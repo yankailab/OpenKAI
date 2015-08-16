@@ -12,6 +12,7 @@ AutoPilot::~AutoPilot()
 
 bool AutoPilot::init()
 {
+/*
 	m_roll = { 0, 0, 0, 0, 0, 0, ROLL_P, ROLL_I, ROLL_IMAX, ROLL_D, PWM_CENTER };
 	m_pitch = { 0, 0, 0, 0, 0, 0, PITCH_P, PITCH_I, PITCH_IMAX, PITCH_D, PWM_CENTER };
 	m_alt = { 0, 0, 0, 0, 0, 0, ALT_P, ALT_I, ALT_IMAX, ALT_D, PWM_CENTER };
@@ -24,7 +25,7 @@ bool AutoPilot::init()
 	m_pitchNear = { PITCH_P, PITCH_I, PITCH_D, Z_NEAR_LIM };
 	m_yawFar = { YAW_P, YAW_I, YAW_D, Z_FAR_LIM };
 	m_yawNear = { YAW_P, YAW_I, YAW_D, Z_NEAR_LIM };
-
+*/
 	m_pCV = NULL;
 	m_pMavlink = NULL;
 
@@ -42,7 +43,11 @@ bool AutoPilot::init()
 	m_iFlowFrame = 0;
 	m_resetFlowFrame = NUM_FLOW_FRAME_RESET;
 	m_resetFactor = FLOW_RESET_FACTOR;
-	m_flowTotal = fVector4{ 0, 0, 0, 0 };
+	m_flowTotal.m_x = 0;
+	m_flowTotal.m_y = 0;
+	m_flowTotal.m_z = 0;
+	m_flowTotal.m_w = 0;
+//	m_flowTotal = fVector4{ 0, 0, 0, 0 };
 
 	return true;
 }
@@ -78,8 +83,13 @@ void AutoPilot::setTargetPosCV(fVector3 pos)
 
 fVector3 AutoPilot::getTargetPosCV(void)
 {
-	return fVector3{ m_roll.m_targetPos, m_alt.m_targetPos, m_pitch.m_targetPos };
+	fVector3 v;
+	v.m_x = m_roll.m_targetPos;
+	v.m_y = m_alt.m_targetPos;
+	v.m_z = m_pitch.m_targetPos;
+//	return fVector3{ m_roll.m_targetPos, m_alt.m_targetPos, m_pitch.m_targetPos };
 
+	return v;
 }
 
 void AutoPilot::markerLock(void)
@@ -443,22 +453,46 @@ PID_SETTING AutoPilot::getYawNearPID(void)
 
 fVector3 AutoPilot::getRollPID(void)
 {
-	return fVector3{ m_roll.m_P, m_roll.m_I, m_roll.m_D};
+	fVector3 v;
+	v.m_x = m_roll.m_P;
+	v.m_y = m_roll.m_I;
+	v.m_z = m_roll.m_D;
+
+	return v;
+//	return fVector3{ m_roll.m_P, m_roll.m_I, m_roll.m_D};
 }
 
 fVector3 AutoPilot::getAltPID(void)
 {
-	return fVector3{ m_alt.m_P, m_alt.m_I, m_alt.m_D };
+	fVector3 v;
+	v.m_x = m_alt.m_P;
+	v.m_y = m_alt.m_I;
+	v.m_z = m_alt.m_D;
+
+	return v;
+//	return fVector3{ m_alt.m_P, m_alt.m_I, m_alt.m_D };
 }
 
 fVector3 AutoPilot::getPitchPID(void)
 {
-	return fVector3{ m_pitch.m_P, m_pitch.m_I, m_pitch.m_D };
+	fVector3 v;
+	v.m_x = m_pitch.m_P;
+	v.m_y = m_pitch.m_I;
+	v.m_z = m_pitch.m_D;
+
+	return v;
+//	return fVector3{ m_pitch.m_P, m_pitch.m_I, m_pitch.m_D };
 }
 
 fVector3 AutoPilot::getYawPID(void)
 {
-	return fVector3{ m_yaw.m_P, m_yaw.m_I, m_yaw.m_D };
+	fVector3 v;
+	v.m_x = m_yaw.m_P;
+	v.m_y = m_yaw.m_I;
+	v.m_z = m_yaw.m_D;
+
+	return v;
+//	return fVector3{ m_yaw.m_P, m_yaw.m_I, m_yaw.m_D };
 }
 
 void AutoPilot::setRollFarPID(PID_SETTING pid)

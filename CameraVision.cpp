@@ -81,7 +81,11 @@ void CameraVision::updateOpticalFlow(void)
 	m_pOpticalFlow->m_frameID = m_Mat.m_frameID;
 
 	m_pOpticalFlow->m_flowMat.download(m_pOpticalFlow->m_uFlowMat);
-	m_pOpticalFlow->m_flow = fVector4{ 0, 0, 0, 0 };
+//	m_pOpticalFlow->m_flow = fVector4{ 0, 0, 0, 0 };
+	m_pOpticalFlow->m_flow.m_x = 0;
+	m_pOpticalFlow->m_flow.m_y = 0;
+	m_pOpticalFlow->m_flow.m_z = 0;
+	m_pOpticalFlow->m_flow.m_w = 0;
 
 	for (i = 0; i < m_pOpticalFlow->m_uFlowMat.rows; i++)
 	{
@@ -143,8 +147,14 @@ void CameraVision::initFeatureFlow(void)
 {
 	if (!m_pFeatureFlow)m_pFeatureFlow = new FEATURE_FLOW();
 
-	m_pFeatureFlow->m_flow = fVector4{ 0, 0, 0 };
-	m_pFeatureFlow->m_diffPrev = fVector3{ 0, 0, 0 };
+	m_pFeatureFlow->m_flow.m_x = 0;
+	m_pFeatureFlow->m_flow.m_y = 0;
+	m_pFeatureFlow->m_flow.m_z = 0;
+	m_pFeatureFlow->m_flow.m_w = 0;
+
+	m_pFeatureFlow->m_diffPrev.m_x = 0;
+	m_pFeatureFlow->m_diffPrev.m_y = 0;
+	m_pFeatureFlow->m_diffPrev.m_z = 0;
 
 	m_functionFlag |= FRAME_GRAY;
 	m_functionFlag |= FRAME_GRAY_SMALL;
@@ -218,7 +228,11 @@ void CameraVision::updateFeatureFlow(void)
 	d_status.download(tMat);
 
 	//Find the flow direction
-	m_pFeatureFlow->m_flow = fVector4{0, 0, 0, 0};
+	m_pFeatureFlow->m_flow.m_x = 0;
+	m_pFeatureFlow->m_flow.m_y = 0;
+	m_pFeatureFlow->m_flow.m_z = 0;
+	m_pFeatureFlow->m_flow.m_w = 0;
+
 	absXtot = 0.0;
 	absYtot = 0.0;
 	numPts = prevPts.size();
@@ -618,7 +632,12 @@ void CameraVision::getGlobalFlowVelocity(fVector4* pFlow)
 
 	int		 numMethod = 0;
 	double	 nBase;
-	fVector4 vFlow = fVector4{ 0, 0, 0, 0 };
+	fVector4 vFlow;
+
+	vFlow.m_x = 0;
+	vFlow.m_y = 0;
+	vFlow.m_z = 0;
+	vFlow.m_w = 0;
 
 	if (m_pMarkerFlow)
 	{
@@ -661,7 +680,10 @@ void CameraVision::getGlobalFlowVelocity(fVector4* pFlow)
 
 	if (numMethod == 0)
 	{
-		*pFlow = fVector4{ 0, 0, 0, 0 };
+		pFlow->m_x = 0;
+		pFlow->m_y = 0;
+		pFlow->m_z = 0;
+		pFlow->m_w = 0;
 		return;
 	}
 

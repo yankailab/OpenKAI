@@ -120,7 +120,9 @@ int main()
 	}
 */
 	//Initial target position
-	g_targetPosExt = { CAM_WIDTH*0.5, CAM_HEIGHT*0.5, (Z_NEAR_LIM+Z_FAR_LIM)*0.2 };
+	g_targetPosExt.m_x = CAM_WIDTH*0.5;
+	g_targetPosExt.m_y = CAM_HEIGHT*0.5;
+	g_targetPosExt.m_z = (Z_NEAR_LIM+Z_FAR_LIM)*0.2;
 
 	//Init CV
 	g_pCV = new CameraVision();
@@ -240,7 +242,11 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 	case EVENT_LBUTTONDOWN:
 		g_bTracking = true;
 		g_targetPosExt = g_pAP->getTargetPosCV();
-		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
+//		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
+		g_targetPosExt.m_x = x;
+		g_targetPosExt.m_y = y;
+//		g_targetPosExt.m_z = g_targetPosExt.m_z;
+
 		g_pAP->setTargetPosCV(g_targetPosExt);
 		break;
 	case EVENT_LBUTTONUP:
@@ -249,12 +255,20 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 	case EVENT_MOUSEMOVE:
 		if (!g_bTracking)return;
 		g_targetPosExt = g_pAP->getTargetPosCV();
-		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
+//		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
+		g_targetPosExt.m_x = x;
+		g_targetPosExt.m_y = y;
+//		g_targetPosExt.m_z = g_targetPosExt.m_z;
 		g_pAP->setTargetPosCV(g_targetPosExt);
 		break;
 	case EVENT_RBUTTONDOWN:
 		//Re-locate the ROI for object recognition
-		g_pCV->setObjROI(fVector3{ x, y, 10 });
+		fVector3 v;
+		v.m_x = x;
+		v.m_y = y;
+		v.m_z = 10;
+//		g_pCV->setObjROI(fVector3{ x, y, 10 });
+		g_pCV->setObjROI(v);
 		break;
 	default:
 		break;
@@ -444,8 +458,20 @@ void displayInfo(void)
 	//	m_gBalloonyness.download(matBalloonyness);
 	//	imshow("balloonyness", matBalloonyness);
 
-	if (!g_pCV->getObjPosition(&vPos))vPos = fVector3{0, 0, 0};
-	if (!g_pCV->getObjAttitude(&vAtt))vAtt = fVector3{ 0, 0,0 };
+	if (!g_pCV->getObjPosition(&vPos))
+	{
+//		vPos = fVector3{0, 0, 0};
+		vPos.m_x = 0;
+		vPos.m_y = 0;
+		vPos.m_z = 0;
+	}
+	if (!g_pCV->getObjAttitude(&vAtt))
+	{
+//		vAtt = fVector3{ 0, 0,0 };
+		vAtt.m_x = 0;
+		vAtt.m_y = 0;
+		vAtt.m_z = 0;
+	}
 	g_targetPosExt = g_pAP->getTargetPosCV();
 
 	g_displayMat = Scalar(0);
