@@ -423,7 +423,7 @@ void createConfigWindow(void)
 
 void displayInfo(void)
 {
-	char strBuf[128];
+	char strBuf[512];
 	std::string strInfo;
 	PID_SETTING pid;
 	fVector3 pid3;
