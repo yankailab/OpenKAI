@@ -5,11 +5,11 @@
 #define MF_WINDOW "Marker_Flow"
 #define SHOW_FEATURE_FLOW 0
 #define CF_WINDOW "Feature_Flow"
-#define SHOW_OPTICAL_FLOW 1
+#define SHOW_OPTICAL_FLOW 0
 #define OPF_WINDOW "Optical_Flow"
 
-//#define USE_MARKER_FLOW
-#define USE_OPTICAL_FLOW
+#define USE_MARKER_FLOW
+//#define USE_OPTICAL_FLOW
 //#define USE_FEATURE_FLOW
 
 //Optical Flow Default PID
@@ -67,11 +67,11 @@
 
 #define DELAY_TIME 5.0
 
-#define CAM_WIDTH 640
-#define CAM_HEIGHT 480
+#define CAM_WIDTH 1280
+#define CAM_HEIGHT 800
 
 #define CAM_EXTERNAL_ID 0
-#define CAM_UPWARD_ID 2
+#define CAM_UPWARD_ID 1
 #endif
 
 #define Z_FAR_LIM 50

@@ -1,6 +1,5 @@
 #pragma once
-#include "common.h"
-#include <stdio.h>
+#include "platform.h"
 
 #define ARDUINO_WAIT_TIME 2000
 

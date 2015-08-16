@@ -210,6 +210,17 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
 #else
 //for Linux
 
+SerialPort::SerialPort(void)
+{
+	this->bConnected = false;
+}
+
+bool SerialPort::IsConnected()
+{
+	//Simply return the connection status
+	return this->bConnected;
+}
+
 SerialPort::~SerialPort()
 {
     //Check if we are bConnected before trying to disconnect
@@ -268,7 +279,7 @@ bool SerialPort::connect(char *portName)
 
     if(tcsetattr(m_fd, TCSANOW, &toptions) < 0)
     {
-	  print("init_serialport: Couldn't set term attributes\n");
+	  printf("init_serialport: Couldn't set term attributes\n");
 	  return false;
     }
 

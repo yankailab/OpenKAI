@@ -1,5 +1,6 @@
 #pragma once
 #include "platform.h"
+#include "defaultparam.h"
 
 //Common include
 #include "opencv2/opencv.hpp"
@@ -7,14 +8,7 @@
 #include "opencv2/core/utility.hpp"
 #include "opencv2/core/ocl.hpp"
 #include "opencv2/features2d.hpp"
-
-#ifdef PLATFORM_WIN
 #include "opencv2/highgui.hpp"
-
-#elif PLATFORM_UBUNTU
-//#include <sys/time.h>
-
-#endif
 
 #ifdef USE_CUDA
 #include "opencv2/cudaarithm.hpp"
@@ -27,15 +21,9 @@
 #define SHOW_DEBUG_WINDOW 1
 #define DRAW_DEBUG_DATA 0
 
-
-#include "defaultparam.h"
-
-
-
 using namespace std;
 using namespace cv;
 using namespace cv::cuda;
-
 
 struct fVector4
 {

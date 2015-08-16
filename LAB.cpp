@@ -60,7 +60,7 @@ int main()
 #ifdef PLATFORM_WIN
 	char pSportName[] = "\\\\.\\COM11";
 #else
-	char pSportName[] = "/dev/ttyUSB0";
+	char pSportName[] = "/dev/ttyACM0";
 #endif
 	g_pMavlink = new MavlinkInterface();
 
@@ -94,7 +94,7 @@ int main()
 
 
 	//Open external camera
-	g_externalCam.open(CAM_EXTERNAL_ID + CV_CAP_DSHOW);//CV_CAP_MSMF
+	g_externalCam.open(CAM_EXTERNAL_ID);// + CV_CAP_DSHOW);//CV_CAP_MSMF
 	if (!g_externalCam.isOpened())
 	{
 		g_pLogger->print("Cannot open External camera\n");
@@ -104,9 +104,11 @@ int main()
 	g_externalCam.set(CV_CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT);
 
 	//Open the upward camera
-	g_upwardCam.open(CAM_UPWARD_ID + CV_CAP_DSHOW);//CV_CAP_MSMF
+	g_upwardCam.open(CAM_UPWARD_ID);// + CV_CAP_DSHOW);//CV_CAP_MSMF
 	g_bUpwardCam = true;
-	if (!g_upwardCam.isOpened())
+	g_bUpwardCam = false;
+
+/*	if (!g_upwardCam.isOpened())
 	{
 		g_pLogger->print("Cannot open Upward camera\n");
 		g_bUpwardCam = false;
@@ -116,7 +118,7 @@ int main()
 		g_upwardCam.set(CV_CAP_PROP_FRAME_WIDTH, CAM_WIDTH);
 		g_upwardCam.set(CV_CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT);
 	}
-
+*/
 	//Initial target position
 	g_targetPosExt = { CAM_WIDTH*0.5, CAM_HEIGHT*0.5, (Z_NEAR_LIM+Z_FAR_LIM)*0.2 };
 
