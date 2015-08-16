@@ -5,7 +5,7 @@
 #include "CameraVision.h"
 #include "AutoPilot.h"
 #include "Logger.h"
-
+//test
 AutoPilot* g_pAP;
 CameraVision* g_pCV;
 MavlinkInterface* g_pMavlink;
