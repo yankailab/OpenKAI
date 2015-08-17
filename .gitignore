@@ -1,0 +1,17 @@
+/Debug/
+
+*.prefs
+
+.project
+
+.cproject
+
+include/mavlink/ualberta/version.h
+
+include/mavlink/ardupilotmega/ardupilotmega.h
+
+include/mavlink/ardupilotmega/mavlink_msg_ahrs.h
+
+include/mavlink/ardupilotmega/mavlink_msg_ahrs2.h
+
+include/mavlink/ardupilotmega/mavlink_msg_ahrs3.h
