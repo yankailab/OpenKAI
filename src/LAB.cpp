@@ -2,9 +2,12 @@
 #include <cmath>
 #include <cstdarg>
 
+#include "NNClassifier.h"
 #include "CameraVision.h"
 #include "AutoPilot.h"
 #include "Logger.h"
+
+
 //test
 AutoPilot* g_pAP;
 CameraVision* g_pCV;
@@ -55,6 +58,35 @@ int main()
 	g_bRun = true;
 	g_bTracking = false;
 	g_pLogger = new Logger();
+
+
+	//NN test
+	NNClassifier classifier;
+
+	classifier.setup(
+			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",//model_file,
+			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",//trained_file,
+			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",//mean_file,
+			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt"//label_file
+			);
+
+	  string file = "/Users/yankai/Documents/dev/caffe-master/examples/images/cat.jpg";
+
+	  std::cout << "---------- Prediction for "
+	            << file << " ----------" << std::endl;
+
+	  cv::Mat img = cv::imread(file, -1);
+	  CHECK(!img.empty()) << "Unable to decode image " << file;
+	  std::vector<Prediction> predictions = classifier.Classify(img);
+
+	  /* Print the top N predictions. */
+	  for (size_t i = 0; i < predictions.size(); ++i) {
+	    Prediction p = predictions[i];
+	    std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
+	              << p.first << "\"" << std::endl;
+	  }
+
+	  return 0;
 
 	//Connect to Mavlink
 #ifdef PLATFORM_WIN
