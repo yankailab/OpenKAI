@@ -10,11 +10,24 @@
 #endif
 
 #ifdef PLATFORM_UBUNTU
-#include <sys/time.h>
 #include <stdio.h>
+#include <stdint.h>   /* Standard types */
+#include <fcntl.h>
 #include <termios.h>
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <fcntl.h>
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#include <getopt.h>
+
+#include <pthread.h>
+#include <string>
+#include <string.h>
+
 #endif
