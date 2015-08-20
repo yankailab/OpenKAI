@@ -85,3 +85,23 @@ include/mavlink/slugs/version.h
 include/mavlink/slugs/testsuite.h
 
 include/mavlink/slugs/mavlink.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gimbal_report_factory_tests_progress.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gimbal_report.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gimbal_reset.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gimbal_set_factory_parameters.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gimbal_set_home_offsets.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gopro_command.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gopro_power_off.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gopro_power_on.h
+
+include/mavlink/ardupilotmega/mavlink_msg_gopro_response.h
+
+include/mavlink/ardupilotmega/mavlink_msg_hwstatus.h
