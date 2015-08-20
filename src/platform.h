@@ -11,8 +11,10 @@
 
 #ifdef PLATFORM_UBUNTU
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>   /* Standard types */
 #include <fcntl.h>
+#include <fstream>
 #include <termios.h>
 #include <unistd.h>
 #include <sys/time.h>

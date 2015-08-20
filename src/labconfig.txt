@@ -1,0 +1,6 @@
+{
+"vehicleName":"ROMANCE",
+"vehicleCtrlPort":7890,
+"vehiclePass":"lovelyvehicle",
+"serialPort":"\\\\.\\COM6",
+}

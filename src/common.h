@@ -1,29 +1,19 @@
 #pragma once
 #include "platform.h"
 #include "defaultparam.h"
+#include "MultiThreadBase.h"
+
+#include "JSONParser.h"
+#include <glog/logging.h>
 
 //Common include
-#include "opencv2/opencv.hpp"
-#include "opencv2/core.hpp"
-#include "opencv2/core/utility.hpp"
-#include "opencv2/core/ocl.hpp"
-#include "opencv2/features2d.hpp"
-#include "opencv2/highgui.hpp"
-
-#ifdef USE_CUDA
-#include "opencv2/cudaarithm.hpp"
-#include "opencv2/cudaimgproc.hpp"
-#include "opencv2/cudaoptflow.hpp"
-#include "opencv2/cudaarithm.hpp"
-#endif
 
 #define PER_FRAME_TIME_LOGGING 0
 #define SHOW_DEBUG_WINDOW 1
 #define DRAW_DEBUG_DATA 0
 
 using namespace std;
-using namespace cv;
-using namespace cv::cuda;
+
 
 struct fVector4
 {
@@ -44,6 +34,27 @@ struct fVector2
 {
 	double m_x;
 	double m_y;
+};
+
+struct iVector2
+{
+	int m_x;
+	int m_y;
+};
+
+struct iVector3
+{
+	int m_x;
+	int m_y;
+	int m_z;
+};
+
+struct iVector4
+{
+	int m_x;
+	int m_y;
+	int m_z;
+	int m_w;
 };
 
 struct CAMERA_DATA

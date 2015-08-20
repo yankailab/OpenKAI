@@ -2,16 +2,15 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "NNClassifier.h"
+#include "ObjectDetector.h"
 #include "CameraVision.h"
 #include "AutoPilot.h"
-#include "Logger.h"
 
 //test
 AutoPilot* g_pAP;
 CameraVision* g_pCV;
+ObjectDetector* g_pDetector;
 MavlinkInterface* g_pMavlink;
-Logger* g_pLogger;
 cv::UMat g_frame;
 cv::UMat g_upwardFrame;
 cv::UMat g_displayMat;
@@ -26,10 +25,10 @@ VideoCapture g_upwardCam;
 
 bool g_bUpwardCam;
 
-std::vector<Prediction> g_predictions;
+JSONParser g_Json;
 
-
-struct PID_UI {
+struct PID_UI
+{
 	int m_P;
 	int m_I;
 	int m_D;
@@ -52,29 +51,52 @@ void onTrackbar(int, void*);
 void displayInfo(void);
 void handleKey(int key);
 
-int main() {
+int main(int argc, char* argv[])
+{
+	// Initialize Google's logging library.
+	google::InitGoogleLogging(argv[0]);
 	namedWindow(APP_NAME);
+
+
+
+
+/*
+	if(m_jsonParser.init()==false)
+		{
+			m_logger.addLog(0,LOG_ERROR,"U_JSONParser.init()");
+			return false;
+		}
+
+		if(!m_fileIO.open(CONFIG_FILENAME))
+		{
+			m_logger.addLog(0,LOG_ERROR,"U_FileIO.open()");
+			return false;
+		}
+		string config = m_fileIO.getContent();
+
+		if(!m_jsonParser.parse(config.c_str()))
+		{
+			m_logger.addLog(0,LOG_ERROR,"U_JSONParser.parse()");
+			return false;
+		}
+
+		if(!m_jsonParser.getVal("vehicleName",&m_name))
+		{
+			m_logger.addLog(0,LOG_ERROR,"U_JSONParser.getVal():vehicleName");
+			return false;
+		}
+*/
+
+
+
+
+
+
+
+
 
 	g_bRun = true;
 	g_bTracking = false;
-	g_pLogger = new Logger();
-
-	//NN test
-	NNClassifier classifier;
-
-	classifier.setup(
-			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt", //model_file,
-			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel", //trained_file,
-			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto", //mean_file,
-			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt" //label_file
-			);
-	/*
-	 string file = "/Users/yankai/Documents/dev/caffe-master/examples/images/cat.jpg";
-	 std::cout << "---------- Prediction for "
-	 << file << " ----------" << std::endl;
-	 cv::Mat img = cv::imread(file, -1);
-	 CHECK(!img.empty()) << "Unable to decode image " << file;
-	 */
 
 	//Connect to Mavlink
 #ifdef PLATFORM_WIN
@@ -84,10 +106,13 @@ int main() {
 #endif
 	g_pMavlink = new MavlinkInterface();
 
-	if (g_pMavlink->open(pSportName) != true) {
-		g_pLogger->print("Cannot open serial port\nWorking in CV mode only\n");
-	} else {
-		g_pLogger->print("Serial port connected\n");
+	if (g_pMavlink->open(pSportName) != true)
+	{
+		LOG(ERROR) << "Cannot open serial port, Working in CV mode only";
+	}
+	else
+	{
+		LOG(ERROR) << "Serial port connected";
 	}
 
 	printf("OpenCV Drone Control\n");
@@ -95,20 +120,25 @@ int main() {
 	printf("CUDA devices: %d\n", cuda::getCudaEnabledDeviceCount());
 	printf("Current CUDA device: %d\n", cuda::getDevice());
 
-	if (ocl::haveOpenCL()) {
+	if (ocl::haveOpenCL())
+	{
 		printf("OpenCL is found\n");
 		ocl::setUseOpenCL(true);
-		if (ocl::useOpenCL()) {
+		if (ocl::useOpenCL())
+		{
 			printf("Using OpenCL\n");
 		}
-	} else {
+	}
+	else
+	{
 		printf("OpenCL not found\n");
 	}
 
 	//Open external camera
 	g_externalCam.open(CAM_EXTERNAL_ID); // + CV_CAP_DSHOW);//CV_CAP_MSMF
-	if (!g_externalCam.isOpened()) {
-		g_pLogger->print("Cannot open External camera\n");
+	if (!g_externalCam.isOpened())
+	{
+		LOG(ERROR) << "Cannot open External camera\n";
 		return false;
 	}
 	g_externalCam.set(CV_CAP_PROP_FRAME_WIDTH, CAM_WIDTH);
@@ -163,7 +193,14 @@ int main() {
 	//set the callback function for any mouse event
 	setMouseCallback(APP_NAME, onMouse, NULL);
 
-	while (g_bRun) {
+
+	//Init Detector
+	g_pDetector = new ObjectDetector();
+	g_pDetector->init();
+
+
+	while (g_bRun)
+	{
 		while (!g_externalCam.read(g_frame))
 			;
 		g_pCV->updateFrame(&g_frame);
@@ -179,17 +216,19 @@ int main() {
 		g_pAP->flowLock();
 #endif
 
-		g_predictions = classifier.Classify(g_pCV->getMat()->getMat(ACCESS_READ));
+//		g_predictions = classifier.Classify(g_pCV->getMat()->getMat(ACCESS_READ));
 
 		/* Print the top N predictions. */
-/*		for (size_t i = 0; i < g_predictions.size(); ++i) {
-			Prediction p = g_predictions[i];
-			std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
-					<< p.first << "\"" << std::endl;
-		}
-*/
+		/*		for (size_t i = 0; i < g_predictions.size(); ++i) {
+		 Prediction p = g_predictions[i];
+		 std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
+		 << p.first << "\"" << std::endl;
+		 }
+		 */
+		g_pDetector->detect(g_pCV->getMat()->getMat(ACCESS_READ));
 
-		if (g_bUpwardCam) {
+		if (g_bUpwardCam)
+		{
 			while (!g_upwardCam.read(g_upwardFrame))
 				;
 			cv::Rect roi(cv::Point(CAM_WIDTH, 0), g_upwardFrame.size());
@@ -205,12 +244,12 @@ int main() {
 	}
 
 	g_externalCam.release();
-	if (g_bUpwardCam) {
+	if (g_bUpwardCam)
+	{
 		g_upwardCam.release();
 	}
 	g_pMavlink->close();
 	delete g_pMavlink;
-	delete g_pLogger;
 	delete g_pAP;
 	delete g_pCV;
 
@@ -218,18 +257,22 @@ int main() {
 
 }
 
-void handleKey(int key) {
-	switch (key) {
+void handleKey(int key)
+{
+	switch (key)
+	{
 	case 'a':
 		//Going forward
-		if (g_targetPosExt.m_z > Z_FAR_LIM) {
+		if (g_targetPosExt.m_z > Z_FAR_LIM)
+		{
 			g_targetPosExt.m_z -= 5;
 			g_pAP->setTargetPosCV(g_targetPosExt);
 		}
 		break;
 	case 'z':
 		//Going backward
-		if (g_targetPosExt.m_z < Z_NEAR_LIM) {
+		if (g_targetPosExt.m_z < Z_NEAR_LIM)
+		{
 			g_targetPosExt.m_z += 5;
 			g_pAP->setTargetPosCV(g_targetPosExt);
 		}
@@ -249,11 +292,13 @@ void handleKey(int key) {
 	}
 }
 
-void onMouse(int event, int x, int y, int flags, void* userdata) {
+void onMouse(int event, int x, int y, int flags, void* userdata)
+{
 	if (x > CAM_WIDTH || y > CAM_HEIGHT)
 		return;
 
-	switch (event) {
+	switch (event)
+	{
 	case EVENT_LBUTTONDOWN:
 		g_bTracking = true;
 		g_targetPosExt = g_pAP->getTargetPosCV();
@@ -291,7 +336,8 @@ void onMouse(int event, int x, int y, int flags, void* userdata) {
 	}
 }
 
-void onTrackbar(int, void*) {
+void onTrackbar(int, void*)
+{
 	//Get current value
 	PID_SETTING pid;
 
@@ -380,7 +426,8 @@ void onTrackbar(int, void*) {
 
 }
 
-void createConfigWindow(void) {
+void createConfigWindow(void)
+{
 	namedWindow(CONFIG_WINDOW);
 
 	//Get current value
@@ -518,7 +565,8 @@ void createConfigWindow(void) {
 			onTrackbar);
 }
 
-void displayInfo(void) {
+void displayInfo(void)
+{
 	char strBuf[512];
 	std::string strInfo;
 	PID_SETTING pid;
@@ -538,13 +586,15 @@ void displayInfo(void) {
 	//	m_gBalloonyness.download(matBalloonyness);
 	//	imshow("balloonyness", matBalloonyness);
 
-	if (!g_pCV->getObjPosition(&vPos)) {
+	if (!g_pCV->getObjPosition(&vPos))
+	{
 //		vPos = fVector3{0, 0, 0};
 		vPos.m_x = 0;
 		vPos.m_y = 0;
 		vPos.m_z = 0;
 	}
-	if (!g_pCV->getObjAttitude(&vAtt)) {
+	if (!g_pCV->getObjAttitude(&vAtt))
+	{
 //		vAtt = fVector3{ 0, 0,0 };
 		vAtt.m_x = 0;
 		vAtt.m_y = 0;
@@ -701,16 +751,16 @@ void displayInfo(void) {
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-
-	for (size_t j = 0; j < g_predictions.size(); ++j) {
+/*
+	for (size_t j = 0; j < g_predictions.size(); ++j)
+	{
 		Prediction p = g_predictions[j];
 //		std::cout << std::fixed << std::setprecision(4) << p.second << " - \"" << p.first << "\"" << std::endl;
 		cv::putText(g_displayMat, String(p.first),
 				Point(startPosH, startPosV + lineHeight * (++i)),
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	}
-
+*/
 }
 
 /*

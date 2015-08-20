@@ -15,7 +15,7 @@ public:
 	MultiThreadBase();
 	virtual ~MultiThreadBase();
 
-	void sleepThread(int32_t sec);
+	void sleepThread(int32_t sec, int32_t nsec);
 	void wakeupThread(void);
 
 public:

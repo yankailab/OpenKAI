@@ -25,7 +25,8 @@
 #include <utility>
 #include <vector>
 
-using namespace caffe;  // NOLINT(build/namespaces)
+using namespace caffe;
+// NOLINT(build/namespaces)
 using caffe::Blob;
 using caffe::Caffe;
 using caffe::Net;
@@ -33,39 +34,43 @@ using caffe::shared_ptr;
 using caffe::vector;
 using caffe::MemoryDataLayer;
 using std::string;
-
+using namespace std;
 
 /* Pair (label, confidence) representing a prediction. */
 typedef std::pair<string, float> Prediction;
 
-class NNClassifier {
+class NNClassifier
+{
 public:
 	NNClassifier();
-	virtual ~NNClassifier();
+	~NNClassifier();
 
-	  void setup(const string& model_file,
-	             const string& trained_file,
-	             const string& mean_file,
-	             const string& label_file);
+	void
+	setup(const string& model_file, const string& trained_file,
+			const string& mean_file, const string& label_file);
 
-	  std::vector<Prediction> Classify(const cv::Mat& img, int N = 5);
+	std::vector<Prediction>
+	Classify(const cv::Mat& img, int N = 5);
 
-	 private:
-	  void SetMean(const string& mean_file);
+private:
+	void
+	SetMean(const string& mean_file);
 
-	  std::vector<float> Predict(const cv::Mat& img);
+	std::vector<float>
+	Predict(const cv::Mat& img);
 
-	  void WrapInputLayer(std::vector<cv::Mat>* input_channels);
+	void
+	WrapInputLayer(std::vector<cv::Mat>* input_channels);
 
-	  void Preprocess(const cv::Mat& img,
-	                  std::vector<cv::Mat>* input_channels);
+	void
+	Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
 
-	 private:
-	  shared_ptr<Net<float> > net_;
-	  cv::Size input_geometry_;
-	  int num_channels_;
-	  cv::Mat mean_;
-	  std::vector<string> labels_;
+private:
+	std::shared_ptr<Net<float> > net_;
+	cv::Size input_geometry_;
+	int num_channels_;
+	cv::Mat mean_;
+	std::vector<string> labels_;
 };
 
 #endif /* SRC_NNCLASSIFIER_H_ */

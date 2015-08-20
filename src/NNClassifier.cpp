@@ -7,17 +7,20 @@
 
 #include "NNClassifier.h"
 
-NNClassifier::NNClassifier() {
+NNClassifier::NNClassifier()
+{
 	// TODO Auto-generated constructor stub
 
 }
 
-NNClassifier::~NNClassifier() {
+NNClassifier::~NNClassifier()
+{
 	// TODO Auto-generated destructor stub
 }
 
 void NNClassifier::setup(const string& model_file, const string& trained_file,
-		const string& mean_file, const string& label_file) {
+		const string& mean_file, const string& label_file)
+{
 #ifdef CPU_ONLY
 	Caffe::set_mode(Caffe::CPU);
 #else
@@ -52,12 +55,14 @@ void NNClassifier::setup(const string& model_file, const string& trained_file,
 }
 
 static bool PairCompare(const std::pair<float, int>& lhs,
-		const std::pair<float, int>& rhs) {
+		const std::pair<float, int>& rhs)
+{
 	return lhs.first > rhs.first;
 }
 
 /* Return the indices of the top N values of vector v. */
-static std::vector<int> Argmax(const std::vector<float>& v, int N) {
+static std::vector<int> Argmax(const std::vector<float>& v, int N)
+{
 	std::vector<std::pair<float, int> > pairs;
 	for (size_t i = 0; i < v.size(); ++i)
 		pairs.push_back(std::make_pair(v[i], i));
@@ -71,13 +76,15 @@ static std::vector<int> Argmax(const std::vector<float>& v, int N) {
 }
 
 /* Return the top N predictions. */
-std::vector<Prediction> NNClassifier::Classify(const cv::Mat& img, int N) {
+std::vector<Prediction> NNClassifier::Classify(const cv::Mat& img, int N)
+{
 	std::vector<float> output = Predict(img);
 
 	N = std::min<int>(labels_.size(), N);
 	std::vector<int> maxN = Argmax(output, N);
 	std::vector<Prediction> predictions;
-	for (int i = 0; i < N; ++i) {
+	for (int i = 0; i < N; ++i)
+	{
 		int idx = maxN[i];
 		predictions.push_back(std::make_pair(labels_[idx], output[idx]));
 	}
@@ -86,7 +93,8 @@ std::vector<Prediction> NNClassifier::Classify(const cv::Mat& img, int N) {
 }
 
 /* Load the mean file in binaryproto format. */
-void NNClassifier::SetMean(const string& mean_file) {
+void NNClassifier::SetMean(const string& mean_file)
+{
 	BlobProto blob_proto;
 	ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
 
@@ -99,7 +107,8 @@ void NNClassifier::SetMean(const string& mean_file) {
 	/* The format of the mean file is planar 32-bit float BGR or grayscale. */
 	std::vector<cv::Mat> channels;
 	float* data = mean_blob.mutable_cpu_data();
-	for (int i = 0; i < num_channels_; ++i) {
+	for (int i = 0; i < num_channels_; ++i)
+	{
 		/* Extract an individual channel. */
 		cv::Mat channel(mean_blob.height(), mean_blob.width(), CV_32FC1, data);
 		channels.push_back(channel);
@@ -116,7 +125,8 @@ void NNClassifier::SetMean(const string& mean_file) {
 	mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 }
 
-std::vector<float> NNClassifier::Predict(const cv::Mat& img) {
+std::vector<float> NNClassifier::Predict(const cv::Mat& img)
+{
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, num_channels_, input_geometry_.height,
 			input_geometry_.width);
@@ -142,13 +152,15 @@ std::vector<float> NNClassifier::Predict(const cv::Mat& img) {
  * don't need to rely on cudaMemcpy2D. The last preprocessing
  * operation will write the separate channels directly to the input
  * layer. */
-void NNClassifier::WrapInputLayer(std::vector<cv::Mat>* input_channels) {
+void NNClassifier::WrapInputLayer(std::vector<cv::Mat>* input_channels)
+{
 	Blob<float>* input_layer = net_->input_blobs()[0];
 
 	int width = input_layer->width();
 	int height = input_layer->height();
 	float* input_data = input_layer->mutable_cpu_data();
-	for (int i = 0; i < input_layer->channels(); ++i) {
+	for (int i = 0; i < input_layer->channels(); ++i)
+	{
 		cv::Mat channel(height, width, CV_32FC1, input_data);
 		input_channels->push_back(channel);
 		input_data += width * height;
@@ -156,7 +168,8 @@ void NNClassifier::WrapInputLayer(std::vector<cv::Mat>* input_channels) {
 }
 
 void NNClassifier::Preprocess(const cv::Mat& img,
-		std::vector<cv::Mat>* input_channels) {
+		std::vector<cv::Mat>* input_channels)
+{
 	/* Convert the input image to the input image format of the network. */
 	cv::Mat sample;
 	if (img.channels() == 3 && num_channels_ == 1)
