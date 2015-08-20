@@ -5,6 +5,7 @@
 
 #include "JSONParser.h"
 #include <glog/logging.h>
+#include "FileIO.h"
 
 //Common include
 

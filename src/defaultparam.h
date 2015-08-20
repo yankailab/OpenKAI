@@ -1,4 +1,4 @@
-#define APP_NAME "CVDrone"
+#define APP_NAME "OpenKAI demo"
 #define CONFIG_WINDOW "Configuration"
 
 #define SHOW_MARKER_FLOW 0
@@ -71,7 +71,7 @@
 #define CAM_HEIGHT 800
 
 #define CAM_EXTERNAL_ID 1
-#define CAM_UPWARD_ID 1
+#define CAM_UPWARD_ID 2
 #endif
 
 #define Z_FAR_LIM 50
