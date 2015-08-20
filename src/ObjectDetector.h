@@ -50,7 +50,7 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	int detect(Mat pImg);
+	int detect(Mat pImg, NN_OBJECT** ppObjects);
 
 private:
 	pthread_t m_threadID;

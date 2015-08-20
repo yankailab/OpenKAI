@@ -80,22 +80,24 @@ void ObjectDetector::waitForComplete(void)
 	pthread_join(m_threadID, NULL);
 }
 
-int ObjectDetector::detect(Mat pImg)
+int ObjectDetector::detect(Mat pImg, NN_OBJECT** ppObjects)
 {
+	size_t i;
 	m_predictions = m_classifier.Classify(pImg);
 
-	for (size_t i = 0; i < g_predictions.size(); i++)
+	for (i = 0; i < m_predictions.size(); i++)
 	{
-		Prediction p = g_predictions[j];
+		Prediction p = m_predictions[i];
 
-//		std::cout << std::fixed << std::setprecision(4) << p.second << " - \"" << p.first << "\"" << std::endl;
-
-		cv::putText(g_displayMat, String(p.first),
-				Point(startPosH, startPosV + lineHeight * (++i)),
-				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+		m_pObjects[i].m_name[0] = p.first;
+		if(i>=NUM_OBJECTS)
+		{
+			break;
+		}
 	}
 
-	return 5;
+	*ppObjects = m_pObjects;
+	return i;
 }
 
 

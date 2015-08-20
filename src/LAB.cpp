@@ -10,6 +10,8 @@
 AutoPilot* g_pAP;
 CameraVision* g_pCV;
 ObjectDetector* g_pDetector;
+NN_OBJECT* g_pObj;
+int g_numObj;
 MavlinkInterface* g_pMavlink;
 cv::UMat g_frame;
 cv::UMat g_upwardFrame;
@@ -225,7 +227,7 @@ int main(int argc, char* argv[])
 		 << p.first << "\"" << std::endl;
 		 }
 		 */
-		g_pDetector->detect(g_pCV->getMat()->getMat(ACCESS_READ));
+		g_numObj = g_pDetector->detect(g_pCV->getMat()->getMat(ACCESS_READ),&g_pObj);
 
 		if (g_bUpwardCam)
 		{
@@ -751,6 +753,13 @@ void displayInfo(void)
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	for(int j = 0; j<g_numObj; j++)
+	{
+		cv::putText(g_displayMat, g_pObj[j].m_name[0],
+				Point(startPosH, startPosV + lineHeight * (++i)),
+				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	}
 /*
 	for (size_t j = 0; j < g_predictions.size(); ++j)
 	{

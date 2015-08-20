@@ -70,7 +70,7 @@
 #define CAM_WIDTH 1280
 #define CAM_HEIGHT 800
 
-#define CAM_EXTERNAL_ID 0
+#define CAM_EXTERNAL_ID 1
 #define CAM_UPWARD_ID 1
 #endif
 
