@@ -16,7 +16,7 @@ int main(int argc, char* argv[])
 	namedWindow(APP_NAME);
 
 
-	if (!g_file.open("/Users/yankai/Documents/workspace/LAB/src/config.txt"))
+	if (!g_file.open(argv[1]))//"/Users/yankai/Documents/workspace/LAB/src/config.txt"))
 	{
 		LOG(FATAL)<<"FileIO.open()";
 		return 1;
