@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdio.h>
-#include "../include/mavlink/common/mavlink.h"
+#include "include/mavlink/common/mavlink.h"
 #include "SerialPort.h"
 //#include <signal.h>
 //#include <time.h>
