@@ -10,44 +10,123 @@ AutoPilot::~AutoPilot()
 {
 }
 
-bool AutoPilot::init()
+bool AutoPilot::init(JSONParser* json)
 {
-/*
-	m_roll = { 0, 0, 0, 0, 0, 0, ROLL_P, ROLL_I, ROLL_IMAX, ROLL_D, PWM_CENTER };
-	m_pitch = { 0, 0, 0, 0, 0, 0, PITCH_P, PITCH_I, PITCH_IMAX, PITCH_D, PWM_CENTER };
-	m_alt = { 0, 0, 0, 0, 0, 0, ALT_P, ALT_I, ALT_IMAX, ALT_D, PWM_CENTER };
+	CONTROL_AXIS cAxis;
 
-	m_rollFar = { ROLL_P, ROLL_I, ROLL_D, Z_FAR_LIM};
-	m_rollNear = { ROLL_P, ROLL_I, ROLL_D, Z_NEAR_LIM };
-	m_altFar = { ALT_P, ALT_I, ALT_D, Z_FAR_LIM };
-	m_altNear = { ALT_P, ALT_I, ALT_D, Z_NEAR_LIM };
-	m_pitchFar = { PITCH_P, PITCH_I, PITCH_D, Z_FAR_LIM };
-	m_pitchNear = { PITCH_P, PITCH_I, PITCH_D, Z_NEAR_LIM };
-	m_yawFar = { YAW_P, YAW_I, YAW_D, Z_FAR_LIM };
-	m_yawNear = { YAW_P, YAW_I, YAW_D, Z_NEAR_LIM };
-*/
+	cAxis.m_pos = 0;
+	cAxis.m_targetPos = 0;
+	cAxis.m_accel = 0;
+	cAxis.m_cvErr = 0;
+	cAxis.m_cvErrOld = 0;
+	cAxis.m_cvErrInteg = 0;
+	cAxis.m_P = 0;
+	cAxis.m_I = 0;
+	cAxis.m_Imax = 0;
+	cAxis.m_D = 0;
+	cAxis.m_pwm = 0;
+	cAxis.m_pwmCenter = 0;
+	cAxis.m_RCChannel = 0;
+
+	m_roll = cAxis;
+	m_pitch = cAxis;
+	m_alt = cAxis;
+
+	CHECK_FATAL(json->getVal("ROLL_P", &m_roll.m_P));
+	CHECK_FATAL(json->getVal("ROLL_I", &m_roll.m_I));
+	CHECK_FATAL(json->getVal("ROLL_IMAX", &m_roll.m_Imax));
+	CHECK_FATAL(json->getVal("ROLL_D", &m_roll.m_D));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_roll.m_pwm));
+	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_roll.m_pwmLow));
+	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_roll.m_pwmHigh));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_roll.m_pwmCenter));
+	CHECK_FATAL(json->getVal("RC_ROLL", (int*)&m_roll.m_RCChannel));
+
+	CHECK_FATAL(json->getVal("PITCH_P", &m_pitch.m_P));
+	CHECK_FATAL(json->getVal("PITCH_I", &m_pitch.m_I));
+	CHECK_FATAL(json->getVal("PITCH_IMAX", &m_pitch.m_Imax));
+	CHECK_FATAL(json->getVal("PITCH_D", &m_pitch.m_D));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_pitch.m_pwm));
+	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_pitch.m_pwmLow));
+	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_pitch.m_pwmHigh));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_pitch.m_pwmCenter));
+	CHECK_FATAL(json->getVal("RC_PITCH", (int*)&m_pitch.m_RCChannel));
+
+	CHECK_FATAL(json->getVal("ALT_P", &m_alt.m_P));
+	CHECK_FATAL(json->getVal("ALT_I", &m_alt.m_I));
+	CHECK_FATAL(json->getVal("ALT_IMAX", &m_alt.m_Imax));
+	CHECK_FATAL(json->getVal("ALT_D", &m_alt.m_D));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_alt.m_pwm));
+	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_alt.m_pwmLow));
+	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_alt.m_pwmHigh));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_alt.m_pwmCenter));
+	CHECK_FATAL(json->getVal("RC_THROTTLE", (int*)&m_alt.m_RCChannel));
+
+	CHECK_FATAL(json->getVal("ROLL_P", &m_rollFar.m_P));
+	CHECK_FATAL(json->getVal("ROLL_I", &m_rollFar.m_I));
+	CHECK_FATAL(json->getVal("ROLL_D", &m_rollFar.m_D));
+	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_rollFar.m_Z));
+
+	CHECK_FATAL(json->getVal("ROLL_P", &m_rollNear.m_P));
+	CHECK_FATAL(json->getVal("ROLL_I", &m_rollNear.m_I));
+	CHECK_FATAL(json->getVal("ROLL_D", &m_rollNear.m_D));
+	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_rollNear.m_Z));
+
+	CHECK_FATAL(json->getVal("ALT_P", &m_altFar.m_P));
+	CHECK_FATAL(json->getVal("ALT_I", &m_altFar.m_I));
+	CHECK_FATAL(json->getVal("ALT_D", &m_altFar.m_D));
+	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_altFar.m_Z));
+
+	CHECK_FATAL(json->getVal("ALT_P", &m_altNear.m_P));
+	CHECK_FATAL(json->getVal("ALT_I", &m_altNear.m_I));
+	CHECK_FATAL(json->getVal("ALT_D", &m_altNear.m_D));
+	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_altNear.m_Z));
+
+	CHECK_FATAL(json->getVal("PITCH_P", &m_pitchFar.m_P));
+	CHECK_FATAL(json->getVal("PITCH_I", &m_pitchFar.m_I));
+	CHECK_FATAL(json->getVal("PITCH_D", &m_pitchFar.m_D));
+	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_pitchFar.m_Z));
+
+	CHECK_FATAL(json->getVal("PITCH_P", &m_pitchNear.m_P));
+	CHECK_FATAL(json->getVal("PITCH_I", &m_pitchNear.m_I));
+	CHECK_FATAL(json->getVal("PITCH_D", &m_pitchNear.m_D));
+	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_pitchNear.m_Z));
+
+	CHECK_FATAL(json->getVal("YAW_P", &m_yawFar.m_P));
+	CHECK_FATAL(json->getVal("YAW_I", &m_yawFar.m_I));
+	CHECK_FATAL(json->getVal("YAW_D", &m_yawFar.m_D));
+	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_yawFar.m_Z));
+
+	CHECK_FATAL(json->getVal("YAW_P", &m_yawNear.m_P));
+	CHECK_FATAL(json->getVal("YAW_I", &m_yawNear.m_I));
+	CHECK_FATAL(json->getVal("YAW_D", &m_yawNear.m_D));
+	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_yawNear.m_Z));
+
+	m_RC[m_roll.m_RCChannel] = m_roll.m_pwmCenter;
+	m_RC[m_pitch.m_RCChannel] = m_pitch.m_pwmCenter;
+	m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
+	m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
+
+
 	m_pCV = NULL;
 	m_pMavlink = NULL;
-
-	for (int i = 0; i < NUM_RC_CHANNEL; i++)
-	{
-		m_RC[i] = PWM_LOW;
-	}
 
 	m_hostSystem.m_mode = OPE_BOOT;
 	m_remoteSystem.m_mode = OPE_BOOT;
 
-	m_dT = 0.0;
+	CHECK_FATAL(json->getVal("DELAY_TIME", &m_dT));
 	m_bAutoCalcDelay = true;
 
 	m_iFlowFrame = 0;
-	m_resetFlowFrame = NUM_FLOW_FRAME_RESET;
-	m_resetFactor = FLOW_RESET_FACTOR;
+	CHECK_FATAL(json->getVal("NUM_FLOW_FRAME_RESET", &m_resetFlowFrame));
+	CHECK_FATAL(json->getVal("FLOW_RESET_FACTOR", &m_resetFactor));
+//	m_resetFlowFrame = NUM_FLOW_FRAME_RESET;
+//	m_resetFactor = FLOW_RESET_FACTOR;
+
 	m_flowTotal.m_x = 0;
 	m_flowTotal.m_y = 0;
 	m_flowTotal.m_z = 0;
 	m_flowTotal.m_w = 0;
-//	m_flowTotal = fVector4{ 0, 0, 0, 0 };
 
 	return true;
 }
@@ -87,7 +166,6 @@ fVector3 AutoPilot::getTargetPosCV(void)
 	v.m_x = m_roll.m_targetPos;
 	v.m_y = m_alt.m_targetPos;
 	v.m_z = m_pitch.m_targetPos;
-//	return fVector3{ m_roll.m_targetPos, m_alt.m_targetPos, m_pitch.m_targetPos };
 
 	return v;
 }
@@ -140,13 +218,13 @@ void AutoPilot::markerLock(void)
 		
 		m_roll.m_cvErrOld = m_roll.m_cvErr;
 		m_roll.m_cvErr = m_roll.m_targetPos - m_roll.m_pos;
-		m_roll.m_cvErrInteg = confineVal(m_roll.m_cvErrInteg + m_roll.m_cvErr, ERROR_RANGE,-ERROR_RANGE);
-		m_roll.m_pwm = PWM_CENTER +
+		m_roll.m_cvErrInteg += m_roll.m_cvErr;
+		m_roll.m_pwm = m_roll.m_pwmCenter +
 			m_roll.m_P * m_roll.m_cvErr
 			+ m_roll.m_D * (m_roll.m_cvErr - m_roll.m_cvErrOld)
 			+ confineVal(m_roll.m_I * m_roll.m_cvErrInteg, m_roll.m_Imax, -m_roll.m_Imax);
 
-		m_RC[RC_ROLL] = constrain(m_roll.m_pwm, PWM_LOW, PWM_HIGH);
+		m_RC[m_roll.m_RCChannel] = constrain(m_roll.m_pwm, m_roll.m_pwmLow, m_roll.m_pwmHigh);
 
 		//Alt = Y axis
 		m_alt.m_P = m_altNear.m_P + (m_altFar.m_P - m_altNear.m_P)*zRatio;
@@ -155,13 +233,13 @@ void AutoPilot::markerLock(void)
 
 		m_alt.m_cvErrOld = m_alt.m_cvErr;
 		m_alt.m_cvErr = m_alt.m_targetPos - m_alt.m_pos;
-		m_alt.m_cvErrInteg = confineVal(m_alt.m_cvErrInteg + m_alt.m_cvErr, ERROR_RANGE, -ERROR_RANGE);
-		m_alt.m_pwm = PWM_CENTER +
+		m_alt.m_cvErrInteg += m_alt.m_cvErr;
+		m_alt.m_pwm = m_alt.m_pwmCenter +
 			m_alt.m_P * m_alt.m_cvErr
 			+ m_alt.m_D * (m_alt.m_cvErr - m_alt.m_cvErrOld)
 			+ confineVal(m_alt.m_I * m_alt.m_cvErrInteg, m_alt.m_Imax, -m_alt.m_Imax);
 
-		m_RC[RC_THROTTLE] = constrain(m_alt.m_pwm, PWM_LOW, PWM_HIGH);
+		m_RC[m_alt.m_RCChannel] = constrain(m_alt.m_pwm, m_alt.m_pwmLow, m_alt.m_pwmHigh);
 
 		//Pitch = Z axis (Depth)
 		if (m_lockLevel >= LOCK_LEVEL_SIZE)
@@ -172,20 +250,20 @@ void AutoPilot::markerLock(void)
 
 			m_pitch.m_cvErrOld = m_pitch.m_cvErr;
 			m_pitch.m_cvErr = m_pitch.m_targetPos - m_pitch.m_pos;
-			m_pitch.m_cvErrInteg = confineVal(m_pitch.m_cvErrInteg + m_pitch.m_cvErr, ERROR_RANGE, -ERROR_RANGE);
-			m_pitch.m_pwm = PWM_CENTER +
+			m_pitch.m_cvErrInteg += m_pitch.m_cvErr;
+			m_pitch.m_pwm = m_pitch.m_pwmCenter +
 				m_pitch.m_P * m_pitch.m_cvErr
 				+ m_pitch.m_D * (m_pitch.m_cvErr - m_pitch.m_cvErrOld)
 				+ confineVal(m_pitch.m_I * m_pitch.m_cvErrInteg, m_pitch.m_Imax, -m_pitch.m_Imax);
 
-			m_RC[RC_PITCH] = constrain(m_pitch.m_pwm, PWM_LOW, PWM_HIGH);
+			m_RC[m_pitch.m_RCChannel] = constrain(m_pitch.m_pwm, m_pitch.m_pwmLow, m_pitch.m_pwmHigh);
 		}
 		else
 		{
 			m_pitch.m_cvErrOld = 0;
 			m_pitch.m_cvErr = 0;
 			m_pitch.m_cvErrInteg = 0;
-			m_RC[RC_PITCH] = PWM_CENTER;
+			m_RC[m_pitch.m_RCChannel] = m_pitch.m_pwmCenter;
 		}
 
 		//Yaw axis
@@ -201,20 +279,20 @@ void AutoPilot::markerLock(void)
 
 			m_yaw.m_cvErrOld = m_yaw.m_cvErr;
 			m_yaw.m_cvErr = m_yaw.m_targetPos - m_yaw.m_pos;
-			m_yaw.m_cvErrInteg = confineVal(m_yaw.m_cvErrInteg + m_yaw.m_cvErr, ERROR_RANGE, -ERROR_RANGE);
-			m_yaw.m_pwm = PWM_CENTER +
+			m_yaw.m_cvErrInteg += m_yaw.m_cvErr;
+			m_yaw.m_pwm = m_yaw.m_pwmCenter +
 				m_yaw.m_P * m_yaw.m_cvErr
 				+ m_yaw.m_D * (m_yaw.m_cvErr - m_yaw.m_cvErrOld)
 				+ m_yaw.m_I * m_yaw.m_cvErrInteg;
 
-			m_RC[RC_YAW] = constrain(m_yaw.m_pwm, PWM_LOW, PWM_HIGH);
+			m_RC[m_yaw.m_RCChannel] = constrain(m_yaw.m_pwm, m_yaw.m_pwmLow, m_yaw.m_pwmHigh);
 		}
 		else
 		{
 			m_yaw.m_cvErrOld = 0;
 			m_yaw.m_cvErr = 0;
 			m_yaw.m_cvErrInteg = 0;
-			m_RC[RC_YAW] = PWM_CENTER;
+			m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
 		}
 
 
@@ -239,10 +317,10 @@ void AutoPilot::markerLock(void)
 		m_yaw.m_cvErrInteg = 0;
 
 		//RC
-		m_RC[RC_ROLL] = PWM_CENTER;
-		m_RC[RC_THROTTLE] = PWM_CENTER;
-		m_RC[RC_PITCH] = PWM_CENTER;
-		m_RC[RC_YAW] = PWM_CENTER;
+		m_RC[m_roll.m_RCChannel] = m_roll.m_pwmCenter;
+		m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
+		m_RC[m_pitch.m_RCChannel] = m_pitch.m_pwmCenter;
+		m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
 	}
 
 	//Mavlink
@@ -302,12 +380,12 @@ void AutoPilot::flowLock(void)
 	m_roll.m_cvErrOld = m_roll.m_cvErr;
 	m_roll.m_cvErr = m_flowTotal.m_x;
 	m_roll.m_cvErrInteg += m_roll.m_cvErr;
-	m_roll.m_pwm = PWM_CENTER +
+	m_roll.m_pwm = m_roll.m_pwmCenter +
 		m_roll.m_P * m_roll.m_cvErr
 		+ m_roll.m_D * (m_roll.m_cvErr - m_roll.m_cvErrOld)
 		+ confineVal(m_roll.m_I * m_roll.m_cvErrInteg, m_roll.m_Imax, -m_roll.m_Imax);
 
-	m_RC[RC_ROLL] = constrain(m_roll.m_pwm, PWM_LOW, PWM_HIGH);
+	m_RC[m_roll.m_RCChannel] = constrain(m_roll.m_pwm, m_roll.m_pwmLow, m_roll.m_pwmHigh);
 
 	//Pitch = Y axis
 	m_pitch.m_P = m_pitchNear.m_P;
@@ -317,12 +395,12 @@ void AutoPilot::flowLock(void)
 	m_pitch.m_cvErrOld = m_pitch.m_cvErr;
 	m_pitch.m_cvErr = m_flowTotal.m_y;
 	m_pitch.m_cvErrInteg += m_pitch.m_cvErr;
-	m_pitch.m_pwm = PWM_CENTER +
+	m_pitch.m_pwm = m_pitch.m_pwmCenter +
 		m_pitch.m_P * m_pitch.m_cvErr
 		+ m_pitch.m_D * (m_pitch.m_cvErr - m_pitch.m_cvErrOld)
 		+ confineVal(m_pitch.m_I * m_pitch.m_cvErrInteg, m_pitch.m_Imax, -m_pitch.m_Imax);
 
-	m_RC[RC_PITCH] = constrain(m_pitch.m_pwm, PWM_LOW, PWM_HIGH);
+	m_RC[m_pitch.m_RCChannel] = constrain(m_pitch.m_pwm, m_pitch.m_pwmLow, m_pitch.m_pwmHigh);
 
 /*
 	//Alt = Z axis
@@ -360,8 +438,8 @@ void AutoPilot::flowLock(void)
 	m_RC[RC_YAW] = constrain(m_yaw.m_pwm, PWM_LOW, PWM_HIGH);
 */
 
-	m_RC[RC_THROTTLE] = PWM_CENTER;
-	m_RC[RC_YAW] = PWM_CENTER;
+	m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
+	m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
 
 	//Mavlink
 	m_pMavlink->rc_overide(NUM_RC_CHANNEL, m_RC);
@@ -481,7 +559,6 @@ fVector3 AutoPilot::getPitchPID(void)
 	v.m_z = m_pitch.m_D;
 
 	return v;
-//	return fVector3{ m_pitch.m_P, m_pitch.m_I, m_pitch.m_D };
 }
 
 fVector3 AutoPilot::getYawPID(void)
@@ -492,7 +569,6 @@ fVector3 AutoPilot::getYawPID(void)
 	v.m_z = m_yaw.m_D;
 
 	return v;
-//	return fVector3{ m_yaw.m_P, m_yaw.m_I, m_yaw.m_D };
 }
 
 void AutoPilot::setRollFarPID(PID_SETTING pid)

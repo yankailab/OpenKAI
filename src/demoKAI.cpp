@@ -15,14 +15,14 @@ int main(int argc, char* argv[])
 
 	namedWindow(APP_NAME);
 
-
-	if (!g_file.open(argv[1]))//"/Users/yankai/Documents/workspace/LAB/src/config.txt"))
+	if (!g_file.open(argv[1]))
 	{
 		LOG(FATAL)<<"FileIO.open()";
 		return 1;
 	}
-	string config = g_file.getContent();
+	LOG(INFO)<<"Using config file: "<<argv[1];
 
+	string config = g_file.getContent();
 	if (!g_Json.parse(config.c_str()))
 	{
 		LOG(FATAL)<<"JSONParser.parse()";
@@ -39,14 +39,9 @@ int main(int argc, char* argv[])
 	g_bTracking = false;
 
 	//Connect to Mavlink
-#ifdef PLATFORM_WIN
-	char pSportName[] = "\\\\.\\COM11";
-#else
-	char pSportName[] = "/dev/ttyACM0";
-#endif
 	g_pMavlink = new MavlinkInterface();
 
-	if (g_pMavlink->open(pSportName) != true)
+	if (g_pMavlink->open((char*)g_serialPort.c_str()) != true)
 	{
 		LOG(ERROR)<< "Cannot open serial port, Working in CV mode only";
 	}
@@ -55,7 +50,7 @@ int main(int argc, char* argv[])
 		LOG(ERROR) << "Serial port connected";
 	}
 
-	printf("OpenCV Drone Control\n");
+	printf("OpenKAI controller demo\n");
 	printf("Optimized code: %d\n", useOptimized());
 	printf("CUDA devices: %d\n", cuda::getCudaEnabledDeviceCount());
 	printf("Current CUDA device: %d\n", cuda::getDevice());
@@ -121,7 +116,7 @@ int main(int argc, char* argv[])
 
 	//Init Autopilot
 	g_pAP = new AutoPilot();
-	g_pAP->init();
+	g_pAP->init(&g_Json);
 	g_pAP->setCameraVision(g_pCV);
 	g_pAP->setMavlink(g_pMavlink);
 	g_pAP->setTargetPosCV(g_targetPosExt);
@@ -135,7 +130,7 @@ int main(int argc, char* argv[])
 
 	//Init Detector
 	g_pDetector = new ObjectDetector();
-	g_pDetector->init();
+	g_pDetector->init(&g_Json);
 
 	while (g_bRun)
 	{
@@ -154,15 +149,7 @@ int main(int argc, char* argv[])
 		g_pAP->flowLock();
 #endif
 
-//		g_predictions = classifier.Classify(g_pCV->getMat()->getMat(ACCESS_READ));
 
-		/* Print the top N predictions. */
-		/*		for (size_t i = 0; i < g_predictions.size(); ++i) {
-		 Prediction p = g_predictions[i];
-		 std::cout << std::fixed << std::setprecision(4) << p.second << " - \""
-		 << p.first << "\"" << std::endl;
-		 }
-		 */
 		g_numObj = g_pDetector->detect(g_pCV->getMat()->getMat(ACCESS_READ),
 				&g_pObj);
 

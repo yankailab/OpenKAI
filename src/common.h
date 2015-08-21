@@ -15,6 +15,9 @@
 
 using namespace std;
 
+#define CHECK_FATAL(x) if(x==false){LOG(FATAL);return false;}
+#define CHECK_ERROR(x) if(x==false){LOG(ERROR);return false;}
+
 
 struct fVector4
 {

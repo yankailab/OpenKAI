@@ -16,26 +16,7 @@
 #define OPE_RC_BRIDGE 5
 #define OPE_BOOT 6
 
-#define ERROR_RANGE 1000
-
 #define NUM_RC_CHANNEL 8
-#define RC_THROTTLE 2
-#define RC_YAW 3
-#define RC_PITCH 1
-#define RC_ROLL 0
-#define RC_MODE 4
-
-//FLOW
-#define NUM_FLOW_FRAME_RESET 1
-#define FLOW_RESET_FACTOR 0.8
-
-//PWM
-#define PWM_LOW 1350
-#define PWM_CENTER 1500
-#define PWM_HIGH 1650
-
-#define PWM_MODE_ALT_HOLD 1815
-#define PWM_MODE_MANUAL 1165
 
 //FALCON COMMANDS
 #define CMD_RC_UPDATE 0
@@ -65,6 +46,10 @@ struct CONTROL_AXIS
 	double m_D;
 
 	unsigned int m_pwm;
+	unsigned int m_pwmLow;
+	unsigned int m_pwmCenter;
+	unsigned int m_pwmHigh;
+	unsigned int m_RCChannel;
 };
 
 class AutoPilot
@@ -73,7 +58,7 @@ public:
 	AutoPilot();
 	~AutoPilot();
 
-	bool init(void);
+	bool init(JSONParser* json);
 	PID_SETTING getRollFarPID(void);
 	PID_SETTING getRollNearPID(void);
 	PID_SETTING getAltFarPID(void);
@@ -161,7 +146,6 @@ private:
 	int m_RC[NUM_RC_CHANNEL];
 
 	CameraVision* m_pCV;
-	CAMERA_DATA* m_pCVdata;
 	MavlinkInterface* m_pMavlink;
 
 };

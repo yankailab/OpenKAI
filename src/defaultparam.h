@@ -44,6 +44,7 @@
 #endif
 
 //Marker Locking PID
+/*
 #ifdef USE_MARKER_FLOW
 #define ROLL_P 1.0
 #define ROLL_I 0.25
@@ -70,20 +71,8 @@
 #define CAM_WIDTH 1280
 #define CAM_HEIGHT 800
 
-#define CAM_EXTERNAL_ID 1
+#define CAM_EXTERNAL_ID 0
 #define CAM_UPWARD_ID 2
+
 #endif
-
-#define Z_FAR_LIM 50
-#define Z_NEAR_LIM 500
-
-#define PID_UI_LIM 1000.0
-#define PID_UI_LIM_HALF 500.0
-
-#define PID_P_LIM 10.0
-#define PID_I_LIM 1.0
-#define PID_D_LIM 50.0
-#define PID_Z_LIM 500.0
-#define PID_YAW_P_LIM 200.0
-#define DT_LIM 10.0
-
+*/

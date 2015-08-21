@@ -23,13 +23,13 @@ bool JSONParser::parse(string json)
 	}
 	return true;
 }
-/*
+
 bool JSONParser::getVal(string name, int* val)
 {
 	if(m_JSON.is<object>())
 	{
 		value var = m_JSON.get(name);
-		if(var.is<double>())
+		if(var.is<int>())
 		{
 			*val = (int)var.get<double>();
 			return true;
@@ -38,7 +38,7 @@ bool JSONParser::getVal(string name, int* val)
 
 	return false;
 }
-*/
+/*
 bool JSONParser::getVal(string name, int32_t* val)
 {
 	if(m_JSON.is<object>())
@@ -53,7 +53,7 @@ bool JSONParser::getVal(string name, int32_t* val)
 
 	return false;
 }
-
+*/
 bool JSONParser::getVal(string name, double* val)
 {
 	if(m_JSON.is<object>())

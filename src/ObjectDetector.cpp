@@ -18,14 +18,23 @@ ObjectDetector::~ObjectDetector()
 	// TODO Auto-generated destructor stub
 }
 
-bool ObjectDetector::init(void)
+bool ObjectDetector::init(JSONParser* pJson)
 {
+	string modelFile;
+	string trainedFile;
+	string meanFile;
+	string labelFile;
+
+	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
 
 	m_classifier.setup(
-			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt", //model_file,
-			"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel", //trained_file,
-			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto", //mean_file,
-			"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt" //label_file
+			modelFile,
+			trainedFile,
+			meanFile,
+			labelFile
 			);
 
 	m_tSleep = TRD_INTERVAL;

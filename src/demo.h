@@ -8,6 +8,19 @@
 #ifndef SRC_DEMO_H_
 #define SRC_DEMO_H_
 
+#define Z_FAR_LIM 50
+#define Z_NEAR_LIM 500
+
+#define PID_UI_LIM 1000.0
+#define PID_UI_LIM_HALF 500.0
+
+#define PID_P_LIM 10.0
+#define PID_I_LIM 1.0
+#define PID_D_LIM 50.0
+#define PID_Z_LIM 500.0
+#define PID_YAW_P_LIM 200.0
+#define DT_LIM 10.0
+
 //test
 AutoPilot* g_pAP;
 CameraVision* g_pCV;
