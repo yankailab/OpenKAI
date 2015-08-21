@@ -1,19 +1,19 @@
 /*
- * MultiThreadBase.h
+ * ThreadBase.h
  *
  *  Created on: Aug 20, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_MULTITHREADBASE_H_
-#define SRC_MULTITHREADBASE_H_
+#ifndef SRC_THREADBASE_H_
+#define SRC_THREADBASE_H_
 
 #include "platform.h"
 
-class MultiThreadBase {
+class ThreadBase {
 public:
-	MultiThreadBase();
-	virtual ~MultiThreadBase();
+	ThreadBase();
+	virtual ~ThreadBase();
 
 	void sleepThread(int32_t sec, int32_t nsec);
 	void wakeupThread(void);
@@ -24,4 +24,4 @@ public:
 	int m_tSleep;
 };
 
-#endif /* SRC_MULTITHREADBASE_H_ */
+#endif /* SRC_THREADBASE_H_ */

@@ -25,6 +25,9 @@
 #include <utility>
 #include <vector>
 
+namespace kai
+{
+
 using namespace caffe;
 // NOLINT(build/namespaces)
 using caffe::Blob;
@@ -72,5 +75,7 @@ private:
 	cv::Mat mean_;
 	std::vector<string> labels_;
 };
+
+}
 
 #endif /* SRC_NNCLASSIFIER_H_ */

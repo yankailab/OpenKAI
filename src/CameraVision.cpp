@@ -1,5 +1,6 @@
 #include "CameraVision.h"
-
+namespace kai
+{
 CameraVision::CameraVision()
 {
 }
@@ -8,7 +9,7 @@ CameraVision::~CameraVision()
 {
 }
 
-bool CameraVision::init(void)
+bool CameraVision::init(JSON* pJson)
 {
 #if (SHOW_MARKER_FLOW == 1)
 	namedWindow(MF_WINDOW);
@@ -59,12 +60,6 @@ void CameraVision::initOpticalFlow(void)
 	m_functionFlag |= FRAME_SMALL;
 	m_functionFlag |= FRAME_GRAY_SMALL;
 
-//	m_pOpticalFlow->m_method = OPF_FARN;
-//	m_pOpticalFlow->m_pBrox = cuda::BroxOpticalFlow::create(0.197f, 50.0f, 0.8f, 10, 77, 10);
-//	m_pOpticalFlow->m_pLK = cuda::DensePyrLKOpticalFlow::create(Size(7, 7));
-//	m_pOpticalFlow->m_pTVL1 = cuda::OpticalFlowDual_TVL1::create();
-
-
 }
 
 void CameraVision::updateOpticalFlow(void)
@@ -101,28 +96,6 @@ void CameraVision::updateOpticalFlow(void)
 	m_pOpticalFlow->m_flow.m_x *= base;
 	m_pOpticalFlow->m_flow.m_y *= base;
 
-
-
-
-/*	switch (m_pOpticalFlow->m_method)
-	{
-	case OPF_BROX:
-		m_pOpticalFlow->m_pBrox->calc(*m_Mat.m_pSmallGrayOld, *m_Mat.m_pSmallGrayNew, m_pOpticalFlow->m_flowMat);
-		break;
-	case OPF_LK:
-		m_pOpticalFlow->m_pLK->calc(*m_Mat.m_pSmallGrayOld, *m_Mat.m_pSmallGrayNew, m_pOpticalFlow->m_flowMat);
-		break;
-	case OPF_FARN:
-		m_pOpticalFlow->m_pFarn->calc(*m_Mat.m_pSmallGrayOld, *m_Mat.m_pSmallGrayNew, m_pOpticalFlow->m_flowMat);
-		break;
-	case OPF_TVL1:
-		m_pOpticalFlow->m_pTVL1->calc(*m_Mat.m_pSmallGrayOld, *m_Mat.m_pSmallGrayNew, m_pOpticalFlow->m_flowMat);
-		break;
-	default:
-		m_pOpticalFlow->m_pBrox->calc(*m_Mat.m_pSmallGrayOld, *m_Mat.m_pSmallGrayNew, m_pOpticalFlow->m_flowMat);
-		break;
-	}
-*/
 
 #if (SHOW_OPTICAL_FLOW == 1)
 	m_Mat.m_pNew->download(m_pOpticalFlow->m_uFlowMat);
@@ -901,5 +874,5 @@ void CameraVision::log(const char* msg, ...)
 #endif
 }
 
-
+}
 

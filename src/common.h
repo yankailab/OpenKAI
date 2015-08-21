@@ -1,11 +1,10 @@
 #pragma once
 #include "platform.h"
 #include "defaultparam.h"
-#include "MultiThreadBase.h"
-
 #include <glog/logging.h>
 #include "FileIO.h"
 #include "JSON.h"
+#include "ThreadBase.h"
 
 //Common include
 
@@ -18,6 +17,8 @@ using namespace std;
 #define CHECK_FATAL(x) if(x==false){LOG(FATAL);return false;}
 #define CHECK_ERROR(x) if(x==false){LOG(ERROR);return false;}
 
+namespace kai
+{
 
 struct fVector4
 {
@@ -73,6 +74,8 @@ struct SYSTEM
 {
 	char m_mode;
 };
+
+}
 
 
 

@@ -6,7 +6,8 @@
  */
 
 #include "ObjectDetector.h"
-
+namespace kai
+{
 ObjectDetector::ObjectDetector()
 {
 	// TODO Auto-generated constructor stub
@@ -107,6 +108,7 @@ int ObjectDetector::detect(Mat pImg, NN_OBJECT** ppObjects)
 
 	*ppObjects = m_pObjects;
 	return i;
+}
 }
 
 

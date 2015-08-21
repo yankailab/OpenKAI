@@ -1,23 +1,7 @@
 #pragma once
 #include "common.h"
 #include "stdio.h"
-
-#include "opencv2/opencv.hpp"
-#include "opencv2/core.hpp"
-#include "opencv2/core/utility.hpp"
-#include "opencv2/core/ocl.hpp"
-#include "opencv2/features2d.hpp"
-#include "opencv2/highgui.hpp"
-
-#ifdef USE_CUDA
-#include "opencv2/cudaarithm.hpp"
-#include "opencv2/cudaimgproc.hpp"
-#include "opencv2/cudaoptflow.hpp"
-#include "opencv2/cudaarithm.hpp"
-#endif
-
-using namespace cv;
-using namespace cv::cuda;
+#include "cvplatform.h"
 
 #define SMALL_WIDTH 300
 #define SMALL_HEIGHT 300
@@ -32,17 +16,15 @@ using namespace cv::cuda;
 #define LOCK_LEVEL_SIZE 2
 #define LOCK_LEVEL_ATT 3
 
-#define OPF_BROX 0
-#define OPF_LK 1
-#define OPF_FARN 2
-#define OPF_TVL1 3
-
 #define FRAME_SMALL 1
 #define FRAME_GRAY (1<<1)
 #define FRAME_GRAY_SMALL (1<<2)
 #define FRAME_HSV (1<<3)
 
 #define MAX_FRAME_ID 0xffffffff
+
+namespace kai
+{
 
 struct GENERAL_MATRICES
 {
@@ -54,6 +36,10 @@ struct GENERAL_MATRICES
 	//index for switching New and Old frame
 	unsigned char m_iFrame;
 	cv::Size m_smallSize;
+
+	unsigned int m_nGray;
+	unsigned int m_nSmall;
+	unsigned int m_nSmallGray;
 
 #ifdef USE_CUDA
 	GpuMat* m_pNew;
@@ -138,11 +124,6 @@ struct OPTICAL_FLOW
 
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 
-//	int	m_method;
-//	Ptr<cuda::BroxOpticalFlow> m_pBrox;
-//	Ptr<cuda::DensePyrLKOpticalFlow> m_pLK;
-//	Ptr<cuda::OpticalFlowDual_TVL1> m_pTVL1;
-
 };
 
 struct FEATURE_FLOW
@@ -185,7 +166,7 @@ public:
 	CameraVision();
 	~CameraVision();
 
-	bool init(void);
+	bool init(JSON* pJson);
 	void updateFrame(UMat* pFrame);
 
 	//Object detection using markers
@@ -238,4 +219,6 @@ private:
 
 
 };
+
+}
 

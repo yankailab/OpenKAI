@@ -22,6 +22,9 @@
 #define CMD_RC_UPDATE 0
 #define CMD_OPERATE_MODE 1
 
+namespace kai
+{
+
 struct PID_SETTING
 {
 	double m_P;
@@ -149,4 +152,6 @@ private:
 	MavlinkInterface* m_pMavlink;
 
 };
+
+}
 

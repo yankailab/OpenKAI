@@ -8,6 +8,21 @@
 #ifndef SRC_DEMO_H_
 #define SRC_DEMO_H_
 
+#define APP_NAME "OpenKAI demo"
+#define CONFIG_WINDOW "Configuration"
+
+#define SHOW_MARKER_FLOW 0
+#define MF_WINDOW "Marker_Flow"
+#define SHOW_FEATURE_FLOW 0
+#define CF_WINDOW "Feature_Flow"
+#define SHOW_OPTICAL_FLOW 0
+#define OPF_WINDOW "Optical_Flow"
+
+#define USE_MARKER_FLOW
+//#define USE_OPTICAL_FLOW
+//#define USE_FEATURE_FLOW
+
+
 #define Z_FAR_LIM 50
 #define Z_NEAR_LIM 500
 
@@ -21,6 +36,7 @@
 #define PID_YAW_P_LIM 200.0
 #define DT_LIM 10.0
 
+using namespace kai;
 //test
 AutoPilot* g_pAP;
 CameraVision* g_pCV;

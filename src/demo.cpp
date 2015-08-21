@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
 
 	//Init CV
 	g_pCV = new CameraVision();
-	g_pCV->init();
+	g_pCV->init(&g_Json);
 
 #ifdef USE_MARKER_FLOW
 	g_pCV->initMarkerFlow();

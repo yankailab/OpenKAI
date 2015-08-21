@@ -25,6 +25,8 @@
 #include "opencv2/cudaarithm.hpp"
 #endif
 
+namespace kai
+{
 using namespace cv;
 using namespace cv::cuda;
 
@@ -38,7 +40,7 @@ struct NN_OBJECT
 	iVector4 m_posSize;
 };
 
-class ObjectDetector: public MultiThreadBase
+class ObjectDetector: public ThreadBase
 {
 public:
 	ObjectDetector();
@@ -69,5 +71,6 @@ private:
 	std::vector<Prediction> m_predictions;
 
 };
+}
 
 #endif /* SRC_OBJECTDETECTOR_H_ */

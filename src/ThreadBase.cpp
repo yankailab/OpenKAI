@@ -1,13 +1,13 @@
 /*
- * MultiThreadBase.cpp
+ * ThreadBase.cpp
  *
  *  Created on: Aug 20, 2015
  *      Author: yankai
  */
 
-#include "MultiThreadBase.h"
+#include "ThreadBase.h"
 
-MultiThreadBase::MultiThreadBase()
+ThreadBase::ThreadBase()
 {
 	// TODO Auto-generated constructor stub
 	pthread_mutex_init(&m_wakeupMutex, NULL);
@@ -15,14 +15,14 @@ MultiThreadBase::MultiThreadBase()
 
 }
 
-MultiThreadBase::~MultiThreadBase()
+ThreadBase::~ThreadBase()
 {
 	// TODO Auto-generated destructor stub
 	pthread_mutex_destroy(&m_wakeupMutex);
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
-void MultiThreadBase::sleepThread(int32_t sec, int32_t nsec)
+void ThreadBase::sleepThread(int32_t sec, int32_t nsec)
 {
 	struct timeval now;
 	struct timespec timeout;
@@ -36,7 +36,7 @@ void MultiThreadBase::sleepThread(int32_t sec, int32_t nsec)
 
 }
 
-void MultiThreadBase::wakeupThread(void)
+void ThreadBase::wakeupThread(void)
 {
 	m_tSleep = 0;
 	pthread_cond_signal(&m_wakeupSignal);

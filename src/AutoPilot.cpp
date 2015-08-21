@@ -1,5 +1,7 @@
 #include "AutoPilot.h"
 
+namespace kai
+{
 
 AutoPilot::AutoPilot()
 {
@@ -659,3 +661,5 @@ void AutoPilot::setPitchPID(fVector3 pid)
 
 }
 */
+
+}

@@ -6,7 +6,8 @@
  */
 
 #include "NNClassifier.h"
-
+namespace kai
+{
 NNClassifier::NNClassifier()
 {
 	// TODO Auto-generated constructor stub
@@ -206,4 +207,6 @@ void NNClassifier::Preprocess(const cv::Mat& img,
 	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
 			== net_->input_blobs()[0]->cpu_data())
 															<< "Input channels are not wrapping the input layer of the network.";
+}
+
 }

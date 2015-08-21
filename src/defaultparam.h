@@ -1,16 +1,4 @@
-#define APP_NAME "OpenKAI demo"
-#define CONFIG_WINDOW "Configuration"
 
-#define SHOW_MARKER_FLOW 0
-#define MF_WINDOW "Marker_Flow"
-#define SHOW_FEATURE_FLOW 0
-#define CF_WINDOW "Feature_Flow"
-#define SHOW_OPTICAL_FLOW 0
-#define OPF_WINDOW "Optical_Flow"
-
-#define USE_MARKER_FLOW
-//#define USE_OPTICAL_FLOW
-//#define USE_FEATURE_FLOW
 
 //Optical Flow Default PID
 #ifdef USE_OPTICAL_FLOW
