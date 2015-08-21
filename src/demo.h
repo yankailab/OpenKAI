@@ -44,7 +44,7 @@ VideoCapture g_upwardCam;
 
 bool g_bUpwardCam;
 
-JSONParser g_Json;
+JSON g_Json;
 FileIO g_file;
 string g_serialPort;
 

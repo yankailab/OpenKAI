@@ -3,9 +3,9 @@
 #include "defaultparam.h"
 #include "MultiThreadBase.h"
 
-#include "JSONParser.h"
 #include <glog/logging.h>
 #include "FileIO.h"
+#include "JSON.h"
 
 //Common include
 

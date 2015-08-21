@@ -10,7 +10,7 @@ AutoPilot::~AutoPilot()
 {
 }
 
-bool AutoPilot::init(JSONParser* json)
+bool AutoPilot::init(JSON* json)
 {
 	CONTROL_AXIS cAxis;
 

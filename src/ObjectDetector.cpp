@@ -18,7 +18,7 @@ ObjectDetector::~ObjectDetector()
 	// TODO Auto-generated destructor stub
 }
 
-bool ObjectDetector::init(JSONParser* pJson)
+bool ObjectDetector::init(JSON* pJson)
 {
 	string modelFile;
 	string trainedFile;

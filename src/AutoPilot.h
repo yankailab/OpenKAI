@@ -58,7 +58,7 @@ public:
 	AutoPilot();
 	~AutoPilot();
 
-	bool init(JSONParser* json);
+	bool init(JSON* json);
 	PID_SETTING getRollFarPID(void);
 	PID_SETTING getRollNearPID(void);
 	PID_SETTING getAltFarPID(void);

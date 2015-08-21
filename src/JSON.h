@@ -4,14 +4,14 @@
 using namespace std;
 using namespace picojson;
 
-class JSONParser
+class JSON
 {
 private:
 	picojson::value m_JSON;
 
 public:
-	JSONParser(void);
-	~JSONParser(void);
+	JSON(void);
+	~JSON(void);
 
 	bool init(void);
 

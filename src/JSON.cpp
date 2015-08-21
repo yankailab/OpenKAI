@@ -1,16 +1,16 @@
-#include "JSONParser.h"
+#include "JSON.h"
 
 
-JSONParser::JSONParser(void)
+JSON::JSON(void)
 {
 }
 
 
-JSONParser::~JSONParser(void)
+JSON::~JSON(void)
 {
 }
 
-bool JSONParser::parse(string json)
+bool JSON::parse(string json)
 {
 	string error;
 	const char* jsonstr = json.c_str();
@@ -24,7 +24,7 @@ bool JSONParser::parse(string json)
 	return true;
 }
 
-bool JSONParser::getVal(string name, int* val)
+bool JSON::getVal(string name, int* val)
 {
 	if(m_JSON.is<object>())
 	{
@@ -39,7 +39,7 @@ bool JSONParser::getVal(string name, int* val)
 	return false;
 }
 /*
-bool JSONParser::getVal(string name, int32_t* val)
+bool JSON::getVal(string name, int32_t* val)
 {
 	if(m_JSON.is<object>())
 	{
@@ -54,7 +54,7 @@ bool JSONParser::getVal(string name, int32_t* val)
 	return false;
 }
 */
-bool JSONParser::getVal(string name, double* val)
+bool JSON::getVal(string name, double* val)
 {
 	if(m_JSON.is<object>())
 	{
@@ -69,7 +69,7 @@ bool JSONParser::getVal(string name, double* val)
 	return false;
 }
 
-bool JSONParser::getVal(string name, string* val)
+bool JSON::getVal(string name, string* val)
 {
 	if(m_JSON.is<object>())
 	{
@@ -84,7 +84,7 @@ bool JSONParser::getVal(string name, string* val)
 	return false;
 }
 
-bool JSONParser::getArray(string name, array* val)
+bool JSON::getArray(string name, array* val)
 {
 	if(m_JSON.is<object>())
 	{
@@ -110,7 +110,7 @@ bool JSONParser::getArray(string name, array* val)
 */
 }
 
-int JSONParser::checkErrorNum(void)
+int JSON::checkErrorNum(void)
 {
 	int numError;
 	string errorDesc;

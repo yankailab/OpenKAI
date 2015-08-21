@@ -44,7 +44,7 @@ public:
 	ObjectDetector();
 	~ObjectDetector();
 
-	bool init(JSONParser* pJson);
+	bool init(JSON* pJson);
 	bool start(void);
 	bool complete(void);
 	void stop(void);
