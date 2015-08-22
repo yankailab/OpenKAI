@@ -8,20 +8,22 @@
 #ifndef SRC_DEMO_H_
 #define SRC_DEMO_H_
 
+#include <cstdio>
+#include <cmath>
+#include <cstdarg>
+
+#include "ObjectDetector.h"
+//#include "CameraVision.h"
+#include "CamInput.h"
+#include "CamMarkerDetect.h"
+#include "AutoPilot.h"
+
+
 #define APP_NAME "OpenKAI demo"
 #define CONFIG_WINDOW "Configuration"
-
-#define SHOW_MARKER_FLOW 0
-#define MF_WINDOW "Marker_Flow"
-#define SHOW_FEATURE_FLOW 0
-#define CF_WINDOW "Feature_Flow"
-#define SHOW_OPTICAL_FLOW 0
-#define OPF_WINDOW "Optical_Flow"
-
-#define USE_MARKER_FLOW
-//#define USE_OPTICAL_FLOW
-//#define USE_FEATURE_FLOW
-
+#define MD_WINDOW "Marker_Detect"
+#define SF_WINDOW "Sparce_Flow"
+#define DF_WINDOW "Dense_Flow"
 
 #define Z_FAR_LIM 50
 #define Z_NEAR_LIM 500
@@ -36,29 +38,34 @@
 #define PID_YAW_P_LIM 200.0
 #define DT_LIM 10.0
 
+#define INFOWINDOW_WIDTH 1000
+#define INFOWINDOW_HEIGHT 800
+
 using namespace kai;
-//test
-AutoPilot* g_pAP;
-CameraVision* g_pCV;
 
-ObjectDetector* g_pDetector;
-NN_OBJECT* g_pObj;
-int g_numObj;
 
-MavlinkInterface* g_pMavlink;
-cv::UMat g_frame;
-cv::UMat g_upwardFrame;
-cv::UMat g_displayMat;
-fVector3 g_targetPosExt;
+
 
 int g_key;
 bool g_bRun;
 bool g_bTracking;
 
-VideoCapture g_externalCam;
-VideoCapture g_upwardCam;
+CamInput g_camFront;
+CamInput g_camUp;
 
-bool g_bUpwardCam;
+CamFrame g_frontRGB;
+CamFrame g_frontHSV;
+CamMarkerDetect g_markerDet;
+ObjectDetector g_objDet;
+NN_OBJECT* g_pObj;
+int g_numObj;
+
+AutoPilot* g_pAP;
+
+VehicleInterface* g_pVehicle;
+cv::Mat g_displayMat;
+fVector3 g_targetPosExt;
+
 
 JSON g_Json;
 FileIO g_file;
@@ -126,15 +133,13 @@ void handleKey(int key)
 
 void onMouse(int event, int x, int y, int flags, void* userdata)
 {
-	if (x > CAM_WIDTH || y > CAM_HEIGHT)
-		return;
+//	if (x > CAM_WIDTH || y > CAM_HEIGHT)return;
 
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
 		g_bTracking = true;
 		g_targetPosExt = g_pAP->getTargetPosCV();
-//		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
 		g_targetPosExt.m_x = x;
 		g_targetPosExt.m_y = y;
 //		g_targetPosExt.m_z = g_targetPosExt.m_z;
@@ -148,7 +153,6 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 		if (!g_bTracking)
 			return;
 		g_targetPosExt = g_pAP->getTargetPosCV();
-//		g_targetPosExt = fVector3{ x, y, g_targetPosExt.m_z };
 		g_targetPosExt.m_x = x;
 		g_targetPosExt.m_y = y;
 //		g_targetPosExt.m_z = g_targetPosExt.m_z;
@@ -160,8 +164,7 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 		v.m_x = x;
 		v.m_y = y;
 		v.m_z = 10;
-//		g_pCV->setObjROI(fVector3{ x, y, 10 });
-		g_pCV->setObjROI(v);
+		g_markerDet.setObjROI(v);
 		break;
 	default:
 		break;
@@ -406,7 +409,7 @@ void displayInfo(void)
 	fVector3 vPos;
 	fVector3 vAtt;
 	cv::Rect roi;
-	cv::UMat* pExtMat;
+	cv::Mat* pExtMat;
 	int i;
 	int startPosH = 25;
 	int startPosV = 725;
@@ -418,14 +421,14 @@ void displayInfo(void)
 	//	m_gBalloonyness.download(matBalloonyness);
 	//	imshow("balloonyness", matBalloonyness);
 
-	if (!g_pCV->getObjPosition(&vPos))
+	if (!g_markerDet.getObjPosition(&vPos))
 	{
 //		vPos = fVector3{0, 0, 0};
 		vPos.m_x = 0;
 		vPos.m_y = 0;
 		vPos.m_z = 0;
 	}
-	if (!g_pCV->getObjAttitude(&vAtt))
+	if (!g_markerDet.getObjAttitude(&vAtt))
 	{
 //		vAtt = fVector3{ 0, 0,0 };
 		vAtt.m_x = 0;
@@ -437,7 +440,7 @@ void displayInfo(void)
 	g_displayMat = Scalar(0);
 
 	//External Camera Output
-	pExtMat = g_pCV->getMat();
+	pExtMat = &g_frontRGB.m_uFrame;
 	roi = cv::Rect(cv::Point(0, 0), pExtMat->size());
 	pExtMat->copyTo(g_displayMat(roi));
 

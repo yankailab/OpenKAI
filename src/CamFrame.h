@@ -24,7 +24,7 @@ public:
 	virtual ~CamFrame();
 
 	bool init(void);
-	void updateFrame(UMat* pFrame);
+	void updateFrame(Mat* pFrame);
 	void switchFrame(void);
 
 	void resize(int width, int height, CamFrame* pResult);
@@ -34,7 +34,8 @@ public:
 public:
 	//Frame Index, updated in each frame update
 	unsigned int m_frameID;
-	UMat m_uFrame;
+
+	Mat m_uFrame;
 	unsigned char m_iFrame;
 
 	unsigned int m_width;
@@ -45,10 +46,6 @@ public:
 	GpuMat* m_pPrev;
 	GpuMat m_pFrame[2];
 
-	GpuMat  m_Hsv;
-	GpuMat  m_Hue;
-	GpuMat  m_Sat;
-	GpuMat  m_Val;
 #else
 	UMat* m_pNext;
 	UMat* m_pPrev;

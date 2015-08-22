@@ -12,10 +12,17 @@
 #include "stdio.h"
 #include "cvplatform.h"
 
+#include "CamFrame.h"
+
 #define NUM_MARKER 128
 #define NUM_TARGET_MARKER 2
 #define MARKER_AREA_RATIO 0.5
 #define MIN_MARKER_SIZE 5
+
+#define LOCK_LEVEL_NONE 0
+#define LOCK_LEVEL_POS 1
+#define LOCK_LEVEL_SIZE 2
+#define LOCK_LEVEL_ATT 3
 
 namespace kai
 {
@@ -26,9 +33,16 @@ public:
 	CamMarkerDetect();
 	virtual ~CamMarkerDetect();
 
+	void init(void);
+	void detect(CamFrame* pFrameHSV);
 
-	unsigned int  m_frameID;
+	//Object detection using markers
+	void setObjROI(fVector3 ROI);
+	int  getObjLockLevel(void);
+	bool getObjPosition(fVector3* pPos);
+	bool getObjAttitude(fVector3* pAtt);
 
+public:
 	fVector4 m_flow;
 	int		 m_numAllMarker;
 	fVector4 m_pAllMarker[NUM_MARKER];
@@ -48,6 +62,11 @@ public:
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
 #ifdef USE_CUDA
+	GpuMat m_HSV;
+	GpuMat m_Hue;
+	GpuMat m_Sat;
+	GpuMat m_Val;
+
 	GpuMat  m_Huered;
 	GpuMat  m_Scalehuered;
 	GpuMat  m_Scalesat;

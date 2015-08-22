@@ -120,11 +120,11 @@ struct MESSAGE
 
 };
 
-class MavlinkInterface
+class VehicleInterface
 {
 public:
-	MavlinkInterface();
-	~MavlinkInterface();
+	VehicleInterface();
+	~VehicleInterface();
 
 	int m_systemID;
 	int m_autopilotID;

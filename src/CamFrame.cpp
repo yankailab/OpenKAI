@@ -42,7 +42,7 @@ void CamFrame::resize(int width, int height, CamFrame* pResult)
 	cv::Size newSize = cv::Size(width,height);
 
 #ifdef USE_CUDA
-	UMat newMat;
+	Mat newMat;
 	cv::resize(m_uFrame, newMat, newSize);
 	pResult->updateFrame(&newMat);
 #else
@@ -69,33 +69,23 @@ void CamFrame::getHSV(CamFrame* pResult)
 	if(!pResult)return;
 
 #ifdef USE_CUDA
-	GpuMat hsv;
-	vector<GpuMat> hsvPlanes(3);
-
-	hsvPlanes[0] = m_Hue;
-	hsvPlanes[1] = m_Sat;
-	hsvPlanes[2] = m_Val;
-
 	//RGB or BGR depends on device
-	cuda::cvtColor(*m_pNext, hsv, CV_BGR2HSV);
-	cuda::split(hsv, hsvPlanes);
-
-	m_Hue = hsvPlanes[0];
-	m_Sat = hsvPlanes[1];
-	m_Val = hsvPlanes[2];
-
-	pResult->m_Hsv = hsv;
-	pResult->m_Hue = m_Hue;
-	pResult->m_Sat = m_Sat;
-	pResult->m_Val = m_Val;
+	cuda::cvtColor(*m_pNext, *(pResult->m_pNext), CV_BGR2HSV);
 #else
 
 
 #endif
 }
 
+void CamFrame::switchFrame(void)
+{
+	//switch the current frame and old frame
+	m_pPrev = m_pNext;
+	m_iFrame = 1 - m_iFrame;
+	m_pNext = &m_pFrame[m_iFrame];
+}
 
-void CamFrame::updateFrame(UMat* pFrame)
+void CamFrame::updateFrame(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
@@ -118,13 +108,7 @@ void CamFrame::updateFrame(UMat* pFrame)
 
 }
 
-void CamFrame::switchFrame(void)
-{
-	//switch the current frame and old frame
-	m_pPrev = m_pNext;
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
-}
+
 
 
 

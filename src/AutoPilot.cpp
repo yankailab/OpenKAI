@@ -110,9 +110,6 @@ bool AutoPilot::init(JSON* json)
 	m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
 
 
-	m_pCV = NULL;
-	m_pMavlink = NULL;
-
 	m_hostSystem.m_mode = OPE_BOOT;
 	m_remoteSystem.m_mode = OPE_BOOT;
 
@@ -131,18 +128,6 @@ bool AutoPilot::init(JSON* json)
 	m_flowTotal.m_w = 0;
 
 	return true;
-}
-
-void AutoPilot::setCameraVision(CameraVision* pCV)
-{
-	if (pCV == NULL)return;
-
-	m_pCV = pCV;
-}
-
-void AutoPilot::setMavlink(MavlinkInterface* pMavlink)
-{
-	m_pMavlink = pMavlink;
 }
 
 void AutoPilot::setRC(int channelID, int pwmCenter, int pwmFrom, int pwmTo)
@@ -172,17 +157,17 @@ fVector3 AutoPilot::getTargetPosCV(void)
 	return v;
 }
 
-void AutoPilot::markerLock(void)
+void AutoPilot::markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
 {
 	double zRatio;
 	double cvSize;
 
-	m_lockLevel = m_pCV->getObjLockLevel();
+	m_lockLevel = pCMD->getObjLockLevel();
 
 	if (m_lockLevel >= LOCK_LEVEL_POS)
 	{
 		//Update current position with trajectory estimation
-		m_pCV->getObjPosition(&m_cvPos);
+		pCMD->getObjPosition(&m_cvPos);
 
 		m_roll.m_pos = m_cvPos.m_x + (m_cvPos.m_x - m_cvPosOld.m_x)*m_dT;
 		m_alt.m_pos = m_cvPos.m_y + (m_cvPos.m_y - m_cvPosOld.m_y)*m_dT;
@@ -275,7 +260,7 @@ void AutoPilot::markerLock(void)
 			m_yaw.m_I = m_yawNear.m_I + (m_yawFar.m_I - m_yawNear.m_I)*zRatio;
 			m_yaw.m_D = m_yawNear.m_D + (m_yawFar.m_D - m_yawNear.m_D)*zRatio;
 
-			m_pCV->getObjAttitude(&m_cvAtt);
+			pCMD->getObjAttitude(&m_cvAtt);
 			m_yaw.m_pos = m_cvAtt.m_z;
 			m_yaw.m_targetPos = 1.0;
 
@@ -326,14 +311,14 @@ void AutoPilot::markerLock(void)
 	}
 
 	//Mavlink
-	m_pMavlink->rc_overide(NUM_RC_CHANNEL, m_RC);
+	pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 
 	return;
 
 	//Decode mavlink message from device
-	if (m_pMavlink->readMessages())
+	if (pVI->readMessages())
 	{
-		m_pRecvMsg = &m_pMavlink->m_recvMsg;
+		m_pRecvMsg = &pVI->m_recvMsg;
 		remoteMavlinkMsg(m_pRecvMsg);
 
 		//reset the flag to accept new messages
@@ -348,14 +333,15 @@ void AutoPilot::markerLock(void)
 		}
 		else
 		{
-			m_pMavlink->controlMode(m_hostSystem.m_mode);
+			pVI->controlMode(m_hostSystem.m_mode);
 		}
 	}
 
 }
 
-void AutoPilot::flowLock(void)
+void AutoPilot::flowLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
 {
+	/*
 	fVector4 vFlow;
 
 	//To avoid accumulated error
@@ -368,7 +354,7 @@ void AutoPilot::flowLock(void)
 		m_iFlowFrame = 0;
 	}
 
-	m_pCV->getOpticalFlowVelocity(&vFlow);
+	pCMD->getOpticalFlowVelocity(&vFlow);
 	m_flowTotal.m_x += vFlow.m_x * (1.0 + m_dT);
 	m_flowTotal.m_y += vFlow.m_y * (1.0 + m_dT);
 	m_flowTotal.m_z += vFlow.m_z * (1.0 + m_dT);
@@ -404,6 +390,11 @@ void AutoPilot::flowLock(void)
 
 	m_RC[m_pitch.m_RCChannel] = constrain(m_pitch.m_pwm, m_pitch.m_pwmLow, m_pitch.m_pwmHigh);
 
+
+	*/
+
+
+
 /*
 	//Alt = Z axis
 	m_alt.m_P = m_altNear.m_P;
@@ -425,7 +416,7 @@ void AutoPilot::flowLock(void)
 	m_yaw.m_I = m_yawNear.m_I;
 	m_yaw.m_D = m_yawNear.m_D;
 
-	m_pCV->getObjAttitude(&m_cvAtt);
+	pCMD->getObjAttitude(&m_cvAtt);
 	m_yaw.m_pos = m_cvAtt.m_z;
 	m_yaw.m_targetPos = 1.0;
 
@@ -444,7 +435,7 @@ void AutoPilot::flowLock(void)
 	m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
 
 	//Mavlink
-	m_pMavlink->rc_overide(NUM_RC_CHANNEL, m_RC);
+	pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 
 }
 

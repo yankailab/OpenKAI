@@ -1,9 +1,9 @@
 #pragma once
 
 #include "common.h"
-#include "CameraVision.h"
-#include "MavlinkInterface.h"
+#include "CamMarkerDetect.h"
 #include "util.h"
+#include "VehicleInterface.h"
 
 //
 // Operation mode
@@ -99,11 +99,11 @@ public:
 
 	void setRC(int channelID, int pwmCenter, int pwmFrom, int pwmTo);
 
-	void setCameraVision(CameraVision* pCV);
-	void setMavlink(MavlinkInterface* pMavlink);
+//	void setCameraVision(CameraVision* pCV);
+//	void setMavlink(VehicleInterface* pMavlink);
 
-	void markerLock(void);
-	void flowLock(void);
+	void markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI);
+	void flowLock(CamMarkerDetect* pCMD, VehicleInterface* pVI);
 
 	void setTargetPosCV(fVector3 pos);
 	fVector3 getTargetPosCV(void);
@@ -147,9 +147,6 @@ private:
 	PID_SETTING m_yawNear;
 
 	int m_RC[NUM_RC_CHANNEL];
-
-	CameraVision* m_pCV;
-	MavlinkInterface* m_pMavlink;
 
 };
 

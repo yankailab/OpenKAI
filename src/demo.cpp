@@ -1,10 +1,3 @@
-#include <cstdio>
-#include <cmath>
-#include <cstdarg>
-
-#include "ObjectDetector.h"
-#include "CameraVision.h"
-#include "AutoPilot.h"
 
 #include "demo.h"
 
@@ -25,13 +18,13 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 	if (!g_Json.parse(config.c_str()))
 	{
-		LOG(FATAL)<<"JSONParser.parse()";
+		LOG(FATAL)<<"JSON.parse()";
 		return 1;
 	}
 
 	if (!g_Json.getVal("serialPort", &g_serialPort))
 	{
-		LOG(FATAL)<<"JSONParser.getVal():serialPort";
+		LOG(FATAL)<<"JSON.getVal():serialPort";
 		return 1;
 	}
 
@@ -39,9 +32,9 @@ int main(int argc, char* argv[])
 	g_bTracking = false;
 
 	//Connect to Mavlink
-	g_pMavlink = new MavlinkInterface();
+	g_pVehicle = new VehicleInterface();
 
-	if (g_pMavlink->open((char*)g_serialPort.c_str()) != true)
+	if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
 	{
 		LOG(ERROR)<< "Cannot open serial port, Working in CV mode only";
 	}
@@ -50,7 +43,8 @@ int main(int argc, char* argv[])
 		LOG(ERROR) << "Serial port connected";
 	}
 
-	printf("OpenKAI controller demo\n");
+
+
 	printf("Optimized code: %d\n", useOptimized());
 	printf("CUDA devices: %d\n", cuda::getCudaEnabledDeviceCount());
 	printf("Current CUDA device: %d\n", cuda::getDevice());
@@ -69,99 +63,72 @@ int main(int argc, char* argv[])
 		printf("OpenCL not found\n");
 	}
 
-	//Open external camera
-	g_externalCam.open(CAM_EXTERNAL_ID); // + CV_CAP_DSHOW);//CV_CAP_MSMF
-	if (!g_externalCam.isOpened())
+
+
+
+	//Open front camera
+	CHECK_FATAL(g_Json.getVal("CAM_FRONT_ID", &g_camFront.m_camDeviceID));
+	if(!g_camFront.openCamera())
 	{
-		LOG(ERROR)<< "Cannot open External camera\n";
-		return false;
+		LOG(FATAL)<< "Cannot open External camera\n";
+		return 1;
 	}
-	g_externalCam.set(CV_CAP_PROP_FRAME_WIDTH, CAM_WIDTH);
-	g_externalCam.set(CV_CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT);
 
-	//Open the upward camera
-//	g_upwardCam.open(CAM_UPWARD_ID); // + CV_CAP_DSHOW);//CV_CAP_MSMF
-	g_bUpwardCam = true;
-	g_bUpwardCam = false;
+	CHECK_FATAL(g_Json.getVal("CAM_FRONT_WIDTH", &g_camFront.m_width));
+	CHECK_FATAL(g_Json.getVal("CAM_FRONT_HEIGHT", &g_camFront.m_height));
+	g_camFront.setSize();
 
-	/*	if (!g_upwardCam.isOpened())
-	 {
-	 g_pLogger->print("Cannot open Upward camera\n");
-	 g_bUpwardCam = false;
-	 }
-	 else
-	 {
-	 g_upwardCam.set(CV_CAP_PROP_FRAME_WIDTH, CAM_WIDTH);
-	 g_upwardCam.set(CV_CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT);
-	 }
-	 */
 	//Initial target position
-	g_targetPosExt.m_x = CAM_WIDTH * 0.5;
-	g_targetPosExt.m_y = CAM_HEIGHT * 0.5;
+	g_targetPosExt.m_x = g_camFront.m_width * 0.5;
+	g_targetPosExt.m_y = g_camFront.m_height * 0.5;
 	g_targetPosExt.m_z = (Z_NEAR_LIM + Z_FAR_LIM) * 0.2;
 
-	//Init CV
-	g_pCV = new CameraVision();
-	g_pCV->init(&g_Json);
 
-#ifdef USE_MARKER_FLOW
-	g_pCV->initMarkerFlow();
-#endif
-#ifdef USE_FEATURE_FLOW
-	g_pCV->initFeatureFlow();
-#endif
-#ifdef USE_OPTICAL_FLOW
-	g_pCV->initOpticalFlow();
-#endif
+	//Init frames
+	g_frontRGB.init();
+
+	//Init Marker Detector
+	g_markerDet.init();
+
+
 
 	//Init Autopilot
 	g_pAP = new AutoPilot();
 	g_pAP->init(&g_Json);
-	g_pAP->setCameraVision(g_pCV);
-	g_pAP->setMavlink(g_pMavlink);
 	g_pAP->setTargetPosCV(g_targetPosExt);
-	g_pAP->setDelayTime(DELAY_TIME);
 
 	//Mat for display output
-	g_displayMat = UMat(CAM_HEIGHT * 2, CAM_WIDTH * 2, CV_8UC3, Scalar(0));
+	g_displayMat = Mat(INFOWINDOW_WIDTH, INFOWINDOW_HEIGHT, CV_8UC3, Scalar(0));
 
 	//set the callback function for any mouse event
 	setMouseCallback(APP_NAME, onMouse, NULL);
 
-	//Init Detector
-	g_pDetector = new ObjectDetector();
-	g_pDetector->init(&g_Json);
+
+	//Init Object Detector
+//	g_ObjDet = new ObjectDetector();
+	g_objDet.init(&g_Json);
+
+
+
+
+
 
 	while (g_bRun)
 	{
-		while (!g_externalCam.read(g_frame))
-			;
-		g_pCV->updateFrame(&g_frame);
+		g_frontRGB.switchFrame();
+		g_camFront.readFrame(&g_frontRGB);
 
-#ifdef USE_MARKER_FLOW
-		g_pCV->updateMarkerFlow();
-//		g_pAP->markerLock();
-#endif
+		g_frontHSV.switchFrame();
+		g_frontRGB.getHSV(&g_frontHSV);
 
-#ifdef USE_OPTICAL_FLOW
-//		g_pCV->updateFeatureFlow();
-		g_pCV->updateOpticalFlow();
-		g_pAP->flowLock();
-#endif
+		g_markerDet.detect(&g_frontHSV);
+
+		g_pAP->markerLock(&g_markerDet,g_pVehicle);
 
 
-		g_numObj = g_pDetector->detect(g_pCV->getMat()->getMat(ACCESS_READ),
-				&g_pObj);
+		g_numObj = g_objDet.detect(g_frontRGB.m_uFrame/*.getMat(ACCESS_READ)*/,&g_pObj);
 
-		if (g_bUpwardCam)
-		{
-			while (!g_upwardCam.read(g_upwardFrame))
-				;
-			cv::Rect roi(cv::Point(CAM_WIDTH, 0), g_upwardFrame.size());
-			g_upwardFrame.copyTo(g_displayMat(roi));
-		}
-
-		displayInfo();
+//		displayInfo();
 		imshow(APP_NAME, g_displayMat);
 
 		//Handle key input
@@ -169,47 +136,13 @@ int main(int argc, char* argv[])
 		handleKey(g_key);
 	}
 
-	g_externalCam.release();
-	if (g_bUpwardCam)
-	{
-		g_upwardCam.release();
-	}
-	g_pMavlink->close();
-	delete g_pMavlink;
+	g_camFront.m_camera.release();
+	g_pVehicle->close();
+	delete g_pVehicle;
 	delete g_pAP;
-	delete g_pCV;
 
 	return 0;
 
 }
 
-/*
- #include <opencv2/highgui/highgui.hpp>
- #include <opencv2/imgproc/imgproc.hpp>
- #include <iostream>
- using namespace cv;
- using namespace std;
 
- int main() {
- VideoCapture stream1(1);   //0 is the id of video device.0 if you have only one camera.
-
- if (!stream1.isOpened()) { //check if video device has been initialised
- cout << "cannot open camera";
- return 1;
- }
-
- namedWindow("cam");
- Mat cameraFrame;
-
- while(true)
- {
- while(!stream1.read(cameraFrame));
- imshow("cam", cameraFrame);
- if (waitKey(1) >= 0)
- {
- break;
- }
- }
- return 0;
- }
- */

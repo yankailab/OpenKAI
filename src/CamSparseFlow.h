@@ -12,6 +12,8 @@
 #include "stdio.h"
 #include "cvplatform.h"
 
+#include "CamFrame.h"
+
 namespace kai
 {
 
@@ -20,6 +22,9 @@ class CamSparseFlow
 public:
 	CamSparseFlow();
 	virtual ~CamSparseFlow();
+
+	void init(void);
+	fVector4 detect(CamFrame* pFrame);
 
 private:
 	unsigned int m_frameID;
@@ -30,8 +35,6 @@ private:
 	Ptr<cuda::CornersDetector> m_pDetector;
 	Ptr<cuda::SparsePyrLKOpticalFlow> m_pPyrLK;
 
-	GpuMat** m_pFrameNew;
-	GpuMat** m_pFrameOld;
 	unsigned int m_numCorners;
 
 #else

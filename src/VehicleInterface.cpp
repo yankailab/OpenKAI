@@ -1,15 +1,15 @@
-#include "MavlinkInterface.h"
+#include "VehicleInterface.h"
 
-MavlinkInterface::MavlinkInterface()
+VehicleInterface::VehicleInterface()
 {
 	m_bConnected = false;
 }
 
-MavlinkInterface::~MavlinkInterface()
+VehicleInterface::~VehicleInterface()
 {
 }
 
-bool MavlinkInterface::open(char* pSerialName)
+bool VehicleInterface::open(char* pSerialName)
 {
 	m_systemID = 0; // system id
 	m_autopilotID = 0; // autopilot component id
@@ -60,7 +60,7 @@ bool MavlinkInterface::open(char* pSerialName)
 	// we need this before starting the write thread
 }
 
-void MavlinkInterface::close()
+void VehicleInterface::close()
 {
 //	disable_offboard_control();
 
@@ -90,7 +90,7 @@ bool MavlinkInterface::writeMessage(mavlink_message_t message)
 // ------------------------------------------------------------------------------
 //   Read Messages
 // ------------------------------------------------------------------------------
-bool MavlinkInterface::readMessages()
+bool VehicleInterface::readMessages()
 {
 /*	mavlink_message_t message;
 	mavlink_status_t status;
@@ -150,7 +150,7 @@ bool MavlinkInterface::readMessages()
 // ------------------------------------------------------------------------------
 //   Write Setpoint Message
 // ------------------------------------------------------------------------------
-void MavlinkInterface::rc_overide(int numChannel, int* pChannels)
+void VehicleInterface::rc_overide(int numChannel, int* pChannels)
 {
 	/*
 	// Prepare command for off-board mode
@@ -192,7 +192,7 @@ void MavlinkInterface::rc_overide(int numChannel, int* pChannels)
 
 }
 
-void MavlinkInterface::controlMode(int mode)
+void VehicleInterface::controlMode(int mode)
 {
 	if (!m_bConnected)return;
 
