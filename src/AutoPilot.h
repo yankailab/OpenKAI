@@ -55,7 +55,7 @@ struct CONTROL_AXIS
 	unsigned int m_RCChannel;
 };
 
-class AutoPilot
+class AutoPilot: public ThreadBase
 {
 public:
 	AutoPilot();

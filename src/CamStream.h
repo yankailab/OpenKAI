@@ -12,12 +12,12 @@
 #include "stdio.h"
 #include "cvplatform.h"
 
-#include "ThreadBase.h"
-
+#include "CamInput.h"
 #include "CamFrame.h"
 #include "CamMarkerDetect.h"
 #include "CamDenseFlow.h"
 #include "CamSparseFlow.h"
+#include "CamMonitor.h"
 
 namespace kai
 {
@@ -35,10 +35,18 @@ public:
 	void waitForComplete(void);
 
 private:
-	CamFrame*			m_pFrame;
+	CamInput*			m_pCamL;
+	CamInput*			m_pCamR;
+	CamFrame*			m_pFrameL;
+	CamFrame*			m_pFrameR;
+	CamFrame**			m_pFrameProcess;
+	CamFrame*			m_pHSV;
+
 	CamMarkerDetect* 	m_pMarkerDetect;
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
+
+	CamMonitor*			m_pMonitor;
 
 
 	pthread_t m_threadID;

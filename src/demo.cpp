@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_Json.getVal("CAM_FRONT_ID", &g_camFront.m_camDeviceID));
 	if(!g_camFront.openCamera())
 	{
-		LOG(FATAL)<< "Cannot open External camera\n";
+		LOG(FATAL)<< "Cannot open Front camera\n";
 		return 1;
 	}
 
