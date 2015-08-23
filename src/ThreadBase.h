@@ -10,6 +10,9 @@
 
 #include "platform.h"
 
+namespace kai
+{
+
 class ThreadBase {
 public:
 	ThreadBase();
@@ -23,5 +26,7 @@ public:
 	pthread_cond_t	m_wakeupSignal;
 	int m_tSleep;
 };
+
+}
 
 #endif /* SRC_THREADBASE_H_ */

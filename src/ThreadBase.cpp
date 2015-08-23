@@ -7,6 +7,9 @@
 
 #include "ThreadBase.h"
 
+namespace kai
+{
+
 ThreadBase::ThreadBase()
 {
 	// TODO Auto-generated constructor stub
@@ -40,4 +43,8 @@ void ThreadBase::wakeupThread(void)
 {
 	m_tSleep = 0;
 	pthread_cond_signal(&m_wakeupSignal);
+}
+
+
+
 }
