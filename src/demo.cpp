@@ -105,11 +105,10 @@ int main(int argc, char* argv[])
 
 
 	//Init Object Detector
-//	g_ObjDet = new ObjectDetector();
-	g_objDet.init(&g_Json);
+//	g_objDet.init(&g_Json);
 
-
-
+	g_frontMonitor.setWindowName("Front camera");
+	g_frontMonitor.init();
 
 
 
@@ -126,10 +125,12 @@ int main(int argc, char* argv[])
 		g_pAP->markerLock(&g_markerDet,g_pVehicle);
 
 
-		g_numObj = g_objDet.detect(g_frontRGB.m_uFrame/*.getMat(ACCESS_READ)*/,&g_pObj);
+//		g_numObj = g_objDet.detect(g_frontRGB.m_uFrame/*.getMat(ACCESS_READ)*/,&g_pObj);
 
+		g_frontMonitor.addFrame(&g_frontRGB,0,0);
+		g_frontMonitor.show();
 //		displayInfo();
-		imshow(APP_NAME, g_displayMat);
+//		imshow(APP_NAME, g_displayMat);
 
 		//Handle key input
 		g_key = waitKey(1);

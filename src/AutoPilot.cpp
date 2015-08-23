@@ -64,6 +64,17 @@ bool AutoPilot::init(JSON* json)
 	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_alt.m_pwmCenter));
 	CHECK_FATAL(json->getVal("RC_THROTTLE", (int*)&m_alt.m_RCChannel));
 
+	CHECK_FATAL(json->getVal("YAW_P", &m_yaw.m_P));
+	CHECK_FATAL(json->getVal("YAW_I", &m_yaw.m_I));
+	CHECK_FATAL(json->getVal("YAW_IMAX", &m_yaw.m_Imax));
+	CHECK_FATAL(json->getVal("YAW_D", &m_yaw.m_D));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_yaw.m_pwm));
+	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_yaw.m_pwmLow));
+	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_yaw.m_pwmHigh));
+	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_yaw.m_pwmCenter));
+	CHECK_FATAL(json->getVal("RC_YAW", (int*)&m_yaw.m_RCChannel));
+
+
 	CHECK_FATAL(json->getVal("ROLL_P", &m_rollFar.m_P));
 	CHECK_FATAL(json->getVal("ROLL_I", &m_rollFar.m_I));
 	CHECK_FATAL(json->getVal("ROLL_D", &m_rollFar.m_D));

@@ -16,6 +16,7 @@
 //#include "CameraVision.h"
 #include "CamInput.h"
 #include "CamMarkerDetect.h"
+#include "CamMonitor.h"
 #include "AutoPilot.h"
 
 
@@ -52,7 +53,7 @@ bool g_bTracking;
 
 CamInput g_camFront;
 CamInput g_camUp;
-
+CamMonitor g_frontMonitor;
 CamFrame g_frontRGB;
 CamFrame g_frontHSV;
 CamMarkerDetect g_markerDet;
