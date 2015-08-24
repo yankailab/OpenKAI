@@ -1,15 +1,23 @@
 #include "VehicleInterface.h"
 
+namespace kai
+{
 VehicleInterface::VehicleInterface()
 {
 	m_bConnected = false;
+	m_sportName = "";
 }
 
 VehicleInterface::~VehicleInterface()
 {
 }
 
-bool VehicleInterface::open(char* pSerialName)
+void VehicleInterface::setSerialName(string name)
+{
+	m_sportName = name;
+}
+
+bool VehicleInterface::open(void)
 {
 	m_systemID = 0; // system id
 	m_autopilotID = 0; // autopilot component id
@@ -20,7 +28,7 @@ bool VehicleInterface::open(char* pSerialName)
 
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
-	if (m_pSerialPort->connect((char*)pSerialName) != true)
+	if (m_pSerialPort->connect((char*)m_sportName.c_str()) != true)
 	{
 		m_bConnected = false;
 		return false;
@@ -205,6 +213,75 @@ void VehicleInterface::controlMode(int mode)
 }
 
 
+
+bool VehicleInterface::start(void)
+{
+	//Start thread
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode << " in VehicleInterface::start().pthread_create()";
+		m_bThreadON = false;
+		return false;
+	}
+
+	LOG(INFO) << "VehicleInterface.start()";
+
+	return true;
+}
+
+void VehicleInterface::update(void)
+{
+	int tThreadBegin;
+	m_tSleep = TRD_INTERVAL_VI_USEC;
+
+	while (m_bThreadON)
+	{
+		tThreadBegin = time(NULL);
+
+
+
+/*
+		if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
+		{
+			LOG(ERROR)<< "Cannot open serial port, Working in CV mode only";
+		}
+		*/
+
+
+
+		if(m_tSleep>0)
+		{
+			//sleepThread can be woke up by this->wakeupThread()
+			this->sleepThread(0,m_tSleep);
+		}
+	}
+
+}
+
+bool VehicleInterface::complete(void)
+{
+
+	return true;
+}
+
+void VehicleInterface::stop(void)
+{
+	m_bThreadON = false;
+	this->wakeupThread();
+	pthread_join(m_threadID, NULL);
+
+	LOG(INFO) << "VehicleInterface.stop()";
+}
+
+void VehicleInterface::waitForComplete(void)
+{
+	pthread_join(m_threadID, NULL);
+}
+
+
+
 /*
 
 void MavlinkInterface::handleMessage(mavlink_message_t message)
@@ -318,7 +395,7 @@ void MavlinkInterface::handleMessage(mavlink_message_t message)
 
 
 
-
+}
 
 
 

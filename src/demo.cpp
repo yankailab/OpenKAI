@@ -18,15 +18,8 @@ int main(int argc, char* argv[])
 
 	//Connect to Mavlink
 	g_pVehicle = new VehicleInterface();
+	g_pVehicle->setSerialName(g_serialPort);
 
-	if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
-	{
-		LOG(ERROR)<< "Cannot open serial port, Working in CV mode only";
-	}
-	else
-	{
-		LOG(ERROR) << "Serial port connected";
-	}
 
 
 	printEnvironment();
@@ -47,6 +40,7 @@ int main(int argc, char* argv[])
 	g_pAP->setVehicleInterface(g_pVehicle);
 
 
+	g_pVehicle->start();
 	g_pCamFront->start();
 	g_pAP->start();
 

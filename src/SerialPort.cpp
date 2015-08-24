@@ -213,6 +213,7 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
 SerialPort::SerialPort(void)
 {
 	this->bConnected = false;
+	m_fd = 0;
 }
 
 bool SerialPort::IsConnected()

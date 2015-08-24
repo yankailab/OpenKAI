@@ -130,6 +130,9 @@ void CamStream::update(void)
 {
 	int tThreadBegin;
 
+	m_tSleep = 0;
+
+
 	while (m_bThreadON)
 	{
 		tThreadBegin = time(NULL);
@@ -182,7 +185,7 @@ void CamStream::update(void)
 		if(m_tSleep>0)
 		{
 			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(m_tSleep,0);
+			this->sleepThread(0,m_tSleep);
 		}
 	}
 

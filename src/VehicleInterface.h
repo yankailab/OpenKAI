@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdio.h>
+#include "common.h"
 #include "include/mavlink/common/mavlink.h"
 #include "SerialPort.h"
 //#include <signal.h>
@@ -9,18 +9,17 @@
 
 // helper functions
 /*
-uint64_t get_time_usec();
-void set_position(float x, float y, float z, mavlink_set_position_target_local_ned_t &sp);
-void set_velocity(float vx, float vy, float vz, mavlink_set_position_target_local_ned_t &sp);
-void set_acceleration(float ax, float ay, float az, mavlink_set_position_target_local_ned_t &sp);
-void set_yaw(float yaw, mavlink_set_position_target_local_ned_t &sp);
-void set_yaw_rate(float yaw_rate, mavlink_set_position_target_local_ned_t &sp);
-*/
+ uint64_t get_time_usec();
+ void set_position(float x, float y, float z, mavlink_set_position_target_local_ned_t &sp);
+ void set_velocity(float vx, float vy, float vz, mavlink_set_position_target_local_ned_t &sp);
+ void set_acceleration(float ax, float ay, float az, mavlink_set_position_target_local_ned_t &sp);
+ void set_yaw(float yaw, mavlink_set_position_target_local_ned_t &sp);
+ void set_yaw_rate(float yaw_rate, mavlink_set_position_target_local_ned_t &sp);
+ */
 
 // ------------------------------------------------------------------------------
 //   Data Structures
 // ------------------------------------------------------------------------------
-
 
 struct Time_Stamps
 {
@@ -55,7 +54,6 @@ struct Time_Stamps
 	}
 
 };
-
 
 // Struct containing information on the MAV we are currently connected to
 struct Mavlink_Messages
@@ -95,18 +93,15 @@ struct Mavlink_Messages
 
 	// System Parameters?
 
-
 	// Time Stamps
 	Time_Stamps time_stamps;
 
-	void
-		reset_timestamps()
+	void reset_timestamps()
 	{
 		time_stamps.reset_timestamps();
 	}
 
 };
-
 
 #define MAVLINK_BEGIN 0xFE
 #define MAVLINK_HEADDER_LEN 3
@@ -120,7 +115,11 @@ struct MESSAGE
 
 };
 
-class VehicleInterface
+#define TRD_INTERVAL_VI_USEC 10000
+namespace kai
+{
+
+class VehicleInterface: public ThreadBase
 {
 public:
 	VehicleInterface();
@@ -133,8 +132,15 @@ public:
 //	Mavlink_Messages m_currentMessages;
 //	mavlink_set_position_target_local_ned_t m_initialPosition;
 
-	bool open(char* pSerialName);
+	void setSerialName(string name);
+	bool open(void);
 	void close(void);
+
+
+	bool start(void);
+	bool complete(void);
+	void stop(void);
+	void waitForComplete(void);
 
 //	bool writeMessage(mavlink_message_t message);
 	bool readMessages();
@@ -143,18 +149,18 @@ public:
 	void rc_overide(int numChannel, int* pChannels);
 	void controlMode(int mode);
 
-/*	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
-	void enable_offboard_control();
-	void disable_offboard_control();
-	*/
+	/*	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
+	 void enable_offboard_control();
+	 void disable_offboard_control();
+	 */
 
 	MESSAGE m_recvMsg;
 
-
 private:
-	bool	m_bConnected;
+	bool m_bConnected;
 
-	SerialPort *m_pSerialPort;
+	string	m_sportName;
+	SerialPort* m_pSerialPort;
 //	mavlink_set_position_target_local_ned_t current_setpoint;
 
 	int toggle_offboard_control(bool flag);
@@ -162,7 +168,18 @@ private:
 
 	char m_pBuf[256];
 
+	//Thread
+	pthread_t m_threadID;
+	bool m_bThreadON;
+
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((VehicleInterface *) This)->update();
+		return NULL;
+	}
 
 };
 
+}
 

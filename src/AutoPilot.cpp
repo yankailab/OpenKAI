@@ -24,6 +24,9 @@ AutoPilot::AutoPilot()
 
 	m_numCamStream = 0;
 	m_pVI = NULL;
+	m_bThreadON = false;
+	m_threadID = 0;
+
 }
 
 
@@ -59,6 +62,8 @@ void AutoPilot::update(void)
 {
 	int tThreadBegin;
 
+	m_tSleep = TRD_INTERVAL_AUTOPILOT_USEC;
+
 	while (m_bThreadON)
 	{
 		tThreadBegin = time(NULL);
@@ -71,7 +76,7 @@ void AutoPilot::update(void)
 		if(m_tSleep>0)
 		{
 			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(m_tSleep,0);
+			this->sleepThread(0,m_tSleep);
 		}
 	}
 
