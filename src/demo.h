@@ -13,11 +13,11 @@
 #include <cstdarg>
 
 #include "ObjectDetector.h"
-//#include "CameraVision.h"
 #include "CamInput.h"
 #include "CamMarkerDetect.h"
 #include "CamMonitor.h"
 #include "AutoPilot.h"
+#include "Config.h"
 
 
 #define APP_NAME "OpenKAI demo"
@@ -39,9 +39,6 @@
 #define PID_YAW_P_LIM 200.0
 #define DT_LIM 10.0
 
-#define INFOWINDOW_WIDTH 1000
-#define INFOWINDOW_HEIGHT 800
-
 using namespace kai;
 
 
@@ -51,12 +48,16 @@ int g_key;
 bool g_bRun;
 bool g_bTracking;
 
+CamStream* g_pCamFront;
+/*
 CamInput g_camFront;
 CamInput g_camUp;
 CamMonitor g_frontMonitor;
 CamFrame g_frontRGB;
 CamFrame g_frontHSV;
 CamMarkerDetect g_markerDet;
+*/
+
 ObjectDetector g_objDet;
 NN_OBJECT* g_pObj;
 int g_numObj;
@@ -70,6 +71,7 @@ fVector3 g_targetPosExt;
 
 JSON g_Json;
 FileIO g_file;
+Config g_config;
 string g_serialPort;
 
 
@@ -96,6 +98,31 @@ void createConfigWindow(void);
 void onTrackbar(int, void*);
 void displayInfo(void);
 void handleKey(int key);
+void printEnvironment(void);
+
+
+void printEnvironment(void)
+{
+	printf("Optimized code: %d\n", useOptimized());
+	printf("CUDA devices: %d\n", cuda::getCudaEnabledDeviceCount());
+	printf("Current CUDA device: %d\n", cuda::getDevice());
+
+	if (ocl::haveOpenCL())
+	{
+		printf("OpenCL is found\n");
+		ocl::setUseOpenCL(true);
+		if (ocl::useOpenCL())
+		{
+			printf("Using OpenCL\n");
+		}
+	}
+	else
+	{
+		printf("OpenCL not found\n");
+	}
+
+}
+
 
 void handleKey(int key)
 {
@@ -165,7 +192,7 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 		v.m_x = x;
 		v.m_y = y;
 		v.m_z = 10;
-		g_markerDet.setObjROI(v);
+//		g_markerDet.setObjROI(v);
 		break;
 	default:
 		break;
@@ -403,6 +430,7 @@ void createConfigWindow(void)
 
 void displayInfo(void)
 {
+	/*
 	char strBuf[512];
 	std::string strInfo;
 	PID_SETTING pid;
@@ -594,6 +622,9 @@ void displayInfo(void)
 				Point(startPosH, startPosV + lineHeight * (++i)),
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	}
+	*/
+
+
 	/*
 	 for (size_t j = 0; j < g_predictions.size(); ++j)
 	 {
@@ -604,6 +635,7 @@ void displayInfo(void)
 	 FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	 }
 	 */
+
 }
 
 #endif /* SRC_DEMO_H_ */

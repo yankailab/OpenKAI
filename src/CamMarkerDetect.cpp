@@ -12,8 +12,12 @@ namespace kai
 
 CamMarkerDetect::CamMarkerDetect()
 {
-	// TODO Auto-generated constructor stub
+	m_numAllMarker = 0;
+	m_objLockLevel = LOCK_LEVEL_NONE;
+	m_objPos.m_z = 0;
 
+	m_minMarkerSize = MIN_MARKER_SIZE;
+	m_areaRatio = MARKER_AREA_RATIO;
 }
 
 CamMarkerDetect::~CamMarkerDetect()
@@ -22,11 +26,9 @@ CamMarkerDetect::~CamMarkerDetect()
 }
 
 
-void CamMarkerDetect::init(void)
+bool CamMarkerDetect::init(void)
 {
-	m_numAllMarker = 0;
-	m_objLockLevel = LOCK_LEVEL_NONE;
-	m_objPos.m_z = 0;
+
 
 /*
 	// Setup SimpleBlobDetector parameters.
@@ -61,6 +63,7 @@ void CamMarkerDetect::init(void)
 	// So you need to use arrow ( ->) instead of dot ( . )
 	// detector->detect( im, keypoints);
 */
+	return true;
 }
 
 

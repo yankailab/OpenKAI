@@ -10,7 +10,9 @@ namespace kai
 {
 ObjectDetector::ObjectDetector()
 {
-	// TODO Auto-generated constructor stub
+	m_bThreadON = false;
+	m_threadID = 0;
+	m_numObjDetected = 0;
 
 }
 

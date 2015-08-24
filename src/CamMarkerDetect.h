@@ -33,7 +33,7 @@ public:
 	CamMarkerDetect();
 	virtual ~CamMarkerDetect();
 
-	void init(void);
+	bool init(void);
 	void detect(CamFrame* pFrameHSV);
 
 	//Object detection using markers
@@ -56,8 +56,8 @@ public:
 	fVector3 m_objROIPos;
 	fVector3 m_objAtt;	//Roll, Pitch, Yaw
 
-	double	m_minMarkerSize = MIN_MARKER_SIZE;
-	double  m_areaRatio = MARKER_AREA_RATIO;
+	double	m_minMarkerSize;
+	double  m_areaRatio;
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 

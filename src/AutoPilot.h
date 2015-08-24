@@ -61,7 +61,7 @@ public:
 	AutoPilot();
 	~AutoPilot();
 
-	bool init(JSON* json);
+	bool init(void);
 	PID_SETTING getRollFarPID(void);
 	PID_SETTING getRollNearPID(void);
 	PID_SETTING getAltFarPID(void);
@@ -114,7 +114,7 @@ public:
 	SYSTEM m_remoteSystem;
 	MESSAGE* m_pRecvMsg;
 
-private:
+public:
 	//Common
 	double	 m_dT;
 

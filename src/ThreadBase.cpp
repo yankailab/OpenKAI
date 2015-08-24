@@ -12,7 +12,7 @@ namespace kai
 
 ThreadBase::ThreadBase()
 {
-	// TODO Auto-generated constructor stub
+	m_tSleep = 0;
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
 
@@ -20,7 +20,6 @@ ThreadBase::ThreadBase()
 
 ThreadBase::~ThreadBase()
 {
-	// TODO Auto-generated destructor stub
 	pthread_mutex_destroy(&m_wakeupMutex);
 	pthread_cond_destroy(&m_wakeupSignal);
 }

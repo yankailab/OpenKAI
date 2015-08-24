@@ -23,7 +23,7 @@ public:
 	CamDenseFlow();
 	virtual ~CamDenseFlow();
 
-	void init(void);
+	bool init(void);
 	fVector4 detect(CamFrame* pFrame);
 
 
@@ -33,7 +33,6 @@ public:
 	void showFlow(const char* name, const GpuMat& d_flow);
 
 private:
-	unsigned int m_frameID;
 	fVector4 m_flow;
 	GpuMat m_flowMat;
 

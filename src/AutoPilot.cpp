@@ -5,6 +5,22 @@ namespace kai
 
 AutoPilot::AutoPilot()
 {
+	m_dT = 0.0;
+	m_lockLevel = LOCK_LEVEL_NONE;
+	m_hostSystem.m_mode = OPE_BOOT;
+	m_remoteSystem.m_mode = OPE_BOOT;
+
+	m_bAutoCalcDelay = true;
+	m_iFlowFrame = 0;
+
+	m_flowTotal.m_x = 0;
+	m_flowTotal.m_y = 0;
+	m_flowTotal.m_z = 0;
+	m_flowTotal.m_w = 0;
+
+	m_pRecvMsg = NULL;
+	m_resetFactor = 0.0;
+	m_resetFlowFrame = 0;
 }
 
 
@@ -12,131 +28,8 @@ AutoPilot::~AutoPilot()
 {
 }
 
-bool AutoPilot::init(JSON* json)
+bool AutoPilot::init(void)
 {
-	CONTROL_AXIS cAxis;
-
-	cAxis.m_pos = 0;
-	cAxis.m_targetPos = 0;
-	cAxis.m_accel = 0;
-	cAxis.m_cvErr = 0;
-	cAxis.m_cvErrOld = 0;
-	cAxis.m_cvErrInteg = 0;
-	cAxis.m_P = 0;
-	cAxis.m_I = 0;
-	cAxis.m_Imax = 0;
-	cAxis.m_D = 0;
-	cAxis.m_pwm = 0;
-	cAxis.m_pwmCenter = 0;
-	cAxis.m_RCChannel = 0;
-
-	m_roll = cAxis;
-	m_pitch = cAxis;
-	m_alt = cAxis;
-
-	CHECK_FATAL(json->getVal("ROLL_P", &m_roll.m_P));
-	CHECK_FATAL(json->getVal("ROLL_I", &m_roll.m_I));
-	CHECK_FATAL(json->getVal("ROLL_IMAX", &m_roll.m_Imax));
-	CHECK_FATAL(json->getVal("ROLL_D", &m_roll.m_D));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_roll.m_pwm));
-	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_roll.m_pwmLow));
-	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_roll.m_pwmHigh));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_roll.m_pwmCenter));
-	CHECK_FATAL(json->getVal("RC_ROLL", (int*)&m_roll.m_RCChannel));
-
-	CHECK_FATAL(json->getVal("PITCH_P", &m_pitch.m_P));
-	CHECK_FATAL(json->getVal("PITCH_I", &m_pitch.m_I));
-	CHECK_FATAL(json->getVal("PITCH_IMAX", &m_pitch.m_Imax));
-	CHECK_FATAL(json->getVal("PITCH_D", &m_pitch.m_D));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_pitch.m_pwm));
-	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_pitch.m_pwmLow));
-	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_pitch.m_pwmHigh));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_pitch.m_pwmCenter));
-	CHECK_FATAL(json->getVal("RC_PITCH", (int*)&m_pitch.m_RCChannel));
-
-	CHECK_FATAL(json->getVal("ALT_P", &m_alt.m_P));
-	CHECK_FATAL(json->getVal("ALT_I", &m_alt.m_I));
-	CHECK_FATAL(json->getVal("ALT_IMAX", &m_alt.m_Imax));
-	CHECK_FATAL(json->getVal("ALT_D", &m_alt.m_D));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_alt.m_pwm));
-	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_alt.m_pwmLow));
-	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_alt.m_pwmHigh));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_alt.m_pwmCenter));
-	CHECK_FATAL(json->getVal("RC_THROTTLE", (int*)&m_alt.m_RCChannel));
-
-	CHECK_FATAL(json->getVal("YAW_P", &m_yaw.m_P));
-	CHECK_FATAL(json->getVal("YAW_I", &m_yaw.m_I));
-	CHECK_FATAL(json->getVal("YAW_IMAX", &m_yaw.m_Imax));
-	CHECK_FATAL(json->getVal("YAW_D", &m_yaw.m_D));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_yaw.m_pwm));
-	CHECK_FATAL(json->getVal("PWM_LOW", (int*)&m_yaw.m_pwmLow));
-	CHECK_FATAL(json->getVal("PWM_HIGH", (int*)&m_yaw.m_pwmHigh));
-	CHECK_FATAL(json->getVal("PWM_CENTER", (int*)&m_yaw.m_pwmCenter));
-	CHECK_FATAL(json->getVal("RC_YAW", (int*)&m_yaw.m_RCChannel));
-
-
-	CHECK_FATAL(json->getVal("ROLL_P", &m_rollFar.m_P));
-	CHECK_FATAL(json->getVal("ROLL_I", &m_rollFar.m_I));
-	CHECK_FATAL(json->getVal("ROLL_D", &m_rollFar.m_D));
-	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_rollFar.m_Z));
-
-	CHECK_FATAL(json->getVal("ROLL_P", &m_rollNear.m_P));
-	CHECK_FATAL(json->getVal("ROLL_I", &m_rollNear.m_I));
-	CHECK_FATAL(json->getVal("ROLL_D", &m_rollNear.m_D));
-	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_rollNear.m_Z));
-
-	CHECK_FATAL(json->getVal("ALT_P", &m_altFar.m_P));
-	CHECK_FATAL(json->getVal("ALT_I", &m_altFar.m_I));
-	CHECK_FATAL(json->getVal("ALT_D", &m_altFar.m_D));
-	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_altFar.m_Z));
-
-	CHECK_FATAL(json->getVal("ALT_P", &m_altNear.m_P));
-	CHECK_FATAL(json->getVal("ALT_I", &m_altNear.m_I));
-	CHECK_FATAL(json->getVal("ALT_D", &m_altNear.m_D));
-	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_altNear.m_Z));
-
-	CHECK_FATAL(json->getVal("PITCH_P", &m_pitchFar.m_P));
-	CHECK_FATAL(json->getVal("PITCH_I", &m_pitchFar.m_I));
-	CHECK_FATAL(json->getVal("PITCH_D", &m_pitchFar.m_D));
-	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_pitchFar.m_Z));
-
-	CHECK_FATAL(json->getVal("PITCH_P", &m_pitchNear.m_P));
-	CHECK_FATAL(json->getVal("PITCH_I", &m_pitchNear.m_I));
-	CHECK_FATAL(json->getVal("PITCH_D", &m_pitchNear.m_D));
-	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_pitchNear.m_Z));
-
-	CHECK_FATAL(json->getVal("YAW_P", &m_yawFar.m_P));
-	CHECK_FATAL(json->getVal("YAW_I", &m_yawFar.m_I));
-	CHECK_FATAL(json->getVal("YAW_D", &m_yawFar.m_D));
-	CHECK_FATAL(json->getVal("Z_FAR_LIM", &m_yawFar.m_Z));
-
-	CHECK_FATAL(json->getVal("YAW_P", &m_yawNear.m_P));
-	CHECK_FATAL(json->getVal("YAW_I", &m_yawNear.m_I));
-	CHECK_FATAL(json->getVal("YAW_D", &m_yawNear.m_D));
-	CHECK_FATAL(json->getVal("Z_NEAR_LIM", &m_yawNear.m_Z));
-
-	m_RC[m_roll.m_RCChannel] = m_roll.m_pwmCenter;
-	m_RC[m_pitch.m_RCChannel] = m_pitch.m_pwmCenter;
-	m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
-	m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
-
-
-	m_hostSystem.m_mode = OPE_BOOT;
-	m_remoteSystem.m_mode = OPE_BOOT;
-
-	CHECK_FATAL(json->getVal("DELAY_TIME", &m_dT));
-	m_bAutoCalcDelay = true;
-
-	m_iFlowFrame = 0;
-	CHECK_FATAL(json->getVal("NUM_FLOW_FRAME_RESET", &m_resetFlowFrame));
-	CHECK_FATAL(json->getVal("FLOW_RESET_FACTOR", &m_resetFactor));
-//	m_resetFlowFrame = NUM_FLOW_FRAME_RESET;
-//	m_resetFactor = FLOW_RESET_FACTOR;
-
-	m_flowTotal.m_x = 0;
-	m_flowTotal.m_y = 0;
-	m_flowTotal.m_z = 0;
-	m_flowTotal.m_w = 0;
 
 	return true;
 }

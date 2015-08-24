@@ -12,18 +12,6 @@ namespace kai
 
 CamSparseFlow::CamSparseFlow()
 {
-	// TODO Auto-generated constructor stub
-
-}
-
-CamSparseFlow::~CamSparseFlow()
-{
-	// TODO Auto-generated destructor stub
-}
-
-
-void CamSparseFlow::init(void)
-{
 	m_flow.m_x = 0;
 	m_flow.m_y = 0;
 	m_flow.m_z = 0;
@@ -33,8 +21,19 @@ void CamSparseFlow::init(void)
 	m_diffPrev.m_y = 0;
 	m_diffPrev.m_z = 0;
 
-#ifdef USE_CUDA
 	m_numCorners = 1000;
+}
+
+CamSparseFlow::~CamSparseFlow()
+{
+	// TODO Auto-generated destructor stub
+}
+
+
+bool CamSparseFlow::init(void)
+{
+
+#ifdef USE_CUDA
 	m_pDetector = cuda::createGoodFeaturesToTrackDetector(CV_8UC1, m_numCorners, 0.01, 0.0);
 	m_pPyrLK = cuda::SparsePyrLKOpticalFlow::create();
 
@@ -44,7 +43,7 @@ void CamSparseFlow::init(void)
 	//	m_pMatcher = DescriptorMatcher::create("BruteForce-Hamming");
 #endif
 
-
+	return true;
 }
 
 fVector4 CamSparseFlow::detect(CamFrame* pFrame)
@@ -132,6 +131,8 @@ fVector4 CamSparseFlow::detect(CamFrame* pFrame)
 	m_flow.m_y *= vBase;
 	m_flow.m_z = 0;	//TODO: Change in Height
 	m_flow.m_w = 0;	//TODO: Rotation
+
+	return m_flow;
 
 #if (SHOW_FEATURE_FLOW==1)
 	m_Mat.m_pNew->download(dMat);

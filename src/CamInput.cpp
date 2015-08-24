@@ -13,7 +13,9 @@ namespace kai
 CamInput::CamInput()
 {
 	// TODO Auto-generated constructor stub
-
+	m_width = 0;
+	m_height = 0;
+	m_camDeviceID = 0;
 }
 
 CamInput::~CamInput()

@@ -10,13 +10,11 @@ namespace kai
 {
 NNClassifier::NNClassifier()
 {
-	// TODO Auto-generated constructor stub
-
+	num_channels_ = 0;
 }
 
 NNClassifier::~NNClassifier()
 {
-	// TODO Auto-generated destructor stub
 }
 
 void NNClassifier::setup(const string& model_file, const string& trained_file,

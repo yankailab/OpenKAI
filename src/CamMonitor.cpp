@@ -30,6 +30,7 @@ void CamMonitor::setWindowName(string name)
 bool CamMonitor::init(void)
 {
 
+	return true;
 }
 
 void CamMonitor::addFrame(CamFrame* pFrame, int zIndex, double alpha)

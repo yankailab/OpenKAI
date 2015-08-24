@@ -13,7 +13,14 @@ namespace kai
 CamFrame::CamFrame()
 {
 	// TODO Auto-generated constructor stub
+	m_frameID = 0;
+	m_width = 0;
+	m_height = 0;
 
+	m_iFrame = 0;
+	m_pPrev = &m_pFrame[m_iFrame];
+	m_iFrame = 1 - m_iFrame;
+	m_pNext = &m_pFrame[m_iFrame];
 }
 
 CamFrame::~CamFrame()
@@ -23,15 +30,6 @@ CamFrame::~CamFrame()
 
 bool CamFrame::init(void)
 {
-	m_frameID = 0;
-	m_iFrame = 0;
-	m_width = 0;
-	m_height = 0;
-
-	m_pPrev = &m_pFrame[m_iFrame];
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
-
 	return true;
 }
 

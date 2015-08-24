@@ -9,7 +9,6 @@
 #define SRC_CAMSTREAM_H_
 
 #include "common.h"
-#include "stdio.h"
 #include "cvplatform.h"
 
 #include "CamInput.h"
@@ -34,19 +33,32 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-private:
+	bool openWindow(void);
+	void closeWindow(void);
+
+public:
+	string				m_camName;
 	CamInput*			m_pCamL;
 	CamInput*			m_pCamR;
 	CamFrame*			m_pFrameL;
 	CamFrame*			m_pFrameR;
 	CamFrame**			m_pFrameProcess;
 	CamFrame*			m_pHSV;
+	CamFrame*			m_pGray;
 
 	CamMarkerDetect* 	m_pMarkerDetect;
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
 
 	CamMonitor*			m_pMonitor;
+
+	bool		m_bStereoCam;
+	bool		m_bMarkerDetect;
+	bool		m_bDenseFlow;
+	bool		m_bSparseFlow;
+	bool		m_bHSV;
+	bool		m_bGray;
+	bool		m_bShowWindow;
 
 
 	pthread_t m_threadID;

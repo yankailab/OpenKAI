@@ -25,11 +25,12 @@ CamDenseFlow::~CamDenseFlow()
 	// TODO Auto-generated destructor stub
 }
 
-void CamDenseFlow::init(void)
+bool CamDenseFlow::init(void)
 {
 //	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
+	return true;
 }
 
 fVector4 CamDenseFlow::detect(CamFrame* pFrame)

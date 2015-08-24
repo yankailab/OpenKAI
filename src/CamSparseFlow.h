@@ -23,11 +23,10 @@ public:
 	CamSparseFlow();
 	virtual ~CamSparseFlow();
 
-	void init(void);
+	bool init(void);
 	fVector4 detect(CamFrame* pFrame);
 
 private:
-	unsigned int m_frameID;
 	fVector4 m_flow;
 	fVector3 m_diffPrev;
 
