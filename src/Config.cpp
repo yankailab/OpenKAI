@@ -45,6 +45,7 @@ bool Config::setCamStream(CamStream* pCamStream)
 
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_NAME", &pCamStream->m_camName));
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_ID_L", &pCamStream->m_pCamL->m_camDeviceID));
+	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_ID_R", &pCamStream->m_pCamR->m_camDeviceID));
 
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_WIDTH", &pCamStream->m_pCamL->m_width));
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_HEIGHT", &pCamStream->m_pCamL->m_height));

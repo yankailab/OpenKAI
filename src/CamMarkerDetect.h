@@ -9,7 +9,6 @@
 #define SRC_CAMMARKERDETECT_H_
 
 #include "common.h"
-#include "stdio.h"
 #include "cvplatform.h"
 
 #include "CamFrame.h"

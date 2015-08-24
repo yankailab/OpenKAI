@@ -19,13 +19,14 @@ CamStream::CamStream()
 	m_pFrameR = new CamFrame();
 	m_pHSV = new CamFrame();
 	m_pGray = new CamFrame();
+	m_pDepth = new CamFrame();
 	m_pMonitor = new CamMonitor();
 	m_pFrameProcess = &m_pFrameL;
-
 
 	m_pMarkerDetect = new CamMarkerDetect();
 	m_pDenseFlow = new CamDenseFlow();
 	m_pSparseFlow = new CamSparseFlow();
+	m_pStereo = new CamStereo();
 
 	m_bStereoCam = false;
 	m_bMarkerDetect = false;
@@ -49,11 +50,13 @@ CamStream::~CamStream()
 	RELEASE(m_pFrameR);
 	RELEASE(m_pHSV);
 	RELEASE(m_pGray);
+	RELEASE(m_pDepth);
 	RELEASE(m_pMonitor);
 
 	RELEASE(m_pMarkerDetect);
 	RELEASE(m_pDenseFlow);
 	RELEASE(m_pSparseFlow);
+	RELEASE(m_pStereo);
 
 }
 
@@ -68,6 +71,7 @@ bool CamStream::init(void)
 	m_pMarkerDetect->init();
 	m_pDenseFlow->init();
 	m_pSparseFlow->init();
+	m_pStereo->init();
 
 	m_bThreadON = false;
 
@@ -104,10 +108,12 @@ bool CamStream::start(void)
 	CHECK_ERROR(m_pCamL->openCamera());
 	m_pCamL->setSize();
 
-	if(m_bStereoCam)
+	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
 	{
 		CHECK_ERROR(!m_pCamR->openCamera());
 		m_pCamR->setSize();
+
+		m_bStereoCam = true;
 	}
 
 
@@ -144,6 +150,8 @@ void CamStream::update(void)
 		{
 			m_pFrameR->switchFrame();
 			m_pCamR->readFrame(m_pFrameR);
+
+			m_pStereo->detect(m_pFrameL,m_pFrameR,m_pDepth);
 		}
 
 		if(m_bHSV)
@@ -179,7 +187,9 @@ void CamStream::update(void)
 		if(m_bShowWindow)
 		{
 			m_pMonitor->addFrame(m_pFrameL,0,0);
-			m_pMonitor->show();
+//			m_pMonitor->addFrame(m_pDepth,0,0);
+
+//			m_pMonitor->show();
 		}
 
 		if(m_tSleep>0)

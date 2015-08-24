@@ -17,6 +17,7 @@
 #include "CamDenseFlow.h"
 #include "CamSparseFlow.h"
 #include "CamMonitor.h"
+#include "CamStereo.h"
 
 namespace kai
 {
@@ -45,10 +46,12 @@ public:
 	CamFrame**			m_pFrameProcess;
 	CamFrame*			m_pHSV;
 	CamFrame*			m_pGray;
+	CamFrame*			m_pDepth;
 
 	CamMarkerDetect* 	m_pMarkerDetect;
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
+	CamStereo*			m_pStereo;
 
 	CamMonitor*			m_pMonitor;
 
