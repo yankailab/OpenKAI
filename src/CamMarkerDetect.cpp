@@ -67,7 +67,7 @@ bool CamMarkerDetect::init(void)
 }
 
 
-void CamMarkerDetect::detect(CamFrame* pFrameHSV)
+void CamMarkerDetect::detect(CamFrame* pHSV, CamFrame* pRGB, bool bDrawResult)
 {
 	int i,j,k;
 	Point2f center;
@@ -82,7 +82,7 @@ void CamMarkerDetect::detect(CamFrame* pFrameHSV)
 	matHSV[1] = m_Sat;
 	matHSV[2] = m_Val;
 
-	cuda::split(*(pFrameHSV->m_pNext), matHSV);
+	cuda::split(*(pHSV->m_pNext), matHSV);
 
 	m_Hue = matHSV[0];
 	m_Sat = matHSV[1];
@@ -97,29 +97,30 @@ void CamMarkerDetect::detect(CamFrame* pFrameHSV)
 //	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
 	m_Thresh.download(matThresh);
 
+	if(bDrawResult)
+	{
+		//	Mat matShow;
+		//	m_Thresh.download(matShow);
+		//	m_Mat.m_pSmallNew->download(matShow);
 
-#if (SHOW_MARKER_FLOW==1)
-//	Mat matShow;
-//	m_Thresh.download(matShow);
-//	m_Mat.m_pSmallNew->download(matShow);
+			// Storage for blobs
+		//	vector<KeyPoint> keypoints;
+			// Detect blobs
+		//	m_pBlobDetector->detect(matShow, keypoints);
 
-	// Storage for blobs
-//	vector<KeyPoint> keypoints;
-	// Detect blobs
-//	m_pBlobDetector->detect(matShow, keypoints);
+			// Draw detected blobs as red circles.
+			// DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures
+			// the size of the circle corresponds to the size of blob
 
-	// Draw detected blobs as red circles.
-	// DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures
-	// the size of the circle corresponds to the size of blob
+		//	Mat imTest;
+		//	drawKeypoints(matShow, keypoints, imTest, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 
-//	Mat imTest;
-//	drawKeypoints(matShow, keypoints, imTest, Scalar(0, 0, 255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		//	imshow(MF_WINDOW, matThresh);
 
-//	imshow(MF_WINDOW, matThresh);
+		//	m_objLockLevel = LOCK_LEVEL_NONE;
+		//	return;
 
-//	m_objLockLevel = LOCK_LEVEL_NONE;
-//	return;
-#endif
+	}
 
 /*	m_Balloonyness.download(m_threshMat);
 	/// Reduce the noise so we avoid false circle detection
@@ -151,10 +152,10 @@ void CamMarkerDetect::detect(CamFrame* pFrameHSV)
 
 	//Find the contours
 	findContours(matThresh, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-
-#if (DRAW_DEBUG_DATA == 1)
-	drawContours(m_Mat.m_uFrame, contours, -1, Scalar(255, 0, 0));
-#endif
+	if(bDrawResult)
+	{
+//		drawContours(pRGB->m_uFrame, contours, -1, Scalar(255, 0, 0));
+	}
 
 	//Find marker
 	m_numAllMarker = 0;
@@ -162,15 +163,19 @@ void CamMarkerDetect::detect(CamFrame* pFrameHSV)
 	{
 		minEnclosingCircle(contours[i], center, radius);
 
-#if (DRAW_DEBUG_DATA == 1)
-//		circle(m_Mat.m_uFrame, center, radius, Scalar(0, 255, 255));
-#endif
+		if(bDrawResult)
+		{
+//			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 1);
+		}
 
 		//New marker found
 		if (contourArea(contours[i]) < m_areaRatio*radius*radius*3.1415926)continue;
 		if (radius < m_minMarkerSize)continue;
 
-//		circle(m_Mat.m_uFrame, center, radius, Scalar(0, 255, 0), 2);
+		if(bDrawResult)
+		{
+			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 2);
+		}
 
 		m_pAllMarker[m_numAllMarker].m_x = center.x;
 		m_pAllMarker[m_numAllMarker].m_y = center.y;

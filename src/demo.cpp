@@ -43,9 +43,12 @@ int main(int argc, char* argv[])
 	g_pAP = new AutoPilot();
 	CHECK_FATAL(g_config.setAutoPilot(g_pAP));
 	g_pAP->init();
+	g_pAP->setCamStream(g_pCamFront,CAM_FRONT);
+	g_pAP->setVehicleInterface(g_pVehicle);
 
 
 	g_pCamFront->start();
+	g_pAP->start();
 
 
 
@@ -64,11 +67,14 @@ int main(int argc, char* argv[])
 		handleKey(g_key);
 	}
 
+	g_pAP->stop();
 	g_pCamFront->stop();
+
+	g_pAP->complete();
 	g_pCamFront->complete();
 
-
 	g_pVehicle->close();
+
 	delete g_pVehicle;
 	delete g_pAP;
 	delete g_pCamFront;

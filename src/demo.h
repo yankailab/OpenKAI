@@ -203,7 +203,7 @@ void onTrackbar(int, void*)
 {
 	//Get current value
 	PID_SETTING pid;
-
+/*
 	g_pAP->setDelayTime(
 			-DT_LIM * (PID_UI_LIM_HALF - (double) g_dT) / PID_UI_LIM_HALF);
 
@@ -286,7 +286,7 @@ void onTrackbar(int, void*)
 	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_yawNear.m_Z)
 			/ PID_UI_LIM_HALF;
 	g_pAP->setYawNearPID(pid);
-
+*/
 }
 
 void createConfigWindow(void)
@@ -295,7 +295,7 @@ void createConfigWindow(void)
 
 	//Get current value
 	PID_SETTING pid;
-
+/*
 	g_dT = (g_pAP->getDelayTime() / DT_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
 
 	pid = g_pAP->getRollFarPID();
@@ -426,6 +426,7 @@ void createConfigWindow(void)
 			onTrackbar);
 	createTrackbar("yawNear_Z", CONFIG_WINDOW, &g_yawNear.m_Z, PID_UI_LIM,
 			onTrackbar);
+			*/
 }
 
 void displayInfo(void)

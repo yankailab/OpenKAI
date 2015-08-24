@@ -21,6 +21,9 @@ AutoPilot::AutoPilot()
 	m_pRecvMsg = NULL;
 	m_resetFactor = 0.0;
 	m_resetFlowFrame = 0;
+
+	m_numCamStream = 0;
+	m_pVI = NULL;
 }
 
 
@@ -34,34 +37,80 @@ bool AutoPilot::init(void)
 	return true;
 }
 
-void AutoPilot::setRC(int channelID, int pwmCenter, int pwmFrom, int pwmTo)
+
+bool AutoPilot::start(void)
 {
-/*	m_RC[channelID].m_pwmCenter = pwmCenter;
-	m_RC[channelID].m_pwmFrom = pwmFrom;
-	m_RC[channelID].m_pwmTo = pwmTo;
-	m_RC[channelID].m_current = pwmCenter;
-	*/
+	//Start thread
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode << " in AutoPilot::start().pthread_create()";
+		m_bThreadON = false;
+		return false;
+	}
+
+	LOG(INFO) << "AutoPilot.start()";
+
+	return true;
 }
 
-void AutoPilot::setTargetPosCV(fVector3 pos)
+void AutoPilot::update(void)
 {
-	m_roll.m_targetPos = pos.m_x;
-	m_pitch.m_targetPos = pos.m_z;
-	m_alt.m_targetPos = pos.m_y;
+	int tThreadBegin;
+
+	while (m_bThreadON)
+	{
+		tThreadBegin = time(NULL);
+
+
+		markerLock(m_pCamStream[CAM_FRONT]->m_pMarkerDetect);
+
+
+
+		if(m_tSleep>0)
+		{
+			//sleepThread can be woke up by this->wakeupThread()
+			this->sleepThread(m_tSleep,0);
+		}
+	}
 
 }
 
-fVector3 AutoPilot::getTargetPosCV(void)
+bool AutoPilot::complete(void)
 {
-	fVector3 v;
-	v.m_x = m_roll.m_targetPos;
-	v.m_y = m_alt.m_targetPos;
-	v.m_z = m_pitch.m_targetPos;
 
-	return v;
+	return true;
 }
 
-void AutoPilot::markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
+void AutoPilot::stop(void)
+{
+	m_bThreadON = false;
+	this->wakeupThread();
+	pthread_join(m_threadID, NULL);
+
+	LOG(INFO) << "AutoPilot.stop()";
+}
+
+void AutoPilot::waitForComplete(void)
+{
+	pthread_join(m_threadID, NULL);
+}
+
+
+bool AutoPilot::setCamStream(CamStream* pCamStream, int camPosition)
+{
+	CHECK_ERROR(pCamStream);
+	if(camPosition > NUM_CAM_STREAM)return false;
+
+	m_pCamStream[camPosition] = pCamStream;
+
+	return true;
+}
+
+
+
+void AutoPilot::markerLock(CamMarkerDetect* pCMD)
 {
 	double zRatio;
 	double cvSize;
@@ -215,14 +264,14 @@ void AutoPilot::markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
 	}
 
 	//Mavlink
-	pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
+	m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 
 	return;
 
 	//Decode mavlink message from device
-	if (pVI->readMessages())
+	if (m_pVI->readMessages())
 	{
-		m_pRecvMsg = &pVI->m_recvMsg;
+		m_pRecvMsg = &m_pVI->m_recvMsg;
 		remoteMavlinkMsg(m_pRecvMsg);
 
 		//reset the flag to accept new messages
@@ -237,13 +286,13 @@ void AutoPilot::markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
 		}
 		else
 		{
-			pVI->controlMode(m_hostSystem.m_mode);
+			m_pVI->controlMode(m_hostSystem.m_mode);
 		}
 	}
 
 }
 
-void AutoPilot::flowLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
+void AutoPilot::flowLock(CamMarkerDetect* pCMD)
 {
 	/*
 	fVector4 vFlow;
@@ -339,10 +388,17 @@ void AutoPilot::flowLock(CamMarkerDetect* pCMD, VehicleInterface* pVI)
 	m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
 
 	//Mavlink
-	pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
+	m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 
 }
 
+
+void AutoPilot::setVehicleInterface(VehicleInterface* pVehicle)
+{
+	if(!pVehicle)return;
+
+	m_pVI = pVehicle;
+}
 
 void AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
 {
@@ -385,176 +441,27 @@ int* AutoPilot::getPWMOutput(void)
 	return m_RC;
 }
 
-PID_SETTING AutoPilot::getRollFarPID(void)
+
+
+
+void AutoPilot::setTargetPosCV(fVector3 pos)
 {
-	return m_rollFar;
+	m_roll.m_targetPos = pos.m_x;
+	m_pitch.m_targetPos = pos.m_z;
+	m_alt.m_targetPos = pos.m_y;
+
 }
 
-PID_SETTING AutoPilot::getRollNearPID(void)
-{
-	return m_rollNear;
-}
-
-PID_SETTING AutoPilot::getAltFarPID(void)
-{
-	return m_altFar;
-}
-
-PID_SETTING AutoPilot::getAltNearPID(void)
-{
-	return m_altNear;
-}
-
-PID_SETTING AutoPilot::getPitchFarPID(void)
-{
-	return m_pitchFar;
-}
-
-PID_SETTING AutoPilot::getPitchNearPID(void)
-{
-	return m_pitchNear;
-}
-
-PID_SETTING AutoPilot::getYawFarPID(void)
-{
-	return m_yawFar;
-}
-
-PID_SETTING AutoPilot::getYawNearPID(void)
-{
-	return m_yawNear;
-}
-
-
-fVector3 AutoPilot::getRollPID(void)
+fVector3 AutoPilot::getTargetPosCV(void)
 {
 	fVector3 v;
-	v.m_x = m_roll.m_P;
-	v.m_y = m_roll.m_I;
-	v.m_z = m_roll.m_D;
-
-	return v;
-//	return fVector3{ m_roll.m_P, m_roll.m_I, m_roll.m_D};
-}
-
-fVector3 AutoPilot::getAltPID(void)
-{
-	fVector3 v;
-	v.m_x = m_alt.m_P;
-	v.m_y = m_alt.m_I;
-	v.m_z = m_alt.m_D;
-
-	return v;
-//	return fVector3{ m_alt.m_P, m_alt.m_I, m_alt.m_D };
-}
-
-fVector3 AutoPilot::getPitchPID(void)
-{
-	fVector3 v;
-	v.m_x = m_pitch.m_P;
-	v.m_y = m_pitch.m_I;
-	v.m_z = m_pitch.m_D;
+	v.m_x = m_roll.m_targetPos;
+	v.m_y = m_alt.m_targetPos;
+	v.m_z = m_pitch.m_targetPos;
 
 	return v;
 }
 
-fVector3 AutoPilot::getYawPID(void)
-{
-	fVector3 v;
-	v.m_x = m_yaw.m_P;
-	v.m_y = m_yaw.m_I;
-	v.m_z = m_yaw.m_D;
 
-	return v;
-}
-
-void AutoPilot::setRollFarPID(PID_SETTING pid)
-{
-	m_rollFar = pid;
-}
-
-void AutoPilot::setRollNearPID(PID_SETTING pid)
-{
-	m_rollNear = pid;
-}
-
-void AutoPilot::setAltFarPID(PID_SETTING pid)
-{
-	m_altFar = pid;
-}
-
-void AutoPilot::setAltNearPID(PID_SETTING pid)
-{
-	m_altNear = pid;
-}
-
-void AutoPilot::setPitchFarPID(PID_SETTING pid)
-{
-	m_pitchFar = pid;
-}
-
-void AutoPilot::setPitchNearPID(PID_SETTING pid)
-{
-	m_pitchNear = pid;
-}
-
-void AutoPilot::setYawFarPID(PID_SETTING pid)
-{
-	m_yawFar = pid;
-}
-
-void AutoPilot::setYawNearPID(PID_SETTING pid)
-{
-	m_yawNear = pid;
-}
-
-void AutoPilot::setDelayTime(double dT)
-{
-	if (dT < 0.0)
-	{
-		m_bAutoCalcDelay = true;
-		return;
-	}
-
-	m_bAutoCalcDelay = false;
-	m_dT = dT;
-}
-
-double AutoPilot::getDelayTime(void)
-{
-	return m_dT;
-}
-
-CONTROL_AXIS* AutoPilot::getRollAxis(void)
-{
-	return &m_roll;
-}
-
-CONTROL_AXIS* AutoPilot::getPitchAxis(void)
-{
-	return &m_pitch;
-}
-
-CONTROL_AXIS* AutoPilot::getAltAxis(void)
-{
-	return &m_alt;
-}
-
-
-/*
-void AutoPilot::setRollPID(fVector3 pid)
-{
-}
-
-void AutoPilot::setAltPID(fVector3 pid)
-{
-
-}
-
-void AutoPilot::setPitchPID(fVector3 pid)
-{
-
-}
-*/
 
 }

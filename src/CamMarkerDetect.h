@@ -34,7 +34,7 @@ public:
 	virtual ~CamMarkerDetect();
 
 	bool init(void);
-	void detect(CamFrame* pFrameHSV);
+	void detect(CamFrame* pHSV, CamFrame* pRGB, bool bDrawResult);
 
 	//Object detection using markers
 	void setObjROI(fVector3 ROI);

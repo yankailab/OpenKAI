@@ -116,12 +116,12 @@ bool CamStream::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR) << "Return code: "<< retCode << " in ObjectDetector::start().pthread_create()";
+		LOG(ERROR) << "Return code: "<< retCode << " in CamStream::start().pthread_create()";
 		m_bThreadON = false;
 		return false;
 	}
 
-	LOG(INFO) << "ObjectDetector.start()";
+	LOG(INFO) << "CamStream.start()";
 
 	return true;
 }
@@ -157,7 +157,7 @@ void CamStream::update(void)
 
 		if(m_bMarkerDetect)
 		{
-			m_pMarkerDetect->detect(m_pHSV);
+			m_pMarkerDetect->detect(m_pHSV,m_pFrameL,true);
 		}
 
 		if(m_bDenseFlow)

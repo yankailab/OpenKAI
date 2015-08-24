@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common.h"
-#include "CamMarkerDetect.h"
+#include "CamStream.h"
 #include "util.h"
 #include "VehicleInterface.h"
 
@@ -17,10 +17,17 @@
 #define OPE_BOOT 6
 
 #define NUM_RC_CHANNEL 8
+#define NUM_CAM_STREAM 16
 
 //FALCON COMMANDS
 #define CMD_RC_UPDATE 0
 #define CMD_OPERATE_MODE 1
+
+
+#define CAM_FRONT 0
+#define CAM_LEFT 1
+#define CAM_RIGHT 2
+#define CAM_BACK 3
 
 namespace kai
 {
@@ -62,73 +69,48 @@ public:
 	~AutoPilot();
 
 	bool init(void);
-	PID_SETTING getRollFarPID(void);
-	PID_SETTING getRollNearPID(void);
-	PID_SETTING getAltFarPID(void);
-	PID_SETTING getAltNearPID(void);
-	PID_SETTING getPitchFarPID(void);
-	PID_SETTING getPitchNearPID(void);
-	PID_SETTING getYawFarPID(void);
-	PID_SETTING getYawNearPID(void);
+	bool start(void);
+	bool complete(void);
+	void stop(void);
+	void waitForComplete(void);
 
-	fVector3 getRollPID(void);
-	fVector3 getAltPID(void);
-	fVector3 getPitchPID(void);
-	fVector3 getYawPID(void);
-
-	void setRollFarPID(PID_SETTING pid);
-	void setRollNearPID(PID_SETTING pid);
-	void setAltFarPID(PID_SETTING pid);
-	void setAltNearPID(PID_SETTING pid);
-	void setPitchFarPID(PID_SETTING pid);
-	void setPitchNearPID(PID_SETTING pid);
-	void setYawFarPID(PID_SETTING pid);
-	void setYawNearPID(PID_SETTING pid);
-
-	int* getPWMOutput(void);
-	CONTROL_AXIS* getRollAxis(void);
-	CONTROL_AXIS* getPitchAxis(void);
-	CONTROL_AXIS* getAltAxis(void);
-
-	void setDelayTime(double dT);
-	double getDelayTime(void);
-
-//	void setRollPID(fVector3 pid);
-//	void setAltPID(fVector3 pid);
-//	void setPitchPID(fVector3 pid);
-
-	void setRC(int channelID, int pwmCenter, int pwmFrom, int pwmTo);
-
-//	void setCameraVision(CameraVision* pCV);
-//	void setMavlink(VehicleInterface* pMavlink);
-
-	void markerLock(CamMarkerDetect* pCMD, VehicleInterface* pVI);
-	void flowLock(CamMarkerDetect* pCMD, VehicleInterface* pVI);
-
+	bool setCamStream(CamStream* pCamStream, int camPosition);
+	void markerLock(CamMarkerDetect* pCMD);
+	void flowLock(CamMarkerDetect* pCMD);
 	void setTargetPosCV(fVector3 pos);
 	fVector3 getTargetPosCV(void);
 
-	void remoteMavlinkMsg(MESSAGE* pMsg);
+	void setVehicleInterface(VehicleInterface* pVehicle);
 
+	int* getPWMOutput(void);
+
+	void remoteMavlinkMsg(MESSAGE* pMsg);
 	SYSTEM m_hostSystem;
 	SYSTEM m_remoteSystem;
 	MESSAGE* m_pRecvMsg;
 
 public:
+	//Camera Stream
+	int 			m_numCamStream;
+	CamStream*	m_pCamStream[NUM_CAM_STREAM];
+
+	VehicleInterface* m_pVI;
+
+
 	//Common
-	double	 m_dT;
+	double m_dT;
 
 	//Marker Lock
-	int		 m_lockLevel;
-	bool	 m_bAutoCalcDelay;
+	int m_lockLevel;
+	bool m_bAutoCalcDelay;
 	fVector3 m_cvPos;
 	fVector3 m_cvPosOld;
 	fVector3 m_cvAtt;
 
 	//Flow Lock
-	int		 m_iFlowFrame;
-	int		 m_resetFlowFrame;
-	double	 m_resetFactor;
+	int m_iFlowFrame;
+	int m_resetFlowFrame;
+	double m_resetFactor;
 	fVector4 m_flowTotal;
 
 	//Control
@@ -147,6 +129,17 @@ public:
 	PID_SETTING m_yawNear;
 
 	int m_RC[NUM_RC_CHANNEL];
+
+	//Thread
+	pthread_t m_threadID;
+	bool m_bThreadON;
+
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((AutoPilot *) This)->update();
+		return NULL;
+	}
 
 };
 
