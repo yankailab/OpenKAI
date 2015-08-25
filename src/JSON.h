@@ -24,7 +24,7 @@ public:
 	bool getVal(string name,string* val);
 
 	bool getArray(string name,int* val);
-	bool getArray(string name,array* val);
+	bool getArray(string name,value::array* val);
 
 
 

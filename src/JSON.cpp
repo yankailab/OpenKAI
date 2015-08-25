@@ -84,14 +84,14 @@ bool JSON::getVal(string name, string* val)
 	return false;
 }
 
-bool JSON::getArray(string name, array* val)
+bool JSON::getArray(string name, value::array* val)
 {
 	if(m_JSON.is<object>())
 	{
 		value var = m_JSON.get(name);
-		if(var.is<array>())
+		if(var.is<value::array>())
 		{
-			*val = var.get<array>();
+			*val = var.get<value::array>();
 			return true;
 		}
     }
