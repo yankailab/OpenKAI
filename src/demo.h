@@ -49,19 +49,7 @@ bool g_bRun;
 bool g_bTracking;
 
 CamStream* g_pCamFront;
-/*
-CamInput g_camFront;
-CamInput g_camUp;
-CamMonitor g_frontMonitor;
-CamFrame g_frontRGB;
-CamFrame g_frontHSV;
-CamMarkerDetect g_markerDet;
-*/
-
-ObjectDetector g_objDet;
-NN_OBJECT* g_pObj;
-int g_numObj;
-
+ObjectDetector* g_pOD;
 AutoPilot* g_pAP;
 
 VehicleInterface* g_pVehicle;

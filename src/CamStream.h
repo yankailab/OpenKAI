@@ -63,7 +63,7 @@ public:
 	bool		m_bGray;
 	bool		m_bShowWindow;
 
-
+private:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 

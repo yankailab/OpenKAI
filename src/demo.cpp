@@ -35,12 +35,14 @@ int main(int argc, char* argv[])
 	g_pAP->setVehicleInterface(g_pVehicle);
 
 	//Init Object Detector
-//	g_objDet.init(&g_Json);
+	g_pOD = new ObjectDetector();
+	g_pOD->init(&g_Json);
 
 	//Start threads
 	g_pVehicle->start();
 	g_pCamFront->start();
 	g_pAP->start();
+	g_pOD->start();
 
 	//UI thread
 	g_bRun = true;
@@ -54,19 +56,24 @@ int main(int argc, char* argv[])
 	{
 		g_pCamFront->m_pMonitor->show();
 
+		g_pOD->setFrame(g_pCamFront->m_pFrameL->m_uFrame);
+
 		//Handle key input
-		g_key = waitKey(30);
+		g_key = waitKey(1);
 		handleKey(g_key);
 	}
 
+	g_pOD->stop();
 	g_pAP->stop();
 	g_pCamFront->stop();
 
+	g_pOD->complete();
 	g_pAP->complete();
 	g_pCamFront->complete();
 
 	g_pVehicle->close();
 
+	delete g_pOD;
 	delete g_pVehicle;
 	delete g_pAP;
 	delete g_pCamFront;

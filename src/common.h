@@ -8,9 +8,7 @@
 
 //Common include
 
-#define PER_FRAME_TIME_LOGGING 0
-#define SHOW_DEBUG_WINDOW 1
-#define DRAW_DEBUG_DATA 0
+#define MAX_FRAME_ID 0xffffffff
 
 using namespace std;
 

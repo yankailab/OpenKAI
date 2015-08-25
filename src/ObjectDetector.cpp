@@ -13,12 +13,14 @@ ObjectDetector::ObjectDetector()
 	m_bThreadON = false;
 	m_threadID = 0;
 	m_numObjDetected = 0;
+	m_frameID = 0;
+	m_processedFrameID = 0;
+	m_numImg = 0;
 
 }
 
 ObjectDetector::~ObjectDetector()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool ObjectDetector::init(JSON* pJson)
@@ -40,8 +42,6 @@ bool ObjectDetector::init(JSON* pJson)
 			labelFile
 			);
 
-	m_tSleep = TRD_INTERVAL;
-
 	LOG(INFO)<<"Object Detector Initialized";
 
 	return true;
@@ -49,6 +49,7 @@ bool ObjectDetector::init(JSON* pJson)
 
 bool ObjectDetector::start(void)
 {
+	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -71,7 +72,12 @@ void ObjectDetector::update(void)
 	{
 		tThreadBegin = time(NULL);
 
-		this->sleepThread(m_tSleep,0);//sleepThread can be woke up by this->wakeupThread()
+		detect();
+
+		if(m_processedFrameID == m_frameID)
+		{
+			this->sleepThread(0,m_tSleep);//sleepThread can be woke up by this->wakeupThread()
+		}
 	}
 
 }
@@ -82,8 +88,6 @@ void ObjectDetector::stop(void)
 	this->wakeupThread();
 	pthread_join(m_threadID, NULL);
 
-//	m_pVController->stop();
-
 	LOG(INFO) << "ObjectDetector.stop()";
 }
 
@@ -92,10 +96,37 @@ void ObjectDetector::waitForComplete(void)
 	pthread_join(m_threadID, NULL);
 }
 
-int ObjectDetector::detect(Mat pImg, NN_OBJECT** ppObjects)
+bool ObjectDetector::complete(void)
 {
+	return true;
+}
+
+void ObjectDetector::setFrame(Mat img)
+{
+	if(++m_frameID == MAX_FRAME_ID)
+	{
+		m_frameID = 0;
+	}
+
+	m_frame = img;
+
+	this->wakeupThread();
+}
+
+int  ObjectDetector::getObject(NN_OBJECT** ppObjects)
+{
+	*ppObjects = m_pObjects;
+	return m_numObjDetected;
+}
+
+void ObjectDetector::detect(void)
+{
+	if(m_frame.rows+m_frame.cols==0)return;
+
+
 	size_t i;
-	m_predictions = m_classifier.Classify(pImg);
+	m_predictions = m_classifier.Classify(m_frame);
+	m_processedFrameID = m_frameID;
 
 	for (i = 0; i < m_predictions.size(); i++)
 	{
@@ -107,11 +138,11 @@ int ObjectDetector::detect(Mat pImg, NN_OBJECT** ppObjects)
 			break;
 		}
 	}
+	m_numObjDetected = i;
+}
 
-	*ppObjects = m_pObjects;
-	return i;
 }
-}
+
 
 
 

@@ -12,7 +12,6 @@ namespace kai
 
 CamFrame::CamFrame()
 {
-	// TODO Auto-generated constructor stub
 	m_frameID = 0;
 	m_width = 0;
 	m_height = 0;
@@ -25,7 +24,6 @@ CamFrame::CamFrame()
 
 CamFrame::~CamFrame()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool CamFrame::init(void)

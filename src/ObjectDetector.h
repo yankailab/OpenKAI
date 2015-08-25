@@ -9,30 +9,19 @@
 #define SRC_OBJECTDETECTOR_H_
 
 #include "common.h"
+#include "cvplatform.h"
 #include "NNClassifier.h"
 
-#include "opencv2/opencv.hpp"
-#include "opencv2/core.hpp"
-#include "opencv2/core/utility.hpp"
-#include "opencv2/core/ocl.hpp"
-#include "opencv2/features2d.hpp"
-#include "opencv2/highgui.hpp"
-
-#ifdef USE_CUDA
-#include "opencv2/cudaarithm.hpp"
-#include "opencv2/cudaimgproc.hpp"
-#include "opencv2/cudaoptflow.hpp"
-#include "opencv2/cudaarithm.hpp"
-#endif
-
-namespace kai
-{
 using namespace cv;
 using namespace cv::cuda;
 
-#define TRD_INTERVAL 1
+#define TRD_INTERVAL_OBJDETECTOR 10000
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJECTS 1000
+#define NUM_IMG 100
+
+namespace kai
+{
 
 struct NN_OBJECT
 {
@@ -52,7 +41,26 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	int detect(Mat pImg, NN_OBJECT** ppObjects);
+	void setFrame(Mat pImg);
+	int  getObject(NN_OBJECT** ppObjects);
+
+private:
+	void detect(void);
+
+private:
+	int m_frameID;
+	int m_processedFrameID;
+	Mat m_frame;
+
+	int m_numImg;
+	Mat m_pImg[NUM_IMG];
+
+	int m_numObjDetected;
+	NN_OBJECT m_pObjects[NUM_OBJECTS];
+
+	NNClassifier m_classifier;
+	std::vector<Prediction> m_predictions;
+
 
 private:
 	pthread_t m_threadID;
@@ -65,10 +73,6 @@ private:
 		return NULL;
 	}
 
-	int m_numObjDetected;
-	NN_OBJECT m_pObjects[NUM_OBJECTS];
-	NNClassifier m_classifier;
-	std::vector<Prediction> m_predictions;
 
 };
 }

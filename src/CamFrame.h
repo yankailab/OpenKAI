@@ -12,8 +12,6 @@
 #include "stdio.h"
 #include "cvplatform.h"
 
-#define MAX_FRAME_ID 0xffffffff
-
 namespace kai
 {
 
@@ -50,11 +48,6 @@ public:
 	UMat* m_pNext;
 	UMat* m_pPrev;
 	UMat m_pFrame[2];
-
-	UMat  m_Hsv;
-	UMat  m_Hue;
-	UMat  m_Sat;
-	UMat  m_Val;
 #endif
 
 };
