@@ -43,7 +43,6 @@ CamStream::CamStream()
 
 CamStream::~CamStream()
 {
-	// TODO Auto-generated destructor stub
 	RELEASE(m_pCamL);
 	RELEASE(m_pCamR);
 	RELEASE(m_pFrameL);
@@ -135,9 +134,7 @@ bool CamStream::start(void)
 void CamStream::update(void)
 {
 	int tThreadBegin;
-
-	m_tSleep = 0;
-
+	m_tSleep = TRD_INTERVAL_CAMSTREAM;
 
 	while (m_bThreadON)
 	{
@@ -180,9 +177,6 @@ void CamStream::update(void)
 		{
 			m_pSparseFlow->detect(m_pGray);
 		}
-
-//		g_pAP->markerLock(&g_markerDet,g_pVehicle);
-//		g_numObj = g_objDet.detect(g_frontRGB.m_uFrame/*.getMat(ACCESS_READ)*/,&g_pObj);
 
 		if(m_bShowWindow)
 		{

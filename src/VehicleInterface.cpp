@@ -6,6 +6,8 @@ VehicleInterface::VehicleInterface()
 {
 	m_bConnected = false;
 	m_sportName = "";
+	m_bThreadON = false;
+	m_pSerialPort = NULL;
 }
 
 VehicleInterface::~VehicleInterface()

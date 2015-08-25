@@ -2,6 +2,7 @@
 
 #include "common.h"
 #include "CamStream.h"
+#include "ObjectDetector.h"
 #include "util.h"
 #include "VehicleInterface.h"
 
@@ -64,6 +65,12 @@ struct CONTROL_AXIS
 	unsigned int m_RCChannel;
 };
 
+struct CAMERA_STREAM
+{
+	int			m_frameID;
+	CamStream*	m_pCam;
+};
+
 class AutoPilot: public ThreadBase
 {
 public:
@@ -93,10 +100,13 @@ public:
 
 public:
 	//Camera Stream
-	int 			m_numCamStream;
-	CamStream*	m_pCamStream[NUM_CAM_STREAM];
+	int 				m_numCamStream;
+	CAMERA_STREAM	m_pCamStream[NUM_CAM_STREAM];
+
+	ObjectDetector*	m_pOD;
 
 	VehicleInterface* m_pVI;
+
 
 
 	//Common

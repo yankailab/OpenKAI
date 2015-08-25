@@ -12,10 +12,14 @@ ObjectDetector::ObjectDetector()
 {
 	m_bThreadON = false;
 	m_threadID = 0;
-	m_numObjDetected = 0;
-	m_frameID = 0;
-	m_processedFrameID = 0;
-	m_numImg = 0;
+
+	int i;
+	for(i=0;i<NUM_DETECTOR_STREAM;i++)
+	{
+		m_pStream[i].m_frameID = 0;
+		m_pStream[i].m_numImg = 0;
+		m_pStream[i].m_pCamStream = NULL;
+	}
 
 }
 
@@ -49,7 +53,6 @@ bool ObjectDetector::init(JSON* pJson)
 
 bool ObjectDetector::start(void)
 {
-	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -66,20 +69,71 @@ bool ObjectDetector::start(void)
 
 void ObjectDetector::update(void)
 {
+	int i;
+	CamFrame* pFrame;
 	int tThreadBegin;
+	DETECTOR_STREAM* pDS;
+	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 
 	while (m_bThreadON)
 	{
 		tThreadBegin = time(NULL);
 
-		detect();
-
-		if(m_processedFrameID == m_frameID)
+		for(i=0;i<NUM_DETECTOR_STREAM;i++)
 		{
-			this->sleepThread(0,m_tSleep);//sleepThread can be woke up by this->wakeupThread()
+			pDS = &m_pStream[i];
+			if(!pDS->m_pCamStream)continue;
+
+			pFrame = *(pDS->m_pCamStream->m_pFrameProcess);
+			if(pDS->m_frameID == pFrame->m_frameID)continue;
+
+			detect(i);
 		}
+
+		this->sleepThread(0,m_tSleep);//sleepThread can be woke up by this->wakeupThread()
 	}
 
+}
+
+void ObjectDetector::setFrame(int iStream, CamStream* pCam)
+{
+	if(!pCam)return;
+
+	DETECTOR_STREAM* pDS = &m_pStream[iStream];
+	pDS->m_pCamStream = pCam;
+//	this->wakeupThread();
+}
+
+int  ObjectDetector::getObject(int iStream, NN_OBJECT** ppObjects)
+{
+	DETECTOR_STREAM* pDS = &m_pStream[iStream];
+	*ppObjects = pDS->m_pObjects;
+	return pDS->m_numImg;
+}
+
+void ObjectDetector::detect(int iStream)
+{
+	DETECTOR_STREAM* pDS = &m_pStream[iStream];
+	CamFrame* pFrame = *(pDS->m_pCamStream->m_pFrameProcess);
+
+	if(pFrame->m_uFrame.empty())return;
+
+	pDS->m_frameID = pFrame->m_frameID;
+	pFrame->m_uFrame.copyTo(pDS->m_pImg[0]);
+
+	if(pDS->m_pImg[0].empty())return;
+
+	m_predictions = m_classifier.Classify(pDS->m_pImg[0]);//TODO:change to separated local images
+
+
+	size_t i;
+	for (i = 0; i < m_predictions.size(); i++)
+	{
+		Prediction p = m_predictions[i];
+
+		pDS->m_pObjects[0].m_name[i] = p.first;
+		if(i>=NUM_OBJECT_NAME)break;
+	}
 }
 
 void ObjectDetector::stop(void)
@@ -101,45 +155,7 @@ bool ObjectDetector::complete(void)
 	return true;
 }
 
-void ObjectDetector::setFrame(Mat img)
-{
-	if(++m_frameID == MAX_FRAME_ID)
-	{
-		m_frameID = 0;
-	}
 
-	m_frame = img;
-
-	this->wakeupThread();
-}
-
-int  ObjectDetector::getObject(NN_OBJECT** ppObjects)
-{
-	*ppObjects = m_pObjects;
-	return m_numObjDetected;
-}
-
-void ObjectDetector::detect(void)
-{
-	if(m_frame.rows+m_frame.cols==0)return;
-
-
-	size_t i;
-	m_predictions = m_classifier.Classify(m_frame);
-	m_processedFrameID = m_frameID;
-
-	for (i = 0; i < m_predictions.size(); i++)
-	{
-		Prediction p = m_predictions[i];
-
-		m_pObjects[i].m_name[0] = p.first;
-		if(i>=NUM_OBJECTS)
-		{
-			break;
-		}
-	}
-	m_numObjDetected = i;
-}
 
 }
 

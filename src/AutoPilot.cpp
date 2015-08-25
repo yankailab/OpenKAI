@@ -23,9 +23,17 @@ AutoPilot::AutoPilot()
 	m_resetFlowFrame = 0;
 
 	m_numCamStream = 0;
+	m_pOD = NULL;
 	m_pVI = NULL;
 	m_bThreadON = false;
 	m_threadID = 0;
+
+	int i;
+	for(i=0;i<NUM_CAM_STREAM;i++)
+	{
+		m_pCamStream[i].m_frameID = 0;
+		m_pCamStream[i].m_pCam = NULL;
+	}
 
 }
 
@@ -60,6 +68,8 @@ bool AutoPilot::start(void)
 
 void AutoPilot::update(void)
 {
+	CAMERA_STREAM* pCam;
+	CamFrame* pFrame;
 	int tThreadBegin;
 
 	m_tSleep = TRD_INTERVAL_AUTOPILOT_USEC;
@@ -68,10 +78,24 @@ void AutoPilot::update(void)
 	{
 		tThreadBegin = time(NULL);
 
+		pCam = &m_pCamStream[CAM_FRONT];
+		pFrame = *(pCam->m_pCam->m_pFrameProcess);
 
-		markerLock(m_pCamStream[CAM_FRONT]->m_pMarkerDetect);
+		if(pCam->m_frameID != pFrame->m_frameID)
+		{
+			//New frame arrived
+			pCam->m_frameID = pFrame->m_frameID;
 
+			if(m_pOD)
+			{
+				m_pOD->setFrame(CAM_FRONT,pCam->m_pCam);
+				m_pOD->wakeupThread();
+			}
 
+		}
+
+		//Action
+		markerLock(pCam->m_pCam->m_pMarkerDetect);
 
 		if(m_tSleep>0)
 		{
@@ -108,7 +132,7 @@ bool AutoPilot::setCamStream(CamStream* pCamStream, int camPosition)
 	CHECK_ERROR(pCamStream);
 	if(camPosition > NUM_CAM_STREAM)return false;
 
-	m_pCamStream[camPosition] = pCamStream;
+	m_pCamStream[camPosition].m_pCam = pCamStream;
 
 	return true;
 }

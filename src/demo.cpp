@@ -27,16 +27,17 @@ int main(int argc, char* argv[])
 	g_pCamFront->init();
 	g_pCamFront->openWindow();
 
+	//Init Object Detector
+	g_pOD = new ObjectDetector();
+	g_pOD->init(&g_Json);
+
 	//Init Autopilot
 	g_pAP = new AutoPilot();
 	CHECK_FATAL(g_config.setAutoPilot(g_pAP));
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront,CAM_FRONT);
 	g_pAP->setVehicleInterface(g_pVehicle);
-
-	//Init Object Detector
-	g_pOD = new ObjectDetector();
-	g_pOD->init(&g_Json);
+	g_pAP->m_pOD = g_pOD;
 
 	//Start threads
 	g_pVehicle->start();
@@ -50,33 +51,36 @@ int main(int argc, char* argv[])
 	setMouseCallback(APP_NAME, onMouse, NULL);
 
 	//Wait until the first frame
-	while(g_pCamFront->m_pMonitor->m_mat.rows<=0);
+//	while(g_pCamFront->m_pMonitor->m_mat.empty());
 
 	while (g_bRun)
 	{
-		g_pCamFront->m_pMonitor->show();
-
-		g_pOD->setFrame(g_pCamFront->m_pFrameL->m_uFrame);
+		if(!g_pCamFront->m_pMonitor->m_mat.empty())
+		{
+			g_pCamFront->m_pMonitor->show();
+		}
 
 		//Handle key input
-		g_key = waitKey(1);
+		g_key = waitKey(10);
 		handleKey(g_key);
 	}
 
 	g_pOD->stop();
 	g_pAP->stop();
 	g_pCamFront->stop();
+	g_pVehicle->stop();
 
 	g_pOD->complete();
 	g_pAP->complete();
 	g_pCamFront->complete();
+	g_pVehicle->complete();
 
 	g_pVehicle->close();
 
-	delete g_pOD;
 	delete g_pVehicle;
 	delete g_pAP;
 	delete g_pCamFront;
+//	delete g_pOD;
 
 	return 0;
 

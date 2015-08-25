@@ -19,6 +19,8 @@
 #include "CamMonitor.h"
 #include "CamStereo.h"
 
+#define TRD_INTERVAL_CAMSTREAM 0
+
 namespace kai
 {
 

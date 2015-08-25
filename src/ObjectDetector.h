@@ -12,21 +12,33 @@
 #include "cvplatform.h"
 #include "NNClassifier.h"
 
+#include "CamStream.h"
+
 using namespace cv;
 using namespace cv::cuda;
 
 #define TRD_INTERVAL_OBJDETECTOR 10000
 #define NUM_OBJECT_NAME 5
-#define NUM_OBJECTS 1000
 #define NUM_IMG 100
+#define NUM_DETECTOR_STREAM 5
 
 namespace kai
 {
 
 struct NN_OBJECT
 {
-	string m_name[NUM_OBJECT_NAME];
-	iVector4 m_posSize;
+	string 		m_name[NUM_OBJECT_NAME];
+	iVector4 	m_posSize;
+};
+
+struct DETECTOR_STREAM
+{
+	CamStream*	m_pCamStream;
+
+	int m_frameID;
+	int m_numImg;
+	Mat m_pImg[NUM_IMG];
+	NN_OBJECT m_pObjects[NUM_IMG];
 };
 
 class ObjectDetector: public ThreadBase
@@ -41,26 +53,16 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	void setFrame(Mat pImg);
-	int  getObject(NN_OBJECT** ppObjects);
+	void setFrame(int iStream, CamStream* pCam);
+	int  getObject(int iStream, NN_OBJECT** ppObjects);
 
 private:
-	void detect(void);
+	void detect(int iStream);
 
 private:
-	int m_frameID;
-	int m_processedFrameID;
-	Mat m_frame;
-
-	int m_numImg;
-	Mat m_pImg[NUM_IMG];
-
-	int m_numObjDetected;
-	NN_OBJECT m_pObjects[NUM_OBJECTS];
-
+	DETECTOR_STREAM m_pStream[NUM_DETECTOR_STREAM];
 	NNClassifier m_classifier;
 	std::vector<Prediction> m_predictions;
-
 
 private:
 	pthread_t m_threadID;
