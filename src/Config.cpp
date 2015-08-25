@@ -50,6 +50,9 @@ bool Config::setCamStream(CamStream* pCamStream)
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_WIDTH", &pCamStream->m_pCamL->m_width));
 	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_HEIGHT", &pCamStream->m_pCamL->m_height));
 
+	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_WIDTH", &pCamStream->m_pCamR->m_width));
+	CHECK_FATAL(m_pJson->getVal("CAM_FRONT_HEIGHT", &pCamStream->m_pCamR->m_height));
+
 	int bSwitch;
 	if(m_pJson->getVal("CAM_FRONT_MARKER", &bSwitch))
 	{

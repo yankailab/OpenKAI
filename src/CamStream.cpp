@@ -18,7 +18,8 @@ CamStream::CamStream()
 	m_pFrameL = new CamFrame();
 	m_pFrameR = new CamFrame();
 	m_pHSV = new CamFrame();
-	m_pGray = new CamFrame();
+	m_pGrayL = new CamFrame();
+	m_pGrayR = new CamFrame();
 	m_pDepth = new CamFrame();
 	m_pMonitor = new CamMonitor();
 	m_pFrameProcess = &m_pFrameL;
@@ -48,7 +49,8 @@ CamStream::~CamStream()
 	RELEASE(m_pFrameL);
 	RELEASE(m_pFrameR);
 	RELEASE(m_pHSV);
-	RELEASE(m_pGray);
+	RELEASE(m_pGrayL);
+	RELEASE(m_pGrayR);
 	RELEASE(m_pDepth);
 	RELEASE(m_pMonitor);
 
@@ -65,6 +67,9 @@ bool CamStream::init(void)
 	m_pFrameR->init();
 	m_pHSV->init();
 	m_pMonitor->init();
+	m_pGrayL->init();
+	m_pGrayR->init();
+	m_pDepth->init();
 	m_pFrameProcess = &m_pFrameL;
 
 	m_pMarkerDetect->init();
@@ -109,10 +114,12 @@ bool CamStream::start(void)
 
 	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
 	{
-		CHECK_ERROR(!m_pCamR->openCamera());
+		CHECK_ERROR(m_pCamR->openCamera());
 		m_pCamR->setSize();
 
 		m_bStereoCam = true;
+
+//		m_pDepth->m_uFrame = Mat(CV_8U));
 	}
 
 
@@ -148,7 +155,17 @@ void CamStream::update(void)
 			m_pFrameR->switchFrame();
 			m_pCamR->readFrame(m_pFrameR);
 
-			m_pStereo->detect(m_pFrameL,m_pFrameR,m_pDepth);
+			m_pGrayL->switchFrame();
+			m_pFrameL->getGray(m_pGrayL);
+			m_pGrayR->switchFrame();
+			m_pFrameR->getGray(m_pGrayR);
+
+			m_pStereo->detect(m_pGrayL,m_pGrayR,m_pDepth);
+		}
+		else if(m_bGray)
+		{
+			m_pGrayL->switchFrame();
+			(*m_pFrameProcess)->getGray(m_pGrayL);
 		}
 
 		if(m_bHSV)
@@ -157,11 +174,6 @@ void CamStream::update(void)
 			(*m_pFrameProcess)->getHSV(m_pHSV);
 		}
 
-		if(m_bGray)
-		{
-			m_pGray->switchFrame();
-			(*m_pFrameProcess)->getGray(m_pGray);
-		}
 
 		if(m_bMarkerDetect)
 		{
@@ -170,18 +182,19 @@ void CamStream::update(void)
 
 		if(m_bDenseFlow)
 		{
-			m_pDenseFlow->detect(m_pGray);
+			m_pDenseFlow->detect(m_pGrayL);
 		}
 
 		if(m_bSparseFlow)
 		{
-			m_pSparseFlow->detect(m_pGray);
+			m_pSparseFlow->detect(m_pGrayL);
 		}
 
 		if(m_bShowWindow)
 		{
-			m_pMonitor->addFrame(m_pFrameL,0,0);
-//			m_pMonitor->addFrame(m_pDepth,0,0);
+//			m_pMonitor->addFrame(m_pFrameL,0,0);
+//			m_pMonitor->addFrame(m_pFrameR,0,0);
+			m_pMonitor->addFrame(m_pDepth,0,0);
 
 //			m_pMonitor->show();
 		}

@@ -19,7 +19,7 @@
 #include "CamMonitor.h"
 #include "CamStereo.h"
 
-#define TRD_INTERVAL_CAMSTREAM 0
+#define TRD_INTERVAL_CAMSTREAM 100
 
 namespace kai
 {
@@ -47,7 +47,8 @@ public:
 	CamFrame*			m_pFrameR;
 	CamFrame**			m_pFrameProcess;
 	CamFrame*			m_pHSV;
-	CamFrame*			m_pGray;
+	CamFrame*			m_pGrayL;
+	CamFrame*			m_pGrayR;
 	CamFrame*			m_pDepth;
 
 	CamMarkerDetect* 	m_pMarkerDetect;

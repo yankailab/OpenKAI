@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 		}
 
 		//Handle key input
-		g_key = waitKey(10);
+		g_key = waitKey(30);
 		handleKey(g_key);
 	}
 
