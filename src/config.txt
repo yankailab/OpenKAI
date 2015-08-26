@@ -83,4 +83,11 @@
 "CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
 
+
+"OD_CANNY_LOW":10,
+"OD_CANNY_HIGH":100,
+"OD_CANNY_APPERTURE":3,
+"OD_GAUSS_KSIZE":3,
+"OD_GAUSS_SIGMA":1,
+
 }

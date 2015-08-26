@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 				cv::putText(g_pCamFront->m_pMonitor->m_mat,
 							pObj->m_name[0],
 							pObj->m_boundBox.tl(),
-							FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+							FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 			}
 
 			g_pCamFront->m_pMonitor->show();

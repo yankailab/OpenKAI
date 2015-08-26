@@ -67,6 +67,7 @@ public:
 	Mat		m_frame;
 	GpuMat m_pGMat;
 	Ptr<cuda::CannyEdgeDetector> m_pCanny;
+//	Ptr<cuda::> m_pGaussian;
 
 private:
 	pthread_t m_threadID;

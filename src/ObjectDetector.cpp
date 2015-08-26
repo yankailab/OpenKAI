@@ -51,8 +51,20 @@ bool ObjectDetector::init(JSON* pJson)
 
 	LOG(INFO)<<"Object Detector Initialized";
 
-	m_pCanny = cuda::createCannyEdgeDetector(35, 200, 3);
-
+	int lowThr = 10;
+	int highThr = 100;
+	int Apperture = 3;
+	CHECK_ERROR(pJson->getVal("OD_CANNY_LOW", &lowThr));
+	CHECK_ERROR(pJson->getVal("OD_CANNY_HIGH", &highThr));
+	CHECK_ERROR(pJson->getVal("OD_CANNY_APPERTURE", &Apperture));
+	m_pCanny = cuda::createCannyEdgeDetector(lowThr, highThr, Apperture);
+/*
+	int ksize = 3;
+	int sigma = 1;
+	CHECK_ERROR(pJson->getVal("OD_GAUSS_KSIZE", &ksize));
+	CHECK_ERROR(pJson->getVal("OD_GAUSS_SIGMA", &sigma));
+	m_pGaussian = cuda::createGaussianFilter(CV_8U, CV_8U, ksize, sigma);
+*/
 	return true;
 }
 
@@ -118,27 +130,26 @@ void ObjectDetector::detect(int iStream)
 	pDS->m_frameID = pFrame->m_frameID;
 	GpuMat* pGray = pCS->m_pGrayL->m_pNext;
 
-	if (pGray->empty())
-		return;
+	if (pGray->empty())return;
 
-//	cuda::bilateralFilter(d_src, d_dst, -1, 50, 7);
-	m_pCanny->detect(*pGray, m_pGMat);
-	m_pGMat.download(m_frame);
-//	pGray->download(m_frame);
+//	cuda::bilateralFilter(*pGray, m_pGMat, 5, 50, 7);
+//	m_pCanny->detect(*pGray, m_pGMat);
+//	m_pGMat.download(m_frame);
 
+	pGray->download(m_frame);
 
-
-	int i, j, k;
+	int i,j;
 	int thresh = 100;
 	int max_thresh = 255;
 
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
+	Mat matThr;
 
 	// Detect edges using Threshold
-//	cv::threshold(m_frame, threshold_output, thresh, 255, THRESH_BINARY);
+	cv::threshold(m_frame, matThr, thresh, 255, THRESH_BINARY);
 	// Find contours
-	findContours(m_frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(matThr, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
@@ -154,8 +165,6 @@ void ObjectDetector::detect(int iStream)
 
 		boundRect.x *= 0.9;
 		boundRect.y *= 0.9;
-		if(boundRect.x<0)boundRect.x=0;
-		if(boundRect.y<0)boundRect.y=0;
 
 		boundRect.width *= 1.25;
 		boundRect.height *= 1.25;
@@ -169,7 +178,7 @@ void ObjectDetector::detect(int iStream)
 		}
 
 		pDS->m_pObjects[pDS->m_numObj].m_boundBox = boundRect;
-		m_frame(boundRect).copyTo(pDS->m_pObjects[pDS->m_numObj].m_pImg);
+		pCS->m_pFrameL->m_uFrame(boundRect).copyTo(pDS->m_pObjects[pDS->m_numObj].m_pImg);
 		pDS->m_numObj++;
 	}
 
@@ -190,8 +199,8 @@ void ObjectDetector::detect(int iStream)
 
 	}
 
+//	imshow("Canny", m_frame);return;
 
-//	imshow("ObjectDetect", drawing);//m_frame);
 
 	//TODO:Perform a quick HOG detection on people
 	//TODO:Perform a quick HOG detection on car
