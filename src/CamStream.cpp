@@ -192,9 +192,9 @@ void CamStream::update(void)
 
 		if(m_bShowWindow)
 		{
-//			m_pMonitor->addFrame(m_pFrameL,0,0);
+			m_pMonitor->addFrame(m_pFrameL,0,0);
 //			m_pMonitor->addFrame(m_pFrameR,0,0);
-			m_pMonitor->addFrame(m_pDepth,0,0);
+//			m_pMonitor->addFrame(m_pDepth,0,0);
 
 //			m_pMonitor->show();
 		}

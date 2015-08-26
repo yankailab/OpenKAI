@@ -27,9 +27,9 @@ bool CamStereo::init(void)
 	m_pBP = cuda::createStereoBeliefPropagation(m_disparity);
 	m_pCSBP = cv::cuda::createStereoConstantSpaceBP(m_disparity);
 
-	namedWindow("Left");
-	namedWindow("Right");
-	namedWindow("Stereo");
+//	namedWindow("Left");
+//	namedWindow("Right");
+//	namedWindow("Stereo");
 
 }
 

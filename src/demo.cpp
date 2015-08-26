@@ -26,6 +26,7 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_config.setCamStream(g_pCamFront));
 	g_pCamFront->init();
 	g_pCamFront->openWindow();
+	g_pCamFront->m_bGray = true;
 
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
@@ -57,6 +58,24 @@ int main(int argc, char* argv[])
 	{
 		if(!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
+
+			DETECTOR_STREAM* pDS = &g_pOD->m_pStream[CAM_FRONT];
+			NN_OBJECT* pObj;
+			for (int i = 0; i < pDS->m_numObj; i++)
+			{
+				pObj = &pDS->m_pObjects[i];
+				if(pObj->m_name[0].empty())continue;
+
+				rectangle(g_pCamFront->m_pMonitor->m_mat,
+						pObj->m_boundBox.tl(),
+						pObj->m_boundBox.br(), Scalar(0,255,0), 2, 5,0);
+
+				cv::putText(g_pCamFront->m_pMonitor->m_mat,
+							pObj->m_name[0],
+							pObj->m_boundBox.tl(),
+							FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+			}
+
 			g_pCamFront->m_pMonitor->show();
 		}
 
