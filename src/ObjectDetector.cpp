@@ -25,6 +25,7 @@ ObjectDetector::ObjectDetector()
 			for(k=0;k<NUM_OBJECT_NAME;k++)
 			{
 				m_pStream[i].m_pObjects[j].m_name[k] = "";
+				m_pStream[i].m_pObjects[j].m_prob[k] = 0;
 			}
 		}
 	}
@@ -136,20 +137,39 @@ void ObjectDetector::detect(int iStream)
 //	m_pCanny->detect(*pGray, m_pGMat);
 //	m_pGMat.download(m_frame);
 
-	pGray->download(m_frame);
+
+
+
+	//Test
+/*	pCS->m_pDenseFlow->detect(pCS->m_pGrayL);
+
+	GpuMat gMat1,gMat2;
+	if(pCS->m_pDenseFlow->m_flowMat.empty())return;
+	cuda::abs(pCS->m_pDenseFlow->m_flowMat,gMat1);
+
+	vector<GpuMat> fMat(2);
+	cuda::split(gMat1,fMat);
+	cuda::add(fMat[0],fMat[1],gMat1);
+	cuda::threshold(gMat1, gMat2, 5, 255, THRESH_BINARY);
+
+	gMat2.download(m_frame);
+	m_frame.convertTo(matThr,CV_8UC1);
+*/
+
 
 	int i,j;
-	int thresh = 100;
-	int max_thresh = 255;
-
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	Mat matThr;
 
+	GpuMat gThr;
 	// Detect edges using Threshold
-	cv::threshold(m_frame, matThr, thresh, 255, THRESH_BINARY);
+	cuda::threshold(*pGray, gThr, 50, 255, THRESH_BINARY);
+	gThr.download(m_frame);
+
 	// Find contours
-	findContours(matThr, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(m_frame, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE);
+//	findContours(m_frame, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
@@ -161,21 +181,22 @@ void ObjectDetector::detect(int iStream)
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 
 		boundRect = boundingRect(Mat(contours_poly[i]));
-		if(boundRect.area()<10000)continue;
+		if(boundRect.area()<5000)continue;
 
-		boundRect.x *= 0.9;
-		boundRect.y *= 0.9;
+		int extraW = boundRect.width*0.15;
+		int extraH = boundRect.height*0.15;
 
-		boundRect.width *= 1.25;
-		boundRect.height *= 1.25;
-		if(boundRect.x + boundRect.width > m_frame.cols)
-		{
-			boundRect.width = m_frame.cols - boundRect.x;
-		}
-		if(boundRect.y + boundRect.height > m_frame.rows)
-		{
-			boundRect.height = m_frame.rows - boundRect.y;
-		}
+		boundRect.x -= extraW;
+		boundRect.y -= extraH;
+		if(boundRect.x<0)boundRect.x=0;
+		if(boundRect.y<0)boundRect.y=0;
+
+		boundRect.width += extraW+extraW;
+		boundRect.height += extraH+extraH;
+		int overW = m_frame.cols - boundRect.x - boundRect.width;
+		int overH = m_frame.rows - boundRect.y - boundRect.height;
+		if(overW<0)boundRect.width+=overW;
+		if(overH<0)boundRect.height+=overH;
 
 		pDS->m_pObjects[pDS->m_numObj].m_boundBox = boundRect;
 		pCS->m_pFrameL->m_uFrame(boundRect).copyTo(pDS->m_pObjects[pDS->m_numObj].m_pImg);
@@ -194,6 +215,7 @@ void ObjectDetector::detect(int iStream)
 			Prediction p = m_predictions[j];
 
 			pObj->m_name[j] = p.first;
+			pObj->m_prob[j] = p.second;
 			if (j >= NUM_OBJECT_NAME)break;
 		}
 

@@ -27,6 +27,7 @@ int main(int argc, char* argv[])
 	g_pCamFront->init();
 	g_pCamFront->openWindow();
 	g_pCamFront->m_bGray = true;
+//	g_pCamFront->m_bDenseFlow = true;
 
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
@@ -65,6 +66,7 @@ int main(int argc, char* argv[])
 			{
 				pObj = &pDS->m_pObjects[i];
 				if(pObj->m_name[0].empty())continue;
+//				if(pObj->m_prob[0]<0.5)continue;
 
 				rectangle(g_pCamFront->m_pMonitor->m_mat,
 						pObj->m_boundBox.tl(),
@@ -73,7 +75,7 @@ int main(int argc, char* argv[])
 				cv::putText(g_pCamFront->m_pMonitor->m_mat,
 							pObj->m_name[0],
 							pObj->m_boundBox.tl(),
-							FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
+							FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 2);
 			}
 
 			g_pCamFront->m_pMonitor->show();

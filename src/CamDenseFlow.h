@@ -32,7 +32,7 @@ public:
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
 	void showFlow(const char* name, const GpuMat& d_flow);
 
-private:
+public:
 	fVector4 m_flow;
 	GpuMat m_flowMat;
 

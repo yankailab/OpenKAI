@@ -39,13 +39,25 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 	cv::Point2f vFlow;
 	double base;
 
-	m_pFarn->calc(*(pFrame->m_pPrev), *(pFrame->m_pNext), m_flowMat);
-
-	m_flowMat.download(m_uFlowMat);
 	m_flow.m_x = 0;
 	m_flow.m_y = 0;
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
+
+	if(pFrame->m_pPrev->empty())return m_flow;
+	if(pFrame->m_pPrev->size()!=pFrame->m_pNext->size())return m_flow;
+	m_pFarn->calc(*(pFrame->m_pPrev), *(pFrame->m_pNext), m_flowMat);
+
+	m_flowMat.download(m_uFlowMat);
+
+//	imshow("DenseFlow",m_flowY);
+
+
+
+
+
+
+
 
 	for (i = 0; i < m_uFlowMat.rows; i++)
 	{

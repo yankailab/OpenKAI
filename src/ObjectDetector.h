@@ -28,6 +28,7 @@ namespace kai
 struct NN_OBJECT
 {
 	string 		m_name[NUM_OBJECT_NAME];
+	double		m_prob[NUM_OBJECT_NAME];
 	Mat         m_pImg;
 	Rect			m_boundBox;
 };
