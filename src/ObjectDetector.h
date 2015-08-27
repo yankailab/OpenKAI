@@ -22,7 +22,7 @@ using namespace cv::cuda;
 #define NUM_OBJ 100
 #define NUM_DETECTOR_STREAM 5
 
-#define NUM_DETECT_BATCH 10
+#define NUM_DETECT_BATCH 20
 
 namespace kai
 {
