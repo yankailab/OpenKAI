@@ -17,10 +17,12 @@
 using namespace cv;
 using namespace cv::cuda;
 
-#define TRD_INTERVAL_OBJDETECTOR 10000
+#define TRD_INTERVAL_OBJDETECTOR 0
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
 #define NUM_DETECTOR_STREAM 5
+
+#define NUM_DETECT_BATCH 10
 
 namespace kai
 {
@@ -63,7 +65,8 @@ private:
 public:
 	DETECTOR_STREAM m_pStream[NUM_DETECTOR_STREAM];
 	NNClassifier m_classifier;
-	std::vector<Prediction> m_predictions;
+	vector<Prediction> m_predictions;
+	vector<vector<Prediction> > m_vPredictions;
 
 	Mat		m_frame;
 	GpuMat m_pGMat;

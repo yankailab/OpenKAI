@@ -38,6 +38,7 @@ using caffe::vector;
 using caffe::MemoryDataLayer;
 using std::string;
 using namespace std;
+using namespace cv;
 
 /* Pair (label, confidence) representing a prediction. */
 typedef std::pair<string, float> Prediction;
@@ -50,30 +51,42 @@ public:
 
 	void
 	setup(const string& model_file, const string& trained_file,
-			const string& mean_file, const string& label_file);
+			const string& mean_file, const string& label_file, int batch_size);
 
 	std::vector<Prediction>
 	Classify(const cv::Mat& img, int N = 5);
+
+	std::vector<vector<Prediction> > ClassifyBatch(
+			const vector<cv::Mat> imgs, int num_classes);
 
 private:
 	void
 	SetMean(const string& mean_file);
 
-	std::vector<float>
-	Predict(const cv::Mat& img);
+	std::vector<float> Predict(const Mat& img);
+
+	std::vector<float> PredictBatch(const vector<cv::Mat> imgs);
+
+	void WrapInputLayer(vector<cv::Mat>* input_channels, int numImg);
+
+	void WrapBatchInputLayer(
+			std::vector<std::vector<cv::Mat> > *input_batch);
 
 	void
-	WrapInputLayer(std::vector<cv::Mat>* input_channels);
+	Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels,
+			int iImg);
 
-	void
-	Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
+	void PreprocessBatch(const vector<cv::Mat> imgs,
+			std::vector<std::vector<cv::Mat> >* input_batch);
+
 
 private:
-	std::shared_ptr<Net<float> > net_;
+	shared_ptr<Net<float> > net_;
 	cv::Size input_geometry_;
 	int num_channels_;
 	cv::Mat mean_;
-	std::vector<string> labels_;
+	vector<string> labels_;
+	int batch_size_;
 };
 
 }

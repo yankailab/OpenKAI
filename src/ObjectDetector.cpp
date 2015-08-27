@@ -48,7 +48,7 @@ bool ObjectDetector::init(JSON* pJson)
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
 
-	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile);
+	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile, NUM_DETECT_BATCH);
 
 	LOG(INFO)<<"Object Detector Initialized";
 
@@ -204,22 +204,70 @@ void ObjectDetector::detect(int iStream)
 	}
 
 
+	vector<Mat> vImg;
 	NN_OBJECT* pObj;
+
+/*
 	for (i = 0; i < pDS->m_numObj; i++)
 	{
 		pObj = &pDS->m_pObjects[i];
-		m_predictions = m_classifier.Classify(pObj->m_pImg);
 
+		vImg.clear();
+		vImg.push_back(pObj->m_pImg);
+		m_vPredictions = m_classifier.ClassifyBatch(vImg,5);
+
+		m_predictions = m_vPredictions[0];
 		for (j = 0; j < m_predictions.size(); j++)
 		{
 			Prediction p = m_predictions[j];
 
 			pObj->m_name[j] = p.first;
 			pObj->m_prob[j] = p.second;
+
+			int from = pObj->m_name[j].find_first_of(' ');
+			int to = pObj->m_name[j].find_first_of(' ');
+			pObj->m_name[j] = pObj->m_name[j].substr(from+1,pObj->m_name[j].length());
+
 			if (j >= NUM_OBJECT_NAME)break;
 		}
-
 	}
+
+	return;
+*/
+
+
+
+
+	if(pDS->m_numObj>NUM_DETECT_BATCH)pDS->m_numObj = NUM_DETECT_BATCH;
+
+	for (i = 0; i < pDS->m_numObj; i++)
+	{
+		pObj = &pDS->m_pObjects[i];
+		vImg.push_back(pObj->m_pImg);
+	}
+
+	m_vPredictions = m_classifier.ClassifyBatch(vImg,5);//pDS->m_numObj);
+
+	for (i = 0; i < pDS->m_numObj; i++)
+//	for (i = 0; i < m_vPredictions.size(); i++)
+	{
+		pObj = &pDS->m_pObjects[i];
+		for (j = 0; j < m_vPredictions[i].size(); j++)
+		{
+			Prediction p = m_vPredictions[i][j];
+
+			pObj->m_name[j] = p.first;
+			pObj->m_prob[j] = p.second;
+
+			int from = pObj->m_name[j].find_first_of(' ');
+			int to = pObj->m_name[j].find_first_of(' ');
+			pObj->m_name[j] = pObj->m_name[j].substr(from+1,pObj->m_name[j].length());
+
+			if (j >= NUM_OBJECT_NAME)break;
+		}
+	}
+
+
 
 //	imshow("Canny", m_frame);return;
 
