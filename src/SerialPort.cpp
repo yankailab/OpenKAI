@@ -243,13 +243,13 @@ bool SerialPort::connect(char *portName)
 
 //    char* nametest = "/dev/ttyACM0";
     //fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
-    m_fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    m_fd = open(portName, O_RDWR | O_NOCTTY);// | O_NDELAY);// | O_NONBLOCK);
     if(m_fd == -1)
     {
 	  printf("init_serialport: Unable to open port\n");
 	  return false;
     }
-
+/*
     if(tcgetattr(m_fd, &toptions) < 0)
     {
 	  printf("init_serialport: Couldn't get term attributes\n");
@@ -268,15 +268,20 @@ bool SerialPort::connect(char *portName)
 
     // no flow control
     toptions.c_cflag &= ~CRTSCTS;
+//    toptions.c_cflag |= CRTSCTS;
 
     toptions.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
-    toptions.c_iflag &= ~(IXON | IXOFF | IXANY); // turn off s/w flow ctrl
-    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG); // make raw
-    toptions.c_oflag &= ~OPOST; // make raw
+    toptions.c_iflag &= ~(IXON | IXOFF | IXANY);// | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
+    toptions.c_iflag |= IGNPAR;
+//    toptions.c_lflag = 0;
+//    toptions.c_oflag = 0;
+
+    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG | IEXTEN); // make raw
+    toptions.c_oflag &= ~(OPOST|OLCUC|ONLCR|OCRNL|ONLRET|OFDEL); // make raw
 
     // see: http://unixwiz.net/techtips/termios-vmin-vtime.html
     toptions.c_cc[VMIN]  = 0;
-    toptions.c_cc[VTIME] = 20;
+    toptions.c_cc[VTIME] = 0;
 
     if(tcsetattr(m_fd, TCSANOW, &toptions) < 0)
     {
@@ -284,6 +289,14 @@ bool SerialPort::connect(char *portName)
 	  return false;
     }
 
+    fcntl(m_fd, F_SETFL, FNDELAY);
+    tcflush(m_fd,TCIOFLUSH);
+
+    struct serial_struct serial;
+    ioctl(m_fd, TIOCGSERIAL, &serial);
+    serial.flags |= ASYNC_LOW_LATENCY; // (0x2000)
+    ioctl(m_fd, TIOCSSERIAL, &serial);
+*/
 	usleep(2000 * 1000);
 	this->bConnected = true;
 
@@ -307,6 +320,7 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
     unsigned int n = write(m_fd, buffer, nbChar);
     if( n!=nbChar )
     {
+    	printf("Not wrote! %d, %d\n",nbChar, n);
     		return false;
     }
 

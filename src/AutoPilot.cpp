@@ -86,12 +86,13 @@ void AutoPilot::update(void)
 			//New frame arrived
 			pCam->m_frameID = pFrame->m_frameID;
 
+#ifdef OBJECT_DETECT
 			if(m_pOD)
 			{
 				m_pOD->setFrame(CAM_FRONT,pCam->m_pCam);
 				m_pOD->wakeupThread();
 			}
-
+#endif
 /*
 			//Decode mavlink message from device
 			if (m_pVI->readMessages())
@@ -317,7 +318,6 @@ void AutoPilot::markerLock(CamMarkerDetect* pCMD)
 
 	//Mavlink
 	m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
-
 	return;
 
 }

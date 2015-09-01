@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
 
 	//Start threads
-	g_pVehicle->start();
+//	g_pVehicle->start();
 	g_pCamFront->start();
 	g_pAP->start();
 #ifdef OBJECT_DETECT

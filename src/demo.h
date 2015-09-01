@@ -421,7 +421,7 @@ void displayInfo(void)
 	cv::Mat* pExtMat;
 	int i;
 	int startPosH = 25;
-	int startPosV = 725;
+	int startPosV = 125;
 	int lineHeight = 20;
 	int* pPWM;
 	CONTROL_AXIS pControl;
@@ -450,10 +450,12 @@ void displayInfo(void)
 //	pExtMat->copyTo(g_displayMat(roi));
 
 	//Vehicle position
+	if(vPos.m_z<0)vPos.m_z=0;
 	cv::circle(g_displayMat, Point(vPos.m_x, vPos.m_y), vPos.m_z * 0.5,
 			Scalar(0, 255, 0), 3);
 
 	//Target position
+	if(g_targetPosExt.m_z<0)g_targetPosExt.m_z=0;
 	cv::circle(g_displayMat, Point(g_targetPosExt.m_x, g_targetPosExt.m_y),
 			g_targetPosExt.m_z * 0.5, Scalar(0, 255, 255), 3);
 

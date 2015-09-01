@@ -4,9 +4,9 @@
 "serialPortWIN":"\\\\.\\COM6",
 
 "ROLL_P":1.0,
-"ROLL_I":0.25,
-"ROLL_IMAX":30.0,
-"ROLL_D":8.0,
+"ROLL_I":0.0,
+"ROLL_IMAX":0.0,
+"ROLL_D":0.0,
 
 "PITCH_P":1.5,
 "PITCH_I":0.1,
@@ -23,7 +23,7 @@
 "YAW_IMAX":0.0,
 "YAW_D":0.0,
 
-"DELAY_TIME":5.0,
+"DELAY_TIME":0.0,
 
 "TARGET_X":640,
 "TARGET_Y":400,

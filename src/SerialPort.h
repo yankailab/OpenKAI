@@ -1,6 +1,9 @@
 #pragma once
 #include "platform.h"
 
+#include <sys/ioctl.h>
+#include <linux/serial.h>
+
 #define ARDUINO_WAIT_TIME 2000
 
 class SerialPort

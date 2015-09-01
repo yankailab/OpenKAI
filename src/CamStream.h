@@ -19,7 +19,7 @@
 #include "CamMonitor.h"
 #include "CamStereo.h"
 
-#define TRD_INTERVAL_CAMSTREAM 10
+#define TRD_INTERVAL_CAMSTREAM 0
 
 namespace kai
 {
@@ -67,6 +67,7 @@ public:
 	bool		m_bShowWindow;
 
 private:
+public:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 
