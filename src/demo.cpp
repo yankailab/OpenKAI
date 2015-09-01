@@ -1,6 +1,7 @@
 
 #include "demo.h"
 
+
 int main(int argc, char* argv[])
 {
 	// Initialize Google's logging library.
@@ -20,18 +21,31 @@ int main(int argc, char* argv[])
 	g_pVehicle = new VehicleInterface();
 	CHECK_ERROR(g_Json.getVal("serialPort", &g_serialPort));
 	g_pVehicle->setSerialName(g_serialPort);
+	if(g_pVehicle->open())
+	{
+		printf("Serial port opened¥n");
+	}
 
 	//Init CamStream
 	g_pCamFront = new CamStream();
 	CHECK_FATAL(g_config.setCamStream(g_pCamFront));
 	g_pCamFront->init();
 	g_pCamFront->openWindow();
-	g_pCamFront->m_bGray = true;
-//	g_pCamFront->m_bDenseFlow = true;
 
+#ifdef OBJECT_DETECT
+	g_pCamFront->m_bGray = true;
+#endif
+#ifdef MARKER_COPTER
+	g_pCamFront->m_bHSV = true;
+	g_pCamFront->m_bMarkerDetect = true;
+//	g_pCamFront->m_bDenseFlow = true;
+#endif
+
+#ifdef OBJECT_DETECT
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
+#endif
 
 	//Init Autopilot
 	g_pAP = new AutoPilot();
@@ -39,27 +53,30 @@ int main(int argc, char* argv[])
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront,CAM_FRONT);
 	g_pAP->setVehicleInterface(g_pVehicle);
+#ifdef OBJECT_DETECTOR
 	g_pAP->m_pOD = g_pOD;
+#endif
+	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
 
 	//Start threads
 	g_pVehicle->start();
 	g_pCamFront->start();
 	g_pAP->start();
+#ifdef OBJECT_DETECT
 	g_pOD->start();
+#endif
 
 	//UI thread
 	g_bRun = true;
 	g_bTracking = false;
-	setMouseCallback(APP_NAME, onMouse, NULL);
-
-	//Wait until the first frame
-//	while(g_pCamFront->m_pMonitor->m_mat.empty());
+	setMouseCallback(g_pCamFront->m_camName, onMouse, NULL);
 
 	while (g_bRun)
 	{
+
 		if(!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
-
+#ifdef OBJECT_DETECT
 			DETECTOR_STREAM* pDS = &g_pOD->m_pStream[CAM_FRONT];
 			NN_OBJECT* pObj;
 			for (int i = 0; i < pDS->m_numObj; i++)
@@ -79,6 +96,12 @@ int main(int argc, char* argv[])
 			}
 
 			g_pCamFront->m_pMonitor->show();
+#endif
+
+#ifdef MARKER_COPTER
+			displayInfo();
+			imshow(g_pCamFront->m_camName,g_displayMat);
+#endif
 		}
 
 		//Handle key input
@@ -86,12 +109,16 @@ int main(int argc, char* argv[])
 		handleKey(g_key);
 	}
 
+#ifdef OBJECT_DETECT
 	g_pOD->stop();
+#endif
 	g_pAP->stop();
 	g_pCamFront->stop();
 	g_pVehicle->stop();
 
+#ifdef OBJECT_DETECT
 	g_pOD->complete();
+#endif
 	g_pAP->complete();
 	g_pCamFront->complete();
 	g_pVehicle->complete();
@@ -101,7 +128,10 @@ int main(int argc, char* argv[])
 	delete g_pVehicle;
 	delete g_pAP;
 	delete g_pCamFront;
-//	delete g_pOD;
+
+#ifdef OBJECT_DETECT
+	delete g_pOD;
+#endif
 
 	return 0;
 

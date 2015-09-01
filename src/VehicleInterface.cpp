@@ -137,7 +137,7 @@ bool VehicleInterface::readMessages()
 			{
 				//decode the command
 //				hostCommand();
-//				m_recvMsg.m_cmd = 0;
+				m_recvMsg.m_cmd = 0;
 
 				return true; //Execute one command at a time
 			}

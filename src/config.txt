@@ -1,5 +1,6 @@
 {
-"serialPort":"/dev/ttyACM0",
+"serialPort":"/dev/cu.usbmodem1411",
+"serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",
 
 "ROLL_P":1.0,

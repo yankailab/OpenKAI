@@ -6,6 +6,11 @@
 #include "JSON.h"
 #include "ThreadBase.h"
 
+//Demo App
+#define MARKER_COPTER
+//#define OBJECT_DETECT
+
+
 //Common include
 
 #define MAX_FRAME_ID 0xffffffff

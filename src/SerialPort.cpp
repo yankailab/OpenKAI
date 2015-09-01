@@ -243,7 +243,7 @@ bool SerialPort::connect(char *portName)
 
 //    char* nametest = "/dev/ttyACM0";
     //fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
-    m_fd = open(portName, O_RDWR | O_NOCTTY);
+    m_fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if(m_fd == -1)
     {
 	  printf("init_serialport: Unable to open port\n");
@@ -307,7 +307,7 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
     unsigned int n = write(m_fd, buffer, nbChar);
     if( n!=nbChar )
     {
-    	return false;
+    		return false;
     }
 
     return true;

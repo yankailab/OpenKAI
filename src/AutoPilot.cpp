@@ -92,6 +92,29 @@ void AutoPilot::update(void)
 				m_pOD->wakeupThread();
 			}
 
+/*
+			//Decode mavlink message from device
+			if (m_pVI->readMessages())
+			{
+				m_pRecvMsg = &m_pVI->m_recvMsg;
+				remoteMavlinkMsg(m_pRecvMsg);
+
+				//reset the flag to accept new messages
+				m_pRecvMsg->m_cmd = 0;
+			}
+
+			if (m_remoteSystem.m_mode != m_hostSystem.m_mode)
+			{
+				if (m_hostSystem.m_mode == OPE_BOOT)
+				{
+					m_hostSystem.m_mode = m_remoteSystem.m_mode;
+				}
+				else
+				{
+					m_pVI->controlMode(m_hostSystem.m_mode);
+				}
+			}
+*/
 		}
 
 		//Action
@@ -296,28 +319,6 @@ void AutoPilot::markerLock(CamMarkerDetect* pCMD)
 	m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 
 	return;
-
-	//Decode mavlink message from device
-	if (m_pVI->readMessages())
-	{
-		m_pRecvMsg = &m_pVI->m_recvMsg;
-		remoteMavlinkMsg(m_pRecvMsg);
-
-		//reset the flag to accept new messages
-		m_pRecvMsg->m_cmd = 0;
-	}
-
-	if (m_remoteSystem.m_mode != m_hostSystem.m_mode)
-	{
-		if (m_hostSystem.m_mode == OPE_BOOT)
-		{
-			m_hostSystem.m_mode = m_remoteSystem.m_mode;
-		}
-		else
-		{
-			m_pVI->controlMode(m_hostSystem.m_mode);
-		}
-	}
 
 }
 

@@ -19,13 +19,6 @@
 #include "AutoPilot.h"
 #include "Config.h"
 
-
-#define APP_NAME "OpenKAI demo"
-#define CONFIG_WINDOW "Configuration"
-#define MD_WINDOW "Marker_Detect"
-#define SF_WINDOW "Sparce_Flow"
-#define DF_WINDOW "Dense_Flow"
-
 #define Z_FAR_LIM 50
 #define Z_NEAR_LIM 500
 
@@ -42,8 +35,6 @@
 using namespace kai;
 
 
-
-
 int g_key;
 bool g_bRun;
 bool g_bTracking;
@@ -51,11 +42,11 @@ bool g_bTracking;
 CamStream* g_pCamFront;
 ObjectDetector* g_pOD;
 AutoPilot* g_pAP;
+CamMarkerDetect* g_pMD;
 
 VehicleInterface* g_pVehicle;
 cv::Mat g_displayMat;
 fVector3 g_targetPosExt;
-
 
 JSON g_Json;
 FileIO g_file;
@@ -180,7 +171,7 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 		v.m_x = x;
 		v.m_y = y;
 		v.m_z = 10;
-//		g_markerDet.setObjROI(v);
+		g_pAP->m_pCamStream[0].m_pCam->m_pMarkerDetect->setObjROI(v);
 		break;
 	default:
 		break;
@@ -279,7 +270,7 @@ void onTrackbar(int, void*)
 
 void createConfigWindow(void)
 {
-	namedWindow (CONFIG_WINDOW);
+//	namedWindow (CONFIG_WINDOW);
 
 	//Get current value
 	PID_SETTING pid;
@@ -419,11 +410,11 @@ void createConfigWindow(void)
 
 void displayInfo(void)
 {
-	/*
+
 	char strBuf[512];
 	std::string strInfo;
 	PID_SETTING pid;
-	fVector3 pid3;
+	CONTROL_AXIS pid3;
 	fVector3 vPos;
 	fVector3 vAtt;
 	cv::Rect roi;
@@ -433,34 +424,30 @@ void displayInfo(void)
 	int startPosV = 725;
 	int lineHeight = 20;
 	int* pPWM;
-	CONTROL_AXIS* pControl;
+	CONTROL_AXIS pControl;
 	i = 0;
 
-	//	m_gBalloonyness.download(matBalloonyness);
-	//	imshow("balloonyness", matBalloonyness);
-
-	if (!g_markerDet.getObjPosition(&vPos))
+	if (!g_pMD->getObjPosition(&vPos))
 	{
-//		vPos = fVector3{0, 0, 0};
 		vPos.m_x = 0;
 		vPos.m_y = 0;
 		vPos.m_z = 0;
 	}
-	if (!g_markerDet.getObjAttitude(&vAtt))
+	if (!g_pMD->getObjAttitude(&vAtt))
 	{
-//		vAtt = fVector3{ 0, 0,0 };
 		vAtt.m_x = 0;
 		vAtt.m_y = 0;
 		vAtt.m_z = 0;
 	}
 	g_targetPosExt = g_pAP->getTargetPosCV();
 
-	g_displayMat = Scalar(0);
+//	g_displayMat = g_pCamFront->m_pMonitor->m_mat;//g_pAP->Scalar(0);
+	g_pCamFront->m_pMonitor->m_mat.copyTo(g_displayMat);
 
 	//External Camera Output
-	pExtMat = &g_frontRGB.m_uFrame;
-	roi = cv::Rect(cv::Point(0, 0), pExtMat->size());
-	pExtMat->copyTo(g_displayMat(roi));
+//	pExtMat = &g_frontRGB.m_uFrame;
+//	roi = cv::Rect(cv::Point(0, 0), pExtMat->size());
+//	pExtMat->copyTo(g_displayMat(roi));
 
 	//Vehicle position
 	cv::circle(g_displayMat, Point(vPos.m_x, vPos.m_y), vPos.m_z * 0.5,
@@ -489,93 +476,93 @@ void displayInfo(void)
 
 	sprintf(strBuf, "Target Pos: X=%.2f, Y=%.2f, Z=%.2f, dT=%.2f",
 			g_targetPosExt.m_x, g_targetPosExt.m_y, g_targetPosExt.m_z,
-			g_pAP->getDelayTime());
+			g_pAP->m_dT);//getDelayTime());
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	i++;
 
-	pid3 = g_pAP->getRollPID();
-	sprintf(strBuf, "Roll: P=%.2f, I=%.2f, D=%.2f", pid3.m_x, pid3.m_y,
-			pid3.m_z);
+	pid3 = g_pAP->m_roll;//getRollPID();
+	sprintf(strBuf, "Roll: P=%.2f, I=%.2f, D=%.2f", pid3.m_P, pid3.m_I,
+			pid3.m_D);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid3 = g_pAP->getAltPID();
-	sprintf(strBuf, "Alt: P=%.2f, I=%.2f, D=%.2f", pid3.m_x, pid3.m_y,
-			pid3.m_z);
+	pid3 = g_pAP->m_alt;//getAltPID();
+	sprintf(strBuf, "Alt: P=%.2f, I=%.2f, D=%.2f", pid3.m_P, pid3.m_I,
+			pid3.m_D);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid3 = g_pAP->getPitchPID();
-	sprintf(strBuf, "Pitch: P=%.2f, I=%.2f, D=%.2f", pid3.m_x, pid3.m_y,
-			pid3.m_z);
+	pid3 = g_pAP->m_pitch;//getPitchPID();
+	sprintf(strBuf, "Pitch: P=%.2f, I=%.2f, D=%.2f", pid3.m_P, pid3.m_I,
+			pid3.m_D);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid3 = g_pAP->getYawPID();
-	sprintf(strBuf, "Yaw: P=%.2f, I=%.2f, D=%.2f", pid3.m_x, pid3.m_y,
-			pid3.m_z);
+	pid3 = g_pAP->m_yaw;//getYawPID();
+	sprintf(strBuf, "Yaw: P=%.2f, I=%.2f, D=%.2f", pid3.m_P, pid3.m_I,
+			pid3.m_D);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	i++;
 
-	pid = g_pAP->getRollFarPID();
+	pid = g_pAP->m_rollFar;//getRollFarPID();
 	sprintf(strBuf, "Roll_Far: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getRollNearPID();
+	pid = g_pAP->m_rollNear;//getRollNearPID();
 	sprintf(strBuf, "Roll_Near: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getAltFarPID();
+	pid = g_pAP->m_altFar;//getAltFarPID();
 	sprintf(strBuf, "Alt_Far: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P, pid.m_I,
 			pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getAltNearPID();
+	pid = g_pAP->m_altNear;//getAltNearPID();
 	sprintf(strBuf, "Alt_Near: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getPitchFarPID();
+	pid = g_pAP->m_pitchFar;//getPitchFarPID();
 	sprintf(strBuf, "Pitch_Far: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getPitchNearPID();
+	pid = g_pAP->m_pitchNear;//getPitchNearPID();
 	sprintf(strBuf, "Pitch_Near: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getYawFarPID();
+	pid = g_pAP->m_yawFar;//getYawFarPID();
 	sprintf(strBuf, "Yaw_Far: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P, pid.m_I,
 			pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pid = g_pAP->getYawNearPID();
+	pid = g_pAP->m_yawNear;//getYawNearPID();
 	sprintf(strBuf, "Yaw_Near: P=%.2f, I=%.2f, D=%.2f, Z=%.2f", pid.m_P,
 			pid.m_I, pid.m_D, pid.m_Z);
 	cv::putText(g_displayMat, String(strBuf),
@@ -592,38 +579,18 @@ void displayInfo(void)
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pControl = g_pAP->getRollAxis();
-	sprintf(strBuf, "ROLL_I_PWM: %.2f", pControl->m_cvErrInteg * pControl->m_I);
+	pControl = g_pAP->m_roll;//getRollAxis();
+	sprintf(strBuf, "ROLL_I_PWM: %.2f", pControl.m_cvErrInteg * pControl.m_I);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	pControl = g_pAP->getPitchAxis();
+	pControl = g_pAP->m_pitch;//getPitchAxis();
 	sprintf(strBuf, "PITCH_I_PWM: %.2f",
-			pControl->m_cvErrInteg * pControl->m_I);
+			pControl.m_cvErrInteg * pControl.m_I);
 	cv::putText(g_displayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	for (int j = 0; j < g_numObj; j++)
-	{
-		cv::putText(g_displayMat, g_pObj[j].m_name[0],
-				Point(startPosH, startPosV + lineHeight * (++i)),
-				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	}
-	*/
-
-
-	/*
-	 for (size_t j = 0; j < g_predictions.size(); ++j)
-	 {
-	 Prediction p = g_predictions[j];
-	 //		std::cout << std::fixed << std::setprecision(4) << p.second << " - \"" << p.first << "\"" << std::endl;
-	 cv::putText(g_displayMat, String(p.first),
-	 Point(startPosH, startPosV + lineHeight * (++i)),
-	 FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	 }
-	 */
 
 }
 
