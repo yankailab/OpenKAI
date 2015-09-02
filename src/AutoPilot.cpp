@@ -124,6 +124,8 @@ void AutoPilot::update(void)
 		}
 
 
+		m_pVI->readMessages();
+
 		if(m_tSleep>0)
 		{
 			//sleepThread can be woke up by this->wakeupThread()

@@ -243,7 +243,7 @@ bool SerialPort::connect(char *portName)
 
 //    char* nametest = "/dev/ttyACM0";
     //fd = open(serialport, O_RDWR | O_NOCTTY | O_NDELAY);
-    m_fd = open(portName, O_RDWR | O_NOCTTY);// | O_NDELAY);// | O_NONBLOCK);
+    m_fd = open(/*portName*/"/dev/cu.usbmodem1411", O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);// | O_NDELAY);// | O_NONBLOCK);
     if(m_fd == -1)
     {
 	  printf("init_serialport: Unable to open port\n");
@@ -256,7 +256,7 @@ bool SerialPort::connect(char *portName)
 	  return false;
     }
 
-    speed_t brate = B115200; // let you override switch below if needed
+    speed_t brate = B9600;//B115200; // let you override switch below if needed
     cfsetispeed(&toptions, brate);
     cfsetospeed(&toptions, brate);
 
@@ -273,7 +273,10 @@ bool SerialPort::connect(char *portName)
     toptions.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
     toptions.c_iflag &= ~(IXON | IXOFF | IXANY);// | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
     toptions.c_iflag |= IGNPAR;
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
     toptions.c_lflag = 0;
     toptions.c_oflag = 0;
 //    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG | IEXTEN); // make raw
@@ -291,7 +294,7 @@ bool SerialPort::connect(char *portName)
 
 //    fcntl(m_fd, F_SETFL, FNDELAY);
     tcflush(m_fd,TCIOFLUSH);
-
+/*
     struct serial_struct serial;
     ioctl(m_fd, TIOCGSERIAL, &serial);
     serial.flags |= ASYNC_LOW_LATENCY; // (0x2000)
@@ -313,8 +316,13 @@ int SerialPort::ReadData(char *buffer, unsigned int nbChar)
 		return -1;    // couldn't read or nothing to read
 	}
 
+<<<<<<< Updated upstream
 
 //    tcflush(m_fd,TCIFLUSH);
+=======
+	tcflush(m_fd,TCIFLUSH);
+
+>>>>>>> Stashed changes
     return n;
 }
 
@@ -325,7 +333,7 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
 
     if( n!=nbChar )
     {
-    	printf("Not wrote! %d, %d\n",nbChar, n);
+//    	printf("Not written! %d, %d\n",nbChar, n);
     		return false;
     }
 

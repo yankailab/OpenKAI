@@ -4,9 +4,9 @@
 "serialPortWIN":"\\\\.\\COM6",
 
 "ROLL_P":1.0,
-"ROLL_I":0.0,
-"ROLL_IMAX":0.0,
-"ROLL_D":0.0,
+"ROLL_I":0.25,
+"ROLL_IMAX":30.0,
+"ROLL_D":8.0,
 
 "PITCH_P":1.5,
 "PITCH_I":0.1,
