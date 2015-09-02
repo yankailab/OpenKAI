@@ -116,10 +116,13 @@ void AutoPilot::update(void)
 				}
 			}
 */
+//			m_pVI->readMessages();
+
+			//Action
+			markerLock(pCam->m_pCam->m_pMarkerDetect);
+
 		}
 
-		//Action
-		markerLock(pCam->m_pCam->m_pMarkerDetect);
 
 		if(m_tSleep>0)
 		{

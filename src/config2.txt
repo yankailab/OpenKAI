@@ -1,5 +1,5 @@
 {
-"serialPort":"/dev/ttyACM0",
+"serialPort":"/dev/ttyUSB0",
 "serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",
 
