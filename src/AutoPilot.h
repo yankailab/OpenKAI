@@ -30,7 +30,7 @@
 #define CAM_RIGHT 2
 #define CAM_BACK 3
 
-#define TRD_INTERVAL_AUTOPILOT_USEC 0
+#define TRD_INTERVAL_AUTOPILOT_USEC 10000
 
 namespace kai
 {
