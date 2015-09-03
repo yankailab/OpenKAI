@@ -1,7 +1,7 @@
 
 #include "demo.h"
 
-
+//test
 int main(int argc, char* argv[])
 {
 	// Initialize Google's logging library.
