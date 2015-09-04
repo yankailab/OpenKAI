@@ -12,7 +12,7 @@ namespace kai
 
 CamStereo::CamStereo()
 {
-	m_disparity = 64;
+	m_disparity = 128;
 
 }
 
@@ -42,16 +42,7 @@ void CamStereo::detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth)
 
 //	m_pCSBP->compute(*pLeft->m_pNext, *pRight->m_pNext, *pDepth->m_pNext);
 
-	Mat im;
 
-	pLeft->m_pNext->download(im);
-	imshow("Left",im);
-	pRight->m_pNext->download(im);
-	imshow("Right",im);
-
-	im = Mat(im.size(),CV_8U);
-	pDepth->m_pNext->download(im);
-	imshow("Stereo",im);
 }
 
 } /* namespace kai */

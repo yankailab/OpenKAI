@@ -1,7 +1,6 @@
 
 #include "demo.h"
 
-//test
 int main(int argc, char* argv[])
 {
 	// Initialize Google's logging library.
@@ -45,6 +44,7 @@ int main(int argc, char* argv[])
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
+	g_pOD->m_pStream[CAM_FRONT].m_pCamStream = g_pCamFront;
 #endif
 
 	//Init Autopilot
@@ -53,15 +53,19 @@ int main(int argc, char* argv[])
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront,CAM_FRONT);
 	g_pAP->setVehicleInterface(g_pVehicle);
-#ifdef OBJECT_DETECTOR
+#ifdef OBJECT_DETECT
 	g_pAP->m_pOD = g_pOD;
 #endif
+#ifdef MARKER_COPTER
 	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
+#endif
 
 	//Start threads
 //	g_pVehicle->start();
 	g_pCamFront->start();
+#ifdef MARKER_COPTER
 	g_pAP->start();
+#endif
 #ifdef OBJECT_DETECT
 	g_pOD->start();
 #endif
@@ -83,7 +87,6 @@ int main(int argc, char* argv[])
 			{
 				pObj = &pDS->m_pObjects[i];
 				if(pObj->m_name[0].empty())continue;
-//				if(pObj->m_prob[0]<0.5)continue;
 
 				rectangle(g_pCamFront->m_pMonitor->m_mat,
 						pObj->m_boundBox.tl(),
@@ -95,7 +98,30 @@ int main(int argc, char* argv[])
 							FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 0, 0), 2);
 			}
 
-			g_pCamFront->m_pMonitor->show();
+//			g_pCamFront->m_pMonitor->show();
+
+
+			Mat imL,imR,imD;
+
+			g_pCamFront->m_pFrameL->m_pNext->download(imL);
+			if(!imL.empty())
+			{
+				imshow("Left",imL);
+			}
+			g_pCamFront->m_pFrameR->m_pNext->download(imR);
+			if(!imR.empty())
+			{
+				imshow("Right",imR);
+			}
+
+			imD = Mat(imD.size(),CV_8U);
+			g_pCamFront->m_pDepth->m_pNext->download(imD);
+
+			if(!imD.empty())
+			{
+				imshow("Stereo",imD);
+			}
+
 #endif
 
 #ifdef MARKER_COPTER
