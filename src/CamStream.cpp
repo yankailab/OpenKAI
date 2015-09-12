@@ -97,9 +97,10 @@ bool CamStream::openWindow(void)
 	m_pMonitor->setWindowName(m_camName);
 	m_bShowWindow = true;
 
-	return true;
 
+	return true;
 }
+
 
 void CamStream::closeWindow(void)
 {

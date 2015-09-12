@@ -1,4 +1,3 @@
-
 #include "demo.h"
 
 int main(int argc, char* argv[])
@@ -20,7 +19,7 @@ int main(int argc, char* argv[])
 	g_pVehicle = new VehicleInterface();
 	CHECK_ERROR(g_Json.getVal("serialPort", &g_serialPort));
 	g_pVehicle->setSerialName(g_serialPort);
-	if(g_pVehicle->open())
+	if (g_pVehicle->open())
 	{
 		printf("Serial port opened¥n");
 	}
@@ -51,7 +50,7 @@ int main(int argc, char* argv[])
 	g_pAP = new AutoPilot();
 	CHECK_FATAL(g_config.setAutoPilot(g_pAP));
 	g_pAP->init();
-	g_pAP->setCamStream(g_pCamFront,CAM_FRONT);
+	g_pAP->setCamStream(g_pCamFront, CAM_FRONT);
 	g_pAP->setVehicleInterface(g_pVehicle);
 #ifdef OBJECT_DETECT
 	g_pAP->m_pOD = g_pOD;
@@ -78,55 +77,58 @@ int main(int argc, char* argv[])
 	while (g_bRun)
 	{
 
-		if(!g_pCamFront->m_pMonitor->m_mat.empty())
+		if (!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
 #ifdef OBJECT_DETECT
-			DETECTOR_STREAM* pDS = &g_pOD->m_pStream[CAM_FRONT];
-			NN_OBJECT* pObj;
-			for (int i = 0; i < pDS->m_numObj; i++)
-			{
-				pObj = &pDS->m_pObjects[i];
-				if(pObj->m_name[0].empty())continue;
-
-				rectangle(g_pCamFront->m_pMonitor->m_mat,
-						pObj->m_boundBox.tl(),
-						pObj->m_boundBox.br(), Scalar(0,255,0), 2, 5,0);
-
-				cv::putText(g_pCamFront->m_pMonitor->m_mat,
-							pObj->m_name[0],
-							pObj->m_boundBox.tl(),
-							FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 0, 0), 2);
-			}
-
-//			g_pCamFront->m_pMonitor->show();
-
-
-			Mat imL,imR,imD;
+			Mat imL, imR, imD;
 
 			g_pCamFront->m_pFrameL->m_pNext->download(imL);
-			if(!imL.empty())
+			if (!imL.empty())
 			{
-				imshow("Left",imL);
-			}
-			g_pCamFront->m_pFrameR->m_pNext->download(imR);
-			if(!imR.empty())
-			{
-				imshow("Right",imR);
+
+				DETECTOR_STREAM* pDS = &g_pOD->m_pStream[CAM_FRONT];
+				NN_OBJECT* pObj;
+				for (int i = 0; i < pDS->m_numObj; i++)
+				{
+					pObj = &pDS->m_pObjects[i];
+					if (pObj->m_name[0].empty())
+						continue;
+
+					rectangle(imL, pObj->m_boundBox.tl(),
+							pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
+
+					cv::putText(imL, pObj->m_name[0],
+							pObj->m_boundBox.tl(), FONT_HERSHEY_SIMPLEX, 0.6,
+							Scalar(255, 0, 0), 2);
+				}
+
+				//			g_pCamFront->m_pMonitor->show();
+
+				imshow("Left", imL);
 			}
 
-			imD = Mat(imD.size(),CV_8U);
-			g_pCamFront->m_pDepth->m_pNext->download(imD);
-
-			if(!imD.empty())
+			if (g_pCamFront->m_bStereoCam)
 			{
-				imshow("Stereo",imD);
+				g_pCamFront->m_pFrameR->m_pNext->download(imR);
+				if (!imR.empty())
+				{
+					imshow("Right", imR);
+				}
+				imD = Mat(imD.size(), CV_8U);
+				g_pCamFront->m_pDepth->m_pNext->download(imD);
+				if (!imD.empty())
+				{
+					imshow("Stereo", imD);
+				}
 			}
+
+
 
 #endif
 
 #ifdef MARKER_COPTER
 			displayInfo();
-			imshow(g_pCamFront->m_camName,g_displayMat);
+			imshow(g_pCamFront->m_camName, g_displayMat);
 #endif
 		}
 
@@ -162,5 +164,4 @@ int main(int argc, char* argv[])
 	return 0;
 
 }
-
 
