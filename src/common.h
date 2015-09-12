@@ -8,8 +8,8 @@
 
 //Demo App
 
-#define MARKER_COPTER
-//#define OBJECT_DETECT
+//#define MARKER_COPTER
+#define OBJECT_DETECT
 
 
 //Common include
