@@ -1,5 +1,5 @@
 {
-"serialPort":"/dev/cu.usbmodem1411",
+"serialPort":"/dev/cu.usbmodem14131",
 "serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",
 
