@@ -3,10 +3,10 @@
 "serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",
 
-"ROLL_P":1.0,
-"ROLL_I":0.25,
-"ROLL_IMAX":30.0,
-"ROLL_D":0.0,
+"ROLL_P":3.0,
+"ROLL_I":0.1,
+"ROLL_IMAX":10.0,
+"ROLL_D":8.0,
 
 "PITCH_P":1.5,
 "PITCH_I":0.1,
@@ -16,14 +16,14 @@
 "ALT_P":1.0,
 "ALT_I":0.0,
 "ALT_IMAX":0.0,
-"ALT_D":0.25,
+"ALT_D":0.0,
 
 "YAW_P":200.0,
 "YAW_I":0.0,
 "YAW_IMAX":0.0,
 "YAW_D":0.0,
 
-"DELAY_TIME":0.0,
+"DELAY_TIME":8.0,
 
 "TARGET_X":640,
 "TARGET_Y":400,
@@ -32,8 +32,8 @@
 "CAM_FRONT_NAME":"CAM_FRONT",
 "CAM_FRONT_WIDTH":1280,
 "CAM_FRONT_HEIGHT":800,
-"CAM_FRONT_ID_L":0,
-"CAM_FRONT_ID_R":0,
+"CAM_FRONT_ID_L":1,
+"CAM_FRONT_ID_R":1,
 "CAM_FRONT_MARKER":1,
 
 "CAM_UP_ID":2,
