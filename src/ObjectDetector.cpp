@@ -6,6 +6,8 @@
  */
 
 #include "ObjectDetector.h"
+
+
 namespace kai
 {
 ObjectDetector::ObjectDetector()
@@ -66,6 +68,27 @@ bool ObjectDetector::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("OD_GAUSS_SIGMA", &sigma));
 	m_pGaussian = cuda::createGaussianFilter(CV_8U, CV_8U, ksize, sigma);
 */
+
+	//OpenCV Saliency
+	string saliencyAlgorithm;
+	string saliencyTrainPath;
+
+	CHECK_ERROR(pJson->getVal("SALIENCY_ALGORITHM", &saliencyAlgorithm));
+	CHECK_ERROR(pJson->getVal("SALIENCY_TRAIN_PATH", &saliencyTrainPath));
+
+//	m_pSaliency = cv::saliency::Saliency::create(saliencyAlgorithm);
+	m_pSaliency = ObjectnessBING::create(saliencyAlgorithm);
+
+	if(m_pSaliency == NULL)
+	{
+		LOG(INFO)<<"Saliency Algorithm not found";
+	}
+	else
+	{
+		m_pSaliency.dynamicCast<ObjectnessBING>()->setTrainingPath( saliencyTrainPath );
+		m_pSaliency.dynamicCast<ObjectnessBING>()->setBBResDir( saliencyTrainPath + "/Results" );
+	}
+
 	return true;
 }
 
@@ -133,12 +156,23 @@ void ObjectDetector::detect(int iStream)
 
 	if (pGray->empty())return;
 
+
+
+    if(m_pSaliency)
+    	{
+    		if(m_pSaliency->computeSaliency(*pMat, m_pSaliencyMap ))
+    		{
+
+
+    		}
+    }
+
+
+
+
 //	cuda::bilateralFilter(*pGray, m_pGMat, 5, 50, 7);
 //	m_pCanny->detect(*pGray, m_pGMat);
 //	m_pGMat.download(m_frame);
-
-
-
 
 	//Test
 /*	pCS->m_pDenseFlow->detect(pCS->m_pGrayL);

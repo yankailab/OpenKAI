@@ -16,6 +16,8 @@
 
 using namespace cv;
 using namespace cv::cuda;
+using namespace cv::saliency;
+using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
 #define NUM_OBJECT_NAME 5
@@ -69,9 +71,15 @@ public:
 	vector<vector<Prediction> > m_vPredictions;
 
 	Mat		m_frame;
-	GpuMat m_pGMat;
+	GpuMat  m_pGMat;
+
 	Ptr<cuda::CannyEdgeDetector> m_pCanny;
 //	Ptr<cuda::> m_pGaussian;
+
+	//OpenCV Saliency
+	Ptr<Saliency> m_pSaliency;
+	vector<Vec4i> m_pSaliencyMap;
+
 
 private:
 	pthread_t m_threadID;
