@@ -83,6 +83,9 @@
 "CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
 "CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
+"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
+"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
+
 
 
 "OD_CANNY_LOW":10,

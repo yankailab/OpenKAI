@@ -76,8 +76,8 @@ bool ObjectDetector::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("SALIENCY_ALGORITHM", &saliencyAlgorithm));
 	CHECK_ERROR(pJson->getVal("SALIENCY_TRAIN_PATH", &saliencyTrainPath));
 
-//	m_pSaliency = cv::saliency::Saliency::create(saliencyAlgorithm);
-	m_pSaliency = ObjectnessBING::create(saliencyAlgorithm);
+	m_pSaliency = Saliency::create(saliencyAlgorithm);
+//	m_pSaliency = ObjectnessBING::create(saliencyAlgorithm);
 
 	if(m_pSaliency == NULL)
 	{
@@ -85,8 +85,8 @@ bool ObjectDetector::init(JSON* pJson)
 	}
 	else
 	{
-		m_pSaliency.dynamicCast<ObjectnessBING>()->setTrainingPath( saliencyTrainPath );
-		m_pSaliency.dynamicCast<ObjectnessBING>()->setBBResDir( saliencyTrainPath + "/Results" );
+//		m_pSaliency.dynamicCast<ObjectnessBING>()->setTrainingPath( saliencyTrainPath );
+//		m_pSaliency.dynamicCast<ObjectnessBING>()->setBBResDir( saliencyTrainPath + "/Results" );
 	}
 
 	return true;
@@ -143,6 +143,8 @@ void ObjectDetector::update(void)
 
 void ObjectDetector::detect(int iStream)
 {
+	int i,j;
+
 	DETECTOR_STREAM* pDS = &m_pStream[iStream];
 	CamStream* pCS = pDS->m_pCamStream;
 	CamFrame* pFrame = *(pCS->m_pFrameProcess);
@@ -156,17 +158,45 @@ void ObjectDetector::detect(int iStream)
 
 	if (pGray->empty())return;
 
+	if( m_pSaliency->computeSaliency( *pMat, m_saliencyMap ) )
+	{
+	      StaticSaliencySpectralResidual spec;
+	      spec.computeBinaryMap( m_saliencyMap, m_binMap );
+	}
+
+	return;
 
 
+/*
     if(m_pSaliency)
-    	{
+    	{,
     		if(m_pSaliency->computeSaliency(*pMat, m_pSaliencyMap ))
     		{
+    			Rect boundRect;
+    			Vec4i iRect;
 
+    			j = m_pSaliencyMap.size();
+    			if(j>NUM_OBJ)j=NUM_OBJ;
+
+    			pDS->m_numObj = 0;
+    			for (i = 0; i < j; i++)
+    			{
+    				iRect = m_pSaliencyMap[i];
+    				boundRect.x = iRect[0];
+    				boundRect.y = iRect[1];
+    				boundRect.width = iRect[2];
+    				boundRect.height = iRect[3];
+
+    				pDS->m_pObjects[pDS->m_numObj].m_boundBox = boundRect;
+    				pDS->m_pObjects[pDS->m_numObj].m_name[0] = "test";
+    				pDS->m_numObj++;
+    			}
 
     		}
     }
 
+    return;
+*/
 
 
 
@@ -191,7 +221,6 @@ void ObjectDetector::detect(int iStream)
 */
 
 
-	int i,j;
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	Mat matThr;

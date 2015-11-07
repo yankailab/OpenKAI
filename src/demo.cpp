@@ -105,7 +105,18 @@ int main(int argc, char* argv[])
 				//			g_pCamFront->m_pMonitor->show();
 
 				imshow("Left", imL);
+				if(g_pOD->m_saliencyMap.rows != 0)
+				{
+					imshow( "Saliency Map", g_pOD->m_saliencyMap );
+				}
+
+				if(g_pOD->m_binMap.rows != 0)
+				{
+					imshow( "Binary Map", g_pOD->m_binMap );
+				}
 			}
+
+
 
 			if (g_pCamFront->m_bStereoCam)
 			{

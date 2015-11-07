@@ -71,6 +71,8 @@ public:
 	vector<vector<Prediction> > m_vPredictions;
 
 	Mat		m_frame;
+	Mat		m_binMap;
+	Mat		m_saliencyMap;
 	GpuMat  m_pGMat;
 
 	Ptr<cuda::CannyEdgeDetector> m_pCanny;
