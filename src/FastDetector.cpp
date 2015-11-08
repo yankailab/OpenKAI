@@ -56,10 +56,8 @@ bool FastDetector::init(JSON* pJson)
 	Size block_stride(block_stride_width, block_stride_height);
 	Size cell_size(cell_width, cell_width);
 
-	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride,
-			cell_size, nbins);
-	Mat detector = m_pHumanHOG->getDefaultPeopleDetector();
-	m_pHumanHOG->setSVMDetector(detector);
+	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride, cell_size, nbins);
+	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
 	return true;
 }
@@ -121,12 +119,12 @@ void FastDetector::detect(void)
 	if (pGray->empty())
 		return;
 
-	if (!m_pCascade)
+	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->m_pNext;
+	if (pBGRA->empty())
 		return;
 
-	GpuMat cascadeGMat;
-	vector<Rect> vRect;
-
+	if (m_pCascade)
+	{
 	/*
 	 //	m_pCascade->setFindLargestObject(false);
 	 m_pCascade->setScaleFactor(1.2);
@@ -146,6 +144,12 @@ void FastDetector::detect(void)
 	 }
 	 }
 	 */
+	}
+
+
+	GpuMat cascadeGMat;
+	vector<Rect> vRect;
+
 
 	Size win_stride(win_stride_width, win_stride_height);
 
@@ -155,7 +159,7 @@ void FastDetector::detect(void)
 	m_pHumanHOG->setScaleFactor(scale);
 	m_pHumanHOG->setGroupThreshold(gr_threshold);
 
-	m_pHumanHOG->detectMultiScale(*pGray, vRect);
+	m_pHumanHOG->detectMultiScale(*pBGRA, vRect);
 
 	m_numHuman = 0;
 	for (i = 0; i < vRect.size(); i++)

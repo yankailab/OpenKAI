@@ -21,6 +21,7 @@ CamStream::CamStream()
 	m_pGrayL = new CamFrame();
 	m_pGrayR = new CamFrame();
 	m_pDepth = new CamFrame();
+	m_pBGRAL = new CamFrame();
 	m_pMonitor = new CamMonitor();
 	m_pFrameProcess = &m_pFrameL;
 
@@ -52,6 +53,7 @@ CamStream::~CamStream()
 	RELEASE(m_pGrayL);
 	RELEASE(m_pGrayR);
 	RELEASE(m_pDepth);
+	RELEASE(m_pBGRAL);
 	RELEASE(m_pMonitor);
 
 	RELEASE(m_pMarkerDetect);
@@ -70,6 +72,7 @@ bool CamStream::init(void)
 	m_pGrayL->init();
 	m_pGrayR->init();
 	m_pDepth->init();
+	m_pBGRAL->init();
 	m_pFrameProcess = &m_pFrameL;
 
 	m_pMarkerDetect->init();
@@ -174,6 +177,9 @@ void CamStream::update(void)
 			m_pHSV->switchFrame();
 			(*m_pFrameProcess)->getHSV(m_pHSV);
 		}
+
+		m_pBGRAL->switchFrame();
+		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
 
 
 		if(m_bMarkerDetect)

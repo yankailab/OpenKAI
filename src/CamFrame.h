@@ -28,6 +28,7 @@ public:
 	void resize(int width, int height, CamFrame* pResult);
 	void getGray(CamFrame* pResult);
 	void getHSV(CamFrame* pResult);
+	void getBGRA(CamFrame* pResult);
 
 public:
 	//Frame Index, updated in each frame update

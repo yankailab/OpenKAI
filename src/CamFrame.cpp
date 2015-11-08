@@ -73,6 +73,18 @@ void CamFrame::getHSV(CamFrame* pResult)
 #endif
 }
 
+void CamFrame::getBGRA(CamFrame* pResult)
+{
+	if(!pResult)return;
+
+#ifdef USE_CUDA
+	cuda::cvtColor(*m_pNext, *(pResult->m_pNext), CV_BGR2BGRA);
+#else
+
+
+#endif
+}
+
 void CamFrame::switchFrame(void)
 {
 	//switch the current frame and old frame

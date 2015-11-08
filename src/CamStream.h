@@ -50,6 +50,7 @@ public:
 	CamFrame*			m_pGrayL;
 	CamFrame*			m_pGrayR;
 	CamFrame*			m_pDepth;
+	CamFrame*			m_pBGRAL;
 
 	CamMarkerDetect* 	m_pMarkerDetect;
 	CamDenseFlow*		m_pDenseFlow;
