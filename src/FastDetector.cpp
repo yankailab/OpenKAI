@@ -1,0 +1,181 @@
+/*
+ * ObjectLocalizer.cpp
+ *
+ *  Created on: Aug 17, 2015
+ *      Author: yankai
+ */
+
+#include "FastDetector.h"
+
+namespace kai
+{
+FastDetector::FastDetector()
+{
+	m_bThreadON = false;
+	m_threadID = 0;
+
+	m_frameID = 0;
+	m_numHuman = 0;
+	m_numCar = 0;
+	m_pCamStream = NULL;
+//	m_pCascade = NULL;
+}
+
+FastDetector::~FastDetector()
+{
+}
+
+bool FastDetector::init(JSON* pJson)
+{
+	string cascadeFile;
+	CHECK_FATAL(pJson->getVal("CASCADE_FILE", &cascadeFile));
+
+//	m_hogHuman.setSVMDetector(HOGDescriptor::getDefaultPeopleDetector());
+
+	m_pCascade = cuda::CascadeClassifier::create(cascadeFile);
+
+	return true;
+}
+
+bool FastDetector::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR)<< "Return code: "<< retCode << " in FastDetector::start().pthread_create()";
+		m_bThreadON = false;
+		return false;
+	}
+
+	LOG(INFO)<< "FastDetector.start()";
+
+	return true;
+}
+
+void FastDetector::update(void)
+{
+	int i;
+	CamFrame* pFrame;
+	int tThreadBegin;
+	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
+
+	while (m_bThreadON)
+	{
+		tThreadBegin = time(NULL);
+
+		if (!m_pCamStream)
+			continue;
+		pFrame = *(m_pCamStream->m_pFrameProcess);
+
+		//The current frame is not the latest frame
+		if (m_frameID != pFrame->m_frameID)
+		{
+			detect();
+			m_frameID = pFrame->m_frameID;
+		}
+
+		//sleepThread can be woke up by this->wakeupThread()
+		this->sleepThread(0, m_tSleep);
+	}
+
+}
+
+void FastDetector::detect(void)
+{
+	int i, j;
+
+	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
+	Mat* pMat = &pFrame->m_uFrame;
+	if (pMat->empty())
+		return;
+
+	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
+	if (pGray->empty())
+		return;
+
+	if(!m_pCascade)return;
+
+	GpuMat cascadeGMat;
+	vector<Rect> vRect;
+
+//	m_pCascade->setFindLargestObject(false);
+	m_pCascade->setScaleFactor(1.2);
+//	m_pCascade->setMinNeighbors((filterRects || findLargestObject) ? 4 : 0);
+
+	m_pCascade->detectMultiScale(*pGray, cascadeGMat);
+	m_pCascade->convert(cascadeGMat, vRect);
+
+	m_numHuman = 0;
+	for (i = 0; i < vRect.size(); i++)
+	{
+		m_pHuman[m_numHuman].m_boundBox = vRect[i];
+		m_numHuman++;
+		if (m_numHuman == NUM_FASTOBJ)
+		{
+			break;
+		}
+	}
+
+	/*
+	 vector<Rect> found;
+	 m_hogHuman.detectMultiScale(*pMat, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
+
+	 for (i=0; i<found.size(); i++)
+	 {
+	 Rect r = found[i];
+	 for (j=0; j<found.size(); j++)
+	 {
+	 if (j!=i && (r & found[j]) == r)
+	 break;
+	 }
+
+	 if (j==found.size())
+	 {
+	 m_pHuman[m_numHuman].m_boundBox = r;
+	 m_numHuman++;
+	 if(m_numHuman==NUM_FASTOBJ)
+	 {
+	 break;
+	 }
+	 }
+	 }
+	 */
+}
+
+void FastDetector::setFrame(CamStream* pCam)
+{
+	if (!pCam)
+		return;
+
+	m_pCamStream = pCam;
+	this->wakeupThread();
+}
+
+int FastDetector::getHuman(FAST_OBJECT** ppHuman)
+{
+	*ppHuman = m_pHuman;
+	return m_numHuman;
+}
+
+void FastDetector::stop(void)
+{
+	m_bThreadON = false;
+	this->wakeupThread();
+	pthread_join(m_threadID, NULL);
+
+	LOG(INFO)<< "FastDetector.stop()";
+}
+
+void FastDetector::waitForComplete(void)
+{
+	pthread_join(m_threadID, NULL);
+}
+
+bool FastDetector::complete(void)
+{
+	return true;
+}
+
+}
+

@@ -24,6 +24,7 @@ AutoPilot::AutoPilot()
 
 	m_numCamStream = 0;
 	m_pOD = NULL;
+	m_pFD = NULL;
 	m_pVI = NULL;
 	m_bThreadON = false;
 	m_threadID = 0;
@@ -89,8 +90,14 @@ void AutoPilot::update(void)
 #ifdef OBJECT_DETECT
 			if(m_pOD)
 			{
-				m_pOD->setFrame(CAM_FRONT,pCam->m_pCam);
+				m_pOD->setFrame(pCam->m_pCam);
 				m_pOD->wakeupThread();
+			}
+
+			if(m_pFD)
+			{
+				m_pFD->setFrame(pCam->m_pCam);
+				m_pFD->wakeupThread();
 			}
 #endif
 /*

@@ -13,6 +13,7 @@
 #include <cstdarg>
 
 #include "ObjectDetector.h"
+#include "FastDetector.h"
 #include "CamInput.h"
 #include "CamMarkerDetect.h"
 #include "CamMonitor.h"
@@ -41,6 +42,7 @@ bool g_bTracking;
 
 CamStream* g_pCamFront;
 ObjectDetector* g_pOD;
+FastDetector* g_pFD;
 AutoPilot* g_pAP;
 CamMarkerDetect* g_pMD;
 
@@ -180,232 +182,10 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 
 void onTrackbar(int, void*)
 {
-	//Get current value
-	PID_SETTING pid;
-/*
-	g_pAP->setDelayTime(
-			-DT_LIM * (PID_UI_LIM_HALF - (double) g_dT) / PID_UI_LIM_HALF);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_rollFar.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_rollFar.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_rollFar.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_rollFar.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setRollFarPID(pid);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_rollNear.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_rollNear.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_rollNear.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_rollNear.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setRollNearPID(pid);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_altFar.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_altFar.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_altFar.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_altFar.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setAltFarPID(pid);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_altNear.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_altNear.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_altNear.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_altNear.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setAltNearPID(pid);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_pitchFar.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_pitchFar.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_pitchFar.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_pitchFar.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setPitchFarPID(pid);
-
-	pid.m_P = -PID_P_LIM * (PID_UI_LIM_HALF - (double) g_pitchNear.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_pitchNear.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_pitchNear.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_pitchNear.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setPitchNearPID(pid);
-
-	pid.m_P = -PID_YAW_P_LIM * (PID_UI_LIM_HALF - (double) g_yawFar.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_yawFar.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_yawFar.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_yawFar.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setYawFarPID(pid);
-
-	pid.m_P = -PID_YAW_P_LIM * (PID_UI_LIM_HALF - (double) g_yawNear.m_P)
-			/ PID_UI_LIM_HALF;
-	pid.m_I = -PID_I_LIM * (PID_UI_LIM_HALF - (double) g_yawNear.m_I)
-			/ PID_UI_LIM_HALF;
-	pid.m_D = -PID_D_LIM * (PID_UI_LIM_HALF - (double) g_yawNear.m_D)
-			/ PID_UI_LIM_HALF;
-	pid.m_Z = -PID_Z_LIM * (PID_UI_LIM_HALF - (double) g_yawNear.m_Z)
-			/ PID_UI_LIM_HALF;
-	g_pAP->setYawNearPID(pid);
-*/
 }
 
 void createConfigWindow(void)
 {
-//	namedWindow (CONFIG_WINDOW);
-
-	//Get current value
-	PID_SETTING pid;
-/*
-	g_dT = (g_pAP->getDelayTime() / DT_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getRollFarPID();
-	g_rollFar.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollFar.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollFar.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollFar.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getRollNearPID();
-	g_rollNear.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollNear.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollNear.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_rollNear.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getAltFarPID();
-	g_altFar.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altFar.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altFar.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altFar.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getAltNearPID();
-	g_altNear.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altNear.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altNear.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_altNear.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getPitchFarPID();
-	g_pitchFar.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchFar.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchFar.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchFar.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getPitchNearPID();
-	g_pitchNear.m_P = (pid.m_P / PID_P_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchNear.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchNear.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_pitchNear.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getYawFarPID();
-	g_yawFar.m_P = (pid.m_P / PID_YAW_P_LIM) * PID_UI_LIM_HALF
-			+ PID_UI_LIM_HALF;
-	g_yawFar.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_yawFar.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_yawFar.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	pid = g_pAP->getYawNearPID();
-	g_yawNear.m_P = (pid.m_P / PID_YAW_P_LIM) * PID_UI_LIM_HALF
-			+ PID_UI_LIM_HALF;
-	g_yawNear.m_I = (pid.m_I / PID_I_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_yawNear.m_D = (pid.m_D / PID_D_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-	g_yawNear.m_Z = (pid.m_Z / PID_Z_LIM) * PID_UI_LIM_HALF + PID_UI_LIM_HALF;
-
-	//Trackbar for configuration
-	createTrackbar("dT", CONFIG_WINDOW, &g_dT, PID_UI_LIM, onTrackbar);
-
-	//Roll
-	createTrackbar("rollFar_P", CONFIG_WINDOW, &g_rollFar.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollFar_I", CONFIG_WINDOW, &g_rollFar.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollFar_D", CONFIG_WINDOW, &g_rollFar.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollFar_Z", CONFIG_WINDOW, &g_rollFar.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	createTrackbar("rollNear_P", CONFIG_WINDOW, &g_rollNear.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollNear_I", CONFIG_WINDOW, &g_rollNear.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollNear_D", CONFIG_WINDOW, &g_rollNear.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("rollNear_Z", CONFIG_WINDOW, &g_rollNear.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	//Alt
-	createTrackbar("altFar_P", CONFIG_WINDOW, &g_altFar.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altFar_I", CONFIG_WINDOW, &g_altFar.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altFar_D", CONFIG_WINDOW, &g_altFar.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altFar_Z", CONFIG_WINDOW, &g_altFar.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	createTrackbar("altNear_P", CONFIG_WINDOW, &g_altNear.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altNear_I", CONFIG_WINDOW, &g_altNear.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altNear_D", CONFIG_WINDOW, &g_altNear.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("altNear_Z", CONFIG_WINDOW, &g_altNear.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	//Pitch
-	createTrackbar("pitchFar_P", CONFIG_WINDOW, &g_pitchFar.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchFar_I", CONFIG_WINDOW, &g_pitchFar.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchFar_D", CONFIG_WINDOW, &g_pitchFar.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchFar_Z", CONFIG_WINDOW, &g_pitchFar.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	createTrackbar("pitchNear_P", CONFIG_WINDOW, &g_pitchNear.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchNear_I", CONFIG_WINDOW, &g_pitchNear.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchNear_D", CONFIG_WINDOW, &g_pitchNear.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("pitchNear_Z", CONFIG_WINDOW, &g_pitchNear.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	//Yaw
-	createTrackbar("yawFar_P", CONFIG_WINDOW, &g_yawFar.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawFar_I", CONFIG_WINDOW, &g_yawFar.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawFar_D", CONFIG_WINDOW, &g_yawFar.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawFar_Z", CONFIG_WINDOW, &g_yawFar.m_Z, PID_UI_LIM,
-			onTrackbar);
-
-	createTrackbar("yawNear_P", CONFIG_WINDOW, &g_yawNear.m_P, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawNear_I", CONFIG_WINDOW, &g_yawNear.m_I, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawNear_D", CONFIG_WINDOW, &g_yawNear.m_D, PID_UI_LIM,
-			onTrackbar);
-	createTrackbar("yawNear_Z", CONFIG_WINDOW, &g_yawNear.m_Z, PID_UI_LIM,
-			onTrackbar);
-			*/
 }
 
 void displayInfo(void)

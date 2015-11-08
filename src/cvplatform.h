@@ -7,6 +7,7 @@
 #include "opencv2/saliency.hpp"
 
 #ifdef USE_CUDA
+#include "opencv2/cudaobjdetect.hpp"
 #include "opencv2/cudaarithm.hpp"
 #include "opencv2/cudaimgproc.hpp"
 #include "opencv2/cudaoptflow.hpp"

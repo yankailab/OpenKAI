@@ -22,28 +22,17 @@ using namespace std;
 #define TRD_INTERVAL_OBJDETECTOR 0
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
-#define NUM_DETECTOR_STREAM 5
-
 #define NUM_DETECT_BATCH 10
 
 namespace kai
 {
 
-struct NN_OBJECT
+struct OBJECT
 {
 	string 		m_name[NUM_OBJECT_NAME];
 	double		m_prob[NUM_OBJECT_NAME];
 	Mat         m_pImg;
 	Rect			m_boundBox;
-};
-
-struct DETECTOR_STREAM
-{
-	CamStream*	m_pCamStream;
-
-	int m_frameID;
-	int m_numObj;
-	NN_OBJECT m_pObjects[NUM_OBJ];
 };
 
 class ObjectDetector: public ThreadBase
@@ -58,30 +47,33 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	void setFrame(int iStream, CamStream* pCam);
-	int  getObject(int iStream, NN_OBJECT** ppObjects);
+	void setFrame(CamStream* pCam);
+	int  getObject(OBJECT** ppObjects);
 
 private:
-	void detect(int iStream);
+	void detect(void);
 
 public:
-	DETECTOR_STREAM m_pStream[NUM_DETECTOR_STREAM];
-	NNClassifier m_classifier;
-	vector<Prediction> m_predictions;
-	vector<vector<Prediction> > m_vPredictions;
+	int 			m_frameID;
+	CamStream*	m_pCamStream;
+	OBJECT 		m_pObjects[NUM_OBJ];
+	int 			m_numObj;
 
 	Mat		m_frame;
 	Mat		m_binMap;
 	Mat		m_saliencyMap;
 	GpuMat  m_pGMat;
 
+	//OpenCV algorithms
 	Ptr<cuda::CannyEdgeDetector> m_pCanny;
 //	Ptr<cuda::> m_pGaussian;
-
-	//OpenCV Saliency
 	Ptr<Saliency> m_pSaliency;
 	vector<Vec4i> m_pSaliencyMap;
 
+	//Caffe classifier
+	NNClassifier m_classifier;
+	vector<Prediction> m_predictions;
+	vector<vector<Prediction> > m_vPredictions;
 
 private:
 	pthread_t m_threadID;

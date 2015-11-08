@@ -121,7 +121,8 @@ std::vector<vector<Prediction> > NNClassifier::ClassifyBatch(
 	{
 //		vector<float> output(output_batch.begin() + j * num_classes,
 //				output_batch.begin() + (j + 1) * num_classes);
-		vector<float> output(output_batch.begin() + j * output_layer->channels(),
+		vector<float> output(
+				output_batch.begin() + j * output_layer->channels(),
 				output_batch.begin() + (j + 1) * output_layer->channels());
 
 		vector<int> maxN = Argmax(output, num_classes);
@@ -131,8 +132,7 @@ std::vector<vector<Prediction> > NNClassifier::ClassifyBatch(
 		for (int i = 0; i < num_classes; ++i)
 		{
 			int idx = maxN[i];
-			prediction_single.push_back(
-					make_pair(labels_[idx], output[idx]));
+			prediction_single.push_back(make_pair(labels_[idx], output[idx]));
 		}
 
 		predictions.push_back(vector<Prediction>(prediction_single));

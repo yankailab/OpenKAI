@@ -3,6 +3,7 @@
 #include "common.h"
 #include "CamStream.h"
 #include "ObjectDetector.h"
+#include "FastDetector.h"
 #include "util.h"
 #include "VehicleInterface.h"
 
@@ -104,6 +105,7 @@ public:
 	CAMERA_STREAM	m_pCamStream[NUM_CAM_STREAM];
 
 	ObjectDetector*	m_pOD;
+	FastDetector*	m_pFD;
 
 	VehicleInterface* m_pVI;
 

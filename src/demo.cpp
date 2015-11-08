@@ -43,7 +43,13 @@ int main(int argc, char* argv[])
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
-	g_pOD->m_pStream[CAM_FRONT].m_pCamStream = g_pCamFront;
+	g_pOD->m_pCamStream = g_pCamFront;
+
+	//Init Fast Detector
+	g_pFD = new FastDetector();
+	g_pFD->init(&g_Json);
+	g_pFD->m_pCamStream = g_pCamFront;
+
 #endif
 
 	//Init Autopilot
@@ -54,6 +60,7 @@ int main(int argc, char* argv[])
 	g_pAP->setVehicleInterface(g_pVehicle);
 #ifdef OBJECT_DETECT
 	g_pAP->m_pOD = g_pOD;
+	g_pAP->m_pFD = g_pFD;
 #endif
 #ifdef MARKER_COPTER
 	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
@@ -66,10 +73,12 @@ int main(int argc, char* argv[])
 	g_pAP->start();
 #endif
 #ifdef OBJECT_DETECT
-	g_pOD->start();
+//	g_pOD->start();
+	g_pFD->start();
 #endif
 
 	//UI thread
+	int i;
 	g_bRun = true;
 	g_bTracking = false;
 	setMouseCallback(g_pCamFront->m_camName, onMouse, NULL);
@@ -85,22 +94,30 @@ int main(int argc, char* argv[])
 			g_pCamFront->m_pFrameL->m_pNext->download(imL);
 			if (!imL.empty())
 			{
-
-				DETECTOR_STREAM* pDS = &g_pOD->m_pStream[CAM_FRONT];
-				NN_OBJECT* pObj;
-				for (int i = 0; i < pDS->m_numObj; i++)
+				OBJECT* pObj;
+				for (i = 0; i < g_pOD->m_numObj; i++)
 				{
-					pObj = &pDS->m_pObjects[i];
+					pObj = &g_pOD->m_pObjects[i];
 					if (pObj->m_name[0].empty())
 						continue;
 
 					rectangle(imL, pObj->m_boundBox.tl(),
 							pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
 
-					cv::putText(imL, pObj->m_name[0],
+					putText(imL, pObj->m_name[0],
 							pObj->m_boundBox.tl(), FONT_HERSHEY_SIMPLEX, 0.6,
 							Scalar(255, 0, 0), 2);
 				}
+
+				FAST_OBJECT* pFastObj;
+				for (i = 0; i < g_pFD->m_numHuman; i++)
+				{
+					pFastObj = &g_pFD->m_pHuman[i];
+
+					rectangle(imL, pFastObj->m_boundBox.tl(),
+							pFastObj->m_boundBox.br(), Scalar(0, 0, 255), 2, 5, 0);
+				}
+
 
 				//			g_pCamFront->m_pMonitor->show();
 
