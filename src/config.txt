@@ -86,6 +86,7 @@
 "SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
 "SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
 
+"HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
 "CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
 
 

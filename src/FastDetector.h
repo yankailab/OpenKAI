@@ -45,8 +45,38 @@ public:
 	CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
+	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
 	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
+
+
+
+    double scale;
+    int nlevels;
+    int gr_threshold;
+
+    double hit_threshold;
+    bool hit_threshold_auto;
+
+    int win_width;
+    int win_stride_width, win_stride_height;
+    int block_width;
+    int block_stride_width, block_stride_height;
+    int cell_width;
+    int nbins;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 //    HOGDescriptor m_hogCar;
 	int 			m_numCar;
