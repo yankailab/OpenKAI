@@ -54,9 +54,7 @@ public:
     double scale;
     int nlevels;
     int gr_threshold;
-
     double hit_threshold;
-    bool hit_threshold_auto;
 
     int win_width;
     int win_stride_width, win_stride_height;
@@ -64,17 +62,6 @@ public:
     int block_stride_width, block_stride_height;
     int cell_width;
     int nbins;
-
-
-
-
-
-
-
-
-
-
-
 
 
 

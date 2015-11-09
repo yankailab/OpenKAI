@@ -67,7 +67,7 @@
 using std::string;
 using namespace std;
 
-#include <common/mavlink.h>
+#include "mavlink/common/mavlink.h"
 
 #include "autopilot_interface.h"
 #include "serial_port.h"
@@ -77,7 +77,7 @@ using namespace std;
 //   Prototypes
 // ------------------------------------------------------------------------------
 
-int main(int argc, char **argv);
+int main_2(int argc, char **argv);
 int top(int argc, char **argv);
 
 void commands(Autopilot_Interface &autopilot_interface);

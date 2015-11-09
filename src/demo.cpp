@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
 	g_pAP->start();
 #endif
 #ifdef OBJECT_DETECT
-//	g_pOD->start();
+	g_pOD->start();
 	g_pFD->start();
 #endif
 

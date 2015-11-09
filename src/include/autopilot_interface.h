@@ -61,7 +61,7 @@
 #include <time.h>
 #include <sys/time.h>
 
-#include <common/mavlink.h>
+#include "mavlink/common/mavlink.h"
 
 // ------------------------------------------------------------------------------
 //   Defines

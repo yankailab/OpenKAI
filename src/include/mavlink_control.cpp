@@ -59,6 +59,7 @@
 // ------------------------------------------------------------------------------
 //   TOP
 // ------------------------------------------------------------------------------
+
 int
 top (int argc, char **argv)
 {
@@ -350,7 +351,7 @@ quit_handler( int sig )
 //   Main
 // ------------------------------------------------------------------------------
 int
-main(int argc, char **argv)
+main_2(int argc, char **argv)
 {
 	// This program uses throw, wrap one big try/catch here
 	try

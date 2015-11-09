@@ -18,7 +18,20 @@ FastDetector::FastDetector()
 	m_numHuman = 0;
 	m_numCar = 0;
 	m_pCamStream = NULL;
-//	m_pCascade = NULL;
+
+	scale = 1.05;
+	nlevels = 13;
+	gr_threshold = 8;
+	hit_threshold = 1.4;
+
+	win_width = 48;
+	win_stride_width = 8;
+	win_stride_height = 8;
+	block_width = 16;
+	block_stride_width = 8;
+	block_stride_height = 8;
+	cell_width = 8;
+	nbins = 9;
 }
 
 FastDetector::~FastDetector()
@@ -35,28 +48,14 @@ bool FastDetector::init(JSON* pJson)
 	string hogFile;
 	CHECK_ERROR(pJson->getVal("HOG_FILE", &hogFile));
 
-	scale = 1.05;
-	nlevels = 13;
-	gr_threshold = 8;
-	hit_threshold = 1.4;
-	hit_threshold_auto = true;
-
-	win_width = 48;
-	win_stride_width = 8;
-	win_stride_height = 8;
-	block_width = 16;
-	block_stride_width = 8;
-	block_stride_height = 8;
-	cell_width = 8;
-	nbins = 9;
-
 	Size win_stride(win_stride_width, win_stride_height);
 	Size win_size(win_width, win_width * 2);
 	Size block_size(block_width, block_width);
 	Size block_stride(block_stride_width, block_stride_height);
 	Size cell_size(cell_width, cell_width);
 
-	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride, cell_size, nbins);
+	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride,
+			cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
 	return true;
@@ -123,33 +122,30 @@ void FastDetector::detect(void)
 	if (pBGRA->empty())
 		return;
 
-	if (m_pCascade)
-	{
-	/*
-	 //	m_pCascade->setFindLargestObject(false);
-	 m_pCascade->setScaleFactor(1.2);
-	 //	m_pCascade->setMinNeighbors((filterRects || findLargestObject) ? 4 : 0);
-
-	 m_pCascade->detectMultiScale(*pGray, cascadeGMat);
-	 m_pCascade->convert(cascadeGMat, vRect);
-
-	 m_numHuman = 0;
-	 for (i = 0; i < vRect.size(); i++)
-	 {
-	 m_pHuman[m_numHuman].m_boundBox = vRect[i];
-	 m_numHuman++;
-	 if (m_numHuman == NUM_FASTOBJ)
-	 {
-	 break;
-	 }
-	 }
-	 */
-	}
-
 
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
+	m_numHuman = 0;
 
+	if (m_pCascade)
+	{
+		//	m_pCascade->setFindLargestObject(false);
+		m_pCascade->setScaleFactor(1.2);
+		//	m_pCascade->setMinNeighbors((filterRects || findLargestObject) ? 4 : 0);
+
+		m_pCascade->detectMultiScale(*pGray, cascadeGMat);
+		m_pCascade->convert(cascadeGMat, vRect);
+
+		for (i = 0; i < vRect.size(); i++)
+		{
+			m_pHuman[m_numHuman].m_boundBox = vRect[i];
+			m_numHuman++;
+			if (m_numHuman == NUM_FASTOBJ)
+			{
+				break;
+			}
+		}
+	}
 
 	Size win_stride(win_stride_width, win_stride_height);
 
@@ -161,7 +157,7 @@ void FastDetector::detect(void)
 
 	m_pHumanHOG->detectMultiScale(*pBGRA, vRect);
 
-	m_numHuman = 0;
+//	m_numHuman = 0;
 	for (i = 0; i < vRect.size(); i++)
 	{
 		m_pHuman[m_numHuman].m_boundBox = vRect[i];
@@ -172,30 +168,6 @@ void FastDetector::detect(void)
 		}
 	}
 
-	/*
-	 vector<Rect> found;
-	 m_hogHuman.detectMultiScale(*pMat, found, 0, Size(8, 8), Size(32, 32), 1.05, 2);
-
-	 for (i=0; i<found.size(); i++)
-	 {
-	 Rect r = found[i];
-	 for (j=0; j<found.size(); j++)
-	 {
-	 if (j!=i && (r & found[j]) == r)
-	 break;
-	 }
-
-	 if (j==found.size())
-	 {
-	 m_pHuman[m_numHuman].m_boundBox = r;
-	 m_numHuman++;
-	 if(m_numHuman==NUM_FASTOBJ)
-	 {
-	 break;
-	 }
-	 }
-	 }
-	 */
 }
 
 void FastDetector::setFrame(CamStream* pCam)
