@@ -440,7 +440,7 @@ static void mavlink_test_sens_batmon(uint8_t system_id, uint8_t component_id, ma
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_sens_batmon_t packet_in = {
-		17235,17339,17443,17547,17651,17755,17859,17963,18067,18171,18275,18379
+		17.0,17443,17547,17651,17755,17859,17963,18067,18171,18275,18379,18483,211
     };
 	mavlink_sens_batmon_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
@@ -456,6 +456,7 @@ static void mavlink_test_sens_batmon(uint8_t system_id, uint8_t component_id, ma
         	packet1.cellvoltage4 = packet_in.cellvoltage4;
         	packet1.cellvoltage5 = packet_in.cellvoltage5;
         	packet1.cellvoltage6 = packet_in.cellvoltage6;
+        	packet1.SoC = packet_in.SoC;
         
         
 
@@ -465,12 +466,12 @@ static void mavlink_test_sens_batmon(uint8_t system_id, uint8_t component_id, ma
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_sens_batmon_pack(system_id, component_id, &msg , packet1.temperature , packet1.voltage , packet1.current , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
+	mavlink_msg_sens_batmon_pack(system_id, component_id, &msg , packet1.temperature , packet1.voltage , packet1.current , packet1.SoC , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
 	mavlink_msg_sens_batmon_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_sens_batmon_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.temperature , packet1.voltage , packet1.current , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
+	mavlink_msg_sens_batmon_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.temperature , packet1.voltage , packet1.current , packet1.SoC , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
 	mavlink_msg_sens_batmon_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
@@ -483,8 +484,114 @@ static void mavlink_test_sens_batmon(uint8_t system_id, uint8_t component_id, ma
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_sens_batmon_send(MAVLINK_COMM_1 , packet1.temperature , packet1.voltage , packet1.current , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
+	mavlink_msg_sens_batmon_send(MAVLINK_COMM_1 , packet1.temperature , packet1.voltage , packet1.current , packet1.SoC , packet1.batterystatus , packet1.serialnumber , packet1.hostfetcontrol , packet1.cellvoltage1 , packet1.cellvoltage2 , packet1.cellvoltage3 , packet1.cellvoltage4 , packet1.cellvoltage5 , packet1.cellvoltage6 );
 	mavlink_msg_sens_batmon_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_fw_soaring_data(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_fw_soaring_data_t packet_in = {
+		93372036854775807ULL,93372036854776311ULL,129.0,157.0,185.0,213.0,241.0,269.0,297.0,325.0,353.0,381.0,173,240
+    };
+	mavlink_fw_soaring_data_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.timestamp = packet_in.timestamp;
+        	packet1.timestampModeChanged = packet_in.timestampModeChanged;
+        	packet1.CurrentUpdraftSpeed = packet_in.CurrentUpdraftSpeed;
+        	packet1.xW = packet_in.xW;
+        	packet1.xR = packet_in.xR;
+        	packet1.xLat = packet_in.xLat;
+        	packet1.xLon = packet_in.xLon;
+        	packet1.VarW = packet_in.VarW;
+        	packet1.VarR = packet_in.VarR;
+        	packet1.VarLat = packet_in.VarLat;
+        	packet1.VarLon = packet_in.VarLon;
+        	packet1.LoiterRadius = packet_in.LoiterRadius;
+        	packet1.ControlMode = packet_in.ControlMode;
+        	packet1.valid = packet_in.valid;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_fw_soaring_data_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_fw_soaring_data_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_fw_soaring_data_pack(system_id, component_id, &msg , packet1.timestamp , packet1.timestampModeChanged , packet1.CurrentUpdraftSpeed , packet1.xW , packet1.xR , packet1.xLat , packet1.xLon , packet1.VarW , packet1.VarR , packet1.VarLat , packet1.VarLon , packet1.LoiterRadius , packet1.ControlMode , packet1.valid );
+	mavlink_msg_fw_soaring_data_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_fw_soaring_data_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.timestamp , packet1.timestampModeChanged , packet1.CurrentUpdraftSpeed , packet1.xW , packet1.xR , packet1.xLat , packet1.xLon , packet1.VarW , packet1.VarR , packet1.VarLat , packet1.VarLon , packet1.LoiterRadius , packet1.ControlMode , packet1.valid );
+	mavlink_msg_fw_soaring_data_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_fw_soaring_data_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_fw_soaring_data_send(MAVLINK_COMM_1 , packet1.timestamp , packet1.timestampModeChanged , packet1.CurrentUpdraftSpeed , packet1.xW , packet1.xR , packet1.xLat , packet1.xLon , packet1.VarW , packet1.VarR , packet1.VarLat , packet1.VarLon , packet1.LoiterRadius , packet1.ControlMode , packet1.valid );
+	mavlink_msg_fw_soaring_data_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_sensorpod_status(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_sensorpod_status_t packet_in = {
+		93372036854775807ULL,17651,163,230,41,108,175,242
+    };
+	mavlink_sensorpod_status_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.timestamp = packet_in.timestamp;
+        	packet1.free_space = packet_in.free_space;
+        	packet1.visensor_rate_1 = packet_in.visensor_rate_1;
+        	packet1.visensor_rate_2 = packet_in.visensor_rate_2;
+        	packet1.visensor_rate_3 = packet_in.visensor_rate_3;
+        	packet1.visensor_rate_4 = packet_in.visensor_rate_4;
+        	packet1.recording_nodes_count = packet_in.recording_nodes_count;
+        	packet1.cpu_temp = packet_in.cpu_temp;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_sensorpod_status_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_sensorpod_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_sensorpod_status_pack(system_id, component_id, &msg , packet1.timestamp , packet1.visensor_rate_1 , packet1.visensor_rate_2 , packet1.visensor_rate_3 , packet1.visensor_rate_4 , packet1.recording_nodes_count , packet1.cpu_temp , packet1.free_space );
+	mavlink_msg_sensorpod_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_sensorpod_status_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.timestamp , packet1.visensor_rate_1 , packet1.visensor_rate_2 , packet1.visensor_rate_3 , packet1.visensor_rate_4 , packet1.recording_nodes_count , packet1.cpu_temp , packet1.free_space );
+	mavlink_msg_sensorpod_status_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_sensorpod_status_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_sensorpod_status_send(MAVLINK_COMM_1 , packet1.timestamp , packet1.visensor_rate_1 , packet1.visensor_rate_2 , packet1.visensor_rate_3 , packet1.visensor_rate_4 , packet1.recording_nodes_count , packet1.cpu_temp , packet1.free_space );
+	mavlink_msg_sensorpod_status_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
@@ -499,6 +606,8 @@ static void mavlink_test_ASLUAV(uint8_t system_id, uint8_t component_id, mavlink
 	mavlink_test_asl_obctrl(system_id, component_id, last_msg);
 	mavlink_test_sens_atmos(system_id, component_id, last_msg);
 	mavlink_test_sens_batmon(system_id, component_id, last_msg);
+	mavlink_test_fw_soaring_data(system_id, component_id, last_msg);
+	mavlink_test_sensorpod_status(system_id, component_id, last_msg);
 }
 
 #ifdef __cplusplus
