@@ -384,6 +384,20 @@ void Autopilot_Interface::read_messages()
 				this_timestamps.position_target_global_int
 				&& this_timestamps.highres_imu && this_timestamps.attitude;
 
+//		received_all = this_timestamps.heartbeat;
+//				&& this_timestamps.sys_status
+//				&&
+//				this_timestamps.battery_status             &&
+//				this_timestamps.radio_status               &&
+//				this_timestamps.local_position_ned
+//				&&
+//				this_timestamps.global_position_int        &&
+//				this_timestamps.position_target_local_ned  &&
+//				this_timestamps.position_target_global_int
+//				&& this_timestamps.highres_imu && this_timestamps.attitude;
+
+
+
 		// give the write thread time to use the port
 		if (writing_status > false)
 			usleep(100); // look for components of batches at 10kHz
@@ -626,6 +640,8 @@ void Autopilot_Interface::start()
 			return;
 		usleep(500000);
 	}
+
+	//todo
 
 	// copy initial position ned
 	Mavlink_Messages local_data = current_messages;
