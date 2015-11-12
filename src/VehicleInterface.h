@@ -3,6 +3,7 @@
 #include "common.h"
 #include "include/mavlink/common/mavlink.h"
 #include "SerialPort.h"
+
 //#include <signal.h>
 //#include <time.h>
 //#include <sys/time.h>
@@ -20,7 +21,7 @@
 // ------------------------------------------------------------------------------
 //   Data Structures
 // ------------------------------------------------------------------------------
-
+/*
 struct Time_Stamps
 {
 	Time_Stamps()
@@ -102,7 +103,7 @@ struct Mavlink_Messages
 	}
 
 };
-
+*/
 #define MAVLINK_BEGIN 0xFE
 #define MAVLINK_HEADDER_LEN 3
 
