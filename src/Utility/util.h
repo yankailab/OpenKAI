@@ -1,5 +1,8 @@
 #pragma once
 #include "../Base/platform.h"
+#include <signal.h>
+#include <time.h>
+#include <sys/time.h>
 
 using namespace std;
 
@@ -20,6 +23,14 @@ inline double confineVal(double val, double max, double min)
 	else if (val<min)val = min;
 
 	return val;
+}
+
+
+uint64_t get_time_usec()
+{
+	static struct timeval _time_stamp;
+	gettimeofday(&_time_stamp, NULL);
+	return _time_stamp.tv_sec * 1000000 + _time_stamp.tv_usec;
 }
 
 /*
