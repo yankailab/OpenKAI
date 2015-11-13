@@ -250,7 +250,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_HEARTBEAT:
 			{
-				//printf("MAVLINK_MSG_ID_HEARTBEAT\n");
+				printf("MAVLINK_MSG_ID_HEARTBEAT\n");
 				mavlink_msg_heartbeat_decode(&message,
 						&(current_messages.heartbeat));
 				current_messages.time_stamps.heartbeat = get_time_usec();
@@ -261,7 +261,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_SYS_STATUS:
 			{
-				//printf("MAVLINK_MSG_ID_SYS_STATUS\n");
+				printf("MAVLINK_MSG_ID_SYS_STATUS\n");
 				mavlink_msg_sys_status_decode(&message,
 						&(current_messages.sys_status));
 				current_messages.time_stamps.sys_status = get_time_usec();
@@ -272,7 +272,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_BATTERY_STATUS:
 			{
-				//printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
+				printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
 				mavlink_msg_battery_status_decode(&message,
 						&(current_messages.battery_status));
 				current_messages.time_stamps.battery_status = get_time_usec();
@@ -283,7 +283,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_RADIO_STATUS:
 			{
-				//printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
+				printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
 				mavlink_msg_radio_status_decode(&message,
 						&(current_messages.radio_status));
 				current_messages.time_stamps.radio_status = get_time_usec();
@@ -294,7 +294,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 			{
-				//printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
+				printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
 				mavlink_msg_local_position_ned_decode(&message,
 						&(current_messages.local_position_ned));
 				current_messages.time_stamps.local_position_ned =
@@ -306,7 +306,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 			{
-				//printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
+				printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
 				mavlink_msg_global_position_int_decode(&message,
 						&(current_messages.global_position_int));
 				current_messages.time_stamps.global_position_int =
@@ -318,7 +318,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 			{
-				//printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
+				printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
 				mavlink_msg_position_target_local_ned_decode(&message,
 						&(current_messages.position_target_local_ned));
 				current_messages.time_stamps.position_target_local_ned =
@@ -330,7 +330,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 			{
-				//printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
+				printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
 				mavlink_msg_position_target_global_int_decode(&message,
 						&(current_messages.position_target_global_int));
 				current_messages.time_stamps.position_target_global_int =
@@ -342,7 +342,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_HIGHRES_IMU:
 			{
-				//printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
+				printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
 				mavlink_msg_highres_imu_decode(&message,
 						&(current_messages.highres_imu));
 				current_messages.time_stamps.highres_imu = get_time_usec();
@@ -353,7 +353,7 @@ void Autopilot_Interface::read_messages()
 
 			case MAVLINK_MSG_ID_ATTITUDE:
 			{
-				//printf("MAVLINK_MSG_ID_ATTITUDE\n");
+				printf("MAVLINK_MSG_ID_ATTITUDE\n");
 				mavlink_msg_attitude_decode(&message,
 						&(current_messages.attitude));
 				current_messages.time_stamps.attitude = get_time_usec();
@@ -364,7 +364,7 @@ void Autopilot_Interface::read_messages()
 
 			default:
 			{
-				// printf("Warning, did not handle message id %i\n",message.msgid);
+				 printf("Warning, did not handle message id %i\n",message.msgid);
 				break;
 			}
 
@@ -373,7 +373,7 @@ void Autopilot_Interface::read_messages()
 		} // end: if read message
 
 		// Check for receipt of all items
-		received_all = this_timestamps.heartbeat && this_timestamps.sys_status
+/*		received_all = this_timestamps.heartbeat && this_timestamps.sys_status
 				&&
 //				this_timestamps.battery_status             &&
 //				this_timestamps.radio_status               &&
@@ -383,8 +383,8 @@ void Autopilot_Interface::read_messages()
 //				this_timestamps.position_target_local_ned  &&
 				this_timestamps.position_target_global_int
 				&& this_timestamps.highres_imu && this_timestamps.attitude;
-
-//		received_all = this_timestamps.heartbeat;
+*/
+		received_all = this_timestamps.heartbeat;
 //				&& this_timestamps.sys_status
 //				&&
 //				this_timestamps.battery_status             &&
@@ -460,6 +460,31 @@ void Autopilot_Interface::write_setpoint()
 		fprintf(stderr, "WARNING: could not send POSITION_TARGET_LOCAL_NED \n");
 	//	else
 	//		printf("%lu POSITION_TARGET  = [ %f , %f , %f ] \n", write_count, position_target.x, position_target.y, position_target.z);
+
+
+
+
+
+
+
+	//test
+	mavlink_request_data_stream_t ds;
+	ds.target_system = system_id;
+	ds.target_component = autopilot_id;
+	ds.req_stream_id = MAV_DATA_STREAM_ALL;//MAV_DATA_STREAM_POSITION;
+	ds.req_message_rate = 1;
+	ds.start_stop = 1;
+	mavlink_msg_request_data_stream_encode(system_id,companion_id,&message,&ds);
+
+	len = write_message(message);
+
+	// check the write
+	if (not len > 0)
+		fprintf(stderr, "WARNING: could not send request data stream \n");
+
+
+
+
 
 	return;
 }
@@ -551,6 +576,9 @@ int Autopilot_Interface::toggle_offboard_control(bool flag)
 	// Send the message
 	int len = serial_port->write_message(message);
 
+
+
+
 	// Done!
 	return len;
 }
@@ -633,6 +661,7 @@ void Autopilot_Interface::start()
 	// --------------------------------------------------------------------------
 
 	// Wait for initial position ned
+	/*
 	while (not (current_messages.time_stamps.local_position_ned
 			&& current_messages.time_stamps.attitude))
 	{
@@ -640,7 +669,7 @@ void Autopilot_Interface::start()
 			return;
 		usleep(500000);
 	}
-
+*/
 	//todo
 
 	// copy initial position ned

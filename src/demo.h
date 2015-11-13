@@ -437,6 +437,9 @@ void commands(Autopilot_Interface &api)
 	api.enable_offboard_control();
 	usleep(100); // give some time to let it sink in
 
+
+
+
 	// now the autopilot is accepting setpoint commands
 
 	// --------------------------------------------------------------------------
@@ -457,8 +460,8 @@ void commands(Autopilot_Interface &api)
 //				   sp        );
 
 	// Example 2 - Set Position
-	set_position(ip.x - 5.0, // [m]
-	ip.y - 5.0, // [m]
+	set_position(ip.x - 0.0, // [m]
+	ip.y - 0.0, // [m]
 	ip.z, // [m]
 			sp);
 
@@ -471,13 +474,14 @@ void commands(Autopilot_Interface &api)
 	// NOW pixhawk will try to move
 
 	// Wait for 8 seconds, check position
-	for (int i = 0; i < 8; i++)
+//	for (int i = 0; i < 8; i++)
+	int i=0;
+	while(true)
 	{
-		mavlink_local_position_ned_t pos =
-				api.current_messages.local_position_ned;
-		printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", i,
-				pos.x, pos.y, pos.z);
+		mavlink_local_position_ned_t pos = api.current_messages.local_position_ned;
+		printf("%i CURRENT POSITION XYZ = [ % .4f , % .4f , % .4f ] \n", i, pos.x, pos.y, pos.z);
 		sleep(1);
+		i++;
 	}
 
 	printf("\n");
@@ -626,10 +630,10 @@ int top(int argc, char **argv)
 	// --------------------------------------------------------------------------
 
 	// Default input arguments
-//	char *uart_name = (char*) "/dev/ttyUSB0";
+	char *uart_name = (char*) "/dev/ttyUSB0";
 //	char *uart_name = (char*) "/dev/cu.usbmodem1";
-	char *uart_name = (char*) "/dev/ttyACM0";
-	int baudrate = 115200;//57600;
+//	char *uart_name = (char*) "/dev/ttyACM0";
+	int baudrate = 57600;
 
 	// do the parse, will throw an int if it fails
 	parse_commandline(argc, argv, uart_name, baudrate);
