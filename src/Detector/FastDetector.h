@@ -3,9 +3,9 @@
 #ifndef SRC_FASTDETECTOR_H_
 #define SRC_FASTDETECTOR_H_
 
-#include "common.h"
-#include "cvplatform.h"
-#include "CamStream.h"
+#include "../Base/common.h"
+#include "../Base/cvplatform.h"
+#include "../Camera/CamStream.h"
 
 using namespace cv;
 using namespace cv::cuda;

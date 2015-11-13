@@ -8,8 +8,8 @@
 #ifndef SRC_CAMSTEREO_H_
 #define SRC_CAMSTEREO_H_
 
-#include "common.h"
-#include "cvplatform.h"
+#include "../Base/common.h"
+#include "../Base/cvplatform.h"
 
 #include "CamFrame.h"
 

@@ -8,9 +8,9 @@
 #ifndef SRC_CAMFRAME_H_
 #define SRC_CAMFRAME_H_
 
-#include "common.h"
+#include "../Base/common.h"
 #include "stdio.h"
-#include "cvplatform.h"
+#include "../Base/cvplatform.h"
 
 namespace kai
 {

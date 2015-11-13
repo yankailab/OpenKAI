@@ -1,7 +1,7 @@
 #pragma once
-#include "common.h"
+#include "../Base/common.h"
 #include "stdio.h"
-#include "cvplatform.h"
+#include "../Base/cvplatform.h"
 
 #define SMALL_WIDTH 300
 #define SMALL_HEIGHT 300

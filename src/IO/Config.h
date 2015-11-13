@@ -8,11 +8,11 @@
 #ifndef SRC_CONFIG_H_
 #define SRC_CONFIG_H_
 
-#include "common.h"
-#include "cvplatform.h"
+#include "../Base/common.h"
+#include "../Base/cvplatform.h"
 
-#include "AutoPilot.h"
-#include "CamStream.h"
+#include "../Autopilot/AutoPilot.h"
+#include "../Camera/CamStream.h"
 
 namespace kai
 {

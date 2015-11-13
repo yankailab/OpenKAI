@@ -8,11 +8,11 @@
 #ifndef SRC_OBJECTDETECTOR_H_
 #define SRC_OBJECTDETECTOR_H_
 
-#include "common.h"
-#include "cvplatform.h"
-#include "NNClassifier.h"
+#include "../Base/common.h"
+#include "../Base/cvplatform.h"
+#include "../AI/NNClassifier.h"
 
-#include "CamStream.h"
+#include "../Camera/CamStream.h"
 
 using namespace cv;
 using namespace cv::cuda;

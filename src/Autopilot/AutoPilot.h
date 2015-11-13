@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common.h"
-#include "CamStream.h"
-#include "ObjectDetector.h"
-#include "FastDetector.h"
-#include "util.h"
-#include "VehicleInterface.h"
+#include "../Base/common.h"
+#include "../Camera/CamStream.h"
+#include "../Detector/ObjectDetector.h"
+#include "../Detector/FastDetector.h"
+#include "../Utility/util.h"
+#include "../Interface/VehicleInterface.h"
 
 //
 // Operation mode

@@ -8,9 +8,9 @@
 #ifndef SRC_CAMSPARSEFLOW_H_
 #define SRC_CAMSPARSEFLOW_H_
 
-#include "common.h"
+#include "../Base/common.h"
 #include "stdio.h"
-#include "cvplatform.h"
+#include "../Base/cvplatform.h"
 
 #include "CamFrame.h"
 

@@ -12,13 +12,13 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "ObjectDetector.h"
-#include "FastDetector.h"
-#include "CamInput.h"
-#include "CamMarkerDetect.h"
-#include "CamMonitor.h"
-#include "AutoPilot.h"
-#include "Config.h"
+#include "Detector/ObjectDetector.h"
+#include "Detector/FastDetector.h"
+#include "Camera/CamInput.h"
+#include "Camera/CamMarkerDetect.h"
+#include "Camera/CamMonitor.h"
+#include "Autopilot/AutoPilot.h"
+#include "IO/Config.h"
 
 
 #define Z_FAR_LIM 50
@@ -628,8 +628,9 @@ int top(int argc, char **argv)
 	// Default input arguments
 //	char *uart_name = (char*) "/dev/ttyUSB0";
 //	char *uart_name = (char*) "/dev/cu.usbmodem1";
-	char *uart_name = (char*) "/dev/ttyACM0";
-	int baudrate = 115200;//57600;
+	char *uart_name = (char*) "/dev/cu.usbserial-AI03CO9Z";
+//	char *uart_name = (char*) "/dev/ttyACM0";
+	int baudrate = 57600;
 
 	// do the parse, will throw an int if it fails
 	parse_commandline(argc, argv, uart_name, baudrate);

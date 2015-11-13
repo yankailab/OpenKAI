@@ -7,9 +7,9 @@
 
 #include "CamDenseFlow.h"
 
-#include "common.h"
+#include "../Base/common.h"
 #include "stdio.h"
-#include "cvplatform.h"
+#include "../Base/cvplatform.h"
 
 namespace kai
 {

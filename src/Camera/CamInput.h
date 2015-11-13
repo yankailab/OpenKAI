@@ -8,11 +8,11 @@
 #ifndef SRC_CAMINPUT_H_
 #define SRC_CAMINPUT_H_
 
-#include "common.h"
+#include "../Base/common.h"
 #include "stdio.h"
-#include "cvplatform.h"
+#include "../Base/cvplatform.h"
 
-#include "CamFrame.h"
+#include "../Camera/CamFrame.h"
 
 namespace kai
 {

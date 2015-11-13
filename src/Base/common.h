@@ -2,8 +2,8 @@
 #include "platform.h"
 #include "defaultparam.h"
 #include <glog/logging.h>
-#include "FileIO.h"
-#include "JSON.h"
+#include "../IO/FileIO.h"
+#include "../IO/JSON.h"
 #include "ThreadBase.h"
 
 //Demo App
