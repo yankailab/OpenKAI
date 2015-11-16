@@ -119,7 +119,7 @@ struct Mavlink_Messages
 
 };
 
-#define TRD_INTERVAL_MI_USEC 10000
+#define TRD_INTERVAL_MI_USEC 1000
 
 namespace kai
 {

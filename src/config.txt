@@ -1,6 +1,6 @@
 {
 "serialPort":"/dev/cu.usbserial-AI03CO9Z",
-"serialPortMavlink":"/dev/cu.usbserial-AI03CO9Z",
+"serialPortMavlink":"/dev/cu.usbmodem1",
 "baudrateMavlink":115200,
 "serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",

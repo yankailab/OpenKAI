@@ -245,7 +245,7 @@ int MavlinkInterface::writeMessage(mavlink_message_t message)
 	char buf[512];
 
 	// Translate message to buffer
-	unsigned len = mavlink_msg_to_send_buffer((uint8_t*) buf, &message);
+	unsigned int len = mavlink_msg_to_send_buffer((uint8_t*) buf, &message);
 
 	// Write buffer to serial port, locks port while writing
 	m_pSerialPort->Write(buf, len);
@@ -300,6 +300,7 @@ void MavlinkInterface::update(void)
 		}
 
 		requestDataStream();
+
 		handleMessages();
 
 
@@ -337,6 +338,24 @@ void MavlinkInterface::stop(void)
 void MavlinkInterface::waitForComplete(void)
 {
 	pthread_join(m_threadID, NULL);
+}
+
+
+void MavlinkInterface::requestDataStream(void)
+{
+	//test
+	mavlink_message_t message;
+	mavlink_request_data_stream_t ds;
+	ds.target_system = system_id;
+	ds.target_component = autopilot_id;
+	ds.req_stream_id = MAV_DATA_STREAM_ALL;	//MAV_DATA_STREAM_POSITION;
+	ds.req_message_rate = 1;
+	ds.start_stop = 1;
+	mavlink_msg_request_data_stream_encode(system_id, companion_id, &message,&ds);
+
+	writeMessage(message);
+
+	return;
 }
 
 // ------------------------------------------------------------------------------
@@ -536,27 +555,6 @@ void MavlinkInterface::set_yaw_rate(float yaw_rate,
 	sp.yaw_rate = yaw_rate;
 }
 
-
-void MavlinkInterface::requestDataStream(void)
-{
-	//test
-	mavlink_message_t message;
-	mavlink_request_data_stream_t ds;
-	ds.target_system = system_id;
-	ds.target_component = autopilot_id;
-	ds.req_stream_id = MAV_DATA_STREAM_ALL;	//MAV_DATA_STREAM_POSITION;
-	ds.req_message_rate = 1;
-	ds.start_stop = 1;
-	mavlink_msg_request_data_stream_encode(system_id, companion_id, &message,&ds);
-
-	int len = writeMessage(message);
-
-	// check the write
-	if (not len > 0)
-		printf("WARNING: could not send request data stream \n");
-
-	return;
-}
 
 }
 
