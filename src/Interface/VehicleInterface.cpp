@@ -30,7 +30,7 @@ bool VehicleInterface::open(void)
 
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
-	if (m_pSerialPort->connect((char*)m_sportName.c_str()) != true)
+	if (m_pSerialPort->Open((char*)m_sportName.c_str()) != true)
 	{
 		m_bConnected = false;
 		return false;
@@ -64,7 +64,7 @@ bool VehicleInterface::readMessages()
 	unsigned char	inByte;
 	int		byteRead;
 
-	while ((byteRead = m_pSerialPort->ReadData((char*)&inByte,1)) > 0)
+	while ((byteRead = m_pSerialPort->Read((char*)&inByte,1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
@@ -122,7 +122,7 @@ void VehicleInterface::rc_overide(int numChannel, int* pChannels)
 
 	len = 4 + numChannel * 2;
 
-	m_pSerialPort->WriteData((char*)m_pBuf, len);
+	m_pSerialPort->Write((char*)m_pBuf, len);
 
 }
 
@@ -135,7 +135,7 @@ void VehicleInterface::controlMode(int mode)
 	m_pBuf[2] = 1;
 	m_pBuf[3] = (unsigned char)mode;
 
-	m_pSerialPort->WriteData((char*)m_pBuf, 4);
+	m_pSerialPort->Write((char*)m_pBuf, 4);
 }
 
 

@@ -8,24 +8,6 @@ int main(int argc, char* argv[])
 
 	printEnvironment();
 
-
-
-	//Testing mavlink control
-	starttest(argc, argv);
-
-	return 0;
-
-
-
-
-
-
-
-
-
-
-
-
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	CHECK_FATAL(g_file.open(argv[1]));
 
@@ -33,6 +15,30 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
 	g_config.setJSON(&g_Json);
+
+	//Connect to Mavlink
+	CHECK_ERROR(g_Json.getVal("serialPortMavlink", &g_serialPort));
+	CHECK_ERROR(g_Json.getVal("baudrateMavlink", &g_baudrate));
+
+	g_pMavlink = new MavlinkInterface();
+	g_pMavlink->setSerial(g_serialPort, g_baudrate);
+	if (g_pMavlink->open())
+	{
+		printf("Serial port opened¥n");
+	}
+
+	g_pMavlink->start();
+
+	while(1);
+
+return 0;
+
+
+
+
+
+
+
 
 	//Connect to Mavlink
 	g_pVehicle = new VehicleInterface();

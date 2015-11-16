@@ -12,7 +12,7 @@ using namespace cv::cuda;
 using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
-#define NUM_FASTOBJ 1000
+#define NUM_OPTICALFLOW_OBJECT 100
 
 namespace kai
 {
@@ -35,7 +35,7 @@ public:
 	void waitForComplete(void);
 
 	void setFrame(CamStream* pCam);
-	int  getHuman(FAST_OBJECT** ppHuman);
+	int  getHuman(OPTICALFLOW_OBJECT** ppHuman);
 
 private:
 	void detect(void);
@@ -47,7 +47,7 @@ public:
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
-	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
+	OPTICALFLOW_OBJECT 	m_pHuman[NUM_OPTICALFLOW_OBJECT];
 
 
 
@@ -67,7 +67,7 @@ public:
 
 //    HOGDescriptor m_hogCar;
 	int 			m_numCar;
-	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
+	OPTICALFLOW_OBJECT 	m_pCar[NUM_OPTICALFLOW_OBJECT];
 
 	Mat		m_frame;
 	GpuMat  m_pGMat;

@@ -4,7 +4,6 @@
 #include "../Camera/CamStream.h"
 #include "../Detector/ObjectDetector.h"
 #include "../Detector/FastDetector.h"
-#include "../Utility/util.h"
 #include "../Interface/VehicleInterface.h"
 
 //

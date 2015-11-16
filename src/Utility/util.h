@@ -1,6 +1,5 @@
 #pragma once
 #include "../Base/platform.h"
-#include <signal.h>
 #include <time.h>
 #include <sys/time.h>
 
@@ -26,7 +25,7 @@ inline double confineVal(double val, double max, double min)
 }
 
 
-uint64_t get_time_usec()
+inline uint64_t get_time_usec()
 {
 	static struct timeval _time_stamp;
 	gettimeofday(&_time_stamp, NULL);

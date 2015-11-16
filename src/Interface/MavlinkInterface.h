@@ -4,7 +4,6 @@
 #include "../include/mavlink/common/mavlink.h"
 #include "../IO/SerialPort.h"
 
-#include "../include/serial_port.h"
 #include <signal.h>
 #include <time.h>
 #include <sys/time.h>
@@ -131,7 +130,7 @@ public:
 	MavlinkInterface();
 	~MavlinkInterface();
 
-	void setSerialName(string name);
+	void setSerial(string name, int baudrate);
 	bool open(void);
 	void close(void);
 
@@ -140,15 +139,16 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
+	void handleMessages();
+	bool readMessage(mavlink_message_t &message);
+	int  writeMessage(mavlink_message_t message);
 
-
-	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
-	void read_messages();
-	int  write_message(mavlink_message_t message);
+	void requestDataStream(void);
 
 	void enable_offboard_control();
 	void disable_offboard_control();
 	int  toggle_offboard_control(bool flag);
+	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
 	void write_setpoint();
 
 	void set_position(float x, float y, float z,
@@ -162,9 +162,11 @@ public:
 			mavlink_set_position_target_local_ned_t &sp);
 
 private:
-	bool m_bConnected;
+	bool m_bSerialConnected;
+
 	string m_sportName;
 	SerialPort* m_pSerialPort;
+	int m_baudRate;
 
 	int system_id;
 	int autopilot_id;
@@ -172,13 +174,10 @@ private:
 
 	Mavlink_Messages current_messages;
 	mavlink_set_position_target_local_ned_t initial_position;
+	mavlink_status_t last_status;
 
 	char control_status;
 	uint64_t write_count;
-
-
-
-	char m_pBuf[256];
 
 	//Read Thread
 	pthread_t m_threadID;
@@ -187,7 +186,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((VehicleInterface *) This)->update();
+		((MavlinkInterface *) This)->update();
 		return NULL;
 	}
 

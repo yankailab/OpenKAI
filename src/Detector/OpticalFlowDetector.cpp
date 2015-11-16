@@ -135,7 +135,7 @@ void OpticalFlowDetector::detect(void)
 		{
 			m_pHuman[m_numHuman].m_boundBox = vRect[i];
 			m_numHuman++;
-			if (m_numHuman == NUM_FASTOBJ)
+			if (m_numHuman == NUM_OPTICALFLOW_OBJECT)
 			{
 				break;
 			}
@@ -157,7 +157,7 @@ void OpticalFlowDetector::detect(void)
 	{
 		m_pHuman[m_numHuman].m_boundBox = vRect[i];
 		m_numHuman++;
-		if (m_numHuman == NUM_FASTOBJ)
+		if (m_numHuman == NUM_OPTICALFLOW_OBJECT)
 		{
 			break;
 		}
@@ -174,7 +174,7 @@ void OpticalFlowDetector::setFrame(CamStream* pCam)
 	this->wakeupThread();
 }
 
-int OpticalFlowDetector::getHuman(FAST_OBJECT** ppHuman)
+int OpticalFlowDetector::getHuman(OPTICALFLOW_OBJECT** ppHuman)
 {
 	*ppHuman = m_pHuman;
 	return m_numHuman;

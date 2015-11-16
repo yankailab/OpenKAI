@@ -1,4 +1,5 @@
 #include "AutoPilot.h"
+#include "../Utility/util.h"
 
 namespace kai
 {
