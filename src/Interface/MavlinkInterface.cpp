@@ -61,6 +61,8 @@ bool MavlinkInterface::open(void)
 		return false;
 	}
 
+	last_status.packet_rx_drop_count = 0;
+
 	m_bSerialConnected = true;
 	return true;
 
@@ -229,12 +231,13 @@ bool MavlinkInterface::readMessage(mavlink_message_t &message)
 			return true;
 		}
 
-		// check for dropped packets
-		if (last_status.packet_rx_drop_count != status.packet_rx_drop_count)
-		{
-			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
-		}
 		last_status = status;
+
+		// check for dropped packets
+		if (last_status.packet_rx_drop_count > 0)
+		{
+			printf("ERROR: DROPPED %d PACKETS\n", last_status.packet_rx_drop_count);
+		}
 	}
 
 	return false;
