@@ -223,21 +223,33 @@ bool MavlinkInterface::readMessage(mavlink_message_t &message)
 {
 	uint8_t cp;
 	mavlink_status_t status;
+	uint8_t result;
 
 	while (m_pSerialPort->Read((char*)&cp, 1))
 	{
-		if (mavlink_parse_char(MAVLINK_COMM_1, cp, &message, &status))
+//		if (mavlink_parse_char(MAVLINK_COMM_0, cp, &message, &status))
+		result = mavlink_frame_char(MAVLINK_COMM_0, cp, &message, &status);
+
+		if (result == 1)
 		{
+			//Good message decoded
+			last_status = status;
 			return true;
 		}
-
-		last_status = status;
+		else if(result == 2)
+		{
+			//Bad CRC
+//			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
+		}
 
 		// check for dropped packets
-		if (last_status.packet_rx_drop_count > 0)
+/*		if ((last_status.packet_rx_drop_count != status.packet_rx_drop_count) &&
+				status.packet_rx_drop_count > 0)
 		{
-			printf("ERROR: DROPPED %d PACKETS\n", last_status.packet_rx_drop_count);
+			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
 		}
+		last_status = status;
+*/
 	}
 
 	return false;

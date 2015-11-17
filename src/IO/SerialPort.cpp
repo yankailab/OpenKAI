@@ -261,7 +261,7 @@ bool SerialPort::Open(char *portName)
 
 	fcntl(m_fd, F_SETFL, 0);
 
-	usleep(2000 * 1000);
+//	usleep(2000 * 1000);
 	this->bConnected = true;
 
 	return true;
@@ -351,7 +351,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 
 	// One input byte is enough to return from read()
 	// Inter-character timer off
-	config.c_cc[VMIN] = 1;
+	config.c_cc[VMIN] = 0;
 	config.c_cc[VTIME] = 10; // was 0
 	// see: http://unixwiz.net/techtips/termios-vmin-vtime.html
 //	toptions.c_cc[VMIN] = 0;

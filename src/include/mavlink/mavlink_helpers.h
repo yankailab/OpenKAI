@@ -260,7 +260,7 @@ MAVLINK_HELPER uint8_t mavlink_frame_char_buffer(mavlink_message_t* rxmsg,
 	   and out). Only use if the channel will only contain messages types listed in
 	   the headers.
 	*/
-#ifdef MAVLINK_CHECK_MESSAGE_LENGTH
+#ifdef MAVLIESSAGE_LENGTHNK_CHECK_M
 #ifndef MAVLINK_MESSAGE_LENGTH
 	static const uint8_t mavlink_message_lengths[256] = MAVLINK_MESSAGE_LENGTHS;
 #define MAVLINK_MESSAGE_LENGTH(msgid) mavlink_message_lengths[msgid]

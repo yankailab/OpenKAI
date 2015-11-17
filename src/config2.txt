@@ -1,5 +1,7 @@
 {
 "serialPort":"/dev/ttyUSB0",
+"serialPortMavlink":"/dev/ttyUSB0",
+"baudrateMavlink":57600,
 "serialPortLidar":"/dev/ttyACM1",
 "serialPortWIN":"\\\\.\\COM6",
 
