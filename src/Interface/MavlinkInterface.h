@@ -119,7 +119,8 @@ struct Mavlink_Messages
 
 };
 
-#define TRD_INTERVAL_MI_USEC 1000
+#define TRD_INTERVAL_MI_USEC 100
+#define NUM_MSG_HANDLE 10
 
 namespace kai
 {
@@ -139,15 +140,18 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
+	//Receive
 	void handleMessages();
 	bool readMessage(mavlink_message_t &message);
+
+	//Send
 	int  writeMessage(mavlink_message_t message);
+	void requestDataStream(uint8_t stream_id);
 
-	void requestDataStream(void);
+	//Commands
+	int  toggleOffboardControl(bool bEnable);
 
-	void enable_offboard_control();
-	void disable_offboard_control();
-	int  toggle_offboard_control(bool flag);
+
 	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
 	void write_setpoint();
 
@@ -161,7 +165,7 @@ public:
 	void set_yaw_rate(float yaw_rate,
 			mavlink_set_position_target_local_ned_t &sp);
 
-private:
+public:
 	bool m_bSerialConnected;
 
 	string m_sportName;
@@ -171,13 +175,13 @@ private:
 	int system_id;
 	int autopilot_id;
 	int companion_id;
+	bool m_bControlling;
 
 	Mavlink_Messages current_messages;
 	mavlink_set_position_target_local_ned_t initial_position;
 	mavlink_status_t last_status;
 
-	char control_status;
-	uint64_t write_count;
+
 
 	//Read Thread
 	pthread_t m_threadID;

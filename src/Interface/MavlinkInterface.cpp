@@ -12,9 +12,8 @@ MavlinkInterface::MavlinkInterface()
 	m_pSerialPort = NULL;
 	m_baudRate = 57600;
 
-	// initialize attributes
-	write_count = 0;
-	control_status = 0;     // whether the autopilot is in offboard control mode
+	// whether the autopilot is in offboard control mode
+	m_bControlling = false;
 
 	system_id = 0;
 	autopilot_id = 0;
@@ -84,6 +83,9 @@ void MavlinkInterface::handleMessages()
 {
 	Time_Stamps this_timestamps;
 	mavlink_message_t message;
+	int nMsgHandled;
+
+	nMsgHandled = 0;
 
 	//Handle Message while new message is received
 	while (readMessage(message))
@@ -101,7 +103,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
-			printf("MAVLINK_MSG_ID_HEARTBEAT\n");
+//			printf("MAVLINK_MSG_ID_HEARTBEAT\n");
 			mavlink_msg_heartbeat_decode(&message,
 					&(current_messages.heartbeat));
 			current_messages.time_stamps.heartbeat = get_time_usec();
@@ -111,7 +113,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_SYS_STATUS:
 		{
-			printf("MAVLINK_MSG_ID_SYS_STATUS\n");
+//			printf("MAVLINK_MSG_ID_SYS_STATUS\n");
 			mavlink_msg_sys_status_decode(&message,
 					&(current_messages.sys_status));
 			current_messages.time_stamps.sys_status = get_time_usec();
@@ -122,7 +124,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_BATTERY_STATUS:
 		{
-			printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
+//			printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
 			mavlink_msg_battery_status_decode(&message,
 					&(current_messages.battery_status));
 			current_messages.time_stamps.battery_status = get_time_usec();
@@ -133,7 +135,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_RADIO_STATUS:
 		{
-			printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
+//			printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
 			mavlink_msg_radio_status_decode(&message,
 					&(current_messages.radio_status));
 			current_messages.time_stamps.radio_status = get_time_usec();
@@ -144,7 +146,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
-			printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
+//			printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
 			mavlink_msg_local_position_ned_decode(&message,
 					&(current_messages.local_position_ned));
 			current_messages.time_stamps.local_position_ned = get_time_usec();
@@ -155,7 +157,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
-			printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
+//			printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
 			mavlink_msg_global_position_int_decode(&message,
 					&(current_messages.global_position_int));
 			current_messages.time_stamps.global_position_int = get_time_usec();
@@ -166,7 +168,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
-			printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
+//			printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
 			mavlink_msg_position_target_local_ned_decode(&message,
 					&(current_messages.position_target_local_ned));
 			current_messages.time_stamps.position_target_local_ned =
@@ -178,7 +180,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
-			printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
+//			printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
 			mavlink_msg_position_target_global_int_decode(&message,
 					&(current_messages.position_target_global_int));
 			current_messages.time_stamps.position_target_global_int =
@@ -190,7 +192,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_HIGHRES_IMU:
 		{
-			printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
+//			printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
 			mavlink_msg_highres_imu_decode(&message,
 					&(current_messages.highres_imu));
 			current_messages.time_stamps.highres_imu = get_time_usec();
@@ -201,7 +203,7 @@ void MavlinkInterface::handleMessages()
 
 		case MAVLINK_MSG_ID_ATTITUDE:
 		{
-			printf("MAVLINK_MSG_ID_ATTITUDE\n");
+//			printf("MAVLINK_MSG_ID_ATTITUDE\n");
 			mavlink_msg_attitude_decode(&message, &(current_messages.attitude));
 			current_messages.time_stamps.attitude = get_time_usec();
 			this_timestamps.attitude = current_messages.time_stamps.attitude;
@@ -215,6 +217,9 @@ void MavlinkInterface::handleMessages()
 		}
 
 		} // end: switch msgid
+
+
+		if(++nMsgHandled >= NUM_MSG_HANDLE)return;
 	}
 
 }
@@ -257,7 +262,7 @@ bool MavlinkInterface::readMessage(mavlink_message_t &message)
 
 int MavlinkInterface::writeMessage(mavlink_message_t message)
 {
-	char buf[512];
+	char buf[300];
 
 	// Translate message to buffer
 	unsigned int len = mavlink_msg_to_send_buffer((uint8_t*) buf, &message);
@@ -314,7 +319,8 @@ void MavlinkInterface::update(void)
 			}
 		}
 
-		requestDataStream();
+		//Connected to Vehicle
+		requestDataStream(MAV_DATA_STREAM_ALL);
 
 		handleMessages();
 
@@ -356,14 +362,13 @@ void MavlinkInterface::waitForComplete(void)
 }
 
 
-void MavlinkInterface::requestDataStream(void)
+void MavlinkInterface::requestDataStream(uint8_t stream_id)
 {
-	//test
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
 	ds.target_system = system_id;
 	ds.target_component = autopilot_id;
-	ds.req_stream_id = MAV_DATA_STREAM_ALL;	//MAV_DATA_STREAM_POSITION;
+	ds.req_stream_id = stream_id;	//MAV_DATA_STREAM_POSITION;
 	ds.req_message_rate = 1;
 	ds.start_stop = 1;
 	mavlink_msg_request_data_stream_encode(system_id, companion_id, &message,&ds);
@@ -373,96 +378,30 @@ void MavlinkInterface::requestDataStream(void)
 	return;
 }
 
-// ------------------------------------------------------------------------------
-//   Start Off-Board Mode
-// ------------------------------------------------------------------------------
-void MavlinkInterface::enable_offboard_control()
+int MavlinkInterface::toggleOffboardControl(bool bEnable)
 {
-	// Should only send this command once
-	if (control_status == false)
-	{
-		printf("ENABLE OFFBOARD MODE\n");
+	if(m_bControlling == bEnable)return -1;
 
-		// ----------------------------------------------------------------------
-		//   TOGGLE OFF-BOARD MODE
-		// ----------------------------------------------------------------------
-
-		// Sends the command to go off-board
-		int success = toggle_offboard_control(true);
-
-		// Check the command was written
-		if (success)
-			control_status = true;
-		else
-		{
-			fprintf(stderr,
-					"Error: off-board mode not set, could not write message\n");
-			//throw EXIT_FAILURE;
-		}
-
-		printf("\n");
-
-	} // end: if not offboard_status
-
-}
-
-// ------------------------------------------------------------------------------
-//   Stop Off-Board Mode
-// ------------------------------------------------------------------------------
-void MavlinkInterface::disable_offboard_control()
-{
-
-	// Should only send this command once
-	if (control_status == true)
-	{
-		printf("DISABLE OFFBOARD MODE\n");
-
-		// ----------------------------------------------------------------------
-		//   TOGGLE OFF-BOARD MODE
-		// ----------------------------------------------------------------------
-
-		// Sends the command to stop off-board
-		int success = toggle_offboard_control(false);
-
-		// Check the command was written
-		if (success)
-			control_status = false;
-		else
-		{
-			fprintf(stderr,
-					"Error: off-board mode not set, could not write message\n");
-			//throw EXIT_FAILURE;
-		}
-
-		printf("\n");
-
-	} // end: if offboard_status
-
-}
-
-// ------------------------------------------------------------------------------
-//   Toggle Off-Board Mode
-// ------------------------------------------------------------------------------
-int MavlinkInterface::toggle_offboard_control(bool flag)
-{
 	// Prepare command for off-board mode
 	mavlink_command_long_t com;
 	com.target_system = system_id;
 	com.target_component = autopilot_id;
 	com.command = MAV_CMD_NAV_GUIDED_ENABLE;
 	com.confirmation = true;
-	com.param1 = (float) flag; // flag >0.5 => start, <0.5 => stop
+	com.param1 = (float) bEnable; // flag >0.5 => start, <0.5 => stop
 
 	// Encode
 	mavlink_message_t message;
 	mavlink_msg_command_long_encode(system_id, companion_id, &message, &com);
 
 	// Send the message
-	int len = writeMessage(message);
+	return writeMessage(message);
 
-	// Done!
-	return len;
 }
+
+
+
+
 
 
 /*
