@@ -5,6 +5,7 @@
 #include "../IO/FileIO.h"
 #include "../IO/JSON.h"
 #include "ThreadBase.h"
+#include "../Algorithm/Filter.h"
 
 //Demo App
 

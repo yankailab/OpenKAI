@@ -69,6 +69,8 @@ public:
 
 	double	m_rotate;
 
+	Filter	m_filter;
+
 private:
 public:
 	pthread_t m_threadID;

@@ -42,7 +42,8 @@ bool Filter::startMedian(int windowLength)
 
 double Filter::input(double v)
 {
-	long data[FILTER_BUF];
+	double data[FILTER_BUF];
+	double tmp;
 	int i, j;
 
 	m_trajectory[m_iTraj] = v;
@@ -51,7 +52,6 @@ double Filter::input(double v)
 		m_iTraj = 0;
 	}
 
-	long tmp;
 
 	for (i = 0; i<m_windowLength; i++)
 	{

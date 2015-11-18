@@ -42,6 +42,7 @@ CamStream::CamStream()
 	m_threadID = NULL;
 
 	m_rotate = 0;
+	m_filter.startMedian(3);
 
 }
 
@@ -156,7 +157,7 @@ void CamStream::update(void)
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
 
-		m_pFrameL->rotate(-m_rotate);
+		m_pFrameL->rotate(m_filter.input(-m_rotate));
 
 		if(m_bStereoCam)
 		{

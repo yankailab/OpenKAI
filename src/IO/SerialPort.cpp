@@ -252,7 +252,8 @@ bool SerialPort::Open(char *portName)
 
 	m_portName = portName;
 
-	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
+//	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
+	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 	if (m_fd == -1)
 	{
 		printf("init_serialport: Unable to open port\n");
@@ -302,8 +303,8 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// no input parity check, don't strip high bit off,
 	// no XON/XOFF software flow control
 	config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
-//	toptions.c_iflag &= ~(IXON | IXOFF | IXANY); // | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
-//	toptions.c_iflag |= IGNPAR;
+//	config.c_iflag &= ~(IXON | IXOFF | IXANY); // | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
+//	config.c_iflag |= IGNPAR;
 
 
 	// Output flags - Turn off output processing
@@ -313,6 +314,8 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// no local output processing
 	config.c_oflag &= ~(OCRNL | ONLCR | ONLRET | ONOCR | OFILL | OPOST);
 //	toptions.c_oflag = 0;
+//  toptions.c_oflag &= ~(OPOST|OLCUC|ONLCR|OCRNL|ONLRET|OFDEL); // make raw
+
 
 #ifdef OLCUC
 	config.c_oflag &= ~OLCUC;
@@ -322,31 +325,28 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	config.c_oflag &= ~ONOEOT;
 #endif
 
+
 	// No line processing:
 	// echo off, echo newline off, canonical mode off,
 	// extended input processing off, signal chars off
 	config.c_lflag &= ~(ECHO | ECHONL | ICANON | IEXTEN | ISIG);
+//	config.c_lflag = 0;
 //	toptions.c_lflag = 0;
-//    toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG | IEXTEN); // make raw
-//    toptions.c_oflag &= ~(OPOST|OLCUC|ONLCR|OCRNL|ONLRET|OFDEL); // make raw
+//  toptions.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG | IEXTEN); // make raw
 
 	// Turn off character processing
 	// clear current char size mask, no parity checking,
 	// no output processing, force 8 bit input
 	config.c_cflag &= ~(CSIZE | PARENB);
 	config.c_cflag |= CS8;
-/*	// 8N1
-	toptions.c_cflag &= ~PARENB;
-	toptions.c_cflag &= ~CSTOPB;
-	toptions.c_cflag &= ~CSIZE;
-	toptions.c_cflag |= CS8;
 
+	// 8N1
+/*	config.c_cflag &= ~CSTOPB;
 	// no flow control
-	toptions.c_cflag &= ~CRTSCTS;
+	config.c_cflag &= ~CRTSCTS;
 	//    toptions.c_cflag |= CRTSCTS;
-
-	toptions.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
 */
+//	config.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
 
 
 	// One input byte is enough to return from read()
@@ -357,10 +357,6 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 //	toptions.c_cc[VMIN] = 0;
 //	toptions.c_cc[VTIME] = 10;
 
-
-	// Get the current options for the port
-	////struct termios options;
-	////tcgetattr(fd, &options);
 
 	// Apply baudrate
 	switch (baud)
