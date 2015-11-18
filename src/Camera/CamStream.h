@@ -67,6 +67,8 @@ public:
 	bool		m_bGray;
 	bool		m_bShowWindow;
 
+	double	m_rotate;
+
 private:
 public:
 	pthread_t m_threadID;

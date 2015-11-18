@@ -41,6 +41,8 @@ CamStream::CamStream()
 	m_bThreadON = false;
 	m_threadID = NULL;
 
+	m_rotate = 0;
+
 }
 
 CamStream::~CamStream()
@@ -153,6 +155,8 @@ void CamStream::update(void)
 
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
+
+		m_pFrameL->rotate(-m_rotate);
 
 		if(m_bStereoCam)
 		{

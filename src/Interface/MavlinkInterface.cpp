@@ -212,7 +212,7 @@ void MavlinkInterface::handleMessages()
 
 		default:
 		{
-			printf("Warning, did not handle message id %i\n", message.msgid);
+//			printf("Warning, did not handle message id %i\n", message.msgid);
 			break;
 		}
 
@@ -320,7 +320,7 @@ void MavlinkInterface::update(void)
 		}
 
 		//Connected to Vehicle
-		requestDataStream(MAV_DATA_STREAM_ALL);
+		requestDataStream(MAV_DATA_STREAM_ALL, 30);
 
 		handleMessages();
 
@@ -362,14 +362,14 @@ void MavlinkInterface::waitForComplete(void)
 }
 
 
-void MavlinkInterface::requestDataStream(uint8_t stream_id)
+void MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 {
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
 	ds.target_system = system_id;
 	ds.target_component = autopilot_id;
-	ds.req_stream_id = stream_id;	//MAV_DATA_STREAM_POSITION;
-	ds.req_message_rate = 1;
+	ds.req_stream_id = stream_id;
+	ds.req_message_rate = rate;
 	ds.start_stop = 1;
 	mavlink_msg_request_data_stream_encode(system_id, companion_id, &message,&ds);
 

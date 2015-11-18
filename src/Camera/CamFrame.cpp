@@ -85,6 +85,25 @@ void CamFrame::getBGRA(CamFrame* pResult)
 #endif
 }
 
+
+void CamFrame::rotate(double radian)
+{
+    Point2f center(m_centerH, m_centerV);
+    double deg = radian * 180.0 * OneOvPI;
+    Mat rot = getRotationMatrix2D(center, deg, 1.0);
+
+#ifdef USE_CUDA
+
+	cuda::warpAffine(*m_pNext, m_tmpMat, rot, m_pNext->size());
+
+
+#else
+	//cv::warpAffine(m_uFrame, m_uFrame, rot, m_uFrame.size());
+
+#endif
+}
+
+
 void CamFrame::switchFrame(void)
 {
 	//switch the current frame and old frame
@@ -104,6 +123,10 @@ void CamFrame::updateFrame(Mat* pFrame)
 	}
 
 	m_uFrame = *pFrame;
+	m_width = m_uFrame.cols;
+	m_height = m_uFrame.rows;
+	m_centerH = m_width * 0.5;
+	m_centerV = m_height * 0.5;
 
 	//Upload to GPU
 #ifdef USE_CUDA

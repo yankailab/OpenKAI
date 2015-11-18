@@ -12,6 +12,9 @@
 #include "stdio.h"
 #include "../Base/cvplatform.h"
 
+#define PI 3.141592653589793
+#define OneOvPI 0.31830988618
+
 namespace kai
 {
 
@@ -30,6 +33,8 @@ public:
 	void getHSV(CamFrame* pResult);
 	void getBGRA(CamFrame* pResult);
 
+	void rotate(double radian);
+
 public:
 	//Frame Index, updated in each frame update
 	unsigned int m_frameID;
@@ -39,11 +44,14 @@ public:
 
 	unsigned int m_width;
 	unsigned int m_height;
+	unsigned int m_centerH;
+	unsigned int m_centerV;
 
 #ifdef USE_CUDA
 	GpuMat* m_pNext;
 	GpuMat* m_pPrev;
 	GpuMat m_pFrame[2];
+	GpuMat m_tmpMat;
 
 #else
 	UMat* m_pNext;

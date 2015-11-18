@@ -13,6 +13,7 @@
 #include "opencv2/cudaoptflow.hpp"
 #include "opencv2/cudaarithm.hpp"
 #include "opencv2/cudastereo.hpp"
+#include "opencv2/cudawarping.hpp"
 #endif
 
 using namespace cv;

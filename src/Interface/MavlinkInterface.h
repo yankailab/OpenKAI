@@ -119,7 +119,7 @@ struct Mavlink_Messages
 
 };
 
-#define TRD_INTERVAL_MI_USEC 100
+#define TRD_INTERVAL_MI_USEC 10
 #define NUM_MSG_HANDLE 10
 
 namespace kai
@@ -146,7 +146,7 @@ public:
 
 	//Send
 	int  writeMessage(mavlink_message_t message);
-	void requestDataStream(uint8_t stream_id);
+	void requestDataStream(uint8_t stream_id, int rate);
 
 	//Commands
 	int  toggleOffboardControl(bool bEnable);

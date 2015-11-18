@@ -87,13 +87,19 @@ int main(int argc, char* argv[])
 
 	while (g_bRun)
 	{
+		Mavlink_Messages mMsg;
+		mMsg = g_pMavlink->current_messages;
+		g_pCamFront->m_rotate = mMsg.attitude.roll;
+		printf("%f\n", g_pCamFront->m_rotate);
 
 		if (!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
 #ifdef OBJECT_DETECT
 			Mat imL, imR, imD;
 
-			g_pCamFront->m_pFrameL->m_pNext->download(imL);
+//			g_pCamFront->m_pFrameL->m_pNext->download(imL);
+			g_pCamFront->m_pFrameL->m_tmpMat.download(imL);
+
 			if (!imL.empty())
 			{
 				OBJECT* pObj;
@@ -124,7 +130,11 @@ int main(int argc, char* argv[])
 				//			g_pCamFront->m_pMonitor->show();
 				displayInfo(&imL);
 
-				imshow("Left", imL);
+
+				Mat gimbal = imL(Rect(240, 100, 800, 600));
+				imshow("Left", gimbal);
+
+//				imshow("Left", imL);
 				if(g_pOD->m_saliencyMap.rows != 0)
 				{
 					imshow( "Saliency Map", g_pOD->m_saliencyMap );
@@ -304,14 +314,14 @@ void displayInfo(Mat* pDisplayMat)
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+/*	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
 			mMsg.attitude.roll,
 			mMsg.attitude.pitch,
 			mMsg.attitude.yaw);
 	cv::putText(*pDisplayMat, String(strBuf),
 			Point(startPosH, startPosV + lineHeight * (++i)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
+*/
 	i++;
 
 	i = 0;
