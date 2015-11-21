@@ -313,7 +313,6 @@ void MavlinkInterface::update(void)
 			}
 			else
 			{
-				LOG(ERROR)<< "Cannot open serial port";
 				this->sleepThread(0,m_tSleep);
 				continue;
 			}
