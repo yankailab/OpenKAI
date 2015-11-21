@@ -157,7 +157,8 @@ void CamStream::update(void)
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
 
-		m_pFrameL->rotate(m_filter.input(-m_rotate));
+//		m_pFrameL->rotate(m_filter.input(-m_rotate));
+		m_pFrameL->rotate(-m_rotate);
 
 		if(m_bStereoCam)
 		{

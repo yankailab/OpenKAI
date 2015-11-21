@@ -131,8 +131,8 @@ int main(int argc, char* argv[])
 				displayInfo(&imL);
 
 
-//				Mat gimbal = imL(Rect(240, 100, 800, 600));
-				Mat gimbal = imL(Rect(190, 90, 1600, 900));
+				Mat gimbal = imL(Rect(240, 100, 800, 600));
+//				Mat gimbal = imL(Rect(190, 90, 1600, 900));
 				imshow("Left", gimbal);
 
 //				imshow("Left", imL);
