@@ -8,10 +8,9 @@
 #ifndef SRC_CAMINPUT_H_
 #define SRC_CAMINPUT_H_
 
-#include "../Base/common.h"
 #include "stdio.h"
+#include "../Base/common.h"
 #include "../Base/cvplatform.h"
-
 #include "../Camera/CamFrame.h"
 
 namespace kai
@@ -35,8 +34,11 @@ public:
 
 	int m_width;
 	int m_height;
-
 	Mat	m_frame;
+
+	Mat m_cameraMat;
+	Mat m_distCoeffs;
+	bool	 m_bCalibration;
 
 
 };

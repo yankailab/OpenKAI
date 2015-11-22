@@ -21,6 +21,10 @@ MavlinkInterface::MavlinkInterface()
 
 	current_messages.sysid = system_id;
 	current_messages.compid = autopilot_id;
+
+	current_messages.attitude.pitch = 0;
+	current_messages.attitude.roll = 0;
+	current_messages.attitude.yaw = 0;
 }
 
 MavlinkInterface::~MavlinkInterface()
@@ -319,7 +323,7 @@ void MavlinkInterface::update(void)
 		}
 
 		//Connected to Vehicle
-		requestDataStream(MAV_DATA_STREAM_ALL, 30);
+		requestDataStream(MAV_DATA_STREAM_RAW_SENSORS/*MAV_DATA_STREAM_ALL*/, 30);
 
 		handleMessages();
 

@@ -256,7 +256,7 @@ bool SerialPort::Open(char *portName)
 	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 	if (m_fd == -1)
 	{
-		printf("init_serialport: Unable to open port\n");
+//		printf("init_serialport: Unable to open port\n");
 		return false;
 	}
 
