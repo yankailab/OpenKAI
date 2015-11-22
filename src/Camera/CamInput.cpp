@@ -24,6 +24,33 @@ CamInput::~CamInput()
 	// TODO Auto-generated destructor stub
 }
 
+bool CamInput::setup(JSON* pJson, string camName)
+{
+	string calibFile;
+
+	if(pJson->getVal("CAM_"+camName+"_CALIB", &calibFile))
+	{
+		FileStorage fs(calibFile, FileStorage::READ);
+		if (!fs.isOpened())
+		{
+			LOG(INFO)<<"Camera calibration file not found";
+			m_bCalibration = false;
+		}
+		else
+		{
+			LOG(INFO)<<"Camera setting file opened";
+
+			fs["camera_matrix"] >> m_cameraMat;
+			fs["distortion_coefficients"] >> m_distCoeffs;
+			fs.release();
+			m_bCalibration = true;
+		}
+	}
+
+	return true;
+}
+
+
 bool CamInput::openCamera(void)
 {
 	m_camera.open(m_camDeviceID);
@@ -32,23 +59,6 @@ bool CamInput::openCamera(void)
 		LOG(ERROR)<< "Cannot open camera:" << m_camDeviceID;
 		return false;
 	}
-
-	FileStorage fs("/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml", FileStorage::READ);
-	if (!fs.isOpened())
-	{
-		printf("Cannot open camera setting file");
-		m_bCalibration = false;
-		return true;
-	}
-
-	fs["camera_matrix"] >> m_cameraMat;
-	fs["distortion_coefficients"] >> m_distCoeffs;
-
-	printf("Camera setting file opened");
-	cout << endl << "camMatrix = " << m_cameraMat << endl;
-	cout << "distMat = " << m_distCoeffs << endl << endl;
-
-	m_bCalibration = true;
 	return true;
 }
 

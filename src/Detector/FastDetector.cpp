@@ -79,7 +79,6 @@ bool FastDetector::start(void)
 
 void FastDetector::update(void)
 {
-	int i;
 	CamFrame* pFrame;
 	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
@@ -107,7 +106,7 @@ void FastDetector::update(void)
 
 void FastDetector::detect(void)
 {
-	int i, j;
+	int i;
 
 	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
 	Mat* pMat = &pFrame->m_uFrame;
@@ -170,13 +169,11 @@ void FastDetector::detect(void)
 
 }
 
-void FastDetector::setFrame(CamStream* pCam)
+void FastDetector::setCamStream(CamStream* pCam)
 {
-	if (!pCam)
-		return;
+	if (!pCam)return;
 
 	m_pCamStream = pCam;
-	this->wakeupThread();
 }
 
 int FastDetector::getHuman(FAST_OBJECT** ppHuman)

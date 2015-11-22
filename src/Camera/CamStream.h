@@ -30,6 +30,7 @@ public:
 	CamStream();
 	virtual ~CamStream();
 
+	bool setup(JSON* pJson, string camName);
 	bool init(void);
 	bool start(void);
 	bool complete(void);

@@ -1,9 +1,7 @@
 {
-"serialPort":"/dev/ttyUSB0",
-"serialPortMavlink":"/dev/ttyUSB0",
-"baudrateMavlink":57600,
-"serialPortLidar":"/dev/ttyACM1",
-"serialPortWIN":"\\\\.\\COM6",
+"SERIALPORT_FC_NAME":"/dev/ttyUSB0",
+"SERIALPORT_FC_BAUDRATE":115200,
+
 
 "ROLL_P":2.25,
 "ROLL_I":0.0,
@@ -37,6 +35,9 @@
 "CAM_FRONT_ID_L":0,
 "CAM_FRONT_ID_R":0,
 "CAM_FRONT_MARKER":0,
+"CAM_FRONT_SHOW_WIDTH":1280,
+"CAM_FRONT_SHOW_HEIGHT":800,
+"CAM_FRONT_CALIB":"/home/kai/Documents/workspace/LAB/src/logitech_c930e.xml",
 
 "CAM_UP_ID":2,
 

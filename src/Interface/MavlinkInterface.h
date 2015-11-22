@@ -131,7 +131,7 @@ public:
 	MavlinkInterface();
 	~MavlinkInterface();
 
-	void setSerial(string name, int baudrate);
+	bool setup(JSON* pJson, string serialName);
 	bool open(void);
 	void close(void);
 

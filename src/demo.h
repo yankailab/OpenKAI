@@ -18,7 +18,6 @@
 #include "Camera/CamMarkerDetect.h"
 #include "Camera/CamMonitor.h"
 #include "Autopilot/AutoPilot.h"
-#include "IO/Config.h"
 #include "Interface/MavlinkInterface.h"
 
 using namespace kai;
@@ -37,7 +36,6 @@ cv::Mat g_displayMat;
 
 JSON g_Json;
 FileIO g_file;
-Config g_config;
 string g_serialPort;
 int g_baudrate;
 

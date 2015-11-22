@@ -44,6 +44,127 @@ AutoPilot::~AutoPilot()
 {
 }
 
+bool AutoPilot::	setup(JSON* pJson, string pilotName)
+{
+	if(!pJson)return false;
+
+		CONTROL_AXIS cAxis;
+
+		cAxis.m_pos = 0;
+		cAxis.m_targetPos = 0;
+		cAxis.m_accel = 0;
+		cAxis.m_cvErr = 0;
+		cAxis.m_cvErrOld = 0;
+		cAxis.m_cvErrInteg = 0;
+		cAxis.m_P = 0;
+		cAxis.m_I = 0;
+		cAxis.m_Imax = 0;
+		cAxis.m_D = 0;
+		cAxis.m_pwm = 0;
+		cAxis.m_pwmCenter = 0;
+		cAxis.m_RCChannel = 0;
+
+		m_roll = cAxis;
+		m_pitch = cAxis;
+		m_alt = cAxis;
+
+		CHECK_ERROR(pJson->getVal("ROLL_P", &m_roll.m_P));
+		CHECK_ERROR(pJson->getVal("ROLL_I", &m_roll.m_I));
+		CHECK_ERROR(pJson->getVal("ROLL_IMAX", &m_roll.m_Imax));
+		CHECK_ERROR(pJson->getVal("ROLL_D", &m_roll.m_D));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_roll.m_pwm));
+		CHECK_ERROR(pJson->getVal("PWM_LOW", (int*)&m_roll.m_pwmLow));
+		CHECK_ERROR(pJson->getVal("PWM_HIGH", (int*)&m_roll.m_pwmHigh));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_roll.m_pwmCenter));
+		CHECK_ERROR(pJson->getVal("RC_ROLL", (int*)&m_roll.m_RCChannel));
+
+		CHECK_ERROR(pJson->getVal("PITCH_P", &m_pitch.m_P));
+		CHECK_ERROR(pJson->getVal("PITCH_I", &m_pitch.m_I));
+		CHECK_ERROR(pJson->getVal("PITCH_IMAX", &m_pitch.m_Imax));
+		CHECK_ERROR(pJson->getVal("PITCH_D", &m_pitch.m_D));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_pitch.m_pwm));
+		CHECK_ERROR(pJson->getVal("PWM_LOW", (int*)&m_pitch.m_pwmLow));
+		CHECK_ERROR(pJson->getVal("PWM_HIGH", (int*)&m_pitch.m_pwmHigh));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_pitch.m_pwmCenter));
+		CHECK_ERROR(pJson->getVal("RC_PITCH", (int*)&m_pitch.m_RCChannel));
+
+		CHECK_ERROR(pJson->getVal("ALT_P", &m_alt.m_P));
+		CHECK_ERROR(pJson->getVal("ALT_I", &m_alt.m_I));
+		CHECK_ERROR(pJson->getVal("ALT_IMAX", &m_alt.m_Imax));
+		CHECK_ERROR(pJson->getVal("ALT_D", &m_alt.m_D));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_alt.m_pwm));
+		CHECK_ERROR(pJson->getVal("PWM_LOW", (int*)&m_alt.m_pwmLow));
+		CHECK_ERROR(pJson->getVal("PWM_HIGH", (int*)&m_alt.m_pwmHigh));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_alt.m_pwmCenter));
+		CHECK_ERROR(pJson->getVal("RC_THROTTLE", (int*)&m_alt.m_RCChannel));
+
+		CHECK_ERROR(pJson->getVal("YAW_P", &m_yaw.m_P));
+		CHECK_ERROR(pJson->getVal("YAW_I", &m_yaw.m_I));
+		CHECK_ERROR(pJson->getVal("YAW_IMAX", &m_yaw.m_Imax));
+		CHECK_ERROR(pJson->getVal("YAW_D", &m_yaw.m_D));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_yaw.m_pwm));
+		CHECK_ERROR(pJson->getVal("PWM_LOW", (int*)&m_yaw.m_pwmLow));
+		CHECK_ERROR(pJson->getVal("PWM_HIGH", (int*)&m_yaw.m_pwmHigh));
+		CHECK_ERROR(pJson->getVal("PWM_CENTER", (int*)&m_yaw.m_pwmCenter));
+		CHECK_ERROR(pJson->getVal("RC_YAW", (int*)&m_yaw.m_RCChannel));
+
+
+		CHECK_ERROR(pJson->getVal("ROLL_P", &m_rollFar.m_P));
+		CHECK_ERROR(pJson->getVal("ROLL_I", &m_rollFar.m_I));
+		CHECK_ERROR(pJson->getVal("ROLL_D", &m_rollFar.m_D));
+		CHECK_ERROR(pJson->getVal("Z_FAR_LIM", &m_rollFar.m_Z));
+
+		CHECK_ERROR(pJson->getVal("ROLL_P", &m_rollNear.m_P));
+		CHECK_ERROR(pJson->getVal("ROLL_I", &m_rollNear.m_I));
+		CHECK_ERROR(pJson->getVal("ROLL_D", &m_rollNear.m_D));
+		CHECK_ERROR(pJson->getVal("Z_NEAR_LIM", &m_rollNear.m_Z));
+
+		CHECK_ERROR(pJson->getVal("ALT_P", &m_altFar.m_P));
+		CHECK_ERROR(pJson->getVal("ALT_I", &m_altFar.m_I));
+		CHECK_ERROR(pJson->getVal("ALT_D", &m_altFar.m_D));
+		CHECK_ERROR(pJson->getVal("Z_FAR_LIM", &m_altFar.m_Z));
+
+		CHECK_ERROR(pJson->getVal("ALT_P", &m_altNear.m_P));
+		CHECK_ERROR(pJson->getVal("ALT_I", &m_altNear.m_I));
+		CHECK_ERROR(pJson->getVal("ALT_D", &m_altNear.m_D));
+		CHECK_ERROR(pJson->getVal("Z_NEAR_LIM", &m_altNear.m_Z));
+
+		CHECK_ERROR(pJson->getVal("PITCH_P", &m_pitchFar.m_P));
+		CHECK_ERROR(pJson->getVal("PITCH_I", &m_pitchFar.m_I));
+		CHECK_ERROR(pJson->getVal("PITCH_D", &m_pitchFar.m_D));
+		CHECK_ERROR(pJson->getVal("Z_FAR_LIM", &m_pitchFar.m_Z));
+
+		CHECK_ERROR(pJson->getVal("PITCH_P", &m_pitchNear.m_P));
+		CHECK_ERROR(pJson->getVal("PITCH_I", &m_pitchNear.m_I));
+		CHECK_ERROR(pJson->getVal("PITCH_D", &m_pitchNear.m_D));
+		CHECK_ERROR(pJson->getVal("Z_NEAR_LIM", &m_pitchNear.m_Z));
+
+		CHECK_ERROR(pJson->getVal("YAW_P", &m_yawFar.m_P));
+		CHECK_ERROR(pJson->getVal("YAW_I", &m_yawFar.m_I));
+		CHECK_ERROR(pJson->getVal("YAW_D", &m_yawFar.m_D));
+		CHECK_ERROR(pJson->getVal("Z_FAR_LIM", &m_yawFar.m_Z));
+
+		CHECK_ERROR(pJson->getVal("YAW_P", &m_yawNear.m_P));
+		CHECK_ERROR(pJson->getVal("YAW_I", &m_yawNear.m_I));
+		CHECK_ERROR(pJson->getVal("YAW_D", &m_yawNear.m_D));
+		CHECK_ERROR(pJson->getVal("Z_NEAR_LIM", &m_yawNear.m_Z));
+
+		m_RC[m_roll.m_RCChannel] = m_roll.m_pwmCenter;
+		m_RC[m_pitch.m_RCChannel] = m_pitch.m_pwmCenter;
+		m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
+		m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
+
+		CHECK_ERROR(pJson->getVal("NUM_FLOW_FRAME_RESET", &m_resetFlowFrame));
+		CHECK_ERROR(pJson->getVal("FLOW_RESET_FACTOR", &m_resetFactor));
+		CHECK_ERROR(pJson->getVal("DELAY_TIME", &m_dT));
+
+		CHECK_ERROR(pJson->getVal("TARGET_X", &m_roll.m_targetPos));
+		CHECK_ERROR(pJson->getVal("TARGET_Y", &m_alt.m_targetPos));
+		CHECK_ERROR(pJson->getVal("TARGET_Z", &m_pitch.m_targetPos));
+
+		return true;
+}
+
 bool AutoPilot::init(void)
 {
 
@@ -88,42 +209,6 @@ void AutoPilot::update(void)
 			//New frame arrived
 			pCam->m_frameID = pFrame->m_frameID;
 
-#ifdef OBJECT_DETECT
-			if(m_pOD)
-			{
-				m_pOD->setFrame(pCam->m_pCam);
-				m_pOD->wakeupThread();
-			}
-
-			if(m_pFD)
-			{
-				m_pFD->setFrame(pCam->m_pCam);
-				m_pFD->wakeupThread();
-			}
-#endif
-/*
-			//Decode mavlink message from device
-			if (m_pVI->readMessages())
-			{
-				m_pRecvMsg = &m_pVI->m_recvMsg;
-				remoteMavlinkMsg(m_pRecvMsg);
-
-				//reset the flag to accept new messages
-				m_pRecvMsg->m_cmd = 0;
-			}
-
-			if (m_remoteSystem.m_mode != m_hostSystem.m_mode)
-			{
-				if (m_hostSystem.m_mode == OPE_BOOT)
-				{
-					m_hostSystem.m_mode = m_remoteSystem.m_mode;
-				}
-				else
-				{
-					m_pVI->controlMode(m_hostSystem.m_mode);
-				}
-			}
-*/
 //			m_pVI->readMessages();
 
 			//Action
@@ -446,7 +531,6 @@ void AutoPilot::setVehicleInterface(VehicleInterface* pVehicle)
 void AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
 {
 	int i;
-	unsigned char numChannel;
 	unsigned int val;
 
 	switch (pMsg->m_pBuf[2]) //Command

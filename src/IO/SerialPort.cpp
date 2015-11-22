@@ -217,8 +217,7 @@ SerialPort::SerialPort(void)
 	m_baudrate = 57600;
 
 	// Start mutex
-	int result = pthread_mutex_init(&m_portMutex, NULL);
-	if (result != 0)
+	if (pthread_mutex_init(&m_portMutex, NULL) != 0)
 	{
 		printf("mutex init failed\n");
 	}

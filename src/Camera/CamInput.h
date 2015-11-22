@@ -22,6 +22,8 @@ public:
 	CamInput();
 	virtual ~CamInput();
 
+	bool setup(JSON* pJson, string camName);
+
 	void setCameraID(int);
 	bool openCamera(void);
 	bool setSize(void);

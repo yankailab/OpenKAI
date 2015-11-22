@@ -34,7 +34,7 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	void setFrame(CamStream* pCam);
+	void setCamStream(CamStream* pCam);
 	int  getHuman(FAST_OBJECT** ppHuman);
 
 private:

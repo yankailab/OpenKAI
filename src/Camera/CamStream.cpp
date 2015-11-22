@@ -66,6 +66,36 @@ CamStream::~CamStream()
 
 }
 
+bool CamStream::setup(JSON* pJson, string camName)
+{
+	if(!pJson)return false;
+
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID_L", &m_pCamL->m_camDeviceID));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID_R", &m_pCamR->m_camDeviceID));
+
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_pCamL->m_width));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_pCamL->m_height));
+
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_pCamR->m_width));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_pCamR->m_height));
+
+	CHECK_INFO(m_pCamL->setup(pJson, camName));
+
+	int bSwitch;
+	if(pJson->getVal("CAM_"+camName+"_MARKER", &bSwitch))
+	{
+		if(bSwitch)
+		{
+			m_bHSV = true;
+			m_bMarkerDetect = true;
+		}
+	}
+
+
+	return true;
+}
+
 bool CamStream::init(void)
 {
 	m_pFrameL->init();
@@ -99,10 +129,10 @@ bool CamStream::openWindow(void)
 	{
 		return false;
 	}
+
 	namedWindow(m_camName);
 	m_pMonitor->setWindowName(m_camName);
 	m_bShowWindow = true;
-
 
 	return true;
 }

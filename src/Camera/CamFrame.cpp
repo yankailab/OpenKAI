@@ -16,6 +16,9 @@ CamFrame::CamFrame()
 	m_width = 0;
 	m_height = 0;
 
+	m_centerH = 0;
+	m_centerV = 0;
+
 	m_iFrame = 0;
 	m_pPrev = &m_pFrame[m_iFrame];
 	m_iFrame = 1 - m_iFrame;
@@ -28,6 +31,12 @@ CamFrame::~CamFrame()
 
 bool CamFrame::init(void)
 {
+	// Start mutex
+/*	if (pthread_mutex_init(&m_mutexNext, NULL) != 0)
+	{
+		printf("mutexNext init failed\n");
+	}
+*/
 	return true;
 }
 
@@ -93,14 +102,20 @@ void CamFrame::rotate(double radian)
     Mat rot = getRotationMatrix2D(center, deg, 1.0);
 
 #ifdef USE_CUDA
-
-	cuda::warpAffine(*m_pNext, m_tmpMat, rot, m_pNext->size());
-
-
+//    pthread_mutex_lock(&m_mutexNext);
+	cuda::warpAffine(*m_pNext, m_GMat, rot, m_pNext->size());
+//    pthread_mutex_unlock(&m_mutexNext);
 #else
 	//cv::warpAffine(m_uFrame, m_uFrame, rot, m_uFrame.size());
 
 #endif
+}
+
+void CamFrame::getNextMat(Mat* pDest)
+{
+//    pthread_mutex_lock(&m_mutexNext);
+    m_GMat.download(*pDest);
+//    pthread_mutex_unlock(&m_mutexNext);
 }
 
 

@@ -77,6 +77,7 @@ public:
 	AutoPilot();
 	~AutoPilot();
 
+	bool setup(JSON* pJson, string pilotName);
 	bool init(void);
 	bool start(void);
 	bool complete(void);

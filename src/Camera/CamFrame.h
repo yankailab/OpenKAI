@@ -8,9 +8,12 @@
 #ifndef SRC_CAMFRAME_H_
 #define SRC_CAMFRAME_H_
 
-#include "../Base/common.h"
+#include <pthread.h>
 #include "stdio.h"
+
+#include "../Base/common.h"
 #include "../Base/cvplatform.h"
+
 
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
@@ -29,6 +32,8 @@ public:
 	void switchFrame(void);
 
 	void resize(int width, int height, CamFrame* pResult);
+	void getNextMat(Mat* pDest);
+
 	void getGray(CamFrame* pResult);
 	void getHSV(CamFrame* pResult);
 	void getBGRA(CamFrame* pResult);
@@ -47,11 +52,13 @@ public:
 	unsigned int m_centerH;
 	unsigned int m_centerV;
 
+//	pthread_mutex_t m_mutexNext;
+
 #ifdef USE_CUDA
 	GpuMat* m_pNext;
 	GpuMat* m_pPrev;
-	GpuMat m_pFrame[2];
-	GpuMat m_tmpMat;
+	GpuMat  m_pFrame[2];
+	GpuMat  m_GMat;
 
 #else
 	UMat* m_pNext;

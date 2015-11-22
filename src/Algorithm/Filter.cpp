@@ -13,7 +13,9 @@ namespace kai
 Filter::Filter()
 {
 	// TODO Auto-generated constructor stub
-
+	m_iTraj = 0;
+	m_windowLength = 0;
+	m_iMedian = 0;
 }
 
 Filter::~Filter()

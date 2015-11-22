@@ -47,7 +47,7 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	void setFrame(CamStream* pCam);
+	void setCamStream(CamStream* pCam);
 	int  getObject(OBJECT** ppObjects);
 
 private:

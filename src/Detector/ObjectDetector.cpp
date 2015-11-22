@@ -124,8 +124,8 @@ void ObjectDetector::update(void)
 		//The current frame is not the latest frame
 		if (m_frameID != pFrame->m_frameID)
 		{
-			detect();
 			m_frameID = pFrame->m_frameID;
+			detect();
 		}
 
 		//sleepThread can be woke up by this->wakeupThread()
@@ -284,12 +284,11 @@ void ObjectDetector::detect(void)
 
 }
 
-void ObjectDetector::setFrame(CamStream* pCam)
+void ObjectDetector::setCamStream(CamStream* pCam)
 {
 	if (!pCam)return;
 
 	m_pCamStream = pCam;
-//	this->wakeupThread();
 }
 
 int ObjectDetector::getObject(OBJECT** ppObjects)

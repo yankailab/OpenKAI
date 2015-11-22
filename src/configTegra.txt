@@ -1,12 +1,6 @@
 {
-"serialPort":"/dev/cu.usbmodem1",
-"serialPortMavlink":"/dev/cu.usbmodem1",
-"baudrateMavlink":115200,
-"_serialPort":"/dev/cu.usbserial-A901OAWE",
-"_serialPortMavlink":"/dev/cu.usbserial-A901OAWE",
-"_baudrateMavlink":57600,
-"serialPortLidar":"/dev/ttyACM1",
-"serialPortWIN":"\\\\.\\COM6",
+"SERIALPORT_FC_NAME":"/dev/cu.usbmodem1",
+"SERIALPORT_FC_BAUDRATE":115200,
 
 "ROLL_P":3.0,
 "ROLL_I":0.1,
@@ -42,6 +36,8 @@
 "CAM_FRONT_MARKER":1,
 "CAM_FRONT_SHOW_WIDTH":1280,
 "CAM_FRONT_SHOW_HEIGHT":800,
+"CAM_FRONT_CALIB":"/home/kai/Documents/workspace/LAB/src/logitech_c930e.xml",
+
 
 "CAM_UP_ID":2,
 

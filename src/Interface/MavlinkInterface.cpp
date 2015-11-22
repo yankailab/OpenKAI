@@ -35,11 +35,16 @@ MavlinkInterface::~MavlinkInterface()
 	}
 }
 
-void MavlinkInterface::setSerial(string name, int baudrate)
+bool MavlinkInterface::setup(JSON* pJson, string serialName)
 {
-	m_sportName = name;
-	m_baudRate = baudrate;
+	if(!pJson)return false;
+
+	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
+	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
+
+	return true;
 }
+
 
 bool MavlinkInterface::open(void)
 {

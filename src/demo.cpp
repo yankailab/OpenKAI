@@ -1,36 +1,26 @@
 #include "demo.h"
 
-
 int main(int argc, char* argv[])
 {
-	// Initialize Google's logging library.
+	//Init Logger
 	google::InitGoogleLogging(argv[0]);
-
 	printEnvironment();
 
+	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	CHECK_FATAL(g_file.open(argv[1]));
-
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
-	g_config.setJSON(&g_Json);
-
 	//Connect to Mavlink
-	CHECK_ERROR(g_Json.getVal("serialPortMavlink", &g_serialPort));
-	CHECK_ERROR(g_Json.getVal("baudrateMavlink", &g_baudrate));
-
 	g_pMavlink = new MavlinkInterface();
-	g_pMavlink->setSerial(g_serialPort, g_baudrate);
-	if (g_pMavlink->open())
-	{
-		printf("Serial port opened¥n");
-	}
+	CHECK_FATAL(g_pMavlink->setup(&g_Json,"FC"));
+	CHECK_INFO(g_pMavlink->open());
 
-	//Init CamStream
+	//Init Camera
 	g_pCamFront = new CamStream();
-	CHECK_FATAL(g_config.setCamStream(g_pCamFront));
-	g_pCamFront->init();
+	CHECK_FATAL(g_pCamFront->setup(&g_Json, "FRONT"));
+	CHECK_FATAL(g_pCamFront->init());
 	g_pCamFront->openWindow();
 
 #ifdef OBJECT_DETECT
@@ -46,21 +36,21 @@ int main(int argc, char* argv[])
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
-	g_pOD->m_pCamStream = g_pCamFront;
+	g_pOD->setCamStream(g_pCamFront);
 
 	//Init Fast Detector
 	g_pFD = new FastDetector();
 	g_pFD->init(&g_Json);
-	g_pFD->m_pCamStream = g_pCamFront;
+	g_pFD->setCamStream(g_pCamFront);
 
 #endif
 
 	//Init Autopilot
 	g_pAP = new AutoPilot();
-	CHECK_FATAL(g_config.setAutoPilot(g_pAP));
+	CHECK_FATAL(g_pAP->setup(&g_Json,""));
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront, CAM_FRONT);
-//	g_pAP->setVehicleInterface(g_pVehicle);
+
 #ifdef OBJECT_DETECT
 	g_pAP->m_pOD = g_pOD;
 	g_pAP->m_pFD = g_pFD;
@@ -90,19 +80,17 @@ int main(int argc, char* argv[])
 		Mavlink_Messages mMsg;
 		mMsg = g_pMavlink->current_messages;
 		g_pCamFront->m_rotate = mMsg.attitude.roll;
-//		printf("%f\n", g_pCamFront->m_rotate);
 
 		if (!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
 #ifdef OBJECT_DETECT
 			Mat imL, imR, imD;
 
-//			g_pCamFront->m_pFrameL->m_pNext->download(imL);
-			g_pCamFront->m_pFrameL->m_tmpMat.download(imL);
+			g_pCamFront->m_pFrameL->getNextMat(&imL);
 
 			if (!imL.empty())
 			{
-/*				OBJECT* pObj;
+				OBJECT* pObj;
 				for (i = 0; i < g_pOD->m_numObj; i++)
 				{
 					pObj = &g_pOD->m_pObjects[i];
@@ -129,7 +117,7 @@ int main(int argc, char* argv[])
 
 				//			g_pCamFront->m_pMonitor->show();
 				displayInfo(&imL);
-*/
+
 
 				Mat gimbal = imL(Rect(240, 100, 800, 600));
 //				Mat gimbal = imL(Rect(190, 90, 1600, 900));
@@ -179,6 +167,7 @@ int main(int argc, char* argv[])
 
 #ifdef OBJECT_DETECT
 	g_pOD->stop();
+	g_pFD->stop();
 #endif
 	g_pAP->stop();
 	g_pCamFront->stop();
@@ -186,11 +175,11 @@ int main(int argc, char* argv[])
 
 #ifdef OBJECT_DETECT
 	g_pOD->complete();
+	g_pFD->complete();
 #endif
 	g_pAP->complete();
 	g_pCamFront->complete();
 	g_pMavlink->complete();
-
 	g_pMavlink->close();
 
 	delete g_pMavlink;
@@ -199,6 +188,7 @@ int main(int argc, char* argv[])
 
 #ifdef OBJECT_DETECT
 	delete g_pOD;
+	delete g_pFD;
 #endif
 
 	return 0;
