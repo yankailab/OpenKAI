@@ -7,15 +7,12 @@
 #include "ThreadBase.h"
 #include "../Algorithm/Filter.h"
 
-//Demo App
-
-//#define MARKER_COPTER
-#define OBJECT_DETECT
-
-
 //Common include
 
 #define MAX_FRAME_ID 0xffffffff
+
+#define PI 3.141592653589793
+#define OneOvPI 0.31830988618
 
 using namespace std;
 

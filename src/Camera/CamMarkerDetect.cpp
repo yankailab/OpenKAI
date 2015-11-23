@@ -174,7 +174,7 @@ void CamMarkerDetect::detect(CamFrame* pHSV, CamFrame* pRGB, bool bDrawResult)
 
 		if(bDrawResult)
 		{
-			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 2);
+//			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 2);
 		}
 
 		m_pAllMarker[m_numAllMarker].m_x = center.x;

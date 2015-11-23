@@ -137,11 +137,11 @@ void ObjectDetector::update(void)
 void ObjectDetector::detect(void)
 {
 	int i,j;
+	Mat pMat;
 
 	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-	Mat* pMat = &pFrame->m_uFrame;
-
-	if (pMat->empty())return;
+	if(pFrame->m_pNext->empty())return;
+	pFrame->m_pNext->download(pMat);
 
 	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
 	if (pGray->empty())return;
@@ -247,7 +247,7 @@ void ObjectDetector::detect(void)
 		if(overH<0)boundRect.height+=overH;
 
 		m_pObjects[m_numObj].m_boundBox = boundRect;
-		m_pCamStream->m_pFrameL->m_uFrame(boundRect).copyTo(m_pObjects[m_numObj].m_pImg);
+		pMat(boundRect).copyTo(m_pObjects[m_numObj].m_pImg);
 		m_numObj++;
 	}
 

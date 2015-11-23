@@ -57,7 +57,6 @@ public:
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
-
 	CamMonitor*			m_pMonitor;
 
 	bool		m_bStereoCam;
@@ -67,10 +66,6 @@ public:
 	bool		m_bHSV;
 	bool		m_bGray;
 	bool		m_bShowWindow;
-
-	double	m_rotate;
-
-	Filter	m_filter;
 
 private:
 public:

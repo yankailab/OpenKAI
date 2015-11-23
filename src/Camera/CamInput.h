@@ -30,18 +30,31 @@ public:
 
 	void readFrame(CamFrame* pFrame);
 
+	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
+
 public:
 	int m_camDeviceID;
 	VideoCapture m_camera;
 
 	int m_width;
 	int m_height;
-	Mat	m_frame;
+	unsigned int m_centerH;
+	unsigned int m_centerV;
+
+	Mat m_frame;
 
 	Mat m_cameraMat;
 	Mat m_distCoeffs;
-	bool	 m_bCalibration;
+	bool m_bCalibration;
 
+	bool			m_bGimbal;
+	Mat			m_rotRoll;
+	uint64_t		m_rotTime;
+	double		m_rotPrev;
+
+private:
+	GpuMat 		m_Gframe;
+	GpuMat 		m_Gframe2;
 
 };
 

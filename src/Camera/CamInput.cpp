@@ -12,11 +12,11 @@ namespace kai
 
 CamInput::CamInput()
 {
-	// TODO Auto-generated constructor stub
 	m_width = 0;
 	m_height = 0;
 	m_camDeviceID = 0;
 	m_bCalibration = false;
+	m_bGimbal = false;
 }
 
 CamInput::~CamInput()
@@ -27,6 +27,10 @@ CamInput::~CamInput()
 bool CamInput::setup(JSON* pJson, string camName)
 {
 	string calibFile;
+
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID", &m_camDeviceID));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_width));
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_height));
 
 	if(pJson->getVal("CAM_"+camName+"_CALIB", &calibFile))
 	{
@@ -67,6 +71,9 @@ bool CamInput::setSize(void)
 	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
+	m_centerH = m_width * 0.5;
+	m_centerV = m_height * 0.5;
+
 	return true;
 }
 
@@ -74,15 +81,36 @@ void CamInput::readFrame(CamFrame* pFrame)
 {
 	while (!m_camera.read(m_frame));
 
-	m_bCalibration = false;
+	m_Gframe.upload(m_frame);
+
 	if(m_bCalibration)
 	{
-		Mat tmp;
-		undistort(m_frame, tmp, m_cameraMat, m_distCoeffs);
-		m_frame = tmp;
+		//TODO: to GPU
+//		Mat tmp;
+//		undistort(m_frame, tmp, m_cameraMat, m_distCoeffs);
+//		m_frame = tmp;
 	}
 
-	pFrame->updateFrame(&m_frame);
+	if(m_bGimbal)
+	{
+		cuda::warpAffine(m_Gframe, m_Gframe2, m_rotRoll, m_Gframe.size());
+		pFrame->updateFrame(&m_Gframe2);
+	}
+	else
+	{
+		pFrame->updateFrame(&m_Gframe);
+	}
+
 }
+
+void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
+{
+    Point2f center(m_centerH, m_centerV);
+    double deg = -rollRad * 180.0 * OneOvPI;
+
+    m_rotRoll = getRotationMatrix2D(center, deg, 1.5);
+
+}
+
 
 } /* namespace kai */

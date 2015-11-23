@@ -44,6 +44,13 @@ void ThreadBase::wakeupThread(void)
 	pthread_cond_signal(&m_wakeupSignal);
 }
 
+void ThreadBase::updateTime(void)
+{
+	m_timeStamp = get_time_usec();
+
+
+}
+
 
 
 }

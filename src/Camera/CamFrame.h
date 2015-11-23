@@ -15,8 +15,7 @@
 #include "../Base/cvplatform.h"
 
 
-#define PI 3.141592653589793
-#define OneOvPI 0.31830988618
+
 
 namespace kai
 {
@@ -28,43 +27,25 @@ public:
 	virtual ~CamFrame();
 
 	bool init(void);
-	void updateFrame(Mat* pFrame);
+	void updateFrame(GpuMat* pGpuFrame);
 	void switchFrame(void);
 
 	void resize(int width, int height, CamFrame* pResult);
-	void getNextMat(Mat* pDest);
 
 	void getGray(CamFrame* pResult);
 	void getHSV(CamFrame* pResult);
 	void getBGRA(CamFrame* pResult);
 
-	void rotate(double radian);
-
 public:
 	//Frame Index, updated in each frame update
 	unsigned int m_frameID;
 
-	Mat m_uFrame;
+	//index to m_pFrame
 	unsigned char m_iFrame;
 
-	unsigned int m_width;
-	unsigned int m_height;
-	unsigned int m_centerH;
-	unsigned int m_centerV;
-
-//	pthread_mutex_t m_mutexNext;
-
-#ifdef USE_CUDA
 	GpuMat* m_pNext;
 	GpuMat* m_pPrev;
 	GpuMat  m_pFrame[2];
-	GpuMat  m_GMat;
-
-#else
-	UMat* m_pNext;
-	UMat* m_pPrev;
-	UMat m_pFrame[2];
-#endif
 
 };
 

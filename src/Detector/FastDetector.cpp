@@ -108,11 +108,11 @@ void FastDetector::detect(void)
 {
 	int i;
 
-	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-	Mat* pMat = &pFrame->m_uFrame;
-	if (pMat->empty())
-		return;
-
+//	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
+//	Mat* pMat = &pFrame->m_uFrame;
+//	if (pMat->empty())
+//		return;
+//
 	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
 	if (pGray->empty())
 		return;

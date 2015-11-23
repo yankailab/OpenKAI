@@ -35,9 +35,9 @@ bool CamMonitor::init(void)
 
 void CamMonitor::addFrame(CamFrame* pFrame, int zIndex, double alpha)
 {
-	m_mat = pFrame->m_uFrame;
+//	m_mat = pFrame->m_uFrame;
 //	pFrame->m_uFrame.copyTo(m_mat);
-//	pFrame->m_pNext->download(m_mat);
+	pFrame->m_pNext->download(m_mat);
 }
 
 void CamMonitor::addMarkerDetect(CamFrame* pFrame, int zIndex, double alpha)

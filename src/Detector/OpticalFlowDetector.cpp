@@ -105,9 +105,9 @@ void OpticalFlowDetector::detect(void)
 	int i, j;
 
 	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-	Mat* pMat = &pFrame->m_uFrame;
-	if (pMat->empty())
-		return;
+//	Mat* pMat = &pFrame->m_uFrame;
+//	if (pMat->empty())
+//		return;
 
 	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
 	if (pGray->empty())

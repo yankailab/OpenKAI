@@ -19,20 +19,15 @@ int main(int argc, char* argv[])
 
 	//Init Camera
 	g_pCamFront = new CamStream();
-	CHECK_FATAL(g_pCamFront->setup(&g_Json, "FRONT"));
+	CHECK_FATAL(g_pCamFront->setup(&g_Json, "FRONTL"));
 	CHECK_FATAL(g_pCamFront->init());
 	g_pCamFront->openWindow();
 
-#ifdef OBJECT_DETECT
 	g_pCamFront->m_bGray = true;
-#endif
-#ifdef MARKER_COPTER
 	g_pCamFront->m_bHSV = true;
 	g_pCamFront->m_bMarkerDetect = true;
 //	g_pCamFront->m_bDenseFlow = true;
-#endif
 
-#ifdef OBJECT_DETECT
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
@@ -43,32 +38,22 @@ int main(int argc, char* argv[])
 	g_pFD->init(&g_Json);
 	g_pFD->setCamStream(g_pCamFront);
 
-#endif
-
 	//Init Autopilot
 	g_pAP = new AutoPilot();
 	CHECK_FATAL(g_pAP->setup(&g_Json,""));
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront, CAM_FRONT);
 
-#ifdef OBJECT_DETECT
 	g_pAP->m_pOD = g_pOD;
 	g_pAP->m_pFD = g_pFD;
-#endif
-#ifdef MARKER_COPTER
-	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
-#endif
+//	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
 
 	//Start threads
 	g_pCamFront->start();
 	g_pMavlink->start();
-#ifdef MARKER_COPTER
-	g_pAP->start();
-#endif
-#ifdef OBJECT_DETECT
+//	g_pAP->start();
 	g_pOD->start();
 	g_pFD->start();
-#endif
 
 	//UI thread
 	int i;
@@ -79,14 +64,14 @@ int main(int argc, char* argv[])
 	{
 		Mavlink_Messages mMsg;
 		mMsg = g_pMavlink->current_messages;
-		g_pCamFront->m_rotate = mMsg.attitude.roll;
+		g_pCamFront->m_pCamL->m_bGimbal = true;
+		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
 		if (!g_pCamFront->m_pMonitor->m_mat.empty())
 		{
-#ifdef OBJECT_DETECT
 			Mat imL, imR, imD;
 
-			g_pCamFront->m_pFrameL->getNextMat(&imL);
+			g_pCamFront->m_pFrameL->m_pNext->download(imL);
 
 			if (!imL.empty())
 			{
@@ -119,11 +104,11 @@ int main(int argc, char* argv[])
 				displayInfo(&imL);
 
 
-				Mat gimbal = imL(Rect(240, 100, 800, 600));
+//				Mat gimbal = imL(Rect(240, 100, 800, 600));
 //				Mat gimbal = imL(Rect(190, 90, 1600, 900));
-				imshow("Left", gimbal);
+//				imshow("Left", gimbal);
 
-//				imshow("Left", imL);
+				imshow("Left", imL);
 				if(g_pOD->m_saliencyMap.rows != 0)
 				{
 					imshow( "Saliency Map", g_pOD->m_saliencyMap );
@@ -152,12 +137,6 @@ int main(int argc, char* argv[])
 				}
 			}
 
-#endif
-
-#ifdef MARKER_COPTER
-			displayInfo();
-			imshow(g_pCamFront->m_camName, g_displayMat);
-#endif
 		}
 
 		//Handle key input
@@ -165,18 +144,14 @@ int main(int argc, char* argv[])
 		handleKey(g_key);
 	}
 
-#ifdef OBJECT_DETECT
 	g_pOD->stop();
 	g_pFD->stop();
-#endif
 	g_pAP->stop();
 	g_pCamFront->stop();
 	g_pMavlink->stop();
 
-#ifdef OBJECT_DETECT
 	g_pOD->complete();
 	g_pFD->complete();
-#endif
 	g_pAP->complete();
 	g_pCamFront->complete();
 	g_pMavlink->complete();
@@ -185,11 +160,8 @@ int main(int argc, char* argv[])
 	delete g_pMavlink;
 	delete g_pAP;
 	delete g_pCamFront;
-
-#ifdef OBJECT_DETECT
 	delete g_pOD;
 	delete g_pFD;
-#endif
 
 	return 0;
 

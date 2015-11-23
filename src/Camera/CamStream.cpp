@@ -41,9 +41,6 @@ CamStream::CamStream()
 	m_bThreadON = false;
 	m_threadID = NULL;
 
-	m_rotate = 0;
-	m_filter.startMedian(3);
-
 }
 
 CamStream::~CamStream()
@@ -71,16 +68,9 @@ bool CamStream::setup(JSON* pJson, string camName)
 	if(!pJson)return false;
 
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID_L", &m_pCamL->m_camDeviceID));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID_R", &m_pCamR->m_camDeviceID));
 
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_pCamL->m_width));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_pCamL->m_height));
+	CHECK_ERROR(m_pCamL->setup(pJson, camName));
 
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_pCamR->m_width));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_pCamR->m_height));
-
-	CHECK_INFO(m_pCamL->setup(pJson, camName));
 
 	int bSwitch;
 	if(pJson->getVal("CAM_"+camName+"_MARKER", &bSwitch))
@@ -177,18 +167,14 @@ bool CamStream::start(void)
 
 void CamStream::update(void)
 {
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_CAMSTREAM;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
-
-//		m_pFrameL->rotate(m_filter.input(-m_rotate));
-		m_pFrameL->rotate(-m_rotate);
 
 		if(m_bStereoCam)
 		{

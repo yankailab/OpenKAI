@@ -328,7 +328,7 @@ void MavlinkInterface::update(void)
 		}
 
 		//Connected to Vehicle
-		requestDataStream(MAV_DATA_STREAM_RAW_SENSORS/*MAV_DATA_STREAM_ALL*/, 30);
+		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 10);
 
 		handleMessages();
 
