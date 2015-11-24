@@ -13,7 +13,6 @@
 
 #include "CamInput.h"
 #include "CamFrame.h"
-#include "CamMarkerDetect.h"
 #include "CamDenseFlow.h"
 #include "CamSparseFlow.h"
 #include "CamStereo.h"
@@ -54,13 +53,11 @@ public:
 	CamFrame*			m_pDepth;
 	CamFrame*			m_pBGRAL;
 
-	CamMarkerDetect* 	m_pMarkerDetect;
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
 
 	bool		m_bStereoCam;
-	bool		m_bMarkerDetect;
 	bool		m_bDenseFlow;
 	bool		m_bSparseFlow;
 	bool		m_bHSV;

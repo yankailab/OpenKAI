@@ -159,12 +159,11 @@ bool VehicleInterface::start(void)
 
 void VehicleInterface::update(void)
 {
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_VI_USEC;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 
 

@@ -284,7 +284,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// Check file descriptor
 	if (!isatty(m_fd))
 	{
-		printf("ERROR: file descriptor %d is NOT a serial port\n");
+		printf("ERROR: file descriptor is NOT a serial port\n");
 		return false;
 	}
 
@@ -292,7 +292,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	struct termios config;
 	if (tcgetattr(m_fd, &config) < 0)
 	{
-		printf("\nERROR: could not read configuration of fd %d\n");
+		printf("\nERROR: could not read configuration of fd\n");
 		return false;
 	}
 
@@ -449,12 +449,10 @@ int SerialPort::Read(char *buffer, unsigned int nbChar)
 {
 	int n;
 
-	// Lock
 	pthread_mutex_lock(&m_portMutex);
 
 	n = read(m_fd, buffer, nbChar);
 
-	// Unlock
 	pthread_mutex_unlock(&m_portMutex);
 
 	return n;
@@ -462,15 +460,12 @@ int SerialPort::Read(char *buffer, unsigned int nbChar)
 
 void SerialPort::Write(char *buffer, unsigned int nbChar)
 {
-	// Lock
 	pthread_mutex_lock(&m_portMutex);
 
 	write(m_fd, buffer, nbChar);
-
 	// Wait until all data has been written
 	tcdrain(m_fd);
 
-	// Unlock
 	pthread_mutex_unlock(&m_portMutex);
 
 }

@@ -193,13 +193,12 @@ void AutoPilot::update(void)
 {
 	CAMERA_STREAM* pCam;
 	CamFrame* pFrame;
-	int tThreadBegin;
 
 	m_tSleep = TRD_INTERVAL_AUTOPILOT_USEC;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 		pCam = &m_pCamStream[CAM_FRONT];
 		pFrame = *(pCam->m_pCam->m_pFrameProcess);
@@ -212,7 +211,7 @@ void AutoPilot::update(void)
 //			m_pVI->readMessages();
 
 			//Action
-			markerLock(pCam->m_pCam->m_pMarkerDetect);
+//			markerLock(pCam->m_pCam->m_pMarkerDetect);
 
 		}
 
@@ -261,7 +260,7 @@ bool AutoPilot::setCamStream(CamStream* pCamStream, int camPosition)
 
 
 
-void AutoPilot::markerLock(CamMarkerDetect* pCMD)
+void AutoPilot::markerLock(MarkerDetector* pCMD)
 {
 	double zRatio;
 	double cvSize;
@@ -420,7 +419,7 @@ void AutoPilot::markerLock(CamMarkerDetect* pCMD)
 
 }
 
-void AutoPilot::flowLock(CamMarkerDetect* pCMD)
+void AutoPilot::flowLock(MarkerDetector* pCMD)
 {
 	/*
 	fVector4 vFlow;

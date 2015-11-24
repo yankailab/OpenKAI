@@ -24,13 +24,11 @@ CamStream::CamStream()
 	m_pBGRAL = new CamFrame();
 	m_pFrameProcess = &m_pFrameL;
 
-	m_pMarkerDetect = new CamMarkerDetect();
 	m_pDenseFlow = new CamDenseFlow();
 	m_pSparseFlow = new CamSparseFlow();
 	m_pStereo = new CamStereo();
 
 	m_bStereoCam = false;
-	m_bMarkerDetect = false;
 	m_bDenseFlow = false;
 	m_bSparseFlow = false;
 	m_bHSV = false;
@@ -53,7 +51,6 @@ CamStream::~CamStream()
 	RELEASE(m_pDepth);
 	RELEASE(m_pBGRAL);
 
-	RELEASE(m_pMarkerDetect);
 	RELEASE(m_pDenseFlow);
 	RELEASE(m_pSparseFlow);
 	RELEASE(m_pStereo);
@@ -65,20 +62,7 @@ bool CamStream::setup(JSON* pJson, string camName)
 	if(!pJson)return false;
 
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
-
 	CHECK_ERROR(m_pCamL->setup(pJson, camName));
-
-
-	int bSwitch;
-	if(pJson->getVal("CAM_"+camName+"_MARKER", &bSwitch))
-	{
-		if(bSwitch)
-		{
-			m_bHSV = true;
-			m_bMarkerDetect = true;
-		}
-	}
-
 
 	return true;
 }
@@ -94,7 +78,6 @@ bool CamStream::init(void)
 	m_pBGRAL->init();
 	m_pFrameProcess = &m_pFrameL;
 
-	m_pMarkerDetect->init();
 	m_pDenseFlow->init();
 	m_pSparseFlow->init();
 	m_pStereo->init();
@@ -170,12 +153,6 @@ void CamStream::update(void)
 
 		m_pBGRAL->switchFrame();
 		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
-
-
-		if(m_bMarkerDetect)
-		{
-			m_pMarkerDetect->detect(m_pHSV,m_pFrameL,true);
-		}
 
 		if(m_bDenseFlow)
 		{

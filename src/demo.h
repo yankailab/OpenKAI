@@ -14,8 +14,8 @@
 
 #include "Detector/ObjectDetector.h"
 #include "Detector/FastDetector.h"
+#include "Detector/MarkerDetector.h"
 #include "Camera/CamInput.h"
-#include "Camera/CamMarkerDetect.h"
 #include "UI/UIMonitor.h"
 #include "Autopilot/AutoPilot.h"
 #include "Interface/MavlinkInterface.h"
@@ -30,7 +30,7 @@ UIMonitor* g_pUIMonitor;
 ObjectDetector* g_pOD;
 FastDetector* g_pFD;
 AutoPilot* g_pAP;
-CamMarkerDetect* g_pMD;
+MarkerDetector* g_pMD;
 
 MavlinkInterface* g_pMavlink;
 cv::Mat g_displayMat;

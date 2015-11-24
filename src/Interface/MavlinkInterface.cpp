@@ -25,6 +25,10 @@ MavlinkInterface::MavlinkInterface()
 	current_messages.attitude.pitch = 0;
 	current_messages.attitude.roll = 0;
 	current_messages.attitude.yaw = 0;
+	current_messages.attitude.pitchspeed = 0;
+	current_messages.attitude.rollspeed = 0;
+	current_messages.attitude.yawspeed = 0;
+
 }
 
 MavlinkInterface::~MavlinkInterface()
@@ -301,12 +305,11 @@ bool MavlinkInterface::start(void)
 
 void MavlinkInterface::update(void)
 {
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_MI_USEC;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 		if (m_sportName == "")
 		{

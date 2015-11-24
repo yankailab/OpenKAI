@@ -4,6 +4,7 @@
 #include "../Camera/CamStream.h"
 #include "../Detector/ObjectDetector.h"
 #include "../Detector/FastDetector.h"
+#include "../Detector/MarkerDetector.h"
 #include "../Interface/VehicleInterface.h"
 
 //
@@ -67,7 +68,7 @@ struct CONTROL_AXIS
 
 struct CAMERA_STREAM
 {
-	int			m_frameID;
+	unsigned int m_frameID;
 	CamStream*	m_pCam;
 };
 
@@ -85,8 +86,8 @@ public:
 	void waitForComplete(void);
 
 	bool setCamStream(CamStream* pCamStream, int camPosition);
-	void markerLock(CamMarkerDetect* pCMD);
-	void flowLock(CamMarkerDetect* pCMD);
+	void markerLock(MarkerDetector* pCMD);
+	void flowLock(MarkerDetector* pCMD);
 	void setTargetPosCV(fVector3 pos);
 	fVector3 getTargetPosCV(void);
 

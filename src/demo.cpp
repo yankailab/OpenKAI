@@ -24,7 +24,6 @@ int main(int argc, char* argv[])
 
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = true;
-	g_pCamFront->m_bMarkerDetect = true;
 //	g_pCamFront->m_bDenseFlow = true;
 
 	//Init Object Detector
@@ -151,7 +150,7 @@ void showInfo(Mat* pDisplayMat)
 	char strBuf[512];
 	std::string strInfo;
 	cv::Rect roi;
-	cv::Mat* pExtMat;
+
 	int i;
 	int startPosH = 25;
 	int startPosV = 25;
