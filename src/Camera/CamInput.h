@@ -26,31 +26,31 @@ public:
 
 	void setCameraID(int);
 	bool openCamera(void);
-	bool setSize(void);
 
 	void readFrame(CamFrame* pFrame);
-
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
 public:
-	int m_camDeviceID;
+	int 			m_camDeviceID;
 	VideoCapture m_camera;
 
-	int m_width;
-	int m_height;
-	unsigned int m_centerH;
-	unsigned int m_centerV;
+	int 			m_width;
+	int 			m_height;
+	int			m_centerH;
+	int			m_centerV;
 
-	Mat m_frame;
-
-	Mat m_cameraMat;
-	Mat m_distCoeffs;
-	bool m_bCalibration;
+	Mat 			m_frame;
+	Mat 			m_cameraMat;
+	Mat 			m_distCoeffs;
+	GpuMat		m_Gmap1;
+	GpuMat		m_Gmap2;
+	bool			m_bCalibration;
 
 	bool			m_bGimbal;
 	Mat			m_rotRoll;
 	uint64_t		m_rotTime;
 	double		m_rotPrev;
+	double		m_isoScale;
 
 private:
 	GpuMat 		m_Gframe;

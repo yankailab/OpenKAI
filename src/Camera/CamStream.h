@@ -16,7 +16,6 @@
 #include "CamMarkerDetect.h"
 #include "CamDenseFlow.h"
 #include "CamSparseFlow.h"
-#include "CamMonitor.h"
 #include "CamStereo.h"
 
 #define TRD_INTERVAL_CAMSTREAM 1000
@@ -40,6 +39,8 @@ public:
 	bool openWindow(void);
 	void closeWindow(void);
 
+	void showMonitor(void);
+
 public:
 	string				m_camName;
 	CamInput*			m_pCamL;
@@ -57,7 +58,6 @@ public:
 	CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
-	CamMonitor*			m_pMonitor;
 
 	bool		m_bStereoCam;
 	bool		m_bMarkerDetect;
@@ -65,7 +65,6 @@ public:
 	bool		m_bSparseFlow;
 	bool		m_bHSV;
 	bool		m_bGray;
-	bool		m_bShowWindow;
 
 private:
 public:

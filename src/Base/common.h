@@ -1,6 +1,5 @@
 #pragma once
 #include "platform.h"
-#include "defaultparam.h"
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
 #include "../IO/JSON.h"
@@ -21,6 +20,8 @@ using namespace std;
 #define CHECK_INFO(x) if(x==false){LOG(INFO);}
 
 #define RELEASE(x) if(x){delete x;}
+
+#define SWAP(x,y,t) t=x;x=y;y=t;
 
 namespace kai
 {

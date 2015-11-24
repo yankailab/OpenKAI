@@ -21,7 +21,6 @@ int main(int argc, char* argv[])
 	g_pCamFront = new CamStream();
 	CHECK_FATAL(g_pCamFront->setup(&g_Json, "FRONTL"));
 	CHECK_FATAL(g_pCamFront->init());
-	g_pCamFront->openWindow();
 
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = true;
@@ -56,7 +55,6 @@ int main(int argc, char* argv[])
 	g_pFD->start();
 
 	//UI thread
-	int i;
 	g_bRun = true;
 	setMouseCallback(g_pCamFront->m_camName, onMouse, NULL);
 
@@ -67,77 +65,7 @@ int main(int argc, char* argv[])
 		g_pCamFront->m_pCamL->m_bGimbal = true;
 		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
-		if (!g_pCamFront->m_pMonitor->m_mat.empty())
-		{
-			Mat imL, imR, imD;
-
-			g_pCamFront->m_pFrameL->m_pNext->download(imL);
-
-			if (!imL.empty())
-			{
-				OBJECT* pObj;
-				for (i = 0; i < g_pOD->m_numObj; i++)
-				{
-					pObj = &g_pOD->m_pObjects[i];
-					if (pObj->m_name[0].empty())
-						continue;
-
-					rectangle(imL, pObj->m_boundBox.tl(),
-							pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
-
-					putText(imL, pObj->m_name[0],
-							pObj->m_boundBox.tl(), FONT_HERSHEY_SIMPLEX, 0.6,
-							Scalar(255, 0, 0), 2);
-				}
-
-				FAST_OBJECT* pFastObj;
-				for (i = 0; i < g_pFD->m_numHuman; i++)
-				{
-					pFastObj = &g_pFD->m_pHuman[i];
-
-					rectangle(imL, pFastObj->m_boundBox.tl(),
-							pFastObj->m_boundBox.br(), Scalar(0, 0, 255), 2, 5, 0);
-				}
-
-
-				//			g_pCamFront->m_pMonitor->show();
-				displayInfo(&imL);
-
-
-//				Mat gimbal = imL(Rect(240, 100, 800, 600));
-//				Mat gimbal = imL(Rect(190, 90, 1600, 900));
-//				imshow("Left", gimbal);
-
-				imshow("Left", imL);
-				if(g_pOD->m_saliencyMap.rows != 0)
-				{
-					imshow( "Saliency Map", g_pOD->m_saliencyMap );
-				}
-
-				if(g_pOD->m_binMap.rows != 0)
-				{
-					imshow( "Binary Map", g_pOD->m_binMap );
-				}
-			}
-
-
-
-			if (g_pCamFront->m_bStereoCam)
-			{
-				g_pCamFront->m_pFrameR->m_pNext->download(imR);
-				if (!imR.empty())
-				{
-					imshow("Right", imR);
-				}
-				imD = Mat(imD.size(), CV_8U);
-				g_pCamFront->m_pDepth->m_pNext->download(imD);
-				if (!imD.empty())
-				{
-					imshow("Stereo", imD);
-				}
-			}
-
-		}
+		showScreen(NULL);
 
 		//Handle key input
 		g_key = waitKey(30);
@@ -167,6 +95,96 @@ int main(int argc, char* argv[])
 
 }
 
+
+void showScreen(Mat* pDisplayMat)
+{
+	int i;
+
+	if (!(*g_pCamFront->m_pFrameProcess)->m_pNext->empty())
+	{
+		Mat imL, imR, imD;
+
+		g_pCamFront->m_pFrameL->m_pNext->download(imL);
+
+		if (!imL.empty())
+		{
+			OBJECT* pObj;
+			for (i = 0; i < g_pOD->m_numObj; i++)
+			{
+				pObj = &g_pOD->m_pObjects[i];
+				if (pObj->m_name[0].empty())
+					continue;
+
+				rectangle(imL, pObj->m_boundBox.tl(),
+						pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
+
+				putText(imL, pObj->m_name[0],
+						pObj->m_boundBox.tl(), FONT_HERSHEY_SIMPLEX, 0.6,
+						Scalar(255, 0, 0), 2);
+			}
+
+			FAST_OBJECT* pFastObj;
+			for (i = 0; i < g_pFD->m_numHuman; i++)
+			{
+				pFastObj = &g_pFD->m_pHuman[i];
+
+				rectangle(imL, pFastObj->m_boundBox.tl(),
+						pFastObj->m_boundBox.br(), Scalar(0, 0, 255), 2, 5, 0);
+			}
+
+
+			//			g_pCamFront->m_pMonitor->show();
+			showInfo(&imL);
+
+			imshow("Left", imL);
+		}
+	}
+
+}
+
+
+
+#define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
+
+void showInfo(Mat* pDisplayMat)
+{
+	char strBuf[512];
+	std::string strInfo;
+	cv::Rect roi;
+	cv::Mat* pExtMat;
+	int i;
+	int startPosH = 25;
+	int startPosV = 25;
+	int lineHeight = 20;
+	Mavlink_Messages mMsg;
+
+	i = 0;
+
+	//External Camera Output
+//	roi = cv::Rect(cv::Point(0, 0), pExtMat->size());
+//	pExtMat->copyTo(g_displayMat(roi));
+
+	mMsg = g_pMavlink->current_messages;
+
+	//Vehicle position
+	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			mMsg.attitude.roll,
+			mMsg.attitude.pitch,
+			mMsg.attitude.yaw);
+	PUTTEXT(startPosH, startPosV+lineHeight*(++i),strBuf);
+
+	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			mMsg.attitude.rollspeed,
+			mMsg.attitude.pitchspeed,
+			mMsg.attitude.yawspeed);
+	PUTTEXT(startPosH, startPosV+lineHeight*(++i),strBuf);
+
+	i++;
+
+	i = 0;
+	startPosH = 600;
+
+}
 
 
 void printEnvironment(void)
@@ -229,74 +247,7 @@ void onMouse(int event, int x, int y, int flags, void* userdata)
 	}
 }
 
-void onTrackbar(int, void*)
-{
-}
 
-void createConfigWindow(void)
-{
-}
-
-void displayInfo(Mat* pDisplayMat)
-{
-	char strBuf[512];
-	std::string strInfo;
-	cv::Rect roi;
-	cv::Mat* pExtMat;
-	int i;
-	int startPosH = 25;
-	int startPosV = 25;
-	int lineHeight = 20;
-	Mavlink_Messages mMsg;
-
-	i = 0;
-
-//	g_pCamFront->m_pMonitor->m_mat.copyTo(g_displayMat);
-
-	//External Camera Output
-//	pExtMat = &g_frontRGB.m_uFrame;
-//	roi = cv::Rect(cv::Point(0, 0), pExtMat->size());
-//	pExtMat->copyTo(g_displayMat(roi));
-
-	mMsg = g_pMavlink->current_messages;
-
-	//Vehicle position
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.roll,
-			mMsg.attitude.pitch,
-			mMsg.attitude.yaw);
-	cv::putText(*pDisplayMat, String(strBuf),
-			Point(startPosH, startPosV + lineHeight * (++i)),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.rollspeed,
-			mMsg.attitude.pitchspeed,
-			mMsg.attitude.yawspeed);
-	cv::putText(*pDisplayMat, String(strBuf),
-			Point(startPosH, startPosV + lineHeight * (++i)),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-/*	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.roll,
-			mMsg.attitude.pitch,
-			mMsg.attitude.yaw);
-	cv::putText(*pDisplayMat, String(strBuf),
-			Point(startPosH, startPosV + lineHeight * (++i)),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-*/
-	i++;
-
-	i = 0;
-	startPosH = 600;
-
-/*	sprintf(strBuf, "PITCH_I_PWM: %.2f",
-			pControl.m_cvErrInteg * pControl.m_I);
-	cv::putText(g_displayMat, String(strBuf),
-			Point(startPosH, startPosV + lineHeight * (++i)),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-*/
-}
 
 
 

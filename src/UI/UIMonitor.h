@@ -11,19 +11,16 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 
-#include "CamFrame.h"
-#include "CamMarkerDetect.h"
-#include "CamDenseFlow.h"
-#include "CamSparseFlow.h"
+#include "../Camera/CamStream.h"
 
 namespace kai
 {
 
-class CamMonitor
+class UIMonitor
 {
 public:
-	CamMonitor();
-	virtual ~CamMonitor();
+	UIMonitor();
+	virtual ~UIMonitor();
 
 	void setWindowName(string name);
 	bool init(void);

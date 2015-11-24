@@ -2,6 +2,42 @@
 "SERIALPORT_FC_NAME":"/dev/cu.usbmodem1",
 "SERIALPORT_FC_BAUDRATE":115200,
 
+"CAM_FRONTL_NAME":"CAM_FRONT_L",
+"CAM_FRONTL_WIDTH":1280,
+"CAM_FRONTL_HEIGHT":800,
+"CAM_FRONTL_ID":0,
+"CAM_FRONTL_MARKER":1,
+"CAM_FRONTL_CALIB":"/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml",
+"CAM_FRONTL_ISOSCALE":0.8,
+
+"CAM_FRONTR_ID":0,
+
+
+"CAM_UP_ID":2,
+
+
+"CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
+"CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
+"CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
+"CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
+
+"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
+"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
+
+"HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
+"CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
+
+
+"OD_CANNY_LOW":10,
+"OD_CANNY_HIGH":100,
+"OD_CANNY_APPERTURE":3,
+"OD_GAUSS_KSIZE":3,
+"OD_GAUSS_SIGMA":1,
+
+
+
+
+
 
 "ROLL_P":3.0,
 "ROLL_I":0.1,
@@ -29,23 +65,6 @@
 "TARGET_Y":400,
 "TARGET_Z":25,
 
-"CAM_FRONTL_NAME":"CAM_FRONTL",
-"CAM_FRONTL_WIDTH":1280,
-"CAM_FRONTL_HEIGHT":800,
-"CAM_FRONTL_ID":0,
-"CAM_FRONTL_MARKER":1,
-"CAM_FRONTL_SHOW_WIDTH":1280,
-"CAM_FRONTL_SHOW_HEIGHT":800,
-"CAM_FRONTL_CALIB":"/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml",
-
-"CAM_FRONTR_ID":0,
-
-
-"CAM_UP_ID":2,
-
-
-
-
 "ERROR_RANGE":1000,
 
 "NUM_RC_CHANNEL":8,
@@ -68,13 +87,11 @@
 "CMD_RC_UPDATE":0,
 "CMD_OPERATE_MODE":1,
 
-
 "Z_FAR_LIM":50,
 "Z_NEAR_LIM":500,
 
 "PID_UI_LIM":1000.0,
 "PID_UI_LIM_HALF":500.0,
-
 "PID_P_LIM":10.0,
 "PID_I_LIM":1.0,
 "PID_D_LIM":50.0,
@@ -83,22 +100,5 @@
 "DT_LIM":10.0,
 
 
-"CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
-"CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
-"CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
-"CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
-
-"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
-"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
-
-"HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
-"CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
-
-
-"OD_CANNY_LOW":10,
-"OD_CANNY_HIGH":100,
-"OD_CANNY_APPERTURE":3,
-"OD_GAUSS_KSIZE":3,
-"OD_GAUSS_SIGMA":1,
 
 }

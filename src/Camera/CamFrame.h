@@ -46,6 +46,8 @@ public:
 	GpuMat* m_pNext;
 	GpuMat* m_pPrev;
 	GpuMat  m_pFrame[2];
+	GpuMat  m_GMat;
+
 
 };
 

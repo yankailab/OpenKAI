@@ -14,14 +14,18 @@ CamInput::CamInput()
 {
 	m_width = 0;
 	m_height = 0;
+	m_centerH = 0;
+	m_centerV = 0;
 	m_camDeviceID = 0;
 	m_bCalibration = false;
 	m_bGimbal = false;
+	m_isoScale = 1.0;
+	m_rotTime = 0;
+	m_rotPrev = 0;
 }
 
 CamInput::~CamInput()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool CamInput::setup(JSON* pJson, string camName)
@@ -31,6 +35,7 @@ bool CamInput::setup(JSON* pJson, string camName)
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID", &m_camDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_width));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_height));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_ISOSCALE", &m_isoScale));
 
 	if(pJson->getVal("CAM_"+camName+"_CALIB", &calibFile))
 	{
@@ -42,11 +47,32 @@ bool CamInput::setup(JSON* pJson, string camName)
 		}
 		else
 		{
-			LOG(INFO)<<"Camera setting file opened";
-
 			fs["camera_matrix"] >> m_cameraMat;
 			fs["distortion_coefficients"] >> m_distCoeffs;
 			fs.release();
+
+			Mat map1, map2;
+			cv::Size imSize(m_width,m_height);
+
+	        initUndistortRectifyMap(
+	        		m_cameraMat,
+	        		m_distCoeffs,
+				Mat(),
+	            getOptimalNewCameraMatrix(
+	            		m_cameraMat,
+					m_distCoeffs,
+					imSize,
+					1,
+					imSize,
+					0),
+				imSize,
+				CV_32FC1,
+				map1,
+				map2);
+
+	        m_Gmap1.upload(map1);
+	        m_Gmap2.upload(map2);
+
 			m_bCalibration = true;
 		}
 	}
@@ -63,11 +89,7 @@ bool CamInput::openCamera(void)
 		LOG(ERROR)<< "Cannot open camera:" << m_camDeviceID;
 		return false;
 	}
-	return true;
-}
 
-bool CamInput::setSize(void)
-{
 	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
@@ -79,27 +101,29 @@ bool CamInput::setSize(void)
 
 void CamInput::readFrame(CamFrame* pFrame)
 {
-	while (!m_camera.read(m_frame));
+	GpuMat* pSrc;
+	GpuMat* pDest;
+	GpuMat* pTmp;
 
+	while (!m_camera.read(m_frame));
 	m_Gframe.upload(m_frame);
+
+	pSrc = &m_Gframe;
+	pDest = &m_Gframe2;
 
 	if(m_bCalibration)
 	{
-		//TODO: to GPU
-//		Mat tmp;
-//		undistort(m_frame, tmp, m_cameraMat, m_distCoeffs);
-//		m_frame = tmp;
+        cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+        SWAP(pSrc,pDest,pTmp);
 	}
 
 	if(m_bGimbal)
 	{
-		cuda::warpAffine(m_Gframe, m_Gframe2, m_rotRoll, m_Gframe.size());
-		pFrame->updateFrame(&m_Gframe2);
+		cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+        SWAP(pSrc,pDest,pTmp);
 	}
-	else
-	{
-		pFrame->updateFrame(&m_Gframe);
-	}
+
+	pFrame->updateFrame(pSrc);
 
 }
 
@@ -108,7 +132,9 @@ void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
     Point2f center(m_centerH, m_centerV);
     double deg = -rollRad * 180.0 * OneOvPI;
 
-    m_rotRoll = getRotationMatrix2D(center, deg, 1.5);
+    m_rotRoll = getRotationMatrix2D(center, deg, m_isoScale);
+
+    //TODO: add rot estimation
 
 }
 

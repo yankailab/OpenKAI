@@ -22,7 +22,6 @@ CamStream::CamStream()
 	m_pGrayR = new CamFrame();
 	m_pDepth = new CamFrame();
 	m_pBGRAL = new CamFrame();
-	m_pMonitor = new CamMonitor();
 	m_pFrameProcess = &m_pFrameL;
 
 	m_pMarkerDetect = new CamMarkerDetect();
@@ -36,7 +35,6 @@ CamStream::CamStream()
 	m_bSparseFlow = false;
 	m_bHSV = false;
 	m_bGray = false;
-	m_bShowWindow = false;
 
 	m_bThreadON = false;
 	m_threadID = NULL;
@@ -54,7 +52,6 @@ CamStream::~CamStream()
 	RELEASE(m_pGrayR);
 	RELEASE(m_pDepth);
 	RELEASE(m_pBGRAL);
-	RELEASE(m_pMonitor);
 
 	RELEASE(m_pMarkerDetect);
 	RELEASE(m_pDenseFlow);
@@ -91,7 +88,6 @@ bool CamStream::init(void)
 	m_pFrameL->init();
 	m_pFrameR->init();
 	m_pHSV->init();
-	m_pMonitor->init();
 	m_pGrayL->init();
 	m_pGrayR->init();
 	m_pDepth->init();
@@ -108,42 +104,14 @@ bool CamStream::init(void)
 	return true;
 }
 
-bool CamStream::openWindow(void)
-{
-	if(m_bShowWindow)
-	{
-		return true;
-	}
-
-	if(m_camName=="")
-	{
-		return false;
-	}
-
-	namedWindow(m_camName);
-	m_pMonitor->setWindowName(m_camName);
-	m_bShowWindow = true;
-
-	return true;
-}
-
-
-void CamStream::closeWindow(void)
-{
-	m_bShowWindow = false;
-}
-
 bool CamStream::start(void)
 {
 	//Open camera
 	CHECK_ERROR(m_pCamL->openCamera());
-	m_pCamL->setSize();
 
 	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
 	{
 		CHECK_ERROR(m_pCamR->openCamera());
-		m_pCamR->setSize();
-
 		m_bStereoCam = true;
 
 //		m_pDepth->m_uFrame = Mat(CV_8U));
@@ -217,15 +185,6 @@ void CamStream::update(void)
 		if(m_bSparseFlow)
 		{
 			m_pSparseFlow->detect(m_pGrayL);
-		}
-
-		if(m_bShowWindow)
-		{
-			m_pMonitor->addFrame(m_pFrameL,0,0);
-//			m_pMonitor->addFrame(m_pFrameR,0,0);
-//			m_pMonitor->addFrame(m_pDepth,0,0);
-
-//			m_pMonitor->show();
 		}
 
 		if(m_tSleep>0)

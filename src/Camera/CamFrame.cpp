@@ -32,14 +32,10 @@ bool CamFrame::init(void)
 void CamFrame::resize(int width, int height, CamFrame* pResult)
 {
 	if(!pResult)return;
-
 	cv::Size newSize = cv::Size(width,height);
 
-	//TODO: to GPU
-//	Mat newMat;
-//	cv::resize(m_uFrame, newMat, newSize);
-//	pResult->updateFrame(&newMat);
-	pResult->updateFrame(m_pNext);
+	cuda::resize(*m_pNext,m_GMat,newSize);
+	pResult->updateFrame(&m_GMat);
 
 }
 
