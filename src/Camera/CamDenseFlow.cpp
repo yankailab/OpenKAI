@@ -50,14 +50,7 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 
 	m_flowMat.download(m_uFlowMat);
 
-//	imshow("DenseFlow",m_flowY);
-
-
-
-
-
-
-
+//	imshow("DenseFlow", m_uFlowMat);
 
 	for (i = 0; i < m_uFlowMat.rows; i++)
 	{
@@ -73,17 +66,16 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 	m_flow.m_x *= base;
 	m_flow.m_y *= base;
 
+	showFlow("flow", m_flowMat);
+
 	return m_flow;
 
-#if (SHOW_OPTICAL_FLOW == 1)
-	m_Mat.m_pNew->download(m_uFlowMat);
-	cv::Size mSize = m_uFlowMat.size();
+/*	cv::Size mSize = m_uFlowMat.size();
 	Point p = Point(mSize.width / 2, mSize.height / 2);
 	Point q = p + Point(m_flow.m_x, m_flow.m_y);
 	line(m_uFlowMat, p, q, Scalar(0, 255, 0), 3);
-	imshow(OPF_WINDOW, m_uFlowMat);
-//	showFlow(OPF_WINDOW, m_flowMat);
-#endif
+	imshow("flow", m_uFlowMat);
+*/
 
 }
 

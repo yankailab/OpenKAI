@@ -26,6 +26,7 @@ int g_key;
 bool g_bRun;
 
 CamStream* g_pCamFront;
+CamFrame* g_pShow;
 UIMonitor* g_pUIMonitor;
 ObjectDetector* g_pOD;
 FastDetector* g_pFD;
@@ -41,7 +42,7 @@ string g_serialPort;
 int g_baudrate;
 
 void onMouse(int event, int x, int y, int flags, void* userdata);
-void showScreen(Mat* pDisplayMat);
+void showScreen(void);
 void showInfo(Mat* pDisplayMat);
 void handleKey(int key);
 void printEnvironment(void);

@@ -28,13 +28,16 @@ public:
 
 	bool init(void);
 	void updateFrame(GpuMat* pGpuFrame);
+	void updateFrame(Mat* pFrame);
 	void switchFrame(void);
 
-	void resize(int width, int height, CamFrame* pResult);
-
+	void getResized(int width, int height, CamFrame* pResult);
 	void getGray(CamFrame* pResult);
 	void getHSV(CamFrame* pResult);
 	void getBGRA(CamFrame* pResult);
+	void get8UC3(CamFrame* pResult);
+	void copyTo(CamFrame* pResult);
+	GpuMat* getCurrentFrame(void);
 
 public:
 	//Frame Index, updated in each frame update

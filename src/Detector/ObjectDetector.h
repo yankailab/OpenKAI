@@ -52,6 +52,20 @@ public:
 
 private:
 	void detect(void);
+	void classifyObject(void);
+	void findObjectByContour(void);
+	void findObjectByOpticalFlow(void);
+	void findObjectBySaliency(void);
+
+	pthread_t m_threadID;
+	bool m_bThreadON;
+
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((ObjectDetector*) This)->update();
+		return NULL;
+	}
 
 public:
 	int 			m_frameID;
@@ -59,12 +73,18 @@ public:
 	OBJECT 		m_pObjects[NUM_OBJ];
 	int 			m_numObj;
 
-	Mat		m_frame;
-	Mat		m_binMap;
-	Mat		m_saliencyMap;
-	GpuMat  m_pGMat;
+	CamFrame*	m_pFrame;
+	CamFrame*	m_pContourFrame;
+	CamFrame*	m_pSaliencyFrame;
+	GpuMat* 		m_pGMat;
+	GpuMat*		m_pGray;
 
-	//OpenCV algorithms
+	Mat			m_contourMat;
+	Mat			m_saliencyMat;
+	Mat			m_binMat;
+	Mat			m_Mat;
+
+	//OpenCV Saliency algorithms
 	Ptr<cuda::CannyEdgeDetector> m_pCanny;
 //	Ptr<cuda::> m_pGaussian;
 	Ptr<Saliency> m_pSaliency;
@@ -74,18 +94,6 @@ public:
 	NNClassifier m_classifier;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
-
-private:
-	pthread_t m_threadID;
-	bool m_bThreadON;
-
-	void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((ObjectDetector *) This)->update();
-		return NULL;
-	}
-
 
 };
 }

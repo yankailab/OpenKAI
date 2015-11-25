@@ -35,11 +35,6 @@ public:
 	void stop(void);
 	void waitForComplete(void);
 
-	bool openWindow(void);
-	void closeWindow(void);
-
-	void showMonitor(void);
-
 public:
 	string				m_camName;
 	CamInput*			m_pCamL;
