@@ -23,9 +23,9 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pCamFront->init());
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = true;
-//	g_pCamFront->m_bDenseFlow = true;
+	g_pCamFront->m_bDenseFlow = true;
 
-//Init Object Detector
+	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
 	g_pOD->setCamStream(g_pCamFront);
@@ -44,19 +44,19 @@ int main(int argc, char* argv[])
 	g_pAP->m_pFD = g_pFD;
 //	g_pMD = g_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
 
-//Main window
+	//Main window
 	g_pShow = new CamFrame();
 	g_pShow->init();
 
 	//Init UI Monitor
 	g_pUIMonitor = new UIMonitor();
 	g_pUIMonitor->init("OpenKAI demo", 1980, 1080);
-//	g_pUIMonitor->addFrame(g_pCamFront->m_pFrameL,0,0,990,540);
 	g_pUIMonitor->addFrame(g_pShow, 0, 0, 1280, 750);
-	g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 1280, 0, 700, 400);
-//	g_pUIMonitor->addFrame(g_pOD,0,0,800,600);
+	g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 1280, 0, 700, 360);
+	g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 1280, 360, 700, 360);
+	//TODO: add depth
 
-//Start threads
+	//Start threads
 	g_pCamFront->start();
 	g_pMavlink->start();
 //	g_pAP->start();

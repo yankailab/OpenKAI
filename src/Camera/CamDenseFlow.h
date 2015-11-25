@@ -30,11 +30,13 @@ public:
 	inline bool isFlowCorrect(Point2f u);
 	Vec3b computeColor(float fx, float fy);
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
-	void showFlow(const char* name, const GpuMat& d_flow);
+	void generateFlowMap(const GpuMat& d_flow);
 
 public:
 	fVector4 m_flow;
-	GpuMat m_flowMat;
+	GpuMat m_GFlowMat;
+	CamFrame* m_pFlowFrame;
+	CamFrame* m_pShowFlow;
 
 	Mat m_uFlowMat;
 	Mat m_flowX;

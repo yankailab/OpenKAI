@@ -80,7 +80,6 @@ void CamFrame::get8UC3(CamFrame* pResult)
 	{
 		cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_GRAY2BGR);
 	}
-
 }
 
 void CamFrame::copyTo(CamFrame* pResult)

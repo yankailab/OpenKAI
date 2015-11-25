@@ -30,6 +30,11 @@ bool CamDenseFlow::init(void)
 //	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
+	m_pFlowFrame = new CamFrame();
+	m_pFlowFrame->init();
+	m_pShowFlow = new CamFrame();
+	m_pShowFlow->init();
+
 	return true;
 }
 
@@ -45,12 +50,14 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 	m_flow.m_w = 0;
 
 	if(pFrame->m_pPrev->empty())return m_flow;
-	if(pFrame->m_pPrev->size()!=pFrame->m_pNext->size())return m_flow;
-	m_pFarn->calc(*(pFrame->m_pPrev), *(pFrame->m_pNext), m_flowMat);
 
-	m_flowMat.download(m_uFlowMat);
+	m_pFlowFrame->switchFrame();
+	pFrame->getResized(640,480, m_pFlowFrame);
 
-//	imshow("DenseFlow", m_uFlowMat);
+	if(m_pFlowFrame->m_pPrev->size() != m_pFlowFrame->m_pNext->size())return m_flow;
+	m_pFarn->calc(*m_pFlowFrame->m_pPrev, *m_pFlowFrame->m_pNext, m_GFlowMat);
+
+	m_GFlowMat.download(m_uFlowMat);
 
 	for (i = 0; i < m_uFlowMat.rows; i++)
 	{
@@ -66,7 +73,7 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 	m_flow.m_x *= base;
 	m_flow.m_y *= base;
 
-	showFlow("flow", m_flowMat);
+	generateFlowMap(m_GFlowMat);
 
 	return m_flow;
 
@@ -193,7 +200,7 @@ void CamDenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& 
 	}
 }
 
-void CamDenseFlow::showFlow(const char* name, const GpuMat& d_flow)
+void CamDenseFlow::generateFlowMap(const GpuMat& d_flow)
 {
 	GpuMat planes[2];
 	cuda::split(d_flow, planes);
@@ -204,7 +211,9 @@ void CamDenseFlow::showFlow(const char* name, const GpuMat& d_flow)
 	Mat out;
 	drawOpticalFlow(flowx, flowy, out, 10);
 
-	imshow(name, out);
+	m_pShowFlow->updateFrame(&out);
+
+//	imshow(name, out);
 }
 
 } /* namespace kai */
