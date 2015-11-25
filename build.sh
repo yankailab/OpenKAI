@@ -8,8 +8,6 @@ g++ $INCLUDES $OPTIONS -MF"build/MavlinkInterface.d" -MT"build/MavlinkInterface.
 
 g++ $INCLUDES $OPTIONS -MF"build/VehicleInterface.d" -MT"build/VehicleInterface.d" -o "build/VehicleInterface.o" "src/Interface/VehicleInterface.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/Config.d" -MT"build/Config.d" -o "build/Config.o" "src/IO/Config.cpp"
-
 g++ $INCLUDES $OPTIONS -MF"build/FileIO.d" -MT"build/FileIO.d" -o "build/FileIO.o" "src/IO/FileIO.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/JSON.d" -MT"build/JSON.d" -o "build/JSON.o" "src/IO/JSON.cpp"
@@ -28,17 +26,15 @@ g++ $INCLUDES $OPTIONS -MF"build/CamFrame.d" -MT"build/CamFrame.d" -o "build/Cam
 
 g++ $INCLUDES $OPTIONS -MF"build/CamInput.d" -MT"build/CamInput.d" -o "build/CamInput.o" "src/Camera/CamInput.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/CamMarkerDetect.d" -MT"build/CamMarkerDetect.d" -o "build/CamMarkerDetect.o" "src/Camera/CamMarkerDetect.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/MarkerDetector.d" -MT"build/MarkerDetector.d" -o "build/MarkerDetector.o" "src/Detector/MarkerDetector.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/CamMonitor.d" -MT"build/CamMonitor.d" -o "build/CamMonitor.o" "src/Camera/CamMonitor.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/UIMonitor.d" -MT"build/UIMonitor.d" -o "build/UIMonitor.o" "src/UI/UIMonitor.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/CamSparseFlow.d" -MT"build/CamSparseFlow.d" -o "build/CamSparseFlow.o" "src/Camera/CamSparseFlow.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/CamStereo.d" -MT"build/CamStereo.d" -o "build/CamStereo.o" "src/Camera/CamStereo.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/CamStream.d" -MT"build/CamStream.d" -o "build/CamStream.o" "src/Camera/CamStream.cpp"
-
-g++ $INCLUDES $OPTIONS -MF"build/CameraVision.d" -MT"build/CameraVision.d" -o "build/CameraVision.o" "src/Camera/CameraVision.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/ThreadBase.d" -MT"build/ThreadBase.d" -o "build/ThreadBase.o" "src/Base/ThreadBase.cpp"
 
@@ -48,5 +44,5 @@ g++ $INCLUDES $OPTIONS -MF"build/Filter.d" -MT"build/Filter.d" -o "build/Filter.
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o  ./build/Config.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/CamMarkerDetect.o ./build/CamMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/CameraVision.o  ./build/ThreadBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
+g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/MarkerDetector.o ./build/UIMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/ThreadBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
 
