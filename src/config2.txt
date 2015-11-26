@@ -23,10 +23,10 @@
 "CAFFE_LABEL_FILE":"/home/kai/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
 "SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
-"SALIENCY_TRAIN_PATH":"/home/kai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
+"SALIENCY_TRAIN_PATH":"/home/kai/dev/opencv_contrib/modules/saliency/samples/ObjectnessTrainedModel",
 
-"HOG_FILE":"/home/kai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
-"CASCADE_FILE":"/home/kai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
+"HOG_FILE":"/home/kai/dev/opencv/data/hogcascades/hogcascade_pedestrians.xml",
+"CASCADE_FILE":"/home/kai/dev/opencv/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
 
 "OD_CANNY_LOW":10,
 "OD_CANNY_HIGH":100,
