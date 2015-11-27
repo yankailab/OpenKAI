@@ -117,6 +117,9 @@ void CamStream::update(void)
 	{
 		this->updateTime();
 
+		//If the copyTo is called by other thread After switch changes and Before the readFrame complete
+		//the previous frame might be used thus causes fluctuation.
+		//We use frameID = the time the frame or Mat is created to avoid such case.
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
 

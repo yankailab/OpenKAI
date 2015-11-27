@@ -89,8 +89,8 @@ void CamFrame::updateFrame(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	m_frameID = get_time_usec();
 	pFrame->getCurrentFrame()->copyTo(*m_pNext);
+	m_frameID = get_time_usec();
 }
 
 
@@ -98,16 +98,16 @@ void CamFrame::updateFrame(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
-	m_frameID = get_time_usec();
 	pGpuFrame->copyTo(*m_pNext);
+	m_frameID = get_time_usec();
 }
 
 void CamFrame::updateFrame(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	m_frameID = get_time_usec();
 	m_pNext->upload(*pFrame);
+	m_frameID = get_time_usec();
 }
 
 GpuMat* CamFrame::getCurrentFrame(void)
