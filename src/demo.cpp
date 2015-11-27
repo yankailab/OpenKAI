@@ -51,9 +51,9 @@ int main(int argc, char* argv[])
 	//Init UI Monitor
 	g_pUIMonitor = new UIMonitor();
 	g_pUIMonitor->init("OpenKAI demo", 1980, 1080);
-	g_pUIMonitor->addFrame(g_pShow, 0, 0, 1280, 750);
-	g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 1280, 0, 700, 360);
-	g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 1280, 360, 700, 360);
+	g_pUIMonitor->addFrame(g_pShow, 0, 0, 1980, 1080);
+//	g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 1280, 0, 700, 360);
+//	g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 1280, 360, 700, 360);
 	//TODO: add depth
 
 	//Start threads

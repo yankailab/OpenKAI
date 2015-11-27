@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "stdio.h"
 #include "../Base/cvplatform.h"
-
 #include "../Camera/CamFrame.h"
 
 namespace kai

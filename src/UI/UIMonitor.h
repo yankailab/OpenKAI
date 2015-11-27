@@ -20,6 +20,7 @@ namespace kai
 struct MONITOR_FRAME
 {
 	CamFrame* 	m_pFrame;
+	string 		m_name;
 	int			m_x;
 	int			m_y;
 	int			m_w;
@@ -34,6 +35,8 @@ public:
 
 	bool init(string name, int width, int height);
 	bool addFrame(CamFrame* pFrame, int x, int y, int w, int h);
+	bool addFrame(MONITOR_FRAME* pMFrame);
+	bool updateFrame(MONITOR_FRAME* pMFrame);
 	void removeFrame(CamFrame* pFrame);
 	void show(void);
 

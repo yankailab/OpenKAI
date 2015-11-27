@@ -13,7 +13,7 @@
 "CAM_FRONTR_ID":0,
 
 
-"CAM_UP_ID":2,
+
 
 
 "CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",

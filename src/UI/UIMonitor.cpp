@@ -46,6 +46,7 @@ bool UIMonitor::addFrame(CamFrame* pFrame, int x, int y, int w, int h)
 
 	if(!pFrame)return false;
 	if(x<0 || y<0)return false;
+	if(h<=0 || w<=0)return false;
 	if(m_numFrame >= NUM_MONITOR_FRAME)return false;
 
 	pMFrame = &m_pFrame[m_numFrame];
@@ -59,6 +60,40 @@ bool UIMonitor::addFrame(CamFrame* pFrame, int x, int y, int w, int h)
 	return true;
 }
 
+bool UIMonitor::addFrame(MONITOR_FRAME* pMFrame)
+{
+	if(!pMFrame)return false;
+	if(pMFrame->m_x<0 || pMFrame->m_x<0)return false;
+	if(pMFrame->m_h<=0 || pMFrame->m_w<=0)return false;
+	if(m_numFrame >= NUM_MONITOR_FRAME)return false;
+
+	m_pFrame[m_numFrame] = *pMFrame;
+	m_numFrame++;
+
+	return true;
+}
+
+bool UIMonitor::updateFrame(MONITOR_FRAME* pMFrame)
+{
+	if(!pMFrame)return false;
+	if(pMFrame->m_x<0 || pMFrame->m_x<0)return false;
+	if(pMFrame->m_h<=0 || pMFrame->m_w<=0)return false;
+
+	int i;
+
+	for(i=0;i<m_numFrame;i++)
+	{
+		if(m_pFrame[i].m_pFrame == pMFrame->m_pFrame)
+		{
+			m_pFrame[i] = *pMFrame;
+			return true;
+		}
+	}
+
+	return false;
+
+}
+
 void UIMonitor::show(void)
 {
 	int i;
@@ -66,6 +101,8 @@ void UIMonitor::show(void)
 	MONITOR_FRAME* pMFrame;
 
 	if(m_numFrame == 0)return;
+
+	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
 
 	for(i=0;i<m_numFrame;i++)
 	{
