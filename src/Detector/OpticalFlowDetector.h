@@ -6,6 +6,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Camera/CamStream.h"
+#include "DetectorBase.h"
+
 
 using namespace cv;
 using namespace cv::cuda;
@@ -22,7 +24,7 @@ struct OPTICALFLOW_OBJECT
 	Rect		m_boundBox;
 };
 
-class OpticalFlowDetector: public ThreadBase
+class OpticalFlowDetector: public DetectorBase, ThreadBase
 {
 public:
 	OpticalFlowDetector();
@@ -41,15 +43,12 @@ private:
 	void detect(void);
 
 public:
-	int 			m_frameID;
 	CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
 	OPTICALFLOW_OBJECT 	m_pHuman[NUM_OPTICALFLOW_OBJECT];
-
-
 
     double scale;
     int nlevels;
@@ -64,13 +63,12 @@ public:
     int nbins;
 
 
-
-//    HOGDescriptor m_hogCar;
+//  HOGDescriptor	m_hogCar;
 	int 			m_numCar;
 	OPTICALFLOW_OBJECT 	m_pCar[NUM_OPTICALFLOW_OBJECT];
 
 	Mat		m_frame;
-	GpuMat  m_pGMat;
+//	GpuMat  m_pGMat;
 
 private:
 	pthread_t m_threadID;

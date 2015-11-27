@@ -69,13 +69,6 @@ bool CamStream::setup(JSON* pJson, string camName)
 
 bool CamStream::init(void)
 {
-	m_pFrameL->init();
-	m_pFrameR->init();
-	m_pHSV->init();
-	m_pGrayL->init();
-	m_pGrayR->init();
-	m_pDepth->init();
-	m_pBGRAL->init();
 	m_pFrameProcess = &m_pFrameL;
 
 	m_pDenseFlow->init();

@@ -35,8 +35,12 @@ bool CamStereo::init(void)
 
 void CamStereo::detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth)
 {
+	GpuMat* pL = pLeft->getCurrentFrame();
+	GpuMat* pR = pRight->getCurrentFrame();
+	GpuMat* pD = pDepth->getPreviousFrame();
+
 	//BM
-	m_pBM->compute(*pLeft->m_pNext, *pRight->m_pNext, *pDepth->m_pNext);
+	m_pBM->compute(*pL, *pR, *pD);
 
 //	m_pBP->compute(*pLeft->m_pNext, *pRight->m_pNext, *pDepth->m_pNext);
 

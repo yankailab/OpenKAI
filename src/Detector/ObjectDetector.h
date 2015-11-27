@@ -5,14 +5,14 @@
  *      Author: yankai
  */
 
-#ifndef SRC_OBJECTDETECTOR_H_
-#define SRC_OBJECTDETECTOR_H_
+#ifndef DETECTOR_OBJECTDETECTOR_H_
+#define DETECTOR_OBJECTDETECTOR_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../AI/NNClassifier.h"
-
 #include "../Camera/CamStream.h"
+#include "DetectorBase.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -35,7 +35,7 @@ struct OBJECT
 	Rect			m_boundBox;
 };
 
-class ObjectDetector: public ThreadBase
+class ObjectDetector: public DetectorBase, ThreadBase
 {
 public:
 	ObjectDetector();
@@ -68,15 +68,13 @@ private:
 	}
 
 public:
-	int 			m_frameID;
 	CamStream*	m_pCamStream;
 	OBJECT 		m_pObjects[NUM_OBJ];
-	int 			m_numObj;
+	int 		m_numObj;
 
-	CamFrame*	m_pFrame;
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;
-	GpuMat* 		m_pGMat;
+	GpuMat* 	m_pGMat;
 	GpuMat*		m_pGray;
 
 	Mat			m_contourMat;

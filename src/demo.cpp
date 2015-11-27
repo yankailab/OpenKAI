@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pCamFront->init());
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = true;
-	g_pCamFront->m_bDenseFlow = true;
+	g_pCamFront->m_bDenseFlow = false;//true;
 
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
@@ -46,7 +46,6 @@ int main(int argc, char* argv[])
 
 	//Main window
 	g_pShow = new CamFrame();
-	g_pShow->init();
 
 	//Init UI Monitor
 	g_pUIMonitor = new UIMonitor();
@@ -112,10 +111,13 @@ void showScreen(void)
 	int i;
 	Mat imMat;
 	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
-	if (pFrame->getCurrentFrame()->empty())
-		return;
 
-	pFrame->copyTo(g_pShow);
+	if (pFrame->getCurrentFrame()->empty())return;
+
+	if (g_pShow->isNewerThan(pFrame))return;
+
+	g_pShow->updateFrame(pFrame);
+//	g_pShow->updateFrame(pFrame->getCurrentFrame());
 	g_pShow->getCurrentFrame()->download(imMat);
 
 	OBJECT* pObj;

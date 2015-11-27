@@ -25,7 +25,6 @@ public:
 	bool init(void);
 	fVector4 detect(CamFrame* pFrame);
 
-
 	inline bool isFlowCorrect(Point2f u);
 	Vec3b computeColor(float fx, float fy);
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);

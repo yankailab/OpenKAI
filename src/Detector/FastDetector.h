@@ -1,11 +1,12 @@
 
 
-#ifndef SRC_FASTDETECTOR_H_
-#define SRC_FASTDETECTOR_H_
+#ifndef DETECTOR_FASTDETECTOR_H_
+#define DETECTOR_FASTDETECTOR_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Camera/CamStream.h"
+#include "DetectorBase.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -22,7 +23,7 @@ struct FAST_OBJECT
 	Rect		m_boundBox;
 };
 
-class FastDetector: public ThreadBase
+class FastDetector: public DetectorBase, ThreadBase
 {
 public:
 	FastDetector();
@@ -41,14 +42,12 @@ private:
 	void detect(void);
 
 public:
-	int 			m_frameID;
 	CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
 	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
-
 
 
     double scale;

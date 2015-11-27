@@ -31,9 +31,7 @@ bool CamDenseFlow::init(void)
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 	m_pFlowFrame = new CamFrame();
-	m_pFlowFrame->init();
 	m_pShowFlow = new CamFrame();
-	m_pShowFlow->init();
 
 	return true;
 }
@@ -43,19 +41,25 @@ fVector4 CamDenseFlow::detect(CamFrame* pFrame)
 	int i, j;
 	cv::Point2f vFlow;
 	double base;
+	GpuMat* pPrev;
+	GpuMat* pNext;
 
 	m_flow.m_x = 0;
 	m_flow.m_y = 0;
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
 
-	if(pFrame->m_pPrev->empty())return m_flow;
+	if(pFrame->getCurrentFrame()->empty())return m_flow;
 
 	m_pFlowFrame->switchFrame();
 	pFrame->getResized(640,480, m_pFlowFrame);
 
-	if(m_pFlowFrame->m_pPrev->size() != m_pFlowFrame->m_pNext->size())return m_flow;
-	m_pFarn->calc(*m_pFlowFrame->m_pPrev, *m_pFlowFrame->m_pNext, m_GFlowMat);
+	pPrev = m_pFlowFrame->getPreviousFrame();
+	pNext = m_pFlowFrame->getCurrentFrame();
+
+	if(pPrev->size() != pNext->size())return m_flow;
+
+	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
 
 	m_GFlowMat.download(m_uFlowMat);
 

@@ -35,7 +35,6 @@ bool UIMonitor::init(string name, int width, int height)
 	m_numFrame = 0;
 
 	m_showFrame = Mat(height,width,CV_8UC3,cv::Scalar(0,0,0));
-	m_camFrame.init();
 
 	return true;
 }
@@ -115,7 +114,7 @@ void UIMonitor::show(void)
 		pFrame->getResized(pMFrame->m_w, pMFrame->m_h, &m_camFrame);
 
 		//Convert color mode if necesary
-		if(m_camFrame.m_pNext->type()!=m_showFrame.type())
+		if(m_camFrame.getCurrentFrame()->type() != m_showFrame.type())
 		{
 			m_camFrame.get8UC3(&m_camFrame2);
 			m_camFrame2.getCurrentFrame()->download(m_frame);

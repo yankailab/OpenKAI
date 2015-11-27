@@ -15,7 +15,6 @@ ObjectDetector::ObjectDetector()
 	m_threadID = 0;
 
 	int i, j;
-	m_frameID = 0;
 	m_numObj = 0;
 	m_pCamStream = NULL;
 
@@ -89,9 +88,8 @@ bool ObjectDetector::init(JSON* pJson)
 	}
 
 	m_pContourFrame = new CamFrame();
-	m_pContourFrame->init();
 	m_pSaliencyFrame = new CamFrame();
-	m_pSaliencyFrame->init();
+	m_pFrame = new CamFrame();
 
 	return true;
 }
@@ -114,23 +112,21 @@ bool ObjectDetector::start(void)
 
 void ObjectDetector::update(void)
 {
-	int i;
 	CamFrame* pFrame;
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
-		if (!m_pCamStream)
-			continue;
+		if (!m_pCamStream)continue;
 		pFrame = *(m_pCamStream->m_pFrameProcess);
 
 		//The current frame is not the latest frame
-		if (m_frameID != pFrame->m_frameID)
+//		if (m_frameID != pFrame->m_frameID)
+		if (pFrame->isNewerThan(m_pFrame))
 		{
-			m_frameID = pFrame->m_frameID;
+			m_pFrame->updateFrame(pFrame);
 			detect();
 		}
 
@@ -142,7 +138,6 @@ void ObjectDetector::update(void)
 
 void ObjectDetector::detect(void)
 {
-	m_pFrame = *(m_pCamStream->m_pFrameProcess);
 	m_pGMat = m_pFrame->getCurrentFrame();
 
 	if (m_pGMat->empty())return;

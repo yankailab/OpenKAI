@@ -203,17 +203,18 @@ void AutoPilot::update(void)
 		pCam = &m_pCamStream[CAM_FRONT];
 		pFrame = *(pCam->m_pCam->m_pFrameProcess);
 
-		if(pCam->m_frameID != pFrame->m_frameID)
-		{
+		//TODO
+//		if(pFrame->isNewThan(pCam->m_frameID))
+//		{
 			//New frame arrived
-			pCam->m_frameID = pFrame->m_frameID;
+//			pCam->m_frameID = pFrame->m_frameID;
 
 //			m_pVI->readMessages();
 
 			//Action
 //			markerLock(pCam->m_pCam->m_pMarkerDetect);
 
-		}
+//		}
 
 
 		m_pVI->readMessages();

@@ -68,7 +68,7 @@ struct CONTROL_AXIS
 
 struct CAMERA_STREAM
 {
-	unsigned int m_frameID;
+	uint64_t m_frameID;
 	CamStream*	m_pCam;
 };
 
@@ -102,15 +102,13 @@ public:
 
 public:
 	//Camera Stream
-	int 				m_numCamStream;
+	int 			m_numCamStream;
 	CAMERA_STREAM	m_pCamStream[NUM_CAM_STREAM];
 
 	ObjectDetector*	m_pOD;
 	FastDetector*	m_pFD;
 
 	VehicleInterface* m_pVI;
-
-
 
 	//Common
 	double m_dT;

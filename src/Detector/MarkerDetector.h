@@ -5,13 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef SRC_MARKERDETECTOR_H_
-#define SRC_MARKERDETECTOR_H_
+#ifndef DETECTOR_MARKERDETECTOR_H_
+#define DETECTOR_MARKERDETECTOR_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-
 #include "../Camera/CamStream.h"
+#include "DetectorBase.h"
 
 #define NUM_MARKER 128
 #define NUM_TARGET_MARKER 2
@@ -26,7 +26,7 @@
 namespace kai
 {
 
-class MarkerDetector
+class MarkerDetector : public DetectorBase, ThreadBase
 {
 public:
 	MarkerDetector();

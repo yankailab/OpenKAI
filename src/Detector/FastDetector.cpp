@@ -14,7 +14,6 @@ FastDetector::FastDetector()
 	m_bThreadON = false;
 	m_threadID = 0;
 
-	m_frameID = 0;
 	m_numHuman = 0;
 	m_numCar = 0;
 	m_pCamStream = NULL;
@@ -58,6 +57,10 @@ bool FastDetector::init(JSON* pJson)
 			cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
+
+	m_pFrame = new CamFrame();
+
+
 	return true;
 }
 
@@ -80,22 +83,21 @@ bool FastDetector::start(void)
 void FastDetector::update(void)
 {
 	CamFrame* pFrame;
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 		if (!m_pCamStream)
 			continue;
 		pFrame = *(m_pCamStream->m_pFrameProcess);
 
 		//The current frame is not the latest frame
-		if (m_frameID != pFrame->m_frameID)
+		if (pFrame->isNewerThan(m_pFrame))
 		{
+			m_pFrame->updateFrame(pFrame);
 			detect();
-			m_frameID = pFrame->m_frameID;
 		}
 
 		//sleepThread can be woke up by this->wakeupThread()
@@ -113,11 +115,11 @@ void FastDetector::detect(void)
 //	if (pMat->empty())
 //		return;
 //
-	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
+	GpuMat* pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
 	if (pGray->empty())
 		return;
 
-	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->m_pNext;
+	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->getCurrentFrame();
 	if (pBGRA->empty())
 		return;
 

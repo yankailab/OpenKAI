@@ -66,15 +66,17 @@ fVector4 CamSparseFlow::detect(CamFrame* pFrame)
 	double distSQMax;
 	double vBase;
 
+	GpuMat* pPrev = pFrame->getPreviousFrame();
+	GpuMat* pNext = pFrame->getCurrentFrame();
 
 	distSQMin = 1;
-	distSQMax = (pFrame->m_pNext->cols + pFrame->m_pNext->rows)*0.15;
+	distSQMax = (pNext->cols + pNext->rows)*0.15;
 	distSQMax *= distSQMax;
 
-	m_pDetector->detect(*(pFrame->m_pPrev), d_prevPts);
+	m_pDetector->detect(*pPrev, d_prevPts);
 	m_pPyrLK->calc(
-		*(pFrame->m_pPrev),
-		*(pFrame->m_pNext),
+		*pPrev,
+		*pNext,
 		d_prevPts,
 		d_nextPts,
 		d_status);

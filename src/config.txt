@@ -13,9 +13,6 @@
 "CAM_FRONTR_ID":0,
 
 
-
-
-
 "CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
 "CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
 "CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",

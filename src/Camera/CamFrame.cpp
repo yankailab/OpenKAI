@@ -24,11 +24,6 @@ CamFrame::~CamFrame()
 {
 }
 
-bool CamFrame::init(void)
-{
-	return true;
-}
-
 void CamFrame::getResized(int width, int height, CamFrame* pResult)
 {
 	if(!pResult)return;
@@ -82,13 +77,6 @@ void CamFrame::get8UC3(CamFrame* pResult)
 	}
 }
 
-void CamFrame::copyTo(CamFrame* pResult)
-{
-	if(!pResult)return;
-
-	m_pNext->copyTo(*pResult->m_pNext);
-}
-
 void CamFrame::switchFrame(void)
 {
 	//switch the current frame and old frame
@@ -97,16 +85,20 @@ void CamFrame::switchFrame(void)
 	m_pNext = &m_pFrame[m_iFrame];
 }
 
+void CamFrame::updateFrame(CamFrame* pFrame)
+{
+	if (pFrame == NULL)return;
+
+	m_frameID = get_time_usec();
+	pFrame->getCurrentFrame()->copyTo(*m_pNext);
+}
+
+
 void CamFrame::updateFrame(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
-	//Update the frame ID for flow synchronization
-	if (++m_frameID == MAX_FRAME_ID)
-	{
-		m_frameID = 0;
-	}
-
+	m_frameID = get_time_usec();
 	pGpuFrame->copyTo(*m_pNext);
 }
 
@@ -114,22 +106,36 @@ void CamFrame::updateFrame(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	//Update the frame ID for flow synchronization
-	if (++m_frameID == MAX_FRAME_ID)
-	{
-		m_frameID = 0;
-	}
-
+	m_frameID = get_time_usec();
 	m_pNext->upload(*pFrame);
 }
-
 
 GpuMat* CamFrame::getCurrentFrame(void)
 {
 	return m_pNext;
 }
 
+GpuMat* CamFrame::getPreviousFrame(void)
+{
+	return m_pPrev;
+}
 
+uint64_t CamFrame::getFrameID(void)
+{
+	return m_frameID;
+}
+
+bool CamFrame::isNewerThan(CamFrame* pFrame)
+{
+	if (pFrame == NULL)return false;
+
+	if(pFrame->getFrameID() < m_frameID)
+	{
+		return true;
+	}
+
+	return false;
+}
 
 
 }

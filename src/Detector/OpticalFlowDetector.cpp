@@ -9,7 +9,6 @@ OpticalFlowDetector::OpticalFlowDetector()
 	m_bThreadON = false;
 	m_threadID = 0;
 
-	m_frameID = 0;
 	m_numHuman = 0;
 	m_numCar = 0;
 	m_pCamStream = NULL;
@@ -87,12 +86,7 @@ void OpticalFlowDetector::update(void)
 			continue;
 		pFrame = *(m_pCamStream->m_pFrameProcess);
 
-		//The current frame is not the latest frame
-		if (m_frameID != pFrame->m_frameID)
-		{
-			detect();
-			m_frameID = pFrame->m_frameID;
-		}
+		detect();
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
@@ -105,18 +99,16 @@ void OpticalFlowDetector::detect(void)
 	int i, j;
 
 	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-//	Mat* pMat = &pFrame->m_uFrame;
-//	if (pMat->empty())
-//		return;
 
-	GpuMat* pGray = m_pCamStream->m_pGrayL->m_pNext;
+	GpuMat* pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
 	if (pGray->empty())
 		return;
 
-	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->m_pNext;
+	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->getCurrentFrame();
 	if (pBGRA->empty())
 		return;
 
+	//TODO: add frameID verify
 
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
