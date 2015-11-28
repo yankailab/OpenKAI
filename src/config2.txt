@@ -11,11 +11,8 @@
 "_CAM_FRONTL_CALIBFILE":"/home/kai/Documents/workspace/LAB/src/logitech_c930e.xml",
 "CAM_FRONTL_CALIBFILE":"/home/kai/workspace/OpenKAI/OpenKAI.git/src/logitech_c930e.xml",
 "CAM_FRONTL_ISOSCALE":0.8,
-
+"CAM_FRONTL_GIMBAL":1,
 "CAM_FRONTR_ID":0,
-
-
-"CAM_UP_ID":2,
 
 
 "CAFFE_MODEL_FILE":"/home/kai/dev/caffe-master/models/bvlc_alexnet/deploy.prototxt",

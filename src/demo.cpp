@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pCamFront->init());
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = true;
-	g_pCamFront->m_bDenseFlow = true;
+	g_pCamFront->m_bDenseFlow = false;//true;
 
 	//Init Object Detector
 	g_pOD = new ObjectDetector();

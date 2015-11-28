@@ -10,9 +10,8 @@
 "CAM_FRONTL_CALIB":0,
 "CAM_FRONTL_CALIBFILE":"/home/ubuntu/Downloads/OpenKAI/src/logitech_c930e.xml",
 "CAM_FRONTL_ISOSCALE":1.0,
-
+"CAM_FRONTL_GIMBAL":1,
 "CAM_FRONTR_ID":0,
-"CAM_UP_ID":2,
 
 "CAFFE_MODEL_FILE":"/home/ubuntu/Downloads/caffe/models/bvlc_reference_caffenet/deploy.prototxt",
 "CAFFE_TRAINED_FILE":"/home/ubuntu/Downloads/caffe/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",

@@ -37,6 +37,7 @@ bool CamInput::setup(JSON* pJson, string camName)
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_height));
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_ISOSCALE", &m_isoScale));
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CALIB", &m_bCalibration));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_GIMBAL", &m_bGimbal));
 
 	if(pJson->getVal("CAM_"+camName+"_CALIBFILE", &calibFile))
 	{
