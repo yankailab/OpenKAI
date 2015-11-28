@@ -38,11 +38,13 @@ g++ $INCLUDES $OPTIONS -MF"build/CamStream.d" -MT"build/CamStream.d" -o "build/C
 
 g++ $INCLUDES $OPTIONS -MF"build/ThreadBase.d" -MT"build/ThreadBase.d" -o "build/ThreadBase.o" "src/Base/ThreadBase.cpp"
 
+g++ $INCLUDES $OPTIONS -MF"build/DetectorBase.d" -MT"build/DetectorBase.d" -o "build/DetectorBase.o" "src/Detector/DetectorBase.cpp"
+
 g++ $INCLUDES $OPTIONS -MF"build/AutoPilot.d" -MT"build/AutoPilot.d" -o "build/AutoPilot.o" "src/Autopilot/AutoPilot.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/Filter.d" -MT"build/Filter.d" -o "build/Filter.o" "src/Algorithm/Filter.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/MarkerDetector.o ./build/UIMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/ThreadBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
+g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/MarkerDetector.o ./build/UIMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/ThreadBase.o  build/DetectorBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
 
