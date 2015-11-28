@@ -131,4 +131,9 @@ void UIMonitor::show(void)
 	imshow(m_windowName,m_showFrame);
 }
 
+void UIMonitor::removeAll(void)
+{
+	m_numFrame = 0;
+}
+
 } /* namespace kai */

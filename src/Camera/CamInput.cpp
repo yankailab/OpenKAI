@@ -36,8 +36,9 @@ bool CamInput::setup(JSON* pJson, string camName)
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_width));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_height));
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_ISOSCALE", &m_isoScale));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CALIB", &m_bCalibration));
 
-	if(pJson->getVal("CAM_"+camName+"_CALIB", &calibFile))
+	if(pJson->getVal("CAM_"+camName+"_CALIBFILE", &calibFile))
 	{
 		FileStorage fs(calibFile, FileStorage::READ);
 		if (!fs.isOpened())
@@ -73,7 +74,7 @@ bool CamInput::setup(JSON* pJson, string camName)
 	        m_Gmap1.upload(map1);
 	        m_Gmap2.upload(map2);
 
-			m_bCalibration = true;
+//			m_bCalibration = true;
 		}
 	}
 

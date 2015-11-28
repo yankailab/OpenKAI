@@ -38,6 +38,7 @@ public:
 	bool addFrame(MONITOR_FRAME* pMFrame);
 	bool updateFrame(MONITOR_FRAME* pMFrame);
 	void removeFrame(CamFrame* pFrame);
+	void removeAll(void);
 	void show(void);
 
 public:

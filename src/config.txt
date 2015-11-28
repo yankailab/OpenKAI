@@ -7,7 +7,9 @@
 "CAM_FRONTL_HEIGHT":800,
 "CAM_FRONTL_ID":0,
 "CAM_FRONTL_MARKER":1,
-"CAM_FRONTL_CALIB":"/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml",
+"CAM_FRONTL_CALIB":0,
+"CAM_FRONTL_CALIBFILE":"/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml",
+
 "CAM_FRONTL_ISOSCALE":1.0,
 
 "CAM_FRONTR_ID":0,

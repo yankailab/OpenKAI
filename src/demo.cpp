@@ -51,9 +51,6 @@ int main(int argc, char* argv[])
 	g_pUIMonitor = new UIMonitor();
 	g_pUIMonitor->init("OpenKAI demo", 1980, 1080);
 	g_pUIMonitor->addFrame(g_pShow, 0, 0, 1980, 1080);
-//	g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 1280, 0, 700, 360);
-//	g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 1280, 360, 700, 360);
-	//TODO: add depth
 
 	//Start threads
 	g_pCamFront->start();
@@ -71,8 +68,7 @@ int main(int argc, char* argv[])
 		Mavlink_Messages mMsg;
 		mMsg = g_pMavlink->current_messages;
 		g_pCamFront->m_pCamL->m_bGimbal = true;
-		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0,
-				mMsg.time_stamps.attitude);
+		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
 		showScreen();
 
@@ -129,7 +125,7 @@ void showScreen(void)
 				Scalar(0, 255, 0), 2, 5, 0);
 
 		putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
-				FONT_HERSHEY_SIMPLEX, 0.6, Scalar(255, 0, 0), 2);
+				FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 2);
 	}
 
 	FAST_OBJECT* pFastObj;
@@ -204,13 +200,22 @@ void handleKey(int key)
 {
 	switch (key)
 	{
-	case 'a':
+	case 'q':
+		g_pCamFront->m_bDenseFlow = false;
+		g_pUIMonitor->removeAll();
+		g_pUIMonitor->addFrame(g_pShow, 0, 0, 1980, 1080);
 		break;
-	case 'z':
+	case 'w':
+		g_pCamFront->m_bDenseFlow = false;
+		g_pUIMonitor->removeAll();
+		g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 0,0,1980,1080);
 		break;
-	case 'c':
+	case 'e':
+		g_pCamFront->m_bDenseFlow = true;
+		g_pUIMonitor->removeAll();
+		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
 		break;
-	case 'm':
+	case 'r':
 		break;
 	case 27:
 		g_bRun = false;	//ESC

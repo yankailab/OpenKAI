@@ -18,8 +18,9 @@ public:
 	bool parse(string json);
 	int checkErrorNum(void);
 
-//	bool getVal(string name,int* val);
-	bool getVal(string name,int32_t* val);
+	bool getVal(string name,int* val);
+	bool getVal(string name, bool* val);
+//	bool getVal(string name,int32_t* val);
 	bool getVal(string name,double* val);
 	bool getVal(string name,string* val);
 
