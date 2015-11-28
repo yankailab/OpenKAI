@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
+#include "../AI/ClassifierManager.h"
 #include "../AI/NNClassifier.h"
 #include "../Camera/CamStream.h"
 #include "DetectorBase.h"
@@ -20,13 +21,11 @@ using namespace cv::saliency;
 using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
-#define NUM_OBJECT_NAME 5
-#define NUM_OBJ 100
 #define NUM_DETECT_BATCH 10
 
 namespace kai
 {
-
+/*
 struct OBJECT
 {
 	string 		m_name[NUM_OBJECT_NAME];
@@ -34,7 +33,7 @@ struct OBJECT
 	Mat         m_pImg;
 	Rect			m_boundBox;
 };
-
+*/
 class ObjectDetector: public DetectorBase, ThreadBase
 {
 public:

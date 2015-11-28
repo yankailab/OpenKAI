@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NNCLASSIFIER_H_
-#define SRC_NNCLASSIFIER_H_
+#ifndef AI_NNCLASSIFIER_H_
+#define AI_NNCLASSIFIER_H_
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>

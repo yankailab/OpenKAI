@@ -31,10 +31,10 @@ public:
 	void generateFlowMap(const GpuMat& d_flow);
 
 public:
-	fVector4 m_flow;
-	GpuMat m_GFlowMat;
-	CamFrame* m_pFlowFrame;
-	CamFrame* m_pShowFlow;
+	fVector4		m_flow;
+	GpuMat		m_GFlowMat;
+	CamFrame*	m_pFlowFrame;
+	CamFrame*	m_pShowFlow;
 
 	Mat m_uFlowMat;
 	Mat m_flowX;

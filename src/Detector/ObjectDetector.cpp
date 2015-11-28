@@ -165,7 +165,7 @@ void ObjectDetector::classifyObject(void)
 
 	for (i = 0; i < m_numObj; i++)
 	{
-		vImg.push_back(m_pObjects[i].m_pImg);
+		vImg.push_back(m_pObjects[i].m_Mat);
 	}
 
 	m_vPredictions = m_classifier.ClassifyBatch(vImg, 5);
@@ -244,7 +244,7 @@ void ObjectDetector::findObjectByContour(void)
 			boundRect.height += overH;
 
 		m_pObjects[m_numObj].m_boundBox = boundRect;
-		m_Mat(boundRect).copyTo(m_pObjects[m_numObj].m_pImg);
+		m_Mat(boundRect).copyTo(m_pObjects[m_numObj].m_Mat);
 		m_numObj++;
 	}
 
