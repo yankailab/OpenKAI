@@ -2,6 +2,8 @@ INCLUDES="-I/home/ubuntu/Downloads/caffe/include -I/home/ubuntu/Downloads/caffe/
 OPTIONS="-O3 -w -Wall -c -fmessage-length=0 -MMD -MP"
 LINKERS="-L/usr/local/lib -L/home/ubuntu/Downloads/caffe/build/lib"
 
+g++ $INCLUDES $OPTIONS -MF"build/ClassifierBase.d" -MT"build/ClassifierBase.d" -o "build/ClassifierBase.o" "src/AI/ClassifierBase.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/ClassifierManager.d" -MT"build/ClassifierManager.d" -o "build/ClassifierManager.o" "src/AI/ClassifierManager.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/NNClassifier.d" -MT"build/NNClassifier.d" -o "build/NNClassifier.o" "src/AI/NNClassifier.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/MavlinkInterface.d" -MT"build/MavlinkInterface.d" -o "build/MavlinkInterface.o" "src/Interface/MavlinkInterface.cpp"
@@ -46,5 +48,5 @@ g++ $INCLUDES $OPTIONS -MF"build/Filter.d" -MT"build/Filter.d" -o "build/Filter.
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/MarkerDetector.o ./build/UIMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/ThreadBase.o  build/DetectorBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
+g++ $LINKERS -o "LAB"  ./build/MavlinkInterface.o ./build/VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o  ./build/FastDetector.o ./build/ObjectDetector.o ./build/OpticalFlowDetector.o  ./build/CamDenseFlow.o ./build/CamFrame.o ./build/CamInput.o ./build/MarkerDetector.o ./build/UIMonitor.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/CamStream.o ./build/ThreadBase.o  build/DetectorBase.o  ./build/AutoPilot.o  ./build/Filter.o  ./build/ClassifierBase.o  ./build/ClassifierManager.o  ./build/NNClassifier.o  ./build/demo.o   -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency
 

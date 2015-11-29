@@ -67,13 +67,19 @@ private:
 	}
 
 public:
+
+	//Temporal demo
+	int			m_bOneImg;
+
+
+
 	CamStream*	m_pCamStream;
 	OBJECT 		m_pObjects[NUM_OBJ];
-	int 		m_numObj;
+	int 			m_numObj;
 
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;
-	GpuMat* 	m_pGMat;
+	GpuMat* 		m_pGMat;
 	GpuMat*		m_pGray;
 
 	Mat			m_contourMat;

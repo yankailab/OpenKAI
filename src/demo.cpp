@@ -29,6 +29,8 @@ int main(int argc, char* argv[])
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
 	g_pOD->setCamStream(g_pCamFront);
+	//Temporal
+	g_pOD->m_bOneImg = 1;
 
 	//Init Fast Detector
 	g_pFD = new FastDetector();
@@ -125,7 +127,7 @@ void showScreen(void)
 				Scalar(0, 255, 0), 2, 5, 0);
 
 		putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
-				FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 0), 2);
+				FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
 	}
 
 	FAST_OBJECT* pFastObj;
@@ -216,6 +218,7 @@ void handleKey(int key)
 		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
 		break;
 	case 'r':
+		g_pOD->m_bOneImg = 1 - g_pOD->m_bOneImg;
 		break;
 	case 27:
 		g_bRun = false;	//ESC

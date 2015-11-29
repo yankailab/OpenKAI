@@ -123,7 +123,6 @@ void ObjectDetector::update(void)
 		pFrame = *(m_pCamStream->m_pFrameProcess);
 
 		//The current frame is not the latest frame
-//		if (m_frameID != pFrame->m_frameID)
 		if (pFrame->isNewerThan(m_pFrame))
 		{
 			m_pFrame->updateFrame(pFrame);
@@ -168,6 +167,7 @@ void ObjectDetector::classifyObject(void)
 		vImg.push_back(m_pObjects[i].m_Mat);
 	}
 
+	//Get the top 5 possible labels
 	m_vPredictions = m_classifier.ClassifyBatch(vImg, 5);
 
 	for (i = 0; i < m_numObj; i++)
@@ -193,9 +193,35 @@ void ObjectDetector::classifyObject(void)
 
 void ObjectDetector::findObjectByContour(void)
 {
-	int i, j;
+	int i;
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
+	Rect boundRect;
+
+
+
+
+	//DEMO
+	if(m_bOneImg==1)
+	{
+		m_numObj = 0;
+		boundRect.height = m_Mat.size().height - 50;
+		boundRect.width = boundRect.height;
+		boundRect.x = (m_Mat.size().width - boundRect.width)*0.5;
+		boundRect.y = (m_Mat.size().height - boundRect.height)*0.5;
+
+		m_pObjects[m_numObj].m_boundBox = boundRect;
+		m_Mat(boundRect).copyTo(m_pObjects[m_numObj].m_Mat);
+		m_numObj++;
+		return;
+	}
+
+
+
+
+
+
+
 
 	m_pContourFrame->switchFrame();
 	GpuMat* pThr = m_pContourFrame->getCurrentFrame();
@@ -211,7 +237,6 @@ void ObjectDetector::findObjectByContour(void)
 
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
-	Rect boundRect;
 
 	for (i = 0; i < contours.size(); i++)
 	{
