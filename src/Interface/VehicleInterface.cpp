@@ -4,6 +4,7 @@ namespace kai
 {
 VehicleInterface::VehicleInterface()
 {
+	m_threadID = 0;
 	m_bConnected = false;
 	m_sportName = "";
 	m_bThreadON = false;

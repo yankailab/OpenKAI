@@ -6,6 +6,7 @@ namespace kai
 
 MavlinkInterface::MavlinkInterface()
 {
+	m_threadID = 0;
 	m_bSerialConnected = false;
 	m_sportName = "";
 	m_bThreadON = false;

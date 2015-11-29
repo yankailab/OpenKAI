@@ -1,9 +1,3 @@
-/*
- * ObjectLocalizer.h
- *
- *  Created on: Aug 17, 2015
- *      Author: yankai
- */
 
 #ifndef DETECTOR_OBJECTDETECTOR_H_
 #define DETECTOR_OBJECTDETECTOR_H_
@@ -21,19 +15,11 @@ using namespace cv::saliency;
 using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
-#define NUM_DETECT_BATCH 10
+
 
 namespace kai
 {
-/*
-struct OBJECT
-{
-	string 		m_name[NUM_OBJECT_NAME];
-	double		m_prob[NUM_OBJECT_NAME];
-	Mat         m_pImg;
-	Rect			m_boundBox;
-};
-*/
+
 class ObjectDetector: public DetectorBase, ThreadBase
 {
 public:
