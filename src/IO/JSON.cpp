@@ -52,22 +52,21 @@ bool JSON::getVal(string name, bool* val)
 	return false;
 }
 
-/*
- bool JSON::getVal(string name, int32_t* val)
- {
- if(m_JSON.is<object>())
- {
- value var = m_JSON.get(name);
- if(var.is<double>())
- {
- *val = (int32_t)var.get<double>();
- return true;
- }
- }
+bool JSON::getVal(string name, uint64_t* val)
+{
+	if (m_JSON.is<object>())
+	{
+		value var = m_JSON.get(name);
+		if (var.is<double>())
+		{
+			*val = (uint64_t) var.get<double>();
+			return true;
+		}
+	}
 
- return false;
- }
- */
+	return false;
+}
+
 bool JSON::getVal(string name, double* val)
 {
 	if (m_JSON.is<object>())

@@ -13,19 +13,10 @@ ObjectDetector::ObjectDetector()
 {
 	m_bThreadON = false;
 	m_threadID = 0;
+	m_pClassMgr = NULL;
 
 	int i, j;
-	m_numObj = 0;
 	m_pCamStream = NULL;
-
-	for (i = 0; i < NUM_OBJ; i++)
-	{
-		for (j = 0; j < NUM_OBJECT_NAME; j++)
-		{
-			m_pObjects[i].m_name[j] = "";
-			m_pObjects[i].m_prob[j] = 0;
-		}
-	}
 
 }
 
@@ -35,22 +26,6 @@ ObjectDetector::~ObjectDetector()
 
 bool ObjectDetector::init(JSON* pJson)
 {
-	//Setup Caffe Classifier
-	string modelFile;
-	string trainedFile;
-	string meanFile;
-	string labelFile;
-
-	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
-
-	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile,
-	NUM_DETECT_BATCH);
-
-	LOG(INFO)<<"Caffe Initialized";
-
 	//OpenCV Canny Edge Detector
 	int lowThr = 10;
 	int highThr = 100;
@@ -145,50 +120,8 @@ void ObjectDetector::detect(void)
 	m_pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
 	if (m_pGray->empty())return;
 
-	m_numObj = 0;
-
 	findObjectByContour();
 //	findObjectBySaliency();
-	classifyObject();
-
-}
-
-void ObjectDetector::classifyObject(void)
-{
-	int i, j;
-	vector<Mat> vImg;
-	OBJECT* pObj;
-
-	if (m_numObj > NUM_DETECT_BATCH)
-		m_numObj = NUM_DETECT_BATCH;
-
-	for (i = 0; i < m_numObj; i++)
-	{
-		vImg.push_back(m_pObjects[i].m_Mat);
-	}
-
-	//Get the top 5 possible labels
-	m_vPredictions = m_classifier.ClassifyBatch(vImg, 5);
-
-	for (i = 0; i < m_numObj; i++)
-	{
-		pObj = &m_pObjects[i];
-		for (j = 0; j < m_vPredictions[i].size(); j++)
-		{
-			Prediction p = m_vPredictions[i][j];
-
-			pObj->m_name[j] = p.first;
-			pObj->m_prob[j] = p.second;
-
-			int from = pObj->m_name[j].find_first_of(' ');
-			int to = pObj->m_name[j].find_first_of(' ');
-			pObj->m_name[j] = pObj->m_name[j].substr(from + 1,
-					pObj->m_name[j].length());
-
-			if (j >= NUM_OBJECT_NAME)
-				break;
-		}
-	}
 }
 
 void ObjectDetector::findObjectByContour(void)
@@ -198,30 +131,17 @@ void ObjectDetector::findObjectByContour(void)
 	vector<Vec4i> hierarchy;
 	Rect boundRect;
 
-
-
-
 	//DEMO
 	if(m_bOneImg==1)
 	{
-		m_numObj = 0;
 		boundRect.height = m_Mat.size().height - 50;
 		boundRect.width = boundRect.height;
 		boundRect.x = (m_Mat.size().width - boundRect.width)*0.5;
 		boundRect.y = (m_Mat.size().height - boundRect.height)*0.5;
 
-		m_pObjects[m_numObj].m_boundBox = boundRect;
-		m_Mat(boundRect).copyTo(m_pObjects[m_numObj].m_Mat);
-		m_numObj++;
+		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect);
 		return;
 	}
-
-
-
-
-
-
-
 
 	m_pContourFrame->switchFrame();
 	GpuMat* pThr = m_pContourFrame->getCurrentFrame();
@@ -240,8 +160,6 @@ void ObjectDetector::findObjectByContour(void)
 
 	for (i = 0; i < contours.size(); i++)
 	{
-		if(m_numObj>=NUM_OBJ)break;
-
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 
 		boundRect = boundingRect(Mat(contours_poly[i]));
@@ -268,9 +186,7 @@ void ObjectDetector::findObjectByContour(void)
 		if (overH < 0)
 			boundRect.height += overH;
 
-		m_pObjects[m_numObj].m_boundBox = boundRect;
-		m_Mat(boundRect).copyTo(m_pObjects[m_numObj].m_Mat);
-		m_numObj++;
+		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect);
 	}
 
 }
@@ -282,35 +198,6 @@ void ObjectDetector::findObjectBySaliency(void)
 		StaticSaliencySpectralResidual spec;
 		spec.computeBinaryMap(m_saliencyMat, m_binMat);
 	}
-
-/*
-	if (m_pSaliency->computeSaliency(*pMat, m_pSaliencyMap))
-	{
-		Rect boundRect;
-		Vec4i iRect;
-
-		j = m_pSaliencyMap.size();
-		if (j > NUM_OBJ)
-			j = NUM_OBJ;
-
-		pDS->m_numObj = 0;
-		for (i = 0; i < j; i++)
-		{
-			if(m_numObj>=NUM_OBJ)break;
-
-			iRect = m_pSaliencyMap[i];
-			boundRect.x = iRect[0];
-			boundRect.y = iRect[1];
-			boundRect.width = iRect[2];
-			boundRect.height = iRect[3];
-
-			pDS->m_pObjects[pDS->m_numObj].m_boundBox = boundRect;
-			pDS->m_pObjects[pDS->m_numObj].m_name[0] = "test";
-			pDS->m_numObj++;
-		}
-
-	}
-*/
 }
 
 void ObjectDetector::findObjectByOpticalFlow(void)
@@ -338,12 +225,6 @@ void ObjectDetector::setCamStream(CamStream* pCam)
 	if (!pCam)
 		return;
 	m_pCamStream = pCam;
-}
-
-int ObjectDetector::getObject(OBJECT** ppObjects)
-{
-	*ppObjects = m_pObjects;
-	return m_numObj;
 }
 
 void ObjectDetector::stop(void)

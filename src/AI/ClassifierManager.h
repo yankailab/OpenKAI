@@ -14,7 +14,7 @@
 #include "../AI/NNClassifier.h"
 #include "../Camera/CamStream.h"
 
-#define TRD_INTERVAL_CLASSIFIER_MANAGER 10
+#define TRD_INTERVAL_CLASSIFIER_MANAGER 1
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
 #define NUM_DETECT_BATCH 10
@@ -34,7 +34,6 @@ struct OBJECT
 
 	uint16_t		m_status;
 	uint64_t		m_frameID;
-	uint64_t		m_classifyBefore;
 
 	Mat			m_Mat;
 	GpuMat		m_GMat;
@@ -48,7 +47,7 @@ public:
 	virtual ~ClassifierManager();
 
 	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect);
-	bool addObject(uint64_t frameID, GpuMat* pGMat, Rect* pRect);
+//	bool addObject(uint64_t frameID, GpuMat* pGMat, Rect* pRect);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);
@@ -68,11 +67,13 @@ private:
 		return NULL;
 	}
 
-private:
+public:
 	uint64_t		m_globalFrameID;
-
+	uint64_t		m_frameLifeTime;
 	OBJECT		m_pObjects[NUM_OBJ];
 	int 			m_numObj;
+
+	vector<Mat>	m_vMat;
 
 	//Caffe classifier
 	NNClassifier m_classifier;

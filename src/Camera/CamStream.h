@@ -17,7 +17,7 @@
 #include "CamSparseFlow.h"
 #include "CamStereo.h"
 
-#define TRD_INTERVAL_CAMSTREAM 1000
+#define TRD_INTERVAL_CAMSTREAM 100
 
 namespace kai
 {
@@ -28,8 +28,7 @@ public:
 	CamStream();
 	virtual ~CamStream();
 
-	bool setup(JSON* pJson, string camName);
-	bool init(void);
+	bool init(JSON* pJson, string camName);
 	bool start(void);
 	bool complete(void);
 	void stop(void);

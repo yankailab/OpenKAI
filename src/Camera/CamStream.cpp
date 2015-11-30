@@ -57,20 +57,14 @@ CamStream::~CamStream()
 
 }
 
-bool CamStream::setup(JSON* pJson, string camName)
+bool CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_ERROR(m_pCamL->setup(pJson, camName));
 
-	return true;
-}
-
-bool CamStream::init(void)
-{
 	m_pFrameProcess = &m_pFrameL;
-
 	m_pDenseFlow->init();
 	m_pSparseFlow->init();
 	m_pStereo->init();

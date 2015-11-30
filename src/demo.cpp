@@ -19,16 +19,20 @@ int main(int argc, char* argv[])
 
 	//Init Camera
 	g_pCamFront = new CamStream();
-	CHECK_FATAL(g_pCamFront->setup(&g_Json, "FRONTL"));
-	CHECK_FATAL(g_pCamFront->init());
+	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
 	g_pCamFront->m_bGray = true;
-	g_pCamFront->m_bHSV = true;
+	g_pCamFront->m_bHSV = false;//true;
 	g_pCamFront->m_bDenseFlow = false;//true;
+
+	//Init Classifier Manager
+	g_pClassMgr = new ClassifierManager();
+	g_pClassMgr->init(&g_Json);
 
 	//Init Object Detector
 	g_pOD = new ObjectDetector();
 	g_pOD->init(&g_Json);
 	g_pOD->setCamStream(g_pCamFront);
+	g_pOD->m_pClassMgr = g_pClassMgr;
 	//Temporal
 	g_pOD->m_bOneImg = 1;
 
@@ -57,11 +61,12 @@ int main(int argc, char* argv[])
 	//Start threads
 	g_pCamFront->start();
 	g_pMavlink->start();
-//	g_pAP->start();
+	g_pClassMgr->start();
 	g_pOD->start();
+//	g_pAP->start();
 //	g_pFD->start();
 
-//UI thread
+	//UI thread
 	g_bRun = true;
 	setMouseCallback(g_pCamFront->m_camName, onMouse, NULL);
 
@@ -77,7 +82,7 @@ int main(int argc, char* argv[])
 		g_pUIMonitor->show();
 
 		//Handle key input
-		g_key = waitKey(15);
+		g_key = waitKey(30);
 		handleKey(g_key);
 	}
 
@@ -86,7 +91,9 @@ int main(int argc, char* argv[])
 	g_pAP->stop();
 	g_pCamFront->stop();
 	g_pMavlink->stop();
+	g_pClassMgr->stop();
 
+	g_pClassMgr->complete();
 	g_pOD->complete();
 	g_pFD->complete();
 	g_pAP->complete();
@@ -94,8 +101,9 @@ int main(int argc, char* argv[])
 	g_pMavlink->complete();
 	g_pMavlink->close();
 
-	delete g_pMavlink;
-	delete g_pAP;
+//	delete g_pClassMgr;
+//	delete g_pAP;
+//	delete g_pMavlink;
 	delete g_pCamFront;
 	delete g_pOD;
 	delete g_pFD;
@@ -117,18 +125,34 @@ void showScreen(void)
 	g_pShow->getCurrentFrame()->download(imMat);
 
 	OBJECT* pObj;
-	for (i = 0; i < g_pOD->m_numObj; i++)
+	for (i = 0; i < g_pClassMgr->m_numObj; i++)
 	{
-		pObj = &g_pOD->m_pObjects[i];
-		if (pObj->m_name[0].empty())
-			continue;
+		pObj = &g_pClassMgr->m_pObjects[i];
 
-		rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-				Scalar(0, 255, 0), 2, 5, 0);
+		if(pObj->m_status == OBJ_COMPLETE)
+		{
+			if (pObj->m_name[0].empty())continue;
 
-		putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
-				FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 255, 0), 2, 5, 0);
+
+			putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
+					FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
+		}
+
+		if(pObj->m_status == OBJ_CLASSIFYING)
+		{
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 0, 255), 2, 5, 0);
+		}
+
+		if(pObj->m_status == OBJ_ADDED)
+		{
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 255, 255), 2, 5, 0);
+		}
 	}
+
 
 	FAST_OBJECT* pFastObj;
 	for (i = 0; i < g_pFD->m_numHuman; i++)

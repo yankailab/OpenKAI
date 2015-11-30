@@ -5,7 +5,6 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../AI/ClassifierManager.h"
-#include "../AI/NNClassifier.h"
 #include "../Camera/CamStream.h"
 #include "DetectorBase.h"
 
@@ -33,11 +32,9 @@ public:
 	void waitForComplete(void);
 
 	void setCamStream(CamStream* pCam);
-	int  getObject(OBJECT** ppObjects);
 
 private:
 	void detect(void);
-	void classifyObject(void);
 	void findObjectByContour(void);
 	void findObjectByOpticalFlow(void);
 	void findObjectBySaliency(void);
@@ -57,11 +54,8 @@ public:
 	//Temporal demo
 	int			m_bOneImg;
 
-
-
+	ClassifierManager* m_pClassMgr;
 	CamStream*	m_pCamStream;
-	OBJECT 		m_pObjects[NUM_OBJ];
-	int 			m_numObj;
 
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;
@@ -80,9 +74,9 @@ public:
 	vector<Vec4i> m_pSaliencyMap;
 
 	//Caffe classifier
-	NNClassifier m_classifier;
-	vector<Prediction> m_predictions;
-	vector<vector<Prediction> > m_vPredictions;
+//	NNClassifier m_classifier;
+//	vector<Prediction> m_predictions;
+//	vector<vector<Prediction> > m_vPredictions;
 
 };
 }

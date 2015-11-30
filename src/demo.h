@@ -19,6 +19,7 @@
 #include "UI/UIMonitor.h"
 #include "Autopilot/AutoPilot.h"
 #include "Interface/MavlinkInterface.h"
+#include "AI/ClassifierManager.h"
 
 using namespace kai;
 
@@ -32,6 +33,7 @@ ObjectDetector* g_pOD;
 FastDetector* g_pFD;
 AutoPilot* g_pAP;
 MarkerDetector* g_pMD;
+ClassifierManager* g_pClassMgr;
 
 MavlinkInterface* g_pMavlink;
 cv::Mat g_displayMat;

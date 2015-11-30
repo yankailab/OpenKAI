@@ -26,12 +26,16 @@
 "HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
 "CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
 
-
 "OD_CANNY_LOW":10,
 "OD_CANNY_HIGH":100,
 "OD_CANNY_APPERTURE":3,
 "OD_GAUSS_KSIZE":3,
 "OD_GAUSS_SIGMA":1,
+
+
+
+"CLASSIFIER_FRAME_LIFETIME":1000,
+
 
 
 
