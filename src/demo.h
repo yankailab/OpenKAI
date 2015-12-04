@@ -27,32 +27,25 @@ int g_key;
 bool g_bRun;
 
 _CamStream* g_pCamFront;
-CamFrame* g_pShow;
-UIMonitor* g_pUIMonitor;
 _ObjectDetector* g_pOD;
 _FastDetector* g_pFD;
 _AutoPilot* g_pAP;
-MarkerDetector* g_pMD;
 _ClassifierManager* g_pClassMgr;
-_CamDenseFlow* g_pDF;
-
+_DenseFlow* g_pDF;
 _MavlinkInterface* g_pMavlink;
+
+CamFrame* g_pShow;
+UIMonitor* g_pUIMonitor;
+MarkerDetector* g_pMD;
 cv::Mat g_displayMat;
 
 JSON g_Json;
 FileIO g_file;
-string g_serialPort;
-int g_baudrate;
 
 void onMouse(int event, int x, int y, int flags, void* userdata);
 void showScreen(void);
 void showInfo(Mat* pDisplayMat);
 void handleKey(int key);
 void printEnvironment(void);
-
-
-
-
-
 
 #endif /* SRC_DEMO_H_ */

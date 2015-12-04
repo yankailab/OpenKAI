@@ -5,28 +5,32 @@
  *      Author: yankai
  */
 
+#include "_DenseFlow.h"
+
 #include "../Base/common.h"
 #include "stdio.h"
 #include "../Base/cvplatform.h"
-#include "_CamDenseFlow.h"
 
 namespace kai
 {
 
-_CamDenseFlow::_CamDenseFlow()
+_DenseFlow::_DenseFlow()
 {
 	_ThreadBase();
 
 	m_width = 640;
 	m_height = 480;
 
+	m_pFlowFrame = NULL;
+	m_pShowFlow = NULL;
+
 }
 
-_CamDenseFlow::~_CamDenseFlow()
+_DenseFlow::~_DenseFlow()
 {
 }
 
-bool _CamDenseFlow::init(JSON* pJson, string camName)
+bool _DenseFlow::init(JSON* pJson, string camName)
 {
 	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_width));
 	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_height));
@@ -41,7 +45,7 @@ bool _CamDenseFlow::init(JSON* pJson, string camName)
 }
 
 
-bool _CamDenseFlow::start(void)
+bool _DenseFlow::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -54,7 +58,7 @@ bool _CamDenseFlow::start(void)
 	return true;
 }
 
-void _CamDenseFlow::update(void)
+void _DenseFlow::update(void)
 {
 	m_tSleep = TRD_INTERVAL_DENSEFLOW;
 
@@ -65,12 +69,23 @@ void _CamDenseFlow::update(void)
 		detect();
 
 		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(1, m_tSleep);
+		this->sleepThread(0, m_tSleep);
 	}
 
 }
 
-fVector4 _CamDenseFlow::detect(void)
+void _DenseFlow::updateFrame(CamFrame* pFrame)
+{
+	if(pFrame==NULL)return;
+	if(pFrame->getCurrentFrame()->empty())return;
+
+	m_pFlowFrame->switchFrame();
+	pFrame->getResized(640,480, m_pFlowFrame);
+
+	this->wakeupThread();
+}
+
+fVector4 _DenseFlow::detect(void)
 {
 	int i, j;
 	cv::Point2f vFlow;
@@ -83,14 +98,10 @@ fVector4 _CamDenseFlow::detect(void)
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
 
-	if(m_pFlowFrame->getCurrentFrame()->empty())return m_flow;
-//
-//	m_pFlowFrame->switchFrame();
-//	pFrame->getResized(640,480, m_pFlowFrame);
-
 	pPrev = m_pFlowFrame->getPreviousFrame();
 	pNext = m_pFlowFrame->getCurrentFrame();
 
+	if(pNext->empty())return m_flow;
 	if(pPrev->size() != pNext->size())return m_flow;
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
@@ -126,12 +137,12 @@ fVector4 _CamDenseFlow::detect(void)
 
 
 
-inline bool _CamDenseFlow::isFlowCorrect(Point2f u)
+inline bool _DenseFlow::isFlowCorrect(Point2f u)
 {
 	return !cvIsNaN(u.x) && !cvIsNaN(u.y) && fabs(u.x) < 1e9 && fabs(u.y) < 1e9;
 }
 
-Vec3b _CamDenseFlow::computeColor(float fx, float fy)
+Vec3b _DenseFlow::computeColor(float fx, float fy)
 {
 	static bool first = true;
 
@@ -201,7 +212,7 @@ Vec3b _CamDenseFlow::computeColor(float fx, float fy)
 	return pix;
 }
 
-void _CamDenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion)
+void _DenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion)
 {
 	dst.create(flowx.size(), CV_8UC3);
 	dst.setTo(Scalar::all(0));
@@ -238,7 +249,7 @@ void _CamDenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>&
 	}
 }
 
-void _CamDenseFlow::generateFlowMap(const GpuMat& d_flow)
+void _DenseFlow::generateFlowMap(const GpuMat& d_flow)
 {
 	GpuMat planes[2];
 	cuda::split(d_flow, planes);
@@ -250,8 +261,6 @@ void _CamDenseFlow::generateFlowMap(const GpuMat& d_flow)
 	drawOpticalFlow(flowx, flowy, out, 10);
 
 	m_pShowFlow->updateFrame(&out);
-
-//	imshow(name, out);
 }
 
 } /* namespace kai */

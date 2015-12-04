@@ -11,6 +11,7 @@ namespace kai
 NNClassifier::NNClassifier()
 {
 	num_channels_ = 0;
+	batch_size_ = 0;
 }
 
 NNClassifier::~NNClassifier()

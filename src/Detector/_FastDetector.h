@@ -12,7 +12,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_OBJDETECTOR 0
+#define TRD_INTERVAL_FASTDETECTOR 0
 #define NUM_FASTOBJ 1000
 
 namespace kai

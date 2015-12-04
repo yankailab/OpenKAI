@@ -12,7 +12,6 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../AI/NNClassifier.h"
-#include "../Camera/_CamStream.h"
 
 #define TRD_INTERVAL_CLASSIFIER_MANAGER 1
 #define NUM_OBJECT_NAME 5

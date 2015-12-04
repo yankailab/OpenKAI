@@ -85,7 +85,7 @@ bool _FastDetector::start(void)
 void _FastDetector::update(void)
 {
 	CamFrame* pFrame;
-	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
+	m_tSleep = TRD_INTERVAL_FASTDETECTOR;
 
 	while (m_bThreadON)
 	{

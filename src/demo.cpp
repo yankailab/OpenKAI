@@ -18,15 +18,8 @@ int main(int argc, char* argv[])
 	CHECK_INFO(g_pMavlink->open());
 
 	//Init Optical Flow
-	g_pDF = new _CamDenseFlow();
+	g_pDF = new _DenseFlow();
 	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
-
-	//Init Camera
-	g_pCamFront = new _CamStream();
-	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
-	g_pCamFront->m_bGray = true;
-	g_pCamFront->m_bHSV = false;//true;
-	g_pCamFront->m_pDenseFlow = g_pDF;
 
 	//Init Classifier Manager
 	g_pClassMgr = new _ClassifierManager();
@@ -35,10 +28,17 @@ int main(int argc, char* argv[])
 	//Init Object Detector
 	g_pOD = new _ObjectDetector();
 	g_pOD->init(&g_Json);
-	g_pOD->setCamStream(g_pCamFront);
 	g_pOD->m_pClassMgr = g_pClassMgr;
 	//Temporal
 	g_pOD->m_bOneImg = 1;
+
+	//Init Camera
+	g_pCamFront = new _CamStream();
+	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
+	g_pCamFront->m_bGray = true;
+	g_pCamFront->m_bHSV = false;//true;
+	g_pCamFront->m_pDenseFlow = g_pDF;
+	g_pCamFront->m_pOD = g_pOD;
 
 	//Init Fast Detector
 	g_pFD = new _FastDetector();

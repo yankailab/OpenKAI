@@ -14,7 +14,13 @@ _ObjectDetector::_ObjectDetector()
 	_ThreadBase();
 
 	m_pClassMgr = NULL;
-	m_pCamStream = NULL;
+
+	m_pContourFrame = NULL;
+	m_pSaliencyFrame = NULL;
+	m_pFrame = NULL;
+
+	m_pGMat = NULL;
+	m_pGray = NULL;
 
 }
 
@@ -92,15 +98,8 @@ void _ObjectDetector::update(void)
 	{
 		this->updateTime();
 
-		if (!m_pCamStream)continue;
-		pFrame = *(m_pCamStream->m_pFrameProcess);
-
-		//The current frame is not the latest frame
-		if (pFrame->isNewerThan(m_pFrame))
-		{
-			m_pFrame->updateFrame(pFrame);
-			detect();
-		}
+		findObjectByContour();
+	//	findObjectBySaliency();
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
@@ -108,18 +107,20 @@ void _ObjectDetector::update(void)
 
 }
 
-void _ObjectDetector::detect(void)
+void _ObjectDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
 {
-	m_pGMat = m_pFrame->getCurrentFrame();
+	if(pFrame==NULL)return;
+	if(pFrame->getCurrentFrame()->empty())return;
+	if(pGray==NULL)return;
+	if(pGray->getCurrentFrame()->empty())return;
 
-	if (m_pGMat->empty())return;
+	m_pFrame->updateFrame(pFrame);
+	m_pGMat = m_pFrame->getCurrentFrame();
 	m_pGMat->download(m_Mat);
 
-	m_pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
-	if (m_pGray->empty())return;
+	m_pGray = pGray->getCurrentFrame();
 
-	findObjectByContour();
-//	findObjectBySaliency();
+	this->wakeupThread();
 }
 
 void _ObjectDetector::findObjectByContour(void)
@@ -216,13 +217,6 @@ void _ObjectDetector::findObjectByOpticalFlow(void)
 	 m_frame.convertTo(matThr,CV_8UC1);
 	 */
 
-}
-
-void _ObjectDetector::setCamStream(_CamStream* pCam)
-{
-	if (!pCam)
-		return;
-	m_pCamStream = pCam;
 }
 
 }

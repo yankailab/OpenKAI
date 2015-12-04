@@ -38,6 +38,7 @@ _CamStream::_CamStream()
 	m_threadID = NULL;
 
 	m_pDenseFlow = NULL;
+	m_pOD = NULL;
 
 }
 
@@ -114,6 +115,7 @@ void _CamStream::update(void)
 		m_pFrameL->switchFrame();
 		m_pCamL->readFrame(m_pFrameL);
 
+		//Image processing
 		if(m_bStereoCam)
 		{
 			m_pFrameR->switchFrame();
@@ -141,10 +143,15 @@ void _CamStream::update(void)
 		m_pBGRAL->switchFrame();
 		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
 
+		//Notification to other threads
 		if(m_pDenseFlow)
 		{
-			m_pDenseFlow->m_pFlowFrame->switchFrame();
-			m_pGrayL->getResized(640,480,m_pDenseFlow->m_pFlowFrame);
+			m_pDenseFlow->updateFrame(m_pGrayL);
+		}
+
+		if(m_pOD)
+		{
+			m_pOD->updateFrame(m_pFrameL, m_pGrayL);
 		}
 
 		if(m_bSparseFlow)

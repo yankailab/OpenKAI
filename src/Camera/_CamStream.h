@@ -10,14 +10,15 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "_CamDenseFlow.h"
+#include "../Image/_DenseFlow.h"
+#include "../Detector/_ObjectDetector.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
 #include "CamSparseFlow.h"
 #include "CamStereo.h"
 
-#define TRD_INTERVAL_CAMSTREAM 100
+#define TRD_INTERVAL_CAMSTREAM 0
 
 namespace kai
 {
@@ -45,7 +46,9 @@ public:
 	CamFrame*			m_pDepth;
 	CamFrame*			m_pBGRAL;
 
-	_CamDenseFlow*		m_pDenseFlow;
+	_ObjectDetector*		m_pOD;
+	_DenseFlow*			m_pDenseFlow;
+
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
 
@@ -55,10 +58,6 @@ public:
 	bool		m_bGray;
 
 private:
-public:
-//	pthread_t m_threadID;
-//	bool m_bThreadON;
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

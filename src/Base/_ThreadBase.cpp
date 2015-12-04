@@ -14,7 +14,7 @@ _ThreadBase::_ThreadBase()
 {
 	m_bThreadON = false;
 	m_threadID = 0;
-
+	m_timeStamp = 0;
 	m_tSleep = 0;
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);

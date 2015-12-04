@@ -5,7 +5,7 @@
 #include "../AI/_ClassifierManager.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_CamStream.h"
+//#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
 
 using namespace cv;
@@ -13,7 +13,7 @@ using namespace cv::cuda;
 using namespace cv::saliency;
 using namespace std;
 
-#define TRD_INTERVAL_OBJDETECTOR 0
+#define TRD_INTERVAL_OBJDETECTOR 1000
 
 
 namespace kai
@@ -28,16 +28,14 @@ public:
 	bool init(JSON* pJson);
 	bool start(void);
 
-	void setCamStream(_CamStream* pCam);
+//	void setCamStream(_CamStream* pCam);
+
+	void updateFrame(CamFrame* pFrame, CamFrame* pGray);
 
 private:
-	void detect(void);
 	void findObjectByContour(void);
 	void findObjectByOpticalFlow(void);
 	void findObjectBySaliency(void);
-
-//	pthread_t m_threadID;
-//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -52,7 +50,6 @@ public:
 	int			m_bOneImg;
 
 	_ClassifierManager* m_pClassMgr;
-	_CamStream*	m_pCamStream;
 
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;
