@@ -3,8 +3,8 @@
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
 #include "../IO/JSON.h"
-#include "ThreadBase.h"
 #include "../Algorithm/Filter.h"
+#include "_ThreadBase.h"
 
 //Common include
 

@@ -5,14 +5,14 @@
  *      Author: yankai
  */
 
-#ifndef SRC_AI_CLASSIFIERMANAGER_H_
-#define SRC_AI_CLASSIFIERMANAGER_H_
+#ifndef SRC_AI__CLASSIFIERMANAGER_H_
+#define SRC_AI__CLASSIFIERMANAGER_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Base/ThreadBase.h"
+#include "../Base/_ThreadBase.h"
 #include "../AI/NNClassifier.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 
 #define TRD_INTERVAL_CLASSIFIER_MANAGER 1
 #define NUM_OBJECT_NAME 5
@@ -40,11 +40,11 @@ struct OBJECT
 	Rect			m_boundBox;
 };
 
-class ClassifierManager: public ThreadBase
+class _ClassifierManager: public _ThreadBase
 {
 public:
-	ClassifierManager();
-	virtual ~ClassifierManager();
+	_ClassifierManager();
+	virtual ~_ClassifierManager();
 
 	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect);
 //	bool addObject(uint64_t frameID, GpuMat* pGMat, Rect* pRect);
@@ -52,18 +52,12 @@ public:
 
 	bool init(JSON* pJson);
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
 private:
-	pthread_t m_threadID;
-	bool m_bThreadON;
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((ClassifierManager*) This)->update();
+		((_ClassifierManager*) This)->update();
 		return NULL;
 	}
 
@@ -84,4 +78,4 @@ public:
 
 } /* namespace kai */
 
-#endif /* SRC_AI_CLASSIFIERMANAGER_H_ */
+#endif /* SRC_AI__CLASSIFIERMANAGER_H_ */

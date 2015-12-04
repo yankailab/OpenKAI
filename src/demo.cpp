@@ -13,23 +13,27 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
 	//Connect to Mavlink
-	g_pMavlink = new MavlinkInterface();
+	g_pMavlink = new _MavlinkInterface();
 	CHECK_FATAL(g_pMavlink->setup(&g_Json, "FC"));
 	CHECK_INFO(g_pMavlink->open());
 
+	//Init Optical Flow
+	g_pDF = new _CamDenseFlow();
+	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
+
 	//Init Camera
-	g_pCamFront = new CamStream();
+	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = false;//true;
-	g_pCamFront->m_bDenseFlow = false;//true;
+	g_pCamFront->m_pDenseFlow = g_pDF;
 
 	//Init Classifier Manager
-	g_pClassMgr = new ClassifierManager();
+	g_pClassMgr = new _ClassifierManager();
 	g_pClassMgr->init(&g_Json);
 
 	//Init Object Detector
-	g_pOD = new ObjectDetector();
+	g_pOD = new _ObjectDetector();
 	g_pOD->init(&g_Json);
 	g_pOD->setCamStream(g_pCamFront);
 	g_pOD->m_pClassMgr = g_pClassMgr;
@@ -37,12 +41,12 @@ int main(int argc, char* argv[])
 	g_pOD->m_bOneImg = 1;
 
 	//Init Fast Detector
-	g_pFD = new FastDetector();
+	g_pFD = new _FastDetector();
 	g_pFD->init(&g_Json);
 	g_pFD->setCamStream(g_pCamFront);
 
 	//Init Autopilot
-	g_pAP = new AutoPilot();
+	g_pAP = new _AutoPilot();
 	CHECK_FATAL(g_pAP->setup(&g_Json, ""));
 	g_pAP->init();
 	g_pAP->setCamStream(g_pCamFront, CAM_FRONT);
@@ -63,6 +67,7 @@ int main(int argc, char* argv[])
 	g_pMavlink->start();
 	g_pClassMgr->start();
 	g_pOD->start();
+	g_pDF->start();
 //	g_pAP->start();
 //	g_pFD->start();
 
@@ -86,6 +91,7 @@ int main(int argc, char* argv[])
 		handleKey(g_key);
 	}
 
+	g_pDF->stop();
 	g_pOD->stop();
 	g_pFD->stop();
 	g_pAP->stop();
@@ -93,6 +99,7 @@ int main(int argc, char* argv[])
 	g_pMavlink->stop();
 	g_pClassMgr->stop();
 
+	g_pDF->complete();
 	g_pClassMgr->complete();
 	g_pOD->complete();
 	g_pFD->complete();
@@ -104,6 +111,7 @@ int main(int argc, char* argv[])
 //	delete g_pClassMgr;
 //	delete g_pAP;
 //	delete g_pMavlink;
+	delete g_pDF;
 	delete g_pCamFront;
 	delete g_pOD;
 	delete g_pFD;
@@ -227,17 +235,14 @@ void handleKey(int key)
 	switch (key)
 	{
 	case 'q':
-		g_pCamFront->m_bDenseFlow = false;
 		g_pUIMonitor->removeAll();
 		g_pUIMonitor->addFrame(g_pShow, 0, 0, 1980, 1080);
 		break;
 	case 'w':
-		g_pCamFront->m_bDenseFlow = false;
 		g_pUIMonitor->removeAll();
 		g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 0,0,1980,1080);
 		break;
 	case 'e':
-		g_pCamFront->m_bDenseFlow = true;
 		g_pUIMonitor->removeAll();
 		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
 		break;

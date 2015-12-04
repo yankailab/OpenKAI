@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 
 #define NUM_MONITOR_FRAME 8
 

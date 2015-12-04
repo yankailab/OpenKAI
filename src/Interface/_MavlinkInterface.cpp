@@ -1,15 +1,15 @@
-#include "MavlinkInterface.h"
 #include "../Utility/util.h"
+#include "_MavlinkInterface.h"
 
 namespace kai
 {
 
-MavlinkInterface::MavlinkInterface()
+_MavlinkInterface::_MavlinkInterface()
 {
-	m_threadID = 0;
+	_ThreadBase();
+
 	m_bSerialConnected = false;
 	m_sportName = "";
-	m_bThreadON = false;
 	m_pSerialPort = NULL;
 	m_baudRate = 57600;
 
@@ -32,7 +32,7 @@ MavlinkInterface::MavlinkInterface()
 
 }
 
-MavlinkInterface::~MavlinkInterface()
+_MavlinkInterface::~_MavlinkInterface()
 {
 	if (m_pSerialPort)
 	{
@@ -40,7 +40,7 @@ MavlinkInterface::~MavlinkInterface()
 	}
 }
 
-bool MavlinkInterface::setup(JSON* pJson, string serialName)
+bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 {
 	if(!pJson)return false;
 
@@ -51,7 +51,7 @@ bool MavlinkInterface::setup(JSON* pJson, string serialName)
 }
 
 
-bool MavlinkInterface::open(void)
+bool _MavlinkInterface::open(void)
 {
 	system_id = 0;
 	autopilot_id = 0;
@@ -81,7 +81,7 @@ bool MavlinkInterface::open(void)
 
 }
 
-void MavlinkInterface::close()
+void _MavlinkInterface::close()
 {
 //	disable_offboard_control();
 
@@ -93,7 +93,7 @@ void MavlinkInterface::close()
 	printf("Serial port closed.\n");
 }
 
-void MavlinkInterface::handleMessages()
+void _MavlinkInterface::handleMessages()
 {
 	Time_Stamps this_timestamps;
 	mavlink_message_t message;
@@ -238,7 +238,7 @@ void MavlinkInterface::handleMessages()
 
 }
 
-bool MavlinkInterface::readMessage(mavlink_message_t &message)
+bool _MavlinkInterface::readMessage(mavlink_message_t &message)
 {
 	uint8_t cp;
 	mavlink_status_t status;
@@ -274,7 +274,7 @@ bool MavlinkInterface::readMessage(mavlink_message_t &message)
 	return false;
 }
 
-int MavlinkInterface::writeMessage(mavlink_message_t message)
+int _MavlinkInterface::writeMessage(mavlink_message_t message)
 {
 	char buf[300];
 
@@ -287,7 +287,7 @@ int MavlinkInterface::writeMessage(mavlink_message_t message)
 	return len;
 }
 
-bool MavlinkInterface::start(void)
+bool _MavlinkInterface::start(void)
 {
 	//Start thread
 	m_bThreadON = true;
@@ -304,7 +304,7 @@ bool MavlinkInterface::start(void)
 	return true;
 }
 
-void MavlinkInterface::update(void)
+void _MavlinkInterface::update(void)
 {
 	m_tSleep = TRD_INTERVAL_MI_USEC;
 
@@ -353,28 +353,8 @@ void MavlinkInterface::update(void)
 
 }
 
-bool MavlinkInterface::complete(void)
-{
 
-	return true;
-}
-
-void MavlinkInterface::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO)<< "MavlinkInterface.stop()";
-}
-
-void MavlinkInterface::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
-
-
-void MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
+void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 {
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
@@ -390,7 +370,7 @@ void MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 	return;
 }
 
-int MavlinkInterface::toggleOffboardControl(bool bEnable)
+int _MavlinkInterface::toggleOffboardControl(bool bEnable)
 {
 	if(m_bControlling == bEnable)return -1;
 
@@ -422,7 +402,7 @@ int MavlinkInterface::toggleOffboardControl(bool bEnable)
  * Modifies a mavlink_set_position_target_local_ned_t struct with target XYZ locations
  * in the Local NED frame, in meters.
  */
-void MavlinkInterface::set_position(float x, float y, float z,
+void _MavlinkInterface::set_position(float x, float y, float z,
 		mavlink_set_position_target_local_ned_t &sp)
 {
 	sp.type_mask =
@@ -445,7 +425,7 @@ void MavlinkInterface::set_position(float x, float y, float z,
  * Modifies a mavlink_set_position_target_local_ned_t struct with target VX VY VZ
  * velocities in the Local NED frame, in meters per second.
  */
-void MavlinkInterface::set_velocity(float vx, float vy, float vz,
+void _MavlinkInterface::set_velocity(float vx, float vy, float vz,
 		mavlink_set_position_target_local_ned_t &sp)
 {
 	sp.type_mask =
@@ -467,7 +447,7 @@ void MavlinkInterface::set_velocity(float vx, float vy, float vz,
  * Modifies a mavlink_set_position_target_local_ned_t struct with target AX AY AZ
  * accelerations in the Local NED frame, in meters per second squared.
  */
-void MavlinkInterface::set_acceleration(float ax, float ay, float az,
+void _MavlinkInterface::set_acceleration(float ax, float ay, float az,
 		mavlink_set_position_target_local_ned_t &sp)
 {
 
@@ -494,7 +474,7 @@ void MavlinkInterface::set_acceleration(float ax, float ay, float az,
  * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw
  * in the Local NED frame, in radians.
  */
-void MavlinkInterface::set_yaw(float yaw,
+void _MavlinkInterface::set_yaw(float yaw,
 		mavlink_set_position_target_local_ned_t &sp)
 {
 	sp.type_mask &=
@@ -512,7 +492,7 @@ void MavlinkInterface::set_yaw(float yaw,
  * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw rate
  * in the Local NED frame, in radians per second.
  */
-void MavlinkInterface::set_yaw_rate(float yaw_rate,
+void _MavlinkInterface::set_yaw_rate(float yaw_rate,
 		mavlink_set_position_target_local_ned_t &sp)
 {
 	sp.type_mask &=

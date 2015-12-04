@@ -1,54 +1,51 @@
 
 
-#ifndef SRC_OPTICALFLOWDETECTOR_H_
-#define SRC_OPTICALFLOWDETECTOR_H_
+#ifndef DETECTOR_FASTDETECTOR_H_
+#define DETECTOR_FASTDETECTOR_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
-
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
-#define NUM_OPTICALFLOW_OBJECT 100
+#define NUM_FASTOBJ 1000
 
 namespace kai
 {
 
-struct OPTICALFLOW_OBJECT
+struct FAST_OBJECT
 {
 	Rect		m_boundBox;
 };
 
-class OpticalFlowDetector: public DetectorBase, ThreadBase
+class _FastDetector: public DetectorBase, public _ThreadBase
 {
 public:
-	OpticalFlowDetector();
-	~OpticalFlowDetector();
+	_FastDetector();
+	~_FastDetector();
 
 	bool init(JSON* pJson);
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
-	void setFrame(CamStream* pCam);
-	int  getHuman(OPTICALFLOW_OBJECT** ppHuman);
+	void setCamStream(_CamStream* pCam);
+	int  getHuman(FAST_OBJECT** ppHuman);
 
 private:
 	void detect(void);
 
 public:
-	CamStream*		m_pCamStream;
+	_CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
-	OPTICALFLOW_OBJECT 	m_pHuman[NUM_OPTICALFLOW_OBJECT];
+	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
+
 
     double scale;
     int nlevels;
@@ -63,21 +60,22 @@ public:
     int nbins;
 
 
-//  HOGDescriptor	m_hogCar;
+
+//    HOGDescriptor m_hogCar;
 	int 			m_numCar;
-	OPTICALFLOW_OBJECT 	m_pCar[NUM_OPTICALFLOW_OBJECT];
+	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
 
 	Mat		m_frame;
-//	GpuMat  m_pGMat;
+	GpuMat  m_pGMat;
 
 private:
-	pthread_t m_threadID;
-	bool m_bThreadON;
+//	pthread_t m_threadID;
+//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((OpticalFlowDetector *) This)->update();
+		((_FastDetector *) This)->update();
 		return NULL;
 	}
 
@@ -85,4 +83,4 @@ private:
 };
 }
 
-#endif /* SRC_OPTICALFLOWDETECTOR_H_ */
+#endif /* SRC_FASTDETECTOR_H_ */

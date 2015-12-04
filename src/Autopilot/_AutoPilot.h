@@ -1,11 +1,11 @@
 #pragma once
 
 #include "../Base/common.h"
-#include "../Camera/CamStream.h"
-#include "../Detector/ObjectDetector.h"
-#include "../Detector/FastDetector.h"
+#include "../Camera/_CamStream.h"
+#include "../Detector/_FastDetector.h"
+#include "../Detector/_ObjectDetector.h"
 #include "../Detector/MarkerDetector.h"
-#include "../Interface/VehicleInterface.h"
+#include "../Interface/_VehicleInterface.h"
 
 //
 // Operation mode
@@ -69,29 +69,26 @@ struct CONTROL_AXIS
 struct CAMERA_STREAM
 {
 	uint64_t m_frameID;
-	CamStream*	m_pCam;
+	_CamStream*	m_pCam;
 };
 
-class AutoPilot: public ThreadBase
+class _AutoPilot: public _ThreadBase
 {
 public:
-	AutoPilot();
-	~AutoPilot();
+	_AutoPilot();
+	~_AutoPilot();
 
 	bool setup(JSON* pJson, string pilotName);
 	bool init(void);
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
-	bool setCamStream(CamStream* pCamStream, int camPosition);
+	bool setCamStream(_CamStream* pCamStream, int camPosition);
 	void markerLock(MarkerDetector* pCMD);
 	void flowLock(MarkerDetector* pCMD);
 	void setTargetPosCV(fVector3 pos);
 	fVector3 getTargetPosCV(void);
 
-	void setVehicleInterface(VehicleInterface* pVehicle);
+	void setVehicleInterface(_VehicleInterface* pVehicle);
 
 	int* getPWMOutput(void);
 
@@ -105,10 +102,10 @@ public:
 	int 			m_numCamStream;
 	CAMERA_STREAM	m_pCamStream[NUM_CAM_STREAM];
 
-	ObjectDetector*	m_pOD;
-	FastDetector*	m_pFD;
+	_ObjectDetector*	m_pOD;
+	_FastDetector*	m_pFD;
 
-	VehicleInterface* m_pVI;
+	_VehicleInterface* m_pVI;
 
 	//Common
 	double m_dT;
@@ -144,13 +141,10 @@ public:
 	int m_RC[NUM_RC_CHANNEL];
 
 	//Thread
-	pthread_t m_threadID;
-	bool m_bThreadON;
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((AutoPilot *) This)->update();
+		((_AutoPilot *) This)->update();
 		return NULL;
 	}
 

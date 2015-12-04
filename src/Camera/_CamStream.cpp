@@ -5,13 +5,15 @@
  *      Author: yankai
  */
 
-#include "CamStream.h"
+#include "_CamStream.h"
 
 namespace kai
 {
 
-CamStream::CamStream()
+_CamStream::_CamStream()
 {
+	_ThreadBase();
+
 	m_camName = "";
 	m_pCamL = new CamInput();
 	m_pCamR = new CamInput();
@@ -24,12 +26,10 @@ CamStream::CamStream()
 	m_pBGRAL = new CamFrame();
 	m_pFrameProcess = &m_pFrameL;
 
-	m_pDenseFlow = new CamDenseFlow();
 	m_pSparseFlow = new CamSparseFlow();
 	m_pStereo = new CamStereo();
 
 	m_bStereoCam = false;
-	m_bDenseFlow = false;
 	m_bSparseFlow = false;
 	m_bHSV = false;
 	m_bGray = false;
@@ -37,9 +37,11 @@ CamStream::CamStream()
 	m_bThreadON = false;
 	m_threadID = NULL;
 
+	m_pDenseFlow = NULL;
+
 }
 
-CamStream::~CamStream()
+_CamStream::~_CamStream()
 {
 	RELEASE(m_pCamL);
 	RELEASE(m_pCamR);
@@ -51,13 +53,12 @@ CamStream::~CamStream()
 	RELEASE(m_pDepth);
 	RELEASE(m_pBGRAL);
 
-	RELEASE(m_pDenseFlow);
 	RELEASE(m_pSparseFlow);
 	RELEASE(m_pStereo);
 
 }
 
-bool CamStream::init(JSON* pJson, string camName)
+bool _CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
@@ -65,7 +66,7 @@ bool CamStream::init(JSON* pJson, string camName)
 	CHECK_ERROR(m_pCamL->setup(pJson, camName));
 
 	m_pFrameProcess = &m_pFrameL;
-	m_pDenseFlow->init();
+
 	m_pSparseFlow->init();
 	m_pStereo->init();
 
@@ -74,7 +75,7 @@ bool CamStream::init(JSON* pJson, string camName)
 	return true;
 }
 
-bool CamStream::start(void)
+bool _CamStream::start(void)
 {
 	//Open camera
 	CHECK_ERROR(m_pCamL->openCamera());
@@ -87,23 +88,19 @@ bool CamStream::start(void)
 //		m_pDepth->m_uFrame = Mat(CV_8U));
 	}
 
-
 	//Start thread
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR) << "Return code: "<< retCode << " in CamStream::start().pthread_create()";
 		m_bThreadON = false;
 		return false;
 	}
 
-	LOG(INFO) << "CamStream.start()";
-
 	return true;
 }
 
-void CamStream::update(void)
+void _CamStream::update(void)
 {
 	m_tSleep = TRD_INTERVAL_CAMSTREAM;
 
@@ -144,9 +141,10 @@ void CamStream::update(void)
 		m_pBGRAL->switchFrame();
 		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
 
-		if(m_bDenseFlow)
+		if(m_pDenseFlow)
 		{
-			m_pDenseFlow->detect(m_pGrayL);
+			m_pDenseFlow->m_pFlowFrame->switchFrame();
+			m_pGrayL->getResized(640,480,m_pDenseFlow->m_pFlowFrame);
 		}
 
 		if(m_bSparseFlow)
@@ -163,7 +161,7 @@ void CamStream::update(void)
 
 }
 
-bool CamStream::complete(void)
+bool _CamStream::complete(void)
 {
 	m_pCamL->m_camera.release();
 	if(m_bStereoCam)
@@ -172,20 +170,6 @@ bool CamStream::complete(void)
 	}
 
 	return true;
-}
-
-void CamStream::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO) << "CamStream.stop()";
-}
-
-void CamStream::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
 }
 
 } /* namespace kai */

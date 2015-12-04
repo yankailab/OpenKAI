@@ -17,14 +17,15 @@ struct MESSAGE
 };
 
 #define TRD_INTERVAL_VI_USEC 10000
+
 namespace kai
 {
 
-class VehicleInterface: public ThreadBase
+class _VehicleInterface: public _ThreadBase
 {
 public:
-	VehicleInterface();
-	~VehicleInterface();
+	_VehicleInterface();
+	~_VehicleInterface();
 
 	int m_systemID;
 	int m_autopilotID;
@@ -33,12 +34,7 @@ public:
 	void setSerialName(string name);
 	bool open(void);
 	void close(void);
-
-
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
 //	bool writeMessage(mavlink_message_t message);
 	bool readMessages();
@@ -62,13 +58,13 @@ private:
 	char m_pBuf[256];
 
 	//Thread
-	pthread_t m_threadID;
-	bool m_bThreadON;
+//	pthread_t m_threadID;
+//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((VehicleInterface *) This)->update();
+		((_VehicleInterface *) This)->update();
 		return NULL;
 	}
 

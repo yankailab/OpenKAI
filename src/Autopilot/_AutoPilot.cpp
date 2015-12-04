@@ -1,11 +1,13 @@
-#include "AutoPilot.h"
 #include "../Utility/util.h"
+#include "_AutoPilot.h"
 
 namespace kai
 {
 
-AutoPilot::AutoPilot()
+_AutoPilot::_AutoPilot()
 {
+	_ThreadBase();
+
 	m_dT = 0.0;
 	m_lockLevel = LOCK_LEVEL_NONE;
 	m_hostSystem.m_mode = OPE_BOOT;
@@ -40,11 +42,11 @@ AutoPilot::AutoPilot()
 }
 
 
-AutoPilot::~AutoPilot()
+_AutoPilot::~_AutoPilot()
 {
 }
 
-bool AutoPilot::	setup(JSON* pJson, string pilotName)
+bool _AutoPilot::	setup(JSON* pJson, string pilotName)
 {
 	if(!pJson)return false;
 
@@ -165,14 +167,14 @@ bool AutoPilot::	setup(JSON* pJson, string pilotName)
 		return true;
 }
 
-bool AutoPilot::init(void)
+bool _AutoPilot::init(void)
 {
 
 	return true;
 }
 
 
-bool AutoPilot::start(void)
+bool _AutoPilot::start(void)
 {
 	//Start thread
 	m_bThreadON = true;
@@ -189,7 +191,7 @@ bool AutoPilot::start(void)
 	return true;
 }
 
-void AutoPilot::update(void)
+void _AutoPilot::update(void)
 {
 	CAMERA_STREAM* pCam;
 	CamFrame* pFrame;
@@ -228,28 +230,8 @@ void AutoPilot::update(void)
 
 }
 
-bool AutoPilot::complete(void)
-{
 
-	return true;
-}
-
-void AutoPilot::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO) << "AutoPilot.stop()";
-}
-
-void AutoPilot::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
-
-
-bool AutoPilot::setCamStream(CamStream* pCamStream, int camPosition)
+bool _AutoPilot::setCamStream(_CamStream* pCamStream, int camPosition)
 {
 	CHECK_ERROR(pCamStream);
 	if(camPosition > NUM_CAM_STREAM)return false;
@@ -261,7 +243,7 @@ bool AutoPilot::setCamStream(CamStream* pCamStream, int camPosition)
 
 
 
-void AutoPilot::markerLock(MarkerDetector* pCMD)
+void _AutoPilot::markerLock(MarkerDetector* pCMD)
 {
 	double zRatio;
 	double cvSize;
@@ -420,7 +402,7 @@ void AutoPilot::markerLock(MarkerDetector* pCMD)
 
 }
 
-void AutoPilot::flowLock(MarkerDetector* pCMD)
+void _AutoPilot::flowLock(MarkerDetector* pCMD)
 {
 	/*
 	fVector4 vFlow;
@@ -521,14 +503,14 @@ void AutoPilot::flowLock(MarkerDetector* pCMD)
 }
 
 
-void AutoPilot::setVehicleInterface(VehicleInterface* pVehicle)
+void _AutoPilot::setVehicleInterface(_VehicleInterface* pVehicle)
 {
 	if(!pVehicle)return;
 
 	m_pVI = pVehicle;
 }
 
-void AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
+void _AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
 {
 	int i;
 	unsigned int val;
@@ -563,7 +545,7 @@ void AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
 	}
 }
 
-int* AutoPilot::getPWMOutput(void)
+int* _AutoPilot::getPWMOutput(void)
 {
 	return m_RC;
 }
@@ -571,7 +553,7 @@ int* AutoPilot::getPWMOutput(void)
 
 
 
-void AutoPilot::setTargetPosCV(fVector3 pos)
+void _AutoPilot::setTargetPosCV(fVector3 pos)
 {
 	m_roll.m_targetPos = pos.m_x;
 	m_pitch.m_targetPos = pos.m_z;
@@ -579,7 +561,7 @@ void AutoPilot::setTargetPosCV(fVector3 pos)
 
 }
 
-fVector3 AutoPilot::getTargetPosCV(void)
+fVector3 _AutoPilot::getTargetPosCV(void)
 {
 	fVector3 v;
 	v.m_x = m_roll.m_targetPos;

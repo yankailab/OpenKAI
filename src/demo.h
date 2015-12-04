@@ -12,30 +12,31 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "Detector/ObjectDetector.h"
-#include "Detector/FastDetector.h"
+#include "AI/_ClassifierManager.h"
+#include "Autopilot/_AutoPilot.h"
 #include "Detector/MarkerDetector.h"
 #include "Camera/CamInput.h"
+#include "Detector/_FastDetector.h"
+#include "Detector/_ObjectDetector.h"
+#include "Interface/_MavlinkInterface.h"
 #include "UI/UIMonitor.h"
-#include "Autopilot/AutoPilot.h"
-#include "Interface/MavlinkInterface.h"
-#include "AI/ClassifierManager.h"
 
 using namespace kai;
 
 int g_key;
 bool g_bRun;
 
-CamStream* g_pCamFront;
+_CamStream* g_pCamFront;
 CamFrame* g_pShow;
 UIMonitor* g_pUIMonitor;
-ObjectDetector* g_pOD;
-FastDetector* g_pFD;
-AutoPilot* g_pAP;
+_ObjectDetector* g_pOD;
+_FastDetector* g_pFD;
+_AutoPilot* g_pAP;
 MarkerDetector* g_pMD;
-ClassifierManager* g_pClassMgr;
+_ClassifierManager* g_pClassMgr;
+_CamDenseFlow* g_pDF;
 
-MavlinkInterface* g_pMavlink;
+_MavlinkInterface* g_pMavlink;
 cv::Mat g_displayMat;
 
 JSON g_Json;

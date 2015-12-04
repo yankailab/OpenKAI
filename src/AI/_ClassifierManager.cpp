@@ -5,15 +5,14 @@
  *      Author: yankai
  */
 
-#include "ClassifierManager.h"
+#include "_ClassifierManager.h"
 
 namespace kai
 {
 
-ClassifierManager::ClassifierManager()
+_ClassifierManager::_ClassifierManager()
 {
-	m_bThreadON = false;
-	m_threadID = 0;
+	_ThreadBase();
 
 	int i, j;
 	m_numObj = NUM_OBJ;
@@ -35,12 +34,12 @@ ClassifierManager::ClassifierManager()
 
 }
 
-ClassifierManager::~ClassifierManager()
+_ClassifierManager::~_ClassifierManager()
 {
 	// TODO Auto-generated destructor stub
 }
 
-bool ClassifierManager::init(JSON* pJson)
+bool _ClassifierManager::init(JSON* pJson)
 {
 	//Setup Caffe Classifier
 	string modelFile;
@@ -61,7 +60,7 @@ bool ClassifierManager::init(JSON* pJson)
 	return true;
 }
 
-bool ClassifierManager::start(void)
+bool _ClassifierManager::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -75,7 +74,7 @@ bool ClassifierManager::start(void)
 	return true;
 }
 
-void ClassifierManager::update(void)
+void _ClassifierManager::update(void)
 {
 	m_tSleep = TRD_INTERVAL_CLASSIFIER_MANAGER;
 
@@ -93,7 +92,7 @@ void ClassifierManager::update(void)
 
 }
 
-void ClassifierManager::classifyObject(void)
+void _ClassifierManager::classifyObject(void)
 {
 	int i, j;
 	OBJECT* pObj;
@@ -163,7 +162,7 @@ void ClassifierManager::classifyObject(void)
 	}
 }
 
-bool ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
+bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
 {
 	if(!pMat)return false;
 	if(!pRect)return false;
@@ -186,24 +185,5 @@ bool ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
 
 	return false;
 }
-
-
-void ClassifierManager::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-}
-
-void ClassifierManager::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
-
-bool ClassifierManager::complete(void)
-{
-	return true;
-}
-
 
 } /* namespace kai */

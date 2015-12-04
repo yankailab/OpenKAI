@@ -10,10 +10,10 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
+#include "_CamDenseFlow.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
-#include "CamDenseFlow.h"
 #include "CamSparseFlow.h"
 #include "CamStereo.h"
 
@@ -22,17 +22,15 @@
 namespace kai
 {
 
-class CamStream: public ThreadBase
+class _CamStream: public _ThreadBase
 {
 public:
-	CamStream();
-	virtual ~CamStream();
+	_CamStream();
+	virtual ~_CamStream();
 
 	bool init(JSON* pJson, string camName);
 	bool start(void);
 	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
 public:
 	string				m_camName;
@@ -47,25 +45,24 @@ public:
 	CamFrame*			m_pDepth;
 	CamFrame*			m_pBGRAL;
 
-	CamDenseFlow*		m_pDenseFlow;
+	_CamDenseFlow*		m_pDenseFlow;
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
 
 	bool		m_bStereoCam;
-	bool		m_bDenseFlow;
 	bool		m_bSparseFlow;
 	bool		m_bHSV;
 	bool		m_bGray;
 
 private:
 public:
-	pthread_t m_threadID;
-	bool m_bThreadON;
+//	pthread_t m_threadID;
+//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((CamStream *) This)->update();
+		((_CamStream *) This)->update();
 		return NULL;
 	}
 };

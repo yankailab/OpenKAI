@@ -2,10 +2,10 @@
 #ifndef DETECTOR_OBJECTDETECTOR_H_
 #define DETECTOR_OBJECTDETECTOR_H_
 
+#include "../AI/_ClassifierManager.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../AI/ClassifierManager.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
 
 using namespace cv;
@@ -19,19 +19,16 @@ using namespace std;
 namespace kai
 {
 
-class ObjectDetector: public DetectorBase, ThreadBase
+class _ObjectDetector: public DetectorBase, public _ThreadBase
 {
 public:
-	ObjectDetector();
-	~ObjectDetector();
+	_ObjectDetector();
+	~_ObjectDetector();
 
 	bool init(JSON* pJson);
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
-	void setCamStream(CamStream* pCam);
+	void setCamStream(_CamStream* pCam);
 
 private:
 	void detect(void);
@@ -39,13 +36,13 @@ private:
 	void findObjectByOpticalFlow(void);
 	void findObjectBySaliency(void);
 
-	pthread_t m_threadID;
-	bool m_bThreadON;
+//	pthread_t m_threadID;
+//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((ObjectDetector*) This)->update();
+		((_ObjectDetector*) This)->update();
 		return NULL;
 	}
 
@@ -54,8 +51,8 @@ public:
 	//Temporal demo
 	int			m_bOneImg;
 
-	ClassifierManager* m_pClassMgr;
-	CamStream*	m_pCamStream;
+	_ClassifierManager* m_pClassMgr;
+	_CamStream*	m_pCamStream;
 
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;

@@ -125,20 +125,16 @@ struct Mavlink_Messages
 namespace kai
 {
 
-class MavlinkInterface: public ThreadBase
+class _MavlinkInterface: public _ThreadBase
 {
 public:
-	MavlinkInterface();
-	~MavlinkInterface();
+	_MavlinkInterface();
+	~_MavlinkInterface();
 
 	bool setup(JSON* pJson, string serialName);
 	bool open(void);
 	void close(void);
-
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
 	//Receive
 	void handleMessages();
@@ -184,13 +180,10 @@ public:
 
 
 	//Read Thread
-	pthread_t m_threadID;
-	bool m_bThreadON;
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((MavlinkInterface *) This)->update();
+		((_MavlinkInterface *) This)->update();
 		return NULL;
 	}
 

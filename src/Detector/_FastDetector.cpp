@@ -1,11 +1,18 @@
+/*
+ * ObjectLocalizer.cpp
+ *
+ *  Created on: Aug 17, 2015
+ *      Author: yankai
+ */
 
-
-#include "OpticalFlowDetector.h"
+#include "_FastDetector.h"
 
 namespace kai
 {
-OpticalFlowDetector::OpticalFlowDetector()
+_FastDetector::_FastDetector()
 {
+	_ThreadBase();
+
 	m_bThreadON = false;
 	m_threadID = 0;
 
@@ -28,11 +35,11 @@ OpticalFlowDetector::OpticalFlowDetector()
 	nbins = 9;
 }
 
-OpticalFlowDetector::~OpticalFlowDetector()
+_FastDetector::~_FastDetector()
 {
 }
 
-bool OpticalFlowDetector::init(JSON* pJson)
+bool _FastDetector::init(JSON* pJson)
 {
 	string cascadeFile;
 	CHECK_ERROR(pJson->getVal("CASCADE_FILE", &cascadeFile));
@@ -52,41 +59,48 @@ bool OpticalFlowDetector::init(JSON* pJson)
 			cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
+
+	m_pFrame = new CamFrame();
+
+
 	return true;
 }
 
-bool OpticalFlowDetector::start(void)
+bool _FastDetector::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< "Return code: "<< retCode << " in OpticalFlowDetector::start().pthread_create()";
+		LOG(ERROR)<< "Return code: "<< retCode << " in FastDetector::start().pthread_create()";
 		m_bThreadON = false;
 		return false;
 	}
 
-	LOG(INFO)<< "OpticalFlowDetector.start()";
+	LOG(INFO)<< "FastDetector.start()";
 
 	return true;
 }
 
-void OpticalFlowDetector::update(void)
+void _FastDetector::update(void)
 {
-	int i;
 	CamFrame* pFrame;
-	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->updateTime();
 
 		if (!m_pCamStream)
 			continue;
 		pFrame = *(m_pCamStream->m_pFrameProcess);
 
-		detect();
+		//The current frame is not the latest frame
+		if (pFrame->isNewerThan(m_pFrame))
+		{
+			m_pFrame->updateFrame(pFrame);
+			detect();
+		}
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
@@ -94,12 +108,15 @@ void OpticalFlowDetector::update(void)
 
 }
 
-void OpticalFlowDetector::detect(void)
+void _FastDetector::detect(void)
 {
-	int i, j;
+	int i;
 
-	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-
+//	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
+//	Mat* pMat = &pFrame->m_uFrame;
+//	if (pMat->empty())
+//		return;
+//
 	GpuMat* pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
 	if (pGray->empty())
 		return;
@@ -108,7 +125,6 @@ void OpticalFlowDetector::detect(void)
 	if (pBGRA->empty())
 		return;
 
-	//TODO: add frameID verify
 
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
@@ -127,7 +143,7 @@ void OpticalFlowDetector::detect(void)
 		{
 			m_pHuman[m_numHuman].m_boundBox = vRect[i];
 			m_numHuman++;
-			if (m_numHuman == NUM_OPTICALFLOW_OBJECT)
+			if (m_numHuman == NUM_FASTOBJ)
 			{
 				break;
 			}
@@ -149,7 +165,7 @@ void OpticalFlowDetector::detect(void)
 	{
 		m_pHuman[m_numHuman].m_boundBox = vRect[i];
 		m_numHuman++;
-		if (m_numHuman == NUM_OPTICALFLOW_OBJECT)
+		if (m_numHuman == NUM_FASTOBJ)
 		{
 			break;
 		}
@@ -157,38 +173,17 @@ void OpticalFlowDetector::detect(void)
 
 }
 
-void OpticalFlowDetector::setFrame(CamStream* pCam)
+void _FastDetector::setCamStream(_CamStream* pCam)
 {
-	if (!pCam)
-		return;
+	if (!pCam)return;
 
 	m_pCamStream = pCam;
-	this->wakeupThread();
 }
 
-int OpticalFlowDetector::getHuman(OPTICALFLOW_OBJECT** ppHuman)
+int _FastDetector::getHuman(FAST_OBJECT** ppHuman)
 {
 	*ppHuman = m_pHuman;
 	return m_numHuman;
-}
-
-void OpticalFlowDetector::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO)<< "OpticalFlowDetector.stop()";
-}
-
-void OpticalFlowDetector::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
-
-bool OpticalFlowDetector::complete(void)
-{
-	return true;
 }
 
 }

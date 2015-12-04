@@ -1,26 +1,26 @@
-#include "VehicleInterface.h"
+#include "_VehicleInterface.h"
 
 namespace kai
 {
-VehicleInterface::VehicleInterface()
+_VehicleInterface::_VehicleInterface()
 {
-	m_threadID = 0;
+	_ThreadBase();
+
 	m_bConnected = false;
 	m_sportName = "";
-	m_bThreadON = false;
 	m_pSerialPort = NULL;
 }
 
-VehicleInterface::~VehicleInterface()
+_VehicleInterface::~_VehicleInterface()
 {
 }
 
-void VehicleInterface::setSerialName(string name)
+void _VehicleInterface::setSerialName(string name)
 {
 	m_sportName = name;
 }
 
-bool VehicleInterface::open(void)
+bool _VehicleInterface::open(void)
 {
 	m_systemID = 0; // system id
 	m_autopilotID = 0; // autopilot component id
@@ -45,7 +45,7 @@ bool VehicleInterface::open(void)
 
 }
 
-void VehicleInterface::close()
+void _VehicleInterface::close()
 {
 //	disable_offboard_control();
 
@@ -60,7 +60,7 @@ void VehicleInterface::close()
 // ------------------------------------------------------------------------------
 //   Read Messages
 // ------------------------------------------------------------------------------
-bool VehicleInterface::readMessages()
+bool _VehicleInterface::readMessages()
 {
 	unsigned char	inByte;
 	int		byteRead;
@@ -103,7 +103,7 @@ bool VehicleInterface::readMessages()
 // ------------------------------------------------------------------------------
 //   Write Setpoint Message
 // ------------------------------------------------------------------------------
-void VehicleInterface::rc_overide(int numChannel, int* pChannels)
+void _VehicleInterface::rc_overide(int numChannel, int* pChannels)
 {
 	if (!m_bConnected)return;
 
@@ -127,7 +127,7 @@ void VehicleInterface::rc_overide(int numChannel, int* pChannels)
 
 }
 
-void VehicleInterface::controlMode(int mode)
+void _VehicleInterface::controlMode(int mode)
 {
 	if (!m_bConnected)return;
 
@@ -141,7 +141,7 @@ void VehicleInterface::controlMode(int mode)
 
 
 
-bool VehicleInterface::start(void)
+bool _VehicleInterface::start(void)
 {
 	//Start thread
 	m_bThreadON = true;
@@ -158,7 +158,7 @@ bool VehicleInterface::start(void)
 	return true;
 }
 
-void VehicleInterface::update(void)
+void _VehicleInterface::update(void)
 {
 	m_tSleep = TRD_INTERVAL_VI_USEC;
 
@@ -186,24 +186,5 @@ void VehicleInterface::update(void)
 
 }
 
-bool VehicleInterface::complete(void)
-{
-
-	return true;
-}
-
-void VehicleInterface::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO) << "VehicleInterface.stop()";
-}
-
-void VehicleInterface::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
 
 }

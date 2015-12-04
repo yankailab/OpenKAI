@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
 
 #define NUM_MARKER 128
@@ -26,7 +26,7 @@
 namespace kai
 {
 
-class MarkerDetector : public DetectorBase, ThreadBase
+class MarkerDetector : public DetectorBase
 {
 public:
 	MarkerDetector();

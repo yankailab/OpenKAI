@@ -5,26 +5,24 @@
  *      Author: yankai
  */
 
-#include "ObjectDetector.h"
+#include "_ObjectDetector.h"
 
 namespace kai
 {
-ObjectDetector::ObjectDetector()
+_ObjectDetector::_ObjectDetector()
 {
-	m_bThreadON = false;
-	m_threadID = 0;
-	m_pClassMgr = NULL;
+	_ThreadBase();
 
-	int i, j;
+	m_pClassMgr = NULL;
 	m_pCamStream = NULL;
 
 }
 
-ObjectDetector::~ObjectDetector()
+_ObjectDetector::~_ObjectDetector()
 {
 }
 
-bool ObjectDetector::init(JSON* pJson)
+bool _ObjectDetector::init(JSON* pJson)
 {
 	//OpenCV Canny Edge Detector
 	int lowThr = 10;
@@ -69,7 +67,7 @@ bool ObjectDetector::init(JSON* pJson)
 	return true;
 }
 
-bool ObjectDetector::start(void)
+bool _ObjectDetector::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -85,7 +83,7 @@ bool ObjectDetector::start(void)
 	return true;
 }
 
-void ObjectDetector::update(void)
+void _ObjectDetector::update(void)
 {
 	CamFrame* pFrame;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
@@ -110,7 +108,7 @@ void ObjectDetector::update(void)
 
 }
 
-void ObjectDetector::detect(void)
+void _ObjectDetector::detect(void)
 {
 	m_pGMat = m_pFrame->getCurrentFrame();
 
@@ -124,7 +122,7 @@ void ObjectDetector::detect(void)
 //	findObjectBySaliency();
 }
 
-void ObjectDetector::findObjectByContour(void)
+void _ObjectDetector::findObjectByContour(void)
 {
 	int i;
 	vector<vector<Point> > contours;
@@ -191,7 +189,7 @@ void ObjectDetector::findObjectByContour(void)
 
 }
 
-void ObjectDetector::findObjectBySaliency(void)
+void _ObjectDetector::findObjectBySaliency(void)
 {
 	if (m_pSaliency->computeSaliency(m_Mat, m_saliencyMat))
 	{
@@ -200,7 +198,7 @@ void ObjectDetector::findObjectBySaliency(void)
 	}
 }
 
-void ObjectDetector::findObjectByOpticalFlow(void)
+void _ObjectDetector::findObjectByOpticalFlow(void)
 {
 	//Test
 	/*	pCS->m_pDenseFlow->detect(pCS->m_pGrayL);
@@ -220,30 +218,11 @@ void ObjectDetector::findObjectByOpticalFlow(void)
 
 }
 
-void ObjectDetector::setCamStream(CamStream* pCam)
+void _ObjectDetector::setCamStream(_CamStream* pCam)
 {
 	if (!pCam)
 		return;
 	m_pCamStream = pCam;
-}
-
-void ObjectDetector::stop(void)
-{
-	m_bThreadON = false;
-	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
-	LOG(INFO)<< "ObjectDetector.stop()";
-}
-
-void ObjectDetector::waitForComplete(void)
-{
-	pthread_join(m_threadID, NULL);
-}
-
-bool ObjectDetector::complete(void)
-{
-	return true;
 }
 
 }

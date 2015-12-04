@@ -1,54 +1,51 @@
 
 
-#ifndef DETECTOR_FASTDETECTOR_H_
-#define DETECTOR_FASTDETECTOR_H_
+#ifndef SRC_OPTICALFLOWDETECTOR_H_
+#define SRC_OPTICALFLOWDETECTOR_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamStream.h"
+#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
+
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
 #define TRD_INTERVAL_OBJDETECTOR 0
-#define NUM_FASTOBJ 1000
+#define NUM_OPTICALFLOW_OBJECT 100
 
 namespace kai
 {
 
-struct FAST_OBJECT
+struct OPTICALFLOW_OBJECT
 {
 	Rect		m_boundBox;
 };
 
-class FastDetector: public DetectorBase, ThreadBase
+class _OpticalFlowDetector: public DetectorBase, _ThreadBase
 {
 public:
-	FastDetector();
-	~FastDetector();
+	_OpticalFlowDetector();
+	~_OpticalFlowDetector();
 
 	bool init(JSON* pJson);
 	bool start(void);
-	bool complete(void);
-	void stop(void);
-	void waitForComplete(void);
 
-	void setCamStream(CamStream* pCam);
-	int  getHuman(FAST_OBJECT** ppHuman);
+	void setFrame(_CamStream* pCam);
+	int  getHuman(OPTICALFLOW_OBJECT** ppHuman);
 
 private:
 	void detect(void);
 
 public:
-	CamStream*		m_pCamStream;
+	_CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
 	int 			m_numHuman;
-	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
-
+	OPTICALFLOW_OBJECT 	m_pHuman[NUM_OPTICALFLOW_OBJECT];
 
     double scale;
     int nlevels;
@@ -63,22 +60,21 @@ public:
     int nbins;
 
 
-
-//    HOGDescriptor m_hogCar;
+//  HOGDescriptor	m_hogCar;
 	int 			m_numCar;
-	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
+	OPTICALFLOW_OBJECT 	m_pCar[NUM_OPTICALFLOW_OBJECT];
 
 	Mat		m_frame;
-	GpuMat  m_pGMat;
+//	GpuMat  m_pGMat;
 
 private:
-	pthread_t m_threadID;
-	bool m_bThreadON;
+//	pthread_t m_threadID;
+//	bool m_bThreadON;
 
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((FastDetector *) This)->update();
+		((_OpticalFlowDetector *) This)->update();
 		return NULL;
 	}
 
@@ -86,4 +82,4 @@ private:
 };
 }
 
-#endif /* SRC_FASTDETECTOR_H_ */
+#endif /* SRC_OPTICALFLOWDETECTOR_H_ */
