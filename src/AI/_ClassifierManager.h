@@ -53,6 +53,8 @@ public:
 	bool start(void);
 
 private:
+	void deleteObject(int i);
+
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -66,6 +68,7 @@ public:
 	OBJECT		m_pObjects[NUM_OBJ];
 	int 			m_numObj;
 	int 			m_disparity;
+	double		m_objProbMin;
 
 	vector<Mat>	m_vMat;
 

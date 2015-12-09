@@ -38,6 +38,7 @@ bool _ObjectDetector::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("OD_CANNY_HIGH", &highThr));
 	CHECK_ERROR(pJson->getVal("OD_CANNY_APPERTURE", &Apperture));
 	m_pCanny = cuda::createCannyEdgeDetector(lowThr, highThr, Apperture);
+
 	/*
 	 int ksize = 3;
 	 int sigma = 1;

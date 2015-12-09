@@ -19,6 +19,8 @@ _ClassifierManager::_ClassifierManager()
 	m_numBatch = 0;
 	m_globalFrameID = 0;
 	m_frameLifeTime = 0;
+	m_objProbMin = 0;
+	m_disparity = 50;
 
 	for (i = 0; i < m_numObj; i++)
 	{
@@ -33,7 +35,6 @@ _ClassifierManager::_ClassifierManager()
 		}
 	}
 
-	m_disparity = 50;
 
 }
 
@@ -57,8 +58,9 @@ bool _ClassifierManager::init(JSON* pJson)
 	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
 
-	CHECK_FATAL(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
-
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
 
 	return true;
 }
@@ -95,6 +97,16 @@ void _ClassifierManager::update(void)
 
 }
 
+void _ClassifierManager::deleteObject(int i)
+{
+	OBJECT* pObj = &m_pObjects[i];
+
+	//Follow the order, change the status after releasing m_pMat
+	RELEASE(pObj->m_pMat);
+	pObj->m_pMat = NULL;
+	pObj->m_status = OBJ_VACANT;
+}
+
 void _ClassifierManager::classifyObject(void)
 {
 	int i, j;
@@ -112,11 +124,18 @@ void _ClassifierManager::classifyObject(void)
 		//Delete the outdated frame
 		if(m_globalFrameID - pObj->m_frameID > m_frameLifeTime)
 		{
-			//Follow the order, change the status after releasing m_pMat
-			RELEASE(pObj->m_pMat);
-			pObj->m_pMat = NULL;
-			pObj->m_status = OBJ_VACANT;
+			deleteObject(i);
 			continue;
+		}
+
+		//Delete the uncertain ones
+		if(pObj->m_status == OBJ_COMPLETE)
+		{
+			if(pObj->m_prob[0]<=m_objProbMin)
+			{
+				deleteObject(i);
+				continue;
+			}
 		}
 
 		if(pObj->m_status != OBJ_ADDED)continue;
@@ -203,13 +222,14 @@ bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
 
 	if(iVacant < m_numObj)
 	{
+		//Change in status comes to the last
 		pObj = &m_pObjects[iVacant];
-		pObj->m_status = OBJ_ADDED;
 		pObj->m_frameID = frameID;
 		pObj->m_boundBox = *pRect;
-
 		pObj->m_pMat = new Mat(pRect->width,pRect->height,pMat->type());
 		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(*pObj->m_pMat);
+		pObj->m_status = OBJ_ADDED;
+
 		return true;
 	}
 
