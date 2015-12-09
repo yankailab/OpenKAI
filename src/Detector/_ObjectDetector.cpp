@@ -91,7 +91,6 @@ bool _ObjectDetector::start(void)
 
 void _ObjectDetector::update(void)
 {
-	CamFrame* pFrame;
 	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
 
 	while (m_bThreadON)

@@ -20,10 +20,11 @@ _ClassifierManager::_ClassifierManager()
 	m_globalFrameID = 0;
 	m_frameLifeTime = 0;
 
-	for (i = 0; i < NUM_OBJ; i++)
+	for (i = 0; i < m_numObj; i++)
 	{
 		m_pObjects[i].m_frameID = 0;
 		m_pObjects[i].m_status = OBJ_VACANT;
+		m_pObjects[i].m_pMat = NULL;
 
 		for (j = 0; j < NUM_OBJECT_NAME; j++)
 		{
@@ -31,6 +32,8 @@ _ClassifierManager::_ClassifierManager()
 			m_pObjects[i].m_prob[j] = 0;
 		}
 	}
+
+	m_disparity = 50;
 
 }
 
@@ -101,31 +104,28 @@ void _ClassifierManager::classifyObject(void)
 
 	numBatch = 0;
 
-	//Delete the outdated frame
-	for (i = 0; i < m_numObj; i++)
-	{
-		pObj = &m_pObjects[i];
-
-		if(m_globalFrameID - pObj->m_frameID > 1000000)	//this length have to be longer than the NNclassifier needs
-		{
-			pObj->m_status = OBJ_VACANT;
-		}
-		else if(pObj->m_Mat.empty())
-		{
-			pObj->m_status = OBJ_VACANT;
-		}
-	}
-
 	//Collect the candidates
 	for (i = 0; i < m_numObj; i++)
 	{
 		pObj = &m_pObjects[i];
 
+		//Delete the outdated frame
+		if(m_globalFrameID - pObj->m_frameID > m_frameLifeTime)
+		{
+			//Follow the order, change the status after releasing m_pMat
+			RELEASE(pObj->m_pMat);
+			pObj->m_pMat = NULL;
+			pObj->m_status = OBJ_VACANT;
+			continue;
+		}
+
 		if(pObj->m_status != OBJ_ADDED)continue;
+		if(!pObj->m_pMat)continue;
+		if(pObj->m_pMat->empty())continue;
 
 		//TODO: resize
 		pObj->m_status = OBJ_CLASSIFYING;
-		m_vMat.push_back(pObj->m_Mat);
+		m_vMat.push_back(*pObj->m_pMat);
 
 		pObjBatch[numBatch] = pObj;
 
@@ -166,22 +166,53 @@ bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
 {
 	if(!pMat)return false;
 	if(!pRect)return false;
+	if(pMat->empty())return false;
+	if(pRect->width<=0)return false;
+	if(pRect->height<=0)return false;
 
 	int i;
+	int iVacant;
 	OBJECT* pObj;
 
+	iVacant = m_numObj;
 	for(i=0; i<m_numObj; i++)
 	{
 		pObj = &m_pObjects[i];
-		if(pObj->m_status != OBJ_VACANT)continue;
-		if(pMat->empty())return false;
 
+		//Record the index of vacancy
+		if(pObj->m_status == OBJ_VACANT)
+		{
+			if(iVacant==m_numObj)
+			{
+				iVacant = i;
+			}
+
+			continue;
+		}
+
+		//Compare if already existed
+		if(abs(pObj->m_boundBox.x - pRect->x) > m_disparity)continue;
+		if(abs(pObj->m_boundBox.y - pRect->y) > m_disparity)continue;
+		if(abs(pObj->m_boundBox.width - pRect->width) > m_disparity)continue;
+		if(abs(pObj->m_boundBox.height - pRect->height) > m_disparity)continue;
+
+		//The region is already under recognizing
+		pObj->m_frameID = frameID;
+		return true;
+	}
+
+	if(iVacant < m_numObj)
+	{
+		pObj = &m_pObjects[iVacant];
 		pObj->m_status = OBJ_ADDED;
 		pObj->m_frameID = frameID;
 		pObj->m_boundBox = *pRect;
-		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(pObj->m_Mat);
+
+		pObj->m_pMat = new Mat(pRect->width,pRect->height,pMat->type());
+		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(*pObj->m_pMat);
 		return true;
 	}
+
 
 	return false;
 }

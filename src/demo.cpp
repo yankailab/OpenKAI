@@ -137,6 +137,7 @@ void showScreen(void)
 	{
 		pObj = &g_pClassMgr->m_pObjects[i];
 
+		//Green
 		if(pObj->m_status == OBJ_COMPLETE)
 		{
 			if (pObj->m_name[0].empty())continue;
@@ -148,16 +149,18 @@ void showScreen(void)
 					FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
 		}
 
+		//Yellow
 		if(pObj->m_status == OBJ_CLASSIFYING)
 		{
 			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 0, 255), 2, 5, 0);
+					Scalar(0, 255, 255), 2, 5, 0);
 		}
 
+		//Red
 		if(pObj->m_status == OBJ_ADDED)
 		{
 			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 255, 255), 2, 5, 0);
+					Scalar(0, 0, 255), 2, 5, 0);
 		}
 	}
 

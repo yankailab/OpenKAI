@@ -13,7 +13,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../AI/NNClassifier.h"
 
-#define TRD_INTERVAL_CLASSIFIER_MANAGER 1
+#define TRD_INTERVAL_CLASSIFIER_MANAGER 0
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
 #define NUM_DETECT_BATCH 10
@@ -34,7 +34,8 @@ struct OBJECT
 	uint16_t		m_status;
 	uint64_t		m_frameID;
 
-	Mat			m_Mat;
+//	Mat			m_Mat;
+	Mat*			m_pMat;
 	GpuMat		m_GMat;
 	Rect			m_boundBox;
 };
@@ -46,7 +47,6 @@ public:
 	virtual ~_ClassifierManager();
 
 	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect);
-//	bool addObject(uint64_t frameID, GpuMat* pGMat, Rect* pRect);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);
@@ -65,6 +65,7 @@ public:
 	uint64_t		m_frameLifeTime;
 	OBJECT		m_pObjects[NUM_OBJ];
 	int 			m_numObj;
+	int 			m_disparity;
 
 	vector<Mat>	m_vMat;
 
