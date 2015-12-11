@@ -27,6 +27,7 @@ _ClassifierManager::_ClassifierManager()
 		m_pObjects[i].m_frameID = 0;
 		m_pObjects[i].m_status = OBJ_VACANT;
 		m_pObjects[i].m_pMat = NULL;
+		m_pObjects[i].m_vContours.clear();
 
 		for (j = 0; j < NUM_OBJECT_NAME; j++)
 		{
@@ -104,6 +105,7 @@ void _ClassifierManager::deleteObject(int i)
 	//Follow the order, change the status after releasing m_pMat
 	RELEASE(pObj->m_pMat);
 	pObj->m_pMat = NULL;
+	pObj->m_vContours.clear();
 	pObj->m_status = OBJ_VACANT;
 }
 
@@ -181,7 +183,7 @@ void _ClassifierManager::classifyObject(void)
 	}
 }
 
-bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
+bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 	if(!pMat)return false;
 	if(!pRect)return false;
@@ -228,6 +230,10 @@ bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect)
 		pObj->m_boundBox = *pRect;
 		pObj->m_pMat = new Mat(pRect->width,pRect->height,pMat->type());
 		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(*pObj->m_pMat);
+		if(pContour)
+		{
+			pObj->m_vContours = *pContour;
+		}
 		pObj->m_status = OBJ_ADDED;
 
 		return true;

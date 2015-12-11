@@ -124,6 +124,7 @@ void showScreen(void)
 {
 	int i;
 	Mat imMat;
+	vector< vector< Point > > contours;
 	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
 
 	if (pFrame->getCurrentFrame()->empty())return;
@@ -136,6 +137,8 @@ void showScreen(void)
 	for (i = 0; i < g_pClassMgr->m_numObj; i++)
 	{
 		pObj = &g_pClassMgr->m_pObjects[i];
+		contours.clear();
+		contours.push_back(pObj->m_vContours);
 
 		//Green
 		if(pObj->m_status == OBJ_COMPLETE)
@@ -145,6 +148,8 @@ void showScreen(void)
 			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
 					Scalar(0, 255, 0), 2, 5, 0);
 
+//			drawContours(imMat, contours, -1, Scalar(0, 255, 0),2);
+
 			putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
 					FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
 		}
@@ -152,15 +157,17 @@ void showScreen(void)
 		//Yellow
 		if(pObj->m_status == OBJ_CLASSIFYING)
 		{
+//			drawContours(imMat, contours, -1, Scalar(0, 255, 255),1);
 			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 255, 255), 2, 5, 0);
+					Scalar(0, 255, 255), 1);
 		}
 
 		//Red
 		if(pObj->m_status == OBJ_ADDED)
 		{
+//			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
 			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 0, 255), 2, 5, 0);
+					Scalar(0, 0, 255), 1);
 		}
 	}
 

@@ -38,6 +38,8 @@ struct OBJECT
 	Mat*			m_pMat;
 	GpuMat		m_GMat;
 	Rect			m_boundBox;
+	vector<Point> m_vContours;
+
 };
 
 class _ClassifierManager: public _ThreadBase
@@ -46,7 +48,7 @@ public:
 	_ClassifierManager();
 	virtual ~_ClassifierManager();
 
-	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect);
+	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);

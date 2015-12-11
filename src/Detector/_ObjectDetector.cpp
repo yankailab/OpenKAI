@@ -138,15 +138,17 @@ void _ObjectDetector::findObjectByContour(void)
 		boundRect.x = (m_Mat.size().width - boundRect.width)*0.5;
 		boundRect.y = (m_Mat.size().height - boundRect.height)*0.5;
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect);
+		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,NULL);
 		return;
 	}
 
 	m_pContourFrame->switchFrame();
 	GpuMat* pThr = m_pContourFrame->getCurrentFrame();
 
+	m_pCanny->detect(*m_pGray, *pThr);
+
 	// Detect edges using Threshold
-	cuda::threshold(*m_pGray, *pThr, 50, 255, THRESH_BINARY);
+//	cuda::threshold(*m_pGray, *pThr, 200, 255, THRESH_BINARY);
 	pThr->download(m_contourMat);
 
 	// Find contours
@@ -185,7 +187,7 @@ void _ObjectDetector::findObjectByContour(void)
 		if (overH < 0)
 			boundRect.height += overH;
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect);
+		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,&contours_poly[i]);
 	}
 
 }
