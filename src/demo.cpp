@@ -257,6 +257,10 @@ void handleKey(int key)
 		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
 		break;
 	case 'r':
+		g_pUIMonitor->removeAll();
+		g_pUIMonitor->addFrame(g_pOD->m_pSaliencyFrame, 0, 0, 1980, 1080);
+		break;
+	case 't':
 		g_pOD->m_bOneImg = 1 - g_pOD->m_bOneImg;
 		break;
 	case 27:

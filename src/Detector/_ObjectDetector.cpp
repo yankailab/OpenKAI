@@ -99,7 +99,7 @@ void _ObjectDetector::update(void)
 		this->updateTime();
 
 		findObjectByContour();
-	//	findObjectBySaliency();
+//		findObjectBySaliency();
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
@@ -194,10 +194,14 @@ void _ObjectDetector::findObjectByContour(void)
 
 void _ObjectDetector::findObjectBySaliency(void)
 {
+	//TODO
 	if (m_pSaliency->computeSaliency(m_Mat, m_saliencyMat))
 	{
 		StaticSaliencySpectralResidual spec;
 		spec.computeBinaryMap(m_saliencyMat, m_binMat);
+
+		m_pSaliencyFrame->switchFrame();
+		m_pSaliencyFrame->updateFrame(&m_saliencyMat);
 	}
 }
 
