@@ -1,4 +1,5 @@
 #pragma once
+#include "../Base/platform.h"
 #include "picojson.h"
 
 using namespace std;
