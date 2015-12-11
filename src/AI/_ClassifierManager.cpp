@@ -219,6 +219,7 @@ bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vec
 
 		//The region is already under recognizing
 		pObj->m_frameID = frameID;
+//		pObj->m_status = OBJ_ADDED;
 		return true;
 	}
 

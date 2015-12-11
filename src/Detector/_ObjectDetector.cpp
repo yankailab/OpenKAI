@@ -22,6 +22,8 @@ _ObjectDetector::_ObjectDetector()
 	m_pGMat = NULL;
 	m_pGray = NULL;
 
+	m_bOneImg = 1;
+
 }
 
 _ObjectDetector::~_ObjectDetector()
