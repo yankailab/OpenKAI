@@ -13,6 +13,9 @@
 "CAM_FRONTL_GIMBAL":1,
 "CAM_FRONTR_ID":0,
 
+"DENSEFLOW_FRONTL_WIDTH":640,
+"DENSEFLOW_FRONTL_HEIGHT":320,
+
 "CAFFE_MODEL_FILE":"/home/ubuntu/Downloads/caffe/models/bvlc_reference_caffenet/deploy.prototxt",
 "CAFFE_TRAINED_FILE":"/home/ubuntu/Downloads/caffe/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
 "CAFFE_MEAN_FILE":"/home/ubuntu/Downloads/caffe/data/ilsvrc12/imagenet_mean.binaryproto",
@@ -23,6 +26,19 @@
 
 "HOG_FILE":"/home/ubuntu/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
 "CASCADE_FILE":"/home/ubuntu/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
+
+
+"OD_CANNY_LOW":10,
+"OD_CANNY_HIGH":100,
+"OD_CANNY_APPERTURE":3,
+"OD_GAUSS_KSIZE":3,
+"OD_GAUSS_SIGMA":1,
+
+
+"CLASSIFIER_FRAME_LIFETIME":100000,
+"CLASSIFIER_PROB_MIN":0.1,
+"CLASSIFIER_POS_DISPARITY":50,
+
 
 
 "ROLL_P":3.0,
@@ -88,12 +104,5 @@
 "PID_YAW_P_LIM":200.0,
 "DT_LIM":10.0,
 
-
-
-"OD_CANNY_LOW":10,
-"OD_CANNY_HIGH":100,
-"OD_CANNY_APPERTURE":3,
-"OD_GAUSS_KSIZE":3,
-"OD_GAUSS_SIGMA":1,
 
 }
