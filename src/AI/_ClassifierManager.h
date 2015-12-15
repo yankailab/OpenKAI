@@ -34,8 +34,8 @@ struct OBJECT
 	uint16_t		m_status;
 	uint64_t		m_frameID;
 
-//	Mat			m_Mat;
-	Mat*			m_pMat;
+	Mat			m_Mat;
+//	Mat*			m_pMat;
 	GpuMat		m_GMat;
 	Rect			m_boundBox;
 	vector<Point> m_vContours;

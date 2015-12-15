@@ -82,13 +82,13 @@ bool _CamStream::start(void)
 	//Open camera
 	CHECK_ERROR(m_pCamL->openCamera());
 
-	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
-	{
-		CHECK_ERROR(m_pCamR->openCamera());
-		m_bStereoCam = true;
-
-//		m_pDepth->m_uFrame = Mat(CV_8U));
-	}
+//	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
+//	{
+//		CHECK_ERROR(m_pCamR->openCamera());
+//		m_bStereoCam = true;
+//
+////		m_pDepth->m_uFrame = Mat(CV_8U));
+//	}
 
 	//Start thread
 	m_bThreadON = true;
