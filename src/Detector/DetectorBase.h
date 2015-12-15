@@ -22,7 +22,7 @@ public:
 
 public:
 	CamFrame*	m_pFrame;
-	CamFrame*	m_pGrayFrame;
+	CamFrame*	m_pGray;
 
 
 };

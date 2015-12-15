@@ -12,13 +12,13 @@ namespace kai
 _FastDetector::_FastDetector()
 {
 	_ThreadBase();
+	DetectorBase();
 
 	m_bThreadON = false;
 	m_threadID = 0;
 
 	m_numHuman = 0;
 	m_numCar = 0;
-	m_pCamStream = NULL;
 
 	scale = 1.05;
 	nlevels = 13;
@@ -55,13 +55,10 @@ bool _FastDetector::init(JSON* pJson)
 	Size block_stride(block_stride_width, block_stride_height);
 	Size cell_size(cell_width, cell_width);
 
-	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride,
-			cell_size, nbins);
+	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride, cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
-
-	m_pFrame = new CamFrame();
-
+	m_pBGRA = new CamFrame();
 
 	return true;
 }
@@ -84,23 +81,13 @@ bool _FastDetector::start(void)
 
 void _FastDetector::update(void)
 {
-	CamFrame* pFrame;
 	m_tSleep = TRD_INTERVAL_FASTDETECTOR;
 
 	while (m_bThreadON)
 	{
 		this->updateTime();
 
-		if (!m_pCamStream)
-			continue;
-		pFrame = *(m_pCamStream->m_pFrameProcess);
-
-		//The current frame is not the latest frame
-		if (pFrame->isNewerThan(m_pFrame))
-		{
-			m_pFrame->updateFrame(pFrame);
-			detect();
-		}
+		detect();
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
@@ -108,27 +95,29 @@ void _FastDetector::update(void)
 
 }
 
+void _FastDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
+{
+	if(pFrame==NULL)return;
+	if(pFrame->empty())return;
+	if(pGray==NULL)return;
+	if(pGray->empty())return;
+
+	pFrame->getBGRA(m_pBGRA);
+	m_pGray->updateFrame(pGray);
+
+	this->wakeupThread();
+}
+
 void _FastDetector::detect(void)
 {
 	int i;
 
-//	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-//	Mat* pMat = &pFrame->m_uFrame;
-//	if (pMat->empty())
-//		return;
-//
-	GpuMat* pGray = m_pCamStream->m_pGrayL->getCurrentFrame();
-	if (pGray->empty())
-		return;
-
-	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->getCurrentFrame();
-	if (pBGRA->empty())
-		return;
-
-
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
-	m_numHuman = 0;
+//	m_numHuman = 0;
+
+	if(m_pGray->empty())return;
+
 
 	if (m_pCascade)
 	{
@@ -136,7 +125,7 @@ void _FastDetector::detect(void)
 		m_pCascade->setScaleFactor(1.2);
 		//	m_pCascade->setMinNeighbors((filterRects || findLargestObject) ? 4 : 0);
 
-		m_pCascade->detectMultiScale(*pGray, cascadeGMat);
+		m_pCascade->detectMultiScale(*m_pGray->getCurrentFrame(), cascadeGMat);
 		m_pCascade->convert(cascadeGMat, vRect);
 
 		for (i = 0; i < vRect.size(); i++)
@@ -150,34 +139,27 @@ void _FastDetector::detect(void)
 		}
 	}
 
-	Size win_stride(win_stride_width, win_stride_height);
+//	vRect.clear();
+//	Size win_stride(win_stride_width, win_stride_height);
+//
+//	m_pHumanHOG->setNumLevels(nlevels);
+//	m_pHumanHOG->setHitThreshold(hit_threshold);
+//	m_pHumanHOG->setWinStride(win_stride);
+//	m_pHumanHOG->setScaleFactor(scale);
+//	m_pHumanHOG->setGroupThreshold(gr_threshold);
+//	m_pHumanHOG->detectMultiScale(*m_pGray->getCurrentFrame(), vRect);
+//
+//	//	m_numHuman = 0;
+//	for (i = 0; i < vRect.size(); i++)
+//	{
+//		m_pHuman[m_numHuman].m_boundBox = vRect[i];
+//		m_numHuman++;
+//		if (m_numHuman == NUM_FASTOBJ)
+//		{
+//			break;
+//		}
+//	}
 
-	m_pHumanHOG->setNumLevels(nlevels);
-	m_pHumanHOG->setHitThreshold(hit_threshold);
-	m_pHumanHOG->setWinStride(win_stride);
-	m_pHumanHOG->setScaleFactor(scale);
-	m_pHumanHOG->setGroupThreshold(gr_threshold);
-
-	m_pHumanHOG->detectMultiScale(*pBGRA, vRect);
-
-//	m_numHuman = 0;
-	for (i = 0; i < vRect.size(); i++)
-	{
-		m_pHuman[m_numHuman].m_boundBox = vRect[i];
-		m_numHuman++;
-		if (m_numHuman == NUM_FASTOBJ)
-		{
-			break;
-		}
-	}
-
-}
-
-void _FastDetector::setCamStream(_CamStream* pCam)
-{
-	if (!pCam)return;
-
-	m_pCamStream = pCam;
 }
 
 int _FastDetector::getHuman(FAST_OBJECT** ppHuman)

@@ -23,7 +23,7 @@ _CamStream::_CamStream()
 	m_pGrayL = new CamFrame();
 	m_pGrayR = new CamFrame();
 	m_pDepth = new CamFrame();
-	m_pBGRAL = new CamFrame();
+//	m_pBGRAL = new CamFrame();
 	m_pFrameProcess = &m_pFrameL;
 
 	m_pSparseFlow = new CamSparseFlow();
@@ -39,6 +39,7 @@ _CamStream::_CamStream()
 
 	m_pDenseFlow = NULL;
 	m_pOD = NULL;
+	m_pFD = NULL;
 
 }
 
@@ -52,7 +53,7 @@ _CamStream::~_CamStream()
 	RELEASE(m_pGrayL);
 	RELEASE(m_pGrayR);
 	RELEASE(m_pDepth);
-	RELEASE(m_pBGRAL);
+//	RELEASE(m_pBGRAL);
 
 	RELEASE(m_pSparseFlow);
 	RELEASE(m_pStereo);
@@ -140,8 +141,8 @@ void _CamStream::update(void)
 			(*m_pFrameProcess)->getHSV(m_pHSV);
 		}
 
-		m_pBGRAL->switchFrame();
-		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
+//		m_pBGRAL->switchFrame();
+//		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
 
 		//Notification to other threads
 		if(m_pDenseFlow)
@@ -152,6 +153,11 @@ void _CamStream::update(void)
 		if(m_pOD)
 		{
 			m_pOD->updateFrame(m_pFrameL, m_pGrayL);
+		}
+
+		if(m_pFD)
+		{
+			m_pFD->updateFrame(m_pFrameL, m_pGrayL);
 		}
 
 		if(m_bSparseFlow)

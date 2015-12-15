@@ -12,6 +12,9 @@ namespace kai
 DetectorBase::DetectorBase() {
 	// TODO Auto-generated constructor stub
 
+	m_pFrame = new CamFrame();
+	m_pGray = new CamFrame();
+
 }
 
 DetectorBase::~DetectorBase() {

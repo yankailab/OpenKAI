@@ -103,9 +103,9 @@ void _OpticalFlowDetector::detect(void)
 	if (pGray->empty())
 		return;
 
-	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->getCurrentFrame();
-	if (pBGRA->empty())
-		return;
+//	GpuMat* pBGRA = m_pCamStream->m_pBGRAL->getCurrentFrame();
+//	if (pBGRA->empty())
+//		return;
 
 	//TODO: add frameID verify
 
@@ -141,7 +141,7 @@ void _OpticalFlowDetector::detect(void)
 	m_pHumanHOG->setScaleFactor(scale);
 	m_pHumanHOG->setGroupThreshold(gr_threshold);
 
-	m_pHumanHOG->detectMultiScale(*pBGRA, vRect);
+//	m_pHumanHOG->detectMultiScale(*m_pBGRA, vRect);
 
 //	m_numHuman = 0;
 	for (i = 0; i < vRect.size(); i++)

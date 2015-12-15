@@ -32,6 +32,11 @@ int main(int argc, char* argv[])
 	//Temporal
 	g_pOD->m_bOneImg = 1;
 
+	//Init Fast Detector
+	g_pFD = new _FastDetector();
+	g_pFD->init(&g_Json);
+//	g_pFD->setCamStream(g_pCamFront);
+
 	//Init Camera
 	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
@@ -39,11 +44,7 @@ int main(int argc, char* argv[])
 	g_pCamFront->m_bHSV = false;//true;
 	g_pCamFront->m_pDenseFlow = g_pDF;
 	g_pCamFront->m_pOD = g_pOD;
-
-	//Init Fast Detector
-	g_pFD = new _FastDetector();
-	g_pFD->init(&g_Json);
-	g_pFD->setCamStream(g_pCamFront);
+	g_pCamFront->m_pFD = g_pFD;
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();
@@ -69,7 +70,7 @@ int main(int argc, char* argv[])
 	g_pOD->start();
 	g_pDF->start();
 //	g_pAP->start();
-//	g_pFD->start();
+	g_pFD->start();
 
 	//UI thread
 	g_bRun = true;
@@ -163,12 +164,12 @@ void showScreen(void)
 		}
 
 		//Red
-		if(pObj->m_status == OBJ_ADDED)
-		{
-//			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
-			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 0, 255), 1);
-		}
+//		if(pObj->m_status == OBJ_ADDED)
+//		{
+////			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
+//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+//					Scalar(0, 0, 255), 1);
+//		}
 	}
 
 

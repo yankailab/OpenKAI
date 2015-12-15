@@ -125,6 +125,11 @@ uint64_t CamFrame::getFrameID(void)
 	return m_frameID;
 }
 
+bool CamFrame::empty(void)
+{
+	return m_pNext->empty();
+}
+
 bool CamFrame::isNewerThan(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return false;

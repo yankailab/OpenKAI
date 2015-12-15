@@ -38,6 +38,7 @@ public:
 
 	bool isNewerThan(CamFrame* pFrame);
 	uint64_t getFrameID(void);
+	bool	 empty(void);
 
 private:
 	//Time for last update, updated in each frame update

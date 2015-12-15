@@ -12,6 +12,7 @@
 #include "../Base/cvplatform.h"
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_ObjectDetector.h"
+#include "../Detector/_FastDetector.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
@@ -44,9 +45,10 @@ public:
 	CamFrame*			m_pGrayL;
 	CamFrame*			m_pGrayR;
 	CamFrame*			m_pDepth;
-	CamFrame*			m_pBGRAL;
+//	CamFrame*			m_pBGRAL;
 
 	_ObjectDetector*		m_pOD;
+	_FastDetector*		m_pFD;
 	_DenseFlow*			m_pDenseFlow;
 
 	CamSparseFlow*		m_pSparseFlow;

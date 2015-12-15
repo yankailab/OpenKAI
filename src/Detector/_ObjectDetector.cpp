@@ -12,15 +12,16 @@ namespace kai
 _ObjectDetector::_ObjectDetector()
 {
 	_ThreadBase();
+	DetectorBase();
 
 	m_pClassMgr = NULL;
 
 	m_pContourFrame = NULL;
 	m_pSaliencyFrame = NULL;
-	m_pFrame = NULL;
+//	m_pFrame = NULL;
 
 	m_pGMat = NULL;
-	m_pGray = NULL;
+//	m_pGray = NULL;
 
 	m_bOneImg = 1;
 
@@ -71,7 +72,7 @@ bool _ObjectDetector::init(JSON* pJson)
 
 	m_pContourFrame = new CamFrame();
 	m_pSaliencyFrame = new CamFrame();
-	m_pFrame = new CamFrame();
+//	m_pFrame = new CamFrame();
 
 	return true;
 }

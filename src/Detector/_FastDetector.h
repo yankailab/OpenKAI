@@ -5,14 +5,13 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_FASTDETECTOR 0
+#define TRD_INTERVAL_FASTDETECTOR 100000
 #define NUM_FASTOBJ 1000
 
 namespace kai
@@ -32,14 +31,21 @@ public:
 	bool init(JSON* pJson);
 	bool start(void);
 
-	void setCamStream(_CamStream* pCam);
+	void updateFrame(CamFrame* pFrame, CamFrame* pGray);
+
 	int  getHuman(FAST_OBJECT** ppHuman);
 
 private:
 	void detect(void);
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_FastDetector *) This)->update();
+		return NULL;
+	}
 
 public:
-	_CamStream*		m_pCamStream;
+//	_CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
 	Ptr<cuda::HOG> m_pHumanHOG;
@@ -59,25 +65,13 @@ public:
     int cell_width;
     int nbins;
 
-
-
 //    HOGDescriptor m_hogCar;
 	int 			m_numCar;
 	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
 
-	Mat		m_frame;
-	GpuMat  m_pGMat;
-
-private:
-//	pthread_t m_threadID;
-//	bool m_bThreadON;
-
-	void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_FastDetector *) This)->update();
-		return NULL;
-	}
+	Mat			m_Mat;
+	CamFrame*	m_pBGRA;
+//	GpuMat*  	m_pGMat;
 
 
 };
