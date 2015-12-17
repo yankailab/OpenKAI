@@ -177,9 +177,10 @@ void showScreen(void)
 	for (i = 0; i < g_pFD->m_numHuman; i++)
 	{
 		pFastObj = &g_pFD->m_pHuman[i];
+		if(pFastObj->m_status != OBJ_ADDED)continue;
 
 		rectangle(imMat, pFastObj->m_boundBox.tl(), pFastObj->m_boundBox.br(),
-				Scalar(0, 0, 255), 2, 5, 0);
+				Scalar(0, 0, 255), 1);
 	}
 
 	showInfo(&imMat);

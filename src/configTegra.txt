@@ -26,6 +26,8 @@
 
 "HOG_FILE":"/home/ubuntu/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
 "CASCADE_FILE":"/home/ubuntu/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_frontalface_default.xml",
+"CASCADE_HUMAN_NUM":100,
+
 
 
 "OD_CANNY_LOW":10,

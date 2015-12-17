@@ -26,7 +26,7 @@ _ClassifierManager::_ClassifierManager()
 	{
 		m_pObjects[i].m_frameID = 0;
 		m_pObjects[i].m_status = OBJ_VACANT;
-t		m_pObjects[i].m_vContours.clear();
+		m_pObjects[i].m_vContours.clear();
 
 		for (j = 0; j < NUM_OBJECT_NAME; j++)
 		{

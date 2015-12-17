@@ -17,8 +17,11 @@ _FastDetector::_FastDetector()
 	m_bThreadON = false;
 	m_threadID = 0;
 
+	m_iHuman = 0;
 	m_numHuman = 0;
-	m_numCar = 0;
+	m_pHuman = NULL;
+	m_frameID = 0;
+	m_objLifeTime = 100000;
 
 	scale = 1.05;
 	nlevels = 13;
@@ -58,6 +61,19 @@ bool _FastDetector::init(JSON* pJson)
 	m_pHumanHOG = cuda::HOG::create(win_size, block_size, block_stride, cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
+	CHECK_INFO(pJson->getVal("CASCADE_HUMAN_LIFETIME", &m_objLifeTime));
+	CHECK_ERROR(pJson->getVal("CASCADE_HUMAN_NUM", &m_numHuman));
+	m_pHuman = new FAST_OBJECT[m_numHuman];
+	if(m_pHuman==NULL)return false;
+	m_iHuman = 0;
+
+	int i;
+	for(i=0; i<m_numHuman; i++)
+	{
+		m_pHuman[i].m_status = OBJ_VACANT;
+	}
+
+
 	m_pBGRA = new CamFrame();
 
 	return true;
@@ -87,10 +103,15 @@ void _FastDetector::update(void)
 	{
 		this->updateTime();
 
+		m_frameID = this->m_timeStamp;
+		deleteOutdated();
 		detect();
 
 		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		if(m_tSleep > 0)
+		{
+			this->sleepThread(0, m_tSleep);
+		}
 	}
 
 }
@@ -108,16 +129,57 @@ void _FastDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
 	this->wakeupThread();
 }
 
-void _FastDetector::detect(void)
+inline int _FastDetector::findVacancy(int iStart)
+{
+	FAST_OBJECT* pObj;
+	int iComplete = iStart - 1;
+
+	if(iStart >= m_numHuman)
+	{
+		iStart = 0;
+		iComplete = m_numHuman-1;
+	}
+
+	do
+	{
+		pObj = &m_pHuman[iStart];
+		if(pObj->m_status == OBJ_VACANT)
+		{
+			return iStart;
+		}
+
+		if(++iStart >= m_numHuman)iStart = 0;
+	}
+	while(iStart != iComplete);
+
+	return -1;
+}
+
+inline void _FastDetector::deleteOutdated(void)
 {
 	int i;
+	FAST_OBJECT* pObj;
 
+	for(i=0;i<m_numHuman;i++)
+	{
+		pObj = &m_pHuman[i];
+		if(m_frameID - pObj->m_frameID > m_objLifeTime)
+		{
+			pObj->m_status = OBJ_VACANT;
+		}
+	}
+}
+
+void _FastDetector::detect(void)
+{
+	int i,iVacant;
+	FAST_OBJECT* pObj;
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
-//	m_numHuman = 0;
 
 	if(m_pGray->empty())return;
 
+	iVacant = 0;
 
 	if (m_pCascade)
 	{
@@ -130,12 +192,15 @@ void _FastDetector::detect(void)
 
 		for (i = 0; i < vRect.size(); i++)
 		{
-			m_pHuman[m_numHuman].m_boundBox = vRect[i];
-			m_numHuman++;
-			if (m_numHuman == NUM_FASTOBJ)
-			{
-				break;
-			}
+			iVacant = findVacancy(iVacant+1);
+
+			//No vacant space
+			if(iVacant<0)return;
+
+			pObj = &m_pHuman[iVacant];
+			pObj->m_boundBox = vRect[i];
+			pObj->m_frameID = m_frameID;
+			pObj->m_status = OBJ_ADDED;
 		}
 	}
 

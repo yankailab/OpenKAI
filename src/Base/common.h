@@ -11,6 +11,12 @@
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
 
+#define OBJ_VACANT 0
+#define OBJ_ADDED 1
+#define OBJ_CLASSIFYING 2
+#define OBJ_COMPLETE 3
+
+
 using namespace std;
 
 #define CHECK_FATAL(x) if(x==false){LOG(FATAL);return false;}

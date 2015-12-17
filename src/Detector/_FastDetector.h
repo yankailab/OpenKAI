@@ -6,20 +6,24 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
+#include "../Utility/util.h"
+
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_FASTDETECTOR 100000
-#define NUM_FASTOBJ 1000
+#define TRD_INTERVAL_FASTDETECTOR 1000000
 
 namespace kai
 {
 
 struct FAST_OBJECT
 {
-	Rect		m_boundBox;
+	uint16_t		m_status;
+	uint64_t		m_frameID;
+
+	Rect			m_boundBox;
 };
 
 class _FastDetector: public DetectorBase, public _ThreadBase
@@ -36,6 +40,8 @@ public:
 	int  getHuman(FAST_OBJECT** ppHuman);
 
 private:
+	inline int findVacancy(int iStart);
+	inline void deleteOutdated(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -48,9 +54,13 @@ public:
 //	_CamStream*		m_pCamStream;
 
 	Ptr<cuda::CascadeClassifier> m_pCascade;
-	Ptr<cuda::HOG> m_pHumanHOG;
-	int 			m_numHuman;
-	FAST_OBJECT 	m_pHuman[NUM_FASTOBJ];
+	Ptr<cuda::HOG>	m_pHumanHOG;
+	int 				m_iHuman;
+	int				m_numHuman;
+	FAST_OBJECT* 	m_pHuman;
+	uint64_t			m_frameID;
+	uint64_t			m_objLifeTime;
+
 
 
     double scale;
@@ -66,8 +76,8 @@ public:
     int nbins;
 
 //    HOGDescriptor m_hogCar;
-	int 			m_numCar;
-	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
+//	int 			m_numCar;
+//	FAST_OBJECT 	m_pCar[NUM_FASTOBJ];
 
 	Mat			m_Mat;
 	CamFrame*	m_pBGRA;

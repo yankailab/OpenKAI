@@ -18,11 +18,6 @@
 #define NUM_OBJ 100
 #define NUM_DETECT_BATCH 10
 
-#define OBJ_VACANT 0
-#define OBJ_ADDED 1
-#define OBJ_CLASSIFYING 2
-#define OBJ_COMPLETE 3
-
 namespace kai
 {
 
@@ -35,7 +30,6 @@ struct OBJECT
 	uint64_t		m_frameID;
 
 	Mat			m_Mat;
-//	Mat*			m_pMat;
 	GpuMat		m_GMat;
 	Rect			m_boundBox;
 	vector<Point> m_vContours;

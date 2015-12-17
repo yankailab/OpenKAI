@@ -3,9 +3,9 @@
 "SERIALPORT_FC_BAUDRATE":115200,
 
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
-"CAM_FRONTL_WIDTH":1440,
-"CAM_FRONTL_HEIGHT":1440,
-"CAM_FRONTL_ID":2,
+"CAM_FRONTL_WIDTH":1980,
+"CAM_FRONTL_HEIGHT":1080,
+"CAM_FRONTL_ID":1,
 "CAM_FRONTL_MARKER":1,
 "CAM_FRONTL_CALIB":0,
 "CAM_FRONTL_CALIBFILE":"/Users/yankai/Documents/workspace/LAB/src/logitech_c930e.xml",
@@ -28,6 +28,8 @@
 
 "HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
 "CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_fullbody.xml",
+"CASCADE_HUMAN_NUM":100,
+"CASCADE_HUMAN_LIFETIME":1000000,
 
 "OD_CANNY_LOW":10,
 "OD_CANNY_HIGH":100,
@@ -40,6 +42,7 @@
 "CLASSIFIER_FRAME_LIFETIME":100000,
 "CLASSIFIER_PROB_MIN":0.1,
 "CLASSIFIER_POS_DISPARITY":50,
+
 
 
 
