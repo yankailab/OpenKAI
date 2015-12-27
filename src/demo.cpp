@@ -12,6 +12,64 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
+
+
+
+	//Test
+
+	//Setup Caffe SegNet Classifier
+	string modelFile;
+	string trainedFile;
+	string labelFile;
+	CHECK_FATAL(g_Json.getVal("SEGNET_MODEL_FILE", &modelFile));
+	CHECK_FATAL(g_Json.getVal("SEGNET_WEIGHTS_FILE", &trainedFile));
+	CHECK_FATAL(g_Json.getVal("SEGNET_COLOR_FILE", &labelFile));
+
+	SegNet snet;
+	snet.setup(modelFile, trainedFile, labelFile);
+
+	VideoCapture camera;
+	camera.open(0);
+	if (!camera.isOpened())
+	{
+		return 1;
+	}
+	camera.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+	camera.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
+
+	Mat frame;
+	g_bRun = true;
+
+	while (g_bRun)
+	{
+		while (!camera.read(frame));
+		imshow("input", frame);
+		imshow("SegNet", snet.segment(frame));
+
+		//Handle key input
+		g_key = waitKey(30);
+		handleKey(g_key);
+	}
+
+	return 0;
+
+	//Test
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//Connect to Mavlink
 	g_pMavlink = new _MavlinkInterface();
 	CHECK_FATAL(g_pMavlink->setup(&g_Json, "FC"));

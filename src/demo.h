@@ -21,6 +21,8 @@
 #include "Interface/_MavlinkInterface.h"
 #include "UI/UIMonitor.h"
 
+#include "AI/SegNet.h"
+
 using namespace kai;
 
 int g_key;
