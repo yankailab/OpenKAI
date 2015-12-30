@@ -23,9 +23,9 @@
 "CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
 "CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
-"SEGNET_MODEL_FILE":"/Users/yankai/Documents/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
-"SEGNET_WEIGHTS_FILE":"/Users/yankai/Documents/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
-"SEGNET_COLOR_FILE":"/Users/yankai/Documents/dev/SegNet-Tutorial/Scripts/camvid12.png",
+"SEGNET_MODEL_FILE":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
+"SEGNET_WEIGHTS_FILE":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
+"SEGNET_COLOR_FILE":"/home/kai/dev/SegNet-Tutorial/Scripts/camvid12.png",
 
 
 "SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",

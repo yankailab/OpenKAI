@@ -8,12 +8,10 @@ int main(int argc, char* argv[])
 
 	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
+	printf(argv[1]);
 	CHECK_FATAL(g_file.open(argv[1]));
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
-
-
-
 
 	//Test
 
