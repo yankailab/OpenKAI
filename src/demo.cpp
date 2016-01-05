@@ -16,48 +16,42 @@ int main(int argc, char* argv[])
 	//Test
 
 	//Setup Caffe SegNet Classifier
-	string modelFile;
-	string trainedFile;
-	string labelFile;
-	CHECK_FATAL(g_Json.getVal("SEGNET_MODEL_FILE", &modelFile));
-	CHECK_FATAL(g_Json.getVal("SEGNET_WEIGHTS_FILE", &trainedFile));
-	CHECK_FATAL(g_Json.getVal("SEGNET_COLOR_FILE", &labelFile));
-
-	SegNet snet;
-	snet.setup(modelFile, trainedFile, labelFile);
-
-	VideoCapture camera;
-	camera.open(0);
-	if (!camera.isOpened())
-	{
-		return 1;
-	}
-	camera.set(CV_CAP_PROP_FRAME_WIDTH, 1280);
-	camera.set(CV_CAP_PROP_FRAME_HEIGHT, 800);
-
-	Mat frame;
-	g_bRun = true;
-
-	while (g_bRun)
-	{
-		while (!camera.read(frame));
-		imshow("input", frame);
-		imshow("SegNet", snet.segment(frame));
-
-		//Handle key input
-		g_key = waitKey(30);
-		handleKey(g_key);
-	}
-
-	return 0;
-
+//	string modelFile;
+//	string trainedFile;
+//	string labelFile;
+//	CHECK_FATAL(g_Json.getVal("SEGNET_MODEL_FILE", &modelFile));
+//	CHECK_FATAL(g_Json.getVal("SEGNET_WEIGHTS_FILE", &trainedFile));
+//	CHECK_FATAL(g_Json.getVal("SEGNET_COLOR_FILE", &labelFile));
+//
+//	SegNet snet;
+//	snet.setup(modelFile, trainedFile, labelFile);
+//
+//	VideoCapture camera;
+//	camera.open(0);
+//	if (!camera.isOpened())
+//	{
+//		return 1;
+//	}
+//	camera.set(CV_CAP_PROP_FRAME_WIDTH, 3840);
+//	camera.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
+//
+//	Mat frame;
+//	g_bRun = true;
+//
+//	while (g_bRun)
+//	{
+//		while (!camera.read(frame));
+//		imshow("input", frame);
+//		imshow("SegNet", snet.segment(frame));
+//
+//		//Handle key input
+//		g_key = waitKey(30);
+//		handleKey(g_key);
+//	}
+//
+//	return 0;
+//
 	//Test
-
-
-
-
-
-
 
 
 
@@ -90,7 +84,7 @@ int main(int argc, char* argv[])
 
 	//Init Fast Detector
 	g_pFD = new _FastDetector();
-	g_pFD->init(&g_Json);
+//	g_pFD->init(&g_Json);
 //	g_pFD->setCamStream(g_pCamFront);
 
 	//Init Camera
@@ -99,8 +93,9 @@ int main(int argc, char* argv[])
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = false;//true;
 	g_pCamFront->m_pDenseFlow = g_pDF;
-	g_pCamFront->m_pOD = g_pOD;
-	g_pCamFront->m_pFD = g_pFD;
+//	g_pCamFront->m_pOD = g_pOD;
+//	g_pCamFront->m_pFD = g_pFD;
+	g_pCamFront->m_pCM = g_pClassMgr;
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();
@@ -123,10 +118,10 @@ int main(int argc, char* argv[])
 	g_pCamFront->start();
 	g_pMavlink->start();
 	g_pClassMgr->start();
-	g_pOD->start();
-	g_pDF->start();
+//	g_pOD->start();
+//	g_pDF->start();
 //	g_pAP->start();
-	g_pFD->start();
+//	g_pFD->start();
 
 	//UI thread
 	g_bRun = true;

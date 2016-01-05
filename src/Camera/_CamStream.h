@@ -50,6 +50,7 @@ public:
 	_ObjectDetector*		m_pOD;
 	_FastDetector*		m_pFD;
 	_DenseFlow*			m_pDenseFlow;
+	_ClassifierManager* m_pCM;
 
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
