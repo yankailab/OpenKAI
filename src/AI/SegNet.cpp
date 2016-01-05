@@ -37,7 +37,7 @@ void SegNet::setup(const string& model_file, const string& trained_file,
 
 	Blob<float>* output_layer = net_->output_blobs()[0];
 
-	m_labelColor = imread(color_file, 1);
+	m_labelColor = imread(color_file, 1);//CV_LOAD_IMAGE_ANYDEPTH);//IMREAD_COLOR);
 }
 
 cv::Mat SegNet::segment(cv::Mat img)
@@ -46,7 +46,7 @@ cv::Mat SegNet::segment(cv::Mat img)
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, num_channels_, input_size_.height, input_size_.width);
-	/* Forward dimension change to all layers. */
+
 	net_->Reshape();
 
 	std::vector<cv::Mat> input_channels;
@@ -55,25 +55,22 @@ cv::Mat SegNet::segment(cv::Mat img)
 
 	net_->ForwardPrefilled();
 
-	/* Copy the output layer to a std::vector */
-	Blob<float>* output_layer = net_->output_blobs()[0];
-	const float* pOutput = output_layer->cpu_data();
+	Blob<float>* output_layer = net_->output_blobs()[0];//net_->blob_by_name("argmax").get();
+	const float* begin = output_layer->cpu_data();
+	const float* end = begin + output_layer->channels() * input_size_.area() * 4;
+	vector<float> pOutput = std::vector<float>(begin, end);
 
-	cv::Mat output_channels[3];
-	for (int i = 0; i < input_layer->channels(); ++i)
-	{
-		output_channels[i] = Mat(input_size_.height, input_size_.width, CV_32FC1, *pOutput);
-		pOutput += input_size_.width * input_size_.height;
-	}
+	Mat segIdx = Mat(input_size_.height, input_size_.width, CV_32FC1, pOutput.data());
 
-	Mat segIdx;
-	cv::merge(output_channels,3,segIdx);
+	Mat uimg,uimg3;
+	segIdx.convertTo(uimg, CV_8UC1);
+	cvtColor(uimg, uimg3, CV_GRAY2BGR);
 
-	Mat segRGB;
-	cv::LUT(segIdx,m_labelColor,segRGB);
-	segRGB *= (1.0/255.0);
+	Mat segRGB = Mat(input_size_.height, input_size_.width, CV_8UC3);
+	cv::LUT(uimg3,m_labelColor,segRGB);
 
 	return segRGB;
+
 }
 
 /* Wrap the input layer of the network in separate cv::Mat objects
@@ -89,7 +86,6 @@ void SegNet::WrapInputLayer(std::vector<cv::Mat>* input_channels)
 	for (int i = 0; i < input_layer->channels(); ++i)
 	{
 		cv::Mat channel(input_size_.height, input_size_.width, CV_32FC1, input_data);
-//		cv::Mat channel(height, width, CV_8U3, input_data);
 		input_channels->push_back(channel);
 		input_data += input_size_.width * input_size_.height;
 	}
@@ -110,6 +106,7 @@ void SegNet::Preprocess(const cv::Mat& img,
 		cv::cvtColor(img, sample, CV_GRAY2BGR);
 	else
 		sample = img;
+//		cv::cvtColor(img, sample, CV_BGR2RGB);
 
 	cv::Mat sample_resized;
 	if (sample.size() != input_size_)
@@ -123,13 +120,9 @@ void SegNet::Preprocess(const cv::Mat& img,
 	else
 		sample_resized.convertTo(sample_float, CV_32FC1);
 
-//	cv::Mat sample_normalized;
-//	cv::subtract(sample_float, mean_, sample_normalized);
-
 	/* This operation will write the separate BGR planes directly to the
 	 * input layer of the network because it is wrapped by the cv::Mat
 	 * objects in input_channels. */
-//	cv::split(sample_normalized, *input_channels);
 	cv::split(sample_float, *input_channels);
 
 //	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
