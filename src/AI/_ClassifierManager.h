@@ -78,6 +78,7 @@ public:
 	//SegNet
 	SegNet m_segnet;
 	Mat m_segnetMat;
+	Mat m_segment;
 	CamFrame* m_pFrame;
 };
 

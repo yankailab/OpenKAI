@@ -13,55 +13,6 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
-	//Test
-
-	//Setup Caffe SegNet Classifier
-//	string modelFile;
-//	string trainedFile;
-//	string labelFile;
-//	CHECK_FATAL(g_Json.getVal("SEGNET_MODEL_FILE", &modelFile));
-//	CHECK_FATAL(g_Json.getVal("SEGNET_WEIGHTS_FILE", &trainedFile));
-//	CHECK_FATAL(g_Json.getVal("SEGNET_COLOR_FILE", &labelFile));
-//
-//	SegNet snet;
-//	snet.setup(modelFile, trainedFile, labelFile);
-//
-//	VideoCapture camera;
-//	camera.open(0);
-//	if (!camera.isOpened())
-//	{
-//		return 1;
-//	}
-//	camera.set(CV_CAP_PROP_FRAME_WIDTH, 3840);
-//	camera.set(CV_CAP_PROP_FRAME_HEIGHT, 1080);
-//
-//	Mat frame;
-//	g_bRun = true;
-//
-//	while (g_bRun)
-//	{
-//		while (!camera.read(frame));
-//		imshow("input", frame);
-//		imshow("SegNet", snet.segment(frame));
-//
-//		//Handle key input
-//		g_key = waitKey(30);
-//		handleKey(g_key);
-//	}
-//
-//	return 0;
-//
-	//Test
-
-
-
-
-
-
-
-
-
-
 	//Connect to Mavlink
 	g_pMavlink = new _MavlinkInterface();
 	CHECK_FATAL(g_pMavlink->setup(&g_Json, "FC"));
@@ -108,6 +59,8 @@ int main(int argc, char* argv[])
 
 	//Main window
 	g_pShow = new CamFrame();
+	g_pMat = new CamFrame();
+	g_pMat2 = new CamFrame();
 
 	//Init UI Monitor
 	g_pUIMonitor = new UIMonitor();
@@ -116,7 +69,7 @@ int main(int argc, char* argv[])
 
 	//Start threads
 	g_pCamFront->start();
-	g_pMavlink->start();
+//	g_pMavlink->start();
 	g_pClassMgr->start();
 //	g_pOD->start();
 //	g_pDF->start();
@@ -174,6 +127,33 @@ int main(int argc, char* argv[])
 
 void showScreen(void)
 {
+	int i;
+	Mat imMat,imMat2,imMat3;
+	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
+
+	if (pFrame->getCurrentFrame()->empty())return;
+	if (g_pShow->isNewerThan(pFrame))return;
+	if (g_pClassMgr->m_segment.empty())return;
+
+	g_pMat->updateFrame(pFrame);
+	g_pMat->getResized(1980,1080,g_pMat2);
+	g_pMat2->getCurrentFrame()->download(imMat);
+
+	g_pMat->updateFrame(&g_pClassMgr->m_segment);
+	g_pMat->getResized(1980,1080,g_pMat2);
+	g_pMat2->getCurrentFrame()->download(imMat2);
+
+	double alpha = 0.5;
+	double beta;
+	beta = ( 1.0 - alpha );
+	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
+
+	g_pShow->updateFrame(&imMat3);
+
+	return;
+
+
+/*
 	int i;
 	Mat imMat;
 	vector< vector< Point > > contours;
@@ -237,6 +217,7 @@ void showScreen(void)
 	showInfo(&imMat);
 
 	g_pShow->updateFrame(&imMat);
+	*/
 }
 
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)

@@ -37,6 +37,8 @@ _DenseFlow* g_pDF;
 _MavlinkInterface* g_pMavlink;
 
 CamFrame* g_pShow;
+CamFrame* g_pMat;
+CamFrame* g_pMat2;
 UIMonitor* g_pUIMonitor;
 MarkerDetector* g_pMD;
 cv::Mat g_displayMat;

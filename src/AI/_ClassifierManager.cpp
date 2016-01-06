@@ -104,7 +104,8 @@ void _ClassifierManager::update(void)
 //		classifyObject();
 		if(!m_segnetMat.empty())
 		{
-			imshow("SegNet",m_segnet.segment(m_segnetMat));
+			m_segment = m_segnet.segment(m_segnetMat);
+//			imshow("SegNet",m_segnet.segment(m_segnetMat));
 		}
 
 		//sleepThread can be woke up by this->wakeupThread()
