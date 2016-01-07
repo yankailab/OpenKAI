@@ -24,17 +24,36 @@ UIMonitor::~UIMonitor()
 	// TODO Auto-generated destructor stub
 }
 
-bool UIMonitor::init(string name, int width, int height)
+bool UIMonitor::init(string name, JSON* pJson)
 {
 	if(name.empty())return false;
-	if(width==0 || height==0)return false;
+	if(pJson==NULL)return false;
+
+	CHECK_FATAL(pJson->getVal("UI_MAIN_WIDTH", &m_width));
+	CHECK_FATAL(pJson->getVal("UI_MAIN_HEIGHT", &m_height));
 
 	m_windowName = name;
-	m_width = width;
-	m_height = height;
 	m_numFrame = 0;
 
-	m_showFrame = Mat(height,width,CV_8UC3,cv::Scalar(0,0,0));
+	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
+
+	return true;
+}
+
+bool UIMonitor::addFullFrame(CamFrame* pFrame)
+{
+	MONITOR_FRAME* pMFrame;
+
+	if(!pFrame)return false;
+	if(m_numFrame >= NUM_MONITOR_FRAME)return false;
+
+	pMFrame = &m_pFrame[m_numFrame];
+	pMFrame->m_pFrame = pFrame;
+	pMFrame->m_x = 0;
+	pMFrame->m_y = 0;
+	pMFrame->m_w = m_width;
+	pMFrame->m_h = m_height;
+	m_numFrame++;
 
 	return true;
 }

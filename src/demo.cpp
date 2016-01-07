@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
 
 	//Init UI Monitor
 	g_pUIMonitor = new UIMonitor();
-	g_pUIMonitor->init("OpenKAI demo", 1980, 1080);
-	g_pUIMonitor->addFrame(g_pShow, 0, 0, 1980, 1080);
+	g_pUIMonitor->init("OpenKAI demo", &g_Json);
+	g_pUIMonitor->addFullFrame(g_pShow);
 
 	//Start threads
 	g_pCamFront->start();

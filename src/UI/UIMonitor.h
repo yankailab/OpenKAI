@@ -14,26 +14,24 @@
 
 #define NUM_MONITOR_FRAME 8
 
-namespace kai
-{
+namespace kai {
 
-struct MONITOR_FRAME
-{
-	CamFrame* 	m_pFrame;
-	string 		m_name;
-	int			m_x;
-	int			m_y;
-	int			m_w;
-	int			m_h;
+struct MONITOR_FRAME {
+	CamFrame* m_pFrame;
+	string m_name;
+	int m_x;
+	int m_y;
+	int m_w;
+	int m_h;
 };
 
-class UIMonitor
-{
+class UIMonitor {
 public:
 	UIMonitor();
 	virtual ~UIMonitor();
 
-	bool init(string name, int width, int height);
+	bool init(string name, JSON* pJson);
+	bool addFullFrame(CamFrame* pFrame);
 	bool addFrame(CamFrame* pFrame, int x, int y, int w, int h);
 	bool addFrame(MONITOR_FRAME* pMFrame);
 	bool updateFrame(MONITOR_FRAME* pMFrame);
@@ -42,16 +40,16 @@ public:
 	void show(void);
 
 public:
-	string 	m_windowName;
-	int		m_width;
-	int		m_height;
-	Mat 		m_showFrame;
-	Mat 		m_frame;
+	string m_windowName;
+	int m_width;
+	int m_height;
+	Mat m_showFrame;
+	Mat m_frame;
 
-	CamFrame		m_camFrame;
-	CamFrame		m_camFrame2;
+	CamFrame m_camFrame;
+	CamFrame m_camFrame2;
 	MONITOR_FRAME m_pFrame[NUM_MONITOR_FRAME];
-	int		m_numFrame;
+	int m_numFrame;
 
 };
 
