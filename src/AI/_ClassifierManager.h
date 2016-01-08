@@ -12,8 +12,6 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../AI/NNClassifier.h"
-#include "../AI/SegNet.h"
-#include "../Camera/CamFrame.h"
 
 #define TRD_INTERVAL_CLASSIFIER_MANAGER 0
 #define NUM_OBJECT_NAME 5
@@ -45,8 +43,6 @@ public:
 			vector<Point>* pContour);
 	void classifyObject(void);
 
-	void updateFrame(CamFrame* pFrame);
-
 	bool init(JSON* pJson);
 	bool start(void);
 
@@ -75,11 +71,6 @@ public:
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;
 
-	//SegNet
-	SegNet m_segnet;
-	Mat m_segnetMat;
-	Mat m_segment;
-	CamFrame* m_pFrame;
 };
 
 } /* namespace kai */

@@ -9,6 +9,7 @@ int main(int argc, char* argv[])
 	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	printf(argv[1]);
+	printf("\n");
 	CHECK_FATAL(g_file.open(argv[1]));
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
@@ -23,8 +24,8 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
 
 	//Init Classifier Manager
-	g_pClassMgr = new _ClassifierManager();
-	g_pClassMgr->init(&g_Json);
+//	g_pClassMgr = new _ClassifierManager();
+//	g_pClassMgr->init(&g_Json);
 
 	//Init Object Detector
 	g_pOD = new _ObjectDetector();
@@ -38,6 +39,10 @@ int main(int argc, char* argv[])
 //	g_pFD->init(&g_Json);
 //	g_pFD->setCamStream(g_pCamFront);
 
+	//Init SegNet
+	g_pSegNet = new _SegNet();
+	g_pSegNet->init("",&g_Json);
+
 	//Init Camera
 	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
@@ -46,7 +51,7 @@ int main(int argc, char* argv[])
 	g_pCamFront->m_pDenseFlow = g_pDF;
 //	g_pCamFront->m_pOD = g_pOD;
 //	g_pCamFront->m_pFD = g_pFD;
-	g_pCamFront->m_pCM = g_pClassMgr;
+	g_pCamFront->m_pSegNet = g_pSegNet;
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();
@@ -70,11 +75,12 @@ int main(int argc, char* argv[])
 	//Start threads
 	g_pCamFront->start();
 //	g_pMavlink->start();
-	g_pClassMgr->start();
+//	g_pClassMgr->start();
 //	g_pOD->start();
 //	g_pDF->start();
 //	g_pAP->start();
 //	g_pFD->start();
+	g_pSegNet->start();
 
 	//UI thread
 	g_bRun = true;
@@ -103,6 +109,7 @@ int main(int argc, char* argv[])
 	g_pCamFront->stop();
 	g_pMavlink->stop();
 	g_pClassMgr->stop();
+	g_pSegNet->stop();
 
 	g_pDF->complete();
 	g_pClassMgr->complete();
@@ -133,13 +140,13 @@ void showScreen(void)
 
 	if (pFrame->getCurrentFrame()->empty())return;
 	if (g_pShow->isNewerThan(pFrame))return;
-	if (g_pClassMgr->m_segment.empty())return;
+	if (g_pSegNet->m_segment.empty())return;
 
 	g_pMat->updateFrame(pFrame);
 	g_pMat->getResized(1980,1080,g_pMat2);
 	g_pMat2->getCurrentFrame()->download(imMat);
 
-	g_pMat->updateFrame(&g_pClassMgr->m_segment);
+	g_pMat->updateFrame(&g_pSegNet->m_segment);
 	g_pMat->getResized(1980,1080,g_pMat2);
 	g_pMat2->getCurrentFrame()->download(imMat2);
 

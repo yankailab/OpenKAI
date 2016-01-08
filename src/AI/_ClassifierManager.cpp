@@ -35,9 +35,6 @@ _ClassifierManager::_ClassifierManager()
 		}
 	}
 
-	m_pFrame = new CamFrame();
-
-
 }
 
 _ClassifierManager::~_ClassifierManager()
@@ -48,31 +45,21 @@ _ClassifierManager::~_ClassifierManager()
 bool _ClassifierManager::init(JSON* pJson)
 {
 	//Setup Caffe Classifier
-//	string modelFile;
-//	string trainedFile;
-//	string meanFile;
-//	string labelFile;
-//
-//	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
-//	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
-//	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
-//	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
-//	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile, NUM_DETECT_BATCH);
-//	LOG(INFO)<<"Caffe Initialized";
-//
-//	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
-//	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
-//	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
-
-
 	string modelFile;
 	string trainedFile;
+	string meanFile;
 	string labelFile;
-	CHECK_FATAL(pJson->getVal("SEGNET_MODEL_FILE", &modelFile));
-	CHECK_FATAL(pJson->getVal("SEGNET_WEIGHTS_FILE", &trainedFile));
-	CHECK_FATAL(pJson->getVal("SEGNET_COLOR_FILE", &labelFile));
 
-	m_segnet.setup(modelFile, trainedFile, labelFile);
+	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
+	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile, NUM_DETECT_BATCH);
+	LOG(INFO)<<"Caffe Initialized";
+
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
 
 	return true;
 }
@@ -101,29 +88,12 @@ void _ClassifierManager::update(void)
 
 		m_globalFrameID = get_time_usec();
 
-//		classifyObject();
-		if(!m_segnetMat.empty())
-		{
-			m_segment = m_segnet.segment(m_segnetMat);
-//			imshow("SegNet",m_segnet.segment(m_segnetMat));
-		}
+		classifyObject();
 
 		//sleepThread can be woke up by this->wakeupThread()
 		this->sleepThread(0, m_tSleep);
 	}
 
-}
-
-void _ClassifierManager::updateFrame(CamFrame* pFrame)
-{
-	if(pFrame==NULL)return;
-	if(pFrame->getCurrentFrame()->empty())return;
-
-	m_pFrame->updateFrame(pFrame);
-	GpuMat* pGMat = m_pFrame->getCurrentFrame();
-	pGMat->download(m_segnetMat);
-
-	this->wakeupThread();
 }
 
 void _ClassifierManager::deleteObject(int i)

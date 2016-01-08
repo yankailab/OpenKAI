@@ -13,6 +13,7 @@
 #include <cstdarg>
 
 #include "AI/_ClassifierManager.h"
+#include "AI/_SegNet.h"
 #include "Autopilot/_AutoPilot.h"
 #include "Detector/MarkerDetector.h"
 #include "Camera/CamInput.h"
@@ -21,7 +22,6 @@
 #include "Interface/_MavlinkInterface.h"
 #include "UI/UIMonitor.h"
 
-#include "AI/SegNet.h"
 
 using namespace kai;
 
@@ -35,6 +35,7 @@ _AutoPilot* g_pAP;
 _ClassifierManager* g_pClassMgr;
 _DenseFlow* g_pDF;
 _MavlinkInterface* g_pMavlink;
+_SegNet* g_pSegNet;
 
 CamFrame* g_pShow;
 CamFrame* g_pMat;

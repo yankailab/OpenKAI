@@ -40,7 +40,7 @@ _CamStream::_CamStream()
 	m_pDenseFlow = NULL;
 	m_pOD = NULL;
 	m_pFD = NULL;
-	m_pCM = NULL;
+	m_pSegNet = NULL;
 
 }
 
@@ -161,9 +161,9 @@ void _CamStream::update(void)
 			m_pFD->updateFrame(m_pFrameL, m_pGrayL);
 		}
 
-		if(m_pCM)
+		if(m_pSegNet)
 		{
-			m_pCM->updateFrame(m_pFrameL);
+			m_pSegNet->updateFrame(m_pFrameL);
 		}
 
 		if(m_bSparseFlow)

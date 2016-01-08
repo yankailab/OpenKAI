@@ -13,6 +13,7 @@
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_ObjectDetector.h"
 #include "../Detector/_FastDetector.h"
+#include "../AI/_SegNet.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
@@ -47,10 +48,10 @@ public:
 	CamFrame*			m_pDepth;
 //	CamFrame*			m_pBGRAL;
 
-	_ObjectDetector*		m_pOD;
+	_ObjectDetector*	m_pOD;
 	_FastDetector*		m_pFD;
 	_DenseFlow*			m_pDenseFlow;
-	_ClassifierManager* m_pCM;
+	_SegNet* 			m_pSegNet;
 
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
