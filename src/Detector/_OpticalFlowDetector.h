@@ -13,7 +13,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_OBJDETECTOR 0
+#define TRD_INTERVAL_OPTFLOWDETECTOR 0
 #define NUM_OPTICALFLOW_OBJECT 100
 
 namespace kai

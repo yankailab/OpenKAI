@@ -75,7 +75,7 @@ void _OpticalFlowDetector::update(void)
 	int i;
 	CamFrame* pFrame;
 	int tThreadBegin;
-	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
+	m_tSleep = TRD_INTERVAL_OPTFLOWDETECTOR;
 
 	while (m_bThreadON)
 	{

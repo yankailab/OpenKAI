@@ -35,22 +35,21 @@ int main(int argc, char* argv[])
 	g_pOD->m_bOneImg = 1;
 
 	//Init Fast Detector
-	g_pFD = new _FastDetector();
-//	g_pFD->init(&g_Json);
-//	g_pFD->setCamStream(g_pCamFront);
+	g_pFD = new _CascadeDetector();
+	g_pFD->init("DRONE", &g_Json);
 
 	//Init SegNet
 	g_pSegNet = new _SegNet();
-	g_pSegNet->init("",&g_Json);
+	g_pSegNet->init("DEFAULT",&g_Json);
 
 	//Init Camera
 	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
 	g_pCamFront->m_bGray = true;
 	g_pCamFront->m_bHSV = false;//true;
-	g_pCamFront->m_pDenseFlow = g_pDF;
+//	g_pCamFront->m_pDenseFlow = g_pDF;
 //	g_pCamFront->m_pOD = g_pOD;
-//	g_pCamFront->m_pFD = g_pFD;
+	g_pCamFront->m_pFD = g_pFD;
 	g_pCamFront->m_pSegNet = g_pSegNet;
 
 	//Init Autopilot
@@ -79,7 +78,7 @@ int main(int argc, char* argv[])
 //	g_pOD->start();
 //	g_pDF->start();
 //	g_pAP->start();
-//	g_pFD->start();
+	g_pFD->start();
 	g_pSegNet->start();
 
 	//UI thread
@@ -154,6 +153,15 @@ void showScreen(void)
 	double beta;
 	beta = ( 1.0 - alpha );
 	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
+
+	CASCADE_OBJECT* pDrone;
+	for (i = 0; i < g_pFD->m_numObj; i++)
+	{
+		pDrone = &g_pFD->m_pObj[i];
+		if(pDrone->m_status != OBJ_ADDED)continue;
+
+		rectangle(imMat3, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
+	}
 
 	g_pShow->updateFrame(&imMat3);
 

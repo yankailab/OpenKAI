@@ -3,7 +3,7 @@
 "SERIALPORT_FC_BAUDRATE":115200,
 
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
-"CAM_FRONTL_WIDTH":3960,
+"CAM_FRONTL_WIDTH":1980,
 "CAM_FRONTL_HEIGHT":1080,
 "CAM_FRONTL_ID":0,
 "CAM_FRONTL_MARKER":1,
@@ -12,29 +12,21 @@
 "CAM_FRONTL_ISOSCALE":1.0,
 "CAM_FRONTL_GIMBAL":1,
 
+"UI_MAIN_WIDTH":1980,
+"UI_MAIN_HEIGHT":1080,
+
 "DENSEFLOW_FRONTL_WIDTH":800,
 "DENSEFLOW_FRONTL_HEIGHT":600,
 
 "CAM_FRONTR_ID":0,
 
+"SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
+"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
+"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Scripts/camvid12.png",
 
-"CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
-"CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
-"CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
-"CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
-
-"SEGNET_MODEL_FILE":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
-"SEGNET_WEIGHTS_FILE":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
-"SEGNET_COLOR_FILE":"/home/kai/dev/SegNet-Tutorial/Scripts/camvid12.png",
-
-
-"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
-"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
-
-"HOG_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/hogcascades/hogcascade_pedestrians.xml",
-"CASCADE_FILE":"/Users/yankai/Downloads/opencv-3.0.0/data/haarcascades_cuda/haarcascade_fullbody.xml",
-"CASCADE_HUMAN_NUM":100,
-"CASCADE_HUMAN_LIFETIME":1000000,
+"CASCADE_FILE_DRONE":"/home/kai/dev/opencv/data/haarcascades_cuda/haarcascade_frontalface_alt.xml",
+"CASCADE_NUM_DRONE":100,
+"CASCADE_LIFETIME_DRONE":1000000,
 
 "OD_CANNY_LOW":10,
 "OD_CANNY_HIGH":100,
@@ -43,16 +35,17 @@
 "OD_GAUSS_SIGMA":1,
 
 
-
 "CLASSIFIER_FRAME_LIFETIME":100000,
 "CLASSIFIER_PROB_MIN":0.1,
 "CLASSIFIER_POS_DISPARITY":50,
 
+"CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
+"CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
+"CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
+"CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
-"UI_MAIN_WIDTH":3960,
-"UI_MAIN_HEIGHT":1080,
-
-
+"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
+"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
 
 
 

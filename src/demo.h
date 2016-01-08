@@ -17,7 +17,7 @@
 #include "Autopilot/_AutoPilot.h"
 #include "Detector/MarkerDetector.h"
 #include "Camera/CamInput.h"
-#include "Detector/_FastDetector.h"
+#include "Detector/_CascadeDetector.h"
 #include "Detector/_ObjectDetector.h"
 #include "Interface/_MavlinkInterface.h"
 #include "UI/UIMonitor.h"
@@ -30,7 +30,7 @@ bool g_bRun;
 
 _CamStream* g_pCamFront;
 _ObjectDetector* g_pOD;
-_FastDetector* g_pFD;
+_CascadeDetector* g_pFD;
 _AutoPilot* g_pAP;
 _ClassifierManager* g_pClassMgr;
 _DenseFlow* g_pDF;

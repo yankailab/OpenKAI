@@ -1,4 +1,6 @@
-#pragma once
+#ifndef BASE_COMMON_H_
+#define BASE_COMMON_H_
+
 #include "platform.h"
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
@@ -86,6 +88,8 @@ struct SYSTEM
 };
 
 }
+
+#endif
 
 
 

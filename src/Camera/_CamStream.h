@@ -12,8 +12,8 @@
 #include "../Base/cvplatform.h"
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_ObjectDetector.h"
-#include "../Detector/_FastDetector.h"
 #include "../AI/_SegNet.h"
+#include "../Detector/_CascadeDetector.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
@@ -49,7 +49,7 @@ public:
 //	CamFrame*			m_pBGRAL;
 
 	_ObjectDetector*	m_pOD;
-	_FastDetector*		m_pFD;
+	_CascadeDetector*		m_pFD;
 	_DenseFlow*			m_pDenseFlow;
 	_SegNet* 			m_pSegNet;
 
