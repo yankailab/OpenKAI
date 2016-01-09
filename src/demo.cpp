@@ -142,17 +142,13 @@ void showScreen(void)
 	if (g_pSegNet->m_segment.empty())return;
 
 	g_pMat->updateFrame(pFrame);
-	g_pMat->getResized(1980,1080,g_pMat2);
-	g_pMat2->getCurrentFrame()->download(imMat);
+//	g_pMat->getResized(3960,1080,g_pMat2);
+	g_pMat->getCurrentFrame()->download(imMat);
 
 	g_pMat->updateFrame(&g_pSegNet->m_segment);
-	g_pMat->getResized(1980,1080,g_pMat2);
+	g_pMat->getResized(imMat.cols,imMat.rows,g_pMat2);
 	g_pMat2->getCurrentFrame()->download(imMat2);
 
-	double alpha = 0.5;
-	double beta;
-	beta = ( 1.0 - alpha );
-	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
 
 	CASCADE_OBJECT* pDrone;
 	for (i = 0; i < g_pFD->m_numObj; i++)
@@ -160,8 +156,13 @@ void showScreen(void)
 		pDrone = &g_pFD->m_pObj[i];
 		if(pDrone->m_status != OBJ_ADDED)continue;
 
-		rectangle(imMat3, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
+		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
 	}
+
+	double alpha = 0.5;
+	double beta;
+	beta = ( 1.0 - alpha );
+	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
 
 	g_pShow->updateFrame(&imMat3);
 
