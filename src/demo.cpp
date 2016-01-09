@@ -159,9 +159,8 @@ void showScreen(void)
 		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
 	}
 
-	double alpha = 0.5;
-	double beta;
-	beta = ( 1.0 - alpha );
+	double alpha = 1.0;
+	double beta = 0.5;
 	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
 
 	g_pShow->updateFrame(&imMat3);
