@@ -97,7 +97,7 @@ int main(int argc, char* argv[])
 		g_pUIMonitor->show();
 
 		//Handle key input
-		g_key = waitKey(30);
+		g_key = waitKey(1);
 		handleKey(g_key);
 	}
 

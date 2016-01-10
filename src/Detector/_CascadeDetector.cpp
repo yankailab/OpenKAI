@@ -165,6 +165,8 @@ void _CascadeDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
 	if(pGray==NULL)return;
 	if(pGray->empty())return;
 
+	//TODO:frameID isNewThan compare?
+
 //	pFrame->getBGRA(m_pBGRA);
 	m_pGray->updateFrame(pGray);
 

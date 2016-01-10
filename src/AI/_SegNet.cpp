@@ -123,7 +123,7 @@ void _SegNet::updateFrame(CamFrame* pFrame)
 	if(m_pFrame->isNewerThan(pFrame))return;
 
 	m_pFrame->updateFrame(pFrame);
-	m_pFrame->getCurrentFrame()->download(m_frame);
+//	m_pFrame->getCurrentFrame()->download(m_frame);
 
 	this->wakeupThread();
 }

@@ -135,7 +135,6 @@ bool CamFrame::empty(void)
 bool CamFrame::isNewerThan(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return false;
-
 	if(pFrame->getFrameID() < m_frameID)
 	{
 		return true;
