@@ -59,7 +59,6 @@ public:
 
 	Mat			m_Mat;
 
-
 };
 }
 

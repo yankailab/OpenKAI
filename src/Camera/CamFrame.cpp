@@ -45,7 +45,9 @@ void CamFrame::getGray(CamFrame* pResult)
 {
 	if(!pResult)return;
 
-	cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_BGR2GRAY);
+	cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
+
+//	m_cudaStream.waitForCompletion();
 }
 
 void CamFrame::getHSV(CamFrame* pResult)

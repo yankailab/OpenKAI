@@ -142,7 +142,6 @@ void showScreen(void)
 	if (g_pSegNet->m_segment.empty())return;
 
 	g_pMat->updateFrame(pFrame);
-//	g_pMat->getResized(3960,1080,g_pMat2);
 	g_pMat->getCurrentFrame()->download(imMat);
 
 	g_pMat->updateFrame(&g_pSegNet->m_segment);
@@ -160,7 +159,7 @@ void showScreen(void)
 	}
 
 	double alpha = 1.0;
-	double beta = 0.5;
+	double beta = 1.0;
 	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
 
 	g_pShow->updateFrame(&imMat3);

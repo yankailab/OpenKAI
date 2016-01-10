@@ -62,6 +62,10 @@ private:
 	void WrapInputLayer(std::vector<cv::Mat>* input_channels);
 	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
 
+	void segmentGPU(void);
+	void WrapInputLayerGPU(std::vector<cv::cuda::GpuMat>* input_channels);
+	void PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels);
+
 	void update(void);
 	static void* getUpdateThread(void* This) {
 		((_SegNet*) This)->update();
@@ -74,8 +78,11 @@ private:
 	int m_NumChannels;
 	Mat m_labelColor;
 
+	Ptr<LookUpTable>	m_pGpuLUT;
+
 public:
 	CamFrame* m_pFrame;
+	CamFrame* m_pSegment;
 	Mat m_frame;
 	Mat m_segment;
 

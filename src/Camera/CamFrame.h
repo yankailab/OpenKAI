@@ -51,6 +51,9 @@ private:
 	GpuMat  m_pFrame[2];
 	GpuMat  m_GMat;
 
+	cuda::Stream		m_cudaStream;
+
+
 };
 
 }/*namespace kai*/

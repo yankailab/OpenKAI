@@ -49,7 +49,7 @@ public:
 //	CamFrame*			m_pBGRAL;
 
 	_ObjectDetector*	m_pOD;
-	_CascadeDetector*		m_pFD;
+	_CascadeDetector*	m_pFD;
 	_DenseFlow*			m_pDenseFlow;
 	_SegNet* 			m_pSegNet;
 

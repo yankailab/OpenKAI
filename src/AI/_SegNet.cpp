@@ -41,12 +41,14 @@ bool _SegNet::init(string name, JSON* pJson)
 	m_NumChannels = input_layer->channels();
 	m_InputSize = cv::Size(input_layer->width(), input_layer->height());
 
-	Blob<float>* output_layer = net_->output_blobs()[0];
+//	Blob<float>* output_layer = net_->output_blobs()[0];
 
 	m_segment = Mat(m_InputSize.height, m_InputSize.width, CV_8UC3);
 	m_pFrame = new CamFrame();
+	m_pSegment = new CamFrame();
 
 	m_labelColor = imread(labelFile, 1);
+	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
 
 	return true;
 }
@@ -73,7 +75,7 @@ void _SegNet::update(void)
 	{
 		this->updateTime();
 
-		segment();
+		segmentGPU();
 
 		if(m_tSleep > 0)
 		{
@@ -102,10 +104,10 @@ void _SegNet::segment(void)
 
 	Blob<float>* output_layer = net_->output_blobs()[0];//net_->blob_by_name("argmax").get();
 	const float* begin = output_layer->cpu_data();
-	const float* end = begin + output_layer->channels() * m_InputSize.area() * 4;
-	vector<float> pOutput = std::vector<float>(begin, end);
+//	const float* end = begin + output_layer->channels() * m_InputSize.area() * 4;
+//	vector<float> pOutput = std::vector<float>(begin, end);
 
-	Mat segIdx = Mat(m_InputSize.height, m_InputSize.width, CV_32FC1, pOutput.data());
+	Mat segIdx = Mat(m_InputSize.height, m_InputSize.width, CV_32FC1, (void*)begin);// pOutput.data());
 
 	Mat uimg,uimg3;
 	segIdx.convertTo(uimg, CV_8UC1);
@@ -185,5 +187,88 @@ void _SegNet::Preprocess(const cv::Mat& img,
 }
 
 
+
+
+
+void _SegNet::segmentGPU(void)
+{
+	if(m_pFrame->getCurrentFrame()->empty())return;
+
+	Blob<float>* input_layer = net_->input_blobs()[0];
+	input_layer->Reshape(1, m_NumChannels, m_InputSize.height, m_InputSize.width);
+
+	net_->Reshape();
+
+	std::vector<GpuMat> input_channels;
+	WrapInputLayerGPU(&input_channels);
+	PreprocessGPU(&input_channels);
+
+	net_->ForwardPrefilled();
+
+	Blob<float>* output_layer = net_->output_blobs()[0];//net_->blob_by_name("argmax").get();
+	GpuMat segIdx = GpuMat(m_InputSize.height, m_InputSize.width, CV_32FC1, (void*)output_layer->gpu_data());
+	GpuMat uimg,uimg3;
+	segIdx.convertTo(uimg, CV_8UC1);
+	cv::cuda::cvtColor(uimg, uimg3, CV_GRAY2BGR);
+	m_pGpuLUT->transform(uimg3,*m_pSegment->getCurrentFrame());
+
+	m_pSegment->getCurrentFrame()->download(m_segment);
+}
+
+
+
+/* Wrap the input layer of the network in separate cv::Mat objects
+ * (one per channel). This way we save one memcpy operation and we
+ * don't need to rely on cudaMemcpy2D. The last preprocessing
+ * operation will write the separate channels directly to the input
+ * layer. */
+void _SegNet::WrapInputLayerGPU(std::vector<cv::cuda::GpuMat>* input_channels)
+{
+	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	float* input_data = input_layer->mutable_gpu_data();
+	for (int i = 0; i < input_layer->channels(); ++i)
+	{
+		cv::cuda::GpuMat channel(m_InputSize.height, m_InputSize.width, CV_32FC1, input_data);
+		input_channels->push_back(channel);
+		input_data += m_InputSize.width * m_InputSize.height;
+	}
+}
+
+void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
+{
+	/* Convert the input image to the input image format of the network. */
+	cv::cuda::GpuMat sample;
+	GpuMat* pGMat = m_pFrame->getCurrentFrame();
+
+	if (pGMat->channels() == 3 && m_NumChannels == 1)
+		cv::cuda::cvtColor(*pGMat, sample, CV_BGR2GRAY);
+	else if (pGMat->channels() == 4 && m_NumChannels == 1)
+		cv::cuda::cvtColor(*pGMat, sample, CV_BGRA2GRAY);
+	else if (pGMat->channels() == 4 && m_NumChannels == 3)
+		cv::cuda::cvtColor(*pGMat, sample, CV_BGRA2BGR);
+	else if (pGMat->channels() == 1 && m_NumChannels == 3)
+		cv::cuda::cvtColor(*pGMat, sample, CV_GRAY2BGR);
+	else
+		sample = *pGMat;
+
+	cv::cuda::GpuMat sample_resized;
+	if (sample.size() != m_InputSize)
+		cv::cuda::resize(sample, sample_resized, m_InputSize);
+	else
+		sample_resized = sample;
+
+	cv::cuda::GpuMat sample_float;
+	if (m_NumChannels == 3)
+		sample_resized.convertTo(sample_float, CV_32FC3);
+	else
+		sample_resized.convertTo(sample_float, CV_32FC1);
+
+	/* This operation will write the separate BGR planes directly to the
+	 * input layer of the network because it is wrapped by the cv::Mat
+	 * objects in input_channels. */
+	cv::cuda::split(sample_float, *input_channels);
+
+}
 
 }
