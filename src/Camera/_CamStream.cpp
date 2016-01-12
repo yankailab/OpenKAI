@@ -114,15 +114,17 @@ void _CamStream::update(void)
 		//If the copyTo is called by other thread After switch changes and Before the readFrame complete
 		//the previous frame might be used thus causes fluctuation.
 		//We use frameID = the time the frame or Mat is created to avoid such case.
-		m_pFrameL->switchFrame();
-		m_pCamL->readFrame(m_pFrameL);
+//		m_pFrameL->switchFrame();
+		m_pFrameL->updateFrameSwitch(m_pCamL->readFrame());
 
 		//Image processing
 		if(m_bStereoCam)
 		{
-			m_pFrameR->switchFrame();
-			m_pCamR->readFrame(m_pFrameR);
+//			m_pFrameR->switchFrame();
+//			m_pCamR->readFrame(m_pFrameR);
+			m_pFrameR->updateFrameSwitch(m_pCamR->readFrame());
 
+			//TODO
 			m_pGrayL->switchFrame();
 			m_pFrameL->getGray(m_pGrayL);
 			m_pGrayR->switchFrame();

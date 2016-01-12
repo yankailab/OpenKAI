@@ -11,6 +11,8 @@ namespace kai
 
 _SegNet::_SegNet()
 {
+	_ThreadBase();
+
 	m_NumChannels = 0;
 }
 
@@ -44,7 +46,7 @@ bool _SegNet::init(string name, JSON* pJson)
 //	Blob<float>* output_layer = net_->output_blobs()[0];
 
 	m_segment = Mat(m_InputSize.height, m_InputSize.width, CV_8UC3);
-	m_pFrame = new CamFrame();
+	m_pFrame = NULL;//new CamFrame();
 	m_pSegment = new CamFrame();
 
 	m_labelColor = imread(labelFile, 1);
@@ -87,7 +89,6 @@ void _SegNet::update(void)
 
 void _SegNet::segment(void)
 {
-	int i;
 
 	if(m_frame.empty())return;
 
@@ -120,9 +121,15 @@ void _SegNet::updateFrame(CamFrame* pFrame)
 {
 	if(pFrame==NULL)return;
 	if(pFrame->getCurrentFrame()->empty())return;
-	if(m_pFrame->isNewerThan(pFrame))return;
 
-	m_pFrame->updateFrame(pFrame);
+	if(m_pFrame)
+	{
+		if(m_pFrame->isNewerThan(pFrame))return;
+	}
+
+	m_pFrame = pFrame;
+
+//	m_pFrame->updateFrame(pFrame);
 //	m_pFrame->getCurrentFrame()->download(m_frame);
 
 	this->wakeupThread();
@@ -192,6 +199,7 @@ void _SegNet::Preprocess(const cv::Mat& img,
 
 void _SegNet::segmentGPU(void)
 {
+	if(m_pFrame==NULL)return;
 	if(m_pFrame->getCurrentFrame()->empty())return;
 
 	Blob<float>* input_layer = net_->input_blobs()[0];

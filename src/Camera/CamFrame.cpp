@@ -79,6 +79,38 @@ void CamFrame::get8UC3(CamFrame* pResult)
 	}
 }
 
+GpuMat* CamFrame::getCurrentFrame(void)
+{
+	return m_pNext;
+}
+
+GpuMat* CamFrame::getPreviousFrame(void)
+{
+	return m_pPrev;
+}
+
+uint64_t CamFrame::getFrameID(void)
+{
+	return m_frameID;
+}
+
+bool CamFrame::empty(void)
+{
+	return m_pNext->empty();
+}
+
+bool CamFrame::isNewerThan(CamFrame* pFrame)
+{
+	if (pFrame == NULL)return false;
+	if(pFrame->getFrameID() < m_frameID)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+
 void CamFrame::switchFrame(void)
 {
 	//switch the current frame and old frame
@@ -112,35 +144,64 @@ void CamFrame::updateFrame(Mat* pFrame)
 	m_frameID = get_time_usec();
 }
 
-GpuMat* CamFrame::getCurrentFrame(void)
+
+void CamFrame::updateFrameSwitch(CamFrame* pFrame)
 {
-	return m_pNext;
+	if (pFrame == NULL)return;
+
+	//Prepare the destination
+	GpuMat* pDest = m_pPrev;
+
+	//Pointer both frames to the one not being transfered temporarily
+	m_pPrev = m_pNext;
+
+	pFrame->getCurrentFrame()->copyTo(*pDest);
+
+	//Update the pointer to the latest frame
+	m_iFrame = 1 - m_iFrame;
+	m_pNext = &m_pFrame[m_iFrame];
+
+	m_frameID = get_time_usec();
 }
 
-GpuMat* CamFrame::getPreviousFrame(void)
+
+void CamFrame::updateFrameSwitch(GpuMat* pGpuFrame)
 {
-	return m_pPrev;
+	if (pGpuFrame == NULL)return;
+
+	//Prepare the destination
+	GpuMat* pDest = m_pPrev;
+
+	//Pointer both frames to the one not being transfered temporarily
+	m_pPrev = m_pNext;
+
+	pGpuFrame->copyTo(*pDest);
+
+	//Update the pointer to the latest frame
+	m_iFrame = 1 - m_iFrame;
+	m_pNext = &m_pFrame[m_iFrame];
+
+	m_frameID = get_time_usec();
 }
 
-uint64_t CamFrame::getFrameID(void)
+void CamFrame::updateFrameSwitch(Mat* pFrame)
 {
-	return m_frameID;
-}
+	if (pFrame == NULL)return;
 
-bool CamFrame::empty(void)
-{
-	return m_pNext->empty();
-}
+	//Prepare the destination
+	GpuMat* pDest = m_pPrev;
 
-bool CamFrame::isNewerThan(CamFrame* pFrame)
-{
-	if (pFrame == NULL)return false;
-	if(pFrame->getFrameID() < m_frameID)
-	{
-		return true;
-	}
+	//Pointer both frames to the one not being transfered temporarily
+	m_pPrev = m_pNext;
 
-	return false;
+	pDest->upload(*pFrame);
+
+	//Update the pointer to the latest frame
+	m_iFrame = 1 - m_iFrame;
+	m_pNext = &m_pFrame[m_iFrame];
+
+	m_frameID = get_time_usec();
+
 }
 
 

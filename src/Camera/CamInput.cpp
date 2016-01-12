@@ -101,7 +101,7 @@ bool CamInput::openCamera(void)
 	return true;
 }
 
-void CamInput::readFrame(CamFrame* pFrame)
+GpuMat* CamInput::readFrame(void)
 {
 	GpuMat* pSrc;
 	GpuMat* pDest;
@@ -125,8 +125,7 @@ void CamInput::readFrame(CamFrame* pFrame)
         SWAP(pSrc,pDest,pTmp);
 	}
 
-	pFrame->updateFrame(pSrc);
-
+	return pSrc;
 }
 
 void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)

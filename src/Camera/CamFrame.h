@@ -23,10 +23,14 @@ public:
 	CamFrame();
 	virtual ~CamFrame();
 
-	void switchFrame(void);
 	void updateFrame(GpuMat* pGpuFrame);
 	void updateFrame(Mat* pFrame);
 	void updateFrame(CamFrame* pFrame);
+
+	void switchFrame(void);
+	void updateFrameSwitch(GpuMat* pGpuFrame);
+	void updateFrameSwitch(Mat* pFrame);
+	void updateFrameSwitch(CamFrame* pFrame);
 
 	void getResized(int width, int height, CamFrame* pResult);
 	void getGray(CamFrame* pResult);
