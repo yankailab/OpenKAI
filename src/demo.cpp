@@ -34,19 +34,20 @@ int main(int argc, char* argv[])
 	//Temporal
 	g_pOD->m_bOneImg = 1;
 
+	//Init Camera
+	g_pCamFront = new _CamStream();
+	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
+	g_pCamFront->m_bGray = true;
+
 	//Init Fast Detector
 	g_pFD = new _CascadeDetector();
 	g_pFD->init("DRONE", &g_Json);
+	g_pFD->m_pGray = g_pCamFront->m_pGrayL;
 
 	//Init SegNet
 	g_pSegNet = new _SegNet();
 	g_pSegNet->init("DEFAULT",&g_Json);
-
-	//Init Camera
-	g_pCamFront = new _CamStream();
-	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
-	g_pCamFront->addOriginalUser(&g_pSegNet->m_pFrame);
-	g_pCamFront->addGrayUser(&g_pFD->m_pGray);
+	g_pSegNet->m_pFrame = g_pCamFront->m_pFrameL;
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();

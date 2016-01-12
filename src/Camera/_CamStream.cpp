@@ -28,23 +28,13 @@ _CamStream::_CamStream()
 
 	m_pSparseFlow = new CamSparseFlow();
 	m_pStereo = new CamStereo();
-
 	m_bStereoCam = false;
-//	m_bSparseFlow = false;
-//	m_bHSV = false;
-//	m_bGray = false;
 
 	m_bThreadON = false;
 	m_threadID = NULL;
 
-//	m_pDenseFlow = NULL;
-//	m_pOD = NULL;
-//	m_pFD = NULL;
-//	m_pSegNet = NULL;
-
-	m_originalUser.m_numUser = 0;
-	m_grayUser.m_numUser = 0;
-	m_HSVUser.m_numUser = 0;
+	m_bGray = false;
+	m_bHSV = false;
 
 }
 
@@ -122,80 +112,17 @@ void _CamStream::update(void)
 //		m_pFrameL->switchFrame();
 		m_pFrameL->updateFrameSwitch(m_pCamL->readFrame());
 
-		for(i=0;i<m_originalUser.m_numUser;i++)
-		{
-			if(!m_originalUser.m_pFrame[i])continue;
-			*m_originalUser.m_pFrame[i] = m_pFrameL;
-		}
-
-		if(m_grayUser.m_numUser > 0)
+		if(m_bGray)
 		{
 			m_pGrayL->switchFrame();
 			m_pGrayL->getGrayOf(*m_pFrameProcess);
-
-			for(i=0;i<m_grayUser.m_numUser;i++)
-			{
-				if(!m_grayUser.m_pFrame[i])continue;
-				*m_grayUser.m_pFrame[i] = m_pGrayL;
-			}
 		}
 
-		if(m_HSVUser.m_numUser > 0)
+		if(m_bHSV)
 		{
 			m_pHSV->switchFrame();
-			m_pHSV->getGrayOf(*m_pFrameProcess);
-
-			for(i=0;i<m_HSVUser.m_numUser;i++)
-			{
-				if(!m_HSVUser.m_pFrame[i])continue;
-				*m_HSVUser.m_pFrame[i] = m_pHSV;
-			}
+			m_pHSV->getHSVOf(*m_pFrameProcess);
 		}
-
-		//Image processing
-//		if(m_bStereoCam)
-//		{
-////			m_pFrameR->switchFrame();
-////			m_pCamR->readFrame(m_pFrameR);
-//			m_pFrameR->updateFrameSwitch(m_pCamR->readFrame());
-//
-//			//TODO
-//			m_pGrayL->switchFrame();
-//			m_pGrayL->getGrayOf(m_pFrameL);
-//			m_pGrayR->switchFrame();
-//			m_pGrayR->getGrayOf(m_pFrameR);
-//
-//			m_pStereo->detect(m_pGrayL,m_pGrayR,m_pDepth);
-//		}
-
-//		m_pBGRAL->switchFrame();
-//		(*m_pFrameProcess)->getBGRA(m_pBGRAL);
-
-		//Notification to other threads
-//		if(m_pDenseFlow)
-//		{
-//			m_pDenseFlow->updateFrame(m_pGrayL);
-//		}
-//
-//		if(m_pOD)
-//		{
-//			m_pOD->updateFrame(m_pFrameL, m_pGrayL);
-//		}
-//
-//		if(m_pFD)
-//		{
-//			m_pFD->updateFrame(m_pFrameL, m_pGrayL);
-//		}
-//
-//		if(m_pSegNet)
-//		{
-//			m_pSegNet->updateFrame(m_pFrameL);
-//		}
-//
-//		if(m_bSparseFlow)
-//		{
-//			m_pSparseFlow->detect(m_pGrayL);
-//		}
 
 		if(m_tSleep>0)
 		{
@@ -205,37 +132,6 @@ void _CamStream::update(void)
 	}
 
 }
-
-bool _CamStream::addOriginalUser(CamFrame** ppFrame)
-{
-	if(ppFrame==NULL)return false;
-	if(m_originalUser.m_numUser >= FRAME_USER_NUM)return false;
-
-	m_originalUser.m_pFrame[m_originalUser.m_numUser] = ppFrame;
-	m_originalUser.m_numUser++;
-	return true;
-}
-
-bool _CamStream::addGrayUser(CamFrame** ppFrame)
-{
-	if(ppFrame==NULL)return false;
-	if(m_grayUser.m_numUser >= FRAME_USER_NUM)return false;
-
-	m_grayUser.m_pFrame[m_grayUser.m_numUser] = ppFrame;
-	m_grayUser.m_numUser++;
-	return true;
-}
-
-bool _CamStream::addHSVUser(CamFrame** ppFrame)
-{
-	if(ppFrame==NULL)return false;
-	if(m_HSVUser.m_numUser >= FRAME_USER_NUM)return false;
-
-	m_HSVUser.m_pFrame[m_HSVUser.m_numUser] = ppFrame;
-	m_HSVUser.m_numUser++;
-	return true;
-}
-
 
 bool _CamStream::complete(void)
 {

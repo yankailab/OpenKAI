@@ -27,12 +27,6 @@
 namespace kai
 {
 
-struct FRAME_USER
-{
-	int m_numUser;
-	CamFrame** m_pFrame[FRAME_USER_NUM];
-};
-
 class _CamStream: public _ThreadBase
 {
 public:
@@ -60,22 +54,13 @@ public:
 	CamFrame*			m_pDepth;
 //	CamFrame*			m_pBGRAL;
 
-	FRAME_USER			m_originalUser;
-	FRAME_USER			m_grayUser;
-	FRAME_USER			m_HSVUser;
-
-//	_ObjectDetector*	m_pOD;
-//	_CascadeDetector*	m_pFD;
-//	_DenseFlow*			m_pDenseFlow;
-//	_SegNet* 			m_pSegNet;
-
 	CamSparseFlow*		m_pSparseFlow;
 	CamStereo*			m_pStereo;
 
 	bool		m_bStereoCam;
 //	bool		m_bSparseFlow;
-//	bool		m_bHSV;
-//	bool		m_bGray;
+	bool		m_bHSV;
+	bool		m_bGray;
 
 private:
 	void update(void);
