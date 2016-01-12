@@ -54,7 +54,7 @@ public:
 	~_SegNet();
 
 	bool init(string name, JSON* pJson);
-	void updateFrame(CamFrame* pFrame);
+//	void updateFrame(CamFrame* pFrame);
 	bool start(void);
 
 private:

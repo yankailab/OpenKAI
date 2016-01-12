@@ -32,11 +32,11 @@ public:
 	void updateFrameSwitch(Mat* pFrame);
 	void updateFrameSwitch(CamFrame* pFrame);
 
-	void getResized(int width, int height, CamFrame* pResult);
-	void getGray(CamFrame* pResult);
-	void getHSV(CamFrame* pResult);
-	void getBGRA(CamFrame* pResult);
-	void get8UC3(CamFrame* pResult);
+	void getResizedOf(CamFrame* pFrom, int width, int height);
+	void getGrayOf(CamFrame* pFrom);
+	void getHSVOf(CamFrame* pFrom);
+	void getBGRAOf(CamFrame* pFrom);
+	void get8UC3Of(CamFrame* pFrom);
 	GpuMat* getCurrentFrame(void);
 	GpuMat* getPreviousFrame(void);
 

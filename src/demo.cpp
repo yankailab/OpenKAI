@@ -45,12 +45,8 @@ int main(int argc, char* argv[])
 	//Init Camera
 	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
-	g_pCamFront->m_bGray = true;
-	g_pCamFront->m_bHSV = false;//true;
-//	g_pCamFront->m_pDenseFlow = g_pDF;
-//	g_pCamFront->m_pOD = g_pOD;
-	g_pCamFront->m_pFD = g_pFD;
-	g_pCamFront->m_pSegNet = g_pSegNet;
+	g_pCamFront->addOriginalUser(&g_pSegNet->m_pFrame);
+	g_pCamFront->addGrayUser(&g_pFD->m_pGray);
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();
@@ -145,7 +141,7 @@ void showScreen(void)
 	g_pMat->getCurrentFrame()->download(imMat);
 
 	g_pMat->updateFrame(&g_pSegNet->m_segment);
-	g_pMat->getResized(imMat.cols,imMat.rows,g_pMat2);
+	g_pMat2->getResizedOf(g_pMat, imMat.cols,imMat.rows);
 	g_pMat2->getCurrentFrame()->download(imMat2);
 
 
@@ -300,10 +296,10 @@ void handleKey(int key)
 		g_pUIMonitor->removeAll();
 		g_pUIMonitor->addFrame(g_pOD->m_pContourFrame, 0,0,1980,1080);
 		break;
-	case 'e':
-		g_pUIMonitor->removeAll();
-		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
-		break;
+//	case 'e':
+//		g_pUIMonitor->removeAll();
+//		g_pUIMonitor->addFrame(g_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
+//		break;
 	case 'r':
 		g_pUIMonitor->removeAll();
 		g_pUIMonitor->addFrame(g_pOD->m_pSaliencyFrame, 0, 0, 1980, 1080);

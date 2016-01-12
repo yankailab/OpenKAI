@@ -33,7 +33,7 @@ public:
 	bool init(string name, JSON* pJson);
 	bool start(void);
 
-	void updateFrame(CamFrame* pFrame, CamFrame* pGray);
+//	void updateFrame(CamFrame* pFrame, CamFrame* pGray);
 
 	int  getObjList(CASCADE_OBJECT** ppObj);
 

@@ -24,58 +24,60 @@ CamFrame::~CamFrame()
 {
 }
 
-void CamFrame::getResized(int width, int height, CamFrame* pResult)
+void CamFrame::getResizedOf(CamFrame* pFrom, int width, int height)
 {
-	if(!pResult)return;
+	if(!pFrom)return;
+	if(pFrom->getCurrentFrame()->empty())return;
+
 	cv::Size newSize = cv::Size(width,height);
 
-	if(newSize == m_pNext->size())
+	if(newSize == pFrom->getCurrentFrame()->size())
 	{
-		pResult->updateFrame(m_pNext);
+		this->updateFrame(pFrom);
 	}
 	else
 	{
-		cuda::resize(*m_pNext,m_GMat,newSize);
-		pResult->updateFrame(&m_GMat);
+		cuda::resize(*pFrom->getCurrentFrame(), m_GMat, newSize);
+		this->updateFrame(&m_GMat);
 	}
 
 }
 
-void CamFrame::getGray(CamFrame* pResult)
+void CamFrame::getGrayOf(CamFrame* pFrom)
 {
-	if(!pResult)return;
+	if(!pFrom)return;
 
-	cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
+	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
 
 //	m_cudaStream.waitForCompletion();
 }
 
-void CamFrame::getHSV(CamFrame* pResult)
+void CamFrame::getHSVOf(CamFrame* pFrom)
 {
-	if(!pResult)return;
+	if(!pFrom)return;
 
 	//RGB or BGR depends on device
-	cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_BGR2HSV);
+	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2HSV);
 }
 
-void CamFrame::getBGRA(CamFrame* pResult)
+void CamFrame::getBGRAOf(CamFrame* pFrom)
 {
-	if(!pResult)return;
+	if(!pFrom)return;
 
-	cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_BGR2BGRA);
+	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2BGRA);
 }
 
-void CamFrame::get8UC3(CamFrame* pResult)
+void CamFrame::get8UC3Of(CamFrame* pFrom)
 {
-	if(!pResult)return;
+	if(!pFrom)return;
 
-	if(m_pNext->type()==CV_8UC3)
+	if(pFrom->getCurrentFrame()->type()==CV_8UC3)
 	{
-		m_pNext->copyTo(*pResult->m_pNext);
+		pFrom->getCurrentFrame()->copyTo(*m_pNext);
 	}
 	else
 	{
-		cuda::cvtColor(*m_pNext, *pResult->m_pNext, CV_GRAY2BGR);
+		cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_GRAY2BGR);
 	}
 }
 
@@ -109,7 +111,6 @@ bool CamFrame::isNewerThan(CamFrame* pFrame)
 
 	return false;
 }
-
 
 void CamFrame::switchFrame(void)
 {

@@ -89,7 +89,6 @@ void _SegNet::update(void)
 
 void _SegNet::segment(void)
 {
-
 	if(m_frame.empty())return;
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
@@ -117,23 +116,23 @@ void _SegNet::segment(void)
 
 }
 
-void _SegNet::updateFrame(CamFrame* pFrame)
-{
-	if(pFrame==NULL)return;
-	if(pFrame->getCurrentFrame()->empty())return;
-
-	if(m_pFrame)
-	{
-		if(m_pFrame->isNewerThan(pFrame))return;
-	}
-
-	m_pFrame = pFrame;
-
-//	m_pFrame->updateFrame(pFrame);
-//	m_pFrame->getCurrentFrame()->download(m_frame);
-
-	this->wakeupThread();
-}
+//void _SegNet::updateFrame(CamFrame* pFrame)
+//{
+//	if(pFrame==NULL)return;
+//	if(pFrame->getCurrentFrame()->empty())return;
+//
+//	if(m_pFrame)
+//	{
+//		if(m_pFrame->isNewerThan(pFrame))return;
+//	}
+//
+//	m_pFrame = pFrame;
+//
+////	m_pFrame->updateFrame(pFrame);
+////	m_pFrame->getCurrentFrame()->download(m_frame);
+//
+//	this->wakeupThread();
+//}
 
 
 /* Wrap the input layer of the network in separate cv::Mat objects

@@ -80,7 +80,8 @@ void _DenseFlow::updateFrame(CamFrame* pFrame)
 	if(pFrame->getCurrentFrame()->empty())return;
 
 	m_pFlowFrame->switchFrame();
-	pFrame->getResized(640,480, m_pFlowFrame);
+//	pFrame->getResized(640,480, m_pFlowFrame);
+	m_pFlowFrame->getResizedOf(pFrame,640,480);
 
 	this->wakeupThread();
 }
