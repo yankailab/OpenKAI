@@ -21,6 +21,7 @@
 #include "Detector/_ObjectDetector.h"
 #include "Interface/_MavlinkInterface.h"
 #include "UI/UIMonitor.h"
+#include "Interface/_VehicleInterface.h"
 
 
 using namespace kai;
@@ -36,6 +37,7 @@ _ClassifierManager* g_pClassMgr;
 _DenseFlow* g_pDF;
 _MavlinkInterface* g_pMavlink;
 _SegNet* g_pSegNet;
+_VehicleInterface* g_pVlink;
 
 CamFrame* g_pShow;
 CamFrame* g_pMat;

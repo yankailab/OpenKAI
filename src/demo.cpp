@@ -6,6 +6,31 @@ int main(int argc, char* argv[])
 	google::InitGoogleLogging(argv[0]);
 	printEnvironment();
 
+
+
+	//Connect to Vehicle
+//	int ppm[8];
+//	ppm[0]=1250;
+//	ppm[1]=1250;
+//	ppm[2]=1250;
+//	ppm[3]=1250;
+//	ppm[4]=1250;
+//	ppm[5]=1250;
+//	ppm[6]=1250;
+//	ppm[7]=1250;
+//	g_pVlink = new _VehicleInterface();
+//	g_pVlink->setSerialName("/dev/cu.usbmodem1");
+//	g_pVlink->open();
+//	g_pVlink->rc_overide(8,ppm);
+//	g_pVlink->start();
+//
+//	while(1);
+//
+//	return 1;
+
+
+
+
 	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	printf(argv[1]);
