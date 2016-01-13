@@ -84,14 +84,12 @@ int main(int argc, char* argv[])
 
 	while (g_bRun)
 	{
-		Mavlink_Messages mMsg;
-		mMsg = g_pMavlink->current_messages;
-		g_pCamFront->m_pCamL->m_bGimbal = true;
-		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
+//		Mavlink_Messages mMsg;
+//		mMsg = g_pMavlink->current_messages;
+//		g_pCamFront->m_pCamL->m_bGimbal = true;
+//		g_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
 		showScreen();
-
-		g_pUIMonitor->show();
 
 		//Handle key input
 		g_key = waitKey(1);
@@ -138,13 +136,13 @@ void showScreen(void)
 	if (g_pShow->isNewerThan(pFrame))return;
 	if (g_pSegNet->m_segment.empty())return;
 
-	g_pMat->updateFrame(pFrame);
-	g_pMat->getCurrentFrame()->download(imMat);
+//	g_pMat->updateFrame(pFrame);
+//	g_pMat->getCurrentFrame()->download(imMat);
+	pFrame->getCurrentFrame()->download(imMat);
 
 	g_pMat->updateFrame(&g_pSegNet->m_segment);
 	g_pMat2->getResizedOf(g_pMat, imMat.cols,imMat.rows);
 	g_pMat2->getCurrentFrame()->download(imMat2);
-
 
 	CASCADE_OBJECT* pDrone;
 	for (i = 0; i < g_pFD->m_numObj; i++)
@@ -155,11 +153,10 @@ void showScreen(void)
 		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
 	}
 
-	double alpha = 1.0;
-	double beta = 1.0;
-	cv::addWeighted( imMat, alpha, imMat2, beta, 0.0, imMat3);
+	cv::addWeighted(imMat, 1.0, imMat2, 1.0, 0.0, imMat3);
 
 	g_pShow->updateFrame(&imMat3);
+	g_pUIMonitor->show();
 
 	return;
 

@@ -29,8 +29,9 @@ inline uint64_t get_time_usec()
 {
 	static struct timeval _time_stamp;
 	gettimeofday(&_time_stamp, NULL);
-//	printf("%ld\n",(uint64_t)_time_stamp.tv_sec * (uint64_t)1000000 + _time_stamp.tv_usec);
-	return (uint64_t)_time_stamp.tv_sec * (uint64_t)1000000 + _time_stamp.tv_usec;
+	uint64_t time = (uint64_t)_time_stamp.tv_sec * (uint64_t)1000000 + _time_stamp.tv_usec;
+//	printf("%ld\n", time);
+	return time;
 }
 
 /*
