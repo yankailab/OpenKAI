@@ -7,12 +7,13 @@
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
 #include "../Utility/util.h"
+#include "../Camera/_CamStream.h"
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_CASCADEDETECTOR 100
+#define TRD_INTERVAL_CASCADEDETECTOR 0
 
 namespace kai
 {
@@ -58,6 +59,8 @@ public:
 	int					m_posDiff;
 
 	Mat			m_Mat;
+
+	_CamStream*			m_pCamStream;
 
 };
 }

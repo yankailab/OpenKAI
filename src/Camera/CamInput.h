@@ -50,7 +50,8 @@ public:
 	double m_rotPrev;
 	double m_isoScale;
 
-private:
+//private:
+public:
 	GpuMat m_Gframe;
 	GpuMat m_Gframe2;
 

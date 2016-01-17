@@ -25,6 +25,8 @@ _CascadeDetector::_CascadeDetector()
 	m_objLifeTime = 100000;
 	m_posDiff = 0;
 
+	m_pCamStream = NULL;
+
 }
 
 _CascadeDetector::~_CascadeDetector()
@@ -157,21 +159,6 @@ void _CascadeDetector::detect(void)
 	}
 
 }
-
-//void _CascadeDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
-//{
-//	if(pFrame==NULL)return;
-//	if(pFrame->empty())return;
-//	if(pGray==NULL)return;
-//	if(pGray->empty())return;
-//
-//	//TODO:frameID isNewThan compare?
-//
-////	pFrame->getBGRA(m_pBGRA);
-//	m_pGray->updateFrame(pGray);
-//
-//	this->wakeupThread();
-//}
 
 inline int _CascadeDetector::findVacancy(int iStart)
 {

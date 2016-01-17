@@ -100,17 +100,22 @@ bool _CamStream::start(void)
 void _CamStream::update(void)
 {
 	int i;
+	GpuMat* pNewInput;
 	m_tSleep = TRD_INTERVAL_CAMSTREAM;
 
 	while (m_bThreadON)
 	{
 		this->updateTime();
 
-		//If the copyTo is called by other thread After switch changes and Before the readFrame complete
-		//the previous frame might be used thus causes fluctuation.
-		//We use frameID = the time the frame or Mat is created to avoid such case.
-//		m_pFrameL->switchFrame();
-		m_pFrameL->updateFrameSwitch(m_pCamL->readFrame());
+		pNewInput = m_pCamL->readFrame();
+
+		if(this->mutexTrylock(CAMSTREAM_MUTEX_ORIGINAL))
+		{
+			continue;
+		}
+
+		m_pFrameL->updateFrameSwitch(pNewInput);
+		this->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
 
 		if(m_bGray)
 		{

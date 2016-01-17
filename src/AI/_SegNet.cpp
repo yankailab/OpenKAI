@@ -14,6 +14,7 @@ _SegNet::_SegNet()
 	_ThreadBase();
 
 	m_NumChannels = 0;
+	m_pCamStream = NULL;
 }
 
 _SegNet::~_SegNet()
@@ -248,6 +249,8 @@ void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
 	cv::cuda::GpuMat sample;
 	GpuMat* pGMat = m_pFrame->getCurrentFrame();
 
+	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_ORIGINAL);
+
 	if (pGMat->channels() == 3 && m_NumChannels == 1)
 		cv::cuda::cvtColor(*pGMat, sample, CV_BGR2GRAY);
 	else if (pGMat->channels() == 4 && m_NumChannels == 1)
@@ -270,6 +273,8 @@ void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
 		sample_resized.convertTo(sample_float, CV_32FC3);
 	else
 		sample_resized.convertTo(sample_float, CV_32FC1);
+
+	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
 
 	/* This operation will write the separate BGR planes directly to the
 	 * input layer of the network because it is wrapped by the cv::Mat

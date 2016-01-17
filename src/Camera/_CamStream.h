@@ -12,8 +12,6 @@
 #include "../Base/cvplatform.h"
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_ObjectDetector.h"
-#include "../AI/_SegNet.h"
-#include "../Detector/_CascadeDetector.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
@@ -23,6 +21,10 @@
 #define TRD_INTERVAL_CAMSTREAM 0
 
 #define FRAME_USER_NUM 5
+
+#define CAMSTREAM_MUTEX_ORIGINAL 0
+#define CAMSTREAM_MUTEX_GRAY 1
+#define CAMSTREAM_MUTEX_HSV 2
 
 namespace kai
 {

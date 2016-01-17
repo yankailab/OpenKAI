@@ -29,6 +29,7 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Camera/CamFrame.h"
+#include "../Camera/_CamStream.h"
 
 #define TRD_INTERVAL_SEGNET 0
 
@@ -85,6 +86,8 @@ public:
 	CamFrame* m_pSegment;
 	Mat m_frame;
 	Mat m_segment;
+
+	_CamStream* m_pCamStream;
 
 };
 

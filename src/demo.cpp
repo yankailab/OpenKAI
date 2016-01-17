@@ -6,31 +6,6 @@ int main(int argc, char* argv[])
 	google::InitGoogleLogging(argv[0]);
 	printEnvironment();
 
-
-
-	//Connect to Vehicle
-//	int ppm[8];
-//	ppm[0]=1250;
-//	ppm[1]=1250;
-//	ppm[2]=1250;
-//	ppm[3]=1250;
-//	ppm[4]=1250;
-//	ppm[5]=1250;
-//	ppm[6]=1250;
-//	ppm[7]=1250;
-//	g_pVlink = new _VehicleInterface();
-//	g_pVlink->setSerialName("/dev/cu.usbmodem1");
-//	g_pVlink->open();
-//	g_pVlink->rc_overide(8,ppm);
-//	g_pVlink->start();
-//
-//	while(1);
-//
-//	return 1;
-
-
-
-
 	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	printf(argv[1]);
@@ -68,11 +43,13 @@ int main(int argc, char* argv[])
 	g_pFD = new _CascadeDetector();
 	g_pFD->init("DRONE", &g_Json);
 	g_pFD->m_pGray = g_pCamFront->m_pGrayL;
+	g_pFD->m_pCamStream = g_pCamFront;
 
 	//Init SegNet
 	g_pSegNet = new _SegNet();
 	g_pSegNet->init("DEFAULT",&g_Json);
 	g_pSegNet->m_pFrame = g_pCamFront->m_pFrameL;
+	g_pSegNet->m_pCamStream = g_pCamFront;
 
 	//Init Autopilot
 	g_pAP = new _AutoPilot();
@@ -161,8 +138,6 @@ void showScreen(void)
 	if (g_pShow->isNewerThan(pFrame))return;
 	if (g_pSegNet->m_segment.empty())return;
 
-//	g_pMat->updateFrame(pFrame);
-//	g_pMat->getCurrentFrame()->download(imMat);
 	pFrame->getCurrentFrame()->download(imMat);
 
 	g_pMat->updateFrame(&g_pSegNet->m_segment);
@@ -180,7 +155,13 @@ void showScreen(void)
 
 	cv::addWeighted(imMat, 1.0, imMat2, 1.0, 0.0, imMat3);
 
+	putText(imMat3, "Camera FPS: "+f2str(g_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "SegNet FPS: "+f2str(g_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Cascade FPS: "+f2str(g_pFD->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
 	g_pShow->updateFrame(&imMat3);
+//	imshow("OpenKAI demo",imMat);
+
 	g_pUIMonitor->show();
 
 	return;
