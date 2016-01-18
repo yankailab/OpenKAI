@@ -58,9 +58,12 @@ public:
 	uint64_t			m_objLifeTime;
 	int					m_posDiff;
 
-	Mat			m_Mat;
+	Mat					m_Mat;
+	GpuMat				m_GMat;
 
 	_CamStream*			m_pCamStream;
+	int					m_cudaDeviceID;
+
 
 };
 }

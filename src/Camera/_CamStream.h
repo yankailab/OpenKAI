@@ -64,6 +64,8 @@ public:
 	bool		m_bHSV;
 	bool		m_bGray;
 
+	int			m_cudaDeviceID;
+
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)

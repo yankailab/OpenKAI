@@ -88,6 +88,8 @@ public:
 	Mat m_segment;
 
 	_CamStream* m_pCamStream;
+	int			m_cudaDeviceID;
+
 
 };
 

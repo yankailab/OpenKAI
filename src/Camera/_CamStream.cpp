@@ -35,6 +35,8 @@ _CamStream::_CamStream()
 
 	m_bGray = false;
 	m_bHSV = false;
+	m_cudaDeviceID = 0;
+
 
 }
 
@@ -59,6 +61,7 @@ bool _CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CUDADEVICE_ID", &m_cudaDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_ERROR(m_pCamL->setup(pJson, camName));
 
@@ -102,6 +105,7 @@ void _CamStream::update(void)
 	int i;
 	GpuMat* pNewInput;
 	m_tSleep = TRD_INTERVAL_CAMSTREAM;
+	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
@@ -111,22 +115,32 @@ void _CamStream::update(void)
 
 		if(this->mutexTrylock(CAMSTREAM_MUTEX_ORIGINAL))
 		{
+			m_pFrameL->updateFrameSwitch(pNewInput);
+			this->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
+		}
+		else
+		{
 			continue;
 		}
 
-		m_pFrameL->updateFrameSwitch(pNewInput);
-		this->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
-
 		if(m_bGray)
 		{
-			m_pGrayL->switchFrame();
-			m_pGrayL->getGrayOf(*m_pFrameProcess);
+			if(this->mutexTrylock(CAMSTREAM_MUTEX_GRAY))
+			{
+				m_pGrayL->switchFrame();
+				m_pGrayL->getGrayOf(*m_pFrameProcess);
+				this->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+			}
 		}
 
 		if(m_bHSV)
 		{
-			m_pHSV->switchFrame();
-			m_pHSV->getHSVOf(*m_pFrameProcess);
+			if(this->mutexTrylock(CAMSTREAM_MUTEX_HSV))
+			{
+				m_pHSV->switchFrame();
+				m_pHSV->getHSVOf(*m_pFrameProcess);
+				this->mutexUnlock(CAMSTREAM_MUTEX_HSV);
+			}
 		}
 
 		if(m_tSleep>0)

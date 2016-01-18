@@ -15,6 +15,8 @@ _SegNet::_SegNet()
 
 	m_NumChannels = 0;
 	m_pCamStream = NULL;
+	m_cudaDeviceID = 0;
+
 }
 
 _SegNet::~_SegNet()
@@ -35,6 +37,8 @@ bool _SegNet::init(string name, JSON* pJson)
 	CHECK_FATAL(pJson->getVal("SEGNET_MODEL_FILE_"+name, &modelFile));
 	CHECK_FATAL(pJson->getVal("SEGNET_WEIGHTS_FILE_"+name, &trainedFile));
 	CHECK_FATAL(pJson->getVal("SEGNET_COLOR_FILE_"+name, &labelFile));
+
+	CHECK_FATAL(pJson->getVal("SEGNET_CUDADEVICE_ID_"+name, &m_cudaDeviceID));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(modelFile, TEST));
@@ -73,6 +77,7 @@ bool _SegNet::start(void)
 void _SegNet::update(void)
 {
 	m_tSleep = TRD_INTERVAL_SEGNET;
+	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{

@@ -6,6 +6,8 @@ int main(int argc, char* argv[])
 	google::InitGoogleLogging(argv[0]);
 	printEnvironment();
 
+	setDevice(0);
+
 	//Load config
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	printf(argv[1]);

@@ -26,6 +26,7 @@ _CascadeDetector::_CascadeDetector()
 	m_posDiff = 0;
 
 	m_pCamStream = NULL;
+	m_cudaDeviceID = 0;
 
 }
 
@@ -41,6 +42,7 @@ bool _CascadeDetector::init(string name, JSON* pJson)
 	//TODO:set the upper limit of objects to be detected
 	//m_pCascade->
 
+	CHECK_INFO(pJson->getVal("CASCADE_CUDADEVICE_ID_"+name, &m_cudaDeviceID));
 	CHECK_INFO(pJson->getVal("CASCADE_LIFETIME_"+name, &m_objLifeTime));
 	CHECK_INFO(pJson->getVal("CASCADE_POSDIFF_"+name, &m_posDiff));
 	CHECK_ERROR(pJson->getVal("CASCADE_NUM_"+name, &m_numObj));
@@ -76,6 +78,7 @@ bool _CascadeDetector::start(void)
 void _CascadeDetector::update(void)
 {
 	m_tSleep = TRD_INTERVAL_CASCADEDETECTOR;
+	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
@@ -110,11 +113,14 @@ void _CascadeDetector::detect(void)
 
 	if (m_pCascade)
 	{
+		m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+		m_pGray->getCurrentFrame()->copyTo(m_GMat);
+		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+
 		//	m_pCascade->setFindLargestObject(false);
 		m_pCascade->setScaleFactor(1.2);
 		//	m_pCascade->setMinNeighbors((filterRects || findLargestObject) ? 4 : 0);
-
-		m_pCascade->detectMultiScale(*m_pGray->getCurrentFrame(), cascadeGMat);
+		m_pCascade->detectMultiScale(m_GMat, cascadeGMat);
 		m_pCascade->convert(cascadeGMat, vRect);
 
 		for (i = 0; i < vRect.size(); i++)
