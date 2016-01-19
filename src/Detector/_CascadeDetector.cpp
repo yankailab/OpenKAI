@@ -65,12 +65,12 @@ bool _CascadeDetector::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< "Return code: "<< retCode << " in FastDetector::start().pthread_create()";
+		LOG(ERROR)<< "Return code: "<< retCode << " in CascadeDetector::start().pthread_create()";
 		m_bThreadON = false;
 		return false;
 	}
 
-	LOG(INFO)<< "FastDetector.start()";
+	LOG(INFO)<< "CascadeDetector.start()";
 
 	return true;
 }

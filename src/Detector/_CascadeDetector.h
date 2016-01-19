@@ -13,7 +13,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_CASCADEDETECTOR 0
+#define TRD_INTERVAL_CASCADEDETECTOR 10
 
 namespace kai
 {

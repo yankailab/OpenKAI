@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 		showScreen();
 
 		//Handle key input
-		g_key = waitKey(1);
+		g_key = waitKey(15);
 		handleKey(g_key);
 	}
 
