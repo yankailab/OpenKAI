@@ -21,8 +21,8 @@
 
 "CAM_FRONTR_ID":0,
 
-"SEGNET_MODEL_FILE_DEFAULT":"/home/ubuntu/Downloads/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
-"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/ubuntu/Downloads/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
+"SEGNET_MODEL_FILE_DEFAULT":"/home/ubuntu/Downloads/SegNet-Tutorial/Example_Models/segnet_model_driving_webdemo.prototxt",
+"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/ubuntu/Downloads/SegNet-Tutorial/Example_Models/driving.caffemodel",
 "SEGNET_COLOR_FILE_DEFAULT":"/home/ubuntu/Downloads/SegNet-Tutorial/Scripts/camvid12.png",
 "SEGNET_CUDADEVICE_ID_DEFAULT":0,
 

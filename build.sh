@@ -1,6 +1,6 @@
-INCLUDES="-I/home/ubuntu/Downloads/caffe-segnet/include -I/home/ubuntu/Downloads/caffe-segnet/build/src -I/usr/local/cuda/include -I/usr/local/include"
+INCLUDES="-I/home/ubuntu/Downloads/caffe-segnet/include -I/home/ubuntu/Downloads/caffe-segnet/build/include -I/usr/local/cuda/include -I/usr/local/include"
 OPTIONS="-O3 -w -Wall -c -fmessage-length=0 -MMD -MP"
-LINKERS="-L/usr/local/lib -L/home/ubuntu/Downloads/caffe-segnet/build/lib"
+LINKERS="-L/usr/local/lib -L/home/ubuntu/Downloads/caffe-segnet/build/lib -L/home/ubuntu/Downloads/caffe-segnet/build"
 
 g++ $INCLUDES $OPTIONS -MF"build/ClassifierBase.d" -MT"build/ClassifierBase.d" -o "build/ClassifierBase.o" "src/AI/ClassifierBase.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_ClassifierManager.d" -MT"build/_ClassifierManager.d" -o "build/_ClassifierManager.o" "src/AI/_ClassifierManager.cpp"
