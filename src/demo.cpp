@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 //	g_pOD->start();
 //	g_pDF->start();
 //	g_pAP->start();
-	g_pFD->start();
+//	g_pFD->start();
 	g_pSegNet->start();
 
 	//UI thread
@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
 		showScreen();
 
 		//Handle key input
-		g_key = waitKey(15);
+		g_key = waitKey(30);
 		handleKey(g_key);
 	}
 
