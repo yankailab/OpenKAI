@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 //	g_pOD->start();
 //	g_pDF->start();
 //	g_pAP->start();
-//	g_pFD->start();
+	g_pFD->start();
 	g_pSegNet->start();
 
 	//UI thread

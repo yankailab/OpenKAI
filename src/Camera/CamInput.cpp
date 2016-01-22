@@ -7,11 +7,9 @@
 
 #include "CamInput.h"
 
-namespace kai
-{
+namespace kai {
 
-CamInput::CamInput()
-{
+CamInput::CamInput() {
 	m_width = 0;
 	m_height = 0;
 	m_centerH = 0;
@@ -19,32 +17,30 @@ CamInput::CamInput()
 	m_camDeviceID = 0;
 	m_bCalibration = false;
 	m_bGimbal = false;
+	m_bFisheye = false;
 	m_isoScale = 1.0;
 	m_rotTime = 0;
 	m_rotPrev = 0;
 }
 
-CamInput::~CamInput()
-{
+CamInput::~CamInput() {
 }
 
-bool CamInput::setup(JSON* pJson, string camName)
-{
+bool CamInput::setup(JSON* pJson, string camName) {
 	string calibFile;
 
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_ID", &m_camDeviceID));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_WIDTH", &m_width));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_HEIGHT", &m_height));
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_ISOSCALE", &m_isoScale));
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CALIB", &m_bCalibration));
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_GIMBAL", &m_bGimbal));
+	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ID", &m_camDeviceID));
+	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_WIDTH", &m_width));
+	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_HEIGHT", &m_height));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ISOSCALE", &m_isoScale));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_CALIB", &m_bCalibration));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
 
-	if(pJson->getVal("CAM_"+camName+"_CALIBFILE", &calibFile))
-	{
+	if (pJson->getVal("CAM_" + camName + "_CALIBFILE", &calibFile)) {
 		FileStorage fs(calibFile, FileStorage::READ);
-		if (!fs.isOpened())
-		{
-			LOG(INFO)<<"Camera calibration file not found";
+		if (!fs.isOpened()) {
+			LOG(ERROR)<<"Camera calibration file not found";
 			m_bCalibration = false;
 		}
 		else
@@ -56,38 +52,47 @@ bool CamInput::setup(JSON* pJson, string camName)
 			Mat map1, map2;
 			cv::Size imSize(m_width,m_height);
 
-	        initUndistortRectifyMap(
-	        		m_cameraMat,
-	        		m_distCoeffs,
-				Mat(),
-	            getOptimalNewCameraMatrix(
-	            		m_cameraMat,
-					m_distCoeffs,
-					imSize,
-					1,
-					imSize,
-					0),
-				imSize,
-				CV_32FC1,
-				map1,
-				map2);
+			if(m_bFisheye)
+			{
+				Mat newCamMat;
+				fisheye::estimateNewCameraMatrixForUndistortRectify(m_cameraMat, m_distCoeffs, imSize,
+						Matx33d::eye(), newCamMat, 1);
+				fisheye::initUndistortRectifyMap(m_cameraMat, m_distCoeffs, Matx33d::eye(), newCamMat, imSize,
+						CV_32F/*CV_16SC2*/, map1, map2);
+			}
+			else
+			{
+				initUndistortRectifyMap(
+						m_cameraMat,
+						m_distCoeffs,
+						Mat(),
+						getOptimalNewCameraMatrix(
+								m_cameraMat,
+								m_distCoeffs,
+								imSize,
+								1,
+								imSize,
+								0),
+						imSize,
+						CV_32FC1,
+						map1,
+						map2);
+			}
 
-	        m_Gmap1.upload(map1);
-	        m_Gmap2.upload(map2);
+			m_Gmap1.upload(map1);
+			m_Gmap2.upload(map2);
 
-//			m_bCalibration = true;
+			LOG(INFO)<<"Camera calibration initialized";
+
 		}
 	}
 
 	return true;
 }
 
-
-bool CamInput::openCamera(void)
-{
+bool CamInput::openCamera(void) {
 	m_camera.open(m_camDeviceID);
-	if (!m_camera.isOpened())
-	{
+	if (!m_camera.isOpened()) {
 		LOG(ERROR)<< "Cannot open camera:" << m_camDeviceID;
 		return false;
 	}
@@ -101,43 +106,40 @@ bool CamInput::openCamera(void)
 	return true;
 }
 
-GpuMat* CamInput::readFrame(void)
-{
+GpuMat* CamInput::readFrame(void) {
 	GpuMat* pSrc;
 	GpuMat* pDest;
 	GpuMat* pTmp;
 
 	while (!m_camera.read(m_frame));
+
 	m_Gframe.upload(m_frame);
 
 	pSrc = &m_Gframe;
 	pDest = &m_Gframe2;
 
-	if(m_bCalibration)
-	{
-        cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-        SWAP(pSrc,pDest,pTmp);
+	if (m_bCalibration) {
+		cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+		SWAP(pSrc, pDest, pTmp);
 	}
 
-	if(m_bGimbal)
-	{
+	if (m_bGimbal) {
 		cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
-        SWAP(pSrc,pDest,pTmp);
+		SWAP(pSrc, pDest, pTmp);
 	}
 
 	return pSrc;
 }
 
-void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
-{
-    Point2f center(m_centerH, m_centerV);
-    double deg = -rollRad * 180.0 * OneOvPI;
+void CamInput::setAttitude(double rollRad, double pitchRad,
+		uint64_t timestamp) {
+	Point2f center(m_centerH, m_centerV);
+	double deg = -rollRad * 180.0 * OneOvPI;
 
-    m_rotRoll = getRotationMatrix2D(center, deg, m_isoScale);
+	m_rotRoll = getRotationMatrix2D(center, deg, m_isoScale);
 
-    //TODO: add rot estimation
+	//TODO: add rot estimation
 
 }
-
 
 } /* namespace kai */

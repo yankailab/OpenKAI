@@ -43,6 +43,7 @@ public:
 	GpuMat m_Gmap1;
 	GpuMat m_Gmap2;
 	bool m_bCalibration;
+	bool m_bFisheye;
 
 	bool m_bGimbal;
 	Mat m_rotRoll;
