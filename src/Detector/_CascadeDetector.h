@@ -15,6 +15,9 @@ using namespace std;
 
 #define TRD_INTERVAL_CASCADEDETECTOR 10
 
+#define CASCADE_CPU 0
+#define CASCADE_CUDA 1
+
 namespace kai
 {
 
@@ -42,6 +45,7 @@ private:
 	inline int findVacancy(int iStart);
 	inline void deleteOutdated(void);
 	void detect(void);
+	void detectCUDA(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -50,7 +54,10 @@ private:
 	}
 
 public:
+	int					m_device;
 	Ptr<cuda::CascadeClassifier> m_pCascade;
+	cv::CascadeClassifier	m_CC;
+
 	int 				m_iObj;
 	int					m_numObj;
 	CASCADE_OBJECT* 	m_pObj;
@@ -63,6 +70,7 @@ public:
 
 	_CamStream*			m_pCamStream;
 	int					m_cudaDeviceID;
+
 
 
 };

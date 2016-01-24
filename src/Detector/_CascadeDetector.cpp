@@ -28,6 +28,8 @@ _CascadeDetector::_CascadeDetector()
 	m_pCamStream = NULL;
 	m_cudaDeviceID = 0;
 
+	m_device = CASCADE_CPU;
+
 }
 
 _CascadeDetector::~_CascadeDetector()
@@ -37,21 +39,34 @@ _CascadeDetector::~_CascadeDetector()
 bool _CascadeDetector::init(string name, JSON* pJson)
 {
 	string cascadeFile;
-	CHECK_ERROR(pJson->getVal("CASCADE_FILE_"+name, &cascadeFile));
-	m_pCascade = cuda::CascadeClassifier::create(cascadeFile);
-	//TODO:set the upper limit of objects to be detected
-	//m_pCascade->
 
-	CHECK_INFO(pJson->getVal("CASCADE_CUDADEVICE_ID_"+name, &m_cudaDeviceID));
-	CHECK_INFO(pJson->getVal("CASCADE_LIFETIME_"+name, &m_objLifeTime));
-	CHECK_INFO(pJson->getVal("CASCADE_POSDIFF_"+name, &m_posDiff));
-	CHECK_ERROR(pJson->getVal("CASCADE_NUM_"+name, &m_numObj));
+	CHECK_ERROR(pJson->getVal("CASCADE_DEVICE_" + name, &m_device));
+	CHECK_ERROR(pJson->getVal("CASCADE_FILE_" + name, &cascadeFile));
+
+	if (m_device == CASCADE_CPU)
+	{
+		CHECK_ERROR(m_CC.load(cascadeFile));
+	}
+	else if (m_device == CASCADE_CUDA)
+	{
+		m_pCascade = cuda::CascadeClassifier::create(cascadeFile);
+		CHECK_ERROR(m_pCascade);
+		//TODO:set the upper limit of objects to be detected
+		//m_pCascade->
+		CHECK_INFO(pJson->getVal("CASCADE_CUDADEVICE_ID_" + name, &m_cudaDeviceID));
+	}
+
+	CHECK_INFO(pJson->getVal("CASCADE_LIFETIME_" + name, &m_objLifeTime));
+	CHECK_INFO(pJson->getVal("CASCADE_POSDIFF_" + name, &m_posDiff));
+	CHECK_ERROR(pJson->getVal("CASCADE_NUM_" + name, &m_numObj));
+
 	m_pObj = new CASCADE_OBJECT[m_numObj];
-	if(m_pObj==NULL)return false;
+	if (m_pObj == NULL)
+		return false;
 	m_iObj = 0;
 
 	int i;
-	for(i=0; i<m_numObj; i++)
+	for (i = 0; i < m_numObj; i++)
 	{
 		m_pObj[i].m_status = OBJ_VACANT;
 	}
@@ -87,10 +102,18 @@ void _CascadeDetector::update(void)
 		m_frameID = this->m_timeStamp;
 
 		deleteOutdated();
-		detect();
+
+		if(m_device==CASCADE_CPU)
+		{
+			detect();
+		}
+		else
+		{
+			detectCUDA();
+		}
 
 		//sleepThread can be woke up by this->wakeupThread()
-		if(m_tSleep > 0)
+		if (m_tSleep > 0)
 		{
 			this->sleepThread(0, m_tSleep);
 		}
@@ -100,14 +123,83 @@ void _CascadeDetector::update(void)
 
 void _CascadeDetector::detect(void)
 {
-	int i,j,iVacant;
+	int i, j, iVacant;
+	CASCADE_OBJECT* pObj;
+	vector<Rect> vRect;
+	Rect iRect;
+	bool bNewObj;
+	Mat matGray;
+
+	if (m_pGray->empty())
+		return;
+	iVacant = 0;
+
+	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+	m_pGray->getCurrentFrame()->download(matGray);
+	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+
+	cv::equalizeHist(matGray, matGray);
+	m_CC.detectMultiScale(matGray, vRect, 1.1, 2, 0 | CASCADE_SCALE_IMAGE,
+			Size(30, 30));
+
+	for (i = 0; i < vRect.size(); i++)
+	{
+		iRect = vRect[i];
+		bNewObj = true;
+
+		if (m_posDiff)
+		{
+			//Find the correspondence to existing object
+			for (j = 0; j < m_numObj; j++)
+			{
+				pObj = &m_pObj[j];
+				if (pObj->m_status == OBJ_VACANT)
+					continue;
+
+				if (abs(pObj->m_boundBox.x - iRect.x) <= m_posDiff
+						&& abs(pObj->m_boundBox.y - iRect.y) <= m_posDiff
+						&& abs(pObj->m_boundBox.width - iRect.width)
+								<= m_posDiff
+						&& abs(pObj->m_boundBox.height - iRect.height)
+								<= m_posDiff)
+				{
+					pObj->m_boundBox = iRect;
+					pObj->m_frameID = m_frameID;
+					bNewObj = false;
+					break;
+				}
+			}
+
+			if (!bNewObj)
+				continue;
+		}
+
+		//Newly detected, allocate new space to hold it
+		iVacant = findVacancy(iVacant + 1);
+
+		//No vacant space
+		if (iVacant < 0)
+			return;
+
+		pObj = &m_pObj[iVacant];
+		pObj->m_boundBox = vRect[i];
+		pObj->m_frameID = m_frameID;
+		pObj->m_status = OBJ_ADDED;
+	}
+
+}
+
+void _CascadeDetector::detectCUDA(void)
+{
+	int i, j, iVacant;
 	CASCADE_OBJECT* pObj;
 	GpuMat cascadeGMat;
 	vector<Rect> vRect;
 	Rect iRect;
 	bool bNewObj;
 
-	if(m_pGray->empty())return;
+	if (m_pGray->empty())
+		return;
 
 	iVacant = 0;
 
@@ -128,18 +220,21 @@ void _CascadeDetector::detect(void)
 			iRect = vRect[i];
 			bNewObj = true;
 
-			if(m_posDiff)
+			if (m_posDiff)
 			{
 				//Find the correspondence to existing object
-				for(j=0;j<m_numObj;j++)
+				for (j = 0; j < m_numObj; j++)
 				{
 					pObj = &m_pObj[j];
-					if(pObj->m_status==OBJ_VACANT)continue;
+					if (pObj->m_status == OBJ_VACANT)
+						continue;
 
-					if(abs(pObj->m_boundBox.x-iRect.x)<=m_posDiff &&
-							abs(pObj->m_boundBox.y-iRect.y)<=m_posDiff &&
-							abs(pObj->m_boundBox.width-iRect.width)<=m_posDiff &&
-							abs(pObj->m_boundBox.height-iRect.height)<=m_posDiff)
+					if (abs(pObj->m_boundBox.x - iRect.x) <= m_posDiff
+							&& abs(pObj->m_boundBox.y - iRect.y) <= m_posDiff
+							&& abs(pObj->m_boundBox.width - iRect.width)
+									<= m_posDiff
+							&& abs(pObj->m_boundBox.height - iRect.height)
+									<= m_posDiff)
 					{
 						pObj->m_boundBox = iRect;
 						pObj->m_frameID = m_frameID;
@@ -148,14 +243,16 @@ void _CascadeDetector::detect(void)
 					}
 				}
 
-				if(!bNewObj)continue;
+				if (!bNewObj)
+					continue;
 			}
 
 			//Newly detected, allocate new space to hold it
-			iVacant = findVacancy(iVacant+1);
+			iVacant = findVacancy(iVacant + 1);
 
 			//No vacant space
-			if(iVacant<0)return;
+			if (iVacant < 0)
+				return;
 
 			pObj = &m_pObj[iVacant];
 			pObj->m_boundBox = vRect[i];
@@ -171,23 +268,23 @@ inline int _CascadeDetector::findVacancy(int iStart)
 	CASCADE_OBJECT* pObj;
 	int iComplete = iStart - 1;
 
-	if(iStart >= m_numObj)
+	if (iStart >= m_numObj)
 	{
 		iStart = 0;
-		iComplete = m_numObj-1;
+		iComplete = m_numObj - 1;
 	}
 
 	do
 	{
 		pObj = &m_pObj[iStart];
-		if(pObj->m_status == OBJ_VACANT)
+		if (pObj->m_status == OBJ_VACANT)
 		{
 			return iStart;
 		}
 
-		if(++iStart >= m_numObj)iStart = 0;
-	}
-	while(iStart != iComplete);
+		if (++iStart >= m_numObj)
+			iStart = 0;
+	} while (iStart != iComplete);
 
 	return -1;
 }
@@ -197,16 +294,15 @@ inline void _CascadeDetector::deleteOutdated(void)
 	int i;
 	CASCADE_OBJECT* pObj;
 
-	for(i=0;i<m_numObj;i++)
+	for (i = 0; i < m_numObj; i++)
 	{
 		pObj = &m_pObj[i];
-		if(m_frameID - pObj->m_frameID > m_objLifeTime)
+		if (m_frameID - pObj->m_frameID > m_objLifeTime)
 		{
 			pObj->m_status = OBJ_VACANT;
 		}
 	}
 }
-
 
 int _CascadeDetector::getObjList(CASCADE_OBJECT** ppObj)
 {

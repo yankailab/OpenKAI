@@ -161,10 +161,10 @@ void showScreen(void)
 	putText(imMat3, "SegNet FPS: "+f2str(g_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat3, "Cascade FPS: "+f2str(g_pFD->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	g_pShow->updateFrame(&imMat3);
-//	imshow("OpenKAI demo",imMat);
+//	g_pShow->updateFrame(&imMat3);
+	imshow("OpenKAI demo",imMat3);
 
-	g_pUIMonitor->show();
+//	g_pUIMonitor->show();
 
 	return;
 
