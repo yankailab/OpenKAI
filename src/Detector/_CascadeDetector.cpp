@@ -138,9 +138,9 @@ void _CascadeDetector::detect(void)
 	m_pGray->getCurrentFrame()->download(matGray);
 	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
-	cv::equalizeHist(matGray, matGray);
+//	cv::equalizeHist(matGray, matGray);
 	m_CC.detectMultiScale(matGray, vRect, 1.1, 2, 0 | CASCADE_SCALE_IMAGE,
-			Size(30, 30));
+			Size(10, 10),Size(500, 500));
 
 	for (i = 0; i < vRect.size(); i++)
 	{
