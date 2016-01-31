@@ -80,7 +80,7 @@ int main(int argc, char* argv[])
 //	g_pDF->start();
 //	g_pAP->start();
 	g_pFD->start();
-	g_pSegNet->start();
+//	g_pSegNet->start();
 
 	//UI thread
 	g_bRun = true;
@@ -138,31 +138,38 @@ void showScreen(void)
 
 	if (pFrame->getCurrentFrame()->empty())return;
 	if (g_pShow->isNewerThan(pFrame))return;
-	if (g_pSegNet->m_segment.empty())return;
+//	if (g_pSegNet->m_segment.empty())return;
 
 	pFrame->getCurrentFrame()->download(imMat);
 
-	g_pMat->updateFrame(&g_pSegNet->m_segment);
-	g_pMat2->getResizedOf(g_pMat, imMat.cols,imMat.rows);
-	g_pMat2->getCurrentFrame()->download(imMat2);
+//	g_pMat->updateFrame(&g_pSegNet->m_segment);
+//	g_pMat2->getResizedOf(g_pMat, imMat.cols,imMat.rows);
+//	g_pMat2->getCurrentFrame()->download(imMat2);
 
 	CASCADE_OBJECT* pDrone;
+	int iTarget = 0;
+
 	for (i = 0; i < g_pFD->m_numObj; i++)
 	{
 		pDrone = &g_pFD->m_pObj[i];
 		if(pDrone->m_status != OBJ_ADDED)continue;
 
-		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 1);
+		if(iTarget == 0)iTarget = i;
+		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
 	}
 
-	cv::addWeighted(imMat, 1.0, imMat2, 1.0, 0.0, imMat3);
+	pDrone = &g_pFD->m_pObj[iTarget];
+	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
 
-	putText(imMat3, "Camera FPS: "+f2str(g_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "SegNet FPS: "+f2str(g_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "Cascade FPS: "+f2str(g_pFD->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+//	cv::addWeighted(imMat, 1.0, imMat2, 1.0, 0.0, imMat3);
+
+	putText(imMat, "Camera FPS: "+f2str(g_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Cascade FPS: "+f2str(g_pFD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat3, "SegNet FPS: "+f2str(g_pSegNet->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 //	g_pShow->updateFrame(&imMat3);
-	imshow("OpenKAI demo",imMat3);
+	imshow("OpenKAI demo",imMat);
 
 //	g_pUIMonitor->show();
 
