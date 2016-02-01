@@ -23,6 +23,7 @@
 #include "UI/UIMonitor.h"
 #include "Interface/_VehicleInterface.h"
 #include "Utility/util.h"
+#include "Image/_DenseFlow.h"
 
 
 using namespace kai;

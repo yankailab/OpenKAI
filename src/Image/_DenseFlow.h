@@ -10,9 +10,12 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamFrame.h"
+#include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
+#include "../Camera/CamFrame.h"
+#include "../Camera/_CamStream.h"
+
 
 using namespace cv;
 using namespace cv::cuda;
@@ -23,7 +26,7 @@ using namespace std;
 namespace kai
 {
 
-class _DenseFlow: public _ThreadBase
+class _DenseFlow:  public DetectorBase, public _ThreadBase
 {
 public:
 	_DenseFlow();
@@ -41,7 +44,7 @@ private:
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
 	void generateFlowMap(const GpuMat& d_flow);
 
-	fVector4 detect(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -50,10 +53,10 @@ private:
 	}
 
 public:
-	fVector4		m_flow;
+	fVector4	m_flow;
 	GpuMat		m_GFlowMat;
 	CamFrame*	m_pFlowFrame;
-	CamFrame*	m_pShowFlow;
+//	CamFrame*	m_pShowFlow;
 
 	int	m_width;
 	int m_height;
@@ -63,6 +66,12 @@ public:
 	Mat m_flowY;
 
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
+
+	_CamStream*			m_pCamStream;
+	int					m_cudaDeviceID;
+
+	Mat m_showMat;
+
 };
 
 } /* namespace kai */

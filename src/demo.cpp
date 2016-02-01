@@ -21,10 +21,6 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pMavlink->setup(&g_Json, "FC"));
 	CHECK_INFO(g_pMavlink->open());
 
-	//Init Optical Flow
-	g_pDF = new _DenseFlow();
-	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
-
 	//Init Classifier Manager
 //	g_pClassMgr = new _ClassifierManager();
 //	g_pClassMgr->init(&g_Json);
@@ -40,6 +36,12 @@ int main(int argc, char* argv[])
 	g_pCamFront = new _CamStream();
 	CHECK_FATAL(g_pCamFront->init(&g_Json, "FRONTL"));
 	g_pCamFront->m_bGray = true;
+
+	//Init Optical Flow
+	g_pDF = new _DenseFlow();
+	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
+	g_pDF->m_pGray = g_pCamFront->m_pGrayL;
+	g_pDF->m_pCamStream = g_pCamFront;
 
 	//Init Fast Detector
 	g_pFD = new _CascadeDetector();
@@ -77,7 +79,7 @@ int main(int argc, char* argv[])
 //	g_pMavlink->start();
 //	g_pClassMgr->start();
 //	g_pOD->start();
-//	g_pDF->start();
+	g_pDF->start();
 //	g_pAP->start();
 	g_pFD->start();
 //	g_pSegNet->start();
@@ -170,6 +172,11 @@ void showScreen(void)
 
 //	g_pShow->updateFrame(&imMat3);
 	imshow("OpenKAI demo",imMat);
+
+	if(!g_pDF->m_showMat.empty())
+	{
+		imshow("DenseFlow",g_pDF->m_showMat);
+	}
 
 //	g_pUIMonitor->show();
 

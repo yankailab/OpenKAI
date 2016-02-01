@@ -22,7 +22,10 @@ _DenseFlow::_DenseFlow()
 	m_height = 480;
 
 	m_pFlowFrame = NULL;
-	m_pShowFlow = NULL;
+//	m_pShowFlow = NULL;
+
+	m_pGray = NULL;
+	m_cudaDeviceID = 0;
 
 }
 
@@ -39,7 +42,7 @@ bool _DenseFlow::init(JSON* pJson, string camName)
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 	m_pFlowFrame = new CamFrame();
-	m_pShowFlow = new CamFrame();
+//	m_pShowFlow = new CamFrame();
 
 	return true;
 }
@@ -61,6 +64,7 @@ bool _DenseFlow::start(void)
 void _DenseFlow::update(void)
 {
 	m_tSleep = TRD_INTERVAL_DENSEFLOW;
+	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
@@ -86,13 +90,36 @@ void _DenseFlow::updateFrame(CamFrame* pFrame)
 	this->wakeupThread();
 }
 
-fVector4 _DenseFlow::detect(void)
+void _DenseFlow::detect(void)
 {
 	int i, j;
 	cv::Point2f vFlow;
 	double base;
 	GpuMat* pPrev;
 	GpuMat* pNext;
+	Mat matGray;
+
+	if(!m_pGray)return;
+	if (m_pGray->empty())return;
+
+//	if(m_pCamStream->mutexTrylock(CAMSTREAM_MUTEX_GRAY))
+//	{
+//		m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
+//		m_pFlowFrame->updateFrameSwitch(m_pGray);
+//		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+//	}
+//	else
+//	{
+//		return;
+//	}
+
+	m_pFlowFrame->switchFrame();
+	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+	m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
+//	m_pGray->getCurrentFrame()->download(matGray);
+	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+
+//	m_pFlowFrame->updateFrame(&matGray);
 
 	m_flow.m_x = 0;
 	m_flow.m_y = 0;
@@ -102,30 +129,29 @@ fVector4 _DenseFlow::detect(void)
 	pPrev = m_pFlowFrame->getPreviousFrame();
 	pNext = m_pFlowFrame->getCurrentFrame();
 
-	if(pNext->empty())return m_flow;
-	if(pPrev->size() != pNext->size())return m_flow;
+	if(pPrev->empty())return;
+	if(pNext->empty())return;
+	if(pPrev->size() != pNext->size())return;
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
-
-	m_GFlowMat.download(m_uFlowMat);
-
-	for (i = 0; i < m_uFlowMat.rows; i++)
-	{
-		for (j = 0; j < m_uFlowMat.cols; j++)
-		{
-			vFlow = m_uFlowMat.at<cv::Point2f>(i, j);
-			m_flow.m_x += vFlow.x;
-			m_flow.m_y += vFlow.y;
-		}
-	}
-
-	base = 10.0/(double)(m_uFlowMat.rows * m_uFlowMat.cols);
-	m_flow.m_x *= base;
-	m_flow.m_y *= base;
+//	m_GFlowMat.download(m_uFlowMat);
+//
+//	for (i = 0; i < m_uFlowMat.rows; i++)
+//	{
+//		for (j = 0; j < m_uFlowMat.cols; j++)
+//		{
+//			vFlow = m_uFlowMat.at<cv::Point2f>(i, j);
+//			m_flow.m_x += vFlow.x;
+//			m_flow.m_y += vFlow.y;
+//		}
+//	}
+//
+//	base = 10.0/(double)(m_uFlowMat.rows * m_uFlowMat.cols);
+//	m_flow.m_x *= base;
+//	m_flow.m_y *= base;
 
 	generateFlowMap(m_GFlowMat);
 
-	return m_flow;
 
 /*	cv::Size mSize = m_uFlowMat.size();
 	Point p = Point(mSize.width / 2, mSize.height / 2);
@@ -259,9 +285,11 @@ void _DenseFlow::generateFlowMap(const GpuMat& d_flow)
 	Mat flowy(planes[1]);
 
 	Mat out;
-	drawOpticalFlow(flowx, flowy, out, 10);
+	drawOpticalFlow(flowx, flowy, m_showMat, 10);
 
-	m_pShowFlow->updateFrame(&out);
+//	imshow("Dense Flow",out);
+
+//	m_pShowFlow->updateFrame(&out);
 }
 
 } /* namespace kai */
