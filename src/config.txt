@@ -31,8 +31,8 @@
 "CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
 "CASCADE_FILE_DRONE_":"/home/kai/dev/opencv/data/haarcascades/haarcascade_frontalface_alt.xml",
 "CASCADE_NUM_DRONE":10,
-"CASCADE_LIFETIME_DRONE":500000,
-"CASCADE_POSDIFF_DRONE":10,
+"CASCADE_LIFETIME_DRONE":200000,
+"CASCADE_POSDIFF_DRONE":50,
 "CASCADE_CUDADEVICE_ID_DRONE":0,
 
 "OD_CANNY_LOW":10,
