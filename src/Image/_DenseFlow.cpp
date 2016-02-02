@@ -285,7 +285,9 @@ void _DenseFlow::generateFlowMap(const GpuMat& d_flow)
 	Mat flowy(planes[1]);
 
 	Mat out;
-	drawOpticalFlow(flowx, flowy, m_showMat, 10);
+	drawOpticalFlow(flowx, flowy, out, 10);
+
+	out.copyTo(m_showMat);
 
 //	imshow("Dense Flow",out);
 

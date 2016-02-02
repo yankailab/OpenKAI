@@ -24,7 +24,7 @@
 
 "SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
 "SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
-"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Scripts/camvid12.png",
+"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/camvid12.png",
 "SEGNET_CUDADEVICE_ID_DEFAULT":0,
 
 "CASCADE_DEVICE_DRONE":0,
