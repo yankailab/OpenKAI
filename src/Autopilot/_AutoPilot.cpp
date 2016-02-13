@@ -46,7 +46,7 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::	setup(JSON* pJson, string pilotName)
+bool _AutoPilot::setup(JSON* pJson, string pilotName)
 {
 	if(!pJson)return false;
 
@@ -243,7 +243,7 @@ bool _AutoPilot::setCamStream(_CamStream* pCamStream, int camPosition)
 
 
 
-void _AutoPilot::markerLock(MarkerDetector* pCMD)
+void _AutoPilot::markerLock(_MarkerDetector* pCMD)
 {
 	double zRatio;
 	double cvSize;
@@ -402,7 +402,7 @@ void _AutoPilot::markerLock(MarkerDetector* pCMD)
 
 }
 
-void _AutoPilot::flowLock(MarkerDetector* pCMD)
+void _AutoPilot::flowLock(_MarkerDetector* pCMD)
 {
 	/*
 	fVector4 vFlow;

@@ -23,7 +23,7 @@ g++ $INCLUDES $OPTIONS -MF"build/_CascadeDetector.d" -MT"build/_CascadeDetector.
 g++ $INCLUDES $OPTIONS -MF"build/_ObjectDetector.d" -MT"build/_ObjectDetector.d" -o "build/_ObjectDetector.o" "src/Detector/_ObjectDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_OpticalFlowDetector.d" -MT"build/_OpticalFlowDetector.d" -o "build/_OpticalFlowDetector.o" "src/Detector/_OpticalFlowDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/DetectorBase.d" -MT"build/DetectorBase.d" -o "build/DetectorBase.o" "src/Detector/DetectorBase.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/MarkerDetector.d" -MT"build/MarkerDetector.d" -o "build/MarkerDetector.o" "src/Detector/MarkerDetector.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_MarkerDetector.d" -MT"build/_MarkerDetector.d" -o "build/_MarkerDetector.o" "src/Detector/_MarkerDetector.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_DenseFlow.d" -MT"build/_DenseFlow.d" -o "build/_DenseFlow.o" "src/Image/_DenseFlow.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_MavlinkInterface.d" -MT"build/_MavlinkInterface.d" -o "build/_MavlinkInterface.o" "src/Interface/_MavlinkInterface.cpp"
@@ -37,5 +37,5 @@ g++ $INCLUDES $OPTIONS -MF"build/UIMonitor.d" -MT"build/UIMonitor.d" -o "build/U
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "LAB" ./build/ClassifierBase.o ./build/_ClassifierManager.o ./build/NNClassifier.o ./build/_SegNet.o ./build/Filter.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/_CascadeDetector.o ./build/_ObjectDetector.o ./build/_OpticalFlowDetector.o build/DetectorBase.o ./build/MarkerDetector.o ./build/_DenseFlow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect
+g++ $LINKERS -o "LAB" ./build/ClassifierBase.o ./build/_ClassifierManager.o ./build/NNClassifier.o ./build/_SegNet.o ./build/Filter.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/_CascadeDetector.o ./build/_ObjectDetector.o ./build/_OpticalFlowDetector.o build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DenseFlow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect
 

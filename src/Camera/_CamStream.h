@@ -38,9 +38,9 @@ public:
 	bool start(void);
 	bool complete(void);
 
-	bool addOriginalUser(CamFrame** ppFrame);
-	bool addGrayUser(CamFrame** ppFrame);
-	bool addHSVUser(CamFrame** ppFrame);
+//	bool addOriginalUser(CamFrame** ppFrame);
+//	bool addGrayUser(CamFrame** ppFrame);
+//	bool addHSVUser(CamFrame** ppFrame);
 
 public:
 	string				m_camName;

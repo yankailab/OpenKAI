@@ -35,8 +35,7 @@ public:
 	bool init(JSON* pJson, string camName);
 	bool start(void);
 
-	void updateFrame(CamFrame* pFrame);
-
+//	void updateFrame(CamFrame* pFrame);
 
 private:
 	inline bool isFlowCorrect(Point2f u);

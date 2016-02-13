@@ -24,6 +24,7 @@ _DenseFlow::_DenseFlow()
 	m_pFlowFrame = NULL;
 //	m_pShowFlow = NULL;
 
+	m_pCamStream = NULL;
 	m_pGray = NULL;
 	m_cudaDeviceID = 0;
 
@@ -78,17 +79,17 @@ void _DenseFlow::update(void)
 
 }
 
-void _DenseFlow::updateFrame(CamFrame* pFrame)
-{
-	if(pFrame==NULL)return;
-	if(pFrame->getCurrentFrame()->empty())return;
-
-	m_pFlowFrame->switchFrame();
-//	pFrame->getResized(640,480, m_pFlowFrame);
-	m_pFlowFrame->getResizedOf(pFrame,640,480);
-
-	this->wakeupThread();
-}
+//void _DenseFlow::updateFrame(CamFrame* pFrame)
+//{
+//	if(pFrame==NULL)return;
+//	if(pFrame->getCurrentFrame()->empty())return;
+//
+//	m_pFlowFrame->switchFrame();
+////	pFrame->getResized(640,480, m_pFlowFrame);
+//	m_pFlowFrame->getResizedOf(pFrame,640,480);
+//
+//	this->wakeupThread();
+//}
 
 void _DenseFlow::detect(void)
 {

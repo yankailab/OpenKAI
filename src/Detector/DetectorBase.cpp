@@ -14,6 +14,7 @@ DetectorBase::DetectorBase() {
 
 	m_pFrame = new CamFrame();
 	m_pGray = new CamFrame();
+	m_pHSV = new CamFrame();
 
 }
 

@@ -12,6 +12,7 @@
 #include "../Base/cvplatform.h"
 #include "../Camera/_CamStream.h"
 #include "DetectorBase.h"
+#include "../Base/_ThreadBase.h"
 
 #define NUM_MARKER 128
 #define NUM_TARGET_MARKER 2
@@ -23,23 +24,35 @@
 #define LOCK_LEVEL_SIZE 2
 #define LOCK_LEVEL_ATT 3
 
+#define TRD_INTERVAL_MARKERDETECTOR 100
+
 namespace kai
 {
 
-class MarkerDetector : public DetectorBase
+class _MarkerDetector : public DetectorBase, public _ThreadBase
 {
 public:
-	MarkerDetector();
-	virtual ~MarkerDetector();
+	_MarkerDetector();
+	virtual ~_MarkerDetector();
 
-	bool init(void);
-	void detect(CamFrame* pHSV, CamFrame* pRGB, bool bDrawResult);
+	bool init(JSON* pJson, string name);
+	bool start(void);
 
 	//Object detection using markers
 	void setObjROI(fVector3 ROI);
 	int  getObjLockLevel(void);
 	bool getObjPosition(fVector3* pPos);
 	bool getObjAttitude(fVector3* pAtt);
+
+private:
+	void detect(void);
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_MarkerDetector*) This)->update();
+		return NULL;
+	}
+
 
 public:
 	fVector4 m_flow;
@@ -60,6 +73,9 @@ public:
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
+	_CamStream*			m_pCamStream;
+
+
 #ifdef USE_CUDA
 	GpuMat m_HSV;
 	GpuMat m_Hue;
@@ -71,6 +87,8 @@ public:
 	GpuMat  m_Scalesat;
 	GpuMat  m_Balloonyness;
 	GpuMat  m_Thresh;
+
+	int		m_cudaDeviceID;
 #else
 
 #endif

@@ -3,8 +3,8 @@
 #include "../Base/common.h"
 #include "../Camera/_CamStream.h"
 #include "../Detector/_CascadeDetector.h"
+#include "../Detector/_MarkerDetector.h"
 #include "../Detector/_ObjectDetector.h"
-#include "../Detector/MarkerDetector.h"
 #include "../Interface/_VehicleInterface.h"
 
 //
@@ -83,8 +83,8 @@ public:
 	bool start(void);
 
 	bool setCamStream(_CamStream* pCamStream, int camPosition);
-	void markerLock(MarkerDetector* pCMD);
-	void flowLock(MarkerDetector* pCMD);
+	void markerLock(_MarkerDetector* pCMD);
+	void flowLock(_MarkerDetector* pCMD);
 	void setTargetPosCV(fVector3 pos);
 	fVector3 getTargetPosCV(void);
 
