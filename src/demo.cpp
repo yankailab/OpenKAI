@@ -26,6 +26,11 @@ int main(int argc, char* argv[])
 	g_pMD->m_pCamStream = g_pCamFront;
 	g_pCamFront->m_bHSV = true;
 
+	//Init BgFg Detector
+	g_pBgFgD = new _BgFgDetector();
+	CHECK_FATAL(g_pBgFgD->init(&g_Json, ""));
+	g_pBgFgD->m_pCamStream = g_pCamFront;
+
 	//Init Optical Flow
 /*	g_pDF = new _DenseFlow();
 	CHECK_FATAL(g_pDF->init(&g_Json, "FRONTL"));
@@ -98,11 +103,13 @@ int main(int argc, char* argv[])
 //	g_pAP->start();
 //	g_pFD->start();
 //	g_pSegNet->start();
+	g_pBgFgD->start();
 
 	//UI thread
 	g_bRun = true;
-	cv::namedWindow("MarkerDetector");
-	setMouseCallback("MarkerDetector", onMouse, NULL);
+	namedWindow("CopterDetector", CV_WINDOW_NORMAL);
+	setWindowProperty("CopterDetector", CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+	setMouseCallback("CopterDetector", onMouse, NULL);
 
 	while (g_bRun)
 	{
@@ -114,7 +121,10 @@ int main(int argc, char* argv[])
 //		showScreenSegNet();
 //		showScreenCascadeDetector();
 //		showScreenDenseFlow();
-		showScreenMarkerDetector();
+		if(!showScreenMarkerDetector())
+		{
+			showScreenBgFgDetector();
+		}
 
 		//Handle key input
 		g_key = waitKey(30);
@@ -130,8 +140,10 @@ int main(int argc, char* argv[])
 //	g_pMavlink->stop();
 //	g_pClassMgr->stop();
 //	g_pSegNet->stop();
+	g_pBgFgD->stop();
 
 	g_pMD->complete();
+	g_pBgFgD->complete();
 //	g_pDF->complete();
 //	g_pClassMgr->complete();
 //	g_pOD->complete();
@@ -160,7 +172,7 @@ void showScreenSegNet(void)
 	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
 
 	if (pFrame->getCurrentFrame()->empty())return;
-	if (g_pShow->isNewerThan(pFrame))return;
+//	if (g_pShow->isNewerThan(pFrame))return;
 	if (g_pSegNet->m_segment.empty())return;
 
 	pFrame->getCurrentFrame()->download(imMat);
@@ -189,13 +201,13 @@ void showScreenDenseFlow(void)
 	}
 }
 
-void showScreenMarkerDetector(void)
+bool showScreenMarkerDetector(void)
 {
 	int i;
 	Mat imMat;
 	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
 
-	if (pFrame->getCurrentFrame()->empty())return;
+	if (pFrame->getCurrentFrame()->empty())return false;
 	pFrame->getCurrentFrame()->download(imMat);
 
 	putText(imMat, "Camera FPS: "+f2str(g_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
@@ -203,15 +215,51 @@ void showScreenMarkerDetector(void)
 
 	fVector3 markerPos;
 	int lockLevel = g_pMD->getObjLockLevel();
-	if (lockLevel >= LOCK_LEVEL_POS)
+	if (lockLevel < LOCK_LEVEL_POS)
 	{
-		putText(imMat, "MARKER LOCKED", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-		//Update current position with trajectory estimation
-		g_pMD->getObjPosition(&markerPos);
-		circle(imMat, Point(markerPos.m_x,markerPos.m_y), markerPos.m_z, Scalar(0, 255, 0), 2);
+		return false;
 	}
 
-	imshow("MarkerDetector",imMat);
+	putText(imMat, "MARKER LOCKED", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	//Update current position with trajectory estimation
+	g_pMD->getObjPosition(&markerPos);
+	circle(imMat, Point(markerPos.m_x,markerPos.m_y), markerPos.m_z, Scalar(0, 255, 0), 2);
+
+	imshow("CopterDetector",imMat);
+	return true;
+}
+
+void showScreenBgFgDetector(void)
+{
+	int i;
+	Mat imMat, imMat2;
+	CamFrame* pFrame = (*g_pCamFront->m_pFrameProcess);
+
+	if(pFrame->getCurrentFrame()->empty())return;
+	if(g_pBgFgD->m_Mat.empty())return;
+	if(g_pBgFgD->m_gFg.empty())return;
+
+//	g_pBgFgD->m_gFg.download(imMat2);
+//	imshow("Bg",imMat);
+//	imshow("Fg",imMat2);
+//	imshow("BgFgContour",g_pBgFgD->m_Mat);
+
+	imMat = g_pBgFgD->m_Mat;
+
+	putText(imMat, "Camera FPS: "+f2str(g_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "BgFg Detector FPS: "+f2str(g_pBgFgD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+//	fVector3 markerPos;
+//	int lockLevel = g_pMD->getObjLockLevel();
+//	if (lockLevel >= LOCK_LEVEL_POS)
+//	{
+//		putText(imMat, "BgFg", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//		//Update current position with trajectory estimation
+//		g_pMD->getObjPosition(&markerPos);
+//		circle(imMat, Point(markerPos.m_x,markerPos.m_y), markerPos.m_z, Scalar(0, 255, 0), 2);
+//	}
+
+	imshow("CopterDetector",imMat);
 }
 
 void showScreenCascadeDetector(void)

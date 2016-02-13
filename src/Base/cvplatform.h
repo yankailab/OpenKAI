@@ -14,6 +14,7 @@
 #include "opencv2/cudaarithm.hpp"
 #include "opencv2/cudastereo.hpp"
 #include "opencv2/cudawarping.hpp"
+#include "opencv2/cudabgsegm.hpp"
 #endif
 
 using namespace cv;
