@@ -14,11 +14,13 @@
 
 #include "Application/ExtCamControl.h"
 #include "Application/SegNetDemo.h"
+#include "Application/DroneHunter.h"
 
 using namespace kai;
 
 ExtCamControl* g_pAppExtCamControl;
 SegNetDemo* g_pAppSegNetDemo;
+DroneHunter* g_pAppDroneHunter;
 
 JSON g_Json;
 FileIO g_file;

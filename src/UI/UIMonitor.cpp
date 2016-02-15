@@ -35,7 +35,7 @@ bool UIMonitor::init(string name, JSON* pJson)
 	m_windowName = name;
 	m_numFrame = 0;
 
-	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
+	m_showFrame = UMat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
 
 	return true;
 }
@@ -120,28 +120,28 @@ void UIMonitor::show(void)
 
 	if(m_numFrame == 0)return;
 
-	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
+	m_showFrame = UMat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
 
 	for(i=0;i<m_numFrame;i++)
 	{
 		//Ignore if empty
 		pMFrame = &m_pFrame[i];
 		pFrame = pMFrame->m_pFrame;
-		if(pFrame->getCurrentFrame()->empty())continue;
+		if(pFrame->getCurrent()->empty())continue;
 
 		//Resize and download
 //		pFrame->getResized(pMFrame->m_w, pMFrame->m_h, &m_camFrame);
 		m_camFrame.getResizedOf(pFrame, pMFrame->m_w, pMFrame->m_h);
 
 		//Convert color mode if necesary
-		if(m_camFrame.getCurrentFrame()->type() != m_showFrame.type())
+		if(m_camFrame.getCurrent()->type() != m_showFrame.type())
 		{
 			m_camFrame2.get8UC3Of(&m_camFrame);
-			m_camFrame2.getCurrentFrame()->download(m_frame);
+			m_camFrame2.getCurrent()->download(m_frame);
 		}
 		else
 		{
-			m_camFrame.getCurrentFrame()->download(m_frame);
+			m_camFrame.getCurrent()->download(m_frame);
 		}
 
 		//Copy to show frame

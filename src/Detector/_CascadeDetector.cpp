@@ -128,14 +128,14 @@ void _CascadeDetector::detect(void)
 	vector<Rect> vRect;
 	Rect iRect;
 	bool bNewObj;
-	Mat matGray;
+	UMat matGray;
 
 	if (m_pGray->empty())
 		return;
 	iVacant = 0;
 
 	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-	m_pGray->getCurrentFrame()->download(matGray);
+	m_pGray->getCurrent()->download(matGray);
 	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 //	cv::equalizeHist(matGray, matGray);
@@ -206,7 +206,7 @@ void _CascadeDetector::detectCUDA(void)
 	if (m_pCascade)
 	{
 		m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-		m_pGray->getCurrentFrame()->copyTo(m_GMat);
+		m_pGray->getCurrent()->copyTo(m_GMat);
 		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 		//	m_pCascade->setFindLargestObject(false);

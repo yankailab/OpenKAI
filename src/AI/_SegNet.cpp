@@ -205,7 +205,7 @@ void _SegNet::Preprocess(const cv::Mat& img,
 void _SegNet::segmentGPU(void)
 {
 	if(m_pFrame==NULL)return;
-	if(m_pFrame->getCurrentFrame()->empty())return;
+	if(m_pFrame->getCurrent()->empty())return;
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, m_NumChannels, m_InputSize.height, m_InputSize.width);
@@ -223,9 +223,9 @@ void _SegNet::segmentGPU(void)
 	GpuMat uimg,uimg3;
 	segIdx.convertTo(uimg, CV_8UC1);
 	cv::cuda::cvtColor(uimg, uimg3, CV_GRAY2BGR);
-	m_pGpuLUT->transform(uimg3,*m_pSegment->getCurrentFrame());
+	m_pGpuLUT->transform(uimg3,*m_pSegment->getCurrent());
 
-	m_pSegment->getCurrentFrame()->download(m_segment);
+	m_pSegment->getCurrent()->download(m_segment);
 }
 
 
@@ -252,7 +252,7 @@ void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
 {
 	/* Convert the input image to the input image format of the network. */
 	cv::cuda::GpuMat sample;
-	GpuMat* pGMat = m_pFrame->getCurrentFrame();
+	GpuMat* pGMat = m_pFrame->getCurrent();
 
 	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_ORIGINAL);
 

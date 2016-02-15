@@ -12,12 +12,12 @@ namespace kai
 
 CamFrame::CamFrame()
 {
-	m_frameID = 0;
+	m_frameID_GPU = 0;
 
-	m_iFrame = 0;
-	m_pPrev = &m_pFrame[m_iFrame];
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
+	m_iFrame_GPU = 0;
+	m_pPrev = &m_pFrame[m_iFrame_GPU];
+	m_iFrame_GPU = 1 - m_iFrame_GPU;
+	m_pNext = &m_pFrame[m_iFrame_GPU];
 }
 
 CamFrame::~CamFrame()
@@ -27,18 +27,21 @@ CamFrame::~CamFrame()
 void CamFrame::getResizedOf(CamFrame* pFrom, int width, int height)
 {
 	if(!pFrom)return;
-	if(pFrom->getCurrentFrame()->empty())return;
+	if(pFrom->getCurrent()->empty())return;
 
 	cv::Size newSize = cv::Size(width,height);
 
-	if(newSize == pFrom->getCurrentFrame()->size())
+	if(newSize == pFrom->getCurrent()->size())
 	{
-		this->updateFrame(pFrom);
+		this->update(pFrom);
 	}
 	else
 	{
-		cuda::resize(*pFrom->getCurrentFrame(), m_GMat, newSize);
-		this->updateFrame(&m_GMat);
+		cuda::resize(*pFrom->getCurrent(), *m_pNext, newSize);
+//		cuda::resize(*pFrom->getCurrentFrame(), m_GMat, newSize);
+//		this->updateFrame(&m_GMat);
+
+		m_frameID_GPU = get_time_usec();
 	}
 
 }
@@ -47,7 +50,11 @@ void CamFrame::getGrayOf(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
-	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
+#ifdef USE_CUDA
+	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
+#else
+	cv::cvtColor(pFrom->get);
+#endif
 
 //	m_cudaStream.waitForCompletion();
 }
@@ -57,43 +64,43 @@ void CamFrame::getHSVOf(CamFrame* pFrom)
 	if(!pFrom)return;
 
 	//RGB or BGR depends on device
-	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2HSV);
+	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2HSV);
 }
 
 void CamFrame::getBGRAOf(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
-	cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_BGR2BGRA);
+	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2BGRA);
 }
 
 void CamFrame::get8UC3Of(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
-	if(pFrom->getCurrentFrame()->type()==CV_8UC3)
+	if(pFrom->getCurrent()->type()==CV_8UC3)
 	{
-		pFrom->getCurrentFrame()->copyTo(*m_pNext);
+		pFrom->getCurrent()->copyTo(*m_pNext);
 	}
 	else
 	{
-		cuda::cvtColor(*pFrom->getCurrentFrame(), *m_pNext, CV_GRAY2BGR);
+		cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_GRAY2BGR);
 	}
 }
 
-GpuMat* CamFrame::getCurrentFrame(void)
+GpuMat* CamFrame::getCurrent(void)
 {
 	return m_pNext;
 }
 
-GpuMat* CamFrame::getPreviousFrame(void)
+GpuMat* CamFrame::getPrevious(void)
 {
 	return m_pPrev;
 }
 
 uint64_t CamFrame::getFrameID(void)
 {
-	return m_frameID;
+	return m_frameID_GPU;
 }
 
 bool CamFrame::empty(void)
@@ -104,7 +111,7 @@ bool CamFrame::empty(void)
 bool CamFrame::isNewerThan(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return false;
-	if(pFrame->getFrameID() < m_frameID)
+	if(pFrame->getFrameID() < m_frameID_GPU)
 	{
 		return true;
 	}
@@ -116,37 +123,37 @@ void CamFrame::switchFrame(void)
 {
 	//switch the current frame and old frame
 	m_pPrev = m_pNext;
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
+	m_iFrame_GPU = 1 - m_iFrame_GPU;
+	m_pNext = &m_pFrame[m_iFrame_GPU];
 }
 
-void CamFrame::updateFrame(CamFrame* pFrame)
+void CamFrame::update(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	pFrame->getCurrentFrame()->copyTo(*m_pNext);
-	m_frameID = get_time_usec();
+	pFrame->getCurrent()->copyTo(*m_pNext);
+	m_frameID_GPU = get_time_usec();
 }
 
 
-void CamFrame::updateFrame(GpuMat* pGpuFrame)
+void CamFrame::update(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
 	pGpuFrame->copyTo(*m_pNext);
-	m_frameID = get_time_usec();
+	m_frameID_GPU = get_time_usec();
 }
 
-void CamFrame::updateFrame(Mat* pFrame)
+void CamFrame::update(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
 	m_pNext->upload(*pFrame);
-	m_frameID = get_time_usec();
+	m_frameID_GPU = get_time_usec();
 }
 
 
-void CamFrame::updateFrameSwitch(CamFrame* pFrame)
+void CamFrame::updateSwitch(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return;
 
@@ -156,17 +163,17 @@ void CamFrame::updateFrameSwitch(CamFrame* pFrame)
 	//Pointer both frames to the one not being transfered temporarily
 	m_pPrev = m_pNext;
 
-	pFrame->getCurrentFrame()->copyTo(*pDest);
+	pFrame->getCurrent()->copyTo(*pDest);
 
 	//Update the pointer to the latest frame
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
+	m_iFrame_GPU = 1 - m_iFrame_GPU;
+	m_pNext = &m_pFrame[m_iFrame_GPU];
 
-	m_frameID = get_time_usec();
+	m_frameID_GPU = get_time_usec();
 }
 
 
-void CamFrame::updateFrameSwitch(GpuMat* pGpuFrame)
+void CamFrame::updateSwitch(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
@@ -179,13 +186,13 @@ void CamFrame::updateFrameSwitch(GpuMat* pGpuFrame)
 	pGpuFrame->copyTo(*pDest);
 
 	//Update the pointer to the latest frame
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
+	m_iFrame_GPU = 1 - m_iFrame_GPU;
+	m_pNext = &m_pFrame[m_iFrame_GPU];
 
-	m_frameID = get_time_usec();
+	m_frameID_GPU = get_time_usec();
 }
 
-void CamFrame::updateFrameSwitch(Mat* pFrame)
+void CamFrame::updateSwitch(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
@@ -198,10 +205,10 @@ void CamFrame::updateFrameSwitch(Mat* pFrame)
 	pDest->upload(*pFrame);
 
 	//Update the pointer to the latest frame
-	m_iFrame = 1 - m_iFrame;
-	m_pNext = &m_pFrame[m_iFrame];
+	m_iFrame_GPU = 1 - m_iFrame_GPU;
+	m_pNext = &m_pFrame[m_iFrame_GPU];
 
-	m_frameID = get_time_usec();
+	m_frameID_GPU = get_time_usec();
 
 }
 

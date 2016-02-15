@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_SEGNETDEMO_H_
-#define SRC_SEGNETDEMO_H_
+#ifndef SRC_DRONEHUNTER_H_
+#define SRC_DRONEHUNTER_H_
 
 #include <cstdio>
 #include <cmath>
@@ -19,18 +19,18 @@
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 
-#define APP_NAME "SEGNET_INTERFACE_DEMO"
+#define APP_NAME "DRONE_HUNTER"
 
 using namespace kai;
 
 namespace kai
 {
 
-class SegNetDemo
+class DroneHunter
 {
 public:
-	SegNetDemo();
-	~SegNetDemo();
+	DroneHunter();
+	~DroneHunter();
 
 	int m_key;
 	bool m_bRun;
@@ -38,7 +38,7 @@ public:
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
-	_SegNet* m_pSegNet;
+	_CascadeDetector* m_pCascade;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

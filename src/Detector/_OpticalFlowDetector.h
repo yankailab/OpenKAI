@@ -64,7 +64,7 @@ public:
 	int 			m_numCar;
 	OPTICALFLOW_OBJECT 	m_pCar[NUM_OPTICALFLOW_OBJECT];
 
-	Mat		m_frame;
+	UMat		m_frame;
 //	GpuMat  m_pGMat;
 
 private:

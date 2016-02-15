@@ -23,40 +23,53 @@ public:
 	CamFrame();
 	virtual ~CamFrame();
 
-	void updateFrame(GpuMat* pGpuFrame);
-	void updateFrame(Mat* pFrame);
-	void updateFrame(CamFrame* pFrame);
+	void update(Mat* pFrame);
+	void update(CamFrame* pFrame);
 
 	void switchFrame(void);
-	void updateFrameSwitch(GpuMat* pGpuFrame);
-	void updateFrameSwitch(Mat* pFrame);
-	void updateFrameSwitch(CamFrame* pFrame);
+	void updateSwitch(Mat* pFrame);
+	void updateSwitch(CamFrame* pFrame);
 
 	void getResizedOf(CamFrame* pFrom, int width, int height);
 	void getGrayOf(CamFrame* pFrom);
 	void getHSVOf(CamFrame* pFrom);
 	void getBGRAOf(CamFrame* pFrom);
 	void get8UC3Of(CamFrame* pFrom);
-	GpuMat* getCurrentFrame(void);
-	GpuMat* getPreviousFrame(void);
 
 	bool isNewerThan(CamFrame* pFrame);
 	uint64_t getFrameID(void);
 	bool	 empty(void);
 
-private:
-	//Time for last update, updated in each frame update
-	uint64_t m_frameID;
+//	Mat* getCurrent(void);
+//	Mat* getPrevious(void);
 
-	//index to m_pFrame
-	unsigned char m_iFrame;
+#ifdef USE_CUDA
+	void update(GpuMat* pGpuFrame);
+	void updateSwitch(GpuMat* pGpuFrame);
+	GpuMat* getCurrent(void);
+	GpuMat* getPrevious(void);
+#endif
+
+
+private:
+
+//	//index to m_pFrame
+//	unsigned char m_iFrame_CPU;
+//	//Time for last update, updated in each frame update
+//	uint64_t m_frameID_CPU;
+//	Mat* m_pNext;
+//	Mat* m_pPrev;
+//	Mat  m_pFrame[2];
+//	Mat  m_Mat;
+
+#ifdef USE_CUDA
+	unsigned char m_iFrame_GPU;
+	uint64_t m_frameID_GPU;
 	GpuMat* m_pNext;
 	GpuMat* m_pPrev;
 	GpuMat  m_pFrame[2];
-	GpuMat  m_GMat;
-
 	cuda::Stream		m_cudaStream;
-
+#endif
 
 };
 

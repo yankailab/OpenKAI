@@ -113,15 +113,15 @@ void _ObjectDetector::update(void)
 void _ObjectDetector::updateFrame(CamFrame* pFrame, CamFrame* pGray)
 {
 	if(pFrame==NULL)return;
-	if(pFrame->getCurrentFrame()->empty())return;
+	if(pFrame->getCurrent()->empty())return;
 	if(pGray==NULL)return;
-	if(pGray->getCurrentFrame()->empty())return;
+	if(pGray->getCurrent()->empty())return;
 
-	m_pFrame->updateFrame(pFrame);
-	m_pGMat = m_pFrame->getCurrentFrame();
+	m_pFrame->update(pFrame);
+	m_pGMat = m_pFrame->getCurrent();
 	m_pGMat->download(m_Mat);
 
-	m_pGray = pGray->getCurrentFrame();
+	m_pGray = pGray->getCurrent();
 
 	this->wakeupThread();
 }
@@ -146,7 +146,7 @@ void _ObjectDetector::findObjectByContour(void)
 	}
 
 	m_pContourFrame->switchFrame();
-	GpuMat* pThr = m_pContourFrame->getCurrentFrame();
+	GpuMat* pThr = m_pContourFrame->getCurrent();
 
 	m_pCanny->detect(*m_pGray, *pThr);
 
@@ -204,7 +204,7 @@ void _ObjectDetector::findObjectBySaliency(void)
 		spec.computeBinaryMap(m_saliencyMat, m_binMat);
 
 		m_pSaliencyFrame->switchFrame();
-		m_pSaliencyFrame->updateFrame(&m_saliencyMat);
+		m_pSaliencyFrame->update(&m_saliencyMat);
 	}
 }
 

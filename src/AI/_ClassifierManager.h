@@ -39,7 +39,7 @@ public:
 	_ClassifierManager();
 	virtual ~_ClassifierManager();
 
-	bool addObject(uint64_t frameID, Mat* pMat, Rect* pRect,
+	bool addObject(uint64_t frameID, Mat* pUMat, Rect* pRect,
 			vector<Point>* pContour);
 	void classifyObject(void);
 

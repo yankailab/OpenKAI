@@ -127,8 +127,8 @@ void _DenseFlow::detect(void)
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
 
-	pPrev = m_pFlowFrame->getPreviousFrame();
-	pNext = m_pFlowFrame->getCurrentFrame();
+	pPrev = m_pFlowFrame->getPrevious();
+	pNext = m_pFlowFrame->getCurrent();
 
 	if(pPrev->empty())return;
 	if(pNext->empty())return;

@@ -7,9 +7,11 @@
 
 #include "CamInput.h"
 
-namespace kai {
+namespace kai
+{
 
-CamInput::CamInput() {
+CamInput::CamInput()
+{
 	m_width = 0;
 	m_height = 0;
 	m_centerH = 0;
@@ -23,10 +25,12 @@ CamInput::CamInput() {
 	m_rotPrev = 0;
 }
 
-CamInput::~CamInput() {
+CamInput::~CamInput()
+{
 }
 
-bool CamInput::setup(JSON* pJson, string camName) {
+bool CamInput::setup(JSON* pJson, string camName)
+{
 	string calibFile;
 
 	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ID", &m_camDeviceID));
@@ -37,9 +41,11 @@ bool CamInput::setup(JSON* pJson, string camName) {
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
 
-	if (pJson->getVal("CAM_" + camName + "_CALIBFILE", &calibFile)) {
+	if (pJson->getVal("CAM_" + camName + "_CALIBFILE", &calibFile))
+	{
 		FileStorage fs(calibFile, FileStorage::READ);
-		if (!fs.isOpened()) {
+		if (!fs.isOpened())
+		{
 			LOG(ERROR)<<"Camera calibration file not found";
 			m_bCalibration = false;
 		}
@@ -65,7 +71,7 @@ bool CamInput::setup(JSON* pJson, string camName) {
 				initUndistortRectifyMap(
 						m_cameraMat,
 						m_distCoeffs,
-						Mat(),
+						UMat(),
 						getOptimalNewCameraMatrix(
 								m_cameraMat,
 								m_distCoeffs,
@@ -90,9 +96,11 @@ bool CamInput::setup(JSON* pJson, string camName) {
 	return true;
 }
 
-bool CamInput::openCamera(void) {
+bool CamInput::openCamera(void)
+{
 	m_camera.open(m_camDeviceID);
-	if (!m_camera.isOpened()) {
+	if (!m_camera.isOpened())
+	{
 		LOG(ERROR)<< "Cannot open camera:" << m_camDeviceID;
 		return false;
 	}
@@ -106,24 +114,28 @@ bool CamInput::openCamera(void) {
 	return true;
 }
 
-GpuMat* CamInput::readFrame(void) {
+GpuMat* CamInput::readFrame(void)
+{
 	GpuMat* pSrc;
 	GpuMat* pDest;
 	GpuMat* pTmp;
 
-	while (!m_camera.read(m_frame));
+	while (!m_camera.read(m_frame))
+		;
 
 	m_Gframe.upload(m_frame);
 
 	pSrc = &m_Gframe;
 	pDest = &m_Gframe2;
 
-	if (m_bCalibration) {
+	if (m_bCalibration)
+	{
 		cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
 		SWAP(pSrc, pDest, pTmp);
 	}
 
-	if (m_bGimbal) {
+	if (m_bGimbal)
+	{
 		cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
 		SWAP(pSrc, pDest, pTmp);
 	}
@@ -131,8 +143,8 @@ GpuMat* CamInput::readFrame(void) {
 	return pSrc;
 }
 
-void CamInput::setAttitude(double rollRad, double pitchRad,
-		uint64_t timestamp) {
+void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
+{
 	Point2f center(m_centerH, m_centerV);
 	double deg = -rollRad * 180.0 * OneOvPI;
 

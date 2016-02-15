@@ -119,11 +119,11 @@ bool ExtCamControl::start(JSON* pJson)
 bool ExtCamControl::showScreenMarkerDetector(void)
 {
 	int i;
-	Mat imMat;
+	UMat imMat;
 	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
 
-	if (pFrame->getCurrentFrame()->empty())return false;
-	pFrame->getCurrentFrame()->download(imMat);
+	if (pFrame->getCurrent()->empty())return false;
+	pFrame->getCurrent()->download(imMat);
 
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat, "Marker Detector FPS: "+f2str(m_pMD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
@@ -147,10 +147,10 @@ bool ExtCamControl::showScreenMarkerDetector(void)
 void ExtCamControl::showScreenBgFgDetector(void)
 {
 	int i;
-	Mat imMat, imMat2;
+	UMat imMat, imMat2;
 	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
 
-	if(pFrame->getCurrentFrame()->empty())return;
+	if(pFrame->getCurrent()->empty())return;
 	if(m_pBgFgD->m_Mat.empty())return;
 	if(m_pBgFgD->m_gFg.empty())return;
 
@@ -179,7 +179,7 @@ void ExtCamControl::showScreenBgFgDetector(void)
 
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-void ExtCamControl::showInfo(Mat* pDisplayMat)
+void ExtCamControl::showInfo(UMat* pDisplayMat)
 {
 	char strBuf[512];
 	std::string strInfo;

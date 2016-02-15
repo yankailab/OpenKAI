@@ -61,7 +61,7 @@ public:
 	int		m_objLockLevel;
 
 	_CamStream*		m_pCamStream;
-	Mat				m_Mat;
+	UMat				m_Mat;
 
 #ifdef USE_CUDA
 	int		m_cudaDeviceID;

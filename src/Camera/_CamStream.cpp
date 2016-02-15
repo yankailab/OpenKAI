@@ -115,7 +115,7 @@ void _CamStream::update(void)
 
 		if(this->mutexTrylock(CAMSTREAM_MUTEX_ORIGINAL))
 		{
-			m_pFrameL->updateFrameSwitch(pNewInput);
+			m_pFrameL->updateSwitch(pNewInput);
 			this->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
 		}
 		else

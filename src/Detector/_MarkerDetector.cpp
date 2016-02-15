@@ -96,7 +96,7 @@ void _MarkerDetector::detect(void)
 	matHSV[1] = m_Sat;
 	matHSV[2] = m_Val;
 
-	cuda::split(*(pHSV->getCurrentFrame()), matHSV);
+	cuda::split(*(pHSV->getCurrent()), matHSV);
 
 	m_Hue = matHSV[0];
 	m_Sat = matHSV[1];

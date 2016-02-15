@@ -1,37 +1,37 @@
-#include "SegNetDemo.h"
+#include "DroneHunter.h"
 
-SegNetDemo* g_pSegNetDemo;
-void onMouseSegNet(int event, int x, int y, int flags, void* userdata)
+DroneHunter* g_pDroneHunter;
+void onMouseDroneHunter(int event, int x, int y, int flags, void* userdata)
 {
-	g_pSegNetDemo->handleMouse(event,x,y,flags);
+	g_pDroneHunter->handleMouse(event,x,y,flags);
 }
 
 
 namespace kai
 {
 
-SegNetDemo::SegNetDemo()
+DroneHunter::DroneHunter()
 {
 }
 
-SegNetDemo::~SegNetDemo()
+DroneHunter::~DroneHunter()
 {
 }
 
 
-bool SegNetDemo::start(JSON* pJson)
+bool DroneHunter::start(JSON* pJson)
 {
-	g_pSegNetDemo = this;
+	g_pDroneHunter = this;
 
 	//Init Camera
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
-	//Init SegNet
-	m_pSegNet = new _SegNet();
-	m_pSegNet->init("DEFAULT",pJson);
-	m_pSegNet->m_pFrame = m_pCamFront->m_pFrameL;
-	m_pSegNet->m_pCamStream = m_pCamFront;
+		//Init Fast Detector
+	m_pCascade = new _CascadeDetector();
+	m_pCascade->init("DRONE", pJson);
+	m_pCascade->m_pGray = m_pCamFront->m_pGrayL;
+	m_pCascade->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
 	//Init Autopilot
@@ -65,13 +65,13 @@ bool SegNetDemo::start(JSON* pJson)
 //	m_pMavlink->start();
 //	m_pDF->start();
 //	m_pAP->start();
-	m_pSegNet->start();
+	m_pCascade->start();
 
 	//UI thread
 	m_bRun = true;
 	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
 	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	setMouseCallback(APP_NAME, onMouseSegNet, NULL);
+	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
 
 	while (m_bRun)
 	{
@@ -88,10 +88,10 @@ bool SegNetDemo::start(JSON* pJson)
 	}
 
 //	m_pAP->stop();
-	m_pSegNet->stop();
+	m_pCascade->stop();
 //	m_pMavlink->stop();
 
-	m_pSegNet->complete();
+	m_pCascade->complete();
 //	m_pDF->complete();
 //	m_pAP->complete();
 //	m_pCamFront->complete();
@@ -102,34 +102,40 @@ bool SegNetDemo::start(JSON* pJson)
 //	delete m_pMavlink;
 //	delete m_pDF;
 	delete m_pCamFront;
-	delete m_pSegNet;
+	delete m_pCascade;
 
 	return 0;
 
 }
 
-void SegNetDemo::showScreen(void)
+void DroneHunter::showScreen(void)
 {
 	int i;
-	UMat imMat,imMat2,imMat3;
+	UMat imMat;
 	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
 
 	if (pFrame->getCurrent()->empty())return;
-//	if (g_pShow->isNewerThan(pFrame))return;
-	if (m_pSegNet->m_segment.empty())return;
-
 	pFrame->getCurrent()->download(imMat);
 
-	m_pMat->update(&m_pSegNet->m_segment);
-	m_pMat2->getResizedOf(m_pMat, imMat.cols,imMat.rows);
-	m_pMat2->getCurrent()->download(imMat2);
+	CASCADE_OBJECT* pDrone;
+	int iTarget = 0;
 
-	cv::addWeighted(imMat, 1.0, imMat2, 0.5, 0.0, imMat3);
+	for (i = 0; i < m_pCascade->m_numObj; i++)
+	{
+		pDrone = &m_pCascade->m_pObj[i];
+		if(pDrone->m_status != OBJ_ADDED)continue;
 
-	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "SegNet FPS: "+f2str(m_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+		if(iTarget == 0)iTarget = i;
+		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
+	}
 
-	imshow(APP_NAME,imMat3);
+	pDrone = &m_pCascade->m_pObj[iTarget];
+	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+
+	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	imshow(APP_NAME,imMat);
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();
@@ -138,7 +144,7 @@ void SegNetDemo::showScreen(void)
 
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-void SegNetDemo::showInfo(UMat* pDisplayMat)
+void DroneHunter::showInfo(UMat* pDisplayMat)
 {
 	char strBuf[512];
 	std::string strInfo;
@@ -169,7 +175,7 @@ void SegNetDemo::showInfo(UMat* pDisplayMat)
 
 }
 
-void SegNetDemo::handleKey(int key)
+void DroneHunter::handleKey(int key)
 {
 	switch (key)
 	{
@@ -200,7 +206,7 @@ void SegNetDemo::handleKey(int key)
 	}
 }
 
-void SegNetDemo::handleMouse(int event, int x, int y, int flags)
+void DroneHunter::handleMouse(int event, int x, int y, int flags)
 {
 
 	switch (event)

@@ -5,6 +5,7 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/saliency.hpp"
+using namespace cv;
 
 #ifdef USE_CUDA
 #include "opencv2/cudaobjdetect.hpp"
@@ -15,7 +16,6 @@
 #include "opencv2/cudastereo.hpp"
 #include "opencv2/cudawarping.hpp"
 #include "opencv2/cudabgsegm.hpp"
+using namespace cv::cuda;
 #endif
 
-using namespace cv;
-using namespace cv::cuda;

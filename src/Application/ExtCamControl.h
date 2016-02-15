@@ -59,7 +59,7 @@ public:
 	void showScreenBgFgDetector(void);
 
 	void handleMouse(int event, int x, int y, int flags);
-	void showInfo(Mat* pDisplayMat);
+	void showInfo(UMat* pDisplayMat);
 	void handleKey(int key);
 	void printEnvironment(void);
 
