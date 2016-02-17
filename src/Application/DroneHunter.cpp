@@ -30,7 +30,7 @@ bool DroneHunter::start(JSON* pJson)
 		//Init Fast Detector
 	m_pCascade = new _CascadeDetector();
 	m_pCascade->init("DRONE", pJson);
-	m_pCascade->m_pGray = m_pCamFront->m_pGrayL;
+	m_pCascade->m_pGray = m_pCamFront->getLastGrayFrame();//m_pCamFront->m_pGrayL;
 	m_pCascade->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
@@ -111,11 +111,11 @@ bool DroneHunter::start(JSON* pJson)
 void DroneHunter::showScreen(void)
 {
 	int i;
-	UMat imMat;
-	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
+	Mat imMat;
+	CamFrame* pFrame = m_pCamFront->getLastFrame();// (*m_pCamFront->m_pFrameProcess);
 
-	if (pFrame->getCurrent()->empty())return;
-	pFrame->getCurrent()->download(imMat);
+	if (pFrame->empty())return;
+	pFrame->getGMat()->download(imMat);
 
 	CASCADE_OBJECT* pDrone;
 	int iTarget = 0;

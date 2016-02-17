@@ -17,6 +17,31 @@
 namespace kai
 {
 
+struct CPU_MAT
+{
+	uint64_t m_frameID;
+	Mat m_mat;
+};
+
+#ifdef USE_CUDA
+struct GPU_MAT
+{
+	//	//Time for last update, updated in each frame update
+	uint64_t m_frameID;
+	GpuMat m_mat;
+};
+#endif
+
+#ifdef USE_OPENCL
+struct U_MAT
+{
+	uint64_t m_frameID;
+	UMat m_mat;
+};
+#endif
+
+
+
 class CamFrame
 {
 public:
@@ -25,50 +50,33 @@ public:
 
 	void update(Mat* pFrame);
 	void update(CamFrame* pFrame);
+	void updatedCMat(void);
 
-	void switchFrame(void);
-	void updateSwitch(Mat* pFrame);
-	void updateSwitch(CamFrame* pFrame);
-
+	Mat* getCMat(void);
 	void getResizedOf(CamFrame* pFrom, int width, int height);
 	void getGrayOf(CamFrame* pFrom);
 	void getHSVOf(CamFrame* pFrom);
 	void getBGRAOf(CamFrame* pFrom);
 	void get8UC3Of(CamFrame* pFrom);
 
+	Size getSize(void);
+
 	bool isNewerThan(CamFrame* pFrame);
 	uint64_t getFrameID(void);
 	bool	 empty(void);
 
-//	Mat* getCurrent(void);
-//	Mat* getPrevious(void);
-
 #ifdef USE_CUDA
 	void update(GpuMat* pGpuFrame);
-	void updateSwitch(GpuMat* pGpuFrame);
-	GpuMat* getCurrent(void);
-	GpuMat* getPrevious(void);
+	void updatedGMat(void);
+	GpuMat* getGMat(void);
 #endif
 
-
 private:
-
-//	//index to m_pFrame
-//	unsigned char m_iFrame_CPU;
-//	//Time for last update, updated in each frame update
-//	uint64_t m_frameID_CPU;
-//	Mat* m_pNext;
-//	Mat* m_pPrev;
-//	Mat  m_pFrame[2];
-//	Mat  m_Mat;
+	CPU_MAT	m_CMat;
 
 #ifdef USE_CUDA
-	unsigned char m_iFrame_GPU;
-	uint64_t m_frameID_GPU;
-	GpuMat* m_pNext;
-	GpuMat* m_pPrev;
-	GpuMat  m_pFrame[2];
-	cuda::Stream		m_cudaStream;
+	GPU_MAT	m_GMat;
+	cuda::Stream	m_cudaStream;
 #endif
 
 };

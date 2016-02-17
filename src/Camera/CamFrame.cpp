@@ -12,12 +12,13 @@ namespace kai
 
 CamFrame::CamFrame()
 {
-	m_frameID_GPU = 0;
+	//Common
+	m_CMat.m_frameID = 0;
 
-	m_iFrame_GPU = 0;
-	m_pPrev = &m_pFrame[m_iFrame_GPU];
-	m_iFrame_GPU = 1 - m_iFrame_GPU;
-	m_pNext = &m_pFrame[m_iFrame_GPU];
+#ifdef USE_CUDA
+	m_GMat.m_frameID = 0;
+#endif
+
 }
 
 CamFrame::~CamFrame()
@@ -27,21 +28,26 @@ CamFrame::~CamFrame()
 void CamFrame::getResizedOf(CamFrame* pFrom, int width, int height)
 {
 	if(!pFrom)return;
-	if(pFrom->getCurrent()->empty())return;
+	if(pFrom->empty())return;
 
 	cv::Size newSize = cv::Size(width,height);
 
-	if(newSize == pFrom->getCurrent()->size())
+	if(newSize == pFrom->getSize())//pFrom->getNextGMat()->size())
 	{
 		this->update(pFrom);
 	}
 	else
 	{
-		cuda::resize(*pFrom->getCurrent(), *m_pNext, newSize);
-//		cuda::resize(*pFrom->getCurrentFrame(), m_GMat, newSize);
-//		this->updateFrame(&m_GMat);
+#ifdef USE_CUDA
+		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+		updatedGMat();
+#elif USE_OPENCL
 
-		m_frameID_GPU = get_time_usec();
+#else
+		cv::resize(*pFrom->getNextCMat(), m_CMat.m_mat, newSize);
+		updatedCMat();
+#endif
+
 	}
 
 }
@@ -51,67 +57,97 @@ void CamFrame::getGrayOf(CamFrame* pFrom)
 	if(!pFrom)return;
 
 #ifdef USE_CUDA
-	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2GRAY);//,0, m_cudaStream);
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);//,0, m_cudaStream);
+	//	m_cudaStream.waitForCompletion();
+#elif USE_OPENCL
+
 #else
-	cv::cvtColor(pFrom->get);
+	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2GRAY);
 #endif
 
-//	m_cudaStream.waitForCompletion();
 }
 
 void CamFrame::getHSVOf(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
+#ifdef USE_CUDA
 	//RGB or BGR depends on device
-	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2HSV);
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+#elif USE_OPENCL
+
+#else
+	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2HSV);
+#endif
+
 }
 
 void CamFrame::getBGRAOf(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
-	cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_BGR2BGRA);
+#ifdef USE_CUDA
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+#elif USE_OPENCL
+
+#else
+	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2BGRA);
+#endif
+
 }
 
 void CamFrame::get8UC3Of(CamFrame* pFrom)
 {
 	if(!pFrom)return;
 
-	if(pFrom->getCurrent()->type()==CV_8UC3)
+#ifdef USE_CUDA
+	if(pFrom->getGMat()->type()==CV_8UC3)
 	{
-		pFrom->getCurrent()->copyTo(*m_pNext);
+		pFrom->getGMat()->copyTo(m_GMat.m_mat);
 	}
 	else
 	{
-		cuda::cvtColor(*pFrom->getCurrent(), *m_pNext, CV_GRAY2BGR);
+		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 	}
-}
+#elif USE_OPENCL
 
-GpuMat* CamFrame::getCurrent(void)
-{
-	return m_pNext;
-}
+#else
+	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_GRAY2BGR);
+#endif
 
-GpuMat* CamFrame::getPrevious(void)
-{
-	return m_pPrev;
 }
 
 uint64_t CamFrame::getFrameID(void)
 {
-	return m_frameID_GPU;
+	uint64_t frameID = m_CMat.m_frameID;
+
+#ifdef USE_CUDA
+	if(frameID < m_GMat.m_frameID)frameID = m_GMat.m_frameID;
+#elif USE_OPENCL
+
+#endif
+
+	return frameID;
 }
 
 bool CamFrame::empty(void)
 {
-	return m_pNext->empty();
+	bool bEmpty = true;
+	if(!m_CMat.m_mat.empty())bEmpty = false;
+
+#ifdef USE_CUDA
+	if(!m_GMat.m_mat.empty())bEmpty = false;
+#elif USE_OPENCL
+
+#endif
+
+	return bEmpty;
 }
 
 bool CamFrame::isNewerThan(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return false;
-	if(pFrame->getFrameID() < m_frameID_GPU)
+	if(pFrame->getFrameID() < this->getFrameID())// m_GMat.m_frameID)
 	{
 		return true;
 	}
@@ -119,98 +155,108 @@ bool CamFrame::isNewerThan(CamFrame* pFrame)
 	return false;
 }
 
-void CamFrame::switchFrame(void)
-{
-	//switch the current frame and old frame
-	m_pPrev = m_pNext;
-	m_iFrame_GPU = 1 - m_iFrame_GPU;
-	m_pNext = &m_pFrame[m_iFrame_GPU];
-}
-
 void CamFrame::update(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	pFrame->getCurrent()->copyTo(*m_pNext);
-	m_frameID_GPU = get_time_usec();
+#ifdef USE_CUDA
+	pFrame->getGMat()->copyTo(m_GMat.m_mat);
+	updatedGMat();
+#elif USE_OPENCL
+
+#else
+	pFrame->getCMat()->copyTo(m_CMat.m_mat);
+	updatedCMat();
+#endif
 }
 
-
+#ifdef USE_CUDA
 void CamFrame::update(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
-	pGpuFrame->copyTo(*m_pNext);
-	m_frameID_GPU = get_time_usec();
+	pGpuFrame->copyTo(m_GMat.m_mat);
+	updatedGMat();
 }
+#endif
 
 void CamFrame::update(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
-	m_pNext->upload(*pFrame);
-	m_frameID_GPU = get_time_usec();
+#ifdef USE_CUDA
+	m_GMat.m_mat.upload(*pFrame);
+	updatedGMat();
+#elif USE_OPENCL
+
+#else
+	pFrame->copyTo(m_CMat.m_mat);
+	updatedCMat();
+#endif
 }
 
-
-void CamFrame::updateSwitch(CamFrame* pFrame)
+void CamFrame::updatedCMat(void)
 {
-	if (pFrame == NULL)return;
-
-	//Prepare the destination
-	GpuMat* pDest = m_pPrev;
-
-	//Pointer both frames to the one not being transfered temporarily
-	m_pPrev = m_pNext;
-
-	pFrame->getCurrent()->copyTo(*pDest);
-
-	//Update the pointer to the latest frame
-	m_iFrame_GPU = 1 - m_iFrame_GPU;
-	m_pNext = &m_pFrame[m_iFrame_GPU];
-
-	m_frameID_GPU = get_time_usec();
+	m_CMat.m_frameID = get_time_usec();
 }
 
-
-void CamFrame::updateSwitch(GpuMat* pGpuFrame)
+#ifdef USE_CUDA
+void CamFrame::updatedGMat(void)
 {
-	if (pGpuFrame == NULL)return;
-
-	//Prepare the destination
-	GpuMat* pDest = m_pPrev;
-
-	//Pointer both frames to the one not being transfered temporarily
-	m_pPrev = m_pNext;
-
-	pGpuFrame->copyTo(*pDest);
-
-	//Update the pointer to the latest frame
-	m_iFrame_GPU = 1 - m_iFrame_GPU;
-	m_pNext = &m_pFrame[m_iFrame_GPU];
-
-	m_frameID_GPU = get_time_usec();
+	m_GMat.m_frameID = get_time_usec();
 }
+#endif
 
-void CamFrame::updateSwitch(Mat* pFrame)
+#ifdef USE_CUDA
+GpuMat* CamFrame::getGMat(void)
 {
-	if (pFrame == NULL)return;
+	//Return the latest content
+	if(m_CMat.m_frameID > m_GMat.m_frameID)
+	{
+		m_GMat.m_mat.upload(m_CMat.m_mat);
+		m_GMat.m_frameID = m_CMat.m_frameID;
+	}
 
-	//Prepare the destination
-	GpuMat* pDest = m_pPrev;
-
-	//Pointer both frames to the one not being transfered temporarily
-	m_pPrev = m_pNext;
-
-	pDest->upload(*pFrame);
-
-	//Update the pointer to the latest frame
-	m_iFrame_GPU = 1 - m_iFrame_GPU;
-	m_pNext = &m_pFrame[m_iFrame_GPU];
-
-	m_frameID_GPU = get_time_usec();
-
+	return &m_GMat.m_mat;
 }
+#endif
+
+Mat* CamFrame::getCMat(void)
+{
+#ifdef USE_CUDA
+	//Return the latest content
+	if(m_GMat.m_frameID > m_CMat.m_frameID)
+	{
+		m_GMat.m_mat.download(m_CMat.m_mat);
+		m_CMat.m_frameID = m_GMat.m_frameID;
+	}
+#endif
+
+	return &m_CMat.m_mat;
+}
+
+Size CamFrame::getSize(void)
+{
+	Size mySize = Size(0,0);
+	mySize = m_CMat.m_mat.size();
+
+#ifdef USE_CUDA
+	if(m_GMat.m_frameID > m_CMat.m_frameID)
+	{
+		mySize = m_GMat.m_mat.size();
+	}
+#elif USE_OPENCL
+
+#endif
+
+	return mySize;
+}
+
+
+
+
+
+
 
 
 }

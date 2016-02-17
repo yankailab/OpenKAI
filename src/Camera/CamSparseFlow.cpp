@@ -46,7 +46,7 @@ bool CamSparseFlow::init(void)
 	return true;
 }
 
-fVector4 CamSparseFlow::detect(CamFrame* pFrame)
+fVector4 CamSparseFlow::detect(_CamStream* pCamStream)
 {
 #ifdef USE_CUDA
 	GpuMat d_prevPts;
@@ -66,8 +66,9 @@ fVector4 CamSparseFlow::detect(CamFrame* pFrame)
 	double distSQMax;
 	double vBase;
 
-	GpuMat* pPrev = pFrame->getPrevious();
-	GpuMat* pNext = pFrame->getCurrent();
+	FrameGroup* pFrameGroup = pCamStream->getFrameGroup();
+	GpuMat* pPrev = pFrameGroup->getPrevFrame()->getGMat();
+	GpuMat* pNext = pFrameGroup->getLastFrame()->getGMat();
 
 	distSQMin = 1;
 	distSQMax = (pNext->cols + pNext->rows)*0.15;

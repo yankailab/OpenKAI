@@ -12,7 +12,7 @@
 #include "stdio.h"
 #include "../Base/cvplatform.h"
 
-#include "CamFrame.h"
+#include "_CamStream.h"
 
 namespace kai
 {
@@ -24,7 +24,7 @@ public:
 	virtual ~CamSparseFlow();
 
 	bool init(void);
-	fVector4 detect(CamFrame* pFrame);
+	fVector4 detect(_CamStream* pFrame);
 
 private:
 	fVector4 m_flow;

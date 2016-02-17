@@ -127,21 +127,21 @@ void UIMonitor::show(void)
 		//Ignore if empty
 		pMFrame = &m_pFrame[i];
 		pFrame = pMFrame->m_pFrame;
-		if(pFrame->getCurrent()->empty())continue;
+		if(pFrame->getGMat()->empty())continue;
 
 		//Resize and download
 //		pFrame->getResized(pMFrame->m_w, pMFrame->m_h, &m_camFrame);
 		m_camFrame.getResizedOf(pFrame, pMFrame->m_w, pMFrame->m_h);
 
 		//Convert color mode if necesary
-		if(m_camFrame.getCurrent()->type() != m_showFrame.type())
+		if(m_camFrame.getGMat()->type() != m_showFrame.type())
 		{
 			m_camFrame2.get8UC3Of(&m_camFrame);
-			m_camFrame2.getCurrent()->download(m_frame);
+			m_camFrame2.getGMat()->download(m_frame);
 		}
 		else
 		{
-			m_camFrame.getCurrent()->download(m_frame);
+			m_camFrame.getGMat()->download(m_frame);
 		}
 
 		//Copy to show frame

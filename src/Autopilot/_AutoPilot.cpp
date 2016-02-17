@@ -203,7 +203,7 @@ void _AutoPilot::update(void)
 		this->updateTime();
 
 		pCam = &m_pCamStream[CAM_FRONT];
-		pFrame = *(pCam->m_pCam->m_pFrameProcess);
+		pFrame = pCam->m_pCam->getLastFrame();//*(pCam->m_pCam->m_pFrameProcess);
 
 		//TODO
 //		if(pFrame->isNewThan(pCam->m_frameID))

@@ -30,7 +30,6 @@ bool SegNetDemo::start(JSON* pJson)
 	//Init SegNet
 	m_pSegNet = new _SegNet();
 	m_pSegNet->init("DEFAULT",pJson);
-	m_pSegNet->m_pFrame = m_pCamFront->m_pFrameL;
 	m_pSegNet->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
@@ -111,18 +110,17 @@ bool SegNetDemo::start(JSON* pJson)
 void SegNetDemo::showScreen(void)
 {
 	int i;
-	UMat imMat,imMat2,imMat3;
-	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
+	Mat imMat,imMat2,imMat3;
+	CamFrame* pFrame = m_pCamFront->getLastFrame();// (*m_pCamFront->m_pFrameProcess);
 
-	if (pFrame->getCurrent()->empty())return;
-//	if (g_pShow->isNewerThan(pFrame))return;
+	if (pFrame->getGMat()->empty())return;
 	if (m_pSegNet->m_segment.empty())return;
 
-	pFrame->getCurrent()->download(imMat);
+	pFrame->getGMat()->download(imMat);
 
 	m_pMat->update(&m_pSegNet->m_segment);
 	m_pMat2->getResizedOf(m_pMat, imMat.cols,imMat.rows);
-	m_pMat2->getCurrent()->download(imMat2);
+	m_pMat2->getGMat()->download(imMat2);
 
 	cv::addWeighted(imMat, 1.0, imMat2, 0.5, 0.0, imMat3);
 
@@ -130,9 +128,6 @@ void SegNetDemo::showScreen(void)
 	putText(imMat3, "SegNet FPS: "+f2str(m_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat3);
-
-//	g_pShow->updateFrame(&imMat3);
-//	g_pUIMonitor->show();
 
 }
 

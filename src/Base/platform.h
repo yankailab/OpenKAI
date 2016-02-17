@@ -4,7 +4,7 @@
 //#define PLATFORM_MAC
 
 #define USE_CUDA
-
+//#define USE_OPENCL
 
 #ifdef PLATFORM_WIN
 #endif

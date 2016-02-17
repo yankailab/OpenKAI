@@ -73,22 +73,22 @@ private:
 		return NULL;
 	}
 
+public:
+	_CamStream* m_pCamStream;
+	int			m_cudaDeviceID;
+	Mat m_segment;
+
 private:
 	shared_ptr<Net<float> > net_;
 	Size m_InputSize;
 	int m_NumChannels;
 	Mat m_labelColor;
-
 	Ptr<LookUpTable>	m_pGpuLUT;
 
-public:
 	CamFrame* m_pFrame;
 	CamFrame* m_pSegment;
 	Mat m_frame;
-	Mat m_segment;
 
-	_CamStream* m_pCamStream;
-	int			m_cudaDeviceID;
 
 
 };

@@ -122,24 +122,6 @@ void _SegNet::segment(void)
 
 }
 
-//void _SegNet::updateFrame(CamFrame* pFrame)
-//{
-//	if(pFrame==NULL)return;
-//	if(pFrame->getCurrentFrame()->empty())return;
-//
-//	if(m_pFrame)
-//	{
-//		if(m_pFrame->isNewerThan(pFrame))return;
-//	}
-//
-//	m_pFrame = pFrame;
-//
-////	m_pFrame->updateFrame(pFrame);
-////	m_pFrame->getCurrentFrame()->download(m_frame);
-//
-//	this->wakeupThread();
-//}
-
 
 /* Wrap the input layer of the network in separate cv::Mat objects
  * (one per channel). This way we save one memcpy operation and we
@@ -200,12 +182,12 @@ void _SegNet::Preprocess(const cv::Mat& img,
 
 
 
-
-
 void _SegNet::segmentGPU(void)
 {
+	m_pFrame = m_pCamStream->getLastFrame();
+
 	if(m_pFrame==NULL)return;
-	if(m_pFrame->getCurrent()->empty())return;
+	if(m_pFrame->empty())return;
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, m_NumChannels, m_InputSize.height, m_InputSize.width);
@@ -223,9 +205,10 @@ void _SegNet::segmentGPU(void)
 	GpuMat uimg,uimg3;
 	segIdx.convertTo(uimg, CV_8UC1);
 	cv::cuda::cvtColor(uimg, uimg3, CV_GRAY2BGR);
-	m_pGpuLUT->transform(uimg3,*m_pSegment->getCurrent());
+	m_pGpuLUT->transform(uimg3,*m_pSegment->getGMat());
+	m_pSegment->updatedGMat();
 
-	m_pSegment->getCurrent()->download(m_segment);
+	m_segment = *m_pSegment->getCMat();
 }
 
 
@@ -252,9 +235,9 @@ void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
 {
 	/* Convert the input image to the input image format of the network. */
 	cv::cuda::GpuMat sample;
-	GpuMat* pGMat = m_pFrame->getCurrent();
+	GpuMat* pGMat = m_pFrame->getGMat();
 
-	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_ORIGINAL);
+//	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_ORIGINAL);
 
 	if (pGMat->channels() == 3 && m_NumChannels == 1)
 		cv::cuda::cvtColor(*pGMat, sample, CV_BGR2GRAY);
@@ -279,7 +262,7 @@ void _SegNet::PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels)
 	else
 		sample_resized.convertTo(sample_float, CV_32FC1);
 
-	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
+//	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
 
 	/* This operation will write the separate BGR planes directly to the
 	 * input layer of the network because it is wrapped by the cv::Mat

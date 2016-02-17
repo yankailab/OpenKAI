@@ -114,11 +114,12 @@ void _DenseFlow::detect(void)
 //		return;
 //	}
 
-	m_pFlowFrame->switchFrame();
-	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+	return;
+//	m_pFlowFrame->switchFrame();
+//	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
 	m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
 //	m_pGray->getCurrentFrame()->download(matGray);
-	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+//	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 //	m_pFlowFrame->updateFrame(&matGray);
 
@@ -127,8 +128,8 @@ void _DenseFlow::detect(void)
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
 
-	pPrev = m_pFlowFrame->getPrevious();
-	pNext = m_pFlowFrame->getCurrent();
+//	pPrev = m_pFlowFrame->getPrevGMat();
+	pNext = m_pFlowFrame->getGMat();
 
 	if(pPrev->empty())return;
 	if(pNext->empty())return;

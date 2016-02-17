@@ -73,7 +73,6 @@ bool _OpticalFlowDetector::start(void)
 void _OpticalFlowDetector::update(void)
 {
 	int i;
-	CamFrame* pFrame;
 	int tThreadBegin;
 	m_tSleep = TRD_INTERVAL_OPTFLOWDETECTOR;
 
@@ -83,7 +82,6 @@ void _OpticalFlowDetector::update(void)
 
 		if (!m_pCamStream)
 			continue;
-		pFrame = *(m_pCamStream->m_pFrameProcess);
 
 		detect();
 
@@ -97,9 +95,8 @@ void _OpticalFlowDetector::detect(void)
 {
 	int i, j;
 
-	CamFrame* pFrame = *(m_pCamStream->m_pFrameProcess);
-
-	GpuMat* pGray = m_pCamStream->m_pGrayL->getCurrent();
+	CamFrame* pFrame = m_pCamStream->getLastFrame();// *(m_pCamStream->m_pFrameProcess);
+	GpuMat* pGray = m_pCamStream->getLastGrayFrame()->getGMat();//m_pCamStream->m_pGrayL->getGMat();
 	if (pGray->empty())
 		return;
 

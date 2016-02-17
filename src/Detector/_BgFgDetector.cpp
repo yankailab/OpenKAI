@@ -84,13 +84,13 @@ void _BgFgDetector::detect(void)
 	CamFrame* pRGB;
 
 	if(!m_pCamStream)return;
-	pRGB = m_pCamStream->m_pFrameL;
+	pRGB = m_pCamStream->getLastFrame();//m_pCamStream->m_pFrameL;
 	if(pRGB->empty())return;
 
-	m_pBgSubtractor->apply(*pRGB->getCurrent(), m_gFg);
+	m_pBgSubtractor->apply(*pRGB->getGMat(), m_gFg);
 //	m_pBgSubtractor->getBackgroundImage(m_gBg);
 
-	pRGB->getCurrent()->download(m_Mat);
+	pRGB->getGMat()->download(m_Mat);
 	m_gFg.download(matThresh);
 
 	//Find the contours

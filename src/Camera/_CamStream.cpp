@@ -15,60 +15,38 @@ _CamStream::_CamStream()
 	_ThreadBase();
 
 	m_camName = "";
-	m_pCamL = new CamInput();
-	m_pCamR = new CamInput();
-	m_pFrameL = new CamFrame();
-	m_pFrameR = new CamFrame();
-	m_pHSV = new CamFrame();
-	m_pGrayL = new CamFrame();
-	m_pGrayR = new CamFrame();
-	m_pDepth = new CamFrame();
-//	m_pBGRAL = new CamFrame();
-	m_pFrameProcess = &m_pFrameL;
-
-	m_pSparseFlow = new CamSparseFlow();
-	m_pStereo = new CamStereo();
-	m_bStereoCam = false;
+	m_pCamInput = new CamInput();
+	m_pCamFrames = new FrameGroup();
+	m_pGrayFrames = new FrameGroup();
+	m_pHSVframes = new FrameGroup();
 
 	m_bThreadON = false;
 	m_threadID = NULL;
 
 	m_bGray = false;
 	m_bHSV = false;
-	m_cudaDeviceID = 0;
-
 
 }
 
 _CamStream::~_CamStream()
 {
-	RELEASE(m_pCamL);
-	RELEASE(m_pCamR);
-	RELEASE(m_pFrameL);
-	RELEASE(m_pFrameR);
-	RELEASE(m_pHSV);
-	RELEASE(m_pGrayL);
-	RELEASE(m_pGrayR);
-	RELEASE(m_pDepth);
-//	RELEASE(m_pBGRAL);
-
-	RELEASE(m_pSparseFlow);
-	RELEASE(m_pStereo);
-
+	RELEASE(m_pCamInput);
+	RELEASE(m_pCamFrames);
+	RELEASE(m_pGrayFrames);
+	RELEASE(m_pHSVframes);
 }
 
 bool _CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CUDADEVICE_ID", &m_cudaDeviceID));
+//	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CUDADEVICE_ID", &m_cudaDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
-	CHECK_ERROR(m_pCamL->setup(pJson, camName));
+	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
 
-	m_pFrameProcess = &m_pFrameL;
-
-	m_pSparseFlow->init();
-	m_pStereo->init();
+	CHECK_FATAL(m_pCamFrames->init(2));
+	CHECK_FATAL(m_pGrayFrames->init(2));
+	CHECK_FATAL(m_pHSVframes->init(2));
 
 	m_bThreadON = false;
 
@@ -78,15 +56,7 @@ bool _CamStream::init(JSON* pJson, string camName)
 bool _CamStream::start(void)
 {
 	//Open camera
-	CHECK_ERROR(m_pCamL->openCamera());
-
-//	if(m_pCamR->m_camDeviceID != m_pCamL->m_camDeviceID)
-//	{
-//		CHECK_ERROR(m_pCamR->openCamera());
-//		m_bStereoCam = true;
-//
-////		m_pDepth->m_uFrame = Mat(CV_8U));
-//	}
+	CHECK_ERROR(m_pCamInput->openCamera());
 
 	//Start thread
 	m_bThreadON = true;
@@ -102,45 +72,39 @@ bool _CamStream::start(void)
 
 void _CamStream::update(void)
 {
-	int i;
 	GpuMat* pNewInput;
+	CamFrame* pFrame;
+	CamFrame* pGray;
+	CamFrame* pHSV;
+
 	m_tSleep = TRD_INTERVAL_CAMSTREAM;
-	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
 		this->updateTime();
 
-		pNewInput = m_pCamL->readFrame();
+		//Get new input frame
+		pNewInput = m_pCamInput->readFrame();
 
-		if(this->mutexTrylock(CAMSTREAM_MUTEX_ORIGINAL))
-		{
-			m_pFrameL->updateSwitch(pNewInput);
-			this->mutexUnlock(CAMSTREAM_MUTEX_ORIGINAL);
-		}
-		else
-		{
-			continue;
-		}
+		//Update camera frame
+		m_pCamFrames->updateFrameIndex();
+		pFrame = m_pCamFrames->getLastFrame();
+		pFrame->update(pNewInput);
 
+		//Update Gray frame
 		if(m_bGray)
 		{
-			if(this->mutexTrylock(CAMSTREAM_MUTEX_GRAY))
-			{
-				m_pGrayL->switchFrame();
-				m_pGrayL->getGrayOf(*m_pFrameProcess);
-				this->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
-			}
+			m_pGrayFrames->updateFrameIndex();
+			pGray = m_pGrayFrames->getLastFrame();
+			pGray->getGrayOf(pFrame);
 		}
 
+		//Update HSV frame
 		if(m_bHSV)
 		{
-			if(this->mutexTrylock(CAMSTREAM_MUTEX_HSV))
-			{
-				m_pHSV->switchFrame();
-				m_pHSV->getHSVOf(*m_pFrameProcess);
-				this->mutexUnlock(CAMSTREAM_MUTEX_HSV);
-			}
+			m_pHSVframes->updateFrameIndex();
+			pHSV = m_pHSVframes->getLastFrame();
+			pHSV->getHSVOf(pFrame);
 		}
 
 		if(m_tSleep>0)
@@ -154,13 +118,40 @@ void _CamStream::update(void)
 
 bool _CamStream::complete(void)
 {
-	m_pCamL->m_camera.release();
-	if(m_bStereoCam)
-	{
-		m_pCamR->m_camera.release();
-	}
+	m_pCamInput->m_camera.release();
 
 	return true;
 }
+
+CamFrame* _CamStream::getLastFrame(void)
+{
+	return m_pCamFrames->getLastFrame();
+}
+
+CamFrame* _CamStream::getLastGrayFrame(void)
+{
+	return m_pGrayFrames->getLastFrame();
+}
+
+CamFrame* _CamStream::getLastHSVFrame(void)
+{
+	return m_pHSVframes->getLastFrame();
+}
+
+FrameGroup* _CamStream::getFrameGroup(void)
+{
+	return m_pCamFrames;
+}
+
+FrameGroup* _CamStream::getGrayFrameGroup(void)
+{
+	return m_pGrayFrames;
+}
+
+FrameGroup* _CamStream::getHSVFrameGroup(void)
+{
+	return m_pHSVframes;
+}
+
 
 } /* namespace kai */

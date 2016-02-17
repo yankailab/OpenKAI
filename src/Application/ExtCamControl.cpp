@@ -120,10 +120,10 @@ bool ExtCamControl::showScreenMarkerDetector(void)
 {
 	int i;
 	UMat imMat;
-	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
+	CamFrame* pFrame = m_pCamFront->getLastFrame();
 
-	if (pFrame->getCurrent()->empty())return false;
-	pFrame->getCurrent()->download(imMat);
+	if (pFrame->getGMat()->empty())return false;
+	pFrame->getGMat()->download(imMat);
 
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat, "Marker Detector FPS: "+f2str(m_pMD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
@@ -148,9 +148,9 @@ void ExtCamControl::showScreenBgFgDetector(void)
 {
 	int i;
 	UMat imMat, imMat2;
-	CamFrame* pFrame = (*m_pCamFront->m_pFrameProcess);
+	CamFrame* pFrame = m_pCamFront->getLastFrame();
 
-	if(pFrame->getCurrent()->empty())return;
+	if(pFrame->getGMat()->empty())return;
 	if(m_pBgFgD->m_Mat.empty())return;
 	if(m_pBgFgD->m_gFg.empty())return;
 

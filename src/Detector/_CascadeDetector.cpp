@@ -134,9 +134,9 @@ void _CascadeDetector::detect(void)
 		return;
 	iVacant = 0;
 
-	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-	m_pGray->getCurrent()->download(matGray);
-	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+//	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+	m_pGray->getGMat()->download(matGray);
+//	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 //	cv::equalizeHist(matGray, matGray);
 	m_CC.detectMultiScale(matGray, vRect, 1.1, 2, 0 | CASCADE_SCALE_IMAGE,
@@ -205,9 +205,9 @@ void _CascadeDetector::detectCUDA(void)
 
 	if (m_pCascade)
 	{
-		m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-		m_pGray->getCurrent()->copyTo(m_GMat);
-		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
+//		m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+		m_pGray->getGMat()->copyTo(m_GMat);
+//		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 		//	m_pCascade->setFindLargestObject(false);
 		m_pCascade->setScaleFactor(1.2);

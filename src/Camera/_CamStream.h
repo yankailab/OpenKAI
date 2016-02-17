@@ -14,16 +14,13 @@
 
 #include "CamInput.h"
 #include "CamFrame.h"
-#include "CamSparseFlow.h"
-#include "CamStereo.h"
+#include "FrameGroup.h"
 
 #define TRD_INTERVAL_CAMSTREAM 0
 
-#define FRAME_USER_NUM 5
-
-#define CAMSTREAM_MUTEX_ORIGINAL 0
-#define CAMSTREAM_MUTEX_GRAY 1
-#define CAMSTREAM_MUTEX_HSV 2
+//#define CAMSTREAM_MUTEX_ORIGINAL 0
+//#define CAMSTREAM_MUTEX_GRAY 1
+//#define CAMSTREAM_MUTEX_HSV 2
 
 namespace kai
 {
@@ -38,32 +35,25 @@ public:
 	bool start(void);
 	bool complete(void);
 
-//	bool addOriginalUser(CamFrame** ppFrame);
-//	bool addGrayUser(CamFrame** ppFrame);
-//	bool addHSVUser(CamFrame** ppFrame);
+	CamFrame* getLastFrame(void);
+	CamFrame* getLastGrayFrame(void);
+	CamFrame* getLastHSVFrame(void);
+
+	FrameGroup* getFrameGroup(void);
+	FrameGroup* getGrayFrameGroup(void);
+	FrameGroup* getHSVFrameGroup(void);
 
 public:
-	string				m_camName;
-	CamInput*			m_pCamL;
-	CamInput*			m_pCamR;
-	CamFrame*			m_pFrameL;
-	CamFrame*			m_pFrameR;
-	CamFrame**			m_pFrameProcess;
-	CamFrame*			m_pHSV;
-	CamFrame*			m_pGrayL;
-	CamFrame*			m_pGrayR;
-	CamFrame*			m_pDepth;
-//	CamFrame*			m_pBGRAL;
-
-	CamSparseFlow*		m_pSparseFlow;
-	CamStereo*			m_pStereo;
-
-	bool		m_bStereoCam;
-//	bool		m_bSparseFlow;
 	bool		m_bHSV;
 	bool		m_bGray;
 
-	int			m_cudaDeviceID;
+private:
+	string				m_camName;
+	CamInput*			m_pCamInput;
+
+	FrameGroup*			m_pCamFrames;
+	FrameGroup*			m_pGrayFrames;
+	FrameGroup*			m_pHSVframes;
 
 private:
 	void update(void);
