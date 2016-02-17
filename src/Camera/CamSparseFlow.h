@@ -13,6 +13,7 @@
 #include "../Base/cvplatform.h"
 
 #include "_CamStream.h"
+#include "FrameGroup.h"
 
 namespace kai
 {

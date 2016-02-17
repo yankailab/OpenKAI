@@ -66,7 +66,10 @@ fVector4 CamSparseFlow::detect(_CamStream* pCamStream)
 	double distSQMax;
 	double vBase;
 
-	FrameGroup* pFrameGroup = pCamStream->getFrameGroup();
+	fVector4 temp;
+	return temp;
+
+	FrameGroup* pFrameGroup;// = pCamStream->getFrameGroup();
 	GpuMat* pPrev = pFrameGroup->getPrevFrame()->getGMat();
 	GpuMat* pNext = pFrameGroup->getLastFrame()->getGMat();
 

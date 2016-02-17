@@ -14,7 +14,6 @@
 
 #include "CamInput.h"
 #include "CamFrame.h"
-#include "FrameGroup.h"
 
 #define TRD_INTERVAL_CAMSTREAM 0
 
@@ -35,13 +34,9 @@ public:
 	bool start(void);
 	bool complete(void);
 
-	CamFrame* getLastFrame(void);
-	CamFrame* getLastGrayFrame(void);
-	CamFrame* getLastHSVFrame(void);
-
-	FrameGroup* getFrameGroup(void);
-	FrameGroup* getGrayFrameGroup(void);
-	FrameGroup* getHSVFrameGroup(void);
+	CamFrame* getFrame(void);
+	CamFrame* getGrayFrame(void);
+	CamFrame* getHSVFrame(void);
 
 public:
 	bool		m_bHSV;
@@ -51,9 +46,9 @@ private:
 	string				m_camName;
 	CamInput*			m_pCamInput;
 
-	FrameGroup*			m_pCamFrames;
-	FrameGroup*			m_pGrayFrames;
-	FrameGroup*			m_pHSVframes;
+	CamFrame*			m_pCamFrame;
+	CamFrame*			m_pGrayFrame;
+	CamFrame*			m_pHSVframe;
 
 private:
 	void update(void);

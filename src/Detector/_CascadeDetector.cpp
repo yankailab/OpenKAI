@@ -25,6 +25,7 @@ _CascadeDetector::_CascadeDetector()
 	m_objLifeTime = 100000;
 	m_posDiff = 0;
 
+	m_pGray = NULL;
 	m_pCamStream = NULL;
 	m_cudaDeviceID = 0;
 
@@ -130,12 +131,13 @@ void _CascadeDetector::detect(void)
 	bool bNewObj;
 	UMat matGray;
 
-	if (m_pGray->empty())
-		return;
-	iVacant = 0;
-
 //	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
+	m_pGray = m_pCamStream->getGrayFrame();//m_pCamFront->m_pGrayL;
+	if (m_pGray->empty())return;
+
 	m_pGray->getGMat()->download(matGray);
+	iVacant = 0;
+//	matGray = m_pGray->getCMat();//->download(matGray);
 //	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
 //	cv::equalizeHist(matGray, matGray);

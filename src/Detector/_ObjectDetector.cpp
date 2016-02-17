@@ -25,6 +25,8 @@ _ObjectDetector::_ObjectDetector()
 
 	m_bOneImg = 1;
 
+	m_pFrame = new CamFrame();
+
 }
 
 _ObjectDetector::~_ObjectDetector()

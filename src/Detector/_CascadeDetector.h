@@ -37,8 +37,6 @@ public:
 	bool init(string name, JSON* pJson);
 	bool start(void);
 
-//	void updateFrame(CamFrame* pFrame, CamFrame* pGray);
-
 	int  getObjList(CASCADE_OBJECT** ppObj);
 
 private:
@@ -65,11 +63,15 @@ public:
 	uint64_t			m_objLifeTime;
 	int					m_posDiff;
 
-	Mat					m_Mat;
-	GpuMat				m_GMat;
-
 	_CamStream*			m_pCamStream;
 	int					m_cudaDeviceID;
+
+private:
+	Mat			m_Mat;
+	GpuMat		m_GMat;
+	CamFrame*	m_pGray;
+
+
 
 
 

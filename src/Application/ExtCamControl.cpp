@@ -120,7 +120,7 @@ bool ExtCamControl::showScreenMarkerDetector(void)
 {
 	int i;
 	UMat imMat;
-	CamFrame* pFrame = m_pCamFront->getLastFrame();
+	CamFrame* pFrame = m_pCamFront->getFrame();
 
 	if (pFrame->getGMat()->empty())return false;
 	pFrame->getGMat()->download(imMat);
@@ -148,7 +148,7 @@ void ExtCamControl::showScreenBgFgDetector(void)
 {
 	int i;
 	UMat imMat, imMat2;
-	CamFrame* pFrame = m_pCamFront->getLastFrame();
+	CamFrame* pFrame = m_pCamFront->getFrame();
 
 	if(pFrame->getGMat()->empty())return;
 	if(m_pBgFgD->m_Mat.empty())return;

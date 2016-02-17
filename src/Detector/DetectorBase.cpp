@@ -7,14 +7,13 @@
 
 #include "DetectorBase.h"
 
-namespace kai
-{
+namespace kai {
 DetectorBase::DetectorBase() {
 	// TODO Auto-generated constructor stub
 
-	m_pFrame = new CamFrame();
-	m_pGray = new CamFrame();
-	m_pHSV = new CamFrame();
+//	m_pFrame = new CamFrame();
+//	m_pGray = new CamFrame();
+//	m_pHSV = new CamFrame();
 
 }
 

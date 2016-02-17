@@ -86,8 +86,8 @@ void _MarkerDetector::detect(void)
 	CamFrame* pRGB;
 
 	if(!m_pCamStream)return;
-	pHSV = m_pCamStream->getLastHSVFrame();//m_pCamStream->m_pHSV;
-	pRGB = m_pCamStream->getLastFrame();//m_pCamStream->m_pFrameL;
+	pHSV = m_pCamStream->getHSVFrame();//m_pCamStream->m_pHSV;
+	pRGB = m_pCamStream->getFrame();//m_pCamStream->m_pFrameL;
 	if(pRGB->empty())return;
 	if(pHSV->empty())return;
 

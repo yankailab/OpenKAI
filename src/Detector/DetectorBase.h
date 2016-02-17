@@ -19,11 +19,10 @@ public:
 	DetectorBase();
 	virtual ~DetectorBase();
 
-
-public:
-	CamFrame*	m_pFrame;
-	CamFrame*	m_pGray;
-	CamFrame*	m_pHSV;
+private:
+//	CamFrame*	m_pFrame;
+//	CamFrame*	m_pGray;
+//	CamFrame*	m_pHSV;
 
 
 };

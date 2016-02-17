@@ -58,11 +58,13 @@ void CamFrame::getGrayOf(CamFrame* pFrom)
 
 #ifdef USE_CUDA
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);//,0, m_cudaStream);
+	updatedGMat();
 	//	m_cudaStream.waitForCompletion();
 #elif USE_OPENCL
 
 #else
 	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2GRAY);
+	updatedCMat();
 #endif
 
 }
@@ -74,10 +76,12 @@ void CamFrame::getHSVOf(CamFrame* pFrom)
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+	updatedGMat();
 #elif USE_OPENCL
 
 #else
 	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2HSV);
+	updatedCMat();
 #endif
 
 }
@@ -88,10 +92,12 @@ void CamFrame::getBGRAOf(CamFrame* pFrom)
 
 #ifdef USE_CUDA
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+	updatedGMat();
 #elif USE_OPENCL
 
 #else
 	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2BGRA);
+	updatedCMat();
 #endif
 
 }
@@ -109,10 +115,13 @@ void CamFrame::get8UC3Of(CamFrame* pFrom)
 	{
 		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 	}
+
+	updatedGMat();
 #elif USE_OPENCL
 
 #else
 	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_GRAY2BGR);
+	updatedCMat();
 #endif
 
 }
@@ -147,7 +156,7 @@ bool CamFrame::empty(void)
 bool CamFrame::isNewerThan(CamFrame* pFrame)
 {
 	if (pFrame == NULL)return false;
-	if(pFrame->getFrameID() < this->getFrameID())// m_GMat.m_frameID)
+	if(pFrame->getFrameID() < this->getFrameID())
 	{
 		return true;
 	}
@@ -195,13 +204,13 @@ void CamFrame::update(Mat* pFrame)
 #endif
 }
 
-void CamFrame::updatedCMat(void)
+inline void CamFrame::updatedCMat(void)
 {
 	m_CMat.m_frameID = get_time_usec();
 }
 
 #ifdef USE_CUDA
-void CamFrame::updatedGMat(void)
+inline void CamFrame::updatedGMat(void)
 {
 	m_GMat.m_frameID = get_time_usec();
 }

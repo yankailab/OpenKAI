@@ -67,6 +67,9 @@ public:
 	Ptr<Saliency> m_pSaliency;
 	vector<Vec4i> m_pSaliencyMap;
 
+	CamFrame* m_pFrame;
+
+
 	//Caffe classifier
 //	NNClassifier m_classifier;
 //	vector<Prediction> m_predictions;

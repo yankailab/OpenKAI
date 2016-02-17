@@ -13,15 +13,14 @@
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
-#include "../Camera/CamFrame.h"
 #include "../Camera/_CamStream.h"
-
+#include "../Camera/FrameGroup.h"
 
 using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_DENSEFLOW 100
+#define TRD_INTERVAL_DENSEFLOW 1000
 
 namespace kai
 {
@@ -34,8 +33,6 @@ public:
 
 	bool init(JSON* pJson, string camName);
 	bool start(void);
-
-//	void updateFrame(CamFrame* pFrame);
 
 private:
 	inline bool isFlowCorrect(Point2f u);
@@ -54,7 +51,7 @@ private:
 public:
 	fVector4	m_flow;
 	GpuMat		m_GFlowMat;
-	CamFrame*	m_pFlowFrame;
+//	CamFrame*	m_pFlowFrame;
 //	CamFrame*	m_pShowFlow;
 
 	int	m_width;
@@ -68,6 +65,8 @@ public:
 
 	_CamStream*			m_pCamStream;
 	int					m_cudaDeviceID;
+
+	FrameGroup*			m_pGrayFrames;
 
 	Mat m_showMat;
 

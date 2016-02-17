@@ -84,7 +84,7 @@ void _BgFgDetector::detect(void)
 	CamFrame* pRGB;
 
 	if(!m_pCamStream)return;
-	pRGB = m_pCamStream->getLastFrame();//m_pCamStream->m_pFrameL;
+	pRGB = m_pCamStream->getFrame();//m_pCamStream->m_pFrameL;
 	if(pRGB->empty())return;
 
 	m_pBgSubtractor->apply(*pRGB->getGMat(), m_gFg);

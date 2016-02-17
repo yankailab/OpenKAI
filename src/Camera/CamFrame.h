@@ -50,7 +50,7 @@ public:
 
 	void update(Mat* pFrame);
 	void update(CamFrame* pFrame);
-	void updatedCMat(void);
+	inline void updatedCMat(void);
 
 	Mat* getCMat(void);
 	void getResizedOf(CamFrame* pFrom, int width, int height);
@@ -67,7 +67,7 @@ public:
 
 #ifdef USE_CUDA
 	void update(GpuMat* pGpuFrame);
-	void updatedGMat(void);
+	inline void updatedGMat(void);
 	GpuMat* getGMat(void);
 #endif
 

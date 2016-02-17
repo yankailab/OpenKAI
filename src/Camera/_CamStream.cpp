@@ -16,9 +16,9 @@ _CamStream::_CamStream()
 
 	m_camName = "";
 	m_pCamInput = new CamInput();
-	m_pCamFrames = new FrameGroup();
-	m_pGrayFrames = new FrameGroup();
-	m_pHSVframes = new FrameGroup();
+	m_pCamFrame = new CamFrame();
+	m_pGrayFrame = new CamFrame();
+	m_pHSVframe = new CamFrame();
 
 	m_bThreadON = false;
 	m_threadID = NULL;
@@ -31,9 +31,9 @@ _CamStream::_CamStream()
 _CamStream::~_CamStream()
 {
 	RELEASE(m_pCamInput);
-	RELEASE(m_pCamFrames);
-	RELEASE(m_pGrayFrames);
-	RELEASE(m_pHSVframes);
+	RELEASE(m_pCamFrame);
+	RELEASE(m_pGrayFrame);
+	RELEASE(m_pHSVframe);
 }
 
 bool _CamStream::init(JSON* pJson, string camName)
@@ -44,11 +44,8 @@ bool _CamStream::init(JSON* pJson, string camName)
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
 
-	CHECK_FATAL(m_pCamFrames->init(2));
-	CHECK_FATAL(m_pGrayFrames->init(2));
-	CHECK_FATAL(m_pHSVframes->init(2));
-
 	m_bThreadON = false;
+	m_tSleep = TRD_INTERVAL_CAMSTREAM;
 
 	return true;
 }
@@ -72,39 +69,23 @@ bool _CamStream::start(void)
 
 void _CamStream::update(void)
 {
-	GpuMat* pNewInput;
-	CamFrame* pFrame;
-	CamFrame* pGray;
-	CamFrame* pHSV;
-
-	m_tSleep = TRD_INTERVAL_CAMSTREAM;
-
 	while (m_bThreadON)
 	{
 		this->updateTime();
 
-		//Get new input frame
-		pNewInput = m_pCamInput->readFrame();
-
 		//Update camera frame
-		m_pCamFrames->updateFrameIndex();
-		pFrame = m_pCamFrames->getLastFrame();
-		pFrame->update(pNewInput);
+		m_pCamFrame->update(m_pCamInput->readFrame());
 
 		//Update Gray frame
 		if(m_bGray)
 		{
-			m_pGrayFrames->updateFrameIndex();
-			pGray = m_pGrayFrames->getLastFrame();
-			pGray->getGrayOf(pFrame);
+			m_pGrayFrame->getGrayOf(m_pCamFrame);
 		}
 
 		//Update HSV frame
 		if(m_bHSV)
 		{
-			m_pHSVframes->updateFrameIndex();
-			pHSV = m_pHSVframes->getLastFrame();
-			pHSV->getHSVOf(pFrame);
+			m_pHSVframe->getHSVOf(m_pCamFrame);
 		}
 
 		if(m_tSleep>0)
@@ -123,35 +104,19 @@ bool _CamStream::complete(void)
 	return true;
 }
 
-CamFrame* _CamStream::getLastFrame(void)
+CamFrame* _CamStream::getFrame(void)
 {
-	return m_pCamFrames->getLastFrame();
+	return m_pCamFrame;
 }
 
-CamFrame* _CamStream::getLastGrayFrame(void)
+CamFrame* _CamStream::getGrayFrame(void)
 {
-	return m_pGrayFrames->getLastFrame();
+	return m_pGrayFrame;
 }
 
-CamFrame* _CamStream::getLastHSVFrame(void)
+CamFrame* _CamStream::getHSVFrame(void)
 {
-	return m_pHSVframes->getLastFrame();
+	return m_pHSVframe;
 }
-
-FrameGroup* _CamStream::getFrameGroup(void)
-{
-	return m_pCamFrames;
-}
-
-FrameGroup* _CamStream::getGrayFrameGroup(void)
-{
-	return m_pGrayFrames;
-}
-
-FrameGroup* _CamStream::getHSVFrameGroup(void)
-{
-	return m_pHSVframes;
-}
-
 
 } /* namespace kai */

@@ -184,7 +184,7 @@ void _SegNet::Preprocess(const cv::Mat& img,
 
 void _SegNet::segmentGPU(void)
 {
-	m_pFrame = m_pCamStream->getLastFrame();
+	m_pFrame = m_pCamStream->getFrame();
 
 	if(m_pFrame==NULL)return;
 	if(m_pFrame->empty())return;

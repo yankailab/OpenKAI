@@ -21,11 +21,11 @@ _DenseFlow::_DenseFlow()
 	m_width = 640;
 	m_height = 480;
 
-	m_pFlowFrame = NULL;
+//	m_pFlowFrame = NULL;
 //	m_pShowFlow = NULL;
 
 	m_pCamStream = NULL;
-	m_pGray = NULL;
+	m_pGrayFrames = NULL;
 	m_cudaDeviceID = 0;
 
 }
@@ -41,10 +41,13 @@ bool _DenseFlow::init(JSON* pJson, string camName)
 
 	//	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-
-	m_pFlowFrame = new CamFrame();
+//	m_pFlowFrame = new CamFrame();
 //	m_pShowFlow = new CamFrame();
 
+	m_pGrayFrames = new FrameGroup();
+	m_pGrayFrames->init(2);
+
+	m_tSleep = TRD_INTERVAL_DENSEFLOW;
 	return true;
 }
 
@@ -64,7 +67,6 @@ bool _DenseFlow::start(void)
 
 void _DenseFlow::update(void)
 {
-	m_tSleep = TRD_INTERVAL_DENSEFLOW;
 	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
@@ -73,51 +75,46 @@ void _DenseFlow::update(void)
 
 		detect();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		if(m_tSleep>0)
+		{
+			//sleepThread can be woke up by this->wakeupThread()
+			this->sleepThread(0, m_tSleep);
+		}
 	}
 
 }
-
-//void _DenseFlow::updateFrame(CamFrame* pFrame)
-//{
-//	if(pFrame==NULL)return;
-//	if(pFrame->getCurrentFrame()->empty())return;
-//
-//	m_pFlowFrame->switchFrame();
-////	pFrame->getResized(640,480, m_pFlowFrame);
-//	m_pFlowFrame->getResizedOf(pFrame,640,480);
-//
-//	this->wakeupThread();
-//}
 
 void _DenseFlow::detect(void)
 {
 	int i, j;
 	cv::Point2f vFlow;
 	double base;
+	CamFrame* pGray;
+	CamFrame* pNextFrame;
+	CamFrame* pPrevFrame;
 	GpuMat* pPrev;
 	GpuMat* pNext;
 	Mat matGray;
 
-	if(!m_pGray)return;
-	if (m_pGray->empty())return;
+	if(m_pCamStream==NULL)return;
 
-//	if(m_pCamStream->mutexTrylock(CAMSTREAM_MUTEX_GRAY))
-//	{
-//		m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
-//		m_pFlowFrame->updateFrameSwitch(m_pGray);
-//		m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
-//	}
-//	else
-//	{
-//		return;
-//	}
+	pGray = m_pCamStream->getGrayFrame();
+	if(pGray->empty())return;
 
-	return;
+	pNextFrame = m_pGrayFrames->getLastFrame();
+	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;
+
+	m_pGrayFrames->updateFrameIndex();
+	pNextFrame = m_pGrayFrames->getLastFrame();
+	pPrevFrame = m_pGrayFrames->getPrevFrame();
+
+	pNextFrame->getResizedOf(pGray,m_width,m_height);
+	pPrev = pPrevFrame->getGMat();
+	pNext = pNextFrame->getGMat();
+
 //	m_pFlowFrame->switchFrame();
 //	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-	m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
+//	m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
 //	m_pGray->getCurrentFrame()->download(matGray);
 //	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
 
@@ -129,7 +126,7 @@ void _DenseFlow::detect(void)
 	m_flow.m_w = 0;
 
 //	pPrev = m_pFlowFrame->getPrevGMat();
-	pNext = m_pFlowFrame->getGMat();
+//	pNext = m_pFlowFrame->getGMat();
 
 	if(pPrev->empty())return;
 	if(pNext->empty())return;

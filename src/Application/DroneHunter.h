@@ -18,6 +18,7 @@
 #include "../Interface/_MavlinkInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
+#include "../Image/_DenseFlow.h"
 
 #define APP_NAME "DRONE_HUNTER"
 
@@ -39,6 +40,7 @@ public:
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_CascadeDetector* m_pCascade;
+	_DenseFlow* m_pDF;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

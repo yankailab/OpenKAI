@@ -27,11 +27,16 @@ bool DroneHunter::start(JSON* pJson)
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
-		//Init Fast Detector
+	//Init Fast Detector
 	m_pCascade = new _CascadeDetector();
 	m_pCascade->init("DRONE", pJson);
-	m_pCascade->m_pGray = m_pCamFront->getLastGrayFrame();//m_pCamFront->m_pGrayL;
 	m_pCascade->m_pCamStream = m_pCamFront;
+	m_pCamFront->m_bGray = true;
+
+	//Init Optical Flow
+	m_pDF = new _DenseFlow();
+	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
+	m_pDF->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
 	//Init Autopilot
@@ -56,22 +61,22 @@ bool DroneHunter::start(JSON* pJson)
 	m_pMat2 = new CamFrame();
 
 	//Init UI Monitor
-	m_pUIMonitor = new UIMonitor();
-	m_pUIMonitor->init("OpenKAI demo", pJson);
-	m_pUIMonitor->addFullFrame(m_pShow);
+//	m_pUIMonitor = new UIMonitor();
+//	m_pUIMonitor->init("OpenKAI demo", pJson);
+//	m_pUIMonitor->addFullFrame(m_pShow);
 
 	//Start threads
 	m_pCamFront->start();
 //	m_pMavlink->start();
-//	m_pDF->start();
+	m_pDF->start();
 //	m_pAP->start();
 	m_pCascade->start();
 
 	//UI thread
 	m_bRun = true;
-	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
+//	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+//	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
 
 	while (m_bRun)
 	{
@@ -90,9 +95,10 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pAP->stop();
 	m_pCascade->stop();
 //	m_pMavlink->stop();
+	m_pDF->stop();
 
 	m_pCascade->complete();
-//	m_pDF->complete();
+	m_pDF->complete();
 //	m_pAP->complete();
 //	m_pCamFront->complete();
 //	m_pMavlink->complete();
@@ -100,7 +106,7 @@ bool DroneHunter::start(JSON* pJson)
 
 //	delete m_pAP;
 //	delete m_pMavlink;
-//	delete m_pDF;
+	delete m_pDF;
 	delete m_pCamFront;
 	delete m_pCascade;
 
@@ -112,7 +118,7 @@ void DroneHunter::showScreen(void)
 {
 	int i;
 	Mat imMat;
-	CamFrame* pFrame = m_pCamFront->getLastFrame();// (*m_pCamFront->m_pFrameProcess);
+	CamFrame* pFrame = m_pCamFront->getFrame();// (*m_pCamFront->m_pFrameProcess);
 
 	if (pFrame->empty())return;
 	pFrame->getGMat()->download(imMat);
@@ -136,6 +142,11 @@ void DroneHunter::showScreen(void)
 	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat);
+
+	if(!m_pDF->m_showMat.empty())
+	{
+		imshow("OpticalFlow",m_pDF->m_showMat);
+	}
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();
