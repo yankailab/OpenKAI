@@ -28,6 +28,7 @@
 "SEGNET_CUDADEVICE_ID_DEFAULT":0,
 
 "CASCADE_DEVICE_DRONE":0,
+"_CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_3.xml",
 "CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
 "CASCADE_FILE_DRONE_":"/home/kai/dev/opencv/data/haarcascades/haarcascade_frontalface_alt.xml",
 "CASCADE_NUM_DRONE":10,

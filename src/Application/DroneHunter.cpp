@@ -68,14 +68,14 @@ bool DroneHunter::start(JSON* pJson)
 	//Start threads
 	m_pCamFront->start();
 //	m_pMavlink->start();
-	m_pDF->start();
+//	m_pDF->start();
 //	m_pAP->start();
 	m_pCascade->start();
 
 	//UI thread
 	m_bRun = true;
-//	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 //	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
 
 	while (m_bRun)

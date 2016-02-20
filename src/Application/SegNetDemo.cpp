@@ -22,6 +22,7 @@ SegNetDemo::~SegNetDemo()
 bool SegNetDemo::start(JSON* pJson)
 {
 	g_pSegNetDemo = this;
+	m_showMode = 0;
 
 	//Init Camera
 	m_pCamFront = new _CamStream();
@@ -127,7 +128,14 @@ void SegNetDemo::showScreen(void)
 	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat3, "SegNet FPS: "+f2str(m_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	imshow(APP_NAME,imMat3);
+	if(m_showMode == 0)
+	{
+		imshow(APP_NAME,imMat);
+	}
+	else
+	{
+		imshow(APP_NAME,imMat3);
+	}
 
 }
 
@@ -203,6 +211,7 @@ void SegNetDemo::handleMouse(int event, int x, int y, int flags)
 	case EVENT_LBUTTONDOWN:
 		break;
 	case EVENT_LBUTTONUP:
+		m_showMode = 1 - m_showMode;
 		break;
 	case EVENT_MOUSEMOVE:
 		break;
