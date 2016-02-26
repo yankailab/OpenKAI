@@ -18,11 +18,11 @@ int main(int argc, char* argv[])
 //	g_pAppExtCamControl = new ExtCamControl();
 //	g_pAppExtCamControl->start(&g_Json);
 
-//	g_pAppSegNetDemo = new SegNetDemo();
-//	g_pAppSegNetDemo->start(&g_Json);
+	g_pAppSegNetDemo = new SegNetDemo();
+	g_pAppSegNetDemo->start(&g_Json);
 
-	g_pAppDroneHunter = new DroneHunter();
-	g_pAppDroneHunter->start(&g_Json);
+//	g_pAppDroneHunter = new DroneHunter();
+//	g_pAppDroneHunter->start(&g_Json);
 
 	return 0;
 }
