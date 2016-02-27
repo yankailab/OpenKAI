@@ -34,6 +34,7 @@ public:
 
 	int m_key;
 	bool m_bRun;
+	int m_showMode;
 
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
