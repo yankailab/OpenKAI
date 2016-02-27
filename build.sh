@@ -9,6 +9,10 @@ g++ $INCLUDES $OPTIONS -MF"build/_SegNet.d" -MT"build/_SegNet.d" -o "build/_SegN
 
 g++ $INCLUDES $OPTIONS -MF"build/Filter.d" -MT"build/Filter.d" -o "build/Filter.o" "src/Algorithm/Filter.cpp"
 
+g++ $INCLUDES $OPTIONS -MF"build/DroneHunter.d" -MT"build/DroneHunter.d" -o "build/DroneHunter.o" "src/Application/DroneHunter.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/ExtCamControl.d" -MT"build/ExtCamControl.d" -o "build/ExtCamControl.o" "src/Application/ExtCamControl.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/SegNetDemo.d" -MT"build/SegNetDemo.d" -o "build/SegNetDemo.o" "src/Application/SegNetDemo.cpp"
+
 g++ $INCLUDES $OPTIONS -MF"build/_AutoPilot.d" -MT"build/_AutoPilot.d" -o "build/_AutoPilot.o" "src/Autopilot/_AutoPilot.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_ThreadBase.d" -MT"build/_ThreadBase.d" -o "build/_ThreadBase.o" "src/Base/_ThreadBase.cpp"
@@ -18,6 +22,7 @@ g++ $INCLUDES $OPTIONS -MF"build/CamFrame.d" -MT"build/CamFrame.d" -o "build/Cam
 g++ $INCLUDES $OPTIONS -MF"build/CamInput.d" -MT"build/CamInput.d" -o "build/CamInput.o" "src/Camera/CamInput.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/CamSparseFlow.d" -MT"build/CamSparseFlow.d" -o "build/CamSparseFlow.o" "src/Camera/CamSparseFlow.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/CamStereo.d" -MT"build/CamStereo.d" -o "build/CamStereo.o" "src/Camera/CamStereo.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/FrameGroup.d" -MT"build/FrameGroup.d" -o "build/FrameGroup.o" "src/Camera/FrameGroup.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_BgFgDetector.d" -MT"build/_BgFgDetector.d" -o "build/_BgFgDetector.o" "src/Detector/_BgFgDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_CascadeDetector.d" -MT"build/_CascadeDetector.d" -o "build/_CascadeDetector.o" "src/Detector/_CascadeDetector.cpp"
@@ -38,5 +43,5 @@ g++ $INCLUDES $OPTIONS -MF"build/UIMonitor.d" -MT"build/UIMonitor.d" -o "build/U
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "LAB" ./build/ClassifierBase.o ./build/_ClassifierManager.o ./build/NNClassifier.o ./build/_SegNet.o ./build/Filter.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/_ObjectDetector.o ./build/_OpticalFlowDetector.o build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DenseFlow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect
+g++ $LINKERS -o "LAB" ./build/ClassifierBase.o ./build/_ClassifierManager.o ./build/NNClassifier.o ./build/_SegNet.o ./build/Filter.o ./build/DroneHunter.o ./build/ExtCamControl.o ./build/SegNetDemo.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/CamSparseFlow.o ./build/CamStereo.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/_ObjectDetector.o ./build/_OpticalFlowDetector.o build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DenseFlow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect
 
