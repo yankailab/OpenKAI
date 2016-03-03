@@ -27,6 +27,10 @@
 "SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/camvid12.png",
 "SEGNET_CUDADEVICE_ID_DEFAULT":0,
 
+"FEATURE_IMG_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/akaze.jpg",
+"FEATURE_IMG2_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/2akaze.jpg",
+
+
 "CASCADE_DEVICE_DRONE":0,
 "_CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_3.xml",
 "__CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",

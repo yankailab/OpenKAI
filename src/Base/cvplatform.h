@@ -5,6 +5,8 @@
 #include "opencv2/features2d.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/saliency.hpp"
+#include <opencv2/imgcodecs.hpp>
+
 using namespace cv;
 
 #ifdef USE_CUDA

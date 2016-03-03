@@ -45,7 +45,6 @@ public:
 
 	Ptr<cuda::CornersDetector> m_pDetector;
 	Ptr<cuda::SparsePyrLKOpticalFlow> m_pPyrLK;
-
 	unsigned int m_numCorners;
 
 	uint64_t			m_frameID;
@@ -53,8 +52,11 @@ public:
 	_CamStream*			m_pCamStream;
 	FrameGroup*			m_pGrayFrames;
 
+	Ptr<AKAZE> m_pAkaze;
+
 private:
 	Mat			m_Mat;
+	Mat			m_targetMat;
 	GpuMat		m_GMat;
 	CamFrame*	m_pGray;
 

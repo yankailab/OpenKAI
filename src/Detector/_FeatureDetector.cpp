@@ -43,6 +43,46 @@ bool _FeatureDetector::init(string name, JSON* pJson)
 
 	m_tSleep = TRD_INTERVAL_FEATUREDETECTOR;
 
+	string targetFile;
+	CHECK_ERROR(pJson->getVal("FEATURE_IMG_" + name, &targetFile));
+	m_targetMat = imread(targetFile, cv::IMREAD_COLOR);
+
+	CHECK_ERROR(pJson->getVal("FEATURE_IMG2_" + name, &targetFile));
+	Mat testMat = imread(targetFile, cv::IMREAD_COLOR);
+
+//	  cv::Mat scene1 = cv::imread(scene1_path, cv::IMREAD_COLOR);
+//	  cv::Mat scene2 = cv::imread(scene2_path, cv::IMREAD_COLOR);
+
+	m_pAkaze = cv::AKAZE::create();
+
+	  std::vector<cv::KeyPoint> keypoint1, keypoint2;
+	  m_pAkaze->detect(m_targetMat, keypoint1);
+	  m_pAkaze->detect(testMat, keypoint2);
+
+	  cv::Mat descriptor1, descriptor2;
+	  m_pAkaze->compute(m_targetMat, keypoint1, descriptor1);
+	  m_pAkaze->compute(testMat, keypoint2, descriptor2);
+
+	  cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce");
+	  std::vector<cv::DMatch> match, match12, match21;
+	  matcher->match(descriptor1, descriptor2, match12);
+	  matcher->match(descriptor2, descriptor1, match21);
+
+	  for (size_t i = 0; i < match12.size(); i++)
+	  {
+	    cv::DMatch forward = match12[i];
+	    cv::DMatch backward = match21[forward.trainIdx];
+	    if (backward.trainIdx == forward.queryIdx)
+	    {
+	      match.push_back(forward);
+	    }
+	  }
+
+	  cv::Mat dest;
+	  cv::drawMatches(m_targetMat, keypoint1, testMat, keypoint2, match, dest);
+
+	  imshow("AKAZE",dest);
+
 
 
 //	string cascadeFile;
