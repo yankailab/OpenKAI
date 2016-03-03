@@ -19,6 +19,7 @@
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Image/_DenseFlow.h"
+#include "../Detector/_FeatureDetector.h"
 
 #define APP_NAME "DRONE_HUNTER"
 
@@ -41,6 +42,7 @@ public:
 	_MavlinkInterface* m_pMavlink;
 	_CascadeDetector* m_pCascade;
 	_DenseFlow* m_pDF;
+	_FeatureDetector* m_pFeature;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

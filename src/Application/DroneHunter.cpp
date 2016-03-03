@@ -39,6 +39,13 @@ bool DroneHunter::start(JSON* pJson)
 	m_pDF->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
+	//Init Feature Detector
+	m_pFeature = new _FeatureDetector();
+	m_pFeature->init("DRONE", pJson);
+	m_pFeature->m_pCamStream = m_pCamFront;
+	m_pCamFront->m_bGray = true;
+
+
 	//Init Autopilot
 /*	m_pAP = new _AutoPilot();
 	CHECK_FATAL(m_pAP->setup(&m_Json, ""));
@@ -67,10 +74,11 @@ bool DroneHunter::start(JSON* pJson)
 
 	//Start threads
 	m_pCamFront->start();
+	m_pFeature->start();
 //	m_pMavlink->start();
 //	m_pDF->start();
 //	m_pAP->start();
-	m_pCascade->start();
+//	m_pCascade->start();
 
 	//UI thread
 	m_bRun = true;
@@ -96,9 +104,11 @@ bool DroneHunter::start(JSON* pJson)
 	m_pCascade->stop();
 //	m_pMavlink->stop();
 	m_pDF->stop();
+	m_pFeature->stop();
 
 	m_pCascade->complete();
 	m_pDF->complete();
+	m_pFeature->complete();
 //	m_pAP->complete();
 //	m_pCamFront->complete();
 //	m_pMavlink->complete();
@@ -109,6 +119,7 @@ bool DroneHunter::start(JSON* pJson)
 	delete m_pDF;
 	delete m_pCamFront;
 	delete m_pCascade;
+	delete m_pFeature;
 
 	return 0;
 
