@@ -82,8 +82,8 @@ bool DroneHunter::start(JSON* pJson)
 
 	//UI thread
 	m_bRun = true;
-	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+//	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 //	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
 
 	while (m_bRun)
@@ -158,6 +158,12 @@ void DroneHunter::showScreen(void)
 	{
 		imshow("OpticalFlow",m_pDF->m_showMat);
 	}
+
+	if(!m_pFeature->m_Mat.empty())
+	{
+		imshow("Feature",m_pFeature->m_Mat);
+	}
+
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();

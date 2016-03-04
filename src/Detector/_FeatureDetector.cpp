@@ -47,42 +47,11 @@ bool _FeatureDetector::init(string name, JSON* pJson)
 	CHECK_ERROR(pJson->getVal("FEATURE_IMG_" + name, &targetFile));
 	m_targetMat = imread(targetFile, cv::IMREAD_COLOR);
 
-	CHECK_ERROR(pJson->getVal("FEATURE_IMG2_" + name, &targetFile));
-	Mat testMat = imread(targetFile, cv::IMREAD_COLOR);
-
-//	  cv::Mat scene1 = cv::imread(scene1_path, cv::IMREAD_COLOR);
-//	  cv::Mat scene2 = cv::imread(scene2_path, cv::IMREAD_COLOR);
-
 	m_pAkaze = cv::AKAZE::create();
+	m_pAkaze->detect(m_targetMat, m_targetKeypoint);
+	m_pAkaze->compute(m_targetMat, m_targetKeypoint, m_targetDescriptor);
 
-	  std::vector<cv::KeyPoint> keypoint1, keypoint2;
-	  m_pAkaze->detect(m_targetMat, keypoint1);
-	  m_pAkaze->detect(testMat, keypoint2);
-
-	  cv::Mat descriptor1, descriptor2;
-	  m_pAkaze->compute(m_targetMat, keypoint1, descriptor1);
-	  m_pAkaze->compute(testMat, keypoint2, descriptor2);
-
-	  cv::Ptr<cv::DescriptorMatcher> matcher = cv::DescriptorMatcher::create("BruteForce");
-	  std::vector<cv::DMatch> match, match12, match21;
-	  matcher->match(descriptor1, descriptor2, match12);
-	  matcher->match(descriptor2, descriptor1, match21);
-
-	  for (size_t i = 0; i < match12.size(); i++)
-	  {
-	    cv::DMatch forward = match12[i];
-	    cv::DMatch backward = match21[forward.trainIdx];
-	    if (backward.trainIdx == forward.queryIdx)
-	    {
-	      match.push_back(forward);
-	    }
-	  }
-
-	  cv::Mat dest;
-	  cv::drawMatches(m_targetMat, keypoint1, testMat, keypoint2, match, dest);
-
-	  imshow("AKAZE",dest);
-
+	m_pMatcher = cv::DescriptorMatcher::create("BruteForce");
 
 
 //	string cascadeFile;
@@ -160,61 +129,105 @@ void _FeatureDetector::update(void)
 
 void _FeatureDetector::detect(void)
 {
-	GpuMat d_prevPts;
-	GpuMat d_nextPts;
-	GpuMat d_status;
-	CamFrame* pGray;
-	CamFrame* pNextFrame;
-	CamFrame* pPrevFrame;
-	Mat   dMat, tMat;
-	vector<Point2f> prevPts;
-	vector<Point2f> nextPts;
-	vector<uchar> status;
-	int i;
-	int numPts;
-	int numV;
-	cv::Point p, q;
-
-	//http://docs.opencv.org/2.4/doc/tutorials/features2d/feature_homography/feature_homography.html
+	CamFrame* pFrame;
+	Mat* pMat;
 
 	if(m_pCamStream==NULL)return;
 
-	pGray = m_pCamStream->getGrayFrame();
-	if(pGray->empty())return;
+	pFrame = m_pCamStream->getFrame();
+	if(pFrame->empty())return;
 
-	pNextFrame = m_pGrayFrames->getLastFrame();
-	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;
+//	if(pFrame->getFrameID() <= m_frameID)return;
+//	m_frameID = pFrame->getFrameID();
+	pMat = pFrame->getCMat();
+	if(pMat->empty())return;
 
-	m_pGrayFrames->updateFrameIndex();
-	pNextFrame = m_pGrayFrames->getLastFrame();
-	pPrevFrame = m_pGrayFrames->getPrevFrame();
+	m_pAkaze->detect(*pMat, m_imgKeypoint);
+	m_pAkaze->compute(*pMat, m_imgKeypoint, m_imgDescriptor);
 
-//	pNextFrame->getResizedOf(pGray,m_width,m_height);
-	GpuMat* pPrev = pPrevFrame->getGMat();
-	GpuMat* pNext = pNextFrame->getGMat();
+	std::vector<cv::DMatch> match, match12, match21;
+	m_pMatcher->match(m_targetDescriptor, m_imgDescriptor, match12);
+	m_pMatcher->match(m_imgDescriptor, m_targetDescriptor, match21);
 
-	if(pPrev->empty())return;
-	if(pNext->empty())return;
+	  for (size_t i = 0; i < match12.size(); i++)
+	  {
+	    cv::DMatch forward = match12[i];
+	    cv::DMatch backward = match21[forward.trainIdx];
+	    if (backward.trainIdx == forward.queryIdx)
+	    {
+	      match.push_back(forward);
+	    }
+	  }
 
-	m_pDetector->detect(*pPrev, d_prevPts);
-	m_pPyrLK->calc(
-		*pPrev,
-		*pNext,
-		d_prevPts,
-		d_nextPts,
-		d_status);
+	  cv::drawMatches(m_targetMat, m_targetKeypoint, *pMat, m_imgKeypoint, match, m_Mat);
 
-	prevPts.resize(d_prevPts.cols);
-	tMat = Mat(1, d_prevPts.cols, CV_32FC2, (void*)&prevPts[0]);
-	d_prevPts.download(tMat);
+//	  imshow("AKAZE",m_Mat);
 
-	nextPts.resize(d_nextPts.cols);
-	tMat = Mat(1, d_nextPts.cols, CV_32FC2, (void*)&nextPts[0]);
-	d_nextPts.download(tMat);
 
-	status.resize(d_status.cols);
-	tMat = Mat(1, d_status.cols, CV_8UC1, (void*)&status[0]);
-	d_status.download(tMat);
+
+
+
+
+
+
+
+
+
+//	GpuMat d_prevPts;
+//	GpuMat d_nextPts;
+//	GpuMat d_status;
+//	CamFrame* pGray;
+//	CamFrame* pNextFrame;
+//	CamFrame* pPrevFrame;
+//	Mat   dMat, tMat;
+//	vector<Point2f> prevPts;
+//	vector<Point2f> nextPts;
+//	vector<uchar> status;
+//	int i;
+//	int numPts;
+//	int numV;
+//	cv::Point p, q;
+//
+//	//http://docs.opencv.org/2.4/doc/tutorials/features2d/feature_homography/feature_homography.html
+//
+//	if(m_pCamStream==NULL)return;
+//
+//	pGray = m_pCamStream->getGrayFrame();
+//	if(pGray->empty())return;
+//
+//	pNextFrame = m_pGrayFrames->getLastFrame();
+//	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;
+//
+//	m_pGrayFrames->updateFrameIndex();
+//	pNextFrame = m_pGrayFrames->getLastFrame();
+//	pPrevFrame = m_pGrayFrames->getPrevFrame();
+//
+////	pNextFrame->getResizedOf(pGray,m_width,m_height);
+//	GpuMat* pPrev = pPrevFrame->getGMat();
+//	GpuMat* pNext = pNextFrame->getGMat();
+//
+//	if(pPrev->empty())return;
+//	if(pNext->empty())return;
+//
+//	m_pDetector->detect(*pPrev, d_prevPts);
+//	m_pPyrLK->calc(
+//		*pPrev,
+//		*pNext,
+//		d_prevPts,
+//		d_nextPts,
+//		d_status);
+//
+//	prevPts.resize(d_prevPts.cols);
+//	tMat = Mat(1, d_prevPts.cols, CV_32FC2, (void*)&prevPts[0]);
+//	d_prevPts.download(tMat);
+//
+//	nextPts.resize(d_nextPts.cols);
+//	tMat = Mat(1, d_nextPts.cols, CV_32FC2, (void*)&nextPts[0]);
+//	d_nextPts.download(tMat);
+//
+//	status.resize(d_status.cols);
+//	tMat = Mat(1, d_status.cols, CV_8UC1, (void*)&status[0]);
+//	d_status.download(tMat);
 
 //	//Find the flow direction
 //	m_flow.m_x = 0;

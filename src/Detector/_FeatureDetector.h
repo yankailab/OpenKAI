@@ -14,7 +14,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_FEATUREDETECTOR 10
+#define TRD_INTERVAL_FEATUREDETECTOR 0
 
 #define CASCADE_CPU 0
 #define CASCADE_CUDA 1
@@ -53,10 +53,15 @@ public:
 	FrameGroup*			m_pGrayFrames;
 
 	Ptr<AKAZE> m_pAkaze;
+	Ptr<cv::DescriptorMatcher> m_pMatcher;
 
-private:
 	Mat			m_Mat;
 	Mat			m_targetMat;
+	std::vector<cv::KeyPoint> m_targetKeypoint;
+	std::vector<cv::KeyPoint> m_imgKeypoint;
+	cv::Mat m_targetDescriptor;
+	cv::Mat m_imgDescriptor;
+
 	GpuMat		m_GMat;
 	CamFrame*	m_pGray;
 
