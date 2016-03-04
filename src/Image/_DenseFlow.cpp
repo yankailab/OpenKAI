@@ -21,12 +21,8 @@ _DenseFlow::_DenseFlow()
 	m_width = 640;
 	m_height = 480;
 
-//	m_pFlowFrame = NULL;
-//	m_pShowFlow = NULL;
-
 	m_pCamStream = NULL;
 	m_pGrayFrames = NULL;
-	m_cudaDeviceID = 0;
 
 }
 
@@ -41,8 +37,6 @@ bool _DenseFlow::init(JSON* pJson, string camName)
 
 	//	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-//	m_pFlowFrame = new CamFrame();
-//	m_pShowFlow = new CamFrame();
 
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
@@ -67,7 +61,6 @@ bool _DenseFlow::start(void)
 
 void _DenseFlow::update(void)
 {
-	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
@@ -112,28 +105,19 @@ void _DenseFlow::detect(void)
 	pPrev = pPrevFrame->getGMat();
 	pNext = pNextFrame->getGMat();
 
-//	m_pFlowFrame->switchFrame();
-//	m_pCamStream->mutexLock(CAMSTREAM_MUTEX_GRAY);
-//	m_pFlowFrame->getResizedOf(m_pGray,m_width,m_height);
-//	m_pGray->getCurrentFrame()->download(matGray);
-//	m_pCamStream->mutexUnlock(CAMSTREAM_MUTEX_GRAY);
-
-//	m_pFlowFrame->updateFrame(&matGray);
 
 	m_flow.m_x = 0;
 	m_flow.m_y = 0;
 	m_flow.m_z = 0;
 	m_flow.m_w = 0;
 
-//	pPrev = m_pFlowFrame->getPrevGMat();
-//	pNext = m_pFlowFrame->getGMat();
-
 	if(pPrev->empty())return;
 	if(pNext->empty())return;
 	if(pPrev->size() != pNext->size())return;
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
-//	m_GFlowMat.download(m_uFlowMat);
+	m_GFlowMat.download(m_cFlowMat);
+
 //
 //	for (i = 0; i < m_uFlowMat.rows; i++)
 //	{

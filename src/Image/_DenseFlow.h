@@ -51,21 +51,17 @@ private:
 public:
 	fVector4	m_flow;
 	GpuMat		m_GFlowMat;
-//	CamFrame*	m_pFlowFrame;
-//	CamFrame*	m_pShowFlow;
 
 	int	m_width;
 	int m_height;
 
-	Mat m_uFlowMat;
+	Mat m_cFlowMat;
 	Mat m_flowX;
 	Mat m_flowY;
 
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 
 	_CamStream*			m_pCamStream;
-	int					m_cudaDeviceID;
-
 	FrameGroup*			m_pGrayFrames;
 
 	Mat m_showMat;

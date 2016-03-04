@@ -3,9 +3,9 @@
 "SERIALPORT_FC_BAUDRATE":115200,
 
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
-"CAM_FRONTL_WIDTH":1920,
-"CAM_FRONTL_HEIGHT":1080,
-"CAM_FRONTL_ID":1,
+"CAM_FRONTL_WIDTH":640,
+"CAM_FRONTL_HEIGHT":480,
+"CAM_FRONTL_ID":2,
 "CAM_FRONTL_MARKER":1,
 "CAM_FRONTL_CALIB":0,
 "CAM_FRONTL_FISHEYE":0,
@@ -28,13 +28,12 @@
 "SEGNET_CUDADEVICE_ID_DEFAULT":0,
 
 "FEATURE_IMG_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/akaze.jpg",
-"FEATURE_IMG2_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/2akaze.jpg",
 
 
 "CASCADE_DEVICE_DRONE":0,
 "_CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_3.xml",
-"__CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
-"CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_Side.xml",
+"CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
+"__CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_Side.xml",
 "CASCADE_FILE_DRONE_":"/home/kai/dev/opencv/data/haarcascades/haarcascade_frontalface_alt.xml",
 "CASCADE_NUM_DRONE":10,
 "CASCADE_LIFETIME_DRONE":200000,

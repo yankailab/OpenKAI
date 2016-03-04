@@ -51,7 +51,7 @@ bool _FeatureDetector::init(string name, JSON* pJson)
 	m_pAkaze->detect(m_targetMat, m_targetKeypoint);
 	m_pAkaze->compute(m_targetMat, m_targetKeypoint, m_targetDescriptor);
 
-	m_pMatcher = cv::DescriptorMatcher::create("BruteForce");
+	m_pMatcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
 
 
 //	string cascadeFile;

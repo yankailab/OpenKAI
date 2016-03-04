@@ -45,6 +45,10 @@ bool DroneHunter::start(JSON* pJson)
 	m_pFeature->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
+	//Init Dense Flow Tracker
+	m_pDFTracker = new _DenseFlowTracker();
+	m_pDFTracker->init(pJson, "DRONE");
+	m_pDFTracker->m_pDF = m_pDF;
 
 	//Init Autopilot
 /*	m_pAP = new _AutoPilot();
@@ -74,11 +78,12 @@ bool DroneHunter::start(JSON* pJson)
 
 	//Start threads
 	m_pCamFront->start();
-	m_pFeature->start();
+//	m_pFeature->start();
 //	m_pMavlink->start();
-//	m_pDF->start();
+	m_pDF->start();
 //	m_pAP->start();
 //	m_pCascade->start();
+	m_pDFTracker->start();
 
 	//UI thread
 	m_bRun = true;
@@ -105,10 +110,12 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pMavlink->stop();
 	m_pDF->stop();
 	m_pFeature->stop();
+	m_pDFTracker->stop();
 
 	m_pCascade->complete();
 	m_pDF->complete();
 	m_pFeature->complete();
+	m_pDFTracker->complete();
 //	m_pAP->complete();
 //	m_pCamFront->complete();
 //	m_pMavlink->complete();
@@ -120,6 +127,7 @@ bool DroneHunter::start(JSON* pJson)
 	delete m_pCamFront;
 	delete m_pCascade;
 	delete m_pFeature;
+	delete m_pDFTracker;
 
 	return 0;
 
@@ -163,6 +171,12 @@ void DroneHunter::showScreen(void)
 	{
 		imshow("Feature",m_pFeature->m_Mat);
 	}
+
+	if(!m_pDFTracker->m_Mat.empty())
+	{
+		imshow("DFTracker",m_pDFTracker->m_Mat);
+	}
+
 
 
 //	g_pShow->updateFrame(&imMat3);
