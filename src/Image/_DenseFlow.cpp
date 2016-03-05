@@ -133,7 +133,7 @@ void _DenseFlow::detect(void)
 //	m_flow.m_x *= base;
 //	m_flow.m_y *= base;
 
-	generateFlowMap(m_GFlowMat);
+//	generateFlowMap(m_GFlowMat);
 
 
 /*	cv::Size mSize = m_uFlowMat.size();

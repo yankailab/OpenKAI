@@ -136,11 +136,21 @@ bool DroneHunter::start(JSON* pJson)
 void DroneHunter::showScreen(void)
 {
 	int i;
-	Mat imMat;
+	Mat imMat,imMat2,imMat3;
 	CamFrame* pFrame = m_pCamFront->getFrame();// (*m_pCamFront->m_pFrameProcess);
 
 	if (pFrame->empty())return;
 	pFrame->getGMat()->download(imMat);
+
+	if(m_pDFTracker->m_Mat.empty())return;
+
+	m_pMat->update(&m_pDFTracker->m_Mat);
+	m_pMat2->getResizedOf(m_pMat, imMat.cols,imMat.rows);
+	m_pMat->get8UC3Of(m_pMat2);
+	imMat2 = *m_pMat->getCMat();
+
+	cv::addWeighted(imMat, 1.0, imMat2, 1.0, 0.0, imMat3);
+
 
 	CASCADE_OBJECT* pDrone;
 	int iTarget = 0;
@@ -155,27 +165,28 @@ void DroneHunter::showScreen(void)
 	}
 
 	pDrone = &m_pCascade->m_pObj[iTarget];
-	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+	putText(imMat3, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
 
-	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "FlowDepth FPS: "+f2str(m_pDFTracker->getFrameRate()), cv::Point(15,50), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	imshow(APP_NAME,imMat);
+	imshow(APP_NAME,imMat3);
 
-	if(!m_pDF->m_showMat.empty())
-	{
-		imshow("OpticalFlow",m_pDF->m_showMat);
-	}
-
-	if(!m_pFeature->m_Mat.empty())
-	{
-		imshow("Feature",m_pFeature->m_Mat);
-	}
-
-	if(!m_pDFTracker->m_Mat.empty())
-	{
-		imshow("DFTracker",m_pDFTracker->m_Mat);
-	}
+//	if(!m_pDF->m_showMat.empty())
+//	{
+//		imshow("OpticalFlow",m_pDF->m_showMat);
+//	}
+//
+//	if(!m_pFeature->m_Mat.empty())
+//	{
+//		imshow("Feature",m_pFeature->m_Mat);
+//	}
+//
+//	if(!m_pDFTracker->m_Mat.empty())
+//	{
+//		imshow("DFTracker",m_pDFTracker->m_Mat);
+//	}
 
 
 

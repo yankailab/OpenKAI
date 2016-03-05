@@ -21,7 +21,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_DENSEFLOWTRACKER 100
+#define TRD_INTERVAL_DENSEFLOWTRACKER 5000
 
 namespace kai
 {
@@ -46,14 +46,12 @@ private:
 
 public:
 	_DenseFlow*	m_pDF;
-	Size	m_size;
 	Rect	m_ROI;
 	double	m_flowMax;
 	double	m_flowAvr; //average flow distance in previous frame
 	int		m_targetArea;
 
 	Mat		m_Mat;
-
 };
 
 } /* namespace kai */

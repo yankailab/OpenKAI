@@ -27,6 +27,7 @@ _FeatureDetector::_FeatureDetector()
 	m_device = CASCADE_CPU;
 	m_numCorners = 1000;
 
+
 }
 
 _FeatureDetector::~_FeatureDetector()
