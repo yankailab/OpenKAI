@@ -116,7 +116,7 @@ void _DenseFlow::detect(void)
 	if(pPrev->size() != pNext->size())return;
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
-	m_GFlowMat.download(m_cFlowMat);
+//	m_GFlowMat.download(m_cFlowMat);
 
 //
 //	for (i = 0; i < m_uFlowMat.rows; i++)

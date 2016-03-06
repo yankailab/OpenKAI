@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_DENSEFLOWTRACKER_H_
-#define SRC_DENSEFLOWTRACKER_H_
+#ifndef SRC_DenseFlowDepth_H_
+#define SRC_DenseFlowDepth_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
@@ -21,26 +21,27 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_DENSEFLOWTRACKER 5000
+#define TRD_INTERVAL_DENSEFLOWDEPTH 15000
 
 namespace kai
 {
 
-class _DenseFlowTracker:  public DetectorBase, public _ThreadBase
+class _DenseFlowDepth:  public DetectorBase, public _ThreadBase
 {
 public:
-	_DenseFlowTracker();
-	virtual ~_DenseFlowTracker();
+	_DenseFlowDepth();
+	virtual ~_DenseFlowDepth();
 
-	bool init(JSON* pJson, string camName);
+	bool init(JSON* pJson, string name);
 	bool start(void);
 
 private:
-	void track(void);
+	void findDepth(void);
+	void findDepthGPU(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DenseFlowTracker*) This)->update();
+		((_DenseFlowDepth*) This)->update();
 		return NULL;
 	}
 
@@ -51,7 +52,11 @@ public:
 	double	m_flowAvr; //average flow distance in previous frame
 	int		m_targetArea;
 
-	Mat		m_Mat;
+	CamFrame* m_pDepth;
+
+	Mat m_labelColor;
+	Ptr<LookUpTable>	m_pGpuLUT;
+
 };
 
 } /* namespace kai */

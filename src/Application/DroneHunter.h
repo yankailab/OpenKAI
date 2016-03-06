@@ -20,7 +20,7 @@
 #include "../Utility/util.h"
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_FeatureDetector.h"
-#include "../Tracker/_DenseFlowTracker.h"
+#include "../Image/_DenseFlowDepth.h"
 #include "../Tracker/_ROITracker.h"
 
 #define APP_NAME "DRONE_HUNTER"
@@ -45,7 +45,7 @@ public:
 	_CascadeDetector* m_pCascade;
 	_DenseFlow* m_pDF;
 	_FeatureDetector* m_pFeature;
-	_DenseFlowTracker* m_pDFTracker;
+	_DenseFlowDepth* m_pDFDepth;
 	_ROITracker* m_pROITracker;
 
 	CamFrame* m_pShow;
