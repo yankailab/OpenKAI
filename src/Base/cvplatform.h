@@ -6,6 +6,7 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/saliency.hpp"
 #include <opencv2/imgcodecs.hpp>
+#include <opencv2/tracking.hpp>
 
 using namespace cv;
 

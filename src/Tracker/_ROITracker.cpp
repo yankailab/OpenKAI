@@ -1,0 +1,117 @@
+/*
+ * CameraOpticalFlow.cpp
+ *
+ *  Created on: Aug 21, 2015
+ *      Author: yankai
+ */
+
+#include "_ROITracker.h"
+
+#include "../Base/common.h"
+#include "stdio.h"
+#include "../Base/cvplatform.h"
+
+namespace kai
+{
+
+_ROITracker::_ROITracker()
+{
+	_ThreadBase();
+
+	m_pCamStream = NULL;
+	m_pMat = NULL;
+}
+
+_ROITracker::~_ROITracker()
+{
+}
+
+bool _ROITracker::init(JSON* pJson, string camName)
+{
+//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_size.width));
+//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_size.height));
+
+	m_ROI.width = 0;
+	m_ROI.height = 0;
+	m_ROI.x = 0;
+	m_ROI.y = 0;
+
+	m_newROI = m_ROI;
+
+	// create a tracker object
+	m_pTracker = Tracker::create( "KCF" );
+
+	m_tSleep = TRD_INTERVAL_ROITRACKER;
+	return true;
+}
+
+
+bool _ROITracker::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
+void _ROITracker::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->updateTime();
+
+		track();
+
+		if(m_tSleep>0)
+		{
+			//sleepThread can be woke up by this->wakeupThread()
+			this->sleepThread(0, m_tSleep);
+		}
+	}
+
+}
+
+void _ROITracker::setROI(Rect2d roi)
+{
+	if(m_pMat==NULL)return;
+	if(m_pMat->empty())return;
+	if(roi.width==0 || roi.height==0)return;
+
+	m_newROI = roi;
+}
+
+void _ROITracker::track(void)
+{
+	if(m_pCamStream == NULL)return;
+	m_pMat = m_pCamStream->getFrame()->getCMat();
+
+	if(m_pMat->empty())return;
+
+	if(!m_pTracker.empty())
+	{
+		if(m_newROI.width > 0)
+		{
+			m_pTracker.release();
+			m_pTracker = Tracker::create( "KCF" );
+
+		//	m_pTracker->clear();
+			m_ROI = m_newROI;
+			m_pTracker->init(*m_pMat,m_ROI);
+			m_newROI.width = 0;
+		}
+
+		if(m_ROI.width==0 || m_ROI.height==0)return;
+
+		// update the tracking result
+	    m_pTracker->update(*m_pMat,m_ROI);
+	}
+
+}
+
+
+} /* namespace kai */
