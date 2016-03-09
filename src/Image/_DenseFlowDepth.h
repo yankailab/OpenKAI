@@ -53,6 +53,7 @@ public:
 	int		m_targetArea;
 
 	CamFrame* m_pDepth;
+	CamFrame* m_pSeg;
 
 	Mat m_labelColor;
 	Ptr<LookUpTable>	m_pGpuLUT;

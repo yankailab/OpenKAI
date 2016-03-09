@@ -48,6 +48,7 @@ bool _DenseFlowDepth::init(JSON* pJson, string name)
 	m_ROI.y = 0;//m_size.height*0.5 - m_ROI.height*0.5;
 
 	m_pDepth = new CamFrame();
+	m_pSeg = new CamFrame();
 
 	m_tSleep = TRD_INTERVAL_DENSEFLOWDEPTH;
 	return true;
@@ -182,7 +183,8 @@ void _DenseFlowDepth::findDepthGPU(void)
 	cv::cuda::cvtColor(depthGMat, idxGMat, CV_GRAY2BGR);
 	m_pGpuLUT->transform(idxGMat,segGMat);
 
-	m_pDepth->update(&segGMat);
+	m_pDepth->update(&depthGMat);
+	m_pSeg->update(&segGMat);
 
 }
 

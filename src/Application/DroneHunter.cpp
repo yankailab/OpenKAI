@@ -154,7 +154,7 @@ void DroneHunter::showScreen(void)
 
 	if(m_pDFDepth->m_pDepth->empty())return;
 
-	m_pMat->getResizedOf(m_pDFDepth->m_pDepth, imMat.cols,imMat.rows);
+	m_pMat->getResizedOf(m_pDFDepth->m_pSeg, imMat.cols,imMat.rows);
 	m_pMat2->get8UC3Of(m_pMat);
 	imMat2 = *m_pMat2->getCMat();
 
@@ -194,10 +194,7 @@ void DroneHunter::showScreen(void)
 
 	imshow(APP_NAME,imMat3);
 
-//	if(!m_pDF->m_showMat.empty())
-//	{
-//		imshow("OpticalFlow",m_pDF->m_showMat);
-//	}
+	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
 //
 //	if(!m_pFeature->m_Mat.empty())
 //	{
