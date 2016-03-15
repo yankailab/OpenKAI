@@ -21,11 +21,11 @@ int main(int argc, char* argv[])
 //	g_pAppSegNetDemo = new SegNetDemo();
 //	g_pAppSegNetDemo->start(&g_Json);
 
-//	g_pAppDroneHunter = new DroneHunter();
-//	g_pAppDroneHunter->start(&g_Json);
+	g_pAppDroneHunter = new DroneHunter();
+	g_pAppDroneHunter->start(&g_Json);
 
-	g_pAppNavigator = new Navigator();
-	g_pAppNavigator->start(&g_Json);
+//	g_pAppNavigator = new Navigator();
+//	g_pAppNavigator->start(&g_Json);
 
 	return 0;
 }
