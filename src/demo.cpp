@@ -14,6 +14,8 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
+
+
 	//Start Application
 //	g_pAppExtCamControl = new ExtCamControl();
 //	g_pAppExtCamControl->start(&g_Json);

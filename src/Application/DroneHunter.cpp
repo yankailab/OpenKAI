@@ -71,6 +71,13 @@ bool DroneHunter::start(JSON* pJson)
 	CHECK_INFO(m_pMavlink->open());
 */
 
+	m_ROI.m_x = 0;
+	m_ROI.m_y = 0;
+	m_ROI.m_z = 0;
+	m_ROI.m_w = 0;
+	m_bSelect = false;
+
+
 	//Main window
 	m_pShow = new CamFrame();
 	m_pMat = new CamFrame();
@@ -145,51 +152,55 @@ bool DroneHunter::start(JSON* pJson)
 void DroneHunter::showScreen(void)
 {
 	int i;
+	Rect roi;
 	Mat imMat,imMat2,imMat3;
 	CamFrame* pFrame = m_pCamFront->getFrame();
 
 	if (pFrame->empty())return;
 	pFrame->getGMat()->download(imMat);
 
-//	if(m_pDFDepth->m_pDepth->empty())return;
-//
-//	m_pMat->getResizedOf(m_pDFDepth->m_pSeg, imMat.cols,imMat.rows);
-//	m_pMat2->get8UC3Of(m_pMat);
-//	imMat2 = *m_pMat2->getCMat();
-
-//	cv::addWeighted(imMat, 1.0, imMat2, 0.35, 0.0, imMat3);
-
-	CASCADE_OBJECT* pDrone;
-	int iTarget = 0;
-
-	for (i = 0; i < m_pCascade->m_numObj; i++)
-	{
-		pDrone = &m_pCascade->m_pObj[i];
-		if(pDrone->m_status != OBJ_ADDED)continue;
-
-		if(iTarget == 0)iTarget = i;
-		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
-	}
-
-	pDrone = &m_pCascade->m_pObj[iTarget];
-	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
-
-
 	 // draw the tracked object
-	Rect roi = m_pROITracker->m_ROI;
-	if(roi.height>0 || roi.width>0)
+	if(m_bSelect)
 	{
-		rectangle( imMat, roi, Scalar( 0, 0, 255 ), 2 );
+		roi = getROI(m_ROI);
+		if(roi.height>0 || roi.width>0)
+		{
+			rectangle( imMat, roi, Scalar( 0, 255, 0 ), 2 );
+		}
+	}
+	else
+	{
+		roi = m_pROITracker->m_ROI;
+		if(roi.height>0 || roi.width>0)
+		{
+			rectangle( imMat, roi, Scalar( 0, 0, 255 ), 2 );
+		}
 	}
 
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,95), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat);
-//	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
+
+	//	CASCADE_OBJECT* pDrone;
+	//	int iTarget = 0;
+	//
+	//	for (i = 0; i < m_pCascade->m_numObj; i++)
+	//	{
+	//		pDrone = &m_pCascade->m_pObj[i];
+	//		if(pDrone->m_status != OBJ_ADDED)continue;
+	//
+	//		if(iTarget == 0)iTarget = i;
+	//		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
+	//	}
+	//
+	//	pDrone = &m_pCascade->m_pObj[iTarget];
+	//	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+
+	//	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	//	putText(imMat, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	//	putText(imMat, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	//	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();
@@ -263,26 +274,53 @@ void DroneHunter::handleKey(int key)
 void DroneHunter::handleMouse(int event, int x, int y, int flags)
 {
 	Rect2d roi;
-	int roisize = 200;
 
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
-		roi.x = x - roisize/2;
-		roi.y = y - roisize/2;
-		roi.width = roisize;
-		roi.height = roisize;
-		m_pROITracker->setROI(roi);
-		break;
-	case EVENT_LBUTTONUP:
+		m_pROITracker->tracking(false);
+		m_ROI.m_x = x;
+		m_ROI.m_y = y;
+		m_ROI.m_z = x;
+		m_ROI.m_w = y;
+		m_bSelect = true;
 		break;
 	case EVENT_MOUSEMOVE:
+		if(m_bSelect)
+		{
+			m_ROI.m_z = x;
+			m_ROI.m_w = y;
+		}
+		break;
+	case EVENT_LBUTTONUP:
+		roi = getROI(m_ROI);
+		if(roi.width==0 || roi.height==0)
+		{
+		}
+		else
+		{
+			m_pROITracker->setROI(roi);
+			m_pROITracker->tracking(true);
+		}
+		m_bSelect = false;
 		break;
 	case EVENT_RBUTTONDOWN:
 		break;
 	default:
 		break;
 	}
+}
+
+Rect2d DroneHunter::getROI(iVector4 mouseROI)
+{
+	Rect2d roi;
+
+	roi.x = min(mouseROI.m_x,mouseROI.m_z);
+	roi.y = min(mouseROI.m_y,mouseROI.m_w);
+	roi.width = abs(mouseROI.m_z - mouseROI.m_x);
+	roi.height = abs(mouseROI.m_w - mouseROI.m_y);
+
+	return roi;
 }
 
 }

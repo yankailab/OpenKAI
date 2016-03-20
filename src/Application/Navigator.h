@@ -47,6 +47,7 @@ public:
 	_FeatureDetector* m_pFeature;
 	_DenseFlowDepth* m_pDFDepth;
 	_ROITracker* m_pROITracker;
+	_SegNet* m_pSegNet;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

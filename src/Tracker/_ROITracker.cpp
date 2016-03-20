@@ -37,6 +37,7 @@ bool _ROITracker::init(JSON* pJson, string camName)
 	m_ROI.y = 0;
 
 	m_newROI = m_ROI;
+	m_bTracking = false;
 
 	// create a tracker object
 	m_pTracker = Tracker::create( "KCF" );
@@ -85,31 +86,32 @@ void _ROITracker::setROI(Rect2d roi)
 	m_newROI = roi;
 }
 
+void _ROITracker::tracking(bool bTracking)
+{
+	m_bTracking = bTracking;
+}
+
 void _ROITracker::track(void)
 {
 	if(m_pCamStream == NULL)return;
 	m_pMat = m_pCamStream->getFrame()->getCMat();
 
 	if(m_pMat->empty())return;
+	if(m_bTracking==false)return;
+	if(m_pTracker.empty())return;
 
-	if(!m_pTracker.empty())
+	if(m_newROI.width > 0)
 	{
-		if(m_newROI.width > 0)
-		{
-			m_pTracker.release();
-			m_pTracker = Tracker::create( "KCF" );
+		m_pTracker.release();
+		m_pTracker = Tracker::create( "KCF" );
 
-		//	m_pTracker->clear();
-			m_ROI = m_newROI;
-			m_pTracker->init(*m_pMat,m_ROI);
-			m_newROI.width = 0;
-		}
-
-		if(m_ROI.width==0 || m_ROI.height==0)return;
-
-		// update the tracking result
-	    m_pTracker->update(*m_pMat,m_ROI);
+		m_ROI = m_newROI;
+		m_pTracker->init(*m_pMat,m_ROI);
+		m_newROI.width = 0;
 	}
+
+	// update the tracking result
+    m_pTracker->update(*m_pMat,m_ROI);
 
 }
 

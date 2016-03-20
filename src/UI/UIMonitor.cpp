@@ -35,7 +35,7 @@ bool UIMonitor::init(string name, JSON* pJson)
 	m_windowName = name;
 	m_numFrame = 0;
 
-	m_showFrame = UMat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
+	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
 
 	return true;
 }
@@ -120,7 +120,7 @@ void UIMonitor::show(void)
 
 	if(m_numFrame == 0)return;
 
-	m_showFrame = UMat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
+	m_showFrame = Mat(m_height,m_width,CV_8UC3,cv::Scalar(0,0,0));
 
 	for(i=0;i<m_numFrame;i++)
 	{
@@ -137,11 +137,13 @@ void UIMonitor::show(void)
 		if(m_camFrame.getGMat()->type() != m_showFrame.type())
 		{
 			m_camFrame2.get8UC3Of(&m_camFrame);
-			m_camFrame2.getGMat()->download(m_frame);
+//			m_camFrame2.getGMat()->download(m_frame);
+			m_frame = *m_camFrame2.getCMat();
 		}
 		else
 		{
-			m_camFrame.getGMat()->download(m_frame);
+//			m_camFrame.getGMat()->download(m_frame);
+			m_frame = *m_camFrame.getCMat();
 		}
 
 		//Copy to show frame

@@ -126,7 +126,7 @@ void SegNetDemo::showScreen(void)
 	cv::addWeighted(imMat, 1.0, imMat2, 0.5, 0.0, imMat3);
 
 	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "SegNet FPS: "+f2str(m_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Segmentation FPS: "+f2str(m_pSegNet->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	if(m_showMode == 0)
 	{

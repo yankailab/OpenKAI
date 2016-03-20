@@ -53,6 +53,10 @@ public:
 	CamFrame* m_pMat2;
 	UIMonitor* m_pUIMonitor;
 
+	iVector4 m_ROI;
+	bool	 m_bSelect;
+
+	Rect2d getROI(iVector4 mouseROI);
 	bool start(JSON* pJson);
 	void showScreen(void);
 

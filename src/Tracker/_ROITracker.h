@@ -21,7 +21,7 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_ROITRACKER 100
+#define TRD_INTERVAL_ROITRACKER 10
 
 namespace kai
 {
@@ -36,6 +36,7 @@ public:
 	bool start(void);
 
 	void setROI(Rect2d roi);
+	void tracking(bool bTracking);
 
 private:
 	void track(void);
@@ -51,6 +52,7 @@ public:
 	Rect2d	m_ROI;
 	Rect2d	m_newROI;
 	Mat*	m_pMat;
+	bool	m_bTracking;
 
 	Ptr<Tracker> m_pTracker;
 };

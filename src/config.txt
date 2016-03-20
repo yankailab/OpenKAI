@@ -5,7 +5,7 @@
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
 "CAM_FRONTL_WIDTH":1920,
 "CAM_FRONTL_HEIGHT":1080,
-"CAM_FRONTL_ID":1,
+"CAM_FRONTL_ID":2,
 "CAM_FRONTL_MARKER":1,
 "CAM_FRONTL_CALIB":0,
 "CAM_FRONTL_FISHEYE":0,
@@ -19,8 +19,6 @@
 
 "DENSEFLOW_FRONTL_WIDTH":1280,
 "DENSEFLOW_FRONTL_HEIGHT":720,
-
-"CAM_FRONTR_ID":0,
 
 "SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
 "SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",

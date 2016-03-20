@@ -43,8 +43,8 @@ public:
 	string m_windowName;
 	int m_width;
 	int m_height;
-	UMat m_showFrame;
-	UMat m_frame;
+	Mat m_showFrame;
+	Mat m_frame;
 
 	CamFrame m_camFrame;
 	CamFrame m_camFrame2;

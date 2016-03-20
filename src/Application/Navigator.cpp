@@ -27,22 +27,10 @@ bool Navigator::start(JSON* pJson)
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
-	//Init Fast Detector
-	m_pCascade = new _CascadeDetector();
-	m_pCascade->init("DRONE", pJson);
-	m_pCascade->m_pCamStream = m_pCamFront;
-	m_pCamFront->m_bGray = true;
-
 	//Init Optical Flow
 	m_pDF = new _DenseFlow();
 	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
 	m_pDF->m_pCamStream = m_pCamFront;
-	m_pCamFront->m_bGray = true;
-
-	//Init Feature Detector
-	m_pFeature = new _FeatureDetector();
-	m_pFeature->init("DRONE", pJson);
-	m_pFeature->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
 	//Init Dense Flow Tracker
@@ -54,7 +42,6 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker = new _ROITracker();
 	m_pROITracker->init(pJson, "DRONE");
 	m_pROITracker->m_pCamStream = m_pCamFront;
-
 
 	//Init Autopilot
 /*	m_pAP = new _AutoPilot();
@@ -84,13 +71,12 @@ bool Navigator::start(JSON* pJson)
 
 	//Start threads
 	m_pCamFront->start();
-//	m_pFeature->start();
 //	m_pMavlink->start();
 	m_pDF->start();
 //	m_pAP->start();
-//	m_pCascade->start();
 	m_pDFDepth->start();
 	m_pROITracker->start();
+
 
 	//UI thread
 	m_bRun = true;
@@ -113,16 +99,12 @@ bool Navigator::start(JSON* pJson)
 	}
 
 //	m_pAP->stop();
-	m_pCascade->stop();
 //	m_pMavlink->stop();
 	m_pDF->stop();
-	m_pFeature->stop();
 	m_pDFDepth->stop();
 	m_pROITracker->stop();
 
-	m_pCascade->complete();
 	m_pDF->complete();
-	m_pFeature->complete();
 	m_pDFDepth->complete();
 	m_pROITracker->complete();
 //	m_pAP->complete();
@@ -134,8 +116,6 @@ bool Navigator::start(JSON* pJson)
 //	delete m_pMavlink;
 	delete m_pDF;
 	delete m_pCamFront;
-	delete m_pCascade;
-	delete m_pFeature;
 	delete m_pDFDepth;
 	delete m_pROITracker;
 
@@ -158,26 +138,7 @@ void Navigator::showScreen(void)
 	m_pMat2->get8UC3Of(m_pMat);
 	imMat2 = *m_pMat2->getCMat();
 
-//	imshow("OpticalFlow",imMat2);
-
 	cv::addWeighted(imMat, 1.0, imMat2, 0.35, 0.0, imMat3);
-//	imMat3 = imMat;
-
-	CASCADE_OBJECT* pDrone;
-	int iTarget = 0;
-
-	for (i = 0; i < m_pCascade->m_numObj; i++)
-	{
-		pDrone = &m_pCascade->m_pObj[i];
-		if(pDrone->m_status != OBJ_ADDED)continue;
-
-		if(iTarget == 0)iTarget = i;
-		rectangle(imMat3, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
-	}
-
-	pDrone = &m_pCascade->m_pObj[iTarget];
-	putText(imMat3, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
-
 
 	 // draw the tracked object
 	Rect roi = m_pROITracker->m_ROI;
@@ -187,24 +148,29 @@ void Navigator::showScreen(void)
 	}
 
 	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,95), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	//	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat3);
-
 	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
-//
-//	if(!m_pFeature->m_Mat.empty())
-//	{
-//		imshow("Feature",m_pFeature->m_Mat);
-//	}
-//
-//	if(!m_pDFTracker->m_Mat.empty())
-//	{
-//		imshow("DFTracker",m_pDFTracker->m_Mat);
-//	}
+
+	//	CASCADE_OBJECT* pDrone;
+	//	int iTarget = 0;
+	//
+	//	for (i = 0; i < m_pCascade->m_numObj; i++)
+	//	{
+	//		pDrone = &m_pCascade->m_pObj[i];
+	//		if(pDrone->m_status != OBJ_ADDED)continue;
+	//
+	//		if(iTarget == 0)iTarget = i;
+	//		rectangle(imMat3, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
+	//	}
+	//
+	//	pDrone = &m_pCascade->m_pObj[iTarget];
+	//	putText(imMat3, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();
