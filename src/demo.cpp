@@ -14,20 +14,29 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 	CHECK_FATAL(g_Json.parse(config.c_str()));
 
-
+	string appName;
+	CHECK_FATAL(g_Json.getVal("APP_NAME", &appName));
 
 	//Start Application
+	if(appName=="DroneHunter")
+	{
+		g_pAppDroneHunter = new DroneHunter();
+		g_pAppDroneHunter->start(&g_Json);
+	}
+	else if(appName=="SegNet")
+	{
+		g_pAppSegNetDemo = new SegNetDemo();
+		g_pAppSegNetDemo->start(&g_Json);
+	}
+	else if(appName=="Navigator")
+	{
+		g_pAppNavigator = new Navigator();
+		g_pAppNavigator->start(&g_Json);
+	}
+
 //	g_pAppExtCamControl = new ExtCamControl();
 //	g_pAppExtCamControl->start(&g_Json);
 
-//	g_pAppSegNetDemo = new SegNetDemo();
-//	g_pAppSegNetDemo->start(&g_Json);
-
-	g_pAppDroneHunter = new DroneHunter();
-	g_pAppDroneHunter->start(&g_Json);
-
-//	g_pAppNavigator = new Navigator();
-//	g_pAppNavigator->start(&g_Json);
 
 	return 0;
 }

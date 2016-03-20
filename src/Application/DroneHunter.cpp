@@ -168,7 +168,7 @@ void DroneHunter::showScreen(void)
 			rectangle( imMat, roi, Scalar( 0, 255, 0 ), 2 );
 		}
 	}
-	else
+	else if(m_pROITracker->m_bTracking)
 	{
 		roi = m_pROITracker->m_ROI;
 		if(roi.height>0 || roi.width>0)
@@ -296,6 +296,10 @@ void DroneHunter::handleMouse(int event, int x, int y, int flags)
 		roi = getROI(m_ROI);
 		if(roi.width==0 || roi.height==0)
 		{
+			m_ROI.m_x = 0;
+			m_ROI.m_y = 0;
+			m_ROI.m_z = 0;
+			m_ROI.m_w = 0;
 		}
 		else
 		{

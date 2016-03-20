@@ -80,8 +80,8 @@ bool Navigator::start(JSON* pJson)
 
 	//UI thread
 	m_bRun = true;
-	namedWindow(APP_NAME);//, CV_WINDOW_NORMAL);
-//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	setMouseCallback(APP_NAME, onMouseNavigator, NULL);
 
 	while (m_bRun)
@@ -130,7 +130,7 @@ void Navigator::showScreen(void)
 	CamFrame* pFrame = m_pCamFront->getFrame();
 
 	if (pFrame->empty())return;
-	pFrame->getGMat()->download(imMat);
+	imMat = *pFrame->getCMat();
 
 	if(m_pDFDepth->m_pDepth->empty())return;
 
@@ -153,8 +153,9 @@ void Navigator::showScreen(void)
 	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	//	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	imshow(APP_NAME,imMat3);
-	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
+//	imshow(APP_NAME,imMat3);
+//	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
+	imshow(APP_NAME,*m_pDFDepth->m_pDepth->getCMat());
 
 	//	CASCADE_OBJECT* pDrone;
 	//	int iTarget = 0;
