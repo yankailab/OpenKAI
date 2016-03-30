@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_DenseFlowDepth_H_
-#define SRC_DenseFlowDepth_H_
+#ifndef SRC_3DFlow_H_
+#define SRC_3DFlow_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
@@ -26,11 +26,11 @@ using namespace std;
 namespace kai
 {
 
-class _DenseFlowDepth:  public DetectorBase, public _ThreadBase
+class _3DFlow:  public DetectorBase, public _ThreadBase
 {
 public:
-	_DenseFlowDepth();
-	virtual ~_DenseFlowDepth();
+	_3DFlow();
+	virtual ~_3DFlow();
 
 	bool init(JSON* pJson, string name);
 	bool start(void);
@@ -41,7 +41,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DenseFlowDepth*) This)->update();
+		((_3DFlow*) This)->update();
 		return NULL;
 	}
 
@@ -62,4 +62,4 @@ public:
 
 } /* namespace kai */
 
-#endif /* SRC_CAMDENSEFLOW_H_ */
+#endif /* SRC_3DFlow_H_ */

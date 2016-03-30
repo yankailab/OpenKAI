@@ -27,17 +27,17 @@ bool DroneHunter::start(JSON* pJson)
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
-	//Init Fast Detector
-	m_pCascade = new _CascadeDetector();
-	m_pCascade->init("DRONE", pJson);
-	m_pCascade->m_pCamStream = m_pCamFront;
-	m_pCamFront->m_bGray = true;
-
-	//Init Feature Detector
-	m_pFeature = new _FeatureDetector();
-	m_pFeature->init("DRONE", pJson);
-	m_pFeature->m_pCamStream = m_pCamFront;
-	m_pCamFront->m_bGray = true;
+//	//Init Fast Detector
+//	m_pCascade = new _CascadeDetector();
+//	m_pCascade->init("DRONE", pJson);
+//	m_pCascade->m_pCamStream = m_pCamFront;
+//	m_pCamFront->m_bGray = true;
+//
+//	//Init Feature Detector
+//	m_pFeature = new _FeatureDetector();
+//	m_pFeature->init("DRONE", pJson);
+//	m_pFeature->m_pCamStream = m_pCamFront;
+//	m_pCamFront->m_bGray = true;
 
 	//Init ROI Tracker
 	m_pROITracker = new _ROITracker();
@@ -207,6 +207,62 @@ void DroneHunter::showScreen(void)
 
 }
 
+void DroneHunter::handleMouse(int event, int x, int y, int flags)
+{
+	Rect2d roi;
+
+	switch (event)
+	{
+	case EVENT_LBUTTONDOWN:
+		m_pROITracker->tracking(false);
+		m_ROI.m_x = x;
+		m_ROI.m_y = y;
+		m_ROI.m_z = x;
+		m_ROI.m_w = y;
+		m_bSelect = true;
+		break;
+	case EVENT_MOUSEMOVE:
+		if(m_bSelect)
+		{
+			m_ROI.m_z = x;
+			m_ROI.m_w = y;
+		}
+		break;
+	case EVENT_LBUTTONUP:
+		roi = getROI(m_ROI);
+		if(roi.width==0 || roi.height==0)
+		{
+			m_ROI.m_x = 0;
+			m_ROI.m_y = 0;
+			m_ROI.m_z = 0;
+			m_ROI.m_w = 0;
+		}
+		else
+		{
+			m_pROITracker->setROI(roi);
+			m_pROITracker->tracking(true);
+		}
+		m_bSelect = false;
+		break;
+	case EVENT_RBUTTONDOWN:
+		break;
+	default:
+		break;
+	}
+}
+
+Rect2d DroneHunter::getROI(iVector4 mouseROI)
+{
+	Rect2d roi;
+
+	roi.x = min(mouseROI.m_x,mouseROI.m_z);
+	roi.y = min(mouseROI.m_y,mouseROI.m_w);
+	roi.width = abs(mouseROI.m_z - mouseROI.m_x);
+	roi.height = abs(mouseROI.m_w - mouseROI.m_y);
+
+	return roi;
+}
+
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
 void DroneHunter::showInfo(UMat* pDisplayMat)
@@ -271,60 +327,6 @@ void DroneHunter::handleKey(int key)
 	}
 }
 
-void DroneHunter::handleMouse(int event, int x, int y, int flags)
-{
-	Rect2d roi;
 
-	switch (event)
-	{
-	case EVENT_LBUTTONDOWN:
-		m_pROITracker->tracking(false);
-		m_ROI.m_x = x;
-		m_ROI.m_y = y;
-		m_ROI.m_z = x;
-		m_ROI.m_w = y;
-		m_bSelect = true;
-		break;
-	case EVENT_MOUSEMOVE:
-		if(m_bSelect)
-		{
-			m_ROI.m_z = x;
-			m_ROI.m_w = y;
-		}
-		break;
-	case EVENT_LBUTTONUP:
-		roi = getROI(m_ROI);
-		if(roi.width==0 || roi.height==0)
-		{
-			m_ROI.m_x = 0;
-			m_ROI.m_y = 0;
-			m_ROI.m_z = 0;
-			m_ROI.m_w = 0;
-		}
-		else
-		{
-			m_pROITracker->setROI(roi);
-			m_pROITracker->tracking(true);
-		}
-		m_bSelect = false;
-		break;
-	case EVENT_RBUTTONDOWN:
-		break;
-	default:
-		break;
-	}
-}
-
-Rect2d DroneHunter::getROI(iVector4 mouseROI)
-{
-	Rect2d roi;
-
-	roi.x = min(mouseROI.m_x,mouseROI.m_z);
-	roi.y = min(mouseROI.m_y,mouseROI.m_w);
-	roi.width = abs(mouseROI.m_z - mouseROI.m_x);
-	roi.height = abs(mouseROI.m_w - mouseROI.m_y);
-
-	return roi;
-}
 
 }

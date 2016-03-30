@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_DenseFlowDepth.h"
+#include "_3DFlow.h"
 
 #include "../Base/common.h"
 #include "stdio.h"
@@ -14,7 +14,7 @@
 namespace kai
 {
 
-_DenseFlowDepth::_DenseFlowDepth()
+_3DFlow::_3DFlow()
 {
 	_ThreadBase();
 
@@ -26,11 +26,11 @@ _DenseFlowDepth::_DenseFlowDepth()
 
 }
 
-_DenseFlowDepth::~_DenseFlowDepth()
+_3DFlow::~_3DFlow()
 {
 }
 
-bool _DenseFlowDepth::init(JSON* pJson, string name)
+bool _3DFlow::init(JSON* pJson, string name)
 {
 //	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_size.width));
 //	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_size.height));
@@ -55,7 +55,7 @@ bool _DenseFlowDepth::init(JSON* pJson, string name)
 }
 
 
-bool _DenseFlowDepth::start(void)
+bool _3DFlow::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -68,7 +68,7 @@ bool _DenseFlowDepth::start(void)
 	return true;
 }
 
-void _DenseFlowDepth::update(void)
+void _3DFlow::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -85,7 +85,7 @@ void _DenseFlowDepth::update(void)
 
 }
 
-void _DenseFlowDepth::findDepth(void)
+void _3DFlow::findDepth(void)
 {
 	int i, j;
 	Point2f vFlow;
@@ -137,7 +137,7 @@ void _DenseFlowDepth::findDepth(void)
 
 }
 
-void _DenseFlowDepth::findDepthGPU(void)
+void _3DFlow::findDepthGPU(void)
 {
 	double flowDist;
 	double flowTot, newMax;

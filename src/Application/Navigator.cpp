@@ -34,7 +34,7 @@ bool Navigator::start(JSON* pJson)
 	m_pCamFront->m_bGray = true;
 
 	//Init Dense Flow Tracker
-	m_pDFDepth = new _DenseFlowDepth();
+	m_pDFDepth = new _3DFlow();
 	m_pDFDepth->init(pJson, "DEFAULT");
 	m_pDFDepth->m_pDF = m_pDF;
 
