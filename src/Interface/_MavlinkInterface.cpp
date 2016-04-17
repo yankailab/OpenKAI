@@ -50,7 +50,6 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	return true;
 }
 
-
 bool _MavlinkInterface::open(void)
 {
 	system_id = 0;

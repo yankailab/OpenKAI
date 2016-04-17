@@ -56,14 +56,8 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pDFDepth->m_pDF = m_pDF;
 
 	//Init Autopilot
-/*	m_pAP = new _AutoPilot();
-	CHECK_FATAL(m_pAP->setup(&m_Json, ""));
-	m_pAP->init();
-	m_pAP->setCamStream(m_pCamFront, CAM_FRONT);
-	m_pAP->m_pOD = m_pOD;
-	m_pAP->m_pFD = m_pFD;
-//	m_pMD = m_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
-*/
+	m_pAP = new _AutoPilot();
+	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
 
 	//Connect to Mavlink
 /*	m_pMavlink = new _MavlinkInterface();
@@ -93,7 +87,7 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pFeature->start();
 //	m_pMavlink->start();
 //	m_pDF->start();
-//	m_pAP->start();
+	m_pAP->start();
 //	m_pCascade->start();
 //	m_pDFDepth->start();
 	m_pROITracker->start();
@@ -118,7 +112,7 @@ bool DroneHunter::start(JSON* pJson)
 		handleKey(m_key);
 	}
 
-//	m_pAP->stop();
+	m_pAP->stop();
 //	m_pCascade->stop();
 //	m_pMavlink->stop();
 //	m_pDF->stop();
@@ -131,12 +125,12 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pFeature->complete();
 //	m_pDFDepth->complete();
 	m_pROITracker->complete();
-//	m_pAP->complete();
+	m_pAP->complete();
 //	m_pCamFront->complete();
 //	m_pMavlink->complete();
 //	m_pMavlink->close();
 
-//	delete m_pAP;
+	delete m_pAP;
 //	delete m_pMavlink;
 //	delete m_pDF;
 //	delete m_pCamFront;

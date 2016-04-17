@@ -9,26 +9,29 @@ _VehicleInterface::_VehicleInterface()
 	m_bConnected = false;
 	m_sportName = "";
 	m_pSerialPort = NULL;
+	m_baudRate = 115200;
 }
 
 _VehicleInterface::~_VehicleInterface()
 {
+	if (m_pSerialPort)
+	{
+		delete m_pSerialPort;
+	}
 }
 
-void _VehicleInterface::setSerialName(string name)
+bool _VehicleInterface::setup(JSON* pJson, string serialName)
 {
-	m_sportName = name;
+	if(!pJson)return false;
+
+	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
+	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
+
+	return true;
 }
 
 bool _VehicleInterface::open(void)
 {
-	m_systemID = 0; // system id
-	m_autopilotID = 0; // autopilot component id
-	m_companionID = 0; // companion computer component id
-
-//	m_currentMessages.sysid = m_systemID;
-//	m_currentMessages.compid = m_autopilotID;
-
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
 	if (m_pSerialPort->Open((char*)m_sportName.c_str()) != true)
@@ -37,12 +40,16 @@ bool _VehicleInterface::open(void)
 		return false;
 	}
 
+	if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
+	{
+		printf("failure, could not configure port.\n");
+		return false;
+	}
+
 	m_recvMsg.m_cmd = 0;
 	m_bConnected = true;
 
 	return true;
-
-
 }
 
 void _VehicleInterface::close()
@@ -166,16 +173,12 @@ void _VehicleInterface::update(void)
 	{
 		this->updateTime();
 
-
-
 /*
 		if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
 		{
 			LOG(ERROR)<< "Cannot open serial port, Working in CV mode only";
 		}
 		*/
-
-
 
 		if(m_tSleep>0)
 		{

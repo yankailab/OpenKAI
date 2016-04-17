@@ -78,13 +78,6 @@ struct CAMERA_DATA
 {
 	bool m_bBall;
 
-
-
-};
-
-struct SYSTEM
-{
-	char m_mode;
 };
 
 }
