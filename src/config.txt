@@ -60,7 +60,7 @@
 "SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
 "SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
 
-
+"ROI_MIN_SIZE":50,
 
 "ROLL_P_MAIN":3.0,
 "ROLL_I_MAIN":0.1,

@@ -23,6 +23,8 @@ bool DroneHunter::start(JSON* pJson)
 {
 	g_pDroneHunter = this;
 
+	CHECK_ERROR(pJson->getVal("ROI_MIN_SIZE", &m_minROI));
+
 	//Init Camera
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
@@ -64,6 +66,7 @@ bool DroneHunter::start(JSON* pJson)
 	m_pAP = new _AutoPilot();
 //	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
 	m_pAP->m_pVI = m_pVlink;
+	m_pAP->m_pROITracker = m_pROITracker;
 
 	m_ROI.m_x = 0;
 	m_ROI.m_y = 0;
@@ -97,16 +100,6 @@ bool DroneHunter::start(JSON* pJson)
 	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
 
-	int testRC[8];
-	testRC[0]=1250;
-	testRC[1]=1250;
-	testRC[2]=1250;
-	testRC[3]=1250;
-	testRC[4]=1250;
-	testRC[5]=1250;
-	testRC[6]=1250;
-	testRC[7]=1250;
-
 	while (m_bRun)
 	{
 //		Mavlink_Messages mMsg;
@@ -120,8 +113,6 @@ bool DroneHunter::start(JSON* pJson)
 		m_key = waitKey(30);
 		handleKey(m_key);
 
-		if((testRC[0]+=100)>=2000)testRC[0]=1000;
-		m_pVlink->rc_overide(8,testRC);
 	}
 
 	m_pAP->stop();
@@ -236,7 +227,7 @@ void DroneHunter::handleMouse(int event, int x, int y, int flags)
 		break;
 	case EVENT_LBUTTONUP:
 		roi = getROI(m_ROI);
-		if(roi.width==0 || roi.height==0)
+		if(roi.width<m_minROI || roi.height<m_minROI)
 		{
 			m_ROI.m_x = 0;
 			m_ROI.m_y = 0;

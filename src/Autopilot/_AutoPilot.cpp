@@ -14,6 +14,7 @@ _AutoPilot::_AutoPilot()
 	m_pFD = NULL;
 	m_pVI = NULL;
 	m_pMavlink = NULL;
+	m_pROITracker = NULL;
 	m_bThreadON = false;
 	m_threadID = 0;
 
@@ -125,18 +126,7 @@ void _AutoPilot::update(void)
 	{
 		this->updateTime();
 
-		//TODO
-//		if(pFrame->isNewThan(pCam->m_frameID))
-//		{
-		//New frame arrived
-//			pCam->m_frameID = pFrame->m_frameID;
-
-//			m_pVI->readMessages();
-
-		//Action
-//			markerLock(pCam->m_pCam->m_pMarkerDetect);
-
-//		}
+		camROILock();
 
 		if (m_pVI)
 		{
@@ -185,19 +175,15 @@ void _AutoPilot::resetAllControl(void)
 	m_RC[m_alt.m_RC.m_idx] = m_alt.m_RC.m_pwmCenter;
 }
 
-void _AutoPilot::camROILock(fVector2* pTarget, fVector2* pPos, double dist)
+void _AutoPilot::camROILock(void)
 {
 	if(m_pVI==NULL)return;
+	if(m_pROITracker==NULL)return;
 
-	if (pTarget == NULL)
+	if (m_pROITracker->m_bTracking==true)
 	{
 		resetAllControl();
 		m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
-		return;
-	}
-
-	if (pPos == NULL)
-	{
 		return;
 	}
 

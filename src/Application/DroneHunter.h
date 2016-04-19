@@ -57,6 +57,7 @@ public:
 
 	iVector4 m_ROI;
 	bool	 m_bSelect;
+	int		 m_minROI;
 
 	Rect2d getROI(iVector4 mouseROI);
 	bool start(JSON* pJson);

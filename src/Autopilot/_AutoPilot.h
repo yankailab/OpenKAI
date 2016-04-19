@@ -65,13 +65,15 @@ public:
 	int* getPWMOutput(void);
 	void resetAllControl(void);
 
-	void camROILock(fVector2* pTarget, fVector2* pPos, double dist);
+	void camROILock(void);
 
 	void remoteMavlinkMsg(MESSAGE* pMsg);
 
 public:
 	_ObjectDetector*	m_pOD;
 	_CascadeDetector*	m_pFD;
+	_ROITracker* 		m_pROITracker;
+
 
 	_VehicleInterface* m_pVI;
 	_MavlinkInterface* m_pMavlink;
