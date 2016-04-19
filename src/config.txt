@@ -1,5 +1,5 @@
 {
-"SERIALPORT_FC_NAME":"/dev/cu.usbmodem1",
+"SERIALPORT_FC_NAME":"/dev/ttyUSB0",
 "SERIALPORT_FC_BAUDRATE":115200,
 
 "APP_NAME":"DroneHunter",

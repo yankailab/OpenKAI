@@ -187,6 +187,8 @@ void _AutoPilot::resetAllControl(void)
 
 void _AutoPilot::camROILock(fVector2* pTarget, fVector2* pPos, double dist)
 {
+	if(m_pVI==NULL)return;
+
 	if (pTarget == NULL)
 	{
 		resetAllControl();

@@ -55,22 +55,21 @@ bool DroneHunter::start(JSON* pJson)
 //	m_pDFDepth->init(pJson, "DEFAULT");
 //	m_pDFDepth->m_pDF = m_pDF;
 
+	//Connect to Mavlink
+	m_pVlink = new _VehicleInterface();
+	CHECK_FATAL(m_pVlink->setup(pJson, "FC"));
+	CHECK_INFO(m_pVlink->open());
+
 	//Init Autopilot
 	m_pAP = new _AutoPilot();
-	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
-
-	//Connect to Mavlink
-/*	m_pMavlink = new _MavlinkInterface();
-	CHECK_FATAL(m_pMavlink->setup(&m_Json, "FC"));
-	CHECK_INFO(m_pMavlink->open());
-*/
+//	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
+	m_pAP->m_pVI = m_pVlink;
 
 	m_ROI.m_x = 0;
 	m_ROI.m_y = 0;
 	m_ROI.m_z = 0;
 	m_ROI.m_w = 0;
 	m_bSelect = false;
-
 
 	//Main window
 	m_pShow = new CamFrame();
@@ -85,7 +84,7 @@ bool DroneHunter::start(JSON* pJson)
 	//Start threads
 	m_pCamFront->start();
 //	m_pFeature->start();
-//	m_pMavlink->start();
+	m_pVlink->start();
 //	m_pDF->start();
 	m_pAP->start();
 //	m_pCascade->start();
@@ -97,6 +96,16 @@ bool DroneHunter::start(JSON* pJson)
 	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
 	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
+
+	int testRC[8];
+	testRC[0]=1250;
+	testRC[1]=1250;
+	testRC[2]=1250;
+	testRC[3]=1250;
+	testRC[4]=1250;
+	testRC[5]=1250;
+	testRC[6]=1250;
+	testRC[7]=1250;
 
 	while (m_bRun)
 	{
@@ -110,11 +119,14 @@ bool DroneHunter::start(JSON* pJson)
 		//Handle key input
 		m_key = waitKey(30);
 		handleKey(m_key);
+
+		if((testRC[0]+=100)>=2000)testRC[0]=1000;
+		m_pVlink->rc_overide(8,testRC);
 	}
 
 	m_pAP->stop();
 //	m_pCascade->stop();
-//	m_pMavlink->stop();
+	m_pVlink->stop();
 //	m_pDF->stop();
 //	m_pFeature->stop();
 //	m_pDFDepth->stop();
@@ -127,11 +139,11 @@ bool DroneHunter::start(JSON* pJson)
 	m_pROITracker->complete();
 	m_pAP->complete();
 //	m_pCamFront->complete();
-//	m_pMavlink->complete();
-//	m_pMavlink->close();
+	m_pVlink->complete();
+	m_pVlink->close();
 
 	delete m_pAP;
-//	delete m_pMavlink;
+	delete m_pVlink;
 //	delete m_pDF;
 //	delete m_pCamFront;
 //	delete m_pCascade;

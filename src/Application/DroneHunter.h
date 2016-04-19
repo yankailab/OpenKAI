@@ -16,6 +16,7 @@
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/CamInput.h"
 #include "../Interface/_MavlinkInterface.h"
+#include "../Interface/_VehicleInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Image/_DenseFlow.h"
@@ -42,6 +43,7 @@ public:
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
+	_VehicleInterface* m_pVlink;
 	_CascadeDetector* m_pCascade;
 	_DenseFlow* m_pDF;
 	_FeatureDetector* m_pFeature;
