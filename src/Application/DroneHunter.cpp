@@ -177,6 +177,9 @@ void DroneHunter::showScreen(void)
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
+	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
+
+
 	imshow(APP_NAME,imMat);
 
 	//	CASCADE_OBJECT* pDrone;
