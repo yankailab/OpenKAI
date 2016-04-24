@@ -28,8 +28,6 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 {
 	if (!pJson)return false;
 
-	resetAllControl();
-
 	string cName;
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
@@ -98,6 +96,14 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_yaw.m_pid = cPID;
 	m_yaw.m_RC = RC;
 
+
+	//For visual position locking
+	CHECK_ERROR(pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
+	CHECK_ERROR(pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
+
+	resetAllControl();
+
+
 	return true;
 }
 
@@ -148,25 +154,25 @@ void _AutoPilot::resetAllControl(void)
 	m_roll.m_err = 0;
 	m_roll.m_errInteg = 0;
 	m_roll.m_pos = 0;
-	m_roll.m_targetPos = 0;
+//	m_roll.m_targetPos = 0;
 
 	m_alt.m_errOld = 0;
 	m_alt.m_err = 0;
 	m_alt.m_errInteg = 0;
 	m_alt.m_pos = 0;
-	m_alt.m_targetPos = 0;
+//	m_alt.m_targetPos = 0;
 
 	m_pitch.m_errOld = 0;
 	m_pitch.m_err = 0;
 	m_pitch.m_errInteg = 0;
 	m_pitch.m_pos = 0;
-	m_pitch.m_targetPos = 0;
+//	m_pitch.m_targetPos = 0;
 
 	m_yaw.m_errOld = 0;
 	m_yaw.m_err = 0;
 	m_yaw.m_errInteg = 0;
 	m_yaw.m_pos = 0;
-	m_yaw.m_targetPos = 0;
+//	m_yaw.m_targetPos = 0;
 
 	//RC
 	m_RC[m_roll.m_RC.m_idx] = m_roll.m_RC.m_pwmCenter;
@@ -180,26 +186,29 @@ void _AutoPilot::camROILock(void)
 	if(m_pVI==NULL)return;
 	if(m_pROITracker==NULL)return;
 
-	if (m_pROITracker->m_bTracking==true)
+	if (m_pROITracker->m_bTracking==false)
 	{
 		resetAllControl();
 		m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
 		return;
 	}
 
+	double posRoll;
+	double posPitch;
+
+	posRoll = m_roll.m_pos;
+	posPitch = m_pitch.m_pos;
+
+	m_roll.m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width*0.5;
+	m_pitch.m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height*0.5;
+
 	//Update current position with trajectory estimation
-	m_roll.m_pos = pPos->m_x;
-	m_roll.m_targetPos = pTarget->m_x + (pTarget->m_x - m_roll.m_targetPos) * m_roll.m_pid.m_dT;
-
-	m_pitch.m_pos = pPos->m_y;
-	m_pitch.m_targetPos = pTarget->m_y + (pTarget->m_y - m_pitch.m_targetPos) * m_pitch.m_pid.m_dT;
-
-//	m_alt.m_pos = m_cvPos.m_y + (m_cvPos.m_y - m_cvPosOld.m_y) * m_dT;
-
+	posRoll = m_roll.m_pos + (m_roll.m_pos - posRoll) * m_roll.m_pid.m_dT;
+	posPitch = m_pitch.m_pos + (m_pitch.m_pos - posPitch) * m_pitch.m_pid.m_dT;
 
 	//Roll
 	m_roll.m_errOld = m_roll.m_err;
-	m_roll.m_err = m_roll.m_targetPos - m_roll.m_pos;
+	m_roll.m_err = m_roll.m_targetPos - posRoll;
 	m_roll.m_errInteg += m_roll.m_err;
 	m_roll.m_RC.m_pwm =
 			m_roll.m_RC.m_pwmCenter
@@ -210,7 +219,7 @@ void _AutoPilot::camROILock(void)
 
 	//Pitch
 	m_pitch.m_errOld = m_pitch.m_err;
-	m_pitch.m_err = m_pitch.m_targetPos - m_pitch.m_pos;
+	m_pitch.m_err = m_pitch.m_targetPos - posPitch;
 	m_pitch.m_errInteg += m_pitch.m_err;
 	m_pitch.m_RC.m_pwm =
 			m_pitch.m_RC.m_pwmCenter

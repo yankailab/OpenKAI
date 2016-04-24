@@ -64,7 +64,7 @@ bool DroneHunter::start(JSON* pJson)
 
 	//Init Autopilot
 	m_pAP = new _AutoPilot();
-//	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
+	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
 	m_pAP->m_pVI = m_pVlink;
 	m_pAP->m_pROITracker = m_pROITracker;
 
@@ -87,7 +87,7 @@ bool DroneHunter::start(JSON* pJson)
 	//Start threads
 	m_pCamFront->start();
 //	m_pFeature->start();
-	m_pVlink->start();
+//	m_pVlink->start();
 //	m_pDF->start();
 	m_pAP->start();
 //	m_pCascade->start();

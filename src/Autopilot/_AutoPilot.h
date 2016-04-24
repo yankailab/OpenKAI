@@ -6,6 +6,7 @@
 #include "../Detector/_ObjectDetector.h"
 #include "../Interface/_VehicleInterface.h"
 #include "../Interface/_MavlinkInterface.h"
+#include "../Tracker/_ROITracker.h"
 
 #define NUM_RC_CHANNEL 8
 #define NUM_CAM_STREAM 16
@@ -70,10 +71,10 @@ public:
 	void remoteMavlinkMsg(MESSAGE* pMsg);
 
 public:
+	//Detectors
 	_ObjectDetector*	m_pOD;
 	_CascadeDetector*	m_pFD;
 	_ROITracker* 		m_pROITracker;
-
 
 	_VehicleInterface* m_pVI;
 	_MavlinkInterface* m_pMavlink;
