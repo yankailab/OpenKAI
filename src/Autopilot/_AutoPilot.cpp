@@ -195,7 +195,9 @@ void _AutoPilot::camROILock(void)
 
 	double posRoll;
 	double posPitch;
+	double ovDTime;
 
+	ovDTime = (1.0/m_pROITracker->m_dTime)*1000;//ms
 	posRoll = m_roll.m_pos;
 	posPitch = m_pitch.m_pos;
 
@@ -203,8 +205,8 @@ void _AutoPilot::camROILock(void)
 	m_pitch.m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height*0.5;
 
 	//Update current position with trajectory estimation
-	posRoll = m_roll.m_pos + (m_roll.m_pos - posRoll) * m_roll.m_pid.m_dT;
-	posPitch = m_pitch.m_pos + (m_pitch.m_pos - posPitch) * m_pitch.m_pid.m_dT;
+	posRoll = m_roll.m_pos + (m_roll.m_pos - posRoll) * m_roll.m_pid.m_dT * ovDTime;
+	posPitch = m_pitch.m_pos + (m_pitch.m_pos - posPitch) * m_pitch.m_pid.m_dT * ovDTime;
 
 	//Roll
 	m_roll.m_errOld = m_roll.m_err;
@@ -213,7 +215,7 @@ void _AutoPilot::camROILock(void)
 	m_roll.m_RC.m_pwm =
 			m_roll.m_RC.m_pwmCenter
 			+ m_roll.m_pid.m_P * m_roll.m_err
-			+ m_roll.m_pid.m_D * (m_roll.m_err - m_roll.m_errOld)
+			+ m_roll.m_pid.m_D * (m_roll.m_err - m_roll.m_errOld) * ovDTime
 			+ confineVal(m_roll.m_pid.m_I * m_roll.m_errInteg, m_roll.m_pid.m_Imax, -m_roll.m_pid.m_Imax);
 	m_RC[m_roll.m_RC.m_idx] = constrain(m_roll.m_RC.m_pwm, m_roll.m_RC.m_pwmLow, m_roll.m_RC.m_pwmHigh);
 
@@ -224,7 +226,7 @@ void _AutoPilot::camROILock(void)
 	m_pitch.m_RC.m_pwm =
 			m_pitch.m_RC.m_pwmCenter
 			+ m_pitch.m_pid.m_P * m_pitch.m_err
-			+ m_pitch.m_pid.m_D * (m_pitch.m_err - m_pitch.m_errOld)
+			+ m_pitch.m_pid.m_D * (m_pitch.m_err - m_pitch.m_errOld) * ovDTime
 			+ confineVal(m_pitch.m_pid.m_I * m_pitch.m_errInteg, m_pitch.m_pid.m_Imax, -m_pitch.m_pid.m_Imax);
 	m_RC[m_pitch.m_RC.m_idx] = constrain(m_pitch.m_RC.m_pwm, m_pitch.m_RC.m_pwmLow, m_pitch.m_RC.m_pwmHigh);
 
