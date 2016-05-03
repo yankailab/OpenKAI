@@ -103,6 +103,8 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 
 	resetAllControl();
 
+	this->setTargetFPS(30.0);
+
 
 	return true;
 }
@@ -126,11 +128,9 @@ bool _AutoPilot::start(void)
 
 void _AutoPilot::update(void)
 {
-	m_tSleep = TRD_INTERVAL_AUTOPILOT_USEC;
-
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		camROILock();
 
@@ -139,11 +139,8 @@ void _AutoPilot::update(void)
 			m_pVI->readMessages();
 		}
 
-		if (m_tSleep > 0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
+
 	}
 
 }

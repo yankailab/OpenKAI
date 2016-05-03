@@ -47,6 +47,8 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
+	this->setTargetFPS(1000);
+
 	return true;
 }
 
@@ -305,15 +307,11 @@ bool _MavlinkInterface::start(void)
 
 void _MavlinkInterface::update(void)
 {
-	m_tSleep = TRD_INTERVAL_MI_USEC;
-
 	while (m_bThreadON)
 	{
-		this->updateTime();
-
 		if (m_sportName == "")
 		{
-			this->sleepThread(0, m_tSleep);
+			this->sleepThread(0, 1000);
 			continue;
 		}
 
@@ -325,10 +323,12 @@ void _MavlinkInterface::update(void)
 			}
 			else
 			{
-				this->sleepThread(0,m_tSleep);
+				this->sleepThread(0,1000);
 				continue;
 			}
 		}
+
+		this->autoFPSfrom();
 
 		//Connected to Vehicle
 		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 10);
@@ -336,18 +336,9 @@ void _MavlinkInterface::update(void)
 		handleMessages();
 
 
-
-
-
-
-
 		//send local ned control at 2Hz
 
-		if (m_tSleep > 0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }
@@ -413,8 +404,8 @@ void _MavlinkInterface::set_position(float x, float y, float z,
 	sp.y = y;
 	sp.z = z;
 
-	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y,
-			sp.z);
+	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y, sp.z);
+
 
 }
 

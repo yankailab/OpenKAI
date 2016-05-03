@@ -35,6 +35,7 @@ _ObjectDetector::~_ObjectDetector()
 
 bool _ObjectDetector::init(JSON* pJson)
 {
+	this->setTargetFPS(30.0);
 	//OpenCV Canny Edge Detector
 	int lowThr = 10;
 	int highThr = 100;
@@ -97,17 +98,14 @@ bool _ObjectDetector::start(void)
 
 void _ObjectDetector::update(void)
 {
-	m_tSleep = TRD_INTERVAL_OBJDETECTOR;
-
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		findObjectByContour();
 //		findObjectBySaliency();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		this->autoFPSto();
 	}
 
 }

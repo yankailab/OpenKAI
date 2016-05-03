@@ -51,6 +51,8 @@ bool _OpticalFlowDetector::init(JSON* pJson)
 			cell_size, nbins);
 	m_pHumanHOG->setSVMDetector(m_pHumanHOG->getDefaultPeopleDetector());
 
+	this->setTargetFPS(30.0);
+
 	return true;
 }
 
@@ -73,20 +75,17 @@ bool _OpticalFlowDetector::start(void)
 void _OpticalFlowDetector::update(void)
 {
 	int i;
-	int tThreadBegin;
-	m_tSleep = TRD_INTERVAL_OPTFLOWDETECTOR;
 
 	while (m_bThreadON)
 	{
-		tThreadBegin = time(NULL);
+		this->autoFPSfrom();
 
 		if (!m_pCamStream)
 			continue;
 
 		detect();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		this->autoFPSto();
 	}
 
 }

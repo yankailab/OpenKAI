@@ -27,6 +27,8 @@ bool _VehicleInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
+	this->setTargetFPS(1000);
+
 	return true;
 }
 
@@ -167,11 +169,10 @@ bool _VehicleInterface::start(void)
 
 void _VehicleInterface::update(void)
 {
-	m_tSleep = TRD_INTERVAL_VI_USEC;
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 /*
 		if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
@@ -180,11 +181,7 @@ void _VehicleInterface::update(void)
 		}
 		*/
 
-		if(m_tSleep>0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0,m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

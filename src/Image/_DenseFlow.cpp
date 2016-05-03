@@ -41,7 +41,7 @@ bool _DenseFlow::init(JSON* pJson, string camName)
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 
-	m_tSleep = TRD_INTERVAL_DENSEFLOW;
+	this->setTargetFPS(30.0);
 	return true;
 }
 
@@ -64,15 +64,11 @@ void _DenseFlow::update(void)
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		detect();
 
-		if(m_tSleep>0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

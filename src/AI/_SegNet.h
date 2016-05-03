@@ -31,8 +31,6 @@
 #include "../Camera/CamFrame.h"
 #include "../Camera/_CamStream.h"
 
-#define TRD_INTERVAL_SEGNET 0
-
 namespace kai
 {
 
@@ -55,7 +53,6 @@ public:
 	~_SegNet();
 
 	bool init(string name, JSON* pJson);
-//	void updateFrame(CamFrame* pFrame);
 	bool start(void);
 
 private:
@@ -88,8 +85,6 @@ private:
 	CamFrame* m_pFrame;
 	CamFrame* m_pSegment;
 	Mat m_frame;
-
-
 
 };
 

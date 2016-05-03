@@ -22,8 +22,6 @@
 #define LOCK_LEVEL_SIZE 2
 #define LOCK_LEVEL_ATT 3
 
-#define TRD_INTERVAL_BGFGDETECTOR 100
-
 namespace kai
 {
 

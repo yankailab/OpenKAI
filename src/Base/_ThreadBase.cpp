@@ -17,7 +17,11 @@ _ThreadBase::_ThreadBase()
 	m_timeStamp = 0;
 	m_dTime = 0.0;
 	m_dTimeAvr = 0.0;
-	m_tSleep = 0;
+	m_defaultFPS = 30;
+	m_targetFPS = m_defaultFPS;
+	m_targetFrameTime = USEC_1SEC/m_targetFPS;
+	m_timeFrom = 0;
+	m_timeTo = 0;
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
 
@@ -49,7 +53,6 @@ void _ThreadBase::sleepThread(int32_t sec, int32_t usec)
 
 void _ThreadBase::wakeupThread(void)
 {
-	m_tSleep = 0;
 	pthread_cond_signal(&m_wakeupSignal);
 }
 
@@ -85,8 +88,35 @@ void _ThreadBase::updateTime(void)
 
 double _ThreadBase::getFrameRate(void)
 {
-	return 	1000000.0/m_dTimeAvr;
+	return 	USEC_1SEC/m_dTimeAvr;
 }
+
+void _ThreadBase::setTargetFPS(double fps)
+{
+	if(fps<=0)return;
+
+	m_targetFPS = fps;
+	m_targetFrameTime = USEC_1SEC/m_targetFPS;
+}
+
+void _ThreadBase::autoFPSfrom(void)
+{
+	m_timeFrom = (double)get_time_usec();
+}
+
+void _ThreadBase::autoFPSto(void)
+{
+	m_timeTo = (double)get_time_usec();
+
+	int tSleep = (int)(m_targetFrameTime - (m_timeTo - m_timeFrom));
+	if(tSleep>100)
+	{
+		this->sleepThread(0, tSleep);
+	}
+
+	this->updateTime();
+}
+
 
 bool _ThreadBase::complete(void)
 {

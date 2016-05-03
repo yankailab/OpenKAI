@@ -13,6 +13,8 @@
 
 #define NUM_MUTEX 5
 
+#define USEC_1SEC 1000000
+
 namespace kai
 {
 
@@ -34,6 +36,10 @@ public:
 
 	double getFrameRate(void);
 
+	void setTargetFPS(double fps);
+	void autoFPSfrom(void);
+	void autoFPSto(void);
+
 public:
 	pthread_t	m_threadID;
 	bool 		m_bThreadON;
@@ -41,11 +47,17 @@ public:
 	uint64_t		m_timeStamp;
 	double			m_dTime;
 	double			m_dTimeAvr;
-	int 			m_tSleep;
+//	int 			m_tSleep;
 
 	pthread_mutex_t	m_wakeupMutex;
 	pthread_cond_t	m_wakeupSignal;
 	pthread_mutex_t	m_mutex[NUM_MUTEX];
+
+	double			m_defaultFPS;
+	double			m_targetFPS;
+	double			m_targetFrameTime;
+	double			m_timeFrom;
+	double			m_timeTo;
 
 };
 

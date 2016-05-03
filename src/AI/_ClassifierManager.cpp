@@ -61,6 +61,9 @@ bool _ClassifierManager::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
 
+	this->setTargetFPS(30.0);
+
+
 	return true;
 }
 
@@ -80,18 +83,15 @@ bool _ClassifierManager::start(void)
 
 void _ClassifierManager::update(void)
 {
-	m_tSleep = TRD_INTERVAL_CLASSIFIER_MANAGER;
-
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		m_globalFrameID = get_time_usec();
 
 		classifyObject();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		this->autoFPSto();
 	}
 
 }

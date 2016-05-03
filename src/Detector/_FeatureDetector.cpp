@@ -42,7 +42,7 @@ bool _FeatureDetector::init(string name, JSON* pJson)
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 
-	m_tSleep = TRD_INTERVAL_FEATUREDETECTOR;
+	this->setTargetFPS(30.0);
 
 	string targetFile;
 	CHECK_ERROR(pJson->getVal("FEATURE_IMG_" + name, &targetFile));
@@ -113,17 +113,13 @@ void _FeatureDetector::update(void)
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		m_frameID = this->m_timeStamp;
 
 		detect();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		if (m_tSleep > 0)
-		{
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

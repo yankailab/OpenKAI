@@ -20,8 +20,6 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_DENSEFLOW 150
-
 namespace kai
 {
 

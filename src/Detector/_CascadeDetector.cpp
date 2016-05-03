@@ -44,6 +44,8 @@ bool _CascadeDetector::init(string name, JSON* pJson)
 	CHECK_ERROR(pJson->getVal("CASCADE_DEVICE_" + name, &m_device));
 	CHECK_ERROR(pJson->getVal("CASCADE_FILE_" + name, &cascadeFile));
 
+	this->setTargetFPS(30.0);
+
 	if (m_device == CASCADE_CPU)
 	{
 		CHECK_ERROR(m_CC.load(cascadeFile));
@@ -93,12 +95,11 @@ bool _CascadeDetector::start(void)
 
 void _CascadeDetector::update(void)
 {
-	m_tSleep = TRD_INTERVAL_CASCADEDETECTOR;
 	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		m_frameID = this->m_timeStamp;
 
@@ -113,11 +114,7 @@ void _CascadeDetector::update(void)
 			detectCUDA();
 		}
 
-		//sleepThread can be woke up by this->wakeupThread()
-		if (m_tSleep > 0)
-		{
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

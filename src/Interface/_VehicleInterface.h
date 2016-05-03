@@ -15,8 +15,6 @@ struct MESSAGE
 
 };
 
-#define TRD_INTERVAL_VI_USEC 10000
-
 namespace kai
 {
 

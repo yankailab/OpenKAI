@@ -18,7 +18,6 @@ _BgFgDetector::_BgFgDetector()
 	m_minSize = MIN_MARKER_SIZE;
 	m_objLockLevel = LOCK_LEVEL_NONE;
 
-	m_tSleep = TRD_INTERVAL_BGFGDETECTOR;
 	m_pCamStream = NULL;
 }
 
@@ -30,12 +29,14 @@ _BgFgDetector::~_BgFgDetector()
 
 bool _BgFgDetector::init(JSON* pJson, string name)
 {
-	CHECK_INFO(pJson->getVal("BGFG_DETECTOR_TSLEEP_" + name, &m_tSleep));
+//	CHECK_INFO(pJson->getVal("BGFG_DETECTOR_TSLEEP_" + name, &m_tSleep));
 
     m_pBgSubtractor = cuda::createBackgroundSubtractorMOG();
 //    cuda::createBackgroundSubtractorMOG2();
 //    cuda::createBackgroundSubtractorGMG(40);
 //    cuda::createBackgroundSubtractorFGD();
+
+    this->setTargetFPS(30.0);
 
 	return true;
 }
@@ -59,15 +60,11 @@ void _BgFgDetector::update(void)
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		detect();
 
-		if(m_tSleep > 0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

@@ -21,8 +21,6 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_DENSEFLOWDEPTH 1000000
-
 namespace kai
 {
 

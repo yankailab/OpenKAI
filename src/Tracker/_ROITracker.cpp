@@ -42,7 +42,8 @@ bool _ROITracker::init(JSON* pJson, string camName)
 	// create a tracker object
 	m_pTracker = Tracker::create( "KCF" );
 
-	m_tSleep = TRD_INTERVAL_ROITRACKER;
+	this->setTargetFPS(30.0);
+
 	return true;
 }
 
@@ -64,15 +65,11 @@ void _ROITracker::update(void)
 {
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		track();
 
-		if(m_tSleep>0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

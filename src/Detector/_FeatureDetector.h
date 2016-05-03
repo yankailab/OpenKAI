@@ -14,8 +14,6 @@ using namespace cv;
 using namespace cv::cuda;
 using namespace std;
 
-#define TRD_INTERVAL_FEATUREDETECTOR 0
-
 #define CASCADE_CPU 0
 #define CASCADE_CUDA 1
 

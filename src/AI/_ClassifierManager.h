@@ -11,9 +11,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "../AI/NNClassifier.h"
+#include "_BVLDCaffe.h"
 
-#define TRD_INTERVAL_CLASSIFIER_MANAGER 0
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
 #define NUM_DETECT_BATCH 10
@@ -34,7 +33,8 @@ struct OBJECT {
 
 };
 
-class _ClassifierManager: public _ThreadBase {
+class _ClassifierManager: public _ThreadBase
+{
 public:
 	_ClassifierManager();
 	virtual ~_ClassifierManager();
@@ -66,7 +66,7 @@ public:
 	vector<Mat> m_vMat;
 
 	//Caffe classifier
-	NNClassifier m_classifier;
+	_BVLDCaffe m_classifier;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;

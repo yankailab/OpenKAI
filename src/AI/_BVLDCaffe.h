@@ -1,12 +1,12 @@
 /*
- * NNClassifier.h
+ * _BVLDCaffe.h
  *
  *  Created on: Aug 17, 2015
  *      Author: yankai
  */
 
-#ifndef AI_NNCLASSIFIER_H_
-#define AI_NNCLASSIFIER_H_
+#ifndef AI__BVLDCAFFE_H_
+#define AI__BVLDCAFFE_H_
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
@@ -24,6 +24,12 @@
 #include <string>
 #include <utility>
 #include <vector>
+
+#include "../Base/common.h"
+#include "../Base/cvplatform.h"
+#include "../Base/_ThreadBase.h"
+#include "../Camera/CamFrame.h"
+//#include "../Camera/_CamStream.h"
 
 namespace kai
 {
@@ -43,11 +49,11 @@ using namespace cv;
 /* Pair (label, confidence) representing a prediction. */
 typedef std::pair<string, float> Prediction;
 
-class NNClassifier
+class _BVLDCaffe: public _ThreadBase
 {
 public:
-	NNClassifier();
-	~NNClassifier();
+	_BVLDCaffe();
+	~_BVLDCaffe();
 
 	void
 	setup(const string& model_file, const string& trained_file,
@@ -56,28 +62,23 @@ public:
 	std::vector<Prediction>
 	Classify(const cv::Mat& img, int N = 5);
 
-	std::vector<vector<Prediction> > ClassifyBatch(
-			const vector<cv::Mat> imgs, int num_classes);
+	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs,
+			int num_classes);
 
 private:
-	void
-	SetMean(const string& mean_file);
-
+	void SetMean(const string& mean_file);
 	std::vector<float> Predict(const Mat& img);
-
 	std::vector<float> PredictBatch(const vector<cv::Mat> imgs);
-
 	void WrapInputLayer(vector<cv::Mat>* input_channels, int numImg);
+	void WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch);
+	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels, int iImg);
+	void PreprocessBatch(const vector<cv::Mat> imgs, std::vector<std::vector<cv::Mat> >* input_batch);
 
-	void WrapBatchInputLayer(
-			std::vector<std::vector<cv::Mat> > *input_batch);
-
-	void
-	Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels,
-			int iImg);
-
-	void PreprocessBatch(const vector<cv::Mat> imgs,
-			std::vector<std::vector<cv::Mat> >* input_batch);
+	void update(void);
+	static void* getUpdateThread(void* This) {
+		((_BVLDCaffe*) This)->update();
+		return NULL;
+	}
 
 
 private:
@@ -87,8 +88,11 @@ private:
 	cv::Mat mean_;
 	vector<string> labels_;
 	int batch_size_;
+
+	CamFrame* m_pFrame;
+
 };
 
 }
 
-#endif /* SRC_NNCLASSIFIER_H_ */
+#endif

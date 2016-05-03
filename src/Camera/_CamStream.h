@@ -10,12 +10,9 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Detector/_ObjectDetector.h"
 
 #include "CamInput.h"
 #include "CamFrame.h"
-
-#define TRD_INTERVAL_CAMSTREAM 0
 
 //#define CAMSTREAM_MUTEX_ORIGINAL 0
 //#define CAMSTREAM_MUTEX_GRAY 1

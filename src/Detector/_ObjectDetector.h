@@ -13,8 +13,6 @@ using namespace cv::cuda;
 using namespace cv::saliency;
 using namespace std;
 
-#define TRD_INTERVAL_OBJDETECTOR 100000
-
 
 namespace kai
 {

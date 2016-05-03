@@ -57,6 +57,8 @@ bool _SegNet::init(string name, JSON* pJson)
 	m_labelColor = imread(labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
 
+	this->setTargetFPS(30);
+
 	return true;
 }
 
@@ -76,19 +78,15 @@ bool _SegNet::start(void)
 
 void _SegNet::update(void)
 {
-	m_tSleep = TRD_INTERVAL_SEGNET;
 	cuda::setDevice(m_cudaDeviceID);
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		segmentGPU();
 
-		if(m_tSleep > 0)
-		{
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

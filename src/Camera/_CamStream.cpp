@@ -45,7 +45,8 @@ bool _CamStream::init(JSON* pJson, string camName)
 	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
 
 	m_bThreadON = false;
-	m_tSleep = TRD_INTERVAL_CAMSTREAM;
+
+	this->setTargetFPS(30.0);
 
 	return true;
 }
@@ -71,7 +72,7 @@ void _CamStream::update(void)
 {
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		//Update camera frame
 		m_pCamFrame->update(m_pCamInput->readFrame());
@@ -88,11 +89,7 @@ void _CamStream::update(void)
 			m_pHSVframe->getHSVOf(m_pCamFrame);
 		}
 
-		if(m_tSleep>0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0,m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }

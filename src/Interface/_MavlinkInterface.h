@@ -119,7 +119,6 @@ struct Mavlink_Messages
 
 };
 
-#define TRD_INTERVAL_MI_USEC 10
 #define NUM_MSG_HANDLE 100
 
 namespace kai

@@ -26,7 +26,6 @@ _MarkerDetector::_MarkerDetector()
 	m_minMarkerSize = MIN_MARKER_SIZE;
 	m_areaRatio = MARKER_AREA_RATIO;
 
-	m_tSleep = TRD_INTERVAL_MARKERDETECTOR;
 	m_pCamStream = NULL;
 }
 
@@ -38,9 +37,9 @@ _MarkerDetector::~_MarkerDetector()
 
 bool _MarkerDetector::init(JSON* pJson, string name)
 {
+//	CHECK_INFO(pJson->getVal("MARKER_DETECTOR_TSLEEP_" + name, &m_tSleep));
 
-	CHECK_INFO(pJson->getVal("MARKER_DETECTOR_TSLEEP_" + name, &m_tSleep));
-
+	this->setTargetFPS(30.0);
 	return true;
 }
 
@@ -63,12 +62,11 @@ void _MarkerDetector::update(void)
 
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		detect();
 
-		//sleepThread can be woke up by this->wakeupThread()
-		this->sleepThread(0, m_tSleep);
+		this->autoFPSto();
 	}
 
 }

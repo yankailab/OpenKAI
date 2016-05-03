@@ -50,7 +50,7 @@ bool _3DFlow::init(JSON* pJson, string name)
 	m_pDepth = new CamFrame();
 	m_pSeg = new CamFrame();
 
-	m_tSleep = TRD_INTERVAL_DENSEFLOWDEPTH;
+	this->setTargetFPS(30.0);
 	return true;
 }
 
@@ -72,15 +72,11 @@ void _3DFlow::update(void)
 {
 	while (m_bThreadON)
 	{
-		this->updateTime();
+		this->autoFPSfrom();
 
 		findDepthGPU();
 
-		if(m_tSleep>0)
-		{
-			//sleepThread can be woke up by this->wakeupThread()
-			this->sleepThread(0, m_tSleep);
-		}
+		this->autoFPSto();
 	}
 
 }
