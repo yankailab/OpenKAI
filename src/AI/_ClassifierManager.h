@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "_BVLDCaffe.h"
+#include "_DNNCaffe.h"
 
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
@@ -66,7 +66,7 @@ public:
 	vector<Mat> m_vMat;
 
 	//Caffe classifier
-	_BVLDCaffe m_classifier;
+	_DNNCaffe m_classifier;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;

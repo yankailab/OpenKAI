@@ -5,20 +5,20 @@
  *      Author: yankai
  */
 
-#include "_BVLDCaffe.h"
+#include "_DNNCaffe.h"
 namespace kai
 {
-_BVLDCaffe::_BVLDCaffe()
+_DNNCaffe::_DNNCaffe()
 {
 	num_channels_ = 0;
 	batch_size_ = 0;
 }
 
-_BVLDCaffe::~_BVLDCaffe()
+_DNNCaffe::~_DNNCaffe()
 {
 }
 
-void _BVLDCaffe::setup(const string& model_file, const string& trained_file,
+void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file, int batch_size)
 {
 #ifdef CPU_ONLY
@@ -78,7 +78,7 @@ static std::vector<int> Argmax(const std::vector<float>& v, int N)
 }
 
 /* Load the mean file in binaryproto format. */
-void _BVLDCaffe::SetMean(const string& mean_file)
+void _DNNCaffe::SetMean(const string& mean_file)
 {
 	BlobProto blob_proto;
 	ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
@@ -110,7 +110,7 @@ void _BVLDCaffe::SetMean(const string& mean_file)
 	mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 }
 
-std::vector<vector<Prediction> > _BVLDCaffe::ClassifyBatch(
+std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(
 		const vector<cv::Mat> imgs, int num_classes)
 {
 	vector<float> output_batch = PredictBatch(imgs);
@@ -141,7 +141,7 @@ std::vector<vector<Prediction> > _BVLDCaffe::ClassifyBatch(
 	return predictions;
 }
 
-std::vector<float> _BVLDCaffe::PredictBatch(const vector<cv::Mat> imgs)
+std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 
@@ -165,7 +165,7 @@ std::vector<float> _BVLDCaffe::PredictBatch(const vector<cv::Mat> imgs)
 	return std::vector<float>(begin, end);
 }
 
-void _BVLDCaffe::WrapBatchInputLayer(
+void _DNNCaffe::WrapBatchInputLayer(
 		std::vector<std::vector<cv::Mat> > *input_batch)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
@@ -188,7 +188,7 @@ void _BVLDCaffe::WrapBatchInputLayer(
 
 }
 
-void _BVLDCaffe::PreprocessBatch(const vector<cv::Mat> imgs,
+void _DNNCaffe::PreprocessBatch(const vector<cv::Mat> imgs,
 		std::vector<std::vector<cv::Mat> >* input_batch)
 {
 	for (int i = 0; i < imgs.size(); i++)

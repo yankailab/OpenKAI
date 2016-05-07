@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef AI__BVLDCAFFE_H_
-#define AI__BVLDCAFFE_H_
+#ifndef AI__DNNCAFFEFCN_H_
+#define AI__DNNCAFFEFCN_H_
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
@@ -49,11 +49,11 @@ using namespace cv;
 /* Pair (label, confidence) representing a prediction. */
 typedef std::pair<string, float> Prediction;
 
-class _BVLDCaffe: public _ThreadBase
+class _DNNCaffeFCN: public _ThreadBase
 {
 public:
-	_BVLDCaffe();
-	~_BVLDCaffe();
+	_DNNCaffeFCN();
+	~_DNNCaffeFCN();
 
 	void
 	setup(const string& model_file, const string& trained_file,
@@ -76,7 +76,7 @@ private:
 
 	void update(void);
 	static void* getUpdateThread(void* This) {
-		((_BVLDCaffe*) This)->update();
+		((_DNNCaffeFCN*) This)->update();
 		return NULL;
 	}
 
