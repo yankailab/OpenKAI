@@ -1,53 +1,64 @@
 /*
- * DeepSpace.cpp
+ * DeepSpace.h
  *
  *  Created on: May 7, 2016
  *      Author: Kai Yan
  */
 
-#include "DeepSpace.h"
+#ifndef DeepSpace_H_
+#define DeepSpace_H_
 
-DeepSpace::DeepSpace()
+#define DS_ERR_NULLP 1
+#define DS_ERR_INVALID_COORD 2
+#define DS_ERR_INVALID_VALUE 3
+
+
+struct DeepSpaceCoordinate
 {
-	// TODO Auto-generated constructor stub
-	m_lastError = 0;
+	//Set by user
+	double m_minD;	//minimum edge length of block in meter
+	double m_nD;	//number of Z direction layers
+	double m_kD;	//scaling factor for each Z layer
+	double m_kX;	//factor for offset between each two adjacent blocks in Longitude direction
+	double m_kY;	//factor for offset between each two adjacent blocks in Latitude direction
 
-}
+	double m_latFrom;	//-180
+	double m_latTo;		//180
+	double m_latOffset;	//180
 
-DeepSpace::~DeepSpace()
+	double m_lngFrom;	//-180
+	double m_lngTo;		//180
+	double m_lngoffset;	//180
+
+	//Internal use
+	long m_numBlkZ; //using the minimum size
+	long m_numBlkX;
+	long m_numBlkY;
+
+
+};
+
+
+class DeepSpace
 {
-	// TODO Auto-generated destructor stub
-}
+public:
+	DeepSpace();
+	virtual ~DeepSpace();
 
-bool DeepSpace::create(DeepSpaceCoordinate* pCoordinate)
-{
+	bool create(DeepSpaceCoordinate* pCoordinate);
+	long latlng2DSC(double lat, double lng, double Z);
+	bool DSC2latlng(long DSC, double* pLat, double* pLng);
+	bool estimatePosition(long* pDSC, int numDSC, double* pLat, double* pLng, double* pHeight, double* prob);
+	long getLastError(void);
 
+private:
+	DeepSpaceCoordinate m_coord;
 
-	m_lastError = 0;
-	return true;
-}
+	long m_lastError;
 
-long DeepSpace::latlng2DSC(double lat, double lng, double Z)
-{
+};
 
-}
-
-bool DeepSpace::DSC2latlng(long DSC, double* pLat, double* pLng)
-{
-
-	return true;
-}
-
-bool DeepSpace::estimatePosition(long* pDSC, int numDSC, double* pLat, double* pLng, double* pHeight, double* prob)
-{
-
-	return true;
-}
-
-long DeepSpace::getLastError(void)
-{
-	return m_lastError;
-}
+#endif /* DeepSpace_H_ */
 
 
 
