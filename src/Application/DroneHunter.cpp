@@ -75,6 +75,14 @@ bool DroneHunter::start(JSON* pJson)
 	m_bSelect = false;
 	m_ROImode = MODE_ASSIST;
 	m_ROIsize = 100;
+	m_ROIsizeFrom = 50;
+	m_ROIsizeTo = 300;
+
+	m_btnSize = 100;
+	m_btnROIClear = 100;
+	m_btnROIBig = 200;
+	m_btnROISmall = 300;
+	m_btnMode = 980;
 
 	//Main window
 	m_pShow = new CamFrame();
@@ -180,9 +188,38 @@ void DroneHunter::showScreen(void)
 	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	putText(imMat, "AutoPilot FPS: "+f2str(m_pAP->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
+	putText(imMat, "Roll: "+f2str(m_pAP->m_RC[0]), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Pitch: "+f2str(m_pAP->m_RC[1]), cv::Point(15,95), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	if(m_ROImode == MODE_ASSIST)
+	{
+		putText(imMat, "CLR", cv::Point(1825,50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+		putText(imMat, "+", cv::Point(1825,150), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+		putText(imMat, "-", cv::Point(1825,250), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+
+		roi.x = imMat.cols - m_btnSize;
+		roi.y = 0;
+		roi.width = m_btnSize;
+		roi.height = m_btnSize;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+		roi.y = m_btnROIClear;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+		roi.y = m_btnROIBig;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+	}
+
+	putText(imMat, "MODE", cv::Point(1825,1035), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+
+	roi.x = imMat.cols - m_btnSize;
+	roi.y = m_btnMode;
+	roi.width = m_btnSize;
+	roi.height = m_btnSize;
+	rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+
 	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
-
-
 	imshow(APP_NAME,imMat);
 
 	//	CASCADE_OBJECT* pDrone;
@@ -213,14 +250,85 @@ void DroneHunter::showScreen(void)
 void DroneHunter::handleMouse(int event, int x, int y, int flags)
 {
 	Rect2d roi;
-	int ROIhalf = m_ROIsize/2;
+	int ROIhalf;
 
 	if(m_ROImode == MODE_ASSIST)
 	{
 		switch (event)
 		{
 		case EVENT_LBUTTONDOWN:
-//			m_pROITracker->tracking(false);
+			if(x > 1820)
+			{
+				if(y < 100)
+				{
+					//Clear ROI
+					m_pROITracker->tracking(false);
+					m_bSelect = false;
+					return;
+				}
+				else if(y < 200)
+				{
+					//Magnify the ROI size
+					if(m_ROIsize < m_ROIsizeTo)
+					{
+						m_ROIsize += 10;
+						if(m_pROITracker->m_bTracking)
+						{
+							roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width/2;
+							roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height/2;
+							ROIhalf = m_ROIsize/2;
+
+							m_ROI.m_x = roi.x - ROIhalf;
+							m_ROI.m_y = roi.y - ROIhalf;
+							m_ROI.m_z = roi.x + ROIhalf;
+							m_ROI.m_w = roi.y + ROIhalf;
+							roi = getROI(m_ROI);
+							m_pROITracker->setROI(roi);
+							m_bSelect = true;
+						}
+					}
+					m_bSelect = false;
+					return;
+				}
+				else if(y < 300)
+				{
+					//Shrink the ROI size
+					if(m_ROIsize > m_ROIsizeFrom)
+					{
+						m_ROIsize -= 10;
+						if(m_pROITracker->m_bTracking)
+						{
+							roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width/2;
+							roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height/2;
+							ROIhalf = m_ROIsize/2;
+
+							m_ROI.m_x = roi.x - ROIhalf;
+							m_ROI.m_y = roi.y - ROIhalf;
+							m_ROI.m_z = roi.x + ROIhalf;
+							m_ROI.m_w = roi.y + ROIhalf;
+							roi = getROI(m_ROI);
+							m_pROITracker->setROI(roi);
+							m_bSelect = true;
+						}
+					}
+					m_bSelect = false;
+					return;
+				}
+				else if(y > m_btnMode)
+				{
+					m_ROI.m_x = 0;
+					m_ROI.m_y = 0;
+					m_ROI.m_z = 0;
+					m_ROI.m_w = 0;
+					m_pROITracker->tracking(false);
+					m_bSelect = false;
+					m_ROImode = MODE_RECTDRAW;
+					return;
+				}
+			}
+
+			ROIhalf = m_ROIsize/2;
+
 			m_ROI.m_x = x - ROIhalf;
 			m_ROI.m_y = y - ROIhalf;
 			m_ROI.m_z = x + ROIhalf;
@@ -228,18 +336,23 @@ void DroneHunter::handleMouse(int event, int x, int y, int flags)
 			roi = getROI(m_ROI);
 			m_pROITracker->setROI(roi);
 			m_pROITracker->tracking(true);
+			m_bSelect = true;
 			break;
 		case EVENT_MOUSEMOVE:
-//			m_pROITracker->tracking(false);
-			m_ROI.m_x = x - ROIhalf;
-			m_ROI.m_y = y - ROIhalf;
-			m_ROI.m_z = x + ROIhalf;
-			m_ROI.m_w = y + ROIhalf;
-			roi = getROI(m_ROI);
-			m_pROITracker->setROI(roi);
-			m_pROITracker->tracking(true);
+			if(m_bSelect)
+			{
+				ROIhalf = m_ROIsize/2;
+				m_ROI.m_x = x - ROIhalf;
+				m_ROI.m_y = y - ROIhalf;
+				m_ROI.m_z = x + ROIhalf;
+				m_ROI.m_w = y + ROIhalf;
+				roi = getROI(m_ROI);
+				m_pROITracker->setROI(roi);
+				m_pROITracker->tracking(true);
+			}
 			break;
 		case EVENT_LBUTTONUP:
+			m_bSelect = false;
 			break;
 		case EVENT_RBUTTONDOWN:
 			break;
@@ -253,6 +366,21 @@ void DroneHunter::handleMouse(int event, int x, int y, int flags)
 		switch (event)
 		{
 		case EVENT_LBUTTONDOWN:
+			if(x > 1820)
+			{
+				if(y > m_btnMode)
+				{
+					m_ROI.m_x = 0;
+					m_ROI.m_y = 0;
+					m_ROI.m_z = 0;
+					m_ROI.m_w = 0;
+					m_pROITracker->tracking(false);
+					m_bSelect = false;
+					m_ROImode = MODE_ASSIST;
+					return;
+				}
+			}
+
 			m_pROITracker->tracking(false);
 			m_ROI.m_x = x;
 			m_ROI.m_y = y;

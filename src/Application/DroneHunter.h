@@ -63,6 +63,15 @@ public:
 	int		 m_minROI;
 	int		 m_ROImode;
 	int		 m_ROIsize;
+	int 	 m_ROIsizeFrom;
+	int		 m_ROIsizeTo;
+
+	//UI
+	int		m_btnSize;
+	int		m_btnROIClear;
+	int		m_btnROIBig;
+	int		m_btnROISmall;
+	int		m_btnMode;
 
 	Rect2d getROI(iVector4 mouseROI);
 	bool start(JSON* pJson);
