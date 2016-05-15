@@ -26,6 +26,9 @@
 
 #define APP_NAME "DRONE_HUNTER"
 
+#define MODE_ASSIST 0
+#define MODE_RECTDRAW 1
+
 using namespace kai;
 
 namespace kai
@@ -58,6 +61,8 @@ public:
 	iVector4 m_ROI;
 	bool	 m_bSelect;
 	int		 m_minROI;
+	int		 m_ROImode;
+	int		 m_ROIsize;
 
 	Rect2d getROI(iVector4 mouseROI);
 	bool start(JSON* pJson);

@@ -73,6 +73,8 @@ bool DroneHunter::start(JSON* pJson)
 	m_ROI.m_z = 0;
 	m_ROI.m_w = 0;
 	m_bSelect = false;
+	m_ROImode = MODE_ASSIST;
+	m_ROIsize = 100;
 
 	//Main window
 	m_pShow = new CamFrame();
@@ -211,45 +213,83 @@ void DroneHunter::showScreen(void)
 void DroneHunter::handleMouse(int event, int x, int y, int flags)
 {
 	Rect2d roi;
+	int ROIhalf = m_ROIsize/2;
 
-	switch (event)
+	if(m_ROImode == MODE_ASSIST)
 	{
-	case EVENT_LBUTTONDOWN:
-		m_pROITracker->tracking(false);
-		m_ROI.m_x = x;
-		m_ROI.m_y = y;
-		m_ROI.m_z = x;
-		m_ROI.m_w = y;
-		m_bSelect = true;
-		break;
-	case EVENT_MOUSEMOVE:
-		if(m_bSelect)
+		switch (event)
 		{
-			m_ROI.m_z = x;
-			m_ROI.m_w = y;
-		}
-		break;
-	case EVENT_LBUTTONUP:
-		roi = getROI(m_ROI);
-		if(roi.width<m_minROI || roi.height<m_minROI)
-		{
-			m_ROI.m_x = 0;
-			m_ROI.m_y = 0;
-			m_ROI.m_z = 0;
-			m_ROI.m_w = 0;
-		}
-		else
-		{
+		case EVENT_LBUTTONDOWN:
+//			m_pROITracker->tracking(false);
+			m_ROI.m_x = x - ROIhalf;
+			m_ROI.m_y = y - ROIhalf;
+			m_ROI.m_z = x + ROIhalf;
+			m_ROI.m_w = y + ROIhalf;
+			roi = getROI(m_ROI);
 			m_pROITracker->setROI(roi);
 			m_pROITracker->tracking(true);
+			break;
+		case EVENT_MOUSEMOVE:
+//			m_pROITracker->tracking(false);
+			m_ROI.m_x = x - ROIhalf;
+			m_ROI.m_y = y - ROIhalf;
+			m_ROI.m_z = x + ROIhalf;
+			m_ROI.m_w = y + ROIhalf;
+			roi = getROI(m_ROI);
+			m_pROITracker->setROI(roi);
+			m_pROITracker->tracking(true);
+			break;
+		case EVENT_LBUTTONUP:
+			break;
+		case EVENT_RBUTTONDOWN:
+			break;
+		default:
+			break;
 		}
-		m_bSelect = false;
-		break;
-	case EVENT_RBUTTONDOWN:
-		break;
-	default:
-		break;
+
 	}
+	else if(m_ROImode == MODE_RECTDRAW)
+	{
+		switch (event)
+		{
+		case EVENT_LBUTTONDOWN:
+			m_pROITracker->tracking(false);
+			m_ROI.m_x = x;
+			m_ROI.m_y = y;
+			m_ROI.m_z = x;
+			m_ROI.m_w = y;
+			m_bSelect = true;
+			break;
+		case EVENT_MOUSEMOVE:
+			if(m_bSelect)
+			{
+				m_ROI.m_z = x;
+				m_ROI.m_w = y;
+			}
+			break;
+		case EVENT_LBUTTONUP:
+			roi = getROI(m_ROI);
+			if(roi.width<m_minROI || roi.height<m_minROI)
+			{
+				m_ROI.m_x = 0;
+				m_ROI.m_y = 0;
+				m_ROI.m_z = 0;
+				m_ROI.m_w = 0;
+			}
+			else
+			{
+				m_pROITracker->setROI(roi);
+				m_pROITracker->tracking(true);
+			}
+			m_bSelect = false;
+			break;
+		case EVENT_RBUTTONDOWN:
+			break;
+		default:
+			break;
+		}
+	}
+
 }
 
 Rect2d DroneHunter::getROI(iVector4 mouseROI)
