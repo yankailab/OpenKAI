@@ -14,14 +14,14 @@
 
 #include "Application/ExtCamControl.h"
 #include "Application/SegNetDemo.h"
-#include "Application/DroneHunter.h"
 #include "Application/Navigator.h"
+#include "Application/VisualFollow.h"
 
 using namespace kai;
 
 ExtCamControl* g_pAppExtCamControl;
 SegNetDemo* g_pAppSegNetDemo;
-DroneHunter* g_pAppDroneHunter;
+VisualFollow* g_pAppVisualFollow;
 Navigator* g_pAppNavigator;
 
 JSON g_Json;

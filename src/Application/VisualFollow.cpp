@@ -1,6 +1,6 @@
-#include "DroneHunter.h"
+#include "VisualFollow.h"
 
-DroneHunter* g_pDroneHunter;
+VisualFollow* g_pDroneHunter;
 void onMouseDroneHunter(int event, int x, int y, int flags, void* userdata)
 {
 	g_pDroneHunter->handleMouse(event,x,y,flags);
@@ -10,16 +10,16 @@ void onMouseDroneHunter(int event, int x, int y, int flags, void* userdata)
 namespace kai
 {
 
-DroneHunter::DroneHunter()
+VisualFollow::VisualFollow()
 {
 }
 
-DroneHunter::~DroneHunter()
+VisualFollow::~VisualFollow()
 {
 }
 
 
-bool DroneHunter::start(JSON* pJson)
+bool VisualFollow::start(JSON* pJson)
 {
 	g_pDroneHunter = this;
 
@@ -156,7 +156,7 @@ bool DroneHunter::start(JSON* pJson)
 
 }
 
-void DroneHunter::showScreen(void)
+void VisualFollow::showScreen(void)
 {
 	int i;
 	Rect roi;
@@ -247,7 +247,7 @@ void DroneHunter::showScreen(void)
 
 }
 
-void DroneHunter::handleMouse(int event, int x, int y, int flags)
+void VisualFollow::handleMouse(int event, int x, int y, int flags)
 {
 	Rect2d roi;
 	int ROIhalf;
@@ -420,7 +420,7 @@ void DroneHunter::handleMouse(int event, int x, int y, int flags)
 
 }
 
-Rect2d DroneHunter::getROI(iVector4 mouseROI)
+Rect2d VisualFollow::getROI(iVector4 mouseROI)
 {
 	Rect2d roi;
 
@@ -434,7 +434,7 @@ Rect2d DroneHunter::getROI(iVector4 mouseROI)
 
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-void DroneHunter::showInfo(UMat* pDisplayMat)
+void VisualFollow::showInfo(UMat* pDisplayMat)
 {
 	char strBuf[512];
 	std::string strInfo;
@@ -465,7 +465,7 @@ void DroneHunter::showInfo(UMat* pDisplayMat)
 
 }
 
-void DroneHunter::handleKey(int key)
+void VisualFollow::handleKey(int key)
 {
 	switch (key)
 	{

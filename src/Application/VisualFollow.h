@@ -24,7 +24,7 @@
 #include "../Image/_3DFlow.h"
 #include "../Tracker/_ROITracker.h"
 
-#define APP_NAME "DRONE_HUNTER"
+#define APP_NAME "VISUAL_FOLLOW"
 
 #define MODE_ASSIST 0
 #define MODE_RECTDRAW 1
@@ -34,11 +34,11 @@ using namespace kai;
 namespace kai
 {
 
-class DroneHunter
+class VisualFollow
 {
 public:
-	DroneHunter();
-	~DroneHunter();
+	VisualFollow();
+	~VisualFollow();
 
 	int m_key;
 	bool m_bRun;

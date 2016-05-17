@@ -18,10 +18,10 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_Json.getVal("APP_NAME", &appName));
 
 	//Start Application
-	if(appName=="DroneHunter")
+	if(appName=="VisualFollow")
 	{
-		g_pAppDroneHunter = new DroneHunter();
-		g_pAppDroneHunter->start(&g_Json);
+		g_pAppVisualFollow = new VisualFollow();
+		g_pAppVisualFollow->start(&g_Json);
 	}
 	else if(appName=="SegNet")
 	{
