@@ -1,13 +1,18 @@
-# OpenKAI
+//-------------------------------------------------------------
+//Updates if needed
+sudo apt-get update
+sudo apt-get -y upgrade
+sudo apt-get -y dist-upgrade
+sudo apt-get -y autoremove
+sudo apt-get -y autoclean
 
 //-------------------------------------------------------------
 //GitHub Repositories
 sudo apt-get install git
 git clone https://github.com/Itseez/opencv.git
 git clone https://github.com/Itseez/opencv_contrib.git
-git clone https://github.com/yankailab/OpenKAI.git
-//Optional for DNN
 git clone https://github.com/BVLC/caffe.git
+git clone https://github.com/yankailab/OpenKAI.git
 
 //-------------------------------------------------------------
 //g++
@@ -15,9 +20,13 @@ sudo apt-get install build-essential
 
 //-------------------------------------------------------------
 //CUDA7.5
-sudo gedit ~/.bashrc
-export PATH=/usr/local/cuda-7.5/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-7.5/lib64:$LD_LIBRARY_PATH
+sudo apt install nvidia-cuda-toolkit
+
+//If install from downloaded archive
+//sudo gedit ~/.bashrc
+//export PATH=/usr/local/cuda-7.5/bin:$PATH
+//export LD_LIBRARY_PATH=/usr/local/cuda-7.5/lib64:$LD_LIBRARY_PATH
+
 //Test
 nvcc --version
 nvidia-smi
@@ -25,25 +34,49 @@ nvidia-smi
 //-------------------------------------------------------------
 //CuDNN
 cd cuda
-sudo cp lib64/lib* /usr/local/cuda/lib64/
-sudo cp include/cudnn.h /usr/local/cuda/include/
+sudo cp lib64/lib* /usr/local/lib/
+sudo cp include/* /usr/local/include/
+
+//If install from downloaded archive
+//sudo cp lib64/lib* /usr/local/cuda/lib64/
+//sudo cp include/cudnn.h /usr/local/cuda/include/
 
 //-------------------------------------------------------------
 //OpenCV
-sudo apt-get -y install libgtk2.0-dev pkg-config python-dev python-numpy libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libtiff4-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libxine-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils unzip python-protobuf python-scipy python-pip
+sudo apt-get -y install libgtk2.0-dev pkg-config python-dev python-numpy libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils unzip python-protobuf python-scipy python-pip
 
 //OpenCV cmake
+//add
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
+//to top of CMakefile.txt
+
+//CMake to setup the build options
 cd build
 sudo make all -j8
 sudo make install
 //export PATH=/usr/local/lib:$PATH
 
+//-------------------------------------------------------------
 //Caffe
 sudo apt-get install libatlas-base-dev libprotobuf-dev libleveldb-dev libsnappy-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
+
+//Add to Caffe Makefile
+INCLUDE_DIRS += /usr/include/hdf5/serial/
+LIBRARY_DIRS += /usr/lib/x86_64-linux-gnu/hdf5/serial/
+
+//Replace
+//NVCCFLAGS += -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
+NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
 
 //Compile Caffe
 make all -j8
 make test -j8
+
+//Add to ~/.bashrc
+export CAFFE_HOME=/home/dec/caffe/build
+#export PATH=${CAFFE_HOME}/bin:${PATH}
+export LD_LIBRARY_PATH=${CAFFE_HOME}/lib:${LD_LIBRARY_PATH}
+export PYTHONPATH=${CAFFE_HOME}/python:${PYTHONPATH}
 
 //Add to ldconfig
 sudo gedit /etc/ld.so.conf
@@ -54,9 +87,12 @@ sudo ldconfig
 make runtest
 make pycaffe
 
-//Python interface
-sudo pip install matplotlib
-sudo pip install scikit-image
+//-------------------------------------------------------------
+//Java 8
+//sudo apt-add-repository ppa:openjdk-r/ppa
+//sudo apt-get update
+//sudo apt-get install openjdk-8-jdk
+sudo apt-get update
+sodu apt-get install default-jre/jdk
 
-//Build OpenKAI
-./build.sh
+
