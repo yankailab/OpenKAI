@@ -1,0 +1,120 @@
+#!/bin/bash
+
+# TX1 setup script for use as companion computer
+
+# connect TX1 via USB to Ubuntu machine and put TX1 into bootloader mode:
+#    Hold Force Recovery button (aka "REC"), press Reset button(aka "RST"), Release Force Recovery button
+#    On Ubuntu machine "lsusb", and look for "NVidia Corp"
+# Install JetPack on an Ubuntu machine, while connected to the internet:
+# run JetPack-L4T-2.1-linux-x64.run
+#    select Jetson TX1 Development Kit and Ubuntu Host
+#    On JetPack L4T Component Manager:
+#        - Custom
+#        * Common: no action
+#        * For Jetson TX1: mixed
+#           * VisionWorks on Host: no action
+#           * OpenCV for Tegra on Ubunutu 14.04: no action
+#           * Linux for Tegra (TX1): install
+#           * CUDA Toolkit for Ubuntu 14.04: install
+#        * Post Install: mixed
+#           * Flash OS: install
+#           * CUDA Toolkit for L4T: install
+#           * Compile GameWorks Samples: no action
+#           * Compile CUDA Samples: no action
+#           * PerfKit: install
+#           * cuDNN Package: install
+#           * OpenCV for Tegra: no action
+#        * VisionWorks on TX1 Target: no action
+#    Click Next, and Accept All
+#    On "Network Layout" select "Device accesses Internet via router/switch", Next
+#    Select network adapter to use to connect to TX (i.e. eth0 if your Ubuntu machine uses eth0 to access your local internet)
+#    Follow instructions to put TX1 into bootloader mode (i.e. Hold Force Recovery button, etc), Press <Enter>
+#    Click Next again, on "Device information" enter IP address and ubuntu/ubuntu for user/password
+
+# setup as desktop
+# login to TX1 as username/password: ubuntu/ubuntu and setup to start to desktop
+# these instructions are printed on the screen after logging in
+cd ${HOME}/NVIDIA-INSTALLER
+sudo ./installer.sh  # and enter password 'ubuntu'
+sudo reboot now #reboot to switch into desktop mode
+
+# remove modemmanager
+sudo apt-get purge modemmanager
+
+# update package info
+sudo apt-get update
+
+# install python, numpy, pip
+sudo apt-get install python-dev python-numpy python3-numpy python-pip
+
+# install dronekit
+sudo pip install dronekit dronekit-sitl # also installs pymavlink
+#sudo apt-get install screen python-wxgtk2.8 python-matplotlib python-opencv python-pip python-numpy python-dev libxml2-dev libxslt-dev
+sudo pip install mavproxy
+
+# live video related packages
+sudo apt-get install gstreamer1.0
+
+# install git
+sudo apt-get install git
+
+# install boost & caffe (see http://caffe.berkeleyvision.org/install_apt.html)
+sudo apt-get install libboost-all-dev
+sudo apt-get install libprotobuf-dev libleveldb-dev libsnappy-dev libopencv-dev libhdf5-serial-dev protobuf-compiler
+sudo apt-get install libatlas-base-dev
+sudo apt-get install libgflags-dev libgoogle-glog-dev liblmdb-dev
+mkdir ${HOME}/src
+cd ${HOME}/src
+git clone https://github.com/BVLC/caffe.git
+cd caffe
+cp Makefile.config.example Makefile.config
+# USE_CUDNN := 1
+# USE_OPENCV := 1
+# OPENCV_VERSION := 3
+# CUDA_ARCH := -gencode arch=compute_53, code=sm53
+protoc src/caffe/proto/caffe.proto --cpp_out=.
+mkdir include/caffe/proto
+mv src/caffe/proto/caffe.pb.h include/caffe
+sudo make clean
+sudo make all -j4
+
+# install opencv source, opencv_contrib
+cd ${HOME}/src
+git clone https://github.com/Itseez/opencv.git
+git clone https://github.com/Itseez/opencv_contrib.git
+
+# opencv 3 install see http://elinux.org/Jetson/Installing_OpenCV, "Natively compiling the OpenCV library from source onboard the device"
+sudo apt-add-repository universe
+sudo apt-get update
+# Some general development libraries
+sudo apt-get -y install build-essential make cmake cmake-curses-gui g++
+# libav video input/output development libraries
+sudo apt-get -y install libavformat-dev libavutil-dev libswscale-dev
+# Video4Linux camera development libraries
+sudo apt-get -y install libv4l-dev
+# Eigen3 math development libraries
+sudo apt-get -y install libeigen3-dev
+# GTK development libraries (to allow creating graphical windows)
+sudo apt-get -y install libgtk2.0-dev
+# download and unzip OpenCV3.1 source
+cd ${HOME}/Downloads
+wget https://github.com/Itseez/opencv/archive/3.1.0.zip
+# make a directory for the source code and unzip there
+unzip ${HOME}/Downloads/3.1.0.zip -d ${HOME}/src
+cd ${HOME}/src/opencv-3.1.0
+mkdir build
+cd build
+ccmake .. #press "c" to configure
+          # ENABLE_NEON = ON
+          # WITH_GTK_2_X = ON
+          # WITH_LIBV4L = ON
+          # OPENCV_EXTRA_MODULES = /home/ubuntu/src/opencv_contrib/modules
+          # press c twice, then "g"
+
+make -j4
+sudo make install
+sudo ldconfig
+
+# install OpenKai
+cd ${HOME}/src
+git clone https://github.com/yankailab/OpenKAI.git
