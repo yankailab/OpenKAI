@@ -48,10 +48,11 @@ sudo apt-get -y install libgtk2.0-dev pkg-config python-dev python-numpy libdc13
 //OpenCV cmake
 //add
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_FORCE_INLINES")
-//to top of CMakefile.txt
+//to top of CMakeLists.txt
 
 //CMake to setup the build options
-cd build
+sudo mkdir build; cd build
+cmake -D WITH_TBB=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules/ ..
 sudo make all -j8
 sudo make install
 //export PATH=/usr/local/lib:$PATH
@@ -60,11 +61,11 @@ sudo make install
 //Caffe
 sudo apt-get install libatlas-base-dev libprotobuf-dev libleveldb-dev libsnappy-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
 
-//Add to Caffe Makefile
+//Add to Caffe Makefile.config
 INCLUDE_DIRS += /usr/include/hdf5/serial/
 LIBRARY_DIRS += /usr/lib/x86_64-linux-gnu/hdf5/serial/
 
-//Replace
+//Replace in Makefile
 //NVCCFLAGS += -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
 NVCCFLAGS += -D_FORCE_INLINES -ccbin=$(CXX) -Xcompiler -fPIC $(COMMON_FLAGS)
 
