@@ -41,7 +41,6 @@ using caffe::Caffe;
 using caffe::Net;
 using caffe::shared_ptr;
 using caffe::vector;
-using caffe::MemoryDataLayer;
 using std::string;
 using namespace std;
 using namespace cv;
