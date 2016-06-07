@@ -1,0 +1,14 @@
+#!/bin/sh
+
+PATH=/sbin:/usr/sbin:/usr/bin:/bin:$PATH
+
+# start wifi access point
+dhclient eth0
+ifconfig wlan0 10.0.1.1/24 up
+/etc/init.d/hostapd start
+service dnsmasq force-reload
+
+# start mavproxy
+sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_mavproxy/autostart_mavproxy.sh'
+
+exit 0
