@@ -118,3 +118,131 @@ sudo ldconfig
 # install OpenKai
 cd ${HOME}/src
 git clone https://github.com/yankailab/OpenKAI.git
+
+# setup wifi access point.
+# NOTE: if something goes wrong with this setup, and you are unable to connect to the TX1, connect a keyboard and mouse and type "sudo dhclient eth0"
+sudo apt-get install hostapd dnsmasq haveged
+# 
+# disable network manager
+# echo "manual" | sudo tee /etc/init/network-manager.override
+# sudo mv /etc/init/network-manager.conf /etc/init/network-manager.conf.bak
+
+sudo vi /etc/modprobe.d/bcmdhd.conf # add what's below to end of file
+    options bcmdhd op_mode=2
+
+# modify /etc/default/hostapd to use our config file
+sudo vi /etc/default/hostapd # modify line to look like below
+    DAEMON_CONF="/etc/hostapd/hostapd.conf"
+
+# create our hostapd config file
+sudo vi /etc/hostapd/hostapd.conf #add what's below
+    auth_algs=1
+    beacon_int=50
+    channel=3
+    country_code=US
+    disassoc_low_ack=1
+    driver=nl80211
+    hw_mode=g
+    #ht_capab=[SHORT-GI-40]
+    ieee80211d=1
+    ieee80211n=1
+    interface=wlan0
+    require_ht=0
+    rsn_pairwise=CCMP
+    ssid=enroute-drone1
+    wmm_enabled=1
+    wpa=2
+    wpa_key_mgmt=WPA-PSK
+    wpa_passphrase=enroute1024
+
+# modify /etc/dnsmasq.conf to look like below
+sudo vi /etc/dnsmasq.conf
+    interface=wlan0
+    dhcp-range=10.0.1.128,10.0.1.254,12h
+
+# disable NetworkManager so it does not interfere
+sudo vi /etc/init/network-manager.override # add just the line below
+    manual
+
+# create /etc/rc.local file to automatically start hostapd on each reboot
+sudo vi /etc/rc.local # add the contents like below
+    #!/bin/sh
+    PATH=/sbin:/usr/sbin:/usr/bin:/bin:$PATH
+    dhclient eth0
+    ifconfig wlan0 10.0.1.1/24 up
+    /etc/init.d/hostapd start
+    service dnsmasq force-reload
+# make sure /etc/rc.local is executable
+chmod a+x /etc/rc.local
+
+# remove this file which stores old LAN MAC addresses
+sudo rm /etc/udev/rules.d/70-persistent-net.rules
+# create a new fules file that doesn't store the MAC addresses (see http://askubuntu.com/questions/240632/how-to-disable-udev-net-rule-generation)
+sudo vi /etc/udev/rules.d/75-persistent-net.rules # make the file look like below
+    # this disables network device rule generation
+    SUBSYSTEM=="net", DRIVERS=="?*", NAME="%k"
+
+# remove ttyS0 startup file so that it does not interfere with ttyS0 serial comms to pixhawk
+sudo rm /etc/init/ttyS0.conf
+# remove ttyS0 from /boot/extlinux/extlinux.conf.  Make the APPEND line look like below
+    APPEND fbcon=map:0 console=tty0,115200n8 androidboot.modem=none ..etc..
+
+# enable log compression
+sudo vi /etc/logrotate.conf # find rotate and compress lines and make them look like below
+    rotate 1
+    compress
+
+# auto start mavproxy
+sudo apt-get install screen
+cd $HOME
+mkdir start_mavproxy
+cd start_mavproxy
+vi start_mavproxy.sh
+    #!/bin/sh
+    mavproxy.py --master /dev/ttyS0 --baud 921600 --out udpin:localhost:9000 --out udpbcast:10.0.1.255:14550
+vi autostart_mavproxy.sh
+    #!/bin/bash
+    # autostart for mavproxy on TX1
+    (
+    date
+    export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/local/bin
+    export HOME=/home/ubuntu
+    cd $HOME/start_mavproxy
+    screen -d -m -S MAVProxy -s /bin/bash $HOME/start_mavproxy/start_mavproxy.sh
+    ) > $HOME/start_mavproxy/start_mavproxy.log 2>&1
+    exit 0
+# add line below to bottom of /etc/rc.local to call $HOME/start_mavproxy/autostart_mavproxy.sh
+    # start mavproxy
+    sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_mavproxy/autostart_mavproxy.sh'
+
+# setup live video via http (complements of Krita from NII)
+# install and build http-launch
+sudo aptget install git buildessential dpkgdev flex bison autoconf autotoolsdev automake liborcdev autopoint libtool gtkdoctools libgstreamer1.0dev
+cd $HOME/src
+git clone https://github.com/sdroege/http-launch
+export PKG_CONFIG_PATH=/home/ubuntu/src/http-launch/out/lib/pkgconfig
+./autogen.sh
+./configure --prefix=/home/ubuntu/src/http-launch/out
+make
+make install
+
+# create live startup scripts
+cd $HOME
+mkdir start_video
+vi start_http_video.sh
+    # launch http based live video
+    $HOME/src/http-launch/out/bin/http-launch 1234 v4l2src device=/dev/video0 ! "video/x-raw,width=640,height=480,framerate=15/1" ! jpegenc ! multipartmux streamable=true name=stream
+vi autostart_video.sh
+    #!/bin/bash
+    # autostart for streaming video on TX1
+    (
+    date
+    export PATH=$PATH:/bin:/sbin:/usr/bin:/usr/local/bin
+    export HOME=/home/ubuntu
+    cd $HOME/start_video
+    screen -d -m -S HttpVideo -s /bin/bash $HOME/start_video/start_http_video.sh
+    ) > $HOME/start_video/start_http_video.log 2>&1
+    exit 0
+sudo vi /etc/rc.local # add what's below to the bottom
+    # start streaming video
+    sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_video/autostart_video.sh'
