@@ -20,6 +20,7 @@
 #include "../Utility/util.h"
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_FeatureDetector.h"
+#include "../Detector/_DepthDetector.h"
 #include "../Image/_3DFlow.h"
 #include "../Tracker/_ROITracker.h"
 
@@ -45,9 +46,10 @@ public:
 	_CascadeDetector* m_pCascade;
 	_DenseFlow* m_pDF;
 	_FeatureDetector* m_pFeature;
-	_3DFlow* m_pDFDepth;
+	_3DFlow* m_p3DFlow;
 	_ROITracker* m_pROITracker;
 	_SegNet* m_pSegNet;
+	_DepthDetector* m_pDD;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

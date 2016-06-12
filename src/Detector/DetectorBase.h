@@ -25,6 +25,7 @@ private:
 //	CamFrame*	m_pHSV;
 
 
+
 };
 
 

@@ -23,8 +23,9 @@ public:
 	virtual ~CamStereo();
 
 
-	bool init(void);
+	bool init(int disparity);
 	void detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth);
+	void detect(CamFrame* pLRsbs, CamFrame* pDepth);
 
 public:
     int		m_disparity;

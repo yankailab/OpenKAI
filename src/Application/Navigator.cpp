@@ -34,14 +34,19 @@ bool Navigator::start(JSON* pJson)
 	m_pCamFront->m_bGray = true;
 
 	//Init Dense Flow Tracker
-	m_pDFDepth = new _3DFlow();
-	m_pDFDepth->init(pJson, "DEFAULT");
-	m_pDFDepth->m_pDF = m_pDF;
+	m_p3DFlow = new _3DFlow();
+	m_p3DFlow->init(pJson, "DEFAULT");
+	m_p3DFlow->m_pDF = m_pDF;
 
 	//Init ROI Tracker
 	m_pROITracker = new _ROITracker();
 	m_pROITracker->init(pJson, "DRONE");
 	m_pROITracker->m_pCamStream = m_pCamFront;
+
+	//Init DepthDetector
+	m_pDD = new _DepthDetector();
+	m_pDD->init(pJson,"FRONTL");
+	m_pDD->m_pCamStream = m_pCamFront;
 
 	//Init Autopilot
 /*	m_pAP = new _AutoPilot();
@@ -74,9 +79,9 @@ bool Navigator::start(JSON* pJson)
 //	m_pMavlink->start();
 	m_pDF->start();
 //	m_pAP->start();
-	m_pDFDepth->start();
+	m_p3DFlow->start();
 	m_pROITracker->start();
-
+	m_pDD->start();
 
 	//UI thread
 	m_bRun = true;
@@ -101,12 +106,14 @@ bool Navigator::start(JSON* pJson)
 //	m_pAP->stop();
 //	m_pMavlink->stop();
 	m_pDF->stop();
-	m_pDFDepth->stop();
+	m_p3DFlow->stop();
 	m_pROITracker->stop();
+	m_pDD->stop();
 
 	m_pDF->complete();
-	m_pDFDepth->complete();
+	m_p3DFlow->complete();
 	m_pROITracker->complete();
+	m_pDD->complete();
 //	m_pAP->complete();
 //	m_pCamFront->complete();
 //	m_pMavlink->complete();
@@ -114,9 +121,10 @@ bool Navigator::start(JSON* pJson)
 
 //	delete m_pAP;
 //	delete m_pMavlink;
+	delete m_pDD;
 	delete m_pDF;
 	delete m_pCamFront;
-	delete m_pDFDepth;
+	delete m_p3DFlow;
 	delete m_pROITracker;
 
 	return 0;
@@ -129,33 +137,35 @@ void Navigator::showScreen(void)
 	Mat imMat,imMat2,imMat3;
 	CamFrame* pFrame = m_pCamFront->getFrame();
 
-	if (pFrame->empty())return;
-	imMat = *pFrame->getCMat();
+//	if (pFrame->empty())return;
+//	imMat = *pFrame->getCMat();
+//
+//	if(m_p3DFlow->m_pDepth->empty())return;
+//
+//	m_pMat->getResizedOf(m_p3DFlow->m_pSeg, imMat.cols,imMat.rows);
+//	m_pMat2->get8UC3Of(m_pMat);
+//	imMat2 = *m_pMat2->getCMat();
+//
+//	cv::addWeighted(imMat, 1.0, imMat2, 0.35, 0.0, imMat3);
+//
+//	 // draw the tracked object
+//	Rect roi = m_pROITracker->m_ROI;
+//	if(roi.height>0 || roi.width>0)
+//	{
+//		rectangle( imMat3, roi, Scalar( 0, 0, 255 ), 2 );
+//	}
 
-	if(m_pDFDepth->m_pDepth->empty())return;
+	if(m_pDD->m_pDepth->empty())return;
 
-	m_pMat->getResizedOf(m_pDFDepth->m_pSeg, imMat.cols,imMat.rows);
-	m_pMat2->get8UC3Of(m_pMat);
-	imMat2 = *m_pMat2->getCMat();
-
-	cv::addWeighted(imMat, 1.0, imMat2, 0.35, 0.0, imMat3);
-
-	 // draw the tracked object
-	Rect roi = m_pROITracker->m_ROI;
-	if(roi.height>0 || roi.width>0)
-	{
-		rectangle( imMat3, roi, Scalar( 0, 0, 255 ), 2 );
-	}
-
-	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat3, "FlowDepth FPS: "+f2str(m_p3DFlow->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	//	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 //	imshow(APP_NAME,imMat3);
 //	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
-	imshow(APP_NAME,*m_pDFDepth->m_pDepth->getCMat());
+	imshow(APP_NAME,*m_pDD->m_pDepth->getCMat());
 
 	//	CASCADE_OBJECT* pDrone;
 	//	int iTarget = 0;
