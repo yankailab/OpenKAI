@@ -43,20 +43,26 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->init(pJson, "DRONE");
 	m_pROITracker->m_pCamStream = m_pCamFront;
 
-	//Init DepthDetector
+	//Init Depth Detector
 	m_pDD = new _DepthDetector();
 	m_pDD->init(pJson,"FRONTL");
 	m_pDD->m_pCamStream = m_pCamFront;
 
+	//Init Marker Detector
+	m_pMD = new _MarkerDetector();
+	m_pMD->init(pJson,"FRONTL");
+	m_pMD->m_pCamStream = m_pCamFront;
+
+	//Init Mavlink
+	m_pMavlink = new _MavlinkInterface();
+	CHECK_FATAL(m_pMavlink->setup(pJson, "FC"));
+
 	//Init Autopilot
-/*	m_pAP = new _AutoPilot();
-	CHECK_FATAL(m_pAP->setup(&m_Json, ""));
-	m_pAP->init();
-	m_pAP->setCamStream(m_pCamFront, CAM_FRONT);
-	m_pAP->m_pOD = m_pOD;
-	m_pAP->m_pFD = m_pFD;
-//	m_pMD = m_pAP->m_pCamStream[CAM_FRONT].m_pCam->m_pMarkerDetect;
-*/
+	m_pAP = new _AutoPilot();
+	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
+	m_pAP->m_pMavlink = m_pMavlink;
+	m_pAP->m_pROITracker = m_pROITracker;
+	m_pAP->m_pMarkerDetector = m_pMD;
 
 	//Connect to Mavlink
 /*	m_pMavlink = new _MavlinkInterface();
@@ -78,7 +84,7 @@ bool Navigator::start(JSON* pJson)
 	m_pCamFront->start();
 //	m_pMavlink->start();
 	m_pDF->start();
-//	m_pAP->start();
+	m_pAP->start();
 	m_p3DFlow->start();
 	m_pROITracker->start();
 	m_pDD->start();
@@ -103,8 +109,8 @@ bool Navigator::start(JSON* pJson)
 		handleKey(m_key);
 	}
 
-//	m_pAP->stop();
-//	m_pMavlink->stop();
+	m_pAP->stop();
+	m_pMavlink->stop();
 	m_pDF->stop();
 	m_p3DFlow->stop();
 	m_pROITracker->stop();
@@ -114,10 +120,10 @@ bool Navigator::start(JSON* pJson)
 	m_p3DFlow->complete();
 	m_pROITracker->complete();
 	m_pDD->complete();
-//	m_pAP->complete();
+	m_pAP->complete();
 //	m_pCamFront->complete();
-//	m_pMavlink->complete();
-//	m_pMavlink->close();
+	m_pMavlink->complete();
+	m_pMavlink->close();
 
 //	delete m_pAP;
 //	delete m_pMavlink;

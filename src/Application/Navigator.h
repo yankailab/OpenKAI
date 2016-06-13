@@ -21,6 +21,7 @@
 #include "../Image/_DenseFlow.h"
 #include "../Detector/_FeatureDetector.h"
 #include "../Detector/_DepthDetector.h"
+#include "../Detector/_MarkerDetector.h"
 #include "../Image/_3DFlow.h"
 #include "../Tracker/_ROITracker.h"
 
@@ -50,6 +51,7 @@ public:
 	_ROITracker* m_pROITracker;
 	_SegNet* m_pSegNet;
 	_DepthDetector* m_pDD;
+	_MarkerDetector* m_pMD;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

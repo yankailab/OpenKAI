@@ -8,20 +8,21 @@ _MavlinkInterface::_MavlinkInterface()
 {
 	_ThreadBase();
 
-	m_bSerialConnected = false;
+	m_bSerialOpen = false;
 	m_sportName = "";
 	m_pSerialPort = NULL;
-	m_baudRate = 57600;
+	m_baudRate = 115200;
 
 	// whether the autopilot is in offboard control mode
 	m_bControlling = false;
 
-	system_id = 0;
-	autopilot_id = 0;
-	companion_id = 0;
+	m_systemID = 0;
+	m_componentID = 0;
+//	companion_id = 0;
+	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 
-	current_messages.sysid = system_id;
-	current_messages.compid = autopilot_id;
+	current_messages.sysid = m_systemID;
+	current_messages.compid = m_componentID;
 
 	current_messages.attitude.pitch = 0;
 	current_messages.attitude.roll = 0;
@@ -47,39 +48,20 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
-	this->setTargetFPS(1000);
+	this->setTargetFPS(100);
 
-	return true;
-}
+	m_systemID = 1;
+	m_componentID = 0;
+//	companion_id = 0;
 
-bool _MavlinkInterface::open(void)
-{
-	system_id = 0;
-	autopilot_id = 0;
-	companion_id = 0;
-
-	current_messages.sysid = system_id;
-	current_messages.compid = autopilot_id;
+	current_messages.sysid = m_systemID;
+	current_messages.compid = m_componentID;
+	last_status.packet_rx_drop_count = 0;
 
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
-	if (m_pSerialPort->Open((char*) m_sportName.c_str()) != true)
-	{
-		m_bSerialConnected = false;
-		return false;
-	}
 
-	if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
-	{
-		printf("failure, could not configure port.\n");
-		return false;
-	}
-
-	last_status.packet_rx_drop_count = 0;
-
-	m_bSerialConnected = true;
 	return true;
-
 }
 
 void _MavlinkInterface::close()
@@ -89,7 +71,7 @@ void _MavlinkInterface::close()
 	if (m_pSerialPort)
 	{
 		delete m_pSerialPort;
-		m_bSerialConnected = false;
+		m_bSerialOpen = false;
 	}
 	printf("Serial port closed.\n");
 }
@@ -109,8 +91,8 @@ void _MavlinkInterface::handleMessages()
 		current_messages.sysid = message.sysid;
 		current_messages.compid = message.compid;
 
-		system_id = current_messages.sysid;
-		autopilot_id = current_messages.compid;
+		m_systemID = current_messages.sysid;
+		m_componentID = current_messages.compid;
 
 		// Handle Message ID
 		switch (message.msgid)
@@ -309,13 +291,15 @@ void _MavlinkInterface::update(void)
 {
 	while (m_bThreadON)
 	{
+		//Establish serial connection
 		if (m_sportName == "")
 		{
-			this->sleepThread(0, 1000);
+			this->sleepThread(1, 0);
 			continue;
 		}
 
-		if (!m_bSerialConnected)
+		//Try to open and setup the serial port
+		if (!m_bSerialOpen)
 		{
 			if (m_pSerialPort->Open((char*)m_sportName.c_str()))
 			{
@@ -323,37 +307,69 @@ void _MavlinkInterface::update(void)
 			}
 			else
 			{
-				this->sleepThread(0,1000);
+				this->sleepThread(1, 0);
 				continue;
 			}
+
+			if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
+			{
+				LOG(INFO)<< "Serial port: "+m_sportName+" could not be congured";
+				m_pSerialPort->Close();
+				this->sleepThread(1, 0);
+				continue;
+			}
+
+			last_status.packet_rx_drop_count = 0;
+			m_bSerialOpen = true;
 		}
 
-		this->autoFPSfrom();
-
-		//Connected to Vehicle
+		//Connected to Vehicle, request update
 		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 10);
 
+
+		//Regular update loop
+		this->autoFPSfrom();
+
+		//Sending Heartbeat at 1Hz
+		sendHeartbeat(USEC_1SEC);
+
+		//Handling incoming messages
 		handleMessages();
-
-
-		//send local ned control at 2Hz
 
 		this->autoFPSto();
 	}
 
 }
 
+void _MavlinkInterface::sendHeartbeat(uint64_t interval_usec)
+{
+	static uint64_t lastSentTime = 0;
+	uint64_t timeNow = get_time_usec();
+
+	if(timeNow - lastSentTime >= interval_usec)
+	{
+		lastSentTime = timeNow;
+
+		mavlink_message_t message;
+		mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
+
+		writeMessage(message);
+	}
+
+}
+
+
 
 void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 {
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
-	ds.target_system = system_id;
-	ds.target_component = autopilot_id;
+	ds.target_system = m_systemID;
+	ds.target_component = m_componentID;
 	ds.req_stream_id = stream_id;
 	ds.req_message_rate = rate;
 	ds.start_stop = 1;
-	mavlink_msg_request_data_stream_encode(system_id, companion_id, &message,&ds);
+	mavlink_msg_request_data_stream_encode(m_systemID, m_componentID, &message, &ds);
 
 	writeMessage(message);
 
@@ -366,15 +382,15 @@ int _MavlinkInterface::toggleOffboardControl(bool bEnable)
 
 	// Prepare command for off-board mode
 	mavlink_command_long_t com;
-	com.target_system = system_id;
-	com.target_component = autopilot_id;
+	com.target_system = m_systemID;
+	com.target_component = m_componentID;
 	com.command = MAV_CMD_NAV_GUIDED_ENABLE;
 	com.confirmation = true;
 	com.param1 = (float) bEnable; // flag >0.5 => start, <0.5 => stop
 
 	// Encode
 	mavlink_message_t message;
-	mavlink_msg_command_long_encode(system_id, companion_id, &message, &com);
+	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &com);
 
 	// Send the message
 	return writeMessage(message);
@@ -493,4 +509,6 @@ void _MavlinkInterface::set_yaw_rate(float yaw_rate,
 
 
 }
+
+
 

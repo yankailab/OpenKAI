@@ -4,6 +4,7 @@
 #include "../Camera/_CamStream.h"
 #include "../Detector/_CascadeDetector.h"
 #include "../Detector/_ObjectDetector.h"
+#include "../Detector/_MarkerDetector.h"
 #include "../Interface/_VehicleInterface.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../Tracker/_ROITracker.h"
@@ -61,6 +62,7 @@ public:
 	bool start(void);
 
 	void setVehicleInterface(_VehicleInterface* pVehicle);
+	void setMavlinkInterface(_MavlinkInterface* pMavlink);
 	int* getPWMOutput(void);
 	void resetAllControl(void);
 
@@ -73,6 +75,7 @@ public:
 	_ObjectDetector*	m_pOD;
 	_CascadeDetector*	m_pFD;
 	_ROITracker* 		m_pROITracker;
+	_MarkerDetector*	m_pMarkerDetector;
 
 	_VehicleInterface* m_pVI;
 	_MavlinkInterface* m_pMavlink;

@@ -14,7 +14,10 @@ _AutoPilot::_AutoPilot()
 	m_pFD = NULL;
 	m_pVI = NULL;
 	m_pMavlink = NULL;
+	m_pMavlink = NULL;
 	m_pROITracker = NULL;
+	m_pMarkerDetector = NULL;
+
 	m_bThreadON = false;
 	m_threadID = 0;
 
@@ -241,6 +244,14 @@ void _AutoPilot::setVehicleInterface(_VehicleInterface* pVehicle)
 
 	m_pVI = pVehicle;
 }
+
+void _AutoPilot::setMavlinkInterface(_MavlinkInterface* pMavlink)
+{
+	if(!pMavlink)return;
+
+	m_pMavlink = pMavlink;
+}
+
 
 void _AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
 {
