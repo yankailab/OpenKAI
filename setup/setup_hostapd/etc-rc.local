@@ -11,4 +11,7 @@ service dnsmasq force-reload
 # start mavproxy
 sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_mavproxy/autostart_mavproxy.sh'
 
+# start streaming video
+sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_video/autostart_video.sh'
+
 exit 0
