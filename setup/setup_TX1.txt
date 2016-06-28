@@ -45,7 +45,7 @@ sudo apt-get purge modemmanager
 sudo apt-get update
 
 # install python, numpy, pip
-sudo apt-get install python-dev python-numpy python3-numpy python-pip
+sudo apt-get install python-dev python-numpy python3-numpy python-pip python-opencv
 
 # install dronekit
 sudo pip install dronekit dronekit-sitl # also installs pymavlink
@@ -217,9 +217,10 @@ vi autostart_mavproxy.sh
 
 # setup live video via http (complements of Krita from NII)
 # install and build http-launch
-sudo aptget install git buildessential dpkgdev flex bison autoconf autotoolsdev automake liborcdev autopoint libtool gtkdoctools libgstreamer1.0dev
+sudo apt-get install git build-essential dpkg-dev flex bison autoconf autotools-dev automake liborc-dev autopoint libtool gtk-doc-tools libgstreamer1.0-dev
 cd $HOME/src
 git clone https://github.com/sdroege/http-launch
+cd http-launch
 export PKG_CONFIG_PATH=/home/ubuntu/src/http-launch/out/lib/pkgconfig
 ./autogen.sh
 ./configure --prefix=/home/ubuntu/src/http-launch/out
@@ -229,9 +230,11 @@ make install
 # create live startup scripts
 cd $HOME
 mkdir start_video
+cd start_video
 vi start_http_video.sh
     # launch http based live video
     $HOME/src/http-launch/out/bin/http-launch 1234 v4l2src device=/dev/video0 ! "video/x-raw,width=640,height=480,framerate=15/1" ! jpegenc ! multipartmux streamable=true name=stream
+chmod a+x start_http_video.sh
 vi autostart_video.sh
     #!/bin/bash
     # autostart for streaming video on TX1
@@ -243,6 +246,7 @@ vi autostart_video.sh
     screen -d -m -S HttpVideo -s /bin/bash $HOME/start_video/start_http_video.sh
     ) > $HOME/start_video/start_http_video.log 2>&1
     exit 0
+chmod a+x autostart_video.sh
 sudo vi /etc/rc.local # add what's below to the bottom
     # start streaming video
     sudo -H -u ubuntu /bin/bash -c '/home/ubuntu/start_video/autostart_video.sh'
