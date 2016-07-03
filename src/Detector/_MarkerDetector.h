@@ -19,13 +19,16 @@
 #define MARKER_AREA_RATIO 0.6
 #define MIN_MARKER_SIZE 5
 
-#define LOCK_LEVEL_NONE 0
-#define LOCK_LEVEL_POS 1
-#define LOCK_LEVEL_SIZE 2
-#define LOCK_LEVEL_ATT 3
 
 namespace kai
 {
+
+struct MARKER_CIRCLE
+{
+	double	m_x;
+	double	m_y;
+	double	m_r;
+};
 
 class _MarkerDetector : public DetectorBase, public _ThreadBase
 {
@@ -36,14 +39,11 @@ public:
 	bool init(JSON* pJson, string name);
 	bool start(void);
 
-	//Object detection using markers
-	void setObjROI(fVector3 ROI);
-	int  getObjLockLevel(void);
-	bool getObjPosition(fVector3* pPos);
-	bool getObjAttitude(fVector3* pAtt);
+	bool getCircleCenter(fVector2* pCenter);
+
 
 private:
-	void detect(void);
+	void detectCircle(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -53,18 +53,8 @@ private:
 
 
 public:
-	fVector4 m_flow;
-	int		 m_numAllMarker;
-	fVector4 m_pAllMarker[NUM_MARKER];
-	fVector4 m_pTargetMarker[NUM_TARGET_MARKER];
-	//	Ptr<cuda::HoughCirclesDetector> m_pHoughCircle;
-
-	//0:Not locked,1:Pos locked, 2:Size and Attitude locked
-	int		 m_objLockLevel;
-	fVector3 m_targetObjPos;
-	fVector3 m_objPos;
-	fVector3 m_objROIPos;
-	fVector3 m_objAtt;	//Roll, Pitch, Yaw
+	int		 m_numCircle;
+	MARKER_CIRCLE m_pCircle[NUM_MARKER];
 
 	double	m_minMarkerSize;
 	double  m_areaRatio;
@@ -72,7 +62,6 @@ public:
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
 	_CamStream*			m_pCamStream;
-
 
 #ifdef USE_CUDA
 	GpuMat m_HSV;

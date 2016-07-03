@@ -118,29 +118,29 @@ bool ExtCamControl::start(JSON* pJson)
 
 bool ExtCamControl::showScreenMarkerDetector(void)
 {
-	int i;
-	UMat imMat;
-	CamFrame* pFrame = m_pCamFront->getFrame();
-
-	if (pFrame->getGMat()->empty())return false;
-	pFrame->getGMat()->download(imMat);
-
-	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Marker Detector FPS: "+f2str(m_pMD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	fVector3 markerPos;
-	int lockLevel = m_pMD->getObjLockLevel();
-	if (lockLevel < LOCK_LEVEL_POS)
-	{
-		return false;
-	}
-
-	putText(imMat, "MARKER LOCKED", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	//Update current position with trajectory estimation
-	m_pMD->getObjPosition(&markerPos);
-	circle(imMat, Point(markerPos.m_x,markerPos.m_y), markerPos.m_z, Scalar(0, 255, 0), 2);
-
-	imshow(APP_NAME,imMat);
+//	int i;
+//	UMat imMat;
+//	CamFrame* pFrame = m_pCamFront->getFrame();
+//
+//	if (pFrame->getGMat()->empty())return false;
+//	pFrame->getGMat()->download(imMat);
+//
+//	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	putText(imMat, "Marker Detector FPS: "+f2str(m_pMD->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//
+//	fVector3 markerPos;
+//	int lockLevel = m_pMD->getObjLockLevel();
+//	if (lockLevel < LOCK_LEVEL_POS)
+//	{
+//		return false;
+//	}
+//
+//	putText(imMat, "MARKER LOCKED", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	//Update current position with trajectory estimation
+//	m_pMD->getObjPosition(&markerPos);
+//	circle(imMat, Point(markerPos.m_x,markerPos.m_y), markerPos.m_z, Scalar(0, 255, 0), 2);
+//
+//	imshow(APP_NAME,imMat);
 	return true;
 }
 
@@ -251,7 +251,7 @@ void ExtCamControl::handleMouse(int event, int x, int y, int flags)
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
-		m_pMD->setObjROI(pos);
+//		m_pMD->setObjROI(pos);
 		break;
 	case EVENT_LBUTTONUP:
 		break;

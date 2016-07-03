@@ -19,9 +19,7 @@ _MarkerDetector::_MarkerDetector()
 	m_threadID = 0;
 	m_cudaDeviceID = 0;
 
-	m_numAllMarker = 0;
-	m_objLockLevel = LOCK_LEVEL_NONE;
-	m_objPos.m_z = 0;
+	m_numCircle = 0;
 
 	m_minMarkerSize = MIN_MARKER_SIZE;
 	m_areaRatio = MARKER_AREA_RATIO;
@@ -64,14 +62,14 @@ void _MarkerDetector::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
+		detectCircle();
 
 		this->autoFPSto();
 	}
 
 }
 
-void _MarkerDetector::detect(void)
+void _MarkerDetector::detectCircle(void)
 {
 	int i,j,k;
 	Point2f center;
@@ -79,13 +77,13 @@ void _MarkerDetector::detect(void)
 	vector< vector< Point > > contours;
 	vector<Vec3f> circles;
 	fVector4 v4tmp;
-	UMat matThresh;
+	Mat matThresh;
 	CamFrame* pHSV;
 	CamFrame* pRGB;
 
 	if(!m_pCamStream)return;
-	pHSV = m_pCamStream->getHSVFrame();//m_pCamStream->m_pHSV;
-	pRGB = m_pCamStream->getFrame();//m_pCamStream->m_pFrameL;
+	pHSV = m_pCamStream->getHSVFrame();
+	pRGB = m_pCamStream->getFrame();
 	if(pRGB->empty())return;
 	if(pHSV->empty())return;
 
@@ -114,7 +112,7 @@ void _MarkerDetector::detect(void)
 //		drawContours(pRGB->m_uFrame, contours, -1, Scalar(255, 0, 0));
 
 	//Find marker
-	m_numAllMarker = 0;
+	m_numCircle = 0;
 	for (i=0; i<contours.size(); i++)
 	{
 		minEnclosingCircle(contours[i], center, radius);
@@ -127,173 +125,69 @@ void _MarkerDetector::detect(void)
 
 //			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 2);
 
-		m_pAllMarker[m_numAllMarker].m_x = center.x;
-		m_pAllMarker[m_numAllMarker].m_y = center.y;
-		m_pAllMarker[m_numAllMarker].m_z = radius;
-		m_pAllMarker[m_numAllMarker].m_w = abs(center.x - m_objROIPos.m_x) + abs(center.y - m_objROIPos.m_y);
-		m_numAllMarker++;
+		m_pCircle[m_numCircle].m_x = center.x;
+		m_pCircle[m_numCircle].m_y = center.y;
+		m_pCircle[m_numCircle].m_r = radius;
+		m_numCircle++;
 
-		if (m_numAllMarker == NUM_MARKER)
+		if (m_numCircle == NUM_MARKER)
 		{
 			break;
 		}
 	}
-
-	//Failed to detect any marker
-	if (m_numAllMarker <= 0)
-	{
-		m_objLockLevel = LOCK_LEVEL_NONE;
-		return;
-	}
-
-	//Sorting the markers from near to far
-	for (i=1; i<m_numAllMarker; i++)
-	{
-		for (j=i-1; j>=0; j--)
-		{
-			if (m_pAllMarker[j+1].m_w > m_pAllMarker[j].m_w)
-			{
-				break;
-			}
-
-			v4tmp = m_pAllMarker[j];
-			m_pAllMarker[j] = m_pAllMarker[j+1];
-			m_pAllMarker[j+1] = v4tmp;
-		}
-	}
-
-	for (i = 0; i < NUM_TARGET_MARKER; i++)
-	{
-		m_pTargetMarker[i] = m_pAllMarker[i];
-	}
-
-	//if detected markers are less than expected, only use the first one
-	if (m_numAllMarker < NUM_TARGET_MARKER)
-	{
-		m_objPos.m_x = m_pAllMarker[0].m_x;
-		m_objPos.m_y = m_pAllMarker[0].m_y;
-		m_objPos.m_z = m_pAllMarker[0].m_z;
-		m_objROIPos = m_objPos;
-
-		//only position is locked
-		m_objLockLevel = LOCK_LEVEL_POS;
-		return;
-	}
-
-	//Determine the center position and size of object
-	m_objPos.m_x = (m_pAllMarker[1].m_x + m_pAllMarker[0].m_x)*0.5;
-	m_objPos.m_y = (m_pAllMarker[1].m_y + m_pAllMarker[0].m_y)*0.5;
-	m_objPos.m_z = abs(m_pAllMarker[1].m_x - m_pAllMarker[0].m_x);
-	m_objROIPos = m_objPos;
-	m_objLockLevel = LOCK_LEVEL_SIZE;
-
-	//Determine the attitude of object
-	m_objAtt.m_x = (m_pAllMarker[1].m_y - m_pAllMarker[0].m_y) / (m_pAllMarker[1].m_x - m_pAllMarker[0].m_x);
-	m_objAtt.m_y = 0; //TODO: how to determine pitch?
-
-	if (m_pAllMarker[0].m_x < m_pAllMarker[1].m_x)
-	{
-		m_objAtt.m_z = m_pAllMarker[1].m_z / m_pAllMarker[0].m_z;
-	}
-	else
-	{
-		m_objAtt.m_z = m_pAllMarker[0].m_z / m_pAllMarker[1].m_z;
-	}
-
-	m_objLockLevel = LOCK_LEVEL_ATT;
-
 }
 
-int _MarkerDetector::getObjLockLevel(void)
+bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 {
-	return 	m_objLockLevel;
-}
+	if(pCenter==NULL)return false;
 
-bool _MarkerDetector::getObjPosition(fVector3* pPos)
-{
-	if (m_objLockLevel < LOCK_LEVEL_POS)return false;
-	pPos->m_x = m_objPos.m_x;
-	pPos->m_y = m_objPos.m_y;
-//	if (m_objLockLevel >= LOCK_LEVEL_SIZE)
-//	{
-		pPos->m_z = m_objPos.m_z;
-//	}
+	//Use num instead of m_numCircle to avoid multi-thread inconsistancy
+	int num = m_numCircle;
+	if(m_numCircle==0)return false;
+
+	int i;
+	MARKER_CIRCLE avr;
+	MARKER_CIRCLE center;
+	double x,y;
+
+	//Find the average point
+	avr.m_x = 0;
+	avr.m_y = 0;
+
+	for(i=0; i<num; i++)
+	{
+		avr.m_x += m_pCircle[i].m_x;
+		avr.m_y += m_pCircle[i].m_y;
+	}
+
+	avr.m_x /= num;
+	avr.m_x /= num;
+
+	//Eliminate the farest ones
+	center.m_x = 0;
+	center.m_y = 0;
+	center.m_r = 0;
+
+	for(i=0; i<num; i++)
+	{
+		x = m_pCircle[i].m_x;
+		y = m_pCircle[i].m_y;
+
+		if(abs(x-avr.m_x)>500 || abs(y-avr.m_y)>500)continue;
+
+		center.m_x += x;
+		center.m_y += y;
+		center.m_r += 1;
+	}
+
+	center.m_x /= center.m_r;
+	center.m_y /= center.m_r;
+
+	pCenter->m_x = center.m_x;
+	pCenter->m_y = center.m_y;
+
 	return true;
 }
-
-bool _MarkerDetector::getObjAttitude(fVector3* pAtt)
-{
-	if (m_objLockLevel<LOCK_LEVEL_ATT)return false;
-	*pAtt = m_objAtt;
-	return true;
-}
-
-void _MarkerDetector::setObjROI(fVector3 ROI)
-{
-	m_objROIPos = ROI;
-}
-
-
-/*
-	// Setup SimpleBlobDetector parameters.
-	SimpleBlobDetector::Params params;
-
-	// Change thresholds
-	params.minThreshold = 0;
-	params.maxThreshold = 100;
-
-	// Filter by Area.
-	params.filterByArea = false;
-//	params.minArea = 10;
-//	params.maxArea = 10;
-
-	// Filter by Circularity
-	params.filterByCircularity = true;
-	params.minCircularity = 0.8;
-
-	// Filter by Convexity
-	params.filterByConvexity = true;
-	params.minConvexity = 0.9;
-
-	// Filter by Inertia
-	params.filterByInertia = true;
-	params.minInertiaRatio = 0.2;
-
-
-	// Set up detector with params
-	m_pBlobDetector = SimpleBlobDetector::create(params);
-
-	// SimpleBlobDetector::create creates a smart pointer.
-	// So you need to use arrow ( ->) instead of dot ( . )
-	// detector->detect( im, keypoints);
-*/
-/*	m_Balloonyness.download(m_threshMat);
-	/// Reduce the noise so we avoid false circle detection
-	GaussianBlur(m_threshMat, m_testMat, Size(9, 9), 2, 2);
-	/// Apply the Hough Transform to find the circles
-	HoughCircles(m_testMat, circles, CV_HOUGH_GRADIENT, 1, 100, 200, 100, 0, 0);
-
-	/// Draw the circles detected
-	m_numAllMarker = 0;
-	for (size_t i = 0; i < circles.size(); i++)
-	{
-		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		int radius = cvRound(circles[i][2]);
-		// circle outline
-		circle(m_Mat.m_uFrame, center, radius, Scalar(0, 255, 0), 3);
-
-		m_pAllMarker[m_numAllMarker].m_x = center.x;
-		m_pAllMarker[m_numAllMarker].m_y = center.y;
-		m_pAllMarker[m_numAllMarker].m_z = radius;
-		m_pAllMarker[m_numAllMarker].m_w = abs(center.x - m_objROIPos.m_x) + abs(center.y - m_objROIPos.m_y);
-		m_numAllMarker++;
-
-		if (m_numAllMarker == NUM_MARKER)
-		{
-			break;
-		}
-	}
-*/
 
 
 } /* namespace kai */

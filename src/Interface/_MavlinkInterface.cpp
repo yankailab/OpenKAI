@@ -16,9 +16,8 @@ _MavlinkInterface::_MavlinkInterface()
 	// whether the autopilot is in offboard control mode
 	m_bControlling = false;
 
-	m_systemID = 0;
+	m_systemID = 1;
 	m_componentID = 0;
-//	companion_id = 0;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 
 	current_messages.sysid = m_systemID;
@@ -51,8 +50,7 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	this->setTargetFPS(100);
 
 	m_systemID = 1;
-	m_componentID = 0;
-//	companion_id = 0;
+	m_componentID = MAV_COMP_ID_PATHPLANNER;
 
 	current_messages.sysid = m_systemID;
 	current_messages.compid = m_componentID;
@@ -66,11 +64,10 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 
 void _MavlinkInterface::close()
 {
-//	disable_offboard_control();
-
 	if (m_pSerialPort)
 	{
 		delete m_pSerialPort;
+		m_pSerialPort = NULL;
 		m_bSerialOpen = false;
 	}
 	printf("Serial port closed.\n");
@@ -78,7 +75,6 @@ void _MavlinkInterface::close()
 
 void _MavlinkInterface::handleMessages()
 {
-	Time_Stamps this_timestamps;
 	mavlink_message_t message;
 	int nMsgHandled;
 
@@ -91,125 +87,134 @@ void _MavlinkInterface::handleMessages()
 		current_messages.sysid = message.sysid;
 		current_messages.compid = message.compid;
 
-		m_systemID = current_messages.sysid;
-		m_componentID = current_messages.compid;
-
 		// Handle Message ID
 		switch (message.msgid)
 		{
 
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
-//			printf("MAVLINK_MSG_ID_HEARTBEAT\n");
-			mavlink_msg_heartbeat_decode(&message,
-					&(current_messages.heartbeat));
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_HEARTBEAT\n");
+#endif
+			mavlink_msg_heartbeat_decode(&message,&(current_messages.heartbeat));
 			current_messages.time_stamps.heartbeat = get_time_usec();
-			this_timestamps.heartbeat = current_messages.time_stamps.heartbeat;
+
+			if(current_messages.heartbeat.type != MAV_TYPE_GCS)
+			{
+				m_systemID = current_messages.sysid;
+//				m_componentID = current_messages.compid;
+#ifdef MAVLINK_DEBUG
+				printf("  SYSTEM_ID: %d\n  COMPONENT_ID: %d\n",m_systemID,m_componentID);
+#endif
+			}
 			break;
 		}
 
 		case MAVLINK_MSG_ID_SYS_STATUS:
 		{
-//			printf("MAVLINK_MSG_ID_SYS_STATUS\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_SYS_STATUS\n");
+#endif
 			mavlink_msg_sys_status_decode(&message,
 					&(current_messages.sys_status));
 			current_messages.time_stamps.sys_status = get_time_usec();
-			this_timestamps.sys_status =
-					current_messages.time_stamps.sys_status;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_BATTERY_STATUS:
 		{
-//			printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
+#endif
 			mavlink_msg_battery_status_decode(&message,
 					&(current_messages.battery_status));
 			current_messages.time_stamps.battery_status = get_time_usec();
-			this_timestamps.battery_status =
-					current_messages.time_stamps.battery_status;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_RADIO_STATUS:
 		{
-//			printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
+#endif
 			mavlink_msg_radio_status_decode(&message,
 					&(current_messages.radio_status));
 			current_messages.time_stamps.radio_status = get_time_usec();
-			this_timestamps.radio_status =
-					current_messages.time_stamps.radio_status;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
-//			printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
+#endif
 			mavlink_msg_local_position_ned_decode(&message,
 					&(current_messages.local_position_ned));
 			current_messages.time_stamps.local_position_ned = get_time_usec();
-			this_timestamps.local_position_ned =
-					current_messages.time_stamps.local_position_ned;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
-//			printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
+#endif
 			mavlink_msg_global_position_int_decode(&message,
 					&(current_messages.global_position_int));
 			current_messages.time_stamps.global_position_int = get_time_usec();
-			this_timestamps.global_position_int =
-					current_messages.time_stamps.global_position_int;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
-//			printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
+#endif
 			mavlink_msg_position_target_local_ned_decode(&message,
 					&(current_messages.position_target_local_ned));
 			current_messages.time_stamps.position_target_local_ned =
 					get_time_usec();
-			this_timestamps.position_target_local_ned =
-					current_messages.time_stamps.position_target_local_ned;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
-//			printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
+#endif
 			mavlink_msg_position_target_global_int_decode(&message,
 					&(current_messages.position_target_global_int));
 			current_messages.time_stamps.position_target_global_int =
 					get_time_usec();
-			this_timestamps.position_target_global_int =
-					current_messages.time_stamps.position_target_global_int;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_HIGHRES_IMU:
 		{
-//			printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
+#endif
 			mavlink_msg_highres_imu_decode(&message,
 					&(current_messages.highres_imu));
 			current_messages.time_stamps.highres_imu = get_time_usec();
-			this_timestamps.highres_imu =
-					current_messages.time_stamps.highres_imu;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_ATTITUDE:
 		{
-//			printf("MAVLINK_MSG_ID_ATTITUDE\n");
+#ifdef MAVLINK_DEBUG
+			printf("MAVLINK_MSG_ID_ATTITUDE\n");
+#endif
 			mavlink_msg_attitude_decode(&message, &(current_messages.attitude));
 			current_messages.time_stamps.attitude = get_time_usec();
-			this_timestamps.attitude = current_messages.time_stamps.attitude;
 			break;
 		}
 
 		default:
 		{
-//			printf("Warning, did not handle message id %i\n", message.msgid);
+#ifdef MAVLINK_DEBUG
+			printf("Warning, did not handle message id %i\n", message.msgid);
+#endif
 			break;
 		}
 
@@ -324,7 +329,7 @@ void _MavlinkInterface::update(void)
 		}
 
 		//Connected to Vehicle, request update
-		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 10);
+		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
 
 
 		//Regular update loop
@@ -358,8 +363,6 @@ void _MavlinkInterface::sendHeartbeat(uint64_t interval_usec)
 
 }
 
-
-
 void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 {
 	mavlink_message_t message;
@@ -375,6 +378,29 @@ void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 
 	return;
 }
+
+void _MavlinkInterface::landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y)
+{
+	mavlink_message_t message;
+	mavlink_landing_target_t ds;
+
+	ds.time_usec = get_time_usec();
+	ds.target_num = 0;
+	ds.frame = MAV_FRAME_BODY_NED;
+	ds.angle_x = angle_x;
+	ds.angle_y = angle_y;
+	ds.distance = distance;
+	ds.size_x = size_x;
+	ds.size_y = size_y;
+	mavlink_msg_landing_target_encode(m_systemID, m_componentID, &message, &ds);
+
+	writeMessage(message);
+
+	return;
+}
+
+
+
 
 int _MavlinkInterface::toggleOffboardControl(bool bEnable)
 {
@@ -396,10 +422,6 @@ int _MavlinkInterface::toggleOffboardControl(bool bEnable)
 	return writeMessage(message);
 
 }
-
-
-
-
 
 
 /*

@@ -67,6 +67,7 @@ public:
 	void resetAllControl(void);
 
 	void camROILock(void);
+	void camMarkerLock(void);
 
 	void remoteMavlinkMsg(MESSAGE* pMsg);
 

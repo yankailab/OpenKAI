@@ -8,6 +8,10 @@
 #include <time.h>
 #include <sys/time.h>
 
+
+#define MAVLINK_DEBUG
+
+
 // ------------------------------------------------------------------------------
 //   Defines
 // ------------------------------------------------------------------------------
@@ -144,8 +148,10 @@ public:
 	void sendHeartbeat(uint64_t interval_usec);
 
 	//Commands
-	int  toggleOffboardControl(bool bEnable);
+	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
 
+
+	int  toggleOffboardControl(bool bEnable);
 
 	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
 	void write_setpoint();
@@ -170,7 +176,6 @@ public:
 	int m_systemID;
 	int m_componentID;
 	int m_type;
-//	int companion_id;
 
 	bool m_bControlling;
 
@@ -194,14 +199,12 @@ public:
 
 
 /*
-[10:28:01] Randy Mackay: I believe this is the one
-[10:28:30] Randy Mackay: The board itself is 1m.  The outter edge of the red circle is 93cm diameter
-[10:28:52] Randy Mackay: each red ring is 7cm wide
-[10:29:05] Randy Mackay: the central red circle is 9cm diameter
-[10:29:34] Randy Mackay: anyway, I can bring one down to EnRoute some time, or we can mail one
-[10:30:08] Randy Mackay: or we can get new targets made.  My guess is we don't want to use a bullseye forever..
+I believe this is the one
+The board itself is 1m.  The outter edge of the red circle is 93cm diameter
+each red ring is 7cm wide
+the central red circle is 9cm diameter
 
-ok, for the MAVLink command sequence..
+MAVLink command sequence..
 1. OpenKai should send a heartbeat at 1hz.  http://mavlink.org/messages/common#HEARTBEAT
 Inside the HEARTBEAT message (and any other message), openkai needs to specify it's sys-id and component-id.
 ideally the sys-id should match the vehicle's sysid.
@@ -209,38 +212,36 @@ By default the vehicle's sys-id is "1" so you could just hardcode that for now.
 Eventually openKai should instead listen for heartbeat messages on it's serial port and should look for the first heartbeat messages with a
 type != MAV_TYPE_GCS ("6") and grab that system id and use it.
 
-[10:36:55] Randy Mackay: the component id can be anything except 0.
+the component id can be anything except 0.
 there's a list of suggested component-ids on this page (search for MAV_COMPONENT) http://mavlink.org/messages/common.  but it doesn't really matter.  Maybe we could use MAV_COMP_ID_PATHPLANNER ("195")
 
-[10:38:20] Randy Mackay: The Heartbeat's "type" should be MAV_TYPE_ONBOARD_CONTROLLER (18)
-[10:39:06] Randy Mackay: "base_mode" can be anything.
+The Heartbeat's "type" should be MAV_TYPE_ONBOARD_CONTROLLER (18)
+"base_mode" can be anything.
 maybe we will eventually assign values for when OpenKai is providing precision-landing updates vs follow-me updates.. but for now just make it "0" I think
-[10:39:22] Randy Mackay: "autopilot" should be "0"
-[10:39:27] Randy Mackay: "custom_mode" can be "0"
-[10:40:15] Randy Mackay: "system_status" should be MAV_STATE_ACTIVE ("4")
+"autopilot" should be "0"
+"custom_mode" can be "0"
+"system_status" should be MAV_STATE_ACTIVE ("4")
 
-[10:41:25] Randy Mackay: Next, when openkai sees the target is should send LANDING_TARGET messages maybe as quickly as it can.
+Next, when openkai sees the target is should send LANDING_TARGET messages maybe as quickly as it can.
 10hz would be nice.  over 50hz is too fast.
-[10:41:27] Randy Mackay: http://mavlink.org/messages/common#LANDING_TARGET
-[10:41:51] Randy Mackay: "time_usec" is just the TX1's system time in sec * 1,000,000.  We don't use this anyway
-[10:42:07] Randy Mackay: "target_num" = "0" (for now anyway)
-[10:44:06] Randy Mackay: "frame" = MAV_FRAME_BODY_NED ("8")
-[10:50:49] Randy Mackay: "angle_x" : the horizontal angle to the target in radians.
-0 = the target is right in the middle of the screen.
-negative means the target is to the left of center,
-positive means it's to the right of center.
-OpenKai will need to know the field-of-view of the camera.
-So for example, I measured the field of view of the Logitech 920c and horizontall it's 70.42degrees).
-So if the center of the target was on the left most edge of the image we would send "angle_x" as -0.61 radians (= -35degrees)
-
-[11:00:19] Randy Mackay: "angle_y" : the vertical angle to the target in radians.
-0 = middle.  to be honest, I'm not exactly sure if negative is up or down.
-
-[11:02:34] Randy Mackay: "distance" - we don't use this now.
-It can be estimated even using non-stereo cameras if you know the actual size of the object.
-As you probably know, the apparent diameter of the object halves if it's distance is doubled.
-Anyway, we don't use it anyway for now
-[11:03:18] Randy Mackay: "size_x", "size_y" - the horizontal and vertical size of the object in radians.  Also not used.
+http://mavlink.org/messages/common#LANDING_TARGET
+	"time_usec" is just the TX1's system time in sec * 1,000,000.  We don't use this anyway
+	"target_num" = "0" (for now anyway)
+	"frame" = MAV_FRAME_BODY_NED ("8")
+	"angle_x" : the horizontal angle to the target in radians.
+		0 = the target is right in the middle of the screen.
+		negative means the target is to the left of center,
+		positive means it's to the right of center.
+		OpenKai will need to know the field-of-view of the camera.
+		So for example, I measured the field of view of the Logitech 920c and horizontall it's 70.42degrees).
+		So if the center of the target was on the left most edge of the image we would send "angle_x" as -0.61 radians (= -35degrees)
+	"angle_y" : the vertical angle to the target in radians.
+		0 = middle.  to be honest, I'm not exactly sure if negative is up or down.
+	"distance" - we don't use this now.
+		It can be estimated even using non-stereo cameras if you know the actual size of the object.
+		As you probably know, the apparent diameter of the object halves if it's distance is doubled.
+		Anyway, we don't use it anyway for now
+	"size_x", "size_y" - the horizontal and vertical size of the object in radians.  Also not used.
  */
 
 
