@@ -52,6 +52,8 @@ bool Navigator::start(JSON* pJson)
 	m_pMD = new _MarkerDetector();
 	m_pMD->init(pJson,"FRONTL");
 	m_pMD->m_pCamStream = m_pCamFront;
+	m_pCamFront->m_bGray = true;
+	m_pCamFront->m_bHSV = true;
 
 	//Init Mavlink
 	m_pMavlink = new _MavlinkInterface();
@@ -106,7 +108,7 @@ bool Navigator::start(JSON* pJson)
 		showScreen();
 
 		//Handle key input
-		m_key = waitKey(30);
+		m_key = waitKey(50);
 		handleKey(m_key);
 	}
 
@@ -146,9 +148,25 @@ void Navigator::showScreen(void)
 	int i;
 	Mat imMat,imMat2,imMat3;
 	CamFrame* pFrame = m_pCamFront->getFrame();
+	MARKER_CIRCLE* pCircle;
+	fVector2 markerCenter;
 
 	if (pFrame->empty())return;
 	imMat = *pFrame->getCMat();
+
+	for(i=0; i<m_pMD->m_numCircle; i++)
+	{
+		pCircle = &m_pMD->m_pCircle[i];
+
+		circle(imMat, Point(pCircle->m_x,pCircle->m_y), pCircle->m_r, Scalar(0, 255, 0), 1);
+	}
+
+	markerCenter.m_x = 0;
+	markerCenter.m_y = 0;
+
+	m_pMD->getCircleCenter(&markerCenter);
+
+	circle(imMat, Point(markerCenter.m_x,markerCenter.m_y), 10, Scalar(0, 0, 255), 5);
 
 //	if(m_p3DFlow->m_pDepth->empty())return;
 //
@@ -168,6 +186,7 @@ void Navigator::showScreen(void)
 //	if(m_pDD->m_pDepth->empty())return;
 
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "FlowDepth FPS: "+f2str(m_p3DFlow->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);

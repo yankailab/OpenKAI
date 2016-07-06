@@ -51,6 +51,7 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
+	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 
 	current_messages.sysid = m_systemID;
 	current_messages.compid = m_componentID;

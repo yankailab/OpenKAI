@@ -25,9 +25,9 @@ namespace kai
 
 struct MARKER_CIRCLE
 {
-	double	m_x;
-	double	m_y;
-	double	m_r;
+	double m_x;
+	double m_y;
+	double m_r;
 };
 
 class _MarkerDetector : public DetectorBase, public _ThreadBase
@@ -40,7 +40,6 @@ public:
 	bool start(void);
 
 	bool getCircleCenter(fVector2* pCenter);
-
 
 private:
 	void detectCircle(void);

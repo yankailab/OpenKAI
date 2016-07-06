@@ -146,45 +146,22 @@ bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 	if(m_numCircle==0)return false;
 
 	int i;
-	MARKER_CIRCLE avr;
-	MARKER_CIRCLE center;
-	double x,y;
+	MARKER_CIRCLE* pMarker = &m_pCircle[0];
+	MARKER_CIRCLE* pCompare;
+	int camCenter = (1980+1080)/2;
 
-	//Find the average point
-	avr.m_x = 0;
-	avr.m_y = 0;
-
-	for(i=0; i<num; i++)
+	//Find the closest point
+	for(i=1; i<num; i++)
 	{
-		avr.m_x += m_pCircle[i].m_x;
-		avr.m_y += m_pCircle[i].m_y;
+		pCompare = &m_pCircle[i];
+		if(abs(pCompare->m_x + pCompare->m_y - camCenter) < abs(pMarker->m_x + pMarker->m_y - camCenter))
+		{
+			pMarker = pCompare;
+		}
 	}
 
-	avr.m_x /= num;
-	avr.m_x /= num;
-
-	//Eliminate the farest ones
-	center.m_x = 0;
-	center.m_y = 0;
-	center.m_r = 0;
-
-	for(i=0; i<num; i++)
-	{
-		x = m_pCircle[i].m_x;
-		y = m_pCircle[i].m_y;
-
-		if(abs(x-avr.m_x)>500 || abs(y-avr.m_y)>500)continue;
-
-		center.m_x += x;
-		center.m_y += y;
-		center.m_r += 1;
-	}
-
-	center.m_x /= center.m_r;
-	center.m_y /= center.m_r;
-
-	pCenter->m_x = center.m_x;
-	pCenter->m_y = center.m_y;
+	pCenter->m_x = pMarker->m_x;
+	pCenter->m_y = pMarker->m_y;
 
 	return true;
 }
