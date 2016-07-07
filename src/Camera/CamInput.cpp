@@ -120,8 +120,7 @@ GpuMat* CamInput::readFrame(void)
 	GpuMat* pDest;
 	GpuMat* pTmp;
 
-	while (!m_camera.read(m_frame))
-		;
+	while (!m_camera.read(m_frame));
 
 	m_Gframe.upload(m_frame);
 

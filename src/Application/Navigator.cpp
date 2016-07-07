@@ -95,7 +95,7 @@ bool Navigator::start(JSON* pJson)
 	//UI thread
 	m_bRun = true;
 	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
 	setMouseCallback(APP_NAME, onMouseNavigator, NULL);
 
 	while (m_bRun)

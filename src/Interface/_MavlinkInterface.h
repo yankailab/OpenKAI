@@ -123,7 +123,7 @@ struct Mavlink_Messages
 
 };
 
-#define NUM_MSG_HANDLE 100
+#define NUM_MSG_HANDLE 5
 
 namespace kai
 {
@@ -149,10 +149,12 @@ public:
 
 	//Commands
 	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
+	void command_long_doSetMode(int mode);
+
+
 
 
 	int  toggleOffboardControl(bool bEnable);
-
 	void update_setpoint(mavlink_set_position_target_local_ned_t setpoint);
 	void write_setpoint();
 
@@ -177,7 +179,10 @@ public:
 	int m_componentID;
 	int m_type;
 
+	int m_targetComponentID;
+
 	bool m_bControlling;
+	uint64_t m_lastHeartbeat;
 
 	Mavlink_Messages current_messages;
 	mavlink_set_position_target_local_ned_t initial_position;
@@ -192,6 +197,7 @@ public:
 		((_MavlinkInterface *) This)->update();
 		return NULL;
 	}
+
 
 };
 

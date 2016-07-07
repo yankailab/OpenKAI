@@ -13,15 +13,7 @@ _MavlinkInterface::_MavlinkInterface()
 	m_pSerialPort = NULL;
 	m_baudRate = 115200;
 
-	// whether the autopilot is in offboard control mode
 	m_bControlling = false;
-
-	m_systemID = 1;
-	m_componentID = 0;
-	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
-
-	current_messages.sysid = m_systemID;
-	current_messages.compid = m_componentID;
 
 	current_messages.attitude.pitch = 0;
 	current_messages.attitude.roll = 0;
@@ -47,14 +39,17 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
-	this->setTargetFPS(100);
+	this->setTargetFPS(500);
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
+	m_lastHeartbeat = 0;
+	m_targetComponentID = 0;
 
-	current_messages.sysid = m_systemID;
-	current_messages.compid = m_componentID;
+	current_messages.sysid = 0;
+	current_messages.compid = 0;
+
 	last_status.packet_rx_drop_count = 0;
 
 	//Start Serial Port
@@ -103,9 +98,15 @@ void _MavlinkInterface::handleMessages()
 			if(current_messages.heartbeat.type != MAV_TYPE_GCS)
 			{
 				m_systemID = current_messages.sysid;
-//				m_componentID = current_messages.compid;
+				m_targetComponentID = current_messages.compid;
 #ifdef MAVLINK_DEBUG
-				printf("  SYSTEM_ID: %d\n  COMPONENT_ID: %d\n",m_systemID,m_componentID);
+				printf("      SYSTEM_ID: %d;  COMPONENT_ID: %d;  TARGET_COMPONENT_ID: %d;\n",m_systemID,m_componentID,m_targetComponentID);
+#endif
+			}
+			else
+			{
+#ifdef MAVLINK_DEBUG
+				printf("      RECEIVED HEARTBEAT FROM MAV_TYPE_GCS\n");
 #endif
 			}
 			break;
@@ -319,7 +320,7 @@ void _MavlinkInterface::update(void)
 
 			if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
 			{
-				LOG(INFO)<< "Serial port: "+m_sportName+" could not be congured";
+				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
 				m_pSerialPort->Close();
 				this->sleepThread(1, 0);
 				continue;
@@ -329,15 +330,16 @@ void _MavlinkInterface::update(void)
 			m_bSerialOpen = true;
 		}
 
-		//Connected to Vehicle, request update
-		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
-
 
 		//Regular update loop
 		this->autoFPSfrom();
 
 		//Sending Heartbeat at 1Hz
 		sendHeartbeat(USEC_1SEC);
+
+		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
+
+//		command_long_doSetMode(MAV_MODE_GUIDED_DISARMED);
 
 		//Handling incoming messages
 		handleMessages();
@@ -349,17 +351,20 @@ void _MavlinkInterface::update(void)
 
 void _MavlinkInterface::sendHeartbeat(uint64_t interval_usec)
 {
-	static uint64_t lastSentTime = 0;
 	uint64_t timeNow = get_time_usec();
 
-	if(timeNow - lastSentTime >= interval_usec)
+	if(timeNow - m_lastHeartbeat >= interval_usec)
 	{
-		lastSentTime = timeNow;
+		m_lastHeartbeat = timeNow;
 
 		mavlink_message_t message;
 		mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
 
 		writeMessage(message);
+
+#ifdef MAVLINK_DEBUG
+		printf("   SENT HEARTBEAT\n");
+#endif
 	}
 
 }
@@ -369,13 +374,17 @@ void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
 	ds.target_system = m_systemID;
-	ds.target_component = m_componentID;
+	ds.target_component = m_targetComponentID;
 	ds.req_stream_id = stream_id;
 	ds.req_message_rate = rate;
 	ds.start_stop = 1;
 	mavlink_msg_request_data_stream_encode(m_systemID, m_componentID, &message, &ds);
 
 	writeMessage(message);
+
+#ifdef MAVLINK_DEBUG
+	printf("   SENT REQUEST_DATA_STREAM\n");
+#endif
 
 	return;
 }
@@ -397,138 +406,161 @@ void _MavlinkInterface::landing_target(uint8_t stream_id, uint8_t frame, float a
 
 	writeMessage(message);
 
+#ifdef MAVLINK_DEBUG
+	printf("   SENT LANDING_TARGET\n");
+#endif
+
+	return;
+}
+
+void _MavlinkInterface::command_long_doSetMode(int mode)
+{
+	mavlink_message_t message;
+	mavlink_command_long_t ds;
+
+	ds.target_system = m_systemID;
+	ds.target_component = m_targetComponentID;
+	ds.command = MAV_CMD_DO_SET_MODE;
+	ds.param1 = mode;
+	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &ds);
+
+	writeMessage(message);
+
+#ifdef MAVLINK_DEBUG
+	printf("   SENT COMMAND_LONG: DO_SET_MODE\n");
+#endif
+
 	return;
 }
 
 
 
-
-int _MavlinkInterface::toggleOffboardControl(bool bEnable)
-{
-	if(m_bControlling == bEnable)return -1;
-
-	// Prepare command for off-board mode
-	mavlink_command_long_t com;
-	com.target_system = m_systemID;
-	com.target_component = m_componentID;
-	com.command = MAV_CMD_NAV_GUIDED_ENABLE;
-	com.confirmation = true;
-	com.param1 = (float) bEnable; // flag >0.5 => start, <0.5 => stop
-
-	// Encode
-	mavlink_message_t message;
-	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &com);
-
-	// Send the message
-	return writeMessage(message);
-
-}
-
-
-/*
- * Set target local ned position
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target XYZ locations
- * in the Local NED frame, in meters.
- */
-void _MavlinkInterface::set_position(float x, float y, float z,
-		mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask =
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_POSITION;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.x = x;
-	sp.y = y;
-	sp.z = z;
-
-	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y, sp.z);
-
-
-}
-
-/*
- * Set target local ned velocity
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target VX VY VZ
- * velocities in the Local NED frame, in meters per second.
- */
-void _MavlinkInterface::set_velocity(float vx, float vy, float vz,
-		mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask =
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.vx = vx;
-	sp.vy = vy;
-	sp.vz = vz;
-
-	//printf("VELOCITY SETPOINT UVW = [ %.4f , %.4f , %.4f ] \n", sp.vx, sp.vy, sp.vz);
-
-}
-
-/*
- * Set target local ned acceleration
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with target AX AY AZ
- * accelerations in the Local NED frame, in meters per second squared.
- */
-void _MavlinkInterface::set_acceleration(float ax, float ay, float az,
-		mavlink_set_position_target_local_ned_t &sp)
-{
-
-	// NOT IMPLEMENTED
-	fprintf(stderr, "set_acceleration doesn't work yet \n");
-	throw 1;
-
-	sp.type_mask =
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_ACCELERATION &
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
-
-	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-
-	sp.afx = ax;
-	sp.afy = ay;
-	sp.afz = az;
-}
-
-// the next two need to be called after one of the above
-
-/*
- * Set target local ned yaw
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw
- * in the Local NED frame, in radians.
- */
-void _MavlinkInterface::set_yaw(float yaw,
-		mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask &=
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_ANGLE;
-
-	sp.yaw = yaw;
-
-	printf("POSITION SETPOINT YAW = %.4f \n", sp.yaw);
-
-}
-
-/*
- * Set target local ned yaw rate
- *
- * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw rate
- * in the Local NED frame, in radians per second.
- */
-void _MavlinkInterface::set_yaw_rate(float yaw_rate,
-		mavlink_set_position_target_local_ned_t &sp)
-{
-	sp.type_mask &=
-	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE;
-
-	sp.yaw_rate = yaw_rate;
-}
+//int _MavlinkInterface::toggleOffboardControl(bool bEnable)
+//{
+//	if(m_bControlling == bEnable)return -1;
+//
+//	// Prepare command for off-board mode
+//	mavlink_command_long_t com;
+//	com.target_system = m_systemID;
+//	com.target_component = m_componentID;
+//	com.command = MAV_CMD_NAV_GUIDED_ENABLE;
+//	com.confirmation = true;
+//	com.param1 = (float) bEnable; // flag >0.5 => start, <0.5 => stop
+//
+//	// Encode
+//	mavlink_message_t message;
+//	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &com);
+//
+//	// Send the message
+//	return writeMessage(message);
+//
+//}
+//
+//
+///*
+// * Set target local ned position
+// *
+// * Modifies a mavlink_set_position_target_local_ned_t struct with target XYZ locations
+// * in the Local NED frame, in meters.
+// */
+//void _MavlinkInterface::set_position(float x, float y, float z,
+//		mavlink_set_position_target_local_ned_t &sp)
+//{
+//	sp.type_mask =
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_POSITION;
+//
+//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
+//
+//	sp.x = x;
+//	sp.y = y;
+//	sp.z = z;
+//
+//	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y, sp.z);
+//
+//
+//}
+//
+///*
+// * Set target local ned velocity
+// *
+// * Modifies a mavlink_set_position_target_local_ned_t struct with target VX VY VZ
+// * velocities in the Local NED frame, in meters per second.
+// */
+//void _MavlinkInterface::set_velocity(float vx, float vy, float vz,
+//		mavlink_set_position_target_local_ned_t &sp)
+//{
+//	sp.type_mask =
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
+//
+//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
+//
+//	sp.vx = vx;
+//	sp.vy = vy;
+//	sp.vz = vz;
+//
+//	//printf("VELOCITY SETPOINT UVW = [ %.4f , %.4f , %.4f ] \n", sp.vx, sp.vy, sp.vz);
+//
+//}
+//
+///*
+// * Set target local ned acceleration
+// *
+// * Modifies a mavlink_set_position_target_local_ned_t struct with target AX AY AZ
+// * accelerations in the Local NED frame, in meters per second squared.
+// */
+//void _MavlinkInterface::set_acceleration(float ax, float ay, float az,
+//		mavlink_set_position_target_local_ned_t &sp)
+//{
+//
+//	// NOT IMPLEMENTED
+//	fprintf(stderr, "set_acceleration doesn't work yet \n");
+//	throw 1;
+//
+//	sp.type_mask =
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_ACCELERATION &
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
+//
+//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
+//
+//	sp.afx = ax;
+//	sp.afy = ay;
+//	sp.afz = az;
+//}
+//
+//// the next two need to be called after one of the above
+//
+///*
+// * Set target local ned yaw
+// *
+// * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw
+// * in the Local NED frame, in radians.
+// */
+//void _MavlinkInterface::set_yaw(float yaw,
+//		mavlink_set_position_target_local_ned_t &sp)
+//{
+//	sp.type_mask &=
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_ANGLE;
+//
+//	sp.yaw = yaw;
+//
+//	printf("POSITION SETPOINT YAW = %.4f \n", sp.yaw);
+//
+//}
+//
+///*
+// * Set target local ned yaw rate
+// *
+// * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw rate
+// * in the Local NED frame, in radians per second.
+// */
+//void _MavlinkInterface::set_yaw_rate(float yaw_rate,
+//		mavlink_set_position_target_local_ned_t &sp)
+//{
+//	sp.type_mask &=
+//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE;
+//
+//	sp.yaw_rate = yaw_rate;
+//}
 
 
 }

@@ -105,10 +105,8 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_yaw.m_RC = RC;
 
 	//For visual position locking
-	CHECK_ERROR(
-			pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
-	CHECK_ERROR(
-			pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
+	CHECK_ERROR(pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
+	CHECK_ERROR(pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
 
 	resetAllControl();
 
@@ -141,6 +139,8 @@ void _AutoPilot::update(void)
 		this->autoFPSfrom();
 
 		camROILock();
+
+		camMarkerLock();
 
 		if (m_pVI)
 		{
@@ -262,8 +262,8 @@ void _AutoPilot::camMarkerLock(void)
 
 	//Change position to radians
 	//TODO:Add lens factors
-
-
+	angle_x = 0.5;
+	angle_y = 0.8;
 
 	//Send Mavlink command
 	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, angle_x, angle_y, 0,0,0);
