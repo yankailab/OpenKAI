@@ -260,10 +260,10 @@ void _AutoPilot::camMarkerLock(void)
 		return;
 	}
 
-	//Change position to radians
+	//TODO:Change position to radians
 	//TODO:Add lens factors
-	angle_x = 0.5;
-	angle_y = 0.8;
+	angle_x = posCenter.m_x;
+	angle_y = posCenter.m_y;
 
 	//Send Mavlink command
 	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, angle_x, angle_y, 0,0,0);
