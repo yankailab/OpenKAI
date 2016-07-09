@@ -15,8 +15,6 @@ _MarkerDetector::_MarkerDetector()
 	_ThreadBase();
 	DetectorBase();
 
-	m_bThreadON = false;
-	m_threadID = 0;
 	m_cudaDeviceID = 0;
 
 	m_numCircle = 0;

@@ -13,7 +13,11 @@
 #include "../Base/cvplatform.h"
 #include "../Camera/CamFrame.h"
 
-namespace kai {
+#define CAM_GENERAL 0
+#define CAM_ZED 1
+
+namespace kai
+{
 
 class CamInput {
 public:
@@ -29,13 +33,23 @@ public:
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
 public:
+
+#ifdef USE_ZED
+	sl::zed::Camera* m_pZed;
+	sl::zed::SENSING_MODE m_zedMode;
+	Mat m_depthMat;
+#endif
+
+	int m_camType;
 	int m_camDeviceID;
 	VideoCapture m_camera;
 
-	int m_width;
-	int m_height;
-	int m_centerH;
-	int m_centerV;
+	double m_width;
+	double m_height;
+	double m_centerH;
+	double m_centerV;
+	double m_angleH;
+	double m_angleV;
 
 	Mat m_frame;
 	Mat m_cameraMat;

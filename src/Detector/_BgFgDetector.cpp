@@ -9,8 +9,6 @@ _BgFgDetector::_BgFgDetector()
 	_ThreadBase();
 	DetectorBase();
 
-	m_bThreadON = false;
-	m_threadID = 0;
 	m_cudaDeviceID = 0;
 
 	m_objPos.m_z = 0;

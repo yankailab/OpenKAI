@@ -12,6 +12,7 @@ namespace kai
 
 CamInput::CamInput()
 {
+	m_camType = CAM_GENERAL;
 	m_width = 0;
 	m_height = 0;
 	m_centerH = 0;
@@ -23,6 +24,8 @@ CamInput::CamInput()
 	m_isoScale = 1.0;
 	m_rotTime = 0;
 	m_rotPrev = 0;
+	m_angleH = 0;
+	m_angleV = 0;
 }
 
 CamInput::~CamInput()
@@ -31,19 +34,26 @@ CamInput::~CamInput()
 
 bool CamInput::setup(JSON* pJson, string camName)
 {
+	string presetDir = "";
 	string calibFile;
+
+	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
 
 	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ID", &m_camDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_WIDTH", &m_width));
 	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_HEIGHT", &m_height));
+	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ANGLE_V", &m_angleV));
+	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ANGLE_H", &m_angleH));
+
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ISOSCALE", &m_isoScale));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_CALIB", &m_bCalibration));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_TYPE", &m_camType));
 
 	if (pJson->getVal("CAM_" + camName + "_CALIBFILE", &calibFile))
 	{
-		FileStorage fs(calibFile, FileStorage::READ);
+		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())
 		{
 			LOG(ERROR)<<"Camera calibration file not found";
@@ -71,7 +81,7 @@ bool CamInput::setup(JSON* pJson, string camName)
 				initUndistortRectifyMap(
 						m_cameraMat,
 						m_distCoeffs,
-						UMat(),
+						Mat(),
 						getOptimalNewCameraMatrix(
 								m_cameraMat,
 								m_distCoeffs,
@@ -98,6 +108,42 @@ bool CamInput::setup(JSON* pJson, string camName)
 
 bool CamInput::openCamera(void)
 {
+#ifdef USE_ZED
+	if(m_camType == CAM_ZED)
+	{
+		// Initialize ZED color stream in HD and depth in Performance mode
+		m_pZed = new sl::zed::Camera(sl::zed::HD1080);
+
+		// define a struct of parameters for the initialization
+	    sl::zed::InitParams zedParams;
+	    zedParams.mode = sl::zed::MODE::PERFORMANCE;
+	    zedParams.unit = sl::zed::UNIT::MILLIMETER;
+	    zedParams.verbose = 1;
+	    zedParams.device = -1;
+
+	    sl::zed::ERRCODE err = m_pZed->init(zedParams);
+		if (err != sl::zed::SUCCESS)
+		{
+			LOG(ERROR) << "ZED Error code: " << sl::zed::errcode2str(err) << std::endl;
+			return false;
+		}
+
+		// Initialize color image and depth
+		m_width = m_pZed->getImageSize().width;
+		m_height = m_pZed->getImageSize().height;
+
+		m_centerH = m_width * 0.5;
+		m_centerV = m_height * 0.5;
+
+		m_zedMode = sl::zed::STANDARD; //FULL
+
+		m_frame = Mat(m_height, m_width, CV_8UC4,1);
+		m_depthMat = Mat(m_height, m_width, CV_8UC4,1);
+
+		return true;
+	}
+#endif
+
 	m_camera.open(m_camDeviceID);
 	if (!m_camera.isOpened())
 	{
@@ -120,8 +166,42 @@ GpuMat* CamInput::readFrame(void)
 	GpuMat* pDest;
 	GpuMat* pTmp;
 
-	while (!m_camera.read(m_frame));
 
+#ifdef USE_ZED
+	if(m_camType == CAM_ZED)
+	{
+
+		 // Grab frame and compute depth in FULL sensing mode
+		 if (!m_pZed->grab(m_zedMode))
+		 {
+			// Retrieve left color image
+			sl::zed::Mat left = m_pZed->retrieveImage(sl::zed::SIDE::LEFT);
+			memcpy(m_frame.data, left.data, m_width*m_height*4*sizeof(uchar));
+
+			// Retrieve depth map
+			sl::zed::Mat depthmap = m_pZed->normalizeMeasure(sl::zed::MEASURE::DEPTH);
+			memcpy(m_depthMat.data, depthmap.data, m_width*m_height*4*sizeof(uchar));
+
+			m_Gframe.upload(m_depthMat);
+
+			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
+
+
+//			// Display image in OpenCV window
+//			 cv::resize(image, imageDisplay, displaySize);
+//			 cv::imshow("Image", imageDisplay);
+//
+//			 // Display depth map in OpenCV window
+//			 cv::resize(depth, depthDisplay, displaySize);
+//			 cv::imshow("Depth", depthDisplay);
+
+		 }
+
+		 return &m_Gframe2;
+	}
+#endif
+
+	while (!m_camera.read(m_frame));
 	m_Gframe.upload(m_frame);
 
 	pSrc = &m_Gframe;

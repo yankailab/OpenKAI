@@ -6,6 +6,9 @@
 #define USE_CUDA
 //#define USE_OPENCL
 
+#define USE_ZED
+
+
 #ifdef PLATFORM_WIN
 #endif
 

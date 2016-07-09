@@ -12,6 +12,8 @@ namespace kai
 
 Navigator::Navigator()
 {
+	m_bShowScreen = 1;
+	m_bFullScreen = 0;
 }
 
 Navigator::~Navigator()
@@ -22,6 +24,10 @@ Navigator::~Navigator()
 bool Navigator::start(JSON* pJson)
 {
 	g_pNavigator = this;
+
+	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
+	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
+
 
 	//Init Camera
 	m_pCamFront = new _CamStream();
@@ -94,9 +100,16 @@ bool Navigator::start(JSON* pJson)
 
 	//UI thread
 	m_bRun = true;
-	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-//	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	setMouseCallback(APP_NAME, onMouseNavigator, NULL);
+
+	if(m_bShowScreen)
+	{
+		namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+		if(m_bFullScreen)
+		{
+			setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+		}
+		setMouseCallback(APP_NAME, onMouseNavigator, NULL);
+	}
 
 	while (m_bRun)
 	{
@@ -105,7 +118,10 @@ bool Navigator::start(JSON* pJson)
 //		m_pCamFront->m_pCamL->m_bGimbal = true;
 //		m_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
-		showScreen();
+		if(m_bShowScreen)
+		{
+			showScreen();
+		}
 
 		//Handle key input
 		m_key = waitKey(50);

@@ -18,9 +18,6 @@ _AutoPilot::_AutoPilot()
 	m_pROITracker = NULL;
 	m_pMarkerDetector = NULL;
 
-	m_bThreadON = false;
-	m_threadID = 0;
-
 }
 
 _AutoPilot::~_AutoPilot()
@@ -111,6 +108,9 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	resetAllControl();
 
 	this->setTargetFPS(30.0);
+
+	m_landingTarget.m_angleX = 0;
+	m_landingTarget.m_angleY = 0;
 
 	return true;
 }
@@ -247,26 +247,26 @@ void _AutoPilot::camROILock(void)
 
 void _AutoPilot::camMarkerLock(void)
 {
-	fVector2 posCenter;
-	double angle_x;
-	double angle_y;
+	CamInput* pCamInput;
+	fVector2 markerCenter;
 
 	if (m_pMavlink == NULL)return;
 	if (m_pMarkerDetector == NULL)return;
 
 	//Return if not detected
-	if(!m_pMarkerDetector->getCircleCenter(&posCenter))
+	if(!m_pMarkerDetector->getCircleCenter(&markerCenter))
 	{
 		return;
 	}
 
-	//TODO:Change position to radians
-	//TODO:Add lens factors
-	angle_x = posCenter.m_x;
-	angle_y = posCenter.m_y;
+	pCamInput = m_pMarkerDetector->m_pCamStream->getCameraInput();
+
+	//Change position to angles
+	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)/pCamInput->m_width) * pCamInput->m_angleH * DEG_RADIAN;
+	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)/pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN;
 
 	//Send Mavlink command
-	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, angle_x, angle_y, 0,0,0);
+	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0,0,0);
 
 
 }
@@ -329,156 +329,3 @@ int* _AutoPilot::getPWMOutput(void)
 }
 
 }
-
-/*
- #include "../Utility/util.h"
- #include "_AutoPilot.h"
-
- namespace kai
- {
-
-
- void _AutoPilot::flowLock(_MarkerDetector* pCMD)
- {
- //	fVector4 vFlow;
- //
- //	//To avoid accumulated error
- //	if (++m_iFlowFrame >= m_resetFlowFrame)
- //	{
- //		m_flowTotal.m_x *= m_resetFactor;
- //		m_flowTotal.m_y *= m_resetFactor;
- //		m_flowTotal.m_z *= m_resetFactor;
- //		m_flowTotal.m_w *= m_resetFactor;
- //		m_iFlowFrame = 0;
- //	}
- //
- //	pCMD->getOpticalFlowVelocity(&vFlow);
- //	m_flowTotal.m_x += vFlow.m_x * (1.0 + m_dT);
- //	m_flowTotal.m_y += vFlow.m_y * (1.0 + m_dT);
- //	m_flowTotal.m_z += vFlow.m_z * (1.0 + m_dT);
- //	m_flowTotal.m_w += vFlow.m_w * (1.0 + m_dT);
- //
- //	//Roll = X axis
- //	m_roll.m_P = m_rollNear.m_P;
- //	m_roll.m_I = m_rollNear.m_I;
- //	m_roll.m_D = m_rollNear.m_D;
- //
- //	m_roll.m_cvErrOld = m_roll.m_cvErr;
- //	m_roll.m_cvErr = m_flowTotal.m_x;
- //	m_roll.m_cvErrInteg += m_roll.m_cvErr;
- //	m_roll.m_pwm = m_roll.m_pwmCenter +
- //		m_roll.m_P * m_roll.m_cvErr
- //		+ m_roll.m_D * (m_roll.m_cvErr - m_roll.m_cvErrOld)
- //		+ confineVal(m_roll.m_I * m_roll.m_cvErrInteg, m_roll.m_Imax, -m_roll.m_Imax);
- //
- //	m_RC[m_roll.m_RCChannel] = constrain(m_roll.m_pwm, m_roll.m_pwmLow, m_roll.m_pwmHigh);
- //
- //	//Pitch = Y axis
- //	m_pitch.m_P = m_pitchNear.m_P;
- //	m_pitch.m_I = m_pitchNear.m_I;
- //	m_pitch.m_D = m_pitchNear.m_D;
- //
- //	m_pitch.m_cvErrOld = m_pitch.m_cvErr;
- //	m_pitch.m_cvErr = m_flowTotal.m_y;
- //	m_pitch.m_cvErrInteg += m_pitch.m_cvErr;
- //	m_pitch.m_pwm = m_pitch.m_pwmCenter +
- //		m_pitch.m_P * m_pitch.m_cvErr
- //		+ m_pitch.m_D * (m_pitch.m_cvErr - m_pitch.m_cvErrOld)
- //		+ confineVal(m_pitch.m_I * m_pitch.m_cvErrInteg, m_pitch.m_Imax, -m_pitch.m_Imax);
- //
- //	m_RC[m_pitch.m_RCChannel] = constrain(m_pitch.m_pwm, m_pitch.m_pwmLow, m_pitch.m_pwmHigh);
- //
-
-
-
- //
- //	//Alt = Z axis
- //	m_alt.m_P = m_altNear.m_P;
- //	m_alt.m_I = m_altNear.m_I;
- //	m_alt.m_D = m_altNear.m_D;
- //
- //	m_alt.m_cvErrOld = m_alt.m_cvErr;
- //	m_alt.m_cvErr = m_flowTotal.m_z;
- //	m_alt.m_cvErrInteg += m_alt.m_cvErr;
- //	m_alt.m_pwm = PWM_CENTER +
- //		m_alt.m_P * m_alt.m_cvErr
- //		+ m_alt.m_D * (m_alt.m_cvErr - m_alt.m_cvErrOld)
- //		+ confineVal(m_alt.m_I * m_alt.m_cvErrInteg, m_alt.m_Imax, -m_alt.m_Imax);
- //
- //	m_RC[RC_THROTTLE] = constrain(m_alt.m_pwm, PWM_LOW, PWM_HIGH);
- //
- //	//Yaw axis
- //	m_yaw.m_P = m_yawNear.m_P;
- //	m_yaw.m_I = m_yawNear.m_I;
- //	m_yaw.m_D = m_yawNear.m_D;
- //
- //	pCMD->getObjAttitude(&m_cvAtt);
- //	m_yaw.m_pos = m_cvAtt.m_z;
- //	m_yaw.m_targetPos = 1.0;
- //
- //	m_yaw.m_cvErrOld = m_yaw.m_cvErr;
- //	m_yaw.m_cvErr = m_flowTotal.m_w;
- //	m_yaw.m_cvErrInteg += m_yaw.m_cvErr;
- //	m_yaw.m_pwm = PWM_CENTER +
- //		m_yaw.m_P * m_yaw.m_cvErr
- //		+ m_yaw.m_D * (m_yaw.m_cvErr - m_yaw.m_cvErrOld)
- //		+ m_yaw.m_I * m_yaw.m_cvErrInteg;
- //
- //	m_RC[RC_YAW] = constrain(m_yaw.m_pwm, PWM_LOW, PWM_HIGH);
- //
-
- m_RC[m_alt.m_RCChannel] = m_alt.m_pwmCenter;
- m_RC[m_yaw.m_RCChannel] = m_yaw.m_pwmCenter;
-
- //Mavlink
- m_pVI->rc_overide(NUM_RC_CHANNEL, m_RC);
-
- }
-
-
- void _AutoPilot::setVehicleInterface(_VehicleInterface* pVehicle)
- {
- if(!pVehicle)return;
-
- m_pVI = pVehicle;
- }
-
- void _AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
- {
- int i;
- unsigned int val;
-
- switch (pMsg->m_pBuf[2]) //Command
- {
- //	case CMD_RC_UPDATE:
- //		if (*m_pOprMode != OPE_RC_BRIDGE)break;
- //
- //		numChannel = m_hostCMD.m_pBuf[3];
- //		if (m_numChannel > RC_CHANNEL_NUM)
- //		{
- //			numChannel = RC_CHANNEL_NUM;
- //		}
- //
- //		for (i = 0; i<numChannel; i++)
- //		{
- //			val = (int)makeWord(m_hostCMD.m_pBuf[4 + i * 2 + 1], m_hostCMD.m_pBuf[4 + i * 2]);
- //			m_channelValues[i] = val;
- //		}
- //
- //		break;
-
- case CMD_OPERATE_MODE:
- val = pMsg->m_pBuf[3];
- m_remoteSystem.m_mode = val;
- break;
-
- default:
-
- break;
- }
- }
-
-
- }
-
- */

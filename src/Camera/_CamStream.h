@@ -14,10 +14,6 @@
 #include "CamInput.h"
 #include "CamFrame.h"
 
-//#define CAMSTREAM_MUTEX_ORIGINAL 0
-//#define CAMSTREAM_MUTEX_GRAY 1
-//#define CAMSTREAM_MUTEX_HSV 2
-
 namespace kai
 {
 
@@ -34,6 +30,8 @@ public:
 	CamFrame* getFrame(void);
 	CamFrame* getGrayFrame(void);
 	CamFrame* getHSVFrame(void);
+
+	CamInput* getCameraInput(void);
 
 public:
 	bool		m_bHSV;

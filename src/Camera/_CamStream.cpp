@@ -20,9 +20,6 @@ _CamStream::_CamStream()
 	m_pGrayFrame = new CamFrame();
 	m_pHSVframe = new CamFrame();
 
-	m_bThreadON = false;
-	m_threadID = NULL;
-
 	m_bGray = false;
 	m_bHSV = false;
 
@@ -40,7 +37,6 @@ bool _CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
-//	CHECK_INFO(pJson->getVal("CAM_"+camName+"_CUDADEVICE_ID", &m_cudaDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
 
@@ -114,6 +110,11 @@ CamFrame* _CamStream::getGrayFrame(void)
 CamFrame* _CamStream::getHSVFrame(void)
 {
 	return m_pHSVframe;
+}
+
+CamInput* _CamStream::getCameraInput(void)
+{
+	return m_pCamInput;
 }
 
 } /* namespace kai */

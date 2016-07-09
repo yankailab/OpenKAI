@@ -41,6 +41,9 @@ public:
 	int m_key;
 	bool m_bRun;
 
+	int m_bShowScreen;
+	int m_bFullScreen;
+
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;

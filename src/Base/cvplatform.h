@@ -22,3 +22,8 @@ using namespace cv;
 using namespace cv::cuda;
 #endif
 
+#ifdef USE_ZED
+#include <zed/Camera.hpp>
+#endif
+
+

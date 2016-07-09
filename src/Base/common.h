@@ -12,6 +12,7 @@
 
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
+#define DEG_RADIAN 0.0174533
 
 #define OBJ_VACANT 0
 #define OBJ_ADDED 1

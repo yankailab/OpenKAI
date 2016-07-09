@@ -178,10 +178,8 @@ public:
 	int m_systemID;
 	int m_componentID;
 	int m_type;
-
 	int m_targetComponentID;
 
-	bool m_bControlling;
 	uint64_t m_lastHeartbeat;
 
 	Mavlink_Messages current_messages;

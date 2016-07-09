@@ -15,9 +15,8 @@
 #include "../Base/_ThreadBase.h"
 
 #define NUM_MARKER 128
-#define NUM_TARGET_MARKER 2
-#define MARKER_AREA_RATIO 0.6
-#define MIN_MARKER_SIZE 5
+#define MARKER_AREA_RATIO 0.8
+#define MIN_MARKER_SIZE 10
 
 
 namespace kai

@@ -13,8 +13,6 @@ _MavlinkInterface::_MavlinkInterface()
 	m_pSerialPort = NULL;
 	m_baudRate = 115200;
 
-	m_bControlling = false;
-
 	current_messages.attitude.pitch = 0;
 	current_messages.attitude.roll = 0;
 	current_messages.attitude.yaw = 0;
@@ -337,7 +335,7 @@ void _MavlinkInterface::update(void)
 		//Sending Heartbeat at 1Hz
 		sendHeartbeat(USEC_1SEC);
 
-		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
+//		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
 
 //		command_long_doSetMode(MAV_MODE_GUIDED_DISARMED);
 
@@ -407,7 +405,7 @@ void _MavlinkInterface::landing_target(uint8_t stream_id, uint8_t frame, float a
 	writeMessage(message);
 
 #ifdef MAVLINK_DEBUG
-	printf("   SENT LANDING_TARGET\n");
+	printf("   SENT LANDING_TARGET: ANGLE_X:%f; ANGLE_Y:%f;\n", angle_x, angle_y);
 #endif
 
 	return;
