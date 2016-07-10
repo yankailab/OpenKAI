@@ -182,22 +182,18 @@ GpuMat* CamInput::readFrame(void)
 			sl::zed::Mat depthmap = m_pZed->normalizeMeasure(sl::zed::MEASURE::DEPTH);
 			memcpy(m_depthMat.data, depthmap.data, m_width*m_height*4*sizeof(uchar));
 
-			m_Gframe.upload(m_depthMat);
+//			m_Gframe.upload(m_depthMat);
+			m_Gframe.upload(m_frame);
 
 			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
 
-
-//			// Display image in OpenCV window
-//			 cv::resize(image, imageDisplay, displaySize);
-//			 cv::imshow("Image", imageDisplay);
-//
 //			 // Display depth map in OpenCV window
 //			 cv::resize(depth, depthDisplay, displaySize);
 //			 cv::imshow("Depth", depthDisplay);
-
+			 return &m_Gframe2;
 		 }
 
-		 return &m_Gframe2;
+		 return NULL;
 	}
 #endif
 

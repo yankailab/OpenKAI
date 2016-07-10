@@ -39,7 +39,7 @@ bool Navigator::start(JSON* pJson)
 //	m_pDF->m_pCamStream = m_pCamFront;
 //	m_pCamFront->m_bGray = true;
 
-	//Init Dense Flow Tracker
+	//Init Dense Flow
 //	m_p3DFlow = new _3DFlow();
 //	m_p3DFlow->init(pJson, "DEFAULT");
 //	m_p3DFlow->m_pDF = m_pDF;
@@ -72,11 +72,10 @@ bool Navigator::start(JSON* pJson)
 	m_pAP->m_pROITracker = m_pROITracker;
 	m_pAP->m_pMarkerDetector = m_pMD;
 
-	//Connect to Mavlink
-/*	m_pMavlink = new _MavlinkInterface();
-	CHECK_FATAL(m_pMavlink->setup(&m_Json, "FC"));
-	CHECK_INFO(m_pMavlink->open());
-*/
+	//Init Classifier Manager
+	m_pClassifier = new _Classifier();
+	m_pClassifier->init(pJson);
+
 
 	//Main window
 	m_pShow = new CamFrame();
@@ -94,6 +93,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMD->start();
 	m_pAP->start();
 	m_pROITracker->start();
+	m_pClassifier->start();
 //	m_pDF->start();
 //	m_p3DFlow->start();
 //	m_pDD->start();
@@ -132,6 +132,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMavlink->stop();
 	m_pROITracker->stop();
 	m_pMD->stop();
+	m_pClassifier->stop();
 //	m_pDF->stop();
 //	m_p3DFlow->stop();
 //	m_pDD->stop();
@@ -141,6 +142,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMavlink->complete();
 	m_pMavlink->close();
 	m_pMD->complete();
+	m_pClassifier->complete();
 //	m_pDF->complete();
 //	m_p3DFlow->complete();
 //	m_pDD->complete();
@@ -151,6 +153,7 @@ bool Navigator::start(JSON* pJson)
 	delete m_pROITracker;
 	delete m_pAP;
 	delete m_pMD;
+	delete m_pClassifier;
 //	delete m_pDD;
 //	delete m_pDF;
 //	delete m_p3DFlow;
@@ -170,10 +173,18 @@ void Navigator::showScreen(void)
 	if (pFrame->empty())return;
 	imMat = *pFrame->getCMat();
 
+	cv::Rect imrect;
+	imrect.x = 0;
+	imrect.y = 0;
+	imrect.width = imMat.cols;
+	imrect.height = imMat.rows;
+
+	m_pClassifier->addObject(pFrame->getFrameID(),&imMat,&imrect,NULL);
+
+
 	for(i=0; i<m_pMD->m_numCircle; i++)
 	{
 		pCircle = &m_pMD->m_pCircle[i];
-
 		circle(imMat, Point(pCircle->m_x,pCircle->m_y), pCircle->m_r, Scalar(0, 255, 0), 1);
 	}
 

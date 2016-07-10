@@ -2,7 +2,7 @@
 #ifndef DETECTOR_OBJECTDETECTOR_H_
 #define DETECTOR_OBJECTDETECTOR_H_
 
-#include "../AI/_ClassifierManager.h"
+#include "../AI/_Classifier.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 //#include "../Camera/_CamStream.h"
@@ -47,7 +47,7 @@ public:
 	//Temporal demo
 	int			m_bOneImg;
 
-	_ClassifierManager* m_pClassMgr;
+	_Classifier* m_pClassMgr;
 
 	CamFrame*	m_pContourFrame;
 	CamFrame*	m_pSaliencyFrame;

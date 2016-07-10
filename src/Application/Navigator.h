@@ -13,6 +13,7 @@
 #include <cstdarg>
 
 #include "../AI/_SegNet.h"
+#include "../AI/_Classifier.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/CamInput.h"
 #include "../Interface/_MavlinkInterface.h"
@@ -55,6 +56,7 @@ public:
 	_SegNet* m_pSegNet;
 	_DepthDetector* m_pDD;
 	_MarkerDetector* m_pMD;
+	_Classifier* m_pClassifier;
 
 	CamFrame* m_pShow;
 	CamFrame* m_pMat;

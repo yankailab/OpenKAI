@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_ClassifierManager.h"
+#include <workspace/OpenKAI/OpenKAI/src/AI/_Classifier.h>
 
 namespace kai
 {
 
-_ClassifierManager::_ClassifierManager()
+_Classifier::_Classifier()
 {
 	_ThreadBase();
 
@@ -37,37 +37,41 @@ _ClassifierManager::_ClassifierManager()
 
 }
 
-_ClassifierManager::~_ClassifierManager()
+_Classifier::~_Classifier()
 {
 	// TODO Auto-generated destructor stub
 }
 
-bool _ClassifierManager::init(JSON* pJson)
+bool _Classifier::init(JSON* pJson)
 {
 	//Setup Caffe Classifier
+	string caffeDir = "";
 	string modelFile;
 	string trainedFile;
 	string meanFile;
 	string labelFile;
 
+	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
 	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
-	m_classifier.setup(modelFile, trainedFile, meanFile, labelFile, NUM_DETECT_BATCH);
+	m_classifier.setup(caffeDir+modelFile, caffeDir+trainedFile, caffeDir+meanFile, caffeDir+labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
 
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
 
-	this->setTargetFPS(30.0);
 
+	double FPS;
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_FPS", &FPS));
+	this->setTargetFPS(FPS);
 
 	return true;
 }
 
-bool _ClassifierManager::start(void)
+bool _Classifier::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -81,7 +85,7 @@ bool _ClassifierManager::start(void)
 	return true;
 }
 
-void _ClassifierManager::update(void)
+void _Classifier::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -96,7 +100,7 @@ void _ClassifierManager::update(void)
 
 }
 
-void _ClassifierManager::deleteObject(int i)
+void _Classifier::deleteObject(int i)
 {
 	OBJECT* pObj = &m_pObjects[i];
 
@@ -105,7 +109,7 @@ void _ClassifierManager::deleteObject(int i)
 	pObj->m_status = OBJ_VACANT;
 }
 
-void _ClassifierManager::classifyObject(void)
+void _Classifier::classifyObject(void)
 {
 	int i, j;
 	OBJECT* pObj;
@@ -176,9 +180,11 @@ void _ClassifierManager::classifyObject(void)
 
 		pObj->m_status = OBJ_COMPLETE;
 	}
+
+	printf("CAFFE >> %s\n", pObj->m_name[0].c_str());
 }
 
-bool _ClassifierManager::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Point>* pContour)
+bool _Classifier::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 	if(!pMat)return false;
 	if(!pRect)return false;

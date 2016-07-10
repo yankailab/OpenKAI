@@ -2,7 +2,7 @@
 #ifndef DETECTOR_DEPTHDETECTOR_H_
 #define DETECTOR_DEPTHDETECTOR_H_
 
-#include "../AI/_ClassifierManager.h"
+#include "../AI/_Classifier.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
@@ -36,7 +36,7 @@ private:
 	}
 
 public:
-	_ClassifierManager* m_pClassMgr;
+	_Classifier* m_pClassMgr;
 
 	CamFrame*	m_pGray;
 	CamFrame*	m_pDepth;

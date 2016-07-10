@@ -29,7 +29,6 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Camera/CamFrame.h"
-//#include "../Camera/_CamStream.h"
 
 namespace kai
 {

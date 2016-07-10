@@ -8,7 +8,7 @@
 "APP_SHOW_SCREEN":1,
 "APP_FULL_SCREEN":0,
 
-"CAM_FRONTL_TYPE":1,
+"CAM_FRONTL_TYPE":0,
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
 "CAM_FRONTL_WIDTH":1980,
 "CAM_FRONTL_HEIGHT":1080,
@@ -23,48 +23,29 @@
 "CAM_FRONTL_STEREO_DISPARITY":112,
 "CAM_FRONTL_ANGLE_V":70,
 "CAM_FRONTL_ANGLE_H":70,
+"CAM_FRONTL_FPS":60,
 
 "UI_MAIN_WIDTH":1980,
 "UI_MAIN_HEIGHT":1080,
 
 "DENSEFLOW_FRONTL_WIDTH":1920,
 "DENSEFLOW_FRONTL_HEIGHT":1080,
-
-"SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
-"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
-"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/model/camvid12.png",
-"SEGNET_CUDADEVICE_ID_DEFAULT":0,
-
-"FEATURE_IMG_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/akaze.jpg",
 "DENSEFLOWDEPTH_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/model/dlabel.png",
 
-"CASCADE_DEVICE_DRONE":0,
-"CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
-"CASCADE_NUM_DRONE":10,
-"CASCADE_LIFETIME_DRONE":200000,
-"CASCADE_POSDIFF_DRONE":50,
-"CASCADE_CUDADEVICE_ID_DRONE":0,
 
-"OD_CANNY_LOW":10,
-"OD_CANNY_HIGH":100,
-"OD_CANNY_APPERTURE":3,
-"OD_GAUSS_KSIZE":3,
-"OD_GAUSS_SIGMA":1,
-
+"CAFFE_DIR":"/home/kai/dev/caffe/",
+"CAFFE_MODEL_FILE":"models/bvlc_reference_caffenet/deploy.prototxt",
+"CAFFE_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
+"CAFFE_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
+"CAFFE_LABEL_FILE":"data/ilsvrc12/synset_words.txt",
 "CLASSIFIER_FRAME_LIFETIME":100000,
 "CLASSIFIER_PROB_MIN":0.1,
 "CLASSIFIER_POS_DISPARITY":50,
+"CLASSIFIER_FPS":30,
 
-"CAFFE_MODEL_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/deploy.prototxt",
-"CAFFE_TRAINED_FILE":"/Users/yankai/Documents/dev/caffe-master/models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
-"CAFFE_MEAN_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/imagenet_mean.binaryproto",
-"CAFFE_LABEL_FILE":"/Users/yankai/Documents/dev/caffe-master/data/ilsvrc12/synset_words.txt",
 
-"SALIENCY_ALGORITHM":"SPECTRAL_RESIDUAL",
-"SALIENCY_TRAIN_PATH":"/Users/yankai/Downloads/opencv_contrib-master/modules/saliency/samples/ObjectnessTrainedModel",
 
 "ROI_MIN_SIZE":25,
-
 "ROLL_TARGET_POS_MAIN":960,
 "PITCH_TARGET_POS_MAIN":500,
 
@@ -110,6 +91,33 @@
 
 "PWM_MODE_ALT_HOLD":1815,
 "PWM_MODE_MANUAL":1165,
+
+
+
+
+
+
+
+
+
+"OD_CANNY_LOW":10,
+"OD_CANNY_HIGH":100,
+"OD_CANNY_APPERTURE":3,
+"OD_GAUSS_KSIZE":3,
+"OD_GAUSS_SIGMA":1,
+
+"SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
+"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
+"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/model/camvid12.png",
+"SEGNET_CUDADEVICE_ID_DEFAULT":0,
+
+"FEATURE_IMG_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/akaze.jpg",
+"CASCADE_DEVICE_DRONE":0,
+"CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
+"CASCADE_NUM_DRONE":10,
+"CASCADE_LIFETIME_DRONE":200000,
+"CASCADE_POSDIFF_DRONE":50,
+"CASCADE_CUDADEVICE_ID_DRONE":0,
 
 
 

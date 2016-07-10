@@ -22,7 +22,6 @@ _CamStream::_CamStream()
 
 	m_bGray = false;
 	m_bHSV = false;
-
 }
 
 _CamStream::~_CamStream()
@@ -37,12 +36,14 @@ bool _CamStream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
+	double FPS = 30;
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
 
 	m_bThreadON = false;
 
-	this->setTargetFPS(30.0);
+	this->setTargetFPS(FPS);
 
 	return true;
 }

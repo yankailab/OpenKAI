@@ -1,12 +1,12 @@
 /*
- * ClassifierManager.h
+ * Classifier.h
  *
  *  Created on: Nov 28, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_AI__CLASSIFIERMANAGER_H_
-#define SRC_AI__CLASSIFIERMANAGER_H_
+#ifndef SRC_AI__CLASSIFIER_H_
+#define SRC_AI__CLASSIFIER_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
@@ -33,14 +33,13 @@ struct OBJECT {
 
 };
 
-class _ClassifierManager: public _ThreadBase
+class _Classifier: public _ThreadBase
 {
 public:
-	_ClassifierManager();
-	virtual ~_ClassifierManager();
+	_Classifier();
+	virtual ~_Classifier();
 
-	bool addObject(uint64_t frameID, Mat* pUMat, Rect* pRect,
-			vector<Point>* pContour);
+	bool addObject(uint64_t frameID, Mat* pUMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);
@@ -51,7 +50,7 @@ private:
 
 	void update(void);
 	static void* getUpdateThread(void* This) {
-		((_ClassifierManager*) This)->update();
+		((_Classifier*) This)->update();
 		return NULL;
 	}
 
@@ -75,4 +74,4 @@ public:
 
 } /* namespace kai */
 
-#endif /* SRC_AI__CLASSIFIERMANAGER_H_ */
+#endif /* SRC_AI__CLASSIFIER_H_ */

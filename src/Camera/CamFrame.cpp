@@ -57,6 +57,7 @@ void CamFrame::getGrayOf(CamFrame* pFrom)
 	if(!pFrom)return;
 
 #ifdef USE_CUDA
+	if(pFrom->getGMat()->channels()!=3)return;
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);//,0, m_cudaStream);
 	updatedGMat();
 	//	m_cudaStream.waitForCompletion();
@@ -75,6 +76,7 @@ void CamFrame::getHSVOf(CamFrame* pFrom)
 
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
+	if(pFrom->getGMat()->channels()!=3)return;
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
 	updatedGMat();
 #elif USE_OPENCL
@@ -91,6 +93,7 @@ void CamFrame::getBGRAOf(CamFrame* pFrom)
 	if(!pFrom)return;
 
 #ifdef USE_CUDA
+	if(pFrom->getGMat()->channels()!=3)return;
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
 	updatedGMat();
 #elif USE_OPENCL
@@ -113,6 +116,7 @@ void CamFrame::get8UC3Of(CamFrame* pFrom)
 	}
 	else
 	{
+		if(pFrom->getGMat()->channels()!=1)return;
 		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 	}
 
