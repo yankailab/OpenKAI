@@ -38,8 +38,7 @@ void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	num_channels_ = input_layer->channels();
-	CHECK(num_channels_ == 3 || num_channels_ == 1)
-																<< "Input layer should have 1 or 3 channels.";
+	CHECK(num_channels_ == 3 || num_channels_ == 1)<< "Input layer should have 1 or 3 channels.";
 	input_geometry_ = cv::Size(input_layer->width(), input_layer->height());
 
 	/* Load the binaryproto mean file. */
@@ -54,6 +53,43 @@ void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 
 	Blob<float>* output_layer = net_->output_blobs()[0];
 	CHECK_EQ(labels_.size(), output_layer->channels())<< "Number of labels is different from the output layer dimension.";
+
+
+
+
+
+
+//	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
+
+	/* Forward dimension change to all layers. */
+	net_->Reshape();
+
+	WrapBatchInputLayer(&m_input_batch);
+
+}
+
+void _DNNCaffe::WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch)
+{
+	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	int width = input_layer->width();
+	int height = input_layer->height();
+	int num = input_layer->num();
+	float* input_data = input_layer->mutable_cpu_data();
+	for (int j = 0; j < num; j++)
+	{
+		vector<cv::Mat> input_channels;
+		for (int i = 0; i < input_layer->channels(); ++i)
+		{
+			cv::Mat channel(height, width, CV_32FC1, input_data);
+			input_channels.push_back(channel);
+			input_data += width * height;
+		}
+		input_batch->push_back(vector<cv::Mat>(input_channels));
+	}
+
 }
 
 static bool PairCompare(const std::pair<float, int>& lhs,
@@ -110,8 +146,7 @@ void _DNNCaffe::SetMean(const string& mean_file)
 	mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 }
 
-std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(
-		const vector<cv::Mat> imgs, int num_classes)
+std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(const vector<cv::Mat> imgs, int num_classes)
 {
 	vector<float> output_batch = PredictBatch(imgs);
 
@@ -143,20 +178,30 @@ std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(
 
 std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
 {
-	Blob<float>* input_layer = net_->input_blobs()[0];
+//	Blob<float>* input_layer = net_->input_blobs()[0];
+//
+//	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
+//
+//	/* Forward dimension change to all layers. */
+//	net_->Reshape();
 
-	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height,
-			input_geometry_.width);
+//	std::vector<std::vector<cv::Mat> > input_batch;
+//	WrapBatchInputLayer(&input_batch);
 
-	/* Forward dimension change to all layers. */
-	net_->Reshape();
+	PreprocessBatch(imgs, &m_input_batch);
 
-	std::vector<std::vector<cv::Mat> > input_batch;
-	WrapBatchInputLayer(&input_batch);
+#ifdef CLASSIFIER_DEBUG
+	uint64_t tA,tB;
+	tA = get_time_usec();
+#endif
 
-	PreprocessBatch(imgs, &input_batch);
+	net_->Forward();
 
-	net_->ForwardPrefilled();
+#ifdef CLASSIFIER_DEBUG
+	tB = get_time_usec();
+	printf("CAFFE >> NET FORWARD:%d\n", tB-tA);
+#endif
+
 
 	/* Copy the output layer to a std::vector */
 	Blob<float>* output_layer = net_->output_blobs()[0];
@@ -165,31 +210,9 @@ std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
 	return std::vector<float>(begin, end);
 }
 
-void _DNNCaffe::WrapBatchInputLayer(
-		std::vector<std::vector<cv::Mat> > *input_batch)
-{
-	Blob<float>* input_layer = net_->input_blobs()[0];
 
-	int width = input_layer->width();
-	int height = input_layer->height();
-	int num = input_layer->num();
-	float* input_data = input_layer->mutable_cpu_data();
-	for (int j = 0; j < num; j++)
-	{
-		vector<cv::Mat> input_channels;
-		for (int i = 0; i < input_layer->channels(); ++i)
-		{
-			cv::Mat channel(height, width, CV_32FC1, input_data);
-			input_channels.push_back(channel);
-			input_data += width * height;
-		}
-		input_batch->push_back(vector<cv::Mat>(input_channels));
-	}
 
-}
-
-void _DNNCaffe::PreprocessBatch(const vector<cv::Mat> imgs,
-		std::vector<std::vector<cv::Mat> >* input_batch)
+void _DNNCaffe::PreprocessBatch(const vector<cv::Mat> imgs,	std::vector<std::vector<cv::Mat> >* input_batch)
 {
 	for (int i = 0; i < imgs.size(); i++)
 	{

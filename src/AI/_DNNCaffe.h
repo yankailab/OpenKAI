@@ -30,6 +30,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Camera/CamFrame.h"
 
+
 namespace kai
 {
 
@@ -60,8 +61,7 @@ public:
 	std::vector<Prediction>
 	Classify(const cv::Mat& img, int N = 5);
 
-	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs,
-			int num_classes);
+	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs, int num_classes);
 
 private:
 	void SetMean(const string& mean_file);
@@ -86,6 +86,7 @@ private:
 	cv::Mat mean_;
 	vector<string> labels_;
 	int batch_size_;
+	std::vector<std::vector<cv::Mat> > m_input_batch;
 
 	CamFrame* m_pFrame;
 

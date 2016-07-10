@@ -109,22 +109,22 @@ bool CamInput::setup(JSON* pJson, string camName)
 bool CamInput::openCamera(void)
 {
 #ifdef USE_ZED
-	if(m_camType == CAM_ZED)
+	if (m_camType == CAM_ZED)
 	{
 		// Initialize ZED color stream in HD and depth in Performance mode
 		m_pZed = new sl::zed::Camera(sl::zed::HD1080);
 
 		// define a struct of parameters for the initialization
-	    sl::zed::InitParams zedParams;
-	    zedParams.mode = sl::zed::MODE::PERFORMANCE;
-	    zedParams.unit = sl::zed::UNIT::MILLIMETER;
-	    zedParams.verbose = 1;
-	    zedParams.device = -1;
+		sl::zed::InitParams zedParams;
+		zedParams.mode = sl::zed::MODE::PERFORMANCE;
+		zedParams.unit = sl::zed::UNIT::MILLIMETER;
+		zedParams.verbose = 1;
+		zedParams.device = -1;
 
-	    sl::zed::ERRCODE err = m_pZed->init(zedParams);
+		sl::zed::ERRCODE err = m_pZed->init(zedParams);
 		if (err != sl::zed::SUCCESS)
 		{
-			LOG(ERROR) << "ZED Error code: " << sl::zed::errcode2str(err) << std::endl;
+			LOG(ERROR)<< "ZED Error code: " << sl::zed::errcode2str(err) << std::endl;
 			return false;
 		}
 
@@ -137,8 +137,8 @@ bool CamInput::openCamera(void)
 
 		m_zedMode = sl::zed::STANDARD; //FULL
 
-		m_frame = Mat(m_height, m_width, CV_8UC4,1);
-		m_depthMat = Mat(m_height, m_width, CV_8UC4,1);
+		m_frame = Mat(m_height, m_width, CV_8UC4, 1);
+		m_depthFrame = Mat(m_height, m_width, CV_8UC4, 1);
 
 		return true;
 	}
@@ -166,34 +166,33 @@ GpuMat* CamInput::readFrame(void)
 	GpuMat* pDest;
 	GpuMat* pTmp;
 
-
 #ifdef USE_ZED
-	if(m_camType == CAM_ZED)
+	if (m_camType == CAM_ZED)
 	{
 
-		 // Grab frame and compute depth in FULL sensing mode
-		 if (!m_pZed->grab(m_zedMode))
-		 {
+		// Grab frame and compute depth in FULL sensing mode
+		if (!m_pZed->grab(m_zedMode))
+		{
+			//TODO: copy from GPU memory directly
+
 			// Retrieve left color image
 			sl::zed::Mat left = m_pZed->retrieveImage(sl::zed::SIDE::LEFT);
-			memcpy(m_frame.data, left.data, m_width*m_height*4*sizeof(uchar));
+			memcpy(m_frame.data, left.data,	m_width * m_height * 4 * sizeof(uchar));
 
 			// Retrieve depth map
 			sl::zed::Mat depthmap = m_pZed->normalizeMeasure(sl::zed::MEASURE::DEPTH);
-			memcpy(m_depthMat.data, depthmap.data, m_width*m_height*4*sizeof(uchar));
+			memcpy(m_depthFrame.data, depthmap.data, m_width * m_height * 4 * sizeof(uchar));
 
-//			m_Gframe.upload(m_depthMat);
 			m_Gframe.upload(m_frame);
-
 			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
 
-//			 // Display depth map in OpenCV window
-//			 cv::resize(depth, depthDisplay, displaySize);
-//			 cv::imshow("Depth", depthDisplay);
-			 return &m_Gframe2;
-		 }
+			m_Gdepth.upload(m_depthFrame);
+			cuda::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 
-		 return NULL;
+			return &m_Gframe2;
+		}
+
+		return NULL;
 	}
 #endif
 
@@ -218,6 +217,16 @@ GpuMat* CamInput::readFrame(void)
 	return pSrc;
 }
 
+GpuMat* CamInput::getDepthFrame(void)
+{
+	if (m_camType == CAM_ZED)
+	{
+		return &m_Gdepth2;
+	}
+
+	return NULL;
+}
+
 void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
 	Point2f center(m_centerH, m_centerV);
@@ -227,6 +236,11 @@ void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 
 	//TODO: add rot estimation
 
+}
+
+int CamInput::getType(void)
+{
+	return m_camType;
 }
 
 } /* namespace kai */

@@ -107,7 +107,9 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 
 	resetAllControl();
 
-	this->setTargetFPS(30.0);
+	double FPS = DEFAULT_FPS;
+	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	this->setTargetFPS(FPS);
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;

@@ -141,7 +141,7 @@ void _ObjectDetector::findObjectByContour(void)
 		boundRect.x = (m_Mat.size().width - boundRect.width)*0.5;
 		boundRect.y = (m_Mat.size().height - boundRect.height)*0.5;
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,NULL);
+		m_pClassMgr->addObject(&m_Mat,&boundRect,NULL);
 		return;
 	}
 
@@ -191,7 +191,7 @@ void _ObjectDetector::findObjectByContour(void)
 		if (overH < 0)
 			boundRect.height += overH;
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,&contours_poly[i]);
+		m_pClassMgr->addObject(&m_Mat,&boundRect,&contours_poly[i]);
 	}
 
 }

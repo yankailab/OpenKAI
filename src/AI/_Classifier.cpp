@@ -17,10 +17,10 @@ _Classifier::_Classifier()
 	int i, j;
 	m_numObj = NUM_OBJ;
 	m_numBatch = 0;
-	m_globalFrameID = 0;
+	m_frameID = 0;
 	m_frameLifeTime = 0;
 	m_objProbMin = 0;
-	m_disparity = 50;
+	m_disparity = 0;
 
 	for (i = 0; i < m_numObj; i++)
 	{
@@ -62,9 +62,10 @@ bool _Classifier::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
+	CHECK_ERROR(pJson->getVal("CLASSIFIER_DISPARITY", &m_disparity));
 
 
-	double FPS;
+	double FPS = DEFAULT_FPS;
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
@@ -91,7 +92,7 @@ void _Classifier::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_globalFrameID = get_time_usec();
+		m_frameID = get_time_usec();
 
 		classifyObject();
 
@@ -124,7 +125,7 @@ void _Classifier::classifyObject(void)
 		pObj = &m_pObjects[i];
 
 		//Delete the outdated frame
-		if(m_globalFrameID - pObj->m_frameID > m_frameLifeTime)
+		if(m_frameID - pObj->m_frameID > m_frameLifeTime)
 		{
 			deleteObject(i);
 			continue;
@@ -155,9 +156,19 @@ void _Classifier::classifyObject(void)
 
 	if(numBatch <= 0)return;
 
+#ifdef CLASSIFIER_DEBUG
+	uint64_t tA,tB;
+	tA = get_time_usec();
+#endif
+
 	//Get the top 5 possible labels
 	m_vPredictions = m_classifier.ClassifyBatch(m_vMat, 5);
 	m_vMat.clear();
+
+#ifdef CLASSIFIER_DEBUG
+	tB = get_time_usec();
+	printf("CAFFE >> TIME:%d\n", tB-tA);
+#endif
 
 	for (i = 0; i < numBatch; i++)
 	{
@@ -181,20 +192,23 @@ void _Classifier::classifyObject(void)
 		pObj->m_status = OBJ_COMPLETE;
 	}
 
+#ifdef CLASSIFIER_DEBUG
 	printf("CAFFE >> %s\n", pObj->m_name[0].c_str());
+#endif
 }
 
-bool _Classifier::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Classifier::addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
-	if(!pMat)return false;
-	if(!pRect)return false;
-	if(pMat->empty())return false;
-	if(pRect->width<=0)return false;
-	if(pRect->height<=0)return false;
+	if(!pMat)return NULL;
+	if(!pRect)return NULL;
+	if(pMat->empty())return NULL;
+	if(pRect->width<=0)return NULL;
+	if(pRect->height<=0)return NULL;
 
 	int i;
 	int iVacant;
 	OBJECT* pObj;
+	uint64_t frameID = get_time_usec();
 
 	iVacant = m_numObj;
 	for(i=0; i<m_numObj; i++)
@@ -221,7 +235,11 @@ bool _Classifier::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Poi
 		//The region is already under recognizing
 		pObj->m_frameID = frameID;
 //		pObj->m_status = OBJ_ADDED;
-		return true;
+
+		//Update the Rect
+		pObj->m_boundBox = *pRect;
+
+		return pObj;
 	}
 
 	if(iVacant < m_numObj)
@@ -238,11 +256,11 @@ bool _Classifier::addObject(uint64_t frameID, Mat* pMat, Rect* pRect, vector<Poi
 		}
 		pObj->m_status = OBJ_ADDED;
 
-		return true;
+		return pObj;
 	}
 
 
-	return false;
+	return NULL;
 }
 
 } /* namespace kai */

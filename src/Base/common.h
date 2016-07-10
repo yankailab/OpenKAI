@@ -8,8 +8,12 @@
 #include "../Algorithm/Filter.h"
 #include "_ThreadBase.h"
 
-//Common include
 
+#define MAVLINK_DEBUG
+#define CLASSIFIER_DEBUG
+
+
+//Common include
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
 #define DEG_RADIAN 0.0174533
@@ -18,6 +22,8 @@
 #define OBJ_ADDED 1
 #define OBJ_CLASSIFYING 2
 #define OBJ_COMPLETE 3
+
+#define DEFAULT_FPS 30
 
 
 using namespace std;

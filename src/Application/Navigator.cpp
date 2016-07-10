@@ -39,6 +39,7 @@ bool Navigator::start(JSON* pJson)
 //	m_pDF->m_pCamStream = m_pCamFront;
 //	m_pCamFront->m_bGray = true;
 
+	//TODO: Move to CamInput
 	//Init Dense Flow
 //	m_p3DFlow = new _3DFlow();
 //	m_p3DFlow->init(pJson, "DEFAULT");
@@ -50,13 +51,13 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->m_pCamStream = m_pCamFront;
 
 	//Init Depth Detector
-//	m_pDD = new _DepthDetector();
-//	m_pDD->init(pJson,"FRONTL");
-//	m_pDD->m_pCamStream = m_pCamFront;
+	m_pDD = new _DepthDetector();
+	m_pDD->init(pJson,"FRONTL");
+	m_pDD->m_pCamStream = m_pCamFront;
 
 	//Init Marker Detector
 	m_pMD = new _MarkerDetector();
-	m_pMD->init(pJson,"FRONTL");
+	m_pMD->init(pJson,"LANDING");
 	m_pMD->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 	m_pCamFront->m_bHSV = true;
@@ -94,9 +95,9 @@ bool Navigator::start(JSON* pJson)
 	m_pAP->start();
 	m_pROITracker->start();
 	m_pClassifier->start();
+	m_pDD->start();
 //	m_pDF->start();
 //	m_p3DFlow->start();
-//	m_pDD->start();
 
 	//UI thread
 	m_bRun = true;
@@ -133,9 +134,9 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->stop();
 	m_pMD->stop();
 	m_pClassifier->stop();
+	m_pDD->stop();
 //	m_pDF->stop();
 //	m_p3DFlow->stop();
-//	m_pDD->stop();
 
 	m_pAP->complete();
 	m_pROITracker->complete();
@@ -143,9 +144,9 @@ bool Navigator::start(JSON* pJson)
 	m_pMavlink->close();
 	m_pMD->complete();
 	m_pClassifier->complete();
+	m_pDD->complete();
 //	m_pDF->complete();
 //	m_p3DFlow->complete();
-//	m_pDD->complete();
 //	m_pCamFront->complete();
 
 	delete m_pMavlink;
@@ -154,7 +155,7 @@ bool Navigator::start(JSON* pJson)
 	delete m_pAP;
 	delete m_pMD;
 	delete m_pClassifier;
-//	delete m_pDD;
+	delete m_pDD;
 //	delete m_pDF;
 //	delete m_p3DFlow;
 
@@ -173,15 +174,6 @@ void Navigator::showScreen(void)
 	if (pFrame->empty())return;
 	imMat = *pFrame->getCMat();
 
-	cv::Rect imrect;
-	imrect.x = 0;
-	imrect.y = 0;
-	imrect.width = imMat.cols;
-	imrect.height = imMat.rows;
-
-	m_pClassifier->addObject(pFrame->getFrameID(),&imMat,&imrect,NULL);
-
-
 	for(i=0; i<m_pMD->m_numCircle; i++)
 	{
 		pCircle = &m_pMD->m_pCircle[i];
@@ -194,6 +186,57 @@ void Navigator::showScreen(void)
 	m_pMD->getCircleCenter(&markerCenter);
 
 	circle(imMat, Point(markerCenter.m_x,markerCenter.m_y), 10, Scalar(0, 0, 255), 5);
+
+
+
+
+
+	cv::Rect imrect;
+	imrect.x = 0;
+	imrect.y = 0;
+	imrect.width = imMat.cols;
+	imrect.height = imMat.rows;
+
+	m_pClassifier->addObject(&imMat,&imrect,NULL);
+
+	OBJECT* pObj;
+	vector< vector< Point > > contours;
+
+	for (i = 0; i < m_pClassifier->m_numObj; i++)
+	{
+		pObj = &m_pClassifier->m_pObjects[i];
+		contours.clear();
+		contours.push_back(pObj->m_vContours);
+
+		//Green
+		if(pObj->m_status == OBJ_COMPLETE)
+		{
+			if (pObj->m_name[0].empty())continue;
+
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
+
+	//			drawContours(imMat, contours, -1, Scalar(0, 255, 0),2);
+
+			putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
+					FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
+		}
+
+		//Yellow
+		if(pObj->m_status == OBJ_CLASSIFYING)
+		{
+	//			drawContours(imMat, contours, -1, Scalar(0, 255, 255),1);
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 255, 255), 1);
+		}
+
+		//Red
+		if(pObj->m_status == OBJ_ADDED)
+		{
+	//			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 0, 255), 1);
+		}
+	}
 
 //	if(m_p3DFlow->m_pDepth->empty())return;
 //
@@ -213,7 +256,8 @@ void Navigator::showScreen(void)
 //	if(m_pDD->m_pDepth->empty())return;
 
 	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Classifier FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "FlowDepth FPS: "+f2str(m_p3DFlow->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);

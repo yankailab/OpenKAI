@@ -1,3 +1,7 @@
+/*
+ *
+ */
+
 
 #ifndef DETECTOR_DEPTHDETECTOR_H_
 #define DETECTOR_DEPTHDETECTOR_H_
@@ -36,7 +40,7 @@ private:
 	}
 
 public:
-	_Classifier* m_pClassMgr;
+	_Classifier* m_pClassifier;
 
 	CamFrame*	m_pGray;
 	CamFrame*	m_pDepth;
@@ -46,10 +50,11 @@ public:
 	Mat			m_Mat;
 
 	_CamStream*	m_pCamStream;
+	CamInput*	m_pCam;
 	CamFrame*	m_pFrame;
 	CamStereo*	m_pStereo;
 
-	//Caffe classifier
+	//Classifier
 //	NNClassifier m_classifier;
 //	vector<Prediction> m_predictions;
 //	vector<vector<Prediction> > m_vPredictions;

@@ -30,14 +30,16 @@ public:
 	bool openCamera(void);
 
 	GpuMat* readFrame(void);
+	GpuMat* getDepthFrame(void);
+
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
+	int	getType(void);
 
 public:
 
 #ifdef USE_ZED
 	sl::zed::Camera* m_pZed;
 	sl::zed::SENSING_MODE m_zedMode;
-	Mat m_depthMat;
 #endif
 
 	int m_camType;
@@ -51,6 +53,7 @@ public:
 	double m_angleH;
 	double m_angleV;
 
+	Mat m_depthFrame;
 	Mat m_frame;
 	Mat m_cameraMat;
 	Mat m_distCoeffs;
@@ -69,6 +72,8 @@ public:
 public:
 	GpuMat m_Gframe;
 	GpuMat m_Gframe2;
+	GpuMat m_Gdepth;
+	GpuMat m_Gdepth2;
 
 };
 

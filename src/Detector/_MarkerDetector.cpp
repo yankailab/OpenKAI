@@ -18,9 +18,8 @@ _MarkerDetector::_MarkerDetector()
 	m_cudaDeviceID = 0;
 
 	m_numCircle = 0;
-
-	m_minMarkerSize = MIN_MARKER_SIZE;
-	m_areaRatio = MARKER_AREA_RATIO;
+	m_minMarkerSize = 0;
+	m_areaRatio = 0;
 
 	m_pCamStream = NULL;
 }
@@ -33,9 +32,13 @@ _MarkerDetector::~_MarkerDetector()
 
 bool _MarkerDetector::init(JSON* pJson, string name)
 {
-//	CHECK_INFO(pJson->getVal("MARKER_DETECTOR_TSLEEP_" + name, &m_tSleep));
+	double FPS = DEFAULT_FPS;
 
-	this->setTargetFPS(30.0);
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_FPS", &FPS));
+	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_AREA_RATIO", &m_areaRatio));
+	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_MIN_SIZE", &m_minMarkerSize));
+
+	this->setTargetFPS(FPS);
 	return true;
 }
 
@@ -137,7 +140,13 @@ void _MarkerDetector::detectCircle(void)
 
 bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 {
+	CamInput*	pCam;
+
 	if(pCenter==NULL)return false;
+	if(m_pCamStream==NULL)return false;
+
+	pCam = m_pCamStream->getCameraInput();
+	if(pCam==NULL)return false;
 
 	//Use num instead of m_numCircle to avoid multi-thread inconsistancy
 	int num = m_numCircle;
@@ -146,7 +155,7 @@ bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 	int i;
 	MARKER_CIRCLE* pMarker = &m_pCircle[0];
 	MARKER_CIRCLE* pCompare;
-	int camCenter = (1980+1080)/2;
+	int camCenter = (pCam->m_width+pCam->m_height)/2;
 
 	//Find the closest point
 	for(i=1; i<num; i++)

@@ -14,9 +14,8 @@ _DepthDetector::_DepthDetector()
 	_ThreadBase();
 	DetectorBase();
 
-	m_pClassMgr = NULL;
+	m_pClassifier = NULL;
 	m_pGray = NULL;
-//	m_pGray = NULL;
 
 	m_pFrame = new CamFrame();
 }
@@ -27,10 +26,13 @@ _DepthDetector::~_DepthDetector()
 
 bool _DepthDetector::init(JSON* pJson, string camName)
 {
-	this->setTargetFPS(30.0);
 
 	int disparity;
 	CHECK_ERROR(pJson->getVal("CAM_"+camName+"_STEREO_DISPARITY", &disparity));
+
+	double FPS = DEFAULT_FPS;
+	CHECK_INFO(pJson->getVal("DEPTH_DETECTOR_FPS", &FPS));
+	this->setTargetFPS(FPS);
 
 	m_pStereo = new CamStereo();
 	m_pStereo->init(disparity);
@@ -39,7 +41,6 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	m_pDepth = new CamFrame();
 
 	m_camFrameID = 0;
-
 
 	return true;
 }
@@ -76,50 +77,30 @@ void _DepthDetector::update(void)
 void _DepthDetector::detect(void)
 {
 	int i, j;
-
-	if(m_pCamStream==NULL)return;
-
-	m_pGray = m_pCamStream->getGrayFrame();
-//	m_pGray = m_pCamStream->getFrame();
-	if(m_pGray==NULL)return;
-	if(m_pGray->empty())return;
-	if(m_pGray->getFrameID() <= m_camFrameID)return;
-	m_camFrameID = m_pGray->getFrameID();
-
-	m_pStereo->detect(m_pGray, m_pDepth);
-
-/*
-	int i;
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	Rect boundRect;
+	Mat imMat;
 
-	//DEMO
-	if(m_bOneImg==1)
+	if(m_pCamStream==NULL)return;
+	m_pCam = m_pCamStream->getCameraInput();
+
+	if(m_pCam->getType() == CAM_ZED)
 	{
-		boundRect.height = m_Mat.size().height - 50;
-		boundRect.width = boundRect.height;
-		boundRect.x = (m_Mat.size().width - boundRect.width)*0.5;
-		boundRect.y = (m_Mat.size().height - boundRect.height)*0.5;
+		m_pDepth->update(m_pCam->getDepthFrame());
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,NULL);
-		return;
+		if(m_pDepth->empty())return;
+
+		m_contourMat = *(m_pDepth->getCMat());
+
+		m_contourMat.copyTo(imMat);
 	}
 
-	return;
-//	m_pContourFrame->switchFrame();
-	GpuMat* pThr = m_pContourFrame->getGMat();
-
-	m_pCanny->detect(*m_pGray, *pThr);
-
-	// Detect edges using Threshold
-//	cuda::threshold(*m_pGray, *pThr, 200, 255, THRESH_BINARY);
-	pThr->download(m_contourMat);
-
 	// Find contours
-	findContours(m_contourMat, contours, hierarchy, CV_RETR_TREE,
-			CV_CHAIN_APPROX_SIMPLE);
+	findContours(m_contourMat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 	//	findContours(m_frame, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+
+	drawContours(imMat, contours, -1, Scalar(0, 255, 0), 2);
 
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
@@ -129,32 +110,48 @@ void _DepthDetector::detect(void)
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 
 		boundRect = boundingRect(Mat(contours_poly[i]));
-		if (boundRect.area() < 5000)
+		if (boundRect.area() < 1000)
 			continue;
 
-		int extraW = boundRect.width * 0.15;
-		int extraH = boundRect.height * 0.15;
+//		int extraW = boundRect.width * 0.15;
+//		int extraH = boundRect.height * 0.15;
+//
+//		boundRect.x -= extraW;
+//		boundRect.y -= extraH;
+//		if (boundRect.x < 0)
+//			boundRect.x = 0;
+//		if (boundRect.y < 0)
+//			boundRect.y = 0;
+//
+//		boundRect.width += extraW + extraW;
+//		boundRect.height += extraH + extraH;
+//
+//		int overW = m_Mat.cols - boundRect.x - boundRect.width;
+//		int overH = m_Mat.rows - boundRect.y - boundRect.height;
+//		if (overW < 0)
+//			boundRect.width += overW;
+//		if (overH < 0)
+//			boundRect.height += overH;
 
-		boundRect.x -= extraW;
-		boundRect.y -= extraH;
-		if (boundRect.x < 0)
-			boundRect.x = 0;
-		if (boundRect.y < 0)
-			boundRect.y = 0;
+		rectangle( imMat, boundRect, Scalar( 0, 0, 255 ), 2 );
 
-		boundRect.width += extraW + extraW;
-		boundRect.height += extraH + extraH;
+//		m_pClassifier->addObject(&m_Mat,&boundRect,&contours_poly[i]);
 
-		int overW = m_Mat.cols - boundRect.x - boundRect.width;
-		int overH = m_Mat.rows - boundRect.y - boundRect.height;
-		if (overW < 0)
-			boundRect.width += overW;
-		if (overH < 0)
-			boundRect.height += overH;
 
-		m_pClassMgr->addObject(get_time_usec(),&m_Mat,&boundRect,&contours_poly[i]);
 	}
-	*/
+
+	imshow("Depth",imMat);
+
+//
+//	m_pGray = m_pCamStream->getGrayFrame();
+////	m_pGray = m_pCamStream->getFrame();
+//	if(m_pGray==NULL)return;
+//	if(m_pGray->empty())return;
+//	if(m_pGray->getFrameID() <= m_camFrameID)return;
+//	m_camFrameID = m_pGray->getFrameID();
+//
+//	m_pStereo->detect(m_pGray, m_pDepth);
+
 
 }
 

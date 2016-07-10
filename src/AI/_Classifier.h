@@ -15,11 +15,14 @@
 
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
-#define NUM_DETECT_BATCH 10
+#define NUM_DETECT_BATCH 1
 
-namespace kai {
 
-struct OBJECT {
+namespace kai
+{
+
+struct OBJECT
+{
 	string m_name[NUM_OBJECT_NAME];
 	double m_prob[NUM_OBJECT_NAME];
 
@@ -39,7 +42,7 @@ public:
 	_Classifier();
 	virtual ~_Classifier();
 
-	bool addObject(uint64_t frameID, Mat* pUMat, Rect* pRect, vector<Point>* pContour);
+	OBJECT* addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);
@@ -55,7 +58,7 @@ private:
 	}
 
 public:
-	uint64_t m_globalFrameID;
+	uint64_t m_frameID;
 	uint64_t m_frameLifeTime;
 	OBJECT m_pObjects[NUM_OBJ];
 	int m_numObj;
