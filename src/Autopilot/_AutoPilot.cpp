@@ -10,7 +10,6 @@ _AutoPilot::_AutoPilot()
 
 	m_pRecvMsg = NULL;
 
-	m_pOD = NULL;
 	m_pFD = NULL;
 	m_pVI = NULL;
 	m_pMavlink = NULL;

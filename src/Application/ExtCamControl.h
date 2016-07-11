@@ -18,7 +18,6 @@
 #include "../Camera/CamInput.h"
 #include "../Detector/_CascadeDetector.h"
 #include "../Detector/_MarkerDetector.h"
-#include "../Detector/_ObjectDetector.h"
 #include "../Detector/_BgFgDetector.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../UI/UIMonitor.h"

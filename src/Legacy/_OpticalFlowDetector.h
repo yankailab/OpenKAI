@@ -6,7 +6,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Camera/_CamStream.h"
-#include "DetectorBase.h"
+#include "../Detector/DetectorBase.h"
 
 
 using namespace cv;

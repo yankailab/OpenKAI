@@ -11,7 +11,6 @@
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
 #include "../Camera/_CamStream.h"
-#include "../Camera/CamStereo.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -51,10 +50,12 @@ public:
 	_CamStream*	m_pCamStream;
 	CamInput*	m_pCam;
 	CamFrame*	m_pFrame;
-	CamStereo*	m_pStereo;
 
 	int			m_minObjArea;
 	int			m_maxObjArea;
+
+	Mat showMat;
+
 
 
 	//Classifier

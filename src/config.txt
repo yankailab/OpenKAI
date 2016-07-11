@@ -38,7 +38,7 @@
 "CAFFE_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
 "CAFFE_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
 "CAFFE_LABEL_FILE":"data/ilsvrc12/synset_words.txt",
-"CLASSIFIER_FRAME_LIFETIME":500000,
+"CLASSIFIER_FRAME_LIFETIME":800000,
 "CLASSIFIER_PROB_MIN":0.1,
 "CLASSIFIER_POS_DISPARITY":200,
 "CLASSIFIER_FPS":60,

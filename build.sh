@@ -28,9 +28,7 @@ g++ $INCLUDES $OPTIONS -MF"build/FrameGroup.d" -MT"build/FrameGroup.d" -o "build
 
 g++ $INCLUDES $OPTIONS -MF"build/_BgFgDetector.d" -MT"build/_BgFgDetector.d" -o "build/_BgFgDetector.o" "src/Detector/_BgFgDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_CascadeDetector.d" -MT"build/_CascadeDetector.d" -o "build/_CascadeDetector.o" "src/Detector/_CascadeDetector.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_FeatureDetector.d" -MT"build/_FeatureDetector.d" -o "build/_FeatureDetector.o" "src/Detector/_FeatureDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_ObjectDetector.d" -MT"build/_ObjectDetector.d" -o "build/_ObjectDetector.o" "src/Detector/_ObjectDetector.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_OpticalFlowDetector.d" -MT"build/_OpticalFlowDetector.d" -o "build/_OpticalFlowDetector.o" "src/Detector/_OpticalFlowDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/DetectorBase.d" -MT"build/DetectorBase.d" -o "build/DetectorBase.o" "src/Detector/DetectorBase.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_MarkerDetector.d" -MT"build/_MarkerDetector.d" -o "build/_MarkerDetector.o" "src/Detector/_MarkerDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_DepthDetector.d" -MT"build/_DepthDetector.d" -o "build/_DepthDetector.o" "src/Detector/_DepthDetector.cpp"

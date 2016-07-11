@@ -256,7 +256,7 @@ void Navigator::showScreen(void)
 //	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat3);
-//	imshow("Depth", m_pDD->m_Mat);
+	imshow("Depth", m_pDD->showMat);
 
 //	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
 //	imshow(APP_NAME,*m_pDD->m_pDepth->getCMat());

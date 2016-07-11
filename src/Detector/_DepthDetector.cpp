@@ -40,9 +40,6 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MIN", &m_minObjArea));
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MAX", &m_maxObjArea));
 
-	m_pStereo = new CamStereo();
-	m_pStereo->init(disparity);
-
 	m_pGray = new CamFrame();
 	m_pDepth = new CamFrame();
 
@@ -100,9 +97,10 @@ void _DepthDetector::detect(void)
 
 //		cuda::divide(gMat,Scalar(50),gMat2);
 //		cuda::multiply(gMat2,Scalar(50),gMat);
-		gMat.download(m_Mat);
+		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
 
-//		pGMat[0].convertTo(depthGMat,CV_8UC1);
+		gMat2.download(m_Mat);
+
 	}
 	else
 	{
@@ -110,11 +108,10 @@ void _DepthDetector::detect(void)
 		return;
 	}
 
+	m_Mat.copyTo(showMat);
+
 	// Find contours
-	findContours(m_Mat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-
-//	drawContours(imMat, contours, -1, Scalar(0, 255, 0), 2);
-
+	findContours(m_Mat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);//SIMPLE);
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
 

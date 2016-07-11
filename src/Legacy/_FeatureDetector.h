@@ -5,7 +5,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "DetectorBase.h"
+#include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"
 #include "../Camera/_CamStream.h"
 #include "../Camera/FrameGroup.h"
