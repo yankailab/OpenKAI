@@ -49,6 +49,7 @@ private:
 public:
 	fVector4	m_flow;
 	GpuMat		m_GFlowMat;
+//	Mat 		m_cMat;
 
 	int	m_width;
 	int m_height;
@@ -62,7 +63,18 @@ public:
 	_CamStream*			m_pCamStream;
 	FrameGroup*			m_pGrayFrames;
 
-	Mat m_showMat;
+	bool		m_bDepth;
+
+	double	m_flowMax;
+	double	m_flowAvr; //average flow distance in previous frame
+	int		m_targetArea;
+
+	CamFrame* m_pDepth;
+	CamFrame* m_pSeg;
+
+	Mat m_labelColor;
+	Ptr<LookUpTable>	m_pGpuLUT;
+
 
 };
 

@@ -24,6 +24,10 @@ _DenseFlow::_DenseFlow()
 	m_pCamStream = NULL;
 	m_pGrayFrames = NULL;
 
+	m_flowMax = 1e9;
+	m_flowAvr = 0.0;
+	m_pDepth = NULL;
+
 }
 
 _DenseFlow::~_DenseFlow()
@@ -32,8 +36,22 @@ _DenseFlow::~_DenseFlow()
 
 bool _DenseFlow::init(JSON* pJson, string camName)
 {
+	string presetDir = "";
+	double FPS = DEFAULT_FPS;
+
+	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
+
+	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_FPS", &FPS));
 	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_width));
 	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_height));
+
+	string labelFile;
+	CHECK_FATAL(pJson->getVal("3DFLOW_"+camName+"_COLOR_FILE", &labelFile));
+	m_labelColor = imread(presetDir+labelFile, 1);
+	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
+
+	m_pDepth = new CamFrame();
+	m_pSeg = new CamFrame();
 
 	//	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
@@ -41,7 +59,7 @@ bool _DenseFlow::init(JSON* pJson, string camName)
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 
-	this->setTargetFPS(30.0);
+	this->setTargetFPS(FPS);
 	return true;
 }
 
@@ -101,43 +119,55 @@ void _DenseFlow::detect(void)
 	pPrev = pPrevFrame->getGMat();
 	pNext = pNextFrame->getGMat();
 
-
-	m_flow.m_x = 0;
-	m_flow.m_y = 0;
-	m_flow.m_z = 0;
-	m_flow.m_w = 0;
-
 	if(pPrev->empty())return;
 	if(pNext->empty())return;
 	if(pPrev->size() != pNext->size())return;
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
-//	m_GFlowMat.download(m_cFlowMat);
 
-//
-//	for (i = 0; i < m_uFlowMat.rows; i++)
-//	{
-//		for (j = 0; j < m_uFlowMat.cols; j++)
-//		{
-//			vFlow = m_uFlowMat.at<cv::Point2f>(i, j);
-//			m_flow.m_x += vFlow.x;
-//			m_flow.m_y += vFlow.y;
-//		}
-//	}
-//
-//	base = 10.0/(double)(m_uFlowMat.rows * m_uFlowMat.cols);
-//	m_flow.m_x *= base;
-//	m_flow.m_y *= base;
+//	m_GFlowMat.download(m_cMat);
 
-//	generateFlowMap(m_GFlowMat);
+	//	m_flow.m_x = 0;
+	//	m_flow.m_y = 0;
+	//	m_flow.m_z = 0;
+	//	m_flow.m_w = 0;
 
 
-/*	cv::Size mSize = m_uFlowMat.size();
-	Point p = Point(mSize.width / 2, mSize.height / 2);
-	Point q = p + Point(m_flow.m_x, m_flow.m_y);
-	line(m_uFlowMat, p, q, Scalar(0, 255, 0), 3);
-	imshow("flow", m_uFlowMat);
-*/
+	GpuMat pFlowGMat[2];
+	GpuMat pGMat[2];
+	GpuMat depthGMat;
+	GpuMat fGMat;
+	GpuMat idxGMat;
+	GpuMat segGMat;
+
+	cuda::split(m_GFlowMat, pFlowGMat);
+	if(m_GFlowMat.size() != depthGMat.size())
+	{
+		depthGMat = GpuMat(m_GFlowMat.size(), CV_8UC1);
+	}
+
+	m_flowMax = 15;
+	double fInterval = m_flowMax/256;
+	fInterval = 1.0/fInterval;
+
+	cuda::abs(pFlowGMat[0],pGMat[0]);
+	cuda::abs(pFlowGMat[1],pGMat[1]);
+	cuda::add(pGMat[0],pGMat[1],fGMat);
+
+//	m_flowMax = cuda::sum(fGMat)[0] / (fGMat.cols*fGMat.rows);
+//	fInterval = 1.0/m_flowMax;
+//	fInterval *= 50.0;
+
+//	cuda::min(fGMat,Scalar(m_flowMax),pGMat[0]);
+//	cuda::multiply(pGMat[0],Scalar(fInterval),fGMat);
+	cuda::multiply(fGMat,Scalar(fInterval),pGMat[0]);
+	pGMat[0].convertTo(depthGMat,CV_8UC1);
+
+	cv::cuda::cvtColor(depthGMat, idxGMat, CV_GRAY2BGR);
+	m_pGpuLUT->transform(idxGMat,segGMat);
+
+	m_pDepth->update(&depthGMat);
+	m_pSeg->update(&segGMat);
 
 }
 
@@ -266,7 +296,7 @@ void _DenseFlow::generateFlowMap(const GpuMat& d_flow)
 	Mat out;
 	drawOpticalFlow(flowx, flowy, out, 10);
 
-	out.copyTo(m_showMat);
+//	out.copyTo(m_cMat);
 
 //	imshow("Dense Flow",out);
 

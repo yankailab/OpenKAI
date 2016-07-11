@@ -29,7 +29,6 @@ _DepthDetector::~_DepthDetector()
 
 bool _DepthDetector::init(JSON* pJson, string camName)
 {
-
 	int disparity;
 	CHECK_ERROR(pJson->getVal("CAM_"+camName+"_STEREO_DISPARITY", &disparity));
 
@@ -98,6 +97,7 @@ void _DepthDetector::detect(void)
 //		cuda::divide(gMat,Scalar(50),gMat2);
 //		cuda::multiply(gMat2,Scalar(50),gMat);
 		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
+		//TODO: general multiple layers
 
 		gMat2.download(m_Mat);
 

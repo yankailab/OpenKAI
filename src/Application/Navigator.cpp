@@ -28,22 +28,15 @@ bool Navigator::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
 	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
 
-
 	//Init Camera
 	m_pCamFront = new _CamStream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
 	//Init Optical Flow
-//	m_pDF = new _DenseFlow();
-//	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
-//	m_pDF->m_pCamStream = m_pCamFront;
-//	m_pCamFront->m_bGray = true;
-
-	//TODO: Move to CamInput
-	//Init Dense Flow
-//	m_p3DFlow = new _3DFlow();
-//	m_p3DFlow->init(pJson, "DEFAULT");
-//	m_p3DFlow->m_pDF = m_pDF;
+	m_pDF = new _DenseFlow();
+	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
+	m_pDF->m_pCamStream = m_pCamFront;
+	m_pCamFront->m_bGray = true;
 
 	//Init ROI Tracker
 	m_pROITracker = new _ROITracker();
@@ -97,8 +90,7 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->start();
 	m_pClassifier->start();
 	m_pDD->start();
-//	m_pDF->start();
-//	m_p3DFlow->start();
+	m_pDF->start();
 
 	//UI thread
 	m_bRun = true;
@@ -136,8 +128,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMD->stop();
 	m_pClassifier->stop();
 	m_pDD->stop();
-//	m_pDF->stop();
-//	m_p3DFlow->stop();
+	m_pDF->stop();
 
 	m_pAP->complete();
 	m_pROITracker->complete();
@@ -146,8 +137,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMD->complete();
 	m_pClassifier->complete();
 	m_pDD->complete();
-//	m_pDF->complete();
-//	m_p3DFlow->complete();
+	m_pDF->complete();
 //	m_pCamFront->complete();
 
 	delete m_pMavlink;
@@ -157,8 +147,7 @@ bool Navigator::start(JSON* pJson)
 	delete m_pMD;
 	delete m_pClassifier;
 	delete m_pDD;
-//	delete m_pDF;
-//	delete m_p3DFlow;
+	delete m_pDF;
 
 	return 0;
 
@@ -256,7 +245,13 @@ void Navigator::showScreen(void)
 //	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	imshow(APP_NAME,imMat3);
-	imshow("Depth", m_pDD->showMat);
+
+	if(!m_pDF->m_pSeg->empty())
+	{
+		imshow("Flow", *(m_pDF->m_pSeg->getCMat()));
+	}
+
+//	imshow("Depth", m_pDD->showMat);
 
 //	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
 //	imshow(APP_NAME,*m_pDD->m_pDepth->getCMat());

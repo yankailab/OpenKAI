@@ -32,13 +32,14 @@ _3DFlow::~_3DFlow()
 
 bool _3DFlow::init(JSON* pJson, string name)
 {
-//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_size.width));
-//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_size.height));
-
+	string presetDir = "";
+	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
 	string labelFile;
-	CHECK_FATAL(pJson->getVal("DENSEFLOWDEPTH_COLOR_FILE_"+name, &labelFile));
+	CHECK_FATAL(pJson->getVal("3DFLOW_"+name+"_COLOR_FILE", &labelFile));
+	double FPS = DEFAULT_FPS;
+	CHECK_INFO(pJson->getVal("3DFLOW_"+name+"_FPS", &FPS));
 
-	m_labelColor = imread(labelFile, 1);
+	m_labelColor = imread(presetDir+labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
 
 
@@ -50,7 +51,7 @@ bool _3DFlow::init(JSON* pJson, string name)
 	m_pDepth = new CamFrame();
 	m_pSeg = new CamFrame();
 
-	this->setTargetFPS(30.0);
+	this->setTargetFPS(FPS);
 	return true;
 }
 
@@ -167,9 +168,9 @@ void _3DFlow::findDepthGPU(void)
 	cuda::abs(pFlowGMat[1],pGMat[1]);
 	cuda::add(pGMat[0],pGMat[1],fGMat);
 
-	m_flowMax = cuda::sum(fGMat)[0] / (fGMat.cols*fGMat.rows);
-	fInterval = 1.0/m_flowMax;
-	fInterval *= 50.0;
+//	m_flowMax = cuda::sum(fGMat)[0] / (fGMat.cols*fGMat.rows);
+//	fInterval = 1.0/m_flowMax;
+//	fInterval *= 50.0;
 
 //	cuda::min(fGMat,Scalar(m_flowMax),pGMat[0]);
 //	cuda::multiply(pGMat[0],Scalar(fInterval),fGMat);

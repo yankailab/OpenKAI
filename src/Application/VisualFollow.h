@@ -20,7 +20,6 @@
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Image/_DenseFlow.h"
-#include "../Image/_3DFlow.h"
 #include "../Tracker/_ROITracker.h"
 
 #define APP_NAME "VISUAL_FOLLOW"
@@ -48,7 +47,6 @@ public:
 	_VehicleInterface* m_pVlink;
 	_CascadeDetector* m_pCascade;
 	_DenseFlow* m_pDF;
-	_3DFlow* m_pDFDepth;
 	_ROITracker* m_pROITracker;
 
 	CamFrame* m_pShow;

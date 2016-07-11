@@ -176,12 +176,11 @@ GpuMat* CamInput::readFrame(void)
 			// Retrieve left color image
 			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			m_Gframe = GpuMat(Size(m_width,m_height), CV_8UC4, gLeft.data);
+			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
 
 			// Retrieve depth map
 			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH);
 			m_Gdepth = GpuMat(Size(m_width,m_height), CV_8UC4, gDepth.data);
-
-			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
 			cuda::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 
 			return &m_Gframe2;
@@ -218,6 +217,9 @@ GpuMat* CamInput::getDepthFrame(void)
 	{
 		return &m_Gdepth2;
 	}
+
+	//Get Depth map using optical flow for mono camera
+
 
 	return NULL;
 }
