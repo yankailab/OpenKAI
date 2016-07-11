@@ -17,6 +17,9 @@ _DepthDetector::_DepthDetector()
 	m_pClassifier = NULL;
 	m_pGray = NULL;
 
+	m_minObjArea = 0;
+	m_maxObjArea = 10000000;
+
 	m_pFrame = new CamFrame();
 }
 
@@ -31,8 +34,11 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	CHECK_ERROR(pJson->getVal("CAM_"+camName+"_STEREO_DISPARITY", &disparity));
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("DEPTH_DETECTOR_FPS", &FPS));
+	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
 	this->setTargetFPS(FPS);
+
+	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MIN", &m_minObjArea));
+	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MAX", &m_maxObjArea));
 
 	m_pStereo = new CamStereo();
 	m_pStereo->init(disparity);
@@ -79,28 +85,35 @@ void _DepthDetector::detect(void)
 	int i, j;
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-	Rect boundRect;
-	Mat imMat;
+	Rect bb;
+	GpuMat gMat;
+	GpuMat gMat2;
 
+	if(m_pClassifier==NULL)return;
 	if(m_pCamStream==NULL)return;
 	m_pCam = m_pCamStream->getCameraInput();
 
 	if(m_pCam->getType() == CAM_ZED)
 	{
-		m_pDepth->update(m_pCam->getDepthFrame());
+		gMat = *(m_pCam->getDepthFrame());
+		if(gMat.empty())return;
 
-		if(m_pDepth->empty())return;
+//		cuda::divide(gMat,Scalar(50),gMat2);
+//		cuda::multiply(gMat2,Scalar(50),gMat);
+		gMat.download(m_Mat);
 
-		m_contourMat = *(m_pDepth->getCMat());
-
-		m_contourMat.copyTo(imMat);
+//		pGMat[0].convertTo(depthGMat,CV_8UC1);
+	}
+	else
+	{
+		//Temporal
+		return;
 	}
 
 	// Find contours
-	findContours(m_contourMat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-	//	findContours(m_frame, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+	findContours(m_Mat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
-	drawContours(imMat, contours, -1, Scalar(0, 255, 0), 2);
+//	drawContours(imMat, contours, -1, Scalar(0, 255, 0), 2);
 
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
@@ -109,38 +122,13 @@ void _DepthDetector::detect(void)
 	{
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 
-		boundRect = boundingRect(Mat(contours_poly[i]));
-		if (boundRect.area() < 1000)
-			continue;
+		bb = boundingRect(Mat(contours_poly[i]));
+		if (bb.area() < m_minObjArea)continue;
+		if (bb.area() < m_maxObjArea)continue;
 
-//		int extraW = boundRect.width * 0.15;
-//		int extraH = boundRect.height * 0.15;
-//
-//		boundRect.x -= extraW;
-//		boundRect.y -= extraH;
-//		if (boundRect.x < 0)
-//			boundRect.x = 0;
-//		if (boundRect.y < 0)
-//			boundRect.y = 0;
-//
-//		boundRect.width += extraW + extraW;
-//		boundRect.height += extraH + extraH;
-//
-//		int overW = m_Mat.cols - boundRect.x - boundRect.width;
-//		int overH = m_Mat.rows - boundRect.y - boundRect.height;
-//		if (overW < 0)
-//			boundRect.width += overW;
-//		if (overH < 0)
-//			boundRect.height += overH;
-
-		rectangle( imMat, boundRect, Scalar( 0, 0, 255 ), 2 );
-
-//		m_pClassifier->addObject(&m_Mat,&boundRect,&contours_poly[i]);
-
-
+		m_pClassifier->addObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
-	imshow("Depth",imMat);
 
 //
 //	m_pGray = m_pCamStream->getGrayFrame();

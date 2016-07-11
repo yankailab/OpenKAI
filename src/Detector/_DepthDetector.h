@@ -46,13 +46,16 @@ public:
 	CamFrame*	m_pDepth;
 	uint64_t	m_camFrameID;
 
-	Mat			m_contourMat;
 	Mat			m_Mat;
 
 	_CamStream*	m_pCamStream;
 	CamInput*	m_pCam;
 	CamFrame*	m_pFrame;
 	CamStereo*	m_pStereo;
+
+	int			m_minObjArea;
+	int			m_maxObjArea;
+
 
 	//Classifier
 //	NNClassifier m_classifier;

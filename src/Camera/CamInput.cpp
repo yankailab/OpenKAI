@@ -120,6 +120,7 @@ bool CamInput::openCamera(void)
 		zedParams.unit = sl::zed::UNIT::MILLIMETER;
 		zedParams.verbose = 1;
 		zedParams.device = -1;
+		zedParams.minimumDistance = 1000;
 
 		sl::zed::ERRCODE err = m_pZed->init(zedParams);
 		if (err != sl::zed::SUCCESS)
@@ -169,24 +170,18 @@ GpuMat* CamInput::readFrame(void)
 #ifdef USE_ZED
 	if (m_camType == CAM_ZED)
 	{
-
 		// Grab frame and compute depth in FULL sensing mode
 		if (!m_pZed->grab(m_zedMode))
 		{
-			//TODO: copy from GPU memory directly
-
 			// Retrieve left color image
-			sl::zed::Mat left = m_pZed->retrieveImage(sl::zed::SIDE::LEFT);
-			memcpy(m_frame.data, left.data,	m_width * m_height * 4 * sizeof(uchar));
+			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
+			m_Gframe = GpuMat(Size(m_width,m_height), CV_8UC4, gLeft.data);
 
 			// Retrieve depth map
-			sl::zed::Mat depthmap = m_pZed->normalizeMeasure(sl::zed::MEASURE::DEPTH);
-			memcpy(m_depthFrame.data, depthmap.data, m_width * m_height * 4 * sizeof(uchar));
+			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH);
+			m_Gdepth = GpuMat(Size(m_width,m_height), CV_8UC4, gDepth.data);
 
-			m_Gframe.upload(m_frame);
 			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
-
-			m_Gdepth.upload(m_depthFrame);
 			cuda::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 
 			return &m_Gframe2;

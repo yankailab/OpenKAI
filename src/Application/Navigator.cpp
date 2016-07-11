@@ -50,11 +50,6 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->init(pJson, "DRONE");
 	m_pROITracker->m_pCamStream = m_pCamFront;
 
-	//Init Depth Detector
-	m_pDD = new _DepthDetector();
-	m_pDD->init(pJson,"FRONTL");
-	m_pDD->m_pCamStream = m_pCamFront;
-
 	//Init Marker Detector
 	m_pMD = new _MarkerDetector();
 	m_pMD->init(pJson,"LANDING");
@@ -76,6 +71,12 @@ bool Navigator::start(JSON* pJson)
 	//Init Classifier Manager
 	m_pClassifier = new _Classifier();
 	m_pClassifier->init(pJson);
+
+	//Init Depth Detector
+	m_pDD = new _DepthDetector();
+	m_pDD->init(pJson,"FRONTL");
+	m_pDD->m_pCamStream = m_pCamFront;
+	m_pDD->m_pClassifier = m_pClassifier;
 
 
 	//Main window
@@ -173,6 +174,7 @@ void Navigator::showScreen(void)
 
 	if (pFrame->empty())return;
 	imMat = *pFrame->getCMat();
+	imMat.copyTo(imMat2);
 
 	for(i=0; i<m_pMD->m_numCircle; i++)
 	{
@@ -186,18 +188,6 @@ void Navigator::showScreen(void)
 	m_pMD->getCircleCenter(&markerCenter);
 
 	circle(imMat, Point(markerCenter.m_x,markerCenter.m_y), 10, Scalar(0, 0, 255), 5);
-
-
-
-
-
-	cv::Rect imrect;
-	imrect.x = 0;
-	imrect.y = 0;
-	imrect.width = imMat.cols;
-	imrect.height = imMat.rows;
-
-	m_pClassifier->addObject(&imMat,&imrect,NULL);
 
 	OBJECT* pObj;
 	vector< vector< Point > > contours;
@@ -213,30 +203,32 @@ void Navigator::showScreen(void)
 		{
 			if (pObj->m_name[0].empty())continue;
 
-			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
+//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
 
-	//			drawContours(imMat, contours, -1, Scalar(0, 255, 0),2);
+			drawContours(imMat2, contours, -1, Scalar(0, 255, 0),CV_FILLED);
 
-			putText(imMat, pObj->m_name[0], pObj->m_boundBox.tl(),
-					FONT_HERSHEY_SIMPLEX, 0.9, Scalar(255, 0, 0), 2);
+			putText(imMat, pObj->m_name[0], Point(pObj->m_boundBox.x+pObj->m_boundBox.width/2,
+					pObj->m_boundBox.y+pObj->m_boundBox.height/2) ,
+					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
 		}
 
 		//Yellow
 		if(pObj->m_status == OBJ_CLASSIFYING)
 		{
-	//			drawContours(imMat, contours, -1, Scalar(0, 255, 255),1);
-			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 255, 255), 1);
+			drawContours(imMat, contours, -1, Scalar(0, 255, 255),1);
+//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
 		}
 
 		//Red
 		if(pObj->m_status == OBJ_ADDED)
 		{
-	//			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
-			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 0, 255), 1);
+			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
+//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
 		}
 	}
+
+	cv::addWeighted(imMat, 1.0, imMat2, 0.125, 0.0, imMat3);
+
 
 //	if(m_p3DFlow->m_pDepth->empty())return;
 //
@@ -255,15 +247,17 @@ void Navigator::showScreen(void)
 
 //	if(m_pDD->m_pDepth->empty())return;
 
-	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Classifier FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Classifier FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat3, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "FlowDepth FPS: "+f2str(m_p3DFlow->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 //	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	imshow(APP_NAME,imMat);
+	imshow(APP_NAME,imMat3);
+//	imshow("Depth", m_pDD->m_Mat);
+
 //	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
 //	imshow(APP_NAME,*m_pDD->m_pDepth->getCMat());
 

@@ -62,7 +62,6 @@ bool _Classifier::init(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_POS_DISPARITY", &m_disparity));
-	CHECK_ERROR(pJson->getVal("CLASSIFIER_DISPARITY", &m_disparity));
 
 
 	double FPS = DEFAULT_FPS;
@@ -116,6 +115,7 @@ void _Classifier::classifyObject(void)
 	OBJECT* pObj;
 	int numBatch;
 	OBJECT* pObjBatch[NUM_DETECT_BATCH];
+	string* pName;
 
 	numBatch = 0;
 
@@ -177,14 +177,15 @@ void _Classifier::classifyObject(void)
 		for (j = 0; j < m_vPredictions[i].size(); j++)
 		{
 			Prediction p = m_vPredictions[i][j];
+			pName = &pObj->m_name[j];
 
-			pObj->m_name[j] = p.first;
+			*pName = p.first;
 			pObj->m_prob[j] = p.second;
 
-			int from = pObj->m_name[j].find_first_of(' ');
-			int to = pObj->m_name[j].find_first_of(' ');
+			int from = pName->find_first_of(' ');
+			int to = pName->find_first_of(',');
 
-			pObj->m_name[j] = pObj->m_name[j].substr(from + 1, pObj->m_name[j].length());
+			*pName = pName->substr(from+1, to-from);// pObj->m_name[j].length());
 
 			if (j >= NUM_OBJECT_NAME)break;
 		}
@@ -238,6 +239,7 @@ OBJECT* _Classifier::addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 
 		//Update the Rect
 		pObj->m_boundBox = *pRect;
+		pObj->m_vContours = *pContour;
 
 		return pObj;
 	}
