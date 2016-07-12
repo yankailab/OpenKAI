@@ -19,7 +19,7 @@
 #include "../Interface/_MavlinkInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
-#include "../Image/_DenseFlow.h"
+#include "../Vision/_Flow.h"
 #include "../Detector/_DepthDetector.h"
 #include "../Detector/_MarkerDetector.h"
 #include "../Tracker/_ROITracker.h"
@@ -47,7 +47,7 @@ public:
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_CascadeDetector* m_pCascade;
-	_DenseFlow* m_pDF;
+	_Flow* m_pFlow;
 	_ROITracker* m_pROITracker;
 	_SegNet* m_pSegNet;
 	_DepthDetector* m_pDD;
@@ -63,7 +63,7 @@ public:
 	void showScreen(void);
 
 	void handleMouse(int event, int x, int y, int flags);
-	void showInfo(UMat* pDisplayMat);
+	void showInfo(Mat* pDisplayMat);
 	void handleKey(int key);
 
 };

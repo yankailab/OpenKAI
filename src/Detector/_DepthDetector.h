@@ -40,8 +40,6 @@ private:
 
 public:
 	_Classifier* m_pClassifier;
-
-	CamFrame*	m_pGray;
 	CamFrame*	m_pDepth;
 	uint64_t	m_camFrameID;
 

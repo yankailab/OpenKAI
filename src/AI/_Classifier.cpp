@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_Classifier.h>
+#include "_Classifier.h"
 
 namespace kai
 {

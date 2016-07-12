@@ -8,6 +8,7 @@
 #ifndef SRC_3DFlow_H_
 #define SRC_3DFlow_H_
 
+#include <workspace/OpenKAI/OpenKAI/src/Vision/_Flow.h>
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Detector/DetectorBase.h"
@@ -15,7 +16,6 @@
 #include "stdio.h"
 #include "../Camera/_CamStream.h"
 #include "../Camera/FrameGroup.h"
-#include "../Image/_DenseFlow.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -44,7 +44,7 @@ private:
 	}
 
 public:
-	_DenseFlow*	m_pDF;
+	_Flow*	m_pDF;
 	Rect	m_ROI;
 	double	m_flowMax;
 	double	m_flowAvr; //average flow distance in previous frame

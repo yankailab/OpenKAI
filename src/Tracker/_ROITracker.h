@@ -8,6 +8,7 @@
 #ifndef SRC_ROITRACKER_H_
 #define SRC_ROITRACKER_H_
 
+#include <workspace/OpenKAI/OpenKAI/src/Vision/_Flow.h>
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Detector/DetectorBase.h"
@@ -15,7 +16,6 @@
 #include "stdio.h"
 #include "../Camera/_CamStream.h"
 #include "../Camera/FrameGroup.h"
-#include "../Image/_DenseFlow.h"
 
 using namespace cv;
 using namespace cv::cuda;

@@ -33,9 +33,9 @@ bool Navigator::start(JSON* pJson)
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
 	//Init Optical Flow
-	m_pDF = new _DenseFlow();
-	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
-	m_pDF->m_pCamStream = m_pCamFront;
+	m_pFlow = new _Flow();
+	CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
+	m_pFlow->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 
 	//Init ROI Tracker
@@ -77,11 +77,6 @@ bool Navigator::start(JSON* pJson)
 	m_pMat = new CamFrame();
 	m_pMat2 = new CamFrame();
 
-	//Init UI Monitor
-//	m_pUIMonitor = new UIMonitor();
-//	m_pUIMonitor->init("OpenKAI demo", pJson);
-//	m_pUIMonitor->addFullFrame(m_pShow);
-
 	//Start threads
 	m_pCamFront->start();
 	m_pMavlink->start();
@@ -90,7 +85,7 @@ bool Navigator::start(JSON* pJson)
 	m_pROITracker->start();
 	m_pClassifier->start();
 	m_pDD->start();
-	m_pDF->start();
+	m_pFlow->start();
 
 	//UI thread
 	m_bRun = true;
@@ -128,7 +123,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMD->stop();
 	m_pClassifier->stop();
 	m_pDD->stop();
-	m_pDF->stop();
+	m_pFlow->stop();
 
 	m_pAP->complete();
 	m_pROITracker->complete();
@@ -137,7 +132,7 @@ bool Navigator::start(JSON* pJson)
 	m_pMD->complete();
 	m_pClassifier->complete();
 	m_pDD->complete();
-	m_pDF->complete();
+	m_pFlow->complete();
 //	m_pCamFront->complete();
 
 	delete m_pMavlink;
@@ -147,7 +142,7 @@ bool Navigator::start(JSON* pJson)
 	delete m_pMD;
 	delete m_pClassifier;
 	delete m_pDD;
-	delete m_pDF;
+	delete m_pFlow;
 
 	return 0;
 
@@ -246,9 +241,9 @@ void Navigator::showScreen(void)
 
 	imshow(APP_NAME,imMat3);
 
-	if(!m_pDF->m_pSeg->empty())
+	if(!m_pFlow->m_pDepth->empty())
 	{
-		imshow("Flow", *(m_pDF->m_pSeg->getCMat()));
+		imshow("Flow", *(m_pFlow->m_pDepth->getCMat()));
 	}
 
 //	imshow("Depth", m_pDD->showMat);
@@ -264,7 +259,7 @@ void Navigator::showScreen(void)
 
 #define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-void Navigator::showInfo(UMat* pDisplayMat)
+void Navigator::showInfo(Mat* pDisplayMat)
 {
 	char strBuf[512];
 	std::string strInfo;
@@ -328,17 +323,9 @@ void Navigator::handleKey(int key)
 
 void Navigator::handleMouse(int event, int x, int y, int flags)
 {
-	Rect2d roi;
-	int roisize = 200;
-
 	switch (event)
 	{
 	case EVENT_LBUTTONDOWN:
-		roi.x = x - roisize/2;
-		roi.y = y - roisize/2;
-		roi.width = roisize;
-		roi.height = roisize;
-		m_pROITracker->setROI(roi);
 		break;
 	case EVENT_LBUTTONUP:
 		break;

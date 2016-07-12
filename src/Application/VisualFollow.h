@@ -19,7 +19,7 @@
 #include "../Interface/_VehicleInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
-#include "../Image/_DenseFlow.h"
+#include "../Vision/_Flow.h"
 #include "../Tracker/_ROITracker.h"
 
 #define APP_NAME "VISUAL_FOLLOW"
@@ -46,7 +46,7 @@ public:
 	_MavlinkInterface* m_pMavlink;
 	_VehicleInterface* m_pVlink;
 	_CascadeDetector* m_pCascade;
-	_DenseFlow* m_pDF;
+	_Flow* m_pDF;
 	_ROITracker* m_pROITracker;
 
 	CamFrame* m_pShow;

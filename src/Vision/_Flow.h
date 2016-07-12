@@ -1,12 +1,12 @@
 /*
- * CameraOpticalFlow.h
+ * _Flow.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_DENSEFLOW_H_
-#define SRC_DENSEFLOW_H_
+#ifndef SRC_FLOW_H_
+#define SRC_FLOW_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
@@ -23,11 +23,11 @@ using namespace std;
 namespace kai
 {
 
-class _DenseFlow:  public DetectorBase, public _ThreadBase
+class _Flow:  public DetectorBase, public _ThreadBase
 {
 public:
-	_DenseFlow();
-	virtual ~_DenseFlow();
+	_Flow();
+	virtual ~_Flow();
 
 	bool init(JSON* pJson, string camName);
 	bool start(void);
@@ -42,42 +42,31 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DenseFlow*) This)->update();
+		((_Flow*) This)->update();
 		return NULL;
 	}
 
 public:
-	fVector4	m_flow;
-	GpuMat		m_GFlowMat;
-//	Mat 		m_cMat;
-
 	int	m_width;
 	int m_height;
-
-	Mat m_cFlowMat;
-	Mat m_flowX;
-	Mat m_flowY;
-
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
+	_CamStream*						m_pCamStream;
+	FrameGroup*						m_pGrayFrames;
+	GpuMat							m_GFlowMat;
+	GpuMat							m_GDMat;
 
-	_CamStream*			m_pCamStream;
-	FrameGroup*			m_pGrayFrames;
-
-	bool		m_bDepth;
-
+	int		m_bDepth;
 	double	m_flowMax;
 	double	m_flowAvr; //average flow distance in previous frame
-	int		m_targetArea;
-
 	CamFrame* m_pDepth;
-	CamFrame* m_pSeg;
 
-	Mat m_labelColor;
-	Ptr<LookUpTable>	m_pGpuLUT;
+//	Mat m_labelColor;
+//	Ptr<LookUpTable>	m_pGpuLUT;
+
 
 
 };
 
 } /* namespace kai */
 
-#endif /* SRC_CAMDENSEFLOW_H_ */
+#endif /* SRC_FLOW_H_ */

@@ -15,8 +15,6 @@ _DepthDetector::_DepthDetector()
 	DetectorBase();
 
 	m_pClassifier = NULL;
-	m_pGray = NULL;
-
 	m_minObjArea = 0;
 	m_maxObjArea = 10000000;
 
@@ -29,9 +27,6 @@ _DepthDetector::~_DepthDetector()
 
 bool _DepthDetector::init(JSON* pJson, string camName)
 {
-	int disparity;
-	CHECK_ERROR(pJson->getVal("CAM_"+camName+"_STEREO_DISPARITY", &disparity));
-
 	double FPS = DEFAULT_FPS;
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
 	this->setTargetFPS(FPS);
@@ -39,9 +34,7 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MIN", &m_minObjArea));
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MAX", &m_maxObjArea));
 
-	m_pGray = new CamFrame();
 	m_pDepth = new CamFrame();
-
 	m_camFrameID = 0;
 
 	return true;

@@ -23,7 +23,7 @@
 #include "../UI/UIMonitor.h"
 #include "../Interface/_VehicleInterface.h"
 #include "../Utility/util.h"
-#include "../Image/_DenseFlow.h"
+#include "../Vision/_Flow.h"
 
 #define APP_NAME "EXT_CAM_CONTROL"
 
