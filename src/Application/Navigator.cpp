@@ -70,7 +70,7 @@ bool Navigator::start(JSON* pJson)
 	m_pDD->init(pJson,"FRONTL");
 	m_pDD->m_pCamStream = m_pCamFront;
 	m_pDD->m_pClassifier = m_pClassifier;
-
+	m_pDD->m_pFlow = m_pFlow;
 
 	//Main window
 	m_pShow = new CamFrame();
@@ -241,16 +241,10 @@ void Navigator::showScreen(void)
 
 	imshow(APP_NAME,imMat3);
 
-	if(!m_pFlow->m_pDepth->empty())
+	if(!m_pDD->m_Mat.empty())
 	{
-		imshow("Flow", *(m_pFlow->m_pDepth->getCMat()));
+		imshow("Contour", m_pDD->m_Mat);
 	}
-
-//	imshow("Depth", m_pDD->showMat);
-
-//	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
-//	imshow(APP_NAME,*m_pDD->m_pDepth->getCMat());
-
 
 //	g_pShow->updateFrame(&imMat3);
 //	g_pUIMonitor->show();

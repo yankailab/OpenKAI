@@ -18,7 +18,8 @@ _DepthDetector::_DepthDetector()
 	m_minObjArea = 0;
 	m_maxObjArea = 10000000;
 
-	m_pFrame = new CamFrame();
+	m_pFlow = NULL;
+	m_pCamStream = NULL;
 }
 
 _DepthDetector::~_DepthDetector()
@@ -87,24 +88,32 @@ void _DepthDetector::detect(void)
 		gMat = *(m_pCam->getDepthFrame());
 		if(gMat.empty())return;
 
+		//TODO: general multiple layers
 //		cuda::divide(gMat,Scalar(50),gMat2);
 //		cuda::multiply(gMat2,Scalar(50),gMat);
+
 		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
-		//TODO: general multiple layers
 
 		gMat2.download(m_Mat);
-
 	}
 	else
 	{
-		//Temporal
-		return;
+		//Use Flow
+		if(m_pFlow==NULL)return;
+		if(m_pFlow->m_pDepth->empty())return;
+
+		gMat = *(m_pFlow->m_pDepth->getGMat());
+		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
+
+		gMat2.download(m_Mat);
+//		m_Mat = *(m_pFlow->m_pDepth->getCMat());
 	}
 
-	m_Mat.copyTo(showMat);
+	Mat cMat;
+	m_Mat.copyTo(cMat);
 
 	// Find contours
-	findContours(m_Mat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);//SIMPLE);
+	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);//SIMPLE);
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
 
@@ -118,6 +127,12 @@ void _DepthDetector::detect(void)
 
 		m_pClassifier->addObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
+
+
+
+
+
+
 
 
 //

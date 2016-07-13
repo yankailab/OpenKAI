@@ -129,7 +129,7 @@ void _Flow::detect(void)
 
 	cuda::abs(m_GFlowMat, GMat);
 	cuda::split(GMat, pGMat);
-	cuda::multiply(pGMat[0],pGMat[1], GMat);
+	cuda::add(pGMat[0],pGMat[1], GMat);
 	cuda::multiply(GMat, Scalar(100), pGMat[1]);
 
 	pGMat[1].convertTo(*(m_pDepth->getGMat()),CV_8UC1);

@@ -11,6 +11,7 @@
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
 #include "../Camera/_CamStream.h"
+#include "../Vision/_Flow.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -42,24 +43,15 @@ public:
 	_Classifier* m_pClassifier;
 	CamFrame*	m_pDepth;
 	uint64_t	m_camFrameID;
-
-	Mat			m_Mat;
-
 	_CamStream*	m_pCamStream;
 	CamInput*	m_pCam;
-	CamFrame*	m_pFrame;
+	_Flow*		m_pFlow;
+
+	Mat			m_Mat;
 
 	int			m_minObjArea;
 	int			m_maxObjArea;
 
-	Mat showMat;
-
-
-
-	//Classifier
-//	NNClassifier m_classifier;
-//	vector<Prediction> m_predictions;
-//	vector<vector<Prediction> > m_vPredictions;
 
 };
 }

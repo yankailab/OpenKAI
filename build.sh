@@ -1,6 +1,6 @@
-INCLUDES="-I/home/ubuntu/apm/caffe/include -I/home/ubuntu/apm/caffe/build/include -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/zed/include"
+INCLUDES="-I/home/ubuntu/src/caffe/include -I/home/ubuntu/src/caffe/build/include -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/opencv3/include"
 OPTIONS="-O3 -w -Wall -c -fmessage-length=0 -MMD -MP"
-LINKERS="-L/usr/local/lib -L/usr/local/zed/lib -L/home/ubuntu/apm/caffe/build/lib -L/home/ubuntu/apm/caffe/build"
+LINKERS="-L/usr/local/lib -L/usr/local/opencv3/lib -L/home/ubuntu/src/caffe/build/lib -L/home/ubuntu/src/caffe/build"
 
 g++ $INCLUDES $OPTIONS -MF"build/ClassifierBase.d" -MT"build/ClassifierBase.d" -o "build/ClassifierBase.o" "src/AI/ClassifierBase.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_Classifier.d" -MT"build/_Classifier.d" -o "build/_Classifier.o" "src/AI/_Classifier.cpp"
@@ -45,5 +45,5 @@ g++ $INCLUDES $OPTIONS -MF"build/UIMonitor.d" -MT"build/UIMonitor.d" -o "build/U
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "OpenKAI" ./build/ClassifierBase.o ./build/_Classifier.o ./build/_DNNCaffe.o ./build/_DNNCaffeFCN.o ./build/_SegNet.o ./build/Filter.o ./build/VisualFollow.o ./build/ExtCamControl.o ./build/SegNetDemo.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_Flow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_ROITracker.o ./build/UIMonitor.o ./build/demo.o -lsl_zed -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
+g++ $LINKERS -o "OpenKAI" ./build/ClassifierBase.o ./build/_Classifier.o ./build/_DNNCaffe.o ./build/_DNNCaffeFCN.o ./build/_SegNet.o ./build/Filter.o ./build/VisualFollow.o ./build/ExtCamControl.o ./build/SegNetDemo.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_Flow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_ROITracker.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
 
