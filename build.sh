@@ -1,4 +1,4 @@
-INCLUDES="-I/home/ubuntu/src/caffe/include -I/home/ubuntu/src/caffe/build/include -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/opencv3/include"
+INCLUDES="-I/home/ubuntu/src/caffe/include -I/home/ubuntu/src/caffe/build/src -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/opencv3/include"
 OPTIONS="-O3 -w -Wall -c -fmessage-length=0 -MMD -MP"
 LINKERS="-L/usr/local/lib -L/usr/local/opencv3/lib -L/home/ubuntu/src/caffe/build/lib -L/home/ubuntu/src/caffe/build"
 

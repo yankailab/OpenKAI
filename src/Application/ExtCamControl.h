@@ -8,7 +8,7 @@
 #ifndef SRC_EXTCAMCONTROL_H_
 #define SRC_EXTCAMCONTROL_H_
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_Classifier.h>
+#include "../AI/_Classifier.h"
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
