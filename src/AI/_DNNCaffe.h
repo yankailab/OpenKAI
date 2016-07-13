@@ -63,6 +63,8 @@ public:
 
 	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs, int num_classes);
 
+	void setModeGPU();
+
 private:
 	void SetMean(const string& mean_file);
 	std::vector<float> Predict(const Mat& img);

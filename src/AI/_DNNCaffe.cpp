@@ -70,6 +70,11 @@ void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 
 }
 
+void _DNNCaffe::setModeGPU(void)
+{
+	Caffe::set_mode(Caffe::GPU);
+}
+
 void _DNNCaffe::WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];

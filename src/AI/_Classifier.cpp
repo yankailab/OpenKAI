@@ -87,6 +87,8 @@ bool _Classifier::start(void)
 
 void _Classifier::update(void)
 {
+	m_classifier.setModeGPU();
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
