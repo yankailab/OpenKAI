@@ -5,20 +5,20 @@
  *      Author: yankai
  */
 
-#include "_DNNCaffe.h"
+#include <workspace/OpenKAI/OpenKAI/src/AI/_Caffe.h>
 namespace kai
 {
-_DNNCaffe::_DNNCaffe()
+_Caffe::_Caffe()
 {
 	num_channels_ = 0;
 	batch_size_ = 0;
 }
 
-_DNNCaffe::~_DNNCaffe()
+_Caffe::~_Caffe()
 {
 }
 
-void _DNNCaffe::setup(const string& model_file, const string& trained_file,
+void _Caffe::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file, int batch_size)
 {
 #ifdef CPU_ONLY
@@ -67,12 +67,12 @@ void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 
 }
 
-void _DNNCaffe::setModeGPU(void)
+void _Caffe::setModeGPU(void)
 {
 	Caffe::set_mode(Caffe::GPU);
 }
 
-void _DNNCaffe::WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch)
+void _Caffe::WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 
@@ -116,7 +116,7 @@ static std::vector<int> Argmax(const std::vector<float>& v, int N)
 }
 
 /* Load the mean file in binaryproto format. */
-void _DNNCaffe::SetMean(const string& mean_file)
+void _Caffe::SetMean(const string& mean_file)
 {
 	BlobProto blob_proto;
 	ReadProtoFromBinaryFileOrDie(mean_file.c_str(), &blob_proto);
@@ -148,7 +148,7 @@ void _DNNCaffe::SetMean(const string& mean_file)
 	mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 }
 
-std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(const vector<cv::Mat> imgs, int num_classes)
+std::vector<vector<Prediction> > _Caffe::ClassifyBatch(const vector<cv::Mat> imgs, int num_classes)
 {
 	vector<float> output_batch = PredictBatch(imgs);
 
@@ -178,7 +178,7 @@ std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(const vector<cv::Mat> 
 	return predictions;
 }
 
-std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
+std::vector<float> _Caffe::PredictBatch(const vector<cv::Mat> imgs)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 
@@ -214,7 +214,7 @@ std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
 
 
 
-void _DNNCaffe::PreprocessBatch(const vector<cv::Mat> imgs,	std::vector<std::vector<cv::Mat> >* input_batch)
+void _Caffe::PreprocessBatch(const vector<cv::Mat> imgs,	std::vector<std::vector<cv::Mat> >* input_batch)
 {
 	for (int i = 0; i < imgs.size(); i++)
 	{

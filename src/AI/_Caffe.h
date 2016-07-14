@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef AI__DNNCAFFEFCN_H_
-#define AI__DNNCAFFEFCN_H_
+#ifndef AI__CAFFE_H_
+#define AI__CAFFE_H_
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
@@ -29,7 +29,7 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Camera/CamFrame.h"
-//#include "../Camera/_CamStream.h"
+
 
 namespace kai
 {
@@ -48,11 +48,11 @@ using namespace cv;
 /* Pair (label, confidence) representing a prediction. */
 typedef std::pair<string, float> Prediction;
 
-class _DNNCaffeFCN: public _ThreadBase
+class _Caffe: public _ThreadBase
 {
 public:
-	_DNNCaffeFCN();
-	~_DNNCaffeFCN();
+	_Caffe();
+	~_Caffe();
 
 	void
 	setup(const string& model_file, const string& trained_file,
@@ -61,8 +61,9 @@ public:
 	std::vector<Prediction>
 	Classify(const cv::Mat& img, int N = 5);
 
-	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs,
-			int num_classes);
+	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs, int num_classes);
+
+	void setModeGPU();
 
 private:
 	void SetMean(const string& mean_file);
@@ -75,7 +76,7 @@ private:
 
 	void update(void);
 	static void* getUpdateThread(void* This) {
-		((_DNNCaffeFCN*) This)->update();
+		((_Caffe*) This)->update();
 		return NULL;
 	}
 
@@ -87,6 +88,7 @@ private:
 	cv::Mat mean_;
 	vector<string> labels_;
 	int batch_size_;
+//	std::vector<std::vector<cv::Mat> > m_input_batch;
 
 	CamFrame* m_pFrame;
 

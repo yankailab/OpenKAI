@@ -8,12 +8,14 @@
 #ifndef SRC_NAVIGATOR_H_
 #define SRC_NAVIGATOR_H_
 
+#include <workspace/OpenKAI/OpenKAI/src/AI/_FCN.h>
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
 
 #include "../AI/_SegNet.h"
 #include "../AI/_Classifier.h"
+#include "../AI/_FCN.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/CamInput.h"
 #include "../Interface/_MavlinkInterface.h"
@@ -42,6 +44,10 @@ public:
 
 	int m_bShowScreen;
 	int m_bFullScreen;
+	int m_waitKey;
+
+	int m_bCaffe;
+	int m_bFCN;
 
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
@@ -53,9 +59,11 @@ public:
 	_DepthDetector* m_pDD;
 	_MarkerDetector* m_pMD;
 	_Classifier* m_pClassifier;
+	_FCN* m_pFCN;
 
 	CamFrame* m_pFrame;
-	UIMonitor* m_pUIMonitor;
+	Mat m_showMat;
+
 
 	bool start(JSON* pJson);
 	void showScreen(void);

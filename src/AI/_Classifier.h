@@ -8,10 +8,10 @@
 #ifndef SRC_AI__CLASSIFIER_H_
 #define SRC_AI__CLASSIFIER_H_
 
+#include <workspace/OpenKAI/OpenKAI/src/AI/_Caffe.h>
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "_DNNCaffe.h"
 
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
@@ -68,7 +68,7 @@ public:
 	vector<Mat> m_vMat;
 
 	//Caffe classifier
-	_DNNCaffe m_caffe;
+	_Caffe m_caffe;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;
