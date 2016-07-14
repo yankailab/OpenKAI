@@ -73,9 +73,7 @@ bool Navigator::start(JSON* pJson)
 	m_pDD->m_pFlow = m_pFlow;
 
 	//Main window
-	m_pShow = new CamFrame();
-	m_pMat = new CamFrame();
-	m_pMat2 = new CamFrame();
+	m_pFrame = new CamFrame();
 
 	//Start threads
 	m_pCamFront->start();
@@ -151,15 +149,24 @@ bool Navigator::start(JSON* pJson)
 void Navigator::showScreen(void)
 {
 	int i;
-	Mat imMat,imMat2,imMat3;
-	CamFrame* pFrame = m_pCamFront->getFrame();
+	Mat imMat,imMat2,imMat3,imShow;
 	MARKER_CIRCLE* pCircle;
 	fVector2 markerCenter;
+	CamFrame* pFrame;
 
-	if (pFrame->empty())return;
+
+	//Update frames
+	pFrame = m_pCamFront->getFrame();
+	if(pFrame->empty())return;
+	if(m_pDD->m_Mat.empty())return;
+
+
+	//Acquire images
 	imMat = *pFrame->getCMat();
-	imMat.copyTo(imMat2);
+	imMat2 = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
 
+
+	//Draw Landing Marker
 	for(i=0; i<m_pMD->m_numCircle; i++)
 	{
 		pCircle = &m_pMD->m_pCircle[i];
@@ -168,11 +175,13 @@ void Navigator::showScreen(void)
 
 	markerCenter.m_x = 0;
 	markerCenter.m_y = 0;
+	if(m_pMD->getCircleCenter(&markerCenter))
+	{
+		circle(imMat, Point(markerCenter.m_x,markerCenter.m_y), 10, Scalar(0, 0, 255), 5);
+	}
 
-	m_pMD->getCircleCenter(&markerCenter);
 
-	circle(imMat, Point(markerCenter.m_x,markerCenter.m_y), 10, Scalar(0, 0, 255), 5);
-
+	//Draw object contours
 	OBJECT* pObj;
 	vector< vector< Point > > contours;
 
@@ -187,8 +196,7 @@ void Navigator::showScreen(void)
 		{
 			if (pObj->m_name[0].empty())continue;
 
-//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0), 2, 5, 0);
-
+			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
 			drawContours(imMat2, contours, -1, Scalar(0, 255, 0),CV_FILLED);
 
 			putText(imMat, pObj->m_name[0], Point(pObj->m_boundBox.x+pObj->m_boundBox.width/2,
@@ -199,55 +207,31 @@ void Navigator::showScreen(void)
 		//Yellow
 		if(pObj->m_status == OBJ_CLASSIFYING)
 		{
-			drawContours(imMat, contours, -1, Scalar(0, 255, 255),1);
+			drawContours(imMat2, contours, -1, Scalar(0, 255, 255),1);
 //			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
 		}
 
 		//Red
 		if(pObj->m_status == OBJ_ADDED)
 		{
-			drawContours(imMat, contours, -1, Scalar(0, 0, 255),1);
+			drawContours(imMat2, contours, -1, Scalar(0, 0, 255),1);
 //			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
 		}
 	}
 
-	cv::addWeighted(imMat, 1.0, imMat2, 0.125, 0.0, imMat3);
+	cv::resize(imMat2, imMat3, Size(imMat.cols,imMat.rows));
+	cv::addWeighted(imMat, 1.0, imMat3, 0.25, 0.0, imShow);
 
+	putText(imShow, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imShow, "Classifier FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imShow, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-//	if(m_p3DFlow->m_pDepth->empty())return;
-//
-//	m_pMat->getResizedOf(m_p3DFlow->m_pSeg, imMat.cols,imMat.rows);
-//	m_pMat2->get8UC3Of(m_pMat);
-//	imMat2 = *m_pMat2->getCMat();
-//
-//	cv::addWeighted(imMat, 1.0, imMat2, 0.35, 0.0, imMat3);
-//
-//	 // draw the tracked object
-//	Rect roi = m_pROITracker->m_ROI;
-//	if(roi.height>0 || roi.width>0)
+	imshow(APP_NAME,imShow);
+
+//	if(!m_pDD->m_Mat.empty())
 //	{
-//		rectangle( imMat3, roi, Scalar( 0, 0, 255 ), 2 );
+//		imshow("Contour", m_pDD->m_Mat);
 //	}
-
-//	if(m_pDD->m_pDepth->empty())return;
-
-	putText(imMat3, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "Classifier FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat3, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat3, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat3, "FlowDepth FPS: "+f2str(m_p3DFlow->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat3, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	putText(imMat3, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	imshow(APP_NAME,imMat3);
-
-	if(!m_pDD->m_Mat.empty())
-	{
-		imshow("Contour", m_pDD->m_Mat);
-	}
-
-//	g_pShow->updateFrame(&imMat3);
-//	g_pUIMonitor->show();
 
 }
 
@@ -289,11 +273,11 @@ void Navigator::handleKey(int key)
 	switch (key)
 	{
 	case 'q':
-		m_pUIMonitor->removeAll();
-		m_pUIMonitor->addFrame(m_pShow, 0, 0, 1980, 1080);
+//		m_pUIMonitor->removeAll();
+//		m_pUIMonitor->addFrame(m_pShow, 0, 0, 1980, 1080);
 		break;
 	case 'w':
-		m_pUIMonitor->removeAll();
+//		m_pUIMonitor->removeAll();
 //		m_pUIMonitor->addFrame(m_pOD->m_pContourFrame, 0,0,1980,1080);
 		break;
 //	case 'e':
@@ -301,7 +285,7 @@ void Navigator::handleKey(int key)
 //		m_pUIMonitor->addFrame(m_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
 //		break;
 	case 'r':
-		m_pUIMonitor->removeAll();
+//		m_pUIMonitor->removeAll();
 //		m_pUIMonitor->addFrame(m_pOD->m_pSaliencyFrame, 0, 0, 1980, 1080);
 		break;
 	case 't':

@@ -56,7 +56,7 @@ bool _Classifier::init(JSON* pJson)
 	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
-	m_classifier.setup(caffeDir+modelFile, caffeDir+trainedFile, caffeDir+meanFile, caffeDir+labelFile, NUM_DETECT_BATCH);
+	m_caffe.setup(caffeDir+modelFile, caffeDir+trainedFile, caffeDir+meanFile, caffeDir+labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
 
 	CHECK_ERROR(pJson->getVal("CLASSIFIER_FRAME_LIFETIME", &m_frameLifeTime));
@@ -87,7 +87,7 @@ bool _Classifier::start(void)
 
 void _Classifier::update(void)
 {
-	m_classifier.setModeGPU();
+	m_caffe.setModeGPU();
 
 	while (m_bThreadON)
 	{
@@ -164,7 +164,7 @@ void _Classifier::classifyObject(void)
 #endif
 
 	//Get the top 5 possible labels
-	m_vPredictions = m_classifier.ClassifyBatch(m_vMat, 5);
+	m_vPredictions = m_caffe.ClassifyBatch(m_vMat, 5);
 	m_vMat.clear();
 
 #ifdef CLASSIFIER_DEBUG

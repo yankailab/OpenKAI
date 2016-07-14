@@ -54,9 +54,7 @@ public:
 	_MarkerDetector* m_pMD;
 	_Classifier* m_pClassifier;
 
-	CamFrame* m_pShow;
-	CamFrame* m_pMat;
-	CamFrame* m_pMat2;
+	CamFrame* m_pFrame;
 	UIMonitor* m_pUIMonitor;
 
 	bool start(JSON* pJson);

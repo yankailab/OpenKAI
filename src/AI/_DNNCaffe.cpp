@@ -60,13 +60,10 @@ void _DNNCaffe::setup(const string& model_file, const string& trained_file,
 
 
 //	Blob<float>* input_layer = net_->input_blobs()[0];
-
-	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
-
-	/* Forward dimension change to all layers. */
-	net_->Reshape();
-
-	WrapBatchInputLayer(&m_input_batch);
+//	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
+//	/* Forward dimension change to all layers. */
+//	net_->Reshape();
+//	WrapBatchInputLayer(&m_input_batch);
 
 }
 
@@ -183,17 +180,17 @@ std::vector<vector<Prediction> > _DNNCaffe::ClassifyBatch(const vector<cv::Mat> 
 
 std::vector<float> _DNNCaffe::PredictBatch(const vector<cv::Mat> imgs)
 {
-//	Blob<float>* input_layer = net_->input_blobs()[0];
-//
-//	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
-//
-//	/* Forward dimension change to all layers. */
-//	net_->Reshape();
+	Blob<float>* input_layer = net_->input_blobs()[0];
 
-//	std::vector<std::vector<cv::Mat> > input_batch;
-//	WrapBatchInputLayer(&input_batch);
+	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
 
-	PreprocessBatch(imgs, &m_input_batch);
+	/* Forward dimension change to all layers. */
+	net_->Reshape();
+
+	std::vector<std::vector<cv::Mat> > input_batch;
+	WrapBatchInputLayer(&input_batch);
+
+	PreprocessBatch(imgs, &input_batch);
 
 #ifdef CLASSIFIER_DEBUG
 	uint64_t tA,tB;

@@ -51,8 +51,6 @@ public:
 
 	int			m_minObjArea;
 	int			m_maxObjArea;
-
-
 };
 }
 

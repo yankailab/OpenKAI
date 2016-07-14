@@ -76,8 +76,12 @@ void _DepthDetector::detect(void)
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	Rect bb;
+	Size imgSize;
+	double scaleW;
+	double scaleH;
 	GpuMat gMat;
 	GpuMat gMat2;
+	CamFrame* pFrame;
 
 	if(m_pClassifier==NULL)return;
 	if(m_pCamStream==NULL)return;
@@ -93,44 +97,45 @@ void _DepthDetector::detect(void)
 //		cuda::multiply(gMat2,Scalar(50),gMat);
 
 		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
-
 		gMat2.download(m_Mat);
 	}
 	else
 	{
 		//Use Flow
 		if(m_pFlow==NULL)return;
-		if(m_pFlow->m_pDepth->empty())return;
 
-		gMat = *(m_pFlow->m_pDepth->getGMat());
-		cuda::threshold(gMat,gMat2,200,255,cv::THRESH_TOZERO);
+		pFrame = m_pFlow->m_pDepth;
+		if(pFrame->empty())return;
 
-		gMat2.download(m_Mat);
-//		m_Mat = *(m_pFlow->m_pDepth->getCMat());
+		cuda::threshold(*pFrame->getGMat(),gMat,200,255,cv::THRESH_TOZERO);
+		gMat.download(m_Mat);
 	}
 
-	Mat cMat;
-	m_Mat.copyTo(cMat);
+	imgSize = m_pCamStream->getFrame()->getSize();
+	scaleW = ((double)imgSize.width)/((double)m_Mat.cols);
+	scaleH = ((double)imgSize.height)/((double)m_Mat.rows);
 
 	// Find contours
-	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);//SIMPLE);
+	findContours(m_Mat, contours, hierarchy, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 	// Approximate contours to polygons + get bounding rects
 	vector<vector<Point> > contours_poly(contours.size());
 
 	for (i = 0; i < contours.size(); i++)
 	{
 		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
-
 		bb = boundingRect(Mat(contours_poly[i]));
+
+		//Convert bb area position on depth map to those on original image
+		bb.x = ((double)bb.x)*scaleW;
+		bb.y = ((double)bb.y)*scaleH;
+		bb.width = ((double)bb.width)*scaleW-1;
+		bb.height = ((double)bb.height)*scaleH-1;
+
 		if (bb.area() < m_minObjArea)continue;
-		if (bb.area() < m_maxObjArea)continue;
+		if (bb.area() > m_maxObjArea)continue;
 
 		m_pClassifier->addObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
-
-
-
-
 
 
 

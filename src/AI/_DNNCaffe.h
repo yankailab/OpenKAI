@@ -88,7 +88,7 @@ private:
 	cv::Mat mean_;
 	vector<string> labels_;
 	int batch_size_;
-	std::vector<std::vector<cv::Mat> > m_input_batch;
+//	std::vector<std::vector<cv::Mat> > m_input_batch;
 
 	CamFrame* m_pFrame;
 

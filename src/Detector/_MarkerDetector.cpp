@@ -150,7 +150,7 @@ bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 
 	//Use num instead of m_numCircle to avoid multi-thread inconsistancy
 	int num = m_numCircle;
-	if(m_numCircle==0)return false;
+	if(num==0)return false;
 
 	int i;
 	MARKER_CIRCLE* pMarker = &m_pCircle[0];

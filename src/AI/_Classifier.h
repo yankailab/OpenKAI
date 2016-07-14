@@ -68,7 +68,7 @@ public:
 	vector<Mat> m_vMat;
 
 	//Caffe classifier
-	_DNNCaffe m_classifier;
+	_DNNCaffe m_caffe;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;
