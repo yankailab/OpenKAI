@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_Caffe.h>
+#include "_Caffe.h"
 namespace kai
 {
 _Caffe::_Caffe()

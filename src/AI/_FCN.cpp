@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_FCN.h>
+#include "_FCN.h"
 namespace kai
 {
 

@@ -8,7 +8,6 @@
 #ifndef SRC_NAVIGATOR_H_
 #define SRC_NAVIGATOR_H_
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_FCN.h>
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>
