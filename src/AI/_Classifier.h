@@ -8,7 +8,7 @@
 #ifndef SRC_AI__CLASSIFIER_H_
 #define SRC_AI__CLASSIFIER_H_
 
-#include <workspace/OpenKAI/OpenKAI/src/AI/_Caffe.h>
+#include "_Caffe.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"

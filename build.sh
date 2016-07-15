@@ -4,8 +4,8 @@ LINKERS="-L/usr/local/lib -L/usr/local/opencv3/lib -L/home/ubuntu/src/caffe/buil
 
 g++ $INCLUDES $OPTIONS -MF"build/ClassifierBase.d" -MT"build/ClassifierBase.d" -o "build/ClassifierBase.o" "src/AI/ClassifierBase.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_Classifier.d" -MT"build/_Classifier.d" -o "build/_Classifier.o" "src/AI/_Classifier.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_DNNCaffe.d" -MT"build/_DNNCaffe.d" -o "build/_DNNCaffe.o" "src/AI/_DNNCaffe.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_DNNCaffeFCN.d" -MT"build/_DNNCaffeFCN.d" -o "build/_DNNCaffeFCN.o" "src/AI/_DNNCaffeFCN.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Caffe.d" -MT"build/_Caffe.d" -o "build/_Caffe.o" "src/AI/_Caffe.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_FCN.d" -MT"build/_FCN.d" -o "build/_FCN.o" "src/AI/_FCN.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_SegNet.d" -MT"build/_SegNet.d" -o "build/_SegNet.o" "src/AI/_SegNet.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/Filter.d" -MT"build/Filter.d" -o "build/Filter.o" "src/Algorithm/Filter.cpp"
@@ -45,5 +45,5 @@ g++ $INCLUDES $OPTIONS -MF"build/UIMonitor.d" -MT"build/UIMonitor.d" -o "build/U
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "OpenKAI" ./build/ClassifierBase.o ./build/_Classifier.o ./build/_DNNCaffe.o ./build/_DNNCaffeFCN.o ./build/_SegNet.o ./build/Filter.o ./build/VisualFollow.o ./build/ExtCamControl.o ./build/SegNetDemo.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_ROITracker.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
+g++ $LINKERS -o "OpenKAI" ./build/ClassifierBase.o ./build/_Classifier.o ./build/_Caffe.o ./build/_FCN.o ./build/_SegNet.o ./build/Filter.o ./build/VisualFollow.o ./build/ExtCamControl.o ./build/SegNetDemo.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_CamStream.o ./build/CamFrame.o ./build/CamInput.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_ROITracker.o ./build/UIMonitor.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
 
