@@ -37,7 +37,9 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
-	this->setTargetFPS(500);
+	double FPS = 500;
+	CHECK_INFO(pJson->getVal("SERIALPORT_FC_FPS", &FPS));
+	this->setTargetFPS(FPS);
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;

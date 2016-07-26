@@ -139,7 +139,7 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
-		camROILock();
+//		camROILock();
 
 		camMarkerLock();
 
@@ -249,15 +249,30 @@ void _AutoPilot::camROILock(void)
 void _AutoPilot::camMarkerLock(void)
 {
 	CamInput* pCamInput;
-	fVector2 markerCenter;
+	fVector3 markerCenter;
 
 	if (m_pMavlink == NULL)return;
 	if (m_pMarkerDetector == NULL)return;
+	if (m_pROITracker == NULL)return;
 
-	//Return if not detected
-	if(!m_pMarkerDetector->getCircleCenter(&markerCenter))
+	if(m_pMarkerDetector->getCircleCenter(&markerCenter))
 	{
-		return;
+		//Update Tracker
+		Rect roi;
+		roi.x = markerCenter.m_x - markerCenter.m_z;
+		roi.y = markerCenter.m_y - markerCenter.m_z;
+		roi.width = markerCenter.m_z*2;
+		roi.height = markerCenter.m_z*2;
+		m_pROITracker->setROI(roi);
+		m_pROITracker->tracking(true);
+	}
+	else
+	{
+		//Use tracker if marker is not detected
+		if (!m_pROITracker->m_bTracking)return;
+
+		markerCenter.m_x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
+		markerCenter.m_y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
 	}
 
 	pCamInput = m_pMarkerDetector->m_pCamStream->getCameraInput();

@@ -138,7 +138,7 @@ void _MarkerDetector::detectCircle(void)
 	}
 }
 
-bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
+bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 {
 	CamInput*	pCam;
 
@@ -169,6 +169,7 @@ bool _MarkerDetector::getCircleCenter(fVector2* pCenter)
 
 	pCenter->m_x = pMarker->m_x;
 	pCenter->m_y = pMarker->m_y;
+	pCenter->m_z = pMarker->m_r;
 
 	return true;
 }

@@ -47,6 +47,8 @@ public:
 
 	int m_bCaffe;
 	int m_bFCN;
+	int	m_FlowFPS;
+	int m_DDFPS;
 
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;

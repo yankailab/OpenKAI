@@ -38,7 +38,7 @@ public:
 	bool init(JSON* pJson, string name);
 	bool start(void);
 
-	bool getCircleCenter(fVector2* pCenter);
+	bool getCircleCenter(fVector3* pCenter);
 
 private:
 	void detectCircle(void);
