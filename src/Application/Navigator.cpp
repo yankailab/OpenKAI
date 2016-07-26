@@ -42,6 +42,7 @@ bool Navigator::start(JSON* pJson)
 	//TODO: Solve caffe ROI in DepthDetector
 	//TODO: Caffe set data to GPU directly
 	//TODO: Optimize FCN
+	//TODO: Marker detect -> ROI tracker
 
 
 	g_pNavigator = this;
@@ -83,27 +84,28 @@ bool Navigator::start(JSON* pJson)
 
 	if(m_bCaffe)
 	{
-		//Init Optical Flow
-		m_pFlow = new _Flow();
-		CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
-		m_pFlow->m_pCamStream = m_pCamFront;
-		m_pCamFront->m_bGray = true;
-
 		//Init Caffe
 		m_pClassifier = new _Classifier();
 		m_pClassifier->init(pJson);
+		m_pClassifier->start();
+
+		if(m_pCamFront->getCameraInput()->getType() != CAM_ZED)
+		{
+			//Init Optical Flow
+			m_pFlow = new _Flow();
+			CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
+			m_pFlow->m_pCamStream = m_pCamFront;
+			m_pCamFront->m_bGray = true;
+			m_pFlow->start();
+		}
 
 		//Init Depth Detector
 		m_pDD = new _DepthDetector();
-		m_pDD->init(pJson,"FRONTL");
+		CHECK_FATAL(m_pDD->init(pJson,"FRONTL"));
 		m_pDD->m_pCamStream = m_pCamFront;
 		m_pDD->m_pClassifier = m_pClassifier;
 		m_pDD->m_pFlow = m_pFlow;
-
-		m_pClassifier->start();
 		m_pDD->start();
-		m_pFlow->start();
-
 	}
 
 	if(m_bFCN)

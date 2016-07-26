@@ -214,7 +214,7 @@ std::vector<float> _Caffe::PredictBatch(const vector<cv::Mat> imgs)
 
 
 
-void _Caffe::PreprocessBatch(const vector<cv::Mat> imgs,	std::vector<std::vector<cv::Mat> >* input_batch)
+void _Caffe::PreprocessBatch(const vector<cv::Mat> imgs, std::vector<std::vector<cv::Mat> >* input_batch)
 {
 	for (int i = 0; i < imgs.size(); i++)
 	{
@@ -259,5 +259,144 @@ void _Caffe::PreprocessBatch(const vector<cv::Mat> imgs,	std::vector<std::vector
 //          << "Input channels are not wrapping the input layer of the network.";
 	}
 }
+
+
+
+
+
+void _Caffe::WrapBatchInputLayerGPU(std::vector<std::vector<cv::cuda::GpuMat> > *input_batch)
+{
+	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	int width = input_layer->width();
+	int height = input_layer->height();
+	int num = input_layer->num();
+	float* input_data = input_layer->mutable_gpu_data();
+	for (int j = 0; j < num; j++)
+	{
+		vector<cv::cuda::GpuMat> input_channels;
+		for (int i = 0; i < input_layer->channels(); ++i)
+		{
+			cv::cuda::GpuMat channel(height, width, CV_32FC1, input_data);
+			input_channels.push_back(channel);
+			input_data += width * height;
+		}
+		input_batch->push_back(vector<cv::cuda::GpuMat>(input_channels));
+	}
+
+}
+
+std::vector<vector<Prediction> > _Caffe::ClassifyBatchGPU(const vector<cv::cuda::GpuMat> imgs, int num_classes)
+{
+	vector<float> output_batch = PredictBatchGPU(imgs);
+
+	vector<vector<Prediction> > predictions;
+	Blob<float>* output_layer = net_->output_blobs()[0];
+
+	for (int j = 0; j < imgs.size(); j++)
+	{
+//		vector<float> output(output_batch.begin() + j * num_classes,
+//				output_batch.begin() + (j + 1) * num_classes);
+		vector<float> output(
+				output_batch.begin() + j * output_layer->channels(),
+				output_batch.begin() + (j + 1) * output_layer->channels());
+
+		vector<int> maxN = Argmax(output, num_classes);
+
+		vector<Prediction> prediction_single;
+
+		for (int i = 0; i < num_classes; ++i)
+		{
+			int idx = maxN[i];
+			prediction_single.push_back(make_pair(labels_[idx], output[idx]));
+		}
+
+		predictions.push_back(vector<Prediction>(prediction_single));
+	}
+	return predictions;
+}
+
+std::vector<float> _Caffe::PredictBatchGPU(const vector<cv::cuda::GpuMat> imgs)
+{
+	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	input_layer->Reshape(batch_size_, num_channels_, input_geometry_.height, input_geometry_.width);
+
+	/* Forward dimension change to all layers. */
+	net_->Reshape();
+
+	std::vector<std::vector<cv::cuda::GpuMat> > input_batch;
+	WrapBatchInputLayerGPU(&input_batch);
+
+	PreprocessBatchGPU(imgs, &input_batch);
+
+#ifdef CLASSIFIER_DEBUG
+	uint64_t tA,tB;
+	tA = get_time_usec();
+#endif
+
+	net_->Forward();
+
+#ifdef CLASSIFIER_DEBUG
+	tB = get_time_usec();
+	printf("CAFFE >> NET FORWARD:%d\n", tB-tA);
+#endif
+
+
+	/* Copy the output layer to a std::vector */
+	Blob<float>* output_layer = net_->output_blobs()[0];
+	const float* begin = output_layer->cpu_data();
+	const float* end = begin + output_layer->channels() * imgs.size();
+	return std::vector<float>(begin, end);
+}
+
+
+
+void _Caffe::PreprocessBatchGPU(const vector<cv::cuda::GpuMat> imgs, std::vector<std::vector<cv::cuda::GpuMat> >* input_batch)
+{
+	for (int i = 0; i < imgs.size(); i++)
+	{
+		cv::cuda::GpuMat img = imgs[i];
+		std::vector<cv::cuda::GpuMat> *input_channels = &(input_batch->at(i));
+
+		/* Convert the input image to the input image format of the network. */
+		cv::cuda::GpuMat sample;
+		if (img.channels() == 3 && num_channels_ == 1)
+			cv::cuda::cvtColor(img, sample, CV_BGR2GRAY);
+		else if (img.channels() == 4 && num_channels_ == 1)
+			cv::cuda::cvtColor(img, sample, CV_BGRA2GRAY);
+		else if (img.channels() == 4 && num_channels_ == 3)
+			cv::cuda::cvtColor(img, sample, CV_BGRA2BGR);
+		else if (img.channels() == 1 && num_channels_ == 3)
+			cv::cuda::cvtColor(img, sample, CV_GRAY2BGR);
+		else
+			sample = img;
+
+		cv::cuda::GpuMat sample_resized;
+		if (sample.size() != input_geometry_)
+			cv::cuda::resize(sample, sample_resized, input_geometry_);
+		else
+			sample_resized = sample;
+
+		cv::cuda::GpuMat sample_float;
+		if (num_channels_ == 3)
+			sample_resized.convertTo(sample_float, CV_32FC3);
+		else
+			sample_resized.convertTo(sample_float, CV_32FC1);
+
+		cv::cuda::GpuMat sample_normalized;
+		cv::cuda::subtract(sample_float, mean_, sample_normalized);
+
+		/* This operation will write the separate BGR planes directly to the
+		 * input layer of the network because it is wrapped by the cv::Mat
+		 * objects in input_channels. */
+		cv::cuda::split(sample_normalized, *input_channels);
+
+//        CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
+//              == net_->input_blobs()[0]->cpu_data())
+//          << "Input channels are not wrapping the input layer of the network.";
+	}
+}
+
 
 }

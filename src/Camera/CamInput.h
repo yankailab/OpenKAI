@@ -68,6 +68,9 @@ public:
 	double m_rotPrev;
 	double m_isoScale;
 
+	int		m_bCrop;
+	Rect	m_cropBB;
+
 //private:
 public:
 	GpuMat m_Gframe;

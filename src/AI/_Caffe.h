@@ -15,9 +15,6 @@
 #include <caffe/util/io.hpp>
 #include <caffe/proto/caffe.pb.h>
 
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui/highgui.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
 #include <algorithm>
 #include <iosfwd>
 #include <memory>
@@ -54,14 +51,12 @@ public:
 	_Caffe();
 	~_Caffe();
 
-	void
-	setup(const string& model_file, const string& trained_file,
+	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file, int batch_size);
 
-	std::vector<Prediction>
-	Classify(const cv::Mat& img, int N = 5);
-
+	std::vector<Prediction> Classify(const cv::Mat& img, int N = 5);
 	std::vector<vector<Prediction> > ClassifyBatch(const vector<cv::Mat> imgs, int num_classes);
+	std::vector<vector<Prediction> > ClassifyBatchGPU(const vector<cv::cuda::GpuMat> imgs, int num_classes);
 
 	void setModeGPU();
 
@@ -69,10 +64,13 @@ private:
 	void SetMean(const string& mean_file);
 	std::vector<float> Predict(const Mat& img);
 	std::vector<float> PredictBatch(const vector<cv::Mat> imgs);
+	std::vector<float> PredictBatchGPU(const vector<cv::cuda::GpuMat> imgs);
 	void WrapInputLayer(vector<cv::Mat>* input_channels, int numImg);
 	void WrapBatchInputLayer(std::vector<std::vector<cv::Mat> > *input_batch);
+	void WrapBatchInputLayerGPU(std::vector<std::vector<cv::cuda::GpuMat> > *input_batch);
 	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels, int iImg);
 	void PreprocessBatch(const vector<cv::Mat> imgs, std::vector<std::vector<cv::Mat> >* input_batch);
+	void PreprocessBatchGPU(const vector<cv::cuda::GpuMat> imgs, std::vector<std::vector<cv::cuda::GpuMat> >* input_batch);
 
 	void update(void);
 	static void* getUpdateThread(void* This) {

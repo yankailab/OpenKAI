@@ -26,6 +26,7 @@ CamInput::CamInput()
 	m_rotPrev = 0;
 	m_angleH = 0;
 	m_angleV = 0;
+	m_bCrop = 0;
 }
 
 CamInput::~CamInput()
@@ -50,6 +51,15 @@ bool CamInput::setup(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_TYPE", &m_camType));
+
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_CROP", &m_bCrop));
+	if(m_bCrop!=0)
+	{
+		CHECK_FATAL(pJson->getVal("CAM_" + camName + "_CROP_X", &m_cropBB.x));
+		CHECK_FATAL(pJson->getVal("CAM_" + camName + "_CROP_Y", &m_cropBB.y));
+		CHECK_FATAL(pJson->getVal("CAM_" + camName + "_CROP_W", &m_cropBB.width));
+		CHECK_FATAL(pJson->getVal("CAM_" + camName + "_CROP_H", &m_cropBB.height));
+	}
 
 	if (pJson->getVal("CAM_" + camName + "_CALIBFILE", &calibFile))
 	{
@@ -205,6 +215,12 @@ GpuMat* CamInput::readFrame(void)
 	if (m_bGimbal)
 	{
 		cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+		SWAP(pSrc, pDest, pTmp);
+	}
+
+	if (m_bCrop)
+	{
+		*pDest = GpuMat(*pSrc, m_cropBB);
 		SWAP(pSrc, pDest, pTmp);
 	}
 
