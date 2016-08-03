@@ -8,7 +8,7 @@
 #ifndef SRC_3DFlow_H_
 #define SRC_3DFlow_H_
 
-#include <workspace/OpenKAI/OpenKAI/src/Vision/_Flow.h>
+#include "../Vision/_Flow.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Detector/DetectorBase.h"
