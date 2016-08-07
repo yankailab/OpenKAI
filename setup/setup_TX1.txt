@@ -175,6 +175,9 @@ sudo vi /etc/rc.local # add the contents like below
 # make sure /etc/rc.local is executable
 chmod a+x /etc/rc.local
 
+# turn off TX1 USB auto suspend, add the following line before exit 0 of /etc/rc.local
+echo -1 > /sys/module/usbcore/parameters/autosuspend
+
 # remove this file which stores old LAN MAC addresses
 sudo rm /etc/udev/rules.d/70-persistent-net.rules
 # create a new fules file that doesn't store the MAC addresses (see http://askubuntu.com/questions/240632/how-to-disable-udev-net-rule-generation)
