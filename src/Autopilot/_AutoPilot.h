@@ -53,6 +53,11 @@ struct LANDING_TARGET
 {
 	double m_angleX;
 	double m_angleY;
+	double m_orientX;
+	double m_orientY;
+	uint64_t m_ROIstarted;
+	uint64_t m_ROItimeLimit;
+
 };
 
 

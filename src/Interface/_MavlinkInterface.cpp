@@ -44,7 +44,7 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
-	m_lastHeartbeat = 0;
+	m_lastHeartbeat = get_time_usec();
 	m_targetComponentID = 0;
 
 	current_messages.sysid = 0;
@@ -334,9 +334,6 @@ void _MavlinkInterface::update(void)
 		//Regular update loop
 		this->autoFPSfrom();
 
-		//Sending Heartbeat at 1Hz
-		sendHeartbeat(USEC_1SEC);
-
 //		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
 
 //		command_long_doSetMode(MAV_MODE_GUIDED_DISARMED);
@@ -435,132 +432,6 @@ void _MavlinkInterface::command_long_doSetMode(int mode)
 
 
 
-//int _MavlinkInterface::toggleOffboardControl(bool bEnable)
-//{
-//	if(m_bControlling == bEnable)return -1;
-//
-//	// Prepare command for off-board mode
-//	mavlink_command_long_t com;
-//	com.target_system = m_systemID;
-//	com.target_component = m_componentID;
-//	com.command = MAV_CMD_NAV_GUIDED_ENABLE;
-//	com.confirmation = true;
-//	com.param1 = (float) bEnable; // flag >0.5 => start, <0.5 => stop
-//
-//	// Encode
-//	mavlink_message_t message;
-//	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &com);
-//
-//	// Send the message
-//	return writeMessage(message);
-//
-//}
-//
-//
-///*
-// * Set target local ned position
-// *
-// * Modifies a mavlink_set_position_target_local_ned_t struct with target XYZ locations
-// * in the Local NED frame, in meters.
-// */
-//void _MavlinkInterface::set_position(float x, float y, float z,
-//		mavlink_set_position_target_local_ned_t &sp)
-//{
-//	sp.type_mask =
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_POSITION;
-//
-//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-//
-//	sp.x = x;
-//	sp.y = y;
-//	sp.z = z;
-//
-//	printf("POSITION SETPOINT XYZ = [ %.4f , %.4f , %.4f ] \n", sp.x, sp.y, sp.z);
-//
-//
-//}
-//
-///*
-// * Set target local ned velocity
-// *
-// * Modifies a mavlink_set_position_target_local_ned_t struct with target VX VY VZ
-// * velocities in the Local NED frame, in meters per second.
-// */
-//void _MavlinkInterface::set_velocity(float vx, float vy, float vz,
-//		mavlink_set_position_target_local_ned_t &sp)
-//{
-//	sp.type_mask =
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
-//
-//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-//
-//	sp.vx = vx;
-//	sp.vy = vy;
-//	sp.vz = vz;
-//
-//	//printf("VELOCITY SETPOINT UVW = [ %.4f , %.4f , %.4f ] \n", sp.vx, sp.vy, sp.vz);
-//
-//}
-//
-///*
-// * Set target local ned acceleration
-// *
-// * Modifies a mavlink_set_position_target_local_ned_t struct with target AX AY AZ
-// * accelerations in the Local NED frame, in meters per second squared.
-// */
-//void _MavlinkInterface::set_acceleration(float ax, float ay, float az,
-//		mavlink_set_position_target_local_ned_t &sp)
-//{
-//
-//	// NOT IMPLEMENTED
-//	fprintf(stderr, "set_acceleration doesn't work yet \n");
-//	throw 1;
-//
-//	sp.type_mask =
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_ACCELERATION &
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_VELOCITY;
-//
-//	sp.coordinate_frame = MAV_FRAME_LOCAL_NED;
-//
-//	sp.afx = ax;
-//	sp.afy = ay;
-//	sp.afz = az;
-//}
-//
-//// the next two need to be called after one of the above
-//
-///*
-// * Set target local ned yaw
-// *
-// * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw
-// * in the Local NED frame, in radians.
-// */
-//void _MavlinkInterface::set_yaw(float yaw,
-//		mavlink_set_position_target_local_ned_t &sp)
-//{
-//	sp.type_mask &=
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_ANGLE;
-//
-//	sp.yaw = yaw;
-//
-//	printf("POSITION SETPOINT YAW = %.4f \n", sp.yaw);
-//
-//}
-//
-///*
-// * Set target local ned yaw rate
-// *
-// * Modifies a mavlink_set_position_target_local_ned_t struct with a target yaw rate
-// * in the Local NED frame, in radians per second.
-// */
-//void _MavlinkInterface::set_yaw_rate(float yaw_rate,
-//		mavlink_set_position_target_local_ned_t &sp)
-//{
-//	sp.type_mask &=
-//	MAVLINK_MSG_SET_POSITION_TARGET_LOCAL_NED_YAW_RATE;
-//
-//	sp.yaw_rate = yaw_rate;
-//}
 
 
 }

@@ -42,11 +42,9 @@ Navigator::~Navigator()
 
 bool Navigator::start(JSON* pJson)
 {
-	//TODO: Solve caffe ROI in DepthDetector
 	//TODO: Caffe set data to GPU directly
+	//TODO: Solve caffe ROI in DepthDetector
 	//TODO: Optimize FCN
-	//TODO: Marker detect -> ROI tracker
-
 
 	g_pNavigator = this;
 
@@ -130,6 +128,7 @@ bool Navigator::start(JSON* pJson)
 	//Start threads
 	m_pCamFront->start();
 	m_pMavlink->start();
+
 	m_pMD->start();
 	m_pAP->start();
 	m_pROITracker->start();
