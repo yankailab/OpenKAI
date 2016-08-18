@@ -208,6 +208,12 @@ void Navigator::showScreen(void)
 	CamFrame* pFrame;
 
 
+//	if(m_pCamFront->getCameraInput()->m_Gdepth.empty())return;
+//	m_pCamFront->getCameraInput()->m_Gdepth.download(m_showMat);
+//	imshow(APP_NAME, m_showMat);
+//	return;
+
+
 	//Update frames
 	pFrame = m_pCamFront->getFrame();
 	if(pFrame->empty())return;
