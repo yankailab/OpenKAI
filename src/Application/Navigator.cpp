@@ -266,7 +266,7 @@ void Navigator::showScreen(void)
 				{
 					if (pObj->m_name[0].empty())continue;
 
-					drawContours(vMat, contours, -1, Scalar(0, 255, 0),CV_FILLED);
+//					drawContours(vMat, contours, -1, Scalar(0, 255, 0),CV_FILLED);
 
 					rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
 					putText(m_showMat, pObj->m_name[0], Point(pObj->m_boundBox.x+pObj->m_boundBox.width/2,

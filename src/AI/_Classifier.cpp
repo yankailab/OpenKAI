@@ -95,7 +95,7 @@ void _Classifier::update(void)
 
 		m_frameID = get_time_usec();
 
-		classifyObject();
+//		classifyObject();
 
 		this->autoFPSto();
 	}
@@ -200,7 +200,7 @@ void _Classifier::classifyObject(void)
 #endif
 }
 
-OBJECT* _Classifier::addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Classifier::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 	if(!pMat)return NULL;
 	if(!pRect)return NULL;
@@ -266,5 +266,76 @@ OBJECT* _Classifier::addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 
 	return NULL;
 }
+
+OBJECT* _Classifier::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour)
+{
+//	if(!pMat)return NULL;
+	if(!pRect)return NULL;
+//	if(pMat->empty())return NULL;
+	if(pRect->width<=0)return NULL;
+	if(pRect->height<=0)return NULL;
+
+	int i;
+	int iVacant;
+	OBJECT* pObj;
+	uint64_t frameID = get_time_usec();
+
+	iVacant = m_numObj;
+	for(i=0; i<m_numObj; i++)
+	{
+		pObj = &m_pObjects[i];
+
+		//Record the index of vacancy
+		if(pObj->m_status == OBJ_VACANT)
+		{
+			if(iVacant==m_numObj)
+			{
+				iVacant = i;
+				break;
+			}
+		}
+	}
+
+	if(iVacant < m_numObj)
+	{
+		//Change in status comes to the last
+		pObj = &m_pObjects[iVacant];
+		pObj->m_frameID = frameID;
+		pObj->m_name[0] = name;
+		pObj->m_boundBox = *pRect;
+//		pObj->m_Mat = Mat(pRect->width,pRect->height,pMat->type());
+//		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(pObj->m_Mat);
+//		if(pContour)
+//		{
+//			pObj->m_vContours = *pContour;
+//		}
+//		pObj->m_status = OBJ_ADDED;
+		pObj->m_status = OBJ_COMPLETE;
+
+		return pObj;
+	}
+
+
+	return NULL;
+
+}
+
+void _Classifier::reset(void)
+{
+	for (int i = 0; i < m_numObj; i++)
+	{
+		m_pObjects[i].m_frameID = 0;
+		m_pObjects[i].m_status = OBJ_VACANT;
+		m_pObjects[i].m_vContours.clear();
+
+		for (int j = 0; j < NUM_OBJECT_NAME; j++)
+		{
+			m_pObjects[i].m_name[j] = "";
+			m_pObjects[i].m_prob[j] = 0;
+		}
+	}
+
+}
+
 
 } /* namespace kai */

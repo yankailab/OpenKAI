@@ -42,11 +42,13 @@ public:
 	_Classifier();
 	virtual ~_Classifier();
 
-	OBJECT* addObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
+	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
+	OBJECT* addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
 
 	bool init(JSON* pJson);
 	bool start(void);
+	void reset(void);
 
 private:
 	void deleteObject(int i);

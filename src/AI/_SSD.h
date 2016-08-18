@@ -25,6 +25,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
+#include "../Camera/_CamStream.h"
+#include "../AI/_Classifier.h"
 
 
 namespace kai
@@ -46,13 +48,15 @@ public:
 	_SSD();
 	~_SSD();
 
+	bool init(JSON* pJson);
 	void setup(const string& model_file, const string& trained_file,
-			const string& mean_file, const string& label_file, int batch_size);
+			const string& mean_file, const string& label_file);
 
 	std::vector<vector<float> > detect(const cv::Mat img);
 	void setModeGPU();
 
 private:
+	void detectFrame(void);
 	void SetMean(const string& mean_file);
 	void WrapInputLayer(std::vector<cv::Mat>* input_channels);
 	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
@@ -65,13 +69,17 @@ private:
 
 
 private:
+	uint64_t m_frameID;
+
 	shared_ptr<Net<float> > net_;
 	cv::Size input_geometry_;
 	int num_channels_;
 	cv::Mat mean_;
 
 	vector<string> labels_;
-	int batch_size_;
+
+	_Classifier* m_pClassifier;
+	_CamStream*	m_pCamStream;
 
 };
 

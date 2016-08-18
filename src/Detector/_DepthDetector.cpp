@@ -134,7 +134,7 @@ void _DepthDetector::detect(void)
 		if (bb.area() < m_minObjArea)continue;
 		if (bb.area() > m_maxObjArea)continue;
 
-		m_pClassifier->addObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
+		m_pClassifier->addUnknownObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
 

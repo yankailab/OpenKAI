@@ -9,24 +9,51 @@ namespace kai
 {
 _SSD::_SSD()
 {
+	_ThreadBase();
+
 	num_channels_ = 0;
-	batch_size_ = 0;
+	m_pClassifier = NULL;
+	m_pCamStream = NULL;
 }
 
 _SSD::~_SSD()
 {
 }
 
+bool _SSD::init(JSON* pJson)
+{
+	//Setup Caffe Classifier
+	string caffeDir = "";
+	string modelFile;
+	string trainedFile;
+	string meanFile;
+	string labelFile;
+
+	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
+	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MODEL_FILE", &modelFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_SSD_TRAINED_FILE", &trainedFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MEAN_FILE", &meanFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_SSD_LABEL_FILE", &labelFile));
+
+	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
+			caffeDir + labelFile);
+	LOG(INFO)<<"Caffe Initialized";
+
+	double FPS = DEFAULT_FPS;
+	CHECK_ERROR(pJson->getVal("CAFFE_SSD_FPS", &FPS));
+	this->setTargetFPS(FPS);
+
+	return true;
+}
+
 void _SSD::setup(const string& model_file, const string& trained_file,
-		const string& mean_file, const string& label_file, int batch_size)
+		const string& mean_file, const string& label_file)
 {
 #ifdef CPU_ONLY
 	Caffe::set_mode(Caffe::CPU);
 #else
 	Caffe::set_mode(Caffe::GPU);
 #endif
-
-	batch_size_ = batch_size;
 
 	/* Load the network. */
 	net_.reset(new Net<float>(model_file, TEST));
@@ -56,9 +83,66 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 
 }
 
-void _SSD::setModeGPU(void)
+void _SSD::update(void)
 {
 	Caffe::set_mode(Caffe::GPU);
+
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		m_frameID = get_time_usec();
+
+		detectFrame();
+
+		this->autoFPSto();
+	}
+
+}
+
+void _SSD::detectFrame(void)
+{
+	CamFrame* pFrame;
+	string name;
+	Rect bb;
+
+	if (m_pCamStream == NULL)
+		return;
+	if (m_pClassifier == NULL)
+		return;
+
+	pFrame = m_pCamStream->getFrame();
+	if (pFrame->empty())
+		return;
+
+	m_pClassifier->reset();
+
+	Mat* pImg = pFrame->getCMat();
+	std::vector<vector<float> > detections = detect(*pImg);
+
+	float confidence_threshold = 0.5;
+
+	/* Print the detection results. */
+	for (int i = 0; i < detections.size(); ++i)
+	{
+		const vector<float>& d = detections[i];
+		// Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
+		CHECK_EQ(d.size(), 7);
+
+		const float score = d[2];
+		if (score < confidence_threshold)
+			continue;
+
+		name = static_cast<int>(d[1]);
+		bb.x = d[3] * pImg->cols;
+		bb.y = d[4] * pImg->rows;
+		bb.width = d[5] * pImg->cols - bb.x;
+		bb.height = d[6] * pImg->rows - bb.y;
+
+		m_pClassifier->addKnownObject(name, NULL, &bb, NULL);
+
+	}
+
 }
 
 /* Load the mean file in binaryproto format. */
@@ -126,6 +210,7 @@ std::vector<vector<float> > _SSD::detect(const cv::Mat img)
 		detections.push_back(detection);
 		result += 7;
 	}
+
 	return detections;
 }
 
@@ -172,7 +257,9 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 		sample_resized.convertTo(sample_float, CV_32FC1);
 
 	cv::Mat sample_normalized;
-	cv::subtract(sample_float, mean_, sample_normalized);
+//	cv::subtract(sample_float, mean_, sample_normalized);
+
+	sample_normalized = sample_float;
 
 	/* This operation will write the separate BGR planes directly to the
 	 * input layer of the network because it is wrapped by the cv::Mat
@@ -183,6 +270,5 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 			== net_->input_blobs()[0]->cpu_data())
 															<< "Input channels are not wrapping the input layer of the network.";
 }
-
 
 }
