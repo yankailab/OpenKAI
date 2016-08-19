@@ -76,7 +76,7 @@ void _BgFgDetector::detect(void)
 	vector<Vec3f> circles;
 	fVector4 v4tmp;
 	UMat matThresh;
-	CamFrame* pRGB;
+	Frame* pRGB;
 
 	if(!m_pCamStream)return;
 	pRGB = m_pCamStream->getFrame();//m_pCamStream->m_pFrameL;

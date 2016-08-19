@@ -25,7 +25,7 @@ bool SegNetDemo::start(JSON* pJson)
 	m_showMode = 0;
 
 	//Init Camera
-	m_pCamFront = new _CamStream();
+	m_pCamFront = new _Stream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
 	//Init SegNet
@@ -51,9 +51,9 @@ bool SegNetDemo::start(JSON* pJson)
 */
 
 	//Main window
-	m_pShow = new CamFrame();
-	m_pMat = new CamFrame();
-	m_pMat2 = new CamFrame();
+	m_pShow = new Frame();
+	m_pMat = new Frame();
+	m_pMat2 = new Frame();
 
 	//Init UI Monitor
 	m_pUIMonitor = new UIMonitor();
@@ -112,7 +112,7 @@ void SegNetDemo::showScreen(void)
 {
 	int i;
 	Mat imMat,imMat2,imMat3;
-	CamFrame* pFrame = m_pCamFront->getFrame();// (*m_pCamFront->m_pFrameProcess);
+	Frame* pFrame = m_pCamFront->getFrame();// (*m_pCamFront->m_pFrameProcess);
 
 	if (pFrame->getGMat()->empty())return;
 	if (m_pSegNet->m_segment.empty())return;

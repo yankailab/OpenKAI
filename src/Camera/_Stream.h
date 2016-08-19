@@ -10,28 +10,28 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
+#include "Camera.h"
 
-#include "CamInput.h"
-#include "CamFrame.h"
+#include "Frame.h"
 
 namespace kai
 {
 
-class _CamStream: public _ThreadBase
+class _Stream: public _ThreadBase
 {
 public:
-	_CamStream();
-	virtual ~_CamStream();
+	_Stream();
+	virtual ~_Stream();
 
 	bool init(JSON* pJson, string camName);
 	bool start(void);
 	bool complete(void);
 
-	CamFrame* getFrame(void);
-	CamFrame* getGrayFrame(void);
-	CamFrame* getHSVFrame(void);
+	Frame* getFrame(void);
+	Frame* getGrayFrame(void);
+	Frame* getHSVFrame(void);
 
-	CamInput* getCameraInput(void);
+	Camera* getCameraInput(void);
 
 public:
 	bool		m_bHSV;
@@ -39,17 +39,17 @@ public:
 
 private:
 	string				m_camName;
-	CamInput*			m_pCamInput;
+	Camera*			m_pCamInput;
 
-	CamFrame*			m_pCamFrame;
-	CamFrame*			m_pGrayFrame;
-	CamFrame*			m_pHSVframe;
+	Frame*			m_pCamFrame;
+	Frame*			m_pGrayFrame;
+	Frame*			m_pHSVframe;
 
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_CamStream *) This)->update();
+		((_Stream *) This)->update();
 		return NULL;
 	}
 };

@@ -52,7 +52,7 @@ bool _SegNet::init(string name, JSON* pJson)
 
 	m_segment = Mat(m_InputSize.height, m_InputSize.width, CV_8UC3);
 	m_pFrame = NULL;//new CamFrame();
-	m_pSegment = new CamFrame();
+	m_pSegment = new Frame();
 
 	m_labelColor = imread(labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);

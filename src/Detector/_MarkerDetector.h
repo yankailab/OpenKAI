@@ -1,5 +1,5 @@
 /*
- * CameraMarkerDetect.h
+ * _MarkerDetect.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 
@@ -59,7 +59,7 @@ public:
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
-	_CamStream*			m_pCamStream;
+	_Stream*			m_pCamStream;
 
 #ifdef USE_CUDA
 	GpuMat m_HSV;

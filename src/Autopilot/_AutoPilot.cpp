@@ -262,7 +262,7 @@ void _AutoPilot::camROILock(void)
 
 void _AutoPilot::camMarkerLock(void)
 {
-	CamInput* pCamInput;
+	Camera* pCamInput;
 	fVector3 markerCenter;
 
 	if (m_pMavlink == NULL)return;

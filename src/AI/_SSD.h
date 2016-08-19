@@ -25,8 +25,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "../Camera/_CamStream.h"
-#include "../AI/_Classifier.h"
+#include "../Navigation/_Universe.h"
+#include "../Camera/_Stream.h"
 
 
 namespace kai
@@ -79,8 +79,8 @@ private:
 	vector<string> labels_;
 
 public:
-	_Classifier* m_pClassifier;
-	_CamStream*	m_pCamStream;
+	_Universe* m_pClassifier;
+	_Stream*	m_pCamStream;
 
 };
 

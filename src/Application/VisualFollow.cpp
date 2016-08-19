@@ -26,7 +26,7 @@ bool VisualFollow::start(JSON* pJson)
 	CHECK_ERROR(pJson->getVal("ROI_MIN_SIZE", &m_minROI));
 
 	//Init Camera
-	m_pCamFront = new _CamStream();
+	m_pCamFront = new _Stream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
 //	//Init Fast Detector
@@ -85,9 +85,9 @@ bool VisualFollow::start(JSON* pJson)
 	m_btnMode = 980;
 
 	//Main window
-	m_pShow = new CamFrame();
-	m_pMat = new CamFrame();
-	m_pMat2 = new CamFrame();
+	m_pShow = new Frame();
+	m_pMat = new Frame();
+	m_pMat2 = new Frame();
 
 	//Init UI Monitor
 //	m_pUIMonitor = new UIMonitor();
@@ -161,7 +161,7 @@ void VisualFollow::showScreen(void)
 	int i;
 	Rect roi;
 	Mat imMat,imMat2,imMat3;
-	CamFrame* pFrame = m_pCamFront->getFrame();
+	Frame* pFrame = m_pCamFront->getFrame();
 
 	if (pFrame->empty())return;
 	pFrame->getGMat()->download(imMat);

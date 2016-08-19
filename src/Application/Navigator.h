@@ -13,10 +13,9 @@
 #include <cstdarg>
 
 #include "../AI/_SegNet.h"
-#include "../AI/_Classifier.h"
 #include "../AI/_FCN.h"
 #include "../Autopilot/_AutoPilot.h"
-#include "../Camera/CamInput.h"
+#include "../Camera/Camera.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
@@ -25,6 +24,7 @@
 #include "../Detector/_MarkerDetector.h"
 #include "../Tracker/_ROITracker.h"
 #include "../AI/_SSD.h"
+#include "../Navigation/_Universe.h"
 
 #define APP_NAME "NAVIGATOR"
 
@@ -50,7 +50,7 @@ public:
 	int m_DDFPS;
 	int m_SSDFPS;
 
-	_CamStream* m_pCamFront;
+	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_CascadeDetector* m_pCascade;
@@ -59,11 +59,11 @@ public:
 	_SegNet* m_pSegNet;
 	_DepthDetector* m_pDD;
 	_MarkerDetector* m_pMD;
-	_Classifier* m_pClassifier;
+	_Universe* m_pClassifier;
 	_FCN* m_pFCN;
 	_SSD* m_pSSD;
 
-	CamFrame* m_pFrame;
+	Frame* m_pFrame;
 	Mat m_showMat;
 
 

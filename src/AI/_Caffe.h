@@ -25,7 +25,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "../Camera/CamFrame.h"
+#include "../Camera/Frame.h"
 
 
 namespace kai
@@ -88,7 +88,7 @@ private:
 	int batch_size_;
 //	std::vector<std::vector<cv::Mat> > m_input_batch;
 
-	CamFrame* m_pFrame;
+	Frame* m_pFrame;
 
 };
 

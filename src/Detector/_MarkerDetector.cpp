@@ -79,8 +79,8 @@ void _MarkerDetector::detectCircle(void)
 	vector<Vec3f> circles;
 	fVector4 v4tmp;
 	Mat matThresh;
-	CamFrame* pHSV;
-	CamFrame* pRGB;
+	Frame* pHSV;
+	Frame* pRGB;
 
 	if(!m_pCamStream)return;
 	pHSV = m_pCamStream->getHSVFrame();
@@ -140,7 +140,7 @@ void _MarkerDetector::detectCircle(void)
 
 bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 {
-	CamInput*	pCam;
+	Camera*	pCam;
 
 	if(pCenter==NULL)return false;
 	if(m_pCamStream==NULL)return false;

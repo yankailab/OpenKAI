@@ -49,11 +49,6 @@ bool _SSD::init(JSON* pJson, string ssdName)
 void _SSD::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file)
 {
-#ifdef CPU_ONLY
-	Caffe::set_mode(Caffe::CPU);
-#else
-	Caffe::set_mode(Caffe::GPU);
-#endif
 
 	/* Load the network. */
 	net_.reset(new Net<float>(model_file, TEST));
@@ -64,12 +59,11 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	num_channels_ = input_layer->channels();
-	CHECK(num_channels_ == 3 || num_channels_ == 1)
-																<< "Input layer should have 1 or 3 channels.";
+	CHECK(num_channels_ == 3 || num_channels_ == 1)<< "Input layer should have 1 or 3 channels.";
 	input_geometry_ = cv::Size(input_layer->width(), input_layer->height());
 
 	/* Load the binaryproto mean file. */
-	SetMean(mean_file);
+//	SetMean(mean_file);
 
 //	/* Load labels. */
 //	std::ifstream labels(label_file.c_str());
@@ -99,7 +93,12 @@ bool _SSD::start(void)
 
 void _SSD::update(void)
 {
+#ifdef CPU_ONLY
+	Caffe::set_mode(Caffe::CPU);
+#else
 	Caffe::set_mode(Caffe::GPU);
+#endif
+
 
 	while (m_bThreadON)
 	{
@@ -116,7 +115,7 @@ void _SSD::update(void)
 
 void _SSD::detectFrame(void)
 {
-	CamFrame* pFrame;
+	Frame* pFrame;
 	string name;
 	Rect bb;
 
@@ -129,19 +128,19 @@ void _SSD::detectFrame(void)
 	if (pFrame->empty())
 		return;
 
-	m_pClassifier->reset();
-
 	Mat* pImg = pFrame->getCMat();
 	std::vector<vector<float> > detections = detect(*pImg);
 
-	float confidence_threshold = 0.5;
+	float confidence_threshold = 0.1;
 
 	/* Print the detection results. */
 	for (int i = 0; i < detections.size(); ++i)
 	{
 		const vector<float>& d = detections[i];
 		// Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
-		CHECK_EQ(d.size(), 7);
+//		CHECK_EQ(d.size(), 7);
+
+		float size = d.size();
 
 		const float score = d[2];
 		if (score < confidence_threshold)

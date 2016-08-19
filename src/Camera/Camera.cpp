@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "CamInput.h"
+#include "Camera.h"
 
 namespace kai
 {
 
-CamInput::CamInput()
+Camera::Camera()
 {
 	m_camType = CAM_GENERAL;
 	m_width = 0;
@@ -29,11 +29,11 @@ CamInput::CamInput()
 	m_bCrop = 0;
 }
 
-CamInput::~CamInput()
+Camera::~Camera()
 {
 }
 
-bool CamInput::setup(JSON* pJson, string camName)
+bool Camera::setup(JSON* pJson, string camName)
 {
 	string presetDir = "";
 	string calibFile;
@@ -116,7 +116,7 @@ bool CamInput::setup(JSON* pJson, string camName)
 	return true;
 }
 
-bool CamInput::openCamera(void)
+bool Camera::openCamera(void)
 {
 #ifdef USE_ZED
 	if (m_camType == CAM_ZED)
@@ -171,7 +171,7 @@ bool CamInput::openCamera(void)
 	return true;
 }
 
-GpuMat* CamInput::readFrame(void)
+GpuMat* Camera::readFrame(void)
 {
 	GpuMat* pSrc;
 	GpuMat* pDest;
@@ -227,7 +227,7 @@ GpuMat* CamInput::readFrame(void)
 	return pSrc;
 }
 
-GpuMat* CamInput::getDepthFrame(void)
+GpuMat* Camera::getDepthFrame(void)
 {
 	if (m_camType == CAM_ZED)
 	{
@@ -240,7 +240,7 @@ GpuMat* CamInput::getDepthFrame(void)
 	return NULL;
 }
 
-void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
+void Camera::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
 	Point2f center(m_centerH, m_centerV);
 	double deg = -rollRad * 180.0 * OneOvPI;
@@ -251,7 +251,7 @@ void CamInput::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 
 }
 
-int CamInput::getType(void)
+int Camera::getType(void)
 {
 	return m_camType;
 }

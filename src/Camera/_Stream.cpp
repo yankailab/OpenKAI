@@ -5,26 +5,26 @@
  *      Author: yankai
  */
 
-#include "_CamStream.h"
+#include "_Stream.h"
 
 namespace kai
 {
 
-_CamStream::_CamStream()
+_Stream::_Stream()
 {
 	_ThreadBase();
 
 	m_camName = "";
-	m_pCamInput = new CamInput();
-	m_pCamFrame = new CamFrame();
-	m_pGrayFrame = new CamFrame();
-	m_pHSVframe = new CamFrame();
+	m_pCamInput = new Camera();
+	m_pCamFrame = new Frame();
+	m_pGrayFrame = new Frame();
+	m_pHSVframe = new Frame();
 
 	m_bGray = false;
 	m_bHSV = false;
 }
 
-_CamStream::~_CamStream()
+_Stream::~_Stream()
 {
 	RELEASE(m_pCamInput);
 	RELEASE(m_pCamFrame);
@@ -32,7 +32,7 @@ _CamStream::~_CamStream()
 	RELEASE(m_pHSVframe);
 }
 
-bool _CamStream::init(JSON* pJson, string camName)
+bool _Stream::init(JSON* pJson, string camName)
 {
 	if(!pJson)return false;
 
@@ -48,7 +48,7 @@ bool _CamStream::init(JSON* pJson, string camName)
 	return true;
 }
 
-bool _CamStream::start(void)
+bool _Stream::start(void)
 {
 	//Open camera
 	CHECK_ERROR(m_pCamInput->openCamera());
@@ -65,7 +65,7 @@ bool _CamStream::start(void)
 	return true;
 }
 
-void _CamStream::update(void)
+void _Stream::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -91,29 +91,29 @@ void _CamStream::update(void)
 
 }
 
-bool _CamStream::complete(void)
+bool _Stream::complete(void)
 {
 	m_pCamInput->m_camera.release();
 
 	return true;
 }
 
-CamFrame* _CamStream::getFrame(void)
+Frame* _Stream::getFrame(void)
 {
 	return m_pCamFrame;
 }
 
-CamFrame* _CamStream::getGrayFrame(void)
+Frame* _Stream::getGrayFrame(void)
 {
 	return m_pGrayFrame;
 }
 
-CamFrame* _CamStream::getHSVFrame(void)
+Frame* _Stream::getHSVFrame(void)
 {
 	return m_pHSVframe;
 }
 
-CamInput* _CamStream::getCameraInput(void)
+Camera* _Stream::getCameraInput(void)
 {
 	return m_pCamInput;
 }

@@ -46,7 +46,7 @@ bool CamSparseFlow::init(void)
 	return true;
 }
 
-fVector4 CamSparseFlow::detect(_CamStream* pCamStream)
+fVector4 CamSparseFlow::detect(_Stream* pCamStream)
 {
 #ifdef USE_CUDA
 	GpuMat d_prevPts;

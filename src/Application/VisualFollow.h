@@ -14,7 +14,7 @@
 
 #include "../AI/_SegNet.h"
 #include "../Autopilot/_AutoPilot.h"
-#include "../Camera/CamInput.h"
+#include "../Camera/Camera.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../Interface/_VehicleInterface.h"
 #include "../UI/UIMonitor.h"
@@ -41,7 +41,7 @@ public:
 	int m_key;
 	bool m_bRun;
 
-	_CamStream* m_pCamFront;
+	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_VehicleInterface* m_pVlink;
@@ -49,9 +49,9 @@ public:
 	_Flow* m_pDF;
 	_ROITracker* m_pROITracker;
 
-	CamFrame* m_pShow;
-	CamFrame* m_pMat;
-	CamFrame* m_pMat2;
+	Frame* m_pShow;
+	Frame* m_pMat;
+	Frame* m_pMat2;
 	UIMonitor* m_pUIMonitor;
 
 	iVector4 m_ROI;

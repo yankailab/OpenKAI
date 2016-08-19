@@ -10,14 +10,14 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 
 #define NUM_MONITOR_FRAME 8
 
 namespace kai {
 
 struct MONITOR_FRAME {
-	CamFrame* m_pFrame;
+	Frame* m_pFrame;
 	string m_name;
 	int m_x;
 	int m_y;
@@ -31,11 +31,11 @@ public:
 	virtual ~UIMonitor();
 
 	bool init(string name, JSON* pJson);
-	bool addFullFrame(CamFrame* pFrame);
-	bool addFrame(CamFrame* pFrame, int x, int y, int w, int h);
+	bool addFullFrame(Frame* pFrame);
+	bool addFrame(Frame* pFrame, int x, int y, int w, int h);
 	bool addFrame(MONITOR_FRAME* pMFrame);
 	bool updateFrame(MONITOR_FRAME* pMFrame);
-	void removeFrame(CamFrame* pFrame);
+	void removeFrame(Frame* pFrame);
 	void removeAll(void);
 	void show(void);
 
@@ -46,8 +46,8 @@ public:
 	Mat m_showFrame;
 	Mat m_frame;
 
-	CamFrame m_camFrame;
-	CamFrame m_camFrame2;
+	Frame m_camFrame;
+	Frame m_camFrame2;
 	MONITOR_FRAME m_pFrame[NUM_MONITOR_FRAME];
 	int m_numFrame;
 

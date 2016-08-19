@@ -6,11 +6,11 @@
 #ifndef DETECTOR_DEPTHDETECTOR_H_
 #define DETECTOR_DEPTHDETECTOR_H_
 
-#include "../AI/_Classifier.h"
+#include "../Navigation/_Universe.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "../Vision/_Flow.h"
 
 using namespace cv;
@@ -40,11 +40,11 @@ private:
 	}
 
 public:
-	_Classifier* m_pClassifier;
-	CamFrame*	m_pDepth;
+	_Universe* m_pClassifier;
+	Frame*	m_pDepth;
 	uint64_t	m_camFrameID;
-	_CamStream*	m_pCamStream;
-	CamInput*	m_pCam;
+	_Stream*	m_pCamStream;
+	Camera*	m_pCam;
 	_Flow*		m_pFlow;
 
 	Mat			m_Mat;

@@ -8,7 +8,7 @@
 #ifndef SRC_AI__CLASSIFIER_H_
 #define SRC_AI__CLASSIFIER_H_
 
-#include "_Caffe.h"
+#include "../AI/_Caffe.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
@@ -36,11 +36,11 @@ struct OBJECT
 
 };
 
-class _Classifier: public _ThreadBase
+class _Universe: public _ThreadBase
 {
 public:
-	_Classifier();
-	virtual ~_Classifier();
+	_Universe();
+	virtual ~_Universe();
 
 	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	OBJECT* addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour);
@@ -55,7 +55,7 @@ private:
 
 	void update(void);
 	static void* getUpdateThread(void* This) {
-		((_Classifier*) This)->update();
+		((_Universe*) This)->update();
 		return NULL;
 	}
 

@@ -53,10 +53,10 @@ bool Navigator::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &m_DDFPS));
 	CHECK_INFO(pJson->getVal("CAFFE_SSD_FPS", &m_SSDFPS));
 
-	m_pFrame = new CamFrame();
+	m_pFrame = new Frame();
 
 	//Init Camera
-	m_pCamFront = new _CamStream();
+	m_pCamFront = new _Stream();
 	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
 
 	//Init ROI Tracker
@@ -83,7 +83,7 @@ bool Navigator::start(JSON* pJson)
 	m_pAP->m_pMarkerDetector = m_pMD;
 
 	//Init Classifier
-	m_pClassifier = new _Classifier();
+	m_pClassifier = new _Universe();
 	m_pClassifier->init(pJson);
 
 	if (m_SSDFPS > 0)
@@ -208,7 +208,14 @@ void Navigator::showScreen(void)
 	Mat imMat, vMat;
 	MARKER_CIRCLE* pCircle;
 	fVector3 markerCenter;
-	CamFrame* pFrame;
+	Frame* pFrame;
+
+	//Draw object contours
+	OBJECT* pObj;
+	vector<vector<Point> > contours;
+
+
+
 
 //	if(m_pCamFront->getCameraInput()->m_Gdepth.empty())return;
 //	m_pCamFront->getCameraInput()->m_Gdepth.download(m_showMat);
@@ -258,10 +265,6 @@ void Navigator::showScreen(void)
 	{
 		vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
 
-		//Draw object contours
-		OBJECT* pObj;
-		vector<vector<Point> > contours;
-
 		for (i = 0; i < m_pClassifier->m_numObj; i++)
 		{
 			pObj = &m_pClassifier->m_pObjects[i];
@@ -308,6 +311,31 @@ void Navigator::showScreen(void)
 				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
 				1);
 	}
+
+
+
+
+
+
+	for (i = 0; i < m_pClassifier->m_numObj; i++)
+	{
+		pObj = &m_pClassifier->m_pObjects[i];
+
+		//Green
+		if (pObj->m_status == OBJ_COMPLETE)
+		{
+			if (pObj->m_name[0].empty())
+				continue;
+
+			rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
+			putText(m_showMat, pObj->m_name[0],
+					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
+						  pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
+					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
+		}
+	}
+
+
 
 //	if(m_bFCN && !m_pFCN->m_segment.empty())
 //	{

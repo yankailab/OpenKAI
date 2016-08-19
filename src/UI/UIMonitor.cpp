@@ -40,7 +40,7 @@ bool UIMonitor::init(string name, JSON* pJson)
 	return true;
 }
 
-bool UIMonitor::addFullFrame(CamFrame* pFrame)
+bool UIMonitor::addFullFrame(Frame* pFrame)
 {
 	MONITOR_FRAME* pMFrame;
 
@@ -58,7 +58,7 @@ bool UIMonitor::addFullFrame(CamFrame* pFrame)
 	return true;
 }
 
-bool UIMonitor::addFrame(CamFrame* pFrame, int x, int y, int w, int h)
+bool UIMonitor::addFrame(Frame* pFrame, int x, int y, int w, int h)
 {
 	MONITOR_FRAME* pMFrame;
 
@@ -115,7 +115,7 @@ bool UIMonitor::updateFrame(MONITOR_FRAME* pMFrame)
 void UIMonitor::show(void)
 {
 	int i;
-	CamFrame* pFrame;
+	Frame* pFrame;
 	MONITOR_FRAME* pMFrame;
 
 	if(m_numFrame == 0)return;

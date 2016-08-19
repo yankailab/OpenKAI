@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "CamFrame.h"
+#include "Frame.h"
 
 namespace kai
 {
 
-CamFrame::CamFrame()
+Frame::Frame()
 {
 	//Common
 	m_CMat.m_frameID = 0;
@@ -21,11 +21,11 @@ CamFrame::CamFrame()
 
 }
 
-CamFrame::~CamFrame()
+Frame::~Frame()
 {
 }
 
-void CamFrame::getResizedOf(CamFrame* pFrom, int width, int height)
+void Frame::getResizedOf(Frame* pFrom, int width, int height)
 {
 	if(!pFrom)return;
 	if(pFrom->empty())return;
@@ -52,7 +52,7 @@ void CamFrame::getResizedOf(CamFrame* pFrom, int width, int height)
 
 }
 
-void CamFrame::getGrayOf(CamFrame* pFrom)
+void Frame::getGrayOf(Frame* pFrom)
 {
 	if(!pFrom)return;
 
@@ -70,7 +70,7 @@ void CamFrame::getGrayOf(CamFrame* pFrom)
 
 }
 
-void CamFrame::getHSVOf(CamFrame* pFrom)
+void Frame::getHSVOf(Frame* pFrom)
 {
 	if(!pFrom)return;
 
@@ -88,7 +88,7 @@ void CamFrame::getHSVOf(CamFrame* pFrom)
 
 }
 
-void CamFrame::getBGRAOf(CamFrame* pFrom)
+void Frame::getBGRAOf(Frame* pFrom)
 {
 	if(!pFrom)return;
 
@@ -105,7 +105,7 @@ void CamFrame::getBGRAOf(CamFrame* pFrom)
 
 }
 
-void CamFrame::get8UC3Of(CamFrame* pFrom)
+void Frame::get8UC3Of(Frame* pFrom)
 {
 	if(!pFrom)return;
 
@@ -130,7 +130,7 @@ void CamFrame::get8UC3Of(CamFrame* pFrom)
 
 }
 
-uint64_t CamFrame::getFrameID(void)
+uint64_t Frame::getFrameID(void)
 {
 	uint64_t frameID = m_CMat.m_frameID;
 
@@ -143,7 +143,7 @@ uint64_t CamFrame::getFrameID(void)
 	return frameID;
 }
 
-bool CamFrame::empty(void)
+bool Frame::empty(void)
 {
 	bool bEmpty = true;
 	if(!m_CMat.m_mat.empty())bEmpty = false;
@@ -157,7 +157,7 @@ bool CamFrame::empty(void)
 	return bEmpty;
 }
 
-bool CamFrame::isNewerThan(CamFrame* pFrame)
+bool Frame::isNewerThan(Frame* pFrame)
 {
 	if (pFrame == NULL)return false;
 	if(pFrame->getFrameID() < this->getFrameID())
@@ -168,7 +168,7 @@ bool CamFrame::isNewerThan(CamFrame* pFrame)
 	return false;
 }
 
-void CamFrame::update(CamFrame* pFrame)
+void Frame::update(Frame* pFrame)
 {
 	if (pFrame == NULL)return;
 
@@ -184,7 +184,7 @@ void CamFrame::update(CamFrame* pFrame)
 }
 
 #ifdef USE_CUDA
-void CamFrame::update(GpuMat* pGpuFrame)
+void Frame::update(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
@@ -193,7 +193,7 @@ void CamFrame::update(GpuMat* pGpuFrame)
 }
 #endif
 
-void CamFrame::update(Mat* pFrame)
+void Frame::update(Mat* pFrame)
 {
 	if (pFrame == NULL)return;
 
@@ -208,20 +208,20 @@ void CamFrame::update(Mat* pFrame)
 #endif
 }
 
-inline void CamFrame::updatedCMat(void)
+inline void Frame::updatedCMat(void)
 {
 	m_CMat.m_frameID = get_time_usec();
 }
 
 #ifdef USE_CUDA
-void CamFrame::updatedGMat(void)
+void Frame::updatedGMat(void)
 {
 	m_GMat.m_frameID = get_time_usec();
 }
 #endif
 
 #ifdef USE_CUDA
-GpuMat* CamFrame::getGMat(void)
+GpuMat* Frame::getGMat(void)
 {
 	//Return the latest content
 	if(m_CMat.m_frameID > m_GMat.m_frameID)
@@ -234,7 +234,7 @@ GpuMat* CamFrame::getGMat(void)
 }
 #endif
 
-Mat* CamFrame::getCMat(void)
+Mat* Frame::getCMat(void)
 {
 #ifdef USE_CUDA
 	//Return the latest content
@@ -248,7 +248,7 @@ Mat* CamFrame::getCMat(void)
 	return &m_CMat.m_mat;
 }
 
-Size CamFrame::getSize(void)
+Size Frame::getSize(void)
 {
 	Size mySize = Size(0,0);
 	mySize = m_CMat.m_mat.size();

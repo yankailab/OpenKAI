@@ -126,7 +126,7 @@ void _FeatureDetector::update(void)
 
 void _FeatureDetector::detect(void)
 {
-	CamFrame* pFrame;
+	Frame* pFrame;
 	Mat* pMat;
 
 	if(m_pCamStream==NULL)return;

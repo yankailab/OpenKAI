@@ -35,7 +35,7 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MIN", &m_minObjArea));
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MAX", &m_maxObjArea));
 
-	m_pDepth = new CamFrame();
+	m_pDepth = new Frame();
 	m_camFrameID = 0;
 
 	return true;
@@ -81,7 +81,7 @@ void _DepthDetector::detect(void)
 	double scaleH;
 	GpuMat gMat;
 	GpuMat gMat2;
-	CamFrame* pFrame;
+	Frame* pFrame;
 
 	if(m_pClassifier==NULL)return;
 	if(m_pCamStream==NULL)return;

@@ -31,7 +31,7 @@ bool FrameGroup::init(int numFrame)
 
 	for(m_iFrame=0; m_iFrame<m_numFrame; m_iFrame++)
 	{
-		m_pFrame[m_iFrame] = new CamFrame();
+		m_pFrame[m_iFrame] = new Frame();
 	}
 
 	m_iFrame = 0;
@@ -47,7 +47,7 @@ void FrameGroup::updateFrameIndex(void)
 	m_iFrame = iFrame;
 }
 
-CamFrame* FrameGroup::getPrevFrame(void)
+Frame* FrameGroup::getPrevFrame(void)
 {
 	//Thread safe
 	int iFrame = m_iFrame;
@@ -59,7 +59,7 @@ CamFrame* FrameGroup::getPrevFrame(void)
 	return m_pFrame[iFrame-1];
 }
 
-CamFrame* FrameGroup::getLastFrame(void)
+Frame* FrameGroup::getLastFrame(void)
 {
 	return m_pFrame[m_iFrame];
 }

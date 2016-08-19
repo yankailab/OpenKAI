@@ -42,26 +42,26 @@ struct U_MAT
 
 
 
-class CamFrame
+class Frame
 {
 public:
-	CamFrame();
-	virtual ~CamFrame();
+	Frame();
+	virtual ~Frame();
 
 	void update(Mat* pFrame);
-	void update(CamFrame* pFrame);
+	void update(Frame* pFrame);
 	inline void updatedCMat(void);
 
 	Mat* getCMat(void);
-	void getResizedOf(CamFrame* pFrom, int width, int height);
-	void getGrayOf(CamFrame* pFrom);
-	void getHSVOf(CamFrame* pFrom);
-	void getBGRAOf(CamFrame* pFrom);
-	void get8UC3Of(CamFrame* pFrom);
+	void getResizedOf(Frame* pFrom, int width, int height);
+	void getGrayOf(Frame* pFrom);
+	void getHSVOf(Frame* pFrom);
+	void getBGRAOf(Frame* pFrom);
+	void get8UC3Of(Frame* pFrom);
 
 	Size getSize(void);
 
-	bool isNewerThan(CamFrame* pFrame);
+	bool isNewerThan(Frame* pFrame);
 	uint64_t getFrameID(void);
 	bool	 empty(void);
 

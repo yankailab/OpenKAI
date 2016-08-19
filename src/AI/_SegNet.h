@@ -28,8 +28,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "../Camera/CamFrame.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
+#include "../Camera/Frame.h"
 
 namespace kai
 {
@@ -70,7 +70,7 @@ private:
 	}
 
 public:
-	_CamStream* m_pCamStream;
+	_Stream* m_pCamStream;
 	int			m_cudaDeviceID;
 	Mat m_segment;
 
@@ -81,8 +81,8 @@ private:
 	Mat m_labelColor;
 	Ptr<LookUpTable>	m_pGpuLUT;
 
-	CamFrame* m_pFrame;
-	CamFrame* m_pSegment;
+	Frame* m_pFrame;
+	Frame* m_pSegment;
 	Mat m_frame;
 
 };

@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_Classifier.h"
+#include "_Universe.h"
 
 namespace kai
 {
 
-_Classifier::_Classifier()
+_Universe::_Universe()
 {
 	_ThreadBase();
 
@@ -37,12 +37,12 @@ _Classifier::_Classifier()
 
 }
 
-_Classifier::~_Classifier()
+_Universe::~_Universe()
 {
 	// TODO Auto-generated destructor stub
 }
 
-bool _Classifier::init(JSON* pJson)
+bool _Universe::init(JSON* pJson)
 {
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -71,7 +71,7 @@ bool _Classifier::init(JSON* pJson)
 	return true;
 }
 
-bool _Classifier::start(void)
+bool _Universe::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -85,7 +85,7 @@ bool _Classifier::start(void)
 	return true;
 }
 
-void _Classifier::update(void)
+void _Universe::update(void)
 {
 	m_caffe.setModeGPU();
 
@@ -102,7 +102,7 @@ void _Classifier::update(void)
 
 }
 
-void _Classifier::deleteObject(int i)
+void _Universe::deleteObject(int i)
 {
 	OBJECT* pObj = &m_pObjects[i];
 
@@ -111,7 +111,7 @@ void _Classifier::deleteObject(int i)
 	pObj->m_status = OBJ_VACANT;
 }
 
-void _Classifier::classifyObject(void)
+void _Universe::classifyObject(void)
 {
 	int i, j;
 	OBJECT* pObj;
@@ -134,29 +134,31 @@ void _Classifier::classifyObject(void)
 		}
 
 		//Delete the uncertain ones
-		if(pObj->m_status == OBJ_COMPLETE)
-		{
-			if(pObj->m_prob[0]<=m_objProbMin)
-			{
-				deleteObject(i);
-				continue;
-			}
-		}
-
-		if(pObj->m_status != OBJ_ADDED)continue;
-		if(pObj->m_Mat.empty())continue;
-
-		//TODO: resize
-		pObj->m_status = OBJ_CLASSIFYING;
-		m_vMat.push_back(pObj->m_Mat);
-
-		pObjBatch[numBatch] = pObj;
-
-		numBatch++;
-		if(numBatch >= NUM_DETECT_BATCH)break;
+//		if(pObj->m_status == OBJ_COMPLETE)
+//		{
+//			if(pObj->m_prob[0]<=m_objProbMin)
+//			{
+//				deleteObject(i);
+//				continue;
+//			}
+//		}
+//
+//		if(pObj->m_status != OBJ_ADDED)continue;
+//		if(pObj->m_Mat.empty())continue;
+//
+//		//TODO: resize
+//		pObj->m_status = OBJ_CLASSIFYING;
+//		m_vMat.push_back(pObj->m_Mat);
+//
+//		pObjBatch[numBatch] = pObj;
+//
+//		numBatch++;
+//		if(numBatch >= NUM_DETECT_BATCH)break;
 	}
 
 	if(numBatch <= 0)return;
+
+	return;
 
 #ifdef CLASSIFIER_DEBUG
 	uint64_t tA,tB;
@@ -200,7 +202,7 @@ void _Classifier::classifyObject(void)
 #endif
 }
 
-OBJECT* _Classifier::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 	if(!pMat)return NULL;
 	if(!pRect)return NULL;
@@ -267,7 +269,7 @@ OBJECT* _Classifier::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pCo
 	return NULL;
 }
 
-OBJECT* _Classifier::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 //	if(!pMat)return NULL;
 	if(!pRect)return NULL;
@@ -320,7 +322,7 @@ OBJECT* _Classifier::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<
 
 }
 
-void _Classifier::reset(void)
+void _Universe::reset(void)
 {
 	for (int i = 0; i < m_numObj; i++)
 	{

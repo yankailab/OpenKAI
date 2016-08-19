@@ -11,11 +11,11 @@
 "APP_WAIT_KEY":30,
 
 "CAM_FRONTL_FPS":30,
-"CAM_FRONTL_TYPE":1,
+"CAM_FRONTL_TYPE":0,
 "CAM_FRONTL_NAME":"CAM_FRONT_L",
 "CAM_FRONTL_WIDTH":1280,
 "CAM_FRONTL_HEIGHT":720,
-"CAM_FRONTL_ID":2,
+"CAM_FRONTL_ID":1,
 "CAM_FRONTL_MARKER":1,
 "CAM_FRONTL_CALIB":0,
 "CAM_FRONTL_FISHEYE":0,
@@ -43,7 +43,7 @@
 "FLOW_FRONTL_COLOR_FILE":"model/dlabel.png",
 "FLOW_FRONTL_FLOW_MAX":500,
 
-"DEPTH_OBJDETECTOR_FPS":30,
+"DEPTH_OBJDETECTOR_FPS":0,
 "DEPTH_OBJDETECTOR_AREA_MIN":250,
 "DEPTH_OBJDETECTOR_AREA_MAX":10000000,
 
@@ -53,13 +53,13 @@
 "CLASSIFIER_POS_DISPARITY":200,
 
 "CAFFE_DIR":"/home/ubuntu/src/caffe_ssd/caffe/",
-"CAFFE_SSD_FPS":0,
-"CAFFE_SSD_MODEL_FILE":"models/bvlc_reference_caffenet/deploy.prototxt",
-"CAFFE_SSD_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
+"CAFFE_SSD_FPS":30,
+"CAFFE_SSD_MODEL_FILE":"models/VGGNet/VOC0712/SSD_300x300/deploy.prototxt",
+"CAFFE_SSD_TRAINED_FILE":"models/VGGNet/VOC0712/SSD_300x300/VGG_VOC0712_SSD_300x300_iter_60000.caffemodel",
 "CAFFE_SSD_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
 "CAFFE_SSD_LABEL_FILE":"data/ilsvrc12/synset_words.txt",
 
-"CAFFE_ENABLE":1,
+"CAFFE_ENABLE":0,
 "CAFFE_MODEL_FILE":"models/bvlc_reference_caffenet/deploy.prototxt",
 "CAFFE_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
 "CAFFE_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",

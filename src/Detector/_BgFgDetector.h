@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 
@@ -58,7 +58,7 @@ public:
 	double	m_minSize;
 	int		m_objLockLevel;
 
-	_CamStream*		m_pCamStream;
+	_Stream*		m_pCamStream;
 	UMat				m_Mat;
 
 #ifdef USE_CUDA

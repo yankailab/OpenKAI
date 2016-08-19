@@ -11,8 +11,8 @@
 #include "../Base/common.h"
 #include "stdio.h"
 #include "../Base/cvplatform.h"
+#include "../Camera/_Stream.h"
 
-#include "../Camera/_CamStream.h"
 #include "../Camera/FrameGroup.h"
 
 namespace kai
@@ -25,7 +25,7 @@ public:
 	virtual ~CamSparseFlow();
 
 	bool init(void);
-	fVector4 detect(_CamStream* pFrame);
+	fVector4 detect(_Stream* pFrame);
 
 private:
 	fVector4 m_flow;

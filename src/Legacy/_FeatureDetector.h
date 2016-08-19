@@ -5,9 +5,9 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
+#include "../Camera/_Stream.h"
 #include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"
-#include "../Camera/_CamStream.h"
 #include "../Camera/FrameGroup.h"
 
 using namespace cv;
@@ -47,7 +47,7 @@ public:
 
 	uint64_t			m_frameID;
 
-	_CamStream*			m_pCamStream;
+	_Stream*			m_pCamStream;
 	FrameGroup*			m_pGrayFrames;
 
 	Ptr<AKAZE> m_pAkaze;
@@ -61,7 +61,7 @@ public:
 	cv::Mat m_imgDescriptor;
 
 	GpuMat		m_GMat;
-	CamFrame*	m_pGray;
+	Frame*	m_pGray;
 
 };
 }

@@ -48,8 +48,8 @@ bool _3DFlow::init(JSON* pJson, string name)
 	m_ROI.x = 0;//m_size.width*0.5 - m_ROI.width*0.5;
 	m_ROI.y = 0;//m_size.height*0.5 - m_ROI.height*0.5;
 
-	m_pDepth = new CamFrame();
-	m_pSeg = new CamFrame();
+	m_pDepth = new Frame();
+	m_pSeg = new Frame();
 
 	this->setTargetFPS(FPS);
 	return true;

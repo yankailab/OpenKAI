@@ -7,7 +7,7 @@
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
 #include "../Utility/util.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -61,13 +61,13 @@ public:
 	uint64_t			m_objLifeTime;
 	int					m_posDiff;
 
-	_CamStream*			m_pCamStream;
+	_Stream*			m_pCamStream;
 	int					m_cudaDeviceID;
 
 private:
 	Mat			m_Mat;
 	GpuMat		m_GMat;
-	CamFrame*	m_pGray;
+	Frame*	m_pGray;
 
 
 

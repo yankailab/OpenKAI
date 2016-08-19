@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Base/common.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "../Detector/_CascadeDetector.h"
 #include "../Detector/_MarkerDetector.h"
 #include "../Interface/_VehicleInterface.h"

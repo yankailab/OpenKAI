@@ -13,7 +13,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Utility/util.h"
-#include "CamFrame.h"
+#include "Frame.h"
 
 #define NUM_FRAME 10
 
@@ -30,8 +30,8 @@ public:
 //	bool addFrame(CamFrame* pFrame, int iFrame);
 
 	void updateFrameIndex(void);
-	CamFrame* getPrevFrame(void);
-	CamFrame* getLastFrame(void);
+	Frame* getPrevFrame(void);
+	Frame* getLastFrame(void);
 
 //	void switchFrame(void);
 //	void updateSwitch(Mat* pFrame);
@@ -40,7 +40,7 @@ public:
 private:
 	int		m_numFrame;
 	int 	m_iFrame;
-	CamFrame* m_pFrame[NUM_FRAME];
+	Frame* m_pFrame[NUM_FRAME];
 };
 
 }/*namespace kai*/

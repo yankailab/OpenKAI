@@ -14,7 +14,7 @@
 
 #include "../AI/_SegNet.h"
 #include "../Autopilot/_AutoPilot.h"
-#include "../Camera/CamInput.h"
+#include "../Camera/Camera.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
@@ -36,14 +36,14 @@ public:
 	bool m_bRun;
 	int m_showMode;
 
-	_CamStream* m_pCamFront;
+	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_SegNet* m_pSegNet;
 
-	CamFrame* m_pShow;
-	CamFrame* m_pMat;
-	CamFrame* m_pMat2;
+	Frame* m_pShow;
+	Frame* m_pMat;
+	Frame* m_pMat2;
 	UIMonitor* m_pUIMonitor;
 
 	bool start(JSON* pJson);

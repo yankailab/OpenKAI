@@ -14,7 +14,7 @@
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "../Camera/FrameGroup.h"
 
 using namespace cv;
@@ -50,8 +50,8 @@ public:
 	double	m_flowAvr; //average flow distance in previous frame
 	int		m_targetArea;
 
-	CamFrame* m_pDepth;
-	CamFrame* m_pSeg;
+	Frame* m_pDepth;
+	Frame* m_pSeg;
 
 	Mat m_labelColor;
 	Ptr<LookUpTable>	m_pGpuLUT;

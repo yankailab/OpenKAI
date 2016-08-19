@@ -13,7 +13,8 @@
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
-#include "../Camera/_CamStream.h"
+
+#include "../Camera/_Stream.h"
 #include "../Camera/FrameGroup.h"
 
 using namespace cv;
@@ -50,7 +51,7 @@ public:
 	int	m_width;
 	int m_height;
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-	_CamStream*						m_pCamStream;
+	_Stream*						m_pCamStream;
 	FrameGroup*						m_pGrayFrames;
 	GpuMat							m_GFlowMat;
 	GpuMat							m_GDMat;
@@ -58,7 +59,7 @@ public:
 	int		m_bDepth;
 	double	m_flowMax;
 	double	m_flowAvr; //average flow distance in previous frame
-	CamFrame* m_pDepth;
+	Frame* m_pDepth;
 
 //	Mat m_labelColor;
 //	Ptr<LookUpTable>	m_pGpuLUT;

@@ -48,7 +48,7 @@ bool _Flow::init(JSON* pJson, string camName)
 
 	CHECK_FATAL(pJson->getVal("FLOW_"+camName+"_COLOR_FILE", &labelFile));
 
-	m_pDepth = new CamFrame();
+	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
 	m_pGrayFrames = new FrameGroup();
@@ -94,9 +94,9 @@ void _Flow::update(void)
 
 void _Flow::detect(void)
 {
-	CamFrame* pGray;
-	CamFrame* pNextFrame;
-	CamFrame* pPrevFrame;
+	Frame* pGray;
+	Frame* pNextFrame;
+	Frame* pPrevFrame;
 	GpuMat* pPrev;
 	GpuMat* pNext;
 	GpuMat GMat;

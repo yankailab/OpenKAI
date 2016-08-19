@@ -11,7 +11,7 @@
 #include "stdio.h"
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/CamFrame.h"
+#include "../Camera/Frame.h"
 
 #define CAM_GENERAL 0
 #define CAM_ZED 1
@@ -19,10 +19,10 @@
 namespace kai
 {
 
-class CamInput {
+class Camera {
 public:
-	CamInput();
-	virtual ~CamInput();
+	Camera();
+	virtual ~Camera();
 
 	bool setup(JSON* pJson, string camName);
 

@@ -14,7 +14,7 @@
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
-#include "../Camera/_CamStream.h"
+#include "../Camera/_Stream.h"
 #include "../Camera/FrameGroup.h"
 
 using namespace cv;
@@ -46,7 +46,7 @@ private:
 	}
 
 public:
-	_CamStream*	m_pCamStream;
+	_Stream*	m_pCamStream;
 	Rect2d	m_ROI;
 	Rect2d	m_newROI;
 	Mat*	m_pMat;

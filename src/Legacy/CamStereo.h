@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 
-#include "../Camera/CamFrame.h"
+#include "../Camera/Frame.h"
 
 namespace kai
 {
@@ -24,8 +24,8 @@ public:
 
 
 	bool init(int disparity);
-	void detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth);
-	void detect(CamFrame* pLRsbs, CamFrame* pDepth);
+	void detect(Frame* pLeft, Frame* pRight, Frame* pDepth);
+	void detect(Frame* pLRsbs, Frame* pDepth);
 
 public:
     int		m_disparity;

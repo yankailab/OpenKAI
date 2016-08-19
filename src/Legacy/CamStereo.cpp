@@ -29,7 +29,7 @@ bool CamStereo::init(int disparity)
 	m_pCSBP = cv::cuda::createStereoConstantSpaceBP(m_disparity);
 }
 
-void CamStereo::detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth)
+void CamStereo::detect(Frame* pLeft, Frame* pRight, Frame* pDepth)
 {
 	GpuMat* pL = pLeft->getGMat();
 	GpuMat* pR = pRight->getGMat();
@@ -43,7 +43,7 @@ void CamStereo::detect(CamFrame* pLeft, CamFrame* pRight, CamFrame* pDepth)
 
 }
 
-void CamStereo::detect(CamFrame* pLRsbs, CamFrame* pDepth)
+void CamStereo::detect(Frame* pLRsbs, Frame* pDepth)
 {
 	GpuMat* pLR = pLRsbs->getGMat();
 	GpuMat GDepth;
