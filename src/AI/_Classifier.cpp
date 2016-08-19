@@ -95,7 +95,7 @@ void _Classifier::update(void)
 
 		m_frameID = get_time_usec();
 
-//		classifyObject();
+		classifyObject();
 
 		this->autoFPSto();
 	}

@@ -3,9 +3,8 @@
 Navigator* g_pNavigator;
 void onMouseNavigator(int event, int x, int y, int flags, void* userdata)
 {
-	g_pNavigator->handleMouse(event,x,y,flags);
+	g_pNavigator->handleMouse(event, x, y, flags);
 }
-
 
 namespace kai
 {
@@ -16,11 +15,9 @@ Navigator::Navigator()
 	m_bFullScreen = 0;
 	m_waitKey = 50;
 
-	m_bCaffe = 0;
-	m_bFCN = 0;
-
 	m_FlowFPS = 0;
 	m_DDFPS = 0;
+	m_SSDFPS = 0;
 
 	m_pCamFront = NULL;
 	m_pAP = NULL;
@@ -33,12 +30,12 @@ Navigator::Navigator()
 	m_pMD = NULL;
 	m_pClassifier = NULL;
 	m_pFCN = NULL;
+	m_pSSD = NULL;
 }
 
 Navigator::~Navigator()
 {
 }
-
 
 bool Navigator::start(JSON* pJson)
 {
@@ -50,12 +47,11 @@ bool Navigator::start(JSON* pJson)
 
 	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
 	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
-	CHECK_INFO(pJson->getVal("CAFFE_ENABLE", &m_bCaffe));
-	CHECK_INFO(pJson->getVal("FCN_ENABLE", &m_bFCN));
 	CHECK_INFO(pJson->getVal("APP_WAIT_KEY", &m_waitKey));
 
 	CHECK_INFO(pJson->getVal("FLOW_FRONTL_FPS", &m_FlowFPS));
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &m_DDFPS));
+	CHECK_INFO(pJson->getVal("CAFFE_SSD_FPS", &m_SSDFPS));
 
 	m_pFrame = new CamFrame();
 
@@ -70,7 +66,7 @@ bool Navigator::start(JSON* pJson)
 
 	//Init Marker Detector
 	m_pMD = new _MarkerDetector();
-	m_pMD->init(pJson,"LANDING");
+	m_pMD->init(pJson, "LANDING");
 	m_pMD->m_pCamStream = m_pCamFront;
 	m_pCamFront->m_bGray = true;
 	m_pCamFront->m_bHSV = true;
@@ -86,46 +82,53 @@ bool Navigator::start(JSON* pJson)
 	m_pAP->m_pROITracker = m_pROITracker;
 	m_pAP->m_pMarkerDetector = m_pMD;
 
-	if(m_bCaffe)
+	//Init Classifier
+	m_pClassifier = new _Classifier();
+	m_pClassifier->init(pJson);
+
+	if (m_SSDFPS > 0)
 	{
-		//Init Caffe
-		m_pClassifier = new _Classifier();
-		m_pClassifier->init(pJson);
-		m_pClassifier->start();
-
-		if(m_pCamFront->getCameraInput()->getType() != CAM_ZED && m_FlowFPS>0)
-		{
-			//Init Optical Flow
-			m_pFlow = new _Flow();
-			CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
-			m_pFlow->m_pCamStream = m_pCamFront;
-			m_pCamFront->m_bGray = true;
-			m_pFlow->start();
-		}
-
-		if(m_DDFPS > 0)
-		{
-			//Init Depth Detector
-			m_pDD = new _DepthDetector();
-			CHECK_FATAL(m_pDD->init(pJson,"FRONTL"));
-			m_pDD->m_pCamStream = m_pCamFront;
-			m_pDD->m_pClassifier = m_pClassifier;
-			m_pDD->m_pFlow = m_pFlow;
-			m_pDD->start();
-		}
+		//Init SSD
+		m_pSSD = new _SSD();
+		m_pSSD->init(pJson, "_MAIN");
+		m_pSSD->m_pCamStream = m_pCamFront;
+		m_pSSD->m_pClassifier = m_pClassifier;
+		m_pSSD->start();
 	}
 
-	if(m_bFCN)
+	if (m_FlowFPS > 0)
 	{
-		//Init FCN
-		m_pFCN = new _FCN();
-		m_pFCN->init("",pJson);
-		m_pFCN->m_pCamStream = m_pCamFront;
-
-		m_pFCN->start();
+		//Init Optical Flow
+		m_pFlow = new _Flow();
+		CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
+		m_pFlow->m_pCamStream = m_pCamFront;
+		m_pCamFront->m_bGray = true;
+		m_pFlow->start();
 	}
+
+	if (m_DDFPS > 0)
+	{
+		//Init Depth Detector
+		m_pDD = new _DepthDetector();
+		CHECK_FATAL(m_pDD->init(pJson, "FRONTL"));
+		m_pDD->m_pCamStream = m_pCamFront;
+		m_pDD->m_pClassifier = m_pClassifier;
+		m_pDD->m_pFlow = m_pFlow;
+		m_pDD->start();
+	}
+
+//	if(m_bFCN)
+//	{
+//		//Init FCN
+//		m_pFCN = new _FCN();
+//		m_pFCN->init("",pJson);
+//		m_pFCN->m_pCamStream = m_pCamFront;
+//
+//		m_pFCN->start();
+//	}
 
 	//Start threads
+	m_pClassifier->start();
 	m_pCamFront->start();
 	m_pMavlink->start();
 
@@ -136,12 +139,13 @@ bool Navigator::start(JSON* pJson)
 	//UI thread
 	m_bRun = true;
 
-	if(m_bShowScreen)
+	if (m_bShowScreen)
 	{
 		namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-		if(m_bFullScreen)
+		if (m_bFullScreen)
 		{
-			setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+			setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN,
+					CV_WINDOW_FULLSCREEN);
 		}
 		setMouseCallback(APP_NAME, onMouseNavigator, NULL);
 	}
@@ -153,7 +157,7 @@ bool Navigator::start(JSON* pJson)
 //		m_pCamFront->m_pCamL->m_bGimbal = true;
 //		m_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
 
-		if(m_bShowScreen)
+		if (m_bShowScreen)
 		{
 			showScreen();
 		}
@@ -162,7 +166,6 @@ bool Navigator::start(JSON* pJson)
 		m_key = waitKey(m_waitKey);
 		handleKey(m_key);
 	}
-
 
 	STOP(m_pAP);
 	STOP(m_pMavlink);
@@ -207,105 +210,113 @@ void Navigator::showScreen(void)
 	fVector3 markerCenter;
 	CamFrame* pFrame;
 
-
 //	if(m_pCamFront->getCameraInput()->m_Gdepth.empty())return;
 //	m_pCamFront->getCameraInput()->m_Gdepth.download(m_showMat);
 //	imshow(APP_NAME, m_showMat);
 //	return;
 
-
 	//Update frames
 	pFrame = m_pCamFront->getFrame();
-	if(pFrame->empty())return;
-
+	if (pFrame->empty())
+		return;
 
 	//Acquire the original image
 	pFrame->getCMat()->copyTo(m_showMat);
-	putText(m_showMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(m_showMat, "Camera FPS: " + f2str(m_pCamFront->getFrameRate()),
+			cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	//Draw Landing Marker
-	for(i=0; i<m_pMD->m_numCircle; i++)
+	for (i = 0; i < m_pMD->m_numCircle; i++)
 	{
 		pCircle = &m_pMD->m_pCircle[i];
-		circle(m_showMat, Point(pCircle->m_x,pCircle->m_y), pCircle->m_r, Scalar(0, 255, 0), 1);
+		circle(m_showMat, Point(pCircle->m_x, pCircle->m_y), pCircle->m_r,
+				Scalar(0, 255, 0), 1);
 	}
 
 	markerCenter.m_x = 0;
 	markerCenter.m_y = 0;
 	markerCenter.m_z = 0;
-	if(m_pMD->getCircleCenter(&markerCenter))
+	if (m_pMD->getCircleCenter(&markerCenter))
 	{
-		circle(m_showMat, Point(markerCenter.m_x,markerCenter.m_y), markerCenter.m_z, Scalar(0, 0, 255), 5);
+		circle(m_showMat, Point(markerCenter.m_x, markerCenter.m_y),
+				markerCenter.m_z, Scalar(0, 0, 255), 5);
 	}
-	else if(m_pROITracker->m_bTracking)
+	else if (m_pROITracker->m_bTracking)
 	{
-		rectangle(m_showMat, Point(m_pROITracker->m_ROI.x,m_pROITracker->m_ROI.y),
-				Point(m_pROITracker->m_ROI.x+m_pROITracker->m_ROI.width, m_pROITracker->m_ROI.y+m_pROITracker->m_ROI.height), Scalar(0, 0, 255), 3);
+		rectangle(m_showMat,
+				Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
+				Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
+						m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
+				Scalar(0, 0, 255), 3);
 	}
-	putText(m_showMat, "Marker center: ("+f2str(markerCenter.m_x)+" , "+f2str(markerCenter.m_y)+")", cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(m_showMat,
+			"Marker center: (" + f2str(markerCenter.m_x) + " , "
+					+ f2str(markerCenter.m_y) + ")", cv::Point(15, 55),
+			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-
-	if(m_bCaffe && m_pDD)
+	if (m_pDD && !m_pDD->m_Mat.empty())
 	{
-		if(!m_pDD->m_Mat.empty())
+		vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
+
+		//Draw object contours
+		OBJECT* pObj;
+		vector<vector<Point> > contours;
+
+		for (i = 0; i < m_pClassifier->m_numObj; i++)
 		{
-			vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
+			pObj = &m_pClassifier->m_pObjects[i];
+			contours.clear();
+			contours.push_back(pObj->m_vContours);
 
-			//Draw object contours
-			OBJECT* pObj;
-			vector< vector< Point > > contours;
-
-			for (i = 0; i < m_pClassifier->m_numObj; i++)
+			//Green
+			if (pObj->m_status == OBJ_COMPLETE)
 			{
-				pObj = &m_pClassifier->m_pObjects[i];
-				contours.clear();
-				contours.push_back(pObj->m_vContours);
+				if (pObj->m_name[0].empty())
+					continue;
 
-				//Green
-				if(pObj->m_status == OBJ_COMPLETE)
-				{
-					if (pObj->m_name[0].empty())continue;
+				drawContours(vMat, contours, -1, Scalar(0, 255, 0), CV_FILLED);
 
-//					drawContours(vMat, contours, -1, Scalar(0, 255, 0),CV_FILLED);
-
-					rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
-					putText(m_showMat, pObj->m_name[0], Point(pObj->m_boundBox.x+pObj->m_boundBox.width/2,
-							pObj->m_boundBox.y+pObj->m_boundBox.height/2) ,
-							FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
-				}
-
-				//Yellow
-				if(pObj->m_status == OBJ_CLASSIFYING)
-				{
-					drawContours(vMat, contours, -1, Scalar(0, 255, 255),1);
-		//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
-				}
-
-				//Red
-				if(pObj->m_status == OBJ_ADDED)
-				{
-					drawContours(vMat, contours, -1, Scalar(0, 0, 255),1);
-		//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
-				}
+				rectangle(m_showMat, pObj->m_boundBox.tl(),
+						pObj->m_boundBox.br(), Scalar(0, 255, 0));
+				putText(m_showMat, pObj->m_name[0],
+						Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
+								pObj->m_boundBox.y
+										+ pObj->m_boundBox.height / 2),
+						FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
 			}
 
-			cv::resize(vMat, imMat, Size(m_showMat.cols, m_showMat.rows));
-			cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
-			vMat.copyTo(m_showMat);
+			//Yellow
+			if (pObj->m_status == OBJ_CLASSIFYING)
+			{
+				drawContours(vMat, contours, -1, Scalar(0, 255, 255), 1);
+				//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
+			}
 
-			putText(m_showMat, "Caffe FPS: "+f2str(m_pClassifier->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+			//Red
+			if (pObj->m_status == OBJ_ADDED)
+			{
+				drawContours(vMat, contours, -1, Scalar(0, 0, 255), 1);
+				//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
+			}
 		}
-	}
 
-
-	if(m_bFCN && !m_pFCN->m_segment.empty())
-	{
-		cv::resize(m_pFCN->m_segment, imMat, Size(m_showMat.cols, m_showMat.rows));
+		cv::resize(vMat, imMat, Size(m_showMat.cols, m_showMat.rows));
 		cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
 		vMat.copyTo(m_showMat);
 
-		putText(m_showMat, "FCN FPS: "+f2str(m_pFCN->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+		putText(m_showMat, "Caffe FPS: " + f2str(m_pClassifier->getFrameRate()),
+				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
+				1);
 	}
+
+//	if(m_bFCN && !m_pFCN->m_segment.empty())
+//	{
+//		cv::resize(m_pFCN->m_segment, imMat, Size(m_showMat.cols, m_showMat.rows));
+//		cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
+//		vMat.copyTo(m_showMat);
+//
+//		putText(m_showMat, "FCN FPS: "+f2str(m_pFCN->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+//	}
 
 	imshow(APP_NAME, m_showMat);
 

@@ -20,7 +20,7 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(JSON* pJson)
+bool _SSD::init(JSON* pJson, string ssdName)
 {
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -81,6 +81,20 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 //	Blob<float>* output_layer = net_->output_blobs()[0];
 //	CHECK_EQ(labels_.size(), output_layer->channels())<< "Number of labels is different from the output layer dimension.";
 
+}
+
+bool _SSD::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR)<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
 }
 
 void _SSD::update(void)

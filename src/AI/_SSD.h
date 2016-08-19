@@ -48,12 +48,12 @@ public:
 	_SSD();
 	~_SSD();
 
-	bool init(JSON* pJson);
+	bool init(JSON* pJson, string ssdName);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
 
 	std::vector<vector<float> > detect(const cv::Mat img);
-	void setModeGPU();
+	bool start(void);
 
 private:
 	void detectFrame(void);
@@ -78,6 +78,7 @@ private:
 
 	vector<string> labels_;
 
+public:
 	_Classifier* m_pClassifier;
 	_CamStream*	m_pCamStream;
 

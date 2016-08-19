@@ -24,6 +24,7 @@
 #include "../Detector/_DepthDetector.h"
 #include "../Detector/_MarkerDetector.h"
 #include "../Tracker/_ROITracker.h"
+#include "../AI/_SSD.h"
 
 #define APP_NAME "NAVIGATOR"
 
@@ -45,10 +46,9 @@ public:
 	int m_bFullScreen;
 	int m_waitKey;
 
-	int m_bCaffe;
-	int m_bFCN;
 	int	m_FlowFPS;
 	int m_DDFPS;
+	int m_SSDFPS;
 
 	_CamStream* m_pCamFront;
 	_AutoPilot* m_pAP;
@@ -61,6 +61,7 @@ public:
 	_MarkerDetector* m_pMD;
 	_Classifier* m_pClassifier;
 	_FCN* m_pFCN;
+	_SSD* m_pSSD;
 
 	CamFrame* m_pFrame;
 	Mat m_showMat;
