@@ -1,5 +1,5 @@
 /*
- * CameraOpticalFlow.cpp
+ * _ROITracker.cpp
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
@@ -7,8 +7,8 @@
 
 #include "_ROITracker.h"
 
-#include "../Base/common.h"
 #include "stdio.h"
+#include "../Base/common.h"
 #include "../Base/cvplatform.h"
 
 namespace kai
@@ -26,11 +26,8 @@ _ROITracker::~_ROITracker()
 {
 }
 
-bool _ROITracker::init(JSON* pJson, string camName)
+bool _ROITracker::init(JSON* pJson, string roiName)
 {
-//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_WIDTH", &m_size.width));
-//	CHECK_INFO(pJson->getVal("DENSEFLOW_"+camName+"_HEIGHT", &m_size.height));
-
 	m_ROI.width = 0;
 	m_ROI.height = 0;
 	m_ROI.x = 0;
@@ -42,7 +39,9 @@ bool _ROITracker::init(JSON* pJson, string camName)
 	// create a tracker object
 	m_pTracker = Tracker::create( "KCF" );
 
-	this->setTargetFPS(30.0);
+	double FPS = DEFAULT_FPS;
+	CHECK_ERROR(pJson->getVal("ROITRACKER_"+roiName+"_FPS", &FPS));
+	this->setTargetFPS(FPS);
 
 	return true;
 }

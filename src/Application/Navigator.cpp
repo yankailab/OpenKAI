@@ -15,20 +15,15 @@ Navigator::Navigator()
 	m_bFullScreen = 0;
 	m_waitKey = 50;
 
-	m_FlowFPS = 0;
-	m_DDFPS = 0;
-	m_SSDFPS = 0;
-
 	m_pCamFront = NULL;
 	m_pAP = NULL;
 	m_pMavlink = NULL;
 	m_pCascade = NULL;
 	m_pFlow = NULL;
 	m_pROITracker = NULL;
-	m_pSegNet = NULL;
 	m_pDD = NULL;
 	m_pMD = NULL;
-	m_pClassifier = NULL;
+	m_pUniverse = NULL;
 	m_pFCN = NULL;
 	m_pSSD = NULL;
 }
@@ -44,61 +39,98 @@ bool Navigator::start(JSON* pJson)
 	//TODO: Optimize FCN
 
 	g_pNavigator = this;
+	int FPS;
 
 	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
 	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
 	CHECK_INFO(pJson->getVal("APP_WAIT_KEY", &m_waitKey));
 
-	CHECK_INFO(pJson->getVal("FLOW_FRONTL_FPS", &m_FlowFPS));
-	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &m_DDFPS));
-	CHECK_INFO(pJson->getVal("CAFFE_SSD_FPS", &m_SSDFPS));
-
 	m_pFrame = new Frame();
 
 	//Init Camera
-	m_pCamFront = new _Stream();
-	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
+	FPS=0;
+	CHECK_INFO(pJson->getVal("CAM_FRONTL_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pCamFront = new _Stream();
+		CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
+		m_pCamFront->start();
+	}
 
 	//Init ROI Tracker
-	m_pROITracker = new _ROITracker();
-	m_pROITracker->init(pJson, "DRONE");
-	m_pROITracker->m_pCamStream = m_pCamFront;
+	FPS=0;
+	CHECK_INFO(pJson->getVal("ROITRACKER_MAIN_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pROITracker = new _ROITracker();
+		m_pROITracker->init(pJson, "MAIN");
+		m_pROITracker->m_pCamStream = m_pCamFront;
+		m_pROITracker->start();
+	}
 
 	//Init Marker Detector
-	m_pMD = new _MarkerDetector();
-	m_pMD->init(pJson, "LANDING");
-	m_pMD->m_pCamStream = m_pCamFront;
-	m_pCamFront->m_bGray = true;
-	m_pCamFront->m_bHSV = true;
+	FPS=0;
+	CHECK_INFO(pJson->getVal("MARKER_LANDING_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pMD = new _MarkerDetector();
+		m_pMD->init(pJson, "LANDING");
+		m_pMD->m_pCamStream = m_pCamFront;
+		m_pCamFront->m_bGray = true;
+		m_pCamFront->m_bHSV = true;
+		m_pMD->start();
+	}
 
 	//Init Mavlink
-	m_pMavlink = new _MavlinkInterface();
-	CHECK_FATAL(m_pMavlink->setup(pJson, "FC"));
+	FPS=0;
+	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pMavlink = new _MavlinkInterface();
+		CHECK_FATAL(m_pMavlink->setup(pJson, "MAVLINK"));
+		m_pMavlink->start();
+	}
 
 	//Init Autopilot
-	m_pAP = new _AutoPilot();
-	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
-	m_pAP->m_pMavlink = m_pMavlink;
-	m_pAP->m_pROITracker = m_pROITracker;
-	m_pAP->m_pMarkerDetector = m_pMD;
-
-	//Init Classifier
-	m_pClassifier = new _Universe();
-	m_pClassifier->init(pJson);
-
-	if (m_SSDFPS > 0)
+	FPS=0;
+	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	if (FPS > 0)
 	{
-		//Init SSD
+		m_pAP = new _AutoPilot();
+		CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
+		m_pAP->m_pMavlink = m_pMavlink;
+		m_pAP->m_pROITracker = m_pROITracker;
+		m_pAP->m_pMarkerDetector = m_pMD;
+		m_pAP->start();
+	}
+
+	//Init Universe
+	FPS=0;
+	CHECK_INFO(pJson->getVal("UNIVERSE_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pUniverse = new _Universe();
+		m_pUniverse->init(pJson);
+		m_pUniverse->start();
+	}
+
+	//Init SSD
+	FPS=0;
+	CHECK_INFO(pJson->getVal("CAFFE_SSD_FPS", &FPS));
+	if (FPS > 0)
+	{
 		m_pSSD = new _SSD();
 		m_pSSD->init(pJson, "_MAIN");
 		m_pSSD->m_pCamStream = m_pCamFront;
-		m_pSSD->m_pClassifier = m_pClassifier;
+		m_pSSD->m_pUniverse = m_pUniverse;
 		m_pSSD->start();
 	}
 
-	if (m_FlowFPS > 0)
+	//Init Optical Flow
+	FPS=0;
+	CHECK_INFO(pJson->getVal("FLOW_FRONTL_FPS", &FPS));
+	if (FPS > 0)
 	{
-		//Init Optical Flow
 		m_pFlow = new _Flow();
 		CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
 		m_pFlow->m_pCamStream = m_pCamFront;
@@ -106,35 +138,30 @@ bool Navigator::start(JSON* pJson)
 		m_pFlow->start();
 	}
 
-	if (m_DDFPS > 0)
+	//Init Depth Object Detector
+	FPS=0;
+	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
+	if (FPS > 0)
 	{
-		//Init Depth Detector
 		m_pDD = new _DepthDetector();
 		CHECK_FATAL(m_pDD->init(pJson, "FRONTL"));
 		m_pDD->m_pCamStream = m_pCamFront;
-		m_pDD->m_pClassifier = m_pClassifier;
+		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
 		m_pDD->start();
 	}
 
-//	if(m_bFCN)
-//	{
-//		//Init FCN
-//		m_pFCN = new _FCN();
-//		m_pFCN->init("",pJson);
-//		m_pFCN->m_pCamStream = m_pCamFront;
-//
-//		m_pFCN->start();
-//	}
+	//Init FCN
+	FPS=0;
+	CHECK_INFO(pJson->getVal("FCN_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pFCN = new _FCN();
+		m_pFCN->init("",pJson);
+		m_pFCN->m_pCamStream = m_pCamFront;
+		m_pFCN->start();
+	}
 
-	//Start threads
-	m_pClassifier->start();
-	m_pCamFront->start();
-	m_pMavlink->start();
-
-	m_pMD->start();
-	m_pAP->start();
-	m_pROITracker->start();
 
 	//UI thread
 	m_bRun = true;
@@ -171,7 +198,7 @@ bool Navigator::start(JSON* pJson)
 	STOP(m_pMavlink);
 	STOP(m_pROITracker);
 	STOP(m_pMD);
-	STOP(m_pClassifier);
+	STOP(m_pUniverse);
 	STOP(m_pDD);
 	STOP(m_pFlow);
 	STOP(m_pFCN);
@@ -182,7 +209,7 @@ bool Navigator::start(JSON* pJson)
 	COMPLETE(m_pAP);
 	COMPLETE(m_pROITracker);
 	COMPLETE(m_pMD);
-	COMPLETE(m_pClassifier);
+	COMPLETE(m_pUniverse);
 	COMPLETE(m_pDD);
 	COMPLETE(m_pFlow);
 	COMPLETE(m_pFCN);
@@ -193,7 +220,7 @@ bool Navigator::start(JSON* pJson)
 	RELEASE(m_pROITracker);
 	RELEASE(m_pAP);
 	RELEASE(m_pMD);
-	RELEASE(m_pClassifier);
+	RELEASE(m_pUniverse);
 	RELEASE(m_pDD);
 	RELEASE(m_pFlow);
 	RELEASE(m_pFCN);
@@ -265,9 +292,9 @@ void Navigator::showScreen(void)
 	{
 		vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
 
-		for (i = 0; i < m_pClassifier->m_numObj; i++)
+		for (i = 0; i < m_pUniverse->m_numObj; i++)
 		{
-			pObj = &m_pClassifier->m_pObjects[i];
+			pObj = &m_pUniverse->m_pObjects[i];
 			contours.clear();
 			contours.push_back(pObj->m_vContours);
 
@@ -307,7 +334,7 @@ void Navigator::showScreen(void)
 		cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
 		vMat.copyTo(m_showMat);
 
-		putText(m_showMat, "Caffe FPS: " + f2str(m_pClassifier->getFrameRate()),
+		putText(m_showMat, "Caffe FPS: " + f2str(m_pUniverse->getFrameRate()),
 				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
 				1);
 	}
@@ -317,9 +344,9 @@ void Navigator::showScreen(void)
 
 
 
-	for (i = 0; i < m_pClassifier->m_numObj; i++)
+	for (i = 0; i < m_pUniverse->m_numObj; i++)
 	{
-		pObj = &m_pClassifier->m_pObjects[i];
+		pObj = &m_pUniverse->m_pObjects[i];
 
 		//Green
 		if (pObj->m_status == OBJ_COMPLETE)

@@ -14,7 +14,7 @@ _DepthDetector::_DepthDetector()
 	_ThreadBase();
 	DetectorBase();
 
-	m_pClassifier = NULL;
+	m_pUniverse = NULL;
 	m_minObjArea = 0;
 	m_maxObjArea = 10000000;
 
@@ -83,7 +83,7 @@ void _DepthDetector::detect(void)
 	GpuMat gMat2;
 	Frame* pFrame;
 
-	if(m_pClassifier==NULL)return;
+	if(m_pUniverse==NULL)return;
 	if(m_pCamStream==NULL)return;
 	m_pCam = m_pCamStream->getCameraInput();
 
@@ -134,7 +134,7 @@ void _DepthDetector::detect(void)
 		if (bb.area() < m_minObjArea)continue;
 		if (bb.area() > m_maxObjArea)continue;
 
-		m_pClassifier->addUnknownObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
+		m_pUniverse->addUnknownObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
 

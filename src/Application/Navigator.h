@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "../AI/_SegNet.h"
 #include "../AI/_FCN.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
@@ -46,20 +45,15 @@ public:
 	int m_bFullScreen;
 	int m_waitKey;
 
-	int	m_FlowFPS;
-	int m_DDFPS;
-	int m_SSDFPS;
-
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_CascadeDetector* m_pCascade;
 	_Flow* m_pFlow;
 	_ROITracker* m_pROITracker;
-	_SegNet* m_pSegNet;
 	_DepthDetector* m_pDD;
 	_MarkerDetector* m_pMD;
-	_Universe* m_pClassifier;
+	_Universe* m_pUniverse;
 	_FCN* m_pFCN;
 	_SSD* m_pSSD;
 

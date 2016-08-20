@@ -1,5 +1,5 @@
 /*
- * CameraOpticalFlow.h
+ * _ROITracker.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
@@ -30,7 +30,7 @@ public:
 	_ROITracker();
 	virtual ~_ROITracker();
 
-	bool init(JSON* pJson, string camName);
+	bool init(JSON* pJson, string roiName);
 	bool start(void);
 
 	void setROI(Rect2d roi);

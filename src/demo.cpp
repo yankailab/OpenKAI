@@ -23,20 +23,11 @@ int main(int argc, char* argv[])
 		g_pAppVisualFollow = new VisualFollow();
 		g_pAppVisualFollow->start(&g_Json);
 	}
-	else if(appName=="SegNet")
-	{
-		g_pAppSegNetDemo = new SegNetDemo();
-		g_pAppSegNetDemo->start(&g_Json);
-	}
 	else if(appName=="Navigator")
 	{
 		g_pAppNavigator = new Navigator();
 		g_pAppNavigator->start(&g_Json);
 	}
-
-//	g_pAppExtCamControl = new ExtCamControl();
-//	g_pAppExtCamControl->start(&g_Json);
-
 
 	return 0;
 }

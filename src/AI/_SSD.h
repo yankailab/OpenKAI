@@ -28,7 +28,6 @@
 #include "../Navigation/_Universe.h"
 #include "../Camera/_Stream.h"
 
-
 namespace kai
 {
 
@@ -62,11 +61,11 @@ private:
 	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
 
 	void update(void);
-	static void* getUpdateThread(void* This) {
+	static void* getUpdateThread(void* This)
+	{
 		((_SSD*) This)->update();
 		return NULL;
 	}
-
 
 private:
 	uint64_t m_frameID;
@@ -79,8 +78,8 @@ private:
 	vector<string> labels_;
 
 public:
-	_Universe* m_pClassifier;
-	_Stream*	m_pCamStream;
+	_Universe* m_pUniverse;
+	_Stream* m_pCamStream;
 
 };
 

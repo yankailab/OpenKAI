@@ -120,7 +120,7 @@ struct Mavlink_Messages
 
 };
 
-#define NUM_MSG_HANDLE 3
+#define NUM_MSG_HANDLE 100
 
 namespace kai
 {

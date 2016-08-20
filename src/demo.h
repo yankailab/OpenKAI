@@ -12,13 +12,11 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "Application/SegNetDemo.h"
 #include "Application/Navigator.h"
 #include "Application/VisualFollow.h"
 
 using namespace kai;
 
-SegNetDemo* g_pAppSegNetDemo;
 VisualFollow* g_pAppVisualFollow;
 Navigator* g_pAppNavigator;
 

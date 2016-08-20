@@ -37,8 +37,8 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
 	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
-	double FPS = 500;
-	CHECK_INFO(pJson->getVal("SERIALPORT_FC_FPS", &FPS));
+	double FPS = 100;
+	CHECK_INFO(pJson->getVal("SERIALPORT_"+serialName+"_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_systemID = 1;
@@ -333,10 +333,6 @@ void _MavlinkInterface::update(void)
 
 		//Regular update loop
 		this->autoFPSfrom();
-
-//		requestDataStream(/*MAV_DATA_STREAM_RAW_SENSORS*/MAV_DATA_STREAM_ALL, 1);
-
-//		command_long_doSetMode(MAV_MODE_GUIDED_DISARMED);
 
 		//Handling incoming messages
 		handleMessages();

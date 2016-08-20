@@ -12,7 +12,7 @@ _SSD::_SSD()
 	_ThreadBase();
 
 	num_channels_ = 0;
-	m_pClassifier = NULL;
+	m_pUniverse = NULL;
 	m_pCamStream = NULL;
 }
 
@@ -121,7 +121,7 @@ void _SSD::detectFrame(void)
 
 	if (m_pCamStream == NULL)
 		return;
-	if (m_pClassifier == NULL)
+	if (m_pUniverse == NULL)
 		return;
 
 	pFrame = m_pCamStream->getFrame();
@@ -152,7 +152,7 @@ void _SSD::detectFrame(void)
 		bb.width = d[5] * pImg->cols - bb.x;
 		bb.height = d[6] * pImg->rows - bb.y;
 
-		m_pClassifier->addKnownObject(name, NULL, &bb, NULL);
+		m_pUniverse->addKnownObject(name, NULL, &bb, NULL);
 
 	}
 

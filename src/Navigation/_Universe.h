@@ -1,12 +1,12 @@
 /*
- * Classifier.h
+ * _Universe.h
  *
  *  Created on: Nov 28, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_AI__CLASSIFIER_H_
-#define SRC_AI__CLASSIFIER_H_
+#ifndef SRC_NAVIGATION__UNIVERSE_H_
+#define SRC_NAVIGATION__UNIVERSE_H_
 
 #include "../AI/_Caffe.h"
 #include "../Base/common.h"
@@ -79,4 +79,4 @@ public:
 
 } /* namespace kai */
 
-#endif /* SRC_AI__CLASSIFIER_H_ */
+#endif /* SRC_NAVIGATION__UNIVERSE_H_ */

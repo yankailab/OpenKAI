@@ -12,7 +12,6 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "../AI/_SegNet.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
 #include "../Interface/_MavlinkInterface.h"

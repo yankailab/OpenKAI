@@ -40,11 +40,11 @@ private:
 	}
 
 public:
-	_Universe* m_pClassifier;
-	Frame*	m_pDepth;
+	_Universe*	m_pUniverse;
+	Frame*		m_pDepth;
 	uint64_t	m_camFrameID;
 	_Stream*	m_pCamStream;
-	Camera*	m_pCam;
+	Camera*		m_pCam;
 	_Flow*		m_pFlow;
 
 	Mat			m_Mat;
