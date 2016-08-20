@@ -171,7 +171,8 @@ bool Navigator::start(JSON* pJson)
 		namedWindow(APP_NAME, CV_WINDOW_NORMAL);
 		if (m_bFullScreen)
 		{
-			setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN,
+			setWindowProperty(APP_NAME,
+					CV_WND_PROP_FULLSCREEN,
 					CV_WINDOW_FULLSCREEN);
 		}
 		setMouseCallback(APP_NAME, onMouseNavigator, NULL);
@@ -241,6 +242,10 @@ void Navigator::showScreen(void)
 	OBJECT* pObj;
 	vector<vector<Point> > contours;
 
+	int strHstart = 15;
+	int strH = 20;
+	int strIdx = 0;
+
 
 
 
@@ -257,7 +262,16 @@ void Navigator::showScreen(void)
 	//Acquire the original image
 	pFrame->getCMat()->copyTo(m_showMat);
 	putText(m_showMat, "Camera FPS: " + f2str(m_pCamFront->getFrameRate()),
-			cv::Point(15, 15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	putText(m_showMat, "Marker FPS: " + f2str(m_pMD->getFrameRate()),
+			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	putText(m_showMat, "ROI FPS: " + f2str(m_pROITracker->getFrameRate()),
+			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	putText(m_showMat, "AutoPilot FPS: " + f2str(m_pAP->getFrameRate()),
+			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	//Draw Landing Marker
 	for (i = 0; i < m_pMD->m_numCircle; i++)
@@ -285,7 +299,7 @@ void Navigator::showScreen(void)
 	}
 	putText(m_showMat,
 			"Marker center: (" + f2str(markerCenter.m_x) + " , "
-					+ f2str(markerCenter.m_y) + ")", cv::Point(15, 55),
+					+ f2str(markerCenter.m_y) + ")", cv::Point(15, strHstart + strH*(strIdx++)),
 			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	if (m_pDD && !m_pDD->m_Mat.empty())
@@ -335,33 +349,32 @@ void Navigator::showScreen(void)
 		vMat.copyTo(m_showMat);
 
 		putText(m_showMat, "Caffe FPS: " + f2str(m_pUniverse->getFrameRate()),
-				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
-				1);
+				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 	}
 
 
 
 
 
-
-	for (i = 0; i < m_pUniverse->m_numObj; i++)
-	{
-		pObj = &m_pUniverse->m_pObjects[i];
-
-		//Green
-		if (pObj->m_status == OBJ_COMPLETE)
-		{
-			if (pObj->m_name[0].empty())
-				continue;
-
-			rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
-			putText(m_showMat, pObj->m_name[0],
-					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
-						  pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
-					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
-		}
-	}
-
+//
+//	for (i = 0; i < m_pUniverse->m_numObj; i++)
+//	{
+//		pObj = &m_pUniverse->m_pObjects[i];
+//
+//		//Green
+//		if (pObj->m_status == OBJ_COMPLETE)
+//		{
+//			if (pObj->m_name[0].empty())
+//				continue;
+//
+//			rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
+//			putText(m_showMat, pObj->m_name[0],
+//					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
+//						  pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
+//					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
+//		}
+//	}
+//
 
 
 //	if(m_bFCN && !m_pFCN->m_segment.empty())

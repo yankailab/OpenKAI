@@ -40,6 +40,8 @@ public:
 #ifdef USE_ZED
 	sl::zed::Camera* m_pZed;
 	sl::zed::SENSING_MODE m_zedMode;
+	int	m_zedResolution;
+	double m_zedMinDist;
 #endif
 
 	int m_camType;

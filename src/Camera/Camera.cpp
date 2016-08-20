@@ -27,6 +27,8 @@ Camera::Camera()
 	m_angleH = 0;
 	m_angleV = 0;
 	m_bCrop = 0;
+	m_zedResolution = (int)sl::zed::VGA;
+	m_zedMinDist = 1000;
 }
 
 Camera::~Camera()
@@ -51,6 +53,8 @@ bool Camera::setup(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_TYPE", &m_camType));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION", &m_zedResolution));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE", &m_zedMinDist));
 
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_CROP", &m_bCrop));
 	if(m_bCrop!=0)
@@ -122,7 +126,7 @@ bool Camera::openCamera(void)
 	if (m_camType == CAM_ZED)
 	{
 		// Initialize ZED color stream in HD and depth in Performance mode
-		m_pZed = new sl::zed::Camera(sl::zed::HD1080);
+		m_pZed = new sl::zed::Camera((sl::zed::ZEDResolution_mode)m_zedResolution);
 
 		// define a struct of parameters for the initialization
 		sl::zed::InitParams zedParams;
@@ -130,7 +134,7 @@ bool Camera::openCamera(void)
 		zedParams.unit = sl::zed::UNIT::MILLIMETER;
 		zedParams.verbose = 1;
 		zedParams.device = -1;
-		zedParams.minimumDistance = 1000;
+		zedParams.minimumDistance = m_zedMinDist;
 
 		sl::zed::ERRCODE err = m_pZed->init(zedParams);
 		if (err != sl::zed::SUCCESS)

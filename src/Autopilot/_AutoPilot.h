@@ -76,9 +76,7 @@ public:
 	void resetAllControl(void);
 
 	void camROILock(void);
-	void camMarkerLock(void);
-
-	void remoteMavlinkMsg(MESSAGE* pMsg);
+	void landingTarget(void);
 
 public:
 	//Detectors
@@ -98,8 +96,6 @@ public:
 	CONTROL_CHANNEL m_alt;
 
 	int m_RC[NUM_RC_CHANNEL];
-
-	MESSAGE* m_pRecvMsg;
 
 	//Thread
 	void update(void);

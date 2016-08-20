@@ -8,8 +8,6 @@ _AutoPilot::_AutoPilot()
 {
 	_ThreadBase();
 
-	m_pRecvMsg = NULL;
-
 	m_pFD = NULL;
 	m_pVI = NULL;
 	m_pMavlink = NULL;
@@ -149,7 +147,7 @@ void _AutoPilot::update(void)
 
 //		camROILock();
 
-		camMarkerLock();
+		landingTarget();
 
 		if(m_pMavlink)
 		{
@@ -260,12 +258,11 @@ void _AutoPilot::camROILock(void)
 
 }
 
-void _AutoPilot::camMarkerLock(void)
+void _AutoPilot::landingTarget(void)
 {
 	Camera* pCamInput;
 	fVector3 markerCenter;
 
-	if (m_pMavlink == NULL)return;
 	if (m_pMarkerDetector == NULL)return;
 	if (m_pROITracker == NULL)return;
 
@@ -316,6 +313,8 @@ void _AutoPilot::camMarkerLock(void)
 	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)/pCamInput->m_height)
 								* pCamInput->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
 
+	if (m_pMavlink == NULL)return;
+
 	//Send Mavlink command
 	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0,0,0);
 
@@ -338,41 +337,6 @@ void _AutoPilot::setMavlinkInterface(_MavlinkInterface* pMavlink)
 	m_pMavlink = pMavlink;
 }
 
-void _AutoPilot::remoteMavlinkMsg(MESSAGE* pMsg)
-{
-	int i;
-	unsigned int val;
-
-	switch (pMsg->m_pBuf[2])
-	//Command
-	{
-	/*	case CMD_RC_UPDATE:
-	 if (*m_pOprMode != OPE_RC_BRIDGE)break;
-
-	 numChannel = m_hostCMD.m_pBuf[3];
-	 if (m_numChannel > RC_CHANNEL_NUM)
-	 {
-	 numChannel = RC_CHANNEL_NUM;
-	 }
-
-	 for (i = 0; i<numChannel; i++)
-	 {
-	 val = (int)makeWord(m_hostCMD.m_pBuf[4 + i * 2 + 1], m_hostCMD.m_pBuf[4 + i * 2]);
-	 m_channelValues[i] = val;
-	 }
-
-	 break;
-	 */
-	case CMD_OPERATE_MODE:
-		val = pMsg->m_pBuf[3];
-//		m_remoteSystem.m_mode = val;
-		break;
-
-	default:
-
-		break;
-	}
-}
 
 int* _AutoPilot::getPWMOutput(void)
 {
