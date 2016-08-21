@@ -22,6 +22,7 @@ _MarkerDetector::_MarkerDetector()
 	m_areaRatio = 0;
 
 	m_pCamStream = NULL;
+	m_pHSV = NULL;
 }
 
 _MarkerDetector::~_MarkerDetector()
@@ -32,13 +33,15 @@ _MarkerDetector::~_MarkerDetector()
 
 bool _MarkerDetector::init(JSON* pJson, string name)
 {
-	double FPS = DEFAULT_FPS;
-
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_FPS", &FPS));
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_AREA_RATIO", &m_areaRatio));
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_MIN_SIZE", &m_minMarkerSize));
 
+	double FPS = DEFAULT_FPS;
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_FPS", &FPS));
 	this->setTargetFPS(FPS);
+
+	m_pHSV = new Frame();
+
 	return true;
 }
 
@@ -136,18 +139,16 @@ void _MarkerDetector::detectCircle(void)
 
 void _MarkerDetector::detectCircle(void)
 {
-
 	if(!m_pCamStream)return;
 
-	Mat orig_image = *m_pCamStream->getFrame()->getCMat();
-	if(orig_image.empty())return;
-	Mat bgr_image = orig_image;
-
-	cv::medianBlur(bgr_image, bgr_image, 3);
+	Frame* pHSVFrame = m_pCamStream->getHSVFrame();
+	if(pHSVFrame->empty())return;
+	if(!pHSVFrame->isNewerThan(m_pHSV))return;
+	m_pHSV->update(pHSVFrame);
 
 	// Convert input image to HSV
-	cv::Mat hsv_image;
-	cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
+	cv::Mat hsv_image = *m_pHSV->getCMat();
+//	cv::medianBlur(hsv_image, hsv_image, 3);
 
 	// Threshold the HSV image, keep only the red pixels
 	cv::Mat lower_red_hue_range;

@@ -22,6 +22,7 @@ _ThreadBase::_ThreadBase()
 	m_targetFrameTime = USEC_1SEC/m_targetFPS;
 	m_timeFrom = 0;
 	m_timeTo = 0;
+
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
 

@@ -119,6 +119,10 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_Y", &m_landingTarget.m_orientY));
 	CHECK_INFO(pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT", &m_landingTarget.m_ROItimeLimit));
 
+	m_lastHeartbeat = 0;
+	m_iHeartbeat = 0;
+
+
 	return true;
 }
 
@@ -152,8 +156,18 @@ void _AutoPilot::update(void)
 		if(m_pMavlink)
 		{
 			//Sending Heartbeat at 1Hz
-			m_pMavlink->sendHeartbeat(USEC_1SEC);
+			uint64_t timeNow = get_time_usec();
+			if(timeNow - m_lastHeartbeat >= USEC_1SEC)
+			{
+				m_pMavlink->sendHeartbeat();
+				m_lastHeartbeat = timeNow;
+
+		#ifdef MAVLINK_DEBUG
+				printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
+		#endif
+			}
 		}
+
 
 //		if (m_pVI)
 //		{

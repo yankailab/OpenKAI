@@ -44,8 +44,6 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
-	m_lastHeartbeat = get_time_usec();
-	m_iHeartbeat = 0;
 	m_targetComponentID = 0;
 
 	current_messages.sysid = 0;
@@ -343,24 +341,12 @@ void _MavlinkInterface::update(void)
 
 }
 
-void _MavlinkInterface::sendHeartbeat(uint64_t interval_usec)
+void _MavlinkInterface::sendHeartbeat(void)
 {
-	uint64_t timeNow = get_time_usec();
+	mavlink_message_t message;
+	mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
 
-	if(timeNow - m_lastHeartbeat >= interval_usec)
-	{
-		m_lastHeartbeat = timeNow;
-
-		mavlink_message_t message;
-		mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
-
-		writeMessage(message);
-
-#ifdef MAVLINK_DEBUG
-		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
-#endif
-	}
-
+	writeMessage(message);
 }
 
 void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)

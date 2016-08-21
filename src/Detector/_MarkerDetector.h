@@ -59,7 +59,8 @@ public:
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
-	_Stream*			m_pCamStream;
+	_Stream*	m_pCamStream;
+	Frame*		m_pHSV;
 
 #ifdef USE_CUDA
 	GpuMat m_HSV;

@@ -89,6 +89,10 @@ public:
 	_VehicleInterface* m_pVI;
 	_MavlinkInterface* m_pMavlink;
 
+	uint64_t m_lastHeartbeat;
+	uint64_t m_iHeartbeat;
+
+
 	LANDING_TARGET	m_landingTarget;
 
 	//Control

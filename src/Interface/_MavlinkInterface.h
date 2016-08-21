@@ -145,13 +145,11 @@ public:
 	//Send
 	int  writeMessage(mavlink_message_t message);
 	void requestDataStream(uint8_t stream_id, int rate);
-	void sendHeartbeat(uint64_t interval_usec);
+	void sendHeartbeat(void);
 
 	//Commands
 	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
 	void command_long_doSetMode(int mode);
-
-
 
 
 	int  toggleOffboardControl(bool bEnable);
@@ -179,9 +177,6 @@ public:
 	int m_componentID;
 	int m_type;
 	int m_targetComponentID;
-
-	uint64_t m_lastHeartbeat;
-	uint64_t m_iHeartbeat;
 
 	Mavlink_Messages current_messages;
 	mavlink_set_position_target_local_ned_t initial_position;

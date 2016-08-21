@@ -169,6 +169,12 @@ bool Camera::openCamera(void)
 	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
+	if(m_bCrop)
+	{
+		m_width = m_cropBB.width;
+		m_height = m_cropBB.height;
+	}
+
 	m_centerH = m_width * 0.5;
 	m_centerV = m_height * 0.5;
 
