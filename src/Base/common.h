@@ -5,9 +5,6 @@
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
 #include "../IO/JSON.h"
-#include "../Algorithm/Filter.h"
-#include "_ThreadBase.h"
-
 
 #define MAVLINK_DEBUG
 #define CLASSIFIER_DEBUG

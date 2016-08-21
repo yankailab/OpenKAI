@@ -13,7 +13,7 @@ _AutoPilot::_AutoPilot()
 	m_pMavlink = NULL;
 	m_pMavlink = NULL;
 	m_pROITracker = NULL;
-	m_pMarkerDetector = NULL;
+	m_pMD = NULL;
 
 }
 
@@ -263,10 +263,10 @@ void _AutoPilot::landingTarget(void)
 	Camera* pCamInput;
 	fVector3 markerCenter;
 
-	if (m_pMarkerDetector == NULL)return;
+	if (m_pMD == NULL)return;
 	if (m_pROITracker == NULL)return;
 
-	if(m_pMarkerDetector->getCircleCenter(&markerCenter))
+	if(m_pMD->getCircleCenter(&markerCenter))
 	{
 		//Update Tracker
 		Rect roi;
@@ -305,7 +305,7 @@ void _AutoPilot::landingTarget(void)
 		markerCenter.m_y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
 	}
 
-	pCamInput = m_pMarkerDetector->m_pCamStream->getCameraInput();
+	pCamInput = m_pMD->m_pCamStream->getCameraInput();
 
 	//Change position to angles
 	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)/pCamInput->m_width)
@@ -342,5 +342,47 @@ int* _AutoPilot::getPWMOutput(void)
 {
 	return m_RC;
 }
+
+bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	MARKER_CIRCLE* pCircle;
+	fVector3 markerCenter;
+	Mat* pMat = pFrame->getCMat();
+
+	markerCenter.m_x = 0;
+	markerCenter.m_y = 0;
+	markerCenter.m_z = 0;
+
+	if (m_pMD->getCircleCenter(&markerCenter))
+	{
+		circle(*pMat, Point(markerCenter.m_x, markerCenter.m_y), markerCenter.m_z, Scalar(0, 0, 255), 5);
+	}
+	else if (m_pROITracker->m_bTracking)
+	{
+		rectangle(*pMat,
+				Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
+				Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
+						m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
+				Scalar(0, 0, 255), 3);
+	}
+
+	putText(*pMat, "Marker FPS: " + f2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	putText(*pMat,
+			"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+					+ f2str(m_landingTarget.m_angleY) + ")", cv::Point(pTextPos->m_x, pTextPos->m_y),
+			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	return true;
+}
+
 
 }

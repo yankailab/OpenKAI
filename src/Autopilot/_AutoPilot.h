@@ -69,6 +69,8 @@ public:
 
 	bool init(JSON* pJson, string pilotName);
 	bool start(void);
+	bool draw(Frame* pFrame, iVector4* pTextPos);
+
 
 	void setVehicleInterface(_VehicleInterface* pVehicle);
 	void setMavlinkInterface(_MavlinkInterface* pMavlink);
@@ -82,7 +84,7 @@ public:
 	//Detectors
 	_CascadeDetector*	m_pFD;
 	_ROITracker* 		m_pROITracker;
-	_MarkerDetector*	m_pMarkerDetector;
+	_MarkerDetector*	m_pMD;
 
 	_VehicleInterface* m_pVI;
 	_MavlinkInterface* m_pMavlink;

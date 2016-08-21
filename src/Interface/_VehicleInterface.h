@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Base/common.h"
+#include "../Base/_ThreadBase.h"
 #include "../IO/SerialPort.h"
 
 #define MAVLINK_BEGIN 0xFE

@@ -14,7 +14,6 @@ _Universe::_Universe()
 {
 	_ThreadBase();
 
-	int i, j;
 	m_numObj = NUM_OBJ;
 	m_numBatch = 0;
 	m_frameID = 0;
@@ -22,18 +21,7 @@ _Universe::_Universe()
 	m_objProbMin = 0;
 	m_disparity = 0;
 
-	for (i = 0; i < m_numObj; i++)
-	{
-		m_pObjects[i].m_frameID = 0;
-		m_pObjects[i].m_status = OBJ_VACANT;
-		m_pObjects[i].m_vContours.clear();
-
-		for (j = 0; j < NUM_OBJECT_NAME; j++)
-		{
-			m_pObjects[i].m_name[j] = "";
-			m_pObjects[i].m_prob[j] = 0;
-		}
-	}
+	reset();
 
 }
 
@@ -56,13 +44,13 @@ bool _Universe::init(JSON* pJson)
 	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
-	m_caffe.setup(caffeDir+modelFile, caffeDir+trainedFile, caffeDir+meanFile, caffeDir+labelFile, NUM_DETECT_BATCH);
+	m_caffe.setup(caffeDir + modelFile, caffeDir + trainedFile,
+			caffeDir + meanFile, caffeDir + labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
 
 	CHECK_ERROR(pJson->getVal("UNIVERSE_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_POS_DISPARITY", &m_disparity));
-
 
 	double FPS = DEFAULT_FPS;
 	CHECK_ERROR(pJson->getVal("UNIVERSE_FPS", &FPS));
@@ -127,7 +115,7 @@ void _Universe::classifyObject(void)
 		pObj = &m_pObjects[i];
 
 		//Delete the outdated frame
-		if(m_frameID - pObj->m_frameID > m_frameLifeTime)
+		if (m_frameID - pObj->m_frameID > m_frameLifeTime)
 		{
 			deleteObject(i);
 			continue;
@@ -156,12 +144,13 @@ void _Universe::classifyObject(void)
 //		if(numBatch >= NUM_DETECT_BATCH)break;
 	}
 
-	if(numBatch <= 0)return;
+	if (numBatch <= 0)
+		return;
 
 	return;
 
 #ifdef CLASSIFIER_DEBUG
-	uint64_t tA,tB;
+	uint64_t tA, tB;
 	tA = get_time_usec();
 #endif
 
@@ -171,7 +160,7 @@ void _Universe::classifyObject(void)
 
 #ifdef CLASSIFIER_DEBUG
 	tB = get_time_usec();
-	printf("CAFFE >> TIME:%d\n", tB-tA);
+	printf("CAFFE >> TIME:%d\n", tB - tA);
 #endif
 
 	for (i = 0; i < numBatch; i++)
@@ -189,9 +178,10 @@ void _Universe::classifyObject(void)
 			int from = pName->find_first_of(' ');
 			int to = pName->find_first_of(',');
 
-			*pName = pName->substr(from+1, to-from);// pObj->m_name[j].length());
+			*pName = pName->substr(from + 1, to - from); // pObj->m_name[j].length());
 
-			if (j >= NUM_OBJECT_NAME)break;
+			if (j >= NUM_OBJECT_NAME)
+				break;
 		}
 
 		pObj->m_status = OBJ_COMPLETE;
@@ -202,13 +192,19 @@ void _Universe::classifyObject(void)
 #endif
 }
 
-OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect,
+		vector<Point>* pContour)
 {
-	if(!pMat)return NULL;
-	if(!pRect)return NULL;
-	if(pMat->empty())return NULL;
-	if(pRect->width<=0)return NULL;
-	if(pRect->height<=0)return NULL;
+	if (!pMat)
+		return NULL;
+	if (!pRect)
+		return NULL;
+	if (pMat->empty())
+		return NULL;
+	if (pRect->width <= 0)
+		return NULL;
+	if (pRect->height <= 0)
+		return NULL;
 
 	int i;
 	int iVacant;
@@ -216,14 +212,14 @@ OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pCont
 	uint64_t frameID = get_time_usec();
 
 	iVacant = m_numObj;
-	for(i=0; i<m_numObj; i++)
+	for (i = 0; i < m_numObj; i++)
 	{
 		pObj = &m_pObjects[i];
 
 		//Record the index of vacancy
-		if(pObj->m_status == OBJ_VACANT)
+		if (pObj->m_status == OBJ_VACANT)
 		{
-			if(iVacant==m_numObj)
+			if (iVacant == m_numObj)
 			{
 				iVacant = i;
 			}
@@ -232,31 +228,36 @@ OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pCont
 		}
 
 		//Compare if already existed
-		if(abs(pObj->m_boundBox.x - pRect->x) > m_disparity)continue;
-		if(abs(pObj->m_boundBox.y - pRect->y) > m_disparity)continue;
-		if(abs(pObj->m_boundBox.width - pRect->width) > m_disparity)continue;
-		if(abs(pObj->m_boundBox.height - pRect->height) > m_disparity)continue;
+		if (abs(pObj->m_boundBox.x - pRect->x) > m_disparity)
+			continue;
+		if (abs(pObj->m_boundBox.y - pRect->y) > m_disparity)
+			continue;
+		if (abs(pObj->m_boundBox.width - pRect->width) > m_disparity)
+			continue;
+		if (abs(pObj->m_boundBox.height - pRect->height) > m_disparity)
+			continue;
 
 		//The region is already under recognizing
 		pObj->m_frameID = frameID;
 //		pObj->m_status = OBJ_ADDED;
 
-		//Update the Rect
+//Update the Rect
 		pObj->m_boundBox = *pRect;
 		pObj->m_vContours = *pContour;
 
 		return pObj;
 	}
 
-	if(iVacant < m_numObj)
+	if (iVacant < m_numObj)
 	{
 		//Change in status comes to the last
 		pObj = &m_pObjects[iVacant];
 		pObj->m_frameID = frameID;
 		pObj->m_boundBox = *pRect;
-		pObj->m_Mat = Mat(pRect->width,pRect->height,pMat->type());
-		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(pObj->m_Mat);
-		if(pContour)
+		pObj->m_Mat = Mat(pRect->width, pRect->height, pMat->type());
+		pMat->colRange(pRect->tl().x, pRect->br().x).rowRange(pRect->tl().y,
+				pRect->br().y).copyTo(pObj->m_Mat);
+		if (pContour)
 		{
 			pObj->m_vContours = *pContour;
 		}
@@ -265,17 +266,20 @@ OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pCont
 		return pObj;
 	}
 
-
 	return NULL;
 }
 
-OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour)
+OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect,
+		vector<Point>* pContour)
 {
 //	if(!pMat)return NULL;
-	if(!pRect)return NULL;
+	if (!pRect)
+		return NULL;
 //	if(pMat->empty())return NULL;
-	if(pRect->width<=0)return NULL;
-	if(pRect->height<=0)return NULL;
+	if (pRect->width <= 0)
+		return NULL;
+	if (pRect->height <= 0)
+		return NULL;
 
 	int i;
 	int iVacant;
@@ -283,14 +287,14 @@ OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Po
 	uint64_t frameID = get_time_usec();
 
 	iVacant = m_numObj;
-	for(i=0; i<m_numObj; i++)
+	for (i = 0; i < m_numObj; i++)
 	{
 		pObj = &m_pObjects[i];
 
 		//Record the index of vacancy
-		if(pObj->m_status == OBJ_VACANT)
+		if (pObj->m_status == OBJ_VACANT)
 		{
-			if(iVacant==m_numObj)
+			if (iVacant == m_numObj)
 			{
 				iVacant = i;
 				break;
@@ -298,7 +302,7 @@ OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Po
 		}
 	}
 
-	if(iVacant < m_numObj)
+	if (iVacant < m_numObj)
 	{
 		//Change in status comes to the last
 		pObj = &m_pObjects[iVacant];
@@ -316,7 +320,6 @@ OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Po
 
 		return pObj;
 	}
-
 
 	return NULL;
 
@@ -339,5 +342,85 @@ void _Universe::reset(void)
 
 }
 
+bool _Universe::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	int i;
+	OBJECT* pObj;
+	Mat* pMat = pFrame->getCMat();
+
+	for (i = 0; i < m_numObj; i++)
+	{
+		pObj = &m_pObjects[i];
+
+		if (pObj->m_status == OBJ_COMPLETE)
+		{
+			if (pObj->m_name[0].empty())
+				continue;
+
+			rectangle(*pMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
+					Scalar(0, 255, 0));
+			putText(*pMat, pObj->m_name[0],
+					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
+							pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
+					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
+		}
+	}
+
+	putText(*pMat, "Universe FPS: " + f2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	return true;
+
+
+//	vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
+//
+//	for (i = 0; i < m_pUniverse->m_numObj; i++)
+//	{
+//		pObj = &m_pUniverse->m_pObjects[i];
+//		contours.clear();
+//		contours.push_back(pObj->m_vContours);
+//
+//		//Green
+//		if (pObj->m_status == OBJ_COMPLETE)
+//		{
+//			if (pObj->m_name[0].empty())
+//				continue;
+//
+//			drawContours(vMat, contours, -1, Scalar(0, 255, 0), CV_FILLED);
+//
+//			rectangle(m_showMat, pObj->m_boundBox.tl(),
+//					pObj->m_boundBox.br(), Scalar(0, 255, 0));
+//			putText(m_showMat, pObj->m_name[0],
+//					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
+//							pObj->m_boundBox.y
+//									+ pObj->m_boundBox.height / 2),
+//					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
+//		}
+//
+//		//Yellow
+//		if (pObj->m_status == OBJ_CLASSIFYING)
+//		{
+//			drawContours(vMat, contours, -1, Scalar(0, 255, 255), 1);
+//			//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
+//		}
+//
+//		//Red
+//		if (pObj->m_status == OBJ_ADDED)
+//		{
+//			drawContours(vMat, contours, -1, Scalar(0, 0, 255), 1);
+//			//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
+//		}
+//	}
+//
+//	cv::resize(vMat, imMat, Size(m_showMat.cols, m_showMat.rows));
+//	cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
+//	vMat.copyTo(m_showMat);
+
+}
 
 } /* namespace kai */

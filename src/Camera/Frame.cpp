@@ -145,16 +145,20 @@ uint64_t Frame::getFrameID(void)
 
 bool Frame::empty(void)
 {
-	bool bEmpty = true;
-	if(!m_CMat.m_mat.empty())bEmpty = false;
-
 #ifdef USE_CUDA
-	if(!m_GMat.m_mat.empty())bEmpty = false;
+	if(m_CMat.m_frameID > m_GMat.m_frameID)
+	{
+		return m_CMat.m_mat.empty();
+	}
+
+	return m_GMat.m_mat.empty();
+
 #elif USE_OPENCL
 
+#else
+	return m_CMat.m_mat.empty();
 #endif
 
-	return bEmpty;
 }
 
 bool Frame::isNewerThan(Frame* pFrame)

@@ -17,7 +17,7 @@ _ThreadBase::_ThreadBase()
 	m_timeStamp = 0;
 	m_dTime = 0.0;
 	m_dTimeAvr = 0.0;
-	m_defaultFPS = 30;
+	m_defaultFPS = DEFAULT_FPS;
 	m_targetFPS = m_defaultFPS;
 	m_targetFrameTime = USEC_1SEC/m_targetFPS;
 	m_timeFrom = 0;

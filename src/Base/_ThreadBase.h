@@ -10,6 +10,7 @@
 
 #include "platform.h"
 #include "../Utility/util.h"
+#include "common.h"
 
 #define NUM_MUTEX 5
 
@@ -47,7 +48,6 @@ public:
 	uint64_t		m_timeStamp;
 	double			m_dTime;
 	double			m_dTimeAvr;
-//	int 			m_tSleep;
 
 	pthread_mutex_t	m_wakeupMutex;
 	pthread_cond_t	m_wakeupSignal;

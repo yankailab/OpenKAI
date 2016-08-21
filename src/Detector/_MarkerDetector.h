@@ -11,8 +11,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Camera/_Stream.h"
-#include "DetectorBase.h"
 #include "../Base/_ThreadBase.h"
+#include "DetectorBase.h"
 
 #define NUM_MARKER 128
 #define MARKER_AREA_RATIO 0.8

@@ -50,6 +50,8 @@ public:
 	bool init(JSON* pJson, string ssdName);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
+	bool draw(Frame* pFrame, iVector4* pTextPos);
+
 
 	std::vector<vector<float> > detect(const cv::Mat img);
 	bool start(void);

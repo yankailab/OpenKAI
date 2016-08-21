@@ -45,6 +45,7 @@ public:
 	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	OBJECT* addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
+	bool draw(Frame* pFrame, iVector4* pTextPos);
 
 	bool init(JSON* pJson);
 	bool start(void);

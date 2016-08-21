@@ -26,6 +26,7 @@ Navigator::Navigator()
 	m_pUniverse = NULL;
 	m_pFCN = NULL;
 	m_pSSD = NULL;
+	m_pFrame = NULL;
 }
 
 Navigator::~Navigator()
@@ -100,7 +101,7 @@ bool Navigator::start(JSON* pJson)
 		CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
 		m_pAP->m_pMavlink = m_pMavlink;
 		m_pAP->m_pROITracker = m_pROITracker;
-		m_pAP->m_pMarkerDetector = m_pMD;
+		m_pAP->m_pMD = m_pMD;
 		m_pAP->start();
 	}
 
@@ -187,7 +188,7 @@ bool Navigator::start(JSON* pJson)
 
 		if (m_bShowScreen)
 		{
-			showScreen();
+			draw();
 		}
 
 		//Handle key input
@@ -230,196 +231,46 @@ bool Navigator::start(JSON* pJson)
 
 }
 
-void Navigator::showScreen(void)
+void Navigator::draw(void)
 {
-	int i;
-	Mat imMat, vMat;
-	MARKER_CIRCLE* pCircle;
-	fVector3 markerCenter;
-	Frame* pFrame;
+	iVector4 textPos;
+	textPos.m_x = 15;
+	textPos.m_y = 15;
+	textPos.m_w = 20;
+	textPos.m_z = 500;
 
-	//Draw object contours
-	OBJECT* pObj;
-	vector<vector<Point> > contours;
-
-	int strHstart = 15;
-	int strH = 20;
-	int strIdx = 0;
-
-
-
-
-//	if(m_pCamFront->getCameraInput()->m_Gdepth.empty())return;
-//	m_pCamFront->getCameraInput()->m_Gdepth.download(m_showMat);
-//	imshow(APP_NAME, m_showMat);
-//	return;
-
-	//Update frames
-	pFrame = m_pCamFront->getFrame();
-	if (pFrame->empty())
-		return;
-
-	//Acquire the original image
-	pFrame->getCMat()->copyTo(m_showMat);
-	putText(m_showMat, "Camera FPS: " + f2str(m_pCamFront->getFrameRate()),
-			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	putText(m_showMat, "Marker FPS: " + f2str(m_pMD->getFrameRate()),
-			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	putText(m_showMat, "ROI FPS: " + f2str(m_pROITracker->getFrameRate()),
-			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	putText(m_showMat, "AutoPilot FPS: " + f2str(m_pAP->getFrameRate()),
-			cv::Point(15, strHstart + strH*(strIdx++)), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	//Draw Landing Marker
-	for (i = 0; i < m_pMD->m_numCircle; i++)
+	if(m_pCamFront)
 	{
-		pCircle = &m_pMD->m_pCircle[i];
-		circle(m_showMat, Point(pCircle->m_x, pCircle->m_y), pCircle->m_r,
-				Scalar(0, 255, 0), 1);
+		if(!m_pCamFront->draw(m_pFrame, &textPos))return;
 	}
 
-	markerCenter.m_x = 0;
-	markerCenter.m_y = 0;
-	markerCenter.m_z = 0;
-	if (m_pMD->getCircleCenter(&markerCenter))
+	if(m_pAP)
 	{
-		circle(m_showMat, Point(markerCenter.m_x, markerCenter.m_y),
-				markerCenter.m_z, Scalar(0, 0, 255), 5);
+		m_pAP->draw(m_pFrame, &textPos);
 	}
-	else if (m_pROITracker->m_bTracking)
+
+	if(m_pUniverse)
 	{
-		rectangle(m_showMat,
-				Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
-				Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
-						m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
-				Scalar(0, 0, 255), 3);
+		m_pUniverse->draw(m_pFrame, &textPos);
 	}
-	putText(m_showMat,
-			"Marker center: (" + f2str(markerCenter.m_x) + " , "
-					+ f2str(markerCenter.m_y) + ")", cv::Point(15, strHstart + strH*(strIdx++)),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
-	if (m_pDD && !m_pDD->m_Mat.empty())
+	if(m_pSSD)
 	{
-		vMat = Mat(m_pDD->m_Mat.rows, m_pDD->m_Mat.cols, CV_8UC3, Scalar(0));
+		m_pSSD->draw(m_pFrame, &textPos);
+	}
 
-		for (i = 0; i < m_pUniverse->m_numObj; i++)
-		{
-			pObj = &m_pUniverse->m_pObjects[i];
-			contours.clear();
-			contours.push_back(pObj->m_vContours);
+	if(m_pMavlink)
+	{
+		m_pMavlink->draw(m_pFrame, &textPos);
+	}
 
-			//Green
-			if (pObj->m_status == OBJ_COMPLETE)
-			{
-				if (pObj->m_name[0].empty())
-					continue;
-
-				drawContours(vMat, contours, -1, Scalar(0, 255, 0), CV_FILLED);
-
-				rectangle(m_showMat, pObj->m_boundBox.tl(),
-						pObj->m_boundBox.br(), Scalar(0, 255, 0));
-				putText(m_showMat, pObj->m_name[0],
-						Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
-								pObj->m_boundBox.y
-										+ pObj->m_boundBox.height / 2),
-						FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
-			}
-
-			//Yellow
-			if (pObj->m_status == OBJ_CLASSIFYING)
-			{
-				drawContours(vMat, contours, -1, Scalar(0, 255, 255), 1);
-				//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 255), 1);
-			}
-
-			//Red
-			if (pObj->m_status == OBJ_ADDED)
-			{
-				drawContours(vMat, contours, -1, Scalar(0, 0, 255), 1);
-				//			rectangle(imMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 0, 255), 1);
-			}
-		}
-
-		cv::resize(vMat, imMat, Size(m_showMat.cols, m_showMat.rows));
-		cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
-		vMat.copyTo(m_showMat);
-
-		putText(m_showMat, "Caffe FPS: " + f2str(m_pUniverse->getFrameRate()),
-				cv::Point(15, 35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	if(m_pFCN)
+	{
+		m_pFCN->draw(m_pFrame, &textPos);
 	}
 
 
-
-
-
-//
-//	for (i = 0; i < m_pUniverse->m_numObj; i++)
-//	{
-//		pObj = &m_pUniverse->m_pObjects[i];
-//
-//		//Green
-//		if (pObj->m_status == OBJ_COMPLETE)
-//		{
-//			if (pObj->m_name[0].empty())
-//				continue;
-//
-//			rectangle(m_showMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), Scalar(0, 255, 0));
-//			putText(m_showMat, pObj->m_name[0],
-//					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
-//						  pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
-//					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
-//		}
-//	}
-//
-
-
-//	if(m_bFCN && !m_pFCN->m_segment.empty())
-//	{
-//		cv::resize(m_pFCN->m_segment, imMat, Size(m_showMat.cols, m_showMat.rows));
-//		cv::addWeighted(m_showMat, 1.0, imMat, 0.25, 0.0, vMat);
-//		vMat.copyTo(m_showMat);
-//
-//		putText(m_showMat, "FCN FPS: "+f2str(m_pFCN->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-//	}
-
-	imshow(APP_NAME, m_showMat);
-
-}
-
-#define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
-
-void Navigator::showInfo(Mat* pDisplayMat)
-{
-	char strBuf[512];
-	std::string strInfo;
-
-	int i;
-	int startPosH = 25;
-	int startPosV = 25;
-	int lineHeight = 20;
-	Mavlink_Messages mMsg;
-
-	i = 0;
-	mMsg = m_pMavlink->current_messages;
-
-	//Vehicle position
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.roll, mMsg.attitude.pitch, mMsg.attitude.yaw);
-	PUTTEXT(startPosH, startPosV + lineHeight * (++i), strBuf);
-
-	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.rollspeed, mMsg.attitude.pitchspeed,
-			mMsg.attitude.yawspeed);
-	PUTTEXT(startPosH, startPosV + lineHeight * (++i), strBuf);
-
-	i++;
-
-	i = 0;
-	startPosH = 600;
+	imshow(APP_NAME, *m_pFrame->getCMat());
 
 }
 

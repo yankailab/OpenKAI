@@ -1,8 +1,10 @@
 #pragma once
 
 #include "../Base/common.h"
+#include "../Base/_ThreadBase.h"
 #include "../include/mavlink/common/mavlink.h"
 #include "../IO/SerialPort.h"
+#include "../Camera/Frame.h"
 
 #include <signal.h>
 #include <time.h>
@@ -134,6 +136,7 @@ public:
 	bool setup(JSON* pJson, string serialName);
 	void close(void);
 	bool start(void);
+	bool draw(Frame* pFrame, iVector4* pTextPos);
 
 	//Receive
 	void handleMessages();
@@ -178,6 +181,7 @@ public:
 	int m_targetComponentID;
 
 	uint64_t m_lastHeartbeat;
+	uint64_t m_iHeartbeat;
 
 	Mavlink_Messages current_messages;
 	mavlink_set_position_target_local_ned_t initial_position;

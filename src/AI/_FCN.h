@@ -53,6 +53,7 @@ public:
 
 	bool init(string name, JSON* pJson);
 	bool start(void);
+	bool draw(Frame* pFrame, iVector4* pTextPos);
 
 private:
 	void segment(void);
@@ -64,14 +65,15 @@ private:
 	void PreprocessGPU(std::vector<cv::cuda::GpuMat>* input_channels);
 
 	void update(void);
-	static void* getUpdateThread(void* This) {
+	static void* getUpdateThread(void* This)
+	{
 		((_FCN*) This)->update();
 		return NULL;
 	}
 
 public:
 	_Stream* m_pCamStream;
-	int			m_cudaDeviceID;
+	int m_cudaDeviceID;
 	Mat m_segment;
 
 private:
@@ -79,7 +81,7 @@ private:
 	Size m_InputSize;
 	int m_NumChannels;
 	Mat m_labelColor;
-	Ptr<LookUpTable>	m_pGpuLUT;
+	Ptr<LookUpTable> m_pGpuLUT;
 
 	Frame* m_pFrame;
 	Frame* m_pSegment;

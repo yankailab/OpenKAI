@@ -10,8 +10,9 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "Camera.h"
+#include "../Base/_ThreadBase.h"
 
+#include "Camera.h"
 #include "Frame.h"
 
 namespace kai
@@ -26,6 +27,7 @@ public:
 	bool init(JSON* pJson, string camName);
 	bool start(void);
 	bool complete(void);
+	bool draw(Frame* pFrame, iVector4* textPos);
 
 	Frame* getFrame(void);
 	Frame* getGrayFrame(void);
@@ -38,7 +40,7 @@ public:
 	bool		m_bGray;
 
 private:
-	string				m_camName;
+	string			m_camName;
 	Camera*			m_pCamInput;
 
 	Frame*			m_pCamFrame;

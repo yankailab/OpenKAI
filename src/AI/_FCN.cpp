@@ -274,6 +274,28 @@ void _FCN::Preprocess(const cv::Mat& img,
 //															<< "Input channels are not wrapping the input layer of the network.";
 }
 
+bool _FCN::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	if(m_segment.empty())return false;
+
+	Mat fcnMat, showMat;
+	Mat* pMat = pFrame->getCMat();
+
+	putText(*pMat, "FCN FPS: " + f2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	cv::resize(m_segment, fcnMat, Size(pMat->cols, pMat->rows));
+	cv::addWeighted(*pMat, 1.0, fcnMat, 0.25, 0.0, showMat);
+	pFrame->update(&showMat);
+
+	return true;
+}
+
 
 
 

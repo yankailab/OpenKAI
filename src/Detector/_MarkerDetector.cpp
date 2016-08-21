@@ -70,14 +70,14 @@ void _MarkerDetector::update(void)
 
 }
 
+/*
 void _MarkerDetector::detectCircle(void)
 {
-	int i,j,k;
+	int i,j;
 	Point2f center;
 	float radius;
 	vector< vector< Point > > contours;
 	vector<Vec3f> circles;
-	fVector4 v4tmp;
 	Mat matThresh;
 	Frame* pHSV;
 	Frame* pRGB;
@@ -110,7 +110,6 @@ void _MarkerDetector::detectCircle(void)
 
 	//Find the contours
 	findContours(matThresh, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-//		drawContours(pRGB->m_uFrame, contours, -1, Scalar(255, 0, 0));
 
 	//Find marker
 	m_numCircle = 0;
@@ -118,13 +117,9 @@ void _MarkerDetector::detectCircle(void)
 	{
 		minEnclosingCircle(contours[i], center, radius);
 
-//			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 1);
-
 		//New marker found
 		if (contourArea(contours[i]) < m_areaRatio*radius*radius*3.1415926)continue;
 		if (radius < m_minMarkerSize)continue;
-
-//			circle(pRGB->m_uFrame, center, radius, Scalar(0, 255, 0), 2);
 
 		m_pCircle[m_numCircle].m_x = center.x;
 		m_pCircle[m_numCircle].m_y = center.y;
@@ -137,6 +132,58 @@ void _MarkerDetector::detectCircle(void)
 		}
 	}
 }
+*/
+
+void _MarkerDetector::detectCircle(void)
+{
+
+	if(!m_pCamStream)return;
+
+	Mat orig_image = *m_pCamStream->getFrame()->getCMat();
+	if(orig_image.empty())return;
+	Mat bgr_image = orig_image;
+
+	cv::medianBlur(bgr_image, bgr_image, 3);
+
+	// Convert input image to HSV
+	cv::Mat hsv_image;
+	cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
+
+	// Threshold the HSV image, keep only the red pixels
+	cv::Mat lower_red_hue_range;
+	cv::Mat upper_red_hue_range;
+	cv::inRange(hsv_image, cv::Scalar(0, 100, 100), cv::Scalar(10, 255, 255), lower_red_hue_range);
+	cv::inRange(hsv_image, cv::Scalar(160, 100, 100), cv::Scalar(179, 255, 255), upper_red_hue_range);
+
+	// Combine the above two images
+	cv::Mat red_hue_image;
+	cv::addWeighted(lower_red_hue_range, 1.0, upper_red_hue_range, 1.0, 0.0, red_hue_image);
+	cv::GaussianBlur(red_hue_image, red_hue_image, cv::Size(9, 9), 2, 2);
+
+	// Use the Hough transform to detect circles in the combined threshold image
+	std::vector<cv::Vec3f> circles;
+	cv::HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows/8, 100, 20, 0, 0);
+
+
+	m_numCircle = 0;
+	if(circles.size() == 0)return;
+
+	for(size_t current_circle = 0; current_circle < circles.size(); ++current_circle)
+	{
+		m_pCircle[m_numCircle].m_x = circles[current_circle][0];
+		m_pCircle[m_numCircle].m_y = circles[current_circle][1];
+		m_pCircle[m_numCircle].m_r = circles[current_circle][2];
+		m_numCircle++;
+
+		if (m_numCircle == NUM_MARKER)
+		{
+			break;
+		}
+
+	}
+
+}
+
 
 bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 {

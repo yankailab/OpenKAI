@@ -118,4 +118,20 @@ Camera* _Stream::getCameraInput(void)
 	return m_pCamInput;
 }
 
+bool _Stream::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	if(m_pCamFrame->empty())return false;
+
+	pFrame->update(m_pCamFrame);
+	putText(*pFrame->getCMat(), "Camera FPS: " + f2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	return true;
+}
+
 } /* namespace kai */

@@ -45,6 +45,7 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 	m_lastHeartbeat = get_time_usec();
+	m_iHeartbeat = 0;
 	m_targetComponentID = 0;
 
 	current_messages.sysid = 0;
@@ -356,7 +357,7 @@ void _MavlinkInterface::sendHeartbeat(uint64_t interval_usec)
 		writeMessage(message);
 
 #ifdef MAVLINK_DEBUG
-		printf("   SENT HEARTBEAT\n");
+		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
 #endif
 	}
 
@@ -424,6 +425,39 @@ void _MavlinkInterface::command_long_doSetMode(int mode)
 #endif
 
 	return;
+}
+
+
+#define PUTTEXT(x,y,t) cv::putText(*pMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
+
+bool _MavlinkInterface::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	Mat* pMat = pFrame->getCMat();
+
+	char strBuf[512];
+	std::string strInfo;
+
+	putText(*pFrame->getCMat(), "Mavlink FPS: " + f2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	pTextPos->m_y += pTextPos->m_w;
+
+	//Vehicle position
+	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			current_messages.attitude.roll, current_messages.attitude.pitch, current_messages.attitude.yaw);
+	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+	pTextPos->m_y += pTextPos->m_w;
+
+	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			current_messages.attitude.rollspeed,
+			current_messages.attitude.pitchspeed,
+			current_messages.attitude.yawspeed);
+	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+	pTextPos->m_y += pTextPos->m_w;
+
+	return true;
 }
 
 
