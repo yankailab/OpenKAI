@@ -1,11 +1,5 @@
 /Debug/
-
 *.prefs
-
 .project
-
 .cproject
-
 /Release/
-/Release_SegNet/
-/Debug_SegNet/
