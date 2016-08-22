@@ -52,7 +52,6 @@ public:
 			const string& mean_file, const string& label_file);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
-
 	std::vector<vector<float> > detect(const cv::Mat img);
 	bool start(void);
 
@@ -76,6 +75,7 @@ private:
 	cv::Size input_geometry_;
 	int num_channels_;
 	cv::Mat mean_;
+	Frame*	m_pFrame;
 
 	vector<string> labels_;
 

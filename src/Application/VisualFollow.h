@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_DRONEHUNTER_H_
-#define SRC_DRONEHUNTER_H_
+#ifndef SRC_VISUALFOLLOW_H_
+#define SRC_VISUALFOLLOW_H_
 
 #include <cstdio>
 #include <cmath>
@@ -16,10 +16,10 @@
 #include "../Camera/Camera.h"
 #include "../Interface/_MavlinkInterface.h"
 #include "../Interface/_VehicleInterface.h"
-#include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
 #include "../Tracker/_ROITracker.h"
+#include "AppBase.h"
 
 #define APP_NAME "VISUAL_FOLLOW"
 
@@ -31,27 +31,20 @@ using namespace kai;
 namespace kai
 {
 
-class VisualFollow
+class VisualFollow: public AppBase
 {
 public:
 	VisualFollow();
 	~VisualFollow();
 
-	int m_key;
-	bool m_bRun;
-
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_MavlinkInterface* m_pMavlink;
 	_VehicleInterface* m_pVlink;
-	_CascadeDetector* m_pCascade;
 	_Flow* m_pDF;
 	_ROITracker* m_pROITracker;
 
-	Frame* m_pShow;
-	Frame* m_pMat;
-	Frame* m_pMat2;
-	UIMonitor* m_pUIMonitor;
+	Frame* m_pFrame;
 
 	iVector4 m_ROI;
 	bool	 m_bSelect;
@@ -69,11 +62,10 @@ public:
 	int		m_btnMode;
 
 	Rect2d getROI(iVector4 mouseROI);
-	bool start(JSON* pJson);
-	void showScreen(void);
 
+	bool start(JSON* pJson);
+	void draw(void);
 	void handleMouse(int event, int x, int y, int flags);
-	void showInfo(UMat* pDisplayMat);
 	void handleKey(int key);
 
 };

@@ -12,6 +12,15 @@ namespace kai
 
 VisualFollow::VisualFollow()
 {
+	AppBase();
+
+	m_pCamFront = NULL;
+	m_pAP = NULL;
+	m_pMavlink = NULL;
+	m_pVlink = NULL;
+	m_pROITracker = NULL;
+	m_pFrame = NULL;
+
 }
 
 VisualFollow::~VisualFollow()
@@ -22,51 +31,59 @@ VisualFollow::~VisualFollow()
 bool VisualFollow::start(JSON* pJson)
 {
 	g_pDroneHunter = this;
+	int FPS;
+
+	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
+	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
+	CHECK_INFO(pJson->getVal("APP_WAIT_KEY", &m_waitKey));
 
 	CHECK_ERROR(pJson->getVal("ROI_MIN_SIZE", &m_minROI));
 
-	//Init Camera
-	m_pCamFront = new _Stream();
-	CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
+	m_pFrame = new Frame();
 
-//	//Init Fast Detector
-//	m_pCascade = new _CascadeDetector();
-//	m_pCascade->init("DRONE", pJson);
-//	m_pCascade->m_pCamStream = m_pCamFront;
-//	m_pCamFront->m_bGray = true;
-//
-//	//Init Feature Detector
-//	m_pFeature = new _FeatureDetector();
-//	m_pFeature->init("DRONE", pJson);
-//	m_pFeature->m_pCamStream = m_pCamFront;
-//	m_pCamFront->m_bGray = true;
+	//Init Camera
+	FPS=0;
+	CHECK_INFO(pJson->getVal("CAM_FRONTL_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pCamFront = new _Stream();
+		CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
+		m_pCamFront->start();
+	}
 
 	//Init ROI Tracker
-	m_pROITracker = new _ROITracker();
-	m_pROITracker->init(pJson, "DRONE");
-	m_pROITracker->m_pCamStream = m_pCamFront;
+	FPS=0;
+	CHECK_INFO(pJson->getVal("ROITRACKER_MAIN_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pROITracker = new _ROITracker();
+		m_pROITracker->init(pJson, "MAIN");
+		m_pROITracker->m_pCamStream = m_pCamFront;
+		m_pROITracker->start();
+	}
 
-	//Init Optical Flow
-//	m_pDF = new _DenseFlow();
-//	CHECK_FATAL(m_pDF->init(pJson, "FRONTL"));
-//	m_pDF->m_pCamStream = m_pCamFront;
-//	m_pCamFront->m_bGray = true;
-
-	//Init Dense Flow Tracker
-//	m_pDFDepth = new _DenseFlowDepth();
-//	m_pDFDepth->init(pJson, "DEFAULT");
-//	m_pDFDepth->m_pDF = m_pDF;
-
-	//Connect to Mavlink
-	m_pVlink = new _VehicleInterface();
-	CHECK_FATAL(m_pVlink->setup(pJson, "FC"));
-	CHECK_INFO(m_pVlink->open());
+	//Connect to VehicleLink
+	FPS=0;
+	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pVlink = new _VehicleInterface();
+		CHECK_FATAL(m_pVlink->setup(pJson, "MAVLINK"));
+		CHECK_INFO(m_pVlink->open());
+		m_pVlink->start();
+	}
 
 	//Init Autopilot
-	m_pAP = new _AutoPilot();
-	CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
-	m_pAP->m_pVI = m_pVlink;
-	m_pAP->m_pROITracker = m_pROITracker;
+	FPS=0;
+	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pAP = new _AutoPilot();
+		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
+		m_pAP->m_pVI = m_pVlink;
+		m_pAP->m_pROITracker = m_pROITracker;
+		m_pAP->start();
+	}
 
 	m_ROI.m_x = 0;
 	m_ROI.m_y = 0;
@@ -84,25 +101,6 @@ bool VisualFollow::start(JSON* pJson)
 	m_btnROISmall = 300;
 	m_btnMode = 980;
 
-	//Main window
-	m_pShow = new Frame();
-	m_pMat = new Frame();
-	m_pMat2 = new Frame();
-
-	//Init UI Monitor
-//	m_pUIMonitor = new UIMonitor();
-//	m_pUIMonitor->init("OpenKAI demo", pJson);
-//	m_pUIMonitor->addFullFrame(m_pShow);
-
-	//Start threads
-	m_pCamFront->start();
-//	m_pFeature->start();
-//	m_pVlink->start();
-//	m_pDF->start();
-	m_pAP->start();
-//	m_pCascade->start();
-//	m_pDFDepth->start();
-	m_pROITracker->start();
 
 	//UI thread
 	m_bRun = true;
@@ -112,59 +110,58 @@ bool VisualFollow::start(JSON* pJson)
 
 	while (m_bRun)
 	{
-//		Mavlink_Messages mMsg;
-//		mMsg = m_pMavlink->current_messages;
-//		m_pCamFront->m_pCamL->m_bGimbal = true;
-//		m_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
-
-		showScreen();
+		if (m_bShowScreen)
+		{
+			draw();
+		}
 
 		//Handle key input
-		m_key = waitKey(30);
+		m_key = waitKey(m_waitKey);
 		handleKey(m_key);
-
 	}
 
-	m_pAP->stop();
-//	m_pCascade->stop();
-	m_pVlink->stop();
-//	m_pDF->stop();
-//	m_pFeature->stop();
-//	m_pDFDepth->stop();
-	m_pROITracker->stop();
+	STOP(m_pAP);
+	STOP(m_pVlink);
+	STOP(m_pROITracker);
 
-//	m_pCascade->complete();
-//	m_pDF->complete();
-//	m_pFeature->complete();
-//	m_pDFDepth->complete();
-	m_pROITracker->complete();
-	m_pAP->complete();
-//	m_pCamFront->complete();
 	m_pVlink->complete();
 	m_pVlink->close();
 
-	delete m_pAP;
-	delete m_pVlink;
-//	delete m_pDF;
-//	delete m_pCamFront;
-//	delete m_pCascade;
-//	delete m_pFeature;
-//	delete m_pDFDepth;
-	delete m_pROITracker;
+	COMPLETE(m_pAP);
+	COMPLETE(m_pROITracker);
+	COMPLETE(m_pCamFront);
+
+	RELEASE(m_pVlink);
+	RELEASE(m_pCamFront);
+	RELEASE(m_pROITracker);
+	RELEASE(m_pAP);
 
 	return 0;
 
 }
 
-void VisualFollow::showScreen(void)
+void VisualFollow::draw(void)
 {
-	int i;
-	Rect roi;
-	Mat imMat,imMat2,imMat3;
-	Frame* pFrame = m_pCamFront->getFrame();
+	Mat imMat;
+	Rect2d roi;
 
-	if (pFrame->empty())return;
-	pFrame->getGMat()->download(imMat);
+	iVector4 textPos;
+	textPos.m_x = 15;
+	textPos.m_y = 20;
+	textPos.m_w = 20;
+	textPos.m_z = 500;
+
+	if(m_pCamFront)
+	{
+		if(!m_pCamFront->draw(m_pFrame, &textPos))return;
+	}
+
+	if(m_pAP)
+	{
+		m_pAP->draw(m_pFrame, &textPos);
+	}
+
+	imMat = *m_pFrame->getCMat();
 
 	 // draw the tracked object
 	if(m_bSelect)
@@ -184,12 +181,14 @@ void VisualFollow::showScreen(void)
 		}
 	}
 
-	putText(imMat, "Camera FPS: "+f2str(m_pCamFront->getFrameRate()), cv::Point(15,15), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "AutoPilot FPS: "+f2str(m_pAP->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	putText(imMat, "Roll: "+f2str(m_pAP->m_RC[0]), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	putText(imMat, "Pitch: "+f2str(m_pAP->m_RC[1]), cv::Point(15,95), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	textPos.m_y += textPos.m_w;
+	putText(imMat, "AutoPilot FPS: "+f2str(m_pAP->getFrameRate()), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	textPos.m_y += textPos.m_w;
+	putText(imMat, "Roll: "+f2str(m_pAP->m_RC[0]), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	textPos.m_y += textPos.m_w;
+	putText(imMat, "Pitch: "+f2str(m_pAP->m_RC[1]), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	textPos.m_y += textPos.m_w;
 
 	if(m_ROImode == MODE_ASSIST)
 	{
@@ -221,29 +220,6 @@ void VisualFollow::showScreen(void)
 
 	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
 	imshow(APP_NAME,imMat);
-
-	//	CASCADE_OBJECT* pDrone;
-	//	int iTarget = 0;
-	//
-	//	for (i = 0; i < m_pCascade->m_numObj; i++)
-	//	{
-	//		pDrone = &m_pCascade->m_pObj[i];
-	//		if(pDrone->m_status != OBJ_ADDED)continue;
-	//
-	//		if(iTarget == 0)iTarget = i;
-	//		rectangle(imMat, pDrone->m_boundBox.tl(), pDrone->m_boundBox.br(), Scalar(0, 0, 255), 2);
-	//	}
-	//
-	//	pDrone = &m_pCascade->m_pObj[iTarget];
-	//	putText(imMat, "LOCK: DJI Phantom", Point(pDrone->m_boundBox.tl().x,pDrone->m_boundBox.tl().y-20), FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
-
-	//	putText(imMat, "Cascade FPS: "+f2str(m_pCascade->getFrameRate()), cv::Point(15,35), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	//	putText(imMat, "DenseFlow FPS: "+f2str(m_pDF->getFrameRate()), cv::Point(15,55), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	//	putText(imMat, "FlowDepth FPS: "+f2str(m_pDFDepth->getFrameRate()), cv::Point(15,75), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	//	imshow("Depth",*m_pDFDepth->m_pDepth->getCMat());
-
-//	g_pShow->updateFrame(&imMat3);
-//	g_pUIMonitor->show();
 
 }
 
@@ -432,62 +408,11 @@ Rect2d VisualFollow::getROI(iVector4 mouseROI)
 	return roi;
 }
 
-#define PUTTEXT(x,y,t) cv::putText(*pDisplayMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
-
-void VisualFollow::showInfo(UMat* pDisplayMat)
-{
-	char strBuf[512];
-	std::string strInfo;
-
-	int i;
-	int startPosH = 25;
-	int startPosV = 25;
-	int lineHeight = 20;
-	Mavlink_Messages mMsg;
-
-	i = 0;
-	mMsg = m_pMavlink->current_messages;
-
-	//Vehicle position
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.roll, mMsg.attitude.pitch, mMsg.attitude.yaw);
-	PUTTEXT(startPosH, startPosV + lineHeight * (++i), strBuf);
-
-	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			mMsg.attitude.rollspeed, mMsg.attitude.pitchspeed,
-			mMsg.attitude.yawspeed);
-	PUTTEXT(startPosH, startPosV + lineHeight * (++i), strBuf);
-
-	i++;
-
-	i = 0;
-	startPosH = 600;
-
-}
 
 void VisualFollow::handleKey(int key)
 {
 	switch (key)
 	{
-	case 'q':
-		m_pUIMonitor->removeAll();
-		m_pUIMonitor->addFrame(m_pShow, 0, 0, 1980, 1080);
-		break;
-	case 'w':
-		m_pUIMonitor->removeAll();
-//		m_pUIMonitor->addFrame(m_pOD->m_pContourFrame, 0,0,1980,1080);
-		break;
-//	case 'e':
-//		m_pUIMonitor->removeAll();
-//		m_pUIMonitor->addFrame(m_pCamFront->m_pDenseFlow->m_pShowFlow, 0, 0, 1980, 1080);
-//		break;
-	case 'r':
-		m_pUIMonitor->removeAll();
-//		m_pUIMonitor->addFrame(m_pOD->m_pSaliencyFrame, 0, 0, 1980, 1080);
-		break;
-	case 't':
-//		m_pOD->m_bOneImg = 1 - m_pOD->m_bOneImg;
-		break;
 	case 27:
 		m_bRun = false;	//ESC
 		break;

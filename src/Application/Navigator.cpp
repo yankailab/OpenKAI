@@ -11,9 +11,7 @@ namespace kai
 
 Navigator::Navigator()
 {
-	m_bShowScreen = 1;
-	m_bFullScreen = 0;
-	m_waitKey = 50;
+	AppBase();
 
 	m_pCamFront = NULL;
 	m_pAP = NULL;
@@ -98,7 +96,7 @@ bool Navigator::start(JSON* pJson)
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
-		CHECK_FATAL(m_pAP->init(pJson, "_MAIN"));
+		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
 		m_pAP->m_pMavlink = m_pMavlink;
 		m_pAP->m_pROITracker = m_pROITracker;
 		m_pAP->m_pMD = m_pMD;
@@ -235,7 +233,7 @@ void Navigator::draw(void)
 {
 	iVector4 textPos;
 	textPos.m_x = 15;
-	textPos.m_y = 15;
+	textPos.m_y = 20;
 	textPos.m_w = 20;
 	textPos.m_z = 500;
 

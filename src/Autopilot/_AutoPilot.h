@@ -70,6 +70,7 @@ public:
 	bool init(JSON* pJson, string pilotName);
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
+	void sendHeartbeat(void);
 
 
 	void setVehicleInterface(_VehicleInterface* pVehicle);

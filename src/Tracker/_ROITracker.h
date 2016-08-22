@@ -24,7 +24,7 @@ using namespace std;
 namespace kai
 {
 
-class _ROITracker:  public DetectorBase, public _ThreadBase
+class _ROITracker: public DetectorBase, public _ThreadBase
 {
 public:
 	_ROITracker();
@@ -46,11 +46,11 @@ private:
 	}
 
 public:
-	_Stream*	m_pCamStream;
-	Rect2d	m_ROI;
-	Rect2d	m_newROI;
-	Mat*	m_pMat;
-	bool	m_bTracking;
+	_Stream* m_pCamStream;
+	Rect2d m_ROI;
+	Rect2d m_newROI;
+	Frame* m_pFrame;
+	bool m_bTracking;
 
 	Ptr<Tracker> m_pTracker;
 };

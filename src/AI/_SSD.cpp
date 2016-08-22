@@ -14,6 +14,7 @@ _SSD::_SSD()
 	num_channels_ = 0;
 	m_pUniverse = NULL;
 	m_pCamStream = NULL;
+	m_pFrame = NULL;
 }
 
 _SSD::~_SSD()
@@ -42,6 +43,8 @@ bool _SSD::init(JSON* pJson, string ssdName)
 	double FPS = DEFAULT_FPS;
 	CHECK_ERROR(pJson->getVal("CAFFE_SSD_FPS", &FPS));
 	this->setTargetFPS(FPS);
+
+	m_pFrame = new Frame();
 
 	return true;
 }
@@ -115,9 +118,9 @@ void _SSD::update(void)
 
 void _SSD::detectFrame(void)
 {
-	Frame* pFrame;
 	string name;
 	Rect bb;
+	Frame* pFrame;
 
 	if (m_pCamStream == NULL)
 		return;
@@ -125,10 +128,11 @@ void _SSD::detectFrame(void)
 		return;
 
 	pFrame = m_pCamStream->getFrame();
-	if (pFrame->empty())
-		return;
+	if (pFrame->empty())return;
+	if (!pFrame->isNewerThan(m_pFrame))return;
+	m_pFrame->update(pFrame);
 
-	Mat* pImg = pFrame->getCMat();
+	Mat* pImg = m_pFrame->getCMat();
 	std::vector<vector<float> > detections = detect(*pImg);
 
 	float confidence_threshold = 0.1;

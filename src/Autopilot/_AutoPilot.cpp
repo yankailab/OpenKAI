@@ -30,6 +30,8 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
 
+	pilotName = "_"+pilotName;
+
 	cName = "ROLL_";
 
 	CHECK_ERROR(pJson->getVal(cName + "P" + pilotName, &cPID.m_P));
@@ -99,8 +101,10 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_yaw.m_RC = RC;
 
 	//For visual position locking
-	CHECK_ERROR(pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
-	CHECK_ERROR(pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
+	CHECK_ERROR(
+			pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
+	CHECK_ERROR(
+			pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
 
 	resetAllControl();
 
@@ -115,13 +119,18 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_X", &m_landingTarget.m_orientX));
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_Y", &m_landingTarget.m_orientY));
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT", &m_landingTarget.m_ROItimeLimit));
+	CHECK_INFO(
+			pJson->getVal("MARKER_LANDING_ORIENTATION_X",
+					&m_landingTarget.m_orientX));
+	CHECK_INFO(
+			pJson->getVal("MARKER_LANDING_ORIENTATION_Y",
+					&m_landingTarget.m_orientY));
+	CHECK_INFO(
+			pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT",
+					&m_landingTarget.m_ROItimeLimit));
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
-
 
 	return true;
 }
@@ -153,21 +162,7 @@ void _AutoPilot::update(void)
 
 		landingTarget();
 
-		if(m_pMavlink)
-		{
-			//Sending Heartbeat at 1Hz
-			uint64_t timeNow = get_time_usec();
-			if(timeNow - m_lastHeartbeat >= USEC_1SEC)
-			{
-				m_pMavlink->sendHeartbeat();
-				m_lastHeartbeat = timeNow;
-
-		#ifdef MAVLINK_DEBUG
-				printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
-		#endif
-			}
-		}
-
+		sendHeartbeat();
 
 //		if (m_pVI)
 //		{
@@ -178,6 +173,24 @@ void _AutoPilot::update(void)
 
 	}
 
+}
+
+void _AutoPilot::sendHeartbeat(void)
+{
+	if (m_pMavlink == NULL)
+		return;
+
+	//Sending Heartbeat at 1Hz
+	uint64_t timeNow = get_time_usec();
+	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
+	{
+		m_pMavlink->sendHeartbeat();
+		m_lastHeartbeat = timeNow;
+
+#ifdef MAVLINK_DEBUG
+		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
+#endif
+	}
 }
 
 void _AutoPilot::resetAllControl(void)
@@ -215,8 +228,10 @@ void _AutoPilot::resetAllControl(void)
 
 void _AutoPilot::camROILock(void)
 {
-	if (m_pVI == NULL)return;
-	if (m_pROITracker == NULL)return;
+	if (m_pVI == NULL)
+		return;
+	if (m_pROITracker == NULL)
+		return;
 
 	if (m_pROITracker->m_bTracking == false)
 	{
@@ -277,17 +292,19 @@ void _AutoPilot::landingTarget(void)
 	Camera* pCamInput;
 	fVector3 markerCenter;
 
-	if (m_pMD == NULL)return;
-	if (m_pROITracker == NULL)return;
+	if (m_pMD == NULL)
+		return;
+	if (m_pROITracker == NULL)
+		return;
 
-	if(m_pMD->getCircleCenter(&markerCenter))
+	if (m_pMD->getCircleCenter(&markerCenter))
 	{
 		//Update Tracker
 		Rect roi;
 		roi.x = markerCenter.m_x - markerCenter.m_z;
 		roi.y = markerCenter.m_y - markerCenter.m_z;
-		roi.width = markerCenter.m_z*2;
-		roi.height = markerCenter.m_z*2;
+		roi.width = markerCenter.m_z * 2;
+		roi.height = markerCenter.m_z * 2;
 		m_pROITracker->setROI(roi);
 		m_pROITracker->tracking(true);
 
@@ -295,7 +312,8 @@ void _AutoPilot::landingTarget(void)
 	}
 	else
 	{
-		if (!m_pROITracker->m_bTracking)return;
+		if (!m_pROITracker->m_bTracking)
+			return;
 
 		uint64_t timeNow = get_time_usec();
 
@@ -303,7 +321,8 @@ void _AutoPilot::landingTarget(void)
 		if (m_landingTarget.m_ROIstarted > 0)
 		{
 			//Disable sending landing target if the marker is not seen for a certain time
-			if(timeNow - m_landingTarget.m_ROIstarted > m_landingTarget.m_ROItimeLimit)
+			if (timeNow - m_landingTarget.m_ROIstarted
+					> m_landingTarget.m_ROItimeLimit)
 			{
 				m_pROITracker->tracking(false);
 				return;
@@ -315,23 +334,28 @@ void _AutoPilot::landingTarget(void)
 			m_landingTarget.m_ROIstarted = timeNow;
 		}
 
-		markerCenter.m_x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
-		markerCenter.m_y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
+		markerCenter.m_x = m_pROITracker->m_ROI.x
+				+ m_pROITracker->m_ROI.width * 0.5;
+		markerCenter.m_y = m_pROITracker->m_ROI.y
+				+ m_pROITracker->m_ROI.height * 0.5;
 	}
 
 	pCamInput = m_pMD->m_pCamStream->getCameraInput();
 
 	//Change position to angles
-	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)/pCamInput->m_width)
-								* pCamInput->m_angleH * DEG_RADIAN * m_landingTarget.m_orientX;
-	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)/pCamInput->m_height)
-								* pCamInput->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
+	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)
+			/ pCamInput->m_width) * pCamInput->m_angleH * DEG_RADIAN
+			* m_landingTarget.m_orientX;
+	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)
+			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
+			* m_landingTarget.m_orientY;
 
-	if (m_pMavlink == NULL)return;
+	if (m_pMavlink == NULL)
+		return;
 
 	//Send Mavlink command
-	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL,MAV_FRAME_BODY_NED, m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0,0,0);
-
+	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 }
 
@@ -351,7 +375,6 @@ void _AutoPilot::setMavlinkInterface(_MavlinkInterface* pMavlink)
 	m_pMavlink = pMavlink;
 }
 
-
 int* _AutoPilot::getPWMOutput(void)
 {
 	return m_RC;
@@ -362,41 +385,43 @@ bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
 	if (pFrame == NULL)
 		return false;
 
-	MARKER_CIRCLE* pCircle;
-	fVector3 markerCenter;
-	Mat* pMat = pFrame->getCMat();
-
-	markerCenter.m_x = 0;
-	markerCenter.m_y = 0;
-	markerCenter.m_z = 0;
-
-	if (m_pMD->getCircleCenter(&markerCenter))
+	if(m_pMD)
 	{
-		circle(*pMat, Point(markerCenter.m_x, markerCenter.m_y), markerCenter.m_z, Scalar(0, 0, 255), 5);
+		Mat* pMat = pFrame->getCMat();
+		fVector3 markerCenter;
+		markerCenter.m_x = 0;
+		markerCenter.m_y = 0;
+		markerCenter.m_z = 0;
+
+		if (m_pMD->getCircleCenter(&markerCenter))
+		{
+			circle(*pMat, Point(markerCenter.m_x, markerCenter.m_y),
+					markerCenter.m_z, Scalar(0, 0, 255), 5);
+		}
+		else if (m_pROITracker->m_bTracking)
+		{
+			rectangle(*pMat, Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
+					Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
+							m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
+					Scalar(0, 0, 255), 3);
+		}
+
+		putText(*pMat, "Marker FPS: " + f2str(getFrameRate()),
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+				Scalar(0, 255, 0), 1);
+
+		pTextPos->m_y += pTextPos->m_w;
+
+		putText(*pMat,
+				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+						+ f2str(m_landingTarget.m_angleY) + ")",
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+				Scalar(0, 255, 0), 1);
+
+		pTextPos->m_y += pTextPos->m_w;
 	}
-	else if (m_pROITracker->m_bTracking)
-	{
-		rectangle(*pMat,
-				Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
-				Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
-						m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
-				Scalar(0, 0, 255), 3);
-	}
-
-	putText(*pMat, "Marker FPS: " + f2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
-
-	putText(*pMat,
-			"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-					+ f2str(m_landingTarget.m_angleY) + ")", cv::Point(pTextPos->m_x, pTextPos->m_y),
-			FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }
-
 
 }

@@ -22,13 +22,6 @@
 namespace kai
 {
 
-struct MARKER_CIRCLE
-{
-	double m_x;
-	double m_y;
-	double m_r;
-};
-
 class _MarkerDetector : public DetectorBase, public _ThreadBase
 {
 public:
@@ -52,7 +45,7 @@ private:
 
 public:
 	int		 m_numCircle;
-	MARKER_CIRCLE m_pCircle[NUM_MARKER];
+	fVector3 m_pCircle[NUM_MARKER];
 
 	double	m_minMarkerSize;
 	double  m_areaRatio;

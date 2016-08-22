@@ -24,6 +24,7 @@
 #include "../Tracker/_ROITracker.h"
 #include "../AI/_SSD.h"
 #include "../Navigation/_Universe.h"
+#include "AppBase.h"
 
 #define APP_NAME "NAVIGATOR"
 
@@ -32,18 +33,11 @@ using namespace kai;
 namespace kai
 {
 
-class Navigator
+class Navigator: public AppBase
 {
 public:
 	Navigator();
 	~Navigator();
-
-	int m_key;
-	bool m_bRun;
-
-	int m_bShowScreen;
-	int m_bFullScreen;
-	int m_waitKey;
 
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
@@ -61,9 +55,7 @@ public:
 
 	bool start(JSON* pJson);
 	void draw(void);
-
 	void handleMouse(int event, int x, int y, int flags);
-	void showInfo(Mat* pDisplayMat);
 	void handleKey(int key);
 
 };

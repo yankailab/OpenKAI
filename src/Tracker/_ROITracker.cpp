@@ -19,7 +19,7 @@ _ROITracker::_ROITracker()
 	_ThreadBase();
 
 	m_pCamStream = NULL;
-	m_pMat = NULL;
+	m_pFrame = NULL;
 }
 
 _ROITracker::~_ROITracker()
@@ -35,17 +35,17 @@ bool _ROITracker::init(JSON* pJson, string roiName)
 
 	m_newROI = m_ROI;
 	m_bTracking = false;
+	m_pFrame = new Frame();
 
 	// create a tracker object
-	m_pTracker = Tracker::create( "KCF" );
+	m_pTracker = Tracker::create("KCF");
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("ROITRACKER_"+roiName+"_FPS", &FPS));
+	CHECK_ERROR(pJson->getVal("ROITRACKER_" + roiName + "_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	return true;
 }
-
 
 bool _ROITracker::start(void)
 {
@@ -75,9 +75,13 @@ void _ROITracker::update(void)
 
 void _ROITracker::setROI(Rect2d roi)
 {
-	if(m_pMat==NULL)return;
-	if(m_pMat->empty())return;
-	if(roi.width==0 || roi.height==0)return;
+	Mat* pMat;
+	pMat = m_pFrame->getCMat();
+
+	if (pMat->empty())
+		return;
+	if (roi.width == 0 || roi.height == 0)
+		return;
 
 	m_newROI = roi;
 }
@@ -89,27 +93,38 @@ void _ROITracker::tracking(bool bTracking)
 
 void _ROITracker::track(void)
 {
-	if(m_pCamStream == NULL)return;
-	m_pMat = m_pCamStream->getFrame()->getCMat();
+	Frame* pFrame;
+	Mat* pMat;
 
-	if(m_pMat->empty())return;
-	if(m_bTracking==false)return;
-	if(m_pTracker.empty())return;
+	if (m_pCamStream == NULL)
+		return;
+	if (m_bTracking == false)
+		return;
+	if (m_pTracker.empty())
+		return;
 
-	if(m_newROI.width > 0)
+	pFrame = m_pCamStream->getFrame();
+	if (!pFrame->isNewerThan(m_pFrame))
+		return;
+	m_pFrame->update(pFrame);
+
+	pMat = m_pFrame->getCMat();
+	if (pMat->empty())
+		return;
+
+	if (m_newROI.width > 0)
 	{
 		m_pTracker.release();
-		m_pTracker = Tracker::create( "KCF" );
+		m_pTracker = Tracker::create("KCF");
 
 		m_ROI = m_newROI;
-		m_pTracker->init(*m_pMat,m_ROI);
+		m_pTracker->init(*pMat, m_ROI);
 		m_newROI.width = 0;
 	}
 
 	// update the tracking result
-    m_pTracker->update(*m_pMat,m_ROI);
+	m_pTracker->update(*pMat, m_ROI);
 
 }
-
 
 } /* namespace kai */

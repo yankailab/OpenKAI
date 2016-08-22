@@ -124,6 +124,8 @@ void _Flow::detect(void)
 
 	m_pFarn->calc(*pPrev, *pNext, m_GFlowMat);
 
+
+
 	//Generate Depth Map from Flow
 	if(m_bDepth==0)return;
 

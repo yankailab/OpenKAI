@@ -173,7 +173,7 @@ void _MarkerDetector::detectCircle(void)
 	{
 		m_pCircle[m_numCircle].m_x = circles[current_circle][0];
 		m_pCircle[m_numCircle].m_y = circles[current_circle][1];
-		m_pCircle[m_numCircle].m_r = circles[current_circle][2];
+		m_pCircle[m_numCircle].m_z = circles[current_circle][2];
 		m_numCircle++;
 
 		if (m_numCircle == NUM_MARKER)
@@ -201,8 +201,8 @@ bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 	if(num==0)return false;
 
 	int i;
-	MARKER_CIRCLE* pMarker = &m_pCircle[0];
-	MARKER_CIRCLE* pCompare;
+	fVector3* pMarker = &m_pCircle[0];
+	fVector3* pCompare;
 	int camCenter = (pCam->m_width+pCam->m_height)/2;
 
 	//Find the closest point
@@ -217,7 +217,7 @@ bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 
 	pCenter->m_x = pMarker->m_x;
 	pCenter->m_y = pMarker->m_y;
-	pCenter->m_z = pMarker->m_r;
+	pCenter->m_z = pMarker->m_z;
 
 	return true;
 }
