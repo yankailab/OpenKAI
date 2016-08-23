@@ -112,7 +112,7 @@ void SegNetDemo::showScreen(void)
 {
 	int i;
 	Mat imMat,imMat2,imMat3;
-	Frame* pFrame = m_pCamFront->getFrame();// (*m_pCamFront->m_pFrameProcess);
+	Frame* pFrame = m_pCamFront->getBGRFrame();// (*m_pCamFront->m_pFrameProcess);
 
 	if (pFrame->getGMat()->empty())return;
 	if (m_pSegNet->m_segment.empty())return;

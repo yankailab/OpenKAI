@@ -131,7 +131,7 @@ void _FeatureDetector::detect(void)
 
 	if(m_pCamStream==NULL)return;
 
-	pFrame = m_pCamStream->getFrame();
+	pFrame = m_pCamStream->getBGRFrame();
 	if(pFrame->empty())return;
 
 //	if(pFrame->getFrameID() <= m_frameID)return;

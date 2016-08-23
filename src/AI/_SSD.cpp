@@ -127,7 +127,7 @@ void _SSD::detectFrame(void)
 	if (m_pUniverse == NULL)
 		return;
 
-	pFrame = m_pCamStream->getFrame();
+	pFrame = m_pCamStream->getBGRFrame();
 	if (pFrame->empty())return;
 	if (!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);

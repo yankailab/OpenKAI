@@ -99,7 +99,7 @@ void _FCN::update(void)
 void _FCN::segmentGPU(void)
 {
 	if(m_pCamStream==NULL)return;
-	m_pFrame = m_pCamStream->getFrame();
+	m_pFrame = m_pCamStream->getBGRFrame();
 
 	if(m_pFrame==NULL)return;
 	if(m_pFrame->empty())return;

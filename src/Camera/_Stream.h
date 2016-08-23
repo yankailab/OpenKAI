@@ -29,7 +29,7 @@ public:
 	bool complete(void);
 	bool draw(Frame* pFrame, iVector4* textPos);
 
-	Frame* getFrame(void);
+	Frame* getBGRFrame(void);
 	Frame* getGrayFrame(void);
 	Frame* getHSVFrame(void);
 

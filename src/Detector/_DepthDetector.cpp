@@ -111,7 +111,7 @@ void _DepthDetector::detect(void)
 		gMat.download(m_Mat);
 	}
 
-	imgSize = m_pCamStream->getFrame()->getSize();
+	imgSize = m_pCamStream->getBGRFrame()->getSize();
 	scaleW = ((double)imgSize.width)/((double)m_Mat.cols);
 	scaleH = ((double)imgSize.height)/((double)m_Mat.rows);
 
@@ -134,7 +134,7 @@ void _DepthDetector::detect(void)
 		if (bb.area() < m_minObjArea)continue;
 		if (bb.area() > m_maxObjArea)continue;
 
-		m_pUniverse->addUnknownObject(m_pCamStream->getFrame()->getCMat(), &bb, &contours_poly[i]);
+		m_pUniverse->addUnknownObject(m_pCamStream->getBGRFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
 

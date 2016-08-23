@@ -98,7 +98,7 @@ bool _Stream::complete(void)
 	return true;
 }
 
-Frame* _Stream::getFrame(void)
+Frame* _Stream::getBGRFrame(void)
 {
 	return m_pCamFrame;
 }

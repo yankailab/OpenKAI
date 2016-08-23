@@ -27,8 +27,11 @@ Camera::Camera()
 	m_angleH = 0;
 	m_angleV = 0;
 	m_bCrop = 0;
+
+#ifdef USE_ZED
 	m_zedResolution = (int)sl::zed::VGA;
 	m_zedMinDist = 1000;
+#endif
 }
 
 Camera::~Camera()
@@ -53,8 +56,11 @@ bool Camera::setup(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_FISHEYE", &m_bFisheye));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_TYPE", &m_camType));
+
+#ifdef USE_ZED
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION", &m_zedResolution));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE", &m_zedMinDist));
+#endif
 
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_CROP", &m_bCrop));
 	if(m_bCrop!=0)

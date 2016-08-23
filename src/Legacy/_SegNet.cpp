@@ -182,7 +182,7 @@ void _SegNet::Preprocess(const cv::Mat& img,
 
 void _SegNet::segmentGPU(void)
 {
-	m_pFrame = m_pCamStream->getFrame();
+	m_pFrame = m_pCamStream->getBGRFrame();
 
 	if(m_pFrame==NULL)return;
 	if(m_pFrame->empty())return;

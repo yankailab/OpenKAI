@@ -103,7 +103,7 @@ void _ROITracker::track(void)
 	if (m_pTracker.empty())
 		return;
 
-	pFrame = m_pCamStream->getFrame();
+	pFrame = m_pCamStream->getBGRFrame();
 	if (!pFrame->isNewerThan(m_pFrame))
 		return;
 	m_pFrame->update(pFrame);

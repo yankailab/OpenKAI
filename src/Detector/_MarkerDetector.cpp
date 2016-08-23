@@ -17,12 +17,19 @@ _MarkerDetector::_MarkerDetector()
 
 	m_cudaDeviceID = 0;
 
+	m_method = METHOD_FILL;
 	m_numCircle = 0;
 	m_minMarkerSize = 0;
 	m_areaRatio = 0;
+	m_kSize = 1;
+	m_houghMinDist = 100;
+	m_houghParam1 = 100;
+	m_houghParam2 = 20;
+	m_houghMinR = 0;
+	m_houghMaxR = 0;
 
 	m_pCamStream = NULL;
-	m_pHSV = NULL;
+	m_pFrame = NULL;
 }
 
 _MarkerDetector::~_MarkerDetector()
@@ -36,11 +43,21 @@ bool _MarkerDetector::init(JSON* pJson, string name)
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_AREA_RATIO", &m_areaRatio));
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_MIN_SIZE", &m_minMarkerSize));
 
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_METHOD", &m_method));
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_MEDBLUR_KSIZE", &m_kSize));
+
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MINDIST", &m_houghMinDist));
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_PARAM1", &m_houghParam1));
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_PARAM2", &m_houghParam2));
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MINR", &m_houghMinR));
+	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MAXR", &m_houghMaxR));
+
+
 	double FPS = DEFAULT_FPS;
 	CHECK_INFO(pJson->getVal("MARKER_" + name + "_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
-	m_pHSV = new Frame();
+	m_pFrame = new Frame();
 
 	return true;
 }
@@ -66,15 +83,26 @@ void _MarkerDetector::update(void)
 	{
 		this->autoFPSfrom();
 
-		detectCircle();
+		switch (m_method)
+		{
+			case METHOD_FILL:
+				detectCircleFill();
+				break;
+			case METHOD_HOUGH:
+				detectCircleHough();
+				break;
+			default:
+				detectCircleFill();
+				break;
+		}
 
 		this->autoFPSto();
 	}
 
 }
 
-/*
-void _MarkerDetector::detectCircle(void)
+
+void _MarkerDetector::detectCircleFill(void)
 {
 	int i,j;
 	Point2f center;
@@ -87,7 +115,7 @@ void _MarkerDetector::detectCircle(void)
 
 	if(!m_pCamStream)return;
 	pHSV = m_pCamStream->getHSVFrame();
-	pRGB = m_pCamStream->getFrame();
+	pRGB = m_pCamStream->getBGRFrame();
 	if(pRGB->empty())return;
 	if(pHSV->empty())return;
 
@@ -126,7 +154,7 @@ void _MarkerDetector::detectCircle(void)
 
 		m_pCircle[m_numCircle].m_x = center.x;
 		m_pCircle[m_numCircle].m_y = center.y;
-		m_pCircle[m_numCircle].m_r = radius;
+		m_pCircle[m_numCircle].m_z = radius;
 		m_numCircle++;
 
 		if (m_numCircle == NUM_MARKER)
@@ -135,19 +163,25 @@ void _MarkerDetector::detectCircle(void)
 		}
 	}
 }
-*/
 
-void _MarkerDetector::detectCircle(void)
+void _MarkerDetector::detectCircleHough(void)
 {
 	if(!m_pCamStream)return;
 
-	Frame* pHSVFrame = m_pCamStream->getHSVFrame();
-	if(pHSVFrame->empty())return;
-	if(!pHSVFrame->isNewerThan(m_pHSV))return;
-	m_pHSV->update(pHSVFrame);
+	Frame* pFrame = m_pCamStream->getHSVFrame();
+	if(pFrame->empty())return;
+	if(!pFrame->isNewerThan(m_pFrame))return;
+	m_pFrame->update(pFrame);
+
+//	cv::Mat bgr_image = *m_pFrame->getCMat();
+//	cv::medianBlur(bgr_image, bgr_image, m_kSize);
 
 	// Convert input image to HSV
-	cv::Mat hsv_image = *m_pHSV->getCMat();
+//	cv::Mat hsv_image;
+//	cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
+
+	// Convert input image to HSV
+	cv::Mat hsv_image = *m_pFrame->getCMat();
 //	cv::medianBlur(hsv_image, hsv_image, 3);
 
 	// Threshold the HSV image, keep only the red pixels
@@ -163,7 +197,7 @@ void _MarkerDetector::detectCircle(void)
 
 	// Use the Hough transform to detect circles in the combined threshold image
 	std::vector<cv::Vec3f> circles;
-	cv::HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, red_hue_image.rows/8, 100, 20, 0, 0);
+	cv::HoughCircles(red_hue_image, circles, CV_HOUGH_GRADIENT, 1, m_houghMinDist, m_houghParam1, m_houghParam2, m_houghMinR, m_houghMaxR);
 
 
 	m_numCircle = 0;
@@ -182,9 +216,7 @@ void _MarkerDetector::detectCircle(void)
 		}
 
 	}
-
 }
-
 
 bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 {

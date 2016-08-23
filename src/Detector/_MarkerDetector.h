@@ -15,6 +15,9 @@
 #include "DetectorBase.h"
 
 #define NUM_MARKER 128
+
+#define METHOD_FILL 0
+#define METHOD_HOUGH 1
 #define MARKER_AREA_RATIO 0.8
 #define MIN_MARKER_SIZE 10
 
@@ -34,7 +37,8 @@ public:
 	bool getCircleCenter(fVector3* pCenter);
 
 private:
-	void detectCircle(void);
+	void detectCircleFill(void);
+	void detectCircleHough(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -47,13 +51,22 @@ public:
 	int		 m_numCircle;
 	fVector3 m_pCircle[NUM_MARKER];
 
+	int		m_method;
+
 	double	m_minMarkerSize;
 	double  m_areaRatio;
+
+	int		m_kSize;
+	int		m_houghMinDist;
+	int		m_houghParam1;
+	int		m_houghParam2;
+	int		m_houghMinR;
+	int		m_houghMaxR;
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
 	_Stream*	m_pCamStream;
-	Frame*		m_pHSV;
+	Frame*		m_pFrame;
 
 #ifdef USE_CUDA
 	GpuMat m_HSV;
