@@ -16,7 +16,7 @@ _ThreadBase::_ThreadBase()
 	m_threadID = 0;
 	m_timeStamp = 0;
 	m_dTime = 0.0;
-	m_dTimeAvr = 0.0;
+	m_dTimeAvr = 1.0;
 	m_defaultFPS = DEFAULT_FPS;
 	m_targetFPS = m_defaultFPS;
 	m_targetFrameTime = USEC_1SEC/m_targetFPS;

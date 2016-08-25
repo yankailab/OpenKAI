@@ -15,6 +15,8 @@ _SSD::_SSD()
 	m_pUniverse = NULL;
 	m_pCamStream = NULL;
 	m_pFrame = NULL;
+
+	m_confidence_threshold = 0.1;
 }
 
 _SSD::~_SSD()
@@ -35,6 +37,8 @@ bool _SSD::init(JSON* pJson, string ssdName)
 	CHECK_FATAL(pJson->getVal("CAFFE_SSD_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_SSD_LABEL_FILE", &labelFile));
+
+	CHECK_INFO(pJson->getVal("CAFFE_SSD_MIN_CONFIDENCE", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
 			caffeDir + labelFile);
@@ -68,13 +72,34 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 	/* Load the binaryproto mean file. */
 //	SetMean(mean_file);
 
-//	/* Load labels. */
-//	std::ifstream labels(label_file.c_str());
-//	CHECK(labels) << "Unable to open labels file " << label_file;
-//	string line;
-//	while (std::getline(labels, line))
-//		labels_.push_back(string(line));
-//
+	/* Load labels. */
+	std::ifstream labels(label_file.c_str());
+	CHECK(labels) << "Unable to open labels file " << label_file;
+	string line;
+	while (std::getline(labels, line))
+	{
+		if(line.at(0) == 'a')
+		{
+			safetyGrade_.push_back(0);
+		}
+		else if(line.at(0) == 'b')
+		{
+			safetyGrade_.push_back(1);
+		}
+		else
+		{
+			safetyGrade_.push_back(2);
+		}
+
+		int from = line.find_last_of(',');
+		int to = line.length();
+		line = line.substr(from + 1, to - from);
+
+		labels_.push_back(string(line));
+
+	}
+
+
 //	Blob<float>* output_layer = net_->output_blobs()[0];
 //	CHECK_EQ(labels_.size(), output_layer->channels())<< "Number of labels is different from the output layer dimension.";
 
@@ -121,6 +146,7 @@ void _SSD::detectFrame(void)
 	string name;
 	Rect bb;
 	Frame* pFrame;
+	int iClass;
 
 	if (m_pCamStream == NULL)
 		return;
@@ -132,10 +158,11 @@ void _SSD::detectFrame(void)
 	if (!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
 
-	Mat* pImg = m_pFrame->getCMat();
-	std::vector<vector<float> > detections = detect(*pImg);
+//	Mat* pImg = m_pFrame->getCMat();
+//	std::vector<vector<float> > detections = detect(*pImg);
 
-	float confidence_threshold = 0.1;
+	cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
+	std::vector<vector<float> > detections = detect(pFrame);
 
 	/* Print the detection results. */
 	for (int i = 0; i < detections.size(); ++i)
@@ -145,18 +172,20 @@ void _SSD::detectFrame(void)
 //		CHECK_EQ(d.size(), 7);
 
 		float size = d.size();
-
 		const float score = d[2];
-		if (score < confidence_threshold)
-			continue;
 
-		name = static_cast<int>(d[1]);
+		if (score < m_confidence_threshold)continue;
+
+		iClass = static_cast<int>(d[1])-1;
+		if(iClass >= labels_.size())continue;
+
+		name = labels_[iClass];// i2str(iClass);
 		bb.x = d[3] * pImg->cols;
 		bb.y = d[4] * pImg->rows;
 		bb.width = d[5] * pImg->cols - bb.x;
 		bb.height = d[6] * pImg->rows - bb.y;
 
-		m_pUniverse->addKnownObject(name, NULL, &bb, NULL);
+		m_pUniverse->addKnownObject(name, safetyGrade_[iClass], NULL, &bb, NULL);
 
 	}
 
@@ -195,7 +224,7 @@ void _SSD::SetMean(const string& mean_file)
 	mean_ = cv::Mat(input_geometry_, mean.type(), channel_mean);
 }
 
-std::vector<vector<float> > _SSD::detect(const cv::Mat img)
+std::vector<vector<float> > _SSD::detect(Frame* pFrame)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	input_layer->Reshape(1, num_channels_, input_geometry_.height,
@@ -203,10 +232,10 @@ std::vector<vector<float> > _SSD::detect(const cv::Mat img)
 	/* Forward dimension change to all layers. */
 	net_->Reshape();
 
-	std::vector<cv::Mat> input_channels;
+	std::vector<cv::cuda::GpuMat> input_channels;
 	WrapInputLayer(&input_channels);
 
-	Preprocess(img, &input_channels);
+	Preprocess(*pFrame->getGMat(), &input_channels);
 
 	net_->Forward();
 
@@ -231,49 +260,49 @@ std::vector<vector<float> > _SSD::detect(const cv::Mat img)
 	return detections;
 }
 
-void _SSD::WrapInputLayer(std::vector<cv::Mat>* input_channels)
+void _SSD::WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels)
 {
 	Blob<float>* input_layer = net_->input_blobs()[0];
 
 	int width = input_layer->width();
 	int height = input_layer->height();
-	float* input_data = input_layer->mutable_cpu_data();
+	float* input_data = input_layer->mutable_gpu_data();
 	for (int i = 0; i < input_layer->channels(); ++i)
 	{
-		cv::Mat channel(height, width, CV_32FC1, input_data);
+		cv::cuda::GpuMat channel(height, width, CV_32FC1, input_data);
 		input_channels->push_back(channel);
 		input_data += width * height;
 	}
 }
 
-void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
+void _SSD::Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>* input_channels)
 {
 	/* Convert the input image to the input image format of the network. */
-	cv::Mat sample;
+	cv::cuda::GpuMat sample;
 	if (img.channels() == 3 && num_channels_ == 1)
-		cv::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
+		cv::cuda::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
 	else if (img.channels() == 4 && num_channels_ == 1)
-		cv::cvtColor(img, sample, cv::COLOR_BGRA2GRAY);
+		cv::cuda::cvtColor(img, sample, cv::COLOR_BGRA2GRAY);
 	else if (img.channels() == 4 && num_channels_ == 3)
-		cv::cvtColor(img, sample, cv::COLOR_BGRA2BGR);
+		cv::cuda::cvtColor(img, sample, cv::COLOR_BGRA2BGR);
 	else if (img.channels() == 1 && num_channels_ == 3)
-		cv::cvtColor(img, sample, cv::COLOR_GRAY2BGR);
+		cv::cuda::cvtColor(img, sample, cv::COLOR_GRAY2BGR);
 	else
 		sample = img;
 
-	cv::Mat sample_resized;
+	cv::cuda::GpuMat sample_resized;
 	if (sample.size() != input_geometry_)
-		cv::resize(sample, sample_resized, input_geometry_);
+		cv::cuda::resize(sample, sample_resized, input_geometry_);
 	else
 		sample_resized = sample;
 
-	cv::Mat sample_float;
+	cv::cuda::GpuMat sample_float;
 	if (num_channels_ == 3)
 		sample_resized.convertTo(sample_float, CV_32FC3);
 	else
 		sample_resized.convertTo(sample_float, CV_32FC1);
 
-	cv::Mat sample_normalized;
+	cv::cuda::GpuMat sample_normalized;
 //	cv::subtract(sample_float, mean_, sample_normalized);
 
 	sample_normalized = sample_float;
@@ -281,12 +310,16 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 	/* This operation will write the separate BGR planes directly to the
 	 * input layer of the network because it is wrapped by the cv::Mat
 	 * objects in input_channels. */
-	cv::split(sample_normalized, *input_channels);
+	cv::cuda::split(sample_normalized, *input_channels);
 
-	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
-			== net_->input_blobs()[0]->cpu_data())
-															<< "Input channels are not wrapping the input layer of the network.";
+//	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
+//			== net_->input_blobs()[0]->cpu_data())
+//		<< "Input channels are not wrapping the input layer of the network.";
 }
+
+
+
+
 
 
 bool _SSD::draw(Frame* pFrame, iVector4* pTextPos)

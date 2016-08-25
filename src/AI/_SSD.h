@@ -52,14 +52,18 @@ public:
 			const string& mean_file, const string& label_file);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
-	std::vector<vector<float> > detect(const cv::Mat img);
+	std::vector<vector<float> > detect(Frame* pFrame);
+
+
+//	std::vector<vector<float> > detect(const cv::Mat img);
 	bool start(void);
 
 private:
+
 	void detectFrame(void);
 	void SetMean(const string& mean_file);
-	void WrapInputLayer(std::vector<cv::Mat>* input_channels);
-	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
+	void WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels);
+	void Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>* input_channels);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -75,9 +79,12 @@ private:
 	cv::Size input_geometry_;
 	int num_channels_;
 	cv::Mat mean_;
-	Frame*	m_pFrame;
+	Frame* m_pFrame;
 
 	vector<string> labels_;
+	vector<int> safetyGrade_;
+	double m_confidence_threshold;
+
 
 public:
 	_Universe* m_pUniverse;

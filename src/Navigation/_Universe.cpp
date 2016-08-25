@@ -44,6 +44,7 @@ bool _Universe::init(JSON* pJson)
 	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
+
 	m_caffe.setup(caffeDir + modelFile, caffeDir + trainedFile,
 			caffeDir + meanFile, caffeDir + labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
@@ -269,13 +270,10 @@ OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect,
 	return NULL;
 }
 
-OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect,
-		vector<Point>* pContour)
+OBJECT* _Universe::addKnownObject(string name, int safetyGrade, Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
-//	if(!pMat)return NULL;
 	if (!pRect)
 		return NULL;
-//	if(pMat->empty())return NULL;
 	if (pRect->width <= 0)
 		return NULL;
 	if (pRect->height <= 0)
@@ -291,37 +289,45 @@ OBJECT* _Universe::addKnownObject(string name, Mat* pMat, Rect* pRect,
 	{
 		pObj = &m_pObjects[i];
 
-		//Record the index of vacancy
-		if (pObj->m_status == OBJ_VACANT)
+		if (pObj->m_status != OBJ_VACANT)
 		{
-			if (iVacant == m_numObj)
-			{
-				iVacant = i;
-				break;
-			}
+			//Compare if already existed
+			if (abs(pObj->m_boundBox.x - pRect->x) > m_disparity)continue;
+			if (abs(pObj->m_boundBox.y - pRect->y) > m_disparity)continue;
+			if (abs(pObj->m_boundBox.width - pRect->width) > m_disparity)continue;
+			if (abs(pObj->m_boundBox.height - pRect->height) > m_disparity)continue;
+
+			//Already existed
+			pObj->m_frameID = frameID;
+			pObj->m_name[0] = name;
+			pObj->m_safetyGrade = safetyGrade;
+			pObj->m_boundBox = *pRect;
+
+			return pObj;
 		}
+
+		//Record the index of vacancy
+		iVacant = i;
+		break;
 	}
 
-	if (iVacant < m_numObj)
-	{
-		//Change in status comes to the last
-		pObj = &m_pObjects[iVacant];
-		pObj->m_frameID = frameID;
-		pObj->m_name[0] = name;
-		pObj->m_boundBox = *pRect;
-//		pObj->m_Mat = Mat(pRect->width,pRect->height,pMat->type());
-//		pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(pObj->m_Mat);
-//		if(pContour)
-//		{
-//			pObj->m_vContours = *pContour;
-//		}
-//		pObj->m_status = OBJ_ADDED;
-		pObj->m_status = OBJ_COMPLETE;
+	if (iVacant >= m_numObj)return NULL;
 
-		return pObj;
-	}
+	//Change in status comes to the last
+	pObj = &m_pObjects[iVacant];
+	pObj->m_frameID = frameID;
+	pObj->m_name[0] = name;
+	pObj->m_safetyGrade = safetyGrade;
+	pObj->m_boundBox = *pRect;
+//	pObj->m_Mat = Mat(pRect->width,pRect->height,pMat->type());
+//	pMat->colRange(pRect->tl().x,pRect->br().x).rowRange(pRect->tl().y,pRect->br().y).copyTo(pObj->m_Mat);
+//	if(pContour)
+//	{
+//		pObj->m_vContours = *pContour;
+//	}
+	pObj->m_status = OBJ_COMPLETE;
 
-	return NULL;
+	return pObj;
 
 }
 
@@ -331,6 +337,7 @@ void _Universe::reset(void)
 	{
 		m_pObjects[i].m_frameID = 0;
 		m_pObjects[i].m_status = OBJ_VACANT;
+		m_pObjects[i].m_safetyGrade = 0;
 		m_pObjects[i].m_vContours.clear();
 
 		for (int j = 0; j < NUM_OBJECT_NAME; j++)
@@ -350,6 +357,8 @@ bool _Universe::draw(Frame* pFrame, iVector4* pTextPos)
 	int i;
 	OBJECT* pObj;
 	Mat* pMat = pFrame->getCMat();
+	Scalar color;
+	double thickness;
 
 	for (i = 0; i < m_numObj; i++)
 	{
@@ -360,12 +369,28 @@ bool _Universe::draw(Frame* pFrame, iVector4* pTextPos)
 			if (pObj->m_name[0].empty())
 				continue;
 
-			rectangle(*pMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(),
-					Scalar(0, 255, 0));
+			if(pObj->m_safetyGrade == 0)
+			{
+				color = Scalar(0,0,255);
+				thickness = 2;
+			}
+			else if(pObj->m_safetyGrade == 1)
+			{
+				color = Scalar(0,255,255);
+				thickness = 1;
+			}
+			else
+			{
+				color = Scalar(0,255,0);
+				thickness = 1;
+			}
+
+			rectangle(*pMat, pObj->m_boundBox.tl(), pObj->m_boundBox.br(), color, thickness);
+
 			putText(*pMat, pObj->m_name[0],
 					Point(pObj->m_boundBox.x + pObj->m_boundBox.width / 2,
 							pObj->m_boundBox.y + pObj->m_boundBox.height / 2),
-					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 2);
+					FONT_HERSHEY_SIMPLEX, 0.8, color, thickness);
 		}
 	}
 

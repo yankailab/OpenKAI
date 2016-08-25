@@ -175,14 +175,28 @@ bool Camera::openCamera(void)
 	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
+	//Acquire a frame to determine the actual frame size
+	while (!m_camera.read(m_frame));
+	int i;
+
+	m_width = m_frame.cols;
+	m_height = m_frame.rows;
+
 	if(m_bCrop)
 	{
+		i = m_frame.cols - m_cropBB.x;
+		if(m_cropBB.width > i)m_cropBB.width = i;
+
+		i = m_frame.rows - m_cropBB.y;
+		if(m_cropBB.height > i)m_cropBB.height = i;
+
 		m_width = m_cropBB.width;
 		m_height = m_cropBB.height;
 	}
 
 	m_centerH = m_width * 0.5;
 	m_centerV = m_height * 0.5;
+
 
 	return true;
 }

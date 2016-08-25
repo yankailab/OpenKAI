@@ -28,6 +28,7 @@ struct OBJECT
 
 	uint16_t m_status;
 	uint64_t m_frameID;
+	int	m_safetyGrade;
 
 	Mat m_Mat;
 	GpuMat m_GMat;
@@ -43,7 +44,7 @@ public:
 	virtual ~_Universe();
 
 	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
-	OBJECT* addKnownObject(string name, Mat* pMat, Rect* pRect, vector<Point>* pContour);
+	OBJECT* addKnownObject(string name, int safetyGrade, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
