@@ -85,7 +85,7 @@ bool Navigator::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pMavlink = new _MavlinkInterface();
+		m_pMavlink = new _Mavlink();
 		CHECK_FATAL(m_pMavlink->setup(pJson, "MAVLINK"));
 		m_pMavlink->start();
 	}

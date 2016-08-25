@@ -351,7 +351,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// One input byte is enough to return from read()
 	// Inter-character timer off
 	config.c_cc[VMIN] = 0;
-	config.c_cc[VTIME] = 10; // was 0
+	config.c_cc[VTIME] = 0; // was 0
 	// see: http://unixwiz.net/techtips/termios-vmin-vtime.html
 //	toptions.c_cc[VMIN] = 0;
 //	toptions.c_cc[VTIME] = 10;
@@ -449,24 +449,24 @@ int SerialPort::Read(char *buffer, unsigned int nbChar)
 {
 	int n;
 
-	pthread_mutex_lock(&m_portMutex);
+//	pthread_mutex_lock(&m_portMutex);
 
 	n = read(m_fd, buffer, nbChar);
 
-	pthread_mutex_unlock(&m_portMutex);
+//	pthread_mutex_unlock(&m_portMutex);
 
 	return n;
 }
 
 void SerialPort::Write(char *buffer, unsigned int nbChar)
 {
-	pthread_mutex_lock(&m_portMutex);
+//	pthread_mutex_lock(&m_portMutex);
 
 	write(m_fd, buffer, nbChar);
 	// Wait until all data has been written
 	tcdrain(m_fd);
 
-	pthread_mutex_unlock(&m_portMutex);
+//	pthread_mutex_unlock(&m_portMutex);
 
 }
 #endif

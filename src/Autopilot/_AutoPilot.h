@@ -4,8 +4,8 @@
 #include "../Camera/_Stream.h"
 #include "../Detector/_CascadeDetector.h"
 #include "../Detector/_MarkerDetector.h"
-#include "../Interface/_VehicleInterface.h"
-#include "../Interface/_MavlinkInterface.h"
+#include "../Interface/_Mavlink.h"
+#include "../Interface/_RC.h"
 #include "../Tracker/_ROITracker.h"
 
 #define NUM_RC_CHANNEL 8
@@ -73,8 +73,8 @@ public:
 	void sendHeartbeat(void);
 
 
-	void setVehicleInterface(_VehicleInterface* pVehicle);
-	void setMavlinkInterface(_MavlinkInterface* pMavlink);
+	void setVehicleInterface(_RC* pVehicle);
+	void setMavlinkInterface(_Mavlink* pMavlink);
 	int* getPWMOutput(void);
 	void resetAllControl(void);
 
@@ -87,8 +87,8 @@ public:
 	_ROITracker* 		m_pROITracker;
 	_MarkerDetector*	m_pMD;
 
-	_VehicleInterface* m_pVI;
-	_MavlinkInterface* m_pMavlink;
+	_RC* m_pVI;
+	_Mavlink* m_pMavlink;
 
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;

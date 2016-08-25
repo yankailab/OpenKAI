@@ -1,8 +1,8 @@
-#include "_VehicleInterface.h"
+#include "_RC.h"
 
 namespace kai
 {
-_VehicleInterface::_VehicleInterface()
+_RC::_RC()
 {
 	_ThreadBase();
 
@@ -12,7 +12,7 @@ _VehicleInterface::_VehicleInterface()
 	m_baudRate = 115200;
 }
 
-_VehicleInterface::~_VehicleInterface()
+_RC::~_RC()
 {
 	if (m_pSerialPort)
 	{
@@ -20,7 +20,7 @@ _VehicleInterface::~_VehicleInterface()
 	}
 }
 
-bool _VehicleInterface::setup(JSON* pJson, string serialName)
+bool _RC::setup(JSON* pJson, string serialName)
 {
 	if(!pJson)return false;
 
@@ -32,7 +32,7 @@ bool _VehicleInterface::setup(JSON* pJson, string serialName)
 	return true;
 }
 
-bool _VehicleInterface::open(void)
+bool _RC::open(void)
 {
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
@@ -54,7 +54,7 @@ bool _VehicleInterface::open(void)
 	return true;
 }
 
-void _VehicleInterface::close()
+void _RC::close()
 {
 //	disable_offboard_control();
 
@@ -69,7 +69,7 @@ void _VehicleInterface::close()
 // ------------------------------------------------------------------------------
 //   Read Messages
 // ------------------------------------------------------------------------------
-bool _VehicleInterface::readMessages()
+bool _RC::readMessages()
 {
 	unsigned char	inByte;
 	int		byteRead;
@@ -112,7 +112,7 @@ bool _VehicleInterface::readMessages()
 // ------------------------------------------------------------------------------
 //   Write Setpoint Message
 // ------------------------------------------------------------------------------
-void _VehicleInterface::rc_overide(int numChannel, int* pChannels)
+void _RC::rc_overide(int numChannel, int* pChannels)
 {
 	if (!m_bConnected)return;
 
@@ -136,7 +136,7 @@ void _VehicleInterface::rc_overide(int numChannel, int* pChannels)
 
 }
 
-void _VehicleInterface::controlMode(int mode)
+void _RC::controlMode(int mode)
 {
 	if (!m_bConnected)return;
 
@@ -150,7 +150,7 @@ void _VehicleInterface::controlMode(int mode)
 
 
 
-bool _VehicleInterface::start(void)
+bool _RC::start(void)
 {
 	//Start thread
 	m_bThreadON = true;
@@ -167,7 +167,7 @@ bool _VehicleInterface::start(void)
 	return true;
 }
 
-void _VehicleInterface::update(void)
+void _RC::update(void)
 {
 
 	while (m_bThreadON)

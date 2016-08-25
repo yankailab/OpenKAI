@@ -19,11 +19,11 @@ struct MESSAGE
 namespace kai
 {
 
-class _VehicleInterface: public _ThreadBase
+class _RC: public _ThreadBase
 {
 public:
-	_VehicleInterface();
-	~_VehicleInterface();
+	_RC();
+	~_RC();
 
 	bool setup(JSON* pJson, string serialName);
 	bool open(void);
@@ -50,7 +50,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_VehicleInterface *) This)->update();
+		((_RC *) This)->update();
 		return NULL;
 	}
 

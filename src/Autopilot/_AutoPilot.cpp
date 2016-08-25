@@ -359,7 +359,7 @@ void _AutoPilot::landingTarget(void)
 
 }
 
-void _AutoPilot::setVehicleInterface(_VehicleInterface* pVehicle)
+void _AutoPilot::setVehicleInterface(_RC* pVehicle)
 {
 	if (!pVehicle)
 		return;
@@ -367,7 +367,7 @@ void _AutoPilot::setVehicleInterface(_VehicleInterface* pVehicle)
 	m_pVI = pVehicle;
 }
 
-void _AutoPilot::setMavlinkInterface(_MavlinkInterface* pMavlink)
+void _AutoPilot::setMavlinkInterface(_Mavlink* pMavlink)
 {
 	if (!pMavlink)
 		return;

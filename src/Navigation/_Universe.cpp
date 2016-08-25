@@ -39,7 +39,7 @@ bool _Universe::init(JSON* pJson)
 	string meanFile;
 	string labelFile;
 
-	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
+/*	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
 	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
@@ -48,7 +48,7 @@ bool _Universe::init(JSON* pJson)
 	m_caffe.setup(caffeDir + modelFile, caffeDir + trainedFile,
 			caffeDir + meanFile, caffeDir + labelFile, NUM_DETECT_BATCH);
 	LOG(INFO)<<"Caffe Initialized";
-
+*/
 	CHECK_ERROR(pJson->getVal("UNIVERSE_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_POS_DISPARITY", &m_disparity));

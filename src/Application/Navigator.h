@@ -15,7 +15,7 @@
 #include "../AI/_FCN.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
-#include "../Interface/_MavlinkInterface.h"
+#include "../Interface/_Mavlink.h"
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
@@ -41,7 +41,7 @@ public:
 
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
-	_MavlinkInterface* m_pMavlink;
+	_Mavlink* m_pMavlink;
 	_CascadeDetector* m_pCascade;
 	_Flow* m_pFlow;
 	_ROITracker* m_pROITracker;

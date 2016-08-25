@@ -7,7 +7,6 @@
 #include "../IO/JSON.h"
 
 #define MAVLINK_DEBUG
-#define CLASSIFIER_DEBUG
 
 
 //Common include

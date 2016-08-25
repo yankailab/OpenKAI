@@ -67,7 +67,7 @@ bool VisualFollow::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pVlink = new _VehicleInterface();
+		m_pVlink = new _RC();
 		CHECK_FATAL(m_pVlink->setup(pJson, "MAVLINK"));
 		CHECK_INFO(m_pVlink->open());
 		m_pVlink->start();

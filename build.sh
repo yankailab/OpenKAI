@@ -1,6 +1,10 @@
-INCLUDES="-I/home/ubuntu/src/caffe/include -I/home/ubuntu/src/caffe/build/src -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/opencv3/include"
+INCLUDES="-I/home/ubuntu/src/caffe_ssd/caffe/include -I/home/ubuntu/src/caffe_ssd/caffe/build/src -I/usr/local/cuda/include -I/usr/local/include -I/usr/local/opencv3/include"
 OPTIONS="-O3 -w -Wall -c -fmessage-length=0 -MMD -MP"
-LINKERS="-L/usr/local/lib -L/usr/local/opencv3/lib -L/home/ubuntu/src/caffe/build/lib -L/home/ubuntu/src/caffe/build"
+LINKERS="-L/usr/local/lib -L/usr/local/opencv3/lib -L/home/ubuntu/src/caffe_ssd/caffe/build/lib -L/home/ubuntu/src/caffe_ssd/caffe/build"
+
+rm OpenKAI
+rm -rf build
+mkdir build
 
 g++ $INCLUDES $OPTIONS -MF"build/_Caffe.d" -MT"build/_Caffe.d" -o "build/_Caffe.o" "src/AI/_Caffe.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_FCN.d" -MT"build/_FCN.d" -o "build/_FCN.o" "src/AI/_FCN.cpp"
@@ -29,8 +33,8 @@ g++ $INCLUDES $OPTIONS -MF"build/_DepthDetector.d" -MT"build/_DepthDetector.d" -
 
 g++ $INCLUDES $OPTIONS -MF"build/_Flow.d" -MT"build/_Flow.d" -o "build/_Flow.o" "src/Vision/_Flow.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/_MavlinkInterface.d" -MT"build/_MavlinkInterface.d" -o "build/_MavlinkInterface.o" "src/Interface/_MavlinkInterface.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_VehicleInterface.d" -MT"build/_VehicleInterface.d" -o "build/_VehicleInterface.o" "src/Interface/_VehicleInterface.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Mavlink.d" -MT"build/_Mavlink.d" -o "build/_Mavlink.o" "src/Interface/_Mavlink.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_RC.d" -MT"build/_RC.d" -o "build/_RC.o" "src/Interface/_RC.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/FileIO.d" -MT"build/FileIO.d" -o "build/FileIO.o" "src/IO/FileIO.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/JSON.d" -MT"build/JSON.d" -o "build/JSON.o" "src/IO/JSON.cpp"
@@ -42,5 +46,5 @@ g++ $INCLUDES $OPTIONS -MF"build/_ROITracker.d" -MT"build/_ROITracker.d" -o "bui
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "OpenKAI" ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_MavlinkInterface.o ./build/_VehicleInterface.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
+g++ $LINKERS -o "OpenKAI" ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_Mavlink.o ./build/_RC.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
 

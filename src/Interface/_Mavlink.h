@@ -127,11 +127,11 @@ struct Mavlink_Messages
 namespace kai
 {
 
-class _MavlinkInterface: public _ThreadBase
+class _Mavlink: public _ThreadBase
 {
 public:
-	_MavlinkInterface();
-	~_MavlinkInterface();
+	_Mavlink();
+	~_Mavlink();
 
 	bool setup(JSON* pJson, string serialName);
 	void close(void);
@@ -188,7 +188,7 @@ public:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_MavlinkInterface *) This)->update();
+		((_Mavlink *) This)->update();
 		return NULL;
 	}
 

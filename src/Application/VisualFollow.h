@@ -14,8 +14,8 @@
 
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
-#include "../Interface/_MavlinkInterface.h"
-#include "../Interface/_VehicleInterface.h"
+#include "../Interface/_Mavlink.h"
+#include "../Interface/_RC.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
 #include "../Tracker/_ROITracker.h"
@@ -39,8 +39,8 @@ public:
 
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
-	_MavlinkInterface* m_pMavlink;
-	_VehicleInterface* m_pVlink;
+	_Mavlink* m_pMavlink;
+	_RC* m_pVlink;
 	_Flow* m_pDF;
 	_ROITracker* m_pROITracker;
 

@@ -1,10 +1,10 @@
 #include "../Utility/util.h"
-#include "_MavlinkInterface.h"
+#include "_Mavlink.h"
 
 namespace kai
 {
 
-_MavlinkInterface::_MavlinkInterface()
+_Mavlink::_Mavlink()
 {
 	_ThreadBase();
 
@@ -22,7 +22,7 @@ _MavlinkInterface::_MavlinkInterface()
 
 }
 
-_MavlinkInterface::~_MavlinkInterface()
+_Mavlink::~_Mavlink()
 {
 	if (m_pSerialPort)
 	{
@@ -30,7 +30,7 @@ _MavlinkInterface::~_MavlinkInterface()
 	}
 }
 
-bool _MavlinkInterface::setup(JSON* pJson, string serialName)
+bool _Mavlink::setup(JSON* pJson, string serialName)
 {
 	if(!pJson)return false;
 
@@ -57,7 +57,7 @@ bool _MavlinkInterface::setup(JSON* pJson, string serialName)
 	return true;
 }
 
-void _MavlinkInterface::close()
+void _Mavlink::close()
 {
 	if (m_pSerialPort)
 	{
@@ -68,7 +68,7 @@ void _MavlinkInterface::close()
 	printf("Serial port closed.\n");
 }
 
-void _MavlinkInterface::handleMessages()
+void _Mavlink::handleMessages()
 {
 	mavlink_message_t message;
 	int nMsgHandled;
@@ -227,7 +227,7 @@ void _MavlinkInterface::handleMessages()
 
 }
 
-bool _MavlinkInterface::readMessage(mavlink_message_t &message)
+bool _Mavlink::readMessage(mavlink_message_t &message)
 {
 	uint8_t cp;
 	mavlink_status_t status;
@@ -263,7 +263,7 @@ bool _MavlinkInterface::readMessage(mavlink_message_t &message)
 	return false;
 }
 
-int _MavlinkInterface::writeMessage(mavlink_message_t message)
+int _Mavlink::writeMessage(mavlink_message_t message)
 {
 	char buf[300];
 
@@ -276,7 +276,7 @@ int _MavlinkInterface::writeMessage(mavlink_message_t message)
 	return len;
 }
 
-bool _MavlinkInterface::start(void)
+bool _Mavlink::start(void)
 {
 	//Start thread
 	m_bThreadON = true;
@@ -293,7 +293,7 @@ bool _MavlinkInterface::start(void)
 	return true;
 }
 
-void _MavlinkInterface::update(void)
+void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -341,7 +341,7 @@ void _MavlinkInterface::update(void)
 
 }
 
-void _MavlinkInterface::sendHeartbeat(void)
+void _Mavlink::sendHeartbeat(void)
 {
 	mavlink_message_t message;
 	mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
@@ -349,7 +349,7 @@ void _MavlinkInterface::sendHeartbeat(void)
 	writeMessage(message);
 }
 
-void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
+void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 {
 	mavlink_message_t message;
 	mavlink_request_data_stream_t ds;
@@ -369,7 +369,7 @@ void _MavlinkInterface::requestDataStream(uint8_t stream_id, int rate)
 	return;
 }
 
-void _MavlinkInterface::landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y)
+void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y)
 {
 	mavlink_message_t message;
 	mavlink_landing_target_t ds;
@@ -393,7 +393,7 @@ void _MavlinkInterface::landing_target(uint8_t stream_id, uint8_t frame, float a
 	return;
 }
 
-void _MavlinkInterface::command_long_doSetMode(int mode)
+void _Mavlink::command_long_doSetMode(int mode)
 {
 	mavlink_message_t message;
 	mavlink_command_long_t ds;
@@ -416,7 +416,7 @@ void _MavlinkInterface::command_long_doSetMode(int mode)
 
 #define PUTTEXT(x,y,t) cv::putText(*pMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-bool _MavlinkInterface::draw(Frame* pFrame, iVector4* pTextPos)
+bool _Mavlink::draw(Frame* pFrame, iVector4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;
