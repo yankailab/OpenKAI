@@ -36,7 +36,7 @@ g++ $INCLUDES $OPTIONS -MF"build/FileIO.d" -MT"build/FileIO.d" -o "build/FileIO.
 g++ $INCLUDES $OPTIONS -MF"build/JSON.d" -MT"build/JSON.d" -o "build/JSON.o" "src/IO/JSON.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/SerialPort.d" -MT"build/SerialPort.d" -o "build/SerialPort.o" "src/IO/SerialPort.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/_Universe.d" -MT"build/_Universe.d" -o "build/_Universe.o" "src/IO/_Universe.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Universe.d" -MT"build/_Universe.d" -o "build/_Universe.o" "src/Navigation/_Universe.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_ROITracker.d" -MT"build/_ROITracker.d" -o "build/_ROITracker.o" "src/Tracker/_ROITracker.cpp"
 
