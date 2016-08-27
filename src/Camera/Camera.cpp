@@ -1,5 +1,5 @@
 /*
- * CamInput.cpp
+ * Camera.cpp
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai

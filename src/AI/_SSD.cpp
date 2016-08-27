@@ -15,6 +15,7 @@ _SSD::_SSD()
 	m_pUniverse = NULL;
 	m_pCamStream = NULL;
 	m_pFrame = NULL;
+	m_frameID = 0;
 
 	m_confidence_threshold = 0.1;
 }
@@ -31,7 +32,9 @@ bool _SSD::init(JSON* pJson, string ssdName)
 	string trainedFile;
 	string meanFile;
 	string labelFile;
+	string presetDir = "";
 
+	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
 	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
 	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MODEL_FILE", &modelFile));
 	CHECK_FATAL(pJson->getVal("CAFFE_SSD_TRAINED_FILE", &trainedFile));
@@ -40,8 +43,7 @@ bool _SSD::init(JSON* pJson, string ssdName)
 
 	CHECK_INFO(pJson->getVal("CAFFE_SSD_MIN_CONFIDENCE", &m_confidence_threshold));
 
-	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
-			caffeDir + labelFile);
+	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
 
 	double FPS = DEFAULT_FPS;
@@ -146,7 +148,8 @@ void _SSD::detectFrame(void)
 	string name;
 	Rect bb;
 	Frame* pFrame;
-	int iClass;
+	unsigned int iClass;
+	unsigned int i;
 
 	if (m_pCamStream == NULL)
 		return;
@@ -158,20 +161,16 @@ void _SSD::detectFrame(void)
 	if (!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
 
-//	Mat* pImg = m_pFrame->getCMat();
-//	std::vector<vector<float> > detections = detect(*pImg);
-
 	cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
 	std::vector<vector<float> > detections = detect(pFrame);
 
 	/* Print the detection results. */
-	for (int i = 0; i < detections.size(); ++i)
+	for (i = 0; i < detections.size(); ++i)
 	{
 		const vector<float>& d = detections[i];
 		// Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
 //		CHECK_EQ(d.size(), 7);
-
-		float size = d.size();
+//		float size = d.size();
 		const float score = d[2];
 
 		if (score < m_confidence_threshold)continue;

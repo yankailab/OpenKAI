@@ -7,7 +7,7 @@
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
 #include "../Utility/util.h"
-#include "../Camera/_Stream.h"
+#include "../Stream/_Stream.h"
 
 using namespace cv;
 using namespace cv::cuda;

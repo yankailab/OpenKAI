@@ -15,6 +15,9 @@ _AutoPilot::_AutoPilot()
 	m_pROITracker = NULL;
 	m_pMD = NULL;
 
+	m_lastHeartbeat = 0;
+	m_iHeartbeat = 0;
+
 }
 
 _AutoPilot::~_AutoPilot()

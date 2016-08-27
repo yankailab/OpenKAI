@@ -27,6 +27,8 @@ bool CamStereo::init(int disparity)
 	m_pBM = cuda::createStereoBM(m_disparity);
 	m_pBP = cuda::createStereoBeliefPropagation(m_disparity);
 	m_pCSBP = cv::cuda::createStereoConstantSpaceBP(m_disparity);
+
+	return true;
 }
 
 void CamStereo::detect(Frame* pLeft, Frame* pRight, Frame* pDepth)

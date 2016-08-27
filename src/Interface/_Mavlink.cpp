@@ -12,6 +12,10 @@ _Mavlink::_Mavlink()
 	m_sportName = "";
 	m_pSerialPort = NULL;
 	m_baudRate = 115200;
+	m_systemID = 1;
+	m_componentID = MAV_COMP_ID_PATHPLANNER;
+	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
+	m_targetComponentID = 0;
 
 	current_messages.attitude.pitch = 0;
 	current_messages.attitude.roll = 0;

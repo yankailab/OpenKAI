@@ -16,6 +16,8 @@ AppBase::AppBase()
 	m_bShowScreen = 1;
 	m_bFullScreen = 0;
 	m_waitKey = 50;
+	m_bRun = true;
+	m_key = 0;
 
 
 }

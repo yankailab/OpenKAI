@@ -1,12 +1,12 @@
 /*
- * CamInput.h
+ * CamBase.h
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_CAMERA_H_
-#define SRC_CAMERA_H_
+#ifndef SRC_CAMBASE_H_
+#define SRC_CAMBASE_H_
 
 #include "stdio.h"
 #include "../Base/common.h"
@@ -19,34 +19,32 @@
 namespace kai
 {
 
-class Camera {
+class CamBase
+{
 public:
-	Camera();
-	virtual ~Camera();
+	CamBase();
+	virtual ~CamBase();
 
-	bool setup(JSON* pJson, string camName);
-
-	void setCameraID(int);
+	bool setup(JSON* pJson, string name);
 	bool openCamera(void);
 
 	GpuMat* readFrame(void);
 	GpuMat* getDepthFrame(void);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
-	int	getType(void);
 
 public:
 
-#ifdef USE_ZED
-	sl::zed::Camera* m_pZed;
-	sl::zed::SENSING_MODE m_zedMode;
-	int	m_zedResolution;
-	double m_zedMinDist;
-#endif
+//#ifdef USE_ZED
+//	sl::zed::Camera* m_pZed;
+//	sl::zed::SENSING_MODE m_zedMode;
+//	int m_zedResolution;
+//	double m_zedMinDist;
+//#endif
 
-	int m_camType;
-	int m_camDeviceID;
-	VideoCapture m_camera;
+//	int m_camType;
+//	int m_camDeviceID;
+//	VideoCapture m_camera;
 
 	double m_width;
 	double m_height;
@@ -70,8 +68,8 @@ public:
 	double m_rotPrev;
 	double m_isoScale;
 
-	int		m_bCrop;
-	Rect	m_cropBB;
+	int m_bCrop;
+	Rect m_cropBB;
 
 //private:
 public:
@@ -84,4 +82,4 @@ public:
 
 } /* namespace kai */
 
-#endif /* SRC_CAMINPUT_H_ */
+#endif /* SRC_CAMBASE_H_ */

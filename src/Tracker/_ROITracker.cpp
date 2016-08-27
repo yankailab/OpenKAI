@@ -20,6 +20,7 @@ _ROITracker::_ROITracker()
 
 	m_pCamStream = NULL;
 	m_pFrame = NULL;
+	m_bTracking = false;
 }
 
 _ROITracker::~_ROITracker()

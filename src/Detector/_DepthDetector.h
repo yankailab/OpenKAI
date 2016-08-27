@@ -10,7 +10,7 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "DetectorBase.h"
-#include "../Camera/_Stream.h"
+#include "../Stream/_Stream.h"
 #include "../Vision/_Flow.h"
 
 using namespace cv;

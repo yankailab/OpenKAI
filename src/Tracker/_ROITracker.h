@@ -14,8 +14,8 @@
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
-#include "../Camera/_Stream.h"
-#include "../Camera/FrameGroup.h"
+#include "../Stream/_Stream.h"
+#include "../Stream/FrameGroup.h"
 
 using namespace cv;
 using namespace cv::cuda;

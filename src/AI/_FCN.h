@@ -28,8 +28,8 @@
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
-#include "../Camera/_Stream.h"
-#include "../Camera/Frame.h"
+#include "../Stream/_Stream.h"
+#include "../Stream/Frame.h"
 
 namespace kai
 {

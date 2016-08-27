@@ -25,9 +25,9 @@ public:
 	double input(double v);
 
 private:
-	unsigned int m_iTraj;
-	unsigned int m_iMedian;
-	unsigned int m_windowLength;
+	int m_iTraj;
+	int m_iMedian;
+	int m_windowLength;
 	double m_trajectory[FILTER_BUF];
 
 };

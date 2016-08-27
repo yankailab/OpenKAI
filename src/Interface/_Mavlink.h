@@ -4,7 +4,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../include/mavlink/common/mavlink.h"
 #include "../IO/SerialPort.h"
-#include "../Camera/Frame.h"
+#include "../Stream/Frame.h"
 
 #include <signal.h>
 #include <time.h>

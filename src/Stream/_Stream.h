@@ -12,7 +12,7 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 
-#include "Camera.h"
+#include "../Camera/Camera.h"
 #include "Frame.h"
 
 namespace kai

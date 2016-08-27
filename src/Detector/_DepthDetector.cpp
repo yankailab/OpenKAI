@@ -72,7 +72,7 @@ void _DepthDetector::update(void)
 
 void _DepthDetector::detect(void)
 {
-	int i, j;
+	int i;
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
 	Rect bb;

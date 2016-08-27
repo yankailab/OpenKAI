@@ -26,7 +26,7 @@
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Navigation/_Universe.h"
-#include "../Camera/_Stream.h"
+#include "../Stream/_Stream.h"
 
 namespace kai
 {

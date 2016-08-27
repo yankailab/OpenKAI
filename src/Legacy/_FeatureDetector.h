@@ -5,10 +5,10 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_Stream.h"
+#include "../Stream/_Stream.h"
 #include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"
-#include "../Camera/FrameGroup.h"
+#include "../Stream/FrameGroup.h"
 
 using namespace cv;
 using namespace cv::cuda;

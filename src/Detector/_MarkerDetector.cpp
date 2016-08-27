@@ -104,7 +104,7 @@ void _MarkerDetector::update(void)
 
 void _MarkerDetector::detectCircleFill(void)
 {
-	int i,j;
+	int i;
 	Point2f center;
 	float radius;
 	vector< vector< Point > > contours;

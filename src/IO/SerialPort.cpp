@@ -385,7 +385,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B38400) < 0
 				|| cfsetospeed(&config, B38400) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n");
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -393,7 +393,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			printf(	"ERROR: Could not set desired baud rate of %d Baud\n");
+			printf(	"ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -401,7 +401,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			printf(	"ERROR: Could not set desired baud rate of %d Baud\n");
+			printf(	"ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -412,7 +412,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B460800) < 0
 				|| cfsetospeed(&config, B460800) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n");
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -420,12 +420,12 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B921600) < 0
 				|| cfsetospeed(&config, B921600) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n");
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
 	default:
-		printf("ERROR: Desired baud rate %d could not be set, aborting.\n");
+		printf("ERROR: Desired baud rate %d could not be set, aborting.\n", baud);
 		return false;
 		break;
 	}
@@ -437,7 +437,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 
 	if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
 	{
-		printf("ERROR: could not set configuration of fd %d\n");
+		printf("ERROR: could not set configuration of fd %d\n", m_fd);
 		return false;
 	}
 

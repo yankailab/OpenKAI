@@ -69,12 +69,11 @@ void _BgFgDetector::update(void)
 
 void _BgFgDetector::detect(void)
 {
-	int i,j,k;
+	int i;
 	Point2f center;
 	float radius;
 	vector< vector< Point > > contours;
 	vector<Vec3f> circles;
-	fVector4 v4tmp;
 	UMat matThresh;
 	Frame* pRGB;
 

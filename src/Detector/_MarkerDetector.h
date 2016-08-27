@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "../Camera/_Stream.h"
+#include "../Stream/_Stream.h"
 #include "../Base/_ThreadBase.h"
 #include "DetectorBase.h"
 
