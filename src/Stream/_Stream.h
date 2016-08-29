@@ -13,6 +13,7 @@
 #include "../Base/_ThreadBase.h"
 
 #include "../Camera/Camera.h"
+#include "../Camera/ZED.h"
 #include "Frame.h"
 
 namespace kai
@@ -33,7 +34,7 @@ public:
 	Frame* getGrayFrame(void);
 	Frame* getHSVFrame(void);
 
-	Camera* getCameraInput(void);
+	CamBase* getCameraInput(void);
 
 public:
 	bool		m_bHSV;
@@ -41,7 +42,7 @@ public:
 
 private:
 	string			m_camName;
-	Camera*			m_pCamInput;
+	CamBase*			m_pCamera;
 
 	Frame*			m_pCamFrame;
 	Frame*			m_pGrayFrame;

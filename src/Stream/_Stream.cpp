@@ -15,7 +15,7 @@ _Stream::_Stream()
 	_ThreadBase();
 
 	m_camName = "";
-	m_pCamInput = new Camera();
+	m_pCamera = NULL;//new Camera();
 	m_pCamFrame = new Frame();
 	m_pGrayFrame = new Frame();
 	m_pHSVframe = new Frame();
@@ -26,7 +26,7 @@ _Stream::_Stream()
 
 _Stream::~_Stream()
 {
-	RELEASE(m_pCamInput);
+	RELEASE(m_pCamera);
 	RELEASE(m_pCamFrame);
 	RELEASE(m_pGrayFrame);
 	RELEASE(m_pHSVframe);
@@ -39,10 +39,26 @@ bool _Stream::init(JSON* pJson, string camName)
 	double FPS = DEFAULT_FPS;
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
-	CHECK_ERROR(m_pCamInput->setup(pJson, camName));
+
+	int camType;
+	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_TYPE", &camType));
+
+	switch (camType)
+	{
+	case CAM_GENERAL:
+		m_pCamera = new Camera();
+		break;
+	case CAM_ZED:
+		m_pCamera = new ZED();
+		break;
+	default:
+		return false;
+		break;
+	}
+
+	CHECK_ERROR(m_pCamera->setup(pJson, camName));
 
 	m_bThreadON = false;
-
 	this->setTargetFPS(FPS);
 
 	return true;
@@ -51,7 +67,7 @@ bool _Stream::init(JSON* pJson, string camName)
 bool _Stream::start(void)
 {
 	//Open camera
-	CHECK_ERROR(m_pCamInput->openCamera());
+	CHECK_ERROR(m_pCamera->openCamera());
 
 	//Start thread
 	m_bThreadON = true;
@@ -72,7 +88,7 @@ void _Stream::update(void)
 		this->autoFPSfrom();
 
 		//Update camera frame
-		m_pCamFrame->update(m_pCamInput->readFrame());
+		m_pCamFrame->update(m_pCamera->readFrame());
 
 		//Update Gray frame
 		if(m_bGray)
@@ -93,7 +109,7 @@ void _Stream::update(void)
 
 bool _Stream::complete(void)
 {
-	m_pCamInput->m_camera.release();
+	m_pCamera->release();
 
 	return true;
 }
@@ -113,9 +129,9 @@ Frame* _Stream::getHSVFrame(void)
 	return m_pHSVframe;
 }
 
-Camera* _Stream::getCameraInput(void)
+CamBase* _Stream::getCameraInput(void)
 {
-	return m_pCamInput;
+	return m_pCamera;
 }
 
 bool _Stream::draw(Frame* pFrame, iVector4* pTextPos)

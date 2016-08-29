@@ -25,26 +25,17 @@ public:
 	CamBase();
 	virtual ~CamBase();
 
-	bool setup(JSON* pJson, string name);
-	bool openCamera(void);
-
-	GpuMat* readFrame(void);
-	GpuMat* getDepthFrame(void);
+	virtual bool setup(JSON* pJson, string name);
+	virtual bool openCamera(void);
+	virtual GpuMat* readFrame(void);
+	virtual GpuMat* getDepthFrame(void);
+	virtual void release(void);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
+	int getType(void);
 
 public:
-
-//#ifdef USE_ZED
-//	sl::zed::Camera* m_pZed;
-//	sl::zed::SENSING_MODE m_zedMode;
-//	int m_zedResolution;
-//	double m_zedMinDist;
-//#endif
-
-//	int m_camType;
-//	int m_camDeviceID;
-//	VideoCapture m_camera;
+	int m_type;
 
 	double m_width;
 	double m_height;
@@ -57,8 +48,10 @@ public:
 	Mat m_frame;
 	Mat m_cameraMat;
 	Mat m_distCoeffs;
+
 	GpuMat m_Gmap1;
 	GpuMat m_Gmap2;
+
 	bool m_bCalibration;
 	bool m_bFisheye;
 
@@ -71,7 +64,6 @@ public:
 	int m_bCrop;
 	Rect m_cropBB;
 
-//private:
 public:
 	GpuMat m_Gframe;
 	GpuMat m_Gframe2;

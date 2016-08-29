@@ -12,12 +12,10 @@ namespace kai
 
 CamBase::CamBase()
 {
-//	m_camType = CAM_GENERAL;
 	m_width = 0;
 	m_height = 0;
 	m_centerH = 0;
 	m_centerV = 0;
-//	m_camDeviceID = 0;
 	m_bCalibration = false;
 	m_bGimbal = false;
 	m_bFisheye = false;
@@ -27,11 +25,6 @@ CamBase::CamBase()
 	m_angleH = 0;
 	m_angleV = 0;
 	m_bCrop = 0;
-
-#ifdef USE_ZED
-	m_zedResolution = (int)sl::zed::VGA;
-	m_zedMinDist = 1000;
-#endif
 }
 
 CamBase::~CamBase()
@@ -45,7 +38,6 @@ bool CamBase::setup(JSON* pJson, string name)
 
 	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
 
-//	CHECK_FATAL(pJson->getVal("CAM_" + name + "_ID", &m_camDeviceID));
 	CHECK_FATAL(pJson->getVal("CAM_" + name + "_WIDTH", &m_width));
 	CHECK_FATAL(pJson->getVal("CAM_" + name + "_HEIGHT", &m_height));
 	CHECK_FATAL(pJson->getVal("CAM_" + name + "_ANGLE_V", &m_angleV));
@@ -55,12 +47,6 @@ bool CamBase::setup(JSON* pJson, string name)
 	CHECK_INFO(pJson->getVal("CAM_" + name + "_CALIB", &m_bCalibration));
 	CHECK_INFO(pJson->getVal("CAM_" + name + "_GIMBAL", &m_bGimbal));
 	CHECK_INFO(pJson->getVal("CAM_" + name + "_FISHEYE", &m_bFisheye));
-//	CHECK_INFO(pJson->getVal("CAM_" + name + "_TYPE", &m_camType));
-
-#ifdef USE_ZED
-	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION", &m_zedResolution));
-	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE", &m_zedMinDist));
-#endif
 
 	CHECK_INFO(pJson->getVal("CAM_" + name + "_CROP", &m_bCrop));
 	if(m_bCrop!=0)
@@ -126,6 +112,25 @@ bool CamBase::setup(JSON* pJson, string name)
 	return true;
 }
 
+bool CamBase::openCamera(void)
+{
+	return false;
+}
+
+GpuMat* CamBase::readFrame(void)
+{
+	return NULL;
+}
+
+GpuMat* CamBase::getDepthFrame(void)
+{
+	return NULL;
+}
+
+void CamBase::release(void)
+{
+
+}
 
 void CamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
@@ -137,5 +142,11 @@ void CamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 	//TODO: add rot estimation
 
 }
+
+int CamBase::getType(void)
+{
+	return m_type;
+}
+
 
 } /* namespace kai */

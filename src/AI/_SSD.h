@@ -65,6 +65,9 @@ private:
 	void WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels);
 	void Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>* input_channels);
 
+	void WrapInputLayer(std::vector<cv::Mat>* input_channels);
+	void Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels);
+
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

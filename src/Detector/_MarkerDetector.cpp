@@ -220,7 +220,7 @@ void _MarkerDetector::detectCircleHough(void)
 
 bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
 {
-	Camera*	pCam;
+	CamBase* pCam;
 
 	if(pCenter==NULL)return false;
 	if(m_pCamStream==NULL)return false;

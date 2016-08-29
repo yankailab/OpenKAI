@@ -44,7 +44,7 @@ public:
 	Frame*		m_pDepth;
 	uint64_t	m_camFrameID;
 	_Stream*	m_pCamStream;
-	Camera*		m_pCam;
+	CamBase*	m_pCam;
 	_Flow*		m_pFlow;
 
 	Mat			m_Mat;

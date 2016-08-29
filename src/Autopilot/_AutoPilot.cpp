@@ -292,7 +292,7 @@ void _AutoPilot::camROILock(void)
 
 void _AutoPilot::landingTarget(void)
 {
-	Camera* pCamInput;
+	CamBase* pCamInput;
 	fVector3 markerCenter;
 
 	if (m_pMD == NULL)

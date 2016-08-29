@@ -162,7 +162,7 @@ void _SSD::detectFrame(void)
 	m_pFrame->update(pFrame);
 
 	cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
-	std::vector<vector<float> > detections = detect(pFrame);
+	std::vector<vector<float> > detections = detect(m_pFrame);
 
 	/* Print the detection results. */
 	for (i = 0; i < detections.size(); ++i)
@@ -225,16 +225,23 @@ void _SSD::SetMean(const string& mean_file)
 
 std::vector<vector<float> > _SSD::detect(Frame* pFrame)
 {
+	vector<vector<float> > detections;
+
+	if(pFrame==NULL)return detections;
+	if(pFrame->empty())return detections;
+
 	Blob<float>* input_layer = net_->input_blobs()[0];
-	input_layer->Reshape(1, num_channels_, input_geometry_.height,
-			input_geometry_.width);
+	input_layer->Reshape(1, num_channels_, input_geometry_.height, input_geometry_.width);
 	/* Forward dimension change to all layers. */
 	net_->Reshape();
 
 	std::vector<cv::cuda::GpuMat> input_channels;
 	WrapInputLayer(&input_channels);
-
 	Preprocess(*pFrame->getGMat(), &input_channels);
+
+//	std::vector<cv::Mat> input_channels;
+//	WrapInputLayer(&input_channels);
+//	Preprocess(*pFrame->getCMat(), &input_channels);
 
 	net_->Forward();
 
@@ -242,7 +249,6 @@ std::vector<vector<float> > _SSD::detect(Frame* pFrame)
 	Blob<float>* result_blob = net_->output_blobs()[0];
 	const float* result = result_blob->cpu_data();
 	const int num_det = result_blob->height();
-	vector<vector<float> > detections;
 	for (int k = 0; k < num_det; ++k)
 	{
 		if (result[0] == -1)
@@ -316,6 +322,62 @@ void _SSD::Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>
 //		<< "Input channels are not wrapping the input layer of the network.";
 }
 
+void _SSD::WrapInputLayer(std::vector<cv::Mat>* input_channels)
+{
+	Blob<float>* input_layer = net_->input_blobs()[0];
+
+	int width = input_layer->width();
+	int height = input_layer->height();
+	float* input_data = input_layer->mutable_cpu_data();
+	for (int i = 0; i < input_layer->channels(); ++i)
+	{
+		cv::Mat channel(height, width, CV_32FC1, input_data);
+		input_channels->push_back(channel);
+		input_data += width * height;
+	}
+}
+
+void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
+{
+	/* Convert the input image to the input image format of the network. */
+	cv::Mat sample;
+	if (img.channels() == 3 && num_channels_ == 1)
+		cv::cvtColor(img, sample, cv::COLOR_BGR2GRAY);
+	else if (img.channels() == 4 && num_channels_ == 1)
+		cv::cvtColor(img, sample, cv::COLOR_BGRA2GRAY);
+	else if (img.channels() == 4 && num_channels_ == 3)
+		cv::cvtColor(img, sample, cv::COLOR_BGRA2BGR);
+	else if (img.channels() == 1 && num_channels_ == 3)
+		cv::cvtColor(img, sample, cv::COLOR_GRAY2BGR);
+	else
+		sample = img;
+
+	cv::Mat sample_resized;
+	if (sample.size() != input_geometry_)
+		cv::resize(sample, sample_resized, input_geometry_);
+	else
+		sample_resized = sample;
+
+	cv::Mat sample_float;
+	if (num_channels_ == 3)
+		sample_resized.convertTo(sample_float, CV_32FC3);
+	else
+		sample_resized.convertTo(sample_float, CV_32FC1);
+
+	cv::Mat sample_normalized;
+//	cv::subtract(sample_float, mean_, sample_normalized);
+
+	sample_normalized = sample_float;
+
+	/* This operation will write the separate BGR planes directly to the
+	 * input layer of the network because it is wrapped by the cv::Mat
+	 * objects in input_channels. */
+	cv::split(sample_normalized, *input_channels);
+
+//	CHECK(reinterpret_cast<float*>(input_channels->at(0).data)
+//			== net_->input_blobs()[0]->cpu_data())
+//		<< "Input channels are not wrapping the input layer of the network.";
+}
 
 
 

@@ -1,12 +1,12 @@
 /*
- * CamInput.h
+ * ZED.h
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_CAMERA_H_
-#define SRC_CAMERA_H_
+#ifndef SRC_ZED_H_
+#define SRC_ZED_H_
 
 #include "stdio.h"
 #include "../Base/common.h"
@@ -17,27 +17,26 @@
 namespace kai
 {
 
-class Camera: public CamBase
+class ZED : public CamBase
 {
 public:
-	Camera();
-	virtual ~Camera();
+	ZED();
+	virtual ~ZED();
 
-	bool setup(JSON* pJson, string camName);
+	bool setup(JSON* pJson, string name);
 	bool openCamera(void);
 	GpuMat* readFrame(void);
 	GpuMat* getDepthFrame(void);
 	void release(void);
 
-	void setCameraID(int);
-
 public:
-	int m_camType;
-	int m_camDeviceID;
-	VideoCapture m_camera;
+	sl::zed::Camera* m_pZed;
+	sl::zed::SENSING_MODE m_zedMode;
+	int m_zedResolution;
+	double m_zedMinDist;
 
 };
 
 } /* namespace kai */
 
-#endif /* SRC_CAMERA_H_ */
+#endif /* SRC_CAMINPUT_H_ */
