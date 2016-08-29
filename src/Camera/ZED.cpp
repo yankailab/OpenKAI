@@ -62,6 +62,8 @@ bool ZED::openCamera(void)
 		return false;
 	}
 
+//	m_pZed->setFPS(30);
+
 	// Initialize color image and depth
 	m_width = m_pZed->getImageSize().width;
 	m_height = m_pZed->getImageSize().height;

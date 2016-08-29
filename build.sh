@@ -20,10 +20,13 @@ g++ $INCLUDES $OPTIONS -MF"build/_AutoPilot.d" -MT"build/_AutoPilot.d" -o "build
 
 g++ $INCLUDES $OPTIONS -MF"build/_ThreadBase.d" -MT"build/_ThreadBase.d" -o "build/_ThreadBase.o" "src/Base/_ThreadBase.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/_Stream.d" -MT"build/_Stream.d" -o "build/_Stream.o" "src/Camera/_Stream.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/Frame.d" -MT"build/Frame.d" -o "build/Frame.o" "src/Camera/Frame.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/CamBase.d" -MT"build/CamBase.d" -o "build/CamBase.o" "src/Camera/CamBase.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/Camera.d" -MT"build/Camera.d" -o "build/Camera.o" "src/Camera/Camera.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/FrameGroup.d" -MT"build/FrameGroup.d" -o "build/FrameGroup.o" "src/Camera/FrameGroup.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/ZED.d" -MT"build/ZED.d" -o "build/ZED.o" "src/Camera/ZED.cpp"
+
+g++ $INCLUDES $OPTIONS -MF"build/_Stream.d" -MT"build/_Stream.d" -o "build/_Stream.o" "src/Stream/_Stream.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/Frame.d" -MT"build/Frame.d" -o "build/Frame.o" "src/Stream/Frame.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/FrameGroup.d" -MT"build/FrameGroup.d" -o "build/FrameGroup.o" "src/Stream/FrameGroup.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_BgFgDetector.d" -MT"build/_BgFgDetector.d" -o "build/_BgFgDetector.o" "src/Detector/_BgFgDetector.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/_CascadeDetector.d" -MT"build/_CascadeDetector.d" -o "build/_CascadeDetector.o" "src/Detector/_CascadeDetector.cpp"
@@ -46,5 +49,5 @@ g++ $INCLUDES $OPTIONS -MF"build/_ROITracker.d" -MT"build/_ROITracker.d" -o "bui
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "OpenKAI" ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_Mavlink.o ./build/_RC.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
+g++ $LINKERS -o "OpenKAI" ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/CamBase.o ./build/ZED.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_Mavlink.o ./build/_RC.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
 
