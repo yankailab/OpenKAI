@@ -34,6 +34,7 @@ public:
 	sl::zed::SENSING_MODE m_zedMode;
 	int m_zedResolution;
 	double m_zedMinDist;
+	int m_zedFPS;
 
 };
 

@@ -17,6 +17,7 @@ ZED::ZED()
 	m_zedMinDist = 1000;
 	m_pZed = NULL;
 	m_type = CAM_ZED;
+	m_zedFPS = DEFAULT_FPS;
 }
 
 ZED::~ZED()
@@ -34,6 +35,7 @@ bool ZED::setup(JSON* pJson, string camName)
 	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION",&m_zedResolution));
 	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE",&m_zedMinDist));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &m_zedFPS));
 
 	return true;
 }
@@ -58,7 +60,7 @@ bool ZED::openCamera(void)
 		return false;
 	}
 
-//	m_pZed->setFPS(30);
+	m_pZed->setFPS(m_zedFPS);
 
 	// Initialize color image and depth
 	m_width = m_pZed->getImageSize().width;

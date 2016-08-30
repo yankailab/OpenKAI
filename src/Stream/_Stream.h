@@ -42,11 +42,13 @@ public:
 
 private:
 	string			m_camName;
-	CamBase*			m_pCamera;
+	CamBase*		m_pCamera;
 
 	Frame*			m_pCamFrame;
 	Frame*			m_pGrayFrame;
 	Frame*			m_pHSVframe;
+
+	int				m_showDepth;
 
 private:
 	void update(void);

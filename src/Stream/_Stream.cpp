@@ -19,6 +19,7 @@ _Stream::_Stream()
 	m_pCamFrame = new Frame();
 	m_pGrayFrame = new Frame();
 	m_pHSVframe = new Frame();
+	m_showDepth = 0;
 
 	m_bGray = false;
 	m_bHSV = false;
@@ -37,10 +38,11 @@ bool _Stream::init(JSON* pJson, string camName)
 	if(!pJson)return false;
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
-
 	int camType;
+
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
+	CHECK_INFO(pJson->getVal("CAM_"+camName+"_SHOWDEPTH", &m_showDepth));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_TYPE", &camType));
 
 	switch (camType)
@@ -141,8 +143,15 @@ bool _Stream::draw(Frame* pFrame, iVector4* pTextPos)
 
 	if(m_pCamFrame->empty())return false;
 
-	pFrame->update(m_pCamFrame);
-//	pFrame->update(m_pCamera->getDepthFrame());
+	if(m_showDepth==0)
+	{
+		pFrame->update(m_pCamFrame);
+	}
+	else
+	{
+		pFrame->update(m_pCamera->getDepthFrame());
+	}
+
 	putText(*pFrame->getCMat(), "Camera FPS: " + f2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
