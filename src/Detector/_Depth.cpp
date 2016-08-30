@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#include "_DepthDetector.h"
+#include "_Depth.h"
 
 namespace kai
 {
-_DepthDetector::_DepthDetector()
+_Depth::_Depth()
 {
 	_ThreadBase();
 	DetectorBase();
@@ -22,11 +22,11 @@ _DepthDetector::_DepthDetector()
 	m_pCamStream = NULL;
 }
 
-_DepthDetector::~_DepthDetector()
+_Depth::~_Depth()
 {
 }
 
-bool _DepthDetector::init(JSON* pJson, string camName)
+bool _Depth::init(JSON* pJson, string camName)
 {
 	double FPS = DEFAULT_FPS;
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
@@ -41,7 +41,7 @@ bool _DepthDetector::init(JSON* pJson, string camName)
 	return true;
 }
 
-bool _DepthDetector::start(void)
+bool _Depth::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -57,7 +57,7 @@ bool _DepthDetector::start(void)
 	return true;
 }
 
-void _DepthDetector::update(void)
+void _Depth::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -70,7 +70,7 @@ void _DepthDetector::update(void)
 
 }
 
-void _DepthDetector::detect(void)
+void _Depth::detect(void)
 {
 	int i;
 	vector<vector<Point> > contours;

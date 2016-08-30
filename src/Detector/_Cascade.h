@@ -26,11 +26,11 @@ struct CASCADE_OBJECT
 	Rect			m_boundBox;
 };
 
-class _CascadeDetector: public DetectorBase, public _ThreadBase
+class _Cascade: public DetectorBase, public _ThreadBase
 {
 public:
-	_CascadeDetector();
-	~_CascadeDetector();
+	_Cascade();
+	~_Cascade();
 
 	bool init(string name, JSON* pJson);
 	bool start(void);
@@ -45,7 +45,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_CascadeDetector *) This)->update();
+		((_Cascade*) This)->update();
 		return NULL;
 	}
 

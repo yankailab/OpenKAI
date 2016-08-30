@@ -25,11 +25,11 @@
 namespace kai
 {
 
-class _MarkerDetector : public DetectorBase, public _ThreadBase
+class _Bullseye : public DetectorBase, public _ThreadBase
 {
 public:
-	_MarkerDetector();
-	virtual ~_MarkerDetector();
+	_Bullseye();
+	virtual ~_Bullseye();
 
 	bool init(JSON* pJson, string name);
 	bool start(void);
@@ -42,7 +42,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_MarkerDetector*) This)->update();
+		((_Bullseye*) This)->update();
 		return NULL;
 	}
 

@@ -20,11 +20,11 @@ using namespace std;
 namespace kai
 {
 
-class _DepthDetector: public DetectorBase, public _ThreadBase
+class _Depth: public DetectorBase, public _ThreadBase
 {
 public:
-	_DepthDetector();
-	~_DepthDetector();
+	_Depth();
+	~_Depth();
 
 	bool init(JSON* pJson, string camName);
 	bool start(void);
@@ -35,7 +35,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DepthDetector*) This)->update();
+		((_Depth*) This)->update();
 		return NULL;
 	}
 

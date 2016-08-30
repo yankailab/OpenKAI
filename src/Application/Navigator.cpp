@@ -72,12 +72,23 @@ bool Navigator::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("MARKER_LANDING_FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pMD = new _MarkerDetector();
+		m_pMD = new _Bullseye();
 		m_pMD->init(pJson, "LANDING");
 		m_pMD->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
 		m_pCamFront->m_bHSV = true;
 		m_pMD->start();
+	}
+
+	//Init AprilTags Detector
+	FPS=0;
+	CHECK_INFO(pJson->getVal("APRILTAGS_LANDING_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pAT = new _AprilTags();
+		m_pAT->init(pJson, "LANDING");
+		m_pAT->m_pCamStream = m_pCamFront;
+		m_pAT->start();
 	}
 
 	//Init Mavlink
@@ -142,7 +153,7 @@ bool Navigator::start(JSON* pJson)
 	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pDD = new _DepthDetector();
+		m_pDD = new _Depth();
 		CHECK_FATAL(m_pDD->init(pJson, "FRONTL"));
 		m_pDD->m_pCamStream = m_pCamFront;
 		m_pDD->m_pUniverse = m_pUniverse;
@@ -245,6 +256,11 @@ void Navigator::draw(void)
 	if(m_pAP)
 	{
 		m_pAP->draw(m_pFrame, &textPos);
+	}
+
+	if(m_pAT)
+	{
+		m_pAT->draw(m_pFrame, &textPos);
 	}
 
 	if(m_pUniverse)

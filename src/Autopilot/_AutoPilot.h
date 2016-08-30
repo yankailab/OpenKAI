@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../Base/common.h"
+#include "../Detector/_Bullseye.h"
 #include "../Stream/_Stream.h"
-#include "../Detector/_CascadeDetector.h"
-#include "../Detector/_MarkerDetector.h"
+#include "../Detector/_Cascade.h"
 #include "../Interface/_Mavlink.h"
 #include "../Interface/_RC.h"
 #include "../Tracker/_ROITracker.h"
@@ -83,9 +83,9 @@ public:
 
 public:
 	//Detectors
-	_CascadeDetector*	m_pFD;
+	_Cascade*	m_pFD;
 	_ROITracker* 		m_pROITracker;
-	_MarkerDetector*	m_pMD;
+	_Bullseye*	m_pMD;
 
 	_RC* m_pVI;
 	_Mavlink* m_pMavlink;

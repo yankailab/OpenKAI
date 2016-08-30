@@ -19,10 +19,11 @@
 #include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
-#include "../Detector/_DepthDetector.h"
-#include "../Detector/_MarkerDetector.h"
+#include "../Detector/_Bullseye.h"
+#include "../Detector/_AprilTags.h"
 #include "../Tracker/_ROITracker.h"
 #include "../AI/_SSD.h"
+#include "../Detector/_Depth.h"
 #include "../Navigation/_Universe.h"
 #include "AppBase.h"
 
@@ -42,11 +43,12 @@ public:
 	_Stream* m_pCamFront;
 	_AutoPilot* m_pAP;
 	_Mavlink* m_pMavlink;
-	_CascadeDetector* m_pCascade;
+	_Cascade* m_pCascade;
 	_Flow* m_pFlow;
 	_ROITracker* m_pROITracker;
-	_DepthDetector* m_pDD;
-	_MarkerDetector* m_pMD;
+	_Depth* m_pDD;
+	_Bullseye* m_pMD;
+	_AprilTags* m_pAT;
 	_Universe* m_pUniverse;
 	_FCN* m_pFCN;
 	_SSD* m_pSSD;

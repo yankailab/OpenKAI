@@ -1,10 +1,10 @@
 
-#include "_BgFgDetector.h"
+#include "_BgFg.h"
 
 namespace kai
 {
 
-_BgFgDetector::_BgFgDetector()
+_BgFg::_BgFg()
 {
 	_ThreadBase();
 	DetectorBase();
@@ -19,13 +19,13 @@ _BgFgDetector::_BgFgDetector()
 	m_pCamStream = NULL;
 }
 
-_BgFgDetector::~_BgFgDetector()
+_BgFg::~_BgFg()
 {
 	// TODO Auto-generated destructor stub
 }
 
 
-bool _BgFgDetector::init(JSON* pJson, string name)
+bool _BgFg::init(JSON* pJson, string name)
 {
 //	CHECK_INFO(pJson->getVal("BGFG_DETECTOR_TSLEEP_" + name, &m_tSleep));
 
@@ -39,7 +39,7 @@ bool _BgFgDetector::init(JSON* pJson, string name)
 	return true;
 }
 
-bool _BgFgDetector::start(void)
+bool _BgFg::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -52,7 +52,7 @@ bool _BgFgDetector::start(void)
 	return true;
 }
 
-void _BgFgDetector::update(void)
+void _BgFg::update(void)
 {
 	cuda::setDevice(m_cudaDeviceID);
 
@@ -67,7 +67,7 @@ void _BgFgDetector::update(void)
 
 }
 
-void _BgFgDetector::detect(void)
+void _BgFg::detect(void)
 {
 	int i;
 	Point2f center;
@@ -162,7 +162,7 @@ void _BgFgDetector::detect(void)
 }
 
 
-bool _BgFgDetector::getObjPosition(fVector3* pPos)
+bool _BgFg::getObjPosition(fVector3* pPos)
 {
 	if (m_objLockLevel < LOCK_LEVEL_POS)return false;
 	pPos->m_x = m_objPos.m_x;
@@ -172,7 +172,7 @@ bool _BgFgDetector::getObjPosition(fVector3* pPos)
 	return true;
 }
 
-void _BgFgDetector::setObjROI(fVector3 ROI)
+void _BgFg::setObjROI(fVector3 ROI)
 {
 	m_objROIPos = ROI;
 }

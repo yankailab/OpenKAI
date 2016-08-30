@@ -25,11 +25,11 @@
 namespace kai
 {
 
-class _BgFgDetector : public DetectorBase, public _ThreadBase
+class _BgFg : public DetectorBase, public _ThreadBase
 {
 public:
-	_BgFgDetector();
-	virtual ~_BgFgDetector();
+	_BgFg();
+	virtual ~_BgFg();
 
 	bool init(JSON* pJson, string name);
 	bool start(void);
@@ -43,7 +43,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_BgFgDetector*) This)->update();
+		((_BgFg*) This)->update();
 		return NULL;
 	}
 

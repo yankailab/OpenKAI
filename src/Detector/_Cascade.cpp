@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_CascadeDetector.h"
+#include "_Cascade.h"
 
 namespace kai
 {
 
-_CascadeDetector::_CascadeDetector()
+_Cascade::_Cascade()
 {
 	_ThreadBase();
 	DetectorBase();
@@ -33,11 +33,11 @@ _CascadeDetector::_CascadeDetector()
 
 }
 
-_CascadeDetector::~_CascadeDetector()
+_Cascade::~_Cascade()
 {
 }
 
-bool _CascadeDetector::init(string name, JSON* pJson)
+bool _Cascade::init(string name, JSON* pJson)
 {
 	string cascadeFile;
 
@@ -77,7 +77,7 @@ bool _CascadeDetector::init(string name, JSON* pJson)
 	return true;
 }
 
-bool _CascadeDetector::start(void)
+bool _Cascade::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -93,7 +93,7 @@ bool _CascadeDetector::start(void)
 	return true;
 }
 
-void _CascadeDetector::update(void)
+void _Cascade::update(void)
 {
 	cuda::setDevice(m_cudaDeviceID);
 
@@ -119,7 +119,7 @@ void _CascadeDetector::update(void)
 
 }
 
-void _CascadeDetector::detect(void)
+void _Cascade::detect(void)
 {
 	int i, j, iVacant;
 	CASCADE_OBJECT* pObj;
@@ -188,7 +188,7 @@ void _CascadeDetector::detect(void)
 
 }
 
-void _CascadeDetector::detectCUDA(void)
+void _Cascade::detectCUDA(void)
 {
 	int i, j, iVacant;
 	CASCADE_OBJECT* pObj;
@@ -262,7 +262,7 @@ void _CascadeDetector::detectCUDA(void)
 
 }
 
-inline int _CascadeDetector::findVacancy(int iStart)
+inline int _Cascade::findVacancy(int iStart)
 {
 	CASCADE_OBJECT* pObj;
 	int iComplete = iStart - 1;
@@ -288,7 +288,7 @@ inline int _CascadeDetector::findVacancy(int iStart)
 	return -1;
 }
 
-inline void _CascadeDetector::deleteOutdated(void)
+inline void _Cascade::deleteOutdated(void)
 {
 	int i;
 	CASCADE_OBJECT* pObj;
@@ -303,7 +303,7 @@ inline void _CascadeDetector::deleteOutdated(void)
 	}
 }
 
-int _CascadeDetector::getObjList(CASCADE_OBJECT** ppObj)
+int _Cascade::getObjList(CASCADE_OBJECT** ppObj)
 {
 	*ppObj = m_pObj;
 	return m_numObj;

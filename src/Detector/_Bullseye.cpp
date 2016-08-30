@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_MarkerDetector.h"
+#include "_Bullseye.h"
 
 namespace kai
 {
 
-_MarkerDetector::_MarkerDetector()
+_Bullseye::_Bullseye()
 {
 	_ThreadBase();
 	DetectorBase();
@@ -32,13 +32,13 @@ _MarkerDetector::_MarkerDetector()
 	m_pFrame = NULL;
 }
 
-_MarkerDetector::~_MarkerDetector()
+_Bullseye::~_Bullseye()
 {
 	// TODO Auto-generated destructor stub
 }
 
 
-bool _MarkerDetector::init(JSON* pJson, string name)
+bool _Bullseye::init(JSON* pJson, string name)
 {
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_AREA_RATIO", &m_areaRatio));
 	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_MIN_SIZE", &m_minMarkerSize));
@@ -62,7 +62,7 @@ bool _MarkerDetector::init(JSON* pJson, string name)
 	return true;
 }
 
-bool _MarkerDetector::start(void)
+bool _Bullseye::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -75,7 +75,7 @@ bool _MarkerDetector::start(void)
 	return true;
 }
 
-void _MarkerDetector::update(void)
+void _Bullseye::update(void)
 {
 	cuda::setDevice(m_cudaDeviceID);
 
@@ -102,7 +102,7 @@ void _MarkerDetector::update(void)
 }
 
 
-void _MarkerDetector::detectCircleFill(void)
+void _Bullseye::detectCircleFill(void)
 {
 	int i;
 	Point2f center;
@@ -164,7 +164,7 @@ void _MarkerDetector::detectCircleFill(void)
 	}
 }
 
-void _MarkerDetector::detectCircleHough(void)
+void _Bullseye::detectCircleHough(void)
 {
 	if(!m_pCamStream)return;
 
@@ -218,7 +218,7 @@ void _MarkerDetector::detectCircleHough(void)
 	}
 }
 
-bool _MarkerDetector::getCircleCenter(fVector3* pCenter)
+bool _Bullseye::getCircleCenter(fVector3* pCenter)
 {
 	CamBase* pCam;
 
