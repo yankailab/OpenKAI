@@ -32,23 +32,10 @@ _Universe::~_Universe()
 
 bool _Universe::init(JSON* pJson)
 {
-	//Setup Caffe Classifier
-	string caffeDir = "";
-	string modelFile;
-	string trainedFile;
-	string meanFile;
-	string labelFile;
+	if(pJson==NULL)return false;
 
-/*	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
-	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
+//	if(m_caffe.init(pJson,"")==false)return false;
 
-	m_caffe.setup(caffeDir + modelFile, caffeDir + trainedFile,
-			caffeDir + meanFile, caffeDir + labelFile, NUM_DETECT_BATCH);
-	LOG(INFO)<<"Caffe Initialized";
-*/
 	CHECK_ERROR(pJson->getVal("UNIVERSE_FRAME_LIFETIME", &m_frameLifeTime));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_PROB_MIN", &m_objProbMin));
 	CHECK_ERROR(pJson->getVal("UNIVERSE_POS_DISPARITY", &m_disparity));
@@ -150,19 +137,9 @@ void _Universe::classifyObject(void)
 
 	return;
 
-#ifdef CLASSIFIER_DEBUG
-	uint64_t tA, tB;
-	tA = get_time_usec();
-#endif
-
 	//Get the top 5 possible labels
 	m_vPredictions = m_caffe.ClassifyBatch(m_vMat, 5);
 	m_vMat.clear();
-
-#ifdef CLASSIFIER_DEBUG
-	tB = get_time_usec();
-	printf("CAFFE >> TIME:%d\n", tB - tA);
-#endif
 
 	for (i = 0; i < numBatch; i++)
 	{
@@ -188,13 +165,9 @@ void _Universe::classifyObject(void)
 		pObj->m_status = OBJ_COMPLETE;
 	}
 
-#ifdef CLASSIFIER_DEBUG
-	printf("CAFFE >> %s\n", pObj->m_name[0].c_str());
-#endif
 }
 
-OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect,
-		vector<Point>* pContour)
+OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)
 {
 	if (!pMat)
 		return NULL;

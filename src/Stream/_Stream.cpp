@@ -66,9 +66,6 @@ bool _Stream::init(JSON* pJson, string camName)
 
 bool _Stream::start(void)
 {
-	//Open camera
-	CHECK_ERROR(m_pCamera->openCamera());
-
 	//Start thread
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -83,6 +80,9 @@ bool _Stream::start(void)
 
 void _Stream::update(void)
 {
+	//Open camera
+	if(m_pCamera->openCamera()==false)return;
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -142,6 +142,7 @@ bool _Stream::draw(Frame* pFrame, iVector4* pTextPos)
 	if(m_pCamFrame->empty())return false;
 
 	pFrame->update(m_pCamFrame);
+//	pFrame->update(m_pCamera->getDepthFrame());
 	putText(*pFrame->getCMat(), "Camera FPS: " + f2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 

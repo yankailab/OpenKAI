@@ -32,12 +32,8 @@ bool ZED::setup(JSON* pJson, string camName)
 	string calibFile;
 
 	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_INFO(
-			pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION",
-					&m_zedResolution));
-	CHECK_INFO(
-			pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE",
-					&m_zedMinDist));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION",&m_zedResolution));
+	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE",&m_zedMinDist));
 
 	return true;
 }

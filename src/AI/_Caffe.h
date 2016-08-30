@@ -51,6 +51,7 @@ public:
 	_Caffe();
 	~_Caffe();
 
+	bool init(JSON* pJson, string name);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file, int batch_size);
 

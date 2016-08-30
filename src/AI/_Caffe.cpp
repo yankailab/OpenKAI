@@ -18,6 +18,35 @@ _Caffe::~_Caffe()
 {
 }
 
+bool _Caffe::init(JSON* pJson, string name)
+{
+	//Setup Caffe Classifier
+	string caffeDir = "";
+	string modelFile;
+	string trainedFile;
+	string meanFile;
+	string labelFile;
+	string presetDir = "";
+
+	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
+	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
+	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
+	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
+
+	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, caffeDir + labelFile, 1);
+	LOG(INFO)<<"Caffe Initialized";
+
+	double FPS = DEFAULT_FPS;
+	CHECK_ERROR(pJson->getVal("CAFFE_FPS", &FPS));
+	this->setTargetFPS(FPS);
+
+	m_pFrame = new Frame();
+
+	return true;
+}
+
 void _Caffe::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file, int batch_size)
 {
@@ -192,18 +221,7 @@ std::vector<float> _Caffe::PredictBatch(const vector<cv::Mat> imgs)
 
 	PreprocessBatch(imgs, &input_batch);
 
-#ifdef CLASSIFIER_DEBUG
-	uint64_t tA,tB;
-	tA = get_time_usec();
-#endif
-
 	net_->Forward();
-
-#ifdef CLASSIFIER_DEBUG
-	tB = get_time_usec();
-	printf("CAFFE >> NET FORWARD:%d\n", tB-tA);
-#endif
-
 
 	/* Copy the output layer to a std::vector */
 	Blob<float>* output_layer = net_->output_blobs()[0];
@@ -330,18 +348,7 @@ std::vector<float> _Caffe::PredictBatchGPU(const vector<cv::cuda::GpuMat> imgs)
 
 	PreprocessBatchGPU(imgs, &input_batch);
 
-#ifdef CLASSIFIER_DEBUG
-	uint64_t tA,tB;
-	tA = get_time_usec();
-#endif
-
 	net_->Forward();
-
-#ifdef CLASSIFIER_DEBUG
-	tB = get_time_usec();
-	printf("CAFFE >> NET FORWARD:%d\n", tB-tA);
-#endif
-
 
 	/* Copy the output layer to a std::vector */
 	Blob<float>* output_layer = net_->output_blobs()[0];

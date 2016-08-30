@@ -46,7 +46,7 @@
 "CAFFE_SSD_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
 "CAFFE_SSD_LABEL_FILE":"model/coco_labels.txt",
 
-"CAFFE_ENABLE":30,
+"CAFFE_FPS":0,
 "CAFFE_MODEL_FILE":"models/bvlc_reference_caffenet/deploy.prototxt",
 "CAFFE_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
 "CAFFE_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
