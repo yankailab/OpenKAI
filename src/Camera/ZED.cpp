@@ -7,6 +7,8 @@
 
 #include "ZED.h"
 
+#ifdef USE_ZED
+
 namespace kai
 {
 
@@ -106,3 +108,5 @@ void ZED::release(void)
 }
 
 } /* namespace kai */
+
+#endif

@@ -51,7 +51,11 @@ bool _Stream::init(JSON* pJson, string camName)
 		m_pCamera = new Camera();
 		break;
 	case CAM_ZED:
+#ifdef USE_ZED
 		m_pCamera = new ZED();
+#else
+		return false;
+#endif
 		break;
 	default:
 		return false;

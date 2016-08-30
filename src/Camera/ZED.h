@@ -8,11 +8,16 @@
 #ifndef SRC_ZED_H_
 #define SRC_ZED_H_
 
-#include "stdio.h"
 #include "../Base/common.h"
+
+#ifdef USE_ZED
+
+#include "stdio.h"
 #include "../Base/cvplatform.h"
 #include "../Stream/Frame.h"
 #include "CamBase.h"
+#include <zed/Camera.hpp>
+
 
 namespace kai
 {
@@ -39,5 +44,7 @@ public:
 };
 
 } /* namespace kai */
+
+#endif
 
 #endif /* SRC_CAMINPUT_H_ */
