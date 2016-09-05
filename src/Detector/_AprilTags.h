@@ -69,6 +69,8 @@ public:
 	int					m_tagDistThr;
 	double				m_tagAliveFrom;
 	double				m_tagAliveInterval;
+	double				m_tagScaling;
+	int					m_tagSizeLim;
 
 };
 

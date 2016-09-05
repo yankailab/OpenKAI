@@ -39,6 +39,7 @@ bool Navigator::start(JSON* pJson)
 
 	g_pNavigator = this;
 	int FPS;
+	string camName;
 
 	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
 	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
@@ -47,12 +48,11 @@ bool Navigator::start(JSON* pJson)
 	m_pFrame = new Frame();
 
 	//Init Camera
-	FPS=0;
-	CHECK_INFO(pJson->getVal("CAM_FRONTL_FPS", &FPS));
-	if (FPS > 0)
+	CHECK_INFO(pJson->getVal("CAM_MAIN_NAME", &camName));
+	if (camName != "video")
 	{
 		m_pCamFront = new _Stream();
-		CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
+		CHECK_FATAL(m_pCamFront->init(pJson, camName));
 		m_pCamFront->start();
 	}
 

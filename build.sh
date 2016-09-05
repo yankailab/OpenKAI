@@ -17,6 +17,7 @@ g++ $INCLUDES $OPTIONS -MF"build/VisualFollow.d" -MT"build/VisualFollow.d" -o "b
 g++ $INCLUDES $OPTIONS -MF"build/Navigator.d" -MT"build/Navigator.d" -o "build/Navigator.o" "src/Application/Navigator.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_AutoPilot.d" -MT"build/_AutoPilot.d" -o "build/_AutoPilot.o" "src/Autopilot/_AutoPilot.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_State.d" -MT"build/_State.d" -o "build/_State.o" "src/Autopilot/_State.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_ThreadBase.d" -MT"build/_ThreadBase.d" -o "build/_ThreadBase.o" "src/Base/_ThreadBase.cpp"
 
@@ -28,11 +29,12 @@ g++ $INCLUDES $OPTIONS -MF"build/_Stream.d" -MT"build/_Stream.d" -o "build/_Stre
 g++ $INCLUDES $OPTIONS -MF"build/Frame.d" -MT"build/Frame.d" -o "build/Frame.o" "src/Stream/Frame.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/FrameGroup.d" -MT"build/FrameGroup.d" -o "build/FrameGroup.o" "src/Stream/FrameGroup.cpp"
 
-g++ $INCLUDES $OPTIONS -MF"build/_BgFgDetector.d" -MT"build/_BgFgDetector.d" -o "build/_BgFgDetector.o" "src/Detector/_BgFgDetector.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_CascadeDetector.d" -MT"build/_CascadeDetector.d" -o "build/_CascadeDetector.o" "src/Detector/_CascadeDetector.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_BgFg.d" -MT"build/_BgFg.d" -o "build/_BgFg.o" "src/Detector/_BgFg.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Cascade.d" -MT"build/_Cascade.d" -o "build/_Cascade.o" "src/Detector/_Cascade.cpp"
 g++ $INCLUDES $OPTIONS -MF"build/DetectorBase.d" -MT"build/DetectorBase.d" -o "build/DetectorBase.o" "src/Detector/DetectorBase.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_MarkerDetector.d" -MT"build/_MarkerDetector.d" -o "build/_MarkerDetector.o" "src/Detector/_MarkerDetector.cpp"
-g++ $INCLUDES $OPTIONS -MF"build/_DepthDetector.d" -MT"build/_DepthDetector.d" -o "build/_DepthDetector.o" "src/Detector/_DepthDetector.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Bullseye.d" -MT"build/_Bullseye.d" -o "build/_Bullseye.o" "src/Detector/_Bullseye.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_Depth.d" -MT"build/_Depth.d" -o "build/_Depth.o" "src/Detector/_Depth.cpp"
+g++ $INCLUDES $OPTIONS -MF"build/_AprilTags.d" -MT"build/_AprilTags.d" -o "build/_AprilTags.o" "src/Detector/_AprilTags.cpp"
 
 g++ $INCLUDES $OPTIONS -MF"build/_Flow.d" -MT"build/_Flow.d" -o "build/_Flow.o" "src/Vision/_Flow.cpp"
 
@@ -49,5 +51,5 @@ g++ $INCLUDES $OPTIONS -MF"build/_ROITracker.d" -MT"build/_ROITracker.d" -o "bui
 
 g++ $INCLUDES $OPTIONS -MF"build/demo.d" -MT"build/demo.d" -o "build/demo.o" "src/demo.cpp"
 
-g++ $LINKERS -o "OpenKAI" ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/CamBase.o ./build/FrameGroup.o ./build/_BgFgDetector.o ./build/_CascadeDetector.o ./build/DetectorBase.o ./build/_MarkerDetector.o ./build/_DepthDetector.o ./build/_Flow.o ./build/_Mavlink.o ./build/_RC.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
+g++ $LINKERS -o "OpenKAI" ./build/_State.o ./build/_Caffe.o ./build/_FCN.o ./build/_SSD.o ./build/Filter.o ./build/AppBase.o ./build/VisualFollow.o ./build/Navigator.o ./build/_AutoPilot.o ./build/_ThreadBase.o ./build/_Stream.o ./build/Frame.o ./build/Camera.o ./build/CamBase.o ./build/FrameGroup.o ./build/_BgFg.o ./build/_Cascade.o ./build/DetectorBase.o ./build/_Bullseye.o ./build/_Depth.o ./build/_AprilTags.o ./build/_Flow.o ./build/_Mavlink.o ./build/_RC.o ./build/FileIO.o ./build/JSON.o ./build/SerialPort.o ./build/_Universe.o ./build/_ROITracker.o ./build/demo.o -lpthread -lboost_system -lopencv_imgproc -lopencv_cudawarping -lopencv_cudaobjdetect -lglog -lcaffe -lopencv_videoio -lopencv_core -lopencv_cudaarithm -lopencv_cudabgsegm -lopencv_cudaimgproc -lopencv_calib3d -lopencv_cudaoptflow -lopencv_imgcodecs -lopencv_highgui -lopencv_cudastereo -lopencv_saliency -lopencv_objdetect -lopencv_xobjdetect -lopencv_tracking -lopencv_features2d
 

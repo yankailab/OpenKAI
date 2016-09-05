@@ -23,6 +23,8 @@ _AprilTags::_AprilTags()
 	m_tagLifetime = USEC_1SEC;
 	m_tagDistThr = 100;
 	m_tagAliveInterval = USEC_1SEC;
+	m_tagScaling = 0.8;
+	m_tagSizeLim = 800;
 
 	reset();
 }
@@ -39,6 +41,8 @@ bool _AprilTags::init(JSON* pJson, string name)
 	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_LIFETIME", &m_tagLifetime));
 	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_DIST_THR", &m_tagDistThr));
 	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_DET_INTERVAL", &m_tagAliveInterval));
+	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_SCALING", &m_tagScaling));
+	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_SIZELIM", &m_tagSizeLim));
 
 	double FPS = DEFAULT_FPS;
 	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_FPS", &FPS));
@@ -94,16 +98,20 @@ void _AprilTags::detect(void)
 
 	TagDetectionArray detections;
 	Mat* pImg = m_pFrame->getCMat();
+	double scaling = 1.0;
 
-//		while (std::max(src.rows, src.cols) > 800)
-//		{
-//			cv::Mat tmp;
-//			cv::resize(src, tmp, cv::Size(0, 0), 0.5, 0.5);
-//			src = tmp;
-//		}
-
+	while (std::max(pImg->rows, pImg->cols) > m_tagSizeLim)
+	{
+		scaling *= m_tagScaling;
+		cv::Mat tmp;
+		cv::resize(*pImg, tmp, cv::Size(0, 0), m_tagScaling, m_tagScaling);
+		*pImg = tmp;
+	}
 	cv::Point2d opticalCenter(0.5 * pImg->rows, 0.5 * pImg->cols);
+
 	m_pTagDetector->process(*pImg, opticalCenter, detections);
+
+	scaling = 1.0/scaling;
 
 	for (i = 0; i < detections.size(); i++)
 	{
@@ -113,6 +121,16 @@ void _AprilTags::detect(void)
 			continue;
 		if (pD->id >= m_numTags)
 			continue;
+
+		if(abs(scaling-1.0) > 0.0000001)
+		{
+			pD->cxy.x *= scaling;
+			pD->cxy.y *= scaling;
+			pD->p[0] *= scaling;
+			pD->p[1] *= scaling;
+			pD->p[2] *= scaling;
+			pD->p[3] *= scaling;
+		}
 
 		for(j=0; j<NUM_PER_TAG;j++)
 		{

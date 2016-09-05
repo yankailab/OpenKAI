@@ -39,8 +39,8 @@ bool _Stream::init(JSON* pJson, string camName)
 
 	double FPS = DEFAULT_FPS;
 	int camType;
+	m_camName = camName;
 
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_NAME", &m_camName));
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
 	CHECK_INFO(pJson->getVal("CAM_"+camName+"_SHOWDEPTH", &m_showDepth));
 	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_TYPE", &camType));
@@ -54,6 +54,7 @@ bool _Stream::init(JSON* pJson, string camName)
 #ifdef USE_ZED
 		m_pCamera = new ZED();
 #else
+		LOG(FATAL)<<"ZED is not support in this build, please compile OpenKAI with ZED support enabled.";
 		return false;
 #endif
 		break;
