@@ -388,7 +388,7 @@ bool _SSD::draw(Frame* pFrame, iVector4* pTextPos)
 	if (pFrame == NULL)
 		return false;
 
-	putText(*pFrame->getCMat(), "SSD FPS: " + f2str(getFrameRate()),
+	putText(*pFrame->getCMat(), "SSD FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	pTextPos->m_y += pTextPos->m_w;

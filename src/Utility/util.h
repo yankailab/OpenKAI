@@ -114,12 +114,11 @@ inline void copyByte(char* pBuf, double num)
 inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
 {
     if( pString == NULL )return NULL;
-//        goto _error;
+
     char* pSource = pString;
     if( *(int32_t*)&Value < 0 )
     {
         if( (size_t)( pString - pSource ) >= Size )return NULL;
-//            goto _error;
         *pString++ = '-';
         *(int32_t*)&Value ^= 0x80000000;
     }
@@ -130,7 +129,6 @@ inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
     for( int i = 10; i <= Integer; i *= 10, pString++ );
 
     if( (size_t)( pString - pSource ) >= Size )return NULL;
-//        goto _error;
 
     char* pCode = pString++;
     *pCode-- = '0' + (char)( Integer % 10 );
@@ -139,28 +137,24 @@ inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
     if( FracDigits > 0 )
     {
         if( (size_t)( pString - pSource ) >= Size )return NULL;
-//            goto _error;
         *pString++ = '.';
         while( FracDigits-- > 1 )
         {
             Value -= Integer;
             Integer = (int)( Value *= 10.0f );
             if( (size_t)( pString - pSource ) >= Size )return NULL;
-//                goto _error;
             *pString++ = '0' + (char)Integer;
         }
         Integer = (int)( ( Value - Integer ) * 10.0f + 0.5f );
         if( Integer < 10 )
         {
             if( (size_t)( pString - pSource ) >= Size )return NULL;
-//                goto _error;
             *pString++ = '0' + (char)Integer;
         }
         else
         {
             pCode = pString - 1;
             if( (size_t)( pString - pSource ) >= Size )return NULL;
-//                goto _error;
             *pString++ = '0';
             do
             {
@@ -176,7 +170,6 @@ inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
                 if( pCode == pBegin )
                 {
                     if( (size_t)( pString - pSource ) >= Size )return NULL;
-//                        goto _error;
                     char* pEnd = pString++;
                     while( pEnd-- != pCode )
                         *( pEnd + 1 ) = *pEnd;
@@ -186,12 +179,8 @@ inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
         }
     }
     if( (size_t)( pString - pSource ) >= Size )return NULL;
-//        goto _error;
     *pString = '\0';
     return pSource;
-//_error:
-//    __debugbreak();
-//    return NULL;
 }
 
 

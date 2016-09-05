@@ -16,9 +16,19 @@
 #include "../include/apriltags-cpp/TagDetector.h"
 
 #define NUM_TAGS 128
+#define DEFAULT_TAG_FAMILY "Tag16h5"
+#define NUM_PER_TAG 10
 
 namespace kai
 {
+
+struct APRIL_TAG
+{
+	TagDetection m_tag;
+	uint64_t	m_frameID;
+	uint64_t	m_detInterval;
+};
+
 
 class _AprilTags : public DetectorBase, public _ThreadBase
 {
@@ -30,7 +40,8 @@ public:
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
-	bool getTags(fVector3* pCenter);
+	bool getTags(int tagID, fVector3* pCenter);
+	void reset(void);
 
 private:
 	void detect(void);
@@ -43,15 +54,21 @@ private:
 
 
 public:
-	int		 m_numTag;
-	iVector3 m_pTag[NUM_TAGS];
+	int		  m_numTags;
+	APRIL_TAG m_pTag[NUM_TAGS][NUM_PER_TAG];
 
 	_Stream*	m_pCamStream;
 	Frame*		m_pFrame;
+	uint64_t	m_frameID;
 
 	TagDetector*		m_pTagDetector;
 	TagDetectionArray	m_tagArray;
 	string				m_tagFamily;
+	double				m_tagErr;
+	uint64_t			m_tagLifetime;
+	int					m_tagDistThr;
+	double				m_tagAliveFrom;
+	double				m_tagAliveInterval;
 
 };
 

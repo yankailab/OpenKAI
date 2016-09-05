@@ -156,7 +156,7 @@ bool _Stream::draw(Frame* pFrame, iVector4* pTextPos)
 		pFrame->update(m_pCamera->getDepthFrame());
 	}
 
-	putText(*pFrame->getCMat(), "Camera FPS: " + f2str(getFrameRate()),
+	putText(*pFrame->getCMat(), "Camera FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	pTextPos->m_y += pTextPos->m_w;
