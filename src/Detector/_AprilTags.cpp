@@ -129,21 +129,25 @@ void _AprilTags::detect(void)
 
 }
 
-bool _AprilTags::getTags(int tagID, fVector3* pCenter)
+int _AprilTags::getTags(int tagID, APRIL_TAG* pTag)
 {
-	if (pCenter == NULL)
-		return false;
+	if (pTag == NULL)
+		return 0;
 	if (tagID > m_numTags)
-		return false;
+		return 0;
 
-	APRIL_TAG* pAT = &m_pTag[tagID][0];
-	if (pAT->m_frameID < m_tagAliveFrom)
-		return false;
+	int i,k;
+	k=0;
+	for(i=0; i<NUM_PER_TAG;i++)
+	{
+		APRIL_TAG* pAT = &m_pTag[tagID][i];
+		if (pAT->m_frameID < m_tagAliveFrom)continue;
 
-	pCenter->m_x = pAT->m_tag.cxy.x;
-	pCenter->m_y = pAT->m_tag.cxy.y;
+		pTag[k]=*pAT;
+		k++;
+	}
 
-	return true;
+	return k;
 }
 
 void _AprilTags::reset(void)

@@ -40,7 +40,7 @@ public:
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
-	bool getTags(int tagID, fVector3* pCenter);
+	int getTags(int tagID, APRIL_TAG* pTag);
 	void reset(void);
 
 private:

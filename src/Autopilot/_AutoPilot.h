@@ -2,6 +2,7 @@
 
 #include "../Base/common.h"
 #include "../Detector/_Bullseye.h"
+#include "../Detector/_AprilTags.h"
 #include "../Stream/_Stream.h"
 #include "../Detector/_Cascade.h"
 #include "../Interface/_Mavlink.h"
@@ -72,7 +73,6 @@ public:
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 	void sendHeartbeat(void);
 
-
 	void setVehicleInterface(_RC* pVehicle);
 	void setMavlinkInterface(_Mavlink* pMavlink);
 	int* getPWMOutput(void);
@@ -83,16 +83,20 @@ public:
 
 public:
 	//Detectors
-	_Cascade*	m_pFD;
-	_ROITracker* 		m_pROITracker;
-	_Bullseye*	m_pMD;
+	_Cascade*		m_pFD;
+	_ROITracker* 	m_pROITracker;
+	_Bullseye*		m_pMD;
+
+	_AprilTags*		m_pAT;
+	APRIL_TAG		m_pATags[NUM_PER_TAG];
+	int				m_pATagsLandingTarget[NUM_PER_TAG];
+	int				m_numATagsLandingTarget;
 
 	_RC* m_pVI;
 	_Mavlink* m_pMavlink;
 
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
-
 
 	LANDING_TARGET	m_landingTarget;
 

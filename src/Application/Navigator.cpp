@@ -111,6 +111,7 @@ bool Navigator::start(JSON* pJson)
 		m_pAP->m_pMavlink = m_pMavlink;
 		m_pAP->m_pROITracker = m_pROITracker;
 		m_pAP->m_pMD = m_pMD;
+		m_pAP->m_pAT = m_pAT;
 		m_pAP->start();
 	}
 

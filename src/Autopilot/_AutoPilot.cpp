@@ -14,9 +14,11 @@ _AutoPilot::_AutoPilot()
 	m_pMavlink = NULL;
 	m_pROITracker = NULL;
 	m_pMD = NULL;
+	m_pAT = NULL;
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
+	m_numATagsLandingTarget = 0;
 
 }
 
@@ -26,12 +28,12 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(JSON* pJson, string pilotName)
 {
-	if (!pJson)
-		return false;
+	if (!pJson)return false;
 
 	string cName;
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
+	int i;
 
 	pilotName = "_"+pilotName;
 
@@ -122,15 +124,19 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	CHECK_INFO(
-			pJson->getVal("MARKER_LANDING_ORIENTATION_X",
+	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_X",
 					&m_landingTarget.m_orientX));
-	CHECK_INFO(
-			pJson->getVal("MARKER_LANDING_ORIENTATION_Y",
+	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_Y",
 					&m_landingTarget.m_orientY));
-	CHECK_INFO(
-			pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT",
+	CHECK_INFO(pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT",
 					&m_landingTarget.m_ROItimeLimit));
+
+
+	CHECK_INFO(pJson->getVal("APRILTAGS_LANDING_NUM_TAG", &m_numATagsLandingTarget));
+	for(i=0; i<m_numATagsLandingTarget; i++)
+	{
+		CHECK_ERROR(pJson->getVal("APRILTAGS_LANDING_TAG_"+i2str(i), &m_pATagsLandingTarget[i]));
+	}
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
@@ -166,11 +172,6 @@ void _AutoPilot::update(void)
 		landingTarget();
 
 		sendHeartbeat();
-
-//		if (m_pVI)
-//		{
-//			m_pVI->readMessages();
-//		}
 
 		this->autoFPSto();
 
@@ -290,6 +291,7 @@ void _AutoPilot::camROILock(void)
 
 }
 
+/*
 void _AutoPilot::landingTarget(void)
 {
 	CamBase* pCamInput;
@@ -361,6 +363,39 @@ void _AutoPilot::landingTarget(void)
 			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 }
+*/
+
+void _AutoPilot::landingTarget(void)
+{
+	if (m_pAT == NULL)
+		return;
+	if (m_pMavlink == NULL)
+		return;
+	if (m_pAT->m_pCamStream == NULL)
+		return;
+
+	int i;
+	int tTag;
+	CamBase* pCam = m_pAT->m_pCamStream->getCameraInput();
+
+	for(i=0;i<m_numATagsLandingTarget;i++)
+	{
+		tTag = m_pATagsLandingTarget[i];
+		if (m_pAT->getTags(tTag, m_pATags)<=0)continue;
+
+		APRIL_TAG* pTag = &m_pATags[0];
+
+		//Change position to angles
+		m_landingTarget.m_angleX = ((pTag->m_tag.cxy.x - pCam->m_centerH) / pCam->m_width) * pCam->m_angleH * DEG_RADIAN * m_landingTarget.m_orientX;
+		m_landingTarget.m_angleY = ((pTag->m_tag.cxy.y - pCam->m_centerV) / pCam->m_height) * pCam->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
+
+		//Send Mavlink command
+		m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+				m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
+
+		return;
+	}
+}
 
 void _AutoPilot::setVehicleInterface(_RC* pVehicle)
 {
@@ -388,9 +423,24 @@ bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
 	if (pFrame == NULL)
 		return false;
 
+	Mat* pMat = pFrame->getCMat();
+
+	if(m_pAT)
+	{
+		APRIL_TAG* pTag = &m_pATags[0];
+
+		circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
+		putText(*pMat,
+				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+						+ f2str(m_landingTarget.m_angleY) + ")",
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+				Scalar(0, 255, 0), 1);
+
+		pTextPos->m_y += pTextPos->m_w;
+	}
+
 	if(m_pMD)
 	{
-		Mat* pMat = pFrame->getCMat();
 		fVector3 markerCenter;
 		markerCenter.m_x = 0;
 		markerCenter.m_y = 0;
