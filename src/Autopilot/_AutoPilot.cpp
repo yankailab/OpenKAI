@@ -381,7 +381,11 @@ void _AutoPilot::landingTarget(void)
 	for(i=0;i<m_numATagsLandingTarget;i++)
 	{
 		tTag = m_pATagsLandingTarget[i];
-		if (m_pAT->getTags(tTag, m_pATags)<=0)continue;
+		if (m_pAT->getTags(tTag, m_pATags)<=0)
+		{
+			m_pATags[0].m_frameID = 0;
+			continue;
+		}
 
 		APRIL_TAG* pTag = &m_pATags[0];
 
@@ -428,15 +432,17 @@ bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
 	if(m_pAT)
 	{
 		APRIL_TAG* pTag = &m_pATags[0];
+		if(pTag->m_frameID>0)
+		{
+			circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
+			putText(*pMat,
+					"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+							+ f2str(m_landingTarget.m_angleY) + ")",
+					cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+					Scalar(0, 255, 0), 1);
 
-		circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
-		putText(*pMat,
-				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-						+ f2str(m_landingTarget.m_angleY) + ")",
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-				Scalar(0, 255, 0), 1);
-
-		pTextPos->m_y += pTextPos->m_w;
+			pTextPos->m_y += pTextPos->m_w;
+		}
 	}
 
 	if(m_pMD)

@@ -133,7 +133,7 @@ bool SerialPort::connect(char *portName)
 
 //If everything went fine we're bConnected
 		pSport->bConnected = true;
-		//We wait 2s as the arduino board will be reseting
+//We wait 2s as the arduino board will be reseting
 		Sleep(ARDUINO_WAIT_TIME);
 	}
 
@@ -217,9 +217,14 @@ SerialPort::SerialPort(void)
 	m_baudrate = 57600;
 
 	// Start mutex
-	if (pthread_mutex_init(&m_portMutex, NULL) != 0)
+	if (pthread_mutex_init(&m_writeMutex, NULL) != 0)
 	{
-		printf("mutex init failed\n");
+		printf("send mutex init failed\n");
+	}
+
+	if (pthread_mutex_init(&m_readMutex, NULL) != 0)
+	{
+		printf("receive mutex init failed\n");
 	}
 
 }
@@ -242,7 +247,8 @@ SerialPort::~SerialPort()
 	}
 
 	// destroy mutex
-	pthread_mutex_destroy(&m_portMutex);
+	pthread_mutex_destroy(&m_writeMutex);
+	pthread_mutex_destroy(&m_readMutex);
 }
 
 bool SerialPort::Open(char *portName)
@@ -255,13 +261,11 @@ bool SerialPort::Open(char *portName)
 	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
 	if (m_fd == -1)
 	{
-//		printf("init_serialport: Unable to open port\n");
 		return false;
 	}
 
 	fcntl(m_fd, F_SETFL, 0);
 
-//	usleep(2000 * 1000);
 	this->bConnected = true;
 
 	return true;
@@ -274,7 +278,6 @@ void SerialPort::Close(void)
 		printf("WARNING: Error on port close (%i)\n");
 	}
 }
-
 
 bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		bool hardware_control)
@@ -301,10 +304,10 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// no NL to CR translation, don't mark parity errors or breaks
 	// no input parity check, don't strip high bit off,
 	// no XON/XOFF software flow control
-	config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
+	config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK
+			| ISTRIP | IXON);
 //	config.c_iflag &= ~(IXON | IXOFF | IXANY); // | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
 //	config.c_iflag |= IGNPAR;
-
 
 	// Output flags - Turn off output processing
 	// no CR to NL translation, no NL to CR-NL translation,
@@ -315,7 +318,6 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 //	toptions.c_oflag = 0;
 //  toptions.c_oflag &= ~(OPOST|OLCUC|ONLCR|OCRNL|ONLRET|OFDEL); // make raw
 
-
 #ifdef OLCUC
 	config.c_oflag &= ~OLCUC;
 #endif
@@ -323,7 +325,6 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 #ifdef ONOEOT
 	config.c_oflag &= ~ONOEOT;
 #endif
-
 
 	// No line processing:
 	// echo off, echo newline off, canonical mode off,
@@ -340,13 +341,12 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	config.c_cflag |= CS8;
 
 	// 8N1
-/*	config.c_cflag &= ~CSTOPB;
-	// no flow control
-	config.c_cflag &= ~CRTSCTS;
-	//    toptions.c_cflag |= CRTSCTS;
-*/
+	/*	config.c_cflag &= ~CSTOPB;
+	 // no flow control
+	 config.c_cflag &= ~CRTSCTS;
+	 //    toptions.c_cflag |= CRTSCTS;
+	 */
 //	config.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
-
 
 	// One input byte is enough to return from read()
 	// Inter-character timer off
@@ -355,7 +355,6 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// see: http://unixwiz.net/techtips/termios-vmin-vtime.html
 //	toptions.c_cc[VMIN] = 0;
 //	toptions.c_cc[VTIME] = 10;
-
 
 	// Apply baudrate
 	switch (baud)
@@ -393,7 +392,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			printf(	"ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -401,7 +400,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			printf(	"ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
 			return false;
 		}
 		break;
@@ -425,14 +424,15 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		}
 		break;
 	default:
-		printf("ERROR: Desired baud rate %d could not be set, aborting.\n", baud);
+		printf("ERROR: Desired baud rate %d could not be set, aborting.\n",
+				baud);
 		return false;
 		break;
 	}
 
 	// Finally, apply the configuration
 //	if (tcsetattr(m_fd, TCSANOW, &toptions) < 0)
-//    fcntl(m_fd, F_SETFL, FNDELAY);
+//  fcntl(m_fd, F_SETFL, FNDELAY);
 //	tcflush(m_fd, TCIOFLUSH);
 
 	if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
@@ -444,29 +444,28 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	return true;
 }
 
-
 int SerialPort::Read(char *buffer, unsigned int nbChar)
 {
 	int n;
 
-//	pthread_mutex_lock(&m_portMutex);
+	pthread_mutex_lock(&m_readMutex);
 
 	n = read(m_fd, buffer, nbChar);
 
-//	pthread_mutex_unlock(&m_portMutex);
+	pthread_mutex_unlock(&m_readMutex);
 
 	return n;
 }
 
 void SerialPort::Write(char *buffer, unsigned int nbChar)
 {
-//	pthread_mutex_lock(&m_portMutex);
+	pthread_mutex_lock(&m_writeMutex);
 
 	write(m_fd, buffer, nbChar);
 	// Wait until all data has been written
 	tcdrain(m_fd);
 
-//	pthread_mutex_unlock(&m_portMutex);
+	pthread_mutex_unlock(&m_writeMutex);
 
 }
 #endif

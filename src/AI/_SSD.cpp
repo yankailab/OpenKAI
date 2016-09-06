@@ -178,7 +178,7 @@ void _SSD::detectFrame(void)
 		iClass = static_cast<int>(d[1])-1;
 		if(iClass >= labels_.size())continue;
 
-		name = labels_[iClass];// i2str(iClass);
+		name = labels_[iClass];
 		bb.x = d[3] * pImg->cols;
 		bb.y = d[4] * pImg->rows;
 		bb.width = d[5] * pImg->cols - bb.x;

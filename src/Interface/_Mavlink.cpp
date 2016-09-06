@@ -8,7 +8,6 @@ _Mavlink::_Mavlink()
 {
 	_ThreadBase();
 
-	m_bSerialOpen = false;
 	m_sportName = "";
 	m_pSerialPort = NULL;
 	m_baudRate = 115200;
@@ -67,7 +66,6 @@ void _Mavlink::close()
 	{
 		delete m_pSerialPort;
 		m_pSerialPort = NULL;
-		m_bSerialOpen = false;
 	}
 	printf("Serial port closed.\n");
 }
@@ -309,7 +307,7 @@ void _Mavlink::update(void)
 		}
 
 		//Try to open and setup the serial port
-		if (!m_bSerialOpen)
+		if (!m_pSerialPort->IsConnected())
 		{
 			if (m_pSerialPort->Open((char*)m_sportName.c_str()))
 			{
@@ -330,7 +328,6 @@ void _Mavlink::update(void)
 			}
 
 			last_status.packet_rx_drop_count = 0;
-			m_bSerialOpen = true;
 		}
 
 

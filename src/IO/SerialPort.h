@@ -55,7 +55,8 @@ private:
 
 	string m_portName;
 	int  m_baudrate;
-	pthread_mutex_t m_portMutex;
+	pthread_mutex_t m_writeMutex;
+	pthread_mutex_t m_readMutex;
 
 
 };

@@ -167,8 +167,6 @@ public:
 			mavlink_set_position_target_local_ned_t &sp);
 
 public:
-	bool m_bSerialOpen;
-
 	string m_sportName;
 	SerialPort* m_pSerialPort;
 	int m_baudRate;
