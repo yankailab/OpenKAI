@@ -25,6 +25,7 @@ Navigator::Navigator()
 	m_pFCN = NULL;
 	m_pSSD = NULL;
 	m_pFrame = NULL;
+	m_pAT = NULL;
 }
 
 Navigator::~Navigator()
