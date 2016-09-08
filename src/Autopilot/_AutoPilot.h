@@ -1,4 +1,6 @@
-#pragma once
+
+#ifndef OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
+#define OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
 
 #include "../Base/common.h"
 #include "../Detector/_Bullseye.h"
@@ -120,4 +122,5 @@ public:
 
 }
 
+#endif
 
