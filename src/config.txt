@@ -1,5 +1,5 @@
 {
-"PRESET_DIR":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+"PRESET_DIR":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
 
 "SERIALPORT_MAVLINK_FPS":30,
 "SERIALPORT_MAVLINK_NAME":"/dev/ttyUSB0",
@@ -10,7 +10,7 @@
 "APP_FULL_SCREEN":0,
 "APP_WAIT_KEY":30,
 
-"CAM_MAIN_NAME":"ZEDL",
+"CAM_MAIN_NAME":"TILTAC",
 
 "CAM_ZEDL_FPS":30,
 "CAM_ZEDL_TYPE":0,
@@ -59,7 +59,7 @@
 
 "CAM_TILTAC_FPS":30,
 "CAM_TILTAC_TYPE":0,
-"CAM_TILTAC_ID":0,
+"CAM_TILTAC_ID":2,
 "CAM_TILTAC_WIDTH":1280,
 "CAM_TILTAC_HEIGHT":720,
 "CAM_TILTAC_ANGLE_V":67.1,
@@ -83,7 +83,7 @@
 "UNIVERSE_PROB_MIN":0.1,
 "UNIVERSE_POS_DISPARITY":200,
 
-"CAFFE_DIR":"/home/ubuntu/src/caffe_ssd/caffe/",
+"CAFFE_DIR":"/home/kai/dev/caffe_ssd/caffe/",
 "CAFFE_SSD_FPS":30,
 "CAFFE_SSD_MIN_CONFIDENCE":0.1,
 "CAFFE_SSD_MODEL_FILE":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
