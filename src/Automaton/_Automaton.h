@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "State.h"
 
-#define NUM_STATE 16
+#define NUM_STATE 32
 
 namespace kai
 {
@@ -27,15 +27,15 @@ public:
 	bool start(void);
 
 	State* addState(void);
+	bool setState(int iState);
 	bool checkDiagram(void);
 
 public:
 	void updateAll(void);
 
-	int		m_iMyState;
+	int		m_iState;
 	int		m_numState;
-	State	m_pState[NUM_STATE];
-
+	State*	m_pState[NUM_STATE];
 
 	//Thread
 	void update(void);

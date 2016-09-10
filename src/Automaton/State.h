@@ -2,7 +2,7 @@
  * State.h
  *
  *  Created on: Aug 27, 2016
- *      Author: root
+ *      Author: Kai Yan
  */
 
 #ifndef OPENKAI_SRC_AUTOMATON_STATE_H_
@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "Transition.h"
 
-#define NUM_STATE_TRANSITION 16
+#define NUM_STATE_TRANSITION 32
 
 namespace kai
 {
@@ -28,7 +28,7 @@ public:
 public:
 	string		m_name;
 	int			m_numTransition;
-	Transition	m_pTransition[NUM_STATE_TRANSITION];
+	Transition*	m_pTransition[NUM_STATE_TRANSITION];
 
 };
 

@@ -9,31 +9,12 @@
 #define OPENKAI_SRC_AUTOMATON_TRANSITION_H_
 
 #include "../Base/common.h"
+#include "ConditionII.h"
 
 #define NUM_TRANSITION_COND 32
 
 namespace kai
 {
-
-enum COMP_COND
-{
-	DEFAULT,bt,beq,st,seq,eq,neq
-};
-
-struct TRANSITION_COND
-{
-	int* 	m_pI1;
-	double* m_pF1;
-
-	int* 	m_pI2;
-	double* m_pF2;
-	int		m_pIConst2;
-	double	m_pFConst2;
-
-	string			m_namePtr1;
-	string			m_namePtr2;
-	COMP_COND		m_condition;
-};
 
 class Transition
 {
@@ -41,13 +22,18 @@ public:
 	Transition();
 	virtual ~Transition();
 
-	TRANSITION_COND* addCondition(void);
-	bool IsValid(void);
+	ConditionII* addConditionII(void);
+	ConditionBase* addConditionIF(void);
+	ConditionBase* addConditionFF(void);
+	ConditionBase* addConditionIC(void);
+
+	bool activate(void);
+	bool isValid(void);
 
 public:
 	int					m_transitToID;
 	int					m_numCond;
-	TRANSITION_COND 	m_pCond[NUM_TRANSITION_COND];
+	ConditionBase*	 	m_pCond[NUM_TRANSITION_COND];
 	int					m_flagSatisfied;
 };
 

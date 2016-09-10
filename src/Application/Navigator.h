@@ -14,6 +14,7 @@
 
 #include "../AI/_FCN.h"
 #include "../Autopilot/_AutoPilot.h"
+#include "../Automaton/_Automaton.h"
 #include "../Camera/Camera.h"
 #include "../Interface/_Mavlink.h"
 #include "../UI/UIMonitor.h"
@@ -52,6 +53,7 @@ public:
 	_Universe* m_pUniverse;
 	_FCN* m_pFCN;
 	_SSD* m_pSSD;
+	_Automaton* m_pAM;
 
 	Frame* m_pFrame;
 

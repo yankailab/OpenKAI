@@ -15,7 +15,7 @@ _Automaton::_Automaton()
 	_ThreadBase();
 
 	m_numState = 0;
-	m_iMyState = 0;
+	m_iState = 0;
 
 }
 
@@ -29,7 +29,7 @@ bool _Automaton::init(JSON* pJson, string automatonName)
 	if (!pJson)return false;
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("STATE_"+automatonName+"_FPS", &FPS));
+	CHECK_INFO(pJson->getVal("AM_"+automatonName+"_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	//init basic params
@@ -37,36 +37,45 @@ bool _Automaton::init(JSON* pJson, string automatonName)
 
 	//read in configuration
 	int i,k;
-
 	string name;
-	string fullName;
-	string stateID;
-	string transitionID;
-	string condID;
 	string condStr;
+	string typeStr;
+	string nameS;
+	string nameST;
+	string nameSTC;
 
-	fullName = "STATE_"+automatonName+"_STATE_";
-	stateID = i2str(m_numState);
-
-	while(pJson->getVal(fullName+stateID+"_NAME", &name))
+	do
 	{
+		nameS = "AM_"+automatonName+"_STATE" + i2str(m_numState);
+		if(!pJson->getVal(nameS+"_NAME", &name))break;
+
 		State* pS = addState();
 		if(pS==NULL)return false;
-
 		pS->m_name = name;
-		transitionID = i2str(pS->m_numTransition);
 
-		while(pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_TO", &k))
+		do
 		{
+			nameST = nameS+"_T"+i2str(pS->m_numTransition);
+			if(!pJson->getVal(nameST+"_TO", &k))break;
+
 			Transition* pT = pS->addTransition();
 			if(pT==NULL)return false;
-
 			pT->m_transitToID = k;
-			condID = i2str(pT->m_numCond);
 
-			while(pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_COND"+condID+"COND", &condStr))
+			do
 			{
-				TRANSITION_COND* pTC = pT->addCondition();
+				nameSTC = nameST+"_COND"+i2str(pT->m_numCond);
+
+				if(!pJson->getVal(nameSTC+"_TYPE", &typeStr))break;
+				if(!pJson->getVal(nameSTC+"_COND", &condStr))break;
+
+				ConditionBase* pTC;
+
+				if(typeStr=="ii")
+					pTC = pT->addConditionII();
+				else if(typeStr=="ff")
+					pTC = pT->addConditionII();
+
 				if(pTC==NULL)return false;
 
 				if(condStr=="bt")pTC->m_condition=bt;
@@ -75,22 +84,20 @@ bool _Automaton::init(JSON* pJson, string automatonName)
 				else if(condStr=="seq")pTC->m_condition=seq;
 				else if(condStr=="eq")pTC->m_condition=eq;
 				else if(condStr=="neq")pTC->m_condition=neq;
+				else pTC->m_condition=DEFAULT;
 
-				pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_COND"+condID+"NAME1", &pTC->m_namePtr1);
-				pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_COND"+condID+"NAME2", &pTC->m_namePtr2);
-				if(!pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_COND"+condID+"CONST2", &pTC->m_pFConst2))
-				{
-					pJson->getVal(fullName+stateID+"_TRANSITION_"+transitionID+"_COND"+condID+"CONST2", &pTC->m_pIConst2);
-				}
+				pJson->getVal(nameSTC+"_NAME1", &pTC->m_namePtr1);
+				pJson->getVal(nameSTC+"_NAME2", &pTC->m_namePtr2);
+//				if(!pJson->getVal(nameSTC+"_CONST2F", &pTC->m_pFConst2))
+//				{
+//					pJson->getVal(nameSTC+"_CONST2I", &pTC->m_pIConst2);
+//				}
 
-				condID = i2str(pT->m_numCond);
-			}
+			}while(1);
 
-			transitionID = i2str(pS->m_numTransition);
-		}
+		}while(1);
 
-		stateID = i2str(m_numState);
-	}
+	}while(1);
 
 	return true;
 }
@@ -133,9 +140,30 @@ void _Automaton::updateAll(void)
 
 State* _Automaton::addState(void)
 {
+	if(m_numState >= NUM_STATE)return NULL;
 
-	return NULL;
+	State** ppS = &m_pState[m_numState];
+	*ppS = new State();
+	if(*ppS==NULL)return NULL;
+
+	m_numState++;
+	return *ppS;
 }
+
+bool _Automaton::setState(int iState)
+{
+	if(iState >= m_numState)return false;
+	if(iState < 0)return false;
+
+	m_iState = iState;
+	return true;
+}
+
+bool _Automaton::checkDiagram(void)
+{
+	return true;
+}
+
 
 
 } /* namespace kai */

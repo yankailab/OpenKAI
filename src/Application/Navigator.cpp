@@ -26,6 +26,7 @@ Navigator::Navigator()
 	m_pSSD = NULL;
 	m_pFrame = NULL;
 	m_pAT = NULL;
+	m_pAM = NULL;
 }
 
 Navigator::~Navigator()
@@ -55,6 +56,16 @@ bool Navigator::start(JSON* pJson)
 		m_pCamFront = new _Stream();
 		CHECK_FATAL(m_pCamFront->init(pJson, camName));
 		m_pCamFront->start();
+	}
+
+	//Init Automaton
+	FPS=0;
+	CHECK_INFO(pJson->getVal("AM_MAIN_FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pAM = new _Automaton();
+		CHECK_FATAL(m_pAM->init(pJson, "MAIN"));
+		m_pAM->start();
 	}
 
 	//Init ROI Tracker
