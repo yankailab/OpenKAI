@@ -1,12 +1,12 @@
 /*
- * ConditionII.h
+ * ConditionIC.h
  *
  *  Created on: Aug 27, 2016
  *      Author: Kai Yan
  */
 
-#ifndef OPENKAI_SRC_AUTOMATON_CONDITIONII_H_
-#define OPENKAI_SRC_AUTOMATON_CONDITIONII_H_
+#ifndef OPENKAI_SRC_AUTOMATON_CONDITIONIC_H_
+#define OPENKAI_SRC_AUTOMATON_CONDITIONIC_H_
 
 #include "../Base/common.h"
 #include "ConditionBase.h"
@@ -14,11 +14,11 @@
 namespace kai
 {
 
-class ConditionII: public ConditionBase
+class ConditionIC: public ConditionBase
 {
 public:
-	ConditionII();
-	virtual ~ConditionII();
+	ConditionIC();
+	virtual ~ConditionIC();
 
 	bool isSatisfied(void);
 	bool setPtrByName(string name, int* ptr);
@@ -26,9 +26,9 @@ public:
 
 public:
 	int* 	m_p1;
-	int* 	m_p2;
+	int 	m_const;
 };
 
 } /* namespace kai */
 
-#endif /* OPENKAI_SRC_AUTOMATON_CONDITIONII_H_ */
+#endif /* OPENKAI_SRC_AUTOMATON_CONDITIONIC_H_ */

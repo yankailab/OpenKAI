@@ -3,13 +3,14 @@
 #define OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
 
 #include "../Base/common.h"
+#include "../Stream/_Stream.h"
 #include "../Detector/_Bullseye.h"
 #include "../Detector/_AprilTags.h"
-#include "../Stream/_Stream.h"
 #include "../Detector/_Cascade.h"
+#include "../Tracker/_ROITracker.h"
 #include "../Interface/_Mavlink.h"
 #include "../Interface/_RC.h"
-#include "../Tracker/_ROITracker.h"
+#include "../Automaton/_Automaton.h"
 
 #define NUM_RC_CHANNEL 8
 #define NUM_CAM_STREAM 16
@@ -109,6 +110,9 @@ public:
 	CONTROL_CHANNEL m_alt;
 
 	int m_RC[NUM_RC_CHANNEL];
+
+	//Automaon
+	_Automaton* m_pAM;
 
 	//Thread
 	void update(void);

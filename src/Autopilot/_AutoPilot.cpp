@@ -15,6 +15,7 @@ _AutoPilot::_AutoPilot()
 	m_pROITracker = NULL;
 	m_pMD = NULL;
 	m_pAT = NULL;
+	m_pAM = NULL;
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
@@ -140,6 +141,12 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
+
+
+	//Setup parameters to Automaton pointers
+	if(m_pAM==NULL)return false;
+	//TODO: add Mavlink status
+
 
 	return true;
 }
@@ -291,80 +298,6 @@ void _AutoPilot::camROILock(void)
 
 }
 
-/*
-void _AutoPilot::landingTarget(void)
-{
-	CamBase* pCamInput;
-	fVector3 markerCenter;
-
-	if (m_pMD == NULL)
-		return;
-	if (m_pROITracker == NULL)
-		return;
-
-	if (m_pMD->getCircleCenter(&markerCenter))
-	{
-		//Update Tracker
-		Rect roi;
-		roi.x = markerCenter.m_x - markerCenter.m_z;
-		roi.y = markerCenter.m_y - markerCenter.m_z;
-		roi.width = markerCenter.m_z * 2;
-		roi.height = markerCenter.m_z * 2;
-		m_pROITracker->setROI(roi);
-		m_pROITracker->tracking(true);
-
-		m_landingTarget.m_ROIstarted = 0;
-	}
-	else
-	{
-		if (!m_pROITracker->m_bTracking)
-			return;
-
-		uint64_t timeNow = get_time_usec();
-
-		//ROI tracker is already in use
-		if (m_landingTarget.m_ROIstarted > 0)
-		{
-			//Disable sending landing target if the marker is not seen for a certain time
-			if (timeNow - m_landingTarget.m_ROIstarted
-					> m_landingTarget.m_ROItimeLimit)
-			{
-				m_pROITracker->tracking(false);
-				return;
-			}
-		}
-		else
-		{
-			//Start to use ROI tracker if marker is not detected
-			m_landingTarget.m_ROIstarted = timeNow;
-		}
-
-		markerCenter.m_x = m_pROITracker->m_ROI.x
-				+ m_pROITracker->m_ROI.width * 0.5;
-		markerCenter.m_y = m_pROITracker->m_ROI.y
-				+ m_pROITracker->m_ROI.height * 0.5;
-	}
-
-	pCamInput = m_pMD->m_pCamStream->getCameraInput();
-
-	//Change position to angles
-	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)
-			/ pCamInput->m_width) * pCamInput->m_angleH * DEG_RADIAN
-			* m_landingTarget.m_orientX;
-	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)
-			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
-			* m_landingTarget.m_orientY;
-
-	if (m_pMavlink == NULL)
-		return;
-
-	//Send Mavlink command
-	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
-			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
-
-}
-*/
-
 void _AutoPilot::landingTarget(void)
 {
 	if (m_pAT == NULL)
@@ -482,5 +415,82 @@ bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
 
 	return true;
 }
+
+
+
+/*
+void _AutoPilot::landingTarget(void)
+{
+	CamBase* pCamInput;
+	fVector3 markerCenter;
+
+	if (m_pMD == NULL)
+		return;
+	if (m_pROITracker == NULL)
+		return;
+
+	if (m_pMD->getCircleCenter(&markerCenter))
+	{
+		//Update Tracker
+		Rect roi;
+		roi.x = markerCenter.m_x - markerCenter.m_z;
+		roi.y = markerCenter.m_y - markerCenter.m_z;
+		roi.width = markerCenter.m_z * 2;
+		roi.height = markerCenter.m_z * 2;
+		m_pROITracker->setROI(roi);
+		m_pROITracker->tracking(true);
+
+		m_landingTarget.m_ROIstarted = 0;
+	}
+	else
+	{
+		if (!m_pROITracker->m_bTracking)
+			return;
+
+		uint64_t timeNow = get_time_usec();
+
+		//ROI tracker is already in use
+		if (m_landingTarget.m_ROIstarted > 0)
+		{
+			//Disable sending landing target if the marker is not seen for a certain time
+			if (timeNow - m_landingTarget.m_ROIstarted
+					> m_landingTarget.m_ROItimeLimit)
+			{
+				m_pROITracker->tracking(false);
+				return;
+			}
+		}
+		else
+		{
+			//Start to use ROI tracker if marker is not detected
+			m_landingTarget.m_ROIstarted = timeNow;
+		}
+
+		markerCenter.m_x = m_pROITracker->m_ROI.x
+				+ m_pROITracker->m_ROI.width * 0.5;
+		markerCenter.m_y = m_pROITracker->m_ROI.y
+				+ m_pROITracker->m_ROI.height * 0.5;
+	}
+
+	pCamInput = m_pMD->m_pCamStream->getCameraInput();
+
+	//Change position to angles
+	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)
+			/ pCamInput->m_width) * pCamInput->m_angleH * DEG_RADIAN
+			* m_landingTarget.m_orientX;
+	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)
+			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
+			* m_landingTarget.m_orientY;
+
+	if (m_pMavlink == NULL)
+		return;
+
+	//Send Mavlink command
+	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
+
+}
+*/
+
 
 }

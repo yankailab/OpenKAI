@@ -119,11 +119,12 @@ bool Navigator::start(JSON* pJson)
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
-		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
 		m_pAP->m_pMavlink = m_pMavlink;
 		m_pAP->m_pROITracker = m_pROITracker;
 		m_pAP->m_pMD = m_pMD;
 		m_pAP->m_pAT = m_pAT;
+		m_pAP->m_pAM = m_pAM;
+		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
 		m_pAP->start();
 	}
 
@@ -264,6 +265,11 @@ void Navigator::draw(void)
 	if(m_pCamFront)
 	{
 		if(!m_pCamFront->draw(m_pFrame, &textPos))return;
+	}
+
+	if(m_pAM)
+	{
+		m_pAM->draw(m_pFrame, &textPos);
 	}
 
 	if(m_pAP)

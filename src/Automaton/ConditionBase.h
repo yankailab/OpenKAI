@@ -25,6 +25,8 @@ public:
 	virtual ~ConditionBase();
 
 	virtual bool isSatisfied(void);
+	virtual bool setPtrByName(string name, int* ptr);
+	virtual bool setPtrByName(string name, double* ptr);
 
 public:
 	string			m_namePtr1;

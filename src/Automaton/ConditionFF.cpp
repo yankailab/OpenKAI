@@ -1,33 +1,33 @@
 /*
- * ConditionII.cpp
+ * ConditionFF.cpp
  *
  *  Created on: Aug 27, 2016
  *      Author: Kai Yan
  */
 
-#include "ConditionII.h"
+#include "ConditionFF.h"
 
 namespace kai
 {
 
-ConditionII::ConditionII()
+ConditionFF::ConditionFF()
 {
 	ConditionBase();
 	m_p1 = NULL;
 	m_p2 = NULL;
 }
 
-ConditionII::~ConditionII()
+ConditionFF::~ConditionFF()
 {
 }
 
-bool ConditionII::isSatisfied(void)
+bool ConditionFF::isSatisfied(void)
 {
 	if(m_p1==NULL)return false;
 	if(m_p2==NULL)return false;
 
-	int p1 = (int)(*m_p1);
-	int p2 = (int)(*m_p2);
+	double p1 = (double)(*m_p1);
+	double p2 = (double)(*m_p2);
 
 	switch (m_condition)
 	{
@@ -57,24 +57,24 @@ bool ConditionII::isSatisfied(void)
 	return false;
 }
 
-bool ConditionII::setPtrByName(string name, int* ptr)
+bool ConditionFF::setPtrByName(string name, int* ptr)
+{
+	if(ptr==NULL)return false;
+	if(name=="")return false;
+
+	if(name==m_namePtr1)m_p1 = (double*)ptr;
+	if(name==m_namePtr2)m_p2 = (double*)ptr;
+
+	return true;
+}
+
+bool ConditionFF::setPtrByName(string name, double* ptr)
 {
 	if(ptr==NULL)return false;
 	if(name=="")return false;
 
 	if(name==m_namePtr1)m_p1 = ptr;
 	if(name==m_namePtr2)m_p2 = ptr;
-
-	return true;
-}
-
-bool ConditionII::setPtrByName(string name, double* ptr)
-{
-	if(ptr==NULL)return false;
-	if(name=="")return false;
-
-	if(name==m_namePtr1)m_p1 = (int*)ptr;
-	if(name==m_namePtr2)m_p2 = (int*)ptr;
 
 	return true;
 }

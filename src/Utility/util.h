@@ -1,4 +1,7 @@
-#pragma once
+
+#ifndef OPENKAI_SRC_UTILITY_UTIL_H_
+#define OPENKAI_SRC_UTILITY_UTIL_H_
+
 #include "../Base/platform.h"
 #include <time.h>
 #include <sys/time.h>
@@ -211,4 +214,6 @@ inline void trimJson(string* pStr)
 		pStr->erase(0,idx-1);
 	}
 }
+
+#endif
 

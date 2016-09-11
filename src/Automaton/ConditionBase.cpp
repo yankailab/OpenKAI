@@ -26,4 +26,14 @@ bool ConditionBase::isSatisfied(void)
 	return false;
 }
 
+bool ConditionBase::setPtrByName(string name, int* ptr)
+{
+	return false;
+}
+
+bool ConditionBase::setPtrByName(string name, double* ptr)
+{
+	return false;
+}
+
 } /* namespace kai */

@@ -72,9 +72,18 @@ bool _Automaton::init(JSON* pJson, string automatonName)
 				ConditionBase* pTC;
 
 				if(typeStr=="ii")
+				{
 					pTC = pT->addConditionII();
+				}
 				else if(typeStr=="ff")
-					pTC = pT->addConditionII();
+				{
+					pTC = pT->addConditionFF();
+				}
+				else if(typeStr=="ic")
+				{
+					pTC = pT->addConditionIC();
+					pJson->getVal(nameSTC+"_CONSTI", &(((ConditionIC*)pTC)->m_const));
+				}
 
 				if(pTC==NULL)return false;
 
@@ -88,16 +97,16 @@ bool _Automaton::init(JSON* pJson, string automatonName)
 
 				pJson->getVal(nameSTC+"_NAME1", &pTC->m_namePtr1);
 				pJson->getVal(nameSTC+"_NAME2", &pTC->m_namePtr2);
-//				if(!pJson->getVal(nameSTC+"_CONST2F", &pTC->m_pFConst2))
-//				{
-//					pJson->getVal(nameSTC+"_CONST2I", &pTC->m_pIConst2);
-//				}
 
 			}while(1);
 
 		}while(1);
 
 	}while(1);
+
+	k=0;
+	pJson->getVal("AM_"+automatonName+"_START_STATE", &k);
+	setState(k);
 
 	return true;
 }
@@ -134,9 +143,39 @@ void _Automaton::update(void)
 
 void _Automaton::updateAll(void)
 {
+	int iTransit = m_pState[m_iState]->Transit();
 
+	if(iTransit<0)return;
+	if(iTransit>=m_numState)return;
+
+	m_iState = iTransit;
 }
 
+bool _Automaton::setPtrByName(string name, int* ptr)
+{
+	if(ptr==NULL)return false;
+	if(name=="")return false;
+
+	for(int i=0;i<m_numState;i++)
+	{
+		m_pState[i]->setPtrByName(name,ptr);
+	}
+
+	return true;
+}
+
+bool _Automaton::setPtrByName(string name, double* ptr)
+{
+	if(ptr==NULL)return false;
+	if(name=="")return false;
+
+	for(int i=0;i<m_numState;i++)
+	{
+		m_pState[i]->setPtrByName(name,ptr);
+	}
+
+	return true;
+}
 
 State* _Automaton::addState(void)
 {
@@ -163,6 +202,27 @@ bool _Automaton::checkDiagram(void)
 {
 	return true;
 }
+
+bool _Automaton::draw(Frame* pFrame, iVector4* pTextPos)
+{
+	if (pFrame == NULL)
+		return false;
+
+	Mat* pMat = pFrame->getCMat();
+
+	putText(*pFrame->getCMat(), "Automaton FPS: " + i2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	putText(*pFrame->getCMat(), "Automaton State: " + m_pState[m_iState]->m_name + " (" + i2str(m_iState) + ")",
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+
+	pTextPos->m_y += pTextPos->m_w;
+
+	return true;
+}
+
 
 
 

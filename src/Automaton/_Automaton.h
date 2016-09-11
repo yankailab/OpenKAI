@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Stream/Frame.h"
 #include "State.h"
 
 #define NUM_STATE 32
@@ -29,6 +30,11 @@ public:
 	State* addState(void);
 	bool setState(int iState);
 	bool checkDiagram(void);
+
+	bool setPtrByName(string name, int* ptr);
+	bool setPtrByName(string name, double* ptr);
+
+	bool draw(Frame* pFrame, iVector4* pTextPos);
 
 public:
 	void updateAll(void);

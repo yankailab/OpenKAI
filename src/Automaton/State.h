@@ -24,6 +24,11 @@ public:
 
 	Transition* addTransition(void);
 	bool IsValid(void);
+	int Transit(void);
+
+	bool setPtrByName(string name, int* ptr);
+	bool setPtrByName(string name, double* ptr);
+
 
 public:
 	string		m_name;
