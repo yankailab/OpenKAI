@@ -28,18 +28,18 @@ bool _Caffe::init(JSON* pJson, string name)
 	string labelFile;
 	string presetDir = "";
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
-	CHECK_FATAL(pJson->getVal("CAFFE_MODEL_FILE", &modelFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_TRAINED_FILE", &trainedFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_MEAN_FILE", &meanFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_LABEL_FILE", &labelFile));
+	CHECK_INFO(pJson->var("PRESET_DIR", &presetDir));
+	CHECK_INFO(pJson->var("CAFFE_DIR", &caffeDir));
+	CHECK_FATAL(pJson->var("CAFFE_MODEL_FILE", &modelFile));
+	CHECK_FATAL(pJson->var("CAFFE_TRAINED_FILE", &trainedFile));
+	CHECK_FATAL(pJson->var("CAFFE_MEAN_FILE", &meanFile));
+	CHECK_FATAL(pJson->var("CAFFE_LABEL_FILE", &labelFile));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, caffeDir + labelFile, 1);
 	LOG(INFO)<<"Caffe Initialized";
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("CAFFE_FPS", &FPS));
+	CHECK_ERROR(pJson->var("CAFFE_FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_pFrame = new Frame();

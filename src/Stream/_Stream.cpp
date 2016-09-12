@@ -1,5 +1,5 @@
 /*
- * CamStream.cpp
+ * _Stream.cpp
  *
  *  Created on: Aug 23, 2015
  *      Author: yankai
@@ -33,17 +33,23 @@ _Stream::~_Stream()
 	RELEASE(m_pHSVframe);
 }
 
-bool _Stream::init(JSON* pJson, string camName)
+bool _Stream::init(Config* pConfig, string name)
 {
-	if(!pJson)return false;
+	if(!pConfig)return false;
+	if(name.empty())return false;
+
+	Config* pStream = pConfig->obj(name);
+	if(pStream->empty())return false;
 
 	double FPS = DEFAULT_FPS;
-	int camType;
-	m_camName = camName;
+	CHECK_INFO(pStream->var("FPS", &FPS));
+	this->setTargetFPS(FPS);
 
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &FPS));
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_SHOWDEPTH", &m_showDepth));
-	CHECK_FATAL(pJson->getVal("CAM_"+camName+"_TYPE", &camType));
+	int camType;
+	m_camName = name;
+
+	CHECK_INFO(pStream->var("bShowDepth", &m_showDepth));
+	CHECK_FATAL(pStream->var("type", &camType));
 
 	switch (camType)
 	{
@@ -63,10 +69,9 @@ bool _Stream::init(JSON* pJson, string camName)
 		break;
 	}
 
-	CHECK_ERROR(m_pCamera->setup(pJson, camName));
+	CHECK_ERROR(m_pCamera->setup(pConfig, name));
 
 	m_bThreadON = false;
-	this->setTargetFPS(FPS);
 
 	return true;
 }

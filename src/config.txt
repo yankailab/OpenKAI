@@ -1,231 +1,298 @@
+
 {
-"PRESET_DIR":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
-
-"SERIALPORT_MAVLINK_FPS":30,
-"SERIALPORT_MAVLINK_NAME":"/dev/ttyUSB0",
-"SERIALPORT_MAVLINK_BAUDRATE":921600,
-
-"APP_NAME":"Navigator",
-"APP_SHOW_SCREEN":1,
-"APP_FULL_SCREEN":0,
-"APP_WAIT_KEY":30,
-
-"CAM_MAIN_NAME":"TILTAC",
-
-"CAM_ZEDL_FPS":30,
-"CAM_ZEDL_TYPE":0,
-"CAM_ZEDL_ID":0,
-"CAM_ZEDL_SHOWDEPTH":0,
-"CAM_ZEDL_WIDTH":1344,
-"CAM_ZEDL_HEIGHT":376,
-"CAM_ZEDL_CROP":1,
-"CAM_ZEDL_CROP_X":0,
-"CAM_ZEDL_CROP_Y":0,
-"CAM_ZEDL_CROP_W":672,
-"CAM_ZEDL_CROP_H":376,
-"CAM_ZEDL_CALIB":0,
-"CAM_ZEDL_FISHEYE":0,
-"CAM_ZEDL_CALIBFILE":"calibration/sp360-1440.xml",
-"CAM_ZEDL_ISOSCALE":1.0,
-"CAM_ZEDL_GIMBAL":0,
-"CAM_ZEDL_ANGLE_V":67.1,
-"CAM_ZEDL_ANGLE_H":66.7,
-
-"CAM_ZEDLHD_FPS":30,
-"CAM_ZEDLHD_TYPE":0,
-"CAM_ZEDLHD_ID":0,
-"CAM_ZEDLHD_WIDTH":2560,
-"CAM_ZEDLHD_HEIGHT":720,
-"CAM_ZEDLHD_CROP":1,
-"CAM_ZEDLHD_CROP_X":0,
-"CAM_ZEDLHD_CROP_Y":0,
-"CAM_ZEDLHD_CROP_W":1280,
-"CAM_ZEDLHD_CROP_H":720,
-"CAM_ZEDLHD_ANGLE_V":67.1,
-"CAM_ZEDLHD_ANGLE_H":66.7,
-
-"CAM_ZEDLFHD_FPS":30,
-"CAM_ZEDLFHD_TYPE":0,
-"CAM_ZEDLFHD_ID":0,
-"CAM_ZEDLFHD_WIDTH":3840,
-"CAM_ZEDLFHD_HEIGHT":1080,
-"CAM_ZEDLFHD_CROP":1,
-"CAM_ZEDLFHD_CROP_X":0,
-"CAM_ZEDLFHD_CROP_Y":0,
-"CAM_ZEDLFHD_CROP_W":1920,
-"CAM_ZEDLFHD_CROP_H":1080,
-"CAM_ZEDLFHD_ANGLE_V":67.1,
-"CAM_ZEDLFHD_ANGLE_H":66.7,
-
-"CAM_TILTAC_FPS":30,
-"CAM_TILTAC_TYPE":0,
-"CAM_TILTAC_ID":2,
-"CAM_TILTAC_WIDTH":1280,
-"CAM_TILTAC_HEIGHT":720,
-"CAM_TILTAC_ANGLE_V":67.1,
-"CAM_TILTAC_ANGLE_H":66.7,
-
-"CAM_ZED_FPS":30,
-"CAM_ZED_TYPE":1,
-"CAM_ZED_SHOWDEPTH":0,
-"CAM_ZED_ZED_RESOLUTION":2,
-"CAM_ZED_ZED_MIN_DISTANCE":800,
-"CAM_ZED_WIDTH":1344,
-"CAM_ZED_HEIGHT":376,
-"CAM_ZED_ANGLE_V":67.1,
-"CAM_ZED_ANGLE_H":66.7,
-"CAM_ZED_CROP":0,
-
-
-"UNIVERSE_FPS":30,
-"UNIVERSE_FRAME_LIFETIME":1000000,
-"UNIVERSE_PROB_MIN":0.1,
-"UNIVERSE_POS_DISPARITY":200,
-
-"CAFFE_DIR":"/home/kai/dev/caffe_ssd/caffe/",
-"CAFFE_SSD_FPS":30,
-"CAFFE_SSD_MIN_CONFIDENCE":0.1,
-"CAFFE_SSD_MODEL_FILE":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
-"CAFFE_SSD_TRAINED_FILE":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
-"CAFFE_SSD_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
-"CAFFE_SSD_LABEL_FILE":"model/coco_labels.txt",
-
-"CAFFE_FPS":0,
-"CAFFE_MODEL_FILE":"models/bvlc_reference_caffenet/deploy.prototxt",
-"CAFFE_TRAINED_FILE":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
-"CAFFE_MEAN_FILE":"data/ilsvrc12/imagenet_mean.binaryproto",
-"CAFFE_LABEL_FILE":"data/ilsvrc12/synset_words.txt",
-
-"FCN_FPS":0,
-"FCN_PROTOTXT":"models/FCN-8/deploy.prototxt",
-"FCN_CAFFEMODEL":"models/FCN-8/fcn8s-heavy-pascal.caffemodel",
-"FCN_COLOR_FILE":"models/FCN-8/camvid12.png",
-"FCN_CUDADEVICE_ID":0,
-
-"APRILTAGS_LANDING_FPS":30,
-"APRILTAGS_LANDING_FAMILY":"Tag16h5",
-"APRILTAGS_LANDING_ERROR":0.1,
-"APRILTAGS_LANDING_LIFETIME":300000,
-"APRILTAGS_LANDING_DIST_THR":100,
-"APRILTAGS_LANDING_DET_INTERVAL":500000,
-"APRILTAGS_LANDING_SIZELIM":700,
-"APRILTAGS_LANDING_SCALING":0.5,
-"APRILTAGS_LANDING_NUM_TAG":1,
-"APRILTAGS_LANDING_TAG_0":5,
-
-"ROITRACKER_MAIN_FPS":0,
-
-"MARKER_LANDING_FPS":0,
-"MARKER_LANDING_METHOD":1,
-"MARKER_LANDING_ORIENTATION_X":1,
-"MARKER_LANDING_ORIENTATION_Y":1,
-"MARKER_LANDING_ROI_TIME_LIMIT":1000000,
-"MARKER_LANDING_AREA_RATIO":0.8,
-"MARKER_LANDING_MIN_SIZE":5,
-"MARKER_LANDING_MEDBLUR_KSIZE":9,
-"MARKER_LANDING_HOUGH_MINDIST":100,
-"MARKER_LANDING_HOUGH_PARAM1":100,
-"MARKER_LANDING_HOUGH_PARAM2":50,
-"MARKER_LANDING_HOUGH_MINR":0,
-"MARKER_LANDING_HOUGH_MAXR":0,
-
-"FLOW_FRONTL_FPS":0,
-"FLOW_FRONTL_DEPTH":0,
-"FLOW_FRONTL_WIDTH":640,
-"FLOW_FRONTL_HEIGHT":480,
-"FLOW_FRONTL_COLOR_FILE":"model/dlabel.png",
-"FLOW_FRONTL_FLOW_MAX":500,
-
-"DEPTH_OBJDETECTOR_FPS":0,
-"DEPTH_OBJDETECTOR_AREA_MIN":250,
-"DEPTH_OBJDETECTOR_AREA_MAX":10000000,
-
-"AUTOPILOT_MAIN_FPS":20,
-"ROI_MIN_SIZE":25,
-"ROLL_TARGET_POS_MAIN":960,
-"PITCH_TARGET_POS_MAIN":500,
-
-"ROLL_P_MAIN":-0.5,
-"ROLL_I_MAIN":0.0,
-"ROLL_IMAX_MAIN":10.0,
-"ROLL_D_MAIN":-0.6,
-"ROLL_dT_MAIN":900.0,
-"ROLL_PWM_CENTER_MAIN":1510,
-"ROLL_PWM_LOW_MAIN":1250,
-"ROLL_PWM_HIGH_MAIN":1750,
-"ROLL_PWM_IDX_MAIN":0,
-
-"PITCH_P_MAIN":-0.5,
-"PITCH_I_MAIN":0.0,
-"PITCH_IMAX_MAIN":10.0,
-"PITCH_D_MAIN":-0.6,
-"PITCH_dT_MAIN":900.0,
-"PITCH_PWM_CENTER_MAIN":1510,
-"PITCH_PWM_LOW_MAIN":1250,
-"PITCH_PWM_HIGH_MAIN":1750,
-"PITCH_PWM_IDX_MAIN":1,
-
-"ALT_P_MAIN":1.0,
-"ALT_I_MAIN":0.0,
-"ALT_IMAX_MAIN":0.0,
-"ALT_D_MAIN":0.0,
-"ALT_dT_MAIN":0.0,
-"ALT_PWM_CENTER_MAIN":1500,
-"ALT_PWM_LOW_MAIN":1000,
-"ALT_PWM_HIGH_MAIN":2000,
-"ALT_PWM_IDX_MAIN":2,
-
-"YAW_P_MAIN":200.0,
-"YAW_I_MAIN":0.0,
-"YAW_IMAX_MAIN":0.0,
-"YAW_D_MAIN":0.0,
-"YAW_dT_MAIN":0.0,
-"YAW_PWM_CENTER_MAIN":1500,
-"YAW_PWM_LOW_MAIN":1000,
-"YAW_PWM_HIGH_MAIN":2000,
-"YAW_PWM_IDX_MAIN":3,
-
-"PWM_MODE_ALT_HOLD":1815,
-"PWM_MODE_MANUAL":1165,
-
-
-"AM_MAIN_FPS":10,
-"AM_MAIN_START_STATE":0,
-
-"AM_MAIN_STATE0_NAME":"STANDBY",
-"AM_MAIN_STATE0_T0_TO":0,
-"AM_MAIN_STATE0_T0_COND0_TYPE":"ii",
-"AM_MAIN_STATE0_T0_COND0_COND":"",
-"AM_MAIN_STATE0_T0_COND0_NAME1":"",
-"AM_MAIN_STATE0_T0_COND0_NAME2":"",
-"AM_MAIN_STATE0_T0_COND0_CONST2I":,
-
-
-
-
-
-
-
-
-"OD_CANNY_LOW":10,
-"OD_CANNY_HIGH":100,
-"OD_CANNY_APPERTURE":3,
-"OD_GAUSS_KSIZE":3,
-"OD_GAUSS_SIGMA":1,
-
-"SEGNET_MODEL_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.prototxt",
-"SEGNET_WEIGHTS_FILE_DEFAULT":"/home/kai/dev/SegNet-Tutorial/Example_Models/driving_web_demo/driving.caffemodel",
-"SEGNET_COLOR_FILE_DEFAULT":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/model/camvid12.png",
-"SEGNET_CUDADEVICE_ID_DEFAULT":0,
-
-"FEATURE_IMG_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/akaze.jpg",
-"CASCADE_DEVICE_DRONE":0,
-"CASCADE_FILE_DRONE":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
-"CASCADE_NUM_DRONE":10,
-"CASCADE_LIFETIME_DRONE":200000,
-"CASCADE_POSDIFF_DRONE":50,
-"CASCADE_CUDADEVICE_ID_DRONE":0,
-
-
-
+	"name":"APP",
+	"appName":"Navigator",
+	"bShowScreen":1,
+	"bFullScreen":0,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"camMain":"ZEDL",
 }
+
+{
+	"name":"Mavlink0",
+	"FPS":30,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":921600,
+}
+
+{
+	"name":"ZEDL",
+	"FPS":30,
+	"type":0,
+	"ID":0,
+	"bShowDepth":0,
+	"width":1344,
+	"height":376,
+	"bCrop":1,
+	"cropX":0,
+	"cropY":0,
+	"cropW":672,
+	"cropH":376,
+	"bCalib":0,
+	"bFisheye":0,
+	"calibFile":"calibration/sp360-1440.xml",
+	"isoScale":1.0,
+	"bGimbal":0,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"ZEDLHD",
+	"FPS":30,
+	"type":0,
+	"ID":0,
+	"width":2560,
+	"height":720,
+	"bCrop":1,
+	"cropX":0,
+	"cropY":0,
+	"cropW":1280,
+	"cropH":720,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"ZEDLFHD",
+	"FPS":30,
+	"type":0,
+	"ID":0,
+	"width":3840,
+	"height":1080,
+	"bCrop":1,
+	"cropX":0,
+	"cropY":0,
+	"cropW":1920,
+	"cropH":1080,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"TILTAC",
+	"FPS":30,
+	"type":0,
+	"ID":2,
+	"width":1280,
+	"height":720,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"ZED",
+	"FPS":30,
+	"type":1,
+	"bShowDepth":0,
+	"ZEDresolution":2,
+	"ZEDminDist":800,
+	"width":1344,
+	"height":376,
+	"angleV":67.1,
+	"angleH":66.7,
+	"bCrop":0,
+}
+
+{
+	"name":"Universe",
+	"FPS":30,
+	"frameLifetime":1000000,
+	"probMin":0.1,
+	"posDisparity":200,
+}
+
+{
+	"name":"SSD",
+	"FPS":30,
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
+	"minConfidence":0.1,
+	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
+	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
+	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
+	"labelFile":"model/coco_labels.txt",
+}
+
+{
+	"name":"Caffe",
+	"FPS":0,
+	"dir":"/home/ubuntu/src/caffe/caffe/",
+	"modelFile":"models/bvlc_reference_caffenet/deploy.prototxt",
+	"trainedFile":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
+	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
+	"labelFile":"data/ilsvrc12/synset_words.txt",
+}
+
+{
+	"name":"FCN",
+	"FPS":0,
+	"dir":"/home/ubuntu/src/caffe/caffe/",
+	"modelFile":"models/FCN-8/deploy.prototxt",
+	"trainedFile":"models/FCN-8/fcn8s-heavy-pascal.caffemodel",
+	"labelFile":"models/FCN-8/camvid12.png",
+}
+
+{
+	"name":"AprilTagLanding",
+	"FPS":30,
+	"family":"Tag16h5",
+	"err":0.1,
+	"lifeTime":300000,
+	"distThr":100,
+	"detInterval":500000,
+	"sizeLim":700,
+	"scaling":0.5,
+}
+
+{
+	"name":"roiTracker0",
+	"FPS":0,
+}
+
+{
+	"name":"markerLanding",
+	"FPS":0,
+	"method":1,
+	"areaRatio":0.8,
+	"minSize":5,
+	"medBlueKsize":9,
+	"HoughMinDist":100,
+	"HoughParam1":100,
+	"HoughParam2":50,
+	"HoughMinR":0,
+	"HoughMaxR":0,
+}
+
+{
+	"name":"optflow0",
+	"FPS":0,
+	"bDepth":0,
+	"width":640,
+	"height":480,
+	"colorFile":"model/dlabel.png",
+	"flowMax":500,
+}
+
+{
+	"name":"depthObjDetector",
+	"FPS":0,
+	"areaMin":250,
+	"areaMax":10000000,
+}
+
+{
+	"name":"Autopilot0",
+	"FPS":20,
+	"roiMinSize":25,
+	
+	{
+		"name":"roll",
+		"P":-0.5,
+		"I":0.0,
+		"Imax":10.0,
+		"D":-0.6,
+		"dT":900.0,
+		"pwmN":1510,
+		"pwmL":1250,
+		"pwmH":1750,
+		"pwmCh":0,
+	}
+	
+	{
+		"name":"pitch",
+		"P":-0.5,
+		"I":0.0,
+		"Imax":10.0,
+		"D":-0.6,
+		"dT":900.0,
+		"pwmN":1510,
+		"pwmL":1250,
+		"pwmH":1750,
+		"pwmCh":1,
+	}
+
+	{
+		"name":"alt",
+		"P":1.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"dT":0.0,
+		"pwmN":1500,
+		"pwmL":1000,
+		"pwmH":2000,
+		"pwmCh":2,
+	}
+
+	{
+		"name":"yaw",
+		"P":200.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"dT":0.0,
+		"pwmN":1500,
+		"pwmL":1000,
+		"pwmH":2000,
+		"pwmCh":3,
+	}
+
+	{
+		"name":"visualFollow",
+		"targetX":960,
+		"targetY":500,
+	}
+	
+	{
+		"name":"visualLanding"
+		"orientationX":1,
+		"orientationY":1,
+		"roiTimeLimit":1000000,
+		
+		{
+			"name":"AprilTags",
+			"num":1,
+			"tag0":15,
+		}	
+	}
+	
+	{
+		"name":"mode",
+		"pwmAltHold":1815,
+		"pwmStabilize":1165,
+	}
+}
+
+{
+	"name":"Automaton0",
+	"FPS":10,
+	"startState":0,
+
+	{
+		"name":"state0",
+		"stateName":"LAND_STANDBY",
+		{
+			"name":"transition0",
+			"toState":0,
+			{
+				"name":"condition0",
+				"type":"ii",
+				"cond":"bt",
+				"ptrName1":"",
+				"ptrName2":"",
+				"constI":0,				
+			}
+		}
+	}
+}
+
+{
+	"name":"cascade0",
+	"FPS":0,
+	"cascadeFile":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
+	"num":10,
+	"lifeTime":200000,
+	"posDiff":50,
+}
+

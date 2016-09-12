@@ -23,19 +23,25 @@ _FCN::~_FCN()
 {
 }
 
-bool _FCN::init(string name, JSON* pJson)
+bool _FCN::init(Config* pConfig, string name)
 {
+	if(!pConfig)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
 	string modelFile;
 	string trainedFile;
 	string labelFile;
 	string caffeDir = "";
 
-	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
-	CHECK_INFO(pJson->getVal("FCN_CUDADEVICE_ID", &m_cudaDeviceID));
+	CHECK_INFO(pC->var("dir", &caffeDir));
+	CHECK_INFO(pC->var("cudaDeviceID", &m_cudaDeviceID));
 
-	CHECK_FATAL(pJson->getVal("FCN_PROTOTXT", &modelFile));
-	CHECK_FATAL(pJson->getVal("FCN_CAFFEMODEL", &trainedFile));
-	CHECK_FATAL(pJson->getVal("FCN_COLOR_FILE", &labelFile));
+	CHECK_FATAL(pC->var("modelFile", &modelFile));
+	CHECK_FATAL(pC->var("trainedFile", &trainedFile));
+	CHECK_FATAL(pC->var("labelFile", &labelFile));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(caffeDir+modelFile, TEST));
@@ -55,7 +61,7 @@ bool _FCN::init(string name, JSON* pJson)
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("CLASSIFIER_FPS", &FPS));
+	CHECK_ERROR(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	return true;

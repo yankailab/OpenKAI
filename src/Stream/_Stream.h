@@ -1,12 +1,12 @@
 /*
- * CamStream.h
+ * _Stream.h
  *
  *  Created on: Aug 23, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_CAMSTREAM_H_
-#define SRC_CAMSTREAM_H_
+#ifndef SRC_STREAM_STREAM_H_
+#define SRC_STREAM_STREAM_H_
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
@@ -25,7 +25,7 @@ public:
 	_Stream();
 	virtual ~_Stream();
 
-	bool init(JSON* pJson, string camName);
+	bool init(Config* pConfig, string camName);
 	bool start(void);
 	bool complete(void);
 	bool draw(Frame* pFrame, iVector4* textPos);
@@ -61,4 +61,4 @@ private:
 
 } /* namespace kai */
 
-#endif /* SRC_CAMSTREAM_H_ */
+#endif /* SRC_STREAM_STREAM_H_ */

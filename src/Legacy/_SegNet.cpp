@@ -34,11 +34,11 @@ bool _SegNet::init(string name, JSON* pJson)
 	string modelFile;
 	string trainedFile;
 	string labelFile;
-	CHECK_FATAL(pJson->getVal("SEGNET_MODEL_FILE_"+name, &modelFile));
-	CHECK_FATAL(pJson->getVal("SEGNET_WEIGHTS_FILE_"+name, &trainedFile));
-	CHECK_FATAL(pJson->getVal("SEGNET_COLOR_FILE_"+name, &labelFile));
+	CHECK_FATAL(pJson->var("SEGNET_MODEL_FILE_"+name, &modelFile));
+	CHECK_FATAL(pJson->var("SEGNET_WEIGHTS_FILE_"+name, &trainedFile));
+	CHECK_FATAL(pJson->var("SEGNET_COLOR_FILE_"+name, &labelFile));
 
-	CHECK_FATAL(pJson->getVal("SEGNET_CUDADEVICE_ID_"+name, &m_cudaDeviceID));
+	CHECK_FATAL(pJson->var("SEGNET_CUDADEVICE_ID_"+name, &m_cudaDeviceID));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(modelFile, TEST));

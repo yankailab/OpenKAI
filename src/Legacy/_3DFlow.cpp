@@ -33,11 +33,11 @@ _3DFlow::~_3DFlow()
 bool _3DFlow::init(JSON* pJson, string name)
 {
 	string presetDir = "";
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
+	CHECK_INFO(pJson->var("PRESET_DIR", &presetDir));
 	string labelFile;
-	CHECK_FATAL(pJson->getVal("3DFLOW_"+name+"_COLOR_FILE", &labelFile));
+	CHECK_FATAL(pJson->var("3DFLOW_"+name+"_COLOR_FILE", &labelFile));
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("3DFLOW_"+name+"_FPS", &FPS));
+	CHECK_INFO(pJson->var("3DFLOW_"+name+"_FPS", &FPS));
 
 	m_labelColor = imread(presetDir+labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);

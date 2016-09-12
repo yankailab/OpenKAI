@@ -28,7 +28,7 @@ public:
 	ZED();
 	virtual ~ZED();
 
-	bool setup(JSON* pJson, string name);
+	bool setup(Config* pConfig, string name);
 	bool openCamera(void);
 	GpuMat* readFrame(void);
 	GpuMat* getDepthFrame(void);

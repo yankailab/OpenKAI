@@ -24,8 +24,8 @@ bool _RC::setup(JSON* pJson, string serialName)
 {
 	if(!pJson)return false;
 
-	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
-	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
+	CHECK_ERROR(pJson->var("SERIALPORT_"+serialName+"_NAME", &m_sportName));
+	CHECK_ERROR(pJson->var("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
 
 	this->setTargetFPS(1000);
 

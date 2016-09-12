@@ -37,18 +37,28 @@ _Cascade::~_Cascade()
 {
 }
 
-bool _Cascade::init(string name, JSON* pJson)
+bool _Cascade::init(Config* pConfig, string name)
 {
-	string cascadeFile;
+	if(!pConfig)return false;
+	if(name.empty())return false;
 
-	CHECK_ERROR(pJson->getVal("CASCADE_DEVICE_" + name, &m_device));
-	CHECK_ERROR(pJson->getVal("CASCADE_FILE_" + name, &cascadeFile));
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
 
-	this->setTargetFPS(30.0);
+	double FPS = DEFAULT_FPS;
+	CHECK_ERROR(pC->var("FPS", &FPS));
+	this->setTargetFPS(FPS);
+
+	string cascadeFile = "";
+	string presetDir = "";
+
+	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_ERROR(pC->var("device", &m_device));
+	CHECK_ERROR(pC->var("cascadeFile", &cascadeFile));
 
 	if (m_device == CASCADE_CPU)
 	{
-		CHECK_ERROR(m_CC.load(cascadeFile));
+		CHECK_ERROR(m_CC.load(presetDir+cascadeFile));
 	}
 	else if (m_device == CASCADE_CUDA)
 	{
@@ -56,12 +66,12 @@ bool _Cascade::init(string name, JSON* pJson)
 		CHECK_ERROR(m_pCascade);
 		//TODO:set the upper limit of objects to be detected
 		//m_pCascade->
-		CHECK_INFO(pJson->getVal("CASCADE_CUDADEVICE_ID_" + name, &m_cudaDeviceID));
+		CHECK_INFO(pC->var("cudaDeviceID", &m_cudaDeviceID));
 	}
 
-	CHECK_INFO(pJson->getVal("CASCADE_LIFETIME_" + name, &m_objLifeTime));
-	CHECK_INFO(pJson->getVal("CASCADE_POSDIFF_" + name, &m_posDiff));
-	CHECK_ERROR(pJson->getVal("CASCADE_NUM_" + name, &m_numObj));
+	CHECK_INFO(pC->var("lifeTime", &m_objLifeTime));
+	CHECK_INFO(pC->var("posDiff", &m_posDiff));
+	CHECK_ERROR(pC->var("num", &m_numObj));
 
 	m_pObj = new CASCADE_OBJECT[m_numObj];
 	if (m_pObj == NULL)

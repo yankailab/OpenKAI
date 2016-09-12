@@ -33,7 +33,7 @@ Navigator::~Navigator()
 {
 }
 
-bool Navigator::start(JSON* pJson)
+bool Navigator::start(Config* pConfig)
 {
 	//TODO: Caffe set data to GPU directly
 	//TODO: Solve caffe ROI in DepthDetector
@@ -43,49 +43,49 @@ bool Navigator::start(JSON* pJson)
 	int FPS;
 	string camName;
 
-	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
-	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
-	CHECK_INFO(pJson->getVal("APP_WAIT_KEY", &m_waitKey));
+	CHECK_INFO(pConfig->obj("APP")->var("bShowScreen", &m_bShowScreen));
+	CHECK_INFO(pConfig->obj("APP")->var("bFullScreen", &m_bFullScreen));
+	CHECK_INFO(pConfig->obj("APP")->var("waitKey", &m_waitKey));
 
 	m_pFrame = new Frame();
 
 	//Init Camera
-	CHECK_INFO(pJson->getVal("CAM_MAIN_NAME", &camName));
+	CHECK_INFO(pConfig->obj("APP")->var("camMain", &camName));
 	if (camName != "video")
 	{
 		m_pCamFront = new _Stream();
-		CHECK_FATAL(m_pCamFront->init(pJson, camName));
+		CHECK_FATAL(m_pCamFront->init(pConfig, camName));
 		m_pCamFront->start();
 	}
 
 	//Init Automaton
 	FPS=0;
-	CHECK_INFO(pJson->getVal("AM_MAIN_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("Automaton0")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAM = new _Automaton();
-		CHECK_FATAL(m_pAM->init(pJson, "MAIN"));
+		CHECK_FATAL(m_pAM->init(pConfig, "Automaton0"));
 		m_pAM->start();
 	}
 
 	//Init ROI Tracker
 	FPS=0;
-	CHECK_INFO(pJson->getVal("ROITRACKER_MAIN_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("roiTracker0")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
-		m_pROITracker->init(pJson, "MAIN");
+		m_pROITracker->init(pConfig, "roiTracker0");
 		m_pROITracker->m_pCamStream = m_pCamFront;
 		m_pROITracker->start();
 	}
 
 	//Init Marker Detector
 	FPS=0;
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("markerLanding")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMD = new _Bullseye();
-		m_pMD->init(pJson, "LANDING");
+		m_pMD->init(pConfig, "markerLanding");
 		m_pMD->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
 		m_pCamFront->m_bHSV = true;
@@ -94,28 +94,28 @@ bool Navigator::start(JSON* pJson)
 
 	//Init AprilTags Detector
 	FPS=0;
-	CHECK_INFO(pJson->getVal("APRILTAGS_LANDING_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("AprilTagLanding")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAT = new _AprilTags();
-		m_pAT->init(pJson, "LANDING");
+		m_pAT->init(pConfig, "AprilTagLanding");
 		m_pAT->m_pCamStream = m_pCamFront;
 		m_pAT->start();
 	}
 
 	//Init Mavlink
 	FPS=0;
-	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("Mavlink0")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMavlink = new _Mavlink();
-		CHECK_FATAL(m_pMavlink->setup(pJson, "MAVLINK"));
+		CHECK_FATAL(m_pMavlink->setup(pConfig, "Mavlink0"));
 		m_pMavlink->start();
 	}
 
 	//Init Autopilot
 	FPS=0;
-	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("Autopilot0")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
@@ -124,27 +124,27 @@ bool Navigator::start(JSON* pJson)
 		m_pAP->m_pMD = m_pMD;
 		m_pAP->m_pAT = m_pAT;
 		m_pAP->m_pAM = m_pAM;
-		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
+		CHECK_FATAL(m_pAP->init(pConfig, "Autopilot0"));
 		m_pAP->start();
 	}
 
 	//Init Universe
 	FPS=0;
-	CHECK_INFO(pJson->getVal("UNIVERSE_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("Universe")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pUniverse = new _Universe();
-		m_pUniverse->init(pJson);
+		m_pUniverse->init(pConfig,"Universe");
 		m_pUniverse->start();
 	}
 
 	//Init SSD
 	FPS=0;
-	CHECK_INFO(pJson->getVal("CAFFE_SSD_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("SSD")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pSSD = new _SSD();
-		m_pSSD->init(pJson, "_MAIN");
+		m_pSSD->init(pConfig, "SSD");
 		m_pSSD->m_pCamStream = m_pCamFront;
 		m_pSSD->m_pUniverse = m_pUniverse;
 		m_pSSD->start();
@@ -152,11 +152,11 @@ bool Navigator::start(JSON* pJson)
 
 	//Init Optical Flow
 	FPS=0;
-	CHECK_INFO(pJson->getVal("FLOW_FRONTL_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("optflow0")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFlow = new _Flow();
-		CHECK_FATAL(m_pFlow->init(pJson, "FRONTL"));
+		CHECK_FATAL(m_pFlow->init(pConfig, "optflow0"));
 		m_pFlow->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
 		m_pFlow->start();
@@ -164,11 +164,11 @@ bool Navigator::start(JSON* pJson)
 
 	//Init Depth Object Detector
 	FPS=0;
-	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("depthObjDetector")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pDD = new _Depth();
-		CHECK_FATAL(m_pDD->init(pJson, "FRONTL"));
+		CHECK_FATAL(m_pDD->init(pConfig, "depthObjDetector"));
 		m_pDD->m_pCamStream = m_pCamFront;
 		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
@@ -177,11 +177,11 @@ bool Navigator::start(JSON* pJson)
 
 	//Init FCN
 	FPS=0;
-	CHECK_INFO(pJson->getVal("FCN_FPS", &FPS));
+	CHECK_INFO(pConfig->obj("FCN")->var("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFCN = new _FCN();
-		m_pFCN->init("",pJson);
+		m_pFCN->init(pConfig,"FCN");
 		m_pFCN->m_pCamStream = m_pCamFront;
 		m_pFCN->start();
 	}

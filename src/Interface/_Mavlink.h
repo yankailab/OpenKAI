@@ -133,7 +133,7 @@ public:
 	_Mavlink();
 	~_Mavlink();
 
-	bool setup(JSON* pJson, string serialName);
+	bool setup(Config* pConfig, string name);
 	void close(void);
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);

@@ -32,7 +32,7 @@ public:
 	_Cascade();
 	~_Cascade();
 
-	bool init(string name, JSON* pJson);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 
 	int  getObjList(CASCADE_OBJECT** ppObj);

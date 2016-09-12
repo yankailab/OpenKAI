@@ -42,22 +42,22 @@ public:
 	~Navigator();
 
 	_Stream* m_pCamFront;
-	_AutoPilot* m_pAP;
-	_Mavlink* m_pMavlink;
-	_Cascade* m_pCascade;
-	_Flow* m_pFlow;
-	_ROITracker* m_pROITracker;
-	_Depth* m_pDD;
-	_Bullseye* m_pMD;
-	_AprilTags* m_pAT;
-	_Universe* m_pUniverse;
-	_FCN* m_pFCN;
-	_SSD* m_pSSD;
 	_Automaton* m_pAM;
+	_AutoPilot* m_pAP;
+	_Universe* m_pUniverse;
+	_Mavlink* m_pMavlink;
+	_AprilTags* m_pAT;
+	_SSD* m_pSSD;
+	_Bullseye* m_pMD;
+	_ROITracker* m_pROITracker;
+	_Cascade* m_pCascade;
+	_Depth* m_pDD;
+	_FCN* m_pFCN;
+	_Flow* m_pFlow;
 
 	Frame* m_pFrame;
 
-	bool start(JSON* pJson);
+	bool start(Config* pConfig);
 	void draw(void);
 	void handleMouse(int event, int x, int y, int flags);
 	void handleKey(int key);

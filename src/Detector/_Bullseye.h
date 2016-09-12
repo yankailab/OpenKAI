@@ -31,7 +31,7 @@ public:
 	_Bullseye();
 	virtual ~_Bullseye();
 
-	bool init(JSON* pJson, string name);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 
 	bool getCircleCenter(fVector3* pCenter);

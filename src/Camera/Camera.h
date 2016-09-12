@@ -23,7 +23,7 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	bool setup(JSON* pJson, string camName);
+	bool setup(Config* pConfig, string camName);
 	bool openCamera(void);
 	GpuMat* readFrame(void);
 	GpuMat* getDepthFrame(void);

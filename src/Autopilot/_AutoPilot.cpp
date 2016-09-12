@@ -27,95 +27,94 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::init(JSON* pJson, string pilotName)
+bool _AutoPilot::init(Config* pConfig, string name)
 {
-	if (!pJson)return false;
+	if(pConfig==NULL)return false;
+	if(name.empty())return false;
 
-	string cName;
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
 	int i;
+	Config* pCC;
 
-	pilotName = "_"+pilotName;
+	pCC = pC->obj("roll");
+	if(pCC->empty())return false;
 
-	cName = "ROLL_";
-
-	CHECK_ERROR(pJson->getVal(cName + "P" + pilotName, &cPID.m_P));
-	CHECK_ERROR(pJson->getVal(cName + "I" + pilotName, &cPID.m_I));
-	CHECK_ERROR(pJson->getVal(cName + "IMAX" + pilotName, &cPID.m_Imax));
-	CHECK_ERROR(pJson->getVal(cName + "D" + pilotName, &cPID.m_D));
-	CHECK_ERROR(pJson->getVal(cName + "dT" + pilotName, &cPID.m_dT));
-
-	CHECK_ERROR(pJson->getVal(cName + "PWM_LOW" + pilotName, &RC.m_pwmLow));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_HIGH" + pilotName, &RC.m_pwmHigh));
-	CHECK_ERROR(
-			pJson->getVal(cName + "PWM_CENTER" + pilotName, &RC.m_pwmCenter));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_IDX" + pilotName, &RC.m_idx));
+	CHECK_ERROR(pCC->var("P", &cPID.m_P));
+	CHECK_ERROR(pCC->var("I", &cPID.m_I));
+	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->var("D", &cPID.m_D));
+	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
 
 	m_roll.m_pid = cPID;
 	m_roll.m_RC = RC;
 
-	cName = "PITCH_";
+	pCC = pC->obj("pitch");
+	if(pCC->empty())return false;
 
-	CHECK_ERROR(pJson->getVal(cName + "P" + pilotName, &cPID.m_P));
-	CHECK_ERROR(pJson->getVal(cName + "I" + pilotName, &cPID.m_I));
-	CHECK_ERROR(pJson->getVal(cName + "IMAX" + pilotName, &cPID.m_Imax));
-	CHECK_ERROR(pJson->getVal(cName + "D" + pilotName, &cPID.m_D));
-	CHECK_ERROR(pJson->getVal(cName + "dT" + pilotName, &cPID.m_dT));
-
-	CHECK_ERROR(pJson->getVal(cName + "PWM_LOW" + pilotName, &RC.m_pwmLow));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_HIGH" + pilotName, &RC.m_pwmHigh));
-	CHECK_ERROR(
-			pJson->getVal(cName + "PWM_CENTER" + pilotName, &RC.m_pwmCenter));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_IDX" + pilotName, &RC.m_idx));
+	CHECK_ERROR(pCC->var("P", &cPID.m_P));
+	CHECK_ERROR(pCC->var("I", &cPID.m_I));
+	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->var("D", &cPID.m_D));
+	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
 
 	m_pitch.m_pid = cPID;
 	m_pitch.m_RC = RC;
 
-	cName = "ALT_";
+	pCC = pC->obj("alt");
+	if(pCC->empty())return false;
 
-	CHECK_ERROR(pJson->getVal(cName + "P" + pilotName, &cPID.m_P));
-	CHECK_ERROR(pJson->getVal(cName + "I" + pilotName, &cPID.m_I));
-	CHECK_ERROR(pJson->getVal(cName + "IMAX" + pilotName, &cPID.m_Imax));
-	CHECK_ERROR(pJson->getVal(cName + "D" + pilotName, &cPID.m_D));
-	CHECK_ERROR(pJson->getVal(cName + "dT" + pilotName, &cPID.m_dT));
-
-	CHECK_ERROR(pJson->getVal(cName + "PWM_LOW" + pilotName, &RC.m_pwmLow));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_HIGH" + pilotName, &RC.m_pwmHigh));
-	CHECK_ERROR(
-			pJson->getVal(cName + "PWM_CENTER" + pilotName, &RC.m_pwmCenter));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_IDX" + pilotName, &RC.m_idx));
+	CHECK_ERROR(pCC->var("P", &cPID.m_P));
+	CHECK_ERROR(pCC->var("I", &cPID.m_I));
+	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->var("D", &cPID.m_D));
+	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
 
 	m_alt.m_pid = cPID;
 	m_alt.m_RC = RC;
 
-	cName = "YAW_";
+	pCC = pC->obj("yaw");
+	if(pCC->empty())return false;
 
-	CHECK_ERROR(pJson->getVal(cName + "P" + pilotName, &cPID.m_P));
-	CHECK_ERROR(pJson->getVal(cName + "I" + pilotName, &cPID.m_I));
-	CHECK_ERROR(pJson->getVal(cName + "IMAX" + pilotName, &cPID.m_Imax));
-	CHECK_ERROR(pJson->getVal(cName + "D" + pilotName, &cPID.m_D));
-	CHECK_ERROR(pJson->getVal(cName + "dT" + pilotName, &cPID.m_dT));
-
-	CHECK_ERROR(pJson->getVal(cName + "PWM_LOW" + pilotName, &RC.m_pwmLow));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_HIGH" + pilotName, &RC.m_pwmHigh));
-	CHECK_ERROR(
-			pJson->getVal(cName + "PWM_CENTER" + pilotName, &RC.m_pwmCenter));
-	CHECK_ERROR(pJson->getVal(cName + "PWM_IDX" + pilotName, &RC.m_idx));
+	CHECK_ERROR(pCC->var("P", &cPID.m_P));
+	CHECK_ERROR(pCC->var("I", &cPID.m_I));
+	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->var("D", &cPID.m_D));
+	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
 
 	m_yaw.m_pid = cPID;
 	m_yaw.m_RC = RC;
 
+	pCC = pC->obj("visualFollow");
+	if(pCC->empty())return false;
+
 	//For visual position locking
-	CHECK_ERROR(
-			pJson->getVal("ROLL_TARGET_POS" + pilotName, &m_roll.m_targetPos));
-	CHECK_ERROR(
-			pJson->getVal("PITCH_TARGET_POS" + pilotName, &m_pitch.m_targetPos));
+	CHECK_ERROR(pCC->var("targetX", &m_roll.m_targetPos));
+	CHECK_ERROR(pCC->var("targetY", &m_pitch.m_targetPos));
 
 	resetAllControl();
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	CHECK_INFO(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_landingTarget.m_angleX = 0;
@@ -125,18 +124,20 @@ bool _AutoPilot::init(JSON* pJson, string pilotName)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_X",
-					&m_landingTarget.m_orientX));
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ORIENTATION_Y",
-					&m_landingTarget.m_orientY));
-	CHECK_INFO(pJson->getVal("MARKER_LANDING_ROI_TIME_LIMIT",
-					&m_landingTarget.m_ROItimeLimit));
+	pCC = pC->obj("visualLanding");
+	if(pCC->empty())return false;
 
+	CHECK_INFO(pCC->var("orientationX", &m_landingTarget.m_orientX));
+	CHECK_INFO(pCC->var("orientationY", &m_landingTarget.m_orientY));
+	CHECK_INFO(pCC->var("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
-	CHECK_INFO(pJson->getVal("APRILTAGS_LANDING_NUM_TAG", &m_numATagsLandingTarget));
+	pCC = pCC->obj("AprilTags");
+	if(pCC->empty())return false;
+
+	CHECK_INFO(pCC->var("num", &m_numATagsLandingTarget));
 	for(i=0; i<m_numATagsLandingTarget; i++)
 	{
-		CHECK_ERROR(pJson->getVal("APRILTAGS_LANDING_TAG_"+i2str(i), &m_pATagsLandingTarget[i]));
+		CHECK_ERROR(pCC->var("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
 
 	m_lastHeartbeat = 0;

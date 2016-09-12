@@ -21,16 +21,16 @@ Camera::~Camera()
 {
 }
 
-bool Camera::setup(JSON* pJson, string camName)
+bool Camera::setup(Config* pConfig, string camName)
 {
-	if (CamBase::setup(pJson, camName) == false)
+	if (CamBase::setup(pConfig, camName) == false)
 		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_FATAL(pJson->getVal("CAM_" + camName + "_ID", &m_camDeviceID));
+	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_FATAL(pConfig->obj(camName)->var("ID", &m_camDeviceID));
 
 	return true;
 }

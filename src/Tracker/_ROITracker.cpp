@@ -27,7 +27,7 @@ _ROITracker::~_ROITracker()
 {
 }
 
-bool _ROITracker::init(JSON* pJson, string roiName)
+bool _ROITracker::init(Config* pConfig, string roiName)
 {
 	m_ROI.width = 0;
 	m_ROI.height = 0;
@@ -42,7 +42,7 @@ bool _ROITracker::init(JSON* pJson, string roiName)
 	m_pTracker = Tracker::create("KCF");
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("ROITRACKER_" + roiName + "_FPS", &FPS));
+	CHECK_ERROR(pConfig->obj(roiName)->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	return true;

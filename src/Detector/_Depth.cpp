@@ -26,14 +26,20 @@ _Depth::~_Depth()
 {
 }
 
-bool _Depth::init(JSON* pJson, string camName)
+bool _Depth::init(Config* pConfig, string name)
 {
+	if(!pConfig)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_FPS", &FPS));
+	CHECK_INFO(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
-	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MIN", &m_minObjArea));
-	CHECK_INFO(pJson->getVal("DEPTH_OBJDETECTOR_AREA_MAX", &m_maxObjArea));
+	CHECK_INFO(pC->var("areaMin", &m_minObjArea));
+	CHECK_INFO(pC->var("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;

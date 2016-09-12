@@ -33,15 +33,19 @@ _Mavlink::~_Mavlink()
 	}
 }
 
-bool _Mavlink::setup(JSON* pJson, string serialName)
+bool _Mavlink::setup(Config* pConfig, string name)
 {
-	if(!pJson)return false;
+	if(pConfig==NULL)return false;
+	if(name.empty())return false;
 
-	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_NAME", &m_sportName));
-	CHECK_ERROR(pJson->getVal("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
+	CHECK_ERROR(pC->var("portName", &m_sportName));
+	CHECK_ERROR(pC->var("baudrate", &m_baudRate));
 
 	double FPS = 100;
-	CHECK_INFO(pJson->getVal("SERIALPORT_"+serialName+"_FPS", &FPS));
+	CHECK_INFO(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_systemID = 1;

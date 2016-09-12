@@ -34,18 +34,24 @@ _AprilTags::~_AprilTags()
 	// TODO Auto-generated destructor stub
 }
 
-bool _AprilTags::init(JSON* pJson, string name)
+bool _AprilTags::init(Config* pConfig, string name)
 {
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_FAMILY", &m_tagFamily));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_ERROR", &m_tagErr));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_LIFETIME", &m_tagLifetime));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_DIST_THR", &m_tagDistThr));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_DET_INTERVAL", &m_tagAliveInterval));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_SCALING", &m_tagScaling));
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_SIZELIM", &m_tagSizeLim));
+	if(pConfig==NULL)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
+	CHECK_INFO(pC->var("family", &m_tagFamily));
+	CHECK_INFO(pC->var("err", &m_tagErr));
+	CHECK_INFO(pC->var("lifeTime", &m_tagLifetime));
+	CHECK_INFO(pC->var("distThr", &m_tagDistThr));
+	CHECK_INFO(pC->var("detInterval", &m_tagAliveInterval));
+	CHECK_INFO(pC->var("scaling", &m_tagScaling));
+	CHECK_INFO(pC->var("sizeLim", &m_tagSizeLim));
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("APRILTAGS_" + name + "_FPS", &FPS));
+	CHECK_INFO(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_pFrame = new Frame();

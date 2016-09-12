@@ -33,20 +33,26 @@ _Flow::~_Flow()
 {
 }
 
-bool _Flow::init(JSON* pJson, string camName)
+bool _Flow::init(Config* pConfig, string name)
 {
+	if(!pConfig)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
 	string presetDir = "";
 	double FPS = DEFAULT_FPS;
 	string labelFile;
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_INFO(pJson->getVal("FLOW_"+camName+"_FPS", &FPS));
-	CHECK_INFO(pJson->getVal("FLOW_"+camName+"_DEPTH", &m_bDepth));
-	CHECK_INFO(pJson->getVal("FLOW_"+camName+"_WIDTH", &m_width));
-	CHECK_INFO(pJson->getVal("FLOW_"+camName+"_HEIGHT", &m_height));
-	CHECK_INFO(pJson->getVal("FLOW_"+camName+"_FLOW_MAX", &m_flowMax));
+	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
 
-	CHECK_FATAL(pJson->getVal("FLOW_"+camName+"_COLOR_FILE", &labelFile));
+	CHECK_INFO(pC->var("FPS", &FPS));
+	CHECK_INFO(pC->var("bDepth", &m_bDepth));
+	CHECK_INFO(pC->var("width", &m_width));
+	CHECK_INFO(pC->var("height", &m_height));
+	CHECK_INFO(pC->var("flowMax", &m_flowMax));
+	CHECK_INFO(pC->var("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();

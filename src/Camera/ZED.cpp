@@ -26,18 +26,22 @@ ZED::~ZED()
 {
 }
 
-bool ZED::setup(JSON* pJson, string camName)
+bool ZED::setup(Config* pConfig, string camName)
 {
-	if (CamBase::setup(pJson, camName) == false)
+	if (CamBase::setup(pConfig, camName) == false)
 		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_RESOLUTION",&m_zedResolution));
-	CHECK_INFO(pJson->getVal("CAM_" + camName + "_ZED_MIN_DISTANCE",&m_zedMinDist));
-	CHECK_INFO(pJson->getVal("CAM_"+camName+"_FPS", &m_zedFPS));
+	CHECK_INFO(g_pConfig->obj("APP")->var("presetDir", &presetDir));
+
+	Config* pZED = pConfig->obj(camName);
+	if(pZED->empty())return false;
+
+	CHECK_INFO(pZED->var("ZEDresolution",&m_zedResolution));
+	CHECK_INFO(pZED->var("ZEDminDist",&m_zedMinDist));
+	CHECK_INFO(pZED->var("FPS", &m_zedFPS));
 
 	return true;
 }

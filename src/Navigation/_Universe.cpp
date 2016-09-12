@@ -30,18 +30,22 @@ _Universe::~_Universe()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Universe::init(JSON* pJson)
+bool _Universe::init(Config* pConfig, string name)
 {
-	if(pJson==NULL)return false;
+	if(pConfig==NULL)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
 
 //	if(m_caffe.init(pJson,"")==false)return false;
 
-	CHECK_ERROR(pJson->getVal("UNIVERSE_FRAME_LIFETIME", &m_frameLifeTime));
-	CHECK_ERROR(pJson->getVal("UNIVERSE_PROB_MIN", &m_objProbMin));
-	CHECK_ERROR(pJson->getVal("UNIVERSE_POS_DISPARITY", &m_disparity));
+	CHECK_ERROR(pC->var("frameLifetime", &m_frameLifeTime));
+	CHECK_ERROR(pC->var("probMin", &m_objProbMin));
+	CHECK_ERROR(pC->var("posDisparity", &m_disparity));
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("UNIVERSE_FPS", &FPS));
+	CHECK_ERROR(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	return true;

@@ -51,7 +51,7 @@ public:
 	_FCN();
 	~_FCN();
 
-	bool init(string name, JSON* pJson);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 

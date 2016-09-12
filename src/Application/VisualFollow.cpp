@@ -30,20 +30,26 @@ VisualFollow::~VisualFollow()
 
 bool VisualFollow::start(JSON* pJson)
 {
+
+	return false;
+
+
+
+/*
 	g_pDroneHunter = this;
 	int FPS;
 
-	CHECK_INFO(pJson->getVal("APP_SHOW_SCREEN", &m_bShowScreen));
-	CHECK_INFO(pJson->getVal("APP_FULL_SCREEN", &m_bFullScreen));
-	CHECK_INFO(pJson->getVal("APP_WAIT_KEY", &m_waitKey));
+	CHECK_INFO(pJson->var("APP_SHOW_SCREEN", &m_bShowScreen));
+	CHECK_INFO(pJson->var("APP_FULL_SCREEN", &m_bFullScreen));
+	CHECK_INFO(pJson->var("APP_WAIT_KEY", &m_waitKey));
 
-	CHECK_ERROR(pJson->getVal("ROI_MIN_SIZE", &m_minROI));
+	CHECK_ERROR(pJson->var("ROI_MIN_SIZE", &m_minROI));
 
 	m_pFrame = new Frame();
 
 	//Init Camera
 	FPS=0;
-	CHECK_INFO(pJson->getVal("CAM_FRONTL_FPS", &FPS));
+	CHECK_INFO(pJson->var("CAM_FRONTL_FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pCamFront = new _Stream();
@@ -53,7 +59,7 @@ bool VisualFollow::start(JSON* pJson)
 
 	//Init ROI Tracker
 	FPS=0;
-	CHECK_INFO(pJson->getVal("ROITRACKER_MAIN_FPS", &FPS));
+	CHECK_INFO(pJson->var("ROITRACKER_MAIN_FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
@@ -64,7 +70,7 @@ bool VisualFollow::start(JSON* pJson)
 
 	//Connect to VehicleLink
 	FPS=0;
-	CHECK_INFO(pJson->getVal("SERIALPORT_MAVLINK_FPS", &FPS));
+	CHECK_INFO(pJson->var("SERIALPORT_MAVLINK_FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pVlink = new _RC();
@@ -75,7 +81,7 @@ bool VisualFollow::start(JSON* pJson)
 
 	//Init Autopilot
 	FPS=0;
-	CHECK_INFO(pJson->getVal("AUTOPILOT_MAIN_FPS", &FPS));
+	CHECK_INFO(pJson->var("AUTOPILOT_MAIN_FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
@@ -137,6 +143,7 @@ bool VisualFollow::start(JSON* pJson)
 	RELEASE(m_pAP);
 
 	return 0;
+	*/
 
 }
 

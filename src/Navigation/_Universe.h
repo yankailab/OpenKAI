@@ -48,7 +48,7 @@ public:
 	void classifyObject(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
-	bool init(JSON* pJson);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 	void reset(void);
 

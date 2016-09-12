@@ -36,7 +36,7 @@ public:
 	_AprilTags();
 	virtual ~_AprilTags();
 
-	bool init(JSON* pJson, string name);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 

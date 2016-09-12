@@ -24,8 +24,14 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(JSON* pJson, string ssdName)
+bool _SSD::init(Config* pConfig, string name)
 {
+	if(!pConfig)return false;
+	if(name.empty())return false;
+
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
+
 	//Setup Caffe Classifier
 	string caffeDir = "";
 	string modelFile;
@@ -34,20 +40,20 @@ bool _SSD::init(JSON* pJson, string ssdName)
 	string labelFile;
 	string presetDir = "";
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
-	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
-	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MODEL_FILE", &modelFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_SSD_TRAINED_FILE", &trainedFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_SSD_MEAN_FILE", &meanFile));
-	CHECK_FATAL(pJson->getVal("CAFFE_SSD_LABEL_FILE", &labelFile));
+	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
 
-	CHECK_INFO(pJson->getVal("CAFFE_SSD_MIN_CONFIDENCE", &m_confidence_threshold));
+	CHECK_INFO(pC->var("dir", &caffeDir));
+	CHECK_FATAL(pC->var("modelFile", &modelFile));
+	CHECK_FATAL(pC->var("trainedFile", &trainedFile));
+	CHECK_FATAL(pC->var("meanFile", &meanFile));
+	CHECK_FATAL(pC->var("labelFile", &labelFile));
+	CHECK_INFO(pC->var("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
 
 	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pJson->getVal("CAFFE_SSD_FPS", &FPS));
+	CHECK_ERROR(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_pFrame = new Frame();

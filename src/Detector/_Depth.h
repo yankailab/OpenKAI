@@ -26,7 +26,7 @@ public:
 	_Depth();
 	~_Depth();
 
-	bool init(JSON* pJson, string camName);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 
 private:

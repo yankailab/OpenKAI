@@ -71,7 +71,7 @@ public:
 	_AutoPilot();
 	~_AutoPilot();
 
-	bool init(JSON* pJson, string pilotName);
+	bool init(Config* pConfig, string name);
 	bool start(void);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 	void sendHeartbeat(void);

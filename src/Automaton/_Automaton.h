@@ -24,7 +24,7 @@ public:
 	_Automaton();
 	virtual ~_Automaton();
 
-	bool init(JSON* pJson, string stateName);
+	bool init(Config* pConfig, string stateName);
 	bool start(void);
 
 	State* addState(void);

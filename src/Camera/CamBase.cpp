@@ -31,33 +31,39 @@ CamBase::~CamBase()
 {
 }
 
-bool CamBase::setup(JSON* pJson, string name)
+bool CamBase::setup(Config* pConfig, string name)
 {
+	if(pConfig==NULL)return false;
+	if(name.empty())return false;
+
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(pJson->getVal("PRESET_DIR", &presetDir));
+	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
 
-	CHECK_FATAL(pJson->getVal("CAM_" + name + "_WIDTH", &m_width));
-	CHECK_FATAL(pJson->getVal("CAM_" + name + "_HEIGHT", &m_height));
-	CHECK_FATAL(pJson->getVal("CAM_" + name + "_ANGLE_V", &m_angleV));
-	CHECK_FATAL(pJson->getVal("CAM_" + name + "_ANGLE_H", &m_angleH));
+	Config* pCam = pConfig->obj(name);
+	if(pCam->empty())return false;
 
-	CHECK_INFO(pJson->getVal("CAM_" + name + "_ISOSCALE", &m_isoScale));
-	CHECK_INFO(pJson->getVal("CAM_" + name + "_CALIB", &m_bCalibration));
-	CHECK_INFO(pJson->getVal("CAM_" + name + "_GIMBAL", &m_bGimbal));
-	CHECK_INFO(pJson->getVal("CAM_" + name + "_FISHEYE", &m_bFisheye));
+	CHECK_FATAL(pCam->var("width", &m_width));
+	CHECK_FATAL(pCam->var("height", &m_height));
+	CHECK_FATAL(pCam->var("angleV", &m_angleV));
+	CHECK_FATAL(pCam->var("angleH", &m_angleH));
 
-	CHECK_INFO(pJson->getVal("CAM_" + name + "_CROP", &m_bCrop));
+	CHECK_INFO(pCam->var("isoScale", &m_isoScale));
+	CHECK_INFO(pCam->var("bCalib", &m_bCalibration));
+	CHECK_INFO(pCam->var("bGimbal", &m_bGimbal));
+	CHECK_INFO(pCam->var("bFisheye", &m_bFisheye));
+
+	CHECK_INFO(pCam->var("bCrop", &m_bCrop));
 	if(m_bCrop!=0)
 	{
-		CHECK_FATAL(pJson->getVal("CAM_" + name + "_CROP_X", &m_cropBB.x));
-		CHECK_FATAL(pJson->getVal("CAM_" + name + "_CROP_Y", &m_cropBB.y));
-		CHECK_FATAL(pJson->getVal("CAM_" + name + "_CROP_W", &m_cropBB.width));
-		CHECK_FATAL(pJson->getVal("CAM_" + name + "_CROP_H", &m_cropBB.height));
+		CHECK_FATAL(pCam->var("cropX", &m_cropBB.x));
+		CHECK_FATAL(pCam->var("cropY", &m_cropBB.y));
+		CHECK_FATAL(pCam->var("cropW", &m_cropBB.width));
+		CHECK_FATAL(pCam->var("cropH", &m_cropBB.height));
 	}
 
-	if (pJson->getVal("CAM_" + name + "_CALIBFILE", &calibFile))
+	if (pCam->var("calibFile", &calibFile))
 	{
 		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())

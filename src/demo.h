@@ -20,7 +20,7 @@ using namespace kai;
 VisualFollow* g_pAppVisualFollow;
 Navigator* g_pAppNavigator;
 
-JSON g_Json;
+Config* g_pConfig;
 FileIO g_file;
 
 void printEnvironment(void);

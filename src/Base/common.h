@@ -4,7 +4,7 @@
 #include "platform.h"
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
-#include "../IO/JSON.h"
+#include "../Script/Config.h"
 
 #define MAVLINK_DEBUG
 

@@ -38,23 +38,26 @@ _Bullseye::~_Bullseye()
 }
 
 
-bool _Bullseye::init(JSON* pJson, string name)
+bool _Bullseye::init(Config* pConfig, string name)
 {
-	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_AREA_RATIO", &m_areaRatio));
-	CHECK_ERROR(pJson->getVal("MARKER_" + name + "_MIN_SIZE", &m_minMarkerSize));
+	Config* pC = pConfig->obj(name);
+	if(pC->empty())return false;
 
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_METHOD", &m_method));
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_MEDBLUR_KSIZE", &m_kSize));
+	CHECK_ERROR(pC->var("areaRatio", &m_areaRatio));
+	CHECK_ERROR(pC->var("minSize", &m_minMarkerSize));
 
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MINDIST", &m_houghMinDist));
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_PARAM1", &m_houghParam1));
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_PARAM2", &m_houghParam2));
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MINR", &m_houghMinR));
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_HOUGH_MAXR", &m_houghMaxR));
+	CHECK_INFO(pC->var("method", &m_method));
+	CHECK_INFO(pC->var("medBlueKsize", &m_kSize));
+
+	CHECK_INFO(pC->var("HoughMinDist", &m_houghMinDist));
+	CHECK_INFO(pC->var("HoughParam1", &m_houghParam1));
+	CHECK_INFO(pC->var("HoughParam2", &m_houghParam2));
+	CHECK_INFO(pC->var("HoughMinR", &m_houghMinR));
+	CHECK_INFO(pC->var("HoughMaxR", &m_houghMaxR));
 
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pJson->getVal("MARKER_" + name + "_FPS", &FPS));
+	CHECK_INFO(pC->var("FPS", &FPS));
 	this->setTargetFPS(FPS);
 
 	m_pFrame = new Frame();

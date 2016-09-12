@@ -29,8 +29,8 @@ bool UIMonitor::init(string name, JSON* pJson)
 	if(name.empty())return false;
 	if(pJson==NULL)return false;
 
-	CHECK_FATAL(pJson->getVal("UI_MAIN_WIDTH", &m_width));
-	CHECK_FATAL(pJson->getVal("UI_MAIN_HEIGHT", &m_height));
+	CHECK_FATAL(pJson->var("UI_MAIN_WIDTH", &m_width));
+	CHECK_FATAL(pJson->var("UI_MAIN_HEIGHT", &m_height));
 
 	m_windowName = name;
 	m_numFrame = 0;
