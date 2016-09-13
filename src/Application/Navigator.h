@@ -17,7 +17,6 @@
 #include "../Automaton/_Automaton.h"
 #include "../Camera/Camera.h"
 #include "../Interface/_Mavlink.h"
-#include "../UI/UIMonitor.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
 #include "../Detector/_Bullseye.h"
@@ -26,6 +25,7 @@
 #include "../AI/_SSD.h"
 #include "../Detector/_Depth.h"
 #include "../Navigation/_Universe.h"
+#include "../UI/UI.h"
 #include "AppBase.h"
 
 #define APP_NAME "NAVIGATOR"

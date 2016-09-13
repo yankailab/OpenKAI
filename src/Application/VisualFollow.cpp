@@ -188,15 +188,6 @@ void VisualFollow::draw(void)
 		}
 	}
 
-	putText(imMat, "ROITracker FPS: "+f2str(m_pROITracker->getFrameRate()), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	textPos.m_y += textPos.m_w;
-	putText(imMat, "AutoPilot FPS: "+f2str(m_pAP->getFrameRate()), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	textPos.m_y += textPos.m_w;
-	putText(imMat, "Roll: "+f2str(m_pAP->m_RC[0]), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	textPos.m_y += textPos.m_w;
-	putText(imMat, "Pitch: "+f2str(m_pAP->m_RC[1]), cv::Point(textPos.m_x, textPos.m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	textPos.m_y += textPos.m_w;
-
 	if(m_ROImode == MODE_ASSIST)
 	{
 		putText(imMat, "CLR", cv::Point(1825,50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);

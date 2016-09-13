@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define NUM_CHILDREN 1024
+#define NUM_CHILDREN 128
 
 class Config
 {

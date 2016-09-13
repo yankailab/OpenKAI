@@ -20,7 +20,7 @@ bool Config::parse(string str)
 	int k;
 	std::string::size_type from, to;
 
-//	trim(&str);
+	trim(&str);
 
 	do
 	{
@@ -84,21 +84,21 @@ void Config::trim(string* pStr)
 	k = pStr->find(' ');
 	while (k != std::string::npos)
 	{
-		pStr->erase(k);
+		pStr->erase(k,1);
 		k = pStr->find(' ');
 	}
 
 	k = pStr->find('\r');
 	while (k != std::string::npos)
 	{
-		pStr->erase(k);
+		pStr->erase(k,1);
 		k = pStr->find('\r');
 	}
 
 	k = pStr->find('\t');
 	while (k != std::string::npos)
 	{
-		pStr->erase(k);
+		pStr->erase(k,1);
 		k = pStr->find('\t');
 	}
 
