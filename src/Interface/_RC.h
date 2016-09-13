@@ -25,7 +25,7 @@ public:
 	_RC();
 	~_RC();
 
-	bool setup(JSON* pJson, string serialName);
+	bool init(Config* pConfig, string name);
 	bool open(void);
 	void close(void);
 	bool start(void);

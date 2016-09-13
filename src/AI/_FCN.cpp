@@ -25,23 +25,22 @@ _FCN::~_FCN()
 
 bool _FCN::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
 	string modelFile;
 	string trainedFile;
 	string labelFile;
 	string caffeDir = "";
 
-	CHECK_INFO(pC->var("dir", &caffeDir));
-	CHECK_INFO(pC->var("cudaDeviceID", &m_cudaDeviceID));
+	CHECK_INFO(pC->v("dir", &caffeDir));
+	CHECK_INFO(pC->v("cudaDeviceID", &m_cudaDeviceID));
 
-	CHECK_FATAL(pC->var("modelFile", &modelFile));
-	CHECK_FATAL(pC->var("trainedFile", &trainedFile));
-	CHECK_FATAL(pC->var("labelFile", &labelFile));
+	CHECK_FATAL(pC->v("modelFile", &modelFile));
+	CHECK_FATAL(pC->v("trainedFile", &trainedFile));
+	CHECK_FATAL(pC->v("labelFile", &labelFile));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(caffeDir+modelFile, TEST));
@@ -59,10 +58,6 @@ bool _FCN::init(Config* pConfig, string name)
 
 	m_labelColor = imread(caffeDir+labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
-
-	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
 
 	return true;
 }

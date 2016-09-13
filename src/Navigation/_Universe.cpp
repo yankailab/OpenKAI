@@ -32,21 +32,16 @@ _Universe::~_Universe()
 
 bool _Universe::init(Config* pConfig, string name)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
 //	if(m_caffe.init(pJson,"")==false)return false;
 
-	CHECK_ERROR(pC->var("frameLifetime", &m_frameLifeTime));
-	CHECK_ERROR(pC->var("probMin", &m_objProbMin));
-	CHECK_ERROR(pC->var("posDisparity", &m_disparity));
-
-	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	CHECK_ERROR(pC->v("frameLifetime", &m_frameLifeTime));
+	CHECK_ERROR(pC->v("probMin", &m_objProbMin));
+	CHECK_ERROR(pC->v("posDisparity", &m_disparity));
 
 	return true;
 }

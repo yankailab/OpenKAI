@@ -1,5 +1,6 @@
-#include "../Utility/util.h"
 #include "_AutoPilot.h"
+
+#include "../Utility/util.h"
 
 namespace kai
 {
@@ -10,7 +11,6 @@ _AutoPilot::_AutoPilot()
 
 	m_pFD = NULL;
 	m_pVI = NULL;
-	m_pMavlink = NULL;
 	m_pMavlink = NULL;
 	m_pROITracker = NULL;
 	m_pMD = NULL;
@@ -29,93 +29,88 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(Config* pConfig, string name)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
 	int i;
 	Config* pCC;
 
-	pCC = pC->obj("roll");
+	pCC = pC->o("roll");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->var("P", &cPID.m_P));
-	CHECK_ERROR(pCC->var("I", &cPID.m_I));
-	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->var("D", &cPID.m_D));
-	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
-	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
-	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
-	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
+	CHECK_ERROR(pCC->v("P", &cPID.m_P));
+	CHECK_ERROR(pCC->v("I", &cPID.m_I));
+	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->v("D", &cPID.m_D));
+	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->v("pwmCh", &RC.m_idx));
 
 	m_roll.m_pid = cPID;
 	m_roll.m_RC = RC;
 
-	pCC = pC->obj("pitch");
+	pCC = pC->o("pitch");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->var("P", &cPID.m_P));
-	CHECK_ERROR(pCC->var("I", &cPID.m_I));
-	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->var("D", &cPID.m_D));
-	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
-	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
-	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
-	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
+	CHECK_ERROR(pCC->v("P", &cPID.m_P));
+	CHECK_ERROR(pCC->v("I", &cPID.m_I));
+	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->v("D", &cPID.m_D));
+	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->v("pwmCh", &RC.m_idx));
 
 	m_pitch.m_pid = cPID;
 	m_pitch.m_RC = RC;
 
-	pCC = pC->obj("alt");
+	pCC = pC->o("alt");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->var("P", &cPID.m_P));
-	CHECK_ERROR(pCC->var("I", &cPID.m_I));
-	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->var("D", &cPID.m_D));
-	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
-	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
-	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
-	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
+	CHECK_ERROR(pCC->v("P", &cPID.m_P));
+	CHECK_ERROR(pCC->v("I", &cPID.m_I));
+	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->v("D", &cPID.m_D));
+	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->v("pwmCh", &RC.m_idx));
 
 	m_alt.m_pid = cPID;
 	m_alt.m_RC = RC;
 
-	pCC = pC->obj("yaw");
+	pCC = pC->o("yaw");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->var("P", &cPID.m_P));
-	CHECK_ERROR(pCC->var("I", &cPID.m_I));
-	CHECK_ERROR(pCC->var("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->var("D", &cPID.m_D));
-	CHECK_ERROR(pCC->var("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->var("pwmL", &RC.m_pwmLow));
-	CHECK_ERROR(pCC->var("pwmH", &RC.m_pwmHigh));
-	CHECK_ERROR(pCC->var("pwmN", &RC.m_pwmCenter));
-	CHECK_ERROR(pCC->var("pwmCh", &RC.m_idx));
+	CHECK_ERROR(pCC->v("P", &cPID.m_P));
+	CHECK_ERROR(pCC->v("I", &cPID.m_I));
+	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
+	CHECK_ERROR(pCC->v("D", &cPID.m_D));
+	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
+	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmLow));
+	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmHigh));
+	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmCenter));
+	CHECK_ERROR(pCC->v("pwmCh", &RC.m_idx));
 
 	m_yaw.m_pid = cPID;
 	m_yaw.m_RC = RC;
 
-	pCC = pC->obj("visualFollow");
+	pCC = pC->o("visualFollow");
 	if(pCC->empty())return false;
 
 	//For visual position locking
-	CHECK_ERROR(pCC->var("targetX", &m_roll.m_targetPos));
-	CHECK_ERROR(pCC->var("targetY", &m_pitch.m_targetPos));
+	CHECK_ERROR(pCC->v("targetX", &m_roll.m_targetPos));
+	CHECK_ERROR(pCC->v("targetY", &m_pitch.m_targetPos));
 
 	resetAllControl();
-
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;
@@ -124,20 +119,20 @@ bool _AutoPilot::init(Config* pConfig, string name)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	pCC = pC->obj("visualLanding");
+	pCC = pC->o("visualLanding");
 	if(pCC->empty())return false;
 
-	CHECK_INFO(pCC->var("orientationX", &m_landingTarget.m_orientX));
-	CHECK_INFO(pCC->var("orientationY", &m_landingTarget.m_orientY));
-	CHECK_INFO(pCC->var("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
+	CHECK_INFO(pCC->v("orientationX", &m_landingTarget.m_orientX));
+	CHECK_INFO(pCC->v("orientationY", &m_landingTarget.m_orientY));
+	CHECK_INFO(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
-	pCC = pCC->obj("AprilTags");
+	pCC = pCC->o("AprilTags");
 	if(pCC->empty())return false;
 
-	CHECK_INFO(pCC->var("num", &m_numATagsLandingTarget));
+	CHECK_INFO(pCC->v("num", &m_numATagsLandingTarget));
 	for(i=0; i<m_numATagsLandingTarget; i++)
 	{
-		CHECK_ERROR(pCC->var("tag"+i2str(i), &m_pATagsLandingTarget[i]));
+		CHECK_ERROR(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
 
 	m_lastHeartbeat = 0;
@@ -176,8 +171,6 @@ void _AutoPilot::update(void)
 		this->autoFPSfrom();
 
 //		camROILock();
-
-		landingTarget();
 
 		sendHeartbeat();
 
@@ -299,42 +292,6 @@ void _AutoPilot::camROILock(void)
 
 }
 
-void _AutoPilot::landingTarget(void)
-{
-	if (m_pAT == NULL)
-		return;
-	if (m_pMavlink == NULL)
-		return;
-	if (m_pAT->m_pCamStream == NULL)
-		return;
-
-	int i;
-	int tTag;
-	CamBase* pCam = m_pAT->m_pCamStream->getCameraInput();
-
-	for(i=0;i<m_numATagsLandingTarget;i++)
-	{
-		tTag = m_pATagsLandingTarget[i];
-		if (m_pAT->getTags(tTag, m_pATags)<=0)
-		{
-			m_pATags[0].m_frameID = 0;
-			continue;
-		}
-
-		APRIL_TAG* pTag = &m_pATags[0];
-
-		//Change position to angles
-		m_landingTarget.m_angleX = ((pTag->m_tag.cxy.x - pCam->m_centerH) / pCam->m_width) * pCam->m_angleH * DEG_RADIAN * m_landingTarget.m_orientX;
-		m_landingTarget.m_angleY = ((pTag->m_tag.cxy.y - pCam->m_centerV) / pCam->m_height) * pCam->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
-
-		//Send Mavlink command
-		m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
-				m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
-
-		return;
-	}
-}
-
 void _AutoPilot::setVehicleInterface(_RC* pVehicle)
 {
 	if (!pVehicle)
@@ -363,56 +320,11 @@ bool _AutoPilot::draw(Frame* pFrame, iVector4* pTextPos)
 
 	Mat* pMat = pFrame->getCMat();
 
-	if(m_pAT)
-	{
-		APRIL_TAG* pTag = &m_pATags[0];
-		if(pTag->m_frameID>0)
-		{
-			circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
-			putText(*pMat,
-					"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-							+ f2str(m_landingTarget.m_angleY) + ")",
-					cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-					Scalar(0, 255, 0), 1);
+	putText(*pMat, "AutoPilot FPS: " + i2str(getFrameRate()),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			Scalar(0, 255, 0), 1);
 
-			pTextPos->m_y += pTextPos->m_w;
-		}
-	}
-
-	if(m_pMD)
-	{
-		fVector3 markerCenter;
-		markerCenter.m_x = 0;
-		markerCenter.m_y = 0;
-		markerCenter.m_z = 0;
-
-		if (m_pMD->getCircleCenter(&markerCenter))
-		{
-			circle(*pMat, Point(markerCenter.m_x, markerCenter.m_y),
-					markerCenter.m_z, Scalar(0, 0, 255), 5);
-		}
-		else if (m_pROITracker->m_bTracking)
-		{
-			rectangle(*pMat, Point(m_pROITracker->m_ROI.x, m_pROITracker->m_ROI.y),
-					Point(m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width,
-							m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height),
-					Scalar(0, 0, 255), 3);
-		}
-
-		putText(*pMat, "Marker FPS: " + i2str(getFrameRate()),
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-				Scalar(0, 255, 0), 1);
-
-		pTextPos->m_y += pTextPos->m_w;
-
-		putText(*pMat,
-				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-						+ f2str(m_landingTarget.m_angleY) + ")",
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-				Scalar(0, 255, 0), 1);
-
-		pTextPos->m_y += pTextPos->m_w;
-	}
+	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }

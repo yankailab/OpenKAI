@@ -20,12 +20,12 @@ bool JSON::parse(string json)
 	return true;
 }
 
-bool JSON::var(string name, int* val)
+bool JSON::v(string* pName, int* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<int>())
 		return false;
 
@@ -33,12 +33,12 @@ bool JSON::var(string name, int* val)
 	return true;
 }
 
-bool JSON::var(string name, bool* val)
+bool JSON::v(string* pName, bool* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<int>())
 		return false;
 
@@ -46,12 +46,12 @@ bool JSON::var(string name, bool* val)
 	return true;
 }
 
-bool JSON::var(string name, uint64_t* val)
+bool JSON::v(string* pName, uint64_t* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<double>())
 		return false;
 
@@ -59,12 +59,12 @@ bool JSON::var(string name, uint64_t* val)
 	return true;
 }
 
-bool JSON::var(string name, double* val)
+bool JSON::v(string* pName, double* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<double>())
 		return false;
 
@@ -72,12 +72,12 @@ bool JSON::var(string name, double* val)
 	return true;
 }
 
-bool JSON::var(string name, string* val)
+bool JSON::v(string* pName, string* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<string>())
 		return false;
 
@@ -85,12 +85,12 @@ bool JSON::var(string name, string* val)
 	return true;
 }
 
-bool JSON::array(string name, value::array* val)
+bool JSON::array(string* pName, value::array* val)
 {
 	if (!m_JSON.is<object>())
 		return false;
 
-	value var = m_JSON.get(name);
+	value var = m_JSON.get(*pName);
 	if (!var.is<value::array>())
 		return false;
 
@@ -113,7 +113,8 @@ int JSON::checkErrorNum(void)
 {
 	int numError;
 	string errorDesc;
-	if (!var("error", &numError))
+	string err = "error";
+	if (!v(&err, &numError))
 	{
 		return -1;
 	}

@@ -1,4 +1,4 @@
-#include "demo.h"
+#include "main.h"
 
 int main(int argc, char* argv[])
 {
@@ -17,19 +17,11 @@ int main(int argc, char* argv[])
 	CHECK_FATAL(g_pConfig->parse(config));
 
 	string appName;
-	CHECK_FATAL(g_pConfig->obj("APP")->var("appName", &appName));
+	CHECK_FATAL(g_pConfig->o("APP")->v("appName", &appName));
 
 	//Start Application
-	if(appName=="VisualFollow")
-	{
-		g_pAppVisualFollow = new VisualFollow();
-//		g_pAppVisualFollow->start(&g_Json);
-	}
-	else if(appName=="Navigator")
-	{
-		g_pAppNavigator = new Navigator();
-		g_pAppNavigator->start(g_pConfig);
-	}
+	g_pGen = new General();
+	g_pGen->start(g_pConfig);
 
 	return 0;
 }

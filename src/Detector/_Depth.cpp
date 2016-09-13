@@ -28,18 +28,13 @@ _Depth::~_Depth()
 
 bool _Depth::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
-
-	CHECK_INFO(pC->var("areaMin", &m_minObjArea));
-	CHECK_INFO(pC->var("areaMax", &m_maxObjArea));
+	CHECK_INFO(pC->v("areaMin", &m_minObjArea));
+	CHECK_INFO(pC->v("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;

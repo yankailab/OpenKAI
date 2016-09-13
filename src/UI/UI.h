@@ -19,8 +19,21 @@ namespace kai
 
 struct BUTTON
 {
-	Rect	m_area;
 	string	m_name;
+	Rect	m_rect;
+	Scalar	m_color;
+	double	m_sizeFont;
+
+	int		m_event;
+
+	void handler(int event, int x, int y, int flags)
+	{
+		m_event = 0;
+		if(x<m_rect.x || x>m_rect.x+m_rect.width)return;
+		if(y<m_rect.y || y>m_rect.y+m_rect.height)return;
+
+		m_event = event;
+	}
 };
 
 class UI
@@ -32,14 +45,12 @@ public:
 	bool init(Config* pConfig, string name);
 	bool draw(Frame* pFrame, iVector4* pTextPos);
 
+	BUTTON* addBtn(BUTTON* pBtn);
+
 	void handleMouse(int event, int x, int y, int flags);
 	void handleKey(int key);
 
-
 public:
-	int		m_bActiveBtn;
-	int		m_eventBtn;
-
 	int 	m_nBtn;
 	BUTTON	m_pBtn[NUM_BUTTON];
 

@@ -66,7 +66,8 @@ bool Config::parse(string str)
 	if (!m_json.parse("{" + str + "}"))
 		return false;
 
-	m_json.var("name", &m_name);
+	string name = "name";
+	m_json.v(&name, &m_name);
 
 	if (m_pNULL == NULL)
 	{
@@ -118,7 +119,7 @@ bool Config::addChild(string str)
 	return pChild->parse(str);
 }
 
-Config* Config::obj(string name)
+Config* Config::o(string name)
 {
 	if (name.empty())
 		return NULL;
@@ -144,33 +145,33 @@ bool Config::empty(void)
 	return m_bNULL;
 }
 
-bool Config::var(string name, int* val)
+bool Config::v(string name, int* val)
 {
-	return m_json.var(name, val);
+	return m_json.v(&name, val);
 }
 
-bool Config::var(string name, bool* val)
+bool Config::v(string name, bool* val)
 {
-	return m_json.var(name, val);
+	return m_json.v(&name, val);
 }
 
-bool Config::var(string name, uint64_t* val)
+bool Config::v(string name, uint64_t* val)
 {
-	return m_json.var(name, val);
+	return m_json.v(&name, val);
 }
 
-bool Config::var(string name, double* val)
+bool Config::v(string name, double* val)
 {
-	return m_json.var(name, val);
+	return m_json.v(&name, val);
 }
 
-bool Config::var(string name, string* val)
+bool Config::v(string name, string* val)
 {
-	return m_json.var(name, val);
+	return m_json.v(&name, val);
 }
 
 bool Config::array(string name, value::array* val)
 {
-	return m_json.array(name, val);
+	return m_json.array(&name, val);
 }
 

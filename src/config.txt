@@ -1,19 +1,26 @@
 
 {
 	"name":"APP",
-	"appName":"Navigator",
+	"appName":"AI-Pilot",
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
 	"camMain":"ZEDL",
 }
 
 {
 	"name":"Mavlink0",
-	"FPS":30,
+	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":921600,
+}
+
+{
+	"name":"RC",
+	"FPS":30,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":115200,
 }
 
 {
@@ -106,7 +113,7 @@
 {
 	"name":"SSD",
 	"FPS":30,
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
+	"dir":"/home/kai/dev/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",

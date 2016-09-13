@@ -39,31 +39,31 @@ bool CamBase::setup(Config* pConfig, string name)
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	Config* pCam = pConfig->obj(name);
+	Config* pCam = pConfig->o(name);
 	if(pCam->empty())return false;
 
-	CHECK_FATAL(pCam->var("width", &m_width));
-	CHECK_FATAL(pCam->var("height", &m_height));
-	CHECK_FATAL(pCam->var("angleV", &m_angleV));
-	CHECK_FATAL(pCam->var("angleH", &m_angleH));
+	CHECK_FATAL(pCam->v("width", &m_width));
+	CHECK_FATAL(pCam->v("height", &m_height));
+	CHECK_FATAL(pCam->v("angleV", &m_angleV));
+	CHECK_FATAL(pCam->v("angleH", &m_angleH));
 
-	CHECK_INFO(pCam->var("isoScale", &m_isoScale));
-	CHECK_INFO(pCam->var("bCalib", &m_bCalibration));
-	CHECK_INFO(pCam->var("bGimbal", &m_bGimbal));
-	CHECK_INFO(pCam->var("bFisheye", &m_bFisheye));
+	CHECK_INFO(pCam->v("isoScale", &m_isoScale));
+	CHECK_INFO(pCam->v("bCalib", &m_bCalibration));
+	CHECK_INFO(pCam->v("bGimbal", &m_bGimbal));
+	CHECK_INFO(pCam->v("bFisheye", &m_bFisheye));
 
-	CHECK_INFO(pCam->var("bCrop", &m_bCrop));
+	CHECK_INFO(pCam->v("bCrop", &m_bCrop));
 	if(m_bCrop!=0)
 	{
-		CHECK_FATAL(pCam->var("cropX", &m_cropBB.x));
-		CHECK_FATAL(pCam->var("cropY", &m_cropBB.y));
-		CHECK_FATAL(pCam->var("cropW", &m_cropBB.width));
-		CHECK_FATAL(pCam->var("cropH", &m_cropBB.height));
+		CHECK_FATAL(pCam->v("cropX", &m_cropBB.x));
+		CHECK_FATAL(pCam->v("cropY", &m_cropBB.y));
+		CHECK_FATAL(pCam->v("cropW", &m_cropBB.width));
+		CHECK_FATAL(pCam->v("cropH", &m_cropBB.height));
 	}
 
-	if (pCam->var("calibFile", &calibFile))
+	if (pCam->v("calibFile", &calibFile))
 	{
 		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())

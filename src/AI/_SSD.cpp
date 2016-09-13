@@ -26,11 +26,10 @@ _SSD::~_SSD()
 
 bool _SSD::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -40,21 +39,17 @@ bool _SSD::init(Config* pConfig, string name)
 	string labelFile;
 	string presetDir = "";
 
-	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	CHECK_INFO(pC->var("dir", &caffeDir));
-	CHECK_FATAL(pC->var("modelFile", &modelFile));
-	CHECK_FATAL(pC->var("trainedFile", &trainedFile));
-	CHECK_FATAL(pC->var("meanFile", &meanFile));
-	CHECK_FATAL(pC->var("labelFile", &labelFile));
-	CHECK_INFO(pC->var("minConfidence", &m_confidence_threshold));
+	CHECK_INFO(pC->v("dir", &caffeDir));
+	CHECK_FATAL(pC->v("modelFile", &modelFile));
+	CHECK_FATAL(pC->v("trainedFile", &trainedFile));
+	CHECK_FATAL(pC->v("meanFile", &meanFile));
+	CHECK_FATAL(pC->v("labelFile", &labelFile));
+	CHECK_INFO(pC->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
-
-	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
 
 	m_pFrame = new Frame();
 

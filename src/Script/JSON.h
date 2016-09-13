@@ -20,14 +20,14 @@ public:
 	bool parse(string json);
 	int checkErrorNum(void);
 
-	bool var(string name,int* val);
-	bool var(string name, bool* val);
-	bool var(string name,uint64_t* val);
-	bool var(string name,double* val);
-	bool var(string name,string* val);
+	bool v(string* pName, int* val);
+	bool v(string* pName, bool* val);
+	bool v(string* pName, uint64_t* val);
+	bool v(string* pName, double* val);
+	bool v(string* pName, string* val);
 
 //	bool array(string name,int* val);
-	bool array(string name,value::array* val);
+	bool array(string* pName,value::array* val);
 
 
 };

@@ -45,7 +45,7 @@ bool _FeatureDetector::init(string name, JSON* pJson)
 	this->setTargetFPS(30.0);
 
 	string targetFile;
-	CHECK_ERROR(pJson->var("FEATURE_IMG_" + name, &targetFile));
+//	CHECK_ERROR(pJson->v("FEATURE_IMG_" + name, &targetFile));
 	m_targetMat = imread(targetFile, cv::IMREAD_COLOR);
 
 	m_pAkaze = cv::AKAZE::create();

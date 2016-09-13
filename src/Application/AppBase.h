@@ -1,12 +1,14 @@
 /*
- * ApplicationBase.h
+ * AppBase.h
  *
  *  Created on: Aug 22, 2016
- *      Author: root
+ *      Author: Kai Yan
  */
 
 #ifndef OPENKAI_SRC_APPLICATION_APPBASE_H_
 #define OPENKAI_SRC_APPLICATION_APPBASE_H_
+
+#include "../Base/common.h"
 
 namespace kai
 {
@@ -18,6 +20,7 @@ public:
 	virtual ~AppBase();
 
 public:
+	string m_name;
 	int m_key;
 	bool m_bRun;
 

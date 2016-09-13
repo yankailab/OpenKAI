@@ -1,15 +1,15 @@
-#include "Navigator.h"
+#include "General.h"
 
-Navigator* g_pNavigator;
+General* g_pGeneral;
 void onMouseNavigator(int event, int x, int y, int flags, void* userdata)
 {
-	g_pNavigator->handleMouse(event, x, y, flags);
+	g_pGeneral->handleMouse(event, x, y, flags);
 }
 
 namespace kai
 {
 
-Navigator::Navigator()
+General::General()
 {
 	AppBase();
 
@@ -29,28 +29,29 @@ Navigator::Navigator()
 	m_pAM = NULL;
 }
 
-Navigator::~Navigator()
+General::~General()
 {
 }
 
-bool Navigator::start(Config* pConfig)
+bool General::start(Config* pConfig)
 {
 	//TODO: Caffe set data to GPU directly
 	//TODO: Solve caffe ROI in DepthDetector
 	//TODO: Optimize FCN
 
-	g_pNavigator = this;
+	g_pGeneral = this;
 	int FPS;
 	string camName;
 
-	CHECK_INFO(pConfig->obj("APP")->var("bShowScreen", &m_bShowScreen));
-	CHECK_INFO(pConfig->obj("APP")->var("bFullScreen", &m_bFullScreen));
-	CHECK_INFO(pConfig->obj("APP")->var("waitKey", &m_waitKey));
+	CHECK_INFO(pConfig->o("APP")->v("appName", &m_name));
+	CHECK_INFO(pConfig->o("APP")->v("bShowScreen", &m_bShowScreen));
+	CHECK_INFO(pConfig->o("APP")->v("bFullScreen", &m_bFullScreen));
+	CHECK_INFO(pConfig->o("APP")->v("waitKey", &m_waitKey));
 
 	m_pFrame = new Frame();
 
 	//Init Camera
-	CHECK_INFO(pConfig->obj("APP")->var("camMain", &camName));
+	CHECK_INFO(pConfig->o("APP")->v("camMain", &camName));
 	if (camName != "video")
 	{
 		m_pCamFront = new _Stream();
@@ -60,7 +61,7 @@ bool Navigator::start(Config* pConfig)
 
 	//Init Automaton
 	FPS=0;
-	CHECK_INFO(pConfig->obj("Automaton0")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("Automaton0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAM = new _Automaton();
@@ -70,42 +71,42 @@ bool Navigator::start(Config* pConfig)
 
 	//Init ROI Tracker
 	FPS=0;
-	CHECK_INFO(pConfig->obj("roiTracker0")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("roiTracker0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
-		m_pROITracker->init(pConfig, "roiTracker0");
 		m_pROITracker->m_pCamStream = m_pCamFront;
+		m_pROITracker->init(pConfig, "roiTracker0");
 		m_pROITracker->start();
 	}
 
 	//Init Marker Detector
 	FPS=0;
-	CHECK_INFO(pConfig->obj("markerLanding")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("markerLanding")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMD = new _Bullseye();
-		m_pMD->init(pConfig, "markerLanding");
-		m_pMD->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
 		m_pCamFront->m_bHSV = true;
+		m_pMD->m_pCamStream = m_pCamFront;
+		m_pMD->init(pConfig, "markerLanding");
 		m_pMD->start();
 	}
 
 	//Init AprilTags Detector
 	FPS=0;
-	CHECK_INFO(pConfig->obj("AprilTagLanding")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("AprilTagLanding")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAT = new _AprilTags();
-		m_pAT->init(pConfig, "AprilTagLanding");
 		m_pAT->m_pCamStream = m_pCamFront;
+		m_pAT->init(pConfig, "AprilTagLanding");
 		m_pAT->start();
 	}
 
 	//Init Mavlink
 	FPS=0;
-	CHECK_INFO(pConfig->obj("Mavlink0")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("Mavlink0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMavlink = new _Mavlink();
@@ -115,7 +116,7 @@ bool Navigator::start(Config* pConfig)
 
 	//Init Autopilot
 	FPS=0;
-	CHECK_INFO(pConfig->obj("Autopilot0")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("Autopilot0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
@@ -130,7 +131,7 @@ bool Navigator::start(Config* pConfig)
 
 	//Init Universe
 	FPS=0;
-	CHECK_INFO(pConfig->obj("Universe")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("Universe")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pUniverse = new _Universe();
@@ -140,49 +141,49 @@ bool Navigator::start(Config* pConfig)
 
 	//Init SSD
 	FPS=0;
-	CHECK_INFO(pConfig->obj("SSD")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("SSD")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pSSD = new _SSD();
-		m_pSSD->init(pConfig, "SSD");
 		m_pSSD->m_pCamStream = m_pCamFront;
 		m_pSSD->m_pUniverse = m_pUniverse;
+		m_pSSD->init(pConfig, "SSD");
 		m_pSSD->start();
 	}
 
 	//Init Optical Flow
 	FPS=0;
-	CHECK_INFO(pConfig->obj("optflow0")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("optflow0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFlow = new _Flow();
-		CHECK_FATAL(m_pFlow->init(pConfig, "optflow0"));
 		m_pFlow->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
+		CHECK_FATAL(m_pFlow->init(pConfig, "optflow0"));
 		m_pFlow->start();
 	}
 
 	//Init Depth Object Detector
 	FPS=0;
-	CHECK_INFO(pConfig->obj("depthObjDetector")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("depthObjDetector")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pDD = new _Depth();
-		CHECK_FATAL(m_pDD->init(pConfig, "depthObjDetector"));
 		m_pDD->m_pCamStream = m_pCamFront;
 		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
+		CHECK_FATAL(m_pDD->init(pConfig, "depthObjDetector"));
 		m_pDD->start();
 	}
 
 	//Init FCN
 	FPS=0;
-	CHECK_INFO(pConfig->obj("FCN")->var("FPS", &FPS));
+	CHECK_INFO(pConfig->o("FCN")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFCN = new _FCN();
-		m_pFCN->init(pConfig,"FCN");
 		m_pFCN->m_pCamStream = m_pCamFront;
+		m_pFCN->init(pConfig,"FCN");
 		m_pFCN->start();
 	}
 
@@ -192,14 +193,14 @@ bool Navigator::start(Config* pConfig)
 
 	if (m_bShowScreen)
 	{
-		namedWindow(APP_NAME, CV_WINDOW_NORMAL);
+		namedWindow(m_name, CV_WINDOW_NORMAL);
 		if (m_bFullScreen)
 		{
-			setWindowProperty(APP_NAME,
+			setWindowProperty(m_name,
 					CV_WND_PROP_FULLSCREEN,
 					CV_WINDOW_FULLSCREEN);
 		}
-		setMouseCallback(APP_NAME, onMouseNavigator, NULL);
+		setMouseCallback(m_name, onMouseNavigator, NULL);
 	}
 
 	while (m_bRun)
@@ -254,7 +255,7 @@ bool Navigator::start(Config* pConfig)
 
 }
 
-void Navigator::draw(void)
+void General::draw(void)
 {
 	iVector4 textPos;
 	textPos.m_x = 15;
@@ -303,11 +304,11 @@ void Navigator::draw(void)
 	}
 
 
-	imshow(APP_NAME, *m_pFrame->getCMat());
+	imshow(m_name, *m_pFrame->getCMat());
 
 }
 
-void Navigator::handleKey(int key)
+void General::handleKey(int key)
 {
 	switch (key)
 	{
@@ -319,7 +320,7 @@ void Navigator::handleKey(int key)
 	}
 }
 
-void Navigator::handleMouse(int event, int x, int y, int flags)
+void General::handleMouse(int event, int x, int y, int flags)
 {
 	switch (event)
 	{

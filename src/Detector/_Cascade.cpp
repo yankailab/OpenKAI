@@ -39,22 +39,17 @@ _Cascade::~_Cascade()
 
 bool _Cascade::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
-
-	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	Config* pC = pConfig->o(name);
 
 	string cascadeFile = "";
 	string presetDir = "";
 
-	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
-	CHECK_ERROR(pC->var("device", &m_device));
-	CHECK_ERROR(pC->var("cascadeFile", &cascadeFile));
+	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
+	CHECK_ERROR(pC->v("device", &m_device));
+	CHECK_ERROR(pC->v("cascadeFile", &cascadeFile));
 
 	if (m_device == CASCADE_CPU)
 	{
@@ -66,12 +61,12 @@ bool _Cascade::init(Config* pConfig, string name)
 		CHECK_ERROR(m_pCascade);
 		//TODO:set the upper limit of objects to be detected
 		//m_pCascade->
-		CHECK_INFO(pC->var("cudaDeviceID", &m_cudaDeviceID));
+		CHECK_INFO(pC->v("cudaDeviceID", &m_cudaDeviceID));
 	}
 
-	CHECK_INFO(pC->var("lifeTime", &m_objLifeTime));
-	CHECK_INFO(pC->var("posDiff", &m_posDiff));
-	CHECK_ERROR(pC->var("num", &m_numObj));
+	CHECK_INFO(pC->v("lifeTime", &m_objLifeTime));
+	CHECK_INFO(pC->v("posDiff", &m_posDiff));
+	CHECK_ERROR(pC->v("num", &m_numObj));
 
 	m_pObj = new CASCADE_OBJECT[m_numObj];
 	if (m_pObj == NULL)

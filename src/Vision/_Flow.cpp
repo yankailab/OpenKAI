@@ -35,24 +35,21 @@ _Flow::~_Flow()
 
 bool _Flow::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
 	string presetDir = "";
-	double FPS = DEFAULT_FPS;
 	string labelFile;
 
-	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	CHECK_INFO(pC->var("FPS", &FPS));
-	CHECK_INFO(pC->var("bDepth", &m_bDepth));
-	CHECK_INFO(pC->var("width", &m_width));
-	CHECK_INFO(pC->var("height", &m_height));
-	CHECK_INFO(pC->var("flowMax", &m_flowMax));
-	CHECK_INFO(pC->var("colorFile", &labelFile));
+	CHECK_INFO(pC->v("bDepth", &m_bDepth));
+	CHECK_INFO(pC->v("width", &m_width));
+	CHECK_INFO(pC->v("height", &m_height));
+	CHECK_INFO(pC->v("flowMax", &m_flowMax));
+	CHECK_INFO(pC->v("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
@@ -62,7 +59,6 @@ bool _Flow::init(Config* pConfig, string name)
 
 	m_GDMat = GpuMat(m_height, m_width, CV_32FC1, Scalar(0));
 
-	this->setTargetFPS(FPS);
 	return true;
 
 	//	m_labelColor = imread(presetDir+labelFile, 1);

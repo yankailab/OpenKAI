@@ -29,8 +29,8 @@ bool Camera::setup(Config* pConfig, string camName)
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(pConfig->obj("APP")->var("presetDir", &presetDir));
-	CHECK_FATAL(pConfig->obj(camName)->var("ID", &m_camDeviceID));
+	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
+	CHECK_FATAL(pConfig->o(camName)->v("ID", &m_camDeviceID));
 
 	return true;
 }

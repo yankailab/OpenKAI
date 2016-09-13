@@ -30,44 +30,7 @@ VisualFollow::~VisualFollow()
 
 bool VisualFollow::start(JSON* pJson)
 {
-
-	return false;
-
-
-
 /*
-	g_pDroneHunter = this;
-	int FPS;
-
-	CHECK_INFO(pJson->var("APP_SHOW_SCREEN", &m_bShowScreen));
-	CHECK_INFO(pJson->var("APP_FULL_SCREEN", &m_bFullScreen));
-	CHECK_INFO(pJson->var("APP_WAIT_KEY", &m_waitKey));
-
-	CHECK_ERROR(pJson->var("ROI_MIN_SIZE", &m_minROI));
-
-	m_pFrame = new Frame();
-
-	//Init Camera
-	FPS=0;
-	CHECK_INFO(pJson->var("CAM_FRONTL_FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pCamFront = new _Stream();
-		CHECK_FATAL(m_pCamFront->init(pJson, "FRONTL"));
-		m_pCamFront->start();
-	}
-
-	//Init ROI Tracker
-	FPS=0;
-	CHECK_INFO(pJson->var("ROITRACKER_MAIN_FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pROITracker = new _ROITracker();
-		m_pROITracker->init(pJson, "MAIN");
-		m_pROITracker->m_pCamStream = m_pCamFront;
-		m_pROITracker->start();
-	}
-
 	//Connect to VehicleLink
 	FPS=0;
 	CHECK_INFO(pJson->var("SERIALPORT_MAVLINK_FPS", &FPS));
@@ -77,18 +40,6 @@ bool VisualFollow::start(JSON* pJson)
 		CHECK_FATAL(m_pVlink->setup(pJson, "MAVLINK"));
 		CHECK_INFO(m_pVlink->open());
 		m_pVlink->start();
-	}
-
-	//Init Autopilot
-	FPS=0;
-	CHECK_INFO(pJson->var("AUTOPILOT_MAIN_FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pAP = new _AutoPilot();
-		CHECK_FATAL(m_pAP->init(pJson, "MAIN"));
-		m_pAP->m_pVI = m_pVlink;
-		m_pAP->m_pROITracker = m_pROITracker;
-		m_pAP->start();
 	}
 
 	m_ROI.m_x = 0;
@@ -106,43 +57,6 @@ bool VisualFollow::start(JSON* pJson)
 	m_btnROIBig = 200;
 	m_btnROISmall = 300;
 	m_btnMode = 980;
-
-
-	//UI thread
-	m_bRun = true;
-	namedWindow(APP_NAME, CV_WINDOW_NORMAL);
-	setWindowProperty(APP_NAME, CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
-	setMouseCallback(APP_NAME, onMouseDroneHunter, NULL);
-
-	while (m_bRun)
-	{
-		if (m_bShowScreen)
-		{
-			draw();
-		}
-
-		//Handle key input
-		m_key = waitKey(m_waitKey);
-		handleKey(m_key);
-	}
-
-	STOP(m_pAP);
-	STOP(m_pVlink);
-	STOP(m_pROITracker);
-
-	m_pVlink->complete();
-	m_pVlink->close();
-
-	COMPLETE(m_pAP);
-	COMPLETE(m_pROITracker);
-	COMPLETE(m_pCamFront);
-
-	RELEASE(m_pVlink);
-	RELEASE(m_pCamFront);
-	RELEASE(m_pROITracker);
-	RELEASE(m_pAP);
-
-	return 0;
 	*/
 
 }

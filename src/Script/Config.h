@@ -17,15 +17,15 @@ public:
 	~Config(void);
 
 	bool parse(string str);
-	Config* obj(string name);
+	Config* o(string name);
 	JSON* json(void);
 	bool empty(void);
 
-	bool var(string name,int* val);
-	bool var(string name, bool* val);
-	bool var(string name,uint64_t* val);
-	bool var(string name,double* val);
-	bool var(string name,string* val);
+	bool v(string name,int* val);
+	bool v(string name, bool* val);
+	bool v(string name,uint64_t* val);
+	bool v(string name,double* val);
+	bool v(string name,string* val);
 
 //	bool array(string name,int* val);
 	bool array(string name,value::array* val);

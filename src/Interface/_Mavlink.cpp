@@ -35,18 +35,12 @@ _Mavlink::~_Mavlink()
 
 bool _Mavlink::setup(Config* pConfig, string name)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
-
-	CHECK_ERROR(pC->var("portName", &m_sportName));
-	CHECK_ERROR(pC->var("baudrate", &m_baudRate));
-
-	double FPS = 100;
-	CHECK_INFO(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	Config* pC = pConfig->o(name);
+	CHECK_ERROR(pC->v("portName", &m_sportName));
+	CHECK_ERROR(pC->v("baudrate", &m_baudRate));
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
@@ -334,7 +328,6 @@ void _Mavlink::update(void)
 			last_status.packet_rx_drop_count = 0;
 		}
 
-
 		//Regular update loop
 		this->autoFPSfrom();
 
@@ -431,8 +424,17 @@ bool _Mavlink::draw(Frame* pFrame, iVector4* pTextPos)
 	char strBuf[512];
 	std::string strInfo;
 
-	putText(*pFrame->getCMat(), "Mavlink FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	if (m_pSerialPort->IsConnected())
+	{
+		putText(*pFrame->getCMat(), "Mavlink FPS: " + i2str(getFrameRate()),
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	}
+	else
+	{
+		putText(*pFrame->getCMat(), "Mavlink Not Connected",
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	}
+
 	pTextPos->m_y += pTextPos->m_w;
 
 	//Vehicle position

@@ -39,6 +39,25 @@ _ThreadBase::~_ThreadBase()
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
+bool _ThreadBase::init(Config* pConfig, string name)
+{
+	if (!pConfig)
+		return false;
+
+	if(name.empty())
+		return false;
+
+	Config* pC = pConfig->o(name);
+	if (pC->empty())
+		return false;
+
+	double FPS = DEFAULT_FPS;
+	CHECK_INFO(pC->v("FPS", &FPS));
+	setTargetFPS(FPS);
+
+	return true;
+}
+
 void _ThreadBase::sleepThread(int32_t sec, int32_t usec)
 {
 	struct timeval now;

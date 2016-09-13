@@ -24,6 +24,7 @@ public:
 	_ThreadBase();
 	virtual ~_ThreadBase();
 
+	bool init(Config* pConfig, string name);
 	void stop(void);
 	bool complete(void);
 	void waitForComplete(void);

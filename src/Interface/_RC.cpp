@@ -20,14 +20,14 @@ _RC::~_RC()
 	}
 }
 
-bool _RC::setup(JSON* pJson, string serialName)
+bool _RC::init(Config* pConfig, string name)
 {
-	if(!pJson)return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	CHECK_ERROR(pJson->var("SERIALPORT_"+serialName+"_NAME", &m_sportName));
-	CHECK_ERROR(pJson->var("SERIALPORT_"+serialName+"_BAUDRATE", &m_baudRate));
-
-	this->setTargetFPS(1000);
+	Config* pC = pConfig->o(name);
+	CHECK_ERROR(pC->v("portName", &m_sportName));
+	CHECK_ERROR(pC->v("baudrate", &m_baudRate));
 
 	return true;
 }

@@ -24,18 +24,12 @@ _Automaton::~_Automaton()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Automaton::init(Config* pConfig, string amName)
+bool _Automaton::init(Config* pConfig, string name)
 {
-	if (!pConfig)
+	if (this->_ThreadBase::init(pConfig,name)==false)
 		return false;
 
-	Config* pAM = pConfig->obj(amName);
-	if (pAM->empty())
-		return false;
-
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pAM->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	Config* pAM = pConfig->o(name);
 
 	//init basic params
 	m_numState = 0;
@@ -49,45 +43,35 @@ bool _Automaton::init(Config* pConfig, string amName)
 
 	do
 	{
-//		nameS = "AM_"+automatonName+"_STATE" + i2str(m_numState);
-//		if(!pJson->getVal(nameS+"_NAME", &name))break;
-
-		cState = pAM->obj("state" + i2str(m_numState));
+		cState = pAM->o("state" + i2str(m_numState));
 		if (cState->empty())
 			break;
 
 		State* pS = addState();
 		if (pS == NULL)
 			return false;
-		cState->var("name", &pS->m_name);
+		cState->v("stateName", &pS->m_name);
 
 		do
 		{
-//			nameST = nameS+"_T"+i2str(pS->m_numTransition);
-//			if(!pJson->getVal(nameST+"_TO", &k))break;
-
-			cTransit = cState->obj("transition" + i2str(pS->m_numTransition));
+			cTransit = cState->o("transition" + i2str(pS->m_numTransition));
 			if (cTransit->empty())
 				break;
 
 			Transition* pT = pS->addTransition();
 			if (pT == NULL)
 				return false;
-			cTransit->var("toState", &pT->m_transitToID);
+			cTransit->v("toState", &pT->m_transitToID);
 
 			do
 			{
-				cCond = cTransit->obj("condition" + i2str(pT->m_numCond));
+				cCond = cTransit->o("condition" + i2str(pT->m_numCond));
 				if (cCond->empty())
 					break;
 
-//				nameSTC = nameST+"_COND"+i2str(pT->m_numCond);
-//				if(!pJson->getVal(nameSTC+"_TYPE", &typeStr))break;
-//				if(!pJson->getVal(nameSTC+"_COND", &condStr))break;
-
-				if (!cCond->var("type", &typeStr))
+				if (!cCond->v("type", &typeStr))
 					break;
-				if (!cCond->var("cond", &condStr))
+				if (!cCond->v("cond", &condStr))
 					break;
 
 				ConditionBase* pTC;
@@ -103,7 +87,7 @@ bool _Automaton::init(Config* pConfig, string amName)
 				else if (typeStr == "ic")
 				{
 					pTC = pT->addConditionIC();
-					cCond->var("constI", &(((ConditionIC*) pTC)->m_const));
+					cCond->v("constI", &(((ConditionIC*) pTC)->m_const));
 				}
 
 				if (pTC == NULL)
@@ -124,8 +108,8 @@ bool _Automaton::init(Config* pConfig, string amName)
 				else
 					pTC->m_condition = DEFAULT;
 
-				cCond->var("ptrName1", &pTC->m_namePtr1);
-				cCond->var("ptrName2", &pTC->m_namePtr2);
+				cCond->v("ptrName1", &pTC->m_namePtr1);
+				cCond->v("ptrName2", &pTC->m_namePtr2);
 
 			} while (1);
 
@@ -134,7 +118,7 @@ bool _Automaton::init(Config* pConfig, string amName)
 	} while (1);
 
 	int k = 0;
-	pAM->var("startState", &k);
+	pAM->v("startState", &k);
 	return setState(k);
 }
 

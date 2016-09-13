@@ -27,8 +27,11 @@ _ROITracker::~_ROITracker()
 {
 }
 
-bool _ROITracker::init(Config* pConfig, string roiName)
+bool _ROITracker::init(Config* pConfig, string name)
 {
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
+
 	m_ROI.width = 0;
 	m_ROI.height = 0;
 	m_ROI.x = 0;
@@ -40,10 +43,6 @@ bool _ROITracker::init(Config* pConfig, string roiName)
 
 	// create a tracker object
 	m_pTracker = Tracker::create("KCF");
-
-	double FPS = DEFAULT_FPS;
-	CHECK_ERROR(pConfig->obj(roiName)->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
 
 	return true;
 }

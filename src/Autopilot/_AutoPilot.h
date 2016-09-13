@@ -82,7 +82,6 @@ public:
 	void resetAllControl(void);
 
 	void camROILock(void);
-	void landingTarget(void);
 
 public:
 	//Detectors

@@ -36,23 +36,18 @@ _AprilTags::~_AprilTags()
 
 bool _AprilTags::init(Config* pConfig, string name)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(name);
 
-	CHECK_INFO(pC->var("family", &m_tagFamily));
-	CHECK_INFO(pC->var("err", &m_tagErr));
-	CHECK_INFO(pC->var("lifeTime", &m_tagLifetime));
-	CHECK_INFO(pC->var("distThr", &m_tagDistThr));
-	CHECK_INFO(pC->var("detInterval", &m_tagAliveInterval));
-	CHECK_INFO(pC->var("scaling", &m_tagScaling));
-	CHECK_INFO(pC->var("sizeLim", &m_tagSizeLim));
-
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	CHECK_INFO(pC->v("family", &m_tagFamily));
+	CHECK_INFO(pC->v("err", &m_tagErr));
+	CHECK_INFO(pC->v("lifeTime", &m_tagLifetime));
+	CHECK_INFO(pC->v("distThr", &m_tagDistThr));
+	CHECK_INFO(pC->v("detInterval", &m_tagAliveInterval));
+	CHECK_INFO(pC->v("scaling", &m_tagScaling));
+	CHECK_INFO(pC->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
 

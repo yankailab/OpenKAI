@@ -40,25 +40,22 @@ _Bullseye::~_Bullseye()
 
 bool _Bullseye::init(Config* pConfig, string name)
 {
-	Config* pC = pConfig->obj(name);
-	if(pC->empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	CHECK_ERROR(pC->var("areaRatio", &m_areaRatio));
-	CHECK_ERROR(pC->var("minSize", &m_minMarkerSize));
+	Config* pC = pConfig->o(name);
 
-	CHECK_INFO(pC->var("method", &m_method));
-	CHECK_INFO(pC->var("medBlueKsize", &m_kSize));
+	CHECK_ERROR(pC->v("areaRatio", &m_areaRatio));
+	CHECK_ERROR(pC->v("minSize", &m_minMarkerSize));
 
-	CHECK_INFO(pC->var("HoughMinDist", &m_houghMinDist));
-	CHECK_INFO(pC->var("HoughParam1", &m_houghParam1));
-	CHECK_INFO(pC->var("HoughParam2", &m_houghParam2));
-	CHECK_INFO(pC->var("HoughMinR", &m_houghMinR));
-	CHECK_INFO(pC->var("HoughMaxR", &m_houghMaxR));
+	CHECK_INFO(pC->v("method", &m_method));
+	CHECK_INFO(pC->v("medBlueKsize", &m_kSize));
 
-
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pC->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	CHECK_INFO(pC->v("HoughMinDist", &m_houghMinDist));
+	CHECK_INFO(pC->v("HoughParam1", &m_houghParam1));
+	CHECK_INFO(pC->v("HoughParam2", &m_houghParam2));
+	CHECK_INFO(pC->v("HoughMinR", &m_houghMinR));
+	CHECK_INFO(pC->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
 

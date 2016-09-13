@@ -12,14 +12,14 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
 #include "../Interface/_Mavlink.h"
 #include "../Interface/_RC.h"
 #include "../Utility/util.h"
 #include "../Vision/_Flow.h"
 #include "../Tracker/_ROITracker.h"
-#include "AppBase.h"
+#include "../Application/AppBase.h"
+#include "../Autopilot/_AutoPilot.h"
 
 #define APP_NAME "VISUAL_FOLLOW"
 

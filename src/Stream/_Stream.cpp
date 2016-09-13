@@ -35,21 +35,16 @@ _Stream::~_Stream()
 
 bool _Stream::init(Config* pConfig, string name)
 {
-	if(!pConfig)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,name)==false)
+		return false;
 
-	Config* pStream = pConfig->obj(name);
-	if(pStream->empty())return false;
-
-	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pStream->var("FPS", &FPS));
-	this->setTargetFPS(FPS);
+	Config* pStream = pConfig->o(name);
 
 	int camType;
 	m_camName = name;
 
-	CHECK_INFO(pStream->var("bShowDepth", &m_showDepth));
-	CHECK_FATAL(pStream->var("type", &camType));
+	CHECK_INFO(pStream->v("bShowDepth", &m_showDepth));
+	CHECK_FATAL(pStream->v("type", &camType));
 
 	switch (camType)
 	{

@@ -13,6 +13,7 @@ namespace kai
 AppBase::AppBase()
 {
 	// TODO Auto-generated constructor stub
+	m_name = "";
 	m_bShowScreen = 1;
 	m_bFullScreen = 0;
 	m_waitKey = 50;
