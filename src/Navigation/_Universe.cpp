@@ -39,9 +39,9 @@ bool _Universe::init(Config* pConfig, string name)
 
 //	if(m_caffe.init(pJson,"")==false)return false;
 
-	CHECK_ERROR(pC->v("frameLifetime", &m_frameLifeTime));
-	CHECK_ERROR(pC->v("probMin", &m_objProbMin));
-	CHECK_ERROR(pC->v("posDisparity", &m_disparity));
+	F_ERROR_F(pC->v("frameLifetime", &m_frameLifeTime));
+	F_ERROR_F(pC->v("probMin", &m_objProbMin));
+	F_ERROR_F(pC->v("posDisparity", &m_disparity));
 
 	return true;
 }

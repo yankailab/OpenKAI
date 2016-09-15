@@ -26,8 +26,8 @@ bool _RC::init(Config* pConfig, string name)
 		return false;
 
 	Config* pC = pConfig->o(name);
-	CHECK_ERROR(pC->v("portName", &m_sportName));
-	CHECK_ERROR(pC->v("baudrate", &m_baudRate));
+	F_ERROR_F(pC->v("portName", &m_sportName));
+	F_ERROR_F(pC->v("baudrate", &m_baudRate));
 
 	return true;
 }

@@ -33,8 +33,8 @@ bool _Depth::init(Config* pConfig, string name)
 
 	Config* pC = pConfig->o(name);
 
-	CHECK_INFO(pC->v("areaMin", &m_minObjArea));
-	CHECK_INFO(pC->v("areaMax", &m_maxObjArea));
+	F_INFO_(pC->v("areaMin", &m_minObjArea));
+	F_INFO_(pC->v("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;

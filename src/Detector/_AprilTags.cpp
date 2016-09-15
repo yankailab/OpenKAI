@@ -41,13 +41,13 @@ bool _AprilTags::init(Config* pConfig, string name)
 
 	Config* pC = pConfig->o(name);
 
-	CHECK_INFO(pC->v("family", &m_tagFamily));
-	CHECK_INFO(pC->v("err", &m_tagErr));
-	CHECK_INFO(pC->v("lifeTime", &m_tagLifetime));
-	CHECK_INFO(pC->v("distThr", &m_tagDistThr));
-	CHECK_INFO(pC->v("detInterval", &m_tagAliveInterval));
-	CHECK_INFO(pC->v("scaling", &m_tagScaling));
-	CHECK_INFO(pC->v("sizeLim", &m_tagSizeLim));
+	F_INFO_(pC->v("family", &m_tagFamily));
+	F_INFO_(pC->v("err", &m_tagErr));
+	F_INFO_(pC->v("lifeTime", &m_tagLifetime));
+	F_INFO_(pC->v("distThr", &m_tagDistThr));
+	F_INFO_(pC->v("detInterval", &m_tagAliveInterval));
+	F_INFO_(pC->v("scaling", &m_tagScaling));
+	F_INFO_(pC->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
 

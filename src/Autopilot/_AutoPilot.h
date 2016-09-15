@@ -1,4 +1,3 @@
-
 #ifndef OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
 #define OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
 
@@ -10,8 +9,6 @@
 #include "ActionBase.h"
 #include "commonAutopilot.h"
 
-
-#define NUM_RC_CHANNEL 8
 
 //FALCON COMMANDS
 #define CMD_RC_UPDATE 0
@@ -31,11 +28,14 @@ public:
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 	void sendHeartbeat(void);
 
-//	int* getPWMOutput(void);
-//	void resetAllControl(void);
+
 
 public:
+
 	_Automaton* m_pAM;
+
+	int m_nActions;
+	ActionBase* m_pActions;
 
 	//Interface
 	_RC* m_pVI;
@@ -44,11 +44,7 @@ public:
 	uint64_t m_iHeartbeat;
 
 	//Control
-	CONTROL_CHANNEL m_roll;
-	CONTROL_CHANNEL m_pitch;
-	CONTROL_CHANNEL m_yaw;
-	CONTROL_CHANNEL m_alt;
-	int m_RC[NUM_RC_CHANNEL];
+	AUTOPILOT_CONTROL m_ctrl;
 
 	//Thread
 	void update(void);
@@ -57,8 +53,6 @@ public:
 		((_AutoPilot *) This)->update();
 		return NULL;
 	}
-
-
 
 };
 

@@ -46,6 +46,7 @@ public:
 	_AutoPilot* m_pAP;
 	_Universe* m_pUniverse;
 	_Mavlink* m_pMavlink;
+	_RC* m_pRC;
 	_AprilTags* m_pAT;
 	_Bullseye* m_pMD;
 	_ROITracker* m_pROITracker;

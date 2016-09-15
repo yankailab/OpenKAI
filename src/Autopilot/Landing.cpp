@@ -36,17 +36,17 @@ bool Landing::init(Config* pConfig, string name)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	CHECK_INFO(pCC->v("orientationX", &m_landingTarget.m_orientX));
-	CHECK_INFO(pCC->v("orientationY", &m_landingTarget.m_orientY));
-	CHECK_INFO(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
+	F_INFO_(pCC->v("orientationX", &m_landingTarget.m_orientX));
+	F_INFO_(pCC->v("orientationY", &m_landingTarget.m_orientY));
+	F_INFO_(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
 	pCC = pCC->o("AprilTags");
 	if(pCC->empty())return false;
 
-	CHECK_INFO(pCC->v("num", &m_numATagsLandingTarget));
+	F_INFO_(pCC->v("num", &m_numATagsLandingTarget));
 	for(i=0; i<m_numATagsLandingTarget; i++)
 	{
-		CHECK_ERROR(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
+		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
 
 	return true;

@@ -140,6 +140,18 @@ JSON* Config::json(void)
 	return &m_json;
 }
 
+int Config::getClasses(string name, Config* pClasses)
+{
+	if(name.empty())return -1;
+	if(pClasses==NULL)return -1;
+
+	int i;
+
+	//TODO: find list with the class name
+
+	return 0;
+}
+
 bool Config::empty(void)
 {
 	return m_bNULL;

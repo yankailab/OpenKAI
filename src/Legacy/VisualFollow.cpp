@@ -4,110 +4,6 @@
 namespace kai
 {
 
-bool VisualFollow::start(JSON* pJson)
-{
-	//Connect to VehicleLink
-	FPS=0;
-	CHECK_INFO(pJson->var("SERIALPORT_MAVLINK_FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pVlink = new _RC();
-		CHECK_FATAL(m_pVlink->setup(pJson, "MAVLINK"));
-		CHECK_INFO(m_pVlink->open());
-		m_pVlink->start();
-	}
-
-	m_ROI.m_x = 0;
-	m_ROI.m_y = 0;
-	m_ROI.m_z = 0;
-	m_ROI.m_w = 0;
-	m_bSelect = false;
-	m_ROImode = MODE_ASSIST;
-	m_ROIsize = 100;
-	m_ROIsizeFrom = 50;
-	m_ROIsizeTo = 300;
-
-	m_btnSize = 100;
-	m_btnROIClear = 100;
-	m_btnROIBig = 200;
-	m_btnROISmall = 300;
-	m_btnMode = 980;
-}
-
-void VisualFollow::draw(void)
-{
-	Mat imMat;
-	Rect2d roi;
-
-	iVector4 textPos;
-	textPos.m_x = 15;
-	textPos.m_y = 20;
-	textPos.m_w = 20;
-	textPos.m_z = 500;
-
-	if(m_pCamFront)
-	{
-		if(!m_pCamFront->draw(m_pFrame, &textPos))return;
-	}
-
-	if(m_pAP)
-	{
-		m_pAP->draw(m_pFrame, &textPos);
-	}
-
-	imMat = *m_pFrame->getCMat();
-
-	 // draw the tracked object
-	if(m_bSelect)
-	{
-		roi = getROI(m_ROI);
-		if(roi.height>0 || roi.width>0)
-		{
-			rectangle( imMat, roi, Scalar( 0, 255, 0 ), 2 );
-		}
-	}
-	else if(m_pROITracker->m_bTracking)
-	{
-		roi = m_pROITracker->m_ROI;
-		if(roi.height>0 || roi.width>0)
-		{
-			rectangle( imMat, roi, Scalar( 0, 0, 255 ), 2 );
-		}
-	}
-
-	if(m_ROImode == MODE_ASSIST)
-	{
-		putText(imMat, "CLR", cv::Point(1825,50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-		putText(imMat, "+", cv::Point(1825,150), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-		putText(imMat, "-", cv::Point(1825,250), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-
-		roi.x = imMat.cols - m_btnSize;
-		roi.y = 0;
-		roi.width = m_btnSize;
-		roi.height = m_btnSize;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-		roi.y = m_btnROIClear;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-		roi.y = m_btnROIBig;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-	}
-
-	putText(imMat, "MODE", cv::Point(1825,1035), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-
-	roi.x = imMat.cols - m_btnSize;
-	roi.y = m_btnMode;
-	roi.width = m_btnSize;
-	roi.height = m_btnSize;
-	rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-
-	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
-	imshow(APP_NAME,imMat);
-
-}
-
 void VisualFollow::handleMouse(int event, int x, int y, int flags)
 {
 	Rect2d roi;
@@ -292,20 +188,6 @@ Rect2d VisualFollow::getROI(iVector4 mouseROI)
 
 	return roi;
 }
-
-
-void VisualFollow::handleKey(int key)
-{
-	switch (key)
-	{
-	case 27:
-		m_bRun = false;	//ESC
-		break;
-	default:
-		break;
-	}
-}
-
 
 
 }

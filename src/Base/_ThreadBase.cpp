@@ -52,7 +52,7 @@ bool _ThreadBase::init(Config* pConfig, string name)
 		return false;
 
 	double FPS = DEFAULT_FPS;
-	CHECK_INFO(pC->v("FPS", &FPS));
+	F_INFO_(pC->v("FPS", &FPS));
 	setTargetFPS(FPS);
 
 	return true;

@@ -47,26 +47,26 @@ bool _Cascade::init(Config* pConfig, string name)
 	string cascadeFile = "";
 	string presetDir = "";
 
-	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
-	CHECK_ERROR(pC->v("device", &m_device));
-	CHECK_ERROR(pC->v("cascadeFile", &cascadeFile));
+	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_ERROR_F(pC->v("device", &m_device));
+	F_ERROR_F(pC->v("cascadeFile", &cascadeFile));
 
 	if (m_device == CASCADE_CPU)
 	{
-		CHECK_ERROR(m_CC.load(presetDir+cascadeFile));
+		F_ERROR_F(m_CC.load(presetDir+cascadeFile));
 	}
 	else if (m_device == CASCADE_CUDA)
 	{
 		m_pCascade = cuda::CascadeClassifier::create(cascadeFile);
-		CHECK_ERROR(m_pCascade);
+		F_ERROR_F(m_pCascade);
 		//TODO:set the upper limit of objects to be detected
 		//m_pCascade->
-		CHECK_INFO(pC->v("cudaDeviceID", &m_cudaDeviceID));
+		F_INFO_(pC->v("cudaDeviceID", &m_cudaDeviceID));
 	}
 
-	CHECK_INFO(pC->v("lifeTime", &m_objLifeTime));
-	CHECK_INFO(pC->v("posDiff", &m_posDiff));
-	CHECK_ERROR(pC->v("num", &m_numObj));
+	F_INFO_(pC->v("lifeTime", &m_objLifeTime));
+	F_INFO_(pC->v("posDiff", &m_posDiff));
+	F_ERROR_F(pC->v("num", &m_numObj));
 
 	m_pObj = new CASCADE_OBJECT[m_numObj];
 	if (m_pObj == NULL)

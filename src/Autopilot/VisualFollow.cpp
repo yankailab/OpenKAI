@@ -9,15 +9,23 @@ VisualFollow::VisualFollow()
 
 	m_pFD = NULL;
 	m_pROITracker = NULL;
-	m_pMD = NULL;
 
-	m_pRC = NULL;
-	m_nRC = 0;
-	m_pRoll = NULL;
-	m_pPitch = NULL;
-	m_pYaw = NULL;
-	m_pAlt = NULL;
 
+	m_ROI.m_x = 0;
+	m_ROI.m_y = 0;
+	m_ROI.m_z = 0;
+	m_ROI.m_w = 0;
+	m_bSelect = false;
+	m_ROImode = MODE_ASSIST;
+	m_ROIsize = 100;
+	m_ROIsizeFrom = 50;
+	m_ROIsizeTo = 300;
+
+	m_btnSize = 100;
+	m_btnROIClear = 100;
+	m_btnROIBig = 200;
+	m_btnROISmall = 300;
+	m_btnMode = 980;
 }
 
 VisualFollow::~VisualFollow()
@@ -31,12 +39,16 @@ bool VisualFollow::init(Config* pConfig, string name)
 
 	int i;
 	Config* pC = pConfig->o(name);
-	Config* pCC = pC->o("visualVisualFollow");
+	Config* pCC = pC->o("visualFollow");
 	if (pCC->empty())
 		return false;
 
+	//TODO: setup UI
+	m_pUI = new UI();
 
-	resetAllControl();
+
+
+	m_pCtrl->reset();
 
 	return true;
 }
@@ -50,17 +62,15 @@ void VisualFollow::update(void)
 
 void VisualFollow::followROI(void)
 {
-	if (m_pVI == NULL)
-		return;
-	if (m_pROITracker == NULL)
-		return;
-	if (m_pRC == NULL)
-		return;
+	NULL_(m_pVI);
+	NULL_(m_pROITracker);
+	NULL_(m_pCtrl);
 
 	if (m_pROITracker->m_bTracking == false)
 	{
-		resetAllControl();
-		m_pVI->rc_overide(m_nRC, m_pRC);
+		m_pCtrl->resetErr();
+		m_pCtrl->resetRC();
+		m_pVI->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
 		return;
 	}
 
@@ -68,66 +78,52 @@ void VisualFollow::followROI(void)
 	double posPitch;
 	double ovDTime;
 
-	ovDTime = (1.0 / m_pROITracker->m_dTime) * 1000; //ms
-	posRoll = m_pRoll->m_pos;
-	posPitch = m_pPitch->m_pos;
+	CONTROL_CHANNEL* pRoll = &m_pCtrl->m_roll;
+	CONTROL_CHANNEL* pPitch = &m_pCtrl->m_pitch;
+	CONTROL_CHANNEL* pAlt = &m_pCtrl->m_alt;
+	CONTROL_CHANNEL* pYaw = &m_pCtrl->m_yaw;
 
-	m_pRoll->m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
-	m_pPitch->m_pos = m_pROITracker->m_ROI.y
-			+ m_pROITracker->m_ROI.height * 0.5;
+	ovDTime = (1.0 / m_pROITracker->m_dTime) * 1000; //ms
+	posRoll = pRoll->m_pos;
+	posPitch = pPitch->m_pos;
+
+	//Update pos from ROI tracker
+	pRoll->m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
+	pPitch->m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
 
 	//Update current position with trajectory estimation
-	posRoll = m_pRoll->m_pos
-			+ (m_pRoll->m_pos - posRoll) * m_pRoll->m_pid.m_dT * ovDTime;
-	posPitch = m_pPitch->m_pos
-			+ (m_pPitch->m_pos - posPitch) * m_pPitch->m_pid.m_dT * ovDTime;
+	posRoll = pRoll->m_pos
+			+ (pRoll->m_pos - posRoll) * pRoll->m_pid.m_dT * ovDTime;
+	posPitch = pPitch->m_pos
+			+ (pPitch->m_pos - posPitch) * pPitch->m_pid.m_dT * ovDTime;
 
 	//Roll
-	m_pRoll->m_errOld = m_pRoll->m_err;
-	m_pRoll->m_err = m_pRoll->m_targetPos - posRoll;
-	m_pRoll->m_errInteg += m_pRoll->m_err;
-	m_pRoll->m_RC.m_pwm = m_pRoll->m_RC.m_pwmN
-			+ m_pRoll->m_pid.m_P * m_pRoll->m_err
-			+ m_pRoll->m_pid.m_D * (m_pRoll->m_err - m_pRoll->m_errOld)
-					* ovDTime
-			+ confineVal(m_pRoll->m_pid.m_I * m_pRoll->m_errInteg,
-					m_pRoll->m_pid.m_Imax, -m_pRoll->m_pid.m_Imax);
-	m_pRC[m_pRoll->m_RC.m_iCh] = constrain(m_pRoll->m_RC.m_pwm,
-			m_pRoll->m_RC.m_pwmL, m_pRoll->m_RC.m_pwmH);
+	pRoll->m_errOld = pRoll->m_err;
+	pRoll->m_err = pRoll->m_targetPos - posRoll;
+	pRoll->m_errInteg += pRoll->m_err;
+	pRoll->m_RC.m_pwm = pRoll->m_RC.m_pwmN + pRoll->m_pid.m_P * pRoll->m_err
+			+ pRoll->m_pid.m_D * (pRoll->m_err - pRoll->m_errOld) * ovDTime
+			+ confineVal(pRoll->m_pid.m_I * pRoll->m_errInteg,
+					pRoll->m_pid.m_Imax, -pRoll->m_pid.m_Imax);
+	m_pCtrl->m_pRC[pRoll->m_RC.m_iCh] = constrain(pRoll->m_RC.m_pwm,
+			pRoll->m_RC.m_pwmL, pRoll->m_RC.m_pwmH);
 
 	//Pitch
-	m_pPitch->m_errOld = m_pPitch->m_err;
-	m_pPitch->m_err = m_pPitch->m_targetPos - posPitch;
-	m_pPitch->m_errInteg += m_pPitch->m_err;
-	m_pPitch->m_RC.m_pwm = m_pPitch->m_RC.m_pwmN
-			+ m_pPitch->m_pid.m_P * m_pPitch->m_err
-			+ m_pPitch->m_pid.m_D * (m_pPitch->m_err - m_pPitch->m_errOld)
-					* ovDTime
-			+ confineVal(m_pPitch->m_pid.m_I * m_pPitch->m_errInteg,
-					m_pPitch->m_pid.m_Imax, -m_pPitch->m_pid.m_Imax);
-	m_pRC[m_pPitch->m_RC.m_iCh] = constrain(m_pPitch->m_RC.m_pwm,
-			m_pPitch->m_RC.m_pwmL, m_pPitch->m_RC.m_pwmH);
+	pPitch->m_errOld = pPitch->m_err;
+	pPitch->m_err = pPitch->m_targetPos - posPitch;
+	pPitch->m_errInteg += pPitch->m_err;
+	pPitch->m_RC.m_pwm = pPitch->m_RC.m_pwmN + pPitch->m_pid.m_P * pPitch->m_err
+			+ pPitch->m_pid.m_D * (pPitch->m_err - pPitch->m_errOld) * ovDTime
+			+ confineVal(pPitch->m_pid.m_I * pPitch->m_errInteg,
+					pPitch->m_pid.m_Imax, -pPitch->m_pid.m_Imax);
+	m_pCtrl->m_pRC[pPitch->m_RC.m_iCh] = constrain(pPitch->m_RC.m_pwm,
+			pPitch->m_RC.m_pwmL, pPitch->m_RC.m_pwmH);
 
-	//Mavlink
-	m_pVI->rc_overide(m_nRC, m_pRC);
+	//RC output
+	m_pVI->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
 	return;
 
 }
-
-void VisualFollow::resetAllControl(void)
-{
-	m_pRoll->reset();
-	m_pAlt->reset();
-	m_pPitch->reset();
-	m_pYaw->reset();
-
-	//RC
-	m_pRC[m_pRoll->m_RC.m_iCh] = m_pRoll->m_RC.m_pwmN;
-	m_pRC[m_pPitch->m_RC.m_iCh] = m_pPitch->m_RC.m_pwmN;
-	m_pRC[m_pYaw->m_RC.m_iCh] = m_pYaw->m_RC.m_pwmN;
-	m_pRC[m_pAlt->m_RC.m_iCh] = m_pAlt->m_RC.m_pwmN;
-}
-
 
 bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 {
@@ -136,6 +132,58 @@ bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 
 	Mat* pMat = pFrame->getCMat();
 
+	Rect2d roi;
+
+/*
+	 // draw the tracked object
+	if(m_bSelect)
+	{
+		roi = getROI(m_ROI);
+		if(roi.height>0 || roi.width>0)
+		{
+			rectangle( imMat, roi, Scalar( 0, 255, 0 ), 2 );
+		}
+	}
+	else if(m_pROITracker->m_bTracking)
+	{
+		roi = m_pROITracker->m_ROI;
+		if(roi.height>0 || roi.width>0)
+		{
+			rectangle( imMat, roi, Scalar( 0, 0, 255 ), 2 );
+		}
+	}
+
+	if(m_ROImode == MODE_ASSIST)
+	{
+		putText(imMat, "CLR", cv::Point(1825,50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+		putText(imMat, "+", cv::Point(1825,150), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+		putText(imMat, "-", cv::Point(1825,250), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+
+		roi.x = imMat.cols - m_btnSize;
+		roi.y = 0;
+		roi.width = m_btnSize;
+		roi.height = m_btnSize;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+		roi.y = m_btnROIClear;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+		roi.y = m_btnROIBig;
+		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+	}
+
+	putText(imMat, "MODE", cv::Point(1825,1035), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+
+	roi.x = imMat.cols - m_btnSize;
+	roi.y = m_btnMode;
+	roi.width = m_btnSize;
+	roi.height = m_btnSize;
+	rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+
+
+	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
+
+*/
 	return true;
 }
 

@@ -6,9 +6,6 @@
 #include "commonAutopilot.h"
 #include "ActionBase.h"
 
-
-#define NUM_PER_TAG 16
-
 namespace kai
 {
 

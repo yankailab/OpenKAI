@@ -4,6 +4,7 @@
 #include "../Base/common.h"
 #include "commonAutopilot.h"
 #include "ActionBase.h"
+#include "../UI/UI.h"
 
 #define MODE_ASSIST 0
 #define MODE_RECTDRAW 1
@@ -22,14 +23,15 @@ public:
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	void followROI(void);
-	void resetAllControl(void);
 
 private:
 	//Detectors
 	_Cascade* m_pFD;
 	_ROITracker* m_pROITracker;
-	_Bullseye* m_pMD;
 	_Flow* m_pDF;
+
+	//UI
+	UI* m_pUI;
 
 	iVec4 m_ROI;
 	bool m_bSelect;

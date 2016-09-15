@@ -45,17 +45,17 @@ bool _Bullseye::init(Config* pConfig, string name)
 
 	Config* pC = pConfig->o(name);
 
-	CHECK_ERROR(pC->v("areaRatio", &m_areaRatio));
-	CHECK_ERROR(pC->v("minSize", &m_minMarkerSize));
+	F_ERROR_F(pC->v("areaRatio", &m_areaRatio));
+	F_ERROR_F(pC->v("minSize", &m_minMarkerSize));
 
-	CHECK_INFO(pC->v("method", &m_method));
-	CHECK_INFO(pC->v("medBlueKsize", &m_kSize));
+	F_INFO_(pC->v("method", &m_method));
+	F_INFO_(pC->v("medBlueKsize", &m_kSize));
 
-	CHECK_INFO(pC->v("HoughMinDist", &m_houghMinDist));
-	CHECK_INFO(pC->v("HoughParam1", &m_houghParam1));
-	CHECK_INFO(pC->v("HoughParam2", &m_houghParam2));
-	CHECK_INFO(pC->v("HoughMinR", &m_houghMinR));
-	CHECK_INFO(pC->v("HoughMaxR", &m_houghMaxR));
+	F_INFO_(pC->v("HoughMinDist", &m_houghMinDist));
+	F_INFO_(pC->v("HoughParam1", &m_houghParam1));
+	F_INFO_(pC->v("HoughParam2", &m_houghParam2));
+	F_INFO_(pC->v("HoughMinR", &m_houghMinR));
+	F_INFO_(pC->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
 

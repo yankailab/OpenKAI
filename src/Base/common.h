@@ -27,9 +27,12 @@
 
 using namespace std;
 
-#define CHECK_FATAL(x) if(x==false){LOG(FATAL);return false;}
-#define CHECK_ERROR(x) if(x==false){LOG(ERROR);return false;}
-#define CHECK_INFO(x) if(x==false){LOG(INFO);}
+#define F_FATAL_F(x) if(x==false){LOG(FATAL);return false;}
+#define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
+#define F_INFO_(x) if(x==false){LOG(INFO);}
+
+#define NULL_(x) if(x==NULL){return;}
+#define NULL_F(x) if(x==NULL){return false;}
 
 #define RELEASE(x) if(x){delete x;}
 #define STOP(x) if(x){x->stop();}

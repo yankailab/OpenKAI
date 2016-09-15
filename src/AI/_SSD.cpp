@@ -39,14 +39,14 @@ bool _SSD::init(Config* pConfig, string name)
 	string labelFile;
 	string presetDir = "";
 
-	CHECK_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	CHECK_INFO(pC->v("dir", &caffeDir));
-	CHECK_FATAL(pC->v("modelFile", &modelFile));
-	CHECK_FATAL(pC->v("trainedFile", &trainedFile));
-	CHECK_FATAL(pC->v("meanFile", &meanFile));
-	CHECK_FATAL(pC->v("labelFile", &labelFile));
-	CHECK_INFO(pC->v("minConfidence", &m_confidence_threshold));
+	F_INFO_(pC->v("dir", &caffeDir));
+	F_FATAL_F(pC->v("modelFile", &modelFile));
+	F_FATAL_F(pC->v("trainedFile", &trainedFile));
+	F_FATAL_F(pC->v("meanFile", &meanFile));
+	F_FATAL_F(pC->v("labelFile", &labelFile));
+	F_INFO_(pC->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";

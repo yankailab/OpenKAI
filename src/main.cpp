@@ -10,14 +10,14 @@ int main(int argc, char* argv[])
 	LOG(INFO)<<"Using config file: "<<argv[1];
 	printf(argv[1]);
 	printf("\n");
-	CHECK_FATAL(g_file.open(argv[1]));
+	F_FATAL_F(g_file.open(argv[1]));
 	string config = g_file.getContent();
 
 	g_pConfig = new Config();
-	CHECK_FATAL(g_pConfig->parse(config));
+	F_FATAL_F(g_pConfig->parse(config));
 
 	string appName;
-	CHECK_FATAL(g_pConfig->o("APP")->v("appName", &appName));
+	F_FATAL_F(g_pConfig->o("APP")->v("appName", &appName));
 
 	//Start Application
 	g_pGen = new General();

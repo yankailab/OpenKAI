@@ -19,6 +19,7 @@ public:
 	bool parse(string str);
 	Config* o(string name);
 	JSON* json(void);
+	int getClasses(string name, Config* pClasses);
 	bool empty(void);
 
 	bool v(string name,int* val);

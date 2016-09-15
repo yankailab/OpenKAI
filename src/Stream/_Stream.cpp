@@ -43,8 +43,8 @@ bool _Stream::init(Config* pConfig, string name)
 	int camType;
 	m_camName = name;
 
-	CHECK_INFO(pStream->v("bShowDepth", &m_showDepth));
-	CHECK_FATAL(pStream->v("type", &camType));
+	F_INFO_(pStream->v("bShowDepth", &m_showDepth));
+	F_FATAL_F(pStream->v("type", &camType));
 
 	switch (camType)
 	{
@@ -64,7 +64,7 @@ bool _Stream::init(Config* pConfig, string name)
 		break;
 	}
 
-	CHECK_ERROR(m_pCamera->setup(pConfig, name));
+	F_ERROR_F(m_pCamera->setup(pConfig, name));
 
 	m_bThreadON = false;
 

@@ -33,14 +33,14 @@ _Mavlink::~_Mavlink()
 	}
 }
 
-bool _Mavlink::setup(Config* pConfig, string name)
+bool _Mavlink::init(Config* pConfig, string name)
 {
 	if (this->_ThreadBase::init(pConfig,name)==false)
 		return false;
 
 	Config* pC = pConfig->o(name);
-	CHECK_ERROR(pC->v("portName", &m_sportName));
-	CHECK_ERROR(pC->v("baudrate", &m_baudRate));
+	F_ERROR_F(pC->v("portName", &m_sportName));
+	F_ERROR_F(pC->v("baudrate", &m_baudRate));
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;

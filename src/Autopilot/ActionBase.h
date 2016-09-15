@@ -27,16 +27,10 @@ public:
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 public:
+
+	AUTOPILOT_CONTROL* m_pCtrl;
 	_RC* m_pVI;
 	_Mavlink* m_pMavlink;
-
-	CONTROL_CHANNEL* m_pRoll;
-	CONTROL_CHANNEL* m_pPitch;
-	CONTROL_CHANNEL* m_pYaw;
-	CONTROL_CHANNEL* m_pAlt;
-
-	int  m_nRC;
-	int* m_pRC;
 
 
 

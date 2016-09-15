@@ -35,12 +35,12 @@ bool _FCN::init(Config* pConfig, string name)
 	string labelFile;
 	string caffeDir = "";
 
-	CHECK_INFO(pC->v("dir", &caffeDir));
-	CHECK_INFO(pC->v("cudaDeviceID", &m_cudaDeviceID));
+	F_INFO_(pC->v("dir", &caffeDir));
+	F_INFO_(pC->v("cudaDeviceID", &m_cudaDeviceID));
 
-	CHECK_FATAL(pC->v("modelFile", &modelFile));
-	CHECK_FATAL(pC->v("trainedFile", &trainedFile));
-	CHECK_FATAL(pC->v("labelFile", &labelFile));
+	F_FATAL_F(pC->v("modelFile", &modelFile));
+	F_FATAL_F(pC->v("trainedFile", &trainedFile));
+	F_FATAL_F(pC->v("labelFile", &labelFile));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(caffeDir+modelFile, TEST));

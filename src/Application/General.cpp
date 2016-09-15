@@ -1,7 +1,7 @@
 #include "General.h"
 
 General* g_pGeneral;
-void onMouseNavigator(int event, int x, int y, int flags, void* userdata)
+void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
 {
 	g_pGeneral->handleMouse(event, x, y, flags);
 }
@@ -16,6 +16,7 @@ General::General()
 	m_pCamFront = NULL;
 	m_pAP = NULL;
 	m_pMavlink = NULL;
+	m_pRC = NULL;
 	m_pCascade = NULL;
 	m_pFlow = NULL;
 	m_pROITracker = NULL;
@@ -43,35 +44,35 @@ bool General::start(Config* pConfig)
 	int FPS;
 	string camName;
 
-	CHECK_INFO(pConfig->o("APP")->v("appName", &m_name));
-	CHECK_INFO(pConfig->o("APP")->v("bShowScreen", &m_bShowScreen));
-	CHECK_INFO(pConfig->o("APP")->v("bFullScreen", &m_bFullScreen));
-	CHECK_INFO(pConfig->o("APP")->v("waitKey", &m_waitKey));
+	F_INFO_(pConfig->o("APP")->v("appName", &m_name));
+	F_INFO_(pConfig->o("APP")->v("bShowScreen", &m_bShowScreen));
+	F_INFO_(pConfig->o("APP")->v("bFullScreen", &m_bFullScreen));
+	F_INFO_(pConfig->o("APP")->v("waitKey", &m_waitKey));
 
 	m_pFrame = new Frame();
 
 	//Init Camera
-	CHECK_INFO(pConfig->o("APP")->v("camMain", &camName));
+	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
 	if (camName != "video")
 	{
 		m_pCamFront = new _Stream();
-		CHECK_FATAL(m_pCamFront->init(pConfig, camName));
+		F_FATAL_F(m_pCamFront->init(pConfig, camName));
 		m_pCamFront->start();
 	}
 
 	//Init Automaton
-	FPS=0;
-	CHECK_INFO(pConfig->o("Automaton0")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("Automaton0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAM = new _Automaton();
-		CHECK_FATAL(m_pAM->init(pConfig, "Automaton0"));
+		F_FATAL_F(m_pAM->init(pConfig, "Automaton0"));
 		m_pAM->start();
 	}
 
 	//Init ROI Tracker
-	FPS=0;
-	CHECK_INFO(pConfig->o("roiTracker0")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("roiTracker0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
@@ -81,8 +82,8 @@ bool General::start(Config* pConfig)
 	}
 
 	//Init Marker Detector
-	FPS=0;
-	CHECK_INFO(pConfig->o("markerLanding")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("markerLanding")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMD = new _Bullseye();
@@ -94,8 +95,8 @@ bool General::start(Config* pConfig)
 	}
 
 	//Init AprilTags Detector
-	FPS=0;
-	CHECK_INFO(pConfig->o("AprilTagLanding")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("AprilTagLanding")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAT = new _AprilTags();
@@ -105,18 +106,29 @@ bool General::start(Config* pConfig)
 	}
 
 	//Init Mavlink
-	FPS=0;
-	CHECK_INFO(pConfig->o("Mavlink0")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("Mavlink0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMavlink = new _Mavlink();
-		CHECK_FATAL(m_pMavlink->setup(pConfig, "Mavlink0"));
+		F_FATAL_F(m_pMavlink->init(pConfig, "Mavlink0"));
 		m_pMavlink->start();
 	}
 
+	//Connect to RC output
+	FPS = 0;
+	F_INFO_(pConfig->o("RC_0")->v("FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pRC = new _RC();
+		F_FATAL_F(m_pRC->init(pConfig, "RC_0"));
+		F_FATAL_F(m_pRC->open());
+		m_pRC->start();
+	}
+
 	//Init Autopilot
-	FPS=0;
-	CHECK_INFO(pConfig->o("Autopilot0")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("Autopilot0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
@@ -125,23 +137,23 @@ bool General::start(Config* pConfig)
 //		m_pAP->m_pMD = m_pMD;
 //		m_pAP->m_pAT = m_pAT;
 		m_pAP->m_pAM = m_pAM;
-		CHECK_FATAL(m_pAP->init(pConfig, "Autopilot0"));
+		F_FATAL_F(m_pAP->init(pConfig, "Autopilot0"));
 		m_pAP->start();
 	}
 
 	//Init Universe
-	FPS=0;
-	CHECK_INFO(pConfig->o("Universe")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("Universe")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pUniverse = new _Universe();
-		m_pUniverse->init(pConfig,"Universe");
+		m_pUniverse->init(pConfig, "Universe");
 		m_pUniverse->start();
 	}
 
 	//Init SSD
-	FPS=0;
-	CHECK_INFO(pConfig->o("SSD")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("SSD")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pSSD = new _SSD();
@@ -152,41 +164,40 @@ bool General::start(Config* pConfig)
 	}
 
 	//Init Optical Flow
-	FPS=0;
-	CHECK_INFO(pConfig->o("optflow0")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("optflow0")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFlow = new _Flow();
 		m_pFlow->m_pCamStream = m_pCamFront;
 		m_pCamFront->m_bGray = true;
-		CHECK_FATAL(m_pFlow->init(pConfig, "optflow0"));
+		F_FATAL_F(m_pFlow->init(pConfig, "optflow0"));
 		m_pFlow->start();
 	}
 
 	//Init Depth Object Detector
-	FPS=0;
-	CHECK_INFO(pConfig->o("depthObjDetector")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("depthObjDetector")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pDD = new _Depth();
 		m_pDD->m_pCamStream = m_pCamFront;
 		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
-		CHECK_FATAL(m_pDD->init(pConfig, "depthObjDetector"));
+		F_FATAL_F(m_pDD->init(pConfig, "depthObjDetector"));
 		m_pDD->start();
 	}
 
 	//Init FCN
-	FPS=0;
-	CHECK_INFO(pConfig->o("FCN")->v("FPS", &FPS));
+	FPS = 0;
+	F_INFO_(pConfig->o("FCN")->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFCN = new _FCN();
 		m_pFCN->m_pCamStream = m_pCamFront;
-		m_pFCN->init(pConfig,"FCN");
+		m_pFCN->init(pConfig, "FCN");
 		m_pFCN->start();
 	}
-
 
 	//UI thread
 	m_bRun = true;
@@ -196,11 +207,10 @@ bool General::start(Config* pConfig)
 		namedWindow(m_name, CV_WINDOW_NORMAL);
 		if (m_bFullScreen)
 		{
-			setWindowProperty(m_name,
-					CV_WND_PROP_FULLSCREEN,
+			setWindowProperty(m_name, CV_WND_PROP_FULLSCREEN,
 					CV_WINDOW_FULLSCREEN);
 		}
-		setMouseCallback(m_name, onMouseNavigator, NULL);
+		setMouseCallback(m_name, onMouseGeneral, NULL);
 	}
 
 	while (m_bRun)
@@ -263,12 +273,13 @@ void General::draw(void)
 	textPos.m_w = 20;
 	textPos.m_z = 500;
 
-	if(m_pCamFront)
+	if (m_pCamFront)
 	{
-		if(!m_pCamFront->draw(m_pFrame, &textPos))return;
+		if (!m_pCamFront->draw(m_pFrame, &textPos))
+			return;
 	}
 
-	if(m_pAM)
+	if (m_pAM)
 	{
 		m_pAM->draw(m_pFrame, &textPos);
 	}
@@ -278,31 +289,30 @@ void General::draw(void)
 //		m_pAP->draw(m_pFrame, &textPos);
 //	}
 
-	if(m_pAT)
+	if (m_pAT)
 	{
 		m_pAT->draw(m_pFrame, &textPos);
 	}
 
-	if(m_pUniverse)
+	if (m_pUniverse)
 	{
 		m_pUniverse->draw(m_pFrame, &textPos);
 	}
 
-	if(m_pSSD)
+	if (m_pSSD)
 	{
 		m_pSSD->draw(m_pFrame, &textPos);
 	}
 
-	if(m_pMavlink)
+	if (m_pMavlink)
 	{
 		m_pMavlink->draw(m_pFrame, &textPos);
 	}
 
-	if(m_pFCN)
+	if (m_pFCN)
 	{
 		m_pFCN->draw(m_pFrame, &textPos);
 	}
-
 
 	imshow(m_name, *m_pFrame->getCMat());
 

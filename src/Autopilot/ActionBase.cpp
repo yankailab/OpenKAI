@@ -7,6 +7,8 @@ ActionBase::ActionBase()
 {
 	m_pVI = NULL;
 	m_pMavlink = NULL;
+	m_pCtrl = NULL;
+
 }
 
 ActionBase::~ActionBase()

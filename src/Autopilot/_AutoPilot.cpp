@@ -34,77 +34,78 @@ bool _AutoPilot::init(Config* pConfig, string name)
 	pCC = pC->o("roll");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->v("P", &cPID.m_P));
-	CHECK_ERROR(pCC->v("I", &cPID.m_I));
-	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->v("D", &cPID.m_D));
-	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmL));
-	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmH));
-	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmN));
-	CHECK_ERROR(pCC->v("pwmCh", &RC.m_iCh));
+	F_ERROR_F(pCC->v("P", &cPID.m_P));
+	F_ERROR_F(pCC->v("I", &cPID.m_I));
+	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
+	F_ERROR_F(pCC->v("D", &cPID.m_D));
+	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_ERROR_F(pCC->v("pwmL", &RC.m_pwmL));
+	F_ERROR_F(pCC->v("pwmH", &RC.m_pwmH));
+	F_ERROR_F(pCC->v("pwmN", &RC.m_pwmN));
+	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 
-	m_roll.m_pid = cPID;
-	m_roll.m_RC = RC;
+	m_ctrl.m_roll.m_pid = cPID;
+	m_ctrl.m_roll.m_RC = RC;
 
 	pCC = pC->o("pitch");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->v("P", &cPID.m_P));
-	CHECK_ERROR(pCC->v("I", &cPID.m_I));
-	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->v("D", &cPID.m_D));
-	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmL));
-	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmH));
-	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmN));
-	CHECK_ERROR(pCC->v("pwmCh", &RC.m_iCh));
+	F_ERROR_F(pCC->v("P", &cPID.m_P));
+	F_ERROR_F(pCC->v("I", &cPID.m_I));
+	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
+	F_ERROR_F(pCC->v("D", &cPID.m_D));
+	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_ERROR_F(pCC->v("pwmL", &RC.m_pwmL));
+	F_ERROR_F(pCC->v("pwmH", &RC.m_pwmH));
+	F_ERROR_F(pCC->v("pwmN", &RC.m_pwmN));
+	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 
-	m_pitch.m_pid = cPID;
-	m_pitch.m_RC = RC;
+	m_ctrl.m_pitch.m_pid = cPID;
+	m_ctrl.m_pitch.m_RC = RC;
 
 	pCC = pC->o("alt");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->v("P", &cPID.m_P));
-	CHECK_ERROR(pCC->v("I", &cPID.m_I));
-	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->v("D", &cPID.m_D));
-	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmL));
-	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmH));
-	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmN));
-	CHECK_ERROR(pCC->v("pwmCh", &RC.m_iCh));
+	F_ERROR_F(pCC->v("P", &cPID.m_P));
+	F_ERROR_F(pCC->v("I", &cPID.m_I));
+	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
+	F_ERROR_F(pCC->v("D", &cPID.m_D));
+	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_ERROR_F(pCC->v("pwmL", &RC.m_pwmL));
+	F_ERROR_F(pCC->v("pwmH", &RC.m_pwmH));
+	F_ERROR_F(pCC->v("pwmN", &RC.m_pwmN));
+	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 
-	m_alt.m_pid = cPID;
-	m_alt.m_RC = RC;
+	m_ctrl.m_alt.m_pid = cPID;
+	m_ctrl.m_alt.m_RC = RC;
 
 	pCC = pC->o("yaw");
 	if(pCC->empty())return false;
 
-	CHECK_ERROR(pCC->v("P", &cPID.m_P));
-	CHECK_ERROR(pCC->v("I", &cPID.m_I));
-	CHECK_ERROR(pCC->v("Imax", &cPID.m_Imax));
-	CHECK_ERROR(pCC->v("D", &cPID.m_D));
-	CHECK_ERROR(pCC->v("dT", &cPID.m_dT));
-	CHECK_ERROR(pCC->v("pwmL", &RC.m_pwmL));
-	CHECK_ERROR(pCC->v("pwmH", &RC.m_pwmH));
-	CHECK_ERROR(pCC->v("pwmN", &RC.m_pwmN));
-	CHECK_ERROR(pCC->v("pwmCh", &RC.m_iCh));
+	F_ERROR_F(pCC->v("P", &cPID.m_P));
+	F_ERROR_F(pCC->v("I", &cPID.m_I));
+	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
+	F_ERROR_F(pCC->v("D", &cPID.m_D));
+	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_ERROR_F(pCC->v("pwmL", &RC.m_pwmL));
+	F_ERROR_F(pCC->v("pwmH", &RC.m_pwmH));
+	F_ERROR_F(pCC->v("pwmN", &RC.m_pwmN));
+	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 
-	m_yaw.m_pid = cPID;
-	m_yaw.m_RC = RC;
+	m_ctrl.m_yaw.m_pid = cPID;
+	m_ctrl.m_yaw.m_RC = RC;
 
 	pCC = pC->o("visualFollow");
 	if(pCC->empty())return false;
 
 	//For visual position locking
-	CHECK_ERROR(pCC->v("targetX", &m_roll.m_targetPos));
-	CHECK_ERROR(pCC->v("targetY", &m_pitch.m_targetPos));
-
+	F_ERROR_F(pCC->v("targetX", &m_ctrl.m_roll.m_targetPos));
+	F_ERROR_F(pCC->v("targetY", &m_ctrl.m_pitch.m_targetPos));
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
+
+	//TODO: Create action classes
 
 	return true;
 }
@@ -132,6 +133,8 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
+		//TODO:Execute actions based on Automaton State
+
 		sendHeartbeat();
 
 		this->autoFPSto();
@@ -156,11 +159,6 @@ void _AutoPilot::sendHeartbeat(void)
 #endif
 	}
 }
-
-//int* _AutoPilot::getPWMOutput(void)
-//{
-//	return m_RC;
-//}
 
 bool _AutoPilot::draw(Frame* pFrame, iVec4* pTextPos)
 {
