@@ -1,11 +1,11 @@
 
 {
 	"name":"APP",
-	"appName":"AI-Pilot",
+	"appName":"OpenKAI",
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 	"camMain":"ZEDL",
 }
 
@@ -46,7 +46,7 @@
 }
 
 {
-	"name":"ZEDLHD",
+	"name":"ZEDL_HD",
 	"FPS":30,
 	"type":0,
 	"ID":0,
@@ -62,7 +62,7 @@
 }
 
 {
-	"name":"ZEDLFHD",
+	"name":"ZEDL_FHD",
 	"FPS":30,
 	"type":0,
 	"ID":0,
@@ -78,7 +78,7 @@
 }
 
 {
-	"name":"TILTAC",
+	"name":"Tiltac",
 	"FPS":30,
 	"type":0,
 	"ID":2,
@@ -113,7 +113,7 @@
 {
 	"name":"SSD",
 	"FPS":30,
-	"dir":"/home/kai/dev/caffe_ssd/caffe/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",

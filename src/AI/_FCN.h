@@ -53,7 +53,7 @@ public:
 
 	bool init(Config* pConfig, string name);
 	bool start(void);
-	bool draw(Frame* pFrame, iVector4* pTextPos);
+	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 private:
 	void segment(void);

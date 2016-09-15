@@ -218,7 +218,7 @@ void _Bullseye::detectCircleHough(void)
 	}
 }
 
-bool _Bullseye::getCircleCenter(fVector3* pCenter)
+bool _Bullseye::getCircleCenter(fVec3* pCenter)
 {
 	CamBase* pCam;
 
@@ -233,8 +233,8 @@ bool _Bullseye::getCircleCenter(fVector3* pCenter)
 	if(num==0)return false;
 
 	int i;
-	fVector3* pMarker = &m_pCircle[0];
-	fVector3* pCompare;
+	fVec3* pMarker = &m_pCircle[0];
+	fVec3* pCompare;
 	int camCenter = (pCam->m_width+pCam->m_height)/2;
 
 	//Find the closest point

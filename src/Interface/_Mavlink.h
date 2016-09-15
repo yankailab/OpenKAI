@@ -136,7 +136,7 @@ public:
 	bool setup(Config* pConfig, string name);
 	void close(void);
 	bool start(void);
-	bool draw(Frame* pFrame, iVector4* pTextPos);
+	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	//Receive
 	void handleMessages();

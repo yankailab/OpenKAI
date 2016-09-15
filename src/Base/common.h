@@ -2,9 +2,12 @@
 #define BASE_COMMON_H_
 
 #include "platform.h"
+#include "cvplatform.h"
+#include "BASE.h"
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
 #include "../Script/Config.h"
+#include "../Utility/util.h"
 
 #define MAVLINK_DEBUG
 
@@ -37,7 +40,7 @@ using namespace std;
 namespace kai
 {
 
-struct fVector4
+struct fVec4
 {
 	double m_x;
 	double m_y;
@@ -45,33 +48,33 @@ struct fVector4
 	double m_w;
 };
 
-struct fVector3
+struct fVec3
 {
 	double m_x;
 	double m_y;
 	double m_z;
 };
 
-struct fVector2
+struct fVec2
 {
 	double m_x;
 	double m_y;
 };
 
-struct iVector2
+struct iVec2
 {
 	int m_x;
 	int m_y;
 };
 
-struct iVector3
+struct iVec3
 {
 	int m_x;
 	int m_y;
 	int m_z;
 };
 
-struct iVector4
+struct iVec4
 {
 	int m_x;
 	int m_y;

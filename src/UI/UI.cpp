@@ -41,7 +41,7 @@ BUTTON* UI::addBtn(BUTTON* pBtn)
 	return pNew;
 }
 
-bool UI::draw(Frame* pFrame, iVector4* pTextPos)
+bool UI::draw(Frame* pFrame, iVec4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

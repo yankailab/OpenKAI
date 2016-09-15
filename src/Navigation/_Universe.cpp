@@ -321,7 +321,7 @@ void _Universe::reset(void)
 
 }
 
-bool _Universe::draw(Frame* pFrame, iVector4* pTextPos)
+bool _Universe::draw(Frame* pFrame, iVec4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

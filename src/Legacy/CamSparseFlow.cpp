@@ -46,7 +46,7 @@ bool CamSparseFlow::init(void)
 	return true;
 }
 
-fVector4 CamSparseFlow::detect(_Stream* pCamStream)
+fVec4 CamSparseFlow::detect(_Stream* pCamStream)
 {
 #ifdef USE_CUDA
 	GpuMat d_prevPts;
@@ -66,7 +66,7 @@ fVector4 CamSparseFlow::detect(_Stream* pCamStream)
 	double distSQMax;
 	double vBase;
 
-	fVector4 temp;
+	fVec4 temp;
 	return temp;
 
 	FrameGroup* pFrameGroup;// = pCamStream->getFrameGroup();

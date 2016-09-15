@@ -384,7 +384,7 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 
 
 
-bool _SSD::draw(Frame* pFrame, iVector4* pTextPos)
+bool _SSD::draw(Frame* pFrame, iVec4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

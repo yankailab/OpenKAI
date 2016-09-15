@@ -28,7 +28,7 @@ public:
 	bool init(Config* pConfig, string camName);
 	bool start(void);
 	bool complete(void);
-	bool draw(Frame* pFrame, iVector4* textPos);
+	bool draw(Frame* pFrame, iVec4* textPos);
 
 	Frame* getBGRFrame(void);
 	Frame* getGrayFrame(void);

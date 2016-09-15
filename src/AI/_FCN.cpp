@@ -275,7 +275,7 @@ void _FCN::Preprocess(const cv::Mat& img,
 //															<< "Input channels are not wrapping the input layer of the network.";
 }
 
-bool _FCN::draw(Frame* pFrame, iVector4* pTextPos)
+bool _FCN::draw(Frame* pFrame, iVec4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

@@ -50,7 +50,7 @@ public:
 	bool init(Config* pConfig, string name);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
-	bool draw(Frame* pFrame, iVector4* pTextPos);
+	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
 

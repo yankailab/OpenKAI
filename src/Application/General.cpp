@@ -121,9 +121,9 @@ bool General::start(Config* pConfig)
 	{
 		m_pAP = new _AutoPilot();
 		m_pAP->m_pMavlink = m_pMavlink;
-		m_pAP->m_pROITracker = m_pROITracker;
-		m_pAP->m_pMD = m_pMD;
-		m_pAP->m_pAT = m_pAT;
+//		m_pAP->m_pROITracker = m_pROITracker;
+//		m_pAP->m_pMD = m_pMD;
+//		m_pAP->m_pAT = m_pAT;
 		m_pAP->m_pAM = m_pAM;
 		CHECK_FATAL(m_pAP->init(pConfig, "Autopilot0"));
 		m_pAP->start();
@@ -220,7 +220,7 @@ bool General::start(Config* pConfig)
 		handleKey(m_key);
 	}
 
-	STOP(m_pAP);
+//	STOP(m_pAP);
 	STOP(m_pMavlink);
 	STOP(m_pROITracker);
 	STOP(m_pMD);
@@ -232,7 +232,7 @@ bool General::start(Config* pConfig)
 	m_pMavlink->complete();
 	m_pMavlink->close();
 
-	COMPLETE(m_pAP);
+//	COMPLETE(m_pAP);
 	COMPLETE(m_pROITracker);
 	COMPLETE(m_pMD);
 	COMPLETE(m_pUniverse);
@@ -257,7 +257,7 @@ bool General::start(Config* pConfig)
 
 void General::draw(void)
 {
-	iVector4 textPos;
+	iVec4 textPos;
 	textPos.m_x = 15;
 	textPos.m_y = 20;
 	textPos.m_w = 20;
@@ -273,10 +273,10 @@ void General::draw(void)
 		m_pAM->draw(m_pFrame, &textPos);
 	}
 
-	if(m_pAP)
-	{
-		m_pAP->draw(m_pFrame, &textPos);
-	}
+//	if(m_pAP)
+//	{
+//		m_pAP->draw(m_pFrame, &textPos);
+//	}
 
 	if(m_pAT)
 	{

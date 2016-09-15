@@ -38,7 +38,7 @@ public:
 
 	bool init(Config* pConfig, string name);
 	bool start(void);
-	bool draw(Frame* pFrame, iVector4* pTextPos);
+	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	int getTags(int tagID, APRIL_TAG* pTag);
 	void reset(void);

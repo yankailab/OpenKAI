@@ -34,7 +34,7 @@ public:
 	bool init(Config* pConfig, string name);
 	bool start(void);
 
-	bool getCircleCenter(fVector3* pCenter);
+	bool getCircleCenter(fVec3* pCenter);
 
 private:
 	void detectCircleFill(void);
@@ -49,7 +49,7 @@ private:
 
 public:
 	int		 m_numCircle;
-	fVector3 m_pCircle[NUM_MARKER];
+	fVec3 m_pCircle[NUM_MARKER];
 
 	int		m_method;
 

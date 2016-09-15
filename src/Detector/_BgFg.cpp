@@ -162,7 +162,7 @@ void _BgFg::detect(void)
 }
 
 
-bool _BgFg::getObjPosition(fVector3* pPos)
+bool _BgFg::getObjPosition(fVec3* pPos)
 {
 	if (m_objLockLevel < LOCK_LEVEL_POS)return false;
 	pPos->m_x = m_objPos.m_x;
@@ -172,7 +172,7 @@ bool _BgFg::getObjPosition(fVector3* pPos)
 	return true;
 }
 
-void _BgFg::setObjROI(fVector3 ROI)
+void _BgFg::setObjROI(fVec3 ROI)
 {
 	m_objROIPos = ROI;
 }

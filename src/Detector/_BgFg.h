@@ -35,8 +35,8 @@ public:
 	bool start(void);
 
 	//Object detection using markers
-	void setObjROI(fVector3 ROI);
-	bool getObjPosition(fVector3* pPos);
+	void setObjROI(fVec3 ROI);
+	bool getObjPosition(fVec3* pPos);
 
 private:
 	void detect(void);
@@ -49,11 +49,11 @@ private:
 
 public:
 	int		 m_numAllMarker;
-	fVector4 m_pAllMarker[NUM_MARKER];
+	fVec4 m_pAllMarker[NUM_MARKER];
 
 	//0:Not locked,1:Pos locked, 2:Size and Attitude locked
-	fVector3 m_objPos;
-	fVector3 m_objROIPos;
+	fVec3 m_objPos;
+	fVec3 m_objROIPos;
 
 	double	m_minSize;
 	int		m_objLockLevel;

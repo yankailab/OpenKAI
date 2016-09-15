@@ -1,36 +1,11 @@
+/*
 #include "VisualFollow.h"
-
-VisualFollow* g_pDroneHunter;
-void onMouseDroneHunter(int event, int x, int y, int flags, void* userdata)
-{
-	g_pDroneHunter->handleMouse(event,x,y,flags);
-}
-
 
 namespace kai
 {
 
-VisualFollow::VisualFollow()
-{
-	AppBase();
-
-	m_pCamFront = NULL;
-	m_pAP = NULL;
-	m_pMavlink = NULL;
-	m_pVlink = NULL;
-	m_pROITracker = NULL;
-	m_pFrame = NULL;
-
-}
-
-VisualFollow::~VisualFollow()
-{
-}
-
-
 bool VisualFollow::start(JSON* pJson)
 {
-/*
 	//Connect to VehicleLink
 	FPS=0;
 	CHECK_INFO(pJson->var("SERIALPORT_MAVLINK_FPS", &FPS));
@@ -57,8 +32,6 @@ bool VisualFollow::start(JSON* pJson)
 	m_btnROIBig = 200;
 	m_btnROISmall = 300;
 	m_btnMode = 980;
-	*/
-
 }
 
 void VisualFollow::draw(void)
@@ -336,3 +309,4 @@ void VisualFollow::handleKey(int key)
 
 
 }
+*/

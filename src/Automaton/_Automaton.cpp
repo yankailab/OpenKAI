@@ -224,7 +224,7 @@ bool _Automaton::checkDiagram(void)
 	return true;
 }
 
-bool _Automaton::draw(Frame* pFrame, iVector4* pTextPos)
+bool _Automaton::draw(Frame* pFrame, iVec4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

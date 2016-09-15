@@ -46,7 +46,7 @@ public:
 	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	OBJECT* addKnownObject(string name, int safetyGrade, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
-	bool draw(Frame* pFrame, iVector4* pTextPos);
+	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	bool init(Config* pConfig, string name);
 	bool start(void);

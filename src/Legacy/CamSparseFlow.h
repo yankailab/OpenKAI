@@ -24,11 +24,11 @@ public:
 	virtual ~CamSparseFlow();
 
 	bool init(void);
-	fVector4 detect(_Stream* pFrame);
+	fVec4 detect(_Stream* pFrame);
 
 private:
-	fVector4 m_flow;
-	fVector3 m_diffPrev;
+	fVec4 m_flow;
+	fVec3 m_diffPrev;
 
 #ifdef USE_CUDA
 	Ptr<cuda::CornersDetector> m_pDetector;
