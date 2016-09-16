@@ -140,16 +140,38 @@ JSON* Config::json(void)
 	return &m_json;
 }
 
-int Config::getClasses(string name, Config* pClasses)
+Config** Config::getClassItr(string* pClassName)
 {
-	if(name.empty())return -1;
-	if(pClasses==NULL)return -1;
+	if(pClassName==NULL)return NULL;
+	if(pClassName->empty())return NULL;
 
 	int i;
+	int nFound = 0;
+	Config* ppItr[NUM_CHILDREN];
 
-	//TODO: find list with the class name
+	//Find list with the class name
+	for(i=0; i<m_nChild; i++)
+	{
+		Config* pC = m_pChild[i];
+		if(pC->m_class != (*pClassName))continue;
 
-	return 0;
+		ppItr[nFound]=pC;
+		nFound++;
+
+		if(nFound == NUM_CHILDREN-1)break;
+	}
+
+	ppItr[nFound]=NULL;
+	nFound++;
+
+	return ppItr;
+}
+
+Config** Config::getChildItr(void)
+{
+	m_pChild[m_nChild]=NULL;
+
+	return m_pChild;
 }
 
 bool Config::empty(void)

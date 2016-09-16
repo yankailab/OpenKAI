@@ -19,7 +19,8 @@ public:
 	bool parse(string str);
 	Config* o(string name);
 	JSON* json(void);
-	int getClasses(string name, Config* pClasses);
+	Config** getClassItr(string* pClassName);
+	Config** getChildItr(void);
 	bool empty(void);
 
 	bool v(string name,int* val);
@@ -37,6 +38,7 @@ private:
 	bool addChild(string str);
 
 public:
+	string	m_class;
 	string	m_name;
 	JSON	m_json;
 	int		m_nChild;

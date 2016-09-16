@@ -27,30 +27,38 @@
 }
 
 {
-	"class":"",
+	"class":"_Stream",
 	"name":"ZEDL",
-	"FPS":30,
-	"type":0,
-	"ID":0,
-	"bShowDepth":0,
-	"width":1344,
-	"height":376,
-	"bCrop":1,
-	"cropX":0,
-	"cropY":0,
-	"cropW":672,
-	"cropH":376,
-	"bCalib":0,
-	"bFisheye":0,
-	"calibFile":"calibration/sp360-1440.xml",
-	"isoScale":1.0,
-	"bGimbal":0,
-	"angleV":67.1,
-	"angleH":66.7,
+	"bGray":1,
+	"bHSV":1,
+	"input":"ZEDL",
+		
+	{
+		"class":"Camera"
+		"name":"ZEDL",
+		"FPS":30,
+		"type":0,
+		"ID":0,
+		"bShowDepth":0,
+		"width":1344,
+		"height":376,
+		"bCrop":1,
+		"cropX":0,
+		"cropY":0,
+		"cropW":672,
+		"cropH":376,
+		"bCalib":0,
+		"bFisheye":0,
+		"calibFile":"calibration/sp360-1440.xml",
+		"isoScale":1.0,
+		"bGimbal":0,
+		"angleV":67.1,
+		"angleH":66.7,
+	}
 }
 
 {
-	"class":"",
+	"class":"_Stream",
 	"name":"ZEDL_HD",
 	"FPS":30,
 	"type":0,
@@ -67,7 +75,7 @@
 }
 
 {
-	"class":"",
+	"class":"_Stream",
 	"name":"ZEDL_FHD",
 	"FPS":30,
 	"type":0,
@@ -84,7 +92,7 @@
 }
 
 {
-	"class":"",
+	"class":"_Stream",
 	"name":"Tiltac",
 	"FPS":30,
 	"type":0,
@@ -96,7 +104,7 @@
 }
 
 {
-	"class":"",
+	"class":"_Stream",
 	"name":"ZED",
 	"FPS":30,
 	"type":1,

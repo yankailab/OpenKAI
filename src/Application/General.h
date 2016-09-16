@@ -12,6 +12,7 @@
 #include <cmath>
 #include <cstdarg>
 
+#include "../Base/BASE.h"
 #include "../AI/_SSD.h"
 #include "../AI/_FCN.h"
 #include "../Automaton/_Automaton.h"
@@ -25,8 +26,9 @@
 #include "../Navigation/_Universe.h"
 #include "../UI/UI.h"
 #include "../Vision/_Flow.h"
-
 #include "AppBase.h"
+
+#define N_INST 16
 
 using namespace kai;
 
@@ -39,7 +41,14 @@ public:
 	General();
 	~General();
 
-	_Stream* m_pCamFront;
+	void initInst(BASE** pInstList);
+	int getNextVacant(BASE** pInstList);
+	bool loadInst(Config* pConfig);
+	bool linkInst(Config* pConfig);
+
+public:
+	_Stream* m_pStream;
+	BASE* m_pStream1[N_INST];
 	_SSD* m_pSSD;
 	_FCN* m_pFCN;
 	_Automaton* m_pAM;
@@ -53,6 +62,7 @@ public:
 	_Cascade* m_pCascade;
 	_Depth* m_pDD;
 	_Flow* m_pFlow;
+	UI* m_pUI;
 
 	Frame* m_pFrame;
 

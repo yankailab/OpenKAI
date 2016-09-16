@@ -13,7 +13,9 @@ General::General()
 {
 	AppBase();
 
-	m_pCamFront = NULL;
+	initInst(m_pStream1);
+
+	m_pStream = NULL;
 	m_pAP = NULL;
 	m_pMavlink = NULL;
 	m_pRC = NULL;
@@ -28,6 +30,14 @@ General::General()
 	m_pFrame = NULL;
 	m_pAT = NULL;
 	m_pAM = NULL;
+}
+
+void General::initInst(BASE** pInstList)
+{
+	for (int i = 0; i < N_INST; i++)
+	{
+		pInstList[i] = NULL;
+	}
 }
 
 General::~General()
@@ -55,9 +65,9 @@ bool General::start(Config* pConfig)
 	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
 	if (camName != "video")
 	{
-		m_pCamFront = new _Stream();
-		F_FATAL_F(m_pCamFront->init(pConfig, camName));
-		m_pCamFront->start();
+		m_pStream = new _Stream();
+		F_FATAL_F(m_pStream->init(pConfig, camName));
+		m_pStream->start();
 	}
 
 	//Init Automaton
@@ -76,7 +86,7 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
-		m_pROITracker->m_pCamStream = m_pCamFront;
+		m_pROITracker->m_pCamStream = m_pStream;
 		m_pROITracker->init(pConfig, "roiTracker0");
 		m_pROITracker->start();
 	}
@@ -87,9 +97,9 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pMD = new _Bullseye();
-		m_pCamFront->m_bGray = true;
-		m_pCamFront->m_bHSV = true;
-		m_pMD->m_pCamStream = m_pCamFront;
+		m_pStream->m_bGray = true;
+		m_pStream->m_bHSV = true;
+		m_pMD->m_pCamStream = m_pStream;
 		m_pMD->init(pConfig, "markerLanding");
 		m_pMD->start();
 	}
@@ -100,7 +110,7 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pAT = new _AprilTags();
-		m_pAT->m_pCamStream = m_pCamFront;
+		m_pAT->m_pCamStream = m_pStream;
 		m_pAT->init(pConfig, "AprilTagLanding");
 		m_pAT->start();
 	}
@@ -157,7 +167,7 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pSSD = new _SSD();
-		m_pSSD->m_pCamStream = m_pCamFront;
+		m_pSSD->m_pCamStream = m_pStream;
 		m_pSSD->m_pUniverse = m_pUniverse;
 		m_pSSD->init(pConfig, "SSD");
 		m_pSSD->start();
@@ -169,8 +179,8 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pFlow = new _Flow();
-		m_pFlow->m_pCamStream = m_pCamFront;
-		m_pCamFront->m_bGray = true;
+		m_pFlow->m_pCamStream = m_pStream;
+		m_pStream->m_bGray = true;
 		F_FATAL_F(m_pFlow->init(pConfig, "optflow0"));
 		m_pFlow->start();
 	}
@@ -181,7 +191,7 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pDD = new _Depth();
-		m_pDD->m_pCamStream = m_pCamFront;
+		m_pDD->m_pCamStream = m_pStream;
 		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
 		F_FATAL_F(m_pDD->init(pConfig, "depthObjDetector"));
@@ -194,7 +204,7 @@ bool General::start(Config* pConfig)
 	if (FPS > 0)
 	{
 		m_pFCN = new _FCN();
-		m_pFCN->m_pCamStream = m_pCamFront;
+		m_pFCN->m_pCamStream = m_pStream;
 		m_pFCN->init(pConfig, "FCN");
 		m_pFCN->start();
 	}
@@ -249,10 +259,10 @@ bool General::start(Config* pConfig)
 	COMPLETE(m_pDD);
 	COMPLETE(m_pFlow);
 	COMPLETE(m_pFCN);
-	COMPLETE(m_pCamFront);
+	COMPLETE(m_pStream);
 
 	RELEASE(m_pMavlink);
-	RELEASE(m_pCamFront);
+	RELEASE(m_pStream);
 	RELEASE(m_pROITracker);
 	RELEASE(m_pAP);
 	RELEASE(m_pMD);
@@ -273,9 +283,9 @@ void General::draw(void)
 	textPos.m_w = 20;
 	textPos.m_z = 500;
 
-	if (m_pCamFront)
+	if (m_pStream)
 	{
-		if (!m_pCamFront->draw(m_pFrame, &textPos))
+		if (!m_pStream->draw(m_pFrame, &textPos))
 			return;
 	}
 
@@ -345,6 +355,118 @@ void General::handleMouse(int event, int x, int y, int flags)
 	default:
 		break;
 	}
+}
+
+bool General::loadInst(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	Config** pItr = pConfig->getChildItr();
+
+	int FPS;
+	int k;
+	int i = 0;
+	while (pItr[i])
+	{
+		Config* pC = pItr[i++];
+
+		F_INFO_(pC->v("FPS", &FPS));
+		if (FPS <= 0)
+			continue;
+
+		if (pC->m_class == "_Stream")
+		{
+			k = getNextVacant(m_pStream1);
+			if (k < 0)
+				return false;
+
+			_Stream* pStream = new _Stream();
+			F_FATAL_F(pStream->_Stream::init(pConfig, pC->m_name));
+			pStream->_Stream::start();
+
+			m_pStream1[k] = pStream;
+
+		}
+		else if (pC->m_class == "_SSD")
+		{
+
+		}
+		else if (pC->m_class == "_FCN")
+		{
+
+		}
+		else if (pC->m_class == "_Automaton")
+		{
+
+		}
+		else if (pC->m_class == "_AutoPilot")
+		{
+
+		}
+		else if (pC->m_class == "_Universe")
+		{
+
+		}
+		else if (pC->m_class == "_Mavlink")
+		{
+
+		}
+		else if (pC->m_class == "_RC")
+		{
+
+		}
+		else if (pC->m_class == "_AprilTags")
+		{
+
+		}
+		else if (pC->m_class == "_Bullseye")
+		{
+
+		}
+		else if (pC->m_class == "_ROITracker")
+		{
+
+		}
+		else if (pC->m_class == "_Cascade")
+		{
+
+		}
+		else if (pC->m_class == "_Depth")
+		{
+
+		}
+		else if (pC->m_class == "_Flow")
+		{
+
+		}
+		else if (pC->m_class == "UI")
+		{
+
+		}
+		else
+		{
+
+		}
+
+
+
+		k++;
+	}
+
+	return true;
+
+	//TODO: start threads later: m_pStream->start();
+}
+
+int General::getNextVacant(BASE** pInstList)
+{
+	for (int i = 0; i < N_INST; i++)
+	{
+		if (pInstList[i] == NULL)
+			return i;
+	}
+
+	return -1;
 }
 
 }

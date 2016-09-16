@@ -11,6 +11,7 @@
 #include "platform.h"
 #include "../Utility/util.h"
 #include "common.h"
+#include "BASE.h"
 
 #define NUM_MUTEX 5
 #define USEC_1SEC 1000000
@@ -18,7 +19,7 @@
 namespace kai
 {
 
-class _ThreadBase
+class _ThreadBase: public BASE
 {
 public:
 	_ThreadBase();
