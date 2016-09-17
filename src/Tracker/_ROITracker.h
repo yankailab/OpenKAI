@@ -30,7 +30,7 @@ public:
 	_ROITracker();
 	virtual ~_ROITracker();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 
 	void setROI(Rect2d roi);

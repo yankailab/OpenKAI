@@ -24,12 +24,12 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(Config* pConfig, string name)
+bool _SSD::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 	//Setup Caffe Classifier
 	string caffeDir = "";

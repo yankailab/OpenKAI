@@ -16,13 +16,13 @@
 namespace kai
 {
 
-class ActionBase
+class ActionBase: public BASE
 {
 public:
 	ActionBase();
 	~ActionBase();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 

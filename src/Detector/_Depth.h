@@ -26,7 +26,7 @@ public:
 	_Depth();
 	~_Depth();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 
 private:

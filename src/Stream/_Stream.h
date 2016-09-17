@@ -25,7 +25,7 @@ public:
 	_Stream();
 	virtual ~_Stream();
 
-	bool init(Config* pConfig, string camName);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 	bool complete(void);
 	bool draw(Frame* pFrame, iVec4* textPos);
@@ -41,7 +41,6 @@ public:
 	bool		m_bGray;
 
 private:
-	string			m_camName;
 	CamBase*		m_pCamera;
 
 	Frame*			m_pCamFrame;

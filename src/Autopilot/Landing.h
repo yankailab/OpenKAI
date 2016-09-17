@@ -26,7 +26,7 @@ public:
 	Landing();
 	~Landing();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 

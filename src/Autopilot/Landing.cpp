@@ -19,13 +19,13 @@ Landing::~Landing()
 {
 }
 
-bool Landing::init(Config* pConfig, string name)
+bool Landing::init(Config* pConfig, string* pName)
 {
-	if (this->ActionBase::init(pConfig,name)==false)
+	if (this->ActionBase::init(pConfig,pName)==false)
 		return false;
 
 	int i;
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 	Config* pCC = pC->o("visualLanding");
 	if(pCC->empty())return false;
 

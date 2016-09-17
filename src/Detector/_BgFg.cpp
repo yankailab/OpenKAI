@@ -25,7 +25,7 @@ _BgFg::~_BgFg()
 }
 
 
-bool _BgFg::init(JSON* pJson, string name)
+bool _BgFg::init(JSON* pJson, string* pName)
 {
 //	CHECK_INFO(pJson->getVal("BGFG_DETECTOR_TSLEEP_" + name, &m_tSleep));
 

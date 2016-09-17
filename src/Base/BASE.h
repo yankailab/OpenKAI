@@ -9,6 +9,7 @@
 #define OPENKAI_SRC_BASE_BASE_H_
 
 #include "platform.h"
+#include "../Script/Config.h"
 
 using namespace std;
 
@@ -21,6 +22,8 @@ class BASE
 public:
 	BASE();
 	virtual ~BASE();
+
+	bool init(Config* pConfig, string* pName);
 
 public:
 	string m_name;

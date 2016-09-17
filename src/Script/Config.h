@@ -10,6 +10,9 @@ using namespace std;
 
 #define NUM_CHILDREN 128
 
+namespace kai
+{
+
 class Config
 {
 public:
@@ -21,6 +24,7 @@ public:
 	JSON* json(void);
 	Config** getClassItr(string* pClassName);
 	Config** getChildItr(void);
+	Config* root(void);
 	bool empty(void);
 
 	bool v(string name,int* val);
@@ -41,11 +45,15 @@ public:
 	string	m_class;
 	string	m_name;
 	JSON	m_json;
+
+	Config* m_pParent;
 	int		m_nChild;
 	Config*	m_pChild[NUM_CHILDREN];
 
 	Config* m_pNULL;
 	bool	m_bNULL;
 };
+
+}
 
 #endif

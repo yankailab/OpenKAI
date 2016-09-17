@@ -10,16 +10,34 @@
 namespace kai
 {
 
-
 BASE::BASE()
 {
-	// TODO Auto-generated constructor stub
+	m_name = "";
 
 }
 
 BASE::~BASE()
 {
 	// TODO Auto-generated destructor stub
+}
+
+bool BASE::init(Config* pConfig, string* pName)
+{
+	if (!pConfig)
+		return false;
+
+	if (!pName)
+		return false;
+
+	if (pName->empty())
+		return false;
+
+	Config* pC = pConfig->o(*pName);
+	if (pC->empty())
+		return false;
+
+	m_name = *pName;
+	return true;
 }
 
 }

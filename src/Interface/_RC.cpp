@@ -20,12 +20,12 @@ _RC::~_RC()
 	}
 }
 
-bool _RC::init(Config* pConfig, string name)
+bool _RC::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig, pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 	F_ERROR_F(pC->v("portName", &m_sportName));
 	F_ERROR_F(pC->v("baudrate", &m_baudRate));
 

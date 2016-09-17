@@ -37,12 +37,12 @@ _Cascade::~_Cascade()
 {
 }
 
-bool _Cascade::init(Config* pConfig, string name)
+bool _Cascade::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig, pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 	string cascadeFile = "";
 	string presetDir = "";

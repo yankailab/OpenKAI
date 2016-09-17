@@ -47,15 +47,22 @@ public:
 	bool linkInst(Config* pConfig);
 
 public:
-	_Stream* m_pStream;
-	BASE* m_pStream1[N_INST];
+	BASE* m_pStream[N_INST];
+	BASE* m_pAM[N_INST];
+	BASE* m_pUniv[N_INST];
+	BASE* m_pMavlink[N_INST];
+	BASE* m_pRC[N_INST];
+
+
+	_Stream* m_pStream1;
+	_Automaton* m_pAM1;
+	_Universe* m_pUniverse;
+	_Mavlink* m_pMavlink1;
+	_RC* m_pRC1;
+
 	_SSD* m_pSSD;
 	_FCN* m_pFCN;
-	_Automaton* m_pAM;
 	_AutoPilot* m_pAP;
-	_Universe* m_pUniverse;
-	_Mavlink* m_pMavlink;
-	_RC* m_pRC;
 	_AprilTags* m_pAT;
 	_Bullseye* m_pMD;
 	_ROITracker* m_pROITracker;

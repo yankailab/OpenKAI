@@ -12,6 +12,8 @@ namespace kai
 
 CamBase::CamBase()
 {
+	BASE();
+
 	m_width = 0;
 	m_height = 0;
 	m_centerH = 0;
@@ -31,18 +33,17 @@ CamBase::~CamBase()
 {
 }
 
-bool CamBase::setup(Config* pConfig, string name)
+bool CamBase::setup(Config* pConfig, string* pName)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->BASE::init(pConfig,pName)==false)
+		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_INFO_(pConfig->root()->o("APP")->v("presetDir", &presetDir));
 
-	Config* pCam = pConfig->o(name);
-	if(pCam->empty())return false;
+	Config* pCam = pConfig->o(*pName);
 
 	F_FATAL_F(pCam->v("width", &m_width));
 	F_FATAL_F(pCam->v("height", &m_height));

@@ -38,12 +38,12 @@ _Bullseye::~_Bullseye()
 }
 
 
-bool _Bullseye::init(Config* pConfig, string name)
+bool _Bullseye::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 	F_ERROR_F(pC->v("areaRatio", &m_areaRatio));
 	F_ERROR_F(pC->v("minSize", &m_minMarkerSize));

@@ -30,12 +30,12 @@ _Universe::~_Universe()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Universe::init(Config* pConfig, string name)
+bool _Universe::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 //	if(m_caffe.init(pJson,"")==false)return false;
 

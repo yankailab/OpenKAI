@@ -1,11 +1,15 @@
 #include "Config.h"
 
+namespace kai
+{
+
 Config::Config(void)
 {
 	m_nChild = 0;
 	m_name = "";
 	m_bNULL = false;
 	m_pNULL = NULL;
+	m_pParent = NULL;
 }
 
 Config::~Config(void)
@@ -116,6 +120,7 @@ bool Config::addChild(string str)
 	Config* pChild = m_pChild[m_nChild];
 	m_nChild++;
 
+	pChild->m_pParent = this;
 	return pChild->parse(str);
 }
 
@@ -133,6 +138,18 @@ Config* Config::o(string name)
 	}
 
 	return m_pNULL;
+}
+
+Config* Config::root(void)
+{
+	Config* pRoot = this;
+
+	while(pRoot->m_pParent)
+	{
+		pRoot = pRoot->m_pParent;
+	}
+
+	return pRoot;
 }
 
 JSON* Config::json(void)
@@ -209,3 +226,4 @@ bool Config::array(string name, value::array* val)
 	return m_json.array(&name, val);
 }
 
+}

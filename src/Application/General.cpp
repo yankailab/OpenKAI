@@ -13,12 +13,13 @@ General::General()
 {
 	AppBase();
 
-	initInst(m_pStream1);
+	initInst(m_pStream);
+	m_pFrame = NULL;
 
-	m_pStream = NULL;
+	m_pStream1 = NULL;
 	m_pAP = NULL;
-	m_pMavlink = NULL;
-	m_pRC = NULL;
+	m_pMavlink1 = NULL;
+	m_pRC1 = NULL;
 	m_pCascade = NULL;
 	m_pFlow = NULL;
 	m_pROITracker = NULL;
@@ -27,9 +28,8 @@ General::General()
 	m_pUniverse = NULL;
 	m_pFCN = NULL;
 	m_pSSD = NULL;
-	m_pFrame = NULL;
 	m_pAT = NULL;
-	m_pAM = NULL;
+	m_pAM1 = NULL;
 }
 
 void General::initInst(BASE** pInstList)
@@ -50,162 +50,188 @@ bool General::start(Config* pConfig)
 	//TODO: Solve caffe ROI in DepthDetector
 	//TODO: Optimize FCN
 
+	NULL_F(pConfig);
+
 	g_pGeneral = this;
-	int FPS;
-	string camName;
+	Config* pRoot = pConfig->o("APP");
+	if(pRoot->empty())return false;
 
-	F_INFO_(pConfig->o("APP")->v("appName", &m_name));
-	F_INFO_(pConfig->o("APP")->v("bShowScreen", &m_bShowScreen));
-	F_INFO_(pConfig->o("APP")->v("bFullScreen", &m_bFullScreen));
-	F_INFO_(pConfig->o("APP")->v("waitKey", &m_waitKey));
+	F_INFO_(pRoot->v("appName", &m_name));
+	F_INFO_(pRoot->v("bShowScreen", &m_bShowScreen));
+	F_INFO_(pRoot->v("bFullScreen", &m_bFullScreen));
+	F_INFO_(pRoot->v("waitKey", &m_waitKey));
 
-	m_pFrame = new Frame();
+
+	F_FATAL_F(loadInst(pConfig));
+
+
+
+
+
+
+
+	//temporal
+	string cName;
 
 	//Init Camera
-	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
-	if (camName != "video")
-	{
-		m_pStream = new _Stream();
-		F_FATAL_F(m_pStream->init(pConfig, camName));
-		m_pStream->start();
-	}
+	int FPS;
+//	string camName;
+//	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
+//	if (camName != "video")
+//	{
+//		m_pStream1 = new _Stream();
+//		F_FATAL_F(m_pStream1->init(pConfig, &camName));
+//		m_pStream1->start();
+//	}
 
 	//Init Automaton
-	FPS = 0;
-	F_INFO_(pConfig->o("Automaton0")->v("FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pAM = new _Automaton();
-		F_FATAL_F(m_pAM->init(pConfig, "Automaton0"));
-		m_pAM->start();
-	}
+//	FPS = 0;
+//	cName = "Automaton0";
+//	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
+//	if (FPS > 0)
+//	{
+//		m_pAM1 = new _Automaton();
+//		F_FATAL_F(m_pAM1->init(pConfig, &cName));
+//		m_pAM1->start();
+//	}
 
 	//Init ROI Tracker
 	FPS = 0;
-	F_INFO_(pConfig->o("roiTracker0")->v("FPS", &FPS));
+	cName = "roiTracker";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pROITracker = new _ROITracker();
-		m_pROITracker->m_pCamStream = m_pStream;
-		m_pROITracker->init(pConfig, "roiTracker0");
+		m_pROITracker->m_pCamStream = m_pStream1;
+		m_pROITracker->init(pConfig, &cName);
 		m_pROITracker->start();
 	}
 
 	//Init Marker Detector
 	FPS = 0;
-	F_INFO_(pConfig->o("markerLanding")->v("FPS", &FPS));
+	cName = "markerLanding";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pMD = new _Bullseye();
-		m_pStream->m_bGray = true;
-		m_pStream->m_bHSV = true;
-		m_pMD->m_pCamStream = m_pStream;
-		m_pMD->init(pConfig, "markerLanding");
+		m_pStream1->m_bGray = true;
+		m_pStream1->m_bHSV = true;
+		m_pMD->m_pCamStream = m_pStream1;
+		m_pMD->init(pConfig, &cName);
 		m_pMD->start();
 	}
 
 	//Init AprilTags Detector
 	FPS = 0;
-	F_INFO_(pConfig->o("AprilTagLanding")->v("FPS", &FPS));
+	cName = "AprilTagLanding";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAT = new _AprilTags();
-		m_pAT->m_pCamStream = m_pStream;
-		m_pAT->init(pConfig, "AprilTagLanding");
+		m_pAT->m_pCamStream = m_pStream1;
+		m_pAT->init(pConfig, &cName);
 		m_pAT->start();
 	}
 
 	//Init Mavlink
 	FPS = 0;
-	F_INFO_(pConfig->o("Mavlink0")->v("FPS", &FPS));
+	cName = "Mavlink0";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pMavlink = new _Mavlink();
-		F_FATAL_F(m_pMavlink->init(pConfig, "Mavlink0"));
-		m_pMavlink->start();
+		m_pMavlink1 = new _Mavlink();
+		F_FATAL_F(m_pMavlink1->init(pConfig, &cName));
+		m_pMavlink1->start();
 	}
 
 	//Connect to RC output
 	FPS = 0;
-	F_INFO_(pConfig->o("RC_0")->v("FPS", &FPS));
+	cName = "RC_0";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
-		m_pRC = new _RC();
-		F_FATAL_F(m_pRC->init(pConfig, "RC_0"));
-		F_FATAL_F(m_pRC->open());
-		m_pRC->start();
+		m_pRC1 = new _RC();
+		F_FATAL_F(m_pRC1->init(pConfig, &cName));
+		F_FATAL_F(m_pRC1->open());
+		m_pRC1->start();
 	}
 
 	//Init Autopilot
 	FPS = 0;
-	F_INFO_(pConfig->o("Autopilot0")->v("FPS", &FPS));
+	cName = "Autopilot0";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pAP = new _AutoPilot();
-		m_pAP->m_pMavlink = m_pMavlink;
+		m_pAP->m_pMavlink = m_pMavlink1;
 //		m_pAP->m_pROITracker = m_pROITracker;
 //		m_pAP->m_pMD = m_pMD;
 //		m_pAP->m_pAT = m_pAT;
-		m_pAP->m_pAM = m_pAM;
-		F_FATAL_F(m_pAP->init(pConfig, "Autopilot0"));
+		m_pAP->m_pAM = m_pAM1;
+		F_FATAL_F(m_pAP->init(pConfig, &cName));
 		m_pAP->start();
 	}
 
-	//Init Universe
-	FPS = 0;
-	F_INFO_(pConfig->o("Universe")->v("FPS", &FPS));
-	if (FPS > 0)
-	{
-		m_pUniverse = new _Universe();
-		m_pUniverse->init(pConfig, "Universe");
-		m_pUniverse->start();
-	}
+//	//Init Universe
+//	FPS = 0;
+//	cName = "Universe";
+//	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
+//	if (FPS > 0)
+//	{
+//		m_pUniverse = new _Universe();
+//		m_pUniverse->init(pConfig, &cName);
+//		m_pUniverse->start();
+//	}
 
 	//Init SSD
 	FPS = 0;
-	F_INFO_(pConfig->o("SSD")->v("FPS", &FPS));
+	cName = "SSD";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pSSD = new _SSD();
-		m_pSSD->m_pCamStream = m_pStream;
+		m_pSSD->m_pCamStream = m_pStream1;
 		m_pSSD->m_pUniverse = m_pUniverse;
-		m_pSSD->init(pConfig, "SSD");
+		m_pSSD->init(pConfig, &cName);
 		m_pSSD->start();
 	}
 
 	//Init Optical Flow
 	FPS = 0;
-	F_INFO_(pConfig->o("optflow0")->v("FPS", &FPS));
+	cName = "optflow0";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFlow = new _Flow();
-		m_pFlow->m_pCamStream = m_pStream;
-		m_pStream->m_bGray = true;
-		F_FATAL_F(m_pFlow->init(pConfig, "optflow0"));
+		m_pFlow->m_pCamStream = m_pStream1;
+		m_pStream1->m_bGray = true;
+		F_FATAL_F(m_pFlow->init(pConfig, &cName));
 		m_pFlow->start();
 	}
 
 	//Init Depth Object Detector
 	FPS = 0;
-	F_INFO_(pConfig->o("depthObjDetector")->v("FPS", &FPS));
+	cName = "depthObjDetector";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pDD = new _Depth();
-		m_pDD->m_pCamStream = m_pStream;
+		m_pDD->m_pCamStream = m_pStream1;
 		m_pDD->m_pUniverse = m_pUniverse;
 		m_pDD->m_pFlow = m_pFlow;
-		F_FATAL_F(m_pDD->init(pConfig, "depthObjDetector"));
+		F_FATAL_F(m_pDD->init(pConfig, &cName));
 		m_pDD->start();
 	}
 
 	//Init FCN
 	FPS = 0;
-	F_INFO_(pConfig->o("FCN")->v("FPS", &FPS));
+	cName = "FCN";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
 	if (FPS > 0)
 	{
 		m_pFCN = new _FCN();
-		m_pFCN->m_pCamStream = m_pStream;
-		m_pFCN->init(pConfig, "FCN");
+		m_pFCN->m_pCamStream = m_pStream1;
+		m_pFCN->init(pConfig, &cName);
 		m_pFCN->start();
 	}
 
@@ -214,6 +240,8 @@ bool General::start(Config* pConfig)
 
 	if (m_bShowScreen)
 	{
+		m_pFrame = new Frame();
+
 		namedWindow(m_name, CV_WINDOW_NORMAL);
 		if (m_bFullScreen)
 		{
@@ -241,7 +269,7 @@ bool General::start(Config* pConfig)
 	}
 
 //	STOP(m_pAP);
-	STOP(m_pMavlink);
+	STOP(m_pMavlink1);
 	STOP(m_pROITracker);
 	STOP(m_pMD);
 	STOP(m_pUniverse);
@@ -249,8 +277,8 @@ bool General::start(Config* pConfig)
 	STOP(m_pFlow);
 	STOP(m_pFCN);
 
-	m_pMavlink->complete();
-	m_pMavlink->close();
+	m_pMavlink1->complete();
+	m_pMavlink1->close();
 
 //	COMPLETE(m_pAP);
 	COMPLETE(m_pROITracker);
@@ -259,9 +287,9 @@ bool General::start(Config* pConfig)
 	COMPLETE(m_pDD);
 	COMPLETE(m_pFlow);
 	COMPLETE(m_pFCN);
-	COMPLETE(m_pStream);
+	COMPLETE(m_pStream1);
 
-	RELEASE(m_pMavlink);
+	RELEASE(m_pMavlink1);
 	RELEASE(m_pStream);
 	RELEASE(m_pROITracker);
 	RELEASE(m_pAP);
@@ -277,21 +305,23 @@ bool General::start(Config* pConfig)
 
 void General::draw(void)
 {
+	NULL_(m_pFrame);
+
 	iVec4 textPos;
 	textPos.m_x = 15;
 	textPos.m_y = 20;
 	textPos.m_w = 20;
 	textPos.m_z = 500;
 
-	if (m_pStream)
+	if (m_pStream1)
 	{
-		if (!m_pStream->draw(m_pFrame, &textPos))
+		if (!m_pStream1->draw(m_pFrame, &textPos))
 			return;
 	}
 
-	if (m_pAM)
+	if (m_pAM1)
 	{
-		m_pAM->draw(m_pFrame, &textPos);
+		m_pAM1->draw(m_pFrame, &textPos);
 	}
 
 //	if(m_pAP)
@@ -314,9 +344,9 @@ void General::draw(void)
 		m_pSSD->draw(m_pFrame, &textPos);
 	}
 
-	if (m_pMavlink)
+	if (m_pMavlink1)
 	{
-		m_pMavlink->draw(m_pFrame, &textPos);
+		m_pMavlink1->draw(m_pFrame, &textPos);
 	}
 
 	if (m_pFCN)
@@ -376,16 +406,55 @@ bool General::loadInst(Config* pConfig)
 
 		if (pC->m_class == "_Stream")
 		{
-			k = getNextVacant(m_pStream1);
-			if (k < 0)
-				return false;
+			k = getNextVacant(m_pStream);
+			if (k < 0)return false;
 
 			_Stream* pStream = new _Stream();
-			F_FATAL_F(pStream->_Stream::init(pConfig, pC->m_name));
-			pStream->_Stream::start();
+			F_FATAL_F(pStream->_Stream::init(pConfig, &pC->m_name));
 
-			m_pStream1[k] = pStream;
+			m_pStream[k] = pStream;
 
+		}
+		else if (pC->m_class == "_Automaton")
+		{
+			k = getNextVacant(m_pAM);
+			if (k < 0)return false;
+
+			_Automaton* pAM = new _Automaton();
+			F_FATAL_F(pAM->_Automaton::init(pConfig, &pC->m_name));
+
+			m_pAM[k] = pAM;
+		}
+		else if (pC->m_class == "_Universe")
+		{
+			k = getNextVacant(m_pUniv);
+			if (k < 0)return false;
+
+			_Universe* pUniv = new _Universe();
+			F_FATAL_F(pUniv->_Universe::init(pConfig, &pC->m_name));
+
+			m_pUniv[k] = pUniv;
+		}
+		else if (pC->m_class == "_Mavlink")
+		{
+			k = getNextVacant(m_pMavlink);
+			if (k < 0)return false;
+
+			_Mavlink* pMavlink = new _Mavlink();
+			F_FATAL_F(pMavlink->_Mavlink::init(pConfig, &pC->m_name));
+
+			m_pMavlink[k] = pMavlink;
+
+		}
+		else if (pC->m_class == "_RC")
+		{
+			k = getNextVacant(m_pRC);
+			if (k < 0)return false;
+
+			_RC* pRC = new _RC();
+			F_FATAL_F(pRC->_RC::init(pConfig, &pC->m_name));
+
+			m_pRC[k] = pRC;
 		}
 		else if (pC->m_class == "_SSD")
 		{
@@ -395,23 +464,7 @@ bool General::loadInst(Config* pConfig)
 		{
 
 		}
-		else if (pC->m_class == "_Automaton")
-		{
-
-		}
 		else if (pC->m_class == "_AutoPilot")
-		{
-
-		}
-		else if (pC->m_class == "_Universe")
-		{
-
-		}
-		else if (pC->m_class == "_Mavlink")
-		{
-
-		}
-		else if (pC->m_class == "_RC")
 		{
 
 		}

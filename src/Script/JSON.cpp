@@ -1,5 +1,8 @@
 #include "JSON.h"
 
+namespace kai
+{
+
 JSON::JSON(void)
 {
 }
@@ -122,4 +125,6 @@ int JSON::checkErrorNum(void)
 	//TODO record error description
 
 	return numError;
+}
+
 }

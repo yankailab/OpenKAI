@@ -36,7 +36,7 @@ public:
 	_AprilTags();
 	virtual ~_AprilTags();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 

@@ -6,7 +6,6 @@
 #include "BASE.h"
 #include <glog/logging.h>
 #include "../IO/FileIO.h"
-#include "../Script/Config.h"
 #include "../Utility/util.h"
 
 #define MAVLINK_DEBUG

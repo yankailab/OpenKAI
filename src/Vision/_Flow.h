@@ -30,7 +30,7 @@ public:
 	_Flow();
 	virtual ~_Flow();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 
 private:

@@ -32,7 +32,7 @@ public:
 	_Cascade();
 	~_Cascade();
 
-	bool init(Config* pConfig, string name);
+	bool init(Config* pConfig, string* pName);
 	bool start(void);
 
 	int  getObjList(CASCADE_OBJECT** ppObj);

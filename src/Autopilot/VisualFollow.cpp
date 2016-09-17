@@ -32,13 +32,13 @@ VisualFollow::~VisualFollow()
 {
 }
 
-bool VisualFollow::init(Config* pConfig, string name)
+bool VisualFollow::init(Config* pConfig, string* pName)
 {
-	if (this->ActionBase::init(pConfig, name) == false)
+	if (this->ActionBase::init(pConfig, pName) == false)
 		return false;
 
 	int i;
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 	Config* pCC = pC->o("visualFollow");
 	if (pCC->empty())
 		return false;

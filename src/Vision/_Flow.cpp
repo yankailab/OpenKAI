@@ -33,12 +33,12 @@ _Flow::~_Flow()
 {
 }
 
-bool _Flow::init(Config* pConfig, string name)
+bool _Flow::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 	string presetDir = "";
 	string labelFile;

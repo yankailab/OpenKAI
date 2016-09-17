@@ -27,9 +27,9 @@ _ROITracker::~_ROITracker()
 {
 }
 
-bool _ROITracker::init(Config* pConfig, string name)
+bool _ROITracker::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
 	m_ROI.width = 0;

@@ -31,7 +31,7 @@ public:
 	_BgFg();
 	virtual ~_BgFg();
 
-	bool init(JSON* pJson, string name);
+	bool init(JSON* pJson, string* pName);
 	bool start(void);
 
 	//Object detection using markers

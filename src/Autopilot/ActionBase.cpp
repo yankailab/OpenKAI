@@ -15,14 +15,12 @@ ActionBase::~ActionBase()
 {
 }
 
-bool ActionBase::init(Config* pConfig, string name)
+bool ActionBase::init(Config* pConfig, string* pName)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->BASE::init(pConfig,pName)==false)
+		return false;
 
-	Config* pC = pConfig->o(name);
-	if(pC->empty())return false;
-
+	Config* pC = pConfig->o(*pName);
 
 	return true;
 }

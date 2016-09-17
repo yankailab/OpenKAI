@@ -26,21 +26,21 @@ ZED::~ZED()
 {
 }
 
-bool ZED::setup(Config* pConfig, string camName)
+bool ZED::setup(Config* pConfig, string* pName)
 {
-	if (CamBase::setup(pConfig, camName) == false)
+	if (CamBase::setup(pConfig, pName) == false)
 		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	CHECK_INFO(g_pConfig->obj("APP")->var("presetDir", &presetDir));
+	CHECK_INFO(g_pConfig->root()->obj("APP")->var("presetDir", &presetDir));
 
-	Config* pZED = pConfig->obj(camName);
+	Config* pZED = pConfig->obj(*pName);
 	if(pZED->empty())return false;
 
-	CHECK_INFO(pZED->var("ZEDresolution",&m_zedResolution));
-	CHECK_INFO(pZED->var("ZEDminDist",&m_zedMinDist));
+	CHECK_INFO(pZED->var("resolution",&m_zedResolution));
+	CHECK_INFO(pZED->var("minDist",&m_zedMinDist));
 	CHECK_INFO(pZED->var("FPS", &m_zedFPS));
 
 	return true;

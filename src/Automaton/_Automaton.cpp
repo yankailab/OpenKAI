@@ -24,12 +24,12 @@ _Automaton::~_Automaton()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Automaton::init(Config* pConfig, string name)
+bool _Automaton::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pAM = pConfig->o(name);
+	Config* pAM = pConfig->o(*pName);
 
 	//init basic params
 	m_numState = 0;

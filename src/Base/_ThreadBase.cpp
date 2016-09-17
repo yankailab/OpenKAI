@@ -12,6 +12,8 @@ namespace kai
 
 _ThreadBase::_ThreadBase()
 {
+	BASE();
+
 	m_bThreadON = false;
 	m_threadID = 0;
 	m_timeStamp = 0;
@@ -39,18 +41,12 @@ _ThreadBase::~_ThreadBase()
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
-bool _ThreadBase::init(Config* pConfig, string name)
+bool _ThreadBase::init(Config* pConfig, string* pName)
 {
-	if (!pConfig)
+	if (this->BASE::init(pConfig,pName)==false)
 		return false;
 
-	if(name.empty())
-		return false;
-
-	Config* pC = pConfig->o(name);
-	if (pC->empty())
-		return false;
-
+	Config* pC = pConfig->o(*pName);
 	double FPS = DEFAULT_FPS;
 	F_INFO_(pC->v("FPS", &FPS));
 	setTargetFPS(FPS);

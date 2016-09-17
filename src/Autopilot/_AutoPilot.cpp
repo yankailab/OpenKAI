@@ -18,13 +18,12 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::init(Config* pConfig, string name)
+bool _AutoPilot::init(Config* pConfig, string* pName)
 {
-	if(pConfig==NULL)return false;
-	if(name.empty())return false;
+	if (this->_ThreadBase::init(pConfig,pName)==false)
+		return false;
 
-	Config* pC = pConfig->o(name);
-	if(pC->empty())return false;
+	Config* pC = pConfig->o(*pName);
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;

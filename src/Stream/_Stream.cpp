@@ -14,8 +14,7 @@ _Stream::_Stream()
 {
 	_ThreadBase();
 
-	m_camName = "";
-	m_pCamera = NULL;//new Camera();
+	m_pCamera = NULL;
 	m_pCamFrame = new Frame();
 	m_pGrayFrame = new Frame();
 	m_pHSVframe = new Frame();
@@ -33,41 +32,45 @@ _Stream::~_Stream()
 	RELEASE(m_pHSVframe);
 }
 
-bool _Stream::init(Config* pConfig, string name)
+bool _Stream::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pStream = pConfig->o(name);
-
-	int camType;
-	m_camName = name;
-
+	Config* pStream = pConfig->o(*pName);
 	F_INFO_(pStream->v("bShowDepth", &m_showDepth));
-	F_FATAL_F(pStream->v("type", &camType));
+	F_INFO_(pStream->v("bGray", &m_bGray));
+	F_INFO_(pStream->v("bHSV", &m_bHSV));
 
-	switch (camType)
+	string camClass;
+	string camName;
+
+	F_FATAL_F(pStream->v("input", &camName));
+	Config* pC = pStream->o(camName);
+	F_FATAL_F(pC->v("class", &camClass));
+
+	if(camClass=="Camera")
 	{
-	case CAM_GENERAL:
 		m_pCamera = new Camera();
-		break;
-	case CAM_ZED:
+	}
+	else if(camClass=="ZED")
+	{
 #ifdef USE_ZED
 		m_pCamera = new ZED();
 #else
-		LOG(FATAL)<<"ZED is not support in this build, please compile OpenKAI with ZED support enabled.";
+		LOG(FATAL)<<"ZED is not support in this build, please compile OpenKAI with ZED support enabled";
 		return false;
 #endif
-		break;
-	default:
+	}
+	else
+	{
+		LOG(FATAL)<<"Unknown stream input";
 		return false;
-		break;
 	}
 
-	F_ERROR_F(m_pCamera->setup(pConfig, name));
+	F_ERROR_F(m_pCamera->setup(pStream, pName));
 
 	m_bThreadON = false;
-
 	return true;
 }
 
@@ -87,8 +90,12 @@ bool _Stream::start(void)
 
 void _Stream::update(void)
 {
-	//Open camera
-	if(m_pCamera->openCamera()==false)return;
+	//Open stream input
+	if(m_pCamera->openCamera()==false)
+	{
+		LOG(FATAL)<<"Cannot open stream input:";
+		return;
+	}
 
 	while (m_bThreadON)
 	{
@@ -157,7 +164,7 @@ bool _Stream::draw(Frame* pFrame, iVec4* pTextPos)
 		pFrame->update(m_pCamera->getDepthFrame());
 	}
 
-	putText(*pFrame->getCMat(), "Camera FPS: " + i2str(getFrameRate()),
+	putText(*pFrame->getCMat(), "Stream "+m_name+" FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	pTextPos->m_y += pTextPos->m_w;

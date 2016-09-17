@@ -8,6 +8,9 @@
 using namespace std;
 using namespace picojson;
 
+namespace kai
+{
+
 class JSON
 {
 private:
@@ -32,4 +35,5 @@ public:
 
 };
 
+}
 #endif

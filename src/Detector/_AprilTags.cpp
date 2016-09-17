@@ -34,12 +34,12 @@ _AprilTags::~_AprilTags()
 	// TODO Auto-generated destructor stub
 }
 
-bool _AprilTags::init(Config* pConfig, string name)
+bool _AprilTags::init(Config* pConfig, string* pName)
 {
-	if (this->_ThreadBase::init(pConfig,name)==false)
+	if (this->_ThreadBase::init(pConfig,pName)==false)
 		return false;
 
-	Config* pC = pConfig->o(name);
+	Config* pC = pConfig->o(*pName);
 
 	F_INFO_(pC->v("family", &m_tagFamily));
 	F_INFO_(pC->v("err", &m_tagErr));
