@@ -133,7 +133,7 @@ public:
 	_Mavlink();
 	~_Mavlink();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	void close(void);
 	bool start(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);

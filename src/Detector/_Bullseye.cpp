@@ -38,24 +38,22 @@ _Bullseye::~_Bullseye()
 }
 
 
-bool _Bullseye::init(Config* pConfig, string* pName)
+bool _Bullseye::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	Config* pC = pConfig->o(*pName);
+	F_ERROR_F(pConfig->v("areaRatio", &m_areaRatio));
+	F_ERROR_F(pConfig->v("minSize", &m_minMarkerSize));
 
-	F_ERROR_F(pC->v("areaRatio", &m_areaRatio));
-	F_ERROR_F(pC->v("minSize", &m_minMarkerSize));
+	F_INFO_(pConfig->v("method", &m_method));
+	F_INFO_(pConfig->v("medBlueKsize", &m_kSize));
 
-	F_INFO_(pC->v("method", &m_method));
-	F_INFO_(pC->v("medBlueKsize", &m_kSize));
-
-	F_INFO_(pC->v("HoughMinDist", &m_houghMinDist));
-	F_INFO_(pC->v("HoughParam1", &m_houghParam1));
-	F_INFO_(pC->v("HoughParam2", &m_houghParam2));
-	F_INFO_(pC->v("HoughMinR", &m_houghMinR));
-	F_INFO_(pC->v("HoughMaxR", &m_houghMaxR));
+	F_INFO_(pConfig->v("HoughMinDist", &m_houghMinDist));
+	F_INFO_(pConfig->v("HoughParam1", &m_houghParam1));
+	F_INFO_(pConfig->v("HoughParam2", &m_houghParam2));
+	F_INFO_(pConfig->v("HoughMinR", &m_houghMinR));
+	F_INFO_(pConfig->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
 

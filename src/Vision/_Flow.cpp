@@ -33,23 +33,21 @@ _Flow::~_Flow()
 {
 }
 
-bool _Flow::init(Config* pConfig, string* pName)
+bool _Flow::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pC = pConfig->o(*pName);
 
 	string presetDir = "";
 	string labelFile;
 
 	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO_(pC->v("bDepth", &m_bDepth));
-	F_INFO_(pC->v("width", &m_width));
-	F_INFO_(pC->v("height", &m_height));
-	F_INFO_(pC->v("flowMax", &m_flowMax));
-	F_INFO_(pC->v("colorFile", &labelFile));
+	F_INFO_(pConfig->v("bDepth", &m_bDepth));
+	F_INFO_(pConfig->v("width", &m_width));
+	F_INFO_(pConfig->v("height", &m_height));
+	F_INFO_(pConfig->v("flowMax", &m_flowMax));
+	F_INFO_(pConfig->v("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();

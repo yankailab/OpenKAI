@@ -18,7 +18,7 @@ _Caffe::~_Caffe()
 {
 }
 
-bool _Caffe::init(JSON* pJson, string* pName)
+bool _Caffe::init(JSON* pJson)
 {
 	//Setup Caffe Classifier
 	string caffeDir = "";

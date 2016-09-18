@@ -41,14 +41,13 @@ _ThreadBase::~_ThreadBase()
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
-bool _ThreadBase::init(Config* pConfig, string* pName)
+bool _ThreadBase::init(Config* pConfig)
 {
-	if (this->BASE::init(pConfig,pName)==false)
+	if (this->BASE::init(pConfig)==false)
 		return false;
 
-	Config* pC = pConfig->o(*pName);
 	double FPS = DEFAULT_FPS;
-	F_INFO_(pC->v("FPS", &FPS));
+	F_INFO_(pConfig->v("FPS", &FPS));
 	setTargetFPS(FPS);
 
 	return true;

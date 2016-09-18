@@ -45,6 +45,7 @@ public:
 	string	m_class;
 	string	m_name;
 	JSON	m_json;
+	void*	m_pInst;
 
 	Config* m_pParent;
 	int		m_nChild;

@@ -24,12 +24,10 @@ _Automaton::~_Automaton()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Automaton::init(Config* pConfig, string* pName)
+bool _Automaton::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pAM = pConfig->o(*pName);
 
 	//init basic params
 	m_numState = 0;
@@ -43,7 +41,7 @@ bool _Automaton::init(Config* pConfig, string* pName)
 
 	do
 	{
-		cState = pAM->o("state" + i2str(m_numState));
+		cState = pConfig->o("state" + i2str(m_numState));
 		if (cState->empty())
 			break;
 
@@ -118,7 +116,7 @@ bool _Automaton::init(Config* pConfig, string* pName)
 	} while (1);
 
 	int k = 0;
-	pAM->v("startState", &k);
+	pConfig->v("startState", &k);
 	return setState(k);
 }
 

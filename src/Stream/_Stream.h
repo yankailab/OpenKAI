@@ -25,7 +25,7 @@ public:
 	_Stream();
 	virtual ~_Stream();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	bool start(void);
 	bool complete(void);
 	bool draw(Frame* pFrame, iVec4* textPos);

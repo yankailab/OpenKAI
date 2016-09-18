@@ -6,10 +6,12 @@ namespace kai
 Config::Config(void)
 {
 	m_nChild = 0;
+	m_class = "";
 	m_name = "";
 	m_bNULL = false;
 	m_pNULL = NULL;
 	m_pParent = NULL;
+	m_pInst = NULL;
 }
 
 Config::~Config(void)
@@ -70,8 +72,13 @@ bool Config::parse(string str)
 	if (!m_json.parse("{" + str + "}"))
 		return false;
 
-	string name = "name";
+	string name;
+	name = "name";
 	m_json.v(&name, &m_name);
+
+	name = "class";
+	m_json.v(&name, &m_class);
+
 
 	if (m_pNULL == NULL)
 	{

@@ -19,14 +19,13 @@ Landing::~Landing()
 {
 }
 
-bool Landing::init(Config* pConfig, string* pName)
+bool Landing::init(Config* pConfig)
 {
-	if (this->ActionBase::init(pConfig,pName)==false)
+	if (this->ActionBase::init(pConfig)==false)
 		return false;
 
 	int i;
-	Config* pC = pConfig->o(*pName);
-	Config* pCC = pC->o("visualLanding");
+	Config* pCC = pConfig->o("visualLanding");
 	if(pCC->empty())return false;
 
 	m_landingTarget.m_angleX = 0;

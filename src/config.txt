@@ -11,8 +11,9 @@
 }
 
 {
-	"name":"Mavlink0",
-	"class":"",
+	"name":"apm",
+	"class":"_Mavlink",
+	"bInst":1,
 	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":921600,
@@ -20,15 +21,17 @@
 
 {
 	"name":"RC",
-	"class":"",
+	"class":"_RC",
+	"bInst":1,
 	"FPS":30,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":115200,
 }
 
 {
-	"name":"ZEDL",
+	"name":"Downward",
 	"class":"_Stream",
+	"bInst":1,
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
@@ -116,6 +119,7 @@
 {
 	"name":"Universe",
 	"class":"_Universe",
+	"bInst":1,
 	"FPS":30,
 	"frameLifetime":1000000,
 	"probMin":0.1,
@@ -125,6 +129,7 @@
 {
 	"name":"SSD",
 	"class":"_SSD",
+	"bInst":1,
 	"FPS":30,
 	"dir":"/home/kai/dev/caffe_ssd/caffe/",
 	"minConfidence":0.1,
@@ -137,6 +142,7 @@
 {
 	"name":"Caffe",
 	"class":"Caffe",
+	"bInst":0,
 	"FPS":0,
 	"dir":"/home/ubuntu/src/caffe/caffe/",
 	"modelFile":"models/bvlc_reference_caffenet/deploy.prototxt",
@@ -148,6 +154,7 @@
 {
 	"name":"FCN",
 	"class":"_FCN",
+	"bInst":0,
 	"FPS":0,
 	"dir":"/home/ubuntu/src/caffe/caffe/",
 	"modelFile":"models/FCN-8/deploy.prototxt",
@@ -156,8 +163,9 @@
 }
 
 {
-	"name":"AprilTagLanding",
+	"name":"AprilTag_Landing",
 	"class":"_AprilTags",
+	"bInst":1,
 	"FPS":30,
 	"family":"Tag16h5",
 	"err":0.1,
@@ -169,15 +177,17 @@
 }
 
 {
-	"name":"roiTracker0",
+	"name":"targetDrone",
 	"class":"_ROITracker",
+	"bInst":0,
 	"FPS":0,
 }
 
 {
-	"name":"markerLanding",
+	"name":"Bullseye_Landing",
 	"class":"_Bullseye",
-	"FPS":0,
+	"bInst":0,
+	"FPS":30,
 	"method":1,
 	"areaRatio":0.8,
 	"minSize":5,
@@ -190,9 +200,10 @@
 }
 
 {
-	"name":"optflow0",
+	"name":"optFlowTest",
 	"class":"_Flow",
-	"FPS":0,
+	"bInst":0,
+	"FPS":30,
 	"bDepth":0,
 	"width":640,
 	"height":480,
@@ -203,14 +214,16 @@
 {
 	"name":"depthObjDetector",
 	"class":"_Depth",
-	"FPS":0,
+	"bInst":0,
+	"FPS":30,
 	"areaMin":250,
 	"areaMax":10000000,
 }
 
 {
-	"name":"Autopilot0",
+	"name":"autopilot",
 	"class":"_AutoPilot",
+	"bInst":1,
 	"FPS":20,
 	"roiMinSize":25,
 	
@@ -300,8 +313,9 @@
 }
 
 {
-	"name":"Automaton0",
+	"name":"flightControl",
 	"class":"_Automaton",
+	"bInst":1,
 	"FPS":10,
 	"startState":0,
 
@@ -329,9 +343,10 @@
 }
 
 {
-	"name":"cascade0",
+	"name":"cascadeTest",
 	"class":"_Cascade",
-	"FPS":0,
+	"bInst":0,
+	"FPS":30,
 	"cascadeFile":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
 	"num":10,
 	"lifeTime":200000,

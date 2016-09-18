@@ -13,8 +13,15 @@ General::General()
 {
 	AppBase();
 
-	initInst(m_pStream);
+	for (int i = 0; i < N_INST; i++)
+	{
+		m_pInst[i] = NULL;
+	}
+	m_nInst = 0;
 	m_pFrame = NULL;
+
+
+
 
 	m_pStream1 = NULL;
 	m_pAP = NULL;
@@ -32,14 +39,6 @@ General::General()
 	m_pAM1 = NULL;
 }
 
-void General::initInst(BASE** pInstList)
-{
-	for (int i = 0; i < N_INST; i++)
-	{
-		pInstList[i] = NULL;
-	}
-}
-
 General::~General()
 {
 }
@@ -53,47 +52,47 @@ bool General::start(Config* pConfig)
 	NULL_F(pConfig);
 
 	g_pGeneral = this;
-	Config* pRoot = pConfig->o("APP");
-	if(pRoot->empty())return false;
+	Config* pApp = pConfig->o("APP");
+	if(pApp->empty())return false;
 
-	F_INFO_(pRoot->v("appName", &m_name));
-	F_INFO_(pRoot->v("bShowScreen", &m_bShowScreen));
-	F_INFO_(pRoot->v("bFullScreen", &m_bFullScreen));
-	F_INFO_(pRoot->v("waitKey", &m_waitKey));
-
-
-	F_FATAL_F(loadInst(pConfig));
+	F_INFO_(pApp->v("appName", &m_name));
+	F_INFO_(pApp->v("bShowScreen", &m_bShowScreen));
+	F_INFO_(pApp->v("bFullScreen", &m_bFullScreen));
+	F_INFO_(pApp->v("waitKey", &m_waitKey));
 
 
+	F_FATAL_F(createAllInst(pConfig));
 
 
 
 
 
+
+/*
 	//temporal
 	string cName;
 
 	//Init Camera
 	int FPS;
-//	string camName;
-//	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
-//	if (camName != "video")
-//	{
-//		m_pStream1 = new _Stream();
-//		F_FATAL_F(m_pStream1->init(pConfig, &camName));
-//		m_pStream1->start();
-//	}
+	string camName;
+	F_INFO_(pConfig->o("APP")->v("camMain", &camName));
+	if (camName != "video")
+	{
+		m_pStream1 = new _Stream();
+		F_FATAL_F(m_pStream1->init(pConfig, &camName));
+		m_pStream1->start();
+	}
 
 	//Init Automaton
-//	FPS = 0;
-//	cName = "Automaton0";
-//	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
-//	if (FPS > 0)
-//	{
-//		m_pAM1 = new _Automaton();
-//		F_FATAL_F(m_pAM1->init(pConfig, &cName));
-//		m_pAM1->start();
-//	}
+	FPS = 0;
+	cName = "Automaton0";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pAM1 = new _Automaton();
+		F_FATAL_F(m_pAM1->init(pConfig, &cName));
+		m_pAM1->start();
+	}
 
 	//Init ROI Tracker
 	FPS = 0;
@@ -172,16 +171,16 @@ bool General::start(Config* pConfig)
 		m_pAP->start();
 	}
 
-//	//Init Universe
-//	FPS = 0;
-//	cName = "Universe";
-//	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
-//	if (FPS > 0)
-//	{
-//		m_pUniverse = new _Universe();
-//		m_pUniverse->init(pConfig, &cName);
-//		m_pUniverse->start();
-//	}
+	//Init Universe
+	FPS = 0;
+	cName = "Universe";
+	F_INFO_(pConfig->o(cName)->v("FPS", &FPS));
+	if (FPS > 0)
+	{
+		m_pUniverse = new _Universe();
+		m_pUniverse->init(pConfig, &cName);
+		m_pUniverse->start();
+	}
 
 	//Init SSD
 	FPS = 0;
@@ -234,6 +233,10 @@ bool General::start(Config* pConfig)
 		m_pFCN->init(pConfig, &cName);
 		m_pFCN->start();
 	}
+*/
+
+
+
 
 	//UI thread
 	m_bRun = true;
@@ -249,36 +252,33 @@ bool General::start(Config* pConfig)
 					CV_WINDOW_FULLSCREEN);
 		}
 		setMouseCallback(m_name, onMouseGeneral, NULL);
-	}
 
-	while (m_bRun)
-	{
-//		Mavlink_Messages mMsg;
-//		mMsg = m_pMavlink->current_messages;
-//		m_pCamFront->m_pCamL->m_bGimbal = true;
-//		m_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
-
-		if (m_bShowScreen)
+		while (m_bRun)
 		{
+	//		Mavlink_Messages mMsg;
+	//		mMsg = m_pMavlink->current_messages;
+	//		m_pCamFront->m_pCamL->m_bGimbal = true;
+	//		m_pCamFront->m_pCamL->setAttitude(mMsg.attitude.roll, 0, mMsg.time_stamps.attitude);
+
 			draw();
+
+			//Handle key input
+			//TODO: move into bShowScreen
+			m_key = waitKey(m_waitKey);
+			handleKey(m_key);
 		}
 
-		//Handle key input
-		m_key = waitKey(m_waitKey);
-		handleKey(m_key);
+//		STOP(m_pAP);
+//		STOP(m_pMavlink1);
+//		STOP(m_pROITracker);
+//		STOP(m_pMD);
+//		STOP(m_pUniverse);
+//		STOP(m_pDD);
+//		STOP(m_pFlow);
+//		STOP(m_pFCN);
 	}
 
-//	STOP(m_pAP);
-	STOP(m_pMavlink1);
-	STOP(m_pROITracker);
-	STOP(m_pMD);
-	STOP(m_pUniverse);
-	STOP(m_pDD);
-	STOP(m_pFlow);
-	STOP(m_pFCN);
-
-	m_pMavlink1->complete();
-	m_pMavlink1->close();
+/*
 
 //	COMPLETE(m_pAP);
 	COMPLETE(m_pROITracker);
@@ -289,6 +289,9 @@ bool General::start(Config* pConfig)
 	COMPLETE(m_pFCN);
 	COMPLETE(m_pStream1);
 
+	m_pMavlink1->complete();
+	m_pMavlink1->close();
+
 	RELEASE(m_pMavlink1);
 	RELEASE(m_pStream);
 	RELEASE(m_pROITracker);
@@ -298,7 +301,7 @@ bool General::start(Config* pConfig)
 	RELEASE(m_pDD);
 	RELEASE(m_pFlow);
 	RELEASE(m_pFCN);
-
+*/
 	return 0;
 
 }
@@ -387,139 +390,107 @@ void General::handleMouse(int event, int x, int y, int flags)
 	}
 }
 
-bool General::loadInst(Config* pConfig)
+
+bool General::createAllInst(Config* pConfig)
 {
 	NULL_F(pConfig);
+	Config** pItr = pConfig->root()->getChildItr();
 
-	Config** pItr = pConfig->getChildItr();
-
-	int FPS;
-	int k;
 	int i = 0;
 	while (pItr[i])
 	{
 		Config* pC = pItr[i++];
 
-		F_INFO_(pC->v("FPS", &FPS));
-		if (FPS <= 0)
-			continue;
+		bool bInst = false;
+		F_INFO_(pC->v("bInst", &bInst));
+		if (!bInst)continue;
+
 
 		if (pC->m_class == "_Stream")
 		{
-			k = getNextVacant(m_pStream);
-			if (k < 0)return false;
-
-			_Stream* pStream = new _Stream();
-			F_FATAL_F(pStream->_Stream::init(pConfig, &pC->m_name));
-
-			m_pStream[k] = pStream;
-
+			F_FATAL_F(createInst<_Stream>(pConfig));
 		}
 		else if (pC->m_class == "_Automaton")
 		{
-			k = getNextVacant(m_pAM);
-			if (k < 0)return false;
-
-			_Automaton* pAM = new _Automaton();
-			F_FATAL_F(pAM->_Automaton::init(pConfig, &pC->m_name));
-
-			m_pAM[k] = pAM;
+			F_FATAL_F(createInst<_Automaton>(pConfig));
 		}
 		else if (pC->m_class == "_Universe")
 		{
-			k = getNextVacant(m_pUniv);
-			if (k < 0)return false;
-
-			_Universe* pUniv = new _Universe();
-			F_FATAL_F(pUniv->_Universe::init(pConfig, &pC->m_name));
-
-			m_pUniv[k] = pUniv;
+			F_FATAL_F(createInst<_Universe>(pConfig));
 		}
 		else if (pC->m_class == "_Mavlink")
 		{
-			k = getNextVacant(m_pMavlink);
-			if (k < 0)return false;
-
-			_Mavlink* pMavlink = new _Mavlink();
-			F_FATAL_F(pMavlink->_Mavlink::init(pConfig, &pC->m_name));
-
-			m_pMavlink[k] = pMavlink;
-
+			F_FATAL_F(createInst<_Mavlink>(pConfig));
 		}
 		else if (pC->m_class == "_RC")
 		{
-			k = getNextVacant(m_pRC);
-			if (k < 0)return false;
-
-			_RC* pRC = new _RC();
-			F_FATAL_F(pRC->_RC::init(pConfig, &pC->m_name));
-
-			m_pRC[k] = pRC;
+			F_FATAL_F(createInst<_RC>(pConfig));
 		}
 		else if (pC->m_class == "_SSD")
 		{
-
+			F_FATAL_F(createInst<_SSD>(pConfig));
 		}
 		else if (pC->m_class == "_FCN")
 		{
-
+			F_FATAL_F(createInst<_FCN>(pConfig));
 		}
 		else if (pC->m_class == "_AutoPilot")
 		{
-
+			F_FATAL_F(createInst<_AutoPilot>(pConfig));
 		}
 		else if (pC->m_class == "_AprilTags")
 		{
-
+			F_FATAL_F(createInst<_AprilTags>(pConfig));
 		}
 		else if (pC->m_class == "_Bullseye")
 		{
-
+			F_FATAL_F(createInst<_Bullseye>(pConfig));
 		}
 		else if (pC->m_class == "_ROITracker")
 		{
-
+			F_FATAL_F(createInst<_ROITracker>(pConfig));
 		}
 		else if (pC->m_class == "_Cascade")
 		{
-
+			F_FATAL_F(createInst<_Cascade>(pConfig));
 		}
 		else if (pC->m_class == "_Depth")
 		{
-
+			F_FATAL_F(createInst<_Depth>(pConfig));
 		}
 		else if (pC->m_class == "_Flow")
 		{
-
+			F_FATAL_F(createInst<_Flow>(pConfig));
 		}
 		else if (pC->m_class == "UI")
 		{
-
+			F_FATAL_F(createInst<UI>(pConfig));
 		}
-		else
+		else if(pC->m_class != "General")
 		{
-
+			LOG(ERROR)<<"Unknown class type";
 		}
 
-
-
-		k++;
 	}
 
 	return true;
-
-	//TODO: start threads later: m_pStream->start();
 }
 
-int General::getNextVacant(BASE** pInstList)
+template <typename T> bool General::createInst(Config* pConfig)
 {
-	for (int i = 0; i < N_INST; i++)
-	{
-		if (pInstList[i] == NULL)
-			return i;
-	}
+	if(m_nInst>=N_INST)return false;
+	NULL_F(pConfig);
 
-	return -1;
+	T* pInst = new T();
+	F_FATAL_F(pInst->T::init(pConfig));
+	pConfig->m_pInst = pInst;
+
+	m_pInst[m_nInst] = pInst;
+	m_nInst++;
+
+//	F_FATAL_F(pInst->T::start());
+
+    return true;
 }
 
 }

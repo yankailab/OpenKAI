@@ -34,20 +34,18 @@ _AprilTags::~_AprilTags()
 	// TODO Auto-generated destructor stub
 }
 
-bool _AprilTags::init(Config* pConfig, string* pName)
+bool _AprilTags::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	Config* pC = pConfig->o(*pName);
-
-	F_INFO_(pC->v("family", &m_tagFamily));
-	F_INFO_(pC->v("err", &m_tagErr));
-	F_INFO_(pC->v("lifeTime", &m_tagLifetime));
-	F_INFO_(pC->v("distThr", &m_tagDistThr));
-	F_INFO_(pC->v("detInterval", &m_tagAliveInterval));
-	F_INFO_(pC->v("scaling", &m_tagScaling));
-	F_INFO_(pC->v("sizeLim", &m_tagSizeLim));
+	F_INFO_(pConfig->v("family", &m_tagFamily));
+	F_INFO_(pConfig->v("err", &m_tagErr));
+	F_INFO_(pConfig->v("lifeTime", &m_tagLifetime));
+	F_INFO_(pConfig->v("distThr", &m_tagDistThr));
+	F_INFO_(pConfig->v("detInterval", &m_tagAliveInterval));
+	F_INFO_(pConfig->v("scaling", &m_tagScaling));
+	F_INFO_(pConfig->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
 

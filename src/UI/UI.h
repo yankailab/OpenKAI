@@ -42,7 +42,7 @@ public:
 	UI();
 	virtual ~UI();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	BUTTON* addBtn(BUTTON* pBtn);

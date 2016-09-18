@@ -25,7 +25,7 @@ public:
 	CamBase();
 	virtual ~CamBase();
 
-	virtual bool setup(Config* pConfig, string* pName);
+	virtual bool setup(Config* pConfig);
 	virtual bool openCamera(void);
 	virtual GpuMat* readFrame(void);
 	virtual GpuMat* getDepthFrame(void);

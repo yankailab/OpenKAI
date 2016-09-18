@@ -23,7 +23,7 @@ public:
 	_AutoPilot();
 	~_AutoPilot();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	bool start(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 	void sendHeartbeat(void);

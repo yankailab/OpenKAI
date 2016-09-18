@@ -18,19 +18,17 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::init(Config* pConfig, string* pName)
+bool _AutoPilot::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pC = pConfig->o(*pName);
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
 	int i;
 	Config* pCC;
 
-	pCC = pC->o("roll");
+	pCC = pConfig->o("roll");
 	if(pCC->empty())return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -46,7 +44,7 @@ bool _AutoPilot::init(Config* pConfig, string* pName)
 	m_ctrl.m_roll.m_pid = cPID;
 	m_ctrl.m_roll.m_RC = RC;
 
-	pCC = pC->o("pitch");
+	pCC = pConfig->o("pitch");
 	if(pCC->empty())return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -62,7 +60,7 @@ bool _AutoPilot::init(Config* pConfig, string* pName)
 	m_ctrl.m_pitch.m_pid = cPID;
 	m_ctrl.m_pitch.m_RC = RC;
 
-	pCC = pC->o("alt");
+	pCC = pConfig->o("alt");
 	if(pCC->empty())return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -78,7 +76,7 @@ bool _AutoPilot::init(Config* pConfig, string* pName)
 	m_ctrl.m_alt.m_pid = cPID;
 	m_ctrl.m_alt.m_RC = RC;
 
-	pCC = pC->o("yaw");
+	pCC = pConfig->o("yaw");
 	if(pCC->empty())return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -94,7 +92,7 @@ bool _AutoPilot::init(Config* pConfig, string* pName)
 	m_ctrl.m_yaw.m_pid = cPID;
 	m_ctrl.m_yaw.m_RC = RC;
 
-	pCC = pC->o("visualFollow");
+	pCC = pConfig->o("visualFollow");
 	if(pCC->empty())return false;
 
 	//For visual position locking

@@ -22,7 +22,7 @@ public:
 	ActionBase();
 	~ActionBase();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 

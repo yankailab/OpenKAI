@@ -41,17 +41,20 @@ public:
 	General();
 	~General();
 
-	void initInst(BASE** pInstList);
-	int getNextVacant(BASE** pInstList);
-	bool loadInst(Config* pConfig);
-	bool linkInst(Config* pConfig);
+	bool start(Config* pConfig);
+	void draw(void);
+	void handleMouse(int event, int x, int y, int flags);
+	void handleKey(int key);
+
+	bool createAllInst(Config* pConfig);
+	BASE* getInstByName(string* pName);
+
+	template <typename T> bool createInst(Config* pConfig);
 
 public:
-	BASE* m_pStream[N_INST];
-	BASE* m_pAM[N_INST];
-	BASE* m_pUniv[N_INST];
-	BASE* m_pMavlink[N_INST];
-	BASE* m_pRC[N_INST];
+	int		m_nInst;
+	BASE* 	m_pInst[N_INST];
+	Frame*	m_pFrame;
 
 
 	_Stream* m_pStream1;
@@ -71,12 +74,7 @@ public:
 	_Flow* m_pFlow;
 	UI* m_pUI;
 
-	Frame* m_pFrame;
 
-	bool start(Config* pConfig);
-	void draw(void);
-	void handleMouse(int event, int x, int y, int flags);
-	void handleKey(int key);
 
 };
 

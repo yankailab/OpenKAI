@@ -20,9 +20,9 @@ UI::~UI()
 	// TODO Auto-generated destructor stub
 }
 
-bool UI::init(Config* pConfig, string* pName)
+bool UI::init(Config* pConfig)
 {
-	if (this->BASE::init(pConfig,pName)==false)
+	if (this->BASE::init(pConfig)==false)
 		return false;
 
 

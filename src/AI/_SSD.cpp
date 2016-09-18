@@ -24,12 +24,10 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(Config* pConfig, string* pName)
+bool _SSD::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pC = pConfig->o(*pName);
 
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -41,12 +39,12 @@ bool _SSD::init(Config* pConfig, string* pName)
 
 	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO_(pC->v("dir", &caffeDir));
-	F_FATAL_F(pC->v("modelFile", &modelFile));
-	F_FATAL_F(pC->v("trainedFile", &trainedFile));
-	F_FATAL_F(pC->v("meanFile", &meanFile));
-	F_FATAL_F(pC->v("labelFile", &labelFile));
-	F_INFO_(pC->v("minConfidence", &m_confidence_threshold));
+	F_INFO_(pConfig->v("dir", &caffeDir));
+	F_FATAL_F(pConfig->v("modelFile", &modelFile));
+	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
+	F_FATAL_F(pConfig->v("meanFile", &meanFile));
+	F_FATAL_F(pConfig->v("labelFile", &labelFile));
+	F_INFO_(pConfig->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";

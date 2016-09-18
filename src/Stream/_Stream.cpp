@@ -32,21 +32,20 @@ _Stream::~_Stream()
 	RELEASE(m_pHSVframe);
 }
 
-bool _Stream::init(Config* pConfig, string* pName)
+bool _Stream::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	Config* pStream = pConfig->o(*pName);
-	F_INFO_(pStream->v("bShowDepth", &m_showDepth));
-	F_INFO_(pStream->v("bGray", &m_bGray));
-	F_INFO_(pStream->v("bHSV", &m_bHSV));
+	F_INFO_(pConfig->v("bShowDepth", &m_showDepth));
+	F_INFO_(pConfig->v("bGray", &m_bGray));
+	F_INFO_(pConfig->v("bHSV", &m_bHSV));
 
 	string camClass;
 	string camName;
 
-	F_FATAL_F(pStream->v("input", &camName));
-	Config* pC = pStream->o(camName);
+	F_FATAL_F(pConfig->v("input", &camName));
+	Config* pC = pConfig->o(camName);
 	F_FATAL_F(pC->v("class", &camClass));
 
 	if(camClass=="Camera")
@@ -68,7 +67,7 @@ bool _Stream::init(Config* pConfig, string* pName)
 		return false;
 	}
 
-	F_ERROR_F(m_pCamera->setup(pStream, pName));
+	F_ERROR_F(m_pCamera->setup(pC));
 
 	m_bThreadON = false;
 	return true;
@@ -164,7 +163,7 @@ bool _Stream::draw(Frame* pFrame, iVec4* pTextPos)
 		pFrame->update(m_pCamera->getDepthFrame());
 	}
 
-	putText(*pFrame->getCMat(), "Stream "+m_name+" FPS: " + i2str(getFrameRate()),
+	putText(*pFrame->getCMat(), "Stream "+(*this->getName())+" FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
 
 	pTextPos->m_y += pTextPos->m_w;

@@ -47,7 +47,7 @@ public:
 	_SSD();
 	~_SSD();
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
 	bool draw(Frame* pFrame, iVec4* pTextPos);

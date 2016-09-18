@@ -30,18 +30,16 @@ _Universe::~_Universe()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Universe::init(Config* pConfig, string* pName)
+bool _Universe::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pC = pConfig->o(*pName);
 
 //	if(m_caffe.init(pJson,"")==false)return false;
 
-	F_ERROR_F(pC->v("frameLifetime", &m_frameLifeTime));
-	F_ERROR_F(pC->v("probMin", &m_objProbMin));
-	F_ERROR_F(pC->v("posDisparity", &m_disparity));
+	F_ERROR_F(pConfig->v("frameLifetime", &m_frameLifeTime));
+	F_ERROR_F(pConfig->v("probMin", &m_objProbMin));
+	F_ERROR_F(pConfig->v("posDisparity", &m_disparity));
 
 	return true;
 }

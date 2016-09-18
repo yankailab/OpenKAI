@@ -23,24 +23,22 @@ _FCN::~_FCN()
 {
 }
 
-bool _FCN::init(Config* pConfig, string* pName)
+bool _FCN::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig,pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
-
-	Config* pC = pConfig->o(*pName);
 
 	string modelFile;
 	string trainedFile;
 	string labelFile;
 	string caffeDir = "";
 
-	F_INFO_(pC->v("dir", &caffeDir));
-	F_INFO_(pC->v("cudaDeviceID", &m_cudaDeviceID));
+	F_INFO_(pConfig->v("dir", &caffeDir));
+	F_INFO_(pConfig->v("cudaDeviceID", &m_cudaDeviceID));
 
-	F_FATAL_F(pC->v("modelFile", &modelFile));
-	F_FATAL_F(pC->v("trainedFile", &trainedFile));
-	F_FATAL_F(pC->v("labelFile", &labelFile));
+	F_FATAL_F(pConfig->v("modelFile", &modelFile));
+	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
+	F_FATAL_F(pConfig->v("labelFile", &labelFile));
 
 	/* Load the network. */
 	net_.reset(new Net<float>(caffeDir+modelFile, TEST));

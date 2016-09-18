@@ -35,7 +35,7 @@ using namespace std;
 
 #define RELEASE(x) if(x){delete x;}
 #define STOP(x) if(x){x->stop();}
-#define COMPLETE(x) if(x){x->complete();}
+#define COMPLETE(x) if(x){x->waitForComplete();}
 
 #define SWAP(x,y,t) t=x;x=y;y=t;
 

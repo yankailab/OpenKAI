@@ -48,7 +48,7 @@ public:
 	void classifyObject(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
-	bool init(Config* pConfig, string* pName);
+	bool init(Config* pConfig);
 	bool start(void);
 	void reset(void);
 

@@ -26,15 +26,13 @@ _Depth::~_Depth()
 {
 }
 
-bool _Depth::init(Config* pConfig, string* pName)
+bool _Depth::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig, pName)==false)
+	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	Config* pC = pConfig->o(*pName);
-
-	F_INFO_(pC->v("areaMin", &m_minObjArea));
-	F_INFO_(pC->v("areaMax", &m_maxObjArea));
+	F_INFO_(pConfig->v("areaMin", &m_minObjArea));
+	F_INFO_(pConfig->v("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;

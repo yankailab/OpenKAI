@@ -23,10 +23,12 @@ public:
 	BASE();
 	virtual ~BASE();
 
-	bool init(Config* pConfig, string* pName);
+	virtual bool init(Config* pConfig);
+	string* getName(void);
+	string* getClass(void);
 
 public:
-	string m_name;
+	Config*	m_pConfig;
 };
 
 }
