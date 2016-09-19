@@ -29,6 +29,7 @@ using namespace std;
 #define F_FATAL_F(x) if(x==false){LOG(FATAL);return false;}
 #define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
 #define F_INFO(x) if(x==false){LOG(INFO);}
+#define F_(x) if(x==false){return;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}

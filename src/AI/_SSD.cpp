@@ -44,7 +44,7 @@ bool _SSD::init(Config* pConfig)
 	string labelFile;
 	string presetDir = "";
 
-	F_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
 
 	F_INFO(pConfig->v("dir", &caffeDir));
 	F_FATAL_F(pConfig->v("modelFile", &modelFile));

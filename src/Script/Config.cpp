@@ -18,67 +18,9 @@ Config::~Config(void)
 {
 }
 
-bool Config::parse(string str)
+bool Config::parse(string* pStr)
 {
-	if (m_bNULL)
-		return false;
-
-	int k;
-	std::string::size_type from, to;
-
-	trim(&str);
-
-	do
-	{
-		//find the object start
-		from = str.find('{');
-		if (from == std::string::npos)
-			break;
-
-		//find the paired bracket
-		to = from + 1;
-		k = 0;
-		while (to < str.length())
-		{
-			if (str[to] == '{')
-			{
-				k++;
-			}
-			else if (str[to] == '}')
-			{
-				if (k == 0)
-					break;
-				k--;
-			}
-			to++;
-		}
-
-		//the pair bracket not found
-		if (to == str.length())
-			return false;
-
-		//check if it is a null object
-		if (to > from + 1)
-		{
-			//create new obj
-			if (!addChild(str.substr(from + 1, to - from - 1)))
-				return false;
-		}
-
-		str.erase(from, to - from + 1);
-
-	} while (1);
-
-	if (!m_json.parse("{" + str + "}"))
-		return false;
-
-	string name;
-	name = "name";
-	m_json.v(&name, &m_name);
-
-	name = "class";
-	m_json.v(&name, &m_class);
-
+	if (m_bNULL)return false;
 
 	//Create NULL instance
 	if(m_pParent)
@@ -90,6 +32,64 @@ bool Config::parse(string str)
 		m_pNULL = new Config();
 		m_pNULL->m_bNULL = true;
 	}
+
+
+	int k;
+	std::string::size_type from, to;
+
+	trim(pStr);
+
+	do
+	{
+		//find the object start
+		from = pStr->find('{');
+		if (from == std::string::npos)
+			break;
+
+		//find the paired bracket
+		to = from + 1;
+		k = 0;
+		while (to < pStr->length())
+		{
+			if ((*pStr)[to] == '{')
+			{
+				k++;
+			}
+			else if ((*pStr)[to] == '}')
+			{
+				if (k == 0)
+					break;
+				k--;
+			}
+			to++;
+		}
+
+		//the pair bracket not found
+		if (to == pStr->length())
+			return false;
+
+		//check if it is a null object
+		if (to > from + 1)
+		{
+			//create new obj
+			string subStr = pStr->substr(from + 1, to - from - 1);
+			if (!addChild(&subStr))
+				return false;
+		}
+
+		pStr->erase(from, to - from + 1);
+
+	} while (1);
+
+	if (!m_json.parse("{" + (*pStr) + "}"))
+		return false;
+
+	string name;
+	name = "name";
+	m_json.v(&name, &m_name);
+
+	name = "class";
+	m_json.v(&name, &m_class);
 
 	return true;
 }
@@ -121,7 +121,7 @@ void Config::trim(string* pStr)
 
 }
 
-bool Config::addChild(string str)
+bool Config::addChild(string* pStr)
 {
 	if (m_bNULL)
 		return false;
@@ -133,7 +133,7 @@ bool Config::addChild(string str)
 	m_nChild++;
 
 	pChild->m_pParent = this;
-	return pChild->parse(str);
+	return pChild->parse(pStr);
 }
 
 Config* Config::o(string name)
@@ -221,7 +221,10 @@ Config* Config::getChildByName(string* pName)
 
 void* Config::getChildInstByName(string* pName)
 {
-	return getChildByName(pName)->m_pInst;
+	void* pC = getChildByName(pName);
+	if(!pC)return NULL;
+
+	return ((Config*)pC)->m_pInst;
 }
 
 bool Config::empty(void)

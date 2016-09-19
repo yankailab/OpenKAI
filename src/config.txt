@@ -22,7 +22,7 @@
 {
 	"name":"RC",
 	"class":"_RC",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":115200,
@@ -35,13 +35,13 @@
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
-	"input":"ZEDL",
+	"input":"Tiltac",
 		
 	{
 		"name":"ZEDL",
-		"class":"Camera"
+		"class":"Camera",
 		"FPS":30,
-		"ID":0,
+		"ID":1,
 		"width":1344,
 		"height":376,
 		"bCrop":1,
@@ -62,7 +62,7 @@
 		"name":"ZEDL_HD",
 		"class":"Camera",
 		"FPS":30,
-		"ID":0,
+		"ID":1,
 		"width":2560,
 		"height":720,
 		"bCrop":1,
@@ -78,7 +78,7 @@
 		"name":"ZEDL_FHD",
 		"class":"Camera",
 		"FPS":30,
-		"ID":0,
+		"ID":1,
 		"width":3840,
 		"height":1080,
 		"bCrop":1,
@@ -231,11 +231,41 @@
 }
 
 {
+	"name":"flight",
+	"class":"_Automaton",
+	"bInst":1,
+	"FPS":10,
+	"startState":0,
+
+	{
+		"class":"",
+		"name":"state0",
+		"stateName":"LAND_STANDBY",
+		"action":"",
+		
+		{
+			"class":"",
+			"name":"transition0",
+			"toState":0,
+			{
+				"class":"",
+				"name":"condition0",
+				"type":"ii",
+				"cond":"bt",
+				"ptrName1":"",
+				"ptrName2":"",
+				"constI":0,				
+			}
+		}
+	}
+}
+
+{
 	"name":"autopilot",
 	"class":"_AutoPilot",
 	"bInst":1,
 	"FPS":20,
-	"_Automaton","flight",
+	"_Automaton":"flight",
 	"_Mavlink":"APM",
 	"_RC":"RC",
 	"roiMinSize":25,
@@ -322,36 +352,6 @@
 		"name":"mode",
 		"pwmAltHold":1815,
 		"pwmStabilize":1165,
-	}
-}
-
-{
-	"name":"flight",
-	"class":"_Automaton",
-	"bInst":1,
-	"FPS":10,
-	"startState":0,
-
-	{
-		"class":"",
-		"name":"state0",
-		"stateName":"LAND_STANDBY",
-		"action":"",
-		
-		{
-			"class":"",
-			"name":"transition0",
-			"toState":0,
-			{
-				"class":"",
-				"name":"condition0",
-				"type":"ii",
-				"cond":"bt",
-				"ptrName1":"",
-				"ptrName2":"",
-				"constI":0,				
-			}
-		}
 	}
 }
 

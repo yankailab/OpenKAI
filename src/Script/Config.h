@@ -19,7 +19,7 @@ public:
 	Config(void);
 	~Config(void);
 
-	bool parse(string str);
+	bool parse(string* pStr);
 	Config* o(string name);
 	JSON* json(void);
 	Config** getClassItr(string* pClassName);
@@ -41,7 +41,7 @@ public:
 
 private:
 	void trim(string* pStr);
-	bool addChild(string str);
+	bool addChild(string* pStr);
 
 public:
 	string	m_class;

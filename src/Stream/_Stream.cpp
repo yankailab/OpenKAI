@@ -118,6 +118,8 @@ void _Stream::update(void)
 		this->autoFPSto();
 	}
 
+	m_pCamera->release();
+
 }
 
 Frame* _Stream::getBGRFrame(void)

@@ -36,7 +36,7 @@ bool General::start(Config* pConfig)
 	NULL_F(pConfig);
 
 	g_pGeneral = this;
-	Config* pApp = pConfig->o("APP");
+	Config* pApp = pConfig->root()->o("APP");
 	if(pApp->empty())return false;
 
 	F_INFO(pApp->v("appName", &m_name));
@@ -108,70 +108,63 @@ void General::draw(void)
 
 		if (*cName == "_Stream")
 		{
-			drawInst<_Stream>((_Stream*)pInst, m_pFrame, &textPos);
+			F_(((_Stream*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_Automaton")
 		{
-			drawInst<_Automaton>((_Automaton*)pInst, m_pFrame, &textPos);
+			F_(((_Automaton*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_Universe")
 		{
-			drawInst<_Universe>((_Universe*)pInst, m_pFrame, &textPos);
+			F_(((_Universe*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_Mavlink")
 		{
-			drawInst<_Mavlink>((_Mavlink*)pInst, m_pFrame, &textPos);
+			F_(((_Mavlink*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_SSD")
 		{
-			drawInst<_SSD>((_SSD*)pInst, m_pFrame, &textPos);
+			F_(((_SSD*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_FCN")
 		{
-			drawInst<_FCN>((_FCN*)pInst, m_pFrame, &textPos);
+			F_(((_FCN*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_AutoPilot")
 		{
-			drawInst<_AutoPilot>((_AutoPilot*)pInst, m_pFrame, &textPos);
+			F_(((_AutoPilot*)pInst)->draw(m_pFrame, &textPos));
 		}
 		else if (*cName == "_AprilTags")
 		{
-			drawInst<_AprilTags>((_AprilTags*)pInst, m_pFrame, &textPos);
+			F_(((_AprilTags*)pInst)->draw(m_pFrame, &textPos));
 		}
 //		else if (*cName == "_RC")
 //		{
-//			drawInst<_RC>((_RC*)pInst, m_pFrame, &textPos);
+//			F_(((_RC*)pInst)->draw(m_pFrame, &textPos));
 //		}
 //		else if (*cName == "_ROITracker")
 //		{
-//			drawInst<_ROITracker>((_ROITracker*)pInst, m_pFrame, &textPos);
+//			F_(((_ROITracker*)pInst)->draw(m_pFrame, &textPos));
 //		}
 //		else if (*cName == "_Cascade")
 //		{
-//			drawInst<_Cascade>((_Cascade*)pInst, m_pFrame, &textPos);
+//			F_(((_Cascade*)pInst)->draw(m_pFrame, &textPos));
 //		}
 //		else if (*cName == "_Bullseye")
 //		{
-//			drawInst<_Bullseye>((_Bullseye*)pInst, m_pFrame, &textPos);
+//			F_(((_Bullseye*)pInst)->draw(m_pFrame, &textPos));
 //		}
 //		else if (*cName == "_Depth")
 //		{
-//			drawInst<_Depth>((_Depth*)pInst, m_pFrame, &textPos);
+//			F_(((_Depth*)pInst)->draw(m_pFrame, &textPos));
 //		}
 //		else if (*cName == "_Flow")
 //		{
-//			drawInst<_Flow>((_Flow*)pInst, m_pFrame, &textPos);
+//			F_(((_Flow*)pInst)->draw(m_pFrame, &textPos));
 //		}
 	}
 
 	imshow(m_name, *m_pFrame->getCMat());
-}
-
-template <typename T> void General::drawInst(T* pInst, Frame* pFrame, iVec4* textPos)
-{
-	NULL_(pInst);
-
-	((T*)pInst)->draw(pFrame, textPos);
 }
 
 void General::handleKey(int key)
@@ -221,59 +214,59 @@ bool General::createAllInst(Config* pConfig)
 
 		if (pC->m_class == "_Stream")
 		{
-			F_FATAL_F(createInst<_Stream>(pConfig));
+			F_FATAL_F(createInst<_Stream>(pC));
 		}
 		else if (pC->m_class == "_Automaton")
 		{
-			F_FATAL_F(createInst<_Automaton>(pConfig));
+			F_FATAL_F(createInst<_Automaton>(pC));
 		}
 		else if (pC->m_class == "_Universe")
 		{
-			F_FATAL_F(createInst<_Universe>(pConfig));
+			F_FATAL_F(createInst<_Universe>(pC));
 		}
 		else if (pC->m_class == "_Mavlink")
 		{
-			F_FATAL_F(createInst<_Mavlink>(pConfig));
+			F_FATAL_F(createInst<_Mavlink>(pC));
 		}
 		else if (pC->m_class == "_RC")
 		{
-			F_FATAL_F(createInst<_RC>(pConfig));
+			F_FATAL_F(createInst<_RC>(pC));
 		}
 		else if (pC->m_class == "_SSD")
 		{
-			F_FATAL_F(createInst<_SSD>(pConfig));
+			F_FATAL_F(createInst<_SSD>(pC));
 		}
 		else if (pC->m_class == "_FCN")
 		{
-			F_FATAL_F(createInst<_FCN>(pConfig));
+			F_FATAL_F(createInst<_FCN>(pC));
 		}
 		else if (pC->m_class == "_AutoPilot")
 		{
-			F_FATAL_F(createInst<_AutoPilot>(pConfig));
+			F_FATAL_F(createInst<_AutoPilot>(pC));
 		}
 		else if (pC->m_class == "_AprilTags")
 		{
-			F_FATAL_F(createInst<_AprilTags>(pConfig));
+			F_FATAL_F(createInst<_AprilTags>(pC));
 		}
 		else if (pC->m_class == "_Bullseye")
 		{
-			F_FATAL_F(createInst<_Bullseye>(pConfig));
+			F_FATAL_F(createInst<_Bullseye>(pC));
 		}
 		else if (pC->m_class == "_ROITracker")
 		{
-			F_FATAL_F(createInst<_ROITracker>(pConfig));
+			F_FATAL_F(createInst<_ROITracker>(pC));
 		}
 		else if (pC->m_class == "_Cascade")
 		{
-			F_FATAL_F(createInst<_Cascade>(pConfig));
+			F_FATAL_F(createInst<_Cascade>(pC));
 		}
 		else if (pC->m_class == "_Depth")
 		{
-			F_FATAL_F(createInst<_Depth>(pConfig));
+			F_FATAL_F(createInst<_Depth>(pC));
 		}
 		else if (pC->m_class == "_Flow")
 		{
-			F_FATAL_F(createInst<_Flow>(pConfig));
+			F_FATAL_F(createInst<_Flow>(pC));
 		}
 		else if(pC->m_class != "General")
 		{

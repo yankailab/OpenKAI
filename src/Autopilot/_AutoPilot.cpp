@@ -25,11 +25,11 @@ bool _AutoPilot::init(Config* pConfig)
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(pConfig->v("_Mavlink",&iName));
+	F_INFO(pConfig->v("_Mavlink",&iName));
 	m_pMavlink = (_Mavlink*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_RC",&iName));
+	F_INFO(pConfig->v("_RC",&iName));
 	m_pRC = (_RC*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_Automaton",&iName));
+	F_INFO(pConfig->v("_Automaton",&iName));
 	m_pAM = (_Automaton*)(pConfig->root()->getChildInstByName(&iName));
 
 

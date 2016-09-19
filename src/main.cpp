@@ -14,10 +14,7 @@ int main(int argc, char* argv[])
 	string config = g_file.getContent();
 
 	g_pConfig = new Config();
-	F_FATAL_F(g_pConfig->parse(config));
-
-	string appName;
-	F_FATAL_F(g_pConfig->o("APP")->v("appName", &appName));
+	F_FATAL_F(g_pConfig->parse(&config));
 
 	//Start Application
 	g_pGen = new General();

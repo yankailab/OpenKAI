@@ -50,7 +50,6 @@ public:
 	BASE* getInstByName(string* pName);
 
 	template <typename T> bool createInst(Config* pConfig);
-	template <typename T> void drawInst(T* pInst, Frame* pFrame, iVec4* textPos);
 
 public:
 	int		m_nInst;
