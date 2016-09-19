@@ -72,7 +72,7 @@ private:
 	}
 
 public:
-	_Stream* m_pCamStream;
+	_Stream* m_pStream;
 	int m_cudaDeviceID;
 	Mat m_segment;
 

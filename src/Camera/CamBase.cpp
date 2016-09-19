@@ -41,19 +41,19 @@ bool CamBase::setup(Config* pConfig)
 	string presetDir = "";
 	string calibFile;
 
-	F_INFO_(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
 
 	F_FATAL_F(pConfig->v("width", &m_width));
 	F_FATAL_F(pConfig->v("height", &m_height));
 	F_FATAL_F(pConfig->v("angleV", &m_angleV));
 	F_FATAL_F(pConfig->v("angleH", &m_angleH));
 
-	F_INFO_(pConfig->v("isoScale", &m_isoScale));
-	F_INFO_(pConfig->v("bCalib", &m_bCalibration));
-	F_INFO_(pConfig->v("bGimbal", &m_bGimbal));
-	F_INFO_(pConfig->v("bFisheye", &m_bFisheye));
+	F_INFO(pConfig->v("isoScale", &m_isoScale));
+	F_INFO(pConfig->v("bCalib", &m_bCalibration));
+	F_INFO(pConfig->v("bGimbal", &m_bGimbal));
+	F_INFO(pConfig->v("bFisheye", &m_bFisheye));
 
-	F_INFO_(pConfig->v("bCrop", &m_bCrop));
+	F_INFO(pConfig->v("bCrop", &m_bCrop));
 	if(m_bCrop!=0)
 	{
 		F_FATAL_F(pConfig->v("cropX", &m_cropBB.x));

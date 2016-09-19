@@ -45,7 +45,7 @@ bool _Cascade::init(Config* pConfig)
 	string cascadeFile = "";
 	string presetDir = "";
 
-	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
 	F_ERROR_F(pConfig->v("device", &m_device));
 	F_ERROR_F(pConfig->v("cascadeFile", &cascadeFile));
 
@@ -59,11 +59,11 @@ bool _Cascade::init(Config* pConfig)
 		F_ERROR_F(m_pCascade);
 		//TODO:set the upper limit of objects to be detected
 		//m_pCascade->
-		F_INFO_(pConfig->v("cudaDeviceID", &m_cudaDeviceID));
+		F_INFO(pConfig->v("cudaDeviceID", &m_cudaDeviceID));
 	}
 
-	F_INFO_(pConfig->v("lifeTime", &m_objLifeTime));
-	F_INFO_(pConfig->v("posDiff", &m_posDiff));
+	F_INFO(pConfig->v("lifeTime", &m_objLifeTime));
+	F_INFO(pConfig->v("posDiff", &m_posDiff));
 	F_ERROR_F(pConfig->v("num", &m_numObj));
 
 	m_pObj = new CASCADE_OBJECT[m_numObj];

@@ -51,7 +51,7 @@ public:
 	int	m_width;
 	int m_height;
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-	_Stream*						m_pCamStream;
+	_Stream*						m_pStream;
 	FrameGroup*						m_pGrayFrames;
 	GpuMat							m_GFlowMat;
 	GpuMat							m_GDMat;

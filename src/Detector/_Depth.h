@@ -43,7 +43,7 @@ public:
 	_Universe*	m_pUniverse;
 	Frame*		m_pDepth;
 	uint64_t	m_camFrameID;
-	_Stream*	m_pCamStream;
+	_Stream*	m_pStream;
 	CamBase*	m_pCam;
 	_Flow*		m_pFlow;
 

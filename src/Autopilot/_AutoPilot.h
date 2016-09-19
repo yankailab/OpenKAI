@@ -29,16 +29,14 @@ public:
 	void sendHeartbeat(void);
 
 
-
 public:
-
 	_Automaton* m_pAM;
 
 	int m_nActions;
 	ActionBase* m_pActions;
 
 	//Interface
-	_RC* m_pVI;
+	_RC* m_pRC;
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;

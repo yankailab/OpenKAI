@@ -91,7 +91,7 @@ private:
 
 public:
 	_Universe* m_pUniverse;
-	_Stream* m_pCamStream;
+	_Stream* m_pStream;
 
 };
 

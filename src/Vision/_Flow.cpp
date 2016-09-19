@@ -19,8 +19,9 @@ _Flow::_Flow()
 
 	m_width = 640;
 	m_height = 480;
+	m_bDepth = false;
 
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_pGrayFrames = NULL;
 
 	m_flowMax = 100;
@@ -38,16 +39,20 @@ bool _Flow::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
 	string presetDir = "";
 	string labelFile;
 
-	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
-
-	F_INFO_(pConfig->v("bDepth", &m_bDepth));
-	F_INFO_(pConfig->v("width", &m_width));
-	F_INFO_(pConfig->v("height", &m_height));
-	F_INFO_(pConfig->v("flowMax", &m_flowMax));
-	F_INFO_(pConfig->v("colorFile", &labelFile));
+	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->v("bDepth", &m_bDepth));
+	F_INFO(pConfig->v("width", &m_width));
+	F_INFO(pConfig->v("height", &m_height));
+	F_INFO(pConfig->v("flowMax", &m_flowMax));
+	F_INFO(pConfig->v("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
@@ -102,9 +107,9 @@ void _Flow::detect(void)
 	GpuMat GMat;
 	GpuMat pGMat[2];
 
-	if(m_pCamStream==NULL)return;
+	if(m_pStream==NULL)return;
 
-	pGray = m_pCamStream->getGrayFrame();
+	pGray = m_pStream->getGrayFrame();
 	if(pGray->empty())return;
 
 	pNextFrame = m_pGrayFrames->getLastFrame();

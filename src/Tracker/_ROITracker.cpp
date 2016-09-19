@@ -18,7 +18,7 @@ _ROITracker::_ROITracker()
 {
 	_ThreadBase();
 
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_bTracking = false;
 }
@@ -32,6 +32,12 @@ bool _ROITracker::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//format params
 	m_ROI.width = 0;
 	m_ROI.height = 0;
 	m_ROI.x = 0;
@@ -96,14 +102,14 @@ void _ROITracker::track(void)
 	Frame* pFrame;
 	Mat* pMat;
 
-	if (m_pCamStream == NULL)
+	if (m_pStream == NULL)
 		return;
 	if (m_bTracking == false)
 		return;
 	if (m_pTracker.empty())
 		return;
 
-	pFrame = m_pCamStream->getBGRFrame();
+	pFrame = m_pStream->getBGRFrame();
 	if (!pFrame->isNewerThan(m_pFrame))
 		return;
 	m_pFrame->update(pFrame);

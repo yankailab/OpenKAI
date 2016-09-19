@@ -27,10 +27,7 @@ _Mavlink::_Mavlink()
 
 _Mavlink::~_Mavlink()
 {
-	if (m_pSerialPort)
-	{
-		delete m_pSerialPort;
-	}
+	close();
 }
 
 bool _Mavlink::init(Config* pConfig)
@@ -61,6 +58,7 @@ void _Mavlink::close()
 {
 	if (m_pSerialPort)
 	{
+		m_pSerialPort->Close();
 		delete m_pSerialPort;
 		m_pSerialPort = NULL;
 	}

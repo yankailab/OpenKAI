@@ -6,7 +6,7 @@ namespace kai
 _AutoPilot::_AutoPilot()
 {
 	m_pAM = NULL;
-	m_pVI = NULL;
+	m_pRC = NULL;
 	m_pMavlink = NULL;
 
 	m_lastHeartbeat = 0;
@@ -22,6 +22,16 @@ bool _AutoPilot::init(Config* pConfig)
 {
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Mavlink",&iName));
+	m_pMavlink = (_Mavlink*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_RC",&iName));
+	m_pRC = (_RC*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_Automaton",&iName));
+	m_pAM = (_Automaton*)(pConfig->root()->getChildInstByName(&iName));
+
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;

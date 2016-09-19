@@ -32,7 +32,6 @@ public:
 	void setCameraID(int);
 
 public:
-	int m_camType;
 	int m_camDeviceID;
 	VideoCapture m_camera;
 

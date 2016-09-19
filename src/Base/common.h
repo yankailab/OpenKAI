@@ -28,14 +28,12 @@ using namespace std;
 
 #define F_FATAL_F(x) if(x==false){LOG(FATAL);return false;}
 #define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
-#define F_INFO_(x) if(x==false){LOG(INFO);}
+#define F_INFO(x) if(x==false){LOG(INFO);}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}
 
-#define RELEASE(x) if(x){delete x;}
-#define STOP(x) if(x){x->stop();}
-#define COMPLETE(x) if(x){x->waitForComplete();}
+#define DEL(x) if(x){delete x;}
 
 #define SWAP(x,y,t) t=x;x=y;y=t;
 

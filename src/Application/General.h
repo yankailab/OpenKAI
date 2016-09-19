@@ -50,31 +50,12 @@ public:
 	BASE* getInstByName(string* pName);
 
 	template <typename T> bool createInst(Config* pConfig);
+	template <typename T> void drawInst(T* pInst, Frame* pFrame, iVec4* textPos);
 
 public:
 	int		m_nInst;
 	BASE* 	m_pInst[N_INST];
 	Frame*	m_pFrame;
-
-
-	_Stream* m_pStream1;
-	_Automaton* m_pAM1;
-	_Universe* m_pUniverse;
-	_Mavlink* m_pMavlink1;
-	_RC* m_pRC1;
-
-	_SSD* m_pSSD;
-	_FCN* m_pFCN;
-	_AutoPilot* m_pAP;
-	_AprilTags* m_pAT;
-	_Bullseye* m_pMD;
-	_ROITracker* m_pROITracker;
-	_Cascade* m_pCascade;
-	_Depth* m_pDD;
-	_Flow* m_pFlow;
-	UI* m_pUI;
-
-
 
 };
 

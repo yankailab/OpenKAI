@@ -26,8 +26,8 @@ public:
 	virtual ~_ThreadBase();
 
 	bool init(Config* pConfig);
-	void stop(void);
-	bool complete(void);
+//	void stop(void);
+	void complete(void);
 	void waitForComplete(void);
 
 	void sleepThread(int32_t sec, int32_t nsec);

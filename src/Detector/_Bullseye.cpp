@@ -28,7 +28,7 @@ _Bullseye::_Bullseye()
 	m_houghMinR = 0;
 	m_houghMaxR = 0;
 
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_pFrame = NULL;
 }
 
@@ -43,17 +43,23 @@ bool _Bullseye::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//format params
 	F_ERROR_F(pConfig->v("areaRatio", &m_areaRatio));
 	F_ERROR_F(pConfig->v("minSize", &m_minMarkerSize));
 
-	F_INFO_(pConfig->v("method", &m_method));
-	F_INFO_(pConfig->v("medBlueKsize", &m_kSize));
+	F_INFO(pConfig->v("method", &m_method));
+	F_INFO(pConfig->v("medBlueKsize", &m_kSize));
 
-	F_INFO_(pConfig->v("HoughMinDist", &m_houghMinDist));
-	F_INFO_(pConfig->v("HoughParam1", &m_houghParam1));
-	F_INFO_(pConfig->v("HoughParam2", &m_houghParam2));
-	F_INFO_(pConfig->v("HoughMinR", &m_houghMinR));
-	F_INFO_(pConfig->v("HoughMaxR", &m_houghMaxR));
+	F_INFO(pConfig->v("HoughMinDist", &m_houghMinDist));
+	F_INFO(pConfig->v("HoughParam1", &m_houghParam1));
+	F_INFO(pConfig->v("HoughParam2", &m_houghParam2));
+	F_INFO(pConfig->v("HoughMinR", &m_houghMinR));
+	F_INFO(pConfig->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
 
@@ -111,9 +117,9 @@ void _Bullseye::detectCircleFill(void)
 	Frame* pHSV;
 	Frame* pRGB;
 
-	if(!m_pCamStream)return;
-	pHSV = m_pCamStream->getHSVFrame();
-	pRGB = m_pCamStream->getBGRFrame();
+	if(!m_pStream)return;
+	pHSV = m_pStream->getHSVFrame();
+	pRGB = m_pStream->getBGRFrame();
 	if(pRGB->empty())return;
 	if(pHSV->empty())return;
 
@@ -164,9 +170,9 @@ void _Bullseye::detectCircleFill(void)
 
 void _Bullseye::detectCircleHough(void)
 {
-	if(!m_pCamStream)return;
+	if(!m_pStream)return;
 
-	Frame* pFrame = m_pCamStream->getHSVFrame();
+	Frame* pFrame = m_pStream->getHSVFrame();
 	if(pFrame->empty())return;
 	if(!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
@@ -221,9 +227,9 @@ bool _Bullseye::getCircleCenter(fVec3* pCenter)
 	CamBase* pCam;
 
 	if(pCenter==NULL)return false;
-	if(m_pCamStream==NULL)return false;
+	if(m_pStream==NULL)return false;
 
-	pCam = m_pCamStream->getCameraInput();
+	pCam = m_pStream->getCameraInput();
 	if(pCam==NULL)return false;
 
 	//Use num instead of m_numCircle to avoid multi-thread inconsistancy

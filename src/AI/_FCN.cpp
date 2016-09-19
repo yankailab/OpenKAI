@@ -14,7 +14,7 @@ _FCN::_FCN()
 	_ThreadBase();
 
 	m_NumChannels = 0;
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_cudaDeviceID = 0;
 
 }
@@ -28,13 +28,19 @@ bool _FCN::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+
 	string modelFile;
 	string trainedFile;
 	string labelFile;
 	string caffeDir = "";
 
-	F_INFO_(pConfig->v("dir", &caffeDir));
-	F_INFO_(pConfig->v("cudaDeviceID", &m_cudaDeviceID));
+	F_INFO(pConfig->v("dir", &caffeDir));
+	F_INFO(pConfig->v("cudaDeviceID", &m_cudaDeviceID));
 
 	F_FATAL_F(pConfig->v("modelFile", &modelFile));
 	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
@@ -97,8 +103,8 @@ void _FCN::update(void)
 
 void _FCN::segmentGPU(void)
 {
-	if(m_pCamStream==NULL)return;
-	m_pFrame = m_pCamStream->getBGRFrame();
+	if(m_pStream==NULL)return;
+	m_pFrame = m_pStream->getBGRFrame();
 
 	if(m_pFrame==NULL)return;
 	if(m_pFrame->empty())return;

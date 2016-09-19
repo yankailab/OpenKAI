@@ -14,10 +14,7 @@ _RC::_RC()
 
 _RC::~_RC()
 {
-	if (m_pSerialPort)
-	{
-		delete m_pSerialPort;
-	}
+	close();
 }
 
 bool _RC::init(Config* pConfig)
@@ -55,10 +52,9 @@ bool _RC::open(void)
 
 void _RC::close()
 {
-//	disable_offboard_control();
-
 	if (m_pSerialPort)
 	{
+		m_pSerialPort->Close();
 		delete m_pSerialPort;
 		m_bConnected = false;
 	}
@@ -172,6 +168,8 @@ void _RC::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
+
+		//TODO: Open
 
 /*
 		if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)

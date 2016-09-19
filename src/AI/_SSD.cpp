@@ -13,7 +13,7 @@ _SSD::_SSD()
 
 	num_channels_ = 0;
 	m_pUniverse = NULL;
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_frameID = 0;
 
@@ -29,6 +29,13 @@ bool _SSD::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
+
 	//Setup Caffe Classifier
 	string caffeDir = "";
 	string modelFile;
@@ -37,14 +44,14 @@ bool _SSD::init(Config* pConfig)
 	string labelFile;
 	string presetDir = "";
 
-	F_INFO_(pConfig->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO_(pConfig->v("dir", &caffeDir));
+	F_INFO(pConfig->v("dir", &caffeDir));
 	F_FATAL_F(pConfig->v("modelFile", &modelFile));
 	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
 	F_FATAL_F(pConfig->v("meanFile", &meanFile));
 	F_FATAL_F(pConfig->v("labelFile", &labelFile));
-	F_INFO_(pConfig->v("minConfidence", &m_confidence_threshold));
+	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
@@ -150,12 +157,12 @@ void _SSD::detectFrame(void)
 	unsigned int iClass;
 	unsigned int i;
 
-	if (m_pCamStream == NULL)
+	if (m_pStream == NULL)
 		return;
 	if (m_pUniverse == NULL)
 		return;
 
-	pFrame = m_pCamStream->getBGRFrame();
+	pFrame = m_pStream->getBGRFrame();
 	if (pFrame->empty())return;
 	if (!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);

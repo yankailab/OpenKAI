@@ -15,6 +15,7 @@ Camera::Camera()
 	CamBase();
 
 	m_type = CAM_GENERAL;
+	m_camDeviceID = 0;
 }
 
 Camera::~Camera()
@@ -29,7 +30,7 @@ bool Camera::setup(Config* pConfig)
 	string presetDir = "";
 	string calibFile;
 
-	F_INFO_(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
 	F_FATAL_F(pConfig->v("ID", &m_camDeviceID));
 
 	return true;

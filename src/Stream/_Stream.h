@@ -27,7 +27,6 @@ public:
 
 	bool init(Config* pConfig);
 	bool start(void);
-	bool complete(void);
 	bool draw(Frame* pFrame, iVec4* textPos);
 
 	Frame* getBGRFrame(void);
@@ -43,7 +42,7 @@ public:
 private:
 	CamBase*		m_pCamera;
 
-	Frame*			m_pCamFrame;
+	Frame*			m_pFrame;
 	Frame*			m_pGrayFrame;
 	Frame*			m_pHSVframe;
 

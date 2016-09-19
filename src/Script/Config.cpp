@@ -80,7 +80,12 @@ bool Config::parse(string str)
 	m_json.v(&name, &m_class);
 
 
-	if (m_pNULL == NULL)
+	//Create NULL instance
+	if(m_pParent)
+	{
+		m_pNULL = this->m_pParent->m_pNULL;
+	}
+	else if (!m_pNULL)
 	{
 		m_pNULL = new Config();
 		m_pNULL->m_bNULL = true;
@@ -171,7 +176,6 @@ Config** Config::getClassItr(string* pClassName)
 
 	int i;
 	int nFound = 0;
-	Config* ppItr[NUM_CHILDREN];
 
 	//Find list with the class name
 	for(i=0; i<m_nChild; i++)
@@ -179,16 +183,16 @@ Config** Config::getClassItr(string* pClassName)
 		Config* pC = m_pChild[i];
 		if(pC->m_class != (*pClassName))continue;
 
-		ppItr[nFound]=pC;
+		m_ppItr[nFound]=pC;
 		nFound++;
 
 		if(nFound == NUM_CHILDREN-1)break;
 	}
 
-	ppItr[nFound]=NULL;
+	m_ppItr[nFound]=NULL;
 	nFound++;
 
-	return ppItr;
+	return m_ppItr;
 }
 
 Config** Config::getChildItr(void)
@@ -196,6 +200,28 @@ Config** Config::getChildItr(void)
 	m_pChild[m_nChild]=NULL;
 
 	return m_pChild;
+}
+
+Config* Config::getChildByName(string* pName)
+{
+	if(pName==NULL)return NULL;
+	if(pName->empty())return NULL;
+
+	for(int i=0; i<m_nChild; i++)
+	{
+		Config* pC = m_pChild[i];
+		if(pC->m_name == (*pName))
+		{
+			return pC;
+		}
+	}
+
+	return NULL;
+}
+
+void* Config::getChildInstByName(string* pName)
+{
+	return getChildByName(pName)->m_pInst;
 }
 
 bool Config::empty(void)

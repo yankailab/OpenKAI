@@ -57,7 +57,7 @@ public:
 	int		  m_numTags;
 	APRIL_TAG m_pTag[NUM_TAGS][NUM_PER_TAG];
 
-	_Stream*	m_pCamStream;
+	_Stream*	m_pStream;
 	Frame*		m_pFrame;
 	uint64_t	m_frameID;
 

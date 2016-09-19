@@ -11,7 +11,7 @@
 }
 
 {
-	"name":"apm",
+	"name":"APM",
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":100,
@@ -29,7 +29,7 @@
 }
 
 {
-	"name":"Downward",
+	"name":"mainStream",
 	"class":"_Stream",
 	"bInst":1,
 	"bGray":1,
@@ -131,6 +131,8 @@
 	"class":"_SSD",
 	"bInst":1,
 	"FPS":30,
+	"_Stream":"mainStream",
+	"_Universe":"Universe",
 	"dir":"/home/kai/dev/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
@@ -156,6 +158,7 @@
 	"class":"_FCN",
 	"bInst":0,
 	"FPS":0,
+	"_Stream","mainStream",
 	"dir":"/home/ubuntu/src/caffe/caffe/",
 	"modelFile":"models/FCN-8/deploy.prototxt",
 	"trainedFile":"models/FCN-8/fcn8s-heavy-pascal.caffemodel",
@@ -167,6 +170,7 @@
 	"class":"_AprilTags",
 	"bInst":1,
 	"FPS":30,
+	"_Stream":"mainStream",
 	"family":"Tag16h5",
 	"err":0.1,
 	"lifeTime":300000,
@@ -181,6 +185,7 @@
 	"class":"_ROITracker",
 	"bInst":0,
 	"FPS":0,
+	"_Stream":"mainStream",
 }
 
 {
@@ -188,6 +193,7 @@
 	"class":"_Bullseye",
 	"bInst":0,
 	"FPS":30,
+	"_Stream":"mainStream",
 	"method":1,
 	"areaRatio":0.8,
 	"minSize":5,
@@ -204,6 +210,7 @@
 	"class":"_Flow",
 	"bInst":0,
 	"FPS":30,
+	"_Stream":"mainStream",
 	"bDepth":0,
 	"width":640,
 	"height":480,
@@ -216,6 +223,9 @@
 	"class":"_Depth",
 	"bInst":0,
 	"FPS":30,
+	"_Stream":"mainStream",
+	"_Universe":"Universe",
+	"_Flow":"optFlowTest",
 	"areaMin":250,
 	"areaMax":10000000,
 }
@@ -225,6 +235,9 @@
 	"class":"_AutoPilot",
 	"bInst":1,
 	"FPS":20,
+	"_Automaton","flight",
+	"_Mavlink":"APM",
+	"_RC":"RC",
 	"roiMinSize":25,
 	
 	{
@@ -313,7 +326,7 @@
 }
 
 {
-	"name":"flightControl",
+	"name":"flight",
 	"class":"_Automaton",
 	"bInst":1,
 	"FPS":10,

@@ -35,14 +35,14 @@ bool Landing::init(Config* pConfig)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	F_INFO_(pCC->v("orientationX", &m_landingTarget.m_orientX));
-	F_INFO_(pCC->v("orientationY", &m_landingTarget.m_orientY));
-	F_INFO_(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
+	F_INFO(pCC->v("orientationX", &m_landingTarget.m_orientX));
+	F_INFO(pCC->v("orientationY", &m_landingTarget.m_orientY));
+	F_INFO(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
 	pCC = pCC->o("AprilTags");
 	if(pCC->empty())return false;
 
-	F_INFO_(pCC->v("num", &m_numATagsLandingTarget));
+	F_INFO(pCC->v("num", &m_numATagsLandingTarget));
 	for(i=0; i<m_numATagsLandingTarget; i++)
 	{
 		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
@@ -65,12 +65,12 @@ void Landing::landingAtAprilTags(void)
 		return;
 	if (m_pMavlink == NULL)
 		return;
-	if (m_pAT->m_pCamStream == NULL)
+	if (m_pAT->m_pStream == NULL)
 		return;
 
 	int i;
 	int tTag;
-	CamBase* pCam = m_pAT->m_pCamStream->getCameraInput();
+	CamBase* pCam = m_pAT->m_pStream->getCameraInput();
 
 	for(i=0;i<m_numATagsLandingTarget;i++)
 	{
@@ -148,7 +148,7 @@ void Landing::landingAtBullseye(void)
 				+ m_pROITracker->m_ROI.height * 0.5;
 	}
 
-	pCamInput = m_pMD->m_pCamStream->getCameraInput();
+	pCamInput = m_pMD->m_pStream->getCameraInput();
 
 	//Change position to angles
 	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)

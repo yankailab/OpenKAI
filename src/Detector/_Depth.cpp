@@ -19,7 +19,9 @@ _Depth::_Depth()
 	m_maxObjArea = 10000000;
 
 	m_pFlow = NULL;
-	m_pCamStream = NULL;
+	m_pStream = NULL;
+
+	m_camFrameID = 0;
 }
 
 _Depth::~_Depth()
@@ -31,8 +33,18 @@ bool _Depth::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	F_INFO_(pConfig->v("areaMin", &m_minObjArea));
-	F_INFO_(pConfig->v("areaMax", &m_maxObjArea));
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_Flow",&iName));
+	m_pFlow = (_Flow*)(pConfig->root()->getChildInstByName(&iName));
+
+
+	F_INFO(pConfig->v("areaMin", &m_minObjArea));
+	F_INFO(pConfig->v("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;
@@ -83,8 +95,8 @@ void _Depth::detect(void)
 	Frame* pFrame;
 
 	if(m_pUniverse==NULL)return;
-	if(m_pCamStream==NULL)return;
-	m_pCam = m_pCamStream->getCameraInput();
+	if(m_pStream==NULL)return;
+	m_pCam = m_pStream->getCameraInput();
 
 	if(m_pCam->getType() == CAM_ZED)
 	{
@@ -110,7 +122,7 @@ void _Depth::detect(void)
 		gMat.download(m_Mat);
 	}
 
-	imgSize = m_pCamStream->getBGRFrame()->getSize();
+	imgSize = m_pStream->getBGRFrame()->getSize();
 	scaleW = ((double)imgSize.width)/((double)m_Mat.cols);
 	scaleH = ((double)imgSize.height)/((double)m_Mat.rows);
 
@@ -133,7 +145,7 @@ void _Depth::detect(void)
 		if (bb.area() < m_minObjArea)continue;
 		if (bb.area() > m_maxObjArea)continue;
 
-		m_pUniverse->addUnknownObject(m_pCamStream->getBGRFrame()->getCMat(), &bb, &contours_poly[i]);
+		m_pUniverse->addUnknownObject(m_pStream->getBGRFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
 

@@ -15,7 +15,7 @@ _Stream::_Stream()
 	_ThreadBase();
 
 	m_pCamera = NULL;
-	m_pCamFrame = new Frame();
+	m_pFrame = new Frame();
 	m_pGrayFrame = new Frame();
 	m_pHSVframe = new Frame();
 	m_showDepth = 0;
@@ -26,10 +26,10 @@ _Stream::_Stream()
 
 _Stream::~_Stream()
 {
-	RELEASE(m_pCamera);
-	RELEASE(m_pCamFrame);
-	RELEASE(m_pGrayFrame);
-	RELEASE(m_pHSVframe);
+	DEL(m_pCamera);
+	DEL(m_pFrame);
+	DEL(m_pGrayFrame);
+	DEL(m_pHSVframe);
 }
 
 bool _Stream::init(Config* pConfig)
@@ -37,9 +37,9 @@ bool _Stream::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	F_INFO_(pConfig->v("bShowDepth", &m_showDepth));
-	F_INFO_(pConfig->v("bGray", &m_bGray));
-	F_INFO_(pConfig->v("bHSV", &m_bHSV));
+	F_INFO(pConfig->v("bShowDepth", &m_showDepth));
+	F_INFO(pConfig->v("bGray", &m_bGray));
+	F_INFO(pConfig->v("bHSV", &m_bHSV));
 
 	string camClass;
 	string camName;
@@ -101,18 +101,18 @@ void _Stream::update(void)
 		this->autoFPSfrom();
 
 		//Update camera frame
-		m_pCamFrame->update(m_pCamera->readFrame());
+		m_pFrame->update(m_pCamera->readFrame());
 
 		//Update Gray frame
 		if(m_bGray)
 		{
-			m_pGrayFrame->getGrayOf(m_pCamFrame);
+			m_pGrayFrame->getGrayOf(m_pFrame);
 		}
 
 		//Update HSV frame
 		if(m_bHSV)
 		{
-			m_pHSVframe->getHSVOf(m_pCamFrame);
+			m_pHSVframe->getHSVOf(m_pFrame);
 		}
 
 		this->autoFPSto();
@@ -120,16 +120,9 @@ void _Stream::update(void)
 
 }
 
-bool _Stream::complete(void)
-{
-	m_pCamera->release();
-
-	return true;
-}
-
 Frame* _Stream::getBGRFrame(void)
 {
-	return m_pCamFrame;
+	return m_pFrame;
 }
 
 Frame* _Stream::getGrayFrame(void)
@@ -152,11 +145,11 @@ bool _Stream::draw(Frame* pFrame, iVec4* pTextPos)
 	if (pFrame == NULL)
 		return false;
 
-	if(m_pCamFrame->empty())return false;
+	if(m_pFrame->empty())return false;
 
 	if(m_showDepth==0)
 	{
-		pFrame->update(m_pCamFrame);
+		pFrame->update(m_pFrame);
 	}
 	else
 	{

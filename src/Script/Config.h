@@ -24,6 +24,8 @@ public:
 	JSON* json(void);
 	Config** getClassItr(string* pClassName);
 	Config** getChildItr(void);
+	Config* getChildByName(string* pName);
+	void* getChildInstByName(string* pName);
 	Config* root(void);
 	bool empty(void);
 
@@ -53,6 +55,9 @@ public:
 
 	Config* m_pNULL;
 	bool	m_bNULL;
+
+	Config* m_ppItr[NUM_CHILDREN];
+
 };
 
 }

@@ -46,7 +46,7 @@ private:
 	}
 
 public:
-	_Stream* m_pCamStream;
+	_Stream* m_pStream;
 	Rect2d m_ROI;
 	Rect2d m_newROI;
 	Frame* m_pFrame;

@@ -15,7 +15,7 @@ _AprilTags::_AprilTags()
 	_ThreadBase();
 	DetectorBase();
 
-	m_pCamStream = NULL;
+	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_tagFamily = DEFAULT_TAG_FAMILY;
 	m_tagErr = 0;
@@ -39,13 +39,19 @@ bool _AprilTags::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
-	F_INFO_(pConfig->v("family", &m_tagFamily));
-	F_INFO_(pConfig->v("err", &m_tagErr));
-	F_INFO_(pConfig->v("lifeTime", &m_tagLifetime));
-	F_INFO_(pConfig->v("distThr", &m_tagDistThr));
-	F_INFO_(pConfig->v("detInterval", &m_tagAliveInterval));
-	F_INFO_(pConfig->v("scaling", &m_tagScaling));
-	F_INFO_(pConfig->v("sizeLim", &m_tagSizeLim));
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//format params
+	F_INFO(pConfig->v("family", &m_tagFamily));
+	F_INFO(pConfig->v("err", &m_tagErr));
+	F_INFO(pConfig->v("lifeTime", &m_tagLifetime));
+	F_INFO(pConfig->v("distThr", &m_tagDistThr));
+	F_INFO(pConfig->v("detInterval", &m_tagAliveInterval));
+	F_INFO(pConfig->v("scaling", &m_tagScaling));
+	F_INFO(pConfig->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
 
@@ -88,10 +94,10 @@ void _AprilTags::detect(void)
 {
 	int i, j;
 
-	if (!m_pCamStream)
+	if (!m_pStream)
 		return;
 
-	m_pFrame->update(m_pCamStream->getBGRFrame());
+	m_pFrame->update(m_pStream->getBGRFrame());
 	if (m_pFrame->empty())
 		return;
 

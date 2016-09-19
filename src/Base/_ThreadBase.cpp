@@ -47,7 +47,7 @@ bool _ThreadBase::init(Config* pConfig)
 		return false;
 
 	double FPS = DEFAULT_FPS;
-	F_INFO_(pConfig->v("FPS", &FPS));
+	F_INFO(pConfig->v("FPS", &FPS));
 	setTargetFPS(FPS);
 
 	return true;
@@ -132,18 +132,10 @@ void _ThreadBase::autoFPSto(void)
 	this->updateTime();
 }
 
-
-bool _ThreadBase::complete(void)
-{
-	return true;
-}
-
-void _ThreadBase::stop(void)
+void _ThreadBase::complete(void)
 {
 	m_bThreadON = false;
 	this->wakeupThread();
-	pthread_join(m_threadID, NULL);
-
 }
 
 void _ThreadBase::waitForComplete(void)
