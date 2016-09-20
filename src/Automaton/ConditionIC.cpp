@@ -21,9 +21,37 @@ ConditionIC::~ConditionIC()
 {
 }
 
+bool ConditionIC::init(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	string condStr;
+	F_FATAL_F(pConfig->v("cond", &condStr));
+
+	if (condStr == "bt")
+		m_condition = bt;
+	else if (condStr == "beq")
+		m_condition = beq;
+	else if (condStr == "st")
+		m_condition = st;
+	else if (condStr == "seq")
+		m_condition = seq;
+	else if (condStr == "eq")
+		m_condition = eq;
+	else if (condStr == "neq")
+		m_condition = neq;
+	else
+		LOG(FATAL)<<"Unknown condition";
+
+	pConfig->v("ptr1", &m_namePtr1);
+	pConfig->v("constI", &m_const);
+
+	return true;
+}
+
 bool ConditionIC::isSatisfied(void)
 {
-	if(m_p1==NULL)return false;
+	NULL_F(m_p1);
 
 	int p1 = (int)(*m_p1);
 
@@ -55,24 +83,26 @@ bool ConditionIC::isSatisfied(void)
 	return false;
 }
 
-bool ConditionIC::setPtrByName(string name, int* ptr)
+bool ConditionIC::setPtrByName(string* pName, int* ptr)
 {
-	if(ptr==NULL)return false;
-	if(name=="")return false;
+	NULL_F(ptr);
+	NULL_F(pName);
+	CHECK_F(*pName=="");
 
-	if(name==m_namePtr1)m_p1 = ptr;
-	if(name==m_namePtr2)m_const = *ptr;
+	if(*pName==m_namePtr1)m_p1 = ptr;
+	if(*pName==m_namePtr2)m_const = *ptr;
 
 	return true;
 }
 
-bool ConditionIC::setPtrByName(string name, double* ptr)
+bool ConditionIC::setPtrByName(string* pName, double* ptr)
 {
-	if(ptr==NULL)return false;
-	if(name=="")return false;
+	NULL_F(ptr);
+	NULL_F(pName);
+	CHECK_F(*pName=="");
 
-	if(name==m_namePtr1)m_p1 = (int*)ptr;
-	if(name==m_namePtr2)m_const = (int)(*ptr);
+	if(*pName==m_namePtr1)m_p1 = (int*)ptr;
+	if(*pName==m_namePtr2)m_const = (int)(*ptr);
 
 	return true;
 }

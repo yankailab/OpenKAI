@@ -17,8 +17,7 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig) == false)
-		return false;
+	CHECK_F(this->_ThreadBase::init(pConfig) == false);
 
 	//link instance
 	string iName = "";
@@ -35,8 +34,7 @@ bool _AutoPilot::init(Config* pConfig)
 	Config* pCC;
 
 	pCC = pConfig->o("roll");
-	if (pCC->empty())
-		return false;
+	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -52,8 +50,7 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_roll.m_RC = RC;
 
 	pCC = pConfig->o("pitch");
-	if (pCC->empty())
-		return false;
+	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -69,8 +66,7 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_pitch.m_RC = RC;
 
 	pCC = pConfig->o("alt");
-	if (pCC->empty())
-		return false;
+	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -86,8 +82,7 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_alt.m_RC = RC;
 
 	pCC = pConfig->o("yaw");
-	if (pCC->empty())
-		return false;
+	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -103,9 +98,8 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_yaw.m_RC = RC;
 
 	//create action instance
-	pCC = pConfig->o("pilotAction");
-	if (pCC->empty())
-		return true;
+	pCC = pConfig->o("action");
+	CHECK_T(pCC->empty());
 
 	Config** pItr = pCC->getChildItr();
 
@@ -182,8 +176,7 @@ void _AutoPilot::update(void)
 
 void _AutoPilot::sendHeartbeat(void)
 {
-	if (m_ctrl.m_pMavlink == NULL)
-		return;
+	NULL_(m_ctrl.m_pMavlink);
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
@@ -200,8 +193,7 @@ void _AutoPilot::sendHeartbeat(void)
 
 bool _AutoPilot::draw(Frame* pFrame, iVec4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
+	NULL_F(pFrame);
 
 	Mat* pMat = pFrame->getCMat();
 

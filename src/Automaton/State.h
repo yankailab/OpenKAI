@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "Transition.h"
 
-#define NUM_STATE_TRANSITION 32
+#define N_TRANSITION 32
 
 namespace kai
 {
@@ -21,6 +21,8 @@ class State
 public:
 	State();
 	virtual ~State();
+
+	bool init(Config* pConfig);
 
 	Transition* addTransition(void);
 	bool IsValid(void);
@@ -32,8 +34,8 @@ public:
 
 public:
 	string		m_name;
-	int			m_numTransition;
-	Transition*	m_pTransition[NUM_STATE_TRANSITION];
+	int			m_nTransition;
+	Transition*	m_pTransition[N_TRANSITION];
 
 };
 

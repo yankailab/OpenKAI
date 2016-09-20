@@ -3,7 +3,6 @@
 #define OPENKAI_SRC_AUTOPILOT_LANDING_H_
 
 #include "../Base/common.h"
-#include "commonAutopilot.h"
 #include "ActionBase.h"
 
 namespace kai

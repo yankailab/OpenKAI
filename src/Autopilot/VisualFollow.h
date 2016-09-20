@@ -2,7 +2,6 @@
 #define OPENKAI_SRC_AUTOPILOT_VISUALFOLLOW_H_
 
 #include "../Base/common.h"
-#include "commonAutopilot.h"
 #include "ActionBase.h"
 #include "../UI/UI.h"
 

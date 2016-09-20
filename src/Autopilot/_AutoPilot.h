@@ -5,7 +5,6 @@
 #include "../Base/_ThreadBase.h"
 #include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
-#include "commonAutopilot.h"
 #include "VisualFollow.h"
 #include "Landing.h"
 
@@ -37,7 +36,6 @@ public:
 	int m_nAction;
 	ActionBase* m_pAction[N_ACTION];
 	AUTOPILOT_CONTROL m_ctrl;
-
 
 	//Thread
 	void update(void);

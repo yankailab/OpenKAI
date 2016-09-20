@@ -14,7 +14,7 @@ ConditionBase::ConditionBase()
 {
 	m_namePtr1 = "";
 	m_namePtr2 = "";
-	m_condition = DEFAULT;
+	m_condition = bt;
 }
 
 ConditionBase::~ConditionBase()

@@ -20,9 +20,11 @@ public:
 	ConditionII();
 	virtual ~ConditionII();
 
+	bool init(Config* pConfig);
+
 	bool isSatisfied(void);
-	bool setPtrByName(string name, int* ptr);
-	bool setPtrByName(string name, double* ptr);
+	bool setPtrByName(string* pName, int* ptr);
+	bool setPtrByName(string* pName, double* ptr);
 
 public:
 	int* 	m_p1;

@@ -30,9 +30,14 @@ using namespace std;
 #define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
 #define F_INFO(x) if(x==false){LOG(INFO);}
 #define F_(x) if(x==false){return;}
+#define CHECK_T(x) if(x){return true;}
+#define CHECK_F(x) if(x){return false;}
+#define CHECK_N(x) if(x){return NULL;}
+#define CHECK_(x) if(x){return;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}
+#define NULL_N(x) if(x==NULL){return NULL;}
 
 #define DEL(x) if(x){delete x;}
 

@@ -13,7 +13,7 @@
 #include "../Stream/Frame.h"
 #include "State.h"
 
-#define NUM_STATE 32
+#define N_STATE 32
 
 namespace kai
 {
@@ -27,7 +27,6 @@ public:
 	bool init(Config* pConfig);
 	bool start(void);
 
-	State* addState(void);
 	bool setState(int iState);
 	bool checkDiagram(void);
 
@@ -40,8 +39,8 @@ public:
 	void updateAll(void);
 
 	int		m_iState;
-	int		m_numState;
-	State*	m_pState[NUM_STATE];
+	int		m_nState;
+	State*	m_pState[N_STATE];
 
 	//Thread
 	void update(void);

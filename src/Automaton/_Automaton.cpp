@@ -14,7 +14,7 @@ _Automaton::_Automaton()
 {
 	_ThreadBase();
 
-	m_numState = 0;
+	m_nState = 0;
 	m_iState = 0;
 
 }
@@ -26,94 +26,29 @@ _Automaton::~_Automaton()
 
 bool _Automaton::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
+	CHECK_F(this->_ThreadBase::init(pConfig)==false);
 
-	//init basic params
-	m_numState = 0;
+	Config** pItr = pConfig->getChildItr();
 
-	//read in configuration
-	string condStr;
-	string typeStr;
-	Config* cState;
-	Config* cTransit;
-	Config* cCond;
-
-	do
+	int i = 0;
+	while (pItr[i])
 	{
-		cState = pConfig->o("state" + i2str(m_numState));
-		if (cState->empty())
-			break;
+		Config* pState = pItr[i];
+		i++;
 
-		State* pS = addState();
-		if (pS == NULL)
-			return false;
-		cState->v("stateName", &pS->m_name);
+		bool bInst = false;
+		F_INFO(pState->v("bInst", &bInst));
+		if (!bInst)continue;
+		if (pState->m_class != "State")continue;
+		CHECK_F(m_nState >= N_STATE);
 
-		do
-		{
-			cTransit = cState->o("transition" + i2str(pS->m_numTransition));
-			if (cTransit->empty())
-				break;
+		State** ppS = &m_pState[m_nState];
+		m_nState++;
 
-			Transition* pT = pS->addTransition();
-			if (pT == NULL)
-				return false;
-			cTransit->v("toState", &pT->m_transitToID);
-
-			do
-			{
-				cCond = cTransit->o("condition" + i2str(pT->m_numCond));
-				if (cCond->empty())
-					break;
-
-				if (!cCond->v("type", &typeStr))
-					break;
-				if (!cCond->v("cond", &condStr))
-					break;
-
-				ConditionBase* pTC;
-
-				if (typeStr == "ii")
-				{
-					pTC = pT->addConditionII();
-				}
-				else if (typeStr == "ff")
-				{
-					pTC = pT->addConditionFF();
-				}
-				else if (typeStr == "ic")
-				{
-					pTC = pT->addConditionIC();
-					cCond->v("constI", &(((ConditionIC*) pTC)->m_const));
-				}
-
-				if (pTC == NULL)
-					return false;
-
-				if (condStr == "bt")
-					pTC->m_condition = bt;
-				else if (condStr == "beq")
-					pTC->m_condition = beq;
-				else if (condStr == "st")
-					pTC->m_condition = st;
-				else if (condStr == "seq")
-					pTC->m_condition = seq;
-				else if (condStr == "eq")
-					pTC->m_condition = eq;
-				else if (condStr == "neq")
-					pTC->m_condition = neq;
-				else
-					pTC->m_condition = DEFAULT;
-
-				cCond->v("ptrName1", &pTC->m_namePtr1);
-				cCond->v("ptrName2", &pTC->m_namePtr2);
-
-			} while (1);
-
-		} while (1);
-
-	} while (1);
+		*ppS = new State();
+		F_ERROR_F((*ppS)->init(pState));
+		pState->m_pInst = (void*)(*ppS);
+	}
 
 	int k = 0;
 	pConfig->v("startState", &k);
@@ -154,22 +89,18 @@ void _Automaton::updateAll(void)
 {
 	int iTransit = m_pState[m_iState]->Transit();
 
-	if (iTransit < 0)
-		return;
-	if (iTransit >= m_numState)
-		return;
+	CHECK_(iTransit < 0);
+	CHECK_(iTransit >= m_nState);
 
 	m_iState = iTransit;
 }
 
 bool _Automaton::setPtrByName(string name, int* ptr)
 {
-	if (ptr == NULL)
-		return false;
-	if (name == "")
-		return false;
+	NULL_F(ptr);
+	CHECK_F(name == "");
 
-	for (int i = 0; i < m_numState; i++)
+	for (int i = 0; i < m_nState; i++)
 	{
 		m_pState[i]->setPtrByName(name, ptr);
 	}
@@ -179,12 +110,10 @@ bool _Automaton::setPtrByName(string name, int* ptr)
 
 bool _Automaton::setPtrByName(string name, double* ptr)
 {
-	if (ptr == NULL)
-		return false;
-	if (name == "")
-		return false;
+	NULL_F(ptr);
+	CHECK_F(name == "");
 
-	for (int i = 0; i < m_numState; i++)
+	for (int i = 0; i < m_nState; i++)
 	{
 		m_pState[i]->setPtrByName(name, ptr);
 	}
@@ -192,26 +121,10 @@ bool _Automaton::setPtrByName(string name, double* ptr)
 	return true;
 }
 
-State* _Automaton::addState(void)
-{
-	if (m_numState >= NUM_STATE)
-		return NULL;
-
-	State** ppS = &m_pState[m_numState];
-	*ppS = new State();
-	if (*ppS == NULL)
-		return NULL;
-
-	m_numState++;
-	return *ppS;
-}
-
 bool _Automaton::setState(int iState)
 {
-	if (iState >= m_numState)
-		return false;
-	if (iState < 0)
-		return false;
+	CHECK_F(iState >= m_nState);
+	CHECK_F(iState < 0);
 
 	m_iState = iState;
 	return true;
@@ -224,20 +137,18 @@ bool _Automaton::checkDiagram(void)
 
 bool _Automaton::draw(Frame* pFrame, iVec4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
+	NULL_F(pFrame);
 
 	Mat* pMat = pFrame->getCMat();
 
-	putText(*pFrame->getCMat(), "Automaton FPS: " + i2str(getFrameRate()),
+	putText(*pMat, "Automaton FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 
 	pTextPos->m_y += pTextPos->m_w;
 
-	putText(*pFrame->getCMat(),
-			"Automaton State: " + m_pState[m_iState]->m_name + " ("
-					+ i2str(m_iState) + ")",
+	putText(*pMat,
+			"Automaton State: " + m_pState[m_iState]->m_name,
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 

@@ -12,48 +12,66 @@ namespace kai
 
 Transition::Transition()
 {
-	m_transitToID = -1;
-	m_numCond = 0;
+	m_iToState = -1;
+	m_nCond = 0;
 }
 
 Transition::~Transition()
 {
 }
 
-ConditionII* Transition::addConditionII(void)
+bool Transition::init(Config* pConfig)
 {
-	if(m_numCond >= NUM_TRANSITION_COND)return NULL;
+	NULL_F(pConfig);
+	F_FATAL_F(pConfig->v("toState", &m_iToState));
 
-	ConditionBase** ppC = &m_pCond[m_numCond];
-	*ppC = new ConditionII();
-	if(*ppC==NULL)return NULL;
+	Config** pItr = pConfig->getChildItr();
 
-	m_numCond++;
-	return (ConditionII*)*ppC;
+	int i = 0;
+	while (pItr[i])
+	{
+		Config* pCond = pItr[i];
+		i++;
+
+		bool bInst = false;
+		F_INFO(pCond->v("bInst", &bInst));
+		if (!bInst)continue;
+		CHECK_F(m_nCond >= N_COND);
+
+		if(pCond->m_class=="ConditionII")
+		{
+			F_ERROR_F(addCondition<ConditionII>(pCond));
+		}
+		else if(pCond->m_class=="ConditionIC")
+		{
+			F_ERROR_F(addCondition<ConditionIC>(pCond));
+		}
+		else if(pCond->m_class=="ConditionFF")
+		{
+			F_ERROR_F(addCondition<ConditionFF>(pCond));
+		}
+		else
+		{
+			LOG(FATAL)<<"Unknown condition";
+		}
+	}
+
+	return true;
 }
 
-ConditionFF* Transition::addConditionFF(void)
+template <typename T> bool Transition::addCondition(Config* pConfig)
 {
-	if(m_numCond >= NUM_TRANSITION_COND)return NULL;
+	CHECK_N(m_nCond >= N_COND);
 
-	ConditionBase** ppC = &m_pCond[m_numCond];
-	*ppC = new ConditionFF();
-	if(*ppC==NULL)return NULL;
+	ConditionBase** ppC = &m_pCond[m_nCond];
+	m_nCond++;
+	*ppC = new T();
+	NULL_N(*ppC);
 
-	m_numCond++;
-	return (ConditionFF*)*ppC;
-}
+	F_FATAL_F(((T*)*ppC)->init(pConfig));
+	pConfig->m_pInst = (void*)(*ppC);
 
-ConditionIC* Transition::addConditionIC(void)
-{
-	if(m_numCond >= NUM_TRANSITION_COND)return NULL;
-
-	ConditionBase** ppC = &m_pCond[m_numCond];
-	*ppC = new ConditionIC();
-	if(*ppC==NULL)return NULL;
-
-	m_numCond++;
-	return (ConditionIC*)*ppC;
+	return true;
 }
 
 bool Transition::setPtrByName(string name, int* ptr)
@@ -61,7 +79,7 @@ bool Transition::setPtrByName(string name, int* ptr)
 	if(ptr==NULL)return false;
 	if(name=="")return false;
 
-	for(int i=0;i<m_numCond;i++)
+	for(int i=0;i<m_nCond;i++)
 	{
 		m_pCond[i]->setPtrByName(name,ptr);
 	}
@@ -74,7 +92,7 @@ bool Transition::setPtrByName(string name, double* ptr)
 	if(ptr==NULL)return false;
 	if(name=="")return false;
 
-	for(int i=0;i<m_numCond;i++)
+	for(int i=0;i<m_nCond;i++)
 	{
 		m_pCond[i]->setPtrByName(name,ptr);
 	}
@@ -88,7 +106,7 @@ bool Transition::activate(void)
 	int i;
 	int nSatisfied = 0;
 
-	for(i=0;i<m_numCond;i++)
+	for(i=0;i<m_nCond;i++)
 	{
 		if(m_pCond[i]->isSatisfied())
 		{
@@ -96,7 +114,7 @@ bool Transition::activate(void)
 		}
 	}
 
-	if(nSatisfied>=m_numCond)return true;
+	if(nSatisfied>=m_nCond)return true;
 
 	return false;
 }

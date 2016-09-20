@@ -15,7 +15,7 @@ namespace kai
 
 enum COMP_COND
 {
-	DEFAULT,bt,beq,st,seq,eq,neq
+	bt,beq,st,seq,eq,neq
 };
 
 class ConditionBase

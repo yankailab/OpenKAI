@@ -33,7 +33,6 @@ bool Config::parse(string* pStr)
 		m_pNULL->m_bNULL = true;
 	}
 
-
 	int k;
 	std::string::size_type from, to;
 
@@ -162,6 +161,11 @@ Config* Config::root(void)
 	}
 
 	return pRoot;
+}
+
+Config* Config::parent(void)
+{
+	return m_pParent;
 }
 
 JSON* Config::json(void)

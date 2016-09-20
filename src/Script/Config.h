@@ -27,6 +27,7 @@ public:
 	Config* getChildByName(string* pName);
 	void* getChildInstByName(string* pName);
 	Config* root(void);
+	Config* parent(void);
 	bool empty(void);
 
 	bool v(string name,int* val);

@@ -13,7 +13,7 @@
 #include "ConditionFF.h"
 #include "ConditionIC.h"
 
-#define NUM_TRANSITION_COND 32
+#define N_COND 32
 
 namespace kai
 {
@@ -24,10 +24,9 @@ public:
 	Transition();
 	virtual ~Transition();
 
-	ConditionII* addConditionII(void);
-	ConditionFF* addConditionFF(void);
-	ConditionIC* addConditionIC(void);
+	bool init(Config* pConfig);
 
+	template <typename T> bool addCondition(Config* pConfig);
 	bool activate(void);
 	bool isValid(void);
 
@@ -35,9 +34,9 @@ public:
 	bool setPtrByName(string name, double* ptr);
 
 public:
-	int					m_transitToID;
-	int					m_numCond;
-	ConditionBase*	 	m_pCond[NUM_TRANSITION_COND];
+	int					m_iToState;
+	int					m_nCond;
+	ConditionBase*	 	m_pCond[N_COND];
 };
 
 } /* namespace kai */

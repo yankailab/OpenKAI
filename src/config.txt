@@ -6,7 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -143,7 +143,7 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
+	"dir":"/home/kai/dev/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -248,22 +248,23 @@
 	"startState":0,
 
 	{
-		"class":"",
-		"name":"state0",
-		"stateName":"LAND_STANDBY",
+		"name":"LAND_STANDBY",
+		"class":"State",
+		"bInst":1,
 		"action":"",
 		
 		{
-			"class":"",
-			"name":"transition0",
+			"name":"toTakeoff",
+			"class":"Transition",
+			"bInst":1,
 			"toState":0,
 			{
-				"class":"",
 				"name":"condition0",
-				"type":"ii",
+				"class":"ConditionII",
+				"bInst":1,
 				"cond":"bt",
-				"ptrName1":"",
-				"ptrName2":"",
+				"ptr1":"",
+				"ptr2":"",
 				"constI":0,				
 			}
 		}
@@ -339,7 +340,7 @@
 	}
 
 	{
-		"name":"pilotAction",
+		"name":"action",
 		
 		{
 			"name":"DDH",
