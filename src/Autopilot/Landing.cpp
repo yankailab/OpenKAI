@@ -19,14 +19,12 @@ Landing::~Landing()
 {
 }
 
-bool Landing::init(Config* pConfig)
+bool Landing::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 {
-	if (this->ActionBase::init(pConfig)==false)
+	if (this->ActionBase::init(pConfig, pAC)==false)
 		return false;
 
-	int i;
-	Config* pCC = pConfig->o("visualLanding");
-	if(pCC->empty())return false;
+	m_pCtrl = pAC;
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;
@@ -35,15 +33,15 @@ bool Landing::init(Config* pConfig)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	F_INFO(pCC->v("orientationX", &m_landingTarget.m_orientX));
-	F_INFO(pCC->v("orientationY", &m_landingTarget.m_orientY));
-	F_INFO(pCC->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
+	F_INFO(pConfig->v("orientationX", &m_landingTarget.m_orientX));
+	F_INFO(pConfig->v("orientationY", &m_landingTarget.m_orientY));
+	F_INFO(pConfig->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
-	pCC = pCC->o("AprilTags");
+	Config* pCC = pConfig->o("AprilTags");
 	if(pCC->empty())return false;
 
 	F_INFO(pCC->v("num", &m_numATagsLandingTarget));
-	for(i=0; i<m_numATagsLandingTarget; i++)
+	for(int i=0; i<m_numATagsLandingTarget; i++)
 	{
 		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
@@ -61,12 +59,10 @@ void Landing::update(void)
 
 void Landing::landingAtAprilTags(void)
 {
-	if (m_pAT == NULL)
-		return;
-	if (m_pMavlink == NULL)
-		return;
-	if (m_pAT->m_pStream == NULL)
-		return;
+	NULL_(m_pCtrl);
+	NULL_(m_pCtrl->m_pMavlink);
+	NULL_(m_pAT);
+	NULL_(m_pAT->m_pStream);
 
 	int i;
 	int tTag;
@@ -88,7 +84,7 @@ void Landing::landingAtAprilTags(void)
 		m_landingTarget.m_angleY = ((pTag->m_tag.cxy.y - pCam->m_centerV) / pCam->m_height) * pCam->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
 
 		//Send Mavlink command
-		m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+		m_pCtrl->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 				m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 		return;
@@ -158,11 +154,11 @@ void Landing::landingAtBullseye(void)
 			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
 			* m_landingTarget.m_orientY;
 
-	if (m_pMavlink == NULL)
+	if (m_pCtrl->m_pMavlink == NULL)
 		return;
 
 	//Send Mavlink command
-	m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+	m_pCtrl->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 }

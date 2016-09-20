@@ -270,7 +270,7 @@ bool General::createAllInst(Config* pConfig)
 		}
 		else if(pC->m_class != "General")
 		{
-			LOG(ERROR)<<"Unknown class type";
+			LOG(ERROR)<<"Unknown class";
 		}
 
 	}

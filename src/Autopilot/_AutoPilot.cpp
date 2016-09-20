@@ -6,12 +6,9 @@ namespace kai
 _AutoPilot::_AutoPilot()
 {
 	m_pAM = NULL;
-	m_pRC = NULL;
-	m_pMavlink = NULL;
+	m_nAction = 0;
 
-	m_lastHeartbeat = 0;
-	m_iHeartbeat = 0;
-
+	m_ctrl.reset();
 }
 
 _AutoPilot::~_AutoPilot()
@@ -20,18 +17,17 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
+	if (this->_ThreadBase::init(pConfig) == false)
 		return false;
 
 	//link instance
 	string iName = "";
-	F_INFO(pConfig->v("_Mavlink",&iName));
-	m_pMavlink = (_Mavlink*)(pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_RC",&iName));
-	m_pRC = (_RC*)(pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_Automaton",&iName));
-	m_pAM = (_Automaton*)(pConfig->root()->getChildInstByName(&iName));
-
+	F_INFO(pConfig->v("_Mavlink", &iName));
+	m_ctrl.m_pMavlink = (_Mavlink*) (pConfig->root()->getChildInstByName(&iName));
+	F_INFO(pConfig->v("_RC", &iName));
+	m_ctrl.m_pRC = (_RC*) (pConfig->root()->getChildInstByName(&iName));
+	F_INFO(pConfig->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (pConfig->root()->getChildInstByName(&iName));
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
@@ -39,7 +35,8 @@ bool _AutoPilot::init(Config* pConfig)
 	Config* pCC;
 
 	pCC = pConfig->o("roll");
-	if(pCC->empty())return false;
+	if (pCC->empty())
+		return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -55,7 +52,8 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_roll.m_RC = RC;
 
 	pCC = pConfig->o("pitch");
-	if(pCC->empty())return false;
+	if (pCC->empty())
+		return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -71,7 +69,8 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_pitch.m_RC = RC;
 
 	pCC = pConfig->o("alt");
-	if(pCC->empty())return false;
+	if (pCC->empty())
+		return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -87,7 +86,8 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_alt.m_RC = RC;
 
 	pCC = pConfig->o("yaw");
-	if(pCC->empty())return false;
+	if (pCC->empty())
+		return false;
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_ERROR_F(pCC->v("I", &cPID.m_I));
@@ -102,17 +102,48 @@ bool _AutoPilot::init(Config* pConfig)
 	m_ctrl.m_yaw.m_pid = cPID;
 	m_ctrl.m_yaw.m_RC = RC;
 
-	pCC = pConfig->o("visualFollow");
-	if(pCC->empty())return false;
+	//create action instance
+	pCC = pConfig->o("pilotAction");
+	if (pCC->empty())
+		return true;
 
-	//For visual position locking
-	F_ERROR_F(pCC->v("targetX", &m_ctrl.m_roll.m_targetPos));
-	F_ERROR_F(pCC->v("targetY", &m_ctrl.m_pitch.m_targetPos));
+	Config** pItr = pCC->getChildItr();
 
-	m_lastHeartbeat = 0;
-	m_iHeartbeat = 0;
+	i = 0;
+	while (pItr[i])
+	{
+		Config* pAction = pItr[i];
+		i++;
 
-	//TODO: Create action classes
+		bool bInst = false;
+		F_INFO(pAction->v("bInst", &bInst));
+		if (!bInst)
+			continue;
+
+		if (m_nAction >= N_ACTION)
+			LOG(FATAL);
+		ActionBase** pA = &m_pAction[m_nAction];
+		m_nAction++;
+
+		if (pAction->m_class == "VisualFollow")
+		{
+			*pA = new VisualFollow();
+			F_ERROR_F(((VisualFollow* )(*pA))->VisualFollow::init(pAction, &m_ctrl));
+		}
+		else if (pAction->m_class == "Landing")
+		{
+			*pA = new Landing();
+			F_ERROR_F(((Landing* )(*pA))->Landing::init(pAction, &m_ctrl));
+		}
+		else
+		{
+			LOG(INFO)<<"Unknown action class";
+		}
+
+	}
+
+	m_ctrl.m_lastHeartbeat = 0;
+	m_ctrl.m_iHeartbeat = 0;
 
 	return true;
 }
@@ -151,18 +182,18 @@ void _AutoPilot::update(void)
 
 void _AutoPilot::sendHeartbeat(void)
 {
-	if (m_pMavlink == NULL)
+	if (m_ctrl.m_pMavlink == NULL)
 		return;
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
-	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
+	if (timeNow - m_ctrl.m_lastHeartbeat >= USEC_1SEC)
 	{
-		m_pMavlink->sendHeartbeat();
-		m_lastHeartbeat = timeNow;
+		m_ctrl.m_pMavlink->sendHeartbeat();
+		m_ctrl.m_lastHeartbeat = timeNow;
 
 #ifdef MAVLINK_DEBUG
-		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
+		printf("   SENT HEARTBEAT:%d\n", (++m_ctrl.m_iHeartbeat));
 #endif
 	}
 }

@@ -3,16 +3,18 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Interface/_Mavlink.h"
-#include "../Interface/_RC.h"
 #include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
 #include "commonAutopilot.h"
+#include "VisualFollow.h"
+#include "Landing.h"
 
 
 //FALCON COMMANDS
 #define CMD_RC_UPDATE 0
 #define CMD_OPERATE_MODE 1
+
+#define N_ACTION 32
 
 namespace kai
 {
@@ -32,17 +34,10 @@ public:
 public:
 	_Automaton* m_pAM;
 
-	int m_nActions;
-	ActionBase* m_pActions;
-
-	//Interface
-	_RC* m_pRC;
-	_Mavlink* m_pMavlink;
-	uint64_t m_lastHeartbeat;
-	uint64_t m_iHeartbeat;
-
-	//Control
+	int m_nAction;
+	ActionBase* m_pAction[N_ACTION];
 	AUTOPILOT_CONTROL m_ctrl;
+
 
 	//Thread
 	void update(void);

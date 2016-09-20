@@ -9,7 +9,7 @@ VisualFollow::VisualFollow()
 
 	m_pFD = NULL;
 	m_pROITracker = NULL;
-
+	m_pFlow = NULL;
 
 	m_ROI.m_x = 0;
 	m_ROI.m_y = 0;
@@ -32,22 +32,26 @@ VisualFollow::~VisualFollow()
 {
 }
 
-bool VisualFollow::init(Config* pConfig)
+bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 {
-	if (this->ActionBase::init(pConfig) == false)
+	if (this->ActionBase::init(pConfig, pAC) == false)
 		return false;
 
-	int i;
-	Config* pCC = pConfig->o("visualFollow");
-	if (pCC->empty())
-		return false;
+	m_pCtrl = pAC;
+
+	m_roll.reset();
+	m_pitch.reset();
+	m_yaw.reset();
+	m_alt.reset();
+
+	//For visual position locking
+	F_ERROR_F(pConfig->v("targetX", &m_roll.m_targetPos));
+	F_ERROR_F(pConfig->v("targetY", &m_pitch.m_targetPos));
+
+	//TODO: Link ROI tracker etc.
 
 	//TODO: setup UI
 	m_pUI = new UI();
-
-
-
-	m_pCtrl->reset();
 
 	return true;
 }
@@ -61,15 +65,16 @@ void VisualFollow::update(void)
 
 void VisualFollow::followROI(void)
 {
-	NULL_(m_pVI);
-	NULL_(m_pROITracker);
 	NULL_(m_pCtrl);
+	NULL_(m_pCtrl->m_pRC);
+	NULL_(m_pROITracker);
 
 	if (m_pROITracker->m_bTracking == false)
 	{
-		m_pCtrl->resetErr();
-		m_pCtrl->resetRC();
-		m_pVI->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
+		m_pCtrl->RCneutral();
+		m_roll.resetErr();
+		m_pitch.resetErr();
+//		m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
 		return;
 	}
 
@@ -77,49 +82,58 @@ void VisualFollow::followROI(void)
 	double posPitch;
 	double ovDTime;
 
-	CONTROL_CHANNEL* pRoll = &m_pCtrl->m_roll;
-	CONTROL_CHANNEL* pPitch = &m_pCtrl->m_pitch;
-	CONTROL_CHANNEL* pAlt = &m_pCtrl->m_alt;
-	CONTROL_CHANNEL* pYaw = &m_pCtrl->m_yaw;
+	CONTROL_PARAM* pRoll = &m_pCtrl->m_roll;
+	CONTROL_PARAM* pPitch = &m_pCtrl->m_pitch;
+	CONTROL_PARAM* pAlt = &m_pCtrl->m_alt;
+	CONTROL_PARAM* pYaw = &m_pCtrl->m_yaw;
+
+	CONTROL_PID* pidRoll = &pRoll->m_pid;
+	CONTROL_PID* pidPitch = &pPitch->m_pid;
+	CONTROL_PID* pidAlt = &pAlt->m_pid;
+	CONTROL_PID* pidYaw = &pYaw->m_pid;
+
+	RC_CHANNEL* pRCroll = &pRoll->m_RC;
+	RC_CHANNEL* pRCpitch = &pPitch->m_RC;
+	RC_CHANNEL* pRCalt = &pAlt->m_RC;
+	RC_CHANNEL* pRCyaw = &pYaw->m_RC;
+
 
 	ovDTime = (1.0 / m_pROITracker->m_dTime) * 1000; //ms
-	posRoll = pRoll->m_pos;
-	posPitch = pPitch->m_pos;
+	posRoll = m_roll.m_pos;
+	posPitch = m_pitch.m_pos;
 
 	//Update pos from ROI tracker
-	pRoll->m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
-	pPitch->m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
+	m_roll.m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
+	m_pitch.m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
 
 	//Update current position with trajectory estimation
-	posRoll = pRoll->m_pos
-			+ (pRoll->m_pos - posRoll) * pRoll->m_pid.m_dT * ovDTime;
-	posPitch = pPitch->m_pos
-			+ (pPitch->m_pos - posPitch) * pPitch->m_pid.m_dT * ovDTime;
+	posRoll = m_roll.m_pos
+			+ (m_roll.m_pos - posRoll) * pidRoll->m_dT * ovDTime;
+	posPitch = m_pitch.m_pos
+			+ (m_pitch.m_pos - posPitch) * pidPitch->m_dT * ovDTime;
 
 	//Roll
-	pRoll->m_errOld = pRoll->m_err;
-	pRoll->m_err = pRoll->m_targetPos - posRoll;
-	pRoll->m_errInteg += pRoll->m_err;
-	pRoll->m_RC.m_pwm = pRoll->m_RC.m_pwmN + pRoll->m_pid.m_P * pRoll->m_err
-			+ pRoll->m_pid.m_D * (pRoll->m_err - pRoll->m_errOld) * ovDTime
-			+ confineVal(pRoll->m_pid.m_I * pRoll->m_errInteg,
-					pRoll->m_pid.m_Imax, -pRoll->m_pid.m_Imax);
-	m_pCtrl->m_pRC[pRoll->m_RC.m_iCh] = constrain(pRoll->m_RC.m_pwm,
-			pRoll->m_RC.m_pwmL, pRoll->m_RC.m_pwmH);
+	m_roll.m_errOld = m_roll.m_err;
+	m_roll.m_err = m_roll.m_targetPos - posRoll;
+	m_roll.m_errInteg += m_roll.m_err;
+	pRCroll->m_pwm = pRCroll->m_pwmN + pidRoll->m_P * m_roll.m_err
+			+ pidRoll->m_D * (m_roll.m_err - m_roll.m_errOld) * ovDTime
+			+ confineVal(pidRoll->m_I * m_roll.m_errInteg,
+					pidRoll->m_Imax, -pidRoll->m_Imax);
+	pRCroll->m_pwm = constrain(pRCroll->m_pwm, pRCroll->m_pwmL, pRCroll->m_pwmH);
 
 	//Pitch
-	pPitch->m_errOld = pPitch->m_err;
-	pPitch->m_err = pPitch->m_targetPos - posPitch;
-	pPitch->m_errInteg += pPitch->m_err;
-	pPitch->m_RC.m_pwm = pPitch->m_RC.m_pwmN + pPitch->m_pid.m_P * pPitch->m_err
-			+ pPitch->m_pid.m_D * (pPitch->m_err - pPitch->m_errOld) * ovDTime
-			+ confineVal(pPitch->m_pid.m_I * pPitch->m_errInteg,
-					pPitch->m_pid.m_Imax, -pPitch->m_pid.m_Imax);
-	m_pCtrl->m_pRC[pPitch->m_RC.m_iCh] = constrain(pPitch->m_RC.m_pwm,
-			pPitch->m_RC.m_pwmL, pPitch->m_RC.m_pwmH);
+	m_pitch.m_errOld = m_pitch.m_err;
+	m_pitch.m_err = m_pitch.m_targetPos - posPitch;
+	m_pitch.m_errInteg += m_pitch.m_err;
+	pRCpitch->m_pwm = pRCpitch->m_pwmN + pidPitch->m_P * m_pitch.m_err
+			+ pidPitch->m_D * (m_pitch.m_err - m_pitch.m_errOld) * ovDTime
+			+ confineVal(pidPitch->m_I * m_pitch.m_errInteg,
+					pidPitch->m_Imax, - pidPitch->m_Imax);
+	pRCpitch->m_pwm = constrain(pRCpitch->m_pwm, pRCpitch->m_pwmL, pRCpitch->m_pwmH);
 
 	//RC output
-	m_pVI->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
+//	m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
 	return;
 
 }

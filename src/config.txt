@@ -6,8 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
-	"camMain":"ZEDL",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -35,13 +34,13 @@
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
-	"input":"Tiltac",
+	"input":"ZEDL",
 		
 	{
 		"name":"ZEDL",
 		"class":"Camera",
 		"FPS":30,
-		"ID":1,
+		"ID":0,
 		"width":1344,
 		"height":376,
 		"bCrop":1,
@@ -100,6 +99,17 @@
 		"angleV":67.1,
 		"angleH":66.7,
 	}
+	
+	{
+		"name":"Tara",
+		"class":"Camera",
+		"FPS":60,
+		"ID":1,
+		"width":752,
+		"height":480,
+		"angleV":67.1,
+		"angleH":66.7,
+	}
 
 	{
 		"name":"ZED",
@@ -133,7 +143,7 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/kai/dev/caffe_ssd/caffe/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -271,7 +281,6 @@
 	"roiMinSize":25,
 	
 	{
-		"class":"",
 		"name":"roll",
 		"P":-0.5,
 		"I":0.0,
@@ -285,7 +294,6 @@
 	}
 	
 	{
-		"class":"",
 		"name":"pitch",
 		"P":-0.5,
 		"I":0.0,
@@ -299,7 +307,6 @@
 	}
 
 	{
-		"class":"",
 		"name":"alt",
 		"P":1.0,
 		"I":0.0,
@@ -313,7 +320,6 @@
 	}
 
 	{
-		"class":"",
 		"name":"yaw",
 		"P":200.0,
 		"I":0.0,
@@ -327,32 +333,39 @@
 	}
 
 	{
-		"name":"visualFollow",
-		"class":"VisualFollow",
-		"targetX":960,
-		"targetY":500,
-	}
-	
-	{
-		"name":"visualLanding"
-		"class":"Landing",
-		"orientationX":1,
-		"orientationY":1,
-		"roiTimeLimit":1000000,
-		
-		{
-			"name":"AprilTags",
-			"num":1,
-			"tag0":15,
-		}	
-	}
-	
-	{
-		"class":"",
 		"name":"mode",
 		"pwmAltHold":1815,
 		"pwmStabilize":1165,
 	}
+
+	{
+		"name":"pilotAction",
+		
+		{
+			"name":"DDH",
+			"bInst":1,
+			"class":"VisualFollow",
+			"targetX":960,
+			"targetY":500,
+		}
+		
+		{
+			"name":"aprilTag",
+			"bInst":1,
+			"class":"Landing",
+			"orientationX":1,
+			"orientationY":1,
+			"roiTimeLimit":1000000,
+			
+			{
+				"name":"AprilTags",
+				"num":1,
+				"tag0":15,
+			}	
+		}
+		
+	}
+	
 }
 
 {

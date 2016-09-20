@@ -18,17 +18,23 @@ public:
 	VisualFollow();
 	~VisualFollow();
 
-	bool init(Config* pConfig);
+	bool init(Config* pConfig, AUTOPILOT_CONTROL* pAC);
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	void followROI(void);
 
 private:
+	//Control
+	CONTROL_CHANNEL m_roll;
+	CONTROL_CHANNEL m_pitch;
+	CONTROL_CHANNEL m_yaw;
+	CONTROL_CHANNEL m_alt;
+
 	//Detectors
 	_Cascade* m_pFD;
 	_ROITracker* m_pROITracker;
-	_Flow* m_pDF;
+	_Flow* m_pFlow;
 
 	//UI
 	UI* m_pUI;

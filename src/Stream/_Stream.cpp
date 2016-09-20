@@ -69,6 +69,12 @@ bool _Stream::init(Config* pConfig)
 
 	F_ERROR_F(m_pCamera->setup(pC));
 
+	double FPS;
+	if(pC->v("FPS", &FPS))
+	{
+		setTargetFPS(FPS);
+	}
+
 	m_bThreadON = false;
 	return true;
 }
