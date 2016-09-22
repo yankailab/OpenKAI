@@ -348,6 +348,105 @@
 			"class":"VisualFollow",
 			"targetX":960,
 			"targetY":500,
+			"ROIsizeFrom":50,
+			"ROIsizeTo":300,
+			"ROItracker":"targetDrone",
+			
+			{
+				"name":"assist",
+				"bInst":1,
+				"class":"UI",
+				
+				{
+					"name":"CLR",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":0,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":1825,
+					"ty":50,
+					"fontSize":1,
+				}
+
+				{
+					"name":"+",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":100,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":1825,
+					"ty":150,
+					"fontSize":1,
+				}
+
+				{
+					"name":"-",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":300,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":1825,
+					"ty":250,
+					"fontSize":1,
+				}
+				
+				{
+					"name":"MODE",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":980,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":1825,
+					"ty":1035,
+					"fontSize":1,
+				}
+
+			}
+			
+			
+			{
+				"name":"drawRect",
+				"bInst":1,
+				"class":"UI",
+
+				{
+					"name":"MODE",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":980,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":1825,
+					"ty":1035,
+					"fontSize":1,
+				}
+
+			}
+			
 		}
 		
 		{

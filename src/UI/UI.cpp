@@ -12,7 +12,7 @@ namespace kai
 
 UI::UI()
 {
-
+	m_nBtn = 0;
 }
 
 UI::~UI()
@@ -25,19 +25,53 @@ bool UI::init(Config* pConfig)
 	if (this->BASE::init(pConfig)==false)
 		return false;
 
+	//create buttons
+	Config** pItr = pConfig->getChildItr();
 
+	int i = 0;
+	while (pItr[i])
+	{
+		Config* pBtn = pItr[i];
+		i++;
+
+		bool bInst = false;
+		F_INFO(pBtn->v("bInst", &bInst));
+		if (!bInst)continue;
+
+		string className = "";
+		F_INFO(pBtn->v("class", &className));
+		if(className!="Btn")continue;
+
+		BUTTON* pNewBtn = addBtn();
+		NULL_F(pNewBtn);
+		double r=0,g=0,b=0;
+
+		F_INFO(pBtn->v("x", &pNewBtn->m_rect.x));
+		F_INFO(pBtn->v("y", &pNewBtn->m_rect.y));
+		F_INFO(pBtn->v("w", &pNewBtn->m_rect.width));
+		F_INFO(pBtn->v("h", &pNewBtn->m_rect.height));
+		F_INFO(pBtn->v("r", &r));
+		F_INFO(pBtn->v("g", &g));
+		F_INFO(pBtn->v("b", &b));
+		pNewBtn->m_color = Scalar(b,g,r);
+		F_INFO(pBtn->v("tx", &pNewBtn->m_tx));
+		F_INFO(pBtn->v("ty", &pNewBtn->m_ty));
+		F_INFO(pBtn->v("fontSize", &pNewBtn->m_sizeFont));
+
+	}
+
+	pConfig->m_pInst = this;
 	return true;
 }
 
-BUTTON* UI::addBtn(BUTTON* pBtn)
+BUTTON* UI::addBtn(void)
 {
-	if(pBtn==NULL)return NULL;
-	if(m_nBtn >= NUM_BUTTON)return NULL;
+	if(m_nBtn >= N_BUTTON)return NULL;
 
 	BUTTON* pNew = &m_pBtn[m_nBtn];
 	m_nBtn++;
 
-	*pNew = *pBtn;
+	pNew->init();
 	return pNew;
 }
 

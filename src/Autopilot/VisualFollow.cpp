@@ -11,6 +11,10 @@ VisualFollow::VisualFollow()
 	m_pROITracker = NULL;
 	m_pFlow = NULL;
 
+	m_bUI = false;
+	m_pUIassist = NULL;
+	m_pUIdrawRect = NULL;
+
 	m_ROI.m_x = 0;
 	m_ROI.m_y = 0;
 	m_ROI.m_z = 0;
@@ -21,11 +25,6 @@ VisualFollow::VisualFollow()
 	m_ROIsizeFrom = 50;
 	m_ROIsizeTo = 300;
 
-	m_btnSize = 100;
-	m_btnROIClear = 100;
-	m_btnROIBig = 200;
-	m_btnROISmall = 300;
-	m_btnMode = 980;
 }
 
 VisualFollow::~VisualFollow()
@@ -44,14 +43,34 @@ bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 	m_yaw.reset();
 	m_alt.reset();
 
-	//For visual position locking
 	F_ERROR_F(pConfig->v("targetX", &m_roll.m_targetPos));
 	F_ERROR_F(pConfig->v("targetY", &m_pitch.m_targetPos));
+	F_INFO(pConfig->v("ROIsizeFrom", &m_ROIsizeFrom));
+	F_INFO(pConfig->v("ROIsizeTo", &m_ROIsizeTo));
 
-	//TODO: Link ROI tracker etc.
+	//link ROI tracker
+	string roiName = "";
+	F_ERROR_F(pConfig->v("ROItracker", &roiName));
+	m_pROITracker = (_ROITracker*)(pConfig->root()->o(roiName)->getChildInstByName(&roiName));
 
-	//TODO: setup UI
-	m_pUI = new UI();
+	//setup UI
+	Config* pC;
+
+	pC = pConfig->o("assist");
+	if(!pC->empty())
+	{
+		m_pUIassist = new UI();
+		F_FATAL_F(m_pUIassist->init(pC));
+	}
+
+	pC = pConfig->o("drawRect");
+	if(!pC->empty())
+	{
+		m_pUIdrawRect = new UI();
+		F_FATAL_F(m_pUIdrawRect->init(pC));
+	}
+
+	pConfig->m_pInst = this;
 
 	return true;
 }
@@ -60,11 +79,6 @@ void VisualFollow::update(void)
 {
 	this->ActionBase::update();
 
-	followROI();
-}
-
-void VisualFollow::followROI(void)
-{
 	NULL_(m_pCtrl);
 	NULL_(m_pCtrl->m_pRC);
 	NULL_(m_pROITracker);
@@ -147,14 +161,13 @@ bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 
 	Rect2d roi;
 
-/*
 	 // draw the tracked object
 	if(m_bSelect)
 	{
 		roi = getROI(m_ROI);
 		if(roi.height>0 || roi.width>0)
 		{
-			rectangle( imMat, roi, Scalar( 0, 255, 0 ), 2 );
+			rectangle( *pMat, roi, Scalar( 0, 255, 0 ), 2 );
 		}
 	}
 	else if(m_pROITracker->m_bTracking)
@@ -162,41 +175,21 @@ bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 		roi = m_pROITracker->m_ROI;
 		if(roi.height>0 || roi.width>0)
 		{
-			rectangle( imMat, roi, Scalar( 0, 0, 255 ), 2 );
+			rectangle( *pMat, roi, Scalar( 0, 0, 255 ), 2 );
 		}
 	}
 
 	if(m_ROImode == MODE_ASSIST)
 	{
-		putText(imMat, "CLR", cv::Point(1825,50), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-		putText(imMat, "+", cv::Point(1825,150), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-		putText(imMat, "-", cv::Point(1825,250), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
-
-		roi.x = imMat.cols - m_btnSize;
-		roi.y = 0;
-		roi.width = m_btnSize;
-		roi.height = m_btnSize;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-		roi.y = m_btnROIClear;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-		roi.y = m_btnROIBig;
-		rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
+		m_pUIassist->draw(pFrame, pTextPos);
+	}
+	else if(m_ROImode == MODE_DRAWRECT)
+	{
+		m_pUIdrawRect->draw(pFrame, pTextPos);
 	}
 
-	putText(imMat, "MODE", cv::Point(1825,1035), FONT_HERSHEY_SIMPLEX, 1, Scalar(0, 255, 0), 1);
+	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
 
-	roi.x = imMat.cols - m_btnSize;
-	roi.y = m_btnMode;
-	roi.width = m_btnSize;
-	roi.height = m_btnSize;
-	rectangle( imMat, roi, Scalar( 0, 255, 0 ), 1 );
-
-
-	circle(imMat, Point(m_pAP->m_roll.m_targetPos, m_pAP->m_pitch.m_targetPos), 50, Scalar(0,255,0), 2);
-
-*/
 	return true;
 }
 

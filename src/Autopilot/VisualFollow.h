@@ -6,7 +6,7 @@
 #include "../UI/UI.h"
 
 #define MODE_ASSIST 0
-#define MODE_RECTDRAW 1
+#define MODE_DRAWRECT 1
 
 namespace kai
 {
@@ -21,7 +21,7 @@ public:
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
-	void followROI(void);
+	Rect2d getROI(iVec4 mouseROI);
 
 private:
 	//Control
@@ -36,7 +36,9 @@ private:
 	_Flow* m_pFlow;
 
 	//UI
-	UI* m_pUI;
+	bool m_bUI;
+	UI* m_pUIassist;
+	UI* m_pUIdrawRect;
 
 	iVec4 m_ROI;
 	bool m_bSelect;
@@ -46,14 +48,6 @@ private:
 	int m_ROIsizeFrom;
 	int m_ROIsizeTo;
 
-	//UI
-	int m_btnSize;
-	int m_btnROIClear;
-	int m_btnROIBig;
-	int m_btnROISmall;
-	int m_btnMode;
-
-	Rect2d getROI(iVec4 mouseROI);
 
 };
 
