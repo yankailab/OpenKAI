@@ -23,13 +23,13 @@
 
 #define DEFAULT_FPS 30
 
-
 using namespace std;
 
 #define F_FATAL_F(x) if(x==false){LOG(FATAL);return false;}
 #define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
 #define F_INFO(x) if(x==false){LOG(INFO);}
 #define F_(x) if(x==false){return;}
+
 #define CHECK_T(x) if(x){return true;}
 #define CHECK_F(x) if(x){return false;}
 #define CHECK_N(x) if(x){return NULL;}
@@ -88,10 +88,12 @@ struct iVec4
 	int m_w;
 };
 
-struct CAMERA_DATA
+struct MOUSE
 {
-	bool m_bBall;
-
+	int m_event;
+	int m_x;
+	int m_y;
+	int m_flags;
 };
 
 }

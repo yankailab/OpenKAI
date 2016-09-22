@@ -13,6 +13,7 @@ namespace kai
 UI::UI()
 {
 	m_nBtn = 0;
+
 }
 
 UI::~UI()
@@ -46,6 +47,8 @@ bool UI::init(Config* pConfig)
 		NULL_F(pNewBtn);
 		double r=0,g=0,b=0;
 
+		F_ERROR_F(pBtn->v("name", &pNewBtn->m_name));
+		CHECK_F(pNewBtn->m_name.empty());
 		F_INFO(pBtn->v("x", &pNewBtn->m_rect.x));
 		F_INFO(pBtn->v("y", &pNewBtn->m_rect.y));
 		F_INFO(pBtn->v("w", &pNewBtn->m_rect.width));
@@ -94,16 +97,27 @@ bool UI::draw(Frame* pFrame, iVec4* pTextPos)
 	return true;
 }
 
-void UI::handleMouse(int event, int x, int y, int flags)
+BUTTON* UI::onMouse(MOUSE* pMouse)
 {
+	NULL_N(pMouse);
+	BUTTON* pActive = NULL;
+
 	int i;
 	for(i=0; i<m_nBtn;i++)
 	{
-		m_pBtn[i].handler(event,x,y,flags);
+		if(m_pBtn[i].handler(pMouse->m_event,
+							pMouse->m_x,
+							pMouse->m_y,
+							pMouse->m_flags))
+		{
+			pActive = &m_pBtn[i];
+		}
 	}
+
+	return pActive;
 }
 
-void UI::handleKey(int key)
+void UI::onKey(int key)
 {
 
 }

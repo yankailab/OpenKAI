@@ -280,6 +280,7 @@
 	"_Mavlink":"APM",
 	"_RC":"RC",
 	"roiMinSize":25,
+	"bMouse":1,
 	
 	{
 		"name":"roll",
@@ -348,9 +349,12 @@
 			"class":"VisualFollow",
 			"targetX":960,
 			"targetY":500,
-			"ROIsizeFrom":50,
+			"ROIsizeFrom":10,
 			"ROIsizeTo":300,
+			"ROIsizeStep":10,
 			"ROItracker":"targetDrone",
+			"bMouse":1,
+			
 			
 			{
 				"name":"assist",

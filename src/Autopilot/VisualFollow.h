@@ -20,8 +20,11 @@ public:
 	bool init(Config* pConfig, AUTOPILOT_CONTROL* pAC);
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
+	Rect2d getMouseROI(iVec4 mouseROI);
 
-	Rect2d getROI(iVec4 mouseROI);
+	void onMouse(MOUSE* pMouse);
+	void onMouseAssist(MOUSE* pMouse, BUTTON* pBtn);
+	void onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn);
 
 private:
 	//Control
@@ -42,11 +45,11 @@ private:
 
 	iVec4 m_ROI;
 	bool m_bSelect;
-	int m_minROI;
 	int m_ROImode;
 	int m_ROIsize;
 	int m_ROIsizeFrom;
 	int m_ROIsizeTo;
+	int m_ROIsizeStep;
 
 
 };

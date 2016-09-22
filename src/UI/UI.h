@@ -25,7 +25,6 @@ struct BUTTON
 	int		m_tx;
 	int		m_ty;
 	double	m_sizeFont;
-
 	int		m_event;
 
 	void init()
@@ -42,13 +41,14 @@ struct BUTTON
 		m_event = 0;
 	}
 
-	void handler(int event, int x, int y, int flags)
+	bool handler(int event, int x, int y, int flags)
 	{
 		m_event = 0;
-		if(x<m_rect.x || x>m_rect.x+m_rect.width)return;
-		if(y<m_rect.y || y>m_rect.y+m_rect.height)return;
+		if(x<m_rect.x || x>m_rect.x+m_rect.width)return false;
+		if(y<m_rect.y || y>m_rect.y+m_rect.height)return false;
 
 		m_event = event;
+		return true;
 	}
 };
 
@@ -63,13 +63,12 @@ public:
 
 	BUTTON* addBtn(void);
 
-	void handleMouse(int event, int x, int y, int flags);
-	void handleKey(int key);
+	BUTTON* onMouse(MOUSE* pMouse);
+	void onKey(int key);
 
 public:
 	int 	m_nBtn;
 	BUTTON	m_pBtn[N_BUTTON];
-
 
 };
 
