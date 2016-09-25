@@ -165,9 +165,7 @@ void Landing::landingAtBullseye(void)
 
 bool Landing::draw(Frame* pFrame, iVec4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
-
+	NULL_F(pFrame);
 	Mat* pMat = pFrame->getCMat();
 
 	if(m_pAT)

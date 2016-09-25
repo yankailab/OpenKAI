@@ -52,9 +52,13 @@ public:
 	template <typename T> bool createInst(Config* pConfig);
 
 public:
+	Frame*	m_pFrame;
+
 	int		m_nInst;
 	BASE* 	m_pInst[N_INST];
-	Frame*	m_pFrame;
+
+	int 	m_nMouse;
+	BASE* 	m_pMouse[N_INST];
 
 };
 

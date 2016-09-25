@@ -125,7 +125,6 @@ public:
 
 	bool init(Config* pConfig, AUTOPILOT_CONTROL* pAC);
 	void update(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 public:
 	AUTOPILOT_CONTROL* m_pCtrl;

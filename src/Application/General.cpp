@@ -16,8 +16,10 @@ General::General()
 	for (int i = 0; i < N_INST; i++)
 	{
 		m_pInst[i] = NULL;
+		m_pMouse[i] = NULL;
 	}
 	m_nInst = 0;
+	m_nMouse = 0;
 	m_pFrame = NULL;
 
 }
@@ -54,12 +56,16 @@ bool General::start(Config* pConfig)
 	{
 		m_pFrame = new Frame();
 
-		namedWindow(m_name, CV_WINDOW_NORMAL);
 		if (m_bFullScreen)
 		{
+			namedWindow(m_name, CV_WINDOW_NORMAL);
 			setWindowProperty(m_name,
 					CV_WND_PROP_FULLSCREEN,
 					CV_WINDOW_FULLSCREEN);
+		}
+		else
+		{
+			namedWindow(m_name, CV_WINDOW_AUTOSIZE);
 		}
 		setMouseCallback(m_name, onMouseGeneral, NULL);
 
@@ -181,18 +187,16 @@ void General::handleKey(int key)
 
 void General::handleMouse(int event, int x, int y, int flags)
 {
-	switch (event)
+	MOUSE m;
+	m.m_event = event;
+	m.m_flags = flags;
+	m.m_x = x;
+	m.m_y = y;
+
+	int i;
+	for(i=0;i<m_nMouse;i++)
 	{
-	case EVENT_LBUTTONDOWN:
-		break;
-	case EVENT_LBUTTONUP:
-		break;
-	case EVENT_MOUSEMOVE:
-		break;
-	case EVENT_RBUTTONDOWN:
-		break;
-	default:
-		break;
+		((_AutoPilot*)m_pMouse[i])->onMouse(&m);
 	}
 }
 
@@ -291,6 +295,13 @@ template <typename T> bool General::createInst(Config* pConfig)
 	m_nInst++;
 
 	F_FATAL_F(pInst->T::start());
+
+	CHECK_T(pConfig->m_class != "_AutoPilot");
+	CHECK_T(!m_bShowScreen);
+
+	m_pMouse[m_nMouse] = pInst;
+	m_nMouse++;
+
     return true;
 }
 

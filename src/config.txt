@@ -34,7 +34,7 @@
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
-	"input":"ZEDL",
+	"input":"Embedded",
 		
 	{
 		"name":"ZEDL",
@@ -96,6 +96,17 @@
 		"ID":2,
 		"width":1280,
 		"height":720,
+		"angleV":67.1,
+		"angleH":66.7,
+	}
+
+	{
+		"name":"Embedded",
+		"class":"Camera",
+		"FPS":30,
+		"ID":0,
+		"width":1920,
+		"height":1080,
 		"angleV":67.1,
 		"angleH":66.7,
 	}
@@ -193,8 +204,8 @@
 {
 	"name":"targetDrone",
 	"class":"_ROITracker",
-	"bInst":0,
-	"FPS":0,
+	"bInst":1,
+	"FPS":30,
 	"_Stream":"mainStream",
 }
 
@@ -372,7 +383,7 @@
 					"r":0,
 					"g":250,
 					"b":0,
-					"tx":1825,
+					"tx":10,
 					"ty":50,
 					"fontSize":1,
 				}
@@ -388,8 +399,8 @@
 					"r":0,
 					"g":250,
 					"b":0,
-					"tx":1825,
-					"ty":150,
+					"tx":10,
+					"ty":50,
 					"fontSize":1,
 				}
 
@@ -398,14 +409,14 @@
 					"bInst":1,
 					"class":"Btn",
 					"x":1820,
-					"y":300,
+					"y":200,
 					"w":100,
 					"h":100,
 					"r":0,
 					"g":250,
 					"b":0,
-					"tx":1825,
-					"ty":250,
+					"tx":10,
+					"ty":50,
 					"fontSize":1,
 				}
 				
@@ -420,8 +431,8 @@
 					"r":0,
 					"g":250,
 					"b":0,
-					"tx":1825,
-					"ty":1035,
+					"tx":10,
+					"ty":50,
 					"fontSize":1,
 				}
 
@@ -444,8 +455,8 @@
 					"r":0,
 					"g":250,
 					"b":0,
-					"tx":1825,
-					"ty":1035,
+					"tx":10,
+					"ty":50,
 					"fontSize":1,
 				}
 

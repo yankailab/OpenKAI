@@ -89,7 +89,7 @@ bool UI::draw(Frame* pFrame, iVec4* pTextPos)
 	for(i=0; i<m_nBtn;i++)
 	{
 		BUTTON* pBtn = &m_pBtn[i];
-		putText(*pMat, pBtn->m_name, cv::Point(pBtn->m_rect.x,pBtn->m_rect.y),
+		putText(*pMat, pBtn->m_name, cv::Point(pBtn->m_rect.x+pBtn->m_tx,pBtn->m_rect.y+pBtn->m_ty),
 				FONT_HERSHEY_SIMPLEX, pBtn->m_sizeFont, pBtn->m_color, 1);
 		rectangle( *pMat, pBtn->m_rect, pBtn->m_color, 1 );
 	}

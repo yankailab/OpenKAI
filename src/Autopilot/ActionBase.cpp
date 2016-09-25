@@ -28,14 +28,4 @@ void ActionBase::update(void)
 
 }
 
-
-bool ActionBase::draw(Frame* pFrame, iVec4* pTextPos)
-{
-	if (pFrame == NULL)
-		return false;
-
-	return true;
-}
-
-
 }

@@ -7,6 +7,7 @@ _AutoPilot::_AutoPilot()
 {
 	m_pAM = NULL;
 	m_nAction = 0;
+	m_pAA = NULL;
 
 	m_ctrl.reset();
 }
@@ -123,6 +124,7 @@ bool _AutoPilot::init(Config* pConfig)
 		{
 			*pA = new VisualFollow();
 			F_ERROR_F(((VisualFollow* )(*pA))->VisualFollow::init(pAction, &m_ctrl));
+			m_pAA = *pA;
 		}
 		else if (pAction->m_class == "Landing")
 		{
@@ -203,7 +205,25 @@ bool _AutoPilot::draw(Frame* pFrame, iVec4* pTextPos)
 
 	pTextPos->m_y += pTextPos->m_w;
 
+	CHECK_T(!m_pAA);
+
+	string* className = m_pAA->getClass();
+	if(*className == "VisualFollow")
+	{
+		((VisualFollow*)m_pAA)->draw(pFrame, pTextPos);
+	}
+
 	return true;
 }
+
+void _AutoPilot::onMouse(MOUSE* pMouse)
+{
+	NULL_(m_pAA);
+	NULL_(pMouse);
+	CHECK_(*(m_pAA->getClass())!="VisualFollow");
+
+	((VisualFollow*)m_pAA)->onMouse(pMouse);
+}
+
 
 }

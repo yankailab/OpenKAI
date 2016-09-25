@@ -53,9 +53,7 @@ bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 	//link ROI tracker
 	string roiName = "";
 	F_ERROR_F(pConfig->v("ROItracker", &roiName));
-	m_pROITracker =
-			(_ROITracker*) (pConfig->root()->o(roiName)->getChildInstByName(
-					&roiName));
+	m_pROITracker = (_ROITracker*) (pConfig->root()->getChildInstByName(&roiName));
 
 	//setup UI
 	Config* pC;
@@ -158,9 +156,8 @@ void VisualFollow::update(void)
 
 bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
-
+	NULL_F(pFrame);
+	NULL_F(m_pROITracker);
 	Mat* pMat = pFrame->getCMat();
 
 	Rect2d roi;

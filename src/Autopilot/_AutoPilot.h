@@ -29,12 +29,15 @@ public:
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 	void sendHeartbeat(void);
 
+	void onMouse(MOUSE* pMouse);
+
 
 public:
 	_Automaton* m_pAM;
 
 	int m_nAction;
 	ActionBase* m_pAction[N_ACTION];
+	ActionBase* m_pAA;
 	AUTOPILOT_CONTROL m_ctrl;
 
 	//Thread
