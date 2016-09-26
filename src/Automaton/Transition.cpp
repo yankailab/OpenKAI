@@ -12,8 +12,9 @@ namespace kai
 
 Transition::Transition()
 {
-	m_iToState = -1;
 	m_nCond = 0;
+	m_strToState = "";
+	m_pToState = NULL;
 }
 
 Transition::~Transition()
@@ -23,7 +24,9 @@ Transition::~Transition()
 bool Transition::init(Config* pConfig)
 {
 	NULL_F(pConfig);
-	F_FATAL_F(pConfig->v("toState", &m_iToState));
+	F_FATAL_F(pConfig->v("toState", &m_strToState));
+
+	pConfig->m_pInst = (void*)this;
 
 	Config** pItr = pConfig->getChildItr();
 
@@ -55,6 +58,16 @@ bool Transition::init(Config* pConfig)
 			LOG(FATAL)<<"Unknown condition";
 		}
 	}
+
+	return true;
+}
+
+bool Transition::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	m_pToState = pConfig->getChildInstByName(&m_strToState);
+	NULL_F(m_pToState);
 
 	return true;
 }

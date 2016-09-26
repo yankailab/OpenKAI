@@ -27,7 +27,6 @@ public:
 	bool init(Config* pConfig);
 	bool start(void);
 
-	bool setState(int iState);
 	bool checkDiagram(void);
 
 	bool setPtrByName(string name, int* ptr);
@@ -38,9 +37,9 @@ public:
 public:
 	void updateAll(void);
 
-	int		m_iState;
 	int		m_nState;
 	State*	m_pState[N_STATE];
+	State*	m_pMyState;
 
 	//Thread
 	void update(void);

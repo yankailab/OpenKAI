@@ -138,6 +138,7 @@ bool _AutoPilot::init(Config* pConfig)
 
 	}
 
+	//init controls
 	m_ctrl.m_lastHeartbeat = 0;
 	m_ctrl.m_iHeartbeat = 0;
 

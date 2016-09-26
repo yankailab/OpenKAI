@@ -23,10 +23,11 @@ public:
 	virtual ~State();
 
 	bool init(Config* pConfig);
+	bool link(Config* pConfig);
 
 	Transition* addTransition(void);
 	bool IsValid(void);
-	int Transit(void);
+	State* Transit(void);
 
 	bool setPtrByName(string name, int* ptr);
 	bool setPtrByName(string name, double* ptr);

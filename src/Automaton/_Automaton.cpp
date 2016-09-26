@@ -15,7 +15,7 @@ _Automaton::_Automaton()
 	_ThreadBase();
 
 	m_nState = 0;
-	m_iState = 0;
+	m_pMyState = NULL;
 
 }
 
@@ -28,6 +28,7 @@ bool _Automaton::init(Config* pConfig)
 {
 	CHECK_F(this->_ThreadBase::init(pConfig)==false);
 
+	//create state instances
 	Config** pItr = pConfig->getChildItr();
 
 	int i = 0;
@@ -47,12 +48,20 @@ bool _Automaton::init(Config* pConfig)
 
 		*ppS = new State();
 		F_ERROR_F((*ppS)->init(pState));
-		pState->m_pInst = (void*)(*ppS);
 	}
 
-	int k = 0;
-	pConfig->v("startState", &k);
-	return setState(k);
+	//link state instances
+	for(i=0;i<m_nState;i++)
+	{
+		F_ERROR_F(m_pState[i]->link(pConfig));
+	}
+
+	string startState = "";
+	F_FATAL_F(pConfig->v("startState", &startState));
+	m_pMyState = (State*)(pConfig->getChildInstByName(&startState));
+	NULL_F(m_pMyState);
+
+	return true;
 }
 
 bool _Automaton::start(void)
@@ -87,12 +96,11 @@ void _Automaton::update(void)
 
 void _Automaton::updateAll(void)
 {
-	int iTransit = m_pState[m_iState]->Transit();
+	State* pNext = m_pMyState->Transit();
 
-	CHECK_(iTransit < 0);
-	CHECK_(iTransit >= m_nState);
+	NULL_(pNext);
 
-	m_iState = iTransit;
+	m_pMyState = pNext;
 }
 
 bool _Automaton::setPtrByName(string name, int* ptr)
@@ -121,15 +129,6 @@ bool _Automaton::setPtrByName(string name, double* ptr)
 	return true;
 }
 
-bool _Automaton::setState(int iState)
-{
-	CHECK_F(iState >= m_nState);
-	CHECK_F(iState < 0);
-
-	m_iState = iState;
-	return true;
-}
-
 bool _Automaton::checkDiagram(void)
 {
 	return true;
@@ -148,7 +147,7 @@ bool _Automaton::draw(Frame* pFrame, iVec4* pTextPos)
 	pTextPos->m_y += pTextPos->m_w;
 
 	putText(*pMat,
-			"Automaton State: " + m_pState[m_iState]->m_name,
+			"Automaton State: " + m_pMyState->m_name,
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 

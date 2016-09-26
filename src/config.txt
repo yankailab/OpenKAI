@@ -6,7 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -34,7 +34,7 @@
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
-	"input":"Embedded",
+	"input":"ZEDL",
 		
 	{
 		"name":"ZEDL",
@@ -77,7 +77,7 @@
 		"name":"ZEDL_FHD",
 		"class":"Camera",
 		"FPS":30,
-		"ID":1,
+		"ID":0,
 		"width":3840,
 		"height":1080,
 		"bCrop":1,
@@ -154,7 +154,7 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/kai/dev/caffe_ssd/caffe/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -256,7 +256,7 @@
 	"class":"_Automaton",
 	"bInst":1,
 	"FPS":10,
-	"startState":0,
+	"startState":"LAND_STANDBY",
 
 	{
 		"name":"LAND_STANDBY",
@@ -268,7 +268,7 @@
 			"name":"toTakeoff",
 			"class":"Transition",
 			"bInst":1,
-			"toState":0,
+			"toState":"LAND_ARM",
 			{
 				"name":"condition0",
 				"class":"ConditionII",
@@ -280,6 +280,76 @@
 			}
 		}
 	}
+	
+	{
+		"name":"LAND_ARM",
+		"class":"State",
+		"bInst":1,
+		"action":"",
+		
+		{
+			"name":"toTakeoff",
+			"class":"Transition",
+			"bInst":1,
+			"toState":"AIR_FOLLOW",
+			{
+				"name":"condition0",
+				"class":"ConditionII",
+				"bInst":1,
+				"cond":"bt",
+				"ptr1":"",
+				"ptr2":"",
+				"constI":0,				
+			}
+		}
+	}
+
+	{
+		"name":"AIR_FOLLOW",
+		"class":"State",
+		"bInst":1,
+		"action":"",
+		
+		{
+			"name":"toTakeoff",
+			"class":"Transition",
+			"bInst":1,
+			"toState":"AIR_RTH",
+			{
+				"name":"condition0",
+				"class":"ConditionII",
+				"bInst":1,
+				"cond":"bt",
+				"ptr1":"",
+				"ptr2":"",
+				"constI":0,				
+			}
+		}
+	}
+
+	{
+		"name":"AIR_RTH",
+		"class":"State",
+		"bInst":1,
+		"action":"",
+		
+		{
+			"name":"toTakeoff",
+			"class":"Transition",
+			"bInst":1,
+			"toState":"LAND_STANDBY",
+			{
+				"name":"condition0",
+				"class":"ConditionII",
+				"bInst":1,
+				"cond":"bt",
+				"ptr1":"",
+				"ptr2":"",
+				"constI":0,				
+			}
+		}
+	}
+	
 }
 
 {

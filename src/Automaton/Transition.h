@@ -25,6 +25,7 @@ public:
 	virtual ~Transition();
 
 	bool init(Config* pConfig);
+	bool link(Config* pConfig);
 
 	template <typename T> bool addCondition(Config* pConfig);
 	bool activate(void);
@@ -34,7 +35,8 @@ public:
 	bool setPtrByName(string name, double* ptr);
 
 public:
-	int					m_iToState;
+	void*				m_pToState;
+	string				m_strToState;
 	int					m_nCond;
 	ConditionBase*	 	m_pCond[N_COND];
 };

@@ -25,6 +25,8 @@ bool State::init(Config* pConfig)
 	NULL_F(pConfig);
 	F_FATAL_F(pConfig->v("name", &m_name));
 
+	pConfig->m_pInst = (void*)this;
+
 	Config** pItr = pConfig->getChildItr();
 
 	int i = 0;
@@ -44,7 +46,18 @@ bool State::init(Config* pConfig)
 
 		*ppT = new Transition();
 		F_ERROR_F((*ppT)->init(pT));
-		pT->m_pInst = (void*)(*ppT);
+	}
+
+	return true;
+}
+
+bool State::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	for(int i=0;i<m_nTransition;i++)
+	{
+		F_ERROR_F(m_pTransition[i]->link(pConfig));
 	}
 
 	return true;
@@ -67,18 +80,18 @@ bool State::IsValid(void)
 	return true;
 }
 
-int State::Transit(void)
+State* State::Transit(void)
 {
 	for(int i=0; i<m_nTransition; i++)
 	{
 		Transition* pT = m_pTransition[i];
 		if(pT->activate())
 		{
-			return pT->m_iToState;
+			return (State*)(pT->m_pToState);
 		}
 	}
 
-	return -1;
+	return NULL;
 }
 
 bool State::setPtrByName(string name, int* ptr)
