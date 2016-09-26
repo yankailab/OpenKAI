@@ -48,6 +48,7 @@ public:
 
 	bool createAllInst(Config* pConfig);
 	BASE* getInstByName(string* pName);
+	bool linkAllInst(Config* pConfig);
 
 	template <typename T> bool createInst(Config* pConfig);
 

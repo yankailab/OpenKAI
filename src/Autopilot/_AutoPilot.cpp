@@ -18,16 +18,8 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(Config* pConfig)
 {
-	CHECK_F(this->_ThreadBase::init(pConfig) == false);
-
-	//link instance
-	string iName = "";
-	F_INFO(pConfig->v("_Mavlink", &iName));
-	m_ctrl.m_pMavlink = (_Mavlink*) (pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_RC", &iName));
-	m_ctrl.m_pRC = (_RC*) (pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	CONTROL_PID cPID;
 	RC_CHANNEL RC;
@@ -141,6 +133,24 @@ bool _AutoPilot::init(Config* pConfig)
 	//init controls
 	m_ctrl.m_lastHeartbeat = 0;
 	m_ctrl.m_iHeartbeat = 0;
+
+	return true;
+}
+
+bool _AutoPilot::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_INFO(pConfig->v("_Mavlink", &iName));
+	m_ctrl.m_pMavlink = (_Mavlink*) (pConfig->root()->getChildInstByName(&iName));
+	F_INFO(pConfig->v("_RC", &iName));
+	m_ctrl.m_pRC = (_RC*) (pConfig->root()->getChildInstByName(&iName));
+	F_INFO(pConfig->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

@@ -39,8 +39,8 @@ _Cascade::~_Cascade()
 
 bool _Cascade::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	string cascadeFile = "";
 	string presetDir = "";
@@ -76,6 +76,15 @@ bool _Cascade::init(Config* pConfig)
 	{
 		m_pObj[i].m_status = OBJ_VACANT;
 	}
+
+	return true;
+}
+
+bool _Cascade::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

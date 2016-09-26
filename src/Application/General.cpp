@@ -46,8 +46,11 @@ bool General::start(Config* pConfig)
 	F_INFO(pApp->v("bFullScreen", &m_bFullScreen));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
 
-	//create instances and link with each other
+	//create instances
 	F_FATAL_F(createAllInst(pConfig));
+
+	//link instances with each other
+	F_FATAL_F(linkAllInst(pConfig));
 
 	//UI thread
 	m_bRun = true;
@@ -200,7 +203,6 @@ void General::handleMouse(int event, int x, int y, int flags)
 	}
 }
 
-
 bool General::createAllInst(Config* pConfig)
 {
 	NULL_F(pConfig);
@@ -276,7 +278,6 @@ bool General::createAllInst(Config* pConfig)
 		{
 			LOG(ERROR)<<"Unknown class";
 		}
-
 	}
 
 	return true;
@@ -289,7 +290,7 @@ template <typename T> bool General::createInst(Config* pConfig)
 
 	T* pInst = new T();
 	F_FATAL_F(pInst->T::init(pConfig));
-	pConfig->m_pInst = pInst;
+//	pConfig->m_pInst = pInst;
 
 	m_pInst[m_nInst] = pInst;
 	m_nInst++;
@@ -304,5 +305,86 @@ template <typename T> bool General::createInst(Config* pConfig)
 
     return true;
 }
+
+bool General::linkAllInst(Config* pConfig)
+{
+	NULL_F(pConfig);
+	Config** pItr = pConfig->root()->getChildItr();
+
+	int i = 0;
+	while (pItr[i])
+	{
+		Config* pC = pItr[i++];
+
+		bool bInst = false;
+		F_INFO(pC->v("bInst", &bInst));
+		if (!bInst)continue;
+
+		if (pC->m_class == "_Stream")
+		{
+			F_FATAL_F(((_Stream*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Automaton")
+		{
+			F_FATAL_F(((_Automaton*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Universe")
+		{
+			F_FATAL_F(((_Universe*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Mavlink")
+		{
+			F_FATAL_F(((_Mavlink*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_RC")
+		{
+			F_FATAL_F(((_RC*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_SSD")
+		{
+			F_FATAL_F(((_SSD*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_FCN")
+		{
+			F_FATAL_F(((_FCN*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_AutoPilot")
+		{
+			F_FATAL_F(((_AutoPilot*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_AprilTags")
+		{
+			F_FATAL_F(((_AprilTags*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Bullseye")
+		{
+			F_FATAL_F(((_Bullseye*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_ROITracker")
+		{
+			F_FATAL_F(((_ROITracker*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Cascade")
+		{
+			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Depth")
+		{
+			F_FATAL_F(((_Depth*)(pC->m_pInst))->link(pC));
+		}
+		else if (pC->m_class == "_Flow")
+		{
+			F_FATAL_F(((_Flow*)(pC->m_pInst))->link(pC));
+		}
+		else if(pC->m_class != "General")
+		{
+			LOG(ERROR)<<"Unknown class";
+		}
+
+	}
+
+	return true;
+}
+
 
 }

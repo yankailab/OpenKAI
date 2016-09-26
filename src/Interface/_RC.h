@@ -26,6 +26,7 @@ public:
 	~_RC();
 
 	bool init(Config* pConfig);
+	bool link(Config* pConfig);
 	bool open(void);
 	void close(void);
 	bool start(void);

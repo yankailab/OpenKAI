@@ -32,6 +32,8 @@ public:
 	virtual ~_Bullseye();
 
 	bool init(Config* pConfig);
+	bool link(Config* pConfig);
+
 	bool start(void);
 
 	bool getCircleCenter(fVec3* pCenter);

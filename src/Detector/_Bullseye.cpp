@@ -37,16 +37,10 @@ _Bullseye::~_Bullseye()
 	// TODO Auto-generated destructor stub
 }
 
-
 bool _Bullseye::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	//format params
 	F_ERROR_F(pConfig->v("areaRatio", &m_areaRatio));
@@ -62,6 +56,20 @@ bool _Bullseye::init(Config* pConfig)
 	F_INFO(pConfig->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
+
+	return true;
+}
+
+bool _Bullseye::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

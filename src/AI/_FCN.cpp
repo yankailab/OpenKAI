@@ -25,14 +25,8 @@ _FCN::~_FCN()
 
 bool _FCN::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
-
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	string modelFile;
 	string trainedFile;
@@ -62,6 +56,18 @@ bool _FCN::init(Config* pConfig)
 
 	m_labelColor = imread(caffeDir+labelFile, 1);
 	m_pGpuLUT = cuda::createLookUpTable(m_labelColor);
+
+	return true;
+}
+
+bool _FCN::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
 
 	return true;
 }

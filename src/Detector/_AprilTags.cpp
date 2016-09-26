@@ -36,13 +36,8 @@ _AprilTags::~_AprilTags()
 
 bool _AprilTags::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	//format params
 	F_INFO(pConfig->v("family", &m_tagFamily));
@@ -54,6 +49,20 @@ bool _AprilTags::init(Config* pConfig)
 	F_INFO(pConfig->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
+
+	return true;
+}
+
+bool _AprilTags::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

@@ -30,8 +30,21 @@ _Depth::~_Depth()
 
 bool _Depth::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
+
+	F_INFO(pConfig->v("areaMin", &m_minObjArea));
+	F_INFO(pConfig->v("areaMax", &m_maxObjArea));
+
+	m_pDepth = new Frame();
+	m_camFrameID = 0;
+
+	return true;
+}
+
+bool _Depth::link(Config* pConfig)
+{
+	NULL_F(pConfig);
 
 	//link instance
 	string iName = "";
@@ -42,12 +55,7 @@ bool _Depth::init(Config* pConfig)
 	F_ERROR_F(pConfig->v("_Flow",&iName));
 	m_pFlow = (_Flow*)(pConfig->root()->getChildInstByName(&iName));
 
-
-	F_INFO(pConfig->v("areaMin", &m_minObjArea));
-	F_INFO(pConfig->v("areaMax", &m_maxObjArea));
-
-	m_pDepth = new Frame();
-	m_camFrameID = 0;
+	//TODO: link variables to Automaton
 
 	return true;
 }

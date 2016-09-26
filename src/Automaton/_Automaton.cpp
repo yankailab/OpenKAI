@@ -28,6 +28,8 @@ bool _Automaton::init(Config* pConfig)
 {
 	CHECK_F(this->_ThreadBase::init(pConfig)==false);
 
+	pConfig->m_pInst = this;
+
 	//create state instances
 	Config** pItr = pConfig->getChildItr();
 
@@ -60,6 +62,13 @@ bool _Automaton::init(Config* pConfig)
 	F_FATAL_F(pConfig->v("startState", &startState));
 	m_pMyState = (State*)(pConfig->getChildInstByName(&startState));
 	NULL_F(m_pMyState);
+
+	return true;
+}
+
+bool _Automaton::link(Config* pConfig)
+{
+	NULL_F(pConfig);
 
 	return true;
 }

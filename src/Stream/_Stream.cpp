@@ -37,6 +37,7 @@ bool _Stream::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	pConfig->m_pInst = this;
 	F_INFO(pConfig->v("bShowDepth", &m_showDepth));
 	F_INFO(pConfig->v("bGray", &m_bGray));
 	F_INFO(pConfig->v("bHSV", &m_bHSV));
@@ -76,6 +77,15 @@ bool _Stream::init(Config* pConfig)
 	}
 
 	m_bThreadON = false;
+	return true;
+}
+
+bool _Stream::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//TODO:link variables
+
 	return true;
 }
 

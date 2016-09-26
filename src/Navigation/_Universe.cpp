@@ -35,11 +35,22 @@ bool _Universe::init(Config* pConfig)
 	if (this->_ThreadBase::init(pConfig)==false)
 		return false;
 
+	pConfig->m_pInst = this;
+
 //	if(m_caffe.init(pJson,"")==false)return false;
 
 	F_ERROR_F(pConfig->v("frameLifetime", &m_frameLifeTime));
 	F_ERROR_F(pConfig->v("probMin", &m_objProbMin));
 	F_ERROR_F(pConfig->v("posDisparity", &m_disparity));
+
+	return true;
+}
+
+bool _Universe::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

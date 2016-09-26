@@ -134,6 +134,8 @@ public:
 	~_Mavlink();
 
 	bool init(Config* pConfig);
+	bool link(Config* pConfig);
+
 	void close(void);
 	bool start(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);

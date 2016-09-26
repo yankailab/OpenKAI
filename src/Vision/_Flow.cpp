@@ -36,13 +36,8 @@ _Flow::~_Flow()
 
 bool _Flow::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	string presetDir = "";
 	string labelFile;
@@ -69,6 +64,21 @@ bool _Flow::init(Config* pConfig)
 	//	m_pSeg = new CamFrame();
 	//	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 }
+
+bool _Flow::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link variables to Automaton
+
+	return true;
+}
+
 
 bool _Flow::start(void)
 {

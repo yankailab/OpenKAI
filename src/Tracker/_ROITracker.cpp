@@ -29,13 +29,8 @@ _ROITracker::~_ROITracker()
 
 bool _ROITracker::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	//format params
 	m_ROI.width = 0;
@@ -49,6 +44,20 @@ bool _ROITracker::init(Config* pConfig)
 
 	// create a tracker object
 	m_pTracker = Tracker::create("KCF");
+
+	return true;
+}
+
+bool _ROITracker::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//link instance
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

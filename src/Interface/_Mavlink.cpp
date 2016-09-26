@@ -32,8 +32,9 @@ _Mavlink::~_Mavlink()
 
 bool _Mavlink::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+
+	pConfig->m_pInst = this;
 
 	F_ERROR_F(pConfig->v("portName", &m_sportName));
 	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
@@ -50,6 +51,15 @@ bool _Mavlink::init(Config* pConfig)
 
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();
+
+	return true;
+}
+
+bool _Mavlink::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//TODO: link variables to Automaton
 
 	return true;
 }

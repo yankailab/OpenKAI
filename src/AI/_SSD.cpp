@@ -26,15 +26,8 @@ _SSD::~_SSD()
 
 bool _SSD::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
-
-	//link instance
-	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
+	pConfig->m_pInst = this;
 
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -57,6 +50,21 @@ bool _SSD::init(Config* pConfig)
 	LOG(INFO)<<"Caffe Initialized";
 
 	m_pFrame = new Frame();
+
+	return true;
+}
+
+bool _SSD::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	string iName = "";
+	F_ERROR_F(pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(pConfig->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
+
+	//TODO: link my variables to Automaton
 
 	return true;
 }

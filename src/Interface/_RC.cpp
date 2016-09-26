@@ -19,11 +19,21 @@ _RC::~_RC()
 
 bool _RC::init(Config* pConfig)
 {
-	if (this->_ThreadBase::init(pConfig)==false)
-		return false;
+	CHECK(!this->_ThreadBase::init(pConfig));
+
+	pConfig->m_pInst = this;
 
 	F_ERROR_F(pConfig->v("portName", &m_sportName));
 	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
+
+	return true;
+}
+
+bool _RC::link(Config* pConfig)
+{
+	NULL_F(pConfig);
+
+	//TODO: link variables to Automaton
 
 	return true;
 }
