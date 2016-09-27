@@ -25,7 +25,7 @@ public:
 	virtual ~_Automaton();
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 	bool start(void);
 
 	bool checkDiagram(void);

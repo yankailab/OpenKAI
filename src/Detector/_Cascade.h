@@ -33,7 +33,7 @@ public:
 	~_Cascade();
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 	bool start(void);
 
 	int  getObjList(CASCADE_OBJECT** ppObj);

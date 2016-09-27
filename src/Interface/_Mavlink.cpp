@@ -55,9 +55,9 @@ bool _Mavlink::init(Config* pConfig)
 	return true;
 }
 
-bool _Mavlink::link(Config* pConfig)
+bool _Mavlink::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//TODO: link variables to Automaton
 

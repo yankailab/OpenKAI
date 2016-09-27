@@ -42,18 +42,18 @@ bool _Depth::init(Config* pConfig)
 	return true;
 }
 
-bool _Depth::link(Config* pConfig)
+bool _Depth::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_Flow",&iName));
-	m_pFlow = (_Flow*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Flow",&iName));
+	m_pFlow = (_Flow*)(m_pConfig->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

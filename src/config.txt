@@ -6,7 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -16,6 +16,7 @@
 	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":921600,
+	"_Automaton":"flight",
 }
 
 {
@@ -25,6 +26,7 @@
 	"FPS":30,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":115200,
+	"_Automaton":"flight",
 }
 
 {
@@ -34,7 +36,8 @@
 	"bGray":1,
 	"bHSV":1,
 	"bShowDepth":0,
-	"input":"Embedded",
+	"_Automaton":"flight",
+	"input":"ZEDL",
 		
 	{
 		"name":"ZEDL",
@@ -145,6 +148,7 @@
 	"frameLifetime":1000000,
 	"probMin":0.1,
 	"posDisparity":200,
+	"_Automaton":"flight",
 }
 
 {
@@ -154,7 +158,8 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/kai/dev/caffe_ssd/caffe/",
+	"_Automaton":"flight",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -167,6 +172,7 @@
 	"class":"Caffe",
 	"bInst":0,
 	"FPS":0,
+	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/caffe/caffe/",
 	"modelFile":"models/bvlc_reference_caffenet/deploy.prototxt",
 	"trainedFile":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
@@ -180,6 +186,7 @@
 	"bInst":0,
 	"FPS":0,
 	"_Stream","mainStream",
+	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/caffe/caffe/",
 	"modelFile":"models/FCN-8/deploy.prototxt",
 	"trainedFile":"models/FCN-8/fcn8s-heavy-pascal.caffemodel",
@@ -192,6 +199,7 @@
 	"bInst":1,
 	"FPS":30,
 	"_Stream":"mainStream",
+	"_Automaton":"flight",
 	"family":"Tag16h5",
 	"err":0.1,
 	"lifeTime":300000,
@@ -207,6 +215,7 @@
 	"bInst":1,
 	"FPS":30,
 	"_Stream":"mainStream",
+	"_Automaton":"flight",
 }
 
 {
@@ -215,6 +224,7 @@
 	"bInst":0,
 	"FPS":30,
 	"_Stream":"mainStream",
+	"_Automaton":"flight",
 	"method":1,
 	"areaRatio":0.8,
 	"minSize":5,
@@ -232,6 +242,7 @@
 	"bInst":0,
 	"FPS":30,
 	"_Stream":"mainStream",
+	"_Automaton":"flight",
 	"bDepth":0,
 	"width":640,
 	"height":480,
@@ -245,6 +256,7 @@
 	"bInst":0,
 	"FPS":30,
 	"_Stream":"mainStream",
+	"_Automaton":"flight",
 	"_Universe":"Universe",
 	"_Flow":"optFlowTest",
 	"areaMin":250,
@@ -262,15 +274,14 @@
 		"name":"LAND_STANDBY",
 		"class":"State",
 		"bInst":1,
-		"action":"",
 		
 		{
-			"name":"toTakeoff",
+			"name":"toArm",
 			"class":"Transition",
 			"bInst":1,
 			"toState":"LAND_ARM",
 			{
-				"name":"condition0",
+				"name":"targetLocked",
 				"class":"ConditionII",
 				"bInst":1,
 				"cond":"bt",
@@ -285,15 +296,14 @@
 		"name":"LAND_ARM",
 		"class":"State",
 		"bInst":1,
-		"action":"",
 		
 		{
-			"name":"toTakeoff",
+			"name":"toFollow",
 			"class":"Transition",
 			"bInst":1,
 			"toState":"AIR_FOLLOW",
 			{
-				"name":"condition0",
+				"name":"armed",
 				"class":"ConditionII",
 				"bInst":1,
 				"cond":"bt",
@@ -308,15 +318,14 @@
 		"name":"AIR_FOLLOW",
 		"class":"State",
 		"bInst":1,
-		"action":"",
 		
 		{
-			"name":"toTakeoff",
+			"name":"toRTL",
 			"class":"Transition",
 			"bInst":1,
-			"toState":"AIR_RTH",
+			"toState":"AIR_RTL",
 			{
-				"name":"condition0",
+				"name":"targetHunted",
 				"class":"ConditionII",
 				"bInst":1,
 				"cond":"bt",
@@ -328,18 +337,17 @@
 	}
 
 	{
-		"name":"AIR_RTH",
+		"name":"AIR_RTL",
 		"class":"State",
 		"bInst":1,
-		"action":"",
 		
 		{
-			"name":"toTakeoff",
+			"name":"toStandby",
 			"class":"Transition",
 			"bInst":1,
 			"toState":"LAND_STANDBY",
 			{
-				"name":"condition0",
+				"name":"landed",
 				"class":"ConditionII",
 				"bInst":1,
 				"cond":"bt",
@@ -435,7 +443,7 @@
 			"ROIsizeStep":10,
 			"ROItracker":"targetDrone",
 			"bMouse":1,
-			
+			"State":"AIR_FOLLOW",
 			
 			{
 				"name":"assist",
@@ -541,6 +549,7 @@
 			"orientationX":1,
 			"orientationY":1,
 			"roiTimeLimit":1000000,
+			"State":"AIR_RTL",
 			
 			{
 				"name":"AprilTags",
@@ -558,6 +567,7 @@
 	"class":"_Cascade",
 	"bInst":0,
 	"FPS":30,
+	"_Automaton":"flight",
 	"cascadeFile":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
 	"num":10,
 	"lifeTime":200000,

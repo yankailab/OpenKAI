@@ -50,7 +50,7 @@ public:
 	bool init(Config* pConfig);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
-	bool link(Config* pConfig);
+	bool link(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
@@ -60,7 +60,6 @@ public:
 	bool start(void);
 
 private:
-
 	void detectFrame(void);
 	void SetMean(const string& mean_file);
 	void WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels);

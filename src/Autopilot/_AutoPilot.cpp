@@ -137,20 +137,24 @@ bool _AutoPilot::init(Config* pConfig)
 	return true;
 }
 
-bool _AutoPilot::link(Config* pConfig)
+bool _AutoPilot::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//link instance
 	string iName = "";
-	F_INFO(pConfig->v("_Mavlink", &iName));
-	m_ctrl.m_pMavlink = (_Mavlink*) (pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_RC", &iName));
-	m_ctrl.m_pRC = (_RC*) (pConfig->root()->getChildInstByName(&iName));
-	F_INFO(pConfig->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pConfig->v("_Mavlink", &iName));
+	m_ctrl.m_pMavlink = (_Mavlink*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pConfig->v("_RC", &iName));
+	m_ctrl.m_pRC = (_RC*) (m_pConfig->root()->getChildInstByName(&iName));
 
-	//TODO: link variables to Automaton
+	//link variables to Automaton
+	F_INFO(m_pConfig->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
+	NULL_T(m_pAM);
+
+	m_pAM->setPtrByName(m_pConfig->m_name+"bArm", (int*)&m_ctrl.m_bArm);
+	m_pAM->setPtrByName(m_pConfig->m_name+"bAirborne", (int*)&m_ctrl.m_bAirborne);
 
 	return true;
 }
@@ -162,12 +166,10 @@ bool _AutoPilot::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< "Return code: "<< retCode << " in _State::start().pthread_create()";
+		LOG(ERROR)<<retCode;
 		m_bThreadON = false;
 		return false;
 	}
-
-	LOG(INFO)<< "AutoPilot.start()";
 
 	return true;
 }

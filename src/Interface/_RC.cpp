@@ -29,9 +29,9 @@ bool _RC::init(Config* pConfig)
 	return true;
 }
 
-bool _RC::link(Config* pConfig)
+bool _RC::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//TODO: link variables to Automaton
 

@@ -46,9 +46,9 @@ bool _Universe::init(Config* pConfig)
 	return true;
 }
 
-bool _Universe::link(Config* pConfig)
+bool _Universe::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//TODO: link variables to Automaton
 

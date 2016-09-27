@@ -94,6 +94,9 @@ struct AUTOPILOT_CONTROL
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
 
+	bool	m_bArm;
+	bool	m_bAirborne;
+
 	CONTROL_PARAM m_roll;
 	CONTROL_PARAM m_pitch;
 	CONTROL_PARAM m_yaw;

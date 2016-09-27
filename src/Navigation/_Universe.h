@@ -49,7 +49,7 @@ public:
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 	bool start(void);
 	void reset(void);
 

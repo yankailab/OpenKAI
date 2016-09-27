@@ -60,14 +60,14 @@ bool _FCN::init(Config* pConfig)
 	return true;
 }
 
-bool _FCN::link(Config* pConfig)
+bool _FCN::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
 
 	return true;
 }

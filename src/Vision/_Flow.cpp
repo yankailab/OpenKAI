@@ -65,14 +65,14 @@ bool _Flow::init(Config* pConfig)
 	//	m_flowMat = GpuMat(SMALL_WIDTH, SMALL_HEIGHT, CV_32FC2);
 }
 
-bool _Flow::link(Config* pConfig)
+bool _Flow::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

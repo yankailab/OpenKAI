@@ -32,7 +32,7 @@ public:
 	virtual ~_Bullseye();
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 
 	bool start(void);
 

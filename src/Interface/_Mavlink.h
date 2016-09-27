@@ -134,7 +134,7 @@ public:
 	~_Mavlink();
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 
 	void close(void);
 	bool start(void);

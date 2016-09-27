@@ -66,9 +66,9 @@ bool _Automaton::init(Config* pConfig)
 	return true;
 }
 
-bool _Automaton::link(Config* pConfig)
+bool _Automaton::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	return true;
 }

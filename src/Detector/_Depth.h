@@ -27,7 +27,7 @@ public:
 	~_Depth();
 
 	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool link(void);
 	bool start(void);
 
 private:

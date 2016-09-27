@@ -38,6 +38,7 @@ using namespace std;
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}
 #define NULL_N(x) if(x==NULL){return NULL;}
+#define NULL_T(x) if(x==NULL){return true;}
 
 #define DEL(x) if(x){delete x;}
 

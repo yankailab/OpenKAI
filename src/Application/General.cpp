@@ -322,59 +322,59 @@ bool General::linkAllInst(Config* pConfig)
 
 		if (pC->m_class == "_Stream")
 		{
-			F_FATAL_F(((_Stream*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Stream*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Automaton")
 		{
-			F_FATAL_F(((_Automaton*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Automaton*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Universe")
 		{
-			F_FATAL_F(((_Universe*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Universe*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Mavlink")
 		{
-			F_FATAL_F(((_Mavlink*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Mavlink*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_RC")
 		{
-			F_FATAL_F(((_RC*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_RC*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_SSD")
 		{
-			F_FATAL_F(((_SSD*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_SSD*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_FCN")
 		{
-			F_FATAL_F(((_FCN*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_FCN*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_AutoPilot")
 		{
-			F_FATAL_F(((_AutoPilot*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_AutoPilot*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_AprilTags")
 		{
-			F_FATAL_F(((_AprilTags*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_AprilTags*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Bullseye")
 		{
-			F_FATAL_F(((_Bullseye*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Bullseye*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_ROITracker")
 		{
-			F_FATAL_F(((_ROITracker*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_ROITracker*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Cascade")
 		{
-			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Depth")
 		{
-			F_FATAL_F(((_Depth*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Depth*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_Flow")
 		{
-			F_FATAL_F(((_Flow*)(pC->m_pInst))->link(pC));
+			F_FATAL_F(((_Flow*)(pC->m_pInst))->link());
 		}
 		else if(pC->m_class != "General")
 		{

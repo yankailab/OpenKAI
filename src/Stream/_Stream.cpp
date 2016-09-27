@@ -80,10 +80,9 @@ bool _Stream::init(Config* pConfig)
 	return true;
 }
 
-bool _Stream::link(Config* pConfig)
+bool _Stream::link(void)
 {
-	NULL_F(pConfig);
-
+	NULL_F(m_pConfig);
 	//TODO:link variables
 
 	return true;

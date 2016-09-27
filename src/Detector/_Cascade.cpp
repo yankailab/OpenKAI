@@ -80,9 +80,9 @@ bool _Cascade::init(Config* pConfig)
 	return true;
 }
 
-bool _Cascade::link(Config* pConfig)
+bool _Cascade::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	//TODO: link variables to Automaton
 

@@ -54,15 +54,15 @@ bool _SSD::init(Config* pConfig)
 	return true;
 }
 
-bool _SSD::link(Config* pConfig)
+bool _SSD::link(void)
 {
-	NULL_F(pConfig);
+	NULL_F(m_pConfig);
 
 	string iName = "";
-	F_ERROR_F(pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(pConfig->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pConfig->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(m_pConfig->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
 
