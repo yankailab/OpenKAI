@@ -35,7 +35,6 @@ public:
 
 private:
 	//Detectors
-	_Cascade*		m_pFD;
 	_ROITracker* 	m_pROITracker;
 	_Bullseye*		m_pMD;
 

@@ -5,7 +5,7 @@
 
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
-#include "DetectorBase.h"
+#include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"
 #include "../Stream/_Stream.h"
 

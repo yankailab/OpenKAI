@@ -238,14 +238,6 @@ bool General::createAllInst(Config* pConfig)
 		{
 			F_FATAL_F(createInst<_RC>(pC));
 		}
-		else if (pC->m_class == "_SSD")
-		{
-			F_FATAL_F(createInst<_SSD>(pC));
-		}
-		else if (pC->m_class == "_FCN")
-		{
-			F_FATAL_F(createInst<_FCN>(pC));
-		}
 		else if (pC->m_class == "_AutoPilot")
 		{
 			F_FATAL_F(createInst<_AutoPilot>(pC));
@@ -262,18 +254,36 @@ bool General::createAllInst(Config* pConfig)
 		{
 			F_FATAL_F(createInst<_ROITracker>(pC));
 		}
-		else if (pC->m_class == "_Cascade")
+		else if (pC->m_class == "_Flow")
 		{
-			F_FATAL_F(createInst<_Cascade>(pC));
+			F_FATAL_F(createInst<_Flow>(pC));
 		}
 		else if (pC->m_class == "_Depth")
 		{
 			F_FATAL_F(createInst<_Depth>(pC));
 		}
-		else if (pC->m_class == "_Flow")
+//		else if (pC->m_class == "_Cascade")
+//		{
+//			F_FATAL_F(createInst<_Cascade>(pC));
+//		}
+#ifdef USE_SSD
+		else if (pC->m_class == "_SSD")
 		{
-			F_FATAL_F(createInst<_Flow>(pC));
+			F_FATAL_F(createInst<_SSD>(pC));
 		}
+#endif
+#ifdef USE_FCN
+		else if (pC->m_class == "_FCN")
+		{
+			F_FATAL_F(createInst<_FCN>(pC));
+		}
+#endif
+#ifdef USE_TENSORRT
+		else if (pC->m_class == "_DetectNet")
+		{
+			F_FATAL_F(createInst<_DetectNet>(pC));
+		}
+#endif
 		else if(pC->m_class != "General")
 		{
 			LOG(ERROR)<<"Unknown class";
@@ -290,7 +300,6 @@ template <typename T> bool General::createInst(Config* pConfig)
 
 	T* pInst = new T();
 	F_FATAL_F(pInst->T::init(pConfig));
-//	pConfig->m_pInst = pInst;
 
 	m_pInst[m_nInst] = pInst;
 	m_nInst++;
@@ -340,14 +349,6 @@ bool General::linkAllInst(Config* pConfig)
 		{
 			F_FATAL_F(((_RC*)(pC->m_pInst))->link());
 		}
-		else if (pC->m_class == "_SSD")
-		{
-			F_FATAL_F(((_SSD*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_FCN")
-		{
-			F_FATAL_F(((_FCN*)(pC->m_pInst))->link());
-		}
 		else if (pC->m_class == "_AutoPilot")
 		{
 			F_FATAL_F(((_AutoPilot*)(pC->m_pInst))->link());
@@ -364,10 +365,6 @@ bool General::linkAllInst(Config* pConfig)
 		{
 			F_FATAL_F(((_ROITracker*)(pC->m_pInst))->link());
 		}
-		else if (pC->m_class == "_Cascade")
-		{
-			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link());
-		}
 		else if (pC->m_class == "_Depth")
 		{
 			F_FATAL_F(((_Depth*)(pC->m_pInst))->link());
@@ -376,6 +373,28 @@ bool General::linkAllInst(Config* pConfig)
 		{
 			F_FATAL_F(((_Flow*)(pC->m_pInst))->link());
 		}
+//		else if (pC->m_class == "_Cascade")
+//		{
+//			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link());
+//		}
+#ifdef USE_SSD
+		else if (pC->m_class == "_SSD")
+		{
+			F_FATAL_F(((_SSD*)(pC->m_pInst))->link());
+		}
+#endif
+#ifdef USE_FCN
+		else if (pC->m_class == "_FCN")
+		{
+			F_FATAL_F(((_FCN*)(pC->m_pInst))->link());
+		}
+#endif
+#ifdef USE_TENSORRT
+		else if (pC->m_class == "_DetectNet")
+		{
+			F_FATAL_F(((_DetectNet*)(pC->m_pInst))->link());
+		}
+#endif
 		else if(pC->m_class != "General")
 		{
 			LOG(ERROR)<<"Unknown class";

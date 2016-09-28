@@ -7,7 +7,6 @@ Landing::Landing()
 {
 	ActionBase();
 
-	m_pFD = NULL;
 	m_pROITracker = NULL;
 	m_pMD = NULL;
 	m_pAT = NULL;

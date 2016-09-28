@@ -57,6 +57,7 @@ public:
 	void getGrayOf(Frame* pFrom);
 	void getHSVOf(Frame* pFrom);
 	void getBGRAOf(Frame* pFrom);
+	void getRGBAOf(Frame* pFrom);
 	void get8UC3Of(Frame* pFrom);
 
 	Size getSize(void);

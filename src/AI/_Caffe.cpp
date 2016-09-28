@@ -6,6 +6,9 @@
  */
 
 #include "_Caffe.h"
+
+#ifdef USE_CAFFE
+
 namespace kai
 {
 _Caffe::_Caffe()
@@ -407,3 +410,5 @@ void _Caffe::PreprocessBatchGPU(const vector<cv::cuda::GpuMat> imgs, std::vector
 
 
 }
+
+#endif

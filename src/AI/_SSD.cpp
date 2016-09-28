@@ -5,6 +5,8 @@
 
 #include "_SSD.h"
 
+#ifdef USE_SSD
+
 namespace kai
 {
 _SSD::_SSD()
@@ -413,3 +415,4 @@ bool _SSD::draw(Frame* pFrame, iVec4* pTextPos)
 
 }
 
+#endif

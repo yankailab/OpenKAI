@@ -8,6 +8,10 @@
 #ifndef AI__CAFFE_H_
 #define AI__CAFFE_H_
 
+#include "../Base/common.h"
+
+#ifdef USE_CAFFE
+
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
 #include <caffe/blob.hpp>
@@ -22,7 +26,6 @@
 #include <utility>
 #include <vector>
 
-#include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
@@ -94,5 +97,7 @@ private:
 };
 
 }
+
+#endif
 
 #endif

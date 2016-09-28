@@ -34,7 +34,6 @@ private:
 	CONTROL_CHANNEL m_alt;
 
 	//Detectors
-	_Cascade* m_pFD;
 	_ROITracker* m_pROITracker;
 	_Flow* m_pFlow;
 

@@ -1,11 +1,14 @@
 /*
- * SegNet.cpp
+ * FCN.cpp
  *
  *  Created on: Aug 17, 2015
  *      Author: yankai
  */
 
 #include "_FCN.h"
+
+#ifdef USE_FCN
+
 namespace kai
 {
 
@@ -311,3 +314,5 @@ bool _FCN::draw(Frame* pFrame, iVec4* pTextPos)
 
 
 }
+
+#endif

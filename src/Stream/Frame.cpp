@@ -105,6 +105,23 @@ void Frame::getBGRAOf(Frame* pFrom)
 
 }
 
+void Frame::getRGBAOf(Frame* pFrom)
+{
+	if(!pFrom)return;
+
+#ifdef USE_CUDA
+	if(pFrom->getGMat()->channels()!=3)return;
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+	updatedGMat();
+#elif USE_OPENCL
+
+#else
+	cv::cvtColor(*pFrom->getNextCMat(), m_CMat.m_mat, CV_BGR2RGBA);
+	updatedCMat();
+#endif
+
+}
+
 void Frame::get8UC3Of(Frame* pFrom)
 {
 	if(!pFrom)return;

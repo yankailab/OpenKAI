@@ -1,5 +1,5 @@
 /*
- * SegNet.h
+ * FCN.h
  *
  *  Created on: Aug 17, 2015
  *      Author: yankai
@@ -7,6 +7,10 @@
 
 #ifndef AI_FCN_H_
 #define AI_FCN_H_
+
+#include "../Base/common.h"
+
+#ifdef USE_FCN
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
@@ -25,7 +29,6 @@
 #include <utility>
 #include <vector>
 
-#include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_Stream.h"
@@ -92,5 +95,5 @@ private:
 };
 
 }
-
+#endif
 #endif /* SRC_DNNCAFFEFCN_H_ */

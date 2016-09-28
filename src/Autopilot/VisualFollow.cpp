@@ -7,7 +7,6 @@ VisualFollow::VisualFollow()
 {
 	ActionBase();
 
-	m_pFD = NULL;
 	m_pROITracker = NULL;
 	m_pFlow = NULL;
 

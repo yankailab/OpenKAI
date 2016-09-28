@@ -12,9 +12,18 @@
 #include <cmath>
 #include <cstdarg>
 
-#include "../Base/BASE.h"
+#include "../Base/common.h"
+#ifdef USE_SSD
 #include "../AI/_SSD.h"
+#endif
+#ifdef USE_FCN
 #include "../AI/_FCN.h"
+#endif
+#ifdef USE_TENSORRT
+#include "../AI/_DetectNet.h"
+#endif
+
+#include "../Base/BASE.h"
 #include "../Automaton/_Automaton.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"

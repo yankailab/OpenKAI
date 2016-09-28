@@ -6,7 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -37,7 +37,7 @@
 	"bHSV":1,
 	"bShowDepth":0,
 	"_Automaton":"flight",
-	"input":"ZEDL",
+	"input":"Embedded",
 		
 	{
 		"name":"ZEDL",
@@ -159,7 +159,7 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
+	"dir":"/home/kai/dev/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -560,17 +560,5 @@
 		
 	}
 	
-}
-
-{
-	"name":"cascadeTest",
-	"class":"_Cascade",
-	"bInst":0,
-	"FPS":30,
-	"_Automaton":"flight",
-	"cascadeFile":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/model/phantom_lbp20.xml",
-	"num":10,
-	"lifeTime":200000,
-	"posDiff":50,
 }
 
