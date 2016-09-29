@@ -1,5 +1,10 @@
 /Debug/
+/Release/
+/build/
 *.prefs
 .project
 .cproject
-/Release/
+*.*~
+*.cmake
+!.gitignore
+

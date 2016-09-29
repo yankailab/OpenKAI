@@ -6,7 +6,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -37,7 +37,7 @@
 	"bHSV":1,
 	"bShowDepth":0,
 	"_Automaton":"flight",
-	"input":"Embedded",
+	"input":"ZEDL",
 		
 	{
 		"name":"ZEDL",
@@ -159,7 +159,7 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/kai/dev/caffe_ssd/caffe/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
