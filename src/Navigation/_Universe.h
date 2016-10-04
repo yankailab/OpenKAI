@@ -8,10 +8,14 @@
 #ifndef SRC_NAVIGATION__UNIVERSE_H_
 #define SRC_NAVIGATION__UNIVERSE_H_
 
+#ifdef USE_CAFFE
 #include "../AI/_Caffe.h"
+#endif
+
 #include "../Base/common.h"
 #include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
+#include "../Stream/Frame.h"
 
 #define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
@@ -72,12 +76,13 @@ public:
 
 	vector<Mat> m_vMat;
 
+#ifdef USE_CAFFE
 	//Caffe classifier
 	_Caffe m_caffe;
 	vector<Prediction> m_predictions;
 	vector<vector<Prediction> > m_vPredictions;
 	int m_numBatch;
-
+#endif
 };
 
 } /* namespace kai */

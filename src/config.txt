@@ -4,9 +4,9 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShowScreen":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
 }
 
 {
@@ -37,7 +37,7 @@
 	"bHSV":1,
 	"bShowDepth":0,
 	"_Automaton":"flight",
-	"input":"ZEDL",
+	"input":"Generic",
 		
 	{
 		"name":"ZEDL",
@@ -64,7 +64,7 @@
 		"name":"ZEDL_HD",
 		"class":"Camera",
 		"FPS":30,
-		"ID":1,
+		"ID":0,
 		"width":2560,
 		"height":720,
 		"bCrop":1,
@@ -96,7 +96,7 @@
 		"name":"Tiltac",
 		"class":"Camera",
 		"FPS":30,
-		"ID":2,
+		"ID":0,
 		"width":1280,
 		"height":720,
 		"angleV":67.1,
@@ -104,12 +104,12 @@
 	}
 
 	{
-		"name":"Embedded",
+		"name":"Generic",
 		"class":"Camera",
 		"FPS":30,
 		"ID":0,
-		"width":1920,
-		"height":1080,
+		"width":1280,
+		"height":720,
 		"angleV":67.1,
 		"angleH":66.7,
 	}
@@ -145,10 +145,26 @@
 	"class":"_Universe",
 	"bInst":1,
 	"FPS":30,
-	"frameLifetime":1000000,
+	"frameLifetime":500000,
 	"probMin":0.1,
 	"posDisparity":200,
 	"_Automaton":"flight",
+}
+
+{
+	"name":"detectNet",
+	"class":"_DetectNet",
+	"bInst":0,
+	"FPS":30,
+	"_Stream":"mainStream",
+	"_Universe":"Universe",
+	"_Automaton":"flight",
+	"dir":"/home/ubuntu/src/caffe/",
+	"minConfidence":0.1,
+	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
+	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
+	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
+	"labelFile":"model/coco_labels.txt",
 }
 
 {
@@ -159,7 +175,7 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
+	"dir":"/home/ubuntu/src/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -196,7 +212,7 @@
 {
 	"name":"AprilTag_Landing",
 	"class":"_AprilTags",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Automaton":"flight",
@@ -212,7 +228,7 @@
 {
 	"name":"targetDrone",
 	"class":"_ROITracker",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Automaton":"flight",
@@ -266,7 +282,7 @@
 {
 	"name":"flight",
 	"class":"_Automaton",
-	"bInst":1,
+	"bInst":0,
 	"FPS":10,
 	"startState":"LAND_STANDBY",
 
@@ -363,7 +379,7 @@
 {
 	"name":"autopilot",
 	"class":"_AutoPilot",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"_Automaton":"flight",
 	"_Mavlink":"APM",

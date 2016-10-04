@@ -131,14 +131,6 @@ void General::draw(void)
 		{
 			F_(((_Mavlink*)pInst)->draw(m_pFrame, &textPos));
 		}
-		else if (*cName == "_SSD")
-		{
-			F_(((_SSD*)pInst)->draw(m_pFrame, &textPos));
-		}
-		else if (*cName == "_FCN")
-		{
-			F_(((_FCN*)pInst)->draw(m_pFrame, &textPos));
-		}
 		else if (*cName == "_AutoPilot")
 		{
 			F_(((_AutoPilot*)pInst)->draw(m_pFrame, &textPos));
@@ -147,6 +139,24 @@ void General::draw(void)
 		{
 			F_(((_AprilTags*)pInst)->draw(m_pFrame, &textPos));
 		}
+#ifdef USE_SSD
+		else if (*cName == "_SSD")
+		{
+			F_(((_SSD*)pInst)->draw(m_pFrame, &textPos));
+		}
+#endif
+#ifdef USE_FCN
+		else if (*cName == "_FCN")
+		{
+			F_(((_FCN*)pInst)->draw(m_pFrame, &textPos));
+		}
+#endif
+#ifdef USE_TENSORRT
+		else if (*cName == "_DetectNet")
+		{
+			F_(((_DetectNet*)pInst)->draw(m_pFrame, &textPos));
+		}
+#endif
 //		else if (*cName == "_RC")
 //		{
 //			F_(((_RC*)pInst)->draw(m_pFrame, &textPos));

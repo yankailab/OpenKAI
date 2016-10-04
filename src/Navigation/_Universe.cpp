@@ -15,11 +15,14 @@ _Universe::_Universe()
 	_ThreadBase();
 
 	m_numObj = NUM_OBJ;
-	m_numBatch = 0;
 	m_frameID = 0;
 	m_frameLifeTime = 0;
 	m_objProbMin = 0;
 	m_disparity = 0;
+
+#ifdef USE_CAFFE
+	m_numBatch = 0;
+#endif
 
 	reset();
 
@@ -71,7 +74,9 @@ bool _Universe::start(void)
 
 void _Universe::update(void)
 {
+#ifdef USE_CAFFE
 	m_caffe.setModeGPU();
+#endif
 
 	while (m_bThreadON)
 	{
@@ -145,6 +150,8 @@ void _Universe::classifyObject(void)
 
 	return;
 
+#ifdef USE_CAFFE
+
 	//Get the top 5 possible labels
 	m_vPredictions = m_caffe.ClassifyBatch(m_vMat, 5);
 	m_vMat.clear();
@@ -173,6 +180,7 @@ void _Universe::classifyObject(void)
 		pObj->m_status = OBJ_COMPLETE;
 	}
 
+#endif
 }
 
 OBJECT* _Universe::addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour)

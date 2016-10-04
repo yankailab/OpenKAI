@@ -1,7 +1,7 @@
 /*
  * _DetectNet.h
  *
- *  Created on: Aug 17, 2015
+ *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
@@ -25,8 +25,8 @@
 #include <utility>
 #include <vector>
 
-//#include "cudaMappedMemory.h"
-//#include "cudaNormalize.h"
+#include "cudaMappedMemory.h"
+#include "cudaNormalize.h"
 #include "detectNet.h"
 
 namespace kai
@@ -71,7 +71,8 @@ private:
 	double m_confidence_threshold;
 
 	detectNet* m_pDN;
-	uint32_t m_nBox;
+	int m_nBox;
+	int m_nBoxMax;
 	uint32_t m_nClass;
 
 	float* m_bbCPU;

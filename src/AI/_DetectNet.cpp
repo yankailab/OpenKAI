@@ -1,5 +1,5 @@
 /*
- *  Created on: Sept 28, 2015
+ *  Created on: Sept 28, 2016
  *      Author: yankai
  */
 #include "_DetectNet.h"
@@ -22,6 +22,7 @@ _DetectNet::_DetectNet()
 
 	m_pDN = NULL;
 	m_nBox = 0;
+	m_nBoxMax = 0;
 	m_nClass = 0;
 
 	m_bbCPU = NULL;
@@ -39,18 +40,7 @@ bool _DetectNet::init(Config* pConfig)
 	CHECK_F(!this->_ThreadBase::init(pConfig));
 	pConfig->m_pInst = this;
 
-	m_pDN = detectNet::Create(detectNet::PEDNET_MULTI);
-	NULL_F(m_pDN);
-
-	m_nBox = m_pDN->GetMaxBoundingBoxes();
-	m_nClass = m_pDN->GetNumClasses();
-
-	CHECK_F(
-			!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
-					m_nBox * sizeof(float4)));
-	CHECK_F(
-			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
-					m_nBox * m_nClass * sizeof(float)));
+	m_pFrame = new Frame();
 
 	return true;
 
@@ -74,7 +64,6 @@ bool _DetectNet::init(Config* pConfig)
 	setup(detectNetDir + modelFile, detectNetDir + trainedFile,
 			detectNetDir + meanFile, presetDir + labelFile);
 
-	m_pFrame = new Frame();
 
 	return true;
 }
@@ -90,6 +79,8 @@ bool _DetectNet::link(void)
 	m_pUniverse = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
+
+	printf("_DetectNet link complete\n");
 
 	return true;
 }
@@ -116,6 +107,26 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
+	string tensorRTpath = "/home/ubuntu/src/jetson-inference/build/aarch64/bin/";
+	string fDeploy = tensorRTpath + "multiped-500/deploy.prototxt";
+	string fCaffemodel = tensorRTpath + "multiped-500/snapshot_iter_178000.caffemodel";
+	string fBinaryproto = tensorRTpath + "multiped-500/mean.binaryproto";
+
+	m_pDN = detectNet::Create(fDeploy.c_str(),
+				  fCaffemodel.c_str(),
+				  fBinaryproto.c_str(), 0.5 );
+	NULL_(m_pDN);
+
+	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
+	m_nClass = m_pDN->GetNumClasses();
+
+	CHECK_(!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
+					m_nBoxMax * sizeof(float4)));
+	CHECK_(!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
+					m_nBoxMax * m_nClass * sizeof(float)));
+
+	printf("_DetectNet setup complete\n");
+
 
 	while (m_bThreadON)
 	{
@@ -144,8 +155,14 @@ void _DetectNet::detectFrame(void)
 	m_pFrame->getRGBAOf(pBGR);
 	GpuMat* pGMat = m_pFrame->getGMat();
 
-	CHECK_(!m_pDN->Detect((float* )pGMat->data, pGMat->cols, pGMat->rows,
-					m_bbCPU, &m_nBox, m_confCPU));
+	CHECK_(pGMat->empty());
+
+	GpuMat fGMat;
+	pGMat->convertTo(fGMat, CV_32FC4);
+
+	m_nBox = m_nBoxMax;
+
+	CHECK_(!m_pDN->Detect((float*)fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU, &m_nBox, m_confCPU));
 
 	printf("%i bounding boxes detected\n", m_nBox);
 
@@ -181,59 +198,6 @@ void _DetectNet::detectFrame(void)
 
 		 m_pUniverse->addKnownObject(name, 0, NULL, &bbox, NULL);
 	}
-
-	/*if( font != NULL )
-	 {
-	 char str[256];
-	 sprintf(str, "%05.2f%% %s", confidence * 100.0f, net->GetClassDesc(img_class));
-
-	 font->RenderOverlay((float4*)imgRGBA, (float4*)imgRGBA, camera->GetWidth(), camera->GetHeight(),
-	 str, 10, 10, make_float4(255.0f, 255.0f, 255.0f, 255.0f));
-	 }*/
-
-	/*
-	 string name;
-	 Rect bb;
-	 Frame* pFrame;
-	 unsigned int iClass;
-	 unsigned int i;
-
-	 pFrame = m_pStream->getBGRFrame();
-	 if (pFrame->empty())
-	 return;
-	 if (!pFrame->isNewerThan(m_pFrame))
-	 return;
-	 m_pFrame->update(pFrame);
-
-	 cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
-	 std::vector<vector<float> > detections = detect(m_pFrame);
-
-	 //print the detection results
-	 for (i = 0; i < detections.size(); ++i)
-	 {
-	 const vector<float>& d = detections[i];
-	 // Detection format: [image_id, label, score, xmin, ymin, xmax, ymax].
-	 //		CHECK_EQ(d.size(), 7);
-	 //		float size = d.size();
-	 const float score = d[2];
-
-	 if (score < m_confidence_threshold)
-	 continue;
-
-	 iClass = static_cast<int>(d[1]) - 1;
-	 if (iClass >= labels_.size())
-	 continue;
-
-	 name = labels_[iClass];
-	 bb.x = d[3] * pImg->cols;
-	 bb.y = d[4] * pImg->rows;
-	 bb.width = d[5] * pImg->cols - bb.x;
-	 bb.height = d[6] * pImg->rows - bb.y;
-
-	 m_pUniverse->addKnownObject(name, safetyGrade_[iClass], NULL, &bb, NULL);
-
-	 }
-	 */
 }
 
 bool _DetectNet::draw(Frame* pFrame, iVec4* pTextPos)

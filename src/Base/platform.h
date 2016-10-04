@@ -20,11 +20,10 @@
 #include <string.h>
 
 
-
 #define USE_CUDA
 //#define USE_TENSORRT
-#define USE_CAFFE
+//#define USE_CAFFE
 #define USE_SSD
-#define USE_FCN
+//#define USE_FCN
 //#define USE_OPENCL
 //#define USE_ZED
