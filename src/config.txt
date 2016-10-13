@@ -4,15 +4,15 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShowScreen":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
 	"name":"APM",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bInst":0,
 	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":921600,
@@ -30,6 +30,16 @@
 }
 
 {
+	"name":"HM",
+	"class":"_Canbus",
+	"bInst":1,
+	"FPS":100,
+	"portName":"/dev/ttyACM0",
+	"baudrate":115200,
+	"_Automaton":"flight",
+}
+
+{
 	"name":"mainStream",
 	"class":"_Stream",
 	"bInst":1,
@@ -37,7 +47,7 @@
 	"bHSV":1,
 	"bShowDepth":0,
 	"_Automaton":"flight",
-	"input":"Generic",
+	"input":"ZEDL_HD",
 		
 	{
 		"name":"ZEDL",
@@ -175,7 +185,7 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/caffe/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/",
 	"minConfidence":0.1,
 	"modelFile":"models/VGGNet/coco/SSD_300x300/deploy.prototxt",
 	"trainedFile":"models/VGGNet/coco/SSD_300x300/VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -379,11 +389,12 @@
 {
 	"name":"autopilot",
 	"class":"_AutoPilot",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"_Automaton":"flight",
 	"_Mavlink":"APM",
 	"_RC":"RC",
+	"_Canbus":"HM",
 	"roiMinSize":25,
 	"bMouse":1,
 	
@@ -449,8 +460,20 @@
 		"name":"action",
 		
 		{
-			"name":"DDH",
+			"name":"hm",
 			"bInst":1,
+			"class":"HM",
+			"State":"AIR_RTL",	
+			{
+				"name":"AprilTags",
+				"num":1,
+				"tag0":15,
+			}	
+		}
+		
+		{
+			"name":"DDH",
+			"bInst":0,
 			"class":"VisualFollow",
 			"targetX":960,
 			"targetY":500,

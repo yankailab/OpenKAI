@@ -19,7 +19,7 @@ _RC::~_RC()
 
 bool _RC::init(Config* pConfig)
 {
-	CHECK(!this->_ThreadBase::init(pConfig));
+	CHECK_F(!this->_ThreadBase::init(pConfig));
 
 	pConfig->m_pInst = this;
 

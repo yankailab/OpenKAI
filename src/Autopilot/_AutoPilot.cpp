@@ -123,6 +123,11 @@ bool _AutoPilot::init(Config* pConfig)
 			*pA = new Landing();
 			F_ERROR_F(((Landing* )(*pA))->Landing::init(pAction, &m_ctrl));
 		}
+		else if (pAction->m_class == "HM")
+		{
+			*pA = new HM();
+			F_ERROR_F(((HM* )(*pA))->HM::init(pAction, &m_ctrl));
+		}
 		else
 		{
 			LOG(INFO)<<"Unknown action class";
@@ -147,14 +152,23 @@ bool _AutoPilot::link(void)
 	m_ctrl.m_pMavlink = (_Mavlink*) (m_pConfig->root()->getChildInstByName(&iName));
 	F_INFO(m_pConfig->v("_RC", &iName));
 	m_ctrl.m_pRC = (_RC*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pConfig->v("_Canbus", &iName));
+	m_ctrl.m_pCAN = (_Canbus*) (m_pConfig->root()->getChildInstByName(&iName));
 
 	//link variables to Automaton
 	F_INFO(m_pConfig->v("_Automaton", &iName));
 	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
-	NULL_T(m_pAM);
+	if(m_pAM)
+	{
+		m_pAM->setPtrByName(m_pConfig->m_name+"bArm", (int*)&m_ctrl.m_bArm);
+		m_pAM->setPtrByName(m_pConfig->m_name+"bAirborne", (int*)&m_ctrl.m_bAirborne);
+	}
 
-	m_pAM->setPtrByName(m_pConfig->m_name+"bArm", (int*)&m_ctrl.m_bArm);
-	m_pAM->setPtrByName(m_pConfig->m_name+"bAirborne", (int*)&m_ctrl.m_bAirborne);
+
+	iName = "action";
+	Config* pCA = m_pConfig->getChildByName(&iName);
+	iName = "hm";
+	m_pAA = (HM*)pCA->getChildInstByName(&iName);
 
 	return true;
 }
@@ -182,7 +196,16 @@ void _AutoPilot::update(void)
 
 		//TODO:Execute actions based on Automaton State
 
-		sendHeartbeat();
+		if(m_pAA)
+		{
+			string* className = m_pAA->getClass();
+			if(*className == "HM")
+			{
+				((HM*)m_pAA)->HM::update();
+			}
+		}
+
+//		sendHeartbeat();
 
 		this->autoFPSto();
 	}
@@ -225,6 +248,11 @@ bool _AutoPilot::draw(Frame* pFrame, iVec4* pTextPos)
 	{
 		((VisualFollow*)m_pAA)->draw(pFrame, pTextPos);
 	}
+	else if(*className == "HM")
+	{
+		((HM*)m_pAA)->draw(pFrame, pTextPos);
+	}
+
 
 	return true;
 }
@@ -235,7 +263,11 @@ void _AutoPilot::onMouse(MOUSE* pMouse)
 	NULL_(pMouse);
 	CHECK_(*(m_pAA->getClass())!="VisualFollow");
 
-	((VisualFollow*)m_pAA)->onMouse(pMouse);
+	string* className = m_pAA->getClass();
+	if(*className == "VisualFollow")
+	{
+		((VisualFollow*)m_pAA)->onMouse(pMouse);
+	}
 }
 
 

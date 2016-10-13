@@ -13,7 +13,7 @@ struct SERIAL_PORT
 	DWORD errors;
 
 	//Connection status
-	bool bConnected;
+	bool m_bConnected;
 
 	//Serial comm file descriptor
 //	int m_fd;
@@ -26,7 +26,7 @@ SerialPort::SerialPort(void)
 	this->m_pSerialPort = &g_serialPort;
 
 	SERIAL_PORT* pSport = (SERIAL_PORT*)this->m_pSerialPort;
-	pSport->bConnected = false;
+	pSport->m_bConnected = false;
 }
 
 bool SerialPort::IsConnected()
@@ -34,7 +34,7 @@ bool SerialPort::IsConnected()
 	SERIAL_PORT* pSport = (SERIAL_PORT*)this->m_pSerialPort;
 
 	//Simply return the connection status
-	return pSport->bConnected;
+	return pSport->m_bConnected;
 }
 
 SerialPort::~SerialPort()
@@ -42,10 +42,10 @@ SerialPort::~SerialPort()
 	SERIAL_PORT* pSport = (SERIAL_PORT*)this->m_pSerialPort;
 
 	//Check if we are bConnected before trying to disconnect
-	if(pSport->bConnected)
+	if(pSport->m_bConnected)
 	{
 		//We're no longer bConnected
-		pSport->bConnected = false;
+		pSport->m_bConnected = false;
 		//Close the serial handler
 		CloseHandle(pSport->hSerial);
 	}
@@ -56,7 +56,7 @@ bool SerialPort::connect(char *portName)
 	this->m_pSerialPort = &g_serialPort;
 	SERIAL_PORT* pSport = (SERIAL_PORT*)this->m_pSerialPort;
 
-	pSport->bConnected = false;
+	pSport->m_bConnected = false;
 
 	//Try to connect to the given port through CreateFile
 	pSport->hSerial = CreateFile(portName,
@@ -132,7 +132,7 @@ bool SerialPort::connect(char *portName)
 //	   	SetupComm(hSerial, 10240, 10240);
 
 //If everything went fine we're bConnected
-		pSport->bConnected = true;
+		pSport->m_bConnected = true;
 //We wait 2s as the arduino board will be reseting
 		Sleep(ARDUINO_WAIT_TIME);
 	}
@@ -210,10 +210,10 @@ bool SerialPort::WriteData(char *buffer, unsigned int nbChar)
 
 SerialPort::SerialPort(void)
 {
-	this->bConnected = false;
+	m_bConnected = false;
 	m_fd = -1;
 
-	m_portName = (char*) "/dev/ttyUSB0";
+	m_portName = "";
 	m_baudrate = 57600;
 
 	// Start mutex
@@ -232,16 +232,16 @@ SerialPort::SerialPort(void)
 bool SerialPort::IsConnected()
 {
 	//Simply return the connection status
-	return this->bConnected;
+	return m_bConnected;
 }
 
 SerialPort::~SerialPort()
 {
 	//Check if we are bConnected before trying to disconnect
-	if (this->bConnected)
+	if (m_bConnected)
 	{
 		//We're no longer bConnected
-		this->bConnected = false;
+		m_bConnected = false;
 		//Close the serial file descriptor
 		close(m_fd);
 	}
@@ -253,7 +253,7 @@ SerialPort::~SerialPort()
 
 bool SerialPort::Open(char *portName)
 {
-	this->bConnected = false;
+	m_bConnected = false;
 
 	m_portName = portName;
 
@@ -266,7 +266,7 @@ bool SerialPort::Open(char *portName)
 
 	fcntl(m_fd, F_SETFL, 0);
 
-	this->bConnected = true;
+	m_bConnected = true;
 
 	return true;
 }

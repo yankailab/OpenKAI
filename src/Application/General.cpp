@@ -131,6 +131,10 @@ void General::draw(void)
 		{
 			F_(((_Mavlink*)pInst)->draw(m_pFrame, &textPos));
 		}
+		else if (*cName == "_Canbus")
+		{
+			F_(((_Canbus*)pInst)->draw(m_pFrame, &textPos));
+		}
 		else if (*cName == "_AutoPilot")
 		{
 			F_(((_AutoPilot*)pInst)->draw(m_pFrame, &textPos));
@@ -244,6 +248,10 @@ bool General::createAllInst(Config* pConfig)
 		{
 			F_FATAL_F(createInst<_Mavlink>(pC));
 		}
+		else if (pC->m_class == "_Canbus")
+		{
+			F_FATAL_F(createInst<_Canbus>(pC));
+		}
 		else if (pC->m_class == "_RC")
 		{
 			F_FATAL_F(createInst<_RC>(pC));
@@ -354,6 +362,10 @@ bool General::linkAllInst(Config* pConfig)
 		else if (pC->m_class == "_Mavlink")
 		{
 			F_FATAL_F(((_Mavlink*)(pC->m_pInst))->link());
+		}
+		else if (pC->m_class == "_Canbus")
+		{
+			F_FATAL_F(((_Canbus*)(pC->m_pInst))->link());
 		}
 		else if (pC->m_class == "_RC")
 		{

@@ -47,10 +47,8 @@ public:
 	bool IsConnected();
 
 private:
-//		void* m_pSerialPort;
-
 	//Connection status
-	bool bConnected;
+	bool m_bConnected;
 	int  m_fd;
 
 	string m_portName;

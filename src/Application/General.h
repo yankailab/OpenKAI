@@ -28,6 +28,7 @@
 #include "../Autopilot/_AutoPilot.h"
 #include "../Camera/Camera.h"
 #include "../Interface/_Mavlink.h"
+#include "../Interface/_Canbus.h"
 #include "../Detector/_Bullseye.h"
 #include "../Detector/_AprilTags.h"
 #include "../Tracker/_ROITracker.h"

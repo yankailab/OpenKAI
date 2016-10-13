@@ -5,6 +5,7 @@
 #include "../Base/common.h"
 #include "../Interface/_Mavlink.h"
 #include "../Interface/_RC.h"
+#include "../Interface/_Canbus.h"
 #include "../Stream/_Stream.h"
 #include "../Tracker/_ROITracker.h"
 #include "../Detector/_Bullseye.h"
@@ -89,6 +90,7 @@ struct CONTROL_PARAM
 struct AUTOPILOT_CONTROL
 {
 	_RC* m_pRC;
+	_Canbus* m_pCAN;
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
@@ -103,6 +105,7 @@ struct AUTOPILOT_CONTROL
 
 	void reset(void)
 	{
+		m_pCAN = NULL;
 		m_pRC = NULL;
 		m_pMavlink = NULL;
 		m_lastHeartbeat = 0;
