@@ -10,36 +10,6 @@
 }
 
 {
-	"name":"APM",
-	"class":"_Mavlink",
-	"bInst":0,
-	"FPS":100,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":921600,
-	"_Automaton":"flight",
-}
-
-{
-	"name":"RC",
-	"class":"_RC",
-	"bInst":0,
-	"FPS":30,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":115200,
-	"_Automaton":"flight",
-}
-
-{
-	"name":"HM",
-	"class":"_Canbus",
-	"bInst":1,
-	"FPS":100,
-	"portName":"/dev/ttyACM0",
-	"baudrate":115200,
-	"_Automaton":"flight",
-}
-
-{
 	"name":"mainStream",
 	"class":"_Stream",
 	"bInst":1,
@@ -148,6 +118,36 @@
 		"angleH":66.7,
 		"bCrop":0,
 	}
+}
+
+{
+	"name":"APM",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":100,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":921600,
+	"_Automaton":"flight",
+}
+
+{
+	"name":"RC",
+	"class":"_RC",
+	"bInst":0,
+	"FPS":30,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":115200,
+	"_Automaton":"flight",
+}
+
+{
+	"name":"HM",
+	"class":"_Canbus",
+	"bInst":1,
+	"FPS":100,
+	"portName":"/dev/ttyACM0",
+	"baudrate":115200,
+	"_Automaton":"flight",
 }
 
 {

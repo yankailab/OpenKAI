@@ -55,6 +55,15 @@ bool _Canbus::recv()
 	unsigned char inByte;
 	int byteRead;
 
+
+	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)
+	{
+		printf("%s",&inByte);
+	}
+
+	return true;
+
+
 	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
@@ -91,20 +100,33 @@ bool _Canbus::recv()
 
 void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 {
+	CHECK_(len+8 > CAN_BUF);
 	CHECK_(!m_pSerialPort->IsConnected());
 
+	//Link header
 	m_pBuf[0] = 0xFE; //Mavlink begin
-	m_pBuf[1] = 4 + 1 + len;	//Payload Length
+	m_pBuf[1] = 5 + len;	//Payload Length
 	m_pBuf[2] = CMD_CAN_SEND;
+
+	//Payload from here
+
+	//CAN addr
+	m_pBuf[3] = (uint8_t)addr;
+	m_pBuf[4] = (uint8_t)(addr >> 8);
+	m_pBuf[5] = (uint8_t)(addr >> 16);
+	m_pBuf[6] = (uint8_t)(addr >> 24);
+
+	//CAN data len
+	m_pBuf[7] = len;
 
 	for (int i = 0; i < len; i++)
 	{
-		m_pBuf[i + 3] = pData[i];
+		m_pBuf[i + 8] = pData[i];
 	}
 
-	//	CAN.sendMsgBuf(*addr, 0, len, pData);
+	//Payload to here
 
-	m_pSerialPort->Write((char*) m_pBuf, len + 3);
+	m_pSerialPort->Write((char*) m_pBuf, len + 8);
 }
 
 bool _Canbus::start(void)
@@ -173,29 +195,20 @@ bool _Canbus::draw(Frame* pFrame, iVec4* pTextPos)
 
 	Mat* pMat = pFrame->getCMat();
 
-	char strBuf[512];
-	std::string strInfo;
-
 	if (m_pSerialPort->IsConnected())
 	{
-		putText(*pFrame->getCMat(), "CANBUS FPS: " + i2str(getFrameRate()),
+		putText(*pMat, "CANBUS FPS: " + i2str(getFrameRate()),
 				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
 				0.5, Scalar(0, 255, 0), 1);
 	}
 	else
 	{
-		putText(*pFrame->getCMat(), "CANBUS Not Connected",
+		putText(*pMat, "CANBUS Not Connected",
 				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
 				0.5, Scalar(0, 255, 0), 1);
 	}
 
 	pTextPos->m_y += pTextPos->m_w;
-
-	//Vehicle position
-//	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-//			current_messages.attitude.roll, current_messages.attitude.pitch, current_messages.attitude.yaw);
-//	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
-//	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }

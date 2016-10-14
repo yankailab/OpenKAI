@@ -115,50 +115,51 @@ void General::draw(void)
 		BASE* pInst = m_pInst[i];
 		string* cName = pInst->getClass();
 
+		//Make sure the stream class comes to the first in config file as stream will format the Mat with camera stream
 		if (*cName == "_Stream")
 		{
-			F_(((_Stream*)pInst)->draw(m_pFrame, &textPos));
+			((_Stream*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_Automaton")
 		{
-			F_(((_Automaton*)pInst)->draw(m_pFrame, &textPos));
+			((_Automaton*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_Universe")
 		{
-			F_(((_Universe*)pInst)->draw(m_pFrame, &textPos));
+			((_Universe*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_Mavlink")
 		{
-			F_(((_Mavlink*)pInst)->draw(m_pFrame, &textPos));
+			((_Mavlink*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_Canbus")
 		{
-			F_(((_Canbus*)pInst)->draw(m_pFrame, &textPos));
+			((_Canbus*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_AutoPilot")
 		{
-			F_(((_AutoPilot*)pInst)->draw(m_pFrame, &textPos));
+			((_AutoPilot*)pInst)->draw(m_pFrame, &textPos);
 		}
 		else if (*cName == "_AprilTags")
 		{
-			F_(((_AprilTags*)pInst)->draw(m_pFrame, &textPos));
+			((_AprilTags*)pInst)->draw(m_pFrame, &textPos);
 		}
 #ifdef USE_SSD
 		else if (*cName == "_SSD")
 		{
-			F_(((_SSD*)pInst)->draw(m_pFrame, &textPos));
+			((_SSD*)pInst)->draw(m_pFrame, &textPos);
 		}
 #endif
 #ifdef USE_FCN
 		else if (*cName == "_FCN")
 		{
-			F_(((_FCN*)pInst)->draw(m_pFrame, &textPos));
+			((_FCN*)pInst)->draw(m_pFrame, &textPos));
 		}
 #endif
 #ifdef USE_TENSORRT
 		else if (*cName == "_DetectNet")
 		{
-			F_(((_DetectNet*)pInst)->draw(m_pFrame, &textPos));
+			((_DetectNet*)pInst)->draw(m_pFrame, &textPos));
 		}
 #endif
 //		else if (*cName == "_RC")
