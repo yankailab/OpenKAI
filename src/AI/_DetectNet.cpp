@@ -29,6 +29,8 @@ _DetectNet::_DetectNet()
 	m_bbCUDA = NULL;
 	m_confCPU = NULL;
 	m_confCUDA = NULL;
+
+	m_className = "target";
 }
 
 _DetectNet::~_DetectNet()
@@ -58,6 +60,7 @@ bool _DetectNet::init(Config* pConfig)
 	F_FATAL_F(pConfig->v("meanFile", &meanFile));
 	F_FATAL_F(pConfig->v("labelFile", &labelFile));
 	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
+	F_INFO(pConfig->v("className", &m_className));
 
 	setup(detectNetDir + modelFile, detectNetDir + trainedFile,
 			detectNetDir + meanFile, presetDir + labelFile);
@@ -85,25 +88,6 @@ bool _DetectNet::link(void)
 void _DetectNet::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file)
 {
-//	string tensorRTpath = "/home/ubuntu/src/model/DetectNet_min25_BLR1e-4_Batch1-10/";
-//	string fDeploy = tensorRTpath + "deploy.prototxt";
-//	string fCaffemodel = tensorRTpath + "snapshot_iter_38295.caffemodel";
-//	string fBinaryproto = tensorRTpath + "mean.binaryproto";
-
-//	string tensorRTpath = "/home/ubuntu/src/jetson-inference/data/networks/ped-100/";
-//	string fDeploy = tensorRTpath + "deploy.prototxt";
-//	string fCaffemodel = tensorRTpath + "snapshot_iter_70800.caffemodel";
-//	string fBinaryproto = tensorRTpath + "mean.binaryproto";
-
-
-//	F_FATAL_F(pConfig->v("modelFile", &modelFile));
-//	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
-//	F_FATAL_F(pConfig->v("meanFile", &meanFile));
-//	F_FATAL_F(pConfig->v("labelFile", &labelFile));
-//	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
-
-//	m_pDN = detectNet::Create(detectNet::PEDNET);
-
 	m_pDN = detectNet::Create(model_file.c_str(),
 				  trained_file.c_str(),
 				  mean_file.c_str(), m_confidence_threshold );
@@ -176,9 +160,6 @@ void _DetectNet::detectFrame(void)
 
 	printf("%i bounding boxes detected\n", m_nBox);
 
-//	int lastClass = 0;
-//	int lastStart = 0;
-
 	Rect bbox;
 
 	for (int n = 0; n < m_nBox; n++)
@@ -189,24 +170,12 @@ void _DetectNet::detectFrame(void)
 		printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0],
 				bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]);
 
-//		if (nc != lastClass || n == (m_nBox - 1))
-//		{
-//			if (!net->DrawBoxes((float*) imgRGBA, (float*) imgRGBA,
-//					camera->GetWidth(), camera->GetHeight(),
-//					bbCUDA + (lastStart * 4), (n - lastStart) + 1, lastClass))
-//				printf("detectnet-console:  failed to draw boxes\n");
-//
-//			lastClass = nc;
-//			lastStart = n;
-//		}
-
-		 string name = "test";
 		 bbox.x = bb[0];
 		 bbox.y = bb[1];
 		 bbox.width = bb[2] - bb[0];
 		 bbox.height = bb[3] - bb[1];
 
-		 m_pUniverse->addKnownObject(name, 0, NULL, &bbox, NULL);
+		 m_pUniverse->addKnownObject(m_className, 0, NULL, &bbox, NULL);
 	}
 }
 

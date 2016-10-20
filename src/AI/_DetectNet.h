@@ -64,7 +64,6 @@ private:
 
 private:
 	uint64_t m_frameID;
-
 	int num_channels_;
 	cv::Mat mean_;
 	Frame* m_pFrame;
@@ -79,6 +78,8 @@ private:
 	float* m_bbCUDA;
 	float* m_confCPU;
 	float* m_confCUDA;
+
+	string m_className;
 
 public:
 	_Universe* m_pUniverse;
