@@ -118,7 +118,7 @@ void General::draw(void)
 		//Make sure the stream class comes to the first in config file as stream will format the Mat with camera stream
 		if (*cName == "_Stream")
 		{
-			((_Stream*)pInst)->draw(m_pFrame, &textPos);
+			if(!((_Stream*)pInst)->draw(m_pFrame, &textPos))return;
 		}
 		else if (*cName == "_Automaton")
 		{
@@ -153,13 +153,13 @@ void General::draw(void)
 #ifdef USE_FCN
 		else if (*cName == "_FCN")
 		{
-			((_FCN*)pInst)->draw(m_pFrame, &textPos));
+			((_FCN*)pInst)->draw(m_pFrame, &textPos);
 		}
 #endif
 #ifdef USE_TENSORRT
 		else if (*cName == "_DetectNet")
 		{
-			((_DetectNet*)pInst)->draw(m_pFrame, &textPos));
+			((_DetectNet*)pInst)->draw(m_pFrame, &textPos);
 		}
 #endif
 //		else if (*cName == "_RC")

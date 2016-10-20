@@ -42,8 +42,6 @@ bool _DetectNet::init(Config* pConfig)
 
 	m_pFrame = new Frame();
 
-	return true;
-
 	//Setup model
 	string detectNetDir = "";
 	string modelFile;
@@ -63,7 +61,6 @@ bool _DetectNet::init(Config* pConfig)
 
 	setup(detectNetDir + modelFile, detectNetDir + trainedFile,
 			detectNetDir + meanFile, presetDir + labelFile);
-
 
 	return true;
 }
@@ -88,7 +85,28 @@ bool _DetectNet::link(void)
 void _DetectNet::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file)
 {
+//	string tensorRTpath = "/home/ubuntu/src/model/DetectNet_min25_BLR1e-4_Batch1-10/";
+//	string fDeploy = tensorRTpath + "deploy.prototxt";
+//	string fCaffemodel = tensorRTpath + "snapshot_iter_38295.caffemodel";
+//	string fBinaryproto = tensorRTpath + "mean.binaryproto";
 
+//	string tensorRTpath = "/home/ubuntu/src/jetson-inference/data/networks/ped-100/";
+//	string fDeploy = tensorRTpath + "deploy.prototxt";
+//	string fCaffemodel = tensorRTpath + "snapshot_iter_70800.caffemodel";
+//	string fBinaryproto = tensorRTpath + "mean.binaryproto";
+
+
+//	F_FATAL_F(pConfig->v("modelFile", &modelFile));
+//	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
+//	F_FATAL_F(pConfig->v("meanFile", &meanFile));
+//	F_FATAL_F(pConfig->v("labelFile", &labelFile));
+//	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
+
+//	m_pDN = detectNet::Create(detectNet::PEDNET);
+
+	m_pDN = detectNet::Create(model_file.c_str(),
+				  trained_file.c_str(),
+				  mean_file.c_str(), m_confidence_threshold );
 }
 
 bool _DetectNet::start(void)
@@ -107,14 +125,6 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
-	string tensorRTpath = "/home/ubuntu/src/jetson-inference/build/aarch64/bin/";
-	string fDeploy = tensorRTpath + "multiped-500/deploy.prototxt";
-	string fCaffemodel = tensorRTpath + "multiped-500/snapshot_iter_178000.caffemodel";
-	string fBinaryproto = tensorRTpath + "multiped-500/mean.binaryproto";
-
-	m_pDN = detectNet::Create(fDeploy.c_str(),
-				  fCaffemodel.c_str(),
-				  fBinaryproto.c_str(), 0.5 );
 	NULL_(m_pDN);
 
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
