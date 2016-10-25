@@ -59,6 +59,7 @@ public:
 	void getBGRAOf(Frame* pFrom);
 	void getRGBAOf(Frame* pFrom);
 	void get8UC3Of(Frame* pFrom);
+	void get32FC4Of(Frame* pFrom);
 
 	Size getSize(void);
 

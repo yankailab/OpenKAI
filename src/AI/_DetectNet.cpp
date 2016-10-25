@@ -16,7 +16,8 @@ _DetectNet::_DetectNet()
 	num_channels_ = 0;
 	m_pUniverse = NULL;
 	m_pStream = NULL;
-	m_pFrame = NULL;
+	m_pRGBA = NULL;
+	m_pRGBAf = NULL;
 	m_frameID = 0;
 	m_confidence_threshold = 0.0;
 
@@ -42,7 +43,8 @@ bool _DetectNet::init(Config* pConfig)
 	CHECK_F(!this->_ThreadBase::init(pConfig));
 	pConfig->m_pInst = this;
 
-	m_pFrame = new Frame();
+	m_pRGBA = new Frame();
+	m_pRGBAf = new Frame();
 
 	//Setup model
 	string detectNetDir = "";
@@ -62,8 +64,17 @@ bool _DetectNet::init(Config* pConfig)
 	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
 	F_INFO(pConfig->v("className", &m_className));
 
-	setup(detectNetDir + modelFile, detectNetDir + trainedFile,
-			detectNetDir + meanFile, presetDir + labelFile);
+
+	modelFile = detectNetDir + modelFile;
+	trainedFile = detectNetDir + trainedFile;
+	meanFile = detectNetDir + meanFile;
+	labelFile = presetDir + labelFile;
+
+	m_pDN = detectNet::Create(modelFile.c_str(),
+				  trainedFile.c_str(),
+				  meanFile.c_str(),
+				  m_confidence_threshold );
+
 
 	return true;
 }
@@ -83,14 +94,6 @@ bool _DetectNet::link(void)
 	printf("_DetectNet link complete\n");
 
 	return true;
-}
-
-void _DetectNet::setup(const string& model_file, const string& trained_file,
-		const string& mean_file, const string& label_file)
-{
-	m_pDN = detectNet::Create(model_file.c_str(),
-				  trained_file.c_str(),
-				  mean_file.c_str(), m_confidence_threshold );
 }
 
 bool _DetectNet::start(void)
@@ -121,7 +124,6 @@ void _DetectNet::update(void)
 
 	printf("_DetectNet setup complete\n");
 
-
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -144,15 +146,11 @@ void _DetectNet::detectFrame(void)
 	Frame* pBGR = m_pStream->getBGRFrame();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());
-	CHECK_(m_pFrame->isNewerThan(pBGR));
+	CHECK_(m_pRGBA->isNewerThan(pBGR));
 
-	m_pFrame->getRGBAOf(pBGR);
-	GpuMat* pGMat = m_pFrame->getGMat();
-
-	CHECK_(pGMat->empty());
-
-	GpuMat fGMat;
-	pGMat->convertTo(fGMat, CV_32FC4);
+	m_pRGBA->getRGBAOf(pBGR);
+	m_pRGBAf->get32FC4Of(m_pRGBA);
+	GpuMat* fGMat = m_pRGBA->getGMat();
 
 	m_nBox = m_nBoxMax;
 

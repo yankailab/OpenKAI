@@ -43,14 +43,10 @@ public:
 	~_DetectNet();
 
 	bool init(Config* pConfig);
-	void setup(const string& model_file, const string& trained_file,
-			const string& mean_file, const string& label_file);
 	bool link(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
-
-//	std::vector<vector<float> > detect(const cv::Mat img);
 	bool start(void);
 
 private:
@@ -66,7 +62,8 @@ private:
 	uint64_t m_frameID;
 	int num_channels_;
 	cv::Mat mean_;
-	Frame* m_pFrame;
+	Frame* m_pRGBA;
+	Frame* m_pRGBAf;
 	double m_confidence_threshold;
 
 	detectNet* m_pDN;

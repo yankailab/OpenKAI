@@ -147,6 +147,34 @@ void Frame::get8UC3Of(Frame* pFrom)
 
 }
 
+void Frame::get32FC4Of(Frame* pFrom)
+{
+	if(!pFrom)return;
+
+#ifdef USE_CUDA
+	if(pFrom->getGMat()->type()==CV_32FC4)
+	{
+		pFrom->getGMat()->copyTo(m_GMat.m_mat);
+	}
+	else
+	{
+		if(pFrom->getGMat()->channels()!=4)return;
+		pFrom->getGMat()->convertTo(m_GMat.m_mat, CV_32FC4);
+	}
+
+	updatedGMat();
+#elif USE_OPENCL
+
+#else
+	if(pFrom->getGMat()->channels()!=4)return;
+	pFrom->getNextCMat()->convertTo(m_CMat.m_mat, CV_32FC4);
+	updatedCMat();
+#endif
+
+}
+
+
+
 uint64_t Frame::getFrameID(void)
 {
 	uint64_t frameID = m_CMat.m_frameID;
