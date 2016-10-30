@@ -4,9 +4,9 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShowScreen":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
 }
 
 {
@@ -156,8 +156,8 @@
 	"bInst":1,
 	"FPS":30,
 	"frameLifetime":50000,
-	"probMin":0.0001,
-	"posDisparity":20,
+	"probMin":0.00001,
+	"posDisparity":0,
 	"_Automaton":"flight",
 }
 
@@ -169,10 +169,10 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/model/Corw_20161020-175328-4f01_epoch_31.0/",
-	"minConfidence":0.01,
+	"dir":"/home/ubuntu/src/model/miimo/",
+	"minConfidence":0.1,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_7874.caffemodel",
+	"trainedFile":"snapshot_iter_62080.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
 	"className":"Crow",
@@ -187,7 +187,7 @@
 	"_Universe":"Universe",
 	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/labmodel/HM/SSD_300x300/",
-	"minConfidence":0.1,
+	"minConfidence":0.0,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_VOC0712_SSD_300x300_iter_60000.caffemodel",
 	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",

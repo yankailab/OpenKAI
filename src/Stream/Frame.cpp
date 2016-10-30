@@ -152,7 +152,7 @@ void Frame::get32FC4Of(Frame* pFrom)
 	if(!pFrom)return;
 
 #ifdef USE_CUDA
-	if(pFrom->getGMat()->type()==CV_32FC4)
+/*	if(pFrom->getGMat()->type()==CV_32FC4)
 	{
 		pFrom->getGMat()->copyTo(m_GMat.m_mat);
 	}
@@ -161,6 +161,9 @@ void Frame::get32FC4Of(Frame* pFrom)
 		if(pFrom->getGMat()->channels()!=4)return;
 		pFrom->getGMat()->convertTo(m_GMat.m_mat, CV_32FC4);
 	}
+*/
+
+	pFrom->getGMat()->convertTo(m_GMat.m_mat, CV_32FC4);
 
 	updatedGMat();
 #elif USE_OPENCL

@@ -82,6 +82,13 @@ public:
 	_Universe* m_pUniverse;
 	_Stream* m_pStream;
 
+
+	string modelFile;
+	string trainedFile;
+	string meanFile;
+	string labelFile;
+
+
 };
 
 }
