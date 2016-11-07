@@ -36,6 +36,7 @@
 #include "../Navigation/_Universe.h"
 #include "../UI/UI.h"
 #include "../Vision/_Flow.h"
+#include "../Sensor/_Lightware_SF40.h"
 #include "AppBase.h"
 
 #define N_INST 16

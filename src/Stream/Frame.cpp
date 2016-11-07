@@ -25,6 +25,12 @@ Frame::~Frame()
 {
 }
 
+void Frame::allocate(int w, int h)
+{
+	m_CMat.m_mat = Mat::zeros(Size(w,h), CV_8UC3);
+	updatedCMat();
+}
+
 void Frame::getResizedOf(Frame* pFrom, int width, int height)
 {
 	if(!pFrom)return;

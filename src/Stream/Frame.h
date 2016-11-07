@@ -48,6 +48,8 @@ public:
 	Frame();
 	virtual ~Frame();
 
+	void allocate(int w, int h);
+
 	void update(Mat* pFrame);
 	void update(Frame* pFrame);
 	inline void updatedCMat(void);

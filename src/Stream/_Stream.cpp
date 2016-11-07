@@ -159,8 +159,7 @@ CamBase* _Stream::getCameraInput(void)
 
 bool _Stream::draw(Frame* pFrame, iVec4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
+	NULL_F(pFrame);
 
 	if(m_pFrame->empty())return false;
 

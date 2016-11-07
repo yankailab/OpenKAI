@@ -104,6 +104,8 @@ void General::draw(void)
 {
 	NULL_(m_pFrame);
 
+	m_pFrame->allocate(1280,1280);
+
 	iVec4 textPos;
 	textPos.m_x = 15;
 	textPos.m_y = 20;
@@ -143,6 +145,10 @@ void General::draw(void)
 		else if (*cName == "_AprilTags")
 		{
 			((_AprilTags*)pInst)->draw(m_pFrame, &textPos);
+		}
+		else if (*cName == "_Lightware_SF40")
+		{
+			((_Lightware_SF40*)pInst)->draw(m_pFrame, &textPos);
 		}
 #ifdef USE_SSD
 		else if (*cName == "_SSD")
@@ -281,10 +287,10 @@ bool General::createAllInst(Config* pConfig)
 		{
 			F_FATAL_F(createInst<_Depth>(pC));
 		}
-//		else if (pC->m_class == "_Cascade")
-//		{
-//			F_FATAL_F(createInst<_Cascade>(pC));
-//		}
+		else if (pC->m_class == "_Lightware_SF40")
+		{
+			F_FATAL_F(createInst<_Lightware_SF40>(pC));
+		}
 #ifdef USE_SSD
 		else if (pC->m_class == "_SSD")
 		{
@@ -396,10 +402,10 @@ bool General::linkAllInst(Config* pConfig)
 		{
 			F_FATAL_F(((_Flow*)(pC->m_pInst))->link());
 		}
-//		else if (pC->m_class == "_Cascade")
-//		{
-//			F_FATAL_F(((_Cascade*)(pC->m_pInst))->link());
-//		}
+		else if (pC->m_class == "_Lightware_SF40")
+		{
+			F_FATAL_F(((_Lightware_SF40*)(pC->m_pInst))->link());
+		}
 #ifdef USE_SSD
 		else if (pC->m_class == "_SSD")
 		{

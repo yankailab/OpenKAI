@@ -21,7 +21,7 @@
 
 
 #define USE_CUDA
-#define USE_TENSORRT
+//#define USE_TENSORRT
 //#define USE_CAFFE
 //#define USE_SSD
 //#define USE_FCN

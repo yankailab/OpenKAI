@@ -12,6 +12,12 @@
 #include "../Base/_ThreadBase.h"
 #include "../Navigation/_Universe.h"
 #include "../IO/SerialPort.h"
+#include "../Algorithm/Filter.h"
+
+#define DEG_AROUND 360.0
+#define DIV_AROUND 2500
+#define CR '\x0d'
+#define LF '\x0a'
 
 
 namespace kai
@@ -37,8 +43,10 @@ public:
 
 private:
 	void updateLidar(void);
+
+	void reqMap(void);
 	void write(void);
-	void read(void);
+	bool read(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -47,13 +55,33 @@ private:
 		return NULL;
 	}
 
-private:
-
 public:
 	_Universe* m_pUniverse;
 	string m_sportName;
 	SerialPort* m_pSerialPort;
 	int m_baudRate;
+
+	double	m_offsetAngle;
+	double	m_nDiv;
+	double	m_dAngle;
+	double	m_pDist[DIV_AROUND];
+	double	m_minDist;
+	double	m_maxDist;
+	int		m_mwlX;
+	int		m_mwlY;
+	Filter* m_pX;
+	Filter* m_pY;
+
+	uint64_t m_lastReq;
+
+	string	m_strRecv;
+
+	double	m_showScale;
+
+
+
+
+
 
 };
 
