@@ -6,7 +6,8 @@ OpenKAI is supposed to behave as a companion computer that commands an external 
 
 ## Supported platform
 Ubuntu desktop (14.04, 16.04)
-Ubuntu for embedded platforms: Jetson TX1 (JetPack 23.2)
+
+Ubuntu for embedded platforms: Jetson TX1 (JetPack 2.3)
 
 ## System architecture
 OpenKAI is organized as a combination of multiple functional Modules. Each Module runs in an individual thread, so that modules can be ran simultaneously over multi-core CPUs efficiently. Each Module contains multiple sub-Modules, each sub-Module may handle certain part of functions divided by its category, and the Module switches between each of its sub-Modules to form a complete function.
