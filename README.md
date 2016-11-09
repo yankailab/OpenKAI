@@ -1,7 +1,7 @@
 # OpenKAI
 OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to be ran on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
 
-## Supported hardwares
+## Hardwares
 OpenKAI is supposed to behave as a companion computer that commands an external low-level robotic controller. Supported hardware for the companiton computer are
 * x86 PC
 * NVIDIA JetsonTX1
@@ -10,14 +10,14 @@ Planned supported hardwares in future includes
 * Raspberry Pi
 * Odroid
 
-## Supported platform
+## Platform
 * Ubuntu desktop (14.04, 16.04)
 * Ubuntu for embedded platforms: Jetson TX1 (JetPack 2.3)
 
-## Supported external controller
+## External controller
 * Pixhawk (Mavlink/UART)
-* CAN bus (Via UART<->CAN bus converter)
-* Controllers with RC (PWM) input (Via USB->PWM converter)
+* Controllers with CAN bus I/F (Via UART/USB<->CAN bus converter)
+* Controllers with RC (PWM) input (Via UART/USB->PWM converter)
 
 ## System architecture
 OpenKAI is organized as a combination of multiple functional Modules. Each Module runs in an individual thread, so that modules can be ran simultaneously over multi-core CPUs efficiently. Each Module contains multiple sub-Modules, each sub-Module may handle certain part of functions divided by its category, and the Module switches between each of its sub-Modules to form a complete function.
