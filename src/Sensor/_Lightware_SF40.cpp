@@ -24,12 +24,8 @@ _Lightware_SF40::_Lightware_SF40()
 	m_mwlX = 3;
 	m_mwlY = 3;
 	m_strRecv = "";
-	m_lastReq = 0;
-
-	for(int i=0;i<DIV_AROUND;i++)
-	{
-		m_pDist[i] = 0.0;
-	}
+	m_pSF40sender = NULL;
+	m_pDist = NULL;
 
 }
 
@@ -58,6 +54,10 @@ bool _Lightware_SF40::init(Config* pConfig)
 	F_INFO(pConfig->v("maxDist", &m_maxDist));
 	F_INFO(pConfig->v("showScale", &m_showScale));
 
+	F_ERROR_F(pConfig->v("nDiv", &m_nDiv));
+    m_dAngle = DEG_AROUND / m_nDiv;
+    m_pDist = new double[m_nDiv+1];
+
 	F_ERROR_F(pConfig->v("portName", &m_sportName));
 	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
 	m_pSerialPort = new SerialPort();
@@ -68,6 +68,11 @@ bool _Lightware_SF40::init(Config* pConfig)
 	m_pY = new Filter();
 	m_pX->startMedian(m_mwlX);
 	m_pY->startMedian(m_mwlY);
+
+	m_pSF40sender = new _Lightware_SF40_sender();
+	m_pSF40sender->m_pSerialPort = m_pSerialPort;
+	m_pSF40sender->m_dAngle = m_dAngle;
+	CHECK_F(!m_pSF40sender->init(pConfig));
 
 	return true;
 }
@@ -89,6 +94,8 @@ bool _Lightware_SF40::link(void)
 
 bool _Lightware_SF40::start(void)
 {
+	CHECK_F(!m_pSF40sender->start());
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -105,14 +112,12 @@ void _Lightware_SF40::update(void)
 {
 	while (m_bThreadON)
 	{
-		//Establish serial connection
 		if (m_sportName == "")
 		{
 			this->sleepThread(1, 0);
 			continue;
 		}
 
-		//Try to open and setup the serial port
 		if (!m_pSerialPort->IsConnected())
 		{
 			if (m_pSerialPort->Open((char*) m_sportName.c_str()))
@@ -135,7 +140,6 @@ void _Lightware_SF40::update(void)
 
 		}
 
-		//Regular update loop
 		this->autoFPSfrom();
 
 		updateLidar();
@@ -147,33 +151,9 @@ void _Lightware_SF40::update(void)
 
 void _Lightware_SF40::updateLidar(void)
 {
-	uint64_t timeNow = get_time_usec();
-	if(timeNow - m_lastReq > 100000)
-	{
-		reqMap();
-		m_lastReq = timeNow;
-	}
-
 	F_(read());
 
-	//trim the received line
-	std::string::size_type k;
-
-	k = m_strRecv.find(CR);
-	while (k != std::string::npos)
-	{
-		m_strRecv.erase(k,1);
-		k = m_strRecv.find(CR);
-	}
-
-	k = m_strRecv.find(LF);
-	while (k != std::string::npos)
-	{
-		m_strRecv.erase(k,1);
-		k = m_strRecv.find(LF);
-	}
-
-    string str;
+	string str;
     istringstream sStr;
 
 	//separate the command part
@@ -190,7 +170,17 @@ void _Lightware_SF40::updateLidar(void)
     string cmd = vStr.at(0);
     string result = vStr.at(1);
 
-	//separate the result part
+    //find the angle from cmd
+    vector<string> vCmd;
+    sStr.clear();
+    sStr.str(cmd);
+    while (getline(sStr, str, ','))
+    {
+        vCmd.push_back(str);
+    }
+    double angle = atof(vCmd.at(1).c_str());
+
+	//find the result
     vector<string> vResult;
     sStr.clear();
     sStr.str(result);
@@ -198,25 +188,14 @@ void _Lightware_SF40::updateLidar(void)
     {
         vResult.push_back(str);
     }
-
-    m_nDiv = atoi(vResult.at(0).c_str());
-    m_dAngle = DEG_AROUND / m_nDiv;
-
-    if(m_nDiv > vResult.size()-1)m_nDiv = vResult.size()-1;
-
-    for(int i=0; i<m_nDiv; i++)
-    {
-    	m_pDist[i] = atof(vResult.at(i+1).c_str());
-
-//    	printf("%f, ",m_pDist[i]);
-    }
-
-//	printf("\n");
+    double dist = atof(vResult.at(0).c_str());
 
     m_strRecv.clear();
 
+    printf("angle:%f, dist:%f\n",angle,dist);
 
-    //TODO: change TM to LD for less data over UART
+    int iAngle = (int)(angle/m_dAngle);
+    m_pDist[iAngle] = dist;
 
 }
 
@@ -227,13 +206,10 @@ bool _Lightware_SF40::read(void)
 	while (m_pSerialPort->Read(&buf, 1))
 	{
 		if(buf==0)continue;
+		if(buf==CR)continue;
+		if(buf==LF)return true;
 
 		m_strRecv += buf;
-
-		if(buf==LF)
-		{
-			return true;
-		}
 	}
 
 	return false;
@@ -244,18 +220,6 @@ void _Lightware_SF40::reqMap(void)
 	string TM = "?TM,360,0\x0d\x0a";
 
 	m_pSerialPort->Write((char*)TM.c_str(), TM.length());
-}
-
-void _Lightware_SF40::write(void)
-{
-	char buf[300];
-
-	// Translate message to buffer
-	unsigned int len = 0;
-
-	// Write buffer to serial port, locks port while writing
-	m_pSerialPort->Write(buf, len);
-
 }
 
 bool _Lightware_SF40::draw(Frame* pFrame, iVec4* pTextPos)
@@ -283,9 +247,9 @@ bool _Lightware_SF40::draw(Frame* pFrame, iVec4* pTextPos)
 	for(int i=0; i<m_nDiv; i++)
 	{
 		double dist = m_pDist[i] * m_showScale;
-		double angle = m_dAngle * i;
-		int pX = (dist * cos(angle*DEG_RADIAN));
-		int pY = (dist * sin(angle*DEG_RADIAN));
+		double angle = m_dAngle * i * DEG_RADIAN;
+		int pX = (dist * cos(angle));
+		int pY = (dist * sin(angle));
 
 		circle(*pMat, Point(cX+pX,cY+pY), 1, Scalar(0, 255, 0), 1);
 	}

@@ -28,6 +28,7 @@
 	"baudrate":115200,
 	"_Automaton":"flight",
 	"_Universe":"Universe",
+	"nDiv":360,
 	"offsetAngle":0.0,
 	"minDist":1.0,
 	"maxDist":50.0,

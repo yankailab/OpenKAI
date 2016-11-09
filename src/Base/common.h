@@ -10,7 +10,6 @@
 
 #define MAVLINK_DEBUG
 
-
 //Common include
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
@@ -22,6 +21,9 @@
 #define OBJ_COMPLETE 3
 
 #define DEFAULT_FPS 30
+
+#define CR '\x0d'
+#define LF '\x0a'
 
 using namespace std;
 
