@@ -143,6 +143,7 @@ void _Lightware_SF40::update(void)
 		this->autoFPSfrom();
 
 		updateLidar();
+		updatePosition();
 
 		this->autoFPSto();
 	}
@@ -155,17 +156,18 @@ void _Lightware_SF40::updateLidar(void)
 
 	string str;
     istringstream sStr;
+    string recv = m_strRecv;
+    m_strRecv.clear();
 
 	//separate the command part
     vector<string> vStr;
     vStr.clear();
-    sStr.str(m_strRecv);
+    sStr.str(recv);
     while (getline(sStr, str, ' '))
     {
         vStr.push_back(str);
     }
-
-    if(vStr.size()<2)return;
+    CHECK_(vStr.size()<2);
 
     string cmd = vStr.at(0);
     string result = vStr.at(1);
@@ -178,6 +180,7 @@ void _Lightware_SF40::updateLidar(void)
     {
         vCmd.push_back(str);
     }
+    CHECK_(vCmd.size()<2);
     double angle = atof(vCmd.at(1).c_str());
 
 	//find the result
@@ -188,14 +191,23 @@ void _Lightware_SF40::updateLidar(void)
     {
         vResult.push_back(str);
     }
+    CHECK_(vResult.size()<1);
     double dist = atof(vResult.at(0).c_str());
 
-    m_strRecv.clear();
-
-    printf("angle:%f, dist:%f\n",angle,dist);
+//    printf("angle:%f, dist:%f\n",angle,dist);
 
     int iAngle = (int)(angle/m_dAngle);
     m_pDist[iAngle] = dist;
+
+//    uint64_t timeNow = get_time_usec();
+//    static uint64_t timeLast = 0;
+//    if(iAngle==0)
+//    {
+//    	uint64_t dTime = timeNow - timeLast;
+//    	timeLast = timeNow;
+//    	printf("dTime:%d\n",dTime);
+//
+//    }
 
 }
 
@@ -215,6 +227,31 @@ bool _Lightware_SF40::read(void)
 	return false;
 }
 
+void _Lightware_SF40::updatePosition(void)
+{
+	int i,nV;
+	double pX=0;
+	double pY=0;
+
+	for(i=0,nV=0; i<m_nDiv; i++)
+	{
+		double dist = m_pDist[i];
+		if(dist < m_minDist)continue;
+		if(dist > m_maxDist)continue;
+
+		double angle = m_dAngle * i * DEG_RADIAN;
+		pX += (dist * sin(angle));
+		pY += -(dist * cos(angle));
+		nV++;
+	}
+
+	pX /= nV;
+	pY /= nV;
+
+	m_pX->input(pX);
+	m_pY->input(pY);
+}
+
 void _Lightware_SF40::reqMap(void)
 {
 	string TM = "?TM,360,0\x0d\x0a";
@@ -229,8 +266,14 @@ bool _Lightware_SF40::draw(Frame* pFrame, iVec4* pTextPos)
 	putText(*pFrame->getCMat(), "Lightware_SF40 FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-
 	pTextPos->m_y += pTextPos->m_w;
+
+
+	putText(*pFrame->getCMat(), "Lidar POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			Scalar(0, 255, 0), 1);
+	pTextPos->m_y += pTextPos->m_w;
+
 
 	if(m_nDiv<=0)return true;
 
@@ -248,8 +291,8 @@ bool _Lightware_SF40::draw(Frame* pFrame, iVec4* pTextPos)
 	{
 		double dist = m_pDist[i] * m_showScale;
 		double angle = m_dAngle * i * DEG_RADIAN;
-		int pX = (dist * cos(angle));
-		int pY = (dist * sin(angle));
+		int pX = (dist * sin(angle));
+		int pY = -(dist * cos(angle));
 
 		circle(*pMat, Point(cX+pX,cY+pY), 1, Scalar(0, 255, 0), 1);
 	}

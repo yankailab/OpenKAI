@@ -40,6 +40,7 @@ public:
 
 private:
 	void updateLidar(void);
+	void updatePosition(void);
 
 	void reqMap(void);
 	void write(void);
@@ -67,6 +68,7 @@ public:
 	double	m_maxDist;
 	int		m_mwlX;
 	int		m_mwlY;
+
 	Filter* m_pX;
 	Filter* m_pY;
 

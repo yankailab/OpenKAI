@@ -16,6 +16,7 @@ Filter::Filter()
 	m_iTraj = 0;
 	m_windowLength = 0;
 	m_iMedian = 0;
+	m_vMid = 0;
 }
 
 Filter::~Filter()
@@ -42,7 +43,7 @@ bool Filter::startMedian(int windowLength)
 	return true;
 }
 
-double Filter::input(double v)
+void Filter::input(double v)
 {
 	double data[FILTER_BUF];
 	double tmp;
@@ -72,11 +73,13 @@ double Filter::input(double v)
 		}
 	}
 
-	return data[m_iMedian];
+	m_vMid = data[m_iMedian];
 }
 
-
-
+double Filter::v(void)
+{
+	return m_vMid;
+}
 
 
 } /* namespace kai */

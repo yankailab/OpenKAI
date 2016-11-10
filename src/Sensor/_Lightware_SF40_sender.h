@@ -49,7 +49,6 @@ private:
 
 public:
 	SerialPort* m_pSerialPort;
-
 	double	m_dAngle;
 
 };

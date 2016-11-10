@@ -62,7 +62,7 @@ void _Lightware_SF40_sender::LD(void)
 
 	for(double angle=0; angle<DEG_AROUND; angle+=m_dAngle)
 	{
-		sprintf(str, "?LD,%1f\x0d\x0a", angle);
+		sprintf(str, "?LD,%.1f\x0d\x0a", angle);
 		m_pSerialPort->Write(str, strlen(str));
 	}
 

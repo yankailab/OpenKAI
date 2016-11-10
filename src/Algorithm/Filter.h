@@ -10,7 +10,7 @@
 
 #define SWITCH(x,y,t) (t=x,x=y,y=t)
 
-#define FILTER_BUF 1000
+#define FILTER_BUF 100
 
 namespace kai
 {
@@ -22,13 +22,15 @@ public:
 	virtual ~Filter();
 
 	bool startMedian(int windowLength);
-	double input(double v);
+	void input(double v);
+	double v(void);
 
 private:
 	int m_iTraj;
 	int m_iMedian;
 	int m_windowLength;
 	double m_trajectory[FILTER_BUF];
+	double m_vMid;
 
 };
 
