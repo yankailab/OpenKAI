@@ -7,6 +7,7 @@ HM::HM()
 {
 	ActionBase();
 
+	m_maxSpeed = 10;
 	m_pROITracker = NULL;
 	m_pCtrl = NULL;
 }
@@ -18,25 +19,15 @@ HM::~HM()
 bool HM::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 {
 	CHECK_F(this->ActionBase::init(pConfig, pAC) == false)
-
 	m_pCtrl = pAC;
 
-//	F_ERROR_F(pConfig->v("targetX", &m_roll.m_targetPos));
-//	F_ERROR_F(pConfig->v("targetY", &m_pitch.m_targetPos));
+	F_INFO(pConfig->v("maxSpeed", &m_maxSpeed));
+
 
 //link ROI tracker
 //	string roiName = "";
 //	F_ERROR_F(pConfig->v("ROItracker", &roiName));
 //	m_pROITracker = (_ROITracker*) (pConfig->root()->getChildInstByName(&roiName));
-
-//setup UI
-//	Config* pC;
-//	pC = pConfig->o("assist");
-//	if (!pC->empty())
-//	{
-//		m_pUIassist = new UI();
-//		F_FATAL_F(m_pUIassist->init(pC));
-//	}
 
 	pConfig->m_pInst = this;
 
@@ -49,15 +40,14 @@ void HM::update(void)
 
 	NULL_(m_pCtrl);
 	NULL_(m_pCtrl->m_pCAN);
-//	NULL_(m_pROITracker);
 
-//	if (m_pROITracker->m_bTracking == false)
-//	{
-//		return;
-//	}
+	move(0,0);
+}
 
-//RC output
-//	m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
+void HM::move(double speedL, double speedR)
+{
+	speedL = confineVal(speedL, m_maxSpeed, -m_maxSpeed);
+	speedR = confineVal(speedR, m_maxSpeed, -m_maxSpeed);
 
 	unsigned long addr = 0x113;
 	unsigned char cmd[8];
@@ -80,10 +70,10 @@ void HM::update(void)
 	cmd[7] = 0x09; //pwmM;
 
 	// send data:  id = 0x00, standrad frame, data len = 8, stmp: data buf
-//	CAN.sendMsgBuf(0x113, 0, 8, cmd);
+	// CAN.sendMsgBuf(0x113, 0, 8, cmd);
 
 	m_pCtrl->m_pCAN->send(addr, 8, cmd);
-	return;
+
 
 }
 

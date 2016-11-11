@@ -18,10 +18,14 @@ public:
 	void update(void);
 	bool draw(Frame* pFrame, iVec4* pTextPos);
 
+	void move(double speedL, double speedR);
+
 private:
 
 	//Detectors
 	_ROITracker* m_pROITracker;
+
+	double	m_maxSpeed;
 
 };
 
