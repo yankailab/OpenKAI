@@ -41,22 +41,6 @@
 	}
 	
 	{
-		"name":"ZEDL_HD",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":2560,
-		"height":720,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":1280,
-		"cropH":720,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-
-	{
 		"name":"Generic",
 		"class":"Camera",
 		"FPS":30,
@@ -87,9 +71,9 @@
 	"class":"_Canbus",
 	"bInst":0,
 	"FPS":100,
-	"portName":"/dev/ttyACM0",
+	"portName":"/dev/ttyUSB0",
 	"baudrate":115200,
-	"_Automaton":"flight",
+	"_Automaton":"autoHM",
 }
 
 {
@@ -150,56 +134,22 @@
 }
 
 {
-	"name":"AprilTag_Landing",
-	"class":"_AprilTags",
-	"bInst":0,
-	"FPS":30,
-	"_Stream":"mainStream",
-	"_Automaton":"flight",
-	"family":"Tag16h5",
-	"err":0.1,
-	"lifeTime":300000,
-	"distThr":100,
-	"detInterval":500000,
-	"sizeLim":700,
-	"scaling":0.5,
-}
-
-{
-	"name":"Bullseye_Landing",
-	"class":"_Bullseye",
-	"bInst":0,
-	"FPS":30,
-	"_Stream":"mainStream",
-	"_Automaton":"flight",
-	"method":1,
-	"areaRatio":0.8,
-	"minSize":5,
-	"medBlueKsize":9,
-	"HoughMinDist":100,
-	"HoughParam1":100,
-	"HoughParam2":50,
-	"HoughMinR":0,
-	"HoughMaxR":0,
-}
-
-{
-	"name":"flight",
+	"name":"autoHM",
 	"class":"_Automaton",
 	"bInst":0,
 	"FPS":10,
-	"startState":"LAND_STANDBY",
+	"startState":"HM_STANDBY",
 
 	{
-		"name":"LAND_STANDBY",
+		"name":"HM_STANDBY",
 		"class":"State",
 		"bInst":1,
 		
 		{
-			"name":"toArm",
+			"name":"toFollow",
 			"class":"Transition",
 			"bInst":1,
-			"toState":"LAND_ARM",
+			"toState":"HM_FOLLOW",
 			{
 				"name":"targetLocked",
 				"class":"ConditionII",
@@ -213,17 +163,17 @@
 	}
 	
 	{
-		"name":"LAND_ARM",
+		"name":"HM_FOLLOW",
 		"class":"State",
 		"bInst":1,
 		
 		{
-			"name":"toFollow",
+			"name":"toWork",
 			"class":"Transition",
 			"bInst":1,
-			"toState":"AIR_FOLLOW",
+			"toState":"HM_WORK",
 			{
-				"name":"armed",
+				"name":"noTarget",
 				"class":"ConditionII",
 				"bInst":1,
 				"cond":"bt",
@@ -235,7 +185,29 @@
 	}
 
 	{
-		"name":"AIR_FOLLOW",
+		"name":"HM_WORK",
+		"class":"State",
+		"bInst":1,
+		
+		{
+			"name":"toFollow",
+			"class":"Transition",
+			"bInst":1,
+			"toState":"HM_FOLLOW",
+			{
+				"name":"targetLocked",
+				"class":"ConditionII",
+				"bInst":1,
+				"cond":"bt",
+				"ptr1":"",
+				"ptr2":"",
+				"constI":0,				
+			}
+		}
+	}
+
+	{
+		"name":"HM_RTH",
 		"class":"State",
 		"bInst":1,
 		
@@ -257,7 +229,7 @@
 	}
 
 	{
-		"name":"AIR_RTL",
+		"name":"HM_CHARGE",
 		"class":"State",
 		"bInst":1,
 		
@@ -285,11 +257,8 @@
 	"class":"_AutoPilot",
 	"bInst":0,
 	"FPS":30,
-	"_Automaton":"flight",
-	"_Mavlink":"APM",
-	"_RC":"RC",
+	"_Automaton":"autoHM",
 	"_Canbus":"HM",
-	"roiMinSize":25,
 	"bMouse":1,
 	
 	{
@@ -357,12 +326,12 @@
 			"name":"hm",
 			"bInst":1,
 			"class":"HM",
-			"State":"AIR_RTL",	
-			{
-				"name":"AprilTags",
-				"num":1,
-				"tag0":15,
-			}	
+			"maxSpeed":100,
+			"bSpeaker":0,
+			"motorPwmL":10,
+			"motorPwmR":10,
+			"motorPwmW":10,
+			"State":"AIR_RTL",
 		}		
 		
 	}
