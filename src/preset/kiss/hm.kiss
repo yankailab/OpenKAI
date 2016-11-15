@@ -185,11 +185,12 @@
 			"class":"HM_base",
 			"bInst":1,
 			"_Canbus":"HMcanbus",
-			"maxSpeed":2560,
+			"maxSpeedT":65535,
+			"maxSpeedW":2500,
 			"bSpeaker":0,
-			"motorPwmL":2560,
-			"motorPwmR":2560,
-			"motorPwmW":2500,
+			"motorPwmL":0,
+			"motorPwmR":0,
+			"motorPwmW":0,
 		}
 
 		{

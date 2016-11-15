@@ -55,13 +55,13 @@ bool _Canbus::recv()
 	unsigned char inByte;
 	int byteRead;
 
-
 	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)
 	{
 		printf("%s",&inByte);
 	}
-
 	return true;
+
+
 
 
 	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)

@@ -12,7 +12,8 @@ HM_base::HM_base()
 	m_motorPwmW = 0;
 	m_bSpeaker = 0;
 
-	m_maxSpeed = 100;
+	m_maxSpeedT = 65535;
+	m_maxSpeedW = 2500;
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
 }
@@ -26,7 +27,8 @@ bool HM_base::init(Config* pConfig)
 	CHECK_F(this->ActionBase::init(pConfig)==false);
 	pConfig->m_pInst = this;
 
-	F_INFO(pConfig->v("maxSpeed", &m_maxSpeed));
+	F_INFO(pConfig->v("maxSpeedT", &m_maxSpeedT));
+	F_INFO(pConfig->v("maxSpeedW", &m_maxSpeedW));
 	F_INFO(pConfig->v("bSpeaker", &m_bSpeaker));
 	F_INFO(pConfig->v("motorPwmL", &m_motorPwmL));
 	F_INFO(pConfig->v("motorPwmR", &m_motorPwmR));
@@ -59,9 +61,9 @@ void HM_base::updateCAN(void)
 	m_ctrlB0 |= ((m_motorPwmL >> dint) << 5);
 	m_ctrlB0 |= ((m_motorPwmW >> dint) << 6);
 
-	uint16_t motorPwmL = abs(confineVal(m_motorPwmL, m_maxSpeed, -m_maxSpeed));
-	uint16_t motorPwmR = abs(confineVal(m_motorPwmR, m_maxSpeed, -m_maxSpeed));
-	uint16_t motorPwmW = abs(confineVal(m_motorPwmW, m_maxSpeed, -m_maxSpeed));
+	uint16_t motorPwmL = abs(confineVal(m_motorPwmL, m_maxSpeedT, -m_maxSpeedT));
+	uint16_t motorPwmR = abs(confineVal(m_motorPwmR, m_maxSpeedT, -m_maxSpeedT));
+	uint16_t motorPwmW = abs(confineVal(m_motorPwmW, m_maxSpeedW, -m_maxSpeedW));
 
 	m_ctrlB1 = 0;
 	m_ctrlB1 |= 1;						//tracktion motor relay

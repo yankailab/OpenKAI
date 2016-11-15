@@ -22,7 +22,8 @@ public:
 public:
 	_Canbus* m_pCAN;
 
-	double m_maxSpeed;
+	int m_maxSpeedT;
+	int m_maxSpeedW;
 	int m_motorPwmL;
 	int m_motorPwmR;
 	int m_motorPwmW;
