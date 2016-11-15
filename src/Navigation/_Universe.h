@@ -13,7 +13,7 @@
 #endif
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
 
@@ -50,7 +50,7 @@ public:
 	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	OBJECT* addKnownObject(string name, int safetyGrade, Mat* pMat, Rect* pRect, vector<Point>* pContour);
 	void classifyObject(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	bool init(Config* pConfig);
 	bool link(void);

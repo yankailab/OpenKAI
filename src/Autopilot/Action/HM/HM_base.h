@@ -1,0 +1,39 @@
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HM_BASE_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_HM_BASE_H_
+
+#include "../../../Base/common.h"
+#include "../../../Interface/_Canbus.h"
+#include "../ActionBase.h"
+
+namespace kai
+{
+
+
+class HM_base: public ActionBase
+{
+public:
+	HM_base();
+	~HM_base();
+
+	bool init(Config* pConfig);
+	bool link(void);
+	void updateCAN(void);
+
+public:
+	_Canbus* m_pCAN;
+
+	double m_maxSpeed;
+	int m_motorPwmL;
+	int m_motorPwmR;
+	int m_motorPwmW;
+	bool m_bSpeaker;
+
+	uint8_t m_ctrlB0;
+	uint8_t m_ctrlB1;
+
+};
+
+}
+
+#endif
+

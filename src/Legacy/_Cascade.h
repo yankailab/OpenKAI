@@ -4,7 +4,7 @@
 #define DETECTOR_CASCADEDETECTOR_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"
 #include "../Stream/_Stream.h"

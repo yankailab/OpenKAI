@@ -30,10 +30,6 @@ General::~General()
 
 bool General::start(Config* pConfig)
 {
-	//TODO: Caffe set data to GPU directly
-	//TODO: Solve caffe ROI in DepthDetector
-	//TODO: Optimize FCN
-
 	int i;
 	NULL_F(pConfig);
 
@@ -106,7 +102,7 @@ void General::draw(void)
 
 	m_pFrame->allocate(1280,1280);
 
-	iVec4 textPos;
+	vInt4 textPos;
 	textPos.m_x = 15;
 	textPos.m_y = 20;
 	textPos.m_w = 20;
@@ -311,7 +307,7 @@ bool General::createAllInst(Config* pConfig)
 #endif
 		else if(pC->m_class != "General")
 		{
-			LOG(ERROR)<<"Unknown class";
+			LOG(ERROR)<<"Unknown class:"+pC->m_class;
 		}
 	}
 
@@ -426,7 +422,7 @@ bool General::linkAllInst(Config* pConfig)
 #endif
 		else if(pC->m_class != "General")
 		{
-			LOG(ERROR)<<"Unknown class";
+			LOG(ERROR)<<"Unknown class:"+pC->m_class;
 		}
 
 	}

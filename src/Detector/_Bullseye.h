@@ -9,9 +9,9 @@
 #define DETECTOR_MARKERDETECTOR_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Stream/_Stream.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/cv.h"
 #include "DetectorBase.h"
 
 #define NUM_MARKER 128
@@ -36,7 +36,7 @@ public:
 
 	bool start(void);
 
-	bool getCircleCenter(fVec3* pCenter);
+	bool getCircleCenter(vDouble3* pCenter);
 
 private:
 	void detectCircleFill(void);
@@ -51,7 +51,7 @@ private:
 
 public:
 	int		 m_numCircle;
-	fVec3 m_pCircle[NUM_MARKER];
+	vDouble3 m_pCircle[NUM_MARKER];
 
 	int		m_method;
 

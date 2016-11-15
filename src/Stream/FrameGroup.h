@@ -11,7 +11,7 @@
 #include <pthread.h>
 #include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Utility/util.h"
 #include "Frame.h"
 

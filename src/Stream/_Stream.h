@@ -9,8 +9,8 @@
 #define SRC_STREAM_STREAM_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/cv.h"
 
 #include "../Camera/Camera.h"
 #include "../Camera/ZED.h"
@@ -28,7 +28,7 @@ public:
 	bool init(Config* pConfig);
 	bool link(void);
 	bool start(void);
-	bool draw(Frame* pFrame, iVec4* textPos);
+	bool draw(Frame* pFrame, vInt4* textPos);
 
 	Frame* getBGRFrame(void);
 	Frame* getGrayFrame(void);

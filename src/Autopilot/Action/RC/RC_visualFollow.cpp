@@ -1,12 +1,14 @@
-#include "VisualFollow.h"
+#include "RC_visualFollow.h"
 
 namespace kai
 {
 
-VisualFollow::VisualFollow()
+RC_visualFollow::RC_visualFollow()
 {
 	ActionBase();
 
+	m_pRC = NULL;
+	m_pRCconfig = NULL;
 	m_pROITracker = NULL;
 	m_pFlow = NULL;
 
@@ -24,19 +26,15 @@ VisualFollow::VisualFollow()
 	m_ROIsizeFrom = 50;
 	m_ROIsizeTo = 300;
 	m_ROIsizeStep = 10;
-
 }
 
-VisualFollow::~VisualFollow()
+RC_visualFollow::~RC_visualFollow()
 {
 }
 
-bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
+bool RC_visualFollow::init(Config* pConfig)
 {
-	if (this->ActionBase::init(pConfig, pAC) == false)
-		return false;
-
-	m_pCtrl = pAC;
+	CHECK_F(this->ActionBase::init(pConfig) == false);
 
 	m_roll.reset();
 	m_pitch.reset();
@@ -48,11 +46,6 @@ bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 	F_INFO(pConfig->v("ROIsizeFrom", &m_ROIsizeFrom));
 	F_INFO(pConfig->v("ROIsizeTo", &m_ROIsizeTo));
 	F_INFO(pConfig->v("ROIsizeStep", &m_ROIsizeStep));
-
-	//link ROI tracker
-	string roiName = "";
-	F_ERROR_F(pConfig->v("ROItracker", &roiName));
-	m_pROITracker = (_ROITracker*) (pConfig->root()->getChildInstByName(&roiName));
 
 	//setup UI
 	Config* pC;
@@ -76,17 +69,35 @@ bool VisualFollow::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 	return true;
 }
 
-void VisualFollow::update(void)
+bool RC_visualFollow::link(void)
+{
+	NULL_F(m_pConfig);
+
+	string iName = "";
+
+	F_INFO(m_pConfig->v("_RC", &iName));
+	m_pRC = (_RC*) (m_pConfig->root()->getChildInstByName(&iName));
+
+	F_INFO(m_pConfig->v("RC_base", &iName));
+	m_pRCconfig = (RC_base*) (m_pConfig->root()->getChildInstByName(&iName));
+
+	F_ERROR_F(m_pConfig->v("ROItracker", &iName));
+	m_pROITracker = (_ROITracker*) (m_pConfig->root()->getChildInstByName(&iName));
+
+	return true;
+}
+
+void RC_visualFollow::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pCtrl);
-	NULL_(m_pCtrl->m_pRC);
+	NULL_(m_pRC);
 	NULL_(m_pROITracker);
 
 	if (m_pROITracker->m_bTracking == false)
 	{
-		m_pCtrl->RCneutral();
+		m_pRCconfig->m_rcRoll.neutral();
+		m_pRCconfig->m_rcPitch.neutral();
 		m_roll.resetErr();
 		m_pitch.resetErr();
 //		m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
@@ -97,20 +108,15 @@ void VisualFollow::update(void)
 	double posPitch;
 	double ovDTime;
 
-	CONTROL_PARAM* pRoll = &m_pCtrl->m_roll;
-	CONTROL_PARAM* pPitch = &m_pCtrl->m_pitch;
-	CONTROL_PARAM* pAlt = &m_pCtrl->m_alt;
-	CONTROL_PARAM* pYaw = &m_pCtrl->m_yaw;
+	RC_PID* pidRoll = &m_pRCconfig->m_pidRoll;
+	RC_PID* pidPitch = &m_pRCconfig->m_pidPitch;
+	RC_PID* pidAlt = &m_pRCconfig->m_pidAlt;
+	RC_PID* pidYaw = &m_pRCconfig->m_pidYaw;
 
-	CONTROL_PID* pidRoll = &pRoll->m_pid;
-	CONTROL_PID* pidPitch = &pPitch->m_pid;
-	CONTROL_PID* pidAlt = &pAlt->m_pid;
-	CONTROL_PID* pidYaw = &pYaw->m_pid;
-
-	RC_CHANNEL* pRCroll = &pRoll->m_RC;
-	RC_CHANNEL* pRCpitch = &pPitch->m_RC;
-	RC_CHANNEL* pRCalt = &pAlt->m_RC;
-	RC_CHANNEL* pRCyaw = &pYaw->m_RC;
+	RC_CHANNEL* pRCroll = &m_pRCconfig->m_rcRoll;
+	RC_CHANNEL* pRCpitch = &m_pRCconfig->m_rcPitch;
+	RC_CHANNEL* pRCalt = &m_pRCconfig->m_rcAlt;
+	RC_CHANNEL* pRCyaw = &m_pRCconfig->m_rcYaw;
 
 	ovDTime = (1.0 / m_pROITracker->m_dTime) * 1000; //ms
 	posRoll = m_roll.m_pos;
@@ -153,7 +159,7 @@ void VisualFollow::update(void)
 
 }
 
-bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
+bool RC_visualFollow::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 	NULL_F(m_pROITracker);
@@ -194,7 +200,7 @@ bool VisualFollow::draw(Frame* pFrame, iVec4* pTextPos)
 	return true;
 }
 
-Rect2d VisualFollow::getMouseROI(iVec4 mouseROI)
+Rect2d RC_visualFollow::getMouseROI(vInt4 mouseROI)
 {
 	Rect2d roi;
 
@@ -206,7 +212,7 @@ Rect2d VisualFollow::getMouseROI(iVec4 mouseROI)
 	return roi;
 }
 
-void VisualFollow::onMouse(MOUSE* pMouse)
+void RC_visualFollow::onMouse(MOUSE* pMouse)
 {
 	NULL_(pMouse);
 
@@ -223,7 +229,7 @@ void VisualFollow::onMouse(MOUSE* pMouse)
 	}
 }
 
-void VisualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
+void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 {
 	NULL_(pMouse);
 
@@ -335,7 +341,7 @@ void VisualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 }
 
-void VisualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
+void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 {
 	NULL_(pMouse);
 

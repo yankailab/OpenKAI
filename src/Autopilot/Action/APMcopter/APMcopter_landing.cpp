@@ -1,9 +1,9 @@
-#include "Landing.h"
+#include "APMcopter_landing.h"
 
 namespace kai
 {
 
-Landing::Landing()
+APMcopter_landing::APMcopter_landing()
 {
 	ActionBase();
 
@@ -12,18 +12,16 @@ Landing::Landing()
 	m_pAT = NULL;
 	m_numATagsLandingTarget = 0;
 
+	m_pAPM = NULL;
 }
 
-Landing::~Landing()
+APMcopter_landing::~APMcopter_landing()
 {
 }
 
-bool Landing::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
+bool APMcopter_landing::init(Config* pConfig)
 {
-	if (this->ActionBase::init(pConfig, pAC)==false)
-		return false;
-
-	m_pCtrl = pAC;
+	CHECK_F(this->ActionBase::init(pConfig)==false);
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;
@@ -45,23 +43,44 @@ bool Landing::init(Config* pConfig, AUTOPILOT_CONTROL* pAC)
 		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
 
+	//TODO: init APM_base
+
+
+	pConfig->m_pInst = this;
+
 	return true;
 }
 
-void Landing::update(void)
+bool APMcopter_landing::link(void)
+{
+	NULL_F(m_pConfig);
+
+	string iName = "";
+
+	F_INFO(m_pConfig->v("APMcopter_base", &iName));
+	m_pAPM = (APMcopter_base*) (m_pConfig->root()->getChildInstByName(&iName));
+
+	F_ERROR_F(m_pConfig->v("ROItracker", &iName));
+	m_pROITracker = (_ROITracker*) (m_pConfig->root()->getChildInstByName(&iName));
+
+	return true;
+}
+
+void APMcopter_landing::update(void)
 {
 	this->ActionBase::update();
+
+	NULL_(m_pAPM);
 
 	landingAtAprilTags();
 
 }
 
-void Landing::landingAtAprilTags(void)
+void APMcopter_landing::landingAtAprilTags(void)
 {
-	NULL_(m_pCtrl);
-	NULL_(m_pCtrl->m_pMavlink);
 	NULL_(m_pAT);
 	NULL_(m_pAT->m_pStream);
+	NULL_(m_pAPM->m_pMavlink);
 
 	int i;
 	int tTag;
@@ -83,17 +102,17 @@ void Landing::landingAtAprilTags(void)
 		m_landingTarget.m_angleY = ((pTag->m_tag.cxy.y - pCam->m_centerV) / pCam->m_height) * pCam->m_angleV * DEG_RADIAN * m_landingTarget.m_orientY;
 
 		//Send Mavlink command
-		m_pCtrl->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+		m_pAPM->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 				m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 		return;
 	}
 }
 
-void Landing::landingAtBullseye(void)
+void APMcopter_landing::landingAtBullseye(void)
 {
 	CamBase* pCamInput;
-	fVec3 markerCenter;
+	vDouble3 markerCenter;
 
 	if (m_pMD == NULL)
 		return;
@@ -153,16 +172,15 @@ void Landing::landingAtBullseye(void)
 			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
 			* m_landingTarget.m_orientY;
 
-	if (m_pCtrl->m_pMavlink == NULL)
-		return;
+	NULL_(m_pAPM->m_pMavlink);
 
 	//Send Mavlink command
-	m_pCtrl->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+	m_pAPM->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 			m_landingTarget.m_angleX, m_landingTarget.m_angleY, 0, 0, 0);
 
 }
 
-bool Landing::draw(Frame* pFrame, iVec4* pTextPos)
+bool APMcopter_landing::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 	Mat* pMat = pFrame->getCMat();
@@ -185,7 +203,7 @@ bool Landing::draw(Frame* pFrame, iVec4* pTextPos)
 
 	if(m_pMD)
 	{
-		fVec3 markerCenter;
+		vDouble3 markerCenter;
 		markerCenter.m_x = 0;
 		markerCenter.m_y = 0;
 		markerCenter.m_z = 0;

@@ -138,7 +138,7 @@ public:
 
 	void close(void);
 	bool start(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	//Receive
 	void handleMessages();

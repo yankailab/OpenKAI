@@ -13,6 +13,7 @@
 #include <cstdarg>
 
 #include "Application/General.h"
+#include "IO/FileIO.h"
 
 using namespace kai;
 

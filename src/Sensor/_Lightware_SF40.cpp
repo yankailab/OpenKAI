@@ -259,7 +259,7 @@ void _Lightware_SF40::reqMap(void)
 	m_pSerialPort->Write((char*)TM.c_str(), TM.length());
 }
 
-bool _Lightware_SF40::draw(Frame* pFrame, iVec4* pTextPos)
+bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 

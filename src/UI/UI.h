@@ -9,7 +9,7 @@
 #define SRC_UI_UI_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
 
 #define N_BUTTON 16
@@ -59,7 +59,7 @@ public:
 	virtual ~UI();
 
 	bool init(Config* pConfig);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	BUTTON* addBtn(void);
 

@@ -78,7 +78,7 @@ BUTTON* UI::addBtn(void)
 	return pNew;
 }
 
-bool UI::draw(Frame* pFrame, iVec4* pTextPos)
+bool UI::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

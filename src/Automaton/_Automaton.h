@@ -33,7 +33,7 @@ public:
 	bool setPtrByName(string name, int* ptr);
 	bool setPtrByName(string name, double* ptr);
 
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 public:
 	void updateAll(void);

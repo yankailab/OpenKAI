@@ -9,7 +9,7 @@
 
 #include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 
 namespace kai
 {

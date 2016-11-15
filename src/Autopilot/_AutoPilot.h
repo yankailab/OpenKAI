@@ -4,14 +4,10 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Automaton/_Automaton.h"
-#include "ActionBase.h"
-#include "VisualFollow.h"
-#include "Landing.h"
-#include "HM.h"
-
-//FALCON COMMANDS
-#define CMD_RC_UPDATE 0
-#define CMD_OPERATE_MODE 1
+#include "Action/ActionBase.h"
+#include "Action/APMcopter/APMcopter_landing.h"
+#include "Action/HM/HM_follow.h"
+#include "Action/RC/RC_visualFollow.h"
 
 #define N_ACTION 32
 
@@ -28,11 +24,9 @@ public:
 	bool link(void);
 
 	bool start(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
-	void sendHeartbeat(void);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	void onMouse(MOUSE* pMouse);
-
 
 public:
 	_Automaton* m_pAM;
@@ -40,7 +34,6 @@ public:
 	int m_nAction;
 	ActionBase* m_pAction[N_ACTION];
 	ActionBase* m_pAA;
-	AUTOPILOT_CONTROL m_ctrl;
 
 	//Thread
 	void update(void);
@@ -49,7 +42,6 @@ public:
 		((_AutoPilot *) This)->update();
 		return NULL;
 	}
-
 };
 
 }

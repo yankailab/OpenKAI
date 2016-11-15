@@ -1,12 +1,11 @@
 #ifndef BASE_COMMON_H_
 #define BASE_COMMON_H_
 
+#include "cv.h"
 #include "platform.h"
-#include "cvplatform.h"
-#include "BASE.h"
 #include <glog/logging.h>
-#include "../IO/FileIO.h"
 #include "../Utility/util.h"
+#include "../Base/BASE.h"
 
 #define MAVLINK_DEBUG
 
@@ -14,6 +13,7 @@
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
 #define DEG_RADIAN 0.0174533
+#define USEC_1SEC 1000000
 
 #define OBJ_VACANT 0
 #define OBJ_ADDED 1
@@ -49,7 +49,7 @@ using namespace std;
 namespace kai
 {
 
-struct fVec4
+struct vDouble4
 {
 	double m_x;
 	double m_y;
@@ -57,33 +57,33 @@ struct fVec4
 	double m_w;
 };
 
-struct fVec3
+struct vDouble3
 {
 	double m_x;
 	double m_y;
 	double m_z;
 };
 
-struct fVec2
+struct vDouble2
 {
 	double m_x;
 	double m_y;
 };
 
-struct iVec2
+struct vInt2
 {
 	int m_x;
 	int m_y;
 };
 
-struct iVec3
+struct vInt3
 {
 	int m_x;
 	int m_y;
 	int m_z;
 };
 
-struct iVec4
+struct vInt4
 {
 	int m_x;
 	int m_y;

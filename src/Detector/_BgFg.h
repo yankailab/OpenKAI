@@ -9,10 +9,10 @@
 #define DETECTOR_BGFGDETECTOR_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Stream/_Stream.h"
 #include "DetectorBase.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/cv.h"
 
 #define NUM_MARKER 128
 #define MIN_MARKER_SIZE 10
@@ -35,8 +35,8 @@ public:
 	bool start(void);
 
 	//Object detection using markers
-	void setObjROI(fVec3 ROI);
-	bool getObjPosition(fVec3* pPos);
+	void setObjROI(vDouble3 ROI);
+	bool getObjPosition(vDouble3* pPos);
 
 private:
 	void detect(void);
@@ -49,11 +49,11 @@ private:
 
 public:
 	int		 m_numAllMarker;
-	fVec4 m_pAllMarker[NUM_MARKER];
+	vDouble4 m_pAllMarker[NUM_MARKER];
 
 	//0:Not locked,1:Pos locked, 2:Size and Attitude locked
-	fVec3 m_objPos;
-	fVec3 m_objROIPos;
+	vDouble3 m_objPos;
+	vDouble3 m_objROIPos;
 
 	double	m_minSize;
 	int		m_objLockLevel;

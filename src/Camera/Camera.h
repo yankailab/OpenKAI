@@ -10,7 +10,7 @@
 
 #include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Stream/Frame.h"
 #include "CamBase.h"
 

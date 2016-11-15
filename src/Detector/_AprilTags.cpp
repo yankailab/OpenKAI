@@ -194,7 +194,7 @@ void _AprilTags::reset(void)
 	}
 }
 
-bool _AprilTags::draw(Frame* pFrame, iVec4* pTextPos)
+bool _AprilTags::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	int i,j;
 	APRIL_TAG* pTag;

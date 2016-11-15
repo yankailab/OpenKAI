@@ -14,7 +14,6 @@
 #include "BASE.h"
 
 #define NUM_MUTEX 5
-#define USEC_1SEC 1000000
 
 namespace kai
 {

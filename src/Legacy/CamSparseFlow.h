@@ -10,7 +10,8 @@
 
 #include "../Base/common.h"
 #include "stdio.h"
-#include "../Base/cvplatform.h"
+
+#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
 #include "../Stream/FrameGroup.h"
 
@@ -24,11 +25,11 @@ public:
 	virtual ~CamSparseFlow();
 
 	bool init(void);
-	fVec4 detect(_Stream* pFrame);
+	vDouble4 detect(_Stream* pFrame);
 
 private:
-	fVec4 m_flow;
-	fVec3 m_diffPrev;
+	vDouble4 m_flow;
+	vDouble3 m_diffPrev;
 
 #ifdef USE_CUDA
 	Ptr<cuda::CornersDetector> m_pDetector;

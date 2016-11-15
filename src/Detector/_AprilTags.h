@@ -9,9 +9,9 @@
 #define DETECTOR_APRILTAGS_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Stream/_Stream.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/cv.h"
 #include "DetectorBase.h"
 #include "../include/apriltags-cpp/TagDetector.h"
 
@@ -39,7 +39,7 @@ public:
 	bool init(Config* pConfig);
 	bool link(void);
 	bool start(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	int getTags(int tagID, APRIL_TAG* pTag);
 	void reset(void);

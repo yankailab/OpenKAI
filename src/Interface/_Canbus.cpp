@@ -189,7 +189,7 @@ void _Canbus::update(void)
 
 }
 
-bool _Canbus::draw(Frame* pFrame, iVec4* pTextPos)
+bool _Canbus::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 

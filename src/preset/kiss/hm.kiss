@@ -1,4 +1,3 @@
-
 {
 	"name":"APP",
 	"class":"General",
@@ -17,7 +16,7 @@
 	"bHSV":0,
 	"bShowDepth":0,
 	"_Automaton":"flight",
-	"input":"Generic",
+	"input":"ZEDL",
 		
 	{
 		"name":"ZEDL",
@@ -64,16 +63,6 @@
 		"angleH":66.7,
 		"bCrop":0,
 	}
-}
-
-{
-	"name":"HM",
-	"class":"_Canbus",
-	"bInst":0,
-	"FPS":100,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":115200,
-	"_Automaton":"autoHM",
 }
 
 {
@@ -134,7 +123,7 @@
 }
 
 {
-	"name":"autoHM",
+	"name":"HMauto",
 	"class":"_Automaton",
 	"bInst":0,
 	"FPS":10,
@@ -144,197 +133,73 @@
 		"name":"HM_STANDBY",
 		"class":"State",
 		"bInst":1,
-		
-		{
-			"name":"toFollow",
-			"class":"Transition",
-			"bInst":1,
-			"toState":"HM_FOLLOW",
-			{
-				"name":"targetLocked",
-				"class":"ConditionII",
-				"bInst":1,
-				"cond":"bt",
-				"ptr1":"",
-				"ptr2":"",
-				"constI":0,				
-			}
-		}
 	}
 	
 	{
 		"name":"HM_FOLLOW",
 		"class":"State",
 		"bInst":1,
-		
-		{
-			"name":"toWork",
-			"class":"Transition",
-			"bInst":1,
-			"toState":"HM_WORK",
-			{
-				"name":"noTarget",
-				"class":"ConditionII",
-				"bInst":1,
-				"cond":"bt",
-				"ptr1":"",
-				"ptr2":"",
-				"constI":0,				
-			}
-		}
 	}
 
 	{
 		"name":"HM_WORK",
 		"class":"State",
 		"bInst":1,
-		
-		{
-			"name":"toFollow",
-			"class":"Transition",
-			"bInst":1,
-			"toState":"HM_FOLLOW",
-			{
-				"name":"targetLocked",
-				"class":"ConditionII",
-				"bInst":1,
-				"cond":"bt",
-				"ptr1":"",
-				"ptr2":"",
-				"constI":0,				
-			}
-		}
 	}
 
 	{
 		"name":"HM_RTH",
 		"class":"State",
 		"bInst":1,
-		
-		{
-			"name":"toRTL",
-			"class":"Transition",
-			"bInst":1,
-			"toState":"AIR_RTL",
-			{
-				"name":"targetHunted",
-				"class":"ConditionII",
-				"bInst":1,
-				"cond":"bt",
-				"ptr1":"",
-				"ptr2":"",
-				"constI":0,				
-			}
-		}
 	}
 
 	{
 		"name":"HM_CHARGE",
 		"class":"State",
 		"bInst":1,
-		
-		{
-			"name":"toStandby",
-			"class":"Transition",
-			"bInst":1,
-			"toState":"LAND_STANDBY",
-			{
-				"name":"landed",
-				"class":"ConditionII",
-				"bInst":1,
-				"cond":"bt",
-				"ptr1":"",
-				"ptr2":"",
-				"constI":0,				
-			}
-		}
-	}
-	
+	}	
+}
+
+{
+	"name":"HMcanbus",
+	"class":"_Canbus",
+	"bInst":1,
+	"FPS":100,
+	"portName":"/dev/ttyACM0",
+	"baudrate":115200,
 }
 
 {
 	"name":"autopilot",
 	"class":"_AutoPilot",
-	"bInst":0,
+	"_Automaton":"HMauto",
+	"bInst":1,
 	"FPS":30,
-	"_Automaton":"autoHM",
-	"_Canbus":"HM",
 	"bMouse":1,
 	
-	{
-		"name":"roll",
-		"P":-0.5,
-		"I":0.0,
-		"Imax":10.0,
-		"D":-0.6,
-		"dT":900.0,
-		"pwmN":1510,
-		"pwmL":1250,
-		"pwmH":1750,
-		"pwmCh":0,
-	}
-	
-	{
-		"name":"pitch",
-		"P":-0.5,
-		"I":0.0,
-		"Imax":10.0,
-		"D":-0.6,
-		"dT":900.0,
-		"pwmN":1510,
-		"pwmL":1250,
-		"pwmH":1750,
-		"pwmCh":1,
-	}
-
-	{
-		"name":"alt",
-		"P":1.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"dT":0.0,
-		"pwmN":1500,
-		"pwmL":1000,
-		"pwmH":2000,
-		"pwmCh":2,
-	}
-
-	{
-		"name":"yaw",
-		"P":200.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"dT":0.0,
-		"pwmN":1500,
-		"pwmL":1000,
-		"pwmH":2000,
-		"pwmCh":3,
-	}
-
-	{
-		"name":"mode",
-		"pwmAltHold":1815,
-		"pwmStabilize":1165,
-	}
-
 	{
 		"name":"action",
 		
 		{
-			"name":"hm",
+			"name":"HMbase",
+			"class":"HM_base",
 			"bInst":1,
-			"class":"HM",
-			"maxSpeed":100,
+			"_Canbus":"HMcanbus",
+			"maxSpeed":2560,
 			"bSpeaker":0,
-			"motorPwmL":10,
-			"motorPwmR":10,
-			"motorPwmW":10,
-			"State":"AIR_RTL",
-		}		
-		
+			"motorPwmL":2560,
+			"motorPwmR":2560,
+			"motorPwmW":2500,
+		}
+
+		{
+			"name":"HMfollow",
+			"class":"HM_follow",
+			"bInst":1,
+			"HM_base":"HMbase",
+			"_Automaton":"HMauto",
+			"State":"HM_FOLLOW",
+		}
 	}
-	
 }
 

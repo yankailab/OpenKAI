@@ -9,11 +9,11 @@
 #define SRC_FLOW_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
 #include "stdio.h"
 
+#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
 #include "../Stream/FrameGroup.h"
 

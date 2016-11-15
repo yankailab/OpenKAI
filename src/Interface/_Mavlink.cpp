@@ -421,7 +421,7 @@ void _Mavlink::command_long_doSetMode(int mode)
 
 #define PUTTEXT(x,y,t) cv::putText(*pMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
 
-bool _Mavlink::draw(Frame* pFrame, iVec4* pTextPos)
+bool _Mavlink::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

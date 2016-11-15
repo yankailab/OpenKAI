@@ -143,7 +143,7 @@ bool _Automaton::checkDiagram(void)
 	return true;
 }
 
-bool _Automaton::draw(Frame* pFrame, iVec4* pTextPos)
+bool _Automaton::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 

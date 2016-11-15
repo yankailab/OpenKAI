@@ -10,8 +10,8 @@
 
 #include "NetworkBase.h"
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/cv.h"
 
 namespace kai
 {

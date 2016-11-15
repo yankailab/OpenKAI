@@ -29,7 +29,7 @@
 #include <utility>
 #include <vector>
 
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_Stream.h"
 #include "../Stream/Frame.h"

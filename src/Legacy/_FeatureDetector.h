@@ -4,7 +4,7 @@
 #define DETECTOR_FeatureDetector_H_
 
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
 #include "../Detector/DetectorBase.h"
 #include "../Utility/util.h"

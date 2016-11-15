@@ -227,7 +227,7 @@ void _DetectNet::detectFrame(void)
 */
 }
 
-bool _DetectNet::draw(Frame* pFrame, iVec4* pTextPos)
+bool _DetectNet::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	if (pFrame == NULL)
 		return false;

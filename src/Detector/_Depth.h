@@ -8,7 +8,7 @@
 
 #include "../Navigation/_Universe.h"
 #include "../Base/common.h"
-#include "../Base/cvplatform.h"
+#include "../Base/cv.h"
 #include "DetectorBase.h"
 #include "../Stream/_Stream.h"
 #include "../Vision/_Flow.h"

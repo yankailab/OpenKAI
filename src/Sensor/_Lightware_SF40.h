@@ -33,7 +33,7 @@ public:
 	bool init(Config* pConfig);
 	bool link(void);
 	void close(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
 	bool start(void);

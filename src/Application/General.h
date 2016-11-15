@@ -39,7 +39,7 @@
 #include "../Sensor/_Lightware_SF40.h"
 #include "AppBase.h"
 
-#define N_INST 16
+#define N_INST 128
 
 using namespace kai;
 
