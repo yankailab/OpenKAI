@@ -8,37 +8,29 @@
 #ifndef SRC_NAVIGATION__UNIVERSE_H_
 #define SRC_NAVIGATION__UNIVERSE_H_
 
-#ifdef USE_CAFFE
-#include "../AI/_Caffe.h"
-#endif
-
 #include "../Base/common.h"
 #include "../Base/cv.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
 
-#define NUM_OBJECT_NAME 5
 #define NUM_OBJ 100
-#define NUM_DETECT_BATCH 1
-
 
 namespace kai
 {
 
+struct OBJ_CLASS
+{
+	string m_name;
+	uint8_t m_safety;
+};
+
 struct OBJECT
 {
-	string m_name[NUM_OBJECT_NAME];
-	double m_prob[NUM_OBJECT_NAME];
-
-	uint16_t m_status;
-	uint64_t m_frameID;
-	int	m_safetyGrade;
-
-	Mat m_Mat;
-	GpuMat m_GMat;
-	Rect m_boundBox;
-	vector<Point> m_vContours;
-
+	uint64_t m_frameID;	//0:vacant
+	OBJ_CLASS* m_pClass;
+	double	m_prob;
+	vInt4	m_bbox;
+	double	m_dist;
 };
 
 class _Universe: public _ThreadBase
@@ -47,21 +39,21 @@ public:
 	_Universe();
 	virtual ~_Universe();
 
-	OBJECT* addUnknownObject(Mat* pMat, Rect* pRect, vector<Point>* pContour);
-	OBJECT* addKnownObject(string name, int safetyGrade, Mat* pMat, Rect* pRect, vector<Point>* pContour);
-	void classifyObject(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
-
 	bool init(Config* pConfig);
 	bool link(void);
 	bool start(void);
 	void reset(void);
 
+	OBJECT* addObject(OBJ_CLASS* pClass, vInt4* pBbox, double dist, double prob);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
+
 private:
+	void updateObject(void);
 	void deleteObject(int i);
 
 	void update(void);
-	static void* getUpdateThread(void* This) {
+	static void* getUpdateThread(void* This)
+	{
 		((_Universe*) This)->update();
 		return NULL;
 	}
@@ -69,20 +61,14 @@ private:
 public:
 	uint64_t m_frameID;
 	uint64_t m_frameLifeTime;
-	OBJECT m_pObjects[NUM_OBJ];
+
+	OBJECT m_pObj[NUM_OBJ];
 	int m_numObj;
 	int m_disparity;
 	double m_objProbMin;
 
 	vector<Mat> m_vMat;
 
-#ifdef USE_CAFFE
-	//Caffe classifier
-	_Caffe m_caffe;
-	vector<Prediction> m_predictions;
-	vector<vector<Prediction> > m_vPredictions;
-	int m_numBatch;
-#endif
 };
 
 } /* namespace kai */

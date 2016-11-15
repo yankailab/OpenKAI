@@ -44,7 +44,7 @@ public:
 
 	bool init(Config* pConfig);
 	bool link(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
 	bool start(void);
@@ -82,12 +82,10 @@ public:
 	_Universe* m_pUniverse;
 	_Stream* m_pStream;
 
-
 	string modelFile;
 	string trainedFile;
 	string meanFile;
 	string labelFile;
-
 
 };
 

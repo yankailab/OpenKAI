@@ -88,8 +88,6 @@ bool _DetectNet::link(void)
 	F_ERROR_F(m_pConfig->v("_Universe", &iName));
 	m_pUniverse = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
 
-	//TODO: link my variables to Automaton
-
 	printf("_DetectNet link complete\n");
 
 	return true;
@@ -170,7 +168,7 @@ void _DetectNet::detectFrame(void)
 	CHECK_(!m_pDN->Detect((float*)fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU, &m_nBox, m_confCPU));
 	printf("%i bounding boxes detected\n", m_nBox);
 
-	Rect bbox;
+	vInt4 bbox;
 
 	for (int n = 0; n < m_nBox; n++)
 	{
@@ -180,62 +178,28 @@ void _DetectNet::detectFrame(void)
 		printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0],
 				bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]);
 
-		 bbox.x = (int)bb[0];
-		 bbox.y = (int)bb[1];
-		 bbox.width = (int)(bb[2] - bb[0]);
-		 bbox.height = (int)(bb[3] - bb[1]);
+//		 bbox.x = (int)bb[0];
+//		 bbox.y = (int)bb[1];
+//		 bbox.width = (int)(bb[2] - bb[0]);
+//		 bbox.height = (int)(bb[3] - bb[1]);
 
-		 m_pUniverse->addKnownObject(m_className, 0, NULL, &bbox, NULL);
+		 bbox.m_x = (int)bb[0];
+		 bbox.m_y = (int)bb[1];
+		 bbox.m_z = (int)bb[2];
+		 bbox.m_w = (int)bb[3];
+
+		 m_pUniverse->addObject(NULL, &bbox, 0.0, 0.0);
 	}
 
-
-
-
-
-/*
-
-			int lastClass = 0;
-			int lastStart = 0;
-			
-			for( int n=0; n < m_nBox; n++ )
-			{
-				const int nc = m_confCPU[n*2+1];
-				float* bb = m_bbCPU + (n * 4);
-				
-				printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0], bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]); 
-				
-				if( nc != lastClass || n == (m_nBox - 1) )
-				{
-//					if( !net->DrawBoxes((float*)imgFC, (float*)imgFC, camera->GetWidth(), camera->GetHeight(), bbCUDA+(lastStart * 4), (n - lastStart) + 1, lastClass) )
-//					bool DrawBoxes( float* input, float* output, uint32_t width, uint32_t height, const float* boundingBoxes, int numBoxes, int classIndex=0 );
-
-					float* pbb = m_bbCPU + (lastStart*4);
-
-
-					 bbox.x = pbb[0];		
-					 bbox.y = pbb[1];
-					 bbox.width = (pbb[2] - pbb[0]);
-					 bbox.height = (pbb[3] - pbb[1]);
-
-					 m_pUniverse->addKnownObject(m_className, 0, NULL, &bbox, NULL);
-
-					
-					lastClass = nc;
-					lastStart = n;
-				}
-			}
-*/
 }
 
 bool _DetectNet::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
+	NULL_F(pFrame);
 
 	putText(*pFrame->getCMat(), "DetectNet FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-
 	pTextPos->m_y += pTextPos->m_w;
 
 	return true;

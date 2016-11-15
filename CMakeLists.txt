@@ -16,7 +16,7 @@ set(
 )
 
 #file(GLOB OpenKAIcpp )
-file(GLOB OpenKAIcpp src/*.cpp src/*/*.cpp src/*/*/*.cpp)
+file(GLOB OpenKAIcpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp)
 
 cuda_add_executable(OpenKAI ${OpenKAIcpp})
 

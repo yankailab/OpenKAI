@@ -73,7 +73,6 @@
 	"frameLifetime":50000,
 	"probMin":0.00001,
 	"posDisparity":0,
-	"_Automaton":"flight",
 }
 
 {
@@ -100,13 +99,12 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/labmodel/HM/SSD_300x300/",
 	"minConfidence":0.0,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_VOC0712_SSD_300x300_iter_60000.caffemodel",
 	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
-	"labelFile":"model/coco_labels.txt",
+	"labelFile":"model/SSD/coco_labels.txt",
 }
 
 {

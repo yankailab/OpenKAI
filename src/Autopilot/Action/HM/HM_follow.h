@@ -4,15 +4,9 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/Frame.h"
+#include "../../../Navigation/_Universe.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
-
-#ifdef USE_TENSORRT
-#include "../AI/_DetectNet.h"
-#endif
-#ifdef USE_SSD
-#include "../AI/_SSD.h"
-#endif
 
 namespace kai
 {
@@ -31,18 +25,9 @@ public:
 private:
 	void updateMotion(void);
 
-	//Detectors
-#ifdef USE_TENSORRT
-	_DetectNet* m_pDN;
-#endif
-#ifdef USE_SSD
-	_SSD* m_pSSD;
-#endif
-
-	HM_base* m_pHM;
+	_Universe*	m_pUniv;
 	_Automaton* m_pAM;
-
-
+	HM_base* m_pHM;
 
 };
 

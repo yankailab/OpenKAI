@@ -162,7 +162,7 @@ void _SSD::update(void)
 void _SSD::detectFrame(void)
 {
 	string name;
-	Rect bb;
+	vInt4 bb;
 	Frame* pFrame;
 	unsigned int iClass;
 	unsigned int i;
@@ -195,13 +195,17 @@ void _SSD::detectFrame(void)
 		if(iClass >= labels_.size())continue;
 
 		name = labels_[iClass];
-		bb.x = d[3] * pImg->cols;
-		bb.y = d[4] * pImg->rows;
-		bb.width = d[5] * pImg->cols - bb.x;
-		bb.height = d[6] * pImg->rows - bb.y;
+//		bb.x = d[3] * pImg->cols;
+//		bb.y = d[4] * pImg->rows;
+//		bb.width = d[5] * pImg->cols - bb.x;
+//		bb.height = d[6] * pImg->rows - bb.y;
 
-		m_pUniverse->addKnownObject(name, safetyGrade_[iClass], NULL, &bb, NULL);
+		bb.m_x = d[3] * pImg->cols;
+		bb.m_y = d[4] * pImg->rows;
+		bb.m_z = d[5] * pImg->cols;
+		bb.m_w = d[6] * pImg->rows;
 
+		m_pUniverse->addObject(NULL, &bb, 0.0, 0.0);
 	}
 
 }
@@ -395,18 +399,12 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 //		<< "Input channels are not wrapping the input layer of the network.";
 }
 
-
-
-
-
 bool _SSD::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
+	NULL_F(pFrame == NULL);
 
 	putText(*pFrame->getCMat(), "SSD FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
 	pTextPos->m_y += pTextPos->m_w;
 
 	return true;

@@ -153,7 +153,7 @@ void _Depth::detect(void)
 		if (bb.area() < m_minObjArea)continue;
 		if (bb.area() > m_maxObjArea)continue;
 
-		m_pUniverse->addUnknownObject(m_pStream->getBGRFrame()->getCMat(), &bb, &contours_poly[i]);
+//		m_pUniverse->addObject(m_pStream->getBGRFrame()->getCMat(), &bb, &contours_poly[i]);
 	}
 
 

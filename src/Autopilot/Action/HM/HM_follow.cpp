@@ -9,13 +9,7 @@ HM_follow::HM_follow()
 
 	m_pHM = NULL;
 	m_pAM = NULL;
-
-#ifdef USE_TENSORRT
-	m_pDN = NULL;
-#endif
-#ifdef USE_SSD
-	m_pSSD = NULL;
-#endif
+	m_pUniv = NULL;
 
 }
 
@@ -27,7 +21,6 @@ bool HM_follow::init(Config* pConfig)
 {
 	CHECK_F(this->ActionBase::init(pConfig) == false)
 	pConfig->m_pInst = this;
-
 
 	return true;
 }
@@ -43,19 +36,8 @@ bool HM_follow::link(void)
 	F_INFO(m_pConfig->v("_Automaton", &iName));
 	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
 
-
-#ifdef USE_TENSORRT
-
-#endif
-#ifdef USE_SSD
-
-#endif
-
-	//link ROI tracker
-	//	string roiName = "";
-	//	F_ERROR_F(pConfig->v("ROItracker", &roiName));
-	//	m_pROITracker = (_ROITracker*) (pConfig->root()->getChildInstByName(&roiName));
-
+	F_INFO(m_pConfig->v("_Universe", &iName));
+	m_pUniv = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
 
 	return true;
 }

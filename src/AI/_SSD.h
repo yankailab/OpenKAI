@@ -54,7 +54,7 @@ public:
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
 	bool link(void);
-	bool draw(Frame* pFrame, iVec4* pTextPos);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
 

@@ -1,6 +1,7 @@
 #ifndef BASE_COMMON_H_
 #define BASE_COMMON_H_
 
+#include "Module.h"
 #include "cv.h"
 #include "platform.h"
 #include <glog/logging.h>
@@ -14,12 +15,6 @@
 #define OneOvPI 0.31830988618
 #define DEG_RADIAN 0.0174533
 #define USEC_1SEC 1000000
-
-#define OBJ_VACANT 0
-#define OBJ_ADDED 1
-#define OBJ_CLASSIFYING 2
-#define OBJ_COMPLETE 3
-
 #define DEFAULT_FPS 30
 
 #define CR '\x0d'
@@ -43,7 +38,6 @@ using namespace std;
 #define NULL_T(x) if(x==NULL){return true;}
 
 #define DEL(x) if(x){delete x;}
-
 #define SWAP(x,y,t) t=x;x=y;y=t;
 
 namespace kai
