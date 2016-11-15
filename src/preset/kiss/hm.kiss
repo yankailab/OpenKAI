@@ -83,13 +83,13 @@
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/model/miimo/",
+	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.1,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_62080.caffemodel",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
-	"className":"Crow",
+	"className":"Human",
 }
 
 {
@@ -186,9 +186,9 @@
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
 			"bSpeaker":0,
-			"motorPwmL":0,
-			"motorPwmR":0,
-			"motorPwmW":0,
+			"motorPwmL":1000,
+			"motorPwmR":1000,
+			"motorPwmW":2500,
 		}
 
 		{
