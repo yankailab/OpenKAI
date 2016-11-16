@@ -5,7 +5,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
 }
 
 {
@@ -70,9 +70,9 @@
 	"class":"_Universe",
 	"bInst":1,
 	"FPS":30,
-	"frameLifetime":50000,
-	"probMin":0.00001,
-	"posDisparity":0,
+	"frameLifetime":800000,
+	"probMin":0.0,
+	"posDisparity":50,
 }
 
 {
@@ -99,7 +99,7 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
+	"dir":"/home/ubuntu/src/caffe/models/VGGNet/coco/SSD_300x300/",
 	"minConfidence":0.3,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
