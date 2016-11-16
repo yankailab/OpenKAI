@@ -13,24 +13,26 @@
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
 
-#define NUM_OBJ 100
+#define NUM_OBJ 128
+#define NUM_OBJ_CLASS 128
 
 namespace kai
 {
 
 struct OBJ_CLASS
 {
-	string m_name;
-	uint8_t m_safety;
+	string	m_name;
+	uint8_t	m_safety;
 };
 
 struct OBJECT
 {
-	uint64_t m_frameID;	//0:vacant
-	OBJ_CLASS* m_pClass;
-	double	m_prob;
-	vInt4	m_bbox;
-	double	m_dist;
+	uint64_t	m_frameID;	//0:vacant
+	vInt4 		m_bbox;
+	double 		m_dist;
+	double		m_prob;
+	vInt2		m_camSize;
+	int			m_iClass;
 };
 
 class _Universe: public _ThreadBase
@@ -44,7 +46,11 @@ public:
 	bool start(void);
 	void reset(void);
 
-	OBJECT* addObject(OBJ_CLASS* pClass, vInt4* pBbox, double dist, double prob);
+	int addObjClass(string* pName, uint8_t safety);
+
+	OBJECT* addObject(OBJECT* pNewObj);
+	OBJECT* getObjectByClass(int iClass);
+
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 private:
@@ -61,13 +67,15 @@ private:
 public:
 	uint64_t m_frameID;
 	uint64_t m_frameLifeTime;
-
-	OBJECT m_pObj[NUM_OBJ];
-	int m_numObj;
 	int m_disparity;
 	double m_objProbMin;
 
-	vector<Mat> m_vMat;
+	OBJ_CLASS m_pObjClass[NUM_OBJ_CLASS];
+	int m_nObjClass;
+
+	OBJECT m_pObj[NUM_OBJ];
+	int m_nObj;
+
 
 };
 

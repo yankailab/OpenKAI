@@ -49,6 +49,21 @@ struct vDouble4
 	double m_y;
 	double m_z;
 	double m_w;
+
+	double midX(void)
+	{
+		return (m_x+m_z)*0.5;
+	}
+
+	double midY(void)
+	{
+		return (m_y+m_w)*0.5;
+	}
+
+	double area(void)
+	{
+		return abs((m_z-m_x)*(m_w-m_y));
+	}
 };
 
 struct vDouble3
@@ -68,6 +83,11 @@ struct vInt2
 {
 	int m_x;
 	int m_y;
+
+	int area(void)
+	{
+		return abs(m_x*m_y);
+	}
 };
 
 struct vInt3
@@ -83,6 +103,22 @@ struct vInt4
 	int m_y;
 	int m_z;
 	int m_w;
+
+	int midX(void)
+	{
+		return (m_x+m_z)/2;
+	}
+
+	int midY(void)
+	{
+		return (m_y+m_w)/2;
+	}
+
+	int area(void)
+	{
+		return abs((m_z-m_x)*(m_w-m_y));
+	}
+
 };
 
 struct MOUSE

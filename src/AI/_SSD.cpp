@@ -68,6 +68,11 @@ bool _SSD::link(void)
 
 	//TODO: link my variables to Automaton
 
+	for(int i=0; i<labels_.size();i++)
+	{
+		m_pUniverse->addObjClass(&labels_.at(i), 0);
+	}
+
 	return true;
 }
 
@@ -96,31 +101,15 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 	string line;
 	while (std::getline(labels, line))
 	{
-		if(line.at(0) == 'a')
-		{
-			safetyGrade_.push_back(0);
-		}
-		else if(line.at(0) == 'b')
-		{
-			safetyGrade_.push_back(1);
-		}
-		else
-		{
-			safetyGrade_.push_back(2);
-		}
-
 		int from = line.find_last_of(',');
 		int to = line.length();
 		line = line.substr(from + 1, to - from);
 
 		labels_.push_back(string(line));
-
 	}
-
 
 //	Blob<float>* output_layer = net_->output_blobs()[0];
 //	CHECK_EQ(labels_.size(), output_layer->channels())<< "Number of labels is different from the output layer dimension.";
-
 }
 
 bool _SSD::start(void)
@@ -161,16 +150,13 @@ void _SSD::update(void)
 
 void _SSD::detectFrame(void)
 {
-	string name;
-	vInt4 bb;
+	OBJECT obj;
 	Frame* pFrame;
 	unsigned int iClass;
 	unsigned int i;
 
-	if (m_pStream == NULL)
-		return;
-	if (m_pUniverse == NULL)
-		return;
+	NULL_(m_pStream);
+	NULL_(m_pUniverse);
 
 	pFrame = m_pStream->getBGRFrame();
 	if (pFrame->empty())return;
@@ -194,18 +180,17 @@ void _SSD::detectFrame(void)
 		iClass = static_cast<int>(d[1])-1;
 		if(iClass >= labels_.size())continue;
 
-		name = labels_[iClass];
-//		bb.x = d[3] * pImg->cols;
-//		bb.y = d[4] * pImg->rows;
-//		bb.width = d[5] * pImg->cols - bb.x;
-//		bb.height = d[6] * pImg->rows - bb.y;
+		obj.m_iClass = iClass;
+		obj.m_bbox.m_x = d[3] * pImg->cols;
+		obj.m_bbox.m_y = d[4] * pImg->rows;
+		obj.m_bbox.m_z = d[5] * pImg->cols;
+		obj.m_bbox.m_w = d[6] * pImg->rows;
+		obj.m_camSize.m_x = pImg->cols;
+		obj.m_camSize.m_y = pImg->rows;
+		obj.m_dist = 0.0;
+		obj.m_prob = 0.0;
 
-		bb.m_x = d[3] * pImg->cols;
-		bb.m_y = d[4] * pImg->rows;
-		bb.m_z = d[5] * pImg->cols;
-		bb.m_w = d[6] * pImg->rows;
-
-		m_pUniverse->addObject(NULL, &bb, 0.0, 0.0);
+		m_pUniverse->addObject(&obj);
 	}
 
 }

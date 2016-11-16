@@ -6,7 +6,6 @@
 
 #ifdef USE_TENSORRT
 
-
 namespace kai
 {
 _DetectNet::_DetectNet()
@@ -33,10 +32,10 @@ _DetectNet::_DetectNet()
 
 	m_className = "target";
 
-	modelFile="";
-	trainedFile="";
-	meanFile="";
-	labelFile="";
+	modelFile = "";
+	trainedFile = "";
+	meanFile = "";
+	labelFile = "";
 
 }
 
@@ -66,14 +65,10 @@ bool _DetectNet::init(Config* pConfig)
 	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
 	F_INFO(pConfig->v("className", &m_className));
 
-
 	modelFile = detectNetDir + modelFile;
 	trainedFile = detectNetDir + trainedFile;
 	meanFile = detectNetDir + meanFile;
 	labelFile = presetDir + labelFile;
-
-
-
 
 	return true;
 }
@@ -89,6 +84,8 @@ bool _DetectNet::link(void)
 	m_pUniverse = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
 
 	printf("_DetectNet link complete\n");
+
+	m_pUniverse->addObjClass(&m_className, 0);
 
 	return true;
 }
@@ -110,18 +107,18 @@ bool _DetectNet::start(void)
 void _DetectNet::update(void)
 {
 
-	m_pDN = detectNet::Create(modelFile.c_str(),
-				  trainedFile.c_str(),
-				  meanFile.c_str(),
-				  m_confidence_threshold );
+	m_pDN = detectNet::Create(modelFile.c_str(), trainedFile.c_str(),
+			meanFile.c_str(), m_confidence_threshold);
 	NULL_(m_pDN);
 
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
 	m_nClass = m_pDN->GetNumClasses();
 
-	CHECK_(!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
+	CHECK_(
+			!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
 					m_nBoxMax * sizeof(float4)));
-	CHECK_(!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
+	CHECK_(
+			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
 
 	printf("_DetectNet setup complete\n");
@@ -150,26 +147,24 @@ void _DetectNet::detectFrame(void)
 	CHECK_(pBGR->empty());
 	CHECK_(m_pRGBA->isNewerThan(pBGR));
 
-	
 	m_pRGBA->getRGBAOf(pBGR);
 	GpuMat* pGMat = m_pRGBA->getGMat();
 	CHECK_(pGMat->empty());
 
 	GpuMat fGMat;
-	pGMat->convertTo(fGMat,CV_32FC4);
+	pGMat->convertTo(fGMat, CV_32FC4);
 
-
-/*	m_pRGBA->getRGBAOf(pBGR);
-	m_pRGBAf->get32FC4Of(m_pRGBA);
-	GpuMat* fGMat = m_pRGBA->getGMat();
-*/
+	/*	m_pRGBA->getRGBAOf(pBGR);
+	 m_pRGBAf->get32FC4Of(m_pRGBA);
+	 GpuMat* fGMat = m_pRGBA->getGMat();
+	 */
 	m_nBox = m_nBoxMax;
 
-	CHECK_(!m_pDN->Detect((float*)fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU, &m_nBox, m_confCPU));
+	CHECK_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
+					&m_nBox, m_confCPU));
 	printf("%i bounding boxes detected\n", m_nBox);
 
-	vInt4 bbox;
-
+	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
 		const int nc = m_confCPU[n * 2 + 1];
@@ -178,17 +173,17 @@ void _DetectNet::detectFrame(void)
 		printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0],
 				bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]);
 
-//		 bbox.x = (int)bb[0];
-//		 bbox.y = (int)bb[1];
-//		 bbox.width = (int)(bb[2] - bb[0]);
-//		 bbox.height = (int)(bb[3] - bb[1]);
+		obj.m_iClass = 0;
+		obj.m_bbox.m_x = (int) bb[0];
+		obj.m_bbox.m_y = (int) bb[1];
+		obj.m_bbox.m_z = (int) bb[2];
+		obj.m_bbox.m_w = (int) bb[3];
+		obj.m_camSize.m_x = fGMat.cols;
+		obj.m_camSize.m_y = fGMat.rows;
+		obj.m_dist = 0.0;
+		obj.m_prob = 0.0;
 
-		 bbox.m_x = (int)bb[0];
-		 bbox.m_y = (int)bb[1];
-		 bbox.m_z = (int)bb[2];
-		 bbox.m_w = (int)bb[3];
-
-		 m_pUniverse->addObject(NULL, &bbox, 0.0, 0.0);
+		m_pUniverse->addObject(&obj);
 	}
 
 }

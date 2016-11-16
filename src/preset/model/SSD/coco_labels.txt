@@ -1,4 +1,4 @@
-a,1,1,person
+1,1,person
 2,2,bicycle
 3,3,car
 4,4,motorcycle
@@ -12,16 +12,16 @@ a,1,1,person
 13,12,stop sign
 14,13,parking meter
 15,14,bench
-b,16,15,bird
-b,17,16,cat
-b,18,17,dog
-b,19,18,horse
-b,20,19,sheep
-b,21,20,cow
-b,22,21,elephant
-b,23,22,bear
-b,24,23,zebra
-b,25,24,giraffe
+16,15,bird
+17,16,cat
+18,17,dog
+19,18,horse
+20,19,sheep
+21,20,cow
+22,21,elephant
+23,22,bear
+24,23,zebra
+25,24,giraffe
 27,25,backpack
 28,26,umbrella
 31,27,handbag

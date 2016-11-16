@@ -14,7 +14,8 @@ _Universe::_Universe()
 {
 	_ThreadBase();
 
-	m_numObj = NUM_OBJ;
+	m_nObjClass = 0;
+	m_nObj = NUM_OBJ;
 	m_frameID = 0;
 	m_frameLifeTime = 0;
 	m_objProbMin = 0;
@@ -83,6 +84,15 @@ void _Universe::deleteObject(int i)
 
 	pObj->m_frameID = 0;
 	pObj->m_prob = 0;
+	pObj->m_iClass = 0;
+}
+
+void _Universe::reset(void)
+{
+	for (int i = 0; i < m_nObj; i++)
+	{
+		deleteObject(i);
+	}
 }
 
 void _Universe::updateObject(void)
@@ -90,9 +100,11 @@ void _Universe::updateObject(void)
 	OBJECT* pObj;
 
 	//Collect the candidates
-	for (int i = 0; i < m_numObj; i++)
+	for (int i = 0; i < m_nObj; i++)
 	{
 		pObj = &m_pObj[i];
+
+		if (pObj->m_frameID <= 0)continue;
 
 		//Delete the outdated frame
 		if (m_frameID - pObj->m_frameID > m_frameLifeTime)
@@ -103,45 +115,46 @@ void _Universe::updateObject(void)
 	}
 }
 
-OBJECT* _Universe::addObject(OBJ_CLASS* pClass, vInt4* pBbox, double dist,
-		double prob)
+int _Universe::addObjClass(string* pName, uint8_t safety)
 {
-	NULL_N(pBbox);
+	if(pName==NULL)return -1;
+	if(m_nObjClass >= NUM_OBJ_CLASS)return -1;
+
+	m_pObjClass[m_nObjClass].m_name = *pName;
+	m_pObjClass[m_nObjClass].m_safety = safety;
+	m_nObjClass++;
+	return m_nObjClass-1;
+}
+
+OBJECT* _Universe::addObject(OBJECT* pNewObj)
+{
+	NULL_N(pNewObj);
 
 	int i;
 	int iVacant;
 	OBJECT* pObj;
 	uint64_t frameID = get_time_usec();
 
-	iVacant = m_numObj;
-	for (i = 0; i < m_numObj; i++)
+	iVacant = m_nObj;
+	for (i = 0; i < m_nObj; i++)
 	{
 		pObj = &m_pObj[i];
 
-		if (pObj->m_frameID)	//>0:not vacant
+		if (pObj->m_frameID > 0)	//>0:not vacant
 		{
 			//compare if already existed
-			if (abs(pObj->m_bbox.m_x - pBbox->m_x) > m_disparity)
+			if (abs(pObj->m_bbox.m_x - pNewObj->m_bbox.m_x) > m_disparity)
 				continue;
-			if (abs(pObj->m_bbox.m_y - pBbox->m_y) > m_disparity)
+			if (abs(pObj->m_bbox.m_y - pNewObj->m_bbox.m_y) > m_disparity)
 				continue;
-			if (abs(pObj->m_bbox.m_z - pBbox->m_z) > m_disparity)
+			if (abs(pObj->m_bbox.m_z - pNewObj->m_bbox.m_z) > m_disparity)
 				continue;
-			if (abs(pObj->m_bbox.m_w - pBbox->m_w) > m_disparity)
+			if (abs(pObj->m_bbox.m_w - pNewObj->m_bbox.m_w) > m_disparity)
 				continue;
 
 			//already existed, update and return
+			*pObj = *pNewObj;
 			pObj->m_frameID = frameID;
-			pObj->m_bbox = *pBbox;
-			pObj->m_dist = dist;
-			if (!pClass)
-				return pObj;
-			if (prob > pObj->m_prob)
-			{
-				pObj->m_pClass = pClass;
-				pObj->m_prob = prob;
-			}
-
 			return pObj;
 		}
 
@@ -150,26 +163,33 @@ OBJECT* _Universe::addObject(OBJ_CLASS* pClass, vInt4* pBbox, double dist,
 		break;
 	}
 
-	CHECK_N(iVacant >= m_numObj);
+	CHECK_N(iVacant >= m_nObj);
 
 	//Change in status comes to the last
 	pObj = &m_pObj[iVacant];
+	*pObj = *pNewObj;
 	pObj->m_frameID = frameID;
-	pObj->m_pClass = pClass;
-	pObj->m_prob = prob;
-	pObj->m_bbox = *pBbox;
-	pObj->m_dist = dist;
 	return pObj;
 
 }
 
-void _Universe::reset(void)
+OBJECT* _Universe::getObjectByClass(int iClass)
 {
-	for (int i = 0; i < m_numObj; i++)
+	int i;
+	OBJECT* pObj;
+
+	for (i = 0; i < m_nObj; i++)
 	{
-		m_pObj[i].m_frameID = 0;
-		m_pObj[i].m_prob = 0;
+		pObj = &m_pObj[i];
+
+		if (pObj->m_frameID <= 0)	//>0:not vacant
+			continue;
+
+		if (pObj->m_iClass == iClass)
+			return pObj;
 	}
+
+	return NULL;
 }
 
 bool _Universe::draw(Frame* pFrame, vInt4* pTextPos)
@@ -186,11 +206,10 @@ bool _Universe::draw(Frame* pFrame, vInt4* pTextPos)
 	Scalar color;
 	double thickness;
 
-	for (int i = 0; i < m_numObj; i++)
+	for (int i = 0; i < m_nObj; i++)
 	{
 		pObj = &m_pObj[i];
-		if (pObj->m_frameID <= 0)
-			continue;
+		if (pObj->m_frameID <= 0)continue;
 
 		color = Scalar(0, 255, 0);
 		thickness = 1;
@@ -202,10 +221,9 @@ bool _Universe::draw(Frame* pFrame, vInt4* pTextPos)
 
 		rectangle(*pMat, bbox, color, thickness);
 
-		if(!pObj->m_pClass)continue;
-		putText(*pMat, pObj->m_pClass->m_name,
-				Point(bbox.x + bbox.width / 2,
-					  bbox.y + bbox.height / 2),
+		if(pObj->m_iClass >= m_nObjClass)continue;
+		putText(*pMat, m_pObjClass[pObj->m_iClass].m_name,
+				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
 				FONT_HERSHEY_SIMPLEX, 0.8, color, thickness);
 	}
 

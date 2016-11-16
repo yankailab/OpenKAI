@@ -5,7 +5,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -84,7 +84,7 @@
 	"_Universe":"Universe",
 	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/model/ped-100/",
-	"minConfidence":0.1,
+	"minConfidence":0.01,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
@@ -95,15 +95,15 @@
 {
 	"name":"SSD",
 	"class":"_SSD",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"dir":"/home/ubuntu/src/labmodel/HM/SSD_300x300/",
-	"minConfidence":0.0,
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
+	"minConfidence":0.3,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"VGG_VOC0712_SSD_300x300_iter_60000.caffemodel",
-	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
+	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
+	"meanFile":"imagenet_mean.binaryproto",
 	"labelFile":"model/SSD/coco_labels.txt",
 }
 
@@ -188,7 +188,7 @@
 			"bSpeaker":0,
 			"motorPwmL":1000,
 			"motorPwmR":1000,
-			"motorPwmW":2500,
+			"motorPwmW":0,
 		}
 
 		{
@@ -196,8 +196,16 @@
 			"class":"HM_follow",
 			"bInst":1,
 			"HM_base":"HMbase",
+			"_Universe":"Universe",			
 			"_Automaton":"HMauto",
 			"State":"HM_FOLLOW",
+			"targetX":0.5,
+			"targetY":0.5,
+			"targetSize":0.35,
+			"speedP":0.005,
+			"steerP":25,
+			"filterWindow":10,
+			"targetClass":0,
 		}
 	}
 }

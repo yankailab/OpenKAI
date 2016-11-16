@@ -88,7 +88,6 @@ private:
 	Frame* m_pFrame;
 
 	vector<string> labels_;
-	vector<int> safetyGrade_;
 	double m_confidence_threshold;
 
 
