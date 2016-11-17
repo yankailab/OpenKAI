@@ -54,12 +54,11 @@ void HM_base::updateCAN(void)
 
 	unsigned long addr = 0x113;
 	unsigned char cmd[8];
-	const static int dint = sizeof(int)*8-1;
 
 	m_ctrlB0 = 0;
-	m_ctrlB0 |= ((m_motorPwmR >> dint) << 4);
-	m_ctrlB0 |= ((m_motorPwmL >> dint) << 5);
-	m_ctrlB0 |= ((m_motorPwmW >> dint) << 6);
+	m_ctrlB0 |= (m_motorPwmR<0)?(1 << 4):0;
+	m_ctrlB0 |= (m_motorPwmL<0)?(1 << 5):0;
+	m_ctrlB0 |= (m_motorPwmW<0)?(1 << 6):0;
 
 	uint16_t motorPwmL = abs(confineVal(m_motorPwmL, m_maxSpeedT, -m_maxSpeedT));
 	uint16_t motorPwmR = abs(confineVal(m_motorPwmR, m_maxSpeedT, -m_maxSpeedT));

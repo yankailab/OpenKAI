@@ -13,10 +13,10 @@ HM_follow::HM_follow()
 
 	m_destX = 0.5;
 	m_destY = 0.5;
-	m_destArea = 0.25;
+	m_destArea = 0.1;
 
-	m_speedP = 1.0;
-	m_steerP = 1.0;
+	m_speedP = 0.0;
+	m_steerP = 0.0;
 
 	m_pTarget = NULL;
 	m_pTargetX = new kai::Filter();
@@ -38,7 +38,7 @@ bool HM_follow::init(Config* pConfig)
 
 	F_INFO(pConfig->v("targetX", &m_destX));
 	F_INFO(pConfig->v("targetY", &m_destY));
-	F_INFO(pConfig->v("targetSize", &m_destArea));
+	F_INFO(pConfig->v("targetArea", &m_destArea));
 	F_INFO(pConfig->v("targetClass", &m_targetClass));
 
 	F_INFO(pConfig->v("speedP", &m_speedP));

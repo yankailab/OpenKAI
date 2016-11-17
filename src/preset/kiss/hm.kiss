@@ -3,7 +3,7 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShowScreen":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
 }
@@ -70,9 +70,9 @@
 	"class":"_Universe",
 	"bInst":1,
 	"FPS":30,
-	"frameLifetime":800000,
+	"frameLifetime":500000,
 	"probMin":0.0,
-	"posDisparity":50,
+	"posDisparity":100,
 }
 
 {
@@ -84,7 +84,7 @@
 	"_Universe":"Universe",
 	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/model/ped-100/",
-	"minConfidence":0.01,
+	"minConfidence":0.2,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
@@ -201,9 +201,9 @@
 			"State":"HM_FOLLOW",
 			"targetX":0.5,
 			"targetY":0.5,
-			"targetSize":0.35,
-			"speedP":0.005,
-			"steerP":25,
+			"targetArea":0.1,
+			"speedP":0.25,
+			"steerP":8,
 			"filterWindow":10,
 			"targetClass":0,
 		}
