@@ -1,8 +1,8 @@
 
-#ifndef OPENKAI_SRC_IO_JSON_H_
-#define OPENKAI_SRC_IO_JSON_H
+#ifndef OPENKAI_SRC_SCRIPT_JSON_H_
+#define OPENKAI_SRC_SCRIPT_JSON_H_
 
-#include "../Base/platform.h"
+#include "../Base/common.h"
 #include "picojson.h"
 
 using namespace std;

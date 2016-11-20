@@ -1,19 +1,15 @@
 /*
- * CameraInput.h
+ * FrameGroup.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_FRAMEGROUP_H_
-#define SRC_FRAMEGROUP_H_
+#ifndef SRC_STREAM_FRAMEGROUP_H_
+#define SRC_STREAM_FRAMEGROUP_H_
 
-#include <pthread.h>
-#include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "../Utility/util.h"
-#include "Frame.h"
+#include "../Stream/Frame.h"
 
 #define NUM_FRAME 10
 
@@ -27,15 +23,10 @@ public:
 	virtual ~FrameGroup();
 
 	bool init(int numFrame);
-//	bool addFrame(CamFrame* pFrame, int iFrame);
 
 	void updateFrameIndex(void);
 	Frame* getPrevFrame(void);
 	Frame* getLastFrame(void);
-
-//	void switchFrame(void);
-//	void updateSwitch(Mat* pFrame);
-//	void updateSwitch(CamFrame* pFrame);
 
 private:
 	int		m_numFrame;
@@ -45,4 +36,4 @@ private:
 
 }/*namespace kai*/
 
-#endif /* SRC_FRAMEGROUP_H_ */
+#endif

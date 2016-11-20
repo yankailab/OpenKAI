@@ -1,0 +1,161 @@
+{
+	"name":"APP",
+	"class":"General",
+	"appName":"OpenKAI",
+	"bShowScreen":1,
+	"bFullScreen":0,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+}
+
+{
+	"name":"mainStream",
+	"class":"_Stream",
+	"bInst":1,
+	"bGray":0,
+	"bHSV":0,
+	"bShowDepth":0,
+	"_Automaton":"flight",
+	"input":"ZEDL",
+		
+	{
+		"name":"ZEDL",
+		"class":"Camera",
+		"FPS":30,
+		"ID":0,
+		"width":1344,
+		"height":376,
+		"bCrop":1,
+		"cropX":0,
+		"cropY":0,
+		"cropW":672,
+		"cropH":376,
+		"bCalib":0,
+		"bFisheye":0,
+		"calibFile":"calibration/sp360-1440.xml",
+		"isoScale":1.0,
+		"bGimbal":0,
+		"angleV":67.1,
+		"angleH":66.7,
+	}
+	
+	{
+		"name":"Generic",
+		"class":"Camera",
+		"FPS":30,
+		"ID":0,
+		"width":640,
+		"height":480,
+		"angleV":67.1,
+		"angleH":66.7,
+	}
+	
+	{
+		"name":"ZED",
+		"class":"ZED",
+		"FPS":30,
+		"bShowDepth":0,
+		"resolution":2,
+		"minDist":800,
+		"width":1344,
+		"height":376,
+		"angleV":67.1,
+		"angleH":66.7,
+		"bCrop":0,
+	}
+}
+
+{
+	"name":"Universe",
+	"class":"_Universe",
+	"bInst":1,
+	"FPS":30,
+	"frameLifetime":500000,
+	"probMin":0.0,
+	"posDisparity":100,
+}
+
+{
+	"name":"detectNet",
+	"class":"_DetectNet",
+	"bInst":1,
+	"FPS":30,
+	"_Stream":"mainStream",
+	"_Universe":"Universe",
+	"_Automaton":"flight",
+	"dir":"/home/ubuntu/src/model/ped-100/",
+	"minConfidence":0.2,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"model/coco_labels.txt",
+	"className":"Human",
+}
+
+{
+	"name":"SSD",
+	"class":"_SSD",
+	"bInst":1,
+	"FPS":30,
+	"_Stream":"mainStream",
+	"_Universe":"Universe",
+	"dir":"/home/ubuntu/src/caffe/models/VGGNet/coco/SSD_300x300/",
+	"minConfidence":0.3,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
+	"meanFile":"imagenet_mean.binaryproto",
+	"labelFile":"model/SSD/coco_labels.txt",
+}
+
+{
+	"name":"APMrover",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":100,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":921600,
+}
+
+{
+	"name":"autopilot",
+	"class":"_AutoPilot",
+	"_Automaton":"HMauto",
+	"bInst":1,
+	"FPS":30,
+	"bMouse":1,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"APMbase",
+			"class":"APMrover_base",
+			"bInst":1,
+			"_Mavlink":"APMrover",
+			"maxSpeedT":65535,
+			"maxSpeedW":2500,
+			"bSpeaker":0,
+			"motorPwmL":1000,
+			"motorPwmR":1000,
+			"motorPwmW":0,
+		}
+
+		{
+			"name":"HMfollow",
+			"class":"HM_follow",
+			"bInst":1,
+			"HM_base":"HMbase",
+			"_Universe":"Universe",			
+			"_Automaton":"HMauto",
+			"State":"HM_FOLLOW",
+			"targetX":0.5,
+			"targetY":0.5,
+			"targetArea":0.1,
+			"speedP":0.25,
+			"steerP":8,
+			"filterWindow":10,
+			"targetClass":0,
+		}
+	}
+}
+

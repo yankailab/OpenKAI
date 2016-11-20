@@ -1,18 +1,17 @@
 /*
- * _MarkerDetect.h
+ * _Bullseye.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef DETECTOR_MARKERDETECTOR_H_
-#define DETECTOR_MARKERDETECTOR_H_
+#ifndef DETECTOR_BULLSEYE_H_
+#define DETECTOR_BULLSEYE_H_
 
 #include "../Base/common.h"
 #include "../Stream/_Stream.h"
-#include "../Base/_ThreadBase.h"
-#include "../Base/cv.h"
-#include "DetectorBase.h"
+#include "../Detector/DetectorBase.h"
+
 
 #define NUM_MARKER 128
 

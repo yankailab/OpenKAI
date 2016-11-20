@@ -18,3 +18,13 @@
 #include <pthread.h>
 #include <string>
 #include <string.h>
+#include "stdio.h"
+#include <cstdio>
+#include <cmath>
+#include <cstdarg>
+#include <signal.h>
+#include <time.h>
+#include <sys/time.h>
+
+
+

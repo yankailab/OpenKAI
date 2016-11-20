@@ -8,10 +8,8 @@
 #ifndef SRC_CAMBASE_H_
 #define SRC_CAMBASE_H_
 
-#include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "../Stream/Frame.h"
+#include "../Base/BASE.h"
 
 #define CAM_GENERAL 0
 #define CAM_ZED 1

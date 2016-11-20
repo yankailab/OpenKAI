@@ -9,8 +9,9 @@
 #define SRC_UI_UI_H_
 
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "../Stream/_Stream.h"
+#include "../Base/BASE.h"
+#include "../Stream/Frame.h"
+
 
 #define N_BUTTON 16
 

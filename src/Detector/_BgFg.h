@@ -10,9 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Stream/_Stream.h"
-#include "DetectorBase.h"
-#include "../Base/_ThreadBase.h"
-#include "../Base/cv.h"
+#include "../Detector/DetectorBase.h"
+
 
 #define NUM_MARKER 128
 #define MIN_MARKER_SIZE 10

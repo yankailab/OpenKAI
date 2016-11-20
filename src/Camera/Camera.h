@@ -1,5 +1,5 @@
 /*
- * CamInput.h
+ * Camera.h
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
@@ -8,10 +8,7 @@
 #ifndef SRC_CAMERA_H_
 #define SRC_CAMERA_H_
 
-#include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "../Stream/Frame.h"
 #include "CamBase.h"
 
 namespace kai

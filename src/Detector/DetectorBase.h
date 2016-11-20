@@ -8,7 +8,7 @@
 #ifndef DETECTOR_DETECTORBASE_H_
 #define DETECTOR_DETECTORBASE_H_
 
-#include "../Stream/Frame.h"
+#include "../Base/common.h"
 
 namespace kai
 {

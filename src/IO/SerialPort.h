@@ -1,5 +1,7 @@
-#pragma once
-#include "../Base/platform.h"
+#ifndef AI_IO_SERIALPORT_H_
+#define AI_IO_SERIALPORT_H_
+
+#include "../Base/common.h"
 
 #include <sys/ioctl.h>
 //#include <linux/serial.h>
@@ -59,3 +61,4 @@ private:
 
 };
 
+#endif

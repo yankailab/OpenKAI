@@ -9,6 +9,7 @@
 #define OPENKAI_SRC_AUTOMATON_TRANSITION_H_
 
 #include "../Base/common.h"
+#include "ConditionBase.h"
 #include "ConditionII.h"
 #include "ConditionFF.h"
 #include "ConditionIC.h"

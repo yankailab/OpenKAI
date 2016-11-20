@@ -1,4 +1,5 @@
-#pragma once
+#ifndef OPENKAI_SRC_INTERFACE_MAVLINK_H_
+#define OPENKAI_SRC_INTERFACE_MAVLINK_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -6,9 +7,6 @@
 #include "../IO/SerialPort.h"
 #include "../Stream/Frame.h"
 
-#include <signal.h>
-#include <time.h>
-#include <sys/time.h>
 
 
 // ------------------------------------------------------------------------------
@@ -197,6 +195,7 @@ public:
 
 }
 
+#endif
 
 /*
 I believe this is the one

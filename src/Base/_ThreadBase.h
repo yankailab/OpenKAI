@@ -8,8 +8,6 @@
 #ifndef SRC_THREADBASE_H_
 #define SRC_THREADBASE_H_
 
-#include "platform.h"
-#include "../Utility/util.h"
 #include "common.h"
 #include "BASE.h"
 

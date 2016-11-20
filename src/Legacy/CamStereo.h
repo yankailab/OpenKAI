@@ -9,7 +9,6 @@
 #define SRC_CAMSTEREO_H_
 
 #include "../Base/common.h"
-#include "../Base/cv.h"
 #include "../Stream/Frame.h"
 
 namespace kai

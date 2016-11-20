@@ -5,14 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef AI__Lightware_SF40_sender_SENDER_H_
-#define AI__Lightware_SF40_sender_SENDER_H_
+#ifndef AI__Lightware_SF40_SENDER_H_
+#define AI__Lightware_SF40_SENDER_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Navigation/_Universe.h"
+#include "../Stream/Frame.h"
 #include "../IO/SerialPort.h"
-#include "../Algorithm/Filter.h"
 
 #define DEG_AROUND 360.0
 

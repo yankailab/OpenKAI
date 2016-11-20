@@ -2,12 +2,17 @@
 #define OPENKAI_SRC_AUTOPILOT__AUTOPILOT_H_
 
 #include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../Automaton/_Automaton.h"
 #include "Action/ActionBase.h"
-#include "Action/APMcopter/APMcopter_landing.h"
+#include "Action/HM/HM_base.h"
 #include "Action/HM/HM_follow.h"
+#include "Action/APMcopter/APMcopter_base.h"
+#include "Action/APMcopter/APMcopter_landing.h"
+#include "Action/APMrover/APMrover_base.h"
+#include "Action/APMrover/APMrover_follow.h"
+#include "Action/RC/RC_base.h"
 #include "Action/RC/RC_visualFollow.h"
+
 
 #define N_ACTION 32
 

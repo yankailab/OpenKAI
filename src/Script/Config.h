@@ -1,10 +1,9 @@
 
 #ifndef OPENKAI_SRC_IO_CONFIG_H_
-#define OPENKAI_SRC_IO_CONFIG_H
+#define OPENKAI_SRC_IO_CONFIG_H_
 
-#include "../Base/platform.h"
+#include "../Base/common.h"
 #include "JSON.h"
-#include <string>
 
 using namespace std;
 

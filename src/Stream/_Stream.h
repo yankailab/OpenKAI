@@ -10,11 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/cv.h"
-
+#include "../Stream/Frame.h"
 #include "../Camera/Camera.h"
-#include "../Camera/ZED.h"
-#include "Frame.h"
 
 namespace kai
 {

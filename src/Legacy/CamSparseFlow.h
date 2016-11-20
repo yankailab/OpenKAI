@@ -9,9 +9,6 @@
 #define SRC_CAMSPARSEFLOW_H_
 
 #include "../Base/common.h"
-#include "stdio.h"
-
-#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
 #include "../Stream/FrameGroup.h"
 

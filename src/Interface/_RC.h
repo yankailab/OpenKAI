@@ -1,8 +1,10 @@
-#pragma once
+#ifndef OPENKAI_SRC_INTERFACE_RC_H_
+#define OPENKAI_SRC_INTERFACE_RC_H_
 
 #include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../IO/SerialPort.h"
+#include "../Script/Config.h"
+#include "../Base/_ThreadBase.h"
 
 #define MAVLINK_BEGIN 0xFE
 #define MAVLINK_HEADDER_LEN 3
@@ -59,3 +61,4 @@ private:
 
 }
 
+#endif

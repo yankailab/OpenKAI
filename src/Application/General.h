@@ -8,38 +8,8 @@
 #ifndef SRC_GENERAL_H_
 #define SRC_GENERAL_H_
 
-#include <cstdio>
-#include <cmath>
-#include <cstdarg>
-
 #include "../Base/common.h"
-#ifdef USE_SSD
-#include "../AI/_SSD.h"
-#endif
-#ifdef USE_FCN
-#include "../AI/_FCN.h"
-#endif
-#ifdef USE_TENSORRT
-#include "../AI/_DetectNet.h"
-#endif
-
-#include "../Base/BASE.h"
-#include "../Automaton/_Automaton.h"
-#include "../Autopilot/_AutoPilot.h"
-#include "../Camera/Camera.h"
-#include "../Interface/_Mavlink.h"
-#include "../Interface/_Canbus.h"
-#include "../Detector/_Bullseye.h"
-#include "../Detector/_AprilTags.h"
-#include "../Tracker/_ROITracker.h"
-#include "../Detector/_Depth.h"
-#include "../Navigation/_Universe.h"
-#include "../UI/UI.h"
-#include "../Vision/_Flow.h"
-#include "../Sensor/_Lightware_SF40.h"
-#include "AppBase.h"
-
-#define N_INST 128
+#include "Module.h"
 
 using namespace kai;
 

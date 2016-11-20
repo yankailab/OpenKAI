@@ -8,15 +8,10 @@
 #ifndef SRC_ROITRACKER_H_
 #define SRC_ROITRACKER_H_
 
-#include "../Vision/_Flow.h"
 #include "../Base/common.h"
-#include "../Detector/DetectorBase.h"
 #include "../Base/_ThreadBase.h"
-#include "stdio.h"
-
-#include "../Base/cv.h"
 #include "../Stream/_Stream.h"
-#include "../Stream/FrameGroup.h"
+#include "../Detector/DetectorBase.h"
 
 using namespace cv;
 using namespace cv::cuda;

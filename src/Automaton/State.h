@@ -9,7 +9,8 @@
 #define OPENKAI_SRC_AUTOMATON_STATE_H_
 
 #include "../Base/common.h"
-#include "Transition.h"
+#include "../Automaton/Transition.h"
+#include "../Script/Config.h"
 
 #define N_TRANSITION 32
 

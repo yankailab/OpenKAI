@@ -8,12 +8,9 @@
 #ifndef SRC_OPENKAI_MAIN_H_
 #define SRC_OPENKAI_MAIN_H_
 
-#include <cstdio>
-#include <cmath>
-#include <cstdarg>
-
 #include "Application/General.h"
 #include "IO/FileIO.h"
+
 
 using namespace kai;
 

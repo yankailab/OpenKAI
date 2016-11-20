@@ -9,9 +9,10 @@
 #define AI__SSD_H_
 
 #include "../Base/common.h"
+#include "../Stream/_Stream.h"
+#include "../Navigation/_Universe.h"
 
 #ifdef USE_SSD
-
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
 #include <caffe/blob.hpp>
@@ -25,11 +26,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-#include "../Base/cv.h"
-#include "../Base/_ThreadBase.h"
-#include "../Navigation/_Universe.h"
-#include "../Stream/_Stream.h"
 
 namespace kai
 {

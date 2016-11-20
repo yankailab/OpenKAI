@@ -2,16 +2,15 @@
  *
  */
 
+#ifndef DETECTOR_DEPTH_H_
+#define DETECTOR_DEPTH_H_
 
-#ifndef DETECTOR_DEPTHDETECTOR_H_
-#define DETECTOR_DEPTHDETECTOR_H_
-
-#include "../Navigation/_Universe.h"
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "DetectorBase.h"
 #include "../Stream/_Stream.h"
+#include "../Navigation/_Universe.h"
+#include "../Detector/DetectorBase.h"
 #include "../Vision/_Flow.h"
+
 
 using namespace cv;
 using namespace cv::cuda;

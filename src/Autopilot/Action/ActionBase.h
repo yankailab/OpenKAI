@@ -3,6 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_ACTIONBASE_H_
 
 #include "../../Base/common.h"
+#include "../../Base/BASE.h"
 
 namespace kai
 {

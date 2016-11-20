@@ -8,10 +8,11 @@
 #ifndef SRC_NETWORK_SERVERE_H_
 #define SRC_NETWORK_SERVERE_H_
 
-#include "NetworkBase.h"
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/cv.h"
+#include "../Script/Config.h"
+#include "NetworkBase.h"
+
 
 namespace kai
 {
@@ -22,7 +23,7 @@ public:
 	_server();
 	virtual ~_server();
 
-	bool init(JSON* pJson);
+	bool init(Config* pConfig);
 	bool start(void);
 
 private:

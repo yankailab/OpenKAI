@@ -1,6 +1,7 @@
-#pragma once
+#ifndef AI_IO_FILEIO_H_
+#define AI_IO_FILEIO_H_
 
-#include "../Base/platform.h"
+#include "../Base/common.h"
 
 using namespace std;
 
@@ -19,4 +20,4 @@ public:
 
 };
 
-
+#endif

@@ -65,10 +65,10 @@ public:
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
 
-	APMrover_PID m_pidSpeed;
+	APMrover_PID m_pidThrust;
 	APMrover_PID m_pidSteer;
 
-	APMrover_CTRL m_ctrlSpeed;
+	APMrover_CTRL m_ctrlThrust;
 	APMrover_CTRL m_ctrlSteer;
 
 };

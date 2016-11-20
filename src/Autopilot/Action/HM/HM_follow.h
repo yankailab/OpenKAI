@@ -2,9 +2,8 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
-#include "../../../Stream/Frame.h"
 #include "../../../Navigation/_Universe.h"
+#include "../../../Automaton/_Automaton.h"
 #include "../../../Algorithm/Filter.h"
 #include "../ActionBase.h"
 #include "HM_base.h"

@@ -10,8 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Automaton/State.h"
 #include "../Stream/Frame.h"
-#include "State.h"
 
 #define N_STATE 32
 

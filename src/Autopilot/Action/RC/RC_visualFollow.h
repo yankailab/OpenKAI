@@ -2,12 +2,16 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../Interface/_RC.h"
+#include "../../../Navigation/_Universe.h"
+#include "../../../Algorithm/Filter.h"
+#include "../../../Stream/Frame.h"
 #include "../../../Tracker/_ROITracker.h"
 #include "../../../Vision/_Flow.h"
 #include "../../../UI/UI.h"
+#include "../../../Interface/_RC.h"
 #include "../ActionBase.h"
 #include "RC_base.h"
+
 
 #define MODE_ASSIST 0
 #define MODE_DRAWRECT 1

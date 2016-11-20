@@ -9,9 +9,9 @@ APMrover_base::APMrover_base()
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	m_pidSpeed.reset();
+	m_pidThrust.reset();
 	m_pidSteer.reset();
-	m_ctrlSpeed.reset();
+	m_ctrlThrust.reset();
 	m_ctrlSteer.reset();
 }
 
@@ -46,7 +46,7 @@ bool APMrover_base::init(Config* pConfig)
 	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
 	F_ERROR_F(pCC->v("D", &cPID.m_D));
 	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
-	m_pidSpeed = cPID;
+	m_pidThrust = cPID;
 
 	//init controls
 	m_lastHeartbeat = 0;

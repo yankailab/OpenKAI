@@ -9,7 +9,6 @@
 #define SRC_NAVIGATION__UNIVERSE_H_
 
 #include "../Base/common.h"
-#include "../Base/cv.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
 

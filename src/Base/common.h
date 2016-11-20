@@ -1,21 +1,33 @@
 #ifndef BASE_COMMON_H_
 #define BASE_COMMON_H_
 
-#include "Module.h"
+
+//User defined switch
+#define USE_CUDA
+//#define USE_TENSORRT
+//#define USE_CAFFE
+#define USE_SSD
+//#define USE_FCN
+//#define USE_OPENCL
+//#define USE_ZED
+#define MAVLINK_DEBUG
+
+
+//User defined default parameters
+#define N_INST 128
+#define DEFAULT_FPS 30
+
+
+
 #include "cv.h"
 #include "platform.h"
 #include <glog/logging.h>
-#include "../Utility/util.h"
-#include "../Base/BASE.h"
-
-#define MAVLINK_DEBUG
 
 //Common include
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618
 #define DEG_RADIAN 0.0174533
 #define USEC_1SEC 1000000
-#define DEFAULT_FPS 30
 
 #define CR '\x0d'
 #define LF '\x0a'
@@ -130,6 +142,9 @@ struct MOUSE
 };
 
 }
+
+#include "../Utility/util.h"
+
 
 #endif
 

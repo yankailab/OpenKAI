@@ -1,9 +1,11 @@
-#pragma once
+#ifndef OPENKAI_SRC_INTERFACE_CANBUS_H_
+#define OPENKAI_SRC_INTERFACE_CANBUS_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/SerialPort.h"
 #include "../Stream/Frame.h"
+
 
 //0 START MARK
 //1 PAYLOAD LENGTH
@@ -14,7 +16,6 @@
 #define MAVLINK_HEADDER_LEN 3
 
 #define CMD_CAN_SEND 0
-
 #define CAN_BUF 256
 
 namespace kai
@@ -63,3 +64,4 @@ private:
 
 }
 
+#endif

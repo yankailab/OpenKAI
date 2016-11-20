@@ -1,18 +1,14 @@
 /*
- * CameraInput.h
+ * Frame.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_CAMFRAME_H_
-#define SRC_CAMFRAME_H_
+#ifndef SRC_STREAM_FRAME_H_
+#define SRC_STREAM_FRAME_H_
 
-#include <pthread.h>
-#include "stdio.h"
 #include "../Base/common.h"
-#include "../Base/cv.h"
-#include "../Utility/util.h"
 
 namespace kai
 {
@@ -85,6 +81,6 @@ private:
 
 };
 
-}/*namespace kai*/
+}
 
-#endif /* SRC_CAMFRAME_H_ */
+#endif

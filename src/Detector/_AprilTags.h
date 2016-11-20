@@ -9,11 +9,11 @@
 #define DETECTOR_APRILTAGS_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/cv.h"
-#include "DetectorBase.h"
+#include "../Stream/_Stream.h"
+#include "../Detector/DetectorBase.h"
 #include "../include/apriltags-cpp/TagDetector.h"
+
 
 #define NUM_TAGS 128
 #define DEFAULT_TAG_FAMILY "Tag16h5"

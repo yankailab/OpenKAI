@@ -8,7 +8,7 @@
 #ifndef OPENKAI_SRC_BASE_BASE_H_
 #define OPENKAI_SRC_BASE_BASE_H_
 
-#include "platform.h"
+#include "common.h"
 #include "../Script/Config.h"
 
 using namespace std;
