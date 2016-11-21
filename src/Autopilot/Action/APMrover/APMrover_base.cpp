@@ -76,26 +76,20 @@ void APMrover_base::sendHeartbeat(void)
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
-	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
-	{
-		m_pMavlink->sendHeartbeat();
-		m_lastHeartbeat = timeNow;
+	CHECK_(timeNow - m_lastHeartbeat < USEC_1SEC);
+
+	m_pMavlink->sendHeartbeat();
+	m_lastHeartbeat = timeNow;
 
 #ifdef MAVLINK_DEBUG
-		printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
+	printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
 #endif
-	}
 }
 
 void APMrover_base::sendSteerThrust(void)
 {
 	NULL_(m_pMavlink);
-
 	m_pMavlink->command_long_doSetPositionYawThrust(m_steer, m_thrust);
-
-#ifdef MAVLINK_DEBUG
-	printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
-#endif
 
 }
 
