@@ -13,12 +13,12 @@ int main(int argc, char* argv[])
 	F_FATAL_F(g_file.open(argv[1]));
 	string config = g_file.getContent();
 
-	g_pConfig = new Config();
-	F_FATAL_F(g_pConfig->parse(&config));
+	g_pKiss = new Kiss();
+	F_FATAL_F(g_pKiss->parse(&config));
 
 	//Start Application
 	g_pGen = new General();
-	g_pGen->start(g_pConfig);
+	g_pGen->start(g_pKiss);
 
 	return 0;
 }

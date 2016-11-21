@@ -21,12 +21,12 @@ ConditionFF::~ConditionFF()
 {
 }
 
-bool ConditionFF::init(Config* pConfig)
+bool ConditionFF::init(Kiss* pKiss)
 {
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
 	string condStr;
-	F_FATAL_F(pConfig->v("cond", &condStr));
+	F_FATAL_F(pKiss->v("cond", &condStr));
 
 	if (condStr == "bt")
 		m_condition = bt;
@@ -43,8 +43,8 @@ bool ConditionFF::init(Config* pConfig)
 	else
 		LOG(FATAL)<<"Unknown condition";
 
-	pConfig->v("ptr1", &m_namePtr1);
-	pConfig->v("ptr2", &m_namePtr2);
+	pKiss->v("ptr1", &m_namePtr1);
+	pKiss->v("ptr2", &m_namePtr2);
 
 	return true;
 }

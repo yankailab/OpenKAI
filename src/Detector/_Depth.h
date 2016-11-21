@@ -25,7 +25,7 @@ public:
 	_Depth();
 	~_Depth();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool start(void);
 

@@ -56,9 +56,10 @@ public:
 	APMrover_base();
 	~APMrover_base();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void sendHeartbeat(void);
+	void sendSteerThrust(void);
 
 public:
 	_Mavlink* m_pMavlink;
@@ -70,6 +71,9 @@ public:
 
 	APMrover_CTRL m_ctrlThrust;
 	APMrover_CTRL m_ctrlSteer;
+
+	double	m_thrust;
+	double	m_steer;
 
 };
 

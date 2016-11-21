@@ -26,7 +26,7 @@ public:
 	_Flow();
 	virtual ~_Flow();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool start(void);
 

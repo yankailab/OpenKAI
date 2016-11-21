@@ -25,7 +25,7 @@ public:
 	RC_visualFollow();
 	~RC_visualFollow();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

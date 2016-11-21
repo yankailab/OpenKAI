@@ -15,20 +15,20 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::init(Config* pConfig)
+bool _AutoPilot::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
 	//create action instance
-	Config* pCC = pConfig->o("action");
+	Kiss* pCC = pKiss->o("action");
 	CHECK_T(pCC->empty());
-	Config** pItr = pCC->getChildItr();
+	Kiss** pItr = pCC->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pAction = pItr[i];
+		Kiss* pAction = pItr[i];
 		i++;
 
 		bool bInst = false;
@@ -60,6 +60,17 @@ bool _AutoPilot::init(Config* pConfig)
 			*pA = new HM_follow();
 			F_ERROR_F(((HM_follow* )(*pA))->HM_follow::init(pAction));
 		}
+		else if (pAction->m_class == "APMrover_base")
+		{
+			*pA = new APMrover_base();
+			F_ERROR_F(((APMrover_base* )(*pA))->APMrover_base::init(pAction));
+		}
+		else if (pAction->m_class == "APMrover_follow")
+		{
+			*pA = new APMrover_follow();
+			F_ERROR_F(((APMrover_follow* )(*pA))->APMrover_follow::init(pAction));
+			m_pAA = *pA;
+		}
 		else
 		{
 			LOG(INFO)<<"Unknown action class"+pAction->m_class;
@@ -71,7 +82,7 @@ bool _AutoPilot::init(Config* pConfig)
 
 bool _AutoPilot::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	int i;
 	for(i=0;i<m_nAction;i++)
@@ -94,11 +105,19 @@ bool _AutoPilot::link(void)
 		{
 			F_ERROR_F(((HM_follow*)pA)->HM_follow::link());
 		}
+		else if (*pA->getClass() == "APMrover_base")
+		{
+			F_ERROR_F(((APMrover_base*)pA)->APMrover_base::link());
+		}
+		else if (*pA->getClass() == "APMrover_follow")
+		{
+			F_ERROR_F(((APMrover_follow*)pA)->APMrover_follow::link());
+		}
 	}
 
 	string iName="";
-	F_INFO(m_pConfig->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -127,16 +146,13 @@ void _AutoPilot::update(void)
 		//TODO:Execute actions based on Automaton State
 
 		int i;
-		for(i=0;i<m_nAction;i++)
+		if(*m_pAA->getClass() == "HM_follow")
 		{
-			ActionBase* pA = m_pAction[i];
-
-			if(*pA->getClass() == "HM_follow")
-			{
-				((HM_follow*)pA)->HM_follow::update();
-
-				m_pAA = pA;
-			}
+			((HM_follow*)m_pAA)->HM_follow::update();
+		}
+		else if(*m_pAA->getClass() == "APMrover_follow")
+		{
+			((APMrover_follow*)m_pAA)->APMrover_follow::update();
 		}
 
 		this->autoFPSto();
@@ -167,7 +183,10 @@ bool _AutoPilot::draw(Frame* pFrame, vInt4* pTextPos)
 	{
 		((HM_follow*)m_pAA)->draw(pFrame, pTextPos);
 	}
-
+	else if(*className == "APMrover_follow")
+	{
+		((APMrover_follow*)m_pAA)->draw(pFrame, pTextPos);
+	}
 
 	return true;
 }

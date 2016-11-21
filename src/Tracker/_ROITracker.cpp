@@ -23,10 +23,10 @@ _ROITracker::~_ROITracker()
 {
 }
 
-bool _ROITracker::init(Config* pConfig)
+bool _ROITracker::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
 	//format params
 	m_ROI.width = 0;
@@ -46,12 +46,12 @@ bool _ROITracker::init(Config* pConfig)
 
 bool _ROITracker::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

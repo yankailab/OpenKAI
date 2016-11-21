@@ -21,12 +21,12 @@ ConditionIC::~ConditionIC()
 {
 }
 
-bool ConditionIC::init(Config* pConfig)
+bool ConditionIC::init(Kiss* pKiss)
 {
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
 	string condStr;
-	F_FATAL_F(pConfig->v("cond", &condStr));
+	F_FATAL_F(pKiss->v("cond", &condStr));
 
 	if (condStr == "bt")
 		m_condition = bt;
@@ -43,8 +43,8 @@ bool ConditionIC::init(Config* pConfig)
 	else
 		LOG(FATAL)<<"Unknown condition";
 
-	pConfig->v("ptr1", &m_namePtr1);
-	pConfig->v("constI", &m_const);
+	pKiss->v("ptr1", &m_namePtr1);
+	pKiss->v("constI", &m_const);
 
 	return true;
 }

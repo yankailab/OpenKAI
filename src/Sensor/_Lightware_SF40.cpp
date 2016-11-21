@@ -44,26 +44,26 @@ void _Lightware_SF40::close()
 	printf("Serial port closed.\n");
 }
 
-bool _Lightware_SF40::init(Config* pConfig)
+bool _Lightware_SF40::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
-	F_INFO(pConfig->v("offsetAngle", &m_offsetAngle));
-	F_INFO(pConfig->v("minDist", &m_minDist));
-	F_INFO(pConfig->v("maxDist", &m_maxDist));
-	F_INFO(pConfig->v("showScale", &m_showScale));
+	F_INFO(pKiss->v("offsetAngle", &m_offsetAngle));
+	F_INFO(pKiss->v("minDist", &m_minDist));
+	F_INFO(pKiss->v("maxDist", &m_maxDist));
+	F_INFO(pKiss->v("showScale", &m_showScale));
 
-	F_ERROR_F(pConfig->v("nDiv", &m_nDiv));
+	F_ERROR_F(pKiss->v("nDiv", &m_nDiv));
     m_dAngle = DEG_AROUND / m_nDiv;
     m_pDist = new double[m_nDiv+1];
 
-	F_ERROR_F(pConfig->v("portName", &m_sportName));
-	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
+	F_ERROR_F(pKiss->v("portName", &m_sportName));
+	F_ERROR_F(pKiss->v("baudrate", &m_baudRate));
 	m_pSerialPort = new SerialPort();
 
-	F_INFO(pConfig->v("mwlX", &m_mwlX));
-	F_INFO(pConfig->v("mwlY", &m_mwlY));
+	F_INFO(pKiss->v("mwlX", &m_mwlX));
+	F_INFO(pKiss->v("mwlY", &m_mwlY));
 	m_pX = new Filter();
 	m_pY = new Filter();
 	m_pX->startMedian(m_mwlX);
@@ -72,18 +72,18 @@ bool _Lightware_SF40::init(Config* pConfig)
 	m_pSF40sender = new _Lightware_SF40_sender();
 	m_pSF40sender->m_pSerialPort = m_pSerialPort;
 	m_pSF40sender->m_dAngle = m_dAngle;
-	CHECK_F(!m_pSF40sender->init(pConfig));
+	CHECK_F(!m_pSF40sender->init(pKiss));
 
 	return true;
 }
 
 bool _Lightware_SF40::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Universe", &iName));
-	m_pUniverse = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Universe", &iName));
+	m_pUniverse = (_Universe*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
 

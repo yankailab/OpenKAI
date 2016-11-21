@@ -3,8 +3,8 @@
 
 #include "../Base/common.h"
 #include "../IO/SerialPort.h"
-#include "../Script/Config.h"
 #include "../Base/_ThreadBase.h"
+#include "../Script/Kiss.h"
 
 #define MAVLINK_BEGIN 0xFE
 #define MAVLINK_HEADDER_LEN 3
@@ -27,7 +27,7 @@ public:
 	_RC();
 	~_RC();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool open(void);
 	void close(void);

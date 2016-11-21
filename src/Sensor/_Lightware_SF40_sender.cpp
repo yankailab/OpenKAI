@@ -17,10 +17,10 @@ _Lightware_SF40_sender::~_Lightware_SF40_sender()
 {
 }
 
-bool _Lightware_SF40_sender::init(Config* pConfig)
+bool _Lightware_SF40_sender::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-//	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+//	pKiss->m_pInst = this;
 
 	return true;
 }

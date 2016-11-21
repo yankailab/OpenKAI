@@ -31,20 +31,20 @@ HM_follow::~HM_follow()
 {
 }
 
-bool HM_follow::init(Config* pConfig)
+bool HM_follow::init(Kiss* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pConfig) == false)
-	pConfig->m_pInst = this;
+	CHECK_F(this->ActionBase::init(pKiss) == false)
+	pKiss->m_pInst = this;
 
-	F_INFO(pConfig->v("targetX", &m_destX));
-	F_INFO(pConfig->v("targetY", &m_destY));
-	F_INFO(pConfig->v("targetArea", &m_destArea));
-	F_INFO(pConfig->v("targetClass", &m_targetClass));
+	F_INFO(pKiss->v("targetX", &m_destX));
+	F_INFO(pKiss->v("targetY", &m_destY));
+	F_INFO(pKiss->v("targetArea", &m_destArea));
+	F_INFO(pKiss->v("targetClass", &m_targetClass));
 
-	F_INFO(pConfig->v("speedP", &m_speedP));
-	F_INFO(pConfig->v("steerP", &m_steerP));
+	F_INFO(pKiss->v("speedP", &m_speedP));
+	F_INFO(pKiss->v("steerP", &m_steerP));
 
-	F_INFO(pConfig->v("filterWindow", &m_filterWindow));
+	F_INFO(pKiss->v("filterWindow", &m_filterWindow));
 	m_pTargetX->startMedian(m_filterWindow);
 	m_pTargetY->startMedian(m_filterWindow);
 	m_pTargetArea->startMedian(m_filterWindow);
@@ -55,17 +55,17 @@ bool HM_follow::init(Config* pConfig)
 
 bool HM_follow::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 	string iName = "";
 
-	F_INFO(m_pConfig->v("HM_base", &iName));
-	m_pHM = (HM_base*) (m_pConfig->parent()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("HM_base", &iName));
+	m_pHM = (HM_base*) (m_pKiss->parent()->getChildInstByName(&iName));
 
-	F_INFO(m_pConfig->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (m_pKiss->root()->getChildInstByName(&iName));
 
-	F_INFO(m_pConfig->v("_Universe", &iName));
-	m_pUniv = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Universe", &iName));
+	m_pUniv = (_Universe*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }

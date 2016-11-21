@@ -14,7 +14,7 @@ public:
 	ActionBase();
 	~ActionBase();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void update(void);
 

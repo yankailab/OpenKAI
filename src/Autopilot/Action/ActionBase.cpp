@@ -11,9 +11,9 @@ ActionBase::~ActionBase()
 {
 }
 
-bool ActionBase::init(Config* pConfig)
+bool ActionBase::init(Kiss* pKiss)
 {
-	if (this->BASE::init(pConfig)==false)
+	if (this->BASE::init(pKiss)==false)
 		return false;
 
 	return true;

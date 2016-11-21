@@ -24,7 +24,7 @@ public:
 	_Automaton();
 	virtual ~_Automaton();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool start(void);
 

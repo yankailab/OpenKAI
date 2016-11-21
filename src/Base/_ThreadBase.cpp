@@ -41,13 +41,13 @@ _ThreadBase::~_ThreadBase()
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
-bool _ThreadBase::init(Config* pConfig)
+bool _ThreadBase::init(Kiss* pKiss)
 {
-	if (this->BASE::init(pConfig)==false)
+	if (this->BASE::init(pKiss)==false)
 		return false;
 
 	double FPS = DEFAULT_FPS;
-	F_INFO(pConfig->v("FPS", &FPS));
+	F_INFO(pKiss->v("FPS", &FPS));
 	setTargetFPS(FPS);
 
 	return true;

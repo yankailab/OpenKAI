@@ -1,9 +1,9 @@
-#include "Config.h"
+#include "Kiss.h"
 
 namespace kai
 {
 
-Config::Config(void)
+Kiss::Kiss(void)
 {
 	m_nChild = 0;
 	m_class = "";
@@ -14,11 +14,11 @@ Config::Config(void)
 	m_pInst = NULL;
 }
 
-Config::~Config(void)
+Kiss::~Kiss(void)
 {
 }
 
-bool Config::parse(string* pStr)
+bool Kiss::parse(string* pStr)
 {
 	if (m_bNULL)return false;
 
@@ -29,7 +29,7 @@ bool Config::parse(string* pStr)
 	}
 	else if (!m_pNULL)
 	{
-		m_pNULL = new Config();
+		m_pNULL = new Kiss();
 		m_pNULL->m_bNULL = true;
 	}
 
@@ -93,7 +93,7 @@ bool Config::parse(string* pStr)
 	return true;
 }
 
-void Config::trim(string* pStr)
+void Kiss::trim(string* pStr)
 {
 	std::string::size_type k;
 
@@ -120,22 +120,22 @@ void Config::trim(string* pStr)
 
 }
 
-bool Config::addChild(string* pStr)
+bool Kiss::addChild(string* pStr)
 {
 	if (m_bNULL)
 		return false;
 	if (m_nChild >= NUM_CHILDREN)
 		return false;
 
-	m_pChild[m_nChild] = new Config();
-	Config* pChild = m_pChild[m_nChild];
+	m_pChild[m_nChild] = new Kiss();
+	Kiss* pChild = m_pChild[m_nChild];
 	m_nChild++;
 
 	pChild->m_pParent = this;
 	return pChild->parse(pStr);
 }
 
-Config* Config::o(string name)
+Kiss* Kiss::o(string name)
 {
 	if (name.empty())
 		return NULL;
@@ -151,9 +151,9 @@ Config* Config::o(string name)
 	return m_pNULL;
 }
 
-Config* Config::root(void)
+Kiss* Kiss::root(void)
 {
-	Config* pRoot = this;
+	Kiss* pRoot = this;
 
 	while(pRoot->m_pParent)
 	{
@@ -163,17 +163,17 @@ Config* Config::root(void)
 	return pRoot;
 }
 
-Config* Config::parent(void)
+Kiss* Kiss::parent(void)
 {
 	return m_pParent;
 }
 
-JSON* Config::json(void)
+JSON* Kiss::json(void)
 {
 	return &m_json;
 }
 
-Config** Config::getClassItr(string* pClassName)
+Kiss** Kiss::getClassItr(string* pClassName)
 {
 	if(pClassName==NULL)return NULL;
 	if(pClassName->empty())return NULL;
@@ -184,7 +184,7 @@ Config** Config::getClassItr(string* pClassName)
 	//Find list with the class name
 	for(i=0; i<m_nChild; i++)
 	{
-		Config* pC = m_pChild[i];
+		Kiss* pC = m_pChild[i];
 		if(pC->m_class != (*pClassName))continue;
 
 		m_ppItr[nFound]=pC;
@@ -199,21 +199,21 @@ Config** Config::getClassItr(string* pClassName)
 	return m_ppItr;
 }
 
-Config** Config::getChildItr(void)
+Kiss** Kiss::getChildItr(void)
 {
 	m_pChild[m_nChild]=NULL;
 
 	return m_pChild;
 }
 
-Config* Config::getChildByName(string* pName)
+Kiss* Kiss::getChildByName(string* pName)
 {
 	if(pName==NULL)return NULL;
 	if(pName->empty())return NULL;
 
 	for(int i=0; i<m_nChild; i++)
 	{
-		Config* pC = m_pChild[i];
+		Kiss* pC = m_pChild[i];
 		if(pC->m_name == (*pName))
 		{
 			return pC;
@@ -223,45 +223,45 @@ Config* Config::getChildByName(string* pName)
 	return NULL;
 }
 
-void* Config::getChildInstByName(string* pName)
+void* Kiss::getChildInstByName(string* pName)
 {
 	void* pC = getChildByName(pName);
 	if(!pC)return NULL;
 
-	return ((Config*)pC)->m_pInst;
+	return ((Kiss*)pC)->m_pInst;
 }
 
-bool Config::empty(void)
+bool Kiss::empty(void)
 {
 	return m_bNULL;
 }
 
-bool Config::v(string name, int* val)
+bool Kiss::v(string name, int* val)
 {
 	return m_json.v(&name, val);
 }
 
-bool Config::v(string name, bool* val)
+bool Kiss::v(string name, bool* val)
 {
 	return m_json.v(&name, val);
 }
 
-bool Config::v(string name, uint64_t* val)
+bool Kiss::v(string name, uint64_t* val)
 {
 	return m_json.v(&name, val);
 }
 
-bool Config::v(string name, double* val)
+bool Kiss::v(string name, double* val)
 {
 	return m_json.v(&name, val);
 }
 
-bool Config::v(string name, string* val)
+bool Kiss::v(string name, string* val)
 {
 	return m_json.v(&name, val);
 }
 
-bool Config::array(string name, value::array* val)
+bool Kiss::array(string name, value::array* val)
 {
 	return m_json.array(&name, val);
 }

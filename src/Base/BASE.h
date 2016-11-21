@@ -8,8 +8,8 @@
 #ifndef OPENKAI_SRC_BASE_BASE_H_
 #define OPENKAI_SRC_BASE_BASE_H_
 
+#include "../Script/Kiss.h"
 #include "common.h"
-#include "../Script/Config.h"
 
 using namespace std;
 
@@ -23,12 +23,12 @@ public:
 	BASE();
 	virtual ~BASE();
 
-	virtual bool init(Config* pConfig);
+	virtual bool init(Kiss* pKiss);
 	string* getName(void);
 	string* getClass(void);
 
 public:
-	Config*	m_pConfig;
+	Kiss*	m_pKiss;
 };
 
 }

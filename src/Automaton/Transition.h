@@ -25,10 +25,10 @@ public:
 	Transition();
 	virtual ~Transition();
 
-	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool init(Kiss* pKiss);
+	bool link(Kiss* pKiss);
 
-	template <typename T> bool addCondition(Config* pConfig);
+	template <typename T> bool addCondition(Kiss* pConfig);
 	bool activate(void);
 	bool isValid(void);
 

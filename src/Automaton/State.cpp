@@ -20,19 +20,19 @@ State::~State()
 {
 }
 
-bool State::init(Config* pConfig)
+bool State::init(Kiss* pKiss)
 {
-	NULL_F(pConfig);
-	F_FATAL_F(pConfig->v("name", &m_name));
+	NULL_F(pKiss);
+	F_FATAL_F(pKiss->v("name", &m_name));
 
-	pConfig->m_pInst = (void*)this;
+	pKiss->m_pInst = (void*)this;
 
-	Config** pItr = pConfig->getChildItr();
+	Kiss** pItr = pKiss->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pT = pItr[i];
+		Kiss* pT = pItr[i];
 		i++;
 
 		bool bInst = false;
@@ -51,13 +51,13 @@ bool State::init(Config* pConfig)
 	return true;
 }
 
-bool State::link(Config* pConfig)
+bool State::link(Kiss* pKiss)
 {
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
 	for(int i=0;i<m_nTransition;i++)
 	{
-		F_ERROR_F(m_pTransition[i]->link(pConfig));
+		F_ERROR_F(m_pTransition[i]->link(pKiss));
 	}
 
 	return true;

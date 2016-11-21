@@ -33,36 +33,36 @@ CamBase::~CamBase()
 {
 }
 
-bool CamBase::setup(Config* pConfig)
+bool CamBase::setup(Kiss* pKiss)
 {
-	if (this->BASE::init(pConfig)==false)
+	if (this->BASE::init(pKiss)==false)
 		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
 
-	F_FATAL_F(pConfig->v("width", &m_width));
-	F_FATAL_F(pConfig->v("height", &m_height));
-	F_FATAL_F(pConfig->v("angleV", &m_angleV));
-	F_FATAL_F(pConfig->v("angleH", &m_angleH));
+	F_FATAL_F(pKiss->v("width", &m_width));
+	F_FATAL_F(pKiss->v("height", &m_height));
+	F_FATAL_F(pKiss->v("angleV", &m_angleV));
+	F_FATAL_F(pKiss->v("angleH", &m_angleH));
 
-	F_INFO(pConfig->v("isoScale", &m_isoScale));
-	F_INFO(pConfig->v("bCalib", &m_bCalibration));
-	F_INFO(pConfig->v("bGimbal", &m_bGimbal));
-	F_INFO(pConfig->v("bFisheye", &m_bFisheye));
+	F_INFO(pKiss->v("isoScale", &m_isoScale));
+	F_INFO(pKiss->v("bCalib", &m_bCalibration));
+	F_INFO(pKiss->v("bGimbal", &m_bGimbal));
+	F_INFO(pKiss->v("bFisheye", &m_bFisheye));
 
-	F_INFO(pConfig->v("bCrop", &m_bCrop));
+	F_INFO(pKiss->v("bCrop", &m_bCrop));
 	if(m_bCrop!=0)
 	{
-		F_FATAL_F(pConfig->v("cropX", &m_cropBB.x));
-		F_FATAL_F(pConfig->v("cropY", &m_cropBB.y));
-		F_FATAL_F(pConfig->v("cropW", &m_cropBB.width));
-		F_FATAL_F(pConfig->v("cropH", &m_cropBB.height));
+		F_FATAL_F(pKiss->v("cropX", &m_cropBB.x));
+		F_FATAL_F(pKiss->v("cropY", &m_cropBB.y));
+		F_FATAL_F(pKiss->v("cropW", &m_cropBB.width));
+		F_FATAL_F(pKiss->v("cropH", &m_cropBB.height));
 	}
 
-	if (pConfig->v("calibFile", &calibFile))
+	if (pKiss->v("calibFile", &calibFile))
 	{
 		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())

@@ -46,7 +46,7 @@ public:
 	_SSD();
 	~_SSD();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
 	bool link(void);

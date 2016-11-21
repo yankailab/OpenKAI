@@ -59,7 +59,7 @@ public:
 	UI();
 	virtual ~UI();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	BUTTON* addBtn(void);

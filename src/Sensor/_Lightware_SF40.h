@@ -29,7 +29,7 @@ public:
 	_Lightware_SF40();
 	~_Lightware_SF40();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void close(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

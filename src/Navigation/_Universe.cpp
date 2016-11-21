@@ -29,21 +29,21 @@ _Universe::~_Universe()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Universe::init(Config* pConfig)
+bool _Universe::init(Kiss* pKiss)
 {
-	CHECK_F(this->_ThreadBase::init(pConfig) == false);
-	pConfig->m_pInst = this;
+	CHECK_F(this->_ThreadBase::init(pKiss) == false);
+	pKiss->m_pInst = this;
 
-	F_ERROR_F(pConfig->v("frameLifetime", &m_frameLifeTime));
-	F_ERROR_F(pConfig->v("probMin", &m_objProbMin));
-	F_ERROR_F(pConfig->v("posDisparity", &m_disparity));
+	F_ERROR_F(pKiss->v("frameLifetime", &m_frameLifeTime));
+	F_ERROR_F(pKiss->v("probMin", &m_objProbMin));
+	F_ERROR_F(pKiss->v("posDisparity", &m_disparity));
 
 	return true;
 }
 
 bool _Universe::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	return true;
 }

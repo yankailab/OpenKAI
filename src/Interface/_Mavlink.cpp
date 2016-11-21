@@ -30,14 +30,13 @@ _Mavlink::~_Mavlink()
 	close();
 }
 
-bool _Mavlink::init(Config* pConfig)
+bool _Mavlink::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
-	pConfig->m_pInst = this;
-
-	F_ERROR_F(pConfig->v("portName", &m_sportName));
-	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
+	F_ERROR_F(pKiss->v("portName", &m_sportName));
+	F_ERROR_F(pKiss->v("baudrate", &m_baudRate));
 
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
@@ -57,8 +56,7 @@ bool _Mavlink::init(Config* pConfig)
 
 bool _Mavlink::link(void)
 {
-	NULL_F(m_pConfig);
-
+	NULL_F(m_pKiss);
 	//TODO: link variables to Automaton
 
 	return true;
@@ -78,9 +76,7 @@ void _Mavlink::close()
 void _Mavlink::handleMessages()
 {
 	mavlink_message_t message;
-	int nMsgHandled;
-
-	nMsgHandled = 0;
+	int nMsgHandled = 0;
 
 	//Handle Message while new message is received
 	while (readMessage(message))
@@ -96,23 +92,26 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_HEARTBEAT\n");
+			printf("-> MAVLINK_MSG_ID_HEARTBEAT\n");
 #endif
-			mavlink_msg_heartbeat_decode(&message,&(current_messages.heartbeat));
+			mavlink_msg_heartbeat_decode(&message,
+					&(current_messages.heartbeat));
 			current_messages.time_stamps.heartbeat = get_time_usec();
 
-			if(current_messages.heartbeat.type != MAV_TYPE_GCS)
+			if (current_messages.heartbeat.type != MAV_TYPE_GCS)
 			{
 				m_systemID = current_messages.sysid;
 				m_targetComponentID = current_messages.compid;
 #ifdef MAVLINK_DEBUG
-				printf("      SYSTEM_ID: %d;  COMPONENT_ID: %d;  TARGET_COMPONENT_ID: %d;\n",m_systemID,m_componentID,m_targetComponentID);
+				printf(
+						"-> SYSTEM_ID: %d;  COMPONENT_ID: %d;  TARGET_COMPONENT_ID: %d;\n",
+						m_systemID, m_componentID, m_targetComponentID);
 #endif
 			}
 			else
 			{
 #ifdef MAVLINK_DEBUG
-				printf("      RECEIVED HEARTBEAT FROM MAV_TYPE_GCS\n");
+				printf("-> HEARTBEAT FROM MAV_TYPE_GCS\n");
 #endif
 			}
 			break;
@@ -121,7 +120,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_SYS_STATUS:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_SYS_STATUS\n");
+			printf("-> MAVLINK_MSG_ID_SYS_STATUS\n");
 #endif
 			mavlink_msg_sys_status_decode(&message,
 					&(current_messages.sys_status));
@@ -132,7 +131,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_BATTERY_STATUS:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_BATTERY_STATUS\n");
+			printf("-> MAVLINK_MSG_ID_BATTERY_STATUS\n");
 #endif
 			mavlink_msg_battery_status_decode(&message,
 					&(current_messages.battery_status));
@@ -143,7 +142,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_RADIO_STATUS:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_RADIO_STATUS\n");
+			printf("-> MAVLINK_MSG_ID_RADIO_STATUS\n");
 #endif
 			mavlink_msg_radio_status_decode(&message,
 					&(current_messages.radio_status));
@@ -154,7 +153,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
+			printf("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
 #endif
 			mavlink_msg_local_position_ned_decode(&message,
 					&(current_messages.local_position_ned));
@@ -165,7 +164,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
+			printf("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
 #endif
 			mavlink_msg_global_position_int_decode(&message,
 					&(current_messages.global_position_int));
@@ -176,7 +175,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
+			printf("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
 #endif
 			mavlink_msg_position_target_local_ned_decode(&message,
 					&(current_messages.position_target_local_ned));
@@ -188,7 +187,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
+			printf("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
 #endif
 			mavlink_msg_position_target_global_int_decode(&message,
 					&(current_messages.position_target_global_int));
@@ -200,7 +199,7 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_HIGHRES_IMU:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_HIGHRES_IMU\n");
+			printf("-> MAVLINK_MSG_ID_HIGHRES_IMU\n");
 #endif
 			mavlink_msg_highres_imu_decode(&message,
 					&(current_messages.highres_imu));
@@ -211,25 +210,36 @@ void _Mavlink::handleMessages()
 		case MAVLINK_MSG_ID_ATTITUDE:
 		{
 #ifdef MAVLINK_DEBUG
-			printf("MAVLINK_MSG_ID_ATTITUDE\n");
+			printf("-> MAVLINK_MSG_ID_ATTITUDE\n");
 #endif
 			mavlink_msg_attitude_decode(&message, &(current_messages.attitude));
 			current_messages.time_stamps.attitude = get_time_usec();
 			break;
 		}
 
-		default:
+		case MAVLINK_MSG_ID_COMMAND_ACK:
 		{
+			mavlink_msg_command_ack_decode(&message, &(current_messages.command_ack));
+			current_messages.time_stamps.attitude = get_time_usec();
+
 #ifdef MAVLINK_DEBUG
-			printf("Warning, did not handle message id %i\n", message.msgid);
+			printf("-> MAVLINK_MSG_ID_COMMAND_ACK: %d \n",current_messages.command_ack.result);
 #endif
 			break;
 		}
 
-		} // end: switch msgid
+		default:
+		{
+#ifdef MAVLINK_DEBUG
+			printf("-> MSG_ID: %i\n", message.msgid);
+#endif
+			break;
+		}
 
+		}
 
-		if(++nMsgHandled >= NUM_MSG_HANDLE)return;
+		if (++nMsgHandled >= NUM_MSG_HANDLE)
+			return;
 	}
 
 }
@@ -240,7 +250,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 	mavlink_status_t status;
 	uint8_t result;
 
-	while (m_pSerialPort->Read((char*)&cp, 1))
+	while (m_pSerialPort->Read((char*) &cp, 1))
 	{
 //		if (mavlink_parse_char(MAVLINK_COMM_0, cp, &message, &status))
 		result = mavlink_frame_char(MAVLINK_COMM_0, cp, &message, &status);
@@ -251,20 +261,20 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 			last_status = status;
 			return true;
 		}
-		else if(result == 2)
+		else if (result == 2)
 		{
 			//Bad CRC
 //			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
 		}
 
 		// check for dropped packets
-/*		if ((last_status.packet_rx_drop_count != status.packet_rx_drop_count) &&
-				status.packet_rx_drop_count > 0)
-		{
-			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
-		}
-		last_status = status;
-*/
+		/*		if ((last_status.packet_rx_drop_count != status.packet_rx_drop_count) &&
+		 status.packet_rx_drop_count > 0)
+		 {
+		 printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
+		 }
+		 last_status = status;
+		 */
 	}
 
 	return false;
@@ -314,7 +324,7 @@ void _Mavlink::update(void)
 		//Try to open and setup the serial port
 		if (!m_pSerialPort->IsConnected())
 		{
-			if (m_pSerialPort->Open((char*)m_sportName.c_str()))
+			if (m_pSerialPort->Open((char*) m_sportName.c_str()))
 			{
 				LOG(INFO)<< "Serial port: "+m_sportName+" connected";
 			}
@@ -349,7 +359,8 @@ void _Mavlink::update(void)
 void _Mavlink::sendHeartbeat(void)
 {
 	mavlink_message_t message;
-	mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0, 0, 0, MAV_STATE_ACTIVE);
+	mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0,
+			0, 0, MAV_STATE_ACTIVE);
 
 	writeMessage(message);
 }
@@ -368,13 +379,14 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	writeMessage(message);
 
 #ifdef MAVLINK_DEBUG
-	printf("   SENT REQUEST_DATA_STREAM\n");
+	printf("<- REQUEST_DATA_STREAM\n");
 #endif
 
 	return;
 }
 
-void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y)
+void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
+		float angle_y, float distance, float size_x, float size_y)
 {
 	mavlink_message_t message;
 	mavlink_landing_target_t ds;
@@ -392,7 +404,7 @@ void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x, f
 	writeMessage(message);
 
 #ifdef MAVLINK_DEBUG
-	printf("   SENT LANDING_TARGET: ANGLE_X:%f; ANGLE_Y:%f;\n", angle_x, angle_y);
+	printf("<- LANDING_TARGET: ANGLE_X:%f; ANGLE_Y:%f;\n", angle_x, angle_y);
 #endif
 
 	return;
@@ -412,59 +424,71 @@ void _Mavlink::command_long_doSetMode(int mode)
 	writeMessage(message);
 
 #ifdef MAVLINK_DEBUG
-	printf("   SENT COMMAND_LONG: DO_SET_MODE\n");
+	printf("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE\n");
 #endif
 
 	return;
 }
 
+void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
+{
+	mavlink_message_t message;
+	mavlink_command_long_t ds;
 
-#define PUTTEXT(x,y,t) cv::putText(*pMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
+	ds.target_system = m_systemID;
+	ds.target_component = m_targetComponentID;
+	ds.command = 213; //MAV_CMD_DO_SET_POSITION_YAW_THRUST;
+	ds.confirmation = 0;
+	ds.param1 = steer;
+	ds.param2 = thrust;
+	mavlink_msg_command_long_encode(m_systemID, m_targetComponentID, &message, &ds);
+
+	writeMessage(message);
+
+#ifdef MAVLINK_DEBUG
+	printf("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST\n");
+#endif
+
+	return;
+}
 
 bool _Mavlink::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	if (pFrame == NULL)
-		return false;
-
+	NULL_F(pFrame);
 	Mat* pMat = pFrame->getCMat();
-
-	char strBuf[512];
-	std::string strInfo;
 
 	if (m_pSerialPort->IsConnected())
 	{
-		putText(*pFrame->getCMat(), "Mavlink FPS: " + i2str(getFrameRate()),
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+		putText(*pFrame->getCMat(),
+				"Mavlink: Connected; FPS: " + i2str(getFrameRate()),
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
+				0.5, Scalar(0, 255, 0), 1);
 	}
 	else
 	{
 		putText(*pFrame->getCMat(), "Mavlink Not Connected",
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
+				0.5, Scalar(0, 255, 0), 1);
 	}
 
 	pTextPos->m_y += pTextPos->m_w;
 
 	//Vehicle position
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			current_messages.attitude.roll, current_messages.attitude.pitch, current_messages.attitude.yaw);
-	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
-	pTextPos->m_y += pTextPos->m_w;
-
-	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			current_messages.attitude.rollspeed,
-			current_messages.attitude.pitchspeed,
-			current_messages.attitude.yawspeed);
-	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
-	pTextPos->m_y += pTextPos->m_w;
+//	char strBuf[512];
+//	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+//			current_messages.attitude.roll, current_messages.attitude.pitch, current_messages.attitude.yaw);
+//	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+//	pTextPos->m_y += pTextPos->m_w;
+//
+//	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+//			current_messages.attitude.rollspeed,
+//			current_messages.attitude.pitchspeed,
+//			current_messages.attitude.yawspeed);
+//	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+//	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }
 
-
-
-
-
 }
-
-
 

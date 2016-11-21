@@ -21,18 +21,18 @@ UI::~UI()
 	// TODO Auto-generated destructor stub
 }
 
-bool UI::init(Config* pConfig)
+bool UI::init(Kiss* pKiss)
 {
-	if (this->BASE::init(pConfig)==false)
+	if (this->BASE::init(pKiss)==false)
 		return false;
 
 	//create buttons
-	Config** pItr = pConfig->getChildItr();
+	Kiss** pItr = pKiss->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pBtn = pItr[i];
+		Kiss* pBtn = pItr[i];
 		i++;
 
 		bool bInst = false;
@@ -63,7 +63,7 @@ bool UI::init(Config* pConfig)
 
 	}
 
-	pConfig->m_pInst = this;
+	pKiss->m_pInst = this;
 	return true;
 }
 

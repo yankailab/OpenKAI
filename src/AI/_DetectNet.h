@@ -11,8 +11,6 @@
 #include "../Base/common.h"
 
 #ifdef USE_TENSORRT
-
-#include "../Base/cv.h"
 #include "../Base/_ThreadBase.h"
 #include "../Navigation/_Universe.h"
 #include "../Stream/_Stream.h"
@@ -42,7 +40,7 @@ public:
 	_DetectNet();
 	~_DetectNet();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 

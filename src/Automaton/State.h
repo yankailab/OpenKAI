@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Automaton/Transition.h"
-#include "../Script/Config.h"
+#include "../Script/Kiss.h"
 
 #define N_TRANSITION 32
 
@@ -23,8 +23,8 @@ public:
 	State();
 	virtual ~State();
 
-	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool init(Kiss* pKiss);
+	bool link(Kiss* pKiss);
 
 	Transition* addTransition(void);
 	bool IsValid(void);

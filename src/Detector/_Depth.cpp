@@ -28,13 +28,13 @@ _Depth::~_Depth()
 {
 }
 
-bool _Depth::init(Config* pConfig)
+bool _Depth::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
-	F_INFO(pConfig->v("areaMin", &m_minObjArea));
-	F_INFO(pConfig->v("areaMax", &m_maxObjArea));
+	F_INFO(pKiss->v("areaMin", &m_minObjArea));
+	F_INFO(pKiss->v("areaMax", &m_maxObjArea));
 
 	m_pDepth = new Frame();
 	m_camFrameID = 0;
@@ -44,16 +44,16 @@ bool _Depth::init(Config* pConfig)
 
 bool _Depth::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(m_pConfig->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(m_pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(m_pConfig->v("_Flow",&iName));
-	m_pFlow = (_Flow*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Flow",&iName));
+	m_pFlow = (_Flow*)(m_pKiss->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

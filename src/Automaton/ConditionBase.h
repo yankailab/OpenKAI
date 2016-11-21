@@ -9,7 +9,7 @@
 #define OPENKAI_SRC_AUTOMATON_CONDITIONBASE_H_
 
 #include "../Base/common.h"
-#include "../Script/Config.h"
+#include "../Script/Kiss.h"
 
 namespace kai
 {

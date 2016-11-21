@@ -22,8 +22,8 @@ public:
 	_ThreadBase();
 	virtual ~_ThreadBase();
 
-	bool init(Config* pConfig);
-	bool link(Config* pConfig);
+	bool init(Kiss* pKiss);
+	bool link(Kiss* pKiss);
 	void complete(void);
 	void waitForComplete(void);
 

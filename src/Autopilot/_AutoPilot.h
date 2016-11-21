@@ -25,7 +25,7 @@ public:
 	_AutoPilot();
 	~_AutoPilot();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 
 	bool start(void);

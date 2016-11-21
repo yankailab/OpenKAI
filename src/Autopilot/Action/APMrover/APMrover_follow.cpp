@@ -32,20 +32,20 @@ APMrover_follow::~APMrover_follow()
 {
 }
 
-bool APMrover_follow::init(Config* pConfig)
+bool APMrover_follow::init(Kiss* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pConfig)==false);
-	pConfig->m_pInst = this;
+	CHECK_F(this->ActionBase::init(pKiss)==false);
+	pKiss->m_pInst = this;
 
-	F_INFO(pConfig->v("targetX", &m_destX));
-	F_INFO(pConfig->v("targetY", &m_destY));
-	F_INFO(pConfig->v("targetArea", &m_destArea));
-	F_INFO(pConfig->v("targetClass", &m_targetClass));
+	F_INFO(pKiss->v("targetX", &m_destX));
+	F_INFO(pKiss->v("targetY", &m_destY));
+	F_INFO(pKiss->v("targetArea", &m_destArea));
+	F_INFO(pKiss->v("targetClass", &m_targetClass));
 
-	F_INFO(pConfig->v("speedP", &m_speedP));
-	F_INFO(pConfig->v("steerP", &m_steerP));
+	F_INFO(pKiss->v("speedP", &m_speedP));
+	F_INFO(pKiss->v("steerP", &m_steerP));
 
-	F_INFO(pConfig->v("filterWindow", &m_filterWindow));
+	F_INFO(pKiss->v("filterWindow", &m_filterWindow));
 	m_pTargetX->startMedian(m_filterWindow);
 	m_pTargetY->startMedian(m_filterWindow);
 	m_pTargetArea->startMedian(m_filterWindow);
@@ -55,17 +55,17 @@ bool APMrover_follow::init(Config* pConfig)
 
 bool APMrover_follow::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 	string iName = "";
 
-	F_INFO(m_pConfig->v("APMrover_base", &iName));
-	m_pAPM = (APMrover_base*) (m_pConfig->parent()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("APMrover_base", &iName));
+	m_pAPM = (APMrover_base*) (m_pKiss->parent()->getChildInstByName(&iName));
 
-	F_INFO(m_pConfig->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (m_pKiss->root()->getChildInstByName(&iName));
 
-	F_INFO(m_pConfig->v("_Universe", &iName));
-	m_pUniv = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Universe", &iName));
+	m_pUniv = (_Universe*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -82,10 +82,8 @@ void APMrover_follow::update(void)
 
 	if (m_pTarget == NULL)
 	{
-		//no target found, stop and standby TODO: go back to work
-//		m_pAPM->m_motorPwmL = 0;
-//		m_pAPM->m_motorPwmR = 0;
-//		m_pAPM->m_bSpeaker = false;
+		//no target found, stop and standby
+		m_pAPM->m_thrust = 0;
 	}
 	else
 	{
@@ -94,17 +92,16 @@ void APMrover_follow::update(void)
 		m_pTargetArea->input(m_pTarget->m_bbox.area());
 
 		//forward or backward
-		int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
+		int speed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
 
 		//steering
-		int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
+		int dSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * (-m_steerP);
 
-//		m_pAPM->m_motorPwmL = rpmSpeed - rpmSteer;
-//		m_pAPM->m_motorPwmR = rpmSpeed + rpmSteer;
-//		m_pAPM->m_bSpeaker = true;
+		m_pAPM->m_steer = dSteer;
 	}
 
-//	m_pAPM->updateCAN();
+	m_pAPM->sendHeartbeat();
+	m_pAPM->sendSteerThrust();
 
 
 }
@@ -114,16 +111,33 @@ bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
 	NULL_F(pFrame);
 	Mat* pMat = pFrame->getCMat();
 
-//	putText(*pMat,
-//			"APMrover: rpmL=" + i2str(m_pAPM->m_motorPwmL) + ", rpmR="
-//					+ i2str(m_pAPM->m_motorPwmR),
-//			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-//			Scalar(0, 255, 0), 1);
-//	pTextPos->m_y += pTextPos->m_w;
+	putText(*pMat,
+			"APMrover: thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer),
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			Scalar(0, 255, 0), 1);
+	pTextPos->m_y += pTextPos->m_w;
 
 	CHECK_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
 			Scalar(0, 0, 255), 2);
+
+	//Vehicle position
+	char strBuf[128];
+
+	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			m_pAPM->m_pMavlink->current_messages.attitude.roll,
+			m_pAPM->m_pMavlink->current_messages.attitude.pitch,
+			m_pAPM->m_pMavlink->current_messages.attitude.yaw);
+	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+	pTextPos->m_y += pTextPos->m_w;
+
+	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
+			m_pAPM->m_pMavlink->current_messages.attitude.rollspeed,
+			m_pAPM->m_pMavlink->current_messages.attitude.pitchspeed,
+			m_pAPM->m_pMavlink->current_messages.attitude.yawspeed);
+	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
+	pTextPos->m_y += pTextPos->m_w;
+
 
 	return true;
 }

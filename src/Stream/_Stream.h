@@ -22,7 +22,7 @@ public:
 	_Stream();
 	virtual ~_Stream();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool start(void);
 	bool draw(Frame* pFrame, vInt4* textPos);

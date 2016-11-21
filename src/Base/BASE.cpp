@@ -12,7 +12,7 @@ namespace kai
 
 BASE::BASE()
 {
-	m_pConfig = NULL;
+	m_pKiss = NULL;
 }
 
 BASE::~BASE()
@@ -20,29 +20,29 @@ BASE::~BASE()
 	// TODO Auto-generated destructor stub
 }
 
-bool BASE::init(Config* pConfig)
+bool BASE::init(Kiss* pKiss)
 {
-	if (!pConfig)
+	if (!pKiss)
 		return false;
 
 	string name;
-	if(!pConfig->v("name",&name))return false;
+	if(!pKiss->v("name",&name))return false;
 	if (name.empty())return false;
 
-	m_pConfig = pConfig;
+	m_pKiss = pKiss;
 	return true;
 }
 
 string* BASE::getName(void)
 {
-	if(!m_pConfig)return NULL;
-	return &m_pConfig->m_name;
+	if(!m_pKiss)return NULL;
+	return &m_pKiss->m_name;
 }
 
 string* BASE::getClass(void)
 {
-	if(!m_pConfig)return NULL;
-	return &m_pConfig->m_class;
+	if(!m_pKiss)return NULL;
+	return &m_pKiss->m_class;
 }
 
 

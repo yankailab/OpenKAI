@@ -21,19 +21,19 @@ Transition::~Transition()
 {
 }
 
-bool Transition::init(Config* pConfig)
+bool Transition::init(Kiss* pKiss)
 {
-	NULL_F(pConfig);
-	F_FATAL_F(pConfig->v("toState", &m_strToState));
+	NULL_F(pKiss);
+	F_FATAL_F(pKiss->v("toState", &m_strToState));
 
-	pConfig->m_pInst = (void*)this;
+	pKiss->m_pInst = (void*)this;
 
-	Config** pItr = pConfig->getChildItr();
+	Kiss** pItr = pKiss->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pCond = pItr[i];
+		Kiss* pCond = pItr[i];
 		i++;
 
 		bool bInst = false;
@@ -62,17 +62,17 @@ bool Transition::init(Config* pConfig)
 	return true;
 }
 
-bool Transition::link(Config* pConfig)
+bool Transition::link(Kiss* pKiss)
 {
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
-	m_pToState = pConfig->getChildInstByName(&m_strToState);
+	m_pToState = pKiss->getChildInstByName(&m_strToState);
 	NULL_F(m_pToState);
 
 	return true;
 }
 
-template <typename T> bool Transition::addCondition(Config* pConfig)
+template <typename T> bool Transition::addCondition(Kiss* pKiss)
 {
 	CHECK_N(m_nCond >= N_COND);
 
@@ -81,8 +81,8 @@ template <typename T> bool Transition::addCondition(Config* pConfig)
 	*ppC = new T();
 	NULL_N(*ppC);
 
-	F_FATAL_F(((T*)*ppC)->init(pConfig));
-	pConfig->m_pInst = (void*)(*ppC);
+	F_FATAL_F(((T*)*ppC)->init(pKiss));
+	pKiss->m_pInst = (void*)(*ppC);
 
 	return true;
 }

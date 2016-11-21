@@ -26,10 +26,10 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(Config* pConfig)
+bool _SSD::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -39,14 +39,14 @@ bool _SSD::init(Config* pConfig)
 	string labelFile;
 	string presetDir = "";
 
-	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO(pConfig->v("dir", &caffeDir));
-	F_FATAL_F(pConfig->v("modelFile", &modelFile));
-	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
-	F_FATAL_F(pConfig->v("meanFile", &meanFile));
-	F_FATAL_F(pConfig->v("labelFile", &labelFile));
-	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
+	F_INFO(pKiss->v("dir", &caffeDir));
+	F_FATAL_F(pKiss->v("modelFile", &modelFile));
+	F_FATAL_F(pKiss->v("trainedFile", &trainedFile));
+	F_FATAL_F(pKiss->v("meanFile", &meanFile));
+	F_FATAL_F(pKiss->v("labelFile", &labelFile));
+	F_INFO(pKiss->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
@@ -58,13 +58,13 @@ bool _SSD::init(Config* pConfig)
 
 bool _SSD::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(m_pConfig->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(m_pKiss->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
 

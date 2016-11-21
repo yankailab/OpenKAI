@@ -21,7 +21,7 @@ public:
 	APMrover_follow();
 	~APMrover_follow();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

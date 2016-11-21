@@ -34,19 +34,19 @@ _AprilTags::~_AprilTags()
 	// TODO Auto-generated destructor stub
 }
 
-bool _AprilTags::init(Config* pConfig)
+bool _AprilTags::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
 	//format params
-	F_INFO(pConfig->v("family", &m_tagFamily));
-	F_INFO(pConfig->v("err", &m_tagErr));
-	F_INFO(pConfig->v("lifeTime", &m_tagLifetime));
-	F_INFO(pConfig->v("distThr", &m_tagDistThr));
-	F_INFO(pConfig->v("detInterval", &m_tagAliveInterval));
-	F_INFO(pConfig->v("scaling", &m_tagScaling));
-	F_INFO(pConfig->v("sizeLim", &m_tagSizeLim));
+	F_INFO(pKiss->v("family", &m_tagFamily));
+	F_INFO(pKiss->v("err", &m_tagErr));
+	F_INFO(pKiss->v("lifeTime", &m_tagLifetime));
+	F_INFO(pKiss->v("distThr", &m_tagDistThr));
+	F_INFO(pKiss->v("detInterval", &m_tagAliveInterval));
+	F_INFO(pKiss->v("scaling", &m_tagScaling));
+	F_INFO(pKiss->v("sizeLim", &m_tagSizeLim));
 
 	m_pFrame = new Frame();
 
@@ -55,12 +55,12 @@ bool _AprilTags::init(Config* pConfig)
 
 bool _AprilTags::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Stream",&iName));
+	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

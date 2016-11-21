@@ -102,6 +102,7 @@ struct Mavlink_Messages
 	int compid;
 
 	mavlink_heartbeat_t heartbeat;
+	mavlink_command_ack_t command_ack;
 	mavlink_sys_status_t sys_status;
 	mavlink_battery_status_t battery_status;
 	mavlink_radio_status_t radio_status;
@@ -131,7 +132,7 @@ public:
 	_Mavlink();
 	~_Mavlink();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 
 	void close(void);
@@ -150,6 +151,7 @@ public:
 	//Commands
 	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
 	void command_long_doSetMode(int mode);
+	void command_long_doSetPositionYawThrust(float steer, float thrust);
 
 
 	int  toggleOffboardControl(bool bEnable);

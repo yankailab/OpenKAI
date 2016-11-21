@@ -16,7 +16,7 @@ using namespace kai;
 
 General* g_pGen;
 
-Config* g_pConfig;
+Kiss* g_pKiss;
 FileIO g_file;
 
 void printEnvironment(void);

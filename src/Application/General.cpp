@@ -28,13 +28,13 @@ General::~General()
 {
 }
 
-bool General::start(Config* pConfig)
+bool General::start(Kiss* pKiss)
 {
 	int i;
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
 	g_pGeneral = this;
-	Config* pApp = pConfig->root()->o("APP");
+	Kiss* pApp = pKiss->root()->o("APP");
 	if(pApp->empty())return false;
 
 	F_INFO(pApp->v("appName", &m_name));
@@ -43,10 +43,10 @@ bool General::start(Config* pConfig)
 	F_INFO(pApp->v("waitKey", &m_waitKey));
 
 	//create instances
-	F_FATAL_F(createAllInst(pConfig));
+	F_FATAL_F(createAllInst(pKiss));
 
 	//link instances with each other
-	F_FATAL_F(linkAllInst(pConfig));
+	F_FATAL_F(linkAllInst(pKiss));
 
 	//UI thread
 	m_bRun = true;
@@ -220,15 +220,15 @@ void General::handleMouse(int event, int x, int y, int flags)
 	}
 }
 
-bool General::createAllInst(Config* pConfig)
+bool General::createAllInst(Kiss* pKiss)
 {
-	NULL_F(pConfig);
-	Config** pItr = pConfig->root()->getChildItr();
+	NULL_F(pKiss);
+	Kiss** pItr = pKiss->root()->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pC = pItr[i++];
+		Kiss* pC = pItr[i++];
 
 		bool bInst = false;
 		F_INFO(pC->v("bInst", &bInst));
@@ -314,20 +314,20 @@ bool General::createAllInst(Config* pConfig)
 	return true;
 }
 
-template <typename T> bool General::createInst(Config* pConfig)
+template <typename T> bool General::createInst(Kiss* pKiss)
 {
 	if(m_nInst>=N_INST)return false;
-	NULL_F(pConfig);
+	NULL_F(pKiss);
 
 	T* pInst = new T();
-	F_FATAL_F(pInst->T::init(pConfig));
+	F_FATAL_F(pInst->T::init(pKiss));
 
 	m_pInst[m_nInst] = pInst;
 	m_nInst++;
 
 	F_FATAL_F(pInst->T::start());
 
-	CHECK_T(pConfig->m_class != "_AutoPilot");
+	CHECK_T(pKiss->m_class != "_AutoPilot");
 	CHECK_T(!m_bShowScreen);
 
 	m_pMouse[m_nMouse] = pInst;
@@ -336,15 +336,15 @@ template <typename T> bool General::createInst(Config* pConfig)
     return true;
 }
 
-bool General::linkAllInst(Config* pConfig)
+bool General::linkAllInst(Kiss* pKiss)
 {
-	NULL_F(pConfig);
-	Config** pItr = pConfig->root()->getChildItr();
+	NULL_F(pKiss);
+	Kiss** pItr = pKiss->root()->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pC = pItr[i++];
+		Kiss* pC = pItr[i++];
 
 		bool bInst = false;
 		F_INFO(pC->v("bInst", &bInst));

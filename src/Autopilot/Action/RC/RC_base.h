@@ -81,7 +81,7 @@ public:
 	RC_base();
 	~RC_base();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 
 public:
 	RC_PID m_pidRoll;

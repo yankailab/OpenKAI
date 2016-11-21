@@ -17,21 +17,21 @@ _RC::~_RC()
 	close();
 }
 
-bool _RC::init(Config* pConfig)
+bool _RC::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
+	CHECK_F(!this->_ThreadBase::init(pKiss));
 
-	pConfig->m_pInst = this;
+	pKiss->m_pInst = this;
 
-	F_ERROR_F(pConfig->v("portName", &m_sportName));
-	F_ERROR_F(pConfig->v("baudrate", &m_baudRate));
+	F_ERROR_F(pKiss->v("portName", &m_sportName));
+	F_ERROR_F(pKiss->v("baudrate", &m_baudRate));
 
 	return true;
 }
 
 bool _RC::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	//TODO: link variables to Automaton
 

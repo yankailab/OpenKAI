@@ -40,7 +40,7 @@ public:
 	_Universe();
 	virtual ~_Universe();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	bool start(void);
 	void reset(void);

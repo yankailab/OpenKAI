@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Script/Config.h"
+#include "../Script/Kiss.h"
 #include "NetworkBase.h"
 
 
@@ -23,7 +23,7 @@ public:
 	_server();
 	virtual ~_server();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool start(void);
 
 private:

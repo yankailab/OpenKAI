@@ -32,57 +32,57 @@ RC_visualFollow::~RC_visualFollow()
 {
 }
 
-bool RC_visualFollow::init(Config* pConfig)
+bool RC_visualFollow::init(Kiss* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pConfig) == false);
+	CHECK_F(this->ActionBase::init(pKiss) == false);
 
 	m_roll.reset();
 	m_pitch.reset();
 	m_yaw.reset();
 	m_alt.reset();
 
-	F_ERROR_F(pConfig->v("targetX", &m_roll.m_targetPos));
-	F_ERROR_F(pConfig->v("targetY", &m_pitch.m_targetPos));
-	F_INFO(pConfig->v("ROIsizeFrom", &m_ROIsizeFrom));
-	F_INFO(pConfig->v("ROIsizeTo", &m_ROIsizeTo));
-	F_INFO(pConfig->v("ROIsizeStep", &m_ROIsizeStep));
+	F_ERROR_F(pKiss->v("targetX", &m_roll.m_targetPos));
+	F_ERROR_F(pKiss->v("targetY", &m_pitch.m_targetPos));
+	F_INFO(pKiss->v("ROIsizeFrom", &m_ROIsizeFrom));
+	F_INFO(pKiss->v("ROIsizeTo", &m_ROIsizeTo));
+	F_INFO(pKiss->v("ROIsizeStep", &m_ROIsizeStep));
 
 	//setup UI
-	Config* pC;
+	Kiss* pC;
 
-	pC = pConfig->o("assist");
+	pC = pKiss->o("assist");
 	if (!pC->empty())
 	{
 		m_pUIassist = new UI();
 		F_FATAL_F(m_pUIassist->init(pC));
 	}
 
-	pC = pConfig->o("drawRect");
+	pC = pKiss->o("drawRect");
 	if (!pC->empty())
 	{
 		m_pUIdrawRect = new UI();
 		F_FATAL_F(m_pUIdrawRect->init(pC));
 	}
 
-	pConfig->m_pInst = this;
+	pKiss->m_pInst = this;
 
 	return true;
 }
 
 bool RC_visualFollow::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
 
-	F_INFO(m_pConfig->v("_RC", &iName));
-	m_pRC = (_RC*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_RC", &iName));
+	m_pRC = (_RC*) (m_pKiss->root()->getChildInstByName(&iName));
 
-	F_INFO(m_pConfig->v("RC_base", &iName));
-	m_pRCconfig = (RC_base*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("RC_base", &iName));
+	m_pRCconfig = (RC_base*) (m_pKiss->root()->getChildInstByName(&iName));
 
-	F_ERROR_F(m_pConfig->v("ROItracker", &iName));
-	m_pROITracker = (_ROITracker*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("ROItracker", &iName));
+	m_pROITracker = (_ROITracker*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }

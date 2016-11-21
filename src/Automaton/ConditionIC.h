@@ -20,7 +20,7 @@ public:
 	ConditionIC();
 	virtual ~ConditionIC();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 
 	bool isSatisfied(void);
 	bool setPtrByName(string* pName, int* ptr);

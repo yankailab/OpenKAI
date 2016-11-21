@@ -43,10 +43,10 @@ _DetectNet::~_DetectNet()
 {
 }
 
-bool _DetectNet::init(Config* pConfig)
+bool _DetectNet::init(Kiss* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pConfig));
-	pConfig->m_pInst = this;
+	CHECK_F(!this->_ThreadBase::init(pKiss));
+	pKiss->m_pInst = this;
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
@@ -55,15 +55,15 @@ bool _DetectNet::init(Config* pConfig)
 	string detectNetDir = "";
 	string presetDir = "";
 
-	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO(pConfig->v("dir", &detectNetDir));
-	F_FATAL_F(pConfig->v("modelFile", &modelFile));
-	F_FATAL_F(pConfig->v("trainedFile", &trainedFile));
-	F_FATAL_F(pConfig->v("meanFile", &meanFile));
-	F_FATAL_F(pConfig->v("labelFile", &labelFile));
-	F_INFO(pConfig->v("minConfidence", &m_confidence_threshold));
-	F_INFO(pConfig->v("className", &m_className));
+	F_INFO(pKiss->v("dir", &detectNetDir));
+	F_FATAL_F(pKiss->v("modelFile", &modelFile));
+	F_FATAL_F(pKiss->v("trainedFile", &trainedFile));
+	F_FATAL_F(pKiss->v("meanFile", &meanFile));
+	F_FATAL_F(pKiss->v("labelFile", &labelFile));
+	F_INFO(pKiss->v("minConfidence", &m_confidence_threshold));
+	F_INFO(pKiss->v("className", &m_className));
 
 	modelFile = detectNetDir + modelFile;
 	trainedFile = detectNetDir + trainedFile;
@@ -75,13 +75,13 @@ bool _DetectNet::init(Config* pConfig)
 
 bool _DetectNet::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
-	F_ERROR_F(m_pConfig->v("_Stream", &iName));
-	m_pStream = (_Stream*) (m_pConfig->root()->getChildInstByName(&iName));
-	F_ERROR_F(m_pConfig->v("_Universe", &iName));
-	m_pUniverse = (_Universe*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Stream", &iName));
+	m_pStream = (_Stream*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(m_pKiss->v("_Universe", &iName));
+	m_pUniverse = (_Universe*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	printf("_DetectNet link complete\n");
 

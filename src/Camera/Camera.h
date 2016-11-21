@@ -20,7 +20,7 @@ public:
 	Camera();
 	virtual ~Camera();
 
-	bool setup(Config* pConfig);
+	bool setup(Kiss* pKiss);
 	bool openCamera(void);
 	GpuMat* readFrame(void);
 	GpuMat* getDepthFrame(void);

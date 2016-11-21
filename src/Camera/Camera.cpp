@@ -22,16 +22,16 @@ Camera::~Camera()
 {
 }
 
-bool Camera::setup(Config* pConfig)
+bool Camera::setup(Kiss* pKiss)
 {
-	if (CamBase::setup(pConfig) == false)
+	if (CamBase::setup(pKiss) == false)
 		return false;
 
 	string presetDir = "";
 	string calibFile;
 
-	F_INFO(pConfig->root()->o("APP")->v("presetDir", &presetDir));
-	F_FATAL_F(pConfig->v("ID", &m_camDeviceID));
+	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
+	F_FATAL_F(pKiss->v("ID", &m_camDeviceID));
 
 	return true;
 }

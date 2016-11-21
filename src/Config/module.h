@@ -5,9 +5,10 @@
  *      Author: Kai Yan
  */
 
-#ifndef OPENKAI_SRC_APPLICATION_MODULE_H_
-#define OPENKAI_SRC_APPLICATION_MODULE_H_
+#ifndef OPENKAI_SRC_CONFIG_MODULE_H_
+#define OPENKAI_SRC_CONFIG_MODULE_H_
 
+#include "switch.h"
 
 #include "../Application/AppBase.h"
 #include "../Stream/Frame.h"

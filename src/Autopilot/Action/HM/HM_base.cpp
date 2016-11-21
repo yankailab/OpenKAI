@@ -22,28 +22,28 @@ HM_base::~HM_base()
 {
 }
 
-bool HM_base::init(Config* pConfig)
+bool HM_base::init(Kiss* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pConfig)==false);
-	pConfig->m_pInst = this;
+	CHECK_F(this->ActionBase::init(pKiss)==false);
+	pKiss->m_pInst = this;
 
-	F_INFO(pConfig->v("maxSpeedT", &m_maxSpeedT));
-	F_INFO(pConfig->v("maxSpeedW", &m_maxSpeedW));
-	F_INFO(pConfig->v("bSpeaker", &m_bSpeaker));
-	F_INFO(pConfig->v("motorPwmL", &m_motorPwmL));
-	F_INFO(pConfig->v("motorPwmR", &m_motorPwmR));
-	F_INFO(pConfig->v("motorPwmW", &m_motorPwmW));
+	F_INFO(pKiss->v("maxSpeedT", &m_maxSpeedT));
+	F_INFO(pKiss->v("maxSpeedW", &m_maxSpeedW));
+	F_INFO(pKiss->v("bSpeaker", &m_bSpeaker));
+	F_INFO(pKiss->v("motorPwmL", &m_motorPwmL));
+	F_INFO(pKiss->v("motorPwmR", &m_motorPwmR));
+	F_INFO(pKiss->v("motorPwmW", &m_motorPwmW));
 
 	return true;
 }
 
 bool HM_base::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
-	F_INFO(m_pConfig->v("_Canbus", &iName));
-	m_pCAN = (_Canbus*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Canbus", &iName));
+	m_pCAN = (_Canbus*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }

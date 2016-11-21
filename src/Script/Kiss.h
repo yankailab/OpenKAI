@@ -12,21 +12,21 @@ using namespace std;
 namespace kai
 {
 
-class Config
+class Kiss
 {
 public:
-	Config(void);
-	~Config(void);
+	Kiss(void);
+	~Kiss(void);
 
 	bool parse(string* pStr);
-	Config* o(string name);
+	Kiss* o(string name);
 	JSON* json(void);
-	Config** getClassItr(string* pClassName);
-	Config** getChildItr(void);
-	Config* getChildByName(string* pName);
+	Kiss** getClassItr(string* pClassName);
+	Kiss** getChildItr(void);
+	Kiss* getChildByName(string* pName);
 	void* getChildInstByName(string* pName);
-	Config* root(void);
-	Config* parent(void);
+	Kiss* root(void);
+	Kiss* parent(void);
 	bool empty(void);
 
 	bool v(string name,int* val);
@@ -49,14 +49,14 @@ public:
 	JSON	m_json;
 	void*	m_pInst;
 
-	Config* m_pParent;
+	Kiss* m_pParent;
 	int		m_nChild;
-	Config*	m_pChild[NUM_CHILDREN];
+	Kiss*	m_pChild[NUM_CHILDREN];
 
-	Config* m_pNULL;
+	Kiss* m_pNULL;
 	bool	m_bNULL;
 
-	Config* m_ppItr[NUM_CHILDREN];
+	Kiss* m_ppItr[NUM_CHILDREN];
 
 };
 

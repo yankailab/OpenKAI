@@ -9,6 +9,9 @@ APMrover_base::APMrover_base()
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
+	m_thrust = 0;
+	m_steer = 0;
+
 	m_pidThrust.reset();
 	m_pidSteer.reset();
 	m_ctrlThrust.reset();
@@ -19,33 +22,32 @@ APMrover_base::~APMrover_base()
 {
 }
 
-bool APMrover_base::init(Config* pConfig)
+bool APMrover_base::init(Kiss* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pConfig)==false);
-	pConfig->m_pInst = this;
+	CHECK_F(this->ActionBase::init(pKiss)==false);
+	pKiss->m_pInst = this;
 
-	int i;
-	Config* pCC;
+	Kiss* pCC;
 	APMrover_PID cPID;
 
-	pCC = pConfig->o("steer");
+	pCC = pKiss->o("steer");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
-	F_ERROR_F(pCC->v("I", &cPID.m_I));
-	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
-	F_ERROR_F(pCC->v("D", &cPID.m_D));
-	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_INFO(pCC->v("I", &cPID.m_I));
+	F_INFO(pCC->v("Imax", &cPID.m_Imax));
+	F_INFO(pCC->v("D", &cPID.m_D));
+	F_INFO(pCC->v("dT", &cPID.m_dT));
 	m_pidSteer = cPID;
 
-	pCC = pConfig->o("speed");
+	pCC = pKiss->o("thrust");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
-	F_ERROR_F(pCC->v("I", &cPID.m_I));
-	F_ERROR_F(pCC->v("Imax", &cPID.m_Imax));
-	F_ERROR_F(pCC->v("D", &cPID.m_D));
-	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
+	F_INFO(pCC->v("I", &cPID.m_I));
+	F_INFO(pCC->v("Imax", &cPID.m_Imax));
+	F_INFO(pCC->v("D", &cPID.m_D));
+	F_INFO(pCC->v("dT", &cPID.m_dT));
 	m_pidThrust = cPID;
 
 	//init controls
@@ -57,12 +59,12 @@ bool APMrover_base::init(Config* pConfig)
 
 bool APMrover_base::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	string iName = "";
 
-	F_INFO(m_pConfig->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (m_pConfig->root()->getChildInstByName(&iName));
+	F_INFO(m_pKiss->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (m_pKiss->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -80,9 +82,22 @@ void APMrover_base::sendHeartbeat(void)
 		m_lastHeartbeat = timeNow;
 
 #ifdef MAVLINK_DEBUG
-		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
+		printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
 #endif
 	}
 }
+
+void APMrover_base::sendSteerThrust(void)
+{
+	NULL_(m_pMavlink);
+
+	m_pMavlink->command_long_doSetPositionYawThrust(m_steer, m_thrust);
+
+#ifdef MAVLINK_DEBUG
+	printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
+#endif
+
+}
+
 
 }

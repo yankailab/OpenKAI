@@ -24,19 +24,19 @@ _Automaton::~_Automaton()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Automaton::init(Config* pConfig)
+bool _Automaton::init(Kiss* pKiss)
 {
-	CHECK_F(this->_ThreadBase::init(pConfig)==false);
+	CHECK_F(this->_ThreadBase::init(pKiss)==false);
 
-	pConfig->m_pInst = this;
+	pKiss->m_pInst = this;
 
 	//create state instances
-	Config** pItr = pConfig->getChildItr();
+	Kiss** pItr = pKiss->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
 	{
-		Config* pState = pItr[i];
+		Kiss* pState = pItr[i];
 		i++;
 
 		bool bInst = false;
@@ -55,12 +55,12 @@ bool _Automaton::init(Config* pConfig)
 	//link state instances
 	for(i=0;i<m_nState;i++)
 	{
-		F_ERROR_F(m_pState[i]->link(pConfig));
+		F_ERROR_F(m_pState[i]->link(pKiss));
 	}
 
 	string startState = "";
-	F_FATAL_F(pConfig->v("startState", &startState));
-	m_pMyState = (State*)(pConfig->getChildInstByName(&startState));
+	F_FATAL_F(pKiss->v("startState", &startState));
+	m_pMyState = (State*)(pKiss->getChildInstByName(&startState));
 	NULL_F(m_pMyState);
 
 	return true;
@@ -68,7 +68,7 @@ bool _Automaton::init(Config* pConfig)
 
 bool _Automaton::link(void)
 {
-	NULL_F(m_pConfig);
+	NULL_F(m_pKiss);
 
 	return true;
 }

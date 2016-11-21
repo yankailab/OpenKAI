@@ -16,7 +16,7 @@ public:
 	HM_base();
 	~HM_base();
 
-	bool init(Config* pConfig);
+	bool init(Kiss* pKiss);
 	bool link(void);
 	void updateCAN(void);
 
