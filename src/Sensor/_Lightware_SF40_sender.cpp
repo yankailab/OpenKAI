@@ -17,7 +17,7 @@ _Lightware_SF40_sender::~_Lightware_SF40_sender()
 {
 }
 
-bool _Lightware_SF40_sender::init(Kiss* pKiss)
+bool _Lightware_SF40_sender::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
 //	pKiss->m_pInst = this;
@@ -36,6 +36,11 @@ bool _Lightware_SF40_sender::start(void)
 		return false;
 	}
 
+	return true;
+}
+
+bool _Lightware_SF40_sender::link(void)
+{
 	return true;
 }
 
@@ -67,5 +72,11 @@ void _Lightware_SF40_sender::LD(void)
 	}
 
 }
+
+bool _Lightware_SF40_sender::draw(Frame* pFrame, vInt4* pTextPos)
+{
+	return true;
+}
+
 
 }

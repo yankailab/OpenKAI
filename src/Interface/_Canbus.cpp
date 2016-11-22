@@ -16,14 +16,14 @@ _Canbus::~_Canbus()
 	close();
 }
 
-bool _Canbus::init(Kiss* pKiss)
+bool _Canbus::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
-	pKiss->m_pInst = this;
-
-	F_ERROR_F(pKiss->v("portName", &m_sportName));
-	F_ERROR_F(pKiss->v("baudrate", &m_baudRate));
+	F_ERROR_F(pK->v("portName", &m_sportName));
+	F_ERROR_F(pK->v("baudrate", &m_baudRate));
 
 	//Start Serial Port
 	m_pSerialPort = new SerialPort();

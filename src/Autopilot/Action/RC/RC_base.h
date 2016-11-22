@@ -3,6 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_BASE_H_
 
 #include "../../../Base/common.h"
+#include "../../../Script/Kiss.h"
 #include "../ActionBase.h"
 
 #define NUM_RC_CHANNEL 8
@@ -81,7 +82,7 @@ public:
 	RC_base();
 	~RC_base();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 
 public:
 	RC_PID m_pidRoll;

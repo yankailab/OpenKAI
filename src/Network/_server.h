@@ -23,7 +23,7 @@ public:
 	_server();
 	virtual ~_server();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool start(void);
 
 private:

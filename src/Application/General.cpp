@@ -46,7 +46,10 @@ bool General::start(Kiss* pKiss)
 	F_FATAL_F(createAllInst(pKiss));
 
 	//link instances with each other
-	F_FATAL_F(linkAllInst(pKiss));
+	for(i=0; i<m_nInst; i++)
+	{
+		F_FATAL_F(m_pInst[i]->link());
+	}
 
 	//UI thread
 	m_bRun = true;
@@ -113,81 +116,14 @@ void General::draw(void)
 		BASE* pInst = m_pInst[i];
 		string* cName = pInst->getClass();
 
-		//Make sure the stream class comes to the first in config file as stream will format the Mat with camera stream
 		if (*cName == "_Stream")
 		{
-			if(!((_Stream*)pInst)->draw(m_pFrame, &textPos))return;
+			if(!pInst->draw(m_pFrame, &textPos))return;
 		}
-		else if (*cName == "_Automaton")
+		else
 		{
-			((_Automaton*)pInst)->draw(m_pFrame, &textPos);
+			pInst->draw(m_pFrame, &textPos);
 		}
-		else if (*cName == "_Universe")
-		{
-			((_Universe*)pInst)->draw(m_pFrame, &textPos);
-		}
-		else if (*cName == "_Mavlink")
-		{
-			((_Mavlink*)pInst)->draw(m_pFrame, &textPos);
-		}
-		else if (*cName == "_Canbus")
-		{
-			((_Canbus*)pInst)->draw(m_pFrame, &textPos);
-		}
-		else if (*cName == "_AutoPilot")
-		{
-			((_AutoPilot*)pInst)->draw(m_pFrame, &textPos);
-		}
-		else if (*cName == "_AprilTags")
-		{
-			((_AprilTags*)pInst)->draw(m_pFrame, &textPos);
-		}
-		else if (*cName == "_Lightware_SF40")
-		{
-			((_Lightware_SF40*)pInst)->draw(m_pFrame, &textPos);
-		}
-#ifdef USE_SSD
-		else if (*cName == "_SSD")
-		{
-			((_SSD*)pInst)->draw(m_pFrame, &textPos);
-		}
-#endif
-#ifdef USE_FCN
-		else if (*cName == "_FCN")
-		{
-			((_FCN*)pInst)->draw(m_pFrame, &textPos);
-		}
-#endif
-#ifdef USE_TENSORRT
-		else if (*cName == "_DetectNet")
-		{
-			((_DetectNet*)pInst)->draw(m_pFrame, &textPos);
-		}
-#endif
-//		else if (*cName == "_RC")
-//		{
-//			F_(((_RC*)pInst)->draw(m_pFrame, &textPos));
-//		}
-//		else if (*cName == "_ROITracker")
-//		{
-//			F_(((_ROITracker*)pInst)->draw(m_pFrame, &textPos));
-//		}
-//		else if (*cName == "_Cascade")
-//		{
-//			F_(((_Cascade*)pInst)->draw(m_pFrame, &textPos));
-//		}
-//		else if (*cName == "_Bullseye")
-//		{
-//			F_(((_Bullseye*)pInst)->draw(m_pFrame, &textPos));
-//		}
-//		else if (*cName == "_Depth")
-//		{
-//			F_(((_Depth*)pInst)->draw(m_pFrame, &textPos));
-//		}
-//		else if (*cName == "_Flow")
-//		{
-//			F_(((_Flow*)pInst)->draw(m_pFrame, &textPos));
-//		}
 	}
 
 	imshow(m_name, *m_pFrame->getCMat());
@@ -228,207 +164,40 @@ bool General::createAllInst(Kiss* pKiss)
 	int i = 0;
 	while (pItr[i])
 	{
-		Kiss* pC = pItr[i++];
+		Kiss* pK = pItr[i++];
 
 		bool bInst = false;
-		F_INFO(pC->v("bInst", &bInst));
+		F_INFO(pK->v("bInst", &bInst));
 		if (!bInst)continue;
 
+		if(pK->m_class == "General")continue;
 
-		if (pC->m_class == "_Stream")
+		BASE* pNew = m_module.createInstance(pK);
+		if(pNew==NULL)
 		{
-			F_FATAL_F(createInst<_Stream>(pC));
+			LOG(ERROR)<<"Unknown class:"+pK->m_class;
+			continue;
 		}
-		else if (pC->m_class == "_Automaton")
+
+		if(m_nInst>=N_INST)
 		{
-			F_FATAL_F(createInst<_Automaton>(pC));
+			LOG(ERROR)<<"Number of module instances reached limit";
+			return false;
 		}
-		else if (pC->m_class == "_Universe")
-		{
-			F_FATAL_F(createInst<_Universe>(pC));
-		}
-		else if (pC->m_class == "_Mavlink")
-		{
-			F_FATAL_F(createInst<_Mavlink>(pC));
-		}
-		else if (pC->m_class == "_Canbus")
-		{
-			F_FATAL_F(createInst<_Canbus>(pC));
-		}
-		else if (pC->m_class == "_RC")
-		{
-			F_FATAL_F(createInst<_RC>(pC));
-		}
-		else if (pC->m_class == "_AutoPilot")
-		{
-			F_FATAL_F(createInst<_AutoPilot>(pC));
-		}
-		else if (pC->m_class == "_AprilTags")
-		{
-			F_FATAL_F(createInst<_AprilTags>(pC));
-		}
-		else if (pC->m_class == "_Bullseye")
-		{
-			F_FATAL_F(createInst<_Bullseye>(pC));
-		}
-		else if (pC->m_class == "_ROITracker")
-		{
-			F_FATAL_F(createInst<_ROITracker>(pC));
-		}
-		else if (pC->m_class == "_Flow")
-		{
-			F_FATAL_F(createInst<_Flow>(pC));
-		}
-		else if (pC->m_class == "_Depth")
-		{
-			F_FATAL_F(createInst<_Depth>(pC));
-		}
-		else if (pC->m_class == "_Lightware_SF40")
-		{
-			F_FATAL_F(createInst<_Lightware_SF40>(pC));
-		}
-#ifdef USE_SSD
-		else if (pC->m_class == "_SSD")
-		{
-			F_FATAL_F(createInst<_SSD>(pC));
-		}
-#endif
-#ifdef USE_FCN
-		else if (pC->m_class == "_FCN")
-		{
-			F_FATAL_F(createInst<_FCN>(pC));
-		}
-#endif
-#ifdef USE_TENSORRT
-		else if (pC->m_class == "_DetectNet")
-		{
-			F_FATAL_F(createInst<_DetectNet>(pC));
-		}
-#endif
-		else if(pC->m_class != "General")
-		{
-			LOG(ERROR)<<"Unknown class:"+pC->m_class;
-		}
+
+		m_pInst[m_nInst] = pNew;
+		m_nInst++;
+
+		F_FATAL_F(pNew->start());
+
+		if(*pNew->getClass() != "_AutoPilot")continue;
+		if(!m_bShowScreen)continue;
+
+		m_pMouse[m_nMouse] = pNew;
+		m_nMouse++;
 	}
 
 	return true;
 }
-
-template <typename T> bool General::createInst(Kiss* pKiss)
-{
-	if(m_nInst>=N_INST)return false;
-	NULL_F(pKiss);
-
-	T* pInst = new T();
-	F_FATAL_F(pInst->T::init(pKiss));
-
-	m_pInst[m_nInst] = pInst;
-	m_nInst++;
-
-	F_FATAL_F(pInst->T::start());
-
-	CHECK_T(pKiss->m_class != "_AutoPilot");
-	CHECK_T(!m_bShowScreen);
-
-	m_pMouse[m_nMouse] = pInst;
-	m_nMouse++;
-
-    return true;
-}
-
-bool General::linkAllInst(Kiss* pKiss)
-{
-	NULL_F(pKiss);
-	Kiss** pItr = pKiss->root()->getChildItr();
-
-	int i = 0;
-	while (pItr[i])
-	{
-		Kiss* pC = pItr[i++];
-
-		bool bInst = false;
-		F_INFO(pC->v("bInst", &bInst));
-		if (!bInst)continue;
-
-		if (pC->m_class == "_Stream")
-		{
-			F_FATAL_F(((_Stream*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Automaton")
-		{
-			F_FATAL_F(((_Automaton*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Universe")
-		{
-			F_FATAL_F(((_Universe*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Mavlink")
-		{
-			F_FATAL_F(((_Mavlink*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Canbus")
-		{
-			F_FATAL_F(((_Canbus*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_RC")
-		{
-			F_FATAL_F(((_RC*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_AutoPilot")
-		{
-			F_FATAL_F(((_AutoPilot*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_AprilTags")
-		{
-			F_FATAL_F(((_AprilTags*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Bullseye")
-		{
-			F_FATAL_F(((_Bullseye*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_ROITracker")
-		{
-			F_FATAL_F(((_ROITracker*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Depth")
-		{
-			F_FATAL_F(((_Depth*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Flow")
-		{
-			F_FATAL_F(((_Flow*)(pC->m_pInst))->link());
-		}
-		else if (pC->m_class == "_Lightware_SF40")
-		{
-			F_FATAL_F(((_Lightware_SF40*)(pC->m_pInst))->link());
-		}
-#ifdef USE_SSD
-		else if (pC->m_class == "_SSD")
-		{
-			F_FATAL_F(((_SSD*)(pC->m_pInst))->link());
-		}
-#endif
-#ifdef USE_FCN
-		else if (pC->m_class == "_FCN")
-		{
-			F_FATAL_F(((_FCN*)(pC->m_pInst))->link());
-		}
-#endif
-#ifdef USE_TENSORRT
-		else if (pC->m_class == "_DetectNet")
-		{
-			F_FATAL_F(((_DetectNet*)(pC->m_pInst))->link());
-		}
-#endif
-		else if(pC->m_class != "General")
-		{
-			LOG(ERROR)<<"Unknown class:"+pC->m_class;
-		}
-
-	}
-
-	return true;
-}
-
 
 }

@@ -9,7 +9,7 @@
 #define SRC_GENERAL_H_
 
 #include "../Base/common.h"
-#include "../Config/module.h"
+#include "../Config/Module.h"
 
 using namespace kai;
 
@@ -26,16 +26,12 @@ public:
 	void draw(void);
 	void handleMouse(int event, int x, int y, int flags);
 	void handleKey(int key);
-
 	bool createAllInst(Kiss* pKiss);
-	BASE* getInstByName(string* pName);
-	bool linkAllInst(Kiss* pKiss);
-
-	template <typename T> bool createInst(Kiss* pKiss);
 
 public:
 	Frame*	m_pFrame;
 
+	Module	m_module;
 	int		m_nInst;
 	BASE* 	m_pInst[N_INST];
 

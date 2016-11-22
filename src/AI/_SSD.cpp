@@ -26,10 +26,11 @@ _SSD::~_SSD()
 {
 }
 
-bool _SSD::init(Kiss* pKiss)
+bool _SSD::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	//Setup Caffe Classifier
 	string caffeDir = "";
@@ -39,14 +40,14 @@ bool _SSD::init(Kiss* pKiss)
 	string labelFile;
 	string presetDir = "";
 
-	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO(pKiss->v("dir", &caffeDir));
-	F_FATAL_F(pKiss->v("modelFile", &modelFile));
-	F_FATAL_F(pKiss->v("trainedFile", &trainedFile));
-	F_FATAL_F(pKiss->v("meanFile", &meanFile));
-	F_FATAL_F(pKiss->v("labelFile", &labelFile));
-	F_INFO(pKiss->v("minConfidence", &m_confidence_threshold));
+	F_INFO(pK->v("dir", &caffeDir));
+	F_FATAL_F(pK->v("modelFile", &modelFile));
+	F_FATAL_F(pK->v("trainedFile", &trainedFile));
+	F_FATAL_F(pK->v("meanFile", &meanFile));
+	F_FATAL_F(pK->v("labelFile", &labelFile));
+	F_INFO(pK->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
 	LOG(INFO)<<"Caffe Initialized";
@@ -59,12 +60,13 @@ bool _SSD::init(Kiss* pKiss)
 bool _SSD::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_ERROR_F(m_pKiss->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
-	F_ERROR_F(m_pKiss->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_Universe",&iName));
+	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
 
@@ -386,7 +388,7 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 
 bool _SSD::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	NULL_F(pFrame == NULL);
+	NULL_F(pFrame);
 
 	putText(*pFrame->getCMat(), "SSD FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);

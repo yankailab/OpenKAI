@@ -41,15 +41,25 @@ _ThreadBase::~_ThreadBase()
 	pthread_cond_destroy(&m_wakeupSignal);
 }
 
-bool _ThreadBase::init(Kiss* pKiss)
+bool _ThreadBase::init(void* pKiss)
 {
-	if (this->BASE::init(pKiss)==false)
-		return false;
+	CHECK_F(this->BASE::init(pKiss)==false);
+	Kiss* pK = (Kiss*)pKiss;
 
 	double FPS = DEFAULT_FPS;
-	F_INFO(pKiss->v("FPS", &FPS));
+	F_INFO(pK->v("FPS", &FPS));
 	setTargetFPS(FPS);
 
+	return true;
+}
+
+bool _ThreadBase::link(void)
+{
+	return true;
+}
+
+bool _ThreadBase::start(void)
+{
 	return true;
 }
 
@@ -142,5 +152,11 @@ void _ThreadBase::waitForComplete(void)
 {
 	pthread_join(m_threadID, NULL);
 }
+
+bool _ThreadBase::draw(Frame* pFrame, vInt4* pTextPos)
+{
+	return true;
+}
+
 
 }

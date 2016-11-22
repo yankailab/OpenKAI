@@ -32,39 +32,40 @@ RC_visualFollow::~RC_visualFollow()
 {
 }
 
-bool RC_visualFollow::init(Kiss* pKiss)
+bool RC_visualFollow::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss) == false);
+	Kiss* pK = (Kiss*)pKiss;
 
 	m_roll.reset();
 	m_pitch.reset();
 	m_yaw.reset();
 	m_alt.reset();
 
-	F_ERROR_F(pKiss->v("targetX", &m_roll.m_targetPos));
-	F_ERROR_F(pKiss->v("targetY", &m_pitch.m_targetPos));
-	F_INFO(pKiss->v("ROIsizeFrom", &m_ROIsizeFrom));
-	F_INFO(pKiss->v("ROIsizeTo", &m_ROIsizeTo));
-	F_INFO(pKiss->v("ROIsizeStep", &m_ROIsizeStep));
+	F_ERROR_F(pK->v("targetX", &m_roll.m_targetPos));
+	F_ERROR_F(pK->v("targetY", &m_pitch.m_targetPos));
+	F_INFO(pK->v("ROIsizeFrom", &m_ROIsizeFrom));
+	F_INFO(pK->v("ROIsizeTo", &m_ROIsizeTo));
+	F_INFO(pK->v("ROIsizeStep", &m_ROIsizeStep));
 
 	//setup UI
 	Kiss* pC;
 
-	pC = pKiss->o("assist");
+	pC = pK->o("assist");
 	if (!pC->empty())
 	{
 		m_pUIassist = new UI();
 		F_FATAL_F(m_pUIassist->init(pC));
 	}
 
-	pC = pKiss->o("drawRect");
+	pC = pK->o("drawRect");
 	if (!pC->empty())
 	{
 		m_pUIdrawRect = new UI();
 		F_FATAL_F(m_pUIdrawRect->init(pC));
 	}
 
-	pKiss->m_pInst = this;
+	pK->m_pInst = this;
 
 	return true;
 }
@@ -72,17 +73,18 @@ bool RC_visualFollow::init(Kiss* pKiss)
 bool RC_visualFollow::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
 
-	F_INFO(m_pKiss->v("_RC", &iName));
-	m_pRC = (_RC*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_RC", &iName));
+	m_pRC = (_RC*) (pK->root()->getChildInstByName(&iName));
 
-	F_INFO(m_pKiss->v("RC_base", &iName));
-	m_pRCconfig = (RC_base*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("RC_base", &iName));
+	m_pRCconfig = (RC_base*) (pK->root()->getChildInstByName(&iName));
 
-	F_ERROR_F(m_pKiss->v("ROItracker", &iName));
-	m_pROITracker = (_ROITracker*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("ROItracker", &iName));
+	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

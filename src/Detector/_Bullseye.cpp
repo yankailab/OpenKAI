@@ -37,23 +37,24 @@ _Bullseye::~_Bullseye()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Bullseye::init(Kiss* pKiss)
+bool _Bullseye::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	//format params
-	F_ERROR_F(pKiss->v("areaRatio", &m_areaRatio));
-	F_ERROR_F(pKiss->v("minSize", &m_minMarkerSize));
+	F_ERROR_F(pK->v("areaRatio", &m_areaRatio));
+	F_ERROR_F(pK->v("minSize", &m_minMarkerSize));
 
-	F_INFO(pKiss->v("method", &m_method));
-	F_INFO(pKiss->v("medBlueKsize", &m_kSize));
+	F_INFO(pK->v("method", &m_method));
+	F_INFO(pK->v("medBlueKsize", &m_kSize));
 
-	F_INFO(pKiss->v("HoughMinDist", &m_houghMinDist));
-	F_INFO(pKiss->v("HoughParam1", &m_houghParam1));
-	F_INFO(pKiss->v("HoughParam2", &m_houghParam2));
-	F_INFO(pKiss->v("HoughMinR", &m_houghMinR));
-	F_INFO(pKiss->v("HoughMaxR", &m_houghMaxR));
+	F_INFO(pK->v("HoughMinDist", &m_houghMinDist));
+	F_INFO(pK->v("HoughParam1", &m_houghParam1));
+	F_INFO(pK->v("HoughParam2", &m_houghParam2));
+	F_INFO(pK->v("HoughMinR", &m_houghMinR));
+	F_INFO(pK->v("HoughMaxR", &m_houghMaxR));
 
 	m_pFrame = new Frame();
 
@@ -63,11 +64,12 @@ bool _Bullseye::init(Kiss* pKiss)
 bool _Bullseye::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(m_pKiss->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

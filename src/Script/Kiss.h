@@ -1,8 +1,8 @@
-
 #ifndef OPENKAI_SRC_IO_CONFIG_H_
 #define OPENKAI_SRC_IO_CONFIG_H_
 
 #include "../Base/common.h"
+#include "../Base/BASE.h"
 #include "JSON.h"
 
 using namespace std;
@@ -29,32 +29,31 @@ public:
 	Kiss* parent(void);
 	bool empty(void);
 
-	bool v(string name,int* val);
+	bool v(string name, int* val);
 	bool v(string name, bool* val);
-	bool v(string name,uint64_t* val);
-	bool v(string name,double* val);
-	bool v(string name,string* val);
+	bool v(string name, uint64_t* val);
+	bool v(string name, double* val);
+	bool v(string name, string* val);
 
 //	bool array(string name,int* val);
-	bool array(string name,value::array* val);
-
+	bool array(string name, value::array* val);
 
 private:
 	void trim(string* pStr);
 	bool addChild(string* pStr);
 
 public:
-	string	m_class;
-	string	m_name;
-	JSON	m_json;
-	void*	m_pInst;
+	string m_class;
+	string m_name;
+	JSON m_json;
+	BASE* m_pInst;
 
 	Kiss* m_pParent;
-	int		m_nChild;
-	Kiss*	m_pChild[NUM_CHILDREN];
+	int m_nChild;
+	Kiss* m_pChild[NUM_CHILDREN];
 
 	Kiss* m_pNULL;
-	bool	m_bNULL;
+	bool m_bNULL;
 
 	Kiss* m_ppItr[NUM_CHILDREN];
 

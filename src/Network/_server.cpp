@@ -22,7 +22,7 @@ _server::~_server()
 	// TODO Auto-generated destructor stub
 }
 
-bool _server::init(Kiss* pKiss)
+bool _server::init(void* pKiss)
 {
 //	CHECK_INFO(pJson->getVal("CAFFE_DIR", &caffeDir));
 //	LOG(INFO)<<"Caffe Initialized";

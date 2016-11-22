@@ -132,7 +132,7 @@ public:
 	_Mavlink();
 	~_Mavlink();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 
 	void close(void);

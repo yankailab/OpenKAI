@@ -8,8 +8,8 @@
 #ifndef OPENKAI_SRC_BASE_BASE_H_
 #define OPENKAI_SRC_BASE_BASE_H_
 
-#include "../Script/Kiss.h"
 #include "common.h"
+#include "../Stream/Frame.h"
 
 using namespace std;
 
@@ -23,12 +23,17 @@ public:
 	BASE();
 	virtual ~BASE();
 
-	virtual bool init(Kiss* pKiss);
+	virtual bool init(void* pKiss);
+	virtual bool link(void);
+
 	string* getName(void);
 	string* getClass(void);
 
+	virtual bool start(void);
+	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
+
 public:
-	Kiss*	m_pKiss;
+	void*	m_pKiss;
 };
 
 }

@@ -22,15 +22,16 @@ APMrover_base::~APMrover_base()
 {
 }
 
-bool APMrover_base::init(Kiss* pKiss)
+bool APMrover_base::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	Kiss* pCC;
 	APMrover_PID cPID;
 
-	pCC = pKiss->o("steer");
+	pCC = pK->o("steer");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -40,7 +41,7 @@ bool APMrover_base::init(Kiss* pKiss)
 	F_INFO(pCC->v("dT", &cPID.m_dT));
 	m_pidSteer = cPID;
 
-	pCC = pKiss->o("thrust");
+	pCC = pK->o("thrust");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -60,11 +61,12 @@ bool APMrover_base::init(Kiss* pKiss)
 bool APMrover_base::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
 
-	F_INFO(m_pKiss->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

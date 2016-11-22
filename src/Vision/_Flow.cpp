@@ -35,20 +35,21 @@ _Flow::~_Flow()
 {
 }
 
-bool _Flow::init(Kiss* pKiss)
+bool _Flow::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	string presetDir = "";
 	string labelFile;
 
-	F_INFO(pKiss->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pKiss->v("bDepth", &m_bDepth));
-	F_INFO(pKiss->v("width", &m_width));
-	F_INFO(pKiss->v("height", &m_height));
-	F_INFO(pKiss->v("flowMax", &m_flowMax));
-	F_INFO(pKiss->v("colorFile", &labelFile));
+	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pK->v("bDepth", &m_bDepth));
+	F_INFO(pK->v("width", &m_width));
+	F_INFO(pK->v("height", &m_height));
+	F_INFO(pK->v("flowMax", &m_flowMax));
+	F_INFO(pK->v("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
@@ -69,11 +70,12 @@ bool _Flow::init(Kiss* pKiss)
 bool _Flow::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(m_pKiss->v("_Stream",&iName));
-	m_pStream = (_Stream*)(m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_Stream",&iName));
+	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 

@@ -11,10 +11,11 @@ RC_base::~RC_base()
 {
 }
 
-bool RC_base::init(Kiss* pKiss)
+bool RC_base::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 
 	int i;
@@ -22,7 +23,7 @@ bool RC_base::init(Kiss* pKiss)
 	RC_CHANNEL RC;
 	Kiss* pCC;
 
-	pCC = pKiss->o("roll");
+	pCC = pK->o("roll");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -38,7 +39,7 @@ bool RC_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 	m_rcRoll = RC;
 
-	pCC = pKiss->o("pitch");
+	pCC = pK->o("pitch");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -54,7 +55,7 @@ bool RC_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 	m_rcPitch = RC;
 
-	pCC = pKiss->o("alt");
+	pCC = pK->o("alt");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -70,7 +71,7 @@ bool RC_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 	m_rcAlt = RC;
 
-	pCC = pKiss->o("yaw");
+	pCC = pK->o("yaw");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));

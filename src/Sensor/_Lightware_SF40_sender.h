@@ -28,7 +28,7 @@ public:
 	_Lightware_SF40_sender();
 	~_Lightware_SF40_sender();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void close(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

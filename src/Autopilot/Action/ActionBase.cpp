@@ -11,11 +11,15 @@ ActionBase::~ActionBase()
 {
 }
 
-bool ActionBase::init(Kiss* pKiss)
+bool ActionBase::init(void* pKiss)
 {
-	if (this->BASE::init(pKiss)==false)
-		return false;
+	CHECK_F(this->BASE::init(pKiss)==false);
 
+	return true;
+}
+
+bool ActionBase::link(void)
+{
 	return true;
 }
 
@@ -23,5 +27,11 @@ void ActionBase::update(void)
 {
 
 }
+
+bool ActionBase::draw(Frame* pFrame, vInt4* pTextPos)
+{
+	return true;
+}
+
 
 }

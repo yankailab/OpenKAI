@@ -9,7 +9,9 @@
 #define SRC_CAMERA_H_
 
 #include "../Base/common.h"
+#include "../Script/Kiss.h"
 #include "CamBase.h"
+
 
 namespace kai
 {

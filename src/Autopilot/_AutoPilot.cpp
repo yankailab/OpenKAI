@@ -15,13 +15,14 @@ _AutoPilot::~_AutoPilot()
 {
 }
 
-bool _AutoPilot::init(Kiss* pKiss)
+bool _AutoPilot::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	//create action instance
-	Kiss* pCC = pKiss->o("action");
+	Kiss* pCC = pK->o("action");
 	CHECK_T(pCC->empty());
 	Kiss** pItr = pCC->getChildItr();
 
@@ -39,42 +40,14 @@ bool _AutoPilot::init(Kiss* pKiss)
 		ActionBase** pA = &m_pAction[m_nAction];
 		m_nAction++;
 
-		if (pAction->m_class == "RC_visualFollow")
-		{
-			*pA = new RC_visualFollow();
-			F_ERROR_F(((RC_visualFollow* )(*pA))->RC_visualFollow::init(pAction));
-			m_pAA = *pA;
-		}
-		else if (pAction->m_class == "APMcopter_landing")
-		{
-			*pA = new APMcopter_landing();
-			F_ERROR_F(((APMcopter_landing* )(*pA))->APMcopter_landing::init(pAction));
-		}
-		else if (pAction->m_class == "HM_base")
-		{
-			*pA = new HM_base();
-			F_ERROR_F(((HM_base* )(*pA))->HM_base::init(pAction));
-		}
-		else if (pAction->m_class == "HM_follow")
-		{
-			*pA = new HM_follow();
-			F_ERROR_F(((HM_follow* )(*pA))->HM_follow::init(pAction));
-		}
-		else if (pAction->m_class == "APMrover_base")
-		{
-			*pA = new APMrover_base();
-			F_ERROR_F(((APMrover_base* )(*pA))->APMrover_base::init(pAction));
-		}
-		else if (pAction->m_class == "APMrover_follow")
-		{
-			*pA = new APMrover_follow();
-			F_ERROR_F(((APMrover_follow* )(*pA))->APMrover_follow::init(pAction));
-			m_pAA = *pA;
-		}
-		else
-		{
-			LOG(INFO)<<"Unknown action class"+pAction->m_class;
-		}
+		ADD_ACTION(RC_visualFollow);
+		ADD_ACTION(APMcopter_landing);
+		ADD_ACTION(HM_base);
+		ADD_ACTION(HM_follow);
+		ADD_ACTION(APMrover_base);
+		ADD_ACTION(APMrover_follow);
+
+		LOG(INFO)<<"Unknown action class"+pAction->m_class;
 	}
 
 	return true;
@@ -83,41 +56,18 @@ bool _AutoPilot::init(Kiss* pKiss)
 bool _AutoPilot::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	int i;
 	for(i=0;i<m_nAction;i++)
 	{
 		ActionBase* pA = m_pAction[i];
-
-		if (*pA->getClass() == "RC_visualFollow")
-		{
-			F_ERROR_F(((RC_visualFollow*)pA)->RC_visualFollow::link());
-		}
-		else if (*pA->getClass() == "APMcopter_landing")
-		{
-			F_ERROR_F(((APMcopter_landing*)pA)->APMcopter_landing::link());
-		}
-		else if (*pA->getClass() == "HM_base")
-		{
-			F_ERROR_F(((HM_base*)pA)->HM_base::link());
-		}
-		else if (*pA->getClass() == "HM_follow")
-		{
-			F_ERROR_F(((HM_follow*)pA)->HM_follow::link());
-		}
-		else if (*pA->getClass() == "APMrover_base")
-		{
-			F_ERROR_F(((APMrover_base*)pA)->APMrover_base::link());
-		}
-		else if (*pA->getClass() == "APMrover_follow")
-		{
-			F_ERROR_F(((APMrover_follow*)pA)->APMrover_follow::link());
-		}
+		F_ERROR_F(pA->link());
 	}
 
 	string iName="";
-	F_INFO(m_pKiss->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_Automaton", &iName));
+	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -145,14 +95,9 @@ void _AutoPilot::update(void)
 
 		//TODO:Execute actions based on Automaton State
 
-		int i;
-		if(*m_pAA->getClass() == "HM_follow")
+		if(m_pAA)
 		{
-			((HM_follow*)m_pAA)->HM_follow::update();
-		}
-		else if(*m_pAA->getClass() == "APMrover_follow")
-		{
-			((APMrover_follow*)m_pAA)->APMrover_follow::update();
+			m_pAA->update();
 		}
 
 		this->autoFPSto();
@@ -173,20 +118,7 @@ bool _AutoPilot::draw(Frame* pFrame, vInt4* pTextPos)
 	pTextPos->m_y += pTextPos->m_w;
 
 	CHECK_T(!m_pAA);
-
-	string* className = m_pAA->getClass();
-	if(*className == "VisualFollow")
-	{
-		((RC_visualFollow*)m_pAA)->draw(pFrame, pTextPos);
-	}
-	else if(*className == "HM_follow")
-	{
-		((HM_follow*)m_pAA)->draw(pFrame, pTextPos);
-	}
-	else if(*className == "APMrover_follow")
-	{
-		((APMrover_follow*)m_pAA)->draw(pFrame, pTextPos);
-	}
+	m_pAA->draw(pFrame, pTextPos);
 
 	return true;
 }

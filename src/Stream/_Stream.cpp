@@ -32,21 +32,20 @@ _Stream::~_Stream()
 	DEL(m_pHSVframe);
 }
 
-bool _Stream::init(Kiss* pKiss)
+bool _Stream::init(void* pKiss)
 {
-	if (this->_ThreadBase::init(pKiss)==false)
-		return false;
-
-	pKiss->m_pInst = this;
-	F_INFO(pKiss->v("bShowDepth", &m_showDepth));
-	F_INFO(pKiss->v("bGray", &m_bGray));
-	F_INFO(pKiss->v("bHSV", &m_bHSV));
+	CHECK_F(this->_ThreadBase::init(pKiss)==false);
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
+	F_INFO(pK->v("bShowDepth", &m_showDepth));
+	F_INFO(pK->v("bGray", &m_bGray));
+	F_INFO(pK->v("bHSV", &m_bHSV));
 
 	string camClass;
 	string camName;
 
-	F_FATAL_F(pKiss->v("input", &camName));
-	Kiss* pC = pKiss->o(camName);
+	F_FATAL_F(pK->v("input", &camName));
+	Kiss* pC = pK->o(camName);
 	F_FATAL_F(pC->v("class", &camClass));
 
 	if(camClass=="Camera")

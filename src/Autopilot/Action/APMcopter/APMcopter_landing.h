@@ -30,7 +30,7 @@ public:
 	APMcopter_landing();
 	~APMcopter_landing();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

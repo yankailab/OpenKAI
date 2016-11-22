@@ -17,7 +17,7 @@ public:
 	HM_follow();
 	~HM_follow();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);

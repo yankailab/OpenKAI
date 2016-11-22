@@ -10,6 +10,8 @@
 
 #include "common.h"
 #include "BASE.h"
+#include "../Script/Kiss.h"
+#include "../Stream/Frame.h"
 
 #define NUM_MUTEX 5
 
@@ -22,8 +24,8 @@ public:
 	_ThreadBase();
 	virtual ~_ThreadBase();
 
-	bool init(Kiss* pKiss);
-	bool link(Kiss* pKiss);
+	virtual bool init(void* pKiss);
+	virtual bool link(void);
 	void complete(void);
 	void waitForComplete(void);
 
@@ -39,6 +41,9 @@ public:
 	void setTargetFPS(double fps);
 	void autoFPSfrom(void);
 	void autoFPSto(void);
+
+	virtual bool start(void);
+	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
 
 public:
 	pthread_t m_threadID;

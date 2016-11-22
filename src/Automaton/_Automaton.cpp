@@ -15,7 +15,7 @@ _Automaton::_Automaton()
 	_ThreadBase();
 
 	m_nState = 0;
-	m_pMyState = NULL;
+//	m_pMyState = NULL;
 
 }
 
@@ -24,14 +24,14 @@ _Automaton::~_Automaton()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Automaton::init(Kiss* pKiss)
+bool _Automaton::init(void* pKiss)
 {
 	CHECK_F(this->_ThreadBase::init(pKiss)==false);
-
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	//create state instances
-	Kiss** pItr = pKiss->getChildItr();
+	Kiss** pItr = pK->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
@@ -45,23 +45,23 @@ bool _Automaton::init(Kiss* pKiss)
 		if (pState->m_class != "State")continue;
 		CHECK_F(m_nState >= N_STATE);
 
-		State** ppS = &m_pState[m_nState];
+//		State** ppS = &m_pState[m_nState];
 		m_nState++;
 
-		*ppS = new State();
-		F_ERROR_F((*ppS)->init(pState));
+//		*ppS = new State();
+//		F_ERROR_F((*ppS)->init(pState));
 	}
 
-	//link state instances
-	for(i=0;i<m_nState;i++)
-	{
-		F_ERROR_F(m_pState[i]->link(pKiss));
-	}
-
-	string startState = "";
-	F_FATAL_F(pKiss->v("startState", &startState));
-	m_pMyState = (State*)(pKiss->getChildInstByName(&startState));
-	NULL_F(m_pMyState);
+//	//link state instances
+//	for(i=0;i<m_nState;i++)
+//	{
+//		F_ERROR_F(m_pState[i]->link());
+//	}
+//
+//	string startState = "";
+//	F_FATAL_F(pK->v("startState", &startState));
+//	m_pMyState = (State*)(pK->getChildInstByName(&startState));
+//	NULL_F(m_pMyState);
 
 	return true;
 }
@@ -105,35 +105,34 @@ void _Automaton::update(void)
 
 void _Automaton::updateAll(void)
 {
-	State* pNext = m_pMyState->Transit();
-
-	NULL_(pNext);
-
-	m_pMyState = pNext;
+//	State* pNext = m_pMyState->Transit();
+//	NULL_(pNext);
+//
+//	m_pMyState = pNext;
 }
 
 bool _Automaton::setPtrByName(string name, int* ptr)
 {
-	NULL_F(ptr);
-	CHECK_F(name == "");
-
-	for (int i = 0; i < m_nState; i++)
-	{
-		m_pState[i]->setPtrByName(name, ptr);
-	}
+//	NULL_F(ptr);
+//	CHECK_F(name == "");
+//
+//	for (int i = 0; i < m_nState; i++)
+//	{
+//		m_pState[i]->setPtrByName(name, ptr);
+//	}
 
 	return true;
 }
 
 bool _Automaton::setPtrByName(string name, double* ptr)
 {
-	NULL_F(ptr);
-	CHECK_F(name == "");
-
-	for (int i = 0; i < m_nState; i++)
-	{
-		m_pState[i]->setPtrByName(name, ptr);
-	}
+//	NULL_F(ptr);
+//	CHECK_F(name == "");
+//
+//	for (int i = 0; i < m_nState; i++)
+//	{
+//		m_pState[i]->setPtrByName(name, ptr);
+//	}
 
 	return true;
 }
@@ -155,12 +154,12 @@ bool _Automaton::draw(Frame* pFrame, vInt4* pTextPos)
 
 	pTextPos->m_y += pTextPos->m_w;
 
-	putText(*pMat,
-			"Automaton State: " + m_pMyState->m_name,
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
+//	putText(*pMat,
+//			"Automaton State: " + m_pMyState->m_name,
+//			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+//			Scalar(0, 255, 0), 1);
+//
+//	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }

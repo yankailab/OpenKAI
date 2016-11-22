@@ -13,7 +13,7 @@
 #include "Action/RC/RC_base.h"
 #include "Action/RC/RC_visualFollow.h"
 
-
+#define ADD_ACTION(x) if(pAction->m_class==#x){*pA=new x();F_ERROR_F((*pA)->init(pAction));m_pAA=*pA;continue;}
 #define N_ACTION 32
 
 namespace kai
@@ -25,7 +25,7 @@ public:
 	_AutoPilot();
 	~_AutoPilot();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 
 	bool start(void);

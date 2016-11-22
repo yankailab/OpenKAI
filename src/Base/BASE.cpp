@@ -6,6 +6,7 @@
  */
 
 #include "BASE.h"
+#include "../Script/Kiss.h"
 
 namespace kai
 {
@@ -20,29 +21,43 @@ BASE::~BASE()
 	// TODO Auto-generated destructor stub
 }
 
-bool BASE::init(Kiss* pKiss)
+bool BASE::init(void* pKiss)
 {
-	if (!pKiss)
-		return false;
+	NULL_F(pKiss);
 
 	string name;
-	if(!pKiss->v("name",&name))return false;
-	if (name.empty())return false;
+	CHECK_F(!((Kiss*)pKiss)->v("name",&name));
+	CHECK_F(name.empty());
 
 	m_pKiss = pKiss;
 	return true;
 }
 
+bool BASE::link(void)
+{
+	return true;
+}
+
 string* BASE::getName(void)
 {
-	if(!m_pKiss)return NULL;
-	return &m_pKiss->m_name;
+	NULL_N(m_pKiss);
+	return &((Kiss*)m_pKiss)->m_name;
 }
 
 string* BASE::getClass(void)
 {
-	if(!m_pKiss)return NULL;
-	return &m_pKiss->m_class;
+	NULL_N(m_pKiss);
+	return &((Kiss*)m_pKiss)->m_class;
+}
+
+bool BASE::start(void)
+{
+	return true;
+}
+
+bool BASE::draw(Frame* pFrame, vInt4* pTextPos)
+{
+	return true;
 }
 
 

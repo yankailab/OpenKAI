@@ -22,17 +22,18 @@ HM_base::~HM_base()
 {
 }
 
-bool HM_base::init(Kiss* pKiss)
+bool HM_base::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
-	F_INFO(pKiss->v("maxSpeedT", &m_maxSpeedT));
-	F_INFO(pKiss->v("maxSpeedW", &m_maxSpeedW));
-	F_INFO(pKiss->v("bSpeaker", &m_bSpeaker));
-	F_INFO(pKiss->v("motorPwmL", &m_motorPwmL));
-	F_INFO(pKiss->v("motorPwmR", &m_motorPwmR));
-	F_INFO(pKiss->v("motorPwmW", &m_motorPwmW));
+	F_INFO(pK->v("maxSpeedT", &m_maxSpeedT));
+	F_INFO(pK->v("maxSpeedW", &m_maxSpeedW));
+	F_INFO(pK->v("bSpeaker", &m_bSpeaker));
+	F_INFO(pK->v("motorPwmL", &m_motorPwmL));
+	F_INFO(pK->v("motorPwmR", &m_motorPwmR));
+	F_INFO(pK->v("motorPwmW", &m_motorPwmW));
 
 	return true;
 }
@@ -40,10 +41,11 @@ bool HM_base::init(Kiss* pKiss)
 bool HM_base::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_INFO(m_pKiss->v("_Canbus", &iName));
-	m_pCAN = (_Canbus*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_Canbus", &iName));
+	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

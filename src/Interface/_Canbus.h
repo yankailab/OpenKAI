@@ -35,7 +35,7 @@ public:
 	_Canbus();
 	~_Canbus();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void close(void);
 	bool start(void);

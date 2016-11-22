@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Automaton/State.h"
 #include "../Stream/Frame.h"
 
 #define N_STATE 32
@@ -24,7 +23,7 @@ public:
 	_Automaton();
 	virtual ~_Automaton();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
 
@@ -39,8 +38,8 @@ public:
 	void updateAll(void);
 
 	int		m_nState;
-	State*	m_pState[N_STATE];
-	State*	m_pMyState;
+//	State*	m_pState[N_STATE];
+//	State*	m_pMyState;
 
 	//Thread
 	void update(void);

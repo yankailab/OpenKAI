@@ -15,16 +15,17 @@ APMcopter_base::~APMcopter_base()
 {
 }
 
-bool APMcopter_base::init(Kiss* pKiss)
+bool APMcopter_base::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	int i;
 	Kiss* pCC;
 	APMcopter_PID cPID;
 
-	pCC = pKiss->o("roll");
+	pCC = pK->o("roll");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -34,7 +35,7 @@ bool APMcopter_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
 	m_pidRoll = cPID;
 
-	pCC = pKiss->o("pitch");
+	pCC = pK->o("pitch");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -44,7 +45,7 @@ bool APMcopter_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
 	m_pidPitch = cPID;
 
-	pCC = pKiss->o("alt");
+	pCC = pK->o("alt");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -54,7 +55,7 @@ bool APMcopter_base::init(Kiss* pKiss)
 	F_ERROR_F(pCC->v("dT", &cPID.m_dT));
 	m_pidAlt = cPID;
 
-	pCC = pKiss->o("yaw");
+	pCC = pK->o("yaw");
 	CHECK_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
@@ -74,11 +75,12 @@ bool APMcopter_base::init(Kiss* pKiss)
 bool APMcopter_base::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
 
-	F_INFO(m_pKiss->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
+#include "../Script/Kiss.h"
 #include "../Stream/Frame.h"
 
 
@@ -59,7 +60,7 @@ public:
 	UI();
 	virtual ~UI();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	BUTTON* addBtn(void);

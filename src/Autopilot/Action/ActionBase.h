@@ -4,6 +4,7 @@
 
 #include "../../Base/common.h"
 #include "../../Base/BASE.h"
+#include "../../Stream/Frame.h"
 
 namespace kai
 {
@@ -14,9 +15,10 @@ public:
 	ActionBase();
 	~ActionBase();
 
-	bool init(Kiss* pKiss);
-	bool link(void);
-	void update(void);
+	virtual bool init(void* pKiss);
+	virtual bool link(void);
+	virtual void update(void);
+	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
 
 public:
 

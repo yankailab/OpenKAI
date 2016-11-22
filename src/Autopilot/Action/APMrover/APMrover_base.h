@@ -56,7 +56,7 @@ public:
 	APMrover_base();
 	~APMrover_base();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void sendHeartbeat(void);
 	void sendSteerThrust(void);

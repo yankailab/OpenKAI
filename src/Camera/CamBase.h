@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
+#include "../Script/Kiss.h"
 
 #define CAM_GENERAL 0
 #define CAM_ZED 1

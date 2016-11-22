@@ -1,32 +1,26 @@
 /*
  * Module.h
  *
- *  Created on: Nov 15, 2016
- *      Author: Kai Yan
+ *  Created on: Nov 22, 2016
+ *      Author: root
  */
 
 #ifndef OPENKAI_SRC_CONFIG_MODULE_H_
 #define OPENKAI_SRC_CONFIG_MODULE_H_
 
+#include "../Base/common.h"
+#include "../Base/BASE.h"
+#include "../Script/Kiss.h"
 #include "switch.h"
 
 #include "../Application/AppBase.h"
 #include "../Stream/Frame.h"
-
 #include "../Stream/FrameGroup.h"
 #include "../Camera/CamBase.h"
 #include "../Camera/Camera.h"
 #include "../Camera/ZED.h"
-
 #include "../Stream/_Stream.h"
 #include "../Navigation/_Universe.h"
-
-#include "../Automaton/ConditionBase.h"
-#include "../Automaton/ConditionII.h"
-#include "../Automaton/ConditionFF.h"
-#include "../Automaton/ConditionIC.h"
-#include "../Automaton/Transition.h"
-#include "../Automaton/State.h"
 #include "../Automaton/_Automaton.h"
 
 #include "../IO/FileIO.h"
@@ -69,8 +63,21 @@
 #endif
 
 
+#define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 
+namespace kai
+{
 
+class Module
+{
+public:
+	Module();
+	virtual ~Module();
+	BASE* createInstance(Kiss* pK);
+private:
+	template <typename T> BASE* createInst(Kiss* pKiss);
+};
 
+}
 
-#endif /* OPENKAI_SRC_BASE_MODULE_H_ */
+#endif

@@ -58,7 +58,7 @@ public:
 	APMcopter_base();
 	~APMcopter_base();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void sendHeartbeat(void);
 

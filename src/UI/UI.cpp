@@ -21,13 +21,13 @@ UI::~UI()
 	// TODO Auto-generated destructor stub
 }
 
-bool UI::init(Kiss* pKiss)
+bool UI::init(void* pKiss)
 {
-	if (this->BASE::init(pKiss)==false)
-		return false;
+	CHECK_F(this->BASE::init(pKiss)==false);
+	Kiss* pK = (Kiss*)pKiss;
 
 	//create buttons
-	Kiss** pItr = pKiss->getChildItr();
+	Kiss** pItr = pK->getChildItr();
 
 	int i = 0;
 	while (pItr[i])
@@ -63,7 +63,7 @@ bool UI::init(Kiss* pKiss)
 
 	}
 
-	pKiss->m_pInst = this;
+	pK->m_pInst = this;
 	return true;
 }
 

@@ -19,9 +19,10 @@ APMcopter_landing::~APMcopter_landing()
 {
 }
 
-bool APMcopter_landing::init(Kiss* pKiss)
+bool APMcopter_landing::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
+	Kiss* pK = (Kiss*)pKiss;
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;
@@ -30,11 +31,11 @@ bool APMcopter_landing::init(Kiss* pKiss)
 	m_landingTarget.m_ROIstarted = 0;
 	m_landingTarget.m_ROItimeLimit = 0;
 
-	F_INFO(pKiss->v("orientationX", &m_landingTarget.m_orientX));
-	F_INFO(pKiss->v("orientationY", &m_landingTarget.m_orientY));
-	F_INFO(pKiss->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
+	F_INFO(pK->v("orientationX", &m_landingTarget.m_orientX));
+	F_INFO(pK->v("orientationY", &m_landingTarget.m_orientY));
+	F_INFO(pK->v("roiTimeLimit", &m_landingTarget.m_ROItimeLimit));
 
-	Kiss* pCC = pKiss->o("AprilTags");
+	Kiss* pCC = pK->o("AprilTags");
 	if(pCC->empty())return false;
 
 	F_INFO(pCC->v("num", &m_numATagsLandingTarget));
@@ -46,7 +47,7 @@ bool APMcopter_landing::init(Kiss* pKiss)
 	//TODO: init APM_base
 
 
-	pKiss->m_pInst = this;
+	pK->m_pInst = this;
 
 	return true;
 }
@@ -54,14 +55,15 @@ bool APMcopter_landing::init(Kiss* pKiss)
 bool APMcopter_landing::link(void)
 {
 	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
 
-	F_INFO(m_pKiss->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("APMcopter_base", &iName));
+	m_pAPM = (APMcopter_base*) (pK->root()->getChildInstByName(&iName));
 
-	F_ERROR_F(m_pKiss->v("ROItracker", &iName));
-	m_pROITracker = (_ROITracker*) (m_pKiss->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("ROItracker", &iName));
+	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

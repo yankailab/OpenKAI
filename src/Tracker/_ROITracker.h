@@ -26,7 +26,7 @@ public:
 	_ROITracker();
 	virtual ~_ROITracker();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
 

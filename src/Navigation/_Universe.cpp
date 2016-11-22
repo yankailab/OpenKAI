@@ -29,14 +29,15 @@ _Universe::~_Universe()
 	// TODO Auto-generated destructor stub
 }
 
-bool _Universe::init(Kiss* pKiss)
+bool _Universe::init(void* pKiss)
 {
 	CHECK_F(this->_ThreadBase::init(pKiss) == false);
-	pKiss->m_pInst = this;
+	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
-	F_ERROR_F(pKiss->v("frameLifetime", &m_frameLifeTime));
-	F_ERROR_F(pKiss->v("probMin", &m_objProbMin));
-	F_ERROR_F(pKiss->v("posDisparity", &m_disparity));
+	F_ERROR_F(pK->v("frameLifetime", &m_frameLifeTime));
+	F_ERROR_F(pK->v("probMin", &m_objProbMin));
+	F_ERROR_F(pK->v("posDisparity", &m_disparity));
 
 	return true;
 }

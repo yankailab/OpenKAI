@@ -27,7 +27,7 @@ public:
 	_RC();
 	~_RC();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	bool open(void);
 	void close(void);

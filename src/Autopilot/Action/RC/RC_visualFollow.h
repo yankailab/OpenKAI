@@ -2,6 +2,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 
 #include "../../../Base/common.h"
+#include "../../../Script/Kiss.h"
 #include "../../../Navigation/_Universe.h"
 #include "../../../Algorithm/Filter.h"
 #include "../../../Stream/Frame.h"
@@ -25,7 +26,7 @@ public:
 	RC_visualFollow();
 	~RC_visualFollow();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
