@@ -40,7 +40,7 @@ public:
 	_DetectNet();
 	~_DetectNet();
 
-	bool init(Kiss* pKiss);
+	bool init(void* pKiss);
 	bool link(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 

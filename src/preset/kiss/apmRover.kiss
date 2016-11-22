@@ -5,7 +5,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
 }
 
 {
@@ -89,7 +89,7 @@
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
-	"className":"Human",
+	"className":"Person",
 }
 
 {
@@ -110,16 +110,16 @@
 {
 	"name":"APM_TX1",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":100,
 	"portName":"/dev/ttyS0",
-	"baudrate":921600,
+	"baudrate":115200,
 }
 
 {
 	"name":"APM_USB",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bInst":0,
 	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":57600,
@@ -141,7 +141,7 @@
 			"name":"APMbase",
 			"class":"APMrover_base",
 			"bInst":1,
-			"_Mavlink":"APM_USB",
+			"_Mavlink":"APM_TX1",
 			"maxThrust":2,
 			"maxSteer":10,
 			
