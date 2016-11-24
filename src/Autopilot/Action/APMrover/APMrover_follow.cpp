@@ -34,8 +34,8 @@ APMrover_follow::~APMrover_follow()
 
 bool APMrover_follow::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss)==false);
-	Kiss* pK = (Kiss*)pKiss;
+	CHECK_F(this->ActionBase::init(pKiss) == false);
+	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("targetX", &m_destX));
@@ -56,15 +56,12 @@ bool APMrover_follow::init(void* pKiss)
 
 bool APMrover_follow::link(void)
 {
-	NULL_F(m_pKiss);
-	Kiss* pK = (Kiss*)m_pKiss;
+	CHECK_F(this->ActionBase::link() == false);
+	Kiss* pK = (Kiss*) m_pKiss;
 	string iName = "";
 
 	F_INFO(pK->v("APMrover_base", &iName));
 	m_pAPM = (APMrover_base*) (pK->parent()->getChildInstByName(&iName));
-
-	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniv = (_Universe*) (pK->root()->getChildInstByName(&iName));
@@ -78,6 +75,7 @@ void APMrover_follow::update(void)
 
 	NULL_(m_pAPM);
 	NULL_(m_pUniv);
+	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	//get visual target and decide motion
 	m_pTarget = m_pUniv->getObjectByClass(m_targetClass);
@@ -94,17 +92,18 @@ void APMrover_follow::update(void)
 		m_pTargetArea->input(m_pTarget->m_bbox.area());
 
 		//forward or backward
-		int speed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
+		int speed = (m_destArea * m_pTarget->m_camSize.area()
+				- m_pTargetArea->v()) * m_speedP;
 
 		//steering
-		int dSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * (-m_steerP);
+		int dSteer = (m_destX * m_pTarget->m_camSize.m_x - m_pTargetX->v())
+				* (-m_steerP);
 
 		m_pAPM->m_steer = dSteer;
 	}
 
 	m_pAPM->sendHeartbeat();
 	m_pAPM->sendSteerThrust();
-
 
 }
 
@@ -114,7 +113,8 @@ bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
 	Mat* pMat = pFrame->getCMat();
 
 	putText(*pMat,
-			"APMrover: thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer),
+			"APMrover: thrust=" + i2str(m_pAPM->m_thrust) + ", steer="
+					+ i2str(m_pAPM->m_steer),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
@@ -140,9 +140,7 @@ bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
 	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
 	pTextPos->m_y += pTextPos->m_w;
 
-
 	return true;
 }
-
 
 }

@@ -24,7 +24,6 @@ public:
 
 private:
 	_Universe*	m_pUniv;
-	_Automaton* m_pAM;
 	HM_base* m_pHM;
 
 	//where target should be on cam coordinate

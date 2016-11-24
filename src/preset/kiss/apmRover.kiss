@@ -5,7 +5,7 @@
 	"bShowScreen":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
 }
 
 {
@@ -15,8 +15,8 @@
 	"bGray":0,
 	"bHSV":0,
 	"bShowDepth":0,
-	"_Automaton":"flight",
-	"input":"ZEDL",
+	"_Automaton":"APMstate",
+	"input":"Generic",
 		
 	{
 		"name":"ZEDL",
@@ -44,8 +44,8 @@
 		"class":"Camera",
 		"FPS":30,
 		"ID":0,
-		"width":640,
-		"height":480,
+		"width":1280,
+		"height":720,
 		"angleV":67.1,
 		"angleH":66.7,
 	}
@@ -82,7 +82,7 @@
 	"FPS":30,
 	"_Stream":"mainStream",
 	"_Universe":"Universe",
-	"_Automaton":"flight",
+	"_Automaton":"APMstate",
 	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.2,
 	"modelFile":"deploy.prototxt",
@@ -110,7 +110,7 @@
 {
 	"name":"APM_TX1",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bInst":0,
 	"FPS":100,
 	"portName":"/dev/ttyS0",
 	"baudrate":115200,
@@ -119,17 +119,31 @@
 {
 	"name":"APM_USB",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":100,
 	"portName":"/dev/ttyUSB0",
 	"baudrate":57600,
 }
 
+{
+	"name":"APMstate",
+	"class":"_Automaton",
+	"bInst":1,
+	"startState":"APM_STANDBY",
+
+	{
+		"state":"APM_STANDBY",
+	}
+
+	{
+		"state":"APM_CRUISE",
+	}
+}
 
 {
 	"name":"autopilot",
 	"class":"_AutoPilot",
-	"_Automaton":"HMauto",
+	"_Automaton":"APMstate",
 	"bInst":1,
 	"FPS":30,
 	"bMouse":1,
@@ -141,7 +155,8 @@
 			"name":"APMbase",
 			"class":"APMrover_base",
 			"bInst":1,
-			"_Mavlink":"APM_TX1",
+			"_Automaton":"APMstate",
+			"_Mavlink":"APM_USB",
 			"maxThrust":2,
 			"maxSteer":10,
 			
@@ -162,6 +177,8 @@
 			"name":"APMfollow",
 			"class":"APMrover_follow",
 			"bInst":1,
+			"_Automaton":"APMstate",
+			"activeState":"APM_CRUISE",
 			"APMrover_base":"APMbase",
 			"_Universe":"Universe",			
 			"targetX":0.5,

@@ -44,9 +44,6 @@ bool APMcopter_landing::init(void* pKiss)
 		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
 
-	//TODO: init APM_base
-
-
 	pK->m_pInst = this;
 
 	return true;
@@ -54,7 +51,7 @@ bool APMcopter_landing::init(void* pKiss)
 
 bool APMcopter_landing::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(this->ActionBase::link()==false);
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -73,6 +70,7 @@ void APMcopter_landing::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAPM);
+	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	landingAtAprilTags();
 

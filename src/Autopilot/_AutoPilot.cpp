@@ -7,8 +7,6 @@ _AutoPilot::_AutoPilot()
 {
 	m_pAM = NULL;
 	m_nAction = 0;
-	m_pAA = NULL;
-
 }
 
 _AutoPilot::~_AutoPilot()
@@ -93,11 +91,9 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
-		//TODO:Execute actions based on Automaton State
-
-		if(m_pAA)
+		for(int i=0;i<m_nAction;i++)
 		{
-			m_pAA->update();
+			m_pAction[i]->update();
 		}
 
 		this->autoFPSto();
@@ -117,22 +113,24 @@ bool _AutoPilot::draw(Frame* pFrame, vInt4* pTextPos)
 
 	pTextPos->m_y += pTextPos->m_w;
 
-	CHECK_T(!m_pAA);
-	m_pAA->draw(pFrame, pTextPos);
+	for(int i=0;i<m_nAction;i++)
+	{
+		m_pAction[i]->draw(pFrame, pTextPos);
+	}
 
 	return true;
 }
 
 void _AutoPilot::onMouse(MOUSE* pMouse)
 {
-	NULL_(m_pAA);
 	NULL_(pMouse);
-	CHECK_(*(m_pAA->getClass())!="RC_visualFollow");
 
-	string* className = m_pAA->getClass();
-	if(*className == "RC_visualFollow")
+	for(int i=0;i<m_nAction;i++)
 	{
-		((RC_visualFollow*)m_pAA)->onMouse(pMouse);
+		if(*m_pAction[i]->getClass()=="RC_visualFollow")
+		{
+			((RC_visualFollow*)m_pAction[i])->onMouse(pMouse);
+		}
 	}
 }
 

@@ -72,7 +72,7 @@ bool RC_visualFollow::init(void* pKiss)
 
 bool RC_visualFollow::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(this->ActionBase::link()==false);
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -95,6 +95,7 @@ void RC_visualFollow::update(void)
 
 	NULL_(m_pRC);
 	NULL_(m_pROITracker);
+	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	if (m_pROITracker->m_bTracking == false)
 	{

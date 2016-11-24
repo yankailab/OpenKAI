@@ -56,15 +56,12 @@ bool HM_follow::init(void* pKiss)
 
 bool HM_follow::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(this->ActionBase::link()==false);
 	Kiss* pK = (Kiss*)m_pKiss;
 	string iName = "";
 
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
-
-	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniv = (_Universe*) (pK->root()->getChildInstByName(&iName));
@@ -78,6 +75,7 @@ void HM_follow::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pUniv);
+	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	//get visual target and decide motion
 	m_pTarget = m_pUniv->getObjectByClass(m_targetClass);

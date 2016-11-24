@@ -32,7 +32,6 @@ public:
 private:
 	APMrover_base* m_pAPM;
 	_Universe*	m_pUniv;
-	_Automaton* m_pAM;
 
 	//where target should be on cam coordinate
 	double	m_destX;

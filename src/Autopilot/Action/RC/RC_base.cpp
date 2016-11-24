@@ -17,8 +17,6 @@ bool RC_base::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-
-	int i;
 	RC_PID cPID;
 	RC_CHANNEL RC;
 	Kiss* pCC;

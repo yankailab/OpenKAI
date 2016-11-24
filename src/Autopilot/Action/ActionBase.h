@@ -4,6 +4,7 @@
 
 #include "../../Base/common.h"
 #include "../../Base/BASE.h"
+#include "../../Automaton/_Automaton.h"
 #include "../../Stream/Frame.h"
 
 namespace kai
@@ -21,6 +22,8 @@ public:
 	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
 
 public:
+	_Automaton* m_pAM;
+	int	m_iActiveState;
 
 };
 

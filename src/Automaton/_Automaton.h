@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/Frame.h"
 
 #define N_STATE 32
 
@@ -26,28 +25,17 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-
-	bool checkDiagram(void);
-
-	bool setPtrByName(string name, int* ptr);
-	bool setPtrByName(string name, double* ptr);
-
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
+	int getStateIdx(string* pStateName);
+	int getCurrentStateIdx(void);
+	bool transit(string* pNextStateName);
+	bool transit(int nextStateIdx);
+
 public:
-	void updateAll(void);
-
 	int		m_nState;
-//	State*	m_pState[N_STATE];
-//	State*	m_pMyState;
-
-	//Thread
-	void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_Automaton *) This)->update();
-		return NULL;
-	}
+	int		m_iState;
+	string	m_pStateName[N_STATE];
 
 };
 

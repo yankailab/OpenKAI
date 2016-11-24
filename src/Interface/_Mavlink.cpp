@@ -58,7 +58,6 @@ bool _Mavlink::init(void* pKiss)
 bool _Mavlink::link(void)
 {
 	NULL_F(m_pKiss);
-	//TODO: link variables to Automaton
 
 	return true;
 }
