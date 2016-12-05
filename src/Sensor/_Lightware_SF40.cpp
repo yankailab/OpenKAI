@@ -84,7 +84,7 @@ bool _Lightware_SF40::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_ERROR_F(pK->v("_Universe", &iName));
+	F_INFO(pK->v("_Universe", &iName));
 	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
 	//TODO: link my variables to Automaton
@@ -196,20 +196,8 @@ void _Lightware_SF40::updateLidar(void)
     CHECK_(vResult.size()<1);
     double dist = atof(vResult.at(0).c_str());
 
-//    printf("angle:%f, dist:%f\n",angle,dist);
-
     int iAngle = (int)(angle/m_dAngle);
     m_pDist[iAngle] = dist;
-
-//    uint64_t timeNow = get_time_usec();
-//    static uint64_t timeLast = 0;
-//    if(iAngle==0)
-//    {
-//    	uint64_t dTime = timeNow - timeLast;
-//    	timeLast = timeNow;
-//    	printf("dTime:%d\n",dTime);
-//
-//    }
 
 }
 
@@ -241,7 +229,7 @@ void _Lightware_SF40::updatePosition(void)
 		if(dist < m_minDist)continue;
 		if(dist > m_maxDist)continue;
 
-		double angle = m_dAngle * i * DEG_RADIAN;
+		double angle = (m_dAngle * i + m_offsetAngle) * DEG_RADIAN;
 		pX += (dist * sin(angle));
 		pY += -(dist * cos(angle));
 		nV++;
@@ -252,6 +240,9 @@ void _Lightware_SF40::updatePosition(void)
 
 	m_pX->input(pX);
 	m_pY->input(pY);
+
+	//TODO: set new position when difference is bigger than a threshold
+
 }
 
 void _Lightware_SF40::reqMap(void)
@@ -292,7 +283,7 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 	for(int i=0; i<m_nDiv; i++)
 	{
 		double dist = m_pDist[i] * m_showScale;
-		double angle = m_dAngle * i * DEG_RADIAN;
+		double angle = (m_dAngle * i + m_offsetAngle) * DEG_RADIAN;
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));
 

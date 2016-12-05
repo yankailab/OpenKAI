@@ -8,23 +8,44 @@
 
 using namespace std;
 
-inline int constrain(int x, int l, int h)
+inline int constrain(int v, int a, int b)
 {
-	int y;
+	int min,max;
+	if(a<b)
+	{
+		min = a;
+		max = b;
+	}
+	else
+	{
+		max = a;
+		min = b;
+	}
 
-	if (x < l)y = l;
-	else y = x;
+	if (v>max)v = max;
+	else if (v<min)v = min;
 
-	if (y > h)return h;
-	else return y;
+	return v;
 }
 
-inline double confineVal(double val, double max, double min)
+inline double constrain(double v, double a, double b)
 {
-	if (val>max)val = max;
-	else if (val<min)val = min;
+	double min,max;
+	if(a<b)
+	{
+		min = a;
+		max = b;
+	}
+	else
+	{
+		max = a;
+		min = b;
+	}
 
-	return val;
+	if (v>max)v = max;
+	else if (v<min)v = min;
+
+	return v;
 }
 
 

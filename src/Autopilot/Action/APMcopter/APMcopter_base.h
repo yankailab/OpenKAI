@@ -17,6 +17,8 @@ struct APMcopter_PID
 	double m_Imax;
 	double m_D;
 	double m_dT;
+	double m_rate;
+	double m_lim;
 
 	void reset(void)
 	{
@@ -25,11 +27,14 @@ struct APMcopter_PID
 		m_Imax = 0;
 		m_D = 0;
 		m_dT = 0;
+		m_rate = 0;
+		m_lim = 100.0;
 	}
 };
 
 struct APMcopter_CTRL
 {
+	double m_v;
 	double m_pos;
 	double m_targetPos;
 
@@ -62,6 +67,8 @@ public:
 	bool link(void);
 	void sendHeartbeat(void);
 
+	void updateAttitude(void);
+
 public:
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
@@ -70,7 +77,12 @@ public:
 	APMcopter_PID m_pidRoll;
 	APMcopter_PID m_pidPitch;
 	APMcopter_PID m_pidYaw;
-	APMcopter_PID m_pidAlt;
+	APMcopter_PID m_pidThr;
+
+	APMcopter_CTRL m_ctrlRoll;
+	APMcopter_CTRL m_ctrlPitch;
+	APMcopter_CTRL m_ctrlYaw;
+	APMcopter_CTRL m_ctrlThr;
 
 };
 

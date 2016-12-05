@@ -83,6 +83,7 @@ void APMrover_follow::update(void)
 	if (m_pTarget == NULL)
 	{
 		//no target found, stop and standby
+		m_pAPM->m_steer = 0;
 		m_pAPM->m_thrust = 0;
 	}
 	else
@@ -100,6 +101,7 @@ void APMrover_follow::update(void)
 				* (-m_steerP);
 
 		m_pAPM->m_steer = dSteer;
+		m_pAPM->m_thrust = speed;
 	}
 
 	m_pAPM->sendHeartbeat();
@@ -127,16 +129,16 @@ bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
 	char strBuf[128];
 
 	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->current_messages.attitude.roll,
-			m_pAPM->m_pMavlink->current_messages.attitude.pitch,
-			m_pAPM->m_pMavlink->current_messages.attitude.yaw);
+			m_pAPM->m_pMavlink->m_msg.attitude.roll,
+			m_pAPM->m_pMavlink->m_msg.attitude.pitch,
+			m_pAPM->m_pMavlink->m_msg.attitude.yaw);
 	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
 	pTextPos->m_y += pTextPos->m_w;
 
 	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->current_messages.attitude.rollspeed,
-			m_pAPM->m_pMavlink->current_messages.attitude.pitchspeed,
-			m_pAPM->m_pMavlink->current_messages.attitude.yawspeed);
+			m_pAPM->m_pMavlink->m_msg.attitude.rollspeed,
+			m_pAPM->m_pMavlink->m_msg.attitude.pitchspeed,
+			m_pAPM->m_pMavlink->m_msg.attitude.yawspeed);
 	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
 	pTextPos->m_y += pTextPos->m_w;
 

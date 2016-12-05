@@ -38,6 +38,9 @@ public:
 	int 	m_nMouse;
 	BASE* 	m_pMouse[N_INST];
 
+	int		m_screenW;
+	int		m_screenH;
+
 };
 
 }

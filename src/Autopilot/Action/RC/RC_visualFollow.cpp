@@ -140,7 +140,7 @@ void RC_visualFollow::update(void)
 	m_roll.m_errInteg += m_roll.m_err;
 	pRCroll->m_pwm = pRCroll->m_pwmN + pidRoll->m_P * m_roll.m_err
 			+ pidRoll->m_D * (m_roll.m_err - m_roll.m_errOld) * ovDTime
-			+ confineVal(pidRoll->m_I * m_roll.m_errInteg, pidRoll->m_Imax,
+			+ constrain(pidRoll->m_I * m_roll.m_errInteg, pidRoll->m_Imax,
 					-pidRoll->m_Imax);
 	pRCroll->m_pwm = constrain(pRCroll->m_pwm, pRCroll->m_pwmL,
 			pRCroll->m_pwmH);
@@ -151,7 +151,7 @@ void RC_visualFollow::update(void)
 	m_pitch.m_errInteg += m_pitch.m_err;
 	pRCpitch->m_pwm = pRCpitch->m_pwmN + pidPitch->m_P * m_pitch.m_err
 			+ pidPitch->m_D * (m_pitch.m_err - m_pitch.m_errOld) * ovDTime
-			+ confineVal(pidPitch->m_I * m_pitch.m_errInteg, pidPitch->m_Imax,
+			+ constrain(pidPitch->m_I * m_pitch.m_errInteg, pidPitch->m_Imax,
 					-pidPitch->m_Imax);
 	pRCpitch->m_pwm = constrain(pRCpitch->m_pwm, pRCpitch->m_pwmL,
 			pRCpitch->m_pwmH);

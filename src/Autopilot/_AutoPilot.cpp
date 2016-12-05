@@ -38,12 +38,17 @@ bool _AutoPilot::init(void* pKiss)
 		ActionBase** pA = &m_pAction[m_nAction];
 		m_nAction++;
 
+		//Add action modules below
+
 		ADD_ACTION(RC_visualFollow);
 		ADD_ACTION(APMcopter_landing);
+		ADD_ACTION(APMcopter_guided);
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_follow);
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);
+
+		//Add action modules above
 
 		LOG(INFO)<<"Unknown action class"+pAction->m_class;
 	}

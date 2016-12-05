@@ -62,9 +62,9 @@ void HM_base::updateCAN(void)
 	m_ctrlB0 |= (m_motorPwmL<0)?(1 << 5):0;
 	m_ctrlB0 |= (m_motorPwmW<0)?(1 << 6):0;
 
-	uint16_t motorPwmL = abs(confineVal(m_motorPwmL, m_maxSpeedT, -m_maxSpeedT));
-	uint16_t motorPwmR = abs(confineVal(m_motorPwmR, m_maxSpeedT, -m_maxSpeedT));
-	uint16_t motorPwmW = abs(confineVal(m_motorPwmW, m_maxSpeedW, -m_maxSpeedW));
+	uint16_t motorPwmL = abs(constrain(m_motorPwmL, m_maxSpeedT, -m_maxSpeedT));
+	uint16_t motorPwmR = abs(constrain(m_motorPwmR, m_maxSpeedT, -m_maxSpeedT));
+	uint16_t motorPwmW = abs(constrain(m_motorPwmW, m_maxSpeedW, -m_maxSpeedW));
 
 	m_ctrlB1 = 0;
 	m_ctrlB1 |= 1;						//tracktion motor relay

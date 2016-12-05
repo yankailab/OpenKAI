@@ -1,0 +1,128 @@
+
+{
+	"name":"APP",
+	"class":"General",
+	"appName":"OpenKAI",
+	"bShowScreen":1,
+	"bFullScreen":0,
+	"screenW":1280,
+	"screenH":720,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+}
+
+{
+	"name":"APM",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":100,
+	"portName":"/dev/ttyS0",
+	"baudrate":921600,
+	"_Automaton":"flight",
+}
+
+{
+	"name":"SF40",
+	"class":"_Lightware_SF40",
+	"bInst":1,
+	"FPS":300,
+	"portName":"/dev/ttyUSB0",
+	"baudrate":115200,
+	"_Automaton":"APMstate",
+	"_Universe":"Universe",
+	"nDiv":60,
+	"offsetAngle":-90.0,
+	"minDist":0.1,
+	"maxDist":10.0,
+	"mwlX":3,
+	"mwlY":3,
+	"showScale":100.0,
+}
+
+{
+	"name":"APMstate",
+	"class":"_Automaton",
+	"bInst":1,
+	"startState":"APM_STANDBY",
+
+	{
+		"state":"APM_STANDBY",
+	}
+
+	{
+		"state":"APM_POSHOLD",
+	}
+}
+
+
+{
+	"name":"APMpilot",
+	"class":"_AutoPilot",
+	"_Automaton":"APMstate",
+	"bInst":0,
+	"FPS":30,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"APMbase",
+			"class":"APMcopter_base",
+			"bInst":1,
+			"_Automaton":"APMstate",
+			"_Mavlink":"APM",
+			
+			{
+				"name":"roll",
+				"P":0.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":0.0,
+				"rate":0.0,
+				"lim":30.0,
+			}
+	
+			{
+				"name":"pitch",
+				"P":0.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":0.0,
+				"rate":0.0,
+				"lim":30.0,
+			}
+
+			{
+				"name":"thr",
+				"P":0.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":0.0,
+				"lim":100.0,
+			}
+
+			{
+				"name":"yaw",
+				"P":0.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":0.0,
+				"lim":360.0,
+			}
+		}
+
+		{
+			"name":"APMguided",
+			"class":"APMcopter_guided",
+			"bInst":1,
+			"_Automaton":"APMstate",
+			"activeState":"APM_POSHOLD",
+			"APMcopter_base":"APMbase",
+		}
+	}
+}
+

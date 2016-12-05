@@ -4,6 +4,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../include/mavlink/common/mavlink.h"
+#include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/SerialPort.h"
 #include "../Stream/Frame.h"
 
@@ -149,6 +150,7 @@ public:
 	void sendHeartbeat(void);
 
 	//Commands
+	void set_attitude_target(float* pAttitude, float* pRate, float thrust, uint8_t mask);
 	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
 	void command_long_doSetMode(int mode);
 	void command_long_doSetPositionYawThrust(float steer, float thrust);
@@ -178,9 +180,9 @@ public:
 	int m_type;
 	int m_targetComponentID;
 
-	Mavlink_Messages current_messages;
-	mavlink_set_position_target_local_ned_t initial_position;
-	mavlink_status_t last_status;
+	Mavlink_Messages m_msg;
+	mavlink_set_position_target_local_ned_t m_initPos;
+	mavlink_status_t m_status;
 
 
 

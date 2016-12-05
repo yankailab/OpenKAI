@@ -22,6 +22,9 @@ General::General()
 	m_nMouse = 0;
 	m_pFrame = NULL;
 
+	m_screenW = 1280;
+	m_screenH = 720;
+
 }
 
 General::~General()
@@ -41,6 +44,8 @@ bool General::start(Kiss* pKiss)
 	F_INFO(pApp->v("bShowScreen", &m_bShowScreen));
 	F_INFO(pApp->v("bFullScreen", &m_bFullScreen));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
+	F_INFO(pApp->v("screenW", &m_screenW));
+	F_INFO(pApp->v("screenH", &m_screenH));
 
 	//create instances
 	F_FATAL_F(createAllInst(pKiss));
@@ -103,7 +108,7 @@ void General::draw(void)
 {
 	NULL_(m_pFrame);
 
-	m_pFrame->allocate(1280,1280);
+	m_pFrame->allocate(m_screenW, m_screenH);
 
 	vInt4 textPos;
 	textPos.m_x = 15;
