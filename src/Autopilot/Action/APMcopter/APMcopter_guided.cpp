@@ -73,8 +73,9 @@ void APMcopter_guided::updateAttitude(void)
 	v = m_pSF40->m_pX->v();
 
 	pCtrl->m_errOld = pCtrl->m_err;
-	pCtrl->m_pos = v + (v-pCtrl->m_pos)*pPID->m_dT;
-	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_pos;
+	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
+	pCtrl->m_pos = v;
+	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
 	pCtrl->m_errInteg += pCtrl->m_err;
 	pCtrl->m_v = pPID->m_P * pCtrl->m_err
 						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)
@@ -86,8 +87,9 @@ void APMcopter_guided::updateAttitude(void)
 	v = m_pSF40->m_pY->v();
 
 	pCtrl->m_errOld = pCtrl->m_err;
-	pCtrl->m_pos = v + (v-pCtrl->m_pos)*pPID->m_dT;
-	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_pos;
+	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
+	pCtrl->m_pos = v;
+	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
 	pCtrl->m_errInteg += pCtrl->m_err;
 	pCtrl->m_v = pPID->m_P * pCtrl->m_err
 						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)

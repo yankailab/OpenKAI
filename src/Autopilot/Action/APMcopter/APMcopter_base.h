@@ -36,6 +36,7 @@ struct APMcopter_CTRL
 {
 	double m_v;
 	double m_pos;
+	double m_predPos;
 	double m_targetPos;
 
 	double m_err;
@@ -53,6 +54,7 @@ struct APMcopter_CTRL
 	{
 		resetErr();
 		m_pos = 0;
+		m_predPos = 0;
 		m_targetPos = 0;
 	}
 };
