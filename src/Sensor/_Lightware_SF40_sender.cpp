@@ -20,7 +20,6 @@ _Lightware_SF40_sender::~_Lightware_SF40_sender()
 bool _Lightware_SF40_sender::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-//	pKiss->m_pInst = this;
 
 	return true;
 }

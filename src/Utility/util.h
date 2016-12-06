@@ -58,83 +58,67 @@ inline uint64_t get_time_usec()
 	return time;
 }
 
-/*
-inline int32_t confineVal(int32_t val, int32_t max, int32_t min)
+union QBYTE
 {
-	if(val>max)val=max;
-	else if(val<min)val=min;
+    uint32_t m_uint32;
+    uint8_t  m_uint8[4];
+};
 
-	return val;
+inline uint32_t makeUINT32(uint8_t* pBuf)
+{
+	QBYTE n;
+	n.m_uint8[0] = pBuf[0];
+	n.m_uint8[1] = pBuf[1];
+	n.m_uint8[2] = pBuf[2];
+	n.m_uint8[3] = pBuf[3];
+	return n.m_uint32;
 }
 
-inline int32_t makeLong(char* buf)
+union OBYTE
 {
-	D_WORD num;
-	num.bytes[0] = buf[0];
-	num.bytes[1] = buf[1];
-	num.bytes[2] = buf[2];
-	num.bytes[3] = buf[3];
-	return num.val;
+    uint64_t m_uint32;
+    uint8_t  m_uint8[8];
+    double	 m_double;
+};
+
+inline double makeDouble(uint8_t* pBuf)
+{
+	OBYTE n;
+	n.m_uint8[0] = pBuf[0];
+	n.m_uint8[1] = pBuf[1];
+	n.m_uint8[2] = pBuf[2];
+	n.m_uint8[3] = pBuf[3];
+	n.m_uint8[4] = pBuf[4];
+	n.m_uint8[5] = pBuf[5];
+	n.m_uint8[6] = pBuf[6];
+	n.m_uint8[7] = pBuf[7];
+	return n.m_double;
 }
 
-inline double makeDouble(char* buf)
+inline void copyByte(uint32_t v, uint8_t* pBuf)
 {
-	Q_WORD num;
-	num.bytes[0] = buf[0];
-	num.bytes[1] = buf[1];
-	num.bytes[2] = buf[2];
-	num.bytes[3] = buf[3];
-	num.bytes[4] = buf[4];
-	num.bytes[5] = buf[5];
-	num.bytes[6] = buf[6];
-	num.bytes[7] = buf[7];
-	return num.val;
+	QBYTE n;
+	n.m_uint32 = v;
+	pBuf[0] = n.m_uint8[0];
+	pBuf[1] = n.m_uint8[1];
+	pBuf[2] = n.m_uint8[2];
+	pBuf[3] = n.m_uint8[3];
 }
 
-inline void copyByte(char* pBuf, D_WORD val)
+inline void copyByte(double v, uint8_t* pBuf)
 {
-	pBuf[0] = val.bytes[0];
-	pBuf[1] = val.bytes[1];
-	pBuf[2] = val.bytes[2];
-	pBuf[3] = val.bytes[3];
+	OBYTE n;
+	n.m_double = v;
+	pBuf[0] = n.m_uint8[0];
+	pBuf[1] = n.m_uint8[1];
+	pBuf[2] = n.m_uint8[2];
+	pBuf[3] = n.m_uint8[3];
+	pBuf[4] = n.m_uint8[4];
+	pBuf[5] = n.m_uint8[5];
+	pBuf[6] = n.m_uint8[6];
+	pBuf[7] = n.m_uint8[7];
 }
 
-inline void copyByte(char* pBuf, Q_WORD val)
-{
-	pBuf[0] = val.bytes[0];
-	pBuf[1] = val.bytes[1];
-	pBuf[2] = val.bytes[2];
-	pBuf[3] = val.bytes[3];
-	pBuf[4] = val.bytes[4];
-	pBuf[5] = val.bytes[5];
-	pBuf[6] = val.bytes[6];
-	pBuf[7] = val.bytes[7];
-}
-
-inline void copyByte(char* pBuf, int32_t num)
-{
-	D_WORD val;
-	val.val = num;
-	pBuf[0] = val.bytes[0];
-	pBuf[1] = val.bytes[1];
-	pBuf[2] = val.bytes[2];
-	pBuf[3] = val.bytes[3];
-}
-
-inline void copyByte(char* pBuf, double num)
-{
-	Q_WORD val;
-	val.val = num;
-	pBuf[0] = val.bytes[0];
-	pBuf[1] = val.bytes[1];
-	pBuf[2] = val.bytes[2];
-	pBuf[3] = val.bytes[3];
-	pBuf[4] = val.bytes[4];
-	pBuf[5] = val.bytes[5];
-	pBuf[6] = val.bytes[6];
-	pBuf[7] = val.bytes[7];
-}
-*/
 inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
 {
     if( pString == NULL )return NULL;
