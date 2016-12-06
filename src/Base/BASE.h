@@ -10,6 +10,7 @@
 
 #include "common.h"
 #include "../Stream/Frame.h"
+#include "Message.h"
 
 using namespace std;
 

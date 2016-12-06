@@ -317,7 +317,7 @@ void _Mavlink::update(void)
 		//Establish serial connection
 		if (m_sportName == "")
 		{
-			this->sleepThread(1, 0);
+			this->sleepThread(USEC_1SEC);
 			continue;
 		}
 
@@ -330,7 +330,7 @@ void _Mavlink::update(void)
 			}
 			else
 			{
-				this->sleepThread(1, 0);
+				this->sleepThread(USEC_1SEC);
 				continue;
 			}
 
@@ -338,7 +338,7 @@ void _Mavlink::update(void)
 			{
 				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
 				m_pSerialPort->Close();
-				this->sleepThread(1, 0);
+				this->sleepThread(USEC_1SEC);
 				continue;
 			}
 

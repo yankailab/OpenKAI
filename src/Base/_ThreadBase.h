@@ -13,7 +13,6 @@
 #include "../Script/Kiss.h"
 #include "../Stream/Frame.h"
 
-#define NUM_MUTEX 5
 
 namespace kai
 {
@@ -29,16 +28,12 @@ public:
 	void complete(void);
 	void waitForComplete(void);
 
-	void sleepThread(int32_t sec, int32_t nsec);
+	void sleepThread(int64_t usec);
 	void wakeupThread(void);
 	void updateTime(void);
-	bool mutexTrylock(int mutex);
-	void mutexLock(int mutex);
-	void mutexUnlock(int mutex);
 
 	double getFrameRate(void);
-
-	void setTargetFPS(double fps);
+	void setTargetFPS(int fps);
 	void autoFPSfrom(void);
 	void autoFPSto(void);
 
@@ -49,19 +44,18 @@ public:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 
-	uint64_t m_timeStamp;
-	double m_dTime;
-	double m_dTimeAvr;
+	int64_t m_timeStamp;
+	int64_t m_dTime;
+	int64_t m_dTimeAvr;
 
 	pthread_mutex_t m_wakeupMutex;
 	pthread_cond_t m_wakeupSignal;
-	pthread_mutex_t m_mutex[NUM_MUTEX];
 
-	double m_defaultFPS;
-	double m_targetFPS;
-	double m_targetFrameTime;
-	double m_timeFrom;
-	double m_timeTo;
+	int64_t m_defaultFPS;
+	int64_t m_targetFPS;
+	int64_t m_targetFrameTime;
+	int64_t m_timeFrom;
+	int64_t m_timeTo;
 
 };
 

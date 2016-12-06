@@ -87,10 +87,6 @@ bool _Lightware_SF40::link(void)
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
-	//TODO: link my variables to Automaton
-
-	printf("_Lightware_SF40 link complete\n");
-
 	return true;
 }
 
@@ -116,7 +112,7 @@ void _Lightware_SF40::update(void)
 	{
 		if (m_sportName == "")
 		{
-			this->sleepThread(1, 0);
+			this->sleepThread(USEC_1SEC);
 			continue;
 		}
 
@@ -128,7 +124,7 @@ void _Lightware_SF40::update(void)
 			}
 			else
 			{
-				this->sleepThread(1, 0);
+				this->sleepThread(USEC_1SEC);
 				continue;
 			}
 
@@ -136,7 +132,7 @@ void _Lightware_SF40::update(void)
 			{
 				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
 				m_pSerialPort->Close();
-				this->sleepThread(1, 0);
+				this->sleepThread(USEC_1SEC);
 				continue;
 			}
 

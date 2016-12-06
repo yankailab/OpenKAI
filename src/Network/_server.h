@@ -5,36 +5,50 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_SERVERE_H_
-#define SRC_NETWORK_SERVERE_H_
+#ifndef SRC_NETWORK_SERVER_H_
+#define SRC_NETWORK_SERVER_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
-#include "NetworkBase.h"
+#include "_peer.h"
 
+#define N_PEER 2
 
 namespace kai
 {
 
-class _server: public _ThreadBase, public NetworkBase
+class _server: public _ThreadBase
 {
 public:
 	_server();
 	virtual ~_server();
 
 	bool init(void* pKiss);
+	bool link(void);
 	bool start(void);
+	bool draw(Frame* pFrame, vInt4* pTextPos);
+
+	bool socketHandler(void);
 
 private:
+	int getFreePeer(void);
 	void update(void);
-	static void* getUpdateThread(void* This) {
+	static void* getUpdateThread(void* This)
+	{
 		((_server*) This)->update();
 		return NULL;
 	}
 
 public:
-	uint64_t m_frameID;
+	uint16_t	m_listenPort;
+	int			m_nListen;
+	string		m_strStatus;
+
+	int m_socket;
+	struct sockaddr_in m_serverAddr;
+
+	_peer* m_ppPeer[N_PEER];
 
 };
 

@@ -52,6 +52,9 @@
 #include "../Autopilot/Action/RC/RC_visualFollow.h"
 #include "../Autopilot/_AutoPilot.h"
 
+#include "../Network/_server.h"
+#include "../Network/_peer.h"
+
 #ifdef USE_SSD
 #include "../AI/_SSD.h"
 #endif

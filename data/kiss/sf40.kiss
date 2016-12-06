@@ -12,6 +12,26 @@
 }
 
 {
+	"name":"Client",
+	"class":"_peer",
+	"bInst":1,
+	"FPS":1,
+	"addr":"127.0.0.1",
+	"port":19849,
+	"timeoutSec":10,
+}
+
+{
+	"name":"Server",
+	"class":"_server",
+	"bInst":1,
+	"FPS":1,
+	"listenPort":19849,
+	"nlisten":10,
+	"timeoutSec":10,	
+}
+
+{
 	"name":"APM",
 	"class":"_Mavlink",
 	"bInst":0,
@@ -42,7 +62,7 @@
 {
 	"name":"APMstate",
 	"class":"_Automaton",
-	"bInst":1,
+	"bInst":0,
 	"startState":"APM_STANDBY",
 
 	{

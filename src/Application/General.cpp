@@ -90,6 +90,8 @@ bool General::start(Kiss* pKiss)
 		}
 	}
 
+	exit(0);
+
 	for(i=0;i<m_nInst;i++)
 	{
 		((_ThreadBase*)m_pInst[i])->waitForComplete();
