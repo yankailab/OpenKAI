@@ -15,12 +15,11 @@
 
 #define DEG_AROUND 360.0
 
-namespace kai
-{
-
 using std::string;
 using namespace std;
-using namespace cv;
+
+namespace kai
+{
 
 class _Lightware_SF40_sender: public _ThreadBase
 {

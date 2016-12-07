@@ -1,4 +1,4 @@
-#include "_RC.h"
+#include "../Protocol/_RC.h"
 
 namespace kai
 {
@@ -6,10 +6,7 @@ _RC::_RC()
 {
 	_ThreadBase();
 
-	m_bConnected = false;
-	m_sportName = "";
 	m_pSerialPort = NULL;
-	m_baudRate = 115200;
 }
 
 _RC::~_RC()
@@ -23,8 +20,10 @@ bool _RC::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_ERROR_F(pK->v("portName", &m_sportName));
-	F_ERROR_F(pK->v("baudrate", &m_baudRate));
+	Kiss* pCC = pK->o("serialPort");
+	CHECK_F(pCC->empty());
+	m_pSerialPort = new SerialPort();
+	CHECK_F(m_pSerialPort->init(pCC));
 
 	return true;
 }
@@ -33,30 +32,6 @@ bool _RC::link(void)
 {
 	NULL_F(m_pKiss);
 
-	//TODO: link variables to Automaton
-
-	return true;
-}
-
-bool _RC::open(void)
-{
-	//Start Serial Port
-	m_pSerialPort = new SerialPort();
-	if (m_pSerialPort->Open((char*)m_sportName.c_str()) != true)
-	{
-		m_bConnected = false;
-		return false;
-	}
-
-	if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
-	{
-		printf("failure, could not configure port.\n");
-		return false;
-	}
-
-	m_recvMsg.m_cmd = 0;
-	m_bConnected = true;
-
 	return true;
 }
 
@@ -64,9 +39,8 @@ void _RC::close()
 {
 	if (m_pSerialPort)
 	{
-		m_pSerialPort->Close();
+		m_pSerialPort->close();
 		delete m_pSerialPort;
-		m_bConnected = false;
 	}
 	printf("Serial port closed.\n");
 }
@@ -76,10 +50,10 @@ void _RC::close()
 // ------------------------------------------------------------------------------
 bool _RC::readMessages()
 {
-	unsigned char	inByte;
+	uint8_t	inByte;
 	int		byteRead;
 
-	while ((byteRead = m_pSerialPort->Read((char*)&inByte,1)) > 0)
+	while ((byteRead = m_pSerialPort->read(&inByte,1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
@@ -119,7 +93,7 @@ bool _RC::readMessages()
 // ------------------------------------------------------------------------------
 void _RC::rc_overide(int numChannel, int* pChannels)
 {
-	if (!m_bConnected)return;
+	CHECK_(!m_pSerialPort->isOpen());
 
 	int len;
 	int pwm;
@@ -136,24 +110,21 @@ void _RC::rc_overide(int numChannel, int* pChannels)
 	}
 
 	len = 4 + numChannel * 2;
-
-	m_pSerialPort->Write((char*)m_pBuf, len);
+	m_pSerialPort->write(m_pBuf, len);
 
 }
 
 void _RC::controlMode(int mode)
 {
-	if (!m_bConnected)return;
+	CHECK_(!m_pSerialPort->isOpen());
 
 	m_pBuf[0] = 0xFE;//Mavlink begin
 	m_pBuf[1] = 1;
 	m_pBuf[2] = 1;
 	m_pBuf[3] = (unsigned char)mode;
 
-	m_pSerialPort->Write((char*)m_pBuf, 4);
+	m_pSerialPort->write(m_pBuf, 4);
 }
-
-
 
 bool _RC::start(void)
 {
@@ -174,13 +145,20 @@ bool _RC::start(void)
 
 void _RC::update(void)
 {
-
 	while (m_bThreadON)
 	{
+		if(!m_pSerialPort->isOpen())
+		{
+			if(!m_pSerialPort->open())
+			{
+				this->sleepThread(USEC_1SEC);
+				continue;
+			}
+			m_recvMsg.m_cmd = 0;
+		}
+
+
 		this->autoFPSfrom();
-
-		//TODO: Open
-
 /*
 		if (g_pVehicle->open((char*)g_serialPort.c_str()) != true)
 		{

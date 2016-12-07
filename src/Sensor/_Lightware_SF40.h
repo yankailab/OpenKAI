@@ -11,9 +11,9 @@
 #include "../Base/common.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../IO/SerialPort.h"
+#include "../IO/File.h"
 #include "../Navigation/_Universe.h"
 #include "../Algorithm/Filter.h"
-#include "../IO/FileIO.h"
 
 #define DEG_AROUND 360.0
 
@@ -53,33 +53,26 @@ private:
 	}
 
 public:
-	int		m_inputMode;
+	IO* m_pInput;
+	IO* m_pOutput;
 
 	_Lightware_SF40_sender* m_pSF40sender;
 	_Universe* m_pUniverse;
-	string m_sportName;
-	SerialPort* m_pSerialPort;
-	int m_baudRate;
 
-	double	m_offsetAngle;
-	int		m_nDiv;
-	double	m_dAngle;
-	double*	m_pDist;
-	double	m_minDist;
-	double	m_maxDist;
-	int		m_mwlX;
-	int		m_mwlY;
+	double m_offsetAngle;
+	int m_nDiv;
+	double m_dAngle;
+	double* m_pDist;
+	double m_minDist;
+	double m_maxDist;
+	int m_mwlX;
+	int m_mwlY;
 
 	Filter* m_pX;
 	Filter* m_pY;
 
-	string	m_strRecv;
-	double	m_showScale;
-
-	FileIO* m_pFileOut;
-	FileIO* m_pFileIn;
-
-
+	string m_strRecv;
+	double m_showScale;
 
 };
 

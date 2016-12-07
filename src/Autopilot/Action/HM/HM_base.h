@@ -2,7 +2,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HM_BASE_H_
 
 #include "../../../Base/common.h"
-#include "../../../Interface/_Canbus.h"
+#include "../../../Protocol/_Canbus.h"
 #include "../ActionBase.h"
 
 

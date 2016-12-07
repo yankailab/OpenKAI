@@ -29,7 +29,6 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-	bool open(void);
 	void close(void);
 	bool start(void);
 
@@ -42,13 +41,8 @@ public:
 	MESSAGE m_recvMsg;
 
 private:
-	bool m_bConnected;
-
-	string	m_sportName;
 	SerialPort* m_pSerialPort;
-	int m_baudRate;
-
-	char m_pBuf[256];
+	uint8_t m_pBuf[256];
 
 	void update(void);
 	static void* getUpdateThread(void* This)

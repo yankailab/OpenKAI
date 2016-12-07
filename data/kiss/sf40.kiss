@@ -8,13 +8,13 @@
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
 	"name":"Client",
 	"class":"_peer",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"addr":"127.0.0.1",
 	"port":19849,
@@ -24,7 +24,7 @@
 {
 	"name":"Server",
 	"class":"_server",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"listenPort":19849,
 	"nlisten":10,
@@ -44,14 +44,8 @@
 {
 	"name":"SF40",
 	"class":"_Lightware_SF40",
-	"bInst":0,
+	"bInst":1,
 	"FPS":300,
-	"inputMode":"file",
-	"fileIn":"output/_2016-12-07_Wed_13-37-16.sf40log",
-	"fileOut_":"output/",
-	"_peer":"Client",
-	"portName":"/dev/ttyUSB1",
-	"baudrate":115200,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
 	"nDiv":60,
@@ -61,6 +55,30 @@
 	"mwlX":3,
 	"mwlY":3,
 	"showScale":100.0,	
+	
+	{
+		"name":"input",
+		"class":"File",
+		"bInst":1,
+		"fileName":"output/sf40.txt",
+	}
+	
+	{
+		"name":"output",
+		"class":"File",
+		"bInst":0,
+		"fileName":"output/sf40.txt",
+	}
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":0,
+		"portName":"/dev/ttyUSB1",
+		"baud":115200,
+	}
+	
+
 }
 
 {

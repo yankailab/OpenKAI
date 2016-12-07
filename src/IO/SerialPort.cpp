@@ -1,81 +1,113 @@
 #include "SerialPort.h"
+#include "../Script/Kiss.h"
+
+namespace kai
+{
 
 SerialPort::SerialPort(void)
 {
-	m_bConnected = false;
+	IO();
 	m_fd = -1;
+	m_name = "";
+	m_type = serialport;
 
-	m_portName = "";
-	m_baudrate = 57600;
+	m_baud = 115200;
+	m_dataBits = 8;
+	m_stopBits = 1;
+	m_parity = false;
+	m_hardwareControl = false;
 
-	// Start mutex
-	if (pthread_mutex_init(&m_writeMutex, NULL) != 0)
-	{
-		printf("send mutex init failed\n");
-	}
 
-	if (pthread_mutex_init(&m_readMutex, NULL) != 0)
-	{
-		printf("receive mutex init failed\n");
-	}
-
-}
-
-bool SerialPort::IsConnected()
-{
-	//Simply return the connection status
-	return m_bConnected;
+	pthread_mutex_init(&m_mutexWrite, NULL);
+	pthread_mutex_init(&m_mutexRead, NULL);
 }
 
 SerialPort::~SerialPort()
 {
-	//Check if we are bConnected before trying to disconnect
-	if (m_bConnected)
-	{
-		//We're no longer bConnected
-		m_bConnected = false;
-		//Close the serial file descriptor
-		close(m_fd);
-	}
+	close();
 
-	// destroy mutex
-	pthread_mutex_destroy(&m_writeMutex);
-	pthread_mutex_destroy(&m_readMutex);
+	pthread_mutex_destroy(&m_mutexWrite);
+	pthread_mutex_destroy(&m_mutexRead);
 }
 
-bool SerialPort::Open(char *portName)
+bool SerialPort::init(void* pKiss)
 {
-	m_bConnected = false;
+	CHECK_F(!this->IO::init(pKiss));
+	Kiss* pK = (Kiss*) pKiss;
+	pK->m_pInst = this;
 
-	m_portName = portName;
-
-//	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
-	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-	if (m_fd == -1)
-	{
-		return false;
-	}
-
-	fcntl(m_fd, F_SETFL, 0);
-
-	m_bConnected = true;
+	F_INFO(pK->v("portName", &m_name));
+	F_INFO(pK->v("baud", &m_baud));
+	F_INFO(pK->v("dataBits", &m_dataBits));
+	F_INFO(pK->v("stopBits", &m_stopBits));
+	F_INFO(pK->v("parity", &m_parity));
+	F_INFO(pK->v("hardwareControl", &m_hardwareControl));
 
 	return true;
 }
 
-void SerialPort::Close(void)
+bool SerialPort::open(void)
 {
-	if (close(m_fd))
-	{
-		printf("WARNING: Error on port close (%i)\n");
-	}
+	CHECK_F(m_name.empty());
+
+//	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
+	m_fd = ::open(m_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+	CHECK_F(m_fd == -1);
+	fcntl(m_fd, F_SETFL, 0);
+
+	m_status = opening;
+	return setup();
 }
 
-bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
-		bool hardware_control)
+void SerialPort::close(void)
 {
-	m_baudrate = baud;
+	CHECK_(m_status!=opening);
 
+	::close(m_fd);
+	m_status = closed;
+}
+
+int SerialPort::read(uint8_t* pBuf, int nByte)
+{
+	int n;
+
+	pthread_mutex_lock(&m_mutexRead);
+	n = ::read(m_fd, pBuf, nByte);
+	pthread_mutex_unlock(&m_mutexRead);
+
+	return n;
+}
+
+bool SerialPort::write(uint8_t* pBuf, int nByte)
+{
+	int n;
+
+	pthread_mutex_lock(&m_mutexWrite);
+	n = ::write(m_fd, pBuf, nByte);
+	// Wait until all data has been written
+	tcdrain(m_fd);
+	pthread_mutex_unlock(&m_mutexWrite);
+
+	return (n==nByte);
+}
+
+bool SerialPort::writeLine(uint8_t* pBuf, int nByte)
+{
+	int n;
+	const char crlf[] = "\x0d\x0a";
+
+	pthread_mutex_lock(&m_mutexWrite);
+	n = ::write(m_fd, pBuf, nByte);
+	n += ::write(m_fd, crlf, 2);
+	// Wait until all data has been written
+	tcdrain(m_fd);
+	pthread_mutex_unlock(&m_mutexWrite);
+
+	return (n==nByte+2);
+}
+
+bool SerialPort::setup(void)
+{
 	// Check file descriptor
 	if (!isatty(m_fd))
 	{
@@ -135,7 +167,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 	// 8N1
 	/*	config.c_cflag &= ~CSTOPB;
 	 // no flow control
-	 config.c_cflag &= ~CRTSCTS;
+	 	config.c_cflag &= ~CRTSCTS;
 	 //    toptions.c_cflag |= CRTSCTS;
 	 */
 //	config.c_cflag |= CREAD | CLOCAL;  // turn on READ & ignore ctrl lines
@@ -149,14 +181,14 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 //	toptions.c_cc[VTIME] = 10;
 
 	// Apply baudrate
-	switch (baud)
+	switch (m_baud)
 	{
 	case 1200:
 		if (cfsetispeed(&config, B1200) < 0 || cfsetospeed(&config, B1200) < 0)
 		{
 			fprintf(stderr,
 					"\nERROR: Could not set desired baud rate of %d Baud\n",
-					baud);
+					m_baud);
 			return false;
 		}
 		break;
@@ -176,7 +208,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B38400) < 0
 				|| cfsetospeed(&config, B38400) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
 			return false;
 		}
 		break;
@@ -184,7 +216,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
 			return false;
 		}
 		break;
@@ -192,7 +224,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
 			return false;
 		}
 		break;
@@ -203,7 +235,7 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B460800) < 0
 				|| cfsetospeed(&config, B460800) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
 			return false;
 		}
 		break;
@@ -211,18 +243,18 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 		if (cfsetispeed(&config, B921600) < 0
 				|| cfsetospeed(&config, B921600) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", baud);
+			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
 			return false;
 		}
 		break;
 	default:
 		printf("ERROR: Desired baud rate %d could not be set, aborting.\n",
-				baud);
+				m_baud);
 		return false;
 		break;
 	}
 
-	// Finally, apply the configuration
+	//apply the configuration
 //	if (tcsetattr(m_fd, TCSANOW, &toptions) < 0)
 //  fcntl(m_fd, F_SETFL, FNDELAY);
 //	tcflush(m_fd, TCIOFLUSH);
@@ -235,29 +267,6 @@ bool SerialPort::Setup(int baud, int data_bits, int stop_bits, bool parity,
 
 	return true;
 }
-
-int SerialPort::Read(char *buffer, unsigned int nbChar)
-{
-	int n;
-
-	pthread_mutex_lock(&m_readMutex);
-
-	n = read(m_fd, buffer, nbChar);
-
-	pthread_mutex_unlock(&m_readMutex);
-
-	return n;
-}
-
-void SerialPort::Write(char *buffer, unsigned int nbChar)
-{
-	pthread_mutex_lock(&m_writeMutex);
-
-	write(m_fd, buffer, nbChar);
-	// Wait until all data has been written
-	tcdrain(m_fd);
-
-	pthread_mutex_unlock(&m_writeMutex);
 
 }
 

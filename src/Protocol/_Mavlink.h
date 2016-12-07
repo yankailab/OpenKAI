@@ -8,8 +8,6 @@
 #include "../IO/SerialPort.h"
 #include "../Stream/Frame.h"
 
-
-
 // ------------------------------------------------------------------------------
 //   Defines
 // ------------------------------------------------------------------------------
@@ -171,9 +169,7 @@ public:
 			mavlink_set_position_target_local_ned_t &sp);
 
 public:
-	string m_sportName;
 	SerialPort* m_pSerialPort;
-	int m_baudRate;
 
 	int m_systemID;
 	int m_componentID;
@@ -183,8 +179,6 @@ public:
 	Mavlink_Messages m_msg;
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
-
-
 
 	//Read Thread
 	void update(void);

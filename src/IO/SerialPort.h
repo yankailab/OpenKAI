@@ -2,17 +2,7 @@
 #define AI_IO_SERIALPORT_H_
 
 #include "../Base/common.h"
-
-#include <sys/ioctl.h>
-//#include <linux/serial.h>
-
-#include <cstdlib>
-#include <stdio.h>   // Standard input/output definitions
-#include <unistd.h>  // UNIX standard function definitions
-#include <fcntl.h>   // File control definitions
-#include <termios.h> // POSIX terminal control definitions
-#include <pthread.h> // This uses POSIX Threads
-#include <signal.h>
+#include "IO.h"
 
 // The following two non-standard baudrates should have been defined by the system
 // If not, just fallback to number
@@ -24,41 +14,45 @@
 #define B921600 921600
 #endif
 
-#define ARDUINO_WAIT_TIME 2000
-
 using namespace std;
 
-class SerialPort
+namespace kai
+{
+
+class SerialPort: public IO
 {
 public:
-	//Initialize Serial communication with the given COM port
 	SerialPort();
-
-	//Close the connection
-	//NOTA: for some reason you can't connect again before exiting
-	//the program and running it again
 	~SerialPort();
 
-	bool Open(char *portName);
-	bool Setup(int baud, int data_bits, int stop_bits, bool parity, bool hardware_control);
-	int  Read(char *buffer, unsigned int nbChar);
-	void Write(char *buffer, unsigned int nbChar);
-	void Close(void);
+	bool init(void* pKiss);
+	bool open(void);
+	void close(void);
 
-	//Check if we are actually connected
-	bool IsConnected();
+	int read(uint8_t* pBuf, int nByte);
+	bool write(uint8_t* pBuf, int nByte);
+	bool writeLine(uint8_t* pBuf, int nByte);
+
+private:
+	bool setup(void);
+//	m_baudRate, 8, 1, false, false
+//	bool Setup(int baud, int data_bits, int stop_bits, bool parity, bool hardware_control);
 
 private:
 	//Connection status
-	bool m_bConnected;
-	int  m_fd;
+	int m_fd;
+	string m_name;
+	int m_baud;
+	int m_dataBits;
+	int m_stopBits;
+	bool m_parity;
+	bool m_hardwareControl;
 
-	string m_portName;
-	int  m_baudrate;
-	pthread_mutex_t m_writeMutex;
-	pthread_mutex_t m_readMutex;
-
+	pthread_mutex_t m_mutexWrite;
+	pthread_mutex_t m_mutexRead;
 
 };
+
+}
 
 #endif

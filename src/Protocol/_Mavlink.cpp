@@ -1,5 +1,5 @@
-#include "../Utility/util.h"
 #include "_Mavlink.h"
+#include "../Utility/util.h"
 
 namespace kai
 {
@@ -8,9 +8,7 @@ _Mavlink::_Mavlink()
 {
 	_ThreadBase();
 
-	m_sportName = "";
 	m_pSerialPort = NULL;
-	m_baudRate = 115200;
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
@@ -22,7 +20,6 @@ _Mavlink::_Mavlink()
 	m_msg.attitude.pitchspeed = 0;
 	m_msg.attitude.rollspeed = 0;
 	m_msg.attitude.yawspeed = 0;
-
 }
 
 _Mavlink::~_Mavlink()
@@ -36,21 +33,19 @@ bool _Mavlink::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_ERROR_F(pK->v("portName", &m_sportName));
-	F_ERROR_F(pK->v("baudrate", &m_baudRate));
+	Kiss* pCC = pK->o("serialPort");
+	CHECK_F(pCC->empty());
+	m_pSerialPort = new SerialPort();
+	CHECK_F(m_pSerialPort->init(pCC));
 
+	//init param
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 	m_targetComponentID = 0;
-
 	m_msg.sysid = 0;
 	m_msg.compid = 0;
-
 	m_status.packet_rx_drop_count = 0;
-
-	//Start Serial Port
-	m_pSerialPort = new SerialPort();
 
 	return true;
 }
@@ -66,11 +61,10 @@ void _Mavlink::close()
 {
 	if (m_pSerialPort)
 	{
-		m_pSerialPort->Close();
+		m_pSerialPort->close();
 		delete m_pSerialPort;
 		m_pSerialPort = NULL;
 	}
-	printf("Serial port closed.\n");
 }
 
 void _Mavlink::handleMessages()
@@ -250,7 +244,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 	mavlink_status_t status;
 	uint8_t result;
 
-	while (m_pSerialPort->Read((char*) &cp, 1))
+	while (m_pSerialPort->read(&cp, 1))
 	{
 //		if (mavlink_parse_char(MAVLINK_COMM_0, cp, &message, &status))
 		result = mavlink_frame_char(MAVLINK_COMM_0, cp, &message, &status);
@@ -282,13 +276,11 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 
 int _Mavlink::writeMessage(mavlink_message_t message)
 {
-	char buf[300];
+	uint8_t buf[300];
 
 	// Translate message to buffer
-	unsigned int len = mavlink_msg_to_send_buffer((uint8_t*) buf, &message);
-
-	// Write buffer to serial port, locks port while writing
-	m_pSerialPort->Write(buf, len);
+	unsigned int len = mavlink_msg_to_send_buffer(buf, &message);
+	m_pSerialPort->write(buf, len);
 
 	return len;
 }
@@ -314,38 +306,16 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		//Establish serial connection
-		if (m_sportName == "")
+		if(!m_pSerialPort->isOpen())
 		{
-			this->sleepThread(USEC_1SEC);
-			continue;
-		}
-
-		//Try to open and setup the serial port
-		if (!m_pSerialPort->IsConnected())
-		{
-			if (m_pSerialPort->Open((char*) m_sportName.c_str()))
-			{
-				LOG(INFO)<< "Serial port: "+m_sportName+" connected";
-			}
-			else
+			if(!m_pSerialPort->open())
 			{
 				this->sleepThread(USEC_1SEC);
 				continue;
 			}
-
-			if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
-			{
-				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
-				m_pSerialPort->Close();
-				this->sleepThread(USEC_1SEC);
-				continue;
-			}
-
 			m_status.packet_rx_drop_count = 0;
 		}
 
-		//Regular update loop
 		this->autoFPSfrom();
 
 		//Handling incoming messages
@@ -491,7 +461,7 @@ bool _Mavlink::draw(Frame* pFrame, vInt4* pTextPos)
 	NULL_F(pFrame);
 	Mat* pMat = pFrame->getCMat();
 
-	if (m_pSerialPort->IsConnected())
+	if (m_pSerialPort->isOpen())
 	{
 		putText(*pMat, "Mavlink: Connected; FPS: " + i2str(getFrameRate()) + ", Mode: " + i2str(m_msg.heartbeat.custom_mode),
 				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,

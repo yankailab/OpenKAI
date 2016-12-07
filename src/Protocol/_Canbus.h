@@ -47,9 +47,7 @@ public:
 	MESSAGE m_recvMsg;
 
 private:
-	string	m_sportName;
 	SerialPort* m_pSerialPort;
-	int m_baudRate;
 
 	unsigned char m_pBuf[CAN_BUF];
 

@@ -23,11 +23,7 @@
 #include "../Navigation/_Universe.h"
 #include "../Automaton/_Automaton.h"
 
-#include "../IO/FileIO.h"
 #include "../IO/SerialPort.h"
-#include "../Interface/_Mavlink.h"
-#include "../Interface/_Canbus.h"
-#include "../Interface/_RC.h"
 #include "../UI/UI.h"
 
 #include "../Detector/DetectorBase.h"
@@ -51,9 +47,13 @@
 #include "../Autopilot/Action/RC/RC_base.h"
 #include "../Autopilot/Action/RC/RC_visualFollow.h"
 #include "../Autopilot/_AutoPilot.h"
+#include "../IO/File.h"
 
 #include "../Network/_server.h"
 #include "../Network/_peer.h"
+#include "../Protocol/_Canbus.h"
+#include "../Protocol/_Mavlink.h"
+#include "../Protocol/_RC.h"
 
 #ifdef USE_SSD
 #include "../AI/_SSD.h"

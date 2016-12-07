@@ -6,9 +6,7 @@ _Canbus::_Canbus()
 {
 	_ThreadBase();
 
-	m_sportName = "";
 	m_pSerialPort = NULL;
-	m_baudRate = 115200;
 }
 
 _Canbus::~_Canbus()
@@ -22,11 +20,11 @@ bool _Canbus::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_ERROR_F(pK->v("portName", &m_sportName));
-	F_ERROR_F(pK->v("baudrate", &m_baudRate));
+	Kiss* pCC = pK->o("serialPort");
+	CHECK_F(pCC->empty());
 
-	//Start Serial Port
 	m_pSerialPort = new SerialPort();
+	CHECK_F(m_pSerialPort->init(pCC));
 
 	return true;
 }
@@ -35,8 +33,6 @@ bool _Canbus::link(void)
 {
 	NULL_F(m_pKiss);
 
-	//TODO: link variables to Automaton
-
 	return true;
 }
 
@@ -44,10 +40,49 @@ void _Canbus::close()
 {
 	if (m_pSerialPort)
 	{
-		m_pSerialPort->Close();
+		m_pSerialPort->close();
 		delete m_pSerialPort;
 	}
 	printf("Serial port closed.\n");
+}
+
+bool _Canbus::start(void)
+{
+	//Start thread
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR)<< "Return code: "<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
+void _Canbus::update(void)
+{
+	while (m_bThreadON)
+	{
+		if(!m_pSerialPort->isOpen())
+		{
+			if(!m_pSerialPort->open())
+			{
+				this->sleepThread(USEC_1SEC);
+				continue;
+			}
+		}
+
+		//Regular update loop
+		this->autoFPSfrom();
+
+		//Handling incoming messages
+		recv();
+
+		this->autoFPSto();
+	}
+
 }
 
 bool _Canbus::recv()
@@ -55,7 +90,7 @@ bool _Canbus::recv()
 	unsigned char inByte;
 	int byteRead;
 
-	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)
+	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
 	{
 		printf("%s",&inByte);
 	}
@@ -64,7 +99,7 @@ bool _Canbus::recv()
 
 
 
-	while ((byteRead = m_pSerialPort->Read((char*) &inByte, 1)) > 0)
+	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
@@ -101,7 +136,7 @@ bool _Canbus::recv()
 void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 {
 	CHECK_(len+8 > CAN_BUF);
-	CHECK_(!m_pSerialPort->IsConnected());
+	CHECK_(!m_pSerialPort->isOpen());
 
 	//Link header
 	m_pBuf[0] = 0xFE; //Mavlink begin
@@ -126,76 +161,16 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 
 	//Payload to here
 
-	m_pSerialPort->Write((char*) m_pBuf, len + 8);
+	m_pSerialPort->write(m_pBuf, len + 8);
 }
 
-bool _Canbus::start(void)
-{
-	//Start thread
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR)<< "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
-}
-
-void _Canbus::update(void)
-{
-	while (m_bThreadON)
-	{
-		//Establish serial connection
-		if (m_sportName == "")
-		{
-			this->sleepThread(USEC_1SEC);
-			continue;
-		}
-
-		//Try to open and setup the serial port
-		if (!m_pSerialPort->IsConnected())
-		{
-			if (m_pSerialPort->Open((char*) m_sportName.c_str()))
-			{
-				LOG(INFO)<< "Serial port: "+m_sportName+" connected";
-			}
-			else
-			{
-				this->sleepThread(USEC_1SEC);
-				continue;
-			}
-
-			if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
-			{
-				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
-				m_pSerialPort->Close();
-				this->sleepThread(USEC_1SEC);
-				continue;
-			}
-
-		}
-
-		//Regular update loop
-		this->autoFPSfrom();
-
-		//Handling incoming messages
-		recv();
-
-		this->autoFPSto();
-	}
-
-}
 
 bool _Canbus::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
-
 	Mat* pMat = pFrame->getCMat();
 
-	if (m_pSerialPort->IsConnected())
+	if (m_pSerialPort->isOpen())
 	{
 		putText(*pMat, "CANBUS FPS: " + i2str(getFrameRate()),
 				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,

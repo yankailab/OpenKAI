@@ -2,7 +2,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_BASE_H_
 
 #include "../../../Base/common.h"
-#include "../../../Interface/_Mavlink.h"
+#include "../../../Protocol/_Mavlink.h"
 #include "../ActionBase.h"
 
 

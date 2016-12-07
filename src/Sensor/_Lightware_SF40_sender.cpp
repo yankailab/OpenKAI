@@ -11,6 +11,7 @@ _Lightware_SF40_sender::_Lightware_SF40_sender()
 	_ThreadBase();
 
 	m_pSerialPort = NULL;
+	m_dAngle = 1;
 }
 
 _Lightware_SF40_sender::~_Lightware_SF40_sender()
@@ -48,7 +49,7 @@ void _Lightware_SF40_sender::update(void)
 	while (m_bThreadON)
 	{
 		if (!m_pSerialPort)continue;
-		if (!m_pSerialPort->IsConnected())continue;
+		if (!m_pSerialPort->isOpen())continue;
 
 		//Regular update loop
 		this->autoFPSfrom();
@@ -67,7 +68,7 @@ void _Lightware_SF40_sender::LD(void)
 	for(double angle=0; angle<DEG_AROUND; angle+=m_dAngle)
 	{
 		sprintf(str, "?LD,%.1f\x0d\x0a", angle);
-		m_pSerialPort->Write(str, strlen(str));
+		m_pSerialPort->write((uint8_t*)str, strlen(str));
 	}
 
 }
@@ -76,7 +77,7 @@ void _Lightware_SF40_sender::Map(void)
 {
 	string TM = "?TM,360,0\x0d\x0a";
 
-	m_pSerialPort->Write((char*)TM.c_str(), TM.length());
+	m_pSerialPort->write((uint8_t*)TM.c_str(), TM.length());
 }
 
 
