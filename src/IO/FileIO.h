@@ -5,19 +5,33 @@
 
 using namespace std;
 
+namespace kai
+{
+
 class FileIO
 {
 private:
+	string m_name;
 	string m_buf;
-	ifstream m_file;
+	ifstream m_if;
+	ofstream m_of;
 
 public:
 	FileIO(void);
 	~FileIO(void);
 
-	bool open(string fileName);
-	string getContent(void);
+	string* readAll(string* pFileName);
 
+	bool in(string* pFileName);
+	string* readLine(void);
+
+	bool out(string* pFileName);
+	bool write(char* pBuf, int nByte);
+	bool CRLF(void);
+
+	void close(void);
 };
+
+}
 
 #endif

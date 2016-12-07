@@ -38,6 +38,7 @@ public:
 
 private:
 	void LD(void);
+	void Map(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)

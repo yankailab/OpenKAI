@@ -27,6 +27,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	void complete(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	bool socketHandler(void);

@@ -72,6 +72,14 @@ void _Lightware_SF40_sender::LD(void)
 
 }
 
+void _Lightware_SF40_sender::Map(void)
+{
+	string TM = "?TM,360,0\x0d\x0a";
+
+	m_pSerialPort->Write((char*)TM.c_str(), TM.length());
+}
+
+
 bool _Lightware_SF40_sender::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	return true;

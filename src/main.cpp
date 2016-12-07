@@ -7,14 +7,20 @@ int main(int argc, char* argv[])
 	printEnvironment();
 
 	//Load config
-	LOG(INFO)<<"Using config file: "<<argv[1];
+	LOG(INFO)<<"Using kiss file: "<<argv[1];
 	printf(argv[1]);
 	printf("\n");
-	F_FATAL_F(g_file.open(argv[1]));
-	string config = g_file.getContent();
+
+	string kissFile(argv[1]);
+	string* pKiss = g_file.readAll(&kissFile);
+	if(pKiss==NULL)
+	{
+		LOG(FATAL)<<"Kiss file not found";
+		return 1;
+	}
 
 	g_pKiss = new Kiss();
-	F_FATAL_F(g_pKiss->parse(&config));
+	F_FATAL_F(g_pKiss->parse(pKiss));
 
 	//Start Application
 	g_pGen = new General();

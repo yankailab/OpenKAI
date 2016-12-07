@@ -6,6 +6,7 @@
 
 namespace kai
 {
+
 _Lightware_SF40::_Lightware_SF40()
 {
 	_ThreadBase();
@@ -26,14 +27,16 @@ _Lightware_SF40::_Lightware_SF40()
 	m_strRecv = "";
 	m_pSF40sender = NULL;
 	m_pDist = NULL;
+	m_pX = NULL;
+	m_pY = NULL;
+
+	m_pFileOut = NULL;
+	m_pFileIn = NULL;
+	m_inputMode = SF40_UART;
 
 }
 
 _Lightware_SF40::~_Lightware_SF40()
-{
-}
-
-void _Lightware_SF40::close()
 {
 	if (m_pSerialPort)
 	{
@@ -41,7 +44,21 @@ void _Lightware_SF40::close()
 		delete m_pSerialPort;
 		m_pSerialPort = NULL;
 	}
-	printf("Serial port closed.\n");
+
+	if(m_pFileOut)
+	{
+		m_pFileOut->close();
+		delete m_pFileOut;
+	}
+
+	if(m_pFileIn)
+	{
+		m_pFileIn->close();
+		delete m_pFileIn;
+	}
+
+	DEL(m_pX);
+	DEL(m_pY);
 }
 
 bool _Lightware_SF40::init(void* pKiss)
@@ -50,6 +67,14 @@ bool _Lightware_SF40::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
+	string presetDir = "";
+	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
+
+	string inputMode = "uart";
+	string fileName = "";
+	F_INFO(pK->v("inputMode", &inputMode));
+
+	//common in all input modes
 	F_INFO(pK->v("offsetAngle", &m_offsetAngle));
 	F_INFO(pK->v("minDist", &m_minDist));
 	F_INFO(pK->v("maxDist", &m_maxDist));
@@ -59,10 +84,6 @@ bool _Lightware_SF40::init(void* pKiss)
     m_dAngle = DEG_AROUND / m_nDiv;
     m_pDist = new double[m_nDiv+1];
 
-	F_ERROR_F(pK->v("portName", &m_sportName));
-	F_ERROR_F(pK->v("baudrate", &m_baudRate));
-	m_pSerialPort = new SerialPort();
-
 	F_INFO(pK->v("mwlX", &m_mwlX));
 	F_INFO(pK->v("mwlY", &m_mwlY));
 	m_pX = new Filter();
@@ -70,10 +91,45 @@ bool _Lightware_SF40::init(void* pKiss)
 	m_pX->startMedian(m_mwlX);
 	m_pY->startMedian(m_mwlY);
 
-	m_pSF40sender = new _Lightware_SF40_sender();
-	m_pSF40sender->m_pSerialPort = m_pSerialPort;
-	m_pSF40sender->m_dAngle = m_dAngle;
-	CHECK_F(!m_pSF40sender->init(pKiss));
+	if(inputMode=="uart")
+	{
+		m_inputMode = SF40_UART;
+		F_ERROR_F(pK->v("portName", &m_sportName));
+		F_ERROR_F(pK->v("baudrate", &m_baudRate));
+		m_pSerialPort = new SerialPort();
+
+		m_pSF40sender = new _Lightware_SF40_sender();
+		m_pSF40sender->m_pSerialPort = m_pSerialPort;
+		m_pSF40sender->m_dAngle = m_dAngle;
+		CHECK_F(!m_pSF40sender->init(pKiss));
+	}
+	else if(inputMode=="file")
+	{
+		m_inputMode = SF40_FILE;
+
+		fileName = "";
+		F_ERROR_F(pK->v("fileIn", &fileName));
+		fileName = presetDir + fileName;
+		printf("SF40 input file: %s\n",fileName.c_str());
+
+		m_pFileIn = new FileIO();
+		F_ERROR_F(m_pFileIn->in(&fileName));
+	}
+
+	//log file output
+	fileName = "";
+	F_INFO(pK->v("fileOut", &fileName));
+	if(!fileName.empty())
+	{
+		char date[64];
+		time_t t = time(NULL);
+		strftime(date, sizeof(date), "_%Y-%m-%d_%a_%H-%M-%S.sf40raw", localtime(&t));
+		fileName = presetDir + fileName + date;
+
+		printf("SF40 output file: %s\n",fileName.c_str());
+		m_pFileOut = new FileIO();
+		F_ERROR_F(m_pFileOut->out(&fileName));
+	}
 
 	return true;
 }
@@ -92,7 +148,10 @@ bool _Lightware_SF40::link(void)
 
 bool _Lightware_SF40::start(void)
 {
-	CHECK_F(!m_pSF40sender->start());
+	if(m_inputMode==SF40_UART)
+	{
+		CHECK_F(!m_pSF40sender->start());
+	}
 
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -106,14 +165,14 @@ bool _Lightware_SF40::start(void)
 	return true;
 }
 
-void _Lightware_SF40::update(void)
+bool _Lightware_SF40::connect(void)
 {
-	while (m_bThreadON)
+	if(m_inputMode == SF40_UART)
 	{
 		if (m_sportName == "")
 		{
 			this->sleepThread(USEC_1SEC);
-			continue;
+			return false;
 		}
 
 		if (!m_pSerialPort->IsConnected())
@@ -125,7 +184,7 @@ void _Lightware_SF40::update(void)
 			else
 			{
 				this->sleepThread(USEC_1SEC);
-				continue;
+				return false;
 			}
 
 			if (!m_pSerialPort->Setup(m_baudRate, 8, 1, false, false))
@@ -133,10 +192,21 @@ void _Lightware_SF40::update(void)
 				LOG(INFO)<< "Serial port: "+m_sportName+" could not be configured";
 				m_pSerialPort->Close();
 				this->sleepThread(USEC_1SEC);
-				continue;
+				return false;
 			}
-
 		}
+
+		return true;
+	}
+
+	return true;
+}
+
+void _Lightware_SF40::update(void)
+{
+	while (m_bThreadON)
+	{
+		if(!connect())continue;
 
 		this->autoFPSfrom();
 
@@ -150,17 +220,22 @@ void _Lightware_SF40::update(void)
 
 void _Lightware_SF40::updateLidar(void)
 {
-	F_(read());
+	F_(readLine());
+
+	//output to file
+	if(m_pFileOut)
+	{
+		m_pFileOut->write((char*)m_strRecv.c_str(), m_strRecv.length());
+		m_pFileOut->CRLF();
+	}
 
 	string str;
     istringstream sStr;
-    string recv = m_strRecv;
-    m_strRecv.clear();
 
 	//separate the command part
     vector<string> vStr;
     vStr.clear();
-    sStr.str(recv);
+    sStr.str(m_strRecv);
     while (getline(sStr, str, ' '))
     {
         vStr.push_back(str);
@@ -195,19 +270,40 @@ void _Lightware_SF40::updateLidar(void)
     int iAngle = (int)(angle/m_dAngle);
     m_pDist[iAngle] = dist;
 
+    m_strRecv.clear();
 }
 
-bool _Lightware_SF40::read(void)
+bool _Lightware_SF40::readLine(void)
 {
-	char buf;
-
-	while (m_pSerialPort->Read(&buf, 1))
+	if(m_inputMode == SF40_UART)
 	{
-		if(buf==0)continue;
-		if(buf==CR)continue;
-		if(buf==LF)return true;
+		char buf;
+		while (m_pSerialPort->Read(&buf, 1))
+		{
+			if(buf==0)continue;
+			if(buf==CR)continue;
+			if(buf==LF)return true;
 
-		m_strRecv += buf;
+			m_strRecv += buf;
+		}
+
+		return false;
+	}
+	else if(m_inputMode == SF40_FILE)
+	{
+		string* pLine = m_pFileIn->readLine();
+		NULL_F(pLine);
+
+		m_strRecv = *pLine;
+		if(m_strRecv.at(m_strRecv.length()-1)==LF)
+		{
+			m_strRecv.erase(m_strRecv.length()-1,1);
+		}
+		if(m_strRecv.at(m_strRecv.length()-1)==CR)
+		{
+			m_strRecv.erase(m_strRecv.length()-1,1);
+		}
+		return true;
 	}
 
 	return false;
@@ -239,13 +335,6 @@ void _Lightware_SF40::updatePosition(void)
 
 	//TODO: set new position when difference is bigger than a threshold
 
-}
-
-void _Lightware_SF40::reqMap(void)
-{
-	string TM = "?TM,360,0\x0d\x0a";
-
-	m_pSerialPort->Write((char*)TM.c_str(), TM.length());
 }
 
 bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)

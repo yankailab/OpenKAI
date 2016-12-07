@@ -25,8 +25,10 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
-	void complete(void);
+	virtual bool start(void);
+	virtual void complete(void);
 	void waitForComplete(void);
+	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	void sleepThread(int64_t usec);
 	void wakeupThread(void);
@@ -36,9 +38,6 @@ public:
 	void setTargetFPS(int fps);
 	void autoFPSfrom(void);
 	void autoFPSto(void);
-
-	virtual bool start(void);
-	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
 
 public:
 	pthread_t m_threadID;

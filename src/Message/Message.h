@@ -8,36 +8,33 @@
 #ifndef OPENKAI_SRC_BASE_MESSAGE_H_
 #define OPENKAI_SRC_BASE_MESSAGE_H_
 
-#include "common.h"
+#include "../Base/common.h"
 #include "../Utility/util.h"
 
-#define MSG_BUF 512
+#define MSG_LEN_MAX 512
 
-//msg definitions
-#define KMSG_HEADER_LEN 9
+//Msg header
 #define KMSG_BEGIN 0xff
-
-#define KMSG_REQ_DATA 1
-#define KMSG_SEND_DATA 2
+#define KMSG_HEADER_LEN
 
 /*
  * msg format
- * begin mark	[0]
- * cmd			[1~4]
- * payload byte	[5~8]
- * payload		[9~]
+ * begin mark		[1]
+ * msg byte			[4]
+ * cmd				[4]
+ * instTo byte  	[1]
+ * instTo			[0~]
+ * instFrom byte	[1]
+ * instFrom			[0~]
+ * checksum			[4]
+ * payload byte		[4]
+ * payload			[0~]
  */
 
-/*
- * payload format
- * instTo length			[1]
- * (optional) instTo		[0~]
- * instFrom length			[1]
- * (optional) instFrom		[0~]
- * cmd dependent contents	[0~]
- * checksum					[4]
- * timeStamp				[8]
- */
+//Msg ref
+#define KMSG_REQ_DATA 1
+#define KMSG_SEND_DATA 2
+
 
 namespace kai
 {
@@ -50,23 +47,23 @@ public:
 
 	void init(void);
 	int handle(uint8_t* pBuf, uint32_t nByte);
-	bool encode(uint32_t cmd, string* pInstTo, string* pInstFrom, string* pData);
+	bool encode(uint32_t cmd, string* pInstTo, string* pInstFrom, string* pPayload);
 
 private:
 	bool decode(void);
+	void reset(void);
 
 public:
 	//header and raw contents
+	uint32_t	m_nMsg;
 	uint32_t	m_cmd;
+	uint8_t		m_nInstTo;
+	string		m_instTo;
+	uint8_t		m_nInstFrom;
+	string		m_instFrom;
+	uint32_t	m_checksum;
 	uint32_t	m_nPayload;
 	uint8_t*	m_pPayload;
-	uint32_t	m_checksum;
-
-	//cmd dependent
-	string		m_instTo;
-	string		m_instFrom;
-	uint8_t*	m_pData;
-	uint32_t	m_nData;
 
 	//network info
 	void*		m_pPeer;
@@ -76,8 +73,7 @@ public:
 	//operation
 	uint64_t	m_timeStamp;
 	uint32_t	m_iByte;
-	uint8_t		m_pBuf[MSG_BUF];
-
+	uint8_t		m_pBuf[MSG_LEN_MAX];
 
 };
 

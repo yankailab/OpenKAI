@@ -85,14 +85,7 @@ void _server::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(socketHandler())
-		{
-			m_strStatus = "";
-		}
-		else
-		{
-			m_strStatus = "Socket handler failed";
-		}
+		socketHandler();
 
 		this->autoFPSto();
 	}
@@ -173,6 +166,15 @@ int _server::getFreePeer(void)
 	}
 
 	return -1;
+}
+
+void _server::complete(void)
+{
+	close(m_socket);
+
+	this->_ThreadBase::complete();
+
+	pthread_cancel(m_threadID);
 }
 
 bool _server::draw(Frame* pFrame, vInt4* pTextPos)

@@ -13,8 +13,12 @@
 #include "../IO/SerialPort.h"
 #include "../Navigation/_Universe.h"
 #include "../Algorithm/Filter.h"
+#include "../IO/FileIO.h"
 
 #define DEG_AROUND 360.0
+
+#define SF40_UART 0
+#define SF40_FILE 1
 
 namespace kai
 {
@@ -31,19 +35,14 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-	void close(void);
+	bool start(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
-	std::vector<vector<float> > detect(Frame* pFrame);
-	bool start(void);
-
 private:
+	bool connect(void);
 	void updateLidar(void);
 	void updatePosition(void);
-
-	void reqMap(void);
-	void write(void);
-	bool read(void);
+	bool readLine(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -53,6 +52,8 @@ private:
 	}
 
 public:
+	int		m_inputMode;
+
 	_Lightware_SF40_sender* m_pSF40sender;
 	_Universe* m_pUniverse;
 	string m_sportName;
@@ -72,8 +73,12 @@ public:
 	Filter* m_pY;
 
 	string	m_strRecv;
-
 	double	m_showScale;
+
+	FileIO* m_pFileOut;
+	FileIO* m_pFileIn;
+
+
 
 };
 
