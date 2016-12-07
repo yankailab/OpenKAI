@@ -156,6 +156,14 @@ bool _peer::sendMsg(Message* pMsg)
 
 }
 
+void _peer::complete(void)
+{
+	close(m_socket);
+	this->_ThreadBase::complete();
+	pthread_cancel(m_threadID);
+}
+
+
 bool _peer::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);

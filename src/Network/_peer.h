@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
+#include "../Message/Message.h"
 
 #define BUFSIZE 512
 
@@ -26,6 +27,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	void complete(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
 	bool connectServer(void);

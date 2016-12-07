@@ -14,19 +14,19 @@
 {
 	"name":"Client",
 	"class":"_peer",
-	"bInst":0,
+	"bInst":1,
 	"FPS":1,
 	"addr":"127.0.0.1",
-	"port":19848,
+	"port":19849,
 	"timeoutSec":10,
 }
 
 {
 	"name":"Server",
 	"class":"_server",
-	"bInst":0,
+	"bInst":1,
 	"FPS":1,
-	"listenPort":19848,
+	"listenPort":19849,
 	"nlisten":10,
 	"timeoutSec":10,	
 }
@@ -44,11 +44,12 @@
 {
 	"name":"SF40",
 	"class":"_Lightware_SF40",
-	"bInst":1,
+	"bInst":0,
 	"FPS":300,
 	"inputMode":"file",
 	"fileIn":"output/_2016-12-07_Wed_13-37-16.sf40log",
 	"fileOut_":"output/",
+	"_peer":"Client",
 	"portName":"/dev/ttyUSB1",
 	"baudrate":115200,
 	"_Automaton":"APMstate",

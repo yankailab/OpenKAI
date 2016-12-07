@@ -12,7 +12,8 @@ int main(int argc, char* argv[])
 	printf("\n");
 
 	string kissFile(argv[1]);
-	string* pKiss = g_file.readAll(&kissFile);
+	CHECK_F(!g_file.open(&kissFile));
+	string* pKiss = g_file.readAll();
 	if(pKiss==NULL)
 	{
 		LOG(FATAL)<<"Kiss file not found";
@@ -21,6 +22,7 @@ int main(int argc, char* argv[])
 
 	g_pKiss = new Kiss();
 	F_FATAL_F(g_pKiss->parse(pKiss));
+	g_file.close();
 
 	//Start Application
 	g_pGen = new General();

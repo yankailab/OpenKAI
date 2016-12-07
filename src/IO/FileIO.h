@@ -13,23 +13,27 @@ class FileIO
 private:
 	string m_name;
 	string m_buf;
-	ifstream m_if;
-	ofstream m_of;
+	fstream m_file;
+
+//	ifstream m_if;
+//	ofstream m_of;
 
 public:
 	FileIO(void);
 	~FileIO(void);
 
-	string* readAll(string* pFileName);
+	bool open(string* pName);
+	void close(void);
 
-	bool in(string* pFileName);
+	string* readAll(void);
 	string* readLine(void);
 
-	bool out(string* pFileName);
 	bool write(char* pBuf, int nByte);
-	bool CRLF(void);
+	bool writeCRLF(void);
 
-	void close(void);
+//	bool in(string* pFileName);
+//	bool out(string* pFileName);
+
 };
 
 }

@@ -113,7 +113,7 @@ bool _Lightware_SF40::init(void* pKiss)
 		printf("SF40 input file: %s\n",fileName.c_str());
 
 		m_pFileIn = new FileIO();
-		F_ERROR_F(m_pFileIn->in(&fileName));
+		F_ERROR_F(m_pFileIn->open(&fileName));
 	}
 
 	//log file output
@@ -123,12 +123,12 @@ bool _Lightware_SF40::init(void* pKiss)
 	{
 		char date[64];
 		time_t t = time(NULL);
-		strftime(date, sizeof(date), "_%Y-%m-%d_%a_%H-%M-%S.sf40raw", localtime(&t));
+		strftime(date, sizeof(date), "_%Y-%m-%d_%a_%H-%M-%S.sf40log", localtime(&t));
 		fileName = presetDir + fileName + date;
 
 		printf("SF40 output file: %s\n",fileName.c_str());
 		m_pFileOut = new FileIO();
-		F_ERROR_F(m_pFileOut->out(&fileName));
+		F_ERROR_F(m_pFileOut->open(&fileName));
 	}
 
 	return true;
@@ -220,13 +220,16 @@ void _Lightware_SF40::update(void)
 
 void _Lightware_SF40::updateLidar(void)
 {
-	F_(readLine());
+	if(m_inputMode != SF40_NET)
+	{
+		F_(readLine());
+	}
 
 	//output to file
 	if(m_pFileOut)
 	{
 		m_pFileOut->write((char*)m_strRecv.c_str(), m_strRecv.length());
-		m_pFileOut->CRLF();
+		m_pFileOut->writeCRLF();
 	}
 
 	string str;
@@ -295,13 +298,15 @@ bool _Lightware_SF40::readLine(void)
 		NULL_F(pLine);
 
 		m_strRecv = *pLine;
-		if(m_strRecv.at(m_strRecv.length()-1)==LF)
+		int iLen = m_strRecv.length()-1;
+		if(m_strRecv.at(iLen)==LF)
 		{
-			m_strRecv.erase(m_strRecv.length()-1,1);
+			m_strRecv.erase(iLen,1);
 		}
-		if(m_strRecv.at(m_strRecv.length()-1)==CR)
+		iLen = m_strRecv.length()-1;
+		if(m_strRecv.at(iLen)==CR)
 		{
-			m_strRecv.erase(m_strRecv.length()-1,1);
+			m_strRecv.erase(iLen,1);
 		}
 		return true;
 	}

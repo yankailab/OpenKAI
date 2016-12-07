@@ -19,6 +19,7 @@
 
 #define SF40_UART 0
 #define SF40_FILE 1
+#define SF40_NET 2
 
 namespace kai
 {

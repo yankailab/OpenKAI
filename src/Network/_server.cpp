@@ -14,6 +14,7 @@ _server::_server()
 {
 	_ThreadBase();
 
+	m_socket = 0;
 	m_listenPort = 8888;
 	m_nListen = N_PEER;
 	m_strStatus = "";
@@ -134,8 +135,6 @@ bool _server::socketHandler(void)
 		}
 
 		_peer* pPeer = m_ppPeer[iPeer];
-//		pPeer->init(m_pKiss);
-//		pPeer->link();
 		pPeer->m_bClient = false;
 
 		struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
@@ -171,10 +170,14 @@ int _server::getFreePeer(void)
 void _server::complete(void)
 {
 	close(m_socket);
-
 	this->_ThreadBase::complete();
-
 	pthread_cancel(m_threadID);
+
+	for(int i=0;i<N_PEER;i++)
+	{
+		if(!m_ppPeer[i]->m_bConnected)continue;
+		m_ppPeer[i]->complete();
+	}
 }
 
 bool _server::draw(Frame* pFrame, vInt4* pTextPos)
