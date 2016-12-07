@@ -23,7 +23,10 @@ bool File::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	string presetDir = "";
+	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("fileName", &m_name));
+	m_name = presetDir + m_name;
 	return true;
 }
 
@@ -43,6 +46,7 @@ bool File::open(void)
 	CHECK_F(!m_file);
 	m_buf = "";
 
+	m_status = opening;
     return true;
 }
 

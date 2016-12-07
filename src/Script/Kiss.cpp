@@ -72,8 +72,8 @@ bool Kiss::parse(string* pStr)
 		{
 			//create new obj
 			string subStr = pStr->substr(from + 1, to - from - 1);
-			if (!addChild(&subStr))
-				return false;
+//			if (!addChild(&subStr))return false;
+			addChild(&subStr);
 		}
 
 		pStr->erase(from, to - from + 1);
@@ -90,7 +90,11 @@ bool Kiss::parse(string* pStr)
 	name = "class";
 	m_json.v(&name, &m_class);
 
-	return true;
+	bool bInst = true;
+	name = "bInst";
+	m_json.v(&name, &bInst);
+
+	return bInst;
 }
 
 void Kiss::trim(string* pStr)
@@ -127,12 +131,24 @@ bool Kiss::addChild(string* pStr)
 	if (m_nChild >= NUM_CHILDREN)
 		return false;
 
-	m_pChild[m_nChild] = new Kiss();
-	Kiss* pChild = m_pChild[m_nChild];
+	Kiss* pChild = new Kiss();
+	pChild->m_pParent = this;
+	if(!pChild->parse(pStr))
+	{
+		delete pChild;
+		return false;
+	}
+
+	m_pChild[m_nChild] = pChild;
 	m_nChild++;
 
-	pChild->m_pParent = this;
-	return pChild->parse(pStr);
+	return true;
+//	m_pChild[m_nChild] = new Kiss();
+//	Kiss* pChild = m_pChild[m_nChild];
+//	m_nChild++;
+//
+//	pChild->m_pParent = this;
+//	return pChild->parse(pStr);
 }
 
 Kiss* Kiss::o(string name)

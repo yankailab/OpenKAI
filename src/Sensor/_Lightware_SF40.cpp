@@ -101,6 +101,7 @@ bool _Lightware_SF40::init(void* pKiss)
 
 	pCC = pK->o("output");
 	CHECK_T(pCC->empty());
+	param = "";
 	F_ERROR_F(pCC->v("class", &param));
 	if (param == "SerialPort")
 	{

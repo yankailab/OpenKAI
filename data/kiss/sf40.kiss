@@ -8,7 +8,7 @@
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
@@ -60,14 +60,14 @@
 		"name":"input",
 		"class":"File",
 		"bInst":1,
-		"fileName":"output/sf40.txt",
+		"fileName":"output/sf40.test",
 	}
 	
 	{
 		"name":"output",
 		"class":"File",
 		"bInst":0,
-		"fileName":"output/sf40.txt",
+		"fileName":"output/sf40_2.test",
 	}
 
 	{
@@ -77,7 +77,6 @@
 		"portName":"/dev/ttyUSB1",
 		"baud":115200,
 	}
-	
 
 }
 
