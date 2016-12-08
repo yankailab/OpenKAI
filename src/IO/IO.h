@@ -19,7 +19,8 @@ enum IO_TYPE
 	none,
 	serialport,
 	file,
-	network
+	tcp,
+	udp
 };
 
 enum IO_STATUS

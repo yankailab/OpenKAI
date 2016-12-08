@@ -16,7 +16,6 @@
 //#define USE_FCN
 //#define USE_OPENCL
 //#define USE_ZED
-#define MAVLINK_DEBUG
 
 
 

@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
+#include "../IO/IO.h"
 #include "_peer.h"
 
 #define N_PEER 2

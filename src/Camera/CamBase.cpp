@@ -67,7 +67,7 @@ bool CamBase::setup(Kiss* pKiss)
 		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())
 		{
-			LOG(ERROR)<<"Camera calibration file not found";
+			LOG(ERROR)<<"Calibration file not found:"<<presetDir<<calibFile;
 			m_bCalibration = false;
 		}
 		else

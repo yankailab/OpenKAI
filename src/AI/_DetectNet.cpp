@@ -85,8 +85,6 @@ bool _DetectNet::link(void)
 	F_ERROR_F(pK->v("_Universe", &iName));
 	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
-	printf("_DetectNet link complete\n");
-
 	m_pUniverse->addObjClass(&m_className, 0);
 
 	return true;
@@ -122,8 +120,6 @@ void _DetectNet::update(void)
 	CHECK_(
 			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
-
-	printf("_DetectNet setup complete\n");
 
 	while (m_bThreadON)
 	{
@@ -164,16 +160,14 @@ void _DetectNet::detectFrame(void)
 
 	CHECK_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 					&m_nBox, m_confCPU));
-	printf("%i bounding boxes detected\n", m_nBox);
+
+	LOG(INFO)<<m_nBox<<" bboxes detected";
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
 		const int nc = m_confCPU[n * 2 + 1];
 		float* bb = m_bbCPU + (n * 4);
-
-		printf("bounding box %i   (%f, %f)  (%f, %f)  w=%f  h=%f\n", n, bb[0],
-				bb[1], bb[2], bb[3], bb[2] - bb[0], bb[3] - bb[1]);
 
 		obj.m_iClass = 0;
 		obj.m_bbox.m_x = (int) bb[0];

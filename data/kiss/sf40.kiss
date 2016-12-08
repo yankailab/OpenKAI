@@ -59,7 +59,7 @@
 	{
 		"name":"input",
 		"class":"SerialPort",
-		"bInst":1,
+		"bInst":0,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
 	}
@@ -67,16 +67,33 @@
 	{
 		"name":"input",
 		"class":"File",
-		"bInst":0,
+		"bInst":1,
 		"fileName":"output/sf40.test",
 	}
 	
 	{
 		"name":"output",
 		"class":"File",
-		"bInst":1,
-		"fileName":"output/sf40.log",
+		"bInst":0,
+		"fileName":"output/scimus.sf40log",
 	}
+	
+	{
+		"name":"output",
+		"class":"_peer",
+		"bInst":0,
+		"addr":"127.0.0.1",
+		"port":19848,
+	}
+	
+	{
+		"name":"output",
+		"class":"_server",
+		"bInst":0,
+		"addr":"127.0.0.1",
+		"port":19848,
+	}	
+	
 }
 
 {

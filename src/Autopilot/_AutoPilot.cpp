@@ -50,7 +50,7 @@ bool _AutoPilot::init(void* pKiss)
 
 		//Add action modules above
 
-		LOG(INFO)<<"Unknown action class"+pAction->m_class;
+		LOG(INFO)<<"Unknown action class:"+pAction->m_class;
 	}
 
 	return true;

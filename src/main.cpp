@@ -3,13 +3,12 @@
 int main(int argc, char* argv[])
 {
 	//Init Logger
-	google::InitGoogleLogging(argv[0]);
+	FLAGS_logtostderr = 1;
+	google::InitGoogleLogging("OpenKAI");
 	printEnvironment();
 
 	//Load config
-	LOG(INFO)<<"Using kiss file: "<<argv[1];
-	printf(argv[1]);
-	printf("\n");
+	LOG(INFO)<<"Kiss file:"<<argv[1];
 
 	string kissFile(argv[1]);
 	CHECK_F(!g_file.open(&kissFile));
@@ -34,22 +33,22 @@ int main(int argc, char* argv[])
 
 void printEnvironment(void)
 {
-	printf("Optimized code: %d\n", useOptimized());
-	printf("CUDA devices: %d\n", cuda::getCudaEnabledDeviceCount());
-	printf("Current CUDA device: %d\n", cuda::getDevice());
+	LOG(INFO)<<"Optimized code:"<<useOptimized();
+	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
+	LOG(INFO)<<"Current CUDA device:"<<cuda::getDevice();
 
 	if (ocl::haveOpenCL())
 	{
-		printf("OpenCL is found\n");
+		LOG(INFO)<<"OpenCL is found";
 		ocl::setUseOpenCL(true);
 		if (ocl::useOpenCL())
 		{
-			printf("Using OpenCL\n");
+			LOG(INFO)<<"Using OpenCL";
 		}
 	}
 	else
 	{
-		printf("OpenCL not found\n");
+		LOG(INFO)<<"OpenCL not found";
 	}
 }
 

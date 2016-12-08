@@ -21,9 +21,6 @@ bool APMcopter_guided::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-//	F_INFO(pK->v("", &m_guidedTarget.m_orientX));
-
-
 	return true;
 }
 

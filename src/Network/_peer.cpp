@@ -21,6 +21,9 @@ _peer::_peer()
 	m_strAddr = "";
 	m_port = 0;
 	m_bClient = true;
+	m_bConnected = 0;
+	m_socket = 0;
+	m_iBuf = 0;
 }
 
 _peer::~_peer()

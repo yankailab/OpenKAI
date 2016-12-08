@@ -85,9 +85,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_HEARTBEAT\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_HEARTBEAT";
 			mavlink_msg_heartbeat_decode(&message, &(m_msg.heartbeat));
 			m_msg.time_stamps.heartbeat = get_time_usec();
 
@@ -95,25 +93,21 @@ void _Mavlink::handleMessages()
 			{
 				m_systemID = m_msg.sysid;
 				m_targetComponentID = m_msg.compid;
-#ifdef MAVLINK_DEBUG
-				printf(	"-> SYSTEM_ID: %d;  COMPONENT_ID: %d;  TARGET_COMPONENT_ID: %d;\n",
-						m_systemID, m_componentID, m_targetComponentID);
-#endif
+
+				LOG(INFO)<<"-> SYSTEM_ID:"<<m_systemID
+				<<" COMPONENT_ID:"<<m_componentID
+				<<" TARGET_COMPONENT_ID:"<<m_targetComponentID;
 			}
 			else
 			{
-#ifdef MAVLINK_DEBUG
-				printf("-> HEARTBEAT FROM MAV_TYPE_GCS\n");
-#endif
+				LOG(INFO)<<"-> HEARTBEAT FROM MAV_TYPE_GCS";
 			}
 			break;
 		}
 
 		case MAVLINK_MSG_ID_SYS_STATUS:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_SYS_STATUS\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_SYS_STATUS";
 			mavlink_msg_sys_status_decode(&message,
 					&(m_msg.sys_status));
 			m_msg.time_stamps.sys_status = get_time_usec();
@@ -122,9 +116,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_BATTERY_STATUS:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_BATTERY_STATUS\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_BATTERY_STATUS";
 			mavlink_msg_battery_status_decode(&message,
 					&(m_msg.battery_status));
 			m_msg.time_stamps.battery_status = get_time_usec();
@@ -133,9 +125,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_RADIO_STATUS:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_RADIO_STATUS\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_RADIO_STATUS";
 			mavlink_msg_radio_status_decode(&message,
 					&(m_msg.radio_status));
 			m_msg.time_stamps.radio_status = get_time_usec();
@@ -144,9 +134,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_LOCAL_POSITION_NED";
 			mavlink_msg_local_position_ned_decode(&message,
 					&(m_msg.local_position_ned));
 			m_msg.time_stamps.local_position_ned = get_time_usec();
@@ -155,9 +143,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT";
 			mavlink_msg_global_position_int_decode(&message,
 					&(m_msg.global_position_int));
 			m_msg.time_stamps.global_position_int = get_time_usec();
@@ -166,33 +152,27 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED";
 			mavlink_msg_position_target_local_ned_decode(&message,
 					&(m_msg.position_target_local_ned));
 			m_msg.time_stamps.position_target_local_ned =
-					get_time_usec();
+			get_time_usec();
 			break;
 		}
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT";
 			mavlink_msg_position_target_global_int_decode(&message,
 					&(m_msg.position_target_global_int));
 			m_msg.time_stamps.position_target_global_int =
-					get_time_usec();
+			get_time_usec();
 			break;
 		}
 
 		case MAVLINK_MSG_ID_HIGHRES_IMU:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_HIGHRES_IMU\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_HIGHRES_IMU";
 			mavlink_msg_highres_imu_decode(&message,
 					&(m_msg.highres_imu));
 			m_msg.time_stamps.highres_imu = get_time_usec();
@@ -201,9 +181,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_ATTITUDE:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_ATTITUDE\n");
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_ATTITUDE";
 			mavlink_msg_attitude_decode(&message, &(m_msg.attitude));
 			m_msg.time_stamps.attitude = get_time_usec();
 			break;
@@ -215,22 +193,17 @@ void _Mavlink::handleMessages()
 					&(m_msg.command_ack));
 			m_msg.time_stamps.attitude = get_time_usec();
 
-#ifdef MAVLINK_DEBUG
-			printf("-> MAVLINK_MSG_ID_COMMAND_ACK: %d \n",
-					m_msg.command_ack.result);
-#endif
+			LOG(INFO)<<"-> MAVLINK_MSG_ID_COMMAND_ACK:"<<m_msg.command_ack.result;
 			break;
 		}
 
 		default:
 		{
-#ifdef MAVLINK_DEBUG
-			printf("-> MSG_ID: %i\n", message.msgid);
-#endif
+			LOG(INFO)<<"-> UNKNOWN MSG_ID:"<<message.msgid;
 			break;
 		}
 
-		}
+	}
 
 		if (++nMsgHandled >= NUM_MSG_HANDLE)
 			return;
@@ -258,7 +231,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 		else if (result == 2)
 		{
 			//Bad CRC
-//			printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
+			LOG(INFO)<<"-> DROPPED PACKETS:"<<status.packet_rx_drop_count;
 		}
 
 		// check for dropped packets
@@ -292,12 +265,10 @@ bool _Mavlink::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< "Return code: "<< retCode << " in MavlinkInterface::start().pthread_create()";
+		LOG(ERROR)<<retCode;
 		m_bThreadON = false;
 		return false;
 	}
-
-	LOG(INFO)<< "MavlinkInterface.start()";
 
 	return true;
 }
@@ -306,9 +277,9 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pSerialPort->isOpen())
+		if (!m_pSerialPort->isOpen())
 		{
-			if(!m_pSerialPort->open())
+			if (!m_pSerialPort->open())
 			{
 				this->sleepThread(USEC_1SEC);
 				continue;
@@ -349,14 +320,13 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 
 	writeMessage(message);
 
-#ifdef MAVLINK_DEBUG
-	printf("<- REQUEST_DATA_STREAM\n");
-#endif
+	LOG(INFO)<<"<- REQUEST_DATA_STREAM";
 
 	return;
 }
 
-void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust, uint8_t mask)
+void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,
+		uint8_t mask)
 {
 	mavlink_message_t message;
 	mavlink_set_attitude_target_t ds;
@@ -377,13 +347,13 @@ void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust, uin
 	ds.thrust = thrust;
 	ds.type_mask = mask;
 
-	mavlink_msg_set_attitude_target_encode(m_systemID, m_componentID, &message, &ds);
+	mavlink_msg_set_attitude_target_encode(m_systemID, m_componentID, &message,
+			&ds);
 
 	writeMessage(message);
 
-#ifdef MAVLINK_DEBUG
-	printf("<- SET_ATTITUDE_TARGET: ROLL:%f, PITCH:%f, YAW:%f, THR:%f\n", pAtti[0], pAtti[1], pAtti[2], thrust);
-#endif
+	LOG(INFO)<<"<- SET_ATTITUDE_TARGET: ROLL:"<< pAtti[0]
+	<<" PITCH:"<< pAtti[1] <<" YAW:"<< pAtti[2] <<" THR:"<<thrust;
 
 	return;
 }
@@ -406,9 +376,7 @@ void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
 
 	writeMessage(message);
 
-#ifdef MAVLINK_DEBUG
-	printf("<- LANDING_TARGET: ANGLE_X:%f; ANGLE_Y:%f;\n", angle_x, angle_y);
-#endif
+	LOG(INFO)<<"<- LANDING_TARGET: ANGLE_X:"<< angle_x << " ANGLE_Y:" << angle_y;
 
 	return;
 }
@@ -426,9 +394,7 @@ void _Mavlink::command_long_doSetMode(int mode)
 
 	writeMessage(message);
 
-#ifdef MAVLINK_DEBUG
-	printf("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE\n");
-#endif
+	LOG(INFO)<<"<- COMMAND_LONG: MAV_CMD_DO_SET_MODE";
 
 	return;
 }
@@ -449,9 +415,7 @@ void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
 
 	writeMessage(message);
 
-#ifdef MAVLINK_DEBUG
-	printf("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST\n");
-#endif
+	LOG(INFO)<<"<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST";
 
 	return;
 }
@@ -463,7 +427,9 @@ bool _Mavlink::draw(Frame* pFrame, vInt4* pTextPos)
 
 	if (m_pSerialPort->isOpen())
 	{
-		putText(*pMat, "Mavlink: Connected; FPS: " + i2str(getFrameRate()) + ", Mode: " + i2str(m_msg.heartbeat.custom_mode),
+		putText(*pMat,
+				"Mavlink: Connected; FPS: " + i2str(getFrameRate()) + ", Mode: "
+						+ i2str(m_msg.heartbeat.custom_mode),
 				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
 				0.5, Scalar(0, 255, 0), 1);
 	}

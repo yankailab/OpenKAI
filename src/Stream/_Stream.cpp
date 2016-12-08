@@ -106,7 +106,7 @@ void _Stream::update(void)
 	//Open stream input
 	if(m_pCamera->openCamera()==false)
 	{
-		LOG(FATAL)<<"Cannot open stream input:";
+		LOG(FATAL)<<"Cannot open stream input";
 		return;
 	}
 

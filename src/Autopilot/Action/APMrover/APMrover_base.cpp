@@ -83,9 +83,7 @@ void APMrover_base::sendHeartbeat(void)
 	m_pMavlink->sendHeartbeat();
 	m_lastHeartbeat = timeNow;
 
-#ifdef MAVLINK_DEBUG
-	printf("<- OpenKAI HEARTBEAT:%d\n", (++m_iHeartbeat));
-#endif
+	LOG(INFO)<<"APMrover HEARTBEAT:"<<++m_iHeartbeat;
 }
 
 void APMrover_base::sendSteerThrust(void)

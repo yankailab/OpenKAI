@@ -190,9 +190,7 @@ bool SerialPort::setup(void)
 	case 1200:
 		if (cfsetispeed(&config, B1200) < 0 || cfsetospeed(&config, B1200) < 0)
 		{
-			fprintf(stderr,
-					"\nERROR: Could not set desired baud rate of %d Baud\n",
-					m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
@@ -212,7 +210,7 @@ bool SerialPort::setup(void)
 		if (cfsetispeed(&config, B38400) < 0
 				|| cfsetospeed(&config, B38400) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
@@ -220,7 +218,7 @@ bool SerialPort::setup(void)
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
@@ -228,7 +226,7 @@ bool SerialPort::setup(void)
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
@@ -239,7 +237,7 @@ bool SerialPort::setup(void)
 		if (cfsetispeed(&config, B460800) < 0
 				|| cfsetospeed(&config, B460800) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
@@ -247,13 +245,12 @@ bool SerialPort::setup(void)
 		if (cfsetispeed(&config, B921600) < 0
 				|| cfsetospeed(&config, B921600) < 0)
 		{
-			printf("ERROR: Could not set desired baud rate of %d Baud\n", m_baud);
+			LOG(ERROR)<<"Could not set baud:"<<m_baud;
 			return false;
 		}
 		break;
 	default:
-		printf("ERROR: Desired baud rate %d could not be set, aborting.\n",
-				m_baud);
+		LOG(ERROR)<<"Could not set baud:"<<m_baud;
 		return false;
 		break;
 	}
@@ -265,7 +262,7 @@ bool SerialPort::setup(void)
 
 	if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
 	{
-		printf("ERROR: could not set configuration of fd %d\n", m_fd);
+		LOG(ERROR)<<"Could not set configuration of fd:"<<m_fd;
 		return false;
 	}
 

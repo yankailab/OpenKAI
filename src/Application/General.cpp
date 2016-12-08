@@ -170,11 +170,6 @@ bool General::createAllInst(Kiss* pKiss)
 	while (pItr[i])
 	{
 		Kiss* pK = pItr[i++];
-
-//		bool bInst = false;
-//		F_INFO(pK->v("bInst", &bInst));
-//		if (!bInst)continue;
-
 		if(pK->m_class == "General")continue;
 
 		BASE* pNew = m_module.createInstance(pK);

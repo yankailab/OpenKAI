@@ -24,8 +24,7 @@ Camera::~Camera()
 
 bool Camera::setup(Kiss* pKiss)
 {
-	if (CamBase::setup(pKiss) == false)
-		return false;
+	CHECK_F(!CamBase::setup(pKiss));
 
 	string presetDir = "";
 	string calibFile;
