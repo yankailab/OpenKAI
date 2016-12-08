@@ -1,6 +1,7 @@
 //-------------------------------------------------------------
 //g++
-sudo apt-get install build-essential cmake-curses-gui
+sudo apt-get -y install git cmake build-essential cmake-curses-gui libatlas-base-dev libprotobuf-dev libleveldb-dev libsnappy-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler libgtk2.0-dev pkg-config python-dev python-numpy libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils unzip python-protobuf python-scipy python-pip
+
 
 //-------------------------------------------------------------
 //GitHub Repositories
@@ -8,6 +9,7 @@ sudo apt-get install git
 git clone https://github.com/Itseez/opencv.git
 git clone https://github.com/Itseez/opencv_contrib.git
 git clone https://github.com/yankailab/OpenKAI.git
+git clone https://github.com/dusty-nv/jetson-inference.git
 
 //Optional
 git clone https://github.com/dusty-nv/jetson-inference.git
@@ -41,21 +43,26 @@ sudo cp include/cudnn.h /usr/local/cuda/include/
 
 //-------------------------------------------------------------
 //OpenCV
-sudo apt-get -y install libgtk2.0-dev pkg-config python-dev python-numpy libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libgstreamer0.10-dev libgstreamer-plugins-base0.10-dev libv4l-dev libtbb-dev libqt4-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libtheora-dev libvorbis-dev libxvidcore-dev x264 v4l-utils unzip python-protobuf python-scipy python-pip
-
-//OpenCV cmake
 //CMake to setup the build options
-sudo mkdir build
+mkdir build
 cd build
-(Optional)ccmake ../
+ccmake ../
+//Optional
 cmake -D WITH_TBB=ON -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules/ ..
+
 sudo make all -j8
 sudo make install
 
 //-------------------------------------------------------------
-//Caffe
-sudo apt-get install libatlas-base-dev libprotobuf-dev libleveldb-dev libsnappy-dev libboost-all-dev libhdf5-serial-dev libgflags-dev libgoogle-glog-dev liblmdb-dev protobuf-compiler
+//jetson-inference
+cd jetson-inference
+mkdir build
+cd build
+cmake ../
+make
 
+//-------------------------------------------------------------
+//Caffe ssd
 //Add to Caffe Makefile.config
 INCLUDE_DIRS += /usr/include/hdf5/serial/
 LIBRARY_DIRS += /usr/lib/x86_64-linux-gnu/hdf5/serial/
