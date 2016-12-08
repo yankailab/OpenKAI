@@ -48,7 +48,7 @@ void _Lightware_SF40_sender::update(void)
 {
 	while (m_bThreadON)
 	{
-		if (!m_pSerialPort)continue;
+		if (m_pSerialPort==NULL)continue;
 		if (!m_pSerialPort->isOpen())continue;
 
 		//Regular update loop
@@ -61,6 +61,9 @@ void _Lightware_SF40_sender::update(void)
 
 void _Lightware_SF40_sender::LD(void)
 {
+	NULL_(m_pSerialPort);
+	CHECK_(!m_pSerialPort->isOpen());
+
 	//?LD,aaa.a<CR><LF> <space>dd.dd<CR><LF>
 
 	char str[128];

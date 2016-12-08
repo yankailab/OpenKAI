@@ -10,6 +10,7 @@ File::File(void)
 	m_type = file;
 	m_name = "";
 	m_buf = "";
+	m_status = unknown;
 }
 
 
@@ -27,6 +28,7 @@ bool File::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("fileName", &m_name));
 	m_name = presetDir + m_name;
+	m_status = closed;
 	return true;
 }
 
@@ -34,6 +36,7 @@ bool File::open(string* pName)
 {
 	NULL_F(pName);
 	m_name = *pName;
+	m_status = closed;
 
     return open();
 }
@@ -56,6 +59,7 @@ void File::close(void)
 
 	m_file.flush();
 	m_file.close();
+	m_status = closed;
 }
 
 int File::read(uint8_t* pBuf, int nByte)

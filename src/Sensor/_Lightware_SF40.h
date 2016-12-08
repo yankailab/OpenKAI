@@ -53,8 +53,8 @@ private:
 	}
 
 public:
-	IO* m_pInput;
-	IO* m_pOutput;
+	IO* m_pIn;
+	IO* m_pOut;
 
 	_Lightware_SF40_sender* m_pSF40sender;
 	_Universe* m_pUniverse;

@@ -69,8 +69,9 @@ void SerialPort::close(void)
 
 int SerialPort::read(uint8_t* pBuf, int nByte)
 {
-	int n;
+	if(m_status!=opening)return -1;
 
+	int n;
 	pthread_mutex_lock(&m_mutexRead);
 	n = ::read(m_fd, pBuf, nByte);
 	pthread_mutex_unlock(&m_mutexRead);
@@ -80,8 +81,9 @@ int SerialPort::read(uint8_t* pBuf, int nByte)
 
 bool SerialPort::write(uint8_t* pBuf, int nByte)
 {
-	int n;
+	CHECK_F(m_status!=opening);
 
+	int n;
 	pthread_mutex_lock(&m_mutexWrite);
 	n = ::write(m_fd, pBuf, nByte);
 	// Wait until all data has been written
@@ -93,6 +95,8 @@ bool SerialPort::write(uint8_t* pBuf, int nByte)
 
 bool SerialPort::writeLine(uint8_t* pBuf, int nByte)
 {
+	CHECK_F(m_status!=opening);
+
 	int n;
 	const char crlf[] = "\x0d\x0a";
 

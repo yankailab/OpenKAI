@@ -12,8 +12,8 @@ _Lightware_SF40::_Lightware_SF40()
 	_ThreadBase();
 
 	m_pUniverse = NULL;
-	m_pInput = NULL;
-	m_pOutput = NULL;
+	m_pIn = NULL;
+	m_pOut = NULL;
 
 	m_offsetAngle = 0.0;
 	m_nDiv = 0;
@@ -32,18 +32,18 @@ _Lightware_SF40::_Lightware_SF40()
 
 _Lightware_SF40::~_Lightware_SF40()
 {
-	if (m_pInput)
+	if (m_pIn)
 	{
-		m_pInput->close();
-		delete m_pInput;
-		m_pInput = NULL;
+		m_pIn->close();
+		delete m_pIn;
+		m_pIn = NULL;
 	}
 
-	if (m_pOutput)
+	if (m_pOut)
 	{
-		m_pOutput->close();
-		delete m_pOutput;
-		m_pOutput = NULL;
+		m_pOut->close();
+		delete m_pOut;
+		m_pOut = NULL;
 	}
 
 	DEL(m_pX);
@@ -80,38 +80,40 @@ bool _Lightware_SF40::init(void* pKiss)
 	Kiss* pCC;
 	string param = "";
 
+	//input
 	pCC = pK->o("input");
 	CHECK_F(pCC->empty());
 	F_ERROR_F(pCC->v("class", &param));
 	if (param == "SerialPort")
 	{
-		m_pInput = new SerialPort();
-		CHECK_F(m_pInput->init(pCC));
+		m_pIn = new SerialPort();
+		CHECK_F(!m_pIn->init(pCC));
 
 		m_pSF40sender = new _Lightware_SF40_sender();
-		m_pSF40sender->m_pSerialPort = (SerialPort*)m_pInput;
+		m_pSF40sender->m_pSerialPort = (SerialPort*)m_pIn;
 		m_pSF40sender->m_dAngle = m_dAngle;
 		CHECK_F(!m_pSF40sender->init(pKiss));
 	}
 	else if (param == "File")
 	{
-		m_pInput = new File();
-		F_ERROR_F(m_pInput->init(pCC));
+		m_pIn = new File();
+		F_ERROR_F(m_pIn->init(pCC));
 	}
 
+	//output
 	pCC = pK->o("output");
 	CHECK_T(pCC->empty());
 	param = "";
 	F_ERROR_F(pCC->v("class", &param));
 	if (param == "SerialPort")
 	{
-		m_pOutput = new SerialPort();
-		CHECK_F(m_pOutput->init(pCC));
+		m_pOut = new SerialPort();
+		CHECK_F(m_pOut->init(pCC));
 	}
 	else if (param == "File")
 	{
-		m_pOutput = new File();
-		F_ERROR_F(m_pOutput->init(pCC));
+		m_pOut = new File();
+		F_ERROR_F(m_pOut->init(pCC));
 	}
 
 	return true;
@@ -131,7 +133,7 @@ bool _Lightware_SF40::link(void)
 
 bool _Lightware_SF40::start(void)
 {
-	if (m_pInput->type() == serialport)
+	if (m_pIn->type() == serialport)
 	{
 		CHECK_F(!m_pSF40sender->start());
 	}
@@ -152,9 +154,9 @@ void _Lightware_SF40::update(void)
 {
 	while (m_bThreadON)
 	{
-		if (!m_pInput->isOpen())
+		if (!m_pIn->isOpen())
 		{
-			if (!m_pInput->open())
+			if (!m_pIn->open())
 			{
 				this->sleepThread(USEC_1SEC);
 				continue;
@@ -222,16 +224,20 @@ void _Lightware_SF40::updateLidar(void)
 bool _Lightware_SF40::readLine(void)
 {
 	char buf;
-	while (m_pInput->read((uint8_t*)&buf, 1) > 0)
+	while (m_pIn->read((uint8_t*)&buf, 1) > 0)
 	{
 		if (buf == 0)continue;
 		if (buf == CR)continue;
 		if (buf == LF)
 		{
-			if (m_pOutput)
+			CHECK_T(m_pOut==NULL);
+
+			if(!m_pOut->isOpen())
 			{
-				m_pOutput->writeLine((uint8_t*) m_strRecv.c_str(), m_strRecv.length());
+				CHECK_T(!m_pOut->open());
 			}
+
+			m_pOut->writeLine((uint8_t*) m_strRecv.c_str(), m_strRecv.length());
 			return true;
 		}
 

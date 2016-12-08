@@ -171,9 +171,9 @@ bool General::createAllInst(Kiss* pKiss)
 	{
 		Kiss* pK = pItr[i++];
 
-		bool bInst = false;
-		F_INFO(pK->v("bInst", &bInst));
-		if (!bInst)continue;
+//		bool bInst = false;
+//		F_INFO(pK->v("bInst", &bInst));
+//		if (!bInst)continue;
 
 		if(pK->m_class == "General")continue;
 

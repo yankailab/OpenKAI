@@ -8,7 +8,7 @@
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
@@ -17,7 +17,7 @@
 	"bInst":0,
 	"FPS":1,
 	"addr":"127.0.0.1",
-	"port":19849,
+	"port":19848,
 	"timeoutSec":10,
 }
 
@@ -26,7 +26,7 @@
 	"class":"_server",
 	"bInst":0,
 	"FPS":1,
-	"listenPort":19849,
+	"listenPort":19848,
 	"nlisten":10,
 	"timeoutSec":10,	
 }
@@ -58,26 +58,25 @@
 	
 	{
 		"name":"input",
-		"class":"File",
+		"class":"SerialPort",
 		"bInst":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
+	}
+	
+	{
+		"name":"input",
+		"class":"File",
+		"bInst":0,
 		"fileName":"output/sf40.test",
 	}
 	
 	{
 		"name":"output",
 		"class":"File",
-		"bInst":0,
-		"fileName":"output/sf40_2.test",
+		"bInst":1,
+		"fileName":"output/sf40.log",
 	}
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":0,
-		"portName":"/dev/ttyUSB1",
-		"baud":115200,
-	}
-
 }
 
 {
