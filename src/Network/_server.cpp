@@ -18,12 +18,12 @@ _server::_server()
 	m_listenPort = 8888;
 	m_nListen = N_PEER;
 	m_strStatus = "";
+	m_nInstPeer = 0;
 
 	for(int i=0;i<N_PEER;i++)
 	{
-		m_ppPeer[i] = new _peer();
+		m_pInstPeer[i].init();
 	}
-
 }
 
 _server::~_server()
@@ -40,12 +40,6 @@ bool _server::init(void* pKiss)
 	F_INFO(pK->v("listenPort", (int*)&m_listenPort));
 	F_INFO(pK->v("nlisten", &m_nListen));
 
-	for(int i=0;i<N_PEER;i++)
-	{
-		m_ppPeer[i]->init(pKiss);
-		m_ppPeer[i]->m_bClient = false;
-	}
-
 	return true;
 }
 
@@ -53,15 +47,6 @@ bool _server::link(void)
 {
 	NULL_F(m_pKiss);
 	Kiss* pK = (Kiss*) m_pKiss;
-
-	for(int i=0;i<N_PEER;i++)
-	{
-		m_ppPeer[i]->link();
-	}
-
-//	string iName = "";
-//	F_INFO(pK->v("_Universe", &iName));
-//	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -86,14 +71,14 @@ void _server::update(void)
 	{
 		this->autoFPSfrom();
 
-		socketHandler();
+		handler();
 
 		this->autoFPSto();
 	}
 
 }
 
-bool _server::socketHandler(void)
+bool _server::handler(void)
 {
 	//Create socket
 	m_strStatus = "Creating socket";
@@ -127,21 +112,19 @@ bool _server::socketHandler(void)
 								(struct sockaddr *) &clientAddr,
 								(socklen_t*) &c)))
 	{
-		int iPeer = getFreePeer();
-		if(iPeer<0)
+		INST_PEER* pInstPeer = getInstPeer();
+		if(!pInstPeer)
 		{
-			LOG(ERROR)<<"Free peer not found";
+			LOG(ERROR)<<"Peer instance not found";
 			continue;
 		}
 
-		_peer* pPeer = m_ppPeer[iPeer];
-		pPeer->m_bClient = false;
-
 		struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
-		pPeer->m_strAddr = inet_ntoa(pAddr->sin_addr);
-		pPeer->m_socket = socketNew;
-		pPeer->m_bConnected = true;
-		pPeer->start();
+		pInstPeer->m_pPeer->m_strAddr = inet_ntoa(pAddr->sin_addr);
+		pInstPeer->m_pPeer->m_socket = socketNew;
+		pInstPeer->m_pPeer->m_bConnected = true;
+		pInstPeer->m_pPeer->start();
+		*pInstPeer->m_ppPeer = pInstPeer->m_pPeer;
 	}
 
 	close(m_socket);
@@ -155,16 +138,48 @@ bool _server::socketHandler(void)
 	return true;
 }
 
-int _server::getFreePeer(void)
+INST_PEER* _server::getInstPeer(void)
 {
 	int i;
-	for(i=0;i<N_PEER;i++)
+	INST_PEER* pInstPeer = NULL;
+	for(i=0;i<m_nInstPeer;i++)
 	{
-		if(m_ppPeer[i]->m_bConnected)continue;
-		return i;
+		pInstPeer = &m_pInstPeer[i];	//temporal
 	}
 
-	return -1;
+	_peer* pPeer = pInstPeer->m_pPeer;
+	if(pPeer)
+	{
+		if(pPeer->m_bConnected)
+		{
+			LOG(ERROR)<<"Peer instance already in connection";
+			return NULL;
+		}
+
+		*pInstPeer->m_ppPeer = NULL;
+		pPeer->complete();
+		delete pPeer;
+	}
+
+	pInstPeer->m_pPeer = new _peer();
+	pPeer = pInstPeer->m_pPeer;
+	pPeer->init(m_pKiss);
+	pPeer->m_bClient = false;
+
+	return pInstPeer;
+}
+
+bool _server::registerInstPeer(string* pName, _peer** ppPeer)
+{
+	NULL_F(pName);
+	NULL_F(ppPeer);
+	CHECK_F(m_nInstPeer >= N_PEER);
+
+	m_pInstPeer[m_nInstPeer].m_instName = *pName;
+	m_pInstPeer[m_nInstPeer].m_ppPeer = ppPeer;
+	m_nInstPeer++;
+
+	return true;
 }
 
 void _server::complete(void)
@@ -173,10 +188,9 @@ void _server::complete(void)
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
 
-	for(int i=0;i<N_PEER;i++)
+	for(int i=0;i<m_nInstPeer;i++)
 	{
-		if(!m_ppPeer[i]->m_bConnected)continue;
-		m_ppPeer[i]->complete();
+		m_pInstPeer[i].m_pPeer->complete();
 	}
 }
 
@@ -186,15 +200,18 @@ bool _server::draw(Frame* pFrame, vInt4* pTextPos)
 	Mat* pMat = pFrame->getCMat();
 
 	putText(*pMat, "Server port: " + i2str(m_listenPort)
-					+ "; STATUS: " + m_strStatus,
+					+ " STATUS: " + m_strStatus,
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
 
-	for(int i=0;i<N_PEER;i++)
+	for(int i=0;i<m_nInstPeer;i++)
 	{
-		if(!m_ppPeer[i]->m_bConnected)continue;
-		m_ppPeer[i]->draw(pFrame,pTextPos);
+		_peer* pPeer = m_pInstPeer[i].m_pPeer;
+		if(!pPeer)continue;
+		if(!pPeer->m_bConnected)continue;
+
+		pPeer->draw(pFrame,pTextPos);
 	}
 
 	return true;

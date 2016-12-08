@@ -23,12 +23,16 @@ _peer::_peer()
 	m_bClient = true;
 	m_bConnected = 0;
 	m_socket = 0;
-	m_iBuf = 0;
+	m_pBuf = NULL;
+	m_nBuf = N_BUF;
+	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
 _peer::~_peer()
 {
-
+	close();
+	pthread_mutex_destroy (&m_mutexSend);
+	pthread_mutex_destroy (&m_mutexRecv);
 }
 
 bool _peer::init(void* pKiss)
@@ -38,12 +42,19 @@ bool _peer::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("addr", &m_strAddr));
-	F_INFO(pK->v("port", (int*)&m_port));
+	F_INFO(pK->v("port", (int* )&m_port));
+	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
+	if (m_timeoutRecv < TIMEOUT_RECV_USEC)
+		m_timeoutRecv = TIMEOUT_RECV_USEC;
+	F_INFO(pK->v("buf", &m_nBuf));
+	if (m_nBuf < N_BUF)
+		m_nBuf = N_BUF;
+	m_pBuf = new uint8_t[m_nBuf];
+	NULL_F(m_pBuf);
 
 	m_strStatus = "Initialized";
-	m_bConnected = false;
-	m_iBuf = 0;
 	m_bClient = true;
+	close();
 
 	return true;
 }
@@ -52,10 +63,6 @@ bool _peer::link(void)
 {
 	NULL_F(m_pKiss);
 	Kiss* pK = (Kiss*) m_pKiss;
-
-//	string iName = "";
-//	F_INFO(pK->v("_Universe", &iName));
-//	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -76,33 +83,40 @@ bool _peer::start(void)
 
 void _peer::update(void)
 {
-	if(m_bClient)
+	//client mode always trying to connect to the server
+	while (m_bThreadON)
 	{
-		//client mode always trying to connect to the server
-		while (m_bThreadON)
+		if (m_bClient && !m_bConnected)
 		{
-			this->autoFPSfrom();
-
-			if(connectServer())
+			if (!connect())
 			{
-				msgHandler();
+				this->sleepThread(USEC_1SEC);
+				continue;
 			}
-
-			this->autoFPSto();
+		}
+		else
+		{
+			if (!m_bConnected)
+			{
+				this->sleepThread(USEC_1SEC);
+				continue;
+			}
 		}
 
-//		close(m_socket);
-	}
-	else
-	{
-		//server side only maintain the connection until disconnected
-		msgHandler();
+		this->autoFPSfrom();
+
+		send();
+		recv();
+
+		this->autoFPSto();
 	}
 
 }
 
-bool _peer::connectServer(void)
+bool _peer::connect(void)
 {
+	CHECK_T(m_bConnected);
+
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
 	CHECK_F(m_socket < 0);
 
@@ -112,9 +126,9 @@ bool _peer::connectServer(void)
 	server.sin_port = htons(m_port);
 	m_strStatus = "Connecting....";
 
-	if(connect(m_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+	if (::connect(m_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
 	{
-		close(m_socket);
+		close();
 		m_strStatus = "Connection failed";
 		return false;
 	}
@@ -122,50 +136,95 @@ bool _peer::connectServer(void)
 	m_bConnected = true;
 	m_strStatus = "CONNECTED";
 
+	struct timeval timeout;
+	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
+	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
+	setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
 	return true;
 }
 
-bool _peer::msgHandler(void)
+void _peer::send(void)
 {
-	CHECK_F(m_bConnected==false);
-	m_strStatus = "CONNECTED";
+	CHECK_(!m_bConnected);
+	CHECK_(m_queSend.empty());
 
-	int nRecv;
-	while ((nRecv = recv(m_socket, &m_pBuf[m_iBuf], BUFSIZE - m_iBuf, 0)) > 0)
+	int nByte = 0;
+	while (!m_queSend.empty() && nByte < m_nBuf)
 	{
-		//TODO: when recv a msg, put its IP into Message for use in reply
-		//TODO: if msgHandler of instance return 1, return the msg to peer
-		//sendMsg();
+		m_pBuf[nByte++] = m_queSend.front();
+		m_queSend.pop();
 	}
 
-	CHECK_F(nRecv <= 0);
-
-	return true;
+	::write(m_socket, m_pBuf, nByte);
 }
 
-bool _peer::sendMsg(Message* pMsg)
+void _peer::recv(void)
 {
-	NULL_F(pMsg);
+	CHECK_(!m_bConnected);
+
+	int nRecv = ::recv(m_socket, m_pBuf, m_nBuf, 0);
+	if (nRecv == -1)
+	{
+		CHECK_(errno == EAGAIN);
+		CHECK_(errno == EWOULDBLOCK);
+		close();
+	}
+}
+
+bool _peer::write(uint8_t* pBuf, int nByte)
+{
+	CHECK_F(m_bConnected);
+	CHECK_F(nByte <= 0);
+	NULL_F(pBuf);
 
 	pthread_mutex_lock(&m_mutexSend);
 
-	//Send some messages to the client
-//	message = "Greetings! I am your connection handler\n";
-//	write(m_socket, message, strlen(message));
+	for (int i = 0; i < nByte; i++)
+		m_queSend.push(pBuf[i]);
 
 	pthread_mutex_unlock(&m_mutexSend);
 
 	return true;
+}
 
+int _peer::read(uint8_t* pBuf, int nByte)
+{
+	if(!m_bConnected)return -1;
+	if(pBuf==NULL)return -1;
+	if(nByte<=0)return 0;
+
+	pthread_mutex_lock(&m_mutexRecv);
+
+	int i=0;
+	while(!m_queSend.empty() && i<nByte)
+	{
+		pBuf[i++] = m_queSend.front();
+		m_queSend.pop();
+	}
+
+	pthread_mutex_unlock(&m_mutexRecv);
+
+	return i;
+}
+
+void _peer::close(void)
+{
+	::close(m_socket);
+	m_bConnected = false;
+
+	while (!m_queSend.empty())
+		m_queSend.pop();
+	while (!m_queRecv.empty())
+		m_queRecv.pop();
 }
 
 void _peer::complete(void)
 {
-	close(m_socket);
+	close();
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
 }
-
 
 bool _peer::draw(Frame* pFrame, vInt4* pTextPos)
 {
@@ -173,9 +232,9 @@ bool _peer::draw(Frame* pFrame, vInt4* pTextPos)
 	CHECK_F(pFrame->empty());
 	Mat* pMat = pFrame->getCMat();
 
-	putText(*pMat, "Peer IP: " + m_strAddr + ":"+i2str(m_port)
-					+ "; STATUS: " + m_strStatus
-					+ ((m_bClient)?"; Client":"; Server"),
+	putText(*pMat,
+			"Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
+					+ m_strStatus + ((m_bClient) ? "; Client" : "; Server"),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
@@ -183,4 +242,4 @@ bool _peer::draw(Frame* pFrame, vInt4* pTextPos)
 	return true;
 }
 
-} /* namespace kai */
+}

@@ -2,8 +2,8 @@
 #define AI_IO_TCP_H_
 
 #include "../Base/common.h"
+#include "../Network/_server.h"
 #include "IO.h"
-#include "../Network/_peer.h"
 
 using namespace std;
 
@@ -27,6 +27,7 @@ public:
 	bool writeLine(uint8_t* pBuf, int nByte);
 
 private:
+	_server* m_pServer;
 	_peer* m_pPeer;
 
 };

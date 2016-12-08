@@ -14,10 +14,24 @@
 #include "../IO/IO.h"
 #include "_peer.h"
 
-#define N_PEER 2
+#define N_PEER 1
 
 namespace kai
 {
+
+struct INST_PEER
+{
+	string m_instName;
+	_peer** m_ppPeer;
+	_peer* m_pPeer;
+
+	void init(void)
+	{
+		m_instName = "";
+		m_pPeer = NULL;
+		m_ppPeer = NULL;
+	}
+};
 
 class _server: public _ThreadBase
 {
@@ -31,10 +45,10 @@ public:
 	void complete(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
 
-	bool socketHandler(void);
-
+	bool registerInstPeer(string* pName, _peer** ppPeer);
 private:
-	int getFreePeer(void);
+	bool handler(void);
+	INST_PEER* getInstPeer(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -50,7 +64,8 @@ public:
 	int m_socket;
 	struct sockaddr_in m_serverAddr;
 
-	_peer* m_ppPeer[N_PEER];
+	int			m_nInstPeer;
+	INST_PEER	m_pInstPeer[N_PEER];
 
 };
 

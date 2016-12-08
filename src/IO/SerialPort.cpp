@@ -17,7 +17,6 @@ SerialPort::SerialPort(void)
 	m_parity = false;
 	m_hardwareControl = false;
 
-
 	pthread_mutex_init(&m_mutexWrite, NULL);
 	pthread_mutex_init(&m_mutexRead, NULL);
 }

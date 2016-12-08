@@ -72,7 +72,6 @@ bool Kiss::parse(string* pStr)
 		{
 			//create new obj
 			string subStr = pStr->substr(from + 1, to - from - 1);
-//			if (!addChild(&subStr))return false;
 			addChild(&subStr);
 		}
 
@@ -143,12 +142,6 @@ bool Kiss::addChild(string* pStr)
 	m_nChild++;
 
 	return true;
-//	m_pChild[m_nChild] = new Kiss();
-//	Kiss* pChild = m_pChild[m_nChild];
-//	m_nChild++;
-//
-//	pChild->m_pParent = this;
-//	return pChild->parse(pStr);
 }
 
 Kiss* Kiss::o(string name)

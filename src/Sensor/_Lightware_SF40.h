@@ -12,6 +12,7 @@
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../IO/SerialPort.h"
 #include "../IO/File.h"
+#include "../IO/TCP.h"
 #include "../Navigation/_Universe.h"
 #include "../Algorithm/Filter.h"
 

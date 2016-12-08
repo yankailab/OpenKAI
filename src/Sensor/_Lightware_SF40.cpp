@@ -99,6 +99,11 @@ bool _Lightware_SF40::init(void* pKiss)
 		m_pIn = new File();
 		F_ERROR_F(m_pIn->init(pCC));
 	}
+	else if (param == "TCP")
+	{
+		m_pIn = new TCP();
+		F_ERROR_F(m_pIn->init(pCC));
+	}
 
 	//output
 	pCC = pK->o("output");
@@ -113,6 +118,11 @@ bool _Lightware_SF40::init(void* pKiss)
 	else if (param == "File")
 	{
 		m_pOut = new File();
+		F_ERROR_F(m_pOut->init(pCC));
+	}
+	else if (param == "TCP")
+	{
+		m_pOut = new TCP();
 		F_ERROR_F(m_pOut->init(pCC));
 	}
 

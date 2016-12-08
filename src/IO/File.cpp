@@ -10,7 +10,6 @@ File::File(void)
 	m_type = file;
 	m_name = "";
 	m_buf = "";
-	m_status = unknown;
 }
 
 
