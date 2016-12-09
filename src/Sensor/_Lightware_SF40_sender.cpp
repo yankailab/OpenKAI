@@ -16,6 +16,7 @@ _Lightware_SF40_sender::_Lightware_SF40_sender()
 
 _Lightware_SF40_sender::~_Lightware_SF40_sender()
 {
+	MBS(0);
 }
 
 bool _Lightware_SF40_sender::init(void* pKiss)
@@ -58,6 +59,19 @@ void _Lightware_SF40_sender::update(void)
 	}
 
 }
+
+void _Lightware_SF40_sender::MBS(uint8_t MBS)
+{
+	NULL_(m_pSerialPort);
+	CHECK_(!m_pSerialPort->isOpen());
+
+	if(MBS>3)MBS = 3;
+
+	char str[32];
+	sprintf(str, "#MBS,%d\x0d\x0a", MBS);
+	m_pSerialPort->write((uint8_t*)str, strlen(str));
+}
+
 
 void _Lightware_SF40_sender::LD(void)
 {

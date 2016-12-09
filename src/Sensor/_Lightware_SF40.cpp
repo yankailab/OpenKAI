@@ -28,10 +28,13 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pDist = NULL;
 	m_pX = NULL;
 	m_pY = NULL;
+	m_MBS = 0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
 {
+	DEL(m_pSF40sender);
+
 	if (m_pIn)
 	{
 		m_pIn->close();
@@ -64,6 +67,7 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("minDist", &m_minDist));
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
+	F_INFO(pK->v("MBS", (int*)&m_MBS));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
@@ -171,6 +175,7 @@ void _Lightware_SF40::update(void)
 				this->sleepThread(USEC_1SEC);
 				continue;
 			}
+			m_pSF40sender->MBS(m_MBS);
 		}
 
 		this->autoFPSfrom();

@@ -35,6 +35,8 @@ public:
 	std::vector<vector<float> > detect(Frame* pFrame);
 	bool start(void);
 
+	void MBS(uint8_t MBS);
+
 private:
 	void LD(void);
 	void Map(void);

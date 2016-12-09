@@ -68,6 +68,7 @@ public:
 	double m_maxDist;
 	int m_mwlX;
 	int m_mwlY;
+	uint8_t m_MBS;
 
 	Filter* m_pX;
 	Filter* m_pY;
