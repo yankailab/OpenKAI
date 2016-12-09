@@ -8,26 +8,18 @@
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
 	"name":"Client",
-	"class":"_peer",
+	"class":"_socket",
 	"bInst":0,
 	"FPS":1,
 	"addr":"127.0.0.1",
 	"port":19848,
-}
-
-{
-	"name":"Server",
-	"class":"_server",
-	"bInst":0,
-	"FPS":1,
-	"listenPort":19848,
-	"nlisten":10,
 }
 
 {
@@ -58,8 +50,21 @@
 	
 	{
 		"name":"input",
-		"class":"SerialPort",
+		"class":"TCP",
 		"bInst":1,
+	
+		{
+			"name":"server",
+			"bInst":1,
+			"listenPort":19849,
+			"nlisten":10,
+		}
+	}
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":0,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
 	}
@@ -74,7 +79,7 @@
 	{
 		"name":"output",
 		"class":"File",
-		"bInst":1,
+		"bInst":0,
 		"fileName":"output/scimus.sf40log",
 	}
 	

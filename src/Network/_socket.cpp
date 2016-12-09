@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_peer.h"
+#include "_socket.h"
 
 namespace kai
 {
 
-_peer::_peer()
+_socket::_socket()
 {
 	_ThreadBase();
 
@@ -28,14 +28,14 @@ _peer::_peer()
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
-_peer::~_peer()
+_socket::~_socket()
 {
 	close();
 	pthread_mutex_destroy (&m_mutexSend);
 	pthread_mutex_destroy (&m_mutexRecv);
 }
 
-bool _peer::init(void* pKiss)
+bool _socket::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -59,7 +59,7 @@ bool _peer::init(void* pKiss)
 	return true;
 }
 
-bool _peer::link(void)
+bool _socket::link(void)
 {
 	NULL_F(m_pKiss);
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -67,7 +67,7 @@ bool _peer::link(void)
 	return true;
 }
 
-bool _peer::start(void)
+bool _socket::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -81,7 +81,7 @@ bool _peer::start(void)
 	return true;
 }
 
-void _peer::update(void)
+void _socket::update(void)
 {
 	//client mode always trying to connect to the server
 	while (m_bThreadON)
@@ -113,7 +113,7 @@ void _peer::update(void)
 
 }
 
-bool _peer::connect(void)
+bool _socket::connect(void)
 {
 	CHECK_T(m_bConnected);
 
@@ -144,7 +144,7 @@ bool _peer::connect(void)
 	return true;
 }
 
-void _peer::send(void)
+void _socket::send(void)
 {
 	CHECK_(!m_bConnected);
 	CHECK_(m_queSend.empty());
@@ -156,10 +156,16 @@ void _peer::send(void)
 		m_queSend.pop();
 	}
 
-	::write(m_socket, m_pBuf, nByte);
+	int nSend = ::write(m_socket, m_pBuf, nByte);
+	if (nSend == -1)
+	{
+		CHECK_(errno == EAGAIN);
+		CHECK_(errno == EWOULDBLOCK);
+		close();
+	}
 }
 
-void _peer::recv(void)
+void _socket::recv(void)
 {
 	CHECK_(!m_bConnected);
 
@@ -172,7 +178,7 @@ void _peer::recv(void)
 	}
 }
 
-bool _peer::write(uint8_t* pBuf, int nByte)
+bool _socket::write(uint8_t* pBuf, int nByte)
 {
 	CHECK_F(m_bConnected);
 	CHECK_F(nByte <= 0);
@@ -188,7 +194,7 @@ bool _peer::write(uint8_t* pBuf, int nByte)
 	return true;
 }
 
-int _peer::read(uint8_t* pBuf, int nByte)
+int _socket::read(uint8_t* pBuf, int nByte)
 {
 	if(!m_bConnected)return -1;
 	if(pBuf==NULL)return -1;
@@ -208,7 +214,7 @@ int _peer::read(uint8_t* pBuf, int nByte)
 	return i;
 }
 
-void _peer::close(void)
+void _socket::close(void)
 {
 	::close(m_socket);
 	m_bConnected = false;
@@ -219,14 +225,14 @@ void _peer::close(void)
 		m_queRecv.pop();
 }
 
-void _peer::complete(void)
+void _socket::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
 }
 
-bool _peer::draw(Frame* pFrame, vInt4* pTextPos)
+bool _socket::draw(Frame* pFrame, vInt4* pTextPos)
 {
 	NULL_F(pFrame);
 	CHECK_F(pFrame->empty());

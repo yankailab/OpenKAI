@@ -26,9 +26,11 @@ public:
 	bool write(uint8_t* pBuf, int nByte);
 	bool writeLine(uint8_t* pBuf, int nByte);
 
+	bool draw(Frame* pFrame, vInt4* pTextPos);
+
 private:
 	_server* m_pServer;
-	_peer* m_pPeer;
+	_socket* m_pSocket;
 
 };
 

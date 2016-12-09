@@ -12,26 +12,12 @@
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 #include "../IO/IO.h"
-#include "_peer.h"
+#include "_socket.h"
 
-#define N_PEER 1
+#define N_LISTEN 1
 
 namespace kai
 {
-
-struct INST_PEER
-{
-	string m_instName;
-	_peer** m_ppPeer;
-	_peer* m_pPeer;
-
-	void init(void)
-	{
-		m_instName = "";
-		m_pPeer = NULL;
-		m_ppPeer = NULL;
-	}
-};
 
 class _server: public _ThreadBase
 {
@@ -44,11 +30,10 @@ public:
 	bool start(void);
 	void complete(void);
 	bool draw(Frame* pFrame, vInt4* pTextPos);
+	_socket* getFirstSocket(void);
 
-	bool registerInstPeer(string* pName, _peer** ppPeer);
 private:
 	bool handler(void);
-	INST_PEER* getInstPeer(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -64,11 +49,10 @@ public:
 	int m_socket;
 	struct sockaddr_in m_serverAddr;
 
-	int			m_nInstPeer;
-	INST_PEER	m_pInstPeer[N_PEER];
+	list<_socket*> m_lSocket;
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_NETWORK_SERVERE_H_ */
+#endif

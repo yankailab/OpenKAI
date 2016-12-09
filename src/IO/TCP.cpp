@@ -8,18 +8,15 @@ TCP::TCP(void)
 {
 	IO();
 	m_type = tcp;
-	m_pPeer = NULL;
+	m_pSocket = NULL;
 	m_pServer = NULL;
 }
 
-
 TCP::~TCP(void)
 {
-	if(m_pPeer)
-	{
-		m_pPeer->complete();
-		delete m_pPeer;
-	}
+	close();
+	DEL(m_pServer);
+	DEL(m_pSocket);
 }
 
 bool TCP::init(void* pKiss)
@@ -28,55 +25,101 @@ bool TCP::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	string iName = "";
-	F_INFO(pK->v("_server", &iName));
-	if(!iName.empty())
+	Kiss* pCC;
+
+	pCC = pK->o("server");
+	if(!pCC->empty())
 	{
-		m_pServer = (_server*) (pK->root()->getChildInstByName(&iName));
-		NULL_F(m_pServer);
-		CHECK_F(!m_pServer->registerInstPeer(&pK->m_name,&m_pPeer));
-	}
-	else
-	{
-		m_pPeer = new _peer();
-		F_ERROR_F(m_pPeer->init(pK));
+		//server mode
+		m_pServer = new _server();
+		F_ERROR_F(m_pServer->init(pCC));
+		m_status = closed;
+		return true;
 	}
 
-	m_status = closed;
-	return true;
+	pCC = pK->o("client");
+	if(!pCC->empty())
+	{
+		//client mode
+		m_pSocket = new _socket();
+		F_ERROR_F(m_pSocket->init(pCC));
+		m_status = closed;
+		return true;
+	}
+
+	LOG(ERROR)<<"TCP mode unknown";
+	return false;
 }
 
 bool TCP::open(void)
 {
-	if(m_pPeer)
+	CHECK_T(m_status == opening);
+
+	if(m_pServer)
 	{
-		if(m_pPeer->m_bClient)
-		{
-			CHECK_F(m_pPeer->start());
-		}
+		//server mode
+		CHECK_F(m_pServer->start());
+		m_status = opening;
+		return true;
+	}
+	else if(m_pSocket)
+	{
+		//client mode
+		CHECK_F(m_pSocket->start());
+		m_status = opening;
+	    return true;
 	}
 
-	m_status = opening;
-    return true;
+	return false;
 }
 
 void TCP::close(void)
 {
 	m_status = closed;
-	NULL_(m_pPeer);
-	m_pPeer->close();
+	if(m_pServer)m_pServer->complete();
+	else if(m_pSocket)m_pSocket->complete();
 }
 
 int TCP::read(uint8_t* pBuf, int nByte)
 {
-	if(!m_pPeer)return -1;
-    return m_pPeer->read(pBuf,nByte);
+	if(m_status != opening)return -1;
+
+	if(m_pServer)
+	{
+		//server mode
+		_socket* pSocket = m_pServer->getFirstSocket();
+		if(!pSocket)return -1;
+
+	    return pSocket->read(pBuf,nByte);
+	}
+	else if(m_pSocket)
+	{
+		//client mode
+	    return m_pSocket->read(pBuf,nByte);
+	}
+
+	return -1;
 }
 
 bool TCP::write(uint8_t* pBuf, int nByte)
 {
-	NULL_F(m_pPeer);
-	return m_pPeer->write(pBuf,nByte);
+	CHECK_F(m_status != opening);
+
+	if(m_pServer)
+	{
+		//server mode
+		_socket* pSocket = m_pServer->getFirstSocket();
+		if(!pSocket)return -1;
+
+	    return pSocket->write(pBuf,nByte);
+	}
+	else if(m_pSocket)
+	{
+		//client mode
+	    return m_pSocket->write(pBuf,nByte);
+	}
+
+	return false;
 }
 
 bool TCP::writeLine(uint8_t* pBuf, int nByte)
@@ -86,5 +129,22 @@ bool TCP::writeLine(uint8_t* pBuf, int nByte)
 	const char crlf[] = "\x0d\x0a";
 	return write((uint8_t*)crlf, 2);
 }
+
+bool TCP::draw(Frame* pFrame, vInt4* pTextPos)
+{
+	NULL_F(pFrame);
+
+	if(m_pServer)
+	{
+		m_pServer->draw(pFrame,pTextPos);
+	}
+	else if(m_pSocket)
+	{
+		m_pSocket->draw(pFrame,pTextPos);
+	}
+
+	return true;
+}
+
 
 }

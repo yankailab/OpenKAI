@@ -5,21 +5,21 @@
  *      Author: root
  */
 
-#include "Message.h"
+#include "Peer.h"
 
 namespace kai
 {
 
-Message::Message()
+Peer::Peer()
 {
 	init();
 }
 
-Message::~Message()
+Peer::~Peer()
 {
 }
 
-void Message::init(void)
+void Peer::init(void)
 {
 	m_timeStamp = 0;
 	m_pPeer = NULL;
@@ -27,7 +27,7 @@ void Message::init(void)
 	reset();
 }
 
-void Message::reset(void)
+void Peer::reset(void)
 {
 	m_nMsg = MSG_LEN_MAX;
 	m_cmd = 0;
@@ -42,7 +42,7 @@ void Message::reset(void)
 	m_iByte = 0;
 }
 
-int Message::handle(uint8_t* pBuf, uint32_t nByte)
+int Peer::handle(uint8_t* pBuf, uint32_t nByte)
 {
 	if (nByte == 0)
 		return -1;
@@ -96,7 +96,7 @@ int Message::handle(uint8_t* pBuf, uint32_t nByte)
 	return nDecoded;
 }
 
-bool Message::decode(void)
+bool Peer::decode(void)
 {
 	CHECK_F(m_iByte < m_nMsg);
 
@@ -128,7 +128,7 @@ bool Message::decode(void)
 	return true;
 }
 
-bool Message::encode(uint32_t cmd, string* pInstTo, string* pInstFrom,
+bool Peer::encode(uint32_t cmd, string* pInstTo, string* pInstFrom,
 		string* pPayload)
 {
 	reset();

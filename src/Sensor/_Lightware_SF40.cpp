@@ -330,6 +330,16 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 		circle(*pMat, Point(cX + pX, cY + pY), 1, Scalar(0, 255, 0), 1);
 	}
 
+	if(m_pIn)
+	{
+		m_pIn->draw(pFrame,pTextPos);
+	}
+
+	if(m_pOut)
+	{
+		m_pOut->draw(pFrame,pTextPos);
+	}
+
 	return true;
 }
 

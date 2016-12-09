@@ -28,7 +28,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Depth);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_server);
-	ADD_MODULE(_peer);
+	ADD_MODULE(_socket);
 
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);

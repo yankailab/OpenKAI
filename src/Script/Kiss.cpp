@@ -16,6 +16,10 @@ Kiss::Kiss(void)
 
 Kiss::~Kiss(void)
 {
+	for(int i=0;i<m_nChild;i++)
+	{
+		DEL(m_pChild[i]);
+	}
 }
 
 bool Kiss::parse(string* pStr)

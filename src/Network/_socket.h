@@ -10,8 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Protocol/Peer.h"
 #include "../Script/Kiss.h"
-#include "../Protocol/Message.h"
 
 #define N_BUF 128
 #define TIMEOUT_RECV_USEC 1000
@@ -19,11 +19,11 @@
 namespace kai
 {
 
-class _peer: public _ThreadBase
+class _socket: public _ThreadBase
 {
 public:
-	_peer();
-	virtual ~_peer();
+	_socket();
+	virtual ~_socket();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -43,7 +43,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_peer*) This)->update();
+		((_socket*) This)->update();
 		return NULL;
 	}
 

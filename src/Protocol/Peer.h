@@ -39,11 +39,11 @@
 namespace kai
 {
 
-class Message
+class Peer
 {
 public:
-	Message();
-	virtual ~Message();
+	Peer();
+	virtual ~Peer();
 
 	void init(void);
 	int handle(uint8_t* pBuf, uint32_t nByte);

@@ -16,19 +16,15 @@ _server::_server()
 
 	m_socket = 0;
 	m_listenPort = 8888;
-	m_nListen = N_PEER;
+	m_nListen = N_LISTEN;
 	m_strStatus = "";
-	m_nInstPeer = 0;
+	m_lSocket.clear();
 
-	for(int i=0;i<N_PEER;i++)
-	{
-		m_pInstPeer[i].init();
-	}
 }
 
 _server::~_server()
 {
-
+	complete();
 }
 
 bool _server::init(void* pKiss)
@@ -53,6 +49,8 @@ bool _server::link(void)
 
 bool _server::start(void)
 {
+	CHECK_T(m_bThreadON);
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -82,6 +80,7 @@ bool _server::handler(void)
 {
 	//Create socket
 	m_strStatus = "Creating socket";
+	LOG(INFO)<<m_strStatus;
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
 	CHECK_F(m_socket == -1);
 
@@ -92,6 +91,7 @@ bool _server::handler(void)
 
 	//Bind
 	m_strStatus = "Binding";
+	LOG(INFO)<<m_strStatus;
 	if(bind(m_socket, (struct sockaddr *) &m_serverAddr, sizeof(m_serverAddr)) < 0)
 	{
 		m_strStatus = "Binding failed";
@@ -100,10 +100,12 @@ bool _server::handler(void)
 
 	//Listen
 	m_strStatus = "Listening";
+	LOG(INFO)<<m_strStatus;
 	listen(m_socket, m_nListen);
 
 	//Accept incoming connection
 	m_strStatus = "Accepting";
+	LOG(INFO)<<m_strStatus;
 	int socketNew;
 	struct sockaddr_in clientAddr;
 	int c = sizeof(struct sockaddr_in);
@@ -112,19 +114,28 @@ bool _server::handler(void)
 								(struct sockaddr *) &clientAddr,
 								(socklen_t*) &c)))
 	{
-		INST_PEER* pInstPeer = getInstPeer();
-		if(!pInstPeer)
+		LOG(INFO)<<"Accepted new connection";
+
+		_socket* pSocket = new _socket();
+		if(!pSocket)
 		{
-			LOG(ERROR)<<"Peer instance not found";
+			LOG(ERROR)<<"_socket creat failed";
 			continue;
 		}
 
 		struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
-		pInstPeer->m_pPeer->m_strAddr = inet_ntoa(pAddr->sin_addr);
-		pInstPeer->m_pPeer->m_socket = socketNew;
-		pInstPeer->m_pPeer->m_bConnected = true;
-		pInstPeer->m_pPeer->start();
-		*pInstPeer->m_ppPeer = pInstPeer->m_pPeer;
+		pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
+		pSocket->m_socket = socketNew;
+		pSocket->m_bConnected = true;
+		pSocket->m_bClient = false;
+		if(!pSocket->start())
+		{
+			delete pSocket;
+			continue;
+		}
+
+		m_lSocket.push_back(pSocket);
+		LOG(INFO)<<"Allocated new socket";
 	}
 
 	close(m_socket);
@@ -132,54 +143,26 @@ bool _server::handler(void)
 	if (socketNew < 0)
 	{
 		m_strStatus = "Accept failed";
+		LOG(INFO)<<m_strStatus;
 		return false;
 	}
 
 	return true;
 }
 
-INST_PEER* _server::getInstPeer(void)
+_socket* _server::getFirstSocket(void)
 {
-	int i;
-	INST_PEER* pInstPeer = NULL;
-	for(i=0;i<m_nInstPeer;i++)
+	while(!m_lSocket.empty())
 	{
-		pInstPeer = &m_pInstPeer[i];	//temporal
+		_socket* pSocket = m_lSocket.front();
+		if(pSocket->m_bConnected)return pSocket;
+
+		pSocket->complete();
+		delete pSocket;
+		m_lSocket.pop_front();
 	}
 
-	_peer* pPeer = pInstPeer->m_pPeer;
-	if(pPeer)
-	{
-		if(pPeer->m_bConnected)
-		{
-			LOG(ERROR)<<"Peer instance already in connection";
-			return NULL;
-		}
-
-		*pInstPeer->m_ppPeer = NULL;
-		pPeer->complete();
-		delete pPeer;
-	}
-
-	pInstPeer->m_pPeer = new _peer();
-	pPeer = pInstPeer->m_pPeer;
-	pPeer->init(m_pKiss);
-	pPeer->m_bClient = false;
-
-	return pInstPeer;
-}
-
-bool _server::registerInstPeer(string* pName, _peer** ppPeer)
-{
-	NULL_F(pName);
-	NULL_F(ppPeer);
-	CHECK_F(m_nInstPeer >= N_PEER);
-
-	m_pInstPeer[m_nInstPeer].m_instName = *pName;
-	m_pInstPeer[m_nInstPeer].m_ppPeer = ppPeer;
-	m_nInstPeer++;
-
-	return true;
+	return NULL;
 }
 
 void _server::complete(void)
@@ -188,10 +171,12 @@ void _server::complete(void)
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
 
-	for(int i=0;i<m_nInstPeer;i++)
+	for(auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		m_pInstPeer[i].m_pPeer->complete();
+		((_socket*)*itr)->complete();
 	}
+
+	m_lSocket.clear();
 }
 
 bool _server::draw(Frame* pFrame, vInt4* pTextPos)
@@ -205,16 +190,12 @@ bool _server::draw(Frame* pFrame, vInt4* pTextPos)
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
 
-	for(int i=0;i<m_nInstPeer;i++)
+	for(auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		_peer* pPeer = m_pInstPeer[i].m_pPeer;
-		if(!pPeer)continue;
-		if(!pPeer->m_bConnected)continue;
-
-		pPeer->draw(pFrame,pTextPos);
+		((_socket*)*itr)->draw(pFrame,pTextPos);
 	}
 
 	return true;
 }
 
-} /* namespace kai */
+}
