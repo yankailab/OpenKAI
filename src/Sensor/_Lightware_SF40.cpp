@@ -67,7 +67,7 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("minDist", &m_minDist));
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
-	F_INFO(pK->v("MBS", (int*)&m_MBS));
+	F_INFO(pK->v("MBS", (int* )&m_MBS));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
@@ -94,7 +94,7 @@ bool _Lightware_SF40::init(void* pKiss)
 		CHECK_F(!m_pIn->init(pCC));
 
 		m_pSF40sender = new _Lightware_SF40_sender();
-		m_pSF40sender->m_pSerialPort = (SerialPort*)m_pIn;
+		m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
 		m_pSF40sender->m_dAngle = m_dAngle;
 		CHECK_F(!m_pSF40sender->init(pKiss));
 	}
@@ -175,7 +175,9 @@ void _Lightware_SF40::update(void)
 				this->sleepThread(USEC_1SEC);
 				continue;
 			}
-			m_pSF40sender->MBS(m_MBS);
+
+			if (m_pIn->type() == serialport)
+				m_pSF40sender->MBS(m_MBS);
 		}
 
 		this->autoFPSfrom();
@@ -239,15 +241,17 @@ void _Lightware_SF40::updateLidar(void)
 bool _Lightware_SF40::readLine(void)
 {
 	char buf;
-	while (m_pIn->read((uint8_t*)&buf, 1) > 0)
+	while (m_pIn->read((uint8_t*) &buf, 1) > 0)
 	{
-		if (buf == 0)continue;
-		if (buf == CR)continue;
+		if (buf == 0)
+			continue;
+		if (buf == CR)
+			continue;
 		if (buf == LF)
 		{
 			CHECK_T(m_pOut==NULL);
 
-			if(!m_pOut->isOpen())
+			if (!m_pOut->isOpen())
 			{
 				CHECK_T(!m_pOut->open());
 			}
@@ -294,18 +298,28 @@ void _Lightware_SF40::updatePosition(void)
 
 bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
 
-	putText(*pFrame->getCMat(), "Lightware_SF40 FPS: " + i2str(getFrameRate()),
+	putText(*pFrame->getCMat(),
+			*this->getName() + " FPS: " + i2str(getFrameRate()),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
 
+	pTextPos->m_x += SHOW_TAB_PIX;
 	putText(*pFrame->getCMat(),
 			"Lidar POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
+
+	if (m_pIn)
+		m_pIn->draw(pFrame, pTextPos);
+
+	if (m_pOut)
+		m_pOut->draw(pFrame, pTextPos);
+
+	pTextPos->m_x = SHOW_TAB_PIX;
 
 	if (m_nDiv <= 0)
 		return true;
@@ -328,16 +342,6 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 		int pY = -(dist * cos(angle));
 
 		circle(*pMat, Point(cX + pX, cY + pY), 1, Scalar(0, 255, 0), 1);
-	}
-
-	if(m_pIn)
-	{
-		m_pIn->draw(pFrame,pTextPos);
-	}
-
-	if(m_pOut)
-	{
-		m_pOut->draw(pFrame,pTextPos);
 	}
 
 	return true;

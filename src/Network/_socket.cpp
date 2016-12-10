@@ -234,8 +234,8 @@ void _socket::complete(void)
 
 bool _socket::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	NULL_F(pFrame);
-	CHECK_F(pFrame->empty());
+	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
+
 	Mat* pMat = pFrame->getCMat();
 
 	putText(*pMat,

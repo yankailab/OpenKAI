@@ -16,7 +16,6 @@ using namespace std;
 namespace kai
 {
 
-
 class BASE
 {
 public:
@@ -34,8 +33,9 @@ public:
 
 public:
 	void*	m_pKiss;
+	bool	m_bShow;
 };
 
 }
 
-#endif /* OPENKAI_SRC_BASE_BASE_H_ */
+#endif

@@ -3,20 +3,21 @@
 	"name":"APP",
 	"class":"General",
 	"appName":"OpenKAI",
-	"bShowScreen":1,
+	"bShow":0,
 	"bFullScreen":0,
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
 	"name":"Client",
 	"class":"_socket",
 	"bInst":0,
+	"bShow":1,
 	"FPS":1,
 	"addr":"127.0.0.1",
 	"port":19848,
@@ -26,6 +27,7 @@
 	"name":"APM",
 	"class":"_Mavlink",
 	"bInst":0,
+	"bShow":1,
 	"FPS":100,
 	"portName":"/dev/ttyS0",
 	"baudrate":921600,
@@ -36,6 +38,7 @@
 	"name":"SF40",
 	"class":"_Lightware_SF40",
 	"bInst":1,
+	"bShow":1,
 	"FPS":300,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
@@ -50,36 +53,41 @@
 	
 	{
 		"name":"input",
-		"class":"TCP",
+		"class":"SerialPort",
 		"bInst":1,
-	
-		{
-			"name":"server",
-			"bInst":1,
-			"listenPort":19849,
-			"nlisten":10,
-		}
+		"bShow":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
 	}
 
 	{
 		"name":"input",
-		"class":"SerialPort",
+		"class":"TCP",
 		"bInst":0,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
+		"bShow":1,
+	
+		{
+			"name":"server",
+			"bInst":1,
+			"bShow":1,
+			"listenPort":19848,
+			"nlisten":10,
+		}
 	}
 	
 	{
 		"name":"input",
 		"class":"File",
 		"bInst":0,
+		"bShow":1,
 		"fileName":"output/sf40.test",
 	}
 	
 	{
 		"name":"output",
 		"class":"File",
-		"bInst":0,
+		"bInst":1,
+		"bShow":1,
 		"fileName":"output/scimus.sf40log",
 	}
 	
@@ -87,14 +95,7 @@
 		"name":"output",
 		"class":"_peer",
 		"bInst":0,
-		"addr":"127.0.0.1",
-		"port":19848,
-	}
-	
-	{
-		"name":"output",
-		"class":"_server",
-		"bInst":0,
+		"bShow":1,
 		"addr":"127.0.0.1",
 		"port":19848,
 	}	
@@ -105,6 +106,7 @@
 	"name":"APMstate",
 	"class":"_Automaton",
 	"bInst":0,
+	"bShow":1,
 	"startState":"APM_STANDBY",
 
 	{
@@ -122,6 +124,7 @@
 	"class":"_AutoPilot",
 	"_Automaton":"APMstate",
 	"bInst":0,
+	"bShow":1,
 	"FPS":30,
 	
 	{
@@ -131,6 +134,7 @@
 			"name":"APMbase",
 			"class":"APMcopter_base",
 			"bInst":1,
+			"bShow":1,
 			"_Automaton":"APMstate",
 			"_Mavlink":"APM",
 			
@@ -181,6 +185,7 @@
 			"name":"APMguided",
 			"class":"APMcopter_guided",
 			"bInst":1,
+			"bShow":1,
 			"_Automaton":"APMstate",
 			"activeState":"APM_POSHOLD",
 			"APMcopter_base":"APMbase",

@@ -95,11 +95,11 @@ double _ThreadBase::getFrameRate(void)
 
 void _ThreadBase::setTargetFPS(int fps)
 {
-	if (fps <= 0)
-		return;
+	CHECK_(fps<=0);
 
 	m_targetFPS = fps;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
+	m_dTimeAvr = m_targetFrameTime;
 }
 
 void _ThreadBase::autoFPSfrom(void)
@@ -133,7 +133,7 @@ void _ThreadBase::waitForComplete(void)
 
 bool _ThreadBase::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	return true;
+	return this->BASE::draw(pFrame,pTextPos);
 }
 
 }

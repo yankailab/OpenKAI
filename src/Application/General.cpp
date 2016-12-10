@@ -41,7 +41,7 @@ bool General::start(Kiss* pKiss)
 	if(pApp->empty())return false;
 
 	F_INFO(pApp->v("appName", &m_name));
-	F_INFO(pApp->v("bShowScreen", &m_bShowScreen));
+	F_INFO(pApp->v("bShow", &m_bShowScreen));
 	F_INFO(pApp->v("bFullScreen", &m_bFullScreen));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
 	F_INFO(pApp->v("screenW", &m_screenW));
@@ -83,11 +83,19 @@ bool General::start(Kiss* pKiss)
 			m_key = waitKey(m_waitKey);
 			handleKey(m_key);
 		}
-
-		for(i=0;i<m_nInst;i++)
+	}
+	else
+	{
+		while (m_bRun)
 		{
-			((_ThreadBase*)m_pInst[i])->complete();
+			m_key = getchar();
+			if(m_key==27)m_bRun=false;
 		}
+	}
+
+	for(i=0;i<m_nInst;i++)
+	{
+		((_ThreadBase*)m_pInst[i])->complete();
 	}
 
 	for(i=0;i<m_nInst;i++)

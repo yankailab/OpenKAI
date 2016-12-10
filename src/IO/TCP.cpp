@@ -132,7 +132,7 @@ bool TCP::writeLine(uint8_t* pBuf, int nByte)
 
 bool TCP::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->BASE::draw(pFrame,pTextPos));
 
 	if(m_pServer)
 	{

@@ -181,7 +181,8 @@ void _server::complete(void)
 
 bool _server::draw(Frame* pFrame, vInt4* pTextPos)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
+
 	Mat* pMat = pFrame->getCMat();
 
 	putText(*pMat, "Server port: " + i2str(m_listenPort)
@@ -190,10 +191,12 @@ bool _server::draw(Frame* pFrame, vInt4* pTextPos)
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
 
+	pTextPos->m_x += SHOW_TAB_PIX;
 	for(auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
 		((_socket*)*itr)->draw(pFrame,pTextPos);
 	}
+	pTextPos->m_x -= SHOW_TAB_PIX;
 
 	return true;
 }
