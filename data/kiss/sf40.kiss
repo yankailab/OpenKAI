@@ -3,14 +3,14 @@
 	"name":"APP",
 	"class":"General",
 	"appName":"OpenKAI",
-	"bShow":0,
+	"bShow":1,
 	"bFullScreen":0,
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
-	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
@@ -45,16 +45,18 @@
 	"nDiv":60,
 	"offsetAngle":-90.0,
 	"minDist":0.1,
-	"maxDist":10.0,
-	"mwlX":3,
-	"mwlY":3,
+	"maxDist":100.0,
+	"mwlX":10,
+	"mwlY":10,
 	"MBS":3,
-	"showScale":100.0,	
+	"showScale":100.0,
+	"trajectoryStep":0.0,	
+	"nTrajectory":-1,	
 	
 	{
 		"name":"input",
 		"class":"SerialPort",
-		"bInst":1,
+		"bInst":0,
 		"bShow":1,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
@@ -78,7 +80,7 @@
 	{
 		"name":"input",
 		"class":"File",
-		"bInst":0,
+		"bInst":1,
 		"bShow":1,
 		"fileName":"output/sf40.test",
 	}
@@ -86,9 +88,9 @@
 	{
 		"name":"output",
 		"class":"File",
-		"bInst":1,
+		"bInst":0,
 		"bShow":1,
-		"fileName":"output/scimus.sf40log",
+		"fileName":"output/test.sf40log",
 	}
 	
 	{

@@ -76,6 +76,11 @@ public:
 	string m_strRecv;
 	double m_showScale;
 
+	std::list<vDouble2> m_lTrajectory;
+	int m_nTrajectory;
+	double m_trajStep;
+
+
 };
 
 }

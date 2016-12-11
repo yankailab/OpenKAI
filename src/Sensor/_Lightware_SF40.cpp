@@ -29,6 +29,8 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pX = NULL;
 	m_pY = NULL;
 	m_MBS = 0;
+	m_nTrajectory = -1;
+	m_trajStep = 0.0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -68,6 +70,8 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
+	F_INFO(pK->v("nTrajectory", &m_nTrajectory));
+	F_INFO(pK->v("trajectoryStep", &m_trajStep));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
@@ -79,6 +83,8 @@ bool _Lightware_SF40::init(void* pKiss)
 	m_pY = new Filter();
 	m_pX->startMedian(m_mwlX);
 	m_pY->startMedian(m_mwlY);
+
+	m_lTrajectory.clear();
 
 	//IO
 	Kiss* pCC;
@@ -292,6 +298,34 @@ void _Lightware_SF40::updatePosition(void)
 	m_pX->input(pX);
 	m_pY->input(pY);
 
+	//Update trajectory
+	CHECK_(m_nTrajectory==0);
+
+	vDouble2 vPos;
+	if(m_lTrajectory.size()==0)
+	{
+		vPos.m_x = m_pX->v();
+		vPos.m_y = m_pY->v();
+		m_lTrajectory.push_back(vPos);
+		return;
+	}
+
+	vPos = m_lTrajectory.back();
+	double dTraj = abs(m_pX->v() - vPos.m_x) + abs(m_pY->v() - vPos.m_y);
+	CHECK_(dTraj < m_trajStep);
+
+	if (m_nTrajectory > 0)
+	{
+		if (m_lTrajectory.size() >= m_nTrajectory)
+		{
+			m_lTrajectory.pop_front();
+		}
+	}
+
+	vPos.m_x = m_pX->v();
+	vPos.m_y = m_pY->v();
+	m_lTrajectory.push_back(vPos);
+
 	//TODO: set new position when difference is bigger than a threshold
 
 }
@@ -327,11 +361,10 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 	//plotting lidar output onto screen
 	Mat* pMat = pFrame->getCMat();
 
-	int cX = pMat->cols / 2;
-	int cY = pMat->rows / 2;
+	Point pCenter(pMat->cols/2, pMat->rows/2);
 
 	//Plot center as vehicle position
-	circle(*pMat, Point(cX, cY), 10, Scalar(0, 0, 255), 2);
+	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	//Plot lidar result
 	for (int i = 0; i < m_nDiv; i++)
@@ -341,7 +374,28 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));
 
-		circle(*pMat, Point(cX + pX, cY + pY), 1, Scalar(0, 255, 0), 1);
+		circle(*pMat, pCenter+Point(pX, pY), 1, Scalar(0, 255, 0), 1);
+	}
+
+	//Plot trajectory
+	CHECK_T(m_lTrajectory.size() < 2);
+
+	vDouble2 vNow = m_lTrajectory.back();
+	auto iTraj = m_lTrajectory.begin();
+	vDouble2 vPosA = *iTraj;
+	iTraj++;
+
+	while (iTraj != m_lTrajectory.end())
+	{
+		vDouble2 vPosB = (vDouble2) *iTraj;
+
+		line(*pMat,
+				pCenter-Point(m_showScale*(vPosA.m_x - vNow.m_x), m_showScale*(vPosA.m_y - vNow.m_y)),
+				pCenter-Point(m_showScale*(vPosB.m_x - vNow.m_x), m_showScale*(vPosB.m_y - vNow.m_y)),
+				Scalar(0, 255, 255), 1);
+
+		vPosA = vPosB;
+		iTraj++;
 	}
 
 	return true;

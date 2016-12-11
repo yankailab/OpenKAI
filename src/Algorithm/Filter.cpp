@@ -55,7 +55,6 @@ void Filter::input(double v)
 		m_iTraj = 0;
 	}
 
-
 	for (i = 0; i<m_windowLength; i++)
 	{
 		data[i] = m_trajectory[i];
