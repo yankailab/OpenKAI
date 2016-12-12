@@ -69,6 +69,7 @@ public:
 	int m_mwlX;
 	int m_mwlY;
 	uint8_t m_MBS;
+	uint32_t m_iLine;
 
 	Filter* m_pX;
 	Filter* m_pY;

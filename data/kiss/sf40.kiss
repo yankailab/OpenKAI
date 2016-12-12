@@ -42,16 +42,16 @@
 	"FPS":300,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
-	"nDiv":60,
+	"nDiv":180,
 	"offsetAngle":-90.0,
 	"minDist":0.1,
 	"maxDist":100.0,
 	"mwlX":10,
 	"mwlY":10,
 	"MBS":3,
-	"showScale":100.0,
-	"trajectoryStep":0.0,	
-	"nTrajectory":-1,	
+	"showScale":8.0,
+	"trajectoryStep":1.0,	
+	"nTrajectory":100,
 	
 	{
 		"name":"input",
@@ -82,7 +82,7 @@
 		"class":"File",
 		"bInst":1,
 		"bShow":1,
-		"fileName":"output/sf40.test",
+		"fileName":"output/scimus_nDiv=180_free_fast.sf40raw",
 	}
 	
 	{

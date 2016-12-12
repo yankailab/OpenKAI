@@ -83,6 +83,7 @@ bool _Lightware_SF40::init(void* pKiss)
 	m_pY = new Filter();
 	m_pX->startMedian(m_mwlX);
 	m_pY->startMedian(m_mwlY);
+	m_iLine = 0;
 
 	m_lTrajectory.clear();
 
@@ -200,6 +201,8 @@ void _Lightware_SF40::updateLidar(void)
 {
 	F_(readLine());
 
+	m_iLine++;
+
 	string str;
 	istringstream sStr;
 
@@ -251,9 +254,9 @@ bool _Lightware_SF40::readLine(void)
 	{
 		if (buf == 0)
 			continue;
-		if (buf == CR)
-			continue;
-		if (buf == LF)
+//		if (buf == CR)
+//			continue;
+		if (buf == LF || buf == CR)
 		{
 			CHECK_T(m_pOut==NULL);
 
@@ -342,7 +345,13 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 
 	pTextPos->m_x += SHOW_TAB_PIX;
 	putText(*pFrame->getCMat(),
-			"Lidar POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
+			"POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
+			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			Scalar(0, 255, 0), 1);
+	pTextPos->m_y += pTextPos->m_w;
+
+	putText(*pFrame->getCMat(),
+			*this->getName() + "iLine: " + i2str(m_iLine),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;

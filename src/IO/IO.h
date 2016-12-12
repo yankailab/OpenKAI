@@ -43,9 +43,6 @@ public:
 	virtual void close(void);
 
 	virtual int  read(uint8_t* pBuf, int nByte);
-	virtual string* readAll(void);
-	virtual string* readLine(void);
-
 	virtual bool write(uint8_t* pBuf, int nByte);
 	virtual bool writeLine(uint8_t* pBuf, int nByte);
 

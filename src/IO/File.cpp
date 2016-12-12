@@ -34,6 +34,7 @@ bool File::init(void* pKiss)
 bool File::open(string* pName)
 {
 	NULL_F(pName);
+	CHECK_T(m_status == opening);
 	m_name = *pName;
 	m_status = closed;
 
@@ -43,13 +44,16 @@ bool File::open(string* pName)
 bool File::open(void)
 {
 	CHECK_F(m_name.empty());
+	CHECK_T(m_status == opening);
 
 	m_file.open(m_name.c_str(),ios::in|ios::out|ios::app);
 	CHECK_F(!m_file);
+	m_file.seekg(0, ios_base::beg);
 	m_buf = "";
-
 	m_status = opening;
-    return true;
+	m_iByte = 0;
+
+	return true;
 }
 
 void File::close(void)
@@ -67,34 +71,56 @@ int File::read(uint8_t* pBuf, int nByte)
 	if(!pBuf)return -1;
 	if(nByte==0)return 0;
 
-    m_file.read((char*)pBuf,nByte);
+	if(m_buf.size()==0)
+	{
+		if(readAll()==NULL)return -1;
+		m_iByte = 0;
+	}
 
-	return m_file.gcount();
+	if(m_iByte+nByte>=m_buf.size())nByte=m_buf.size()-m_iByte;
+	if(nByte<=0)return 0;
+	m_buf.copy((char*)pBuf, nByte, m_iByte);
+	m_iByte += nByte;
+	return nByte;
+
+//	m_file.read((char*)pBuf,nByte);
+//
+//    if(!m_file)
+//    {
+//    	LOG(ERROR)<<"read";
+//    	if(m_file.bad())
+//    	{
+//        	LOG(ERROR)<<"Bad";
+//        	perror("Bad");
+//    	}
+//    	else if(m_file.fail())
+//    	{
+//        	LOG(ERROR)<<"Fail";
+//    	}
+//    	else if(m_file.eof())
+//    	{
+//        	LOG(ERROR)<<"Eof";
+//    	}
+//
+//    	return -1;
+//    }
+//
+//	return m_file.gcount();
 }
 
 string* File::readAll(void)
 {
 	CHECK_N(!m_file.is_open());
 
-	string oneLine;
 	m_file.seekg(0, ios_base::beg);
 	m_buf.clear();
+	string oneLine;
 
-	while(!m_file.eof())
+	while(m_file && !m_file.eof())
     {
 	    getline(m_file,oneLine);
 		m_buf += oneLine;
     }
-
-	return &m_buf;
-}
-
-string* File::readLine(void)
-{
-	CHECK_N(!m_file.is_open());
-
-	m_buf.clear();
-	CHECK_N(!getline(m_file,m_buf));
 
 	return &m_buf;
 }

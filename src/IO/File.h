@@ -21,19 +21,19 @@ public:
 	void close(void);
 
 	int  read(uint8_t* pBuf, int nByte);
-	string* readAll(void);
-	string* readLine(void);
-
 	bool write(uint8_t* pBuf, int nByte);
 	bool writeLine(uint8_t* pBuf, int nByte);
 
 	//File
 	bool open(string* pName);
+	string* readAll(void);
 
 private:
+
 	string m_name;
 	string m_buf;
 	fstream m_file;
+	int m_iByte;
 
 };
 

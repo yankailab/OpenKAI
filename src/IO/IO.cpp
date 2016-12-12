@@ -49,16 +49,6 @@ int IO::read(uint8_t* pBuf, int nByte)
 	return -1;
 }
 
-string* IO::readAll(void)
-{
-	return NULL;
-}
-
-string* IO::readLine(void)
-{
-	return NULL;
-}
-
 bool IO::write(uint8_t* pBuf, int nByte)
 {
 	return false;
