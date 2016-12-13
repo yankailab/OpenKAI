@@ -8,10 +8,13 @@
 #ifndef OPENKAI_SRC_BASE_MACRO_H_
 #define OPENKAI_SRC_BASE_MACRO_H_
 
+#define LOG_I(x) LOG(INFO)<<*this->getName()<<": "<<x;
+#define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;
+#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;
 
-#define F_FATAL_F(x) if(x==false){LOG(FATAL);return false;}
-#define F_ERROR_F(x) if(x==false){LOG(ERROR);return false;}
-#define F_INFO(x) if(x==false){LOG(INFO);}
+#define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
+#define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
+#define F_INFO(x) if(x==false){LOG_I(#x);}
 #define F_(x) if(x==false){return;}
 
 #define CHECK_T(x) if(x){return true;}

@@ -17,6 +17,7 @@ _server::_server()
 	m_socket = 0;
 	m_listenPort = 8888;
 	m_nListen = N_LISTEN;
+	m_nSocket = N_SOCKET;
 	m_strStatus = "";
 	m_lSocket.clear();
 
@@ -33,8 +34,9 @@ bool _server::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("listenPort", (int*)&m_listenPort));
-	F_INFO(pK->v("nlisten", &m_nListen));
+	F_INFO(pK->v("listenPort", (int* )&m_listenPort));
+	F_INFO(pK->v("nListen", &m_nListen));
+	F_INFO(pK->v("nSocket", &m_nSocket));
 
 	return true;
 }
@@ -80,7 +82,7 @@ bool _server::handler(void)
 {
 	//Create socket
 	m_strStatus = "Creating socket";
-	LOG(INFO)<<m_strStatus;
+	LOG_I(m_strStatus);
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
 	CHECK_F(m_socket == -1);
 
@@ -91,51 +93,90 @@ bool _server::handler(void)
 
 	//Bind
 	m_strStatus = "Binding";
-	LOG(INFO)<<m_strStatus;
-	if(bind(m_socket, (struct sockaddr *) &m_serverAddr, sizeof(m_serverAddr)) < 0)
+	LOG_I(m_strStatus);
+	if (bind(m_socket, (struct sockaddr *) &m_serverAddr, sizeof(m_serverAddr))
+			< 0)
 	{
 		m_strStatus = "Binding failed";
+		LOG_I(m_strStatus);
 		close(m_socket);
+		return false;
 	}
 
 	//Listen
 	m_strStatus = "Listening";
-	LOG(INFO)<<m_strStatus;
+	LOG_I(m_strStatus);
 	listen(m_socket, m_nListen);
 
 	//Accept incoming connection
 	m_strStatus = "Accepting";
-	LOG(INFO)<<m_strStatus;
+	LOG_I(m_strStatus);
 	int socketNew;
 	struct sockaddr_in clientAddr;
 	int c = sizeof(struct sockaddr_in);
 
-	while ((socketNew = accept(m_socket,
-								(struct sockaddr *) &clientAddr,
-								(socklen_t*) &c)))
+	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr,
+			(socklen_t*) &c)))
 	{
-		LOG(INFO)<<"Accepted new connection";
+		LOG_I("Accepted new connection");
 
-		_socket* pSocket = new _socket();
-		if(!pSocket)
+		if (m_lSocket.size() >= m_nSocket)
 		{
-			LOG(ERROR)<<"_socket creat failed";
+			LOG_I("Incoming socket number reached limit");
+//
+//			//clear up disconnected sockets
+//			auto itr = m_lSocket.begin();
+//			while (itr != m_lSocket.end())
+//			{
+//				_socket* pSocket = *itr;
+//				if (!pSocket->m_bConnected)
+//				{
+//					itr = m_lSocket.erase(itr);
+//					pSocket->complete();
+//					delete pSocket;
+//					LOG_I("Deleted disconnected socket");
+//				}
+//				else
+//				{
+//					itr++;
+//				}
+//			}
+//
 			continue;
 		}
 
-		struct sockaddr_in *pAddr = (struct sockaddr_in *)&clientAddr;
+		_socket* pSocket = new _socket();
+		if (!pSocket)
+		{
+			LOG_E("_socket create failed");
+			continue;
+		}
+		LOG_I("Created new _socket");
+
+
+		//TODO: polish
+		struct timeval timeout;
+		timeout.tv_sec = 1000 / USEC_1SEC;
+		timeout.tv_usec = 1000 % USEC_1SEC;
+		setsockopt(socketNew, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
+
+
+		pSocket->init(m_pKiss);
+		struct sockaddr_in *pAddr = (struct sockaddr_in *) &clientAddr;
 		pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
 		pSocket->m_socket = socketNew;
 		pSocket->m_bConnected = true;
 		pSocket->m_bClient = false;
-		if(!pSocket->start())
+		if (!pSocket->start())
 		{
+			LOG_E("Socket start failed");
 			delete pSocket;
 			continue;
 		}
 
 		m_lSocket.push_back(pSocket);
-		LOG(INFO)<<"Allocated new socket";
+		LOG_I("Allocated new socket");
 	}
 
 	close(m_socket);
@@ -143,7 +184,7 @@ bool _server::handler(void)
 	if (socketNew < 0)
 	{
 		m_strStatus = "Accept failed";
-		LOG(INFO)<<m_strStatus;
+		LOG_I(m_strStatus);
 		return false;
 	}
 
@@ -152,17 +193,9 @@ bool _server::handler(void)
 
 _socket* _server::getFirstSocket(void)
 {
-	while(!m_lSocket.empty())
-	{
-		_socket* pSocket = m_lSocket.front();
-		if(pSocket->m_bConnected)return pSocket;
+	CHECK_N(m_lSocket.empty());
 
-		pSocket->complete();
-		delete pSocket;
-		m_lSocket.pop_front();
-	}
-
-	return NULL;
+	return m_lSocket.front();
 }
 
 void _server::complete(void)
@@ -171,9 +204,9 @@ void _server::complete(void)
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
 
-	for(auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
+	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		((_socket*)*itr)->complete();
+		((_socket*) *itr)->complete();
 	}
 
 	m_lSocket.clear();
@@ -185,16 +218,16 @@ bool _server::draw(Frame* pFrame, vInt4* pTextPos)
 
 	Mat* pMat = pFrame->getCMat();
 
-	putText(*pMat, "Server port: " + i2str(m_listenPort)
-					+ " STATUS: " + m_strStatus,
+	putText(*pMat,
+			"Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus,
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;
 
 	pTextPos->m_x += SHOW_TAB_PIX;
-	for(auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
+	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_socket*)*itr)->draw(pFrame,pTextPos);
+		((_socket*) *itr)->draw(pFrame, pTextPos);
 	}
 	pTextPos->m_x -= SHOW_TAB_PIX;
 

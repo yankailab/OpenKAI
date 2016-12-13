@@ -31,6 +31,7 @@ _Lightware_SF40::_Lightware_SF40()
 	m_MBS = 0;
 	m_nTrajectory = -1;
 	m_trajStep = 0.0;
+	m_iLine = 0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -351,7 +352,7 @@ bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
 	pTextPos->m_y += pTextPos->m_w;
 
 	putText(*pFrame->getCMat(),
-			*this->getName() + "iLine: " + i2str(m_iLine),
+			*this->getName() + " iLine: " + i2str(m_iLine),
 			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pTextPos->m_y += pTextPos->m_w;

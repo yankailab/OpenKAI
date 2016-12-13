@@ -20,7 +20,11 @@ int main(int argc, char* argv[])
 	}
 
 	g_pKiss = new Kiss();
-	F_FATAL_F(g_pKiss->parse(pKiss));
+	if(!g_pKiss->parse(pKiss))
+	{
+		LOG(FATAL)<<"Kiss file parsing failed";
+		return 1;
+	}
 	g_file.close();
 
 	//Start Application

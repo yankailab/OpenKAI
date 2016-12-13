@@ -15,6 +15,7 @@
 #include "_socket.h"
 
 #define N_LISTEN 1
+#define N_SOCKET 1
 
 namespace kai
 {
@@ -50,6 +51,7 @@ public:
 	struct sockaddr_in m_serverAddr;
 
 	list<_socket*> m_lSocket;
+	int			m_nSocket;
 
 };
 

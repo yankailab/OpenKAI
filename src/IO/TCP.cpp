@@ -47,7 +47,7 @@ bool TCP::init(void* pKiss)
 		return true;
 	}
 
-	LOG(ERROR)<<"TCP mode unknown";
+	LOG_E("TCP mode unknown");
 	return false;
 }
 
@@ -58,15 +58,17 @@ bool TCP::open(void)
 	if(m_pServer)
 	{
 		//server mode
-		CHECK_F(m_pServer->start());
+		CHECK_F(!m_pServer->start());
 		m_status = opening;
+		LOG_I("Server is opening");
 		return true;
 	}
 	else if(m_pSocket)
 	{
 		//client mode
-		CHECK_F(m_pSocket->start());
+		CHECK_F(!m_pSocket->start());
 		m_status = opening;
+		LOG_I("Socket is opening");
 	    return true;
 	}
 
@@ -78,6 +80,7 @@ void TCP::close(void)
 	m_status = closed;
 	if(m_pServer)m_pServer->complete();
 	else if(m_pSocket)m_pSocket->complete();
+	LOG_I("Closed");
 }
 
 int TCP::read(uint8_t* pBuf, int nByte)
@@ -98,6 +101,7 @@ int TCP::read(uint8_t* pBuf, int nByte)
 	    return m_pSocket->read(pBuf,nByte);
 	}
 
+	LOG_E("IO is NULL in read");
 	return -1;
 }
 
@@ -119,6 +123,7 @@ bool TCP::write(uint8_t* pBuf, int nByte)
 	    return m_pSocket->write(pBuf,nByte);
 	}
 
+	LOG_E("IO is NULL in write");
 	return false;
 }
 

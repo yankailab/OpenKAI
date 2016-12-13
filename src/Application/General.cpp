@@ -31,6 +31,13 @@ General::~General()
 {
 }
 
+string* General::getName(void)
+{
+	const string genName = "APP";
+
+	return (string*)&genName;
+}
+
 bool General::start(Kiss* pKiss)
 {
 	int i;
@@ -183,7 +190,7 @@ bool General::createAllInst(Kiss* pKiss)
 		BASE* pNew = m_module.createInstance(pK);
 		if(pNew==NULL)
 		{
-			LOG(ERROR)<<"Unknown class:"+pK->m_class;
+			LOG(ERROR)<<"Create instance failed: "+pK->m_name;
 			continue;
 		}
 

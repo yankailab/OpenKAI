@@ -4,7 +4,7 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShow":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
@@ -35,10 +35,10 @@
 }
 
 {
-	"name":"SF40",
+	"name":"SF40server",
 	"class":"_Lightware_SF40",
 	"bInst":1,
-	"bShow":1,
+	"bShow":0,
 	"FPS":300,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
@@ -63,17 +63,17 @@
 	}
 
 	{
-		"name":"input",
+		"name":"output",
 		"class":"TCP",
-		"bInst":0,
+		"bInst":1,
 		"bShow":1,
 	
 		{
 			"name":"server",
 			"bInst":1,
 			"bShow":1,
-			"listenPort":19848,
-			"nlisten":10,
+			"listenPort":19860,
+			"nListen":1,
 		}
 	}
 	
@@ -92,17 +92,43 @@
 		"bShow":1,
 		"fileName":"output/test.sf40log",
 	}
+}
+
+{
+	"name":"SF40client",
+	"class":"_Lightware_SF40",
+	"bInst":1,
+	"bShow":1,
+	"FPS":300,
+	"_Automaton":"APMstate",
+	"_Universe":"Universe",
+	"nDiv":180,
+	"offsetAngle":-90.0,
+	"minDist":0.1,
+	"maxDist":100.0,
+	"mwlX":10,
+	"mwlY":10,
+	"MBS":3,
+	"showScale":10.0,
+	"trajectoryStep":1.0,	
+	"nTrajectory":100,
 	
 	{
-		"name":"output",
-		"class":"_peer",
-		"bInst":0,
+		"name":"input",
+		"class":"TCP",
+		"bInst":1,
 		"bShow":1,
-		"addr":"127.0.0.1",
-		"port":19848,
-	}	
 	
+		{
+			"name":"client",
+			"bInst":1,
+			"bShow":1,
+			"addr":"127.0.0.1",
+			"port":19860,
+		}
+	}	
 }
+
 
 {
 	"name":"APMstate",

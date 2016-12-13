@@ -28,6 +28,9 @@ public:
 	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
 
+private:
+	string* getName(void);
+
 public:
 	Frame*	m_pFrame;
 

@@ -21,7 +21,7 @@ _socket::_socket()
 	m_strAddr = "";
 	m_port = 0;
 	m_bClient = true;
-	m_bConnected = 0;
+	m_bConnected = false;
 	m_socket = 0;
 	m_pBuf = NULL;
 	m_nBuf = N_BUF;
@@ -44,8 +44,10 @@ bool _socket::init(void* pKiss)
 	F_INFO(pK->v("addr", &m_strAddr));
 	F_INFO(pK->v("port", (int* )&m_port));
 	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
+
 	if (m_timeoutRecv < TIMEOUT_RECV_USEC)
 		m_timeoutRecv = TIMEOUT_RECV_USEC;
+
 	F_INFO(pK->v("buf", &m_nBuf));
 	if (m_nBuf < N_BUF)
 		m_nBuf = N_BUF;
@@ -69,15 +71,18 @@ bool _socket::link(void)
 
 bool _socket::start(void)
 {
+	CHECK_T(m_bThreadON);
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< retCode;
+		LOG_E("pthread create: "<<retCode);
 		m_bThreadON = false;
 		return false;
 	}
 
+	LOG_I("Update thread started");
 	return true;
 }
 
@@ -124,45 +129,55 @@ bool _socket::connect(void)
 	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
 	server.sin_family = AF_INET;
 	server.sin_port = htons(m_port);
-	m_strStatus = "Connecting....";
+	m_strStatus = "Connecting";
+	LOG_I(m_strStatus);
 
-	if (::connect(m_socket, (struct sockaddr *) &server, sizeof(server)) < 0)
+	int ret = ::connect(m_socket, (struct sockaddr *) &server, sizeof(server));
+	if (ret < 0)
 	{
 		close();
 		m_strStatus = "Connection failed";
+		LOG_I(m_strStatus);
 		return false;
 	}
-
-	m_bConnected = true;
-	m_strStatus = "CONNECTED";
 
 	struct timeval timeout;
 	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
 	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
 	setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
+	m_bConnected = true;
+	m_strStatus = "CONNECTED";
+	LOG_I(m_strStatus);
+
 	return true;
 }
 
 void _socket::send(void)
 {
-	CHECK_(!m_bConnected);
+	CHECK_(!m_bConnected); LOG_I("-----------Send: queSend:"<<m_queSend.size());
 	CHECK_(m_queSend.empty());
 
+	pthread_mutex_lock(&m_mutexSend);
 	int nByte = 0;
 	while (!m_queSend.empty() && nByte < m_nBuf)
 	{
 		m_pBuf[nByte++] = m_queSend.front();
 		m_queSend.pop();
 	}
+	pthread_mutex_unlock(&m_mutexSend);
 
 	int nSend = ::write(m_socket, m_pBuf, nByte);
 	if (nSend == -1)
 	{
 		CHECK_(errno == EAGAIN);
 		CHECK_(errno == EWOULDBLOCK);
+		LOG_E("write error: "<<errno);
 		close();
+		return;
 	}
+
+	LOG_I("Send: "<<nSend);
 }
 
 void _socket::recv(void)
@@ -174,23 +189,34 @@ void _socket::recv(void)
 	{
 		CHECK_(errno == EAGAIN);
 		CHECK_(errno == EWOULDBLOCK);
+		LOG_E("recv error: "<<errno);
 		close();
+		return;
 	}
+
+	for(int i=0;i<nRecv;i++)
+	{
+		m_queRecv.push(m_pBuf[i]);
+	}
+
+	LOG_I("Recv: "<<nRecv);
 }
 
 bool _socket::write(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(m_bConnected);
+	CHECK_F(!m_bConnected);
 	CHECK_F(nByte <= 0);
 	NULL_F(pBuf);
 
 	pthread_mutex_lock(&m_mutexSend);
 
-	for (int i = 0; i < nByte; i++)
+	int i;
+	for (i = 0; i < nByte; i++)
 		m_queSend.push(pBuf[i]);
 
 	pthread_mutex_unlock(&m_mutexSend);
 
+	LOG_I("Write: "<<i<<"  queSend:"<<m_queSend.size());
 	return true;
 }
 
@@ -203,14 +229,15 @@ int _socket::read(uint8_t* pBuf, int nByte)
 	pthread_mutex_lock(&m_mutexRecv);
 
 	int i=0;
-	while(!m_queSend.empty() && i<nByte)
+	while(!m_queRecv.empty() && i<nByte)
 	{
-		pBuf[i++] = m_queSend.front();
-		m_queSend.pop();
+		pBuf[i++] = m_queRecv.front();
+		m_queRecv.pop();
 	}
 
 	pthread_mutex_unlock(&m_mutexRecv);
 
+	LOG_I("Read: "<<i);
 	return i;
 }
 
@@ -223,6 +250,8 @@ void _socket::close(void)
 		m_queSend.pop();
 	while (!m_queRecv.empty())
 		m_queRecv.pop();
+
+	LOG_I("Closed");
 }
 
 void _socket::complete(void)
