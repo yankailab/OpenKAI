@@ -4,7 +4,7 @@
 	"class":"General",
 	"appName":"OpenKAI",
 	"bShow":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"screenW":1280,
 	"screenH":720,
 	"waitKey":30,
@@ -49,7 +49,7 @@
 	"mwlX":10,
 	"mwlY":10,
 	"MBS":3,
-	"showScale":8.0,
+	"showScale":10.0,
 	"trajectoryStep":1.0,	
 	"nTrajectory":100,
 	
@@ -82,7 +82,7 @@
 		"class":"File",
 		"bInst":1,
 		"bShow":1,
-		"fileName":"output/scimus_nDiv=180_free_fast.sf40raw",
+		"fileName":"output/scimus20161213_nDiv=180_alt.sf40raw",
 	}
 	
 	{
