@@ -15,14 +15,14 @@ ActionBase::~ActionBase()
 
 bool ActionBase::init(void* pKiss)
 {
-	CHECK_F(this->BASE::init(pKiss)==false);
+	CHECK_F(!this->BASE::init(pKiss));
 
 	return true;
 }
 
 bool ActionBase::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->BASE::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName="";
@@ -41,9 +41,9 @@ void ActionBase::update(void)
 {
 }
 
-bool ActionBase::draw(Frame* pFrame, vInt4* pTextPos)
+bool ActionBase::draw(void)
 {
-	return true;
+	return this->BASE::draw();
 }
 
 

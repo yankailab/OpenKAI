@@ -10,8 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Stream/_Stream.h"
-#include "../Detector/DetectorBase.h"
-
 
 #define NUM_MARKER 128
 
@@ -24,7 +22,7 @@
 namespace kai
 {
 
-class _Bullseye : public DetectorBase, public _ThreadBase
+class _Bullseye : public _ThreadBase
 {
 public:
 	_Bullseye();

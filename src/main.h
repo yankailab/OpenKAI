@@ -8,14 +8,13 @@
 #ifndef SRC_OPENKAI_MAIN_H_
 #define SRC_OPENKAI_MAIN_H_
 
-#include "Application/General.h"
+#include "Application/Startup.h"
 #include "IO/File.h"
 
 
 using namespace kai;
 
-General* g_pGen;
-
+Startup* g_pStart;
 Kiss* g_pKiss;
 File g_file;
 

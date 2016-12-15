@@ -26,7 +26,7 @@ bool APMcopter_guided::init(void* pKiss)
 
 bool APMcopter_guided::link(void)
 {
-	CHECK_F(this->ActionBase::link()==false);
+	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -101,20 +101,21 @@ void APMcopter_guided::updateAttitude(void)
 
 }
 
-bool APMcopter_guided::draw(Frame* pFrame, vInt4* pTextPos)
+bool APMcopter_guided::draw(void)
 {
-	NULL_F(pFrame);
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	if(m_pAPM)
 	{
-		putText(*pFrame->getCMat(), "APMcopter_GUIDED: Roll="
+		putText(*pMat, *this->getName()+": Roll="
 									+ f2str(m_pAPM->m_ctrlRoll.m_v)
 									+", Pitch="
 									+ f2str(m_pAPM->m_ctrlPitch.m_v),
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 				Scalar(0, 255, 0), 1);
-		pTextPos->m_y += pTextPos->m_w;
+		pWin->lineNext();
 	}
 
 	return true;

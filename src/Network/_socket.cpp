@@ -155,7 +155,7 @@ bool _socket::connect(void)
 
 void _socket::send(void)
 {
-	CHECK_(!m_bConnected); LOG_I("-----------Send: queSend:"<<m_queSend.size());
+	CHECK_(!m_bConnected);
 	CHECK_(m_queSend.empty());
 
 	pthread_mutex_lock(&m_mutexSend);
@@ -176,8 +176,6 @@ void _socket::send(void)
 		close();
 		return;
 	}
-
-	LOG_I("Send: "<<nSend);
 }
 
 void _socket::recv(void)
@@ -198,8 +196,6 @@ void _socket::recv(void)
 	{
 		m_queRecv.push(m_pBuf[i]);
 	}
-
-	LOG_I("Recv: "<<nRecv);
 }
 
 bool _socket::write(uint8_t* pBuf, int nByte)
@@ -216,7 +212,6 @@ bool _socket::write(uint8_t* pBuf, int nByte)
 
 	pthread_mutex_unlock(&m_mutexSend);
 
-	LOG_I("Write: "<<i<<"  queSend:"<<m_queSend.size());
 	return true;
 }
 
@@ -237,7 +232,6 @@ int _socket::read(uint8_t* pBuf, int nByte)
 
 	pthread_mutex_unlock(&m_mutexRecv);
 
-	LOG_I("Read: "<<i);
 	return i;
 }
 
@@ -261,18 +255,18 @@ void _socket::complete(void)
 	pthread_cancel(m_threadID);
 }
 
-bool _socket::draw(Frame* pFrame, vInt4* pTextPos)
+bool _socket::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
-
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->BASE::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
 			"Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
 					+ m_strStatus + ((m_bClient) ? "; Client" : "; Server"),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
 	return true;
 }

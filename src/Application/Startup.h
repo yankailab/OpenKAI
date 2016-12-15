@@ -16,11 +16,11 @@ using namespace kai;
 namespace kai
 {
 
-class General: public AppBase
+class Startup
 {
 public:
-	General();
-	~General();
+	Startup();
+	~Startup();
 
 	bool start(Kiss* pKiss);
 	void draw(void);
@@ -32,8 +32,6 @@ private:
 	string* getName(void);
 
 public:
-	Frame*	m_pFrame;
-
 	Module	m_module;
 	int		m_nInst;
 	BASE* 	m_pInst[N_INST];
@@ -41,9 +39,13 @@ public:
 	int 	m_nMouse;
 	BASE* 	m_pMouse[N_INST];
 
-	int		m_screenW;
-	int		m_screenH;
+	string m_name;
+	int m_key;
+	bool m_bRun;
 
+	int m_bShowScreen;
+	int m_bFullScreen;
+	int m_waitKey;
 };
 
 }

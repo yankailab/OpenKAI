@@ -6,7 +6,7 @@
 #include "../include/mavlink/common/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/SerialPort.h"
-#include "../Stream/Frame.h"
+#include "../UI/Window.h"
 
 // ------------------------------------------------------------------------------
 //   Defines
@@ -136,7 +136,7 @@ public:
 
 	void close(void);
 	bool start(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	//Receive
 	void handleMessages();

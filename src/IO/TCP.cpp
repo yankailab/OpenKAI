@@ -135,17 +135,15 @@ bool TCP::writeLine(uint8_t* pBuf, int nByte)
 	return write((uint8_t*)crlf, 2);
 }
 
-bool TCP::draw(Frame* pFrame, vInt4* pTextPos)
+bool TCP::draw(void)
 {
-	CHECK_F(!this->BASE::draw(pFrame,pTextPos));
-
 	if(m_pServer)
 	{
-		m_pServer->draw(pFrame,pTextPos);
+		m_pServer->draw();
 	}
 	else if(m_pSocket)
 	{
-		m_pSocket->draw(pFrame,pTextPos);
+		m_pSocket->draw();
 	}
 
 	return true;

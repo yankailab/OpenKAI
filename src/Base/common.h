@@ -59,6 +59,12 @@ struct vInt2
 	{
 		return abs(m_x*m_y);
 	}
+
+	void init(void)
+	{
+		m_x = 0;
+		m_y = 0;
+	}
 };
 
 struct vInt3
@@ -66,6 +72,13 @@ struct vInt3
 	int m_x;
 	int m_y;
 	int m_z;
+
+	void init(void)
+	{
+		m_x = 0;
+		m_y = 0;
+		m_z = 0;
+	}
 };
 
 struct vInt4
@@ -88,6 +101,14 @@ struct vInt4
 	int area(void)
 	{
 		return abs((m_z-m_x)*(m_w-m_y));
+	}
+
+	void init(void)
+	{
+		m_x = 0;
+		m_y = 0;
+		m_z = 0;
+		m_w = 0;
 	}
 
 };

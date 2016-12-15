@@ -156,11 +156,11 @@ CamBase* _Stream::getCameraInput(void)
 	return m_pCamera;
 }
 
-bool _Stream::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Stream::draw(void)
 {
-	NULL_F(pFrame);
-
-	if(m_pFrame->empty())return false;
+	CHECK_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
 
 	if(m_showDepth==0)
 	{
@@ -170,11 +170,6 @@ bool _Stream::draw(Frame* pFrame, vInt4* pTextPos)
 	{
 		pFrame->update(m_pCamera->getDepthFrame());
 	}
-
-	putText(*pFrame->getCMat(), "Stream "+(*this->getName())+" FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }

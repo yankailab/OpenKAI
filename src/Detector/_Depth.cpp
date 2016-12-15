@@ -12,7 +12,6 @@ namespace kai
 _Depth::_Depth()
 {
 	_ThreadBase();
-	DetectorBase();
 
 	m_pUniverse = NULL;
 	m_minObjArea = 0;
@@ -45,7 +44,7 @@ bool _Depth::init(void* pKiss)
 
 bool _Depth::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
@@ -56,8 +55,6 @@ bool _Depth::link(void)
 	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Flow",&iName));
 	m_pFlow = (_Flow*)(pK->root()->getChildInstByName(&iName));
-
-	//TODO: link variables to Automaton
 
 	return true;
 }
@@ -72,8 +69,6 @@ bool _Depth::start(void)
 		m_bThreadON = false;
 		return false;
 	}
-
-	LOG(INFO)<< "DepthDetector.start()";
 
 	return true;
 }

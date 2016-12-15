@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 	g_file.close();
 
 	//Start Application
-	g_pGen = new General();
-	g_pGen->start(g_pKiss);
+	g_pStart = new Startup();
+	g_pStart->start(g_pKiss);
 
 	return 0;
 }

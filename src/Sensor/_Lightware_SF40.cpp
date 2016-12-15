@@ -143,7 +143,8 @@ bool _Lightware_SF40::init(void* pKiss)
 
 bool _Lightware_SF40::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
+
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -334,43 +335,38 @@ void _Lightware_SF40::updatePosition(void)
 
 }
 
-bool _Lightware_SF40::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Lightware_SF40::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
+	CHECK_F(!this->_ThreadBase::draw());
 
-	putText(*pFrame->getCMat(),
-			*this->getName() + " FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
-	pTextPos->m_x += SHOW_TAB_PIX;
-	putText(*pFrame->getCMat(),
+	pWin->tabNext();
+	putText(*pMat,
 			"POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
-	putText(*pFrame->getCMat(),
+	putText(*pMat,
 			*this->getName() + " iLine: " + i2str(m_iLine),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
 	if (m_pIn)
-		m_pIn->draw(pFrame, pTextPos);
+		m_pIn->draw();
 
 	if (m_pOut)
-		m_pOut->draw(pFrame, pTextPos);
+		m_pOut->draw();
 
-	pTextPos->m_x = SHOW_TAB_PIX;
+	pWin->tabPrev();
 
 	if (m_nDiv <= 0)
 		return true;
 
 	//plotting lidar output onto screen
-	Mat* pMat = pFrame->getCMat();
-
 	Point pCenter(pMat->cols/2, pMat->rows/2);
 
 	//Plot center as vehicle position

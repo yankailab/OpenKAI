@@ -38,7 +38,7 @@ _ThreadBase::~_ThreadBase()
 
 bool _ThreadBase::init(void* pKiss)
 {
-	CHECK_F(this->BASE::init(pKiss) == false);
+	CHECK_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	int FPS = DEFAULT_FPS;
@@ -50,6 +50,7 @@ bool _ThreadBase::init(void* pKiss)
 
 bool _ThreadBase::link(void)
 {
+	CHECK_F(!this->BASE::link());
 	return true;
 }
 
@@ -131,9 +132,21 @@ void _ThreadBase::waitForComplete(void)
 	pthread_join(m_threadID, NULL);
 }
 
-bool _ThreadBase::draw(Frame* pFrame, vInt4* pTextPos)
+bool _ThreadBase::draw(void)
 {
-	return this->BASE::draw(pFrame,pTextPos);
+	CHECK_F(!this->BASE::draw());
+
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	pWin->tabReset();
+
+	putText(*pMat,
+			*this->getName() + " FPS: " + i2str(getFrameRate()),
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
+			Scalar(0, 255, 0), 1);
+	pWin->lineNext();
+
+	return true;
 }
 
 }

@@ -13,7 +13,6 @@ namespace kai
 _AprilTags::_AprilTags()
 {
 	_ThreadBase();
-	DetectorBase();
 
 	m_pStream = NULL;
 	m_pFrame = NULL;
@@ -31,7 +30,6 @@ _AprilTags::_AprilTags()
 
 _AprilTags::~_AprilTags()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool _AprilTags::init(void* pKiss)
@@ -56,15 +54,13 @@ bool _AprilTags::init(void* pKiss)
 
 bool _AprilTags::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
 	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
-
-	//TODO: link variables to Automaton
 
 	return true;
 }
@@ -196,15 +192,15 @@ void _AprilTags::reset(void)
 	}
 }
 
-bool _AprilTags::draw(Frame* pFrame, vInt4* pTextPos)
+bool _AprilTags::draw(void)
 {
+	CHECK_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	pWin->lineNext();
+
 	int i,j;
 	APRIL_TAG* pTag;
-
-	if (pFrame == NULL)
-		return false;
-
-	Mat* pMat = pFrame->getCMat();
 
 	for (i = 0; i < m_numTags; i++)
 	{
@@ -223,12 +219,6 @@ bool _AprilTags::draw(Frame* pFrame, vInt4* pTextPos)
 					FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 0, 255), 1);
 		}
 	}
-
-	putText(*pMat, "AprilTags FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
 
 	return true;
 }

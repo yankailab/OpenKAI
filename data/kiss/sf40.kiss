@@ -5,8 +5,6 @@
 	"appName":"OpenKAI",
 	"bShow":1,
 	"bFullScreen":0,
-	"screenW":1280,
-	"screenH":720,
 	"waitKey":30,
 	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",

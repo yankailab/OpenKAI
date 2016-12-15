@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Vision/_Flow.h"
 #include "../Stream/Frame.h"
-#include "../Detector/DetectorBase.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -20,7 +19,7 @@ using namespace std;
 namespace kai
 {
 
-class _3DFlow:  public DetectorBase, public _ThreadBase
+class _3DFlow: public _ThreadBase
 {
 public:
 	_3DFlow();

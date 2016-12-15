@@ -1,6 +1,6 @@
-#include "General.h"
+#include "Startup.h"
 
-General* g_pGeneral;
+Startup* g_pGeneral;
 void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
 {
 	g_pGeneral->handleMouse(event, x, y, flags);
@@ -9,10 +9,8 @@ void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
 namespace kai
 {
 
-General::General()
+Startup::Startup()
 {
-	AppBase();
-
 	for (int i = 0; i < N_INST; i++)
 	{
 		m_pInst[i] = NULL;
@@ -20,25 +18,26 @@ General::General()
 	}
 	m_nInst = 0;
 	m_nMouse = 0;
-	m_pFrame = NULL;
 
-	m_screenW = 1280;
-	m_screenH = 720;
+	m_name = "";
+	m_bShowScreen = 1;
+	m_bFullScreen = 0;
+	m_waitKey = 50;
+	m_bRun = true;
+	m_key = 0;
 
 }
 
-General::~General()
+Startup::~Startup()
 {
 }
 
-string* General::getName(void)
+string* Startup::getName(void)
 {
-	const string genName = "APP";
-
-	return (string*)&genName;
+	return &m_name;
 }
 
-bool General::start(Kiss* pKiss)
+bool Startup::start(Kiss* pKiss)
 {
 	int i;
 	NULL_F(pKiss);
@@ -51,8 +50,6 @@ bool General::start(Kiss* pKiss)
 	F_INFO(pApp->v("bShow", &m_bShowScreen));
 	F_INFO(pApp->v("bFullScreen", &m_bFullScreen));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
-	F_INFO(pApp->v("screenW", &m_screenW));
-	F_INFO(pApp->v("screenH", &m_screenH));
 
 	//create instances
 	F_FATAL_F(createAllInst(pKiss));
@@ -68,21 +65,21 @@ bool General::start(Kiss* pKiss)
 
 	if (m_bShowScreen)
 	{
-		m_pFrame = new Frame();
-
-		if (m_bFullScreen)
-		{
-			namedWindow(m_name, CV_WINDOW_NORMAL);
-			setWindowProperty(m_name,
-					CV_WND_PROP_FULLSCREEN,
-					CV_WINDOW_FULLSCREEN);
-		}
-		else
-		{
-			namedWindow(m_name, CV_WINDOW_AUTOSIZE);
-		}
-		setMouseCallback(m_name, onMouseGeneral, NULL);
-
+//		m_pFrame = new Frame();
+//
+//		if (m_bFullScreen)
+//		{
+//			namedWindow(m_name, CV_WINDOW_NORMAL);
+//			setWindowProperty(m_name,
+//					CV_WND_PROP_FULLSCREEN,
+//					CV_WINDOW_FULLSCREEN);
+//		}
+//		else
+//		{
+//			namedWindow(m_name, CV_WINDOW_AUTOSIZE);
+//		}
+//		setMouseCallback(m_name, onMouseGeneral, NULL);
+//
 		while (m_bRun)
 		{
 			draw();
@@ -119,37 +116,18 @@ bool General::start(Kiss* pKiss)
 
 }
 
-void General::draw(void)
+void Startup::draw(void)
 {
-	NULL_(m_pFrame);
-
-	m_pFrame->allocate(m_screenW, m_screenH);
-
-	vInt4 textPos;
-	textPos.m_x = 15;
-	textPos.m_y = 20;
-	textPos.m_w = 20;
-	textPos.m_z = 500;
-
 	for(int i=0; i<m_nInst; i++)
 	{
 		BASE* pInst = m_pInst[i];
 		string* cName = pInst->getClass();
 
-		if (*cName == "_Stream")
-		{
-			if(!pInst->draw(m_pFrame, &textPos))return;
-		}
-		else
-		{
-			pInst->draw(m_pFrame, &textPos);
-		}
+		pInst->draw();
 	}
-
-	imshow(m_name, *m_pFrame->getCMat());
 }
 
-void General::handleKey(int key)
+void Startup::handleKey(int key)
 {
 	switch (key)
 	{
@@ -161,7 +139,7 @@ void General::handleKey(int key)
 	}
 }
 
-void General::handleMouse(int event, int x, int y, int flags)
+void Startup::handleMouse(int event, int x, int y, int flags)
 {
 	MOUSE m;
 	m.m_event = event;
@@ -176,7 +154,7 @@ void General::handleMouse(int event, int x, int y, int flags)
 	}
 }
 
-bool General::createAllInst(Kiss* pKiss)
+bool Startup::createAllInst(Kiss* pKiss)
 {
 	NULL_F(pKiss);
 	Kiss** pItr = pKiss->root()->getChildItr();

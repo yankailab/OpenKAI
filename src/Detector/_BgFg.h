@@ -10,8 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Stream/_Stream.h"
-#include "../Detector/DetectorBase.h"
-
 
 #define NUM_MARKER 128
 #define MIN_MARKER_SIZE 10
@@ -24,7 +22,7 @@
 namespace kai
 {
 
-class _BgFg : public DetectorBase, public _ThreadBase
+class _BgFg : public _ThreadBase
 {
 public:
 	_BgFg();

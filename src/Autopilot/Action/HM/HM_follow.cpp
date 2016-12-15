@@ -33,7 +33,7 @@ HM_follow::~HM_follow()
 
 bool HM_follow::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
+	CHECK_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -56,7 +56,7 @@ bool HM_follow::init(void* pKiss)
 
 bool HM_follow::link(void)
 {
-	CHECK_F(this->ActionBase::link()==false);
+	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 	string iName = "";
 
@@ -107,17 +107,18 @@ void HM_follow::update(void)
 	m_pHM->updateCAN();
 }
 
-bool HM_follow::draw(Frame* pFrame, vInt4* pTextPos)
+bool HM_follow::draw(void)
 {
-	NULL_F(pFrame);
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
 			"HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
 					+ i2str(m_pHM->m_motorPwmR),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
 	CHECK_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,

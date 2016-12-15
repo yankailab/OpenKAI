@@ -29,11 +29,11 @@ public:
 	string* getClass(void);
 
 	virtual bool start(void);
-	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
+	virtual bool draw(void);
 
 public:
 	void*	m_pKiss;
-	bool	m_bShow;
+	void*	m_pWindow;
 };
 
 }

@@ -40,7 +40,7 @@ bool HM_base::init(void* pKiss)
 
 bool HM_base::link(void)
 {
-	CHECK_F(this->ActionBase::link()==false);
+	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";

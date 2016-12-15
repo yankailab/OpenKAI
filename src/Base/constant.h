@@ -11,7 +11,6 @@
 //User defined default parameters
 #define N_INST 128
 #define DEFAULT_FPS 30
-#define SHOW_TAB_PIX 15
 
 #define PI 3.141592653589793
 #define OneOvPI 0.31830988618

@@ -30,7 +30,7 @@ public:
 	bool link(void);
 	bool start(void);
 	void complete(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 	_socket* getFirstSocket(void);
 
 private:

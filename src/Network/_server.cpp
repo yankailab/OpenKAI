@@ -212,24 +212,24 @@ void _server::complete(void)
 	m_lSocket.clear();
 }
 
-bool _server::draw(Frame* pFrame, vInt4* pTextPos)
+bool _server::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw(pFrame, pTextPos));
-
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
 			"Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus,
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
-	pTextPos->m_x += SHOW_TAB_PIX;
+	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_socket*) *itr)->draw(pFrame, pTextPos);
+		((_socket*) *itr)->draw();
 	}
-	pTextPos->m_x -= SHOW_TAB_PIX;
+	pWin->tabPrev();
 
 	return true;
 }

@@ -7,6 +7,7 @@
 
 #include "BASE.h"
 #include "../Script/Kiss.h"
+#include "../UI/Window.h"
 
 namespace kai
 {
@@ -14,12 +15,11 @@ namespace kai
 BASE::BASE()
 {
 	m_pKiss = NULL;
-	m_bShow = true;
+	m_pWindow = NULL;
 }
 
 BASE::~BASE()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool BASE::init(void* pKiss)
@@ -31,14 +31,19 @@ bool BASE::init(void* pKiss)
 	CHECK_F(!pK->v("name",&name));
 	CHECK_F(name.empty());
 
-	F_INFO(pK->v("bShow", &m_bShow));
-
 	m_pKiss = pKiss;
 	return true;
 }
 
 bool BASE::link(void)
 {
+	NULL_F(m_pKiss);
+	Kiss* pK = (Kiss*)m_pKiss;
+
+	string iName = "";
+	F_INFO(pK->v("Renderer",&iName));
+	m_pWindow = (Window*)(pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
@@ -59,12 +64,11 @@ bool BASE::start(void)
 	return true;
 }
 
-bool BASE::draw(Frame* pFrame, vInt4* pTextPos)
+bool BASE::draw(void)
 {
-	NULL_F(pFrame);
-	NULL_F(pTextPos);
-
-	return m_bShow;
+	NULL_F(m_pWindow);
+	NULL_F(((Window*)m_pWindow)->getFrame());
+	return true;
 }
 
 

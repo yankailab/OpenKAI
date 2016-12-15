@@ -11,8 +11,7 @@
 #include "common.h"
 #include "BASE.h"
 #include "../Script/Kiss.h"
-#include "../Stream/Frame.h"
-
+#include "../UI/Window.h"
 
 namespace kai
 {
@@ -28,7 +27,7 @@ public:
 	virtual bool start(void);
 	virtual void complete(void);
 	void waitForComplete(void);
-	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
+	virtual bool draw(void);
 
 	void sleepThread(int64_t usec);
 	void wakeupThread(void);

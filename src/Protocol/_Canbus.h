@@ -39,7 +39,7 @@ public:
 	bool link(void);
 	void close(void);
 	bool start(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	void send(unsigned long addr, unsigned char len, unsigned char* pData);
 	bool recv();

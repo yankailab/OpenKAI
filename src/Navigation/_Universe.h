@@ -50,7 +50,7 @@ public:
 	OBJECT* addObject(OBJECT* pNewObj);
 	OBJECT* getObjectByClass(int iClass);
 
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 private:
 	void updateObject(void);

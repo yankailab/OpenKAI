@@ -20,7 +20,6 @@ _Automaton::_Automaton()
 
 _Automaton::~_Automaton()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool _Automaton::init(void* pKiss)
@@ -52,7 +51,7 @@ bool _Automaton::init(void* pKiss)
 
 bool _Automaton::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -98,16 +97,16 @@ int _Automaton::getCurrentStateIdx(void)
 	return m_iState;
 }
 
-bool _Automaton::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Automaton::draw(void)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->BASE::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
-	Mat* pMat = pFrame->getCMat();
-
-	putText(*pMat, "Automaton State: " + m_pStateName[m_iState],
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+	putText(*pMat, *this->getName()+" State: " + m_pStateName[m_iState],
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
 	return true;
 }

@@ -25,7 +25,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	bool draw(Frame* pFrame, vInt4* textPos);
+	bool draw(void);
 
 	Frame* getBGRFrame(void);
 	Frame* getGrayFrame(void);

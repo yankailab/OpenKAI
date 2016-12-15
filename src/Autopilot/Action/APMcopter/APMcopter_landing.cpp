@@ -51,7 +51,7 @@ bool APMcopter_landing::init(void* pKiss)
 
 bool APMcopter_landing::link(void)
 {
-	CHECK_F(this->ActionBase::link()==false);
+	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -180,10 +180,11 @@ void APMcopter_landing::landingAtBullseye(void)
 
 }
 
-bool APMcopter_landing::draw(Frame* pFrame, vInt4* pTextPos)
+bool APMcopter_landing::draw(void)
 {
-	NULL_F(pFrame);
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	if(m_pAT)
 	{
@@ -194,10 +195,10 @@ bool APMcopter_landing::draw(Frame* pFrame, vInt4* pTextPos)
 			putText(*pMat,
 					"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
 							+ f2str(m_landingTarget.m_angleY) + ")",
-					cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+					*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 					Scalar(0, 255, 0), 1);
 
-			pTextPos->m_y += pTextPos->m_w;
+			pWin->lineNext();
 		}
 	}
 
@@ -224,10 +225,10 @@ bool APMcopter_landing::draw(Frame* pFrame, vInt4* pTextPos)
 		putText(*pMat,
 				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
 						+ f2str(m_landingTarget.m_angleY) + ")",
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 				Scalar(0, 255, 0), 1);
 
-		pTextPos->m_y += pTextPos->m_w;
+		pWin->lineNext();
 	}
 
 	return true;

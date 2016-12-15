@@ -8,7 +8,6 @@
 #include "../Base/common.h"
 #include "../Stream/_Stream.h"
 #include "../Navigation/_Universe.h"
-#include "../Detector/DetectorBase.h"
 #include "../Vision/_Flow.h"
 
 
@@ -19,7 +18,7 @@ using namespace std;
 namespace kai
 {
 
-class _Depth: public DetectorBase, public _ThreadBase
+class _Depth: public _ThreadBase
 {
 public:
 	_Depth();

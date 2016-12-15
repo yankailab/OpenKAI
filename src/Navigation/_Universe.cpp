@@ -193,15 +193,11 @@ OBJECT* _Universe::getObjectByClass(int iClass)
 	return NULL;
 }
 
-bool _Universe::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Universe::draw(void)
 {
-	NULL_F(pFrame);
-
-	Mat* pMat = pFrame->getCMat();
-	putText(*pMat, "Universe FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	CHECK_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	OBJECT* pObj;
 	Scalar color;

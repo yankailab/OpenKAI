@@ -19,7 +19,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	void update(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 public:
 	void updateAttitude(void);

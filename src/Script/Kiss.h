@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_IO_CONFIG_H_
-#define OPENKAI_SRC_IO_CONFIG_H_
+#ifndef OPENKAI_SRC_SCRIPT_KISS_H_
+#define OPENKAI_SRC_SCRIPT_KISS_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
@@ -35,7 +35,6 @@ public:
 	bool v(string name, double* val);
 	bool v(string name, string* val);
 
-//	bool array(string name,int* val);
 	bool array(string name, value::array* val);
 
 private:

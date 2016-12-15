@@ -13,7 +13,6 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
-#include "../Application/AppBase.h"
 #include "../Stream/Frame.h"
 #include "../Stream/FrameGroup.h"
 #include "../Camera/CamBase.h"
@@ -25,8 +24,8 @@
 
 #include "../IO/SerialPort.h"
 #include "../UI/UI.h"
+#include "../UI/Window.h"
 
-#include "../Detector/DetectorBase.h"
 #include "../Detector/_Bullseye.h"
 #include "../Vision/_Flow.h"
 #include "../Detector/_Depth.h"

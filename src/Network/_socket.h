@@ -12,6 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Protocol/Peer.h"
 #include "../Script/Kiss.h"
+#include "../UI/Window.h"
 
 #define N_BUF 128
 #define TIMEOUT_RECV_USEC 1000
@@ -30,7 +31,7 @@ public:
 	bool start(void);
 	void close(void);
 	void complete(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	bool write(uint8_t* pBuf, int nByte);
 	int  read(uint8_t* pBuf, int nByte);

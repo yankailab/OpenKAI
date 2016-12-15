@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_Stream.h"
-#include "../Detector/DetectorBase.h"
 #include "../include/apriltags-cpp/TagDetector.h"
 
 
@@ -30,7 +29,7 @@ struct APRIL_TAG
 };
 
 
-class _AprilTags : public DetectorBase, public _ThreadBase
+class _AprilTags : public _ThreadBase
 {
 public:
 	_AprilTags();
@@ -39,7 +38,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	int getTags(int tagID, APRIL_TAG* pTag);
 	void reset(void);

@@ -13,7 +13,7 @@ RC_base::~RC_base()
 
 bool RC_base::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss)==false);
+	CHECK_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 

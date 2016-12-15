@@ -5,7 +5,7 @@
 #include "../../Base/common.h"
 #include "../../Base/BASE.h"
 #include "../../Automaton/_Automaton.h"
-#include "../../Stream/Frame.h"
+#include "../../UI/Window.h"
 
 namespace kai
 {
@@ -19,7 +19,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
 	virtual void update(void);
-	virtual bool draw(Frame* pFrame, vInt4* pTextPos);
+	virtual bool draw(void);
 
 public:
 	_Automaton* m_pAM;

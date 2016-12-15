@@ -7,7 +7,6 @@ namespace kai
 _BgFg::_BgFg()
 {
 	_ThreadBase();
-	DetectorBase();
 
 	m_cudaDeviceID = 0;
 
@@ -21,7 +20,6 @@ _BgFg::_BgFg()
 
 _BgFg::~_BgFg()
 {
-	// TODO Auto-generated destructor stub
 }
 
 

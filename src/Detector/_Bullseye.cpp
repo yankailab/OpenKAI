@@ -13,8 +13,6 @@ namespace kai
 _Bullseye::_Bullseye()
 {
 	_ThreadBase();
-	DetectorBase();
-
 	m_cudaDeviceID = 0;
 
 	m_method = METHOD_FILL;
@@ -34,7 +32,6 @@ _Bullseye::_Bullseye()
 
 _Bullseye::~_Bullseye()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool _Bullseye::init(void* pKiss)
@@ -63,15 +60,13 @@ bool _Bullseye::init(void* pKiss)
 
 bool _Bullseye::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
 	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
-
-	//TODO: link variables to Automaton
 
 	return true;
 }

@@ -97,8 +97,7 @@ void _Lightware_SF40_sender::Map(void)
 	m_pSerialPort->write((uint8_t*)TM.c_str(), TM.length());
 }
 
-
-bool _Lightware_SF40_sender::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Lightware_SF40_sender::draw(void)
 {
 	return true;
 }

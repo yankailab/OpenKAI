@@ -13,12 +13,10 @@ namespace kai
 UI::UI()
 {
 	m_nBtn = 0;
-
 }
 
 UI::~UI()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool UI::init(void* pKiss)
@@ -78,12 +76,11 @@ BUTTON* UI::addBtn(void)
 	return pNew;
 }
 
-bool UI::draw(Frame* pFrame, vInt4* pTextPos)
+bool UI::draw(void)
 {
-	if (pFrame == NULL)
-		return false;
-
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->BASE::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	int i;
 	for(i=0; i<m_nBtn;i++)

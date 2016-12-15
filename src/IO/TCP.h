@@ -26,7 +26,7 @@ public:
 	bool write(uint8_t* pBuf, int nByte);
 	bool writeLine(uint8_t* pBuf, int nByte);
 
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 private:
 	_server* m_pServer;

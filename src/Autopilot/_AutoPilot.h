@@ -30,7 +30,7 @@ public:
 	bool link(void);
 
 	bool start(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	void onMouse(MOUSE* pMouse);
 

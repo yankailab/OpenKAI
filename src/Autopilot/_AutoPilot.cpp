@@ -106,21 +106,15 @@ void _AutoPilot::update(void)
 
 }
 
-bool _AutoPilot::draw(Frame* pFrame, vInt4* pTextPos)
+bool _AutoPilot::draw(void)
 {
-	NULL_F(pFrame);
-
-	Mat* pMat = pFrame->getCMat();
-
-	putText(*pMat, "AutoPilot FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-
-	pTextPos->m_y += pTextPos->m_w;
+	CHECK_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	for(int i=0;i<m_nAction;i++)
 	{
-		m_pAction[i]->draw(pFrame, pTextPos);
+		m_pAction[i]->draw();
 	}
 
 	return true;

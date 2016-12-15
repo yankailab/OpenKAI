@@ -10,8 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
+#include "../UI/Window.h"
 #include "../Script/Kiss.h"
-#include "../Stream/Frame.h"
 
 
 #define N_BUTTON 16
@@ -61,7 +61,7 @@ public:
 	virtual ~UI();
 
 	bool init(void* pKiss);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool draw(void);
 
 	BUTTON* addBtn(void);
 

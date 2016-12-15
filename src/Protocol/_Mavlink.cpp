@@ -420,27 +420,23 @@ void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
 	return;
 }
 
-bool _Mavlink::draw(Frame* pFrame, vInt4* pTextPos)
+bool _Mavlink::draw(void)
 {
-	NULL_F(pFrame);
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->BASE::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	if (m_pSerialPort->isOpen())
 	{
-		putText(*pMat,
-				"Mavlink: Connected; FPS: " + i2str(getFrameRate()) + ", Mode: "
-						+ i2str(m_msg.heartbeat.custom_mode),
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
-				0.5, Scalar(0, 255, 0), 1);
+		this->_ThreadBase::draw();
 	}
 	else
 	{
-		putText(*pMat, "Mavlink Not Connected",
-				cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX,
+		putText(*pMat, *this->getName()+": Not Connected",
+				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
 				0.5, Scalar(0, 255, 0), 1);
+		pWin->lineNext();
 	}
-
-	pTextPos->m_y += pTextPos->m_w;
 
 	//Vehicle position
 //	char strBuf[512];

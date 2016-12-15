@@ -34,7 +34,7 @@ RC_visualFollow::~RC_visualFollow()
 
 bool RC_visualFollow::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
+	CHECK_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	m_roll.reset();
@@ -72,7 +72,7 @@ bool RC_visualFollow::init(void* pKiss)
 
 bool RC_visualFollow::link(void)
 {
-	CHECK_F(this->ActionBase::link()==false);
+	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -162,11 +162,13 @@ void RC_visualFollow::update(void)
 
 }
 
-bool RC_visualFollow::draw(Frame* pFrame, vInt4* pTextPos)
+bool RC_visualFollow::draw(void)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+
 	NULL_F(m_pROITracker);
-	Mat* pMat = pFrame->getCMat();
 
 	Rect2d roi;
 
@@ -190,11 +192,11 @@ bool RC_visualFollow::draw(Frame* pFrame, vInt4* pTextPos)
 
 	if (m_ROImode == MODE_ASSIST)
 	{
-		m_pUIassist->draw(pFrame, pTextPos);
+		m_pUIassist->draw();
 	}
 	else if (m_ROImode == MODE_DRAWRECT)
 	{
-		m_pUIdrawRect->draw(pFrame, pTextPos);
+		m_pUIdrawRect->draw();
 	}
 
 	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50,
