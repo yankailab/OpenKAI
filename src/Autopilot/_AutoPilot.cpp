@@ -50,7 +50,7 @@ bool _AutoPilot::init(void* pKiss)
 
 		//Add action modules above
 
-		LOG(INFO)<<"Unknown action class:"+pAction->m_class;
+		LOG_E("Unknown action class: "+pAction->m_class);
 	}
 
 	return true;
@@ -58,7 +58,7 @@ bool _AutoPilot::init(void* pKiss)
 
 bool _AutoPilot::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->BASE::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	int i;

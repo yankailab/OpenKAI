@@ -63,7 +63,7 @@ bool _socket::init(void* pKiss)
 
 bool _socket::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -77,12 +77,11 @@ bool _socket::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG_E("pthread create: "<<retCode);
+		LOG_E(retCode);
 		m_bThreadON = false;
 		return false;
 	}
 
-	LOG_I("Update thread started");
 	return true;
 }
 
@@ -192,10 +191,12 @@ void _socket::recv(void)
 		return;
 	}
 
+	pthread_mutex_lock(&m_mutexRecv);
 	for(int i=0;i<nRecv;i++)
 	{
 		m_queRecv.push(m_pBuf[i]);
 	}
+	pthread_mutex_unlock(&m_mutexRecv);
 }
 
 bool _socket::write(uint8_t* pBuf, int nByte)

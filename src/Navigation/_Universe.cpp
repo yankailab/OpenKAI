@@ -26,12 +26,11 @@ _Universe::_Universe()
 
 _Universe::~_Universe()
 {
-	// TODO Auto-generated destructor stub
 }
 
 bool _Universe::init(void* pKiss)
 {
-	CHECK_F(this->_ThreadBase::init(pKiss) == false);
+	CHECK_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -44,7 +43,7 @@ bool _Universe::init(void* pKiss)
 
 bool _Universe::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 
 	return true;
 }

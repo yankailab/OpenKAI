@@ -1,17 +1,30 @@
 {
 	"name":"APP",
-	"class":"General",
+	"class":"Startup",
 	"appName":"OpenKAI",
-	"bShowScreen":1,
-	"bFullScreen":0,
+	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
-	"name":"mainStream",
+	"name":"APM_monitor",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"Front",
 	"class":"_Stream",
 	"bInst":1,
+	"Window":"APM_monitor",
 	"bGray":0,
 	"bHSV":0,
 	"bShowDepth":0,
@@ -70,6 +83,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"FPS":30,
+	"Window":"APM_monitor",
 	"frameLifetime":500000,
 	"probMin":0.0,
 	"posDisparity":100,
@@ -78,9 +92,10 @@
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"_Stream":"mainStream",
+	"_Stream":"Front",
+	"Window":"APM_monitor",
 	"_Universe":"Universe",
 	"_Automaton":"APMstate",
 	"dir":"/home/ubuntu/src/model/ped-100/",
@@ -95,9 +110,10 @@
 {
 	"name":"SSD",
 	"class":"_SSD",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"_Stream":"mainStream",
+	"_Stream":"Front",
+	"Window":"APM_monitor",
 	"_Universe":"Universe",
 	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
 	"minConfidence":0.3,
@@ -112,8 +128,15 @@
 	"class":"_Mavlink",
 	"bInst":0,
 	"FPS":100,
-	"portName":"/dev/ttyS0",
-	"baudrate":115200,
+	"Window":"APM_monitor",
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
+	}
 }
 
 {
@@ -121,14 +144,22 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":100,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":57600,
+	"Window":"APM_monitor",
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
+	}
 }
 
 {
 	"name":"APMstate",
 	"class":"_Automaton",
 	"bInst":1,
+	"Window":"APM_monitor",
 	"startState":"APM_STANDBY",
 
 	{
@@ -146,6 +177,7 @@
 	"_Automaton":"APMstate",
 	"bInst":1,
 	"FPS":30,
+	"Window":"APM_monitor",
 	"bMouse":1,
 	
 	{
@@ -156,6 +188,7 @@
 			"class":"APMrover_base",
 			"bInst":1,
 			"_Automaton":"APMstate",
+			"Window":"APM_monitor",
 			"_Mavlink":"APM_USB",
 			"maxThrust":2,
 			"maxSteer":10,
@@ -177,6 +210,7 @@
 			"name":"APMfollow",
 			"class":"APMrover_follow",
 			"bInst":1,
+			"Window":"APM_monitor",
 			"_Automaton":"APMstate",
 			"activeState":"APM_CRUISE",
 			"APMrover_base":"APMbase",

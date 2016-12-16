@@ -43,14 +43,13 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	void reset(void);
+	bool draw(void);
 
+	void reset(void);
 	int addObjClass(string* pName, uint8_t safety);
 
 	OBJECT* addObject(OBJECT* pNewObj);
 	OBJECT* getObjectByClass(int iClass);
-
-	bool draw(void);
 
 private:
 	void updateObject(void);
@@ -78,6 +77,6 @@ public:
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_NAVIGATION__UNIVERSE_H_ */
+#endif

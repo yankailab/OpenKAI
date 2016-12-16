@@ -101,7 +101,7 @@ int TCP::read(uint8_t* pBuf, int nByte)
 	    return m_pSocket->read(pBuf,nByte);
 	}
 
-	LOG_E("IO is NULL in read");
+	LOG_E("read: IO is NULL");
 	return -1;
 }
 

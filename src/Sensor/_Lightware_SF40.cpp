@@ -144,7 +144,6 @@ bool _Lightware_SF40::init(void* pKiss)
 bool _Lightware_SF40::link(void)
 {
 	CHECK_F(!this->_ThreadBase::link());
-
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -165,7 +164,7 @@ bool _Lightware_SF40::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< retCode;
+		LOG_E(retCode);
 		m_bThreadON = false;
 		return false;
 	}
@@ -256,10 +255,9 @@ bool _Lightware_SF40::readLine(void)
 	{
 		if (buf == 0)
 			continue;
-//		if (buf == CR)
-//			continue;
 		if (buf == LF || buf == CR)
 		{
+			if(m_strRecv.empty())continue;
 			CHECK_T(m_pOut==NULL);
 
 			if (!m_pOut->isOpen())
@@ -362,14 +360,10 @@ bool _Lightware_SF40::draw(void)
 		m_pOut->draw();
 
 	pWin->tabPrev();
-
-	if (m_nDiv <= 0)
-		return true;
-
-	//plotting lidar output onto screen
-	Point pCenter(pMat->cols/2, pMat->rows/2);
+	CHECK_T(m_nDiv <= 0);
 
 	//Plot center as vehicle position
+	Point pCenter(pMat->cols/2, pMat->rows/2);
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	//Plot lidar result

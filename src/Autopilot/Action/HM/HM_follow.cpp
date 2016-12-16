@@ -50,7 +50,6 @@ bool HM_follow::init(void* pKiss)
 	m_pTargetY->startMedian(m_filterWindow);
 	m_pTargetArea->startMedian(m_filterWindow);
 
-
 	return true;
 }
 
@@ -75,6 +74,7 @@ void HM_follow::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pUniv);
+	NULL_(m_pAM);
 	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	//get visual target and decide motion

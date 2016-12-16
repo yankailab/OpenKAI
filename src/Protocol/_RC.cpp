@@ -23,14 +23,14 @@ bool _RC::init(void* pKiss)
 	Kiss* pCC = pK->o("serialPort");
 	CHECK_F(pCC->empty());
 	m_pSerialPort = new SerialPort();
-	CHECK_F(m_pSerialPort->init(pCC));
+	CHECK_F(!m_pSerialPort->init(pCC));
 
 	return true;
 }
 
 bool _RC::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 
 	return true;
 }

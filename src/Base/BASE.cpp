@@ -27,8 +27,8 @@ bool BASE::init(void* pKiss)
 	NULL_F(pKiss);
 	Kiss* pK = (Kiss*)pKiss;
 
-	string name;
-	CHECK_F(!pK->v("name",&name));
+	string name="";
+	F_FATAL_F(pK->v("name",&name));
 	CHECK_F(name.empty());
 
 	m_pKiss = pKiss;

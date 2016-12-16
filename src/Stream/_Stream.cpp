@@ -81,9 +81,7 @@ bool _Stream::init(void* pKiss)
 
 bool _Stream::link(void)
 {
-	NULL_F(m_pKiss);
-	//TODO:link variables
-
+	CHECK_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -158,7 +156,7 @@ CamBase* _Stream::getCameraInput(void)
 
 bool _Stream::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	CHECK_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
@@ -171,7 +169,9 @@ bool _Stream::draw(void)
 		pFrame->update(m_pCamera->getDepthFrame());
 	}
 
+	this->_ThreadBase::draw();
+
 	return true;
 }
 
-} /* namespace kai */
+}

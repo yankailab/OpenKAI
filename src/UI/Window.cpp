@@ -74,6 +74,7 @@ bool Window::link(void)
 bool Window::draw(void)
 {
 	NULL_F(m_pFrame);
+	CHECK_F(m_pFrame->empty());
 
 	imshow(*this->getName(), *m_pFrame->getCMat());
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);

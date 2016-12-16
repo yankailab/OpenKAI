@@ -109,17 +109,17 @@ void APMrover_follow::update(void)
 
 }
 
-bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
+bool APMrover_follow::draw(void)
 {
-	NULL_F(pFrame);
-	Mat* pMat = pFrame->getCMat();
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
-			"APMrover: thrust=" + i2str(m_pAPM->m_thrust) + ", steer="
-					+ i2str(m_pAPM->m_steer),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
+			*this->getName() + ": thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer),
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	pWin->lineNext();
 
 	CHECK_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
@@ -132,15 +132,15 @@ bool APMrover_follow::draw(Frame* pFrame, vInt4* pTextPos)
 			m_pAPM->m_pMavlink->m_msg.attitude.roll,
 			m_pAPM->m_pMavlink->m_msg.attitude.pitch,
 			m_pAPM->m_pMavlink->m_msg.attitude.yaw);
-	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
-	pTextPos->m_y += pTextPos->m_w;
+	cv::putText(*pMat, strBuf, *pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	pWin->lineNext();
 
 	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
 			m_pAPM->m_pMavlink->m_msg.attitude.rollspeed,
 			m_pAPM->m_pMavlink->m_msg.attitude.pitchspeed,
 			m_pAPM->m_pMavlink->m_msg.attitude.yawspeed);
-	PUTTEXT(pTextPos->m_x, pTextPos->m_y, strBuf);
-	pTextPos->m_y += pTextPos->m_w;
+	cv::putText(*pMat, strBuf, *pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
+	pWin->lineNext();
 
 	return true;
 }

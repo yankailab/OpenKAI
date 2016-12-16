@@ -1,21 +1,34 @@
 {
 	"name":"APP",
-	"class":"General",
+	"class":"Startup",
 	"appName":"OpenKAI",
-	"bShowScreen":1,
-	"bFullScreen":1,
+	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/src/preset/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
-	"name":"mainStream",
+	"name":"HM_monitor",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"HMstream",
 	"class":"_Stream",
 	"bInst":1,
+	"Window":"HM_monitor",
 	"bGray":0,
 	"bHSV":0,
 	"bShowDepth":0,
-	"_Automaton":"flight",
+	"_Automaton":"HMauto",
 	"input":"ZEDL",
 		
 	{
@@ -70,6 +83,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"FPS":30,
+	"Window":"HM_monitor",
 	"frameLifetime":500000,
 	"probMin":0.0,
 	"posDisparity":100,
@@ -78,9 +92,10 @@
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"_Stream":"mainStream",
+	"Window":"HM_monitor",
+	"_Stream":"HMstream",
 	"_Universe":"Universe",
 	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/model/ped-100/",
@@ -97,9 +112,10 @@
 	"class":"_SSD",
 	"bInst":1,
 	"FPS":30,
-	"_Stream":"mainStream",
+	"Window":"HM_monitor",
+	"_Stream":"HMstream",
 	"_Universe":"Universe",
-	"dir":"/home/ubuntu/src/caffe/models/VGGNet/coco/SSD_300x300/",
+	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
 	"minConfidence":0.3,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
@@ -108,52 +124,35 @@
 }
 
 {
-	"name":"Caffe",
-	"class":"Caffe",
-	"bInst":0,
-	"FPS":0,
-	"_Automaton":"flight",
-	"dir":"/home/ubuntu/src/caffe/caffe/",
-	"modelFile":"models/bvlc_reference_caffenet/deploy.prototxt",
-	"trainedFile":"models/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel",
-	"meanFile":"data/ilsvrc12/imagenet_mean.binaryproto",
-	"labelFile":"data/ilsvrc12/synset_words.txt",
-}
-
-{
 	"name":"HMauto",
 	"class":"_Automaton",
-	"bInst":0,
+	"bInst":1,
 	"FPS":10,
+	"Window":"HM_monitor",
 	"startState":"HM_STANDBY",
 
 	{
-		"name":"HM_STANDBY",
-		"class":"State",
+		"state":"HM_STANDBY",
 		"bInst":1,
 	}
 	
 	{
-		"name":"HM_FOLLOW",
-		"class":"State",
+		"state":"HM_FOLLOW",
 		"bInst":1,
 	}
 
 	{
-		"name":"HM_WORK",
-		"class":"State",
+		"state":"HM_WORK",
 		"bInst":1,
 	}
 
 	{
-		"name":"HM_RTH",
-		"class":"State",
+		"state":"HM_RTH",
 		"bInst":1,
 	}
 
 	{
-		"name":"HM_CHARGE",
-		"class":"State",
+		"state":"HM_CHARGE",
 		"bInst":1,
 	}	
 }
@@ -162,15 +161,23 @@
 	"name":"HMcanbus",
 	"class":"_Canbus",
 	"bInst":1,
-	"FPS":100,
-	"portName":"/dev/ttyACM0",
-	"baudrate":115200,
+	"Window":"HM_monitor",
+	"FPS":100,	
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
+	}
 }
 
 {
 	"name":"autopilot",
 	"class":"_AutoPilot",
 	"_Automaton":"HMauto",
+	"Window":"HM_monitor",
 	"bInst":1,
 	"FPS":30,
 	"bMouse":1,
@@ -182,6 +189,7 @@
 			"name":"HMbase",
 			"class":"HM_base",
 			"bInst":1,
+			"Window":"HM_monitor",
 			"_Canbus":"HMcanbus",
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
@@ -195,6 +203,7 @@
 			"name":"HMfollow",
 			"class":"HM_follow",
 			"bInst":1,
+			"Window":"HM_monitor",
 			"HM_base":"HMbase",
 			"_Universe":"Universe",			
 			"_Automaton":"HMauto",

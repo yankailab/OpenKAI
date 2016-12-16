@@ -1,10 +1,9 @@
 
 {
 	"name":"APP",
-	"class":"General",
+	"class":"Startup",
 	"appName":"OpenKAI",
-	"bShow":1,
-	"bFullScreen":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
@@ -12,7 +11,20 @@
 }
 
 {
-	"name":"SF40",
+	"name":"SF40_server",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"SF40_client",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -25,21 +37,10 @@
 }
 
 {
-	"name":"APM",
-	"class":"_Mavlink",
-	"bInst":0,
-	"bShow":1,
-	"FPS":100,
-	"portName":"/dev/ttyS0",
-	"baudrate":921600,
-	"_Automaton":"flight",
-}
-
-{
 	"name":"SF40server",
 	"class":"_Lightware_SF40",
 	"bInst":1,
-	"Window":"SF40",
+	"Window":"SF40_server",
 	"FPS":300,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
@@ -73,7 +74,7 @@
 			"name":"server",
 			"bInst":1,
 			"bShow":1,
-			"listenPort":19860,
+			"listenPort":19848,
 			"nListen":1,
 		}
 	}
@@ -82,15 +83,13 @@
 		"name":"input",
 		"class":"File",
 		"bInst":1,
-		"bShow":1,
-		"fileName":"output/scimus20161213_nDiv=180_alt.sf40raw",
+		"fileName":"output/test.sf40raw",
 	}
 	
 	{
 		"name":"output",
 		"class":"File",
 		"bInst":0,
-		"bShow":1,
 		"fileName":"output/test.sf40log",
 	}
 }
@@ -99,8 +98,8 @@
 	"name":"SF40client",
 	"class":"_Lightware_SF40",
 	"bInst":1,
-	"bShow":1,
 	"FPS":300,
+	"Window":"SF40_client",
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
 	"nDiv":180,
@@ -125,11 +124,20 @@
 			"bInst":1,
 			"bShow":1,
 			"addr":"127.0.0.1",
-			"port":19860,
+			"port":19848,
 		}
 	}	
 }
 
+{
+	"name":"APM",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":100,
+	"portName":"/dev/ttyS0",
+	"baudrate":921600,
+	"_Automaton":"flight",
+}
 
 {
 	"name":"APMstate",
@@ -153,7 +161,6 @@
 	"class":"_AutoPilot",
 	"_Automaton":"APMstate",
 	"bInst":0,
-	"bShow":1,
 	"FPS":30,
 	
 	{
@@ -163,7 +170,6 @@
 			"name":"APMbase",
 			"class":"APMcopter_base",
 			"bInst":1,
-			"bShow":1,
 			"_Automaton":"APMstate",
 			"_Mavlink":"APM",
 			
@@ -214,7 +220,6 @@
 			"name":"APMguided",
 			"class":"APMcopter_guided",
 			"bInst":1,
-			"bShow":1,
 			"_Automaton":"APMstate",
 			"activeState":"APM_POSHOLD",
 			"APMcopter_base":"APMbase",

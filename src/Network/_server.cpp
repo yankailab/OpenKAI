@@ -43,7 +43,7 @@ bool _server::init(void* pKiss)
 
 bool _server::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -94,8 +94,7 @@ bool _server::handler(void)
 	//Bind
 	m_strStatus = "Binding";
 	LOG_I(m_strStatus);
-	if (bind(m_socket, (struct sockaddr *) &m_serverAddr, sizeof(m_serverAddr))
-			< 0)
+	if (bind(m_socket, (struct sockaddr *) &m_serverAddr, sizeof(m_serverAddr)) < 0)
 	{
 		m_strStatus = "Binding failed";
 		LOG_I(m_strStatus);
@@ -123,26 +122,27 @@ bool _server::handler(void)
 		if (m_lSocket.size() >= m_nSocket)
 		{
 			LOG_I("Incoming socket number reached limit");
-//
-//			//clear up disconnected sockets
-//			auto itr = m_lSocket.begin();
-//			while (itr != m_lSocket.end())
-//			{
-//				_socket* pSocket = *itr;
-//				if (!pSocket->m_bConnected)
-//				{
-//					itr = m_lSocket.erase(itr);
-//					pSocket->complete();
-//					delete pSocket;
-//					LOG_I("Deleted disconnected socket");
-//				}
-//				else
-//				{
-//					itr++;
-//				}
-//			}
-//
-			continue;
+
+			//clear up disconnected sockets
+			auto itr = m_lSocket.begin();
+			while (itr != m_lSocket.end())
+			{
+				_socket* pSocket = *itr;
+				if (!pSocket->m_bConnected)
+				{
+					itr = m_lSocket.erase(itr);
+					pSocket->complete();
+					delete pSocket;
+					LOG_I("Deleted disconnected socket");
+				}
+				else
+				{
+					itr++;
+				}
+			}
+
+			if (m_lSocket.size() >= m_nSocket)
+				continue;
 		}
 
 		_socket* pSocket = new _socket();
@@ -153,14 +153,11 @@ bool _server::handler(void)
 		}
 		LOG_I("Created new _socket");
 
-
 		//TODO: polish
 		struct timeval timeout;
 		timeout.tv_sec = 1000 / USEC_1SEC;
 		timeout.tv_usec = 1000 % USEC_1SEC;
 		setsockopt(socketNew, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
-
 
 		pSocket->init(m_pKiss);
 		struct sockaddr_in *pAddr = (struct sockaddr_in *) &clientAddr;
@@ -215,13 +212,13 @@ void _server::complete(void)
 bool _server::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
+	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
 			"Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus,
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
+			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
+			1);
 	pWin->lineNext();
 
 	pWin->tabNext();

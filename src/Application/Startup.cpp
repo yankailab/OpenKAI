@@ -1,9 +1,9 @@
 #include "Startup.h"
 
-Startup* g_pGeneral;
+Startup* g_pStartup;
 void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
 {
-	g_pGeneral->handleMouse(event, x, y, flags);
+	g_pStartup->handleMouse(event, x, y, flags);
 }
 
 namespace kai
@@ -20,8 +20,7 @@ Startup::Startup()
 	m_nMouse = 0;
 
 	m_name = "";
-	m_bShowScreen = 1;
-	m_bFullScreen = 0;
+	m_bWindow = 1;
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
@@ -42,13 +41,12 @@ bool Startup::start(Kiss* pKiss)
 	int i;
 	NULL_F(pKiss);
 
-	g_pGeneral = this;
+	g_pStartup = this;
 	Kiss* pApp = pKiss->root()->o("APP");
 	if(pApp->empty())return false;
 
 	F_INFO(pApp->v("appName", &m_name));
-	F_INFO(pApp->v("bShow", &m_bShowScreen));
-	F_INFO(pApp->v("bFullScreen", &m_bFullScreen));
+	F_INFO(pApp->v("bWindow", &m_bWindow));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
 
 	//create instances
@@ -63,23 +61,8 @@ bool Startup::start(Kiss* pKiss)
 	//UI thread
 	m_bRun = true;
 
-	if (m_bShowScreen)
+	if (m_bWindow)
 	{
-//		m_pFrame = new Frame();
-//
-//		if (m_bFullScreen)
-//		{
-//			namedWindow(m_name, CV_WINDOW_NORMAL);
-//			setWindowProperty(m_name,
-//					CV_WND_PROP_FULLSCREEN,
-//					CV_WINDOW_FULLSCREEN);
-//		}
-//		else
-//		{
-//			namedWindow(m_name, CV_WINDOW_AUTOSIZE);
-//		}
-//		setMouseCallback(m_name, onMouseGeneral, NULL);
-//
 		while (m_bRun)
 		{
 			draw();
@@ -163,18 +146,18 @@ bool Startup::createAllInst(Kiss* pKiss)
 	while (pItr[i])
 	{
 		Kiss* pK = pItr[i++];
-		if(pK->m_class == "General")continue;
+		if(pK->m_class == "Startup")continue;
 
 		BASE* pNew = m_module.createInstance(pK);
 		if(pNew==NULL)
 		{
-			LOG(ERROR)<<"Create instance failed: "+pK->m_name;
+			LOG_E("Create instance failed: "+pK->m_name);
 			continue;
 		}
 
 		if(m_nInst>=N_INST)
 		{
-			LOG(ERROR)<<"Number of module instances reached limit";
+			LOG_I("Number of module instances reached limit");
 			return false;
 		}
 
@@ -184,7 +167,7 @@ bool Startup::createAllInst(Kiss* pKiss)
 		F_FATAL_F(pNew->start());
 
 		if(*pNew->getClass() != "_AutoPilot")continue;
-		if(!m_bShowScreen)continue;
+		if(!m_bWindow)continue;
 
 		m_pMouse[m_nMouse] = pNew;
 		m_nMouse++;

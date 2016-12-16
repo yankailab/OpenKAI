@@ -30,7 +30,4 @@
 #define DEL(x) if(x){delete x;}
 #define SWAP(x,y,t) t=x;x=y;y=t;
 
-#define PUTTEXT(x,y,t) cv::putText(*pMat, String(t),Point(x, y),FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1)
-
-
-#endif /* OPENKAI_SRC_BASE_MACRO_H_ */
+#endif

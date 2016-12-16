@@ -9,7 +9,6 @@
 namespace kai
 {
 
-
 class HM_base: public ActionBase
 {
 public:

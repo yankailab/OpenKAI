@@ -50,7 +50,7 @@ bool _SSD::init(void* pKiss)
 	F_INFO(pK->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
-	LOG(INFO)<<"Caffe Initialized";
+	LOG_I("Initialized");
 
 	m_pFrame = new Frame();
 
@@ -59,7 +59,7 @@ bool _SSD::init(void* pKiss)
 
 bool _SSD::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -67,8 +67,6 @@ bool _SSD::link(void)
 	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Universe",&iName));
 	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
-
-	//TODO: link my variables to Automaton
 
 	for(int i=0; i<labels_.size();i++)
 	{
@@ -386,13 +384,12 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 //		<< "Input channels are not wrapping the input layer of the network.";
 }
 
-bool _SSD::draw(Frame* pFrame, vInt4* pTextPos)
+bool _SSD::draw(void)
 {
-	NULL_F(pFrame);
+	CHECK_F(!this->_ThreadBase::draw());
 
-	putText(*pFrame->getCMat(), "SSD FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 
 	return true;
 }

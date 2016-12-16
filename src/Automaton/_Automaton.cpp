@@ -24,7 +24,7 @@ _Automaton::~_Automaton()
 
 bool _Automaton::init(void* pKiss)
 {
-	CHECK_F(this->_ThreadBase::init(pKiss)==false);
+	CHECK_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 

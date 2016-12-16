@@ -76,7 +76,7 @@ bool _DetectNet::init(void* pKiss)
 
 bool _DetectNet::link(void)
 {
-	NULL_F(m_pKiss);
+	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -161,7 +161,7 @@ void _DetectNet::detectFrame(void)
 	CHECK_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 					&m_nBox, m_confCPU));
 
-	LOG(INFO)<<m_nBox<<" bboxes detected";
+//	LOG(INFO)<<m_nBox<<" bboxes detected";
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
@@ -184,15 +184,9 @@ void _DetectNet::detectFrame(void)
 
 }
 
-bool _DetectNet::draw(Frame* pFrame, vInt4* pTextPos)
+bool _DetectNet::draw(void)
 {
-	NULL_F(pFrame);
-
-	putText(*pFrame->getCMat(), "DetectNet FPS: " + i2str(getFrameRate()),
-			cv::Point(pTextPos->m_x, pTextPos->m_y), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pTextPos->m_y += pTextPos->m_w;
-
+	CHECK_F(!this->_ThreadBase::draw());
 	return true;
 }
 

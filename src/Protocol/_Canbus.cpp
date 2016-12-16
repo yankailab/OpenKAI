@@ -20,19 +20,18 @@ bool _Canbus::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	Kiss* pCC = pK->o("serialPort");
+	Kiss* pCC = pK->o("input");
 	CHECK_F(pCC->empty());
 
 	m_pSerialPort = new SerialPort();
-	CHECK_F(m_pSerialPort->init(pCC));
+	CHECK_F(!m_pSerialPort->init(pCC));
 
 	return true;
 }
 
 bool _Canbus::link(void)
 {
-	NULL_F(m_pKiss);
-
+	CHECK_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -43,7 +42,8 @@ void _Canbus::close()
 		m_pSerialPort->close();
 		delete m_pSerialPort;
 	}
-	printf("Serial port closed.\n");
+
+	LOG_I("Closed");
 }
 
 bool _Canbus::start(void)
@@ -53,7 +53,7 @@ bool _Canbus::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< "Return code: "<< retCode;
+		LOG_E(retCode);
 		m_bThreadON = false;
 		return false;
 	}
@@ -167,21 +167,23 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 
 bool _Canbus::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	CHECK_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
 	if (m_pSerialPort->isOpen())
 	{
-		this->_ThreadBase::draw();
+		putText(*pMat, *this->getName()+": CONNECTED",
+				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
+				0.5, Scalar(0, 255, 0), 1);
 	}
 	else
 	{
 		putText(*pMat, *this->getName()+": Not Connected",
 				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
 				0.5, Scalar(0, 255, 0), 1);
-		pWin->lineNext();
 	}
+	pWin->lineNext();
 
 	return true;
 }

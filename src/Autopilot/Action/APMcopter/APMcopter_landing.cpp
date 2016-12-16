@@ -23,6 +23,7 @@ bool APMcopter_landing::init(void* pKiss)
 {
 	CHECK_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
+	pK->m_pInst = this;
 
 	m_landingTarget.m_angleX = 0;
 	m_landingTarget.m_angleY = 0;
@@ -43,8 +44,6 @@ bool APMcopter_landing::init(void* pKiss)
 	{
 		F_ERROR_F(pCC->v("tag"+i2str(i), &m_pATagsLandingTarget[i]));
 	}
-
-	pK->m_pInst = this;
 
 	return true;
 }

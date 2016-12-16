@@ -11,13 +11,11 @@
 //User defined switch
 #define USE_CUDA
 //#define USE_TENSORRT
+#define USE_SSD
 //#define USE_CAFFE
-//#define USE_SSD
 //#define USE_FCN
 //#define USE_OPENCL
 //#define USE_ZED
 
 
-
-
-#endif /* OPENKAI_SRC_BASE_SWITCH_H_ */
+#endif

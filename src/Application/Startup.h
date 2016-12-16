@@ -43,8 +43,7 @@ public:
 	int m_key;
 	bool m_bRun;
 
-	int m_bShowScreen;
-	int m_bFullScreen;
+	int m_bWindow;
 	int m_waitKey;
 };
 

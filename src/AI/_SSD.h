@@ -50,13 +50,10 @@ public:
 	void setup(const string& model_file, const string& trained_file,
 			const string& mean_file, const string& label_file);
 	bool link(void);
-	bool draw(Frame* pFrame, vInt4* pTextPos);
+	bool start(void);
+	bool draw(void);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
-
-
-//	std::vector<vector<float> > detect(const cv::Mat img);
-	bool start(void);
 
 private:
 	void detectFrame(void);
