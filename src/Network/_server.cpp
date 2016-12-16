@@ -71,7 +71,10 @@ void _server::update(void)
 	{
 		this->autoFPSfrom();
 
-		handler();
+		if(!handler())
+		{
+			this->sleepThread(USEC_1SEC);
+		}
 
 		this->autoFPSto();
 	}
@@ -90,6 +93,10 @@ bool _server::handler(void)
 	m_serverAddr.sin_family = AF_INET;
 	m_serverAddr.sin_addr.s_addr = INADDR_ANY;
 	m_serverAddr.sin_port = htons(m_listenPort);
+
+	int yes = 1;
+	setsockopt(m_socket,
+	   SOL_SOCKET, SO_REUSEADDR, (const char *)&yes, sizeof(yes));
 
 	//Bind
 	m_strStatus = "Binding";
@@ -115,7 +122,7 @@ bool _server::handler(void)
 	int c = sizeof(struct sockaddr_in);
 
 	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr,
-			(socklen_t*) &c)))
+			(socklen_t*) &c)) >= 0)
 	{
 		LOG_I("Accepted new connection");
 
@@ -153,18 +160,18 @@ bool _server::handler(void)
 		}
 		LOG_I("Created new _socket");
 
-		//TODO: polish
-		struct timeval timeout;
-		timeout.tv_sec = 1000 / USEC_1SEC;
-		timeout.tv_usec = 1000 % USEC_1SEC;
-		setsockopt(socketNew, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
 		pSocket->init(m_pKiss);
 		struct sockaddr_in *pAddr = (struct sockaddr_in *) &clientAddr;
 		pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
 		pSocket->m_socket = socketNew;
 		pSocket->m_bConnected = true;
 		pSocket->m_bClient = false;
+
+		struct timeval timeout;
+		timeout.tv_sec = pSocket->m_timeoutRecv / USEC_1SEC;
+		timeout.tv_usec = pSocket->m_timeoutRecv % USEC_1SEC;
+		setsockopt(socketNew, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+
 		if (!pSocket->start())
 		{
 			LOG_E("Socket start failed");
@@ -181,7 +188,7 @@ bool _server::handler(void)
 	if (socketNew < 0)
 	{
 		m_strStatus = "Accept failed";
-		LOG_I(m_strStatus);
+		LOG_E(m_strStatus + ": "<<errno);
 		return false;
 	}
 
@@ -200,10 +207,11 @@ void _server::complete(void)
 	close(m_socket);
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
+	this->waitForComplete();
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		((_socket*) *itr)->complete();
+		delete (_socket*)*itr;
 	}
 
 	m_lSocket.clear();

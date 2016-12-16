@@ -12,16 +12,14 @@ namespace kai
 
 Filter::Filter()
 {
-	// TODO Auto-generated constructor stub
 	m_iTraj = 0;
 	m_windowLength = 0;
 	m_iMedian = 0;
-	m_vMid = 0;
+	m_vMid = 0.0;
 }
 
 Filter::~Filter()
 {
-	// TODO Auto-generated destructor stub
 }
 
 
@@ -81,4 +79,4 @@ double Filter::v(void)
 }
 
 
-} /* namespace kai */
+}

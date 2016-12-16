@@ -5,8 +5,8 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"waitKey":30,
-	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
 }
 
@@ -59,7 +59,6 @@
 		"name":"input",
 		"class":"SerialPort",
 		"bInst":0,
-		"bShow":1,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
 	}
@@ -68,14 +67,15 @@
 		"name":"output",
 		"class":"TCP",
 		"bInst":1,
-		"bShow":1,
 	
 		{
 			"name":"server",
+			"class":"_socket",
 			"bInst":1,
-			"bShow":1,
-			"listenPort":19848,
+			"listenPort":19849,
 			"nListen":1,
+			"timeoutRecv":1000,
+			"buf":1024,
 		}
 	}
 	
@@ -83,7 +83,7 @@
 		"name":"input",
 		"class":"File",
 		"bInst":1,
-		"fileName":"output/test.sf40raw",
+		"fileName":"output/highway20161213_nDiv=180_handy.sf40raw",
 	}
 	
 	{
@@ -117,14 +117,15 @@
 		"name":"input",
 		"class":"TCP",
 		"bInst":1,
-		"bShow":1,
 	
 		{
 			"name":"client",
+			"class":"_socket",
 			"bInst":1,
-			"bShow":1,
 			"addr":"127.0.0.1",
-			"port":19848,
+			"port":19849,
+			"timeoutRecv":1000,
+			"buf":1024,
 		}
 	}	
 }

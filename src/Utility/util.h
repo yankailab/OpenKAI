@@ -191,11 +191,11 @@ inline char* ftoa( char* pString, size_t Size, float Value, int FracDigits )
     return pSource;
 }
 
-
 inline string f2str(double val)
 {
 	char buf[128];
-	return string(ftoa(buf,sizeof(buf),val,10));
+	sprintf(buf, "%f", val);
+	return string(buf);
 }
 
 inline string i2str(int val)

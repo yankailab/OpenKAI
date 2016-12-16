@@ -30,7 +30,7 @@ _socket::_socket()
 
 _socket::~_socket()
 {
-	close();
+	complete();
 	pthread_mutex_destroy (&m_mutexSend);
 	pthread_mutex_destroy (&m_mutexRecv);
 }
@@ -56,7 +56,7 @@ bool _socket::init(void* pKiss)
 
 	m_strStatus = "Initialized";
 	m_bClient = true;
-	close();
+	m_bConnected = false;
 
 	return true;
 }
@@ -254,6 +254,7 @@ void _socket::complete(void)
 	close();
 	this->_ThreadBase::complete();
 	pthread_cancel(m_threadID);
+	this->waitForComplete();
 }
 
 bool _socket::draw(void)
