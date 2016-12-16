@@ -48,6 +48,7 @@ bool Window::init(void* pKiss)
 	F_INFO(pK->v("lineH", &m_lineHeight));
 
 	m_pFrame = new Frame();
+	m_pFrame->allocate(m_size.m_x, m_size.m_y);
 
 	if (m_bFullScreen)
 	{
@@ -74,8 +75,11 @@ bool Window::draw(void)
 {
 	NULL_F(m_pFrame);
 
-	m_pFrame->allocate(m_size.m_x, m_size.m_y);
 	imshow(*this->getName(), *m_pFrame->getCMat());
+	m_pFrame->allocate(m_size.m_x, m_size.m_y);
+
+	tabReset();
+	lineReset();
 
 	return true;
 }
@@ -87,8 +91,9 @@ Frame* Window::getFrame(void)
 
 Point* Window::getTextPos(void)
 {
-	static Point p(m_textPos.m_x, m_textPos.m_y);
-	return &p;
+	m_tPoint.x = m_textPos.m_x;
+	m_tPoint.y = m_textPos.m_y;
+	return &m_tPoint;
 }
 
 void Window::tabNext(void)
@@ -117,4 +122,4 @@ void Window::lineReset(void)
 	m_textPos.m_y = m_textStart.m_y;
 }
 
-} /* namespace kai */
+}

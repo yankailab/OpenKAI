@@ -45,6 +45,7 @@ public:
 	vInt2	m_textStart;
 	int		m_pixTab;
 	int		m_lineHeight;
+	Point	m_tPoint;
 };
 
 }

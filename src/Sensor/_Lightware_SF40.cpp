@@ -350,7 +350,7 @@ bool _Lightware_SF40::draw(void)
 	pWin->lineNext();
 
 	putText(*pMat,
-			*this->getName() + " iLine: " + i2str(m_iLine),
+			"Output Line: " + i2str(m_iLine),
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();

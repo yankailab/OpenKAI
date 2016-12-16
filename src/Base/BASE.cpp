@@ -41,7 +41,7 @@ bool BASE::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("Renderer",&iName));
+	F_INFO(pK->v("Window",&iName));
 	m_pWindow = (Window*)(pK->root()->getChildInstByName(&iName));
 
 	return true;

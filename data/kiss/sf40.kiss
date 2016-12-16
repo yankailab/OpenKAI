@@ -6,19 +6,22 @@
 	"bShow":1,
 	"bFullScreen":0,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
-	"name":"Client",
-	"class":"_socket",
-	"bInst":0,
-	"bShow":1,
-	"FPS":1,
-	"addr":"127.0.0.1",
-	"port":19848,
+	"name":"SF40",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":25,
+	"textY":25,
+	"pixTab":25,
+	"lineH":25,
 }
 
 {
@@ -36,7 +39,7 @@
 	"name":"SF40server",
 	"class":"_Lightware_SF40",
 	"bInst":1,
-	"bShow":0,
+	"Window":"SF40",
 	"FPS":300,
 	"_Automaton":"APMstate",
 	"_Universe":"Universe",
