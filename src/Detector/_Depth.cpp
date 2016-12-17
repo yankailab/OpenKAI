@@ -1,10 +1,10 @@
 /*
- * ObjectLocalizer.cpp
+ * _Depth.cpp
  *
  *  Created on: Aug 17, 2015
  *      Author: yankai
  */
-
+/*
 #include "_Depth.h"
 
 namespace kai
@@ -50,7 +50,7 @@ bool _Depth::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Universe",&iName));
 	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Flow",&iName));
@@ -99,13 +99,12 @@ void _Depth::detect(void)
 	GpuMat gMat2;
 	Frame* pFrame;
 
-	if(m_pUniverse==NULL)return;
-	if(m_pStream==NULL)return;
-	m_pCam = m_pStream->getCameraInput();
+	NULL_(m_pUniverse);
+	NULL_(m_pStream);
 
-	if(m_pCam->getType() == CAM_ZED)
+	if(m_pStream->getType() == zed)
 	{
-		gMat = *(m_pCam->getDepthFrame());
+		gMat = *(m_pStream->depth());
 		if(gMat.empty())return;
 
 		//TODO: general multiple layers
@@ -154,20 +153,8 @@ void _Depth::detect(void)
 	}
 
 
-
-
-//
-//	m_pGray = m_pCamStream->getGrayFrame();
-////	m_pGray = m_pCamStream->getFrame();
-//	if(m_pGray==NULL)return;
-//	if(m_pGray->empty())return;
-//	if(m_pGray->getFrameID() <= m_camFrameID)return;
-//	m_camFrameID = m_pGray->getFrameID();
-//
-//	m_pStereo->detect(m_pGray, m_pDepth);
-
-
 }
 
 }
 
+*/

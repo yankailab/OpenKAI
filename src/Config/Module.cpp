@@ -14,7 +14,7 @@ BASE* Module::createInstance(Kiss* pK)
 {
 	CHECK_N(!pK);
 
-	ADD_MODULE(_Stream);
+	ADD_MODULE(_Camera);
 	ADD_MODULE(_Automaton);
 	ADD_MODULE(_Universe);
 	ADD_MODULE(_Mavlink);
@@ -25,7 +25,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Bullseye);
 	ADD_MODULE(_ROITracker);
 	ADD_MODULE(_Flow);
-	ADD_MODULE(_Depth);
+//	ADD_MODULE(_Depth);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_server);
 	ADD_MODULE(_socket);

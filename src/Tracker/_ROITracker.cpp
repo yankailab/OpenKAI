@@ -53,7 +53,7 @@ bool _ROITracker::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 
@@ -109,16 +109,13 @@ void _ROITracker::track(void)
 	Frame* pFrame;
 	Mat* pMat;
 
-	if (m_pStream == NULL)
-		return;
-	if (m_bTracking == false)
-		return;
-	if (m_pTracker.empty())
-		return;
+	NULL_(m_pStream);
+	CHECK_(!m_bTracking);
+	CHECK_(m_pTracker.empty());
 
-	pFrame = m_pStream->getBGRFrame();
-	if (!pFrame->isNewerThan(m_pFrame))
-		return;
+	pFrame = m_pStream->bgr();
+	NULL_(pFrame);
+	CHECK_(!pFrame->isNewerThan(m_pFrame));
 	m_pFrame->update(pFrame);
 
 	pMat = m_pFrame->getCMat();

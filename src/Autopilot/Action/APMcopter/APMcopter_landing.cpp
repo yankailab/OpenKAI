@@ -83,7 +83,7 @@ void APMcopter_landing::landingAtAprilTags(void)
 
 	int i;
 	int tTag;
-	CamBase* pCam = m_pAT->m_pStream->getCameraInput();
+	_StreamBase* pCam = m_pAT->m_pStream;
 
 	for(i=0;i<m_numATagsLandingTarget;i++)
 	{
@@ -110,14 +110,10 @@ void APMcopter_landing::landingAtAprilTags(void)
 
 void APMcopter_landing::landingAtBullseye(void)
 {
-	CamBase* pCamInput;
+	NULL_(m_pMD);
+	NULL_(m_pROITracker);
+
 	vDouble3 markerCenter;
-
-	if (m_pMD == NULL)
-		return;
-	if (m_pROITracker == NULL)
-		return;
-
 	if (m_pMD->getCircleCenter(&markerCenter))
 	{
 		//Update Tracker
@@ -161,14 +157,14 @@ void APMcopter_landing::landingAtBullseye(void)
 				+ m_pROITracker->m_ROI.height * 0.5;
 	}
 
-	pCamInput = m_pMD->m_pStream->getCameraInput();
+	_StreamBase* pCam = m_pMD->m_pStream;
 
 	//Change position to angles
-	m_landingTarget.m_angleX = ((markerCenter.m_x - pCamInput->m_centerH)
-			/ pCamInput->m_width) * pCamInput->m_angleH * DEG_RADIAN
+	m_landingTarget.m_angleX = ((markerCenter.m_x - pCam->m_centerH)
+			/ pCam->m_width) * pCam->m_angleH * DEG_RADIAN
 			* m_landingTarget.m_orientX;
-	m_landingTarget.m_angleY = ((markerCenter.m_y - pCamInput->m_centerV)
-			/ pCamInput->m_height) * pCamInput->m_angleV * DEG_RADIAN
+	m_landingTarget.m_angleY = ((markerCenter.m_y - pCam->m_centerV)
+			/ pCam->m_height) * pCam->m_angleV * DEG_RADIAN
 			* m_landingTarget.m_orientY;
 
 	NULL_(m_pAPM->m_pMavlink);

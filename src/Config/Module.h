@@ -15,10 +15,9 @@
 
 #include "../Stream/Frame.h"
 #include "../Stream/FrameGroup.h"
-#include "../Camera/CamBase.h"
-#include "../Camera/Camera.h"
-#include "../Camera/ZED.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_Camera.h"
+#include "../Stream/_StreamBase.h"
+#include "../Stream/ZED.h"
 #include "../Navigation/_Universe.h"
 #include "../Automaton/_Automaton.h"
 

@@ -60,7 +60,7 @@ bool _AprilTags::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -99,14 +99,9 @@ void _AprilTags::update(void)
 
 void _AprilTags::detect(void)
 {
-	int i, j;
-
-	if (!m_pStream)
-		return;
-
-	m_pFrame->update(m_pStream->getBGRFrame());
-	if (m_pFrame->empty())
-		return;
+	NULL_(!m_pStream);
+	m_pFrame->update(m_pStream->bgr());
+	CHECK_(m_pFrame->empty());
 
 	TagDetectionArray detections;
 	Mat* pImg = m_pFrame->getCMat();
@@ -125,6 +120,7 @@ void _AprilTags::detect(void)
 
 	scaling = 1.0/scaling;
 
+	int i, j;
 	for (i = 0; i < detections.size(); i++)
 	{
 		TagDetection* pD = &detections[i];

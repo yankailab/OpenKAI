@@ -1,12 +1,9 @@
 /*
- *
- */
-
 #ifndef DETECTOR_DEPTH_H_
 #define DETECTOR_DEPTH_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 #include "../Navigation/_Universe.h"
 #include "../Vision/_Flow.h"
 
@@ -42,8 +39,7 @@ public:
 	_Universe*	m_pUniverse;
 	Frame*		m_pDepth;
 	uint64_t	m_camFrameID;
-	_Stream*	m_pStream;
-	CamBase*	m_pCam;
+	_StreamBase*	m_pStream;
 	_Flow*		m_pFlow;
 
 	Mat			m_Mat;
@@ -53,4 +49,5 @@ public:
 };
 }
 
-#endif /* SRC_DEPTHDETECTOR_H_ */
+#endif
+*/

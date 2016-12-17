@@ -59,4 +59,4 @@ public:
 
 }
 
-#endif /* SRC_THREADBASE_H_ */
+#endif

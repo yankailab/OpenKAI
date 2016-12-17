@@ -5,14 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_STREAM_H_
-#define SRC_STREAM_STREAM_H_
+//#ifndef SRC_STREAM_STREAM_H_
+//#define SRC_STREAM_STREAM_H_
+/*
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/Frame.h"
-#include "../Camera/Camera.h"
-
 namespace kai
 {
 
@@ -31,14 +30,12 @@ public:
 	Frame* getGrayFrame(void);
 	Frame* getHSVFrame(void);
 
-	CamBase* getCameraInput(void);
-
 public:
 	bool		m_bHSV;
 	bool		m_bGray;
 
 private:
-	CamBase*		m_pCamera;
+	_Camera*		m_pCamera;
 
 	Frame*			m_pFrame;
 	Frame*			m_pGrayFrame;
@@ -55,6 +52,6 @@ private:
 	}
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_STREAM_STREAM_H_ */
+#endif */

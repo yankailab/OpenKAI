@@ -182,8 +182,6 @@ void Frame::get32FC4Of(Frame* pFrom)
 
 }
 
-
-
 uint64_t Frame::getFrameID(void)
 {
 	uint64_t frameID = m_CMat.m_frameID;

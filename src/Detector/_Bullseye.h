@@ -9,7 +9,7 @@
 #define DETECTOR_BULLSEYE_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 
 #define NUM_MARKER 128
 
@@ -17,7 +17,6 @@
 #define METHOD_HOUGH 1
 #define MARKER_AREA_RATIO 0.8
 #define MIN_MARKER_SIZE 10
-
 
 namespace kai
 {
@@ -30,11 +29,9 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-
 	bool start(void);
 
 	bool getCircleCenter(vDouble3* pCenter);
-
 private:
 	void detectCircleFill(void);
 	void detectCircleHough(void);
@@ -44,7 +41,6 @@ private:
 		((_Bullseye*) This)->update();
 		return NULL;
 	}
-
 
 public:
 	int		 m_numCircle;
@@ -64,8 +60,8 @@ public:
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
-	_Stream*	m_pStream;
-	Frame*		m_pFrame;
+	_StreamBase*	m_pStream;
+	Frame*			m_pFrame;
 
 #ifdef USE_CUDA
 	GpuMat m_HSV;
@@ -85,6 +81,6 @@ public:
 #endif
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_MarkerDetector_H_ */
+#endif

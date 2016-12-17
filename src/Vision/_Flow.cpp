@@ -75,7 +75,7 @@ bool _Flow::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 
 	//TODO: link variables to Automaton
 
@@ -120,10 +120,10 @@ void _Flow::detect(void)
 	GpuMat GMat;
 	GpuMat pGMat[2];
 
-	if(m_pStream==NULL)return;
-
-	pGray = m_pStream->getGrayFrame();
-	if(pGray->empty())return;
+	NULL_(m_pStream);
+	pGray = m_pStream->gray();
+	NULL_(pGray);
+	CHECK_(pGray->empty());
 
 	pNextFrame = m_pGrayFrames->getLastFrame();
 	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;

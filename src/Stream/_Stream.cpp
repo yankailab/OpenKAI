@@ -7,6 +7,7 @@
 
 #include "_Stream.h"
 
+/*
 namespace kai
 {
 
@@ -50,7 +51,7 @@ bool _Stream::init(void* pKiss)
 
 	if(camClass=="Camera")
 	{
-		m_pCamera = new Camera();
+		m_pCamera = new _Camera();
 	}
 	else if(camClass=="ZED")
 	{
@@ -67,13 +68,7 @@ bool _Stream::init(void* pKiss)
 		return false;
 	}
 
-	F_ERROR_F(m_pCamera->setup(pC));
-
-	double FPS;
-	if(pC->v("FPS", &FPS))
-	{
-		setTargetFPS(FPS);
-	}
+	F_ERROR_F(m_pCamera->init(pC));
 
 	m_bThreadON = false;
 	return true;
@@ -102,7 +97,7 @@ bool _Stream::start(void)
 void _Stream::update(void)
 {
 	//Open stream input
-	if(m_pCamera->openCamera()==false)
+	if(m_pCamera->open()==false)
 	{
 		LOG(FATAL)<<"Cannot open stream input";
 		return;
@@ -113,7 +108,7 @@ void _Stream::update(void)
 		this->autoFPSfrom();
 
 		//Update camera frame
-		m_pFrame->update(m_pCamera->readFrame());
+		m_pFrame->update(m_pCamera->getFrame());
 
 		//Update Gray frame
 		if(m_bGray)
@@ -130,8 +125,6 @@ void _Stream::update(void)
 		this->autoFPSto();
 	}
 
-	m_pCamera->release();
-
 }
 
 Frame* _Stream::getBGRFrame(void)
@@ -147,11 +140,6 @@ Frame* _Stream::getGrayFrame(void)
 Frame* _Stream::getHSVFrame(void)
 {
 	return m_pHSVframe;
-}
-
-CamBase* _Stream::getCameraInput(void)
-{
-	return m_pCamera;
 }
 
 bool _Stream::draw(void)
@@ -175,3 +163,5 @@ bool _Stream::draw(void)
 }
 
 }
+*/
+

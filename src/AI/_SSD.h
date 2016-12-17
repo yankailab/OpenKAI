@@ -9,7 +9,7 @@
 #define AI__SSD_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 #include "../Navigation/_Universe.h"
 
 #ifdef USE_SSD
@@ -86,7 +86,7 @@ private:
 
 public:
 	_Universe* m_pUniverse;
-	_Stream* m_pStream;
+	_StreamBase* m_pStream;
 
 };
 

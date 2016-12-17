@@ -64,7 +64,7 @@ bool _SSD::link(void)
 
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Universe",&iName));
 	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
 
@@ -158,8 +158,9 @@ void _SSD::detectFrame(void)
 	NULL_(m_pStream);
 	NULL_(m_pUniverse);
 
-	pFrame = m_pStream->getBGRFrame();
-	if (pFrame->empty())return;
+	pFrame = m_pStream->bgr();
+	NULL_(pFrame);
+	CHECK_(pFrame->empty());
 	if (!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
 

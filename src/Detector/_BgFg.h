@@ -9,7 +9,7 @@
 #define DETECTOR_BGFGDETECTOR_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 
 #define NUM_MARKER 128
 #define MIN_MARKER_SIZE 10
@@ -55,7 +55,7 @@ public:
 	double	m_minSize;
 	int		m_objLockLevel;
 
-	_Stream*		m_pCamStream;
+	_StreamBase*		m_pCamStream;
 	UMat				m_Mat;
 
 #ifdef USE_CUDA

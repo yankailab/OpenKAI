@@ -66,7 +66,7 @@ bool _Bullseye::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_Stream*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -123,8 +123,8 @@ void _Bullseye::detectCircleFill(void)
 	Frame* pRGB;
 
 	if(!m_pStream)return;
-	pHSV = m_pStream->getHSVFrame();
-	pRGB = m_pStream->getBGRFrame();
+	pHSV = m_pStream->hsv();
+	pRGB = m_pStream->bgr();
 	if(pRGB->empty())return;
 	if(pHSV->empty())return;
 
@@ -177,8 +177,9 @@ void _Bullseye::detectCircleHough(void)
 {
 	if(!m_pStream)return;
 
-	Frame* pFrame = m_pStream->getHSVFrame();
-	if(pFrame->empty())return;
+	Frame* pFrame = m_pStream->hsv();
+	NULL_(pFrame);
+	CHECK_(pFrame->empty());
 	if(!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
 
@@ -229,13 +230,8 @@ void _Bullseye::detectCircleHough(void)
 
 bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 {
-	CamBase* pCam;
-
-	if(pCenter==NULL)return false;
-	if(m_pStream==NULL)return false;
-
-	pCam = m_pStream->getCameraInput();
-	if(pCam==NULL)return false;
+	NULL_F(pCenter);
+	NULL_F(m_pStream);
 
 	//Use num instead of m_numCircle to avoid multi-thread inconsistancy
 	int num = m_numCircle;
@@ -244,7 +240,7 @@ bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 	int i;
 	vDouble3* pMarker = &m_pCircle[0];
 	vDouble3* pCompare;
-	int camCenter = (pCam->m_width+pCam->m_height)/2;
+	int camCenter = (m_pStream->m_width+m_pStream->m_height)/2;
 
 	//Find the closest point
 	for(i=1; i<num; i++)

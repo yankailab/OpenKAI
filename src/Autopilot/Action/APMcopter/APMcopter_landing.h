@@ -9,7 +9,6 @@
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
 
-
 namespace kai
 {
 

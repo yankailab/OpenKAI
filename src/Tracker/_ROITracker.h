@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 
 using namespace cv;
 using namespace cv::cuda;
@@ -42,7 +42,7 @@ private:
 	}
 
 public:
-	_Stream* m_pStream;
+	_StreamBase* m_pStream;
 	Rect2d m_ROI;
 	Rect2d m_newROI;
 	Frame* m_pFrame;

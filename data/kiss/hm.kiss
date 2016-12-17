@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
@@ -21,61 +21,55 @@
 }
 
 {
-	"name":"HMstream",
-	"class":"_Stream",
+	"name":"ZEDL",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":0,
+	"Window":"HM_monitor",
+	"ID":0,
+	"width":1344,
+	"height":376,
+	"bCrop":1,
+	"cropX":0,
+	"cropY":0,
+	"cropW":672,
+	"cropH":376,
+	"bCalib":0,
+	"bFisheye":0,
+	"calibFile":"calibration/sp360-1440.xml",
+	"isoScale":1.0,
+	"bGimbal":0,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+	
+{
+	"name":"Generic",
+	"class":"_Camera",
+	"FPS":30,
 	"bInst":1,
 	"Window":"HM_monitor",
-	"bGray":0,
-	"bHSV":0,
+	"ID":0,
+	"width":1280,
+	"height":720,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+	
+{
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":0,
+	"Window":"HM_monitor",
 	"bShowDepth":0,
-	"_Automaton":"HMauto",
-	"input":"ZEDL",
-		
-	{
-		"name":"ZEDL",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":1344,
-		"height":376,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":672,
-		"cropH":376,
-		"bCalib":0,
-		"bFisheye":0,
-		"calibFile":"calibration/sp360-1440.xml",
-		"isoScale":1.0,
-		"bGimbal":0,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"Generic",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":640,
-		"height":480,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"ZED",
-		"class":"ZED",
-		"FPS":30,
-		"bShowDepth":0,
-		"resolution":2,
-		"minDist":800,
-		"width":1344,
-		"height":376,
-		"angleV":67.1,
-		"angleH":66.7,
-		"bCrop":0,
-	}
+	"resolution":2,
+	"minDist":800,
+	"width":1344,
+	"height":376,
+	"angleV":67.1,
+	"angleH":66.7,
+	"bCrop":0,
 }
 
 {
@@ -110,7 +104,7 @@
 {
 	"name":"SSD",
 	"class":"_SSD",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"HM_monitor",
 	"_Stream":"HMstream",

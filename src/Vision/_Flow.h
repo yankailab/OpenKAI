@@ -9,7 +9,7 @@
 #define SRC_VISION_FLOW_H_
 
 #include "../Base/common.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 #include "../Stream/FrameGroup.h"
 
 using namespace cv;
@@ -47,7 +47,7 @@ public:
 	int	m_width;
 	int m_height;
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-	_Stream*						m_pStream;
+	_StreamBase*					m_pStream;
 	FrameGroup*						m_pGrayFrames;
 	GpuMat							m_GFlowMat;
 	GpuMat							m_GDMat;
