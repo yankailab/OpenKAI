@@ -33,7 +33,9 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_OPENCV3
 	ADD_MODULE(_ROITracker);
 #endif
-
+#ifdef USE_ZED
+	ADD_MODULE(_ZED);
+#endif
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);
 #endif

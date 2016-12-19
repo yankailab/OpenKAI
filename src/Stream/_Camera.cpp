@@ -16,11 +16,7 @@ _Camera::_Camera()
 
 	m_type = camera;
 	m_deviceID = 0;
-	m_bOpen = false;
 
-	m_pBGR = NULL;
-	m_pHSV = NULL;
-	m_pGray = NULL;
 	m_bCalibration = false;
 	m_bFisheye = false;
 	m_bCrop = false;
@@ -95,21 +91,7 @@ bool _Camera::init(void* pKiss)
 		}
 	}
 
-	m_pBGR = new Frame();
-
-	bool bParam = false;
-	F_INFO(pK->v("bGray", &bParam));
-	if (bParam)
-		m_pGray = new Frame();
-
-	bParam = false;
-	F_INFO(pK->v("bHSV", &bParam));
-	if (bParam)
-		m_pHSV = new Frame();
-
-	m_bOpen = false;
 	LOG_I("Initialized");
-
 	return true;
 }
 
@@ -132,8 +114,7 @@ bool _Camera::open(void)
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
 	//Acquire a frame to determine the actual frame size
-	while (!m_camera.read(m_mat))
-		;
+	while (!m_camera.read(m_mat));
 
 	m_width = m_mat.cols;
 	m_height = m_mat.rows;
@@ -193,8 +174,7 @@ void _Camera::update(void)
 		GpuMat* pDest;
 		GpuMat* pTmp;
 
-		while (!m_camera.read(m_mat))
-			;
+		while (!m_camera.read(m_mat));
 		m_Gframe.upload(m_mat);
 
 		pSrc = &m_Gframe;
@@ -202,13 +182,21 @@ void _Camera::update(void)
 
 		if (m_bCalibration)
 		{
-			remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+#ifdef USE_OPENCV3
+			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+#elif USE_OPENCV4TEGRA
+			gpu::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+#endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
 		if (m_bGimbal)
 		{
-			warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+#ifdef USE_OPENCV3
+			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+#elif USE_OPENCV4TEGRA
+			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+#endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
@@ -228,21 +216,6 @@ void _Camera::update(void)
 
 		this->autoFPSto();
 	}
-}
-
-Frame* _Camera::bgr(void)
-{
-	return m_pBGR;
-}
-
-Frame* _Camera::hsv(void)
-{
-	return m_pHSV;
-}
-
-Frame* _Camera::gray(void)
-{
-	return m_pGray;
 }
 
 void _Camera::complete(void)

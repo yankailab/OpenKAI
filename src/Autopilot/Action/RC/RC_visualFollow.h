@@ -1,8 +1,6 @@
 #ifndef OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 
-#ifdef USE_OPENCV3
-
 #include "../../../Base/common.h"
 #include "../../../Script/Kiss.h"
 #include "../../../Navigation/_Universe.h"
@@ -15,6 +13,7 @@
 #include "../ActionBase.h"
 #include "RC_base.h"
 
+#ifdef USE_OPENCV3
 
 #define MODE_ASSIST 0
 #define MODE_DRAWRECT 1

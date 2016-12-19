@@ -8,11 +8,11 @@
 #ifndef SRC_ROITRACKER_H_
 #define SRC_ROITRACKER_H_
 
-#ifdef USE_OPENCV3
-
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_StreamBase.h"
+
+#ifdef USE_OPENCV3
 
 namespace kai
 {

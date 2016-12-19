@@ -2,14 +2,14 @@
 #ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
 
-#ifdef USE_OPENCV3
-
 #include "../../../Base/common.h"
 #include "../../../Detector/_Bullseye.h"
 #include "../../../Detector/_AprilTags.h"
 #include "../../../Tracker/_ROITracker.h"
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
+
+#ifdef USE_OPENCV3
 
 namespace kai
 {

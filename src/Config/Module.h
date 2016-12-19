@@ -13,11 +13,11 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
+#include "../Stream/_StreamBase.h"
+#include "../Stream/_Camera.h"
+#include "../Stream/_ZED.h"
 #include "../Stream/Frame.h"
 #include "../Stream/FrameGroup.h"
-#include "../Stream/_Camera.h"
-#include "../Stream/_StreamBase.h"
-#include "../Stream/ZED.h"
 #include "../Navigation/_Universe.h"
 #include "../Automaton/_Automaton.h"
 

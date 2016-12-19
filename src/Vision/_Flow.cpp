@@ -54,8 +54,7 @@ bool _Flow::init(void* pKiss)
 	m_pDepth = new Frame();
 #ifdef USE_OPENCV3
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-#endif
-#ifdef USE_OPENCV4TEGRA
+#elif USE_OPENCV4TEGRA
 	m_pFarn = superres::createOptFlow_Farneback_GPU();
 #endif
 	m_pGrayFrames = new FrameGroup();
@@ -153,8 +152,14 @@ void _Flow::detect(void)
 
 	abs(m_GFlowMat, GMat);
 	split(GMat, pGMat);
-	add(pGMat[0],pGMat[1], GMat);
-	multiply(GMat, Scalar(100), pGMat[1]);
+
+#ifdef USE_OPENCV3
+	cuda::add(pGMat[0],pGMat[1], GMat);
+	cuda::multiply(GMat, Scalar(100), pGMat[1]);
+#elif USE_OPENCV4TEGRA
+	gpu::add(pGMat[0],pGMat[1], GMat);
+	gpu::multiply(GMat, Scalar(100), pGMat[1]);
+#endif
 
 	pGMat[1].convertTo(*(m_pDepth->getGMat()),CV_8UC1);
 	m_pDepth->updatedGMat();

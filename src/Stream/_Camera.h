@@ -11,6 +11,13 @@
 #include "../Base/common.h"
 #include "_StreamBase.h"
 
+#ifdef USE_OPENCV3
+using namespace cv::cuda;
+#elif USE_OPENCV4TEGRA
+using namespace cv::gpu;
+#endif
+
+
 namespace kai
 {
 
@@ -26,10 +33,6 @@ public:
 	bool draw(void);
 	void complete(void);
 
-	Frame* bgr(void);
-	Frame* hsv(void);
-	Frame* gray(void);
-
 private:
 	bool open(void);
 	void update(void);
@@ -40,7 +43,6 @@ private:
 	}
 
 private:
-	bool m_bOpen;
 	int m_deviceID;
 	VideoCapture m_camera;
 
@@ -55,17 +57,6 @@ private:
 	//crop
 	bool m_bCrop;
 	Rect m_cropBB;
-
-	//frame
-	Frame*	m_pBGR;
-	Frame*	m_pGray;
-	Frame*	m_pHSV;
-
-	//operation
-	GpuMat m_Gframe;
-	GpuMat m_Gframe2;
-	GpuMat m_Gdepth;
-	GpuMat m_Gdepth2;
 
 };
 

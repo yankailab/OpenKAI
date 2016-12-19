@@ -138,12 +138,22 @@ void _Bullseye::detectCircleFill(void)
 	m_Val = matHSV[2];
 
 	//Filtering the image
-	absdiff(m_Hue, Scalar(90), m_Huered);
-	multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
-	multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
-	multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
-	threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
+#ifdef USE_OPENCV3
+	cuda::absdiff(m_Hue, Scalar(90), m_Huered);
+	cuda::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
+	cuda::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
+	cuda::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
+	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
 //	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
+#elif USE_OPENCV4TEGRA
+	gpu::absdiff(m_Hue, Scalar(90), m_Huered);
+	gpu::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
+	gpu::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
+	gpu::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
+	gpu::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
+//	gpu::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
+#endif
+
 	m_Thresh.download(matThresh);
 
 	//Find the contours

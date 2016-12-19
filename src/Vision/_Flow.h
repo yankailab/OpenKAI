@@ -46,7 +46,7 @@ public:
 	FrameGroup*						m_pGrayFrames;
 
 #ifdef USE_OPENCV3
-	Ptr<FarnebackOpticalFlow> m_pFarn;
+	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 #endif
 
 #ifdef USE_OPENCV4TEGRA

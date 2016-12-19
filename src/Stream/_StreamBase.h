@@ -39,6 +39,7 @@ public:
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
 public:
+	bool m_bOpen;
 	STREAM_TYPE m_type;
 
 	int m_width;
@@ -55,6 +56,17 @@ public:
 	uint64_t m_rotTime;
 	double m_rotPrev;
 	double m_isoScale;
+
+	//frame
+	Frame*	m_pBGR;
+	Frame*	m_pGray;
+	Frame*	m_pHSV;
+	Frame*	m_pDepth;
+
+	//operation
+	GpuMat m_Gframe;
+	GpuMat m_Gframe2;
+
 
 };
 

@@ -14,6 +14,7 @@ _StreamBase::_StreamBase()
 {
 	BASE();
 
+	m_bOpen = false;
 	m_type = unknownStream;
 	m_width = 1280;
 	m_height = 720;
@@ -25,10 +26,19 @@ _StreamBase::_StreamBase()
 	m_rotPrev = 0;
 	m_angleH = 0;
 	m_angleV = 0;
+
+	m_pBGR = NULL;
+	m_pHSV = NULL;
+	m_pGray = NULL;
+	m_pDepth = NULL;
 }
 
 _StreamBase::~_StreamBase()
 {
+	DEL(m_pBGR);
+	DEL(m_pHSV);
+	DEL(m_pGray);
+	DEL(m_pDepth);
 }
 
 bool _StreamBase::init(void* pKiss)
@@ -44,27 +54,40 @@ bool _StreamBase::init(void* pKiss)
 	F_INFO(pK->v("bGimbal", &m_bGimbal));
 	F_INFO(pK->v("isoScale", &m_isoScale));
 
+	m_pBGR = new Frame();
+
+	bool bParam = false;
+	F_INFO(pK->v("bGray", &bParam));
+	if (bParam)
+		m_pGray = new Frame();
+
+	bParam = false;
+	F_INFO(pK->v("bHSV", &bParam));
+	if (bParam)
+		m_pHSV = new Frame();
+
+	m_bOpen = false;
 	return true;
 }
 
 Frame* _StreamBase::bgr(void)
 {
-	return NULL;
+	return m_pBGR;
 }
 
 Frame* _StreamBase::hsv(void)
 {
-	return NULL;
+	return m_pHSV;
 }
 
 Frame* _StreamBase::gray(void)
 {
-	return NULL;
+	return m_pGray;
 }
 
 Frame* _StreamBase::depth(void)
 {
-	return NULL;
+	return m_pDepth;
 }
 
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)

@@ -33,20 +33,26 @@ void Frame::allocate(int w, int h)
 
 void Frame::getResizedOf(Frame* pFrom, int width, int height)
 {
-	if(!pFrom)return;
-	if(pFrom->empty())return;
+	NULL_(pFrom);
+	CHECK_(pFrom->empty());
 
 	cv::Size newSize = cv::Size(width,height);
 
-	if(newSize == pFrom->getSize())//pFrom->getNextGMat()->size())
+	if(newSize == pFrom->getSize())
 	{
 		this->update(pFrom);
 	}
 	else
 	{
 #ifdef USE_CUDA
-		resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+
+#ifdef USE_OPENCV3
+		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+#elif USE_OPENCV4TEGRA
+		gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+#endif
 		updatedGMat();
+
 #elif USE_OPENCL
 
 #else
@@ -60,11 +66,17 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 
 void Frame::getGrayOf(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	if(pFrom->getGMat()->channels()!=3)return;
-	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
+	CHECK_(pFrom->getGMat()->channels()!=3);
+
+#ifdef USE_OPENCV3
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
+#elif USE_OPENCV4TEGRA
+	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
+#endif
+
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -77,12 +89,18 @@ void Frame::getGrayOf(Frame* pFrom)
 
 void Frame::getHSVOf(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
-	if(pFrom->getGMat()->channels()!=3)return;
-	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+	CHECK_(pFrom->getGMat()->channels()!=3);
+
+#ifdef USE_OPENCV3
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+#elif USE_OPENCV4TEGRA
+	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+#endif
+
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -95,11 +113,17 @@ void Frame::getHSVOf(Frame* pFrom)
 
 void Frame::getBGRAOf(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	if(pFrom->getGMat()->channels()!=3)return;
-	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+	CHECK_(pFrom->getGMat()->channels()!=3);
+
+#ifdef USE_OPENCV3
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+#elif USE_OPENCV4TEGRA
+	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+#endif
+
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -112,11 +136,17 @@ void Frame::getBGRAOf(Frame* pFrom)
 
 void Frame::getRGBAOf(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	if(pFrom->getGMat()->channels()!=3)return;
-	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+	CHECK_(pFrom->getGMat()->channels()!=3);
+
+#ifdef USE_OPENCV3
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+#elif USE_OPENCV4TEGRA
+	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+#endif
+
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -129,7 +159,7 @@ void Frame::getRGBAOf(Frame* pFrom)
 
 void Frame::get8UC3Of(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
 	if(pFrom->getGMat()->type()==CV_8UC3)
@@ -139,7 +169,12 @@ void Frame::get8UC3Of(Frame* pFrom)
 	else
 	{
 		if(pFrom->getGMat()->channels()!=1)return;
-		cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
+
+#ifdef USE_OPENCV3
+		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
+#elif USE_OPENCV4TEGRA
+		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
+#endif
 	}
 
 	updatedGMat();
@@ -154,20 +189,9 @@ void Frame::get8UC3Of(Frame* pFrom)
 
 void Frame::get32FC4Of(Frame* pFrom)
 {
-	if(!pFrom)return;
+	NULL_(pFrom);
 
 #ifdef USE_CUDA
-/*	if(pFrom->getGMat()->type()==CV_32FC4)
-	{
-		pFrom->getGMat()->copyTo(m_GMat.m_mat);
-	}
-	else
-	{
-		if(pFrom->getGMat()->channels()!=4)return;
-		pFrom->getGMat()->convertTo(m_GMat.m_mat, CV_32FC4);
-	}
-*/
-
 	pFrom->getGMat()->convertTo(m_GMat.m_mat, CV_32FC4);
 
 	updatedGMat();
@@ -214,7 +238,7 @@ bool Frame::empty(void)
 
 bool Frame::isNewerThan(Frame* pFrame)
 {
-	if (pFrame == NULL)return false;
+	NULL_F(pFrame);
 	if(pFrame->getFrameID() < this->getFrameID())
 	{
 		return true;
@@ -225,11 +249,9 @@ bool Frame::isNewerThan(Frame* pFrame)
 
 void Frame::update(Frame* pFrame)
 {
-	if (pFrame == NULL)return;
+	NULL_(pFrame);
 
 #ifdef USE_CUDA
-//	pFrame->getGMat()->copyTo(m_GMat.m_mat);
-
 	m_GMat.m_mat = *pFrame->getGMat();
 	updatedGMat();
 #elif USE_OPENCL
@@ -243,7 +265,7 @@ void Frame::update(Frame* pFrame)
 #ifdef USE_CUDA
 void Frame::update(GpuMat* pGpuFrame)
 {
-	if (pGpuFrame == NULL)return;
+	NULL_(pGpuFrame);
 
 	m_GMat.m_mat = *pGpuFrame;
 	updatedGMat();
@@ -252,7 +274,7 @@ void Frame::update(GpuMat* pGpuFrame)
 
 void Frame::update(Mat* pFrame)
 {
-	if (pFrame == NULL)return;
+	NULL_(pFrame);
 
 #ifdef USE_CUDA
 	m_CMat.m_mat = *pFrame;
