@@ -4,7 +4,7 @@ project(OpenKAI)
 add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++11")
 
 # Setting specific lib here
-link_directories(/home/ubuntu/src/jetson-inference/build/aarch64/lib /usr/local/lib /usr/lib)
+link_directories(/home/ubuntu/src/jetson-inference/build/aarch64/lib /usr/local/lib /usr/lib /usr/local/zed/lib)
 
 # setup CUDA
 find_package(CUDA)
@@ -21,9 +21,9 @@ file(GLOB OpenKAIcpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp)
 cuda_add_executable(OpenKAI ${OpenKAIcpp})
 
 # C/C++ settings
-include_directories(/home/ubuntu/src/jetson-inference/cuda /home/ubuntu/src/jetson-inference/build/aarch64/include /usr/local/cuda/include /usr/local/include /usr/include)
+include_directories(/home/ubuntu/src/jetson-inference/cuda /home/ubuntu/src/jetson-inference/build/aarch64/include /usr/local/cuda/include /usr/local/include /usr/include /usr/local/zed/include /usr/include/eigen3)
 
-target_link_libraries(OpenKAI pthread boost_system glog opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_objdetect opencv_features2d opencv_gpu opencv_superres jetson-inference)
+target_link_libraries(OpenKAI pthread boost_system glog opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_objdetect opencv_features2d opencv_gpu opencv_superres jetson-inference sl_zed)
 
 # Dependencies
 #find_package(OpenCV REQUIRED)

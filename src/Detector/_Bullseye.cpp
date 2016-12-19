@@ -145,7 +145,7 @@ void _Bullseye::detectCircleFill(void)
 	cuda::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
 	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
 //	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
-#elif USE_OPENCV4TEGRA
+#elif defined USE_OPENCV4TEGRA
 	gpu::absdiff(m_Hue, Scalar(90), m_Huered);
 	gpu::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
 	gpu::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
