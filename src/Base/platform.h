@@ -28,3 +28,6 @@
 #include <time.h>
 #include <queue>
 #include <list>
+
+using namespace std;
+

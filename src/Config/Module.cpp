@@ -23,13 +23,16 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_AprilTags);
 	ADD_MODULE(_Bullseye);
-	ADD_MODULE(_ROITracker);
 	ADD_MODULE(_Flow);
 //	ADD_MODULE(_Depth);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_server);
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);
+
+#ifdef USE_OPENCV3
+	ADD_MODULE(_ROITracker);
+#endif
 
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);

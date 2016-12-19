@@ -202,13 +202,13 @@ void _Camera::update(void)
 
 		if (m_bCalibration)
 		{
-			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+			remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
 			SWAP(pSrc, pDest, pTmp);
 		}
 
 		if (m_bGimbal)
 		{
-			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+			warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
 			SWAP(pSrc, pDest, pTmp);
 		}
 

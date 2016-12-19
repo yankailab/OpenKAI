@@ -1,5 +1,7 @@
 #include "RC_visualFollow.h"
 
+#ifdef USE_OPENCV3
+
 namespace kai
 {
 
@@ -411,3 +413,6 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 }
 
 }
+
+#endif
+

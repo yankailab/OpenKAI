@@ -8,6 +8,8 @@
 #ifndef SRC_3DFlow_H_
 #define SRC_3DFlow_H_
 
+#ifdef USE_OPENCV3
+
 #include "../Base/common.h"
 #include "../Vision/_Flow.h"
 #include "../Stream/Frame.h"
@@ -53,6 +55,7 @@ public:
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_3DFlow_H_ */
+#endif
+#endif

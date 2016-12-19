@@ -86,8 +86,6 @@ bool _Bullseye::start(void)
 
 void _Bullseye::update(void)
 {
-	cuda::setDevice(m_cudaDeviceID);
-
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -133,18 +131,18 @@ void _Bullseye::detectCircleFill(void)
 	matHSV[1] = m_Sat;
 	matHSV[2] = m_Val;
 
-	cuda::split(*(pHSV->getGMat()), matHSV);
+	split(*(pHSV->getGMat()), matHSV);
 
 	m_Hue = matHSV[0];
 	m_Sat = matHSV[1];
 	m_Val = matHSV[2];
 
 	//Filtering the image
-	cuda::absdiff(m_Hue, Scalar(90), m_Huered);
-	cuda::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
-	cuda::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
-	cuda::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
-	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
+	absdiff(m_Hue, Scalar(90), m_Huered);
+	multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
+	multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
+	multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
+	threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
 //	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
 	m_Thresh.download(matThresh);
 

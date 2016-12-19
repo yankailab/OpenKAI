@@ -7,10 +7,9 @@
 
 #include "_3DFlow.h"
 
-#include "../Base/common.h"
-#include "stdio.h"
+#ifdef USE_OPENCV3
 
-#include "../Base/cv.h"
+#include "../Base/common.h"
 
 namespace kai
 {
@@ -188,4 +187,7 @@ void _3DFlow::findDepthGPU(void)
 
 
 
-} /* namespace kai */
+}
+
+#endif
+

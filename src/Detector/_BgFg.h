@@ -8,6 +8,8 @@
 #ifndef DETECTOR_BGFGDETECTOR_H_
 #define DETECTOR_BGFGDETECTOR_H_
 
+#ifdef USE_OPENCV3
+
 #include "../Base/common.h"
 #include "../Stream/_StreamBase.h"
 
@@ -56,7 +58,7 @@ public:
 	int		m_objLockLevel;
 
 	_StreamBase*		m_pCamStream;
-	UMat				m_Mat;
+	Mat			m_Mat;
 
 #ifdef USE_CUDA
 	int		m_cudaDeviceID;
@@ -70,6 +72,8 @@ public:
 #endif
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_MarkerDetector_H_ */
+#endif
+#endif
+

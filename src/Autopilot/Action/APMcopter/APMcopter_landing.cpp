@@ -1,4 +1,5 @@
 #include "APMcopter_landing.h"
+#ifdef USE_OPENCV3
 
 namespace kai
 {
@@ -7,12 +8,12 @@ APMcopter_landing::APMcopter_landing()
 {
 	ActionBase();
 
-	m_pROITracker = NULL;
 	m_pMD = NULL;
 	m_pAT = NULL;
 	m_numATagsLandingTarget = 0;
-
 	m_pAPM = NULL;
+
+	m_pROITracker = NULL;
 }
 
 APMcopter_landing::~APMcopter_landing()
@@ -60,7 +61,6 @@ bool APMcopter_landing::link(void)
 
 	F_ERROR_F(pK->v("ROItracker", &iName));
 	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -231,3 +231,5 @@ bool APMcopter_landing::draw(void)
 
 
 }
+#endif
+

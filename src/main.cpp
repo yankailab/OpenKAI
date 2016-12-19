@@ -37,6 +37,7 @@ int main(int argc, char* argv[])
 
 void printEnvironment(void)
 {
+#ifdef USE_OPENCV3
 	LOG(INFO)<<"Optimized code:"<<useOptimized();
 	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
 	LOG(INFO)<<"Current CUDA device:"<<cuda::getDevice();
@@ -54,6 +55,7 @@ void printEnvironment(void)
 	{
 		LOG(INFO)<<"OpenCL not found";
 	}
+#endif
 }
 
 

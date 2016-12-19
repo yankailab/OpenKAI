@@ -30,9 +30,15 @@ public:
 public:
     int		m_disparity;
 
+#ifdef USE_OPENCV3
     Ptr<cuda::StereoBM> m_pBM;
     Ptr<cuda::StereoBeliefPropagation> m_pBP;
     Ptr<cuda::StereoConstantSpaceBP> m_pCSBP;
+#endif
+
+#ifdef USE_OPENCV4TEGRA
+
+#endif
 
 };
 

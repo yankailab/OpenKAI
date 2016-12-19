@@ -2,6 +2,8 @@
 #ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
 
+#ifdef USE_OPENCV3
+
 #include "../../../Base/common.h"
 #include "../../../Detector/_Bullseye.h"
 #include "../../../Detector/_AprilTags.h"
@@ -45,18 +47,17 @@ private:
 	_ROITracker* 	m_pROITracker;
 	_Bullseye*		m_pMD;
 
-	_AprilTags*		m_pAT;
-	APRIL_TAG		m_pATags[NUM_PER_TAG];
-	int				m_pATagsLandingTarget[NUM_PER_TAG];
-	int				m_numATagsLandingTarget;
+	_AprilTags*	m_pAT;
+	APRIL_TAG	m_pATags[NUM_PER_TAG];
+	int		m_pATagsLandingTarget[NUM_PER_TAG];
+	int		m_numATagsLandingTarget;
 
 	LANDING_TARGET	m_landingTarget;
-
-
 
 };
 
 }
 
+#endif
 #endif
 

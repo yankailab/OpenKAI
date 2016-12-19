@@ -76,7 +76,6 @@ private:
 
 #ifdef USE_CUDA
 	GPU_MAT	m_GMat;
-	cuda::Stream	m_cudaStream;
 #endif
 
 };

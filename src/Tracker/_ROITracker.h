@@ -8,13 +8,11 @@
 #ifndef SRC_ROITRACKER_H_
 #define SRC_ROITRACKER_H_
 
+#ifdef USE_OPENCV3
+
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_StreamBase.h"
-
-using namespace cv;
-using namespace cv::cuda;
-using namespace std;
 
 namespace kai
 {
@@ -51,6 +49,7 @@ public:
 	Ptr<Tracker> m_pTracker;
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_CAMDENSEFLOW_H_ */
+#endif
+#endif

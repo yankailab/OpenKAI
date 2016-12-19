@@ -7,6 +7,8 @@
 
 #include "_ROITracker.h"
 
+#ifdef USE_OPENCV3
+
 namespace kai
 {
 
@@ -137,4 +139,6 @@ void _ROITracker::track(void)
 
 }
 
-} /* namespace kai */
+}
+
+#endif

@@ -40,13 +40,16 @@ bool _AutoPilot::init(void* pKiss)
 
 		//Add action modules below
 
-		ADD_ACTION(RC_visualFollow);
-		ADD_ACTION(APMcopter_landing);
 		ADD_ACTION(APMcopter_guided);
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_follow);
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);
+
+#ifdef USE_OPENCV3
+		ADD_ACTION(APMcopter_landing);
+		ADD_ACTION(RC_visualFollow);
+#endif
 
 		//Add action modules above
 
@@ -126,10 +129,12 @@ void _AutoPilot::onMouse(MOUSE* pMouse)
 
 	for(int i=0;i<m_nAction;i++)
 	{
+#ifdef USE_OPENCV3
 		if(*m_pAction[i]->getClass()=="RC_visualFollow")
 		{
 			((RC_visualFollow*)m_pAction[i])->onMouse(pMouse);
 		}
+#endif
 	}
 }
 

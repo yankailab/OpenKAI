@@ -45,7 +45,7 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 	else
 	{
 #ifdef USE_CUDA
-		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+		resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
 		updatedGMat();
 #elif USE_OPENCL
 
@@ -64,9 +64,8 @@ void Frame::getGrayOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	if(pFrom->getGMat()->channels()!=3)return;
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);//,0, m_cudaStream);
+	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
 	updatedGMat();
-	//	m_cudaStream.waitForCompletion();
 #elif USE_OPENCL
 
 #else
@@ -83,7 +82,7 @@ void Frame::getHSVOf(Frame* pFrom)
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
 	if(pFrom->getGMat()->channels()!=3)return;
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -100,7 +99,7 @@ void Frame::getBGRAOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	if(pFrom->getGMat()->channels()!=3)return;
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -117,7 +116,7 @@ void Frame::getRGBAOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	if(pFrom->getGMat()->channels()!=3)return;
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+	cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
 	updatedGMat();
 #elif USE_OPENCL
 
@@ -140,7 +139,7 @@ void Frame::get8UC3Of(Frame* pFrom)
 	else
 	{
 		if(pFrom->getGMat()->channels()!=1)return;
-		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
+		cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 	}
 
 	updatedGMat();
@@ -246,7 +245,6 @@ void Frame::update(GpuMat* pGpuFrame)
 {
 	if (pGpuFrame == NULL)return;
 
-//	pGpuFrame->copyTo(m_GMat.m_mat);
 	m_GMat.m_mat = *pGpuFrame;
 	updatedGMat();
 }
@@ -257,8 +255,6 @@ void Frame::update(Mat* pFrame)
 	if (pFrame == NULL)return;
 
 #ifdef USE_CUDA
-//	m_GMat.m_mat.upload(*pFrame);
-//	updatedGMat();
 	m_CMat.m_mat = *pFrame;
 	updatedCMat();
 #elif USE_OPENCL
@@ -325,13 +321,6 @@ Size Frame::getSize(void)
 
 	return mySize;
 }
-
-
-
-
-
-
-
 
 }
 

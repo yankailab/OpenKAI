@@ -12,10 +12,6 @@
 #include "../Stream/_StreamBase.h"
 #include "../Stream/FrameGroup.h"
 
-using namespace cv;
-using namespace cv::cuda;
-using namespace std;
-
 namespace kai
 {
 
@@ -46,13 +42,20 @@ private:
 public:
 	int	m_width;
 	int m_height;
-	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	_StreamBase*					m_pStream;
 	FrameGroup*						m_pGrayFrames;
+
+#ifdef USE_OPENCV3
+	Ptr<FarnebackOpticalFlow> m_pFarn;
+#endif
+
+#ifdef USE_OPENCV4TEGRA
+	Ptr<DenseOpticalFlowExt> m_pFarn;
+#endif
 	GpuMat							m_GFlowMat;
 	GpuMat							m_GDMat;
 
-	int		m_bDepth;
+	int	m_bDepth;
 	double	m_flowMax;
 	double	m_flowAvr; //average flow distance in previous frame
 	Frame* m_pDepth;
@@ -64,6 +67,6 @@ public:
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_FLOW_H_ */
+#endif

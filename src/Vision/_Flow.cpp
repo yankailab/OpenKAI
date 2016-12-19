@@ -52,8 +52,12 @@ bool _Flow::init(void* pKiss)
 	F_INFO(pK->v("colorFile", &labelFile));
 
 	m_pDepth = new Frame();
+#ifdef USE_OPENCV3
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-
+#endif
+#ifdef USE_OPENCV4TEGRA
+	m_pFarn = superres::createOptFlow_Farneback_GPU();
+#endif
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 
@@ -147,10 +151,10 @@ void _Flow::detect(void)
 	//Generate Depth Map from Flow
 	if(m_bDepth==0)return;
 
-	cuda::abs(m_GFlowMat, GMat);
-	cuda::split(GMat, pGMat);
-	cuda::add(pGMat[0],pGMat[1], GMat);
-	cuda::multiply(GMat, Scalar(100), pGMat[1]);
+	abs(m_GFlowMat, GMat);
+	split(GMat, pGMat);
+	add(pGMat[0],pGMat[1], GMat);
+	multiply(GMat, Scalar(100), pGMat[1]);
 
 	pGMat[1].convertTo(*(m_pDepth->getGMat()),CV_8UC1);
 	m_pDepth->updatedGMat();
@@ -284,7 +288,7 @@ void _Flow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, 
 void _Flow::generateFlowMap(const GpuMat& d_flow)
 {
 	GpuMat planes[2];
-	cuda::split(d_flow, planes);
+	split(d_flow, planes);
 
 	Mat flowx(planes[0]);
 	Mat flowy(planes[1]);

@@ -1,6 +1,8 @@
 #ifndef OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 
+#ifdef USE_OPENCV3
+
 #include "../../../Base/common.h"
 #include "../../../Script/Kiss.h"
 #include "../../../Navigation/_Universe.h"
@@ -67,6 +69,6 @@ private:
 };
 
 }
-
+#endif
 #endif
 
