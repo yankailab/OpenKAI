@@ -34,6 +34,6 @@ private:
 	Frame* m_pFrame[NUM_FRAME];
 };
 
-}/*namespace kai*/
+}
 
 #endif

@@ -11,13 +11,6 @@
 #include "../Base/common.h"
 #include "_StreamBase.h"
 
-#ifdef USE_OPENCV3
-using namespace cv::cuda;
-#elif defined USE_OPENCV4TEGRA
-using namespace cv::gpu;
-#endif
-
-
 namespace kai
 {
 

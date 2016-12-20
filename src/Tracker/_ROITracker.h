@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_ROITRACKER_H_
-#define SRC_ROITRACKER_H_
+#ifndef SRC_TRACKER_ROITRACKER_H_
+#define SRC_TRACKER_ROITRACKER_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"

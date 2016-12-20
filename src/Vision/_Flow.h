@@ -47,9 +47,7 @@ public:
 
 #ifdef USE_OPENCV3
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-#endif
-
-#ifdef USE_OPENCV4TEGRA
+#elif defined USE_OPENCV4TEGRA
 	Ptr<DenseOpticalFlowExt> m_pFarn;
 #endif
 	GpuMat							m_GFlowMat;

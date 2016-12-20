@@ -30,10 +30,6 @@
 namespace kai
 {
 
-using std::string;
-using namespace std;
-using namespace cv;
-
 class _DetectNet: public _ThreadBase
 {
 public:

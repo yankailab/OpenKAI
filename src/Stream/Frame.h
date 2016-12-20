@@ -10,12 +10,6 @@
 
 #include "../Base/common.h"
 
-#ifdef USE_OPENCV3
-using namespace cv::cuda;
-#elif defined USE_OPENCV4TEGRA
-using namespace cv::gpu;
-#endif
-
 namespace kai
 {
 

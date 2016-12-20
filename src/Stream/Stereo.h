@@ -34,9 +34,7 @@ public:
     Ptr<cuda::StereoBM> m_pBM;
     Ptr<cuda::StereoBeliefPropagation> m_pBP;
     Ptr<cuda::StereoConstantSpaceBP> m_pCSBP;
-#endif
-
-#ifdef USE_OPENCV4TEGRA
+#elif defined USE_OPENCV4TEGRA
 
 #endif
 

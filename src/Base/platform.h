@@ -30,4 +30,5 @@
 #include <list>
 
 using namespace std;
+using std::string;
 
