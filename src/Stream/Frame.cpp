@@ -46,10 +46,10 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 	{
 #ifdef USE_CUDA
 
-#ifdef USE_OPENCV3
-		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 		gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+#else
+		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
 #endif
 		updatedGMat();
 
@@ -71,10 +71,10 @@ void Frame::getGrayOf(Frame* pFrom)
 #ifdef USE_CUDA
 	CHECK_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV3
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
+#else
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
 #endif
 
 	updatedGMat();
@@ -95,10 +95,10 @@ void Frame::getHSVOf(Frame* pFrom)
 	//RGB or BGR depends on device
 	CHECK_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV3
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
+#else
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
 #endif
 
 	updatedGMat();
@@ -118,10 +118,10 @@ void Frame::getBGRAOf(Frame* pFrom)
 #ifdef USE_CUDA
 	CHECK_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV3
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
+#else
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
 #endif
 
 	updatedGMat();
@@ -141,10 +141,10 @@ void Frame::getRGBAOf(Frame* pFrom)
 #ifdef USE_CUDA
 	CHECK_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV3
-	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
+#else
+	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
 #endif
 
 	updatedGMat();
@@ -170,10 +170,10 @@ void Frame::get8UC3Of(Frame* pFrom)
 	{
 		if(pFrom->getGMat()->channels()!=1)return;
 
-#ifdef USE_OPENCV3
-		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 		gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
+#else
+		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 #endif
 	}
 

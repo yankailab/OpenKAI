@@ -7,7 +7,7 @@
 
 #include "_3DFlow.h"
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 
 #include "../Base/common.h"
 

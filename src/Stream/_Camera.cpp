@@ -182,20 +182,20 @@ void _Camera::update(void)
 
 		if (m_bCalibration)
 		{
-#ifdef USE_OPENCV3
-			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 			gpu::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
+#else
+			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
 #endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
 		if (m_bGimbal)
 		{
-#ifdef USE_OPENCV3
-			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
-#elif defined USE_OPENCV4TEGRA
+#ifdef USE_OPENCV4TEGRA
 			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+#else
+			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
 #endif
 			SWAP(pSrc, pDest, pTmp);
 		}

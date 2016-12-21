@@ -46,7 +46,7 @@ _DetectNet::~_DetectNet()
 bool _DetectNet::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss; 
+	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
 	m_pRGBA = new Frame();
@@ -77,11 +77,11 @@ bool _DetectNet::init(void* pKiss)
 bool _DetectNet::link(void)
 {
 	CHECK_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
+	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream", &iName));
-	m_pStream = (_Stream*) (pK->root()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 	F_ERROR_F(pK->v("_Universe", &iName));
 	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
@@ -96,7 +96,7 @@ bool _DetectNet::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR)<< retCode;
+		LOG_E(retCode);
 		m_bThreadON = false;
 		return false;
 	}
@@ -106,7 +106,6 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
-
 	m_pDN = detectNet::Create(modelFile.c_str(), trainedFile.c_str(),
 			meanFile.c_str(), m_confidence_threshold);
 	NULL_(m_pDN);
@@ -114,11 +113,9 @@ void _DetectNet::update(void)
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
 	m_nClass = m_pDN->GetNumClasses();
 
-	CHECK_(
-			!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
+	CHECK_(!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
 					m_nBoxMax * sizeof(float4)));
-	CHECK_(
-			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
+	CHECK_(!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
 
 	while (m_bThreadON)
@@ -140,7 +137,7 @@ void _DetectNet::detectFrame(void)
 	NULL_(m_pUniverse);
 	NULL_(m_pDN);
 
-	Frame* pBGR = m_pStream->getBGRFrame();
+	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());
 	CHECK_(m_pRGBA->isNewerThan(pBGR));
@@ -161,7 +158,7 @@ void _DetectNet::detectFrame(void)
 	CHECK_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 					&m_nBox, m_confCPU));
 
-//	LOG(INFO)<<m_nBox<<" bboxes detected";
+	LOG_I("Detected BBox: "<<m_nBox);
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
@@ -187,6 +184,10 @@ void _DetectNet::detectFrame(void)
 bool _DetectNet::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
+
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+
 	return true;
 }
 

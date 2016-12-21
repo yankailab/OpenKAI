@@ -30,7 +30,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);
 #endif
 #ifdef USE_ZED

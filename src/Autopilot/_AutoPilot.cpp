@@ -46,7 +46,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 		ADD_ACTION(APMcopter_landing);
 		ADD_ACTION(RC_visualFollow);
 #endif
@@ -129,7 +129,7 @@ void _AutoPilot::onMouse(MOUSE* pMouse)
 
 	for(int i=0;i<m_nAction;i++)
 	{
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 		if(*m_pAction[i]->getClass()=="RC_visualFollow")
 		{
 			((RC_visualFollow*)m_pAction[i])->onMouse(pMouse);

@@ -1,5 +1,5 @@
 #include "APMcopter_landing.h"
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 
 namespace kai
 {

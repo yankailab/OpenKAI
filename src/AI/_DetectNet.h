@@ -13,16 +13,9 @@
 #ifdef USE_TENSORRT
 #include "../Base/_ThreadBase.h"
 #include "../Navigation/_Universe.h"
-#include "../Stream/_Stream.h"
+#include "../Stream/_StreamBase.h"
 
 #include <cuda_runtime.h>
-#include <algorithm>
-#include <iosfwd>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
 #include "cudaMappedMemory.h"
 #include "cudaNormalize.h"
 #include "detectNet.h"
@@ -74,7 +67,7 @@ private:
 
 public:
 	_Universe* m_pUniverse;
-	_Stream* m_pStream;
+	_StreamBase* m_pStream;
 
 	string modelFile;
 	string trainedFile;

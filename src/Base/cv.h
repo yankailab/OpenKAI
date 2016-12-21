@@ -7,15 +7,13 @@
 #include <opencv2/superres/optical_flow.hpp>
 using namespace cv::superres;
 
-
 #ifdef USE_CUDA
 #include <opencv2/gpu/gpu.hpp>
 #include <opencv2/gpu/gpumat.hpp>
 using namespace cv::gpu;
 #endif
-#endif
 
-#ifdef USE_OPENCV3
+#else
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
@@ -36,6 +34,7 @@ using namespace cv::gpu;
 #include <opencv2/cudabgsegm.hpp>
 using namespace cv::cuda;
 #endif
+
 #endif
 
 using namespace cv;

@@ -8,7 +8,7 @@
 #ifndef DETECTOR_BGFGDETECTOR_H_
 #define DETECTOR_BGFGDETECTOR_H_
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 
 #include "../Base/common.h"
 #include "../Stream/_StreamBase.h"

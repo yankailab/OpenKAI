@@ -8,8 +8,6 @@
 #include "constant.h"
 #include <glog/logging.h>
 
-using namespace std;
-
 //Common structures
 namespace kai
 {

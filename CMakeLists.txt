@@ -3,8 +3,60 @@ set(CMAKE_BUILD_TYPE Release)
 project(OpenKAI)
 add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++11")
 
+OPTION(USE_CUDA "Use NVIDIA CUDA" ON)
+OPTION(USE_OPENCV4TEGRA "Use NVIDIA OpenCV4Tegra for JetsonTX1" OFF)
+OPTION(USE_TENSORRT "Use NVIDIA TensorRT" OFF)
+OPTION(USE_SSD "Use Caffe SSD branch" OFF)
+OPTION(USE_CAFFE "Use Caffe" OFF)
+OPTION(USE_ZED "Use Stereolabs ZED camera" OFF)
+
+set(OpenKAI_libDir /usr/lib /usr/local/lib)
+set(OpenKAI_include /usr/local/include /usr/include)
+set(OpenKAI_lib pthread boost_system glog)
+
+if(USE_CUDA)
+  add_definitions(-DUSE_CUDA)
+  set(OpenKAI_include ${OpenKAI_include} /usr/local/cuda/include)
+endif()
+
+if(USE_OPENCV4TEGRA)
+  add_definitions(-DUSE_OPENCV4TEGRA)
+  set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_objdetect opencv_features2d opencv_gpu opencv_superres)
+else()
+  set(OpenKAI_libDir ${OpenKAI_libDir} /usr/local/opencv3/lib)
+  set(OpenKAI_include ${OpenKAI_include} /usr/local/opencv3/include)
+  set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_cudawarping opencv_cudaobjdetect opencv_cudaarithm opencv_cudabgsegm opencv_cudaimgproc opencv_cudaoptflow opencv_cudastereo opencv_objdetect opencv_xobjdetect opencv_tracking opencv_features2d)
+endif()
+
+if(USE_TENSORRT)
+  add_definitions(-DUSE_TENSORRT)
+  set(OpenKAI_libDir ${OpenKAI_libDir} /home/ubuntu/src/jetson-inference/build/aarch64/lib)
+  set(OpenKAI_include ${OpenKAI_include} /home/ubuntu/src/jetson-inference/cuda /home/ubuntu/src/jetson-inference/build/aarch64/include)
+  set(OpenKAI_lib ${OpenKAI_lib} jetson-inference)
+endif()
+
+if(USE_SSD)
+  add_definitions(-DUSE_SSD)
+  set(OpenKAI_libDir ${OpenKAI_libDir} /home/ubuntu/src/caffe_ssd/caffe/build/lib /home/ubuntu/src/caffe_ssd/caffe/build)
+  set(OpenKAI_include ${OpenKAI_include} /home/ubuntu/src/caffe_ssd/caffe/include /home/ubuntu/src/caffe_ssd/caffe/build/src)
+  set(OpenKAI_lib ${OpenKAI_lib} caffe)
+elseif(USE_CAFFE)
+  add_definitions(-DUSE_CAFFE)
+  set(OpenKAI_libDir ${OpenKAI_libDir} /home/ubuntu/src/caffe/build/lib /home/ubuntu/src/caffe/build)
+  set(OpenKAI_include ${OpenKAI_include} /home/ubuntu/src/caffe/include /home/ubuntu/src/caffe/build/src)
+  set(OpenKAI_lib ${OpenKAI_lib} caffe)
+endif()
+
+if(USE_ZED)
+  add_definitions(-DUSE_ZED)
+  set(OpenKAI_libDir ${OpenKAI_libDir} /usr/local/zed/lib)
+  set(OpenKAI_include ${OpenKAI_include} /usr/local/zed/include /usr/include/eigen3)
+  set(OpenKAI_lib ${OpenKAI_lib} sl_zed)
+endif()
+
+
 # Setting specific lib here
-link_directories(/home/ubuntu/src/jetson-inference/build/aarch64/lib /usr/local/lib /usr/lib /usr/local/zed/lib)
+link_directories(${OpenKAI_libDir})
 
 # setup CUDA
 find_package(CUDA)
@@ -15,20 +67,12 @@ set(
     -O3 -gencode arch=compute_53,code=sm_53
 )
 
-#file(GLOB OpenKAIcpp )
-file(GLOB OpenKAIcpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp)
+# File
+file(GLOB OpenKAI_cpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp)
 
-cuda_add_executable(OpenKAI ${OpenKAIcpp})
+cuda_add_executable(OpenKAI ${OpenKAI_cpp})
 
 # C/C++ settings
-include_directories(/home/ubuntu/src/jetson-inference/cuda /home/ubuntu/src/jetson-inference/build/aarch64/include /usr/local/cuda/include /usr/local/include /usr/include /usr/local/zed/include /usr/include/eigen3)
-
-target_link_libraries(OpenKAI pthread boost_system glog opencv_core opencv_highgui opencv_imgproc opencv_calib3d opencv_objdetect opencv_features2d opencv_gpu opencv_superres jetson-inference sl_zed)
-
-# Dependencies
-#find_package(OpenCV REQUIRED)
-#find_package(Threads REQUIRED)
-#find_package(Boost REQUIRED)
-
-#add_subdirectory(src)
+include_directories(${OpenKAI_include})
+target_link_libraries(OpenKAI ${OpenKAI_lib})
 

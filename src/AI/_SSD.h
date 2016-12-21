@@ -20,25 +20,14 @@
 #include <caffe/util/io.hpp>
 #include <caffe/proto/caffe.pb.h>
 
-#include <algorithm>
-#include <iosfwd>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
 namespace kai
 {
-
 using namespace caffe;
 using caffe::Blob;
 using caffe::Caffe;
 using caffe::Net;
 using caffe::shared_ptr;
 using caffe::vector;
-using std::string;
-using namespace std;
-using namespace cv;
 
 class _SSD: public _ThreadBase
 {

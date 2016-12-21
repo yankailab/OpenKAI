@@ -9,7 +9,7 @@
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 
 namespace kai
 {

@@ -45,9 +45,9 @@ public:
 	_StreamBase*					m_pStream;
 	FrameGroup*						m_pGrayFrames;
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
-#elif defined USE_OPENCV4TEGRA
+#else
 	Ptr<DenseOpticalFlowExt> m_pFarn;
 #endif
 	GpuMat							m_GFlowMat;

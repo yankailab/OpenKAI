@@ -117,10 +117,6 @@ void APMcopter_base::sendHeartbeat(void)
 	{
 		m_pMavlink->sendHeartbeat();
 		m_lastHeartbeat = timeNow;
-
-#ifdef MAVLINK_DEBUG
-		printf("   SENT HEARTBEAT:%d\n", (++m_iHeartbeat));
-#endif
 	}
 }
 

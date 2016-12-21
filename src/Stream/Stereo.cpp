@@ -23,7 +23,7 @@ bool Stereo::init(int disparity)
 {
 	m_disparity = disparity;
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	m_pBM = cuda::createStereoBM(m_disparity);
 	m_pBP = cuda::createStereoBeliefPropagation(m_disparity);
 	m_pCSBP = cv::cuda::createStereoConstantSpaceBP(m_disparity);
@@ -37,8 +37,7 @@ void Stereo::detect(Frame* pLeft, Frame* pRight, Frame* pDepth)
 	GpuMat* pR = pRight->getGMat();
 	GpuMat* pD = pDepth->getGMat();
 
-
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	//BM
 	m_pBM->compute(*pL, *pR, *pD);
 
@@ -59,7 +58,7 @@ void Stereo::detect(Frame* pLRsbs, Frame* pDepth)
 	GpuMat mL = (*pLR)(cv::Rect(0, 0, width, height));
 	GpuMat mR = (*pLR)(cv::Rect(width, 0, width, height));
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	m_pBM->compute(mL, mR, GDepth);
 //	m_pBP->compute(mL, mR, GDepth);
 //	m_pCSBP->compute(mL, mR, GDepth);

@@ -7,7 +7,7 @@
 
 #include "_ROITracker.h"
 
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 
 namespace kai
 {
