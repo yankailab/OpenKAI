@@ -18,26 +18,24 @@
 #include "../Stream/_ZED.h"
 #include "../Stream/Frame.h"
 #include "../Stream/FrameGroup.h"
-#include "../Navigation/_Universe.h"
 #include "../Automaton/_Automaton.h"
 
 #include "../IO/SerialPort.h"
 #include "../UI/UI.h"
 #include "../UI/Window.h"
 
-#include "../Detector/_Bullseye.h"
-#include "../Vision/_Flow.h"
-#include "../Detector/_Depth.h"
 #include "../include/apriltags-cpp/TagDetector.h"
 #include "../Detector/_AprilTags.h"
+#include "../Detector/_Bullseye.h"
 #include "../Tracker/_ROITracker.h"
+
+#include "../Vision/_Flow.h"
 
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
 
 #include "../Autopilot/Action/ActionBase.h"
 #include "../Autopilot/Action/HM/HM_base.h"
-#include "../Autopilot/Action/HM/HM_follow.h"
 #include "../Autopilot/Action/APMcopter/APMcopter_base.h"
 #include "../Autopilot/Action/APMcopter/APMcopter_landing.h"
 #include "../Autopilot/Action/APMrover/APMrover_base.h"
@@ -45,6 +43,7 @@
 #include "../Autopilot/Action/RC/RC_base.h"
 #include "../Autopilot/Action/RC/RC_visualFollow.h"
 #include "../Autopilot/_AutoPilot.h"
+#include "../Autopilot/Action/HM/HM_grass.h"
 #include "../IO/File.h"
 
 #include "../Network/_server.h"

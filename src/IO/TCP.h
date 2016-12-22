@@ -5,8 +5,6 @@
 #include "../Network/_server.h"
 #include "IO.h"
 
-using namespace std;
-
 namespace kai
 {
 

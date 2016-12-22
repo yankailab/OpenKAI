@@ -1,13 +1,13 @@
-#include "APMrover_follow.h"
+#include "HM_grass.h"
 
 namespace kai
 {
 
-APMrover_follow::APMrover_follow()
+HM_grass::HM_grass()
 {
 	ActionBase();
 
-	m_pAPM = NULL;
+	m_pHM = NULL;
 	m_pAM = NULL;
 	m_pUniv = NULL;
 
@@ -25,17 +25,16 @@ APMrover_follow::APMrover_follow()
 	m_filterWindow = 3;
 	m_targetClass = 0;
 
-	m_pAPM = NULL;
 }
 
-APMrover_follow::~APMrover_follow()
+HM_grass::~HM_grass()
 {
 }
 
-bool APMrover_follow::init(void* pKiss)
+bool HM_grass::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
-	Kiss* pK = (Kiss*) pKiss;
+	CHECK_F(!this->ActionBase::init(pKiss));
+	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("targetX", &m_destX));
@@ -54,14 +53,14 @@ bool APMrover_follow::init(void* pKiss)
 	return true;
 }
 
-bool APMrover_follow::link(void)
+bool HM_grass::link(void)
 {
 	CHECK_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
+	Kiss* pK = (Kiss*)m_pKiss;
 	string iName = "";
 
-	F_INFO(pK->v("APMrover_base", &iName));
-	m_pAPM = (APMrover_base*) (pK->parent()->getChildInstByName(&iName));
+	F_INFO(pK->v("HM_base", &iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniv = (Object*) (pK->root()->getChildInstByName(&iName));
@@ -69,12 +68,13 @@ bool APMrover_follow::link(void)
 	return true;
 }
 
-void APMrover_follow::update(void)
+void HM_grass::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAPM);
+	NULL_(m_pHM);
 	NULL_(m_pUniv);
+	NULL_(m_pAM);
 	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	//get visual target and decide motion
@@ -82,9 +82,10 @@ void APMrover_follow::update(void)
 
 	if (m_pTarget == NULL)
 	{
-		//no target found, stop and standby
-		m_pAPM->m_steer = 0;
-		m_pAPM->m_thrust = 0;
+		//no target found, stop and standby TODO: go back to work
+		m_pHM->m_motorPwmL = 0;
+		m_pHM->m_motorPwmR = 0;
+		m_pHM->m_bSpeaker = false;
 	}
 	else
 	{
@@ -93,30 +94,28 @@ void APMrover_follow::update(void)
 		m_pTargetArea->input(m_pTarget->m_bbox.area());
 
 		//forward or backward
-		int speed = (m_destArea * m_pTarget->m_camSize.area()
-				- m_pTargetArea->v()) * m_speedP;
+		int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
 
 		//steering
-		int dSteer = (m_destX * m_pTarget->m_camSize.m_x - m_pTargetX->v())
-				* (-m_steerP);
+		int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
 
-		m_pAPM->m_steer = dSteer;
-		m_pAPM->m_thrust = speed;
+		m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
+		m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
+		m_pHM->m_bSpeaker = true;
 	}
 
-	m_pAPM->sendHeartbeat();
-	m_pAPM->sendSteerThrust();
-
+	m_pHM->updateCAN();
 }
 
-bool APMrover_follow::draw(void)
+bool HM_grass::draw(void)
 {
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
-			*this->getName() + ": thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer),
+			"HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
+					+ i2str(m_pHM->m_motorPwmR),
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();
@@ -124,23 +123,6 @@ bool APMrover_follow::draw(void)
 	CHECK_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
 			Scalar(0, 0, 255), 2);
-
-	//Vehicle position
-	char strBuf[128];
-
-	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->m_msg.attitude.roll,
-			m_pAPM->m_pMavlink->m_msg.attitude.pitch,
-			m_pAPM->m_pMavlink->m_msg.attitude.yaw);
-	cv::putText(*pMat, strBuf, *pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	pWin->lineNext();
-
-	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->m_msg.attitude.rollspeed,
-			m_pAPM->m_pMavlink->m_msg.attitude.pitchspeed,
-			m_pAPM->m_pMavlink->m_msg.attitude.yawspeed);
-	cv::putText(*pMat, strBuf, *pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 1);
-	pWin->lineNext();
 
 	return true;
 }

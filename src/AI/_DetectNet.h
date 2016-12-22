@@ -12,7 +12,7 @@
 
 #ifdef USE_TENSORRT
 #include "../Base/_ThreadBase.h"
-#include "../Navigation/_Universe.h"
+#include "../Navigation/Object.h"
 #include "../Stream/_StreamBase.h"
 
 #include <cuda_runtime.h>
@@ -33,11 +33,13 @@ public:
 	bool link(void);
 	bool draw(void);
 
-	std::vector<vector<float> > detect(Frame* pFrame);
 	bool start(void);
 
+	int addObjClass(string* pName, uint8_t safety);
+	OBJECT* addObject(OBJECT* pNewObj);
+
 private:
-	void detectFrame(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -66,8 +68,8 @@ private:
 	string m_className;
 
 public:
-	_Universe* m_pUniverse;
 	_StreamBase* m_pStream;
+	Object* m_pObj;
 
 	string modelFile;
 	string trainedFile;

@@ -13,7 +13,6 @@
 #include "../IO/SerialPort.h"
 #include "../IO/File.h"
 #include "../IO/TCP.h"
-#include "../Navigation/_Universe.h"
 #include "../Algorithm/Filter.h"
 
 #define DEG_AROUND 360.0
@@ -58,7 +57,6 @@ public:
 	IO* m_pOut;
 
 	_Lightware_SF40_sender* m_pSF40sender;
-	_Universe* m_pUniverse;
 
 	double m_offsetAngle;
 	int m_nDiv;

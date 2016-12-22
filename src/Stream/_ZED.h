@@ -28,6 +28,8 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	bool isClear(vInt4* pRect, double dist, double minSize);
+
 private:
 	bool open(void);
 	void update(void);

@@ -42,30 +42,10 @@
 	"depthWindow":"HM_depth",
 	"zedFPS":30,
 	"resolution":2,
-	"minDist":800,
-}
-
-{
-	"name":"ZEDL",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":0,
-	"Window":"HM_monitor",
-	"ID":0,
-	"width":1344,
-	"height":376,
-	"bCrop":1,
-	"cropX":0,
-	"cropY":0,
-	"cropW":672,
-	"cropH":376,
-	"bCalib":0,
-	"bFisheye":0,
-	"calibFile":"calibration/sp360-1440.xml",
-	"isoScale":1.0,
-	"bGimbal":0,
-	"angleV":67.1,
-	"angleH":66.7,
+	"minDist":600,
+	"areaMin":0.01,
+	"threshold":200,
+	"maxVal":255,
 }
 	
 {
@@ -82,25 +62,12 @@
 }
 
 {
-	"name":"Universe",
-	"class":"_Universe",
-	"bInst":1,
-	"FPS":30,
-	"Window":"HM_monitor",
-	"frameLifetime":500000,
-	"probMin":0.0,
-	"posDisparity":100,
-}
-
-{
 	"name":"detectNet",
 	"class":"_DetectNet",
 	"bInst":0,
 	"FPS":30,
 	"Window":"HM_monitor",
 	"_Stream":"ZED",
-	"_Universe":"Universe",
-	"_Automaton":"flight",
 	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.2,
 	"modelFile":"deploy.prototxt",
@@ -117,13 +84,28 @@
 	"FPS":30,
 	"Window":"HM_monitor",
 	"_Stream":"ZED",
-	"_Universe":"Universe",
 	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
 	"minConfidence":0.3,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
 	"meanFile":"imagenet_mean.binaryproto",
 	"labelFile":"model/SSD/coco_labels.txt",
+}
+
+{
+	"name":"HMcanbus",
+	"class":"_Canbus",
+	"bInst":1,
+	"Window":"HM_monitor",
+	"FPS":100,	
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyUSB0",
+		"baud":115200,
+	}
 }
 
 {
@@ -140,11 +122,6 @@
 	}
 	
 	{
-		"state":"HM_FOLLOW",
-		"bInst":1,
-	}
-
-	{
 		"state":"HM_WORK",
 		"bInst":1,
 	}
@@ -152,27 +129,6 @@
 	{
 		"state":"HM_RTH",
 		"bInst":1,
-	}
-
-	{
-		"state":"HM_CHARGE",
-		"bInst":1,
-	}	
-}
-
-{
-	"name":"HMcanbus",
-	"class":"_Canbus",
-	"bInst":1,
-	"Window":"HM_monitor",
-	"FPS":100,	
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
 	}
 }
 
@@ -203,22 +159,59 @@
 		}
 
 		{
-			"name":"HMfollow",
-			"class":"HM_follow",
-			"bInst":1,
+			"name":"HMgrass",
+			"class":"HM_grass",
+			"bInst":0,
 			"Window":"HM_monitor",
 			"HM_base":"HMbase",
-			"_Universe":"Universe",			
 			"_Automaton":"HMauto",
-			"State":"HM_FOLLOW",
-			"targetX":0.5,
-			"targetY":0.5,
-			"targetArea":0.1,
+			"State":"HM_WORK",
 			"speedP":0.25,
 			"steerP":8,
-			"filterWindow":10,
-			"targetClass":0,
 		}
+
+		{
+			"name":"HMmarker",
+			"class":"HM_marker",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HM_monitor",
+			"HM_base":"HMbase",
+			"_Automaton":"HMauto",
+			"State":"HM_WORK",
+			"dist":0.1,
+			"minSize":0.1,
+		}
+		
+		{
+			"name":"HMrth"
+			"class":"HM_rth",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HM_monitor",
+			"HM_base":"HMbase",
+			"_Automaton":"HMauto",
+			"State":"HM_RTH",
+			"dist":0.1,
+		}		
+		
+		{
+			"name":"HMavoid",
+			"class":"HM_avoid",
+			"bInst":1,
+			"_Stream":"ZED",
+			"Window":"HM_monitor",
+			"HM_base":"HMbase",
+			"_Automaton":"HMauto",
+			"State":"HM_RTH",
+			"dist":0.1,
+			"minSize":0.1,
+			"avoidX":0.1,
+			"avoidY":0.9,
+			"avoidW":0.8,
+			"avoidH":0.1,
+		}
+		
 	}
 }
 

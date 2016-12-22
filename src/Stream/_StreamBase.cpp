@@ -90,6 +90,11 @@ Frame* _StreamBase::depth(void)
 	return m_pDepth;
 }
 
+bool _StreamBase::isClear(vInt4* pRect, double dist, double minSize)
+{
+	return true;
+}
+
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
 	Point2f center(m_centerH, m_centerV);

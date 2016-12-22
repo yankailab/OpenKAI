@@ -1,21 +1,21 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HMRTH_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_HMRTH_H_
 
 #include "../../../Base/common.h"
-#include "../../../Navigation/_Universe.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Algorithm/Filter.h"
+#include "../../../Object/Object.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
 namespace kai
 {
 
-class HM_follow: public ActionBase
+class HM_rth: public ActionBase
 {
 public:
-	HM_follow();
-	~HM_follow();
+	HM_rth();
+	~HM_rth();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -23,7 +23,7 @@ public:
 	bool draw(void);
 
 private:
-	_Universe*	m_pUniv;
+	Object*	m_pUniv;
 	HM_base* m_pHM;
 
 	//where target should be on cam coordinate

@@ -14,7 +14,7 @@ _SSD::_SSD()
 	_ThreadBase();
 
 	num_channels_ = 0;
-	m_pUniverse = NULL;
+	m_pObj = NULL;
 	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_frameID = 0;
@@ -24,12 +24,14 @@ _SSD::_SSD()
 
 _SSD::~_SSD()
 {
+	DEL(m_pObj);
+
 }
 
 bool _SSD::init(void* pKiss)
 {
 	CHECK_F(!this->_ThreadBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
 	//Setup Caffe Classifier
@@ -49,10 +51,12 @@ bool _SSD::init(void* pKiss)
 	F_FATAL_F(pK->v("labelFile", &labelFile));
 	F_INFO(pK->v("minConfidence", &m_confidence_threshold));
 
-	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile, presetDir + labelFile);
+	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
+			presetDir + labelFile);
 	LOG_I("Initialized");
 
 	m_pFrame = new Frame();
+	m_pObj = new Object();
 
 	return true;
 }
@@ -60,18 +64,11 @@ bool _SSD::init(void* pKiss)
 bool _SSD::link(void)
 {
 	CHECK_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
+	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
-	F_ERROR_F(pK->v("_Universe",&iName));
-	m_pUniverse = (_Universe*)(pK->root()->getChildInstByName(&iName));
-
-	for(int i=0; i<labels_.size();i++)
-	{
-		m_pUniverse->addObjClass(&labels_.at(i), 0);
-	}
+	F_ERROR_F(pK->v("_Stream", &iName));
+	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -89,12 +86,12 @@ void _SSD::setup(const string& model_file, const string& trained_file,
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
 	num_channels_ = input_layer->channels();
-	CHECK(num_channels_ == 3 || num_channels_ == 1)<< "Input layer should have 1 or 3 channels.";
+	CHECK(num_channels_ == 3 || num_channels_ == 1)
+																<< "Input layer should have 1 or 3 channels.";
 	input_geometry_ = cv::Size(input_layer->width(), input_layer->height());
 
 	/* Load the binaryproto mean file. */
 //	SetMean(mean_file);
-
 	/* Load labels. */
 	std::ifstream labels(label_file.c_str());
 	CHECK(labels) << "Unable to open labels file " << label_file;
@@ -134,7 +131,6 @@ void _SSD::update(void)
 	Caffe::set_mode(Caffe::GPU);
 #endif
 
-
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -156,16 +152,18 @@ void _SSD::detectFrame(void)
 	unsigned int i;
 
 	NULL_(m_pStream);
-	NULL_(m_pUniverse);
 
 	pFrame = m_pStream->bgr();
 	NULL_(pFrame);
 	CHECK_(pFrame->empty());
-	if (!pFrame->isNewerThan(m_pFrame))return;
+	if (!pFrame->isNewerThan(m_pFrame))
+		return;
 	m_pFrame->update(pFrame);
 
 	cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
 	std::vector<vector<float> > detections = detect(m_pFrame);
+
+	m_pObj->reset();
 
 	/* Print the detection results. */
 	for (i = 0; i < detections.size(); ++i)
@@ -176,10 +174,12 @@ void _SSD::detectFrame(void)
 //		float size = d.size();
 		const float score = d[2];
 
-		if (score < m_confidence_threshold)continue;
+		if (score < m_confidence_threshold)
+			continue;
 
-		iClass = static_cast<int>(d[1])-1;
-		if(iClass >= labels_.size())continue;
+		iClass = static_cast<int>(d[1]) - 1;
+		if (iClass >= labels_.size())
+			continue;
 
 		obj.m_iClass = iClass;
 		obj.m_bbox.m_x = d[3] * pImg->cols;
@@ -190,8 +190,9 @@ void _SSD::detectFrame(void)
 		obj.m_camSize.m_y = pImg->rows;
 		obj.m_dist = 0.0;
 		obj.m_prob = 0.0;
+		obj.m_name = labels_.at(iClass);
 
-		m_pUniverse->addObject(&obj);
+		m_pObj->add(&obj);
 	}
 
 }
@@ -233,11 +234,14 @@ std::vector<vector<float> > _SSD::detect(Frame* pFrame)
 {
 	vector<vector<float> > detections;
 
-	if(pFrame==NULL)return detections;
-	if(pFrame->empty())return detections;
+	if (pFrame == NULL)
+		return detections;
+	if (pFrame->empty())
+		return detections;
 
 	Blob<float>* input_layer = net_->input_blobs()[0];
-	input_layer->Reshape(1, num_channels_, input_geometry_.height, input_geometry_.width);
+	input_layer->Reshape(1, num_channels_, input_geometry_.height,
+			input_geometry_.width);
 	/* Forward dimension change to all layers. */
 	net_->Reshape();
 
@@ -286,7 +290,8 @@ void _SSD::WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels)
 	}
 }
 
-void _SSD::Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>* input_channels)
+void _SSD::Preprocess(const cv::cuda::GpuMat& img,
+		std::vector<cv::cuda::GpuMat>* input_channels)
 {
 	/* Convert the input image to the input image format of the network. */
 	cv::cuda::GpuMat sample;
@@ -388,13 +393,28 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 bool _SSD::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-
-	Window* pWin = (Window*)this->m_pWindow;
+	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+
+	OBJECT* pObj;
+	int i = 0;
+	while ((pObj = m_pObj->get(i++)))
+	{
+		Rect bbox;
+		bbox.x = pObj->m_bbox.m_x;
+		bbox.y = pObj->m_bbox.m_y;
+		bbox.width = pObj->m_bbox.m_z - pObj->m_bbox.m_x;
+		bbox.height = pObj->m_bbox.m_w - pObj->m_bbox.m_y;
+
+		rectangle(*pMat, bbox, Scalar(0, 255, 0), 1);
+
+		putText(*pMat, pObj->m_name,
+				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
+				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+	}
 
 	return true;
 }
-
 
 }
 

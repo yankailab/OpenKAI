@@ -3,7 +3,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Script/Kiss.h"
-#include "../../../Navigation/_Universe.h"
 #include "../../../Algorithm/Filter.h"
 #include "../../../Protocol/_RC.h"
 #include "../../../Stream/Frame.h"

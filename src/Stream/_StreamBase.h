@@ -36,6 +36,8 @@ public:
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
 
+	virtual bool isClear(vInt4* pRect, double dist, double minSize);
+
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
 public:

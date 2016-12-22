@@ -160,6 +160,54 @@ void _ZED::update(void)
 	}
 }
 
+bool _ZED::isClear(vInt4* pRect, double dist, double minSize)
+{
+	NULL_F(pRect);
+	NULL_F(m_pDepth);
+
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+	GpuMat gMat;
+	GpuMat gMat2;
+	Mat cMat;
+
+	gMat = *(m_pDepth->getGMat());
+	CHECK_F(gMat.empty());
+
+	Rect r;
+	r.x = pRect->m_x;
+	r.y = pRect->m_y;
+	r.width = pRect->m_z - pRect->m_x;
+	r.height = pRect->m_w - pRect->m_y;
+
+	gMat2 = GpuMat(gMat, r);
+
+#ifndef USE_OPENCV4TEGRA
+	cuda::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+#else
+	gpu::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_TOZERO);
+#endif
+
+	gMat.download(cMat);
+
+	// Find contours
+	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL,
+			CV_CHAIN_APPROX_SIMPLE);
+	// Approximate contours to polygons + get bounding rects
+	vector<vector<Point> > contours_poly(contours.size());
+
+	minSize *= gMat.cols * gMat.rows;
+	for (int i = 0; i < contours.size(); i++)
+	{
+		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
+		Rect bb = boundingRect(Mat(contours_poly[i]));
+
+		if (bb.area() > minSize)return false;
+	}
+
+	return true;
+}
+
 bool _ZED::draw(void)
 {
 	CHECK_F(!this->BASE::draw());

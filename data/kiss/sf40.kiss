@@ -43,7 +43,6 @@
 	"Window":"SF40_server",
 	"FPS":300,
 	"_Automaton":"APMstate",
-	"_Universe":"Universe",
 	"nDiv":180,
 	"offsetAngle":-90.0,
 	"minDist":0.1,

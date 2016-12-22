@@ -7,11 +7,6 @@
 #include "../Navigation/_Universe.h"
 #include "../Vision/_Flow.h"
 
-
-using namespace cv;
-using namespace cv::cuda;
-using namespace std;
-
 namespace kai
 {
 
@@ -24,6 +19,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	bool draw(void);
 
 private:
 	void detect(void);
@@ -36,16 +32,15 @@ private:
 	}
 
 public:
-	_Universe*	m_pUniverse;
-	Frame*		m_pDepth;
-	uint64_t	m_camFrameID;
+	_Universe* 		m_pUniverse;
 	_StreamBase*	m_pStream;
-	_Flow*		m_pFlow;
+	Frame*			m_pThrFrame;
 
-	Mat			m_Mat;
+	Mat m_Mat;
 
-	int			m_minObjArea;
-	int			m_maxObjArea;
+	double m_minArea;
+	int m_threshold;
+	int m_maxValue;
 };
 }
 

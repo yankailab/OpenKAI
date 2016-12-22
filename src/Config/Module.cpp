@@ -16,7 +16,6 @@ BASE* Module::createInstance(Kiss* pK)
 
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Automaton);
-	ADD_MODULE(_Universe);
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_RC);
@@ -24,7 +23,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AprilTags);
 	ADD_MODULE(_Bullseye);
 	ADD_MODULE(_Flow);
-//	ADD_MODULE(_Depth);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_server);
 	ADD_MODULE(_socket);

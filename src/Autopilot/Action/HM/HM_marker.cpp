@@ -1,9 +1,9 @@
-#include "HM_follow.h"
+#include "HM_marker.h"
 
 namespace kai
 {
 
-HM_follow::HM_follow()
+HM_marker::HM_marker()
 {
 	ActionBase();
 
@@ -27,11 +27,11 @@ HM_follow::HM_follow()
 
 }
 
-HM_follow::~HM_follow()
+HM_marker::~HM_marker()
 {
 }
 
-bool HM_follow::init(void* pKiss)
+bool HM_marker::init(void* pKiss)
 {
 	CHECK_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -53,7 +53,7 @@ bool HM_follow::init(void* pKiss)
 	return true;
 }
 
-bool HM_follow::link(void)
+bool HM_marker::link(void)
 {
 	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
@@ -63,12 +63,12 @@ bool HM_follow::link(void)
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
-	m_pUniv = (_Universe*) (pK->root()->getChildInstByName(&iName));
+	m_pUniv = (Object*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
 
-void HM_follow::update(void)
+void HM_marker::update(void)
 {
 	this->ActionBase::update();
 
@@ -78,7 +78,7 @@ void HM_follow::update(void)
 	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	//get visual target and decide motion
-	m_pTarget = m_pUniv->getObjectByClass(m_targetClass);
+	m_pTarget = m_pUniv->getByClass(m_targetClass);
 
 	if (m_pTarget == NULL)
 	{
@@ -107,7 +107,7 @@ void HM_follow::update(void)
 	m_pHM->updateCAN();
 }
 
-bool HM_follow::draw(void)
+bool HM_marker::draw(void)
 {
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

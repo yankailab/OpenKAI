@@ -11,7 +11,6 @@ _Lightware_SF40::_Lightware_SF40()
 {
 	_ThreadBase();
 
-	m_pUniverse = NULL;
 	m_pIn = NULL;
 	m_pOut = NULL;
 
@@ -145,10 +144,6 @@ bool _Lightware_SF40::link(void)
 {
 	CHECK_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
-
-	string iName = "";
-	F_INFO(pK->v("_Universe", &iName));
-	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

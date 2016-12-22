@@ -13,8 +13,8 @@ _DetectNet::_DetectNet()
 	_ThreadBase();
 
 	num_channels_ = 0;
-	m_pUniverse = NULL;
 	m_pStream = NULL;
+	m_pObj = NULL;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_frameID = 0;
@@ -41,6 +41,7 @@ _DetectNet::_DetectNet()
 
 _DetectNet::~_DetectNet()
 {
+	DEL(m_pObj);
 }
 
 bool _DetectNet::init(void* pKiss)
@@ -71,6 +72,8 @@ bool _DetectNet::init(void* pKiss)
 	meanFile = detectNetDir + meanFile;
 	labelFile = presetDir + labelFile;
 
+	m_pObj = new Object();
+
 	return true;
 }
 
@@ -82,10 +85,6 @@ bool _DetectNet::link(void)
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream", &iName));
 	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
-	F_ERROR_F(pK->v("_Universe", &iName));
-	m_pUniverse = (_Universe*) (pK->root()->getChildInstByName(&iName));
-
-	m_pUniverse->addObjClass(&m_className, 0);
 
 	return true;
 }
@@ -124,17 +123,16 @@ void _DetectNet::update(void)
 
 		m_frameID = get_time_usec();
 
-		detectFrame();
+		detect();
 
 		this->autoFPSto();
 	}
 
 }
 
-void _DetectNet::detectFrame(void)
+void _DetectNet::detect(void)
 {
 	NULL_(m_pStream);
-	NULL_(m_pUniverse);
 	NULL_(m_pDN);
 
 	Frame* pBGR = m_pStream->bgr();
@@ -160,6 +158,8 @@ void _DetectNet::detectFrame(void)
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
+	m_pObj->reset();
+
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
@@ -175,8 +175,9 @@ void _DetectNet::detectFrame(void)
 		obj.m_camSize.m_y = fGMat.rows;
 		obj.m_dist = 0.0;
 		obj.m_prob = 0.0;
+		obj.m_name = m_className;
 
-		m_pUniverse->addObject(&obj);
+		m_pObj->add(&obj);
 	}
 
 }
@@ -184,9 +185,25 @@ void _DetectNet::detectFrame(void)
 bool _DetectNet::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+
+	OBJECT* pObj;
+	int i=0;
+	while((pObj=m_pObj->get(i++)))
+	{
+		Rect bbox;
+		bbox.x = pObj->m_bbox.m_x;
+		bbox.y = pObj->m_bbox.m_y;
+		bbox.width = pObj->m_bbox.m_z - pObj->m_bbox.m_x;
+		bbox.height = pObj->m_bbox.m_w - pObj->m_bbox.m_y;
+
+		rectangle(*pMat, bbox, Scalar(0, 255, 0), 1);
+
+		putText(*pMat, pObj->m_name,
+				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
+				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0,255,0), 1);
+	}
 
 	return true;
 }

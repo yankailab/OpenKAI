@@ -151,17 +151,6 @@
 }
 
 {
-	"name":"Universe",
-	"class":"_Universe",
-	"bInst":1,
-	"FPS":30,
-	"frameLifetime":50000,
-	"probMin":0.00001,
-	"posDisparity":0,
-	"_Automaton":"flight",
-}
-
-{
 	"name":"detectNet",
 	"class":"_DetectNet",
 	"bInst":1,

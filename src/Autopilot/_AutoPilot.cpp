@@ -41,8 +41,13 @@ bool _AutoPilot::init(void* pKiss)
 		//Add action modules below
 
 		ADD_ACTION(APMcopter_guided);
+
 		ADD_ACTION(HM_base);
-		ADD_ACTION(HM_follow);
+		ADD_ACTION(HM_grass);
+		ADD_ACTION(HM_marker);
+		ADD_ACTION(HM_rth);
+		ADD_ACTION(HM_avoid);
+
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);
 
@@ -50,9 +55,9 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APMcopter_landing);
 		ADD_ACTION(RC_visualFollow);
 #endif
-
 		//Add action modules above
 
+		m_nAction--;
 		LOG_E("Unknown action class: "+pAction->m_class);
 	}
 

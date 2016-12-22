@@ -1,37 +1,30 @@
-
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_FOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_FOLLOW_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HMGRASS_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_HMGRASS_H_
 
 #include "../../../Base/common.h"
-#include "../../../Protocol/_Mavlink.h"
-#include "../../../Algorithm/Filter.h"
-#include "../../../Stream/Frame.h"
 #include "../../../Automaton/_Automaton.h"
+#include "../../../Algorithm/Filter.h"
 #include "../../../Object/Object.h"
 #include "../ActionBase.h"
-#include "APMrover_base.h"
-
+#include "HM_base.h"
 
 namespace kai
 {
 
-class APMrover_follow: public ActionBase
+class HM_grass: public ActionBase
 {
 public:
-	APMrover_follow();
-	~APMrover_follow();
+	HM_grass();
+	~HM_grass();
 
 	bool init(void* pKiss);
 	bool link(void);
 	void update(void);
 	bool draw(void);
 
-public:
-	void followTarget(void);
-
 private:
-	APMrover_base* m_pAPM;
 	Object*	m_pUniv;
+	HM_base* m_pHM;
 
 	//where target should be on cam coordinate
 	double	m_destX;
@@ -47,8 +40,6 @@ private:
 	kai::Filter* m_pTargetArea;
 	int		m_filterWindow;
 	int		m_targetClass;
-
-
 
 };
 
