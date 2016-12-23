@@ -40,8 +40,8 @@ bool _ZED::init(void* pKiss)
 	string calibFile;
 
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("resolution",&m_zedResolution));
-	F_INFO(pK->v("minDist",&m_zedMinDist));
+	F_INFO(pK->v("resolution", &m_zedResolution));
+	F_INFO(pK->v("minDist", &m_zedMinDist));
 	F_INFO(pK->v("zedFPS", &m_zedFPS));
 
 	m_pDepth = new Frame();
@@ -52,11 +52,11 @@ bool _ZED::init(void* pKiss)
 bool _ZED::link(void)
 {
 	CHECK_F(!this->_StreamBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
+	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("depthWindow",&iName));
-	m_pDepthWin = (Window*)(pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("depthWindow", &iName));
+	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -134,7 +134,8 @@ void _ZED::update(void)
 			// Retrieve left color image
 			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			// Retrieve depth map
-			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH);
+			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(
+					sl::zed::MEASURE::DEPTH);
 
 			m_Gframe = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
 			m_Gdepth = GpuMat(Size(m_width, m_height), CV_8UC4, gDepth.data);
@@ -148,9 +149,9 @@ void _ZED::update(void)
 #endif
 
 			m_pBGR->update(&m_Gframe2);
-			if(m_pGray)
+			if (m_pGray)
 				m_pGray->getGrayOf(m_pBGR);
-			if(m_pHSV)
+			if (m_pHSV)
 				m_pHSV->getHSVOf(m_pBGR);
 
 			m_pDepth->update(&m_Gdepth2);
@@ -160,13 +161,14 @@ void _ZED::update(void)
 	}
 }
 
-bool _ZED::isClear(vInt4* pRect, double dist, double minSize)
+bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 {
 	NULL_F(pRect);
+	NULL_F(pDist);
+	NULL_F(pSize);
 	NULL_F(m_pDepth);
+	CHECK_F(pRect->area()<=0);
 
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
 	GpuMat gMat;
 	GpuMat gMat2;
 	Mat cMat;
@@ -174,37 +176,40 @@ bool _ZED::isClear(vInt4* pRect, double dist, double minSize)
 	gMat = *(m_pDepth->getGMat());
 	CHECK_F(gMat.empty());
 
-	Rect r;
-	r.x = pRect->m_x;
-	r.y = pRect->m_y;
-	r.width = pRect->m_z - pRect->m_x;
-	r.height = pRect->m_w - pRect->m_y;
+	//MinSize
+	int minSize = 0;
+	if(*pSize>0)
+		minSize = *pSize * gMat.cols * gMat.rows;
 
+	//Region
+	Rect r;
+	r.x = pRect->m_x * ((double)gMat.cols);
+	r.y = pRect->m_y * ((double)gMat.rows);
+	r.width = pRect->m_z * ((double)gMat.cols) - r.x;
+	r.height = pRect->m_w * ((double)gMat.rows) - r.y;
 	gMat2 = GpuMat(gMat, r);
 
 #ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+	cuda::calcHist(gMat2, gMat);
 #else
-	gpu::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_TOZERO);
+	gpu::calcHist(gMat2, gMat);
 #endif
 
 	gMat.download(cMat);
 
-	// Find contours
-	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL,
-			CV_CHAIN_APPROX_SIMPLE);
-	// Approximate contours to polygons + get bounding rects
-	vector<vector<Point> > contours_poly(contours.size());
-
-	minSize *= gMat.cols * gMat.rows;
-	for (int i = 0; i < contours.size(); i++)
+	for (int i = cMat.rows; i > 0; i++)
 	{
-		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
-		Rect bb = boundingRect(Mat(contours_poly[i]));
-
-		if (bb.area() > minSize)return false;
+		int intensity = cMat.at<int>(i, 0);
+		if(intensity > minSize)
+		{
+			*pDist = (255.0f - i)/255.0f;
+			*pSize = intensity;
+			return true;
+		}
 	}
 
+	*pDist = -1.0;
+	*pSize = 0;
 	return true;
 }
 

@@ -80,7 +80,7 @@
 {
 	"name":"SSD",
 	"class":"_SSD",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"HM_monitor",
 	"_Stream":"ZED",
@@ -204,12 +204,14 @@
 			"HM_base":"HMbase",
 			"_Automaton":"HMauto",
 			"State":"HM_RTH",
-			"dist":0.1,
-			"minSize":0.1,
-			"avoidX":0.1,
-			"avoidY":0.9,
-			"avoidW":0.8,
-			"avoidH":0.1,
+			"alertDist":0.2,
+			"avoidMinSize":0.001,
+			"avoidLeft":0.1,
+			"avoidRight":0.9,
+			"avoidTop":0.5,
+			"avoidBottom":1.0,
+			"speedP":10000,
+			"steerP":10,
 		}
 		
 	}

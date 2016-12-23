@@ -90,7 +90,7 @@ Frame* _StreamBase::depth(void)
 	return m_pDepth;
 }
 
-bool _StreamBase::isClear(vInt4* pRect, double dist, double minSize)
+bool _StreamBase::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 {
 	return true;
 }

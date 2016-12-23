@@ -4,6 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/_StreamBase.h"
+#include "../../../Stream/_ZED.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -27,6 +28,10 @@ private:
 
 	double	m_speedP;
 	double	m_steerP;
+
+	vDouble4 m_avoidRegion;
+	double	m_avoidMinSize;
+	double	m_alertDist;
 
 };
 

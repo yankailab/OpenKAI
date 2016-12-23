@@ -28,7 +28,7 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	bool isClear(vInt4* pRect, double dist, double minSize);
+	bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
 
 private:
 	bool open(void);

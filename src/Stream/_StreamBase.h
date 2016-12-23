@@ -36,7 +36,7 @@ public:
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
 
-	virtual bool isClear(vInt4* pRect, double dist, double minSize);
+	virtual bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 

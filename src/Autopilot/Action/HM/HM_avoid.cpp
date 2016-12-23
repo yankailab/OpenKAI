@@ -13,6 +13,14 @@ HM_avoid::HM_avoid()
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
+
+	m_avoidRegion.m_x = 0.0;
+	m_avoidRegion.m_y = 0.0;
+	m_avoidRegion.m_z = 1.0;
+	m_avoidRegion.m_w = 1.0;
+
+	m_avoidMinSize = 0.0;
+	m_alertDist = 0.0;
 }
 
 HM_avoid::~HM_avoid()
@@ -28,6 +36,13 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
 
+	F_INFO(pK->v("avoidLeft", &m_avoidRegion.m_x));
+	F_INFO(pK->v("avoidRight", &m_avoidRegion.m_w));
+	F_INFO(pK->v("avoidTop", &m_avoidRegion.m_y));
+	F_INFO(pK->v("avoidBottom", &m_avoidRegion.m_z));
+	F_INFO(pK->v("avoidMinSize", &m_avoidMinSize));
+	F_INFO(pK->v("alertDist", &m_alertDist));
+
 	return true;
 }
 
@@ -41,7 +56,7 @@ bool HM_avoid::link(void)
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Stream", &iName));
-	m_pStream = (_StreamBase*) (pK->parent()->getChildInstByName(&iName));
+	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -52,33 +67,41 @@ void HM_avoid::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
+	NULL_(m_pStream);
 
-	//Obstacle always on except for ChargeStation
-	if(m_pAM->getCurrentStateIdx() != m_iActiveState)
-	{
-		//Working state
-	}
-	else
-	{
-		//RTH
-	}
+	double dist;	//normalized relevant distance: 0.0 ~ 1.0
+	double objSize = m_avoidMinSize;
 
-	//no target found, stop and standby TODO: go back to work
-	m_pHM->m_motorPwmL = 0;
-	m_pHM->m_motorPwmR = 0;
+	CHECK_(!m_pStream->distNearest(&m_avoidRegion, &dist, &objSize));
+
+	//forward speed
+	int rpmSpeed = dist * m_speedP;
+
 	m_pHM->m_bSpeaker = false;
 
-//	//forward or backward
-//	int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
-//	//steering
-//	int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
+	//make turn when object is within a certain distance
+	int rpmSteer = 0;
+	if(dist <= m_alertDist)
+	{
+		rpmSteer = ((m_alertDist - dist)/m_alertDist)* m_steerP;
+		m_pHM->m_bSpeaker = true;
+	}
 
-//	m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
-//	m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
-//	m_pHM->m_bSpeaker = true;
-
+	m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
+	m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
 
 	m_pHM->updateCAN();
+
+	//Obstacle avoidance always on except for ChargeStation
+//	if(m_pAM->getCurrentStateIdx() != m_iActiveState)
+//	{
+//		//Working state
+//	}
+//	else
+//	{
+//		//RTH
+//	}
+
 }
 
 bool HM_avoid::draw(void)
@@ -93,10 +116,6 @@ bool HM_avoid::draw(void)
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();
-
-//	CHECK_T(m_pTarget==NULL);
-//	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
-//			Scalar(0, 0, 255), 2);
 
 	return true;
 }
