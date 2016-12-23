@@ -8,7 +8,6 @@ HM_avoid::HM_avoid()
 	ActionBase();
 
 	m_pHM = NULL;
-	m_pAM = NULL;
 	m_pStream = NULL;
 
 	m_speedP = 0.0;
@@ -21,10 +20,13 @@ HM_avoid::HM_avoid()
 
 	m_avoidMinSize = 0.0;
 	m_alertDist = 0.0;
+
+	m_pFdist = NULL;
 }
 
 HM_avoid::~HM_avoid()
 {
+	DEL(m_pFdist);
 }
 
 bool HM_avoid::init(void* pKiss)
@@ -37,11 +39,16 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pK->v("steerP", &m_steerP));
 
 	F_INFO(pK->v("avoidLeft", &m_avoidRegion.m_x));
-	F_INFO(pK->v("avoidRight", &m_avoidRegion.m_w));
+	F_INFO(pK->v("avoidRight", &m_avoidRegion.m_z));
 	F_INFO(pK->v("avoidTop", &m_avoidRegion.m_y));
-	F_INFO(pK->v("avoidBottom", &m_avoidRegion.m_z));
+	F_INFO(pK->v("avoidBottom", &m_avoidRegion.m_w));
 	F_INFO(pK->v("avoidMinSize", &m_avoidMinSize));
 	F_INFO(pK->v("alertDist", &m_alertDist));
+
+	int filterLen = 3;
+	F_INFO(pK->v("depthFilterLen", &filterLen));
+	m_pFdist = new Filter();
+	m_pFdist->startMedian(filterLen);
 
 	return true;
 }
@@ -69,15 +76,15 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pStream);
 
-	double dist;	//normalized relevant distance: 0.0 ~ 1.0
 	double objSize = m_avoidMinSize;
+	double	dist;
 
 	CHECK_(!m_pStream->distNearest(&m_avoidRegion, &dist, &objSize));
+	m_pFdist->input(dist);
+	dist = m_pFdist->v();
 
 	//forward speed
 	int rpmSpeed = dist * m_speedP;
-
-	m_pHM->m_bSpeaker = false;
 
 	//make turn when object is within a certain distance
 	int rpmSteer = 0;
@@ -87,10 +94,8 @@ void HM_avoid::update(void)
 		m_pHM->m_bSpeaker = true;
 	}
 
-	m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
-	m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
-
-	m_pHM->updateCAN();
+	m_pHM->m_motorPwmL = rpmSpeed + rpmSteer;
+	m_pHM->m_motorPwmR = rpmSpeed - rpmSteer;
 
 	//Obstacle avoidance always on except for ChargeStation
 //	if(m_pAM->getCurrentStateIdx() != m_iActiveState)
@@ -116,6 +121,25 @@ bool HM_avoid::draw(void)
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();
+
+	Rect r;
+	r.x = m_avoidRegion.m_x * ((double)pMat->cols);
+	r.y = m_avoidRegion.m_y * ((double)pMat->rows);
+	r.width = m_avoidRegion.m_z * ((double)pMat->cols) - r.x;
+	r.height = m_avoidRegion.m_w * ((double)pMat->rows) - r.y;
+
+	Scalar col = Scalar(0,255,0);
+	int bold = 1;
+	if(m_pFdist->v() < m_alertDist)
+	{
+		col = Scalar(0,0,255);
+		bold = 2;
+	}
+
+	rectangle(*pMat, r, col, bold);
+	putText(*pMat, f2str(m_pFdist->v()),
+			Point(r.x + r.width / 2, r.y + r.height / 2),
+			FONT_HERSHEY_SIMPLEX, 1.0, col, bold);
 
 	return true;
 }

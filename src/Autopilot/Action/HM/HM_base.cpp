@@ -50,6 +50,17 @@ bool HM_base::link(void)
 	return true;
 }
 
+void HM_base::update(void)
+{
+	this->ActionBase::update();
+
+	updateCAN();
+	m_motorPwmL = 0;
+	m_motorPwmR = 0;
+	m_motorPwmW = 0;
+	m_bSpeaker = false;
+}
+
 void HM_base::updateCAN(void)
 {
 	NULL_(m_pCAN);

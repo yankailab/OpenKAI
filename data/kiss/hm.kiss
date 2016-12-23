@@ -205,13 +205,14 @@
 			"_Automaton":"HMauto",
 			"State":"HM_RTH",
 			"alertDist":0.2,
-			"avoidMinSize":0.001,
-			"avoidLeft":0.1,
-			"avoidRight":0.9,
-			"avoidTop":0.5,
-			"avoidBottom":1.0,
+			"avoidMinSize":0.0,
+			"avoidLeft":0.2,
+			"avoidRight":0.8,
+			"avoidTop":0.6,
+			"avoidBottom":0.9,
+			"depthFilterLen":5,
 			"speedP":10000,
-			"steerP":10,
+			"steerP":2000,
 		}
 		
 	}

@@ -2,6 +2,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMAVOID_H_
 
 #include "../../../Base/common.h"
+#include "../../../Algorithm/Filter.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/_StreamBase.h"
 #include "../../../Stream/_ZED.h"
@@ -32,6 +33,9 @@ private:
 	vDouble4 m_avoidRegion;
 	double	m_avoidMinSize;
 	double	m_alertDist;
+
+	//normalized relevant distance: 0.0 ~ 1.0
+	Filter*	m_pFdist;
 
 };
 

@@ -197,9 +197,9 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 
 	gMat.download(cMat);
 
-	for (int i = cMat.rows; i > 0; i++)
+	for (int i = cMat.cols-1; i > 0; i--)
 	{
-		int intensity = cMat.at<int>(i, 0);
+		int intensity = cMat.at<int>(0, i);
 		if(intensity > minSize)
 		{
 			*pDist = (255.0f - i)/255.0f;

@@ -5,6 +5,7 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Algorithm/Filter.h"
 #include "../../../Object/Object.h"
+#include "../../../Stream/_StreamBase.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,13 +24,16 @@ public:
 	bool draw(void);
 
 private:
-	Object*	m_pUniv;
-	HM_base* m_pHM;
 
-	//where target should be on cam coordinate
-	double	m_destX;
-	double	m_destY;
-	double	m_destArea;
+#ifdef USE_TENSORRT
+	_DetectNet* m_pDetector;
+#elif defined USE_SSD
+	_SSD* m_pDetector;
+#endif
+	int m_targetClass;
+
+	HM_base* m_pHM;
+	_StreamBase* m_pStream;
 
 	double	m_speedP;
 	double	m_steerP;
@@ -37,10 +41,9 @@ private:
 	OBJECT* m_pTarget;
 	kai::Filter* m_pTargetX;
 	kai::Filter* m_pTargetY;
-	kai::Filter* m_pTargetArea;
-	int		m_filterWindow;
-	int		m_targetClass;
-
+	kai::Filter* m_pTargetW;
+	kai::Filter* m_pTargetH;
+	double m_targetDist;
 };
 
 }

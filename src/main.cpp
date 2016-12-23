@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
 void printEnvironment(void)
 {
-#ifdef USE_OPENCV3
+#ifndef USE_OPENCV4TEGRA
 	LOG(INFO)<<"Optimized code:"<<useOptimized();
 	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
 	LOG(INFO)<<"Current CUDA device:"<<cuda::getDevice();
