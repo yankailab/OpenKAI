@@ -12,7 +12,7 @@
 
 #ifdef USE_TENSORRT
 #include "../Base/_ThreadBase.h"
-#include "../Navigation/Object.h"
+#include "../Object/Object.h"
 #include "../Stream/_StreamBase.h"
 
 #include <cuda_runtime.h>
