@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Object/Object.h"
 
 namespace kai
 {
@@ -37,6 +38,7 @@ public:
 	virtual Frame* depth(void);
 
 	virtual bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
+	virtual int findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
@@ -50,8 +52,6 @@ public:
 	int m_centerV;
 	int m_angleH;
 	int m_angleV;
-
-	Mat m_mat;
 
 	bool m_bGimbal;
 	Mat m_rotRoll;

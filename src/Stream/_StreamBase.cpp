@@ -95,6 +95,11 @@ bool _StreamBase::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 	return true;
 }
 
+int _StreamBase::findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize)
+{
+	return 0;
+}
+
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
 	Point2f center(m_centerH, m_centerV);

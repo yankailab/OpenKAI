@@ -22,6 +22,7 @@ _ZED::_ZED()
 	m_pZed = NULL;
 	m_zedFPS = DEFAULT_FPS;
 	m_zedMode = sl::zed::STANDARD;
+	m_zedQuality = sl::zed::PERFORMANCE;
 	m_pDepthWin = NULL;
 }
 
@@ -40,9 +41,10 @@ bool _ZED::init(void* pKiss)
 	string calibFile;
 
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("resolution", &m_zedResolution));
-	F_INFO(pK->v("minDist", &m_zedMinDist));
+	F_INFO(pK->v("zedResolution", &m_zedResolution));
+	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
 	F_INFO(pK->v("zedFPS", &m_zedFPS));
+	F_INFO(pK->v("zedQuality", &m_zedQuality));
 
 	m_pDepth = new Frame();
 
@@ -68,7 +70,7 @@ bool _ZED::open(void)
 
 	// define a struct of parameters for the initialization
 	sl::zed::InitParams zedParams;
-	zedParams.mode = sl::zed::MODE::PERFORMANCE;
+	zedParams.mode = (sl::zed::MODE)m_zedQuality;//sl::zed::MODE::PERFORMANCE;
 	zedParams.unit = sl::zed::UNIT::MILLIMETER;
 	zedParams.verbose = 1;
 	zedParams.device = -1;
@@ -90,10 +92,7 @@ bool _ZED::open(void)
 	m_centerH = m_width * 0.5;
 	m_centerV = m_height * 0.5;
 
-	m_zedMode = sl::zed::STANDARD; //FULL
-
-	m_mat = Mat(m_height, m_width, CV_8UC4, 1);
-	m_depthMat = Mat(m_height, m_width, CV_8UC4, 1);
+	m_zedMode = sl::zed::STANDARD;
 
 	m_bOpen = true;
 	return true;
@@ -120,7 +119,7 @@ void _ZED::update(void)
 		{
 			if (!open())
 			{
-				LOG_E("Cannot open camera");
+				LOG_E("Cannot open ZED");
 				this->sleepThread(USEC_1SEC);
 				continue;
 			}
@@ -166,48 +165,52 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 	NULL_F(pRect);
 	NULL_F(pDist);
 	NULL_F(pSize);
-	NULL_F(m_pDepth);
-	CHECK_F(pRect->area()<=0);
+	CHECK_F(pRect->area() <= 0);
 
 	GpuMat gMat;
 	GpuMat gMat2;
 	Mat histMat;
 
+	NULL_F(m_pDepth);
 	gMat = *(m_pDepth->getGMat());
 	CHECK_F(gMat.empty());
 
 	//MinSize
 	int minSize = 0;
-	if(*pSize>0)
+	if (*pSize > 0)
 		minSize = *pSize * gMat.cols * gMat.rows;
 
 	//Region
 	Rect r;
-	r.x = pRect->m_x * ((double)gMat.cols);
-	r.y = pRect->m_y * ((double)gMat.rows);
-	r.width = pRect->m_z * ((double)gMat.cols) - r.x;
-	r.height = pRect->m_w * ((double)gMat.rows) - r.y;
+	r.x = pRect->m_x * ((double) gMat.cols);
+	r.y = pRect->m_y * ((double) gMat.rows);
+	r.width = pRect->m_z * ((double) gMat.cols) - r.x;
+	r.height = pRect->m_w * ((double) gMat.rows) - r.y;
 	gMat2 = GpuMat(gMat, r);
 
 #ifndef USE_OPENCV4TEGRA
 	cuda::calcHist(gMat2, gMat);
 	gMat.download(histMat);
-	for (int i = histMat.cols-1; i > 0; i--)
+	for (int i = histMat.cols - 1; i > 0; i--)
 	{
 		int intensity = histMat.at<int>(0, i);
-		if(intensity > minSize)
+		if (intensity > minSize)
 		{
-			*pDist = (255.0f - i)/255.0f;
+			*pDist = (255.0f - i) / 255.0f;
 			*pSize = intensity;
 			return true;
 		}
 	}
 #else
-	int channels[] = { 0 };
+	int channels[] =
+	{	0};
 	int bin_num = 256;
-	int bin_nums[] = { bin_num };
-	float range[] = { 0, 256 };
-	const float *ranges[] = { range };
+	int bin_nums[] =
+	{	bin_num};
+	float range[] =
+	{	0, 256};
+	const float *ranges[] =
+	{	range};
 	Mat cMat;
 	gMat2.download(cMat);
 	cv::calcHist(&cMat, 1, channels, cv::Mat(), histMat, 1, bin_nums, ranges);
@@ -227,6 +230,70 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 	*pDist = -1.0;
 	*pSize = 0;
 	return true;
+}
+
+int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize)
+{
+	NULL_F(pRect);
+	NULL_F(pResult);
+	CHECK_F(pRect->area() <= 0);
+
+	GpuMat gMat;
+	GpuMat gMat2;
+
+	NULL_F(m_pDepth);
+	gMat = *(m_pDepth->getGMat());
+	CHECK_F(gMat.empty());
+
+	//MinSize
+	minSize *= gMat.cols * gMat.rows;
+
+	//Region
+	Rect r;
+	r.x = pRect->m_x * ((double) gMat.cols);
+	r.y = pRect->m_y * ((double) gMat.rows);
+	r.width = pRect->m_z * ((double) gMat.cols) - r.x;
+	r.height = pRect->m_w * ((double) gMat.rows) - r.y;
+	gMat2 = GpuMat(gMat, r);
+
+#ifndef USE_OPENCV4TEGRA
+	cuda::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+#else
+	gpu::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+#endif
+
+	Mat cMat;
+	gMat.download(cMat);
+
+	// Find contours
+	vector<vector<Point> > contours;
+	vector<Vec4i> hierarchy;
+	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL,
+			CV_CHAIN_APPROX_SIMPLE);
+
+	// Approximate contours to polygons + get bounding rects
+	//vector<vector<Point> > contours_poly(contours.size());
+	vector<Point> contours_poly;
+	for (int i = 0; i < contours.size(); i++)
+	{
+//		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
+		approxPolyDP(Mat(contours[i]), contours_poly, 3, true);
+		Rect bb = boundingRect(Mat(contours_poly));
+		if (bb.area() < minSize)continue;
+
+		OBJECT obj;
+		obj.m_bbox.m_x = bb.x;
+		obj.m_bbox.m_y = bb.y;
+		obj.m_bbox.m_z = bb.x + bb.width;
+		obj.m_bbox.m_w = bb.y + bb.height;
+		obj.m_camSize.m_x = cMat.cols;
+		obj.m_camSize.m_y = cMat.rows;
+		obj.m_dist = dist;
+
+		pResult->add(&obj);
+	}
+
+	return pResult->size();
 }
 
 bool _ZED::draw(void)

@@ -23,7 +23,7 @@
 {
 	"name":"HM_depth",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -41,8 +41,9 @@
 	"Window":"HM_monitor",
 	"depthWindow":"HM_depth",
 	"zedFPS":30,
-	"resolution":2,
-	"minDist":600,
+	"zedQuality":1,
+	"zedResolution":2,
+	"zedMinDist":600,
 }
 	
 {
@@ -201,15 +202,15 @@
 			"HM_base":"HMbase",
 			"_Automaton":"HMauto",
 			"State":"HM_RTH",
-			"alertDist":0.2,
+			"alertDist":0.0125,
 			"avoidMinSize":0.0,
 			"avoidLeft":0.35,
 			"avoidRight":0.65,
 			"avoidTop":0.7,
 			"avoidBottom":0.9,
-			"depthFilterLen":5,
-			"speedP":10000,
-			"steerP":2000,
+			"depthFilterLen":15,
+			"speedP":5000,
+			"steerP":3000,
 		}
 		
 	}

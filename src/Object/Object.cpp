@@ -54,4 +54,9 @@ OBJECT* Object::getByClass(int iClass)
 	return NULL;
 }
 
+int Object::size(void)
+{
+	return m_nObj;
+}
+
 }

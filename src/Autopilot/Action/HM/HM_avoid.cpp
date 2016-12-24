@@ -12,16 +12,18 @@ HM_avoid::HM_avoid()
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
+	m_pwmL = 0;
+	m_pwmR = 0;
 
 	m_avoidRegion.m_x = 0.0;
 	m_avoidRegion.m_y = 0.0;
 	m_avoidRegion.m_z = 1.0;
 	m_avoidRegion.m_w = 1.0;
-
 	m_avoidMinSize = 0.0;
 	m_alertDist = 0.0;
 
 	m_pFdist = NULL;
+	m_pObj = NULL;
 }
 
 HM_avoid::~HM_avoid()
@@ -50,6 +52,8 @@ bool HM_avoid::init(void* pKiss)
 	m_pFdist = new Filter();
 	m_pFdist->startMedian(filterLen);
 
+	m_pObj = new Object();
+
 	return true;
 }
 
@@ -76,27 +80,49 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pStream);
 
-	double objSize = m_avoidMinSize;
-	double	dist;
-
-	CHECK_(!m_pStream->distNearest(&m_avoidRegion, &dist, &objSize));
-	m_pFdist->input(dist);
-	dist = m_pFdist->v();
-
 	//forward speed
-	int rpmSpeed = dist * m_speedP;
+	int rpmSpeed = m_speedP;
+	int rpmSteer = 0;
+
+	m_pObj->reset();
+	m_pStream->findObjects(&m_avoidRegion, m_pObj, m_alertDist, m_avoidMinSize);
 
 	//make turn when object is within a certain distance
-	int rpmSteer = 0;
-	if(dist <= m_alertDist)
+	if(m_pObj->size()>0)
 	{
-		rpmSteer = ((m_alertDist - dist)/m_alertDist)* m_steerP;
+		rpmSteer = m_steerP;
 		m_pHM->m_bSpeaker = true;
 	}
 
-	m_pHM->m_motorPwmL = rpmSpeed + rpmSteer;
-	m_pHM->m_motorPwmR = rpmSpeed - rpmSteer;
+	m_pwmL = rpmSpeed + rpmSteer;
+	m_pwmR = rpmSpeed - rpmSteer;
+	m_pHM->m_motorPwmL = m_pwmL;
+	m_pHM->m_motorPwmR = m_pwmR;
 
+/*
+	double objSize = m_avoidMinSize;
+	static double objDist = 0;
+
+	m_pStream->distNearest(&m_avoidRegion, &objDist, &objSize);
+	m_pFdist->input(objDist);
+	objDist = m_pFdist->v();
+
+	//forward speed
+	int rpmSpeed = objDist * m_speedP;
+
+	//make turn when object is within a certain distance
+	int rpmSteer = 0;
+	if(objDist <= m_alertDist)
+	{
+		rpmSteer = ((m_alertDist - objDist)/m_alertDist)* m_steerP;
+		m_pHM->m_bSpeaker = true;
+	}
+
+	m_pwmL = rpmSpeed + rpmSteer;
+	m_pwmR = rpmSpeed - rpmSteer;
+	m_pHM->m_motorPwmL = m_pwmL;
+	m_pHM->m_motorPwmR = m_pwmR;
+*/
 	//Obstacle avoidance always on except for ChargeStation
 //	if(m_pAM->getCurrentStateIdx() != m_iActiveState)
 //	{
@@ -116,8 +142,7 @@ bool HM_avoid::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 
 	putText(*pMat,
-			*this->getName()+": rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
-					+ i2str(m_pHM->m_motorPwmR),
+			*this->getName()+": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR),
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();
@@ -130,16 +155,18 @@ bool HM_avoid::draw(void)
 
 	Scalar col = Scalar(0,255,0);
 	int bold = 1;
-	if(m_pFdist->v() < m_alertDist)
+
+//	if(m_pFdist->v() < m_alertDist)
+	if(m_pObj->size()>0)
 	{
 		col = Scalar(0,0,255);
 		bold = 2;
 	}
 
 	rectangle(*pMat, r, col, bold);
-	putText(*pMat, f2str(m_pFdist->v()),
-			Point(r.x + r.width / 2, r.y + r.height / 2),
-			FONT_HERSHEY_SIMPLEX, 1.0, col, bold);
+//	putText(*pMat, f2str(m_pFdist->v()),
+//			Point(r.x + r.width / 2, r.y + r.height / 2),
+//			FONT_HERSHEY_SIMPLEX, 1.0, col, bold);
 
 	return true;
 }

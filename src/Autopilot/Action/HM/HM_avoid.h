@@ -4,8 +4,8 @@
 #include "../../../Base/common.h"
 #include "../../../Algorithm/Filter.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Stream/_StreamBase.h"
 #include "../../../Stream/_ZED.h"
+#include "../../../Object/Object.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -29,6 +29,8 @@ private:
 
 	double	m_speedP;
 	double	m_steerP;
+	int	m_pwmL;
+	int m_pwmR;
 
 	vDouble4 m_avoidRegion;
 	double	m_avoidMinSize;
@@ -36,6 +38,8 @@ private:
 
 	//normalized relevant distance: 0.0 ~ 1.0
 	Filter*	m_pFdist;
+
+	Object* m_pObj;
 
 };
 

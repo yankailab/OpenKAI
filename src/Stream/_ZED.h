@@ -29,6 +29,7 @@ public:
 	bool draw(void);
 
 	bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
+	int findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize);
 
 private:
 	bool open(void);
@@ -45,7 +46,7 @@ private:
 	int m_zedResolution;
 	double m_zedMinDist;
 	int m_zedFPS;
-	Mat m_depthMat;
+	int m_zedQuality;
 
 	//operation
 	GpuMat m_Gdepth;

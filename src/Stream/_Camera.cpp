@@ -113,20 +113,21 @@ bool _Camera::open(void)
 	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
 
+	Mat cMat;
 	//Acquire a frame to determine the actual frame size
-	while (!m_camera.read(m_mat));
+	while (!m_camera.read(cMat));
 
-	m_width = m_mat.cols;
-	m_height = m_mat.rows;
+	m_width = cMat.cols;
+	m_height = cMat.rows;
 
 	if (m_bCrop)
 	{
 		int i;
-		i = m_mat.cols - m_cropBB.x;
+		i = cMat.cols - m_cropBB.x;
 		if (m_cropBB.width > i)
 			m_cropBB.width = i;
 
-		i = m_mat.rows - m_cropBB.y;
+		i = cMat.rows - m_cropBB.y;
 		if (m_cropBB.height > i)
 			m_cropBB.height = i;
 
@@ -173,9 +174,10 @@ void _Camera::update(void)
 		GpuMat* pSrc;
 		GpuMat* pDest;
 		GpuMat* pTmp;
+		Mat cMat;
 
-		while (!m_camera.read(m_mat));
-		m_Gframe.upload(m_mat);
+		while (!m_camera.read(cMat));
+		m_Gframe.upload(cMat);
 
 		pSrc = &m_Gframe;
 		pDest = &m_Gframe2;

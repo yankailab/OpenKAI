@@ -37,6 +37,7 @@ public:
 	bool add(OBJECT* pNewObj);
 	OBJECT* get(int i);
 	OBJECT* getByClass(int iClass);
+	int size(void);
 
 public:
 	OBJECT m_pObj[N_OBJ];
