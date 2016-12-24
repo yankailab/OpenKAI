@@ -92,8 +92,9 @@ bool _Canbus::recv()
 
 	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
 	{
-		printf("%s",&inByte);
+//		printf("%s",&inByte);
 	}
+	LOG_I("Received");
 	return true;
 
 

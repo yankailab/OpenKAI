@@ -23,7 +23,7 @@
 {
 	"name":"HM_depth",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -43,9 +43,6 @@
 	"zedFPS":30,
 	"resolution":2,
 	"minDist":600,
-	"areaMin":0.01,
-	"threshold":200,
-	"maxVal":255,
 }
 	
 {
@@ -103,7 +100,7 @@
 		"name":"input",
 		"class":"SerialPort",
 		"bInst":1,
-		"portName":"/dev/ttyUSB0",
+		"portName":"/dev/ttyACM1",
 		"baud":115200,
 	}
 }
@@ -206,9 +203,9 @@
 			"State":"HM_RTH",
 			"alertDist":0.2,
 			"avoidMinSize":0.0,
-			"avoidLeft":0.2,
-			"avoidRight":0.8,
-			"avoidTop":0.6,
+			"avoidLeft":0.35,
+			"avoidRight":0.65,
+			"avoidTop":0.7,
 			"avoidBottom":0.9,
 			"depthFilterLen":5,
 			"speedP":10000,
