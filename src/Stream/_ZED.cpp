@@ -171,7 +171,7 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 
 	GpuMat gMat;
 	GpuMat gMat2;
-	Mat cMat;
+	Mat histMat;
 
 	gMat = *(m_pDepth->getGMat());
 	CHECK_F(gMat.empty());
@@ -191,15 +191,10 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 
 #ifndef USE_OPENCV4TEGRA
 	cuda::calcHist(gMat2, gMat);
-#else
-	gpu::calcHist(gMat2, gMat);
-#endif
-
-	gMat.download(cMat);
-
-	for (int i = cMat.cols-1; i > 0; i--)
+	gMat.download(histMat);
+	for (int i = histMat.cols-1; i > 0; i--)
 	{
-		int intensity = cMat.at<int>(0, i);
+		int intensity = histMat.at<int>(0, i);
 		if(intensity > minSize)
 		{
 			*pDist = (255.0f - i)/255.0f;
@@ -207,6 +202,27 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 			return true;
 		}
 	}
+#else
+	int channels[] = { 0 };
+	int bin_num = 256;
+	int bin_nums[] = { bin_num };
+	float range[] = { 0, 256 };
+	const float *ranges[] = { range };
+	Mat cMat;
+	gMat2.download(cMat);
+	cv::calcHist(&cMat, 1, channels, cv::Mat(), histMat, 1, bin_nums, ranges);
+
+	for (int i = histMat.rows-1; i > 0; i--)
+	{
+		int intensity = histMat.at<int>(i, 0);
+		if(intensity > minSize)
+		{
+			*pDist = (255.0f - i)/255.0f;
+			*pSize = intensity;
+			return true;
+		}
+	}
+#endif
 
 	*pDist = -1.0;
 	*pSize = 0;
