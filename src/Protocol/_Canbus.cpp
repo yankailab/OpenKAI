@@ -94,7 +94,7 @@ bool _Canbus::recv()
 	{
 //		printf("%s",&inByte);
 	}
-	LOG_I("Received");
+//	LOG_I("Received");
 	return true;
 
 

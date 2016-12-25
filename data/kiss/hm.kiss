@@ -202,15 +202,15 @@
 			"HM_base":"HMbase",
 			"_Automaton":"HMauto",
 			"State":"HM_RTH",
-			"alertDist":0.0125,
+			"alertDist":0.0105,
 			"avoidMinSize":0.0,
-			"avoidLeft":0.35,
-			"avoidRight":0.65,
-			"avoidTop":0.7,
-			"avoidBottom":0.9,
+			"avoidLeft":0.268,
+			"avoidRight":0.935,
+			"avoidTop":0.2,
+			"avoidBottom":0.76,
 			"depthFilterLen":15,
 			"speedP":5000,
-			"steerP":3000,
+			"steerP":5000,
 		}
 		
 	}

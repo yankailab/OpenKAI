@@ -90,6 +90,7 @@ void HM_avoid::update(void)
 	//make turn when object is within a certain distance
 	if(m_pObj->size()>0)
 	{
+		rpmSpeed = 0;
 		rpmSteer = m_steerP;
 		m_pHM->m_bSpeaker = true;
 	}
