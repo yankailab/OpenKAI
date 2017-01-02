@@ -84,18 +84,6 @@ void _AIbase::update(void)
 	NULL_(m_pStream);
 }
 
-bool _AIbase::addObject(OBJECT* pNew)
-{
-	NULL_F(pNew);
-
-	return true;
-}
-
-Object* _AIbase::getObject(void)
-{
-	return NULL;
-}
-
 bool _AIbase::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());

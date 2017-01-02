@@ -52,6 +52,8 @@
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
 
+#include "../AI/_ImageNet.h"
+
 #ifdef USE_SSD
 #include "../AI/_SSD.h"
 #endif
@@ -60,7 +62,6 @@
 #endif
 #ifdef USE_TENSORRT
 #include "../AI/_DetectNet.h"
-#include "../AI/_ImageNet.h"
 #endif
 
 

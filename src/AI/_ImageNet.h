@@ -13,8 +13,6 @@
 #include "../Object/Object.h"
 #include "../Stream/_StreamBase.h"
 
-#ifdef USE_TENSORRT
-
 namespace kai
 {
 
@@ -39,19 +37,23 @@ private:
 	}
 
 public:
+#ifdef USE_TENSORRT
 	imageNet* m_pIN;
+#endif
+	Frame* m_pRGBA;
+
+	double m_detectDist;
+	double m_detectMinSize;
 
 	int m_nBatch;
 	string m_blobIn;
 	string m_blobOut;
 
-	Frame* m_pRGBA;
-
-public:
+	bool m_bDrawContour;
+	double m_contourBlend;
 
 };
 
 }
 
-#endif
 #endif

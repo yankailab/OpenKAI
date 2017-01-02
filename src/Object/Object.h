@@ -34,7 +34,6 @@ public:
 	virtual ~Object();
 
 	void reset(void);
-
 	bool add(OBJECT* pNewObj);
 	OBJECT* get(int i);
 	OBJECT* getByClass(int iClass);

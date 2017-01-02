@@ -4,18 +4,23 @@
  */
 #include "_ImageNet.h"
 
-#ifdef USE_TENSORRT
-
 namespace kai
 {
 _ImageNet::_ImageNet()
 {
 	_AIbase();
 
+#ifdef USE_TENSORRT
 	m_pIN = NULL;
+#endif
+	m_pRGBA = NULL;
 	m_nBatch = 1;
 	m_blobIn = "data";
 	m_blobOut = "prob";
+	m_detectDist = 0.0;
+	m_detectMinSize = 0.0;
+	m_bDrawContour = false;
+	m_contourBlend = 0.125;
 }
 
 _ImageNet::~_ImageNet()
@@ -32,6 +37,10 @@ bool _ImageNet::init(void* pKiss)
 	F_INFO(pK->v("nBatch", &m_nBatch));
 	F_INFO(pK->v("blobIn", &m_blobIn));
 	F_INFO(pK->v("blobOut", &m_blobOut));
+	F_INFO(pK->v("detectDist", &m_detectDist));
+	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
+	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
+	F_INFO(pK->v("contourBlend", &m_contourBlend));
 
 	m_pRGBA = new Frame();
 
@@ -62,10 +71,12 @@ bool _ImageNet::start(void)
 
 void _ImageNet::update(void)
 {
+#ifdef USE_TENSORRT
 	m_pIN = imageNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
 			m_fileMean.c_str(), m_fileLabel.c_str(), m_blobIn.c_str(),
 			m_blobOut.c_str());
 	NULL_(m_pIN);
+#endif
 
 	while (m_bThreadON)
 	{
@@ -81,55 +92,41 @@ void _ImageNet::update(void)
 void _ImageNet::detect(void)
 {
 	NULL_(m_pStream);
+#ifdef USE_TENSORRT
 	NULL_(m_pIN);
+#endif
+
+	m_pObj->reset();
+	CHECK_(m_pStream->findObjects(NULL, m_pObj, m_detectDist, m_detectMinSize)<=0);
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());
-	CHECK_(m_pRGBA->isNewerThan(pBGR));
 
 	m_pRGBA->getRGBAOf(pBGR);
 	GpuMat* pGMat = m_pRGBA->getGMat();
 	CHECK_(pGMat->empty());
-
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
 
-	float confidence = 0.0f;
-	int img_class = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows,
-			&confidence);
-
-	if (img_class >= 0)
+	OBJECT* pObj;
+	for (int i = 0; i < m_pObj->size(); i++)
 	{
-		printf(">>>ImageNet:  %2.5f%% class #%i (%s)\n",
-				confidence * 100.0f, img_class, m_pIN->GetClassDesc(img_class));
+		pObj = m_pObj->get(i);
+		if(!pObj)break;
+		Rect r;
+		vInt42rect(&pObj->m_bbox, &r);
+		GpuMat oGMat = GpuMat(fGMat,r);
 
+#ifdef USE_TENSORRT
+		pObj->m_iClass = m_pIN->Classify((float*) oGMat.data, oGMat.cols, oGMat.rows, &pObj->m_prob);
+		if (pObj->m_iClass >= 0)
+		{
+			pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
+		}
+#endif
 	}
 
-//	LOG_I("Detected BBox: "<<m_nBox);
-/*
-	m_pObj->reset();
-
-	OBJECT obj;
-	for (int n = 0; n < m_nBox; n++)
-	{
-		const int nc = m_confCPU[n * 2 + 1];
-		float* bb = m_bbCPU + (n * 4);
-
-		obj.m_iClass = 0;
-		obj.m_bbox.m_x = (int) bb[0];
-		obj.m_bbox.m_y = (int) bb[1];
-		obj.m_bbox.m_z = (int) bb[2];
-		obj.m_bbox.m_w = (int) bb[3];
-		obj.m_camSize.m_x = fGMat.cols;
-		obj.m_camSize.m_y = fGMat.rows;
-		obj.m_dist = 0.0;
-		obj.m_prob = 0.0;
-		obj.m_name = m_className;
-
-		m_pObj->add(&obj);
-	}
-*/
 }
 
 bool _ImageNet::draw(void)
@@ -137,27 +134,40 @@ bool _ImageNet::draw(void)
 	CHECK_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(pMat->empty());
+
+	Mat bg;
+	if(m_bDrawContour)
+	{
+		bg = Mat::zeros(Size(pMat->cols,pMat->rows), CV_8UC3);
+	}
 
 	OBJECT* pObj;
 	int i = 0;
 	while ((pObj = m_pObj->get(i++)))
 	{
-		Rect bbox;
-		bbox.x = pObj->m_bbox.m_x;
-		bbox.y = pObj->m_bbox.m_y;
-		bbox.width = pObj->m_bbox.m_z - pObj->m_bbox.m_x;
-		bbox.height = pObj->m_bbox.m_w - pObj->m_bbox.m_y;
-
-		rectangle(*pMat, bbox, Scalar(0, 255, 0), 1);
-
+		Rect r;
+		vInt42rect(&pObj->m_bbox, &r);
 		putText(*pMat, pObj->m_name,
-				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
+				Point(r.x + r.width / 2, r.y + r.height / 2),
 				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+
+		if(m_bDrawContour)
+		{
+			drawContours(bg, vector<vector<Point> >(1,pObj->m_contour), -1, Scalar(0, 255, 0), CV_FILLED, 8);
+		}
+		else
+		{
+			rectangle(*pMat, r, Scalar(0, 255, 0), 1);
+		}
+	}
+
+	if(m_bDrawContour)
+	{
+		cv::addWeighted( *pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
 	}
 
 	return true;
 }
 
 }
-
-#endif

@@ -8,6 +8,22 @@
 
 using namespace std;
 
+inline void rect2vInt4(Rect* pR, kai::vInt4* pV)
+{
+	pV->m_x = pR->x;
+	pV->m_y = pR->y;
+	pV->m_z = pR->x + pR->width;
+	pV->m_w = pR->y + pR->height;
+}
+
+inline void vInt42rect(kai::vInt4* pV, Rect* pR)
+{
+	pR->x = pV->m_x;
+	pR->y = pV->m_y;
+	pR->width = pV->m_z - pV->m_x;
+	pR->height = pV->m_w - pV->m_y;
+}
+
 inline int constrain(int v, int a, int b)
 {
 	int min,max;

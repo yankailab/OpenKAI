@@ -28,9 +28,6 @@ public:
 	virtual bool start(void);
 	virtual bool draw(void);
 
-	virtual bool addObject(OBJECT* pNew);
-	virtual Object* getObject(void);
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

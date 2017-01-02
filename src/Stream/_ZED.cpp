@@ -70,7 +70,7 @@ bool _ZED::open(void)
 
 	// define a struct of parameters for the initialization
 	sl::zed::InitParams zedParams;
-	zedParams.mode = (sl::zed::MODE)m_zedQuality;//sl::zed::MODE::PERFORMANCE;
+	zedParams.mode = (sl::zed::MODE) m_zedQuality; //sl::zed::MODE::PERFORMANCE;
 	zedParams.unit = sl::zed::UNIT::MILLIMETER;
 	zedParams.verbose = 1;
 	zedParams.device = -1;
@@ -84,15 +84,13 @@ bool _ZED::open(void)
 	}
 
 	m_pZed->setFPS(m_zedFPS);
+	m_zedMode = sl::zed::STANDARD;
 
 	// Initialize color image and depth
 	m_width = m_pZed->getImageSize().width;
 	m_height = m_pZed->getImageSize().height;
-
 	m_centerH = m_width * 0.5;
 	m_centerV = m_height * 0.5;
-
-	m_zedMode = sl::zed::STANDARD;
 
 	m_bOpen = true;
 	return true;
@@ -232,14 +230,14 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 	return true;
 }
 
-int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize)
+int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist,
+		double minSize)
 {
-	NULL_F(pRect);
 	NULL_F(pResult);
-	CHECK_F(pRect->area() <= 0);
 
 	GpuMat gMat;
 	GpuMat gMat2;
+	GpuMat gMat3;
 
 	NULL_F(m_pDepth);
 	gMat = *(m_pDepth->getGMat());
@@ -250,20 +248,30 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minS
 
 	//Region
 	Rect r;
-	r.x = pRect->m_x * ((double) gMat.cols);
-	r.y = pRect->m_y * ((double) gMat.rows);
-	r.width = pRect->m_z * ((double) gMat.cols) - r.x;
-	r.height = pRect->m_w * ((double) gMat.rows) - r.y;
+	if (pRect)
+	{
+		r.x = pRect->m_x * ((double) gMat.cols);
+		r.y = pRect->m_y * ((double) gMat.rows);
+		r.width = pRect->m_z * ((double) gMat.cols) - r.x;
+		r.height = pRect->m_w * ((double) gMat.rows) - r.y;
+	}
+	else
+	{
+		r.x = 0;
+		r.y = 0;
+		r.width = gMat.cols;
+		r.height = gMat.rows;
+	}
 	gMat2 = GpuMat(gMat, r);
 
 #ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+	cuda::threshold(gMat2, gMat3, (1.0 - dist) * 255.0, 255, cv::THRESH_BINARY);
 #else
-	gpu::threshold(gMat2, gMat, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+	gpu::threshold(gMat2, gMat3, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
 #endif
 
 	Mat cMat;
-	gMat.download(cMat);
+	gMat3.download(cMat);
 
 	// Find contours
 	vector<vector<Point> > contours;
@@ -272,14 +280,13 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minS
 			CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
-	//vector<vector<Point> > contours_poly(contours.size());
 	vector<Point> contours_poly;
 	for (int i = 0; i < contours.size(); i++)
 	{
-//		approxPolyDP(Mat(contours[i]), contours_poly[i], 3, true);
 		approxPolyDP(Mat(contours[i]), contours_poly, 3, true);
 		Rect bb = boundingRect(Mat(contours_poly));
-		if (bb.area() < minSize)continue;
+		if (bb.area() < minSize)
+			continue;
 
 		OBJECT obj;
 		obj.m_bbox.m_x = bb.x;
@@ -290,6 +297,8 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minS
 		obj.m_camSize.m_y = cMat.rows;
 		obj.m_dist = dist;
 		obj.m_contour = contours_poly;
+
+		//TODO: calc avr of the region to determine dist
 
 		pResult->add(&obj);
 	}

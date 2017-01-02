@@ -71,6 +71,10 @@
 	"trainedFile":"bvlc_googlenet.caffemodel",
 	"meanFile":"",
 	"labelFile":"ilsvrc12_synset_words.txt",
+	"detectDist":0.25,
+	"detectMinSize":0.01,
+	"bDrawContour":0,
+	"contourBlend":0.25,	
 }
 
 
