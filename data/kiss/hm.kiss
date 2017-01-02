@@ -60,6 +60,21 @@
 }
 
 {
+	"name":"imageNet",
+	"class":"_ImageNet",
+	"bInst":0,
+	"FPS":30,
+	"Window":"HM_monitor",
+	"_Stream":"ZED",
+	"dir":"/home/ubuntu/src/model/ped-100/",
+	"modelFile":"googlenet.prototxt",
+	"trainedFile":"bvlc_googlenet.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"ilsvrc12_synset_words.txt",
+}
+
+
+{
 	"name":"detectNet",
 	"class":"_DetectNet",
 	"bInst":0,

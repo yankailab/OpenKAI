@@ -1,12 +1,12 @@
 /*
- * _DetectNet.h
+ * _ImageNet.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef AI__DetectNet_H_
-#define AI__DetectNet_H_
+#ifndef AI__ImageNet_H_
+#define AI__ImageNet_H_
 
 #include "../Base/common.h"
 #include "_AIbase.h"
@@ -14,19 +14,15 @@
 #include "../Stream/_StreamBase.h"
 
 #ifdef USE_TENSORRT
-//#include <cuda_runtime.h>
-//#include "cudaMappedMemory.h"
-//#include "cudaNormalize.h"
-//#include "detectNet.h"
 
 namespace kai
 {
 
-class _DetectNet: public _AIbase
+class _ImageNet: public _AIbase
 {
 public:
-	_DetectNet();
-	~_DetectNet();
+	_ImageNet();
+	~_ImageNet();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -42,28 +38,18 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DetectNet*) This)->update();
+		((_ImageNet*) This)->update();
 		return NULL;
 	}
 
 public:
-	detectNet* m_pDN;
-	int m_nBox;
-	int m_nBoxMax;
-	uint32_t m_nClass;
+	imageNet* m_pIN;
 
-	int num_channels_;
-	cv::Mat mean_;
+	int m_nBatch;
+	string m_blobIn;
+	string m_blobOut;
+
 	Frame* m_pRGBA;
-	Frame* m_pRGBAf;
-	double m_minCofidence;
-
-	float* m_bbCPU;
-	float* m_bbCUDA;
-	float* m_confCPU;
-	float* m_confCUDA;
-
-	string m_className;
 
 public:
 

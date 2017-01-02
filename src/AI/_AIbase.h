@@ -42,13 +42,10 @@ public:
 	_StreamBase* m_pStream;
 	Object* m_pObj;
 
-	uint64_t m_frameID;
-
 	string m_fileModel;
 	string m_fileTrained;
 	string m_fileMean;
 	string m_fileLabel;
-
 };
 
 }

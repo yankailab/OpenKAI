@@ -24,6 +24,7 @@ struct OBJECT
 	int			m_iClass;
 	string		m_name;
 	uint8_t		m_safety;
+	vector<Point> m_contour;
 };
 
 class Object

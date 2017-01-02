@@ -13,7 +13,6 @@ _AIbase::_AIbase()
 
 	m_pStream = NULL;
 	m_pObj = NULL;
-	m_frameID = 0;
 
 	m_fileModel = "";
 	m_fileTrained = "";
@@ -39,10 +38,10 @@ bool _AIbase::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("dir", &modelDir));
 
-	F_FATAL_F(pK->v("modelFile", &m_fileModel));
-	F_FATAL_F(pK->v("trainedFile", &m_fileTrained));
-	F_FATAL_F(pK->v("meanFile", &m_fileMean));
-	F_FATAL_F(pK->v("labelFile", &m_fileLabel));
+	F_INFO(pK->v("modelFile", &m_fileModel));
+	F_INFO(pK->v("trainedFile", &m_fileTrained));
+	F_INFO(pK->v("meanFile", &m_fileMean));
+	F_INFO(pK->v("labelFile", &m_fileLabel));
 
 	m_fileModel = modelDir + m_fileModel;
 	m_fileTrained = modelDir + m_fileTrained;

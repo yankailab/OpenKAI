@@ -2,55 +2,43 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_DetectNet.h"
+#include "_ImageNet.h"
 
 #ifdef USE_TENSORRT
 
 namespace kai
 {
-_DetectNet::_DetectNet()
+_ImageNet::_ImageNet()
 {
 	_AIbase();
 
-	num_channels_ = 0;
-	m_pRGBA = NULL;
-	m_pRGBAf = NULL;
-	m_minCofidence = 0.0;
-
-	m_pDN = NULL;
-	m_nBox = 0;
-	m_nBoxMax = 0;
-	m_nClass = 0;
-
-	m_bbCPU = NULL;
-	m_bbCUDA = NULL;
-	m_confCPU = NULL;
-	m_confCUDA = NULL;
-
-	m_className = "target";
+	m_pIN = NULL;
+	m_nBatch = 1;
+	m_blobIn = "data";
+	m_blobOut = "prob";
 }
 
-_DetectNet::~_DetectNet()
+_ImageNet::~_ImageNet()
 {
 	this->~_AIbase();
 }
 
-bool _DetectNet::init(void* pKiss)
+bool _ImageNet::init(void* pKiss)
 {
 	CHECK_F(!this->_AIbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("minConfidence", &m_minCofidence));
-	F_INFO(pK->v("className", &m_className));
+	F_INFO(pK->v("nBatch", &m_nBatch));
+	F_INFO(pK->v("blobIn", &m_blobIn));
+	F_INFO(pK->v("blobOut", &m_blobOut));
 
 	m_pRGBA = new Frame();
-	m_pRGBAf = new Frame();
 
 	return true;
 }
 
-bool _DetectNet::link(void)
+bool _ImageNet::link(void)
 {
 	CHECK_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -58,7 +46,7 @@ bool _DetectNet::link(void)
 	return true;
 }
 
-bool _DetectNet::start(void)
+bool _ImageNet::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -72,21 +60,12 @@ bool _DetectNet::start(void)
 	return true;
 }
 
-void _DetectNet::update(void)
+void _ImageNet::update(void)
 {
-	m_pDN = detectNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
-			m_fileMean.c_str(), m_minCofidence);
-	NULL_(m_pDN);
-
-	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
-	m_nClass = m_pDN->GetNumClasses();
-
-	CHECK_(
-			!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
-					m_nBoxMax * sizeof(float4)));
-	CHECK_(
-			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
-					m_nBoxMax * m_nClass * sizeof(float)));
+	m_pIN = imageNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
+			m_fileMean.c_str(), m_fileLabel.c_str(), m_blobIn.c_str(),
+			m_blobOut.c_str());
+	NULL_(m_pIN);
 
 	while (m_bThreadON)
 	{
@@ -99,10 +78,10 @@ void _DetectNet::update(void)
 
 }
 
-void _DetectNet::detect(void)
+void _ImageNet::detect(void)
 {
 	NULL_(m_pStream);
-	NULL_(m_pDN);
+	NULL_(m_pIN);
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
@@ -116,18 +95,19 @@ void _DetectNet::detect(void)
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
 
-	/*	m_pRGBA->getRGBAOf(pBGR);
-	 m_pRGBAf->get32FC4Of(m_pRGBA);
-	 GpuMat* fGMat = m_pRGBA->getGMat();
-	 */
-	m_nBox = m_nBoxMax;
+	float confidence = 0.0f;
+	int img_class = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows,
+			&confidence);
 
-	CHECK_(
-			!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
-					&m_nBox, m_confCPU));
+	if (img_class >= 0)
+	{
+		printf(">>>ImageNet:  %2.5f%% class #%i (%s)\n",
+				confidence * 100.0f, img_class, m_pIN->GetClassDesc(img_class));
 
-	LOG_I("Detected BBox: "<<m_nBox);
+	}
 
+//	LOG_I("Detected BBox: "<<m_nBox);
+/*
 	m_pObj->reset();
 
 	OBJECT obj;
@@ -149,10 +129,10 @@ void _DetectNet::detect(void)
 
 		m_pObj->add(&obj);
 	}
-
+*/
 }
 
-bool _DetectNet::draw(void)
+bool _ImageNet::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

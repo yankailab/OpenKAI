@@ -289,6 +289,7 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist, double minS
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
 		obj.m_dist = dist;
+		obj.m_contour = contours_poly;
 
 		pResult->add(&obj);
 	}
