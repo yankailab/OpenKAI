@@ -42,6 +42,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_TENSORRT
 	ADD_MODULE(_DetectNet);
+	ADD_MODULE(_ImageNet);
 #endif
 
     return NULL;

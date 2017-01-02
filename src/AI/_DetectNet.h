@@ -14,10 +14,6 @@
 #include "../Stream/_StreamBase.h"
 
 #ifdef USE_TENSORRT
-//#include <cuda_runtime.h>
-//#include "cudaMappedMemory.h"
-//#include "cudaNormalize.h"
-//#include "detectNet.h"
 
 namespace kai
 {
@@ -30,12 +26,8 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-	bool draw(void);
-
 	bool start(void);
-
-	int addObjClass(string* pName, uint8_t safety);
-	OBJECT* addObject(OBJECT* pNewObj);
+	bool draw(void);
 
 private:
 	void detect(void);

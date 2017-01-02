@@ -6,6 +6,7 @@
 #include "../../../Algorithm/Filter.h"
 #include "../../../Object/Object.h"
 #include "../../../Stream/_StreamBase.h"
+#include "../../../AI/_DetectNet.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 

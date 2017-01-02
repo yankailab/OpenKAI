@@ -60,6 +60,7 @@
 #endif
 #ifdef USE_TENSORRT
 #include "../AI/_DetectNet.h"
+#include "../AI/_ImageNet.h"
 #endif
 
 
