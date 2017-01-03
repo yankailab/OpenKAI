@@ -85,7 +85,7 @@ void HM_avoid::update(void)
 	int rpmSteer = 0;
 
 	m_pObj->reset();
-	m_pStream->findObjects(&m_avoidRegion, m_pObj, m_alertDist, m_avoidMinSize);
+	m_pStream->findObjects(m_pObj, m_alertDist, m_avoidMinSize);
 
 	//make turn when object is within a certain distance
 	if(m_pObj->size()>0)

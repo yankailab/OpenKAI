@@ -177,10 +177,10 @@ void _Camera::update(void)
 		Mat cMat;
 
 		while (!m_camera.read(cMat));
-		m_Gframe.upload(cMat);
+		m_Gmat.upload(cMat);
 
-		pSrc = &m_Gframe;
-		pDest = &m_Gframe2;
+		pSrc = &m_Gmat;
+		pDest = &m_Gmat2;
 
 		if (m_bCalibration)
 		{
@@ -195,9 +195,9 @@ void _Camera::update(void)
 		if (m_bGimbal)
 		{
 #ifdef USE_OPENCV4TEGRA
-			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
 #else
-			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gframe.size());
+			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
 #endif
 			SWAP(pSrc, pDest, pTmp);
 		}

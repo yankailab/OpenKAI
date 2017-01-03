@@ -90,12 +90,12 @@ Frame* _StreamBase::depth(void)
 	return m_pDepth;
 }
 
-bool _StreamBase::distNearest(vDouble4* pRect, double* pDist, double* pSize)
+bool _StreamBase::dist(vDouble4* pRect, double* pDist, double* pSize)
 {
 	return true;
 }
 
-int _StreamBase::findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize)
+int _StreamBase::findObjects(Object* pObj, double dist, double minSize)
 {
 	return 0;
 }

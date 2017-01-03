@@ -37,8 +37,8 @@ public:
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
 
-	virtual bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
-	virtual int findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize);
+	virtual bool dist(vDouble4* pRect, double* pDist, double* pSize);
+	virtual int findObjects(Object* pObj, double dist, double minSize);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
@@ -66,8 +66,8 @@ public:
 	Frame*	m_pDepth;
 
 	//operation
-	GpuMat m_Gframe;
-	GpuMat m_Gframe2;
+	GpuMat m_Gmat;
+	GpuMat m_Gmat2;
 
 
 };

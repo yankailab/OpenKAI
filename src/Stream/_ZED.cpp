@@ -47,7 +47,6 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedQuality", &m_zedQuality));
 
 	m_pDepth = new Frame();
-
 	return true;
 }
 
@@ -134,18 +133,18 @@ void _ZED::update(void)
 			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(
 					sl::zed::MEASURE::DEPTH);
 
-			m_Gframe = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
+			m_Gmat = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
 			m_Gdepth = GpuMat(Size(m_width, m_height), CV_8UC4, gDepth.data);
 
 #ifndef USE_OPENCV4TEGRA
-			cuda::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
+			cuda::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
 			cuda::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 #else
-			gpu::cvtColor(m_Gframe, m_Gframe2, CV_BGRA2BGR);
+			gpu::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
 			gpu::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 #endif
 
-			m_pBGR->update(&m_Gframe2);
+			m_pBGR->update(&m_Gmat2);
 			if (m_pGray)
 				m_pGray->getGrayOf(m_pBGR);
 			if (m_pHSV)
@@ -158,7 +157,7 @@ void _ZED::update(void)
 	}
 }
 
-bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
+bool _ZED::dist(vDouble4* pRect, double* pDist, double* pSize)
 {
 	NULL_F(pRect);
 	NULL_F(pDist);
@@ -230,14 +229,12 @@ bool _ZED::distNearest(vDouble4* pRect, double* pDist, double* pSize)
 	return true;
 }
 
-int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist,
-		double minSize)
+int _ZED::findObjects(Object* pObj, double dist, double minSize)
 {
-	NULL_F(pResult);
+	NULL_F(pObj);
 
 	GpuMat gMat;
 	GpuMat gMat2;
-	GpuMat gMat3;
 
 	NULL_F(m_pDepth);
 	gMat = *(m_pDepth->getGMat());
@@ -246,32 +243,14 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist,
 	//MinSize
 	minSize *= gMat.cols * gMat.rows;
 
-	//Region
-	Rect r;
-	if (pRect)
-	{
-		r.x = pRect->m_x * ((double) gMat.cols);
-		r.y = pRect->m_y * ((double) gMat.rows);
-		r.width = pRect->m_z * ((double) gMat.cols) - r.x;
-		r.height = pRect->m_w * ((double) gMat.rows) - r.y;
-	}
-	else
-	{
-		r.x = 0;
-		r.y = 0;
-		r.width = gMat.cols;
-		r.height = gMat.rows;
-	}
-	gMat2 = GpuMat(gMat, r);
-
 #ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gMat2, gMat3, (1.0 - dist) * 255.0, 255, cv::THRESH_BINARY);
+	cuda::threshold(gMat, gMat2, (1.0 - dist) * 255.0, 255, cv::THRESH_BINARY);
 #else
-	gpu::threshold(gMat2, gMat3, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
+	gpu::threshold(gMat, gMat2, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
 #endif
 
 	Mat cMat;
-	gMat3.download(cMat);
+	gMat2.download(cMat);
 
 	// Find contours
 	vector<vector<Point> > contours;
@@ -295,15 +274,20 @@ int _ZED::findObjects(vDouble4* pRect, Object* pResult, double dist,
 		obj.m_bbox.m_w = bb.y + bb.height;
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
-		obj.m_dist = dist;
 		obj.m_contour = contours_poly;
+		obj.m_dist = dist;
 
-		//TODO: calc avr of the region to determine dist
+		//calc avr of the region to determine dist
+		Mat oGMat = Mat(*m_pDepth->getCMat(),bb);
+		Scalar tot = cv::sum(oGMat);
+		obj.m_dist = tot[0]/obj.m_bbox.area();
 
-		pResult->add(&obj);
+		//TODO: merge overlapped in Object
+
+		pObj->add(&obj);
 	}
 
-	return pResult->size();
+	return pObj->size();
 }
 
 bool _ZED::draw(void)

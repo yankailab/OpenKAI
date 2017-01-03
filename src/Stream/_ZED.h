@@ -28,8 +28,8 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	bool distNearest(vDouble4* pRect, double* pDist, double* pSize);
-	int findObjects(vDouble4* pRect, Object* pResult, double dist, double minSize);
+	bool dist(vDouble4* pRect, double* pDist, double* pSize);
+	int findObjects(Object* pObj, double dist, double minSize);
 
 private:
 	bool open(void);
@@ -43,8 +43,8 @@ private:
 private:
 	sl::zed::Camera* m_pZed;
 	sl::zed::SENSING_MODE m_zedMode;
-	int m_zedResolution;
 	double m_zedMinDist;
+	int m_zedResolution;
 	int m_zedFPS;
 	int m_zedQuality;
 

@@ -97,7 +97,7 @@ void _ImageNet::detect(void)
 #endif
 
 	m_pObj->reset();
-	CHECK_(m_pStream->findObjects(NULL, m_pObj, m_detectDist, m_detectMinSize)<=0);
+	CHECK_(m_pStream->findObjects(m_pObj, m_detectDist, m_detectMinSize)<=0);
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
@@ -148,7 +148,7 @@ bool _ImageNet::draw(void)
 	{
 		Rect r;
 		vInt42rect(&pObj->m_bbox, &r);
-		putText(*pMat, pObj->m_name,
+		putText(*pMat, pObj->m_name + " dist="+f2str(pObj->m_dist),
 				Point(r.x + r.width / 2, r.y + r.height / 2),
 				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
 
