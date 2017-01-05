@@ -5,8 +5,6 @@
 #include "../../../Protocol/_Mavlink.h"
 #include "../ActionBase.h"
 
-
-
 namespace kai
 {
 
@@ -59,6 +57,15 @@ struct APMcopter_CTRL
 	}
 };
 
+struct DISTANCE_SENSOR
+{
+	uint8_t m_type;
+	uint8_t m_orientation;
+	uint16_t m_maxDistance;	//unit: centimeters
+	uint16_t m_minDistance;
+	uint16_t m_distance;
+};
+
 class APMcopter_base: public ActionBase
 {
 public:
@@ -70,6 +77,7 @@ public:
 	void sendHeartbeat(void);
 
 	void updateAttitude(void);
+	void updateDistanceSensor(DISTANCE_SENSOR* pSensor);
 
 public:
 	_Mavlink* m_pMavlink;

@@ -151,4 +151,18 @@ void APMcopter_base::updateAttitude(void)
 	 */
 }
 
+void APMcopter_base::updateDistanceSensor(DISTANCE_SENSOR* pSensor)
+{
+	NULL_(m_pMavlink);
+	NULL_(pSensor);
+
+	m_pMavlink->distance_sensor(pSensor->m_type,
+			pSensor->m_orientation,
+			pSensor->m_maxDistance,
+			pSensor->m_minDistance,
+			pSensor->m_distance);
+
+}
+
+
 }

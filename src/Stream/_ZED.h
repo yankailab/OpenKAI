@@ -28,10 +28,11 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	Object* getObject(void);
 	bool dist(vDouble4* pRect, double* pDist, double* pSize);
-	int findObjects(Object* pObj, double dist, double minSize);
 
 private:
+	void detectObject(void);
 	bool open(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -40,17 +41,28 @@ private:
 		return NULL;
 	}
 
-private:
+public:
 	sl::zed::Camera* m_pZed;
 	sl::zed::SENSING_MODE m_zedMode;
-	double m_zedMinDist;
 	int m_zedResolution;
 	int m_zedFPS;
 	int m_zedQuality;
+	double m_zedMinDist;
+	double m_zedMaxDist;
+
+	Object*	 m_pObj;
+	bool	 m_bDetectObject;
+	double	 m_alertDist;
+	double	 m_detectMinSize;
+	int		 m_nObj;
+	uint64_t m_oLifetime;
 
 	//operation
 	GpuMat m_Gdepth;
 	GpuMat m_Gdepth2;
+
+	bool m_bDrawContour;
+	double m_contourBlend;
 
 	Window* m_pDepthWin;
 

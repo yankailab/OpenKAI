@@ -48,8 +48,6 @@ bool _AIbase::init(void* pKiss)
 	m_fileMean = modelDir + m_fileMean;
 	m_fileLabel = modelDir + m_fileLabel;
 
-	m_pObj = new Object();
-
 	return true;
 }
 
@@ -87,25 +85,6 @@ void _AIbase::update(void)
 bool _AIbase::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
-
-	OBJECT* pObj;
-	int i=0;
-	while((pObj=m_pObj->get(i++)))
-	{
-		Rect bbox;
-		bbox.x = pObj->m_bbox.m_x;
-		bbox.y = pObj->m_bbox.m_y;
-		bbox.width = pObj->m_bbox.m_z - pObj->m_bbox.m_x;
-		bbox.height = pObj->m_bbox.m_w - pObj->m_bbox.m_y;
-
-		rectangle(*pMat, bbox, Scalar(0, 255, 0), 1);
-
-		putText(*pMat, pObj->m_name,
-				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
-				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0,255,0), 1);
-	}
 
 	return true;
 }

@@ -1,5 +1,5 @@
 /*
- * _Universe.cpp
+ * Object.cpp
  *
  *  Created on: Nov 28, 2015
  *      Author: yankai
@@ -10,31 +10,39 @@
 namespace kai
 {
 
-Object::Object()
+Object::Object(int nObj, uint64_t lTime)
 {
-	m_nObj = 0;
+	m_lifetime = lTime;
+	m_iObj = 0;
+	m_nObj = nObj;
+
+	m_pObj = new OBJECT[m_nObj];
+	for(int i=0;i<m_nObj;i++)
+	{
+		m_pObj[i].m_frameID = 0;
+	}
 }
 
 Object::~Object()
 {
 }
 
-void Object::reset(void)
-{
-	m_nObj = 0;
-}
-
 bool Object::add(OBJECT* pNewObj)
 {
 	NULL_F(pNewObj);
-	CHECK_F(m_nObj >= N_OBJ);
-	m_pObj[m_nObj++] = *pNewObj;
+	m_pObj[m_iObj] = *pNewObj;
+	if(++m_iObj>=m_nObj)m_iObj=0;
 	return true;
 }
 
-OBJECT* Object::get(int i)
+int Object::size(void)
 {
-	CHECK_N(i>=m_nObj);
+	return m_nObj;
+}
+
+OBJECT* Object::get(int i, uint64_t frameID)
+{
+	CHECK_N(frameID - m_pObj[i].m_frameID >= m_lifetime);
 	return &m_pObj[i];
 }
 
@@ -52,11 +60,6 @@ OBJECT* Object::getByClass(int iClass)
 	}
 
 	return NULL;
-}
-
-int Object::size(void)
-{
-	return m_nObj;
 }
 
 }

@@ -38,7 +38,6 @@ private:
 
 	//normalized relevant distance: 0.0 ~ 1.0
 	Filter*	m_pFdist;
-
 	Object* m_pObj;
 
 };

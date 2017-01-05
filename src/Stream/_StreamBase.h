@@ -37,8 +37,8 @@ public:
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
 
+	virtual Object* getObject(void);
 	virtual bool dist(vDouble4* pRect, double* pDist, double* pSize);
-	virtual int findObjects(Object* pObj, double dist, double minSize);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 
@@ -52,6 +52,7 @@ public:
 	int m_centerV;
 	int m_angleH;
 	int m_angleV;
+	uint8_t m_orientation;
 
 	bool m_bGimbal;
 	Mat m_rotRoll;
@@ -68,7 +69,6 @@ public:
 	//operation
 	GpuMat m_Gmat;
 	GpuMat m_Gmat2;
-
 
 };
 

@@ -16,6 +16,7 @@ _StreamBase::_StreamBase()
 
 	m_bOpen = false;
 	m_type = unknownStream;
+	m_orientation = 0;
 	m_width = 1280;
 	m_height = 720;
 	m_centerH = 640;
@@ -53,6 +54,7 @@ bool _StreamBase::init(void* pKiss)
 	F_INFO(pK->v("angleH", &m_angleH));
 	F_INFO(pK->v("bGimbal", &m_bGimbal));
 	F_INFO(pK->v("isoScale", &m_isoScale));
+	F_INFO(pK->v("orientation", (int*)&m_orientation));
 
 	m_pBGR = new Frame();
 
@@ -95,9 +97,9 @@ bool _StreamBase::dist(vDouble4* pRect, double* pDist, double* pSize)
 	return true;
 }
 
-int _StreamBase::findObjects(Object* pObj, double dist, double minSize)
+Object* _StreamBase::getObject(void)
 {
-	return 0;
+	return NULL;
 }
 
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)

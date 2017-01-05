@@ -41,6 +41,7 @@ bool _AutoPilot::init(void* pKiss)
 		//Add action modules below
 
 		ADD_ACTION(APMcopter_guided);
+		ADD_ACTION(APMcopter_avoid);
 
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_grass);

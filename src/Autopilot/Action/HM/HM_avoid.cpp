@@ -52,8 +52,6 @@ bool HM_avoid::init(void* pKiss)
 	m_pFdist = new Filter();
 	m_pFdist->startMedian(filterLen);
 
-	m_pObj = new Object();
-
 	return true;
 }
 
@@ -84,8 +82,8 @@ void HM_avoid::update(void)
 	int rpmSpeed = m_speedP;
 	int rpmSteer = 0;
 
-	m_pObj->reset();
-	m_pStream->findObjects(m_pObj, m_alertDist, m_avoidMinSize);
+	m_pObj = m_pStream->getObject();
+	NULL_(m_pObj);
 
 	//make turn when object is within a certain distance
 	if(m_pObj->size()>0)

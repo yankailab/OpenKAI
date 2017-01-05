@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 
-#define N_OBJ 128
 
 namespace kai
 {
@@ -25,23 +24,25 @@ struct OBJECT
 	string		m_name;
 	uint8_t		m_safety;
 	vector<Point> m_contour;
+	uint64_t	m_frameID;
 };
 
 class Object
 {
 public:
-	Object();
+	Object(int nObj, uint64_t lTime);
 	virtual ~Object();
 
-	void reset(void);
-	bool add(OBJECT* pNewObj);
-	OBJECT* get(int i);
-	OBJECT* getByClass(int iClass);
 	int size(void);
+	bool add(OBJECT* pNewObj);
+	OBJECT* get(int i, uint64_t frameID);
+	OBJECT* getByClass(int iClass);
 
-public:
-	OBJECT m_pObj[N_OBJ];
+private:
+	OBJECT* m_pObj;
 	int m_nObj;
+	int m_iObj;
+	uint64_t m_lifetime;
 
 };
 

@@ -320,8 +320,6 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	writeMessage(message);
 
 	LOG_I("<- REQUEST_DATA_STREAM");
-
-	return;
 }
 
 void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,
@@ -353,8 +351,6 @@ void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,
 
 	LOG_I("<- SET_ATTITUDE_TARGET: ROLL:"<< pAtti[0]
 	<<" PITCH:"<< pAtti[1] <<" YAW:"<< pAtti[2] <<" THR:"<<thrust);
-
-	return;
 }
 
 void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
@@ -376,8 +372,6 @@ void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
 	writeMessage(message);
 
 	LOG_I("<- LANDING_TARGET: ANGLE_X:"<< angle_x << " ANGLE_Y:" << angle_y);
-
-	return;
 }
 
 void _Mavlink::command_long_doSetMode(int mode)
@@ -394,8 +388,6 @@ void _Mavlink::command_long_doSetMode(int mode)
 	writeMessage(message);
 
 	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE");
-
-	return;
 }
 
 void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
@@ -413,10 +405,40 @@ void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
 			&ds);
 
 	writeMessage(message);
-
 	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST");
+}
 
-	return;
+void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v)
+{
+	/*
+	 time_boot_ms: anything (it’s ignored)
+     min_distance: 100 (i.e. 1m)
+     max_distance: 1500 (i.e. 15m)
+     current_distance: depth-from-zed-in-cm
+     type: 0 (ignored)
+     id: 0 (also ignored for now)
+     orientation: 0 (means pointing forward)
+     covariance: 255 (ignored for now)
+	 */
+
+	mavlink_message_t message;
+	mavlink_distance_sensor_t ds;
+	ds.type = type;
+	ds.max_distance = max;	//unit: centimeters
+	ds.min_distance = min;
+	ds.current_distance = v;
+	ds.orientation = orientation;
+	ds.covariance = 255;
+	ds.id = 0;
+	ds.time_boot_ms = 0;
+
+	mavlink_msg_distance_sensor_encode(m_systemID,
+										m_targetComponentID,
+										&message,
+										&ds);
+
+	writeMessage(message);
+	LOG_I("<- DISTANCE_SENSOR");
 }
 
 bool _Mavlink::draw(void)
