@@ -25,6 +25,10 @@ public:
 	_Automaton* m_pAM;
 	int	m_iActiveState;
 
+	int64_t m_timeStamp;
+	int64_t m_dTime;
+
+
 };
 
 }

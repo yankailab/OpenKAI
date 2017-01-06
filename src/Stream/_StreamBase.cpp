@@ -92,9 +92,9 @@ Frame* _StreamBase::depth(void)
 	return m_pDepth;
 }
 
-bool _StreamBase::dist(vDouble4* pRect, double* pDist, double* pSize)
+double _StreamBase::dist(Rect* pR)
 {
-	return true;
+	return 0.0;
 }
 
 Object* _StreamBase::getObject(void)

@@ -29,7 +29,7 @@ public:
 	bool draw(void);
 
 	Object* getObject(void);
-	bool dist(vDouble4* pRect, double* pDist, double* pSize);
+	double dist(Rect* pR);
 
 private:
 	void detectObject(void);
@@ -54,6 +54,7 @@ public:
 	bool	 m_bDetectObject;
 	double	 m_alertDist;
 	double	 m_detectMinSize;
+	double	 m_distMinSize;
 	int		 m_nObj;
 	uint64_t m_oLifetime;
 

@@ -39,6 +39,9 @@ bool ActionBase::link(void)
 
 void ActionBase::update(void)
 {
+	uint64_t newTime = get_time_usec();
+	m_dTime = newTime - m_timeStamp;
+	m_timeStamp = newTime;
 }
 
 bool ActionBase::draw(void)

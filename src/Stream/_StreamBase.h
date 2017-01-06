@@ -38,7 +38,7 @@ public:
 	virtual Frame* depth(void);
 
 	virtual Object* getObject(void);
-	virtual bool dist(vDouble4* pRect, double* pDist, double* pSize);
+	virtual double dist(Rect* pR);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 

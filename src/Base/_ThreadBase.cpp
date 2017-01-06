@@ -17,8 +17,7 @@ _ThreadBase::_ThreadBase()
 	m_bThreadON = false;
 	m_threadID = 0;
 	m_timeStamp = 0;
-	m_dTime = 0.0;
-	m_dTimeAvr = 1.0;
+	m_dTime = 1.0;
 	m_defaultFPS = DEFAULT_FPS;
 	m_targetFPS = m_defaultFPS;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
@@ -85,13 +84,11 @@ void _ThreadBase::updateTime(void)
 	uint64_t newTime = get_time_usec();
 	m_dTime = newTime - m_timeStamp;
 	m_timeStamp = newTime;
-
-	m_dTimeAvr = m_dTime;
 }
 
 double _ThreadBase::getFrameRate(void)
 {
-	return USEC_1SEC / m_dTimeAvr;
+	return USEC_1SEC / m_dTime;
 }
 
 void _ThreadBase::setTargetFPS(int fps)
@@ -100,7 +97,7 @@ void _ThreadBase::setTargetFPS(int fps)
 
 	m_targetFPS = fps;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
-	m_dTimeAvr = m_targetFrameTime;
+	m_dTime = m_targetFrameTime;
 }
 
 void _ThreadBase::autoFPSfrom(void)

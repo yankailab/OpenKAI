@@ -33,6 +33,7 @@ _ZED::_ZED()
 	m_oLifetime = 100000;
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
+	m_distMinSize = 0.0;
 }
 
 _ZED::~_ZED()
@@ -63,6 +64,7 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("objLifetime", &m_oLifetime));
 	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
 	F_INFO(pK->v("contourBlend", &m_contourBlend));
+	F_INFO(pK->v("distMinSize", &m_distMinSize));
 
 	m_pDepth = new Frame();
 	m_pObj = new Object(m_nObj,m_oLifetime);
@@ -150,7 +152,9 @@ void _ZED::update(void)
 			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			// Retrieve depth map
 			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(
-					sl::zed::MEASURE::DEPTH);
+					sl::zed::MEASURE::DEPTH,
+					m_zedMinDist,
+					m_zedMaxDist);
 
 			m_Gmat = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
 			m_Gdepth = GpuMat(Size(m_width, m_height), CV_8UC4, gDepth.data);
@@ -192,7 +196,7 @@ void _ZED::detectObject(void)
 	double minSize = m_detectMinSize * gMat.cols * gMat.rows;
 
 #ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gMat, gMat2, (1.0 - m_alertDist) * 255.0, 255, cv::THRESH_BINARY);
+	cuda::threshold(gMat, gMat2, (1.0 - m_alertDist) * 255.0, 255, cv::THRESH_TOZERO);//cv::THRESH_BINARY);
 #else
 	gpu::threshold(gMat, gMat2, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
 #endif
@@ -228,9 +232,10 @@ void _ZED::detectObject(void)
 		obj.m_frameID = frameID;
 
 		//calc avr of the region to determine dist
-		Mat oGMat = Mat(*m_pDepth->getCMat(),bb);
+		Mat oGMat = Mat(cMat,bb);
 		Scalar tot = cv::sum(oGMat);
-		obj.m_dist = tot[0]/contourArea(contours_poly);
+		obj.m_dist =  m_zedMinDist+(m_zedMaxDist-m_zedMinDist)*((tot[0]/cv::contourArea(contours_poly)) / 255.0);
+		obj.m_dist*=0.1;
 
 		m_pObj->add(&obj);
 	}
@@ -242,76 +247,56 @@ Object* _ZED::getObject(void)
 	return m_pObj;
 }
 
-bool _ZED::dist(vDouble4* pRect, double* pDist, double* pSize)
+double _ZED::dist(Rect* pR)
 {
-	NULL_F(pRect);
-	NULL_F(pDist);
-	NULL_F(pSize);
-	CHECK_F(pRect->area() <= 0);
+	NULL_F(pR);
 
 	GpuMat gMat;
 	GpuMat gMat2;
-	Mat histMat;
+	GpuMat gHist;
+	Mat cHist;
 
 	NULL_F(m_pDepth);
 	gMat = *(m_pDepth->getGMat());
 	CHECK_F(gMat.empty());
+	gMat2 = GpuMat(gMat, *pR);
 
-	//MinSize
-	int minSize = 0;
-	if (*pSize > 0)
-		minSize = *pSize * gMat.cols * gMat.rows;
-
-	//Region
-	Rect r;
-	r.x = pRect->m_x * ((double) gMat.cols);
-	r.y = pRect->m_y * ((double) gMat.rows);
-	r.width = pRect->m_z * ((double) gMat.cols) - r.x;
-	r.height = pRect->m_w * ((double) gMat.rows) - r.y;
-	gMat2 = GpuMat(gMat, r);
+	int intensity = 0;
+	int minPix = pR->area()*m_distMinSize;
 
 #ifndef USE_OPENCV4TEGRA
-	cuda::calcHist(gMat2, gMat);
-	gMat.download(histMat);
-	for (int i = histMat.cols - 1; i > 0; i--)
+	cuda::calcHist(gMat2, gHist);
+	gHist.download(cHist);
+
+	for (int i = cHist.cols - 1; i > 0; i--)
 	{
-		int intensity = histMat.at<int>(0, i);
-		if (intensity > minSize)
+		intensity += cHist.at<int>(0, i);
+		if (intensity > minPix)
 		{
-			*pDist = (255.0f - i) / 255.0f;
-			*pSize = intensity;
-			return true;
+			return (255.0f - i) / 255.0f;
 		}
 	}
 #else
-	int channels[] =
-	{	0};
+	int channels[] = {0};
 	int bin_num = 256;
-	int bin_nums[] =
-	{	bin_num};
-	float range[] =
-	{	0, 256};
-	const float *ranges[] =
-	{	range};
+	int bin_nums[] = {bin_num};
+	float range[] =	{0, 256};
+	const float *ranges[] = {range};
 	Mat cMat;
 	gMat2.download(cMat);
-	cv::calcHist(&cMat, 1, channels, cv::Mat(), histMat, 1, bin_nums, ranges);
+	cv::calcHist(&cMat, 1, channels, cv::Mat(), cHist, 1, bin_nums, ranges);
 
-	for (int i = histMat.rows-1; i > 0; i--)
+	for (int i = cHist.rows-1; i > 0; i--)
 	{
-		int intensity = histMat.at<int>(i, 0);
-		if(intensity > minSize)
+		intensity += cHist.at<int>(i, 0);
+		if(intensity > minPix)
 		{
-			*pDist = (255.0f - i)/255.0f;
-			*pSize = intensity;
-			return true;
+			return (255.0f - i)/255.0f;
 		}
 	}
 #endif
 
-	*pDist = -1.0;
-	*pSize = 0;
-	return true;
+	return 1.0;
 }
 
 bool _ZED::draw(void)
@@ -331,13 +316,11 @@ bool _ZED::draw(void)
 		bg = Mat::zeros(Size(pMat->cols,pMat->rows), CV_8UC3);
 	}
 
-	uint64_t frameID = get_time_usec()-100000;
-
+	uint64_t frameID = get_time_usec()-m_dTime;
 	for (int i=0; i<m_pObj->size(); i++)
 	{
 		OBJECT* pObj = m_pObj->get(i,frameID);
 		if(!pObj)continue;
-
 
 		Rect r;
 		vInt42rect(&pObj->m_bbox, &r);
@@ -349,7 +332,7 @@ bool _ZED::draw(void)
 					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
 		}
 
-		putText(*pMat, f2str(pObj->m_dist),
+		putText(*pMat, i2str(pObj->m_dist),
 				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
 				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
 

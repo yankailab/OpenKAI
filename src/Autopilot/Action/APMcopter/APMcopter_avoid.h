@@ -32,6 +32,7 @@ private:
 	_Lightware_SF40* m_pSF40;
 	_ZED* m_pZED;
 	DISTANCE_SENSOR m_DS;
+	vDouble4	m_avoidArea;
 
 
 };

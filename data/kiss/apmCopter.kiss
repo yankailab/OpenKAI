@@ -23,7 +23,7 @@
 {
 	"name":"APM_depth",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -31,6 +31,22 @@
 	"textY":20,
 	"pixTab":20,
 	"lineH":20,
+}
+
+{
+	"name":"APM_TX1",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":100,
+	"Window":"APM_forward",
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyACM0",
+		"baud":115200,
+	}
 }
 
 {
@@ -45,12 +61,14 @@
 	"zedQuality":1,
 	"zedResolution":2,
 	"zedMinDist":600,
-	"zedMaxDist":15000,
+	"zedMaxDist":20000,
 	"bDetectObject":1,
-	"alertDist":0.25,
+	"contourBlend":0.15,
+	"nObj":16,
+	"distMinSize":0.5,
+	"alertDist":0.1,
 	"detectMinSize":0.01,
-	"bDrawContour":0,
-	"contourBlend":0.25,
+	"bDrawContour":1,
 }
 	
 {
@@ -97,22 +115,6 @@
 }
 
 {
-	"name":"APM_TX1",
-	"class":"_Mavlink",
-	"bInst":1,
-	"FPS":100,
-	"Window":"APM_forward",
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
-	}
-}
-
-{
 	"name":"APMstate",
 	"class":"_Automaton",
 	"bInst":1,
@@ -132,7 +134,7 @@
 	"name":"autopilot",
 	"class":"_AutoPilot",
 	"_Automaton":"APMstate",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"APM_forward",
 	"bMouse":1,

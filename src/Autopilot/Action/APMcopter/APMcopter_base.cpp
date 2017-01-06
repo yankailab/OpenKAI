@@ -34,8 +34,6 @@ bool APMcopter_base::init(void* pKiss)
 	APMcopter_PID cPID;
 
 	pCC = pK->o("roll");
-	CHECK_F(pCC->empty());
-
 	cPID.reset();
 	F_INFO(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -48,8 +46,6 @@ bool APMcopter_base::init(void* pKiss)
 	m_pidRoll = cPID;
 
 	pCC = pK->o("pitch");
-	CHECK_F(pCC->empty());
-
 	cPID.reset();
 	F_INFO(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -62,8 +58,6 @@ bool APMcopter_base::init(void* pKiss)
 	m_pidPitch = cPID;
 
 	pCC = pK->o("thr");
-	CHECK_F(pCC->empty());
-
 	cPID.reset();
 	F_INFO(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -75,8 +69,6 @@ bool APMcopter_base::init(void* pKiss)
 	m_pidThr = cPID;
 
 	pCC = pK->o("yaw");
-	CHECK_F(pCC->empty());
-
 	cPID.reset();
 	F_INFO(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -105,6 +97,11 @@ bool APMcopter_base::link(void)
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
+}
+
+void APMcopter_base::update(void)
+{
+	sendHeartbeat();
 }
 
 void APMcopter_base::sendHeartbeat(void)

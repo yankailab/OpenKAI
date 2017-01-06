@@ -10,6 +10,10 @@ APMcopter_avoid::APMcopter_avoid()
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
 	m_pZED = NULL;
+	m_avoidArea.m_x = 0.0;
+	m_avoidArea.m_y = 0.0;
+	m_avoidArea.m_z = 1.0;
+	m_avoidArea.m_w = 1.0;
 }
 
 APMcopter_avoid::~APMcopter_avoid()
@@ -22,6 +26,11 @@ bool APMcopter_avoid::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
+	F_INFO(pK->v("avoidX", &m_avoidArea.m_x));
+	F_INFO(pK->v("avoidY", &m_avoidArea.m_y));
+	F_INFO(pK->v("avoidW", &m_avoidArea.m_z));
+	F_INFO(pK->v("avoidH", &m_avoidArea.m_w));
+
 	return true;
 }
 
@@ -33,7 +42,7 @@ bool APMcopter_avoid::link(void)
 	string iName = "";
 
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->root()->getChildInstByName(&iName));
+	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Lightware_SF40", &iName));
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
@@ -59,7 +68,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 {
 	NULL_(m_pAPM->m_pMavlink);
 
-	double dist = -1;
+	double dist = 100000000;
 
 	if(m_pSF40)
 	{
@@ -71,7 +80,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 		Object* pObj = m_pZED->getObject();
 		if(pObj)
 		{
-			uint64_t frameID = get_time_usec()-1000000;
+			uint64_t frameID = get_time_usec()-m_dTime;
 
 			//get the closest object
 			for(int i=0;i<pObj->size();i++)
@@ -81,14 +90,17 @@ void APMcopter_avoid::updateDistanceSensor(void)
 
 				if(pO->m_dist>0.0)
 				{
+					//TODO: check if inside avoid area
+
+
 					if(pO->m_dist < dist)
 						dist = pO->m_dist;
 				}
 			}
 		}
-	}
 
-	CHECK_(dist>0.0);
+		CHECK_(dist>m_pZED->m_zedMaxDist);
+	}
 
 	m_DS.m_distance = dist;
 	m_DS.m_maxDistance = m_pZED->m_zedMaxDist*0.1;

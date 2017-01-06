@@ -44,7 +44,6 @@ public:
 
 	int64_t m_timeStamp;
 	int64_t m_dTime;
-	int64_t m_dTimeAvr;
 
 	pthread_mutex_t m_wakeupMutex;
 	pthread_cond_t m_wakeupSignal;

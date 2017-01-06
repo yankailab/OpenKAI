@@ -84,7 +84,7 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
-			LOG(INFO)<<"-> MAVLINK_MSG_ID_HEARTBEAT";
+			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
 			mavlink_msg_heartbeat_decode(&message, &(m_msg.heartbeat));
 			m_msg.time_stamps.heartbeat = get_time_usec();
 
@@ -99,7 +99,7 @@ void _Mavlink::handleMessages()
 			}
 			else
 			{
-				LOG_I("->HEARTBEAT FROM MAV_TYPE_GCS");
+				LOG_I("-> HEARTBEAT FROM MAV_TYPE_GCS");
 			}
 			break;
 		}
@@ -303,6 +303,8 @@ void _Mavlink::sendHeartbeat(void)
 			0, 0, MAV_STATE_ACTIVE);
 
 	writeMessage(message);
+
+	LOG_I("<- HEARTBEAT");
 }
 
 void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
@@ -438,7 +440,7 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, 
 										&ds);
 
 	writeMessage(message);
-	LOG_I("<- DISTANCE_SENSOR");
+	LOG_I("<- DISTANCE_SENSOR dist="<<ds.current_distance);
 }
 
 bool _Mavlink::draw(void)

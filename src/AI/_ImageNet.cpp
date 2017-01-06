@@ -102,7 +102,7 @@ void _ImageNet::detect(void)
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
 
-	uint64_t frameID = get_time_usec()-1000000;
+	uint64_t frameID = get_time_usec()-m_dTime;
 
 	for (int i = 0; i < m_pObj->size(); i++)
 	{
