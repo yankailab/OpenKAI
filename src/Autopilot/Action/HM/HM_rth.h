@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Algorithm/Filter.h"
-#include "../../../Object/Object.h"
+#include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,7 +23,7 @@ public:
 	bool draw(void);
 
 private:
-	Object*	m_pUniv;
+	_Obstacle*	m_pUniv;
 	HM_base* m_pHM;
 
 	//where target should be on cam coordinate
@@ -34,7 +34,7 @@ private:
 	double	m_speedP;
 	double	m_steerP;
 
-	OBJECT* m_pTarget;
+	OBSTACLE* m_pTarget;
 	kai::Filter* m_pTargetX;
 	kai::Filter* m_pTargetY;
 	kai::Filter* m_pTargetArea;

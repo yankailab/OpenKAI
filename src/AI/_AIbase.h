@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 
 #include "../Base/_ThreadBase.h"
-#include "../Object/Object.h"
 #include "../Stream/_StreamBase.h"
 
 namespace kai
@@ -37,7 +36,6 @@ public:
 
 public:
 	_StreamBase* m_pStream;
-	Object* m_pObj;
 
 	string m_fileModel;
 	string m_fileTrained;

@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "_AIbase.h"
-#include "../Object/Object.h"
 #include "../Stream/_StreamBase.h"
 
 #ifdef USE_TENSORRT

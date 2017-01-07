@@ -8,7 +8,21 @@
 
 using namespace std;
 
-inline void rect2vInt4(Rect* pR, kai::vInt4* pV)
+namespace kai
+{
+
+inline bool isOverlapped(vInt4* pA, vInt4* pB)
+{
+	if (pA->m_z < pB->m_x || pA->m_x > pB->m_z)
+		return false;
+
+	if (pA->m_w < pB->m_y || pA->m_y > pB->m_w)
+		return false;
+
+	return true;
+}
+
+inline void rect2vInt4(Rect* pR, vInt4* pV)
 {
 	pV->m_x = pR->x;
 	pV->m_y = pR->y;
@@ -234,6 +248,8 @@ inline void trimJson(string* pStr)
 	{
 		pStr->erase(0,idx-1);
 	}
+}
+
 }
 
 #endif

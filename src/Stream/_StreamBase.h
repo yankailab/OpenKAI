@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Object/Object.h"
 
 namespace kai
 {
@@ -37,8 +36,8 @@ public:
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
 
-	virtual Object* getObject(void);
-	virtual double dist(Rect* pR);
+	virtual void getRange(double* pMin, double* pMax);
+	virtual uint8_t getOrientation(void);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 

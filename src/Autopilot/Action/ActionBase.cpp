@@ -7,6 +7,8 @@ ActionBase::ActionBase()
 {
 	m_pAM = NULL;
 	m_iActiveState = -1;
+	m_timeStamp = 0;
+	m_dTime = 0;
 }
 
 ActionBase::~ActionBase()

@@ -28,11 +28,9 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	Object* getObject(void);
-	double dist(Rect* pR);
+	void getRange(double* pMin, double* pMax);
 
 private:
-	void detectObject(void);
 	bool open(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -50,20 +48,9 @@ public:
 	double m_zedMinDist;
 	double m_zedMaxDist;
 
-	Object*	 m_pObj;
-	bool	 m_bDetectObject;
-	double	 m_alertDist;
-	double	 m_detectMinSize;
-	double	 m_distMinSize;
-	int		 m_nObj;
-	uint64_t m_oLifetime;
-
 	//operation
 	GpuMat m_Gdepth;
 	GpuMat m_Gdepth2;
-
-	bool m_bDrawContour;
-	double m_contourBlend;
 
 	Window* m_pDepthWin;
 

@@ -63,7 +63,7 @@ bool HM_grass::link(void)
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
-	m_pUniv = (Object*) (pK->root()->getChildInstByName(&iName));
+	m_pUniv = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

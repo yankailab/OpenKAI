@@ -5,7 +5,7 @@
 #include "../../../Algorithm/Filter.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/_ZED.h"
-#include "../../../Object/Object.h"
+#include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -38,7 +38,7 @@ private:
 
 	//normalized relevant distance: 0.0 ~ 1.0
 	Filter*	m_pFdist;
-	Object* m_pObj;
+	_Obstacle* m_pObs;
 
 };
 

@@ -122,10 +122,12 @@ bool _AutoPilot::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
+	pWin->tabNext();
 	for(int i=0;i<m_nAction;i++)
 	{
 		m_pAction[i]->draw();
 	}
+	pWin->tabPrev();
 
 	return true;
 }

@@ -23,7 +23,7 @@ HM_avoid::HM_avoid()
 	m_alertDist = 0.0;
 
 	m_pFdist = NULL;
-	m_pObj = NULL;
+	m_pObs = NULL;
 }
 
 HM_avoid::~HM_avoid()
@@ -67,6 +67,9 @@ bool HM_avoid::link(void)
 	F_INFO(pK->v("_Stream", &iName));
 	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
+	F_INFO(pK->v("_Obstacle", &iName));
+	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
@@ -82,11 +85,11 @@ void HM_avoid::update(void)
 	int rpmSpeed = m_speedP;
 	int rpmSteer = 0;
 
-	m_pObj = m_pStream->getObject();
-	NULL_(m_pObj);
+	NULL_(m_pObs);
 
 	//make turn when object is within a certain distance
-	if(m_pObj->size()>0)
+	//TODO:
+	if(m_pObs->size()>0)
 	{
 		rpmSpeed = 0;
 		rpmSteer = m_steerP;
@@ -156,7 +159,7 @@ bool HM_avoid::draw(void)
 	int bold = 1;
 
 //	if(m_pFdist->v() < m_alertDist)
-	if(m_pObj->size()>0)
+	if(m_pObs->size()>0)
 	{
 		col = Scalar(0,0,255);
 		bold = 2;

@@ -20,6 +20,8 @@
 #include "../Stream/FrameGroup.h"
 #include "../Automaton/_Automaton.h"
 
+#include "../Navigation/_Obstacle.h"
+
 #include "../IO/SerialPort.h"
 #include "../UI/UI.h"
 #include "../UI/Window.h"

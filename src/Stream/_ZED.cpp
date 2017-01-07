@@ -25,21 +25,11 @@ _ZED::_ZED()
 	m_zedMode = sl::zed::STANDARD;
 	m_zedQuality = sl::zed::PERFORMANCE;
 	m_pDepthWin = NULL;
-	m_pObj = NULL;
-	m_bDetectObject = true;
-	m_alertDist = 0.0;
-	m_detectMinSize = 0.0;
-	m_nObj = 128;
-	m_oLifetime = 100000;
-	m_bDrawContour = false;
-	m_contourBlend = 0.125;
-	m_distMinSize = 0.0;
 }
 
 _ZED::~_ZED()
 {
 	this->_StreamBase::complete();
-	DEL(m_pObj);
 }
 
 bool _ZED::init(void* pKiss)
@@ -55,19 +45,10 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedResolution", &m_zedResolution));
 	F_INFO(pK->v("zedFPS", &m_zedFPS));
 	F_INFO(pK->v("zedQuality", &m_zedQuality));
-	F_INFO(pK->v("bDetectObject", &m_bDetectObject));
-	F_INFO(pK->v("alertDist", &m_alertDist));
-	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
 	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
-	F_INFO(pK->v("nObj", &m_nObj));
-	F_INFO(pK->v("objLifetime", &m_oLifetime));
-	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
-	F_INFO(pK->v("contourBlend", &m_contourBlend));
-	F_INFO(pK->v("distMinSize", &m_distMinSize));
 
 	m_pDepth = new Frame();
-	m_pObj = new Object(m_nObj,m_oLifetime);
 	return true;
 }
 
@@ -174,129 +155,19 @@ void _ZED::update(void)
 				m_pHSV->getHSVOf(m_pBGR);
 
 			m_pDepth->update(&m_Gdepth2);
-
-			if(m_bDetectObject)
-				detectObject();
 		}
 
 		this->autoFPSto();
 	}
 }
 
-void _ZED::detectObject(void)
+void _ZED::getRange(double* pMin, double* pMax)
 {
-	GpuMat gMat;
-	GpuMat gMat2;
+	NULL_(pMin);
+	NULL_(pMax);
 
-	NULL_(m_pDepth);
-	gMat = *(m_pDepth->getGMat());
-	CHECK_(gMat.empty());
-
-	//MinSize
-	double minSize = m_detectMinSize * gMat.cols * gMat.rows;
-
-#ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gMat, gMat2, (1.0 - m_alertDist) * 255.0, 255, cv::THRESH_TOZERO);//cv::THRESH_BINARY);
-#else
-	gpu::threshold(gMat, gMat2, (1.0-dist)*255.0, 255, cv::THRESH_BINARY);
-#endif
-
-	Mat cMat;
-	gMat2.download(cMat);
-
-	// Find contours
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
-	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL,
-			CV_CHAIN_APPROX_SIMPLE);
-
-	uint64_t frameID = get_time_usec();
-
-	// Approximate contours to polygons + get bounding rects
-	vector<Point> contours_poly;
-	for (int i = 0; i < contours.size(); i++)
-	{
-		approxPolyDP(Mat(contours[i]), contours_poly, 3, true);
-		Rect bb = boundingRect(Mat(contours_poly));
-		if (bb.area() < minSize)
-			continue;
-
-		OBJECT obj;
-		obj.m_bbox.m_x = bb.x;
-		obj.m_bbox.m_y = bb.y;
-		obj.m_bbox.m_z = bb.x + bb.width;
-		obj.m_bbox.m_w = bb.y + bb.height;
-		obj.m_camSize.m_x = cMat.cols;
-		obj.m_camSize.m_y = cMat.rows;
-		obj.m_contour = contours_poly;
-		obj.m_frameID = frameID;
-
-		//calc avr of the region to determine dist
-		Mat oGMat = Mat(cMat,bb);
-		Scalar tot = cv::sum(oGMat);
-		obj.m_dist =  m_zedMinDist+(m_zedMaxDist-m_zedMinDist)*((tot[0]/cv::contourArea(contours_poly)) / 255.0);
-		obj.m_dist*=0.1;
-
-		m_pObj->add(&obj);
-	}
-
-}
-
-Object* _ZED::getObject(void)
-{
-	return m_pObj;
-}
-
-double _ZED::dist(Rect* pR)
-{
-	NULL_F(pR);
-
-	GpuMat gMat;
-	GpuMat gMat2;
-	GpuMat gHist;
-	Mat cHist;
-
-	NULL_F(m_pDepth);
-	gMat = *(m_pDepth->getGMat());
-	CHECK_F(gMat.empty());
-	gMat2 = GpuMat(gMat, *pR);
-
-	int intensity = 0;
-	int minPix = pR->area()*m_distMinSize;
-
-#ifndef USE_OPENCV4TEGRA
-	cuda::calcHist(gMat2, gHist);
-	gHist.download(cHist);
-
-	for (int i = cHist.cols - 1; i > 0; i--)
-	{
-		intensity += cHist.at<int>(0, i);
-		if (intensity > minPix)
-		{
-			return (255.0f - i) / 255.0f;
-		}
-	}
-#else
-	int channels[] = {0};
-	int bin_num = 256;
-	int bin_nums[] = {bin_num};
-	float range[] =	{0, 256};
-	const float *ranges[] = {range};
-	Mat cMat;
-	gMat2.download(cMat);
-	cv::calcHist(&cMat, 1, channels, cv::Mat(), cHist, 1, bin_nums, ranges);
-
-	for (int i = cHist.rows-1; i > 0; i--)
-	{
-		intensity += cHist.at<int>(i, 0);
-		if(intensity > minPix)
-		{
-			return (255.0f - i)/255.0f;
-		}
-	}
-#endif
-
-	return 1.0;
+	*pMin = m_zedMinDist;
+	*pMax = m_zedMaxDist;
 }
 
 bool _ZED::draw(void)
@@ -304,52 +175,8 @@ bool _ZED::draw(void)
 	CHECK_F(!this->BASE::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
-
 	pFrame->update(m_pBGR);
 	this->_StreamBase::draw();
-	Mat* pMat = pFrame->getCMat();
-	CHECK_F(pMat->empty());
-
-	Mat bg;
-	if(m_bDrawContour)
-	{
-		bg = Mat::zeros(Size(pMat->cols,pMat->rows), CV_8UC3);
-	}
-
-	uint64_t frameID = get_time_usec()-m_dTime;
-	for (int i=0; i<m_pObj->size(); i++)
-	{
-		OBJECT* pObj = m_pObj->get(i,frameID);
-		if(!pObj)continue;
-
-		Rect r;
-		vInt42rect(&pObj->m_bbox, &r);
-
-		if(!pObj->m_name.empty())
-		{
-			putText(*pMat, pObj->m_name,
-					Point(r.x + r.width / 2, r.y + r.height / 2),
-					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
-		}
-
-		putText(*pMat, i2str(pObj->m_dist),
-				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
-				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
-
-		if(m_bDrawContour)
-		{
-			drawContours(bg, vector<vector<Point> >(1,pObj->m_contour), -1, Scalar(0, 255, 0), CV_FILLED, 8);
-		}
-		else
-		{
-			rectangle(*pMat, r, Scalar(0, 255, 0), 1);
-		}
-	}
-
-	if(m_bDrawContour)
-	{
-		cv::addWeighted( *pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
-	}
 
 	NULL_T(m_pDepthWin);
 	pFrame = m_pDepthWin->getFrame();

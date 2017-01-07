@@ -12,8 +12,6 @@ _AIbase::_AIbase()
 	_ThreadBase();
 
 	m_pStream = NULL;
-	m_pObj = NULL;
-
 	m_fileModel = "";
 	m_fileTrained = "";
 	m_fileMean = "";
@@ -22,7 +20,6 @@ _AIbase::_AIbase()
 
 _AIbase::~_AIbase()
 {
-	DEL(m_pObj);
 }
 
 bool _AIbase::init(void* pKiss)

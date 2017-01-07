@@ -130,7 +130,7 @@ void _DetectNet::detect(void)
 
 	m_pObj->reset();
 
-	OBJECT obj;
+	OBS obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
 		const int nc = m_confCPU[n * 2 + 1];
@@ -158,7 +158,7 @@ bool _DetectNet::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	OBJECT* pObj;
+	OBS* pObj;
 	int i = 0;
 	while ((pObj = m_pObj->get(i++)))
 	{

@@ -7,7 +7,7 @@
 #include "../../../Algorithm/Filter.h"
 #include "../../../Stream/Frame.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Object/Object.h"
+#include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "APMrover_base.h"
 
@@ -31,7 +31,7 @@ public:
 
 private:
 	APMrover_base* m_pAPM;
-	Object*	m_pUniv;
+	_Obstacle*	m_pUniv;
 
 	//where target should be on cam coordinate
 	double	m_destX;
@@ -41,7 +41,7 @@ private:
 	double	m_speedP;
 	double	m_steerP;
 
-	OBJECT* m_pTarget;
+	OBSTACLE* m_pTarget;
 	kai::Filter* m_pTargetX;
 	kai::Filter* m_pTargetY;
 	kai::Filter* m_pTargetArea;

@@ -34,7 +34,7 @@
 }
 
 {
-	"name":"APM_TX1",
+	"name":"APM_mavlink",
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":100,
@@ -61,14 +61,7 @@
 	"zedQuality":1,
 	"zedResolution":2,
 	"zedMinDist":600,
-	"zedMaxDist":20000,
-	"bDetectObject":1,
-	"contourBlend":0.15,
-	"nObj":16,
-	"distMinSize":0.5,
-	"alertDist":0.1,
-	"detectMinSize":0.01,
-	"bDrawContour":1,
+	"zedMaxDist":15000,
 }
 	
 {
@@ -96,6 +89,21 @@
 	"trainedFile":"bvlc_googlenet.caffemodel",
 	"meanFile":"",
 	"labelFile":"ilsvrc12_synset_words.txt",
+}
+
+{
+	"name":"Obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"APM_forward",
+	"_Stream":"ZED",
+	"_ImageNet":"imageNet",
+	"contourBlend":0.15,
+	"nObj":8,
+	"alertDist":0.1,
+	"detectMinSize":0.01,
+	"bDrawContour":1,
 }
 
 {
@@ -148,7 +156,7 @@
 			"bInst":1,
 			"_Automaton":"APMstate",
 			"Window":"APM_forward",
-			"_Mavlink":"APM_TX1",
+			"_Mavlink":"APM_mavlink",
 		}
 
 		{
@@ -159,11 +167,12 @@
 			"_Automaton":"APMstate",
 			"activeState":"APM_CRUISE",
 			"APMcopter_base":"APMbase",
+			"_Obstacle":"Obstacle",
 			"_ZED":"ZED",
-			"avoidX":0.2,
-			"avoidY":0.2,
-			"avoidW":0.6,
-			"avoidH":0.6,
+			"avoidLeft":0.2,
+			"avoidTop":0.2,
+			"avoidRight":0.8,
+			"avoidBottom":0.8,
 		}
 	}
 }

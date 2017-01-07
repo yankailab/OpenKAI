@@ -28,6 +28,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);
 	ADD_MODULE(_ImageNet);
+	ADD_MODULE(_Obstacle);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

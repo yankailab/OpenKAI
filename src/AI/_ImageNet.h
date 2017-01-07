@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "_AIbase.h"
-#include "../Object/Object.h"
 #include "../Stream/_StreamBase.h"
 
 namespace kai
@@ -25,10 +24,10 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	bool draw(void);
+
+	double detect(Frame* pFrame, int* classID, string* className);
 
 private:
-	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

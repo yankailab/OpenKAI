@@ -92,14 +92,13 @@ Frame* _StreamBase::depth(void)
 	return m_pDepth;
 }
 
-double _StreamBase::dist(Rect* pR)
+void _StreamBase::getRange(double* pMin, double* pMax)
 {
-	return 0.0;
 }
 
-Object* _StreamBase::getObject(void)
+uint8_t _StreamBase::getOrientation(void)
 {
-	return NULL;
+	return m_orientation;
 }
 
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
