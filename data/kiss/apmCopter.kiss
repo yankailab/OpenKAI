@@ -99,11 +99,11 @@
 	"Window":"APM_forward",
 	"_Stream":"ZED",
 	"_ImageNet":"imageNet",
-	"contourBlend":0.15,
 	"nObj":8,
+	"bDrawContour":1,
+	"contourBlend":0.15,
 	"alertDist":0.1,
 	"detectMinSize":0.01,
-	"bDrawContour":1,
 }
 
 {

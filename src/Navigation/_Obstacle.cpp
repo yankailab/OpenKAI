@@ -1,7 +1,7 @@
 /*
- * Object.cpp
+ * _Obstacle.cpp
  *
- *  Created on: Nov 28, 2015
+ *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
@@ -102,8 +102,7 @@ void _Obstacle::update(void)
 
 void _Obstacle::detect(void)
 {
-	GpuMat gMat;
-	GpuMat gMat2;
+	GpuMat gMat, gMat2;
 
 	NULL_(m_pStream);
 	Frame* pDepth = m_pStream->depth();
@@ -119,18 +118,20 @@ void _Obstacle::detect(void)
 
 #ifndef USE_OPENCV4TEGRA
 	cuda::threshold(gMat, gMat2, (1.0 - m_alertDist) * 255.0, 255,
-			cv::THRESH_TOZERO); //cv::THRESH_BINARY);
+			cv::THRESH_TOZERO);
 #else
 	gpu::threshold(gMat, gMat2, (1.0 - m_alertDist) * 255.0, 255, cv::THRESH_TOZERO);
 #endif
 
-	Mat cMat;
+	Mat cMat, cMat2;
 	gMat2.download(cMat);
+	cMat.copyTo(cMat2);
 
-	// Find contours
+	// find contours
+	// findContours will modify the contents of the given Mat
 	vector<vector<Point> > contours;
 	vector<Vec4i> hierarchy;
-	findContours(cMat, contours, hierarchy, CV_RETR_EXTERNAL,
+	findContours(cMat2, contours, hierarchy, CV_RETR_EXTERNAL,
 			CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
@@ -140,7 +141,7 @@ void _Obstacle::detect(void)
 	m_pStream->getRange(&rangeMin, &rangeMax);
 	double range = rangeMax - rangeMin;
 
-	for (int i = 0; i < contours.size(); i++)
+	for (unsigned int i = 0; i < contours.size(); i++)
 	{
 		approxPolyDP(Mat(contours[i]), contours_poly, 3, true);
 		Rect bb = boundingRect(Mat(contours_poly));
@@ -192,7 +193,7 @@ double _Obstacle::dist(Rect* pR)
 	NULL_F(m_pStream);
 	Frame* pDepth = m_pStream->depth();
 	NULL_F(pDepth);
-	NULL_F(pDepth->empty());
+	CHECK_F(pDepth->empty());
 	gMat = *(pDepth->getGMat());
 	gMat2 = GpuMat(gMat, *pR);
 
@@ -332,7 +333,7 @@ bool _Obstacle::draw(void)
 
 		putText(*pMat, i2str(pObj->m_dist),
 				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
-				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
+				FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 255), 1);
 
 		if (m_bDrawContour)
 		{

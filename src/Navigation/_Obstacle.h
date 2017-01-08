@@ -1,12 +1,12 @@
 /*
- * Object.h
+ * _Obstacle.h
  *
- *  Created on: Nov 28, 2015
+ *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef SRC_OBJECT_OBJECT_H_
-#define SRC_OBJECT_OBJECT_H_
+#ifndef SRC_NAVIGATION_OBSTACLE_H_
+#define SRC_NAVIGATION_OBSTACLE_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
