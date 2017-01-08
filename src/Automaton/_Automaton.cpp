@@ -103,7 +103,7 @@ bool _Automaton::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat, *this->getName()+" State: " + m_pStateName[m_iState],
+	putText(*pMat, *this->getName()+": " + m_pStateName[m_iState],
 			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
 			Scalar(0, 255, 0), 1);
 	pWin->lineNext();

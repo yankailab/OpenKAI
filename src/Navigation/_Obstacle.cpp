@@ -130,12 +130,10 @@ void _Obstacle::detect(void)
 	// find contours
 	// findContours will modify the contents of the given Mat
 	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
-	findContours(cMat2, contours, hierarchy, CV_RETR_EXTERNAL,
-			CV_CHAIN_APPROX_SIMPLE);
+	findContours(cMat2, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
-	vector<Point> contours_poly;
+	vector<Point> contourPoly;
 	uint64_t frameID = get_time_usec();
 	double rangeMin, rangeMax;
 	m_pStream->getRange(&rangeMin, &rangeMax);
@@ -143,8 +141,8 @@ void _Obstacle::detect(void)
 
 	for (unsigned int i = 0; i < contours.size(); i++)
 	{
-		approxPolyDP(Mat(contours[i]), contours_poly, 3, true);
-		Rect bb = boundingRect(Mat(contours_poly));
+		approxPolyDP(Mat(contours[i]), contourPoly, 3, true);
+		Rect bb = boundingRect(Mat(contourPoly));
 		if (bb.area() < minSize)
 			continue;
 
@@ -155,7 +153,7 @@ void _Obstacle::detect(void)
 		obj.m_bbox.m_w = bb.y + bb.height;
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
-		obj.m_contour = contours_poly;
+		obj.m_contour = contourPoly;
 		obj.m_frameID = frameID;
 
 		//calc avr of the region to determine dist
@@ -324,7 +322,7 @@ bool _Obstacle::draw(void)
 		Rect r;
 		vInt42rect(&pObj->m_bbox, &r);
 
-		if (!pObj->m_name.empty())
+		if (pObj->m_iClass>=0)
 		{
 			putText(*pMat, pObj->m_name,
 					Point(r.x + r.width / 2, r.y + r.height / 2),
