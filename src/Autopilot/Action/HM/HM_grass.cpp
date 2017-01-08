@@ -113,12 +113,8 @@ bool HM_grass::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat,
-			"HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
-					+ i2str(m_pHM->m_motorPwmR),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR=" + i2str(m_pHM->m_motorPwmR);
+	pWin->addMsg(&msg);
 
 	CHECK_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,

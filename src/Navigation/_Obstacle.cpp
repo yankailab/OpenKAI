@@ -15,20 +15,26 @@ _Obstacle::_Obstacle()
 	m_pStream = NULL;
 	m_pIN = NULL;
 	m_pFrame = NULL;
-	m_pObj = NULL;
-	m_nObj = 128;
-	m_iObj = 0;
-	m_lifetime = USEC_1SEC;
+	m_pObs = NULL;
+	m_nObs = 128;
+	m_iObs = 0;
+	m_obsLifetime = USEC_1SEC;
 
 	m_alertDist = 0.0;
 	m_detectMinSize = 0.0;
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
+
+	m_sizeName = 0.5;
+	m_sizeDist = 0.5;
+	m_colName = Scalar(255,255,0);
+	m_colDist = Scalar(0,255,255);
+	m_colObs = Scalar(255,255,0);
 }
 
 _Obstacle::~_Obstacle()
 {
-	DEL(m_pObj);
+	DEL(m_pObs);
 	DEL(m_pFrame);
 }
 
@@ -42,18 +48,33 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
-	F_INFO(pK->v("nObj", &m_nObj));
-	F_INFO(pK->v("lifetime", (int*)&m_lifetime));
+	F_INFO(pK->v("nObs", &m_nObs));
+	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
 	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
 	F_INFO(pK->v("contourBlend", &m_contourBlend));
 
-	m_pObj = new OBSTACLE[m_nObj];
-	for (int i = 0; i < m_nObj; i++)
+	F_INFO(pK->v("sizeName", &m_sizeName));
+	F_INFO(pK->v("sizeDist", &m_sizeDist));
+
+	F_INFO(pK->v("nameB", &m_colName[0]));
+	F_INFO(pK->v("nameG", &m_colName[1]));
+	F_INFO(pK->v("nameR", &m_colName[2]));
+
+	F_INFO(pK->v("distB", &m_colDist[0]));
+	F_INFO(pK->v("distG", &m_colDist[1]));
+	F_INFO(pK->v("distR", &m_colDist[2]));
+
+	F_INFO(pK->v("obsB", &m_colObs[0]));
+	F_INFO(pK->v("obsG", &m_colObs[1]));
+	F_INFO(pK->v("obsR", &m_colObs[2]));
+
+	m_pObs = new OBSTACLE[m_nObs];
+	for (int i = 0; i < m_nObs; i++)
 	{
-		m_pObj[i].m_frameID = 0;
-		m_pObj[i].m_dist = -1.0;
+		m_pObs[i].m_frameID = 0;
+		m_pObs[i].m_dist = -1.0;
 	}
-	m_iObj = 0;
+	m_iObs = 0;
 
 	m_pFrame = new Frame();
 
@@ -240,24 +261,24 @@ double _Obstacle::dist(Rect* pR)
 bool _Obstacle::add(OBSTACLE* pNewObj)
 {
 	NULL_F(pNewObj);
-	m_pObj[m_iObj] = *pNewObj;
-	if (++m_iObj >= m_nObj)
-		m_iObj = 0;
+	m_pObs[m_iObs] = *pNewObj;
+	if (++m_iObs >= m_nObs)
+		m_iObs = 0;
 	return true;
 }
 
 int _Obstacle::size(void)
 {
-	return m_nObj;
+	return m_nObs;
 }
 
 OBSTACLE* _Obstacle::get(int i, int64_t frameID)
 {
-	if(frameID - m_pObj[i].m_frameID >= m_lifetime)
+	if(frameID - m_pObs[i].m_frameID >= m_obsLifetime)
 	{
 		return NULL;
 	}
-	return &m_pObj[i];
+	return &m_pObs[i];
 }
 
 OBSTACLE* _Obstacle::getByClass(int iClass)
@@ -265,9 +286,9 @@ OBSTACLE* _Obstacle::getByClass(int iClass)
 	int i;
 	OBSTACLE* pObj;
 
-	for (i = 0; i < m_nObj; i++)
+	for (i = 0; i < m_nObs; i++)
 	{
-		pObj = &m_pObj[i];
+		pObj = &m_pObs[i];
 
 		if (pObj->m_iClass == iClass)
 			return pObj;
@@ -300,11 +321,8 @@ bool _Obstacle::draw(void)
 		aDist = (rangeMin + (rangeMax - rangeMin)*m_alertDist)*0.1;
 	}
 
-	pWin->tabReset();
-	putText(*pMat, *this->getName() + " FPS: " + i2str(getFrameRate()) + " AlertDist=" + i2str(aDist),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
-			1);
-	pWin->lineNext();
+	string msg = *this->getName() + " FPS: " + i2str(getFrameRate()) + " AlertDist=" + i2str(aDist);
+	pWin->addMsg(&msg);
 
 	Mat bg;
 	if (m_bDrawContour)
@@ -312,8 +330,8 @@ bool _Obstacle::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	uint64_t frameID = get_time_usec() - m_dTime;
-	for (int i = 0; i < m_nObj; i++)
+	uint64_t frameID = get_time_usec() - m_obsLifetime;
+	for (int i = 0; i < m_nObs; i++)
 	{
 		OBSTACLE* pObj = get(i, frameID);
 		if (!pObj)
@@ -326,21 +344,21 @@ bool _Obstacle::draw(void)
 		{
 			putText(*pMat, pObj->m_name,
 					Point(r.x + r.width / 2, r.y + r.height / 2),
-					FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
+					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
 		}
 
 		putText(*pMat, i2str(pObj->m_dist),
 				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
-				FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0, 255, 255), 1);
+				FONT_HERSHEY_SIMPLEX, m_sizeDist, m_colDist, 1);
 
 		if (m_bDrawContour)
 		{
 			drawContours(bg, vector<vector<Point> >(1, pObj->m_contour), -1,
-					Scalar(0, 255, 0), CV_FILLED, 8);
+					m_colObs, CV_FILLED, 8);
 		}
 		else
 		{
-			rectangle(*pMat, r, Scalar(0, 255, 0), 1);
+			rectangle(*pMat, r, m_colObs, 1);
 		}
 	}
 

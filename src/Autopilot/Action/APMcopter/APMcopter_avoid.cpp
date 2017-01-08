@@ -131,13 +131,10 @@ bool APMcopter_avoid::draw(void)
 {
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
+	string msg = *this->getName() + " Dist=" + i2str(m_DS.m_distance);
+	pWin->addMsg(&msg);
+
 	Mat* pMat = pWin->getFrame()->getCMat();
-
-	putText(*pMat, *this->getName() + " Dist=" + i2str(m_DS.m_distance),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
-			1);
-	pWin->lineNext();
-
 	Rect r;
 	r.x = m_avoidArea.m_x * ((double)pMat->cols);
 	r.y = m_avoidArea.m_y * ((double)pMat->rows);

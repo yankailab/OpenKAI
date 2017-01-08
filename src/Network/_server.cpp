@@ -221,13 +221,9 @@ bool _server::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat,
-			"Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus,
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0),
-			1);
-	pWin->lineNext();
+	string msg = "Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus;
+	pWin->addMsg(&msg);
 
 	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)

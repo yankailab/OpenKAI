@@ -137,11 +137,8 @@ bool _ThreadBase::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	pWin->tabReset();
 
-	putText(*pMat,
-			*this->getName() + " FPS: " + i2str(getFrameRate()),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	string msg = *this->getName() + " FPS: " + i2str(getFrameRate());
+	pWin->addMsg(&msg);
 
 	return true;
 }

@@ -170,21 +170,14 @@ bool _Canbus::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
 
+	string msg = *this->getName();
 	if (m_pSerialPort->isOpen())
-	{
-		putText(*pMat, *this->getName()+": CONNECTED",
-				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
-				0.5, Scalar(0, 255, 0), 1);
-	}
+		msg = +": CONNECTED";
 	else
-	{
-		putText(*pMat, *this->getName()+": Not Connected",
-				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
-				0.5, Scalar(0, 255, 0), 1);
-	}
-	pWin->lineNext();
+		msg = +": Not connected";
+
+	pWin->addMsg(&msg);
 
 	return true;
 }

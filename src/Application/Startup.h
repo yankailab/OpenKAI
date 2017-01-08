@@ -43,7 +43,8 @@ public:
 	int m_key;
 	bool m_bRun;
 
-	int m_bWindow;
+	bool m_bWindow;
+	bool m_bDraw;
 	int m_waitKey;
 };
 

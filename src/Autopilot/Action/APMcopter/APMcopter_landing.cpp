@@ -180,20 +180,18 @@ bool APMcopter_landing::draw(void)
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+	string msg;
 
 	if(m_pAT)
 	{
 		APRIL_TAG* pTag = &m_pATags[0];
 		if(pTag->m_frameID>0)
 		{
-			circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
-			putText(*pMat,
-					"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-							+ f2str(m_landingTarget.m_angleY) + ")",
-					*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-					Scalar(0, 255, 0), 1);
+			msg = "Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+					+ f2str(m_landingTarget.m_angleY) + ")";
+			pWin->addMsg(&msg);
 
-			pWin->lineNext();
+			circle(*pMat, pTag->m_tag.cxy, 10, Scalar(0, 0, 255), 5);
 		}
 	}
 
@@ -217,13 +215,9 @@ bool APMcopter_landing::draw(void)
 					Scalar(0, 0, 255), 3);
 		}
 
-		putText(*pMat,
-				"Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
-						+ f2str(m_landingTarget.m_angleY) + ")",
-				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-				Scalar(0, 255, 0), 1);
-
-		pWin->lineNext();
+		msg = "Landing_Target: (" + f2str(m_landingTarget.m_angleX) + " , "
+				+ f2str(m_landingTarget.m_angleY) + ")";
+		pWin->addMsg(&msg);
 	}
 
 	return true;

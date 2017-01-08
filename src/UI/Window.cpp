@@ -20,10 +20,17 @@ Window::Window()
 	m_bFullScreen = false;
 	m_pixTab = TAB_PIX;
 	m_lineHeight = LINE_HEIGHT;
+	m_textSize = 0.6;
+	m_textCol = Scalar(0,255,0);
+	m_bShow = true;
 }
 
 Window::~Window()
 {
+	if(m_VW.isOpened())
+	{
+		m_VW.release();
+	}
 }
 
 bool Window::init(void* pKiss)
@@ -42,10 +49,44 @@ bool Window::init(void* pKiss)
 		return false;
 	}
 
+	F_INFO(pK->v("bShow", &m_bShow));
 	F_INFO(pK->v("textX", &m_textStart.m_x));
 	F_INFO(pK->v("textY", &m_textStart.m_y));
 	F_INFO(pK->v("pixTab", &m_pixTab));
 	F_INFO(pK->v("lineH", &m_lineHeight));
+	F_INFO(pK->v("textSize", &m_textSize));
+	F_INFO(pK->v("textB", &m_textCol[0]));
+	F_INFO(pK->v("textG", &m_textCol[1]));
+	F_INFO(pK->v("textR", &m_textCol[2]));
+
+	string fileRec = "";
+	F_INFO(pK->v("fileRec", &fileRec));
+	if(!fileRec.empty())
+	{
+		int recordFPS = 30;
+		string recordCodec = "MJPG";
+		F_INFO(pK->v("fpsRec", &recordFPS));
+		F_INFO(pK->v("codecRec", &recordCodec));
+
+		time_t t = time(NULL);
+	    struct tm *tm = localtime(&t);
+	    char strTime[128];
+	    strftime(strTime, sizeof(strTime), "%c", tm);
+	    fileRec += strTime;
+	    fileRec += ".avi";
+
+		CHECK_F(!m_VW.open(
+				fileRec,
+				cv::VideoWriter::fourcc(
+						recordCodec.at(0),
+						recordCodec.at(1),
+						recordCodec.at(2),
+						recordCodec.at(3)),
+				recordFPS,
+				cv::Size(m_size.m_x,
+						m_size.m_y)
+				));
+	}
 
 	m_pFrame = new Frame();
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);
@@ -76,9 +117,17 @@ bool Window::draw(void)
 	NULL_F(m_pFrame);
 	CHECK_F(m_pFrame->empty());
 
-	imshow(*this->getName(), *m_pFrame->getCMat());
-	m_pFrame->allocate(m_size.m_x, m_size.m_y);
+	if(m_bShow)
+	{
+		imshow(*this->getName(), *m_pFrame->getCMat());
+	}
 
+	if(m_VW.isOpened())
+	{
+		m_VW << *m_pFrame->getCMat();
+	}
+
+	m_pFrame->allocate(m_size.m_x, m_size.m_y);
 	tabReset();
 	lineReset();
 
@@ -122,5 +171,29 @@ void Window::lineReset(void)
 {
 	m_textPos.m_y = m_textStart.m_y;
 }
+
+double Window::textSize(void)
+{
+	return m_textSize;
+}
+
+Scalar Window::textColor(void)
+{
+	return m_textCol;
+}
+
+void Window::addMsg(string* pMsg)
+{
+	putText(*m_pFrame->getCMat(),
+			*pMsg,
+			*getTextPos(),
+			FONT_HERSHEY_SIMPLEX,
+			m_textSize,
+			m_textCol,
+			1);
+	lineNext();
+}
+
+
 
 }

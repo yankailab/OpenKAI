@@ -30,12 +30,17 @@ public:
 	Frame* getFrame(void);
 	Point* getTextPos(void);
 
+	void addMsg(string* pMsg);
+
 	void tabNext(void);
 	void tabPrev(void);
 	void tabReset(void);
 
 	void lineNext(void);
 	void lineReset(void);
+
+	double textSize(void);
+	Scalar textColor(void);
 
 public:
 	bool	m_bFullScreen;
@@ -46,6 +51,12 @@ public:
 	int		m_pixTab;
 	int		m_lineHeight;
 	Point	m_tPoint;
+	double	m_textSize;
+	Scalar	m_textCol;
+
+	VideoWriter m_VW;
+	bool	m_bShow;
+
 };
 
 }

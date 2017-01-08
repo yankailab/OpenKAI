@@ -263,12 +263,9 @@ bool _socket::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat,
-			"Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
-					+ m_strStatus + ((m_bClient) ? "; Client" : "; Server"),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
+			+ m_strStatus + ((m_bClient) ? "; Client" : "; Server");
+	pWin->addMsg(&msg);
 
 	return true;
 }

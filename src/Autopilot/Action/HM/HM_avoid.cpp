@@ -143,11 +143,8 @@ bool HM_avoid::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat,
-			*this->getName()+": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	string msg = *this->getName()+": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR);
+	pWin->addMsg(&msg);
 
 	Rect r;
 	r.x = m_avoidRegion.m_x * ((double)pMat->cols);

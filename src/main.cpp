@@ -34,7 +34,6 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-
 void printEnvironment(void)
 {
 #ifndef USE_OPENCV4TEGRA

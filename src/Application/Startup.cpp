@@ -20,7 +20,8 @@ Startup::Startup()
 	m_nMouse = 0;
 
 	m_name = "";
-	m_bWindow = 1;
+	m_bWindow = true;
+	m_bDraw = true;
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
@@ -47,6 +48,7 @@ bool Startup::start(Kiss* pKiss)
 
 	F_INFO(pApp->v("appName", &m_name));
 	F_INFO(pApp->v("bWindow", &m_bWindow));
+	F_INFO(pApp->v("bDraw", &m_bDraw));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
 
 	//create instances
@@ -75,8 +77,15 @@ bool Startup::start(Kiss* pKiss)
 	{
 		while (m_bRun)
 		{
-			m_key = getchar();
-			if(m_key==27)m_bRun=false;
+			if(m_bDraw)
+			{
+				draw();
+			}
+			else
+			{
+				m_key = getchar();
+				if(m_key==27)m_bRun=false;
+			}
 		}
 	}
 

@@ -101,12 +101,9 @@ bool _Automaton::draw(void)
 {
 	CHECK_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
 
-	putText(*pMat, *this->getName()+": " + m_pStateName[m_iState],
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	string msg = *this->getName()+": " + m_pStateName[m_iState];
+	pWin->addMsg(&msg);
 
 	return true;
 }

@@ -61,15 +61,21 @@ public:
 	_StreamBase* m_pStream;
 	_ImageNet* m_pIN;
 	Frame*	m_pFrame;
-	OBSTACLE* m_pObj;
-	int m_nObj;
-	int m_iObj;
-	int64_t m_lifetime;
+	OBSTACLE* m_pObs;
+	int m_nObs;
+	int m_iObs;
+	int64_t m_obsLifetime;
 
 	double m_alertDist;
 	double m_detectMinSize;
 	double m_contourBlend;
 	bool m_bDrawContour;
+
+	double m_sizeName;
+	double m_sizeDist;
+	Scalar m_colName;
+	Scalar m_colDist;
+	Scalar m_colObs;
 
 };
 

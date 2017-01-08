@@ -455,10 +455,8 @@ bool _Mavlink::draw(void)
 	}
 	else
 	{
-		putText(*pMat, *this->getName()+": Not Connected",
-				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX,
-				0.5, Scalar(0, 255, 0), 1);
-		pWin->lineNext();
+		string msg = *this->getName()+": Not Connected";
+		pWin->addMsg(&msg);
 	}
 
 	return true;

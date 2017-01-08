@@ -109,13 +109,11 @@ bool APMcopter_guided::draw(void)
 
 	if(m_pAPM)
 	{
-		putText(*pMat, *this->getName()+": Roll="
-									+ f2str(m_pAPM->m_ctrlRoll.m_v)
-									+", Pitch="
-									+ f2str(m_pAPM->m_ctrlPitch.m_v),
-				*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-				Scalar(0, 255, 0), 1);
-		pWin->lineNext();
+		string msg = *this->getName()+": Roll="
+				+ f2str(m_pAPM->m_ctrlRoll.m_v)
+				+", Pitch="
+				+ f2str(m_pAPM->m_ctrlPitch.m_v);
+		pWin->addMsg(&msg);
 	}
 
 	return true;

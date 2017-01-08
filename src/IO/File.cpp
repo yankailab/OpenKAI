@@ -10,6 +10,7 @@ File::File(void)
 	m_type = file;
 	m_name = "";
 	m_buf = "";
+	m_iByte = 0;
 }
 
 
@@ -82,30 +83,6 @@ int File::read(uint8_t* pBuf, int nByte)
 	m_buf.copy((char*)pBuf, nByte, m_iByte);
 	m_iByte += nByte;
 	return nByte;
-
-//	m_file.read((char*)pBuf,nByte);
-//
-//    if(!m_file)
-//    {
-//    	LOG(ERROR)<<"read";
-//    	if(m_file.bad())
-//    	{
-//        	LOG(ERROR)<<"Bad";
-//        	perror("Bad");
-//    	}
-//    	else if(m_file.fail())
-//    	{
-//        	LOG(ERROR)<<"Fail";
-//    	}
-//    	else if(m_file.eof())
-//    	{
-//        	LOG(ERROR)<<"Eof";
-//    	}
-//
-//    	return -1;
-//    }
-//
-//	return m_file.gcount();
 }
 
 string* File::readAll(void)

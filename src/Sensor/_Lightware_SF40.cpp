@@ -334,19 +334,14 @@ bool _Lightware_SF40::draw(void)
 
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+	string msg;
 
 	pWin->tabNext();
-	putText(*pMat,
-			"POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")",
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
 
-	putText(*pMat,
-			"Output Line: " + i2str(m_iLine),
-			*pWin->getTextPos(), FONT_HERSHEY_SIMPLEX, 0.5,
-			Scalar(0, 255, 0), 1);
-	pWin->lineNext();
+	msg = "POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")";
+	pWin->addMsg(&msg);
+	msg = "Output Line: " + i2str(m_iLine);
+	pWin->addMsg(&msg);
 
 	if (m_pIn)
 		m_pIn->draw();
