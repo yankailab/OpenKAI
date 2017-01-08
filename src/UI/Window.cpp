@@ -77,7 +77,7 @@ bool Window::init(void* pKiss)
 
 		CHECK_F(!m_VW.open(
 				fileRec,
-				cv::VideoWriter::fourcc(
+				CV_FOURCC(
 						recordCodec.at(0),
 						recordCodec.at(1),
 						recordCodec.at(2),
