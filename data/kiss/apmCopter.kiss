@@ -59,7 +59,7 @@
 	"orientation":0,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":600,
 	"zedMaxDist":15000,
 }
@@ -80,7 +80,7 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",
@@ -100,9 +100,9 @@
 	"_Stream":"ZED",
 	"_ImageNet":"imageNet",
 	"nObj":8,
-	"bDrawContour":1,
+	"bDrawContour":0,
 	"contourBlend":0.15,
-	"alertDist":0.1,
+	"alertDist":0.05,
 	"detectMinSize":0.01,
 }
 

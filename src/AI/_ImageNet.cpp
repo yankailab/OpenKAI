@@ -77,7 +77,7 @@ void _ImageNet::update(void)
 double _ImageNet::detect(Frame* pFrame, int* classID, string* className)
 {
 #ifdef USE_TENSORRT
-	NULL_(m_pIN);
+	NULL_F(m_pIN);
 #endif
 
 	NULL_F(classID);
@@ -91,7 +91,7 @@ double _ImageNet::detect(Frame* pFrame, int* classID, string* className)
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
 
-	double prob = 0;
+	float prob = 0;
 #ifdef USE_TENSORRT
 	*classID = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows, &prob);
 	if (*classID >= 0)

@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "_AIbase.h"
 #include "../Stream/_StreamBase.h"
+#include "../Navigation/_Obstacle.h"
 
 #ifdef USE_TENSORRT
 
@@ -42,6 +43,7 @@ public:
 	int m_nBox;
 	int m_nBoxMax;
 	uint32_t m_nClass;
+	_Obstacle* m_pObs;
 
 	int num_channels_;
 	cv::Mat mean_;

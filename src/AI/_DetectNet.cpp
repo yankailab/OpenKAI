@@ -12,6 +12,7 @@ _DetectNet::_DetectNet()
 {
 	_AIbase();
 
+	m_pObs = NULL;
 	num_channels_ = 0;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
@@ -47,6 +48,9 @@ bool _DetectNet::init(void* pKiss)
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
 
+	//TODO: init _Obstacle
+	m_pObs = new _Obstacle();
+
 	return true;
 }
 
@@ -81,11 +85,9 @@ void _DetectNet::update(void)
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
 	m_nClass = m_pDN->GetNumClasses();
 
-	CHECK_(
-			!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
+	CHECK_(	!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
 					m_nBoxMax * sizeof(float4)));
-	CHECK_(
-			!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
+	CHECK_(	!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
 
 	while (m_bThreadON)
@@ -128,9 +130,7 @@ void _DetectNet::detect(void)
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
-	m_pObj->reset();
-
-	OBS obj;
+	OBSTACLE obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
 		const int nc = m_confCPU[n * 2 + 1];
@@ -147,7 +147,7 @@ void _DetectNet::detect(void)
 		obj.m_prob = 0.0;
 		obj.m_name = m_className;
 
-		m_pObj->add(&obj);
+		m_pObs->add(&obj);
 	}
 
 }
@@ -158,9 +158,10 @@ bool _DetectNet::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	OBS* pObj;
+	OBSTACLE* pObj;
+	int64_t frameID = get_time_usec() - m_dTime;
 	int i = 0;
-	while ((pObj = m_pObj->get(i++)))
+	while ((pObj = m_pObs->get(i++,frameID)))
 	{
 		Rect bbox;
 		bbox.x = pObj->m_bbox.m_x;
