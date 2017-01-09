@@ -3,38 +3,35 @@
 ## What is it?
 OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to be ran on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
 
-## Hardwares
-OpenKAI is supposed to behave as a companion computer that commands an external low-level robotic controller. Supported hardware for the companiton computer are
-* x86 PC
-* NVIDIA JetsonTX1
-
 ## Platform
-* Ubuntu desktop (14.04, 16.04)
-* Ubuntu for embedded platforms: Jetson TX1 (JetPack 2.3)
+OpenKAI is supposed to behave as a companion computer that commands an external low-level robotic controller. Supported hardware for the companiton computer currently are
+* x86 PC & Ubuntu (14.04, 16.04)
+* NVIDIA JetsonTX1 & Ubuntu (JetPack 2.3.1)
 
 ## External controller
-* Pixhawk (Mavlink/UART)
-* Controllers with CAN bus I/F (Via UART/USB<->CAN bus converter)
+* Pixhawk (via Mavlink/UART)
+* Controllers with CAN bus I/F (via UART/USB<->CAN bus converter)
 
 ## Run sample
-Here we show how to run OpenKAI on Jetson TX1 for a classical sample: "Hello Obstacle!!", which uses ZED camera and APMcopter (Pixhawk) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is very recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
+"Hello Obstacle!!", a classical example to get started with OpenKAI on Jetson TX1. This sample application uses ZED camera and Pixhawk (APMcopter 3.4.4 and above) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
 
-If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked items limited to "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image which can be downloaded from [here] (Coming Soon).
+If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked install items such as "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image: [downloaded from here] (Coming Soon).
 
-Now boot TX1 up, connect your ZED camera and open the terminal:
+Boot TX1 up, connect your ZED camera and open the terminal:
   ```Shell
   ./OpenKAI.sh
   ```
-You should see a real-time video stream from ZED, marked with bounding boxes showing the detected obstacles, and the name and distance of each one.
+You should see a real-time video stream from ZED, marked with bounding boxes showing the detected obstacles, with name and distance on each one.
+
 (Coming soon) Connect to APMcopter.
-  
+
 ## Build on Jetson TX1
-Assuming we start from the prebuilt boot image on TX1,
+Assuming we start from the above prebuilt boot image on TX1,
   ```Shell
   # Prebuilt boot image stores code in src folder
   cd src/
   
-  # (Optional: If you want to delete the existing folder and start a fresh install)
+  # The prebuilt image has already git cloned OpenKAI, erase it for a new clean install)
   rm -rf OpenKAI
   
   # Get the code.
