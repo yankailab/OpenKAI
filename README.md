@@ -31,7 +31,7 @@ Assuming we start from the above prebuilt boot image on TX1,
   # Prebuilt boot image stores code in src folder
   cd src/
   
-  # The prebuilt image has already git cloned OpenKAI, erase it for a new clean install)
+  # The prebuilt image has already git cloned OpenKAI, erase it for a new clean install
   rm -rf OpenKAI
   
   # Get the code.
