@@ -19,13 +19,13 @@ OpenKAI is supposed to behave as a companion computer that commands an external 
 ## Run sample
 Here we show how to run OpenKAI on Jetson TX1 for a classical sample: "Hello Obstacle!!", which uses ZED camera and APMcopter (Pixhawk) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is very recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
 
-If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked items limited to "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image which can be downloaded from [here]().
+If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked items limited to "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image which can be downloaded from [here] (Coming Soon).
 
 Now boot TX1 up, connect your ZED camera and open the terminal:
   ```Shell
   ./OpenKAI.sh
   ```
-You should see a real-time video stream from ZED, marked with bounding boxed showing the detected obstacles, and the name and distance of each one.
+You should see a real-time video stream from ZED, marked with bounding boxes showing the detected obstacles, and the name and distance of each one.
 (Coming soon) Connect to APMcopter.
   
 ## Build on Jetson TX1
