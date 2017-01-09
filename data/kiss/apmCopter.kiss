@@ -72,7 +72,7 @@
 	"orientation":0,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":600,
 	"zedMaxDist":20000,
 	"bZedFlip":0,
@@ -131,6 +131,11 @@
 	"obsB":255,
 	"obsG":255,
 	"obsR":0,
+	"bSlit":0,
+	"slitT":0.0,
+	"slitB":0.95,
+	"slitL":0.05,
+	"slitR":0.95,
 }
 
 {

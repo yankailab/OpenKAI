@@ -34,6 +34,14 @@ struct vDouble4
 	{
 		return abs((m_z-m_x)*(m_w-m_y));
 	}
+
+	void init(void)
+	{
+		m_x = 0.0;
+		m_y = 0.0;
+		m_z = 0.0;
+		m_w = 0.0;
+	}
 };
 
 struct vDouble3
@@ -41,12 +49,25 @@ struct vDouble3
 	double m_x;
 	double m_y;
 	double m_z;
+
+	void init(void)
+	{
+		m_x = 0.0;
+		m_y = 0.0;
+		m_z = 0.0;
+	}
 };
 
 struct vDouble2
 {
 	double m_x;
 	double m_y;
+
+	void init(void)
+	{
+		m_x = 0.0;
+		m_y = 0.0;
+	}
 };
 
 struct vInt2

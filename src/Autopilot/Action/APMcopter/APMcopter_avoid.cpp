@@ -98,7 +98,10 @@ void APMcopter_avoid::updateDistanceSensor(void)
 			avoidR.m_w = pCam->m_y * m_avoidArea.m_w;
 
 			if(!isOverlapped(pBB,&avoidR))
+			{
+				pO->m_frameID = 0;
 				continue;
+			}
 
 			if (pO->m_dist < m_DS.m_distance)
 			{

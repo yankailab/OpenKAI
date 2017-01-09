@@ -79,6 +79,9 @@ public:
 	Scalar m_colDist;
 	Scalar m_colObs;
 
+	bool m_bSlit;
+	vDouble4 m_slit;
+
 };
 
 }

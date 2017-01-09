@@ -23,6 +23,8 @@ _Obstacle::_Obstacle()
 	m_alertDist = 0.0;
 	m_detectMinSize = 0.0;
 	m_extraBBox = 0.0;
+	m_bSlit = false;
+	m_slit.init();
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
 
@@ -69,6 +71,15 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->v("obsB", &m_colObs[0]));
 	F_INFO(pK->v("obsG", &m_colObs[1]));
 	F_INFO(pK->v("obsR", &m_colObs[2]));
+
+	F_INFO(pK->v("bSlit", &m_bSlit));
+	if(m_bSlit)
+	{
+		F_INFO(pK->v("slitL", &m_slit.m_x));
+		F_INFO(pK->v("slitR", &m_slit.m_z));
+		F_INFO(pK->v("slitT", &m_slit.m_y));
+		F_INFO(pK->v("slitB", &m_slit.m_w));
+	}
 
 	m_pObs = new OBSTACLE[m_nObs];
 	for (int i = 0; i < m_nObs; i++)
@@ -151,10 +162,25 @@ void _Obstacle::detect(void)
 	gMat2.download(cMat);
 	cMat.copyTo(cMat2);
 
+	vInt4 slitPos;
+	if(m_bSlit)
+	{
+		slitPos.m_x = m_slit.m_x*cMat2.cols;
+		slitPos.m_y = m_slit.m_y*cMat2.rows;
+		slitPos.m_z = m_slit.m_z*cMat2.cols;
+		slitPos.m_w = m_slit.m_w*cMat2.rows;
+
+		Scalar cSlit = Scalar(0,0,0);
+		cv::line(cMat2, Point(slitPos.m_x,0), Point(slitPos.m_x,cMat2.rows), cSlit, 2);
+		cv::line(cMat2, Point(slitPos.m_z,0), Point(slitPos.m_z,cMat2.rows), cSlit, 2);
+		cv::line(cMat2, Point(0,slitPos.m_y), Point(cMat2.cols,slitPos.m_y), cSlit, 2);
+		cv::line(cMat2, Point(0,slitPos.m_w), Point(cMat2.cols,slitPos.m_w), cSlit, 2);
+	}
+
 	// find contours
 	// findContours will modify the contents of the given Mat
 	vector<vector<Point> > contours;
-	findContours(cMat2, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
+	findContours(cMat2, contours, CV_RETR_LIST/*CV_RETR_EXTERNAL*/, CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
 	vector<Point> contourPoly;
@@ -170,6 +196,16 @@ void _Obstacle::detect(void)
 		Rect bb = boundingRect(Mat(contourPoly));
 		if (bb.area() < minSize)
 			continue;
+
+		if(m_bSlit)
+		{
+			int margin = 10;
+			if(abs(bb.x-slitPos.m_x)<margin &&
+					abs(bb.y-slitPos.m_y)<margin &&
+					abs(bb.x+bb.width-slitPos.m_z)<margin &&
+					abs(bb.y+bb.height-slitPos.m_w)<margin)
+				continue;
+		}
 
 		OBSTACLE obj;
 		obj.m_camSize.m_x = cMat.cols;
@@ -347,6 +383,8 @@ bool _Obstacle::draw(void)
 	{
 		OBSTACLE* pObj = get(i, frameID);
 		if (!pObj)
+			continue;
+		if(pObj->m_frameID<=0)
 			continue;
 
 		Rect r;

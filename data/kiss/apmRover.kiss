@@ -4,16 +4,24 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
-	"name":"APM_monitor",
+	"name":"APM_forward",
 	"class":"Window",
 	"bInst":1,
-	"w":1280,
-	"h":720,
+	"w":672,
+	"h":376,
 	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textSize":0.5,
+	"textR":0,
+	"textG":255,
+	"textB":0,
 	"textX":20,
 	"textY":20,
 	"pixTab":20,
@@ -21,72 +29,90 @@
 }
 
 {
-	"name":"Front",
-	"class":"_Stream",
+	"name":"APM_mavlink",
+	"class":"_Mavlink",
 	"bInst":1,
-	"Window":"APM_monitor",
-	"bGray":0,
-	"bHSV":0,
-	"bShowDepth":0,
-	"_Automaton":"APMstate",
-	"input":"Generic",
-		
+	"FPS":100,
+	"Window":"APM_forward",
+
 	{
-		"name":"ZEDL",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":1344,
-		"height":376,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":672,
-		"cropH":376,
-		"bCalib":0,
-		"bFisheye":0,
-		"calibFile":"calibration/sp360-1440.xml",
-		"isoScale":1.0,
-		"bGimbal":0,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"Generic",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":1280,
-		"height":720,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"ZED",
-		"class":"ZED",
-		"FPS":30,
-		"bShowDepth":0,
-		"resolution":2,
-		"minDist":800,
-		"width":1344,
-		"height":376,
-		"angleV":67.1,
-		"angleH":66.7,
-		"bCrop":0,
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyS0",
+		"baud":115200,
 	}
 }
 
 {
-	"name":"Universe",
-	"class":"_Universe",
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"Window":"APM_forward",
+	"depthWindow":"APM_depth",
+	"orientation":0,
+	"zedFPS":30,
+	"zedQuality":1,
+	"zedResolution":2,
+	"zedMinDist":600,
+	"zedMaxDist":20000,
+	"bZedFlip":0,
+}
+	
+{
+	"name":"camLanding",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":0,
+	"Window":"APM_landing",
+	"ID":0,
+	"width":1280,
+	"height":720,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"imageNet",
+	"class":"_ImageNet",
 	"bInst":1,
 	"FPS":30,
-	"Window":"APM_monitor",
-	"frameLifetime":500000,
-	"probMin":0.0,
-	"posDisparity":100,
+	"Window":"APM_forward",
+	"_Stream":"ZED",
+	"dir":"/home/ubuntu/src/model/ImageNet/",
+	"modelFile":"googlenet.prototxt",
+	"trainedFile":"bvlc_googlenet.caffemodel",
+	"meanFile":"",
+	"labelFile":"ilsvrc12_synset_words.txt",
+}
+
+{
+	"name":"Obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"APM_forward",
+	"_Stream":"ZED",
+	"_ImageNet":"imageNet",
+	"obsLifetime":100000,
+	"nObs":16,
+	"bDrawContour":0,
+	"contourBlend":0.15,
+	"alertDist":0.5,
+	"detectMinSize":0.005,
+	"extraBBox":0.025,
+	"sizeName":0.6,
+	"sizeDist":0.5,
+	"nameB":255,
+	"nameG":255,
+	"nameR":0,
+	"distB":0,
+	"distG":255,
+	"distR":255,
+	"obsB":255,
+	"obsG":255,
+	"obsR":0,
 }
 
 {
@@ -94,72 +120,22 @@
 	"class":"_DetectNet",
 	"bInst":0,
 	"FPS":30,
-	"_Stream":"Front",
-	"Window":"APM_monitor",
-	"_Universe":"Universe",
-	"_Automaton":"APMstate",
+	"Window":"APM_forward",
+	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.2,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
-	"className":"Person",
-}
-
-{
-	"name":"SSD",
-	"class":"_SSD",
-	"bInst":0,
-	"FPS":30,
-	"_Stream":"Front",
-	"Window":"APM_monitor",
-	"_Universe":"Universe",
-	"dir":"/home/ubuntu/src/caffe_ssd/caffe/models/VGGNet/coco/SSD_300x300/",
-	"minConfidence":0.3,
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
-	"meanFile":"imagenet_mean.binaryproto",
-	"labelFile":"model/SSD/coco_labels.txt",
-}
-
-{
-	"name":"APM_TX1",
-	"class":"_Mavlink",
-	"bInst":0,
-	"FPS":100,
-	"Window":"APM_monitor",
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
-	}
-}
-
-{
-	"name":"APM_USB",
-	"class":"_Mavlink",
-	"bInst":1,
-	"FPS":100,
-	"Window":"APM_monitor",
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
-	}
+	"className":"Human",
 }
 
 {
 	"name":"APMstate",
 	"class":"_Automaton",
 	"bInst":1,
-	"Window":"APM_monitor",
+	"Window":"APM_forward",
 	"startState":"APM_STANDBY",
 
 	{
@@ -177,7 +153,7 @@
 	"_Automaton":"APMstate",
 	"bInst":1,
 	"FPS":30,
-	"Window":"APM_monitor",
+	"Window":"APM_forward",
 	"bMouse":1,
 	
 	{
