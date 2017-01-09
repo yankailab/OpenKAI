@@ -34,8 +34,6 @@ private:
 	DISTANCE_SENSOR m_DS;
 	vDouble4	m_avoidArea;
 
-	bool m_bAlert;
-
 
 };
 

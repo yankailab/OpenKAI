@@ -14,7 +14,6 @@ APMcopter_avoid::APMcopter_avoid()
 	m_avoidArea.m_y = 0.0;
 	m_avoidArea.m_z = 1.0;
 	m_avoidArea.m_w = 1.0;
-	m_bAlert = false;
 }
 
 APMcopter_avoid::~APMcopter_avoid()
@@ -68,14 +67,12 @@ void APMcopter_avoid::update(void)
 void APMcopter_avoid::updateDistanceSensor(void)
 {
 	NULL_(m_pAPM->m_pMavlink);
+	NULL_(m_pObs);
 
-	const static double distMax = 1000000;
-	double dist = distMax;
-
-	if (m_pSF40)
-	{
-		//TODO: update forward value from SF40
-	}
+	double rangeMin, rangeMax;
+	uint8_t orientation;
+	m_pObs->info(&rangeMin, &rangeMax, &orientation);
+	m_DS.m_distance = rangeMax;
 
 	if (m_pObs)
 	{
@@ -102,24 +99,11 @@ void APMcopter_avoid::updateDistanceSensor(void)
 			if(!isOverlapped(pBB,&avoidR))
 				continue;
 
-			if (pO->m_dist < dist)
-				dist = pO->m_dist;
+			if (pO->m_dist < m_DS.m_distance)
+				m_DS.m_distance = pO->m_dist;
 		}
 	}
 
-	if(dist >= distMax)
-	{
-		m_bAlert = false;
-		m_DS.m_distance = 0.0;
-		return;
-	}
-	m_bAlert = true;
-
-	double rangeMin, rangeMax;
-	uint8_t orientation;
-	m_pObs->info(&rangeMin, &rangeMax, &orientation);
-
-	m_DS.m_distance = dist;
 	m_DS.m_maxDistance = rangeMax * 0.1;
 	m_DS.m_minDistance = rangeMin * 0.1;
 	m_DS.m_orientation = orientation;
@@ -141,16 +125,7 @@ bool APMcopter_avoid::draw(void)
 	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
 	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
 
-	Scalar col = Scalar(0,255,0);
-	int bold = 1;
-	if(m_bAlert)
-	{
-		col = Scalar(0,0,255);
-		bold = 2;
-	}
-
-	rectangle(*pMat, r, col, bold);
-
+	rectangle(*pMat, r, Scalar(0,0,255), 1);
 	return true;
 }
 
