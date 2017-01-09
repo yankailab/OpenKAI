@@ -43,7 +43,9 @@ public:
 	Scalar textColor(void);
 
 public:
+	bool	m_bWindow;
 	bool	m_bFullScreen;
+	bool	m_bRec;
 	Frame*	m_pFrame;
 	vInt2	m_size;
 	vInt2	m_textPos;
@@ -55,8 +57,6 @@ public:
 	Scalar	m_textCol;
 
 	VideoWriter m_VW;
-	bool	m_bShow;
-
 };
 
 }

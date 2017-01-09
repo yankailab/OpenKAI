@@ -44,7 +44,6 @@ public:
 	bool m_bRun;
 
 	bool m_bWindow;
-	bool m_bDraw;
 	int m_waitKey;
 };
 

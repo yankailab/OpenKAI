@@ -25,6 +25,7 @@ _ZED::_ZED()
 	m_zedMode = sl::zed::STANDARD;
 	m_zedQuality = sl::zed::PERFORMANCE;
 	m_pDepthWin = NULL;
+	m_bZedFlip = false;
 }
 
 _ZED::~_ZED()
@@ -47,6 +48,7 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedQuality", &m_zedQuality));
 	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
+	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
 
 	m_pDepth = new Frame();
 	return true;
@@ -76,6 +78,7 @@ bool _ZED::open(void)
 	zedParams.verbose = 1;
 	zedParams.device = -1;
 	zedParams.minimumDistance = m_zedMinDist;
+	zedParams.vflip = m_bZedFlip;
 
 	sl::zed::ERRCODE err = m_pZed->init(zedParams);
 	if (err != sl::zed::SUCCESS)

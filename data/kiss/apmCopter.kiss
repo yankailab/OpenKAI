@@ -3,7 +3,6 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
-	"bDraw":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -15,10 +14,10 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bShow":1,
-	"fileRec":"/media/ubuntu/data/OpenKAI_",
-	"fpsRec":30,
-	"codecRec":"MJPG",	
+	"bRec":1,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
 	"textSize":0.5,
 	"textR":0,
 	"textG":255,
@@ -73,9 +72,10 @@
 	"orientation":0,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":600,
-	"zedMaxDist":15000,
+	"zedMaxDist":20000,
+	"bZedFlip":0,
 }
 	
 {
@@ -117,7 +117,7 @@
 	"nObs":8,
 	"bDrawContour":0,
 	"contourBlend":0.15,
-	"alertDist":0.05,
+	"alertDist":1.0,
 	"detectMinSize":0.01,
 	"sizeName":0.5,
 	"sizeDist":0.5,
@@ -196,7 +196,7 @@
 			"_Obstacle":"Obstacle",
 			"_ZED":"ZED",
 			"avoidLeft":0.2,
-			"avoidTop":0.2,
+			"avoidTop":0.0,
 			"avoidRight":0.8,
 			"avoidBottom":0.8,
 		}

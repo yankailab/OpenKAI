@@ -54,7 +54,11 @@ template <typename T> BASE* Module::createInst(Kiss* pKiss)
 	CHECK_N(!pKiss);
 
 	T* pInst = new T();
-	CHECK_N(!pInst->init(pKiss));
+	if(!pInst->init(pKiss))
+	{
+		delete pInst;
+		return NULL;
+	}
     return pInst;
 }
 

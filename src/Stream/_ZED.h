@@ -45,6 +45,7 @@ public:
 	int m_zedResolution;
 	int m_zedFPS;
 	int m_zedQuality;
+	bool m_bZedFlip;
 	double m_zedMinDist;
 	double m_zedMaxDist;
 

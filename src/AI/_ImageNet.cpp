@@ -97,6 +97,11 @@ double _ImageNet::detect(Frame* pFrame, int* classID, string* className)
 	if (*classID >= 0)
 	{
 		*className = m_pIN->GetClassDesc(*classID);
+
+		std::string::size_type k;
+		k = className->find(',');
+		if (k != std::string::npos)
+			className->erase(k);
 	}
 #endif
 

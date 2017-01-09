@@ -22,7 +22,8 @@ Window::Window()
 	m_lineHeight = LINE_HEIGHT;
 	m_textSize = 0.6;
 	m_textCol = Scalar(0,255,0);
-	m_bShow = true;
+	m_bWindow = true;
+	m_bRec = false;
 }
 
 Window::~Window()
@@ -39,6 +40,10 @@ bool Window::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
+	F_INFO(pK->v("bRec", &m_bRec));
+	CHECK_F(!m_bWindow && !m_bRec);
+
 	F_ERROR_F(pK->v("w", &m_size.m_x));
 	F_ERROR_F(pK->v("h", &m_size.m_y));
 	F_INFO(pK->v("bFullScreen", &m_bFullScreen));
@@ -49,7 +54,48 @@ bool Window::init(void* pKiss)
 		return false;
 	}
 
-	F_INFO(pK->v("bShow", &m_bShow));
+	if(m_bRec)
+	{
+		string fileRec = "";
+		F_INFO(pK->v("recFile", &fileRec));
+		if(!fileRec.empty())
+		{
+			int recFPS = 30;
+			string reCodec = "MJPG";
+			F_INFO(pK->v("recFPS", &recFPS));
+			F_INFO(pK->v("recCodec", &reCodec));
+
+			time_t t = time(NULL);
+		    struct tm *tm = localtime(&t);
+		    char strTime[128];
+		    strftime(strTime, sizeof(strTime), "%c", tm);
+		    fileRec += strTime;
+		    fileRec += ".avi";
+
+			if(!m_VW.open(
+					fileRec,
+					CV_FOURCC(
+							reCodec.at(0),
+							reCodec.at(1),
+							reCodec.at(2),
+							reCodec.at(3)),
+					recFPS,
+					cv::Size(m_size.m_x,
+							m_size.m_y)
+					))
+			{
+				LOG_E("Cannot open VideoWriter");
+				m_bRec = false;
+			}
+		}
+		else
+		{
+			LOG_E("Incorrect recording file name");
+			m_bRec = false;
+		}
+	}
+	CHECK_F(!m_bWindow && !m_bRec);
+
 	F_INFO(pK->v("textX", &m_textStart.m_x));
 	F_INFO(pK->v("textY", &m_textStart.m_y));
 	F_INFO(pK->v("pixTab", &m_pixTab));
@@ -59,50 +105,24 @@ bool Window::init(void* pKiss)
 	F_INFO(pK->v("textG", &m_textCol[1]));
 	F_INFO(pK->v("textR", &m_textCol[2]));
 
-	string fileRec = "";
-	F_INFO(pK->v("fileRec", &fileRec));
-	if(!fileRec.empty())
-	{
-		int recordFPS = 30;
-		string recordCodec = "MJPG";
-		F_INFO(pK->v("fpsRec", &recordFPS));
-		F_INFO(pK->v("codecRec", &recordCodec));
-
-		time_t t = time(NULL);
-	    struct tm *tm = localtime(&t);
-	    char strTime[128];
-	    strftime(strTime, sizeof(strTime), "%c", tm);
-	    fileRec += strTime;
-	    fileRec += ".avi";
-
-		CHECK_F(!m_VW.open(
-				fileRec,
-				CV_FOURCC(
-						recordCodec.at(0),
-						recordCodec.at(1),
-						recordCodec.at(2),
-						recordCodec.at(3)),
-				recordFPS,
-				cv::Size(m_size.m_x,
-						m_size.m_y)
-				));
-	}
-
 	m_pFrame = new Frame();
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);
 
-	if (m_bFullScreen)
+	if(m_bWindow)
 	{
-		namedWindow(*this->getName(), CV_WINDOW_NORMAL);
-		setWindowProperty(*this->getName(),
-				CV_WND_PROP_FULLSCREEN,
-				CV_WINDOW_FULLSCREEN);
+		if (m_bFullScreen)
+		{
+			namedWindow(*this->getName(), CV_WINDOW_NORMAL);
+			setWindowProperty(*this->getName(),
+					CV_WND_PROP_FULLSCREEN,
+					CV_WINDOW_FULLSCREEN);
+		}
+		else
+		{
+			namedWindow(*this->getName(), CV_WINDOW_AUTOSIZE);
+		}
+	//	setMouseCallback(*this->getName(), onMouseGeneral, NULL);
 	}
-	else
-	{
-		namedWindow(*this->getName(), CV_WINDOW_AUTOSIZE);
-	}
-//	setMouseCallback(*this->getName(), onMouseGeneral, NULL);
 
 	return true;
 }
@@ -117,14 +137,24 @@ bool Window::draw(void)
 	NULL_F(m_pFrame);
 	CHECK_F(m_pFrame->empty());
 
-	if(m_bShow)
+	if(m_bWindow)
 	{
 		imshow(*this->getName(), *m_pFrame->getCMat());
 	}
 
 	if(m_VW.isOpened())
 	{
-		m_VW << *m_pFrame->getCMat();
+		Mat rMat = *m_pFrame->getCMat();
+		if(rMat.cols != m_size.m_x || rMat.rows != m_size.m_y)
+		{
+			Mat rMat2;
+			cv::resize(rMat, rMat2, Size(m_size.m_x,m_size.m_y));
+			m_VW << rMat2;
+		}
+		else
+		{
+			m_VW << rMat;
+		}
 	}
 
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);
