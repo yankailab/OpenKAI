@@ -1,14 +1,12 @@
 # OpenKAI
+
+## What is it?
 OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to be ran on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
 
 ## Hardwares
 OpenKAI is supposed to behave as a companion computer that commands an external low-level robotic controller. Supported hardware for the companiton computer are
 * x86 PC
 * NVIDIA JetsonTX1
-
-Planned supported hardwares in future includes
-* Raspberry Pi
-* Odroid
 
 ## Platform
 * Ubuntu desktop (14.04, 16.04)
@@ -17,8 +15,46 @@ Planned supported hardwares in future includes
 ## External controller
 * Pixhawk (Mavlink/UART)
 * Controllers with CAN bus I/F (Via UART/USB<->CAN bus converter)
-* Controllers with RC (PWM) input (Via UART/USB->PWM converter)
 
+## Run sample
+Here we show how to run OpenKAI on Jetson TX1 for a classical sample: "Hello Obstacle!!", which uses ZED camera and APMcopter (Pixhawk) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is very recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
+
+If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked items limited to "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image which can be downloaded from [here]().
+
+Now boot TX1 up, connect your ZED camera and open the terminal:
+  ```Shell
+  ./OpenKAI.sh
+  ```
+You should see a real-time video stream from ZED, marked with bounding boxed showing the detected obstacles, and the name and distance of each one.
+(Coming soon) Connect to APMcopter.
+  
+## Build on Jetson TX1
+Assuming we start from the prebuilt boot image on TX1,
+  ```Shell
+  # Prebuilt boot image stores code in src folder
+  cd src/
+  
+  # (Optional: If you want to delete the existing folder and start a fresh install)
+  rm -rf OpenKAI
+  
+  # Get the code.
+  git clone https://github.com/yankailab/OpenKAI.git
+  cd OpenKAI
+  
+  # Create build folder
+  mkdir build
+  cd build
+  
+  # Make it
+  cmake ../
+  make all -j4
+  ```
+Once make is finished, connect ZED camera and
+  ```Shell
+  cd ~
+  ./OpenKAI.sh
+  ```
+  
 ## System architecture
 OpenKAI is organized as a combination of multiple functional Modules. Each Module runs in an individual thread, so that modules can be ran simultaneously over multi-core CPUs efficiently. Each Module contains multiple sub-Modules, each sub-Module may handle certain part of functions divided by its category, and the Module switches between each of its sub-Modules to form a complete function.
 <p align="center">
