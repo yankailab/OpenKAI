@@ -79,7 +79,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 
 	if (m_pObs)
 	{
-		int64_t frameID = get_time_usec() - m_dTime;
+		int64_t frameID = get_time_usec() - m_pObs->m_dTime;
 
 		//get the closest object
 		for (int i = 0; i < m_pObs->size(); i++)

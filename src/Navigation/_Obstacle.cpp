@@ -155,7 +155,6 @@ void _Obstacle::detect(void)
 
 	// Approximate contours to polygons + get bounding rects
 	vector<Point> contourPoly;
-	uint64_t frameID = get_time_usec();
 	double rangeMin, rangeMax;
 	m_pStream->getRange(&rangeMin, &rangeMax);
 	double range = rangeMax - rangeMin;
@@ -175,7 +174,6 @@ void _Obstacle::detect(void)
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
 		obj.m_contour = contourPoly;
-		obj.m_frameID = frameID;
 
 		//calc avr of the region to determine dist
 		Mat oMat = Mat(cMat, bb);
@@ -195,6 +193,7 @@ void _Obstacle::detect(void)
 			m_pIN->detect(m_pFrame, &obj.m_iClass, &obj.m_name);
 		}
 
+		obj.m_frameID = get_time_usec();
 		add(&obj);
 	}
 
