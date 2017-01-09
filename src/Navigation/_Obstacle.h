@@ -27,6 +27,7 @@ struct OBSTACLE
 	uint8_t m_safety;
 	vector<Point> m_contour;
 	int64_t m_frameID;
+	bool  m_bPrimaryTarget;
 };
 
 class _Obstacle: public _ThreadBase
@@ -68,6 +69,7 @@ public:
 
 	double m_alertDist;
 	double m_detectMinSize;
+	double m_extraBBox;
 	double m_contourBlend;
 	bool m_bDrawContour;
 

@@ -74,6 +74,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 	m_pObs->info(&rangeMin, &rangeMax, &orientation);
 	m_DS.m_distance = rangeMax;
 
+	OBSTACLE* pPrimary = NULL;
 	if (m_pObs)
 	{
 		int64_t frameID = get_time_usec() - m_pObs->m_dTime;
@@ -100,9 +101,15 @@ void APMcopter_avoid::updateDistanceSensor(void)
 				continue;
 
 			if (pO->m_dist < m_DS.m_distance)
+			{
 				m_DS.m_distance = pO->m_dist;
+				pPrimary = pO;
+			}
 		}
 	}
+
+	if(pPrimary)
+		pPrimary->m_bPrimaryTarget = true;
 
 	m_DS.m_maxDistance = rangeMax * 0.1;
 	m_DS.m_minDistance = rangeMin * 0.1;
@@ -125,7 +132,7 @@ bool APMcopter_avoid::draw(void)
 	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
 	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
 
-	rectangle(*pMat, r, Scalar(0,0,255), 1);
+	rectangle(*pMat, r, Scalar(0,255,255), 1);
 	return true;
 }
 

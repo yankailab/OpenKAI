@@ -22,6 +22,7 @@ _Obstacle::_Obstacle()
 
 	m_alertDist = 0.0;
 	m_detectMinSize = 0.0;
+	m_extraBBox = 0.0;
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
 
@@ -48,6 +49,7 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
+	F_INFO(pK->v("extraBBox", &m_extraBBox));
 	F_INFO(pK->v("nObs", &m_nObs));
 	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
 	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
@@ -73,6 +75,7 @@ bool _Obstacle::init(void* pKiss)
 	{
 		m_pObs[i].m_frameID = 0;
 		m_pObs[i].m_dist = -1.0;
+		m_pObs[i].m_bPrimaryTarget = false;
 	}
 	m_iObs = 0;
 
@@ -158,6 +161,8 @@ void _Obstacle::detect(void)
 	double rangeMin, rangeMax;
 	m_pStream->getRange(&rangeMin, &rangeMax);
 	double range = rangeMax - rangeMin;
+	int extraX = cMat.cols*m_extraBBox;
+	int extraY = cMat.rows*m_extraBBox;
 
 	for (unsigned int i = 0; i < contours.size(); i++)
 	{
@@ -167,13 +172,20 @@ void _Obstacle::detect(void)
 			continue;
 
 		OBSTACLE obj;
-		obj.m_bbox.m_x = bb.x;
-		obj.m_bbox.m_y = bb.y;
-		obj.m_bbox.m_z = bb.x + bb.width;
-		obj.m_bbox.m_w = bb.y + bb.height;
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
-		obj.m_contour = contourPoly;
+		obj.m_bPrimaryTarget = false;
+		if(m_bDrawContour)
+			obj.m_contour = contourPoly;
+
+		obj.m_bbox.m_x = bb.x - extraX;
+		obj.m_bbox.m_y = bb.y - extraY;
+		obj.m_bbox.m_z = bb.x + bb.width + extraX;
+		obj.m_bbox.m_w = bb.y + bb.height + extraY;
+		if(obj.m_bbox.m_x < 0)obj.m_bbox.m_x = 0;
+		if(obj.m_bbox.m_y < 0)obj.m_bbox.m_y = 0;
+		if(obj.m_bbox.m_z > cMat.cols)obj.m_bbox.m_z = cMat.cols;
+		if(obj.m_bbox.m_w > cMat.rows)obj.m_bbox.m_w = cMat.rows;
 
 		//calc avr of the region to determine dist
 		Mat oMat = Mat(cMat, bb);
@@ -351,14 +363,22 @@ bool _Obstacle::draw(void)
 				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
 				FONT_HERSHEY_SIMPLEX, m_sizeDist, m_colDist, 1);
 
+		Scalar colObs = m_colObs;
+		int bolObs = 1;
+		if(pObj->m_bPrimaryTarget)
+		{
+			colObs = Scalar(0,0,255);
+			bolObs = 2;
+		}
+
 		if (m_bDrawContour)
 		{
 			drawContours(bg, vector<vector<Point> >(1, pObj->m_contour), -1,
-					m_colObs, CV_FILLED, 8);
+					colObs, CV_FILLED, 8);
 		}
 		else
 		{
-			rectangle(*pMat, r, m_colObs, 1);
+			rectangle(*pMat, r, colObs, bolObs);
 		}
 	}
 
