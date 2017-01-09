@@ -301,6 +301,7 @@ void _Obstacle::info(double* pRangeMin, double* pRangeMax,
 		uint8_t* pOrientation)
 {
 	m_pStream->getRange(pRangeMin, pRangeMax);
+	*pRangeMax = *pRangeMin + (*pRangeMax - *pRangeMin)*m_alertDist;
 	NULL_(pOrientation);
 	*pOrientation = m_pStream->getOrientation();
 }

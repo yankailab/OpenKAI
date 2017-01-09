@@ -440,7 +440,7 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, 
 										&ds);
 
 	writeMessage(message);
-	LOG_I("<- DISTANCE_SENSOR dist="<<ds.current_distance);
+	LOG_I("<- DISTANCE_SENSOR d="<< ds.current_distance << ", min="<<ds.min_distance << ",max="<<ds.max_distance);
 }
 
 bool _Mavlink::draw(void)

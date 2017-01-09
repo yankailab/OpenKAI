@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
@@ -14,9 +14,9 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bRec":1,
+	"bRec":0,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":30,
+	"recFPS":15,
 	"recCodec":"MJPG",	
 	"textSize":0.5,
 	"textR":0,
@@ -79,11 +79,11 @@
 }
 	
 {
-	"name":"Generic",
+	"name":"camLanding",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":0,
-	"Window":"APM_downward",
+	"Window":"APM_landing",
 	"ID":0,
 	"width":1280,
 	"height":720,
@@ -117,7 +117,7 @@
 	"nObs":32,
 	"bDrawContour":0,
 	"contourBlend":0.15,
-	"alertDist":1.0,
+	"alertDist":0.69,
 	"detectMinSize":0.005,
 	"sizeName":0.6,
 	"sizeDist":0.5,
