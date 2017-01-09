@@ -20,7 +20,7 @@ Window::Window()
 	m_bFullScreen = false;
 	m_pixTab = TAB_PIX;
 	m_lineHeight = LINE_HEIGHT;
-	m_textSize = 0.6;
+	m_textSize = 0.5;
 	m_textCol = Scalar(0,255,0);
 	m_bWindow = true;
 	m_bRec = false;
