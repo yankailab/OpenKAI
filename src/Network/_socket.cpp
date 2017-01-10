@@ -253,8 +253,6 @@ void _socket::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
-	pthread_cancel(m_threadID);
-	this->waitForComplete();
 }
 
 bool _socket::draw(void)

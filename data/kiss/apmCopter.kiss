@@ -50,6 +50,7 @@
 	"name":"APM_mavlink",
 	"class":"_Mavlink",
 	"bInst":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"APM_forward",
 
@@ -57,8 +58,8 @@
 		"name":"input",
 		"class":"SerialPort",
 		"bInst":1,
-		"portName":"/dev/ttyS0",
-		"baud":115200,
+		"portName":"/dev/ttyTHS1",
+		"baud":921600,
 	}
 }
 
@@ -75,7 +76,7 @@
 	"zedResolution":3,
 	"zedMinDist":600,
 	"zedMaxDist":20000,
-	"bZedFlip":0,
+	"bZedFlip":1,
 }
 	
 {

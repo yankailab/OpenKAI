@@ -72,7 +72,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 	double rangeMin, rangeMax;
 	uint8_t orientation;
 	m_pObs->info(&rangeMin, &rangeMax, &orientation);
-	m_DS.m_distance = rangeMax;
+	m_DS.m_distance = rangeMax * 0.1;
 
 	OBSTACLE* pPrimary = NULL;
 	if (m_pObs)

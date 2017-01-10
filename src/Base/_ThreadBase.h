@@ -26,11 +26,9 @@ public:
 	virtual bool link(void);
 	virtual bool start(void);
 	virtual void complete(void);
-	void waitForComplete(void);
 	virtual bool draw(void);
 
 	void sleepThread(int64_t usec);
-	void wakeupThread(void);
 	void updateTime(void);
 
 	double getFrameRate(void);

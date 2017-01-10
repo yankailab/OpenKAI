@@ -16,6 +16,7 @@ BASE::BASE()
 {
 	m_pKiss = NULL;
 	m_pWindow = NULL;
+	m_bLog = true;
 }
 
 BASE::~BASE()
@@ -30,6 +31,8 @@ bool BASE::init(void* pKiss)
 	string name="";
 	F_FATAL_F(pK->v("name",&name));
 	CHECK_F(name.empty());
+
+	pK->v("bLog",&m_bLog);
 
 	m_pKiss = pKiss;
 	return true;
@@ -71,5 +74,12 @@ bool BASE::draw(void)
 	return true;
 }
 
+void BASE::complete(void)
+{
+}
 
+//void BASE::waitForComplete(void)
+//{
+//}
+//
 }

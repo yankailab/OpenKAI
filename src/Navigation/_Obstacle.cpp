@@ -233,12 +233,13 @@ void _Obstacle::detect(void)
 
 		//classify
 		obj.m_iClass = -1;
-		obj.m_name = "";
+		obj.m_name = "?";
 		if(m_pIN && !gBGR.empty())
 		{
 			GpuMat gMat = GpuMat(gBGR,bb);
 			m_pFrame->update(&gMat);
 			m_pIN->detect(m_pFrame, &obj.m_iClass, &obj.m_name);
+			LOG_I(obj.m_name<<": "<<obj.m_dist<<" cm");
 		}
 
 		obj.m_frameID = get_time_usec();

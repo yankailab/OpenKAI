@@ -74,11 +74,6 @@ void _ThreadBase::sleepThread(int64_t usec)
 	pthread_mutex_unlock(&m_wakeupMutex);
 }
 
-void _ThreadBase::wakeupThread(void)
-{
-	pthread_cond_signal(&m_wakeupSignal);
-}
-
 void _ThreadBase::updateTime(void)
 {
 	uint64_t newTime = get_time_usec();
@@ -121,11 +116,7 @@ void _ThreadBase::autoFPSto(void)
 void _ThreadBase::complete(void)
 {
 	m_bThreadON = false;
-	this->wakeupThread();
-}
-
-void _ThreadBase::waitForComplete(void)
-{
+	pthread_cancel(m_threadID);
 	pthread_join(m_threadID, NULL);
 }
 

@@ -30,10 +30,12 @@ public:
 
 	virtual bool start(void);
 	virtual bool draw(void);
+	virtual void complete(void);
 
 public:
 	void*	m_pKiss;
 	void*	m_pWindow;
+	bool	m_bLog;
 };
 
 }

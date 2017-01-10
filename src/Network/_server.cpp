@@ -206,8 +206,6 @@ void _server::complete(void)
 {
 	close(m_socket);
 	this->_ThreadBase::complete();
-	pthread_cancel(m_threadID);
-	this->waitForComplete();
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{

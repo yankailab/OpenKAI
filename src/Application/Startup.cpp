@@ -31,7 +31,7 @@ Startup::Startup()
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
-
+	m_bLog = true;
 }
 
 Startup::~Startup()
@@ -89,8 +89,7 @@ bool Startup::start(Kiss* pKiss)
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		((_ThreadBase*) m_pInst[i])->complete();
-		((_ThreadBase*) m_pInst[i])->waitForComplete();
+		m_pInst[i]->complete();
 	}
 
 	for (i = 0; i < m_nInst; i++)

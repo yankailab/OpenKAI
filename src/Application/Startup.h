@@ -42,9 +42,9 @@ public:
 	string m_name;
 	int m_key;
 	bool m_bRun;
-
 	bool m_bWindow;
 	int m_waitKey;
+	bool m_bLog;
 };
 
 }
