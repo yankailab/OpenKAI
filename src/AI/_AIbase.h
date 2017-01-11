@@ -16,6 +16,19 @@
 namespace kai
 {
 
+struct OBJECT
+{
+	vInt4 m_bbox;
+	vInt2 m_camSize;
+	double m_dist;
+	double m_prob;
+	int m_iClass;
+	string m_name;
+	uint8_t m_safety;
+	vector<Point> m_contour;
+	int64_t m_frameID;
+};
+
 class _AIbase: public _ThreadBase
 {
 public:

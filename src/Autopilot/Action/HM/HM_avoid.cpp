@@ -89,12 +89,12 @@ void HM_avoid::update(void)
 
 	//make turn when object is within a certain distance
 	//TODO:
-	if(m_pObs->size()>0)
-	{
-		rpmSpeed = 0;
-		rpmSteer = m_steerP;
-		m_pHM->m_bSpeaker = true;
-	}
+//	if(m_pObs->size()>0)
+//	{
+//		rpmSpeed = 0;
+//		rpmSteer = m_steerP;
+//		m_pHM->m_bSpeaker = true;
+//	}
 
 	m_pwmL = rpmSpeed + rpmSteer;
 	m_pwmR = rpmSpeed - rpmSteer;
@@ -156,11 +156,11 @@ bool HM_avoid::draw(void)
 	int bold = 1;
 
 //	if(m_pFdist->v() < m_alertDist)
-	if(m_pObs->size()>0)
-	{
-		col = Scalar(0,0,255);
-		bold = 2;
-	}
+//	if(m_pObs->size()>0)
+//	{
+//		col = Scalar(0,0,255);
+//		bold = 2;
+//	}
 
 	rectangle(*pMat, r, col, bold);
 //	putText(*pMat, f2str(m_pFdist->v()),

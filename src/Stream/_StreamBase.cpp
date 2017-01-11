@@ -27,6 +27,7 @@ _StreamBase::_StreamBase()
 	m_rotPrev = 0;
 	m_angleH = 0;
 	m_angleV = 0;
+	m_bFlip = false;
 
 	m_pBGR = NULL;
 	m_pHSV = NULL;
@@ -55,6 +56,7 @@ bool _StreamBase::init(void* pKiss)
 	F_INFO(pK->v("bGimbal", &m_bGimbal));
 	F_INFO(pK->v("isoScale", &m_isoScale));
 	F_INFO(pK->v("orientation", (int*)&m_orientation));
+	F_INFO(pK->v("bFlip", &m_bFlip));
 
 	m_pBGR = new Frame();
 

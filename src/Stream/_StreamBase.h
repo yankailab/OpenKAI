@@ -52,6 +52,7 @@ public:
 	int m_angleH;
 	int m_angleV;
 	uint8_t m_orientation;
+	bool m_bFlip;
 
 	bool m_bGimbal;
 	Mat m_rotRoll;

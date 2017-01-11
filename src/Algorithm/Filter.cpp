@@ -30,6 +30,7 @@ bool Filter::startMedian(int windowLength)
 		return false;
 	}
 
+	m_vMid = 0.0;
 	m_iTraj = 0;
 	m_windowLength = windowLength;
 	m_iMedian = m_windowLength * 0.5;
@@ -43,6 +44,9 @@ bool Filter::startMedian(int windowLength)
 
 void Filter::input(double v)
 {
+	m_vMid = v;
+	return;
+
 	double data[FILTER_BUF];
 	double tmp;
 	int i, j;

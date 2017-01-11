@@ -10,6 +10,7 @@ APMcopter_avoid::APMcopter_avoid()
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
 	m_pObs = NULL;
+	m_pZED = NULL;
 	m_avoidArea.m_x = 0.0;
 	m_avoidArea.m_y = 0.0;
 	m_avoidArea.m_z = 1.0;
@@ -50,7 +51,8 @@ bool APMcopter_avoid::link(void)
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
-	//Add GPS
+	F_INFO(pK->v("_ZED", &iName));
+	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -68,55 +70,14 @@ void APMcopter_avoid::updateDistanceSensor(void)
 {
 	NULL_(m_pAPM->m_pMavlink);
 	NULL_(m_pObs);
+	NULL_(m_pZED);
 
+	m_DS.m_distance = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
 	double rangeMin, rangeMax;
-	uint8_t orientation;
-	m_pObs->info(&rangeMin, &rangeMax, &orientation);
-	m_DS.m_distance = rangeMax * 0.1;
-
-	OBSTACLE* pPrimary = NULL;
-	if (m_pObs)
-	{
-		int64_t frameID = get_time_usec() - m_pObs->m_dTime;
-
-		//get the closest object
-		for (int i = 0; i < m_pObs->size(); i++)
-		{
-			OBSTACLE* pO = m_pObs->get(i, frameID);
-			if (!pO)
-				continue;
-			if (pO->m_dist < 0.0)
-				continue;
-
-			//check if inside avoid area
-			vInt4* pBB = &pO->m_bbox;
-			vInt2* pCam = &pO->m_camSize;
-			vInt4 avoidR;
-			avoidR.m_x = pCam->m_x * m_avoidArea.m_x;
-			avoidR.m_y = pCam->m_y * m_avoidArea.m_y;
-			avoidR.m_z = pCam->m_x * m_avoidArea.m_z;
-			avoidR.m_w = pCam->m_y * m_avoidArea.m_w;
-
-			if(!isOverlapped(pBB,&avoidR))
-			{
-				pO->m_frameID = 0;
-				continue;
-			}
-
-			if (pO->m_dist < m_DS.m_distance)
-			{
-				m_DS.m_distance = pO->m_dist;
-				pPrimary = pO;
-			}
-		}
-	}
-
-	if(pPrimary)
-		pPrimary->m_bPrimaryTarget = true;
-
-	m_DS.m_maxDistance = rangeMax * 0.1;
-	m_DS.m_minDistance = rangeMin * 0.1;
-	m_DS.m_orientation = orientation;
+	m_pZED->getRange(&rangeMin, &rangeMax);
+	m_DS.m_maxDistance = rangeMax * 100;
+	m_DS.m_minDistance = rangeMin * 100;
+	m_DS.m_orientation = 0;
 	m_DS.m_type = 0;
 	m_pAPM->updateDistanceSensor(&m_DS);
 }
@@ -129,13 +90,21 @@ bool APMcopter_avoid::draw(void)
 	pWin->addMsg(&msg);
 
 	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(pMat->empty());
 	Rect r;
 	r.x = m_avoidArea.m_x * ((double)pMat->cols);
 	r.y = m_avoidArea.m_y * ((double)pMat->rows);
 	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
 	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
-
 	rectangle(*pMat, r, Scalar(0,255,255), 1);
+
+	NULL_F(m_pObs);
+	vInt2 mDim = m_pObs->matrixDim();
+	circle(*pMat, Point((m_posMin.m_x+0.5)*(pMat->cols/mDim.m_x), (m_posMin.m_y+0.5)*(pMat->rows/mDim.m_y)),
+			0.000025*pMat->cols*pMat->rows,
+			Scalar(0, 255, 0), 1);
+
+
 	return true;
 }
 

@@ -9,6 +9,8 @@
 #include "../../../AI/_DetectNet.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
+#include "../../../AI/_AIbase.h"
+
 
 namespace kai
 {
@@ -39,7 +41,7 @@ private:
 	double	m_speedP;
 	double	m_steerP;
 
-	OBSTACLE* m_pTarget;
+	OBJECT* m_pTarget;
 	kai::Filter* m_pTargetX;
 	kai::Filter* m_pTargetY;
 	kai::Filter* m_pTargetW;

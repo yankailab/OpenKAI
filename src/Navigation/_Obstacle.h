@@ -12,23 +12,10 @@
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_StreamBase.h"
 #include "../AI/_ImageNet.h"
+#include "../Algorithm/Filter.h"
 
 namespace kai
 {
-
-struct OBSTACLE
-{
-	vInt4 m_bbox;
-	vInt2 m_camSize;
-	double m_dist;
-	double m_prob;
-	int m_iClass;
-	string m_name;
-	uint8_t m_safety;
-	vector<Point> m_contour;
-	int64_t m_frameID;
-	bool  m_bPrimaryTarget;
-};
 
 class _Obstacle: public _ThreadBase
 {
@@ -40,17 +27,11 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-
-	int size(void);
-	bool add(OBSTACLE* pNewObj);
-	OBSTACLE* get(int i, int64_t frameID);
-	OBSTACLE* getByClass(int iClass);
-
-	void info(double* pRangeMin, double* pRangeMax, uint8_t* pOrientation);
+	double dist(vDouble4* pROI, vInt2* pPos);
+	vInt2 matrixDim(void);
 
 private:
 	void detect(void);
-	double dist(Rect* pR);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -60,27 +41,12 @@ private:
 
 public:
 	_StreamBase* m_pStream;
-	_ImageNet* m_pIN;
-	Frame*	m_pFrame;
-	OBSTACLE* m_pObs;
-	int m_nObs;
-	int m_iObs;
-	int64_t m_obsLifetime;
+	Frame*	m_pMatrix;
+	vInt2	m_mDim;
+	Filter* m_pFilteredMatrix;
+	int		m_medianLen;
 
-	double m_alertDist;
-	double m_detectMinSize;
-	double m_extraBBox;
-	double m_contourBlend;
-	bool m_bDrawContour;
-
-	double m_sizeName;
-	double m_sizeDist;
-	Scalar m_colName;
-	Scalar m_colDist;
-	Scalar m_colObs;
-
-	bool m_bSlit;
-	vDouble4 m_slit;
+	double m_dBlend;
 
 };
 

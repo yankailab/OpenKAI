@@ -29,6 +29,7 @@ public:
 	bool draw(void);
 
 	void getRange(double* pMin, double* pMax);
+	double dist(Rect* pR);
 
 private:
 	bool open(void);
@@ -48,6 +49,7 @@ public:
 	bool m_bZedFlip;
 	double m_zedMinDist;
 	double m_zedMaxDist;
+	int m_zedConfidence;
 
 	//operation
 	GpuMat m_Gdepth;

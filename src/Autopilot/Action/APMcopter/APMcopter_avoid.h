@@ -5,6 +5,7 @@
 #include "../../../Base/common.h"
 #include "../../../Sensor/_Lightware_SF40.h"
 #include "../../../Navigation/_Obstacle.h"
+#include "../../../Stream/_ZED.h"
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
 
@@ -31,7 +32,9 @@ private:
 	//sensor
 	_Lightware_SF40* m_pSF40;
 	_Obstacle* m_pObs;
+	_ZED* m_pZED;
 	DISTANCE_SENSOR m_DS;
+	vInt2		m_posMin;
 	vDouble4	m_avoidArea;
 
 

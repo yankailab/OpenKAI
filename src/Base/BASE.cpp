@@ -78,8 +78,4 @@ void BASE::complete(void)
 {
 }
 
-//void BASE::waitForComplete(void)
-//{
-//}
-//
 }

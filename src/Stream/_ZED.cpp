@@ -26,6 +26,7 @@ _ZED::_ZED()
 	m_zedQuality = sl::zed::PERFORMANCE;
 	m_pDepthWin = NULL;
 	m_bZedFlip = false;
+	m_zedConfidence = 100;
 }
 
 _ZED::~_ZED()
@@ -49,6 +50,7 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
 	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
+	F_INFO(pK->v("zedConfidence", &m_zedConfidence));
 
 	m_pDepth = new Frame();
 	return true;
@@ -73,8 +75,8 @@ bool _ZED::open(void)
 
 	// define a struct of parameters for the initialization
 	sl::zed::InitParams zedParams;
-	zedParams.mode = (sl::zed::MODE) m_zedQuality; //sl::zed::MODE::PERFORMANCE;
-	zedParams.unit = sl::zed::UNIT::MILLIMETER;
+	zedParams.mode = (sl::zed::MODE) m_zedQuality;
+	zedParams.unit = sl::zed::UNIT::METER;//::MILLIMETER;
 	zedParams.verbose = 1;
 	zedParams.device = -1;
 	zedParams.minimumDistance = m_zedMinDist;
@@ -88,6 +90,8 @@ bool _ZED::open(void)
 	}
 
 	m_pZed->setFPS(m_zedFPS);
+	m_pZed->setConfidenceThreshold(m_zedConfidence);
+	m_pZed->setDepthClampValue(m_zedMaxDist);
 	m_zedMode = sl::zed::STANDARD;
 
 	// Initialize color image and depth
@@ -128,6 +132,11 @@ void _ZED::update(void)
 		}
 
 		this->autoFPSfrom();
+		GpuMat* pSrc;
+		GpuMat* pDest;
+		GpuMat* pSrcD;
+		GpuMat* pDestD;
+		GpuMat* pTmp;
 
 		// Grab frame and compute depth in FULL sensing mode
 		if (!m_pZed->grab(m_zedMode))
@@ -135,29 +144,41 @@ void _ZED::update(void)
 			// Retrieve left color image
 			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			// Retrieve depth map
-			sl::zed::Mat gDepth = m_pZed->normalizeMeasure_gpu(
-					sl::zed::MEASURE::DEPTH,
-					m_zedMinDist,
-					m_zedMaxDist);
+			sl::zed::Mat gDepth = m_pZed->retrieveMeasure_gpu(sl::zed::MEASURE::DEPTH);
 
 			m_Gmat = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
-			m_Gdepth = GpuMat(Size(m_width, m_height), CV_8UC4, gDepth.data);
+			m_Gdepth = GpuMat(Size(m_width, m_height), CV_32F, gDepth.data);
 
 #ifndef USE_OPENCV4TEGRA
 			cuda::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
-			cuda::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 #else
 			gpu::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
-			gpu::cvtColor(m_Gdepth, m_Gdepth2, CV_BGRA2GRAY);
 #endif
+			pSrc = &m_Gmat2;
+			pDest = &m_Gmat;
+			pSrcD = &m_Gdepth;
+			pDestD = &m_Gdepth2;
 
-			m_pBGR->update(&m_Gmat2);
+			if(m_bFlip)
+			{
+#ifndef USE_OPENCV4TEGRA
+				cuda::flip(m_Gmat2,m_Gmat,-1);
+				cuda::flip(m_Gdepth2,m_Gdepth,-1);
+#else
+				gpu::flip(m_Gmat2,m_Gmat,-1);
+				gpu::flip(m_Gdepth2,m_Gdepth,-1);
+#endif
+				SWAP(pSrc, pDest, pTmp);
+				SWAP(pSrcD, pDestD, pTmp);
+			}
+
+			m_pBGR->update(pSrc);
 			if (m_pGray)
 				m_pGray->getGrayOf(m_pBGR);
 			if (m_pHSV)
 				m_pHSV->getHSVOf(m_pBGR);
 
-			m_pDepth->update(&m_Gdepth2);
+			m_pDepth->update(pSrcD);
 		}
 
 		this->autoFPSto();
@@ -173,17 +194,83 @@ void _ZED::getRange(double* pMin, double* pMax)
 	*pMax = m_zedMaxDist;
 }
 
+double _ZED::dist(Rect* pR)
+{
+	NULL_F(pR);
+
+	GpuMat gMat;
+	GpuMat gMat2;
+	GpuMat gHist;
+	Mat cHist;
+
+	NULL_F(m_pDepth);
+	CHECK_F(m_pDepth->empty());
+	gMat = *(m_pDepth->getGMat());
+	gMat2 = GpuMat(gMat, *pR);
+
+	int intensity = 0;
+	int minPix = pR->area() * 0.5;
+
+#ifndef USE_OPENCV4TEGRA
+	cuda::calcHist(gMat2, gHist);
+	gHist.download(cHist);
+
+	for (int i = cHist.cols - 1; i > 0; i--)
+	{
+		intensity += cHist.at<int>(0, i);
+		if (intensity > minPix)
+		{
+			return (255.0f - i) / 255.0f;
+		}
+	}
+#else
+	int channels[] =
+	{	0};
+	int bin_num = 256;
+	int bin_nums[] =
+	{	bin_num};
+	float range[] =
+	{	0, 256};
+	const float *ranges[] =
+	{	range};
+	Mat cMat;
+	gMat2.download(cMat);
+	cv::calcHist(&cMat, 1, channels, cv::Mat(), cHist, 1, bin_nums, ranges);
+
+	for (int i = cHist.rows-1; i > 0; i--)
+	{
+		intensity += cHist.at<int>(i, 0);
+		if(intensity > minPix)
+		{
+			return (255.0f - i)/255.0f;
+		}
+	}
+#endif
+
+	return -1.0;
+}
+
 bool _ZED::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	pFrame->update(m_pBGR);
-	this->_StreamBase::draw();
+	Window* pWin;
+	Frame* pFrame;
+
+	if(this->BASE::draw())
+	{
+		CHECK_F(m_pBGR->empty());
+		pWin = (Window*) this->m_pWindow;
+		pFrame = pWin->getFrame();
+		pFrame->update(m_pBGR);
+		this->_StreamBase::draw();
+	}
 
 	NULL_T(m_pDepthWin);
 	pFrame = m_pDepthWin->getFrame();
-	pFrame->update(m_pDepth);
+	NULL_T(pFrame);
+	CHECK_F(m_pDepth->empty());
+	GpuMat gD;
+	cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+	pFrame->update(&gD);
 
 	return true;
 }

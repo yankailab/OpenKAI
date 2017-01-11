@@ -10,21 +10,34 @@ _ImageNet::_ImageNet()
 {
 	_AIbase();
 
-#ifdef USE_TENSORRT
-	m_pIN = NULL;
-#endif
 	m_pRGBA = NULL;
 	m_nBatch = 1;
 	m_blobIn = "data";
 	m_blobOut = "prob";
+
+	m_pStream = NULL;
+	m_pObj = NULL;
+	m_nObj = 128;
+	m_iObj = 0;
+	m_obsLifetime = USEC_1SEC;
+
+	m_distThr = 0.5;
+	m_detectMinSize = 0.0;
+	m_extraBBox = 0.0;
+	m_bDrawContour = false;
+	m_contourBlend = 0.125;
+
+	m_sizeName = 0.5;
+	m_sizeDist = 0.5;
+	m_colName = Scalar(255,255,0);
+	m_colDist = Scalar(0,255,255);
+	m_colObs = Scalar(255,255,0);
 }
 
 _ImageNet::~_ImageNet()
 {
+	DEL(m_pObj);
 	DEL(m_pRGBA);
-#ifdef USE_TENSORRT
-	DEL(m_pIN);
-#endif
 }
 
 bool _ImageNet::init(void* pKiss)
@@ -33,11 +46,44 @@ bool _ImageNet::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	string presetDir = "";
+	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pK->v("distThr", &m_distThr));
+	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
+	F_INFO(pK->v("extraBBox", &m_extraBBox));
+	F_INFO(pK->v("nObs", &m_nObj));
+	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
+	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
+	F_INFO(pK->v("contourBlend", &m_contourBlend));
+
+	F_INFO(pK->v("sizeName", &m_sizeName));
+	F_INFO(pK->v("sizeDist", &m_sizeDist));
+
+	F_INFO(pK->v("nameB", &m_colName[0]));
+	F_INFO(pK->v("nameG", &m_colName[1]));
+	F_INFO(pK->v("nameR", &m_colName[2]));
+
+	F_INFO(pK->v("distB", &m_colDist[0]));
+	F_INFO(pK->v("distG", &m_colDist[1]));
+	F_INFO(pK->v("distR", &m_colDist[2]));
+
+	F_INFO(pK->v("obsB", &m_colObs[0]));
+	F_INFO(pK->v("obsG", &m_colObs[1]));
+	F_INFO(pK->v("obsR", &m_colObs[2]));
+
 	F_INFO(pK->v("nBatch", &m_nBatch));
 	F_INFO(pK->v("blobIn", &m_blobIn));
 	F_INFO(pK->v("blobOut", &m_blobOut));
 
 	m_pRGBA = new Frame();
+
+	m_pObj = new OBJECT[m_nObj];
+	for (int i = 0; i < m_nObj; i++)
+	{
+		m_pObj[i].m_frameID = 0;
+		m_pObj[i].m_dist = -1.0;
+	}
+	m_iObj = 0;
 
 	return true;
 }
@@ -46,6 +92,10 @@ bool _ImageNet::link(void)
 {
 	CHECK_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
+
+	string iName = "";
+	F_INFO(pK->v("_Stream", &iName));
+	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -70,42 +120,223 @@ void _ImageNet::update(void)
 	m_pIN = imageNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
 			m_fileMean.c_str(), m_fileLabel.c_str(), m_blobIn.c_str(),
 			m_blobOut.c_str());
-#endif
 
-}
-
-double _ImageNet::detect(Frame* pFrame, int* classID, string* className)
-{
-#ifdef USE_TENSORRT
 	NULL_F(m_pIN);
 #endif
 
-	NULL_F(classID);
-	NULL_F(className);
-	NULL_F(pFrame);
-	CHECK_F(pFrame->empty());
-
-	m_pRGBA->getRGBAOf(pFrame);
-	GpuMat* pGMat = m_pRGBA->getGMat();
-	CHECK_F(pGMat->empty());
-	GpuMat fGMat;
-	pGMat->convertTo(fGMat, CV_32FC4);
-
-	float prob = 0;
-#ifdef USE_TENSORRT
-	*classID = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows, &prob);
-	if (*classID >= 0)
+	while (m_bThreadON)
 	{
-		*className = m_pIN->GetClassDesc(*classID);
+		this->autoFPSfrom();
 
-		std::string::size_type k;
-		k = className->find(',');
-		if (k != std::string::npos)
-			className->erase(k);
+		detect();
+
+		this->autoFPSto();
 	}
+}
+
+void _ImageNet::detect(void)
+{
+	NULL_(m_pStream);
+	Frame* pDepth = m_pStream->depth();
+	NULL_(pDepth);
+	CHECK_(pDepth->empty());
+	GpuMat gD = *(pDepth->getGMat());
+	GpuMat gD2;
+
+	Frame* pBGR = m_pStream->bgr();
+	GpuMat gBGR = *pBGR->getGMat();
+
+	//MinSize
+	double minSize = m_detectMinSize * gD.cols * gD.rows;
+
+	//TODO: convert to CV_8UC
+
+#ifndef USE_OPENCV4TEGRA
+	cuda::threshold(gD, gD2, m_distThr * 255.0, 255, cv::THRESH_TOZERO);
+#else
+	gpu::threshold(gMat, gMat2, m_distThr * 255.0, 255, cv::THRESH_TOZERO);
 #endif
 
-	return prob;
+	Mat cMat, cMat2;
+	gD2.download(cMat);
+	cMat.copyTo(cMat2);
+
+	// find contours
+	// findContours will modify the contents of the given Mat
+	vector<vector<Point> > contours;
+	findContours(cMat2, contours, CV_RETR_LIST/*CV_RETR_EXTERNAL*/, CV_CHAIN_APPROX_SIMPLE);
+
+	// Approximate contours to polygons + get bounding rects
+	vector<Point> contourPoly;
+	double rangeMin, rangeMax;
+	m_pStream->getRange(&rangeMin, &rangeMax);
+	double range = rangeMax - rangeMin;
+	int extraX = cMat.cols*m_extraBBox;
+	int extraY = cMat.rows*m_extraBBox;
+
+	for (unsigned int i = 0; i < contours.size(); i++)
+	{
+		approxPolyDP(Mat(contours[i]), contourPoly, 3, true);
+		Rect bb = boundingRect(Mat(contourPoly));
+		if (bb.area() < minSize)
+			continue;
+
+		OBJECT obj;
+		obj.m_camSize.m_x = cMat.cols;
+		obj.m_camSize.m_y = cMat.rows;
+		if(m_bDrawContour)
+			obj.m_contour = contourPoly;
+
+		obj.m_bbox.m_x = bb.x - extraX;
+		obj.m_bbox.m_y = bb.y - extraY;
+		obj.m_bbox.m_z = bb.x + bb.width + extraX;
+		obj.m_bbox.m_w = bb.y + bb.height + extraY;
+		if(obj.m_bbox.m_x < 0)obj.m_bbox.m_x = 0;
+		if(obj.m_bbox.m_y < 0)obj.m_bbox.m_y = 0;
+		if(obj.m_bbox.m_z > cMat.cols)obj.m_bbox.m_z = cMat.cols;
+		if(obj.m_bbox.m_w > cMat.rows)obj.m_bbox.m_w = cMat.rows;
+
+		//calc avr of the region to determine dist
+		Mat oMat = Mat(cMat, bb);
+		Scalar tot = cv::sum(oMat);
+		int area = cv::countNonZero(oMat);
+		double cArea = tot[0] / area;
+		cArea /= 255.0;
+		obj.m_dist = (rangeMax - range * cArea) * 0.1;
+
+		//classify
+		obj.m_iClass = -1;
+		obj.m_name = "?";
+		if(!gBGR.empty())
+		{
+			GpuMat gMat = GpuMat(gBGR,bb);
+
+
+//	GpuMat* pGMat = m_pRGBA->getGMat();
+//	GpuMat fGMat;
+//	pGMat->convertTo(fGMat, CV_32FC4);
+//
+//	float prob = 0;
+//#ifdef USE_TENSORRT
+//	*classID = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows, &prob);
+//	if (*classID >= 0)
+//	{
+//		*className = m_pIN->GetClassDesc(*classID);
+//
+//		std::string::size_type k;
+//		k = className->find(',');
+//		if (k != std::string::npos)
+//			className->erase(k);
+//	}
+//#endif
+
+
+			LOG_I(obj.m_name<<": "<<obj.m_dist<<" cm");
+		}
+
+		obj.m_frameID = get_time_usec();
+		add(&obj);
+	}
+
 }
+
+bool _ImageNet::add(OBJECT* pNewObj)
+{
+	NULL_F(pNewObj);
+	m_pObj[m_iObj] = *pNewObj;
+	if (++m_iObj >= m_nObj)
+		m_iObj = 0;
+	return true;
+}
+
+int _ImageNet::size(void)
+{
+	return m_nObj;
+}
+
+OBJECT* _ImageNet::get(int i, int64_t frameID)
+{
+	if(frameID - m_pObj[i].m_frameID >= m_obsLifetime)
+	{
+		return NULL;
+	}
+	return &m_pObj[i];
+}
+
+OBJECT* _ImageNet::getByClass(int iClass)
+{
+	int i;
+	OBJECT* pObj;
+
+	for (i = 0; i < m_nObj; i++)
+	{
+		pObj = &m_pObj[i];
+
+		if (pObj->m_iClass == iClass)
+			return pObj;
+	}
+
+	return NULL;
+}
+
+bool _ImageNet::draw(void)
+{
+	CHECK_F(!this->_AIbase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->getCMat();
+	CHECK_F(pMat->empty());
+
+	Mat bg;
+	if (m_bDrawContour)
+	{
+		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
+	}
+
+	uint64_t frameID = get_time_usec() - m_obsLifetime;
+	for (int i = 0; i < m_nObj; i++)
+	{
+		OBJECT* pObj = get(i, frameID);
+		if (!pObj)
+			continue;
+		if(pObj->m_frameID<=0)
+			continue;
+
+		Rect r;
+		vInt42rect(&pObj->m_bbox, &r);
+
+		if (pObj->m_iClass>=0)
+		{
+			putText(*pMat, pObj->m_name,
+					Point(r.x + r.width / 2, r.y + r.height / 2),
+					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
+		}
+
+		putText(*pMat, i2str(pObj->m_dist),
+				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
+				FONT_HERSHEY_SIMPLEX, m_sizeDist, m_colDist, 1);
+
+		Scalar colObs = m_colObs;
+		int bolObs = 1;
+
+		if (m_bDrawContour)
+		{
+			drawContours(bg, vector<vector<Point> >(1, pObj->m_contour), -1,
+					colObs, CV_FILLED, 8);
+		}
+		else
+		{
+			rectangle(*pMat, r, colObs, bolObs);
+		}
+	}
+
+	if (m_bDrawContour)
+	{
+		cv::addWeighted(*pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
+	}
+
+	return true;
+}
+
 
 }

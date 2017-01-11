@@ -56,6 +56,8 @@ public:
 	double	m_textSize;
 	Scalar	m_textCol;
 
+	Frame*	m_pF;
+	Frame*	m_pF2;
 	VideoWriter m_VW;
 };
 

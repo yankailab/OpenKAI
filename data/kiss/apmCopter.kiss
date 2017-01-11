@@ -14,7 +14,7 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bRec":0,
+	"bRec":1,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
@@ -32,10 +32,13 @@
 	"name":"APM_depth",
 	"class":"Window",
 	"bInst":0,
-	"w":1280,
-	"h":720,
+	"w":672,
+	"h":376,
 	"bFullScreen":0,
-	"bShow":1,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
 	"textSize":0.5,
 	"textR":0,
 	"textG":255,
@@ -73,10 +76,12 @@
 	"orientation":0,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":3,
-	"zedMinDist":600,
-	"zedMaxDist":20000,
-	"bZedFlip":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":20,
+	"bZedFlip":0,
+	"zedConfidence":90,
+	"bFlip":0,	
 }
 	
 {
@@ -95,7 +100,7 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",
@@ -104,21 +109,12 @@
 	"trainedFile":"bvlc_googlenet.caffemodel",
 	"meanFile":"",
 	"labelFile":"ilsvrc12_synset_words.txt",
-}
 
-{
-	"name":"Obstacle",
-	"class":"_Obstacle",
-	"FPS":30,
-	"bInst":1,
-	"Window":"APM_forward",
-	"_Stream":"ZED",
-	"_ImageNet":"imageNet",
 	"obsLifetime":100000,
 	"nObs":16,
 	"bDrawContour":0,
 	"contourBlend":0.15,
-	"alertDist":0.5,
+	"distThr":0.5,
 	"detectMinSize":0.005,
 	"extraBBox":0.025,
 	"sizeName":0.6,
@@ -132,17 +128,25 @@
 	"obsB":255,
 	"obsG":255,
 	"obsR":0,
-	"bSlit":0,
-	"slitT":0.0,
-	"slitB":0.95,
-	"slitL":0.05,
-	"slitR":0.95,
+}
+
+{
+	"name":"Obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"APM_forward",
+	"_Stream":"ZED",
+	"matrixW":40,
+	"matrixH":30,
+	"medianLen":1,
+	"dBlend":1.0;
 }
 
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",
@@ -202,10 +206,10 @@
 			"APMcopter_base":"APMbase",
 			"_Obstacle":"Obstacle",
 			"_ZED":"ZED",
-			"avoidLeft":0.1,
+			"avoidLeft":0.05,
 			"avoidTop":0.0,
-			"avoidRight":0.9,
-			"avoidBottom":0.9,
+			"avoidRight":0.95,
+			"avoidBottom":0.8,
 		}
 	}
 }

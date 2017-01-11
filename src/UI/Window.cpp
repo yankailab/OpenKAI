@@ -14,6 +14,8 @@ namespace kai
 Window::Window()
 {
 	m_pFrame = NULL;
+	m_pF = NULL;
+	m_pF2 = NULL;
 	m_textPos.init();
 	m_textStart.init();
 	m_size.init();
@@ -108,6 +110,9 @@ bool Window::init(void* pKiss)
 	m_pFrame = new Frame();
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);
 
+	m_pF = new Frame();
+	m_pF2 = new Frame();
+
 	if(m_bWindow)
 	{
 		if (m_bFullScreen)
@@ -144,17 +149,28 @@ bool Window::draw(void)
 
 	if(m_VW.isOpened())
 	{
-		Mat rMat = *m_pFrame->getCMat();
-		if(rMat.cols != m_size.m_x || rMat.rows != m_size.m_y)
+		Frame* pSrc;
+		Frame* pDest;
+		Frame* pTmp;
+		pSrc = m_pF;
+		pDest = m_pF2;
+
+		m_pF->update(m_pFrame->getCMat());
+		Size fSize = pSrc->getSize();
+
+		if(fSize.width != m_size.m_x || fSize.height != m_size.m_y)
 		{
-			Mat rMat2;
-			cv::resize(rMat, rMat2, Size(m_size.m_x,m_size.m_y));
-			m_VW << rMat2;
+			pDest->getResizedOf(pSrc,m_size.m_x,m_size.m_y);
+			SWAP(pSrc,pDest,pTmp);
 		}
-		else
+
+		if(pSrc->getCMat()->type()!=CV_8UC3)
 		{
-			m_VW << rMat;
+			pDest->get8UC3Of(pSrc);
+			SWAP(pSrc,pDest,pTmp);
 		}
+
+		m_VW << *pSrc->getCMat();
 	}
 
 	m_pFrame->allocate(m_size.m_x, m_size.m_y);
