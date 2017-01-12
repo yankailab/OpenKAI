@@ -25,8 +25,8 @@ _StreamBase::_StreamBase()
 	m_isoScale = 1.0;
 	m_rotTime = 0;
 	m_rotPrev = 0;
-	m_angleH = 0;
-	m_angleV = 0;
+	m_angleH = 60;
+	m_angleV = 60;
 	m_bFlip = false;
 
 	m_pBGR = NULL;
@@ -101,6 +101,27 @@ void _StreamBase::getRange(double* pMin, double* pMax)
 uint8_t _StreamBase::getOrientation(void)
 {
 	return m_orientation;
+}
+
+void _StreamBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
+{
+	if(pSize)
+	{
+		pSize->m_x = m_width;
+		pSize->m_y = m_height;
+	}
+
+	if(pCenter)
+	{
+		pCenter->m_x = m_centerH;
+		pCenter->m_y = m_centerV;
+	}
+
+	if(pAngle)
+	{
+		pAngle->m_x = m_angleH;
+		pAngle->m_y = m_angleV;
+	}
 }
 
 void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)

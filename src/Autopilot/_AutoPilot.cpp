@@ -52,9 +52,9 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);
+		ADD_ACTION(APMcopter_landing);
 
 #ifndef USE_OPENCV4TEGRA
-		ADD_ACTION(APMcopter_landing);
 		ADD_ACTION(RC_visualFollow);
 #endif
 		//Add action modules above

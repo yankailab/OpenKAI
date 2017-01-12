@@ -38,6 +38,7 @@ public:
 
 	virtual void getRange(double* pMin, double* pMax);
 	virtual uint8_t getOrientation(void);
+	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 

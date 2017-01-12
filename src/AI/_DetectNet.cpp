@@ -4,21 +4,20 @@
  */
 #include "_DetectNet.h"
 
-#ifdef USE_TENSORRT
-
 namespace kai
 {
 _DetectNet::_DetectNet()
 {
 	_AIbase();
 
-	m_pObs = NULL;
 	num_channels_ = 0;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_minCofidence = 0.0;
 
+#ifdef USE_TENSORRT
 	m_pDN = NULL;
+#endif
 	m_nBox = 0;
 	m_nBoxMax = 0;
 	m_nClass = 0;
@@ -28,7 +27,7 @@ _DetectNet::_DetectNet()
 	m_confCPU = NULL;
 	m_confCUDA = NULL;
 
-	m_className = "target";
+	m_className = "";
 }
 
 _DetectNet::~_DetectNet()
@@ -47,9 +46,6 @@ bool _DetectNet::init(void* pKiss)
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
-
-	//TODO: init _Obstacle
-	m_pObs = new _Obstacle();
 
 	return true;
 }
@@ -78,6 +74,7 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
+#ifdef USE_TENSORRT
 	m_pDN = detectNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
 			m_fileMean.c_str(), m_minCofidence);
 	NULL_(m_pDN);
@@ -89,6 +86,7 @@ void _DetectNet::update(void)
 					m_nBoxMax * sizeof(float4)));
 	CHECK_(	!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
+#endif
 
 	while (m_bThreadON)
 	{
@@ -104,7 +102,9 @@ void _DetectNet::update(void)
 void _DetectNet::detect(void)
 {
 	NULL_(m_pStream);
+#ifdef USE_TENSORRT
 	NULL_(m_pDN);
+#endif
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
@@ -118,12 +118,9 @@ void _DetectNet::detect(void)
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
 
-	/*	m_pRGBA->getRGBAOf(pBGR);
-	 m_pRGBAf->get32FC4Of(m_pRGBA);
-	 GpuMat* fGMat = m_pRGBA->getGMat();
-	 */
 	m_nBox = m_nBoxMax;
 
+#ifdef USE_TENSORRT
 	CHECK_(
 			!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 					&m_nBox, m_confCPU));
@@ -147,38 +144,17 @@ void _DetectNet::detect(void)
 		obj.m_prob = 0.0;
 		obj.m_name = m_className;
 
-//		m_pObs->add(&obj);
+		add(&obj);
 	}
+#endif
 
 }
 
 bool _DetectNet::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(!this->_AIbase::draw());
 
-	OBJECT* pObj;
-	int64_t frameID = get_time_usec() - m_dTime;
-	int i = 0;
-/*	while ((pObj = m_pObs->get(i++,frameID)))
-	{
-		Rect bbox;
-		bbox.x = pObj->m_bbox.m_x;
-		bbox.y = pObj->m_bbox.m_y;
-		bbox.width = pObj->m_bbox.m_z - pObj->m_bbox.m_x;
-		bbox.height = pObj->m_bbox.m_w - pObj->m_bbox.m_y;
-
-		rectangle(*pMat, bbox, Scalar(0, 255, 0), 1);
-
-		putText(*pMat, pObj->m_name,
-				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
-				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
-	}
-*/
 	return true;
 }
 
 }
-
-#endif

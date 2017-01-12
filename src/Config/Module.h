@@ -55,6 +55,7 @@
 #include "../Protocol/_RC.h"
 
 #include "../AI/_ImageNet.h"
+#include "../AI/_DetectNet.h"
 
 #ifdef USE_SSD
 #include "../AI/_SSD.h"
@@ -62,10 +63,6 @@
 #ifdef USE_FCN
 #include "../AI/_FCN.h"
 #endif
-#ifdef USE_TENSORRT
-#include "../AI/_DetectNet.h"
-#endif
-
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

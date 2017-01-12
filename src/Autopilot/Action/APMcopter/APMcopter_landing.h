@@ -3,13 +3,9 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_Bullseye.h"
-#include "../../../Detector/_AprilTags.h"
-#include "../../../Tracker/_ROITracker.h"
+#include "../../../AI/_AIbase.h"
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
-
-#ifndef USE_OPENCV4TEGRA
 
 namespace kai
 {
@@ -20,9 +16,26 @@ struct LANDING_TARGET
 	double m_angleY;
 	double m_orientX;
 	double m_orientY;
-	uint64_t m_ROIstarted;
-	uint64_t m_ROItimeLimit;
+	uint64_t m_timeStamp;
+	uint64_t m_timeOut;
+	double m_minSize;
+	double m_maxSize;
+	vInt2  m_targetPos;
+	bool	m_bLocked;
 
+	void init(void)
+	{
+		m_angleX = 0;
+		m_angleY = 0;
+		m_orientX = 1.0;
+		m_orientY = 1.0;
+		m_timeStamp = 0;
+		m_timeOut = 100000;
+		m_minSize = 0.0;
+		m_maxSize = 1.0;
+		m_targetPos.init();
+		m_bLocked = false;
+	}
 };
 
 class APMcopter_landing: public ActionBase
@@ -36,28 +49,18 @@ public:
 	void update(void);
 	bool draw(void);
 
-public:
-	void landingAtAprilTags(void);
-	void landingAtBullseye(void);
+private:
+	void landing(void);
 
 private:
 	APMcopter_base* m_pAPM;
+	_AIbase* m_pAI;
 
-	//Detectors
-	_ROITracker* 	m_pROITracker;
-	_Bullseye*		m_pMD;
-
-	_AprilTags*	m_pAT;
-	APRIL_TAG	m_pATags[NUM_PER_TAG];
-	int		m_pATagsLandingTarget[NUM_PER_TAG];
-	int		m_numATagsLandingTarget;
-
-	LANDING_TARGET	m_landingTarget;
+	LANDING_TARGET	m_target;
 
 };
 
 }
 
-#endif
 #endif
 

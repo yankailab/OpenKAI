@@ -27,6 +27,9 @@ _ZED::_ZED()
 	m_pDepthWin = NULL;
 	m_bZedFlip = false;
 	m_zedConfidence = 100;
+	m_angleH = 66.7;
+	m_angleV = 67.1;
+
 }
 
 _ZED::~_ZED()
@@ -76,7 +79,7 @@ bool _ZED::open(void)
 	// define a struct of parameters for the initialization
 	sl::zed::InitParams zedParams;
 	zedParams.mode = (sl::zed::MODE) m_zedQuality;
-	zedParams.unit = sl::zed::UNIT::METER;//::MILLIMETER;
+	zedParams.unit = sl::zed::UNIT::METER;
 	zedParams.verbose = 1;
 	zedParams.device = -1;
 	zedParams.minimumDistance = m_zedMinDist;
@@ -146,8 +149,8 @@ void _ZED::update(void)
 			// Retrieve depth map
 			sl::zed::Mat gDepth = m_pZed->retrieveMeasure_gpu(sl::zed::MEASURE::DEPTH);
 
-			m_Gmat = GpuMat(Size(m_width, m_height), CV_8UC4, gLeft.data);
-			m_Gdepth = GpuMat(Size(m_width, m_height), CV_32F, gDepth.data);
+			m_Gmat = GpuMat(Size(gLeft.width, gLeft.height), CV_8UC4, gLeft.data);
+			m_Gdepth = GpuMat(Size(gDepth.width, gDepth.height), CV_32F, gDepth.data);
 
 #ifndef USE_OPENCV4TEGRA
 			cuda::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);

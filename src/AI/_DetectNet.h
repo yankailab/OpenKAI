@@ -11,9 +11,6 @@
 #include "../Base/common.h"
 #include "_AIbase.h"
 #include "../Stream/_StreamBase.h"
-#include "../Navigation/_Obstacle.h"
-
-#ifdef USE_TENSORRT
 
 namespace kai
 {
@@ -39,11 +36,12 @@ private:
 	}
 
 public:
+#ifdef USE_TENSORRT
 	detectNet* m_pDN;
+#endif
 	int m_nBox;
 	int m_nBoxMax;
 	uint32_t m_nClass;
-	_Obstacle* m_pObs;
 
 	int num_channels_;
 	cv::Mat mean_;
@@ -58,11 +56,8 @@ public:
 
 	string m_className;
 
-public:
-
 };
 
 }
 
-#endif
 #endif

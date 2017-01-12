@@ -252,7 +252,7 @@ void Frame::update(Frame* pFrame)
 	NULL_(pFrame);
 
 #ifdef USE_CUDA
-	m_GMat.m_mat = *pFrame->getGMat();
+	pFrame->getGMat()->copyTo(m_GMat.m_mat);
 	updatedGMat();
 #elif defined USE_OPENCL
 
@@ -267,7 +267,7 @@ void Frame::update(GpuMat* pGpuFrame)
 {
 	NULL_(pGpuFrame);
 
-	m_GMat.m_mat = *pGpuFrame;
+	pGpuFrame->copyTo(m_GMat.m_mat);
 	updatedGMat();
 }
 #endif
@@ -277,7 +277,7 @@ void Frame::update(Mat* pFrame)
 	NULL_(pFrame);
 
 #ifdef USE_CUDA
-	m_CMat.m_mat = *pFrame;
+	pFrame->copyTo(m_CMat.m_mat);
 	updatedCMat();
 #elif defined USE_OPENCL
 

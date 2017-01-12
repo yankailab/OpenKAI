@@ -29,6 +29,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(Window);
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_Obstacle);
+	ADD_MODULE(_DetectNet);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);
@@ -41,9 +42,6 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_FCN
 	ADD_MODULE(_FCN);
-#endif
-#ifdef USE_TENSORRT
-	ADD_MODULE(_DetectNet);
 #endif
 
     return NULL;

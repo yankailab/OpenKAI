@@ -74,14 +74,16 @@
 	"Window":"APM_forward",
 	"depthWindow":"APM_depth",
 	"orientation":0,
+	"angleV":67.1,
+	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
 	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
-	"zedConfidence":90,
-	"bFlip":1,	
+	"zedConfidence":98,
+	"bFlip":1,
 }
 	
 {
@@ -117,7 +119,7 @@
 	"fDist":500.0,
 	"detectMinSize":0.01,
 	"detectMaxSize":0.025,
-	"extraBBox":0.025,
+	"extraBBox":0.0,
 
 	"sizeName":0.6,
 	"sizeDist":0.5,
@@ -141,7 +143,7 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"medianLen":5,
+	"medianLen":9,
 	"dBlend":0.25;
 }
 
@@ -158,7 +160,7 @@
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
-	"className":"Human",
+	"className":"",
 }
 
 {
@@ -213,6 +215,24 @@
 			"avoidRight":0.95,
 			"avoidBottom":0.8,
 		}
+		
+		{
+			"name":"APMlanding",
+			"class":"APMcopter_landing",
+			"bInst":0,
+			"Window":"APM_forward",
+			"activeState":"APM_LANDING",
+			"APMcopter_base":"APMbase",
+			"_Stream":"ZED",
+			"_AIbase":"detectNet",
+			"_Automaton":"APMstate",
+			"orientationX":1,
+			"orientationY":1,
+			"timeout":10000,
+			"minSize":0.01,
+			"maxSize":0.15,
+		}
+		
 	}
 }
 

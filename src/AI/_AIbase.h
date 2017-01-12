@@ -40,6 +40,11 @@ public:
 	virtual bool start(void);
 	virtual bool draw(void);
 
+	int size(void);
+	bool add(OBJECT* pNewObj);
+	OBJECT* get(int i, int64_t frameID);
+	OBJECT* getByClass(int iClass);
+
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -54,6 +59,23 @@ public:
 	string m_fileTrained;
 	string m_fileMean;
 	string m_fileLabel;
+
+	OBJECT* m_pObj;
+	int m_nObj;
+	int m_iObj;
+	int64_t m_obsLifetime;
+
+	double m_sizeName;
+	double m_sizeDist;
+	Scalar m_colName;
+	Scalar m_colDist;
+	Scalar m_colObs;
+
+	double m_contourBlend;
+	bool m_bDrawContour;
+
+
+
 };
 
 }

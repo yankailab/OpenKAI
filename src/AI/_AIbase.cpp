@@ -16,10 +16,25 @@ _AIbase::_AIbase()
 	m_fileTrained = "";
 	m_fileMean = "";
 	m_fileLabel = "";
+
+	m_pObj = NULL;
+	m_nObj = 128;
+	m_iObj = 0;
+	m_obsLifetime = USEC_1SEC;
+
+	m_sizeName = 0.5;
+	m_sizeDist = 0.5;
+	m_colName = Scalar(255,255,0);
+	m_colDist = Scalar(0,255,255);
+	m_colObs = Scalar(255,255,0);
+	m_bDrawContour = false;
+	m_contourBlend = 0.125;
+
 }
 
 _AIbase::~_AIbase()
 {
+	DEL(m_pObj);
 }
 
 bool _AIbase::init(void* pKiss)
@@ -44,6 +59,35 @@ bool _AIbase::init(void* pKiss)
 	m_fileTrained = modelDir + m_fileTrained;
 	m_fileMean = modelDir + m_fileMean;
 	m_fileLabel = modelDir + m_fileLabel;
+
+	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
+	F_INFO(pK->v("sizeName", &m_sizeName));
+	F_INFO(pK->v("sizeDist", &m_sizeDist));
+
+	F_INFO(pK->v("nameB", &m_colName[0]));
+	F_INFO(pK->v("nameG", &m_colName[1]));
+	F_INFO(pK->v("nameR", &m_colName[2]));
+
+	F_INFO(pK->v("distB", &m_colDist[0]));
+	F_INFO(pK->v("distG", &m_colDist[1]));
+	F_INFO(pK->v("distR", &m_colDist[2]));
+
+	F_INFO(pK->v("obsB", &m_colObs[0]));
+	F_INFO(pK->v("obsG", &m_colObs[1]));
+	F_INFO(pK->v("obsR", &m_colObs[2]));
+
+	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
+	F_INFO(pK->v("contourBlend", &m_contourBlend));
+
+	F_INFO(pK->v("nObs", &m_nObj));
+	m_pObj = new OBJECT[m_nObj];
+	for (int i = 0; i < m_nObj; i++)
+	{
+		m_pObj[i].m_frameID = 0;
+		m_pObj[i].m_dist = -1.0;
+	}
+	m_iObj = 0;
+
 
 	return true;
 }
@@ -79,9 +123,99 @@ void _AIbase::update(void)
 	NULL_(m_pStream);
 }
 
+bool _AIbase::add(OBJECT* pNewObj)
+{
+	NULL_F(pNewObj);
+	m_pObj[m_iObj] = *pNewObj;
+	if (++m_iObj >= m_nObj)
+		m_iObj = 0;
+	return true;
+}
+
+int _AIbase::size(void)
+{
+	return m_nObj;
+}
+
+OBJECT* _AIbase::get(int i, int64_t frameID)
+{
+	if(frameID - m_pObj[i].m_frameID >= m_obsLifetime)
+	{
+		return NULL;
+	}
+	return &m_pObj[i];
+}
+
+OBJECT* _AIbase::getByClass(int iClass)
+{
+	int i;
+	OBJECT* pObj;
+
+	for (i = 0; i < m_nObj; i++)
+	{
+		pObj = &m_pObj[i];
+
+		if (pObj->m_iClass == iClass)
+			return pObj;
+	}
+
+	return NULL;
+}
+
+
 bool _AIbase::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
+
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->getCMat();
+	CHECK_F(pMat->empty());
+
+	Mat bg;
+	if (m_bDrawContour)
+	{
+		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
+	}
+
+	uint64_t frameID = get_time_usec() - m_obsLifetime;
+	for (int i = 0; i < m_nObj; i++)
+	{
+		OBJECT* pObj = get(i, frameID);
+		if (!pObj)
+			continue;
+		if(pObj->m_frameID<=0)
+			continue;
+
+		Rect r;
+		vInt42rect(&pObj->m_bbox, &r);
+
+		if (pObj->m_iClass>=0)
+		{
+			putText(*pMat, pObj->m_name,
+					Point(r.x + r.width / 2, r.y + r.height / 2),
+					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
+		}
+
+		Scalar colObs = m_colObs;
+		int bolObs = 1;
+
+		if (m_bDrawContour)
+		{
+			drawContours(bg, vector<vector<Point> >(1, pObj->m_contour), -1,
+					colObs, CV_FILLED, 8);
+		}
+		else
+		{
+			rectangle(*pMat, r, colObs, bolObs);
+		}
+	}
+
+	if (m_bDrawContour)
+	{
+		cv::addWeighted(*pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
+	}
+
 
 	return true;
 }
