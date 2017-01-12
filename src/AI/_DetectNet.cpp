@@ -130,7 +130,7 @@ void _DetectNet::detect(void)
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
-	OBSTACLE obj;
+	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
 		const int nc = m_confCPU[n * 2 + 1];
@@ -147,7 +147,7 @@ void _DetectNet::detect(void)
 		obj.m_prob = 0.0;
 		obj.m_name = m_className;
 
-		m_pObs->add(&obj);
+//		m_pObs->add(&obj);
 	}
 
 }
@@ -158,10 +158,10 @@ bool _DetectNet::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	OBSTACLE* pObj;
+	OBJECT* pObj;
 	int64_t frameID = get_time_usec() - m_dTime;
 	int i = 0;
-	while ((pObj = m_pObs->get(i++,frameID)))
+/*	while ((pObj = m_pObs->get(i++,frameID)))
 	{
 		Rect bbox;
 		bbox.x = pObj->m_bbox.m_x;
@@ -175,7 +175,7 @@ bool _DetectNet::draw(void)
 				Point(bbox.x + bbox.width / 2, bbox.y + bbox.height / 2),
 				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 0), 1);
 	}
-
+*/
 	return true;
 }
 

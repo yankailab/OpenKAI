@@ -121,7 +121,7 @@ void _ImageNet::update(void)
 			m_fileMean.c_str(), m_fileLabel.c_str(), m_blobIn.c_str(),
 			m_blobOut.c_str());
 
-	NULL_F(m_pIN);
+	NULL_(m_pIN);
 #endif
 
 	while (m_bThreadON)
@@ -145,8 +145,6 @@ void _ImageNet::detect(void)
 
 	Frame* pBGR = m_pStream->bgr();
 	GpuMat gBGR = *pBGR->getGMat();
-	GpuMat gfBGR;
-	gBGR.convertTo(gfBGR, CV_32FC4);
 
 	//MinSize
 	double minSize = m_detectMinSize * gD.cols * gD.rows;
@@ -196,27 +194,32 @@ void _ImageNet::detect(void)
 		//classify
 		obj.m_iClass = -1;
 		obj.m_name = "?";
-		if(!gBGR.empty())
+/*		if(!gBGR.empty())
 		{
-			GpuMat gfBB = GpuMat(gfBGR,bb);
+			GpuMat gBB;
+			GpuMat gfBB;
+
+			gBB = GpuMat(gBGR,bb);
+			gBB.convertTo(gfBB, CV_32FC3);
 
 #ifdef USE_TENSORRT
 			float prob = 0;
-			*classID = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-			if (*classID >= 0)
+			obj.m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+			if (obj.m_iClass >= 0)
 			{
-				*className = m_pIN->GetClassDesc(*classID);
+				obj.m_name = m_pIN->GetClassDesc(obj.m_iClass);
 
 				std::string::size_type k;
-				k = className->find(',');
+				k = obj.m_name.find(',');
 				if (k != std::string::npos)
-					className->erase(k);
+					obj.m_name.erase(k);
 			}
+
 #endif
 
 			LOG_I(obj.m_name);
 		}
-
+*/
 		obj.m_frameID = get_time_usec();
 		add(&obj);
 	}

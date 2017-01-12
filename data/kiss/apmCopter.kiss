@@ -76,7 +76,7 @@
 	"orientation":0,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
@@ -114,8 +114,8 @@
 	"nObs":16,
 	"bDrawContour":0,
 	"contourBlend":0.15,
-	"fDist":1000.0,
-	"detectMinSize":0.0001,
+	"fDist":500.0,
+	"detectMinSize":0.01,
 	"extraBBox":0.025,
 
 	"sizeName":0.6,
@@ -140,14 +140,14 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"medianLen":9,
+	"medianLen":5,
 	"dBlend":0.25;
 }
 
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",

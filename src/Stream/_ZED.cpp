@@ -269,7 +269,11 @@ bool _ZED::draw(void)
 	NULL_T(pFrame);
 	CHECK_F(m_pDepth->empty());
 	GpuMat gD;
+#ifndef USE_OPENCV4TEGRA
 	cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+#else
+	gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+#endif
 	pFrame->update(&gD);
 
 	return true;
