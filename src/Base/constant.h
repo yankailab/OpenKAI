@@ -17,6 +17,7 @@
 #define DEG_RADIAN 0.0174533
 #define USEC_1SEC 1000000
 #define NSEC_1SEC 1000000000
+#define INF_DIST 1000000000
 
 #define CR '\x0d'
 #define LF '\x0a'

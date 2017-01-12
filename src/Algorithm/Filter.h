@@ -5,12 +5,10 @@
  *      Author: yankai
  */
 
+#include "../Base/common.h"
+
 #ifndef SRC_ALGORITHM_FILTER_H_
 #define SRC_ALGORITHM_FILTER_H_
-
-#define SWITCH(x,y,t) (t=x,x=y,y=t)
-
-#define FILTER_BUF 100
 
 namespace kai
 {
@@ -26,12 +24,11 @@ public:
 	double v(void);
 
 private:
-	int m_iTraj;
-	int m_iMedian;
-	int m_windowLength;
-	double m_trajectory[FILTER_BUF];
-	double m_vMid;
-
+	unsigned int m_windowLength;
+	unsigned int m_iMid;
+	double m_v;
+	std::deque<double> m_data;
+	std::deque<double> m_sort;
 };
 
 } /* namespace kai */

@@ -14,8 +14,8 @@ _Obstacle::_Obstacle()
 {
 	m_pStream = NULL;
 	m_pMatrix = NULL;
-	m_pFilteredMatrix = NULL;
 	m_medianLen = 3;
+	m_nFilter = 0;
 	m_dBlend = 0.5;
 
 	m_mDim.m_x = 10;
@@ -25,6 +25,9 @@ _Obstacle::_Obstacle()
 _Obstacle::~_Obstacle()
 {
 	DEL(m_pMatrix);
+
+	for (int i = 0; i < m_nFilter; i++)
+		DEL(m_pFilteredMatrix[i]);
 }
 
 bool _Obstacle::init(void* pKiss)
@@ -37,13 +40,17 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("dBlend", &m_dBlend));
 
+	F_INFO(pK->v("medianLen", &m_medianLen));
 	F_INFO(pK->v("matrixW", &m_mDim.m_x));
 	F_INFO(pK->v("matrixH", &m_mDim.m_y));
-	F_INFO(pK->v("medianLen", &m_medianLen));
-	m_pFilteredMatrix = new Filter[m_mDim.area()];
-	for (int i = 0; i < m_mDim.area(); i++)
+
+	m_nFilter = m_mDim.area();
+	CHECK_F(m_nFilter >= N_FILTER);
+
+	for (int i = 0; i < m_nFilter; i++)
 	{
-		m_pFilteredMatrix->startMedian(m_medianLen);
+		m_pFilteredMatrix[i] = new Filter();
+		m_pFilteredMatrix[i]->startMedian(m_medianLen);
 	}
 
 	m_pMatrix = new Frame();
@@ -105,7 +112,7 @@ void _Obstacle::detect(void)
 	{
 		for(j=0;j<m_mDim.m_x;j++)
 		{
-			m_pFilteredMatrix[i*m_mDim.m_x+j].input(pM->at<float>(i,j));
+			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<float>(i,j));
 		}
 	}
 }
@@ -124,14 +131,14 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(roi.m_z>=m_mDim.m_x)roi.m_z=m_mDim.m_x-1;
 	if(roi.m_w>=m_mDim.m_y)roi.m_w=m_mDim.m_y-1;
 
-	double distMin = 10000000;
+	double distMin = INF_DIST;
 	vInt2 posMin;
 	int i,j;
 	for(i=roi.m_y;i<roi.m_w;i++)
 	{
 		for(j=roi.m_x;j<roi.m_z;j++)
 		{
-			double cellDist = m_pFilteredMatrix[i*m_mDim.m_x+j].v();
+			double cellDist = m_pFilteredMatrix[i*m_mDim.m_x+j]->v();
 			if(cellDist < distMin)
 			{
 				distMin = cellDist;
@@ -172,7 +179,7 @@ bool _Obstacle::draw(void)
 	{
 		for(j=0;j<m_mDim.m_x;j++)
 		{
-			filterM.at<uchar>(i,j) = (uchar)((1.0-(m_pFilteredMatrix[i*m_mDim.m_x+j].v()*rMax))*255.0);
+			filterM.at<uchar>(i,j) = (uchar)((1.0-(m_pFilteredMatrix[i*m_mDim.m_x+j]->v()*rMax))*255.0);
 		}
 	}
 

@@ -14,6 +14,8 @@
 #include "../AI/_ImageNet.h"
 #include "../Algorithm/Filter.h"
 
+#define N_FILTER 400
+
 namespace kai
 {
 
@@ -43,7 +45,8 @@ public:
 	_StreamBase* m_pStream;
 	Frame*	m_pMatrix;
 	vInt2	m_mDim;
-	Filter* m_pFilteredMatrix;
+	Filter* m_pFilteredMatrix[N_FILTER];
+	int		m_nFilter;
 	int		m_medianLen;
 
 	double m_dBlend;

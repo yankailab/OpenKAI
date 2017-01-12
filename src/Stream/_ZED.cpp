@@ -162,11 +162,11 @@ void _ZED::update(void)
 			if(m_bFlip)
 			{
 #ifndef USE_OPENCV4TEGRA
-				cuda::flip(m_Gmat2,m_Gmat,-1);
-				cuda::flip(m_Gdepth2,m_Gdepth,-1);
+				cuda::flip(*pSrc,*pDest,-1);
+				cuda::flip(*pSrcD,*pDestD,-1);
 #else
-				gpu::flip(m_Gmat2,m_Gmat,-1);
-				gpu::flip(m_Gdepth2,m_Gdepth,-1);
+				gpu::flip(*pSrc,*pDest,-1);
+				gpu::flip(*pSrcD,*pDestD,-1);
 #endif
 				SWAP(pSrc, pDest, pTmp);
 				SWAP(pSrcD, pDestD, pTmp);

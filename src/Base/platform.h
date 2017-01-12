@@ -4,8 +4,10 @@
 #include <cmath>
 #include <cstdarg>
 #include <cstdlib>
+#include <deque>
 #include <fcntl.h>
 #include <fstream>
+#include <functional>
 #include <getopt.h>
 #include <iosfwd>
 #include <list>

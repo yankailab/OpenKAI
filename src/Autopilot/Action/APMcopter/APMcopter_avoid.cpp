@@ -102,7 +102,7 @@ bool APMcopter_avoid::draw(void)
 	vInt2 mDim = m_pObs->matrixDim();
 	circle(*pMat, Point((m_posMin.m_x+0.5)*(pMat->cols/mDim.m_x), (m_posMin.m_y+0.5)*(pMat->rows/mDim.m_y)),
 			0.000025*pMat->cols*pMat->rows,
-			Scalar(0, 255, 0), 1);
+			Scalar(0, 255, 0), 2);
 
 
 	return true;

@@ -12,74 +12,49 @@ namespace kai
 
 Filter::Filter()
 {
-	m_iTraj = 0;
-	m_windowLength = 0;
-	m_iMedian = 0;
-	m_vMid = 0.0;
+	m_windowLength = 3;
+	m_iMid = 1;
+	m_v = 0.0;
 }
 
 Filter::~Filter()
 {
 }
 
-
 bool Filter::startMedian(int windowLength)
 {
-	if(windowLength >= FILTER_BUF)
-	{
-		return false;
-	}
-
-	m_vMid = 0.0;
-	m_iTraj = 0;
 	m_windowLength = windowLength;
-	m_iMedian = m_windowLength * 0.5;
-	for(int i=0; i<m_windowLength;i++)
+	if(m_windowLength<3)
 	{
-		m_trajectory[i] = 0;
+		m_windowLength = 3;
 	}
+	m_iMid = windowLength/2;
+	m_v = 0.0;
+	m_data.clear();
+	m_sort.clear();
 
 	return true;
 }
 
 void Filter::input(double v)
 {
-	m_vMid = v;
-	return;
+	if(std::isnan(v))v = INF_DIST;
+	m_data.push_back(v);
+	CHECK_(m_data.size()<m_windowLength);
 
-	double data[FILTER_BUF];
-	double tmp;
-	int i, j;
-
-	m_trajectory[m_iTraj] = v;
-	if(++m_iTraj >= m_windowLength)
+	while(m_data.size() > m_windowLength)
 	{
-		m_iTraj = 0;
+		m_data.pop_front();
 	}
 
-	for (i = 0; i<m_windowLength; i++)
-	{
-		data[i] = m_trajectory[i];
-
-		for (j = i; j>0; j--)
-		{
-			if (data[j] < data[j - 1])
-			{
-				SWITCH(data[j], data[j - 1], tmp);
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-
-	m_vMid = data[m_iMedian];
+	m_sort = m_data;
+	std::sort(m_sort.begin(),m_sort.end());
+	m_v = m_sort.at(m_iMid);
 }
 
 double Filter::v(void)
 {
-	return m_vMid;
+	return m_v;
 }
 
 

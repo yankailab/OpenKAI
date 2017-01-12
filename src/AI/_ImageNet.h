@@ -56,7 +56,7 @@ public:
 	int m_iObj;
 	int64_t m_obsLifetime;
 
-	double m_distThr;
+	double m_fDist;
 	double m_detectMinSize;
 	double m_extraBBox;
 	double m_contourBlend;

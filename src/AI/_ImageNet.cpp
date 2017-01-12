@@ -21,7 +21,7 @@ _ImageNet::_ImageNet()
 	m_iObj = 0;
 	m_obsLifetime = USEC_1SEC;
 
-	m_distThr = 0.5;
+	m_fDist = 0.0;
 	m_detectMinSize = 0.0;
 	m_extraBBox = 0.0;
 	m_bDrawContour = false;
@@ -48,7 +48,7 @@ bool _ImageNet::init(void* pKiss)
 
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("distThr", &m_distThr));
+	F_INFO(pK->v("fDist", &m_fDist));
 	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
 	F_INFO(pK->v("extraBBox", &m_extraBBox));
 	F_INFO(pK->v("nObs", &m_nObj));
@@ -145,32 +145,29 @@ void _ImageNet::detect(void)
 
 	Frame* pBGR = m_pStream->bgr();
 	GpuMat gBGR = *pBGR->getGMat();
+	GpuMat gfBGR;
+	gBGR.convertTo(gfBGR, CV_32FC4);
 
 	//MinSize
 	double minSize = m_detectMinSize * gD.cols * gD.rows;
 
-	//TODO: convert to CV_8UC
-
 #ifndef USE_OPENCV4TEGRA
-	cuda::threshold(gD, gD2, m_distThr * 255.0, 255, cv::THRESH_TOZERO);
+	cuda::multiply(gD, Scalar(m_fDist), gD2);
 #else
-	gpu::threshold(gMat, gMat2, m_distThr * 255.0, 255, cv::THRESH_TOZERO);
+	gpu::multiply(gD, Scalar(m_fDist), gD2);
 #endif
+	gD2.convertTo(gD,CV_8U);
 
-	Mat cMat, cMat2;
-	gD2.download(cMat);
-	cMat.copyTo(cMat2);
+	Mat cMat;
+	gD.download(cMat);
 
 	// find contours
 	// findContours will modify the contents of the given Mat
 	vector<vector<Point> > contours;
-	findContours(cMat2, contours, CV_RETR_LIST/*CV_RETR_EXTERNAL*/, CV_CHAIN_APPROX_SIMPLE);
+	findContours(cMat, contours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
 
 	// Approximate contours to polygons + get bounding rects
 	vector<Point> contourPoly;
-	double rangeMin, rangeMax;
-	m_pStream->getRange(&rangeMin, &rangeMax);
-	double range = rangeMax - rangeMin;
 	int extraX = cMat.cols*m_extraBBox;
 	int extraY = cMat.rows*m_extraBBox;
 
@@ -196,42 +193,28 @@ void _ImageNet::detect(void)
 		if(obj.m_bbox.m_z > cMat.cols)obj.m_bbox.m_z = cMat.cols;
 		if(obj.m_bbox.m_w > cMat.rows)obj.m_bbox.m_w = cMat.rows;
 
-		//calc avr of the region to determine dist
-		Mat oMat = Mat(cMat, bb);
-		Scalar tot = cv::sum(oMat);
-		int area = cv::countNonZero(oMat);
-		double cArea = tot[0] / area;
-		cArea /= 255.0;
-		obj.m_dist = (rangeMax - range * cArea) * 0.1;
-
 		//classify
 		obj.m_iClass = -1;
 		obj.m_name = "?";
 		if(!gBGR.empty())
 		{
-			GpuMat gMat = GpuMat(gBGR,bb);
+			GpuMat gfBB = GpuMat(gfBGR,bb);
 
+#ifdef USE_TENSORRT
+			float prob = 0;
+			*classID = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+			if (*classID >= 0)
+			{
+				*className = m_pIN->GetClassDesc(*classID);
 
-//	GpuMat* pGMat = m_pRGBA->getGMat();
-//	GpuMat fGMat;
-//	pGMat->convertTo(fGMat, CV_32FC4);
-//
-//	float prob = 0;
-//#ifdef USE_TENSORRT
-//	*classID = m_pIN->Classify((float*) fGMat.data, fGMat.cols, fGMat.rows, &prob);
-//	if (*classID >= 0)
-//	{
-//		*className = m_pIN->GetClassDesc(*classID);
-//
-//		std::string::size_type k;
-//		k = className->find(',');
-//		if (k != std::string::npos)
-//			className->erase(k);
-//	}
-//#endif
+				std::string::size_type k;
+				k = className->find(',');
+				if (k != std::string::npos)
+					className->erase(k);
+			}
+#endif
 
-
-			LOG_I(obj.m_name<<": "<<obj.m_dist<<" cm");
+			LOG_I(obj.m_name);
 		}
 
 		obj.m_frameID = get_time_usec();
@@ -311,10 +294,6 @@ bool _ImageNet::draw(void)
 					Point(r.x + r.width / 2, r.y + r.height / 2),
 					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
 		}
-
-		putText(*pMat, i2str(pObj->m_dist),
-				Point(r.x + r.width / 2, r.y + r.height / 2 + 15),
-				FONT_HERSHEY_SIMPLEX, m_sizeDist, m_colDist, 1);
 
 		Scalar colObs = m_colObs;
 		int bolObs = 1;
