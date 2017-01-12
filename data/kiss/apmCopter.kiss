@@ -11,8 +11,8 @@
 	"name":"APM_forward",
 	"class":"Window",
 	"bInst":1,
-	"w":672,
-	"h":376,
+	"w":1280,
+	"h":720,
 	"bFullScreen":0,
 	"bRec":1,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
@@ -100,7 +100,7 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",
@@ -116,6 +116,7 @@
 	"contourBlend":0.15,
 	"fDist":500.0,
 	"detectMinSize":0.01,
+	"detectMaxSize":0.025,
 	"extraBBox":0.025,
 
 	"sizeName":0.6,

@@ -23,6 +23,7 @@ _ImageNet::_ImageNet()
 
 	m_fDist = 0.0;
 	m_detectMinSize = 0.0;
+	m_detectMaxSize = 0.0;
 	m_extraBBox = 0.0;
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
@@ -50,6 +51,7 @@ bool _ImageNet::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("fDist", &m_fDist));
 	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
+	F_INFO(pK->v("detectMaxSize", &m_detectMaxSize));
 	F_INFO(pK->v("extraBBox", &m_extraBBox));
 	F_INFO(pK->v("nObs", &m_nObj));
 	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
@@ -148,6 +150,7 @@ void _ImageNet::detect(void)
 
 	//MinSize
 	double minSize = m_detectMinSize * gD.cols * gD.rows;
+	double maxSize = m_detectMaxSize * gD.cols * gD.rows;
 
 #ifndef USE_OPENCV4TEGRA
 	cuda::multiply(gD, Scalar(m_fDist), gD2);
@@ -175,6 +178,8 @@ void _ImageNet::detect(void)
 		Rect bb = boundingRect(Mat(contourPoly));
 		if (bb.area() < minSize)
 			continue;
+		if(bb.area() > maxSize)
+			continue;
 
 		OBJECT obj;
 		obj.m_camSize.m_x = cMat.cols;
@@ -194,7 +199,7 @@ void _ImageNet::detect(void)
 		//classify
 		obj.m_iClass = -1;
 		obj.m_name = "?";
-/*		if(!gBGR.empty())
+		if(!gBGR.empty())
 		{
 			GpuMat gBB;
 			GpuMat gfBB;
@@ -219,7 +224,7 @@ void _ImageNet::detect(void)
 
 			LOG_I(obj.m_name);
 		}
-*/
+
 		obj.m_frameID = get_time_usec();
 		add(&obj);
 	}

@@ -58,6 +58,7 @@ public:
 
 	double m_fDist;
 	double m_detectMinSize;
+	double m_detectMaxSize;
 	double m_extraBBox;
 	double m_contourBlend;
 	bool m_bDrawContour;
