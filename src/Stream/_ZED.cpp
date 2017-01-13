@@ -100,8 +100,8 @@ bool _ZED::open(void)
 	// Initialize color image and depth
 	m_width = m_pZed->getImageSize().width;
 	m_height = m_pZed->getImageSize().height;
-	m_centerH = m_width * 0.5;
-	m_centerV = m_height * 0.5;
+	m_centerH = m_width/2;
+	m_centerV = m_height/2;
 
 	m_bOpen = true;
 	return true;
@@ -152,9 +152,6 @@ void _ZED::update(void)
 		{
 			sl::zed::Mat zLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			gImg = GpuMat(Size(zLeft.width, zLeft.height), CV_8UC4, zLeft.data);
-
-//			sl::zed::Mat zDepth = m_pZed->retrieveMeasure_gpu(sl::zed::MEASURE::DEPTH);
-//			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_32F, zDepth.data);
 
 			sl::zed::Mat zDepth = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH, m_zedMinDist, m_zedMaxDist);
 			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_8UC4, zDepth.data);
@@ -281,13 +278,6 @@ bool _ZED::draw(void)
 		pFrame = m_pDepthWin->getFrame();
 		if(pFrame && !m_pDepth->empty())
 		{
-//			GpuMat gD;
-//#ifndef USE_OPENCV4TEGRA
-//			cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
-//#else
-//			gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
-//#endif
-//			pFrame->update(&gD);
 			pFrame->update(m_pDepth);
 		}
 	}

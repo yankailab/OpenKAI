@@ -143,6 +143,7 @@ void _DetectNet::detect(void)
 		obj.m_dist = 0.0;
 		obj.m_prob = 0.0;
 		obj.m_name = m_className;
+		obj.m_frameID = get_time_usec();
 
 		add(&obj);
 	}

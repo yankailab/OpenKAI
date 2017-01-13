@@ -53,7 +53,7 @@
 	"name":"APM_mavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"APM_forward",
 
@@ -100,9 +100,22 @@
 }
 
 {
+	"name":"Obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"APM_forward",
+	"_Stream":"ZED",
+	"matrixW":20,
+	"matrixH":15,
+	"medianLen":9,
+	"dBlend":0.25;
+}
+
+{
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"APM_forward",
 	"_Stream":"ZED",
@@ -117,7 +130,7 @@
 	"contourBlend":0.15,
 	"fDist":0.5,
 	"detectMinSize":0.005,
-	"detectMaxSize":0.8,
+	"detectMaxSize":0.2,
 	"extraBBox":0.0,
 	"sizeName":0.6,
 	"sizeDist":0.5,
@@ -133,19 +146,6 @@
 }
 
 {
-	"name":"Obstacle",
-	"class":"_Obstacle",
-	"FPS":30,
-	"bInst":1,
-	"Window":"APM_forward",
-	"_Stream":"ZED",
-	"matrixW":20,
-	"matrixH":15,
-	"medianLen":9,
-	"dBlend":0.25;
-}
-
-{
 	"name":"detectNet",
 	"class":"_DetectNet",
 	"bInst":0,
@@ -153,12 +153,15 @@
 	"Window":"APM_forward",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/ped-100/",
-	"minConfidence":0.2,
+	"minConfidence":0.1,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"model/coco_labels.txt",
-	"className":"",
+	"className":"target",
+	"obsLifetime":100000000,
+	"nObs":16,
+	"bDrawContour":0,
 }
 
 {
@@ -219,16 +222,16 @@
 			"class":"APMcopter_landing",
 			"bInst":0,
 			"Window":"APM_forward",
-			"activeState":"APM_LANDING",
+			"activeState":"APM_CRUISE",
 			"APMcopter_base":"APMbase",
 			"_Stream":"ZED",
 			"_AIbase":"detectNet",
 			"_Automaton":"APMstate",
 			"orientationX":1,
 			"orientationY":1,
-			"timeout":10000,
-			"minSize":0.01,
-			"maxSize":0.15,
+			"timeout":1000,
+			"minSize":0.0,
+			"maxSize":0.5,
 		}
 		
 	}

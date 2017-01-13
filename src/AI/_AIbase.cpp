@@ -18,7 +18,7 @@ _AIbase::_AIbase()
 	m_fileLabel = "";
 
 	m_pObj = NULL;
-	m_nObj = 128;
+	m_nObj = 16;
 	m_iObj = 0;
 	m_obsLifetime = USEC_1SEC;
 

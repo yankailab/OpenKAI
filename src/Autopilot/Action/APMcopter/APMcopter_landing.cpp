@@ -36,7 +36,7 @@ bool APMcopter_landing::link(void)
 
 	string iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->root()->getChildInstByName(&iName));
+	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
 	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
@@ -48,7 +48,6 @@ void APMcopter_landing::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAPM);
-//	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
 
 	landing();
 }
@@ -56,7 +55,6 @@ void APMcopter_landing::update(void)
 void APMcopter_landing::landing(void)
 {
 	NULL_(m_pAPM);
-	NULL_(m_pAPM->m_pMavlink);
 	NULL_(m_pAI);
 	_StreamBase* pStream = m_pAI->m_pStream;
 	NULL_(pStream);
@@ -76,21 +74,12 @@ void APMcopter_landing::landing(void)
 		OBJECT* pObj = m_pAI->get(i, frameID);
 		if (!pObj)
 			continue;
-		if (pObj->m_frameID <= 0)
-			continue;
-
-		int oSize = pObj->m_bbox.area();
-		if (oSize < m_target.m_minSize)
-			continue;
-		if (oSize > m_target.m_maxSize)
-			continue;
-		if (oSize < targetBB.area())
-			continue;
 
 		targetBB = pObj->m_bbox;
 		m_target.m_targetPos.m_x = pObj->m_bbox.midX();
 		m_target.m_targetPos.m_y = pObj->m_bbox.midY();
 		k++;
+		break;
 	}
 
 	if (k <= 0)
@@ -103,9 +92,9 @@ void APMcopter_landing::landing(void)
 	m_target.m_bLocked = true;
 
 	//Change position to angles
-	m_target.m_angleX = ((m_target.m_targetPos.m_x - cCenter.m_x) / cSize.m_x)
+	m_target.m_angleX = ((double)(m_target.m_targetPos.m_x - cCenter.m_x) / (double)cSize.m_x)
 			* cAngle.m_x * DEG_RADIAN * m_target.m_orientX;
-	m_target.m_angleY = ((m_target.m_targetPos.m_y - cCenter.m_y) / cSize.m_y)
+	m_target.m_angleY = ((double)(m_target.m_targetPos.m_y - cCenter.m_y) / (double)cSize.m_y)
 			* cAngle.m_y * DEG_RADIAN * m_target.m_orientY;
 
 	//Send Mavlink command
@@ -124,7 +113,7 @@ bool APMcopter_landing::draw(void)
 	if (m_target.m_bLocked)
 	{
 		circle(*pMat, Point(m_target.m_targetPos.m_x, m_target.m_targetPos.m_y),
-				pMat->cols * pMat->rows * 0.001, Scalar(0, 255, 0), 3);
+				pMat->cols * pMat->rows * 0.0001, Scalar(0, 255, 0), 2);
 
 		msg = "Landing_Target: (" + f2str(m_target.m_angleX) + " , "
 				+ f2str(m_target.m_angleY) + ")";
