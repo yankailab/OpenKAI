@@ -179,6 +179,7 @@ void _ZED::update(void)
 				gNorm = GpuMat(Size(zNormalize.width, zNormalize.height), CV_8UC4, zNormalize.data);
 			}
 
+
 #ifndef USE_OPENCV4TEGRA
 			cuda::cvtColor(gImg, gImg2, CV_BGRA2BGR);
 			if(m_bNormalize)
@@ -326,23 +327,25 @@ bool _ZED::draw(void)
 	if(m_pDepthWin)
 	{
 		pFrame = m_pDepthWin->getFrame();
-		NULL_T(pFrame);
-		CHECK_F(m_pDepth->empty());
-		GpuMat gD;
+		if(pFrame && !m_pDepth->empty())
+		{
+			GpuMat gD;
 #ifndef USE_OPENCV4TEGRA
-		cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+			cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
 #else
-		gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+			gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
 #endif
-		pFrame->update(&gD);
+			pFrame->update(&gD);
+		}
 	}
 
-	if(m_pNorm)
+	if(m_pNormWin && m_pNorm)
 	{
 		pFrame = m_pNormWin->getFrame();
-		NULL_T(pFrame);
-		CHECK_F(m_pNorm->empty());
-		pFrame->update(m_pNorm);
+		if(pFrame && !m_pNorm->empty())
+		{
+			pFrame->update(m_pNorm);
+		}
 	}
 
 	return true;
