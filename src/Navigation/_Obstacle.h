@@ -14,7 +14,7 @@
 #include "../AI/_ImageNet.h"
 #include "../Algorithm/Filter.h"
 
-#define N_FILTER 2500
+#define N_FILTER 1200
 
 namespace kai
 {

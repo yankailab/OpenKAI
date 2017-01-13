@@ -72,9 +72,10 @@ void APMcopter_avoid::updateDistanceSensor(void)
 	NULL_(m_pObs);
 	NULL_(m_pZED);
 
-	m_DS.m_distance = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
 	double rangeMin, rangeMax;
 	m_pZED->getRange(&rangeMin, &rangeMax);
+
+	m_DS.m_distance = (rangeMax-(m_pObs->dist(&m_avoidArea,&m_posMin)/255.0)*(rangeMax-rangeMin)) * 100;
 	m_DS.m_maxDistance = rangeMax * 100;
 	m_DS.m_minDistance = rangeMin * 100;
 	m_DS.m_orientation = 0;

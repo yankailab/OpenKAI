@@ -31,8 +31,6 @@ public:
 	void getRange(double* pMin, double* pMax);
 	double dist(Rect* pR);
 
-	Frame* norm(void);
-
 private:
 	bool open(void);
 	void update(void);
@@ -52,12 +50,8 @@ public:
 	double m_zedMinDist;
 	double m_zedMaxDist;
 	int m_zedConfidence;
-	bool m_bNormalize;
-
-	Frame* m_pNorm;
 
 	Window* m_pDepthWin;
-	Window* m_pNormWin;
 
 };
 

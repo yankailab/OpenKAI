@@ -38,7 +38,7 @@ bool Filter::startMedian(int windowLength)
 
 void Filter::input(double v)
 {
-	if(std::isnan(v))v = INF_DIST;
+	if(std::isnan(v))v = 0;
 	m_data.push_back(v);
 	CHECK_(m_data.size()<m_windowLength);
 

@@ -99,7 +99,7 @@ void _ImageNet::update(void)
 void _ImageNet::detect(void)
 {
 	NULL_(m_pStream);
-	Frame* pDepth = ((_ZED*)m_pStream)->norm();//m_pStream->depth();
+	Frame* pDepth = m_pStream->depth();
 	NULL_(pDepth);
 	CHECK_(pDepth->empty());
 	GpuMat gD = *(pDepth->getGMat());
@@ -117,13 +117,6 @@ void _ImageNet::detect(void)
 #else
 	gpu::threshold(gD, gD2, m_fDist * 255.0, 255, cv::THRESH_BINARY);
 #endif
-
-//#ifndef USE_OPENCV4TEGRA
-//	cuda::multiply(gD, Scalar(m_fDist), gD2);
-//#else
-//	gpu::multiply(gD, Scalar(m_fDist), gD2);
-//#endif
-//	gD2.convertTo(gD,CV_8U);
 
 	Mat cMat;
 	gD2.download(cMat);

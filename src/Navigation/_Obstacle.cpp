@@ -112,7 +112,8 @@ void _Obstacle::detect(void)
 	{
 		for(j=0;j<m_mDim.m_x;j++)
 		{
-			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<float>(i,j));
+//			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<float>(i,j));
+			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<uchar>(i,j));
 		}
 	}
 }
@@ -131,7 +132,7 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(roi.m_z>=m_mDim.m_x)roi.m_z=m_mDim.m_x-1;
 	if(roi.m_w>=m_mDim.m_y)roi.m_w=m_mDim.m_y-1;
 
-	double distMin = INF_DIST;
+	double distMin = 0;//INF_DIST;
 	vInt2 posMin;
 	int i,j;
 	for(i=roi.m_y;i<roi.m_w;i++)
@@ -139,7 +140,7 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 		for(j=roi.m_x;j<roi.m_z;j++)
 		{
 			double cellDist = m_pFilteredMatrix[i*m_mDim.m_x+j]->v();
-			if(cellDist < distMin)
+			if(cellDist > distMin)
 			{
 				distMin = cellDist;
 				posMin.m_x = j;
@@ -170,16 +171,16 @@ bool _Obstacle::draw(void)
 
     Mat filterM = Mat::zeros(Size(m_mDim.m_x,m_mDim.m_y), CV_8UC1);
 
-    double rMax, rMin;
-	m_pStream->getRange(&rMin,&rMax);
-	rMax = 1.0/rMax;
+//    double rMax, rMin;
+//	m_pStream->getRange(&rMin,&rMax);
+//	rMax = 1.0/rMax;
 
 	int i,j;
 	for(i=0;i<m_mDim.m_y;i++)
 	{
 		for(j=0;j<m_mDim.m_x;j++)
 		{
-			filterM.at<uchar>(i,j) = (uchar)((1.0-(m_pFilteredMatrix[i*m_mDim.m_x+j]->v()*rMax))*255.0);
+			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.m_x+j]->v());
 		}
 	}
 
