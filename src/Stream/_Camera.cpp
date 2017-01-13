@@ -171,6 +171,9 @@ void _Camera::update(void)
 
 		this->autoFPSfrom();
 
+		GpuMat m_Gmat;
+		GpuMat m_Gmat2;
+
 		GpuMat* pSrc;
 		GpuMat* pDest;
 		GpuMat* pTmp;

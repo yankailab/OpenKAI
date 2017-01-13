@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "_AIbase.h"
-#include "../Stream/_StreamBase.h"
+#include "../Stream/_ZED.h"
 
 namespace kai
 {

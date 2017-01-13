@@ -98,7 +98,7 @@ bool _AIbase::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_ERROR_F(pK->v("_Stream", &iName));
+	F_INFO(pK->v("_Stream", &iName));
 	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
@@ -161,7 +161,6 @@ OBJECT* _AIbase::getByClass(int iClass)
 
 	return NULL;
 }
-
 
 bool _AIbase::draw(void)
 {

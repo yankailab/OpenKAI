@@ -59,10 +59,6 @@ bool _ImageNet::link(void)
 	CHECK_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
-	string iName = "";
-	F_INFO(pK->v("_Stream", &iName));
-	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -103,7 +99,7 @@ void _ImageNet::update(void)
 void _ImageNet::detect(void)
 {
 	NULL_(m_pStream);
-	Frame* pDepth = m_pStream->depth();
+	Frame* pDepth = ((_ZED*)m_pStream)->norm();//m_pStream->depth();
 	NULL_(pDepth);
 	CHECK_(pDepth->empty());
 	GpuMat gD = *(pDepth->getGMat());
@@ -117,14 +113,20 @@ void _ImageNet::detect(void)
 	double maxSize = m_detectMaxSize * gD.cols * gD.rows;
 
 #ifndef USE_OPENCV4TEGRA
-	cuda::multiply(gD, Scalar(m_fDist), gD2);
+	cuda::threshold(gD, gD2, m_fDist * 255.0, 255, cv::THRESH_BINARY);
 #else
-	gpu::multiply(gD, Scalar(m_fDist), gD2);
+	gpu::threshold(gD, gD2, m_fDist * 255.0, 255, cv::THRESH_BINARY);
 #endif
-	gD2.convertTo(gD,CV_8U);
+
+//#ifndef USE_OPENCV4TEGRA
+//	cuda::multiply(gD, Scalar(m_fDist), gD2);
+//#else
+//	gpu::multiply(gD, Scalar(m_fDist), gD2);
+//#endif
+//	gD2.convertTo(gD,CV_8U);
 
 	Mat cMat;
-	gD.download(cMat);
+	gD2.download(cMat);
 
 	// find contours
 	// findContours will modify the contents of the given Mat

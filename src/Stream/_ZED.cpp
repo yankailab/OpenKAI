@@ -29,12 +29,15 @@ _ZED::_ZED()
 	m_zedConfidence = 100;
 	m_angleH = 66.7;
 	m_angleV = 67.1;
-
+	m_bNormalize = true;
+	m_pNorm = NULL;
+	m_pNormWin = NULL;
 }
 
 _ZED::~_ZED()
 {
 	this->_StreamBase::complete();
+	DEL(m_pNorm);
 }
 
 bool _ZED::init(void* pKiss)
@@ -54,8 +57,13 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
 	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
 	F_INFO(pK->v("zedConfidence", &m_zedConfidence));
+	F_INFO(pK->v("bNormalize", &m_bNormalize));
 
 	m_pDepth = new Frame();
+
+	if(m_bNormalize)
+		m_pNorm = new Frame();
+
 	return true;
 }
 
@@ -67,6 +75,9 @@ bool _ZED::link(void)
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
 	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));
+
+	F_INFO(pK->v("normWindow", &iName));
+	m_pNormWin = (Window*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -135,44 +146,79 @@ void _ZED::update(void)
 		}
 
 		this->autoFPSfrom();
+
+		GpuMat gImg;
+		GpuMat gImg2;
+		GpuMat gDepth;
+		GpuMat gDepth2;
+		GpuMat gNorm;
+		GpuMat gNorm2;
+
 		GpuMat* pSrc;
 		GpuMat* pDest;
 		GpuMat* pSrcD;
 		GpuMat* pDestD;
+		GpuMat* pSrcN;
+		GpuMat* pDestN;
 		GpuMat* pTmp;
 
 		// Grab frame and compute depth in FULL sensing mode
 		if (!m_pZed->grab(m_zedMode))
 		{
-			// Retrieve left color image
-			sl::zed::Mat gLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
-			// Retrieve depth map
-			sl::zed::Mat gDepth = m_pZed->retrieveMeasure_gpu(sl::zed::MEASURE::DEPTH);
+			sl::zed::Mat zLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
+			gImg = GpuMat(Size(zLeft.width, zLeft.height), CV_8UC4, zLeft.data);
 
-			m_Gmat = GpuMat(Size(gLeft.width, gLeft.height), CV_8UC4, gLeft.data);
-			m_Gdepth = GpuMat(Size(gDepth.width, gDepth.height), CV_32F, gDepth.data);
+			sl::zed::Mat zDepth = m_pZed->retrieveMeasure_gpu(sl::zed::MEASURE::DEPTH);
+			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_32F, zDepth.data);
+
+			// Retrieve normalized map
+			sl::zed::Mat zNormalize;
+			if(m_bNormalize)
+			{
+				zNormalize = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH,m_zedMinDist,m_zedMaxDist);
+				gNorm = GpuMat(Size(zNormalize.width, zNormalize.height), CV_8UC4, zNormalize.data);
+			}
 
 #ifndef USE_OPENCV4TEGRA
-			cuda::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
+			cuda::cvtColor(gImg, gImg2, CV_BGRA2BGR);
+			if(m_bNormalize)
+			{
+				cuda::cvtColor(gNorm, gNorm2, CV_BGRA2GRAY);
+			}
 #else
-			gpu::cvtColor(m_Gmat, m_Gmat2, CV_BGRA2BGR);
+			gpu::cvtColor(gImg, gImg2, CV_BGRA2BGR);
+			if(m_bNormalize)
+			{
+				gpu::cvtColor(gNorm, gNorm2, CV_BGRA2GRAY);
+			}
 #endif
-			pSrc = &m_Gmat2;
-			pDest = &m_Gmat;
-			pSrcD = &m_Gdepth;
-			pDestD = &m_Gdepth2;
+			pSrc = &gImg2;
+			pDest = &gImg;
+			pSrcD = &gDepth;
+			pDestD = &gDepth2;
+			pSrcN = &gNorm2;
+			pDestN = &gNorm;
 
 			if(m_bFlip)
 			{
 #ifndef USE_OPENCV4TEGRA
 				cuda::flip(*pSrc,*pDest,-1);
 				cuda::flip(*pSrcD,*pDestD,-1);
+				if(m_bNormalize)
+				{
+					cuda::flip(*pSrcN,*pDestN,-1);
+				}
 #else
 				gpu::flip(*pSrc,*pDest,-1);
 				gpu::flip(*pSrcD,*pDestD,-1);
+				if(m_bNormalize)
+				{
+					gpu::flip(*pSrcN,*pDestN,-1);
+				}
 #endif
 				SWAP(pSrc, pDest, pTmp);
 				SWAP(pSrcD, pDestD, pTmp);
+				SWAP(pSrcN, pDestN, pTmp);
 			}
 
 			m_pBGR->update(pSrc);
@@ -182,6 +228,11 @@ void _ZED::update(void)
 				m_pHSV->getHSVOf(m_pBGR);
 
 			m_pDepth->update(pSrcD);
+
+			if(m_bNormalize)
+			{
+				m_pNorm->update(pSrcN);
+			}
 		}
 
 		this->autoFPSto();
@@ -195,6 +246,11 @@ void _ZED::getRange(double* pMin, double* pMax)
 
 	*pMin = m_zedMinDist;
 	*pMax = m_zedMaxDist;
+}
+
+Frame* _ZED::norm(void)
+{
+	return m_pNorm;
 }
 
 double _ZED::dist(Rect* pR)
@@ -267,17 +323,27 @@ bool _ZED::draw(void)
 		this->_StreamBase::draw();
 	}
 
-	NULL_T(m_pDepthWin);
-	pFrame = m_pDepthWin->getFrame();
-	NULL_T(pFrame);
-	CHECK_F(m_pDepth->empty());
-	GpuMat gD;
+	if(m_pDepthWin)
+	{
+		pFrame = m_pDepthWin->getFrame();
+		NULL_T(pFrame);
+		CHECK_F(m_pDepth->empty());
+		GpuMat gD;
 #ifndef USE_OPENCV4TEGRA
-	cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+		cuda::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
 #else
-	gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
+		gpu::multiply(*m_pDepth->getGMat(), Scalar(1.0/m_zedMaxDist), gD);
 #endif
-	pFrame->update(&gD);
+		pFrame->update(&gD);
+	}
+
+	if(m_pNorm)
+	{
+		pFrame = m_pNormWin->getFrame();
+		NULL_T(pFrame);
+		CHECK_F(m_pNorm->empty());
+		pFrame->update(m_pNorm);
+	}
 
 	return true;
 }

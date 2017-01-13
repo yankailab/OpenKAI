@@ -79,6 +79,12 @@ void APMcopter_avoid::updateDistanceSensor(void)
 	m_DS.m_minDistance = rangeMin * 100;
 	m_DS.m_orientation = 0;
 	m_DS.m_type = 0;
+
+	if(m_DS.m_distance < m_DS.m_minDistance || m_DS.m_distance > m_DS.m_maxDistance)
+	{
+		m_DS.m_distance = m_DS.m_maxDistance;
+	}
+
 	m_pAPM->updateDistanceSensor(&m_DS);
 }
 

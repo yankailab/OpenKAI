@@ -67,10 +67,6 @@ public:
 	Frame*	m_pHSV;
 	Frame*	m_pDepth;
 
-	//operation
-	GpuMat m_Gmat;
-	GpuMat m_Gmat2;
-
 };
 
 }
