@@ -33,7 +33,7 @@ class _AIbase: public _ThreadBase
 {
 public:
 	_AIbase();
-	~_AIbase();
+	virtual ~_AIbase();
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
@@ -45,6 +45,7 @@ public:
 	OBJECT* get(int i, int64_t frameID);
 	OBJECT* getByClass(int iClass);
 
+private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

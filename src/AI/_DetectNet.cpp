@@ -8,8 +8,6 @@ namespace kai
 {
 _DetectNet::_DetectNet()
 {
-	_AIbase();
-
 	num_channels_ = 0;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
@@ -32,7 +30,8 @@ _DetectNet::_DetectNet()
 
 _DetectNet::~_DetectNet()
 {
-	this->~_AIbase();
+	DEL(m_pRGBA);
+	DEL(m_pRGBAf);
 }
 
 bool _DetectNet::init(void* pKiss)

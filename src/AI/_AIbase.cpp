@@ -7,10 +7,9 @@
 
 namespace kai
 {
+
 _AIbase::_AIbase()
 {
-	_ThreadBase();
-
 	m_pStream = NULL;
 	m_fileModel = "";
 	m_fileTrained = "";
@@ -29,7 +28,6 @@ _AIbase::_AIbase()
 	m_colObs = Scalar(255,255,0);
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
-
 }
 
 _AIbase::~_AIbase()
@@ -87,7 +85,6 @@ bool _AIbase::init(void* pKiss)
 		m_pObj[i].m_dist = -1.0;
 	}
 	m_iObj = 0;
-
 
 	return true;
 }

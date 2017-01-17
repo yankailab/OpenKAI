@@ -14,7 +14,7 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bRec":1,
+	"bRec":0,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
@@ -83,7 +83,7 @@
 	"zedMaxDist":20,
 	"bZedFlip":0,
 	"zedConfidence":99,
-	"bFlip":1,
+	"bFlip":0,
 }
 	
 {
@@ -130,7 +130,7 @@
 	"contourBlend":0.15,
 	"fDist":0.5,
 	"detectMinSize":0.005,
-	"detectMaxSize":0.15,
+	"detectMaxSize":0.05,
 	"extraBBox":0.0,
 	"sizeName":0.6,
 	"sizeDist":0.5,

@@ -5,8 +5,6 @@ namespace kai
 
 APMcopter_avoid::APMcopter_avoid()
 {
-	ActionBase();
-
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
 	m_pObs = NULL;

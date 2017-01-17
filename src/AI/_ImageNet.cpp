@@ -6,10 +6,9 @@
 
 namespace kai
 {
+
 _ImageNet::_ImageNet()
 {
-	_AIbase();
-
 #ifdef USE_TENSORRT
 	m_pIN = NULL;
 #endif
@@ -27,9 +26,11 @@ _ImageNet::_ImageNet()
 
 _ImageNet::~_ImageNet()
 {
-	this->~_AIbase();
-	DEL(m_pObj);
 	DEL(m_pRGBA);
+#ifdef USE_TENSORRT
+	DEL(m_pIN);
+#endif
+
 }
 
 bool _ImageNet::init(void* pKiss)

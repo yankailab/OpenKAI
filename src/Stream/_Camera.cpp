@@ -12,8 +12,6 @@ namespace kai
 
 _Camera::_Camera()
 {
-	_StreamBase();
-
 	m_type = camera;
 	m_deviceID = 0;
 

@@ -14,8 +14,6 @@ namespace kai
 
 _ZED::_ZED()
 {
-	_StreamBase();
-
 	m_type = zed;
 	m_zedResolution = (int) sl::zed::VGA;
 	m_zedMinDist = 0.6;

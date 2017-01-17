@@ -12,8 +12,6 @@ namespace kai
 
 _StreamBase::_StreamBase()
 {
-	BASE();
-
 	m_bOpen = false;
 	m_type = unknownStream;
 	m_orientation = 0;
