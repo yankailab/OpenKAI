@@ -5,8 +5,6 @@ namespace kai
 
 APMcopter_guided::APMcopter_guided()
 {
-	ActionBase();
-
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
 }

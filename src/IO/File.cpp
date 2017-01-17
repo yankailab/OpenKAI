@@ -6,7 +6,6 @@ namespace kai
 
 File::File(void)
 {
-	IO();
 	m_type = file;
 	m_name = "";
 	m_buf = "";

@@ -7,8 +7,6 @@ namespace kai
 
 RC_visualFollow::RC_visualFollow()
 {
-	ActionBase();
-
 	m_pRC = NULL;
 	m_pRCconfig = NULL;
 	m_pROITracker = NULL;

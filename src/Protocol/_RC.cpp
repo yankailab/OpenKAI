@@ -4,8 +4,6 @@ namespace kai
 {
 _RC::_RC()
 {
-	_ThreadBase();
-
 	m_pSerialPort = NULL;
 }
 

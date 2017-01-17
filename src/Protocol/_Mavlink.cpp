@@ -6,8 +6,6 @@ namespace kai
 
 _Mavlink::_Mavlink()
 {
-	_ThreadBase();
-
 	m_pSerialPort = NULL;
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;

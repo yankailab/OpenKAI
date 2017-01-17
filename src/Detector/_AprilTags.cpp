@@ -12,8 +12,6 @@ namespace kai
 
 _AprilTags::_AprilTags()
 {
-	_ThreadBase();
-
 	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_tagFamily = DEFAULT_TAG_FAMILY;

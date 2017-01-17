@@ -8,8 +8,6 @@ namespace kai
 
 _BgFg::_BgFg()
 {
-	_ThreadBase();
-
 	m_cudaDeviceID = 0;
 	m_objPos.m_z = 0;
 	m_minSize = MIN_MARKER_SIZE;

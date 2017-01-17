@@ -12,7 +12,6 @@ namespace kai
 
 _Bullseye::_Bullseye()
 {
-	_ThreadBase();
 	m_cudaDeviceID = 0;
 
 	m_method = METHOD_FILL;

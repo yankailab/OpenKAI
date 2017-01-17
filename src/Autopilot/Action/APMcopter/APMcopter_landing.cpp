@@ -5,8 +5,6 @@ namespace kai
 
 APMcopter_landing::APMcopter_landing()
 {
-	ActionBase();
-
 	m_pAPM = NULL;
 	m_pAI = NULL;
 	m_target.init();

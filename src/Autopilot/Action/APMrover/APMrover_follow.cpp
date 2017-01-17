@@ -5,8 +5,6 @@ namespace kai
 
 APMrover_follow::APMrover_follow()
 {
-	ActionBase();
-
 	m_pAPM = NULL;
 	m_pAM = NULL;
 	m_pUniv = NULL;

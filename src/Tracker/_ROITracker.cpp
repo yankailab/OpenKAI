@@ -14,8 +14,6 @@ namespace kai
 
 _ROITracker::_ROITracker()
 {
-	_ThreadBase();
-
 	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_bTracking = false;

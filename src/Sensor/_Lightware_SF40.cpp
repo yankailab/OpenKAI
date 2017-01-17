@@ -9,8 +9,6 @@ namespace kai
 
 _Lightware_SF40::_Lightware_SF40()
 {
-	_ThreadBase();
-
 	m_pIn = NULL;
 	m_pOut = NULL;
 

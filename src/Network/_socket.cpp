@@ -12,8 +12,6 @@ namespace kai
 
 _socket::_socket()
 {
-	_ThreadBase();
-
 	pthread_mutex_init(&m_mutexSend, NULL);
 	pthread_mutex_init(&m_mutexRecv, NULL);
 

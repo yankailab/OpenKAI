@@ -4,8 +4,6 @@ namespace kai
 {
 _Canbus::_Canbus()
 {
-	_ThreadBase();
-
 	m_pSerialPort = NULL;
 }
 

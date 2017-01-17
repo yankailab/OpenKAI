@@ -16,8 +16,6 @@ namespace kai
 
 _Flow::_Flow()
 {
-	_ThreadBase();
-
 	m_width = 640;
 	m_height = 480;
 	m_bDepth = false;

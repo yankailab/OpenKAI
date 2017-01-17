@@ -6,7 +6,6 @@ namespace kai
 
 SerialPort::SerialPort(void)
 {
-	IO();
 	m_fd = -1;
 	m_name = "";
 	m_type = serialport;

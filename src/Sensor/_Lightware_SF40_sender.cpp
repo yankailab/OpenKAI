@@ -8,8 +8,6 @@ namespace kai
 {
 _Lightware_SF40_sender::_Lightware_SF40_sender()
 {
-	_ThreadBase();
-
 	m_pSerialPort = NULL;
 	m_dAngle = 1;
 }

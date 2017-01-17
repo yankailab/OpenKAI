@@ -12,8 +12,6 @@ namespace kai
 
 _server::_server()
 {
-	_ThreadBase();
-
 	m_socket = 0;
 	m_listenPort = 8888;
 	m_nListen = N_LISTEN;

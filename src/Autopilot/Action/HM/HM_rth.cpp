@@ -5,8 +5,6 @@ namespace kai
 
 HM_rth::HM_rth()
 {
-	ActionBase();
-
 	m_pHM = NULL;
 	m_pAM = NULL;
 	m_pUniv = NULL;

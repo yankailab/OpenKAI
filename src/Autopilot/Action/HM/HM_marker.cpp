@@ -5,8 +5,6 @@ namespace kai
 
 HM_marker::HM_marker()
 {
-	ActionBase();
-
 	m_pHM = NULL;
 	m_pStream = NULL;
 

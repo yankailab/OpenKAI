@@ -5,8 +5,6 @@ namespace kai
 
 HM_avoid::HM_avoid()
 {
-	ActionBase();
-
 	m_pHM = NULL;
 	m_pStream = NULL;
 

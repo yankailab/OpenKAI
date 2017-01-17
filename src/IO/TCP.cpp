@@ -6,7 +6,6 @@ namespace kai
 
 TCP::TCP(void)
 {
-	IO();
 	m_type = tcp;
 	m_pSocket = NULL;
 	m_pServer = NULL;
