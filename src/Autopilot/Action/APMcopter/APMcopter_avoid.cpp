@@ -73,7 +73,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 	double rangeMin, rangeMax;
 	m_pZED->getRange(&rangeMin, &rangeMax);
 
-	m_DS.m_distance = (rangeMax-(m_pObs->dist(&m_avoidArea,&m_posMin)/255.0)*(rangeMax-rangeMin)) * 100;
+	m_DS.m_distance = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
 	m_DS.m_maxDistance = rangeMax * 100;
 	m_DS.m_minDistance = rangeMin * 100;
 	m_DS.m_orientation = 0;
@@ -91,11 +91,12 @@ bool APMcopter_avoid::draw(void)
 {
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(pMat->empty());
+
 	string msg = *this->getName() + " Dist=" + i2str(m_DS.m_distance);
 	pWin->addMsg(&msg);
 
-	Mat* pMat = pWin->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
 	Rect r;
 	r.x = m_avoidArea.m_x * ((double)pMat->cols);
 	r.y = m_avoidArea.m_y * ((double)pMat->rows);
@@ -108,7 +109,6 @@ bool APMcopter_avoid::draw(void)
 	circle(*pMat, Point((m_posMin.m_x+0.5)*(pMat->cols/mDim.m_x), (m_posMin.m_y+0.5)*(pMat->rows/mDim.m_y)),
 			0.000025*pMat->cols*pMat->rows,
 			Scalar(0, 255, 255), 2);
-
 
 	return true;
 }

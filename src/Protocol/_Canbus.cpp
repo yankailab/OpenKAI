@@ -166,14 +166,14 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 
 bool _Canbus::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	CHECK_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	string msg = *this->getName();
 	if (m_pSerialPort->isOpen())
-		msg = +": CONNECTED";
+		msg += ": CONNECTED";
 	else
-		msg = +": Not connected";
+		msg += ": Not connected";
 
 	pWin->addMsg(&msg);
 

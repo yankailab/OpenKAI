@@ -13,6 +13,7 @@ _ImageNet::_ImageNet()
 	m_pIN = NULL;
 #endif
 
+	m_mode = noThread;
 	m_pRGBA = NULL;
 	m_nBatch = 1;
 	m_blobIn = "data";
@@ -52,6 +53,13 @@ bool _ImageNet::init(void* pKiss)
 
 	m_pRGBA = new Frame();
 
+	string iName = "noThread";
+	F_INFO(pK->v("mode", &iName));
+	if(iName == "depth")
+		m_mode = depth;
+	else if(iName == "object")
+		m_mode = object;
+
 	return true;
 }
 
@@ -87,17 +95,81 @@ void _ImageNet::update(void)
 	NULL_(m_pIN);
 #endif
 
+	CHECK_(m_mode==noThread);
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		detect();
+		if(m_mode == depth)
+		{
+			detectDepth();
+		}
+		else if(m_mode == object)
+		{
+			detectObject();
+		}
+		else
+		{
+			return;
+		}
 
 		this->autoFPSto();
 	}
 }
 
-void _ImageNet::detect(void)
+void _ImageNet::detectObject(void)
+{
+	NULL_(m_pStream);
+	Frame* pBGR = m_pStream->bgr();
+	NULL_(pBGR);
+	CHECK_(pBGR->empty());
+	GpuMat gBGR = *pBGR->getGMat();
+
+	for (int i = 0; i < m_iObj; i++)
+	{
+		OBJECT* pObj = &m_pObj[i];
+		if(pObj->m_bbox.area()<=0)
+		{
+			pObj->m_bbox.m_x = pObj->m_fBBox.m_x * gBGR.cols;
+			pObj->m_bbox.m_y = pObj->m_fBBox.m_y * gBGR.rows;
+			pObj->m_bbox.m_z = pObj->m_fBBox.m_z * gBGR.cols;
+			pObj->m_bbox.m_w = pObj->m_fBBox.m_w * gBGR.rows;
+		}
+		if(pObj->m_bbox.area()<=0)continue;
+
+		if(!gBGR.empty())
+		{
+			Rect bb;
+			GpuMat gBB;
+			GpuMat gfBB;
+
+			vInt42rect(&pObj->m_bbox,&bb);
+			gBB = GpuMat(gBGR,bb);
+			gBB.convertTo(gfBB, CV_32FC3);
+
+#ifdef USE_TENSORRT
+			float prob = 0;
+			pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+			if (pObj->m_iClass >= 0)
+			{
+				pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
+
+				std::string::size_type k;
+				k = pObj->m_name.find(',');
+				if (k != std::string::npos)
+					pObj->m_name.erase(k);
+			}
+
+#endif
+		}
+
+		pObj->m_frameID = get_time_usec();
+	}
+}
+
+
+void _ImageNet::detectDepth(void)
 {
 	NULL_(m_pStream);
 	Frame* pDepth = m_pStream->depth();
@@ -188,7 +260,39 @@ void _ImageNet::detect(void)
 		obj.m_frameID = get_time_usec();
 		add(&obj);
 	}
+}
 
+int _ImageNet::classify(Frame* pImg, string* pName)
+{
+	if(!pImg)return -1;
+	GpuMat* gM = pImg->getGMat();
+	if(!gM)return -1;
+	if(gM->empty())return -1;
+
+	GpuMat gfM;
+	gM->convertTo(gfM, CV_32FC3);
+
+	int iClass = -1;
+#ifdef USE_TENSORRT
+	if(!m_pIN)return -1;
+	float prob = 0;
+	iClass = m_pIN->Classify((float*) gfM.data, gfM.cols, gfM.rows, &prob);
+
+	if (iClass < 0)
+		return -1;
+
+	if(pName)
+	{
+		*pName = m_pIN->GetClassDesc(iClass);
+
+		std::string::size_type k;
+		k = pName->find(',');
+		if (k != std::string::npos)
+			pName->erase(k);
+	}
+#endif
+
+	return iClass;
 }
 
 bool _ImageNet::draw(void)

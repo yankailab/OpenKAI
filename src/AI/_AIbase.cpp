@@ -81,8 +81,9 @@ bool _AIbase::init(void* pKiss)
 	m_pObj = new OBJECT[m_nObj];
 	for (int i = 0; i < m_nObj; i++)
 	{
-		m_pObj[i].m_frameID = 0;
-		m_pObj[i].m_dist = -1.0;
+		m_pObj[i].init();
+//		m_pObj[i].m_frameID = 0;
+//		m_pObj[i].m_dist = -1.0;
 	}
 	m_iObj = 0;
 

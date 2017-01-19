@@ -2,9 +2,8 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMAVOID_H_
 
 #include "../../../Base/common.h"
-#include "../../../Algorithm/Filter.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Stream/_ZED.h"
+#include "../../../Stream/_StreamBase.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
@@ -26,19 +25,19 @@ public:
 private:
 	HM_base* m_pHM;
 	_StreamBase* m_pStream;
+	_Obstacle* m_pObs;
+
+	vDouble4 m_avoidArea;
+	vInt2	m_posMin;
+	double	m_alertDist;
 
 	double	m_speedP;
 	double	m_steerP;
 	int	m_pwmL;
 	int m_pwmR;
 
-	vDouble4 m_avoidRegion;
-	double	m_avoidMinSize;
-	double	m_alertDist;
-
-	//normalized relevant distance: 0.0 ~ 1.0
-	Filter*	m_pFdist;
-	_Obstacle* m_pObs;
+	//operation
+	double m_distM;
 
 };
 

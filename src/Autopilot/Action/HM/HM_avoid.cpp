@@ -7,26 +7,23 @@ HM_avoid::HM_avoid()
 {
 	m_pHM = NULL;
 	m_pStream = NULL;
+	m_pObs = NULL;
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
 	m_pwmL = 0;
 	m_pwmR = 0;
 
-	m_avoidRegion.m_x = 0.0;
-	m_avoidRegion.m_y = 0.0;
-	m_avoidRegion.m_z = 1.0;
-	m_avoidRegion.m_w = 1.0;
-	m_avoidMinSize = 0.0;
+	m_avoidArea.m_x = 0.0;
+	m_avoidArea.m_y = 0.0;
+	m_avoidArea.m_z = 1.0;
+	m_avoidArea.m_w = 1.0;
 	m_alertDist = 0.0;
-
-	m_pFdist = NULL;
-	m_pObs = NULL;
+	m_distM = 0.0;
 }
 
 HM_avoid::~HM_avoid()
 {
-	DEL(m_pFdist);
 }
 
 bool HM_avoid::init(void* pKiss)
@@ -38,17 +35,11 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
 
-	F_INFO(pK->v("avoidLeft", &m_avoidRegion.m_x));
-	F_INFO(pK->v("avoidRight", &m_avoidRegion.m_z));
-	F_INFO(pK->v("avoidTop", &m_avoidRegion.m_y));
-	F_INFO(pK->v("avoidBottom", &m_avoidRegion.m_w));
-	F_INFO(pK->v("avoidMinSize", &m_avoidMinSize));
+	F_INFO(pK->v("avoidLeft", &m_avoidArea.m_x));
+	F_INFO(pK->v("avoidRight", &m_avoidArea.m_z));
+	F_INFO(pK->v("avoidTop", &m_avoidArea.m_y));
+	F_INFO(pK->v("avoidBottom", &m_avoidArea.m_w));
 	F_INFO(pK->v("alertDist", &m_alertDist));
-
-	int filterLen = 3;
-	F_INFO(pK->v("depthFilterLen", &filterLen));
-	m_pFdist = new Filter();
-	m_pFdist->startMedian(filterLen);
 
 	return true;
 }
@@ -57,14 +48,16 @@ bool HM_avoid::link(void)
 {
 	CHECK_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
-	string iName = "";
 
+	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_Stream", &iName));
 	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
@@ -78,60 +71,34 @@ void HM_avoid::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pStream);
+	NULL_(m_pObs);
+
+	//Obstacle avoidance always on except for ChargeStation
 
 	//forward speed
 	int rpmSpeed = m_speedP;
 	int rpmSteer = 0;
 
-	NULL_(m_pObs);
-
-	//make turn when object is within a certain distance
-	//TODO:
-//	if(m_pObs->size()>0)
-//	{
-//		rpmSpeed = 0;
-//		rpmSteer = m_steerP;
-//		m_pHM->m_bSpeaker = true;
-//	}
-
-	m_pwmL = rpmSpeed + rpmSteer;
-	m_pwmR = rpmSpeed - rpmSteer;
-	m_pHM->m_motorPwmL = m_pwmL;
-	m_pHM->m_motorPwmR = m_pwmR;
-
-/*
-	double objSize = m_avoidMinSize;
-	static double objDist = 0;
-
-	m_pStream->distNearest(&m_avoidRegion, &objDist, &objSize);
-	m_pFdist->input(objDist);
-	objDist = m_pFdist->v();
-
-	//forward speed
-	int rpmSpeed = objDist * m_speedP;
-
-	//make turn when object is within a certain distance
-	int rpmSteer = 0;
-	if(objDist <= m_alertDist)
+	m_distM = m_pObs->dist(&m_avoidArea,&m_posMin);
+	if(m_distM > m_alertDist)
 	{
-		rpmSteer = ((m_alertDist - objDist)/m_alertDist)* m_steerP;
-		m_pHM->m_bSpeaker = true;
+		//Safe distance, keep going
+		m_pwmL = rpmSpeed;
+		m_pwmR = rpmSpeed;
+		m_pHM->m_motorPwmL = m_pwmL;
+		m_pHM->m_motorPwmR = m_pwmR;
+		return;
 	}
 
+	//make turn when object is within a certain distance
+	rpmSpeed = 0;
+	rpmSteer = m_steerP;
+	m_pHM->m_bSpeaker = true;
+
 	m_pwmL = rpmSpeed + rpmSteer;
 	m_pwmR = rpmSpeed - rpmSteer;
 	m_pHM->m_motorPwmL = m_pwmL;
 	m_pHM->m_motorPwmR = m_pwmR;
-*/
-	//Obstacle avoidance always on except for ChargeStation
-//	if(m_pAM->getCurrentStateIdx() != m_iActiveState)
-//	{
-//		//Working state
-//	}
-//	else
-//	{
-//		//RTH
-//	}
 
 }
 
@@ -140,30 +107,31 @@ bool HM_avoid::draw(void)
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(pMat->empty());
 
-	string msg = *this->getName()+": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR);
+	string msg = *this->getName() +": dist=" + f2str(m_distM) + ": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR);
 	pWin->addMsg(&msg);
 
 	Rect r;
-	r.x = m_avoidRegion.m_x * ((double)pMat->cols);
-	r.y = m_avoidRegion.m_y * ((double)pMat->rows);
-	r.width = m_avoidRegion.m_z * ((double)pMat->cols) - r.x;
-	r.height = m_avoidRegion.m_w * ((double)pMat->rows) - r.y;
+	r.x = m_avoidArea.m_x * ((double)pMat->cols);
+	r.y = m_avoidArea.m_y * ((double)pMat->rows);
+	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
+	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
 
 	Scalar col = Scalar(0,255,0);
 	int bold = 1;
-
-//	if(m_pFdist->v() < m_alertDist)
-//	if(m_pObs->size()>0)
-//	{
-//		col = Scalar(0,0,255);
-//		bold = 2;
-//	}
-
+	if(m_distM < m_alertDist)
+	{
+		col = Scalar(0,0,255);
+		bold = 2;
+	}
 	rectangle(*pMat, r, col, bold);
-//	putText(*pMat, f2str(m_pFdist->v()),
-//			Point(r.x + r.width / 2, r.y + r.height / 2),
-//			FONT_HERSHEY_SIMPLEX, 1.0, col, bold);
+
+	NULL_F(m_pObs);
+	vInt2 mDim = m_pObs->matrixDim();
+	circle(*pMat, Point((m_posMin.m_x+0.5)*(pMat->cols/mDim.m_x), (m_posMin.m_y+0.5)*(pMat->rows/mDim.m_y)),
+			0.000025*pMat->cols*pMat->rows,
+			Scalar(0, 255, 255), 2);
 
 	return true;
 }

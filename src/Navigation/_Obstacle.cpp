@@ -105,14 +105,11 @@ void _Obstacle::detect(void)
 	m_pMatrix->getResizedOf(m_pStream->depth(), m_mDim.m_x, m_mDim.m_y);
 	Mat* pM = m_pMatrix->getCMat();
 
-	//TODO: eliminate ground effect
-
 	int i,j;
 	for(i=0;i<m_mDim.m_y;i++)
 	{
 		for(j=0;j<m_mDim.m_x;j++)
 		{
-//			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<float>(i,j));
 			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<uchar>(i,j));
 		}
 	}
@@ -132,7 +129,7 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(roi.m_z>=m_mDim.m_x)roi.m_z=m_mDim.m_x-1;
 	if(roi.m_w>=m_mDim.m_y)roi.m_w=m_mDim.m_y-1;
 
-	double distMin = 0;//INF_DIST;
+	double distMin = 0;
 	vInt2 posMin;
 	int i,j;
 	for(i=roi.m_y;i<roi.m_w;i++)
@@ -150,6 +147,11 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	}
 
 	*pPos = posMin;
+
+	double rangeMin, rangeMax;
+	m_pStream->getRange(&rangeMin, &rangeMax);
+	distMin = rangeMax-(distMin/255.0)*(rangeMax-rangeMin);
+
 	return distMin;
 }
 

@@ -18,15 +18,29 @@ namespace kai
 
 struct OBJECT
 {
+	vDouble4 m_fBBox;
 	vInt4 m_bbox;
 	vInt2 m_camSize;
 	double m_dist;
 	double m_prob;
 	int m_iClass;
 	string m_name;
-	uint8_t m_safety;
 	vector<Point> m_contour;
 	int64_t m_frameID;
+	uint8_t m_safety;
+
+	void init(void)
+	{
+		m_fBBox.init();
+		m_bbox.init();
+		m_camSize.init();
+		m_dist = -1.0;
+		m_prob = 0;
+		m_iClass = 0;
+		m_name = "";
+		m_frameID = 0;
+		m_safety = -1;
+	}
 };
 
 class _AIbase: public _ThreadBase

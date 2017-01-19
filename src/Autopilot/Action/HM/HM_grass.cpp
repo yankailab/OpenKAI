@@ -6,23 +6,10 @@ namespace kai
 HM_grass::HM_grass()
 {
 	m_pHM = NULL;
-	m_pAM = NULL;
-	m_pUniv = NULL;
-
-	m_destX = 0.5;
-	m_destY = 0.5;
-	m_destArea = 0.1;
+	m_pIN = NULL;
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
-
-	m_pTarget = NULL;
-	m_pTargetX = new kai::Filter();
-	m_pTargetY = new kai::Filter();
-	m_pTargetArea = new kai::Filter();
-	m_filterWindow = 3;
-	m_targetClass = 0;
-
 }
 
 HM_grass::~HM_grass()
@@ -32,21 +19,11 @@ HM_grass::~HM_grass()
 bool HM_grass::init(void* pKiss)
 {
 	CHECK_F(!this->ActionBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	F_INFO(pK->v("targetX", &m_destX));
-	F_INFO(pK->v("targetY", &m_destY));
-	F_INFO(pK->v("targetArea", &m_destArea));
-	F_INFO(pK->v("targetClass", &m_targetClass));
 
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
-
-	F_INFO(pK->v("filterWindow", &m_filterWindow));
-	m_pTargetX->startMedian(m_filterWindow);
-	m_pTargetY->startMedian(m_filterWindow);
-	m_pTargetArea->startMedian(m_filterWindow);
 
 	return true;
 }
@@ -54,14 +31,45 @@ bool HM_grass::init(void* pKiss)
 bool HM_grass::link(void)
 {
 	CHECK_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-	string iName = "";
+	Kiss* pK = (Kiss*) m_pKiss;
 
+	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
-	F_INFO(pK->v("_Universe", &iName));
-	m_pUniv = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	iName = "";
+	F_INFO(pK->v("_ImageNet", &iName));
+	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+
+	NULL_F(m_pIN);
+
+	//create grass detection area instances
+	Kiss** pItr = pK->getChildItr();
+	OBJECT areaObj;
+	int	nArea = 0;
+
+	int i = 0;
+	while (pItr[i])
+	{
+		Kiss* pArea = pItr[i++];
+
+		areaObj.init();
+		if(!pArea->v("area", &areaObj.m_name))continue;
+		if(!pArea->v("left", &areaObj.m_fBBox.m_x))continue;
+		if(!pArea->v("top", &areaObj.m_fBBox.m_y))continue;
+		if(!pArea->v("right", &areaObj.m_fBBox.m_z))continue;
+		if(!pArea->v("bottom", &areaObj.m_fBBox.m_w))continue;
+
+		if(m_pIN->add(&areaObj))nArea++;
+
+		if(nArea>=3)break;
+	}
+
+	if(nArea<3)
+	{
+		LOG_E("3 areas needed for grass navigation");
+		return false;
+	}
 
 	return true;
 }
@@ -71,52 +79,48 @@ void HM_grass::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pUniv);
 	NULL_(m_pAM);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	NULL_(m_pIN);
 
-	//get visual target and decide motion
-//	m_pTarget = m_pUniv->getByClass(m_targetClass);
-
-	if (m_pTarget == NULL)
+	for (int i = 0; i < m_pIN->m_iObj; i++)
 	{
-		//no target found, stop and standby TODO: go back to work
-		m_pHM->m_motorPwmL = 0;
-		m_pHM->m_motorPwmR = 0;
-		m_pHM->m_bSpeaker = false;
-	}
-	else
-	{
-		m_pTargetX->input(m_pTarget->m_bbox.midX());
-		m_pTargetY->input(m_pTarget->m_bbox.midY());
-		m_pTargetArea->input(m_pTarget->m_bbox.area());
+		OBJECT* pObj = m_pIN->get(i,0);
+		if(!pObj)continue;
 
-		//forward or backward
-		int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
-
-		//steering
-		int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
-
-		m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
-		m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
-		m_pHM->m_bSpeaker = true;
 	}
 
-	m_pHM->updateCAN();
 }
 
 bool HM_grass::draw(void)
 {
 	CHECK_F(!this->ActionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
+	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+	NULL_F(pMat);
+	CHECK_F(pMat->empty());
 
-	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR=" + i2str(m_pHM->m_motorPwmR);
+	string msg = *this->getName() + ": rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
+			+ i2str(m_pHM->m_motorPwmR);
 	pWin->addMsg(&msg);
 
-	CHECK_T(m_pTarget==NULL);
-	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
-			Scalar(0, 0, 255), 2);
+	NULL_T(m_pIN);
+	for (int i = 0; i < m_pIN->m_iObj; i++)
+	{
+		OBJECT* pObj = m_pIN->get(i,0);
+		if(!pObj)continue;
+
+		Rect r;
+		vInt42rect(&pObj->m_bbox,&r);
+		Scalar col = Scalar(0,255,0);
+		int bold = 1;
+//		if(m_distM < m_alertDist)
+//		{
+//			col = Scalar(0,0,255);
+//			bold = 2;
+//		}
+		rectangle(*pMat, r, col, bold);
+	}
+
 
 	return true;
 }
