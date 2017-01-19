@@ -125,7 +125,7 @@
 	"trainedFile":"bvlc_googlenet.caffemodel",
 	"meanFile":"",
 	"labelFile":"ilsvrc12_synset_words.txt",
-	"obsLifetime":10000000,
+	"obsLifetime":100000,
 	"nObs":16,
 	"bDrawContour":0,
 	"contourBlend":0.15,
