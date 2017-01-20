@@ -117,7 +117,8 @@ void _Obstacle::detect(void)
 
 double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 {
-	if(!pROI)return 0.0;
+	if(!m_pStream)return -1.0;
+	if(!pROI)return -1.0;
 
 	vInt4 roi;
 	roi.m_x = pROI->m_x * m_mDim.m_x;

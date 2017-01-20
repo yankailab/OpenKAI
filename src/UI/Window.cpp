@@ -40,11 +40,11 @@ bool Window::init(void* pKiss)
 {
 	CHECK_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
 	F_INFO(pK->v("bRec", &m_bRec));
 	CHECK_F(!m_bWindow && !m_bRec);
+	pK->m_pInst = this;
 
 	F_ERROR_F(pK->v("w", &m_size.m_x));
 	F_ERROR_F(pK->v("h", &m_size.m_y));
