@@ -15,11 +15,11 @@ OpenKAI is supposed to behave as a companion computer that commands an external 
 ## Run sample
 Visual obstacle avoidance using OpenKAI + APMcopter3.5 + ZED stereo camera + Jetson TX1
 
-On-board camera:
+On-board camera (Click to jump to YouTube):
 
 [![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/MOFullt5k3g/0.jpg)](https://www.youtube.com/watch?v=MOFullt5k3g)
 
-External camera:
+External camera (Click to jump to YouTube):
 
 [![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/qk_hEtRASqg/0.jpg)](https://www.youtube.com/watch?v=qk_hEtRASqg)
 
