@@ -121,7 +121,6 @@ void _ImageNet::update(void)
 void _ImageNet::detectObject(void)
 {
 	NULL_(m_pStream);
-	NULL_(m_pIN);
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());
@@ -150,18 +149,20 @@ void _ImageNet::detectObject(void)
 			gBB.convertTo(gfBB, CV_32FC3);
 
 #ifdef USE_TENSORRT
-			float prob = 0;
-			pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-			if (pObj->m_iClass >= 0)
+			if(m_pIN)
 			{
-				pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
+				float prob = 0;
+				pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+				if (pObj->m_iClass >= 0)
+				{
+					pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
 
-				std::string::size_type k;
-				k = pObj->m_name.find(',');
-				if (k != std::string::npos)
-					pObj->m_name.erase(k);
+					std::string::size_type k;
+					k = pObj->m_name.find(',');
+					if (k != std::string::npos)
+						pObj->m_name.erase(k);
+				}
 			}
-
 #endif
 		}
 
