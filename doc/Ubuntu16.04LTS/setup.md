@@ -11,6 +11,7 @@ sudo apt-get -y install git cmake build-essential cmake-curses-gui libatlas-base
 Download the latest [CUDA](https://developer.nvidia.com/cuda-downloads) and run
 
 ```Shell
+chmod u+x cuda_8.0.44_linux.run
 ./cuda_8.0.44_linux.run
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
 ```
@@ -29,6 +30,7 @@ sudo ldconfig
 ##Git repositories
 
 ```Shell
+cd ~
 mkdir src
 cd src
 git clone https://github.com/Itseez/opencv.git
@@ -77,6 +79,7 @@ sudo make install
 Download the latest driver from ZED site and run
 
 ```Shell
+chmod u+x ZED_SDK_Linux_Ubuntu16_CUDA80_v1.2.0.run
 ./ZED_SDK_Linux_Ubuntu16_CUDA80_v1.2.0.run
 ```
 
