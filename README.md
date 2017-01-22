@@ -13,7 +13,17 @@ OpenKAI is supposed to behave as a companion computer that commands an external 
 * Controllers with CAN bus I/F (via UART/USB<->CAN bus converter)
 
 ## Run sample
-"Hello Obstacle!!", a classical example to get started with OpenKAI on Jetson TX1. This sample application uses ZED camera and Pixhawk (APMcopter 3.4.4 and above) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
+Visual obstacle avoidance using OpenKAI + APMcopter3.5 + ZED stereo camera + Jetson TX1
+
+On-board camera:
+
+[![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/MOFullt5k3g/0.jpg)](https://www.youtube.com/watch?v=MOFullt5k3g)
+
+External camera:
+
+[![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/qk_hEtRASqg/0.jpg)](https://www.youtube.com/watch?v=qk_hEtRASqg)
+
+The sample application uses ZED camera and Pixhawk (APMcopter 3.4.4 and above) for visual obstacle recognition and avoidance. The sample requires several external dependencies: ZED driver for Jetson TX1, OpenCV4Tegra and NVIDIA TensorRT, it is recommended to download and flash our prebuilt boot image for TX1 for a quick setup:
 
 If you got a brand new Jetson TX1 unit, you have to flash it at least once with the latest [JetPack](https://developer.nvidia.com/embedded/jetpack) provided by NVIDIA, with minimum checked install items such as "Install OS and file systems to Jetson TX1". Once finished, following the "Restoring the image" part of this [instructions](http://elinux.org/Jetson/TX1_Cloning) to flash the latest prebuilt boot image: [downloaded from here] (Coming Soon).
 
