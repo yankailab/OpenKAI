@@ -121,6 +121,7 @@ void _ImageNet::update(void)
 void _ImageNet::detectObject(void)
 {
 	NULL_(m_pStream);
+	NULL_(m_pIN);
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());

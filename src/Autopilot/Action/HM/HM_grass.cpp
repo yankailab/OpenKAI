@@ -41,7 +41,11 @@ bool HM_grass::link(void)
 	F_INFO(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 
-	NULL_F(m_pIN);
+	if(!m_pIN)
+	{
+		LOG_E("_ImageNet not found for grass navigation");
+		return true;
+	}
 
 	//create grass detection area instances
 	Kiss** pItr = pK->getChildItr();
