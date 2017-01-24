@@ -23,9 +23,11 @@ External camera (Click to jump to YouTube):
 
 [![APMcopter+OpenKAI+ZED: visual obstacle avoidance](https://img.youtube.com/vi/qk_hEtRASqg/0.jpg)](https://www.youtube.com/watch?v=qk_hEtRASqg)
 
+
 ## Install & Run apps
-[Build & Run OpenKAI on NVIDIA Jetson TX1](https://github.com/yankailab/OpenKAI/blob/master/doc/JetsonTX1/build.md)
-[Build & Run OpenKAI on Ubuntu desktop systems](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu16.04LTS/build.md)
+[OpenKAI build guide for NVIDIA Jetson TX1](https://github.com/yankailab/OpenKAI/blob/master/doc/JetsonTX1/build.md)
+
+[OpenKAI build guide for Ubuntu desktop systems](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu16.04LTS/build.md)
   
 ## System architecture
 OpenKAI is organized as a combination of multiple functional Modules. Each Module runs in an individual thread, so that modules can be ran simultaneously over multi-core CPUs efficiently. Each Module contains multiple sub-Modules, each sub-Module may handle certain part of functions divided by its category, and the Module switches between each of its sub-Modules to form a complete function.
