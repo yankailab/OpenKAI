@@ -1,6 +1,6 @@
-#Build on NVIDIA Jetson TX1 (Ubuntu 16.04LTS/JetPack2.3.1)
+#Build & Run on NVIDIA Jetson TX1 (Ubuntu 16.04LTS/JetPack2.3.1)
 
-##JetPack instal
+##JetPack install & flash
 Download the latest [JetPack for L4T](https://developer.nvidia.com/embedded/jetpack) and run the installer, choose the following options to be installed and flashed into your Jetson TX1:
 
 <p align="center">
