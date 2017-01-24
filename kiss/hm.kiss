@@ -85,7 +85,7 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"mode":"object",
 	"Window":"winForward",
@@ -119,7 +119,7 @@
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"winForward",
 	"_Stream":"ZED",
