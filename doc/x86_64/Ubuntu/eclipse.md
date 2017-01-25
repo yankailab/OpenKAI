@@ -1,7 +1,9 @@
 #Develop OpenKAI apps with Eclipse CDT
 
-##Firstly complete the setup process in [this guide](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu16.04LTS/build.md)
-Assume you put all the git repositories inside the "/home/ubuntu/src" directory as in above guide,run
+##Firstly complete the setup process following [this guide](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/build.md)
+
+##Prerequisites
+Assume you put all the git repositories inside the "/home/ubuntu/src" directory as in above link,run
 
 ```Shell
 sudo apt-get install default-jre
@@ -49,7 +51,7 @@ Back to Eclipse CDT, in the left pane click "OpenKAI" and press F5 key, now you 
 <img src="https://github.com/yankailab/OpenKAI/raw/master/doc/x86_64/Ubuntu/img/eclipse_OpenKAI.png" alt="Eclipse OpenKAI">
 </p>
 
-Right click project "OpenKAI" and click "Properties", click "C/C++ Build", and choose the Configuration to be "[All configurations]". Setup as following:
+Right click project "OpenKAI" and click "Properties", click "C/C++ Build", and choose the Configuration to be "[All configurations]". Setup each page as following:
 
 <p align="center">
 <img src="https://github.com/yankailab/OpenKAI/raw/master/doc/x86_64/Ubuntu/img/eclipse_cxxBuild.png" alt="Eclipse c++ Build">
@@ -76,14 +78,14 @@ Right click project "OpenKAI" and click "Properties", click "C/C++ Build", and c
 </p>
 
 ###Note:
-If you experienced non-reponse or freezing in Eclipse on Ubuntu 16.04 etc., try to force Eclipse using GTK2 instead of GTK3. Open "/home/ubuntu/src/eclipse/eclipse.ini" and add
+If you experienced non-reponding or freezing in Eclipse on Ubuntu 16.04 etc., try to force Eclipse using GTK2 instead of GTK3. Open "/home/ubuntu/src/eclipse/eclipse.ini" and add
 
 ```ini
 --launcher.GTK_version
 2
 ```
 
-just above the "--launcher.appendVmargs" line, so the "eclipse.ini" should somehow looks like this:
+just above the "--launcher.appendVmargs" line, so the "eclipse.ini" should somehow look like this:
 
 ```ini
 -startup
