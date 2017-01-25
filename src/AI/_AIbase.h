@@ -78,7 +78,7 @@ public:
 	OBJECT* m_pObj;
 	int m_nObj;
 	int m_iObj;
-	int64_t m_obsLifetime;
+	int64_t m_objLifetime;
 
 	double m_sizeName;
 	double m_sizeDist;

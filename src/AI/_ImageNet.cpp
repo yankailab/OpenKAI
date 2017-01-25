@@ -22,6 +22,7 @@ _ImageNet::_ImageNet()
 	m_fDist = 0.0;
 	m_detectMinSize = 0.0;
 	m_detectMaxSize = 0.0;
+	m_maxPix = 100000;
 	m_extraBBox = 0.0;
 }
 
@@ -46,6 +47,7 @@ bool _ImageNet::init(void* pKiss)
 	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
 	F_INFO(pK->v("detectMaxSize", &m_detectMaxSize));
 	F_INFO(pK->v("extraBBox", &m_extraBBox));
+	F_INFO(pK->v("maxPix", &m_maxPix));
 
 	F_INFO(pK->v("nBatch", &m_nBatch));
 	F_INFO(pK->v("blobIn", &m_blobIn));
@@ -55,9 +57,9 @@ bool _ImageNet::init(void* pKiss)
 
 	string iName = "noThread";
 	F_INFO(pK->v("mode", &iName));
-	if(iName == "depth")
+	if (iName == "depth")
 		m_mode = depth;
-	else if(iName == "object")
+	else if (iName == "object")
 		m_mode = object;
 
 	return true;
@@ -95,17 +97,17 @@ void _ImageNet::update(void)
 	NULL_(m_pIN);
 #endif
 
-	CHECK_(m_mode==noThread);
+	CHECK_(m_mode == noThread);
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		if(m_mode == depth)
+		if (m_mode == depth)
 		{
 			detectDepth();
 		}
-		else if(m_mode == object)
+		else if (m_mode == object)
 		{
 			detectObject();
 		}
@@ -124,52 +126,51 @@ void _ImageNet::detectObject(void)
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
 	CHECK_(pBGR->empty());
-	GpuMat gBGR = *pBGR->getGMat();
+
+	m_pRGBA->getRGBAOf(pBGR);
+	GpuMat gRGBA = *m_pRGBA->getGMat();
+	CHECK_(gRGBA.empty());
 
 	for (int i = 0; i < m_iObj; i++)
 	{
 		OBJECT* pObj = &m_pObj[i];
-		if(pObj->m_bbox.area()<=0)
+		if (pObj->m_bbox.area() <= 0)
 		{
-			pObj->m_bbox.m_x = pObj->m_fBBox.m_x * gBGR.cols;
-			pObj->m_bbox.m_y = pObj->m_fBBox.m_y * gBGR.rows;
-			pObj->m_bbox.m_z = pObj->m_fBBox.m_z * gBGR.cols;
-			pObj->m_bbox.m_w = pObj->m_fBBox.m_w * gBGR.rows;
+			pObj->m_bbox.m_x = pObj->m_fBBox.m_x * gRGBA.cols;
+			pObj->m_bbox.m_y = pObj->m_fBBox.m_y * gRGBA.rows;
+			pObj->m_bbox.m_z = pObj->m_fBBox.m_z * gRGBA.cols;
+			pObj->m_bbox.m_w = pObj->m_fBBox.m_w * gRGBA.rows;
 		}
-		if(pObj->m_bbox.area()<=0)continue;
-
-		if(!gBGR.empty())
+		if (pObj->m_bbox.area() <= 0)
+			continue;
+		if (!m_pIN)
+			continue;
+		if (pObj->m_bbox.area() > m_maxPix)
 		{
-			Rect bb;
-			GpuMat gBB;
-			GpuMat gfBB;
+			LOG_E("Image size exceed the max pixel limit");
+			continue;
+		}
 
-			vInt42rect(&pObj->m_bbox,&bb);
-			gBB = GpuMat(gBGR,bb);
-			gBB.convertTo(gfBB, CV_32FC3);
+		Rect bb;
+		GpuMat gBB;
+		GpuMat gfBB;
+
+		vInt42rect(&pObj->m_bbox, &bb);
+		gBB = GpuMat(gRGBA, bb);
+		gBB.convertTo(gfBB, CV_32FC4);
 
 #ifdef USE_TENSORRT
-			if(m_pIN)
-			{
-				float prob = 0;
-				pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-				if (pObj->m_iClass >= 0)
-				{
-					pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
-
-					std::string::size_type k;
-					k = pObj->m_name.find(',');
-					if (k != std::string::npos)
-						pObj->m_name.erase(k);
-				}
-			}
+		float prob = 0;
+		pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+		if (pObj->m_iClass >= 0)
+			pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
+		else
+			pObj->m_name = "";
 #endif
-		}
-
 		pObj->m_frameID = get_time_usec();
+
 	}
 }
-
 
 void _ImageNet::detectDepth(void)
 {
@@ -203,8 +204,8 @@ void _ImageNet::detectDepth(void)
 
 	// Approximate contours to polygons + get bounding rects
 	vector<Point> contourPoly;
-	int extraX = cMat.cols*m_extraBBox;
-	int extraY = cMat.rows*m_extraBBox;
+	int extraX = cMat.cols * m_extraBBox;
+	int extraY = cMat.rows * m_extraBBox;
 
 	for (unsigned int i = 0; i < contours.size(); i++)
 	{
@@ -212,38 +213,43 @@ void _ImageNet::detectDepth(void)
 		Rect bb = boundingRect(Mat(contourPoly));
 		if (bb.area() < minSize)
 			continue;
-		if(bb.area() > maxSize)
+		if (bb.area() > maxSize)
 			continue;
 
 		OBJECT obj;
 		obj.m_camSize.m_x = cMat.cols;
 		obj.m_camSize.m_y = cMat.rows;
-		if(m_bDrawContour)
+		if (m_bDrawContour)
 			obj.m_contour = contourPoly;
 
 		obj.m_bbox.m_x = bb.x - extraX;
 		obj.m_bbox.m_y = bb.y - extraY;
 		obj.m_bbox.m_z = bb.x + bb.width + extraX;
 		obj.m_bbox.m_w = bb.y + bb.height + extraY;
-		if(obj.m_bbox.m_x < 0)obj.m_bbox.m_x = 0;
-		if(obj.m_bbox.m_y < 0)obj.m_bbox.m_y = 0;
-		if(obj.m_bbox.m_z > cMat.cols)obj.m_bbox.m_z = cMat.cols;
-		if(obj.m_bbox.m_w > cMat.rows)obj.m_bbox.m_w = cMat.rows;
+		if (obj.m_bbox.m_x < 0)
+			obj.m_bbox.m_x = 0;
+		if (obj.m_bbox.m_y < 0)
+			obj.m_bbox.m_y = 0;
+		if (obj.m_bbox.m_z > cMat.cols)
+			obj.m_bbox.m_z = cMat.cols;
+		if (obj.m_bbox.m_w > cMat.rows)
+			obj.m_bbox.m_w = cMat.rows;
 
 		//classify
 		obj.m_iClass = -1;
 		obj.m_name = "?";
-		if(!gBGR.empty())
+		if (!gBGR.empty())
 		{
 			GpuMat gBB;
 			GpuMat gfBB;
 
-			gBB = GpuMat(gBGR,bb);
+			gBB = GpuMat(gBGR, bb);
 			gBB.convertTo(gfBB, CV_32FC3);
 
 #ifdef USE_TENSORRT
 			float prob = 0;
-			obj.m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+			obj.m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols,
+					gfBB.rows, &prob);
 			if (obj.m_iClass >= 0)
 			{
 				obj.m_name = m_pIN->GetClassDesc(obj.m_iClass);
@@ -266,24 +272,28 @@ void _ImageNet::detectDepth(void)
 
 int _ImageNet::classify(Frame* pImg, string* pName)
 {
-	if(!pImg)return -1;
+	if (!pImg)
+		return -1;
 	GpuMat* gM = pImg->getGMat();
-	if(!gM)return -1;
-	if(gM->empty())return -1;
+	if (!gM)
+		return -1;
+	if (gM->empty())
+		return -1;
 
 	GpuMat gfM;
 	gM->convertTo(gfM, CV_32FC3);
 
 	int iClass = -1;
 #ifdef USE_TENSORRT
-	if(!m_pIN)return -1;
+	if (!m_pIN)
+		return -1;
 	float prob = 0;
 	iClass = m_pIN->Classify((float*) gfM.data, gfM.cols, gfM.rows, &prob);
 
 	if (iClass < 0)
 		return -1;
 
-	if(pName)
+	if (pName)
 	{
 		*pName = m_pIN->GetClassDesc(iClass);
 
@@ -303,6 +313,5 @@ bool _ImageNet::draw(void)
 
 	return true;
 }
-
 
 }

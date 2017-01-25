@@ -19,7 +19,7 @@ _AIbase::_AIbase()
 	m_pObj = NULL;
 	m_nObj = 16;
 	m_iObj = 0;
-	m_obsLifetime = USEC_1SEC;
+	m_objLifetime = USEC_1SEC;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
@@ -58,7 +58,7 @@ bool _AIbase::init(void* pKiss)
 	m_fileMean = modelDir + m_fileMean;
 	m_fileLabel = modelDir + m_fileLabel;
 
-	F_INFO(pK->v("obsLifetime", (int*)&m_obsLifetime));
+	F_INFO(pK->v("objLifetime", (int*)&m_objLifetime));
 	F_INFO(pK->v("sizeName", &m_sizeName));
 	F_INFO(pK->v("sizeDist", &m_sizeDist));
 
@@ -82,8 +82,6 @@ bool _AIbase::init(void* pKiss)
 	for (int i = 0; i < m_nObj; i++)
 	{
 		m_pObj[i].init();
-//		m_pObj[i].m_frameID = 0;
-//		m_pObj[i].m_dist = -1.0;
 	}
 	m_iObj = 0;
 
@@ -137,7 +135,7 @@ int _AIbase::size(void)
 
 OBJECT* _AIbase::get(int i, int64_t frameID)
 {
-	if(frameID - m_pObj[i].m_frameID >= m_obsLifetime)
+	if(frameID - m_pObj[i].m_frameID >= m_objLifetime)
 	{
 		return NULL;
 	}
@@ -175,7 +173,7 @@ bool _AIbase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	uint64_t frameID = get_time_usec() - m_obsLifetime;
+	uint64_t frameID = get_time_usec() - m_objLifetime;
 	for (int i = 0; i < m_nObj; i++)
 	{
 		OBJECT* pObj = get(i, frameID);

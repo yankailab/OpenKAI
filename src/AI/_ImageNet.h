@@ -57,6 +57,7 @@ public:
 	double m_detectMinSize;
 	double m_detectMaxSize;
 	double m_extraBBox;
+	int	   m_maxPix;
 
 
 };

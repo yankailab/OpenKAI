@@ -85,23 +85,25 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"mode":"object",
 	"Window":"winForward",
 	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/ImageNet/",
-	"modelFile":"googlenet.prototxt",
-	"trainedFile":"bvlc_googlenet.caffemodel",
-	"meanFile":"",
-	"labelFile":"ilsvrc12_synset_words.txt",
-	"obsLifetime":10000000,
-	"nObs":16,
+	"dir":"/home/ubuntu/src/model/hm/grass_128/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_3350.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"blobOut":"softmax",
+	"labelFile":"labels.txt",
+	"objLifetime":10000000,
+	"nObs":32,
 	"bDrawContour":0,
 	"contourBlend":0.15,
 	"fDist":0.5,
 	"detectMinSize":0.005,
-	"detectMaxSize":0.05,
+	"detectMaxSize":0.5,
+	"maxPix":100000,
 	"extraBBox":0.0,
 	"sizeName":0.6,
 	"sizeDist":0.5,
@@ -119,7 +121,7 @@
 {
 	"name":"detectNet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"winForward",
 	"_Stream":"ZED",
@@ -212,34 +214,16 @@
 			"State":"HM_WORK",
 			"speedP":0.25,
 			"steerP":8,
-			
-			{
-				"area":"grassL",
-				"bInst":1,
-				"left":0.0,
-				"top":0.5,
-				"right":0.33,
-				"bottom":0.825,
-			}
 
 			{
-				"area":"grassF",
-				"bInst":1,
-				"left":0.33,
-				"top":0.5,
-				"right":0.66,
-				"bottom":0.825,
-			}
-			
-			{
-				"area":"grassR",
-				"bInst":1,
-				"left":0.66,
+				"name":"grassMatrix",
+				"nW":8,
+				"nH":2,
+				"left":0.0,
 				"top":0.5,
 				"right":1.0,
 				"bottom":0.825,
-			}
-			
+			}			
 		}
 
 		{

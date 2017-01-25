@@ -28,6 +28,9 @@ private:
 	double	m_speedP;
 	double	m_steerP;
 
+	vInt2		m_grassMat;
+	vDouble4	m_grassArea;
+
 
 };
 
