@@ -212,12 +212,14 @@
 			"_ImageNet":"imageNet",
 			"_Automaton":"HMauto",
 			"State":"HM_WORK",
-			"speedP":0.25,
-			"steerP":8,
+			"speedP":0,
+			"steerP":2500,
 
 			{
 				"name":"grassMatrix",
-				"nW":8,
+				"minProb":0.6,
+				"iClass":1,
+				"nW":6,
 				"nH":2,
 				"left":0.0,
 				"top":0.5,

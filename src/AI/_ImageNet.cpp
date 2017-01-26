@@ -162,6 +162,7 @@ void _ImageNet::detectObject(void)
 #ifdef USE_TENSORRT
 		float prob = 0;
 		pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+		pObj->m_prob = prob;
 		if (pObj->m_iClass >= 0)
 			pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
 		else

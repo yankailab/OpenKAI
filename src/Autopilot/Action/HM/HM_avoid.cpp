@@ -75,6 +75,8 @@ void HM_avoid::update(void)
 
 	//Obstacle avoidance always on except for ChargeStation
 
+	//TODO: cooperate with other motions
+
 	//forward speed
 	int rpmSpeed = m_speedP;
 	int rpmSteer = 0;
