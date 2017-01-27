@@ -45,7 +45,7 @@ void APMcopter_guided::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAPM);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	CHECK_(!isActive());
 
 	updateAttitude();
 

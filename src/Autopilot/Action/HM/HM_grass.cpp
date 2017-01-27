@@ -128,6 +128,7 @@ void HM_grass::update(void)
 	grassD[2] *= n;
 
 	CHECK_(grassD[DIR_F] >= m_grassMinProb);
+	CHECK_(!isActive());
 
 	//forward speed
 	int rpmSteer = 0;
@@ -149,8 +150,10 @@ bool HM_grass::draw(void)
 	NULL_F(pMat);
 	CHECK_F(pMat->empty());
 
-	string msg = *this->getName() + ": rpmL=" + i2str(m_pHM->m_motorPwmL)
-			+ ", rpmR=" + i2str(m_pHM->m_motorPwmR);
+	string msg;
+	if(isActive())msg="* ";
+	else msg="- ";
+	msg += *this->getName();
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pIN);

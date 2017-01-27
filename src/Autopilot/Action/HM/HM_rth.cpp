@@ -73,7 +73,7 @@ void HM_rth::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pUniv);
 	NULL_(m_pAM);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	CHECK_(!isActive());
 
 	//get visual target and decide motion
 //	m_pTarget = m_pUniv->getByClass(m_targetClass);

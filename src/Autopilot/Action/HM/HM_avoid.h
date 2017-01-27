@@ -33,8 +33,6 @@ private:
 
 	double	m_speedP;
 	double	m_steerP;
-	int	m_pwmL;
-	int m_pwmR;
 
 	//operation
 	double m_distM;

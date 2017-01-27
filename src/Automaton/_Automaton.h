@@ -29,6 +29,8 @@ public:
 
 	int getStateIdx(string* pStateName);
 	int getCurrentStateIdx(void);
+	string* getCurrentStateName(void);
+	int getLastStateIdx(void);
 	bool transit(string* pNextStateName);
 	bool transit(int nextStateIdx);
 
@@ -36,9 +38,10 @@ public:
 	int		m_nState;
 	int		m_iState;
 	string	m_pStateName[N_STATE];
+	int		m_iLastState;
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* OPENKAI_SRC_AUTOMATON__AUTOMATON_H_ */
+#endif

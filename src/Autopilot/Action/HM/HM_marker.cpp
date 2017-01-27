@@ -7,6 +7,7 @@ HM_marker::HM_marker()
 {
 	m_pHM = NULL;
 	m_pStream = NULL;
+	m_pDN = NULL;
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
@@ -60,13 +61,8 @@ bool HM_marker::link(void)
 	F_INFO(pK->v("_Stream", &iName));
 	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
-#ifdef USE_TENSORRT
 	F_INFO(pK->v("_DetectNet", &iName));
-	m_pDetector = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
-#elif defined USE_SSD
-	F_INFO(pK->v("_SSD", &iName));
-	m_pDetector = (_SSD*) (pK->root()->getChildInstByName(&iName));
-#endif
+	m_pDN = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -78,10 +74,14 @@ void HM_marker::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pStream);
-//	NULL_(m_pDetector);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	NULL_(m_pDN);
+	CHECK_(!isActive());
 
 	//get visual target and decide motion
+	OBJECT* pTarget = m_pDN->get(0,0);
+	NULL_(pTarget);
+
+	//TODO
 //	m_pTarget = m_pUniv->getByClass(m_targetClass);
 //
 //	if (m_pTarget == NULL)
@@ -115,8 +115,10 @@ bool HM_marker::draw(void)
 	CHECK_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
-	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
-			+ i2str(m_pHM->m_motorPwmR);
+	string msg;
+	if(isActive())msg="* ";
+	else msg="- ";
+	msg += *this->getName();
 	pWin->addMsg(&msg);
 
 	CHECK_T(m_pTarget==NULL);

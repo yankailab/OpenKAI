@@ -20,14 +20,14 @@ public:
 	virtual bool link(void);
 	virtual void update(void);
 	virtual bool draw(void);
+	virtual bool isActive(void);
 
 public:
 	_Automaton* m_pAM;
-	int	m_iActiveState;
+	std::vector<int>	m_vActiveState;
 
 	int64_t m_timeStamp;
 	int64_t m_dTime;
-
 
 };
 

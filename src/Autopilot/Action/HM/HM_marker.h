@@ -27,12 +27,7 @@ public:
 	bool draw(void);
 
 private:
-
-#ifdef USE_TENSORRT
-	_DetectNet* m_pDetector;
-#elif defined USE_SSD
-	_SSD* m_pDetector;
-#endif
+	_DetectNet* m_pDN;
 	int m_targetClass;
 
 	HM_base* m_pHM;

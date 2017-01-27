@@ -8,30 +8,9 @@
 }
 
 {
-	"name":"winForward",
+	"name":"forward",
 	"class":"Window",
 	"bInst":1,
-	"w":672,
-	"h":376,
-	"bFullScreen":0,
-	"bRec":0,
-	"recFile":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",	
-	"textSize":0.5,
-	"textR":0,
-	"textG":255,
-	"textB":0,
-	"textX":20,
-	"textY":20,
-	"pixTab":20,
-	"lineH":20,
-}
-
-{
-	"name":"winDepth",
-	"class":"Window",
-	"bInst":0,
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
@@ -54,7 +33,7 @@
 	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
-	"Window":"winForward",
+	"Window":"forward",
 	"depthWindow":"winDepth",
 	"orientation":0,
 	"angleV":67.1,
@@ -70,11 +49,11 @@
 }
 	
 {
-	"name":"Obstacle",
+	"name":"obstacle",
 	"class":"_Obstacle",
 	"FPS":30,
 	"bInst":1,
-	"Window":"winForward",
+	"Window":"forward",
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
@@ -88,7 +67,7 @@
 	"bInst":1,
 	"FPS":30,
 	"mode":"object",
-	"Window":"winForward",
+	"Window":"forward",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/grass_128/",
 	"modelFile":"deploy.prototxt",
@@ -107,41 +86,49 @@
 	"extraBBox":0.0,
 	"sizeName":0.6,
 	"sizeDist":0.5,
-	"nameB":255,
-	"nameG":255,
-	"nameR":0,
-	"distB":0,
-	"distG":255,
-	"distR":255,
-	"obsB":255,
-	"obsG":255,
-	"obsR":0,
 }
 
 {
-	"name":"detectNet",
+	"name":"humanDetector",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
+	"bLog":0,
 	"FPS":30,
-	"Window":"winForward",
+	"Window":"forward",
 	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/ped-100/",
+	"dir":"/home/ubuntu/src/model/hm/ped-100/",
 	"minConfidence":0.05,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
-	"labelFile":"model/coco_labels.txt",
-	"className":"target",
-	"obsLifetime":200000,
-	"nObs":16,
-	"bDrawContour":0,
+	"className":"human",
+	"obsLifetime":100000,
+	"nObs":8,
 }
 
 {
-	"name":"HMcanbus",
+	"name":"markerDetector",
+	"class":"_DetectNet",
+	"bInst":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"forward",
+	"_Stream":"ZED",
+	"dir":"/home/ubuntu/src/model/hm/stopMarker/",
+	"minConfidence":0.05,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_18900.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"className":"marker",
+	"obsLifetime":100000,
+	"nObs":8,
+}
+
+{
+	"name":"canbus",
 	"class":"_Canbus",
 	"bInst":1,
-	"Window":"winForward",
+	"Window":"forward",
 	"FPS":100,	
 
 	{
@@ -154,34 +141,44 @@
 }
 
 {
-	"name":"HMauto",
+	"name":"automaton",
 	"class":"_Automaton",
 	"bInst":1,
 	"FPS":10,
-	"Window":"winForward",
-	"startState":"HM_STANDBY",
+	"Window":"forward",
+	"startState":"HM_IDLE",
 
 	{
-		"state":"HM_STANDBY",
+		"state":"HM_IDLE",
 		"bInst":1,
 	}
-	
 	{
 		"state":"HM_WORK",
 		"bInst":1,
 	}
-
+	{
+		"state":"HM_MARKER_TURN",
+		"bInst":1,
+	}
 	{
 		"state":"HM_RTH",
+		"bInst":1,
+	}
+	{
+		"state":"HM_RTH_TURN",
+		"bInst":1,
+	}
+	{
+		"state":"HM_FOLLOWME",
 		"bInst":1,
 	}
 }
 
 {
-	"name":"autopilot",
+	"name":"autoPilot",
 	"class":"_AutoPilot",
-	"_Automaton":"HMauto",
-	"Window":"winForward",
+	"_Automaton":"automaton",
+	"Window":"forward",
 	"bInst":1,
 	"FPS":30,
 	"bMouse":1,
@@ -190,37 +187,84 @@
 		"name":"action",
 		
 		{
-			"name":"HMbase",
+			"name":"base",
 			"class":"HM_base",
 			"bInst":1,
-			"Window":"winForward",
-			"_Canbus":"HMcanbus",
+			"Window":"forward",
+			"_Canbus":"canbus",
+			"_Automaton":"automaton",
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
 			"bSpeaker":0,
 			"motorPwmL":1000,
 			"motorPwmR":1000,
 			"motorPwmW":0,
+			"speedP":3000,
+			
+			{
+				"name":"cmd",
+				"class":"TCP",
+				"bInst":1,
+				
+				{
+					"name":"server",
+					"class":"_socket",
+					"bInst":1,
+					"listenPort":19840,
+					"nListen":1,
+					"timeoutRecv":1000,
+					"buf":1024,
+				}
+			}			
 		}
-
+		
 		{
-			"name":"HMgrass",
+			"name":"RTH"
+			"class":"HM_rth",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"forward",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"State":"HM_RTH",
+			"dist":0.1,
+		}		
+		
+		{
+			"name":"grass",
 			"class":"HM_grass",
 			"bInst":1,
-			"Window":"winForward",
-			"HM_base":"HMbase",
+			"Window":"forward",
+			"HM_base":"base",
 			"_ImageNet":"imageNet",
-			"_Automaton":"HMauto",
-			"State":"HM_WORK",
+			"_Automaton":"automaton",
 			"speedP":0,
 			"steerP":2500,
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+				{
+					"state":"HM_FOLLOWME",
+					"bInst":1,
+				}				
+			}
 
 			{
 				"name":"grassMatrix",
+				"bInst":1,
 				"minProb":0.6,
 				"iClass":1,
 				"nW":6,
-				"nH":2,
+				"nH":1,
 				"left":0.0,
 				"top":0.5,
 				"right":1.0,
@@ -229,40 +273,48 @@
 		}
 
 		{
-			"name":"HMmarker",
+			"name":"marker",
 			"class":"HM_marker",
 			"bInst":0,
 			"_ZED":"ZED",
-			"Window":"winForward",
-			"HM_base":"HMbase",
-			"_Automaton":"HMauto",
-			"State":"HM_WORK",
+			"Window":"forward",
+			"HM_base":"base",
+			"_Automaton":"automaton",
 			"dist":0.1,
 			"minSize":0.1,
+
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+				{
+					"state":"HM_FOLLOWME",
+					"bInst":1,
+				}
+				{
+					"state":"HM_MARKER_TURN",
+					"bInst":1,
+				}	
+			}
+
 		}
-		
+				
 		{
-			"name":"HMrth"
-			"class":"HM_rth",
-			"bInst":0,
-			"_ZED":"ZED",
-			"Window":"winForward",
-			"HM_base":"HMbase",
-			"_Automaton":"HMauto",
-			"State":"HM_RTH",
-			"dist":0.1,
-		}		
-		
-		{
-			"name":"HMavoid",
+			"name":"avoidance",
 			"class":"HM_avoid",
 			"bInst":1,
 			"_Stream":"ZED",
-			"Window":"winForward",
-			"HM_base":"HMbase",
-			"_Automaton":"HMauto",
-			"_Obstacle":"Obstacle",
-			"State":"HM_RTH",
+			"Window":"forward",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_Obstacle":"obstacle",
 			"alertDist":0.9,
 			"avoidLeft":0.269,
 			"avoidRight":0.93,
@@ -270,6 +322,23 @@
 			"avoidBottom":0.825,
 			"speedP":3000,
 			"steerP":2000,
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+				{
+					"state":"HM_FOLLOWME",
+					"bInst":1,
+				}
+			}
 		}
 		
 	}

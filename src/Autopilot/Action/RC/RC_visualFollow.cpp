@@ -95,7 +95,7 @@ void RC_visualFollow::update(void)
 
 	NULL_(m_pRC);
 	NULL_(m_pROITracker);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	CHECK_(isActive()==false);
 
 	if (m_pROITracker->m_bTracking == false)
 	{

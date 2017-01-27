@@ -6,6 +6,8 @@ namespace kai
 HM_base::HM_base()
 {
 	m_pCAN = NULL;
+	m_pCMD = NULL;
+	m_strCMD = "";
 
 	m_motorPwmL = 0;
 	m_motorPwmR = 0;
@@ -16,6 +18,7 @@ HM_base::HM_base()
 	m_maxSpeedW = 2500;
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
+	m_speedP = 3000;
 }
 
 HM_base::~HM_base()
@@ -34,6 +37,12 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("motorPwmL", &m_motorPwmL));
 	F_INFO(pK->v("motorPwmR", &m_motorPwmR));
 	F_INFO(pK->v("motorPwmW", &m_motorPwmW));
+	F_INFO(pK->v("speedP", &m_speedP));
+
+	Kiss* pI = pK->o("cmd");
+	CHECK_T(pI->empty());
+	m_pCMD = new TCP();
+	F_ERROR_F(m_pCMD->init(pI));
 
 	return true;
 }
@@ -53,12 +62,77 @@ bool HM_base::link(void)
 void HM_base::update(void)
 {
 	this->ActionBase::update();
+	NULL_(m_pAM);
+	NULL_(m_pCMD);
 
 	updateCAN();
-	m_motorPwmL = 0;
-	m_motorPwmR = 0;
+
+	string idle = "HM_IDLE";
+	if(m_pAM->getCurrentStateIdx() == m_pAM->getStateIdx(&idle))
+	{
+		m_motorPwmL = 0;
+		m_motorPwmR = 0;
+	}
+	else
+	{
+		m_motorPwmL = m_speedP;
+		m_motorPwmR = m_speedP;
+	}
+
 	m_motorPwmW = 0;
 	m_bSpeaker = false;
+
+	cmd();
+}
+
+void HM_base::cmd(void)
+{
+	if (!m_pCMD->isOpen())
+	{
+		m_pCMD->open();
+		return;
+	}
+
+	char buf;
+	while (m_pCMD->read((uint8_t*) &buf, 1) > 0)
+	{
+		if (buf == ',')break;
+		m_strCMD += buf;
+	}
+
+	CHECK_(buf!=',');
+
+	string stateName;
+	if(m_strCMD=="start")
+	{
+		if(*m_pAM->getCurrentStateName()=="HM_IDLE")
+		{
+			m_pAM->transit(m_pAM->getLastStateIdx());
+		}
+	}
+	else if(m_strCMD=="stop")
+	{
+		stateName = "HM_IDLE";
+		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+	}
+	else if(m_strCMD=="work")
+	{
+		stateName = "HM_WORK";
+		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+	}
+	else if(m_strCMD=="back_to_home")
+	{
+		stateName = "HM_RTH";
+		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+	}
+	else if(m_strCMD=="follow_me")
+	{
+		stateName = "HM_FOLLOWME";
+		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+	}
+
+	m_strCMD = "";
+
 }
 
 void HM_base::updateCAN(void)
@@ -99,6 +173,21 @@ void HM_base::updateCAN(void)
 	// CAN.sendMsgBuf(0x113, 0, 8, cmd);
 
 	m_pCAN->send(addr, 8, cmd);
+}
+
+bool HM_base::draw(void)
+{
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	NULL_F(pMat);
+	CHECK_F(pMat->empty());
+
+	string msg = *this->getName() + ": rpmL=" + i2str(m_motorPwmL)
+			+ ", rpmR=" + i2str(m_motorPwmR);
+	pWin->addMsg(&msg);
+
+	return true;
 }
 
 

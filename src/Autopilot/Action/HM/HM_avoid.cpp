@@ -11,8 +11,6 @@ HM_avoid::HM_avoid()
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
-	m_pwmL = 0;
-	m_pwmR = 0;
 
 	m_avoidArea.m_x = 0.0;
 	m_avoidArea.m_y = 0.0;
@@ -73,35 +71,21 @@ void HM_avoid::update(void)
 	NULL_(m_pStream);
 	NULL_(m_pObs);
 
-	//Obstacle avoidance always on except for ChargeStation
-
-	//TODO: cooperate with other motions
-
-	//forward speed
-	int rpmSpeed = m_speedP;
-	int rpmSteer = 0;
-
+	//do nothing if no obstacle inside alert distance
 	m_distM = m_pObs->dist(&m_avoidArea,&m_posMin);
-	if(m_distM > m_alertDist)
-	{
-		//Safe distance, keep going
-		m_pwmL = rpmSpeed;
-		m_pwmR = rpmSpeed;
-		m_pHM->m_motorPwmL = m_pwmL;
-		m_pHM->m_motorPwmR = m_pwmR;
-		return;
-	}
+	CHECK_(m_distM > m_alertDist);
 
 	//make turn when object is within a certain distance
-	rpmSpeed = 0;
-	rpmSteer = m_steerP;
 	m_pHM->m_bSpeaker = true;
 
-	m_pwmL = rpmSpeed + rpmSteer;
-	m_pwmR = rpmSpeed - rpmSteer;
-	m_pHM->m_motorPwmL = m_pwmL;
-	m_pHM->m_motorPwmR = m_pwmR;
+	CHECK_(!isActive());
 
+	int rpmSteer = m_steerP;
+	if(m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
+		rpmSteer = -m_steerP;
+
+	m_pHM->m_motorPwmL = rpmSteer;
+	m_pHM->m_motorPwmR = -rpmSteer;
 }
 
 bool HM_avoid::draw(void)
@@ -111,7 +95,10 @@ bool HM_avoid::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	CHECK_F(pMat->empty());
 
-	string msg = *this->getName() +": dist=" + f2str(m_distM) + ": rpmL=" + i2str(m_pwmL) + ", rpmR=" + i2str(m_pwmR);
+	string msg;
+	if(isActive())msg="* ";
+	else msg="- ";
+	msg += *this->getName() +": dist=" + f2str(m_distM);
 	pWin->addMsg(&msg);
 
 	Rect r;

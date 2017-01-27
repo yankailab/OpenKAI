@@ -16,6 +16,7 @@ _Automaton::_Automaton()
 
 	m_nState = 0;
 	m_iState = 0;
+	m_iLastState = 0;
 }
 
 _Automaton::~_Automaton()
@@ -75,19 +76,18 @@ int _Automaton::getStateIdx(string* pStateName)
 bool _Automaton::transit(string* pNextStateName)
 {
 	NULL_F(pNextStateName);
-
 	int iNext = getStateIdx(pNextStateName);
-	CHECK_F(iNext<0);
 
-	m_iState = iNext;
-	return true;
+	return transit(iNext);
 }
 
 bool _Automaton::transit(int nextStateIdx)
 {
 	CHECK_F(nextStateIdx < 0);
 	CHECK_F(nextStateIdx >= m_nState);
+	CHECK_F(nextStateIdx == m_iState);
 
+	m_iLastState = m_iState;
 	m_iState = nextStateIdx;
 	return true;
 }
@@ -95,6 +95,16 @@ bool _Automaton::transit(int nextStateIdx)
 int _Automaton::getCurrentStateIdx(void)
 {
 	return m_iState;
+}
+
+string* _Automaton::getCurrentStateName(void)
+{
+	return &m_pStateName[m_iState];
+}
+
+int _Automaton::getLastStateIdx(void)
+{
+	return m_iLastState;
 }
 
 bool _Automaton::draw(void)
@@ -108,4 +118,4 @@ bool _Automaton::draw(void)
 	return true;
 }
 
-} /* namespace kai */
+}

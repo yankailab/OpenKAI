@@ -73,7 +73,7 @@ void APMrover_follow::update(void)
 
 	NULL_(m_pAPM);
 	NULL_(m_pUniv);
-	CHECK_(m_pAM->getCurrentStateIdx() != m_iActiveState);
+	CHECK_(isActive()==false);
 
 	//get visual target and decide motion
 //	m_pTarget = m_pUniv->getByClass(m_targetClass);
