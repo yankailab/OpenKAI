@@ -1,7 +1,7 @@
 # OpenKAI
 
 ## What is it?
-OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to be ran on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
+OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to run on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
 
 ## Platform
 OpenKAI is supposed to behave as a companion computer that commands an external low-level robotic controller. Supported hardware for the companiton computer currently are
@@ -38,7 +38,7 @@ OpenKAI is implemented purely in C++, it is very easy to implement your applicat
 ###[Develop OpenKAI apps with Eclipse CDT](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/eclipse.md)
 
 ### Kiss (OpenKai Simple Script)
-If the existing function Modules from OpenKAI already satisfy your needs, you can write a json-like Kiss script to define your application. Note that Kiss is treated as a config file and will be parsed all at once at the beginning of OpenKAI program execution. The Modules defined by Kiss file are statically created and get started to run. Therefore there is no difference in execution speed between the Compilation way and application defined by Kiss (To be updated).
+If the existing function Modules from OpenKAI already meet your needs, you can write a json-like Kiss script to define your application. Note that Kiss is treated as a config file and will be parsed all at once at the beginning of OpenKAI program execution. The Modules defined by Kiss file are statically created and get started to run. Therefore there is no difference in execution speed between the Compilation way and application defined by Kiss (To be updated).
 
 ## System architecture
 OpenKAI is organized as a combination of multiple functional Modules. Each Module runs in an individual thread, so that modules can be ran simultaneously over multi-core CPUs efficiently. Each Module contains multiple sub-Modules, each sub-Module may handle certain part of functions divided by its category, and the Module switches between each of its sub-Modules to form a complete function.
