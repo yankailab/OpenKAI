@@ -62,9 +62,9 @@
 }
 
 {
-	"name":"imageNet",
+	"name":"grassClassifier",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"mode":"object",
 	"Window":"forward",
@@ -93,7 +93,7 @@
 	"class":"_DetectNet",
 	"bInst":1,
 	"bLog":0,
-	"FPS":30,
+	"FPS":10,
 	"Window":"forward",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/ped-100/",
@@ -109,7 +109,7 @@
 {
 	"name":"markerDetector",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":30,
 	"Window":"forward",
@@ -226,17 +226,33 @@
 			"Window":"forward",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"State":"HM_RTH",
 			"dist":0.1,
 		}		
 		
+		{
+			"name":"follow"
+			"class":"HM_follow",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"forward",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_DetectNet":"humanDetector",
+			"_Obstacle":"obstacle",
+			"speedP":0,
+			"steerP":2500,
+			"targetDist":1.5,			
+			"targetX":0.5,
+			"targetY":0.5,
+		}		
+
 		{
 			"name":"grass",
 			"class":"HM_grass",
 			"bInst":1,
 			"Window":"forward",
 			"HM_base":"base",
-			"_ImageNet":"imageNet",
+			"_ImageNet":"grassClassifier",
 			"_Automaton":"automaton",
 			"speedP":0,
 			"steerP":2500,

@@ -49,6 +49,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(HM_marker);
 		ADD_ACTION(HM_rth);
 		ADD_ACTION(HM_avoid);
+		ADD_ACTION(HM_follow);
 
 		ADD_ACTION(APMrover_base);
 		ADD_ACTION(APMrover_follow);

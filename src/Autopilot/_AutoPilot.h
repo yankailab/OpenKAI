@@ -10,6 +10,7 @@
 #include "Action/HM/HM_marker.h"
 #include "Action/HM/HM_rth.h"
 #include "Action/HM/HM_avoid.h"
+#include "Action/HM/HM_follow.h"
 
 #include "Action/APMcopter/APMcopter_base.h"
 #include "Action/APMcopter/APMcopter_landing.h"
