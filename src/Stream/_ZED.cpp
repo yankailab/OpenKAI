@@ -127,7 +127,7 @@ void _ZED::update(void)
 			if (!open())
 			{
 				LOG_E("Cannot open ZED");
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}

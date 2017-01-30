@@ -77,7 +77,7 @@ bool _AIbase::init(void* pKiss)
 	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
 	F_INFO(pK->v("contourBlend", &m_contourBlend));
 
-	F_INFO(pK->v("nObs", &m_nObj));
+	F_INFO(pK->v("nObj", &m_nObj));
 	m_pObj = new OBJECT[m_nObj];
 	for (int i = 0; i < m_nObj; i++)
 	{

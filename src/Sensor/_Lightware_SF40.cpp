@@ -173,7 +173,7 @@ void _Lightware_SF40::update(void)
 		{
 			if (!m_pIn->open())
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 

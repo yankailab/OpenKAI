@@ -147,7 +147,10 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 		}
 	}
 
-	*pPos = posMin;
+	if(pPos)
+	{
+		*pPos = posMin;
+	}
 
 	double rangeMin, rangeMax;
 	m_pStream->getRange(&rangeMin, &rangeMax);
@@ -173,10 +176,6 @@ bool _Obstacle::draw(void)
 	CHECK_F(mM.empty());
 
     Mat filterM = Mat::zeros(Size(m_mDim.m_x,m_mDim.m_y), CV_8UC1);
-
-//    double rMax, rMin;
-//	m_pStream->getRange(&rMin,&rMax);
-//	rMax = 1.0/rMax;
 
 	int i,j;
 	for(i=0;i<m_mDim.m_y;i++)

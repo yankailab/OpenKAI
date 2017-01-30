@@ -139,6 +139,7 @@ void _DetectNet::detect(void)
 		obj.m_bbox.m_w = (int) bb[3];
 		obj.m_camSize.m_x = fGMat.cols;
 		obj.m_camSize.m_y = fGMat.rows;
+		obj.i2fBBox();
 		obj.m_dist = 0.0;
 		obj.m_prob = 0.0;
 		obj.m_name = m_className;

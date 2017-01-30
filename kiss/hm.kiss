@@ -64,7 +64,7 @@
 {
 	"name":"grassClassifier",
 	"class":"_ImageNet",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"mode":"object",
 	"Window":"forward",
@@ -76,7 +76,7 @@
 	"blobOut":"softmax",
 	"labelFile":"labels.txt",
 	"objLifetime":10000000,
-	"nObs":32,
+	"nObj":32,
 	"bDrawContour":0,
 	"contourBlend":0.15,
 	"fDist":0.5,
@@ -102,8 +102,8 @@
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"className":"human",
-	"obsLifetime":100000,
-	"nObs":8,
+	"objLifetime":100000,
+	"nObj":8,
 }
 
 {
@@ -120,8 +120,8 @@
 	"trainedFile":"snapshot_iter_18900.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"className":"marker",
-	"obsLifetime":100000,
-	"nObs":8,
+	"objLifetime":100000,
+	"nObj":8,
 }
 
 {
@@ -219,7 +219,7 @@
 		}
 		
 		{
-			"name":"RTH"
+			"name":"RTH",
 			"class":"HM_rth",
 			"bInst":0,
 			"_ZED":"ZED",
@@ -230,20 +230,32 @@
 		}		
 		
 		{
-			"name":"follow"
+			"name":"follow",
 			"class":"HM_follow",
-			"bInst":0,
+			"bInst":1,
 			"_ZED":"ZED",
 			"Window":"forward",
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_DetectNet":"humanDetector",
 			"_Obstacle":"obstacle",
+			"distMin":0.0,
+			"distMax":10.0,
 			"speedP":0,
 			"steerP":2500,
 			"targetDist":1.5,			
 			"targetX":0.5,
 			"targetY":0.5,
+			"objLifetime":100000,
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_FOLLOWME",
+					"bInst":1,
+				}				
+			}
 		}		
 
 		{

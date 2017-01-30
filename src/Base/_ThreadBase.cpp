@@ -21,6 +21,7 @@ _ThreadBase::_ThreadBase()
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
 	m_timeFrom = 0;
 	m_timeTo = 0;
+	m_bSleep = false;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -55,13 +56,12 @@ bool _ThreadBase::start(void)
 	return true;
 }
 
-void _ThreadBase::sleepThread(int64_t usec)
+void _ThreadBase::sleepTime(int64_t usec)
 {
 	struct timeval now;
 	struct timespec timeout;
 
 	gettimeofday(&now, NULL);
-
 	int64_t nsec = (now.tv_usec + usec) * 1000;
 	timeout.tv_sec = now.tv_sec + nsec / NSEC_1SEC;
 	timeout.tv_nsec = nsec % NSEC_1SEC;
@@ -69,6 +69,16 @@ void _ThreadBase::sleepThread(int64_t usec)
 	pthread_mutex_lock(&m_wakeupMutex);
 	pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &timeout);
 	pthread_mutex_unlock(&m_wakeupMutex);
+}
+
+void _ThreadBase::sleep(void)
+{
+	m_bSleep = true;
+}
+
+void _ThreadBase::wakeUp(void)
+{
+	m_bSleep = false;
 }
 
 void _ThreadBase::updateTime(void)
@@ -104,7 +114,12 @@ void _ThreadBase::autoFPSto(void)
 	int uSleep = (int) (m_targetFrameTime - (m_timeTo - m_timeFrom));
 	if (uSleep > 1000)
 	{
-		this->sleepThread(uSleep);
+		this->sleepTime(uSleep);
+	}
+
+	while(m_bSleep)
+	{
+		this->sleepTime(1000);
 	}
 
 	this->updateTime();

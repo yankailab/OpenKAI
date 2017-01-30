@@ -41,6 +41,26 @@ struct OBJECT
 		m_frameID = 0;
 		m_safety = -1;
 	}
+
+	void f2iBBox(void)
+	{
+		m_bbox.m_x = m_fBBox.m_x * m_camSize.m_x;
+		m_bbox.m_z = m_fBBox.m_z * m_camSize.m_x;
+		m_bbox.m_y = m_fBBox.m_y * m_camSize.m_y;
+		m_bbox.m_w = m_fBBox.m_w * m_camSize.m_y;
+	}
+
+	void i2fBBox(void)
+	{
+		double base;
+		base = 1.0/m_camSize.m_x;
+		m_fBBox.m_x = m_bbox.m_x * base;
+		m_fBBox.m_z = m_bbox.m_z * base;
+		base = 1.0/m_camSize.m_y;
+		m_fBBox.m_y = m_bbox.m_y * base;
+		m_fBBox.m_w = m_bbox.m_w * base;
+	}
+
 };
 
 class _AIbase: public _ThreadBase

@@ -92,7 +92,7 @@ void _socket::update(void)
 		{
 			if (!connect())
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
@@ -100,7 +100,7 @@ void _socket::update(void)
 		{
 			if (!m_bConnected)
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}

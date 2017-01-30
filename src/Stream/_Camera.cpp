@@ -162,7 +162,7 @@ void _Camera::update(void)
 			if (!open())
 			{
 				LOG_E("Cannot open camera");
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}

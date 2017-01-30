@@ -134,13 +134,10 @@ void _ImageNet::detectObject(void)
 	for (int i = 0; i < m_iObj; i++)
 	{
 		OBJECT* pObj = &m_pObj[i];
-		if (pObj->m_bbox.area() <= 0)
-		{
-			pObj->m_bbox.m_x = pObj->m_fBBox.m_x * gRGBA.cols;
-			pObj->m_bbox.m_y = pObj->m_fBBox.m_y * gRGBA.rows;
-			pObj->m_bbox.m_z = pObj->m_fBBox.m_z * gRGBA.cols;
-			pObj->m_bbox.m_w = pObj->m_fBBox.m_w * gRGBA.rows;
-		}
+		pObj->m_camSize.m_x = gRGBA.cols;
+		pObj->m_camSize.m_y = gRGBA.rows;
+		pObj->f2iBBox();
+
 		if (pObj->m_bbox.area() <= 0)
 			continue;
 		if (!m_pIN)

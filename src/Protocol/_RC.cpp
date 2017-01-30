@@ -149,7 +149,7 @@ void _RC::update(void)
 		{
 			if(!m_pSerialPort->open())
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 			m_recvMsg.m_cmd = 0;

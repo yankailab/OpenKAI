@@ -67,7 +67,7 @@ void _Canbus::update(void)
 		{
 			if(!m_pSerialPort->open())
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}

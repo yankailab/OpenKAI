@@ -278,7 +278,7 @@ void _Mavlink::update(void)
 		{
 			if (!m_pSerialPort->open())
 			{
-				this->sleepThread(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 			m_status.packet_rx_drop_count = 0;

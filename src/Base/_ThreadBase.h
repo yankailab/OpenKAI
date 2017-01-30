@@ -28,9 +28,11 @@ public:
 	virtual void complete(void);
 	virtual bool draw(void);
 
-	void sleepThread(int64_t usec);
-	void updateTime(void);
+	void sleepTime(int64_t usec);
+	void sleep(void);
+	void wakeUp(void);
 
+	void updateTime(void);
 	double getFrameRate(void);
 	void setTargetFPS(int fps);
 	void autoFPSfrom(void);
@@ -51,6 +53,7 @@ public:
 	int64_t m_targetFrameTime;
 	int64_t m_timeFrom;
 	int64_t m_timeTo;
+	bool	m_bSleep;
 
 };
 

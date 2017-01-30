@@ -71,7 +71,7 @@ void _server::update(void)
 
 		if(!handler())
 		{
-			this->sleepThread(USEC_1SEC);
+			this->sleepTime(USEC_1SEC);
 		}
 
 		this->autoFPSto();

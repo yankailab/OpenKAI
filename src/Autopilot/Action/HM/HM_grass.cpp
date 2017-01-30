@@ -61,7 +61,7 @@ bool HM_grass::link(void)
 
 	if (!m_pIN)
 	{
-		LOG_E("_ImageNet not found for grass navigation");
+		LOG_E("_ImageNet not found");
 		return true;
 	}
 
