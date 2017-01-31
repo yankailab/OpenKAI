@@ -14,8 +14,8 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bRec":0,
-	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"bRec":1,
+	"recFile":"/home/ubuntu/src/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
 	"textSize":0.5,
@@ -65,7 +65,7 @@
 	"name":"grassClassifier",
 	"class":"_ImageNet",
 	"bInst":1,
-	"FPS":30,
+	"FPS":15,
 	"mode":"object",
 	"Window":"forward",
 	"_Stream":"ZED",
@@ -135,7 +135,7 @@
 		"name":"input",
 		"class":"SerialPort",
 		"bInst":1,
-		"portName":"/dev/ttyACM1",
+		"portName":"/dev/ttyACM0",
 		"baud":115200,
 	}
 }
@@ -199,7 +199,7 @@
 			"motorPwmL":1000,
 			"motorPwmR":1000,
 			"motorPwmW":0,
-			"speedP":3000,
+			"speedP":2500,
 			
 			{
 				"name":"cmd",
@@ -267,8 +267,8 @@
 			"_ImageNet":"grassClassifier",
 			"_Automaton":"automaton",
 			"speedP":0,
-			"steerP":2500,
-			"turnTimer":3000000,
+			"steerP":1500,
+			"turnTimer":2800000,
 			
 			{
 				"name":"activeState",
