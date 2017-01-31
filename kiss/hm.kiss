@@ -146,7 +146,7 @@
 	"bInst":1,
 	"FPS":10,
 	"Window":"forward",
-	"startState":"HM_IDLE",
+	"startState":"HM_WORK",
 
 	{
 		"state":"HM_IDLE",
@@ -291,7 +291,7 @@
 				"bInst":1,
 				"minProb":0.6,
 				"iClass":1,
-				"nW":6,
+				"nW":3,
 				"nH":1,
 				"left":0.0,
 				"top":0.5,
@@ -337,7 +337,7 @@
 		{
 			"name":"avoidance",
 			"class":"HM_avoid",
-			"bInst":1,
+			"bInst":0,
 			"_Stream":"ZED",
 			"Window":"forward",
 			"HM_base":"base",
