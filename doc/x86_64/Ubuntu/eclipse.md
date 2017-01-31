@@ -7,7 +7,7 @@ Assume you put all the git repositories inside the "/home/ubuntu/src" directory 
 
 ```Shell
 sudo apt-get install default-jre
-sudo echo -e "/usr/local/cuda/lib64\n/home/ubuntu/src/jetson-inference/build/x86_64/lib" >> /etc/ld.so.conf
+sudo su -c "echo -e '/usr/local/cuda/lib64\n/home/ubuntu/src/jetson-inference/build/x86_64/lib' >> /etc/ld.so.conf"
 sudo ldconfig
 ```
 
