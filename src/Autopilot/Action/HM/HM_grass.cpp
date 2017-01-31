@@ -15,6 +15,9 @@ HM_grass::HM_grass()
 	m_grassArea.init();
 	m_grassMinProb = 0.5;
 	m_grassClassIdx = 1;
+
+	m_turnTimer = USEC_1SEC;
+	m_tTurnSet = 0;
 }
 
 HM_grass::~HM_grass()
@@ -29,6 +32,7 @@ bool HM_grass::init(void* pKiss)
 
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
+	F_INFO(pK->v("turnTimer", (int*)&m_turnTimer));
 
 	string grass = "grassMatrix";
 	Kiss* pG = pK->getChildByName(&grass);
@@ -127,18 +131,35 @@ void HM_grass::update(void)
 	grassD[1] *= n;
 	grassD[2] *= n;
 
-	CHECK_(grassD[DIR_F] >= m_grassMinProb);
 	CHECK_(!isActive());
 
-	//forward speed
-	int rpmSteer = 0;
-	if (grassD[DIR_L] > grassD[DIR_R])
-		rpmSteer = m_steerP;
-	else
-		rpmSteer = -m_steerP;
+	if(grassD[DIR_F] >= m_grassMinProb)
+	{
+		//reset the timer once found a good place to go
+		m_tTurnSet = 0;
+		return;
+	}
 
-	m_pHM->m_motorPwmL = -rpmSteer;
-	m_pHM->m_motorPwmR = rpmSteer;
+	uint64_t t = get_time_usec();
+
+	//set new turn timer and decide the direction
+	if(m_tTurnSet == 0)
+	{
+		m_tTurnSet = t;
+		if (grassD[DIR_L] > grassD[DIR_R])
+			m_rpmSteer = m_steerP;
+		else
+			m_rpmSteer = -m_steerP;
+
+		return;
+	}
+
+	//not yet the time to turn
+	CHECK_(t - m_tTurnSet < m_turnTimer);
+
+	//keep turning
+	m_pHM->m_motorPwmL = -m_rpmSteer;
+	m_pHM->m_motorPwmR = m_rpmSteer;
 
 }
 
@@ -153,7 +174,7 @@ bool HM_grass::draw(void)
 	string msg;
 	if(isActive())msg="* ";
 	else msg="- ";
-	msg += *this->getName();
+	msg += *this->getName() + ": turnTime:" + i2str(m_tTurnSet);
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pIN);

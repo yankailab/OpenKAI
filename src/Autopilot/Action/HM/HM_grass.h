@@ -31,6 +31,9 @@ private:
 
 	double	m_speedP;
 	double	m_steerP;
+	uint64_t	m_turnTimer;
+	uint64_t	m_tTurnSet;
+	int		m_rpmSteer;
 
 	vInt2		m_grassMat;
 	vDouble4	m_grassArea;

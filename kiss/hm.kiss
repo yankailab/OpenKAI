@@ -40,7 +40,7 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
@@ -268,6 +268,7 @@
 			"_Automaton":"automaton",
 			"speedP":0,
 			"steerP":2500,
+			"turnTimer":3000000,
 			
 			{
 				"name":"activeState",
@@ -294,9 +295,9 @@
 				"nW":3,
 				"nH":1,
 				"left":0.0,
-				"top":0.5,
+				"top":0.6,
 				"right":1.0,
-				"bottom":0.825,
+				"bottom":0.76,
 			}			
 		}
 
