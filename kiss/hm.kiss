@@ -14,7 +14,7 @@
 	"w":672,
 	"h":376,
 	"bFullScreen":0,
-	"bRec":1,
+	"bRec":0,
 	"recFile":"/home/ubuntu/src/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
@@ -109,9 +109,9 @@
 {
 	"name":"markerDetector",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
-	"FPS":30,
+	"FPS":10,
 	"Window":"forward",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/stopMarker/",
@@ -121,7 +121,7 @@
 	"meanFile":"mean.binaryproto",
 	"className":"marker",
 	"objLifetime":100000,
-	"nObj":8,
+	"nObj":2,
 }
 
 {
@@ -154,10 +154,6 @@
 	}
 	{
 		"state":"HM_WORK",
-		"bInst":1,
-	}
-	{
-		"state":"HM_MARKER_TURN",
 		"bInst":1,
 	}
 	{
@@ -247,6 +243,7 @@
 			"targetX":0.5,
 			"targetY":0.5,
 			"objLifetime":100000,
+			"minProb":0.5,
 			
 			{
 				"name":"activeState",
@@ -300,40 +297,6 @@
 				"bottom":0.76,
 			}			
 		}
-
-		{
-			"name":"marker",
-			"class":"HM_marker",
-			"bInst":0,
-			"_ZED":"ZED",
-			"Window":"forward",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"dist":0.1,
-			"minSize":0.1,
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_WORK",
-					"bInst":1,
-				}
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-				{
-					"state":"HM_FOLLOWME",
-					"bInst":1,
-				}
-				{
-					"state":"HM_MARKER_TURN",
-					"bInst":1,
-				}	
-			}
-
-		}
 				
 		{
 			"name":"avoidance",
@@ -344,6 +307,7 @@
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
+			"_DetectNet":"markerDetector",
 			"alertDist":0.9,
 			"avoidLeft":0.269,
 			"avoidRight":0.93,
@@ -351,6 +315,9 @@
 			"avoidBottom":0.825,
 			"speedP":3000,
 			"steerP":2000,
+			"objLifetime":200000,
+			"minProb":0.0,
+			"markerTurnTimer":5000000,
 			
 			{
 				"name":"activeState",

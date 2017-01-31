@@ -4,6 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/_StreamBase.h"
+#include "../../../AI/_DetectNet.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
@@ -26,6 +27,7 @@ private:
 	HM_base* m_pHM;
 	_StreamBase* m_pStream;
 	_Obstacle* m_pObs;
+	_DetectNet* m_pMarkerDN;
 
 	vDouble4 m_avoidArea;
 	vInt2	m_posMin;
@@ -36,6 +38,14 @@ private:
 
 	//operation
 	double m_distM;
+
+	double		m_minProb;
+	uint64_t 	m_objLifetime;
+	uint64_t	m_markerTurnStart;
+	uint64_t	m_markerTurnTimer;
+	int			m_rpmSteer;
+	OBJECT*		m_pMarker;
+
 
 };
 

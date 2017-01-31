@@ -18,6 +18,7 @@ HM_grass::HM_grass()
 
 	m_turnTimer = USEC_1SEC;
 	m_tTurnSet = 0;
+	m_rpmSteer = 0;
 }
 
 HM_grass::~HM_grass()
@@ -174,7 +175,7 @@ bool HM_grass::draw(void)
 	string msg;
 	if(isActive())msg="* ";
 	else msg="- ";
-	msg += *this->getName() + ": turnTime:" + i2str(m_tTurnSet);
+	msg += *this->getName() + ": turnTime:" + i2str((int)m_tTurnSet);
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pIN);

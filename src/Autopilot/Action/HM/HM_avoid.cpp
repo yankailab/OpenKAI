@@ -8,6 +8,7 @@ HM_avoid::HM_avoid()
 	m_pHM = NULL;
 	m_pStream = NULL;
 	m_pObs = NULL;
+	m_pMarkerDN = NULL;
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
@@ -18,6 +19,13 @@ HM_avoid::HM_avoid()
 	m_avoidArea.m_w = 1.0;
 	m_alertDist = 0.0;
 	m_distM = 0.0;
+
+	m_minProb = 0.5;
+	m_objLifetime = 100000;
+	m_markerTurnStart = 0;
+	m_markerTurnTimer = USEC_1SEC;
+	m_rpmSteer = 0;
+	m_pMarker = NULL;
 }
 
 HM_avoid::~HM_avoid()
@@ -39,6 +47,10 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pK->v("avoidBottom", &m_avoidArea.m_w));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 
+	F_INFO(pK->v("minProb", &m_minProb));
+	F_INFO(pK->v("objLifetime", &m_objLifetime));
+	F_INFO(pK->v("markerTurnTimer", &m_markerTurnTimer));
+
 	return true;
 }
 
@@ -59,6 +71,10 @@ bool HM_avoid::link(void)
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
+	F_INFO(pK->v("_DetectNet", &iName));
+	m_pMarkerDN = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
@@ -70,22 +86,53 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pStream);
 	NULL_(m_pObs);
+	CHECK_(!isActive());
+
+	uint64_t tNow = get_time_usec();
+
+	//keep turning until the time
+	if(tNow - m_markerTurnStart < m_markerTurnTimer)
+	{
+		m_pHM->m_motorPwmL = m_rpmSteer;
+		m_pHM->m_motorPwmR = -m_rpmSteer;
+		return;
+	}
+	m_markerTurnStart = 0;
 
 	//do nothing if no obstacle inside alert distance
 	m_distM = m_pObs->dist(&m_avoidArea,&m_posMin);
 	CHECK_(m_distM > m_alertDist);
 
-	//make turn when object is within a certain distance
+	//speaker alert if object is within a certain distance
 	m_pHM->m_bSpeaker = true;
 
-	CHECK_(!isActive());
+	//see if marker is around
+	m_pMarker = NULL;
+	uint64_t t = tNow - m_objLifetime;
+	int i;
+	for(i=0; i<m_pMarkerDN->size(); i++)
+	{
+		OBJECT* pObj = m_pMarkerDN->get(i, t);
+		if(!pObj)continue;
+		if(pObj->m_prob < m_minProb)continue;
 
-	int rpmSteer = m_steerP;
+		m_pMarker = pObj;
+		break;
+	}
+
+	//if found marker, start turn for the timer duration
+	if(m_pMarker)
+	{
+		m_markerTurnStart = tNow;
+	}
+
+	//decide which direction to turn
+	m_rpmSteer = m_steerP;
 	if(m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
-		rpmSteer = -m_steerP;
+		m_rpmSteer = -m_steerP;
 
-	m_pHM->m_motorPwmL = rpmSteer;
-	m_pHM->m_motorPwmR = -rpmSteer;
+	m_pHM->m_motorPwmL = m_rpmSteer;
+	m_pHM->m_motorPwmR = -m_rpmSteer;
 }
 
 bool HM_avoid::draw(void)
@@ -98,7 +145,7 @@ bool HM_avoid::draw(void)
 	string msg;
 	if(isActive())msg="* ";
 	else msg="- ";
-	msg += *this->getName() +": dist=" + f2str(m_distM);
+	msg += *this->getName() +": dist=" + f2str(m_distM) + ", markerTurn:" + i2str((int)m_markerTurnStart);
 	pWin->addMsg(&msg);
 
 	Rect r;
