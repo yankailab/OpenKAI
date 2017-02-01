@@ -5,8 +5,8 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"waitKey":30,
-	"presetDir":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
-	"presetDir_":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir_":"/home/ubuntu/src/OpenKAI/data/",
 }
 
@@ -26,7 +26,7 @@
 {
 	"name":"SF40_client",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -57,7 +57,7 @@
 	{
 		"name":"input",
 		"class":"SerialPort",
-		"bInst":0,
+		"bInst":1,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
 	}
@@ -81,7 +81,7 @@
 	{
 		"name":"input",
 		"class":"File",
-		"bInst":1,
+		"bInst":0,
 		"fileName":"output/highway20161213_nDiv=180_handy.sf40raw",
 	}
 	
@@ -96,7 +96,7 @@
 {
 	"name":"SF40client",
 	"class":"_Lightware_SF40",
-	"bInst":1,
+	"bInst":0,
 	"FPS":300,
 	"Window":"SF40_client",
 	"_Automaton":"APMstate",

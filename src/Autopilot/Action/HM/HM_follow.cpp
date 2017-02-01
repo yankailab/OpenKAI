@@ -78,6 +78,12 @@ void HM_follow::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pDN);
 	NULL_(m_pObs);
+	if(!isActive())
+	{
+		m_pDN->sleep();
+		return;
+	}
+	m_pDN->wakeUp();
 
 	m_pTarget = NULL;
 
@@ -103,13 +109,6 @@ void HM_follow::update(void)
 
 	NULL_(m_pTarget);
 	m_distTarget = m_pObs->dist(&m_pTarget->m_fBBox,NULL);
-
-	if(!isActive())
-	{
-		m_pDN->sleep();
-		return;
-	}
-	m_pDN->wakeUp();
 
 	//make turn when object is within a certain distance
 	m_pHM->m_bSpeaker = true;

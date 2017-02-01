@@ -16,8 +16,8 @@ _ThreadBase::_ThreadBase()
 	m_threadID = 0;
 	m_timeStamp = 0;
 	m_dTime = 1.0;
-	m_defaultFPS = DEFAULT_FPS;
-	m_targetFPS = m_defaultFPS;
+	m_FPS = 0;
+	m_targetFPS = DEFAULT_FPS;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
 	m_timeFrom = 0;
 	m_timeTo = 0;
@@ -58,17 +58,27 @@ bool _ThreadBase::start(void)
 
 void _ThreadBase::sleepTime(int64_t usec)
 {
-	struct timeval now;
-	struct timespec timeout;
+	if(usec>0)
+	{
+		struct timeval now;
+		struct timespec timeout;
 
-	gettimeofday(&now, NULL);
-	int64_t nsec = (now.tv_usec + usec) * 1000;
-	timeout.tv_sec = now.tv_sec + nsec / NSEC_1SEC;
-	timeout.tv_nsec = nsec % NSEC_1SEC;
+		gettimeofday(&now, NULL);
+		int64_t nsec = (now.tv_usec + usec) * 1000;
+		timeout.tv_sec = now.tv_sec + nsec / NSEC_1SEC;
+		timeout.tv_nsec = nsec % NSEC_1SEC;
 
-	pthread_mutex_lock(&m_wakeupMutex);
-	pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &timeout);
-	pthread_mutex_unlock(&m_wakeupMutex);
+		pthread_mutex_lock(&m_wakeupMutex);
+		pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &timeout);
+		pthread_mutex_unlock(&m_wakeupMutex);
+	}
+	else
+	{
+		pthread_mutex_lock(&m_wakeupMutex);
+		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
+		pthread_mutex_unlock(&m_wakeupMutex);
+	}
+
 }
 
 void _ThreadBase::sleep(void)
@@ -78,7 +88,9 @@ void _ThreadBase::sleep(void)
 
 void _ThreadBase::wakeUp(void)
 {
+	CHECK_(!m_bSleep);
 	m_bSleep = false;
+	pthread_cond_signal(&m_wakeupSignal);
 }
 
 void _ThreadBase::updateTime(void)
@@ -86,11 +98,12 @@ void _ThreadBase::updateTime(void)
 	uint64_t newTime = get_time_usec();
 	m_dTime = newTime - m_timeStamp;
 	m_timeStamp = newTime;
+	m_FPS = USEC_1SEC / m_dTime;
 }
 
 double _ThreadBase::getFrameRate(void)
 {
-	return USEC_1SEC / m_dTime;
+	return m_FPS;
 }
 
 void _ThreadBase::setTargetFPS(int fps)
@@ -99,7 +112,6 @@ void _ThreadBase::setTargetFPS(int fps)
 
 	m_targetFPS = fps;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
-	m_dTime = m_targetFrameTime;
 }
 
 void _ThreadBase::autoFPSfrom(void)
@@ -117,9 +129,10 @@ void _ThreadBase::autoFPSto(void)
 		this->sleepTime(uSleep);
 	}
 
-	while(m_bSleep)
+	if(m_bSleep)
 	{
-		this->sleepTime(1000);
+		m_FPS = 0;
+		this->sleepTime(0);
 	}
 
 	this->updateTime();
@@ -140,7 +153,7 @@ bool _ThreadBase::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	pWin->tabReset();
 
-	string msg = *this->getName() + " FPS: " + i2str(getFrameRate());
+	string msg = *this->getName() + " FPS: " + i2str(m_FPS);
 	pWin->addMsg(&msg);
 
 	return true;

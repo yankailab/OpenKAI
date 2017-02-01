@@ -28,10 +28,10 @@ bool APMcopter_guided::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-
 	F_INFO(pK->v("APMcopter_base", &iName));
 	m_pAPM = (APMcopter_base*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_Lightware_SF40", &iName));
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
 

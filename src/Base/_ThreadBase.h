@@ -28,9 +28,9 @@ public:
 	virtual void complete(void);
 	virtual bool draw(void);
 
-	void sleepTime(int64_t usec);
 	void sleep(void);
 	void wakeUp(void);
+	void sleepTime(int64_t usec);
 
 	void updateTime(void);
 	double getFrameRate(void);
@@ -48,7 +48,7 @@ public:
 	pthread_mutex_t m_wakeupMutex;
 	pthread_cond_t m_wakeupSignal;
 
-	int64_t m_defaultFPS;
+	int64_t m_FPS;
 	int64_t m_targetFPS;
 	int64_t m_targetFrameTime;
 	int64_t m_timeFrom;
