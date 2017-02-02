@@ -45,6 +45,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APMcopter_avoid);
 
 		ADD_ACTION(HM_base);
+		ADD_ACTION(HM_pathFinder);
 		ADD_ACTION(HM_grass);
 		ADD_ACTION(HM_rth);
 		ADD_ACTION(HM_avoid);

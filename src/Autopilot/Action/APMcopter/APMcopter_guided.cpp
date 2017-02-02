@@ -7,6 +7,7 @@ APMcopter_guided::APMcopter_guided()
 {
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
+	m_lastFlightMode = 0;
 }
 
 APMcopter_guided::~APMcopter_guided()
@@ -56,7 +57,15 @@ void APMcopter_guided::updateAttitude(void)
 	NULL_(m_pAPM->m_pMavlink);
 	NULL_(m_pSF40);
 
-	//TODO: set new holding position in mode change (Any -> Guided)
+	uint32_t fMode = m_pAPM->m_flightMode;
+	if(fMode != m_lastFlightMode)
+	{
+		//TODO: set new holding position in mode change (Any -> Guided_NoGPS)
+
+		m_lastFlightMode = fMode;
+	}
+
+
 
 	APMcopter_PID* pPID;
 	APMcopter_CTRL* pCtrl;
@@ -107,7 +116,7 @@ bool APMcopter_guided::draw(void)
 
 	if(m_pAPM)
 	{
-		string msg = *this->getName()+": Roll="
+		string msg = *this->getName()+": Att. Target: Roll="
 				+ f2str(m_pAPM->m_ctrlRoll.m_v)
 				+", Pitch="
 				+ f2str(m_pAPM->m_ctrlPitch.m_v);

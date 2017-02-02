@@ -8,6 +8,7 @@ APMcopter_base::APMcopter_base()
 	m_pMavlink = NULL;
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
+	m_flightMode = 0;
 
 	m_pidRoll.reset();
 	m_pidPitch.reset();
@@ -101,7 +102,12 @@ bool APMcopter_base::link(void)
 
 void APMcopter_base::update(void)
 {
+	NULL_(m_pMavlink);
+
 	sendHeartbeat();
+
+	//update APM status from heartbeat msg
+	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 }
 
 void APMcopter_base::sendHeartbeat(void)
@@ -160,6 +166,19 @@ void APMcopter_base::updateDistanceSensor(DISTANCE_SENSOR* pSensor)
 			pSensor->m_distance);
 
 }
+
+bool APMcopter_base::draw(void)
+{
+	CHECK_F(!this->ActionBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+
+	string msg = *this->getName()+": Flight Mode=" + i2str(m_flightMode);
+	pWin->addMsg(&msg);
+
+	return true;
+}
+
 
 
 }

@@ -26,6 +26,7 @@ public:
 
 private:
 	APMcopter_base* m_pAPM;
+	uint32_t m_lastFlightMode;
 
 	//sensor
 	_Lightware_SF40* m_pSF40;

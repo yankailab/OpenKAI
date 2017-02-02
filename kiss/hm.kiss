@@ -157,15 +157,19 @@
 		"bInst":1,
 	}
 	{
+		"state":"HM_PATHFINDING",
+		"bInst":1,
+	}
+	{
+		"state":"HM_FOLLOWME",
+		"bInst":1,
+	}
+	{
 		"state":"HM_RTH",
 		"bInst":1,
 	}
 	{
 		"state":"HM_RTH_TURN",
-		"bInst":1,
-	}
-	{
-		"state":"HM_FOLLOWME",
 		"bInst":1,
 	}
 }
@@ -196,6 +200,8 @@
 			"motorPwmR":1000,
 			"motorPwmW":0,
 			"speedP":2500,
+			"pathFindTimer":10000000,
+			"pathFindTurnTimer":3000000,
 			
 			{
 				"name":"cmd",
@@ -212,6 +218,40 @@
 					"buf":1024,
 				}
 			}			
+		}
+
+		{
+			"name":"pathFinder",
+			"class":"HM_pathFinder",
+			"bInst":0,
+			"_Stream":"ZED",
+			"Window":"forward",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_Obstacle":"obstacle",
+			"distDiff":0.5,
+			"speedP":3000,
+			"steerP":2000,
+			"turnTimer":5000000,
+			"turnInterval":5000000,
+
+			"searchLeft":0.0,
+			"searchRight":0.25,
+			"searchTop":0.5,
+			"searchBottom":0.825,
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"HM_PATHFINDING",
+					"bInst":1,
+				}
+			}
 		}
 		
 		{
