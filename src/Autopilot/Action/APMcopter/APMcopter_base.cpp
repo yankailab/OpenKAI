@@ -143,8 +143,7 @@ void APMcopter_base::updateAttitude(void)
 	/*
 	 type_mask
 	 uint8_t	Mappings:
-	 If any of these bits are set,
-	 the corresponding input should be ignored:
+	 If any of these bits are set, the corresponding input should be ignored:
 	 bit 1: body roll rate,
 	 bit 2: body pitch rate,
 	 bit 3: body yaw rate.

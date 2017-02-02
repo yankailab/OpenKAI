@@ -18,8 +18,6 @@ _Lightware_SF40::_Lightware_SF40()
 	m_minDist = 1.0;
 	m_maxDist = 50.0;
 	m_showScale = 1.0;	//1m = 1pixel;
-	m_mwlX = 3;
-	m_mwlY = 3;
 	m_strRecv = "";
 	m_pSF40sender = NULL;
 	m_pDist = NULL;
@@ -27,8 +25,12 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pY = NULL;
 	m_MBS = 0;
 	m_nTrajectory = -1;
-	m_trajStep = 0.0;
 	m_iLine = 0;
+
+	m_initPos.init();
+	m_lastPos.init();
+	m_currentPos.init();
+	m_targetPos.init();
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -69,18 +71,19 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("showScale", &m_showScale));
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
 	F_INFO(pK->v("nTrajectory", &m_nTrajectory));
-	F_INFO(pK->v("trajectoryStep", &m_trajStep));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
 	m_pDist = new double[m_nDiv + 1];
 
-	F_INFO(pK->v("mwlX", &m_mwlX));
-	F_INFO(pK->v("mwlY", &m_mwlY));
+	int mwlX = 3;
+	int mwlY = 3;
+	F_INFO(pK->v("mwlX", &mwlX));
+	F_INFO(pK->v("mwlY", &mwlY));
 	m_pX = new Filter();
 	m_pY = new Filter();
-	m_pX->startMedian(m_mwlX);
-	m_pY->startMedian(m_mwlY);
+	m_pX->startMedian(mwlX);
+	m_pY->startMedian(mwlY);
 	m_iLine = 0;
 
 	m_lTrajectory.clear();
@@ -194,7 +197,6 @@ void _Lightware_SF40::update(void)
 void _Lightware_SF40::updateLidar(void)
 {
 	F_(readLine());
-
 	m_iLine++;
 
 	string str;
@@ -236,7 +238,10 @@ void _Lightware_SF40::updateLidar(void)
 	double dist = atof(vResult.at(0).c_str());
 
 	int iAngle = (int) (angle / m_dAngle);
-	m_pDist[iAngle] = dist;
+	if(iAngle <= m_nDiv)
+	{
+		m_pDist[iAngle] = dist;
+	}
 
 	m_strRecv.clear();
 }
@@ -268,13 +273,19 @@ bool _Lightware_SF40::readLine(void)
 	return false;
 }
 
+void _Lightware_SF40::resetInitPos(void)
+{
+	m_initPos = m_currentPos;
+}
+
 void _Lightware_SF40::updatePosition(void)
 {
-	int i, nV;
+	int i;
+	double nV;
 	double pX = 0;
 	double pY = 0;
 
-	for (i = 0, nV = 0; i < m_nDiv; i++)
+	for (i = 0, nV = 0.0; i < m_nDiv; i++)
 	{
 		double dist = m_pDist[i];
 		if (dist < m_minDist)
@@ -285,45 +296,29 @@ void _Lightware_SF40::updatePosition(void)
 		double angle = (m_dAngle * i + m_offsetAngle) * DEG_RADIAN;
 		pX += (dist * sin(angle));
 		pY += -(dist * cos(angle));
-		nV++;
+		nV += 1.0;
 	}
 
-	pX /= nV;
-	pY /= nV;
-
+	nV = 1.0/nV;
+	pX *= nV;
+	pY *= nV;
 	m_pX->input(pX);
 	m_pY->input(pY);
+
+	vDouble2 newPos;
+	newPos.m_x = m_pX->v();
+	newPos.m_y = m_pY->v();
+
+	m_currentPos.m_x += newPos.m_x - m_lastPos.m_x;
+	m_currentPos.m_y += newPos.m_y - m_lastPos.m_y;
+	m_lastPos = newPos;
 
 	//Update trajectory
 	CHECK_(m_nTrajectory==0);
 
-	vDouble2 vPos;
-	if(m_lTrajectory.size()==0)
-	{
-		vPos.m_x = m_pX->v();
-		vPos.m_y = m_pY->v();
-		m_lTrajectory.push_back(vPos);
-		return;
-	}
-
-	vPos = m_lTrajectory.back();
-	double dTraj = abs(m_pX->v() - vPos.m_x) + abs(m_pY->v() - vPos.m_y);
-	CHECK_(dTraj < m_trajStep);
-
-	if (m_nTrajectory > 0)
-	{
-		if (m_lTrajectory.size() >= m_nTrajectory)
-		{
-			m_lTrajectory.pop_front();
-		}
-	}
-
-	vPos.m_x = m_pX->v();
-	vPos.m_y = m_pY->v();
-	m_lTrajectory.push_back(vPos);
-
-	//TODO: set new position when difference is bigger than a threshold
-
+	m_lTrajectory.push_back(newPos);
+	if (m_lTrajectory.size() >= m_nTrajectory)
+		m_lTrajectory.pop_front();
 }
 
 bool _Lightware_SF40::draw(void)
@@ -336,7 +331,11 @@ bool _Lightware_SF40::draw(void)
 
 	pWin->tabNext();
 
-	msg = "POS: (" + f2str(m_pX->v()) + "," + f2str(m_pY->v()) + ")";
+	msg = "Current POS: (" + f2str(m_currentPos.m_x) + "," + f2str(m_currentPos.m_y) + ")";
+	pWin->addMsg(&msg);
+	msg = "Initial POS: (" + f2str(m_initPos.m_x) + "," + f2str(m_initPos.m_y) + ")";
+	pWin->addMsg(&msg);
+	msg = "POS Diff: (" + f2str(m_currentPos.m_x - m_initPos.m_x) + "," + f2str(m_currentPos.m_y - m_initPos.m_y) + ")";
 	pWin->addMsg(&msg);
 	msg = "Output Line: " + i2str(m_iLine);
 	pWin->addMsg(&msg);

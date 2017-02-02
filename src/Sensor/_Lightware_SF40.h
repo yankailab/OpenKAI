@@ -39,6 +39,8 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	void resetInitPos(void);
+
 private:
 	bool connect(void);
 	void updateLidar(void);
@@ -55,30 +57,30 @@ private:
 public:
 	IO* m_pIn;
 	IO* m_pOut;
-
 	_Lightware_SF40_sender* m_pSF40sender;
 
-	double m_offsetAngle;
-	int m_nDiv;
-	double m_dAngle;
+	double	m_offsetAngle;
+	int		m_nDiv;
+	double	m_dAngle;
 	double* m_pDist;
-	double m_minDist;
-	double m_maxDist;
-	int m_mwlX;
-	int m_mwlY;
+	double	m_minDist;
+	double	m_maxDist;
 	uint8_t m_MBS;
 	uint32_t m_iLine;
+	string m_strRecv;
+	double m_showScale;
 
 	Filter* m_pX;
 	Filter* m_pY;
 
-	string m_strRecv;
-	double m_showScale;
+	//reset in flight mode change to Guided_NoGPS
+	vDouble2 m_initPos;
+	vDouble2 m_lastPos;
+	vDouble2 m_currentPos;
+	vDouble2 m_targetPos;
 
 	std::list<vDouble2> m_lTrajectory;
 	int m_nTrajectory;
-	double m_trajStep;
-
 
 };
 

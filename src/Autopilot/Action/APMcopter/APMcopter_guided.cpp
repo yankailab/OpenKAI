@@ -60,11 +60,10 @@ void APMcopter_guided::updateAttitude(void)
 	uint32_t fMode = m_pAPM->m_flightMode;
 	if(fMode != m_lastFlightMode)
 	{
-		//TODO: set new holding position in mode change (Any -> Guided_NoGPS)
-
+		//set new holding position in mode change (Any -> Guided_NoGPS)
+		m_pSF40->resetInitPos();
 		m_lastFlightMode = fMode;
 	}
-
 
 
 	APMcopter_PID* pPID;
