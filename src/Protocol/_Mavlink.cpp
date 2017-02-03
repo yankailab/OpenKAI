@@ -314,12 +314,24 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	ds.req_stream_id = stream_id;
 	ds.req_message_rate = rate;
 	ds.start_stop = 1;
-	mavlink_msg_request_data_stream_encode(m_systemID, m_componentID, &message,
-			&ds);
+	mavlink_msg_request_data_stream_encode(m_systemID, m_componentID, &message, &ds);
 
 	writeMessage(message);
 
 	LOG_I("<- REQUEST_DATA_STREAM");
+}
+
+void _Mavlink::gps_input(mavlink_gps_input_t* pGPSinput)
+{
+	NULL_(pGPSinput);
+
+	mavlink_message_t message;
+//	mavlink_gps_input_t ds;
+	mavlink_msg_gps_input_encode(m_systemID, m_componentID, &message, pGPSinput);
+
+	writeMessage(message);
+
+	LOG_I("<- GPS_INPUT");
 }
 
 void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,

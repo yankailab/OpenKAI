@@ -21,6 +21,7 @@
 #include "../Automaton/_Automaton.h"
 
 #include "../Navigation/_Obstacle.h"
+#include "../Navigation/_GPS.h"
 
 #include "../IO/SerialPort.h"
 #include "../UI/UI.h"

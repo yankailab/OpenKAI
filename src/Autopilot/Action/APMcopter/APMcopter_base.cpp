@@ -163,7 +163,6 @@ void APMcopter_base::updateDistanceSensor(DISTANCE_SENSOR* pSensor)
 			pSensor->m_maxDistance,
 			pSensor->m_minDistance,
 			pSensor->m_distance);
-
 }
 
 bool APMcopter_base::draw(void)

@@ -247,7 +247,7 @@ bool _Lightware_SF40::updateLidar(void)
 
 	double dist = atof(vResult.at(0).c_str());
 
-	angle += m_hdg;
+	angle += m_hdg + m_offsetAngle;
 	while(angle >= DEG_AROUND)
 		angle -= DEG_AROUND;
 
@@ -307,7 +307,7 @@ void _Lightware_SF40::updatePosition(void)
 		if (dist > m_maxDist)
 			continue;
 
-		double angle = (m_dAngle * i + m_offsetAngle) * DEG_RADIAN;
+		double angle = (m_dAngle * i) * DEG_RADIAN;
 		pX += (dist * sin(angle));
 		pY += -(dist * cos(angle));
 		nV += 1.0;
@@ -376,7 +376,7 @@ bool _Lightware_SF40::draw(void)
 	for (int i = 0; i < m_nDiv; i++)
 	{
 		double dist = m_pDist[i] * m_showScale;
-		double angle = (m_dAngle * i + m_offsetAngle) * DEG_RADIAN;
+		double angle = m_dAngle * i * DEG_RADIAN;
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));
 

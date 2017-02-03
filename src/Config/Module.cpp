@@ -30,6 +30,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_Obstacle);
 	ADD_MODULE(_DetectNet);
+	ADD_MODULE(_GPS);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

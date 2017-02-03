@@ -1,9 +1,10 @@
+#pragma once
 // MESSAGE SENS_BATMON PACKING
 
 #define MAVLINK_MSG_ID_SENS_BATMON 209
 
-typedef struct __mavlink_sens_batmon_t
-{
+MAVPACKED(
+typedef struct __mavlink_sens_batmon_t {
  float temperature; /*< Battery pack temperature in [deg C]*/
  uint16_t voltage; /*< Battery pack voltage in [mV]*/
  int16_t current; /*< Battery pack current in [mA]*/
@@ -17,20 +18,24 @@ typedef struct __mavlink_sens_batmon_t
  uint16_t cellvoltage5; /*< Battery pack cell 5 voltage in [mV]*/
  uint16_t cellvoltage6; /*< Battery pack cell 6 voltage in [mV]*/
  uint8_t SoC; /*< Battery pack state-of-charge*/
-} mavlink_sens_batmon_t;
+}) mavlink_sens_batmon_t;
 
 #define MAVLINK_MSG_ID_SENS_BATMON_LEN 27
+#define MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN 27
 #define MAVLINK_MSG_ID_209_LEN 27
+#define MAVLINK_MSG_ID_209_MIN_LEN 27
 
 #define MAVLINK_MSG_ID_SENS_BATMON_CRC 62
 #define MAVLINK_MSG_ID_209_CRC 62
 
 
 
+#if MAVLINK_COMMAND_24BIT
 #define MAVLINK_MESSAGE_INFO_SENS_BATMON { \
-	"SENS_BATMON", \
-	13, \
-	{  { "temperature", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_sens_batmon_t, temperature) }, \
+    209, \
+    "SENS_BATMON", \
+    13, \
+    {  { "temperature", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_sens_batmon_t, temperature) }, \
          { "voltage", NULL, MAVLINK_TYPE_UINT16_T, 0, 4, offsetof(mavlink_sens_batmon_t, voltage) }, \
          { "current", NULL, MAVLINK_TYPE_INT16_T, 0, 6, offsetof(mavlink_sens_batmon_t, current) }, \
          { "batterystatus", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_sens_batmon_t, batterystatus) }, \
@@ -45,7 +50,26 @@ typedef struct __mavlink_sens_batmon_t
          { "SoC", NULL, MAVLINK_TYPE_UINT8_T, 0, 26, offsetof(mavlink_sens_batmon_t, SoC) }, \
          } \
 }
-
+#else
+#define MAVLINK_MESSAGE_INFO_SENS_BATMON { \
+    "SENS_BATMON", \
+    13, \
+    {  { "temperature", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_sens_batmon_t, temperature) }, \
+         { "voltage", NULL, MAVLINK_TYPE_UINT16_T, 0, 4, offsetof(mavlink_sens_batmon_t, voltage) }, \
+         { "current", NULL, MAVLINK_TYPE_INT16_T, 0, 6, offsetof(mavlink_sens_batmon_t, current) }, \
+         { "batterystatus", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_sens_batmon_t, batterystatus) }, \
+         { "serialnumber", NULL, MAVLINK_TYPE_UINT16_T, 0, 10, offsetof(mavlink_sens_batmon_t, serialnumber) }, \
+         { "hostfetcontrol", NULL, MAVLINK_TYPE_UINT16_T, 0, 12, offsetof(mavlink_sens_batmon_t, hostfetcontrol) }, \
+         { "cellvoltage1", NULL, MAVLINK_TYPE_UINT16_T, 0, 14, offsetof(mavlink_sens_batmon_t, cellvoltage1) }, \
+         { "cellvoltage2", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_sens_batmon_t, cellvoltage2) }, \
+         { "cellvoltage3", NULL, MAVLINK_TYPE_UINT16_T, 0, 18, offsetof(mavlink_sens_batmon_t, cellvoltage3) }, \
+         { "cellvoltage4", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_sens_batmon_t, cellvoltage4) }, \
+         { "cellvoltage5", NULL, MAVLINK_TYPE_UINT16_T, 0, 22, offsetof(mavlink_sens_batmon_t, cellvoltage5) }, \
+         { "cellvoltage6", NULL, MAVLINK_TYPE_UINT16_T, 0, 24, offsetof(mavlink_sens_batmon_t, cellvoltage6) }, \
+         { "SoC", NULL, MAVLINK_TYPE_UINT8_T, 0, 26, offsetof(mavlink_sens_batmon_t, SoC) }, \
+         } \
+}
+#endif
 
 /**
  * @brief Pack a sens_batmon message
@@ -69,50 +93,46 @@ typedef struct __mavlink_sens_batmon_t
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_sens_batmon_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-						       float temperature, uint16_t voltage, int16_t current, uint8_t SoC, uint16_t batterystatus, uint16_t serialnumber, uint16_t hostfetcontrol, uint16_t cellvoltage1, uint16_t cellvoltage2, uint16_t cellvoltage3, uint16_t cellvoltage4, uint16_t cellvoltage5, uint16_t cellvoltage6)
+                               float temperature, uint16_t voltage, int16_t current, uint8_t SoC, uint16_t batterystatus, uint16_t serialnumber, uint16_t hostfetcontrol, uint16_t cellvoltage1, uint16_t cellvoltage2, uint16_t cellvoltage3, uint16_t cellvoltage4, uint16_t cellvoltage5, uint16_t cellvoltage6)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-	char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
-	_mav_put_float(buf, 0, temperature);
-	_mav_put_uint16_t(buf, 4, voltage);
-	_mav_put_int16_t(buf, 6, current);
-	_mav_put_uint16_t(buf, 8, batterystatus);
-	_mav_put_uint16_t(buf, 10, serialnumber);
-	_mav_put_uint16_t(buf, 12, hostfetcontrol);
-	_mav_put_uint16_t(buf, 14, cellvoltage1);
-	_mav_put_uint16_t(buf, 16, cellvoltage2);
-	_mav_put_uint16_t(buf, 18, cellvoltage3);
-	_mav_put_uint16_t(buf, 20, cellvoltage4);
-	_mav_put_uint16_t(buf, 22, cellvoltage5);
-	_mav_put_uint16_t(buf, 24, cellvoltage6);
-	_mav_put_uint8_t(buf, 26, SoC);
+    char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
+    _mav_put_float(buf, 0, temperature);
+    _mav_put_uint16_t(buf, 4, voltage);
+    _mav_put_int16_t(buf, 6, current);
+    _mav_put_uint16_t(buf, 8, batterystatus);
+    _mav_put_uint16_t(buf, 10, serialnumber);
+    _mav_put_uint16_t(buf, 12, hostfetcontrol);
+    _mav_put_uint16_t(buf, 14, cellvoltage1);
+    _mav_put_uint16_t(buf, 16, cellvoltage2);
+    _mav_put_uint16_t(buf, 18, cellvoltage3);
+    _mav_put_uint16_t(buf, 20, cellvoltage4);
+    _mav_put_uint16_t(buf, 22, cellvoltage5);
+    _mav_put_uint16_t(buf, 24, cellvoltage6);
+    _mav_put_uint8_t(buf, 26, SoC);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SENS_BATMON_LEN);
 #else
-	mavlink_sens_batmon_t packet;
-	packet.temperature = temperature;
-	packet.voltage = voltage;
-	packet.current = current;
-	packet.batterystatus = batterystatus;
-	packet.serialnumber = serialnumber;
-	packet.hostfetcontrol = hostfetcontrol;
-	packet.cellvoltage1 = cellvoltage1;
-	packet.cellvoltage2 = cellvoltage2;
-	packet.cellvoltage3 = cellvoltage3;
-	packet.cellvoltage4 = cellvoltage4;
-	packet.cellvoltage5 = cellvoltage5;
-	packet.cellvoltage6 = cellvoltage6;
-	packet.SoC = SoC;
+    mavlink_sens_batmon_t packet;
+    packet.temperature = temperature;
+    packet.voltage = voltage;
+    packet.current = current;
+    packet.batterystatus = batterystatus;
+    packet.serialnumber = serialnumber;
+    packet.hostfetcontrol = hostfetcontrol;
+    packet.cellvoltage1 = cellvoltage1;
+    packet.cellvoltage2 = cellvoltage2;
+    packet.cellvoltage3 = cellvoltage3;
+    packet.cellvoltage4 = cellvoltage4;
+    packet.cellvoltage5 = cellvoltage5;
+    packet.cellvoltage6 = cellvoltage6;
+    packet.SoC = SoC;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SENS_BATMON_LEN);
 #endif
 
-	msg->msgid = MAVLINK_MSG_ID_SENS_BATMON;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
-#else
-    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_SENS_BATMON_LEN);
-#endif
+    msg->msgid = MAVLINK_MSG_ID_SENS_BATMON;
+    return mavlink_finalize_message(msg, system_id, component_id, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 }
 
 /**
@@ -137,51 +157,47 @@ static inline uint16_t mavlink_msg_sens_batmon_pack(uint8_t system_id, uint8_t c
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_sens_batmon_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
-							   mavlink_message_t* msg,
-						           float temperature,uint16_t voltage,int16_t current,uint8_t SoC,uint16_t batterystatus,uint16_t serialnumber,uint16_t hostfetcontrol,uint16_t cellvoltage1,uint16_t cellvoltage2,uint16_t cellvoltage3,uint16_t cellvoltage4,uint16_t cellvoltage5,uint16_t cellvoltage6)
+                               mavlink_message_t* msg,
+                                   float temperature,uint16_t voltage,int16_t current,uint8_t SoC,uint16_t batterystatus,uint16_t serialnumber,uint16_t hostfetcontrol,uint16_t cellvoltage1,uint16_t cellvoltage2,uint16_t cellvoltage3,uint16_t cellvoltage4,uint16_t cellvoltage5,uint16_t cellvoltage6)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-	char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
-	_mav_put_float(buf, 0, temperature);
-	_mav_put_uint16_t(buf, 4, voltage);
-	_mav_put_int16_t(buf, 6, current);
-	_mav_put_uint16_t(buf, 8, batterystatus);
-	_mav_put_uint16_t(buf, 10, serialnumber);
-	_mav_put_uint16_t(buf, 12, hostfetcontrol);
-	_mav_put_uint16_t(buf, 14, cellvoltage1);
-	_mav_put_uint16_t(buf, 16, cellvoltage2);
-	_mav_put_uint16_t(buf, 18, cellvoltage3);
-	_mav_put_uint16_t(buf, 20, cellvoltage4);
-	_mav_put_uint16_t(buf, 22, cellvoltage5);
-	_mav_put_uint16_t(buf, 24, cellvoltage6);
-	_mav_put_uint8_t(buf, 26, SoC);
+    char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
+    _mav_put_float(buf, 0, temperature);
+    _mav_put_uint16_t(buf, 4, voltage);
+    _mav_put_int16_t(buf, 6, current);
+    _mav_put_uint16_t(buf, 8, batterystatus);
+    _mav_put_uint16_t(buf, 10, serialnumber);
+    _mav_put_uint16_t(buf, 12, hostfetcontrol);
+    _mav_put_uint16_t(buf, 14, cellvoltage1);
+    _mav_put_uint16_t(buf, 16, cellvoltage2);
+    _mav_put_uint16_t(buf, 18, cellvoltage3);
+    _mav_put_uint16_t(buf, 20, cellvoltage4);
+    _mav_put_uint16_t(buf, 22, cellvoltage5);
+    _mav_put_uint16_t(buf, 24, cellvoltage6);
+    _mav_put_uint8_t(buf, 26, SoC);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_SENS_BATMON_LEN);
 #else
-	mavlink_sens_batmon_t packet;
-	packet.temperature = temperature;
-	packet.voltage = voltage;
-	packet.current = current;
-	packet.batterystatus = batterystatus;
-	packet.serialnumber = serialnumber;
-	packet.hostfetcontrol = hostfetcontrol;
-	packet.cellvoltage1 = cellvoltage1;
-	packet.cellvoltage2 = cellvoltage2;
-	packet.cellvoltage3 = cellvoltage3;
-	packet.cellvoltage4 = cellvoltage4;
-	packet.cellvoltage5 = cellvoltage5;
-	packet.cellvoltage6 = cellvoltage6;
-	packet.SoC = SoC;
+    mavlink_sens_batmon_t packet;
+    packet.temperature = temperature;
+    packet.voltage = voltage;
+    packet.current = current;
+    packet.batterystatus = batterystatus;
+    packet.serialnumber = serialnumber;
+    packet.hostfetcontrol = hostfetcontrol;
+    packet.cellvoltage1 = cellvoltage1;
+    packet.cellvoltage2 = cellvoltage2;
+    packet.cellvoltage3 = cellvoltage3;
+    packet.cellvoltage4 = cellvoltage4;
+    packet.cellvoltage5 = cellvoltage5;
+    packet.cellvoltage6 = cellvoltage6;
+    packet.SoC = SoC;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_SENS_BATMON_LEN);
 #endif
 
-	msg->msgid = MAVLINK_MSG_ID_SENS_BATMON;
-#if MAVLINK_CRC_EXTRA
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
-#else
-    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_SENS_BATMON_LEN);
-#endif
+    msg->msgid = MAVLINK_MSG_ID_SENS_BATMON;
+    return mavlink_finalize_message_chan(msg, system_id, component_id, chan, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 }
 
 /**
@@ -194,7 +210,7 @@ static inline uint16_t mavlink_msg_sens_batmon_pack_chan(uint8_t system_id, uint
  */
 static inline uint16_t mavlink_msg_sens_batmon_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_sens_batmon_t* sens_batmon)
 {
-	return mavlink_msg_sens_batmon_pack(system_id, component_id, msg, sens_batmon->temperature, sens_batmon->voltage, sens_batmon->current, sens_batmon->SoC, sens_batmon->batterystatus, sens_batmon->serialnumber, sens_batmon->hostfetcontrol, sens_batmon->cellvoltage1, sens_batmon->cellvoltage2, sens_batmon->cellvoltage3, sens_batmon->cellvoltage4, sens_batmon->cellvoltage5, sens_batmon->cellvoltage6);
+    return mavlink_msg_sens_batmon_pack(system_id, component_id, msg, sens_batmon->temperature, sens_batmon->voltage, sens_batmon->current, sens_batmon->SoC, sens_batmon->batterystatus, sens_batmon->serialnumber, sens_batmon->hostfetcontrol, sens_batmon->cellvoltage1, sens_batmon->cellvoltage2, sens_batmon->cellvoltage3, sens_batmon->cellvoltage4, sens_batmon->cellvoltage5, sens_batmon->cellvoltage6);
 }
 
 /**
@@ -208,7 +224,7 @@ static inline uint16_t mavlink_msg_sens_batmon_encode(uint8_t system_id, uint8_t
  */
 static inline uint16_t mavlink_msg_sens_batmon_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_sens_batmon_t* sens_batmon)
 {
-	return mavlink_msg_sens_batmon_pack_chan(system_id, component_id, chan, msg, sens_batmon->temperature, sens_batmon->voltage, sens_batmon->current, sens_batmon->SoC, sens_batmon->batterystatus, sens_batmon->serialnumber, sens_batmon->hostfetcontrol, sens_batmon->cellvoltage1, sens_batmon->cellvoltage2, sens_batmon->cellvoltage3, sens_batmon->cellvoltage4, sens_batmon->cellvoltage5, sens_batmon->cellvoltage6);
+    return mavlink_msg_sens_batmon_pack_chan(system_id, component_id, chan, msg, sens_batmon->temperature, sens_batmon->voltage, sens_batmon->current, sens_batmon->SoC, sens_batmon->batterystatus, sens_batmon->serialnumber, sens_batmon->hostfetcontrol, sens_batmon->cellvoltage1, sens_batmon->cellvoltage2, sens_batmon->cellvoltage3, sens_batmon->cellvoltage4, sens_batmon->cellvoltage5, sens_batmon->cellvoltage6);
 }
 
 /**
@@ -234,47 +250,53 @@ static inline uint16_t mavlink_msg_sens_batmon_encode_chan(uint8_t system_id, ui
 static inline void mavlink_msg_sens_batmon_send(mavlink_channel_t chan, float temperature, uint16_t voltage, int16_t current, uint8_t SoC, uint16_t batterystatus, uint16_t serialnumber, uint16_t hostfetcontrol, uint16_t cellvoltage1, uint16_t cellvoltage2, uint16_t cellvoltage3, uint16_t cellvoltage4, uint16_t cellvoltage5, uint16_t cellvoltage6)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-	char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
-	_mav_put_float(buf, 0, temperature);
-	_mav_put_uint16_t(buf, 4, voltage);
-	_mav_put_int16_t(buf, 6, current);
-	_mav_put_uint16_t(buf, 8, batterystatus);
-	_mav_put_uint16_t(buf, 10, serialnumber);
-	_mav_put_uint16_t(buf, 12, hostfetcontrol);
-	_mav_put_uint16_t(buf, 14, cellvoltage1);
-	_mav_put_uint16_t(buf, 16, cellvoltage2);
-	_mav_put_uint16_t(buf, 18, cellvoltage3);
-	_mav_put_uint16_t(buf, 20, cellvoltage4);
-	_mav_put_uint16_t(buf, 22, cellvoltage5);
-	_mav_put_uint16_t(buf, 24, cellvoltage6);
-	_mav_put_uint8_t(buf, 26, SoC);
+    char buf[MAVLINK_MSG_ID_SENS_BATMON_LEN];
+    _mav_put_float(buf, 0, temperature);
+    _mav_put_uint16_t(buf, 4, voltage);
+    _mav_put_int16_t(buf, 6, current);
+    _mav_put_uint16_t(buf, 8, batterystatus);
+    _mav_put_uint16_t(buf, 10, serialnumber);
+    _mav_put_uint16_t(buf, 12, hostfetcontrol);
+    _mav_put_uint16_t(buf, 14, cellvoltage1);
+    _mav_put_uint16_t(buf, 16, cellvoltage2);
+    _mav_put_uint16_t(buf, 18, cellvoltage3);
+    _mav_put_uint16_t(buf, 20, cellvoltage4);
+    _mav_put_uint16_t(buf, 22, cellvoltage5);
+    _mav_put_uint16_t(buf, 24, cellvoltage6);
+    _mav_put_uint8_t(buf, 26, SoC);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 #else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_LEN);
-#endif
-#else
-	mavlink_sens_batmon_t packet;
-	packet.temperature = temperature;
-	packet.voltage = voltage;
-	packet.current = current;
-	packet.batterystatus = batterystatus;
-	packet.serialnumber = serialnumber;
-	packet.hostfetcontrol = hostfetcontrol;
-	packet.cellvoltage1 = cellvoltage1;
-	packet.cellvoltage2 = cellvoltage2;
-	packet.cellvoltage3 = cellvoltage3;
-	packet.cellvoltage4 = cellvoltage4;
-	packet.cellvoltage5 = cellvoltage5;
-	packet.cellvoltage6 = cellvoltage6;
-	packet.SoC = SoC;
+    mavlink_sens_batmon_t packet;
+    packet.temperature = temperature;
+    packet.voltage = voltage;
+    packet.current = current;
+    packet.batterystatus = batterystatus;
+    packet.serialnumber = serialnumber;
+    packet.hostfetcontrol = hostfetcontrol;
+    packet.cellvoltage1 = cellvoltage1;
+    packet.cellvoltage2 = cellvoltage2;
+    packet.cellvoltage3 = cellvoltage3;
+    packet.cellvoltage4 = cellvoltage4;
+    packet.cellvoltage5 = cellvoltage5;
+    packet.cellvoltage6 = cellvoltage6;
+    packet.SoC = SoC;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)&packet, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)&packet, MAVLINK_MSG_ID_SENS_BATMON_LEN);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)&packet, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 #endif
+}
+
+/**
+ * @brief Send a sens_batmon message
+ * @param chan MAVLink channel to send the message
+ * @param struct The MAVLink struct to serialize
+ */
+static inline void mavlink_msg_sens_batmon_send_struct(mavlink_channel_t chan, const mavlink_sens_batmon_t* sens_batmon)
+{
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    mavlink_msg_sens_batmon_send(chan, sens_batmon->temperature, sens_batmon->voltage, sens_batmon->current, sens_batmon->SoC, sens_batmon->batterystatus, sens_batmon->serialnumber, sens_batmon->hostfetcontrol, sens_batmon->cellvoltage1, sens_batmon->cellvoltage2, sens_batmon->cellvoltage3, sens_batmon->cellvoltage4, sens_batmon->cellvoltage5, sens_batmon->cellvoltage6);
+#else
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)sens_batmon, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 #endif
 }
 
@@ -289,47 +311,39 @@ static inline void mavlink_msg_sens_batmon_send(mavlink_channel_t chan, float te
 static inline void mavlink_msg_sens_batmon_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  float temperature, uint16_t voltage, int16_t current, uint8_t SoC, uint16_t batterystatus, uint16_t serialnumber, uint16_t hostfetcontrol, uint16_t cellvoltage1, uint16_t cellvoltage2, uint16_t cellvoltage3, uint16_t cellvoltage4, uint16_t cellvoltage5, uint16_t cellvoltage6)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-	char *buf = (char *)msgbuf;
-	_mav_put_float(buf, 0, temperature);
-	_mav_put_uint16_t(buf, 4, voltage);
-	_mav_put_int16_t(buf, 6, current);
-	_mav_put_uint16_t(buf, 8, batterystatus);
-	_mav_put_uint16_t(buf, 10, serialnumber);
-	_mav_put_uint16_t(buf, 12, hostfetcontrol);
-	_mav_put_uint16_t(buf, 14, cellvoltage1);
-	_mav_put_uint16_t(buf, 16, cellvoltage2);
-	_mav_put_uint16_t(buf, 18, cellvoltage3);
-	_mav_put_uint16_t(buf, 20, cellvoltage4);
-	_mav_put_uint16_t(buf, 22, cellvoltage5);
-	_mav_put_uint16_t(buf, 24, cellvoltage6);
-	_mav_put_uint8_t(buf, 26, SoC);
+    char *buf = (char *)msgbuf;
+    _mav_put_float(buf, 0, temperature);
+    _mav_put_uint16_t(buf, 4, voltage);
+    _mav_put_int16_t(buf, 6, current);
+    _mav_put_uint16_t(buf, 8, batterystatus);
+    _mav_put_uint16_t(buf, 10, serialnumber);
+    _mav_put_uint16_t(buf, 12, hostfetcontrol);
+    _mav_put_uint16_t(buf, 14, cellvoltage1);
+    _mav_put_uint16_t(buf, 16, cellvoltage2);
+    _mav_put_uint16_t(buf, 18, cellvoltage3);
+    _mav_put_uint16_t(buf, 20, cellvoltage4);
+    _mav_put_uint16_t(buf, 22, cellvoltage5);
+    _mav_put_uint16_t(buf, 24, cellvoltage6);
+    _mav_put_uint8_t(buf, 26, SoC);
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 #else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, buf, MAVLINK_MSG_ID_SENS_BATMON_LEN);
-#endif
-#else
-	mavlink_sens_batmon_t *packet = (mavlink_sens_batmon_t *)msgbuf;
-	packet->temperature = temperature;
-	packet->voltage = voltage;
-	packet->current = current;
-	packet->batterystatus = batterystatus;
-	packet->serialnumber = serialnumber;
-	packet->hostfetcontrol = hostfetcontrol;
-	packet->cellvoltage1 = cellvoltage1;
-	packet->cellvoltage2 = cellvoltage2;
-	packet->cellvoltage3 = cellvoltage3;
-	packet->cellvoltage4 = cellvoltage4;
-	packet->cellvoltage5 = cellvoltage5;
-	packet->cellvoltage6 = cellvoltage6;
-	packet->SoC = SoC;
+    mavlink_sens_batmon_t *packet = (mavlink_sens_batmon_t *)msgbuf;
+    packet->temperature = temperature;
+    packet->voltage = voltage;
+    packet->current = current;
+    packet->batterystatus = batterystatus;
+    packet->serialnumber = serialnumber;
+    packet->hostfetcontrol = hostfetcontrol;
+    packet->cellvoltage1 = cellvoltage1;
+    packet->cellvoltage2 = cellvoltage2;
+    packet->cellvoltage3 = cellvoltage3;
+    packet->cellvoltage4 = cellvoltage4;
+    packet->cellvoltage5 = cellvoltage5;
+    packet->cellvoltage6 = cellvoltage6;
+    packet->SoC = SoC;
 
-#if MAVLINK_CRC_EXTRA
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)packet, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
-#else
-    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)packet, MAVLINK_MSG_ID_SENS_BATMON_LEN);
-#endif
+    _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_SENS_BATMON, (const char *)packet, MAVLINK_MSG_ID_SENS_BATMON_MIN_LEN, MAVLINK_MSG_ID_SENS_BATMON_LEN, MAVLINK_MSG_ID_SENS_BATMON_CRC);
 #endif
 }
 #endif
@@ -346,7 +360,7 @@ static inline void mavlink_msg_sens_batmon_send_buf(mavlink_message_t *msgbuf, m
  */
 static inline float mavlink_msg_sens_batmon_get_temperature(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_float(msg,  0);
+    return _MAV_RETURN_float(msg,  0);
 }
 
 /**
@@ -356,7 +370,7 @@ static inline float mavlink_msg_sens_batmon_get_temperature(const mavlink_messag
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_voltage(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  4);
+    return _MAV_RETURN_uint16_t(msg,  4);
 }
 
 /**
@@ -366,7 +380,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_voltage(const mavlink_message
  */
 static inline int16_t mavlink_msg_sens_batmon_get_current(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_int16_t(msg,  6);
+    return _MAV_RETURN_int16_t(msg,  6);
 }
 
 /**
@@ -376,7 +390,7 @@ static inline int16_t mavlink_msg_sens_batmon_get_current(const mavlink_message_
  */
 static inline uint8_t mavlink_msg_sens_batmon_get_SoC(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint8_t(msg,  26);
+    return _MAV_RETURN_uint8_t(msg,  26);
 }
 
 /**
@@ -386,7 +400,7 @@ static inline uint8_t mavlink_msg_sens_batmon_get_SoC(const mavlink_message_t* m
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_batterystatus(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  8);
+    return _MAV_RETURN_uint16_t(msg,  8);
 }
 
 /**
@@ -396,7 +410,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_batterystatus(const mavlink_m
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_serialnumber(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  10);
+    return _MAV_RETURN_uint16_t(msg,  10);
 }
 
 /**
@@ -406,7 +420,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_serialnumber(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_hostfetcontrol(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  12);
+    return _MAV_RETURN_uint16_t(msg,  12);
 }
 
 /**
@@ -416,7 +430,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_hostfetcontrol(const mavlink_
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage1(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  14);
+    return _MAV_RETURN_uint16_t(msg,  14);
 }
 
 /**
@@ -426,7 +440,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage1(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage2(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  16);
+    return _MAV_RETURN_uint16_t(msg,  16);
 }
 
 /**
@@ -436,7 +450,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage2(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage3(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  18);
+    return _MAV_RETURN_uint16_t(msg,  18);
 }
 
 /**
@@ -446,7 +460,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage3(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage4(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  20);
+    return _MAV_RETURN_uint16_t(msg,  20);
 }
 
 /**
@@ -456,7 +470,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage4(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage5(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  22);
+    return _MAV_RETURN_uint16_t(msg,  22);
 }
 
 /**
@@ -466,7 +480,7 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage5(const mavlink_me
  */
 static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage6(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  24);
+    return _MAV_RETURN_uint16_t(msg,  24);
 }
 
 /**
@@ -477,21 +491,23 @@ static inline uint16_t mavlink_msg_sens_batmon_get_cellvoltage6(const mavlink_me
  */
 static inline void mavlink_msg_sens_batmon_decode(const mavlink_message_t* msg, mavlink_sens_batmon_t* sens_batmon)
 {
-#if MAVLINK_NEED_BYTE_SWAP
-	sens_batmon->temperature = mavlink_msg_sens_batmon_get_temperature(msg);
-	sens_batmon->voltage = mavlink_msg_sens_batmon_get_voltage(msg);
-	sens_batmon->current = mavlink_msg_sens_batmon_get_current(msg);
-	sens_batmon->batterystatus = mavlink_msg_sens_batmon_get_batterystatus(msg);
-	sens_batmon->serialnumber = mavlink_msg_sens_batmon_get_serialnumber(msg);
-	sens_batmon->hostfetcontrol = mavlink_msg_sens_batmon_get_hostfetcontrol(msg);
-	sens_batmon->cellvoltage1 = mavlink_msg_sens_batmon_get_cellvoltage1(msg);
-	sens_batmon->cellvoltage2 = mavlink_msg_sens_batmon_get_cellvoltage2(msg);
-	sens_batmon->cellvoltage3 = mavlink_msg_sens_batmon_get_cellvoltage3(msg);
-	sens_batmon->cellvoltage4 = mavlink_msg_sens_batmon_get_cellvoltage4(msg);
-	sens_batmon->cellvoltage5 = mavlink_msg_sens_batmon_get_cellvoltage5(msg);
-	sens_batmon->cellvoltage6 = mavlink_msg_sens_batmon_get_cellvoltage6(msg);
-	sens_batmon->SoC = mavlink_msg_sens_batmon_get_SoC(msg);
+#if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
+    sens_batmon->temperature = mavlink_msg_sens_batmon_get_temperature(msg);
+    sens_batmon->voltage = mavlink_msg_sens_batmon_get_voltage(msg);
+    sens_batmon->current = mavlink_msg_sens_batmon_get_current(msg);
+    sens_batmon->batterystatus = mavlink_msg_sens_batmon_get_batterystatus(msg);
+    sens_batmon->serialnumber = mavlink_msg_sens_batmon_get_serialnumber(msg);
+    sens_batmon->hostfetcontrol = mavlink_msg_sens_batmon_get_hostfetcontrol(msg);
+    sens_batmon->cellvoltage1 = mavlink_msg_sens_batmon_get_cellvoltage1(msg);
+    sens_batmon->cellvoltage2 = mavlink_msg_sens_batmon_get_cellvoltage2(msg);
+    sens_batmon->cellvoltage3 = mavlink_msg_sens_batmon_get_cellvoltage3(msg);
+    sens_batmon->cellvoltage4 = mavlink_msg_sens_batmon_get_cellvoltage4(msg);
+    sens_batmon->cellvoltage5 = mavlink_msg_sens_batmon_get_cellvoltage5(msg);
+    sens_batmon->cellvoltage6 = mavlink_msg_sens_batmon_get_cellvoltage6(msg);
+    sens_batmon->SoC = mavlink_msg_sens_batmon_get_SoC(msg);
 #else
-	memcpy(sens_batmon, _MAV_PAYLOAD(msg), MAVLINK_MSG_ID_SENS_BATMON_LEN);
+        uint8_t len = msg->len < MAVLINK_MSG_ID_SENS_BATMON_LEN? msg->len : MAVLINK_MSG_ID_SENS_BATMON_LEN;
+        memset(sens_batmon, 0, MAVLINK_MSG_ID_SENS_BATMON_LEN);
+    memcpy(sens_batmon, _MAV_PAYLOAD(msg), len);
 #endif
 }

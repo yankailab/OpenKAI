@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Algorithm/Filter.h"
 #include "../Sensor/_Lightware_SF40.h"
-#include "../Autopilot/Action/APMcopter/APMcopter_base.h"
+#include "../Protocol/_Mavlink.h"
 #include "../include/UTM.h"
 
 namespace kai
@@ -57,12 +57,16 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	void updateMavGPS(void);
+	void bMavOutput(bool bOutput);
+
 	void setLL(LL_POS* pLL);
 	void setUTM(UTM_POS* pUTM);
 	LL_POS* getLL(void);
 	UTM_POS* getUTM(void);
 
 private:
+	void mavOutput(void);
 	bool updateLidar(void);
 	void detect(void);
 	void update(void);
@@ -74,7 +78,12 @@ private:
 
 public:
 	_Lightware_SF40* m_pSF40;
-	APMcopter_base* m_pAPM;
+	_Mavlink* m_pMavlink;
+
+	int	m_mavDSfreq;
+	bool m_bMavOutput;
+
+	uint64_t m_tLastMavGPS;
 
 	LL_POS	m_LL;
 	UTM_POS m_UTM;
