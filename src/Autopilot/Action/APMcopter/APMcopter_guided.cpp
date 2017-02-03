@@ -61,7 +61,6 @@ void APMcopter_guided::updateAttitude(void)
 	if(fMode != m_lastFlightMode)
 	{
 		//set new holding position in mode change (Any -> Guided_NoGPS)
-		m_pSF40->resetInitPos();
 		m_lastFlightMode = fMode;
 	}
 

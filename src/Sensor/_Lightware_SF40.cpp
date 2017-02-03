@@ -27,10 +27,7 @@ _Lightware_SF40::_Lightware_SF40()
 	m_nTrajectory = -1;
 	m_iLine = 0;
 
-	m_initPos.init();
-	m_lastPos.init();
-	m_currentPos.init();
-	m_targetPos.init();
+	m_GPSpos.init();
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -75,6 +72,11 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
 	m_pDist = new double[m_nDiv + 1];
+
+	m_GPSpos.init();
+	F_INFO(pK->v("UTMeasting", &m_GPSpos.m_UTMeasting));
+	F_INFO(pK->v("UTMnorthing", &m_GPSpos.m_UTMnorthing));
+	F_INFO(pK->v("UTMzone", &m_GPSpos.m_UTMzone));
 
 	int mwlX = 3;
 	int mwlY = 3;
@@ -189,6 +191,9 @@ void _Lightware_SF40::update(void)
 		updateLidar();
 		updatePosition();
 
+		m_GPSpos.UTM2LL();
+		LOG_I("lat: " << m_GPSpos.m_lat << " lng: " << m_GPSpos.m_lng);
+
 		this->autoFPSto();
 	}
 
@@ -273,11 +278,6 @@ bool _Lightware_SF40::readLine(void)
 	return false;
 }
 
-void _Lightware_SF40::resetInitPos(void)
-{
-	m_initPos = m_currentPos;
-}
-
 void _Lightware_SF40::updatePosition(void)
 {
 	int i;
@@ -308,9 +308,8 @@ void _Lightware_SF40::updatePosition(void)
 	vDouble2 newPos;
 	newPos.m_x = m_pX->v();
 	newPos.m_y = m_pY->v();
-
-	m_currentPos.m_x += newPos.m_x - m_lastPos.m_x;
-	m_currentPos.m_y += newPos.m_y - m_lastPos.m_y;
+	m_GPSpos.m_UTMeasting += newPos.m_x - m_lastPos.m_x;
+	m_GPSpos.m_UTMnorthing += newPos.m_y - m_lastPos.m_y;
 	m_lastPos = newPos;
 
 	//Update trajectory
@@ -331,11 +330,9 @@ bool _Lightware_SF40::draw(void)
 
 	pWin->tabNext();
 
-	msg = "Current POS: (" + f2str(m_currentPos.m_x) + "," + f2str(m_currentPos.m_y) + ")";
+	msg = "WGS84: lat=" + f2str(m_GPSpos.m_lat) + ", lng=" + f2str(m_GPSpos.m_lng);
 	pWin->addMsg(&msg);
-	msg = "Initial POS: (" + f2str(m_initPos.m_x) + "," + f2str(m_initPos.m_y) + ")";
-	pWin->addMsg(&msg);
-	msg = "POS Diff: (" + f2str(m_currentPos.m_x - m_initPos.m_x) + "," + f2str(m_currentPos.m_y - m_initPos.m_y) + ")";
+	msg = "UTM: E=" + f2str(m_GPSpos.m_UTMeasting) + ", N=" + f2str(m_GPSpos.m_UTMnorthing);
 	pWin->addMsg(&msg);
 	msg = "Output Line: " + i2str(m_iLine);
 	pWin->addMsg(&msg);

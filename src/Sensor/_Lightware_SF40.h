@@ -39,8 +39,6 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	void resetInitPos(void);
-
 private:
 	bool connect(void);
 	void updateLidar(void);
@@ -73,11 +71,8 @@ public:
 	Filter* m_pX;
 	Filter* m_pY;
 
-	//reset in flight mode change to Guided_NoGPS
-	vDouble2 m_initPos;
 	vDouble2 m_lastPos;
-	vDouble2 m_currentPos;
-	vDouble2 m_targetPos;
+	GPS_POSITION m_GPSpos;
 
 	std::list<vDouble2> m_lTrajectory;
 	int m_nTrajectory;

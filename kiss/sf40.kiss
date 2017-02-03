@@ -52,6 +52,9 @@
 	"MBS":3,
 	"showScale":10.0,
 	"nTrajectory":0,
+	"UTMeasting":366155.75,
+	"UTMnorthing":3968842.65,
+	"UTMzone":"54S",
 	
 	{
 		"name":"input",
