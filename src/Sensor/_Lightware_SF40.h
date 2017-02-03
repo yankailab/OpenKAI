@@ -39,9 +39,13 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	void setHeading(double hdg);
+	vDouble2* getDiffPos(void);
+	void reset(void);
+
 private:
 	bool connect(void);
-	void updateLidar(void);
+	bool updateLidar(void);
 	void updatePosition(void);
 	bool readLine(void);
 
@@ -57,6 +61,7 @@ public:
 	IO* m_pOut;
 	_Lightware_SF40_sender* m_pSF40sender;
 
+	double	m_hdg;
 	double	m_offsetAngle;
 	int		m_nDiv;
 	double	m_dAngle;
@@ -70,13 +75,8 @@ public:
 
 	Filter* m_pX;
 	Filter* m_pY;
-
+	vDouble2 m_dPos;
 	vDouble2 m_lastPos;
-	GPS_POSITION m_GPSpos;
-
-	std::list<vDouble2> m_lTrajectory;
-	int m_nTrajectory;
-
 };
 
 }

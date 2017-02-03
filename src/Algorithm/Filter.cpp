@@ -57,5 +57,12 @@ double Filter::v(void)
 	return m_v;
 }
 
+void Filter::reset(void)
+{
+	m_v = 0.0;
+	m_data.clear();
+	m_sort.clear();
+}
+
 
 }

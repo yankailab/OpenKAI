@@ -22,6 +22,7 @@ public:
 	bool startMedian(int windowLength);
 	void input(double v);
 	double v(void);
+	void reset(void);
 
 private:
 	unsigned int m_windowLength;
@@ -31,6 +32,6 @@ private:
 	std::deque<double> m_sort;
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_ALGORITHM_FILTER_H_ */
+#endif

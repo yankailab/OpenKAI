@@ -8,42 +8,10 @@
 #include "macro.h"
 #include "constant.h"
 #include <glog/logging.h>
-#include "../include/UTM.h"
 
 //Common structures
 namespace kai
 {
-
-struct GPS_POSITION
-{
-	double m_lng;
-	double m_lat;
-
-	double m_UTMeasting;
-	double m_UTMnorthing;
-	string m_UTMzone;
-
-	void init(void)
-	{
-		m_lng = 0.0;
-		m_lat = 0.0;
-		m_UTMeasting = 0.0;
-		m_UTMnorthing = 0.0;
-		m_UTMzone = "";
-	}
-
-	void LL2UTM(void)
-	{
-		char pUTMzone[8];
-		UTM::LLtoUTM(m_lat,m_lng,m_UTMnorthing,m_UTMeasting,pUTMzone);
-		m_UTMzone = pUTMzone;
-	}
-
-	void UTM2LL(void)
-	{
-		UTM::UTMtoLL(m_UTMnorthing, m_UTMeasting, m_UTMzone.c_str(), m_lat, m_lng);
-	}
-};
 
 struct vDouble4
 {
@@ -54,17 +22,17 @@ struct vDouble4
 
 	double midX(void)
 	{
-		return (m_x+m_z)*0.5;
+		return (m_x + m_z) * 0.5;
 	}
 
 	double midY(void)
 	{
-		return (m_y+m_w)*0.5;
+		return (m_y + m_w) * 0.5;
 	}
 
 	double area(void)
 	{
-		return abs((m_z-m_x)*(m_w-m_y));
+		return abs((m_z - m_x) * (m_w - m_y));
 	}
 
 	void init(void)
@@ -109,7 +77,7 @@ struct vInt2
 
 	int area(void)
 	{
-		return abs(m_x*m_y);
+		return abs(m_x * m_y);
 	}
 
 	void init(void)
@@ -142,17 +110,17 @@ struct vInt4
 
 	int midX(void)
 	{
-		return (m_x+m_z)/2;
+		return (m_x + m_z) / 2;
 	}
 
 	int midY(void)
 	{
-		return (m_y+m_w)/2;
+		return (m_y + m_w) / 2;
 	}
 
 	int area(void)
 	{
-		return abs((m_z-m_x)*(m_w-m_y));
+		return abs((m_z - m_x) * (m_w - m_y));
 	}
 
 	void init(void)
@@ -179,6 +147,4 @@ struct MOUSE
 #include "../Utility/util.h"
 
 #endif
-
-
 

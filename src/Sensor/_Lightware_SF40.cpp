@@ -12,6 +12,7 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pIn = NULL;
 	m_pOut = NULL;
 
+	m_hdg = 0.0;
 	m_offsetAngle = 0.0;
 	m_nDiv = 0;
 	m_dAngle = 0;
@@ -24,10 +25,11 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pX = NULL;
 	m_pY = NULL;
 	m_MBS = 0;
-	m_nTrajectory = -1;
 	m_iLine = 0;
 
-	m_GPSpos.init();
+	m_dPos.init();
+	m_lastPos.init();
+
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -67,16 +69,10 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
-	F_INFO(pK->v("nTrajectory", &m_nTrajectory));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
 	m_pDist = new double[m_nDiv + 1];
-
-	m_GPSpos.init();
-	F_INFO(pK->v("UTMeasting", &m_GPSpos.m_UTMeasting));
-	F_INFO(pK->v("UTMnorthing", &m_GPSpos.m_UTMnorthing));
-	F_INFO(pK->v("UTMzone", &m_GPSpos.m_UTMzone));
 
 	int mwlX = 3;
 	int mwlY = 3;
@@ -87,8 +83,6 @@ bool _Lightware_SF40::init(void* pKiss)
 	m_pX->startMedian(mwlX);
 	m_pY->startMedian(mwlY);
 	m_iLine = 0;
-
-	m_lTrajectory.clear();
 
 	//IO
 	Kiss* pCC;
@@ -188,21 +182,19 @@ void _Lightware_SF40::update(void)
 
 		this->autoFPSfrom();
 
-		updateLidar();
-		updatePosition();
-
-		m_GPSpos.UTM2LL();
-		LOG_I("lat: " << m_GPSpos.m_lat << " lng: " << m_GPSpos.m_lng);
+		if(updateLidar())
+		{
+			updatePosition();
+		}
 
 		this->autoFPSto();
 	}
 
 }
 
-void _Lightware_SF40::updateLidar(void)
+bool _Lightware_SF40::updateLidar(void)
 {
-	F_(readLine());
-	m_iLine++;
+	CHECK_F(!readLine());
 
 	string str;
 	istringstream sStr;
@@ -215,7 +207,11 @@ void _Lightware_SF40::updateLidar(void)
 	{
 		vStr.push_back(str);
 	}
-	CHECK_(vStr.size() < 2);
+	if(vStr.size() < 2)
+	{
+		m_strRecv.clear();
+		return false;
+	}
 
 	string cmd = vStr.at(0);
 	string result = vStr.at(1);
@@ -228,7 +224,11 @@ void _Lightware_SF40::updateLidar(void)
 	{
 		vCmd.push_back(str);
 	}
-	CHECK_(vCmd.size() < 2);
+	if(vCmd.size() < 2)
+	{
+		m_strRecv.clear();
+		return false;
+	}
 	double angle = atof(vCmd.at(1).c_str());
 
 	//find the result
@@ -239,16 +239,30 @@ void _Lightware_SF40::updateLidar(void)
 	{
 		vResult.push_back(str);
 	}
-	CHECK_(vResult.size() < 1);
-	double dist = atof(vResult.at(0).c_str());
-
-	int iAngle = (int) (angle / m_dAngle);
-	if(iAngle <= m_nDiv)
+	if(vResult.size() < 1)
 	{
-		m_pDist[iAngle] = dist;
+		m_strRecv.clear();
+		return false;
 	}
 
+	double dist = atof(vResult.at(0).c_str());
+
+	angle += m_hdg;
+	while(angle >= DEG_AROUND)
+		angle -= DEG_AROUND;
+
+	int iAngle = (int) (angle / m_dAngle);
+	if(iAngle > m_nDiv)
+	{
+		m_strRecv.clear();
+		return false;
+	}
+
+	m_pDist[iAngle] = dist;
 	m_strRecv.clear();
+	m_iLine++;
+
+	return true;
 }
 
 bool _Lightware_SF40::readLine(void)
@@ -308,16 +322,27 @@ void _Lightware_SF40::updatePosition(void)
 	vDouble2 newPos;
 	newPos.m_x = m_pX->v();
 	newPos.m_y = m_pY->v();
-	m_GPSpos.m_UTMeasting += newPos.m_x - m_lastPos.m_x;
-	m_GPSpos.m_UTMnorthing += newPos.m_y - m_lastPos.m_y;
+	m_dPos.m_x = newPos.m_x - m_lastPos.m_x;
+	m_dPos.m_y = newPos.m_y - m_lastPos.m_y;
 	m_lastPos = newPos;
+}
 
-	//Update trajectory
-	CHECK_(m_nTrajectory==0);
+void _Lightware_SF40::setHeading(double hdg)
+{
+	m_hdg = hdg;
+}
 
-	m_lTrajectory.push_back(newPos);
-	if (m_lTrajectory.size() >= m_nTrajectory)
-		m_lTrajectory.pop_front();
+vDouble2* _Lightware_SF40::getDiffPos(void)
+{
+	return &m_dPos;
+}
+
+void _Lightware_SF40::reset(void)
+{
+	m_pX->reset();
+	m_pY->reset();
+	m_dPos.init();
+	m_lastPos.init();
 }
 
 bool _Lightware_SF40::draw(void)
@@ -329,10 +354,7 @@ bool _Lightware_SF40::draw(void)
 	string msg;
 
 	pWin->tabNext();
-
-	msg = "WGS84: lat=" + f2str(m_GPSpos.m_lat) + ", lng=" + f2str(m_GPSpos.m_lng);
-	pWin->addMsg(&msg);
-	msg = "UTM: E=" + f2str(m_GPSpos.m_UTMeasting) + ", N=" + f2str(m_GPSpos.m_UTMnorthing);
+	msg = "Pos: X=" + f2str(m_pX->v()) + ", Y=" + f2str(m_pY->v());
 	pWin->addMsg(&msg);
 	msg = "Output Line: " + i2str(m_iLine);
 	pWin->addMsg(&msg);
@@ -359,27 +381,6 @@ bool _Lightware_SF40::draw(void)
 		int pY = -(dist * cos(angle));
 
 		circle(*pMat, pCenter+Point(pX, pY), 1, Scalar(0, 255, 0), 1);
-	}
-
-	//Plot trajectory
-	CHECK_T(m_lTrajectory.size() < 2);
-
-	vDouble2 vNow = m_lTrajectory.back();
-	auto iTraj = m_lTrajectory.begin();
-	vDouble2 vPosA = *iTraj;
-	iTraj++;
-
-	while (iTraj != m_lTrajectory.end())
-	{
-		vDouble2 vPosB = (vDouble2) *iTraj;
-
-		line(*pMat,
-				pCenter-Point(m_showScale*(vPosA.m_x - vNow.m_x), m_showScale*(vPosA.m_y - vNow.m_y)),
-				pCenter-Point(m_showScale*(vPosB.m_x - vNow.m_x), m_showScale*(vPosB.m_y - vNow.m_y)),
-				Scalar(0, 255, 255), 1);
-
-		vPosA = vPosB;
-		iTraj++;
 	}
 
 	return true;

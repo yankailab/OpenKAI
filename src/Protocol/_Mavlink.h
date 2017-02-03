@@ -50,7 +50,6 @@ struct Time_Stamps
 // Struct containing information on the MAV we are currently connected to
 struct Mavlink_Messages
 {
-
 	int sysid;
 	int compid;
 
