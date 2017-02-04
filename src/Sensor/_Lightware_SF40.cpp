@@ -21,11 +21,10 @@ _Lightware_SF40::_Lightware_SF40()
 	m_showScale = 1.0;	//1m = 1pixel;
 	m_strRecv = "";
 	m_pSF40sender = NULL;
-	m_pDist = NULL;
-	m_pX = NULL;
-	m_pY = NULL;
 	m_MBS = 0;
-	m_iLine = 0;
+
+	m_pDist = NULL;
+	m_medianFilter = 3;
 
 	m_dPos.init();
 	m_lastPos.init();
@@ -50,8 +49,7 @@ _Lightware_SF40::~_Lightware_SF40()
 		m_pOut = NULL;
 	}
 
-	DEL(m_pX);
-	DEL(m_pY);
+	DEL(m_pDist);
 }
 
 bool _Lightware_SF40::init(void* pKiss)
@@ -72,17 +70,13 @@ bool _Lightware_SF40::init(void* pKiss)
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
-	m_pDist = new double[m_nDiv + 1];
 
-	int mwlX = 3;
-	int mwlY = 3;
-	F_INFO(pK->v("mwlX", &mwlX));
-	F_INFO(pK->v("mwlY", &mwlY));
-	m_pX = new Filter();
-	m_pY = new Filter();
-	m_pX->startMedian(mwlX);
-	m_pY->startMedian(mwlY);
-	m_iLine = 0;
+	F_INFO(pK->v("medianFilter", &m_medianFilter));
+	m_pDist = new Filter[m_nDiv];
+	for(int i=0;i<m_nDiv;i++)
+	{
+		m_pDist->startMedian(m_medianFilter);
+	}
 
 	//IO
 	Kiss* pCC;
@@ -252,15 +246,14 @@ bool _Lightware_SF40::updateLidar(void)
 		angle -= DEG_AROUND;
 
 	int iAngle = (int) (angle / m_dAngle);
-	if(iAngle > m_nDiv)
+	if(iAngle >= m_nDiv)
 	{
 		m_strRecv.clear();
 		return false;
 	}
 
-	m_pDist[iAngle] = dist;
+	m_pDist[iAngle].input(dist);
 	m_strRecv.clear();
-	m_iLine++;
 
 	return true;
 }
@@ -301,11 +294,13 @@ void _Lightware_SF40::updatePosition(void)
 
 	for (i = 0, nV = 0.0; i < m_nDiv; i++)
 	{
-		double dist = m_pDist[i];
+		double dist = m_pDist[i].v();
 		if (dist < m_minDist)
 			continue;
 		if (dist > m_maxDist)
 			continue;
+
+		//TODO: check the variance of the angle, reset if beyond thr
 
 		double angle = (m_dAngle * i) * DEG_RADIAN;
 		pX += (dist * sin(angle));
@@ -316,12 +311,12 @@ void _Lightware_SF40::updatePosition(void)
 	nV = 1.0/nV;
 	pX *= nV;
 	pY *= nV;
-	m_pX->input(pX);
-	m_pY->input(pY);
+//	m_pX->input(pX);
+//	m_pY->input(pY);
 
 	vDouble2 newPos;
-	newPos.m_x = m_pX->v();
-	newPos.m_y = m_pY->v();
+//	newPos.m_x = m_pX->v();
+//	newPos.m_y = m_pY->v();
 	m_dPos.m_x = newPos.m_x - m_lastPos.m_x;
 	m_dPos.m_y = newPos.m_y - m_lastPos.m_y;
 	m_lastPos = newPos;
@@ -339,8 +334,10 @@ vDouble2* _Lightware_SF40::getDiffPos(void)
 
 void _Lightware_SF40::reset(void)
 {
-	m_pX->reset();
-	m_pY->reset();
+	for(int i=0;i<m_nDiv;i++)
+	{
+		m_pDist->reset();
+	}
 	m_dPos.init();
 	m_lastPos.init();
 }
@@ -352,11 +349,9 @@ bool _Lightware_SF40::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
-	pWin->tabNext();
-	msg = "Pos: X=" + f2str(m_pX->v()) + ", Y=" + f2str(m_pY->v());
-	pWin->addMsg(&msg);
-	msg = "Output Line: " + i2str(m_iLine);
-	pWin->addMsg(&msg);
+//	pWin->tabNext();
+//	msg = "Pos: X=" + f2str(m_pX->v()) + ", Y=" + f2str(m_pY->v());
+//	pWin->addMsg(&msg);
 
 	if (m_pIn)
 		m_pIn->draw();
@@ -374,7 +369,7 @@ bool _Lightware_SF40::draw(void)
 	//Plot lidar result
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		double dist = m_pDist[i] * m_showScale;
+		double dist = m_pDist[i].v() * m_showScale;
 		double angle = m_dAngle * i * DEG_RADIAN;
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));

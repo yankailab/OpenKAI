@@ -65,16 +65,16 @@ public:
 	double	m_offsetAngle;
 	int		m_nDiv;
 	double	m_dAngle;
-	double* m_pDist;
+//	double* m_pDist;
+	Filter* m_pDist;
+	int		m_medianFilter;
+
 	double	m_minDist;
 	double	m_maxDist;
 	uint8_t m_MBS;
-	uint32_t m_iLine;
 	string m_strRecv;
 	double m_showScale;
 
-	Filter* m_pX;
-	Filter* m_pY;
 	vDouble2 m_dPos;
 	vDouble2 m_lastPos;
 };

@@ -65,44 +65,44 @@ void APMcopter_guided::updateAttitude(void)
 	}
 
 
-	APMcopter_PID* pPID;
-	APMcopter_CTRL* pCtrl;
-	double v;
-
-	//roll
-	pPID = &m_pAPM->m_pidRoll;
-	pCtrl = &m_pAPM->m_ctrlRoll;
-	v = m_pSF40->m_pX->v();
-
-	pCtrl->m_errOld = pCtrl->m_err;
-	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
-	pCtrl->m_pos = v;
-	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
-	pCtrl->m_errInteg += pCtrl->m_err;
-	pCtrl->m_v = pPID->m_P * pCtrl->m_err
-						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)
-						+ constrain(pPID->m_I * pCtrl->m_errInteg, pPID->m_Imax, -pPID->m_Imax);
-
-	//pitch
-	pPID = &m_pAPM->m_pidPitch;
-	pCtrl = &m_pAPM->m_ctrlPitch;
-	v = m_pSF40->m_pY->v();
-
-	pCtrl->m_errOld = pCtrl->m_err;
-	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
-	pCtrl->m_pos = v;
-	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
-	pCtrl->m_errInteg += pCtrl->m_err;
-	pCtrl->m_v = pPID->m_P * pCtrl->m_err
-						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)
-						+ constrain(pPID->m_I * pCtrl->m_errInteg, pPID->m_Imax, -pPID->m_Imax);
+//	APMcopter_PID* pPID;
+//	APMcopter_CTRL* pCtrl;
+//	double v;
+//
+//	//roll
+//	pPID = &m_pAPM->m_pidRoll;
+//	pCtrl = &m_pAPM->m_ctrlRoll;
+//	v = m_pSF40->m_pX->v();
+//
+//	pCtrl->m_errOld = pCtrl->m_err;
+//	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
+//	pCtrl->m_pos = v;
+//	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
+//	pCtrl->m_errInteg += pCtrl->m_err;
+//	pCtrl->m_v = pPID->m_P * pCtrl->m_err
+//						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)
+//						+ constrain(pPID->m_I * pCtrl->m_errInteg, pPID->m_Imax, -pPID->m_Imax);
+//
+//	//pitch
+//	pPID = &m_pAPM->m_pidPitch;
+//	pCtrl = &m_pAPM->m_ctrlPitch;
+//	v = m_pSF40->m_pY->v();
+//
+//	pCtrl->m_errOld = pCtrl->m_err;
+//	pCtrl->m_predPos = v + (v-pCtrl->m_pos)*pPID->m_dT;
+//	pCtrl->m_pos = v;
+//	pCtrl->m_err = pCtrl->m_targetPos - pCtrl->m_predPos;
+//	pCtrl->m_errInteg += pCtrl->m_err;
+//	pCtrl->m_v = pPID->m_P * pCtrl->m_err
+//						+ pPID->m_D * (pCtrl->m_err - pCtrl->m_errOld)
+//						+ constrain(pPID->m_I * pCtrl->m_errInteg, pPID->m_Imax, -pPID->m_Imax);
 
 	//TODO:
 	//yaw
 	//throttle
 
 	//Send Mavlink command
-	m_pAPM->updateAttitude();
+//	m_pAPM->updateAttitude();
 
 }
 
