@@ -14,10 +14,13 @@ _GPS::_GPS()
 {
 	m_pMavlink = NULL;
 	m_pSF40 = NULL;
+	m_initLL.init();
 	m_LL.init();
 	m_UTM.init();
 	m_mavDSfreq = 30;
-	m_tLastMavGPS = 0;
+	m_tStarted = 0;
+	m_time = 0;
+	m_apmMode = 0;
 }
 
 _GPS::~_GPS()
@@ -31,6 +34,14 @@ bool _GPS::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
+
+	Kiss* pI = pK->o("initLL");
+	CHECK_T(pI->empty());
+	F_INFO(pI->v("lat", &m_initLL.m_lat));
+	F_INFO(pI->v("lng", &m_initLL.m_lng));
+	setLL(&m_initLL);
+
+	m_tStarted = get_time_usec();
 
 	return true;
 }
@@ -70,6 +81,7 @@ void _GPS::update(void)
 	{
 		this->autoFPSfrom();
 
+		m_time = get_time_usec();
 		detect();
 
 		this->autoFPSto();
@@ -81,33 +93,70 @@ void _GPS::detect(void)
 	NULL_(m_pSF40);
 	NULL_(m_pMavlink);
 
+	getMavGPS();
+
+	//reset init pos in mode change
+	uint32_t apmMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+	if(apmMode != m_apmMode)
+	{
+		m_apmMode = apmMode;
+		setLL(&m_initLL);
+	}
+
+	m_pSF40->setHeading(m_LL.m_hdg);
+
+	//estimate position
+
+
+	setMavGPS();
+
+
 
 }
 
-void _GPS::bMavOutput(bool bOutput)
+/*
+time_week
+time_week_ms
+lat
+lon
+alt (optional)
+hdop (optinal)
+vdop (optinal)
+vn, ve, vd (optional)
+speed_accuracy (optional)
+horizontal_accuracy (optional)
+satellites_visible <-- required
+fix_type <-- required
+ */
+void _GPS::setMavGPS(void)
 {
-	m_bMavOutput = bOutput;
+	NULL_(m_pMavlink);
+
+	mavlink_gps_input_t mavGPS;
+	mavGPS.lat = m_LL.m_lat * 1e7;
+	mavGPS.lon = m_LL.m_lng * 1e7;
+	mavGPS.alt = 0.0;
+	mavGPS.gps_id = 0;
+	mavGPS.fix_type = 3;
+	mavGPS.satellites_visible = 10;
+	mavGPS.time_week = 1;
+	mavGPS.time_week_ms = (m_time-m_tStarted) / 1000;
+	mavGPS.ignore_flags = 0b11111111;
+
+	m_pMavlink->gps_input(&mavGPS);
 }
 
-void _GPS::mavOutput(void)
+void _GPS::getMavGPS(void)
 {
-	//tell apm on/off using HDOP
+	NULL_(m_pMavlink);
 
+	if(m_time - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	{
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
+		return;
+	}
 
-}
-
-void _GPS::updateMavGPS(void)
-{
-	//hdg included?
-	m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-
-	double base = 1.0/1e7;
-	LL_POS llPos;
-	llPos.m_lat = ((double)m_pMavlink->m_msg.global_position_int.lat) * base;
-	llPos.m_lng = ((double)m_pMavlink->m_msg.global_position_int.lon) * base;
-	llPos.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-
-	setLL(&llPos);
+	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 }
 
 void _GPS::setLL(LL_POS* pLL)
@@ -141,8 +190,15 @@ UTM_POS* _GPS::getUTM(void)
 bool _GPS::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	string msg;
+
+	pWin->tabNext();
+	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", hdg=" + f2str(m_LL.m_hdg);
+	pWin->addMsg(&msg);
+	pWin->tabPrev();
+
 
 	return true;
 }

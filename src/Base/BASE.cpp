@@ -70,7 +70,13 @@ bool BASE::start(void)
 bool BASE::draw(void)
 {
 	NULL_F(m_pWindow);
-	NULL_F(((Window*)m_pWindow)->getFrame());
+
+	Window* pWin = (Window*)m_pWindow;
+	NULL_F(pWin->getFrame());
+
+	Mat* pMat = pWin->getFrame()->getCMat();
+	CHECK_F(pMat->empty());
+
 	return true;
 }
 

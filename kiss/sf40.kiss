@@ -24,19 +24,6 @@
 }
 
 {
-	"name":"SF40_client",
-	"class":"Window",
-	"bInst":0,
-	"w":1280,
-	"h":720,
-	"bFullScreen":0,
-	"textX":25,
-	"textY":25,
-	"pixTab":25,
-	"lineH":25,
-}
-
-{
 	"name":"SF40server",
 	"class":"_Lightware_SF40",
 	"bInst":1,
@@ -93,6 +80,71 @@
 }
 
 {
+	"name":"APM_mavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"SF40_server",
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":0,
+		"portName":"/dev/ttyTHS1",
+		"baud":921600,
+	}
+	
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyUSB1",
+		"baud":115200,
+	}	
+}
+
+{
+	"name":"SF_GPS",
+	"class":"_GPS",
+	"bInst":1,
+	"FPS":10,
+	"Window":"SF40_server",
+	"_Mavlink":"APM_mavlink",
+	"_Lightware_SF40":"SF40server",
+	"mavDSfreq":30,
+	
+	{
+		"name":"initLL",
+		"bInst":1,
+		"lat":35.854676,
+		"lng":139.517692,
+	}
+	
+	{
+		"name":"initLL_",
+		"bInst":0,
+		"lat":0.0,
+		"lng":0.0,
+	}
+}
+
+
+{
+	"name":"SF40_client",
+	"class":"Window",
+	"bInst":0,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":25,
+	"textY":25,
+	"pixTab":25,
+	"lineH":25,
+}
+
+
+{
 	"name":"SF40client",
 	"class":"_Lightware_SF40",
 	"bInst":0,
@@ -128,114 +180,4 @@
 	}	
 }
 
-{
-	"name":"APM",
-	"class":"_Mavlink",
-	"bInst":0,
-	"FPS":100,
-	"portName":"/dev/ttyS0",
-	"baudrate":921600,
-	"_Automaton":"flight",
-}
-
-{
-	"name":"SF_GPS",
-	"class":"_GPS",
-	"bInst":0,
-	"FPS":100,
-	"_Mavlink":"APM",
-	"_Lightware_SF40":"SF40server",
-	"mavDSfreq":30,
-	"UTMeasting":366155.75,
-	"UTMnorthing":3968842.65,
-	"UTMzone":"54S",
-}
-
-{
-	"name":"APMstate",
-	"class":"_Automaton",
-	"bInst":0,
-	"bShow":1,
-	"startState":"APM_STANDBY",
-
-	{
-		"state":"APM_STANDBY",
-	}
-
-	{
-		"state":"APM_POSHOLD",
-	}
-}
-
-
-{
-	"name":"APMpilot",
-	"class":"_AutoPilot",
-	"_Automaton":"APMstate",
-	"bInst":0,
-	"FPS":30,
-	
-	{
-		"name":"action",
-		
-		{
-			"name":"APMbase",
-			"class":"APMcopter_base",
-			"bInst":1,
-			"_Automaton":"APMstate",
-			"_Mavlink":"APM",
-			
-			{
-				"name":"roll",
-				"P":0.0,
-				"I":0.0,
-				"Imax":0.0,
-				"D":0.0,
-				"dT":0.0,
-				"rate":0.0,
-				"lim":30.0,
-			}
-	
-			{
-				"name":"pitch",
-				"P":0.0,
-				"I":0.0,
-				"Imax":0.0,
-				"D":0.0,
-				"dT":0.0,
-				"rate":0.0,
-				"lim":30.0,
-			}
-
-			{
-				"name":"thr",
-				"P":0.0,
-				"I":0.0,
-				"Imax":0.0,
-				"D":0.0,
-				"dT":0.0,
-				"lim":100.0,
-			}
-
-			{
-				"name":"yaw",
-				"P":0.0,
-				"I":0.0,
-				"Imax":0.0,
-				"D":0.0,
-				"dT":0.0,
-				"lim":360.0,
-			}
-		}
-
-		{
-			"name":"APMguided",
-			"class":"APMcopter_guided",
-			"bInst":1,
-			"_Automaton":"APMstate",
-			"activeState":"APM_POSHOLD",
-			"APMcopter_base":"APMbase",
-		}
-	}
-}
 

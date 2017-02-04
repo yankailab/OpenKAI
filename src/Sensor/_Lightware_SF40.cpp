@@ -348,7 +348,6 @@ void _Lightware_SF40::reset(void)
 bool _Lightware_SF40::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
