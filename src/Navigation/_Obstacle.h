@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Stream/_StreamBase.h"
 #include "../AI/_ImageNet.h"
-#include "../Algorithm/Filter.h"
+#include "../Filter/Median.h"
 
 #define N_FILTER 1600
 
@@ -45,7 +45,7 @@ public:
 	_StreamBase* m_pStream;
 	Frame*	m_pMatrix;
 	vInt2	m_mDim;
-	Filter* m_pFilteredMatrix[N_FILTER];
+	Median* m_pFilteredMatrix[N_FILTER];
 	int		m_nFilter;
 	int		m_medianLen;
 

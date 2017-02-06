@@ -4,10 +4,10 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../../Algorithm/Filter.h"
 #include "../../../Stream/Frame.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_AIbase.h"
+#include "../../../Filter/FilterBase.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "APMrover_base.h"
@@ -43,9 +43,9 @@ private:
 	double	m_steerP;
 
 	OBJECT* m_pTarget;
-	kai::Filter* m_pTargetX;
-	kai::Filter* m_pTargetY;
-	kai::Filter* m_pTargetArea;
+//	kai::FilterBase* m_pTargetX;
+//	kai::FilterBase* m_pTargetY;
+//	kai::FilterBase* m_pTargetArea;
 	int		m_filterWindow;
 	int		m_targetClass;
 

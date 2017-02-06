@@ -108,8 +108,15 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"medianLen":9,
 	"dBlend":0.25;
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"windowLen":9,
+	}
+	
 }
 
 {

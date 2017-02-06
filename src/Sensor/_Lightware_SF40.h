@@ -9,11 +9,9 @@
 #define AI__Lightware_SF40_H_
 
 #include "../Base/common.h"
+#include "../Filter/Median.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../IO/SerialPort.h"
-#include "../IO/File.h"
-#include "../IO/TCP.h"
-#include "../Algorithm/Filter.h"
 
 #define DEG_AROUND 360.0
 
@@ -28,6 +26,7 @@ using std::string;
 using namespace std;
 using namespace cv;
 
+
 class _Lightware_SF40: public _ThreadBase
 {
 public:
@@ -40,7 +39,7 @@ public:
 	bool draw(void);
 
 	void setHeading(double hdg);
-	vDouble2* getDiffPos(void);
+	vDouble2 getDiffPos(void);
 	void reset(void);
 
 private:
@@ -57,17 +56,14 @@ private:
 	}
 
 public:
-	IO* m_pIn;
-	IO* m_pOut;
+	SerialPort* m_pIn;
 	_Lightware_SF40_sender* m_pSF40sender;
 
 	double	m_hdg;
 	double	m_offsetAngle;
 	int		m_nDiv;
 	double	m_dAngle;
-//	double* m_pDist;
-	Filter* m_pDist;
-	int		m_medianFilter;
+	Median* m_pDist;
 
 	double	m_minDist;
 	double	m_maxDist;
@@ -75,8 +71,10 @@ public:
 	string m_strRecv;
 	double m_showScale;
 
-	vDouble2 m_dPos;
-	vDouble2 m_lastPos;
+	vDouble2 m_pos;
+	vDouble2 m_refPos;
+	double	m_varianceLim;
+	double	m_diffThr;
 };
 
 }

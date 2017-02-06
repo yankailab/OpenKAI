@@ -11,7 +11,7 @@
 }
 
 {
-	"name":"SF40_server",
+	"name":"SF40nav",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -27,17 +27,32 @@
 	"name":"SF40server",
 	"class":"_Lightware_SF40",
 	"bInst":1,
-	"Window":"SF40_server",
+	"Window":"SF40nav",
 	"FPS":500,
 	"_Automaton":"APMstate",
-	"medianFilter":10,
 	"nDiv":180,
 	"offsetAngle":0.0,
-	"minDist":0.1,
+	"minDist":0.5,
 	"maxDist":100.0,
 	"MBS":3,
 	"showScale":10.0,
-	"nTrajectory":0,
+	"varianceLim":10.0,
+	"diffThr":1.0,
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"windowLen":5,
+		"diffInt":2,
+	}
+	
+	{
+		"name":"avrFilter",
+		"class":"Average",
+		"bInst":1,
+		"windowLen":3,
+	}
 	
 	{
 		"name":"input",
@@ -45,36 +60,6 @@
 		"bInst":1,
 		"portName":"/dev/ttyUSB0",
 		"baud":115200,
-	}
-
-	{
-		"name":"output",
-		"class":"TCP",
-		"bInst":0,
-	
-		{
-			"name":"server",
-			"class":"_socket",
-			"bInst":1,
-			"listenPort":19849,
-			"nListen":1,
-			"timeoutRecv":1000,
-			"buf":1024,
-		}
-	}
-	
-	{
-		"name":"input",
-		"class":"File",
-		"bInst":0,
-		"fileName":"output/highway20161213_nDiv=180_handy.sf40raw",
-	}
-	
-	{
-		"name":"output",
-		"class":"File",
-		"bInst":0,
-		"fileName":"output/test.sf40log",
 	}
 }
 
@@ -84,7 +69,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"SF40_server",
+	"Window":"SF40nav",
 
 	{
 		"name":"input",
@@ -108,7 +93,7 @@
 	"class":"_GPS",
 	"bInst":1,
 	"FPS":10,
-	"Window":"SF40_server",
+	"Window":"SF40nav",
 	"_Mavlink":"APM_mavlink",
 	"_Lightware_SF40":"SF40server",
 	"mavDSfreq":30,
@@ -127,56 +112,3 @@
 		"lng":0.0,
 	}
 }
-
-
-{
-	"name":"SF40_client",
-	"class":"Window",
-	"bInst":0,
-	"w":1280,
-	"h":720,
-	"bFullScreen":0,
-	"textX":25,
-	"textY":25,
-	"pixTab":25,
-	"lineH":25,
-}
-
-
-{
-	"name":"SF40client",
-	"class":"_Lightware_SF40",
-	"bInst":0,
-	"FPS":300,
-	"Window":"SF40_client",
-	"_Automaton":"APMstate",
-	"_Universe":"Universe",
-	"nDiv":180,
-	"offsetAngle":-90.0,
-	"minDist":0.1,
-	"maxDist":100.0,
-	"mwlX":10,
-	"mwlY":10,
-	"MBS":3,
-	"showScale":10.0,
-	"trajectoryStep":1.0,	
-	"nTrajectory":100,
-	
-	{
-		"name":"input",
-		"class":"TCP",
-		"bInst":1,
-	
-		{
-			"name":"client",
-			"class":"_socket",
-			"bInst":1,
-			"addr":"127.0.0.1",
-			"port":19849,
-			"timeoutRecv":1000,
-			"buf":1024,
-		}
-	}	
-}
-
-

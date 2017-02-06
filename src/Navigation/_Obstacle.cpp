@@ -47,10 +47,17 @@ bool _Obstacle::init(void* pKiss)
 	m_nFilter = m_mDim.area();
 	CHECK_F(m_nFilter >= N_FILTER);
 
-	for (int i = 0; i < m_nFilter; i++)
+	Kiss* pCC;
+	int i;
+
+	//filter
+	pCC = pK->o("medianFilter");
+	CHECK_F(pCC->empty());
+
+	for (i = 0; i < m_nFilter; i++)
 	{
-		m_pFilteredMatrix[i] = new Filter();
-		m_pFilteredMatrix[i]->startMedian(m_medianLen);
+		m_pFilteredMatrix[i] = new Median();
+		CHECK_F(!m_pFilteredMatrix[i]->init(pCC));
 	}
 
 	m_pMatrix = new Frame();

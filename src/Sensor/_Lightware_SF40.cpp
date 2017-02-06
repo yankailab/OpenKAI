@@ -10,8 +10,6 @@ namespace kai
 _Lightware_SF40::_Lightware_SF40()
 {
 	m_pIn = NULL;
-	m_pOut = NULL;
-
 	m_hdg = 0.0;
 	m_offsetAngle = 0.0;
 	m_nDiv = 0;
@@ -24,16 +22,16 @@ _Lightware_SF40::_Lightware_SF40()
 	m_MBS = 0;
 
 	m_pDist = NULL;
-	m_medianFilter = 3;
-
-	m_dPos.init();
-	m_lastPos.init();
-
+	m_pos.init();
+	m_refPos.init();
+	m_varianceLim = 10;
+	m_diffThr = 1.0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
 {
 	DEL(m_pSF40sender);
+	DEL(m_pDist);
 
 	if (m_pIn)
 	{
@@ -41,15 +39,6 @@ _Lightware_SF40::~_Lightware_SF40()
 		delete m_pIn;
 		m_pIn = NULL;
 	}
-
-	if (m_pOut)
-	{
-		m_pOut->close();
-		delete m_pOut;
-		m_pOut = NULL;
-	}
-
-	DEL(m_pDist);
 }
 
 bool _Lightware_SF40::init(void* pKiss)
@@ -67,66 +56,35 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
+	F_INFO(pK->v("varianceLim", &m_varianceLim));
+	F_INFO(pK->v("diffThr", &m_diffThr));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
 
-	F_INFO(pK->v("medianFilter", &m_medianFilter));
-	m_pDist = new Filter[m_nDiv];
-	for(int i=0;i<m_nDiv;i++)
-	{
-		m_pDist->startMedian(m_medianFilter);
-	}
-
-	//IO
 	Kiss* pCC;
-	string param = "";
+	string param;
+	int i;
+
+	//filter
+	pCC = pK->o("medianFilter");
+	CHECK_F(pCC->empty());
+	m_pDist = new Median[m_nDiv];
+	for (i = 0; i < m_nDiv; i++)
+	{
+		CHECK_F(!m_pDist[i].init(pCC));
+	}
 
 	//input
 	pCC = pK->o("input");
 	CHECK_F(pCC->empty());
-	F_ERROR_F(pCC->v("class", &param));
-	if (param == "SerialPort")
-	{
-		m_pIn = new SerialPort();
-		CHECK_F(!m_pIn->init(pCC));
+	m_pIn = new SerialPort();
+	CHECK_F(!m_pIn->init(pCC));
 
-		m_pSF40sender = new _Lightware_SF40_sender();
-		m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
-		m_pSF40sender->m_dAngle = m_dAngle;
-		CHECK_F(!m_pSF40sender->init(pKiss));
-	}
-	else if (param == "File")
-	{
-		m_pIn = new File();
-		F_ERROR_F(m_pIn->init(pCC));
-	}
-	else if (param == "TCP")
-	{
-		m_pIn = new TCP();
-		F_ERROR_F(m_pIn->init(pCC));
-	}
-
-	//output
-	pCC = pK->o("output");
-	CHECK_T(pCC->empty());
-	param = "";
-	F_ERROR_F(pCC->v("class", &param));
-	if (param == "SerialPort")
-	{
-		m_pOut = new SerialPort();
-		CHECK_F(m_pOut->init(pCC));
-	}
-	else if (param == "File")
-	{
-		m_pOut = new File();
-		F_ERROR_F(m_pOut->init(pCC));
-	}
-	else if (param == "TCP")
-	{
-		m_pOut = new TCP();
-		F_ERROR_F(m_pOut->init(pCC));
-	}
+	m_pSF40sender = new _Lightware_SF40_sender();
+	m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
+	m_pSF40sender->m_dAngle = m_dAngle;
+	CHECK_F(!m_pSF40sender->init(pKiss));
 
 	return true;
 }
@@ -176,7 +134,7 @@ void _Lightware_SF40::update(void)
 
 		this->autoFPSfrom();
 
-		if(updateLidar())
+		if (updateLidar())
 		{
 			updatePosition();
 		}
@@ -201,7 +159,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vStr.push_back(str);
 	}
-	if(vStr.size() < 2)
+	if (vStr.size() < 2)
 	{
 		m_strRecv.clear();
 		return false;
@@ -218,7 +176,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vCmd.push_back(str);
 	}
-	if(vCmd.size() < 2)
+	if (vCmd.size() < 2)
 	{
 		m_strRecv.clear();
 		return false;
@@ -233,7 +191,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vResult.push_back(str);
 	}
-	if(vResult.size() < 1)
+	if (vResult.size() < 1)
 	{
 		m_strRecv.clear();
 		return false;
@@ -242,11 +200,11 @@ bool _Lightware_SF40::updateLidar(void)
 	double dist = atof(vResult.at(0).c_str());
 
 	angle += m_hdg + m_offsetAngle;
-	while(angle >= DEG_AROUND)
+	while (angle >= DEG_AROUND)
 		angle -= DEG_AROUND;
 
 	int iAngle = (int) (angle / m_dAngle);
-	if(iAngle >= m_nDiv)
+	if (iAngle >= m_nDiv)
 	{
 		m_strRecv.clear();
 		return false;
@@ -267,15 +225,9 @@ bool _Lightware_SF40::readLine(void)
 			continue;
 		if (buf == LF || buf == CR)
 		{
-			if(m_strRecv.empty())continue;
-			CHECK_T(m_pOut==NULL);
+			if (m_strRecv.empty())
+				continue;
 
-			if (!m_pOut->isOpen())
-			{
-				CHECK_T(!m_pOut->open());
-			}
-
-			m_pOut->writeLine((uint8_t*) m_strRecv.c_str(), m_strRecv.length());
 			return true;
 		}
 
@@ -288,38 +240,55 @@ bool _Lightware_SF40::readLine(void)
 void _Lightware_SF40::updatePosition(void)
 {
 	int i;
-	double nV;
-	double pX = 0;
-	double pY = 0;
+	double pX = 0.0;
+	double pY = 0.0;
+	double nV = 0.0;
+	double dX = 0.0;
+	double dY = 0.0;
+	double nD = 0.0;
 
-	for (i = 0, nV = 0.0; i < m_nDiv; i++)
+	for (i = 0; i < m_nDiv; i++)
 	{
-		double dist = m_pDist[i].v();
+		Median* pD = &m_pDist[i];
+		if (pD->variance() > m_varianceLim)
+			continue;
+		double dist = pD->v();
 		if (dist < m_minDist)
 			continue;
 		if (dist > m_maxDist)
 			continue;
 
-		//TODO: check the variance of the angle, reset if beyond thr
+		double rad = (m_dAngle * i) * DEG_RADIAN;
+		double x = (dist * sin(rad));
+		double y = -(dist * cos(rad));
 
-		double angle = (m_dAngle * i) * DEG_RADIAN;
-		pX += (dist * sin(angle));
-		pY += -(dist * cos(angle));
+		pX += x;
+		pY += y;
 		nV += 1.0;
+
+		if (pD->diff() > m_diffThr)
+		{
+			//update ref pos
+			dX += x;
+			dY += y;
+			nD += 1.0;
+		}
 	}
 
-	nV = 1.0/nV;
+	//update current pos
+	nV = 1.0 / nV;
 	pX *= nV;
 	pY *= nV;
-//	m_pX->input(pX);
-//	m_pY->input(pY);
+	m_pos.m_x = pX;
+	m_pos.m_y = pY;
 
-	vDouble2 newPos;
-//	newPos.m_x = m_pX->v();
-//	newPos.m_y = m_pY->v();
-	m_dPos.m_x = newPos.m_x - m_lastPos.m_x;
-	m_dPos.m_y = newPos.m_y - m_lastPos.m_y;
-	m_lastPos = newPos;
+	//update the last ref pos if vectors changed above the threshold
+	CHECK_(nD <= 0);
+	nD = 1.0 / nD;
+	dX *= nD;
+	dY *= nD;
+	m_refPos.m_x += dX;
+	m_refPos.m_y += dY;
 }
 
 void _Lightware_SF40::setHeading(double hdg)
@@ -327,43 +296,45 @@ void _Lightware_SF40::setHeading(double hdg)
 	m_hdg = hdg;
 }
 
-vDouble2* _Lightware_SF40::getDiffPos(void)
+vDouble2 _Lightware_SF40::getDiffPos(void)
 {
-	return &m_dPos;
+	vDouble2 dPos;
+	dPos.m_x = m_pos.m_x - m_refPos.m_x;
+	dPos.m_y = m_pos.m_y - m_refPos.m_y;
+	m_refPos = m_pos;
+
+	return dPos;
 }
 
 void _Lightware_SF40::reset(void)
 {
-	for(int i=0;i<m_nDiv;i++)
+	for (int i = 0; i < m_nDiv; i++)
 	{
 		m_pDist->reset();
 	}
-	m_dPos.init();
-	m_lastPos.init();
+	m_pos.init();
+	m_refPos.init();
 }
 
 bool _Lightware_SF40::draw(void)
 {
 	CHECK_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
+	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
-//	pWin->tabNext();
-//	msg = "Pos: X=" + f2str(m_pX->v()) + ", Y=" + f2str(m_pY->v());
-//	pWin->addMsg(&msg);
+	pWin->tabNext();
+	msg = "Pos: X=" + f2str(m_pos.m_x) + ", Y=" + f2str(m_pos.m_y);
+	pWin->addMsg(&msg);
 
 	if (m_pIn)
 		m_pIn->draw();
-
-	if (m_pOut)
-		m_pOut->draw();
 
 	pWin->tabPrev();
 	CHECK_T(m_nDiv <= 0);
 
 	//Plot center as vehicle position
-	Point pCenter(pMat->cols/2, pMat->rows/2);
+	Point pCenter(pMat->cols / 2, pMat->rows / 2);
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	//Plot lidar result
@@ -374,7 +345,7 @@ bool _Lightware_SF40::draw(void)
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));
 
-		circle(*pMat, pCenter+Point(pX, pY), 1, Scalar(0, 255, 0), 1);
+		circle(*pMat, pCenter + Point(pX, pY), 1, Scalar(0, 255, 0), 1);
 	}
 
 	return true;

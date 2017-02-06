@@ -17,9 +17,9 @@ HM_rth::HM_rth()
 	m_steerP = 0.0;
 
 	m_pTarget = NULL;
-	m_pTargetX = new kai::Filter();
-	m_pTargetY = new kai::Filter();
-	m_pTargetArea = new kai::Filter();
+//	m_pTargetX = new kai::FilterBase();
+//	m_pTargetY = new kai::FilterBase();
+//	m_pTargetArea = new kai::FilterBase();
 	m_filterWindow = 3;
 	m_targetClass = 0;
 
@@ -44,9 +44,9 @@ bool HM_rth::init(void* pKiss)
 	F_INFO(pK->v("steerP", &m_steerP));
 
 	F_INFO(pK->v("filterWindow", &m_filterWindow));
-	m_pTargetX->startMedian(m_filterWindow);
-	m_pTargetY->startMedian(m_filterWindow);
-	m_pTargetArea->startMedian(m_filterWindow);
+//	m_pTargetX->start(m_filterWindow);
+//	m_pTargetY->start(m_filterWindow);
+//	m_pTargetArea->start(m_filterWindow);
 
 	return true;
 }
@@ -87,19 +87,19 @@ void HM_rth::update(void)
 	}
 	else
 	{
-		m_pTargetX->input(m_pTarget->m_bbox.midX());
-		m_pTargetY->input(m_pTarget->m_bbox.midY());
-		m_pTargetArea->input(m_pTarget->m_bbox.area());
+//		m_pTargetX->input(m_pTarget->m_bbox.midX());
+//		m_pTargetY->input(m_pTarget->m_bbox.midY());
+//		m_pTargetArea->input(m_pTarget->m_bbox.area());
 
-		//forward or backward
-		int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
+//		//forward or backward
+//		int rpmSpeed = (m_destArea*m_pTarget->m_camSize.area() - m_pTargetArea->v()) * m_speedP;
+//
+//		//steering
+//		int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
 
-		//steering
-		int rpmSteer = (m_destX*m_pTarget->m_camSize.m_x - m_pTargetX->v()) * m_steerP;
-
-		m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
-		m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
-		m_pHM->m_bSpeaker = true;
+//		m_pHM->m_motorPwmL = rpmSpeed - rpmSteer;
+//		m_pHM->m_motorPwmR = rpmSpeed + rpmSteer;
+//		m_pHM->m_bSpeaker = true;
 	}
 
 	m_pHM->updateCAN();

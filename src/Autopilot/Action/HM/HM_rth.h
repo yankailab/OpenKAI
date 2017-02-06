@@ -3,11 +3,11 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Algorithm/Filter.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 #include "../../../AI/_AIbase.h"
+#include "../../../Filter/FilterBase.h"
 
 namespace kai
 {
@@ -36,9 +36,9 @@ private:
 	double	m_steerP;
 
 	OBJECT* m_pTarget;
-	kai::Filter* m_pTargetX;
-	kai::Filter* m_pTargetY;
-	kai::Filter* m_pTargetArea;
+//	kai::FilterBase* m_pTargetX;
+//	kai::FilterBase* m_pTargetY;
+//	kai::FilterBase* m_pTargetArea;
 	int		m_filterWindow;
 	int		m_targetClass;
 

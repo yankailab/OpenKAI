@@ -2,8 +2,8 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
 
 #include "../../../Base/common.h"
+#include "../../../Filter/FilterBase.h"
 #include "../../../Script/Kiss.h"
-#include "../../../Algorithm/Filter.h"
 #include "../../../Protocol/_RC.h"
 #include "../../../Stream/Frame.h"
 #include "../../../Tracker/_ROITracker.h"

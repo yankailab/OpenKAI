@@ -57,8 +57,14 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"medianLen":9,
 	"dBlend":0.25;
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"windowLen":9,
+	}
 }
 
 {
@@ -341,7 +347,7 @@
 		{
 			"name":"avoidance",
 			"class":"HM_avoid",
-			"bInst":0,
+			"bInst":1,
 			"_Stream":"ZED",
 			"Window":"forward",
 			"HM_base":"base",
