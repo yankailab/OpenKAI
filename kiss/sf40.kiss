@@ -35,7 +35,7 @@
 	"minDist":0.5,
 	"maxDist":100.0,
 	"MBS":3,
-	"varianceLim":100.0,
+	"varianceLim":1000.0,
 	"diffMax":5.0,
 	"diffMin":0.0,
 	"showScale":30.0,
@@ -44,7 +44,7 @@
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
-		"windowLen":9,
+		"windowLen":5,
 		"nTraj":3,
 	}
 	
@@ -75,7 +75,7 @@
 	{
 		"name":"input",
 		"class":"SerialPort",
-		"bInst":0,
+		"bInst":1,
 		"portName":"/dev/ttyTHS1",
 		"baud":921600,
 	}
@@ -83,7 +83,7 @@
 	{
 		"name":"input",
 		"class":"SerialPort",
-		"bInst":1,
+		"bInst":0,
 		"portName":"/dev/ttyUSB1",
 		"baud":115200,
 	}	
