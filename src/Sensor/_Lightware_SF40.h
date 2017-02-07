@@ -34,13 +34,13 @@ public:
 	bool draw(void);
 
 	void setHeading(double hdg);
-	vDouble2 getDiffRelativePos(void);
+	vDouble2 getPosDiff(void);
 	void reset(void);
 
 private:
 	bool connect(void);
 	bool updateLidar(void);
-	void updateRelativePos(void);
+	void updatePosDiff(void);
 	bool readLine(void);
 
 	void update(void);
@@ -68,7 +68,6 @@ public:
 	int64_t m_tStartUp;
 
 	vDouble2 m_dPos;
-	vDouble2 m_lastPos;
 	double	m_varianceLim;
 	double	m_diffMax;
 	double	m_diffMin;

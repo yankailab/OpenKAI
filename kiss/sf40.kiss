@@ -44,8 +44,8 @@
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
-		"windowLen":5,
-		"nTraj":3,
+		"windowLen":3,
+		"nTraj":2,
 	}
 	
 	{

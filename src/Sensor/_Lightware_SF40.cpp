@@ -23,7 +23,6 @@ _Lightware_SF40::_Lightware_SF40()
 
 	m_pDist = NULL;
 	m_dPos.init();
-	m_lastPos.init();
 	m_varianceLim = 10;
 	m_diffMax = 1.0;
 	m_diffMin = 0.25;
@@ -141,7 +140,7 @@ void _Lightware_SF40::update(void)
 
 		if (updateLidar())
 		{
-			updateRelativePos();
+			updatePosDiff();
 		}
 
 		this->autoFPSto();
@@ -242,7 +241,7 @@ bool _Lightware_SF40::readLine(void)
 	return false;
 }
 
-void _Lightware_SF40::updateRelativePos(void)
+void _Lightware_SF40::updatePosDiff(void)
 {
 	int i;
 	double pX = 0.0;
@@ -252,32 +251,28 @@ void _Lightware_SF40::updateRelativePos(void)
 	for (i = 0; i < m_nDiv; i++)
 	{
 		Median* pD = &m_pDist[i];
-
 		CHECK_CONT(pD->variance() > m_varianceLim);
-
-		double diff = pD->diff();
-		CHECK_CONT(diff < m_diffMin);
-		CHECK_CONT(diff > m_diffMax);
 
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);
 		CHECK_CONT(dist > m_maxDist);
 
-		double rad = m_dAngle * i * DEG_RADIAN;
-		pX += (dist * sin(rad));
-		pY += -(dist * cos(rad));
+		double diff = pD->diff();
+		CHECK_CONT(diff < m_diffMin);
+		CHECK_CONT(diff > m_diffMax);
+
+		double rad = m_dAngle * i * DEG_RAD;
+		pX += (diff * sin(rad));
+		pY += -(diff * cos(rad));
 		nV += 1.0;
 	}
 
 	CHECK_(nV < 1.0);
 
 	//update current pos
-	m_dPos.m_x += pX - m_lastPos.m_x;
-	m_dPos.m_y += pY - m_lastPos.m_y;
-
-	m_lastPos.m_x = pX;
-	m_lastPos.m_y = pY;
-
+	nV = 1.0/nV;
+	m_dPos.m_x += pX * nV;
+	m_dPos.m_y += pY * nV;
 }
 
 void _Lightware_SF40::setHeading(double hdg)
@@ -285,7 +280,7 @@ void _Lightware_SF40::setHeading(double hdg)
 	m_hdg = hdg;
 }
 
-vDouble2 _Lightware_SF40::getDiffRelativePos(void)
+vDouble2 _Lightware_SF40::getPosDiff(void)
 {
 	vDouble2 dPos = m_dPos;
 	m_dPos.init();
@@ -329,20 +324,20 @@ bool _Lightware_SF40::draw(void)
 		Median* pD = &m_pDist[i];
 		CHECK_CONT(pD->variance() > m_varianceLim);
 
-		double diff = pD->diff();
-		CHECK_CONT(diff < m_diffMin);
-		CHECK_CONT(diff > m_diffMax);
-
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);
 		CHECK_CONT(dist > m_maxDist);
 
+		double diff = pD->diff();
+		CHECK_CONT(diff < m_diffMin);
+		CHECK_CONT(diff > m_diffMax);
+
 		dist *= m_showScale;
-		double angle = m_dAngle * i * DEG_RADIAN;
+		double angle = m_dAngle * i * DEG_RAD;
 		int pX = (dist * sin(angle));
 		int pY = -(dist * cos(angle));
 
-		Scalar col = Scalar(255,255,255);
+		Scalar col = Scalar(255, 255, 255);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
 

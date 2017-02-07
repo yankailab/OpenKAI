@@ -91,9 +91,9 @@ void APMcopter_landing::landing(void)
 
 	//Change position to angles
 	m_target.m_angleX = ((double)(m_target.m_targetPos.m_x - cCenter.m_x) / (double)cSize.m_x)
-			* cAngle.m_x * DEG_RADIAN * m_target.m_orientX;
+			* cAngle.m_x * DEG_RAD * m_target.m_orientX;
 	m_target.m_angleY = ((double)(m_target.m_targetPos.m_y - cCenter.m_y) / (double)cSize.m_y)
-			* cAngle.m_y * DEG_RADIAN * m_target.m_orientY;
+			* cAngle.m_y * DEG_RAD * m_target.m_orientY;
 
 	//Send Mavlink command
 	m_pAPM->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,

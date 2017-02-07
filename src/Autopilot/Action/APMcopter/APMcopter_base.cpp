@@ -43,7 +43,7 @@ bool APMcopter_base::init(void* pKiss)
 	F_INFO(pCC->v("dT", &cPID.m_dT));
 	F_INFO(pCC->v("rate", &cPID.m_rate));
 	F_INFO(pCC->v("lim", &cPID.m_lim));
-	cPID.m_lim *= DEG_RADIAN;
+	cPID.m_lim *= DEG_RAD;
 	m_pidRoll = cPID;
 
 	pCC = pK->o("pitch");
@@ -55,7 +55,7 @@ bool APMcopter_base::init(void* pKiss)
 	F_INFO(pCC->v("dT", &cPID.m_dT));
 	F_INFO(pCC->v("rate", &cPID.m_rate));
 	F_INFO(pCC->v("lim", &cPID.m_lim));
-	cPID.m_lim *= DEG_RADIAN;
+	cPID.m_lim *= DEG_RAD;
 	m_pidPitch = cPID;
 
 	pCC = pK->o("thr");
@@ -78,7 +78,7 @@ bool APMcopter_base::init(void* pKiss)
 	F_INFO(pCC->v("dT", &cPID.m_dT));
 	F_INFO(pCC->v("rate", &cPID.m_rate));
 	F_INFO(pCC->v("lim", &cPID.m_lim));
-	cPID.m_lim *= DEG_RADIAN;
+	cPID.m_lim *= DEG_RAD;
 	m_pidYaw = cPID;
 
 	//init controls

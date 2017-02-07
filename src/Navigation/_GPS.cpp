@@ -114,7 +114,7 @@ void _GPS::detect(void)
 	m_pSF40->setHeading(m_LL.m_hdg);
 
 	//estimate position
-	vDouble2 dPos = m_pSF40->getDiffRelativePos();
+	vDouble2 dPos = m_pSF40->getPosDiff();
 	uint64_t tStart = m_pSF40->m_tStartUp;
 	CHECK_(tStart==0);
 	CHECK_(m_time - tStart < m_tStartWait);
