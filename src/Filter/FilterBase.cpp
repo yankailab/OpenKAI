@@ -43,7 +43,7 @@ void FilterBase::input(double v)
 	m_traj.push_back(m_v);
 	CHECK_(m_traj.size() < m_nTraj);
 
-	m_diff = m_traj.at(m_nTraj-1) - m_traj.at(0);
+	m_diff = abs(m_traj.at(m_nTraj-1) - m_traj.at(0));
 
 	double nT = (double)m_nTraj;
 	double baseT = 1.0/nT;

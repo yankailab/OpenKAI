@@ -245,12 +245,9 @@ bool _Lightware_SF40::readLine(void)
 void _Lightware_SF40::updateRelativePos(void)
 {
 	int i;
-	ZONE pZone[4];
-	pZone[0].init();
-	pZone[1].init();
-	pZone[2].init();
-	pZone[3].init();
-	int nZone = m_nDiv/4;
+	double pX = 0.0;
+	double pY = 0.0;
+	double nV = 0.0;
 
 	for (i = 0; i < m_nDiv; i++)
 	{
@@ -267,24 +264,12 @@ void _Lightware_SF40::updateRelativePos(void)
 		CHECK_CONT(dist > m_maxDist);
 
 		double rad = m_dAngle * i * DEG_RADIAN;
-		double x = (dist * sin(rad));
-		double y = -(dist * cos(rad));
-
-		ZONE* pZ = &pZone[i/nZone];
-		pZ->m_x += x;
-		pZ->m_y += y;
-		pZ->m_n += 1.0;
+		pX += (dist * sin(rad));
+		pY += -(dist * cos(rad));
+		nV += 1.0;
 	}
 
-	pZone[0].avr();
-	pZone[1].avr();
-	pZone[2].avr();
-	pZone[3].avr();
-
-	double pX = pZone[0].m_x + pZone[1].m_x + pZone[2].m_x + pZone[3].m_x;
-	double pY = pZone[0].m_y + pZone[1].m_y + pZone[2].m_y + pZone[3].m_y;
-	pX *= 0.25;
-	pY *= 0.25;
+	CHECK_(nV < 1.0);
 
 	//update current pos
 	m_dPos.m_x += pX - m_lastPos.m_x;

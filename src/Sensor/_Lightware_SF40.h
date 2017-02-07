@@ -22,33 +22,6 @@ using std::string;
 using namespace std;
 using namespace cv;
 
-struct ZONE
-{
-	double m_x;
-	double m_y;
-	double m_n;
-
-	void init(void)
-	{
-		m_x = 0.0;
-		m_y = 0.0;
-		m_n = 0.0;
-	}
-
-	void avr(void)
-	{
-		if(m_n<=0.0)
-		{
-			init();
-			return;
-		}
-
-		double base = 1.0/m_n;
-		m_x *= base;
-		m_y *= base;
-	}
-};
-
 class _Lightware_SF40: public _ThreadBase
 {
 public:
