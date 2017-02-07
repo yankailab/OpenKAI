@@ -22,9 +22,6 @@ public:
 
 	bool init(void* pKiss);
 	void input(double v);
-	double v(void);
-	double variance(void);
-	double diff(void);
 	void reset(void);
 
 private:

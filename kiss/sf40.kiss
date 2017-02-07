@@ -24,7 +24,7 @@
 }
 
 {
-	"name":"SF40server",
+	"name":"SF40",
 	"class":"_Lightware_SF40",
 	"bInst":1,
 	"Window":"SF40nav",
@@ -35,16 +35,17 @@
 	"minDist":0.5,
 	"maxDist":100.0,
 	"MBS":3,
-	"showScale":10.0,
-	"varianceLim":10.0,
-	"diffThr":1.0,
+	"varianceLim":100.0,
+	"diffMax":5.0,
+	"diffMin":0.0,
+	"showScale":30.0,
 	
 	{
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
-		"windowLen":5,
-		"diffInt":2,
+		"windowLen":9,
+		"nTraj":3,
 	}
 	
 	{
@@ -95,8 +96,17 @@
 	"FPS":10,
 	"Window":"SF40nav",
 	"_Mavlink":"APM_mavlink",
-	"_Lightware_SF40":"SF40server",
+	"_Lightware_SF40":"SF40",
 	"mavDSfreq":30,
+	"tStartWait":15000000,
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"windowLen":3,
+		"nTraj":2,
+	}
 	
 	{
 		"name":"initLL",

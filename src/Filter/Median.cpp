@@ -29,9 +29,7 @@ bool Median::init(void* pKiss)
 
 	F_INFO(pK->v("windowLen", (int*)&m_windowLen));
 	if(m_windowLen<3)
-	{
 		m_windowLen = 3;
-	}
 
 	m_iMid = m_windowLen/2;
 	reset();
@@ -43,7 +41,12 @@ void Median::input(double v)
 {
 	if(std::isnan(v))v = 0;
 	m_data.push_back(v);
-	CHECK_(m_data.size()<m_windowLen);
+	if(m_data.size() < m_windowLen)
+	{
+		m_v = v;
+		this->FilterBase::input(v);
+		return;
+	}
 
 	while(m_data.size() > m_windowLen)
 	{
@@ -53,27 +56,14 @@ void Median::input(double v)
 	m_sort = m_data;
 	std::sort(m_sort.begin(),m_sort.end());
 	m_v = m_sort.at(m_iMid);
-}
 
-double Median::v(void)
-{
-	return m_v;
+	this->FilterBase::input(v);
 }
 
 void Median::reset(void)
 {
 	this->FilterBase::reset();
 	m_sort.clear();
-}
-
-double Median::variance(void)
-{
-
-}
-
-double Median::diff(void)
-{
-
 }
 
 }

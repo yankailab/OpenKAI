@@ -15,10 +15,6 @@
 
 #define DEG_AROUND 360.0
 
-#define SF40_UART 0
-#define SF40_FILE 1
-#define SF40_NET 2
-
 namespace kai
 {
 
@@ -26,6 +22,32 @@ using std::string;
 using namespace std;
 using namespace cv;
 
+struct ZONE
+{
+	double m_x;
+	double m_y;
+	double m_n;
+
+	void init(void)
+	{
+		m_x = 0.0;
+		m_y = 0.0;
+		m_n = 0.0;
+	}
+
+	void avr(void)
+	{
+		if(m_n<=0.0)
+		{
+			init();
+			return;
+		}
+
+		double base = 1.0/m_n;
+		m_x *= base;
+		m_y *= base;
+	}
+};
 
 class _Lightware_SF40: public _ThreadBase
 {
@@ -39,13 +61,13 @@ public:
 	bool draw(void);
 
 	void setHeading(double hdg);
-	vDouble2 getDiffPos(void);
+	vDouble2 getDiffRelativePos(void);
 	void reset(void);
 
 private:
 	bool connect(void);
 	bool updateLidar(void);
-	void updatePosition(void);
+	void updateRelativePos(void);
 	bool readLine(void);
 
 	void update(void);
@@ -70,11 +92,13 @@ public:
 	uint8_t m_MBS;
 	string m_strRecv;
 	double m_showScale;
+	int64_t m_tStartUp;
 
-	vDouble2 m_pos;
-	vDouble2 m_refPos;
+	vDouble2 m_dPos;
+	vDouble2 m_lastPos;
 	double	m_varianceLim;
-	double	m_diffThr;
+	double	m_diffMax;
+	double	m_diffMin;
 };
 
 }

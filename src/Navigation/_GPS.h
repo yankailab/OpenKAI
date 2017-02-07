@@ -82,10 +82,14 @@ public:
 
 	uint64_t m_tStarted;
 	uint64_t m_time;
+	uint64_t m_tStartWait;
 
 	LL_POS	m_initLL;
 	LL_POS	m_LL;
 	UTM_POS m_UTM;
+
+	Median	m_mX;
+	Median	m_mY;
 
 };
 

@@ -21,6 +21,7 @@
 #define CHECK_F(x) if(x){return false;}
 #define CHECK_N(x) if(x){return NULL;}
 #define CHECK_(x) if(x){return;}
+#define CHECK_CONT(x) if(x){continue;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}

@@ -21,6 +21,7 @@ _GPS::_GPS()
 	m_tStarted = 0;
 	m_time = 0;
 	m_apmMode = 0;
+	m_tStartWait = USEC_1SEC*10;
 }
 
 _GPS::~_GPS()
@@ -34,12 +35,19 @@ bool _GPS::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
+	F_INFO(pK->v("tStartWait", &m_tStartWait));
 
 	Kiss* pI = pK->o("initLL");
 	CHECK_T(pI->empty());
 	F_INFO(pI->v("lat", &m_initLL.m_lat));
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	setLL(&m_initLL);
+
+	//filter
+	pI = pK->o("medianFilter");
+	CHECK_F(pI->empty());
+	CHECK_F(!m_mX.init(pI));
+	CHECK_F(!m_mY.init(pI));
 
 	m_tStarted = get_time_usec();
 
@@ -106,11 +114,20 @@ void _GPS::detect(void)
 	m_pSF40->setHeading(m_LL.m_hdg);
 
 	//estimate position
+	vDouble2 dPos = m_pSF40->getDiffRelativePos();
+	uint64_t tStart = m_pSF40->m_tStartUp;
+	CHECK_(tStart==0);
+	CHECK_(m_time - tStart < m_tStartWait);
 
+	UTM_POS utm = *getUTM();
+	m_mX.input(utm.m_easting + dPos.m_x);
+	m_mY.input(utm.m_northing + dPos.m_y);
+	utm.m_easting = m_mX.v();
+	utm.m_northing = m_mY.v();
+
+	setUTM(&utm);
 
 	setMavGPS();
-
-
 
 }
 

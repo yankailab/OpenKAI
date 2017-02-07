@@ -25,11 +25,18 @@ public:
 	virtual void input(double v);
 	virtual double v(void);
 	virtual void reset(void);
+	virtual double variance(void);
+	virtual double diff(void);
 
 public:
 	double	m_v;
 	std::deque<double> m_data;
 
+	unsigned int m_nTraj;
+	std::deque<double> m_traj;
+
+	double	m_diff;
+	double	m_variance;
 };
 
 }
