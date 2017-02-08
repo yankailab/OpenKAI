@@ -3,7 +3,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
