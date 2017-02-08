@@ -68,7 +68,7 @@ mkdir build
 cd build
 ccmake ../
 ```
-Setup the [build options](), and
+Setup the [build options p1](https://github.com/yankailab/OpenKAI/raw/master/doc/x86_64/Ubuntu/img/OpenCV_ccmake_1.png), [build options p2](https://github.com/yankailab/OpenKAI/raw/master/doc/x86_64/Ubuntu/img/OpenCV_ccmake_2.png) and
 
 ```Shell
 make all -j8
@@ -134,7 +134,7 @@ mkdir build
 cd build
 ccmake ../
 ```
-Setup the [build options](), and
+Setup the [build options](https://github.com/yankailab/OpenKAI/raw/master/doc/x86_64/Ubuntu/img/OpenKAI_ccmake.png), and
 
 ```Shell
 make all -j8
