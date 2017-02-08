@@ -30,12 +30,12 @@
 	"Window":"SF40nav",
 	"FPS":500,
 	"_Automaton":"APMstate",
-	"nDiv":180,
-	"offsetAngle":0.0,
+	"nDiv":90,
+	"nMeasureDiv":180,
+	"offsetAngle":270.0,
+	"MBS":3,
 	"minDist":0.5,
 	"maxDist":100.0,
-	"MBS":3,
-	"varianceLim":1000.0,
 	"diffMax":5.0,
 	"diffMin":0.0,
 	"showScale":30.0,
@@ -52,7 +52,8 @@
 		"name":"avrFilter",
 		"class":"Average",
 		"bInst":1,
-		"windowLen":3,
+		"windowLen":2,
+		"nTraj":1,
 	}
 	
 	{
@@ -106,6 +107,14 @@
 		"bInst":1,
 		"windowLen":3,
 		"nTraj":2,
+	}
+	
+	{
+		"name":"avrFilter",
+		"class":"Average",
+		"bInst":1,
+		"windowLen":1,
+		"nTraj":1,
 	}
 	
 	{

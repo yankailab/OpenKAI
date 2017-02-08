@@ -25,7 +25,6 @@ public:
 	virtual void input(double v);
 	virtual double v(void);
 	virtual void reset(void);
-	virtual double variance(void);
 	virtual double diff(void);
 
 public:

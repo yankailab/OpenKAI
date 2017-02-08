@@ -22,6 +22,7 @@ _GPS::_GPS()
 	m_time = 0;
 	m_apmMode = 0;
 	m_tStartWait = USEC_1SEC*10;
+
 }
 
 _GPS::~_GPS()
@@ -43,11 +44,18 @@ bool _GPS::init(void* pKiss)
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	setLL(&m_initLL);
 
+	m_initUTM = *getUTM();
+
 	//filter
 	pI = pK->o("medianFilter");
 	CHECK_F(pI->empty());
 	CHECK_F(!m_mX.init(pI));
 	CHECK_F(!m_mY.init(pI));
+
+	pI = pK->o("avrFilter");
+	CHECK_F(pI->empty());
+	CHECK_F(!m_aX.init(pI));
+	CHECK_F(!m_aY.init(pI));
 
 	m_tStarted = get_time_usec();
 
@@ -120,8 +128,10 @@ void _GPS::detect(void)
 	CHECK_(m_time - tStart < m_tStartWait);
 
 	UTM_POS utm = *getUTM();
-	m_mX.input(utm.m_easting + dPos.m_x);
-	m_mY.input(utm.m_northing + dPos.m_y);
+	m_aX.input(utm.m_easting + dPos.m_x);
+	m_aY.input(utm.m_northing + dPos.m_y);
+	m_mX.input(m_aX.v());
+	m_mY.input(m_aY.v());
 	utm.m_easting = m_mX.v();
 	utm.m_northing = m_mY.v();
 
@@ -211,8 +221,13 @@ bool _GPS::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
+	double dX = m_UTM.m_easting - m_initUTM.m_easting;
+	double dY = m_UTM.m_northing - m_initUTM.m_northing;
+
 	pWin->tabNext();
 	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", hdg=" + f2str(m_LL.m_hdg);
+	pWin->addMsg(&msg);
+	msg = "Dist: X=" + f2str(dX) + ", Y=" + f2str(dY);
 	pWin->addMsg(&msg);
 	pWin->tabPrev();
 

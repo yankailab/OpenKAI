@@ -90,6 +90,11 @@ public:
 
 	Median	m_mX;
 	Median	m_mY;
+	Average	m_aX;
+	Average	m_aY;
+
+	UTM_POS m_initUTM;
+
 
 };
 

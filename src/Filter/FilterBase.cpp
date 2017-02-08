@@ -12,7 +12,7 @@ namespace kai
 
 FilterBase::FilterBase()
 {
-	m_nTraj = 2;
+	m_nTraj = 1;
 	reset();
 }
 
@@ -26,8 +26,8 @@ bool FilterBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	F_INFO(pK->v("nTraj", (int*)&m_nTraj));
-	if(m_nTraj<2)
-		m_nTraj=2;
+	if(m_nTraj<1)
+		m_nTraj=1;
 
 	reset();
 
@@ -43,12 +43,7 @@ void FilterBase::input(double v)
 	m_traj.push_back(m_v);
 	CHECK_(m_traj.size() < m_nTraj);
 
-	m_diff = abs(m_traj.at(m_nTraj-1) - m_traj.at(0));
-
-	double nT = (double)m_nTraj;
-	double baseT = 1.0/nT;
-	double dV = abs(v - m_v);
-	m_variance = m_variance*(nT-1)*baseT + dV*baseT;
+	m_diff = m_traj.at(m_nTraj-1) - m_traj.at(0);
 }
 
 double FilterBase::v(void)
@@ -63,11 +58,6 @@ void FilterBase::reset(void)
 	m_diff = 0.0;
 	m_data.clear();
 	m_traj.clear();
-}
-
-double FilterBase::variance(void)
-{
-	return m_variance;
 }
 
 double FilterBase::diff(void)

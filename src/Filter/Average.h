@@ -1,12 +1,12 @@
 /*
- * Median.h
+ * Average.h
  *
  *  Created on: Nov 18, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_ALGORITHM_FILTER_MEDIAN_H_
-#define SRC_ALGORITHM_FILTER_MEDIAN_H_
+#ifndef SRC_ALGORITHM_FILTER_AVERAGE_H_
+#define SRC_ALGORITHM_FILTER_AVERAGE_H_
 
 #include "../Base/common.h"
 #include "FilterBase.h"
@@ -14,11 +14,11 @@
 namespace kai
 {
 
-class Median: public FilterBase
+class Average: public FilterBase
 {
 public:
-	Median();
-	virtual ~Median();
+	Average();
+	virtual ~Average();
 
 	bool init(void* pKiss);
 	void input(double v);
@@ -26,9 +26,6 @@ public:
 
 private:
 	unsigned int m_windowLen;
-	unsigned int m_iMid;
-	std::deque<double> m_sort;
-
 
 };
 

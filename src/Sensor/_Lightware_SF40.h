@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Filter/Median.h"
+#include "../Filter/Average.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../IO/SerialPort.h"
 
@@ -57,8 +58,10 @@ public:
 	double	m_hdg;
 	double	m_offsetAngle;
 	int		m_nDiv;
+	int		m_nMeasureDiv;
 	double	m_dAngle;
-	Median* m_pDist;
+	Median* m_pDistMed;
+	Average* m_pDistAvr;
 
 	double	m_minDist;
 	double	m_maxDist;
@@ -68,7 +71,6 @@ public:
 	int64_t m_tStartUp;
 
 	vDouble2 m_dPos;
-	double	m_varianceLim;
 	double	m_diffMax;
 	double	m_diffMin;
 };

@@ -13,6 +13,7 @@ _Lightware_SF40::_Lightware_SF40()
 	m_hdg = 0.0;
 	m_offsetAngle = 0.0;
 	m_nDiv = 0;
+	m_nMeasureDiv = 0;
 	m_dAngle = 0;
 	m_minDist = 1.0;
 	m_maxDist = 50.0;
@@ -21,9 +22,9 @@ _Lightware_SF40::_Lightware_SF40()
 	m_pSF40sender = NULL;
 	m_MBS = 0;
 
-	m_pDist = NULL;
+	m_pDistMed = NULL;
+	m_pDistAvr = NULL;
 	m_dPos.init();
-	m_varianceLim = 10;
 	m_diffMax = 1.0;
 	m_diffMin = 0.25;
 
@@ -33,7 +34,8 @@ _Lightware_SF40::_Lightware_SF40()
 _Lightware_SF40::~_Lightware_SF40()
 {
 	DEL(m_pSF40sender);
-	DEL(m_pDist);
+	DEL(m_pDistMed);
+	DEL(m_pDistAvr);
 
 	if (m_pIn)
 	{
@@ -58,11 +60,12 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
-	F_INFO(pK->v("varianceLim", &m_varianceLim));
 	F_INFO(pK->v("diffMax", &m_diffMax));
 	F_INFO(pK->v("diffMin", &m_diffMin));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
+	m_nMeasureDiv = m_nDiv;
+	F_ERROR_F(pK->v("nMeasureDiv", &m_nMeasureDiv));
 	m_dAngle = DEG_AROUND / m_nDiv;
 
 	Kiss* pCC;
@@ -72,10 +75,18 @@ bool _Lightware_SF40::init(void* pKiss)
 	//filter
 	pCC = pK->o("medianFilter");
 	CHECK_F(pCC->empty());
-	m_pDist = new Median[m_nDiv];
+	m_pDistMed = new Median[m_nDiv];
 	for (i = 0; i < m_nDiv; i++)
 	{
-		CHECK_F(!m_pDist[i].init(pCC));
+		CHECK_F(!m_pDistMed[i].init(pCC));
+	}
+
+	pCC = pK->o("avrFilter");
+	CHECK_F(pCC->empty());
+	m_pDistAvr = new Average[m_nDiv];
+	for (i = 0; i < m_nDiv; i++)
+	{
+		CHECK_F(!m_pDistAvr[i].init(pCC));
 	}
 
 	//input
@@ -86,7 +97,7 @@ bool _Lightware_SF40::init(void* pKiss)
 
 	m_pSF40sender = new _Lightware_SF40_sender();
 	m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
-	m_pSF40sender->m_dAngle = m_dAngle;
+	m_pSF40sender->m_dAngle = DEG_AROUND / m_nMeasureDiv; //m_dAngle;
 	CHECK_F(!m_pSF40sender->init(pKiss));
 
 	return true;
@@ -214,7 +225,8 @@ bool _Lightware_SF40::updateLidar(void)
 		return false;
 	}
 
-	m_pDist[iAngle].input(dist);
+//	m_pDistMed[iAngle].input(dist);
+	m_pDistAvr[iAngle].input(dist);
 	m_strRecv.clear();
 
 	return true;
@@ -250,20 +262,21 @@ void _Lightware_SF40::updatePosDiff(void)
 
 	for (i = 0; i < m_nDiv; i++)
 	{
-		Median* pD = &m_pDist[i];
-		CHECK_CONT(pD->variance() > m_varianceLim);
+		Median* pD = &m_pDistMed[i];
+		pD->input(m_pDistAvr[i].v());
 
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);
 		CHECK_CONT(dist > m_maxDist);
 
 		double diff = pD->diff();
-		CHECK_CONT(diff < m_diffMin);
-		CHECK_CONT(diff > m_diffMax);
+		double absDiff = abs(diff);
+		CHECK_CONT(absDiff < m_diffMin);
+		CHECK_CONT(absDiff > m_diffMax);
 
 		double rad = m_dAngle * i * DEG_RAD;
-		pX += (diff * sin(rad));
-		pY += -(diff * cos(rad));
+		pX += diff * cos(rad);
+		pY += diff * sin(rad);
 		nV += 1.0;
 	}
 
@@ -292,7 +305,8 @@ void _Lightware_SF40::reset(void)
 {
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		m_pDist->reset();
+		m_pDistMed[i].reset();
+		m_pDistAvr[i].reset();
 	}
 	m_dPos.init();
 }
@@ -321,8 +335,7 @@ bool _Lightware_SF40::draw(void)
 	//Plot lidar result
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		Median* pD = &m_pDist[i];
-		CHECK_CONT(pD->variance() > m_varianceLim);
+		Median* pD = &m_pDistMed[i];
 
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);
@@ -333,9 +346,9 @@ bool _Lightware_SF40::draw(void)
 		CHECK_CONT(diff > m_diffMax);
 
 		dist *= m_showScale;
-		double angle = m_dAngle * i * DEG_RAD;
-		int pX = (dist * sin(angle));
-		int pY = -(dist * cos(angle));
+		double rad = m_dAngle * i * DEG_RAD;
+		int pX = dist * cos(rad);
+		int pY = dist * sin(rad);
 
 		Scalar col = Scalar(255, 255, 255);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
