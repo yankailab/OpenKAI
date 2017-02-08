@@ -28,7 +28,7 @@ _Camera::~_Camera()
 
 bool _Camera::init(void* pKiss)
 {
-	CHECK_F(!_StreamBase::init(pKiss));
+	IF_F(!_StreamBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -95,7 +95,7 @@ bool _Camera::init(void* pKiss)
 
 bool _Camera::link(void)
 {
-	CHECK_F(!this->_StreamBase::link());
+	IF_F(!this->_StreamBase::link());
 	return true;
 }
 
@@ -229,7 +229,7 @@ void _Camera::complete(void)
 
 bool _Camera::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 

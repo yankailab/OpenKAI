@@ -28,7 +28,7 @@ _server::~_server()
 
 bool _server::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -41,7 +41,7 @@ bool _server::init(void* pKiss)
 
 bool _server::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -49,7 +49,7 @@ bool _server::link(void)
 
 bool _server::start(void)
 {
-	CHECK_T(m_bThreadON);
+	IF_T(m_bThreadON);
 
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -85,7 +85,7 @@ bool _server::handler(void)
 	m_strStatus = "Creating socket";
 	LOG_I(m_strStatus);
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	CHECK_F(m_socket == -1);
+	IF_F(m_socket == -1);
 
 	//Prepare the sockaddr_in structure
 	m_serverAddr.sin_family = AF_INET;
@@ -195,7 +195,7 @@ bool _server::handler(void)
 
 _socket* _server::getFirstSocket(void)
 {
-	CHECK_N(m_lSocket.empty());
+	IF_N(m_lSocket.empty());
 
 	return m_lSocket.front();
 }
@@ -215,7 +215,7 @@ void _server::complete(void)
 
 bool _server::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg = "Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus;

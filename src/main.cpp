@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 	LOG(INFO)<<"Kiss file:"<<argv[1];
 
 	string kissFile(argv[1]);
-	CHECK_F(!g_file.open(&kissFile));
+	IF_F(!g_file.open(&kissFile));
 	string* pKiss = g_file.readAll();
 	if(pKiss==NULL)
 	{

@@ -98,7 +98,7 @@ int Peer::handle(uint8_t* pBuf, uint32_t nByte)
 
 bool Peer::decode(void)
 {
-	CHECK_F(m_iByte < m_nMsg);
+	IF_F(m_iByte < m_nMsg);
 
 	int iM = 5;
 	m_cmd = makeUINT32(&m_pBuf[iM]);

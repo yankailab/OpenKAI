@@ -30,7 +30,7 @@ SerialPort::~SerialPort()
 
 bool SerialPort::init(void* pKiss)
 {
-	CHECK_F(!this->IO::init(pKiss));
+	IF_F(!this->IO::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -46,11 +46,11 @@ bool SerialPort::init(void* pKiss)
 
 bool SerialPort::open(void)
 {
-	CHECK_F(m_name.empty());
+	IF_F(m_name.empty());
 
 //	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
 	m_fd = ::open(m_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
-	CHECK_F(m_fd == -1);
+	IF_F(m_fd == -1);
 	fcntl(m_fd, F_SETFL, 0);
 
 	m_status = opening;
@@ -59,7 +59,7 @@ bool SerialPort::open(void)
 
 void SerialPort::close(void)
 {
-	CHECK_(m_status!=opening);
+	IF_(m_status!=opening);
 
 	::close(m_fd);
 	m_status = closed;
@@ -79,7 +79,7 @@ int SerialPort::read(uint8_t* pBuf, int nByte)
 
 bool SerialPort::write(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(m_status!=opening);
+	IF_F(m_status!=opening);
 
 	int n;
 	pthread_mutex_lock(&m_mutexWrite);
@@ -93,7 +93,7 @@ bool SerialPort::write(uint8_t* pBuf, int nByte)
 
 bool SerialPort::writeLine(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(m_status!=opening);
+	IF_F(m_status!=opening);
 
 	int n;
 	const char crlf[] = "\x0d\x0a";

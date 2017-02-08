@@ -35,7 +35,7 @@ _socket::~_socket()
 
 bool _socket::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -61,7 +61,7 @@ bool _socket::init(void* pKiss)
 
 bool _socket::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -69,7 +69,7 @@ bool _socket::link(void)
 
 bool _socket::start(void)
 {
-	CHECK_T(m_bThreadON);
+	IF_T(m_bThreadON);
 
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -117,10 +117,10 @@ void _socket::update(void)
 
 bool _socket::connect(void)
 {
-	CHECK_T(m_bConnected);
+	IF_T(m_bConnected);
 
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	CHECK_F(m_socket < 0);
+	IF_F(m_socket < 0);
 
 	struct sockaddr_in server;
 	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
@@ -152,8 +152,8 @@ bool _socket::connect(void)
 
 void _socket::send(void)
 {
-	CHECK_(!m_bConnected);
-	CHECK_(m_queSend.empty());
+	IF_(!m_bConnected);
+	IF_(m_queSend.empty());
 
 	pthread_mutex_lock(&m_mutexSend);
 	int nByte = 0;
@@ -167,8 +167,8 @@ void _socket::send(void)
 	int nSend = ::write(m_socket, m_pBuf, nByte);
 	if (nSend == -1)
 	{
-		CHECK_(errno == EAGAIN);
-		CHECK_(errno == EWOULDBLOCK);
+		IF_(errno == EAGAIN);
+		IF_(errno == EWOULDBLOCK);
 		LOG_E("write error: "<<errno);
 		close();
 		return;
@@ -177,13 +177,13 @@ void _socket::send(void)
 
 void _socket::recv(void)
 {
-	CHECK_(!m_bConnected);
+	IF_(!m_bConnected);
 
 	int nRecv = ::recv(m_socket, m_pBuf, m_nBuf, 0);
 	if (nRecv == -1)
 	{
-		CHECK_(errno == EAGAIN);
-		CHECK_(errno == EWOULDBLOCK);
+		IF_(errno == EAGAIN);
+		IF_(errno == EWOULDBLOCK);
 		LOG_E("recv error: "<<errno);
 		close();
 		return;
@@ -199,8 +199,8 @@ void _socket::recv(void)
 
 bool _socket::write(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(!m_bConnected);
-	CHECK_F(nByte <= 0);
+	IF_F(!m_bConnected);
+	IF_F(nByte <= 0);
 	NULL_F(pBuf);
 
 	pthread_mutex_lock(&m_mutexSend);
@@ -255,7 +255,7 @@ void _socket::complete(void)
 
 bool _socket::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 

@@ -35,7 +35,7 @@ _Flow::~_Flow()
 
 bool _Flow::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -124,7 +124,7 @@ void _Flow::detect(void)
 	NULL_(m_pStream);
 	pGray = m_pStream->gray();
 	NULL_(pGray);
-	CHECK_(pGray->empty());
+	IF_(pGray->empty());
 
 	pNextFrame = m_pGrayFrames->getLastFrame();
 	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;

@@ -23,7 +23,7 @@ IO::~IO()
 
 bool IO::init(void* pKiss)
 {
-	CHECK_F(!this->BASE::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 

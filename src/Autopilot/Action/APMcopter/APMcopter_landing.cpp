@@ -16,7 +16,7 @@ APMcopter_landing::~APMcopter_landing()
 
 bool APMcopter_landing::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
+	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -29,7 +29,7 @@ bool APMcopter_landing::init(void* pKiss)
 
 bool APMcopter_landing::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -103,7 +103,7 @@ void APMcopter_landing::landing(void)
 
 bool APMcopter_landing::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;

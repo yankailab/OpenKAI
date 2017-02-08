@@ -37,7 +37,7 @@ _ImageNet::~_ImageNet()
 
 bool _ImageNet::init(void* pKiss)
 {
-	CHECK_F(!this->_AIbase::init(pKiss));
+	IF_F(!this->_AIbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -67,7 +67,7 @@ bool _ImageNet::init(void* pKiss)
 
 bool _ImageNet::link(void)
 {
-	CHECK_F(!this->_AIbase::link());
+	IF_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -97,7 +97,7 @@ void _ImageNet::update(void)
 	NULL_(m_pIN);
 #endif
 
-	CHECK_(m_mode == noThread);
+	IF_(m_mode == noThread);
 
 	while (m_bThreadON)
 	{
@@ -125,11 +125,11 @@ void _ImageNet::detectObject(void)
 	NULL_(m_pStream);
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
-	CHECK_(pBGR->empty());
+	IF_(pBGR->empty());
 
 	m_pRGBA->getRGBAOf(pBGR);
 	GpuMat gRGBA = *m_pRGBA->getGMat();
-	CHECK_(gRGBA.empty());
+	IF_(gRGBA.empty());
 
 	for (int i = 0; i < m_iObj; i++)
 	{
@@ -175,7 +175,7 @@ void _ImageNet::detectDepth(void)
 	NULL_(m_pStream);
 	Frame* pDepth = m_pStream->depth();
 	NULL_(pDepth);
-	CHECK_(pDepth->empty());
+	IF_(pDepth->empty());
 	GpuMat gD = *(pDepth->getGMat());
 	GpuMat gD2;
 
@@ -307,7 +307,7 @@ int _ImageNet::classify(Frame* pImg, string* pName)
 
 bool _ImageNet::draw(void)
 {
-	CHECK_F(!this->_AIbase::draw());
+	IF_F(!this->_AIbase::draw());
 
 	return true;
 }

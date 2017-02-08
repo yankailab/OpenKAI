@@ -76,7 +76,7 @@ void _BgFg::detect(void)
 	if(!m_pCamStream)return;
 	pRGB = m_pCamStream->bgr();//m_pCamStream->m_pFrameL;
 	NULL_(pRGB);
-	CHECK_(pRGB->empty());
+	IF_(pRGB->empty());
 
 	m_pBgSubtractor->apply(*pRGB->getGMat(), m_gFg);
 //	m_pBgSubtractor->getBackgroundImage(m_gBg);

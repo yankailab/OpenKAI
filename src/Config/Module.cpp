@@ -12,7 +12,7 @@ namespace kai
 
 BASE* Module::createInstance(Kiss* pK)
 {
-	CHECK_N(!pK);
+	IF_N(!pK);
 
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Automaton);
@@ -50,7 +50,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 template <typename T> BASE* Module::createInst(Kiss* pKiss)
 {
-	CHECK_N(!pKiss);
+	IF_N(!pKiss);
 
 	T* pInst = new T();
 	if(!pInst->init(pKiss))

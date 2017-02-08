@@ -28,7 +28,7 @@ HM_follow::~HM_follow()
 
 bool HM_follow::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -46,7 +46,7 @@ bool HM_follow::init(void* pKiss)
 
 bool HM_follow::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -127,11 +127,11 @@ void HM_follow::update(void)
 
 bool HM_follow::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	NULL_F(pMat);
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	string msg;
 	if(isActive())msg="* ";

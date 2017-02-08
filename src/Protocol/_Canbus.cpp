@@ -14,22 +14,22 @@ _Canbus::~_Canbus()
 
 bool _Canbus::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	Kiss* pCC = pK->o("input");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 
 	m_pSerialPort = new SerialPort();
-	CHECK_F(!m_pSerialPort->init(pCC));
+	IF_F(!m_pSerialPort->init(pCC));
 
 	return true;
 }
 
 bool _Canbus::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -134,8 +134,8 @@ bool _Canbus::recv()
 
 void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 {
-	CHECK_(len+8 > CAN_BUF);
-	CHECK_(!m_pSerialPort->isOpen());
+	IF_(len+8 > CAN_BUF);
+	IF_(!m_pSerialPort->isOpen());
 
 	//Link header
 	m_pBuf[0] = 0xFE; //Mavlink begin
@@ -166,7 +166,7 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 
 bool _Canbus::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	string msg = *this->getName();

@@ -34,7 +34,7 @@ HM_avoid::~HM_avoid()
 
 bool HM_avoid::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -56,7 +56,7 @@ bool HM_avoid::init(void* pKiss)
 
 bool HM_avoid::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -86,7 +86,7 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pStream);
 	NULL_(m_pObs);
-	CHECK_(!isActive());
+	IF_(!isActive());
 
 	uint64_t tNow = get_time_usec();
 
@@ -101,7 +101,7 @@ void HM_avoid::update(void)
 
 	//do nothing if no obstacle inside alert distance
 	m_distM = m_pObs->dist(&m_avoidArea,&m_posMin);
-	CHECK_(m_distM > m_alertDist);
+	IF_(m_distM > m_alertDist);
 
 	//speaker alert if object is within a certain distance
 	m_pHM->m_bSpeaker = true;
@@ -137,10 +137,10 @@ void HM_avoid::update(void)
 
 bool HM_avoid::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	string msg;
 	if(isActive())msg="* ";

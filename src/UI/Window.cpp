@@ -38,12 +38,12 @@ Window::~Window()
 
 bool Window::init(void* pKiss)
 {
-	CHECK_F(!this->BASE::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
 	F_INFO(pK->v("bRec", &m_bRec));
-	CHECK_F(!m_bWindow && !m_bRec);
+	IF_F(!m_bWindow && !m_bRec);
 	pK->m_pInst = this;
 
 	F_ERROR_F(pK->v("w", &m_size.m_x));
@@ -96,7 +96,7 @@ bool Window::init(void* pKiss)
 			m_bRec = false;
 		}
 	}
-	CHECK_F(!m_bWindow && !m_bRec);
+	IF_F(!m_bWindow && !m_bRec);
 
 	F_INFO(pK->v("textX", &m_textStart.m_x));
 	F_INFO(pK->v("textY", &m_textStart.m_y));
@@ -140,7 +140,7 @@ bool Window::link(void)
 bool Window::draw(void)
 {
 	NULL_F(m_pFrame);
-	CHECK_F(m_pFrame->empty());
+	IF_F(m_pFrame->empty());
 
 	if(m_bWindow)
 	{

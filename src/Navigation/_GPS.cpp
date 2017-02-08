@@ -21,7 +21,7 @@ _GPS::_GPS()
 	m_tStarted = 0;
 	m_time = 0;
 	m_apmMode = 0;
-	m_tStartWait = USEC_1SEC*10;
+	m_nStartWait = 0;
 
 }
 
@@ -31,15 +31,15 @@ _GPS::~_GPS()
 
 bool _GPS::init(void* pKiss)
 {
-	CHECK_F(!_ThreadBase::init(pKiss));
+	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
-	F_INFO(pK->v("tStartWait", &m_tStartWait));
+	F_INFO(pK->v("nStartWait", &m_nStartWait));
 
 	Kiss* pI = pK->o("initLL");
-	CHECK_T(pI->empty());
+	IF_T(pI->empty());
 	F_INFO(pI->v("lat", &m_initLL.m_lat));
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	setLL(&m_initLL);
@@ -48,14 +48,14 @@ bool _GPS::init(void* pKiss)
 
 	//filter
 	pI = pK->o("medianFilter");
-	CHECK_F(pI->empty());
-	CHECK_F(!m_mX.init(pI));
-	CHECK_F(!m_mY.init(pI));
+	IF_F(pI->empty());
+	IF_F(!m_mX.init(pI));
+	IF_F(!m_mY.init(pI));
 
 	pI = pK->o("avrFilter");
-	CHECK_F(pI->empty());
-	CHECK_F(!m_aX.init(pI));
-	CHECK_F(!m_aY.init(pI));
+	IF_F(pI->empty());
+	IF_F(!m_aX.init(pI));
+	IF_F(!m_aY.init(pI));
 
 	m_tStarted = get_time_usec();
 
@@ -64,7 +64,7 @@ bool _GPS::init(void* pKiss)
 
 bool _GPS::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -123,9 +123,7 @@ void _GPS::detect(void)
 
 	//estimate position
 	vDouble2 dPos = m_pSF40->getPosDiff();
-	uint64_t tStart = m_pSF40->m_tStartUp;
-	CHECK_(tStart==0);
-	CHECK_(m_time - tStart < m_tStartWait);
+	IF_(m_pSF40->m_nTotal < m_nStartWait);
 
 	UTM_POS utm = *getUTM();
 	m_mX.input(utm.m_easting + dPos.m_x);
@@ -216,7 +214,7 @@ UTM_POS* _GPS::getUTM(void)
 
 bool _GPS::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;

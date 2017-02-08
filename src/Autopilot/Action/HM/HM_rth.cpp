@@ -31,7 +31,7 @@ HM_rth::~HM_rth()
 
 bool HM_rth::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -53,7 +53,7 @@ bool HM_rth::init(void* pKiss)
 
 bool HM_rth::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 	string iName = "";
 
@@ -73,7 +73,7 @@ void HM_rth::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pUniv);
 	NULL_(m_pAM);
-	CHECK_(!isActive());
+	IF_(!isActive());
 
 	//get visual target and decide motion
 //	m_pTarget = m_pUniv->getByClass(m_targetClass);
@@ -107,14 +107,14 @@ void HM_rth::update(void)
 
 bool HM_rth::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
 			+ i2str(m_pHM->m_motorPwmR);
 	pWin->addMsg(&msg);
 
-	CHECK_T(m_pTarget==NULL);
+	IF_T(m_pTarget==NULL);
 	Mat* pMat = pWin->getFrame()->getCMat();
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
 			Scalar(0, 0, 255), 2);

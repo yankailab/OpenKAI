@@ -36,7 +36,7 @@ _ZED::~_ZED()
 
 bool _ZED::init(void* pKiss)
 {
-	CHECK_F(!_StreamBase::init(pKiss));
+	IF_F(!_StreamBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -59,7 +59,7 @@ bool _ZED::init(void* pKiss)
 
 bool _ZED::link(void)
 {
-	CHECK_F(!this->_StreamBase::link());
+	IF_F(!this->_StreamBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -211,7 +211,7 @@ double _ZED::dist(Rect* pR)
 	Mat cHist;
 
 	NULL_F(m_pDepth);
-	CHECK_F(m_pDepth->empty());
+	IF_F(m_pDepth->empty());
 	gMat = *(m_pDepth->getGMat());
 	gMat2 = GpuMat(gMat, *pR);
 
@@ -264,7 +264,7 @@ bool _ZED::draw(void)
 
 	if(this->BASE::draw())
 	{
-		CHECK_F(m_pBGR->empty());
+		IF_F(m_pBGR->empty());
 		pWin = (Window*) this->m_pWindow;
 		pFrame = pWin->getFrame();
 		pFrame->update(m_pBGR);

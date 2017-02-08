@@ -21,7 +21,7 @@ UI::~UI()
 
 bool UI::init(void* pKiss)
 {
-	CHECK_F(this->BASE::init(pKiss)==false);
+	IF_F(this->BASE::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 
 	//create buttons
@@ -46,7 +46,7 @@ bool UI::init(void* pKiss)
 		double r=0,g=0,b=0;
 
 		F_ERROR_F(pBtn->v("name", &pNewBtn->m_name));
-		CHECK_F(pNewBtn->m_name.empty());
+		IF_F(pNewBtn->m_name.empty());
 		F_INFO(pBtn->v("x", &pNewBtn->m_rect.x));
 		F_INFO(pBtn->v("y", &pNewBtn->m_rect.y));
 		F_INFO(pBtn->v("w", &pNewBtn->m_rect.width));
@@ -78,7 +78,7 @@ BUTTON* UI::addBtn(void)
 
 bool UI::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 

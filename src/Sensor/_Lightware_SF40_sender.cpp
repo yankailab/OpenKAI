@@ -19,7 +19,7 @@ _Lightware_SF40_sender::~_Lightware_SF40_sender()
 
 bool _Lightware_SF40_sender::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 
 	return true;
 }
@@ -61,7 +61,7 @@ void _Lightware_SF40_sender::update(void)
 void _Lightware_SF40_sender::MBS(uint8_t MBS)
 {
 	NULL_(m_pSerialPort);
-	CHECK_(!m_pSerialPort->isOpen());
+	IF_(!m_pSerialPort->isOpen());
 
 	if(MBS>3)MBS = 3;
 
@@ -74,7 +74,7 @@ void _Lightware_SF40_sender::MBS(uint8_t MBS)
 void _Lightware_SF40_sender::LD(void)
 {
 	NULL_(m_pSerialPort);
-	CHECK_(!m_pSerialPort->isOpen());
+	IF_(!m_pSerialPort->isOpen());
 
 	//?LD,aaa.a<CR><LF> <space>dd.dd<CR><LF>
 

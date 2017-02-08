@@ -27,7 +27,7 @@ HM_base::~HM_base()
 
 bool HM_base::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -40,7 +40,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("speedP", &m_speedP));
 
 	Kiss* pI = pK->o("cmd");
-	CHECK_T(pI->empty());
+	IF_T(pI->empty());
 	m_pCMD = new TCP();
 	F_ERROR_F(m_pCMD->init(pI));
 
@@ -49,7 +49,7 @@ bool HM_base::init(void* pKiss)
 
 bool HM_base::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -100,7 +100,7 @@ void HM_base::cmd(void)
 		m_strCMD += buf;
 	}
 
-	CHECK_(buf!=',');
+	IF_(buf!=',');
 
 	string stateName;
 	if(m_strCMD=="start")
@@ -177,11 +177,11 @@ void HM_base::updateCAN(void)
 
 bool HM_base::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	NULL_F(pMat);
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	string msg = *this->getName() + ": rpmL=" + i2str(m_motorPwmL)
 			+ ", rpmR=" + i2str(m_motorPwmR);

@@ -24,7 +24,7 @@ APMrover_base::~APMrover_base()
 
 bool APMrover_base::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss)==false);
+	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -32,7 +32,7 @@ bool APMrover_base::init(void* pKiss)
 	APMrover_PID cPID;
 
 	pCC = pK->o("steer");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -42,7 +42,7 @@ bool APMrover_base::init(void* pKiss)
 	m_pidSteer = cPID;
 
 	pCC = pK->o("thrust");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 
 	F_ERROR_F(pCC->v("P", &cPID.m_P));
 	F_INFO(pCC->v("I", &cPID.m_I));
@@ -60,7 +60,7 @@ bool APMrover_base::init(void* pKiss)
 
 bool APMrover_base::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -78,7 +78,7 @@ void APMrover_base::sendHeartbeat(void)
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
-	CHECK_(timeNow - m_lastHeartbeat < USEC_1SEC);
+	IF_(timeNow - m_lastHeartbeat < USEC_1SEC);
 
 	m_pMavlink->sendHeartbeat();
 	m_lastHeartbeat = timeNow;

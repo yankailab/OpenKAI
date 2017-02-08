@@ -25,7 +25,7 @@ _Automaton::~_Automaton()
 
 bool _Automaton::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -37,7 +37,7 @@ bool _Automaton::init(void* pKiss)
 	{
 		Kiss* pState = pItr[i++];
 
-		CHECK_F(m_nState >= N_STATE);
+		IF_F(m_nState >= N_STATE);
 		F_ERROR_F(pState->v("state", &m_pStateName[m_nState]));
 		m_nState++;
 	}
@@ -45,14 +45,14 @@ bool _Automaton::init(void* pKiss)
 	string startState = "";
 	F_ERROR_F(pK->v("startState", &startState));
 	m_iState = getStateIdx(&startState);
-	CHECK_F(m_iState<0);
+	IF_F(m_iState<0);
 
 	return true;
 }
 
 bool _Automaton::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -83,9 +83,9 @@ bool _Automaton::transit(string* pNextStateName)
 
 bool _Automaton::transit(int nextStateIdx)
 {
-	CHECK_F(nextStateIdx < 0);
-	CHECK_F(nextStateIdx >= m_nState);
-	CHECK_F(nextStateIdx == m_iState);
+	IF_F(nextStateIdx < 0);
+	IF_F(nextStateIdx >= m_nState);
+	IF_F(nextStateIdx == m_iState);
 
 	m_iLastState = m_iState;
 	m_iState = nextStateIdx;
@@ -109,7 +109,7 @@ int _Automaton::getLastStateIdx(void)
 
 bool _Automaton::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	string msg = *this->getName()+": " + m_pStateName[m_iState];

@@ -34,7 +34,7 @@ void Frame::allocate(int w, int h)
 void Frame::getResizedOf(Frame* pFrom, int width, int height)
 {
 	NULL_(pFrom);
-	CHECK_(pFrom->empty());
+	IF_(pFrom->empty());
 
 	cv::Size newSize = cv::Size(width,height);
 
@@ -69,7 +69,7 @@ void Frame::getGrayOf(Frame* pFrom)
 	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	CHECK_(pFrom->getGMat()->channels()!=3);
+	IF_(pFrom->getGMat()->channels()!=3);
 
 #ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
@@ -93,7 +93,7 @@ void Frame::getHSVOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
-	CHECK_(pFrom->getGMat()->channels()!=3);
+	IF_(pFrom->getGMat()->channels()!=3);
 
 #ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
@@ -116,7 +116,7 @@ void Frame::getBGRAOf(Frame* pFrom)
 	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	CHECK_(pFrom->getGMat()->channels()!=3);
+	IF_(pFrom->getGMat()->channels()!=3);
 
 #ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
@@ -139,7 +139,7 @@ void Frame::getRGBAOf(Frame* pFrom)
 	NULL_(pFrom);
 
 #ifdef USE_CUDA
-	CHECK_(pFrom->getGMat()->channels()!=3);
+	IF_(pFrom->getGMat()->channels()!=3);
 
 #ifdef USE_OPENCV4TEGRA
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);

@@ -15,13 +15,13 @@ _AutoPilot::~_AutoPilot()
 
 bool _AutoPilot::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	//create action instance
 	Kiss* pCC = pK->o("action");
-	CHECK_T(pCC->empty());
+	IF_T(pCC->empty());
 	Kiss** pItr = pCC->getChildItr();
 
 	int i = 0;
@@ -69,7 +69,7 @@ bool _AutoPilot::init(void* pKiss)
 
 bool _AutoPilot::link(void)
 {
-	CHECK_F(!this->BASE::link());
+	IF_F(!this->BASE::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	int i;
@@ -119,7 +119,7 @@ void _AutoPilot::update(void)
 
 bool _AutoPilot::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 

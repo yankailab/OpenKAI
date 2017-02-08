@@ -28,7 +28,9 @@ _Lightware_SF40::_Lightware_SF40()
 	m_diffMax = 1.0;
 	m_diffMin = 0.25;
 
-	m_tStartUp = 0;
+	m_nReceived = 0;
+	m_nUpdate = 0;
+	m_nTotal = 0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -47,7 +49,7 @@ _Lightware_SF40::~_Lightware_SF40()
 
 bool _Lightware_SF40::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -62,6 +64,7 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("MBS", (int* )&m_MBS));
 	F_INFO(pK->v("diffMax", &m_diffMax));
 	F_INFO(pK->v("diffMin", &m_diffMin));
+	F_INFO(pK->v("nUpdate", &m_nUpdate));
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_nMeasureDiv = m_nDiv;
@@ -74,38 +77,38 @@ bool _Lightware_SF40::init(void* pKiss)
 
 	//filter
 	pCC = pK->o("medianFilter");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 	m_pDistMed = new Median[m_nDiv];
 	for (i = 0; i < m_nDiv; i++)
 	{
-		CHECK_F(!m_pDistMed[i].init(pCC));
+		IF_F(!m_pDistMed[i].init(pCC));
 	}
 
 	pCC = pK->o("avrFilter");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 	m_pDistAvr = new Average[m_nDiv];
 	for (i = 0; i < m_nDiv; i++)
 	{
-		CHECK_F(!m_pDistAvr[i].init(pCC));
+		IF_F(!m_pDistAvr[i].init(pCC));
 	}
 
 	//input
 	pCC = pK->o("input");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 	m_pIn = new SerialPort();
-	CHECK_F(!m_pIn->init(pCC));
+	IF_F(!m_pIn->init(pCC));
 
 	m_pSF40sender = new _Lightware_SF40_sender();
 	m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
-	m_pSF40sender->m_dAngle = DEG_AROUND / m_nMeasureDiv; //m_dAngle;
-	CHECK_F(!m_pSF40sender->init(pKiss));
+	m_pSF40sender->m_dAngle = DEG_AROUND / m_nMeasureDiv;
+	IF_F(!m_pSF40sender->init(pKiss));
 
 	return true;
 }
 
 bool _Lightware_SF40::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -115,7 +118,7 @@ bool _Lightware_SF40::start(void)
 {
 	if (m_pIn->type() == serialport)
 	{
-		CHECK_F(!m_pSF40sender->start());
+		IF_F(!m_pSF40sender->start());
 	}
 
 	m_bThreadON = true;
@@ -141,7 +144,6 @@ void _Lightware_SF40::update(void)
 				this->sleepTime(USEC_1SEC);
 				continue;
 			}
-			m_tStartUp = get_time_usec();
 
 			if (m_pIn->type() == serialport)
 				m_pSF40sender->MBS(m_MBS);
@@ -151,6 +153,13 @@ void _Lightware_SF40::update(void)
 
 		if (updateLidar())
 		{
+			m_nReceived++;
+			m_nTotal++;
+		}
+
+		if(m_nReceived >= m_nUpdate)
+		{
+			m_nReceived = 0;
 			updatePosDiff();
 		}
 
@@ -161,7 +170,7 @@ void _Lightware_SF40::update(void)
 
 bool _Lightware_SF40::updateLidar(void)
 {
-	CHECK_F(!readLine());
+	IF_F(!readLine());
 
 	string str;
 	istringstream sStr;
@@ -258,6 +267,7 @@ void _Lightware_SF40::updatePosDiff(void)
 	double pX = 0.0;
 	double pY = 0.0;
 	double nV = 0.0;
+	double dRad = m_dAngle * DEG_RAD;
 
 	for (i = 0; i < m_nDiv; i++)
 	{
@@ -265,21 +275,21 @@ void _Lightware_SF40::updatePosDiff(void)
 		pD->input(m_pDistMed[i].v());
 
 		double dist = pD->v();
-		CHECK_CONT(dist < m_minDist);
-		CHECK_CONT(dist > m_maxDist);
+		IF_CONT(dist <= m_minDist);
+		IF_CONT(dist > m_maxDist);
 
 		double diff = pD->diff();
 		double absDiff = abs(diff);
-		CHECK_CONT(absDiff < m_diffMin);
-		CHECK_CONT(absDiff > m_diffMax);
+		IF_CONT(absDiff <= m_diffMin);
+		IF_CONT(absDiff > m_diffMax);
 
-		double rad = m_dAngle * i * DEG_RAD;
+		double rad = dRad * i;
 		pX += -diff * cos(rad);
 		pY += diff * sin(rad);
 		nV += 1.0;
 	}
 
-	CHECK_(nV < 1.0);
+	IF_(nV < 1.0);
 
 	//update current pos
 	nV = 1.0/nV;
@@ -312,7 +322,7 @@ void _Lightware_SF40::reset(void)
 
 bool _Lightware_SF40::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
@@ -325,7 +335,7 @@ bool _Lightware_SF40::draw(void)
 		m_pIn->draw();
 
 	pWin->tabPrev();
-	CHECK_T(m_nDiv <= 0);
+	IF_T(m_nDiv <= 0);
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
@@ -337,12 +347,12 @@ bool _Lightware_SF40::draw(void)
 		Average* pD = &m_pDistAvr[i];
 
 		double dist = pD->v();
-		CHECK_CONT(dist < m_minDist);
-		CHECK_CONT(dist > m_maxDist);
+		IF_CONT(dist <= m_minDist);
+		IF_CONT(dist > m_maxDist);
 
-		double diff = pD->diff();
-		CHECK_CONT(diff < m_diffMin);
-		CHECK_CONT(diff > m_diffMax);
+		double absDiff = abs(pD->diff());
+		IF_CONT(absDiff <= m_diffMin);
+		IF_CONT(absDiff > m_diffMax);
 
 		dist *= m_showScale;
 		double rad = m_dAngle * i * DEG_RAD;

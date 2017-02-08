@@ -25,7 +25,7 @@ _ROITracker::~_ROITracker()
 
 bool _ROITracker::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -110,12 +110,12 @@ void _ROITracker::track(void)
 	Mat* pMat;
 
 	NULL_(m_pStream);
-	CHECK_(!m_bTracking);
-	CHECK_(m_pTracker.empty());
+	IF_(!m_bTracking);
+	IF_(m_pTracker.empty());
 
 	pFrame = m_pStream->bgr();
 	NULL_(pFrame);
-	CHECK_(!pFrame->isNewerThan(m_pFrame));
+	IF_(!pFrame->isNewerThan(m_pFrame));
 	m_pFrame->update(pFrame);
 
 	pMat = m_pFrame->getCMat();

@@ -17,7 +17,7 @@ ActionBase::~ActionBase()
 
 bool ActionBase::init(void* pKiss)
 {
-	CHECK_F(!this->BASE::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 
 	m_vActiveState.clear();
 	return true;
@@ -25,7 +25,7 @@ bool ActionBase::init(void* pKiss)
 
 bool ActionBase::link(void)
 {
-	CHECK_F(!this->BASE::link());
+	IF_F(!this->BASE::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName="";

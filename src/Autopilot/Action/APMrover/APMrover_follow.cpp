@@ -32,7 +32,7 @@ APMrover_follow::~APMrover_follow()
 
 bool APMrover_follow::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
+	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -54,7 +54,7 @@ bool APMrover_follow::init(void* pKiss)
 
 bool APMrover_follow::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 	string iName = "";
 
@@ -73,7 +73,7 @@ void APMrover_follow::update(void)
 
 	NULL_(m_pAPM);
 	NULL_(m_pUniv);
-	CHECK_(isActive()==false);
+	IF_(isActive()==false);
 
 	//get visual target and decide motion
 //	m_pTarget = m_pUniv->getByClass(m_targetClass);
@@ -109,14 +109,14 @@ void APMrover_follow::update(void)
 
 bool APMrover_follow::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
 	string msg = *this->getName() + ": thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer);
 	pWin->addMsg(&msg);
 
-	CHECK_T(m_pTarget==NULL);
+	IF_T(m_pTarget==NULL);
 	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
 			Scalar(0, 0, 255), 2);
 

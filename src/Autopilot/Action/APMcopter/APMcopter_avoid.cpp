@@ -21,7 +21,7 @@ APMcopter_avoid::~APMcopter_avoid()
 
 bool APMcopter_avoid::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss) == false);
+	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -35,7 +35,7 @@ bool APMcopter_avoid::init(void* pKiss)
 
 bool APMcopter_avoid::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -89,10 +89,10 @@ void APMcopter_avoid::updateDistanceSensor(void)
 
 bool APMcopter_avoid::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	string msg = *this->getName() + " Dist=" + i2str(m_DS.m_distance);
 	pWin->addMsg(&msg);

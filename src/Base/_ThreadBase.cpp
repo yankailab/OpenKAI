@@ -35,7 +35,7 @@ _ThreadBase::~_ThreadBase()
 
 bool _ThreadBase::init(void* pKiss)
 {
-	CHECK_F(!this->BASE::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	int FPS = DEFAULT_FPS;
@@ -47,7 +47,7 @@ bool _ThreadBase::init(void* pKiss)
 
 bool _ThreadBase::link(void)
 {
-	CHECK_F(!this->BASE::link());
+	IF_F(!this->BASE::link());
 	return true;
 }
 
@@ -88,7 +88,7 @@ void _ThreadBase::sleep(void)
 
 void _ThreadBase::wakeUp(void)
 {
-	CHECK_(!m_bSleep);
+	IF_(!m_bSleep);
 	m_bSleep = false;
 	pthread_cond_signal(&m_wakeupSignal);
 }
@@ -108,7 +108,7 @@ double _ThreadBase::getFrameRate(void)
 
 void _ThreadBase::setTargetFPS(int fps)
 {
-	CHECK_(fps<=0);
+	IF_(fps<=0);
 
 	m_targetFPS = fps;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
@@ -147,7 +147,7 @@ void _ThreadBase::complete(void)
 
 bool _ThreadBase::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();

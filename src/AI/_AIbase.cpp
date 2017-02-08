@@ -37,7 +37,7 @@ _AIbase::~_AIbase()
 
 bool _AIbase::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -90,7 +90,7 @@ bool _AIbase::init(void* pKiss)
 
 bool _AIbase::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -160,12 +160,12 @@ OBJECT* _AIbase::getByClass(int iClass)
 
 bool _AIbase::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	Mat bg;
 	if (m_bDrawContour)

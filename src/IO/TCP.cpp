@@ -20,7 +20,7 @@ TCP::~TCP(void)
 
 bool TCP::init(void* pKiss)
 {
-	CHECK_F(!this->IO::init(pKiss));
+	IF_F(!this->IO::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -52,12 +52,12 @@ bool TCP::init(void* pKiss)
 
 bool TCP::open(void)
 {
-	CHECK_T(m_status == opening);
+	IF_T(m_status == opening);
 
 	if(m_pServer)
 	{
 		//server mode
-		CHECK_F(!m_pServer->start());
+		IF_F(!m_pServer->start());
 		m_status = opening;
 		LOG_I("Server is opening");
 		return true;
@@ -65,7 +65,7 @@ bool TCP::open(void)
 	else if(m_pSocket)
 	{
 		//client mode
-		CHECK_F(!m_pSocket->start());
+		IF_F(!m_pSocket->start());
 		m_status = opening;
 		LOG_I("Socket is opening");
 	    return true;
@@ -106,7 +106,7 @@ int TCP::read(uint8_t* pBuf, int nByte)
 
 bool TCP::write(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(m_status != opening);
+	IF_F(m_status != opening);
 
 	if(m_pServer)
 	{
@@ -128,7 +128,7 @@ bool TCP::write(uint8_t* pBuf, int nByte)
 
 bool TCP::writeLine(uint8_t* pBuf, int nByte)
 {
-	CHECK_F(!write(pBuf, nByte));
+	IF_F(!write(pBuf, nByte));
 
 	const char crlf[] = "\x0d\x0a";
 	return write((uint8_t*)crlf, 2);

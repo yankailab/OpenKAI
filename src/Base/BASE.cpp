@@ -30,7 +30,7 @@ bool BASE::init(void* pKiss)
 
 	string name="";
 	F_FATAL_F(pK->v("name",&name));
-	CHECK_F(name.empty());
+	IF_F(name.empty());
 
 	pK->v("bLog",&m_bLog);
 
@@ -75,7 +75,7 @@ bool BASE::draw(void)
 	NULL_F(pWin->getFrame());
 
 	Mat* pMat = pWin->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	return true;
 }

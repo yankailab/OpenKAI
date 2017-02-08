@@ -14,21 +14,21 @@ _RC::~_RC()
 
 bool _RC::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	Kiss* pCC = pK->o("serialPort");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 	m_pSerialPort = new SerialPort();
-	CHECK_F(!m_pSerialPort->init(pCC));
+	IF_F(!m_pSerialPort->init(pCC));
 
 	return true;
 }
 
 bool _RC::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 
 	return true;
 }
@@ -91,7 +91,7 @@ bool _RC::readMessages()
 // ------------------------------------------------------------------------------
 void _RC::rc_overide(int numChannel, int* pChannels)
 {
-	CHECK_(!m_pSerialPort->isOpen());
+	IF_(!m_pSerialPort->isOpen());
 
 	int len;
 	int pwm;
@@ -114,7 +114,7 @@ void _RC::rc_overide(int numChannel, int* pChannels)
 
 void _RC::controlMode(int mode)
 {
-	CHECK_(!m_pSerialPort->isOpen());
+	IF_(!m_pSerialPort->isOpen());
 
 	m_pBuf[0] = 0xFE;//Mavlink begin
 	m_pBuf[1] = 1;

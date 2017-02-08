@@ -27,7 +27,7 @@ HM_pathFinder::~HM_pathFinder()
 
 bool HM_pathFinder::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -47,7 +47,7 @@ bool HM_pathFinder::init(void* pKiss)
 
 bool HM_pathFinder::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -68,7 +68,7 @@ void HM_pathFinder::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pObs);
-	CHECK_(!isActive());
+	IF_(!isActive());
 
 	uint64_t tNow = get_time_usec();
 
@@ -97,7 +97,7 @@ void HM_pathFinder::update(void)
 	}
 
 	//do not turn within interval
-	CHECK_(tNow - m_tLastTurn < m_turnInterval);
+	IF_(tNow - m_tLastTurn < m_turnInterval);
 
 	//check side to see if possible path
 	if(isPathFoundSide())
@@ -126,10 +126,10 @@ bool HM_pathFinder::isPathFoundSide(void)
 
 bool HM_pathFinder::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 //	string msg;
 //	if(isActive())msg="* ";

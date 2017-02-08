@@ -36,7 +36,7 @@ _DetectNet::~_DetectNet()
 
 bool _DetectNet::init(void* pKiss)
 {
-	CHECK_F(!this->_AIbase::init(pKiss));
+	IF_F(!this->_AIbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -51,7 +51,7 @@ bool _DetectNet::init(void* pKiss)
 
 bool _DetectNet::link(void)
 {
-	CHECK_F(!this->_AIbase::link());
+	IF_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -81,9 +81,9 @@ void _DetectNet::update(void)
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
 	m_nClass = m_pDN->GetNumClasses();
 
-	CHECK_(	!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
+	IF_(	!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
 					m_nBoxMax * sizeof(float4)));
-	CHECK_(	!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
+	IF_(	!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
 #endif
 
@@ -107,12 +107,12 @@ void _DetectNet::detect(void)
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
-	CHECK_(pBGR->empty());
-	CHECK_(m_pRGBA->isNewerThan(pBGR));
+	IF_(pBGR->empty());
+	IF_(m_pRGBA->isNewerThan(pBGR));
 
 	m_pRGBA->getRGBAOf(pBGR);
 	GpuMat* pGMat = m_pRGBA->getGMat();
-	CHECK_(pGMat->empty());
+	IF_(pGMat->empty());
 
 	GpuMat fGMat;
 	pGMat->convertTo(fGMat, CV_32FC4);
@@ -120,7 +120,7 @@ void _DetectNet::detect(void)
 	m_nBox = m_nBoxMax;
 
 #ifdef USE_TENSORRT
-	CHECK_(
+	IF_(
 			!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 					&m_nBox, m_confCPU));
 
@@ -153,7 +153,7 @@ void _DetectNet::detect(void)
 
 bool _DetectNet::draw(void)
 {
-	CHECK_F(!this->_AIbase::draw());
+	IF_F(!this->_AIbase::draw());
 
 	return true;
 }

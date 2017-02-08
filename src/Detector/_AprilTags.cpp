@@ -32,7 +32,7 @@ _AprilTags::~_AprilTags()
 
 bool _AprilTags::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -52,7 +52,7 @@ bool _AprilTags::init(void* pKiss)
 
 bool _AprilTags::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
@@ -99,7 +99,7 @@ void _AprilTags::detect(void)
 {
 	NULL_(!m_pStream);
 	m_pFrame->update(m_pStream->bgr());
-	CHECK_(m_pFrame->empty());
+	IF_(m_pFrame->empty());
 
 	TagDetectionArray detections;
 	Mat* pImg = m_pFrame->getCMat();
@@ -188,7 +188,7 @@ void _AprilTags::reset(void)
 
 bool _AprilTags::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	pWin->lineNext();

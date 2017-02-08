@@ -62,13 +62,15 @@ public:
 	double	m_dAngle;
 	Median* m_pDistMed;
 	Average* m_pDistAvr;
+	int		m_nReceived;
+	int		m_nUpdate;
+	int		m_nTotal;
 
 	double	m_minDist;
 	double	m_maxDist;
 	uint8_t m_MBS;
 	string m_strRecv;
 	double m_showScale;
-	int64_t m_tStartUp;
 
 	vDouble2 m_dPos;
 	double	m_diffMax;

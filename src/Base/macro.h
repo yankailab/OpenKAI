@@ -17,11 +17,11 @@
 #define F_INFO(x) if(x==false){LOG_I(#x);}
 #define F_(x) if(x==false){return;}
 
-#define CHECK_T(x) if(x){return true;}
-#define CHECK_F(x) if(x){return false;}
-#define CHECK_N(x) if(x){return NULL;}
-#define CHECK_(x) if(x){return;}
-#define CHECK_CONT(x) if(x){continue;}
+#define IF_T(x) if(x){return true;}
+#define IF_F(x) if(x){return false;}
+#define IF_N(x) if(x){return NULL;}
+#define IF_(x) if(x){return;}
+#define IF_CONT(x) if(x){continue;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}

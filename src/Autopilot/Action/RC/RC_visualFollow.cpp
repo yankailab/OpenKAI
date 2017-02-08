@@ -34,7 +34,7 @@ RC_visualFollow::~RC_visualFollow()
 
 bool RC_visualFollow::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	m_roll.reset();
@@ -72,7 +72,7 @@ bool RC_visualFollow::init(void* pKiss)
 
 bool RC_visualFollow::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -95,7 +95,7 @@ void RC_visualFollow::update(void)
 
 	NULL_(m_pRC);
 	NULL_(m_pROITracker);
-	CHECK_(isActive()==false);
+	IF_(isActive()==false);
 
 	if (m_pROITracker->m_bTracking == false)
 	{
@@ -164,7 +164,7 @@ void RC_visualFollow::update(void)
 
 bool RC_visualFollow::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
@@ -271,9 +271,9 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			//Magnify the ROI size
 			m_bSelect = false;
 
-			CHECK_(m_ROIsize >= m_ROIsizeTo);
+			IF_(m_ROIsize >= m_ROIsizeTo);
 			m_ROIsize += m_ROIsizeStep;
-			CHECK_(!m_pROITracker->m_bTracking);
+			IF_(!m_pROITracker->m_bTracking);
 
 			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
@@ -293,9 +293,9 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			//Shrink the ROI size
 			m_bSelect = false;
 
-			CHECK_(m_ROIsize <= m_ROIsizeFrom);
+			IF_(m_ROIsize <= m_ROIsizeFrom);
 			m_ROIsize -= m_ROIsizeStep;
-			CHECK_(!m_pROITracker->m_bTracking);
+			IF_(!m_pROITracker->m_bTracking);
 
 			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
@@ -324,7 +324,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 		break;
 	case EVENT_MOUSEMOVE:
-		CHECK_(!m_bSelect);
+		IF_(!m_bSelect);
 
 		ROIhalf = m_ROIsize / 2;
 		m_ROI.m_x = pMouse->m_x - ROIhalf;
@@ -381,7 +381,7 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 
 		break;
 	case EVENT_MOUSEMOVE:
-		CHECK_(!m_bSelect);
+		IF_(!m_bSelect);
 
 		m_ROI.m_z = pMouse->m_x;
 		m_ROI.m_w = pMouse->m_y;

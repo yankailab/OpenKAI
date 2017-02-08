@@ -27,14 +27,14 @@ _Mavlink::~_Mavlink()
 
 bool _Mavlink::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
 	Kiss* pCC = pK->o("input");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 	m_pSerialPort = new SerialPort();
-	CHECK_F(!m_pSerialPort->init(pCC));
+	IF_F(!m_pSerialPort->init(pCC));
 
 	//init param
 	m_systemID = 1;
@@ -50,7 +50,7 @@ bool _Mavlink::init(void* pKiss)
 
 bool _Mavlink::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	return true;
 }
 
@@ -455,7 +455,7 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, 
 
 bool _Mavlink::draw(void)
 {
-	CHECK_F(!this->BASE::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 

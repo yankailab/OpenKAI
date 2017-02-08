@@ -32,7 +32,7 @@ _Obstacle::~_Obstacle()
 
 bool _Obstacle::init(void* pKiss)
 {
-	CHECK_F(!_ThreadBase::init(pKiss));
+	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -45,19 +45,19 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->v("matrixH", &m_mDim.m_y));
 
 	m_nFilter = m_mDim.area();
-	CHECK_F(m_nFilter >= N_FILTER);
+	IF_F(m_nFilter >= N_FILTER);
 
 	Kiss* pCC;
 	int i;
 
 	//filter
 	pCC = pK->o("medianFilter");
-	CHECK_F(pCC->empty());
+	IF_F(pCC->empty());
 
 	for (i = 0; i < m_nFilter; i++)
 	{
 		m_pFilteredMatrix[i] = new Median();
-		CHECK_F(!m_pFilteredMatrix[i]->init(pCC));
+		IF_F(!m_pFilteredMatrix[i]->init(pCC));
 	}
 
 	m_pMatrix = new Frame();
@@ -67,7 +67,7 @@ bool _Obstacle::init(void* pKiss)
 
 bool _Obstacle::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -107,7 +107,7 @@ void _Obstacle::detect(void)
 	NULL_(m_pStream);
 	Frame* pDepth = m_pStream->depth();
 	NULL_(pDepth);
-	CHECK_(pDepth->empty());
+	IF_(pDepth->empty());
 
 	m_pMatrix->getResizedOf(m_pStream->depth(), m_mDim.m_x, m_mDim.m_y);
 	Mat* pM = m_pMatrix->getCMat();
@@ -173,14 +173,14 @@ vInt2 _Obstacle::matrixDim(void)
 
 bool _Obstacle::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 	NULL_F(m_pStream);
-	CHECK_F(m_pMatrix->empty());
+	IF_F(m_pMatrix->empty());
 
 	Mat mM = *m_pMatrix->getCMat();
-	CHECK_F(mM.empty());
+	IF_F(mM.empty());
 
     Mat filterM = Mat::zeros(Size(m_mDim.m_x,m_mDim.m_y), CV_8UC1);
 

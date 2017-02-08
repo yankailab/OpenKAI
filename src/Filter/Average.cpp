@@ -22,7 +22,7 @@ Average::~Average()
 
 bool Average::init(void* pKiss)
 {
-	CHECK_F(!FilterBase::init(pKiss));
+	IF_F(!FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 

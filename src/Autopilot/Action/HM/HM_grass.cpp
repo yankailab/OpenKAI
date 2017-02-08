@@ -27,7 +27,7 @@ HM_grass::~HM_grass()
 
 bool HM_grass::init(void* pKiss)
 {
-	CHECK_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -53,7 +53,7 @@ bool HM_grass::init(void* pKiss)
 
 bool HM_grass::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -91,7 +91,7 @@ bool HM_grass::link(void)
 			gBlk.m_fBBox.m_y = m_grassArea.m_y + i * blkH;
 			gBlk.m_fBBox.m_w = m_grassArea.m_y + (i + 1) * blkH;
 
-			CHECK_F(!m_pIN->add(&gBlk));
+			IF_F(!m_pIN->add(&gBlk));
 		}
 	}
 
@@ -132,7 +132,7 @@ void HM_grass::update(void)
 	grassD[1] *= n;
 	grassD[2] *= n;
 
-	CHECK_(!isActive());
+	IF_(!isActive());
 
 	if(grassD[DIR_F] >= m_grassMinProb)
 	{
@@ -156,7 +156,7 @@ void HM_grass::update(void)
 	}
 
 	//not yet the time to turn
-	CHECK_(t - m_tTurnSet < m_turnTimer);
+	IF_(t - m_tTurnSet < m_turnTimer);
 
 	//keep turning
 	m_pHM->m_motorPwmL = -m_rpmSteer;
@@ -166,11 +166,11 @@ void HM_grass::update(void)
 
 bool HM_grass::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	NULL_F(pMat);
-	CHECK_F(pMat->empty());
+	IF_F(pMat->empty());
 
 	string msg;
 	if(isActive())msg="* ";

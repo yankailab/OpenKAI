@@ -35,7 +35,7 @@ _Bullseye::~_Bullseye()
 
 bool _Bullseye::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -59,7 +59,7 @@ bool _Bullseye::init(void* pKiss)
 
 bool _Bullseye::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	//link instance
@@ -186,7 +186,7 @@ void _Bullseye::detectCircleHough(void)
 
 	Frame* pFrame = m_pStream->hsv();
 	NULL_(pFrame);
-	CHECK_(pFrame->empty());
+	IF_(pFrame->empty());
 	if(!pFrame->isNewerThan(m_pFrame))return;
 	m_pFrame->update(pFrame);
 

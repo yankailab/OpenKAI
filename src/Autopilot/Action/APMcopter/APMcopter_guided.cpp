@@ -16,7 +16,7 @@ APMcopter_guided::~APMcopter_guided()
 
 bool APMcopter_guided::init(void* pKiss)
 {
-	CHECK_F(this->ActionBase::init(pKiss)==false);
+	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -25,7 +25,7 @@ bool APMcopter_guided::init(void* pKiss)
 
 bool APMcopter_guided::link(void)
 {
-	CHECK_F(!this->ActionBase::link());
+	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -46,7 +46,7 @@ void APMcopter_guided::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAPM);
-	CHECK_(!isActive());
+	IF_(!isActive());
 
 	updateAttitude();
 
@@ -108,7 +108,7 @@ void APMcopter_guided::updateAttitude(void)
 
 bool APMcopter_guided::draw(void)
 {
-	CHECK_F(!this->ActionBase::draw());
+	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
