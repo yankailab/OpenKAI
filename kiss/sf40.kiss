@@ -32,7 +32,7 @@
 	"_Automaton":"APMstate",
 	"nDiv":180,
 	"nMeasureDiv":180,
-	"offsetAngle":0.0,
+	"offsetAngle":270.0,
 	"MBS":3,
 	"minDist":0.5,
 	"maxDist":80.0,
