@@ -274,7 +274,7 @@ void _Lightware_SF40::updatePosDiff(void)
 		CHECK_CONT(absDiff > m_diffMax);
 
 		double rad = m_dAngle * i * DEG_RAD;
-		pX += diff * cos(rad);
+		pX += -diff * cos(rad);
 		pY += diff * sin(rad);
 		nV += 1.0;
 	}
@@ -346,7 +346,7 @@ bool _Lightware_SF40::draw(void)
 
 		dist *= m_showScale;
 		double rad = m_dAngle * i * DEG_RAD;
-		int pX = dist * cos(rad);
+		int pX = -dist * cos(rad);
 		int pY = dist * sin(rad);
 
 		Scalar col = Scalar(255, 255, 255);
