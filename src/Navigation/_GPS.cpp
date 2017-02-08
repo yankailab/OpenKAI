@@ -128,12 +128,12 @@ void _GPS::detect(void)
 	CHECK_(m_time - tStart < m_tStartWait);
 
 	UTM_POS utm = *getUTM();
-	m_aX.input(utm.m_easting + dPos.m_x);
-	m_aY.input(utm.m_northing + dPos.m_y);
-	m_mX.input(m_aX.v());
-	m_mY.input(m_aY.v());
-	utm.m_easting = m_mX.v();
-	utm.m_northing = m_mY.v();
+	m_mX.input(utm.m_easting + dPos.m_x);
+	m_mY.input(utm.m_northing + dPos.m_y);
+	m_aX.input(m_mX.v());
+	m_aY.input(m_mY.v());
+	utm.m_easting = m_aX.v();
+	utm.m_northing = m_aY.v();
 
 	setUTM(&utm);
 

@@ -225,8 +225,7 @@ bool _Lightware_SF40::updateLidar(void)
 		return false;
 	}
 
-//	m_pDistMed[iAngle].input(dist);
-	m_pDistAvr[iAngle].input(dist);
+	m_pDistMed[iAngle].input(dist);
 	m_strRecv.clear();
 
 	return true;
@@ -262,8 +261,8 @@ void _Lightware_SF40::updatePosDiff(void)
 
 	for (i = 0; i < m_nDiv; i++)
 	{
-		Median* pD = &m_pDistMed[i];
-		pD->input(m_pDistAvr[i].v());
+		Average* pD = &m_pDistAvr[i];
+		pD->input(m_pDistMed[i].v());
 
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);
@@ -335,7 +334,7 @@ bool _Lightware_SF40::draw(void)
 	//Plot lidar result
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		Median* pD = &m_pDistMed[i];
+		Average* pD = &m_pDistAvr[i];
 
 		double dist = pD->v();
 		CHECK_CONT(dist < m_minDist);

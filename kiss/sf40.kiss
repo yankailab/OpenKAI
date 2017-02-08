@@ -30,13 +30,13 @@
 	"Window":"SF40nav",
 	"FPS":500,
 	"_Automaton":"APMstate",
-	"nDiv":90,
+	"nDiv":180,
 	"nMeasureDiv":180,
 	"offsetAngle":270.0,
 	"MBS":3,
 	"minDist":0.5,
-	"maxDist":100.0,
-	"diffMax":5.0,
+	"maxDist":80.0,
+	"diffMax":1.0,
 	"diffMin":0.0,
 	"showScale":30.0,
 	
@@ -44,8 +44,8 @@
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
-		"windowLen":3,
-		"nTraj":2,
+		"windowLen":5,
+		"nTraj":1,
 	}
 	
 	{
@@ -53,7 +53,7 @@
 		"class":"Average",
 		"bInst":1,
 		"windowLen":2,
-		"nTraj":1,
+		"nTraj":2,
 	}
 	
 	{
