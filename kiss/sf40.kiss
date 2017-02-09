@@ -3,7 +3,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
@@ -37,16 +37,16 @@
 	"MBS":3,
 	"minDist":0.1,
 	"maxDist":100.0,
-	"diffMax":1.0,
+	"diffMax":5.0,
 	"diffMin":0.0,
-	"nUpdate":60,
+	"nUpdate":180,
 	"showScale":30.0,
 	
 	{
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
-		"windowLen":5,
+		"windowLen":3,
 		"nTraj":1,
 	}
 	
@@ -54,8 +54,8 @@
 		"name":"avrFilter",
 		"class":"Average",
 		"bInst":1,
-		"windowLen":2,
-		"nTraj":2,
+		"windowLen":1,
+		"nTraj":1,
 	}
 	
 	{
@@ -108,7 +108,7 @@
 		"class":"Median",
 		"bInst":1,
 		"windowLen":3,
-		"nTraj":2,
+		"nTraj":1,
 	}
 	
 	{

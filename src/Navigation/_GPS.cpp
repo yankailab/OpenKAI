@@ -126,12 +126,15 @@ void _GPS::detect(void)
 	IF_(m_pSF40->m_nTotal < m_nStartWait);
 
 	UTM_POS utm = *getUTM();
-	m_mX.input(utm.m_easting + dPos.m_x);
-	m_mY.input(utm.m_northing + dPos.m_y);
-	m_aX.input(m_mX.v());
-	m_aY.input(m_mY.v());
-	utm.m_easting = m_aX.v();
-	utm.m_northing = m_aY.v();
+	utm.m_easting += dPos.m_x;
+	utm.m_northing += dPos.m_y;
+
+//	m_mX.input(utm.m_easting + dPos.m_x);
+//	m_mY.input(utm.m_northing + dPos.m_y);
+//	m_aX.input(m_mX.v());
+//	m_aY.input(m_mY.v());
+//	utm.m_easting = m_aX.v();
+//	utm.m_northing = m_aY.v();
 
 	setUTM(&utm);
 

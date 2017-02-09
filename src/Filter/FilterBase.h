@@ -26,6 +26,7 @@ public:
 	virtual double v(void);
 	virtual void reset(void);
 	virtual double diff(void);
+	virtual double accumlatedDiff(void);
 
 public:
 	double	m_v;
@@ -35,7 +36,9 @@ public:
 	std::deque<double> m_traj;
 
 	double	m_diff;
+	double	m_accumulatedDiff;
 	double	m_variance;
+
 };
 
 }

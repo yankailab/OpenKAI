@@ -151,10 +151,15 @@ void _Lightware_SF40::update(void)
 
 		this->autoFPSfrom();
 
-		if (updateLidar())
+		if(readLine())
 		{
-			m_nReceived++;
-			m_nTotal++;
+			if (updateLidar())
+			{
+				m_nReceived++;
+				m_nTotal++;
+			}
+
+			m_strRecv.clear();
 		}
 
 		if(m_nReceived >= m_nUpdate)
@@ -170,8 +175,6 @@ void _Lightware_SF40::update(void)
 
 bool _Lightware_SF40::updateLidar(void)
 {
-	IF_F(!readLine());
-
 	string str;
 	istringstream sStr;
 
@@ -183,11 +186,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vStr.push_back(str);
 	}
-	if (vStr.size() < 2)
-	{
-		m_strRecv.clear();
-		return false;
-	}
+	IF_F(vStr.size() < 2);
 
 	string cmd = vStr.at(0);
 	string result = vStr.at(1);
@@ -200,11 +199,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vCmd.push_back(str);
 	}
-	if (vCmd.size() < 2)
-	{
-		m_strRecv.clear();
-		return false;
-	}
+	IF_F(vCmd.size() < 2);
 	double angle = atof(vCmd.at(1).c_str());
 
 	//find the result
@@ -215,11 +210,7 @@ bool _Lightware_SF40::updateLidar(void)
 	{
 		vResult.push_back(str);
 	}
-	if (vResult.size() < 1)
-	{
-		m_strRecv.clear();
-		return false;
-	}
+	IF_F(vResult.size() < 1);
 
 	double dist = atof(vResult.at(0).c_str());
 
@@ -228,15 +219,9 @@ bool _Lightware_SF40::updateLidar(void)
 		angle -= DEG_AROUND;
 
 	int iAngle = (int) (angle / m_dAngle);
-	if (iAngle >= m_nDiv)
-	{
-		m_strRecv.clear();
-		return false;
-	}
+	IF_F(iAngle >= m_nDiv);
 
 	m_pDistMed[iAngle].input(dist);
-	m_strRecv.clear();
-
 	return true;
 }
 
@@ -279,13 +264,13 @@ void _Lightware_SF40::updatePosDiff(void)
 		IF_CONT(dist > m_maxDist);
 
 		double diff = pD->diff();
-		double absDiff = abs(diff);
-		IF_CONT(absDiff <= m_diffMin);
-		IF_CONT(absDiff > m_diffMax);
+		IF_CONT(diff <= m_diffMin);
+		IF_CONT(diff > m_diffMax);
 
+		double aDiff = pD->accumlatedDiff();
 		double rad = dRad * i;
-		pX += diff * cos(rad);
-		pY += -diff * sin(rad);
+		pX += aDiff * cos(rad);
+		pY += -aDiff * sin(rad);
 		nV += 1.0;
 	}
 
@@ -354,7 +339,7 @@ bool _Lightware_SF40::draw(void)
 
 		dist *= m_showScale;
 		double rad = m_dAngle * i * DEG_RAD;
-		int pX = dist * cos(rad);
+		int pX = -dist * cos(rad);
 		int pY = -dist * sin(rad);
 
 		Scalar col = Scalar(255, 255, 255);
