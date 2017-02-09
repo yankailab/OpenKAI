@@ -33,13 +33,13 @@
 	"_Automaton":"APMstate",
 	"nDiv":180,
 	"nMeasureDiv":180,
-	"offsetAngle":270.0,
+	"offsetAngle":90.0,
 	"MBS":3,
 	"minDist":0.1,
 	"maxDist":100.0,
 	"diffMax":1.0,
 	"diffMin":0.0,
-	"nUpdate":0,
+	"nUpdate":60,
 	"showScale":30.0,
 	
 	{
@@ -93,7 +93,7 @@
 }
 
 {
-	"name":"SF_GPS",
+	"name":"LA_GPS",
 	"class":"_GPS",
 	"bInst":1,
 	"FPS":10,

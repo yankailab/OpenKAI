@@ -137,6 +137,11 @@ void _GPS::detect(void)
 
 	setMavGPS();
 
+	double dX = m_UTM.m_easting - m_initUTM.m_easting;
+	double dY = m_UTM.m_northing - m_initUTM.m_northing;
+
+//	LOG_I("Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", hdg=" + f2str(m_LL.m_hdg));
+	LOG_I("Dist: X=" + f2str(dX) + ", Y=" + f2str(dY));
 }
 
 /*

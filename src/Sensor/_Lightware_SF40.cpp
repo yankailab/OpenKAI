@@ -284,8 +284,8 @@ void _Lightware_SF40::updatePosDiff(void)
 		IF_CONT(absDiff > m_diffMax);
 
 		double rad = dRad * i;
-		pX += -diff * cos(rad);
-		pY += diff * sin(rad);
+		pX += diff * cos(rad);
+		pY += -diff * sin(rad);
 		nV += 1.0;
 	}
 
@@ -330,6 +330,8 @@ bool _Lightware_SF40::draw(void)
 	pWin->tabNext();
 	msg = "dPos: dX=" + f2str(m_dPos.m_x) + ", dY=" + f2str(m_dPos.m_y);
 	pWin->addMsg(&msg);
+	msg = "nReceived=" + i2str(m_nReceived);
+	pWin->addMsg(&msg);
 
 	if (m_pIn)
 		m_pIn->draw();
@@ -350,14 +352,10 @@ bool _Lightware_SF40::draw(void)
 		IF_CONT(dist <= m_minDist);
 		IF_CONT(dist > m_maxDist);
 
-		double absDiff = abs(pD->diff());
-		IF_CONT(absDiff <= m_diffMin);
-		IF_CONT(absDiff > m_diffMax);
-
 		dist *= m_showScale;
 		double rad = m_dAngle * i * DEG_RAD;
-		int pX = -dist * cos(rad);
-		int pY = dist * sin(rad);
+		int pX = dist * cos(rad);
+		int pY = -dist * sin(rad);
 
 		Scalar col = Scalar(255, 255, 255);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
