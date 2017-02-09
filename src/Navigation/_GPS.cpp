@@ -21,7 +21,6 @@ _GPS::_GPS()
 	m_tStarted = 0;
 	m_time = 0;
 	m_apmMode = 0;
-	m_nStartWait = 0;
 
 }
 
@@ -36,7 +35,6 @@ bool _GPS::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
-	F_INFO(pK->v("nStartWait", &m_nStartWait));
 
 	Kiss* pI = pK->o("initLL");
 	IF_T(pI->empty());
@@ -123,9 +121,9 @@ void _GPS::detect(void)
 
 	//estimate position
 	vDouble2 dPos = m_pSF40->getPosDiff();
-	IF_(m_pSF40->m_nTotal < m_nStartWait);
 
 	UTM_POS utm = *getUTM();
+
 	utm.m_easting += dPos.m_x;
 	utm.m_northing += dPos.m_y;
 
@@ -142,8 +140,6 @@ void _GPS::detect(void)
 
 	double dX = m_UTM.m_easting - m_initUTM.m_easting;
 	double dY = m_UTM.m_northing - m_initUTM.m_northing;
-
-//	LOG_I("Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", hdg=" + f2str(m_LL.m_hdg));
 	LOG_I("Dist: X=" + f2str(dX) + ", Y=" + f2str(dY));
 }
 

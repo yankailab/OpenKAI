@@ -41,9 +41,7 @@ void FilterBase::input(double v)
 	m_traj.push_back(m_v);
 	IF_(m_traj.size() < m_nTraj);
 
-	double dV = m_traj.at(m_nTraj - 1) - m_traj.at(m_nTraj - 2);
-	m_accumulatedDiff += dV;
-	m_diff = abs(dV);
+	m_accumulatedDiff += m_traj.at(m_nTraj - 1) - m_traj.at(m_nTraj - 2);
 }
 
 double FilterBase::v(void)
@@ -55,15 +53,9 @@ void FilterBase::reset(void)
 {
 	m_v = 0.0;
 	m_variance = 0.0;
-	m_diff = 0.0;
 	m_accumulatedDiff = 0.0;
 	m_data.clear();
 	m_traj.clear();
-}
-
-double FilterBase::diff(void)
-{
-	return m_diff;
 }
 
 double FilterBase::accumlatedDiff(void)

@@ -64,7 +64,6 @@ public:
 	Average* m_pDistAvr;
 	int		m_nReceived;
 	int		m_nUpdate;
-	int		m_nTotal;
 
 	double	m_minDist;
 	double	m_maxDist;

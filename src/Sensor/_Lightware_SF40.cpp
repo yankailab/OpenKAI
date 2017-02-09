@@ -30,7 +30,6 @@ _Lightware_SF40::_Lightware_SF40()
 
 	m_nReceived = 0;
 	m_nUpdate = 0;
-	m_nTotal = 0;
 }
 
 _Lightware_SF40::~_Lightware_SF40()
@@ -156,7 +155,6 @@ void _Lightware_SF40::update(void)
 			if (updateLidar())
 			{
 				m_nReceived++;
-				m_nTotal++;
 			}
 
 			m_strRecv.clear();
@@ -256,21 +254,23 @@ void _Lightware_SF40::updatePosDiff(void)
 
 	for (i = 0; i < m_nDiv; i++)
 	{
-		Average* pD = &m_pDistAvr[i];
-		pD->input(m_pDistMed[i].v());
+		Median* pM = &m_pDistMed[i];
+		Average* pA = &m_pDistAvr[i];
 
-		double dist = pD->v();
-		IF_CONT(dist <= m_minDist);
+		pA->input(pM->v());
+
+		double dist = pA->v();
+		IF_CONT(dist < m_minDist);
 		IF_CONT(dist > m_maxDist);
 
-		double diff = pD->diff();
-		IF_CONT(diff <= m_diffMin);
-		IF_CONT(diff > m_diffMax);
+		double dD = pA->accumlatedDiff();
+		double absDD = abs(dD);
+		IF_CONT(absDD <= m_diffMin);
+		IF_CONT(absDD > m_diffMax);
 
-		double aDiff = pD->accumlatedDiff();
 		double rad = dRad * i;
-		pX += aDiff * cos(rad);
-		pY += -aDiff * sin(rad);
+		pX += dD * cos(rad);
+		pY += -dD * sin(rad);
 		nV += 1.0;
 	}
 

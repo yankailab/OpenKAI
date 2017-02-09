@@ -37,7 +37,7 @@
 	"MBS":3,
 	"minDist":0.1,
 	"maxDist":100.0,
-	"diffMax":5.0,
+	"diffMax":0.5,
 	"diffMin":0.0,
 	"nUpdate":180,
 	"showScale":30.0,
@@ -96,12 +96,12 @@
 	"name":"LA_GPS",
 	"class":"_GPS",
 	"bInst":1,
+	"bLog":1,
 	"FPS":10,
 	"Window":"SF40nav",
 	"_Mavlink":"APM_mavlink",
 	"_Lightware_SF40":"SF40",
 	"mavDSfreq":30,
-	"nStartWait":1800,
 	
 	{
 		"name":"medianFilter",

@@ -82,7 +82,6 @@ public:
 
 	uint64_t m_tStarted;
 	uint64_t m_time;
-	int m_nStartWait;
 
 	LL_POS	m_initLL;
 	LL_POS	m_LL;
