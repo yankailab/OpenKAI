@@ -33,10 +33,11 @@ private:
 	_Lightware_SF40* m_pSF40;
 	_Obstacle* m_pObs;
 	_ZED* m_pZED;
-	DISTANCE_SENSOR m_DS;
 	vInt2		m_posMin;
 	vDouble4	m_avoidArea;
 
+	double	m_distObs;
+	double	m_distSF40;
 
 };
 

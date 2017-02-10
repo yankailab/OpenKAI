@@ -15,8 +15,8 @@ _Lightware_SF40::_Lightware_SF40()
 	m_nDiv = 0;
 	m_nMeasureDiv = 0;
 	m_dAngle = 0;
-	m_minDist = 1.0;
-	m_maxDist = 50.0;
+	m_minDist = 0.1;
+	m_maxDist = 100.0;
 	m_showScale = 1.0;	//1m = 1pixel;
 	m_strRecv = "";
 	m_pSF40sender = NULL;
@@ -54,9 +54,6 @@ bool _Lightware_SF40::init(void* pKiss)
 
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-
-	//common in all input modes
-	F_INFO(pK->v("offsetAngle", &m_offsetAngle));
 	F_INFO(pK->v("minDist", &m_minDist));
 	F_INFO(pK->v("maxDist", &m_maxDist));
 	F_INFO(pK->v("showScale", &m_showScale));
@@ -64,6 +61,9 @@ bool _Lightware_SF40::init(void* pKiss)
 	F_INFO(pK->v("diffMax", &m_diffMax));
 	F_INFO(pK->v("diffMin", &m_diffMin));
 	F_INFO(pK->v("nUpdate", &m_nUpdate));
+	F_INFO(pK->v("offsetAngle", &m_offsetAngle));
+	while (m_offsetAngle < 0)
+		m_offsetAngle += DEG_AROUND;
 
 	F_ERROR_F(pK->v("nDiv", &m_nDiv));
 	m_nMeasureDiv = m_nDiv;
@@ -219,7 +219,12 @@ bool _Lightware_SF40::updateLidar(void)
 	int iAngle = (int) (angle / m_dAngle);
 	IF_F(iAngle >= m_nDiv);
 
-	m_pDistMed[iAngle].input(dist);
+	Median* pM = &m_pDistMed[iAngle];
+	Average* pA = &m_pDistAvr[iAngle];
+
+	pM->input(dist);
+	pA->input(pM->v());
+
 	return true;
 }
 
@@ -254,10 +259,7 @@ void _Lightware_SF40::updatePosDiff(void)
 
 	for (i = 0; i < m_nDiv; i++)
 	{
-		Median* pM = &m_pDistMed[i];
 		Average* pA = &m_pDistAvr[i];
-
-		pA->input(pM->v());
 
 		double dist = pA->v();
 		IF_CONT(dist < m_minDist);
@@ -303,6 +305,35 @@ void _Lightware_SF40::reset(void)
 		m_pDistAvr[i].reset();
 	}
 	m_dPos.init();
+}
+
+double _Lightware_SF40::getDistance(double localAngle)
+{
+	double angle = m_offsetAngle - m_hdg + localAngle;
+
+	while (angle < 0)
+		angle += DEG_AROUND;
+
+	while (angle >= DEG_AROUND)
+		angle -= DEG_AROUND;
+
+	int iAngle = (int) (angle / m_dAngle);
+	if(iAngle >= m_nDiv)
+	{
+		return -1.0;
+	}
+
+	return m_pDistAvr[iAngle].v();
+}
+
+double _Lightware_SF40::minDist(void)
+{
+	return m_minDist;
+}
+
+double _Lightware_SF40::maxDist(void)
+{
+	return m_maxDist;
 }
 
 bool _Lightware_SF40::draw(void)

@@ -9,6 +9,10 @@ APMcopter_avoid::APMcopter_avoid()
 	m_pAPM = NULL;
 	m_pObs = NULL;
 	m_pZED = NULL;
+
+	m_distObs = 0.0;
+	m_distSF40 = 0.0;
+
 	m_avoidArea.m_x = 0.0;
 	m_avoidArea.m_y = 0.0;
 	m_avoidArea.m_z = 1.0;
@@ -37,18 +41,21 @@ bool APMcopter_avoid::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
+	string iName;
 
-	string iName = "";
-
+	iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
 	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_Lightware_SF40", &iName));
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
 	F_INFO(pK->v("_ZED", &iName));
 	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
@@ -59,32 +66,63 @@ void APMcopter_avoid::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAPM);
-
 	updateDistanceSensor();
 }
 
 void APMcopter_avoid::updateDistanceSensor(void)
 {
+	NULL_(m_pAPM);
 	NULL_(m_pAPM->m_pMavlink);
-	NULL_(m_pObs);
-	NULL_(m_pZED);
+	_Mavlink* pMavlink = m_pAPM->m_pMavlink;
 
-	double rangeMin, rangeMax;
-	m_pZED->getRange(&rangeMin, &rangeMax);
+	int i;
+	double maxDist;
+	double minDist;
 
-	m_DS.m_distance = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
-	m_DS.m_maxDistance = rangeMax * 100;
-	m_DS.m_minDistance = rangeMin * 100;
-	m_DS.m_orientation = 0;
-	m_DS.m_type = 0;
-
-	if(m_DS.m_distance < m_DS.m_minDistance || m_DS.m_distance > m_DS.m_maxDistance)
+	if(m_pZED && m_pObs)
 	{
-		m_DS.m_distance = m_DS.m_maxDistance;
+		double rangeMin, rangeMax;
+		m_pZED->getRange(&rangeMin, &rangeMax);
+
+		m_distObs = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
+		maxDist = rangeMax * 100;
+		minDist = rangeMin * 100;
+
+		if(m_distObs < minDist || m_distObs > maxDist)
+			m_distObs = maxDist;
+
+		pMavlink->distance_sensor(0, //type
+				0,	//orientation
+				maxDist,
+				minDist,
+				m_distObs);
 	}
 
-	m_pAPM->updateDistanceSensor(&m_DS);
+	if(m_pSF40)
+	{
+		maxDist = m_pSF40->maxDist();
+		minDist = m_pSF40->minDist();
+
+		//send 8 orientations
+		const double pAngles[] = {0, 45, 90, 135, 180, 225, 270, 315};
+		const int nAngles = 8;
+
+		for(i=0; i<nAngles; i++)
+		{
+			m_distSF40 = m_pSF40->getDistance(pAngles[i]);
+
+			if(m_distSF40 < minDist || m_distSF40 > maxDist)
+				m_distSF40 = maxDist;
+
+			pMavlink->distance_sensor(0, //type
+					i,	//orientation
+					maxDist,
+					minDist,
+					m_distSF40);
+		}
+	}
+
+
 }
 
 bool APMcopter_avoid::draw(void)
@@ -94,8 +132,19 @@ bool APMcopter_avoid::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	IF_F(pMat->empty());
 
-	string msg = *this->getName() + " Dist=" + i2str(m_DS.m_distance);
-	pWin->addMsg(&msg);
+	string msg;
+
+	if(m_pZED && m_pObs)
+	{
+		msg = *this->getName() + " Obs dist=" + i2str(m_distObs);
+		pWin->addMsg(&msg);
+	}
+
+	if(m_pSF40)
+	{
+		msg = *this->getName() + " SF40 dist=" + i2str(m_distSF40);
+		pWin->addMsg(&msg);
+	}
 
 	Rect r;
 	r.x = m_avoidArea.m_x * ((double)pMat->cols);

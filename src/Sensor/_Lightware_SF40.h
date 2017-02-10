@@ -33,10 +33,14 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
+	void reset(void);
 
 	void setHeading(double hdg);
 	vDouble2 getPosDiff(void);
-	void reset(void);
+
+	double getDistance(double localAngle);
+	double minDist(void);
+	double maxDist(void);
 
 private:
 	bool connect(void);

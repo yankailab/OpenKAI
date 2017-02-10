@@ -3,7 +3,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
@@ -11,7 +11,7 @@
 }
 
 {
-	"name":"SF40nav",
+	"name":"LA-GPS",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -28,7 +28,7 @@
 	"class":"_Lightware_SF40",
 	"bInst":1,
 	"bLog":1,
-	"Window":"SF40nav",
+	"Window":"LA-GPS",
 	"FPS":500,
 	"_Automaton":"APMstate",
 	"nDiv":180,
@@ -68,12 +68,12 @@
 }
 
 {
-	"name":"APM_mavlink",
+	"name":"APMmavlink",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"SF40nav",
+	"Window":"LA-GPS",
 
 	{
 		"name":"input",
@@ -98,8 +98,8 @@
 	"bInst":1,
 	"bLog":1,
 	"FPS":10,
-	"Window":"SF40nav",
-	"_Mavlink":"APM_mavlink",
+	"Window":"LA-GPS",
+	"_Mavlink":"APMmavlink",
 	"_Lightware_SF40":"SF40",
 	"mavDSfreq":30,
 	
@@ -133,3 +133,39 @@
 		"lng":0.0,
 	}
 }
+
+{
+	"name":"APMcopter",
+	"class":"_AutoPilot",
+	"_Automaton":"APMstate",
+	"bInst":1,
+	"FPS":10,
+	"Window":"LA-GPS",
+	"bMouse":1,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"APMbase",
+			"class":"APMcopter_base",
+			"bInst":1,
+			"_Automaton":"APMstate",
+			"Window":"LA-GPS",
+			"_Mavlink":"APMmavlink",
+		}
+
+		{
+			"name":"APMavoid",
+			"class":"APMcopter_avoid",
+			"bInst":1,
+			"Window":"LA-GPS",
+			"_Automaton":"APMstate",
+			"APMcopter_base":"APMbase",
+			"_Lightware_SF40":"SF40",
+		}
+		
+	}
+}
+
+
