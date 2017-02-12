@@ -138,13 +138,13 @@ void _ImageNet::detectObject(void)
 		pObj->m_camSize.m_y = gRGBA.rows;
 		pObj->f2iBBox();
 
-		if (pObj->m_bbox.area() <= 0)
-			continue;
 		if (!m_pIN)
+			continue;
+		if (pObj->m_bbox.area() <= 0)
 			continue;
 		if (pObj->m_bbox.area() > m_maxPix)
 		{
-			LOG_E("Image size exceed the max pixel limit");
+			LOG_E("Image size exceeds the max pixel limit");
 			continue;
 		}
 

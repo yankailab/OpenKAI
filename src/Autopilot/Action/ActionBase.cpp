@@ -33,9 +33,8 @@ bool ActionBase::link(void)
 	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
 	NULL_T(m_pAM);
 
-	iName = "activeState";
-	Kiss* pAS = pK->getChildByName(&iName);
-	NULL_T(pAS);
+	Kiss* pAS = pK->o("activeState");
+	IF_T(pAS->empty());
 
 	m_vActiveState.clear();
 	Kiss** pItr = pAS->getChildItr();

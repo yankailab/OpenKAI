@@ -312,6 +312,10 @@
 			"speedP":0,
 			"steerP":1500,
 			"turnTimer":2800000,
+			"minProb":0.6,
+			"iClass":1,
+			"tTurnRandRange":100000,
+			"nTurnRand":10,
 			
 			{
 				"name":"activeState",
@@ -329,10 +333,37 @@
 					"bInst":1,
 				}				
 			}
+			
+			{
+				"name":"grassBoxL",
+				"bInst":1,
+				"left":0.0,
+				"top":0.6,
+				"right":0.2,
+				"bottom":0.76,
+			}			
+			
+			{
+				"name":"grassBoxF",
+				"bInst":1,
+				"left":0.4,
+				"top":0.6,
+				"right":0.6,
+				"bottom":0.76,
+			}			
+
+			{
+				"name":"grassBoxR",
+				"bInst":1,
+				"left":0.8,
+				"top":0.6,
+				"right":1.0,
+				"bottom":0.76,
+			}			
 
 			{
 				"name":"grassMatrix",
-				"bInst":1,
+				"bInst":0,
 				"minProb":0.6,
 				"iClass":1,
 				"nW":3,
@@ -355,15 +386,38 @@
 			"_Obstacle":"obstacle",
 			"_DetectNet":"markerDetector",
 			"alertDist":0.9,
-			"avoidLeft":0.269,
-			"avoidRight":0.93,
-			"avoidTop":0.25,
-			"avoidBottom":0.825,
 			"speedP":3000,
 			"steerP":2000,
 			"objLifetime":200000,
 			"minProb":0.0,
 			"markerTurnTimer":5000000,
+
+			{
+				"name":"obsBoxL",
+				"bInst":1,
+				"left":0.0,
+				"top":0.25,
+				"right":0.25,
+				"bottom":0.825,
+			}			
+			
+			{
+				"name":"obsBoxF",
+				"bInst":1,
+				"left":0.269,
+				"top":0.25,
+				"right":0.93,
+				"bottom":0.825,
+			}
+			
+			{
+				"name":"obsBoxR",
+				"bInst":1,
+				"left":0.93,
+				"top":0.25,
+				"right":1.0,
+				"bottom":0.825,
+			}			
 			
 			{
 				"name":"activeState",

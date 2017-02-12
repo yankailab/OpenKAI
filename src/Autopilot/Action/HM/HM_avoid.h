@@ -25,13 +25,15 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_StreamBase* m_pStream;
 	_Obstacle* m_pObs;
 	_DetectNet* m_pMarkerDN;
 
-	vDouble4 m_avoidArea;
+	vDouble4 m_obsBoxF;
+	vDouble4 m_obsBoxL;
+	vDouble4 m_obsBoxR;
 	vInt2	m_posMin;
 	double	m_alertDist;
+	double	m_markerDist;
 
 	double	m_speedP;
 	double	m_steerP;

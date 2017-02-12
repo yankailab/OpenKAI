@@ -23,7 +23,6 @@ public:
 	JSON* json(void);
 	Kiss** getClassItr(string* pClassName);
 	Kiss** getChildItr(void);
-	Kiss* getChildByName(string* pName);
 	void* getChildInstByName(string* pName);
 	Kiss* root(void);
 	Kiss* parent(void);

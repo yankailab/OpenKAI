@@ -6,18 +6,22 @@ namespace kai
 HM_avoid::HM_avoid()
 {
 	m_pHM = NULL;
-	m_pStream = NULL;
 	m_pObs = NULL;
 	m_pMarkerDN = NULL;
 
 	m_speedP = 0.0;
 	m_steerP = 0.0;
 
-	m_avoidArea.m_x = 0.0;
-	m_avoidArea.m_y = 0.0;
-	m_avoidArea.m_z = 1.0;
-	m_avoidArea.m_w = 1.0;
+	m_obsBoxF.m_x = 0.0;
+	m_obsBoxF.m_y = 0.0;
+	m_obsBoxF.m_z = 1.0;
+	m_obsBoxF.m_w = 1.0;
+
+	m_obsBoxL.init();
+	m_obsBoxR.init();
+
 	m_alertDist = 0.0;
+	m_markerDist = 0.0;
 	m_distM = 0.0;
 
 	m_minProb = 0.5;
@@ -40,16 +44,35 @@ bool HM_avoid::init(void* pKiss)
 
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
-
-	F_INFO(pK->v("avoidLeft", &m_avoidArea.m_x));
-	F_INFO(pK->v("avoidRight", &m_avoidArea.m_z));
-	F_INFO(pK->v("avoidTop", &m_avoidArea.m_y));
-	F_INFO(pK->v("avoidBottom", &m_avoidArea.m_w));
 	F_INFO(pK->v("alertDist", &m_alertDist));
+	m_markerDist = m_alertDist * 1.5;
 
 	F_INFO(pK->v("minProb", &m_minProb));
 	F_INFO(pK->v("objLifetime", &m_objLifetime));
 	F_INFO(pK->v("markerTurnTimer", &m_markerTurnTimer));
+
+	Kiss* pG;
+
+	pG = pK->o("obsBoxL");
+	IF_F(pG->empty());
+	F_INFO(pG->v("left", &m_obsBoxL.m_x));
+	F_INFO(pG->v("top", &m_obsBoxL.m_y));
+	F_INFO(pG->v("right", &m_obsBoxL.m_z));
+	F_INFO(pG->v("bottom", &m_obsBoxL.m_w));
+
+	pG = pK->o("obsBoxF");
+	IF_F(pG->empty());
+	F_INFO(pG->v("left", &m_obsBoxF.m_x));
+	F_INFO(pG->v("top", &m_obsBoxF.m_y));
+	F_INFO(pG->v("right", &m_obsBoxF.m_z));
+	F_INFO(pG->v("bottom", &m_obsBoxF.m_w));
+
+	pG = pK->o("obsBoxR");
+	IF_F(pG->empty());
+	F_INFO(pG->v("left", &m_obsBoxR.m_x));
+	F_INFO(pG->v("top", &m_obsBoxR.m_y));
+	F_INFO(pG->v("right", &m_obsBoxR.m_z));
+	F_INFO(pG->v("bottom", &m_obsBoxR.m_w));
 
 	return true;
 }
@@ -62,10 +85,6 @@ bool HM_avoid::link(void)
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
-
-	iName = "";
-	F_INFO(pK->v("_Stream", &iName));
-	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
@@ -84,8 +103,8 @@ void HM_avoid::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-	NULL_(m_pStream);
 	NULL_(m_pObs);
+	NULL_(m_pMarkerDN);
 	IF_(!isActive());
 
 	uint64_t tNow = get_time_usec();
@@ -100,8 +119,17 @@ void HM_avoid::update(void)
 	m_markerTurnStart = 0;
 
 	//do nothing if no obstacle inside alert distance
-	m_distM = m_pObs->dist(&m_avoidArea,&m_posMin);
-	IF_(m_distM > m_alertDist);
+	m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
+	if(m_distM > m_markerDist)
+		m_pMarkerDN->sleep();
+	else
+		m_pMarkerDN->wakeUp();
+
+	if(m_distM > m_alertDist)
+	{
+		m_rpmSteer = 0;
+		return;
+	}
 
 	//speaker alert if object is within a certain distance
 	m_pHM->m_bSpeaker = true;
@@ -126,10 +154,24 @@ void HM_avoid::update(void)
 		m_markerTurnStart = tNow;
 	}
 
-	//decide which direction to turn
-	m_rpmSteer = m_steerP;
-	if(m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
-		m_rpmSteer = -m_steerP;
+	//decide which direction to turn based on previous actions' decision
+	if(m_rpmSteer == 0)
+	{
+		m_rpmSteer = m_steerP;
+		if(m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
+		{
+			m_rpmSteer = -m_steerP;
+		}
+		else if(m_pHM->m_motorPwmL == m_pHM->m_motorPwmR)
+		{
+			//decide direction by obstacles in left and right
+			double dL = m_pObs->dist(&m_obsBoxL, NULL);
+			double dR = m_pObs->dist(&m_obsBoxR, NULL);
+
+			if(dL > dR)
+				m_rpmSteer = -m_steerP;
+		}
+	}
 
 	m_pHM->m_motorPwmL = m_rpmSteer;
 	m_pHM->m_motorPwmR = -m_rpmSteer;
@@ -149,10 +191,10 @@ bool HM_avoid::draw(void)
 	pWin->addMsg(&msg);
 
 	Rect r;
-	r.x = m_avoidArea.m_x * ((double)pMat->cols);
-	r.y = m_avoidArea.m_y * ((double)pMat->rows);
-	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
-	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
+	r.x = m_obsBoxF.m_x * ((double)pMat->cols);
+	r.y = m_obsBoxF.m_y * ((double)pMat->rows);
+	r.width = m_obsBoxF.m_z * ((double)pMat->cols) - r.x;
+	r.height = m_obsBoxF.m_w * ((double)pMat->rows) - r.y;
 
 	Scalar col = Scalar(0,255,0);
 	int bold = 1;
@@ -162,6 +204,18 @@ bool HM_avoid::draw(void)
 		bold = 2;
 	}
 	rectangle(*pMat, r, col, bold);
+
+	r.x = m_obsBoxL.m_x * ((double)pMat->cols);
+	r.y = m_obsBoxL.m_y * ((double)pMat->rows);
+	r.width = m_obsBoxL.m_z * ((double)pMat->cols) - r.x;
+	r.height = m_obsBoxL.m_w * ((double)pMat->rows) - r.y;
+	rectangle(*pMat, r, Scalar(0,255,0), 1);
+
+	r.x = m_obsBoxR.m_x * ((double)pMat->cols);
+	r.y = m_obsBoxR.m_y * ((double)pMat->rows);
+	r.width = m_obsBoxR.m_z * ((double)pMat->cols) - r.x;
+	r.height = m_obsBoxR.m_w * ((double)pMat->rows) - r.y;
+	rectangle(*pMat, r, Scalar(0,255,0), 1);
 
 	NULL_F(m_pObs);
 	vInt2 mDim = m_pObs->matrixDim();

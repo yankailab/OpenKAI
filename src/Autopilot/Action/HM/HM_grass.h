@@ -31,15 +31,23 @@ private:
 
 	double	m_speedP;
 	double	m_steerP;
+	int		m_rpmSteer;
 	uint64_t	m_turnTimer;
 	uint64_t	m_tTurnSet;
-	int		m_rpmSteer;
 
-	vInt2		m_grassMat;
-	vDouble4	m_grassArea;
+	uint64_t	m_nTurnRand;
+	uint64_t	m_tTurnRandRange;
+	uint64_t	m_tTurnRandLen;
+	uint64_t	m_tTurnRandSet;
+
 	double		m_grassMinProb;
 	int			m_grassClassIdx;
+	vDouble4	m_grassBoxL;
+	vDouble4	m_grassBoxF;
+	vDouble4	m_grassBoxR;
 
+	//	vInt2		m_grassMat;
+	//	vDouble4	m_grassArea;
 
 };
 

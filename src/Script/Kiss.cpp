@@ -151,7 +151,7 @@ bool Kiss::addChild(string* pStr)
 Kiss* Kiss::o(string name)
 {
 	if (name.empty())
-		return NULL;
+		return m_pNULL;
 	if (m_bNULL)
 		return m_pNULL;
 
@@ -219,29 +219,14 @@ Kiss** Kiss::getChildItr(void)
 	return m_pChild;
 }
 
-Kiss* Kiss::getChildByName(string* pName)
-{
-	if(pName==NULL)return NULL;
-	if(pName->empty())return NULL;
-
-	for(int i=0; i<m_nChild; i++)
-	{
-		Kiss* pC = m_pChild[i];
-		if(pC->m_name == (*pName))
-		{
-			return pC;
-		}
-	}
-
-	return NULL;
-}
-
 void* Kiss::getChildInstByName(string* pName)
 {
-	void* pC = getChildByName(pName);
-	if(!pC)return NULL;
+	NULL_N(pName);
+	Kiss* pC = o(*pName);
+	IF_N(!pC);
+	IF_N(pC->empty());
 
-	return ((Kiss*)pC)->m_pInst;
+	return pC->m_pInst;
 }
 
 bool Kiss::empty(void)
