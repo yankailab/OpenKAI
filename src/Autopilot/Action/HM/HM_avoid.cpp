@@ -9,8 +9,6 @@ HM_avoid::HM_avoid()
 	m_pObs = NULL;
 	m_pMN = NULL;
 	m_iMarkerClass = -1;
-
-	m_speedP = 0.0;
 	m_steerP = 0.0;
 
 	m_obsBoxF.m_x = 0.0;
@@ -40,7 +38,6 @@ bool HM_avoid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 

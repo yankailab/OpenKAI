@@ -287,6 +287,19 @@
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"dist":0.1,
+
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"HM_PATHFINDING",
+					"bInst":1,
+				}
+			}
 		}		
 		
 		{
@@ -407,7 +420,6 @@
 			"_ImageNet":"hmIN",
 			"_MatrixNet":"hmMN",
 			"alertDist":0.9,
-			"speedP":3000,
 			"steerP":2000,
 			"objLifetime":200000,
 			"markerTurnTimer":5000000,

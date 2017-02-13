@@ -3,7 +3,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Stream/_StreamBase.h"
 #include "../../../AI/_MatrixNet.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
@@ -29,7 +28,6 @@ private:
 	_MatrixNet* m_pMN;
 	int m_iMarkerClass;
 
-	double	m_speedP;
 	double	m_steerP;
 	int		m_rpmSteer;
 

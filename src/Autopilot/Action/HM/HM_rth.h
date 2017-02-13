@@ -2,12 +2,11 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMRTH_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
-#include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
-#include "../../../AI/_AIbase.h"
-#include "../../../Filter/FilterBase.h"
+#include "../../../Automaton/_Automaton.h"
+#include "../../../AI/_MatrixNet.h"
+#include "../../../Navigation/_Obstacle.h"
 
 namespace kai
 {
@@ -24,20 +23,17 @@ public:
 	bool draw(void);
 
 private:
-	_Obstacle*	m_pUniv;
 	HM_base* m_pHM;
+	_Obstacle* m_pObs;
+	_MatrixNet* m_pMN;
 
-	//where target should be on cam coordinate
-	double	m_destX;
-	double	m_destY;
-	double	m_destArea;
-
-	double	m_speedP;
 	double	m_steerP;
+	int		m_rpmSteer;
 
-	OBJECT* m_pTarget;
-	int		m_filterWindow;
-	int		m_targetClass;
+	vDouble2 m_basePos;
+	double	m_baseDist;
+	int		m_iBaseClass;
+	OBJECT* m_pBase;
 
 };
 
