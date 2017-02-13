@@ -28,6 +28,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);
 	ADD_MODULE(_ImageNet);
+	ADD_MODULE(_MatrixNet);
 	ADD_MODULE(_Obstacle);
 	ADD_MODULE(_DetectNet);
 	ADD_MODULE(_GPS);

@@ -27,8 +27,11 @@ HM_grass::HM_grass()
 	m_tTurnRandLen = 0;
 	m_tTurnRandSet = 0;
 
-	//	m_grassMat.init();
-	//	m_grassArea.init();
+	m_iGrassClass = -1;
+	m_pGrassL = NULL;
+	m_pGrassF = NULL;
+	m_pGrassR = NULL;
+
 }
 
 HM_grass::~HM_grass()
@@ -48,6 +51,7 @@ bool HM_grass::init(void* pKiss)
 	F_INFO(pK->v("iClass", &m_grassClassIdx));
 	F_INFO(pK->v("nTurnRand", &m_nTurnRand));
 	F_INFO(pK->v("tTurnRandRange", &m_tTurnRandRange));
+	F_INFO(pK->v("iGrassClass", &m_iGrassClass));
 
 	Kiss* pG;
 
@@ -73,15 +77,6 @@ bool HM_grass::init(void* pKiss)
 	F_INFO(pG->v("bottom", &m_grassBoxR.m_w));
 
 	return true;
-
-	//	Kiss* pG = pK->o("grassMatrix");
-	//	IF_T(pG->empty());
-	//	F_INFO(pG->v("nW", &m_grassMat.m_x));
-	//	F_INFO(pG->v("nH", &m_grassMat.m_y));
-	//	F_INFO(pG->v("left", &m_grassArea.m_x));
-	//	F_INFO(pG->v("top", &m_grassArea.m_y));
-	//	F_INFO(pG->v("right", &m_grassArea.m_z));
-	//	F_INFO(pG->v("bottom", &m_grassArea.m_w));
 }
 
 bool HM_grass::link(void)
@@ -108,45 +103,22 @@ bool HM_grass::link(void)
 	gBlk.init();
 	gBlk.m_name = "";
 	gBlk.m_fBBox = m_grassBoxL;
-	IF_F(!m_pIN->add(&gBlk));
+	m_pGrassL = m_pIN->add(&gBlk);
+	NULL_F(m_pGrassL);
 
 	gBlk.init();
 	gBlk.m_name = "";
 	gBlk.m_fBBox = m_grassBoxF;
-	IF_F(!m_pIN->add(&gBlk));
+	m_pGrassF = m_pIN->add(&gBlk);
+	NULL_F(m_pGrassF);
 
 	gBlk.init();
 	gBlk.m_name = "";
 	gBlk.m_fBBox = m_grassBoxR;
-	IF_F(!m_pIN->add(&gBlk));
+	m_pGrassR = m_pIN->add(&gBlk);
+	NULL_F(m_pGrassR);
 
 	return true;
-
-//	//create grass detection area instances
-//	double blkW = (m_grassArea.m_z - m_grassArea.m_x) / m_grassMat.m_x;
-//	double blkH = (m_grassArea.m_w - m_grassArea.m_y) / m_grassMat.m_y;
-//	if (blkW <= 0 || blkH <= 0)
-//	{
-//		LOG_E("blkW <=0 || blkH <= 0");
-//		return false;
-//	}
-//
-//	OBJECT gBlk;
-//	for (int i = 0; i < m_grassMat.m_y; i++)
-//	{
-//		for (int j = 0; j < m_grassMat.m_x; j++)
-//		{
-//			gBlk.init();
-//			gBlk.m_name = "";
-//			gBlk.m_fBBox.m_x = m_grassArea.m_x + j * blkW;
-//			gBlk.m_fBBox.m_z = m_grassArea.m_x + (j + 1) * blkW;
-//			gBlk.m_fBBox.m_y = m_grassArea.m_y + i * blkH;
-//			gBlk.m_fBBox.m_w = m_grassArea.m_y + (i + 1) * blkH;
-//
-//			IF_F(!m_pIN->add(&gBlk));
-//		}
-//	}
-
 }
 
 void HM_grass::update(void)
@@ -157,48 +129,20 @@ void HM_grass::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pIN);
 
-	double grassD[3];
-	grassD[0] = 0.0;
-	grassD[1] = 0.0;
-	grassD[2] = 0.0;
-
-	OBJECT* pObj;
-
-	pObj = m_pIN->get(DIR_L, 0);
-	if(pObj)
-	{
-		if (pObj->m_iClass == m_grassClassIdx)
-			grassD[DIR_L] += pObj->m_prob;
-	}
-
-	pObj = m_pIN->get(DIR_F, 0);
-	if(pObj)
-	{
-		if (pObj->m_iClass == m_grassClassIdx)
-			grassD[DIR_F] += pObj->m_prob;
-	}
-
-	pObj = m_pIN->get(DIR_R, 0);
-	if(pObj)
-	{
-		if (pObj->m_iClass == m_grassClassIdx)
-			grassD[DIR_R] += pObj->m_prob;
-	}
-
 	IF_(!isActive());
 	uint64_t t = get_time_usec();
 
 	//we have/found a good place to go
-	if (grassD[DIR_F] >= m_grassMinProb)
+	if (m_pGrassF->m_prob >= m_grassMinProb)
 	{
 		IF_(m_tTurnSet == 0);
 
-		if(m_tTurnRandSet == 0)
+		if (m_tTurnRandSet == 0)
 		{
 			m_tTurnRandLen = (rand() % m_nTurnRand) * m_tTurnRandRange;
 			m_tTurnRandSet = t;
 		}
-		else if(t - m_tTurnRandSet > m_tTurnRandLen)
+		else if (t - m_tTurnRandSet > m_tTurnRandLen)
 		{
 			//reset the timer once finished the random extra turning
 			m_tTurnSet = 0;
@@ -211,7 +155,7 @@ void HM_grass::update(void)
 	if (m_tTurnSet == 0)
 	{
 		m_tTurnSet = t;
-		if (grassD[DIR_L] > grassD[DIR_R])
+		if (m_pGrassL->m_prob > m_pGrassR->m_prob)
 			m_rpmSteer = m_steerP;
 		else
 			m_rpmSteer = -m_steerP;
@@ -225,32 +169,6 @@ void HM_grass::update(void)
 	//keep turning
 	m_pHM->m_motorPwmL = -m_rpmSteer;
 	m_pHM->m_motorPwmR = m_rpmSteer;
-
-	//	int wD = m_grassMat.m_x / 3;
-	//	double grassD[3];
-	//	grassD[0] = 0.0;
-	//	grassD[1] = 0.0;
-	//	grassD[2] = 0.0;
-	//
-	//	for (int i = 0; i < m_grassMat.m_y; i++)
-	//	{
-	//		for (int j = 0; j < m_grassMat.m_x; j++)
-	//		{
-	//			int k = i * m_grassMat.m_x + j;
-	//			OBJECT* pObj = m_pIN->get(k, 0);
-	//			NULL_(pObj);
-	//
-	//			if (pObj->m_iClass != m_grassClassIdx)
-	//				continue;
-	//
-	//			grassD[j / wD] += pObj->m_prob;
-	//		}
-	//	}
-	//
-	//	double n = 1.0 / (m_grassMat.m_y * wD);
-	//	grassD[0] *= n;
-	//	grassD[1] *= n;
-	//	grassD[2] *= n;
 
 }
 
@@ -271,23 +189,40 @@ bool HM_grass::draw(void)
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pIN);
-	for (int i = 0; i < m_pIN->m_iObj; i++)
-	{
-		OBJECT* pObj = m_pIN->get(i, 0);
-		if (!pObj)
-			continue;
 
-		Rect r;
-		vInt42rect(&pObj->m_bbox, &r);
-		Scalar col = Scalar(200, 200, 200);
-		int bold = 1;
-		if (pObj->m_iClass == 1)
-		{
-			col = Scalar(0, 255, 0);
-			bold = 2;
-		}
-		rectangle(*pMat, r, col, bold);
+	Rect r;
+	Scalar col;
+	int bold;
+
+	vInt42rect(&m_pGrassL->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassL->m_iClass == m_iGrassClass)
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
 	}
+	rectangle(*pMat, r, col, bold);
+
+	vInt42rect(&m_pGrassF->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassF->m_iClass == m_iGrassClass)
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
+	}
+	rectangle(*pMat, r, col, bold);
+
+	vInt42rect(&m_pGrassR->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassR->m_iClass == m_iGrassClass)
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
+	}
+	rectangle(*pMat, r, col, bold);
 
 	return true;
 }

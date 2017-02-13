@@ -17,6 +17,7 @@ BASE::BASE()
 	m_pKiss = NULL;
 	m_pWindow = NULL;
 	m_bLog = true;
+	m_bDraw = true;
 }
 
 BASE::~BASE()
@@ -33,6 +34,7 @@ bool BASE::init(void* pKiss)
 	IF_F(name.empty());
 
 	pK->v("bLog",&m_bLog);
+	pK->v("bDraw",&m_bDraw);
 
 	m_pKiss = pKiss;
 	return true;
@@ -69,6 +71,7 @@ bool BASE::start(void)
 
 bool BASE::draw(void)
 {
+	IF_F(!m_bDraw);
 	NULL_F(m_pWindow);
 
 	Window* pWin = (Window*)m_pWindow;

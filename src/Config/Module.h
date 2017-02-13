@@ -56,6 +56,7 @@
 #include "../Protocol/_RC.h"
 
 #include "../AI/_ImageNet.h"
+#include "../AI/_MatrixNet.h"
 #include "../AI/_DetectNet.h"
 
 #ifdef USE_SSD

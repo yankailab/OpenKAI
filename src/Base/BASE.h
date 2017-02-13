@@ -36,6 +36,7 @@ public:
 	void*	m_pKiss;
 	void*	m_pWindow;
 	bool	m_bLog;
+	bool	m_bDraw;
 };
 
 }

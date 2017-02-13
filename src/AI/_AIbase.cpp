@@ -119,13 +119,16 @@ void _AIbase::update(void)
 	NULL_(m_pStream);
 }
 
-bool _AIbase::add(OBJECT* pNewObj)
+OBJECT* _AIbase::add(OBJECT* pNewObj)
 {
-	NULL_F(pNewObj);
+	NULL_N(pNewObj);
 	m_pObj[m_iObj] = *pNewObj;
+	OBJECT* pNew = &m_pObj[m_iObj];
+
 	if (++m_iObj >= m_nObj)
 		m_iObj = 0;
-	return true;
+
+	return pNew;
 }
 
 int _AIbase::size(void)

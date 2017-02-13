@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Stream/_StreamBase.h"
-#include "../../../AI/_DetectNet.h"
+#include "../../../AI/_MatrixNet.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
@@ -26,28 +26,23 @@ public:
 private:
 	HM_base* m_pHM;
 	_Obstacle* m_pObs;
-	_DetectNet* m_pMarkerDN;
-
-	vDouble4 m_obsBoxF;
-	vDouble4 m_obsBoxL;
-	vDouble4 m_obsBoxR;
-	vInt2	m_posMin;
-	double	m_alertDist;
-	double	m_markerDist;
+	_MatrixNet* m_pMN;
+	int m_iMarkerClass;
 
 	double	m_speedP;
 	double	m_steerP;
+	int		m_rpmSteer;
 
-	//operation
 	double m_distM;
+	vDouble4 m_obsBoxF;
+	vDouble4 m_obsBoxL;
+	vDouble4 m_obsBoxR;
+	vInt2 m_posMin;
+	double m_alertDist;
 
-	double		m_minProb;
-	uint64_t 	m_objLifetime;
-	uint64_t	m_markerTurnStart;
-	uint64_t	m_markerTurnTimer;
-	int			m_rpmSteer;
-	OBJECT*		m_pMarker;
-
+	uint64_t m_objLifetime;
+	uint64_t m_markerTurnStart;
+	uint64_t m_markerTurnTimer;
 
 };
 

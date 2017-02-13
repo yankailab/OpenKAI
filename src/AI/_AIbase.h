@@ -74,10 +74,10 @@ public:
 	virtual bool start(void);
 	virtual bool draw(void);
 
-	int size(void);
-	bool add(OBJECT* pNewObj);
+	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* get(int i, int64_t frameID);
 	OBJECT* getByClass(int iClass);
+	int size(void);
 
 private:
 	void update(void);

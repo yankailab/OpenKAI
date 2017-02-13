@@ -109,7 +109,7 @@ void APMcopter_avoid::updateDistanceSensor(void)
 
 		for(i=0; i<nAngles; i++)
 		{
-			m_distSF40 = m_pSF40->getDistance(pAngles[i]);
+			m_distSF40 = m_pSF40->getDistance(pAngles[i]) * 100;
 
 			if(m_distSF40 < minDist || m_distSF40 > maxDist)
 				m_distSF40 = maxDist;

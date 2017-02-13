@@ -17,9 +17,6 @@ HM_rth::HM_rth()
 	m_steerP = 0.0;
 
 	m_pTarget = NULL;
-//	m_pTargetX = new kai::FilterBase();
-//	m_pTargetY = new kai::FilterBase();
-//	m_pTargetArea = new kai::FilterBase();
 	m_filterWindow = 3;
 	m_targetClass = 0;
 
@@ -44,9 +41,6 @@ bool HM_rth::init(void* pKiss)
 	F_INFO(pK->v("steerP", &m_steerP));
 
 	F_INFO(pK->v("filterWindow", &m_filterWindow));
-//	m_pTargetX->start(m_filterWindow);
-//	m_pTargetY->start(m_filterWindow);
-//	m_pTargetArea->start(m_filterWindow);
 
 	return true;
 }

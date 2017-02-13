@@ -36,9 +36,6 @@ private:
 	double	m_steerP;
 
 	OBJECT* m_pTarget;
-//	kai::FilterBase* m_pTargetX;
-//	kai::FilterBase* m_pTargetY;
-//	kai::FilterBase* m_pTargetArea;
 	int		m_filterWindow;
 	int		m_targetClass;
 

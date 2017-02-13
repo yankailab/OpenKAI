@@ -7,10 +7,6 @@
 #include "../ActionBase.h"
 #include "HM_base.h"
 
-#define DIR_L 0
-#define DIR_F 1
-#define DIR_R 2
-
 namespace kai
 {
 
@@ -46,8 +42,10 @@ private:
 	vDouble4	m_grassBoxF;
 	vDouble4	m_grassBoxR;
 
-	//	vInt2		m_grassMat;
-	//	vDouble4	m_grassArea;
+	int 		m_iGrassClass;
+	OBJECT*		m_pGrassL;
+	OBJECT*		m_pGrassF;
+	OBJECT*		m_pGrassR;
 
 };
 
