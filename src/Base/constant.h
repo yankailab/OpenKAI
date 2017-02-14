@@ -17,6 +17,7 @@
 #define DEG_RAD 0.0174533
 #define USEC_1SEC 1000000
 #define NSEC_1SEC 1000000000
+#define DEG_AROUND 360.0
 
 #define CR '\x0d'
 #define LF '\x0a'

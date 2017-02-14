@@ -8,9 +8,11 @@
 #include <fcntl.h>
 #include <fstream>
 #include <functional>
+#include <float.h>
 #include <getopt.h>
 #include <iosfwd>
 #include <list>
+#include <limits.h>
 #include <memory>
 #include <netdb.h>
 #include <netinet/in.h>

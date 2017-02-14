@@ -21,10 +21,13 @@ public:
 	virtual void update(void);
 	virtual bool draw(void);
 	virtual bool isActive(void);
+	virtual bool isStateChanged(void);
 
 public:
 	_Automaton* m_pAM;
 	std::vector<int>	m_vActiveState;
+	int m_iLastState;
+	bool m_bStateChanged;
 
 	int64_t m_timeStamp;
 	int64_t m_dTime;

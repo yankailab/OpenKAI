@@ -11,21 +11,42 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Sensor/_Lightware_SF40.h"
-#include "../Protocol/_Mavlink.h"
 #include "../Automaton/_Automaton.h"
 #include "../AI/_MatrixNet.h"
 #include "../Navigation/_Obstacle.h"
+#include "../Navigation/_GPS.h"
 
 using std::vector;
+#define MAX_CELL 1000
+#define CELL_MIN_LEN 0.1
 
 namespace kai
 {
 
+struct OBSTACLE_BOX
+{
+	vDouble4	m_fBBox;
+	double		m_deg;
+
+	void init(void)
+	{
+		m_fBBox.init();
+		m_deg = 0.0;
+	}
+};
+
 struct GRID_CELL
 {
-	uint16_t	m_iClass;
+	int16_t		m_iClass;
+	int32_t		m_data;
 	uint64_t	m_tLastUpdate;
-	uint32_t	m_data;
+
+	void init(void)
+	{
+		m_iClass = -1;
+		m_data = -1;
+		m_tLastUpdate = 0;
+	}
 };
 
 class _SLAM: public _ThreadBase
@@ -40,7 +61,11 @@ public:
 	bool draw(void);
 
 private:
-	void detect(void);
+	void expandGrid(vInt3* pPos);
+	void updateGPS(void);
+	void updateSF40(void);
+	void updateObstacle(void);
+	void updateMatrixNet(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -49,14 +74,29 @@ private:
 	}
 
 public:
-	_Obstacle* m_pObs;
 	_MatrixNet* m_pMN;
 	_Lightware_SF40* m_pSF40;
-	_Mavlink* m_pMavlink;
 
-	vInt3	m_gridDim;
-	vector<vector<vector<GRID_CELL> > > m_grid;
+	_GPS*		m_pGPS;
+	vDouble3	m_attiRad;	//yaw, pitch, roll, heading
+	double		m_hdgRad;
+	double		m_initHdgRad;
+	uint64_t	m_tLastMav;
 
+	_Obstacle*	m_pObs;
+	vDouble2	m_obsRange;
+	vector<OBSTACLE_BOX> m_vObsBox;
+
+	//X positive: Easting
+	//Y positive: Northing
+	//Z altitude
+	vInt3		m_gridDim;
+	vDouble3	m_cellLen;		//in meter
+	vInt3		m_gridOrigin;	//init position
+	vInt3		m_gridPos;
+	deque<deque<deque<GRID_CELL> > > m_grid;
+
+	uint64_t	m_tNow;
 
 
 };

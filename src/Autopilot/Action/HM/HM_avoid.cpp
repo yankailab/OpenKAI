@@ -5,6 +5,7 @@ namespace kai
 
 HM_avoid::HM_avoid()
 {
+	m_pZED = NULL;
 	m_pHM = NULL;
 	m_pObs = NULL;
 	m_pMN = NULL;
@@ -76,9 +77,15 @@ bool HM_avoid::link(void)
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
-	string iName = "";
+	string iName;
+
+	iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_ZED", &iName));
+	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
@@ -99,7 +106,21 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pObs);
 	NULL_(m_pMN);
+	NULL_(m_pZED);
 	IF_(!isActive());
+
+	if(this->isStateChanged())
+	{
+//		m_pZED->startTracking();
+	}
+
+//	if(m_pZED->m_pZed)
+//	{
+//		if(!m_pZED->isTracking())
+//		{
+//			m_pZED->startTracking();
+//		}
+//	}
 
 	uint64_t tNow = get_time_usec();
 

@@ -12,6 +12,7 @@ namespace kai
 
 _GPS::_GPS()
 {
+	m_pZED = NULL;
 	m_pMavlink = NULL;
 	m_pSF40 = NULL;
 	m_initLL.init();
@@ -19,7 +20,7 @@ _GPS::_GPS()
 	m_UTM.init();
 	m_mavDSfreq = 30;
 	m_tStarted = 0;
-	m_time = 0;
+	m_tNow = 0;
 	m_apmMode = 0;
 
 }
@@ -43,18 +44,6 @@ bool _GPS::init(void* pKiss)
 	setLL(&m_initLL);
 
 	m_initUTM = *getUTM();
-
-	//filter
-	pI = pK->o("medianFilter");
-	IF_F(pI->empty());
-	IF_F(!m_mX.init(pI));
-	IF_F(!m_mY.init(pI));
-
-	pI = pK->o("avrFilter");
-	IF_F(pI->empty());
-	IF_F(!m_aX.init(pI));
-	IF_F(!m_aY.init(pI));
-
 	m_tStarted = get_time_usec();
 
 	return true;
@@ -65,9 +54,15 @@ bool _GPS::link(void)
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
-	string iName = "";
+	string iName;
+
+	iName = "";
 	F_INFO(pK->v("_Lightware_SF40", &iName));
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_ZED", &iName));
+	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
@@ -95,7 +90,8 @@ void _GPS::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_time = get_time_usec();
+		m_tNow = get_time_usec();
+
 		detect();
 
 		this->autoFPSto();
@@ -104,7 +100,6 @@ void _GPS::update(void)
 
 void _GPS::detect(void)
 {
-	NULL_(m_pSF40);
 	NULL_(m_pMavlink);
 
 	getMavGPS();
@@ -115,27 +110,35 @@ void _GPS::detect(void)
 	{
 		m_apmMode = apmMode;
 		setLL(&m_initLL);
+
+		if(m_pZED)
+			m_pZED->startTracking();
 	}
-
-	m_pSF40->setHeading(m_LL.m_hdg);
-
-	//estimate position
-	vDouble2 dPos = m_pSF40->getPosDiff();
 
 	UTM_POS utm = *getUTM();
 
-	utm.m_easting += dPos.m_x;
-	utm.m_northing += dPos.m_y;
+	if(m_pSF40)
+	{
+		m_pSF40->setHeading(m_LL.m_hdg);
 
-//	m_mX.input(utm.m_easting + dPos.m_x);
-//	m_mY.input(utm.m_northing + dPos.m_y);
-//	m_aX.input(m_mX.v());
-//	m_aY.input(m_mY.v());
-//	utm.m_easting = m_aX.v();
-//	utm.m_northing = m_aY.v();
+		//estimate position
+		vDouble2 dPos = m_pSF40->getPosDiff();
+
+		utm.m_easting += dPos.m_x;
+		utm.m_northing += dPos.m_y;
+	}
+	else if(m_pZED)
+	{
+		m_pZED->setHeading(m_LL.m_hdg);
+
+		//estimate position
+		vDouble3 dPos = m_pZED->getAccumulatedPos();
+
+		utm.m_easting += dPos.m_x;
+		utm.m_northing += dPos.m_y;
+	}
 
 	setUTM(&utm);
-
 	setMavGPS();
 
 	double dX = m_UTM.m_easting - m_initUTM.m_easting;
@@ -169,7 +172,7 @@ void _GPS::setMavGPS(void)
 	mavGPS.fix_type = 3;
 	mavGPS.satellites_visible = 10;
 	mavGPS.time_week = 1;
-	mavGPS.time_week_ms = (m_time-m_tStarted) / 1000;
+	mavGPS.time_week_ms = (m_tNow-m_tStarted) / 1000;
 	mavGPS.ignore_flags = 0b11111111;
 
 	m_pMavlink->gps_input(&mavGPS);
@@ -179,9 +182,12 @@ void _GPS::getMavGPS(void)
 {
 	NULL_(m_pMavlink);
 
-	if(m_time - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
+//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_mavDSfreq);
+//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER, m_mavDSfreq);
+
 		return;
 	}
 

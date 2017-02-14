@@ -9,6 +9,8 @@ ActionBase::ActionBase()
 	m_timeStamp = 0;
 	m_dTime = 0;
 	m_vActiveState.clear();
+	m_iLastState = 0;
+	m_bStateChanged = false;
 }
 
 ActionBase::~ActionBase()
@@ -52,6 +54,8 @@ bool ActionBase::link(void)
 		m_vActiveState.push_back(iState);
 	}
 
+	m_iLastState = m_pAM->getCurrentStateIdx();
+
 	return true;
 }
 
@@ -60,6 +64,17 @@ void ActionBase::update(void)
 	uint64_t newTime = get_time_usec();
 	m_dTime = newTime - m_timeStamp;
 	m_timeStamp = newTime;
+
+	int currentState = m_pAM->getCurrentStateIdx();
+	if(m_iLastState != currentState)
+	{
+		m_bStateChanged = true;
+		m_iLastState = currentState;
+	}
+	else
+	{
+		m_bStateChanged = false;
+	}
 }
 
 bool ActionBase::isActive(void)
@@ -73,6 +88,11 @@ bool ActionBase::isActive(void)
 	}
 
 	return false;
+}
+
+bool ActionBase::isStateChanged(void)
+{
+	return m_bStateChanged;
 }
 
 bool ActionBase::draw(void)

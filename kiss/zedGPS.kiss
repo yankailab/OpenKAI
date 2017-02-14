@@ -11,7 +11,7 @@
 }
 
 {
-	"name":"LA-GPS",
+	"name":"zedGPS",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -24,47 +24,23 @@
 }
 
 {
-	"name":"SF40",
-	"class":"_Lightware_SF40",
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
 	"bInst":1,
-	"bLog":1,
-	"Window":"LA-GPS",
-	"FPS":500,
-	"_Automaton":"APMstate",
-	"nDiv":180,
-	"nMeasureDiv":180,
-	"offsetAngle":90.0,
-	"MBS":3,
-	"minDist":0.1,
-	"maxDist":100.0,
-	"diffMax":0.5,
-	"diffMin":0.0,
-	"nUpdate":180,
-	"showScale":30.0,
-	
-	{
-		"name":"medianFilter",
-		"class":"Median",
-		"bInst":1,
-		"windowLen":3,
-		"nTraj":1,
-	}
-	
-	{
-		"name":"avrFilter",
-		"class":"Average",
-		"bInst":1,
-		"windowLen":1,
-		"nTraj":1,
-	}
-	
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyUSB0",
-		"baud":115200,
-	}
+	"Window":"zedGPS",
+	"orientation":0,
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":30,
+	"zedQuality":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":20,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bTracking":1,
 }
 
 {
@@ -73,7 +49,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"LA-GPS",
+	"Window":"zedGPS",
 
 	{
 		"name":"input",
@@ -93,32 +69,16 @@
 }
 
 {
-	"name":"LA_GPS",
+	"name":"GPS",
 	"class":"_GPS",
 	"bInst":1,
 	"bLog":1,
 	"FPS":30,
-	"Window":"LA-GPS",
+	"Window":"zedGPS",
 	"_Mavlink":"APMmavlink",
-	"_Lightware_SF40":"SF40",
+	"_ZED":"ZED",
 	"mavDSfreq":30,
-	
-	{
-		"name":"medianFilter",
-		"class":"Median",
-		"bInst":1,
-		"windowLen":3,
-		"nTraj":1,
-	}
-	
-	{
-		"name":"avrFilter",
-		"class":"Average",
-		"bInst":1,
-		"windowLen":1,
-		"nTraj":1,
-	}
-	
+		
 	{
 		"name":"initLL",
 		"bInst":1,
@@ -138,9 +98,9 @@
 	"name":"APMcopter",
 	"class":"_AutoPilot",
 	"_Automaton":"APMstate",
-	"bInst":1,
+	"bInst":0,
 	"FPS":10,
-	"Window":"LA-GPS",
+	"Window":"zedGPS",
 	"bMouse":1,
 	
 	{
@@ -151,7 +111,7 @@
 			"class":"APMcopter_base",
 			"bInst":1,
 			"_Automaton":"APMstate",
-			"Window":"LA-GPS",
+			"Window":"zedGPS",
 			"_Mavlink":"APMmavlink",
 		}
 
@@ -159,7 +119,7 @@
 			"name":"APMavoid",
 			"class":"APMcopter_avoid",
 			"bInst":1,
-			"Window":"LA-GPS",
+			"Window":"zedGPS",
 			"_Automaton":"APMstate",
 			"APMcopter_base":"APMbase",
 			"_Lightware_SF40":"SF40",

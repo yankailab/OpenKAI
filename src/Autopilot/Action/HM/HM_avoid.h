@@ -5,6 +5,7 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_MatrixNet.h"
 #include "../../../Navigation/_Obstacle.h"
+#include "../../../Stream/_ZED.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,6 +24,7 @@ public:
 	bool draw(void);
 
 private:
+	_ZED*	m_pZED;
 	HM_base* m_pHM;
 	_Obstacle* m_pObs;
 	_MatrixNet* m_pMN;

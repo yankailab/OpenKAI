@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Filter/FilterBase.h"
+#include "../Stream/_ZED.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Protocol/_Mavlink.h"
 #include "../include/UTM.h"
@@ -65,7 +66,6 @@ public:
 private:
 	void setMavGPS(void);
 	void getMavGPS(void);
-	bool updateLidar(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -75,22 +75,18 @@ private:
 	}
 
 public:
+	_ZED*	m_pZED;
 	_Lightware_SF40* m_pSF40;
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;
 	uint32_t m_apmMode;
 
 	uint64_t m_tStarted;
-	uint64_t m_time;
+	uint64_t m_tNow;
 
 	LL_POS	m_initLL;
 	LL_POS	m_LL;
 	UTM_POS m_UTM;
-
-	Median	m_mX;
-	Median	m_mY;
-	Average	m_aX;
-	Average	m_aY;
 
 	UTM_POS m_initUTM;
 

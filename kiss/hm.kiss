@@ -46,6 +46,7 @@
 	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
+	"bTracking":1,
 }
 	
 {
@@ -411,7 +412,7 @@
 			"name":"avoidance",
 			"class":"HM_avoid",
 			"bInst":1,
-			"_Stream":"ZED",
+			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",

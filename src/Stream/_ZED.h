@@ -31,6 +31,13 @@ public:
 	void getRange(double* pMin, double* pMax);
 	double dist(Rect* pR);
 
+	void startTracking(void);
+	void stopTracking(void);
+	vDouble3 getAccumulatedPos(void);
+	void setAttitude(vDouble3* pYPR);
+	bool isTracking(void);
+	void setHeading(double hdgDeg);
+
 private:
 	bool open(void);
 	void update(void);
@@ -43,6 +50,7 @@ private:
 public:
 	sl::zed::Camera* m_pZed;
 	sl::zed::SENSING_MODE m_zedMode;
+	sl::zed::TRACKING_STATE m_zedTrackState;
 	int m_zedResolution;
 	int m_zedFPS;
 	int m_zedQuality;
@@ -50,6 +58,14 @@ public:
 	double m_zedMinDist;
 	double m_zedMaxDist;
 	int m_zedConfidence;
+
+	bool m_bTracking;
+    sl::zed::MotionPoseData m_zedMotion;
+    vDouble3 m_dMotion;
+    double	m_sinHdg;
+    double	m_cosHdg;
+    double	m_sinHdgP;
+    double	m_cosHdgP;
 
 	Window* m_pDepthWin;
 

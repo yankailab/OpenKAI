@@ -14,8 +14,6 @@
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../IO/SerialPort.h"
 
-#define DEG_AROUND 360.0
-
 namespace kai
 {
 

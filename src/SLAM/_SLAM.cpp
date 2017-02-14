@@ -15,9 +15,19 @@ _SLAM::_SLAM()
 	m_pObs = NULL;
 	m_pMN = NULL;
 	m_pSF40 = NULL;
-	m_pMavlink = NULL;
+	m_pGPS = NULL;
 
+	m_attiRad.init();
 	m_gridDim.init();
+	m_gridOrigin.init();
+	m_cellLen.init();
+	m_gridPos.init();
+	m_obsRange.init();
+
+	m_tNow = 0;
+	m_hdgRad = 0.0;
+	m_initHdgRad = 0.0;
+	m_tLastMav = 0;
 }
 
 _SLAM::~_SLAM()
@@ -35,16 +45,43 @@ bool _SLAM::init(void* pKiss)
 	F_INFO(pK->v("dimY", &m_gridDim.m_y));
 	F_INFO(pK->v("dimZ", &m_gridDim.m_z));
 
-	int i,j;
+	m_gridDim.m_x = constrain(m_gridDim.m_x, 1, MAX_CELL);
+	m_gridDim.m_y = constrain(m_gridDim.m_y, 1, MAX_CELL);
+	m_gridDim.m_z = constrain(m_gridDim.m_z, 1, MAX_CELL);
 
-	// create grid
-	m_grid.resize(m_gridDim.m_x);
-	for (i = 0; i < m_gridDim.m_x; i++)
+	m_grid.clear();
+	m_gridOrigin.init();
+	m_gridPos = m_gridOrigin;
+
+	F_INFO(pK->v("lenX", &m_cellLen.m_x));
+	F_INFO(pK->v("lenY", &m_cellLen.m_y));
+	F_INFO(pK->v("lenZ", &m_cellLen.m_z));
+
+	m_cellLen.m_x = constrain(m_cellLen.m_x, CELL_MIN_LEN, DBL_MAX);
+	m_cellLen.m_y = constrain(m_cellLen.m_y, CELL_MIN_LEN, DBL_MAX);
+	m_cellLen.m_z = constrain(m_cellLen.m_z, CELL_MIN_LEN, DBL_MAX);
+
+	F_INFO(pK->v("obsRangeMin", &m_obsRange.m_x));
+	F_INFO(pK->v("obsRangeMax", &m_obsRange.m_y));
+
+	Kiss* pObs = pK->o("obstacleBox");
+	IF_T(pObs->empty());
+
+	m_vObsBox.clear();
+	Kiss** pItr = pObs->getChildItr();
+	int i = 0;
+	while (pItr[i])
 	{
-		m_grid[i].resize(m_gridDim.m_y);
+		Kiss* pO = pItr[i++];
 
-		for (j = 0; j < m_gridDim.m_y; j++)
-			m_grid[i][j].resize(m_gridDim.m_z);
+		OBSTACLE_BOX oBox;
+		oBox.init();
+		F_INFO(pO->v("left", &oBox.m_fBBox.m_x));
+		F_INFO(pO->v("top", &oBox.m_fBBox.m_y));
+		F_INFO(pO->v("right", &oBox.m_fBBox.m_z));
+		F_INFO(pO->v("bottom", &oBox.m_fBBox.m_w));
+
+		m_vObsBox.push_back(oBox);
 	}
 
 	return true;
@@ -70,9 +107,8 @@ bool _SLAM::link(void)
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(&iName));
-
+	F_INFO(pK->v("_GPS", &iName));
+	m_pGPS= (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -96,14 +132,116 @@ void _SLAM::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
+		m_tNow = get_time_usec();
+
+		updateGPS();
+		updateSF40();
+		updateObstacle();
+		updateMatrixNet();
 
 		this->autoFPSto();
 	}
 }
 
-void _SLAM::detect(void)
+void _SLAM::updateGPS(void)
 {
+	NULL_(m_pGPS);
+	_Mavlink* pMavlink = m_pGPS->m_pMavlink;
+	NULL_(pMavlink);
+
+	m_attiRad.m_x = (double)pMavlink->m_msg.attitude.yaw;
+	m_attiRad.m_y = (double)pMavlink->m_msg.attitude.pitch;
+	m_attiRad.m_z = (double)pMavlink->m_msg.attitude.roll;
+	m_hdgRad = ((double)pMavlink->m_msg.global_position_int.hdg) * 0.01;
+
+	if(m_tLastMav == 0)
+	{
+		m_initHdgRad = m_hdgRad;
+	}
+
+	m_tLastMav = pMavlink->m_msg.time_stamps.global_position_int;
+
+}
+
+void _SLAM::updateSF40(void)
+{
+	NULL_(m_pSF40);
+}
+
+void _SLAM::updateObstacle(void)
+{
+	NULL_(m_pObs);
+
+	int i;
+	for(i=0; i<m_vObsBox.size(); i++)
+	{
+		OBSTACLE_BOX oB = m_vObsBox[i];
+		double d = m_pObs->dist(&oB.m_fBBox, NULL);
+
+		IF_CONT(d < m_obsRange.m_x);
+		IF_CONT(d > m_obsRange.m_y);
+
+		double dirRad = m_hdgRad + (oB.m_deg * DEG_RAD);
+		double dE = d * sin(dirRad);
+		double dN = d * cos(dirRad);
+
+		vInt3 p;
+		p.m_x = m_gridOrigin.m_x + m_gridPos.m_x + (dE / m_cellLen.m_x);
+		p.m_y = m_gridOrigin.m_y + m_gridPos.m_y + (dE / m_cellLen.m_y);
+		p.m_z = 0;
+
+		expandGrid(&p);
+
+		GRID_CELL* pCell = &m_grid[p.m_x][p.m_y][p.m_z];
+		pCell->m_data = 1;
+		pCell->m_tLastUpdate = m_tNow;
+	}
+}
+
+void _SLAM::expandGrid(vInt3* pPos)
+{
+	NULL_(pPos);
+
+	GRID_CELL newCell;
+	newCell.init();
+	deque<GRID_CELL> eY;
+	eY.push_back(newCell);
+	deque<deque<GRID_CELL> > eX;
+	eX.push_back(eY);
+
+	while(pPos->m_x >= m_grid.size())
+	{
+		m_grid.push_back(eX);
+	}
+
+	while(pPos->m_x < 0)
+	{
+		m_grid.push_front(eX);
+		m_gridOrigin.m_x++;
+		pPos->m_x++;
+	}
+
+	deque<deque<GRID_CELL> >* pY = &m_grid[pPos->m_x];
+
+	while(pPos->m_y >= pY->size())
+	{
+		pY->push_back(eY);
+	}
+
+	while(pPos->m_y < 0)
+	{
+		m_grid.push_front(eX);
+		m_gridOrigin.m_x++;
+		pPos->m_x++;
+	}
+
+}
+
+void _SLAM::updateMatrixNet(void)
+{
+	NULL_(m_pMN);
+
+
 }
 
 bool _SLAM::draw(void)
