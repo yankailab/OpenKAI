@@ -242,9 +242,16 @@ vDouble3 _ZED::getAccumulatedPos(void)
 	if(m_trackState != tracking)
 		return dM;
 
-	dM.m_x = (double)m_mMotion(0,3);
-	dM.m_y = (double)m_mMotion(1,3);
-	dM.m_z = (double)m_mMotion(2,3);
+	double E = (double)m_mMotion(0,3);  //Easting
+	double A = (double)m_mMotion(1,3);  //Alt
+	double N = (double)m_mMotion(2,3);  //Northing
+
+	double sinH = sin(m_hdgRad);
+	double cosH = cos(m_hdgRad);
+
+	dM.m_x = E * cosH + N * sinH; //Easting
+	dM.m_y = A;//Alt
+	dM.m_z = N * cosH - E * sinH; //Northing
 
 	m_mMotion.setIdentity(4,4);
 	return dM;
@@ -267,18 +274,18 @@ void _ZED::setAttitude(vDouble3* pYPR)
 
 void _ZED::setHeading(double hdgDeg)
 {
-	IF_(m_trackState != tracking);
+//	IF_(m_trackState != tracking);
 
 	m_hdgRad = hdgDeg * DEG_RAD;
 
-	Eigen::AngleAxisf y(m_hdgRad, Eigen::Vector3f::UnitY());
-	Eigen::AngleAxisf p(0, Eigen::Vector3f::UnitX());
-	Eigen::AngleAxisf r(0, Eigen::Vector3f::UnitZ());
+//	Eigen::AngleAxisf y(m_hdgRad, Eigen::Vector3f::UnitY());
+//	Eigen::AngleAxisf p(0, Eigen::Vector3f::UnitX());
+//	Eigen::AngleAxisf r(0, Eigen::Vector3f::UnitZ());
 
-	Eigen::Quaternion<float> q = y * p * r;
-	Eigen::Matrix3f mRot = q.matrix();
+//	Eigen::Quaternion<float> q = y * p * r;
+//	Eigen::Matrix3f mRot = q.matrix();
 
-	m_pZed->setTrackingPrior(mRot);
+//	m_pZed->setTrackingPrior(mRot);
 }
 
 void _ZED::getRange(double* pMin, double* pMax)
