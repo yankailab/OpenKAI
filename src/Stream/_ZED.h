@@ -68,6 +68,7 @@ public:
     double	m_hdgRad;
     Eigen::Matrix4f m_mMotion;
 
+
 	Window* m_pDepthWin;
 
 };

@@ -129,14 +129,14 @@ void _GPS::detect(void)
 	}
 	else if(m_pZED)
 	{
-		vDouble3 ypr;
-		ypr.init();
-		ypr.m_x = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01 * DEG_RAD;
-		ypr.m_y = m_pMavlink->m_msg.attitude.pitch;
-		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
-
-////		m_pZED->setHeading(m_LL.m_hdg);
+//		vDouble3 ypr;
+//		ypr.init();
+//		ypr.m_x = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01 * DEG_RAD;
+//		ypr.m_y = m_pMavlink->m_msg.attitude.pitch;
+//		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
 //		m_pZED->setAttitude(&ypr);
+
+		m_pZED->setHeading(m_LL.m_hdg);
 
 		//estimate position
 		vDouble3 dPos = m_pZED->getAccumulatedPos();
