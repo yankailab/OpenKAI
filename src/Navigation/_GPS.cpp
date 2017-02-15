@@ -129,21 +129,30 @@ void _GPS::detect(void)
 	}
 	else if(m_pZED)
 	{
-		m_pZED->setHeading(m_LL.m_hdg);
+		vDouble3 ypr;
+		ypr.init();
+		ypr.m_x = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01 * DEG_RAD;
+		ypr.m_y = m_pMavlink->m_msg.attitude.pitch;
+		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
+
+////		m_pZED->setHeading(m_LL.m_hdg);
+//		m_pZED->setAttitude(&ypr);
 
 		//estimate position
 		vDouble3 dPos = m_pZED->getAccumulatedPos();
 
 		utm.m_easting += dPos.m_x;
-		utm.m_northing += dPos.m_y;
+		utm.m_northing += dPos.m_z;
+		utm.m_alt += dPos.m_y;
 	}
 
 	setUTM(&utm);
 	setMavGPS();
 
-	double dX = m_UTM.m_easting - m_initUTM.m_easting;
-	double dY = m_UTM.m_northing - m_initUTM.m_northing;
-	LOG_I("Dist: X=" + f2str(dX) + ", Y=" + f2str(dY));
+	double dE = m_UTM.m_easting - m_initUTM.m_easting;
+	double dN = m_UTM.m_northing - m_initUTM.m_northing;
+	double dA = m_UTM.m_alt - m_initUTM.m_alt;
+	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
 }
 
 /*
@@ -202,6 +211,7 @@ void _GPS::setLL(LL_POS* pLL)
 	char pUTMzone[8];
 	UTM::LLtoUTM(m_LL.m_lat, m_LL.m_lng, m_UTM.m_northing, m_UTM.m_easting, pUTMzone);
 	m_UTM.m_zone = pUTMzone;
+	m_UTM.m_alt = m_LL.m_alt;
 }
 
 void _GPS::setUTM(UTM_POS* pUTM)
@@ -210,6 +220,7 @@ void _GPS::setUTM(UTM_POS* pUTM)
 	m_UTM = *pUTM;
 
 	UTM::UTMtoLL(m_UTM.m_northing, m_UTM.m_easting, m_UTM.m_zone.c_str(), m_LL.m_lat, m_LL.m_lng);
+	m_LL.m_alt = m_UTM.m_alt;
 }
 
 LL_POS* _GPS::getLL(void)
@@ -231,11 +242,12 @@ bool _GPS::draw(void)
 
 	double dX = m_UTM.m_easting - m_initUTM.m_easting;
 	double dY = m_UTM.m_northing - m_initUTM.m_northing;
+	double dZ = m_UTM.m_alt - m_initUTM.m_alt;
 
 	pWin->tabNext();
-	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", hdg=" + f2str(m_LL.m_hdg);
+	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
 	pWin->addMsg(&msg);
-	msg = "Dist: X=" + f2str(dX) + ", Y=" + f2str(dY);
+	msg = "Dist: X=" + f2str(dX) + ", Y=" + f2str(dY) + ", Z=" + f2str(dZ);
 	pWin->addMsg(&msg);
 	pWin->tabPrev();
 

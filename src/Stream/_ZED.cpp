@@ -27,9 +27,9 @@ _ZED::_ZED()
 	m_zedConfidence = 100;
 	m_angleH = 66.7;
 	m_angleV = 67.1;
-	m_bTracking = false;
-	m_dMotion.init();
 	m_zedTrackState = sl::zed::TRACKING_STATE::TRACKING_OFF;
+	m_mMotion.setIdentity(4,4);
+	m_trackState = track_idle;
 
 	setHeading(0);
 }
@@ -56,7 +56,6 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
 	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
 	F_INFO(pK->v("zedConfidence", &m_zedConfidence));
-	F_INFO(pK->v("bTracking", &m_bTracking));
 
 	m_pDepth = new Frame();
 
@@ -107,10 +106,7 @@ bool _ZED::open(void)
 	m_centerH = m_width/2;
 	m_centerV = m_height/2;
 
-	if(m_bTracking)
-	{
-		startTracking();
-	}
+	startTracking();
 
 	m_bOpen = true;
 	return true;
@@ -198,13 +194,25 @@ void _ZED::update(void)
 
 			m_pDepth->update(pSrcD);
 
-			if(m_bTracking)
+
+			Eigen::Matrix4f m;
+			switch (m_trackState)
 			{
-				m_zedTrackState = m_pZed->getPosition(m_zedMotion, sl::zed::MAT_TRACKING_TYPE::POSE);
-				m_dMotion.m_x += m_zedMotion.translation[0] * m_sinHdg + m_zedMotion.translation[1] * m_sinHdgP;
-				m_dMotion.m_y += m_zedMotion.translation[0] * m_cosHdg + m_zedMotion.translation[1] * m_cosHdgP;
-				m_dMotion.m_z += m_zedMotion.translation[2];
+			case tracking:
+				m_zedTrackState = m_pZed->getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
+				m_mMotion *= m;
+				break;
+			case track_start:
+				m_mMotion.setIdentity(4,4);
+				if(m_pZed->enableTracking(m_mMotion,false))
+					m_trackState = tracking;
+				break;
+			case track_stop:
+				m_pZed->stopTracking();
+				m_trackState = track_idle;
+				break;
 			}
+
 		}
 
 		this->autoFPSto();
@@ -213,48 +221,64 @@ void _ZED::update(void)
 
 void _ZED::startTracking(void)
 {
-	NULL_(m_pZed);
-    Eigen::Matrix4f I;
-	I.setIdentity(4,4);
-	m_bTracking = m_pZed->enableTracking(I,false);
+	m_trackState = track_start;
 }
 
 void _ZED::stopTracking(void)
 {
-	NULL_(m_pZed);
-	IF_(!m_bTracking);
-	m_pZed->stopTracking();
-	m_bTracking = false;
+	m_trackState = track_stop;
 }
 
 bool _ZED::isTracking(void)
 {
-	return m_bTracking;
+	return (m_trackState == tracking);
 }
 
 vDouble3 _ZED::getAccumulatedPos(void)
 {
-	vDouble3 dM = m_dMotion;
-	m_dMotion.init();
+	vDouble3 dM;
+	dM.init();
+
+	if(m_trackState != tracking)
+		return dM;
+
+	dM.m_x = (double)m_mMotion(0,3);
+	dM.m_y = (double)m_mMotion(1,3);
+	dM.m_z = (double)m_mMotion(2,3);
+
+	m_mMotion.setIdentity(4,4);
 	return dM;
 }
 
 void _ZED::setAttitude(vDouble3* pYPR)
 {
 	NULL_(pYPR);
+	IF_(m_trackState != tracking);
 
-//	m_pZed->setTrackingPrior();
+	Eigen::AngleAxisf y(pYPR->m_x, Eigen::Vector3f::UnitY());
+	Eigen::AngleAxisf p(pYPR->m_y, Eigen::Vector3f::UnitX());
+	Eigen::AngleAxisf r(pYPR->m_z, Eigen::Vector3f::UnitZ());
+
+	Eigen::Quaternion<float> q = y * p * r;
+	Eigen::Matrix3f mRot = q.matrix();
+
+	m_pZed->setTrackingPrior(mRot);
 }
 
 void _ZED::setHeading(double hdgDeg)
 {
-	double hRad = hdgDeg * DEG_RAD;
-	m_sinHdg = sin(hRad);
-	m_cosHdg = cos(hRad);
+	IF_(m_trackState != tracking);
 
-	hRad += 90 * DEG_RAD;
-	m_sinHdgP = sin(hRad);
-	m_cosHdgP = cos(hRad);
+	m_hdgRad = hdgDeg * DEG_RAD;
+
+	Eigen::AngleAxisf y(m_hdgRad, Eigen::Vector3f::UnitY());
+	Eigen::AngleAxisf p(0, Eigen::Vector3f::UnitX());
+	Eigen::AngleAxisf r(0, Eigen::Vector3f::UnitZ());
+
+	Eigen::Quaternion<float> q = y * p * r;
+	Eigen::Matrix3f mRot = q.matrix();
+
+	m_pZed->setTrackingPrior(mRot);
 }
 
 void _ZED::getRange(double* pMin, double* pMax)
@@ -338,7 +362,7 @@ bool _ZED::draw(void)
 		string msg;
 		pWin->tabNext();
 
-		msg = "Tracking: X=" + f2str(m_dMotion.m_x) + ", Y=" + f2str(m_dMotion.m_y) + ", Z=" + f2str(m_dMotion.m_z);
+		msg = "Tracking: X=" + f2str(m_mMotion(0,3)) + ", Y=" + f2str(m_mMotion(1,3)) + ", Z=" + f2str(m_mMotion(2,3));
 		pWin->addMsg(&msg);
 
 		pWin->tabPrev();

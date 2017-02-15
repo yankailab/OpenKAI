@@ -23,12 +23,14 @@ struct LL_POS
 {
 	double	m_lat;
 	double	m_lng;
+	double	m_alt;
 	double	m_hdg;
 
 	void init(void)
 	{
 		m_lat = 0.0;
 		m_lng = 0.0;
+		m_alt = 0.0;
 		m_hdg = 0.0;
 	}
 };
@@ -37,12 +39,14 @@ struct UTM_POS
 {
 	double m_easting;
 	double m_northing;
+	double m_alt;
 	string m_zone;
 
 	void init(void)
 	{
 		m_easting = 0.0;
 		m_northing = 0.0;
+		m_alt = 0.0;
 		m_zone = "";
 	}
 };

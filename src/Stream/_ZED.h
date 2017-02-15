@@ -17,6 +17,11 @@
 namespace kai
 {
 
+enum tracking_status
+{
+	track_idle, track_start, tracking, track_stop
+};
+
 class _ZED: public _StreamBase
 {
 public:
@@ -59,13 +64,9 @@ public:
 	double m_zedMaxDist;
 	int m_zedConfidence;
 
-	bool m_bTracking;
-    sl::zed::MotionPoseData m_zedMotion;
-    vDouble3 m_dMotion;
-    double	m_sinHdg;
-    double	m_cosHdg;
-    double	m_sinHdgP;
-    double	m_cosHdgP;
+	tracking_status m_trackState;
+    double	m_hdgRad;
+    Eigen::Matrix4f m_mMotion;
 
 	Window* m_pDepthWin;
 
