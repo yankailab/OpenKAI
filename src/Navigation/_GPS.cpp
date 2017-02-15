@@ -194,9 +194,6 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_mavDSfreq);
-//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RAW_CONTROLLER, m_mavDSfreq);
-
 		return;
 	}
 
