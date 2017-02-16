@@ -93,6 +93,7 @@ public:
 	UTM_POS m_UTM;
 
 	UTM_POS m_initUTM;
+	double	m_posDiffMax;
 
 
 };

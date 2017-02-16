@@ -65,6 +65,7 @@ void ActionBase::update(void)
 	m_dTime = newTime - m_timeStamp;
 	m_timeStamp = newTime;
 
+	NULL_(m_pAM);
 	int currentState = m_pAM->getCurrentStateIdx();
 	if(m_iLastState != currentState)
 	{

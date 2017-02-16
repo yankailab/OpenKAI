@@ -3,8 +3,9 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Canbus.h"
-#include "../ActionBase.h"
 #include "../../../IO/TCP.h"
+#include "../../../Navigation/_Path.h"
+#include "../ActionBase.h"
 
 namespace kai
 {
@@ -27,6 +28,7 @@ public:
 	_Canbus* m_pCAN;
 	IO* m_pCMD;
 	string m_strCMD;
+	_Path*	m_pPath;
 
 	int m_maxSpeedT;
 	int m_maxSpeedW;

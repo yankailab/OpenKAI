@@ -48,6 +48,16 @@
 	"bFlip":0,
 	"bTracking":1,
 }
+
+{
+	"name":"HMpath",
+	"class":"_Path",
+	"bInst":1,
+	"Window":"HMview",
+	"FPS":30,
+	"_ZED":"ZED",
+	"dInterval":0.1,
+}
 	
 {
 	"name":"obstacle",

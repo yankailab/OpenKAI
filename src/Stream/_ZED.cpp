@@ -199,12 +199,13 @@ void _ZED::update(void)
 			{
 			case tracking:
 				m_zedTrackState = m_pZed->getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
-				m_mMotion *= m;
+				if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
+					m_mMotion *= m;
+				else if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_LOST)
+					zedTrackReset();
 				break;
 			case track_start:
-				m_mMotion.setIdentity(4,4);
-				if(m_pZed->enableTracking(m_mMotion,false))
-					m_trackState = tracking;
+				zedTrackReset();
 				break;
 			case track_stop:
 				m_pZed->stopTracking();
@@ -231,6 +232,13 @@ void _ZED::stopTracking(void)
 bool _ZED::isTracking(void)
 {
 	return (m_trackState == tracking);
+}
+
+void _ZED::zedTrackReset(void)
+{
+	m_mMotion.setIdentity(4,4);
+	if(m_pZed->enableTracking(m_mMotion,false))
+		m_trackState = tracking;
 }
 
 vDouble3 _ZED::getAccumulatedPos(void)

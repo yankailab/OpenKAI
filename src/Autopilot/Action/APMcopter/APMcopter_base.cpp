@@ -102,6 +102,8 @@ bool APMcopter_base::link(void)
 
 void APMcopter_base::update(void)
 {
+	this->ActionBase::update();
+
 	NULL_(m_pMavlink);
 
 	sendHeartbeat();

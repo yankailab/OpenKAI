@@ -8,6 +8,7 @@ HM_base::HM_base()
 	m_pCAN = NULL;
 	m_pCMD = NULL;
 	m_strCMD = "";
+	m_pPath = NULL;
 
 	m_motorPwmL = 0;
 	m_motorPwmR = 0;
@@ -52,9 +53,15 @@ bool HM_base::link(void)
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
-	string iName = "";
+	string iName;
+
+	iName = "";
 	F_INFO(pK->v("_Canbus", &iName));
 	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_Path", &iName));
+	m_pPath = (_Path*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -83,6 +90,8 @@ void HM_base::update(void)
 	m_bSpeaker = false;
 
 	cmd();
+
+	NULL_(m_pPath);
 }
 
 void HM_base::cmd(void)

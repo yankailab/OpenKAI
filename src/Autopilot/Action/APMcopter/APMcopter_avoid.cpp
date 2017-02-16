@@ -25,7 +25,7 @@ APMcopter_avoid::~APMcopter_avoid()
 
 bool APMcopter_avoid::init(void* pKiss)
 {
-	IF_F(this->ActionBase::init(pKiss) == false);
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -121,7 +121,6 @@ void APMcopter_avoid::updateDistanceSensor(void)
 					m_distSF40);
 		}
 	}
-
 
 }
 

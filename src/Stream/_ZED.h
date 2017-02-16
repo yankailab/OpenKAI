@@ -44,6 +44,7 @@ public:
 	void setHeading(double hdgDeg);
 
 private:
+	void zedTrackReset(void);
 	bool open(void);
 	void update(void);
 	static void* getUpdateThread(void* This)

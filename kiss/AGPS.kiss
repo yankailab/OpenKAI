@@ -3,7 +3,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir_":"/home/kai/dev/workspace/OpenKAI/OpenKAI/data/",
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
@@ -11,7 +11,7 @@
 }
 
 {
-	"name":"LA-GPS",
+	"name":"AGPS",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -24,13 +24,31 @@
 }
 
 {
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"Window":"AGPS",
+	"orientation":0,
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":30,
+	"zedQuality":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":20,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+}
+
+{
 	"name":"SF40",
 	"class":"_Lightware_SF40",
 	"bInst":1,
 	"bLog":1,
-	"Window":"LA-GPS",
+	"Window":"AGPS",
 	"FPS":500,
-	"_Automaton":"APMstate",
 	"nDiv":180,
 	"nMeasureDiv":180,
 	"offsetAngle":90.0,
@@ -67,13 +85,14 @@
 	}
 }
 
+
 {
 	"name":"APMmavlink",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"LA-GPS",
+	"Window":"AGPS",
 
 	{
 		"name":"input",
@@ -93,34 +112,21 @@
 }
 
 {
-	"name":"LA_GPS",
+	"name":"GPS",
 	"class":"_GPS",
 	"bInst":1,
 	"bLog":1,
 	"FPS":30,
-	"Window":"LA-GPS",
+	"Window":"AGPS",
 	"_Mavlink":"APMmavlink",
+	"_ZED":"ZED",
 	"_Lightware_SF40":"SF40",
 	"mavDSfreq":30,
-	
-	{
-		"name":"medianFilter",
-		"class":"Median",
-		"bInst":1,
-		"windowLen":3,
-		"nTraj":1,
-	}
-	
-	{
-		"name":"avrFilter",
-		"class":"Average",
-		"bInst":1,
-		"windowLen":1,
-		"nTraj":1,
-	}
-	
+	"posDiffMax":1.0,
+		
 	{
 		"name":"initLL",
+		"place":"enRoute",
 		"bInst":1,
 		"lat":35.854676,
 		"lng":139.517692,
@@ -128,10 +134,20 @@
 	
 	{
 		"name":"initLL_",
+		"place":"Day1",
 		"bInst":0,
-		"lat":0.0,
-		"lng":0.0,
+		"lat":34.830164,
+		"lng":137.957510,
 	}
+	
+	{
+		"name":"initLL_",
+		"place":"Day2",
+		"bInst":0,
+		"lat":34.844161,
+		"lng":138.000318,
+	}
+	
 }
 
 {
@@ -140,18 +156,19 @@
 	"_Automaton":"APMstate",
 	"bInst":1,
 	"FPS":10,
-	"Window":"LA-GPS",
+	"Window":"AGPS",
 	"bMouse":1,
 	
 	{
 		"name":"action",
+		"bInst":1,
 		
 		{
 			"name":"APMbase",
 			"class":"APMcopter_base",
 			"bInst":1,
 			"_Automaton":"APMstate",
-			"Window":"LA-GPS",
+			"Window":"AGPS",
 			"_Mavlink":"APMmavlink",
 		}
 
@@ -159,7 +176,7 @@
 			"name":"APMavoid",
 			"class":"APMcopter_avoid",
 			"bInst":1,
-			"Window":"LA-GPS",
+			"Window":"AGPS",
 			"_Automaton":"APMstate",
 			"APMcopter_base":"APMbase",
 			"_Lightware_SF40":"SF40",

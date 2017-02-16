@@ -22,7 +22,7 @@ _GPS::_GPS()
 	m_tStarted = 0;
 	m_tNow = 0;
 	m_apmMode = 0;
-
+	m_posDiffMax = 10.0;
 }
 
 _GPS::~_GPS()
@@ -36,6 +36,8 @@ bool _GPS::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
+	F_INFO(pK->v("posDiffMax", &m_posDiffMax));
+	m_posDiffMax = abs(m_posDiffMax);
 
 	Kiss* pI = pK->o("initLL");
 	IF_T(pI->empty());
@@ -113,6 +115,11 @@ void _GPS::detect(void)
 
 		if(m_pZED)
 			m_pZED->startTracking();
+
+		if(m_pSF40)
+			m_pSF40->reset();
+
+		LOG_I("ZED TRACKING START: APM mode: " + i2str(m_apmMode));
 	}
 
 	UTM_POS utm = *getUTM();
@@ -124,8 +131,8 @@ void _GPS::detect(void)
 		//estimate position
 		vDouble2 dPos = m_pSF40->getPosDiff();
 
-		utm.m_easting += dPos.m_x;
-		utm.m_northing += dPos.m_y;
+		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
+		utm.m_northing += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
 	}
 	else if(m_pZED)
 	{
@@ -141,9 +148,9 @@ void _GPS::detect(void)
 		//estimate position
 		vDouble3 dPos = m_pZED->getAccumulatedPos();
 
-		utm.m_easting += dPos.m_x;
-		utm.m_northing += dPos.m_z;
-		utm.m_alt += dPos.m_y;
+		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
+		utm.m_northing += constrain(dPos.m_z, -m_posDiffMax, m_posDiffMax);
+		utm.m_alt += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
 	}
 
 	setUTM(&utm);
@@ -194,6 +201,7 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
 
