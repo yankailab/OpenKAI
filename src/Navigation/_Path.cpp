@@ -31,6 +31,7 @@ bool _Path::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("dInterval", &m_dInterval));
+	F_INFO(pK->v("showScale", &m_showScale));
 
 	reset();
 	return true;
@@ -50,7 +51,32 @@ bool _Path::link(void)
 	return true;
 }
 
+bool _Path::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
 void _Path::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		trackZED();
+
+		this->autoFPSto();
+	}
+}
+
+void _Path::trackZED(void)
 {
 	NULL_(m_pZed);
 	IF_(!m_bRecord);
@@ -103,9 +129,11 @@ bool _Path::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
+	pWin->tabNext();
 	vDouble3 p = m_lastWP.m_p;
 	msg = "Pos: X=" + f2str(p.m_x) + ", Y=" + f2str(p.m_y) + ", Z=" + f2str(p.m_z) + ", Hdg=" + f2str(m_lastWP.m_hdg);
 	pWin->addMsg(&msg);
+	pWin->tabPrev();
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);

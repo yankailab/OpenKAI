@@ -369,7 +369,11 @@ bool _ZED::draw(void)
 		string msg;
 		pWin->tabNext();
 
-		msg = "Tracking: X=" + f2str(m_mMotion(0,3)) + ", Y=" + f2str(m_mMotion(1,3)) + ", Z=" + f2str(m_mMotion(2,3));
+		msg = "Translation: X=" + f2str(m_mMotion(0,3)) + ", Y=" + f2str(m_mMotion(1,3)) + ", Z=" + f2str(m_mMotion(2,3));
+		pWin->addMsg(&msg);
+
+		double Yaw = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
+		msg = "Attitude: Yaw=" + f2str(Yaw);
 		pWin->addMsg(&msg);
 
 		pWin->tabPrev();

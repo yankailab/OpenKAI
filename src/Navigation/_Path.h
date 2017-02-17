@@ -35,6 +35,7 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
+	bool start(void);
 	bool draw(void);
 
 	void startRecord(void);
@@ -43,6 +44,7 @@ public:
 	WAY_POINT getLastWayPoint(void);
 
 private:
+	void trackZED(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -54,7 +56,7 @@ public:
 	_ZED*	m_pZed;
 
 	bool	m_bRecord;
-	double m_dInterval;
+	double	m_dInterval;
 	vector<WAY_POINT> m_vWP;
 	WAY_POINT m_lastWP;
 	WAY_POINT m_baseWP;

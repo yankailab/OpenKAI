@@ -92,6 +92,7 @@ void HM_base::update(void)
 	cmd();
 
 	NULL_(m_pPath);
+	m_pPath->startRecord();
 }
 
 void HM_base::cmd(void)

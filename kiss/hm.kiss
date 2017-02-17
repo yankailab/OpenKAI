@@ -55,8 +55,9 @@
 	"bInst":1,
 	"Window":"HMview",
 	"FPS":30,
-	"_ZED":"ZED",
-	"dInterval":0.1,
+	"_ZED":"ZED_",
+	"dInterval":0.0,
+	"showScale":10.0,
 }
 	
 {
@@ -126,7 +127,7 @@
 {
 	"name":"humanDet",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":10,
 	"Window":"HMview",
@@ -228,6 +229,7 @@
 			"Window":"HMview",
 			"_Canbus":"canbus",
 			"_Automaton":"automaton",
+			"_Path":"HMpath",
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
 			"bSpeaker":0,
@@ -316,7 +318,7 @@
 		{
 			"name":"follow",
 			"class":"HM_follow",
-			"bInst":1,
+			"bInst":0,
 			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
@@ -346,7 +348,7 @@
 		{
 			"name":"grass",
 			"class":"HM_grass",
-			"bInst":1,
+			"bInst":0,
 			"Window":"HMview",
 			"HM_base":"base",
 			"_ImageNet":"hmIN",
@@ -421,7 +423,7 @@
 		{
 			"name":"avoidance",
 			"class":"HM_avoid",
-			"bInst":1,
+			"bInst":0,
 			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
