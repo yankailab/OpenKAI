@@ -241,9 +241,14 @@ void _ZED::zedTrackReset(void)
 		m_trackState = tracking;
 }
 
-vDouble3 _ZED::getAccumulatedPos(void)
+void _ZED::setHeading(double hdgRad)
 {
-	vDouble3 dM;
+	m_hdgRad = hdgRad;
+}
+
+vDouble4 _ZED::getAccumulatedPos(void)
+{
+	vDouble4 dM;
 	dM.init();
 
 	if(m_trackState != tracking)
@@ -252,6 +257,9 @@ vDouble3 _ZED::getAccumulatedPos(void)
 	double E = (double)m_mMotion(0,3);  //Easting
 	double A = (double)m_mMotion(1,3);  //Alt
 	double N = (double)m_mMotion(2,3);  //Northing
+
+	double Yaw = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
+
 	m_mMotion.setIdentity(4,4);
 
 	double sinH = sin(m_hdgRad);
@@ -260,6 +268,7 @@ vDouble3 _ZED::getAccumulatedPos(void)
 	dM.m_x = E * cosH + N * sinH;	//Easting
 	dM.m_y = A;						//Alt
 	dM.m_z = N * cosH - E * sinH;	//Northing
+	dM.m_w = Yaw;
 
 	return dM;
 }
@@ -277,11 +286,6 @@ void _ZED::setAttitude(vDouble3* pYPR)
 	Eigen::Matrix3f mRot = q.matrix();
 
 	m_pZed->setTrackingPrior(mRot);
-}
-
-void _ZED::setHeading(double hdgDeg)
-{
-	m_hdgRad = hdgDeg * DEG_RAD;
 }
 
 void _ZED::getRange(double* pMin, double* pMax)

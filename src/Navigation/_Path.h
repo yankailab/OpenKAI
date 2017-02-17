@@ -37,7 +37,10 @@ public:
 	bool link(void);
 	bool draw(void);
 
+	void startRecord(void);
+	void stopRecord(void);
 	void reset(void);
+	WAY_POINT getLastWayPoint(void);
 
 private:
 	void update(void);
@@ -50,9 +53,13 @@ private:
 public:
 	_ZED*	m_pZed;
 
+	bool	m_bRecord;
 	double m_dInterval;
 	vector<WAY_POINT> m_vWP;
 	WAY_POINT m_lastWP;
+	WAY_POINT m_baseWP;
+
+	double	m_showScale;
 
 };
 

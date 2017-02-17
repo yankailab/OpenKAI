@@ -22,6 +22,7 @@
 
 #include "../Navigation/_Obstacle.h"
 #include "../Navigation/_GPS.h"
+#include "../Navigation/_Path.h"
 
 #include "../IO/SerialPort.h"
 #include "../UI/UI.h"

@@ -16,6 +16,15 @@
 #include "../Protocol/_Mavlink.h"
 #include "../include/UTM.h"
 
+/*
+APM setting to use MAV_GPS
+GPS_TYPE = MAV (not GPS2_TYPE)
+EK2_GPS_TYPE = 2
+BRD_SER2_RTSCTS = 0
+SERIAL2_BAUD = 115
+SERIAL2_PROTOCOL = 1
+*/
+
 namespace kai
 {
 

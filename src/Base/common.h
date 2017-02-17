@@ -111,6 +111,22 @@ struct vDouble3
 		return v;
 	}
 
+	inline vDouble3 operator*(double r)
+    {
+		vDouble3 v;
+		v.m_x = m_x * r;
+		v.m_y = m_y * r;
+		v.m_z = m_z * r;
+		return v;
+	}
+
+	inline void operator*=(double r)
+    {
+		m_x *= r;
+		m_y *= r;
+		m_z *= r;
+	}
+
 	inline void operator-=(vDouble3& r)
     {
 		m_x -= r.m_x;

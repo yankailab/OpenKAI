@@ -38,10 +38,10 @@ public:
 
 	void startTracking(void);
 	void stopTracking(void);
-	vDouble3 getAccumulatedPos(void);
+	vDouble4 getAccumulatedPos(void);
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
-	void setHeading(double hdgDeg);
+	void setHeading(double hdgRad);
 
 private:
 	void zedTrackReset(void);

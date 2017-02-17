@@ -120,9 +120,9 @@
 	"Window":"AGPS",
 	"_Mavlink":"APMmavlink",
 	"_ZED":"ZED",
-	"_Lightware_SF40":"SF40",
+	"_Lightware_SF40":"SF40_",
 	"mavDSfreq":30,
-	"posDiffMax":1.0,
+	"posDiffMax":0.5,
 		
 	{
 		"name":"initLL",
@@ -154,7 +154,7 @@
 	"name":"APMcopter",
 	"class":"_AutoPilot",
 	"_Automaton":"APMstate",
-	"bInst":1,
+	"bInst":0,
 	"FPS":10,
 	"Window":"AGPS",
 	"bMouse":1,

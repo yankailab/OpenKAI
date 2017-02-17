@@ -143,10 +143,10 @@ void _GPS::detect(void)
 //		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
 //		m_pZED->setAttitude(&ypr);
 
-		m_pZED->setHeading(m_LL.m_hdg);
+		m_pZED->setHeading(m_LL.m_hdg * DEG_RAD);
 
 		//estimate position
-		vDouble3 dPos = m_pZED->getAccumulatedPos();
+		vDouble4 dPos = m_pZED->getAccumulatedPos();
 
 		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
 		utm.m_northing += constrain(dPos.m_z, -m_posDiffMax, m_posDiffMax);
