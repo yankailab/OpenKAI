@@ -43,16 +43,6 @@ struct vDouble4
 		m_w = 0.0;
 	}
 
-	inline vDouble4 operator-(vDouble4& r)
-    {
-		vDouble4 v;
-		v.m_x = m_x - r.m_x;
-		v.m_y = m_y - r.m_y;
-		v.m_z = m_z - r.m_z;
-		v.m_w = m_w - r.m_w;
-		return v;
-	}
-
 	inline vDouble4 operator+(vDouble4& r)
     {
 		vDouble4 v;
@@ -63,12 +53,34 @@ struct vDouble4
 		return v;
 	}
 
-	inline void operator-=(vDouble4& r)
+	inline vDouble4 operator-(vDouble4& r)
     {
-		m_x -= r.m_x;
-		m_y -= r.m_y;
-		m_z -= r.m_z;
-		m_w -= r.m_w;
+		vDouble4 v;
+		v.m_x = m_x - r.m_x;
+		v.m_y = m_y - r.m_y;
+		v.m_z = m_z - r.m_z;
+		v.m_w = m_w - r.m_w;
+		return v;
+	}
+
+	inline vDouble4 operator*(double r)
+    {
+		vDouble4 v;
+		v.m_x = m_x * r;
+		v.m_y = m_y * r;
+		v.m_z = m_z * r;
+		v.m_w = m_w * r;
+		return v;
+	}
+
+	inline vDouble4 operator/(double r)
+    {
+		vDouble4 v;
+		v.m_x = m_x / r;
+		v.m_y = m_y / r;
+		v.m_z = m_z / r;
+		v.m_w = m_w / r;
+		return v;
 	}
 
 	inline void operator+=(vDouble4& r)
@@ -77,6 +89,35 @@ struct vDouble4
 		m_y += r.m_y;
 		m_z += r.m_z;
 		m_w += r.m_w;
+	}
+
+	inline void operator-=(vDouble4& r)
+    {
+		m_x -= r.m_x;
+		m_y -= r.m_y;
+		m_z -= r.m_z;
+		m_w -= r.m_w;
+	}
+
+	inline void operator*=(double r)
+    {
+		m_x *= r;
+		m_y *= r;
+		m_z *= r;
+		m_w *= r;
+	}
+
+	inline void operator/=(double r)
+    {
+		m_x /= r;
+		m_y /= r;
+		m_z /= r;
+		m_w /= r;
+	}
+
+	double len(void)
+	{
+		return sqrt(m_x*m_x + m_y*m_y + m_z*m_z + m_w*m_w);
 	}
 };
 
@@ -93,21 +134,21 @@ struct vDouble3
 		m_z = 0.0;
 	}
 
-	inline vDouble3 operator-(vDouble3& r)
-    {
-		vDouble3 v;
-		v.m_x = m_x - r.m_x;
-		v.m_y = m_y - r.m_y;
-		v.m_z = m_z - r.m_z;
-		return v;
-	}
-
 	inline vDouble3 operator+(vDouble3& r)
     {
 		vDouble3 v;
 		v.m_x = m_x + r.m_x;
 		v.m_y = m_y + r.m_y;
 		v.m_z = m_z + r.m_z;
+		return v;
+	}
+
+	inline vDouble3 operator-(vDouble3& r)
+    {
+		vDouble3 v;
+		v.m_x = m_x - r.m_x;
+		v.m_y = m_y - r.m_y;
+		v.m_z = m_z - r.m_z;
 		return v;
 	}
 
@@ -120,11 +161,20 @@ struct vDouble3
 		return v;
 	}
 
-	inline void operator*=(double r)
+	inline vDouble3 operator/(double r)
     {
-		m_x *= r;
-		m_y *= r;
-		m_z *= r;
+		vDouble3 v;
+		v.m_x = m_x / r;
+		v.m_y = m_y / r;
+		v.m_z = m_z / r;
+		return v;
+	}
+
+	inline void operator+=(vDouble3& r)
+    {
+		m_x += r.m_x;
+		m_y += r.m_y;
+		m_z += r.m_z;
 	}
 
 	inline void operator-=(vDouble3& r)
@@ -134,11 +184,18 @@ struct vDouble3
 		m_z -= r.m_z;
 	}
 
-	inline void operator+=(vDouble3& r)
+	inline void operator*=(double r)
     {
-		m_x += r.m_x;
-		m_y += r.m_y;
-		m_z += r.m_z;
+		m_x *= r;
+		m_y *= r;
+		m_z *= r;
+	}
+
+	inline void operator/=(double r)
+    {
+		m_x /= r;
+		m_y /= r;
+		m_z /= r;
 	}
 
 	double len(void)
@@ -158,14 +215,6 @@ struct vDouble2
 		m_y = 0.0;
 	}
 
-	inline vDouble2 operator-(vDouble2& r)
-    {
-		vDouble2 v;
-		v.m_x = m_x - r.m_x;
-		v.m_y = m_y - r.m_y;
-		return v;
-	}
-
 	inline vDouble2 operator+(vDouble2& r)
     {
 		vDouble2 v;
@@ -174,16 +223,57 @@ struct vDouble2
 		return v;
 	}
 
-	inline void operator-=(vDouble2& r)
+	inline vDouble2 operator-(vDouble2& r)
     {
-		m_x -= r.m_x;
-		m_y -= r.m_y;
+		vDouble2 v;
+		v.m_x = m_x - r.m_x;
+		v.m_y = m_y - r.m_y;
+		return v;
+	}
+
+	inline vDouble2 operator*(double r)
+    {
+		vDouble2 v;
+		v.m_x = m_x * r;
+		v.m_y = m_y * r;
+		return v;
+	}
+
+	inline vDouble2 operator/(double r)
+    {
+		vDouble2 v;
+		v.m_x = m_x / r;
+		v.m_y = m_y / r;
+		return v;
 	}
 
 	inline void operator+=(vDouble2& r)
     {
 		m_x += r.m_x;
 		m_y += r.m_y;
+	}
+
+	inline void operator-=(vDouble2& r)
+    {
+		m_x -= r.m_x;
+		m_y -= r.m_y;
+	}
+
+	inline void operator*=(double r)
+    {
+		m_x *= r;
+		m_y *= r;
+	}
+
+	inline void operator/=(double r)
+    {
+		m_x /= r;
+		m_y /= r;
+	}
+
+	double len(void)
+	{
+		return sqrt(m_x*m_x + m_y*m_y);
 	}
 };
 

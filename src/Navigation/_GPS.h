@@ -49,6 +49,7 @@ struct UTM_POS
 	double m_easting;
 	double m_northing;
 	double m_alt;
+	double m_hdg;
 	string m_zone;
 
 	void init(void)
@@ -56,7 +57,19 @@ struct UTM_POS
 		m_easting = 0.0;
 		m_northing = 0.0;
 		m_alt = 0.0;
+		m_hdg = 0.0;
 		m_zone = "";
+	}
+
+	inline double dist(UTM_POS* pPos)
+	{
+		if(pPos==NULL)return -1.0;
+
+		double e = pPos->m_easting - this->m_easting;
+		double n = pPos->m_northing - this->m_northing;
+		double a = pPos->m_alt - this->m_alt;
+
+		return sqrt(e*e + n*n + a*a);
 	}
 };
 
@@ -75,6 +88,8 @@ public:
 	void setUTM(UTM_POS* pUTM);
 	LL_POS* getLL(void);
 	UTM_POS* getUTM(void);
+	LL_POS* getInitLL(void);
+	UTM_POS* getInitUTM(void);
 
 private:
 	void setMavGPS(void);
@@ -97,10 +112,9 @@ public:
 	uint64_t m_tStarted;
 	uint64_t m_tNow;
 
-	LL_POS	m_initLL;
 	LL_POS	m_LL;
+	LL_POS	m_initLL;
 	UTM_POS m_UTM;
-
 	UTM_POS m_initUTM;
 	double	m_posDiffMax;
 

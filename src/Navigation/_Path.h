@@ -10,22 +10,10 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_ZED.h"
+#include "../Navigation/_GPS.h"
 
 namespace kai
 {
-
-struct WAY_POINT
-{
-	vDouble3	m_p;
-	double		m_hdg;
-
-	void init(void)
-	{
-		m_p.init();
-		m_hdg = 0.0;
-	}
-};
 
 class _Path: public _ThreadBase
 {
@@ -41,10 +29,10 @@ public:
 	void startRecord(void);
 	void stopRecord(void);
 	void reset(void);
-	WAY_POINT getLastWayPoint(void);
+	UTM_POS getLastWayPoint(void);
 
 private:
-	void trackZED(void);
+	void updateGPS(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -53,13 +41,13 @@ private:
 	}
 
 public:
-	_ZED*	m_pZed;
+	_GPS*	m_pGPS;
 
 	bool	m_bRecord;
 	double	m_dInterval;
-	vector<WAY_POINT> m_vWP;
-	WAY_POINT m_lastWP;
-	WAY_POINT m_baseWP;
+	vector<UTM_POS> m_vWP;
+	UTM_POS m_lastWP;
+	UTM_POS m_baseWP;
 
 	double	m_showScale;
 

@@ -108,6 +108,7 @@ void _GPS::detect(void)
 
 	//reset init pos in mode change
 	uint32_t apmMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+	if(apmMode == 0)apmMode = m_apmMode;
 	if(apmMode != m_apmMode)
 	{
 		m_apmMode = apmMode;
@@ -206,6 +207,7 @@ void _GPS::getMavGPS(void)
 	}
 
 	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	setLL(&m_LL);
 }
 
 void _GPS::setLL(LL_POS* pLL)
@@ -217,6 +219,7 @@ void _GPS::setLL(LL_POS* pLL)
 	UTM::LLtoUTM(m_LL.m_lat, m_LL.m_lng, m_UTM.m_northing, m_UTM.m_easting, pUTMzone);
 	m_UTM.m_zone = pUTMzone;
 	m_UTM.m_alt = m_LL.m_alt;
+	m_UTM.m_hdg = m_LL.m_hdg;
 }
 
 void _GPS::setUTM(UTM_POS* pUTM)
@@ -226,6 +229,7 @@ void _GPS::setUTM(UTM_POS* pUTM)
 
 	UTM::UTMtoLL(m_UTM.m_northing, m_UTM.m_easting, m_UTM.m_zone.c_str(), m_LL.m_lat, m_LL.m_lng);
 	m_LL.m_alt = m_UTM.m_alt;
+	m_LL.m_hdg = m_UTM.m_hdg;
 }
 
 LL_POS* _GPS::getLL(void)
@@ -236,6 +240,16 @@ LL_POS* _GPS::getLL(void)
 UTM_POS* _GPS::getUTM(void)
 {
 	return &m_UTM;
+}
+
+LL_POS* _GPS::getInitLL(void)
+{
+	return &m_initLL;
+}
+
+UTM_POS* _GPS::getInitUTM(void)
+{
+	return &m_initUTM;
 }
 
 bool _GPS::draw(void)

@@ -12,7 +12,7 @@ namespace kai
 
 _Path::_Path()
 {
-	m_pZed = NULL;
+	m_pGPS = NULL;
 	m_vWP.clear();
 	m_dInterval = 0;
 	m_lastWP.init();
@@ -45,8 +45,8 @@ bool _Path::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("_ZED", &iName));
-	m_pZed = (_ZED*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -70,34 +70,22 @@ void _Path::update(void)
 	{
 		this->autoFPSfrom();
 
-		trackZED();
+		updateGPS();
 
 		this->autoFPSto();
 	}
 }
 
-void _Path::trackZED(void)
+void _Path::updateGPS(void)
 {
-	NULL_(m_pZed);
+	NULL_(m_pGPS);
 	IF_(!m_bRecord);
 
-	if(!m_pZed->isTracking())
-	{
-		m_pZed->startTracking();
-		return;
-	}
+	UTM_POS newP = *m_pGPS->getUTM();
+	IF_(newP.dist(&m_lastWP) < m_dInterval);
 
-	vDouble4 dPh = m_pZed->getAccumulatedPos();
-	vDouble3 dP;
-	dP.m_x = dPh.m_x;
-	dP.m_y = dPh.m_y;
-	dP.m_z = dPh.m_z;
-
-	IF_(dP.len() < m_dInterval);
-
-	m_lastWP= m_vWP[m_vWP.size()-1];
-	m_lastWP.m_p += dP;
-	m_vWP.push_back(m_lastWP);
+	m_vWP.push_back(newP);
+	m_lastWP = newP;
 }
 
 void _Path::startRecord(void)
@@ -117,7 +105,7 @@ void _Path::reset(void)
 	m_vWP.push_back(m_lastWP);
 }
 
-WAY_POINT _Path::getLastWayPoint(void)
+UTM_POS _Path::getLastWayPoint(void)
 {
 	return m_lastWP;
 }
@@ -129,30 +117,33 @@ bool _Path::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
-	pWin->tabNext();
-	vDouble3 p = m_lastWP.m_p;
-	msg = "Pos: X=" + f2str(p.m_x) + ", Y=" + f2str(p.m_y) + ", Z=" + f2str(p.m_z) + ", Hdg=" + f2str(m_lastWP.m_hdg);
-	pWin->addMsg(&msg);
-	pWin->tabPrev();
-
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	IF_T(m_vWP.size() < 2);
 
+	//Plot trajectory
 	Scalar col = Scalar(0, 255, 0);
 	int bold = 2;
 
-	WAY_POINT* pWP1 = &m_vWP[0];
-	WAY_POINT* pWP2;
+	UTM_POS* pWP1 = &m_vWP[0];
+	UTM_POS* pWP2;
+	UTM_POS initWP = *m_pGPS->getInitUTM();
+	vDouble2 pI;
+	pI.m_x = initWP.m_easting;
+	pI.m_y = initWP.m_northing;
 
-	//Plot trajectory
-	for (int i = 1; i < m_vWP.size(); i++)
+	for (unsigned int i = 1; i < m_vWP.size(); i++)
 	{
 		pWP2 = &m_vWP[i];
-		vDouble3 p1 = pWP1->m_p - m_lastWP.m_p;
-		vDouble3 p2 = pWP2->m_p - m_lastWP.m_p;
+		vDouble2 p1,p2;
+		p1.m_x = pWP1->m_easting;
+		p1.m_y = pWP1->m_northing;
+		p2.m_x = pWP2->m_easting;
+		p2.m_y = pWP2->m_northing;
+		p1 -= pI;
+		p2 -= pI;
 		pWP1 = pWP2;
 
 		line(*pMat, pCenter + Point(p1.m_x, p1.m_y), pCenter + Point(p2.m_x, p2.m_y), col, bold);
