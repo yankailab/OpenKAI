@@ -72,13 +72,29 @@ void HM_base::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pCMD);
 
+	//Update CAN
 	updateCAN();
 
-	string idle = "HM_IDLE";
-	if(m_pAM->getCurrentStateIdx() == m_pAM->getStateIdx(&idle))
+	string standby = "HM_STANDBY";
+	string kickBack = "HM_KICKBACK";
+	string pause = "HM_PAUSE";
+
+	int iStatus = m_pAM->getCurrentStateIdx();
+
+	if(iStatus == m_pAM->getStateIdx(&standby))
 	{
 		m_motorPwmL = 0;
 		m_motorPwmR = 0;
+	}
+	else if(iStatus == m_pAM->getStateIdx(&pause))
+	{
+		m_motorPwmL = 0;
+		m_motorPwmR = 0;
+	}
+	else if(iStatus == m_pAM->getStateIdx(&kickBack))
+	{
+		m_motorPwmL = -m_speedP;
+		m_motorPwmR = -m_speedP;
 	}
 	else
 	{
@@ -89,6 +105,7 @@ void HM_base::update(void)
 	m_motorPwmW = 0;
 	m_bSpeaker = false;
 
+	//receive command
 	cmd();
 
 	NULL_(m_pPath);
@@ -115,14 +132,14 @@ void HM_base::cmd(void)
 	string stateName;
 	if(m_strCMD=="start")
 	{
-		if(*m_pAM->getCurrentStateName()=="HM_IDLE")
+		if(*m_pAM->getCurrentStateName()=="HM_STANDBY")
 		{
 			m_pAM->transit(m_pAM->getLastStateIdx());
 		}
 	}
 	else if(m_strCMD=="stop")
 	{
-		stateName = "HM_IDLE";
+		stateName = "HM_STANDBY";
 		m_pAM->transit(m_pAM->getStateIdx(&stateName));
 	}
 	else if(m_strCMD=="work")

@@ -29,6 +29,47 @@
 }
 
 {
+	"name":"canbus",
+	"class":"_Canbus",
+	"bInst":1,
+	"Window":"HMview",
+	"FPS":100,	
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyACM0",
+		"baud":115200,
+	}
+}
+
+{
+	"name":"APMmavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"HMview",
+
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":1,
+		"portName":"/dev/ttyTHS1",
+		"baud":921600,
+	}
+	
+	{
+		"name":"input",
+		"class":"SerialPort",
+		"bInst":0,
+		"portName":"/dev/ttyUSB1",
+		"baud":115200,
+	}	
+}
+
+{
 	"name":"ZED",
 	"class":"_ZED",
 	"FPS":30,
@@ -47,6 +88,27 @@
 	"zedConfidence":99,
 	"bFlip":0,
 	"bTracking":1,
+}
+
+{
+	"name":"GPS",
+	"class":"_GPS",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"HMview",
+	"_Mavlink":"APMmavlink",
+	"_ZED":"ZED",
+	"mavDSfreq":30,
+	"posDiffMax":0.5,
+		
+	{
+		"name":"initLL",
+		"place":"enRoute",
+		"bInst":1,
+		"lat":35.854676,
+		"lng":139.517692,
+	}	
 }
 
 {
@@ -143,49 +205,27 @@
 }
 
 {
-	"name":"markerDet",
-	"class":"_DetectNet",
-	"bInst":0,
-	"bLog":0,
-	"FPS":10,
-	"Window":"HMview",
-	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/hm/stopMarker/",
-	"minConfidence":0.05,
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_18900.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"className":"marker",
-	"objLifetime":100000,
-	"nObj":2,
-}
-
-{
-	"name":"canbus",
-	"class":"_Canbus",
-	"bInst":1,
-	"Window":"HMview",
-	"FPS":100,	
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyACM0",
-		"baud":115200,
-	}
-}
-
-{
 	"name":"automaton",
 	"class":"_Automaton",
 	"bInst":1,
 	"FPS":10,
 	"Window":"HMview",
-	"startState":"HM_WORK",
+	"startState":"HM_STANDBY",
 
 	{
-		"state":"HM_IDLE",
+		"state":"HM_STANDBY",
+		"bInst":1,
+	}
+	{
+		"state":"HM_KICKBACK",
+		"bInst":1,
+	}
+	{
+		"state":"HM_FOLLOWME",
+		"bInst":1,
+	}
+	{
+		"state":"HM_PAUSE",
 		"bInst":1,
 	}
 	{
@@ -197,15 +237,11 @@
 		"bInst":1,
 	}
 	{
-		"state":"HM_FOLLOWME",
-		"bInst":1,
-	}
-	{
 		"state":"HM_RTH",
 		"bInst":1,
 	}
 	{
-		"state":"HM_RTH_TURN",
+		"state":"HM_RTH_APPROACH",
 		"bInst":1,
 	}
 }
@@ -237,8 +273,7 @@
 			"motorPwmR":1000,
 			"motorPwmW":0,
 			"speedP":2500,
-			"pathFindTimer":10000000,
-			"pathFindTurnTimer":3000000,
+			"distKickBack":2.0,
 			
 			{
 				"name":"cmd",
@@ -290,30 +325,6 @@
 				}
 			}
 		}
-		
-		{
-			"name":"RTH",
-			"class":"HM_rth",
-			"bInst":0,
-			"_ZED":"ZED",
-			"Window":"HMview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"dist":0.1,
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_WORK",
-					"bInst":1,
-				}
-				{
-					"state":"HM_PATHFINDING",
-					"bInst":1,
-				}
-			}
-		}		
 		
 		{
 			"name":"follow",
@@ -482,6 +493,47 @@
 				}
 			}
 		}
+		
+		{
+			"name":"RTH",
+			"class":"HM_rth",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HMview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"dist":0.1,
+
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+			}
+		}		
+		
+		{
+			"name":"RTH",
+			"class":"HM_rth_approach",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HMview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"dist":0.1,
+
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+			}
+		}		
+		
 		
 	}
 }
