@@ -26,11 +26,12 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	int  markCurrentWayPoint(void);
 	void startRecord(void);
 	void stopRecord(void);
 	void reset(void);
-	UTM_POS getLastWayPoint(void);
+	UTM_POS* getCurrentPos(void);
+	UTM_POS* getLastWayPoint(void);
+	UTM_POS* getWayPoint(int iWP);
 
 private:
 	void updateGPS(void);
@@ -49,8 +50,6 @@ public:
 	vector<UTM_POS> m_vWP;
 	UTM_POS m_lastWP;
 	UTM_POS m_baseWP;
-
-	pthread_mutex_t m_mutexWP;
 
 	double	m_showScale;
 

@@ -13,7 +13,8 @@ HM_base::HM_base()
 	m_motorPwmL = 0;
 	m_motorPwmR = 0;
 	m_motorPwmW = 0;
-	m_bSpeaker = 0;
+	m_bSpeaker = false;
+	m_bInStation = true;
 
 	m_maxSpeedT = 65535;
 	m_maxSpeedW = 2500;
@@ -74,27 +75,12 @@ void HM_base::update(void)
 
 	//Update CAN
 	updateCAN();
+	string* pStateName = m_pAM->getCurrentStateName();
 
-	string standby = "HM_STANDBY";
-	string kickBack = "HM_KICKBACK";
-	string pause = "HM_PAUSE";
-
-	int iStatus = m_pAM->getCurrentStateIdx();
-
-	if(iStatus == m_pAM->getStateIdx(&standby))
+	if(*pStateName == "HM_STANDBY")
 	{
 		m_motorPwmL = 0;
 		m_motorPwmR = 0;
-	}
-	else if(iStatus == m_pAM->getStateIdx(&pause))
-	{
-		m_motorPwmL = 0;
-		m_motorPwmR = 0;
-	}
-	else if(iStatus == m_pAM->getStateIdx(&kickBack))
-	{
-		m_motorPwmL = -m_speedP;
-		m_motorPwmR = -m_speedP;
 	}
 	else
 	{
@@ -105,11 +91,9 @@ void HM_base::update(void)
 	m_motorPwmW = 0;
 	m_bSpeaker = false;
 
-	//receive command
+	//ignore external cmd in kickback mode
+	IF_(*pStateName == "HM_KICKBACK");
 	cmd();
-
-	NULL_(m_pPath);
-	m_pPath->startRecord();
 }
 
 void HM_base::cmd(void)
@@ -132,7 +116,13 @@ void HM_base::cmd(void)
 	string stateName;
 	if(m_strCMD=="start")
 	{
-		if(*m_pAM->getCurrentStateName()=="HM_STANDBY")
+		if(m_bInStation)
+		{
+			stateName = "HM_KICKBACK";
+			m_pAM->transit(&stateName);
+			m_bInStation = false;
+		}
+		else if(*m_pAM->getCurrentStateName()=="HM_STANDBY")
 		{
 			m_pAM->transit(m_pAM->getLastStateIdx());
 		}
@@ -140,22 +130,22 @@ void HM_base::cmd(void)
 	else if(m_strCMD=="stop")
 	{
 		stateName = "HM_STANDBY";
-		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+		m_pAM->transit(&stateName);
 	}
 	else if(m_strCMD=="work")
 	{
 		stateName = "HM_WORK";
-		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+		m_pAM->transit(&stateName);
 	}
 	else if(m_strCMD=="back_to_home")
 	{
 		stateName = "HM_RTH";
-		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+		m_pAM->transit(&stateName);
 	}
 	else if(m_strCMD=="follow_me")
 	{
 		stateName = "HM_FOLLOWME";
-		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+		m_pAM->transit(&stateName);
 	}
 
 	m_strCMD = "";

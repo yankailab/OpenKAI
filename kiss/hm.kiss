@@ -94,7 +94,7 @@
 	"name":"GPS",
 	"class":"_GPS",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":30,
 	"Window":"HMview",
 	"_Mavlink":"APMmavlink",
@@ -221,15 +221,11 @@
 		"bInst":1,
 	}
 	{
-		"state":"HM_FOLLOWME",
-		"bInst":1,
-	}
-	{
-		"state":"HM_PAUSE",
-		"bInst":1,
-	}
-	{
 		"state":"HM_WORK",
+		"bInst":1,
+	}
+	{
+		"state":"HM_FOLLOWME",
 		"bInst":1,
 	}
 	{
@@ -289,9 +285,39 @@
 					"timeoutRecv":1000,
 					"buf":1024,
 				}
-			}			
+			}
 		}
+		
+		{
+			"name":"kickBack",
+			"class":"HM_kickBack",
+			"bInst":1,
+			"Window":"HMview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_Obstacle":"obstacle",
+			"distKickBack":1.5,
+			"rpmBack":3000,
 
+			{
+				"name":"obsBox",
+				"bInst":1,
+				"left":0.269,
+				"top":0.25,
+				"right":0.93,
+				"bottom":0.825,
+			}
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_KICKBACK",
+					"bInst":1,
+				}
+			}
+		}
+		
 		{
 			"name":"pathFinder",
 			"class":"HM_pathFinder",
@@ -336,13 +362,11 @@
 			"_Automaton":"automaton",
 			"_DetectNet":"humanDet",
 			"_Obstacle":"obstacle",
-			"distMin":0.0,
+			"distMin":1.0,
 			"distMax":10.0,
-			"speedP":0,
-			"steerP":2500,
-			"targetDist":1.5,			
+			"speedP":3000,
+			"steerP":3000,
 			"targetX":0.5,
-			"targetY":0.5,
 			"objLifetime":100000,
 			"minProb":0.5,
 			
@@ -354,7 +378,7 @@
 					"bInst":1,
 				}				
 			}
-		}		
+		}
 
 		{
 			"name":"grass",
@@ -387,7 +411,11 @@
 				{
 					"state":"HM_FOLLOWME",
 					"bInst":1,
-				}				
+				}
+				{
+					"state":"HM_PATHFINDING",
+					"bInst":1,
+				}	
 			}
 			
 			{
@@ -415,20 +443,47 @@
 				"top":0.6,
 				"right":1.0,
 				"bottom":0.76,
-			}			
+			}
+		}
+				
+		{
+			"name":"RTH",
+			"class":"HM_rth",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HMview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"dist":0.1,
 
 			{
-				"name":"grassMatrix",
-				"bInst":0,
-				"minProb":0.6,
-				"iClass":1,
-				"nW":3,
-				"nH":1,
-				"left":0.0,
-				"top":0.6,
-				"right":1.0,
-				"bottom":0.76,
-			}			
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+			}
+		}		
+		
+		{
+			"name":"RTH",
+			"class":"HM_rth_approach",
+			"bInst":0,
+			"_ZED":"ZED",
+			"Window":"HMview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"dist":0.1,
+
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"HM_RTH",
+					"bInst":1,
+				}
+			}
 		}
 				
 		{
@@ -492,48 +547,7 @@
 					"bInst":1,
 				}
 			}
-		}
-		
-		{
-			"name":"RTH",
-			"class":"HM_rth",
-			"bInst":0,
-			"_ZED":"ZED",
-			"Window":"HMview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"dist":0.1,
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-			}
 		}		
-		
-		{
-			"name":"RTH",
-			"class":"HM_rth_approach",
-			"bInst":0,
-			"_ZED":"ZED",
-			"Window":"HMview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"dist":0.1,
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-			}
-		}		
-		
 		
 	}
 }

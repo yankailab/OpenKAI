@@ -18,15 +18,10 @@ _Path::_Path()
 	m_lastWP.init();
 	m_bRecord = false;
 	m_showScale = 1.0;	//1m = 1pixel;
-
-	pthread_mutex_init(&m_mutexWP, NULL);
-
 }
 
 _Path::~_Path()
 {
-	pthread_mutex_destroy(&m_mutexWP);
-
 }
 
 bool _Path::init(void* pKiss)
@@ -89,24 +84,14 @@ void _Path::updateGPS(void)
 	UTM_POS newP = *m_pGPS->getUTM();
 	IF_(newP.dist(&m_lastWP) < m_dInterval);
 
-	pthread_mutex_lock(&m_mutexWP);
 	m_vWP.push_back(newP);
 	m_lastWP = newP;
-	pthread_mutex_unlock(&m_mutexWP);
 }
 
-int _Path::markCurrentWayPoint(void)
+UTM_POS* _Path::getCurrentPos(void)
 {
-	if(!m_pGPS)return -1;
-
-	UTM_POS newP = *m_pGPS->getUTM();
-	pthread_mutex_lock(&m_mutexWP);
-	m_vWP.push_back(newP);
-	m_lastWP = newP;
-	int iLast = m_vWP.size()-1;
-	pthread_mutex_unlock(&m_mutexWP);
-
-	return iLast;
+	NULL_F(m_pGPS);
+	return m_pGPS->getUTM();
 }
 
 void _Path::startRecord(void)
@@ -126,9 +111,17 @@ void _Path::reset(void)
 	m_vWP.push_back(m_lastWP);
 }
 
-UTM_POS _Path::getLastWayPoint(void)
+UTM_POS* _Path::getLastWayPoint(void)
 {
-	return m_lastWP;
+	return &m_lastWP;
+}
+
+UTM_POS* _Path::getWayPoint(int iWP)
+{
+	IF_N(iWP < 0);
+	IF_N(iWP >= m_vWP.size());
+
+	return &m_vWP[iWP];
 }
 
 bool _Path::draw(void)

@@ -14,9 +14,7 @@ HM_follow::HM_follow()
 	m_distTarget = 0.0;
 	m_steerP = 0.0;
 	m_speedP = 0.0;
-	m_targetPos.init();
-	m_targetPos.m_x = 0.5;
-	m_targetPos.m_y = 0.5;
+	m_targetX = 0.5;
 	m_minProb = 0.1;
 	m_objLifetime = 100000;
 	m_pTarget = NULL;
@@ -36,8 +34,7 @@ bool HM_follow::init(void* pKiss)
 	F_INFO(pK->v("distMax", &m_distMax));
 	F_INFO(pK->v("speedP", &m_speedP));
 	F_INFO(pK->v("steerP", &m_steerP));
-	F_INFO(pK->v("targetX", &m_targetPos.m_x));
-	F_INFO(pK->v("targetY", &m_targetPos.m_y));
+	F_INFO(pK->v("targetX", &m_targetX));
 	F_INFO(pK->v("minProb", &m_minProb));
 	F_INFO(pK->v("objLifetime", &m_objLifetime));
 
@@ -92,7 +89,8 @@ void HM_follow::update(void)
 	for(i=0;i<m_pDN->size();i++)
 	{
 		OBJECT* pObj = m_pDN->get(i, t);
-		if(!pObj)continue;
+		IF_CONT(!pObj);
+		IF_CONT(pObj->m_prob < m_minProb);
 
 		if(!m_pTarget)
 		{
@@ -108,21 +106,19 @@ void HM_follow::update(void)
 	}
 
 	NULL_(m_pTarget);
-	m_distTarget = m_pObs->dist(&m_pTarget->m_fBBox,NULL);
-
-	//make turn when object is within a certain distance
 	m_pHM->m_bSpeaker = true;
 
-	double steerP = m_pTarget->m_camSize.m_x;
-	steerP *= 0.5;
-	steerP = (m_pTarget->m_bbox.midX() - steerP)/steerP;
-	int rpmSteer = m_steerP * steerP;
+	m_distTarget = m_pObs->dist(&m_pTarget->m_fBBox,NULL);
+	double normD = constrain(m_distTarget, m_distMin, m_distMax);
+	double pD = (normD - m_distMin)/(m_distMax - m_distMin);
+	int rpmSpeed = m_speedP * pD;
 
-	m_distTarget = constrain(m_distTarget,m_distMin,m_distMax);
-	int rpmSpeed = m_speedP * (1.0 - m_distTarget/m_distMax);
+	double camW = (double)m_pTarget->m_camSize.m_x;
+	double pX = (camW*m_targetX - m_pTarget->m_fBBox.midX()) / camW;
+	int rpmSteer = m_steerP * pX;
 
-	m_pHM->m_motorPwmL += rpmSteer;
-	m_pHM->m_motorPwmR -= rpmSteer;
+	m_pHM->m_motorPwmL = rpmSpeed + rpmSteer;
+	m_pHM->m_motorPwmR = rpmSpeed - rpmSteer;
 }
 
 bool HM_follow::draw(void)
