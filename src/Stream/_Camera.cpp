@@ -233,6 +233,7 @@ bool _Camera::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
+	IF_F(m_pBGR->empty());
 	pFrame->update(m_pBGR);
 	this->_StreamBase::draw();
 

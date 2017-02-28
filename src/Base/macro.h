@@ -29,6 +29,6 @@
 #define NULL_T(x) if(x==NULL){return true;}
 
 #define DEL(x) if(x){delete x;}
-#define SWAP(x,y,t) t=x;x=y;y=t;
+#define SWAP(x,y,t) {t=x;x=y;y=t;}
 
 #endif

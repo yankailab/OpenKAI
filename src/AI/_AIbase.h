@@ -99,6 +99,7 @@ public:
 	int m_nObj;
 	int m_iObj;
 	int64_t m_objLifetime;
+	int m_nActiveObj;
 
 	double m_sizeName;
 	double m_sizeDist;

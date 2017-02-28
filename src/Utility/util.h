@@ -22,6 +22,39 @@ inline bool isOverlapped(vInt4* pA, vInt4* pB)
 	return true;
 }
 
+inline double overlapRatio(vInt4* pA, vInt4* pB)
+{
+	if(!isOverlapped(pA,pB))return 0.0;
+
+	vInt4* pT;
+	if(pA->area() < pB->area())
+	{
+		SWAP(pA,pB,pT);
+	}
+
+	//pA > pB
+	double w = pA->w();
+	if(pB->w()>w)
+		w=pB->w();
+	double h = pA->h();
+	if(pB->h()>h)
+		h=pB->h();
+
+	double rX = pB->m_z - pA->m_x;
+	if(pB->m_x > pA->m_x)
+		rX = pA->m_z - pB->m_x;
+
+	rX /= w;
+
+	double rY = pB->m_w - pA->m_y;
+	if(pB->m_y > pA->m_y)
+		rY = pA->m_w - pB->m_y;
+
+	rY /= h;
+
+	return rX*rY;
+}
+
 inline void rect2vInt4(Rect* pR, vInt4* pV)
 {
 	pV->m_x = pR->x;

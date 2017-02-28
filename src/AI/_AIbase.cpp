@@ -20,6 +20,7 @@ _AIbase::_AIbase()
 	m_nObj = 16;
 	m_iObj = 0;
 	m_objLifetime = USEC_1SEC;
+	m_nActiveObj = 0;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
@@ -177,13 +178,14 @@ bool _AIbase::draw(void)
 	}
 
 	uint64_t frameID = get_time_usec() - m_objLifetime;
+	m_nActiveObj = 0;
 	for (int i = 0; i < m_nObj; i++)
 	{
 		OBJECT* pObj = get(i, frameID);
-		if (!pObj)
-			continue;
-		if(pObj->m_frameID<=0)
-			continue;
+		IF_CONT(!pObj);
+		IF_CONT(pObj->m_frameID<=0)
+
+		m_nActiveObj++;
 
 		Rect r;
 		vInt42rect(&pObj->m_bbox, &r);
@@ -196,7 +198,7 @@ bool _AIbase::draw(void)
 		}
 
 		Scalar colObs = m_colObs;
-		int bolObs = 1;
+		int bolObs = 2;
 
 		if (m_bDrawContour)
 		{
@@ -213,6 +215,10 @@ bool _AIbase::draw(void)
 	{
 		cv::addWeighted(*pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
 	}
+
+	putText(*pMat, "Tomato Number: "+i2str(m_nActiveObj),
+			Point(pMat->cols*0.025, pMat->rows*0.9),
+			FONT_HERSHEY_SIMPLEX, 1.0, m_colName, 2);
 
 
 	return true;

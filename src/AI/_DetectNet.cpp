@@ -12,6 +12,13 @@ _DetectNet::_DetectNet()
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_minCofidence = 0.0;
+	m_detectMinSize = 0.0;
+	m_detectMaxSize = 1.0;
+	m_overlapMax = 1.0;
+	m_area.init();
+	m_area.m_z = 1.0;
+	m_area.m_w = 1.0;
+
 
 #ifdef USE_TENSORRT
 	m_pDN = NULL;
@@ -42,6 +49,14 @@ bool _DetectNet::init(void* pKiss)
 
 	F_INFO(pK->v("minConfidence", &m_minCofidence));
 	F_INFO(pK->v("className", &m_className));
+	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
+	F_INFO(pK->v("detectMaxSize", &m_detectMaxSize));
+	F_INFO(pK->v("overlapMax", &m_overlapMax));
+
+	F_INFO(pK->v("left", &m_area.m_x));
+	F_INFO(pK->v("top", &m_area.m_y));
+	F_INFO(pK->v("right", &m_area.m_z));
+	F_INFO(pK->v("bottom", &m_area.m_w));
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
@@ -126,6 +141,13 @@ void _DetectNet::detect(void)
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
+	int minSize = fGMat.cols * fGMat.rows * m_detectMinSize;
+	int maxSize = fGMat.cols * fGMat.rows * m_detectMaxSize;
+	int	bLeft = fGMat.cols * m_area.m_x;
+	int	bRight = fGMat.cols * m_area.m_z;
+	int	bTop = fGMat.rows * m_area.m_y;
+	int	bBottom = fGMat.rows * m_area.m_w;
+
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
@@ -145,10 +167,38 @@ void _DetectNet::detect(void)
 		obj.m_name = m_className;
 		obj.m_frameID = get_time_usec();
 
-		add(&obj);
+		int oSize = obj.m_bbox.area();
+		IF_CONT(oSize < minSize);
+		IF_CONT(oSize > maxSize);
+
+		IF_CONT(obj.m_bbox.m_x < bLeft);
+		IF_CONT(obj.m_bbox.m_z > bRight);
+		IF_CONT(obj.m_bbox.m_y < bTop);
+		IF_CONT(obj.m_bbox.m_w > bBottom);
+
+		addOrUpdate(&obj);
 	}
 #endif
 
+}
+
+void _DetectNet::addOrUpdate(OBJECT* pNewObj)
+{
+	NULL_(pNewObj);
+
+	uint64_t frameID = get_time_usec() - m_objLifetime;
+	for (int i = 0; i < m_nObj; i++)
+	{
+		OBJECT* pObj = get(i, frameID);
+		IF_CONT(!pObj);
+		IF_CONT(pObj->m_frameID <= 0);
+		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMax);
+
+		*pObj = *pNewObj;
+		return;
+	}
+
+	add(pNewObj);
 }
 
 bool _DetectNet::draw(void)

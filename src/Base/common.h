@@ -330,6 +330,16 @@ struct vInt4
 		return abs((m_z - m_x) * (m_w - m_y));
 	}
 
+	int w(void)
+	{
+		return m_z - m_x;
+	}
+
+	int h(void)
+	{
+		return m_w - m_y;
+	}
+
 	void init(void)
 	{
 		m_x = 0;

@@ -28,6 +28,7 @@ public:
 
 private:
 	void detect(void);
+	void addOrUpdate(OBJECT* pNewObj);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -48,6 +49,11 @@ public:
 	Frame* m_pRGBA;
 	Frame* m_pRGBAf;
 	double m_minCofidence;
+
+	double m_detectMinSize;
+	double m_detectMaxSize;
+	double m_overlapMax;
+	vDouble4 m_area;
 
 	float* m_bbCPU;
 	float* m_bbCUDA;
