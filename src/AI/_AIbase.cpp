@@ -216,11 +216,6 @@ bool _AIbase::draw(void)
 		cv::addWeighted(*pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
 	}
 
-	putText(*pMat, "Tomato Number: "+i2str(m_nActiveObj),
-			Point(pMat->cols*0.025, pMat->rows*0.9),
-			FONT_HERSHEY_SIMPLEX, 1.0, m_colName, 2);
-
-
 	return true;
 }
 

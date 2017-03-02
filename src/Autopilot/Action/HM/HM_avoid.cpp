@@ -109,19 +109,6 @@ void HM_avoid::update(void)
 	NULL_(m_pZED);
 	IF_(!isActive());
 
-	if(this->isStateChanged())
-	{
-//		m_pZED->startTracking();
-	}
-
-//	if(m_pZED->m_pZed)
-//	{
-//		if(!m_pZED->isTracking())
-//		{
-//			m_pZED->startTracking();
-//		}
-//	}
-
 	uint64_t tNow = get_time_usec();
 
 	//keep turning until the time
