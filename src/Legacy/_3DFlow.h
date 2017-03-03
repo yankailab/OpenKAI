@@ -12,7 +12,7 @@
 
 #include "../Base/common.h"
 #include "../Vision/_Flow.h"
-#include "../Stream/Frame.h"
+#include "../Vision/Frame.h"
 
 using namespace cv;
 using namespace cv::cuda;

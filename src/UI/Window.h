@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
-#include "../Stream/Frame.h"
+#include "../Vision/Frame.h"
 
 #define TAB_PIX 25
 #define LINE_HEIGHT 15;

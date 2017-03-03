@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 
 #ifndef USE_OPENCV4TEGRA
 
@@ -40,7 +40,7 @@ private:
 	}
 
 public:
-	_StreamBase* m_pStream;
+	_VisionBase* m_pStream;
 	Rect2d m_ROI;
 	Rect2d m_newROI;
 	Frame* m_pFrame;

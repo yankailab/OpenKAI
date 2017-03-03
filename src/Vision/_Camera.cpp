@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_Camera.h"
+#include "../Vision/_Camera.h"
 
 namespace kai
 {
@@ -28,7 +28,7 @@ _Camera::~_Camera()
 
 bool _Camera::init(void* pKiss)
 {
-	IF_F(!_StreamBase::init(pKiss));
+	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -95,7 +95,7 @@ bool _Camera::init(void* pKiss)
 
 bool _Camera::link(void)
 {
-	IF_F(!this->_StreamBase::link());
+	IF_F(!this->_VisionBase::link());
 	return true;
 }
 
@@ -223,7 +223,7 @@ void _Camera::update(void)
 
 void _Camera::complete(void)
 {
-	this->_StreamBase::complete();
+	this->_VisionBase::complete();
 	m_camera.release();
 }
 
@@ -235,7 +235,7 @@ bool _Camera::draw(void)
 
 	IF_F(m_pBGR->empty());
 	pFrame->update(m_pBGR);
-	this->_StreamBase::draw();
+	this->_VisionBase::draw();
 
 	return true;
 }

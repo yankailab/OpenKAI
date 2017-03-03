@@ -58,7 +58,7 @@ bool _AprilTags::link(void)
 	//link instance
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_StreamBase*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

@@ -18,6 +18,7 @@ _Path::_Path()
 	m_lastWP.init();
 	m_bRecord = false;
 	m_showScale = 1.0;	//1m = 1pixel;
+	m_distCompress = 0.0;
 }
 
 _Path::~_Path()
@@ -32,6 +33,7 @@ bool _Path::init(void* pKiss)
 
 	F_INFO(pK->v("dInterval", &m_dInterval));
 	F_INFO(pK->v("showScale", &m_showScale));
+	F_INFO(pK->v("distCompress", &m_distCompress));
 
 	reset();
 	return true;
@@ -90,7 +92,7 @@ void _Path::updateGPS(void)
 
 UTM_POS* _Path::getCurrentPos(void)
 {
-	NULL_F(m_pGPS);
+	NULL_N(m_pGPS);
 	return m_pGPS->getUTM();
 }
 
@@ -109,6 +111,11 @@ void _Path::reset(void)
 	m_lastWP.init();
 	m_vWP.clear();
 	m_vWP.push_back(m_lastWP);
+}
+
+void _Path::compress(void)
+{
+
 }
 
 UTM_POS* _Path::getLastWayPoint(void)

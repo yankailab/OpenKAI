@@ -72,7 +72,7 @@ bool _Obstacle::link(void)
 
 	string iName = "";
 	F_INFO(pK->v("_Stream", &iName));
-	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
+	m_pStream = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

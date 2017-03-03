@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -112,6 +112,7 @@
 	"_ZED":"ZED_",
 	"dInterval":0.0,
 	"showScale":10.0,
+	"distCompress":0.0,
 }
 	
 {
@@ -257,11 +258,8 @@
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
 			"bSpeaker":0,
-			"motorPwmL":1000,
-			"motorPwmR":1000,
 			"motorPwmW":0,
 			"speedP":2500,
-			"distKickBack":2.0,
 			
 			{
 				"name":"cmd",
@@ -288,8 +286,8 @@
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
-			"distKickBack":1.5,
-			"rpmBack":-3000,
+			"distKickBack":0.3,
+			"rpmBack":-1500,
 
 			{
 				"name":"obsBox",

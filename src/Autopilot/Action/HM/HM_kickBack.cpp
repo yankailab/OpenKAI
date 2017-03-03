@@ -80,9 +80,9 @@ void HM_kickBack::update(void)
 	if(m_dist >= m_kickBackDist)
 	{
 		//arrived at approach position
-		m_wpStation = *pNew;
+		m_wpApproach = *pNew;
 		string stateName = "HM_WORK";
-		m_pAM->transit(m_pAM->getStateIdx(&stateName));
+		m_pAM->transit(&stateName);
 		return;
 	}
 

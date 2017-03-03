@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_FRAME_H_
-#define SRC_STREAM_FRAME_H_
+#ifndef SRC_VISION_FRAME_H_
+#define SRC_VISION_FRAME_H_
 
 #include "../Base/common.h"
 

@@ -13,11 +13,7 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
-#include "../Stream/_StreamBase.h"
-#include "../Stream/_Camera.h"
-#include "../Stream/_ZED.h"
-#include "../Stream/Frame.h"
-#include "../Stream/FrameGroup.h"
+#include "../Vision/Frame.h"
 #include "../Automaton/_Automaton.h"
 
 #include "../Navigation/_Obstacle.h"
@@ -59,6 +55,10 @@
 #include "../AI/_ImageNet.h"
 #include "../AI/_MatrixNet.h"
 #include "../AI/_DetectNet.h"
+#include "../Vision/_Camera.h"
+#include "../Vision/_VisionBase.h"
+#include "../Vision/_ZED.h"
+#include "../Vision/FrameGroup.h"
 
 #ifdef USE_SSD
 #include "../AI/_SSD.h"

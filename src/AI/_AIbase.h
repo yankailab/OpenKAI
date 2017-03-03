@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 
 namespace kai
 {
@@ -88,7 +88,7 @@ private:
 	}
 
 public:
-	_StreamBase* m_pStream;
+	_VisionBase* m_pStream;
 
 	string m_fileModel;
 	string m_fileTrained;

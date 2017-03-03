@@ -4,7 +4,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/SerialPort.h"
-#include "../Stream/Frame.h"
+#include "../Vision/Frame.h"
 
 
 //0 START MARK

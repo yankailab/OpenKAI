@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Filter/FilterBase.h"
-#include "../Stream/_ZED.h"
+#include "../Vision/_ZED.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Protocol/_Mavlink.h"
 #include "../include/UTM.h"

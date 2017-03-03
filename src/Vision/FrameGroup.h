@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_FRAMEGROUP_H_
-#define SRC_STREAM_FRAMEGROUP_H_
+#ifndef SRC_VISION_FRAMEGROUP_H_
+#define SRC_VISION_FRAMEGROUP_H_
 
 #include "../Base/common.h"
-#include "../Stream/Frame.h"
+#include "Frame.h"
 
 #define NUM_FRAME 10
 

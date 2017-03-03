@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../../Stream/Frame.h"
+#include "../../../Vision/Frame.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_AIbase.h"
 #include "../../../Filter/FilterBase.h"

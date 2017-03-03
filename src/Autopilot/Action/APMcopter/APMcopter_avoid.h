@@ -5,7 +5,7 @@
 #include "../../../Base/common.h"
 #include "../../../Sensor/_Lightware_SF40.h"
 #include "../../../Navigation/_Obstacle.h"
-#include "../../../Stream/_ZED.h"
+#include "../../../Vision/_ZED.h"
 #include "../ActionBase.h"
 #include "APMcopter_base.h"
 

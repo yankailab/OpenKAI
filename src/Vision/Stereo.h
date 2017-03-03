@@ -5,13 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef SRC_CAMERA_STEREO_H_
-#define SRC_CAMERA_STEREO_H_
+#ifndef SRC_VISION_STEREO_H_
+#define SRC_VISION_STEREO_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
-#include "../Stream/Frame.h"
-#include "_StreamBase.h"
+#include "Frame.h"
+#include "_VisionBase.h"
 
 namespace kai
 {
@@ -21,7 +21,6 @@ class Stereo
 public:
 	Stereo();
 	virtual ~Stereo();
-
 
 	bool init(int disparity);
 	void detect(Frame* pLeft, Frame* pRight, Frame* pDepth);

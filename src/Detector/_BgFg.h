@@ -11,7 +11,7 @@
 #ifndef USE_OPENCV4TEGRA
 
 #include "../Base/common.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 
 #define NUM_MARKER 128
 #define MIN_MARKER_SIZE 10
@@ -57,7 +57,7 @@ public:
 	double	m_minSize;
 	int		m_objLockLevel;
 
-	_StreamBase*		m_pCamStream;
+	_VisionBase*		m_pCamStream;
 	Mat			m_Mat;
 
 #ifdef USE_CUDA

@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_ZED.h"
+#include "../Vision/_ZED.h"
 
 #ifdef USE_ZED
 
@@ -36,12 +36,12 @@ _ZED::_ZED()
 
 _ZED::~_ZED()
 {
-	this->_StreamBase::complete();
+	this->_VisionBase::complete();
 }
 
 bool _ZED::init(void* pKiss)
 {
-	IF_F(!_StreamBase::init(pKiss));
+	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -64,7 +64,7 @@ bool _ZED::init(void* pKiss)
 
 bool _ZED::link(void)
 {
-	IF_F(!this->_StreamBase::link());
+	IF_F(!this->_VisionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
@@ -364,7 +364,7 @@ bool _ZED::draw(void)
 		pWin = (Window*) this->m_pWindow;
 		pFrame = pWin->getFrame();
 		pFrame->update(m_pBGR);
-		this->_StreamBase::draw();
+		this->_VisionBase::draw();
 
 		string msg;
 		pWin->tabNext();

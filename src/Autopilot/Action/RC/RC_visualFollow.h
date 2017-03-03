@@ -5,7 +5,7 @@
 #include "../../../Filter/FilterBase.h"
 #include "../../../Script/Kiss.h"
 #include "../../../Protocol/_RC.h"
-#include "../../../Stream/Frame.h"
+#include "../../../Vision/Frame.h"
 #include "../../../Tracker/_ROITracker.h"
 #include "../../../Vision/_Flow.h"
 #include "../../../UI/UI.h"

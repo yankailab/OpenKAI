@@ -8,8 +8,8 @@
 #ifndef OPENKAI_SRC_BASE_BASE_H_
 #define OPENKAI_SRC_BASE_BASE_H_
 
+#include "../Vision/Frame.h"
 #include "common.h"
-#include "../Stream/Frame.h"
 
 using namespace std;
 

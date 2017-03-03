@@ -5,16 +5,16 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_CAMERA_H_
-#define SRC_STREAM_CAMERA_H_
+#ifndef SRC_VISION_CAMERA_H_
+#define SRC_VISION_CAMERA_H_
 
 #include "../Base/common.h"
-#include "_StreamBase.h"
+#include "_VisionBase.h"
 
 namespace kai
 {
 
-class _Camera: public _StreamBase
+class _Camera: public _VisionBase
 {
 public:
 	_Camera();

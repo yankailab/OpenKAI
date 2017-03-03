@@ -36,8 +36,6 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("maxSpeedT", &m_maxSpeedT));
 	F_INFO(pK->v("maxSpeedW", &m_maxSpeedW));
 	F_INFO(pK->v("bSpeaker", &m_bSpeaker));
-	F_INFO(pK->v("motorPwmL", &m_motorPwmL));
-	F_INFO(pK->v("motorPwmR", &m_motorPwmR));
 	F_INFO(pK->v("motorPwmW", &m_motorPwmW));
 	F_INFO(pK->v("speedP", &m_speedP));
 
@@ -148,6 +146,7 @@ void HM_base::cmd(void)
 		m_pAM->transit(&stateName);
 	}
 
+	LOG_I("CMD: "<<m_strCMD);
 	m_strCMD = "";
 
 }

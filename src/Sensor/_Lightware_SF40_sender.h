@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/Frame.h"
+#include "../Vision/Frame.h"
 #include "../IO/SerialPort.h"
 
 #define DEG_AROUND 360.0

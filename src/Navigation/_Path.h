@@ -28,6 +28,7 @@ public:
 
 	void startRecord(void);
 	void stopRecord(void);
+	void compress(void);
 	void reset(void);
 	UTM_POS* getCurrentPos(void);
 	UTM_POS* getLastWayPoint(void);
@@ -47,6 +48,7 @@ public:
 
 	bool	m_bRecord;
 	double	m_dInterval;
+	double	m_distCompress;
 	vector<UTM_POS> m_vWP;
 	UTM_POS m_lastWP;
 	UTM_POS m_baseWP;

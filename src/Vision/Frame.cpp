@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "Frame.h"
+#include "../Vision/Frame.h"
 
 namespace kai
 {

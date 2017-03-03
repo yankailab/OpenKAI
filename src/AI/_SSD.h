@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Navigation/_Obstacle.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 
 #ifdef USE_SSD
 #include <cuda_runtime.h>

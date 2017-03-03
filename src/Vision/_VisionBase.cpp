@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_StreamBase.h"
+#include "_VisionBase.h"
 
 namespace kai
 {
 
-_StreamBase::_StreamBase()
+_VisionBase::_VisionBase()
 {
 	m_bOpen = false;
 	m_type = unknownStream;
@@ -33,7 +33,7 @@ _StreamBase::_StreamBase()
 	m_pDepth = NULL;
 }
 
-_StreamBase::~_StreamBase()
+_VisionBase::~_VisionBase()
 {
 	DEL(m_pBGR);
 	DEL(m_pHSV);
@@ -41,7 +41,7 @@ _StreamBase::~_StreamBase()
 	DEL(m_pDepth);
 }
 
-bool _StreamBase::init(void* pKiss)
+bool _VisionBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -72,36 +72,36 @@ bool _StreamBase::init(void* pKiss)
 	return true;
 }
 
-Frame* _StreamBase::bgr(void)
+Frame* _VisionBase::bgr(void)
 {
 	return m_pBGR;
 }
 
-Frame* _StreamBase::hsv(void)
+Frame* _VisionBase::hsv(void)
 {
 	return m_pHSV;
 }
 
-Frame* _StreamBase::gray(void)
+Frame* _VisionBase::gray(void)
 {
 	return m_pGray;
 }
 
-Frame* _StreamBase::depth(void)
+Frame* _VisionBase::depth(void)
 {
 	return m_pDepth;
 }
 
-void _StreamBase::getRange(double* pMin, double* pMax)
+void _VisionBase::getRange(double* pMin, double* pMax)
 {
 }
 
-uint8_t _StreamBase::getOrientation(void)
+uint8_t _VisionBase::getOrientation(void)
 {
 	return m_orientation;
 }
 
-void _StreamBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
+void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
 {
 	if(pSize)
 	{
@@ -122,7 +122,7 @@ void _StreamBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
 	}
 }
 
-void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
+void _VisionBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
 	Point2f center(m_centerH, m_centerV);
 	double deg = -rollRad * 180.0 * OneOvPI;
@@ -132,7 +132,7 @@ void _StreamBase::setAttitude(double rollRad, double pitchRad, uint64_t timestam
 
 }
 
-STREAM_TYPE _StreamBase::getType(void)
+VISION_TYPE _VisionBase::getType(void)
 {
 	return m_type;
 }

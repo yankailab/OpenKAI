@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "Stereo.h"
+#include "../Vision/Stereo.h"
 
 namespace kai
 {

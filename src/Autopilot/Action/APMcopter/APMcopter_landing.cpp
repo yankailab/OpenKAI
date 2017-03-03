@@ -54,7 +54,7 @@ void APMcopter_landing::landing(void)
 {
 	NULL_(m_pAPM);
 	NULL_(m_pAI);
-	_StreamBase* pStream = m_pAI->m_pStream;
+	_VisionBase* pStream = m_pAI->m_pStream;
 	NULL_(pStream);
 
 	vInt2 cSize;

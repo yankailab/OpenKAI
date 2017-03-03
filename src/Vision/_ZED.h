@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_ZED_H_
-#define SRC_STREAM_ZED_H_
+#ifndef SRC_VISION_ZED_H_
+#define SRC_VISION_ZED_H_
 
 #include "../Base/common.h"
-#include "_StreamBase.h"
+#include "_VisionBase.h"
 
 #ifdef USE_ZED
 #include <zed/Camera.hpp>
@@ -22,7 +22,7 @@ enum tracking_status
 	track_idle, track_start, tracking, track_stop
 };
 
-class _ZED: public _StreamBase
+class _ZED: public _VisionBase
 {
 public:
 	_ZED();

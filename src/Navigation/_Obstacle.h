@@ -10,9 +10,9 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_StreamBase.h"
 #include "../AI/_ImageNet.h"
 #include "../Filter/Median.h"
+#include "../Vision/_VisionBase.h"
 
 #define N_FILTER 1600
 
@@ -42,7 +42,7 @@ private:
 	}
 
 public:
-	_StreamBase* m_pStream;
+	_VisionBase* m_pStream;
 	Frame*	m_pMatrix;
 	vInt2	m_mDim;
 	Median* m_pFilteredMatrix[N_FILTER];

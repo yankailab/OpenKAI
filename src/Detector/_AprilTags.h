@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 #include "../include/apriltags-cpp/TagDetector.h"
 
 
@@ -57,7 +57,7 @@ public:
 	int		  m_numTags;
 	APRIL_TAG m_pTag[NUM_TAGS][NUM_PER_TAG];
 
-	_StreamBase* m_pStream;
+	_VisionBase* m_pStream;
 	Frame*		 m_pFrame;
 	uint64_t	 m_frameID;
 

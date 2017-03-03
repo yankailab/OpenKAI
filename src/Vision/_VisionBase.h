@@ -1,12 +1,12 @@
 /*
- * StreamBase.h
+ * VisionBase.h
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_STREAM_STREAMBASE_H_
-#define SRC_STREAM_STREAMBASE_H_
+#ifndef SRC_VISION_VISIONBASE_H_
+#define SRC_VISION_VISIONBASE_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -14,7 +14,7 @@
 namespace kai
 {
 
-enum STREAM_TYPE
+enum VISION_TYPE
 {
 	unknownStream,
 	camera,
@@ -22,14 +22,14 @@ enum STREAM_TYPE
 	zed,
 };
 
-class _StreamBase: public _ThreadBase
+class _VisionBase: public _ThreadBase
 {
 public:
-	_StreamBase();
-	virtual ~_StreamBase();
+	_VisionBase();
+	virtual ~_VisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual STREAM_TYPE getType(void);
+	virtual VISION_TYPE getType(void);
 
 	virtual Frame* bgr(void);
 	virtual Frame* hsv(void);
@@ -44,7 +44,7 @@ public:
 
 public:
 	bool m_bOpen;
-	STREAM_TYPE m_type;
+	VISION_TYPE m_type;
 
 	int m_width;
 	int m_height;

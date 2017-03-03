@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "FrameGroup.h"
+#include "../Vision/FrameGroup.h"
 
 namespace kai
 {

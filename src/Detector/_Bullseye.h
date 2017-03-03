@@ -9,7 +9,7 @@
 #define DETECTOR_BULLSEYE_H_
 
 #include "../Base/common.h"
-#include "../Stream/_StreamBase.h"
+#include "../Vision/_VisionBase.h"
 
 #define NUM_MARKER 128
 
@@ -60,7 +60,7 @@ public:
 
 	Ptr<SimpleBlobDetector> m_pBlobDetector;
 
-	_StreamBase*	m_pStream;
+	_VisionBase*	m_pStream;
 	Frame*			m_pFrame;
 
 #ifdef USE_CUDA

@@ -9,8 +9,8 @@
 #define SRC_VISION_FLOW_H_
 
 #include "../Base/common.h"
-#include "../Stream/_StreamBase.h"
-#include "../Stream/FrameGroup.h"
+#include "../Vision/FrameGroup.h"
+#include "_VisionBase.h"
 
 namespace kai
 {
@@ -42,7 +42,7 @@ private:
 public:
 	int	m_width;
 	int m_height;
-	_StreamBase*					m_pStream;
+	_VisionBase*					m_pStream;
 	FrameGroup*						m_pGrayFrames;
 
 #ifndef USE_OPENCV4TEGRA
