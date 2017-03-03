@@ -88,6 +88,7 @@ void HM_kickBack::update(void)
 
 	m_pHM->m_motorPwmL = m_rpmBack;
 	m_pHM->m_motorPwmR = m_rpmBack;
+	m_pHM->m_bSpeaker = true;
 }
 
 bool HM_kickBack::draw(void)
