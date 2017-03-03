@@ -23,7 +23,7 @@ public:
 
 	void reset(void);
 
-private:
+public:
 	HM_base* m_pHM;
 	_Path* m_pPath;
 

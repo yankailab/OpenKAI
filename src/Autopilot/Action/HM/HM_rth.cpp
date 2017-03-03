@@ -6,11 +6,14 @@ namespace kai
 HM_rth::HM_rth()
 {
 	m_pHM = NULL;
-	m_pAM = NULL;
+	m_pKB = NULL;
+	m_pPath = NULL;
 
 	m_steerP = 0.0;
-	m_pBase = NULL;
-
+	m_rpmSteer = 0;
+	m_rpmSpeed = 1500;
+	m_rWP = 0.5;
+	m_dHdg = 1.0;
 }
 
 HM_rth::~HM_rth()
@@ -24,7 +27,9 @@ bool HM_rth::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("steerP", &m_steerP));
-	F_INFO(pK->v("targetClass", &m_iBaseClass));
+	F_INFO(pK->v("rpmSpeed", &m_rpmSpeed));
+	F_INFO(pK->v("rWP", &m_rWP));
+	F_INFO(pK->v("dHdg", &m_dHdg));
 
 	return true;
 }
@@ -36,12 +41,16 @@ bool HM_rth::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("HM_base", &iName));
+	F_ERROR_F(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("HM_kickBack", &iName));
+	m_pKB = (HM_kickBack*) (pK->parent()->getChildInstByName(&iName));
+
+	iName = "";
+	F_ERROR_F(pK->v("_Path", &iName));
+	m_pPath = (_Path*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -51,39 +60,48 @@ void HM_rth::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pObs);
 	NULL_(m_pAM);
+	NULL_(m_pKB);
+	NULL_(m_pPath);
 	IF_(!isActive());
 
 	uint64_t tNow = get_time_usec();
 
-	if (m_pMN->bFound(m_iBaseClass))
-	{
+	UTM_POS* pNow = m_pPath->getCurrentPos();
+	NULL_(pNow);
 
+	//Check if arrived at approach pos
+	double dApproach = pNow->dist(&m_pKB->m_wpApproach);
+	if(dApproach < m_rWP)
+	{
+		string stateName = "HM_RTH_APPROACH";
+		m_pAM->transit(&stateName);
+		LOG_I("Arrived at Approach Pos");
+		return;
 	}
 
-	m_pHM->m_motorPwmL = m_rpmSteer;
-	m_pHM->m_motorPwmR = -m_rpmSteer;
+	//Difference between approach pos and current pos
+	UTM_POS dPos = *pNow - m_pKB->m_wpApproach;
 
-	//decide which direction to turn based on previous actions' decision
-//	if (m_rpmSteer == 0)
-//	{
-//		m_rpmSteer = m_steerP;
-//		if (m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
-//		{
-//			m_rpmSteer = -m_steerP;
-//		}
-//		else if (m_pHM->m_motorPwmL == m_pHM->m_motorPwmR)
-//		{
-//			//decide direction by obstacles in left and right
-//			double dL = m_pObs->dist(&m_obsBoxL, NULL);
-//			double dR = m_pObs->dist(&m_obsBoxR, NULL);
-//
-//			if (dL > dR)
-//				m_rpmSteer = -m_steerP;
-//		}
-//	}
+	//Heading towards approach pos
+	if(dPos.m_hdg > m_dHdg)
+	{
+		m_rpmSteer = m_steerP;
+		if(dPos.m_hdg < 0)
+			m_rpmSteer = -m_steerP;
 
+		m_pHM->m_motorPwmL = m_rpmSteer;
+		m_pHM->m_motorPwmR = -m_rpmSteer;
+
+		return;
+	}
+
+	//Move to approach pos
+	m_pHM->m_motorPwmL = m_rpmSpeed;
+	m_pHM->m_motorPwmR = m_rpmSpeed;
+
+	//TODO: compress path trajectory
+	//TODO: find the closest wp towards approach position
 
 }
 
@@ -92,14 +110,14 @@ bool HM_rth::draw(void)
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
-	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
-			+ i2str(m_pHM->m_motorPwmR);
+	//draw messages
+	string msg;
+	if (isActive())
+		msg = "* ";
+	else
+		msg = "- ";
+	msg += *this->getName();
 	pWin->addMsg(&msg);
-
-//	IF_T(m_pTarget==NULL);
-//	Mat* pMat = pWin->getFrame()->getCMat();
-//	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
-//			Scalar(0, 0, 255), 2);
 
 	return true;
 }

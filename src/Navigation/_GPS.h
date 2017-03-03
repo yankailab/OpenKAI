@@ -71,6 +71,21 @@ struct UTM_POS
 
 		return sqrt(e*e + n*n + a*a);
 	}
+
+	inline UTM_POS operator-(UTM_POS rPos)
+	{
+		UTM_POS dPos;
+		dPos.init();
+
+		dPos.m_easting = this->m_easting - rPos.m_easting;
+		dPos.m_northing = this->m_northing - rPos.m_northing;
+		dPos.m_alt = this->m_alt - rPos.m_alt;
+		dPos.m_hdg = this->m_hdg - rPos.m_hdg;
+		dPos.m_zone = this->m_zone;
+
+		return dPos;
+	}
+
 };
 
 class _GPS: public _ThreadBase

@@ -2,11 +2,11 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMRTH_H_
 
 #include "../../../Base/common.h"
+#include "../../../Automaton/_Automaton.h"
+#include "../../../Navigation/_Path.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
-#include "../../../Automaton/_Automaton.h"
-#include "../../../AI/_MatrixNet.h"
-#include "../../../Navigation/_Obstacle.h"
+#include "HM_kickBack.h"
 
 namespace kai
 {
@@ -24,16 +24,14 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_Obstacle* m_pObs;
-	_MatrixNet* m_pMN;
+	HM_kickBack* m_pKB;
+	_Path* m_pPath;
 
 	double	m_steerP;
 	int		m_rpmSteer;
-
-	vDouble2 m_basePos;
-	double	m_baseDist;
-	int		m_iBaseClass;
-	OBJECT* m_pBase;
+	int		m_rpmSpeed;
+	double	m_rWP;
+	double	m_dHdg;
 
 };
 

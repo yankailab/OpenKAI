@@ -71,6 +71,8 @@ void HM_kickBack::update(void)
 		NULL_(pWP);
 		m_wpStation = *pWP;
 		m_bSetStation = true;
+		m_pPath->reset();
+		m_pPath->startRecord();
 		
 		LOG_I("Station Pos Set");
 	}

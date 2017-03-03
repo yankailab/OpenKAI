@@ -440,11 +440,15 @@
 			"name":"RTH",
 			"class":"HM_rth",
 			"bInst":0,
-			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
+			"HM_kickBack":"kickBack",
+			"_Path":"HMpath",
 			"_Automaton":"automaton",
-			"dist":0.1,
+			"steerP":1000,
+			"rWP":0.5,
+			"dHdg":0.5,
+			"rpmSpeed":2500,
 
 			{
 				"name":"activeState",
@@ -470,7 +474,7 @@
 				"name":"activeState",
 				"bInst":1,
 				{
-					"state":"HM_RTH",
+					"state":"HM_RTH_APPROACH",
 					"bInst":1,
 				}
 			}
