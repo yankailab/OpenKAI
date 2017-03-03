@@ -109,7 +109,7 @@
 	"bInst":1,
 	"Window":"HMview",
 	"FPS":30,
-	"_ZED":"ZED_",
+	"_GPS":"GPS",
 	"dInterval":0.0,
 	"showScale":10.0,
 	"distCompress":0.0,
@@ -130,6 +130,7 @@
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
+		"bLog":0,
 		"windowLen":9,
 	}
 }
@@ -254,7 +255,6 @@
 			"Window":"HMview",
 			"_Canbus":"canbus",
 			"_Automaton":"automaton",
-			"_Path":"HMpath",
 			"maxSpeedT":65535,
 			"maxSpeedW":2500,
 			"bSpeaker":0,
@@ -285,8 +285,8 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"_Obstacle":"obstacle",
-			"distKickBack":0.3,
+			"_Path":"HMpath",
+			"kickBackDist":0.3,
 			"rpmBack":-1500,
 
 			{

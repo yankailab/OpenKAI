@@ -47,7 +47,7 @@ bool _Path::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("_GPS", &iName));
+	F_ERROR_F(pK->v("_GPS", &iName));
 	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;

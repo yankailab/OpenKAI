@@ -47,8 +47,6 @@ public:
 	vInt2	m_mDim;
 	Median* m_pFilteredMatrix[N_FILTER];
 	int		m_nFilter;
-	int		m_medianLen;
-
 	double m_dBlend;
 
 };

@@ -8,8 +8,6 @@ HM_base::HM_base()
 	m_pCAN = NULL;
 	m_pCMD = NULL;
 	m_strCMD = "";
-	m_pPath = NULL;
-
 	m_motorPwmL = 0;
 	m_motorPwmR = 0;
 	m_motorPwmW = 0;
@@ -58,10 +56,6 @@ bool HM_base::link(void)
 	F_INFO(pK->v("_Canbus", &iName));
 	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_Path", &iName));
-	m_pPath = (_Path*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -106,10 +100,15 @@ void HM_base::cmd(void)
 	while (m_pCMD->read((uint8_t*) &buf, 1) > 0)
 	{
 		if (buf == ',')break;
+		IF_CONT(buf==LF);
+		IF_CONT(buf==CR);
+
 		m_strCMD += buf;
 	}
 
 	IF_(buf!=',');
+
+	LOG_I("CMD: "<<m_strCMD);
 
 	string stateName;
 	if(m_strCMD=="start")
@@ -146,9 +145,7 @@ void HM_base::cmd(void)
 		m_pAM->transit(&stateName);
 	}
 
-	LOG_I("CMD: "<<m_strCMD);
 	m_strCMD = "";
-
 }
 
 void HM_base::updateCAN(void)

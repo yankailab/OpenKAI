@@ -71,6 +71,8 @@ void HM_kickBack::update(void)
 		NULL_(pWP);
 		m_wpStation = *pWP;
 		m_bSetStation = true;
+		
+		LOG_I("Station Pos Set");
 	}
 
 	UTM_POS* pNew = m_pPath->getCurrentPos();
@@ -83,6 +85,8 @@ void HM_kickBack::update(void)
 		m_wpApproach = *pNew;
 		string stateName = "HM_WORK";
 		m_pAM->transit(&stateName);
+
+		LOG_I("KickBack complete, Approach Pos Set");
 		return;
 	}
 

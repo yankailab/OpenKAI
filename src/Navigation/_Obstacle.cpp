@@ -14,7 +14,6 @@ _Obstacle::_Obstacle()
 {
 	m_pStream = NULL;
 	m_pMatrix = NULL;
-	m_medianLen = 3;
 	m_nFilter = 0;
 	m_dBlend = 0.5;
 
@@ -39,8 +38,6 @@ bool _Obstacle::init(void* pKiss)
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("dBlend", &m_dBlend));
-
-	F_INFO(pK->v("medianLen", &m_medianLen));
 	F_INFO(pK->v("matrixW", &m_mDim.m_x));
 	F_INFO(pK->v("matrixH", &m_mDim.m_y));
 
