@@ -32,6 +32,7 @@ Startup::Startup()
 	m_bRun = true;
 	m_key = 0;
 	m_bLog = true;
+	m_winMouse = "";
 }
 
 Startup::~Startup()
@@ -57,6 +58,7 @@ bool Startup::start(Kiss* pKiss)
 	F_INFO(pApp->v("appName", &m_name));
 	F_INFO(pApp->v("bWindow", &m_bWindow));
 	F_INFO(pApp->v("waitKey", &m_waitKey));
+	F_INFO(pApp->v("winMouse", &m_winMouse));
 
 	//create instances
 	F_FATAL_F(createAllInst(pKiss));
@@ -65,6 +67,11 @@ bool Startup::start(Kiss* pKiss)
 	for (i = 0; i < m_nInst; i++)
 	{
 		F_FATAL_F(m_pInst[i]->link());
+	}
+
+	if(m_winMouse != "" && m_bWindow)
+	{
+		setMouseCallback(m_winMouse, onMouseGeneral, 0 );
 	}
 
 	//UI thread

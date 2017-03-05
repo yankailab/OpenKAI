@@ -55,8 +55,6 @@ bool _ROITracker::link(void)
 	F_ERROR_F(pK->v("_Stream",&iName));
 	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
 
-	//TODO: link variables to Automaton
-
 	return true;
 }
 

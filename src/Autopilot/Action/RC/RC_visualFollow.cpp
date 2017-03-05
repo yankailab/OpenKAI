@@ -52,21 +52,16 @@ bool RC_visualFollow::init(void* pKiss)
 	Kiss* pC;
 
 	pC = pK->o("assist");
-	if (!pC->empty())
-	{
-		m_pUIassist = new UI();
-		F_FATAL_F(m_pUIassist->init(pC));
-	}
+	IF_F(pC->empty());
+	m_pUIassist = new UI();
+	F_FATAL_F(m_pUIassist->init(pC));
 
 	pC = pK->o("drawRect");
-	if (!pC->empty())
-	{
-		m_pUIdrawRect = new UI();
-		F_FATAL_F(m_pUIdrawRect->init(pC));
-	}
+	IF_F(pC->empty());
+	m_pUIdrawRect = new UI();
+	F_FATAL_F(m_pUIdrawRect->init(pC));
 
 	pK->m_pInst = this;
-
 	return true;
 }
 
@@ -86,6 +81,9 @@ bool RC_visualFollow::link(void)
 	F_ERROR_F(pK->v("ROItracker", &iName));
 	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
 
+	IF_F(!m_pUIassist->link());
+	IF_F(!m_pUIdrawRect->link());
+
 	return true;
 }
 
@@ -95,7 +93,7 @@ void RC_visualFollow::update(void)
 
 	NULL_(m_pRC);
 	NULL_(m_pROITracker);
-	IF_(isActive()==false);
+	IF_(!isActive());
 
 	if (m_pROITracker->m_bTracking == false)
 	{
@@ -199,8 +197,8 @@ bool RC_visualFollow::draw(void)
 		m_pUIdrawRect->draw();
 	}
 
-	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50,
-			Scalar(0, 255, 0), 2);
+//	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50,
+//			Scalar(0, 255, 0), 2);
 
 	return true;
 }

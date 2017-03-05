@@ -1,0 +1,186 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+	"winMouse":"TrackerView",
+}
+
+{
+	"name":"TrackerView",
+	"class":"Window",
+	"bInst":1,
+	"w":1920,
+	"h":1080,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/home/ubuntu/src/data/OpenKAI_",
+	"recFPS":10,
+	"recCodec":"MJPG",	
+	"textSize":0.5,
+	"textR":0,
+	"textG":255,
+	"textB":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"TrackerCam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"TrackerView",
+	"ID":1,
+	"width":1920,
+	"height":1080,
+	"angleV":67.1,
+	"angleH":66.7,
+}
+
+{
+	"name":"targetDrone",
+	"class":"_ROITracker",
+	"bInst":1,
+	"FPS":30,
+	"_Stream":"TrackerCam",
+	"_Automaton":"",
+}
+
+{
+	"name":"autoTracker",
+	"class":"_AutoPilot",
+	"bInst":1,
+	"FPS":30,
+	"Window":"TrackerView",
+	"_Automaton":"",
+	"_Mavlink":"",
+	"_RC":"",
+	"_Canbus":"",
+	"roiMinSize":25,
+	"bMouse":1,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"visualTracker",
+			"bInst":1,
+			"class":"RC_visualFollow",
+			"targetX":960,
+			"targetY":500,
+			"ROIsizeFrom":10,
+			"ROIsizeTo":300,
+			"ROIsizeStep":10,
+			"ROItracker":"targetDrone",
+			"Window":"TrackerView",
+			"bMouse":1,
+			"State":"AIR_FOLLOW",
+			
+			{
+				"name":"assist",
+				"bInst":1,
+				"class":"UI",
+				"Window":"TrackerView",
+				
+				{
+					"name":"CLR",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":0,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":10,
+					"ty":50,
+					"fontSize":1,
+				}
+
+				{
+					"name":"+",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":100,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":10,
+					"ty":50,
+					"fontSize":1,
+				}
+
+				{
+					"name":"-",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":200,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":10,
+					"ty":50,
+					"fontSize":1,
+				}
+				
+				{
+					"name":"MODE",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":980,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":10,
+					"ty":50,
+					"fontSize":1,
+				}
+
+			}
+			
+			
+			{
+				"name":"drawRect",
+				"bInst":1,
+				"class":"UI",
+				"Window":"TrackerView",
+
+				{
+					"name":"MODE",
+					"bInst":1,
+					"class":"Btn",
+					"x":1820,
+					"y":980,
+					"w":100,
+					"h":100,
+					"r":0,
+					"g":250,
+					"b":0,
+					"tx":10,
+					"ty":50,
+					"fontSize":1,
+				}
+
+			}
+			
+		}
+				
+	}
+	
+}
+

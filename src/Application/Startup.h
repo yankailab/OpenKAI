@@ -1,12 +1,12 @@
 /*
- * General.h
+ * Startup.h
  *
  *  Created on: Aug 20, 2015
  *      Author: yankai
  */
 
-#ifndef SRC_GENERAL_H_
-#define SRC_GENERAL_H_
+#ifndef SRC_STARTUP_H_
+#define SRC_STARTUP_H_
 
 #include "../Base/common.h"
 #include "../Config/Module.h"
@@ -39,12 +39,13 @@ public:
 	int 	m_nMouse;
 	BASE* 	m_pMouse[N_INST];
 
-	string m_name;
-	int m_key;
-	bool m_bRun;
-	bool m_bWindow;
-	int m_waitKey;
-	bool m_bLog;
+	string	m_name;
+	int		m_key;
+	bool	m_bRun;
+	bool	m_bWindow;
+	int		m_waitKey;
+	bool	m_bLog;
+	string	m_winMouse;
 };
 
 }

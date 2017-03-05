@@ -64,7 +64,6 @@ public:
 	bool draw(void);
 
 	BUTTON* addBtn(void);
-
 	BUTTON* onMouse(MOUSE* pMouse);
 	void onKey(int key);
 
