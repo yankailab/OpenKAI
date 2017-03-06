@@ -107,6 +107,9 @@ public:
 	UTM_POS* getInitUTM(void);
 	void reset(void);
 
+	void addTranslation(vDouble3& dT);
+	void addRotation(vDouble3& dRot);
+
 private:
 	void setMavGPS(void);
 	void getMavGPS(void);

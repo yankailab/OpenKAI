@@ -139,6 +139,7 @@ void _GPS::detect(void)
 
 		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
 		utm.m_northing += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
+		setUTM(&utm);
 	}
 	else if(m_pZED)
 	{
@@ -157,15 +158,37 @@ void _GPS::detect(void)
 		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
 		utm.m_northing += constrain(dPos.m_z, -m_posDiffMax, m_posDiffMax);
 		utm.m_alt += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
+		setUTM(&utm);
 	}
 
-	setUTM(&utm);
 	setMavGPS();
 
 	double dE = m_UTM.m_easting - m_initUTM.m_easting;
 	double dN = m_UTM.m_northing - m_initUTM.m_northing;
 	double dA = m_UTM.m_alt - m_initUTM.m_alt;
 	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
+}
+
+void _GPS::addTranslation(vDouble3& dT)
+{
+	double hdgRad = m_LL.m_hdg * DEG_RAD;
+	double sinH = sin(hdgRad);
+	double cosH = cos(hdgRad);
+
+	double dE = dT.m_x * cosH + dT.m_y * sinH;	//Easting
+	double dN = dT.m_y * cosH - dT.m_x * sinH;	//Northing
+
+	UTM_POS utm = *getUTM();
+	utm.m_easting += dE;
+	utm.m_northing += dN;
+	utm.m_alt += dT.m_y;
+
+	setUTM(&utm);
+}
+
+void _GPS::addRotation(vDouble3& dRot)
+{
+
 }
 
 /*

@@ -5,6 +5,8 @@
 #include "../../../Protocol/_Canbus.h"
 #include "../../../IO/TCP.h"
 #include "../ActionBase.h"
+#include "../../../Navigation/_GPS.h"
+
 
 namespace kai
 {
@@ -22,9 +24,11 @@ public:
 	bool draw(void);
 
 	void cmd(void);
+	void updateGPS(void);
 
 public:
 	_Canbus* m_pCAN;
+	_GPS*	m_pGPS;
 	IO* m_pCMD;
 	string m_strCMD;
 
@@ -39,6 +43,9 @@ public:
 
 	uint8_t m_ctrlB0;
 	uint8_t m_ctrlB1;
+
+	double	m_rpmDist;
+	uint64_t m_lastUpdateGPS;
 
 };
 

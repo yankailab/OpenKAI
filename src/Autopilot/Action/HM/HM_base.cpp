@@ -7,6 +7,7 @@ HM_base::HM_base()
 {
 	m_pCAN = NULL;
 	m_pCMD = NULL;
+	m_pGPS = NULL;
 	m_strCMD = "";
 	m_motorPwmL = 0;
 	m_motorPwmR = 0;
@@ -19,6 +20,8 @@ HM_base::HM_base()
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
 	m_speedP = 3000;
+	m_rpmDist = 1.0;
+	m_lastUpdateGPS = 0;
 }
 
 HM_base::~HM_base()
@@ -36,6 +39,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("bSpeaker", &m_bSpeaker));
 	F_INFO(pK->v("motorPwmW", &m_motorPwmW));
 	F_INFO(pK->v("speedP", &m_speedP));
+	F_INFO(pK->v("rpmDist", &m_rpmDist));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -53,8 +57,12 @@ bool HM_base::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("_Canbus", &iName));
+	F_ERROR_F(pK->v("_Canbus", &iName));
 	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_ERROR_F(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -65,8 +73,9 @@ void HM_base::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pCMD);
 
-	//Update CAN
+	updateGPS();
 	updateCAN();
+
 	string* pStateName = m_pAM->getCurrentStateName();
 
 	if(*pStateName == "HM_STANDBY")
@@ -86,6 +95,29 @@ void HM_base::update(void)
 	//ignore external cmd in kickback mode
 	IF_(*pStateName == "HM_KICKBACK");
 	cmd();
+}
+
+void HM_base::updateGPS(void)
+{
+	NULL_(m_pGPS);
+
+	double tNow = get_time_usec();
+	if(m_lastUpdateGPS==0)
+	{
+		m_lastUpdateGPS = tNow;
+		return;
+	}
+
+	const static double tBase = 1.0/(USEC_1SEC*60);
+
+	double dTime = (double)(tNow - m_lastUpdateGPS);
+	m_lastUpdateGPS = tNow;
+
+	vDouble3 dT;
+	dT.init();
+	dT.m_x = m_motorPwmL * m_rpmDist * dTime * tBase;
+
+	m_pGPS->addTranslation(dT);
 }
 
 void HM_base::cmd(void)
