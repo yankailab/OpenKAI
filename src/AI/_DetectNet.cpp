@@ -171,10 +171,10 @@ void _DetectNet::detect(void)
 		IF_CONT(oSize < minSize);
 		IF_CONT(oSize > maxSize);
 
-		IF_CONT(obj.m_bbox.m_x < bLeft);
-		IF_CONT(obj.m_bbox.m_z > bRight);
-		IF_CONT(obj.m_bbox.m_y < bTop);
-		IF_CONT(obj.m_bbox.m_w > bBottom);
+//		IF_CONT(obj.m_bbox.m_x < bLeft);
+//		IF_CONT(obj.m_bbox.m_z > bRight);
+//		IF_CONT(obj.m_bbox.m_y < bTop);
+//		IF_CONT(obj.m_bbox.m_w > bBottom);
 
 		addOrUpdate(&obj);
 	}

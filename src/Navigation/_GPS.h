@@ -105,6 +105,7 @@ public:
 	UTM_POS* getUTM(void);
 	LL_POS* getInitLL(void);
 	UTM_POS* getInitUTM(void);
+	void reset(void);
 
 private:
 	void setMavGPS(void);

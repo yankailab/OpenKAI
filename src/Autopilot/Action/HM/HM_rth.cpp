@@ -7,7 +7,7 @@ HM_rth::HM_rth()
 {
 	m_pHM = NULL;
 	m_pKB = NULL;
-	m_pPath = NULL;
+	m_pGPS = NULL;
 
 	m_steerP = 0.0;
 	m_rpmSteer = 0;
@@ -49,8 +49,8 @@ bool HM_rth::link(void)
 	m_pKB = (HM_kickBack*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_ERROR_F(pK->v("_Path", &iName));
-	m_pPath = (_Path*) (pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -62,12 +62,10 @@ void HM_rth::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pKB);
-	NULL_(m_pPath);
+	NULL_(m_pGPS);
 	IF_(!isActive());
 
-	uint64_t tNow = get_time_usec();
-
-	UTM_POS* pNow = m_pPath->getCurrentPos();
+	UTM_POS* pNow = m_pGPS->getUTM();
 	NULL_(pNow);
 
 	//Check if arrived at approach pos
@@ -80,14 +78,12 @@ void HM_rth::update(void)
 		return;
 	}
 
-	//Difference between approach pos and current pos
-	UTM_POS dPos = *pNow - m_pKB->m_wpApproach;
-
 	//Heading towards approach pos
-	if(dPos.m_hdg > m_dHdg)
+	double dH = dHdg(pNow->m_hdg, m_pKB->m_wpApproach.m_hdg);
+	if(dH > m_dHdg)
 	{
 		m_rpmSteer = m_steerP;
-		if(dPos.m_hdg < 0)
+		if(dH < 0)
 			m_rpmSteer = -m_steerP;
 
 		m_pHM->m_motorPwmL = m_rpmSteer;
@@ -99,10 +95,6 @@ void HM_rth::update(void)
 	//Move to approach pos
 	m_pHM->m_motorPwmL = m_rpmSpeed;
 	m_pHM->m_motorPwmR = m_rpmSpeed;
-
-	//TODO: compress path trajectory
-	//TODO: find the closest wp towards approach position
-
 }
 
 bool HM_rth::draw(void)

@@ -3,9 +3,14 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Navigation/_Path.h"
+#include "../../../Navigation/_GPS.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
+
+enum KICKBACK_SEQUENCE
+{
+	kb_station,kb_back,kb_turn
+};
 
 namespace kai
 {
@@ -25,15 +30,18 @@ public:
 
 public:
 	HM_base* m_pHM;
-	_Path* m_pPath;
+	_GPS* m_pGPS;
 
 	int		m_rpmBack;
+	int		m_rpmTurn;
 	double	m_kickBackDist;
-	double	m_dist;
 
+	KICKBACK_SEQUENCE	m_sequence;
 	UTM_POS	m_wpStation;
 	UTM_POS	m_wpApproach;
-	bool	m_bSetStation;
+
+	double	m_targetHdg;
+	double	m_rTargetHdg;
 
 };
 

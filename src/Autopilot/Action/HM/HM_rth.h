@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Navigation/_Path.h"
+#include "../../../Navigation/_GPS.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 #include "HM_kickBack.h"
@@ -25,7 +25,7 @@ public:
 private:
 	HM_base* m_pHM;
 	HM_kickBack* m_pKB;
-	_Path* m_pPath;
+	_GPS* m_pGPS;
 
 	double	m_steerP;
 	int		m_rpmSteer;

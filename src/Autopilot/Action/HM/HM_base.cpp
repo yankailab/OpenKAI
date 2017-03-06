@@ -144,6 +144,11 @@ void HM_base::cmd(void)
 		stateName = "HM_FOLLOWME";
 		m_pAM->transit(&stateName);
 	}
+	else if(m_strCMD=="standby")
+	{
+		stateName = "HM_STANDBY";
+		m_pAM->transit(&stateName);
+	}
 
 	m_strCMD = "";
 }

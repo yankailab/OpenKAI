@@ -285,18 +285,12 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"_Path":"HMpath",
+			"_GPS":"GPS@",
 			"kickBackDist":0.3,
 			"rpmBack":-1500,
-
-			{
-				"name":"obsBox",
-				"bInst":1,
-				"left":0.269,
-				"top":0.25,
-				"right":0.93,
-				"bottom":0.825,
-			}
+			"rpmTurn":-1500,
+			"targetHdg":-90,
+			"rTargetHdg":0.5,
 			
 			{
 				"name":"activeState",
@@ -399,10 +393,6 @@
 					"bInst":1,
 				}
 				{
-					"state":"HM_FOLLOWME",
-					"bInst":1,
-				}
-				{
 					"state":"HM_PATHFINDING",
 					"bInst":1,
 				}	
@@ -443,11 +433,11 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"HM_kickBack":"kickBack",
-			"_Path":"HMpath",
+			"_GOS":"GPS",
 			"_Automaton":"automaton",
 			"steerP":1000,
 			"rWP":0.5,
-			"dHdg":0.5,
+			"dHdg":0.2,
 			"rpmSpeed":2500,
 
 			{
@@ -533,10 +523,6 @@
 				}
 				{
 					"state":"HM_RTH",
-					"bInst":1,
-				}
-				{
-					"state":"HM_FOLLOWME",
 					"bInst":1,
 				}
 			}

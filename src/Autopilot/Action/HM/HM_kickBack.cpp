@@ -6,10 +6,12 @@ namespace kai
 HM_kickBack::HM_kickBack()
 {
 	m_pHM = NULL;
-	m_pPath = NULL;
+	m_pGPS = NULL;
 	m_rpmBack = 0;
+	m_rpmTurn = 0;
 	m_kickBackDist = 0.0;
-	m_dist = 0.0;
+	m_targetHdg = 0.0;
+	m_rTargetHdg = 1.0;
 
 	reset();
 }
@@ -22,7 +24,7 @@ void HM_kickBack::reset(void)
 {
 	m_wpStation.init();
 	m_wpApproach.init();
-	m_bSetStation = false;
+	m_sequence = kb_station;
 }
 
 bool HM_kickBack::init(void* pKiss)
@@ -32,7 +34,10 @@ bool HM_kickBack::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("rpmBack", &m_rpmBack));
+	F_INFO(pK->v("rpmTurn", &m_rpmTurn));
 	F_INFO(pK->v("kickBackDist", &m_kickBackDist));
+	F_INFO(pK->v("targetHdg", &m_targetHdg));
+	F_INFO(pK->v("rTargetHdg", &m_rTargetHdg));
 
 	return true;
 }
@@ -49,8 +54,8 @@ bool HM_kickBack::link(void)
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Path", &iName));
-	m_pPath = (_Path*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -61,40 +66,56 @@ void HM_kickBack::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-	NULL_(m_pPath);
+	NULL_(m_pGPS);
 	IF_(!isActive());
 
-	if(!m_bSetStation)
+	UTM_POS* pNew = m_pGPS->getUTM();
+	NULL_(pNew);
+
+	if(m_sequence == kb_station)
 	{
-		//remember station position
-		UTM_POS* pWP = m_pPath->getCurrentPos();
-		NULL_(pWP);
-		m_wpStation = *pWP;
-		m_bSetStation = true;
-		m_pPath->reset();
-		m_pPath->startRecord();
-		
+		m_pGPS->reset();
+		pNew = m_pGPS->getUTM();
+		m_wpStation = *pNew;
+		m_sequence = kb_back;
 		LOG_I("Station Pos Set");
 	}
 
-	UTM_POS* pNew = m_pPath->getCurrentPos();
-	NULL_(pNew);
-	m_dist = pNew->dist(&m_wpStation);
-
-	if(m_dist >= m_kickBackDist)
+	if(m_sequence == kb_back)
 	{
+		if(pNew->dist(&m_wpStation) < m_kickBackDist)
+		{
+			//keep back
+			m_pHM->m_motorPwmL = m_rpmBack;
+			m_pHM->m_motorPwmR = m_rpmBack;
+			m_pHM->m_bSpeaker = true;
+			return;
+		}
+
 		//arrived at approach position
 		m_wpApproach = *pNew;
-		string stateName = "HM_WORK";
-		m_pAM->transit(&stateName);
+		m_sequence = kb_turn;
 
-		LOG_I("KickBack complete, Approach Pos Set");
-		return;
+		LOG_I("Approach Pos Set");
 	}
 
-	m_pHM->m_motorPwmL = m_rpmBack;
-	m_pHM->m_motorPwmR = m_rpmBack;
-	m_pHM->m_bSpeaker = true;
+	if(m_sequence == kb_turn)
+	{
+		if(abs(dHdg(pNew->m_hdg, pNew->m_hdg + m_targetHdg)) < m_rTargetHdg)
+		{
+			//turn complete, change to work mode
+			string stateName = "HM_WORK";
+			m_pAM->transit(&stateName);
+
+			LOG_I("KickBack turn complete");
+			return;
+		}
+
+		//keep turning
+		m_pHM->m_motorPwmL = m_rpmTurn;
+		m_pHM->m_motorPwmR = -m_rpmTurn;
+		m_pHM->m_bSpeaker = true;
+	}
 }
 
 bool HM_kickBack::draw(void)
@@ -110,7 +131,7 @@ bool HM_kickBack::draw(void)
 		msg = "* ";
 	else
 		msg = "- ";
-	msg += *this->getName() + ": dist=" + f2str(m_dist);
+	msg += *this->getName();
 	pWin->addMsg(&msg);
 
 	return true;

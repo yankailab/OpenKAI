@@ -11,7 +11,6 @@ HM_follow::HM_follow()
 
 	m_distMin = 0.0;
 	m_distMax = 10.0;
-	m_distTarget = 0.0;
 	m_steerP = 0.0;
 	m_speedP = 0.0;
 	m_targetX = 0.5;
@@ -75,7 +74,7 @@ void HM_follow::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pDN);
 	NULL_(m_pObs);
-	if(!isActive())
+	if (!isActive())
 	{
 		m_pDN->sleep();
 		return;
@@ -86,19 +85,21 @@ void HM_follow::update(void)
 
 	int i;
 	uint64_t t = get_time_usec() - m_objLifetime;
-	for(i=0;i<m_pDN->size();i++)
+	for (i = 0; i < m_pDN->size(); i++)
 	{
 		OBJECT* pObj = m_pDN->get(i, t);
 		IF_CONT(!pObj);
 		IF_CONT(pObj->m_prob < m_minProb);
 
-		if(!m_pTarget)
+		pObj->m_dist = m_pObs->dist(&pObj->m_fBBox, NULL);
+
+		if (!m_pTarget)
 		{
 			m_pTarget = pObj;
 			continue;
 		}
 
-		if(m_pTarget->m_bbox.area() < pObj->m_bbox.area())
+		if (m_pTarget->m_dist > pObj->m_dist)
 		{
 			m_pTarget = pObj;
 			continue;
@@ -108,17 +109,24 @@ void HM_follow::update(void)
 	NULL_(m_pTarget);
 	m_pHM->m_bSpeaker = true;
 
-	m_distTarget = m_pObs->dist(&m_pTarget->m_fBBox,NULL);
-	double normD = constrain(m_distTarget, m_distMin, m_distMax);
-	double pD = (normD - m_distMin)/(m_distMax - m_distMin);
+	double camW = (double) m_pTarget->m_camSize.m_x;
+	double pX = (camW * m_targetX - m_pTarget->m_fBBox.midX()) / camW;
+	int rpmSteer = m_steerP * pX * 2;
+
+	if(rpmSteer > 0)
+	{
+		m_pHM->m_motorPwmL = rpmSteer;
+		m_pHM->m_motorPwmR = -rpmSteer;
+		return;
+	}
+
+	double normD = constrain(m_pTarget->m_dist, m_distMin, m_distMax);
+	double pD = (normD - m_distMin) / (m_distMax - m_distMin);
 	int rpmSpeed = m_speedP * pD;
 
-	double camW = (double)m_pTarget->m_camSize.m_x;
-	double pX = (camW*m_targetX - m_pTarget->m_fBBox.midX()) / camW;
-	int rpmSteer = m_steerP * pX;
+	m_pHM->m_motorPwmL = rpmSpeed;
+	m_pHM->m_motorPwmR = rpmSpeed;
 
-	m_pHM->m_motorPwmL = rpmSpeed + rpmSteer;
-	m_pHM->m_motorPwmR = rpmSpeed - rpmSteer;
 }
 
 bool HM_follow::draw(void)
@@ -130,9 +138,14 @@ bool HM_follow::draw(void)
 	IF_F(pMat->empty());
 
 	string msg;
-	if(isActive())msg="* ";
-	else msg="- ";
-	msg += *this->getName() + ": dist=" + f2str(m_distTarget);
+	if (isActive())
+		msg = "* ";
+	else
+		msg = "- ";
+	msg += *this->getName();
+
+	if(m_pTarget)
+		msg += ": dist=" + f2str(m_pTarget->m_dist);
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pTarget);

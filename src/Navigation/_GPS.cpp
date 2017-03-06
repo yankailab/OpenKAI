@@ -45,9 +45,9 @@ bool _GPS::init(void* pKiss)
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	setLL(&m_initLL);
 
-	m_initUTM = *getUTM();
 	m_tStarted = get_time_usec();
 
+	reset();
 	return true;
 }
 
@@ -71,6 +71,11 @@ bool _GPS::link(void)
 	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
+}
+
+void _GPS::reset(void)
+{
+	m_initUTM = *getUTM();
 }
 
 bool _GPS::start(void)

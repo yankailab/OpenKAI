@@ -31,7 +31,6 @@ private:
 	double		m_steerP;
 	double		m_distMin;
 	double		m_distMax;
-	double		m_distTarget;
 	double		m_targetX;
 	double		m_minProb;
 	uint64_t 	m_objLifetime;

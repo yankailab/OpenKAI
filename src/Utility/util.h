@@ -11,6 +11,32 @@ using namespace std;
 namespace kai
 {
 
+inline double Hdg(double anyDeg)
+{
+	while(anyDeg > 360)
+		anyDeg -= 360;
+
+	while(anyDeg < 0)
+		anyDeg += 360;
+
+	return anyDeg;
+}
+
+inline double dHdg(double hFrom, double hTo)
+{
+	hFrom = Hdg(hFrom);
+	hTo = Hdg(hTo);
+
+	double d = hTo - hFrom;
+
+	if(d > 180)
+		d -= 360;
+	else if(d < -180)
+		d += 360;
+
+	return d;
+}
+
 inline bool isOverlapped(vInt4* pA, vInt4* pB)
 {
 	if (pA->m_z < pB->m_x || pA->m_x > pB->m_z)
