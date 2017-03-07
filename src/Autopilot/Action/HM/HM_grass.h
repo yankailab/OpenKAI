@@ -7,6 +7,11 @@
 #include "../ActionBase.h"
 #include "HM_base.h"
 
+enum GRASSTURN_SEQUENCE
+{
+	gt_grass,gt_timerSet,gt_turn,gt_randomTurn
+};
+
 namespace kai
 {
 
@@ -31,10 +36,11 @@ private:
 	uint64_t	m_turnTimer;
 	uint64_t	m_tTurnSet;
 
+	GRASSTURN_SEQUENCE m_sequence;
+
 	uint64_t	m_nTurnRand;
 	uint64_t	m_tTurnRandRange;
 	uint64_t	m_tTurnRandLen;
-	uint64_t	m_tTurnRandSet;
 
 	double		m_grassMinProb;
 	int			m_grassClassIdx;

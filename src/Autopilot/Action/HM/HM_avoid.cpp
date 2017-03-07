@@ -12,6 +12,8 @@ HM_avoid::HM_avoid()
 	m_iMarkerClass = -1;
 	m_steerP = 0.0;
 
+	m_sequence = av_clear;
+
 	m_obsBoxF.m_x = 0.0;
 	m_obsBoxF.m_y = 0.0;
 	m_obsBoxF.m_z = 1.0;
@@ -107,37 +109,21 @@ void HM_avoid::update(void)
 	NULL_(m_pObs);
 	NULL_(m_pMN);
 	NULL_(m_pZED);
-	IF_(!isActive());
+	if(!isActive())
+	{
+		m_sequence = av_clear;
+		return;
+	}
 
 	uint64_t tNow = get_time_usec();
 
-	//keep turning until the time
-	if (tNow - m_markerTurnStart < m_markerTurnTimer)
+	if(m_sequence == av_clear)
 	{
-		m_pHM->m_motorPwmL = m_rpmSteer;
-		m_pHM->m_motorPwmR = -m_rpmSteer;
-		return;
-	}
-	m_markerTurnStart = 0;
+		//do nothing if no obstacle inside alert distance
+		m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
+		IF_(m_distM > m_alertDist);
 
-	//do nothing if no obstacle inside alert distance
-	m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
-	if (m_distM > m_alertDist)
-	{
-		m_rpmSteer = 0;
-		return;
-	}
-
-	//speaker alert if object is within a certain distance
-	m_pHM->m_bSpeaker = true;
-
-	//if found marker, start turn for the timer duration
-	if (m_pMN->bFound(m_iMarkerClass))
-		m_markerTurnStart = tNow;
-
-	//decide which direction to turn based on previous actions' decision
-	if (m_rpmSteer == 0)
-	{
+		//decide which direction to turn based on previous actions' decision
 		m_rpmSteer = m_steerP;
 		if (m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
 		{
@@ -152,10 +138,45 @@ void HM_avoid::update(void)
 			if (dL > dR)
 				m_rpmSteer = -m_steerP;
 		}
+
+		//if found marker, start turn for the timer duration
+		if (m_pMN->bFound(m_iMarkerClass))
+		{
+			m_markerTurnStart = tNow;
+			m_sequence = av_markerTurn;
+		}
+
+		m_sequence = av_turn;
 	}
 
-	m_pHM->m_motorPwmL = m_rpmSteer;
-	m_pHM->m_motorPwmR = -m_rpmSteer;
+	if(m_sequence == av_turn)
+	{
+		m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
+		if(m_distM > m_alertDist)
+		{
+			m_sequence = av_clear;
+			return;
+		}
+
+		m_pHM->m_bSpeaker = true;
+		m_pHM->m_motorPwmL = m_rpmSteer;
+		m_pHM->m_motorPwmR = -m_rpmSteer;
+	}
+
+	if(m_sequence == av_markerTurn)
+	{
+		//keep turning until the time
+		if (tNow - m_markerTurnStart >= m_markerTurnTimer)
+		{
+			m_sequence = av_clear;
+			return;
+		}
+
+		m_pHM->m_bSpeaker = true;
+		m_pHM->m_motorPwmL = m_rpmSteer;
+		m_pHM->m_motorPwmR = -m_rpmSteer;
+	}
+
 }
 
 bool HM_avoid::draw(void)

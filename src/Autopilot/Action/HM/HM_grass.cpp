@@ -8,6 +8,8 @@ HM_grass::HM_grass()
 	m_pHM = NULL;
 	m_pIN = NULL;
 
+	m_sequence = gt_grass;
+
 	m_speedP = 0.0;
 	m_steerP = 0.0;
 
@@ -25,7 +27,6 @@ HM_grass::HM_grass()
 	m_nTurnRand = 10;
 	m_tTurnRandRange = 100000;
 	m_tTurnRandLen = 0;
-	m_tTurnRandSet = 0;
 
 	m_iGrassClass = -1;
 	m_pGrassL = NULL;
@@ -128,48 +129,64 @@ void HM_grass::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pIN);
-
-	IF_(!isActive());
-	uint64_t t = get_time_usec();
-
-	//we have/found a good place to go
-	if (m_pGrassF->m_prob >= m_grassMinProb)
+	if(!isActive())
 	{
-		IF_(m_tTurnSet == 0);
-
-		if (m_tTurnRandSet == 0)
-		{
-			m_tTurnRandLen = (rand() % m_nTurnRand) * m_tTurnRandRange;
-			m_tTurnRandSet = t;
-		}
-		else if (t - m_tTurnRandSet > m_tTurnRandLen)
-		{
-			//reset the timer once finished the random extra turning
-			m_tTurnSet = 0;
-			m_tTurnRandSet = 0;
-			return;
-		}
-	}
-
-	//set new turn timer and decide the direction
-	if (m_tTurnSet == 0)
-	{
-		m_tTurnSet = t;
-		if (m_pGrassL->m_prob > m_pGrassR->m_prob)
-			m_rpmSteer = m_steerP;
-		else
-			m_rpmSteer = -m_steerP;
-
+		m_sequence = gt_grass;
 		return;
 	}
 
-	//not yet the time to turn
-	IF_(t - m_tTurnSet < m_turnTimer);
+	uint64_t tNow = get_time_usec();
 
-	//keep turning
-	m_pHM->m_motorPwmL = -m_rpmSteer;
-	m_pHM->m_motorPwmR = m_rpmSteer;
+	if(m_sequence == gt_grass)
+	{
+		//on grass, keep going
+		IF_(m_pGrassF->m_prob > m_grassMinProb);
 
+		//out of grass ahead, set timer for delayed turning
+		m_rpmSteer = m_steerP;
+		if (m_pGrassL->m_prob > m_pGrassR->m_prob)
+			m_rpmSteer = -m_steerP;
+
+		m_tTurnSet = tNow;
+		m_sequence = gt_timerSet;
+	}
+
+	if(m_sequence == gt_timerSet)
+	{
+		//not yet the time to turn
+		IF_(tNow - m_tTurnSet < m_turnTimer);
+		m_sequence = gt_turn;
+	}
+
+	if(m_sequence == gt_turn)
+	{
+		if(m_pGrassF->m_prob <= m_grassMinProb)
+		{
+			//keep turning
+			m_pHM->m_motorPwmL = m_rpmSteer;
+			m_pHM->m_motorPwmR = -m_rpmSteer;
+			return;
+		}
+
+		//start extra random turn
+		m_tTurnRandLen = (rand() % m_nTurnRand) * m_tTurnRandRange;
+		m_tTurnSet = tNow;
+		m_sequence = gt_randomTurn;
+	}
+
+	if(m_sequence == gt_randomTurn)
+	{
+		if (tNow - m_tTurnSet < m_tTurnRandLen)
+		{
+			//keep extra turning
+			m_pHM->m_motorPwmL = m_rpmSteer;
+			m_pHM->m_motorPwmR = -m_rpmSteer;
+			return;
+		}
+
+		//reset the timer once finished the random extra turning
+		m_sequence = gt_grass;
+	}
 }
 
 bool HM_grass::draw(void)

@@ -95,7 +95,6 @@ void HM_kickBack::update(void)
 		//arrived at approach position
 		m_wpApproach = *pNew;
 		m_sequence = kb_turn;
-
 		LOG_I("Approach Pos Set");
 	}
 
@@ -106,7 +105,7 @@ void HM_kickBack::update(void)
 			//turn complete, change to work mode
 			string stateName = "HM_WORK";
 			m_pAM->transit(&stateName);
-
+			m_sequence = kb_complete;
 			LOG_I("KickBack turn complete");
 			return;
 		}

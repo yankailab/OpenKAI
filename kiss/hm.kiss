@@ -73,7 +73,7 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
@@ -90,7 +90,7 @@
 	"FPS":30,
 	"Window":"HMview",
 	"_Mavlink":"APMmavlink",
-	"_ZED":"ZED",
+	"_ZED":"ZED_",
 	"mavDSfreq":30,
 	"posDiffMax":0.5,
 		
@@ -101,18 +101,6 @@
 		"lat":35.854676,
 		"lng":139.517692,
 	}	
-}
-
-{
-	"name":"HMpath",
-	"class":"_Path",
-	"bInst":0,
-	"Window":"HMview",
-	"FPS":30,
-	"_GPS":"GPS",
-	"dInterval":0.0,
-	"showScale":10.0,
-	"distCompress":0.0,
 }
 	
 {
@@ -183,7 +171,7 @@
 {
 	"name":"humanDet",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
 	"FPS":10,
 	"Window":"HMview",
@@ -223,10 +211,6 @@
 		"bInst":1,
 	}
 	{
-		"state":"HM_PATHFINDING",
-		"bInst":1,
-	}
-	{
 		"state":"HM_RTH",
 		"bInst":1,
 	}
@@ -260,7 +244,7 @@
 			"bSpeaker":0,
 			"motorPwmW":0,
 			"speedP":2500,
-			"rpmDist":1,
+			"rpmDist":100,
 			"_GPS":"GPS",
 			
 			{
@@ -287,7 +271,7 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"_GPS":"GPS@",
+			"_GPS":"GPS",
 			"kickBackDist":0.3,
 			"rpmBack":-1500,
 			"rpmTurn":-1500,
@@ -533,4 +517,17 @@
 		
 	}
 }
+
+{
+	"name":"HMpath",
+	"class":"_Path",
+	"bInst":0,
+	"Window":"HMview",
+	"FPS":30,
+	"_GPS":"GPS",
+	"dInterval":0.0,
+	"showScale":10.0,
+	"distCompress":0.0,
+}
+
 

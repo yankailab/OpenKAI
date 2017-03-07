@@ -9,7 +9,7 @@
 
 enum KICKBACK_SEQUENCE
 {
-	kb_station,kb_back,kb_turn
+	kb_station,kb_back,kb_turn,kb_complete
 };
 
 namespace kai

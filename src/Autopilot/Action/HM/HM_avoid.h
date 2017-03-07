@@ -9,6 +9,11 @@
 #include "../ActionBase.h"
 #include "HM_base.h"
 
+enum AVOID_SEQUENCE
+{
+	av_clear,av_turn,av_markerTurn
+};
+
 namespace kai
 {
 
@@ -29,6 +34,8 @@ private:
 	_Obstacle* m_pObs;
 	_MatrixNet* m_pMN;
 	int m_iMarkerClass;
+
+	AVOID_SEQUENCE m_sequence;
 
 	double	m_steerP;
 	int		m_rpmSteer;
