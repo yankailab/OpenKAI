@@ -140,15 +140,25 @@ void HM_grass::update(void)
 	if(m_sequence == gt_grass)
 	{
 		//on grass, keep going
-		IF_(m_pGrassF->m_prob > m_grassMinProb);
+		if(m_pGrassF->m_iClass == m_iGrassClass && m_pGrassF->m_prob > m_grassMinProb)
+		{
+			LOG_I("Grass Prob: "<<m_pGrassF->m_prob);
+			return;
+		}
 
 		//out of grass ahead, set timer for delayed turning
+		double probL = m_pGrassL->m_prob;
+		double probR = m_pGrassR->m_prob;
+		if(m_pGrassL->m_iClass != m_iGrassClass)probL = 0;
+		if(m_pGrassR->m_iClass != m_iGrassClass)probR = 0;
+
 		m_rpmSteer = m_steerP;
-		if (m_pGrassL->m_prob > m_pGrassR->m_prob)
+		if (probL > probR)
 			m_rpmSteer = -m_steerP;
 
 		m_tTurnSet = tNow;
 		m_sequence = gt_timerSet;
+		LOG_I("Sequence: timerSet");
 	}
 
 	if(m_sequence == gt_timerSet)
@@ -156,6 +166,7 @@ void HM_grass::update(void)
 		//not yet the time to turn
 		IF_(tNow - m_tTurnSet < m_turnTimer);
 		m_sequence = gt_turn;
+		LOG_I("Sequence: turn");
 	}
 
 	if(m_sequence == gt_turn)
@@ -172,6 +183,7 @@ void HM_grass::update(void)
 		m_tTurnRandLen = (rand() % m_nTurnRand) * m_tTurnRandRange;
 		m_tTurnSet = tNow;
 		m_sequence = gt_randomTurn;
+		LOG_I("Sequence: randomTurn");
 	}
 
 	if(m_sequence == gt_randomTurn)
@@ -186,6 +198,7 @@ void HM_grass::update(void)
 
 		//reset the timer once finished the random extra turning
 		m_sequence = gt_grass;
+		LOG_I("Sequence: grass");
 	}
 }
 

@@ -109,24 +109,16 @@ void HM_follow::update(void)
 	NULL_(m_pTarget);
 	m_pHM->m_bSpeaker = true;
 
-	double camW = (double) m_pTarget->m_camSize.m_x;
-	double pX = (camW * m_targetX - m_pTarget->m_fBBox.midX()) / camW;
-	int rpmSteer = m_steerP * pX * 2;
+	double pX = m_targetX - m_pTarget->m_fBBox.midX();
+	int rpmSteer = m_steerP * pX;
 
-	if(rpmSteer > 0)
-	{
-		m_pHM->m_motorPwmL = rpmSteer;
-		m_pHM->m_motorPwmR = -rpmSteer;
-		return;
-	}
+	m_pHM->m_motorPwmL = -rpmSteer;
+	m_pHM->m_motorPwmR = rpmSteer;
 
-	double normD = constrain(m_pTarget->m_dist, m_distMin, m_distMax);
-	double pD = (normD - m_distMin) / (m_distMax - m_distMin);
-	int rpmSpeed = m_speedP * pD;
+	IF_(m_pTarget->m_dist < m_distMin);
 
-	m_pHM->m_motorPwmL = rpmSpeed;
-	m_pHM->m_motorPwmR = rpmSpeed;
-
+	m_pHM->m_motorPwmL += m_speedP;
+	m_pHM->m_motorPwmR += m_speedP;
 }
 
 bool HM_follow::draw(void)

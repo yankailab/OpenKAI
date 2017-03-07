@@ -77,7 +77,7 @@ void HM_base::update(void)
 
 	string* pStateName = m_pAM->getCurrentStateName();
 
-	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION")
+	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME")
 	{
 		m_motorPwmL = 0;
 		m_motorPwmR = 0;
@@ -183,6 +183,7 @@ void HM_base::cmd(void)
 	{
 		stateName = "HM_STATION";
 		m_pAM->transit(&stateName);
+		m_pGPS->reset();
 	}
 
 	m_strCMD = "";

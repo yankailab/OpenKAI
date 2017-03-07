@@ -143,18 +143,18 @@ void _DetectNet::detect(void)
 
 	int minSize = fGMat.cols * fGMat.rows * m_detectMinSize;
 	int maxSize = fGMat.cols * fGMat.rows * m_detectMaxSize;
-	int	bLeft = fGMat.cols * m_area.m_x;
-	int	bRight = fGMat.cols * m_area.m_z;
-	int	bTop = fGMat.rows * m_area.m_y;
-	int	bBottom = fGMat.rows * m_area.m_w;
+	int bLeft = fGMat.cols * m_area.m_x;
+	int bRight = fGMat.cols * m_area.m_z;
+	int bTop = fGMat.rows * m_area.m_y;
+	int bBottom = fGMat.rows * m_area.m_w;
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
-		const int nc = m_confCPU[n * 2 + 1];
+		//const int iClass = m_confCPU[n * 2 + 1];
 		float* bb = m_bbCPU + (n * 4);
 
-		obj.m_iClass = 0;
+		obj.m_iClass = 0; //m_confCPU[n*2+1]
 		obj.m_bbox.m_x = (int) bb[0];
 		obj.m_bbox.m_y = (int) bb[1];
 		obj.m_bbox.m_z = (int) bb[2];
@@ -163,7 +163,7 @@ void _DetectNet::detect(void)
 		obj.m_camSize.m_y = fGMat.rows;
 		obj.i2fBBox();
 		obj.m_dist = 0.0;
-		obj.m_prob = 0.0;
+		obj.m_prob = (double)m_confCPU[n*2];
 		obj.m_name = m_className;
 		obj.m_frameID = get_time_usec();
 

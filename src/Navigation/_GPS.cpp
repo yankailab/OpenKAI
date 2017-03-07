@@ -43,7 +43,6 @@ bool _GPS::init(void* pKiss)
 	IF_T(pI->empty());
 	F_INFO(pI->v("lat", &m_initLL.m_lat));
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
-	setLL(&m_initLL);
 
 	m_tStarted = get_time_usec();
 
@@ -75,6 +74,7 @@ bool _GPS::link(void)
 
 void _GPS::reset(void)
 {
+	setLL(&m_initLL);
 	m_initUTM = *getUTM();
 }
 

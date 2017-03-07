@@ -138,7 +138,7 @@
 	"meanFile":"mean.binaryproto",
 	"blobOut":"softmax",
 	"labelFile":"labels.txt",
-	"objLifetime":10000000,
+	"objLifetime":100000,
 	"nObj":64,
 	"fDist":0.5,
 	"detectMinSize":0.005,
@@ -182,7 +182,7 @@
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"className":"human",
-	"objLifetime":100000,
+	"objLifetime":500000,
 	"nObj":8,
 }
 
@@ -295,7 +295,8 @@
 		{
 			"name":"follow",
 			"class":"HM_follow",
-			"bInst":0,
+			"bInst":1,
+			"bLog":1,
 			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
@@ -304,8 +305,8 @@
 			"_Obstacle":"obstacle",
 			"distMin":1.0,
 			"distMax":10.0,
-			"speedP":3000,
-			"steerP":3000,
+			"speedP":1500,
+			"steerP":2000,
 			"targetX":0.5,
 			"objLifetime":100000,
 			"minProb":0.5,
@@ -323,7 +324,7 @@
 		{
 			"name":"grass",
 			"class":"HM_grass",
-			"bInst":0,
+			"bInst":1,
 			"Window":"HMview",
 			"HM_base":"base",
 			"_ImageNet":"hmIN",
@@ -331,7 +332,7 @@
 			"speedP":0,
 			"steerP":1500,
 			"turnTimer":2800000,
-			"minProb":0.6,
+			"minProb":0.5,
 			"iClass":1,
 			"tTurnRandRange":100000,
 			"nTurnRand":10,
@@ -348,10 +349,6 @@
 					"state":"HM_RTH",
 					"bInst":1,
 				}
-				{
-					"state":"HM_PATHFINDING",
-					"bInst":1,
-				}	
 			}
 			
 			{
