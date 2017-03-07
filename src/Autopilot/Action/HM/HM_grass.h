@@ -43,7 +43,6 @@ private:
 	uint64_t	m_tTurnRandLen;
 
 	double		m_grassMinProb;
-	int			m_grassClassIdx;
 	vDouble4	m_grassBoxL;
 	vDouble4	m_grassBoxF;
 	vDouble4	m_grassBoxR;

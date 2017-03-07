@@ -333,7 +333,6 @@
 			"steerP":1500,
 			"turnTimer":2800000,
 			"minProb":0.5,
-			"iClass":1,
 			"tTurnRandRange":100000,
 			"nTurnRand":10,
 			"iGrassClass":1,

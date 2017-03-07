@@ -16,9 +16,7 @@ HM_grass::HM_grass()
 	m_grassBoxL.init();
 	m_grassBoxF.init();
 	m_grassBoxR.init();
-
 	m_grassMinProb = 0.5;
-	m_grassClassIdx = 1;
 
 	m_turnTimer = USEC_1SEC;
 	m_tTurnSet = 0;
@@ -28,7 +26,7 @@ HM_grass::HM_grass()
 	m_tTurnRandRange = 100000;
 	m_tTurnRandLen = 0;
 
-	m_iGrassClass = -1;
+	m_iGrassClass = 1;
 	m_pGrassL = NULL;
 	m_pGrassF = NULL;
 	m_pGrassR = NULL;
@@ -49,7 +47,6 @@ bool HM_grass::init(void* pKiss)
 	F_INFO(pK->v("steerP", &m_steerP));
 	F_INFO(pK->v("turnTimer", (int* )&m_turnTimer));
 	F_INFO(pK->v("minProb", &m_grassMinProb));
-	F_INFO(pK->v("iClass", &m_grassClassIdx));
 	F_INFO(pK->v("nTurnRand", &m_nTurnRand));
 	F_INFO(pK->v("tTurnRandRange", &m_tTurnRandRange));
 	F_INFO(pK->v("iGrassClass", &m_iGrassClass));
