@@ -100,7 +100,7 @@ void HM_kickBack::update(void)
 
 	if(m_sequence == kb_turn)
 	{
-		if(abs(dHdg(pNew->m_hdg, pNew->m_hdg + m_targetHdg)) < m_rTargetHdg)
+		if(abs(dHdg(pNew->m_hdg, m_wpApproach.m_hdg + m_targetHdg)) < m_rTargetHdg)
 		{
 			//turn complete, change to work mode
 			string stateName = "HM_WORK";

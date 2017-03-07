@@ -93,7 +93,7 @@ void HM_base::update(void)
 	m_bSpeaker = false;
 
 	//ignore external cmd in kickback mode
-	IF_(*pStateName == "HM_KICKBACK");
+	//IF_(*pStateName == "HM_KICKBACK");
 	cmd();
 }
 
@@ -113,9 +113,12 @@ void HM_base::updateGPS(void)
 	double dTime = (double)(tNow - m_lastUpdateGPS);
 	m_lastUpdateGPS = tNow;
 
+	//TODO: calc rpm to dist
+	IF_(m_motorPwmL != m_motorPwmR);
+
 	vDouble3 dT;
 	dT.init();
-	dT.m_x = m_motorPwmL * m_rpmDist * dTime * tBase;
+	dT.m_y = m_motorPwmL * m_rpmDist * dTime * tBase;
 
 	m_pGPS->addTranslation(dT);
 }
@@ -180,6 +183,7 @@ void HM_base::cmd(void)
 	{
 		stateName = "HM_STANDBY";
 		m_pAM->transit(&stateName);
+		m_bInStation = true;
 	}
 
 	m_strCMD = "";

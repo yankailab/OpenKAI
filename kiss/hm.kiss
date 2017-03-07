@@ -244,7 +244,7 @@
 			"bSpeaker":0,
 			"motorPwmW":0,
 			"speedP":2500,
-			"rpmDist":100,
+			"rpmDist":0.005,
 			"_GPS":"GPS",
 			
 			{
@@ -274,8 +274,8 @@
 			"_GPS":"GPS",
 			"kickBackDist":0.3,
 			"rpmBack":-1500,
-			"rpmTurn":-1500,
-			"targetHdg":-90,
+			"rpmTurn":1000,
+			"targetHdg":90,
 			"rTargetHdg":0.5,
 			
 			{
@@ -385,7 +385,7 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"HM_kickBack":"kickBack",
-			"_GOS":"GPS",
+			"_GPS":"GPS",
 			"_Automaton":"automaton",
 			"steerP":1000,
 			"rWP":0.5,
