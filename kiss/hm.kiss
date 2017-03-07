@@ -192,8 +192,12 @@
 	"bInst":1,
 	"FPS":10,
 	"Window":"HMview",
-	"startState":"HM_STANDBY",
+	"startState":"HM_STATION",
 
+	{
+		"state":"HM_STATION",
+		"bInst":1,
+	}
 	{
 		"state":"HM_STANDBY",
 		"bInst":1,

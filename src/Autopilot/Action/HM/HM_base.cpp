@@ -13,7 +13,6 @@ HM_base::HM_base()
 	m_motorPwmR = 0;
 	m_motorPwmW = 0;
 	m_bSpeaker = false;
-	m_bInStation = true;
 
 	m_maxSpeedT = 65535;
 	m_maxSpeedW = 2500;
@@ -78,7 +77,7 @@ void HM_base::update(void)
 
 	string* pStateName = m_pAM->getCurrentStateName();
 
-	if(*pStateName == "HM_STANDBY")
+	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION")
 	{
 		m_motorPwmL = 0;
 		m_motorPwmR = 0;
@@ -148,13 +147,14 @@ void HM_base::cmd(void)
 	string stateName;
 	if(m_strCMD=="start")
 	{
-		if(m_bInStation)
+		stateName = *m_pAM->getCurrentStateName();
+
+		if(stateName=="HM_STATION")
 		{
 			stateName = "HM_KICKBACK";
 			m_pAM->transit(&stateName);
-			m_bInStation = false;
 		}
-		else if(*m_pAM->getCurrentStateName()=="HM_STANDBY")
+		else if(stateName=="HM_STANDBY")
 		{
 			m_pAM->transit(m_pAM->getLastStateIdx());
 		}
@@ -179,11 +179,10 @@ void HM_base::cmd(void)
 		stateName = "HM_FOLLOWME";
 		m_pAM->transit(&stateName);
 	}
-	else if(m_strCMD=="standby")
+	else if(m_strCMD=="station")
 	{
-		stateName = "HM_STANDBY";
+		stateName = "HM_STATION";
 		m_pAM->transit(&stateName);
-		m_bInStation = true;
 	}
 
 	m_strCMD = "";

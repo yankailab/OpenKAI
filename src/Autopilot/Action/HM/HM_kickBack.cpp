@@ -105,7 +105,7 @@ void HM_kickBack::update(void)
 			//turn complete, change to work mode
 			string stateName = "HM_WORK";
 			m_pAM->transit(&stateName);
-			m_sequence = kb_complete;
+			m_sequence = kb_station;
 			LOG_I("KickBack turn complete");
 			return;
 		}
