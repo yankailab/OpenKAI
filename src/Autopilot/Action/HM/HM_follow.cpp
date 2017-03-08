@@ -6,7 +6,7 @@ namespace kai
 HM_follow::HM_follow()
 {
 	m_pHM = NULL;
-	m_pDN = NULL;
+	m_pAI = NULL;
 	m_pObs = NULL;
 
 	m_distMin = 0.0;
@@ -17,6 +17,7 @@ HM_follow::HM_follow()
 	m_objLifetime = 100000;
 	m_pTarget = NULL;
 	m_iTargetClass = 0;
+	m_targetName = "";
 }
 
 HM_follow::~HM_follow()
@@ -35,6 +36,7 @@ bool HM_follow::init(void* pKiss)
 	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("targetX", &m_targetX));
 	F_INFO(pK->v("iTargetClass", &m_iTargetClass));
+	F_INFO(pK->v("targetName", &m_targetName));
 	F_INFO(pK->v("objLifetime", &m_objLifetime));
 
 	return true;
@@ -54,10 +56,10 @@ bool HM_follow::link(void)
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_DetectNet", &iName));
-	m_pDN = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_AIbase", &iName));
+	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
 
-	if (!m_pDN)
+	if (!m_pAI)
 	{
 		LOG_E("_DetectNet not found");
 		return true;
@@ -72,24 +74,20 @@ void HM_follow::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-	NULL_(m_pDN);
+	NULL_(m_pAI);
 	NULL_(m_pObs);
-	if (!isActive())
-	{
-		m_pDN->sleep();
-		return;
-	}
-	m_pDN->wakeUp();
+	IF_(!isActive());
 
 	m_pTarget = NULL;
 
 	int i;
-	uint64_t t = get_time_usec() - m_objLifetime;
-	for (i = 0; i < m_pDN->size(); i++)
+//	uint64_t t = get_time_usec() - m_objLifetime;
+	for (i = 0; i < m_pAI->size(); i++)
 	{
-		OBJECT* pObj = m_pDN->get(i, t);
+		OBJECT* pObj = m_pAI->get(i, 0);//t);
 		IF_CONT(!pObj);
-		IF_CONT(pObj->m_iClass != m_iTargetClass);
+//		IF_CONT(pObj->m_iClass != m_iTargetClass);
+		IF_CONT(pObj->m_name != m_targetName);
 
 		pObj->m_dist = m_pObs->dist(&pObj->m_fBBox, NULL);
 

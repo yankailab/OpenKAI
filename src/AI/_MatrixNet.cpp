@@ -18,7 +18,7 @@ _MatrixNet::_MatrixNet()
 	m_area.m_z = 1.0;
 	m_area.m_w = 1.0;
 	m_nObj = 0;
-	m_pObj = NULL;
+	m_ppObj = NULL;
 }
 
 _MatrixNet::~_MatrixNet()
@@ -65,7 +65,7 @@ bool _MatrixNet::link(void)
 	}
 
 	m_nObj = nW * nH;
-	m_pObj = new OBJECT*[m_nObj];
+	m_ppObj = new OBJECT*[m_nObj];
 
 	OBJECT mO;
 	int k = 0;
@@ -79,8 +79,8 @@ bool _MatrixNet::link(void)
 			mO.m_fBBox.m_y = m_area.m_y + i * m_dH;
 			mO.m_fBBox.m_w = m_area.m_y + mO.m_fBBox.m_y + m_h;
 
-			m_pObj[k] = m_pIN->add(&mO);
-			NULL_F(m_pObj[k]);
+			m_ppObj[k] = m_pIN->add(&mO);
+			NULL_F(m_ppObj[k]);
 			k++;
 		}
 	}
@@ -88,12 +88,19 @@ bool _MatrixNet::link(void)
 	return true;
 }
 
+OBJECT* _MatrixNet::get(int i, int64_t minFrameID)
+{
+	IF_N(m_ppObj[i]->m_frameID < minFrameID);
+
+	return m_ppObj[i];
+}
+
 bool _MatrixNet::bFound(int iClass, double minProb)
 {
 	int i;
 	for (i = 0; i < m_nObj; i++)
 	{
-		OBJECT* pObj = m_pObj[i];
+		OBJECT* pObj = m_ppObj[i];
 		IF_CONT(pObj->m_iClass != iClass);
 		IF_CONT(pObj->m_prob < minProb);
 

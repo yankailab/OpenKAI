@@ -25,6 +25,7 @@ public:
 	bool link(void);
 	bool draw(void);
 
+	OBJECT* get(int i, int64_t minFrameID);
 	bool bFound(int iClass, double minProb);
 
 public:
@@ -35,8 +36,7 @@ public:
 	double m_dW;
 	double m_dH;
 	vDouble4 m_area;
-	OBJECT** m_pObj;
-	int		m_nObj;
+	OBJECT** m_ppObj;
 
 };
 

@@ -190,7 +190,7 @@ bool _AIbase::draw(void)
 		}
 
 		Scalar colObs = m_colObs;
-		int bolObs = 2;
+		int bolObs = 1;
 
 		if (m_bDrawContour)
 		{

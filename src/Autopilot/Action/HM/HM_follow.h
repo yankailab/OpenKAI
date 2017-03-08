@@ -3,8 +3,8 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../AI/_DetectNet.h"
 #include "../../../Navigation/_Obstacle.h"
+#include "../../../AI/_AIbase.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,7 +23,7 @@ public:
 	bool draw(void);
 
 private:
-	_DetectNet*	m_pDN;
+	_AIbase*	m_pAI;
 	HM_base*	m_pHM;
 	_Obstacle* 	m_pObs;
 
@@ -35,6 +35,7 @@ private:
 	uint64_t 	m_objLifetime;
 	OBJECT* 	m_pTarget;
 	int			m_iTargetClass;
+	string		m_targetName;
 };
 
 }

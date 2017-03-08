@@ -55,6 +55,7 @@
 #include "../AI/_ImageNet.h"
 #include "../AI/_MatrixNet.h"
 #include "../AI/_DetectNet.h"
+#include "../AI/_Cascade.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VisionBase.h"
 #include "../Vision/_ZED.h"

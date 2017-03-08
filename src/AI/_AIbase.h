@@ -74,10 +74,10 @@ public:
 	virtual bool start(void);
 	virtual bool draw(void);
 
-	OBJECT* add(OBJECT* pNewObj);
-	OBJECT* get(int i, int64_t minFrameID);
-	OBJECT* getByClass(int iClass, int64_t minFrameID);
-	int size(void);
+	virtual OBJECT* add(OBJECT* pNewObj);
+	virtual OBJECT* get(int i, int64_t minFrameID);
+	virtual OBJECT* getByClass(int iClass, int64_t minFrameID);
+	virtual int size(void);
 
 private:
 	void update(void);
