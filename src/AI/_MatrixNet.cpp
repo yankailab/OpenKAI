@@ -19,7 +19,6 @@ _MatrixNet::_MatrixNet()
 	m_area.m_w = 1.0;
 	m_nObj = 0;
 	m_pObj = NULL;
-	m_minProb = 0.0;
 }
 
 _MatrixNet::~_MatrixNet()
@@ -43,7 +42,6 @@ bool _MatrixNet::init(void* pKiss)
 	F_INFO(pK->v("top", &m_area.m_y));
 	F_INFO(pK->v("right", &m_area.m_z));
 	F_INFO(pK->v("bottom", &m_area.m_w));
-	F_INFO(pK->v("minProb", &m_minProb));
 
 	return true;
 }
@@ -90,14 +88,14 @@ bool _MatrixNet::link(void)
 	return true;
 }
 
-bool _MatrixNet::bFound(int iClass)
+bool _MatrixNet::bFound(int iClass, double minProb)
 {
 	int i;
 	for (i = 0; i < m_nObj; i++)
 	{
 		OBJECT* pObj = m_pObj[i];
 		IF_CONT(pObj->m_iClass != iClass);
-		IF_CONT(pObj->m_prob < m_minProb);
+		IF_CONT(pObj->m_prob < minProb);
 
 		return true;
 	}
@@ -112,17 +110,17 @@ bool _MatrixNet::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	IF_F(pMat->empty());
 
-	OBJECT* pO;
-	for (int i = 0; i < m_nObj; i++)
-	{
-		pO = m_pObj[i];
-		IF_CONT(pO->m_iClass <= 0);
-		IF_CONT(pO->m_prob < m_minProb);
-
-		Rect r;
-		vInt42rect(&pO->m_bbox,&r);
-		rectangle(*pMat, r, Scalar(0, 0, 255), 2);
-	}
+//	OBJECT* pO;
+//	for (int i = 0; i < m_nObj; i++)
+//	{
+//		pO = m_pObj[i];
+//		IF_CONT(pO->m_iClass <= 0);
+//		IF_CONT(pO->m_prob < m_minProb);
+//
+//		Rect r;
+//		vInt42rect(&pO->m_bbox,&r);
+//		rectangle(*pMat, r, Scalar(0, 0, 255), 2);
+//	}
 
 	return true;
 }

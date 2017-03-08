@@ -86,8 +86,8 @@ void HM_kickBack::update(void)
 		if(pNew->dist(&m_wpStation) < m_kickBackDist)
 		{
 			//keep back
-			m_pHM->m_motorPwmL = m_rpmBack;
-			m_pHM->m_motorPwmR = m_rpmBack;
+			m_pHM->m_rpmL = m_rpmBack;
+			m_pHM->m_rpmR = m_rpmBack;
 			m_pHM->m_bSpeaker = true;
 			return;
 		}
@@ -111,8 +111,8 @@ void HM_kickBack::update(void)
 		}
 
 		//keep turning
-		m_pHM->m_motorPwmL = m_rpmTurn;
-		m_pHM->m_motorPwmR = -m_rpmTurn;
+		m_pHM->m_rpmL = m_rpmTurn;
+		m_pHM->m_rpmR = -m_rpmTurn;
 		m_pHM->m_bSpeaker = true;
 	}
 }

@@ -9,17 +9,17 @@ HM_base::HM_base()
 	m_pCMD = NULL;
 	m_pGPS = NULL;
 	m_strCMD = "";
-	m_motorPwmL = 0;
-	m_motorPwmR = 0;
-	m_motorPwmW = 0;
+	m_rpmL = 0;
+	m_rpmR = 0;
+	m_motorRpmW = 0;
 	m_bSpeaker = false;
 
-	m_maxSpeedT = 65535;
-	m_maxSpeedW = 2500;
+	m_maxRpmT = 65535;
+	m_maxRpmW = 2500;
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
-	m_speedP = 3000;
-	m_rpmDist = 1.0;
+	m_defaultRpmT = 3000;
+	m_wheelR = 1.0;
 	m_lastUpdateGPS = 0;
 }
 
@@ -33,12 +33,11 @@ bool HM_base::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("maxSpeedT", &m_maxSpeedT));
-	F_INFO(pK->v("maxSpeedW", &m_maxSpeedW));
-	F_INFO(pK->v("bSpeaker", &m_bSpeaker));
-	F_INFO(pK->v("motorPwmW", &m_motorPwmW));
-	F_INFO(pK->v("speedP", &m_speedP));
-	F_INFO(pK->v("rpmDist", &m_rpmDist));
+	F_INFO(pK->v("maxSpeedT", &m_maxRpmT));
+	F_INFO(pK->v("maxSpeedW", &m_maxRpmW));
+	F_INFO(pK->v("motorRpmW", &m_motorRpmW));
+	F_INFO(pK->v("defaultRpmT", &m_defaultRpmT));
+	F_INFO(pK->v("wheelR", &m_wheelR));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -79,16 +78,16 @@ void HM_base::update(void)
 
 	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME")
 	{
-		m_motorPwmL = 0;
-		m_motorPwmR = 0;
+		m_rpmL = 0;
+		m_rpmR = 0;
 	}
 	else
 	{
-		m_motorPwmL = m_speedP;
-		m_motorPwmR = m_speedP;
+		m_rpmL = m_defaultRpmT;
+		m_rpmR = m_defaultRpmT;
 	}
 
-	m_motorPwmW = 0;
+	m_motorRpmW = 0;
 	m_bSpeaker = false;
 
 	//ignore external cmd in kickback mode
@@ -113,11 +112,11 @@ void HM_base::updateGPS(void)
 	m_lastUpdateGPS = tNow;
 
 	//TODO: calc rpm to dist
-	IF_(m_motorPwmL != m_motorPwmR);
+	IF_(m_rpmL != m_rpmR);
 
 	vDouble3 dT;
 	dT.init();
-	dT.m_y = m_motorPwmL * m_rpmDist * dTime * tBase;
+	dT.m_y = m_rpmL * m_wheelR * dTime * tBase;
 
 	m_pGPS->addTranslation(dT);
 }
@@ -197,13 +196,13 @@ void HM_base::updateCAN(void)
 	unsigned char cmd[8];
 
 	m_ctrlB0 = 0;
-	m_ctrlB0 |= (m_motorPwmR<0)?(1 << 4):0;
-	m_ctrlB0 |= (m_motorPwmL<0)?(1 << 5):0;
-	m_ctrlB0 |= (m_motorPwmW<0)?(1 << 6):0;
+	m_ctrlB0 |= (m_rpmR<0)?(1 << 4):0;
+	m_ctrlB0 |= (m_rpmL<0)?(1 << 5):0;
+	m_ctrlB0 |= (m_motorRpmW<0)?(1 << 6):0;
 
-	uint16_t motorPwmL = abs(constrain(m_motorPwmL, m_maxSpeedT, -m_maxSpeedT));
-	uint16_t motorPwmR = abs(constrain(m_motorPwmR, m_maxSpeedT, -m_maxSpeedT));
-	uint16_t motorPwmW = abs(constrain(m_motorPwmW, m_maxSpeedW, -m_maxSpeedW));
+	uint16_t motorPwmL = abs(constrain(m_rpmL, m_maxRpmT, -m_maxRpmT));
+	uint16_t motorPwmR = abs(constrain(m_rpmR, m_maxRpmT, -m_maxRpmT));
+	uint16_t motorPwmW = abs(constrain(m_motorRpmW, m_maxRpmW, -m_maxRpmW));
 
 	m_ctrlB1 = 0;
 	m_ctrlB1 |= 1;						//tracktion motor relay
@@ -237,8 +236,8 @@ bool HM_base::draw(void)
 	NULL_F(pMat);
 	IF_F(pMat->empty());
 
-	string msg = *this->getName() + ": rpmL=" + i2str(m_motorPwmL)
-			+ ", rpmR=" + i2str(m_motorPwmR);
+	string msg = *this->getName() + ": rpmL=" + i2str(m_rpmL)
+			+ ", rpmR=" + i2str(m_rpmR);
 	pWin->addMsg(&msg);
 
 	return true;

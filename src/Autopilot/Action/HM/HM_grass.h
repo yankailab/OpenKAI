@@ -30,9 +30,7 @@ private:
 	_ImageNet*	m_pIN;
 	HM_base* m_pHM;
 
-	double	m_speedP;
-	double	m_steerP;
-	int		m_rpmSteer;
+	int			m_rpmSteer;
 	uint64_t	m_turnTimer;
 	uint64_t	m_tTurnSet;
 
@@ -40,7 +38,7 @@ private:
 
 	uint64_t	m_nTurnRand;
 	uint64_t	m_tTurnRandRange;
-	uint64_t	m_tTurnRandLen;
+	uint64_t	m_tTurnRand;
 
 	double		m_grassMinProb;
 	vDouble4	m_grassBoxL;

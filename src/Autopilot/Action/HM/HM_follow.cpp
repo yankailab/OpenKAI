@@ -11,12 +11,12 @@ HM_follow::HM_follow()
 
 	m_distMin = 0.0;
 	m_distMax = 10.0;
-	m_steerP = 0.0;
-	m_speedP = 0.0;
+	m_rpmSteer = 0.0;
+	m_rpmT = 0.0;
 	m_targetX = 0.5;
-	m_minProb = 0.1;
 	m_objLifetime = 100000;
 	m_pTarget = NULL;
+	m_iTargetClass = 0;
 }
 
 HM_follow::~HM_follow()
@@ -31,10 +31,10 @@ bool HM_follow::init(void* pKiss)
 
 	F_INFO(pK->v("distMin", &m_distMin));
 	F_INFO(pK->v("distMax", &m_distMax));
-	F_INFO(pK->v("speedP", &m_speedP));
-	F_INFO(pK->v("steerP", &m_steerP));
+	F_INFO(pK->v("rpmT", &m_rpmT));
+	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("targetX", &m_targetX));
-	F_INFO(pK->v("minProb", &m_minProb));
+	F_INFO(pK->v("iTargetClass", &m_iTargetClass));
 	F_INFO(pK->v("objLifetime", &m_objLifetime));
 
 	return true;
@@ -89,7 +89,7 @@ void HM_follow::update(void)
 	{
 		OBJECT* pObj = m_pDN->get(i, t);
 		IF_CONT(!pObj);
-		IF_CONT(pObj->m_prob < m_minProb);
+		IF_CONT(pObj->m_iClass != m_iTargetClass);
 
 		pObj->m_dist = m_pObs->dist(&pObj->m_fBBox, NULL);
 
@@ -110,15 +110,15 @@ void HM_follow::update(void)
 	m_pHM->m_bSpeaker = true;
 
 	double pX = m_targetX - m_pTarget->m_fBBox.midX();
-	int rpmSteer = m_steerP * pX;
+	int rpmSteer = m_rpmSteer * pX;
 
-	m_pHM->m_motorPwmL = -rpmSteer;
-	m_pHM->m_motorPwmR = rpmSteer;
+	m_pHM->m_rpmL = -rpmSteer;
+	m_pHM->m_rpmR = rpmSteer;
 
 	IF_(m_pTarget->m_dist < m_distMin);
 
-	m_pHM->m_motorPwmL += m_speedP;
-	m_pHM->m_motorPwmR += m_speedP;
+	m_pHM->m_rpmL += m_rpmT;
+	m_pHM->m_rpmR += m_rpmT;
 }
 
 bool HM_follow::draw(void)

@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -129,7 +129,6 @@
 	"bInst":1,
 	"bDraw":0,
 	"FPS":15,
-	"mode":"object",
 	"Window":"HMview",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/grass_128/",
@@ -138,15 +137,9 @@
 	"meanFile":"mean.binaryproto",
 	"blobOut":"softmax",
 	"labelFile":"labels.txt",
-	"objLifetime":100000,
 	"nObj":64,
-	"fDist":0.5,
-	"detectMinSize":0.005,
-	"detectMaxSize":0.5,
+	"mode":"object",
 	"maxPix":100000,
-	"extraBBox":0.0,
-	"sizeName":0.6,
-	"sizeDist":0.5,
 }
 
 {
@@ -157,7 +150,6 @@
 	"_ImageNet":"hmIN",
 	"Window":"HMview",
 	"_Stream":"ZED",
-	"minProb":0.0,
 	"w":0.2,
 	"h":0.3,
 	"dW":0.1,
@@ -173,17 +165,20 @@
 	"class":"_DetectNet",
 	"bInst":1,
 	"bLog":0,
-	"FPS":10,
+	"bDraw":0,
+	"FPS":5,
 	"Window":"HMview",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/ped-100/",
-	"minConfidence":0.05,
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"className":"human",
-	"objLifetime":500000,
+	"overlapMin":0.2,
 	"nObj":8,
+	"minConfidence":0.05,
+	"minSize":0.05,
+	"maxSize":0.5,
 }
 
 {
@@ -243,12 +238,11 @@
 			"Window":"HMview",
 			"_Canbus":"canbus",
 			"_Automaton":"automaton",
-			"maxSpeedT":65535,
-			"maxSpeedW":2500,
-			"bSpeaker":0,
-			"motorPwmW":0,
-			"speedP":2500,
-			"rpmDist":0.005,
+			"maxRpmT":65535,
+			"maxRpmW":2500,
+			"motorRpmW":0,
+			"defaultRpmT":2500,
+			"wheelR":0.1,
 			"_GPS":"GPS",
 			
 			{
@@ -305,11 +299,11 @@
 			"_Obstacle":"obstacle",
 			"distMin":1.0,
 			"distMax":10.0,
-			"speedP":1500,
-			"steerP":2000,
+			"rpmT":2000,
+			"rpmSteer":2000,
 			"targetX":0.5,
-			"objLifetime":100000,
-			"minProb":0.5,
+			"objLifetime":250000,
+			"iTargetClass":0,
 			
 			{
 				"name":"activeState",
@@ -329,13 +323,12 @@
 			"HM_base":"base",
 			"_ImageNet":"hmIN",
 			"_Automaton":"automaton",
-			"speedP":0,
-			"steerP":1500,
+			"rpmSteer":1500,
 			"turnTimer":2800000,
-			"minProb":0.5,
-			"tTurnRandRange":100000,
-			"nTurnRand":10,
 			"iGrassClass":1,
+			"minProb":0.5,
+			"tTurnRandRange":200000,
+			"nTurnRand":5,
 			
 			{
 				"name":"activeState",
@@ -387,10 +380,10 @@
 			"HM_kickBack":"kickBack",
 			"_GPS":"GPS",
 			"_Automaton":"automaton",
-			"steerP":1000,
+			"rpmT":2500,
+			"rpmSteer":1000,
 			"rWP":0.5,
 			"dHdg":0.2,
-			"rpmSpeed":2500,
 
 			{
 				"name":"activeState",
@@ -406,7 +399,7 @@
 			"name":"RTH",
 			"class":"HM_rth_approach",
 			"bInst":0,
-			"_ZED":"ZED",
+			"_GPS":"GPS",
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
@@ -426,7 +419,6 @@
 			"name":"avoidance",
 			"class":"HM_avoid",
 			"bInst":1,
-			"_ZED":"ZED",
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
@@ -434,10 +426,11 @@
 			"_ImageNet":"hmIN",
 			"_MatrixNet":"hmMN",
 			"alertDist":0.8,
-			"steerP":2000,
-			"objLifetime":200000,
+			"rpmSteer":2000,
 			"markerTurnTimer":5000000,
 			"iMarkerClass":1,
+			"minProb":0.0,
+			
 
 			{
 				"name":"obsBoxL",
@@ -478,42 +471,7 @@
 					"bInst":1,
 				}
 			}
-		}
-		
-		{
-			"name":"pathFinder",
-			"class":"HM_pathFinder",
-			"bInst":0,
-			"_Stream":"ZED",
-			"Window":"HMview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"_Obstacle":"obstacle",
-			"distDiff":0.5,
-			"speedP":3000,
-			"steerP":2000,
-			"turnTimer":5000000,
-			"turnInterval":5000000,
-
-			"searchLeft":0.0,
-			"searchRight":0.25,
-			"searchTop":0.5,
-			"searchBottom":0.825,
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_WORK",
-					"bInst":1,
-				}
-				{
-					"state":"HM_PATHFINDING",
-					"bInst":1,
-				}
-			}
-		}
-				
+		}				
 		
 	}
 }

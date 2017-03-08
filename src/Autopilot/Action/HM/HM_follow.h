@@ -27,14 +27,14 @@ private:
 	HM_base*	m_pHM;
 	_Obstacle* 	m_pObs;
 
-	double		m_speedP;
-	double		m_steerP;
+	double		m_rpmT;
+	double		m_rpmSteer;
 	double		m_distMin;
 	double		m_distMax;
 	double		m_targetX;
-	double		m_minProb;
 	uint64_t 	m_objLifetime;
 	OBJECT* 	m_pTarget;
+	int			m_iTargetClass;
 };
 
 }

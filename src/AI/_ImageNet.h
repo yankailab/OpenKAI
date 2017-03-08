@@ -16,7 +16,7 @@ namespace kai
 
 enum imageNetMode
 {
-	depth, object, noThread
+	object, noThread
 };
 
 class _ImageNet: public _AIbase
@@ -33,8 +33,7 @@ public:
 	int classify(Frame* pImg, string* pName);
 
 private:
-	void detectObject(void);
-	void detectDepth(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -52,13 +51,7 @@ public:
 	int m_nBatch;
 	string m_blobIn;
 	string m_blobOut;
-
-	double m_fDist;
-	double m_detectMinSize;
-	double m_detectMaxSize;
-	double m_extraBBox;
 	int	   m_maxPix;
-
 
 };
 

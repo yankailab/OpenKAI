@@ -12,9 +12,9 @@ _DetectNet::_DetectNet()
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_minCofidence = 0.0;
-	m_detectMinSize = 0.0;
-	m_detectMaxSize = 1.0;
-	m_overlapMax = 1.0;
+	m_minSize = 0.0;
+	m_maxSize = 1.0;
+	m_overlapMin = 1.0;
 	m_area.init();
 	m_area.m_z = 1.0;
 	m_area.m_w = 1.0;
@@ -49,9 +49,9 @@ bool _DetectNet::init(void* pKiss)
 
 	F_INFO(pK->v("minConfidence", &m_minCofidence));
 	F_INFO(pK->v("className", &m_className));
-	F_INFO(pK->v("detectMinSize", &m_detectMinSize));
-	F_INFO(pK->v("detectMaxSize", &m_detectMaxSize));
-	F_INFO(pK->v("overlapMax", &m_overlapMax));
+	F_INFO(pK->v("minSize", &m_minSize));
+	F_INFO(pK->v("maxSize", &m_maxSize));
+	F_INFO(pK->v("overlapMin", &m_overlapMin));
 
 	F_INFO(pK->v("left", &m_area.m_x));
 	F_INFO(pK->v("top", &m_area.m_y));
@@ -141,20 +141,20 @@ void _DetectNet::detect(void)
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
-	int minSize = fGMat.cols * fGMat.rows * m_detectMinSize;
-	int maxSize = fGMat.cols * fGMat.rows * m_detectMaxSize;
-	int bLeft = fGMat.cols * m_area.m_x;
-	int bRight = fGMat.cols * m_area.m_z;
-	int bTop = fGMat.rows * m_area.m_y;
-	int bBottom = fGMat.rows * m_area.m_w;
+	int camArea = fGMat.cols * fGMat.rows;
+	int minSize = camArea * m_minSize;
+	int maxSize = camArea * m_maxSize;
+//	int bLeft = fGMat.cols * m_area.m_x;
+//	int bRight = fGMat.cols * m_area.m_z;
+//	int bTop = fGMat.rows * m_area.m_y;
+//	int bBottom = fGMat.rows * m_area.m_w;
+
+	uint64_t tNow = get_time_usec();
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
-		//const int iClass = m_confCPU[n * 2 + 1];
 		float* bb = m_bbCPU + (n * 4);
-
-		obj.m_iClass = 0; //m_confCPU[n*2+1]
 		obj.m_bbox.m_x = (int) bb[0];
 		obj.m_bbox.m_y = (int) bb[1];
 		obj.m_bbox.m_z = (int) bb[2];
@@ -162,10 +162,12 @@ void _DetectNet::detect(void)
 		obj.m_camSize.m_x = fGMat.cols;
 		obj.m_camSize.m_y = fGMat.rows;
 		obj.i2fBBox();
+
+		obj.m_iClass = m_confCPU[n*2+1];
 		obj.m_dist = 0.0;
 		obj.m_prob = (double)m_confCPU[n*2];
 		obj.m_name = m_className;
-		obj.m_frameID = get_time_usec();
+		obj.m_frameID = tNow;
 
 		int oSize = obj.m_bbox.area();
 		IF_CONT(oSize < minSize);
@@ -186,13 +188,12 @@ void _DetectNet::addOrUpdate(OBJECT* pNewObj)
 {
 	NULL_(pNewObj);
 
-	uint64_t frameID = get_time_usec() - m_objLifetime;
 	for (int i = 0; i < m_nObj; i++)
 	{
-		OBJECT* pObj = get(i, frameID);
+		OBJECT* pObj = get(i, 0);
 		IF_CONT(!pObj);
 		IF_CONT(pObj->m_frameID <= 0);
-		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMax);
+		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
 
 		*pObj = *pNewObj;
 		return;

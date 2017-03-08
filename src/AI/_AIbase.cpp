@@ -19,8 +19,6 @@ _AIbase::_AIbase()
 	m_pObj = NULL;
 	m_nObj = 16;
 	m_iObj = 0;
-	m_objLifetime = USEC_1SEC;
-	m_nActiveObj = 0;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
@@ -59,7 +57,6 @@ bool _AIbase::init(void* pKiss)
 	m_fileMean = modelDir + m_fileMean;
 	m_fileLabel = modelDir + m_fileLabel;
 
-	F_INFO(pK->v("objLifetime", (int*)&m_objLifetime));
 	F_INFO(pK->v("sizeName", &m_sizeName));
 	F_INFO(pK->v("sizeDist", &m_sizeDist));
 
@@ -137,16 +134,14 @@ int _AIbase::size(void)
 	return m_nObj;
 }
 
-OBJECT* _AIbase::get(int i, int64_t frameID)
+OBJECT* _AIbase::get(int i, int64_t minFrameID)
 {
-	if(frameID - m_pObj[i].m_frameID >= m_objLifetime)
-	{
-		return NULL;
-	}
+	IF_N(m_pObj[i].m_frameID < minFrameID);
+
 	return &m_pObj[i];
 }
 
-OBJECT* _AIbase::getByClass(int iClass)
+OBJECT* _AIbase::getByClass(int iClass, int64_t minFrameID)
 {
 	int i;
 	OBJECT* pObj;
@@ -154,9 +149,10 @@ OBJECT* _AIbase::getByClass(int iClass)
 	for (i = 0; i < m_nObj; i++)
 	{
 		pObj = &m_pObj[i];
+		IF_CONT(pObj->m_iClass != iClass);
+		IF_CONT(pObj->m_frameID < minFrameID);
 
-		if (pObj->m_iClass == iClass)
-			return pObj;
+		return pObj;
 	}
 
 	return NULL;
@@ -177,15 +173,11 @@ bool _AIbase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	uint64_t frameID = get_time_usec() - m_objLifetime;
-	m_nActiveObj = 0;
 	for (int i = 0; i < m_nObj; i++)
 	{
-		OBJECT* pObj = get(i, frameID);
+		OBJECT* pObj = get(i, 0);
 		IF_CONT(!pObj);
 		IF_CONT(pObj->m_frameID<=0)
-
-		m_nActiveObj++;
 
 		Rect r;
 		vInt42rect(&pObj->m_bbox, &r);

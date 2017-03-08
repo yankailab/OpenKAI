@@ -7,7 +7,6 @@
 
 #include "Action/HM/HM_base.h"
 #include "Action/HM/HM_kickBack.h"
-#include "Action/HM/HM_pathFinder.h"
 #include "Action/HM/HM_grass.h"
 #include "Action/HM/HM_rth.h"
 #include "Action/HM/HM_rth_approach.h"

@@ -32,18 +32,18 @@ public:
 	IO* m_pCMD;
 	string m_strCMD;
 
-	int m_maxSpeedT;
-	int m_maxSpeedW;
-	int m_motorPwmL;
-	int m_motorPwmR;
-	int m_motorPwmW;
-	int m_speedP;
+	int m_maxRpmT;
+	int m_maxRpmW;
+	int m_rpmL;
+	int m_rpmR;
+	int m_defaultRpmT;
+	int m_motorRpmW;
 	bool m_bSpeaker;
 
 	uint8_t m_ctrlB0;
 	uint8_t m_ctrlB1;
 
-	double	m_rpmDist;
+	double	m_wheelR;
 	uint64_t m_lastUpdateGPS;
 
 };

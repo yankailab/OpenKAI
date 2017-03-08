@@ -5,7 +5,6 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_MatrixNet.h"
 #include "../../../Navigation/_Obstacle.h"
-#include "../../../Vision/_ZED.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -29,17 +28,13 @@ public:
 	bool draw(void);
 
 private:
-	_ZED*	m_pZED;
 	HM_base* m_pHM;
 	_Obstacle* m_pObs;
 	_MatrixNet* m_pMN;
 	int m_iMarkerClass;
 
 	AVOID_SEQUENCE m_sequence;
-
-	double	m_steerP;
 	int		m_rpmSteer;
-
 	double m_distM;
 	vDouble4 m_obsBoxF;
 	vDouble4 m_obsBoxL;
@@ -47,9 +42,10 @@ private:
 	vInt2 m_posMin;
 	double m_alertDist;
 
-	uint64_t m_objLifetime;
 	uint64_t m_markerTurnStart;
 	uint64_t m_markerTurnTimer;
+
+	double m_minProb;
 
 };
 

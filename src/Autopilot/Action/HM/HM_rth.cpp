@@ -9,9 +9,8 @@ HM_rth::HM_rth()
 	m_pKB = NULL;
 	m_pGPS = NULL;
 
-	m_steerP = 0.0;
 	m_rpmSteer = 0;
-	m_rpmSpeed = 1500;
+	m_rpmT = 1500;
 	m_rWP = 0.5;
 	m_dHdg = 1.0;
 }
@@ -26,8 +25,8 @@ bool HM_rth::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("steerP", &m_steerP));
-	F_INFO(pK->v("rpmSpeed", &m_rpmSpeed));
+	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
+	F_INFO(pK->v("rpmT", &m_rpmT));
 	F_INFO(pK->v("rWP", &m_rWP));
 	F_INFO(pK->v("dHdg", &m_dHdg));
 
@@ -82,19 +81,19 @@ void HM_rth::update(void)
 	double dH = dHdg(pNow->m_hdg, m_pKB->m_wpApproach.m_hdg);
 	if(dH > m_dHdg)
 	{
-		m_rpmSteer = m_steerP;
+		m_rpmSteer = abs(m_rpmSteer);
 		if(dH < 0)
-			m_rpmSteer = -m_steerP;
+			m_rpmSteer *= -1;
 
-		m_pHM->m_motorPwmL = m_rpmSteer;
-		m_pHM->m_motorPwmR = -m_rpmSteer;
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
 
 		return;
 	}
 
 	//Move to approach pos
-	m_pHM->m_motorPwmL = m_rpmSpeed;
-	m_pHM->m_motorPwmR = m_rpmSpeed;
+	m_pHM->m_rpmL = m_rpmT;
+	m_pHM->m_rpmR = m_rpmT;
 }
 
 bool HM_rth::draw(void)

@@ -75,8 +75,8 @@ public:
 	virtual bool draw(void);
 
 	OBJECT* add(OBJECT* pNewObj);
-	OBJECT* get(int i, int64_t frameID);
-	OBJECT* getByClass(int iClass);
+	OBJECT* get(int i, int64_t minFrameID);
+	OBJECT* getByClass(int iClass, int64_t minFrameID);
 	int size(void);
 
 private:
@@ -98,8 +98,6 @@ public:
 	OBJECT* m_pObj;
 	int m_nObj;
 	int m_iObj;
-	int64_t m_objLifetime;
-	int m_nActiveObj;
 
 	double m_sizeName;
 	double m_sizeDist;
@@ -109,8 +107,6 @@ public:
 
 	double m_contourBlend;
 	bool m_bDrawContour;
-
-
 
 };
 

@@ -57,13 +57,13 @@ void HM_rth_approach::update(void)
 
 	uint64_t tNow = get_time_usec();
 
-	if (m_pMN->bFound(m_iBaseClass))
-	{
-
-	}
-
-	m_pHM->m_motorPwmL = m_rpmSteer;
-	m_pHM->m_motorPwmR = -m_rpmSteer;
+//	if (m_pMN->bFound(m_iBaseClass))
+//	{
+//
+//	}
+//
+//	m_pHM->m_rpmL = m_rpmSteer;
+//	m_pHM->m_rpmR = -m_rpmSteer;
 
 	//decide which direction to turn based on previous actions' decision
 //	if (m_rpmSteer == 0)
@@ -92,8 +92,8 @@ bool HM_rth_approach::draw(void)
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
-	string msg = "HM: rpmL=" + i2str(m_pHM->m_motorPwmL) + ", rpmR="
-			+ i2str(m_pHM->m_motorPwmR);
+	string msg = "HM: rpmL=" + i2str(m_pHM->m_rpmL) + ", rpmR="
+			+ i2str(m_pHM->m_rpmR);
 	pWin->addMsg(&msg);
 
 //	IF_T(m_pTarget==NULL);

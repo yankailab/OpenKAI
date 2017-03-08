@@ -46,7 +46,6 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_kickBack);
-		ADD_ACTION(HM_pathFinder);
 		ADD_ACTION(HM_grass);
 		ADD_ACTION(HM_rth);
 		ADD_ACTION(HM_rth_approach);

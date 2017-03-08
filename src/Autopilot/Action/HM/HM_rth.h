@@ -27,9 +27,8 @@ private:
 	HM_kickBack* m_pKB;
 	_GPS* m_pGPS;
 
-	double	m_steerP;
 	int		m_rpmSteer;
-	int		m_rpmSpeed;
+	int		m_rpmT;
 	double	m_rWP;
 	double	m_dHdg;
 

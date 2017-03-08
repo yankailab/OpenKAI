@@ -50,9 +50,9 @@ public:
 	Frame* m_pRGBAf;
 	double m_minCofidence;
 
-	double m_detectMinSize;
-	double m_detectMaxSize;
-	double m_overlapMax;
+	double m_minSize;
+	double m_maxSize;
+	double m_overlapMin;
 	vDouble4 m_area;
 
 	float* m_bbCPU;

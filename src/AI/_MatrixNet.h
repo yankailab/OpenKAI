@@ -25,13 +25,11 @@ public:
 	bool link(void);
 	bool draw(void);
 
-	bool bFound(int iClass);
-	//	OBJECT** getObjItr(void);
+	bool bFound(int iClass, double minProb);
 
 public:
 	_ImageNet* m_pIN;
 
-	double m_minProb;
 	double m_w;
 	double m_h;
 	double m_dW;
@@ -39,7 +37,6 @@ public:
 	vDouble4 m_area;
 	OBJECT** m_pObj;
 	int		m_nObj;
-
 
 };
 

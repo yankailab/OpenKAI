@@ -10,9 +10,6 @@ HM_grass::HM_grass()
 
 	m_sequence = gt_grass;
 
-	m_speedP = 0.0;
-	m_steerP = 0.0;
-
 	m_grassBoxL.init();
 	m_grassBoxF.init();
 	m_grassBoxR.init();
@@ -24,7 +21,7 @@ HM_grass::HM_grass()
 
 	m_nTurnRand = 10;
 	m_tTurnRandRange = 100000;
-	m_tTurnRandLen = 0;
+	m_tTurnRand = 0;
 
 	m_iGrassClass = 1;
 	m_pGrassL = NULL;
@@ -43,8 +40,7 @@ bool HM_grass::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("speedP", &m_speedP));
-	F_INFO(pK->v("steerP", &m_steerP));
+	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("turnTimer", (int* )&m_turnTimer));
 	F_INFO(pK->v("minProb", &m_grassMinProb));
 	F_INFO(pK->v("nTurnRand", &m_nTurnRand));
@@ -149,9 +145,9 @@ void HM_grass::update(void)
 		if(m_pGrassL->m_iClass != m_iGrassClass)probL = 0;
 		if(m_pGrassR->m_iClass != m_iGrassClass)probR = 0;
 
-		m_rpmSteer = m_steerP;
+		m_rpmSteer = abs(m_rpmSteer);
 		if (probL > probR)
-			m_rpmSteer = -m_steerP;
+			m_rpmSteer *= -1;
 
 		m_tTurnSet = tNow;
 		m_sequence = gt_timerSet;
@@ -171,13 +167,13 @@ void HM_grass::update(void)
 		if(m_pGrassF->m_prob <= m_grassMinProb)
 		{
 			//keep turning
-			m_pHM->m_motorPwmL = m_rpmSteer;
-			m_pHM->m_motorPwmR = -m_rpmSteer;
+			m_pHM->m_rpmL = m_rpmSteer;
+			m_pHM->m_rpmR = -m_rpmSteer;
 			return;
 		}
 
 		//start extra random turn
-		m_tTurnRandLen = (rand() % m_nTurnRand) * m_tTurnRandRange;
+		m_tTurnRand = (rand() % m_nTurnRand) * m_tTurnRandRange;
 		m_tTurnSet = tNow;
 		m_sequence = gt_randomTurn;
 		LOG_I("Sequence: randomTurn");
@@ -185,11 +181,11 @@ void HM_grass::update(void)
 
 	if(m_sequence == gt_randomTurn)
 	{
-		if (tNow - m_tTurnSet < m_tTurnRandLen)
+		if (tNow - m_tTurnSet < m_tTurnRand)
 		{
 			//keep extra turning
-			m_pHM->m_motorPwmL = m_rpmSteer;
-			m_pHM->m_motorPwmR = -m_rpmSteer;
+			m_pHM->m_rpmL = m_rpmSteer;
+			m_pHM->m_rpmR = -m_rpmSteer;
 			return;
 		}
 

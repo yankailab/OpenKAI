@@ -5,12 +5,10 @@ namespace kai
 
 HM_avoid::HM_avoid()
 {
-	m_pZED = NULL;
 	m_pHM = NULL;
 	m_pObs = NULL;
 	m_pMN = NULL;
 	m_iMarkerClass = -1;
-	m_steerP = 0.0;
 
 	m_sequence = av_clear;
 
@@ -24,11 +22,11 @@ HM_avoid::HM_avoid()
 	m_alertDist = 0.0;
 	m_distM = 0.0;
 
-	m_objLifetime = 100000;
 	m_markerTurnStart = 0;
 	m_markerTurnTimer = USEC_1SEC;
 	m_rpmSteer = 0;
 
+	m_minProb = 0.0;
 }
 
 HM_avoid::~HM_avoid()
@@ -41,12 +39,12 @@ bool HM_avoid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("steerP", &m_steerP));
+	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 
-	F_INFO(pK->v("objLifetime", &m_objLifetime));
 	F_INFO(pK->v("markerTurnTimer", &m_markerTurnTimer));
 	F_INFO(pK->v("iMarkerClass", &m_iMarkerClass));
+	F_INFO(pK->v("minProb", &m_minProb));
 
 	Kiss* pG;
 
@@ -86,10 +84,6 @@ bool HM_avoid::link(void)
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_ZED", &iName));
-	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
-
-	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
@@ -108,7 +102,6 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pObs);
 	NULL_(m_pMN);
-	NULL_(m_pZED);
 	if(!isActive())
 	{
 		m_sequence = av_clear;
@@ -124,23 +117,23 @@ void HM_avoid::update(void)
 		IF_(m_distM > m_alertDist);
 
 		//decide which direction to turn based on previous actions' decision
-		m_rpmSteer = m_steerP;
-		if (m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
+		m_rpmSteer = abs(m_rpmSteer);
+		if (m_pHM->m_rpmL < m_pHM->m_rpmR)
 		{
-			m_rpmSteer = -m_steerP;
+			m_rpmSteer *= -1;
 		}
-		else if (m_pHM->m_motorPwmL == m_pHM->m_motorPwmR)
+		else if (m_pHM->m_rpmL == m_pHM->m_rpmR)
 		{
 			//decide direction by obstacles in left and right
 			double dL = m_pObs->dist(&m_obsBoxL, NULL);
 			double dR = m_pObs->dist(&m_obsBoxR, NULL);
 
 			if (dL > dR)
-				m_rpmSteer = -m_steerP;
+				m_rpmSteer *= -1;
 		}
 
 		//if found marker, start turn for the timer duration
-		if (m_pMN->bFound(m_iMarkerClass))
+		if (m_pMN->bFound(m_iMarkerClass, m_minProb))
 		{
 			m_markerTurnStart = tNow;
 			m_sequence = av_markerTurn;
@@ -159,8 +152,8 @@ void HM_avoid::update(void)
 		}
 
 		m_pHM->m_bSpeaker = true;
-		m_pHM->m_motorPwmL = m_rpmSteer;
-		m_pHM->m_motorPwmR = -m_rpmSteer;
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
 	}
 
 	if(m_sequence == av_markerTurn)
@@ -173,8 +166,8 @@ void HM_avoid::update(void)
 		}
 
 		m_pHM->m_bSpeaker = true;
-		m_pHM->m_motorPwmL = m_rpmSteer;
-		m_pHM->m_motorPwmR = -m_rpmSteer;
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
 	}
 
 }
