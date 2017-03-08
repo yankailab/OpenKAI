@@ -73,14 +73,14 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
 	"bTracking":0,
-	"bGray":1,
+	"bGray":0,
 }
 
 {
