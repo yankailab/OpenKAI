@@ -13,6 +13,7 @@ HM_base::HM_base()
 	m_rpmR = 0;
 	m_motorRpmW = 0;
 	m_bSpeaker = false;
+	m_bMute = false;
 
 	m_maxRpmT = 65535;
 	m_maxRpmW = 2500;
@@ -38,6 +39,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("motorRpmW", &m_motorRpmW));
 	F_INFO(pK->v("defaultRpmT", &m_defaultRpmT));
 	F_INFO(pK->v("wheelR", &m_wheelR));
+	F_INFO(pK->v("bMute", &m_bMute));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -90,8 +92,6 @@ void HM_base::update(void)
 	m_motorRpmW = 0;
 	m_bSpeaker = false;
 
-	//ignore external cmd in kickback mode
-	//IF_(*pStateName == "HM_KICKBACK");
 	cmd();
 }
 
@@ -191,6 +191,8 @@ void HM_base::cmd(void)
 void HM_base::updateCAN(void)
 {
 	NULL_(m_pCAN);
+
+	if(m_bMute)m_bSpeaker = false;
 
 	unsigned long addr = 0x113;
 	unsigned char cmd[8];

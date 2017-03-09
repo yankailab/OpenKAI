@@ -11,7 +11,6 @@ HM_kickBack::HM_kickBack()
 	m_rpmTurn = 0;
 	m_kickBackDist = 0.0;
 	m_targetHdg = 0.0;
-	m_rTargetHdg = 1.0;
 
 	reset();
 }
@@ -37,7 +36,6 @@ bool HM_kickBack::init(void* pKiss)
 	F_INFO(pK->v("rpmTurn", &m_rpmTurn));
 	F_INFO(pK->v("kickBackDist", &m_kickBackDist));
 	F_INFO(pK->v("targetHdg", &m_targetHdg));
-	F_INFO(pK->v("rTargetHdg", &m_rTargetHdg));
 
 	return true;
 }
@@ -73,6 +71,7 @@ void HM_kickBack::update(void)
 		return;
 	}
 
+	static double rotHdg;
 	UTM_POS* pNew = m_pGPS->getUTM();
 	NULL_(pNew);
 
@@ -97,14 +96,19 @@ void HM_kickBack::update(void)
 		}
 
 		//arrived at approach position
-		m_wpApproach = *pNew;
 		m_sequence = kb_turn;
+		m_wpApproach = *pNew;
+
+		rotHdg = dHdg(m_wpApproach.m_hdg, m_wpApproach.m_hdg + m_targetHdg);
+		if(rotHdg>=0)m_rpmTurn = abs(m_rpmTurn);
+		else m_rpmTurn = -abs(m_rpmTurn);
+
 		LOG_I("Approach Pos Set");
 	}
 
 	if(m_sequence == kb_turn)
 	{
-		if(abs(dHdg(pNew->m_hdg, m_wpApproach.m_hdg + m_targetHdg)) < m_rTargetHdg)
+		if(abs(dHdg(m_wpApproach.m_hdg, pNew->m_hdg)) > abs(rotHdg))
 		{
 			//turn complete, change to work mode
 			string stateName = "HM_WORK";

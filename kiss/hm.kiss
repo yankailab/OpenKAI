@@ -224,6 +224,7 @@
 			"defaultRpmT":2500,
 			"wheelR":0.1,
 			"_GPS":"GPS",
+			"bMute":0,
 			
 			{
 				"name":"cmd",
@@ -254,7 +255,6 @@
 			"rpmBack":-1500,
 			"rpmTurn":1000,
 			"targetHdg":90,
-			"rTargetHdg":0.5,
 			
 			{
 				"name":"activeState",

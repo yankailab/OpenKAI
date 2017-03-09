@@ -35,13 +35,11 @@ public:
 	int		m_rpmBack;
 	int		m_rpmTurn;
 	double	m_kickBackDist;
+	double	m_targetHdg;
 
 	KICKBACK_SEQUENCE	m_sequence;
 	UTM_POS	m_wpStation;
 	UTM_POS	m_wpApproach;
-
-	double	m_targetHdg;
-	double	m_rTargetHdg;
 
 };
 

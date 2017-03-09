@@ -39,6 +39,7 @@ public:
 	int m_defaultRpmT;
 	int m_motorRpmW;
 	bool m_bSpeaker;
+	bool m_bMute;
 
 	uint8_t m_ctrlB0;
 	uint8_t m_ctrlB1;
