@@ -88,6 +88,16 @@ bool _MatrixNet::link(void)
 	return true;
 }
 
+void _MatrixNet::active(bool bActive)
+{
+	int i;
+	for(i=0; i<m_nObj; i++)
+	{
+
+	}
+
+}
+
 OBJECT* _MatrixNet::get(int i, int64_t minFrameID)
 {
 	IF_N(m_ppObj[i]->m_frameID < minFrameID);
@@ -116,18 +126,6 @@ bool _MatrixNet::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	IF_F(pMat->empty());
-
-//	OBJECT* pO;
-//	for (int i = 0; i < m_nObj; i++)
-//	{
-//		pO = m_pObj[i];
-//		IF_CONT(pO->m_iClass <= 0);
-//		IF_CONT(pO->m_prob < m_minProb);
-//
-//		Rect r;
-//		vInt42rect(&pO->m_bbox,&r);
-//		rectangle(*pMat, r, Scalar(0, 0, 255), 2);
-//	}
 
 	return true;
 }

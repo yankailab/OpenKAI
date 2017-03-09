@@ -81,13 +81,18 @@ void HM_follow::update(void)
 	m_pTarget = NULL;
 
 	int i;
-//	uint64_t t = get_time_usec() - m_objLifetime;
 	for (i = 0; i < m_pAI->size(); i++)
 	{
-		OBJECT* pObj = m_pAI->get(i, 0);//t);
+		OBJECT* pObj = m_pAI->get(i, 0);
 		IF_CONT(!pObj);
-//		IF_CONT(pObj->m_iClass != m_iTargetClass);
-		IF_CONT(pObj->m_name != m_targetName);
+		if(m_targetName=="")
+		{
+			IF_CONT(pObj->m_iClass != m_iTargetClass);
+		}
+		else
+		{
+			IF_CONT(pObj->m_name != m_targetName);
+		}
 
 		pObj->m_dist = m_pObs->dist(&pObj->m_fBBox, NULL);
 
@@ -117,6 +122,11 @@ void HM_follow::update(void)
 
 	m_pHM->m_rpmL += m_rpmT;
 	m_pHM->m_rpmR += m_rpmT;
+}
+
+void HM_follow::active(bool bActive)
+{
+
 }
 
 bool HM_follow::draw(void)

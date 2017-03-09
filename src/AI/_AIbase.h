@@ -28,6 +28,7 @@ struct OBJECT
 	vector<Point> m_contour;
 	int64_t m_frameID;
 	uint8_t m_safety;
+	bool m_bClassify;
 
 	void init(void)
 	{
@@ -40,6 +41,7 @@ struct OBJECT
 		m_name = "";
 		m_frameID = 0;
 		m_safety = -1;
+		m_bClassify = true;
 	}
 
 	void f2iBBox(void)
@@ -79,7 +81,7 @@ public:
 	virtual OBJECT* getByClass(int iClass, int64_t minFrameID);
 	virtual int size(void);
 
-private:
+public:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

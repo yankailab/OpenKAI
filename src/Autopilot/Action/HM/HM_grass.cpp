@@ -125,9 +125,11 @@ void HM_grass::update(void)
 	if(!isActive())
 	{
 		m_sequence = gt_grass;
+		active(false);
 		return;
 	}
 
+	active(true);
 	uint64_t tNow = get_time_usec();
 
 	if(m_sequence == gt_grass)
@@ -195,6 +197,13 @@ void HM_grass::update(void)
 	}
 }
 
+void HM_grass::active(bool bActive)
+{
+	if(m_pGrassL)m_pGrassL->m_bClassify = bActive;
+	if(m_pGrassF)m_pGrassF->m_bClassify = bActive;
+	if(m_pGrassR)m_pGrassR->m_bClassify = bActive;
+}
+
 bool HM_grass::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
@@ -220,7 +229,7 @@ bool HM_grass::draw(void)
 	vInt42rect(&m_pGrassL->m_bbox, &r);
 	col = Scalar(200, 200, 200);
 	bold = 1;
-	if (m_pGrassL->m_iClass == m_iGrassClass)
+	if (m_pGrassL->m_iClass == m_iGrassClass && m_pGrassL->m_prob > m_grassMinProb)
 	{
 		col = Scalar(0, 255, 0);
 		bold = 2;
@@ -230,7 +239,7 @@ bool HM_grass::draw(void)
 	vInt42rect(&m_pGrassF->m_bbox, &r);
 	col = Scalar(200, 200, 200);
 	bold = 1;
-	if (m_pGrassF->m_iClass == m_iGrassClass)
+	if (m_pGrassF->m_iClass == m_iGrassClass && m_pGrassF->m_prob > m_grassMinProb)
 	{
 		col = Scalar(0, 255, 0);
 		bold = 2;
@@ -240,7 +249,7 @@ bool HM_grass::draw(void)
 	vInt42rect(&m_pGrassR->m_bbox, &r);
 	col = Scalar(200, 200, 200);
 	bold = 1;
-	if (m_pGrassR->m_iClass == m_iGrassClass)
+	if (m_pGrassR->m_iClass == m_iGrassClass && m_pGrassR->m_prob > m_grassMinProb)
 	{
 		col = Scalar(0, 255, 0);
 		bold = 2;

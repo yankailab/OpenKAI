@@ -10,147 +10,6 @@
 }
 
 {
-	"name":"mainStream",
-	"class":"_Stream",
-	"bInst":1,
-	"bGray":0,
-	"bHSV":0,
-	"bShowDepth":0,
-	"_Automaton":"flight",
-	"input":"Generic",
-		
-	{
-		"name":"ZEDL",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":1344,
-		"height":376,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":672,
-		"cropH":376,
-		"bCalib":0,
-		"bFisheye":0,
-		"calibFile":"calibration/sp360-1440.xml",
-		"isoScale":1.0,
-		"bGimbal":0,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"ZEDL_HD",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":2560,
-		"height":720,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":1280,
-		"cropH":720,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-
-	{
-		"name":"ZEDL_FHD",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":3840,
-		"height":1080,
-		"bCrop":1,
-		"cropX":0,
-		"cropY":0,
-		"cropW":1920,
-		"cropH":1080,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-
-	{
-		"name":"Tiltac",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":1280,
-		"height":720,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-
-	{
-		"name":"Generic",
-		"class":"Camera",
-		"FPS":30,
-		"ID":0,
-		"width":640,
-		"height":480,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-	
-	{
-		"name":"Tara",
-		"class":"Camera",
-		"FPS":60,
-		"ID":1,
-		"width":752,
-		"height":480,
-		"angleV":67.1,
-		"angleH":66.7,
-	}
-
-	{
-		"name":"ZED",
-		"class":"ZED",
-		"FPS":30,
-		"bShowDepth":0,
-		"resolution":2,
-		"minDist":800,
-		"width":1344,
-		"height":376,
-		"angleV":67.1,
-		"angleH":66.7,
-		"bCrop":0,
-	}
-}
-
-{
-	"name":"APM",
-	"class":"_Mavlink",
-	"bInst":0,
-	"FPS":100,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":921600,
-	"_Automaton":"flight",
-}
-
-{
-	"name":"RC",
-	"class":"_RC",
-	"bInst":0,
-	"FPS":30,
-	"portName":"/dev/ttyUSB0",
-	"baudrate":115200,
-	"_Automaton":"flight",
-}
-
-{
-	"name":"HM",
-	"class":"_Canbus",
-	"bInst":0,
-	"FPS":100,
-	"portName":"/dev/ttyACM0",
-	"baudrate":115200,
-	"_Automaton":"flight",
-}
-
-{
 	"name":"detectNet",
 	"class":"_DetectNet",
 	"bInst":1,
@@ -493,4 +352,58 @@
 	}
 	
 }
+
+{
+	"name":"cascadeHuman",
+	"class":"_Cascade",
+	"bInst":0,
+	"bLog":0,
+	"bDraw":0,
+	"FPS":15,
+	"Window":"HMview",
+	"_Stream":"ZED",
+	"dir":"/home/ubuntu/src/model/cascade/haarcascades/",
+	"modelFile":"haarcascade_fullbody.xml",
+	"_modelFile":"haarcascade_upperbody.xml",
+	"_modelFile":"haarcascade_lowerbody.xml",
+	"className":"human",
+	"overlapMin":0.2,
+	"nObj":8,
+	"minSize":0.1,
+	"maxSize":0.6,
+}
+
+{
+	"name":"humanDet",
+	"class":"_DetectNet",
+	"bInst":0,
+	"bLog":0,
+	"bDraw":0,
+	"FPS":5,
+	"Window":"HMview",
+	"_Stream":"ZED",
+	"dir":"/home/ubuntu/src/model/ped-100/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"className":"human",
+	"overlapMin":0.2,
+	"nObj":8,
+	"minConfidence":0.05,
+	"minSize":0.05,
+	"maxSize":0.5,
+}
+
+{
+	"name":"HMpath",
+	"class":"_Path",
+	"bInst":0,
+	"Window":"HMview",
+	"FPS":30,
+	"_GPS":"GPS",
+	"dInterval":0.0,
+	"showScale":10.0,
+	"distCompress":0.0,
+}
+
 

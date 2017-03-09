@@ -28,6 +28,8 @@ public:
 	OBJECT* get(int i, int64_t minFrameID);
 	bool bFound(int iClass, double minProb);
 
+	void active(bool bActive);
+
 public:
 	_ImageNet* m_pIN;
 

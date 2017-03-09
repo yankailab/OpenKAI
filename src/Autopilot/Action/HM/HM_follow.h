@@ -23,6 +23,8 @@ public:
 	bool draw(void);
 
 private:
+	void active(bool bActive);
+
 	_AIbase*	m_pAI;
 	HM_base*	m_pHM;
 	_Obstacle* 	m_pObs;

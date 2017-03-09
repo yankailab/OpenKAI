@@ -181,8 +181,8 @@ void HM_base::cmd(void)
 	else if(m_strCMD=="station")
 	{
 		stateName = "HM_STATION";
-		m_pAM->transit(&stateName);
 		m_pGPS->reset();
+		m_pAM->transit(&stateName);
 	}
 
 	m_strCMD = "";

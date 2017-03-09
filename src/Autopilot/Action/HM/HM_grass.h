@@ -27,6 +27,8 @@ public:
 	bool draw(void);
 
 private:
+	void active(bool bActive);
+
 	_ImageNet*	m_pIN;
 	HM_base* m_pHM;
 

@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -162,43 +162,6 @@
 }
 
 {
-	"name":"objIN",
-	"class":"_ImageNet",
-	"bInst":1,
-	"bDraw":0,
-	"FPS":30,
-	"Window":"HMview",
-	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/ImageNet/",
-	"modelFile":"googlenet.prototxt",
-	"trainedFile":"bvlc_googlenet.caffemodel",
-	"meanFile":"",
-	"_blobOut":"softmax",
-	"labelFile":"ilsvrc12_synset_words.txt",
-	"nObj":64,
-	"mode":"object",
-	"maxPix":100000,
-}
-
-{
-	"name":"objMN",
-	"bInst":1,
-	"bDraw":0,
-	"FPS":30,
-	"class":"_MatrixNet",
-	"_ImageNet":"objIN",
-	"Window":"HMview",
-	"w":0.2,
-	"h":0.3,
-	"dW":0.1,
-	"dH":0.15,
-	"left":0.0,
-	"top":0.0,
-	"right":1.0,
-	"bottom":1.0,
-}
-
-{
 	"name":"automaton",
 	"class":"_Automaton",
 	"bInst":1,
@@ -312,7 +275,7 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"_AIbase":"objMN",
+			"_AIbase":"hmMN",
 			"_Obstacle":"obstacle",
 			"distMin":1.0,
 			"distMax":10.0,
@@ -321,7 +284,7 @@
 			"targetX":0.5,
 			"objLifetime":100000,
 			"iTargetClass":0,
-			"targetName":"orange",
+			"targetName":"turf",
 			
 			{
 				"name":"activeState",
@@ -492,60 +455,6 @@
 		}				
 		
 	}
-}
-
-
-{
-	"name":"cascadeHuman",
-	"class":"_Cascade",
-	"bInst":0,
-	"bLog":0,
-	"bDraw":0,
-	"FPS":15,
-	"Window":"HMview",
-	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/cascade/haarcascades/",
-	"modelFile":"haarcascade_fullbody.xml",
-	"_modelFile":"haarcascade_upperbody.xml",
-	"_modelFile":"haarcascade_lowerbody.xml",
-	"className":"human",
-	"overlapMin":0.2,
-	"nObj":8,
-	"minSize":0.1,
-	"maxSize":0.6,
-}
-
-{
-	"name":"humanDet",
-	"class":"_DetectNet",
-	"bInst":0,
-	"bLog":0,
-	"bDraw":0,
-	"FPS":5,
-	"Window":"HMview",
-	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/ped-100/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70800.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"className":"human",
-	"overlapMin":0.2,
-	"nObj":8,
-	"minConfidence":0.05,
-	"minSize":0.05,
-	"maxSize":0.5,
-}
-
-{
-	"name":"HMpath",
-	"class":"_Path",
-	"bInst":0,
-	"Window":"HMview",
-	"FPS":30,
-	"_GPS":"GPS",
-	"dInterval":0.0,
-	"showScale":10.0,
-	"distCompress":0.0,
 }
 
 

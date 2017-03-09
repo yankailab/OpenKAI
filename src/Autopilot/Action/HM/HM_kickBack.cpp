@@ -67,7 +67,11 @@ void HM_kickBack::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pGPS);
-	IF_(!isActive());
+	if(!isActive())
+	{
+		m_sequence = kb_station;
+		return;
+	}
 
 	UTM_POS* pNew = m_pGPS->getUTM();
 	NULL_(pNew);
