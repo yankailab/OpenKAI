@@ -110,6 +110,8 @@ void HM_follow::update(void)
 	}
 
 	NULL_(m_pTarget);
+	IF_(m_pTarget->m_dist > m_distMax);
+
 	m_pHM->m_bSpeaker = true;
 
 	double pX = m_targetX - m_pTarget->m_fBBox.midX();
