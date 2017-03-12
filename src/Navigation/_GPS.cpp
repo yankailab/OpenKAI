@@ -23,6 +23,14 @@ _GPS::_GPS()
 	m_tNow = 0;
 	m_apmMode = 0;
 	m_posDiffMax = 10.0;
+
+	m_dT.m_x = 1000;
+	m_dT.m_y = 1000;
+	m_dT.m_z = 1000;
+
+	m_dRot.m_x = 1000;
+	m_dRot.m_y = 1000;
+	m_dRot.m_z = 1000;
 }
 
 _GPS::~_GPS()
@@ -169,26 +177,27 @@ void _GPS::detect(void)
 	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
 }
 
-void _GPS::addTranslation(vDouble3& dT)
+void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
 {
-	double hdgRad = m_LL.m_hdg * DEG_RAD;
-	double sinH = sin(hdgRad);
-	double cosH = cos(hdgRad);
+	//dT: m/s in xyz
+	//dRot: rad/s in ypr
 
-	double dE = dT.m_x * cosH + dT.m_y * sinH;	//Easting
-	double dN = dT.m_y * cosH - dT.m_x * sinH;	//Northing
+	if(pDT)m_dT = *pDT;
+	if(pDRot)m_dRot = *pDRot;
 
-	UTM_POS utm = *getUTM();
-	utm.m_easting += dE;
-	utm.m_northing += dN;
-	utm.m_alt += dT.m_y;
-
-	setUTM(&utm);
-}
-
-void _GPS::addRotation(vDouble3& dRot)
-{
-
+//	double hdgRad = m_LL.m_hdg * DEG_RAD;
+//	double sinH = sin(hdgRad);
+//	double cosH = cos(hdgRad);
+//
+//	double dE = dT.m_x * cosH + dT.m_y * sinH;	//Easting
+//	double dN = dT.m_y * cosH - dT.m_x * sinH;	//Northing
+//
+//	UTM_POS utm = *getUTM();
+//	utm.m_easting += dE;
+//	utm.m_northing += dN;
+//	utm.m_alt += dT.m_y;
+//
+//	setUTM(&utm);
 }
 
 /*

@@ -105,9 +105,11 @@ void HM_avoid::update(void)
 	if(!isActive())
 	{
 		m_sequence = av_clear;
+		m_pMN->bSetActive(false);
 		return;
 	}
 
+	m_pMN->bSetActive(true);
 	uint64_t tNow = get_time_usec();
 
 	if(m_sequence == av_clear)
@@ -133,7 +135,7 @@ void HM_avoid::update(void)
 		}
 
 		//if found marker, start turn for the timer duration
-		if (m_pMN->bFound(m_iMarkerClass, m_minProb))
+		if (m_pMN->bFound(m_iMarkerClass, m_minProb, 0))
 		{
 			m_markerTurnStart = tNow;
 			m_sequence = av_markerTurn;

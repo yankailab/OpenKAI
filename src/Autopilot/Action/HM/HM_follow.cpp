@@ -6,7 +6,7 @@ namespace kai
 HM_follow::HM_follow()
 {
 	m_pHM = NULL;
-	m_pAI = NULL;
+	m_pMN = NULL;
 	m_pObs = NULL;
 
 	m_distMin = 0.0;
@@ -56,12 +56,12 @@ bool HM_follow::link(void)
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_AIbase", &iName));
-	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_MatrixNet", &iName));
+	m_pMN = (_MatrixNet*) (pK->root()->getChildInstByName(&iName));
 
-	if (!m_pAI)
+	if (!m_pMN)
 	{
-		LOG_E("_DetectNet not found");
+		LOG_E("_MatrixNet not found");
 		return true;
 	}
 
@@ -74,16 +74,21 @@ void HM_follow::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-	NULL_(m_pAI);
+	NULL_(m_pMN);
 	NULL_(m_pObs);
-	IF_(!isActive());
+	if(!isActive())
+	{
+		m_pMN->bSetActive(false);
+		return;
+	}
+
+	m_pMN->bSetActive(true);
 
 	m_pTarget = NULL;
-
 	int i;
-	for (i = 0; i < m_pAI->size(); i++)
+	for (i = 0; i < m_pMN->size(); i++)
 	{
-		OBJECT* pObj = m_pAI->get(i, 0);
+		OBJECT* pObj = m_pMN->get(i, 0);
 		IF_CONT(!pObj);
 		if(m_targetName=="")
 		{

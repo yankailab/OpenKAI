@@ -107,6 +107,9 @@ void _ImageNet::update(void)
 
 void _ImageNet::detect(void)
 {
+#ifdef USE_TENSORRT
+	NULL_(m_pIN);
+#endif
 	NULL_(m_pStream);
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
@@ -116,26 +119,20 @@ void _ImageNet::detect(void)
 	GpuMat gRGBA = *m_pRGBA->getGMat();
 	IF_(gRGBA.empty());
 
+	Rect bb;
+	GpuMat gBB;
+	GpuMat gfBB;
+
 	for (int i = 0; i < m_iObj; i++)
 	{
 		OBJECT* pObj = &m_pObj[i];
+		IF_CONT(!pObj->m_bClassify);
+
 		pObj->m_camSize.m_x = gRGBA.cols;
 		pObj->m_camSize.m_y = gRGBA.rows;
 		pObj->f2iBBox();
-
-		if (!m_pIN)
-			continue;
-		if (pObj->m_bbox.area() <= 0)
-			continue;
-		if (pObj->m_bbox.area() > m_maxPix)
-		{
-			LOG_E("Image size exceeds the max pixel limit");
-			continue;
-		}
-
-		Rect bb;
-		GpuMat gBB;
-		GpuMat gfBB;
+		IF_CONT(pObj->m_bbox.area() <= 0);
+		IF_CONT(pObj->m_bbox.area() > m_maxPix);
 
 		vInt42rect(&pObj->m_bbox, &bb);
 		gBB = GpuMat(gRGBA, bb);
@@ -145,13 +142,12 @@ void _ImageNet::detect(void)
 		float prob = 0;
 		pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
 		pObj->m_prob = prob;
+		pObj->m_frameID = get_time_usec();
 		if (pObj->m_iClass >= 0)
 			pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
 		else
 			pObj->m_name = "";
 #endif
-		pObj->m_frameID = get_time_usec();
-
 	}
 }
 

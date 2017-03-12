@@ -37,7 +37,7 @@ struct OBJECT
 		m_camSize.init();
 		m_dist = -1.0;
 		m_prob = 0;
-		m_iClass = 0;
+		m_iClass = -1;
 		m_name = "";
 		m_frameID = 0;
 		m_safety = -1;

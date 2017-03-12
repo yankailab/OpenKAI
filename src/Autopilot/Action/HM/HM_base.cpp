@@ -111,14 +111,30 @@ void HM_base::updateGPS(void)
 	double dTime = (double)(tNow - m_lastUpdateGPS);
 	m_lastUpdateGPS = tNow;
 
-	//TODO: calc rpm to dist
-	IF_(m_rpmL != m_rpmR);
+	//force rpm to only rot or translation at a time
+	if(abs(m_rpmL) != abs(m_rpmR))
+	{
+		int mid = (m_rpmL + m_rpmR)/2;
+		int absRpm = abs(m_rpmL - mid);
+
+		if(m_rpmL > m_rpmR)
+		{
+			m_rpmL = mid+absRpm;
+			m_rpmR = mid-absRpm;
+		}
+		else
+		{
+			m_rpmL = mid-absRpm;
+			m_rpmR = mid+absRpm;
+		}
+	}
 
 	vDouble3 dT;
 	dT.init();
 	dT.m_y = m_rpmL * m_wheelR * dTime * tBase;
 
-	m_pGPS->addTranslation(dT);
+	//TODO
+//	m_pGPS->setSpeed(dT);
 }
 
 void HM_base::cmd(void)

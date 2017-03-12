@@ -125,11 +125,11 @@ void HM_grass::update(void)
 	if(!isActive())
 	{
 		m_sequence = gt_grass;
-		active(false);
+		bSetActive(false);
 		return;
 	}
 
-	active(true);
+	bSetActive(true);
 	uint64_t tNow = get_time_usec();
 
 	if(m_sequence == gt_grass)
@@ -197,7 +197,7 @@ void HM_grass::update(void)
 	}
 }
 
-void HM_grass::active(bool bActive)
+void HM_grass::bSetActive(bool bActive)
 {
 	if(m_pGrassL)m_pGrassL->m_bClassify = bActive;
 	if(m_pGrassF)m_pGrassF->m_bClassify = bActive;

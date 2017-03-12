@@ -79,7 +79,7 @@
 	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
-	"bTracking":0,
+	"bTracking":1,
 	"bGray":0,
 }
 
@@ -91,7 +91,7 @@
 	"FPS":30,
 	"Window":"HMview",
 	"_Mavlink":"APMmavlink",
-	"_ZED":"ZED_",
+	"_ZED":"ZED",
 	"mavDSfreq":30,
 	"posDiffMax":0.5,
 		
@@ -144,7 +144,7 @@
 }
 
 {
-	"name":"hmMN",
+	"name":"humanMN",
 	"bInst":1,
 	"bDraw":0,
 	"FPS":30,
@@ -152,13 +152,31 @@
 	"_ImageNet":"hmIN",
 	"Window":"HMview",
 	"w":0.2,
-	"h":0.3,
+	"h":1.0,
 	"dW":0.1,
-	"dH":0.15,
+	"dH":1.0,
 	"left":0.0,
 	"top":0.0,
 	"right":1.0,
-	"bottom":1.0,
+	"bottom":0.7,
+}
+
+{
+	"name":"markerMN",
+	"bInst":1,
+	"bDraw":0,
+	"FPS":30,
+	"class":"_MatrixNet",
+	"_ImageNet":"hmIN",
+	"Window":"HMview",
+	"w":0.2,
+	"h":1.0,
+	"dW":0.1,
+	"dH":1.0,
+	"left":0.0,
+	"top":0.0,
+	"right":1.0,
+	"bottom":0.7,
 }
 
 {
@@ -275,7 +293,7 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"_AIbase":"hmMN",
+			"_MatrixNet":"humanMN",
 			"_Obstacle":"obstacle",
 			"distMin":1.0,
 			"distMax":10.0,
@@ -404,15 +422,13 @@
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
-			"_ImageNet":"hmIN",
-			"_MatrixNet":"hmMN",
+			"_MatrixNet":"markerMN",
 			"alertDist":0.8,
 			"rpmSteer":2000,
 			"markerTurnTimer":5000000,
 			"iMarkerClass":1,
 			"minProb":0.0,
 			
-
 			{
 				"name":"obsBoxL",
 				"bInst":1,

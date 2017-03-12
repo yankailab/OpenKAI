@@ -56,28 +56,33 @@ bool _MatrixNet::link(void)
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 
 	//create marker detection area instances
-	int nW = ((m_area.m_z - m_area.m_x - m_w) / m_dW) + 1;
-	int nH = ((m_area.m_w - m_area.m_y - m_h) / m_dH) + 1;
+//	int nW = ((m_area.m_z - m_area.m_x - m_w) / m_dW) + 1;
+//	int nH = ((m_area.m_w - m_area.m_y - m_h) / m_dH) + 1;
+	int nW = ((1.0 - m_w) / m_dW) + 1;
+	int nH = ((1.0 - m_h) / m_dH) + 1;
 	if (nW <= 0 || nH <= 0)
 	{
 		LOG_E("nW <=0 || nH <= 0");
 		return false;
 	}
 
-	m_nObj = nW * nH;
-	m_ppObj = new OBJECT*[m_nObj];
+	int nObj = nW * nH;
+	m_ppObj = new OBJECT*[nObj];
 
 	OBJECT mO;
 	int k = 0;
+	double aW = m_area.m_z - m_area.m_x;
+	double aH = m_area.m_w - m_area.m_y;
+
 	for (int i = 0; i < nH; i++)
 	{
 		for (int j = 0; j < nW; j++)
 		{
 			mO.init();
-			mO.m_fBBox.m_x = m_area.m_x + j * m_dW;
-			mO.m_fBBox.m_z = m_area.m_x + mO.m_fBBox.m_x + m_w;
-			mO.m_fBBox.m_y = m_area.m_y + i * m_dH;
-			mO.m_fBBox.m_w = m_area.m_y + mO.m_fBBox.m_y + m_h;
+			mO.m_fBBox.m_x = m_area.m_x + j * m_dW * aW;
+			mO.m_fBBox.m_z = m_area.m_x + mO.m_fBBox.m_x + m_w * aW;
+			mO.m_fBBox.m_y = m_area.m_y + i * m_dH * aH;
+			mO.m_fBBox.m_w = m_area.m_y + mO.m_fBBox.m_y + m_h * aH;
 
 			m_ppObj[k] = m_pIN->add(&mO);
 			NULL_F(m_ppObj[k]);
@@ -85,17 +90,18 @@ bool _MatrixNet::link(void)
 		}
 	}
 
+	m_nObj = nObj;
+
 	return true;
 }
 
-void _MatrixNet::active(bool bActive)
+void _MatrixNet::bSetActive(bool bActive)
 {
 	int i;
 	for(i=0; i<m_nObj; i++)
 	{
-
+		m_ppObj[i]->m_bClassify = bActive;
 	}
-
 }
 
 OBJECT* _MatrixNet::get(int i, int64_t minFrameID)
@@ -105,7 +111,7 @@ OBJECT* _MatrixNet::get(int i, int64_t minFrameID)
 	return m_ppObj[i];
 }
 
-bool _MatrixNet::bFound(int iClass, double minProb)
+bool _MatrixNet::bFound(int iClass, double minProb, int64_t minFrameID)
 {
 	int i;
 	for (i = 0; i < m_nObj; i++)
@@ -113,6 +119,7 @@ bool _MatrixNet::bFound(int iClass, double minProb)
 		OBJECT* pObj = m_ppObj[i];
 		IF_CONT(pObj->m_iClass != iClass);
 		IF_CONT(pObj->m_prob < minProb);
+		IF_CONT(pObj->m_frameID < minFrameID);
 
 		return true;
 	}

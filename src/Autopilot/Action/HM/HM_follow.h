@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Navigation/_Obstacle.h"
-#include "../../../AI/_AIbase.h"
+#include "../../../AI/_MatrixNet.h"
 #include "../ActionBase.h"
 #include "HM_base.h"
 
@@ -25,7 +25,7 @@ public:
 private:
 	void active(bool bActive);
 
-	_AIbase*	m_pAI;
+	_MatrixNet*	m_pMN;
 	HM_base*	m_pHM;
 	_Obstacle* 	m_pObs;
 
