@@ -22,9 +22,9 @@ _GPS::_GPS()
 	m_tStarted = 0;
 	m_tNow = 0;
 	m_apmMode = 0;
-	m_posDiffMax = 10.0;
 
 	m_hdg = 1000.0;
+	m_lastHdg = 1000.0;
 	m_dT.m_x = 1000;
 	m_dT.m_y = 1000;
 	m_dT.m_z = 1000;
@@ -44,8 +44,6 @@ bool _GPS::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
-	F_INFO(pK->v("posDiffMax", &m_posDiffMax));
-	m_posDiffMax = abs(m_posDiffMax);
 
 	Kiss* pI = pK->o("initLL");
 	IF_T(pI->empty());
@@ -82,6 +80,7 @@ bool _GPS::link(void)
 
 void _GPS::reset(void)
 {
+	m_hdg = 1000.0;
 	setLL(&m_initLL);
 	m_initUTM = *getUTM();
 }
@@ -104,8 +103,6 @@ void _GPS::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-
-		m_tNow = get_time_usec();
 
 		detect();
 
@@ -137,6 +134,7 @@ void _GPS::detect(void)
 	}
 
 	UTM_POS utm = *getUTM();
+	vDouble3 dT = m_dT * (double)this->m_dTime;
 
 	if(m_pSF40)
 	{
@@ -145,8 +143,8 @@ void _GPS::detect(void)
 		//estimate position
 		vDouble2 dPos = m_pSF40->getPosDiff();
 
-		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
-		utm.m_northing += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
+		utm.m_easting += constrain(dPos.m_x, 0.0, dT.m_x);
+		utm.m_northing += constrain(dPos.m_y, 0.0, dT.m_z);
 		setUTM(&utm);
 	}
 	else if(m_pZED)
@@ -163,9 +161,9 @@ void _GPS::detect(void)
 		//estimate position
 		vDouble4 dPos = m_pZED->getAccumulatedPos();
 
-		utm.m_easting += constrain(dPos.m_x, -m_posDiffMax, m_posDiffMax);
-		utm.m_northing += constrain(dPos.m_z, -m_posDiffMax, m_posDiffMax);
-		utm.m_alt += constrain(dPos.m_y, -m_posDiffMax, m_posDiffMax);
+		utm.m_easting += constrain(dPos.m_x, 0.0, dT.m_x);
+		utm.m_northing += constrain(dPos.m_z, 0.0, dT.m_z);
+		utm.m_alt += constrain(dPos.m_y, 0.0, dT.m_y);
 		setUTM(&utm);
 	}
 
@@ -239,13 +237,28 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
+//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
 
+	double mavHdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 
+	if(m_hdg > 360)
+	{
+		//set initial heading
+		m_hdg = mavHdg;
+		m_lastHdg = mavHdg;
+	}
+	else
+	{
+		vDouble3 dRot = m_dRot * (double)this->m_dTime;
+		m_hdg += constrain(mavHdg - m_lastHdg, 0.0, dRot.m_x);
+		m_lastHdg = mavHdg;
+	}
 
-	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	m_hdg = Hdg(m_hdg);
+
+	m_LL.m_hdg = m_hdg;
 	setLL(&m_LL);
 }
 

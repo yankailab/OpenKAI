@@ -20,8 +20,11 @@ HM_base::HM_base()
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
 	m_defaultRpmT = 3000;
-	m_wheelR = 1.0;
-	m_lastUpdateGPS = 0;
+	m_wheelR = 0.1;
+	m_treadW = 0.4;
+
+	m_dT.init();
+	m_dRot.init();
 }
 
 HM_base::~HM_base()
@@ -39,6 +42,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("motorRpmW", &m_motorRpmW));
 	F_INFO(pK->v("defaultRpmT", &m_defaultRpmT));
 	F_INFO(pK->v("wheelR", &m_wheelR));
+	F_INFO(pK->v("treadW", &m_treadW));
 	F_INFO(pK->v("bMute", &m_bMute));
 
 	Kiss* pI = pK->o("cmd");
@@ -99,17 +103,7 @@ void HM_base::updateGPS(void)
 {
 	NULL_(m_pGPS);
 
-	double tNow = get_time_usec();
-	if(m_lastUpdateGPS==0)
-	{
-		m_lastUpdateGPS = tNow;
-		return;
-	}
-
-	const static double tBase = 1.0/(USEC_1SEC*60);
-
-	double dTime = (double)(tNow - m_lastUpdateGPS);
-	m_lastUpdateGPS = tNow;
+	const static double tBase = 1.0/(USEC_1SEC*60.0);
 
 	//force rpm to only rot or translation at a time
 	if(abs(m_rpmL) != abs(m_rpmR))
@@ -119,22 +113,31 @@ void HM_base::updateGPS(void)
 
 		if(m_rpmL > m_rpmR)
 		{
-			m_rpmL = mid+absRpm;
-			m_rpmR = mid-absRpm;
+			m_rpmL = absRpm;
+			m_rpmR = -absRpm;
 		}
 		else
 		{
-			m_rpmL = mid-absRpm;
-			m_rpmR = mid+absRpm;
+			m_rpmL = -absRpm;
+			m_rpmR = absRpm;
 		}
+
+		m_dT.m_z = 0.0;
+		m_dRot.m_x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
+	}
+	else if(m_rpmL != m_rpmR)
+	{
+		m_dT.m_z = 0.0;
+		m_dRot.m_x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
+	}
+	else
+	{
+		m_dT.m_z = ((double)m_rpmL) * tBase * m_wheelR * 2 * PI;
+		m_dRot.m_x = 0.0;
 	}
 
-	vDouble3 dT;
-	dT.init();
-	dT.m_y = m_rpmL * m_wheelR * dTime * tBase;
-
-	//TODO
-//	m_pGPS->setSpeed(dT);
+	m_pGPS->setSpeed(&m_dT,&m_dRot);
+	LOG_I("dZ="<<m_dT.m_z<<" dYaw="<<m_dRot.m_x);
 }
 
 void HM_base::cmd(void)

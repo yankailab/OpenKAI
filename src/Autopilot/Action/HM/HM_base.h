@@ -45,7 +45,9 @@ public:
 	uint8_t m_ctrlB1;
 
 	double	m_wheelR;
-	uint64_t m_lastUpdateGPS;
+	double	m_treadW;
+	vDouble3 m_dT;
+	vDouble3 m_dRot;
 
 };
 

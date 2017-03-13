@@ -134,9 +134,9 @@ public:
 	LL_POS	m_initLL;
 	UTM_POS m_UTM;
 	UTM_POS m_initUTM;
-	double	m_posDiffMax;
 
 	double		m_hdg;
+	double		m_lastHdg;
 	vDouble3	m_dT;
 	vDouble3	m_dRot;
 
