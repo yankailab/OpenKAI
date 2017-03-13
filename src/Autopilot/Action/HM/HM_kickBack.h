@@ -7,13 +7,13 @@
 #include "../ActionBase.h"
 #include "HM_base.h"
 
+namespace kai
+{
+
 enum KICKBACK_SEQUENCE
 {
 	kb_station,kb_back,kb_turn
 };
-
-namespace kai
-{
 
 class HM_kickBack: public ActionBase
 {

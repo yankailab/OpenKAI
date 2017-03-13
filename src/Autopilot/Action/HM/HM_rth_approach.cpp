@@ -6,10 +6,16 @@ namespace kai
 HM_rth_approach::HM_rth_approach()
 {
 	m_pHM = NULL;
-	m_pAM = NULL;
+	m_pMN = NULL;
+	m_pGPS = NULL;
 
-	m_steerP = 0.0;
-	m_pBase = NULL;
+	m_rpmSteer = 0.0;
+	m_rpmT = 0.0;
+	m_targetX = 0.5;
+	m_rTargetX = 0.05;
+	m_pTarget = NULL;
+	m_iTargetClass = 0;
+	m_targetName = "";
 
 }
 
@@ -23,8 +29,12 @@ bool HM_rth_approach::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("steerP", &m_steerP));
-	F_INFO(pK->v("targetClass", &m_iBaseClass));
+	F_INFO(pK->v("rpmT", &m_rpmT));
+	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
+	F_INFO(pK->v("targetX", &m_targetX));
+	F_INFO(pK->v("rTargetX", &m_rTargetX));
+	F_INFO(pK->v("iTargetClass", &m_iTargetClass));
+	F_INFO(pK->v("targetName", &m_targetName));
 
 	return true;
 }
@@ -33,15 +43,24 @@ bool HM_rth_approach::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
-	string iName;
 
-	iName = "";
+	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_MatrixNet", &iName));
+	m_pMN = (_MatrixNet*) (pK->root()->getChildInstByName(&iName));
+
+	if (!m_pMN)
+	{
+		LOG_E("_MatrixNet not found");
+		return false;
+	}
 
 	return true;
 }
@@ -51,55 +70,89 @@ void HM_rth_approach::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pObs);
 	NULL_(m_pAM);
-	IF_(!isActive());
+	NULL_(m_pMN);
+	if(!isActive())
+	{
+		m_pMN->bSetActive(false);
+		return;
+	}
 
-	uint64_t tNow = get_time_usec();
+	m_pMN->bSetActive(true);
 
-//	if (m_pMN->bFound(m_iBaseClass))
-//	{
-//
-//	}
-//
-//	m_pHM->m_rpmL = m_rpmSteer;
-//	m_pHM->m_rpmR = -m_rpmSteer;
+	m_pTarget = NULL;
+	int i;
+	for (i = 0; i < m_pMN->size(); i++)
+	{
+		OBJECT* pObj = m_pMN->get(i, 0);
+		IF_CONT(!pObj);
+		if(m_targetName=="")
+		{
+			IF_CONT(pObj->m_iClass != m_iTargetClass);
+		}
+		else
+		{
+			IF_CONT(pObj->m_name != m_targetName);
+		}
 
-	//decide which direction to turn based on previous actions' decision
-//	if (m_rpmSteer == 0)
-//	{
-//		m_rpmSteer = m_steerP;
-//		if (m_pHM->m_motorPwmL < m_pHM->m_motorPwmR)
-//		{
-//			m_rpmSteer = -m_steerP;
-//		}
-//		else if (m_pHM->m_motorPwmL == m_pHM->m_motorPwmR)
-//		{
-//			//decide direction by obstacles in left and right
-//			double dL = m_pObs->dist(&m_obsBoxL, NULL);
-//			double dR = m_pObs->dist(&m_obsBoxR, NULL);
-//
-//			if (dL > dR)
-//				m_rpmSteer = -m_steerP;
-//		}
-//	}
+		if (!m_pTarget)
+		{
+			m_pTarget = pObj;
+			continue;
+		}
 
+		if (m_pTarget->m_prob < pObj->m_prob)
+		{
+			m_pTarget = pObj;
+			continue;
+		}
+	}
 
+	if(!m_pTarget)
+	{
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
+		return;
+	}
+
+	m_pHM->m_bSpeaker = true;
+
+	double pX = m_targetX - m_pTarget->m_fBBox.midX();
+	if(abs(pX) > m_rTargetX)
+	{
+		int rpmSteer = m_rpmSteer * pX;
+		m_pHM->m_rpmL = -rpmSteer;
+		m_pHM->m_rpmR = rpmSteer;
+		return;
+	}
+
+	m_pHM->m_rpmL = m_rpmT;
+	m_pHM->m_rpmR = m_rpmT;
 }
 
 bool HM_rth_approach::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
+	NULL_F(pMat);
+	IF_F(pMat->empty());
 
-	string msg = "HM: rpmL=" + i2str(m_pHM->m_rpmL) + ", rpmR="
-			+ i2str(m_pHM->m_rpmR);
+	string msg;
+	if (isActive())
+		msg = "* ";
+	else
+		msg = "- ";
+	msg += *this->getName();
+
+	if(m_pTarget)
+		msg += ": dist=" + f2str(m_pTarget->m_dist);
 	pWin->addMsg(&msg);
 
-//	IF_T(m_pTarget==NULL);
-//	Mat* pMat = pWin->getFrame()->getCMat();
-//	circle(*pMat, Point(m_pTarget->m_bbox.midX(), m_pTarget->m_bbox.midY()), 10,
-//			Scalar(0, 0, 255), 2);
+	NULL_T(m_pTarget);
+	Rect r;
+	vInt42rect(&m_pTarget->m_bbox, &r);
+	rectangle(*pMat, r, Scalar(0, 0, 255), 2);
 
 	return true;
 }

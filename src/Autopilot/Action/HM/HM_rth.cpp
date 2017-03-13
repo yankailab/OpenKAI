@@ -78,11 +78,11 @@ void HM_rth::update(void)
 	}
 
 	//Heading towards approach pos
-	double dH = dHdg(pNow->m_hdg, m_pKB->m_wpApproach.m_hdg);
-	if(dH > m_dHdg)
+	UTM_POS dPos = m_pKB->m_wpApproach - *pNow;
+	if(abs(dPos.m_hdg) > m_dHdg)
 	{
 		m_rpmSteer = abs(m_rpmSteer);
-		if(dH < 0)
+		if(dPos.m_hdg < 0)
 			m_rpmSteer *= -1;
 
 		m_pHM->m_rpmL = m_rpmSteer;

@@ -6,7 +6,6 @@
 #include "HM_base.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_MatrixNet.h"
-#include "../../../Navigation/_Obstacle.h"
 
 namespace kai
 {
@@ -24,16 +23,17 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_Obstacle* m_pObs;
 	_MatrixNet* m_pMN;
+	_GPS* m_pGPS;
 
-	double	m_steerP;
+	int		m_rpmT;
 	int		m_rpmSteer;
+	double	m_targetX;
+	double	m_rTargetX;
+	OBJECT* m_pTarget;
+	int		m_iTargetClass;
+	string	m_targetName;
 
-	vDouble2 m_basePos;
-	double	m_baseDist;
-	int		m_iBaseClass;
-	OBJECT* m_pBase;
 
 };
 

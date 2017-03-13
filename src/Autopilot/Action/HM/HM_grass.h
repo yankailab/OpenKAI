@@ -7,13 +7,13 @@
 #include "../ActionBase.h"
 #include "HM_base.h"
 
+namespace kai
+{
+
 enum GRASSTURN_SEQUENCE
 {
 	gt_grass,gt_timerSet,gt_turn,gt_randomTurn
 };
-
-namespace kai
-{
 
 class HM_grass: public ActionBase
 {

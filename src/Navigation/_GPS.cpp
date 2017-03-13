@@ -24,10 +24,10 @@ _GPS::_GPS()
 	m_apmMode = 0;
 	m_posDiffMax = 10.0;
 
+	m_hdg = 1000.0;
 	m_dT.m_x = 1000;
 	m_dT.m_y = 1000;
 	m_dT.m_z = 1000;
-
 	m_dRot.m_x = 1000;
 	m_dRot.m_y = 1000;
 	m_dRot.m_z = 1000;
@@ -242,6 +242,8 @@ void _GPS::getMavGPS(void)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
+
+
 
 	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	setLL(&m_LL);

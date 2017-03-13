@@ -126,13 +126,23 @@ void _ImageNet::detect(void)
 	for (int i = 0; i < m_iObj; i++)
 	{
 		OBJECT* pObj = &m_pObj[i];
-		IF_CONT(!pObj->m_bClassify);
-
 		pObj->m_camSize.m_x = gRGBA.cols;
 		pObj->m_camSize.m_y = gRGBA.rows;
 		pObj->f2iBBox();
 		IF_CONT(pObj->m_bbox.area() <= 0);
-		IF_CONT(pObj->m_bbox.area() > m_maxPix);
+		if(pObj->m_bbox.area() > m_maxPix)
+		{
+			LOG_E("Image size exceeds the maxPix for ImageNet");
+			continue;
+		}
+
+		if(!pObj->m_bClassify)
+		{
+			pObj->m_frameID = -1;
+			pObj->m_iClass = -1;
+			pObj->m_name = "";
+			continue;
+		}
 
 		vInt42rect(&pObj->m_bbox, &bb);
 		gBB = GpuMat(gRGBA, bb);

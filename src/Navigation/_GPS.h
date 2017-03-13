@@ -80,8 +80,8 @@ struct UTM_POS
 		dPos.m_easting = this->m_easting - rPos.m_easting;
 		dPos.m_northing = this->m_northing - rPos.m_northing;
 		dPos.m_alt = this->m_alt - rPos.m_alt;
-		dPos.m_hdg = this->m_hdg - rPos.m_hdg;
 		dPos.m_zone = this->m_zone;
+		dPos.m_hdg = dHdg(rPos.m_hdg, this->m_hdg);
 
 		return dPos;
 	}
@@ -136,8 +136,9 @@ public:
 	UTM_POS m_initUTM;
 	double	m_posDiffMax;
 
-	vDouble3 m_dT;
-	vDouble3 m_dRot;
+	double		m_hdg;
+	vDouble3	m_dT;
+	vDouble3	m_dRot;
 
 
 };

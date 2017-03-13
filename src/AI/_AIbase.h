@@ -39,9 +39,9 @@ struct OBJECT
 		m_prob = 0;
 		m_iClass = -1;
 		m_name = "";
-		m_frameID = 0;
+		m_frameID = -1;
 		m_safety = -1;
-		m_bClassify = true;
+		m_bClassify = false;
 	}
 
 	void f2iBBox(void)

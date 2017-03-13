@@ -56,8 +56,6 @@ bool _MatrixNet::link(void)
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 
 	//create marker detection area instances
-//	int nW = ((m_area.m_z - m_area.m_x - m_w) / m_dW) + 1;
-//	int nH = ((m_area.m_w - m_area.m_y - m_h) / m_dH) + 1;
 	int nW = ((1.0 - m_w) / m_dW) + 1;
 	int nH = ((1.0 - m_h) / m_dH) + 1;
 	if (nW <= 0 || nH <= 0)
@@ -129,10 +127,32 @@ bool _MatrixNet::bFound(int iClass, double minProb, int64_t minFrameID)
 
 bool _MatrixNet::draw(void)
 {
-	IF_F(!this->_AIbase::draw());
+	IF_F(!this->_ThreadBase::draw());
+
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->getCMat();
 	IF_F(pMat->empty());
+
+	for (int i = 0; i < m_nObj; i++)
+	{
+		OBJECT* pObj = get(i, 0);
+		IF_CONT(!pObj);
+		IF_CONT(pObj->m_frameID<=0)
+
+		Rect r;
+		vInt42rect(&pObj->m_bbox, &r);
+
+		if (pObj->m_iClass>=0)
+		{
+			putText(*pMat, pObj->m_name,
+					Point(r.x + r.width / 2, r.y + r.height / 2),
+					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
+		}
+
+		Scalar colObs = m_colObs;
+		rectangle(*pMat, r, colObs, 1);
+	}
 
 	return true;
 }

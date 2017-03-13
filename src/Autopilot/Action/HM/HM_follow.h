@@ -23,8 +23,6 @@ public:
 	bool draw(void);
 
 private:
-	void active(bool bActive);
-
 	_MatrixNet*	m_pMN;
 	HM_base*	m_pHM;
 	_Obstacle* 	m_pObs;
@@ -34,7 +32,7 @@ private:
 	double		m_distMin;
 	double		m_distMax;
 	double		m_targetX;
-	uint64_t 	m_objLifetime;
+	double		m_rTargetX;
 	OBJECT* 	m_pTarget;
 	int			m_iTargetClass;
 	string		m_targetName;

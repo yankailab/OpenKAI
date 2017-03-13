@@ -14,7 +14,7 @@ HM_follow::HM_follow()
 	m_rpmSteer = 0.0;
 	m_rpmT = 0.0;
 	m_targetX = 0.5;
-	m_objLifetime = 100000;
+	m_rTargetX = 0.05;
 	m_pTarget = NULL;
 	m_iTargetClass = 0;
 	m_targetName = "";
@@ -35,9 +35,9 @@ bool HM_follow::init(void* pKiss)
 	F_INFO(pK->v("rpmT", &m_rpmT));
 	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("targetX", &m_targetX));
+	F_INFO(pK->v("rTargetX", &m_rTargetX));
 	F_INFO(pK->v("iTargetClass", &m_iTargetClass));
 	F_INFO(pK->v("targetName", &m_targetName));
-	F_INFO(pK->v("objLifetime", &m_objLifetime));
 
 	return true;
 }
@@ -62,7 +62,7 @@ bool HM_follow::link(void)
 	if (!m_pMN)
 	{
 		LOG_E("_MatrixNet not found");
-		return true;
+		return false;
 	}
 
 	return true;
@@ -120,20 +120,18 @@ void HM_follow::update(void)
 	m_pHM->m_bSpeaker = true;
 
 	double pX = m_targetX - m_pTarget->m_fBBox.midX();
-	int rpmSteer = m_rpmSteer * pX;
-
-	m_pHM->m_rpmL = -rpmSteer;
-	m_pHM->m_rpmR = rpmSteer;
+	if(abs(pX) > m_rTargetX)
+	{
+		int rpmSteer = m_rpmSteer * pX;
+		m_pHM->m_rpmL = -rpmSteer;
+		m_pHM->m_rpmR = rpmSteer;
+		return;
+	}
 
 	IF_(m_pTarget->m_dist < m_distMin);
 
-	m_pHM->m_rpmL += m_rpmT;
-	m_pHM->m_rpmR += m_rpmT;
-}
-
-void HM_follow::active(bool bActive)
-{
-
+	m_pHM->m_rpmL = m_rpmT;
+	m_pHM->m_rpmR = m_rpmT;
 }
 
 bool HM_follow::draw(void)

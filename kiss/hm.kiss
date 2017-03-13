@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -73,7 +73,7 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
@@ -128,7 +128,7 @@
 	"name":"hmIN",
 	"class":"_ImageNet",
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"FPS":30,
 	"Window":"HMview",
 	"_Stream":"ZED",
@@ -140,7 +140,7 @@
 	"labelFile":"labels.txt",
 	"nObj":128,
 	"mode":"object",
-	"maxPix":100000,
+	"maxPix":1000000,
 }
 
 {
@@ -163,6 +163,24 @@
 
 {
 	"name":"markerMN",
+	"bInst":1,
+	"bDraw":0,
+	"FPS":30,
+	"class":"_MatrixNet",
+	"_ImageNet":"hmIN",
+	"Window":"HMview",
+	"w":0.2,
+	"h":1.0,
+	"dW":0.1,
+	"dH":1.0,
+	"left":0.0,
+	"top":0.0,
+	"right":1.0,
+	"bottom":0.7,
+}
+
+{
+	"name":"stationMN",
 	"bInst":1,
 	"bDraw":0,
 	"FPS":30,
@@ -300,7 +318,7 @@
 			"rpmT":2000,
 			"rpmSteer":2000,
 			"targetX":0.5,
-			"objLifetime":100000,
+			"rTargetX":0.05,
 			"iTargetClass":0,
 			"targetName":"turf",
 			
@@ -318,6 +336,7 @@
 			"name":"grass",
 			"class":"HM_grass",
 			"bInst":1,
+			"bDraw":1,
 			"Window":"HMview",
 			"HM_base":"base",
 			"_ImageNet":"hmIN",
@@ -382,7 +401,7 @@
 			"rpmT":2500,
 			"rpmSteer":1000,
 			"rWP":0.5,
-			"dHdg":0.2,
+			"dHdg":1.0,
 
 			{
 				"name":"activeState",
@@ -402,7 +421,14 @@
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
-			"dist":0.1,
+			"_MatrixNet":"stationMN",
+			"_Obstacle":"obstacle",
+			"rpmT":2000,
+			"rpmSteer":2000,
+			"targetX":0.5,
+			"rTargetX":0.05,
+			"iTargetClass":0,
+			"targetName":"station",
 
 			{
 				"name":"activeState",
