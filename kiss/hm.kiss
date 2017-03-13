@@ -263,7 +263,7 @@
 			"wheelR":0.1,
 			"treadW":0.4,
 			"_GPS":"GPS",
-			"bMute":0,
+			"bMute":1,
 			
 			{
 				"name":"cmd",
@@ -286,14 +286,15 @@
 			"name":"kickBack",
 			"class":"HM_kickBack",
 			"bInst":1,
+			"bLog":1,
 			"Window":"HMview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_GPS":"GPS",
-			"kickBackDist":0.6,
+			"kickBackDist":0.3,
 			"rpmBack":-1500,
 			"rpmTurn":1000,
-			"targetHdg":90,
+			"targetHdg":-90,
 			
 			{
 				"name":"activeState",

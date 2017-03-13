@@ -104,6 +104,7 @@ void _GPS::update(void)
 	{
 		this->autoFPSfrom();
 
+		m_tNow = get_time_usec();
 		detect();
 
 		this->autoFPSto();
@@ -161,18 +162,20 @@ void _GPS::detect(void)
 		//estimate position
 		vDouble4 dPos = m_pZED->getAccumulatedPos();
 
-		utm.m_easting += constrain(dPos.m_x, 0.0, dT.m_x);
-		utm.m_northing += constrain(dPos.m_z, 0.0, dT.m_z);
-		utm.m_alt += constrain(dPos.m_y, 0.0, dT.m_y);
+		utm.m_easting += constrain(dPos.m_x, -dT.m_x, dT.m_x);
+		utm.m_northing += constrain(dPos.m_z, -dT.m_z, dT.m_z);
+		utm.m_alt += constrain(dPos.m_y, -dT.m_y, dT.m_y);
 		setUTM(&utm);
+
+//		LOG_I("hdg: "<<m_LL.m_hdg);
 	}
 
 	setMavGPS();
 
-	double dE = m_UTM.m_easting - m_initUTM.m_easting;
-	double dN = m_UTM.m_northing - m_initUTM.m_northing;
-	double dA = m_UTM.m_alt - m_initUTM.m_alt;
-	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
+//	double dE = m_UTM.m_easting - m_initUTM.m_easting;
+//	double dN = m_UTM.m_northing - m_initUTM.m_northing;
+//	double dA = m_UTM.m_alt - m_initUTM.m_alt;
+//	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
 }
 
 void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
@@ -237,7 +240,7 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
 
@@ -258,8 +261,10 @@ void _GPS::getMavGPS(void)
 
 	m_hdg = Hdg(m_hdg);
 
-	m_LL.m_hdg = m_hdg;
+	m_LL.m_hdg = mavHdg;//m_hdg;
 	setLL(&m_LL);
+
+	LOG_I("hdg:"<<m_LL.m_hdg);
 }
 
 void _GPS::setLL(LL_POS* pLL)
