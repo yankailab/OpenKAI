@@ -5,6 +5,8 @@ namespace kai
 _Canbus::_Canbus()
 {
 	m_pSerialPort = NULL;
+
+	m_nCanData = 0;
 }
 
 _Canbus::~_Canbus()
@@ -23,6 +25,21 @@ bool _Canbus::init(void* pKiss)
 
 	m_pSerialPort = new SerialPort();
 	IF_F(!m_pSerialPort->init(pCC));
+
+	pCC = pK->o("canbusID");
+	IF_F(pCC->empty());
+	Kiss** pItr = pCC->getChildItr();
+
+	m_nCanData = 0;
+	while (pItr[m_nCanData])
+	{
+		Kiss* pAddr = pItr[m_nCanData];
+		IF_F(m_nCanData >= N_CANDATA);
+
+		m_pCanData[m_nCanData].init();
+		F_ERROR_F(pAddr->v("addr", (int*)&(m_pCanData[m_nCanData].m_addr)));
+		m_nCanData++;
+	}
 
 	return true;
 }
@@ -80,23 +97,12 @@ void _Canbus::update(void)
 
 		this->autoFPSto();
 	}
-
 }
 
 bool _Canbus::recv()
 {
 	unsigned char inByte;
 	int byteRead;
-
-	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
-	{
-//		printf("%s",&inByte);
-	}
-//	LOG_I("Received");
-	return true;
-
-
-
 
 	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
 	{
@@ -113,7 +119,7 @@ bool _Canbus::recv()
 					== m_recvMsg.m_payloadLen + MAVLINK_HEADDER_LEN + 1)
 			{
 				//decode the command
-//				hostCommand();
+				recvMsg();
 				m_recvMsg.m_cmd = 0;
 
 				return true; //Execute one command at a time
@@ -129,7 +135,43 @@ bool _Canbus::recv()
 	}
 
 	return false;
+}
 
+void _Canbus::recvMsg(void)
+{
+	uint8_t cmd = m_recvMsg.m_pBuf[2];
+
+	if(cmd == CMD_CAN_SEND)
+	{
+		unsigned long* addr = (unsigned long*)(&m_recvMsg.m_pBuf[3]);
+
+		for(int i=0; i<m_nCanData; i++)
+		{
+			CAN_DATA* pCan = &m_pCanData[i];
+			IF_CONT(pCan->m_addr != *addr);
+
+			pCan->m_len = m_recvMsg.m_pBuf[7];
+			memcpy (pCan->m_pData, &m_recvMsg.m_pBuf[8], 8);
+			return;
+
+			LOG_I("Updated CANID:" << i2str(*addr));
+		}
+
+		LOG_I("CANID:" << i2str(*addr));
+	}
+}
+
+uint8_t* _Canbus::get(unsigned long addr)
+{
+	for(int i=0; i<m_nCanData; i++)
+	{
+		CAN_DATA* pCan = &m_pCanData[i];
+		IF_CONT(pCan->m_addr != addr);
+
+		return pCan->m_pData;
+	}
+
+	return NULL;
 }
 
 void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
@@ -143,7 +185,6 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 	m_pBuf[2] = CMD_CAN_SEND;
 
 	//Payload from here
-
 	//CAN addr
 	m_pBuf[3] = (uint8_t)addr;
 	m_pBuf[4] = (uint8_t)(addr >> 8);
@@ -157,7 +198,6 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 	{
 		m_pBuf[i + 8] = pData[i];
 	}
-
 	//Payload to here
 
 	m_pSerialPort->write(m_pBuf, len + 8);

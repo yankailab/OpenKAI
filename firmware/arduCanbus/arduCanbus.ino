@@ -6,7 +6,6 @@
 //Protocol
 #define CMD_BUF_LEN 256
 #define MAVLINK_BEGIN 0xFE
-//#define MAVLINK_HEADDER_LEN 8
 #define MAVLINK_HEADDER_LEN 3
 //temporal
 //0 START MARK
@@ -32,7 +31,7 @@ struct CMD_STREAM
 	uint8_t m_pBuf[CMD_BUF_LEN];
 };
 CMD_STREAM m_cmd;
-
+CMD_STREAM m_read;
 
 void command(void)
 {
@@ -102,10 +101,9 @@ void setup()
 {
 	Serial.begin(115200);
 
-	while (CAN_OK != CAN.begin(CAN_500KBPS))              // init can bus : baudrate = 500k
+	while (CAN_OK != CAN.begin(CAN_500KBPS))  // init can bus : baudrate = 500k
 	{
-		Serial.println("CAN BUS Shield init fail");
-		Serial.println(" Init CAN BUS Shield again");
+		Serial.println("CAN BUS Shield init fail\nInit CAN BUS Shield again");
 		delay(100);
 	}
 	Serial.println("CAN BUS Shield init ok!");
@@ -121,19 +119,24 @@ void loop()
     if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
     {
         CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
-
         unsigned int canId = CAN.getCanId();
         
-        Serial.println("-----------------------------");
-        Serial.print("ID: ");
-        Serial.println(canId, HEX);
-
-        for(int i = 0; i<len; i++)    // print the data
-        {
-            Serial.print(buf[i], HEX);
-            Serial.print("\t");
-        }
-        Serial.println();
+        Serial.write(MAVLINK_BEGIN);	//start mark
+        Serial.write(13);				//payload len
+        Serial.write(CMD_CAN_SEND);		//cmd
+        Serial.write(&canId, 4);		//addr
+        Serial.write(len);				//len
+        Serial.write(buf, 8);			//data
+        
+//        Serial.println("-----------------------------");
+//        Serial.print("ID: ");
+//        Serial.println(canId, HEX);
+//        for(int i = 0; i<len; i++)    // print the data
+//        {
+//            Serial.print(buf[i], HEX);
+//            Serial.print("\t");
+//        }
+//        Serial.println();
     }
 }
 

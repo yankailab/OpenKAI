@@ -40,6 +40,7 @@ public:
 	int m_motorRpmW;
 	bool m_bSpeaker;
 	bool m_bMute;
+	unsigned long m_canAddrStation;
 
 	uint8_t m_ctrlB0;
 	uint8_t m_ctrlB1;

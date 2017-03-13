@@ -14,6 +14,7 @@ HM_base::HM_base()
 	m_motorRpmW = 0;
 	m_bSpeaker = false;
 	m_bMute = false;
+	m_canAddrStation = 0x301;
 
 	m_maxRpmT = 65535;
 	m_maxRpmW = 2500;
@@ -44,6 +45,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("wheelR", &m_wheelR));
 	F_INFO(pK->v("treadW", &m_treadW));
 	F_INFO(pK->v("bMute", &m_bMute));
+	F_INFO(pK->v("canAddrStation", &m_canAddrStation));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -211,6 +213,7 @@ void HM_base::updateCAN(void)
 {
 	NULL_(m_pCAN);
 
+	//send
 	if(m_bMute)m_bSpeaker = false;
 
 	unsigned long addr = 0x113;
@@ -243,10 +246,20 @@ void HM_base::updateCAN(void)
 	cmd[6] = motorPwmW & bFilter;
 	cmd[7] = (motorPwmW>>8) & bFilter;
 
-	// send data:  id = 0x00, standrad frame, data len = 8, stmp: data buf
-	// CAN.sendMsgBuf(0x113, 0, 8, cmd);
-
 	m_pCAN->send(addr, 8, cmd);
+
+	//receive
+	uint8_t* pCanData = m_pCAN->get(m_canAddrStation);
+	NULL_(pCanData);
+
+	//CAN-ID301h 1byte 4bit "AC-input"
+	//1:ON-Docking/0:OFF-area
+	IF_(!((pCanData[1] >> 4) & 1));
+
+	string stateName = "HM_STATION";
+	m_pGPS->reset();
+	m_pAM->transit(&stateName);
+
 }
 
 bool HM_base::draw(void)

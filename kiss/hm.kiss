@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -42,6 +42,15 @@
 		"portName":"/dev/ttyACM0",
 		"baud":115200,
 	}
+
+	{
+		"name":"canbusID",
+		"bInst":1,
+		{
+			"addr":769,
+			"bInst":1,
+		}
+	}
 }
 
 {
@@ -74,7 +83,7 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedQuality":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
 	"bZedFlip":0,
@@ -264,6 +273,7 @@
 			"treadW":0.4,
 			"_GPS":"GPS",
 			"bMute":1,
+			"canAddrStation":769,
 			
 			{
 				"name":"cmd",

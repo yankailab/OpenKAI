@@ -32,12 +32,12 @@ bool _Automaton::init(void* pKiss)
 	//create state instances
 	Kiss** pItr = pK->getChildItr();
 
-	int i = 0;
-	while (pItr[i])
+	m_nState = 0;
+	while (pItr[m_nState])
 	{
-		Kiss* pState = pItr[i++];
-
+		Kiss* pState = pItr[m_nState];
 		IF_F(m_nState >= N_STATE);
+
 		F_ERROR_F(pState->v("state", &m_pStateName[m_nState]));
 		m_nState++;
 	}

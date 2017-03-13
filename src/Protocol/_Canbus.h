@@ -18,6 +18,8 @@
 #define CMD_CAN_SEND 0
 #define CAN_BUF 256
 
+#define N_CANDATA 256
+
 namespace kai
 {
 
@@ -27,6 +29,19 @@ struct MESSAGE
 	int m_iByte;
 	int m_payloadLen;
 	char m_pBuf[CAN_BUF];
+};
+
+struct CAN_DATA
+{
+	unsigned long	m_addr;
+	uint8_t			m_len;
+	uint8_t			m_pData[8];
+
+	void init(void)
+	{
+		m_addr = NULL;
+		m_len = 0;
+	}
 };
 
 class _Canbus: public _ThreadBase
@@ -43,20 +58,23 @@ public:
 
 	void send(unsigned long addr, unsigned char len, unsigned char* pData);
 	bool recv();
+	uint8_t* get(unsigned long addr);
 
-	MESSAGE m_recvMsg;
-
-private:
-	SerialPort* m_pSerialPort;
-
-	unsigned char m_pBuf[CAN_BUF];
-
+public:
+	void recvMsg(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_Canbus *) This)->update();
 		return NULL;
 	}
+
+	SerialPort* m_pSerialPort;
+	unsigned char m_pBuf[CAN_BUF];
+
+	MESSAGE m_recvMsg;
+	CAN_DATA m_pCanData[N_CANDATA];
+	int m_nCanData;
 
 };
 
