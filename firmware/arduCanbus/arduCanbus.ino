@@ -32,6 +32,13 @@ struct CMD_STREAM
 };
 CMD_STREAM m_cmd;
 
+union longBytes
+{
+    byte m_pByte[4];
+    long m_long;
+};
+longBytes lb;
+
 void command(void)
 {
 	int i;
@@ -118,14 +125,18 @@ void loop()
     if(CAN_MSGAVAIL == CAN.checkReceive())            // check if data coming
     {
         CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
-        unsigned int canId = CAN.getCanId();
+        lb.m_long = CAN.getCanId();
         
-        Serial.write(MAVLINK_BEGIN);	//start mark
-        Serial.write(13);				//payload len
-        Serial.write((uint8_t)CMD_CAN_SEND);		//cmd
-        Serial.write((uint8_t*)&canId, 4);		//addr
-        Serial.write(len);				//len
-        Serial.write(buf, 8);			//data
+        Serial.write(MAVLINK_BEGIN);			//start mark
+        Serial.write(13);						//payload len
+        Serial.write((uint8_t)CMD_CAN_SEND);	//cmd
+//      Serial.write((uint8_t*)&canId, 4);		//addr
+        Serial.write(lb.m_pByte[0]);
+        Serial.write(lb.m_pByte[1]);
+        Serial.write(lb.m_pByte[2]);
+        Serial.write(lb.m_pByte[3]);
+        Serial.write(len);						//len
+        Serial.write(buf, 8);					//data
         
 //        Serial.println("-----------------------------");
 //        Serial.print("ID: ");

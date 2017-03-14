@@ -157,7 +157,8 @@ void _Canbus::recvMsg(void)
 			LOG_I("Updated CANID:" << i2str(*addr));
 		}
 
-		LOG_I("CANID:" << i2str(*addr));
+//		LOG_I("CANID:" << i2str(*addr));
+		printf("CANID: %ld\n",*addr);
 	}
 }
 
