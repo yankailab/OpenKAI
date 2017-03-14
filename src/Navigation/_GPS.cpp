@@ -164,9 +164,9 @@ void _GPS::detect(void)
 		double cosH = cos(hdgRad);
 
 		vDouble4 dM = m_pZED->getAccumulatedMotion();
-		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
-		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
-		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
+//		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
+//		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
+//		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
 
 		vDouble4 dPos;
 		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
@@ -232,7 +232,7 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
+//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
 

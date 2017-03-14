@@ -256,7 +256,10 @@ void HM_base::updateCAN(void)
 	//1:ON-Docking/0:OFF-area
 	IF_(!((pCanData[1] >> 4) & 1));
 
-	string stateName = "HM_STATION";
+	string stateName = *m_pAM->getCurrentStateName();
+	IF_(stateName == "HM_KICKBACK");
+
+	stateName = "HM_STATION";
 	m_pGPS->reset();
 	m_pAM->transit(&stateName);
 
