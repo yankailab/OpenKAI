@@ -126,7 +126,9 @@ void loop()
     {
         CAN.readMsgBuf(&len, buf);    // read data,  len: data length, buf: data buf
         lb.m_long = CAN.getCanId();
-        
+
+        if(lb.m_long == 769)
+        {        
         Serial.write(MAVLINK_BEGIN);			//start mark
         Serial.write(13);						//payload len
         Serial.write((uint8_t)CMD_CAN_SEND);	//cmd
@@ -136,7 +138,7 @@ void loop()
         Serial.write(lb.m_pByte[3]);
         Serial.write(len);						//len
         Serial.write(buf, 8);					//data
-        
+        }
     }
 }
 
