@@ -23,14 +23,8 @@ _GPS::_GPS()
 	m_tNow = 0;
 	m_apmMode = 0;
 
-	m_hdg = 1000.0;
-	m_lastHdg = 1000.0;
-	m_dT.m_x = 1000;
-	m_dT.m_y = 1000;
-	m_dT.m_z = 1000;
-	m_dRot.m_x = 1000;
-	m_dRot.m_y = 1000;
-	m_dRot.m_z = 1000;
+	m_vT.init();
+	m_vRot.init();
 }
 
 _GPS::~_GPS()
@@ -49,6 +43,7 @@ bool _GPS::init(void* pKiss)
 	IF_T(pI->empty());
 	F_INFO(pI->v("lat", &m_initLL.m_lat));
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
+	F_INFO(pI->v("hdg", &m_initLL.m_hdg));
 
 	m_tStarted = get_time_usec();
 
@@ -82,7 +77,6 @@ bool _GPS::link(void)
 
 void _GPS::reset(void)
 {
-	m_hdg = 1000.0;
 	setLL(&m_initLL);
 	m_initUTM = *getUTM();
 }
@@ -115,41 +109,41 @@ void _GPS::update(void)
 
 void _GPS::detect(void)
 {
-	NULL_(m_pMavlink);
-
-	getMavGPS();
-
-	//reset init pos in mode change
-	uint32_t apmMode = m_pMavlink->m_msg.heartbeat.custom_mode;
-	if(apmMode == 0)apmMode = m_apmMode;
-	if(apmMode != m_apmMode)
+	if(m_pMavlink)
 	{
-		m_apmMode = apmMode;
-		setLL(&m_initLL);
+		getMavGPS();
 
-		if(m_pZED)
-			m_pZED->startTracking();
+		//reset init pos in mode change
+		uint32_t apmMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+		if(apmMode == 0)apmMode = m_apmMode;
+		if(apmMode != m_apmMode)
+		{
+			m_apmMode = apmMode;
+			setLL(&m_initLL);
 
-		if(m_pSF40)
-			m_pSF40->reset();
+			if(m_pZED)
+				m_pZED->startTracking();
 
-		LOG_I("ZED TRACKING START: APM mode: " + i2str(m_apmMode));
+			if(m_pSF40)
+				m_pSF40->reset();
+
+			LOG_I("ZED TRACKING START: APM mode: " + i2str(m_apmMode));
+		}
 	}
 
 	UTM_POS utm = *getUTM();
-	vDouble3 dT = m_dT * (double)this->m_dTime;
-	double hdgRad = m_LL.m_hdg * DEG_RAD;
+	vDouble3 dT = m_vT * (double)this->m_dTime;
+	vDouble3 dRot = m_vRot * (double)this->m_dTime;
+	double hdgRad = utm.m_hdg * DEG_RAD;
+	double sinH = sin(hdgRad);
+	double cosH = cos(hdgRad);
+	vDouble3 dPos;
 
 	if(m_pSF40)
 	{
-		m_pSF40->setHeading(m_LL.m_hdg);
-
 		//estimate position
-		vDouble2 dPos = m_pSF40->getPosDiff();
-
-		utm.m_easting += constrain(dPos.m_x, 0.0, dT.m_x);
-		utm.m_northing += constrain(dPos.m_y, 0.0, dT.m_z);
-		setUTM(&utm);
+//		m_pSF40->setHeading(m_LL.m_hdg);
+//		vDouble2 dPos = m_pSF40->getPosDiff();
 	}
 	else if(m_pZED)
 	{
@@ -160,27 +154,33 @@ void _GPS::detect(void)
 //		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
 //		m_pZED->setAttitude(&ypr);
 
-		double sinH = sin(hdgRad);
-		double cosH = cos(hdgRad);
-
 		vDouble4 dM = m_pZED->getAccumulatedMotion();
-//		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
-//		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
-//		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
+		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
+		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
+		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
 
-		vDouble4 dPos;
 		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
 		dPos.m_y = dM.m_y;							//Alt
 		dPos.m_z = dM.m_z * cosH - dM.m_x * sinH;	//Northing
-		dPos.m_w = 0.0;
-
-		utm.m_easting += dPos.m_x;
-		utm.m_northing += dPos.m_z;
-		utm.m_alt += dPos.m_y;
-		setUTM(&utm);
+	}
+	else
+	{
+		//purely using rpm to identify position translation
+		dPos = dT;
 	}
 
-	setMavGPS();
+	utm.m_easting += dPos.m_x;
+	utm.m_northing += dPos.m_z;
+	utm.m_alt += dPos.m_y;
+	if(!m_pMavlink)
+		utm.m_hdg += dRot.m_x;
+
+	setUTM(&utm);
+
+	if(m_pMavlink)
+	{
+		setMavGPS();
+	}
 }
 
 void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
@@ -188,8 +188,8 @@ void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
 	//dT: m/s in xyz
 	//dRot: rad/s in ypr
 
-	if(pDT)m_dT = *pDT;
-	if(pDRot)m_dRot = *pDRot;
+	if(pDT)m_vT = *pDT;
+	if(pDRot)m_vRot = *pDRot;
 }
 
 void _GPS::setMavGPS(void)
@@ -232,28 +232,11 @@ void _GPS::getMavGPS(void)
 	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
-//		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
 		return;
 	}
 
-	double mavHdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-
-	if(m_hdg > 360)
-	{
-		//set initial heading
-		m_hdg = mavHdg;
-		m_lastHdg = mavHdg;
-	}
-	else
-	{
-		vDouble3 dRot = m_dRot * (double)this->m_dTime;
-		m_hdg += constrain(mavHdg - m_lastHdg, 0.0, dRot.m_x);
-		m_lastHdg = mavHdg;
-	}
-
-	m_hdg = Hdg(m_hdg);
-
-	m_LL.m_hdg = mavHdg;//m_hdg;
+	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	setLL(&m_LL);
 
 	LOG_I("hdg:"<<m_LL.m_hdg);

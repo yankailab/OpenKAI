@@ -135,10 +135,8 @@ public:
 	UTM_POS m_UTM;
 	UTM_POS m_initUTM;
 
-	double		m_hdg;
-	double		m_lastHdg;
-	vDouble3	m_dT;
-	vDouble3	m_dRot;
+	vDouble3	m_vT;
+	vDouble3	m_vRot;
 
 
 };
