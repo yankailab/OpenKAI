@@ -130,7 +130,6 @@ void loop()
         Serial.write(MAVLINK_BEGIN);			//start mark
         Serial.write(13);						//payload len
         Serial.write((uint8_t)CMD_CAN_SEND);	//cmd
-//      Serial.write((uint8_t*)&canId, 4);		//addr
         Serial.write(lb.m_pByte[0]);
         Serial.write(lb.m_pByte[1]);
         Serial.write(lb.m_pByte[2]);
@@ -138,15 +137,6 @@ void loop()
         Serial.write(len);						//len
         Serial.write(buf, 8);					//data
         
-//        Serial.println("-----------------------------");
-//        Serial.print("ID: ");
-//        Serial.println(canId, HEX);
-//        for(int i = 0; i<len; i++)    // print the data
-//        {
-//            Serial.print(buf[i], HEX);
-//            Serial.print("\t");
-//        }
-//        Serial.println();
     }
 }
 

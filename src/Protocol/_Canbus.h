@@ -33,13 +33,13 @@ struct MESSAGE
 
 struct CAN_DATA
 {
-	unsigned long	m_addr;
+	uint32_t		m_addr;
 	uint8_t			m_len;
 	uint8_t			m_pData[8];
 
 	void init(void)
 	{
-		m_addr = NULL;
+		m_addr = 0;
 		m_len = 0;
 	}
 };

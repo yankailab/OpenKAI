@@ -32,6 +32,8 @@
 	"name":"canbus",
 	"class":"_Canbus",
 	"bInst":1,
+	"bDraw":0,
+	"bLog":0,
 	"Window":"HMview",
 	"FPS":100,	
 

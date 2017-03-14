@@ -143,22 +143,22 @@ void _Canbus::recvMsg(void)
 
 	if(cmd == CMD_CAN_SEND)
 	{
-		unsigned long* addr = (unsigned long*)(&m_recvMsg.m_pBuf[3]);
+		uint32_t* pAddr = (uint32_t*)(&m_recvMsg.m_pBuf[3]);
+		uint32_t addr = *pAddr;
 
 		for(int i=0; i<m_nCanData; i++)
 		{
 			CAN_DATA* pCan = &m_pCanData[i];
-			IF_CONT(pCan->m_addr != *addr);
+			IF_CONT(pCan->m_addr != addr);
 
 			pCan->m_len = m_recvMsg.m_pBuf[7];
 			memcpy (pCan->m_pData, &m_recvMsg.m_pBuf[8], 8);
-			return;
 
-			LOG_I("Updated CANID:" << i2str(*addr));
+			LOG_I("Updated data for CANID:" << i2str(addr));
+			return;
 		}
 
-//		LOG_I("CANID:" << i2str(*addr));
-		printf("CANID: %ld\n",*addr);
+		LOG_I("CANID:" << i2str(addr));
 	}
 }
 
