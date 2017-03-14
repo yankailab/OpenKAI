@@ -156,11 +156,11 @@ void _GPS::detect(void)
 
 		vDouble4 dM = m_pZED->getAccumulatedMotion();
 		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
-		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
-		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
+		dM.m_y = constrain(dM.m_y, 0.0, dT.m_y);	//Alt
+		dM.m_z = constrain(dM.m_z, 0.0, dT.m_z);	//Heading
 
 		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
-		dPos.m_y = dM.m_y;							//Alt
+		dPos.m_y = dM.m_y;				//Alt
 		dPos.m_z = dM.m_z * cosH - dM.m_x * sinH;	//Northing
 	}
 	else

@@ -138,7 +138,10 @@ void HM_base::updateGPS(void)
 		m_dRot.m_x = 0.0;
 	}
 
-	//m_pGPS->setSpeed(&m_dT,&m_dRot);
+	//TODO:Temporal
+	m_dT.m_z *= 1000000;
+
+	m_pGPS->setSpeed(&m_dT,&m_dRot);
 	LOG_I("dZ="<<m_dT.m_z<<" dYaw="<<m_dRot.m_x);
 }
 

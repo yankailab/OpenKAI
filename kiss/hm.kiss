@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -306,7 +306,7 @@
 			"kickBackDist":0.3,
 			"rpmBack":-1500,
 			"rpmTurn":1000,
-			"targetHdg":90,
+			"targetHdg":-90,
 			
 			{
 				"name":"activeState",
