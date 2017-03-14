@@ -20,7 +20,7 @@
 //Can-bus shield
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
-const int SPI_CS_PIN = 9;//10;
+const int SPI_CS_PIN = 10;
 MCP_CAN CAN(SPI_CS_PIN);  // Set CS pin
 
 struct CMD_STREAM
@@ -31,7 +31,6 @@ struct CMD_STREAM
 	uint8_t m_pBuf[CMD_BUF_LEN];
 };
 CMD_STREAM m_cmd;
-CMD_STREAM m_read;
 
 void command(void)
 {
@@ -123,8 +122,8 @@ void loop()
         
         Serial.write(MAVLINK_BEGIN);	//start mark
         Serial.write(13);				//payload len
-        Serial.write(CMD_CAN_SEND);		//cmd
-        Serial.write(&canId, 4);		//addr
+        Serial.write((uint8_t)CMD_CAN_SEND);		//cmd
+        Serial.write((uint8_t*)&canId, 4);		//addr
         Serial.write(len);				//len
         Serial.write(buf, 8);			//data
         
