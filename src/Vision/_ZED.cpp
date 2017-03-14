@@ -31,7 +31,7 @@ _ZED::_ZED()
 	m_mMotion.setIdentity(4,4);
 	m_trackState = track_idle;
 
-	setHeading(0);
+//	setHeading(0);
 }
 
 _ZED::~_ZED()
@@ -241,12 +241,7 @@ void _ZED::zedTrackReset(void)
 		m_trackState = tracking;
 }
 
-void _ZED::setHeading(double hdgRad)
-{
-	m_hdgRad = hdgRad;
-}
-
-vDouble4 _ZED::getAccumulatedPos(void)
+vDouble4 _ZED::getAccumulatedMotion(void)
 {
 	vDouble4 dM;
 	dM.init();
@@ -254,21 +249,12 @@ vDouble4 _ZED::getAccumulatedPos(void)
 	if(m_trackState != tracking)
 		return dM;
 
-	double E = (double)m_mMotion(0,3);  //Easting
-	double A = (double)m_mMotion(1,3);  //Alt
-	double N = (double)m_mMotion(2,3);  //Northing
-
-	double Yaw = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
+	dM.m_x = (double)m_mMotion(0,3);  //Easting
+	dM.m_y = (double)m_mMotion(1,3);  //Alt
+	dM.m_z = (double)m_mMotion(2,3);  //Northing
+//	dM.m_w = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
 
 	m_mMotion.setIdentity(4,4);
-
-	double sinH = sin(m_hdgRad);
-	double cosH = cos(m_hdgRad);
-
-	dM.m_x = E * cosH + N * sinH;	//Easting
-	dM.m_y = A;						//Alt
-	dM.m_z = N * cosH - E * sinH;	//Northing
-	dM.m_w = Yaw;
 
 	return dM;
 }

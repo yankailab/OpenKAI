@@ -68,12 +68,14 @@ bool _GPS::link(void)
 	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_ZED", &iName));
-	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
-
-	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
 	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_ZED", &iName));
+	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
+	if(m_pZED)
+		m_pZED->startTracking();
 
 	return true;
 }
@@ -136,6 +138,7 @@ void _GPS::detect(void)
 
 	UTM_POS utm = *getUTM();
 	vDouble3 dT = m_dT * (double)this->m_dTime;
+	double hdgRad = m_LL.m_hdg * DEG_RAD;
 
 	if(m_pSF40)
 	{
@@ -157,25 +160,27 @@ void _GPS::detect(void)
 //		ypr.m_z = m_pMavlink->m_msg.attitude.roll;
 //		m_pZED->setAttitude(&ypr);
 
-		m_pZED->setHeading(m_LL.m_hdg * DEG_RAD);
+		double sinH = sin(hdgRad);
+		double cosH = cos(hdgRad);
 
-		//estimate position
-		vDouble4 dPos = m_pZED->getAccumulatedPos();
+		vDouble4 dM = m_pZED->getAccumulatedMotion();
+		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
+		dM.m_y = constrain(dM.m_z, 0.0, dT.m_z);	//Alt
+		dM.m_z = constrain(dM.m_y, 0.0, dT.m_y);	//Heading
 
-		utm.m_easting += constrain(dPos.m_x, -dT.m_x, dT.m_x);
-		utm.m_northing += constrain(dPos.m_z, -dT.m_z, dT.m_z);
-		utm.m_alt += constrain(dPos.m_y, -dT.m_y, dT.m_y);
+		vDouble4 dPos;
+		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
+		dPos.m_y = dM.m_y;							//Alt
+		dPos.m_z = dM.m_z * cosH - dM.m_x * sinH;	//Northing
+		dPos.m_w = 0.0;
+
+		utm.m_easting += dPos.m_x;
+		utm.m_northing += dPos.m_z;
+		utm.m_alt += dPos.m_y;
 		setUTM(&utm);
-
-//		LOG_I("hdg: "<<m_LL.m_hdg);
 	}
 
 	setMavGPS();
-
-//	double dE = m_UTM.m_easting - m_initUTM.m_easting;
-//	double dN = m_UTM.m_northing - m_initUTM.m_northing;
-//	double dA = m_UTM.m_alt - m_initUTM.m_alt;
-//	LOG_I("Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA));
 }
 
 void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
@@ -185,38 +190,25 @@ void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
 
 	if(pDT)m_dT = *pDT;
 	if(pDRot)m_dRot = *pDRot;
-
-//	double hdgRad = m_LL.m_hdg * DEG_RAD;
-//	double sinH = sin(hdgRad);
-//	double cosH = cos(hdgRad);
-//
-//	double dE = dT.m_x * cosH + dT.m_y * sinH;	//Easting
-//	double dN = dT.m_y * cosH - dT.m_x * sinH;	//Northing
-//
-//	UTM_POS utm = *getUTM();
-//	utm.m_easting += dE;
-//	utm.m_northing += dN;
-//	utm.m_alt += dT.m_y;
-//
-//	setUTM(&utm);
 }
 
-/*
-time_week
-time_week_ms
-lat
-lon
-alt (optional)
-hdop (optinal)
-vdop (optinal)
-vn, ve, vd (optional)
-speed_accuracy (optional)
-horizontal_accuracy (optional)
-satellites_visible <-- required
-fix_type <-- required
- */
 void _GPS::setMavGPS(void)
 {
+	/*
+	time_week
+	time_week_ms
+	lat
+	lon
+	alt (optional)
+	hdop (optinal)
+	vdop (optinal)
+	vn, ve, vd (optional)
+	speed_accuracy (optional)
+	horizontal_accuracy (optional)
+	satellites_visible <-- required
+	fix_type <-- required
+	 */
+
 	NULL_(m_pMavlink);
 
 	mavlink_gps_input_t mavGPS;
@@ -326,7 +318,6 @@ bool _GPS::draw(void)
 	msg = "Dist: X=" + f2str(dX) + ", Y=" + f2str(dY) + ", Z=" + f2str(dZ);
 	pWin->addMsg(&msg);
 	pWin->tabPrev();
-
 
 	return true;
 }

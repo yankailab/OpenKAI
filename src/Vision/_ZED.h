@@ -38,10 +38,9 @@ public:
 
 	void startTracking(void);
 	void stopTracking(void);
-	vDouble4 getAccumulatedPos(void);
+	vDouble4 getAccumulatedMotion(void);
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
-	void setHeading(double hdgRad);
 
 private:
 	void zedTrackReset(void);
@@ -66,7 +65,6 @@ public:
 	int m_zedConfidence;
 
 	tracking_status m_trackState;
-    double	m_hdgRad;
     Eigen::Matrix4f m_mMotion;
 
 
