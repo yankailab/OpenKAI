@@ -116,6 +116,7 @@ void HM_follow::update(void)
 
 	NULL_(m_pTarget);
 	IF_(m_pTarget->m_dist > m_distMax);
+	IF_(m_pTarget->m_dist < m_distMin);
 
 	m_pHM->m_bSpeaker = true;
 
@@ -127,8 +128,6 @@ void HM_follow::update(void)
 		m_pHM->m_rpmR = rpmSteer;
 		return;
 	}
-
-	IF_(m_pTarget->m_dist < m_distMin);
 
 	m_pHM->m_rpmL = m_rpmT;
 	m_pHM->m_rpmR = m_rpmT;
