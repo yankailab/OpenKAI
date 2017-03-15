@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -163,14 +163,14 @@
 	"class":"_MatrixNet",
 	"_ImageNet":"hmIN",
 	"Window":"HMview",
-	"w":0.2,
-	"h":1.0,
+	"w":0.1,
+	"h":0.15,
 	"dW":0.1,
-	"dH":1.0,
+	"dH":0.15,
 	"left":0.0,
 	"top":0.0,
 	"right":1.0,
-	"bottom":0.7,
+	"bottom":0.5,
 }
 
 {
@@ -303,7 +303,7 @@
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_GPS":"GPS",
-			"kickBackDist":0.3,
+			"kickBackDist":0.6,
 			"rpmBack":-1500,
 			"rpmTurn":1000,
 			"targetHdg":-90,
@@ -331,11 +331,11 @@
 			"_Obstacle":"obstacle",
 			"distMin":1.0,
 			"distMax":10.0,
-			"rpmT":2000,
-			"rpmSteer":2000,
+			"rpmT":3000,
+			"rpmSteer":5000,
 			"targetX":0.5,
-			"rTargetX":0.05,
-			"iTargetClass":0,
+			"rTargetX":0.2,
+			"iTargetClass":1,
 			"targetName":"turf",
 			
 			{
@@ -358,11 +358,11 @@
 			"_ImageNet":"hmIN",
 			"_Automaton":"automaton",
 			"rpmSteer":1500,
-			"turnTimer":2800000,
+			"turnTimer":0,
 			"iGrassClass":1,
-			"minProb":0.5,
-			"tTurnRandRange":200000,
-			"nTurnRand":5,
+			"minProb":0.1,
+			"tTurnRandRange":300000,
+			"nTurnRand":10,
 			
 			{
 				"name":"activeState",
@@ -380,28 +380,28 @@
 			{
 				"name":"grassBoxL",
 				"bInst":1,
-				"left":0.0,
-				"top":0.6,
-				"right":0.2,
-				"bottom":0.76,
+				"left":0.10,
+				"top":0.84,
+				"right":0.20,
+				"bottom":1.0,
 			}			
 			
 			{
 				"name":"grassBoxF",
 				"bInst":1,
-				"left":0.4,
-				"top":0.6,
-				"right":0.6,
-				"bottom":0.76,
+				"left":0.51,
+				"top":0.78,
+				"right":0.61,
+				"bottom":0.83,
 			}			
 
 			{
 				"name":"grassBoxR",
 				"bInst":1,
-				"left":0.8,
-				"top":0.6,
+				"left":0.9,
+				"top":0.84,
 				"right":1.0,
-				"bottom":0.76,
+				"bottom":0.92,
 			}
 		}
 				
@@ -465,7 +465,7 @@
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
 			"_MatrixNet":"markerMN",
-			"alertDist":0.8,
+			"alertDist":1.2,
 			"rpmSteer":2000,
 			"markerTurnTimer":5000000,
 			"iMarkerClass":1,
@@ -476,16 +476,16 @@
 				"bInst":1,
 				"left":0.0,
 				"top":0.25,
-				"right":0.25,
-				"bottom":0.825,
+				"right":0.169,
+				"bottom":1.0,
 			}			
 			
 			{
 				"name":"obsBoxF",
 				"bInst":1,
-				"left":0.269,
+				"left":0.17,
 				"top":0.25,
-				"right":0.93,
+				"right":0.929,
 				"bottom":0.825,
 			}
 			
@@ -495,7 +495,7 @@
 				"left":0.93,
 				"top":0.25,
 				"right":1.0,
-				"bottom":0.825,
+				"bottom":0.92,
 			}			
 			
 			{
