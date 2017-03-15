@@ -21,7 +21,7 @@
 //Can-bus shield
 // the cs pin of the version after v1.1 is default to D9
 // v0.9b and v1.0 is default D10
-const int SPI_CS_PIN = 10;
+const int SPI_CS_PIN = 9;
 MCP_CAN CAN(SPI_CS_PIN);  // Set CS pin
 
 struct CMD_STREAM
@@ -109,9 +109,9 @@ bool receive(void)
 
 void setup()
 {
-	pinMode(A11,OUTPUT);
-	pinMode(A12,OUTPUT);
-	pinMode(A13,OUTPUT);
+	pinMode(11,OUTPUT);
+	pinMode(12,OUTPUT);
+	pinMode(13,OUTPUT);
 
 	Serial.begin(115200);
 
