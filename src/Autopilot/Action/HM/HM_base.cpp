@@ -120,16 +120,16 @@ void HM_base::updateGPS(void)
 		int mid = (m_rpmL + m_rpmR)/2;
 		int absRpm = abs(m_rpmL - mid);
 
-		if(m_rpmL > m_rpmR)
-		{
-			m_rpmL = absRpm;
-			m_rpmR = -absRpm;
-		}
-		else
-		{
-			m_rpmL = -absRpm;
-			m_rpmR = absRpm;
-		}
+//		if(m_rpmL > m_rpmR)
+//		{
+//			m_rpmL = absRpm;
+//			m_rpmR = -absRpm;
+//		}
+//		else
+//		{
+//			m_rpmL = -absRpm;
+//			m_rpmR = absRpm;
+//		}
 
 		m_dT.m_z = 0.0;
 		m_dRot.m_x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
