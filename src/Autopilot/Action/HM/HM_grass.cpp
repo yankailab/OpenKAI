@@ -152,12 +152,16 @@ void HM_grass::update(void)
 		//out of grass ahead, set timer for delayed turning
 		double probL = m_pGrassL->m_prob;
 		double probR = m_pGrassR->m_prob;
-		if(m_pGrassL->m_iClass != m_iGrassClass)probL = 0;
-		if(m_pGrassR->m_iClass != m_iGrassClass)probR = 0;
+		if(m_pGrassL->m_iClass != m_iGrassClass)probL = 0.0;
+		if(m_pGrassR->m_iClass != m_iGrassClass)probR = 0.0;
 
-		m_rpmSteer = abs(m_rpmSteer);
-		if (probL > probR)
-			m_rpmSteer *= -1;
+		//if both sides are unknown, turn to the last direction
+		if(m_pGrassL->m_iClass == m_iGrassClass || m_pGrassR->m_iClass == m_iGrassClass)
+		{
+			m_rpmSteer = abs(m_rpmSteer);
+			if (probL > probR)
+				m_rpmSteer *= -1;
+		}
 
 		m_tTurnSet = tNow;
 		m_sequence = gt_timerSet;
