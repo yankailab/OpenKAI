@@ -272,7 +272,7 @@ void HM_base::updateCAN(void)
 		m_pCAN->pinOut(m_pinLEDrth,1);
 		m_pCAN->pinOut(m_pinLEDfollow,0);
 	}
-	else if(stateName=="HM_FOLLOW")
+	else if(stateName=="HM_FOLLOWME")
 	{
 		m_pCAN->pinOut(m_pinLEDwork,0);
 		m_pCAN->pinOut(m_pinLEDrth,0);
