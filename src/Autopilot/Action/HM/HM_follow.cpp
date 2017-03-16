@@ -125,12 +125,11 @@ void HM_follow::update(void)
 		int rpmSteer = m_rpmSteer * pX;
 		m_pHM->m_rpmL = -rpmSteer;
 		m_pHM->m_rpmR = rpmSteer;
-		return;
 	}
 
 	IF_(m_pTarget->m_dist < m_distMin);
-	m_pHM->m_rpmL = m_rpmT;
-	m_pHM->m_rpmR = m_rpmT;
+	m_pHM->m_rpmL += m_rpmT;
+	m_pHM->m_rpmR += m_rpmT;
 }
 
 bool HM_follow::draw(void)

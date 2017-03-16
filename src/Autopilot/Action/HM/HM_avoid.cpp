@@ -118,21 +118,24 @@ void HM_avoid::update(void)
 		m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
 		IF_(m_distM > m_alertDist);
 
+		//do nothing if already in turning
+		IF_(m_pHM->m_rpmL != m_pHM->m_rpmR);
+
 		//decide which direction to turn based on previous actions' decision
 		m_rpmSteer = abs(m_rpmSteer);
-		if (m_pHM->m_rpmL < m_pHM->m_rpmR)
-		{
-			m_rpmSteer *= -1;
-		}
-		else if (m_pHM->m_rpmL == m_pHM->m_rpmR)
-		{
+//		if (m_pHM->m_rpmL < m_pHM->m_rpmR)
+//		{
+//			m_rpmSteer *= -1;
+//		}
+//		else if (m_pHM->m_rpmL == m_pHM->m_rpmR)
+//		{
 			//decide direction by obstacles in left and right
 			double dL = m_pObs->dist(&m_obsBoxL, NULL);
 			double dR = m_pObs->dist(&m_obsBoxR, NULL);
 
 			if (dL > dR)
 				m_rpmSteer *= -1;
-		}
+//		}
 
 		//if found marker, start turn for the timer duration
 		if (m_pMN->bFound(m_iMarkerClass, m_minProb, 0))
