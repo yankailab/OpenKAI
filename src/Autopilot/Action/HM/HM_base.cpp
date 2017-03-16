@@ -24,9 +24,9 @@ HM_base::HM_base()
 	m_wheelR = 0.1;
 	m_treadW = 0.4;
 
-	m_pinLEDwork = 0;
-	m_pinLEDrth = 0;
-	m_pinLEDfollow = 0;
+	m_pinLEDl = 11;
+	m_pinLEDm = 12;
+	m_pinLEDr = 13;
 
 	m_dT.init();
 	m_dRot.init();
@@ -50,9 +50,9 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("treadW", &m_treadW));
 	F_INFO(pK->v("bMute", &m_bMute));
 	F_INFO(pK->v("canAddrStation", &m_canAddrStation));
-	F_INFO(pK->v("pinLEDwork", (int*)&m_pinLEDwork));
-	F_INFO(pK->v("pinLEDrth", (int*)&m_pinLEDrth));
-	F_INFO(pK->v("pinLEDfollow", (int*)&m_pinLEDfollow));
+	F_INFO(pK->v("pinLEDl", (int*)&m_pinLEDl));
+	F_INFO(pK->v("pinLEDm", (int*)&m_pinLEDm));
+	F_INFO(pK->v("pinLEDr", (int*)&m_pinLEDr));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -260,35 +260,35 @@ void HM_base::updateCAN(void)
 
 	//status LED
 	string stateName = *m_pAM->getCurrentStateName();
-	if(stateName=="HM_WORK")
+	if(stateName=="HM_WORK" || stateName=="HM_RTH")
 	{
-		m_pCAN->pinOut(m_pinLEDwork,1);
-		m_pCAN->pinOut(m_pinLEDrth,0);
-		m_pCAN->pinOut(m_pinLEDfollow,0);
-	}
-	else if(stateName=="HM_RTH")
-	{
-		m_pCAN->pinOut(m_pinLEDwork,0);
-		m_pCAN->pinOut(m_pinLEDrth,1);
-		m_pCAN->pinOut(m_pinLEDfollow,0);
+		m_pCAN->pinOut(m_pinLEDl,0);
+		m_pCAN->pinOut(m_pinLEDm,1);
+		m_pCAN->pinOut(m_pinLEDr,0);
 	}
 	else if(stateName=="HM_FOLLOWME")
 	{
-		m_pCAN->pinOut(m_pinLEDwork,0);
-		m_pCAN->pinOut(m_pinLEDrth,0);
-		m_pCAN->pinOut(m_pinLEDfollow,1);
+		m_pCAN->pinOut(m_pinLEDl,1);
+		m_pCAN->pinOut(m_pinLEDm,0);
+		m_pCAN->pinOut(m_pinLEDr,0);
+	}
+	else if(stateName=="HM_STANDBY")
+	{
+		m_pCAN->pinOut(m_pinLEDl,0);
+		m_pCAN->pinOut(m_pinLEDm,0);
+		m_pCAN->pinOut(m_pinLEDr,1);
 	}
 	else if(stateName=="HM_KICKBACK")
 	{
-		m_pCAN->pinOut(m_pinLEDwork,1);
-		m_pCAN->pinOut(m_pinLEDrth,1);
-		m_pCAN->pinOut(m_pinLEDfollow,1);
+		m_pCAN->pinOut(m_pinLEDl,1);
+		m_pCAN->pinOut(m_pinLEDm,1);
+		m_pCAN->pinOut(m_pinLEDr,1);
 	}
 	else
 	{
-		m_pCAN->pinOut(m_pinLEDwork,0);
-		m_pCAN->pinOut(m_pinLEDrth,0);
-		m_pCAN->pinOut(m_pinLEDfollow,0);
+		m_pCAN->pinOut(m_pinLEDl,0);
+		m_pCAN->pinOut(m_pinLEDm,0);
+		m_pCAN->pinOut(m_pinLEDr,0);
 	}
 
 	//receive

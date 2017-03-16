@@ -50,9 +50,9 @@ public:
 	vDouble3 m_dT;
 	vDouble3 m_dRot;
 
-	uint8_t m_pinLEDwork;
-	uint8_t m_pinLEDrth;
-	uint8_t m_pinLEDfollow;
+	uint8_t m_pinLEDl;
+	uint8_t m_pinLEDm;
+	uint8_t m_pinLEDr;
 
 
 };
