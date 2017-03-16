@@ -134,6 +134,14 @@ void HM_grass::update(void)
 
 	if(m_sequence == gt_grass)
 	{
+		//standby until ImageNet is ready
+		if(m_pGrassF->m_iClass < 0)
+		{
+			m_pHM->m_rpmL = 0;
+			m_pHM->m_rpmR = 0;
+			return;
+		}
+
 		//on grass, keep going
 		if(m_pGrassF->m_iClass == m_iGrassClass && m_pGrassF->m_prob > m_grassMinProb)
 		{

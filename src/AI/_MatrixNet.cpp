@@ -78,9 +78,9 @@ bool _MatrixNet::link(void)
 		{
 			mO.init();
 			mO.m_fBBox.m_x = m_area.m_x + j * m_dW * aW;
-			mO.m_fBBox.m_z = m_area.m_x + mO.m_fBBox.m_x + m_w * aW;
+			mO.m_fBBox.m_z = mO.m_fBBox.m_x + m_w * aW;
 			mO.m_fBBox.m_y = m_area.m_y + i * m_dH * aH;
-			mO.m_fBBox.m_w = m_area.m_y + mO.m_fBBox.m_y + m_h * aH;
+			mO.m_fBBox.m_w = mO.m_fBBox.m_y + m_h * aH;
 
 			m_ppObj[k] = m_pIN->add(&mO);
 			NULL_F(m_ppObj[k]);
