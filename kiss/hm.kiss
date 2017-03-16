@@ -335,7 +335,7 @@
 			"distMin":1.0,
 			"distMax":10.0,
 			"rpmT":3000,
-			"rpmSteer":5000,
+			"rpmSteer":5500,
 			"targetX":0.5,
 			"rTargetX":0.2,
 			"iTargetClass":1,
