@@ -24,6 +24,10 @@ HM_base::HM_base()
 	m_wheelR = 0.1;
 	m_treadW = 0.4;
 
+	m_pinLEDwork = 0;
+	m_pinLEDrth = 0;
+	m_pinLEDfollow = 0;
+
 	m_dT.init();
 	m_dRot.init();
 }
@@ -46,6 +50,9 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("treadW", &m_treadW));
 	F_INFO(pK->v("bMute", &m_bMute));
 	F_INFO(pK->v("canAddrStation", &m_canAddrStation));
+	F_INFO(pK->v("pinLEDwork", (int*)&m_pinLEDwork));
+	F_INFO(pK->v("pinLEDrth", (int*)&m_pinLEDrth));
+	F_INFO(pK->v("pinLEDfollow", (int*)&m_pinLEDfollow));
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -251,6 +258,39 @@ void HM_base::updateCAN(void)
 
 	m_pCAN->send(addr, 8, cmd);
 
+	//status LED
+	string stateName = *m_pAM->getCurrentStateName();
+	if(stateName=="HM_WORK")
+	{
+		m_pCAN->pinOut(m_pinLEDwork,1);
+		m_pCAN->pinOut(m_pinLEDrth,0);
+		m_pCAN->pinOut(m_pinLEDfollow,0);
+	}
+	else if(stateName=="HM_RTH")
+	{
+		m_pCAN->pinOut(m_pinLEDwork,0);
+		m_pCAN->pinOut(m_pinLEDrth,1);
+		m_pCAN->pinOut(m_pinLEDfollow,0);
+	}
+	else if(stateName=="HM_FOLLOW")
+	{
+		m_pCAN->pinOut(m_pinLEDwork,0);
+		m_pCAN->pinOut(m_pinLEDrth,0);
+		m_pCAN->pinOut(m_pinLEDfollow,1);
+	}
+	else if(stateName=="HM_KICKBACK")
+	{
+		m_pCAN->pinOut(m_pinLEDwork,1);
+		m_pCAN->pinOut(m_pinLEDrth,1);
+		m_pCAN->pinOut(m_pinLEDfollow,1);
+	}
+	else
+	{
+		m_pCAN->pinOut(m_pinLEDwork,0);
+		m_pCAN->pinOut(m_pinLEDrth,0);
+		m_pCAN->pinOut(m_pinLEDfollow,0);
+	}
+
 	//receive
 	uint8_t* pCanData = m_pCAN->get(m_canAddrStation);
 	NULL_(pCanData);
@@ -258,8 +298,6 @@ void HM_base::updateCAN(void)
 	//CAN-ID301h 1byte 4bit "AC-input"
 	//1:ON-Docking/0:OFF-area
 	IF_(!((pCanData[1] >> 4) & 1));
-
-	string stateName = *m_pAM->getCurrentStateName();
 	IF_(stateName == "HM_KICKBACK");
 
 	stateName = "HM_STATION";

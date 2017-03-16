@@ -276,6 +276,9 @@
 			"_GPS":"GPS",
 			"bMute":1,
 			"canAddrStation":769,
+			"pinLEDwork":0,
+			"pinLEDrth":0,
+			"pinLEDfollow":0,
 			
 			{
 				"name":"cmd",

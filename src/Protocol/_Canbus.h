@@ -16,6 +16,7 @@
 #define MAVLINK_HEADDER_LEN 3
 
 #define CMD_CAN_SEND 0
+#define CMD_PIN_OUTPUT 2
 #define CAN_BUF 256
 
 #define N_CANDATA 256
@@ -57,6 +58,7 @@ public:
 	bool draw(void);
 
 	void send(unsigned long addr, unsigned char len, unsigned char* pData);
+	void pinOut(uint8_t pin, uint8_t output);
 	bool recv();
 	uint8_t* get(unsigned long addr);
 
@@ -70,7 +72,6 @@ public:
 	}
 
 	SerialPort* m_pSerialPort;
-	unsigned char m_pBuf[CAN_BUF];
 
 	MESSAGE m_recvMsg;
 	CAN_DATA m_pCanData[N_CANDATA];

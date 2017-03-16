@@ -180,30 +180,51 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 	IF_(len+8 > CAN_BUF);
 	IF_(!m_pSerialPort->isOpen());
 
+	unsigned char pBuf[CAN_BUF];
+
 	//Link header
-	m_pBuf[0] = 0xFE; //Mavlink begin
-	m_pBuf[1] = 5 + len;	//Payload Length
-	m_pBuf[2] = CMD_CAN_SEND;
+	pBuf[0] = 0xFE; //Mavlink begin
+	pBuf[1] = 5 + len;	//Payload Length
+	pBuf[2] = CMD_CAN_SEND;
 
 	//Payload from here
 	//CAN addr
-	m_pBuf[3] = (uint8_t)addr;
-	m_pBuf[4] = (uint8_t)(addr >> 8);
-	m_pBuf[5] = (uint8_t)(addr >> 16);
-	m_pBuf[6] = (uint8_t)(addr >> 24);
+	pBuf[3] = (uint8_t)addr;
+	pBuf[4] = (uint8_t)(addr >> 8);
+	pBuf[5] = (uint8_t)(addr >> 16);
+	pBuf[6] = (uint8_t)(addr >> 24);
 
 	//CAN data len
-	m_pBuf[7] = len;
+	pBuf[7] = len;
 
 	for (int i = 0; i < len; i++)
 	{
-		m_pBuf[i + 8] = pData[i];
+		pBuf[i + 8] = pData[i];
 	}
 	//Payload to here
 
-	m_pSerialPort->write(m_pBuf, len + 8);
+	m_pSerialPort->write(pBuf, len + 8);
 }
 
+void _Canbus::pinOut(uint8_t pin, uint8_t output)
+{
+	IF_(!m_pSerialPort->isOpen());
+
+	unsigned char pBuf[CAN_BUF];
+
+	//Link header
+	pBuf[0] = 0xFE; //Mavlink begin
+	pBuf[1] = 2;	//Payload Length
+	pBuf[2] = CMD_PIN_OUTPUT;
+
+	//Payload from here
+	//CAN addr
+	pBuf[3] = pin;
+	pBuf[4] = output;
+	//Payload to here
+
+	m_pSerialPort->write(pBuf, 5);
+}
 
 bool _Canbus::draw(void)
 {

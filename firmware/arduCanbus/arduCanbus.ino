@@ -15,6 +15,7 @@
 
 //Commands
 #define CMD_CAN_SEND 0
+#define CMD_PIN_OUTPUT 2
 #define CMD_OPERATE_MODE 1
 
 //Can-bus shield
@@ -58,8 +59,11 @@ void command(void)
 		CAN.sendMsgBuf(*addr, 0, len, pData);
 		break;
 
-	default:
+	case CMD_PIN_OUTPUT:
+		digitalWrite(m_cmd.m_pBuf[3], m_cmd.m_pBuf[4]);
+		break;
 
+	default:
 		break;
 	}
 }
@@ -105,6 +109,10 @@ bool receive(void)
 
 void setup()
 {
+	pinMode(A11,OUTPUT);
+	pinMode(A12,OUTPUT);
+	pinMode(A13,OUTPUT);
+
 	Serial.begin(115200);
 
 	while (CAN_OK != CAN.begin(CAN_500KBPS))  // init can bus : baudrate = 500k
