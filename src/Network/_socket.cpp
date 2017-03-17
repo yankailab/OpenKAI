@@ -180,11 +180,19 @@ void _socket::recv(void)
 	IF_(!m_bConnected);
 
 	int nRecv = ::recv(m_socket, m_pBuf, m_nBuf, 0);
+
 	if (nRecv == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
 		LOG_E("recv error: "<<errno);
+		close();
+		return;
+	}
+
+	if(nRecv == 0)
+	{
+		LOG_E("socket is shutdown by peer");
 		close();
 		return;
 	}
