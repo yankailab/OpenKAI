@@ -411,7 +411,7 @@
 		{
 			"name":"RTH",
 			"class":"HM_rth",
-			"bInst":1,
+			"bInst":0,
 			"Window":"HMview",
 			"HM_base":"base",
 			"HM_kickBack":"kickBack",
@@ -435,7 +435,7 @@
 		{
 			"name":"RTH",
 			"class":"HM_rth_approach",
-			"bInst":1,
+			"bInst":0,
 			"_GPS":"GPS",
 			"Window":"HMview",
 			"HM_base":"base",

@@ -30,6 +30,7 @@ HM_base::HM_base()
 
 	m_dT.init();
 	m_dRot.init();
+	m_dir = dir_forward;
 }
 
 HM_base::~HM_base()
@@ -85,6 +86,13 @@ void HM_base::update(void)
 	this->ActionBase::update();
 	NULL_(m_pAM);
 	NULL_(m_pCMD);
+
+	if(m_rpmL > m_rpmR)
+		m_dir = dir_right;
+	else if(m_rpmL < m_rpmR)
+		m_dir = dir_left;
+	else
+		m_dir = dir_forward;
 
 	updateGPS();
 	updateCAN();

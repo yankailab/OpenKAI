@@ -134,6 +134,9 @@ void HM_grass::update(void)
 
 	if(m_sequence == gt_grass)
 	{
+		//do nothing if already in turning
+		IF_(m_pHM->m_dir != dir_forward);
+
 		//standby until ImageNet is ready
 		if(m_pGrassF->m_iClass < 0)
 		{
@@ -172,6 +175,14 @@ void HM_grass::update(void)
 	{
 		//not yet the time to turn
 		IF_(tNow - m_tTurnSet < m_turnTimer);
+
+		if(m_pHM->m_dir != dir_forward)
+		{
+			m_rpmSteer = abs(m_rpmSteer);
+			if (m_pHM->m_dir == dir_left)
+				m_rpmSteer *= -1;
+		}
+
 		m_sequence = gt_turn;
 		LOG_I("Sequence: turn");
 	}

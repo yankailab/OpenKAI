@@ -7,6 +7,10 @@
 #include "../ActionBase.h"
 #include "../../../Navigation/_GPS.h"
 
+enum DIRECTION
+{
+	dir_left,dir_forward,dir_right
+};
 
 namespace kai
 {
@@ -54,6 +58,7 @@ public:
 	uint8_t m_pinLEDm;
 	uint8_t m_pinLEDr;
 
+	DIRECTION	m_dir;
 
 };
 
