@@ -90,7 +90,7 @@ bool Startup::start(Kiss* pKiss)
 	{
 		while (m_bRun)
 		{
-			draw();
+			sleep(1);
 		}
 	}
 

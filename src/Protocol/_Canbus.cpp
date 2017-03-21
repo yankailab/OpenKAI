@@ -124,6 +124,11 @@ bool _Canbus::recv()
 
 				return true; //Execute one command at a time
 			}
+			else if (m_recvMsg.m_iByte >= CAN_BUF)
+			{
+				m_recvMsg.m_cmd = 0;
+				return false;
+			}
 		}
 		else if (inByte == MAVLINK_BEGIN)
 		{
