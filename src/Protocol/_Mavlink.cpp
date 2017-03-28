@@ -386,21 +386,21 @@ void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
 	LOG_I("<- LANDING_TARGET: ANGLE_X:"<< angle_x << " ANGLE_Y:" << angle_y);
 }
 
-void _Mavlink::command_long_doSetMode(int mode)
-{
-	mavlink_message_t message;
-	mavlink_command_long_t ds;
-
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.command = MAV_CMD_DO_SET_MODE;
-	ds.param1 = mode;
-	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &ds);
-
-	writeMessage(message);
-
-	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE");
-}
+//void _Mavlink::command_long_doSetMode(int mode)
+//{
+//	mavlink_message_t message;
+//	mavlink_command_long_t ds;
+//
+//	ds.target_system = m_systemID;
+//	ds.target_component = m_targetComponentID;
+//	ds.command = MAV_CMD_DO_SET_MODE;
+//	ds.param1 = mode;
+//	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &ds);
+//
+//	writeMessage(message);
+//
+//	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE");
+//}
 
 void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
 {

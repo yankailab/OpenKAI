@@ -7,11 +7,12 @@ MAVPACKED(
 typedef struct __mavlink_meminfo_t {
  uint16_t brkval; /*< heap top*/
  uint16_t freemem; /*< free memory*/
+ uint32_t freemem32; /*< free memory (32 bit)*/
 }) mavlink_meminfo_t;
 
-#define MAVLINK_MSG_ID_MEMINFO_LEN 4
+#define MAVLINK_MSG_ID_MEMINFO_LEN 8
 #define MAVLINK_MSG_ID_MEMINFO_MIN_LEN 4
-#define MAVLINK_MSG_ID_152_LEN 4
+#define MAVLINK_MSG_ID_152_LEN 8
 #define MAVLINK_MSG_ID_152_MIN_LEN 4
 
 #define MAVLINK_MSG_ID_MEMINFO_CRC 208
@@ -23,17 +24,19 @@ typedef struct __mavlink_meminfo_t {
 #define MAVLINK_MESSAGE_INFO_MEMINFO { \
     152, \
     "MEMINFO", \
-    2, \
+    3, \
     {  { "brkval", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_meminfo_t, brkval) }, \
          { "freemem", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_meminfo_t, freemem) }, \
+         { "freemem32", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_meminfo_t, freemem32) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_MEMINFO { \
     "MEMINFO", \
-    2, \
+    3, \
     {  { "brkval", NULL, MAVLINK_TYPE_UINT16_T, 0, 0, offsetof(mavlink_meminfo_t, brkval) }, \
          { "freemem", NULL, MAVLINK_TYPE_UINT16_T, 0, 2, offsetof(mavlink_meminfo_t, freemem) }, \
+         { "freemem32", NULL, MAVLINK_TYPE_UINT32_T, 0, 4, offsetof(mavlink_meminfo_t, freemem32) }, \
          } \
 }
 #endif
@@ -46,21 +49,24 @@ typedef struct __mavlink_meminfo_t {
  *
  * @param brkval heap top
  * @param freemem free memory
+ * @param freemem32 free memory (32 bit)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_meminfo_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-                               uint16_t brkval, uint16_t freemem)
+                               uint16_t brkval, uint16_t freemem, uint32_t freemem32)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MEMINFO_LEN];
     _mav_put_uint16_t(buf, 0, brkval);
     _mav_put_uint16_t(buf, 2, freemem);
+    _mav_put_uint32_t(buf, 4, freemem32);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MEMINFO_LEN);
 #else
     mavlink_meminfo_t packet;
     packet.brkval = brkval;
     packet.freemem = freemem;
+    packet.freemem32 = freemem32;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MEMINFO_LEN);
 #endif
@@ -77,22 +83,25 @@ static inline uint16_t mavlink_msg_meminfo_pack(uint8_t system_id, uint8_t compo
  * @param msg The MAVLink message to compress the data into
  * @param brkval heap top
  * @param freemem free memory
+ * @param freemem32 free memory (32 bit)
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_meminfo_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
                                mavlink_message_t* msg,
-                                   uint16_t brkval,uint16_t freemem)
+                                   uint16_t brkval,uint16_t freemem,uint32_t freemem32)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MEMINFO_LEN];
     _mav_put_uint16_t(buf, 0, brkval);
     _mav_put_uint16_t(buf, 2, freemem);
+    _mav_put_uint32_t(buf, 4, freemem32);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MEMINFO_LEN);
 #else
     mavlink_meminfo_t packet;
     packet.brkval = brkval;
     packet.freemem = freemem;
+    packet.freemem32 = freemem32;
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), &packet, MAVLINK_MSG_ID_MEMINFO_LEN);
 #endif
@@ -111,7 +120,7 @@ static inline uint16_t mavlink_msg_meminfo_pack_chan(uint8_t system_id, uint8_t 
  */
 static inline uint16_t mavlink_msg_meminfo_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_meminfo_t* meminfo)
 {
-    return mavlink_msg_meminfo_pack(system_id, component_id, msg, meminfo->brkval, meminfo->freemem);
+    return mavlink_msg_meminfo_pack(system_id, component_id, msg, meminfo->brkval, meminfo->freemem, meminfo->freemem32);
 }
 
 /**
@@ -125,7 +134,7 @@ static inline uint16_t mavlink_msg_meminfo_encode(uint8_t system_id, uint8_t com
  */
 static inline uint16_t mavlink_msg_meminfo_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_meminfo_t* meminfo)
 {
-    return mavlink_msg_meminfo_pack_chan(system_id, component_id, chan, msg, meminfo->brkval, meminfo->freemem);
+    return mavlink_msg_meminfo_pack_chan(system_id, component_id, chan, msg, meminfo->brkval, meminfo->freemem, meminfo->freemem32);
 }
 
 /**
@@ -134,21 +143,24 @@ static inline uint16_t mavlink_msg_meminfo_encode_chan(uint8_t system_id, uint8_
  *
  * @param brkval heap top
  * @param freemem free memory
+ * @param freemem32 free memory (32 bit)
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_meminfo_send(mavlink_channel_t chan, uint16_t brkval, uint16_t freemem)
+static inline void mavlink_msg_meminfo_send(mavlink_channel_t chan, uint16_t brkval, uint16_t freemem, uint32_t freemem32)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char buf[MAVLINK_MSG_ID_MEMINFO_LEN];
     _mav_put_uint16_t(buf, 0, brkval);
     _mav_put_uint16_t(buf, 2, freemem);
+    _mav_put_uint32_t(buf, 4, freemem32);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MEMINFO, buf, MAVLINK_MSG_ID_MEMINFO_MIN_LEN, MAVLINK_MSG_ID_MEMINFO_LEN, MAVLINK_MSG_ID_MEMINFO_CRC);
 #else
     mavlink_meminfo_t packet;
     packet.brkval = brkval;
     packet.freemem = freemem;
+    packet.freemem32 = freemem32;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MEMINFO, (const char *)&packet, MAVLINK_MSG_ID_MEMINFO_MIN_LEN, MAVLINK_MSG_ID_MEMINFO_LEN, MAVLINK_MSG_ID_MEMINFO_CRC);
 #endif
@@ -162,7 +174,7 @@ static inline void mavlink_msg_meminfo_send(mavlink_channel_t chan, uint16_t brk
 static inline void mavlink_msg_meminfo_send_struct(mavlink_channel_t chan, const mavlink_meminfo_t* meminfo)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
-    mavlink_msg_meminfo_send(chan, meminfo->brkval, meminfo->freemem);
+    mavlink_msg_meminfo_send(chan, meminfo->brkval, meminfo->freemem, meminfo->freemem32);
 #else
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MEMINFO, (const char *)meminfo, MAVLINK_MSG_ID_MEMINFO_MIN_LEN, MAVLINK_MSG_ID_MEMINFO_LEN, MAVLINK_MSG_ID_MEMINFO_CRC);
 #endif
@@ -176,18 +188,20 @@ static inline void mavlink_msg_meminfo_send_struct(mavlink_channel_t chan, const
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_meminfo_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint16_t brkval, uint16_t freemem)
+static inline void mavlink_msg_meminfo_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint16_t brkval, uint16_t freemem, uint32_t freemem32)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     char *buf = (char *)msgbuf;
     _mav_put_uint16_t(buf, 0, brkval);
     _mav_put_uint16_t(buf, 2, freemem);
+    _mav_put_uint32_t(buf, 4, freemem32);
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MEMINFO, buf, MAVLINK_MSG_ID_MEMINFO_MIN_LEN, MAVLINK_MSG_ID_MEMINFO_LEN, MAVLINK_MSG_ID_MEMINFO_CRC);
 #else
     mavlink_meminfo_t *packet = (mavlink_meminfo_t *)msgbuf;
     packet->brkval = brkval;
     packet->freemem = freemem;
+    packet->freemem32 = freemem32;
 
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MEMINFO, (const char *)packet, MAVLINK_MSG_ID_MEMINFO_MIN_LEN, MAVLINK_MSG_ID_MEMINFO_LEN, MAVLINK_MSG_ID_MEMINFO_CRC);
 #endif
@@ -220,6 +234,16 @@ static inline uint16_t mavlink_msg_meminfo_get_freemem(const mavlink_message_t* 
 }
 
 /**
+ * @brief Get field freemem32 from meminfo message
+ *
+ * @return free memory (32 bit)
+ */
+static inline uint32_t mavlink_msg_meminfo_get_freemem32(const mavlink_message_t* msg)
+{
+    return _MAV_RETURN_uint32_t(msg,  4);
+}
+
+/**
  * @brief Decode a meminfo message into a struct
  *
  * @param msg The message to decode
@@ -230,6 +254,7 @@ static inline void mavlink_msg_meminfo_decode(const mavlink_message_t* msg, mavl
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
     meminfo->brkval = mavlink_msg_meminfo_get_brkval(msg);
     meminfo->freemem = mavlink_msg_meminfo_get_freemem(msg);
+    meminfo->freemem32 = mavlink_msg_meminfo_get_freemem32(msg);
 #else
         uint8_t len = msg->len < MAVLINK_MSG_ID_MEMINFO_LEN? msg->len : MAVLINK_MSG_ID_MEMINFO_LEN;
         memset(meminfo, 0, MAVLINK_MSG_ID_MEMINFO_LEN);

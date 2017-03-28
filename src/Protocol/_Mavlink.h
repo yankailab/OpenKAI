@@ -100,7 +100,7 @@ public:
 	void gps_input(mavlink_gps_input_t* pGPSinput);
 	void set_attitude_target(float* pAttitude, float* pRate, float thrust, uint8_t mask);
 	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
-	void command_long_doSetMode(int mode);
+//	void command_long_doSetMode(int mode);
 	void command_long_doSetPositionYawThrust(float steer, float thrust);
 	void distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v);
 
