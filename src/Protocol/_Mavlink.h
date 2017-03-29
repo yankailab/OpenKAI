@@ -3,7 +3,8 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../include/mavlink/common/mavlink.h"
+//#include "../include/mavlink/common/mavlink.h"
+#include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/SerialPort.h"
 #include "../UI/Window.h"
@@ -103,6 +104,7 @@ public:
 //	void command_long_doSetMode(int mode);
 	void command_long_doSetPositionYawThrust(float steer, float thrust);
 	void distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v);
+	void zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence);
 
 
 public:

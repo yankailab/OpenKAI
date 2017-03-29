@@ -10,9 +10,11 @@
 
 #include "../Base/common.h"
 #include "_VisionBase.h"
+#include "../Utility/util.h"
 
 #ifdef USE_ZED
 #include <zed/Camera.hpp>
+#include <opencv2/core/eigen.hpp>
 
 namespace kai
 {
@@ -38,9 +40,9 @@ public:
 
 	void startTracking(void);
 	void stopTracking(void);
-	vDouble4 getAccumulatedMotion(void);
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
+	bool getMotionDelta(vDouble4* pT, vDouble4* pR);
 
 private:
 	void zedTrackReset(void);

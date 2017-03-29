@@ -241,22 +241,28 @@ void _ZED::zedTrackReset(void)
 		m_trackState = tracking;
 }
 
-vDouble4 _ZED::getAccumulatedMotion(void)
+bool _ZED::getMotionDelta(vDouble4* pT, vDouble4* pR)
 {
-	vDouble4 dM;
-	dM.init();
+	IF_F(m_trackState != tracking);
 
-	if(m_trackState != tracking)
-		return dM;
+	pT->m_x = (double)m_mMotion(0,3);  //Side
+	pT->m_y = (double)m_mMotion(1,3);  //Alt
+	pT->m_z = (double)m_mMotion(2,3);  //Heading
 
-	dM.m_x = (double)m_mMotion(0,3);  //Easting
-	dM.m_y = (double)m_mMotion(1,3);  //Alt
-	dM.m_z = (double)m_mMotion(2,3);  //Northing
-//	dM.m_w = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
+	// Convert rotation matrix to euler angles
+    Eigen::Matrix3f eigenRot = m_mMotion.block(0,0,3,3);
+	cv::Mat mRot(3, 3, CV_64F);
+	cv::eigen2cv(eigenRot, mRot);
+	cv::Mat eulers(3, 1, CV_64F);
+    eulers = rot2euler(mRot);
+
+    pR->m_x = eulers.at<double>(0);
+    pR->m_y = eulers.at<double>(1);
+    pR->m_z = eulers.at<double>(2);
 
 	m_mMotion.setIdentity(4,4);
 
-	return dM;
+	return true;
 }
 
 void _ZED::setAttitude(vDouble3* pYPR)

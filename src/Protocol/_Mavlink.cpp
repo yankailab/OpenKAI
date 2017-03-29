@@ -453,6 +453,31 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, 
 	LOG_I("<- DIST_SENSOR sysID="<<m_systemID<<", d="<< ds.current_distance << ", min="<<ds.min_distance << ", max="<<ds.max_distance);
 }
 
+void _Mavlink::zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence)
+{
+	mavlink_message_t message;
+	mavlink_zed_vision_position_delta_t dZed;
+	dZed.time_usec = get_time_usec();
+	dZed.time_delta_usec = dTime;
+	dZed.angle_delta[0] = (float)pDAngle->m_x;
+	dZed.angle_delta[1] = (float)pDAngle->m_y;
+	dZed.angle_delta[2] = (float)pDAngle->m_z;
+	dZed.position_delta[0] = (float)pDPos->m_x;
+	dZed.position_delta[1] = (float)pDPos->m_y;
+	dZed.position_delta[2] = (float)pDPos->m_z;
+	dZed.confidence = (float)confidence;
+
+	mavlink_msg_zed_vision_position_delta_encode(
+			m_systemID,
+			m_targetComponentID,
+			&message,
+			&dZed);
+
+	writeMessage(message);
+	LOG_I("<- ZED_VISION_POSITION_DELTA");
+}
+
+
 bool _Mavlink::draw(void)
 {
 	IF_F(!this->BASE::draw());
