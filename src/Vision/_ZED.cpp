@@ -30,8 +30,9 @@ _ZED::_ZED()
 	m_zedTrackState = sl::zed::TRACKING_STATE::TRACKING_OFF;
 	m_mMotion.setIdentity(4,4);
 	m_trackState = track_idle;
-
-//	setHeading(0);
+	m_trackConfidence = 0;
+	m_vT.init();
+	m_vR.init();
 }
 
 _ZED::~_ZED()
@@ -58,7 +59,6 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->v("zedConfidence", &m_zedConfidence));
 
 	m_pDepth = new Frame();
-
 	return true;
 }
 
@@ -200,9 +200,14 @@ void _ZED::update(void)
 			case tracking:
 				m_zedTrackState = m_pZed->getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
 				if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
+				{
 					m_mMotion *= m;
+					m_trackConfidence = m_pZed->getTrackingConfidence();
+				}
 				else if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_LOST)
+				{
 					zedTrackReset();
+				}
 				break;
 			case track_start:
 				zedTrackReset();
@@ -231,7 +236,10 @@ void _ZED::stopTracking(void)
 
 bool _ZED::isTracking(void)
 {
-	return (m_trackState == tracking);
+	IF_T(m_trackState == tracking);
+	IF_T(m_trackState == track_start);
+
+	return false;
 }
 
 void _ZED::zedTrackReset(void)
@@ -241,28 +249,34 @@ void _ZED::zedTrackReset(void)
 		m_trackState = tracking;
 }
 
-bool _ZED::getMotionDelta(vDouble4* pT, vDouble4* pR)
+int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
 {
-	IF_F(m_trackState != tracking);
+	if(m_trackState != tracking)
+	{
+		return -1;
+	}
 
-	pT->m_x = (double)m_mMotion(0,3);  //Side
-	pT->m_y = (double)m_mMotion(1,3);  //Alt
-	pT->m_z = (double)m_mMotion(2,3);  //Heading
+	m_vT.m_x = (double)m_mMotion(0,3);  //Side
+	m_vT.m_y = (double)m_mMotion(1,3);  //Alt
+	m_vT.m_z = (double)m_mMotion(2,3);  //Heading
+	*pT = m_vT;
 
-	// Convert rotation matrix to euler angles
-    Eigen::Matrix3f eigenRot = m_mMotion.block(0,0,3,3);
-	cv::Mat mRot(3, 3, CV_64F);
-	cv::eigen2cv(eigenRot, mRot);
-	cv::Mat eulers(3, 1, CV_64F);
-    eulers = rot2euler(mRot);
+	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
+    Eigen::Quaternionf quat(mRot);
+    float3 euler = eulerAngles(quat.x(),quat.y(),quat.z(),quat.w());
+    m_vR.m_x = (double)euler.x;
+    m_vR.m_y = (double)euler.y;
+    m_vR.m_z = (double)euler.z;
 
-    pR->m_x = eulers.at<double>(0);
-    pR->m_y = eulers.at<double>(1);
-    pR->m_z = eulers.at<double>(2);
+//	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
+//  Eigen::Vector3f euler = mRot.eulerAngles(0, 1, 2);
+//  m_vR.m_x = (double)euler[0];
+//  m_vR.m_y = (double)euler[1];
+//  m_vR.m_z = (double)euler[2];
 
+    *pR = m_vR;
 	m_mMotion.setIdentity(4,4);
-
-	return true;
+	return m_trackConfidence;
 }
 
 void _ZED::setAttitude(vDouble3* pYPR)
@@ -361,11 +375,17 @@ bool _ZED::draw(void)
 		string msg;
 		pWin->tabNext();
 
-		msg = "Translation: X=" + f2str(m_mMotion(0,3)) + ", Y=" + f2str(m_mMotion(1,3)) + ", Z=" + f2str(m_mMotion(2,3));
+		msg = "Tracking confidence: " + i2str(m_trackConfidence);
 		pWin->addMsg(&msg);
 
-		double Yaw = atan2(-m_mMotion(2,0), sqrt(m_mMotion(2,1)*m_mMotion(2,1)+m_mMotion(2,2)*m_mMotion(2,2)));
-		msg = "Attitude: Yaw=" + f2str(Yaw);
+		msg = "Translation: X=" + f2str(m_vT.m_x)
+				+ ", Y=" + f2str(m_vT.m_y)
+				+ ", Z=" + f2str(m_vT.m_z);
+		pWin->addMsg(&msg);
+
+		msg = "Rotation: Yaw=" + f2str(m_vR.m_x)
+				+ ", Pitch="+ f2str(m_vR.m_y)
+				+ ", Roll="+ f2str(m_vR.m_z);
 		pWin->addMsg(&msg);
 
 		pWin->tabPrev();

@@ -42,7 +42,7 @@ public:
 	void stopTracking(void);
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
-	bool getMotionDelta(vDouble4* pT, vDouble4* pR);
+	int getMotionDelta(vDouble3* pT, vDouble3* pR);
 
 private:
 	void zedTrackReset(void);
@@ -68,7 +68,9 @@ public:
 
 	tracking_status m_trackState;
     Eigen::Matrix4f m_mMotion;
-
+    vDouble3 m_vT;
+    vDouble3 m_vR;
+    int	m_trackConfidence;
 
 	Window* m_pDepthWin;
 

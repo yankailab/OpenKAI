@@ -147,12 +147,12 @@ void _GPS::detect(void)
 	}
 	else if(m_pZED)
 	{
-		vDouble4 dM;
-		vDouble4 dR;
+		vDouble3 dM;
+		vDouble3 dR;
 		m_pZED->getMotionDelta(&dM,&dR);
-		dM.m_x = constrain(dM.m_x, 0.0, dT.m_x);	//Siding
-		dM.m_y = constrain(dM.m_y, 0.0, dT.m_y);	//Alt
-		dM.m_z = constrain(dM.m_z, 0.0, dT.m_z);	//Heading
+		dM.m_x = constrain(dM.m_x, -dT.m_x, dT.m_x);	//Siding
+		dM.m_y = constrain(dM.m_y, -dT.m_y, dT.m_y);	//Alt
+		dM.m_z = constrain(dM.m_z, -dT.m_z, dT.m_z);	//Heading
 
 		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
 		dPos.m_y = dM.m_y;							//Alt

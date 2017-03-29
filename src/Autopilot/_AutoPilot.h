@@ -17,6 +17,7 @@
 #include "Action/APMcopter/APMcopter_landing.h"
 #include "Action/APMcopter/APMcopter_guided.h"
 #include "Action/APMcopter/APMcopter_avoid.h"
+#include "Action/APMcopter/APMcopter_zedSLAM.h"
 #include "Action/APMrover/APMrover_base.h"
 #include "Action/APMrover/APMrover_follow.h"
 #include "Action/RC/RC_base.h"

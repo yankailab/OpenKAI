@@ -29,27 +29,6 @@
 }
 
 {
-	"name":"APM_depth",
-	"class":"Window",
-	"bInst":0,
-	"w":672,
-	"h":376,
-	"bFullScreen":0,
-	"bRec":0,
-	"recFile":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",	
-	"textSize":0.5,
-	"textR":0,
-	"textG":255,
-	"textB":0,
-	"textX":20,
-	"textY":20,
-	"pixTab":20,
-	"lineH":20,
-}
-
-{
 	"name":"APM_mavlink",
 	"class":"_Mavlink",
 	"bInst":1,
@@ -85,19 +64,6 @@
 	"zedConfidence":99,
 	"bFlip":0,
 }
-	
-{
-	"name":"camLanding",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":0,
-	"Window":"APM_landing",
-	"ID":0,
-	"width":1280,
-	"height":720,
-	"angleV":67.1,
-	"angleH":66.7,
-}
 
 {
 	"name":"Obstacle",
@@ -108,12 +74,13 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"dBlend":0.25;
+	"dBlend":0.25,
 	
 	{
 		"name":"medianFilter",
 		"class":"Median",
 		"bInst":1,
+		"bLog":0,
 		"windowLen":9,
 	}
 	
@@ -122,7 +89,7 @@
 {
 	"name":"imageNet",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"mode":"depth",
 	"Window":"APM_forward",
@@ -215,7 +182,6 @@
 			"bInst":1,
 			"Window":"APM_forward",
 			"_Automaton":"APMstate",
-			"activeState":"APM_CRUISE",
 			"APMcopter_base":"APMbase",
 			"_Obstacle":"Obstacle",
 			"_ZED":"ZED",
@@ -226,11 +192,20 @@
 		}
 		
 		{
+			"name":"APMzedSLAM",
+			"class":"APMcopter_zedSLAM",
+			"bInst":1,
+			"Window":"APM_forward",
+			"_Automaton":"APMstate",
+			"APMcopter_base":"APMbase",
+			"_ZED":"ZED",
+		}
+
+		{
 			"name":"APMlanding",
 			"class":"APMcopter_landing",
 			"bInst":0,
 			"Window":"APM_forward",
-			"activeState":"APM_CRUISE",
 			"APMcopter_base":"APMbase",
 			"_Stream":"ZED",
 			"_AIbase":"detectNet",

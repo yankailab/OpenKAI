@@ -25,7 +25,7 @@ bool FilterBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	F_INFO(pK->v("nTraj", (int* )&m_nTraj));
+	F_INFO(pK->v("nTraj", (int*)&m_nTraj));
 	m_nTraj = (m_nTraj < 2) ? 2 : m_nTraj;
 
 	reset();

@@ -125,7 +125,7 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"dBlend":0.25;
+	"dBlend":0.25,
 	
 	{
 		"name":"medianFilter",
