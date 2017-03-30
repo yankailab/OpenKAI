@@ -28,7 +28,7 @@ _ZED::_ZED()
 	m_angleH = 66.7;
 	m_angleV = 67.1;
 	m_zedTrackState = sl::zed::TRACKING_STATE::TRACKING_OFF;
-	m_mMotion.setIdentity(4,4);
+	m_mMotion.setIdentity(4, 4);
 	m_trackState = track_idle;
 	m_trackConfidence = 0;
 	m_vT.init();
@@ -103,8 +103,8 @@ bool _ZED::open(void)
 	// Initialize color image and depth
 	m_width = m_pZed->getImageSize().width;
 	m_height = m_pZed->getImageSize().height;
-	m_centerH = m_width/2;
-	m_centerV = m_height/2;
+	m_centerH = m_width / 2;
+	m_centerV = m_height / 2;
 
 	startTracking();
 
@@ -153,13 +153,15 @@ void _ZED::update(void)
 		GpuMat* pTmp;
 
 		// Grab frame and compute depth in FULL sensing mode
-		if (!m_pZed->grab(m_zedMode,1,1,1))
+		if (!m_pZed->grab(m_zedMode, 1, 1, 1))
 		{
 			sl::zed::Mat zLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
 			gImg = GpuMat(Size(zLeft.width, zLeft.height), CV_8UC4, zLeft.data);
 
-			sl::zed::Mat zDepth = m_pZed->normalizeMeasure_gpu(sl::zed::MEASURE::DEPTH, m_zedMinDist, m_zedMaxDist);
-			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_8UC4, zDepth.data);
+			sl::zed::Mat zDepth = m_pZed->normalizeMeasure_gpu(
+					sl::zed::MEASURE::DEPTH, m_zedMinDist, m_zedMaxDist);
+			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_8UC4,
+					zDepth.data);
 
 #ifndef USE_OPENCV4TEGRA
 			cuda::cvtColor(gImg, gImg2, CV_BGRA2BGR);
@@ -173,11 +175,11 @@ void _ZED::update(void)
 			pSrcD = &gDepth2;
 			pDestD = &gDepth;
 
-			if(m_bFlip)
+			if (m_bFlip)
 			{
 #ifndef USE_OPENCV4TEGRA
-				cuda::flip(*pSrc,*pDest,-1);
-				cuda::flip(*pSrcD,*pDestD,-1);
+				cuda::flip(*pSrc, *pDest, -1);
+				cuda::flip(*pSrcD, *pDestD, -1);
 #else
 				gpu::flip(*pSrc,*pDest,-1);
 				gpu::flip(*pSrcD,*pDestD,-1);
@@ -198,14 +200,17 @@ void _ZED::update(void)
 			switch (m_trackState)
 			{
 			case tracking:
-				m_zedTrackState = m_pZed->getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
-				if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
+				m_zedTrackState = m_pZed->getPosition(m,
+						sl::zed::MAT_TRACKING_TYPE::POSE);
+				if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
 				{
 					m_mMotion *= m;
 					m_trackConfidence = m_pZed->getTrackingConfidence();
 				}
-				else if(m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_LOST)
+				else if (m_zedTrackState
+						== sl::zed::TRACKING_STATE::TRACKING_LOST)
 				{
+					m_pZed->stopTracking();
 					zedTrackReset();
 				}
 				break;
@@ -244,38 +249,45 @@ bool _ZED::isTracking(void)
 
 void _ZED::zedTrackReset(void)
 {
-	m_mMotion.setIdentity(4,4);
-	if(m_pZed->enableTracking(m_mMotion,false))
+	m_mMotion.setIdentity(4, 4);
+	if (m_pZed->enableTracking(m_mMotion, false))
 		m_trackState = tracking;
 }
 
 int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
 {
-	if(m_trackState != tracking)
+	if (m_trackState != tracking)
 	{
 		return -1;
 	}
 
-	m_vT.m_x = (double)m_mMotion(0,3);  //Side
-	m_vT.m_y = (double)m_mMotion(1,3);  //Alt
-	m_vT.m_z = (double)m_mMotion(2,3);  //Heading
+	m_vT.m_x = (double) m_mMotion(0, 3);  //Side
+	m_vT.m_y = (double) m_mMotion(1, 3);  //Alt
+	m_vT.m_z = (double) m_mMotion(2, 3);  //Heading
 	*pT = m_vT;
 
 	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
-    Eigen::Quaternionf quat(mRot);
-    float3 euler = eulerAngles(quat.x(),quat.y(),quat.z(),quat.w());
+    Eigen::Quaternionf q(mRot);
+    float3 euler = eulerAngles(q.x(),q.y(),q.z(),q.w());
     m_vR.m_x = (double)euler.x;
     m_vR.m_y = (double)euler.y;
     m_vR.m_z = (double)euler.z;
+    if(m_vR.m_z > 0)
+    	m_vR.m_z -= M_PI;
+    else
+    	m_vR.m_z += M_PI;
 
-//	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
-//  Eigen::Vector3f euler = mRot.eulerAngles(0, 1, 2);
-//  m_vR.m_x = (double)euler[0];
-//  m_vR.m_y = (double)euler[1];
-//  m_vR.m_z = (double)euler[2];
+   	*pR = m_vR;
 
-    *pR = m_vR;
-	m_mMotion.setIdentity(4,4);
+//	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
+//	mRot.normalize();
+//	Eigen::Vector3f euler = mRot.eulerAngles(0,1,2);
+//	m_vR.m_x = (double) euler(0);
+//	m_vR.m_y = (double) euler(1);
+//	m_vR.m_z = (double) euler(2);
+//	*pR = m_vR;
+
+	m_mMotion.setIdentity(4, 4);
 	return m_trackConfidence;
 }
 
@@ -364,7 +376,7 @@ bool _ZED::draw(void)
 	Window* pWin;
 	Frame* pFrame;
 
-	if(this->BASE::draw())
+	if (this->BASE::draw())
 	{
 		IF_F(m_pBGR->empty());
 		pWin = (Window*) this->m_pWindow;
@@ -378,23 +390,21 @@ bool _ZED::draw(void)
 		msg = "Tracking confidence: " + i2str(m_trackConfidence);
 		pWin->addMsg(&msg);
 
-		msg = "Translation: X=" + f2str(m_vT.m_x)
-				+ ", Y=" + f2str(m_vT.m_y)
+		msg = "Translation: X=" + f2str(m_vT.m_x) + ", Y=" + f2str(m_vT.m_y)
 				+ ", Z=" + f2str(m_vT.m_z);
 		pWin->addMsg(&msg);
 
-		msg = "Rotation: Yaw=" + f2str(m_vR.m_x)
-				+ ", Pitch="+ f2str(m_vR.m_y)
-				+ ", Roll="+ f2str(m_vR.m_z);
+		msg = "Rotation: Yaw=" + f2str(m_vR.m_x) + ", Pitch=" + f2str(m_vR.m_y)
+				+ ", Roll=" + f2str(m_vR.m_z);
 		pWin->addMsg(&msg);
 
 		pWin->tabPrev();
 	}
 
-	if(m_pDepthWin)
+	if (m_pDepthWin)
 	{
 		pFrame = m_pDepthWin->getFrame();
-		if(pFrame && !m_pDepth->empty())
+		if (pFrame && !m_pDepth->empty())
 		{
 			pFrame->update(m_pDepth);
 		}
