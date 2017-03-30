@@ -261,21 +261,21 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
 		return -1;
 	}
 
-	m_vT.m_x = (double) m_mMotion(0, 3);  //Side
-	m_vT.m_y = (double) m_mMotion(1, 3);  //Alt
-	m_vT.m_z = (double) m_mMotion(2, 3);  //Heading
+	m_vT.x = (double) m_mMotion(0, 3);  //Side
+	m_vT.y = (double) m_mMotion(1, 3);  //Alt
+	m_vT.z = (double) m_mMotion(2, 3);  //Heading
 	*pT = m_vT;
 
 	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
     Eigen::Quaternionf q(mRot);
     float3 euler = eulerAngles(q.x(),q.y(),q.z(),q.w());
-    m_vR.m_x = (double)euler.x;
-    m_vR.m_y = (double)euler.y;
-    m_vR.m_z = (double)euler.z;
-    if(m_vR.m_z > 0)
-    	m_vR.m_z -= M_PI;
+    m_vR.x = (double)euler.x;
+    m_vR.y = (double)euler.y;
+    m_vR.z = (double)euler.z;
+    if(m_vR.z > 0)
+    	m_vR.z -= M_PI;
     else
-    	m_vR.m_z += M_PI;
+    	m_vR.z += M_PI;
 
    	*pR = m_vR;
 
@@ -296,9 +296,9 @@ void _ZED::setAttitude(vDouble3* pYPR)
 	NULL_(pYPR);
 	IF_(m_trackState != tracking);
 
-	Eigen::AngleAxisf y(pYPR->m_x, Eigen::Vector3f::UnitY());
-	Eigen::AngleAxisf p(pYPR->m_y, Eigen::Vector3f::UnitX());
-	Eigen::AngleAxisf r(pYPR->m_z, Eigen::Vector3f::UnitZ());
+	Eigen::AngleAxisf y(pYPR->x, Eigen::Vector3f::UnitY());
+	Eigen::AngleAxisf p(pYPR->y, Eigen::Vector3f::UnitX());
+	Eigen::AngleAxisf r(pYPR->z, Eigen::Vector3f::UnitZ());
 
 	Eigen::Quaternion<float> q = y * p * r;
 	Eigen::Matrix3f mRot = q.matrix();
@@ -390,12 +390,12 @@ bool _ZED::draw(void)
 		msg = "Tracking confidence: " + i2str(m_trackConfidence);
 		pWin->addMsg(&msg);
 
-		msg = "Translation: X=" + f2str(m_vT.m_x) + ", Y=" + f2str(m_vT.m_y)
-				+ ", Z=" + f2str(m_vT.m_z);
+		msg = "Translation: X=" + f2str(m_vT.x) + ", Y=" + f2str(m_vT.y)
+				+ ", Z=" + f2str(m_vT.z);
 		pWin->addMsg(&msg);
 
-		msg = "Rotation: Yaw=" + f2str(m_vR.m_x) + ", Pitch=" + f2str(m_vR.m_y)
-				+ ", Roll=" + f2str(m_vR.m_z);
+		msg = "Rotation: Yaw=" + f2str(m_vR.x) + ", Pitch=" + f2str(m_vR.y)
+				+ ", Roll=" + f2str(m_vR.z);
 		pWin->addMsg(&msg);
 
 		pWin->tabPrev();

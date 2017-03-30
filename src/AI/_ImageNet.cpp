@@ -126,8 +126,8 @@ void _ImageNet::detect(void)
 	for (int i = 0; i < m_iObj; i++)
 	{
 		OBJECT* pObj = &m_pObj[i];
-		pObj->m_camSize.m_x = gRGBA.cols;
-		pObj->m_camSize.m_y = gRGBA.rows;
+		pObj->m_camSize.x = gRGBA.cols;
+		pObj->m_camSize.y = gRGBA.rows;
 		pObj->f2iBBox();
 		IF_CONT(pObj->m_bbox.area() <= 0);
 		if(pObj->m_bbox.area() > m_maxPix)

@@ -105,20 +105,20 @@ void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
 {
 	if(pSize)
 	{
-		pSize->m_x = m_width;
-		pSize->m_y = m_height;
+		pSize->x = m_width;
+		pSize->y = m_height;
 	}
 
 	if(pCenter)
 	{
-		pCenter->m_x = m_centerH;
-		pCenter->m_y = m_centerV;
+		pCenter->x = m_centerH;
+		pCenter->y = m_centerV;
 	}
 
 	if(pAngle)
 	{
-		pAngle->m_x = m_angleH;
-		pAngle->m_y = m_angleV;
+		pAngle->x = m_angleH;
+		pAngle->y = m_angleV;
 	}
 }
 

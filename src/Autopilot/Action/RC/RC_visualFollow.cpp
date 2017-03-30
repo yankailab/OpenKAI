@@ -16,10 +16,10 @@ RC_visualFollow::RC_visualFollow()
 	m_pUIassist = NULL;
 	m_pUIdrawRect = NULL;
 
-	m_ROI.m_x = 0;
-	m_ROI.m_y = 0;
-	m_ROI.m_z = 0;
-	m_ROI.m_w = 0;
+	m_ROI.x = 0;
+	m_ROI.y = 0;
+	m_ROI.z = 0;
+	m_ROI.w = 0;
 	m_bSelect = false;
 	m_ROImode = MODE_ASSIST;
 	m_ROIsize = 100;
@@ -207,10 +207,10 @@ Rect2d RC_visualFollow::getMouseROI(vInt4 mouseROI)
 {
 	Rect2d roi;
 
-	roi.x = min(mouseROI.m_x, mouseROI.m_z);
-	roi.y = min(mouseROI.m_y, mouseROI.m_w);
-	roi.width = abs(mouseROI.m_z - mouseROI.m_x);
-	roi.height = abs(mouseROI.m_w - mouseROI.m_y);
+	roi.x = min(mouseROI.x, mouseROI.z);
+	roi.y = min(mouseROI.y, mouseROI.w);
+	roi.width = abs(mouseROI.z - mouseROI.x);
+	roi.height = abs(mouseROI.w - mouseROI.y);
 
 	return roi;
 }
@@ -245,10 +245,10 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 		if (!pBtn)
 		{
 			ROIhalf = m_ROIsize / 2;
-			m_ROI.m_x = pMouse->m_x - ROIhalf;
-			m_ROI.m_y = pMouse->m_y - ROIhalf;
-			m_ROI.m_z = pMouse->m_x + ROIhalf;
-			m_ROI.m_w = pMouse->m_y + ROIhalf;
+			m_ROI.x = pMouse->m_x - ROIhalf;
+			m_ROI.y = pMouse->m_y - ROIhalf;
+			m_ROI.z = pMouse->m_x + ROIhalf;
+			m_ROI.w = pMouse->m_y + ROIhalf;
 			roi = getMouseROI(m_ROI);
 			m_pROITracker->setROI(roi);
 			m_pROITracker->tracking(true);
@@ -277,10 +277,10 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
 			ROIhalf = m_ROIsize / 2;
 
-			m_ROI.m_x = roi.x - ROIhalf;
-			m_ROI.m_y = roi.y - ROIhalf;
-			m_ROI.m_z = roi.x + ROIhalf;
-			m_ROI.m_w = roi.y + ROIhalf;
+			m_ROI.x = roi.x - ROIhalf;
+			m_ROI.y = roi.y - ROIhalf;
+			m_ROI.z = roi.x + ROIhalf;
+			m_ROI.w = roi.y + ROIhalf;
 			roi = getMouseROI(m_ROI);
 			m_pROITracker->setROI(roi);
 			return;
@@ -299,10 +299,10 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
 			ROIhalf = m_ROIsize / 2;
 
-			m_ROI.m_x = roi.x - ROIhalf;
-			m_ROI.m_y = roi.y - ROIhalf;
-			m_ROI.m_z = roi.x + ROIhalf;
-			m_ROI.m_w = roi.y + ROIhalf;
+			m_ROI.x = roi.x - ROIhalf;
+			m_ROI.y = roi.y - ROIhalf;
+			m_ROI.z = roi.x + ROIhalf;
+			m_ROI.w = roi.y + ROIhalf;
 			roi = getMouseROI(m_ROI);
 			m_pROITracker->setROI(roi);
 			return;
@@ -310,10 +310,10 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 		if (pBtn->m_name == "MODE")
 		{
-			m_ROI.m_x = 0;
-			m_ROI.m_y = 0;
-			m_ROI.m_z = 0;
-			m_ROI.m_w = 0;
+			m_ROI.x = 0;
+			m_ROI.y = 0;
+			m_ROI.z = 0;
+			m_ROI.w = 0;
 			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_DRAWRECT;
@@ -325,10 +325,10 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 		IF_(!m_bSelect);
 
 		ROIhalf = m_ROIsize / 2;
-		m_ROI.m_x = pMouse->m_x - ROIhalf;
-		m_ROI.m_y = pMouse->m_y - ROIhalf;
-		m_ROI.m_z = pMouse->m_x + ROIhalf;
-		m_ROI.m_w = pMouse->m_y + ROIhalf;
+		m_ROI.x = pMouse->m_x - ROIhalf;
+		m_ROI.y = pMouse->m_y - ROIhalf;
+		m_ROI.z = pMouse->m_x + ROIhalf;
+		m_ROI.w = pMouse->m_y + ROIhalf;
 		roi = getMouseROI(m_ROI);
 		m_pROITracker->setROI(roi);
 		m_pROITracker->tracking(true);
@@ -357,20 +357,20 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 		if (!pBtn)
 		{
 			m_pROITracker->tracking(false);
-			m_ROI.m_x = pMouse->m_x;
-			m_ROI.m_y = pMouse->m_y;
-			m_ROI.m_z = pMouse->m_x;
-			m_ROI.m_w = pMouse->m_y;
+			m_ROI.x = pMouse->m_x;
+			m_ROI.y = pMouse->m_y;
+			m_ROI.z = pMouse->m_x;
+			m_ROI.w = pMouse->m_y;
 			m_bSelect = true;
 			return;
 		}
 
 		if (pBtn->m_name == "MODE")
 		{
-			m_ROI.m_x = 0;
-			m_ROI.m_y = 0;
-			m_ROI.m_z = 0;
-			m_ROI.m_w = 0;
+			m_ROI.x = 0;
+			m_ROI.y = 0;
+			m_ROI.z = 0;
+			m_ROI.w = 0;
 			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_ASSIST;
@@ -381,17 +381,17 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 	case EVENT_MOUSEMOVE:
 		IF_(!m_bSelect);
 
-		m_ROI.m_z = pMouse->m_x;
-		m_ROI.m_w = pMouse->m_y;
+		m_ROI.z = pMouse->m_x;
+		m_ROI.w = pMouse->m_y;
 		break;
 	case EVENT_LBUTTONUP:
 		roi = getMouseROI(m_ROI);
 		if (roi.width < m_ROIsizeFrom || roi.height < m_ROIsizeFrom)
 		{
-			m_ROI.m_x = 0;
-			m_ROI.m_y = 0;
-			m_ROI.m_z = 0;
-			m_ROI.m_w = 0;
+			m_ROI.x = 0;
+			m_ROI.y = 0;
+			m_ROI.z = 0;
+			m_ROI.w = 0;
 		}
 		else
 		{

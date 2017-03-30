@@ -41,28 +41,28 @@ bool _SLAM::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("dimX", &m_gridDim.m_x));
-	F_INFO(pK->v("dimY", &m_gridDim.m_y));
-	F_INFO(pK->v("dimZ", &m_gridDim.m_z));
+	F_INFO(pK->v("dimX", &m_gridDim.x));
+	F_INFO(pK->v("dimY", &m_gridDim.y));
+	F_INFO(pK->v("dimZ", &m_gridDim.z));
 
-	m_gridDim.m_x = constrain(m_gridDim.m_x, 1, MAX_CELL);
-	m_gridDim.m_y = constrain(m_gridDim.m_y, 1, MAX_CELL);
-	m_gridDim.m_z = constrain(m_gridDim.m_z, 1, MAX_CELL);
+	m_gridDim.x = constrain(m_gridDim.x, 1, MAX_CELL);
+	m_gridDim.y = constrain(m_gridDim.y, 1, MAX_CELL);
+	m_gridDim.z = constrain(m_gridDim.z, 1, MAX_CELL);
 
 	m_grid.clear();
 	m_gridOrigin.init();
 	m_gridPos = m_gridOrigin;
 
-	F_INFO(pK->v("lenX", &m_cellLen.m_x));
-	F_INFO(pK->v("lenY", &m_cellLen.m_y));
-	F_INFO(pK->v("lenZ", &m_cellLen.m_z));
+	F_INFO(pK->v("lenX", &m_cellLen.x));
+	F_INFO(pK->v("lenY", &m_cellLen.y));
+	F_INFO(pK->v("lenZ", &m_cellLen.z));
 
-	m_cellLen.m_x = constrain(m_cellLen.m_x, CELL_MIN_LEN, DBL_MAX);
-	m_cellLen.m_y = constrain(m_cellLen.m_y, CELL_MIN_LEN, DBL_MAX);
-	m_cellLen.m_z = constrain(m_cellLen.m_z, CELL_MIN_LEN, DBL_MAX);
+	m_cellLen.x = constrain(m_cellLen.x, CELL_MIN_LEN, DBL_MAX);
+	m_cellLen.y = constrain(m_cellLen.y, CELL_MIN_LEN, DBL_MAX);
+	m_cellLen.z = constrain(m_cellLen.z, CELL_MIN_LEN, DBL_MAX);
 
-	F_INFO(pK->v("obsRangeMin", &m_obsRange.m_x));
-	F_INFO(pK->v("obsRangeMax", &m_obsRange.m_y));
+	F_INFO(pK->v("obsRangeMin", &m_obsRange.x));
+	F_INFO(pK->v("obsRangeMax", &m_obsRange.y));
 
 	Kiss* pObs = pK->o("obstacleBox");
 	IF_T(pObs->empty());
@@ -76,10 +76,10 @@ bool _SLAM::init(void* pKiss)
 
 		OBSTACLE_BOX oBox;
 		oBox.init();
-		F_INFO(pO->v("left", &oBox.m_fBBox.m_x));
-		F_INFO(pO->v("top", &oBox.m_fBBox.m_y));
-		F_INFO(pO->v("right", &oBox.m_fBBox.m_z));
-		F_INFO(pO->v("bottom", &oBox.m_fBBox.m_w));
+		F_INFO(pO->v("left", &oBox.m_fBBox.x));
+		F_INFO(pO->v("top", &oBox.m_fBBox.y));
+		F_INFO(pO->v("right", &oBox.m_fBBox.z));
+		F_INFO(pO->v("bottom", &oBox.m_fBBox.w));
 
 		m_vObsBox.push_back(oBox);
 	}
@@ -149,9 +149,9 @@ void _SLAM::updateGPS(void)
 	_Mavlink* pMavlink = m_pGPS->m_pMavlink;
 	NULL_(pMavlink);
 
-	m_attiRad.m_x = (double)pMavlink->m_msg.attitude.yaw;
-	m_attiRad.m_y = (double)pMavlink->m_msg.attitude.pitch;
-	m_attiRad.m_z = (double)pMavlink->m_msg.attitude.roll;
+	m_attiRad.x = (double)pMavlink->m_msg.attitude.yaw;
+	m_attiRad.y = (double)pMavlink->m_msg.attitude.pitch;
+	m_attiRad.z = (double)pMavlink->m_msg.attitude.roll;
 	m_hdgRad = ((double)pMavlink->m_msg.global_position_int.hdg) * 0.01;
 
 	if(m_tLastMav == 0)
@@ -178,21 +178,21 @@ void _SLAM::updateObstacle(void)
 		OBSTACLE_BOX oB = m_vObsBox[i];
 		double d = m_pObs->dist(&oB.m_fBBox, NULL);
 
-		IF_CONT(d < m_obsRange.m_x);
-		IF_CONT(d > m_obsRange.m_y);
+		IF_CONT(d < m_obsRange.x);
+		IF_CONT(d > m_obsRange.y);
 
 		double dirRad = m_hdgRad + (oB.m_deg * DEG_RAD);
 		double dE = d * sin(dirRad);
 		double dN = d * cos(dirRad);
 
 		vInt3 p;
-		p.m_x = m_gridOrigin.m_x + m_gridPos.m_x + (dE / m_cellLen.m_x);
-		p.m_y = m_gridOrigin.m_y + m_gridPos.m_y + (dE / m_cellLen.m_y);
-		p.m_z = 0;
+		p.x = m_gridOrigin.x + m_gridPos.x + (dE / m_cellLen.x);
+		p.y = m_gridOrigin.y + m_gridPos.y + (dE / m_cellLen.y);
+		p.z = 0;
 
 		expandGrid(&p);
 
-		GRID_CELL* pCell = &m_grid[p.m_x][p.m_y][p.m_z];
+		GRID_CELL* pCell = &m_grid[p.x][p.y][p.z];
 		pCell->m_data = 1;
 		pCell->m_tLastUpdate = m_tNow;
 	}
@@ -209,30 +209,30 @@ void _SLAM::expandGrid(vInt3* pPos)
 	deque<deque<GRID_CELL> > eX;
 	eX.push_back(eY);
 
-	while(pPos->m_x >= m_grid.size())
+	while(pPos->x >= m_grid.size())
 	{
 		m_grid.push_back(eX);
 	}
 
-	while(pPos->m_x < 0)
+	while(pPos->x < 0)
 	{
 		m_grid.push_front(eX);
-		m_gridOrigin.m_x++;
-		pPos->m_x++;
+		m_gridOrigin.x++;
+		pPos->x++;
 	}
 
-	deque<deque<GRID_CELL> >* pY = &m_grid[pPos->m_x];
+	deque<deque<GRID_CELL> >* pY = &m_grid[pPos->x];
 
-	while(pPos->m_y >= pY->size())
+	while(pPos->y >= pY->size())
 	{
 		pY->push_back(eY);
 	}
 
-	while(pPos->m_y < 0)
+	while(pPos->y < 0)
 	{
 		m_grid.push_front(eX);
-		m_gridOrigin.m_x++;
-		pPos->m_x++;
+		m_gridOrigin.x++;
+		pPos->x++;
 	}
 
 }

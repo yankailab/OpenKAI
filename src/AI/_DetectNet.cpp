@@ -16,8 +16,8 @@ _DetectNet::_DetectNet()
 	m_maxSize = 1.0;
 	m_overlapMin = 1.0;
 	m_area.init();
-	m_area.m_z = 1.0;
-	m_area.m_w = 1.0;
+	m_area.z = 1.0;
+	m_area.w = 1.0;
 
 
 #ifdef USE_TENSORRT
@@ -53,10 +53,10 @@ bool _DetectNet::init(void* pKiss)
 	F_INFO(pK->v("maxSize", &m_maxSize));
 	F_INFO(pK->v("overlapMin", &m_overlapMin));
 
-	F_INFO(pK->v("left", &m_area.m_x));
-	F_INFO(pK->v("top", &m_area.m_y));
-	F_INFO(pK->v("right", &m_area.m_z));
-	F_INFO(pK->v("bottom", &m_area.m_w));
+	F_INFO(pK->v("left", &m_area.x));
+	F_INFO(pK->v("top", &m_area.y));
+	F_INFO(pK->v("right", &m_area.z));
+	F_INFO(pK->v("bottom", &m_area.w));
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
@@ -155,12 +155,12 @@ void _DetectNet::detect(void)
 	for (int n = 0; n < m_nBox; n++)
 	{
 		float* bb = m_bbCPU + (n * 4);
-		obj.m_bbox.m_x = (int) bb[0];
-		obj.m_bbox.m_y = (int) bb[1];
-		obj.m_bbox.m_z = (int) bb[2];
-		obj.m_bbox.m_w = (int) bb[3];
-		obj.m_camSize.m_x = fGMat.cols;
-		obj.m_camSize.m_y = fGMat.rows;
+		obj.m_bbox.x = (int) bb[0];
+		obj.m_bbox.y = (int) bb[1];
+		obj.m_bbox.z = (int) bb[2];
+		obj.m_bbox.w = (int) bb[3];
+		obj.m_camSize.x = fGMat.cols;
+		obj.m_camSize.y = fGMat.rows;
 		obj.i2fBBox();
 
 		obj.m_iClass = m_confCPU[n*2+1];

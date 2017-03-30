@@ -17,8 +17,8 @@ _Obstacle::_Obstacle()
 	m_nFilter = 0;
 	m_dBlend = 0.5;
 
-	m_mDim.m_x = 10;
-	m_mDim.m_y = 10;
+	m_mDim.x = 10;
+	m_mDim.y = 10;
 }
 
 _Obstacle::~_Obstacle()
@@ -38,8 +38,8 @@ bool _Obstacle::init(void* pKiss)
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("dBlend", &m_dBlend));
-	F_INFO(pK->v("matrixW", &m_mDim.m_x));
-	F_INFO(pK->v("matrixH", &m_mDim.m_y));
+	F_INFO(pK->v("matrixW", &m_mDim.x));
+	F_INFO(pK->v("matrixH", &m_mDim.y));
 
 	m_nFilter = m_mDim.area();
 	IF_F(m_nFilter >= N_FILTER);
@@ -106,15 +106,15 @@ void _Obstacle::detect(void)
 	NULL_(pDepth);
 	IF_(pDepth->empty());
 
-	m_pMatrix->getResizedOf(m_pStream->depth(), m_mDim.m_x, m_mDim.m_y);
+	m_pMatrix->getResizedOf(m_pStream->depth(), m_mDim.x, m_mDim.y);
 	Mat* pM = m_pMatrix->getCMat();
 
 	int i,j;
-	for(i=0;i<m_mDim.m_y;i++)
+	for(i=0;i<m_mDim.y;i++)
 	{
-		for(j=0;j<m_mDim.m_x;j++)
+		for(j=0;j<m_mDim.x;j++)
 		{
-			m_pFilteredMatrix[i*m_mDim.m_x+j]->input((double)pM->at<uchar>(i,j));
+			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<uchar>(i,j));
 		}
 	}
 }
@@ -125,28 +125,28 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(!pROI)return -1.0;
 
 	vInt4 roi;
-	roi.m_x = pROI->m_x * m_mDim.m_x;
-	roi.m_y = pROI->m_y * m_mDim.m_y;
-	roi.m_z = pROI->m_z * m_mDim.m_x;
-	roi.m_w = pROI->m_w * m_mDim.m_y;
-	if(roi.m_x<0)roi.m_x=0;
-	if(roi.m_y<0)roi.m_y=0;
-	if(roi.m_z>=m_mDim.m_x)roi.m_z=m_mDim.m_x-1;
-	if(roi.m_w>=m_mDim.m_y)roi.m_w=m_mDim.m_y-1;
+	roi.x = pROI->x * m_mDim.x;
+	roi.y = pROI->y * m_mDim.y;
+	roi.z = pROI->z * m_mDim.x;
+	roi.w = pROI->w * m_mDim.y;
+	if(roi.x<0)roi.x=0;
+	if(roi.y<0)roi.y=0;
+	if(roi.z>=m_mDim.x)roi.z=m_mDim.x-1;
+	if(roi.w>=m_mDim.y)roi.w=m_mDim.y-1;
 
 	double distMin = 0;
 	vInt2 posMin;
 	int i,j;
-	for(i=roi.m_y;i<roi.m_w;i++)
+	for(i=roi.y;i<roi.w;i++)
 	{
-		for(j=roi.m_x;j<roi.m_z;j++)
+		for(j=roi.x;j<roi.z;j++)
 		{
-			double cellDist = m_pFilteredMatrix[i*m_mDim.m_x+j]->v();
+			double cellDist = m_pFilteredMatrix[i*m_mDim.x+j]->v();
 			if(cellDist > distMin)
 			{
 				distMin = cellDist;
-				posMin.m_x = j;
-				posMin.m_y = i;
+				posMin.x = j;
+				posMin.y = i;
 			}
 		}
 	}
@@ -179,19 +179,19 @@ bool _Obstacle::draw(void)
 	Mat mM = *m_pMatrix->getCMat();
 	IF_F(mM.empty());
 
-    Mat filterM = Mat::zeros(Size(m_mDim.m_x,m_mDim.m_y), CV_8UC1);
+    Mat filterM = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
 
 	int i,j;
-	for(i=0;i<m_mDim.m_y;i++)
+	for(i=0;i<m_mDim.y;i++)
 	{
-		for(j=0;j<m_mDim.m_x;j++)
+		for(j=0;j<m_mDim.x;j++)
 		{
-			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.m_x+j]->v());
+			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.x+j]->v());
 		}
 	}
 
 	Mat mA;
-    mA = Mat::zeros(Size(m_mDim.m_x,m_mDim.m_y), CV_8UC1);
+    mA = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
 	vector<Mat> channels;
     channels.push_back(mA);
     channels.push_back(mA);

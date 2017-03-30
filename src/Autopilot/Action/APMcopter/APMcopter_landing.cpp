@@ -74,8 +74,8 @@ void APMcopter_landing::landing(void)
 			continue;
 
 		targetBB = pObj->m_bbox;
-		m_target.m_targetPos.m_x = pObj->m_bbox.midX();
-		m_target.m_targetPos.m_y = pObj->m_bbox.midY();
+		m_target.m_targetPos.x = pObj->m_bbox.midX();
+		m_target.m_targetPos.y = pObj->m_bbox.midY();
 		k++;
 		break;
 	}
@@ -90,10 +90,10 @@ void APMcopter_landing::landing(void)
 	m_target.m_bLocked = true;
 
 	//Change position to angles
-	m_target.m_angleX = ((double)(m_target.m_targetPos.m_x - cCenter.m_x) / (double)cSize.m_x)
-			* cAngle.m_x * DEG_RAD * m_target.m_orientX;
-	m_target.m_angleY = ((double)(m_target.m_targetPos.m_y - cCenter.m_y) / (double)cSize.m_y)
-			* cAngle.m_y * DEG_RAD * m_target.m_orientY;
+	m_target.m_angleX = ((double)(m_target.m_targetPos.x - cCenter.x) / (double)cSize.x)
+			* cAngle.x * DEG_RAD * m_target.m_orientX;
+	m_target.m_angleY = ((double)(m_target.m_targetPos.y - cCenter.y) / (double)cSize.y)
+			* cAngle.y * DEG_RAD * m_target.m_orientY;
 
 	//Send Mavlink command
 	m_pAPM->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
@@ -110,7 +110,7 @@ bool APMcopter_landing::draw(void)
 
 	if (m_target.m_bLocked)
 	{
-		circle(*pMat, Point(m_target.m_targetPos.m_x, m_target.m_targetPos.m_y),
+		circle(*pMat, Point(m_target.m_targetPos.x, m_target.m_targetPos.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 255, 0), 2);
 
 		msg = "Landing_Target: (" + f2str(m_target.m_angleX) + " , "

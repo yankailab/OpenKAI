@@ -150,13 +150,13 @@ void _GPS::detect(void)
 		vDouble3 dM;
 		vDouble3 dR;
 		m_pZED->getMotionDelta(&dM,&dR);
-		dM.m_x = constrain(dM.m_x, -dT.m_x, dT.m_x);	//Siding
-		dM.m_y = constrain(dM.m_y, -dT.m_y, dT.m_y);	//Alt
-		dM.m_z = constrain(dM.m_z, -dT.m_z, dT.m_z);	//Heading
+		dM.x = constrain(dM.x, -dT.x, dT.x);	//Siding
+		dM.y = constrain(dM.y, -dT.y, dT.y);	//Alt
+		dM.z = constrain(dM.z, -dT.z, dT.z);	//Heading
 
-		dPos.m_x = dM.m_x * cosH + dM.m_z * sinH;	//Easting
-		dPos.m_y = dM.m_y;							//Alt
-		dPos.m_z = dM.m_z * cosH - dM.m_x * sinH;	//Northing
+		dPos.x = dM.x * cosH + dM.z * sinH;	//Easting
+		dPos.y = dM.y;							//Alt
+		dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
 	}
 	else
 	{
@@ -164,11 +164,11 @@ void _GPS::detect(void)
 		dPos = dT;
 	}
 
-	utm.m_easting += dPos.m_x;
-	utm.m_northing += dPos.m_z;
-	utm.m_alt += dPos.m_y;
+	utm.m_easting += dPos.x;
+	utm.m_northing += dPos.z;
+	utm.m_alt += dPos.y;
 	if(!m_pMavlink)
-		utm.m_hdg += dRot.m_x;
+		utm.m_hdg += dRot.x;
 
 	setUTM(&utm);
 

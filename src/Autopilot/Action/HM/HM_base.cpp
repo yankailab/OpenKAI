@@ -139,25 +139,25 @@ void HM_base::updateGPS(void)
 //			m_rpmR = absRpm;
 //		}
 
-		m_dT.m_z = 0.0;
-		m_dRot.m_x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
+		m_dT.z = 0.0;
+		m_dRot.x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
 	}
 	else if(m_rpmL != m_rpmR)
 	{
-		m_dT.m_z = 0.0;
-		m_dRot.m_x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
+		m_dT.z = 0.0;
+		m_dRot.x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
 	}
 	else
 	{
-		m_dT.m_z = ((double)m_rpmL) * tBase * m_wheelR * 2 * PI;
-		m_dRot.m_x = 0.0;
+		m_dT.z = ((double)m_rpmL) * tBase * m_wheelR * 2 * PI;
+		m_dRot.x = 0.0;
 	}
 
 	//TODO:Temporal
-	m_dT.m_z *= 1000000;
+	m_dT.z *= 1000000;
 
 	m_pGPS->setSpeed(&m_dT,&m_dRot);
-	LOG_I("dZ="<<m_dT.m_z<<" dYaw="<<m_dRot.m_x);
+	LOG_I("dZ="<<m_dT.z<<" dYaw="<<m_dRot.x);
 }
 
 void HM_base::cmd(void)

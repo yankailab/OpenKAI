@@ -46,21 +46,21 @@ struct OBJECT
 
 	void f2iBBox(void)
 	{
-		m_bbox.m_x = m_fBBox.m_x * m_camSize.m_x;
-		m_bbox.m_z = m_fBBox.m_z * m_camSize.m_x;
-		m_bbox.m_y = m_fBBox.m_y * m_camSize.m_y;
-		m_bbox.m_w = m_fBBox.m_w * m_camSize.m_y;
+		m_bbox.x = m_fBBox.x * m_camSize.x;
+		m_bbox.z = m_fBBox.z * m_camSize.x;
+		m_bbox.y = m_fBBox.y * m_camSize.y;
+		m_bbox.w = m_fBBox.w * m_camSize.y;
 	}
 
 	void i2fBBox(void)
 	{
 		double base;
-		base = 1.0/m_camSize.m_x;
-		m_fBBox.m_x = m_bbox.m_x * base;
-		m_fBBox.m_z = m_bbox.m_z * base;
-		base = 1.0/m_camSize.m_y;
-		m_fBBox.m_y = m_bbox.m_y * base;
-		m_fBBox.m_w = m_bbox.m_w * base;
+		base = 1.0/m_camSize.x;
+		m_fBBox.x = m_bbox.x * base;
+		m_fBBox.z = m_bbox.z * base;
+		base = 1.0/m_camSize.y;
+		m_fBBox.y = m_bbox.y * base;
+		m_fBBox.w = m_bbox.w * base;
 	}
 
 };

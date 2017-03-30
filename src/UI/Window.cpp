@@ -46,8 +46,8 @@ bool Window::init(void* pKiss)
 	IF_F(!m_bWindow && !m_bRec);
 	pK->m_pInst = this;
 
-	F_ERROR_F(pK->v("w", &m_size.m_x));
-	F_ERROR_F(pK->v("h", &m_size.m_y));
+	F_ERROR_F(pK->v("w", &m_size.x));
+	F_ERROR_F(pK->v("h", &m_size.y));
 	F_INFO(pK->v("bFullScreen", &m_bFullScreen));
 
 	if(m_size.area()<=0)
@@ -82,8 +82,8 @@ bool Window::init(void* pKiss)
 							reCodec.at(2),
 							reCodec.at(3)),
 					recFPS,
-					cv::Size(m_size.m_x,
-							m_size.m_y)
+					cv::Size(m_size.x,
+							m_size.y)
 					))
 			{
 				LOG_E("Cannot open VideoWriter");
@@ -98,8 +98,8 @@ bool Window::init(void* pKiss)
 	}
 	IF_F(!m_bWindow && !m_bRec);
 
-	F_INFO(pK->v("textX", &m_textStart.m_x));
-	F_INFO(pK->v("textY", &m_textStart.m_y));
+	F_INFO(pK->v("textX", &m_textStart.x));
+	F_INFO(pK->v("textY", &m_textStart.y));
 	F_INFO(pK->v("pixTab", &m_pixTab));
 	F_INFO(pK->v("lineH", &m_lineHeight));
 	F_INFO(pK->v("textSize", &m_textSize));
@@ -108,7 +108,7 @@ bool Window::init(void* pKiss)
 	F_INFO(pK->v("textR", &m_textCol[2]));
 
 	m_pFrame = new Frame();
-	m_pFrame->allocate(m_size.m_x, m_size.m_y);
+	m_pFrame->allocate(m_size.x, m_size.y);
 
 	m_pF = new Frame();
 	m_pF2 = new Frame();
@@ -158,9 +158,9 @@ bool Window::draw(void)
 		m_pF->update(m_pFrame->getCMat());
 		Size fSize = pSrc->getSize();
 
-		if(fSize.width != m_size.m_x || fSize.height != m_size.m_y)
+		if(fSize.width != m_size.x || fSize.height != m_size.y)
 		{
-			pDest->getResizedOf(pSrc,m_size.m_x,m_size.m_y);
+			pDest->getResizedOf(pSrc,m_size.x,m_size.y);
 			SWAP(pSrc,pDest,pTmp);
 		}
 
@@ -173,7 +173,7 @@ bool Window::draw(void)
 		m_VW << *pSrc->getCMat();
 	}
 
-	m_pFrame->allocate(m_size.m_x, m_size.m_y);
+	m_pFrame->allocate(m_size.x, m_size.y);
 	tabReset();
 	lineReset();
 
@@ -187,35 +187,35 @@ Frame* Window::getFrame(void)
 
 Point* Window::getTextPos(void)
 {
-	m_tPoint.x = m_textPos.m_x;
-	m_tPoint.y = m_textPos.m_y;
+	m_tPoint.x = m_textPos.x;
+	m_tPoint.y = m_textPos.y;
 	return &m_tPoint;
 }
 
 void Window::tabNext(void)
 {
-	m_textPos.m_x += m_pixTab;
+	m_textPos.x += m_pixTab;
 }
 
 void Window::tabPrev(void)
 {
-	m_textPos.m_x -= m_pixTab;
-	if(m_textPos.m_x < m_textStart.m_x)m_textPos.m_x = m_textStart.m_x;
+	m_textPos.x -= m_pixTab;
+	if(m_textPos.x < m_textStart.x)m_textPos.x = m_textStart.x;
 }
 
 void Window::tabReset(void)
 {
-	m_textPos.m_x = m_textStart.m_x;
+	m_textPos.x = m_textStart.x;
 }
 
 void Window::lineNext(void)
 {
-	m_textPos.m_y += m_lineHeight;
+	m_textPos.y += m_lineHeight;
 }
 
 void Window::lineReset(void)
 {
-	m_textPos.m_y = m_textStart.m_y;
+	m_textPos.y = m_textStart.y;
 }
 
 double Window::textSize(void)

@@ -280,8 +280,8 @@ void _Lightware_SF40::updatePosDiff(void)
 
 	//update current pos
 	nV = 1.0/nV;
-	m_dPos.m_x += pX * nV;
-	m_dPos.m_y += pY * nV;
+	m_dPos.x += pX * nV;
+	m_dPos.y += pY * nV;
 }
 
 void _Lightware_SF40::setHeading(double hdg)
@@ -344,7 +344,7 @@ bool _Lightware_SF40::draw(void)
 	string msg;
 
 	pWin->tabNext();
-	msg = "dPos: dX=" + f2str(m_dPos.m_x) + ", dY=" + f2str(m_dPos.m_y);
+	msg = "dPos: dX=" + f2str(m_dPos.x) + ", dY=" + f2str(m_dPos.y);
 	pWin->addMsg(&msg);
 	msg = "nReceived=" + i2str(m_nReceived);
 	pWin->addMsg(&msg);

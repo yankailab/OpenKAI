@@ -44,6 +44,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APMcopter_guided);
 		ADD_ACTION(APMcopter_avoid);
 		ADD_ACTION(APMcopter_zedSLAM);
+		ADD_ACTION(APMcopter_visualFence);
 
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_kickBack);

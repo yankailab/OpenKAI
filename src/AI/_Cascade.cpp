@@ -12,8 +12,8 @@ _Cascade::_Cascade()
 	m_maxSize = 1.0;
 	m_overlapMin = 1.0;
 	m_area.init();
-	m_area.m_z = 1.0;
-	m_area.m_w = 1.0;
+	m_area.z = 1.0;
+	m_area.w = 1.0;
 	m_className = "";
 }
 
@@ -32,10 +32,10 @@ bool _Cascade::init(void* pKiss)
 	F_INFO(pK->v("maxSize", &m_maxSize));
 	F_INFO(pK->v("overlapMin", &m_overlapMin));
 
-	F_INFO(pK->v("left", &m_area.m_x));
-	F_INFO(pK->v("top", &m_area.m_y));
-	F_INFO(pK->v("right", &m_area.m_z));
-	F_INFO(pK->v("bottom", &m_area.m_w));
+	F_INFO(pK->v("left", &m_area.x));
+	F_INFO(pK->v("top", &m_area.y));
+	F_INFO(pK->v("right", &m_area.z));
+	F_INFO(pK->v("bottom", &m_area.w));
 
 	F_ERROR_F(m_CC.load(m_fileModel));
 
@@ -112,8 +112,8 @@ void _Cascade::detect(void)
 	for (int i = 0; i < vRect.size(); i++)
 	{
 		rect2vInt4(&vRect[i], &obj.m_bbox);
-		obj.m_camSize.m_x = m.cols;
-		obj.m_camSize.m_y = m.rows;
+		obj.m_camSize.x = m.cols;
+		obj.m_camSize.y = m.rows;
 		obj.i2fBBox();
 		obj.m_iClass = 0;
 		obj.m_dist = 0.0;

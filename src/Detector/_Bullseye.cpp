@@ -168,9 +168,9 @@ void _Bullseye::detectCircleFill(void)
 		if (contourArea(contours[i]) < m_areaRatio*radius*radius*3.1415926)continue;
 		if (radius < m_minMarkerSize)continue;
 
-		m_pCircle[m_numCircle].m_x = center.x;
-		m_pCircle[m_numCircle].m_y = center.y;
-		m_pCircle[m_numCircle].m_z = radius;
+		m_pCircle[m_numCircle].x = center.x;
+		m_pCircle[m_numCircle].y = center.y;
+		m_pCircle[m_numCircle].z = radius;
 		m_numCircle++;
 
 		if (m_numCircle == NUM_MARKER)
@@ -222,9 +222,9 @@ void _Bullseye::detectCircleHough(void)
 
 	for(size_t current_circle = 0; current_circle < circles.size(); ++current_circle)
 	{
-		m_pCircle[m_numCircle].m_x = circles[current_circle][0];
-		m_pCircle[m_numCircle].m_y = circles[current_circle][1];
-		m_pCircle[m_numCircle].m_z = circles[current_circle][2];
+		m_pCircle[m_numCircle].x = circles[current_circle][0];
+		m_pCircle[m_numCircle].y = circles[current_circle][1];
+		m_pCircle[m_numCircle].z = circles[current_circle][2];
 		m_numCircle++;
 
 		if (m_numCircle == NUM_MARKER)
@@ -253,15 +253,15 @@ bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 	for(i=1; i<num; i++)
 	{
 		pCompare = &m_pCircle[i];
-		if(abs(pCompare->m_x + pCompare->m_y - camCenter) < abs(pMarker->m_x + pMarker->m_y - camCenter))
+		if(abs(pCompare->x + pCompare->y - camCenter) < abs(pMarker->x + pMarker->y - camCenter))
 		{
 			pMarker = pCompare;
 		}
 	}
 
-	pCenter->m_x = pMarker->m_x;
-	pCenter->m_y = pMarker->m_y;
-	pCenter->m_z = pMarker->m_z;
+	pCenter->x = pMarker->x;
+	pCenter->y = pMarker->y;
+	pCenter->z = pMarker->z;
 
 	return true;
 }

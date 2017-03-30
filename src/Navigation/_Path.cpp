@@ -152,22 +152,22 @@ bool _Path::draw(void)
 	UTM_POS* pWP2;
 	UTM_POS initWP = *m_pGPS->getInitUTM();
 	vDouble2 pI;
-	pI.m_x = initWP.m_easting;
-	pI.m_y = initWP.m_northing;
+	pI.x = initWP.m_easting;
+	pI.y = initWP.m_northing;
 
 	for (unsigned int i = 2; i < m_vWP.size(); i++)
 	{
 		pWP2 = &m_vWP[i];
 		vDouble2 p1,p2;
-		p1.m_x = pWP1->m_easting;
-		p1.m_y = pWP1->m_northing;
-		p2.m_x = pWP2->m_easting;
-		p2.m_y = pWP2->m_northing;
+		p1.x = pWP1->m_easting;
+		p1.y = pWP1->m_northing;
+		p2.x = pWP2->m_easting;
+		p2.y = pWP2->m_northing;
 		p1 -= pI;
 		p2 -= pI;
 		pWP1 = pWP2;
 
-		line(*pMat, pCenter + Point(p1.m_x, p1.m_y), pCenter + Point(p2.m_x, p2.m_y), col, bold);
+		line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y), col, bold);
 	}
 
 	return true;

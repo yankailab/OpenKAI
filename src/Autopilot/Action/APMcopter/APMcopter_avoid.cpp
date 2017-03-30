@@ -13,10 +13,10 @@ APMcopter_avoid::APMcopter_avoid()
 	m_distObs = 0.0;
 	m_distSF40 = 0.0;
 
-	m_avoidArea.m_x = 0.0;
-	m_avoidArea.m_y = 0.0;
-	m_avoidArea.m_z = 1.0;
-	m_avoidArea.m_w = 1.0;
+	m_avoidArea.x = 0.0;
+	m_avoidArea.y = 0.0;
+	m_avoidArea.z = 1.0;
+	m_avoidArea.w = 1.0;
 }
 
 APMcopter_avoid::~APMcopter_avoid()
@@ -29,10 +29,10 @@ bool APMcopter_avoid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("avoidLeft", &m_avoidArea.m_x));
-	F_INFO(pK->v("avoidTop", &m_avoidArea.m_y));
-	F_INFO(pK->v("avoidRight", &m_avoidArea.m_z));
-	F_INFO(pK->v("avoidBottom", &m_avoidArea.m_w));
+	F_INFO(pK->v("avoidLeft", &m_avoidArea.x));
+	F_INFO(pK->v("avoidTop", &m_avoidArea.y));
+	F_INFO(pK->v("avoidRight", &m_avoidArea.z));
+	F_INFO(pK->v("avoidBottom", &m_avoidArea.w));
 
 	return true;
 }
@@ -146,15 +146,15 @@ bool APMcopter_avoid::draw(void)
 	}
 
 	Rect r;
-	r.x = m_avoidArea.m_x * ((double)pMat->cols);
-	r.y = m_avoidArea.m_y * ((double)pMat->rows);
-	r.width = m_avoidArea.m_z * ((double)pMat->cols) - r.x;
-	r.height = m_avoidArea.m_w * ((double)pMat->rows) - r.y;
+	r.x = m_avoidArea.x * ((double)pMat->cols);
+	r.y = m_avoidArea.y * ((double)pMat->rows);
+	r.width = m_avoidArea.z * ((double)pMat->cols) - r.x;
+	r.height = m_avoidArea.w * ((double)pMat->rows) - r.y;
 	rectangle(*pMat, r, Scalar(0,255,255), 1);
 
 	NULL_F(m_pObs);
 	vInt2 mDim = m_pObs->matrixDim();
-	circle(*pMat, Point((m_posMin.m_x+0.5)*(pMat->cols/mDim.m_x), (m_posMin.m_y+0.5)*(pMat->rows/mDim.m_y)),
+	circle(*pMat, Point((m_posMin.x+0.5)*(pMat->cols/mDim.x), (m_posMin.y+0.5)*(pMat->rows/mDim.y)),
 			0.000025*pMat->cols*pMat->rows,
 			Scalar(0, 255, 255), 2);
 

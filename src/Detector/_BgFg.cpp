@@ -9,7 +9,7 @@ namespace kai
 _BgFg::_BgFg()
 {
 	m_cudaDeviceID = 0;
-	m_objPos.m_z = 0;
+	m_objPos.z = 0;
 	m_minSize = MIN_MARKER_SIZE;
 	m_objLockLevel = LOCK_LEVEL_NONE;
 
@@ -101,10 +101,10 @@ void _BgFg::detect(void)
 
 		circle(m_Mat, center, radius, Scalar(0, 255, 0), 2);
 
-		m_pAllMarker[m_numAllMarker].m_x = center.x;
-		m_pAllMarker[m_numAllMarker].m_y = center.y;
-		m_pAllMarker[m_numAllMarker].m_z = radius;
-		m_pAllMarker[m_numAllMarker].m_w = abs(center.x - m_objROIPos.m_x) + abs(center.y - m_objROIPos.m_y);
+		m_pAllMarker[m_numAllMarker].x = center.x;
+		m_pAllMarker[m_numAllMarker].y = center.y;
+		m_pAllMarker[m_numAllMarker].z = radius;
+		m_pAllMarker[m_numAllMarker].w = abs(center.x - m_objROIPos.x) + abs(center.y - m_objROIPos.y);
 		m_numAllMarker++;
 
 		if (m_numAllMarker == NUM_MARKER)
@@ -139,9 +139,9 @@ void _BgFg::detect(void)
 //	}
 
 
-		m_objPos.m_x = m_pAllMarker[0].m_x;
-		m_objPos.m_y = m_pAllMarker[0].m_y;
-		m_objPos.m_z = m_pAllMarker[0].m_z;
+		m_objPos.x = m_pAllMarker[0].x;
+		m_objPos.y = m_pAllMarker[0].y;
+		m_objPos.z = m_pAllMarker[0].z;
 		m_objROIPos = m_objPos;
 
 		//only position is locked
@@ -162,9 +162,9 @@ void _BgFg::detect(void)
 bool _BgFg::getObjPosition(vDouble3* pPos)
 {
 	if (m_objLockLevel < LOCK_LEVEL_POS)return false;
-	pPos->m_x = m_objPos.m_x;
-	pPos->m_y = m_objPos.m_y;
-	pPos->m_z = m_objPos.m_z;
+	pPos->x = m_objPos.x;
+	pPos->y = m_objPos.y;
+	pPos->z = m_objPos.z;
 
 	return true;
 }

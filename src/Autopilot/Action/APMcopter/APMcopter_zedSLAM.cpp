@@ -61,19 +61,19 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 	int confidence = m_pZED->getMotionDelta(&mT, &mR);
 	IF_(confidence < 0);
 
-    m_mT.m_x = mT.m_z;
-    m_mT.m_y = mT.m_x;
-    m_mT.m_z = mT.m_y;
+    m_mT.x = mT.z;
+    m_mT.y = mT.x;
+    m_mT.z = mT.y;
 
-    m_mR.m_x = mR.m_x;
-    m_mR.m_y = mR.m_z;
-    m_mR.m_z = -mR.m_y;
+    m_mR.x = mR.x;
+    m_mR.y = mR.z;
+    m_mR.z = -mR.y;
 
 	NULL_(m_pAPM);
 	NULL_(m_pAPM->m_pMavlink);
 	m_pAPM->m_pMavlink->zedVisionPositionDelta(m_dTime, &m_mR, &m_mT, confidence);
 
-	LOG_I("forward=" << m_mT.m_x << ", right=" << m_mT.m_y << ", down=" << m_mT.m_z << "; roll=" << m_mR.m_x << ", pitch=" << m_mR.m_y << ", yaw=" << m_mR.m_z);
+	LOG_I("forward=" << m_mT.x << ", right=" << m_mT.y << ", down=" << m_mT.z << "; roll=" << m_mR.x << ", pitch=" << m_mR.y << ", yaw=" << m_mR.z);
 }
 
 bool APMcopter_zedSLAM::draw(void)

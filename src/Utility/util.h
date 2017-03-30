@@ -39,10 +39,10 @@ inline double dHdg(double hFrom, double hTo)
 
 inline bool isOverlapped(vInt4* pA, vInt4* pB)
 {
-	if (pA->m_z < pB->m_x || pA->m_x > pB->m_z)
+	if (pA->z < pB->x || pA->x > pB->z)
 		return false;
 
-	if (pA->m_w < pB->m_y || pA->m_y > pB->m_w)
+	if (pA->w < pB->y || pA->y > pB->w)
 		return false;
 
 	return true;
@@ -60,22 +60,22 @@ inline double overlapRatio(vInt4* pA, vInt4* pB)
 	}
 
 	//pA > pB
-	double w = pA->w();
-	if (pB->w() > w)
-		w = pB->w();
-	double h = pA->h();
-	if (pB->h() > h)
-		h = pB->h();
+	double w = pA->width();
+	if (pB->width() > w)
+		w = pB->width();
+	double h = pA->height();
+	if (pB->height() > h)
+		h = pB->height();
 
-	double rX = pB->m_z - pA->m_x;
-	if (pB->m_x > pA->m_x)
-		rX = pA->m_z - pB->m_x;
+	double rX = pB->z - pA->x;
+	if (pB->x > pA->x)
+		rX = pA->z - pB->x;
 
 	rX /= w;
 
-	double rY = pB->m_w - pA->m_y;
-	if (pB->m_y > pA->m_y)
-		rY = pA->m_w - pB->m_y;
+	double rY = pB->w - pA->y;
+	if (pB->y > pA->y)
+		rY = pA->w - pB->y;
 
 	rY /= h;
 
@@ -84,18 +84,18 @@ inline double overlapRatio(vInt4* pA, vInt4* pB)
 
 inline void rect2vInt4(Rect* pR, vInt4* pV)
 {
-	pV->m_x = pR->x;
-	pV->m_y = pR->y;
-	pV->m_z = pR->x + pR->width;
-	pV->m_w = pR->y + pR->height;
+	pV->x = pR->x;
+	pV->y = pR->y;
+	pV->z = pR->x + pR->width;
+	pV->w = pR->y + pR->height;
 }
 
 inline void vInt42rect(kai::vInt4* pV, Rect* pR)
 {
-	pR->x = pV->m_x;
-	pR->y = pV->m_y;
-	pR->width = pV->m_z - pV->m_x;
-	pR->height = pV->m_w - pV->m_y;
+	pR->x = pV->x;
+	pR->y = pV->y;
+	pR->width = pV->z - pV->x;
+	pR->height = pV->w - pV->y;
 }
 
 inline int constrain(int v, int a, int b)

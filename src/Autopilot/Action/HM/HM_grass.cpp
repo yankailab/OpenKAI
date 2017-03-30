@@ -51,24 +51,24 @@ bool HM_grass::init(void* pKiss)
 
 	pG = pK->o("grassBoxL");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxL.m_x));
-	F_INFO(pG->v("top", &m_grassBoxL.m_y));
-	F_INFO(pG->v("right", &m_grassBoxL.m_z));
-	F_INFO(pG->v("bottom", &m_grassBoxL.m_w));
+	F_INFO(pG->v("left", &m_grassBoxL.x));
+	F_INFO(pG->v("top", &m_grassBoxL.y));
+	F_INFO(pG->v("right", &m_grassBoxL.z));
+	F_INFO(pG->v("bottom", &m_grassBoxL.w));
 
 	pG = pK->o("grassBoxF");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxF.m_x));
-	F_INFO(pG->v("top", &m_grassBoxF.m_y));
-	F_INFO(pG->v("right", &m_grassBoxF.m_z));
-	F_INFO(pG->v("bottom", &m_grassBoxF.m_w));
+	F_INFO(pG->v("left", &m_grassBoxF.x));
+	F_INFO(pG->v("top", &m_grassBoxF.y));
+	F_INFO(pG->v("right", &m_grassBoxF.z));
+	F_INFO(pG->v("bottom", &m_grassBoxF.w));
 
 	pG = pK->o("grassBoxR");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxR.m_x));
-	F_INFO(pG->v("top", &m_grassBoxR.m_y));
-	F_INFO(pG->v("right", &m_grassBoxR.m_z));
-	F_INFO(pG->v("bottom", &m_grassBoxR.m_w));
+	F_INFO(pG->v("left", &m_grassBoxR.x));
+	F_INFO(pG->v("top", &m_grassBoxR.y));
+	F_INFO(pG->v("right", &m_grassBoxR.z));
+	F_INFO(pG->v("bottom", &m_grassBoxR.w));
 
 	return true;
 }

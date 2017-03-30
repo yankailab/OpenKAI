@@ -12,10 +12,10 @@ HM_avoid::HM_avoid()
 
 	m_sequence = av_clear;
 
-	m_obsBoxF.m_x = 0.0;
-	m_obsBoxF.m_y = 0.0;
-	m_obsBoxF.m_z = 1.0;
-	m_obsBoxF.m_w = 1.0;
+	m_obsBoxF.x = 0.0;
+	m_obsBoxF.y = 0.0;
+	m_obsBoxF.z = 1.0;
+	m_obsBoxF.w = 1.0;
 	m_obsBoxL.init();
 	m_obsBoxR.init();
 
@@ -50,24 +50,24 @@ bool HM_avoid::init(void* pKiss)
 
 	pG = pK->o("obsBoxL");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxL.m_x));
-	F_INFO(pG->v("top", &m_obsBoxL.m_y));
-	F_INFO(pG->v("right", &m_obsBoxL.m_z));
-	F_INFO(pG->v("bottom", &m_obsBoxL.m_w));
+	F_INFO(pG->v("left", &m_obsBoxL.x));
+	F_INFO(pG->v("top", &m_obsBoxL.y));
+	F_INFO(pG->v("right", &m_obsBoxL.z));
+	F_INFO(pG->v("bottom", &m_obsBoxL.w));
 
 	pG = pK->o("obsBoxF");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxF.m_x));
-	F_INFO(pG->v("top", &m_obsBoxF.m_y));
-	F_INFO(pG->v("right", &m_obsBoxF.m_z));
-	F_INFO(pG->v("bottom", &m_obsBoxF.m_w));
+	F_INFO(pG->v("left", &m_obsBoxF.x));
+	F_INFO(pG->v("top", &m_obsBoxF.y));
+	F_INFO(pG->v("right", &m_obsBoxF.z));
+	F_INFO(pG->v("bottom", &m_obsBoxF.w));
 
 	pG = pK->o("obsBoxR");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxR.m_x));
-	F_INFO(pG->v("top", &m_obsBoxR.m_y));
-	F_INFO(pG->v("right", &m_obsBoxR.m_z));
-	F_INFO(pG->v("bottom", &m_obsBoxR.m_w));
+	F_INFO(pG->v("left", &m_obsBoxR.x));
+	F_INFO(pG->v("top", &m_obsBoxR.y));
+	F_INFO(pG->v("right", &m_obsBoxR.z));
+	F_INFO(pG->v("bottom", &m_obsBoxR.w));
 
 	return true;
 }
@@ -188,10 +188,10 @@ bool HM_avoid::draw(void)
 
 	//draw obstacle detection boxes
 	Rect r;
-	r.x = m_obsBoxF.m_x * ((double) pMat->cols);
-	r.y = m_obsBoxF.m_y * ((double) pMat->rows);
-	r.width = m_obsBoxF.m_z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxF.m_w * ((double) pMat->rows) - r.y;
+	r.x = m_obsBoxF.x * ((double) pMat->cols);
+	r.y = m_obsBoxF.y * ((double) pMat->rows);
+	r.width = m_obsBoxF.z * ((double) pMat->cols) - r.x;
+	r.height = m_obsBoxF.w * ((double) pMat->rows) - r.y;
 
 	Scalar col = Scalar(0, 255, 0);
 	int bold = 1;
@@ -202,16 +202,16 @@ bool HM_avoid::draw(void)
 	}
 	rectangle(*pMat, r, col, bold);
 
-	r.x = m_obsBoxL.m_x * ((double) pMat->cols);
-	r.y = m_obsBoxL.m_y * ((double) pMat->rows);
-	r.width = m_obsBoxL.m_z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxL.m_w * ((double) pMat->rows) - r.y;
+	r.x = m_obsBoxL.x * ((double) pMat->cols);
+	r.y = m_obsBoxL.y * ((double) pMat->rows);
+	r.width = m_obsBoxL.z * ((double) pMat->cols) - r.x;
+	r.height = m_obsBoxL.w * ((double) pMat->rows) - r.y;
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
-	r.x = m_obsBoxR.m_x * ((double) pMat->cols);
-	r.y = m_obsBoxR.m_y * ((double) pMat->rows);
-	r.width = m_obsBoxR.m_z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxR.m_w * ((double) pMat->rows) - r.y;
+	r.x = m_obsBoxR.x * ((double) pMat->cols);
+	r.y = m_obsBoxR.y * ((double) pMat->rows);
+	r.width = m_obsBoxR.z * ((double) pMat->cols) - r.x;
+	r.height = m_obsBoxR.w * ((double) pMat->rows) - r.y;
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
 	//draw obstacle indicator
@@ -219,8 +219,8 @@ bool HM_avoid::draw(void)
 	{
 		vInt2 mDim = m_pObs->matrixDim();
 		circle(*pMat,
-				Point((m_posMin.m_x + 0.5) * (pMat->cols / mDim.m_x),
-						(m_posMin.m_y + 0.5) * (pMat->rows / mDim.m_y)),
+				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
+						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
 				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
 	}
 

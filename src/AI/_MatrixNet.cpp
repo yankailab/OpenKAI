@@ -15,8 +15,8 @@ _MatrixNet::_MatrixNet()
 	m_dW = 0.5;
 	m_dH = 0.5;
 	m_area.init();
-	m_area.m_z = 1.0;
-	m_area.m_w = 1.0;
+	m_area.z = 1.0;
+	m_area.w = 1.0;
 	m_nObj = 0;
 	m_ppObj = NULL;
 }
@@ -38,10 +38,10 @@ bool _MatrixNet::init(void* pKiss)
 	F_INFO(pK->v("h", &m_h));
 	F_INFO(pK->v("dW", &m_dW));
 	F_INFO(pK->v("dH", &m_dH));
-	F_INFO(pK->v("left", &m_area.m_x));
-	F_INFO(pK->v("top", &m_area.m_y));
-	F_INFO(pK->v("right", &m_area.m_z));
-	F_INFO(pK->v("bottom", &m_area.m_w));
+	F_INFO(pK->v("left", &m_area.x));
+	F_INFO(pK->v("top", &m_area.y));
+	F_INFO(pK->v("right", &m_area.z));
+	F_INFO(pK->v("bottom", &m_area.w));
 
 	return true;
 }
@@ -69,18 +69,18 @@ bool _MatrixNet::link(void)
 
 	OBJECT mO;
 	int k = 0;
-	double aW = m_area.m_z - m_area.m_x;
-	double aH = m_area.m_w - m_area.m_y;
+	double aW = m_area.z - m_area.x;
+	double aH = m_area.w - m_area.y;
 
 	for (int i = 0; i < nH; i++)
 	{
 		for (int j = 0; j < nW; j++)
 		{
 			mO.init();
-			mO.m_fBBox.m_x = m_area.m_x + j * m_dW * aW;
-			mO.m_fBBox.m_z = mO.m_fBBox.m_x + m_w * aW;
-			mO.m_fBBox.m_y = m_area.m_y + i * m_dH * aH;
-			mO.m_fBBox.m_w = mO.m_fBBox.m_y + m_h * aH;
+			mO.m_fBBox.x = m_area.x + j * m_dW * aW;
+			mO.m_fBBox.z = mO.m_fBBox.x + m_w * aW;
+			mO.m_fBBox.y = m_area.y + i * m_dH * aH;
+			mO.m_fBBox.w = mO.m_fBBox.y + m_h * aH;
 
 			m_ppObj[k] = m_pIN->add(&mO);
 			NULL_F(m_ppObj[k]);
