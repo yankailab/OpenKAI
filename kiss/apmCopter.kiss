@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"APM_forward",
+	"name":"apmView",
 	"class":"Window",
 	"bInst":1,
 	"w":672,
@@ -18,23 +18,17 @@
 	"recFile":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
-	"textSize":0.5,
-	"textR":0,
-	"textG":255,
-	"textB":0,
 	"textX":20,
 	"textY":20,
-	"pixTab":20,
-	"lineH":20,
 }
 
 {
-	"name":"APM_mavlink",
+	"name":"apmMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"APM_forward",
+	"Window":"apmView",
 
 	{
 		"name":"input",
@@ -50,8 +44,8 @@
 	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
-	"Window":"APM_forward",
-	"depthWindow":"APM_depth",
+	"Window":"apmView",
+	"depthWindow":"apmDepth",
 	"orientation":0,
 	"angleV":67.1,
 	"angleH":66.7,
@@ -70,7 +64,7 @@
 	"class":"_Obstacle",
 	"FPS":30,
 	"bInst":1,
-	"Window":"APM_forward",
+	"Window":"apmView",
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
@@ -86,26 +80,40 @@
 }
 
 {
-	"name":"imageNet",
+	"name":"apmIN",
 	"class":"_ImageNet",
 	"bInst":0,
+	"bDraw":1,
 	"FPS":30,
-	"mode":"depth",
-	"Window":"APM_forward",
-	"_Stream":"ZED",
-	"dir":"/home/ubuntu/src/model/ImageNet/",
-	"modelFile":"googlenet.prototxt",
-	"trainedFile":"bvlc_googlenet.caffemodel",
-	"meanFile":"",
-	"labelFile":"ilsvrc12_synset_words.txt",
-	"obsLifetime":100000,
-	"nObs":16,
-	"bDrawContour":0,
-	"contourBlend":0.15,
-	"fDist":0.5,
-	"detectMinSize":0.005,
-	"detectMaxSize":0.05,
-	"extraBBox":0.0,
+	"Window":"apmView",
+	"_VisionBase":"ZED",
+	"dir":"/home/ubuntu/src/model/hm/grass_128/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_3350.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"blobOut":"softmax",
+	"labelFile":"labels.txt",
+	"nObj":128,
+	"mode":"object",
+	"maxPix":1000000,
+}
+
+{
+	"name":"apmMN",
+	"bInst":0,
+	"bDraw":0,
+	"FPS":30,
+	"class":"_MatrixNet",
+	"_ImageNet":"apmIN",
+	"Window":"apmView",
+	"w":0.1,
+	"h":0.15,
+	"dW":0.1,
+	"dH":0.15,
+	"left":0.0,
+	"top":0.0,
+	"right":1.0,
+	"bottom":0.5,
 }
 
 {
@@ -113,7 +121,7 @@
 	"class":"_DetectNet",
 	"bInst":0,
 	"FPS":30,
-	"Window":"APM_forward",
+	"Window":"apmView",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.05,
@@ -128,10 +136,10 @@
 }
 
 {
-	"name":"APMstate",
+	"name":"apmState",
 	"class":"_Automaton",
 	"bInst":1,
-	"Window":"APM_forward",
+	"Window":"apmView",
 	"startState":"APM_STANDBY",
 
 	{
@@ -144,33 +152,32 @@
 }
 
 {
-	"name":"autopilot",
+	"name":"apmPilot",
 	"class":"_AutoPilot",
-	"_Automaton":"APMstate",
+	"_Automaton":"apmState",
 	"bInst":1,
 	"FPS":30,
-	"Window":"APM_forward",
-	"bMouse":1,
+	"Window":"apmView",
 	
 	{
 		"name":"action",
 		
 		{
-			"name":"APMbase",
+			"name":"apmBase",
 			"class":"APMcopter_base",
 			"bInst":1,
-			"_Automaton":"APMstate",
-			"Window":"APM_forward",
-			"_Mavlink":"APM_mavlink",
+			"_Automaton":"apmState",
+			"Window":"apmView",
+			"_Mavlink":"apmMavlink",
 		}
 
 		{
-			"name":"APMavoid",
+			"name":"apmAvoid",
 			"class":"APMcopter_avoid",
 			"bInst":1,
-			"Window":"APM_forward",
-			"_Automaton":"APMstate",
-			"APMcopter_base":"APMbase",
+			"Window":"apmView",
+			"_Automaton":"apmState",
+			"APMcopter_base":"apmBase",
 			"_Obstacle":"Obstacle",
 			"_ZED":"ZED",
 			"avoidLeft":0.05,
@@ -180,25 +187,45 @@
 		}
 		
 		{
-			"name":"APMzedSLAM",
+			"name":"apmZedSlam",
 			"class":"APMcopter_zedSLAM",
 			"bInst":1,
-			"bLog":1,
-			"Window":"APM_forward",
-			"_Automaton":"APMstate",
-			"APMcopter_base":"APMbase",
+			"bLog":0,
+			"Window":"apmView",
+			"_Automaton":"apmState",
+			"APMcopter_base":"apmBase",
 			"_ZED":"ZED",
 		}
 
 		{
-			"name":"APMlanding",
+			"name":"apmVFence",
+			"class":"APMcopter_visualFence",
+			"bInst":0,
+			"bLog":1,
+			"Window":"apmView",
+			"_Automaton":"apmState",
+			"APMcopter_base":"apmBase",
+			"_MatrixNet":"apmMN",
+			
+			{
+				"iClass":0,
+				"action":0,
+			}
+			{
+				"iClass":0,
+				"action":0,
+			}
+		}
+
+		{
+			"name":"apmLanding",
 			"class":"APMcopter_landing",
 			"bInst":0,
-			"Window":"APM_forward",
-			"APMcopter_base":"APMbase",
+			"Window":"apmView",
+			"APMcopter_base":"apmBase",
 			"_Stream":"ZED",
 			"_AIbase":"detectNet",
-			"_Automaton":"APMstate",
+			"_Automaton":"apmState",
 			"orientationX":1,
 			"orientationY":1,
 			"timeout":1000,

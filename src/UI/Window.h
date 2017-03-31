@@ -12,8 +12,8 @@
 #include "../Base/BASE.h"
 #include "../Vision/Frame.h"
 
-#define TAB_PIX 25
-#define LINE_HEIGHT 15;
+#define TAB_PIX 20
+#define LINE_HEIGHT 20
 
 namespace kai
 {

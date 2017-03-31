@@ -92,7 +92,7 @@ bool _AIbase::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("_Stream", &iName));
+	F_INFO(pK->v("_VisionBase", &iName));
 	m_pStream = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;

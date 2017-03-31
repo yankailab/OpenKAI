@@ -349,7 +349,6 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 	NULL_(pMouse);
 
 	Rect2d roi;
-	int ROIhalf;
 
 	switch (pMouse->m_event)
 	{

@@ -61,7 +61,7 @@ bool HM_follow::link(void)
 
 	if (!m_pMN)
 	{
-		LOG_E("_MatrixNet not found");
+		LOG_E(iName << " not found");
 		return false;
 	}
 

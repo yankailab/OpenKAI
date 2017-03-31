@@ -143,7 +143,7 @@
 	"bDraw":1,
 	"FPS":30,
 	"Window":"HMview",
-	"_Stream":"ZED",
+	"_VisionBase":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/grass_128/",
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_3350.caffemodel",
