@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef AI__Lightware_SF40_H_
-#define AI__Lightware_SF40_H_
+#ifndef SENSOR__Lightware_SF40_H_
+#define SENSOR__Lightware_SF40_H_
 
 #include "../Base/common.h"
 #include "../Filter/Median.h"

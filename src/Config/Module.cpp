@@ -24,6 +24,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Bullseye);
 	ADD_MODULE(_Flow);
 	ADD_MODULE(_Lightware_SF40);
+	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_server);
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);

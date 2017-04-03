@@ -33,6 +33,7 @@
 
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
+#include "../Sensor/_LeddarVu.h"
 
 #include "../Autopilot/Action/ActionBase.h"
 #include "../Autopilot/Action/HM/HM_base.h"
