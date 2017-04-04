@@ -24,7 +24,6 @@ using namespace cv;
 
 struct SDetection
 {
-	uint8_t channel;			 // Channel number (0..15)
 	double dDistance;			 // distance from the sensor, in meters
 	double dAmplitude;			 // signal amplitude
 	uint8_t flags;               // Flags
@@ -52,14 +51,9 @@ private:
 //							       uint32_t& nbrDetections, uint32_t& uTimestamp);
 	bool ReadDetectionsReg(modbus_t* mb, SDetection tabDetections[LEDDAR_MAX_DETECTIONS],
 							      uint32_t& nbrDetections, uint32_t& uTimestamp);
-	void TestConnection(modbus_t* mb);
-
-
-
 
 	bool open(void);
 	bool updateLidar(void);
-
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
