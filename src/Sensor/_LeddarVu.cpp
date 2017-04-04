@@ -10,15 +10,12 @@ namespace kai
 _LeddarVu::_LeddarVu()
 {
 	m_pMb = NULL;
-	m_offsetAngle = 0.0;
 	m_nDiv = 0;
 	m_dAngle = 0;
 	m_minDist = 0.1;
 	m_maxDist = 100.0;
-
-	m_dPos.init();
-	m_diffMax = 1.0;
-	m_diffMin = 0.25;
+	m_angleV = 0.0;
+	m_angleH = 0.0;
 
 	m_portName = "";
 	m_baud = 115200;
@@ -42,27 +39,16 @@ bool _LeddarVu::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	string presetDir = "";
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("minDist", &m_minDist));
 	F_INFO(pK->v("maxDist", &m_maxDist));
-	F_INFO(pK->v("diffMax", &m_diffMax));
-	F_INFO(pK->v("diffMin", &m_diffMin));
-	F_INFO(pK->v("offsetAngle", &m_offsetAngle));
-	while (m_offsetAngle < 0)
-		m_offsetAngle += DEG_AROUND;
 
-	Kiss* pCC;
-	string param;
-	int i;
-
-	//input
-	pCC = pK->o("input");
-	IF_F(pCC->empty());
-	F_INFO(pCC->v("portName", &m_portName));
-	F_INFO(pCC->v("baud", &m_baud));
-	F_INFO(pCC->v("slaveAddr", &m_slaveAddr));
-	F_INFO(pCC->v("bUse0x41", &m_bUse0x41));
+	Kiss* pI;
+	pI = pK->o("input");
+	IF_F(pI->empty());
+	F_INFO(pI->v("portName", &m_portName));
+	F_INFO(pI->v("baud", &m_baud));
+	F_INFO(pI->v("slaveAddr", &m_slaveAddr));
+	F_INFO(pI->v("bUse0x41", &m_bUse0x41));
 
 	return true;
 }
@@ -234,7 +220,7 @@ bool _LeddarVu::draw(void)
 	string msg;
 
 	pWin->tabNext();
-	msg = "dPos: dX=" + f2str(m_dPos.x) + ", dY=" + f2str(m_dPos.y);
+	msg = "";
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();

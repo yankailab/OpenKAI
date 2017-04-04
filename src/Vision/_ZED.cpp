@@ -277,6 +277,11 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
     else
     	m_vR.z += M_PI;
 
+    if(abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
+    {
+    	return -1;
+    }
+
    	*pR = m_vR;
 
 //	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);

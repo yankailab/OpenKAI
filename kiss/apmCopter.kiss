@@ -44,6 +44,7 @@
 	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
+	"bLog":0,
 	"Window":"apmView",
 	"depthWindow":"apmDepth",
 	"orientation":0,
@@ -54,9 +55,31 @@
 	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":20,
-	"bZedFlip":0,
+	"bZedFlip":1,
 	"zedConfidence":99,
 	"bFlip":0,
+}
+
+{
+	"name":"leddarVu",
+	"class":"_LeddarVu",
+	"FPS":30,
+	"bInst":0,
+	"Window":"apmView",
+	"angleV":67.1,
+	"angleH":66.7,
+	"maxDist":100.0,
+	"minDist":0.1,
+	"nDiv":8,
+	"dAngle":10,
+
+	{
+		"name":"input",
+		"bInst":1,
+		"portName":"/dev/ttyACM0",
+		"baud":115200,
+		"bUse0x41":0,
+	}	
 }
 
 {
@@ -156,7 +179,7 @@
 	"class":"_AutoPilot",
 	"_Automaton":"apmState",
 	"bInst":1,
-	"FPS":30,
+	"FPS":20,
 	"Window":"apmView",
 	
 	{

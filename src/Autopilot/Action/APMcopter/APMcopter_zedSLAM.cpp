@@ -59,7 +59,7 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 
 	vDouble3 mT,mR;
 	int confidence = m_pZED->getMotionDelta(&mT, &mR);
-	IF_(confidence < 0);
+	IF_(confidence < 0);	//not tracking or ZED fps is too low
 
     m_mT.x = mT.z;
     m_mT.y = mT.x;

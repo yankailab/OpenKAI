@@ -77,16 +77,13 @@ public:
 	// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
 	bool m_bUse0x41;
 
-	double	m_offsetAngle;
 	int		m_nDiv;
 	double	m_dAngle;
 
+	double	m_angleV;
+	double	m_angleH;
 	double	m_minDist;
 	double	m_maxDist;
-
-	vDouble2 m_dPos;
-	double	m_diffMax;
-	double	m_diffMin;
 
 };
 
