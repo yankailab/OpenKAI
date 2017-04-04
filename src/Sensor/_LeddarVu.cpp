@@ -20,7 +20,7 @@ _LeddarVu::_LeddarVu()
 	m_portName = "";
 	m_baud = 115200;
 
-	m_slaveAddr = -1;
+	m_slaveAddr = 1;
 	m_bUse0x41 = false;
 }
 

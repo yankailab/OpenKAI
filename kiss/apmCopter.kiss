@@ -79,6 +79,7 @@
 		"portName":"/dev/ttyACM0",
 		"baud":115200,
 		"bUse0x41":0,
+		"slaveAddr":1,
 	}	
 }
 
