@@ -22,6 +22,12 @@ _LeddarVu::_LeddarVu()
 
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
+
+	m_bReady = 0;
+	m_nSegment = N_SEGMENT;
+	m_nDetection = 0;
+	m_lightSrcPwr = 0;
+	m_timeStamp = 0;
 }
 
 _LeddarVu::~_LeddarVu()
@@ -101,6 +107,7 @@ bool _LeddarVu::open(void)
 	m_pMb = modbus_new_rtu(m_portName.c_str(), m_baud, 'N', 8, 1);
 	if (m_pMb == nullptr)
 	{
+		m_pMb = NULL;
 		LOG_E("Unable to create the libmodbus context");
 		return false;
 	}
@@ -163,7 +170,6 @@ bool _LeddarVu::open(void)
 					for (int i = 0; i < nReceived; ++i)
 					{
 						str += (buf[i] >= 32) ? buf[i] : ' ';
-//						("  Byte %i = %i ('%c')\n", i, (int)buf[i], (buf[i] >= 32) ? buf[i] : ' ');
 					}
 
 					LOG_I(str);
@@ -189,33 +195,42 @@ bool _LeddarVu::open(void)
 
 bool _LeddarVu::updateLidar(void)
 {
-	// Shows the last reading.
-	SDetection tabDetections[LEDDAR_MAX_DETECTIONS];
-	uint32_t uDetectionCount;
-	uint32_t uTimestamp;
-	string str = "";
+	NULL_F(m_pMb);
 
-	if (ReadDetectionsReg(m_pMb, tabDetections, uDetectionCount, uTimestamp))
+	const uint32_t N_REGISTERS = 15 + N_SEGMENT;
+	uint16_t reg[N_REGISTERS];
+
+	int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
+	IF_F(nRead != N_REGISTERS);
+
+	m_bReady = reg[0];
+	IF_F(m_bReady == 0);
+
+	m_nSegment = reg[1];
+	m_nDetection = reg[10];
+	m_lightSrcPwr = reg[11];
+	m_timeStamp = reg[13] + (reg[14] << 16);
+
+	const static double BASE_D = 1.0/100.0;
+	const static double BASE_A = 1.0/64.0;
+
+	int i;
+	for (i = 0; i < N_SEGMENT; i++)
 	{
-//		str = "nDetectionCount: " + i2str(uDetectionCount);
-//
-//		for (uint32_t i = 0; i < uDetectionCount; ++i)
-//		{
-//			str += " | " + f2str(tabDetections[i].dDistance);
-//		}
-
-		for (int i = 0; i < uDetectionCount; i++)
-		{
-			printf("|%.3lfm (%.1lf)", tabDetections[i].dDistance,
-					tabDetections[i].dAmplitude);
-		}
-
-		printf("|\n");
+		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
+//		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
+//		m_pSegment[i].flags = reg[15 + 2*N_SEGMENT + i];
 	}
-	else
+
+	IF_T(!m_bLog);
+
+	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
+	for (i = 0; i < N_SEGMENT; i++)
 	{
-		LOG_I("Error reading detections, errno="<<errno);
+		log += " | " + f2str(m_pSegment[i].dDistance);
 	}
+	log += " |";
+	LOG_I(log);
 
 	return true;
 }
@@ -252,36 +267,6 @@ bool _LeddarVu::draw(void)
 	for (int i = 0; i < m_nDiv; i++)
 	{
 	}
-
-	return true;
-}
-
-bool _LeddarVu::ReadDetectionsReg(modbus_t* mb,
-		SDetection tabDetections[LEDDAR_MAX_DETECTIONS],
-		uint32_t& nbrDetections, uint32_t& uTimestamp)
-{
-	// This version of the ReadDetections function uses the standard Modbus registers.
-	nbrDetections = 0;
-
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	// Read 32+2 registers from address 14
-	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	const uint32_t NBR_REGISTERS = 32 + 2;
-	uint16_t tabRegValues[NBR_REGISTERS];
-
-	int numRead = modbus_read_input_registers(mb, 14, NBR_REGISTERS, tabRegValues);
-	IF_F(numRead != NBR_REGISTERS);
-
-	uTimestamp = tabRegValues[0] + (tabRegValues[1] << 16);
-
-	for (uint32_t i = 0; i < 16; ++i)
-	{
-		tabDetections[i].dDistance = (double) tabRegValues[2 + i] / 100.0;
-		tabDetections[i].dAmplitude = (double) tabRegValues[18 + i] / 64.0;
-		tabDetections[i].flags = 0;         // unknown with the registers method
-	}
-
-	nbrDetections = 16;        // limit to the first detection (one per segment)
 
 	return true;
 }

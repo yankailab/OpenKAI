@@ -22,11 +22,11 @@ using std::string;
 using namespace std;
 using namespace cv;
 
-struct SDetection
+struct SEGMENT_DETECTION
 {
 	double dDistance;			 // distance from the sensor, in meters
 	double dAmplitude;			 // signal amplitude
-	uint8_t flags;               // Flags
+	uint16_t flags;               // Flags
 };
 
 class _LeddarVu: public _ThreadBase
@@ -46,12 +46,6 @@ public:
 	double maxDist(void);
 
 private:
-	bool SetSlaveAddr(modbus_t* mb, int iSlaveAddr);
-//	bool ReadDetectionsFast(modbus_t* mb, SDetection tabDetections[LEDDAR_MAX_DETECTIONS],
-//							       uint32_t& nbrDetections, uint32_t& uTimestamp);
-	bool ReadDetectionsReg(modbus_t* mb, SDetection tabDetections[LEDDAR_MAX_DETECTIONS],
-							      uint32_t& nbrDetections, uint32_t& uTimestamp);
-
 	bool open(void);
 	bool updateLidar(void);
 	void update(void);
@@ -73,11 +67,19 @@ public:
 
 	int		m_nDiv;
 	double	m_dAngle;
-
 	double	m_angleV;
 	double	m_angleH;
 	double	m_minDist;
 	double	m_maxDist;
+
+	uint16_t m_bReady;
+	uint16_t m_nSegment;
+	uint16_t m_nDetection;
+	uint16_t m_lightSrcPwr;
+	uint32_t m_timeStamp;
+
+	SEGMENT_DETECTION m_pSegment[N_SEGMENT];
+
 
 };
 

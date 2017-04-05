@@ -298,7 +298,7 @@ inline char* ftoa(char* pString, size_t Size, float Value, int FracDigits)
 inline string f2str(double val)
 {
 	char buf[128];
-	sprintf(buf, "%f", val);
+	sprintf(buf, "%.3f", val);
 	return string(buf);
 }
 
