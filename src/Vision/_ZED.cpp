@@ -286,6 +286,12 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
    	*pR = m_vR;
 
    	uint64_t t = get_time_usec();
+   	if(m_tLastTrack == 0)
+   	{
+   	   	m_tLastTrack = t;
+   	   	return -1;
+   	}
+
    	*pDT = t - m_tLastTrack;
    	m_tLastTrack = t;
 
