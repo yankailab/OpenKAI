@@ -33,6 +33,7 @@ _ZED::_ZED()
 	m_trackConfidence = 0;
 	m_vT.init();
 	m_vR.init();
+	m_tLastTrack = 0;
 }
 
 _ZED::~_ZED()
@@ -254,7 +255,7 @@ void _ZED::zedTrackReset(void)
 		m_trackState = tracking;
 }
 
-int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
+int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 {
 	if (m_trackState != tracking)
 	{
@@ -283,6 +284,10 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR)
     }
 
    	*pR = m_vR;
+
+   	uint64_t t = get_time_usec();
+   	*pDT = t - m_tLastTrack;
+   	m_tLastTrack = t;
 
 //	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
 //	mRot.normalize();

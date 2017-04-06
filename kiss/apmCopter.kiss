@@ -64,7 +64,7 @@
 	"name":"leddarVu",
 	"class":"_LeddarVu",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"apmView",
 	"angleV":67.1,
 	"angleH":66.7,

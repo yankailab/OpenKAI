@@ -42,7 +42,7 @@ public:
 	void stopTracking(void);
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
-	int getMotionDelta(vDouble3* pT, vDouble3* pR);
+	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);
 
 private:
 	void zedTrackReset(void);
@@ -71,6 +71,7 @@ public:
     vDouble3 m_vT;
     vDouble3 m_vR;
     int	m_trackConfidence;
+    uint64_t m_tLastTrack;
 
 	Window* m_pDepthWin;
 

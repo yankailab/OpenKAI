@@ -58,7 +58,8 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 	}
 
 	vDouble3 mT,mR;
-	int confidence = m_pZED->getMotionDelta(&mT, &mR);
+	uint64_t dT;
+	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 	IF_(confidence < 0);	//not tracking or ZED fps is too low
 
     m_mT.x = mT.z;
@@ -71,9 +72,9 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 
 	NULL_(m_pAPM);
 	NULL_(m_pAPM->m_pMavlink);
-	m_pAPM->m_pMavlink->zedVisionPositionDelta(m_dTime, &m_mR, &m_mT, confidence);
+	m_pAPM->m_pMavlink->zedVisionPositionDelta(dT, &m_mR, &m_mT, confidence);
 
-	LOG_I("forward=" << m_mT.x << ", right=" << m_mT.y << ", down=" << m_mT.z << "; roll=" << m_mR.x << ", pitch=" << m_mR.y << ", yaw=" << m_mR.z);
+	LOG_I("dT=" << dT << ", forward=" << m_mT.x << ", right=" << m_mT.y << ", down=" << m_mT.z << "; roll=" << m_mR.x << ", pitch=" << m_mR.y << ", yaw=" << m_mR.z);
 }
 
 bool APMcopter_zedSLAM::draw(void)

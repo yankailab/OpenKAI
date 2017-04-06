@@ -149,7 +149,8 @@ void _GPS::detect(void)
 	{
 		vDouble3 dM;
 		vDouble3 dR;
-		m_pZED->getMotionDelta(&dM,&dR);
+		uint64_t dTime;
+		m_pZED->getMotionDelta(&dM,&dR,&dTime);
 		dM.x = constrain(dM.x, -dT.x, dT.x);	//Siding
 		dM.y = constrain(dM.y, -dT.y, dT.y);	//Alt
 		dM.z = constrain(dM.z, -dT.z, dT.z);	//Heading
