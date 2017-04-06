@@ -118,11 +118,11 @@ void APMcopter_base::sendHeartbeat(void)
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
-	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
-	{
-		m_pMavlink->sendHeartbeat();
-		m_lastHeartbeat = timeNow;
-	}
+//	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
+//	{
+//		m_pMavlink->sendHeartbeat();
+//		m_lastHeartbeat = timeNow;
+//	}
 }
 
 void APMcopter_base::updateAttitude(void)

@@ -198,7 +198,7 @@
 		{
 			"name":"apmAvoid",
 			"class":"APMcopter_avoid",
-			"bInst":1,
+			"bInst":0,
 			"Window":"apmView",
 			"_Automaton":"apmState",
 			"APMcopter_base":"apmBase",
