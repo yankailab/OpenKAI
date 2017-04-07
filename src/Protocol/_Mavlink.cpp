@@ -18,11 +18,16 @@ _Mavlink::_Mavlink()
 	m_msg.attitude.pitchspeed = 0;
 	m_msg.attitude.rollspeed = 0;
 	m_msg.attitude.yawspeed = 0;
+
+	pthread_mutex_init(&m_mutexW, NULL);
+	pthread_mutex_init(&m_mutexR, NULL);
 }
 
 _Mavlink::~_Mavlink()
 {
 	close();
+	pthread_mutex_destroy (&m_mutexW);
+	pthread_mutex_destroy (&m_mutexR);
 }
 
 bool _Mavlink::init(void* pKiss)
@@ -246,13 +251,35 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 
 int _Mavlink::writeMessage(mavlink_message_t message)
 {
-	uint8_t buf[300];
+	uint8_t pBuf[N_MAVBUF];
+	int len = mavlink_msg_to_send_buffer(pBuf, &message);
+//	m_pSerialPort->write(m_pBuf, len);
 
-	// Translate message to buffer
-	unsigned int len = mavlink_msg_to_send_buffer(buf, &message);
-	m_pSerialPort->write(buf, len);
+	pthread_mutex_lock(&m_mutexW);
+
+	for (int i = 0; i < len; i++)
+		m_queW.push(pBuf[i]);
+
+	pthread_mutex_unlock(&m_mutexW);
 
 	return len;
+}
+
+void _Mavlink::sendMessage(void)
+{
+	uint8_t pBuf[N_MAVBUF];
+
+	pthread_mutex_lock(&m_mutexW);
+
+	int nW = m_queW.size();
+	if(nW > N_MAVBUF)nW = N_MAVBUF;
+	for (int i = 0; i < nW; i++)
+		pBuf[i] = m_queW.front();
+		m_queW.pop();
+
+	pthread_mutex_unlock(&m_mutexW);
+
+	m_pSerialPort->write(pBuf, nW);
 }
 
 bool _Mavlink::start(void)
@@ -286,6 +313,9 @@ void _Mavlink::update(void)
 
 		this->autoFPSfrom();
 
+		sendMessage();
+
+		//TODO:
 		//Handling incoming messages
 		handleMessages();
 

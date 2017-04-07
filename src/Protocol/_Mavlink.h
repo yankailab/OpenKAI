@@ -10,6 +10,7 @@
 #include "../UI/Window.h"
 
 #define NUM_MSG_HANDLE 100
+#define N_MAVBUF 512
 
 namespace kai
 {
@@ -108,8 +109,15 @@ public:
 
 
 public:
-	SerialPort* m_pSerialPort;
+	void sendMessage(void);
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_Mavlink *) This)->update();
+		return NULL;
+	}
 
+	SerialPort* m_pSerialPort;
 	int m_systemID;
 	int m_componentID;
 	int m_type;
@@ -119,13 +127,11 @@ public:
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
 
-	//Read Thread
-	void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_Mavlink *) This)->update();
-		return NULL;
-	}
+
+	std::queue<uint8_t> m_queW;
+	std::queue<uint8_t> m_queR;
+	pthread_mutex_t m_mutexW;
+	pthread_mutex_t m_mutexR;
 
 
 };

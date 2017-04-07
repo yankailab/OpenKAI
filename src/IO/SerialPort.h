@@ -35,10 +35,7 @@ public:
 
 private:
 	bool setup(void);
-//	m_baudRate, 8, 1, false, false
-//	bool Setup(int baud, int data_bits, int stop_bits, bool parity, bool hardware_control);
 
-private:
 	//Connection status
 	int m_fd;
 	string m_name;
