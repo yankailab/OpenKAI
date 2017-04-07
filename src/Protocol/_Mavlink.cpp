@@ -258,7 +258,9 @@ int _Mavlink::writeMessage(mavlink_message_t message)
 	pthread_mutex_lock(&m_mutexW);
 
 	for (int i = 0; i < len; i++)
+	{
 		m_queW.push(pBuf[i]);
+	}
 
 	pthread_mutex_unlock(&m_mutexW);
 
@@ -274,8 +276,10 @@ void _Mavlink::sendMessage(void)
 	int nW = m_queW.size();
 	if(nW > N_MAVBUF)nW = N_MAVBUF;
 	for (int i = 0; i < nW; i++)
+	{
 		pBuf[i] = m_queW.front();
 		m_queW.pop();
+	}
 
 	pthread_mutex_unlock(&m_mutexW);
 
