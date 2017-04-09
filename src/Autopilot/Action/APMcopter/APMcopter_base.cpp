@@ -103,38 +103,18 @@ bool APMcopter_base::link(void)
 void APMcopter_base::update(void)
 {
 	this->ActionBase::update();
-
-	NULL_(m_pMavlink);
-
-	sendHeartbeat();
-
-	//update APM status from heartbeat msg
-	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
-}
-
-void APMcopter_base::sendHeartbeat(void)
-{
 	NULL_(m_pMavlink);
 
 	//Sending Heartbeat at 1Hz
 	uint64_t timeNow = get_time_usec();
-//	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
-//	{
-//		m_pMavlink->sendHeartbeat();
-//		m_lastHeartbeat = timeNow;
-//	}
-}
+	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
+	{
+		m_pMavlink->sendHeartbeat();
+		m_lastHeartbeat = timeNow;
+	}
 
-void APMcopter_base::updateDistanceSensor(DISTANCE_SENSOR* pSensor)
-{
-	NULL_(m_pMavlink);
-	NULL_(pSensor);
-
-	m_pMavlink->distance_sensor(pSensor->m_type,
-			pSensor->m_orientation,
-			pSensor->m_maxDistance,
-			pSensor->m_minDistance,
-			pSensor->m_distance);
+	//update APM status from heartbeat msg
+	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 }
 
 bool APMcopter_base::draw(void)

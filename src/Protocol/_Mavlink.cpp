@@ -312,13 +312,10 @@ void _Mavlink::zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 bool _Mavlink::readMessage(mavlink_message_t &message)
 {
 	uint8_t	rBuf[N_MAVBUF];
-	mavlink_status_t status;
-	uint8_t result;
 	static int nRead = 0;
 	static int iRead = 0;
 
-	//TODO: check the loop
-	if(iRead == nRead)
+	if(nRead == 0)
 	{
 		nRead = m_pSerialPort->read(rBuf, N_MAVBUF);
 		IF_F(nRead <= 0);
@@ -327,7 +324,8 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 
 	while(iRead < nRead)
 	{
-		result = mavlink_frame_char(MAVLINK_COMM_0, rBuf[iRead], &message, &status);
+		mavlink_status_t status;
+		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, rBuf[iRead], &message, &status);
 		iRead++;
 
 		if (result == 1)
@@ -339,19 +337,11 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 		else if (result == 2)
 		{
 			//Bad CRC
-			LOG_I("-> DROPPED PACKETS:"<<status.packet_rx_drop_count);
+			LOG_I("-> DROPPED PACKETS:" << status.packet_rx_drop_count);
 		}
-
-		// check for dropped packets
-		/*		if ((last_status.packet_rx_drop_count != status.packet_rx_drop_count) &&
-		 status.packet_rx_drop_count > 0)
-		 {
-		 printf("ERROR: DROPPED %d PACKETS\n", status.packet_rx_drop_count);
-		 }
-		 last_status = status;
-		 */
 	}
 
+	nRead = 0;
 	return false;
 }
 

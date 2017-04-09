@@ -77,9 +77,6 @@ public:
 	void update(void);
 	bool draw(void);
 
-	void sendHeartbeat(void);
-	void updateDistanceSensor(DISTANCE_SENSOR* pSensor);
-
 public:
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;

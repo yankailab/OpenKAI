@@ -8,7 +8,7 @@
 #include "../IO/SerialPort.h"
 #include "../UI/Window.h"
 
-#define NUM_MSG_HANDLE 100
+#define NUM_MSG_HANDLE 10
 #define N_MAVBUF 512
 
 namespace kai
