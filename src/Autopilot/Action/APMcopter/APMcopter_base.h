@@ -78,7 +78,6 @@ public:
 	bool draw(void);
 
 	void sendHeartbeat(void);
-	void updateAttitude(void);
 	void updateDistanceSensor(DISTANCE_SENSOR* pSensor);
 
 public:

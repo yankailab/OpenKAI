@@ -3,7 +3,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-//#include "../include/mavlink/common/mavlink.h"
 #include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/SerialPort.h"
@@ -75,6 +74,11 @@ struct Mavlink_Messages
 
 };
 
+struct MAVLINK_MSG_BUF
+{
+	int m_nByte;
+	uint8_t m_pBuf[N_MAVBUF];
+};
 
 class _Mavlink: public _ThreadBase
 {
@@ -94,7 +98,7 @@ public:
 	bool readMessage(mavlink_message_t &message);
 
 	//Send
-	int  writeMessage(mavlink_message_t message);
+	void  writeMessage(mavlink_message_t message);
 	void requestDataStream(uint8_t stream_id, int rate);
 	void sendHeartbeat(void);
 
@@ -127,13 +131,8 @@ public:
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
 
-
-	std::queue<uint8_t> m_queW;
-	std::queue<uint8_t> m_queR;
+	std::queue<MAVLINK_MSG_BUF> m_queW;
 	pthread_mutex_t m_mutexW;
-	pthread_mutex_t m_mutexR;
-
-
 };
 
 }

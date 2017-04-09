@@ -125,36 +125,6 @@ void APMcopter_base::sendHeartbeat(void)
 //	}
 }
 
-void APMcopter_base::updateAttitude(void)
-{
-	NULL_(m_pMavlink);
-
-	float pAttitude[3];
-	float pRate[3];
-
-	pAttitude[0] = constrain(m_ctrlRoll.m_v, m_pidRoll.m_lim, -m_pidRoll.m_lim);
-	pAttitude[1] = constrain(m_ctrlPitch.m_v, m_pidRoll.m_lim, -m_pidRoll.m_lim);
-	pAttitude[2] = constrain(m_ctrlYaw.m_v, m_pidRoll.m_lim, -m_pidRoll.m_lim);
-
-	pRate[0] = m_pidRoll.m_rate;
-	pRate[1] = m_pidPitch.m_rate;
-	pRate[2] = m_pidYaw.m_rate;
-
-	m_pMavlink->set_attitude_target(pAttitude, pRate, 0, 0b01000100);
-
-	/*
-	 type_mask
-	 uint8_t	Mappings:
-	 If any of these bits are set, the corresponding input should be ignored:
-	 bit 1: body roll rate,
-	 bit 2: body pitch rate,
-	 bit 3: body yaw rate.
-	 bit 4-bit 6: reserved,
-	 bit 7: throttle,
-	 bit 8: attitude
-	 */
-}
-
 void APMcopter_base::updateDistanceSensor(DISTANCE_SENSOR* pSensor)
 {
 	NULL_(m_pMavlink);
