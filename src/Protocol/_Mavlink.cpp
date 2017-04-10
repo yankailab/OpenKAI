@@ -306,7 +306,13 @@ void _Mavlink::zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 			m_targetComponentID, &message, &dZed);
 
 	writeMessage(message);
-	LOG_I("<- ZED_VISION_POSITION_DELTA");
+	LOG_I("<- ZED_VISION_POSITION_DELTA dT=" << dTime
+			<< ", forward=" << pDPos->x
+			<< ", right=" << pDPos->y
+			<< ", down=" << pDPos->z
+			<< "; roll=" << pDAngle->x
+			<< ", pitch=" << pDAngle->y
+			<< ", yaw=" << pDAngle->z);
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &message)

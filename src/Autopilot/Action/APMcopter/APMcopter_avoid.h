@@ -12,6 +12,12 @@
 namespace kai
 {
 
+struct DIR_DIST
+{
+	double m_dirDeg;
+	double m_dist;
+};
+
 class APMcopter_avoid: public ActionBase
 {
 public:
@@ -23,13 +29,11 @@ public:
 	void update(void);
 	bool draw(void);
 
-public:
-	void updateDistanceSensor(void);
-
 private:
-	APMcopter_base* m_pAPM;
+	void updateZED(void);
+	void updateSF40(void);
 
-	//sensor
+	APMcopter_base* m_pAPM;
 	_Lightware_SF40* m_pSF40;
 	_Obstacle* m_pObs;
 	_ZED* m_pZED;

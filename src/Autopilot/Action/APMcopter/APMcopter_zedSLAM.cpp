@@ -73,8 +73,6 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 	NULL_(m_pAPM);
 	NULL_(m_pAPM->m_pMavlink);
 	m_pAPM->m_pMavlink->zedVisionPositionDelta(dT, &m_mR, &m_mT, confidence);
-
-	LOG_I("dT=" << dT << ", forward=" << m_mT.x << ", right=" << m_mT.y << ", down=" << m_mT.z << "; roll=" << m_mR.x << ", pitch=" << m_mR.y << ", yaw=" << m_mR.z);
 }
 
 bool APMcopter_zedSLAM::draw(void)

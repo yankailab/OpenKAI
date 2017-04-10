@@ -137,5 +137,10 @@ VISION_TYPE _VisionBase::getType(void)
 	return m_type;
 }
 
+bool _VisionBase::isOpened(void)
+{
+	return m_bOpen;
+}
+
 
 }

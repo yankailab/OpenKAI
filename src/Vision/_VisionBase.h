@@ -41,6 +41,7 @@ public:
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
+	bool isOpened(void);
 
 public:
 	bool m_bOpen;
