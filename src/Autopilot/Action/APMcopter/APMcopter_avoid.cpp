@@ -79,19 +79,18 @@ void APMcopter_avoid::updateZED(void)
 	NULL_(m_pAPM->m_pMavlink);
 	_Mavlink* pMavlink = m_pAPM->m_pMavlink;
 
-	int i;
 	double maxDist;
 	double minDist;
 
 	double rangeMin, rangeMax;
 	m_pZED->getRange(&rangeMin, &rangeMax);
 
-	m_distObs = m_pObs->dist(&m_avoidArea,&m_posMin) * 100;
+	m_distObs = m_pObs->dist(&m_avoidArea, &m_posMin) * 100;
 	maxDist = rangeMax * 100;
 	minDist = rangeMin * 100;
 
-	if(m_distObs < minDist || m_distObs > maxDist)
-		m_distObs = maxDist;
+//	if(m_distObs < minDist || m_distObs > maxDist)
+//		m_distObs = maxDist;
 
 	pMavlink->distance_sensor(0, //type
 			0,	//orientation

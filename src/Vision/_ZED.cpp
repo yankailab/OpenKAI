@@ -15,19 +15,21 @@ namespace kai
 _ZED::_ZED()
 {
 	m_type = zed;
-	m_zedResolution = (int) sl::zed::VGA;
+	m_pZed = NULL;
+	m_pzImg = NULL;
+	m_pzDepth = NULL;
+	m_zedResolution = (int) sl::RESOLUTION_VGA;
 	m_zedMinDist = 0.6;
 	m_zedMaxDist = 20.0;
-	m_pZed = NULL;
 	m_zedFPS = DEFAULT_FPS;
-	m_zedMode = sl::zed::STANDARD;
-	m_zedQuality = sl::zed::PERFORMANCE;
-	m_pDepthWin = NULL;
+	m_zedSenseMode = sl::SENSING_MODE_STANDARD;
+	m_zedDepthMode = sl::DEPTH_MODE_PERFORMANCE;
 	m_bZedFlip = false;
 	m_zedConfidence = 100;
+	m_pDepthWin = NULL;
 	m_angleH = 66.7;
 	m_angleV = 67.1;
-	m_zedTrackState = sl::zed::TRACKING_STATE::TRACKING_OFF;
+	m_zedTrackState = sl::TRACKING_STATE_OFF;
 	m_mMotion.setIdentity(4, 4);
 	m_trackState = track_idle;
 	m_trackConfidence = 0;
@@ -53,7 +55,7 @@ bool _ZED::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("zedResolution", &m_zedResolution));
 	F_INFO(pK->v("zedFPS", &m_zedFPS));
-	F_INFO(pK->v("zedQuality", &m_zedQuality));
+	F_INFO(pK->v("zedDepthMode", &m_zedDepthMode));
 	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
 	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
 	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
@@ -77,40 +79,92 @@ bool _ZED::link(void)
 
 bool _ZED::open(void)
 {
-	// Initialize ZED color stream in HD and depth in Performance mode
-	m_pZed = new sl::zed::Camera((sl::zed::ZEDResolution_mode) m_zedResolution);
+	m_pZed = new sl::Camera();
 
-	// define a struct of parameters for the initialization
-	sl::zed::InitParams zedParams;
-	zedParams.mode = (sl::zed::MODE) m_zedQuality;
-	zedParams.unit = sl::zed::UNIT::METER;
-	zedParams.verbose = 1;
-	zedParams.device = -1;
-	zedParams.minimumDistance = m_zedMinDist;
-	zedParams.vflip = m_bZedFlip;
+	sl::InitParameters zedInit;
+	zedInit.camera_buffer_count_linux = 4;
+	zedInit.camera_disable_self_calib = false;
+	zedInit.camera_fps = m_zedFPS;
+	zedInit.camera_image_flip = m_bZedFlip;
+	zedInit.camera_linux_id = 0;
+	zedInit.camera_resolution = (sl::RESOLUTION) m_zedResolution;
+	zedInit.coordinate_system = sl::COORDINATE_SYSTEM::COORDINATE_SYSTEM_IMAGE;
+	zedInit.coordinate_units = sl::UNIT::UNIT_METER;
+	zedInit.depth_minimum_distance = m_zedMinDist;
+	zedInit.depth_mode = (sl::DEPTH_MODE) m_zedDepthMode;
+	zedInit.sdk_gpu_id = -1;
+	zedInit.sdk_verbose = true;
 
-	sl::zed::ERRCODE err = m_pZed->init(zedParams);
-	if (err != sl::zed::SUCCESS)
+	sl::ERROR_CODE err = m_pZed->open(zedInit);
+	if (err != sl::SUCCESS)
 	{
-		LOG(ERROR)<< "ZED Error code: " << sl::zed::errcode2str(err) << std::endl;
+		LOG(ERROR)<< "ZED Error code: " << sl::errorCode2str(err) << std::endl;
 		return false;
 	}
 
-	m_pZed->setFPS(m_zedFPS);
 	m_pZed->setConfidenceThreshold(m_zedConfidence);
-	m_pZed->setDepthClampValue(m_zedMaxDist);
-	m_zedMode = sl::zed::STANDARD;
+	m_pZed->setDepthMaxRangeValue(m_zedMaxDist);
+
+	// Set runtime parameters after opening the camera
+	m_zedRuntime.sensing_mode = (sl::SENSING_MODE) m_zedSenseMode;
+	m_zedRuntime.enable_depth = true;
+	m_zedRuntime.enable_point_cloud = false;
+	m_zedRuntime.move_point_cloud_to_world_frame = false;
+
+	// Create sl and cv Mat to get ZED left image and depth image
+	// Best way of sharing sl::Mat and cv::Mat :
+	// Create a sl::Mat and then construct a cv::Mat using the ptr to sl::Mat data.
+	sl::Resolution zedImgSize = m_pZed->getResolution();
 
 	// Initialize color image and depth
-	m_width = m_pZed->getImageSize().width;
-	m_height = m_pZed->getImageSize().height;
+	m_width = zedImgSize.width;
+	m_height = zedImgSize.height;
 	m_centerH = m_width / 2;
 	m_centerV = m_height / 2;
+
+	m_pzImg = new sl::Mat(zedImgSize, sl::MAT_TYPE_8U_C4, sl::MEM_GPU);
+	m_gImg = slMat2cvGpuMat(*m_pzImg);
+//	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_8U_C4, sl::MEM_GPU);
+	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_32F_C1, sl::MEM_GPU);
+	m_gDepth = slMat2cvGpuMat(*m_pzDepth);
+
+	m_gImg2 = GpuMat(m_gImg.size(),m_gImg.type());
+	m_gDepth2 = GpuMat(m_gDepth.size(),m_gDepth.type());
+
+	// Jetson only. Execute the calling thread on 2nd core
+//	sl::Camera::sticktoCPUCore(2);
 
 	startTracking();
 
 	m_bOpen = true;
 	return true;
+}
+
+GpuMat _ZED::slMat2cvGpuMat(sl::Mat& input)
+{
+	//convert MAT_TYPE to CV_TYPE
+	int cv_type = -1;
+	switch (input.getDataType())
+	{
+		case sl::MAT_TYPE_32F_C1: cv_type = CV_32FC1; break;
+		case sl::MAT_TYPE_32F_C2: cv_type = CV_32FC2; break;
+		case sl::MAT_TYPE_32F_C3: cv_type = CV_32FC3; break;
+		case sl::MAT_TYPE_32F_C4: cv_type = CV_32FC4; break;
+		case sl::MAT_TYPE_8U_C1: cv_type = CV_8UC1; break;
+		case sl::MAT_TYPE_8U_C2: cv_type = CV_8UC2; break;
+		case sl::MAT_TYPE_8U_C3: cv_type = CV_8UC3; break;
+		case sl::MAT_TYPE_8U_C4: cv_type = CV_8UC4; break;
+		default: break;
+	}
+
+	if(cv_type == CV_32FC1)
+	{
+		return GpuMat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::float1>(sl::MEM_GPU));
+	}
+
+	// cv::Mat data requires a uchar* pointer. Therefore, we get the uchar1 pointer from sl::Mat (getPtr<T>())
+	//cv::Mat and sl::Mat will share the same memory pointer
+	return GpuMat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::uchar1>(sl::MEM_GPU));
 }
 
 bool _ZED::start(void)
@@ -128,6 +182,12 @@ bool _ZED::start(void)
 
 void _ZED::update(void)
 {
+	GpuMat* pSrc;
+	GpuMat* pDest;
+	GpuMat* pSrcD;
+	GpuMat* pDestD;
+	GpuMat* pTmp;
+
 	while (m_bThreadON)
 	{
 		if (!m_bOpen)
@@ -142,89 +202,70 @@ void _ZED::update(void)
 
 		this->autoFPSfrom();
 
-		GpuMat gImg;
-		GpuMat gImg2;
-		GpuMat gDepth;
-		GpuMat gDepth2;
-
-		GpuMat* pSrc;
-		GpuMat* pDest;
-		GpuMat* pSrcD;
-		GpuMat* pDestD;
-		GpuMat* pTmp;
-
 		// Grab frame and compute depth in FULL sensing mode
-		if (!m_pZed->grab(m_zedMode, 1, 1, 1))
+		IF_CONT(m_pZed->grab(m_zedRuntime) != sl::SUCCESS);
+
+		m_pZed->retrieveImage(*m_pzImg, sl::VIEW_LEFT, sl::MEM_GPU);
+//		m_pZed->retrieveImage(*m_pzDepth,sl::VIEW_DEPTH, sl::MEM_GPU);
+		m_pZed->retrieveMeasure(*m_pzDepth,sl::MEASURE_DEPTH, sl::MEM_GPU);
+
+#ifndef USE_OPENCV4TEGRA
+		cuda::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
+//		cuda::cvtColor(m_gDepth, m_gDepth2, CV_BGRA2GRAY);
+#else
+		gpu::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
+//		gpu::cvtColor(m_gDepth, m_gDepth2, CV_BGRA2GRAY);
+#endif
+		pSrc = &m_gImg2;
+		pDest = &m_gImg;
+		pSrcD = &m_gDepth;
+		pDestD = &m_gDepth2;
+
+		if (m_bFlip)
 		{
-			sl::zed::Mat zLeft = m_pZed->retrieveImage_gpu(sl::zed::SIDE::LEFT);
-			gImg = GpuMat(Size(zLeft.width, zLeft.height), CV_8UC4, zLeft.data);
-
-			sl::zed::Mat zDepth = m_pZed->normalizeMeasure_gpu(
-					sl::zed::MEASURE::DEPTH, m_zedMinDist, m_zedMaxDist);
-			gDepth = GpuMat(Size(zDepth.width, zDepth.height), CV_8UC4,
-					zDepth.data);
-
 #ifndef USE_OPENCV4TEGRA
-			cuda::cvtColor(gImg, gImg2, CV_BGRA2BGR);
-			cuda::cvtColor(gDepth, gDepth2, CV_BGRA2GRAY);
+			cuda::flip(*pSrc, *pDest, -1);
+			cuda::flip(*pSrcD, *pDestD, -1);
 #else
-			gpu::cvtColor(gImg, gImg2, CV_BGRA2BGR);
-			gpu::cvtColor(gDepth, gDepth2, CV_BGRA2GRAY);
+			gpu::flip(*pSrc,*pDest,-1);
+			gpu::flip(*pSrcD,*pDestD,-1);
 #endif
-			pSrc = &gImg2;
-			pDest = &gImg;
-			pSrcD = &gDepth2;
-			pDestD = &gDepth;
-
-			if (m_bFlip)
-			{
-#ifndef USE_OPENCV4TEGRA
-				cuda::flip(*pSrc, *pDest, -1);
-				cuda::flip(*pSrcD, *pDestD, -1);
-#else
-				gpu::flip(*pSrc,*pDest,-1);
-				gpu::flip(*pSrcD,*pDestD,-1);
-#endif
-				SWAP(pSrc, pDest, pTmp);
-				SWAP(pSrcD, pDestD, pTmp);
-			}
-
-			m_pBGR->update(pSrc);
-			if (m_pGray)
-				m_pGray->getGrayOf(m_pBGR);
-			if (m_pHSV)
-				m_pHSV->getHSVOf(m_pBGR);
-
-			m_pDepth->update(pSrcD);
-
-			Eigen::Matrix4f m;
-			switch (m_trackState)
-			{
-			case tracking:
-				m_zedTrackState = m_pZed->getPosition(m,
-						sl::zed::MAT_TRACKING_TYPE::POSE);
-				if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
-				{
-					m_mMotion *= m;
-					m_trackConfidence = m_pZed->getTrackingConfidence();
-				}
-				else if (m_zedTrackState
-						== sl::zed::TRACKING_STATE::TRACKING_LOST)
-				{
-					m_pZed->stopTracking();
-					zedTrackReset();
-				}
-				break;
-			case track_start:
-				zedTrackReset();
-				break;
-			case track_stop:
-				m_pZed->stopTracking();
-				m_trackState = track_idle;
-				break;
-			}
-
+			SWAP(pSrc, pDest, pTmp);
+			SWAP(pSrcD, pDestD, pTmp);
 		}
+
+		m_pBGR->update(pSrc);
+		if (m_pGray)
+			m_pGray->getGrayOf(m_pBGR);
+		if (m_pHSV)
+			m_pHSV->getHSVOf(m_pBGR);
+
+		m_pDepth->update(pSrcD);
+
+//		Eigen::Matrix4f m;
+//		switch (m_trackState)
+//		{
+//		case tracking:
+//			m_zedTrackState = m_zed.getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
+//			if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
+//			{
+//				m_mMotion *= m;
+//				m_trackConfidence = m_zed.getTrackingConfidence();
+//			}
+//			else if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_LOST)
+//			{
+//				m_zed.stopTracking();
+//				zedTrackReset();
+//			}
+//			break;
+//		case track_start:
+//			zedTrackReset();
+//			break;
+//		case track_stop:
+//			m_zed.stopTracking();
+//			m_trackState = track_idle;
+//			break;
+//		}
 
 		this->autoFPSto();
 	}
@@ -250,9 +291,9 @@ bool _ZED::isTracking(void)
 
 void _ZED::zedTrackReset(void)
 {
-	m_mMotion.setIdentity(4, 4);
-	if (m_pZed->enableTracking(m_mMotion, false))
-		m_trackState = tracking;
+//	m_mMotion.setIdentity(4, 4);
+//	if (m_zed->enableTracking(m_mMotion, false))
+//		m_trackState = tracking;
 }
 
 int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
@@ -261,39 +302,39 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 	{
 		return -1;
 	}
-
+/*
 	m_vT.x = (double) m_mMotion(0, 3);  //Side
 	m_vT.y = (double) m_mMotion(1, 3);  //Alt
 	m_vT.z = (double) m_mMotion(2, 3);  //Heading
 	*pT = m_vT;
 
-	Eigen::Matrix3f mRot = m_mMotion.block(0,0,3,3);
-    Eigen::Quaternionf q(mRot);
-    float3 euler = eulerAngles(q.x(),q.y(),q.z(),q.w());
-    m_vR.x = (double)euler.x;
-    m_vR.y = (double)euler.y;
-    m_vR.z = (double)euler.z;
-    if(m_vR.z > 0)
-    	m_vR.z -= M_PI;
-    else
-    	m_vR.z += M_PI;
+	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
+	Eigen::Quaternionf q(mRot);
+	float3 euler = eulerAngles(q.x(), q.y(), q.z(), q.w());
+	m_vR.x = (double) euler.x;
+	m_vR.y = (double) euler.y;
+	m_vR.z = (double) euler.z;
+	if (m_vR.z > 0)
+		m_vR.z -= M_PI;
+	else
+		m_vR.z += M_PI;
 
-    if(abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
-    {
-    	return -1;
-    }
+	if (abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
+	{
+		return -1;
+	}
 
-   	*pR = m_vR;
+	*pR = m_vR;
 
-   	uint64_t t = get_time_usec();
-   	if(m_tLastTrack == 0)
-   	{
-   	   	m_tLastTrack = t;
-   	   	return -1;
-   	}
+	uint64_t t = get_time_usec();
+	if (m_tLastTrack == 0)
+	{
+		m_tLastTrack = t;
+		return -1;
+	}
 
-   	*pDT = t - m_tLastTrack;
-   	m_tLastTrack = t;
+	*pDT = t - m_tLastTrack;
+	m_tLastTrack = t;
 
 //	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
 //	mRot.normalize();
@@ -304,6 +345,7 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 //	*pR = m_vR;
 
 	m_mMotion.setIdentity(4, 4);
+	*/
 	return m_trackConfidence;
 }
 
@@ -312,14 +354,14 @@ void _ZED::setAttitude(vDouble3* pYPR)
 	NULL_(pYPR);
 	IF_(m_trackState != tracking);
 
-	Eigen::AngleAxisf y(pYPR->x, Eigen::Vector3f::UnitY());
-	Eigen::AngleAxisf p(pYPR->y, Eigen::Vector3f::UnitX());
-	Eigen::AngleAxisf r(pYPR->z, Eigen::Vector3f::UnitZ());
+//	Eigen::AngleAxisf y(pYPR->x, Eigen::Vector3f::UnitY());
+//	Eigen::AngleAxisf p(pYPR->y, Eigen::Vector3f::UnitX());
+//	Eigen::AngleAxisf r(pYPR->z, Eigen::Vector3f::UnitZ());
+//
+//	Eigen::Quaternion<float> q = y * p * r;
+//	Eigen::Matrix3f mRot = q.matrix();
 
-	Eigen::Quaternion<float> q = y * p * r;
-	Eigen::Matrix3f mRot = q.matrix();
-
-	m_pZed->setTrackingPrior(mRot);
+//	m_zed->setTrackingPrior(mRot);
 }
 
 void _ZED::getRange(double* pMin, double* pMax)

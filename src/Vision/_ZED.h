@@ -13,7 +13,9 @@
 #include "../Utility/util.h"
 
 #ifdef USE_ZED
-#include <zed/Camera.hpp>
+#include <sl/Camera.hpp>
+#include <sl/Core.hpp>
+#include <sl/defines.hpp>
 #include <opencv2/core/eigen.hpp>
 
 namespace kai
@@ -45,6 +47,7 @@ public:
 	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);
 
 private:
+	GpuMat slMat2cvGpuMat(sl::Mat& input);
 	void zedTrackReset(void);
 	bool open(void);
 	void update(void);
@@ -55,16 +58,24 @@ private:
 	}
 
 public:
-	sl::zed::Camera* m_pZed;
-	sl::zed::SENSING_MODE m_zedMode;
-	sl::zed::TRACKING_STATE m_zedTrackState;
+	sl::Camera* m_pZed;
+	sl::RuntimeParameters m_zedRuntime;
+	sl::SENSING_MODE m_zedSenseMode;
+	sl::TRACKING_STATE m_zedTrackState;
 	int m_zedResolution;
 	int m_zedFPS;
-	int m_zedQuality;
+	int m_zedDepthMode;
 	bool m_bZedFlip;
 	double m_zedMinDist;
 	double m_zedMaxDist;
 	int m_zedConfidence;
+
+	sl::Mat* m_pzImg;
+	sl::Mat* m_pzDepth;
+	GpuMat m_gImg;
+	GpuMat m_gImg2;
+	GpuMat m_gDepth;
+	GpuMat m_gDepth2;
 
 	tracking_status m_trackState;
     Eigen::Matrix4f m_mMotion;

@@ -8,6 +8,7 @@
 #include "macro.h"
 #include "constant.h"
 #include <glog/logging.h>
+#include <Eigen/Core>
 
 //Common structures
 namespace kai

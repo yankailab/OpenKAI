@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -51,11 +51,11 @@
 	"angleV":67.1,
 	"angleH":66.7,
 	"zedFPS":30,
-	"zedQuality":1,
-	"zedResolution":3,
+	"zedDepthMode":1,
+	"zedResolution":2,
 	"zedMinDist":0.6,
-	"zedMaxDist":20,
-	"bZedFlip":1,
+	"zedMaxDist":3.0,
+	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
 }
@@ -92,7 +92,7 @@
 	"_Stream":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"dBlend":0.25,
+	"dBlend":1.0,
 	
 	{
 		"name":"medianFilter",
@@ -213,7 +213,7 @@
 		{
 			"name":"apmZedSlam",
 			"class":"APMcopter_zedSLAM",
-			"bInst":1,
+			"bInst":0,
 			"bLog":0,
 			"Window":"apmView",
 			"_Automaton":"apmState",

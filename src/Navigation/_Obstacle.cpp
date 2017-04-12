@@ -114,7 +114,9 @@ void _Obstacle::detect(void)
 	{
 		for(j=0;j<m_mDim.x;j++)
 		{
-			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<uchar>(i,j));
+//			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<uchar>(i,j));
+
+			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<float>(i,j));
 		}
 	}
 }
@@ -134,7 +136,10 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(roi.z>=m_mDim.x)roi.z=m_mDim.x-1;
 	if(roi.w>=m_mDim.y)roi.w=m_mDim.y-1;
 
-	double distMin = 0;
+	double rangeMin, rangeMax;
+	m_pStream->getRange(&rangeMin, &rangeMax);
+
+	double distMin = rangeMax;
 	vInt2 posMin;
 	int i,j;
 	for(i=roi.y;i<roi.w;i++)
@@ -142,12 +147,13 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 		for(j=roi.x;j<roi.z;j++)
 		{
 			double cellDist = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			if(cellDist > distMin)
-			{
-				distMin = cellDist;
-				posMin.x = j;
-				posMin.y = i;
-			}
+			IF_CONT(cellDist < rangeMin);
+			IF_CONT(cellDist > rangeMax);
+			IF_CONT(cellDist > distMin);
+
+			distMin = cellDist;
+			posMin.x = j;
+			posMin.y = i;
 		}
 	}
 
@@ -156,9 +162,9 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 		*pPos = posMin;
 	}
 
-	double rangeMin, rangeMax;
-	m_pStream->getRange(&rangeMin, &rangeMax);
-	distMin = rangeMax-(distMin/255.0)*(rangeMax-rangeMin);
+//	double rangeMin, rangeMax;
+//	m_pStream->getRange(&rangeMin, &rangeMax);
+//	distMin = rangeMax-(distMin/255.0)*(rangeMax-rangeMin);
 
 	return distMin;
 }
@@ -179,14 +185,24 @@ bool _Obstacle::draw(void)
 	Mat mM = *m_pMatrix->getCMat();
 	IF_F(mM.empty());
 
-    Mat filterM = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
+	double rangeMin, rangeMax;
+	m_pStream->getRange(&rangeMin, &rangeMax);
 
+	double normD;
+	double baseD = 255.0/(rangeMax - rangeMin);
+
+    Mat filterM = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
 	int i,j;
 	for(i=0;i<m_mDim.y;i++)
 	{
 		for(j=0;j<m_mDim.x;j++)
 		{
-			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.x+j]->v());
+			normD = m_pFilteredMatrix[i*m_mDim.x+j]->v();
+			normD = constrain(normD,rangeMin,rangeMax);
+			normD = (normD - rangeMin) * baseD;
+			filterM.at<uchar>(i,j) = 255 - (uchar)normD;
+
+//			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.x+j]->v());
 		}
 	}
 

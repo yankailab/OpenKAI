@@ -287,11 +287,11 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max,
 			"<- DIST_SENSOR sysID="<<m_systemID<<", d="<< ds.current_distance << ", min="<<ds.min_distance << ", max="<<ds.max_distance);
 }
 
-void _Mavlink::zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
+void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 		vDouble3* pDPos, uint8_t confidence)
 {
 	mavlink_message_t message;
-	mavlink_zed_vision_position_delta_t dZed;
+	mavlink_vision_position_delta_t dZed;
 	dZed.time_usec = get_time_usec();
 	dZed.time_delta_usec = dTime;
 	dZed.angle_delta[0] = (float) pDAngle->x;
@@ -302,11 +302,11 @@ void _Mavlink::zedVisionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 	dZed.position_delta[2] = (float) pDPos->z;
 	dZed.confidence = (float) confidence;
 
-	mavlink_msg_zed_vision_position_delta_encode(m_systemID,
+	mavlink_msg_vision_position_delta_encode(m_systemID,
 			m_targetComponentID, &message, &dZed);
 
 	writeMessage(message);
-	LOG_I("<- ZED_VISION_POSITION_DELTA dT=" << dTime
+	LOG_I("<- VISION_POSITION_DELTA dT=" << dTime
 			<< ", forward=" << pDPos->x
 			<< ", right=" << pDPos->y
 			<< ", down=" << pDPos->z
