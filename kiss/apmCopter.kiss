@@ -92,7 +92,12 @@
 	"_ZED":"ZED",
 	"matrixW":20,
 	"matrixH":15,
+	"roiL":0.05,
+	"roiT":0.0,
+	"roiR":0.95,
+	"roiB":0.8,
 	"dBlend":0.5,
+	"orientation":0,
 	
 	{
 		"name":"medianFilter",
@@ -202,22 +207,11 @@
 			"Window":"apmView",
 			"_Automaton":"apmState",
 			"APMcopter_base":"apmBase",
-			"_Obstacle":"Obstacle",
-			"_ZED":"ZED",
-			"avoidLeft":0.05,
-			"avoidTop":0.0,
-			"avoidRight":0.95,
-			"avoidBottom":0.8,
-			
+
 			{
-				"class":"_ZED",
-				"orientation":0,
-			}
-			{
-				"class":"_ZED",
-				"orientation":0,
-			}
-			
+				"distSensor":"Obstacle",
+				"class":"_Obstacle",
+			}			
 		}
 		
 		{

@@ -45,7 +45,7 @@ public:
 	bool isTracking(void);
 	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);
 
-	vDouble2 getRange(void);
+	vDouble2 range(void);
 
 private:
 	GpuMat slMat2cvGpuMat(sl::Mat& input);

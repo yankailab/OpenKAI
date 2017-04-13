@@ -235,12 +235,12 @@ bool _LeddarVu::updateLidar(void)
 	return true;
 }
 
-DISTANCE_SENSOR_TYPE _LeddarVu::getType(void)
+DISTANCE_SENSOR_TYPE _LeddarVu::type(void)
 {
 	return dsLeddarVu;
 }
 
-vDouble2 _LeddarVu::getRange(void)
+vDouble2 _LeddarVu::range(void)
 {
 	vDouble2 r;
 	r.x = m_dMin;

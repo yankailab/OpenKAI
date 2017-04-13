@@ -358,7 +358,7 @@ void _ZED::setAttitude(vDouble3* pYPR)
 //	m_zed->setTrackingPrior(mRot);
 }
 
-vDouble2 _ZED::getRange(void)
+vDouble2 _ZED::range(void)
 {
 	vDouble2 r;
 	r.x = m_zedMinDist;

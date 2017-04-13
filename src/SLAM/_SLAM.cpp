@@ -176,7 +176,10 @@ void _SLAM::updateObstacle(void)
 	for(i=0; i<m_vObsBox.size(); i++)
 	{
 		OBSTACLE_BOX oB = m_vObsBox[i];
-		double d = m_pObs->dist(&oB.m_fBBox, NULL);
+
+		//TODO
+//		double d = m_pObs->dist(&oB.m_fBBox, NULL);
+		double d = 0;
 
 		IF_CONT(d < m_obsRange.x);
 		IF_CONT(d > m_obsRange.y);

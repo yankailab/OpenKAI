@@ -44,8 +44,8 @@ public:
 
 	double getDistance(double localAngle);
 
-	DISTANCE_SENSOR_TYPE getType(void);
-	vDouble2 getRange(void);
+	DISTANCE_SENSOR_TYPE type(void);
+	vDouble2 range(void);
 
 private:
 	bool open(void);

@@ -30,11 +30,10 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	double dist(vDouble4* pROI, vInt2* pPos);
 	vInt2 matrixDim(void);
 
-	vDouble2 getRange(void);
-	DISTANCE_SENSOR_TYPE getType(void);
+	DISTANCE_SENSOR_TYPE type(void);
+	double d(void);
 
 private:
 	void detect(void);
@@ -46,15 +45,16 @@ private:
 	}
 
 public:
-	_ZED*	m_pZed;
-	Frame*	m_pMatrix;
-	vInt2	m_mDim;
-	Median* m_pFilteredMatrix[N_FILTER];
-	int		m_nFilter;
-	vDouble2 m_range;
+	_ZED*		m_pZed;
+	Frame*		m_pMatrix;
+	vInt2		m_posMin;
+	vDouble4	m_fRoi;
+	vInt4		m_iRoi;
+	vInt2		m_mDim;
+	Median* 	m_pFilteredMatrix[N_FILTER];
+	int			m_nFilter;
 
-	double m_dBlend;
-
+	double		m_dBlend;
 };
 
 }
