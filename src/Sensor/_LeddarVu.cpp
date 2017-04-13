@@ -12,8 +12,8 @@ _LeddarVu::_LeddarVu()
 	m_pMb = NULL;
 	m_nDiv = 0;
 	m_dAngle = 0;
-	m_minDist = 0.1;
-	m_maxDist = 100.0;
+	m_dMin = 0.1;
+	m_dMax = 100.0;
 	m_angleV = 0.0;
 	m_angleH = 0.0;
 
@@ -45,8 +45,8 @@ bool _LeddarVu::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("minDist", &m_minDist));
-	F_INFO(pK->v("maxDist", &m_maxDist));
+	F_INFO(pK->v("minDist", &m_dMin));
+	F_INFO(pK->v("maxDist", &m_dMax));
 
 	Kiss* pI;
 	pI = pK->o("input");
@@ -235,14 +235,17 @@ bool _LeddarVu::updateLidar(void)
 	return true;
 }
 
-double _LeddarVu::minDist(void)
+DISTANCE_SENSOR_TYPE _LeddarVu::getType(void)
 {
-	return m_minDist;
+	return dsLeddarVu;
 }
 
-double _LeddarVu::maxDist(void)
+vDouble2 _LeddarVu::getRange(void)
 {
-	return m_maxDist;
+	vDouble2 r;
+	r.x = m_dMin;
+	r.y = m_dMax;
+	return r;
 }
 
 bool _LeddarVu::draw(void)

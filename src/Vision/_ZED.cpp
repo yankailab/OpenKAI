@@ -103,7 +103,7 @@ bool _ZED::open(void)
 	}
 
 	m_pZed->setConfidenceThreshold(m_zedConfidence);
-	m_pZed->setDepthMaxRangeValue(m_zedMaxDist);
+	m_pZed->setDepthMaxRangeValue((float)m_zedMaxDist);
 
 	// Set runtime parameters after opening the camera
 	m_zedRuntime.sensing_mode = (sl::SENSING_MODE) m_zedSenseMode;
@@ -112,8 +112,6 @@ bool _ZED::open(void)
 	m_zedRuntime.move_point_cloud_to_world_frame = false;
 
 	// Create sl and cv Mat to get ZED left image and depth image
-	// Best way of sharing sl::Mat and cv::Mat :
-	// Create a sl::Mat and then construct a cv::Mat using the ptr to sl::Mat data.
 	sl::Resolution zedImgSize = m_pZed->getResolution();
 
 	// Initialize color image and depth
@@ -122,9 +120,10 @@ bool _ZED::open(void)
 	m_centerH = m_width / 2;
 	m_centerV = m_height / 2;
 
+	// Best way of sharing sl::Mat and cv::Mat :
+	// Create a sl::Mat and then construct a cv::Mat using the ptr to sl::Mat data.
 	m_pzImg = new sl::Mat(zedImgSize, sl::MAT_TYPE_8U_C4, sl::MEM_GPU);
 	m_gImg = slMat2cvGpuMat(*m_pzImg);
-//	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_8U_C4, sl::MEM_GPU);
 	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_32F_C1, sl::MEM_GPU);
 	m_gDepth = slMat2cvGpuMat(*m_pzDepth);
 
@@ -142,29 +141,31 @@ bool _ZED::open(void)
 
 GpuMat _ZED::slMat2cvGpuMat(sl::Mat& input)
 {
+	int h = input.getHeight();
+	int w = input.getWidth();
+
 	//convert MAT_TYPE to CV_TYPE
-	int cv_type = -1;
 	switch (input.getDataType())
 	{
-		case sl::MAT_TYPE_32F_C1: cv_type = CV_32FC1; break;
-		case sl::MAT_TYPE_32F_C2: cv_type = CV_32FC2; break;
-		case sl::MAT_TYPE_32F_C3: cv_type = CV_32FC3; break;
-		case sl::MAT_TYPE_32F_C4: cv_type = CV_32FC4; break;
-		case sl::MAT_TYPE_8U_C1: cv_type = CV_8UC1; break;
-		case sl::MAT_TYPE_8U_C2: cv_type = CV_8UC2; break;
-		case sl::MAT_TYPE_8U_C3: cv_type = CV_8UC3; break;
-		case sl::MAT_TYPE_8U_C4: cv_type = CV_8UC4; break;
-		default: break;
+		case sl::MAT_TYPE_32F_C1:
+			return GpuMat(h, w, CV_32FC1, input.getPtr<sl::float1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_32F_C2:
+			return GpuMat(h, w, CV_32FC2, input.getPtr<sl::float1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_32F_C3:
+			return GpuMat(h, w, CV_32FC3, input.getPtr<sl::float1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_32F_C4:
+			return GpuMat(h, w, CV_32FC4, input.getPtr<sl::float1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_8U_C1:
+			return GpuMat(h, w, CV_8UC1, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_8U_C2:
+			return GpuMat(h, w, CV_8UC2, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_8U_C3:
+			return GpuMat(h, w, CV_8UC3, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+		case sl::MAT_TYPE_8U_C4:
+			return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+		default:
+			return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
 	}
-
-	if(cv_type == CV_32FC1)
-	{
-		return GpuMat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::float1>(sl::MEM_GPU));
-	}
-
-	// cv::Mat data requires a uchar* pointer. Therefore, we get the uchar1 pointer from sl::Mat (getPtr<T>())
-	//cv::Mat and sl::Mat will share the same memory pointer
-	return GpuMat(input.getHeight(), input.getWidth(), cv_type, input.getPtr<sl::uchar1>(sl::MEM_GPU));
 }
 
 bool _ZED::start(void)
@@ -182,11 +183,6 @@ bool _ZED::start(void)
 
 void _ZED::update(void)
 {
-	GpuMat* pSrc;
-	GpuMat* pDest;
-	GpuMat* pSrcD;
-	GpuMat* pDestD;
-	GpuMat* pTmp;
 
 	while (m_bThreadON)
 	{
@@ -202,24 +198,22 @@ void _ZED::update(void)
 
 		this->autoFPSfrom();
 
-		// Grab frame and compute depth in FULL sensing mode
 		IF_CONT(m_pZed->grab(m_zedRuntime) != sl::SUCCESS);
 
 		m_pZed->retrieveImage(*m_pzImg, sl::VIEW_LEFT, sl::MEM_GPU);
-//		m_pZed->retrieveImage(*m_pzDepth,sl::VIEW_DEPTH, sl::MEM_GPU);
 		m_pZed->retrieveMeasure(*m_pzDepth,sl::MEASURE_DEPTH, sl::MEM_GPU);
 
 #ifndef USE_OPENCV4TEGRA
 		cuda::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
-//		cuda::cvtColor(m_gDepth, m_gDepth2, CV_BGRA2GRAY);
 #else
 		gpu::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
-//		gpu::cvtColor(m_gDepth, m_gDepth2, CV_BGRA2GRAY);
 #endif
-		pSrc = &m_gImg2;
-		pDest = &m_gImg;
-		pSrcD = &m_gDepth;
-		pDestD = &m_gDepth2;
+
+		GpuMat* pSrc = &m_gImg2;
+		GpuMat* pDest = &m_gImg;
+		GpuMat* pSrcD = &m_gDepth;
+		GpuMat* pDestD = &m_gDepth2;
+		GpuMat* pTmp;
 
 		if (m_bFlip)
 		{
@@ -364,13 +358,12 @@ void _ZED::setAttitude(vDouble3* pYPR)
 //	m_zed->setTrackingPrior(mRot);
 }
 
-void _ZED::getRange(double* pMin, double* pMax)
+vDouble2 _ZED::getRange(void)
 {
-	NULL_(pMin);
-	NULL_(pMax);
-
-	*pMin = m_zedMinDist;
-	*pMax = m_zedMaxDist;
+	vDouble2 r;
+	r.x = m_zedMinDist;
+	r.y = m_zedMaxDist;
+	return r;
 }
 
 double _ZED::dist(Rect* pR)

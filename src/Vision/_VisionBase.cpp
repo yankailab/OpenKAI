@@ -92,10 +92,6 @@ Frame* _VisionBase::depth(void)
 	return m_pDepth;
 }
 
-void _VisionBase::getRange(double* pMin, double* pMax)
-{
-}
-
 uint8_t _VisionBase::getOrientation(void)
 {
 	return m_orientation;

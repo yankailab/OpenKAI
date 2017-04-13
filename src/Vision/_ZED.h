@@ -37,7 +37,6 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	void getRange(double* pMin, double* pMax);
 	double dist(Rect* pR);
 
 	void startTracking(void);
@@ -45,6 +44,8 @@ public:
 	void setAttitude(vDouble3* pYPR);
 	bool isTracking(void);
 	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);
+
+	vDouble2 getRange(void);
 
 private:
 	GpuMat slMat2cvGpuMat(sl::Mat& input);

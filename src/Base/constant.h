@@ -23,7 +23,4 @@
 #define CR '\x0d'
 #define LF '\x0a'
 
-
-
-
 #endif /* OPENKAI_SRC_BASE_CONSTANT_H_ */

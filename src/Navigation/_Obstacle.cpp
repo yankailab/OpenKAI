@@ -12,13 +12,16 @@ namespace kai
 
 _Obstacle::_Obstacle()
 {
-	m_pStream = NULL;
+	m_pZed = NULL;
 	m_pMatrix = NULL;
 	m_nFilter = 0;
 	m_dBlend = 0.5;
 
 	m_mDim.x = 10;
 	m_mDim.y = 10;
+
+	m_range.x = 0.0;
+	m_range.y = DBL_MAX;
 }
 
 _Obstacle::~_Obstacle()
@@ -68,8 +71,11 @@ bool _Obstacle::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("_Stream", &iName));
-	m_pStream = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_ZED", &iName));
+	m_pZed = (_ZED*) (pK->root()->getChildInstByName(&iName));
+
+	IF_F(!m_pZed);
+	m_range = m_pZed->getRange();
 
 	return true;
 }
@@ -101,12 +107,14 @@ void _Obstacle::update(void)
 
 void _Obstacle::detect(void)
 {
-	NULL_(m_pStream);
-	Frame* pDepth = m_pStream->depth();
+	NULL_(m_pZed);
+	IF_(!m_pZed->isOpened());
+
+	Frame* pDepth = m_pZed->depth();
 	NULL_(pDepth);
 	IF_(pDepth->empty());
 
-	m_pMatrix->getResizedOf(m_pStream->depth(), m_mDim.x, m_mDim.y);
+	m_pMatrix->getResizedOf(m_pZed->depth(), m_mDim.x, m_mDim.y);
 	Mat* pM = m_pMatrix->getCMat();
 
 	int i,j;
@@ -114,8 +122,6 @@ void _Obstacle::detect(void)
 	{
 		for(j=0;j<m_mDim.x;j++)
 		{
-//			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<uchar>(i,j));
-
 			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<float>(i,j));
 		}
 	}
@@ -123,7 +129,7 @@ void _Obstacle::detect(void)
 
 double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 {
-	if(!m_pStream)return -1.0;
+	if(!m_pZed)return -1.0;
 	if(!pROI)return -1.0;
 
 	vInt4 roi;
@@ -136,22 +142,20 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 	if(roi.z>=m_mDim.x)roi.z=m_mDim.x-1;
 	if(roi.w>=m_mDim.y)roi.w=m_mDim.y-1;
 
-	double rangeMin, rangeMax;
-	m_pStream->getRange(&rangeMin, &rangeMax);
-
-	double distMin = rangeMax;
+	double dMin = m_range.y;
 	vInt2 posMin;
 	int i,j;
+
 	for(i=roi.y;i<roi.w;i++)
 	{
 		for(j=roi.x;j<roi.z;j++)
 		{
-			double cellDist = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			IF_CONT(cellDist < rangeMin);
-			IF_CONT(cellDist > rangeMax);
-			IF_CONT(cellDist > distMin);
+			double dCell = m_pFilteredMatrix[i*m_mDim.x+j]->v();
+			IF_CONT(dCell < m_range.x);
+			IF_CONT(dCell > m_range.y);
+			IF_CONT(dCell > dMin);
 
-			distMin = cellDist;
+			dMin = dCell;
 			posMin.x = j;
 			posMin.y = i;
 		}
@@ -162,11 +166,7 @@ double _Obstacle::dist(vDouble4* pROI, vInt2* pPos)
 		*pPos = posMin;
 	}
 
-//	double rangeMin, rangeMax;
-//	m_pStream->getRange(&rangeMin, &rangeMax);
-//	distMin = rangeMax-(distMin/255.0)*(rangeMax-rangeMin);
-
-	return distMin;
+	return dMin;
 }
 
 vInt2 _Obstacle::matrixDim(void)
@@ -174,22 +174,29 @@ vInt2 _Obstacle::matrixDim(void)
 	return m_mDim;
 }
 
+vDouble2 _Obstacle::getRange(void)
+{
+	return m_range;
+}
+
+DISTANCE_SENSOR_TYPE _Obstacle::getType(void)
+{
+	return dsZED;
+}
+
 bool _Obstacle::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();
 	IF_F(pMat->empty());
-	NULL_F(m_pStream);
+	NULL_F(m_pZed);
 	IF_F(m_pMatrix->empty());
 
 	Mat mM = *m_pMatrix->getCMat();
 	IF_F(mM.empty());
 
-	double rangeMin, rangeMax;
-	m_pStream->getRange(&rangeMin, &rangeMax);
-
 	double normD;
-	double baseD = 255.0/(rangeMax - rangeMin);
+	double baseD = 255.0/(m_range.y - m_range.x);
 
     Mat filterM = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
 	int i,j;
@@ -198,11 +205,8 @@ bool _Obstacle::draw(void)
 		for(j=0;j<m_mDim.x;j++)
 		{
 			normD = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			normD = constrain(normD,rangeMin,rangeMax);
-			normD = (normD - rangeMin) * baseD;
+			normD = (normD - m_range.x) * baseD;
 			filterM.at<uchar>(i,j) = 255 - (uchar)normD;
-
-//			filterM.at<uchar>(i,j) = (uchar)(m_pFilteredMatrix[i*m_mDim.x+j]->v());
 		}
 	}
 

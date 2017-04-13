@@ -54,7 +54,7 @@
 	"zedDepthMode":1,
 	"zedResolution":2,
 	"zedMinDist":0.6,
-	"zedMaxDist":3.0,
+	"zedMaxDist":15.0,
 	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
@@ -89,10 +89,10 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"apmView",
-	"_Stream":"ZED",
+	"_ZED":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"dBlend":1.0,
+	"dBlend":0.5,
 	
 	{
 		"name":"medianFilter",
@@ -208,6 +208,16 @@
 			"avoidTop":0.0,
 			"avoidRight":0.95,
 			"avoidBottom":0.8,
+			
+			{
+				"class":"_ZED",
+				"orientation":0,
+			}
+			{
+				"class":"_ZED",
+				"orientation":0,
+			}
+			
 		}
 		
 		{
