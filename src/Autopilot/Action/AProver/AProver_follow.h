@@ -8,7 +8,7 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../AI/_AIbase.h"
 #include "../../../Filter/FilterBase.h"
-#include "../../../Navigation/_Obstacle.h"
+#include "../../../Sensor/_Obstacle.h"
 #include "../ActionBase.h"
 #include "../AProver/AProver_base.h"
 

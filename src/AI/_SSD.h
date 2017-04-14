@@ -9,7 +9,7 @@
 #define AI__SSD_H_
 
 #include "../Base/common.h"
-#include "../Navigation/_Obstacle.h"
+#include "../Sensor/_Obstacle.h"
 #include "../Vision/_VisionBase.h"
 
 #ifdef USE_SSD

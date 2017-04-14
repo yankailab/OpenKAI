@@ -16,7 +16,7 @@
 #include "../Vision/Frame.h"
 #include "../Automaton/_Automaton.h"
 
-#include "../Navigation/_Obstacle.h"
+#include "../Sensor/_Obstacle.h"
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_Path.h"
 

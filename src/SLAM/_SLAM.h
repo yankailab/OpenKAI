@@ -13,7 +13,7 @@
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Automaton/_Automaton.h"
 #include "../AI/_MatrixNet.h"
-#include "../Navigation/_Obstacle.h"
+#include "../Sensor/_Obstacle.h"
 #include "../Navigation/_GPS.h"
 
 using std::vector;
