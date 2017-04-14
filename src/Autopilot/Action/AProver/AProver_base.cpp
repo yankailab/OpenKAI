@@ -1,9 +1,9 @@
-#include "APMrover_base.h"
+#include "../AProver/AProver_base.h"
 
 namespace kai
 {
 
-APMrover_base::APMrover_base()
+AProver_base::AProver_base()
 {
 	m_pMavlink = NULL;
 	m_lastHeartbeat = 0;
@@ -18,18 +18,18 @@ APMrover_base::APMrover_base()
 	m_ctrlSteer.reset();
 }
 
-APMrover_base::~APMrover_base()
+AProver_base::~AProver_base()
 {
 }
 
-bool APMrover_base::init(void* pKiss)
+bool AProver_base::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	Kiss* pCC;
-	APMrover_PID cPID;
+	AProver_PID cPID;
 
 	pCC = pK->o("steer");
 	IF_F(pCC->empty());
@@ -58,7 +58,7 @@ bool APMrover_base::init(void* pKiss)
 	return true;
 }
 
-bool APMrover_base::link(void)
+bool AProver_base::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
@@ -72,7 +72,7 @@ bool APMrover_base::link(void)
 }
 
 
-void APMrover_base::sendHeartbeat(void)
+void AProver_base::sendHeartbeat(void)
 {
 	NULL_(m_pMavlink);
 
@@ -86,7 +86,7 @@ void APMrover_base::sendHeartbeat(void)
 	LOG(INFO)<<"APMrover HEARTBEAT:"<<++m_iHeartbeat;
 }
 
-void APMrover_base::sendSteerThrust(void)
+void AProver_base::sendSteerThrust(void)
 {
 	NULL_(m_pMavlink);
 	m_pMavlink->command_long_doSetPositionYawThrust(m_steer, m_thrust);

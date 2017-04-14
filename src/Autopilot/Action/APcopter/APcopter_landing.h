@@ -1,11 +1,11 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_LANDING_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_LANDING_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_LANDING_H_
 
 #include "../../../Base/common.h"
 #include "../../../AI/_AIbase.h"
 #include "../ActionBase.h"
-#include "APMcopter_base.h"
+#include "../APcopter/APcopter_base.h"
 
 namespace kai
 {
@@ -38,11 +38,11 @@ struct LANDING_TARGET
 	}
 };
 
-class APMcopter_landing: public ActionBase
+class APcopter_landing: public ActionBase
 {
 public:
-	APMcopter_landing();
-	~APMcopter_landing();
+	APcopter_landing();
+	~APcopter_landing();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -53,7 +53,7 @@ private:
 	void landing(void);
 
 private:
-	APMcopter_base* m_pAPM;
+	APcopter_base* m_pAPM;
 	_AIbase* m_pAI;
 
 	LANDING_TARGET	m_target;

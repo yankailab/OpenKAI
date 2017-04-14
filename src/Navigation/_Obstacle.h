@@ -12,15 +12,15 @@
 #include "../Base/_ThreadBase.h"
 #include "../AI/_ImageNet.h"
 #include "../Filter/Median.h"
+#include "../Sensor/DistSensorBase.h"
 #include "../Vision/_ZED.h"
-#include "../Sensor/DistanceSensorBase.h"
 
 #define N_FILTER 1600
 
 namespace kai
 {
 
-class _Obstacle: public _ThreadBase, public DistanceSensorBase
+class _Obstacle: public _ThreadBase, public DistSensorBase
 {
 public:
 	_Obstacle(void);
@@ -32,8 +32,9 @@ public:
 	bool draw(void);
 	vInt2 matrixDim(void);
 
-	DISTANCE_SENSOR_TYPE type(void);
-	double d(void);
+	DIST_SENSOR_TYPE type(void);
+	double d(vInt4* pROI, vInt2* pPos);
+	double d(vDouble4* pROI, vInt2* pPos);
 
 private:
 	void detect(void);
@@ -47,9 +48,6 @@ private:
 public:
 	_ZED*		m_pZed;
 	Frame*		m_pMatrix;
-	vInt2		m_posMin;
-	vDouble4	m_fRoi;
-	vInt4		m_iRoi;
 	vInt2		m_mDim;
 	Median* 	m_pFilteredMatrix[N_FILTER];
 	int			m_nFilter;

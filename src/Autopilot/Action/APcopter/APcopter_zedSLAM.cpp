@@ -1,9 +1,9 @@
-#include "APMcopter_zedSLAM.h"
+#include "../APcopter/APcopter_zedSLAM.h"
 
 namespace kai
 {
 
-APMcopter_zedSLAM::APMcopter_zedSLAM()
+APcopter_zedSLAM::APcopter_zedSLAM()
 {
 	m_pAPM = NULL;
 	m_pZED = NULL;
@@ -12,11 +12,11 @@ APMcopter_zedSLAM::APMcopter_zedSLAM()
 	m_mR.init();
 }
 
-APMcopter_zedSLAM::~APMcopter_zedSLAM()
+APcopter_zedSLAM::~APcopter_zedSLAM()
 {
 }
 
-bool APMcopter_zedSLAM::init(void* pKiss)
+bool APcopter_zedSLAM::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -25,7 +25,7 @@ bool APMcopter_zedSLAM::init(void* pKiss)
 	return true;
 }
 
-bool APMcopter_zedSLAM::link(void)
+bool APcopter_zedSLAM::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -33,7 +33,7 @@ bool APMcopter_zedSLAM::link(void)
 
 	iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_ZED", &iName));
@@ -42,14 +42,14 @@ bool APMcopter_zedSLAM::link(void)
 	return true;
 }
 
-void APMcopter_zedSLAM::update(void)
+void APcopter_zedSLAM::update(void)
 {
 	this->ActionBase::update();
 
 	updateZEDtracking();
 }
 
-void APMcopter_zedSLAM::updateZEDtracking(void)
+void APcopter_zedSLAM::updateZEDtracking(void)
 {
 	NULL_(m_pZED);
 	if(!m_pZED->isTracking())
@@ -75,7 +75,7 @@ void APMcopter_zedSLAM::updateZEDtracking(void)
 	m_pAPM->m_pMavlink->visionPositionDelta(dT, &m_mR, &m_mT, confidence);
 }
 
-bool APMcopter_zedSLAM::draw(void)
+bool APcopter_zedSLAM::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

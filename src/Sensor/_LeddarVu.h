@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../include/libmodbus/modbus.h"
-#include "DistanceSensorBase.h"
+#include "DistSensorBase.h"
 
 #define N_SEGMENT 8
 #define LEDDAR_MAX_DETECTIONS 16
@@ -30,7 +30,7 @@ struct SEGMENT_DETECTION
 	uint16_t flags;               // Flags
 };
 
-class _LeddarVu: public _ThreadBase, public DistanceSensorBase
+class _LeddarVu: public _ThreadBase, public DistSensorBase
 {
 public:
 	_LeddarVu();
@@ -44,7 +44,7 @@ public:
 
 	double getDistance(double localAngle);
 
-	DISTANCE_SENSOR_TYPE type(void);
+	DIST_SENSOR_TYPE type(void);
 	vDouble2 range(void);
 
 private:

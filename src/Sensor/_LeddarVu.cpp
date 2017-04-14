@@ -235,7 +235,7 @@ bool _LeddarVu::updateLidar(void)
 	return true;
 }
 
-DISTANCE_SENSOR_TYPE _LeddarVu::type(void)
+DIST_SENSOR_TYPE _LeddarVu::type(void)
 {
 	return dsLeddarVu;
 }

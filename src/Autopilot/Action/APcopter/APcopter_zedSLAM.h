@@ -6,16 +6,16 @@
 #include "../../../Vision/_ZED.h"
 #include "../../../Utility/util.h"
 #include "../ActionBase.h"
-#include "APMcopter_base.h"
+#include "../APcopter/APcopter_base.h"
 
 namespace kai
 {
 
-class APMcopter_zedSLAM: public ActionBase
+class APcopter_zedSLAM: public ActionBase
 {
 public:
-	APMcopter_zedSLAM();
-	~APMcopter_zedSLAM();
+	APcopter_zedSLAM();
+	~APcopter_zedSLAM();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -26,7 +26,7 @@ public:
 	void updateZEDtracking();
 
 private:
-	APMcopter_base* m_pAPM;
+	APcopter_base* m_pAPM;
 	_ZED* m_pZED;
 
 	vDouble3 m_mT;

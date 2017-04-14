@@ -1,20 +1,20 @@
-#include "APMcopter_guided.h"
+#include "../APcopter/APcopter_guided.h"
 
 namespace kai
 {
 
-APMcopter_guided::APMcopter_guided()
+APcopter_guided::APcopter_guided()
 {
 	m_pSF40 = NULL;
 	m_pAPM = NULL;
 	m_lastFlightMode = 0;
 }
 
-APMcopter_guided::~APMcopter_guided()
+APcopter_guided::~APcopter_guided()
 {
 }
 
-bool APMcopter_guided::init(void* pKiss)
+bool APcopter_guided::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
@@ -23,14 +23,14 @@ bool APMcopter_guided::init(void* pKiss)
 	return true;
 }
 
-bool APMcopter_guided::link(void)
+bool APcopter_guided::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->root()->getChildInstByName(&iName));
+	m_pAPM = (APcopter_base*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Lightware_SF40", &iName));
@@ -41,7 +41,7 @@ bool APMcopter_guided::link(void)
 	return true;
 }
 
-void APMcopter_guided::update(void)
+void APcopter_guided::update(void)
 {
 	this->ActionBase::update();
 
@@ -52,7 +52,7 @@ void APMcopter_guided::update(void)
 
 }
 
-void APMcopter_guided::updateAttitude(void)
+void APcopter_guided::updateAttitude(void)
 {
 	NULL_(m_pAPM->m_pMavlink);
 	NULL_(m_pSF40);
@@ -106,7 +106,7 @@ void APMcopter_guided::updateAttitude(void)
 
 }
 
-bool APMcopter_guided::draw(void)
+bool APcopter_guided::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

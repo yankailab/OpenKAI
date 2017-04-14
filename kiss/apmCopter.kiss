@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"apmView",
+	"name":"apView",
 	"class":"Window",
 	"bInst":1,
 	"w":672,
@@ -23,12 +23,12 @@
 }
 
 {
-	"name":"apmMavlink",
+	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":1,
 	"FPS":100,
-	"Window":"apmView",
+	"Window":"apView",
 
 	{
 		"name":"input",
@@ -45,8 +45,8 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apmView",
-	"depthWindow":"apmDepth",
+	"Window":"apView",
+	"depthWindow":"apDepth",
 	"orientation":0,
 	"angleV":67.1,
 	"angleH":66.7,
@@ -65,7 +65,7 @@
 	"class":"_LeddarVu",
 	"FPS":30,
 	"bInst":0,
-	"Window":"apmView",
+	"Window":"apView",
 	"angleV":67.1,
 	"angleH":66.7,
 	"maxDist":100.0,
@@ -88,16 +88,11 @@
 	"class":"_Obstacle",
 	"FPS":30,
 	"bInst":1,
-	"Window":"apmView",
+	"Window":"apView",
 	"_ZED":"ZED",
 	"matrixW":20,
 	"matrixH":15,
-	"roiL":0.05,
-	"roiT":0.0,
-	"roiR":0.95,
-	"roiB":0.8,
 	"dBlend":0.5,
-	"orientation":0,
 	
 	{
 		"name":"medianFilter",
@@ -105,16 +100,16 @@
 		"bInst":1,
 		"bLog":0,
 		"windowLen":9,
-	}
+	}	
 }
 
 {
-	"name":"apmIN",
+	"name":"apIN",
 	"class":"_ImageNet",
 	"bInst":0,
 	"bDraw":1,
 	"FPS":30,
-	"Window":"apmView",
+	"Window":"apView",
 	"_VisionBase":"ZED",
 	"dir":"/home/ubuntu/src/model/hm/grass_128/",
 	"modelFile":"deploy.prototxt",
@@ -128,13 +123,13 @@
 }
 
 {
-	"name":"apmMN",
+	"name":"apMN",
 	"bInst":0,
 	"bDraw":0,
 	"FPS":30,
 	"class":"_MatrixNet",
-	"_ImageNet":"apmIN",
-	"Window":"apmView",
+	"_ImageNet":"apIN",
+	"Window":"apView",
 	"w":0.1,
 	"h":0.15,
 	"dW":0.1,
@@ -150,7 +145,7 @@
 	"class":"_DetectNet",
 	"bInst":0,
 	"FPS":30,
-	"Window":"apmView",
+	"Window":"apView",
 	"_Stream":"ZED",
 	"dir":"/home/ubuntu/src/model/ped-100/",
 	"minConfidence":0.05,
@@ -165,75 +160,89 @@
 }
 
 {
-	"name":"apmState",
+	"name":"apState",
 	"class":"_Automaton",
 	"bInst":1,
-	"Window":"apmView",
-	"startState":"APM_STANDBY",
+	"Window":"apView",
+	"startState":"AP_STANDBY",
 
 	{
-		"state":"APM_STANDBY",
+		"state":"AP_STANDBY",
 	}
 
 	{
-		"state":"APM_CRUISE",
+		"state":"AP_CRUISE",
 	}
 }
 
 {
-	"name":"apmPilot",
+	"name":"apPilot",
 	"class":"_AutoPilot",
-	"_Automaton":"apmState",
+	"_Automaton":"apState",
 	"bInst":1,
 	"FPS":20,
-	"Window":"apmView",
+	"Window":"apView",
 	
 	{
 		"name":"action",
 		
 		{
-			"name":"apmBase",
-			"class":"APMcopter_base",
+			"name":"apBase",
+			"class":"APcopter_base",
 			"bInst":1,
-			"_Automaton":"apmState",
-			"Window":"apmView",
-			"_Mavlink":"apmMavlink",
+			"_Automaton":"apState",
+			"Window":"apView",
+			"_Mavlink":"apMavlink",
 		}
 
 		{
-			"name":"apmAvoid",
-			"class":"APMcopter_avoid",
+			"name":"apAvoid",
+			"class":"APcopter_avoid",
 			"bInst":1,
-			"Window":"apmView",
-			"_Automaton":"apmState",
-			"APMcopter_base":"apmBase",
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
 
 			{
-				"distSensor":"Obstacle",
-				"class":"_Obstacle",
-			}			
+				"name":"distSensor",
+				"bInst":1,
+		
+				{
+					"name":"Obstacle",
+					"class":"_Obstacle",
+
+					{
+						"orientation":0,
+						"l":0.05,
+						"t":0.0,
+						"r":0.95,
+						"b":0.8,
+					}
+				}
+			}
+					
 		}
 		
 		{
-			"name":"apmZedSlam",
-			"class":"APMcopter_zedSLAM",
+			"name":"apZedSlam",
+			"class":"APcopter_zedSLAM",
 			"bInst":0,
 			"bLog":0,
-			"Window":"apmView",
-			"_Automaton":"apmState",
-			"APMcopter_base":"apmBase",
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
 			"_ZED":"ZED",
 		}
 
 		{
-			"name":"apmVFence",
-			"class":"APMcopter_visualFence",
+			"name":"apVFence",
+			"class":"APcopter_visualFence",
 			"bInst":0,
 			"bLog":1,
-			"Window":"apmView",
-			"_Automaton":"apmState",
-			"APMcopter_base":"apmBase",
-			"_MatrixNet":"apmMN",
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_MatrixNet":"apMN",
 			
 			{
 				"iClass":0,
@@ -246,14 +255,14 @@
 		}
 
 		{
-			"name":"apmLanding",
-			"class":"APMcopter_landing",
+			"name":"apLanding",
+			"class":"APcopter_landing",
 			"bInst":0,
-			"Window":"apmView",
-			"APMcopter_base":"apmBase",
+			"Window":"apView",
+			"APcopter_base":"apBase",
 			"_Stream":"ZED",
 			"_AIbase":"detectNet",
-			"_Automaton":"apmState",
+			"_Automaton":"apState",
 			"orientationX":1,
 			"orientationY":1,
 			"timeout":1000,

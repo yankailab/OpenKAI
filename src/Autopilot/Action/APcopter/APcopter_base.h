@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_BASE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_BASE_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_BASE_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_BASE_H_
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
@@ -8,7 +8,7 @@
 namespace kai
 {
 
-struct APMcopter_PID
+struct APcopter_PID
 {
 	double m_P;
 	double m_I;
@@ -30,7 +30,7 @@ struct APMcopter_PID
 	}
 };
 
-struct APMcopter_CTRL
+struct APcopter_CTRL
 {
 	double m_v;
 	double m_pos;
@@ -57,20 +57,11 @@ struct APMcopter_CTRL
 	}
 };
 
-struct DISTANCE_SENSOR
-{
-	uint8_t m_type;
-	uint8_t m_orientation;
-	uint16_t m_maxDistance;	//unit: centimeters
-	uint16_t m_minDistance;
-	uint16_t m_distance;
-};
-
-class APMcopter_base: public ActionBase
+class APcopter_base: public ActionBase
 {
 public:
-	APMcopter_base();
-	~APMcopter_base();
+	APcopter_base();
+	~APcopter_base();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -83,15 +74,15 @@ public:
 	uint64_t m_iHeartbeat;
 	uint32_t m_flightMode;
 
-	APMcopter_PID m_pidRoll;
-	APMcopter_PID m_pidPitch;
-	APMcopter_PID m_pidYaw;
-	APMcopter_PID m_pidThr;
+	APcopter_PID m_pidRoll;
+	APcopter_PID m_pidPitch;
+	APcopter_PID m_pidYaw;
+	APcopter_PID m_pidThr;
 
-	APMcopter_CTRL m_ctrlRoll;
-	APMcopter_CTRL m_ctrlPitch;
-	APMcopter_CTRL m_ctrlYaw;
-	APMcopter_CTRL m_ctrlThr;
+	APcopter_CTRL m_ctrlRoll;
+	APcopter_CTRL m_ctrlPitch;
+	APcopter_CTRL m_ctrlYaw;
+	APcopter_CTRL m_ctrlThr;
 
 };
 

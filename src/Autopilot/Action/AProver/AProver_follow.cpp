@@ -1,9 +1,9 @@
-#include "APMrover_follow.h"
+#include "../AProver/AProver_follow.h"
 
 namespace kai
 {
 
-APMrover_follow::APMrover_follow()
+AProver_follow::AProver_follow()
 {
 	m_pAPM = NULL;
 	m_pAM = NULL;
@@ -26,11 +26,11 @@ APMrover_follow::APMrover_follow()
 	m_pAPM = NULL;
 }
 
-APMrover_follow::~APMrover_follow()
+AProver_follow::~AProver_follow()
 {
 }
 
-bool APMrover_follow::init(void* pKiss)
+bool AProver_follow::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
@@ -52,14 +52,14 @@ bool APMrover_follow::init(void* pKiss)
 	return true;
 }
 
-bool APMrover_follow::link(void)
+bool AProver_follow::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 	string iName = "";
 
 	F_INFO(pK->v("APMrover_base", &iName));
-	m_pAPM = (APMrover_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAPM = (AProver_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniv = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
@@ -67,7 +67,7 @@ bool APMrover_follow::link(void)
 	return true;
 }
 
-void APMrover_follow::update(void)
+void AProver_follow::update(void)
 {
 	this->ActionBase::update();
 
@@ -107,7 +107,7 @@ void APMrover_follow::update(void)
 
 }
 
-bool APMrover_follow::draw(void)
+bool AProver_follow::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

@@ -1,20 +1,20 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_GUIDED_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_GUIDED_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_GUIDED_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_GUIDED_H_
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_Lightware_SF40.h"
 #include "../ActionBase.h"
-#include "APMcopter_base.h"
+#include "../APcopter/APcopter_base.h"
 
 namespace kai
 {
 
-class APMcopter_guided: public ActionBase
+class APcopter_guided: public ActionBase
 {
 public:
-	APMcopter_guided();
-	~APMcopter_guided();
+	APcopter_guided();
+	~APcopter_guided();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -25,7 +25,7 @@ public:
 	void updateAttitude(void);
 
 private:
-	APMcopter_base* m_pAPM;
+	APcopter_base* m_pAPM;
 	uint32_t m_lastFlightMode;
 
 	//sensor

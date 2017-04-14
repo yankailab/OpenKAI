@@ -18,12 +18,6 @@ _Obstacle::_Obstacle()
 	m_dBlend = 0.5;
 	m_mDim.x = 10;
 	m_mDim.y = 10;
-	m_fRoi.x = 0.0;
-	m_fRoi.y = 0.0;
-	m_fRoi.z = 1.0;
-	m_fRoi.w = 1.0;
-	m_iRoi.init();
-
 }
 
 _Obstacle::~_Obstacle()
@@ -45,39 +39,22 @@ bool _Obstacle::init(void* pKiss)
 	F_INFO(pK->v("dBlend", &m_dBlend));
 	F_INFO(pK->v("matrixW", &m_mDim.x));
 	F_INFO(pK->v("matrixH", &m_mDim.y));
-	F_INFO(pK->v("orientation", (int*)&m_orientation));
-
-	F_INFO(pK->v("roiL", &m_fRoi.x));
-	F_INFO(pK->v("roiT", &m_fRoi.y));
-	F_INFO(pK->v("roiR", &m_fRoi.z));
-	F_INFO(pK->v("roiB", &m_fRoi.w));
-
-	m_iRoi.x = m_fRoi.x * m_mDim.x;
-	m_iRoi.y = m_fRoi.y * m_mDim.y;
-	m_iRoi.z = m_fRoi.z * m_mDim.x;
-	m_iRoi.w = m_fRoi.w * m_mDim.y;
-
-	if(m_iRoi.x < 0)m_iRoi.x=0;
-	if(m_iRoi.y < 0)m_iRoi.y=0;
-	if(m_iRoi.z >= m_mDim.x)m_iRoi.z=m_mDim.x-1;
-	if(m_iRoi.w >= m_mDim.y)m_iRoi.w=m_mDim.y-1;
 
 	m_nFilter = m_mDim.area();
 	IF_F(m_nFilter >= N_FILTER);
 
-	Kiss* pCC;
+	Kiss* pC;
 	int i;
 
 	//filter
-	pCC = pK->o("medianFilter");
-	IF_F(pCC->empty());
+	pC = pK->o("medianFilter");
+	IF_F(pC->empty());
 
 	for (i = 0; i < m_nFilter; i++)
 	{
 		m_pFilteredMatrix[i] = new Median();
-		IF_F(!m_pFilteredMatrix[i]->init(pCC));
+		IF_F(!m_pFilteredMatrix[i]->init(pC));
 	}
-
 	m_pMatrix = new Frame();
 
 	return true;
@@ -145,15 +122,16 @@ void _Obstacle::detect(void)
 	}
 }
 
-double _Obstacle::d(void)
+double _Obstacle::d(vInt4* pROI, vInt2* pPos)
 {
 	if(!m_pZed)return -1.0;
+	if(!pROI)return -1.0;
 
 	double dMin = m_range.y;
 	int i,j;
-	for(i=m_iRoi.y;i<m_iRoi.w;i++)
+	for(i=pROI->y;i<pROI->w;i++)
 	{
-		for(j=m_iRoi.x;j<m_iRoi.z;j++)
+		for(j=pROI->x;j<pROI->z;j++)
 		{
 			double dCell = m_pFilteredMatrix[i*m_mDim.x+j]->v();
 			IF_CONT(dCell < m_range.x);
@@ -161,8 +139,54 @@ double _Obstacle::d(void)
 			IF_CONT(dCell > dMin);
 
 			dMin = dCell;
-			m_posMin.x = j;
-			m_posMin.y = i;
+			if(pPos)
+			{
+				pPos->x = j;
+				pPos->y = i;
+			}
+		}
+	}
+
+	return dMin;
+}
+
+double _Obstacle::d(vDouble4* pROI, vInt2* pPos)
+{
+	if(!m_pZed)return -1.0;
+	if(!pROI)return -1.0;
+
+	vInt4 iR;
+	iR.x = pROI->x * m_mDim.x;
+	iR.y = pROI->y * m_mDim.y;
+	iR.z = pROI->z * m_mDim.x;
+	iR.w = pROI->w * m_mDim.y;
+
+	if (iR.x < 0)
+		iR.x = 0;
+	if (iR.y < 0)
+		iR.y = 0;
+	if (iR.z >= m_mDim.x)
+		iR.z = m_mDim.x - 1;
+	if (iR.w >= m_mDim.y)
+		iR.w = m_mDim.y - 1;
+
+	double dMin = m_range.y;
+	int i,j;
+	for(i=iR.y;i<iR.w;i++)
+	{
+		for(j=iR.x;j<iR.z;j++)
+		{
+			double dCell = m_pFilteredMatrix[i*m_mDim.x+j]->v();
+			IF_CONT(dCell < m_range.x);
+			IF_CONT(dCell > m_range.y);
+			IF_CONT(dCell > dMin);
+
+			dMin = dCell;
+			if(pPos)
+			{
+				pPos->x = j;
+				pPos->y = i;
+			}
 		}
 	}
 
@@ -174,7 +198,7 @@ vInt2 _Obstacle::matrixDim(void)
 	return m_mDim;
 }
 
-DISTANCE_SENSOR_TYPE _Obstacle::type(void)
+DIST_SENSOR_TYPE _Obstacle::type(void)
 {
 	return dsZED;
 }
@@ -215,18 +239,6 @@ bool _Obstacle::draw(void)
     cv::merge(channels, mB);
 	cv::resize(mB, mA, Size(pMat->cols, pMat->rows),0,0,INTER_NEAREST);
 	cv::addWeighted(*pMat, 1.0, mA, m_dBlend, 0.0, *pMat);
-
-	Rect r;
-	r.x = m_fRoi.x * ((double)pMat->cols);
-	r.y = m_fRoi.y * ((double)pMat->rows);
-	r.width = m_fRoi.z * ((double)pMat->cols) - r.x;
-	r.height = m_fRoi.w * ((double)pMat->rows) - r.y;
-	rectangle(*pMat, r, Scalar(0,255,255), 1);
-
-	circle(*pMat, Point((m_posMin.x+0.5)*(pMat->cols/m_mDim.x), (m_posMin.y+0.5)*(pMat->rows/m_mDim.y)),
-			0.000025*pMat->cols*pMat->rows,
-			Scalar(0, 255, 255), 2);
-
 
 	return true;
 }

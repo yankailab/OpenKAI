@@ -118,16 +118,16 @@ void HM_avoid::update(void)
 		IF_(m_pHM->m_dir != dir_forward);
 
 		//do nothing if no obstacle inside alert distance
-//TODO		m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
+		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
 		IF_(m_distM > m_alertDist);
 
 		//decide direction by obstacles in left and right
-//TODO		double dL = m_pObs->dist(&m_obsBoxL, NULL);
-//TODO		double dR = m_pObs->dist(&m_obsBoxR, NULL);
+		double dL = m_pObs->d(&m_obsBoxL, NULL);
+		double dR = m_pObs->d(&m_obsBoxR, NULL);
 
-//TODO		m_rpmSteer = abs(m_rpmSteer);
-//TODO		if (dL > dR)
-//TODO 			m_rpmSteer *= -1;
+		m_rpmSteer = abs(m_rpmSteer);
+		if (dL > dR)
+ 			m_rpmSteer *= -1;
 
 		//if found marker, start turn for the timer duration
 		if (m_pMN->bFound(m_iMarkerClass, m_minProb, 0))
@@ -141,7 +141,7 @@ void HM_avoid::update(void)
 
 	if(m_sequence == av_turn)
 	{
-//TODO		m_distM = m_pObs->dist(&m_obsBoxF, &m_posMin);
+		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
 		if(m_distM > m_alertDist)
 		{
 			m_sequence = av_clear;

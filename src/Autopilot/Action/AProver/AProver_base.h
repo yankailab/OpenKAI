@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_BASE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_BASE_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_BASE_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_BASE_H_
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
@@ -8,7 +8,7 @@
 namespace kai
 {
 
-struct APMrover_PID
+struct AProver_PID
 {
 	double m_P;
 	double m_I;
@@ -26,7 +26,7 @@ struct APMrover_PID
 	}
 };
 
-struct APMrover_CTRL
+struct AProver_CTRL
 {
 	double m_pos;
 	double m_targetPos;
@@ -50,11 +50,11 @@ struct APMrover_CTRL
 	}
 };
 
-class APMrover_base: public ActionBase
+class AProver_base: public ActionBase
 {
 public:
-	APMrover_base();
-	~APMrover_base();
+	AProver_base();
+	~AProver_base();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -66,11 +66,11 @@ public:
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
 
-	APMrover_PID m_pidThrust;
-	APMrover_PID m_pidSteer;
+	AProver_PID m_pidThrust;
+	AProver_PID m_pidSteer;
 
-	APMrover_CTRL m_ctrlThrust;
-	APMrover_CTRL m_ctrlSteer;
+	AProver_CTRL m_ctrlThrust;
+	AProver_CTRL m_ctrlSteer;
 
 	double	m_thrust;
 	double	m_steer;

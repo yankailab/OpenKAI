@@ -1,20 +1,20 @@
-#include "APMcopter_landing.h"
+#include "../APcopter/APcopter_landing.h"
 
 namespace kai
 {
 
-APMcopter_landing::APMcopter_landing()
+APcopter_landing::APcopter_landing()
 {
 	m_pAPM = NULL;
 	m_pAI = NULL;
 	m_target.init();
 }
 
-APMcopter_landing::~APMcopter_landing()
+APcopter_landing::~APcopter_landing()
 {
 }
 
-bool APMcopter_landing::init(void* pKiss)
+bool APcopter_landing::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
@@ -27,21 +27,21 @@ bool APMcopter_landing::init(void* pKiss)
 	return true;
 }
 
-bool APMcopter_landing::link(void)
+bool APcopter_landing::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
 	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
 	return true;
 }
 
-void APMcopter_landing::update(void)
+void APcopter_landing::update(void)
 {
 	this->ActionBase::update();
 
@@ -50,7 +50,7 @@ void APMcopter_landing::update(void)
 	landing();
 }
 
-void APMcopter_landing::landing(void)
+void APcopter_landing::landing(void)
 {
 	NULL_(m_pAPM);
 	NULL_(m_pAI);
@@ -101,7 +101,7 @@ void APMcopter_landing::landing(void)
 
 }
 
-bool APMcopter_landing::draw(void)
+bool APcopter_landing::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

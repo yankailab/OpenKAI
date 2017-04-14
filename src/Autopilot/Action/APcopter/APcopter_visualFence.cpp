@@ -1,9 +1,9 @@
-#include "APMcopter_visualFence.h"
+#include "../APcopter/APcopter_visualFence.h"
 
 namespace kai
 {
 
-APMcopter_visualFence::APMcopter_visualFence()
+APcopter_visualFence::APcopter_visualFence()
 {
 	m_pAPM = NULL;
 	m_pMN = NULL;
@@ -11,11 +11,11 @@ APMcopter_visualFence::APMcopter_visualFence()
 
 }
 
-APMcopter_visualFence::~APMcopter_visualFence()
+APcopter_visualFence::~APcopter_visualFence()
 {
 }
 
-bool APMcopter_visualFence::init(void* pKiss)
+bool APcopter_visualFence::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -39,7 +39,7 @@ bool APMcopter_visualFence::init(void* pKiss)
 	return true;
 }
 
-bool APMcopter_visualFence::link(void)
+bool APcopter_visualFence::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -47,7 +47,7 @@ bool APMcopter_visualFence::link(void)
 
 	iName = "";
 	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APMcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
@@ -62,7 +62,7 @@ bool APMcopter_visualFence::link(void)
 	return true;
 }
 
-void APMcopter_visualFence::update(void)
+void APcopter_visualFence::update(void)
 {
 	this->ActionBase::update();
 
@@ -74,7 +74,7 @@ void APMcopter_visualFence::update(void)
 //	m_pAPM->m_pMavlink->zedVisionPositionDelta(m_dTime);
 }
 
-bool APMcopter_visualFence::draw(void)
+bool APcopter_visualFence::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

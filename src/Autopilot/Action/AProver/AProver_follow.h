@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_FOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMROVER_FOLLOW_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_FOLLOW_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_FOLLOW_H_
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
@@ -10,17 +10,17 @@
 #include "../../../Filter/FilterBase.h"
 #include "../../../Navigation/_Obstacle.h"
 #include "../ActionBase.h"
-#include "APMrover_base.h"
+#include "../AProver/AProver_base.h"
 
 
 namespace kai
 {
 
-class APMrover_follow: public ActionBase
+class AProver_follow: public ActionBase
 {
 public:
-	APMrover_follow();
-	~APMrover_follow();
+	AProver_follow();
+	~AProver_follow();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -31,7 +31,7 @@ public:
 	void followTarget(void);
 
 private:
-	APMrover_base* m_pAPM;
+	AProver_base* m_pAPM;
 	_Obstacle*	m_pUniv;
 
 	//where target should be on cam coordinate

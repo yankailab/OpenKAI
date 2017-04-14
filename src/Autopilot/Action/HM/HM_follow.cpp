@@ -99,8 +99,7 @@ void HM_follow::update(void)
 			IF_CONT(pObj->m_name != m_targetName);
 		}
 
-		//TODO
-//		pObj->m_dist = m_pObs->dist(&pObj->m_fBBox, NULL);
+		pObj->m_dist = m_pObs->d(&pObj->m_fBBox, NULL);
 
 		if (!m_pTarget)
 		{

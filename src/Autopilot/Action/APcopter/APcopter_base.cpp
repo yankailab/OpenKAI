@@ -1,9 +1,9 @@
-#include "APMcopter_base.h"
+#include "../APcopter/APcopter_base.h"
 
 namespace kai
 {
 
-APMcopter_base::APMcopter_base()
+APcopter_base::APcopter_base()
 {
 	m_pMavlink = NULL;
 	m_lastHeartbeat = 0;
@@ -21,18 +21,18 @@ APMcopter_base::APMcopter_base()
 	m_ctrlThr.reset();
 }
 
-APMcopter_base::~APMcopter_base()
+APcopter_base::~APcopter_base()
 {
 }
 
-bool APMcopter_base::init(void* pKiss)
+bool APcopter_base::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
 	Kiss* pCC;
-	APMcopter_PID cPID;
+	APcopter_PID cPID;
 
 	pCC = pK->o("roll");
 	cPID.reset();
@@ -88,7 +88,7 @@ bool APMcopter_base::init(void* pKiss)
 	return true;
 }
 
-bool APMcopter_base::link(void)
+bool APcopter_base::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
@@ -100,7 +100,7 @@ bool APMcopter_base::link(void)
 	return true;
 }
 
-void APMcopter_base::update(void)
+void APcopter_base::update(void)
 {
 	this->ActionBase::update();
 	NULL_(m_pMavlink);
@@ -117,7 +117,7 @@ void APMcopter_base::update(void)
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 }
 
-bool APMcopter_base::draw(void)
+bool APcopter_base::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
