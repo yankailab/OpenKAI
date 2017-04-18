@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -226,7 +226,7 @@
 		{
 			"name":"apZedSlam",
 			"class":"APcopter_zedSLAM",
-			"bInst":0,
+			"bInst":1,
 			"bLog":0,
 			"Window":"apView",
 			"_Automaton":"apState",

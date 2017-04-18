@@ -290,6 +290,19 @@ void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max,
 void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 		vDouble3* pDPos, uint8_t confidence)
 {
+
+	/*
+	 * float angle_delta[3];
+	 * Rotation in radians in body frame from previous to current frame
+	 * using right-hand coordinate system (0=roll, 1=pitch, 2=yaw)
+	 *
+	 * float position_delta[3];
+	 * Change in position in meters from previous to current frame
+	 * rotated into body frame (0=forward, 1=right, 2=down)
+	 *
+	 * float confidence; //< normalised confidence value from 0 to 100
+	 * */
+
 	mavlink_message_t message;
 	mavlink_vision_position_delta_t dZed;
 	dZed.time_usec = get_time_usec();

@@ -25,7 +25,7 @@ public:
 	void updateAttitude(void);
 
 private:
-	APcopter_base* m_pAPM;
+	APcopter_base* m_pAP;
 	uint32_t m_lastFlightMode;
 
 	//sensor

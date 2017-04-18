@@ -26,7 +26,7 @@ public:
 	void updateZEDtracking();
 
 private:
-	APcopter_base* m_pAPM;
+	APcopter_base* m_pAP;
 	_ZED* m_pZED;
 
 	vDouble3 m_mT;

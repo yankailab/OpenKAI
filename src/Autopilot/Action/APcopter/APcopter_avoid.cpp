@@ -29,7 +29,7 @@ bool APcopter_avoid::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("APMcopter_base", &iName));
+	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	//dist sensor

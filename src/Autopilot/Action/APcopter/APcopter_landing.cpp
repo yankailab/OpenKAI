@@ -5,7 +5,7 @@ namespace kai
 
 APcopter_landing::APcopter_landing()
 {
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_pAI = NULL;
 	m_target.init();
 }
@@ -33,8 +33,8 @@ bool APcopter_landing::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	F_INFO(pK->v("APcopter_base", &iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
 	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
@@ -45,14 +45,14 @@ void APcopter_landing::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAPM);
+	NULL_(m_pAP);
 
 	landing();
 }
 
 void APcopter_landing::landing(void)
 {
-	NULL_(m_pAPM);
+	NULL_(m_pAP);
 	NULL_(m_pAI);
 	_VisionBase* pStream = m_pAI->m_pStream;
 	NULL_(pStream);
@@ -96,7 +96,7 @@ void APcopter_landing::landing(void)
 			* cAngle.y * DEG_RAD * m_target.m_orientY;
 
 	//Send Mavlink command
-	m_pAPM->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+	m_pAP->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 			m_target.m_angleX, m_target.m_angleY, 0, 0, 0);
 
 }

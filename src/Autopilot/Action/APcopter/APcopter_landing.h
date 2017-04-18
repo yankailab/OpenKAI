@@ -53,7 +53,7 @@ private:
 	void landing(void);
 
 private:
-	APcopter_base* m_pAPM;
+	APcopter_base* m_pAP;
 	_AIbase* m_pAI;
 
 	LANDING_TARGET	m_target;

@@ -6,7 +6,7 @@ namespace kai
 APcopter_guided::APcopter_guided()
 {
 	m_pSF40 = NULL;
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_lastFlightMode = 0;
 }
 
@@ -29,8 +29,8 @@ bool APcopter_guided::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APcopter_base*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("APcopter_base", &iName));
+	m_pAP = (APcopter_base*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Lightware_SF40", &iName));
@@ -45,7 +45,7 @@ void APcopter_guided::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAPM);
+	NULL_(m_pAP);
 	IF_(!isActive());
 
 	updateAttitude();
@@ -54,10 +54,10 @@ void APcopter_guided::update(void)
 
 void APcopter_guided::updateAttitude(void)
 {
-	NULL_(m_pAPM->m_pMavlink);
+	NULL_(m_pAP->m_pMavlink);
 	NULL_(m_pSF40);
 
-	uint32_t fMode = m_pAPM->m_flightMode;
+	uint32_t fMode = m_pAP->m_flightMode;
 	if(fMode != m_lastFlightMode)
 	{
 		//set new holding position in mode change (Any -> Guided_NoGPS)
@@ -112,12 +112,12 @@ bool APcopter_guided::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	if(m_pAPM)
+	if(m_pAP)
 	{
 		string msg = *this->getName()+": Att. Target: Roll="
-				+ f2str(m_pAPM->m_ctrlRoll.m_v)
+				+ f2str(m_pAP->m_ctrlRoll.m_v)
 				+", Pitch="
-				+ f2str(m_pAPM->m_ctrlPitch.m_v);
+				+ f2str(m_pAP->m_ctrlPitch.m_v);
 		pWin->addMsg(&msg);
 	}
 

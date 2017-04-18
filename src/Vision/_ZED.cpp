@@ -30,11 +30,11 @@ _ZED::_ZED()
 	m_angleH = 66.7;
 	m_angleV = 67.1;
 	m_zedTrackState = sl::TRACKING_STATE_OFF;
-	m_mMotion.setIdentity(4, 4);
-	m_trackState = track_idle;
 	m_trackConfidence = 0;
 	m_vT.init();
 	m_vR.init();
+	m_trackDT = 0;
+	m_zedL2C = 0.0;
 	m_tLastTrack = 0;
 }
 
@@ -133,13 +133,13 @@ bool _ZED::open(void)
 	// Jetson only. Execute the calling thread on 2nd core
 //	sl::Camera::sticktoCPUCore(2);
 
-	startTracking();
-
 	// Initialize motion tracking parameters
 	sl::TrackingParameters zedTracking;
 	zedTracking.initial_world_transform = sl::Transform::identity();
 	zedTracking.enable_spatial_memory = true;
 	m_pZed->enableTracking(zedTracking);
+
+	m_zedL2C = (double) (m_pZed->getCameraInformation().calibration_parameters.T.x * 0.5);
 
 	m_bOpen = true;
 	return true;
@@ -242,117 +242,51 @@ void _ZED::update(void)
 
 		m_pDepth->update(pSrcD);
 
-//		Eigen::Matrix4f m;
-//		switch (m_trackState)
-//		{
-//		case tracking:
-//			m_zedTrackState = m_zed.getPosition(m, sl::zed::MAT_TRACKING_TYPE::POSE);
-//			if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_GOOD)
-//			{
-//				m_mMotion *= m;
-//				m_trackConfidence = m_zed.getTrackingConfidence();
-//			}
-//			else if (m_zedTrackState == sl::zed::TRACKING_STATE::TRACKING_LOST)
-//			{
-//				m_zed.stopTracking();
-//				zedTrackReset();
-//			}
-//			break;
-//		case track_start:
-//			zedTrackReset();
-//			break;
-//		case track_stop:
-//			m_zed.stopTracking();
-//			m_trackState = track_idle;
-//			break;
-//		}
+		m_zedTrackState = m_pZed->getPosition(m_zedCamPose, sl::REFERENCE_FRAME_LAST);	//REFERENCE_FRAME_WORLD);
+		m_trackConfidence = m_zedCamPose.pose_confidence;
+
+		if (m_zedTrackState == sl::TRACKING_STATE_OK)
+		{
+			sl::Vector3<float> rot = m_zedCamPose.getRotationVector();
+			m_vR.x += rot.x;
+			m_vR.y += rot.y;
+			m_vR.z += rot.z;
+
+			sl::Vector3<float> trans = m_zedCamPose.getTranslation();
+			m_vT.x += trans.tx;
+			m_vT.y += trans.ty;
+			m_vT.z += trans.tz;
+
+			uint64_t trackT = m_pZed->getCameraTimestamp();
+			m_trackDT += trackT - m_tLastTrack;
+			m_tLastTrack = trackT;
+		}
+		else
+		{
+//			m_pZed->resetTracking();
+		}
 
 		this->autoFPSto();
 	}
 }
 
-void _ZED::startTracking(void)
-{
-	m_trackState = track_start;
-}
-
-void _ZED::stopTracking(void)
-{
-	m_trackState = track_stop;
-}
-
-bool _ZED::isTracking(void)
-{
-	IF_T(m_trackState == tracking);
-	IF_T(m_trackState == track_start);
-
-	return false;
-}
-
-void _ZED::zedTrackReset(void)
-{
-//	m_mMotion.setIdentity(4, 4);
-//	if (m_zed->enableTracking(m_mMotion, false))
-//		m_trackState = tracking;
-}
-
 int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 {
-	if (m_trackState != tracking)
-	{
-		return -1;
-	}
-	/*
-	 m_vT.x = (double) m_mMotion(0, 3);  //Side
-	 m_vT.y = (double) m_mMotion(1, 3);  //Alt
-	 m_vT.z = (double) m_mMotion(2, 3);  //Heading
-	 *pT = m_vT;
+	*pT = m_vT;
+	*pR = m_vR;
+	*pDT = m_trackDT / 1000;
 
-	 Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
-	 Eigen::Quaternionf q(mRot);
-	 float3 euler = eulerAngles(q.x(), q.y(), q.z(), q.w());
-	 m_vR.x = (double) euler.x;
-	 m_vR.y = (double) euler.y;
-	 m_vR.z = (double) euler.z;
-	 if (m_vR.z > 0)
-	 m_vR.z -= M_PI;
-	 else
-	 m_vR.z += M_PI;
+	m_vT.init();
+	m_vR.init();
+	m_trackDT = 0;
 
-	 if (abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
-	 {
-	 return -1;
-	 }
-
-	 *pR = m_vR;
-
-	 uint64_t t = get_time_usec();
-	 if (m_tLastTrack == 0)
-	 {
-	 m_tLastTrack = t;
-	 return -1;
-	 }
-
-	 *pDT = t - m_tLastTrack;
-	 m_tLastTrack = t;
-
-	 //	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
-	 //	mRot.normalize();
-	 //	Eigen::Vector3f euler = mRot.eulerAngles(0,1,2);
-	 //	m_vR.m_x = (double) euler(0);
-	 //	m_vR.m_y = (double) euler(1);
-	 //	m_vR.m_z = (double) euler(2);
-	 //	*pR = m_vR;
-
-	 m_mMotion.setIdentity(4, 4);
-	 */
 	return m_trackConfidence;
 }
 
 void _ZED::setAttitude(vDouble3* pYPR)
 {
 	NULL_(pYPR);
-	IF_(m_trackState != tracking);
+//	IF_(m_trackState != tracking);
 
 //	Eigen::AngleAxisf y(pYPR->x, Eigen::Vector3f::UnitY());
 //	Eigen::AngleAxisf p(pYPR->y, Eigen::Vector3f::UnitX());

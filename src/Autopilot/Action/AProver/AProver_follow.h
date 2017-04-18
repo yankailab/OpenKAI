@@ -31,7 +31,7 @@ public:
 	void followTarget(void);
 
 private:
-	AProver_base* m_pAPM;
+	AProver_base* m_pAP;
 	_Obstacle*	m_pUniv;
 
 	//where target should be on cam coordinate

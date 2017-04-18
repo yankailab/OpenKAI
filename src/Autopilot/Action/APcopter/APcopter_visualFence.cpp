@@ -5,7 +5,7 @@ namespace kai
 
 APcopter_visualFence::APcopter_visualFence()
 {
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_pMN = NULL;
 	m_nTerrain = 0;
 
@@ -46,8 +46,8 @@ bool APcopter_visualFence::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	F_INFO(pK->v("APcopter_base", &iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
@@ -69,8 +69,8 @@ void APcopter_visualFence::update(void)
 	NULL_(m_pMN);
 
 
-	NULL_(m_pAPM);
-	NULL_(m_pAPM->m_pMavlink);
+	NULL_(m_pAP);
+	NULL_(m_pAP->m_pMavlink);
 //	m_pAPM->m_pMavlink->zedVisionPositionDelta(m_dTime);
 }
 

@@ -30,7 +30,7 @@ public:
 	bool draw(void);
 
 private:
-	APcopter_base* m_pAPM;
+	APcopter_base* m_pAP;
 	_MatrixNet*	m_pMN;
 
 	TERRAIN m_pTerrain[N_TERRAIN];

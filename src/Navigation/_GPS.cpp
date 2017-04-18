@@ -69,8 +69,6 @@ bool _GPS::link(void)
 	iName = "";
 	F_INFO(pK->v("_ZED", &iName));
 	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
-	if(m_pZED)
-		m_pZED->startTracking();
 
 	return true;
 }
@@ -120,9 +118,6 @@ void _GPS::detect(void)
 		{
 			m_apmMode = apmMode;
 			setLL(&m_initLL);
-
-			if(m_pZED)
-				m_pZED->startTracking();
 
 			if(m_pSF40)
 				m_pSF40->reset();

@@ -5,7 +5,7 @@ namespace kai
 
 AProver_follow::AProver_follow()
 {
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_pAM = NULL;
 	m_pUniv = NULL;
 
@@ -23,7 +23,7 @@ AProver_follow::AProver_follow()
 	m_filterWindow = 3;
 	m_targetClass = 0;
 
-	m_pAPM = NULL;
+	m_pAP = NULL;
 }
 
 AProver_follow::~AProver_follow()
@@ -59,7 +59,7 @@ bool AProver_follow::link(void)
 	string iName = "";
 
 	F_INFO(pK->v("APMrover_base", &iName));
-	m_pAPM = (AProver_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAP = (AProver_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
 	m_pUniv = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
@@ -71,7 +71,7 @@ void AProver_follow::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAPM);
+	NULL_(m_pAP);
 	NULL_(m_pUniv);
 	IF_(isActive()==false);
 
@@ -113,7 +113,7 @@ bool AProver_follow::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg = *this->getName() + ": thrust=" + i2str(m_pAPM->m_thrust) + ", steer=" + i2str(m_pAPM->m_steer);
+	string msg = *this->getName() + ": thrust=" + i2str(m_pAP->m_thrust) + ", steer=" + i2str(m_pAP->m_steer);
 	pWin->addMsg(&msg);
 
 	IF_T(m_pTarget==NULL);
@@ -124,16 +124,16 @@ bool AProver_follow::draw(void)
 	char strBuf[128];
 
 	sprintf(strBuf, "Attitude: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->m_msg.attitude.roll,
-			m_pAPM->m_pMavlink->m_msg.attitude.pitch,
-			m_pAPM->m_pMavlink->m_msg.attitude.yaw);
+			m_pAP->m_pMavlink->m_msg.attitude.roll,
+			m_pAP->m_pMavlink->m_msg.attitude.pitch,
+			m_pAP->m_pMavlink->m_msg.attitude.yaw);
 	msg = strBuf;
 	pWin->addMsg(&msg);
 
 	sprintf(strBuf, "Speed: Roll=%.2f, Pitch=%.2f, Yaw=%.2f",
-			m_pAPM->m_pMavlink->m_msg.attitude.rollspeed,
-			m_pAPM->m_pMavlink->m_msg.attitude.pitchspeed,
-			m_pAPM->m_pMavlink->m_msg.attitude.yawspeed);
+			m_pAP->m_pMavlink->m_msg.attitude.rollspeed,
+			m_pAP->m_pMavlink->m_msg.attitude.pitchspeed,
+			m_pAP->m_pMavlink->m_msg.attitude.yawspeed);
 	msg = strBuf;
 	pWin->addMsg(&msg);
 

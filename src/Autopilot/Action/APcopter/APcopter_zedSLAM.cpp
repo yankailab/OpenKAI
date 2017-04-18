@@ -5,7 +5,7 @@ namespace kai
 
 APcopter_zedSLAM::APcopter_zedSLAM()
 {
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_pZED = NULL;
 
 	m_mT.init();
@@ -32,8 +32,8 @@ bool APcopter_zedSLAM::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("APMcopter_base", &iName));
-	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	F_INFO(pK->v("APcopter_base", &iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_ZED", &iName));
@@ -52,27 +52,34 @@ void APcopter_zedSLAM::update(void)
 void APcopter_zedSLAM::updateZEDtracking(void)
 {
 	NULL_(m_pZED);
-	if(!m_pZED->isTracking())
-	{
-		m_pZED->startTracking();
-	}
 
 	vDouble3 mT,mR;
 	uint64_t dT;
 	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 	IF_(confidence < 0);	//not tracking or ZED fps is too low
 
-    m_mT.x = mT.z;
-    m_mT.y = mT.x;
-    m_mT.z = mT.y;
+    m_mT.x = mT.z;	//forward
+    m_mT.y = mT.x;	//right
+    m_mT.z = mT.y;	//down
 
-    m_mR.x = mR.x;
-    m_mR.y = mR.z;
-    m_mR.z = -mR.y;
+    m_mR.x = -mR.x;  //roll
+    m_mR.y = -mR.z;  //pitch
+    m_mR.z = -mR.y;  //yaw
 
-	NULL_(m_pAPM);
-	NULL_(m_pAPM->m_pMavlink);
-	m_pAPM->m_pMavlink->visionPositionDelta(dT, &m_mR, &m_mT, confidence);
+	NULL_(m_pAP);
+	NULL_(m_pAP->m_pMavlink);
+	m_pAP->m_pMavlink->visionPositionDelta(dT, &m_mR, &m_mT, confidence);
+
+//    static double tx=0,ty=0,tz=0;
+//    static double rx=0,ry=0,rz=0;
+//    tx += m_mT.x;
+//    ty += m_mT.y;
+//    tz += m_mT.z;
+//    rx += m_mR.x;
+//    ry += m_mR.y;
+//    rz += m_mR.z;
+//    printf("zedSLAM:  f=%.5lf\t r=%.5lf\t d=%.5lf\t | r=%.5lf\t p=%.5lf\t y=%.5lf\n",tx,ty,tz,rx,ry,rz);
+
 }
 
 bool APcopter_zedSLAM::draw(void)
