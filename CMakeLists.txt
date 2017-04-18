@@ -62,13 +62,11 @@ endif()
 
 if(USE_ZED)
   add_definitions(-DUSE_ZED)
-  set(EIGEN3_include "/usr/include/eigen3" CACHE STRING "")
   set(ZED_include "/usr/local/zed/include" CACHE STRING "")
   set(ZED_lib "/usr/local/zed/lib" CACHE STRING "")
   set(OpenKAI_libDir ${OpenKAI_libDir} ${ZED_lib})
   set(OpenKAI_include ${OpenKAI_include} ${ZED_include})
-  set(OpenKAI_include ${OpenKAI_include} ${EIGEN3_include})
-  set(OpenKAI_lib ${OpenKAI_lib} sl_zed)
+  set(OpenKAI_lib ${OpenKAI_lib} sl_zed sl_core sl_depthcore sl_tracking)
 endif()
 
 

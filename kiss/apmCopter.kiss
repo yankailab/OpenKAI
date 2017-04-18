@@ -52,7 +52,7 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedDepthMode":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
 	"bZedFlip":0,
