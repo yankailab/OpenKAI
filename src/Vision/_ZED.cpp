@@ -103,7 +103,7 @@ bool _ZED::open(void)
 	}
 
 	m_pZed->setConfidenceThreshold(m_zedConfidence);
-	m_pZed->setDepthMaxRangeValue((float)m_zedMaxDist);
+	m_pZed->setDepthMaxRangeValue((float) m_zedMaxDist);
 
 	// Set runtime parameters after opening the camera
 	m_zedRuntime.sensing_mode = (sl::SENSING_MODE) m_zedSenseMode;
@@ -127,13 +127,19 @@ bool _ZED::open(void)
 	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_32F_C1, sl::MEM_GPU);
 	m_gDepth = slMat2cvGpuMat(*m_pzDepth);
 
-	m_gImg2 = GpuMat(m_gImg.size(),m_gImg.type());
-	m_gDepth2 = GpuMat(m_gDepth.size(),m_gDepth.type());
+	m_gImg2 = GpuMat(m_gImg.size(), m_gImg.type());
+	m_gDepth2 = GpuMat(m_gDepth.size(), m_gDepth.type());
 
 	// Jetson only. Execute the calling thread on 2nd core
 //	sl::Camera::sticktoCPUCore(2);
 
 	startTracking();
+
+	// Initialize motion tracking parameters
+	sl::TrackingParameters zedTracking;
+	zedTracking.initial_world_transform = sl::Transform::identity();
+	zedTracking.enable_spatial_memory = true;
+	m_pZed->enableTracking(zedTracking);
 
 	m_bOpen = true;
 	return true;
@@ -147,24 +153,24 @@ GpuMat _ZED::slMat2cvGpuMat(sl::Mat& input)
 	//convert MAT_TYPE to CV_TYPE
 	switch (input.getDataType())
 	{
-		case sl::MAT_TYPE_32F_C1:
-			return GpuMat(h, w, CV_32FC1, input.getPtr<sl::float1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_32F_C2:
-			return GpuMat(h, w, CV_32FC2, input.getPtr<sl::float1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_32F_C3:
-			return GpuMat(h, w, CV_32FC3, input.getPtr<sl::float1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_32F_C4:
-			return GpuMat(h, w, CV_32FC4, input.getPtr<sl::float1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_8U_C1:
-			return GpuMat(h, w, CV_8UC1, input.getPtr<sl::uchar1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_8U_C2:
-			return GpuMat(h, w, CV_8UC2, input.getPtr<sl::uchar1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_8U_C3:
-			return GpuMat(h, w, CV_8UC3, input.getPtr<sl::uchar1>(sl::MEM_GPU));
-		case sl::MAT_TYPE_8U_C4:
-			return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
-		default:
-			return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_32F_C1:
+		return GpuMat(h, w, CV_32FC1, input.getPtr<sl::float1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_32F_C2:
+		return GpuMat(h, w, CV_32FC2, input.getPtr<sl::float1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_32F_C3:
+		return GpuMat(h, w, CV_32FC3, input.getPtr<sl::float1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_32F_C4:
+		return GpuMat(h, w, CV_32FC4, input.getPtr<sl::float1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_8U_C1:
+		return GpuMat(h, w, CV_8UC1, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_8U_C2:
+		return GpuMat(h, w, CV_8UC2, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_8U_C3:
+		return GpuMat(h, w, CV_8UC3, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+	case sl::MAT_TYPE_8U_C4:
+		return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
+	default:
+		return GpuMat(h, w, CV_8UC4, input.getPtr<sl::uchar1>(sl::MEM_GPU));
 	}
 }
 
@@ -201,7 +207,7 @@ void _ZED::update(void)
 		IF_CONT(m_pZed->grab(m_zedRuntime) != sl::SUCCESS);
 
 		m_pZed->retrieveImage(*m_pzImg, sl::VIEW_LEFT, sl::MEM_GPU);
-		m_pZed->retrieveMeasure(*m_pzDepth,sl::MEASURE_DEPTH, sl::MEM_GPU);
+		m_pZed->retrieveMeasure(*m_pzDepth, sl::MEASURE_DEPTH, sl::MEM_GPU);
 
 #ifndef USE_OPENCV4TEGRA
 		cuda::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
@@ -296,50 +302,50 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 	{
 		return -1;
 	}
-/*
-	m_vT.x = (double) m_mMotion(0, 3);  //Side
-	m_vT.y = (double) m_mMotion(1, 3);  //Alt
-	m_vT.z = (double) m_mMotion(2, 3);  //Heading
-	*pT = m_vT;
+	/*
+	 m_vT.x = (double) m_mMotion(0, 3);  //Side
+	 m_vT.y = (double) m_mMotion(1, 3);  //Alt
+	 m_vT.z = (double) m_mMotion(2, 3);  //Heading
+	 *pT = m_vT;
 
-	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
-	Eigen::Quaternionf q(mRot);
-	float3 euler = eulerAngles(q.x(), q.y(), q.z(), q.w());
-	m_vR.x = (double) euler.x;
-	m_vR.y = (double) euler.y;
-	m_vR.z = (double) euler.z;
-	if (m_vR.z > 0)
-		m_vR.z -= M_PI;
-	else
-		m_vR.z += M_PI;
+	 Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
+	 Eigen::Quaternionf q(mRot);
+	 float3 euler = eulerAngles(q.x(), q.y(), q.z(), q.w());
+	 m_vR.x = (double) euler.x;
+	 m_vR.y = (double) euler.y;
+	 m_vR.z = (double) euler.z;
+	 if (m_vR.z > 0)
+	 m_vR.z -= M_PI;
+	 else
+	 m_vR.z += M_PI;
 
-	if (abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
-	{
-		return -1;
-	}
+	 if (abs(m_vT.x + m_vT.y + m_vT.z + m_vR.x + m_vR.y + m_vR.z) < 1.0e-7)
+	 {
+	 return -1;
+	 }
 
-	*pR = m_vR;
+	 *pR = m_vR;
 
-	uint64_t t = get_time_usec();
-	if (m_tLastTrack == 0)
-	{
-		m_tLastTrack = t;
-		return -1;
-	}
+	 uint64_t t = get_time_usec();
+	 if (m_tLastTrack == 0)
+	 {
+	 m_tLastTrack = t;
+	 return -1;
+	 }
 
-	*pDT = t - m_tLastTrack;
-	m_tLastTrack = t;
+	 *pDT = t - m_tLastTrack;
+	 m_tLastTrack = t;
 
-//	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
-//	mRot.normalize();
-//	Eigen::Vector3f euler = mRot.eulerAngles(0,1,2);
-//	m_vR.m_x = (double) euler(0);
-//	m_vR.m_y = (double) euler(1);
-//	m_vR.m_z = (double) euler(2);
-//	*pR = m_vR;
+	 //	Eigen::Matrix3f mRot = m_mMotion.block(0, 0, 3, 3);
+	 //	mRot.normalize();
+	 //	Eigen::Vector3f euler = mRot.eulerAngles(0,1,2);
+	 //	m_vR.m_x = (double) euler(0);
+	 //	m_vR.m_y = (double) euler(1);
+	 //	m_vR.m_z = (double) euler(2);
+	 //	*pR = m_vR;
 
-	m_mMotion.setIdentity(4, 4);
-	*/
+	 m_mMotion.setIdentity(4, 4);
+	 */
 	return m_trackConfidence;
 }
 
