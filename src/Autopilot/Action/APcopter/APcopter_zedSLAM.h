@@ -31,7 +31,6 @@ private:
 
 	vDouble3 m_mT;
 	vDouble3 m_mR;
-
 };
 
 }

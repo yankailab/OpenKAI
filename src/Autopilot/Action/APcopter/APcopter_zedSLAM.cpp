@@ -52,11 +52,14 @@ void APcopter_zedSLAM::update(void)
 void APcopter_zedSLAM::updateZEDtracking(void)
 {
 	NULL_(m_pZED);
+	IF_(!m_pZED->isOpened());
 
 	vDouble3 mT,mR;
 	uint64_t dT;
 	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 	IF_(confidence < 0);	//not tracking or ZED fps is too low
+	IF_(dT == 0);
+	IF_(dT > USEC_1SEC);
 
     m_mT.x = mT.z;	//forward
     m_mT.y = mT.x;	//right
@@ -68,7 +71,7 @@ void APcopter_zedSLAM::updateZEDtracking(void)
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
-	m_pAP->m_pMavlink->visionPositionDelta(dT, &m_mR, &m_mT, confidence);
+	m_pAP->m_pMavlink->visionPositionDelta(m_dTime, &m_mR, &m_mT, confidence);
 
 //    static double tx=0,ty=0,tz=0;
 //    static double rx=0,ry=0,rz=0;

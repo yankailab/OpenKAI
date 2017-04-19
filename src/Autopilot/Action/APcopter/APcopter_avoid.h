@@ -54,7 +54,7 @@ public:
 private:
 	void updateMavlink(void);
 
-	APcopter_base* m_pAPM;
+	APcopter_base* m_pAP;
 	int	m_nDS;
 	DIST_SENSOR m_pDS[N_DIST_SENSOR];
 

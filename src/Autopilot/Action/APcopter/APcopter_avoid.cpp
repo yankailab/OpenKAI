@@ -5,7 +5,7 @@ namespace kai
 
 APcopter_avoid::APcopter_avoid()
 {
-	m_pAPM = NULL;
+	m_pAP = NULL;
 	m_nDS = 0;
 }
 
@@ -30,7 +30,7 @@ bool APcopter_avoid::link(void)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAPM = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	//dist sensor
 	Kiss* pDS = pK->o("distSensor");
@@ -100,9 +100,9 @@ void APcopter_avoid::update(void)
 
 void APcopter_avoid::updateMavlink(void)
 {
-	NULL_(m_pAPM);
-	NULL_(m_pAPM->m_pMavlink);
-	_Mavlink* pMavlink = m_pAPM->m_pMavlink;
+	NULL_(m_pAP);
+	NULL_(m_pAP->m_pMavlink);
+	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 
 	int i, j;
 	for (i = 0; i < m_nDS; i++)

@@ -32,15 +32,14 @@ public:
 	bool draw(void);
 
 	double dist(Rect* pR);
-
-	void setAttitude(vDouble3* pYPR);
 	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);
-
 	vDouble2 range(void);
 
+	void setAttitude(vDouble3* pYPR);
+
 private:
-	GpuMat slMat2cvGpuMat(sl::Mat& input);
 	bool open(void);
+	GpuMat slMat2cvGpuMat(sl::Mat& input);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
