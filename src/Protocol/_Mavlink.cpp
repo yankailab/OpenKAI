@@ -325,7 +325,8 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 			<< ", down=" << pDPos->z
 			<< "; roll=" << pDAngle->x
 			<< ", pitch=" << pDAngle->y
-			<< ", yaw=" << pDAngle->z);
+			<< ", yaw=" << pDAngle->z
+			<< ", confidence=" << dZed.confidence);
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &message)

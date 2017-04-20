@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -52,10 +52,10 @@
 	"angleH":66.7,
 	"zedFPS":30,
 	"zedDepthMode":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
-	"bZedFlip":0,
+	"bZedFlip":1,
 	"zedConfidence":99,
 	"bFlip":0,
 }

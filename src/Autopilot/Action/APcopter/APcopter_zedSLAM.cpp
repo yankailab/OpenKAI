@@ -57,9 +57,9 @@ void APcopter_zedSLAM::updateZEDtracking(void)
 	vDouble3 mT,mR;
 	uint64_t dT;
 	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
-	IF_(confidence < 0);	//not tracking or ZED fps is too low
-	IF_(dT == 0);
-	IF_(dT > USEC_1SEC);
+//	IF_(confidence < 0);	//not tracking or ZED fps is too low
+//	IF_(dT == 0);
+	IF_(dT > USEC_10SEC);
 
     m_mT.x = mT.z;	//forward
     m_mT.y = mT.x;	//right
