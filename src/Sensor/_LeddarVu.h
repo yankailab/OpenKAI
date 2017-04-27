@@ -27,7 +27,7 @@ struct SEGMENT_DETECTION
 {
 	double dDistance;			 // distance from the sensor, in meters
 	double dAmplitude;			 // signal amplitude
-	uint16_t flags;               // Flags
+	uint16_t flags;              // Flags
 };
 
 class _LeddarVu: public _ThreadBase, public DistSensorBase

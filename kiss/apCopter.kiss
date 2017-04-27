@@ -247,6 +247,11 @@
 			{
 				"iClass":0,
 				"action":0,
+				"orientation":0,
+				"l":0.05,
+				"t":0.0,
+				"r":0.95,
+				"b":0.8,
 			}
 			{
 				"iClass":0,

@@ -114,7 +114,7 @@ void APcopter_avoid::updateMavlink(void)
 		{
 			DIST_SEGMENT* pSeg = &pDS->m_pSeg[j];
 
-			pMavlink->distance_sensor(0, //type
+			pMavlink->distanceSensor(0, //type
 					pSeg->m_orient,	//orientation
 					range.y, range.x, pDS->m_pSensor->d(&pSeg->m_roi, NULL)*100);
 		}

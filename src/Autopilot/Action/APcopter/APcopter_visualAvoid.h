@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALFENCE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALFENCE_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALAVOID_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALAVOID_H_
 
 #include "../../../Base/common.h"
 #include "../../../AI/_MatrixNet.h"
@@ -18,11 +18,11 @@ struct TERRAIN
 	uint8_t	m_action;
 };
 
-class APcopter_visualFence: public ActionBase
+class APcopter_visualAvoid: public ActionBase
 {
 public:
-	APcopter_visualFence();
-	~APcopter_visualFence();
+	APcopter_visualAvoid();
+	~APcopter_visualAvoid();
 
 	bool init(void* pKiss);
 	bool link(void);

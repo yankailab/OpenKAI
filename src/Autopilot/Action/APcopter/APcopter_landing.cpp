@@ -96,7 +96,7 @@ void APcopter_landing::landing(void)
 			* cAngle.y * DEG_RAD * m_target.m_orientY;
 
 	//Send Mavlink command
-	m_pAP->m_pMavlink->landing_target(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
+	m_pAP->m_pMavlink->landingTarget(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
 			m_target.m_angleX, m_target.m_angleY, 0, 0, 0);
 
 }

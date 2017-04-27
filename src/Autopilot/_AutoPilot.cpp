@@ -41,10 +41,10 @@ bool _AutoPilot::init(void* pKiss)
 		//Add action modules below
 
 		ADD_ACTION(APcopter_base);
-		ADD_ACTION(APcopter_guided);
 		ADD_ACTION(APcopter_avoid);
 		ADD_ACTION(APcopter_zedSLAM);
-		ADD_ACTION(APcopter_visualFence);
+		ADD_ACTION(APcopter_visualAvoid);
+		ADD_ACTION(APcopter_visualFollow);
 
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_kickBack);

@@ -103,14 +103,15 @@ public:
 	void sendHeartbeat(void);
 
 	//Commands
-	void gps_input(mavlink_gps_input_t* pGPSinput);
-	void set_attitude_target(float* pAttitude, float* pRate, float thrust, uint8_t mask);
-	void landing_target(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
-//	void command_long_doSetMode(int mode);
-	void command_long_doSetPositionYawThrust(float steer, float thrust);
-	void distance_sensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v);
+	void gpsInput(mavlink_gps_input_t* pGPSinput);
+	void setAttitudeTarget(float* pAttitude, float* pRate, float thrust, uint8_t mask);
+	void landingTarget(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
+	void commandLongDoSetPositionYawThrust(float steer, float thrust);
+	void distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v);
 	void visionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence);
-
+	void positionTargetLocalNed(mavlink_position_target_local_ned_t* pD);
+	void positionTargetGlobalInt(mavlink_position_target_global_int_t* pD);
+	//	void command_long_doSetMode(int mode);
 
 public:
 	void sendMessage(void);

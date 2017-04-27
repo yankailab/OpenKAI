@@ -1,9 +1,9 @@
-#include "../APcopter/APcopter_visualFence.h"
+#include "APcopter_visualAvoid.h"
 
 namespace kai
 {
 
-APcopter_visualFence::APcopter_visualFence()
+APcopter_visualAvoid::APcopter_visualAvoid()
 {
 	m_pAP = NULL;
 	m_pMN = NULL;
@@ -11,11 +11,11 @@ APcopter_visualFence::APcopter_visualFence()
 
 }
 
-APcopter_visualFence::~APcopter_visualFence()
+APcopter_visualAvoid::~APcopter_visualAvoid()
 {
 }
 
-bool APcopter_visualFence::init(void* pKiss)
+bool APcopter_visualAvoid::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -39,7 +39,7 @@ bool APcopter_visualFence::init(void* pKiss)
 	return true;
 }
 
-bool APcopter_visualFence::link(void)
+bool APcopter_visualAvoid::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -62,19 +62,28 @@ bool APcopter_visualFence::link(void)
 	return true;
 }
 
-void APcopter_visualFence::update(void)
+void APcopter_visualAvoid::update(void)
 {
 	this->ActionBase::update();
 
 	NULL_(m_pMN);
-
-
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
-//	m_pAPM->m_pMavlink->zedVisionPositionDelta(m_dTime);
+	_Mavlink* pMavlink = m_pAP->m_pMavlink;
+
+	int i, j;
+	for (i = 0; i < m_nTerrain; i++)
+	{
+
+//		pMavlink->distanceSensor(0, //type
+//			pSeg->m_orient,	//orientation
+//			range.y, range.x, pDS->m_pSensor->d(&pSeg->m_roi, NULL)*100);
+	}
+
+
 }
 
-bool APcopter_visualFence::draw(void)
+bool APcopter_visualAvoid::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

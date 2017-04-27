@@ -159,7 +159,7 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	LOG_I("<- REQUEST_DATA_STREAM");
 }
 
-void _Mavlink::gps_input(mavlink_gps_input_t* pGPSinput)
+void _Mavlink::gpsInput(mavlink_gps_input_t* pGPSinput)
 {
 	NULL_(pGPSinput);
 
@@ -171,7 +171,7 @@ void _Mavlink::gps_input(mavlink_gps_input_t* pGPSinput)
 	LOG_I("<- GPS_INPUT");
 }
 
-void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,
+void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust,
 		uint8_t mask)
 {
 	mavlink_message_t message;
@@ -200,7 +200,7 @@ void _Mavlink::set_attitude_target(float* pAtti, float* pRate, float thrust,
 			"<- SET_ATTITUDE_TARGET: ROLL:"<< pAtti[0] <<" PITCH:"<< pAtti[1] <<" YAW:"<< pAtti[2] <<" THR:"<<thrust);
 }
 
-void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
+void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
 		float angle_y, float distance, float size_x, float size_y)
 {
 	mavlink_message_t message;
@@ -237,7 +237,7 @@ void _Mavlink::landing_target(uint8_t stream_id, uint8_t frame, float angle_x,
 //	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE");
 //}
 
-void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
+void _Mavlink::commandLongDoSetPositionYawThrust(float steer, float thrust)
 {
 	mavlink_message_t message;
 	mavlink_command_long_t ds;
@@ -255,7 +255,7 @@ void _Mavlink::command_long_doSetPositionYawThrust(float steer, float thrust)
 	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST");
 }
 
-void _Mavlink::distance_sensor(uint8_t type, uint8_t orientation, uint16_t max,
+void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max,
 		uint16_t min, uint16_t v)
 {
 	/*
@@ -327,6 +327,104 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 			<< ", pitch=" << pDAngle->y
 			<< ", yaw=" << pDAngle->z
 			<< ", confidence=" << dZed.confidence);
+}
+
+void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t* pD)
+{
+	/**
+	 * @brief Pack a position_target_local_ned message
+	 * @param system_id ID of this system
+	 * @param component_id ID of this component (e.g. 200 for IMU)
+	 * @param msg The MAVLink message to compress the data into
+	 *
+	 * @param time_boot_ms Timestamp in milliseconds since system boot
+	 * @param coordinate_frame Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
+	 * @param type_mask Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate
+	 * @param x X Position in NED frame in meters
+	 * @param y Y Position in NED frame in meters
+	 * @param z Z Position in NED frame in meters (note, altitude is negative in NED)
+	 * @param vx X velocity in NED frame in meter / s
+	 * @param vy Y velocity in NED frame in meter / s
+	 * @param vz Z velocity in NED frame in meter / s
+	 * @param afx X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param afy Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param afz Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param yaw yaw setpoint in rad
+	 * @param yaw_rate yaw rate setpoint in rad/s
+	 * @return length of the message in bytes (excluding serial stream start sign)
+	 */
+
+	NULL_(pD);
+
+	mavlink_message_t message;
+	mavlink_msg_position_target_local_ned_encode(
+			m_systemID,
+			m_targetComponentID, &message, pD);
+
+	writeMessage(message);
+	LOG_I("<- POS_TARGET_LOCAL_NED x=" << pD->x
+			<< ", y=" << pD->y
+			<< ", z=" << pD->z
+			<< ", vx=" << pD->vx
+			<< ", vy=" << pD->vy
+			<< ", vz=" << pD->vz
+			<< ", afx=" << pD->afx
+			<< ", afy=" << pD->afy
+			<< ", afz=" << pD->afz
+			<< ", yaw=" << pD->yaw
+			<< ", yawRate=" << pD->yaw_rate
+			<< ", cFrame=" << pD->coordinate_frame
+			<< ", typeMask=" << pD->type_mask
+			);
+}
+
+void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
+{
+	/**
+	 * @brief Pack a position_target_global_int message
+	 * @param system_id ID of this system
+	 * @param component_id ID of this component (e.g. 200 for IMU)
+	 * @param msg The MAVLink message to compress the data into
+	 *
+	 * @param time_boot_ms Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.
+	 * @param coordinate_frame Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
+	 * @param type_mask Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate
+	 * @param lat_int X Position in WGS84 frame in 1e7 * meters
+	 * @param lon_int Y Position in WGS84 frame in 1e7 * meters
+	 * @param alt Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
+	 * @param vx X velocity in NED frame in meter / s
+	 * @param vy Y velocity in NED frame in meter / s
+	 * @param vz Z velocity in NED frame in meter / s
+	 * @param afx X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param afy Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param afz Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
+	 * @param yaw yaw setpoint in rad
+	 * @param yaw_rate yaw rate setpoint in rad/s
+	 * @return length of the message in bytes (excluding serial stream start sign)
+	 */
+
+	NULL_(pD);
+
+	mavlink_message_t message;
+	mavlink_msg_position_target_global_int_encode(
+			m_systemID,
+			m_targetComponentID, &message, pD);
+
+	writeMessage(message);
+	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" << pD->lat_int
+			<< ", lng=" << pD->lon_int
+			<< ", alt=" << pD->alt
+			<< ", vx=" << pD->vx
+			<< ", vy=" << pD->vy
+			<< ", vz=" << pD->vz
+			<< ", afx=" << pD->afx
+			<< ", afy=" << pD->afy
+			<< ", afz=" << pD->afz
+			<< ", yaw=" << pD->yaw
+			<< ", yawRate=" << pD->yaw_rate
+			<< ", cFrame=" << pD->coordinate_frame
+			<< ", typeMask=" << pD->type_mask
+			);
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &message)
