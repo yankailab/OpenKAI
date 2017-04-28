@@ -16,6 +16,19 @@ struct TERRAIN
 {
 	uint16_t m_iClass;
 	uint8_t	m_action;
+	uint8_t m_orientation;
+	vDouble4 m_roi;
+
+	void init(void)
+	{
+		m_iClass = 0;
+		m_action = 0;
+		m_orientation = 0;
+		m_roi.x = 0.0;
+		m_roi.y = 0.0;
+		m_roi.z = 1.0;
+		m_roi.w = 1.0;
+	}
 };
 
 class APcopter_visualAvoid: public ActionBase

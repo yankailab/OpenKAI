@@ -1,12 +1,12 @@
 /*
- * Message.h
+ * Peer.h
  *
  *  Created on: Dec 6, 2016
  *      Author: root
  */
 
-#ifndef OPENKAI_SRC_BASE_MESSAGE_H_
-#define OPENKAI_SRC_BASE_MESSAGE_H_
+#ifndef OPENKAI_SRC_PROTOCOL_PEER_H_
+#define OPENKAI_SRC_PROTOCOL_PEER_H_
 
 #include "../Base/common.h"
 #include "../Utility/util.h"

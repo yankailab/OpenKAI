@@ -1,12 +1,12 @@
 /*
- * _socket.h
+ * _webSocket.h
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_SOCKET_H_
-#define SRC_NETWORK_SOCKET_H_
+#ifndef SRC_NETWORK_WEBSOCKET_H_
+#define SRC_NETWORK_WEBSOCKET_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -20,11 +20,11 @@
 namespace kai
 {
 
-class _socket: public _ThreadBase
+class _webSocket: public _ThreadBase
 {
 public:
-	_socket();
-	virtual ~_socket();
+	_webSocket();
+	virtual ~_webSocket();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -44,7 +44,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_socket*) This)->update();
+		((_webSocket*) This)->update();
 		return NULL;
 	}
 
@@ -57,7 +57,7 @@ public:
 
 	bool m_bClient;
 	bool m_bConnected;
-	int m_socket;
+	int m_webSocket;
 	uint32_t m_timeoutRecv;
 
 	int m_nBuf;

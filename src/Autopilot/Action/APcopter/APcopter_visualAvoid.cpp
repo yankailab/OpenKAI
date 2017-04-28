@@ -28,11 +28,20 @@ bool APcopter_visualAvoid::init(void* pKiss)
 	while (pItr[m_nTerrain])
 	{
 		Kiss* pKT = pItr[m_nTerrain];
-		IF_F(m_nTerrain >= N_STATE);
+		IF_F(m_nTerrain >= N_TERRAIN);
 
-		TERRAIN* pTerrain = &m_pTerrain[m_nTerrain];
-		F_ERROR_F(pKT->v("iClass", (int*)&pTerrain->m_iClass));
-		F_ERROR_F(pKT->v("action", (int*)&pTerrain->m_action));
+		TERRAIN* pT = &m_pTerrain[m_nTerrain];
+		pT->init();
+
+		F_ERROR_F(pKT->v("iClass", (int*)&pT->m_iClass));
+		F_ERROR_F(pKT->v("action", (int*)&pT->m_action));
+		F_ERROR_F(pKT->v("orientation", (int*)&pT->m_orientation));
+
+		F_INFO(pKT->v("l", &pT->m_roi.x));
+		F_INFO(pKT->v("t", &pT->m_roi.y));
+		F_INFO(pKT->v("r", &pT->m_roi.z));
+		F_INFO(pKT->v("b", &pT->m_roi.w));
+
 		m_nTerrain++;
 	}
 
@@ -71,7 +80,7 @@ void APcopter_visualAvoid::update(void)
 	NULL_(m_pAP->m_pMavlink);
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 
-	int i, j;
+	int i;
 	for (i = 0; i < m_nTerrain; i++)
 	{
 

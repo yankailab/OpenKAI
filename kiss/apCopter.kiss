@@ -235,8 +235,8 @@
 		}
 
 		{
-			"name":"apVFence",
-			"class":"APcopter_visualFence",
+			"name":"apVisualAvoid",
+			"class":"APcopter_visualAvoid",
 			"bInst":0,
 			"bLog":1,
 			"Window":"apView",
@@ -252,10 +252,6 @@
 				"t":0.0,
 				"r":0.95,
 				"b":0.8,
-			}
-			{
-				"iClass":0,
-				"action":0,
 			}
 		}
 
