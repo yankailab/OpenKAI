@@ -11,11 +11,7 @@ namespace kai
 {
 _SSD::_SSD()
 {
-	_ThreadBase();
-
 	num_channels_ = 0;
-	m_pObj = NULL;
-	m_pStream = NULL;
 	m_pFrame = NULL;
 	m_frameID = 0;
 
@@ -24,13 +20,11 @@ _SSD::_SSD()
 
 _SSD::~_SSD()
 {
-	DEL(m_pObj);
-
 }
 
 bool _SSD::init(void* pKiss)
 {
-	CHECK_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_AIbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -52,23 +46,18 @@ bool _SSD::init(void* pKiss)
 	F_INFO(pK->v("minConfidence", &m_confidence_threshold));
 
 	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
-			presetDir + labelFile);
+			presetDir + "model" + labelFile);
 	LOG_I("Initialized");
 
 	m_pFrame = new Frame();
-	m_pObj = new Object();
 
 	return true;
 }
 
 bool _SSD::link(void)
 {
-	CHECK_F(!this->_ThreadBase::link());
+	IF_F(!this->_AIbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
-
-	string iName = "";
-	F_ERROR_F(pK->v("_Stream", &iName));
-	m_pStream = (_StreamBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -137,14 +126,14 @@ void _SSD::update(void)
 
 		m_frameID = get_time_usec();
 
-		detectFrame();
+		detect();
 
 		this->autoFPSto();
 	}
 
 }
 
-void _SSD::detectFrame(void)
+void _SSD::detect(void)
 {
 	OBJECT obj;
 	Frame* pFrame;
@@ -155,7 +144,7 @@ void _SSD::detectFrame(void)
 
 	pFrame = m_pStream->bgr();
 	NULL_(pFrame);
-	CHECK_(pFrame->empty());
+	IF_(pFrame->empty());
 	if (!pFrame->isNewerThan(m_pFrame))
 		return;
 	m_pFrame->update(pFrame);
@@ -163,9 +152,6 @@ void _SSD::detectFrame(void)
 	cv::cuda::GpuMat* pImg = m_pFrame->getGMat();
 	std::vector<vector<float> > detections = detect(m_pFrame);
 
-	m_pObj->reset();
-
-	/* Print the detection results. */
 	for (i = 0; i < detections.size(); ++i)
 	{
 		const vector<float>& d = detections[i];
@@ -182,17 +168,17 @@ void _SSD::detectFrame(void)
 			continue;
 
 		obj.m_iClass = iClass;
-		obj.m_bbox.m_x = d[3] * pImg->cols;
-		obj.m_bbox.m_y = d[4] * pImg->rows;
-		obj.m_bbox.m_z = d[5] * pImg->cols;
-		obj.m_bbox.m_w = d[6] * pImg->rows;
-		obj.m_camSize.m_x = pImg->cols;
-		obj.m_camSize.m_y = pImg->rows;
+		obj.m_bbox.x = d[3] * pImg->cols;
+		obj.m_bbox.y = d[4] * pImg->rows;
+		obj.m_bbox.z = d[5] * pImg->cols;
+		obj.m_bbox.w = d[6] * pImg->rows;
+		obj.m_camSize.x = pImg->cols;
+		obj.m_camSize.y = pImg->rows;
 		obj.m_dist = 0.0;
-		obj.m_prob = 0.0;
+		obj.m_prob = score;
 		obj.m_name = labels_.at(iClass);
 
-		m_pObj->add(&obj);
+		add(&obj);
 	}
 
 }
@@ -390,9 +376,10 @@ void _SSD::Preprocess(const cv::Mat& img, std::vector<cv::Mat>* input_channels)
 //		<< "Input channels are not wrapping the input layer of the network.";
 }
 
+/*
 bool _SSD::draw(void)
 {
-	CHECK_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
@@ -415,7 +402,7 @@ bool _SSD::draw(void)
 
 	return true;
 }
-
+*/
 }
 
 #endif

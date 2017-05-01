@@ -5,5 +5,5 @@
 #define USE_CUDA
 #define USE_TENSORRT
 #define USE_ZED
-//#define USE_SSD
+#define USE_SSD
 //#define USE_CAFFE

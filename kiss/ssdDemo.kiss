@@ -1,0 +1,50 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"ssdView",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"ssdCam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"ssdView",
+	"ID":0,
+	"width":1920,
+	"height":1080,
+}
+
+{
+	"name":"ssd",
+	"class":"_SSD",
+	"bInst":1,
+	"bDraw":1,
+	"FPS":30,
+	"Window":"ssdView",
+	"_VisionBase":"ssdCam",
+	"dir":"/home/ubuntu/src/model/ssd/SSD_300x300/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"synset_words.txt",
+	"nObj":128,
+}

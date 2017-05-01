@@ -9,8 +9,8 @@
 #define AI__SSD_H_
 
 #include "../Base/common.h"
-#include "../Sensor/_Obstacle.h"
 #include "../Vision/_VisionBase.h"
+#include "_AIbase.h"
 
 #ifdef USE_SSD
 #include <cuda_runtime.h>
@@ -29,7 +29,7 @@ using caffe::Net;
 using caffe::shared_ptr;
 using caffe::vector;
 
-class _SSD: public _ThreadBase
+class _SSD: public _AIbase
 {
 public:
 	_SSD();
@@ -40,12 +40,12 @@ public:
 			const string& mean_file, const string& label_file);
 	bool link(void);
 	bool start(void);
-	bool draw(void);
+//	bool draw(void);
 
 	std::vector<vector<float> > detect(Frame* pFrame);
 
 private:
-	void detectFrame(void);
+	void detect(void);
 	void SetMean(const string& mean_file);
 	void WrapInputLayer(std::vector<cv::cuda::GpuMat>* input_channels);
 	void Preprocess(const cv::cuda::GpuMat& img, std::vector<cv::cuda::GpuMat>* input_channels);
@@ -72,10 +72,6 @@ private:
 	vector<string> labels_;
 	double m_confidence_threshold;
 
-
-public:
-	_StreamBase* m_pStream;
-	Object* m_pObj;
 
 };
 
