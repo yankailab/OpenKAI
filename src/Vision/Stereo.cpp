@@ -7,6 +7,8 @@
 
 #include "../Vision/Stereo.h"
 
+#ifdef USE_CUDASTEREO
+
 namespace kai
 {
 
@@ -70,3 +72,4 @@ void Stereo::detect(Frame* pLRsbs, Frame* pDepth)
 }
 
 } /* namespace kai */
+#endif

@@ -12,6 +12,8 @@
 #include "_AIbase.h"
 #include "../Vision/_VisionBase.h"
 
+#ifdef USE_CASCADE
+
 namespace kai
 {
 
@@ -51,4 +53,5 @@ public:
 
 }
 
+#endif
 #endif

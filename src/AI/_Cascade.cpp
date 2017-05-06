@@ -4,6 +4,8 @@
  */
 #include "_Cascade.h"
 
+#ifdef USE_CASCADE
+
 namespace kai
 {
 _Cascade::_Cascade()
@@ -150,3 +152,5 @@ bool _Cascade::draw(void)
 }
 
 }
+#endif
+

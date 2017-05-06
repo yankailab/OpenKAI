@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }

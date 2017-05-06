@@ -52,7 +52,6 @@
 #include "../AI/_ImageNet.h"
 #include "../AI/_MatrixNet.h"
 #include "../AI/_DetectNet.h"
-#include "../AI/_Cascade.h"
 #include "../Autopilot/Action/APcopter/APcopter_base.h"
 #include "../Autopilot/Action/APcopter/APcopter_landing.h"
 #include "../Autopilot/Action/AProver/AProver_base.h"
@@ -62,6 +61,9 @@
 #include "../Vision/_ZED.h"
 #include "../Vision/FrameGroup.h"
 
+#ifdef USE_CASCADE
+#include "../AI/_Cascade.h"
+#endif
 #ifdef USE_SSD
 #include "../AI/_SSD.h"
 #endif

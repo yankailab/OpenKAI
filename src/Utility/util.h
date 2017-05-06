@@ -324,16 +324,6 @@ inline void trimJson(string* pStr)
 	}
 }
 
-inline float3 eulerAngles(float q0, float q1, float q2, float q3)
-{
-    return
-    {
-        atan2(2 * (q0*q1 + q2*q3), 1 - 2 * (q1*q1 + q2*q2)),
-        asin( 2 * (q0*q2 - q3*q1)),
-        atan2(2 * (q0*q3 + q1*q2), 1 - 2 * (q2*q2 + q3*q3))
-    };
-}
-
 }
 
 #endif

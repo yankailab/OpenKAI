@@ -13,6 +13,8 @@
 #include "Frame.h"
 #include "_VisionBase.h"
 
+#ifdef USE_CUDASTEREO
+
 namespace kai
 {
 
@@ -41,4 +43,5 @@ public:
 
 }
 
+#endif
 #endif

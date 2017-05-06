@@ -32,7 +32,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_MatrixNet);
 	ADD_MODULE(_Obstacle);
 	ADD_MODULE(_DetectNet);
-	ADD_MODULE(_Cascade);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_Path);
 
@@ -47,6 +46,9 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_FCN
 	ADD_MODULE(_FCN);
+#endif
+#ifdef USE_CASCADE
+	ADD_MODULE(_Cascade);
 #endif
 
     return NULL;
