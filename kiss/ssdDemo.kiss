@@ -28,9 +28,10 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"ssdView",
-	"ID":0,
+	"deviceID":0,
 	"width":1920,
 	"height":1080,
+	"bFlip":0,
 }
 
 {
@@ -41,7 +42,7 @@
 	"FPS":30,
 	"Window":"ssdView",
 	"_VisionBase":"ssdCam",
-	"dir":"/home/ubuntu/src/model/ssd/SSD_300x300/",
+	"modelDir":"/home/ubuntu/src/model/ssd/SSD_300x300/",
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"VGG_coco_SSD_300x300_iter_240000.caffemodel",
 	"meanFile":"mean.binaryproto",

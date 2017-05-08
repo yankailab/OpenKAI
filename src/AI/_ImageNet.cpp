@@ -79,8 +79,8 @@ bool _ImageNet::start(void)
 void _ImageNet::update(void)
 {
 #ifdef USE_TENSORRT
-	m_pIN = imageNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
-			m_fileMean.c_str(), m_fileLabel.c_str(), m_blobIn.c_str(),
+	m_pIN = imageNet::Create(m_modelFile.c_str(), m_trainedFile.c_str(),
+			m_meanFile.c_str(), m_labelFile.c_str(), m_blobIn.c_str(),
 			m_blobOut.c_str());
 
 	NULL_(m_pIN);

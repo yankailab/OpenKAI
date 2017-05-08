@@ -11,10 +11,10 @@ namespace kai
 _AIbase::_AIbase()
 {
 	m_pStream = NULL;
-	m_fileModel = "";
-	m_fileTrained = "";
-	m_fileMean = "";
-	m_fileLabel = "";
+	m_modelFile = "";
+	m_trainedFile = "";
+	m_meanFile = "";
+	m_labelFile = "";
 
 	m_pObj = NULL;
 	m_nObj = 16;
@@ -45,20 +45,20 @@ bool _AIbase::init(void* pKiss)
 	string presetDir = "";
 
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("dir", &modelDir));
+	F_INFO(pK->v("modelDir", &modelDir));
 
-	F_INFO(pK->v("modelFile", &m_fileModel));
-	F_INFO(pK->v("trainedFile", &m_fileTrained));
-	F_INFO(pK->v("meanFile", &m_fileMean));
-	F_INFO(pK->v("labelFile", &m_fileLabel));
+	KISSm(pK, modelFile);
+	KISSm(pK, trainedFile);
+	KISSm(pK, meanFile);
+	KISSm(pK, labelFile);
 
-	m_fileModel = modelDir + m_fileModel;
-	m_fileTrained = modelDir + m_fileTrained;
-	m_fileMean = modelDir + m_fileMean;
-	m_fileLabel = modelDir + m_fileLabel;
+	m_modelFile = modelDir + m_modelFile;
+	m_trainedFile = modelDir + m_trainedFile;
+	m_meanFile = modelDir + m_meanFile;
+	m_labelFile = modelDir + m_labelFile;
 
-	F_INFO(pK->v("sizeName", &m_sizeName));
-	F_INFO(pK->v("sizeDist", &m_sizeDist));
+	KISSm(pK, sizeName);
+	KISSm(pK, sizeDist);
 
 	F_INFO(pK->v("nameB", &m_colName[0]));
 	F_INFO(pK->v("nameG", &m_colName[1]));
@@ -72,8 +72,8 @@ bool _AIbase::init(void* pKiss)
 	F_INFO(pK->v("obsG", &m_colObs[1]));
 	F_INFO(pK->v("obsR", &m_colObs[2]));
 
-	F_INFO(pK->v("bDrawContour", &m_bDrawContour));
-	F_INFO(pK->v("contourBlend", &m_contourBlend));
+	KISSm(pK, bDrawContour);
+	KISSm(pK, contourBlend);
 
 	F_INFO(pK->v("nObj", &m_nObj));
 	m_pObj = new OBJECT[m_nObj];

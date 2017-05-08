@@ -33,24 +33,25 @@ bool _Camera::init(void* pKiss)
 	pK->m_pInst = this;
 
 	string presetDir = "";
-	string calibFile;
+	string calibFile = "";
 
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("ID", &m_deviceID));
+	KISSm(pK, deviceID);
 
-	F_INFO(pK->v("bCrop", &m_bCrop));
+	KISSm(pK, bCrop);
 	if (m_bCrop != 0)
 	{
-		F_FATAL_F(pK->v("cropX", &m_cropBB.x));
-		F_FATAL_F(pK->v("cropY", &m_cropBB.y));
-		F_FATAL_F(pK->v("cropW", &m_cropBB.width));
-		F_FATAL_F(pK->v("cropH", &m_cropBB.height));
+		F_INFO(pK->v("cropX", &m_cropBB.x));
+		F_INFO(pK->v("cropY", &m_cropBB.y));
+		F_INFO(pK->v("cropW", &m_cropBB.width));
+		F_INFO(pK->v("cropH", &m_cropBB.height));
 	}
 
-	F_INFO(pK->v("bCalib", &m_bCalibration));
-	F_INFO(pK->v("bFisheye", &m_bFisheye));
+	KISSm(pK, bCalibration);
+	KISSm(pK, bFisheye);
+	F_INFO(pK->v("calibFile", &calibFile));
 
-	if (pK->v("calibFile", &calibFile))
+	if (!calibFile.empty())
 	{
 		FileStorage fs(presetDir + calibFile, FileStorage::READ);
 		if (!fs.isOpened())
@@ -199,6 +200,16 @@ void _Camera::update(void)
 			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
 #else
 			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
+#endif
+			SWAP(pSrc, pDest, pTmp);
+		}
+
+		if (m_bFlip)
+		{
+#ifdef USE_OPENCV4TEGRA
+			gpu::flip(*pSrc, *pDest, -1);
+#else
+			cuda::flip(*pSrc, *pDest, -1);
 #endif
 			SWAP(pSrc, pDest, pTmp);
 		}

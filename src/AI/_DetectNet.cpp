@@ -89,8 +89,8 @@ bool _DetectNet::start(void)
 void _DetectNet::update(void)
 {
 #ifdef USE_TENSORRT
-	m_pDN = detectNet::Create(m_fileModel.c_str(), m_fileTrained.c_str(),
-			m_fileMean.c_str(), m_minCofidence);
+	m_pDN = detectNet::Create(m_modelFile.c_str(), m_trainedFile.c_str(),
+			m_meanFile.c_str(), m_minCofidence);
 	NULL_(m_pDN);
 
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();

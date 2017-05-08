@@ -92,10 +92,10 @@ public:
 public:
 	_VisionBase* m_pStream;
 
-	string m_fileModel;
-	string m_fileTrained;
-	string m_fileMean;
-	string m_fileLabel;
+	string m_modelFile;
+	string m_trainedFile;
+	string m_meanFile;
+	string m_labelFile;
 
 	OBJECT* m_pObj;
 	int m_nObj;

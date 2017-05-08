@@ -47,14 +47,14 @@ bool _VisionBase::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("width", &m_width));
-	F_INFO(pK->v("height", &m_height));
-	F_INFO(pK->v("angleV", &m_angleV));
-	F_INFO(pK->v("angleH", &m_angleH));
-	F_INFO(pK->v("bGimbal", &m_bGimbal));
-	F_INFO(pK->v("isoScale", &m_isoScale));
-	F_INFO(pK->v("orientation", (int*)&m_orientation));
-	F_INFO(pK->v("bFlip", &m_bFlip));
+	KISSm(pK,width);
+	KISSm(pK,height);
+	KISSm(pK,angleV);
+	KISSm(pK,angleH);
+	KISSm(pK,bGimbal);
+	KISSm(pK,isoScale);
+	KISSm(pK,bFlip);
+	KISSim(pK,orientation);
 
 	m_pBGR = new Frame();
 

@@ -15,8 +15,20 @@
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
 #define F_INFO(x) if(x==false){LOG_I(#x);}
-#define F_(x) if(x==false){return;}
 
+#define KISSm(x,y) F_INFO(x->v(#y, &m_##y))
+#define KISSm_E(x,y) F_ERROR_F(x->v(#y, &m_##y))
+#define KISSm_F(x,y) F_FATAL_F(x->v(#y, &m_##y))
+
+#define KISSim(x,y) F_INFO(x->v(#y, (int*)&m_##y))
+#define KISSim_E(x,y) F_ERROR_F(x->v(#y, (int*)&m_##y))
+#define KISSim_F(x,y) F_FATAL_F(x->v(#y, (int*)&m_##y))
+
+#define KISSdm(x,y) F_INFO(x->v(#y, (double*)&m_##y))
+#define KISSdm_E(x,y) F_ERROR_F(x->v(#y, (double*)&m_##y))
+#define KISSdm_F(x,y) F_FATAL_F(x->v(#y, (double*)&m_##y))
+
+#define F_(x) if(x==false){return;}
 #define IF_T(x) if(x){return true;}
 #define IF_F(x) if(x){return false;}
 #define IF_N(x) if(x){return NULL;}

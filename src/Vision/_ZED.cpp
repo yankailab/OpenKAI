@@ -49,17 +49,13 @@ bool _ZED::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	string presetDir = "";
-	string calibFile;
-
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("zedResolution", &m_zedResolution));
-	F_INFO(pK->v("zedFPS", &m_zedFPS));
-	F_INFO(pK->v("zedDepthMode", &m_zedDepthMode));
-	F_INFO(pK->v("zedMinDist", &m_zedMinDist));
-	F_INFO(pK->v("zedMaxDist", &m_zedMaxDist));
-	F_INFO(pK->v("bZedFlip", &m_bZedFlip));
-	F_INFO(pK->v("zedConfidence", &m_zedConfidence));
+	KISSm(pK,zedResolution);
+	KISSm(pK,zedFPS);
+	KISSm(pK,zedDepthMode);
+	KISSm(pK,zedMinDist);
+	KISSm(pK,zedMaxDist);
+	KISSm(pK,bZedFlip);
+	KISSm(pK,zedConfidence);
 
 	m_pDepth = new Frame();
 	return true;
