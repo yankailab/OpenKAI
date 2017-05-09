@@ -26,6 +26,7 @@ public:
 	bool draw(void);
 
 	OBJECT* get(int i, int64_t minFrameID);
+	OBJECT* get(vDouble4* pROI, int64_t minFrameID);
 	bool bFound(int iClass, double minProb, int64_t minFrameID);
 
 	void bSetActive(bool bActive);

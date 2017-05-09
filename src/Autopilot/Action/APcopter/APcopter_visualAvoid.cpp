@@ -83,6 +83,11 @@ void APcopter_visualAvoid::update(void)
 	int i;
 	for (i = 0; i < m_nTerrain; i++)
 	{
+		TERRAIN* pT = &m_pTerrain[i];
+		OBJECT* pO = m_pMN->get(&pT->m_roi, 0);
+		IF_CONT(!pO);
+		IF_CONT(pO->m_iClass != pT->m_iClass);
+
 
 //		pMavlink->distanceSensor(0, //type
 //			pSeg->m_orient,	//orientation

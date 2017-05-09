@@ -34,14 +34,14 @@ bool _MatrixNet::init(void* pKiss)
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 
-	F_INFO(pK->v("w", &m_w));
-	F_INFO(pK->v("h", &m_h));
-	F_INFO(pK->v("dW", &m_dW));
-	F_INFO(pK->v("dH", &m_dH));
-	F_INFO(pK->v("left", &m_area.x));
-	F_INFO(pK->v("top", &m_area.y));
-	F_INFO(pK->v("right", &m_area.z));
-	F_INFO(pK->v("bottom", &m_area.w));
+	KISSm(pK,w);
+	KISSm(pK,h);
+	KISSm(pK,dW);
+	KISSm(pK,dH);
+	F_INFO(pK->v("l", &m_area.x));
+	F_INFO(pK->v("t", &m_area.y));
+	F_INFO(pK->v("r", &m_area.z));
+	F_INFO(pK->v("b", &m_area.w));
 
 	return true;
 }
@@ -123,6 +123,24 @@ bool _MatrixNet::bFound(int iClass, double minProb, int64_t minFrameID)
 	}
 
 	return false;
+}
+
+OBJECT* _MatrixNet::get(vDouble4* pROI, int64_t minFrameID)
+{
+	NULL_N(pROI);
+
+	OBJECT* pO;
+//	for (i = 0; i < m_nObj; i++)
+//	{
+//		OBJECT* pObj = m_ppObj[i];
+//		IF_CONT(pObj->m_iClass != iClass);
+//		IF_CONT(pObj->m_prob < minProb);
+//		IF_CONT(pObj->m_frameID < minFrameID);
+//
+//		return true;
+//	}
+
+	return pO;
 }
 
 bool _MatrixNet::draw(void)
