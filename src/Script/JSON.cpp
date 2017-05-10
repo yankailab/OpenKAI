@@ -17,99 +17,135 @@ bool JSON::parse(string json)
 	const char* jsonstr = json.c_str();
 	picojson::parse(m_JSON, jsonstr, jsonstr + strlen(jsonstr), &error);
 
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!m_JSON.is<object>());
 
 	return true;
 }
 
-bool JSON::v(string* pName, int* val)
+bool JSON::v(string* pName, int* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<int>())
-		return false;
+	IF_F(!var.is<int>());
 
-	*val = (int) var.get<double>();
+	*pVal = (int) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, bool* val)
+bool JSON::v(string* pName, bool* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<int>())
-		return false;
+	IF_F(!var.is<int>());
 
-	*val = (((int) var.get<double>()) == 1 ? true : false);
+	*pVal = (((int) var.get<double>()) == 1 ? true : false);
 	return true;
 }
 
-bool JSON::v(string* pName, uint64_t* val)
+bool JSON::v(string* pName, uint64_t* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<double>())
-		return false;
+	IF_F(!var.is<double>());
 
-	*val = (uint64_t) var.get<double>();
+	*pVal = (uint64_t) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, double* val)
+bool JSON::v(string* pName, double* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<double>())
-		return false;
+	IF_F(!var.is<double>());
 
-	*val = var.get<double>();
+	*pVal = var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, string* val)
+bool JSON::v(string* pName, string* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<string>())
-		return false;
+	IF_F(!var.is<string>());
 
-	*val = var.get<string>();
+	*pVal = var.get<string>();
 	return true;
 }
 
-bool JSON::array(string* pName, value::array* val)
+bool JSON::array(string* pName, value::array* pVal)
 {
-	if (!m_JSON.is<object>())
-		return false;
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	if (!var.is<value::array>())
-		return false;
+	IF_F(!var.is<value::array>());
 
-	*val = var.get<value::array>();
+	*pVal = var.get<value::array>();
 	return true;
+}
 
-	//TODO
-	/*      array arr = m_JSON.get<array>();
-	 array::iterator it;
-	 for (it = arr.begin(); it != arr.end(); it++) {
-	 object obj = it->get<object>();
-	 cout << obj["user_login_id"].to_str() << ": " << obj["text"].to_str() << endl;
-	 }
+bool JSON::array(string* pName, string* pVal, int nArray)
+{
+	value::array arr;
+	IF_F(!array(pName, &arr));
 
-	 return false;
-	 */
+	value::array::iterator it;
+	int i = 0;
+	for (it = arr.begin(); it != arr.end(); it++)
+	{
+		IF_T(i >= nArray);
+		IF_F(!it->is<string>());
+		pVal[i] = it->get<string>();
+		i++;
+	}
+
+	return true;
+}
+
+bool JSON::array(string* pName, int* pVal, int nArray)
+{
+	value::array arr;
+	IF_F(!array(pName, &arr));
+
+	value::array::iterator it;
+	int i = 0;
+	for (it = arr.begin(); it != arr.end(); it++)
+	{
+		IF_T(i >= nArray);
+		IF_F(!it->is<double>());
+		pVal[i] = (int)it->get<double>();
+		i++;
+	}
+
+	return true;
+}
+
+bool JSON::array(string* pName, double* pVal, int nArray)
+{
+	value::array arr;
+	IF_F(!array(pName, &arr));
+
+	value::array::iterator it;
+	int i = 0;
+	for (it = arr.begin(); it != arr.end(); it++)
+	{
+		IF_T(i >= nArray);
+		IF_F(!it->is<double>());
+		pVal[i] = it->get<double>();
+		i++;
+	}
+
+	return true;
 }
 
 int JSON::checkErrorNum(void)

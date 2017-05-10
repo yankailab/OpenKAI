@@ -125,24 +125,6 @@ bool _MatrixNet::bFound(int iClass, double minProb, int64_t minFrameID)
 	return false;
 }
 
-OBJECT* _MatrixNet::get(vDouble4* pROI, int64_t minFrameID)
-{
-	NULL_N(pROI);
-
-	OBJECT* pO;
-//	for (i = 0; i < m_nObj; i++)
-//	{
-//		OBJECT* pObj = m_ppObj[i];
-//		IF_CONT(pObj->m_iClass != iClass);
-//		IF_CONT(pObj->m_prob < minProb);
-//		IF_CONT(pObj->m_frameID < minFrameID);
-//
-//		return true;
-//	}
-
-	return pO;
-}
-
 bool _MatrixNet::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());

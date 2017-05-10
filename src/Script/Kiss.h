@@ -34,7 +34,9 @@ public:
 	bool v(string name, double* val);
 	bool v(string name, string* val);
 
-	bool array(string name, value::array* val);
+	bool array(string name, int* pVal, int nArray);
+	bool array(string name, double* pVal, int nArray);
+	bool array(string name, string* pVal, int nArray);
 
 private:
 	void trim(string* pStr);
