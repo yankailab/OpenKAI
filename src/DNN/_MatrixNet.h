@@ -5,17 +5,17 @@
  *      Author: yankai
  */
 
-#ifndef AI__MatrixNet_H_
-#define AI__MatrixNet_H_
+#ifndef OPENKAI_SRC_DNN__MatrixNet_H_
+#define OPENKAI_SRC_DNN__MatrixNet_H_
 
 #include "../Base/common.h"
-#include "_AIbase.h"
+#include "_DNNbase.h"
 #include "_ImageNet.h"
 
 namespace kai
 {
 
-class _MatrixNet: public _AIbase
+class _MatrixNet: public _DNNbase
 {
 public:
 	_MatrixNet();

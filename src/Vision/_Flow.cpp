@@ -1,16 +1,11 @@
 /*
- * CameraOpticalFlow.cpp
+ * _Flow.cpp
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
 #include "../Vision/_Flow.h"
-
-#include "../Base/common.h"
-#include "stdio.h"
-
-#include "../Base/cv.h"
 
 namespace kai
 {

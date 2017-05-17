@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef AI__CAFFE_H_
-#define AI__CAFFE_H_
+#ifndef OPENKAI_SRC_DNN__CAFFE_H_
+#define OPENKAI_SRC_DNN__CAFFE_H_
 
 #include "../Base/common.h"
 

@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../AI/_MatrixNet.h"
+#include "../../../DNN/_MatrixNet.h"
 #include "../../../Sensor/_Obstacle.h"
 #include "../ActionBase.h"
 #include "HM_base.h"

@@ -1,12 +1,12 @@
 /*
- * _AIbase.h
+ * _DNNbase.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef AI__AIBASE_H_
-#define AI__AIBASE_H_
+#ifndef OPENKAI_SRC_DNN__DNNBASE_H_
+#define OPENKAI_SRC_DNN__DNNBASE_H_
 
 #include "../Base/common.h"
 
@@ -65,11 +65,11 @@ struct OBJECT
 
 };
 
-class _AIbase: public _ThreadBase
+class _DNNbase: public _ThreadBase
 {
 public:
-	_AIbase();
-	virtual ~_AIbase();
+	_DNNbase();
+	virtual ~_DNNbase();
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
@@ -85,7 +85,7 @@ public:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_AIbase*) This)->update();
+		((_DNNbase*) This)->update();
 		return NULL;
 	}
 

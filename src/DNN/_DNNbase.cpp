@@ -2,13 +2,13 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_AIbase.h"
+#include "_DNNbase.h"
 
 
 namespace kai
 {
 
-_AIbase::_AIbase()
+_DNNbase::_DNNbase()
 {
 	m_pStream = NULL;
 	m_modelFile = "";
@@ -29,12 +29,12 @@ _AIbase::_AIbase()
 	m_contourBlend = 0.125;
 }
 
-_AIbase::~_AIbase()
+_DNNbase::~_DNNbase()
 {
 	DEL(m_pObj);
 }
 
-bool _AIbase::init(void* pKiss)
+bool _DNNbase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -86,7 +86,7 @@ bool _AIbase::init(void* pKiss)
 	return true;
 }
 
-bool _AIbase::link(void)
+bool _DNNbase::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -98,7 +98,7 @@ bool _AIbase::link(void)
 	return true;
 }
 
-bool _AIbase::start(void)
+bool _DNNbase::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -112,12 +112,12 @@ bool _AIbase::start(void)
 	return true;
 }
 
-void _AIbase::update(void)
+void _DNNbase::update(void)
 {
 	NULL_(m_pStream);
 }
 
-OBJECT* _AIbase::add(OBJECT* pNewObj)
+OBJECT* _DNNbase::add(OBJECT* pNewObj)
 {
 	NULL_N(pNewObj);
 	m_pObj[m_iObj] = *pNewObj;
@@ -129,19 +129,19 @@ OBJECT* _AIbase::add(OBJECT* pNewObj)
 	return pNew;
 }
 
-int _AIbase::size(void)
+int _DNNbase::size(void)
 {
 	return m_nObj;
 }
 
-OBJECT* _AIbase::get(int i, int64_t minFrameID)
+OBJECT* _DNNbase::get(int i, int64_t minFrameID)
 {
 	IF_N(m_pObj[i].m_frameID < minFrameID);
 
 	return &m_pObj[i];
 }
 
-OBJECT* _AIbase::getByClass(int iClass, int64_t minFrameID)
+OBJECT* _DNNbase::getByClass(int iClass, int64_t minFrameID)
 {
 	int i;
 	OBJECT* pObj;
@@ -158,7 +158,7 @@ OBJECT* _AIbase::getByClass(int iClass, int64_t minFrameID)
 	return NULL;
 }
 
-bool _AIbase::draw(void)
+bool _DNNbase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 

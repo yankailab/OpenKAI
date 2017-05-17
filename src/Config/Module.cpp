@@ -14,26 +14,27 @@ BASE* Module::createInstance(Kiss* pK)
 {
 	IF_N(!pK);
 
-	ADD_MODULE(_Camera);
-	ADD_MODULE(_Automaton);
-	ADD_MODULE(_Mavlink);
-	ADD_MODULE(_Canbus);
-	ADD_MODULE(_RC);
 	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_AprilTags);
+	ADD_MODULE(_Automaton);
 	ADD_MODULE(_Bullseye);
+	ADD_MODULE(_Camera);
+	ADD_MODULE(_Canbus);
+	ADD_MODULE(_DetectNet);
+	ADD_MODULE(_DNNSLAM);
 	ADD_MODULE(_Flow);
+	ADD_MODULE(_GPS);
+	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_LeddarVu);
+	ADD_MODULE(_Mavlink);
+	ADD_MODULE(_MatrixNet);
+	ADD_MODULE(_Obstacle);
+	ADD_MODULE(_Path);
+	ADD_MODULE(_RC);
 	ADD_MODULE(_server);
 	ADD_MODULE(_socket);
 	ADD_MODULE(Window);
-	ADD_MODULE(_ImageNet);
-	ADD_MODULE(_MatrixNet);
-	ADD_MODULE(_Obstacle);
-	ADD_MODULE(_DetectNet);
-	ADD_MODULE(_GPS);
-	ADD_MODULE(_Path);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

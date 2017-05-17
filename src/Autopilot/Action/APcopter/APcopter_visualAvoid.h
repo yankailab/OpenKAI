@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALAVOID_H_
 
 #include "../../../Base/common.h"
-#include "../../../AI/_ImageNet.h"
+#include "../../../DNN/_ImageNet.h"
 #include "../ActionBase.h"
 #include "../APcopter/APcopter_base.h"
 

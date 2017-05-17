@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef AI__SSD_H_
-#define AI__SSD_H_
+#ifndef OPENKAI_SRC_DNN__SSD_H_
+#define OPENKAI_SRC_DNN__SSD_H_
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "_AIbase.h"
+#include "_DNNbase.h"
 
 #ifdef USE_SSD
 #include <cuda_runtime.h>

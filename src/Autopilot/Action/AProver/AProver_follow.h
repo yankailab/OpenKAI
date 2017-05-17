@@ -6,7 +6,7 @@
 #include "../../../Protocol/_Mavlink.h"
 #include "../../../Vision/Frame.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../AI/_AIbase.h"
+#include "../../../DNN/_DNNbase.h"
 #include "../../../Filter/FilterBase.h"
 #include "../../../Sensor/_Obstacle.h"
 #include "../ActionBase.h"

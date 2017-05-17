@@ -37,7 +37,7 @@ bool APcopter_landing::link(void)
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
-	m_pAI = (_AIbase*) (pK->root()->getChildInstByName(&iName));
+	m_pAI = (_DNNbase*) (pK->root()->getChildInstByName(&iName));
 	return true;
 }
 

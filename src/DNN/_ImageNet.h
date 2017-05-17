@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef AI__ImageNet_H_
-#define AI__ImageNet_H_
+#ifndef OPENKAI_SRC_DNN__ImageNet_H_
+#define OPENKAI_SRC_DNN__ImageNet_H_
 
 #include "../Base/common.h"
-#include "_AIbase.h"
+#include "_DNNbase.h"
 
 namespace kai
 {
@@ -19,7 +19,7 @@ enum imageNetMode
 	object, noThread
 };
 
-class _ImageNet: public _AIbase
+class _ImageNet: public _DNNbase
 {
 public:
 	_ImageNet();

@@ -13,27 +13,17 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
-#include "../Vision/Frame.h"
 #include "../Automaton/_Automaton.h"
 
-#include "../Sensor/_Obstacle.h"
-#include "../Navigation/_GPS.h"
-#include "../Navigation/_Path.h"
-
-#include "../IO/SerialPort.h"
-#include "../UI/UI.h"
-#include "../UI/Window.h"
-
-#include "../include/apriltags-cpp/TagDetector.h"
 #include "../Detector/_AprilTags.h"
 #include "../Detector/_Bullseye.h"
-#include "../Tracker/_ROITracker.h"
 
-#include "../Vision/_Flow.h"
+#include "../IO/SerialPort.h"
 
-#include "../Sensor/_Lightware_SF40_sender.h"
-#include "../Sensor/_Lightware_SF40.h"
-#include "../Sensor/_LeddarVu.h"
+#include "../include/apriltags-cpp/TagDetector.h"
+
+#include "../Navigation/_GPS.h"
+#include "../Navigation/_Path.h"
 
 #include "../Autopilot/Action/ActionBase.h"
 #include "../Autopilot/Action/HM/HM_base.h"
@@ -41,25 +31,42 @@
 #include "../Autopilot/Action/RC/RC_visualFollow.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Autopilot/Action/HM/HM_grass.h"
-#include "../IO/File.h"
-
-#include "../Network/_server.h"
-#include "../Network/_socket.h"
-#include "../Protocol/_Canbus.h"
-#include "../Protocol/_Mavlink.h"
-#include "../Protocol/_RC.h"
-
-#include "../AI/_ImageNet.h"
-#include "../AI/_MatrixNet.h"
-#include "../AI/_DetectNet.h"
 #include "../Autopilot/Action/APcopter/APcopter_base.h"
 #include "../Autopilot/Action/APcopter/APcopter_landing.h"
 #include "../Autopilot/Action/AProver/AProver_base.h"
 #include "../Autopilot/Action/AProver/AProver_follow.h"
+
+#include "../IO/File.h"
+
+#include "../Network/_server.h"
+#include "../Network/_socket.h"
+
+#include "../DNN/_ImageNet.h"
+#include "../DNN/_MatrixNet.h"
+#include "../DNN/_DetectNet.h"
+
+#include "../Protocol/_Canbus.h"
+#include "../Protocol/_Mavlink.h"
+#include "../Protocol/_RC.h"
+
+#include "../Sensor/_Obstacle.h"
+#include "../Sensor/_Lightware_SF40_sender.h"
+#include "../Sensor/_Lightware_SF40.h"
+#include "../Sensor/_LeddarVu.h"
+
+#include "../SLAM/_DNNSLAM.h"
+
+#include "../Tracker/_ROITracker.h"
+
+#include "../UI/UI.h"
+#include "../UI/Window.h"
+
+#include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VisionBase.h"
 #include "../Vision/_ZED.h"
 #include "../Vision/FrameGroup.h"
+#include "../Vision/_Flow.h"
 
 #ifdef USE_CASCADE
 #include "../AI/_Cascade.h"

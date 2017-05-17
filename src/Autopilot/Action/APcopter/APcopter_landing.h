@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_LANDING_H_
 
 #include "../../../Base/common.h"
-#include "../../../AI/_AIbase.h"
+#include "../../../DNN/_DNNbase.h"
 #include "../ActionBase.h"
 #include "../APcopter/APcopter_base.h"
 
@@ -54,7 +54,7 @@ private:
 
 private:
 	APcopter_base* m_pAP;
-	_AIbase* m_pAI;
+	_DNNbase* m_pAI;
 
 	LANDING_TARGET	m_target;
 

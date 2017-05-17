@@ -1,16 +1,16 @@
 /*
- * _SLAM.cpp
+ * _LidarSLAM.cpp
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#include "_SLAM.h"
+#include "_LidarSLAM.h"
 
 namespace kai
 {
 
-_SLAM::_SLAM()
+_LidarSLAM::_LidarSLAM()
 {
 	m_pObs = NULL;
 	m_pMN = NULL;
@@ -30,12 +30,12 @@ _SLAM::_SLAM()
 	m_tLastMav = 0;
 }
 
-_SLAM::~_SLAM()
+_LidarSLAM::~_LidarSLAM()
 {
 
 }
 
-bool _SLAM::init(void* pKiss)
+bool _LidarSLAM::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -87,7 +87,7 @@ bool _SLAM::init(void* pKiss)
 	return true;
 }
 
-bool _SLAM::link(void)
+bool _LidarSLAM::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -113,7 +113,7 @@ bool _SLAM::link(void)
 	return true;
 }
 
-bool _SLAM::start(void)
+bool _LidarSLAM::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -126,7 +126,7 @@ bool _SLAM::start(void)
 	return true;
 }
 
-void _SLAM::update(void)
+void _LidarSLAM::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -143,7 +143,7 @@ void _SLAM::update(void)
 	}
 }
 
-void _SLAM::updateGPS(void)
+void _LidarSLAM::updateGPS(void)
 {
 	NULL_(m_pGPS);
 	_Mavlink* pMavlink = m_pGPS->m_pMavlink;
@@ -163,12 +163,12 @@ void _SLAM::updateGPS(void)
 
 }
 
-void _SLAM::updateSF40(void)
+void _LidarSLAM::updateSF40(void)
 {
 	NULL_(m_pSF40);
 }
 
-void _SLAM::updateObstacle(void)
+void _LidarSLAM::updateObstacle(void)
 {
 	NULL_(m_pObs);
 
@@ -201,7 +201,7 @@ void _SLAM::updateObstacle(void)
 	}
 }
 
-void _SLAM::expandGrid(vInt3* pPos)
+void _LidarSLAM::expandGrid(vInt3* pPos)
 {
 	NULL_(pPos);
 
@@ -240,14 +240,14 @@ void _SLAM::expandGrid(vInt3* pPos)
 
 }
 
-void _SLAM::updateMatrixNet(void)
+void _LidarSLAM::updateMatrixNet(void)
 {
 	NULL_(m_pMN);
 
 
 }
 
-bool _SLAM::draw(void)
+bool _LidarSLAM::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

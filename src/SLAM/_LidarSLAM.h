@@ -1,18 +1,18 @@
 /*
- * _SLAM.h
+ * _LidarSLAM.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef SRC_SLAM__SLAM_H_
-#define SRC_SLAM__SLAM_H_
+#ifndef OPENKAI_SRC_SLAM__LidarSLAM_H_
+#define OPENKAI_SRC_SLAM__LidarSLAM_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Automaton/_Automaton.h"
-#include "../AI/_MatrixNet.h"
+#include "../DNN/_MatrixNet.h"
 #include "../Sensor/_Obstacle.h"
 #include "../Navigation/_GPS.h"
 
@@ -49,11 +49,11 @@ struct GRID_CELL
 	}
 };
 
-class _SLAM: public _ThreadBase
+class _LidarSLAM: public _ThreadBase
 {
 public:
-	_SLAM(void);
-	virtual ~_SLAM();
+	_LidarSLAM(void);
+	virtual ~_LidarSLAM();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -69,7 +69,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_SLAM *) This)->update();
+		((_LidarSLAM *) This)->update();
 		return NULL;
 	}
 

@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../AI/_MatrixNet.h"
+#include "../../../DNN/_MatrixNet.h"
 #include "../ActionBase.h"
 #include "../APcopter/APcopter_base.h"
 

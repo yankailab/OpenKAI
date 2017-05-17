@@ -43,7 +43,7 @@ _DetectNet::~_DetectNet()
 
 bool _DetectNet::init(void* pKiss)
 {
-	IF_F(!this->_AIbase::init(pKiss));
+	IF_F(!this->_DNNbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -66,7 +66,7 @@ bool _DetectNet::init(void* pKiss)
 
 bool _DetectNet::link(void)
 {
-	IF_F(!this->_AIbase::link());
+	IF_F(!this->_DNNbase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -204,7 +204,7 @@ void _DetectNet::addOrUpdate(OBJECT* pNewObj)
 
 bool _DetectNet::draw(void)
 {
-	IF_F(!this->_AIbase::draw());
+	IF_F(!this->_DNNbase::draw());
 
 	return true;
 }

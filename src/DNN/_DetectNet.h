@@ -5,17 +5,17 @@
  *      Author: yankai
  */
 
-#ifndef AI__DetectNet_H_
-#define AI__DetectNet_H_
+#ifndef OPENKAI_SRC_DNN__DetectNet_H_
+#define OPENKAI_SRC_DNN__DetectNet_H_
 
 #include "../Base/common.h"
-#include "_AIbase.h"
 #include "../Vision/_VisionBase.h"
+#include "_DNNbase.h"
 
 namespace kai
 {
 
-class _DetectNet: public _AIbase
+class _DetectNet: public _DNNbase
 {
 public:
 	_DetectNet();
