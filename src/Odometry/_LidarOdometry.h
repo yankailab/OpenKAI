@@ -1,12 +1,12 @@
 /*
- * _LidarSLAM.h
+ * _LidarOdometry.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_SLAM__LidarSLAM_H_
-#define OPENKAI_SRC_SLAM__LidarSLAM_H_
+#ifndef OPENKAI_SRC_Odometry__LidarSLAM_H_
+#define OPENKAI_SRC_Odometry__LidarSLAM_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -49,11 +49,11 @@ struct GRID_CELL
 	}
 };
 
-class _LidarSLAM: public _ThreadBase
+class _LidarOdometry: public _ThreadBase
 {
 public:
-	_LidarSLAM(void);
-	virtual ~_LidarSLAM();
+	_LidarOdometry(void);
+	virtual ~_LidarOdometry();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -69,7 +69,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_LidarSLAM *) This)->update();
+		((_LidarOdometry *) This)->update();
 		return NULL;
 	}
 

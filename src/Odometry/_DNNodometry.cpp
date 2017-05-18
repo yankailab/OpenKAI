@@ -1,28 +1,28 @@
 /*
- * _DNNSLAM.cpp
+ * _DNNodometry.cpp
  *
  *  Created on: May 17, 2017
  *      Author: yankai
  */
 
-#include "_DNNSLAM.h"
+#include "../Odometry/_DNNodometry.h"
 
 namespace kai
 {
 
-_DNNSLAM::_DNNSLAM()
+_DNNodometry::_DNNodometry()
 {
 	m_pIN = NULL;
 	m_attiRad.init();
 	m_tNow = 0;
 }
 
-_DNNSLAM::~_DNNSLAM()
+_DNNodometry::~_DNNodometry()
 {
 
 }
 
-bool _DNNSLAM::init(void* pKiss)
+bool _DNNodometry::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -31,7 +31,7 @@ bool _DNNSLAM::init(void* pKiss)
 	return true;
 }
 
-bool _DNNSLAM::link(void)
+bool _DNNodometry::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -45,7 +45,7 @@ bool _DNNSLAM::link(void)
 	return true;
 }
 
-bool _DNNSLAM::start(void)
+bool _DNNodometry::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -58,7 +58,7 @@ bool _DNNSLAM::start(void)
 	return true;
 }
 
-void _DNNSLAM::update(void)
+void _DNNodometry::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -69,7 +69,7 @@ void _DNNSLAM::update(void)
 	}
 }
 
-bool _DNNSLAM::draw(void)
+bool _DNNodometry::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

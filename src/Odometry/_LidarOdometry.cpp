@@ -1,16 +1,16 @@
 /*
- * _LidarSLAM.cpp
+ * _LidarOdometry.cpp
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#include "_LidarSLAM.h"
+#include "../Odometry/_LidarOdometry.h"
 
 namespace kai
 {
 
-_LidarSLAM::_LidarSLAM()
+_LidarOdometry::_LidarOdometry()
 {
 	m_pObs = NULL;
 	m_pMN = NULL;
@@ -30,12 +30,12 @@ _LidarSLAM::_LidarSLAM()
 	m_tLastMav = 0;
 }
 
-_LidarSLAM::~_LidarSLAM()
+_LidarOdometry::~_LidarOdometry()
 {
 
 }
 
-bool _LidarSLAM::init(void* pKiss)
+bool _LidarOdometry::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -87,7 +87,7 @@ bool _LidarSLAM::init(void* pKiss)
 	return true;
 }
 
-bool _LidarSLAM::link(void)
+bool _LidarOdometry::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -113,7 +113,7 @@ bool _LidarSLAM::link(void)
 	return true;
 }
 
-bool _LidarSLAM::start(void)
+bool _LidarOdometry::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -126,7 +126,7 @@ bool _LidarSLAM::start(void)
 	return true;
 }
 
-void _LidarSLAM::update(void)
+void _LidarOdometry::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -143,7 +143,7 @@ void _LidarSLAM::update(void)
 	}
 }
 
-void _LidarSLAM::updateGPS(void)
+void _LidarOdometry::updateGPS(void)
 {
 	NULL_(m_pGPS);
 	_Mavlink* pMavlink = m_pGPS->m_pMavlink;
@@ -163,12 +163,12 @@ void _LidarSLAM::updateGPS(void)
 
 }
 
-void _LidarSLAM::updateSF40(void)
+void _LidarOdometry::updateSF40(void)
 {
 	NULL_(m_pSF40);
 }
 
-void _LidarSLAM::updateObstacle(void)
+void _LidarOdometry::updateObstacle(void)
 {
 	NULL_(m_pObs);
 
@@ -201,7 +201,7 @@ void _LidarSLAM::updateObstacle(void)
 	}
 }
 
-void _LidarSLAM::expandGrid(vInt3* pPos)
+void _LidarOdometry::expandGrid(vInt3* pPos)
 {
 	NULL_(pPos);
 
@@ -240,14 +240,14 @@ void _LidarSLAM::expandGrid(vInt3* pPos)
 
 }
 
-void _LidarSLAM::updateMatrixNet(void)
+void _LidarOdometry::updateMatrixNet(void)
 {
 	NULL_(m_pMN);
 
 
 }
 
-bool _LidarSLAM::draw(void)
+bool _LidarOdometry::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

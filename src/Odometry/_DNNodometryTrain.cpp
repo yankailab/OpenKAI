@@ -1,16 +1,16 @@
 /*
- * _DNNSLAMtrain.cpp
+ * _DNNodometryTrain.cpp
  *
  *  Created on: May 17, 2017
  *      Author: yankai
  */
 
-#include "_DNNSLAMtrain.h"
+#include "../Odometry/_DNNodometryTrain.h"
 
 namespace kai
 {
 
-_DNNSLAMtrain::_DNNSLAMtrain()
+_DNNodometryTrain::_DNNodometryTrain()
 {
 	m_pIN = NULL;
 	m_pZED = NULL;
@@ -18,12 +18,12 @@ _DNNSLAMtrain::_DNNSLAMtrain()
 	m_tNow = 0;
 }
 
-_DNNSLAMtrain::~_DNNSLAMtrain()
+_DNNodometryTrain::~_DNNodometryTrain()
 {
 
 }
 
-bool _DNNSLAMtrain::init(void* pKiss)
+bool _DNNodometryTrain::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -32,7 +32,7 @@ bool _DNNSLAMtrain::init(void* pKiss)
 	return true;
 }
 
-bool _DNNSLAMtrain::link(void)
+bool _DNNodometryTrain::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -50,7 +50,7 @@ bool _DNNSLAMtrain::link(void)
 	return true;
 }
 
-bool _DNNSLAMtrain::start(void)
+bool _DNNodometryTrain::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -63,7 +63,7 @@ bool _DNNSLAMtrain::start(void)
 	return true;
 }
 
-void _DNNSLAMtrain::update(void)
+void _DNNodometryTrain::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -74,7 +74,7 @@ void _DNNSLAMtrain::update(void)
 	}
 }
 
-bool _DNNSLAMtrain::draw(void)
+bool _DNNodometryTrain::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

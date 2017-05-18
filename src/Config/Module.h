@@ -44,6 +44,7 @@
 #include "../DNN/_ImageNet.h"
 #include "../DNN/_MatrixNet.h"
 #include "../DNN/_DetectNet.h"
+#include "../Odometry/_DNNodometry.h"
 
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
@@ -53,9 +54,6 @@
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Sensor/_LeddarVu.h"
-
-#include "../SLAM/_DNNSLAM.h"
-
 #include "../Tracker/_ROITracker.h"
 
 #include "../UI/UI.h"
