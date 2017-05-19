@@ -1,5 +1,5 @@
 /*
- * _BVLDCaffe.h
+ * _CaffeRegression.h
  *
  *  Created on: Aug 17, 2015
  *      Author: yankai
@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 
-#ifdef USE_CaffeRegression
+#ifdef USE_CAFFE
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>

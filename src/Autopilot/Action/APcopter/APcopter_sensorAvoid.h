@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_AVOID_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_AVOID_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_sensorAVOID_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_sensorAVOID_H_
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_Obstacle.h"

@@ -1,5 +1,5 @@
 /*
- * _DNNodometryTrain.h
+ * _DNNGen_odometry.h
  *
  *  Created on: May 17, 2017
  *      Author: yankai
@@ -8,12 +8,12 @@
 #ifndef OPENKAI_SRC_Odometry__DNNodometryTrain_H_
 #define OPENKAI_SRC_Odometry__DNNodometryTrain_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
-#include "../DNN/_ImageNet.h"
-#include "../Vision/_ZED.h"
-#include "../Vision/_Flow.h"
-#include "../Utility/util.h"
+#include "../../Base/common.h"
+#include "../../Base/_ThreadBase.h"
+#include "../../DNN/_ImageNet.h"
+#include "../../Vision/_ZED.h"
+#include "../../Vision/_Flow.h"
+#include "../../Utility/util.h"
 
 namespace kai
 {

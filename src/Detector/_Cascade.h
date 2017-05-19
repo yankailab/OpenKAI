@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "_DNNbase.h"
 
 #ifdef USE_CASCADE
 
