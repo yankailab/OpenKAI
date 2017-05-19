@@ -1,9 +1,9 @@
-#include "APcopter_visualAvoid.h"
+#include "APcopter_DNNavoid.h"
 
 namespace kai
 {
 
-APcopter_visualAvoid::APcopter_visualAvoid()
+APcopter_DNNavoid::APcopter_DNNavoid()
 {
 	m_pAP = NULL;
 	m_pIN = NULL;
@@ -11,11 +11,11 @@ APcopter_visualAvoid::APcopter_visualAvoid()
 
 }
 
-APcopter_visualAvoid::~APcopter_visualAvoid()
+APcopter_DNNavoid::~APcopter_DNNavoid()
 {
 }
 
-bool APcopter_visualAvoid::init(void* pKiss)
+bool APcopter_DNNavoid::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -24,7 +24,7 @@ bool APcopter_visualAvoid::init(void* pKiss)
 	return true;
 }
 
-bool APcopter_visualAvoid::link(void)
+bool APcopter_DNNavoid::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -88,7 +88,7 @@ bool APcopter_visualAvoid::link(void)
 	return true;
 }
 
-void APcopter_visualAvoid::update(void)
+void APcopter_DNNavoid::update(void)
 {
 	this->ActionBase::update();
 
@@ -113,7 +113,7 @@ void APcopter_visualAvoid::update(void)
 
 }
 
-bool APcopter_visualAvoid::draw(void)
+bool APcopter_DNNavoid::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

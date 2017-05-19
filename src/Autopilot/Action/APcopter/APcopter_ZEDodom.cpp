@@ -1,9 +1,9 @@
-#include "../APcopter/APcopter_zedSLAM.h"
+#include "APcopter_ZEDodom.h"
 
 namespace kai
 {
 
-APcopter_zedSLAM::APcopter_zedSLAM()
+APcopter_ZEDodom::APcopter_ZEDodom()
 {
 	m_pAP = NULL;
 	m_pZED = NULL;
@@ -12,11 +12,11 @@ APcopter_zedSLAM::APcopter_zedSLAM()
 	m_mR.init();
 }
 
-APcopter_zedSLAM::~APcopter_zedSLAM()
+APcopter_ZEDodom::~APcopter_ZEDodom()
 {
 }
 
-bool APcopter_zedSLAM::init(void* pKiss)
+bool APcopter_ZEDodom::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -25,7 +25,7 @@ bool APcopter_zedSLAM::init(void* pKiss)
 	return true;
 }
 
-bool APcopter_zedSLAM::link(void)
+bool APcopter_ZEDodom::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -42,14 +42,14 @@ bool APcopter_zedSLAM::link(void)
 	return true;
 }
 
-void APcopter_zedSLAM::update(void)
+void APcopter_ZEDodom::update(void)
 {
 	this->ActionBase::update();
 
 	updateZEDtracking();
 }
 
-void APcopter_zedSLAM::updateZEDtracking(void)
+void APcopter_ZEDodom::updateZEDtracking(void)
 {
 	NULL_(m_pZED);
 	IF_(!m_pZED->isOpened());
@@ -85,7 +85,7 @@ void APcopter_zedSLAM::updateZEDtracking(void)
 
 }
 
-bool APcopter_zedSLAM::draw(void)
+bool APcopter_ZEDodom::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

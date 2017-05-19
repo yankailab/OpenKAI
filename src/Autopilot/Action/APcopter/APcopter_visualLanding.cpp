@@ -1,20 +1,20 @@
-#include "../APcopter/APcopter_landing.h"
+#include "APcopter_visualLanding.h"
 
 namespace kai
 {
 
-APcopter_landing::APcopter_landing()
+APcopter_visualLanding::APcopter_visualLanding()
 {
 	m_pAP = NULL;
 	m_pAI = NULL;
 	m_target.init();
 }
 
-APcopter_landing::~APcopter_landing()
+APcopter_visualLanding::~APcopter_visualLanding()
 {
 }
 
-bool APcopter_landing::init(void* pKiss)
+bool APcopter_visualLanding::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
@@ -27,7 +27,7 @@ bool APcopter_landing::init(void* pKiss)
 	return true;
 }
 
-bool APcopter_landing::link(void)
+bool APcopter_visualLanding::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -41,7 +41,7 @@ bool APcopter_landing::link(void)
 	return true;
 }
 
-void APcopter_landing::update(void)
+void APcopter_visualLanding::update(void)
 {
 	this->ActionBase::update();
 
@@ -50,7 +50,7 @@ void APcopter_landing::update(void)
 	landing();
 }
 
-void APcopter_landing::landing(void)
+void APcopter_visualLanding::landing(void)
 {
 	NULL_(m_pAP);
 	NULL_(m_pAI);
@@ -101,7 +101,7 @@ void APcopter_landing::landing(void)
 
 }
 
-bool APcopter_landing::draw(void)
+bool APcopter_visualLanding::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

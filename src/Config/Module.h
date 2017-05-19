@@ -25,16 +25,7 @@
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_Path.h"
 
-#include "../Autopilot/Action/ActionBase.h"
-#include "../Autopilot/Action/HM/HM_base.h"
-#include "../Autopilot/Action/RC/RC_base.h"
-#include "../Autopilot/Action/RC/RC_visualFollow.h"
 #include "../Autopilot/_AutoPilot.h"
-#include "../Autopilot/Action/HM/HM_grass.h"
-#include "../Autopilot/Action/APcopter/APcopter_base.h"
-#include "../Autopilot/Action/APcopter/APcopter_landing.h"
-#include "../Autopilot/Action/AProver/AProver_base.h"
-#include "../Autopilot/Action/AProver/AProver_follow.h"
 
 #include "../IO/File.h"
 
@@ -44,7 +35,7 @@
 #include "../DNN/_ImageNet.h"
 #include "../DNN/_MatrixNet.h"
 #include "../DNN/_DetectNet.h"
-#include "../Odometry/_DNNodometry.h"
+#include "../DNN/TrainDataGenerator/_DNNGen_odometry.h"
 
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
@@ -67,13 +58,17 @@
 #include "../Vision/_Flow.h"
 
 #ifdef USE_CASCADE
-#include "../AI/_Cascade.h"
+#include "../Detector/_Cascade.h"
+#endif
+#ifdef USE_CAFFE
+#include "../DNN/_Caffe.h"
+#include "../DNN/_CaffeRegression.h"
 #endif
 #ifdef USE_SSD
-#include "../AI/_SSD.h"
+#include "../DNN/_SSD.h"
 #endif
 #ifdef USE_FCN
-#include "../AI/_FCN.h"
+#include "../DNN/_FCN.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

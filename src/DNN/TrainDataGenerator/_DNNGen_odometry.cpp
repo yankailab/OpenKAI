@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "../Odometry/_DNNodometryTrain.h"
+#include "_DNNGen_odometry.h"
 
 namespace kai
 {
 
-_DNNodometryTrain::_DNNodometryTrain()
+_DNNGen_odometry::_DNNGen_odometry()
 {
 	m_pIN = NULL;
 	m_pZED = NULL;
@@ -18,12 +18,12 @@ _DNNodometryTrain::_DNNodometryTrain()
 	m_tNow = 0;
 }
 
-_DNNodometryTrain::~_DNNodometryTrain()
+_DNNGen_odometry::~_DNNGen_odometry()
 {
 
 }
 
-bool _DNNodometryTrain::init(void* pKiss)
+bool _DNNGen_odometry::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -32,7 +32,7 @@ bool _DNNodometryTrain::init(void* pKiss)
 	return true;
 }
 
-bool _DNNodometryTrain::link(void)
+bool _DNNGen_odometry::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -50,7 +50,7 @@ bool _DNNodometryTrain::link(void)
 	return true;
 }
 
-bool _DNNodometryTrain::start(void)
+bool _DNNGen_odometry::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -63,7 +63,7 @@ bool _DNNodometryTrain::start(void)
 	return true;
 }
 
-void _DNNodometryTrain::update(void)
+void _DNNGen_odometry::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -74,7 +74,7 @@ void _DNNodometryTrain::update(void)
 	}
 }
 
-bool _DNNodometryTrain::draw(void)
+bool _DNNGen_odometry::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

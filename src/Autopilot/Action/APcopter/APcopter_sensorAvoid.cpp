@@ -1,19 +1,19 @@
-#include "../APcopter/APcopter_avoid.h"
+#include "APcopter_sensorAvoid.h"
 
 namespace kai
 {
 
-APcopter_avoid::APcopter_avoid()
+APcopter_sensorAvoid::APcopter_sensorAvoid()
 {
 	m_pAP = NULL;
 	m_nDS = 0;
 }
 
-APcopter_avoid::~APcopter_avoid()
+APcopter_sensorAvoid::~APcopter_sensorAvoid()
 {
 }
 
-bool APcopter_avoid::init(void* pKiss)
+bool APcopter_sensorAvoid::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -22,7 +22,7 @@ bool APcopter_avoid::init(void* pKiss)
 	return true;
 }
 
-bool APcopter_avoid::link(void)
+bool APcopter_sensorAvoid::link(void)
 {
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -91,14 +91,14 @@ bool APcopter_avoid::link(void)
 	return true;
 }
 
-void APcopter_avoid::update(void)
+void APcopter_sensorAvoid::update(void)
 {
 	this->ActionBase::update();
 
 	updateMavlink();
 }
 
-void APcopter_avoid::updateMavlink(void)
+void APcopter_sensorAvoid::updateMavlink(void)
 {
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
@@ -121,7 +121,7 @@ void APcopter_avoid::updateMavlink(void)
 	}
 }
 
-bool APcopter_avoid::draw(void)
+bool APcopter_sensorAvoid::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;

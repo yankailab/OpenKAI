@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALAVOID_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALAVOID_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_DNNAVOID_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_DNNAVOID_H_
 
 #include "../../../Base/common.h"
 #include "../../../DNN/_ImageNet.h"
@@ -34,11 +34,11 @@ struct TERRAIN
 	}
 };
 
-class APcopter_visualAvoid: public ActionBase
+class APcopter_DNNavoid: public ActionBase
 {
 public:
-	APcopter_visualAvoid();
-	~APcopter_visualAvoid();
+	APcopter_DNNavoid();
+	~APcopter_DNNavoid();
 
 	bool init(void* pKiss);
 	bool link(void);

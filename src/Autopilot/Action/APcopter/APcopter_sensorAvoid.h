@@ -40,11 +40,11 @@ struct DIST_SENSOR
 	}
 };
 
-class APcopter_avoid: public ActionBase
+class APcopter_sensorAvoid: public ActionBase
 {
 public:
-	APcopter_avoid();
-	~APcopter_avoid();
+	APcopter_sensorAvoid();
+	~APcopter_sensorAvoid();
 
 	bool init(void* pKiss);
 	bool link(void);

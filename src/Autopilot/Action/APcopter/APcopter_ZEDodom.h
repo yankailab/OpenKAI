@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDSLAM_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDSLAM_H_
+#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDodom_H_
+#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDodom_H_
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_ZED.h"
@@ -11,11 +11,11 @@
 namespace kai
 {
 
-class APcopter_zedSLAM: public ActionBase
+class APcopter_ZEDodom: public ActionBase
 {
 public:
-	APcopter_zedSLAM();
-	~APcopter_zedSLAM();
+	APcopter_ZEDodom();
+	~APcopter_ZEDodom();
 
 	bool init(void* pKiss);
 	bool link(void);

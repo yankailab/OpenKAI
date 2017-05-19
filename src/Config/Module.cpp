@@ -21,7 +21,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_DetectNet);
-	ADD_MODULE(_DNNodometry);
+	ADD_MODULE(_DNNGen_odometry);
 	ADD_MODULE(_Flow);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_ImageNet);
