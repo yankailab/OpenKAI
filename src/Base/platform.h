@@ -11,6 +11,7 @@
 #include <float.h>
 #include <getopt.h>
 #include <iosfwd>
+#include <iostream>
 #include <list>
 #include <limits.h>
 #include <memory>
@@ -30,6 +31,7 @@
 #include <sys/ioctl.h>
 #include <string>
 #include <string.h>
+#include <sstream>
 #include "stdio.h"
 #include <signal.h>
 #include <time.h>

@@ -32,10 +32,10 @@
 #include "../Network/_server.h"
 #include "../Network/_socket.h"
 
-#include "../DNN/_ImageNet.h"
-#include "../DNN/_MatrixNet.h"
-#include "../DNN/_DetectNet.h"
-#include "../DNN/TrainDataGenerator/_DNNGen_odometry.h"
+#include "../DNN/Detector/_ImageNet.h"
+#include "../DNN/Detector/_MatrixNet.h"
+#include "../DNN/Detector/_DetectNet.h"
+#include "../DNN/Regression/TrainDataGenerator/_DNNGen_odometry.h"
 
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
@@ -61,8 +61,8 @@
 #include "../Detector/_Cascade.h"
 #endif
 #ifdef USE_CAFFE
-#include "../DNN/_Caffe.h"
-#include "../DNN/_CaffeRegression.h"
+#include "../DNN/Classifier/_Caffe.h"
+#include "../DNN/Regression/_CaffeRegression.h"
 #endif
 #ifdef USE_SSD
 #include "../DNN/_SSD.h"

@@ -5,14 +5,14 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_Odometry__LidarSLAM_H_
-#define OPENKAI_SRC_Odometry__LidarSLAM_H_
+#ifndef OPENKAI_SRC_Odometry__LidarOdometry_H_
+#define OPENKAI_SRC_Odometry__LidarOdometry_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Automaton/_Automaton.h"
-#include "../DNN/_MatrixNet.h"
+#include "../DNN/Detector/_MatrixNet.h"
 #include "../Sensor/_Obstacle.h"
 #include "../Navigation/_GPS.h"
 
