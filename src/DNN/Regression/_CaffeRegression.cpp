@@ -13,39 +13,59 @@ namespace kai
 {
 _CaffeRegression::_CaffeRegression()
 {
+	m_presetDir = "";
+	m_fSolverProto = "";
+	m_fDeployProto = "";
+	m_fPretrainedCaffemodel = "";
+	m_fTrainImgList = "";
+	m_fTestImgList = "";
+
+	m_width = 224;
+	m_height = 224;
+	m_nChannel = 3;
+	m_targetDim = 6;
+
+	m_layerInTrain = "data";
+	m_layerInTest = "data";
+	m_layerLabelTrain = "label";
+	m_layerLabelTest = "label";
+
+	m_dataSizeTrain = 1000;
+	m_dataSizeTest = 1000;
+
 }
 
 _CaffeRegression::~_CaffeRegression()
 {
 }
 
-bool _CaffeRegression::init(JSON* pJson)
+bool _CaffeRegression::init(void* pKiss)
 {
-	//Setup Caffe Classifier
-	string caffeDir = "";
-	string modelFile;
-	string trainedFile;
-	string meanFile;
-	string labelFile;
-	string presetDir = "";
+	IF_F(!this->_ThreadBase::init(pKiss));
+	Kiss* pK = (Kiss*) pKiss;
+	pK->m_pInst = this;
 
-	setup(caffeDir + modelFile, caffeDir + trainedFile, caffeDir + meanFile,
-			caffeDir + labelFile, 1);
-	LOG(INFO)<<"Caffe Initialized";
+	KISSm(pK,presetDir);
+	KISSm(pK,fSolverProto);
+	KISSm(pK,fDeployProto);
+	KISSm(pK,fPretrainedCaffemodel);
+	KISSm(pK,fTrainImgList);
+	KISSm(pK,fTestImgList);
 
-	double FPS = DEFAULT_FPS;
-	this->setTargetFPS(FPS);
+	KISSm(pK,width);
+	KISSm(pK,height);
+	KISSm(pK,nChannel);
+	KISSm(pK,targetDim);
 
-//	m_pFrame = new Frame();
+	KISSm(pK,layerInTrain);
+	KISSm(pK,layerInTest);
+	KISSm(pK,layerLabelTrain);
+	KISSm(pK,layerLabelTest);
+
+	KISSm(pK,dataSizeTrain);
+	KISSm(pK,dataSizeTest);
 
 	return true;
-}
-
-void _CaffeRegression::setup(const string& model_file,
-		const string& trained_file, const string& mean_file,
-		const string& label_file, int batch_size)
-{
-
 }
 
 void _CaffeRegression::setModeGPU(void)
@@ -83,8 +103,7 @@ void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *
 		LOG(INFO)<< "cannot open " << list_path; return;
 	}
 
-	float mean[CHANNEL] =
-	{ 104, 117, 123 };
+//	float mean[m_nChannel] = { 104, 117, 123 };
 
 	while (getline(ifs, str))
 	{
@@ -92,31 +111,31 @@ void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *
 		cout << "reading: " << entry[0] << endl;
 		cv::Mat img = cv::imread(entry[0]);
 		cv::Mat resized_img;
-		cv::resize(img, resized_img, cv::Size(WIDTH, HEIGHT));
-		for (int y = 0; y < HEIGHT; y++)
+		cv::resize(img, resized_img, cv::Size(m_width, m_height));
+		for (int y = 0; y < m_height; y++)
 		{
-			for (int x = 0; x < WIDTH; x++)
+			for (int x = 0; x < m_width; x++)
 			{
 				data[y * resized_img.cols + x
 						+ resized_img.cols * resized_img.rows * 0
-						+ WIDTH * HEIGHT * CHANNEL * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 0]
-						- mean[0];
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 0];
+//						- mean[0];
 				data[y * resized_img.cols + x
 						+ resized_img.cols * resized_img.rows * 1
-						+ WIDTH * HEIGHT * CHANNEL * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 1]
-						- mean[1];
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 1];
+//						- mean[1];
 				data[y * resized_img.cols + x
 						+ resized_img.cols * resized_img.rows * 2
-						+ WIDTH * HEIGHT * CHANNEL * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 2]
-						- mean[2];
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 2];
+//						- mean[2];
 			}
 		}
-		for (int i = 0; i < TARGET_DIM; i++)
+		for (int i = 0; i < m_targetDim; i++)
 		{
-			label[n * TARGET_DIM + i] = stof(entry[i + 1]) / 256.0;
+			label[n * m_targetDim + i] = stof(entry[i + 1]) / 256.0;
 		}
 		n++;
 	}
@@ -142,71 +161,51 @@ void _CaffeRegression::readImgFileName(string path, string *infiles)
 void _CaffeRegression::run_googlenet_train()
 {
 	SolverParameter solver_param;
-	ReadProtoFromTextFileOrDie("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\solver.prototxt", &solver_param);
+	ReadProtoFromTextFileOrDie(m_fSolverProto.c_str(), &solver_param);
 	std::shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
 
-	const auto net = solver->net();
-	const auto test_net = solver->test_nets();
+	const auto pNet = solver->net();
+	const auto pTestNet = solver->test_nets();
 
-	net->CopyTrainedLayersFrom(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\bvlc_googlenet.caffemodel");
-	test_net[0]->CopyTrainedLayersFrom(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\bvlc_googlenet.caffemodel");
+	pNet->CopyTrainedLayersFrom(m_fPretrainedCaffemodel.c_str());
+	pTestNet[0]->CopyTrainedLayersFrom(m_fPretrainedCaffemodel.c_str());
 
-	int train_data_size = 1000;
-	float *train_input_data;
-	float *train_label;
+	float* pDataInTrain = new float[m_dataSizeTrain * m_height * m_width * m_nChannel];
+	float* pLabelTrain = new float[m_dataSizeTrain * m_targetDim];
+	float* pDataInTest = new float[m_dataSizeTest * m_height * m_width * m_nChannel];
+	float* pLabelTest = new float[m_dataSizeTest * m_targetDim];
 
-	int test_data_size = 1000;
-	float *test_input_data;
-	float *test_label;
+	readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain, m_dataSizeTrain);
+	readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest, m_dataSizeTest);
 
-	train_input_data = new float[train_data_size * HEIGHT * WIDTH * CHANNEL];
-	train_label = new float[train_data_size * TARGET_DIM];
-	test_input_data = new float[test_data_size * HEIGHT * WIDTH * CHANNEL];
-	test_label = new float[test_data_size * TARGET_DIM];
+	const auto pLayerInTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerInTrain.c_str()));
+	const auto pLayerInTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerInTest.c_str()));
 
-	readImgListToFloat(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\train.txt",
-			train_input_data, train_label, train_data_size);
-	readImgListToFloat(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt",
-			test_input_data, test_label, test_data_size);
+	float* pDummyDataTrain = new float[m_dataSizeTrain];
+	float* pDummtDataTest = new float[m_dataSizeTest];
+	for (int i = 0; i < m_dataSizeTrain; i++)
+		pDummyDataTrain[i] = 0;
+	for (int i = 0; i < m_dataSizeTest; i++)
+		pDummtDataTest[i] = 0;
 
-	const auto train_input_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(net->layer_by_name("data"));
-	const auto test_input_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net[0]->layer_by_name("data"));
+	pLayerInTrain->Reset((float*) pDataInTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
+	pLayerInTest->Reset((float*) pDataInTest, (float*) pDummtDataTest, m_dataSizeTest);
 
-	float *train_dummy = new float[train_data_size];
-	float *test_dummy = new float[test_data_size];
-	for (int i = 0; i < train_data_size; i++)
-		train_dummy[i] = 0;
-	for (int i = 0; i < test_data_size; i++)
-		test_dummy[i] = 0;
+	const auto pLayerLabelTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerLabelTrain.c_str()));
+	const auto pLayerLabelTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerLabelTest.c_str()));
 
-	train_input_layer->Reset((float*) train_input_data, (float*) train_dummy, train_data_size);
-	test_input_layer->Reset((float*) test_input_data, (float*) test_dummy, test_data_size);
+	pLayerLabelTrain->Reset((float*) pLabelTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
+	pLayerLabelTest->Reset((float*) pLabelTest, (float*) pDummtDataTest, m_dataSizeTest);
 
-	const auto train_label_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(net->layer_by_name("label"));
-	const auto test_label_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net[0]->layer_by_name("label"));
-
-	train_label_layer->Reset((float*) train_label, (float*) train_dummy, train_data_size);
-	test_label_layer->Reset((float*) test_label, (float*) test_dummy, test_data_size);
-
-	LOG(INFO)<< "Solve start.";
+	LOG_I("Solve start");
 	solver->Solve();
 
-	delete[] train_input_data;
-	train_input_data = 0;
-	delete[] train_label;
-	train_label = 0;
-	delete[] train_dummy;
-	train_dummy = 0;
-	delete[] test_input_data;
-	test_input_data = 0;
-	delete[] test_label;
-	test_label = 0;
-	delete[] test_dummy;
-	test_dummy = 0;
+	delete[] pDataInTrain;
+	delete[] pLabelTrain;
+	delete[] pDummyDataTrain;
+	delete[] pDataInTest;
+	delete[] pLabelTest;
+	delete[] pDummtDataTest;
 }
 
 void _CaffeRegression::run_googlenet_test()
@@ -223,8 +222,8 @@ void _CaffeRegression::run_googlenet_test()
 
 	float *test_input_data;
 	float *test_label;
-	test_input_data = new float[test_data_size * HEIGHT * WIDTH * CHANNEL];
-	test_label = new float[test_data_size * TARGET_DIM];
+	test_input_data = new float[test_data_size * m_height * m_width * m_nChannel];
+	test_label = new float[test_data_size * m_targetDim];
 
 	Net<float> test_net("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\deploy.prototxt", TEST);
 	test_net.CopyTrainedLayersFrom("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\snapshot\\bvlc_googlenet_iter_80000.caffemodel");
@@ -243,7 +242,7 @@ void _CaffeRegression::run_googlenet_test()
 	{
 		input_test_layer->Reset(
 				(float*) test_input_data
-						+ batch * WIDTH * HEIGHT * CHANNEL * batch_size,
+						+ batch * m_width * m_height * m_nChannel * batch_size,
 				test_dummy + batch * batch_size, batch_size);
 		const auto result = test_net.Forward();
 
@@ -253,18 +252,18 @@ void _CaffeRegression::run_googlenet_test()
 			int total_id = batch * batch_size + i;
 			oimg = cv::imread(infiles[total_id]);
 			resized_oimg;
-			cv::resize(oimg, resized_oimg, cv::Size(WIDTH, HEIGHT));
+			cv::resize(oimg, resized_oimg, cv::Size(m_width, m_height));
 
-			int *val = new int(TARGET_DIM);
-			for (int j = 0; j < TARGET_DIM; j++)
+			int *val = new int(m_targetDim);
+			for (int j = 0; j < m_targetDim; j++)
 			{
-				val[j] = (int) (data[i * TARGET_DIM + j] * 256);
+				val[j] = (int) (data[i * m_targetDim + j] * 256);
 				if (val[j] < 0)
 					val[j] = 0;
-				if (j == 0 && val[j] > WIDTH)
-					val[j] = WIDTH - 1;
-				if (j == 1 && val[j] > HEIGHT)
-					val[j] = HEIGHT - 1;
+				if (j == 0 && val[j] > m_width)
+					val[j] = m_width - 1;
+				if (j == 1 && val[j] > m_height)
+					val[j] = m_height - 1;
 				if (j >= 3 && val[j] > 255)
 					val[j] = 255;
 			}

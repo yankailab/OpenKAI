@@ -18,11 +18,6 @@
 #include <caffe/caffe.hpp>
 #include <caffe/layers/memory_data_layer.hpp>
 
-#define WIDTH	224
-#define HEIGHT	224
-#define CHANNEL	3
-#define TARGET_DIM	6
-
 namespace kai
 {
 using namespace caffe;
@@ -41,10 +36,7 @@ public:
 	_CaffeRegression();
 	~_CaffeRegression();
 
-	bool init(JSON* pJson);
-	void setup(const string& model_file, const string& trained_file,
-			const string& mean_file, const string& label_file, int batch_size);
-
+	bool init(void* pKiss);
 	void setModeGPU();
 
 	vector<string> split(string str, char c);
@@ -60,6 +52,27 @@ private:
 		((_CaffeRegression*) This)->update();
 		return NULL;
 	}
+
+	int m_width;
+	int m_height;
+	int m_nChannel;
+	int m_targetDim;
+
+	int m_dataSizeTrain;
+	int m_dataSizeTest;
+
+	string m_presetDir;
+	string m_fSolverProto;
+	string m_fDeployProto;
+	string m_fPretrainedCaffemodel;
+	string m_fTrainImgList;
+	string m_fTestImgList;
+
+	string m_layerInTrain;
+	string m_layerInTest;
+	string m_layerLabelTrain;
+	string m_layerLabelTest;
+
 
 };
 }
