@@ -13,10 +13,10 @@
 #ifdef USE_CAFFE
 
 #include "../../Base/_ThreadBase.h"
-
+#include <boost/smart_ptr.hpp>
 #include <cuda_runtime.h>
-#include <caffe/caffe.hpp">
-//#include <caffe/layers/memory_data_layer.hpp>
+#include <caffe/caffe.hpp>
+#include <caffe/layers/memory_data_layer.hpp>
 
 #define WIDTH	224
 #define HEIGHT	224
@@ -26,9 +26,8 @@
 namespace kai
 {
 using namespace caffe;
-using namespace std;
-using namespace cv;
-// NOLINT(build/namespaces)
+//using namespace std;
+//using namespace cv;
 //using caffe::Caffe;
 //using caffe::Net;
 //using caffe::Blob;

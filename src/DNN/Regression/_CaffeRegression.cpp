@@ -80,7 +80,8 @@ void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *
 	ifs.open(list_path.c_str(), std::ios::in);
 	if (!ifs)
 	{
-		LOG(INFO)<< "cannot open " << list_path; return;}
+		LOG(INFO)<< "cannot open " << list_path; return;
+	}
 
 	float mean[CHANNEL] =
 	{ 104, 117, 123 };
@@ -141,10 +142,9 @@ void _CaffeRegression::readImgFileName(string path, string *infiles)
 void _CaffeRegression::run_googlenet_train()
 {
 	SolverParameter solver_param;
-	ReadProtoFromTextFileOrDie(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\solver.prototxt",
-			&solver_param);
-	shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
+	ReadProtoFromTextFileOrDie("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\solver.prototxt", &solver_param);
+	std::shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
+
 	const auto net = solver->net();
 	const auto test_net = solver->test_nets();
 
@@ -173,29 +173,24 @@ void _CaffeRegression::run_googlenet_train()
 			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt",
 			test_input_data, test_label, test_data_size);
 
-	const auto train_input_layer = boost::dynamic_pointer_cast<
-			MemoryDataLayer<float>>(net->layer_by_name("data"));
-	const auto test_input_layer = boost::dynamic_pointer_cast<
-			MemoryDataLayer<float>>(test_net[0]->layer_by_name("data"));
+	const auto train_input_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(net->layer_by_name("data"));
+	const auto test_input_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net[0]->layer_by_name("data"));
+
 	float *train_dummy = new float[train_data_size];
 	float *test_dummy = new float[test_data_size];
 	for (int i = 0; i < train_data_size; i++)
 		train_dummy[i] = 0;
 	for (int i = 0; i < test_data_size; i++)
 		test_dummy[i] = 0;
-	train_input_layer->Reset((float*) train_input_data, (float*) train_dummy,
-			train_data_size);
-	test_input_layer->Reset((float*) test_input_data, (float*) test_dummy,
-			test_data_size);
 
-	const auto train_label_layer = boost::dynamic_pointer_cast<
-			MemoryDataLayer<float>>(net->layer_by_name("label"));
-	const auto test_label_layer = boost::dynamic_pointer_cast<
-			MemoryDataLayer<float>>(test_net[0]->layer_by_name("label"));
-	train_label_layer->Reset((float*) train_label, (float*) train_dummy,
-			train_data_size);
-	test_label_layer->Reset((float*) test_label, (float*) test_dummy,
-			test_data_size);
+	train_input_layer->Reset((float*) train_input_data, (float*) train_dummy, train_data_size);
+	test_input_layer->Reset((float*) test_input_data, (float*) test_dummy, test_data_size);
+
+	const auto train_label_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(net->layer_by_name("label"));
+	const auto test_label_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net[0]->layer_by_name("label"));
+
+	train_label_layer->Reset((float*) train_label, (float*) train_dummy, train_data_size);
+	test_label_layer->Reset((float*) test_label, (float*) test_dummy, test_data_size);
 
 	LOG(INFO)<< "Solve start.";
 	solver->Solve();
@@ -223,33 +218,24 @@ void _CaffeRegression::run_googlenet_test()
 
 	string *infiles = new string[test_data_size];
 	ofstream ofs;
-	ofs.open(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\result.txt",
-			ios::out);
-	readImgFileName(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt",
-			infiles);
+	ofs.open("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\result.txt", ios::out);
+	readImgFileName("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt", infiles);
 
 	float *test_input_data;
 	float *test_label;
 	test_input_data = new float[test_data_size * HEIGHT * WIDTH * CHANNEL];
 	test_label = new float[test_data_size * TARGET_DIM];
 
-	Net<float> test_net(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\deploy.prototxt",
-			TEST);
-	test_net.CopyTrainedLayersFrom(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\snapshot\\bvlc_googlenet_iter_80000.caffemodel");
+	Net<float> test_net("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\deploy.prototxt", TEST);
+	test_net.CopyTrainedLayersFrom("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\snapshot\\bvlc_googlenet_iter_80000.caffemodel");
 
-	readImgListToFloat(
-			"G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt",
-			test_input_data, test_label, test_data_size);
+	readImgListToFloat("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt", test_input_data, test_label, test_data_size);
 
-	const auto input_test_layer = boost::dynamic_pointer_cast<
-			MemoryDataLayer<float>>(test_net.layer_by_name("data"));
+	const auto input_test_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net.layer_by_name("data"));
 	float *test_dummy = new float[test_data_size];
 	for (int i = 0; i < test_data_size; i++)
 		test_dummy[i] = 0.0f;
+
 	cv::Mat oimg;
 	cv::Mat resized_oimg;
 
