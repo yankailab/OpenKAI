@@ -324,6 +324,21 @@ inline void trimJson(string* pStr)
 	}
 }
 
+inline vector<string> splitBy(string str, char c)
+{
+	vector<string> v;
+	string buf = "";
+	stringstream ss;
+
+	ss << str;
+	while (getline(ss, buf, c))
+	{
+		v.push_back(buf);
+	}
+
+	return v;
+}
+
 }
 
 #endif

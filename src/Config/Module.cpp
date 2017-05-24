@@ -41,7 +41,8 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);
-	ADD_MODULE(_CaffeRegression);
+	ADD_MODULE(_CaffeRegressionTrain);
+	ADD_MODULE(_CaffeRegressionInf);
 #endif
 #ifdef USE_ZED
 	ADD_MODULE(_ZED);

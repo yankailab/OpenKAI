@@ -63,7 +63,8 @@
 #endif
 #ifdef USE_CAFFE
 #include "../DNN/Classifier/_Caffe.h"
-#include "../DNN/Regression/_CaffeRegression.h"
+#include "../DNN/Regression/_CaffeRegressionTrain.h"
+#include "../DNN/Regression/_CaffeRegressionInf.h"
 #endif
 #ifdef USE_SSD
 #include "../DNN/_SSD.h"

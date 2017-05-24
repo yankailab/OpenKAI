@@ -1,39 +1,26 @@
 /*
- * _CaffeRegression.cpp
+ * _CaffeRegressionInf.cpp
  *
- *  Created on: Aug 17, 2015
+ *  Created on: May 23, 2017
  *      Author: yankai
  */
 
-#include "_CaffeRegression.h"
+#include "_CaffeRegressionInf.h"
 
 #ifdef USE_CAFFE
 
 namespace kai
 {
-_CaffeRegression::_CaffeRegression()
+_CaffeRegressionInf::_CaffeRegressionInf()
 {
 	m_baseDir = "";
-	m_fSolverProto = "";
-	m_fPretrainedCaffemodel = "";
-	m_fTrainImgList = "";
-	m_fTestImgList = "";
-
 	m_width = 224;
 	m_height = 224;
 	m_nChannel = 3;
 	m_targetDim = 6;
 	m_meanCol.init();
 
-	m_layerInTrain = "data";
-	m_layerInTest = "data";
-	m_layerLabelTrain = "label";
-	m_layerLabelTest = "label";
-
-	m_dataSizeTrain = 1000;
-	m_dataSizeTest = 1000;
-
-	m_infBatchSize = 10;
+	m_infBatchSize = 1;
 	m_infDataSize = 1000;
 	m_batchIter = m_infDataSize / m_infBatchSize;
 
@@ -43,43 +30,24 @@ _CaffeRegression::_CaffeRegression()
 	m_infResultDir = "result";
 	m_infLayerInput = "data";
 
-	m_mode = "";
-
 }
 
-_CaffeRegression::~_CaffeRegression()
+_CaffeRegressionInf::~_CaffeRegressionInf()
 {
 }
 
-bool _CaffeRegression::init(void* pKiss)
+bool _CaffeRegressionInf::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,mode);
 	KISSm(pK,baseDir);
-
-	//train
-	KISSm(pK,fSolverProto);
-	KISSm(pK,fPretrainedCaffemodel);
-	KISSm(pK,fTrainImgList);
-	KISSm(pK,fTestImgList);
-
 	KISSm(pK,width);
 	KISSm(pK,height);
 	KISSm(pK,nChannel);
 	KISSm(pK,targetDim);
 
-	KISSm(pK,layerInTrain);
-	KISSm(pK,layerInTest);
-	KISSm(pK,layerLabelTrain);
-	KISSm(pK,layerLabelTest);
-
-	KISSm(pK,dataSizeTrain);
-	KISSm(pK,dataSizeTest);
-
-	//inference
 	KISSm(pK,fDeployProto);
 	KISSm(pK,fDeployProto);
 	KISSm(pK,fInfCaffemodel);
@@ -89,15 +57,6 @@ bool _CaffeRegression::init(void* pKiss)
 	KISSm(pK,infBatchSize);
 	KISSm(pK,infDataSize);
 	KISSm(pK,infLayerInput);
-
-	//common
-	m_fSolverProto = m_baseDir + m_fSolverProto;
-	m_fTrainImgList = m_baseDir + m_fTrainImgList;
-	m_fTestImgList = m_baseDir + m_fTestImgList;
-	if(!m_fPretrainedCaffemodel.empty())
-	{
-		m_fPretrainedCaffemodel = m_baseDir + m_fPretrainedCaffemodel;
-	}
 
 	m_fDeployProto = m_baseDir + m_fDeployProto;
 	m_fInfCaffemodel = m_baseDir + m_fInfCaffemodel;
@@ -111,75 +70,42 @@ bool _CaffeRegression::init(void* pKiss)
 		m_meanCol.z = pMeanCol[2];
 	}
 
-	if(m_mode == "train")
-	{
-		train();
-	}
-	else if(m_mode == "inference")
-	{
-		inference();
-	}
-
-	exit(0);
 	return true;
 }
 
-void _CaffeRegression::train()
+bool _CaffeRegressionInf::link(void)
 {
-	Caffe::set_mode(Caffe::GPU);
+	IF_F(!this->_ThreadBase::link());
+	Kiss* pK = (Kiss*) m_pKiss;
 
-	SolverParameter solver_param;
-	ReadProtoFromTextFileOrDie(m_fSolverProto.c_str(), &solver_param);
-	std::shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
-
-	const auto pNet = solver->net();
-	const auto pTestNet = solver->test_nets();
-
-	if(!m_fPretrainedCaffemodel.empty())
-	{
-		pNet->CopyTrainedLayersFrom(m_fPretrainedCaffemodel.c_str());
-		pTestNet[0]->CopyTrainedLayersFrom(m_fPretrainedCaffemodel.c_str());
-	}
-
-	float* pDataInTrain = new float[m_dataSizeTrain * m_height * m_width * m_nChannel];
-	float* pLabelTrain = new float[m_dataSizeTrain * m_targetDim];
-	float* pDataInTest = new float[m_dataSizeTest * m_height * m_width * m_nChannel];
-	float* pLabelTest = new float[m_dataSizeTest * m_targetDim];
-
-	readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain, m_dataSizeTrain);
-	readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest, m_dataSizeTest);
-
-	const auto pLayerInTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerInTrain.c_str()));
-	const auto pLayerInTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerInTest.c_str()));
-
-	float* pDummyDataTrain = new float[m_dataSizeTrain];
-	float* pDummtDataTest = new float[m_dataSizeTest];
-	for (int i = 0; i < m_dataSizeTrain; i++)
-		pDummyDataTrain[i] = 0;
-	for (int i = 0; i < m_dataSizeTest; i++)
-		pDummtDataTest[i] = 0;
-
-	pLayerInTrain->Reset((float*) pDataInTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
-	pLayerInTest->Reset((float*) pDataInTest, (float*) pDummtDataTest, m_dataSizeTest);
-
-	const auto pLayerLabelTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerLabelTrain.c_str()));
-	const auto pLayerLabelTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerLabelTest.c_str()));
-
-	pLayerLabelTrain->Reset((float*) pLabelTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
-	pLayerLabelTest->Reset((float*) pLabelTest, (float*) pDummtDataTest, m_dataSizeTest);
-
-	LOG_I("Solve start");
-	solver->Solve();
-
-	delete[] pDataInTrain;
-	delete[] pLabelTrain;
-	delete[] pDummyDataTrain;
-	delete[] pDataInTest;
-	delete[] pLabelTest;
-	delete[] pDummtDataTest;
+	return true;
 }
 
-void _CaffeRegression::inference()
+bool _CaffeRegressionInf::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG_E(retCode);
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
+void _CaffeRegressionInf::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		this->autoFPSto();
+	}
+}
+
+void _CaffeRegressionInf::inference()
 {
 	Caffe::set_mode(Caffe::GPU);
 
@@ -248,22 +174,7 @@ void _CaffeRegression::inference()
 	delete[] infiles;
 }
 
-vector<string> _CaffeRegression::split(string str, char c)
-{
-	vector<string> v;
-	string buf = "";
-	stringstream ss;
-
-	ss << str;
-	while (getline(ss, buf, c))
-	{
-		v.push_back(buf);
-	}
-
-	return v;
-}
-
-void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *label, int data_len)
+void _CaffeRegressionInf::readImgListToFloat(string list_path, float *data, float *label, int data_len)
 {
 	ifstream ifs;
 	string str;
@@ -276,7 +187,7 @@ void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *
 
 	while (getline(ifs, str))
 	{
-		vector<string> entry = split(str, '\t');
+		vector<string> entry = splitBy(str, '\t');
 		string fName = m_baseDir + entry[0];
 		cout << "reading: " << fName << endl;
 		cv::Mat img = cv::imread(fName);
@@ -312,7 +223,7 @@ void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *
 	}
 }
 
-void _CaffeRegression::readImgFileName(string path, string *infiles)
+void _CaffeRegressionInf::readImgFileName(string path, string *infiles)
 {
 	ifstream ifs;
 	ifs.open(path.c_str(), ios::in);
@@ -321,7 +232,7 @@ void _CaffeRegression::readImgFileName(string path, string *infiles)
 	int n = 0;
 	while (getline(ifs, str))
 	{
-		vector<string> entry = split(str, '\t');
+		vector<string> entry = splitBy(str, '\t');
 		infiles[n] = entry[0];
 		n++;
 	}
