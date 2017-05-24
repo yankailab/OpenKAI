@@ -26,5 +26,12 @@
 	"fPretrainedFile":"",
 	"fTrainImgList":"trainImgList.txt",
 	"fTestImgList":"testImgList.txt",
-	"mode":"train",
+	"dataSizeTrain":5000,
+	"dataSizeTest":5000,	
+	"infDataSize":5000,	
+	"fDeployProto":"deploy.prototxt",
+	"fInfCaffemodel":"bvlc_googlenet_iter_40000.caffemodel",
+	"fInfImgList":"infImgList.txt",
+	"infResultDir":"result/",	
+	"mode":"inference",
 }
