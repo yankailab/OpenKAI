@@ -39,6 +39,10 @@ BASE* Module::createInstance(Kiss* pK)
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);
 #endif
+#ifdef USE_CAFFE
+	ADD_MODULE(_Caffe);
+	ADD_MODULE(_CaffeRegression);
+#endif
 #ifdef USE_ZED
 	ADD_MODULE(_ZED);
 #endif

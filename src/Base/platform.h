@@ -12,6 +12,7 @@
 #include <getopt.h>
 #include <iosfwd>
 #include <iostream>
+#include <iomanip>
 #include <list>
 #include <limits.h>
 #include <memory>
@@ -20,6 +21,7 @@
 #include <netinet/tcp.h>
 #include <pthread.h>
 #include <queue>
+#include <random>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>

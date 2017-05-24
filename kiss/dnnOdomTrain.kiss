@@ -1,0 +1,30 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+}
+
+{
+	"name":"dnnGen",
+	"class":"_DNNGen_odometry",
+	"bInst":0,
+	"bLog":1,
+	"outDir":"/home/ubuntu/src/OpenKAI/",
+	"nGen":10000,
+}
+
+{
+	"name":"dnnOdomTrain",
+	"class":"_CaffeRegression",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"baseDir":"/home/ubuntu/src/OpenKAI/",
+	"fSolverProto":"solver.prototxt",
+	"fPretrainedFile":"",
+	"fTrainImgList":"trainImgList.txt",
+	"fTestImgList":"testImgList.txt",
+	"mode":"train",
+}

@@ -29,6 +29,51 @@ bool _DNNGen_odometry::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	string outDir = "";
+	int nGen = 10000;
+
+	F_INFO(pK->v("outDir", &outDir));
+	F_INFO(pK->v("nGen", &nGen));
+
+	random_device rand;
+	mt19937 mt(rand());
+	uniform_int_distribution<> rand224(0, 223);
+	uniform_int_distribution<> rand30(1, 30);
+	uniform_int_distribution<> rand256(0, 255);
+
+	string outFile = outDir + "train.txt";
+	ofstream ofs;
+	ofs.open(outFile.c_str(), ios::out);
+
+	for (int i = 0; i < nGen; i++)
+	{
+		Mat img;
+		int x, y, d, b, g, r;
+		stringstream ss;
+
+		x = rand224(mt);
+		y = rand224(mt);
+		d = rand30(mt);
+		b = rand256(mt);
+		g = rand256(mt);
+		r = rand256(mt);
+
+		img = Mat(Size(224, 224), CV_8UC3, Scalar::all(255));
+		circle(img, Point(x, y), d, Scalar(b, g, r), -1);
+
+		ss << setfill('0') << setw(6) << right << i;
+		ofs << ss.str() << ".png" << "\t" << x << "\t" << y << "\t" << d << "\t" << b << "\t" << g << "\t" << r << endl;
+
+		imwrite(outDir + ss.str() + ".png", img);
+
+		LOG_I("Generated: "<<i);
+
+//		waitKey(30);
+	}
+
+	ofs.close();
+	exit(0);
+
 	return true;
 }
 
@@ -52,7 +97,7 @@ bool _DNNGen_odometry::link(void)
 
 bool _DNNGen_odometry::start(void)
 {
-	m_bThreadON = true;
+	m_bThreadON = false;//true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{

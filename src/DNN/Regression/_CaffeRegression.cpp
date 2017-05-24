@@ -13,9 +13,8 @@ namespace kai
 {
 _CaffeRegression::_CaffeRegression()
 {
-	m_presetDir = "";
+	m_baseDir = "";
 	m_fSolverProto = "";
-	m_fDeployProto = "";
 	m_fPretrainedCaffemodel = "";
 	m_fTrainImgList = "";
 	m_fTestImgList = "";
@@ -24,6 +23,7 @@ _CaffeRegression::_CaffeRegression()
 	m_height = 224;
 	m_nChannel = 3;
 	m_targetDim = 6;
+	m_meanCol.init();
 
 	m_layerInTrain = "data";
 	m_layerInTest = "data";
@@ -32,6 +32,17 @@ _CaffeRegression::_CaffeRegression()
 
 	m_dataSizeTrain = 1000;
 	m_dataSizeTest = 1000;
+
+	m_infBatchSize = 10;
+	m_infDataSize = 1000;
+	m_batchIter = m_infDataSize / m_infBatchSize;
+
+	m_fDeployProto = "";
+	m_fInfCaffemodel = "";
+	m_fInfImgList = "";
+	m_infLayerInput = "data";
+
+	m_mode = "";
 
 }
 
@@ -45,9 +56,11 @@ bool _CaffeRegression::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,presetDir);
+	KISSm(pK,mode);
+	KISSm(pK,baseDir);
+
+	//train
 	KISSm(pK,fSolverProto);
-	KISSm(pK,fDeployProto);
 	KISSm(pK,fPretrainedCaffemodel);
 	KISSm(pK,fTrainImgList);
 	KISSm(pK,fTestImgList);
@@ -65,101 +78,51 @@ bool _CaffeRegression::init(void* pKiss)
 	KISSm(pK,dataSizeTrain);
 	KISSm(pK,dataSizeTest);
 
+	//inference
+	KISSm(pK,fDeployProto);
+	KISSm(pK,fDeployProto);
+	KISSm(pK,fInfCaffemodel);
+	KISSm(pK,fInfImgList);
+
+	KISSm(pK,infBatchSize);
+	KISSm(pK,infDataSize);
+	KISSm(pK,infLayerInput);
+
+	//common
+	m_fSolverProto = m_baseDir + m_fSolverProto;
+	m_fPretrainedCaffemodel = m_baseDir + m_fPretrainedCaffemodel;
+	m_fTrainImgList = m_baseDir + m_fTrainImgList;
+	m_fTestImgList = m_baseDir + m_fTestImgList;
+
+	m_fDeployProto = m_baseDir + m_fDeployProto;
+	m_fInfCaffemodel = m_baseDir + m_fInfCaffemodel;
+	m_fInfImgList = m_baseDir + m_fInfImgList;
+
+	int pMeanCol[3];
+	if(pK->array("meanCol", pMeanCol, 3))
+	{
+		m_meanCol.x = pMeanCol[0];
+		m_meanCol.y = pMeanCol[1];
+		m_meanCol.z = pMeanCol[2];
+	}
+
+	if(m_mode == "train")
+	{
+		train();
+	}
+	else if(m_mode == "inference")
+	{
+		inference();
+	}
+
+	exit(0);
 	return true;
 }
 
-void _CaffeRegression::setModeGPU(void)
+void _CaffeRegression::train()
 {
-#ifdef CPU_ONLY
-	Caffe::set_mode(Caffe::CPU);
-#else
 	Caffe::set_mode(Caffe::GPU);
-#endif
-}
 
-vector<string> _CaffeRegression::split(string str, char c)
-{
-	vector<string> v;
-	string buf = "";
-	stringstream ss;
-
-	ss << str;
-	while (getline(ss, buf, c))
-	{
-		v.push_back(buf);
-	}
-
-	return v;
-}
-
-void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *label, int data_len)
-{
-	ifstream ifs;
-	string str;
-	int n = 0;
-	ifs.open(list_path.c_str(), std::ios::in);
-	if (!ifs)
-	{
-		LOG(INFO)<< "cannot open " << list_path; return;
-	}
-
-//	float mean[m_nChannel] = { 104, 117, 123 };
-
-	while (getline(ifs, str))
-	{
-		vector<string> entry = split(str, '\t');
-		cout << "reading: " << entry[0] << endl;
-		cv::Mat img = cv::imread(entry[0]);
-		cv::Mat resized_img;
-		cv::resize(img, resized_img, cv::Size(m_width, m_height));
-		for (int y = 0; y < m_height; y++)
-		{
-			for (int x = 0; x < m_width; x++)
-			{
-				data[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 0
-						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 0];
-//						- mean[0];
-				data[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 1
-						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 1];
-//						- mean[1];
-				data[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 2
-						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 2];
-//						- mean[2];
-			}
-		}
-		for (int i = 0; i < m_targetDim; i++)
-		{
-			label[n * m_targetDim + i] = stof(entry[i + 1]) / 256.0;
-		}
-		n++;
-	}
-}
-
-void _CaffeRegression::readImgFileName(string path, string *infiles)
-{
-	ifstream ifs;
-	ifs.open(path.c_str(), ios::in);
-	string str;
-
-	int n = 0;
-	while (getline(ifs, str))
-	{
-		vector<string> entry = split(str, '\t');
-		infiles[n] = entry[0];
-		n++;
-	}
-
-	ifs.close();
-}
-
-void _CaffeRegression::run_googlenet_train()
-{
 	SolverParameter solver_param;
 	ReadProtoFromTextFileOrDie(m_fSolverProto.c_str(), &solver_param);
 	std::shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
@@ -208,51 +171,45 @@ void _CaffeRegression::run_googlenet_train()
 	delete[] pDummtDataTest;
 }
 
-void _CaffeRegression::run_googlenet_test()
+void _CaffeRegression::inference()
 {
-	int batch_size = 10;
-	int test_data_size = 1000;
-	int batch_iter = test_data_size / batch_size;
-	int test_input_num = 2;
+	Caffe::set_mode(Caffe::GPU);
 
-	string *infiles = new string[test_data_size];
-	ofstream ofs;
-	ofs.open("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\result.txt", ios::out);
-	readImgFileName("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt", infiles);
+	m_batchIter = m_infDataSize / m_infBatchSize;
 
-	float *test_input_data;
-	float *test_label;
-	test_input_data = new float[test_data_size * m_height * m_width * m_nChannel];
-	test_label = new float[test_data_size * m_targetDim];
+	string *infiles = new string[m_infDataSize];
+	readImgFileName(m_fInfImgList.c_str(), infiles);
+//	ofstream ofs;
+//	ofs.open("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\result.txt", ios::out);
 
-	Net<float> test_net("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\deploy.prototxt", TEST);
-	test_net.CopyTrainedLayersFrom("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\snapshot\\bvlc_googlenet_iter_80000.caffemodel");
+	float* pInfData = new float[m_infDataSize * m_height * m_width * m_nChannel];
+	float* pInfLabel = new float[m_infDataSize * m_targetDim];
 
-	readImgListToFloat("G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\test.txt", test_input_data, test_label, test_data_size);
+	Net<float> infNet(m_fDeployProto.c_str(), TEST);
+	infNet.CopyTrainedLayersFrom(m_fInfCaffemodel.c_str());
 
-	const auto input_test_layer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(test_net.layer_by_name("data"));
-	float *test_dummy = new float[test_data_size];
-	for (int i = 0; i < test_data_size; i++)
-		test_dummy[i] = 0.0f;
+	readImgListToFloat(m_fInfImgList.c_str(), pInfData, pInfLabel, m_infDataSize);
 
-	cv::Mat oimg;
-	cv::Mat resized_oimg;
+	const auto pInfInputlayer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(infNet.layer_by_name(m_infLayerInput.c_str()));
+	float *pInfDummy = new float[m_infDataSize];
+	for (int i = 0; i < m_infDataSize; i++)
+		pInfDummy[i] = 0.0f;
 
-	for (int batch = 0; batch < batch_iter; batch++)
+	cv::Mat oImg;
+	cv::Mat resizedOimg;
+
+	for (int iBatch = 0; iBatch < m_batchIter; iBatch++)
 	{
-		input_test_layer->Reset(
-				(float*) test_input_data
-						+ batch * m_width * m_height * m_nChannel * batch_size,
-				test_dummy + batch * batch_size, batch_size);
-		const auto result = test_net.Forward();
+		pInfInputlayer->Reset((float*) pInfData + iBatch * m_width * m_height * m_nChannel * m_infBatchSize,
+				pInfDummy + iBatch * m_infBatchSize, m_infBatchSize);
+		const auto result = infNet.Forward();
 
 		const auto data = result[1]->cpu_data();
-		for (int i = 0; i < batch_size; i++)
+		for (int i = 0; i < m_infBatchSize; i++)
 		{
-			int total_id = batch * batch_size + i;
-			oimg = cv::imread(infiles[total_id]);
-			resized_oimg;
-			cv::resize(oimg, resized_oimg, cv::Size(m_width, m_height));
+			int totalID = iBatch * m_infBatchSize + i;
+			oImg = imread(infiles[totalID]);
+			cv::resize(oImg, resizedOimg, cv::Size(m_width, m_height));
 
 			int *val = new int(m_targetDim);
 			for (int j = 0; j < m_targetDim; j++)
@@ -267,29 +224,101 @@ void _CaffeRegression::run_googlenet_test()
 				if (j >= 3 && val[j] > 255)
 					val[j] = 255;
 			}
-			cv::circle(resized_oimg, cv::Point(val[0], val[1]), val[2],
-					cv::Scalar(val[3], val[4], val[5]), 3);
+
+			circle(resizedOimg, cv::Point(val[0], val[1]), val[2], cv::Scalar(val[3], val[4], val[5]), 3);
 
 			stringstream ofname;
-			ofname
-					<< "G:\\Projects\\roundRegression\\caffe-master\\roundRegression\\output_img\\"
-					<< setw(5) << setfill('0') << i2str(total_id) << ".png";
-			cv::imwrite(ofname.str(), resized_oimg);
+			ofname	<< m_infResultDir << setw(5) << setfill('0') << i2str(totalID) << ".png";
+			imwrite(ofname.str(), resizedOimg);
 		}
 	}
 
-	ofs.close();
-	oimg.release();
-	resized_oimg.release();
-	delete[] test_input_data;
-	test_input_data = 0;
-	delete[] test_label;
-	test_label = 0;
-	delete[] test_dummy;
-	test_dummy = 0;
+	oImg.release();
+	resizedOimg.release();
+	delete[] pInfData;
+	delete[] pInfLabel;
+	delete[] pInfDummy;
 	delete[] infiles;
-	infiles = 0;
 }
+
+vector<string> _CaffeRegression::split(string str, char c)
+{
+	vector<string> v;
+	string buf = "";
+	stringstream ss;
+
+	ss << str;
+	while (getline(ss, buf, c))
+	{
+		v.push_back(buf);
+	}
+
+	return v;
+}
+
+void _CaffeRegression::readImgListToFloat(string list_path, float *data, float *label, int data_len)
+{
+	ifstream ifs;
+	string str;
+	int n = 0;
+	ifs.open(list_path.c_str(), std::ios::in);
+	if (!ifs)
+	{
+		LOG(INFO)<< "cannot open " << list_path; return;
+	}
+
+	while (getline(ifs, str))
+	{
+		vector<string> entry = split(str, '\t');
+		cout << "reading: " << entry[0] << endl;
+		cv::Mat img = cv::imread(entry[0]);
+		cv::Mat resized_img;
+		cv::resize(img, resized_img, cv::Size(m_width, m_height));
+		for (int y = 0; y < m_height; y++)
+		{
+			for (int x = 0; x < m_width; x++)
+			{
+				data[y * resized_img.cols + x
+						+ resized_img.cols * resized_img.rows * 0
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 0] - m_meanCol.x;
+
+				data[y * resized_img.cols + x
+						+ resized_img.cols * resized_img.rows * 1
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 1] - m_meanCol.y;
+
+				data[y * resized_img.cols + x
+						+ resized_img.cols * resized_img.rows * 2
+						+ m_width * m_height * m_nChannel * n] = resized_img.data[y
+						* resized_img.step + x * resized_img.elemSize() + 2] - m_meanCol.z;
+			}
+		}
+		for (int i = 0; i < m_targetDim; i++)
+		{
+			label[n * m_targetDim + i] = stof(entry[i + 1]) / 256.0;
+		}
+		n++;
+	}
+}
+
+void _CaffeRegression::readImgFileName(string path, string *infiles)
+{
+	ifstream ifs;
+	ifs.open(path.c_str(), ios::in);
+	string str;
+
+	int n = 0;
+	while (getline(ifs, str))
+	{
+		vector<string> entry = split(str, '\t');
+		infiles[n] = entry[0];
+		n++;
+	}
+
+	ifs.close();
+}
+
 
 }
 

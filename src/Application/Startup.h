@@ -39,7 +39,7 @@ public:
 	int 	m_nMouse;
 	BASE* 	m_pMouse[N_INST];
 
-	string	m_name;
+	string	m_appName;
 	int		m_key;
 	bool	m_bRun;
 	bool	m_bWindow;

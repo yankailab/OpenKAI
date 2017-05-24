@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_Odometry__DNNodometryTrain_H_
-#define OPENKAI_SRC_Odometry__DNNodometryTrain_H_
+#ifndef OPENKAI_SRC_Odometry__DNNGen_odometry_H_
+#define OPENKAI_SRC_Odometry__DNNGen_odometry_H_
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ThreadBase.h"

@@ -22,7 +22,7 @@ _Caffe::~_Caffe()
 {
 }
 
-bool _Caffe::init(JSON* pJson)
+bool _Caffe::init(void* pKiss)
 {
 	//Setup Caffe Classifier
 	string caffeDir = "";

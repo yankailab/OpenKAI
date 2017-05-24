@@ -26,7 +26,7 @@ Startup::Startup()
 	m_nInst = 0;
 	m_nMouse = 0;
 
-	m_name = "";
+	m_appName = "";
 	m_bWindow = true;
 	m_waitKey = 50;
 	m_bRun = true;
@@ -41,7 +41,7 @@ Startup::~Startup()
 
 string* Startup::getName(void)
 {
-	return &m_name;
+	return &m_appName;
 }
 
 bool Startup::start(Kiss* pKiss)
@@ -49,21 +49,20 @@ bool Startup::start(Kiss* pKiss)
 	g_pStartup = this;
 	signal(SIGINT, signalHandler);
 
-	int i;
 	NULL_F(pKiss);
 	Kiss* pApp = pKiss->root()->o("APP");
-	if (pApp->empty())
-		return false;
+	IF_F(pApp->empty());
 
-	F_INFO(pApp->v("appName", &m_name));
-	F_INFO(pApp->v("bWindow", &m_bWindow));
-	F_INFO(pApp->v("waitKey", &m_waitKey));
-	F_INFO(pApp->v("winMouse", &m_winMouse));
+	KISSm(pApp,appName);
+	KISSm(pApp,bWindow);
+	KISSm(pApp,waitKey);
+	KISSm(pApp,winMouse);
 
 	//create instances
 	F_FATAL_F(createAllInst(pKiss));
 
 	//link instances with each other
+	int i;
 	for (i = 0; i < m_nInst; i++)
 	{
 		F_FATAL_F(m_pInst[i]->link());
