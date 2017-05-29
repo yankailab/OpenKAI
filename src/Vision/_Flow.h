@@ -25,11 +25,11 @@ public:
 	bool link(void);
 	bool start(void);
 
+	bool addFrame(bool bFrame, Frame* pGray);
+	GpuMat* flowMat(void);
+
 private:
-	inline bool isFlowCorrect(Point2f u);
-	Vec3b computeColor(float fx, float fy);
-	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
-	void generateFlowMap(const GpuMat& d_flow);
+//	void generateFlowMap(const GpuMat& d_flow);
 
 	void detect(void);
 	void update(void);
@@ -42,7 +42,7 @@ private:
 public:
 	int	m_width;
 	int m_height;
-	_VisionBase*					m_pStream;
+	_VisionBase*					m_pVision;
 	FrameGroup*						m_pGrayFrames;
 
 #ifndef USE_OPENCV4TEGRA
@@ -50,18 +50,7 @@ public:
 #else
 	Ptr<DenseOpticalFlowExt> m_pFarn;
 #endif
-	GpuMat							m_GFlowMat;
-	GpuMat							m_GDMat;
-
-	int	m_bDepth;
-	double	m_flowMax;
-	double	m_flowAvr; //average flow distance in previous frame
-	Frame* m_pDepth;
-
-//	Mat m_labelColor;
-//	Ptr<LookUpTable>	m_pGpuLUT;
-
-
+	GpuMat							m_gFlow;
 
 };
 

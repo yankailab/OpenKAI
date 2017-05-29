@@ -35,6 +35,7 @@ public:
 	bool start(void);
 
 	bool addImg(cv::Mat& img);
+	double* getOutput(void);
 	void reset(void);
 
 private:
@@ -53,7 +54,7 @@ private:
 	int m_width;
 	int m_height;
 	int m_nChannel;
-	int m_targetDim;
+	int m_outputDim;
 	vInt3 m_meanCol;
 
 	int m_batchSize;

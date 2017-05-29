@@ -17,7 +17,7 @@ _CaffeRegressionTrain::_CaffeRegressionTrain()
 	m_width = 224;
 	m_height = 224;
 	m_nChannel = 3;
-	m_targetDim = 6;
+	m_outputDim = 6;
 	m_meanCol.init();
 
 	m_fSolverProto = "";
@@ -64,7 +64,7 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 	KISSm(pK,width);
 	KISSm(pK,height);
 	KISSm(pK,nChannel);
-	KISSm(pK,targetDim);
+	KISSm(pK,outputDim);
 
 	KISSm(pK,layerInTrain);
 	KISSm(pK,layerInTest);
@@ -130,9 +130,9 @@ void _CaffeRegressionTrain::train()
 
 	//read data
 	float* pDataInTrain = new float[m_dataSizeTrain * m_height * m_width * m_nChannel];
-	float* pLabelTrain = new float[m_dataSizeTrain * m_targetDim];
+	float* pLabelTrain = new float[m_dataSizeTrain * m_outputDim];
 	float* pDataInTest = new float[m_dataSizeTest * m_height * m_width * m_nChannel];
-	float* pLabelTest = new float[m_dataSizeTest * m_targetDim];
+	float* pLabelTest = new float[m_dataSizeTest * m_outputDim];
 
 	int nImgTrain = readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain);
 	int nImgTest = readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest);
@@ -196,7 +196,7 @@ void _CaffeRegressionTrain::inference()
 	readImgFileName(m_fInfImgList.c_str(), infiles);
 
 	float* pInfData = new float[m_infDataSize * m_height * m_width * m_nChannel];
-	float* pInfLabel = new float[m_infDataSize * m_targetDim];
+	float* pInfLabel = new float[m_infDataSize * m_outputDim];
 
 	int nImgInf = readImgListToFloat(m_fInfImgList.c_str(), pInfData, pInfLabel);
 	if(nImgInf > m_infDataSize)
@@ -231,10 +231,10 @@ void _CaffeRegressionTrain::inference()
 			oImg = imread(fName);
 			cv::resize(oImg, resizedOimg, cv::Size(m_width, m_height));
 
-			int *pVal = new int(m_targetDim);
-			for (int j = 0; j < m_targetDim; j++)
+			int *pVal = new int(m_outputDim);
+			for (int j = 0; j < m_outputDim; j++)
 			{
-				pVal[j] = (int) (pResultData[i * m_targetDim + j] * 256);	//256 for normalization from int to float
+				pVal[j] = (int) (pResultData[i * m_outputDim + j] * 256);	//256 for normalization from int to float
 
 				if (pVal[j] < 0)
 					pVal[j] = 0;
@@ -308,9 +308,9 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 			}
 		}
 
-		for (int i = 0; i < m_targetDim; i++)
+		for (int i = 0; i < m_outputDim; i++)
 		{
-			pLabel[nImg * m_targetDim + i] = stof(entry[i + 1]) / 256.0;
+			pLabel[nImg * m_outputDim + i] = stof(entry[i + 1]) / 256.0;
 		}
 
 		nImg++;

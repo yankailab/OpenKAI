@@ -92,9 +92,9 @@ void _3DFlow::findDepth(void)
 	double flowTot, newMax;
 
 	if(m_pDF == NULL)return;
-	if(m_pDF->m_GFlowMat.empty())return;
+	if(m_pDF->m_gFlow.empty())return;
 
-	m_pDF->m_GFlowMat.download(flowMat);//m_cFlowMat;
+	m_pDF->m_gFlow.download(flowMat);//m_cFlowMat;
 	if(flowMat.empty())return;
 
 	if(flowMat.size() != depthMat.size())
@@ -147,7 +147,7 @@ void _3DFlow::findDepthGPU(void)
 	GpuMat segGMat;
 
 	if(m_pDF == NULL)return;
-	pDFGmat = &m_pDF->m_GFlowMat;
+	pDFGmat = &m_pDF->m_gFlow;
 	if(pDFGmat->empty())return;
 
 	cuda::split(*pDFGmat, pFlowGMat);

@@ -10,7 +10,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ThreadBase.h"
-#include "../../Detector/_ImageNet.h"
 #include "../../../Vision/_ZED.h"
 #include "../../../Vision/_Flow.h"
 #include "../../../Utility/util.h"
@@ -30,6 +29,7 @@ public:
 	bool draw(void);
 
 private:
+	void sample(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -39,10 +39,22 @@ private:
 
 public:
 	_ZED* m_pZED;
-	_ImageNet* m_pIN;
-	vDouble3	m_attiRad;	//yaw, pitch, roll, heading
+	Frame* m_pFrameA;
+	Frame* m_pFrameB;
 
-	uint64_t	m_tNow;
+	_Flow* m_pFlow;
+
+	int m_width;
+	int m_height;
+	double	m_zedMinConfidence;
+	double	m_dTfrom;
+	double	m_dTto;
+
+	int			m_nGen;
+	int			m_iGen;
+	string 		m_outDir;
+	ofstream	m_ofs;
+
 };
 
 }

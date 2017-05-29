@@ -17,7 +17,7 @@ _CaffeRegressionInf::_CaffeRegressionInf()
 	m_width = 224;
 	m_height = 224;
 	m_nChannel = 3;
-	m_targetDim = 6;
+	m_outputDim = 6;
 	m_meanCol.init();
 
 	m_batchSize = 1;
@@ -53,7 +53,7 @@ bool _CaffeRegressionInf::init(void* pKiss)
 	KISSm(pK, width);
 	KISSm(pK, height);
 	KISSm(pK, nChannel);
-	KISSm(pK, targetDim);
+	KISSm(pK, outputDim);
 
 	KISSm(pK, fDeployProto);
 	KISSm(pK, fDeployProto);
@@ -116,7 +116,7 @@ void _CaffeRegressionInf::update(void)
 	for (int i = 0; i < m_dataSize; i++)
 		m_pDummy[i] = 0.0f;
 	m_batchIter = m_dataSize / m_batchSize;
-	m_pOutput = new double[m_targetDim];
+	m_pOutput = new double[m_dataSize * m_outputDim];
 
 	//start update loop
 	while (m_bThreadON)
@@ -137,11 +137,11 @@ void _CaffeRegressionInf::update(void)
 
 			for (int i = 0; i < m_batchSize; i++)
 			{
-				int totalID = iBatch * m_batchSize + i;
+				int iOutput = iBatch * m_batchSize + i * m_outputDim;
 
-				for (int j = 0; j < m_targetDim; j++)
+				for (int j = 0; j < m_outputDim; j++)
 				{
-					m_pOutput[j] = (double) (pResultData[i * m_targetDim + j]);
+					m_pOutput[iOutput + j] = (double) (pResultData[i * m_outputDim + j]);
 				}
 			}
 		}
@@ -164,16 +164,19 @@ bool _CaffeRegressionInf::addImg(cv::Mat& img)
 		for (int x = 0; x < m_width; x++)
 		{
 			m_pData[y * rImg.cols + x + rImg.cols * rImg.rows * 0
-					+ m_width * m_height * m_nChannel * m_iImg] = rImg.data[y
-					* rImg.step + x * rImg.elemSize() + 0] - m_meanCol.x;
+					+ m_width * m_height * m_nChannel * m_iImg]
+					=
+					rImg.data[y * rImg.step + x * rImg.elemSize() + 0] - m_meanCol.x;
 
 			m_pData[y * rImg.cols + x + rImg.cols * rImg.rows * 1
-					+ m_width * m_height * m_nChannel * m_iImg] = rImg.data[y
-					* rImg.step + x * rImg.elemSize() + 1] - m_meanCol.y;
+					+ m_width * m_height * m_nChannel * m_iImg]
+					=
+					rImg.data[y * rImg.step + x * rImg.elemSize() + 1] - m_meanCol.y;
 
 			m_pData[y * rImg.cols + x + rImg.cols * rImg.rows * 2
-					+ m_width * m_height * m_nChannel * m_iImg] = rImg.data[y
-					* rImg.step + x * rImg.elemSize() + 2] - m_meanCol.z;
+					+ m_width * m_height * m_nChannel * m_iImg]
+					=
+					rImg.data[y * rImg.step + x * rImg.elemSize() + 2] - m_meanCol.z;
 		}
 	}
 
@@ -185,8 +188,13 @@ bool _CaffeRegressionInf::addImg(cv::Mat& img)
 void _CaffeRegressionInf::reset(void)
 {
 	m_iImg = 0;
-
 }
+
+double* _CaffeRegressionInf::getOutput(void)
+{
+	return m_pOutput;
+}
+
 
 }
 
