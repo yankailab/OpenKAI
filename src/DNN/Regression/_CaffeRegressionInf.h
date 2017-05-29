@@ -34,10 +34,10 @@ public:
 	bool link(void);
 	bool start(void);
 
+	bool addImg(cv::Mat& img);
+	void reset(void);
+
 private:
-	void inference();
-	void readImgListToFloat(string list_path, float *data, float *label, int data_len);
-	void readImgFileName(string path, string *infiles);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -45,22 +45,26 @@ private:
 		return NULL;
 	}
 
+	string m_baseDir;
+	string m_fDeployProto;
+	string m_fInfCaffemodel;
+	string m_infLayerInput;
+
 	int m_width;
 	int m_height;
 	int m_nChannel;
 	int m_targetDim;
 	vInt3 m_meanCol;
 
-	int m_infBatchSize;
-	int m_infDataSize;
+	int m_batchSize;
+	int m_dataSize;
 	int m_batchIter;
 
-	string m_baseDir;
-	string m_fDeployProto;
-	string m_fInfCaffemodel;
-	string m_fInfImgList;
-	string m_infResultDir;
-	string m_infLayerInput;
+	float* m_pData;
+	float* m_pDummy;
+
+	double* m_pOutput;
+	int		m_iImg;
 
 };
 }

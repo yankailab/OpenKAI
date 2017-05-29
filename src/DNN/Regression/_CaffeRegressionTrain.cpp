@@ -14,16 +14,16 @@ namespace kai
 _CaffeRegressionTrain::_CaffeRegressionTrain()
 {
 	m_baseDir = "";
-	m_fSolverProto = "";
-	m_fPretrainedCaffemodel = "";
-	m_fTrainImgList = "";
-	m_fTestImgList = "";
-
 	m_width = 224;
 	m_height = 224;
 	m_nChannel = 3;
 	m_targetDim = 6;
 	m_meanCol.init();
+
+	m_fSolverProto = "";
+	m_fPretrainedCaffemodel = "";
+	m_fTrainImgList = "";
+	m_fTestImgList = "";
 
 	m_layerInTrain = "data";
 	m_layerInTest = "data";
@@ -32,6 +32,16 @@ _CaffeRegressionTrain::_CaffeRegressionTrain()
 
 	m_dataSizeTrain = 1000;
 	m_dataSizeTest = 1000;
+
+	m_infBatchSize = 1;
+	m_infDataSize = 1000;
+	m_infBatchIter = m_infDataSize / m_infBatchSize;
+
+	m_fDeployProto = "";
+	m_fInfCaffemodel = "";
+	m_fInfImgList = "";
+	m_infResultDir = "result";
+	m_infLayerInput = "data";
 }
 
 _CaffeRegressionTrain::~_CaffeRegressionTrain()
@@ -45,6 +55,7 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,baseDir);
+
 	KISSm(pK,fSolverProto);
 	KISSm(pK,fPretrainedCaffemodel);
 	KISSm(pK,fTrainImgList);
@@ -71,6 +82,20 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 		m_fPretrainedCaffemodel = m_baseDir + m_fPretrainedCaffemodel;
 	}
 
+	KISSm(pK,fDeployProto);
+	KISSm(pK,fDeployProto);
+	KISSm(pK,fInfCaffemodel);
+	KISSm(pK,fInfImgList);
+	KISSm(pK,infResultDir);
+
+	KISSm(pK,infBatchSize);
+	KISSm(pK,infDataSize);
+	KISSm(pK,infLayerInput);
+
+	m_fDeployProto = m_baseDir + m_fDeployProto;
+	m_fInfCaffemodel = m_baseDir + m_fInfCaffemodel;
+	m_fInfImgList = m_baseDir + m_fInfImgList;
+
 	int pMeanCol[3];
 	if(pK->array("meanCol", pMeanCol, 3))
 	{
@@ -89,6 +114,7 @@ void _CaffeRegressionTrain::train()
 {
 	Caffe::set_mode(Caffe::GPU);
 
+	//read prototxt
 	SolverParameter solver_param;
 	ReadProtoFromTextFileOrDie(m_fSolverProto.c_str(), &solver_param);
 	std::shared_ptr<Solver<float>> solver(SolverRegistry<float>::CreateSolver(solver_param));
@@ -102,16 +128,26 @@ void _CaffeRegressionTrain::train()
 		pTestNet[0]->CopyTrainedLayersFrom(m_fPretrainedCaffemodel.c_str());
 	}
 
+	//read data
 	float* pDataInTrain = new float[m_dataSizeTrain * m_height * m_width * m_nChannel];
 	float* pLabelTrain = new float[m_dataSizeTrain * m_targetDim];
 	float* pDataInTest = new float[m_dataSizeTest * m_height * m_width * m_nChannel];
 	float* pLabelTest = new float[m_dataSizeTest * m_targetDim];
 
-	readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain);
-	readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest);
+	int nImgTrain = readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain);
+	int nImgTest = readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest);
 
-	const auto pLayerInTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerInTrain.c_str()));
-	const auto pLayerInTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerInTest.c_str()));
+	if(nImgTrain > m_dataSizeTrain)
+	{
+		LOG_E("nImgTrain > m_dataSizeTrain");
+		return;
+	}
+
+	if(nImgTest > m_dataSizeTest)
+	{
+		LOG_E("nImgTest > m_dataSizeTest");
+		return;
+	}
 
 	float* pDummyDataTrain = new float[m_dataSizeTrain];
 	float* pDummtDataTest = new float[m_dataSizeTest];
@@ -119,6 +155,10 @@ void _CaffeRegressionTrain::train()
 		pDummyDataTrain[i] = 0;
 	for (int i = 0; i < m_dataSizeTest; i++)
 		pDummtDataTest[i] = 0;
+
+	//reset layers
+	const auto pLayerInTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerInTrain.c_str()));
+	const auto pLayerInTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerInTest.c_str()));
 
 	pLayerInTrain->Reset((float*) pDataInTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
 	pLayerInTest->Reset((float*) pDataInTest, (float*) pDummtDataTest, m_dataSizeTest);
@@ -129,15 +169,101 @@ void _CaffeRegressionTrain::train()
 	pLayerLabelTrain->Reset((float*) pLabelTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
 	pLayerLabelTest->Reset((float*) pLabelTest, (float*) pDummtDataTest, m_dataSizeTest);
 
+	//start solve
 	LOG_I("Solve start");
 	solver->Solve();
 
+	//complete
 	delete[] pDataInTrain;
 	delete[] pLabelTrain;
 	delete[] pDummyDataTrain;
 	delete[] pDataInTest;
 	delete[] pLabelTest;
 	delete[] pDummtDataTest;
+}
+
+void _CaffeRegressionTrain::inference()
+{
+	Caffe::set_mode(Caffe::GPU);
+
+	//read net and layer
+	Net<float> infNet(m_fDeployProto.c_str(), TEST);
+	infNet.CopyTrainedLayersFrom(m_fInfCaffemodel.c_str());
+	const auto pInfInputlayer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(infNet.layer_by_name(m_infLayerInput.c_str()));
+
+	//read into buf
+	string *infiles = new string[m_infDataSize];
+	readImgFileName(m_fInfImgList.c_str(), infiles);
+
+	float* pInfData = new float[m_infDataSize * m_height * m_width * m_nChannel];
+	float* pInfLabel = new float[m_infDataSize * m_targetDim];
+
+	int nImgInf = readImgListToFloat(m_fInfImgList.c_str(), pInfData, pInfLabel);
+	if(nImgInf > m_infDataSize)
+	{
+		LOG_E("nImgInf > m_infDataSize");
+		return;
+	}
+
+	float *pInfDummy = new float[m_infDataSize];
+	for (int i = 0; i < m_infDataSize; i++)
+		pInfDummy[i] = 0.0f;
+
+	//start inference
+	m_infBatchIter = m_infDataSize / m_infBatchSize;
+	cv::Mat oImg;
+	cv::Mat resizedOimg;
+
+	for (int iBatch = 0; iBatch < m_infBatchIter; iBatch++)
+	{
+		pInfInputlayer->Reset(
+				(float*) pInfData + iBatch * m_width * m_height * m_nChannel * m_infBatchSize,
+				pInfDummy + iBatch * m_infBatchSize,
+				m_infBatchSize);
+
+		const auto pResult = infNet.Forward();
+		const auto pResultData = pResult[1]->cpu_data();
+
+		for (int i = 0; i < m_infBatchSize; i++)
+		{
+			int totalID = iBatch * m_infBatchSize + i;
+			string fName = m_baseDir + infiles[totalID];
+			oImg = imread(fName);
+			cv::resize(oImg, resizedOimg, cv::Size(m_width, m_height));
+
+			int *pVal = new int(m_targetDim);
+			for (int j = 0; j < m_targetDim; j++)
+			{
+				pVal[j] = (int) (pResultData[i * m_targetDim + j] * 256);	//256 for normalization from int to float
+
+				if (pVal[j] < 0)
+					pVal[j] = 0;
+
+				if (j == 0 && pVal[j] > m_width)
+					pVal[j] = m_width - 1;
+
+				if (j == 1 && pVal[j] > m_height)
+					pVal[j] = m_height - 1;
+
+				if (j >= 3 && pVal[j] > 255)
+					pVal[j] = 255;
+			}
+
+			circle(resizedOimg, cv::Point(pVal[0], pVal[1]), pVal[2], cv::Scalar(pVal[3], pVal[4], pVal[5]), 3);
+
+			stringstream ofname;
+			ofname	<< m_baseDir << m_infResultDir << setw(5) << setfill('0') << i2str(totalID) << ".png";
+			imwrite(ofname.str(), resizedOimg);
+		}
+	}
+
+	oImg.release();
+	resizedOimg.release();
+
+	delete[] pInfData;
+	delete[] pInfLabel;
+	delete[] pInfDummy;
+	delete[] infiles;
 }
 
 int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, float *pLabel)
@@ -191,6 +317,23 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 	}
 
 	return nImg;
+}
+
+void _CaffeRegressionTrain::readImgFileName(string path, string *infiles)
+{
+	ifstream ifs;
+	ifs.open(path.c_str(), ios::in);
+	string str;
+
+	int n = 0;
+	while (getline(ifs, str))
+	{
+		vector<string> entry = splitBy(str, '\t');
+		infiles[n] = entry[0];
+		n++;
+	}
+
+	ifs.close();
 }
 
 }
