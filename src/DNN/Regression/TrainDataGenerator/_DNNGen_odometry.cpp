@@ -16,16 +16,15 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_pZED = NULL;
 	m_nGen = 0;
 	m_iGen = 0;
+	m_dMinTot = 0;
 	m_outDir = "";
-	m_width = 224;
-	m_height = 224;
 
-	m_zedMinConfidence = 0.0;
-	m_dTfrom = 0.0;
-	m_dTto = USEC_1SEC;
+	m_zedMinConfidence = 0;
+	m_uDelay = 0;
 
 	m_pFrameA = NULL;
 	m_pFrameB = NULL;
+	m_bCrop = false;
 }
 
 _DNNGen_odometry::~_DNNGen_odometry()
@@ -40,6 +39,17 @@ bool _DNNGen_odometry::init(void* pKiss)
 
 	KISSm(pK,outDir);
 	KISSm(pK,nGen);
+	KISSm(pK,uDelay);
+	KISSm(pK,zedMinConfidence);
+	KISSm(pK,dMinTot);
+	KISSm(pK,bCrop);
+	if (m_bCrop != 0)
+	{
+		F_INFO(pK->v("cropX", &m_cropBB.x));
+		F_INFO(pK->v("cropY", &m_cropBB.y));
+		F_INFO(pK->v("cropW", &m_cropBB.width));
+		F_INFO(pK->v("cropH", &m_cropBB.height));
+	}
 
 	string outFile = m_outDir + "dnnOdomTrainList.txt";
 	m_ofs.open(outFile.c_str(), ios::out);
@@ -90,12 +100,10 @@ void _DNNGen_odometry::update(void)
 		if(m_iGen >= m_nGen)
 		{
 			m_ofs.close();
-			return;
+			exit(0);
 		}
 
 		sample();
-
-		LOG_I("Generated: "<< m_iGen);
 
 		this->autoFPSto();
 	}
@@ -104,56 +112,69 @@ void _DNNGen_odometry::update(void)
 void _DNNGen_odometry::sample(void)
 {
 	NULL_(m_pZED);
-	NULL_(m_pFlow);
 	IF_(!m_pZED->isOpened());
+	NULL_(m_pFlow);
 
-	Mat			flowImg;
-	vDouble3	vT,vR;
+	Mat flowImg;
 	stringstream ss;
-	vT.init();
-	vR.init();
-	vDouble3 mT,mR;
+	vDouble3 vT,vR,mT,mR;
 	uint64_t dT;
-	int zedConfidence;
 
-	flowImg = Mat(Size(m_width, m_height), CV_8UC3, Scalar::all(0));
-
-	//initialize
-	zedConfidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
-
-	//get initial rgb frame
+	//initial shot
 	m_pFrameA->update(m_pZED->gray());
+	m_pZED->getMotionDelta(&mT, &mR, &dT);
 
-	//get ZED odometry
-	zedConfidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
-	IF_(zedConfidence < 0);
-	IF_(dT <= 0);
-	IF_(dT > USEC_10SEC);
+	//insert certain delay
+	if(m_uDelay > 0)
+		usleep(m_uDelay);
+
+	//second shot
+	m_pFrameB->update(m_pZED->gray());
+	int zedConfidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
+
+    //get opt flow
+	IF_(!m_pFlow->addFrame(false,m_pFrameA));
+	IF_(!m_pFlow->addFrame(true,m_pFrameB));
+
+	//check
+	IF_(zedConfidence < m_zedMinConfidence);
 
     vT.x = mT.z;	//forward
     vT.y = mT.x;	//right
     vT.z = mT.y;	//down
-    vR.x = -mR.x;  //roll
-    vR.y = -mR.z;  //pitch
-    vR.z = -mR.y;  //yaw
+    vR.x = -mR.x;	//roll
+    vR.y = -mR.z;	//pitch
+    vR.z = -mR.y;	//yaw
 
-	//get the second rgb frame and optical flow
-	m_pFrameB->update(m_pZED->gray());
+    double dTot = abs(vT.x) + abs(vT.y) + abs(vT.z) + abs(vR.x) + abs(vR.y) + abs(vR.z);
+    IF_(dTot < m_dMinTot);
 
-	m_pFlow->addFrame(false,m_pFrameA);
-	m_pFlow->addFrame(true,m_pFrameB);
+    //crop if needed
+	if(m_bCrop)
+	{
+		Mat fMat;
+		m_pFlow->flowMat()->download(fMat);
+		flowImg = Mat(fMat, m_cropBB);
+	}
+	else
+	{
+		m_pFlow->flowMat()->download(flowImg);
+	}
 
-	Mat fMat;
-	m_pFlow->flowMat()->download(fMat);
-
-	//TODO:cutout the center part of the flow
-
+	//make 3 channels
+	vector<Mat> pChannels;
+	split(flowImg, pChannels);
+	Mat bChan = Mat(Size(pChannels[0].cols, pChannels[0].rows), pChannels[0].type(), Scalar::all(0));
+	pChannels.push_back(bChan);
+	merge(pChannels, flowImg);
 
 	ss << setfill('0') << setw(10) << right << m_iGen;
 	m_ofs << ss.str() << ".png" << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
 
 	imwrite(m_outDir + ss.str() + ".png", flowImg);
+	m_iGen++;
 
+	LOG_I("Generated: "<< m_iGen);
 }
 
 bool _DNNGen_odometry::draw(void)

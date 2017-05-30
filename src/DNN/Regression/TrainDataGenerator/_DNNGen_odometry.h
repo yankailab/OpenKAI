@@ -39,21 +39,21 @@ private:
 
 public:
 	_ZED* m_pZED;
+	_Flow* m_pFlow;
 	Frame* m_pFrameA;
 	Frame* m_pFrameB;
 
-	_Flow* m_pFlow;
-
-	int m_width;
-	int m_height;
-	double	m_zedMinConfidence;
-	double	m_dTfrom;
-	double	m_dTto;
+	int	m_zedMinConfidence;
+	int	m_uDelay;
+	double	m_dMinTot;
 
 	int			m_nGen;
 	int			m_iGen;
 	string 		m_outDir;
 	ofstream	m_ofs;
+
+	bool		m_bCrop;
+	Rect		m_cropBB;
 
 };
 

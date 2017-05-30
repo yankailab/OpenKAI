@@ -51,7 +51,7 @@ bool _Flow::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase",&iName));
+	F_INFO(pK->v("_VisionBase",&iName));
 	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
@@ -59,7 +59,7 @@ bool _Flow::link(void)
 
 bool _Flow::start(void)
 {
-	NULL_F(m_pVision);
+	NULL_T(m_pVision);
 
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -122,7 +122,6 @@ bool _Flow::addFrame(bool bFrame, Frame* pGray)
 	Frame* pFrameA;
 	Frame* pFrameB;
 
-	NULL_F(m_pVision);
 	NULL_F(pGray);
 	IF_F(pGray->empty());
 
@@ -151,17 +150,16 @@ GpuMat* _Flow::flowMat(void)
 	return &m_gFlow;
 }
 
-//void _Flow::generateFlowMap(const GpuMat& d_flow)
-//{
-//	GpuMat planes[2];
-//	split(d_flow, planes);
-//
-//	Mat flowx(planes[0]);
-//	Mat flowy(planes[1]);
-//
-//	Mat out;
-////	drawOpticalFlow(flowx, flowy, out, 10);
-////	out.copyTo(m_cMat);
-//}
+bool _Flow::draw(void)
+{
+	IF_F(!this->BASE::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
 
-} /* namespace kai */
+	IF_F(m_gFlow.empty());
+	pFrame->update(&m_gFlow);
+
+	return true;
+}
+
+}

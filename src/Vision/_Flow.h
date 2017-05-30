@@ -24,6 +24,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	bool draw(void);
 
 	bool addFrame(bool bFrame, Frame* pGray);
 	GpuMat* flowMat(void);

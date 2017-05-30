@@ -17,7 +17,8 @@ Window::Window()
 	m_pF = NULL;
 	m_pF2 = NULL;
 	m_textPos.init();
-	m_textStart.init();
+	m_textStart.x = 15;
+	m_textStart.y = 15;
 	m_size.init();
 	m_bFullScreen = false;
 	m_pixTab = TAB_PIX;
