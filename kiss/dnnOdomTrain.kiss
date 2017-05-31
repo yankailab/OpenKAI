@@ -16,15 +16,6 @@
 }
 
 {
-	"name":"flowView",
-	"class":"Window",
-	"bInst":0,
-	"w":672,
-	"h":376,
-	"bFullScreen":0,
-}
-
-{
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
@@ -59,31 +50,25 @@
 }
 
 {
-	"name":"flow",
-	"class":"_Flow",
-	"bInst":1,
-	"Window":"flowView",
-	"width":1280,
-	"height":720,
-}
-
-{
 	"name":"dnnGen",
 	"class":"_DNNGen_odometry",
 	"bInst":1,
+	"FPS":30,
 	"bLog":1,
-	"_Flow":"flow",
 	"_ZED":"ZED",
 	"zedMinConfidence":50,
 	"outDir":"/home/ubuntu/src/dnnOdom/",
 	"nGen":100,
-	"uDelay":20000,
-	"dMinTot":0.0001,
-	"bCrop":0,
-	"cropX":0,
+	"dMinTot":0.00001,
+	"iStartID":100,
+	"format":".png",
+	"width":640,
+	"height":360,
+	"bCrop":1,
+	"cropX":140,
 	"cropY":0,
-	"cropW":1280,
-	"cropH":720,
+	"cropW":360,
+	"cropH":360,
 }
 
 {

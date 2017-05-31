@@ -11,7 +11,6 @@
 #include "../../../Base/common.h"
 #include "../../../Base/_ThreadBase.h"
 #include "../../../Vision/_ZED.h"
-#include "../../../Vision/_Flow.h"
 #include "../../../Utility/util.h"
 
 namespace kai
@@ -38,20 +37,24 @@ private:
 	}
 
 public:
-	_ZED* m_pZED;
-	_Flow* m_pFlow;
-	Frame* m_pFrameA;
-	Frame* m_pFrameB;
+	_ZED*	m_pZED;
+	Frame*	m_pPrev;
+	Frame*	m_pNext;
+	bool	m_bCount;
 
 	int	m_zedMinConfidence;
 	int	m_uDelay;
 	double	m_dMinTot;
 
+	int			m_iStartID;
 	int			m_nGen;
 	int			m_iGen;
 	string 		m_outDir;
 	ofstream	m_ofs;
+	string		m_format;
 
+	int			m_width;
+	int			m_height;
 	bool		m_bCrop;
 	Rect		m_cropBB;
 

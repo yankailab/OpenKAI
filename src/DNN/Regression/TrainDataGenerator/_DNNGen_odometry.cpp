@@ -12,18 +12,22 @@ namespace kai
 
 _DNNGen_odometry::_DNNGen_odometry()
 {
-	m_pFlow = NULL;
 	m_pZED = NULL;
+	m_iStartID = 0;
 	m_nGen = 0;
 	m_iGen = 0;
 	m_dMinTot = 0;
 	m_outDir = "";
+	m_format = ".png";
+	m_width = 640;
+	m_height = 360;
 
 	m_zedMinConfidence = 0;
 	m_uDelay = 0;
+	m_bCount = false;
 
-	m_pFrameA = NULL;
-	m_pFrameB = NULL;
+	m_pPrev = NULL;
+	m_pNext = NULL;
 	m_bCrop = false;
 }
 
@@ -38,24 +42,26 @@ bool _DNNGen_odometry::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,outDir);
+	KISSm(pK,iStartID);
 	KISSm(pK,nGen);
 	KISSm(pK,uDelay);
 	KISSm(pK,zedMinConfidence);
 	KISSm(pK,dMinTot);
+	KISSm(pK,format);
 	KISSm(pK,bCrop);
 	if (m_bCrop != 0)
 	{
-		F_INFO(pK->v("cropX", &m_cropBB.x));
-		F_INFO(pK->v("cropY", &m_cropBB.y));
-		F_INFO(pK->v("cropW", &m_cropBB.width));
-		F_INFO(pK->v("cropH", &m_cropBB.height));
+		F_ERROR_F(pK->v("cropX", &m_cropBB.x));
+		F_ERROR_F(pK->v("cropY", &m_cropBB.y));
+		F_ERROR_F(pK->v("cropW", &m_cropBB.width));
+		F_ERROR_F(pK->v("cropH", &m_cropBB.height));
 	}
 
 	string outFile = m_outDir + "dnnOdomTrainList.txt";
-	m_ofs.open(outFile.c_str(), ios::out);
+	m_ofs.open(outFile.c_str(), ios::out | ios::app);
 
-	m_pFrameA = new Frame();
-	m_pFrameB = new Frame();
+	m_pPrev = new Frame();
+	m_pNext = new Frame();
 
 	return true;
 }
@@ -66,10 +72,6 @@ bool _DNNGen_odometry::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName;
-
-	iName = "";
-	F_INFO(pK->v("_Flow", &iName));
-	m_pFlow = (_Flow*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_ERROR_F(pK->v("_ZED", &iName));
@@ -111,32 +113,34 @@ void _DNNGen_odometry::update(void)
 
 void _DNNGen_odometry::sample(void)
 {
-	NULL_(m_pZED);
-	IF_(!m_pZED->isOpened());
-	NULL_(m_pFlow);
-
-	Mat flowImg;
-	stringstream ss;
 	vDouble3 vT,vR,mT,mR;
 	uint64_t dT;
+	Mat dM, tM;
 
-	//initial shot
-	m_pFrameA->update(m_pZED->gray());
-	m_pZED->getMotionDelta(&mT, &mR, &dT);
+	NULL_(m_pZED);
+	IF_(!m_pZED->isOpened());
 
-	//insert certain delay
-	if(m_uDelay > 0)
-		usleep(m_uDelay);
-
-	//second shot
-	m_pFrameB->update(m_pZED->gray());
 	int zedConfidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 
-    //get opt flow
-	IF_(!m_pFlow->addFrame(false,m_pFrameA));
-	IF_(!m_pFlow->addFrame(true,m_pFrameB));
+	if(!m_bCount)
+	{
+		m_pPrev->update(m_pZED->gray());
+		IF_(m_pPrev->empty());
+		m_bCount = true;
+		return;
+	}
 
-	//check
+	m_pNext->update(m_pZED->gray());
+	Mat* pM1 = m_pPrev->getCMat();
+	Mat* pM2 = m_pNext->getCMat();
+
+	m_bCount = false;
+
+	//validate
+	IF_(pM1->empty());
+	IF_(pM1->empty());
+	IF_(pM1->rows != pM2->rows);
+	IF_(pM1->cols != pM2->cols);
 	IF_(zedConfidence < m_zedMinConfidence);
 
     vT.x = mT.z;	//forward
@@ -149,32 +153,40 @@ void _DNNGen_odometry::sample(void)
     double dTot = abs(vT.x) + abs(vT.y) + abs(vT.z) + abs(vR.x) + abs(vR.y) + abs(vR.z);
     IF_(dTot < m_dMinTot);
 
+    //make 3 channels
+	Mat bChan = Mat(Size(pM1->cols, pM1->rows), pM1->type(), Scalar::all(0));
+	vector<Mat> pChannels;
+	pChannels.push_back(*pM1);
+	pChannels.push_back(*pM2);
+	pChannels.push_back(bChan);
+	merge(pChannels, dM);
+
+	//resize
+	cv::resize(dM, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
+	dM = tM;
+
     //crop if needed
 	if(m_bCrop)
 	{
-		Mat fMat;
-		m_pFlow->flowMat()->download(fMat);
-		flowImg = Mat(fMat, m_cropBB);
-	}
-	else
-	{
-		m_pFlow->flowMat()->download(flowImg);
+		Mat tM = Mat(dM, m_cropBB);
+		dM = tM;
 	}
 
-	//make 3 channels
-	vector<Mat> pChannels;
-	split(flowImg, pChannels);
-	Mat bChan = Mat(Size(pChannels[0].cols, pChannels[0].rows), pChannels[0].type(), Scalar::all(0));
-	pChannels.push_back(bChan);
-	merge(pChannels, flowImg);
+	//save into list and file
+	int fID = m_iStartID + m_iGen++;
+	stringstream ss;
+	ss << setfill('0') << setw(10) << right << fID;
+	m_ofs << ss.str() << m_format << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
 
-	ss << setfill('0') << setw(10) << right << m_iGen;
-	m_ofs << ss.str() << ".png" << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
-
-	imwrite(m_outDir + ss.str() + ".png", flowImg);
-	m_iGen++;
+	imwrite(m_outDir + ss.str() + ".png", dM);
 
 	LOG_I("Generated: "<< m_iGen);
+
+//	FileStorage fs(m_outDir + ss.str() + ".yml", FileStorage::WRITE );
+//	fs << "dM" << dM;
+//	Mat fm;
+//	FileStorage fs("my.yml", FileStorage::READ );
+//	fs["mat1"] >> fm;
 }
 
 bool _DNNGen_odometry::draw(void)
