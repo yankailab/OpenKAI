@@ -55,6 +55,7 @@ private:
 	//train
 	int m_dataSizeTrain;
 	int m_dataSizeTest;
+	double	m_kLabel;
 
 	string m_fSolverProto;
 	string m_fPretrainedCaffemodel;

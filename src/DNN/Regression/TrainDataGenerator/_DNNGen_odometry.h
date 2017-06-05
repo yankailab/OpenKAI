@@ -52,6 +52,8 @@ public:
 	string 		m_outDir;
 	ofstream	m_ofs;
 	string		m_format;
+	string		m_fNamePrefix;
+	string		m_fNameList;
 
 	int			m_width;
 	int			m_height;

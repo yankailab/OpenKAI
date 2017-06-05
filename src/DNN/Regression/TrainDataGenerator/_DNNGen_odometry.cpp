@@ -19,8 +19,10 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_dMinTot = 0;
 	m_outDir = "";
 	m_format = ".png";
-	m_width = 640;
-	m_height = 360;
+	m_fNamePrefix = "";
+	m_fNameList = "dnnOdomGen.txt";
+	m_width = 398;
+	m_height = 224;
 
 	m_zedMinConfidence = 0;
 	m_uDelay = 0;
@@ -48,6 +50,8 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,zedMinConfidence);
 	KISSm(pK,dMinTot);
 	KISSm(pK,format);
+	KISSm(pK,fNamePrefix);
+	KISSm(pK,fNameList);
 	KISSm(pK,bCrop);
 	if (m_bCrop != 0)
 	{
@@ -57,7 +61,7 @@ bool _DNNGen_odometry::init(void* pKiss)
 		F_ERROR_F(pK->v("cropH", &m_cropBB.height));
 	}
 
-	string outFile = m_outDir + "dnnOdomTrainList.txt";
+	string outFile = m_outDir + m_fNameList;
 	m_ofs.open(outFile.c_str(), ios::out | ios::app);
 
 	m_pPrev = new Frame();
@@ -175,7 +179,7 @@ void _DNNGen_odometry::sample(void)
 	//save into list and file
 	int fID = m_iStartID + m_iGen++;
 	stringstream ss;
-	ss << setfill('0') << setw(10) << right << fID;
+	ss << m_fNamePrefix << setfill('0') << setw(10) << right << fID;
 	m_ofs << ss.str() << m_format << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
 
 	imwrite(m_outDir + ss.str() + ".png", dM);

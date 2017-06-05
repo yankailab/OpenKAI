@@ -18,6 +18,7 @@ _CaffeRegressionTrain::_CaffeRegressionTrain()
 	m_height = 224;
 	m_nChannel = 3;
 	m_outputDim = 6;
+	m_kLabel = 1.0;
 	m_meanCol.init();
 
 	m_fSolverProto = "";
@@ -65,6 +66,7 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 	KISSm(pK,height);
 	KISSm(pK,nChannel);
 	KISSm(pK,outputDim);
+	KISSm(pK,kLabel);
 
 	KISSm(pK,layerInTrain);
 	KISSm(pK,layerInTest);
@@ -283,34 +285,33 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 		vector<string> entry = splitBy(str, '\t');
 		string fName = m_baseDir + entry[0];
 		cout << "reading: " << fName << endl;
+
 		cv::Mat img = cv::imread(fName);
-		cv::Mat resized_img;
-		cv::resize(img, resized_img, cv::Size(m_width, m_height));
+		if(img.cols != m_width || img.rows != m_height)
+		{
+			cv::Mat rImg;
+			cv::resize(img, rImg, cv::Size(m_width, m_height));
+			img = rImg;
+		}
 
 		for (int y = 0; y < m_height; y++)
 		{
+			int iB = m_width * m_height * m_nChannel * nImg;
+
 			for (int x = 0; x < m_width; x++)
 			{
-				pData[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 0
-						+ m_width * m_height * m_nChannel * nImg] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 0] - m_meanCol.x;
+				int iA = y * img.cols + x + img.cols * img.rows;
+				int iC = y * img.step + x * img.elemSize();
 
-				pData[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 1
-						+ m_width * m_height * m_nChannel * nImg] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 1] - m_meanCol.y;
-
-				pData[y * resized_img.cols + x
-						+ resized_img.cols * resized_img.rows * 2
-						+ m_width * m_height * m_nChannel * nImg] = resized_img.data[y
-						* resized_img.step + x * resized_img.elemSize() + 2] - m_meanCol.z;
+				pData[iA * 0 + iB] = img.data[iC + 0] - m_meanCol.x;
+				pData[iA * 1 + iB] = img.data[iC + 1] - m_meanCol.y;
+				pData[iA * 2 + iB] = img.data[iC + 2] - m_meanCol.z;
 			}
 		}
 
 		for (int i = 0; i < m_outputDim; i++)
 		{
-			pLabel[nImg * m_outputDim + i] = stof(entry[i + 1]) / 256.0;
+			pLabel[nImg * m_outputDim + i] = stof(entry[i + 1]) * m_kLabel;
 		}
 
 		nImg++;
