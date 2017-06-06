@@ -35,7 +35,7 @@ public:
 private:
 	void train();
 	void inference();
-	int readImgListToFloat(string fImgList, float *pData, float *pLabel);
+	int readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead);
 	void readImgFileName(string path, string *infiles);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -53,8 +53,8 @@ private:
 	vInt3 m_meanCol;
 
 	//train
-	int m_dataSizeTrain;
-	int m_dataSizeTest;
+	int m_nTrain;
+	int m_nTest;
 	double	m_kLabel;
 
 	string m_fSolverProto;
@@ -68,9 +68,9 @@ private:
 	string m_layerLabelTest;
 
 	//inference
-	int m_infBatchSize;
-	int m_infDataSize;
-	int m_infBatchIter;
+	int m_nInfBatch;
+	int m_nInf;
+	int m_nInfBatchIter;
 
 	string m_fDeployProto;
 	string m_fInfCaffemodel;

@@ -103,10 +103,13 @@ void _DNNGen_odometry::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(m_iGen >= m_nGen)
+		if(m_nGen > 0)
 		{
-			m_ofs.close();
-			exit(0);
+			if(m_iGen >= m_nGen)
+			{
+				m_ofs.close();
+				exit(0);
+			}
 		}
 
 		sample();
@@ -177,14 +180,23 @@ void _DNNGen_odometry::sample(void)
 	}
 
 	//save into list and file
-	int fID = m_iStartID + m_iGen++;
-	stringstream ss;
-	ss << m_fNamePrefix << setfill('0') << setw(10) << right << fID;
-	m_ofs << ss.str() << m_format << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
+	time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    char strTime[128];
+    strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
+    string fName = m_fNamePrefix + strTime + li2str(get_time_usec()) + m_format;
 
-	imwrite(m_outDir + ss.str() + ".png", dM);
+	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
+	imwrite(m_outDir + fName, dM);
 
+    m_iGen++;
 	LOG_I("Generated: "<< m_iGen);
+
+//	int fID = m_iStartID + m_iGen;
+//	stringstream ss;
+//	ss << m_fNamePrefix << setfill('0') << setw(10) << right << fID;
+//	m_ofs << ss.str() << m_format << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
+//	imwrite(m_outDir + ss.str() + ".png", dM);
 
 //	FileStorage fs(m_outDir + ss.str() + ".yml", FileStorage::WRITE );
 //	fs << "dM" << dM;

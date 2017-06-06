@@ -31,12 +31,12 @@ _CaffeRegressionTrain::_CaffeRegressionTrain()
 	m_layerLabelTrain = "label";
 	m_layerLabelTest = "label";
 
-	m_dataSizeTrain = 1000;
-	m_dataSizeTest = 1000;
+	m_nTrain = 1000;
+	m_nTest = 1000;
 
-	m_infBatchSize = 1;
-	m_infDataSize = 1000;
-	m_infBatchIter = m_infDataSize / m_infBatchSize;
+	m_nInfBatch = 1;
+	m_nInf = 1000;
+	m_nInfBatchIter = m_nInf / m_nInfBatch;
 
 	m_fDeployProto = "";
 	m_fInfCaffemodel = "";
@@ -73,8 +73,8 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 	KISSm(pK,layerLabelTrain);
 	KISSm(pK,layerLabelTest);
 
-	KISSm(pK,dataSizeTrain);
-	KISSm(pK,dataSizeTest);
+	KISSm(pK,nTrain);
+	KISSm(pK,nTest);
 
 	m_fSolverProto = m_baseDir + m_fSolverProto;
 	m_fTrainImgList = m_baseDir + m_fTrainImgList;
@@ -90,8 +90,8 @@ bool _CaffeRegressionTrain::init(void* pKiss)
 	KISSm(pK,fInfImgList);
 	KISSm(pK,infResultDir);
 
-	KISSm(pK,infBatchSize);
-	KISSm(pK,infDataSize);
+	KISSm(pK,nInfBatch);
+	KISSm(pK,nInf);
 	KISSm(pK,infLayerInput);
 
 	m_fDeployProto = m_baseDir + m_fDeployProto;
@@ -131,45 +131,45 @@ void _CaffeRegressionTrain::train()
 	}
 
 	//read data
-	float* pDataInTrain = new float[m_dataSizeTrain * m_height * m_width * m_nChannel];
-	float* pLabelTrain = new float[m_dataSizeTrain * m_outputDim];
-	float* pDataInTest = new float[m_dataSizeTest * m_height * m_width * m_nChannel];
-	float* pLabelTest = new float[m_dataSizeTest * m_outputDim];
+	float* pDataInTrain = new float[m_nTrain * m_height * m_width * m_nChannel];
+	float* pLabelTrain = new float[m_nTrain * m_outputDim];
+	float* pDataInTest = new float[m_nTest * m_height * m_width * m_nChannel];
+	float* pLabelTest = new float[m_nTest * m_outputDim];
 
-	int nImgTrain = readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain);
-	int nImgTest = readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest);
+	int nImgTrain = readImgListToFloat(m_fTrainImgList.c_str(), pDataInTrain, pLabelTrain, m_nTrain);
+	int nImgTest = readImgListToFloat(m_fTestImgList.c_str(), pDataInTest, pLabelTest, m_nTest);
 
-	if(nImgTrain > m_dataSizeTrain)
+	if(nImgTrain > m_nTrain)
 	{
-		LOG_E("nImgTrain > m_dataSizeTrain");
+		LOG_E("nImgTrain > m_nTrain");
 		return;
 	}
 
-	if(nImgTest > m_dataSizeTest)
+	if(nImgTest > m_nTest)
 	{
-		LOG_E("nImgTest > m_dataSizeTest");
+		LOG_E("nImgTest > m_nTest");
 		return;
 	}
 
-	float* pDummyDataTrain = new float[m_dataSizeTrain];
-	float* pDummtDataTest = new float[m_dataSizeTest];
-	for (int i = 0; i < m_dataSizeTrain; i++)
+	float* pDummyDataTrain = new float[m_nTrain];
+	float* pDummtDataTest = new float[m_nTest];
+	for (int i = 0; i < m_nTrain; i++)
 		pDummyDataTrain[i] = 0;
-	for (int i = 0; i < m_dataSizeTest; i++)
+	for (int i = 0; i < m_nTest; i++)
 		pDummtDataTest[i] = 0;
 
 	//reset layers
 	const auto pLayerInTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerInTrain.c_str()));
 	const auto pLayerInTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerInTest.c_str()));
 
-	pLayerInTrain->Reset((float*) pDataInTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
-	pLayerInTest->Reset((float*) pDataInTest, (float*) pDummtDataTest, m_dataSizeTest);
+	pLayerInTrain->Reset((float*) pDataInTrain, (float*) pDummyDataTrain, m_nTrain);
+	pLayerInTest->Reset((float*) pDataInTest, (float*) pDummtDataTest, m_nTest);
 
 	const auto pLayerLabelTrain = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pNet->layer_by_name(m_layerLabelTrain.c_str()));
 	const auto pLayerLabelTest = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(pTestNet[0]->layer_by_name(m_layerLabelTest.c_str()));
 
-	pLayerLabelTrain->Reset((float*) pLabelTrain, (float*) pDummyDataTrain, m_dataSizeTrain);
-	pLayerLabelTest->Reset((float*) pLabelTest, (float*) pDummtDataTest, m_dataSizeTest);
+	pLayerLabelTrain->Reset((float*) pLabelTrain, (float*) pDummyDataTrain, m_nTrain);
+	pLayerLabelTest->Reset((float*) pLabelTest, (float*) pDummtDataTest, m_nTest);
 
 	//start solve
 	LOG_I("Solve start");
@@ -194,41 +194,41 @@ void _CaffeRegressionTrain::inference()
 	const auto pInfInputlayer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(infNet.layer_by_name(m_infLayerInput.c_str()));
 
 	//read into buf
-	string *infiles = new string[m_infDataSize];
+	string *infiles = new string[m_nInf];
 	readImgFileName(m_fInfImgList.c_str(), infiles);
 
-	float* pInfData = new float[m_infDataSize * m_height * m_width * m_nChannel];
-	float* pInfLabel = new float[m_infDataSize * m_outputDim];
+	float* pInfData = new float[m_nInf * m_height * m_width * m_nChannel];
+	float* pInfLabel = new float[m_nInf * m_outputDim];
 
-	int nImgInf = readImgListToFloat(m_fInfImgList.c_str(), pInfData, pInfLabel);
-	if(nImgInf > m_infDataSize)
+	int nImgInf = readImgListToFloat(m_fInfImgList.c_str(), pInfData, pInfLabel, m_nInf);
+	if(nImgInf > m_nInf)
 	{
-		LOG_E("nImgInf > m_infDataSize");
+		LOG_E("nImgInf > m_nInf");
 		return;
 	}
 
-	float *pInfDummy = new float[m_infDataSize];
-	for (int i = 0; i < m_infDataSize; i++)
+	float *pInfDummy = new float[m_nInf];
+	for (int i = 0; i < m_nInf; i++)
 		pInfDummy[i] = 0.0f;
 
 	//start inference
-	m_infBatchIter = m_infDataSize / m_infBatchSize;
+	m_nInfBatchIter = m_nInf / m_nInfBatch;
 	cv::Mat oImg;
 	cv::Mat resizedOimg;
 
-	for (int iBatch = 0; iBatch < m_infBatchIter; iBatch++)
+	for (int iBatch = 0; iBatch < m_nInfBatchIter; iBatch++)
 	{
 		pInfInputlayer->Reset(
-				(float*) pInfData + iBatch * m_width * m_height * m_nChannel * m_infBatchSize,
-				pInfDummy + iBatch * m_infBatchSize,
-				m_infBatchSize);
+				(float*) pInfData + iBatch * m_width * m_height * m_nChannel * m_nInfBatch,
+				pInfDummy + iBatch * m_nInfBatch,
+				m_nInfBatch);
 
 		const auto pResult = infNet.Forward();
 		const auto pResultData = pResult[1]->cpu_data();
 
-		for (int i = 0; i < m_infBatchSize; i++)
+		for (int i = 0; i < m_nInfBatch; i++)
 		{
-			int totalID = iBatch * m_infBatchSize + i;
+			int totalID = iBatch * m_nInfBatch + i;
 			string fName = m_baseDir + infiles[totalID];
 			oImg = imread(fName);
 			cv::resize(oImg, resizedOimg, cv::Size(m_width, m_height));
@@ -268,7 +268,7 @@ void _CaffeRegressionTrain::inference()
 	delete[] infiles;
 }
 
-int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, float *pLabel)
+int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead)
 {
 	ifstream ifs;
 	string str;
@@ -315,6 +315,8 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 		}
 
 		nImg++;
+		if(nImg >= nRead)
+			return nImg;
 	}
 
 	return nImg;

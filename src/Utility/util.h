@@ -309,6 +309,13 @@ inline string i2str(int val)
 	return string(buf);
 }
 
+inline string li2str(long val)
+{
+	char buf[128];
+	sprintf(buf, "%ld", val);
+	return string(buf);
+}
+
 inline void trimJson(string* pStr)
 {
 	unsigned int idx = pStr->rfind('}', pStr->size()) + 1;
