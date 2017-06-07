@@ -36,7 +36,6 @@ private:
 	void train();
 	void inference();
 	int readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead);
-	void readImgFileName(string path, string *infiles);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -71,6 +70,8 @@ private:
 	int m_nInfBatch;
 	int m_nInf;
 	int m_nInfBatchIter;
+
+	double m_err;
 
 	string m_fDeployProto;
 	string m_fInfCaffemodel;

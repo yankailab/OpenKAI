@@ -191,18 +191,6 @@ void _DNNGen_odometry::sample(void)
 
     m_iGen++;
 	LOG_I("Generated: "<< m_iGen);
-
-//	int fID = m_iStartID + m_iGen;
-//	stringstream ss;
-//	ss << m_fNamePrefix << setfill('0') << setw(10) << right << fID;
-//	m_ofs << ss.str() << m_format << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
-//	imwrite(m_outDir + ss.str() + ".png", dM);
-
-//	FileStorage fs(m_outDir + ss.str() + ".yml", FileStorage::WRITE );
-//	fs << "dM" << dM;
-//	Mat fm;
-//	FileStorage fs("my.yml", FileStorage::READ );
-//	fs["mat1"] >> fm;
 }
 
 bool _DNNGen_odometry::draw(void)

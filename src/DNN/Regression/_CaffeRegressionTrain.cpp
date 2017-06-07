@@ -37,6 +37,7 @@ _CaffeRegressionTrain::_CaffeRegressionTrain()
 	m_nInfBatch = 1;
 	m_nInf = 1000;
 	m_nInfBatchIter = m_nInf / m_nInfBatch;
+	m_err = 0.0;
 
 	m_fDeployProto = "";
 	m_fInfCaffemodel = "";
@@ -193,10 +194,6 @@ void _CaffeRegressionTrain::inference()
 	infNet.CopyTrainedLayersFrom(m_fInfCaffemodel.c_str());
 	const auto pInfInputlayer = boost::dynamic_pointer_cast<MemoryDataLayer<float>>(infNet.layer_by_name(m_infLayerInput.c_str()));
 
-	//read into buf
-	string *infiles = new string[m_nInf];
-	readImgFileName(m_fInfImgList.c_str(), infiles);
-
 	float* pInfData = new float[m_nInf * m_height * m_width * m_nChannel];
 	float* pInfLabel = new float[m_nInf * m_outputDim];
 
@@ -213,8 +210,7 @@ void _CaffeRegressionTrain::inference()
 
 	//start inference
 	m_nInfBatchIter = m_nInf / m_nInfBatch;
-	cv::Mat oImg;
-	cv::Mat resizedOimg;
+	m_err = 0.0;
 
 	for (int iBatch = 0; iBatch < m_nInfBatchIter; iBatch++)
 	{
@@ -229,43 +225,22 @@ void _CaffeRegressionTrain::inference()
 		for (int i = 0; i < m_nInfBatch; i++)
 		{
 			int totalID = iBatch * m_nInfBatch + i;
-			string fName = m_baseDir + infiles[totalID];
-			oImg = imread(fName);
-			cv::resize(oImg, resizedOimg, cv::Size(m_width, m_height));
 
-			int *pVal = new int(m_outputDim);
 			for (int j = 0; j < m_outputDim; j++)
 			{
-				pVal[j] = (int) (pResultData[i * m_outputDim + j] * 256);	//256 for normalization from int to float
-
-				if (pVal[j] < 0)
-					pVal[j] = 0;
-
-				if (j == 0 && pVal[j] > m_width)
-					pVal[j] = m_width - 1;
-
-				if (j == 1 && pVal[j] > m_height)
-					pVal[j] = m_height - 1;
-
-				if (j >= 3 && pVal[j] > 255)
-					pVal[j] = 255;
+				double r = (double)(pResultData[i * m_outputDim + j]) / m_kLabel;
+				double v = (double)pInfLabel[totalID * m_outputDim + j];
+				m_err += abs(r-v);
 			}
-
-			circle(resizedOimg, cv::Point(pVal[0], pVal[1]), pVal[2], cv::Scalar(pVal[3], pVal[4], pVal[5]), 3);
-
-			stringstream ofname;
-			ofname	<< m_baseDir << m_infResultDir << setw(5) << setfill('0') << i2str(totalID) << ".png";
-			imwrite(ofname.str(), resizedOimg);
 		}
 	}
 
-	oImg.release();
-	resizedOimg.release();
+	m_err /= m_nInf;
+	LOG_I("Inference avr err: " << m_err);
 
 	delete[] pInfData;
 	delete[] pInfLabel;
 	delete[] pInfDummy;
-	delete[] infiles;
 }
 
 int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead)
@@ -311,7 +286,7 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 
 		for (int i = 0; i < m_outputDim; i++)
 		{
-			pLabel[nImg * m_outputDim + i] = stof(entry[i + 1]) * m_kLabel;
+			pLabel[nImg * m_outputDim + i] = (float)(stof(entry[i + 1]) * m_kLabel);
 		}
 
 		nImg++;
@@ -320,23 +295,6 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 	}
 
 	return nImg;
-}
-
-void _CaffeRegressionTrain::readImgFileName(string path, string *infiles)
-{
-	ifstream ifs;
-	ifs.open(path.c_str(), ios::in);
-	string str;
-
-	int n = 0;
-	while (getline(ifs, str))
-	{
-		vector<string> entry = splitBy(str, '\t');
-		infiles[n] = entry[0];
-		n++;
-	}
-
-	ifs.close();
 }
 
 }
