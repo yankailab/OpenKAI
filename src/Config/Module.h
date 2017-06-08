@@ -35,8 +35,8 @@
 #include "../DNN/Detector/_ImageNet.h"
 #include "../DNN/Detector/_MatrixNet.h"
 #include "../DNN/Detector/_DetectNet.h"
-
 #include "../DNN/Regression/TrainDataGenerator/_DNNGen_odometry.h"
+#include "../DNN/Sensing/_DNNodometry.h"
 
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"

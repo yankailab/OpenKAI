@@ -43,7 +43,6 @@ public:
 	bool	m_bCount;
 
 	int	m_zedMinConfidence;
-	int	m_uDelay;
 	double	m_dMinTot;
 
 	int			m_iStartID;

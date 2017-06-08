@@ -25,7 +25,6 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_height = 224;
 
 	m_zedMinConfidence = 0;
-	m_uDelay = 0;
 	m_bCount = false;
 
 	m_pPrev = NULL;
@@ -46,7 +45,6 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,outDir);
 	KISSm(pK,iStartID);
 	KISSm(pK,nGen);
-	KISSm(pK,uDelay);
 	KISSm(pK,zedMinConfidence);
 	KISSm(pK,dMinTot);
 	KISSm(pK,format);
