@@ -65,7 +65,12 @@ bool _DNNGen_odometry::init(void* pKiss)
 		F_ERROR_F(pK->v("cropH", &m_cropBB.height));
 	}
 
-	string outFile = m_outDir + m_fNameList;
+	time_t t = time(NULL);
+    struct tm *tm = localtime(&t);
+    char strTime[128];
+    strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S", tm);
+
+	string outFile = m_outDir + m_fNameList + strTime + ".odom";
 	m_ofs.open(outFile.c_str(), ios::out | ios::app);
 
 	m_pPrev = new Frame();

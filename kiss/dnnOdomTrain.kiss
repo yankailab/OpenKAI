@@ -59,7 +59,7 @@
 	"_ZED":"ZED",
 	"zedMinConfidence":10,
 	"outDir":"/home/ubuntu/src/dnnOdom/",
-	"fNameList":"dnnOdomTrain.txt",
+	"fNameList":"dnnOdomTrain",
 	"fNamePrefix":"atenza",
 	"nGen":0,
 	"dMinTot":0.003,
