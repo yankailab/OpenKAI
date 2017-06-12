@@ -29,6 +29,7 @@ _DNNGen_odometry::_DNNGen_odometry()
 
 	m_pPrev = NULL;
 	m_pNext = NULL;
+	m_bResize = false;
 	m_bCrop = false;
 }
 
@@ -50,6 +51,11 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,format);
 	KISSm(pK,fNamePrefix);
 	KISSm(pK,fNameList);
+
+	KISSm(pK,bResize);
+	KISSm(pK,width);
+	KISSm(pK,height);
+
 	KISSm(pK,bCrop);
 	if (m_bCrop != 0)
 	{
@@ -127,6 +133,13 @@ void _DNNGen_odometry::sample(void)
 
 	int zedConfidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 
+	if(zedConfidence < m_zedMinConfidence)
+	{
+		//zed tracking lost, reset
+		m_bCount = false;
+		return;
+	}
+
 	if(!m_bCount)
 	{
 		m_pPrev->update(m_pZED->gray());
@@ -146,7 +159,6 @@ void _DNNGen_odometry::sample(void)
 	IF_(pM1->empty());
 	IF_(pM1->rows != pM2->rows);
 	IF_(pM1->cols != pM2->cols);
-	IF_(zedConfidence < m_zedMinConfidence);
 
     vT.x = mT.z;	//forward
     vT.y = mT.x;	//right
@@ -167,13 +179,16 @@ void _DNNGen_odometry::sample(void)
 	merge(pChannels, dM);
 
 	//resize
-	cv::resize(dM, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
-	dM = tM;
+	if(m_bResize)
+	{
+		cv::resize(dM, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
+		dM = tM;
+	}
 
-    //crop if needed
+    //crop
 	if(m_bCrop)
 	{
-		Mat tM = Mat(dM, m_cropBB);
+		tM = Mat(dM, m_cropBB);
 		dM = tM;
 	}
 
@@ -184,7 +199,7 @@ void _DNNGen_odometry::sample(void)
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
     string fName = m_fNamePrefix + strTime + li2str(get_time_usec()) + m_format;
 
-	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << endl;
+	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << endl;
 	imwrite(m_outDir + fName, dM);
 
     m_iGen++;

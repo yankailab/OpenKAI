@@ -59,6 +59,7 @@ public:
 	double m_zedMaxDist;
 	int m_zedConfidence;
 	double m_zedL2C;
+	int	m_zedViewLR;
 
 	sl::Pose m_zedCamPose;
 	sl::TRACKING_STATE m_zedTrackState;

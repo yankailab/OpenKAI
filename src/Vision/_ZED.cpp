@@ -36,6 +36,7 @@ _ZED::_ZED()
 	m_trackDT = 0;
 	m_zedL2C = 0.0;
 	m_tLastTrack = 0;
+	m_zedViewLR = sl::VIEW_LEFT;
 }
 
 _ZED::~_ZED()
@@ -56,6 +57,7 @@ bool _ZED::init(void* pKiss)
 	KISSm(pK,zedMaxDist);
 	KISSm(pK,bZedFlip);
 	KISSm(pK,zedConfidence);
+	KISSm(pK,zedViewLR);
 
 	m_pDepth = new Frame();
 	return true;
@@ -202,7 +204,7 @@ void _ZED::update(void)
 
 		IF_CONT(m_pZed->grab(m_zedRuntime) != sl::SUCCESS);
 
-		m_pZed->retrieveImage(*m_pzImg, sl::VIEW_LEFT, sl::MEM_GPU);
+		m_pZed->retrieveImage(*m_pzImg, (sl::VIEW)m_zedViewLR, sl::MEM_GPU);
 		m_pZed->retrieveMeasure(*m_pzDepth, sl::MEASURE_DEPTH, sl::MEM_GPU);
 
 #ifndef USE_OPENCV4TEGRA
@@ -244,14 +246,14 @@ void _ZED::update(void)
 		if (m_zedTrackState == sl::TRACKING_STATE_OK)
 		{
 			sl::Vector3<float> rot = m_zedCamPose.getRotationVector();
-			m_vR.x += rot.x;
-			m_vR.y += rot.y;
-			m_vR.z += rot.z;
+			m_vR.x += (double)rot.x;
+			m_vR.y += (double)rot.y;
+			m_vR.z += (double)rot.z;
 
 			sl::Vector3<float> trans = m_zedCamPose.getTranslation();
-			m_vT.x += trans.tx;
-			m_vT.y += trans.ty;
-			m_vT.z += trans.tz;
+			m_vT.x += (double)trans.tx;
+			m_vT.y += (double)trans.ty;
+			m_vT.z += (double)trans.tz;
 
 			uint64_t trackT = m_pZed->getCameraTimestamp();
 			m_trackDT += trackT - m_tLastTrack;
@@ -259,7 +261,9 @@ void _ZED::update(void)
 		}
 		else
 		{
-//			m_pZed->resetTracking();
+			m_vT.init();
+			m_vR.init();
+			m_trackDT = 0;
 		}
 
 		this->autoFPSto();
@@ -268,6 +272,9 @@ void _ZED::update(void)
 
 int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 {
+	if(m_zedTrackState != sl::TRACKING_STATE_OK)
+		return -1;
+
 	*pT = m_vT;
 	*pR = m_vR;
 	*pDT = m_trackDT / 1000;

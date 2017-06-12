@@ -54,6 +54,7 @@ public:
 	string		m_fNamePrefix;
 	string		m_fNameList;
 
+	bool		m_bResize;
 	int			m_width;
 	int			m_height;
 	bool		m_bCrop;
