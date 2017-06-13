@@ -26,6 +26,8 @@ _ZED::_ZED()
 	m_zedDepthMode = sl::DEPTH_MODE_PERFORMANCE;
 	m_bZedFlip = false;
 	m_zedConfidence = 100;
+	m_bZedSpatialMemory = false;
+	m_iZedCPUcore = -1;
 	m_pDepthWin = NULL;
 	m_angleH = 66.7;
 	m_angleV = 67.1;
@@ -56,8 +58,10 @@ bool _ZED::init(void* pKiss)
 	KISSm(pK,zedMinDist);
 	KISSm(pK,zedMaxDist);
 	KISSm(pK,bZedFlip);
+	KISSm(pK,bZedSpatialMemory);
 	KISSm(pK,zedConfidence);
 	KISSm(pK,zedViewLR);
+	KISSm(pK,iZedCPUcore);
 
 	m_pDepth = new Frame();
 	return true;
@@ -129,12 +133,15 @@ bool _ZED::open(void)
 	m_gDepth2 = GpuMat(m_gDepth.size(), m_gDepth.type());
 
 	// Jetson only. Execute the calling thread on 2nd core
-//	sl::Camera::sticktoCPUCore(2);
+	if(m_iZedCPUcore > 0)
+	{
+		sl::Camera::sticktoCPUCore(m_iZedCPUcore);
+	}
 
 	// Initialize motion tracking parameters
 	sl::TrackingParameters zedTracking;
 	zedTracking.initial_world_transform = sl::Transform::identity();
-	zedTracking.enable_spatial_memory = true;
+	zedTracking.enable_spatial_memory = m_bZedSpatialMemory;
 	m_pZed->enableTracking(zedTracking);
 
 	m_zedL2C = (double) (m_pZed->getCameraInformation().calibration_parameters.T.x * 0.5);
@@ -187,7 +194,6 @@ bool _ZED::start(void)
 
 void _ZED::update(void)
 {
-
 	while (m_bThreadON)
 	{
 		if (!m_bOpen)
@@ -204,43 +210,58 @@ void _ZED::update(void)
 
 		IF_CONT(m_pZed->grab(m_zedRuntime) != sl::SUCCESS);
 
-		m_pZed->retrieveImage(*m_pzImg, (sl::VIEW)m_zedViewLR, sl::MEM_GPU);
-		m_pZed->retrieveMeasure(*m_pzDepth, sl::MEASURE_DEPTH, sl::MEM_GPU);
+		GpuMat* pSrc;
+		GpuMat* pDest;
+		GpuMat* pTmp;
 
+
+		//BGR
+		m_pZed->retrieveImage(*m_pzImg, (sl::VIEW)m_zedViewLR, sl::MEM_GPU);
 #ifndef USE_OPENCV4TEGRA
 		cuda::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
 #else
 		gpu::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
 #endif
-
-		GpuMat* pSrc = &m_gImg2;
-		GpuMat* pDest = &m_gImg;
-		GpuMat* pSrcD = &m_gDepth;
-		GpuMat* pDestD = &m_gDepth2;
-		GpuMat* pTmp;
+		pSrc = &m_gImg2;
+		pDest = &m_gImg;
 
 		if (m_bFlip)
 		{
 #ifndef USE_OPENCV4TEGRA
 			cuda::flip(*pSrc, *pDest, -1);
-			cuda::flip(*pSrcD, *pDestD, -1);
 #else
 			gpu::flip(*pSrc,*pDest,-1);
-			gpu::flip(*pSrcD,*pDestD,-1);
 #endif
-			SWAP(pSrc, pDest, pTmp);
-			SWAP(pSrcD, pDestD, pTmp);
-		}
 
+			SWAP(pSrc, pDest, pTmp);
+		}
 		m_pBGR->update(pSrc);
-		if (m_pGray)
+		if(m_pGray)
 			m_pGray->getGrayOf(m_pBGR);
 		if (m_pHSV)
 			m_pHSV->getHSVOf(m_pBGR);
 
-		m_pDepth->update(pSrcD);
 
-		m_zedTrackState = m_pZed->getPosition(m_zedCamPose, sl::REFERENCE_FRAME_LAST);	//REFERENCE_FRAME_WORLD);
+		//Depth
+		m_pZed->retrieveMeasure(*m_pzDepth, sl::MEASURE_DEPTH, sl::MEM_GPU);
+		pSrc = &m_gDepth;
+		pDest = &m_gDepth2;
+
+		if (m_bFlip)
+		{
+#ifndef USE_OPENCV4TEGRA
+			cuda::flip(*pSrc, *pDest, -1);
+#else
+			gpu::flip(*pSrc,*pDest,-1);
+#endif
+
+			SWAP(pSrc, pDest, pTmp);
+		}
+		m_pDepth->update(pSrc);
+
+
+		//Tracking
+		m_zedTrackState = m_pZed->getPosition(m_zedCamPose, sl::REFERENCE_FRAME_LAST);
 		m_trackConfidence = m_zedCamPose.pose_confidence;
 
 		if (m_zedTrackState == sl::TRACKING_STATE_OK)

@@ -60,6 +60,8 @@ public:
 	int m_zedConfidence;
 	double m_zedL2C;
 	int	m_zedViewLR;
+	bool m_bZedSpatialMemory;
+	int m_iZedCPUcore;
 
 	sl::Pose m_zedCamPose;
 	sl::TRACKING_STATE m_zedTrackState;
