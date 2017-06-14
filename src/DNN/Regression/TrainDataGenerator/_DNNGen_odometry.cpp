@@ -204,7 +204,7 @@ void _DNNGen_odometry::sample(void)
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
     string fName = m_fNamePrefix + strTime + li2str(get_time_usec()) + m_format;
 
-	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << endl;
+	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << "\t" << dT << endl;
 	imwrite(m_outDir + fName, dM);
 
     m_iGen++;

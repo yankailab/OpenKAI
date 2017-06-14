@@ -33,6 +33,7 @@ _ZED::_ZED()
 	m_angleV = 67.1;
 	m_zedTrackState = sl::TRACKING_STATE_OFF;
 	m_trackConfidence = 0;
+	m_trackCount = 0;
 	m_vT.init();
 	m_vR.init();
 	m_trackDT = 0;
@@ -262,7 +263,6 @@ void _ZED::update(void)
 
 		//Tracking
 		m_zedTrackState = m_pZed->getPosition(m_zedCamPose, sl::REFERENCE_FRAME_LAST);
-		m_trackConfidence = m_zedCamPose.pose_confidence;
 
 		if (m_zedTrackState == sl::TRACKING_STATE_OK)
 		{
@@ -276,15 +276,16 @@ void _ZED::update(void)
 			m_vT.y += (double)trans.ty;
 			m_vT.z += (double)trans.tz;
 
+			m_trackConfidence += m_zedCamPose.pose_confidence;
+			m_trackCount++;
+
 			uint64_t trackT = m_pZed->getCameraTimestamp();
 			m_trackDT += trackT - m_tLastTrack;
 			m_tLastTrack = trackT;
 		}
 		else
 		{
-			m_vT.init();
-			m_vR.init();
-			m_trackDT = 0;
+			resetMotionDelta();
 		}
 
 		this->autoFPSto();
@@ -299,12 +300,20 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 	*pT = m_vT;
 	*pR = m_vR;
 	*pDT = m_trackDT / 1000;
+	int avrCount = m_trackConfidence / m_trackCount;
 
+	resetMotionDelta();
+
+	return m_trackConfidence;
+}
+
+void _ZED::resetMotionDelta(void)
+{
 	m_vT.init();
 	m_vR.init();
 	m_trackDT = 0;
-
-	return m_trackConfidence;
+	m_trackConfidence = 0;
+	m_trackCount = 0;
 }
 
 void _ZED::setAttitude(vDouble3* pYPR)

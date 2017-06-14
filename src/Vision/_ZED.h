@@ -41,6 +41,7 @@ private:
 	bool open(void);
 	GpuMat slMat2cvGpuMat(sl::Mat& input);
 	void update(void);
+	void resetMotionDelta(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_ZED *) This)->update();
@@ -70,6 +71,7 @@ public:
     uint64_t m_trackDT;
     uint64_t m_tLastTrack;
     int	m_trackConfidence;
+    int	m_trackCount;
 
 	sl::Mat* m_pzImg;
 	sl::Mat* m_pzDepth;
