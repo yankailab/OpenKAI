@@ -3,7 +3,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../IO/SerialPort.h"
+#include "../IO/_SerialPort.h"
 #include "../Vision/Frame.h"
 
 
@@ -71,7 +71,7 @@ public:
 		return NULL;
 	}
 
-	SerialPort* m_pSerialPort;
+	_SerialPort* m_pSerialPort;
 
 	MESSAGE m_recvMsg;
 	CAN_DATA m_pCanData[N_CANDATA];

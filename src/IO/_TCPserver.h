@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
-#include "../IO/IO.h"
+#include "../IO/_IOBase.h"
 #include "_TCPsocket.h"
 
 #define N_LISTEN 1

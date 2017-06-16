@@ -12,7 +12,7 @@
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
-#include "../IO/SerialPort.h"
+#include "../IO/_SerialPort.h"
 
 namespace kai
 {
@@ -54,7 +54,7 @@ private:
 	}
 
 public:
-	SerialPort* m_pIn;
+	_SerialPort* m_pIn;
 	_Lightware_SF40_sender* m_pSF40sender;
 
 	double	m_hdg;

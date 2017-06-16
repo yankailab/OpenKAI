@@ -2,8 +2,8 @@
 #define OPENKAI_SRC_INTERFACE_RC_H_
 
 #include "../Base/common.h"
-#include "../IO/SerialPort.h"
 #include "../Base/_ThreadBase.h"
+#include "../IO/_SerialPort.h"
 #include "../Script/Kiss.h"
 
 #define MAVLINK_BEGIN 0xFE
@@ -41,7 +41,7 @@ public:
 	MESSAGE m_recvMsg;
 
 private:
-	SerialPort* m_pSerialPort;
+	_SerialPort* m_pSerialPort;
 	uint8_t m_pBuf[256];
 
 	void update(void);

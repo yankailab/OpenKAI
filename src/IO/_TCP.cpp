@@ -1,26 +1,26 @@
-#include "TCP.h"
 #include "../Script/Kiss.h"
+#include "_TCP.h"
 
 namespace kai
 {
 
-TCP::TCP(void)
+_TCP::_TCP(void)
 {
 	m_type = tcp;
 	m_pSocket = NULL;
 	m_pServer = NULL;
 }
 
-TCP::~TCP(void)
+_TCP::~_TCP(void)
 {
 	close();
 	DEL(m_pServer);
 	DEL(m_pSocket);
 }
 
-bool TCP::init(void* pKiss)
+bool _TCP::init(void* pKiss)
 {
-	IF_F(!this->IO::init(pKiss));
+	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -50,7 +50,7 @@ bool TCP::init(void* pKiss)
 	return false;
 }
 
-bool TCP::open(void)
+bool _TCP::open(void)
 {
 	IF_T(m_status == opening);
 
@@ -74,7 +74,7 @@ bool TCP::open(void)
 	return false;
 }
 
-void TCP::close(void)
+void _TCP::close(void)
 {
 	m_status = closed;
 	if(m_pServer)m_pServer->complete();
@@ -82,7 +82,7 @@ void TCP::close(void)
 	LOG_I("Closed");
 }
 
-int TCP::read(uint8_t* pBuf, int nByte)
+int _TCP::read(uint8_t* pBuf, int nByte)
 {
 	if(m_status != opening)return -1;
 
@@ -104,7 +104,7 @@ int TCP::read(uint8_t* pBuf, int nByte)
 	return -1;
 }
 
-bool TCP::write(uint8_t* pBuf, int nByte)
+bool _TCP::write(uint8_t* pBuf, int nByte)
 {
 	IF_F(m_status != opening);
 
@@ -126,7 +126,7 @@ bool TCP::write(uint8_t* pBuf, int nByte)
 	return false;
 }
 
-bool TCP::writeLine(uint8_t* pBuf, int nByte)
+bool _TCP::writeLine(uint8_t* pBuf, int nByte)
 {
 	IF_F(!write(pBuf, nByte));
 
@@ -134,7 +134,7 @@ bool TCP::writeLine(uint8_t* pBuf, int nByte)
 	return write((uint8_t*)crlf, 2);
 }
 
-bool TCP::draw(void)
+bool _TCP::draw(void)
 {
 	if(m_pServer)
 	{

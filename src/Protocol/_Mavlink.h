@@ -5,7 +5,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
-#include "../IO/SerialPort.h"
+#include "../IO/_SerialPort.h"
 #include "../UI/Window.h"
 
 #define NUM_MSG_HANDLE 10
@@ -122,7 +122,7 @@ public:
 		return NULL;
 	}
 
-	SerialPort* m_pSerialPort;
+	_SerialPort* m_pSerialPort;
 	int m_systemID;
 	int m_componentID;
 	int m_type;

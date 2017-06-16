@@ -1,10 +1,10 @@
-#include "SerialPort.h"
 #include "../Script/Kiss.h"
+#include "_SerialPort.h"
 
 namespace kai
 {
 
-SerialPort::SerialPort(void)
+_SerialPort::_SerialPort(void)
 {
 	m_fd = -1;
 	m_name = "";
@@ -20,7 +20,7 @@ SerialPort::SerialPort(void)
 	pthread_mutex_init(&m_mutexRead, NULL);
 }
 
-SerialPort::~SerialPort()
+_SerialPort::~_SerialPort()
 {
 	close();
 
@@ -28,9 +28,9 @@ SerialPort::~SerialPort()
 	pthread_mutex_destroy(&m_mutexRead);
 }
 
-bool SerialPort::init(void* pKiss)
+bool _SerialPort::init(void* pKiss)
 {
-	IF_F(!this->IO::init(pKiss));
+	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -44,7 +44,7 @@ bool SerialPort::init(void* pKiss)
 	return true;
 }
 
-bool SerialPort::open(void)
+bool _SerialPort::open(void)
 {
 	IF_F(m_name.empty());
 
@@ -57,7 +57,7 @@ bool SerialPort::open(void)
 	return setup();
 }
 
-void SerialPort::close(void)
+void _SerialPort::close(void)
 {
 	IF_(m_status!=opening);
 
@@ -65,7 +65,7 @@ void SerialPort::close(void)
 	m_status = closed;
 }
 
-int SerialPort::read(uint8_t* pBuf, int nByte)
+int _SerialPort::read(uint8_t* pBuf, int nByte)
 {
 	if(m_status!=opening)return -1;
 
@@ -77,7 +77,7 @@ int SerialPort::read(uint8_t* pBuf, int nByte)
 	return n;
 }
 
-bool SerialPort::write(uint8_t* pBuf, int nByte)
+bool _SerialPort::write(uint8_t* pBuf, int nByte)
 {
 	IF_F(m_status!=opening);
 
@@ -91,7 +91,7 @@ bool SerialPort::write(uint8_t* pBuf, int nByte)
 	return (n==nByte);
 }
 
-bool SerialPort::writeLine(uint8_t* pBuf, int nByte)
+bool _SerialPort::writeLine(uint8_t* pBuf, int nByte)
 {
 	IF_F(m_status!=opening);
 
@@ -108,7 +108,7 @@ bool SerialPort::writeLine(uint8_t* pBuf, int nByte)
 	return (n==nByte+2);
 }
 
-bool SerialPort::setup(void)
+bool _SerialPort::setup(void)
 {
 	// Check file descriptor
 	if (!isatty(m_fd))

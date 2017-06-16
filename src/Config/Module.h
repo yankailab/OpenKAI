@@ -18,8 +18,6 @@
 #include "../Detector/_AprilTags.h"
 #include "../Detector/_Bullseye.h"
 
-#include "../IO/SerialPort.h"
-
 #include "../include/apriltags-cpp/TagDetector.h"
 
 #include "../Navigation/_GPS.h"
@@ -27,11 +25,12 @@
 
 #include "../Autopilot/_AutoPilot.h"
 
-#include "../IO/File.h"
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPsocket.h"
-#include "../IO/_UDPserver.h"
-#include "../IO/_UDPsocket.h"
+#include "../IO/_TCP.h"
+#include "../IO/_UDP.h"
+#include "../IO/_File.h"
+#include "../IO/_SerialPort.h"
 
 #include "../DNN/Detector/_ImageNet.h"
 #include "../DNN/Detector/_MatrixNet.h"

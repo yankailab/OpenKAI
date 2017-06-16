@@ -2,8 +2,8 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HM_BASE_H_
 
 #include "../../../Base/common.h"
+#include "../../../IO/_TCP.h"
 #include "../../../Protocol/_Canbus.h"
-#include "../../../IO/TCP.h"
 #include "../../ActionBase.h"
 #include "../../../Navigation/_GPS.h"
 
@@ -33,7 +33,7 @@ public:
 public:
 	_Canbus* m_pCAN;
 	_GPS*	m_pGPS;
-	IO* m_pCMD;
+	_IOBase* m_pCMD;
 	string m_strCMD;
 
 	int m_maxRpmT;

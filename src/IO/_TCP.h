@@ -1,19 +1,18 @@
-#ifndef AI_IO_FILE_H_
-#define AI_IO_FILE_H_
+#ifndef AI_IO_TCP_H_
+#define AI_IO_TCP_H_
 
 #include "../Base/common.h"
-#include "IO.h"
-
-using namespace std;
+#include "../IO/_TCPserver.h"
+#include "_IOBase.h"
 
 namespace kai
 {
 
-class File : public IO
+class _TCP : public _IOBase
 {
 public:
-	File(void);
-	~File(void);
+	_TCP(void);
+	~_TCP(void);
 
 	//common
 	bool init(void* pKiss);
@@ -21,19 +20,15 @@ public:
 	void close(void);
 
 	int  read(uint8_t* pBuf, int nByte);
+
 	bool write(uint8_t* pBuf, int nByte);
 	bool writeLine(uint8_t* pBuf, int nByte);
 
-	//File
-	bool open(string* pName);
-	string* readAll(void);
+	bool draw(void);
 
 private:
-
-	string m_name;
-	string m_buf;
-	fstream m_file;
-	int m_iByte;
+	_TCPserver* m_pServer;
+	_TCPsocket* m_pSocket;
 
 };
 

@@ -1,10 +1,10 @@
-#include "File.h"
 #include "../Script/Kiss.h"
+#include "_File.h"
 
 namespace kai
 {
 
-File::File(void)
+_File::_File(void)
 {
 	m_type = file;
 	m_name = "";
@@ -13,13 +13,13 @@ File::File(void)
 }
 
 
-File::~File(void)
+_File::~_File(void)
 {
 }
 
-bool File::init(void* pKiss)
+bool _File::init(void* pKiss)
 {
-	IF_F(!this->IO::init(pKiss));
+	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -31,7 +31,7 @@ bool File::init(void* pKiss)
 	return true;
 }
 
-bool File::open(string* pName)
+bool _File::open(string* pName)
 {
 	NULL_F(pName);
 	IF_T(m_status == opening);
@@ -41,7 +41,7 @@ bool File::open(string* pName)
     return open();
 }
 
-bool File::open(void)
+bool _File::open(void)
 {
 	IF_F(m_name.empty());
 	IF_T(m_status == opening);
@@ -56,7 +56,7 @@ bool File::open(void)
 	return true;
 }
 
-void File::close(void)
+void _File::close(void)
 {
 	IF_(!m_file.is_open());
 
@@ -65,7 +65,7 @@ void File::close(void)
 	m_status = closed;
 }
 
-int File::read(uint8_t* pBuf, int nByte)
+int _File::read(uint8_t* pBuf, int nByte)
 {
 	if(!m_file.is_open())return -1;
 	if(!pBuf)return -1;
@@ -84,7 +84,7 @@ int File::read(uint8_t* pBuf, int nByte)
 	return nByte;
 }
 
-string* File::readAll(void)
+string* _File::readAll(void)
 {
 	IF_N(!m_file.is_open());
 
@@ -101,7 +101,7 @@ string* File::readAll(void)
 	return &m_buf;
 }
 
-bool File::write(uint8_t* pBuf, int nByte)
+bool _File::write(uint8_t* pBuf, int nByte)
 {
 	NULL_F(pBuf);
 	IF_F(nByte==0);
@@ -111,7 +111,7 @@ bool File::write(uint8_t* pBuf, int nByte)
 	return true;
 }
 
-bool File::writeLine(uint8_t* pBuf, int nByte)
+bool _File::writeLine(uint8_t* pBuf, int nByte)
 {
 	IF_F(!write(pBuf, nByte));
 

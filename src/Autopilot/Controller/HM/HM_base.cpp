@@ -57,7 +57,7 @@ bool HM_base::init(void* pKiss)
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
-	m_pCMD = new TCP();
+	m_pCMD = new _TCP();
 	F_ERROR_F(m_pCMD->init(pI));
 
 	return true;

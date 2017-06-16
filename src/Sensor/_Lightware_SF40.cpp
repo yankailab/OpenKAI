@@ -94,11 +94,11 @@ bool _Lightware_SF40::init(void* pKiss)
 	//input
 	pCC = pK->o("input");
 	IF_F(pCC->empty());
-	m_pIn = new SerialPort();
+	m_pIn = new _SerialPort();
 	IF_F(!m_pIn->init(pCC));
 
 	m_pSF40sender = new _Lightware_SF40_sender();
-	m_pSF40sender->m_pSerialPort = (SerialPort*) m_pIn;
+	m_pSF40sender->m_pSerialPort = (_SerialPort*) m_pIn;
 	m_pSF40sender->m_dAngle = DEG_AROUND / m_nMeasureDiv;
 	IF_F(!m_pSF40sender->init(pKiss));
 

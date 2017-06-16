@@ -10,8 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../IO/_SerialPort.h"
 #include "../Vision/Frame.h"
-#include "../IO/SerialPort.h"
 
 #define DEG_AROUND 360.0
 
@@ -49,7 +49,7 @@ private:
 	}
 
 public:
-	SerialPort* m_pSerialPort;
+	_SerialPort* m_pSerialPort;
 	double	m_dAngle;
 
 };

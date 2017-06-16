@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_UDPsocket_H_
-#define SRC_NETWORK_UDPsocket_H_
+#ifndef SRC_IO_UDP_H_
+#define SRC_IO_UDP_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class _UDPsocket: public _IOBase
+class _UDP: public _IOBase
 {
 public:
-	_UDPsocket();
-	virtual ~_UDPsocket();
+	_UDP();
+	virtual ~_UDP();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -38,7 +38,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_UDPsocket*) This)->update();
+		((_UDP*) This)->update();
 		return NULL;
 	}
 

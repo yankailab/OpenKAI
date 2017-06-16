@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_UDPsocket.h"
+#include "_UDP.h"
 
 namespace kai
 {
 
-_UDPsocket::_UDPsocket()
+_UDP::_UDP()
 {
 	m_strAddr = "";
 	m_port = 0;
@@ -18,12 +18,12 @@ _UDPsocket::_UDPsocket()
 	m_nSAddr = 0;
 }
 
-_UDPsocket::~_UDPsocket()
+_UDP::~_UDP()
 {
 	complete();
 }
 
-bool _UDPsocket::init(void* pKiss)
+bool _UDP::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -44,7 +44,7 @@ bool _UDPsocket::init(void* pKiss)
 	return true;
 }
 
-bool _UDPsocket::link(void)
+bool _UDP::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -52,7 +52,7 @@ bool _UDPsocket::link(void)
 	return true;
 }
 
-bool _UDPsocket::start(void)
+bool _UDP::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -68,7 +68,7 @@ bool _UDPsocket::start(void)
 	return true;
 }
 
-void _UDPsocket::update(void)
+void _UDP::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -81,7 +81,7 @@ void _UDPsocket::update(void)
 	}
 }
 
-void _UDPsocket::writeIO(void)
+void _UDP::writeIO(void)
 {
 	int nB = this->_IOBase::writeIO();
 	IF_(nB <= 0);
@@ -99,7 +99,7 @@ void _UDPsocket::writeIO(void)
 	}
 }
 
-void _UDPsocket::readIO(void)
+void _UDP::readIO(void)
 {
 	int nRecv = ::recvfrom(m_socket, m_pBufIO, m_nBufIO, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 
@@ -123,7 +123,7 @@ void _UDPsocket::readIO(void)
 	this->_IOBase::readIO(nRecv);
 }
 
-void _UDPsocket::close(void)
+void _UDP::close(void)
 {
 	::close(m_socket);
 	this->_IOBase::close();
@@ -131,13 +131,13 @@ void _UDPsocket::close(void)
 	LOG_I("Closed");
 }
 
-void _UDPsocket::complete(void)
+void _UDP::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 }
 
-bool _UDPsocket::draw(void)
+bool _UDP::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;

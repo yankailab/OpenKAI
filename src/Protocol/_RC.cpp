@@ -20,7 +20,7 @@ bool _RC::init(void* pKiss)
 
 	Kiss* pCC = pK->o("serialPort");
 	IF_F(pCC->empty());
-	m_pSerialPort = new SerialPort();
+	m_pSerialPort = new _SerialPort();
 	IF_F(!m_pSerialPort->init(pCC));
 
 	return true;

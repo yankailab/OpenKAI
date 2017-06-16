@@ -17,6 +17,22 @@
 namespace kai
 {
 
+enum IO_TYPE
+{
+	none,
+	serialport,
+	file,
+	tcp,
+	udp
+};
+
+enum IO_STATUS
+{
+	unknown,
+	closed,
+	opening
+};
+
 class _IOBase: public _ThreadBase
 {
 public:
@@ -24,15 +40,22 @@ public:
 	virtual ~_IOBase();
 
 	bool init(void* pKiss);
+	virtual bool open(void);
+	virtual bool isOpen(void);
 
 	bool write(uint8_t* pBuf, int nByte);
 	int  read(uint8_t* pBuf, int nByte);
 
 	int writeIO(void);
 	void readIO(int nRead);
-	void close(void);
+
+	virtual void close(void);
+	virtual IO_TYPE type(void);
 
 public:
+	IO_TYPE		m_type;
+	IO_STATUS	m_status;
+
 	int m_nBufIO;
 	uint8_t* m_pBufIO;
 

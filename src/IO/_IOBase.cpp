@@ -17,6 +17,9 @@ _IOBase::_IOBase()
 
 	m_pBufIO = NULL;
 	m_nBufIO = N_BUF_IO;
+
+	m_type = none;
+	m_status = unknown;
 }
 
 _IOBase::~_IOBase()
@@ -38,6 +41,16 @@ bool _IOBase::init(void* pKiss)
 	NULL_F(m_pBufIO);
 
 	return true;
+}
+
+bool _IOBase::open(void)
+{
+	return false;
+}
+
+bool _IOBase::isOpen(void)
+{
+	return (m_status == opening);
 }
 
 int _IOBase::writeIO(void)
@@ -99,6 +112,11 @@ int _IOBase::read(uint8_t* pBuf, int nByte)
 	pthread_mutex_unlock(&m_mutexReadIO);
 
 	return i;
+}
+
+IO_TYPE _IOBase::type(void)
+{
+	return m_type;
 }
 
 void _IOBase::close(void)

@@ -2,7 +2,7 @@
 #define AI_IO_SERIALPORT_H_
 
 #include "../Base/common.h"
-#include "IO.h"
+#include "_IOBase.h"
 
 // The following two non-standard baudrates should have been defined by the system
 // If not, just fallback to number
@@ -19,11 +19,11 @@ using namespace std;
 namespace kai
 {
 
-class SerialPort: public IO
+class _SerialPort: public _IOBase
 {
 public:
-	SerialPort();
-	~SerialPort();
+	_SerialPort();
+	~_SerialPort();
 
 	bool init(void* pKiss);
 	bool open(void);

@@ -34,8 +34,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_RC);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPsocket);
-	ADD_MODULE(_UDPserver);
-	ADD_MODULE(_UDPsocket);
+	ADD_MODULE(_TCP);
+	ADD_MODULE(_UDP);
 	ADD_MODULE(Window);
 
 #ifndef USE_OPENCV4TEGRA
