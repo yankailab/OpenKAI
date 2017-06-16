@@ -1,16 +1,16 @@
 /*
- * _peer.cpp
+ * _TCPsocket.cpp
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#include "_webSocket.h"
+#include "_TCPsocket.h"
 
 namespace kai
 {
 
-_webSocket::_webSocket()
+_TCPsocket::_TCPsocket()
 {
 	pthread_mutex_init(&m_mutexSend, NULL);
 	pthread_mutex_init(&m_mutexRecv, NULL);
@@ -20,20 +20,20 @@ _webSocket::_webSocket()
 	m_port = 0;
 	m_bClient = true;
 	m_bConnected = false;
-	m_webSocket = 0;
+	m_socket = 0;
 	m_pBuf = NULL;
-	m_nBuf = N_BUF;
+	m_nBuf = N_BUF_IO;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
-_webSocket::~_webSocket()
+_TCPsocket::~_TCPsocket()
 {
 	complete();
 	pthread_mutex_destroy (&m_mutexSend);
 	pthread_mutex_destroy (&m_mutexRecv);
 }
 
-bool _webSocket::init(void* pKiss)
+bool _TCPsocket::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -47,8 +47,8 @@ bool _webSocket::init(void* pKiss)
 		m_timeoutRecv = TIMEOUT_RECV_USEC;
 
 	F_INFO(pK->v("buf", &m_nBuf));
-	if (m_nBuf < N_BUF)
-		m_nBuf = N_BUF;
+	if (m_nBuf < N_BUF_IO)
+		m_nBuf = N_BUF_IO;
 	m_pBuf = new uint8_t[m_nBuf];
 	NULL_F(m_pBuf);
 
@@ -59,7 +59,7 @@ bool _webSocket::init(void* pKiss)
 	return true;
 }
 
-bool _webSocket::link(void)
+bool _TCPsocket::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -67,7 +67,7 @@ bool _webSocket::link(void)
 	return true;
 }
 
-bool _webSocket::start(void)
+bool _TCPsocket::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -83,7 +83,7 @@ bool _webSocket::start(void)
 	return true;
 }
 
-void _webSocket::update(void)
+void _TCPsocket::update(void)
 {
 	//client mode always trying to connect to the server
 	while (m_bThreadON)
@@ -115,12 +115,12 @@ void _webSocket::update(void)
 
 }
 
-bool _webSocket::connect(void)
+bool _TCPsocket::connect(void)
 {
 	IF_T(m_bConnected);
 
-	m_webSocket = socket(AF_INET, SOCK_STREAM, 0);
-	IF_F(m_webSocket < 0);
+	m_socket = socket(AF_INET, SOCK_STREAM, 0);
+	IF_F(m_socket < 0);
 
 	struct sockaddr_in server;
 	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
@@ -129,7 +129,7 @@ bool _webSocket::connect(void)
 	m_strStatus = "Connecting";
 	LOG_I(m_strStatus);
 
-	int ret = ::connect(m_webSocket, (struct sockaddr *) &server, sizeof(server));
+	int ret = ::connect(m_socket, (struct sockaddr *) &server, sizeof(server));
 	if (ret < 0)
 	{
 		close();
@@ -141,7 +141,7 @@ bool _webSocket::connect(void)
 	struct timeval timeout;
 	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
 	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	setsockopt(m_webSocket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+	setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
 
 	m_bConnected = true;
 	m_strStatus = "CONNECTED";
@@ -150,7 +150,7 @@ bool _webSocket::connect(void)
 	return true;
 }
 
-void _webSocket::send(void)
+void _TCPsocket::send(void)
 {
 	IF_(!m_bConnected);
 	IF_(m_queSend.empty());
@@ -164,7 +164,7 @@ void _webSocket::send(void)
 	}
 	pthread_mutex_unlock(&m_mutexSend);
 
-	int nSend = ::write(m_webSocket, m_pBuf, nByte);
+	int nSend = ::write(m_socket, m_pBuf, nByte);
 	if (nSend == -1)
 	{
 		IF_(errno == EAGAIN);
@@ -175,11 +175,11 @@ void _webSocket::send(void)
 	}
 }
 
-void _webSocket::recv(void)
+void _TCPsocket::recv(void)
 {
 	IF_(!m_bConnected);
 
-	int nRecv = ::recv(m_webSocket, m_pBuf, m_nBuf, 0);
+	int nRecv = ::recv(m_socket, m_pBuf, m_nBuf, 0);
 
 	if (nRecv == -1)
 	{
@@ -205,7 +205,7 @@ void _webSocket::recv(void)
 	pthread_mutex_unlock(&m_mutexRecv);
 }
 
-bool _webSocket::write(uint8_t* pBuf, int nByte)
+bool _TCPsocket::write(uint8_t* pBuf, int nByte)
 {
 	IF_F(!m_bConnected);
 	IF_F(nByte <= 0);
@@ -222,7 +222,7 @@ bool _webSocket::write(uint8_t* pBuf, int nByte)
 	return true;
 }
 
-int _webSocket::read(uint8_t* pBuf, int nByte)
+int _TCPsocket::read(uint8_t* pBuf, int nByte)
 {
 	if(!m_bConnected)return -1;
 	if(pBuf==NULL)return -1;
@@ -242,9 +242,9 @@ int _webSocket::read(uint8_t* pBuf, int nByte)
 	return i;
 }
 
-void _webSocket::close(void)
+void _TCPsocket::close(void)
 {
-	::close(m_webSocket);
+	::close(m_socket);
 	m_bConnected = false;
 
 	while (!m_queSend.empty())
@@ -255,13 +255,13 @@ void _webSocket::close(void)
 	LOG_I("Closed");
 }
 
-void _webSocket::complete(void)
+void _TCPsocket::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 }
 
-bool _webSocket::draw(void)
+bool _TCPsocket::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;

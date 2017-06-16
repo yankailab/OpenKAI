@@ -1,16 +1,16 @@
 /*
- * _server.cpp
+ * _TCPserver.cpp
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#include "_server.h"
+#include "_TCPserver.h"
 
 namespace kai
 {
 
-_server::_server()
+_TCPserver::_TCPserver()
 {
 	m_socket = 0;
 	m_listenPort = 8888;
@@ -21,12 +21,12 @@ _server::_server()
 
 }
 
-_server::~_server()
+_TCPserver::~_TCPserver()
 {
 	complete();
 }
 
-bool _server::init(void* pKiss)
+bool _TCPserver::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -39,7 +39,7 @@ bool _server::init(void* pKiss)
 	return true;
 }
 
-bool _server::link(void)
+bool _TCPserver::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -47,7 +47,7 @@ bool _server::link(void)
 	return true;
 }
 
-bool _server::start(void)
+bool _TCPserver::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -63,7 +63,7 @@ bool _server::start(void)
 	return true;
 }
 
-void _server::update(void)
+void _TCPserver::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -79,7 +79,7 @@ void _server::update(void)
 
 }
 
-bool _server::handler(void)
+bool _TCPserver::handler(void)
 {
 	//Create socket
 	m_strStatus = "Creating socket";
@@ -132,7 +132,7 @@ bool _server::handler(void)
 			auto itr = m_lSocket.begin();
 			while (itr != m_lSocket.end())
 			{
-				_socket* pSocket = *itr;
+				_TCPsocket* pSocket = *itr;
 				if (!pSocket->m_bConnected)
 				{
 					itr = m_lSocket.erase(itr);
@@ -150,7 +150,7 @@ bool _server::handler(void)
 				continue;
 		}
 
-		_socket* pSocket = new _socket();
+		_TCPsocket* pSocket = new _TCPsocket();
 		if (!pSocket)
 		{
 			LOG_E("_socket create failed");
@@ -193,27 +193,27 @@ bool _server::handler(void)
 	return true;
 }
 
-_socket* _server::getFirstSocket(void)
+_TCPsocket* _TCPserver::getFirstSocket(void)
 {
 	IF_N(m_lSocket.empty());
 
 	return m_lSocket.front();
 }
 
-void _server::complete(void)
+void _TCPserver::complete(void)
 {
 	close(m_socket);
 	this->_ThreadBase::complete();
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		delete (_socket*)*itr;
+		delete (_TCPsocket*)*itr;
 	}
 
 	m_lSocket.clear();
 }
 
-bool _server::draw(void)
+bool _TCPserver::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -224,7 +224,7 @@ bool _server::draw(void)
 	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_socket*) *itr)->draw();
+		((_TCPsocket*) *itr)->draw();
 	}
 	pWin->tabPrev();
 

@@ -132,7 +132,7 @@ bool _webSocketServer::handler(void)
 			auto itr = m_lSocket.begin();
 			while (itr != m_lSocket.end())
 			{
-				_socket* pSocket = *itr;
+				_TCPsocket* pSocket = *itr;
 				if (!pSocket->m_bConnected)
 				{
 					itr = m_lSocket.erase(itr);
@@ -150,7 +150,7 @@ bool _webSocketServer::handler(void)
 				continue;
 		}
 
-		_socket* pSocket = new _socket();
+		_TCPsocket* pSocket = new _TCPsocket();
 		if (!pSocket)
 		{
 			LOG_E("_socket create failed");
@@ -193,7 +193,7 @@ bool _webSocketServer::handler(void)
 	return true;
 }
 
-_socket* _webSocketServer::getFirstSocket(void)
+_TCPsocket* _webSocketServer::getFirstSocket(void)
 {
 	IF_N(m_lSocket.empty());
 
@@ -207,7 +207,7 @@ void _webSocketServer::complete(void)
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		delete (_socket*)*itr;
+		delete (_TCPsocket*)*itr;
 	}
 
 	m_lSocket.clear();
@@ -224,7 +224,7 @@ bool _webSocketServer::draw(void)
 	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_socket*) *itr)->draw();
+		((_TCPsocket*) *itr)->draw();
 	}
 	pWin->tabPrev();
 

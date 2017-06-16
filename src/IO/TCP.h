@@ -2,7 +2,7 @@
 #define AI_IO_TCP_H_
 
 #include "../Base/common.h"
-#include "../Network/_server.h"
+#include "../IO/_TCPserver.h"
 #include "IO.h"
 
 namespace kai
@@ -27,8 +27,8 @@ public:
 	bool draw(void);
 
 private:
-	_server* m_pServer;
-	_socket* m_pSocket;
+	_TCPserver* m_pServer;
+	_TCPsocket* m_pSocket;
 
 };
 

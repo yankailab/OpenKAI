@@ -1,18 +1,18 @@
 /*
- * _server.h
+ * _TCPserver.h
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_SERVER_H_
-#define SRC_NETWORK_SERVER_H_
+#ifndef SRC_NETWORK_TCPSERVER_H_
+#define SRC_NETWORK_TCPSERVER_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 #include "../IO/IO.h"
-#include "_socket.h"
+#include "_TCPsocket.h"
 
 #define N_LISTEN 1
 #define N_SOCKET 1
@@ -20,25 +20,25 @@
 namespace kai
 {
 
-class _server: public _ThreadBase
+class _TCPserver: public _ThreadBase
 {
 public:
-	_server();
-	virtual ~_server();
+	_TCPserver();
+	virtual ~_TCPserver();
 
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
 	void complete(void);
 	bool draw(void);
-	_socket* getFirstSocket(void);
+	_TCPsocket* getFirstSocket(void);
 
 private:
 	bool handler(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_server*) This)->update();
+		((_TCPserver*) This)->update();
 		return NULL;
 	}
 
@@ -50,7 +50,7 @@ public:
 	int m_socket;
 	struct sockaddr_in m_serverAddr;
 
-	list<_socket*> m_lSocket;
+	list<_TCPsocket*> m_lSocket;
 	int			m_nSocket;
 
 };

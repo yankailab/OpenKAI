@@ -14,7 +14,7 @@
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
 
-#define N_BUF 128
+#define N_BUF_IO 128
 #define TIMEOUT_RECV_USEC 1000
 
 namespace kai

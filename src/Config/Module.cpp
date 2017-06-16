@@ -32,8 +32,10 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Obstacle);
 	ADD_MODULE(_Path);
 	ADD_MODULE(_RC);
-	ADD_MODULE(_server);
-	ADD_MODULE(_socket);
+	ADD_MODULE(_TCPserver);
+	ADD_MODULE(_TCPsocket);
+	ADD_MODULE(_UDPserver);
+	ADD_MODULE(_UDPsocket);
 	ADD_MODULE(Window);
 
 #ifndef USE_OPENCV4TEGRA

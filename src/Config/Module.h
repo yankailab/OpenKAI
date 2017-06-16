@@ -28,9 +28,10 @@
 #include "../Autopilot/_AutoPilot.h"
 
 #include "../IO/File.h"
-
-#include "../Network/_server.h"
-#include "../Network/_socket.h"
+#include "../IO/_TCPserver.h"
+#include "../IO/_TCPsocket.h"
+#include "../IO/_UDPserver.h"
+#include "../IO/_UDPsocket.h"
 
 #include "../DNN/Detector/_ImageNet.h"
 #include "../DNN/Detector/_MatrixNet.h"

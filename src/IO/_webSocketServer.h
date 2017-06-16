@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 #include "../IO/IO.h"
-#include "_socket.h"
+#include "_TCPsocket.h"
 
 #define N_LISTEN 1
 #define N_SOCKET 1
@@ -31,7 +31,7 @@ public:
 	bool start(void);
 	void complete(void);
 	bool draw(void);
-	_socket* getFirstSocket(void);
+	_TCPsocket* getFirstSocket(void);
 
 private:
 	bool handler(void);
@@ -50,7 +50,7 @@ public:
 	int m_socket;
 	struct sockaddr_in m_webSocketServerAddr;
 
-	list<_socket*> m_lSocket;
+	list<_TCPsocket*> m_lSocket;
 	int			m_nSocket;
 
 };

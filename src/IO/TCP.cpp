@@ -30,7 +30,7 @@ bool TCP::init(void* pKiss)
 	if(!pCC->empty())
 	{
 		//server mode
-		m_pServer = new _server();
+		m_pServer = new _TCPserver();
 		F_ERROR_F(m_pServer->init(pCC));
 		m_status = closed;
 		return true;
@@ -40,7 +40,7 @@ bool TCP::init(void* pKiss)
 	if(!pCC->empty())
 	{
 		//client mode
-		m_pSocket = new _socket();
+		m_pSocket = new _TCPsocket();
 		F_ERROR_F(m_pSocket->init(pCC));
 		m_status = closed;
 		return true;
@@ -89,7 +89,7 @@ int TCP::read(uint8_t* pBuf, int nByte)
 	if(m_pServer)
 	{
 		//server mode
-		_socket* pSocket = m_pServer->getFirstSocket();
+		_TCPsocket* pSocket = m_pServer->getFirstSocket();
 		if(!pSocket)return -1;
 
 	    return pSocket->read(pBuf,nByte);
@@ -111,7 +111,7 @@ bool TCP::write(uint8_t* pBuf, int nByte)
 	if(m_pServer)
 	{
 		//server mode
-		_socket* pSocket = m_pServer->getFirstSocket();
+		_TCPsocket* pSocket = m_pServer->getFirstSocket();
 		if(!pSocket)return -1;
 
 	    return pSocket->write(pBuf,nByte);

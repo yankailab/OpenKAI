@@ -1,12 +1,12 @@
 /*
- * _socket.h
+ * _TCPsocket.h
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_SOCKET_H_
-#define SRC_NETWORK_SOCKET_H_
+#ifndef SRC_NETWORK_TCPSOCKET_H_
+#define SRC_NETWORK_TCPSOCKET_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -14,17 +14,17 @@
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
 
-#define N_BUF 128
+#define N_BUF_IO 128
 #define TIMEOUT_RECV_USEC 1000
 
 namespace kai
 {
 
-class _socket: public _ThreadBase
+class _TCPsocket: public _ThreadBase
 {
 public:
-	_socket();
-	virtual ~_socket();
+	_TCPsocket();
+	virtual ~_TCPsocket();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -44,7 +44,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_socket*) This)->update();
+		((_TCPsocket*) This)->update();
 		return NULL;
 	}
 
