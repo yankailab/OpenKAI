@@ -1,12 +1,12 @@
 /*
- * _UDP.h
+ * _UDPserver.h
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_IO_UDP_H_
-#define SRC_IO_UDP_H_
+#ifndef SRC_IO_UDPserver_H_
+#define SRC_IO_UDPserver_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class _UDP: public _IOBase
+class _UDPserver: public _IOBase
 {
 public:
-	_UDP();
-	virtual ~_UDP();
+	_UDPserver();
+	virtual ~_UDPserver();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -40,7 +40,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_UDP*) This)->update();
+		((_UDPserver*) This)->update();
 		return NULL;
 	}
 

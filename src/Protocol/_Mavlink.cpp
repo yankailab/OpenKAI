@@ -19,13 +19,13 @@ _Mavlink::_Mavlink()
 	m_msg.attitude.rollspeed = 0;
 	m_msg.attitude.yawspeed = 0;
 
-	pthread_mutex_init(&m_mutexW, NULL);
+//	pthread_mutex_init(&m_mutexW, NULL);
 }
 
 _Mavlink::~_Mavlink()
 {
 	close();
-	pthread_mutex_destroy(&m_mutexW);
+//	pthread_mutex_destroy(&m_mutexW);
 }
 
 bool _Mavlink::init(void* pKiss)
@@ -98,7 +98,7 @@ void _Mavlink::update(void)
 
 		this->autoFPSfrom();
 
-		sendMessage();
+//		sendMessage();
 
 		handleMessages();
 
@@ -112,25 +112,27 @@ void _Mavlink::writeMessage(mavlink_message_t message)
 	MAVLINK_MSG_BUF mavBuf;
 	mavBuf.m_nByte = mavlink_msg_to_send_buffer(mavBuf.m_pBuf, &message);
 
-	pthread_mutex_lock(&m_mutexW);
-	m_queW.push(mavBuf);
-	pthread_mutex_unlock(&m_mutexW);
+	m_pSerialPort->write(mavBuf.m_pBuf, mavBuf.m_nByte);
+
+//	pthread_mutex_lock(&m_mutexW);
+//	m_queW.push(mavBuf);
+//	pthread_mutex_unlock(&m_mutexW);
 }
 
-void _Mavlink::sendMessage(void)
-{
-	MAVLINK_MSG_BUF mavBuf;
-
-	while(!m_queW.empty())
-	{
-		pthread_mutex_lock(&m_mutexW);
-		mavBuf = m_queW.front();
-		m_queW.pop();
-		pthread_mutex_unlock(&m_mutexW);
-
-		m_pSerialPort->write(mavBuf.m_pBuf, mavBuf.m_nByte);
-	}
-}
+//void _Mavlink::sendMessage(void)
+//{
+//	MAVLINK_MSG_BUF mavBuf;
+//
+//	while(!m_queW.empty())
+//	{
+//		pthread_mutex_lock(&m_mutexW);
+//		mavBuf = m_queW.front();
+//		m_queW.pop();
+//		pthread_mutex_unlock(&m_mutexW);
+//
+//		m_pSerialPort->write(mavBuf.m_pBuf, mavBuf.m_nByte);
+//	}
+//}
 
 void _Mavlink::sendHeartbeat(void)
 {

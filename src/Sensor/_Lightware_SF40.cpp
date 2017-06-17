@@ -115,7 +115,7 @@ bool _Lightware_SF40::link(void)
 
 bool _Lightware_SF40::start(void)
 {
-	if (m_pIn->type() == serialport)
+	if (m_pIn->ioType() == io_serialport)
 	{
 		IF_F(!m_pSF40sender->start());
 	}
@@ -144,7 +144,7 @@ void _Lightware_SF40::update(void)
 				continue;
 			}
 
-			if (m_pIn->type() == serialport)
+			if (m_pIn->ioType() == io_serialport)
 				m_pSF40sender->MBS(m_MBS);
 		}
 

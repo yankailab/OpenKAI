@@ -28,15 +28,22 @@ public:
 	bool init(void* pKiss);
 	bool open(void);
 	void close(void);
-
-	int read(uint8_t* pBuf, int nByte);
-	bool write(uint8_t* pBuf, int nByte);
-	bool writeLine(uint8_t* pBuf, int nByte);
+	bool start(void);
+	void complete(void);
 
 private:
 	bool setup(void);
+	void readIO(void);
+	void writeIO(void);
 
-	//Connection status
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_SerialPort*) This)->update();
+		return NULL;
+	}
+
+private:
 	int m_fd;
 	string m_name;
 	int m_baud;
@@ -44,9 +51,6 @@ private:
 	int m_stopBits;
 	bool m_parity;
 	bool m_hardwareControl;
-
-	pthread_mutex_t m_mutexWrite;
-	pthread_mutex_t m_mutexRead;
 
 };
 

@@ -132,8 +132,8 @@ public:
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
 
-	std::queue<MAVLINK_MSG_BUF> m_queW;
-	pthread_mutex_t m_mutexW;
+//	std::queue<MAVLINK_MSG_BUF> m_queW;
+//	pthread_mutex_t m_mutexW;
 };
 
 }

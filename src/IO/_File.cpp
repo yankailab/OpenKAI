@@ -6,7 +6,7 @@ namespace kai
 
 _File::_File(void)
 {
-	m_type = file;
+	m_ioType = io_file;
 	m_name = "";
 	m_buf = "";
 	m_iByte = 0;
@@ -27,16 +27,16 @@ bool _File::init(void* pKiss)
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("fileName", &m_name));
 	m_name = presetDir + m_name;
-	m_status = closed;
+	m_ioStatus = io_closed;
 	return true;
 }
 
 bool _File::open(string* pName)
 {
 	NULL_F(pName);
-	IF_T(m_status == opening);
+	IF_T(m_ioStatus == io_opened);
 	m_name = *pName;
-	m_status = closed;
+	m_ioStatus = io_closed;
 
     return open();
 }
@@ -44,13 +44,13 @@ bool _File::open(string* pName)
 bool _File::open(void)
 {
 	IF_F(m_name.empty());
-	IF_T(m_status == opening);
+	IF_T(m_ioStatus == io_opened);
 
 	m_file.open(m_name.c_str(),ios::in|ios::out|ios::app);
 	IF_F(!m_file);
 	m_file.seekg(0, ios_base::beg);
 	m_buf = "";
-	m_status = opening;
+	m_ioStatus = io_opened;
 	m_iByte = 0;
 
 	return true;
@@ -62,7 +62,7 @@ void _File::close(void)
 
 	m_file.flush();
 	m_file.close();
-	m_status = closed;
+	m_ioStatus = io_closed;
 }
 
 int _File::read(uint8_t* pBuf, int nByte)

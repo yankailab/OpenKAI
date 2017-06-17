@@ -6,7 +6,7 @@ namespace kai
 
 _TCP::_TCP(void)
 {
-	m_type = tcp;
+	m_ioType = io_tcp;
 	m_pSocket = NULL;
 	m_pServer = NULL;
 }
@@ -32,7 +32,7 @@ bool _TCP::init(void* pKiss)
 		//server mode
 		m_pServer = new _TCPserver();
 		F_ERROR_F(m_pServer->init(pCC));
-		m_status = closed;
+		m_ioStatus = io_closed;
 		return true;
 	}
 
@@ -42,7 +42,7 @@ bool _TCP::init(void* pKiss)
 		//client mode
 		m_pSocket = new _TCPsocket();
 		F_ERROR_F(m_pSocket->init(pCC));
-		m_status = closed;
+		m_ioStatus = io_closed;
 		return true;
 	}
 
@@ -52,13 +52,13 @@ bool _TCP::init(void* pKiss)
 
 bool _TCP::open(void)
 {
-	IF_T(m_status == opening);
+	IF_T(m_ioStatus == io_opened);
 
 	if(m_pServer)
 	{
 		//server mode
 		IF_F(!m_pServer->start());
-		m_status = opening;
+		m_ioStatus = io_opened;
 		LOG_I("Server is opening");
 		return true;
 	}
@@ -66,7 +66,7 @@ bool _TCP::open(void)
 	{
 		//client mode
 		IF_F(!m_pSocket->start());
-		m_status = opening;
+		m_ioStatus = io_opened;
 		LOG_I("Socket is opening");
 	    return true;
 	}
@@ -76,7 +76,7 @@ bool _TCP::open(void)
 
 void _TCP::close(void)
 {
-	m_status = closed;
+	m_ioStatus = io_closed;
 	if(m_pServer)m_pServer->complete();
 	else if(m_pSocket)m_pSocket->complete();
 	LOG_I("Closed");
@@ -84,7 +84,7 @@ void _TCP::close(void)
 
 int _TCP::read(uint8_t* pBuf, int nByte)
 {
-	if(m_status != opening)return -1;
+	if(m_ioStatus != io_opened)return -1;
 
 	if(m_pServer)
 	{
@@ -106,7 +106,7 @@ int _TCP::read(uint8_t* pBuf, int nByte)
 
 bool _TCP::write(uint8_t* pBuf, int nByte)
 {
-	IF_F(m_status != opening);
+	IF_F(m_ioStatus != io_opened);
 
 	if(m_pServer)
 	{

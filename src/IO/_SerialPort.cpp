@@ -8,24 +8,18 @@ _SerialPort::_SerialPort(void)
 {
 	m_fd = -1;
 	m_name = "";
-	m_type = serialport;
+	m_ioType = io_serialport;
 
 	m_baud = 115200;
 	m_dataBits = 8;
 	m_stopBits = 1;
 	m_parity = false;
 	m_hardwareControl = false;
-
-	pthread_mutex_init(&m_mutexWrite, NULL);
-	pthread_mutex_init(&m_mutexRead, NULL);
 }
 
 _SerialPort::~_SerialPort()
 {
 	close();
-
-	pthread_mutex_destroy(&m_mutexWrite);
-	pthread_mutex_destroy(&m_mutexRead);
 }
 
 bool _SerialPort::init(void* pKiss)
@@ -53,59 +47,70 @@ bool _SerialPort::open(void)
 	IF_F(m_fd == -1);
 	fcntl(m_fd, F_SETFL, 0);
 
-	m_status = opening;
+	m_ioStatus = io_opened;
 	return setup();
 }
 
 void _SerialPort::close(void)
 {
-	IF_(m_status!=opening);
+	IF_(m_ioStatus!=io_opened);
 
 	::close(m_fd);
-	m_status = closed;
+	this->_IOBase::close();
 }
 
-int _SerialPort::read(uint8_t* pBuf, int nByte)
+void _SerialPort::complete(void)
 {
-	if(m_status!=opening)return -1;
-
-	int n;
-	pthread_mutex_lock(&m_mutexRead);
-	n = ::read(m_fd, pBuf, nByte);
-	pthread_mutex_unlock(&m_mutexRead);
-
-	return n;
+	close();
+	this->_ThreadBase::complete();
 }
 
-bool _SerialPort::write(uint8_t* pBuf, int nByte)
+bool _SerialPort::start(void)
 {
-	IF_F(m_status!=opening);
+	IF_T(m_bThreadON);
 
-	int n;
-	pthread_mutex_lock(&m_mutexWrite);
-	n = ::write(m_fd, pBuf, nByte);
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG_E(retCode);
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
+void _SerialPort::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		writeIO();
+		readIO();
+
+		this->autoFPSto();
+	}
+}
+
+void _SerialPort::writeIO(void)
+{
+	int nB = m_ioW.que2buf();
+	IF_(nB <= 0);
+
+	int nW = ::write(m_fd, m_ioW.m_pBuf, nB);
+
 	// Wait until all data has been written
 	tcdrain(m_fd);
-	pthread_mutex_unlock(&m_mutexWrite);
 
-	return (n==nByte);
+	//if(nW!=nB)?
 }
 
-bool _SerialPort::writeLine(uint8_t* pBuf, int nByte)
+void _SerialPort::readIO(void)
 {
-	IF_F(m_status!=opening);
-
-	int n;
-	const char crlf[] = "\x0d\x0a";
-
-	pthread_mutex_lock(&m_mutexWrite);
-	n = ::write(m_fd, pBuf, nByte);
-	n += ::write(m_fd, crlf, 2);
-	// Wait until all data has been written
-	tcdrain(m_fd);
-	pthread_mutex_unlock(&m_mutexWrite);
-
-	return (n==nByte+2);
+	int n = ::read(m_fd, m_ioR.m_pBuf, m_ioR.m_nBuf);
+	m_ioR.buf2que(n);
 }
 
 bool _SerialPort::setup(void)

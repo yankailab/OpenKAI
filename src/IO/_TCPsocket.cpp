@@ -141,7 +141,7 @@ bool _TCPsocket::connect(void)
 	struct timeval timeout;
 	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
 	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
+	IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
 
 	m_bConnected = true;
 	m_strStatus = "CONNECTED";

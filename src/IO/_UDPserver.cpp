@@ -1,16 +1,16 @@
 /*
- * _UDP.cpp
+ * _UDPserver.cpp
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#include "_UDP.h"
+#include "_UDPserver.h"
 
 namespace kai
 {
 
-_UDP::_UDP()
+_UDPserver::_UDPserver()
 {
 	m_strAddr = "";
 	m_port = 0;
@@ -19,12 +19,12 @@ _UDP::_UDP()
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
-_UDP::~_UDP()
+_UDPserver::~_UDPserver()
 {
 	complete();
 }
 
-bool _UDP::init(void* pKiss)
+bool _UDPserver::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -37,7 +37,7 @@ bool _UDP::init(void* pKiss)
 	return true;
 }
 
-bool _UDP::link(void)
+bool _UDPserver::link(void)
 {
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -45,7 +45,7 @@ bool _UDP::link(void)
 	return true;
 }
 
-bool _UDP::open(void)
+bool _UDPserver::open(void)
 {
 	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	IF_F(m_socket < 0);
@@ -65,7 +65,7 @@ bool _UDP::open(void)
 	return true;
 }
 
-bool _UDP::start(void)
+bool _UDPserver::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -81,7 +81,7 @@ bool _UDP::start(void)
 	return true;
 }
 
-void _UDP::update(void)
+void _UDPserver::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -94,7 +94,7 @@ void _UDP::update(void)
 	}
 }
 
-void _UDP::writeIO(void)
+void _UDPserver::writeIO(void)
 {
 	int nB = m_ioW.que2buf();
 	IF_(nB <= 0);
@@ -111,7 +111,7 @@ void _UDP::writeIO(void)
 	}
 }
 
-void _UDP::readIO(void)
+void _UDPserver::readIO(void)
 {
 	int nRecv = ::recvfrom(m_socket, m_ioR.m_pBuf, m_ioR.m_nBuf, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 
@@ -134,7 +134,7 @@ void _UDP::readIO(void)
 	m_ioR.buf2que(nRecv);
 }
 
-void _UDP::close(void)
+void _UDPserver::close(void)
 {
 	IF_(m_ioStatus!=io_opened);
 
@@ -142,13 +142,13 @@ void _UDP::close(void)
 	this->_IOBase::close();
 }
 
-void _UDP::complete(void)
+void _UDPserver::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 }
 
-bool _UDP::draw(void)
+bool _UDPserver::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
