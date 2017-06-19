@@ -6,7 +6,7 @@ namespace kai
 
 _Mavlink::_Mavlink()
 {
-	m_pSerialPort = NULL;
+	m_pIO = NULL;
 	m_systemID = 1;
 	m_componentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
@@ -19,13 +19,11 @@ _Mavlink::_Mavlink()
 	m_msg.attitude.rollspeed = 0;
 	m_msg.attitude.yawspeed = 0;
 
-//	pthread_mutex_init(&m_mutexW, NULL);
 }
 
 _Mavlink::~_Mavlink()
 {
 	close();
-//	pthread_mutex_destroy(&m_mutexW);
 }
 
 bool _Mavlink::init(void* pKiss)
@@ -33,11 +31,6 @@ bool _Mavlink::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	Kiss* pCC = pK->o("input");
-	IF_F(pCC->empty());
-	m_pSerialPort = new _SerialPort();
-	IF_F(!m_pSerialPort->init(pCC));
 
 	//init param
 	m_systemID = 1;
@@ -54,16 +47,23 @@ bool _Mavlink::init(void* pKiss)
 bool _Mavlink::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
+	Kiss* pK = (Kiss*) m_pKiss;
+
+	string iName;
+
+	iName = "";
+	F_ERROR_F(pK->v("_IOBase", &iName));
+	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
 void _Mavlink::close()
 {
-	if (m_pSerialPort)
+	if (m_pIO)
 	{
-		m_pSerialPort->close();
-		delete m_pSerialPort;
-		m_pSerialPort = NULL;
+		m_pIO->close();
+		m_pIO = NULL;
 	}
 }
 
@@ -86,9 +86,9 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		if (!m_pSerialPort->isOpen())
+		if (!m_pIO->isOpen())
 		{
-			if (!m_pSerialPort->open())
+			if (!m_pIO->open())
 			{
 				this->sleepTime(USEC_1SEC);
 				continue;
@@ -97,8 +97,6 @@ void _Mavlink::update(void)
 		}
 
 		this->autoFPSfrom();
-
-//		sendMessage();
 
 		handleMessages();
 
@@ -109,30 +107,11 @@ void _Mavlink::update(void)
 
 void _Mavlink::writeMessage(mavlink_message_t message)
 {
-	MAVLINK_MSG_BUF mavBuf;
-	mavBuf.m_nByte = mavlink_msg_to_send_buffer(mavBuf.m_pBuf, &message);
+	uint8_t pBuf[256];
+	int nB = mavlink_msg_to_send_buffer(pBuf, &message);
 
-	m_pSerialPort->write(mavBuf.m_pBuf, mavBuf.m_nByte);
-
-//	pthread_mutex_lock(&m_mutexW);
-//	m_queW.push(mavBuf);
-//	pthread_mutex_unlock(&m_mutexW);
+	m_pIO->write(pBuf, nB);
 }
-
-//void _Mavlink::sendMessage(void)
-//{
-//	MAVLINK_MSG_BUF mavBuf;
-//
-//	while(!m_queW.empty())
-//	{
-//		pthread_mutex_lock(&m_mutexW);
-//		mavBuf = m_queW.front();
-//		m_queW.pop();
-//		pthread_mutex_unlock(&m_mutexW);
-//
-//		m_pSerialPort->write(mavBuf.m_pBuf, mavBuf.m_nByte);
-//	}
-//}
 
 void _Mavlink::sendHeartbeat(void)
 {
@@ -437,7 +416,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 
 	if(nRead == 0)
 	{
-		nRead = m_pSerialPort->read(rBuf, N_MAVBUF);
+		nRead = m_pIO->read(rBuf, N_MAVBUF);
 		IF_F(nRead <= 0);
 		iRead = 0;
 	}
@@ -607,7 +586,7 @@ bool _Mavlink::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	if (m_pSerialPort->isOpen())
+	if (m_pIO->isOpen())
 	{
 		this->_ThreadBase::draw();
 	}

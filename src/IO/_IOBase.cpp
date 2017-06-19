@@ -63,7 +63,6 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 
 bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 {
-	int n;
 	const char pCRLF[] = "\x0d\x0a";
 
 	IF_F(!write(pBuf, nB));

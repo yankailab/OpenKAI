@@ -5,7 +5,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
-#include "../IO/_SerialPort.h"
+#include "../IO/_IOBase.h"
 #include "../UI/Window.h"
 
 #define NUM_MSG_HANDLE 10
@@ -74,12 +74,6 @@ struct Mavlink_Messages
 
 };
 
-struct MAVLINK_MSG_BUF
-{
-	int m_nByte;
-	uint8_t m_pBuf[N_MAVBUF];
-};
-
 class _Mavlink: public _ThreadBase
 {
 public:
@@ -122,7 +116,7 @@ public:
 		return NULL;
 	}
 
-	_SerialPort* m_pSerialPort;
+	_IOBase* m_pIO;
 	int m_systemID;
 	int m_componentID;
 	int m_type;
@@ -131,9 +125,6 @@ public:
 	Mavlink_Messages m_msg;
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
-
-//	std::queue<MAVLINK_MSG_BUF> m_queW;
-//	pthread_mutex_t m_mutexW;
 };
 
 }
