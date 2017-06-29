@@ -300,11 +300,13 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 	*pT = m_vT;
 	*pR = m_vR;
 	*pDT = m_trackDT / 1000;
-	int avrCount = m_trackConfidence / m_trackCount;
+
+	if(m_trackCount <= 0)m_trackCount = 1;
+	int avrConfidence = m_trackConfidence / m_trackCount;
 
 	resetMotionDelta();
 
-	return m_trackConfidence;
+	return avrConfidence;
 }
 
 void _ZED::resetMotionDelta(void)

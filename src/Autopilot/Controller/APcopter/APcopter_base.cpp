@@ -113,6 +113,10 @@ void APcopter_base::update(void)
 		m_lastHeartbeat = timeNow;
 	}
 
+	//for test
+	m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 1);
+	m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, 1);
+
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 }

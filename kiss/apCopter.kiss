@@ -23,20 +23,39 @@
 }
 
 {
+	"name":"apSerialJetson",
+	"class":"_SerialPort",
+	"bInst":0,
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+}
+
+{
+	"name":"apSerialPC",
+	"class":"_SerialPort",
+	"bInst":1,
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":0,
+	"addrIn":"192.168.0.1",
+	"portIn":5000,
+	"addrOut":"192.168.0.1",
+	"portOut":5001,
+}
+
+{
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyTHS1",
-		"baud":921600,
-	}
+	"_IOBase":"apSerialPC",
 }
 
 {
@@ -55,10 +74,17 @@
 	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
-	"bZedFlip":1,
+	"bZedFlip":0,
 	"zedConfidence":99,
 	"bFlip":0,
 }
+
+{
+	"name":"leddarVuSerial",
+	"bInst":0,
+	"portName":"/dev/ttyACM1",
+	"baud":115200,
+}	
 
 {
 	"name":"leddarVu",
@@ -72,15 +98,9 @@
 	"minDist":0.1,
 	"nDiv":8,
 	"dAngle":10,
-
-	{
-		"name":"input",
-		"bInst":1,
-		"portName":"/dev/ttyACM0",
-		"baud":115200,
-		"bUse0x41":0,
-		"slaveAddr":1,
-	}	
+	"_IObase":"leddarVuSerial",
+	"bUse0x41":0,
+	"slaveAddr":1,
 }
 
 {
@@ -106,7 +126,7 @@
 {
 	"name":"apIN",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"FPS":30,
 	"Window":"apView",
@@ -198,7 +218,7 @@
 		{
 			"name":"apAvoid",
 			"class":"APcopter_avoid",
-			"bInst":1,
+			"bInst":0,
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
@@ -226,7 +246,7 @@
 		{
 			"name":"apZedSlam",
 			"class":"APcopter_zedSLAM",
-			"bInst":1,
+			"bInst":0,
 			"bLog":0,
 			"Window":"apView",
 			"_Automaton":"apState",
@@ -237,7 +257,7 @@
 		{
 			"name":"apVisualAvoid",
 			"class":"APcopter_visualAvoid",
-			"bInst":1,
+			"bInst":0,
 			"bLog":1,
 			"Window":"apView",
 			"_Automaton":"apState",

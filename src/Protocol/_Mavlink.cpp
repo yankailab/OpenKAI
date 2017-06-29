@@ -86,6 +86,8 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
+		if(!m_pIO)continue;
+
 		if (!m_pIO->isOpen())
 		{
 			if (!m_pIO->open())
