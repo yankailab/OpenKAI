@@ -301,8 +301,9 @@ int _ZED::getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT)
 	*pR = m_vR;
 	*pDT = m_trackDT / 1000;
 
-	if(m_trackCount <= 0)m_trackCount = 1;
-	int avrConfidence = m_trackConfidence / m_trackCount;
+	int avrConfidence = m_trackConfidence;
+	int tCount = m_trackCount;
+	if(tCount > 0)avrConfidence /= tCount;
 
 	resetMotionDelta();
 
@@ -413,7 +414,11 @@ bool _ZED::draw(void)
 		string msg;
 		pWin->tabNext();
 
-		msg = "Tracking confidence: " + i2str(m_trackConfidence);
+		int avrConfidence = m_trackConfidence;
+		int tCount = m_trackCount;
+		if(tCount > 0)avrConfidence /= tCount;
+
+		msg = "Tracking confidence: " + i2str(avrConfidence);
 		pWin->addMsg(&msg);
 
 		msg = "Translation: X=" + f2str(m_vT.x) + ", Y=" + f2str(m_vT.y)

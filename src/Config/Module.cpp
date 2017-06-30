@@ -38,6 +38,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_TCPsocket);
 	ADD_MODULE(_TCP);
 	ADD_MODULE(_UDP);
+	ADD_MODULE(_UDPsender);
+	ADD_MODULE(_UDPreceiver);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

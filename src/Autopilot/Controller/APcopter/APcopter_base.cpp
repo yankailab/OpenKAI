@@ -10,6 +10,9 @@ APcopter_base::APcopter_base()
 	m_iHeartbeat = 0;
 	m_flightMode = 0;
 
+	m_freqAtti = 10;
+	m_freqGlobalPos = 10;
+
 	m_pidRoll.reset();
 	m_pidPitch.reset();
 	m_pidYaw.reset();
@@ -30,6 +33,9 @@ bool APcopter_base::init(void* pKiss)
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
+
+	KISSm(pK,freqAtti);
+	KISSm(pK,freqGlobalPos);
 
 	Kiss* pCC;
 	APcopter_PID cPID;
@@ -106,19 +112,23 @@ void APcopter_base::update(void)
 	NULL_(m_pMavlink);
 
 	//Sending Heartbeat at 1Hz
-	uint64_t timeNow = get_time_usec();
-	if (timeNow - m_lastHeartbeat >= USEC_1SEC)
+	uint64_t tNow = get_time_usec();
+	if (tNow - m_lastHeartbeat >= USEC_1SEC)
 	{
-//		m_pMavlink->sendHeartbeat();
-		m_lastHeartbeat = timeNow;
+		m_pMavlink->sendHeartbeat();
+		m_lastHeartbeat = tNow;
 	}
-
-	//for test
-	m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 1);
-	m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, 1);
 
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+
+	//for test
+	if(tNow - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
+
+	if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
+
 }
 
 bool APcopter_base::draw(void)

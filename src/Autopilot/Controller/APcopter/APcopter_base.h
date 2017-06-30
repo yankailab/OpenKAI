@@ -84,6 +84,9 @@ public:
 	APcopter_CTRL m_ctrlYaw;
 	APcopter_CTRL m_ctrlThr;
 
+	int m_freqAtti;
+	int m_freqGlobalPos;
+
 };
 
 /*

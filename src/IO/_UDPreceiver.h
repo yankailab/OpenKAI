@@ -1,12 +1,12 @@
 /*
- * _UDPserver.h
+ * _UDPreceiver.h
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_IO_UDPserver_H_
-#define SRC_IO_UDPserver_H_
+#ifndef SRC_IO_UDPreceiver_H_
+#define SRC_IO_UDPreceiver_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class _UDPserver: public _IOBase
+class _UDPreceiver: public _IOBase
 {
 public:
-	_UDPserver();
-	virtual ~_UDPserver();
+	_UDPreceiver();
+	virtual ~_UDPreceiver();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -40,7 +40,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_UDPserver*) This)->update();
+		((_UDPreceiver*) This)->update();
 		return NULL;
 	}
 

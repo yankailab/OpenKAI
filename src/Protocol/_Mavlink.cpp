@@ -458,6 +458,8 @@ void _Mavlink::handleMessages()
 		m_msg.sysid = message.sysid;
 		m_msg.compid = message.compid;
 
+		uint64_t tNow = get_time_usec();
+
 		// Handle Message ID
 		switch (message.msgid)
 		{
@@ -466,7 +468,7 @@ void _Mavlink::handleMessages()
 		{
 			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
 			mavlink_msg_heartbeat_decode(&message, &(m_msg.heartbeat));
-			m_msg.time_stamps.heartbeat = get_time_usec();
+			m_msg.time_stamps.heartbeat = tNow;
 
 			if (m_msg.heartbeat.type != MAV_TYPE_GCS)
 			{
@@ -487,7 +489,7 @@ void _Mavlink::handleMessages()
 		{
 			LOG_I("-> MAVLINK_MSG_ID_SYS_STATUS");
 			mavlink_msg_sys_status_decode(&message, &(m_msg.sys_status));
-			m_msg.time_stamps.sys_status = get_time_usec();
+			m_msg.time_stamps.sys_status = tNow;
 			break;
 		}
 
@@ -496,7 +498,7 @@ void _Mavlink::handleMessages()
 			LOG_I("-> MAVLINK_MSG_ID_BATTERY_STATUS");
 			mavlink_msg_battery_status_decode(&message,
 					&(m_msg.battery_status));
-			m_msg.time_stamps.battery_status = get_time_usec();
+			m_msg.time_stamps.battery_status = tNow;
 			break;
 		}
 
@@ -504,7 +506,7 @@ void _Mavlink::handleMessages()
 		{
 			LOG_I("-> MAVLINK_MSG_ID_RADIO_STATUS");
 			mavlink_msg_radio_status_decode(&message, &(m_msg.radio_status));
-			m_msg.time_stamps.radio_status = get_time_usec();
+			m_msg.time_stamps.radio_status = tNow;
 			break;
 		}
 
@@ -513,7 +515,7 @@ void _Mavlink::handleMessages()
 			LOG_I("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED");
 			mavlink_msg_local_position_ned_decode(&message,
 					&(m_msg.local_position_ned));
-			m_msg.time_stamps.local_position_ned = get_time_usec();
+			m_msg.time_stamps.local_position_ned = tNow;
 			break;
 		}
 
@@ -522,7 +524,7 @@ void _Mavlink::handleMessages()
 			LOG_I("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT");
 			mavlink_msg_global_position_int_decode(&message,
 					&(m_msg.global_position_int));
-			m_msg.time_stamps.global_position_int = get_time_usec();
+			m_msg.time_stamps.global_position_int = tNow;
 			break;
 		}
 
@@ -531,7 +533,7 @@ void _Mavlink::handleMessages()
 			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED");
 			mavlink_msg_position_target_local_ned_decode(&message,
 					&(m_msg.position_target_local_ned));
-			m_msg.time_stamps.position_target_local_ned = get_time_usec();
+			m_msg.time_stamps.position_target_local_ned = tNow;
 			break;
 		}
 
@@ -540,7 +542,7 @@ void _Mavlink::handleMessages()
 			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT");
 			mavlink_msg_position_target_global_int_decode(&message,
 					&(m_msg.position_target_global_int));
-			m_msg.time_stamps.position_target_global_int = get_time_usec();
+			m_msg.time_stamps.position_target_global_int = tNow;
 			break;
 		}
 
@@ -548,7 +550,7 @@ void _Mavlink::handleMessages()
 		{
 			LOG_I("-> MAVLINK_MSG_ID_HIGHRES_IMU");
 			mavlink_msg_highres_imu_decode(&message, &(m_msg.highres_imu));
-			m_msg.time_stamps.highres_imu = get_time_usec();
+			m_msg.time_stamps.highres_imu = tNow;
 			break;
 		}
 
@@ -556,14 +558,14 @@ void _Mavlink::handleMessages()
 		{
 			LOG_I("-> MAVLINK_MSG_ID_ATTITUDE");
 			mavlink_msg_attitude_decode(&message, &(m_msg.attitude));
-			m_msg.time_stamps.attitude = get_time_usec();
+			m_msg.time_stamps.attitude = tNow;
 			break;
 		}
 
 		case MAVLINK_MSG_ID_COMMAND_ACK:
 		{
 			mavlink_msg_command_ack_decode(&message, &(m_msg.command_ack));
-			m_msg.time_stamps.attitude = get_time_usec();
+			m_msg.time_stamps.attitude = tNow;
 
 			LOG_I("-> MAVLINK_MSG_ID_COMMAND_ACK:"<<m_msg.command_ack.result);
 			break;
@@ -584,19 +586,31 @@ void _Mavlink::handleMessages()
 
 bool _Mavlink::draw(void)
 {
-	IF_F(!this->BASE::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
 
-	if (m_pIO->isOpen())
+	string msg = *this->getName();
+
+	if (!m_pIO->isOpen())
 	{
-		this->_ThreadBase::draw();
-	}
-	else
-	{
-		string msg = *this->getName() + ": Not Connected";
+		msg += ": Not Connected";
 		pWin->addMsg(&msg);
+		return true;
 	}
+
+	pWin->addMsg(&msg);
+
+	pWin->tabNext();
+
+	msg = "y=" + f2str((double)m_msg.attitude.yaw) +
+			" p=" + f2str((double)m_msg.attitude.pitch) +
+			" r=" + f2str((double)m_msg.attitude.roll);
+	pWin->addMsg(&msg);
+
+	msg = "hdg=" + f2str(((double)m_msg.global_position_int.hdg)*0.01);
+	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }

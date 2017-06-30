@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_UDPserver.h"
+#include "_UDPreceiver.h"
 
 namespace kai
 {
 
-_UDPserver::_UDPserver()
+_UDPreceiver::_UDPreceiver()
 {
 	m_strAddr = "";
 	m_port = 0;
@@ -19,12 +19,12 @@ _UDPserver::_UDPserver()
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
-_UDPserver::~_UDPserver()
+_UDPreceiver::~_UDPreceiver()
 {
 	complete();
 }
 
-bool _UDPserver::init(void* pKiss)
+bool _UDPreceiver::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -37,7 +37,7 @@ bool _UDPserver::init(void* pKiss)
 	return true;
 }
 
-bool _UDPserver::link(void)
+bool _UDPreceiver::link(void)
 {
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -45,7 +45,7 @@ bool _UDPserver::link(void)
 	return true;
 }
 
-bool _UDPserver::open(void)
+bool _UDPreceiver::open(void)
 {
 	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	IF_F(m_socket < 0);
@@ -65,7 +65,7 @@ bool _UDPserver::open(void)
 	return true;
 }
 
-bool _UDPserver::start(void)
+bool _UDPreceiver::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -81,7 +81,7 @@ bool _UDPserver::start(void)
 	return true;
 }
 
-void _UDPserver::update(void)
+void _UDPreceiver::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -94,7 +94,7 @@ void _UDPserver::update(void)
 	}
 }
 
-void _UDPserver::writeIO(void)
+void _UDPreceiver::writeIO(void)
 {
 	int nB = m_ioW.que2buf();
 	IF_(nB <= 0);
@@ -111,7 +111,7 @@ void _UDPserver::writeIO(void)
 	}
 }
 
-void _UDPserver::readIO(void)
+void _UDPreceiver::readIO(void)
 {
 	int nRecv = ::recvfrom(m_socket, m_ioR.m_pBuf, m_ioR.m_nBuf, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 
@@ -134,7 +134,7 @@ void _UDPserver::readIO(void)
 	m_ioR.buf2que(nRecv);
 }
 
-void _UDPserver::close(void)
+void _UDPreceiver::close(void)
 {
 	IF_(m_ioStatus!=io_opened);
 
@@ -142,13 +142,13 @@ void _UDPserver::close(void)
 	this->_IOBase::close();
 }
 
-void _UDPserver::complete(void)
+void _UDPreceiver::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 }
 
-bool _UDPserver::draw(void)
+bool _UDPreceiver::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;

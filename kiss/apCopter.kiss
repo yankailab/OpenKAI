@@ -23,6 +23,27 @@
 }
 
 {
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"apView",
+	"depthWindow":"apDepth",
+	"orientation":0,
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":30,
+	"zedDepthMode":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":15.0,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+}
+
+{
 	"name":"apSerialJetson",
 	"class":"_SerialPort",
 	"bInst":0,
@@ -52,31 +73,10 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apSerialPC",
-}
-
-{
-	"name":"ZED",
-	"class":"_ZED",
-	"FPS":30,
-	"bInst":1,
-	"bLog":0,
-	"Window":"apView",
-	"depthWindow":"apDepth",
-	"orientation":0,
-	"angleV":67.1,
-	"angleH":66.7,
-	"zedFPS":30,
-	"zedDepthMode":1,
-	"zedResolution":2,
-	"zedMinDist":0.6,
-	"zedMaxDist":15.0,
-	"bZedFlip":0,
-	"zedConfidence":99,
-	"bFlip":0,
 }
 
 {
@@ -213,6 +213,8 @@
 			"_Automaton":"apState",
 			"Window":"apView",
 			"_Mavlink":"apMavlink",
+			"freqAtti":10,
+			"freqGlobalPos":10,
 		}
 
 		{

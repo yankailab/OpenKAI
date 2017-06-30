@@ -18,7 +18,7 @@ struct Time_Stamps
 {
 	Time_Stamps()
 	{
-		reset_timestamps();
+		init();
 	}
 
 	uint64_t heartbeat;
@@ -32,7 +32,7 @@ struct Time_Stamps
 	uint64_t highres_imu;
 	uint64_t attitude;
 
-	void reset_timestamps()
+	void init()
 	{
 		heartbeat = 0;
 		sys_status = 0;
@@ -69,7 +69,7 @@ struct Mavlink_Messages
 
 	void reset_timestamps()
 	{
-		time_stamps.reset_timestamps();
+		time_stamps.init();
 	}
 
 };
