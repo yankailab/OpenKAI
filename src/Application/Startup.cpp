@@ -11,6 +11,7 @@ void signalHandler(int signal)
 	if (signal != SIGINT)return;
 	printf("\nSIGINT: Complete\n");
 	g_pStartup->m_bRun = false;
+	exit(0);
 }
 
 namespace kai

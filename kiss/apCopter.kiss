@@ -47,6 +47,7 @@
 	"name":"apSerialJetson",
 	"class":"_SerialPort",
 	"bInst":0,
+	"Window":"apView",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
 }
@@ -55,14 +56,24 @@
 	"name":"apSerialPC",
 	"class":"_SerialPort",
 	"bInst":1,
+	"Window":"apView",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
+}
+
+{
+	"name":"apUDPclient",
+	"class":"_UDPclient",
+	"bInst":1,
+	"Window":"apView",
+	"addr":"127.0.0.1",
 }
 
 {
 	"name":"apUDP",
 	"class":"_UDP",
 	"bInst":0,
+	"Window":"apView",
 	"addrIn":"192.168.0.1",
 	"portIn":5000,
 	"addrOut":"192.168.0.1",

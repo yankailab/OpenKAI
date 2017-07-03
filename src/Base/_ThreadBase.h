@@ -31,6 +31,7 @@ public:
 	void sleep(void);
 	void wakeUp(void);
 	void sleepTime(int64_t usec);
+	void disableSleep(bool bDisable);
 
 	void updateTime(void);
 	double getFrameRate(void);
@@ -54,6 +55,7 @@ public:
 	int64_t m_timeFrom;
 	int64_t m_timeTo;
 	bool	m_bSleep;
+	bool	m_bDisableSleep;
 
 };
 

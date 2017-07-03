@@ -1,30 +1,30 @@
 /*
- * _UDPserver.cpp
+ * _UDPclient.cpp
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#include "_UDPreceiver.h"
+#include "_UDPclient.h"
 
 namespace kai
 {
 
-_UDPreceiver::_UDPreceiver()
+_UDPclient::_UDPclient()
 {
-	m_strAddr = "";
-	m_port = 0;
+	m_strAddr = "127.0.0.1";
+	m_port = DEFAULT_PORT_OUT;
 	m_socket = 0;
 	m_nSAddr = 0;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
-_UDPreceiver::~_UDPreceiver()
+_UDPclient::~_UDPclient()
 {
 	complete();
 }
 
-bool _UDPreceiver::init(void* pKiss)
+bool _UDPclient::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -37,7 +37,7 @@ bool _UDPreceiver::init(void* pKiss)
 	return true;
 }
 
-bool _UDPreceiver::link(void)
+bool _UDPclient::link(void)
 {
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -45,7 +45,7 @@ bool _UDPreceiver::link(void)
 	return true;
 }
 
-bool _UDPreceiver::open(void)
+bool _UDPclient::open(void)
 {
 	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	IF_F(m_socket < 0);
@@ -65,7 +65,7 @@ bool _UDPreceiver::open(void)
 	return true;
 }
 
-bool _UDPreceiver::start(void)
+bool _UDPclient::start(void)
 {
 	IF_T(m_bThreadON);
 
@@ -81,28 +81,42 @@ bool _UDPreceiver::start(void)
 	return true;
 }
 
-void _UDPreceiver::update(void)
+void _UDPclient::update(void)
 {
 	while (m_bThreadON)
 	{
+		if (!isOpen())
+		{
+			if (!open())
+			{
+				this->sleepTime(USEC_1SEC);
+				continue;
+			}
+		}
+
 		this->autoFPSfrom();
 
 		writeIO();
 		readIO();
 
+		if(!this->bEmptyW())
+			this->disableSleep(true);
+		else
+			this->disableSleep(false);
+
 		this->autoFPSto();
 	}
 }
 
-void _UDPreceiver::writeIO(void)
+void _UDPclient::writeIO(void)
 {
 	IO_BUF ioB;
 	toBufW(&ioB);
 	IF_(ioB.bEmpty());
 
-	int nSend = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
+	int nSent = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 
-	if (nSend == -1)
+	if (nSent == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
@@ -112,7 +126,7 @@ void _UDPreceiver::writeIO(void)
 	}
 }
 
-void _UDPreceiver::readIO(void)
+void _UDPclient::readIO(void)
 {
 	IO_BUF ioB;
 	ioB.m_nB = ::recvfrom(m_socket, ioB.m_pB, N_IO_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
@@ -136,7 +150,7 @@ void _UDPreceiver::readIO(void)
 	toQueR(&ioB);
 }
 
-void _UDPreceiver::close(void)
+void _UDPclient::close(void)
 {
 	IF_(m_ioStatus!=io_opened);
 
@@ -144,20 +158,24 @@ void _UDPreceiver::close(void)
 	this->_IOBase::close();
 }
 
-void _UDPreceiver::complete(void)
+void _UDPclient::complete(void)
 {
 	close();
 	this->_ThreadBase::complete();
 }
 
-bool _UDPreceiver::draw(void)
+bool _UDPclient::draw(void)
 {
-	IF_F(!this->BASE::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port);
+	pWin->tabNext();
+
+	string msg = "IP: " + m_strAddr + ":" + i2str(m_port);
 	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }

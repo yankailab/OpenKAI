@@ -22,6 +22,7 @@ _ThreadBase::_ThreadBase()
 	m_timeFrom = 0;
 	m_timeTo = 0;
 	m_bSleep = false;
+	m_bDisableSleep = false;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -60,6 +61,8 @@ void _ThreadBase::sleepTime(int64_t usec)
 {
 	if(usec>0)
 	{
+		IF_(m_bDisableSleep);
+
 		struct timeval now;
 		struct timespec timeout;
 
@@ -84,6 +87,11 @@ void _ThreadBase::sleepTime(int64_t usec)
 void _ThreadBase::sleep(void)
 {
 	m_bSleep = true;
+}
+
+void _ThreadBase::disableSleep(bool bDisable)
+{
+	m_bDisableSleep = bDisable;
 }
 
 void _ThreadBase::wakeUp(void)

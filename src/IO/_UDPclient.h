@@ -1,12 +1,12 @@
 /*
- * _UDPreceiver.h
+ * _UDPclient.h
  *
  *  Created on: June 16, 2016
  *      Author: yankai
  */
 
-#ifndef SRC_IO_UDPreceiver_H_
-#define SRC_IO_UDPreceiver_H_
+#ifndef SRC_IO_UDPsender_H_
+#define SRC_IO_UDPsender_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
@@ -14,15 +14,16 @@
 #include "_IOBase.h"
 
 #define TIMEOUT_RECV_USEC 1000
+#define DEFAULT_PORT_OUT 19848
 
 namespace kai
 {
 
-class _UDPreceiver: public _IOBase
+class _UDPclient: public _IOBase
 {
 public:
-	_UDPreceiver();
-	virtual ~_UDPreceiver();
+	_UDPclient();
+	virtual ~_UDPclient();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -40,7 +41,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_UDPreceiver*) This)->update();
+		((_UDPclient*) This)->update();
 		return NULL;
 	}
 

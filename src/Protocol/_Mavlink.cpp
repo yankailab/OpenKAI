@@ -87,16 +87,7 @@ void _Mavlink::update(void)
 	while (m_bThreadON)
 	{
 		if(!m_pIO)continue;
-
-		if (!m_pIO->isOpen())
-		{
-			if (!m_pIO->open())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-			m_status.packet_rx_drop_count = 0;
-		}
+		if(!m_pIO->isOpen())continue;
 
 		this->autoFPSfrom();
 

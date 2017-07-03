@@ -65,6 +65,7 @@ public:
 	bool write(uint8_t* pBuf, int nB);
 	bool writeLine(uint8_t* pBuf, int nB);
 
+	bool bEmptyW(void);
 	void toBufW(IO_BUF* pB);
 	void toQueR(IO_BUF* pB);
 

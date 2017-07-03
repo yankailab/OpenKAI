@@ -103,6 +103,11 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 	return ioB.m_nB;
 }
 
+bool _IOBase::bEmptyW(void)
+{
+	return m_queW.empty();
+}
+
 void _IOBase::toBufW(IO_BUF* pB)
 {
 	NULL_(pB);

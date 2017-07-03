@@ -85,10 +85,24 @@ void _SerialPort::update(void)
 {
 	while (m_bThreadON)
 	{
+		if (!isOpen())
+		{
+			if (!open())
+			{
+				this->sleepTime(USEC_1SEC);
+				continue;
+			}
+		}
+
 		this->autoFPSfrom();
 
 		writeIO();
 		readIO();
+
+		if(!this->bEmptyW())
+			this->disableSleep(true);
+		else
+			this->disableSleep(false);
 
 		this->autoFPSto();
 	}
