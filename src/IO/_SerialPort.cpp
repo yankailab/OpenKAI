@@ -96,10 +96,11 @@ void _SerialPort::update(void)
 
 void _SerialPort::writeIO(void)
 {
-	int nB = m_ioW.que2buf();
-	IF_(nB <= 0);
+	IO_BUF ioB;
+	toBufW(&ioB);
+	IF_(ioB.bEmpty());
 
-	int nW = ::write(m_fd, m_ioW.m_pBuf, nB);
+	int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
 
 	// Wait until all data has been written
 	tcdrain(m_fd);
@@ -109,8 +110,11 @@ void _SerialPort::writeIO(void)
 
 void _SerialPort::readIO(void)
 {
-	int n = ::read(m_fd, m_ioR.m_pBuf, m_ioR.m_nBuf);
-	m_ioR.buf2que(n);
+	IO_BUF ioB;
+
+	ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
+
+	toQueR(&ioB);
 }
 
 bool _SerialPort::setup(void)

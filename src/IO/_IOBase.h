@@ -12,8 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 
-#define N_IOBUF_MIN 128
-#define N_IOBUF_MAX 10240
+#define N_IO_BUF 256
 
 namespace kai
 {
@@ -34,86 +33,19 @@ enum IO_STATUS
 	io_opened
 };
 
-struct IO_STREAM
+struct IO_BUF
 {
-	int m_nBuf;
-	uint8_t* m_pBuf;
-	std::queue<uint8_t> m_queue;
-	pthread_mutex_t m_mutex;
+	uint8_t m_pB[N_IO_BUF];
+	int m_nB;
 
-	bool init(int nBuf)
+	void init(void)
 	{
-		m_nBuf = constrain(nBuf,N_IOBUF_MIN,N_IOBUF_MAX);
-		m_pBuf = new uint8_t[m_nBuf];
-		NULL_F(m_pBuf);
-
-		pthread_mutex_init(&m_mutex, NULL);
-		return true;
+		m_nB = 0;
 	}
 
-	void close(void)
+	bool bEmpty(void)
 	{
-		while (!m_queue.empty())
-			m_queue.pop();
-	}
-
-	void dest(void)
-	{
-		DEL(m_pBuf);
-		pthread_mutex_destroy (&m_mutex);
-	}
-
-	void write(uint8_t* pBuf, int nB)
-	{
-		pthread_mutex_lock(&m_mutex);
-
-		for (int i = 0; i < nB; i++)
-			m_queue.push(pBuf[i]);
-
-		pthread_mutex_unlock(&m_mutex);
-	}
-
-	int read(uint8_t* pBuf, int nB)
-	{
-		pthread_mutex_lock(&m_mutex);
-
-		int i=0;
-		while(!m_queue.empty() && i<nB)
-		{
-			pBuf[i++] = m_queue.front();
-			m_queue.pop();
-		}
-
-		pthread_mutex_unlock(&m_mutex);
-
-		return i;
-	}
-
-	int que2buf(void)
-	{
-		if(m_queue.empty())
-			return 0;
-
-		pthread_mutex_lock(&m_mutex);
-		int nB = 0;
-		while (!m_queue.empty() && nB < m_nBuf)
-		{
-			m_pBuf[nB++] = m_queue.front();
-			m_queue.pop();
-		}
-		pthread_mutex_unlock(&m_mutex);
-
-		return nB;
-	}
-
-	void buf2que(int nB)
-	{
-		pthread_mutex_lock(&m_mutex);
-		for(int i=0; i<nB; i++)
-		{
-			m_queue.push(m_pBuf[i]);
-		}
-		pthread_mutex_unlock(&m_mutex);
+		return (m_nB<=0);
 	}
 };
 
@@ -123,23 +55,29 @@ public:
 	_IOBase();
 	virtual ~_IOBase();
 
-	bool init(void* pKiss);
+	virtual bool init(void* pKiss);
 	virtual bool open(void);
 	virtual bool isOpen(void);
+	virtual void close(void);
+	virtual IO_TYPE ioType(void);
 
 	int  read(uint8_t* pBuf, int nB);
 	bool write(uint8_t* pBuf, int nB);
 	bool writeLine(uint8_t* pBuf, int nB);
 
-	virtual void close(void);
-	virtual IO_TYPE ioType(void);
+	void toBufW(IO_BUF* pB);
+	void toQueR(IO_BUF* pB);
 
 public:
 	IO_TYPE		m_ioType;
 	IO_STATUS	m_ioStatus;
 
-	IO_STREAM	m_ioR;
-	IO_STREAM	m_ioW;
+	std::queue<IO_BUF> m_queW;
+	std::queue<IO_BUF> m_queR;
+
+	pthread_mutex_t m_mutexW;
+	pthread_mutex_t m_mutexR;
+
 };
 
 }

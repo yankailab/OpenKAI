@@ -14,12 +14,15 @@ _IOBase::_IOBase()
 {
 	m_ioType = io_none;
 	m_ioStatus = io_unknown;
+
+	pthread_mutex_init(&m_mutexW, NULL);
+	pthread_mutex_init(&m_mutexR, NULL);
 }
 
 _IOBase::~_IOBase()
 {
-	m_ioR.dest();
-	m_ioW.dest();
+	pthread_mutex_destroy(&m_mutexW);
+	pthread_mutex_destroy(&m_mutexR);
 }
 
 bool _IOBase::init(void* pKiss)
@@ -27,16 +30,6 @@ bool _IOBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	int n;
-
-	n = 0;
-	F_INFO(pK->v("nBufIOR", &n));
-	IF_F(!m_ioR.init(n));
-
-	n = 0;
-	F_INFO(pK->v("nBufIOW", &n));
-	IF_F(!m_ioW.init(n));
 
 	return true;
 }
@@ -57,7 +50,25 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 	IF_F(nB <= 0);
 	NULL_F(pBuf);
 
-	m_ioW.write(pBuf,nB);
+	IO_BUF ioB;
+	int nW = 0;
+
+	while (nW < nB)
+	{
+		ioB.m_nB = nB - nW;
+		if(ioB.m_nB > N_IO_BUF)
+			ioB.m_nB = N_IO_BUF;
+
+		memcpy(ioB.m_pB, &pBuf[nW], ioB.m_nB);
+		nW += ioB.m_nB;
+
+		pthread_mutex_lock(&m_mutexW);
+
+		m_queW.push(ioB);
+
+		pthread_mutex_unlock(&m_mutexW);
+	}
+
 	return true;
 }
 
@@ -72,10 +83,54 @@ bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 int _IOBase::read(uint8_t* pBuf, int nB)
 {
 	if(m_ioStatus != io_opened)return -1;
+	if(m_queR.empty())return 0;
 	if(pBuf == NULL)return -1;
-	if(nB <= 0)return 0;
+	if(nB <= N_IO_BUF)
+	{
+		LOG_E("nB should be >= " << N_IO_BUF << " bytes");
+		return -1;
+	}
 
-	return m_ioR.read(pBuf, nB);
+	pthread_mutex_lock(&m_mutexR);
+
+	IO_BUF ioB = m_queR.front();
+	m_queR.pop();
+
+	pthread_mutex_unlock(&m_mutexR);
+
+	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
+
+	return ioB.m_nB;
+}
+
+void _IOBase::toBufW(IO_BUF* pB)
+{
+	NULL_(pB);
+
+	if(m_queW.empty())
+	{
+		pB->init();
+		return;
+	}
+
+	pthread_mutex_lock(&m_mutexW);
+
+	*pB = m_queW.front();
+	m_queW.pop();
+
+	pthread_mutex_unlock(&m_mutexW);
+}
+
+void _IOBase::toQueR(IO_BUF* pB)
+{
+	NULL_(pB);
+	IF_(pB->bEmpty());
+
+	pthread_mutex_lock(&m_mutexR);
+
+	m_queR.push(*pB);
+
+	pthread_mutex_unlock(&m_mutexR);
 }
 
 IO_TYPE _IOBase::ioType(void)
@@ -85,8 +140,11 @@ IO_TYPE _IOBase::ioType(void)
 
 void _IOBase::close(void)
 {
-	m_ioR.close();
-	m_ioW.close();
+	while (!m_queW.empty())
+		m_queW.pop();
+
+	while (!m_queR.empty())
+		m_queR.pop();
 
 	m_ioStatus = io_closed;
 	LOG_I("Closed");

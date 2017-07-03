@@ -96,10 +96,11 @@ void _UDPsender::update(void)
 
 void _UDPsender::writeIO(void)
 {
-	int nB = m_ioW.que2buf();
-	IF_(nB <= 0);
+	IO_BUF ioB;
+	toBufW(&ioB);
+	IF_(ioB.bEmpty());
 
-	int nSend = ::sendto(m_socket, m_ioW.m_pBuf, nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
+	int nSend = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 
 	if (nSend == -1)
 	{
@@ -113,9 +114,10 @@ void _UDPsender::writeIO(void)
 
 void _UDPsender::readIO(void)
 {
-	int nRecv = ::recvfrom(m_socket, m_ioR.m_pBuf, m_ioR.m_nBuf, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
+	IO_BUF ioB;
+	ioB.m_nB = ::recvfrom(m_socket, ioB.m_pB, N_IO_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 
-	if (nRecv == -1)
+	if (ioB.m_nB == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
@@ -124,14 +126,14 @@ void _UDPsender::readIO(void)
 		return;
 	}
 
-	if(nRecv == 0)
+	if(ioB.m_nB == 0)
 	{
 		LOG_E("socket is shutdown by peer");
 		close();
 		return;
 	}
 
-	m_ioR.buf2que(nRecv);
+	toQueR(&ioB);
 }
 
 void _UDPsender::close(void)
