@@ -17,6 +17,7 @@ _UDPserver::_UDPserver()
 	m_nSAddr = 0;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 	m_nSAddrPeer = 0;
+	m_bReceiveOnly = false;
 }
 
 _UDPserver::~_UDPserver()
@@ -30,6 +31,7 @@ bool _UDPserver::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	KISSm(pK, bReceiveOnly);
 	F_INFO(pK->v("port", (int* )&m_port));
 	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
 
@@ -98,7 +100,10 @@ void _UDPserver::update(void)
 
 		this->autoFPSfrom();
 
-		writeIO();
+		if(!m_bReceiveOnly)
+		{
+			writeIO();
+		}
 		readIO();
 
 		if(!this->bEmptyW())

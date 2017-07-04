@@ -37,7 +37,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPsocket);
 	ADD_MODULE(_TCP);
-	ADD_MODULE(_UDP);
+	ADD_MODULE(UDP);
 	ADD_MODULE(_UDPclient);
 	ADD_MODULE(_UDPserver);
 

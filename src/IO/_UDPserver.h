@@ -55,6 +55,9 @@ public:
 	sockaddr_in m_sAddrPeer;
 	unsigned int m_nSAddrPeer;
 
+	bool m_bReceiveOnly;
+
+
 
 };
 
