@@ -12,11 +12,12 @@ namespace kai
 
 _UDPclient::_UDPclient()
 {
-	m_strAddr = "127.0.0.1";
+	m_addr = "127.0.0.1";
 	m_port = DEFAULT_PORT_OUT;
 	m_socket = 0;
 	m_nSAddr = 0;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
+	m_bSendOnly = false;
 }
 
 _UDPclient::~_UDPclient()
@@ -30,7 +31,8 @@ bool _UDPclient::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("addr", &m_strAddr));
+	KISSm(pK, addr);
+	KISSm(pK, bSendOnly);
 	F_INFO(pK->v("port", (int* )&m_port));
 	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
 
@@ -52,7 +54,7 @@ bool _UDPclient::open(void)
 
 	m_nSAddr = sizeof(m_sAddr);
     memset((char *) &m_sAddr, 0, m_nSAddr);
-	m_sAddr.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
+	m_sAddr.sin_addr.s_addr = inet_addr(m_addr.c_str());
 	m_sAddr.sin_family = AF_INET;
 	m_sAddr.sin_port = htons(m_port);
 
@@ -97,7 +99,10 @@ void _UDPclient::update(void)
 		this->autoFPSfrom();
 
 		writeIO();
-		readIO();
+		if(!m_bSendOnly)
+		{
+			readIO();
+		}
 
 		if(!this->bEmptyW())
 			this->disableSleep(true);
@@ -148,6 +153,8 @@ void _UDPclient::readIO(void)
 	}
 
 	toQueR(&ioB);
+
+	LOG_I("Received "<< ioB.m_nB <<" bytes from " << inet_ntoa(m_sAddr.sin_addr) << ":" << ntohs(m_sAddr.sin_port));
 }
 
 void _UDPclient::close(void)
@@ -172,7 +179,7 @@ bool _UDPclient::draw(void)
 
 	pWin->tabNext();
 
-	string msg = "IP: " + m_strAddr + ":" + i2str(m_port);
+	string msg = "IP: " + m_addr + ":" + i2str(m_port);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();

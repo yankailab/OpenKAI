@@ -55,7 +55,7 @@
 {
 	"name":"apSerialPC",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bInst":0,
 	"Window":"apView",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
@@ -65,8 +65,12 @@
 	"name":"apUDPclient",
 	"class":"_UDPclient",
 	"bInst":1,
+	"bLog":0,
+	"FPS":100,
 	"Window":"apView",
 	"addr":"127.0.0.1",
+	"port":14550,
+	"bSendOnly":0,
 }
 
 {
@@ -87,7 +91,8 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
-	"_IOBase":"apSerialPC",
+	"__IOBase":"apSerialPC",
+	"_IOBase":"apUDPclient",
 }
 
 {

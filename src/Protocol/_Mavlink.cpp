@@ -580,16 +580,16 @@ bool _Mavlink::draw(void)
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
-	string msg = *this->getName();
+	string msg;
 
 	if (!m_pIO->isOpen())
 	{
-		msg += ": Not Connected";
+		pWin->tabNext();
+		msg + ": Not Connected";
 		pWin->addMsg(&msg);
+		pWin->tabPrev();
 		return true;
 	}
-
-	pWin->addMsg(&msg);
 
 	pWin->tabNext();
 

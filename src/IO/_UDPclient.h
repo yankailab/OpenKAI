@@ -48,10 +48,11 @@ private:
 public:
 	sockaddr_in m_sAddr;
 	unsigned int m_nSAddr;
-	string	m_strAddr;
+	string	m_addr;
 	uint16_t m_port;
 	int m_socket;
 	uint32_t m_timeoutRecv;
+	bool m_bSendOnly;
 
 };
 
