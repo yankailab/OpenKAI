@@ -99,7 +99,7 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apUDPclient",
@@ -245,8 +245,8 @@
 
 		{
 			"name":"apAvoid",
-			"class":"APcopter_avoid",
-			"bInst":0,
+			"class":"APcopter_sensorAvoid",
+			"bInst":1,
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
@@ -272,7 +272,7 @@
 		}
 		
 		{
-			"name":"apZedSlam",
+			"name":"apZedOdom",
 			"class":"APcopter_ZEDodom",
 			"bInst":1,
 			"bLog":0,
