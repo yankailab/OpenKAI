@@ -58,10 +58,13 @@ bool _UDPserver::open(void)
 	m_sAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	m_sAddr.sin_port = htons(m_port);
 
-	struct timeval timeout;
-	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
-	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
+	if(m_timeoutRecv > 0)
+	{
+		struct timeval timeout;
+		timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
+		timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
+		IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
+	}
 
     IF_F(bind(m_socket , (struct sockaddr*)&m_sAddr, m_nSAddr) == -1);
 

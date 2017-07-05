@@ -118,7 +118,7 @@ public:
 
 	_IOBase* m_pIO;
 	int m_systemID;
-	int m_componentID;
+	int m_myComponentID;
 	int m_type;
 	int m_targetComponentID;
 

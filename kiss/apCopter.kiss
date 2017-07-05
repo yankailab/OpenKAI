@@ -38,7 +38,7 @@
 	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
-	"bZedFlip":0,
+	"bZedFlip":1,
 	"zedConfidence":99,
 	"bFlip":0,
 }
@@ -71,6 +71,19 @@
 	"addr":"127.0.0.1",
 	"port":14550,
 	"bSendOnly":0,
+	"timeoutRecv":10000,
+}
+
+{
+	"name":"apUDPserver",
+	"class":"_UDPserver",
+	"bInst":0,
+	"bLog":0,
+	"FPS":100,
+	"Window":"apView",
+	"port":14550,
+	"bReceiveOnly":0,
+	"timeoutRecv":10000,
 }
 
 {
@@ -78,10 +91,8 @@
 	"class":"_UDP",
 	"bInst":0,
 	"Window":"apView",
-	"addrIn":"192.168.0.1",
-	"portIn":5000,
-	"addrOut":"192.168.0.1",
-	"portOut":5001,
+	"_UDPclient":"apUDPclient",
+	"_UDPserver":"apUDPserver",
 }
 
 {
@@ -91,7 +102,6 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
-	"__IOBase":"apSerialPC",
 	"_IOBase":"apUDPclient",
 }
 
@@ -229,8 +239,8 @@
 			"_Automaton":"apState",
 			"Window":"apView",
 			"_Mavlink":"apMavlink",
-			"freqAtti":10,
-			"freqGlobalPos":10,
+			"freqAtti":0,
+			"freqGlobalPos":0,
 		}
 
 		{
@@ -263,8 +273,8 @@
 		
 		{
 			"name":"apZedSlam",
-			"class":"APcopter_zedSLAM",
-			"bInst":0,
+			"class":"APcopter_ZEDodom",
+			"bInst":1,
 			"bLog":0,
 			"Window":"apView",
 			"_Automaton":"apState",

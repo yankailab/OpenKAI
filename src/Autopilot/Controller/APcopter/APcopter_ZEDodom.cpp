@@ -57,17 +57,17 @@ void APcopter_ZEDodom::updateZEDtracking(void)
 	vDouble3 mT,mR;
 	uint64_t dT;
 	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
-//	IF_(confidence < 0);	//not tracking or ZED fps is too low
-//	IF_(dT == 0);
+	if(confidence < 0)
+		confidence = 0;
 	IF_(dT > USEC_10SEC);
 
     m_mT.x = mT.z;	//forward
     m_mT.y = mT.x;	//right
     m_mT.z = mT.y;	//down
 
-    m_mR.x = -mR.x;  //roll
-    m_mR.y = -mR.z;  //pitch
-    m_mR.z = -mR.y;  //yaw
+    m_mR.x = mR.z;  //roll
+    m_mR.y = mR.x;  //pitch
+    m_mR.z = mR.y;  //yaw
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
@@ -81,7 +81,7 @@ void APcopter_ZEDodom::updateZEDtracking(void)
 //    rx += m_mR.x;
 //    ry += m_mR.y;
 //    rz += m_mR.z;
-//    printf("zedSLAM:  f=%.5lf\t r=%.5lf\t d=%.5lf\t | r=%.5lf\t p=%.5lf\t y=%.5lf\n",tx,ty,tz,rx,ry,rz);
+//    printf("ZEDodom:  f=%.5lf\t r=%.5lf\t d=%.5lf\t | r=%.5lf\t p=%.5lf\t y=%.5lf\n",tx,ty,tz,rx,ry,rz);
 
 }
 

@@ -10,8 +10,8 @@ APcopter_base::APcopter_base()
 	m_iHeartbeat = 0;
 	m_flightMode = 0;
 
-	m_freqAtti = 10;
-	m_freqGlobalPos = 10;
+	m_freqAtti = 0;
+	m_freqGlobalPos = 0;
 
 	m_pidRoll.reset();
 	m_pidPitch.reset();
@@ -115,19 +115,25 @@ void APcopter_base::update(void)
 	uint64_t tNow = get_time_usec();
 	if (tNow - m_lastHeartbeat >= USEC_1SEC)
 	{
-		m_pMavlink->sendHeartbeat();
+//		m_pMavlink->sendHeartbeat();
 		m_lastHeartbeat = tNow;
 	}
 
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 
-	//for test
-	if(tNow - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
+	//request updates from Mavlink
+	if(m_freqAtti > 0)
+	{
+		if(tNow - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+			m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
+	}
 
-	if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
+	if(m_freqGlobalPos)
+	{
+		if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
+	}
 
 }
 

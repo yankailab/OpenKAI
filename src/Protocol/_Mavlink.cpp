@@ -8,7 +8,7 @@ _Mavlink::_Mavlink()
 {
 	m_pIO = NULL;
 	m_systemID = 1;
-	m_componentID = MAV_COMP_ID_PATHPLANNER;
+	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 	m_targetComponentID = 0;
 
@@ -34,7 +34,7 @@ bool _Mavlink::init(void* pKiss)
 
 	//init param
 	m_systemID = 1;
-	m_componentID = MAV_COMP_ID_PATHPLANNER;
+	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 	m_targetComponentID = 0;
 	m_msg.sysid = 0;
@@ -109,7 +109,7 @@ void _Mavlink::writeMessage(mavlink_message_t message)
 void _Mavlink::sendHeartbeat(void)
 {
 	mavlink_message_t message;
-	mavlink_msg_heartbeat_pack(m_systemID, m_componentID, &message, m_type, 0,
+	mavlink_msg_heartbeat_pack(m_systemID, m_myComponentID, &message, m_type, 0,
 			0, 0, MAV_STATE_ACTIVE);
 
 	writeMessage(message);
@@ -126,7 +126,7 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	ds.req_stream_id = stream_id;
 	ds.req_message_rate = rate;
 	ds.start_stop = 1;
-	mavlink_msg_request_data_stream_encode(m_systemID, m_componentID, &message, &ds);
+	mavlink_msg_request_data_stream_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
 
@@ -138,7 +138,7 @@ void _Mavlink::gpsInput(mavlink_gps_input_t* pGPSinput)
 	NULL_(pGPSinput);
 
 	mavlink_message_t message;
-	mavlink_msg_gps_input_encode(m_systemID, m_componentID, &message, pGPSinput);
+	mavlink_msg_gps_input_encode(m_systemID, m_myComponentID, &message, pGPSinput);
 
 	writeMessage(message);
 
@@ -166,7 +166,7 @@ void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust,
 	ds.body_yaw_rate = pRate[2];
 	ds.thrust = thrust;
 	ds.type_mask = mask;
-	mavlink_msg_set_attitude_target_encode(m_systemID, m_componentID, &message, &ds);
+	mavlink_msg_set_attitude_target_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
 
@@ -188,7 +188,7 @@ void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
 	ds.distance = distance;
 	ds.size_x = size_x;
 	ds.size_y = size_y;
-	mavlink_msg_landing_target_encode(m_systemID, m_componentID, &message, &ds);
+	mavlink_msg_landing_target_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
 
@@ -222,7 +222,7 @@ void _Mavlink::commandLongDoSetPositionYawThrust(float steer, float thrust)
 	ds.confirmation = 0;
 	ds.param1 = steer;
 	ds.param2 = thrust;
-	mavlink_msg_command_long_encode(m_systemID, m_targetComponentID, &message,
+	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message,
 			&ds);
 
 	writeMessage(message);
@@ -254,7 +254,7 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max,
 	ds.id = 0;
 	ds.time_boot_ms = 0;
 
-	mavlink_msg_distance_sensor_encode(m_systemID, m_targetComponentID, &message, &ds);
+	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
 	LOG_I(
@@ -290,7 +290,7 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 	dZed.confidence = (float) confidence;
 
 	mavlink_msg_vision_position_delta_encode(m_systemID,
-			m_targetComponentID, &message, &dZed);
+			m_myComponentID, &message, &dZed);
 
 	writeMessage(message);
 	LOG_I("<- VISION_POSITION_DELTA dT=" << dTime
@@ -333,7 +333,7 @@ void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t* pD)
 	mavlink_message_t message;
 	mavlink_msg_position_target_local_ned_encode(
 			m_systemID,
-			m_targetComponentID, &message, pD);
+			m_myComponentID, &message, pD);
 
 	writeMessage(message);
 	LOG_I("<- POS_TARGET_LOCAL_NED x=" << pD->x
@@ -382,7 +382,7 @@ void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
 	mavlink_message_t message;
 	mavlink_msg_position_target_global_int_encode(
 			m_systemID,
-			m_targetComponentID, &message, pD);
+			m_myComponentID, &message, pD);
 
 	writeMessage(message);
 	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" << pD->lat_int
@@ -466,12 +466,11 @@ void _Mavlink::handleMessages()
 				m_systemID = m_msg.sysid;
 				m_targetComponentID = m_msg.compid;
 
-				LOG_I(
-						"-> SYSTEM_ID:"<<m_systemID <<" COMPONENT_ID:"<<m_componentID <<" TARGET_COMPONENT_ID:"<<m_targetComponentID);
+				LOG_I("   SYSTEM_ID:"<<m_systemID <<" COMPONENT_ID:"<<m_myComponentID <<" TARGET_COMPONENT_ID:"<<m_targetComponentID);
 			}
 			else
 			{
-				LOG_I("-> HEARTBEAT FROM MAV_TYPE_GCS");
+				LOG_I("   HEARTBEAT FROM MAV_TYPE_GCS");
 			}
 			break;
 		}
