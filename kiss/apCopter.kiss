@@ -99,7 +99,7 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apUDPclient",

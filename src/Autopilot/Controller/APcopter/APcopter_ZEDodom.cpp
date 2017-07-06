@@ -59,7 +59,8 @@ void APcopter_ZEDodom::updateZEDtracking(void)
 	int confidence = m_pZED->getMotionDelta(&mT, &mR, &dT);
 	if(confidence < 0)
 		confidence = 0;
-	IF_(dT > USEC_10SEC);
+	if(dT > USEC_10SEC)
+		confidence = 0;
 
     m_mT.x = mT.z;	//forward
     m_mT.y = mT.x;	//right
