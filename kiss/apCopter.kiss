@@ -30,7 +30,6 @@
 	"bLog":0,
 	"Window":"apView",
 	"depthWindow":"apDepth",
-	"orientation":0,
 	"angleV":67.1,
 	"angleH":66.7,
 	"zedFPS":100,

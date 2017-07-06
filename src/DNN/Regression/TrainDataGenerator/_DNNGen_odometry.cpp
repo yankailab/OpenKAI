@@ -168,9 +168,9 @@ void _DNNGen_odometry::sample(void)
     vT.x = mT.z;	//forward
     vT.y = mT.x;	//right
     vT.z = mT.y;	//down
-    vR.x = -mR.x;	//roll
-    vR.y = -mR.z;	//pitch
-    vR.z = -mR.y;	//yaw
+    vR.x = mR.z;	//roll
+    vR.y = mR.x;	//pitch
+    vR.z = mR.y;	//yaw
 
     double dTot = abs(vT.x) + abs(vT.y) + abs(vT.z) + abs(vR.x) + abs(vR.y) + abs(vR.z);
     IF_(dTot < m_dMinTot);
@@ -204,7 +204,7 @@ void _DNNGen_odometry::sample(void)
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
     string fName = m_fNamePrefix + strTime + li2str(get_time_usec()) + m_format;
 
-	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.x << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << "\t" << dT << endl;
+	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << "\t" << dT << endl;
 	imwrite(m_outDir + fName, dM);
 
     m_iGen++;
