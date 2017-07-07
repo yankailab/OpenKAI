@@ -74,6 +74,7 @@
 	"cropY":0,
 	"cropW":224,
 	"cropH":224,
+	"interval":1,
 }
 
 {

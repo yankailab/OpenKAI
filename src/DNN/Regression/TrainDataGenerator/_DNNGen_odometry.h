@@ -45,6 +45,7 @@ public:
 
 	int	m_zedMinConfidence;
 	double	m_dMinTot;
+	int m_interval;
 
 	int			m_iStartID;
 	int			m_nGen;

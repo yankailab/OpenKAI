@@ -23,6 +23,7 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_fNameList = "dnnOdomGen.txt";
 	m_width = 398;
 	m_height = 224;
+	m_interval = 0;
 
 	m_zedMinConfidence = 0;
 	m_bCount = false;
@@ -52,6 +53,7 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,format);
 	KISSm(pK,fNamePrefix);
 	KISSm(pK,fNameList);
+	KISSm(pK,interval);
 
 	KISSm(pK,bResize);
 	KISSm(pK,width);
@@ -224,6 +226,11 @@ void _DNNGen_odometry::sample(void)
 
     m_iGen++;
 	LOG_I("Generated: "<< m_iGen);
+
+	if(m_interval>0)
+	{
+		::sleep(m_interval);
+	}
 
 	// read Depth from file
 //	cv::FileStorage fs(m_outDir + matName, FileStorage::READ);
