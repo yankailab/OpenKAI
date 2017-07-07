@@ -134,7 +134,7 @@ bool _ZED::open(void)
 	m_gDepth2 = GpuMat(m_gDepth.size(), m_gDepth.type());
 
 	// Jetson only. Execute the calling thread on 2nd core
-	if(m_iZedCPUcore > 0)
+	if(m_iZedCPUcore >= 0)
 	{
 		sl::Camera::sticktoCPUCore(m_iZedCPUcore);
 	}

@@ -13,7 +13,6 @@ namespace kai
 _DNNGen_odometry::_DNNGen_odometry()
 {
 	m_pZED = NULL;
-	m_iStartID = 0;
 	m_nGen = 0;
 	m_iGen = 0;
 	m_dMinTot = 0;
@@ -46,7 +45,6 @@ bool _DNNGen_odometry::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,outDir);
-	KISSm(pK,iStartID);
 	KISSm(pK,nGen);
 	KISSm(pK,zedMinConfidence);
 	KISSm(pK,dMinTot);
