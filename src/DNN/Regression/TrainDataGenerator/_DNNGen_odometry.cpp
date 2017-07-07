@@ -29,6 +29,7 @@ _DNNGen_odometry::_DNNGen_odometry()
 
 	m_pPrev = NULL;
 	m_pNext = NULL;
+	m_pDepth = NULL;
 	m_bResize = false;
 	m_bCrop = false;
 }
@@ -75,6 +76,7 @@ bool _DNNGen_odometry::init(void* pKiss)
 
 	m_pPrev = new Frame();
 	m_pNext = new Frame();
+	m_pDepth = new Frame();
 
 	return true;
 }
@@ -154,14 +156,19 @@ void _DNNGen_odometry::sample(void)
 	}
 
 	m_pNext->update(m_pZED->gray());
+	m_pDepth->update(m_pZED->depth());
+
 	Mat* pM1 = m_pPrev->getCMat();
 	Mat* pM2 = m_pNext->getCMat();
+	Mat* pD = m_pDepth->getCMat();
 
 	m_bCount = false;
 
 	//validate
 	IF_(pM1->empty());
 	IF_(pM1->empty());
+	IF_(pD->empty());
+
 	IF_(pM1->rows != pM2->rows);
 	IF_(pM1->cols != pM2->cols);
 
@@ -202,13 +209,26 @@ void _DNNGen_odometry::sample(void)
     struct tm *tm = localtime(&t);
     char strTime[128];
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
-    string fName = m_fNamePrefix + strTime + li2str(get_time_usec()) + m_format;
+    string fName = m_fNamePrefix + strTime + li2str(get_time_usec());
+    string pngName = fName + m_format;
+    string matName = fName + ".xml";
 
 	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << "\t" << dT << endl;
-	imwrite(m_outDir + fName, dM);
+
+	imwrite(m_outDir + pngName, dM);
+
+	//writh Depth into file
+	cv::FileStorage fs(m_outDir + matName, cv::FileStorage::WRITE);
+	fs << "zedDepth" << (*pD);
+	fs.release();
 
     m_iGen++;
 	LOG_I("Generated: "<< m_iGen);
+
+	// read Depth from file
+//	cv::FileStorage fs(m_outDir + matName, FileStorage::READ);
+//	fs["zedDepth"] >> Mat;
+
 }
 
 bool _DNNGen_odometry::draw(void)

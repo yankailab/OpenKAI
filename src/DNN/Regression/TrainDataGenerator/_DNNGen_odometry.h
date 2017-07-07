@@ -40,6 +40,7 @@ public:
 	_ZED*	m_pZED;
 	Frame*	m_pPrev;
 	Frame*	m_pNext;
+	Frame*	m_pDepth;
 	bool	m_bCount;
 
 	int	m_zedMinConfidence;
