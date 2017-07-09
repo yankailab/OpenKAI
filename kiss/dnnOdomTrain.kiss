@@ -60,7 +60,7 @@
 	"bFlip":0,
 	"bDepthNorm":1,
 	"depthNormFrom":0.0,
-	"depthNormTo":15.0,
+	"depthNormTo":18.0,
 }
 
 {
