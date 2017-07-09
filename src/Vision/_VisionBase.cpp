@@ -31,6 +31,9 @@ _VisionBase::_VisionBase()
 	m_pHSV = NULL;
 	m_pGray = NULL;
 	m_pDepth = NULL;
+	m_pDepthNorm = NULL;
+	m_depthNormInt.x = 0.0;
+	m_depthNormInt.y = 15.0;
 }
 
 _VisionBase::~_VisionBase()
@@ -39,6 +42,7 @@ _VisionBase::~_VisionBase()
 	DEL(m_pHSV);
 	DEL(m_pGray);
 	DEL(m_pDepth);
+	DEL(m_pDepthNorm);
 }
 
 bool _VisionBase::init(void* pKiss)
@@ -55,6 +59,8 @@ bool _VisionBase::init(void* pKiss)
 	KISSm(pK,isoScale);
 	KISSm(pK,bFlip);
 	KISSim(pK,orientation);
+	F_INFO(pK->v("depthNormFrom", &m_depthNormInt.x));
+	F_INFO(pK->v("depthNormTo", &m_depthNormInt.y));
 
 	m_pBGR = new Frame();
 
@@ -67,6 +73,13 @@ bool _VisionBase::init(void* pKiss)
 	F_INFO(pK->v("bHSV", &bParam));
 	if (bParam)
 		m_pHSV = new Frame();
+
+	bParam = false;
+	F_INFO(pK->v("bDepthNorm", &bParam));
+	if (bParam)
+	{
+		m_pDepthNorm = new Frame();
+	}
 
 	m_bOpen = false;
 	return true;
@@ -90,6 +103,11 @@ Frame* _VisionBase::gray(void)
 Frame* _VisionBase::depth(void)
 {
 	return m_pDepth;
+}
+
+Frame* _VisionBase::depthNorm(void)
+{
+	return m_pDepthNorm;
 }
 
 uint8_t _VisionBase::getOrientation(void)

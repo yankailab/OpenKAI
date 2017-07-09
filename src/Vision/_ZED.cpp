@@ -65,6 +65,7 @@ bool _ZED::init(void* pKiss)
 	KISSm(pK,iZedCPUcore);
 
 	m_pDepth = new Frame();
+
 	return true;
 }
 
@@ -261,6 +262,20 @@ void _ZED::update(void)
 		m_pDepth->update(pSrc);
 
 
+		//Normalized Depth
+		if(m_pDepthNorm)
+		{
+			if (m_depthNormInt.x != m_depthNormInt.y)
+			{
+				double alpha = 255.0/(m_depthNormInt.y-m_depthNormInt.x);
+				double beta = -alpha * m_depthNormInt.x;
+
+				m_pDepth->getGMat()->convertTo(*m_pDepthNorm->getGMat(), CV_8U, alpha, beta);
+				m_pDepthNorm->updatedGMat();
+			}
+		}
+
+
 		//Tracking
 		m_zedTrackState = m_pZed->getPosition(m_zedCamPose, sl::REFERENCE_FRAME_LAST);
 
@@ -432,12 +447,12 @@ bool _ZED::draw(void)
 		pWin->tabPrev();
 	}
 
-	if (m_pDepthWin)
+	if (m_pDepthWin && m_pDepthNorm)
 	{
 		pFrame = m_pDepthWin->getFrame();
-		if (pFrame && !m_pDepth->empty())
+		if (pFrame && !m_pDepthNorm->empty())
 		{
-			pFrame->update(m_pDepth);
+			pFrame->update(m_pDepthNorm);
 		}
 	}
 

@@ -40,7 +40,8 @@ public:
 	_ZED*	m_pZED;
 	Frame*	m_pPrev;
 	Frame*	m_pNext;
-	Frame*	m_pDepth;
+	Frame*	m_pDepthPrev;
+	Frame*	m_pDepthNext;
 	bool	m_bCount;
 
 	int	m_zedMinConfidence;
@@ -51,7 +52,6 @@ public:
 	int			m_iGen;
 	string 		m_outDir;
 	ofstream	m_ofs;
-	string		m_format;
 	string		m_fNamePrefix;
 	string		m_fNameList;
 

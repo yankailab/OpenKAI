@@ -16,6 +16,15 @@
 }
 
 {
+	"name":"zedDepthView",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+}
+
+{
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
@@ -34,21 +43,23 @@
 	"bInst":1,
 	"bLog":0,
 	"Window":"zedView",
-	"depthWindow":"zedDepth",
+	"depthWindow":"zedDepthView",
 	"angleV":67.1,
 	"angleH":66.7,
 	"zedFPS":100,
 	"zedDepthMode":1,
 	"zedResolution":2,
 	"zedMinDist":0.6,
-	"zedMaxDist":15.0,
+	"zedMaxDist":16.0,
 	"bZedFlip":1,
 	"zedConfidence":99,
 	"zedViewLR":0,
 	"bZedSpatialMemory":0,
-	"iZedCPUcore":-1,
+	"iZedCPUcore":2,
 	"bFlip":0,
-	"bGray":1,
+	"bDepthNorm":1,
+	"depthNormFrom":0.0,
+	"depthNormTo":15.0,
 }
 
 {
@@ -59,12 +70,11 @@
 	"bLog":1,
 	"_ZED":"ZED",
 	"zedMinConfidence":10,
-	"outDir":"/media/kai/SD/dnnOdom/",
+	"outDir":"/media/ubuntu/usb/dnnOdom/",
 	"fNameList":"dnnOdomTrain",
 	"fNamePrefix":"atenza",
 	"nGen":0,
 	"dMinTot":0.0035,
-	"format":".png",
 	"bResize":0,
 	"width":398,
 	"height":224,

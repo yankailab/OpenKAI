@@ -17,7 +17,6 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_iGen = 0;
 	m_dMinTot = 0;
 	m_outDir = "";
-	m_format = ".png";
 	m_fNamePrefix = "";
 	m_fNameList = "dnnOdomGen.txt";
 	m_width = 398;
@@ -29,7 +28,8 @@ _DNNGen_odometry::_DNNGen_odometry()
 
 	m_pPrev = NULL;
 	m_pNext = NULL;
-	m_pDepth = NULL;
+	m_pDepthPrev = NULL;
+	m_pDepthNext = NULL;
 	m_bResize = false;
 	m_bCrop = false;
 }
@@ -48,7 +48,6 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,nGen);
 	KISSm(pK,zedMinConfidence);
 	KISSm(pK,dMinTot);
-	KISSm(pK,format);
 	KISSm(pK,fNamePrefix);
 	KISSm(pK,fNameList);
 	KISSm(pK,interval);
@@ -76,7 +75,8 @@ bool _DNNGen_odometry::init(void* pKiss)
 
 	m_pPrev = new Frame();
 	m_pNext = new Frame();
-	m_pDepth = new Frame();
+	m_pDepthPrev = new Frame();
+	m_pDepthNext = new Frame();
 
 	return true;
 }
@@ -133,7 +133,7 @@ void _DNNGen_odometry::sample(void)
 {
 	vDouble3 vT,vR,mT,mR;
 	uint64_t dT;
-	Mat dM, tM;
+	Mat dM1, dM2, tM;
 
 	NULL_(m_pZED);
 	IF_(!m_pZED->isOpened());
@@ -149,25 +149,27 @@ void _DNNGen_odometry::sample(void)
 
 	if(!m_bCount)
 	{
-		m_pPrev->update(m_pZED->gray());
-		IF_(m_pPrev->empty());
+		m_pPrev->update(m_pZED->bgr());
+		m_pDepthPrev->update(m_pZED->depthNorm());
 		m_bCount = true;
 		return;
 	}
 
-	m_pNext->update(m_pZED->gray());
-	m_pDepth->update(m_pZED->depth());
+	m_pNext->update(m_pZED->bgr());
+	m_pDepthNext->update(m_pZED->depthNorm());
 
 	Mat* pM1 = m_pPrev->getCMat();
 	Mat* pM2 = m_pNext->getCMat();
-	Mat* pD = m_pDepth->getCMat();
+	Mat* pD1 = m_pDepthPrev->getCMat();
+	Mat* pD2 = m_pDepthNext->getCMat();
 
 	m_bCount = false;
 
 	//validate
 	IF_(pM1->empty());
 	IF_(pM1->empty());
-	IF_(pD->empty());
+	IF_(pD1->empty());
+	IF_(pD2->empty());
 
 	IF_(pM1->rows != pM2->rows);
 	IF_(pM1->cols != pM2->cols);
@@ -182,26 +184,44 @@ void _DNNGen_odometry::sample(void)
     double dTot = abs(vT.x) + abs(vT.y) + abs(vT.z) + abs(vR.x) + abs(vR.y) + abs(vR.z);
     IF_(dTot < m_dMinTot);
 
-    //make 3 channels
-	Mat bChan = Mat(Size(pM1->cols, pM1->rows), pM1->type(), Scalar::all(0));
-	vector<Mat> pChannels;
-	pChannels.push_back(*pM1);
-	pChannels.push_back(*pM2);
-	pChannels.push_back(bChan);
-	merge(pChannels, dM);
+    //reverse to make nearer pixel opaque and far pixel transparent
+    *pD1 = 255 - *pD1;
+    *pD2 = 255 - *pD2;
+
+    Mat Mchan[3];
+    vector<Mat> pChannels;
+
+    cv::split(*pM1,Mchan);
+	pChannels.push_back(Mchan[0]);
+	pChannels.push_back(Mchan[1]);
+	pChannels.push_back(Mchan[2]);
+	pChannels.push_back(*pD1);
+	merge(pChannels, dM1);
+
+	pChannels.clear();
+    cv::split(*pM2,Mchan);
+	pChannels.push_back(Mchan[0]);
+	pChannels.push_back(Mchan[1]);
+	pChannels.push_back(Mchan[2]);
+	pChannels.push_back(*pD2);
+	merge(pChannels, dM2);
 
 	//resize
 	if(m_bResize)
 	{
-		cv::resize(dM, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
-		dM = tM;
+		cv::resize(dM1, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
+		dM1 = tM;
+		cv::resize(dM2, tM, Size(m_width,m_height), 0, 0, INTER_LINEAR);
+		dM2 = tM;
 	}
 
     //crop
 	if(m_bCrop)
 	{
-		tM = Mat(dM, m_cropBB);
-		dM = tM;
+		tM = Mat(dM1, m_cropBB);
+		dM1 = tM;
+		tM = Mat(dM2, m_cropBB);
+		dM2 = tM;
 	}
 
 	//save into list and file
@@ -210,29 +230,21 @@ void _DNNGen_odometry::sample(void)
     char strTime[128];
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
     string fName = m_fNamePrefix + strTime + li2str(get_time_usec());
-    string pngName = fName + m_format;
-    string matName = fName + ".xml";
+	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z
+			 	   << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z
+				   << "\t" << zedConfidence << "\t" << dT
+				   << "\t" << m_pZED->m_depthNormInt.x << "\t" << m_pZED->m_depthNormInt.y << endl;
 
-	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z << "\t" << zedConfidence << "\t" << dT << endl;
+	imwrite(m_outDir + fName + "_a.png", dM1);
+	imwrite(m_outDir + fName + "_b.png", dM2);
 
-	imwrite(m_outDir + pngName, dM);
-
-	//writh Depth into file
-	cv::FileStorage fs(m_outDir + matName, cv::FileStorage::WRITE);
-	fs << "zedDepth" << (*pD);
-	fs.release();
-
-    m_iGen++;
+	m_iGen++;
 	LOG_I("Generated: "<< m_iGen);
 
 	if(m_interval>0)
 	{
 		::sleep(m_interval);
 	}
-
-	// read Depth from file
-//	cv::FileStorage fs(m_outDir + matName, FileStorage::READ);
-//	fs["zedDepth"] >> Mat;
 
 }
 

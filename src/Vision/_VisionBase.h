@@ -35,6 +35,7 @@ public:
 	virtual Frame* hsv(void);
 	virtual Frame* gray(void);
 	virtual Frame* depth(void);
+	virtual Frame* depthNorm(void);
 
 	virtual uint8_t getOrientation(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
@@ -66,6 +67,9 @@ public:
 	Frame*	m_pGray;
 	Frame*	m_pHSV;
 	Frame*	m_pDepth;
+	Frame*  m_pDepthNorm;
+
+	vDouble2 m_depthNormInt;
 
 };
 
