@@ -19,10 +19,10 @@ _ZED::_ZED()
 	m_pzImg = NULL;
 	m_pzDepth = NULL;
 	m_zedResolution = (int) sl::RESOLUTION_VGA;
-	m_zedMinDist = 0.6;
+	m_zedMinDist = 0.7;
 	m_zedMaxDist = 20.0;
 	m_zedFPS = DEFAULT_FPS;
-	m_zedSenseMode = sl::SENSING_MODE_STANDARD;
+	m_zedSenseMode = sl::SENSING_MODE::SENSING_MODE_FILL;
 	m_zedDepthMode = sl::DEPTH_MODE_PERFORMANCE;
 	m_bZedFlip = false;
 	m_zedConfidence = 100;
@@ -40,6 +40,8 @@ _ZED::_ZED()
 	m_zedL2C = 0.0;
 	m_tLastTrack = 0;
 	m_zedViewLR = sl::VIEW_LEFT;
+
+	int a = TOO_FAR;
 }
 
 _ZED::~_ZED()
@@ -63,6 +65,7 @@ bool _ZED::init(void* pKiss)
 	KISSm(pK,zedConfidence);
 	KISSm(pK,zedViewLR);
 	KISSm(pK,iZedCPUcore);
+	KISSm(pK,zedSenseMode);
 
 	m_pDepth = new Frame();
 

@@ -51,7 +51,7 @@ private:
 public:
 	sl::Camera* m_pZed;
 	sl::RuntimeParameters m_zedRuntime;
-	sl::SENSING_MODE m_zedSenseMode;
+	int m_zedSenseMode;
 	int m_zedResolution;
 	int m_zedFPS;
 	int m_zedDepthMode;
