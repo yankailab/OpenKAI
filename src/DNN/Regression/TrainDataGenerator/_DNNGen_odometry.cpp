@@ -233,7 +233,11 @@ void _DNNGen_odometry::sample(void)
 	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z
 			 	   << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z
 				   << "\t" << zedConfidence << "\t" << dT
-				   << "\t" << m_pZED->m_depthNormInt.x << "\t" << m_pZED->m_depthNormInt.y << endl;
+				   << "\t" << m_pZED->m_depthNormInt.x << "\t" << m_pZED->m_depthNormInt.y
+				   << "\t" << 1000000 << "\t" << 1000000 << "\t" << 1000000	//rel atti from AP
+				   << "\t" << 1000000 << "\t" << 1000000 << "\t" << 1000000	//abs atti from AP
+				   << "\t" << 1000000						//height from AP
+				   << endl;
 
 	imwrite(m_outDir + fName + "_a.png", dM1);
 	imwrite(m_outDir + fName + "_b.png", dM2);
