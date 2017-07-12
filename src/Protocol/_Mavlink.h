@@ -67,6 +67,18 @@ struct Mavlink_Messages
 	mavlink_attitude_t attitude;
 	Time_Stamps time_stamps;
 
+	void init(void)
+	{
+		attitude.yaw = 0;
+		attitude.yawspeed = 0;
+		attitude.pitch = 0;
+		attitude.pitchspeed = 0;
+		attitude.roll = 0;
+		attitude.rollspeed = 0;
+
+		global_position_int.alt = 0;
+	}
+
 	void reset_timestamps()
 	{
 		time_stamps.init();

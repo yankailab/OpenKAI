@@ -11,14 +11,7 @@ _Mavlink::_Mavlink()
 	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
 	m_targetComponentID = 0;
-
-	m_msg.attitude.pitch = 0;
-	m_msg.attitude.roll = 0;
-	m_msg.attitude.yaw = 0;
-	m_msg.attitude.pitchspeed = 0;
-	m_msg.attitude.rollspeed = 0;
-	m_msg.attitude.yawspeed = 0;
-
+	m_msg.init();
 }
 
 _Mavlink::~_Mavlink()
@@ -598,6 +591,9 @@ bool _Mavlink::draw(void)
 	pWin->addMsg(&msg);
 
 	msg = "hdg=" + f2str(((double)m_msg.global_position_int.hdg)*0.01);
+	pWin->addMsg(&msg);
+
+	msg = "height=" + f2str(((double)m_msg.global_position_int.alt)*0.001);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();

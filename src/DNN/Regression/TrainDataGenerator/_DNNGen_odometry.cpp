@@ -32,6 +32,13 @@ _DNNGen_odometry::_DNNGen_odometry()
 	m_pDepthNext = NULL;
 	m_bResize = false;
 	m_bCrop = false;
+
+	m_pMavlink = NULL;
+	m_lastHeartbeat = 0;
+	m_iHeartbeat = 0;
+	m_freqAtti = 0;
+	m_freqGlobalPos = 0;
+
 }
 
 _DNNGen_odometry::~_DNNGen_odometry()
@@ -78,6 +85,9 @@ bool _DNNGen_odometry::init(void* pKiss)
 	m_pDepthPrev = new Frame();
 	m_pDepthNext = new Frame();
 
+	KISSm(pK,freqAtti);
+	KISSm(pK,freqGlobalPos);
+
 	return true;
 }
 
@@ -91,6 +101,10 @@ bool _DNNGen_odometry::link(void)
 	iName = "";
 	F_ERROR_F(pK->v("_ZED", &iName));
 	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->parent()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -123,9 +137,37 @@ void _DNNGen_odometry::update(void)
 			}
 		}
 
+		mavlink();
+
 		sample();
 
 		this->autoFPSto();
+	}
+}
+
+void _DNNGen_odometry::mavlink(void)
+{
+	NULL_(m_pMavlink);
+
+	//Sending Heartbeat at 1Hz
+	uint64_t tNow = get_time_usec();
+	if (tNow - m_lastHeartbeat >= USEC_1SEC)
+	{
+//		m_pMavlink->sendHeartbeat();
+		m_lastHeartbeat = tNow;
+	}
+
+	//request updates from Mavlink
+	if(m_freqAtti > 0)
+	{
+		if(tNow - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+			m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
+	}
+
+	if(m_freqGlobalPos)
+	{
+		if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 	}
 }
 
@@ -151,12 +193,14 @@ void _DNNGen_odometry::sample(void)
 	{
 		m_pPrev->update(m_pZED->bgr());
 		m_pDepthPrev->update(m_pZED->depthNorm());
+		m_mavPrev = m_pMavlink->m_msg;
 		m_bCount = true;
 		return;
 	}
 
 	m_pNext->update(m_pZED->bgr());
 	m_pDepthNext->update(m_pZED->depthNorm());
+	m_mavNext = m_pMavlink->m_msg;
 
 	Mat* pM1 = m_pPrev->getCMat();
 	Mat* pM2 = m_pNext->getCMat();
@@ -234,9 +278,14 @@ void _DNNGen_odometry::sample(void)
 			 	   << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z
 				   << "\t" << zedConfidence << "\t" << dT
 				   << "\t" << m_pZED->m_depthNormInt.x << "\t" << m_pZED->m_depthNormInt.y
-				   << "\t" << 1000000 << "\t" << 1000000 << "\t" << 1000000	//rel atti from AP
-				   << "\t" << 1000000 << "\t" << 1000000 << "\t" << 1000000	//abs atti from AP
-				   << "\t" << 1000000						//height from AP
+				   << "\t" << m_mavPrev.attitude.yaw
+				   << "\t" << m_mavPrev.attitude.pitch
+				   << "\t" << m_mavPrev.attitude.roll							//prev atti from AP
+				   << "\t" << (m_mavPrev.global_position_int.alt * 0.001)		//prev height from AP
+				   << "\t" << m_mavNext.attitude.yaw
+				   << "\t" << m_mavNext.attitude.pitch
+				   << "\t" << m_mavNext.attitude.roll							//next atti from AP
+				   << "\t" << (m_mavNext.global_position_int.alt * 0.001)		//next height from AP
 				   << endl;
 
 	imwrite(m_outDir + fName + "_a.png", dM1);
@@ -255,7 +304,8 @@ void _DNNGen_odometry::sample(void)
 bool _DNNGen_odometry::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();
+	Window* pWin = (Window*) this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->getCMat();
 	IF_F(pMat->empty());
 
 	return true;

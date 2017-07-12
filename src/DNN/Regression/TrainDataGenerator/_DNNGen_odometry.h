@@ -12,6 +12,7 @@
 #include "../../../Base/_ThreadBase.h"
 #include "../../../Vision/_ZED.h"
 #include "../../../Utility/util.h"
+#include "../../../Protocol/_Mavlink.h"
 
 namespace kai
 {
@@ -28,6 +29,7 @@ public:
 	bool draw(void);
 
 private:
+	void mavlink(void);
 	void sample(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -60,6 +62,15 @@ public:
 	int			m_height;
 	bool		m_bCrop;
 	Rect		m_cropBB;
+
+	_Mavlink* m_pMavlink;
+	uint64_t m_lastHeartbeat;
+	uint64_t m_iHeartbeat;
+	int m_freqAtti;
+	int m_freqGlobalPos;
+
+	Mavlink_Messages m_mavPrev;
+	Mavlink_Messages m_mavNext;
 
 };
 

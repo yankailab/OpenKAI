@@ -64,6 +64,26 @@
 }
 
 {
+	"name":"apSerialPC",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":150,
+	"Window":"zedView",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":150,
+	"Window":"zedView",
+	"_IOBase":"apSerialPC",
+}
+
+{
 	"name":"dnnOdomGen",
 	"class":"_DNNGen_odometry",
 	"bInst":1,
@@ -71,7 +91,7 @@
 	"bLog":1,
 	"_ZED":"ZED",
 	"zedMinConfidence":10,
-	"outDir":"/media/ubuntu/src/dnnOdom/",
+	"outDir":"/home/ubuntu/dev/dnnOdom/",
 	"fNameList":"dnnOdomTrain",
 	"fNamePrefix":"atenza",
 	"nGen":0,
@@ -85,6 +105,9 @@
 	"cropW":224,
 	"cropH":224,
 	"interval":1,
+	"_Mavlink":"apMavlink",
+	"freqAtti":30,
+	"freqGlobalPos":30,
 }
 
 {
