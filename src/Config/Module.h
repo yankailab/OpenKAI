@@ -47,6 +47,9 @@
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Sensor/_LeddarVu.h"
+
+#include "../SLAM/_ORB_SLAM2.h"
+
 #include "../Tracker/_ROITracker.h"
 
 #include "../UI/UI.h"

@@ -40,6 +40,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(UDP);
 	ADD_MODULE(_UDPclient);
 	ADD_MODULE(_UDPserver);
+	ADD_MODULE(_ORB_SLAM2);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

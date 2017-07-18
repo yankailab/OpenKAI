@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -23,6 +23,19 @@
 }
 
 {
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":0,
+	"Window":"apView",
+	"deviceID":0,
+	"width":1280,
+	"height":720,
+	"bFlip":0,
+	"bGray":1,
+}
+
+{
 	"name":"ZED",
 	"class":"_ZED",
 	"FPS":30,
@@ -34,12 +47,28 @@
 	"angleH":66.7,
 	"zedFPS":100,
 	"zedDepthMode":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
 	"bZedFlip":1,
 	"zedConfidence":99,
 	"bFlip":0,
+	"bZedSpatialMemory":0,
+	"iZedCPUcore":2,
+	"bGray":1,
+}
+
+{
+	"name":"orbSlam2",
+	"class":"_ORB_SLAM2",
+	"FPS":10,
+	"bInst":1,
+	"Window":"apView",
+	"_VisionBase":"ZED",
+	"width":640,
+	"height":360,
+	"fileVocabulary":"/media/kai/evo/dev/ORB_SLAM2/Vocabulary/ORBvoc.txt",
+	"fileSetting":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/general.yaml",
 }
 
 {
