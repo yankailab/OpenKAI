@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<opencv_storage>
+<calibrationDate>"2017年07月18日 14時56分25秒"</calibrationDate>
+<framesCount>29</framesCount>
+<cameraResolution>
+  1280 720</cameraResolution>
+<cameraMatrix type_id="opencv-matrix">
+  <rows>3</rows>
+  <cols>3</cols>
+  <dt>d</dt>
+  <data>
+    7.3756836563250454e+02 0. 6.1060839638443622e+02 0.
+    7.3756836563250454e+02 3.5581750712587552e+02 0. 0. 1.</data></cameraMatrix>
+<cameraMatrix_std_dev type_id="opencv-matrix">
+  <rows>4</rows>
+  <cols>1</cols>
+  <dt>d</dt>
+  <data>
+    0. 2.8837856637235868e+00 3.6872538680534400e-01
+    4.6761680500825931e-01</data></cameraMatrix_std_dev>
+<dist_coeffs type_id="opencv-matrix">
+  <rows>1</rows>
+  <cols>5</cols>
+  <dt>d</dt>
+  <data>
+    1.8149756253638244e-01 -3.8931047381831446e-01 0. 0.
+    1.9835198126526199e-01</data></dist_coeffs>
+<dist_coeffs_std_dev type_id="opencv-matrix">
+  <rows>5</rows>
+  <cols>1</cols>
+  <dt>d</dt>
+  <data>
+    2.2356593586461723e-03 7.4286562725380777e-03 0. 0.
+    5.7484187667630974e-03</data></dist_coeffs_std_dev>
+<avg_reprojection_error>1.9373776568262069e-01</avg_reprojection_error>
+</opencv_storage>
