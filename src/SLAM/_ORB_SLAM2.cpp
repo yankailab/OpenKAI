@@ -20,6 +20,11 @@ _ORB_SLAM2::_ORB_SLAM2()
 	m_pOS = NULL;
 	m_pFrame = NULL;
 
+	m_vT.init();
+	m_vR.init();
+	m_bTracking = false;
+	m_bViewer = false;
+
 }
 
 _ORB_SLAM2::~_ORB_SLAM2()
@@ -41,6 +46,7 @@ bool _ORB_SLAM2::init(void* pKiss)
 
 	KISSm(pK,width);
 	KISSm(pK,height);
+	KISSm(pK,bViewer);
 
 	string fileVocabulary = "";
 	string fileSetting = "";
@@ -49,7 +55,7 @@ bool _ORB_SLAM2::init(void* pKiss)
 	F_INFO(pK->v("fileSetting", &fileSetting));
 
 	// Create SLAM system. It initializes all system threads and gets ready to process frames.
-	m_pOS = new ORB_SLAM2::System(fileVocabulary,fileSetting,ORB_SLAM2::System::MONOCULAR,true);
+	m_pOS = new ORB_SLAM2::System(fileVocabulary,fileSetting,ORB_SLAM2::System::MONOCULAR,m_bViewer);
 
 	m_pFrame = new Frame();
 	m_tStartup = 0;
@@ -59,7 +65,7 @@ bool _ORB_SLAM2::init(void* pKiss)
 
 bool _ORB_SLAM2::link(void)
 {
-	NULL_F(m_pKiss);
+	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -80,6 +86,11 @@ bool _ORB_SLAM2::start(void)
 	}
 
 	return true;
+}
+
+bool _ORB_SLAM2::bTracking(void)
+{
+	return m_bTracking;
 }
 
 void _ORB_SLAM2::update(void)
@@ -114,6 +125,20 @@ void _ORB_SLAM2::detect(void)
 	double t = ((double)(tNow - m_tStartup)) * usecBase;
 
  	m_pose = m_pOS->TrackMonocular(*m_pFrame->getCMat(), t);
+ 	if(m_pose.empty())
+ 	{
+ 		m_bTracking = false;
+
+ 		//TODO: if lost too long reset the system
+
+ 		return;
+ 	}
+
+ 	m_bTracking = true;
+
+ 	m_vT.x = -(double)m_pose.at<float>(0,3); //Right
+ 	m_vT.y = -(double)m_pose.at<float>(1,3); //Down
+ 	m_vT.z = -(double)m_pose.at<float>(2,3); //Front
 
 }
 
@@ -121,9 +146,31 @@ bool _ORB_SLAM2::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
 
+	string msg;
+	pWin->tabNext();
 
+	if(m_bTracking)
+	{
+		msg = "Tracking";
+	}
+	else
+	{
+		msg = "Tracking lost";
+	}
+	pWin->addMsg(&msg);
+
+	msg = "Translation: Right=" + f2str(m_vT.x)
+				   + ", Down=" + f2str(m_vT.y)
+				   + ", Front=" + f2str(m_vT.z);
+	pWin->addMsg(&msg);
+
+	msg = "Rotation: Yaw=" + f2str(m_vR.x)
+			  + ", Pitch=" + f2str(m_vR.y)
+			  + ", Roll=" + f2str(m_vR.z);
+	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }

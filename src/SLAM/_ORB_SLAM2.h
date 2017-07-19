@@ -26,6 +26,8 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	bool bTracking(void);
+
 private:
 	void detect(void);
 	void update(void);
@@ -41,9 +43,14 @@ public:
 
 	_VisionBase*	m_pVision;
 	ORB_SLAM2::System* m_pOS;
-	Mat m_pose;
 	Frame* m_pFrame;
 	uint64_t m_tStartup;
+
+	Mat m_pose;
+	vDouble3 m_vT;
+	vDouble3 m_vR;
+	bool	m_bTracking;
+	bool	m_bViewer;
 
 };
 
