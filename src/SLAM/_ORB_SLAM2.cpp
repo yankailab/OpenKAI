@@ -140,6 +140,21 @@ void _ORB_SLAM2::detect(void)
  	m_vT.y = -(double)m_pose.at<float>(1,3); //Down
  	m_vT.z = -(double)m_pose.at<float>(2,3); //Front
 
+ 	Mat mR = m_pose(Rect(0,0,3,3));
+ 	Eigen::Matrix3f mRot;
+ 	cv2eigen(mR,mRot);
+ 	Eigen::Vector3f vEA = mRot.eulerAngles(0,1,2);
+ 	m_vR.x = (double)vEA[0];
+ 	m_vR.y = (double)vEA[1];
+ 	m_vR.z = (double)vEA[2];
+
+ 	//TODO: iterate keyFrame from the beginning to get ypr
+
+// 	cout << "Eigen" << endl << mRot << endl;
+// 	cout << "Mat" << endl << mR << endl;
+
+ 	//pyr
+ 	cout << "rpy: " << "\t" << m_vR.x << "\t" << m_vR.y << "\t" << m_vR.z << endl;
 }
 
 bool _ORB_SLAM2::draw(void)

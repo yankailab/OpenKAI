@@ -11,6 +11,9 @@
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
 #include <System.h>
+#include <KeyFrame.h>
+#include "Eigen/Eigen"
+#include <opencv2/core/eigen.hpp>
 
 namespace kai
 {
