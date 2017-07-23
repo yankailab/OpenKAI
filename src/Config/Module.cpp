@@ -40,7 +40,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(UDP);
 	ADD_MODULE(_UDPclient);
 	ADD_MODULE(_UDPserver);
-	ADD_MODULE(_ORB_SLAM2);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);
@@ -61,6 +60,9 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_CASCADE
 	ADD_MODULE(_Cascade);
+#endif
+#ifdef USE_ORB_SLAM2
+	ADD_MODULE(_ORB_SLAM2);
 #endif
 
     return NULL;

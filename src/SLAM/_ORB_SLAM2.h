@@ -8,6 +8,8 @@
 #ifndef SRC_SLAM_ORB_SLAM2_H_
 #define SRC_SLAM_ORB_SLAM2_H_
 
+#ifdef USE_ORB_SLAM2
+
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
 #include <System.h>
@@ -59,4 +61,5 @@ public:
 
 }
 
+#endif
 #endif

@@ -1,0 +1,165 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"apView",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"apView",
+	"depthWindow":"apDepth",
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":100,
+	"zedDepthMode":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":15.0,
+	"bZedFlip":1,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bZedSpatialMemory":0,
+	"iZedCPUcore":2,
+	"bGray":1,
+}
+
+{
+	"name":"apSerialJetson",
+	"class":"_SerialPort",
+	"bInst":1,
+	"Window":"apView",
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"apView",
+	"_IOBase":"apSerialJetson",
+}
+
+{
+	"name":"Obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"apView",
+	"_ZED":"ZED",
+	"matrixW":20,
+	"matrixH":15,
+	"dBlend":0.5,
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"bLog":0,
+		"windowLen":9,
+	}	
+}
+
+{
+	"name":"apState",
+	"class":"_Automaton",
+	"bInst":1,
+	"Window":"apView",
+	"startState":"AP_STANDBY",
+
+	{
+		"state":"AP_STANDBY",
+	}
+
+	{
+		"state":"AP_CRUISE",
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"apState",
+	"bInst":1,
+	"FPS":20,
+	"Window":"apView",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"_Automaton":"apState",
+			"Window":"apView",
+			"_Mavlink":"apMavlink",
+			"freqAtti":0,
+			"freqGlobalPos":0,
+		}
+
+		{
+			"name":"apAvoid",
+			"class":"APcopter_sensorAvoid",
+			"bInst":1,
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+
+			{
+				"name":"distSensor",
+				"bInst":1,
+		
+				{
+					"name":"Obstacle",
+					"class":"_Obstacle",
+
+					{
+						"orientation":0,
+						"l":0.05,
+						"t":0.0,
+						"r":0.95,
+						"b":0.8,
+					}
+				}
+			}
+					
+		}
+		
+		{
+			"name":"apZedOdom",
+			"class":"APcopter_ZEDodom",
+			"bInst":1,
+			"bLog":0,
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_ZED":"ZED",
+		}
+	}
+}
+
