@@ -8,9 +8,10 @@
 #ifndef SRC_SLAM_ORB_SLAM2_H_
 #define SRC_SLAM_ORB_SLAM2_H_
 
+#include "../Base/common.h"
+
 #ifdef USE_ORB_SLAM2
 
-#include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
 #include <System.h>
 #include <KeyFrame.h>
@@ -48,6 +49,7 @@ public:
 
 	_VisionBase*	m_pVision;
 	ORB_SLAM2::System* m_pOS;
+	ORB_SLAM2::Tracking* m_pTracker;
 	Frame* m_pFrame;
 	uint64_t m_tStartup;
 
