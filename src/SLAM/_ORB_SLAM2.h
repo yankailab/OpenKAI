@@ -49,7 +49,6 @@ public:
 
 	_VisionBase*	m_pVision;
 	ORB_SLAM2::System* m_pOS;
-	ORB_SLAM2::Tracking* m_pTracker;
 	Frame* m_pFrame;
 	uint64_t m_tStartup;
 

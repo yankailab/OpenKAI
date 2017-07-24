@@ -20,7 +20,6 @@ _ORB_SLAM2::_ORB_SLAM2()
 
 	m_pVision = NULL;
 	m_pOS = NULL;
-	m_pTracker = NULL;
 	m_pFrame = NULL;
 
 	m_vT.init();
