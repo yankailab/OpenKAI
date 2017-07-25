@@ -33,6 +33,7 @@ public:
 	bool draw(void);
 
 	bool bTracking(void);
+	void reset(void);
 
 private:
 	void detect(void);
@@ -55,6 +56,9 @@ public:
 	Mat m_pose;
 	vDouble3 m_vT;
 	vDouble3 m_vR;
+	Mat		m_mPrevPose;
+	Mat		m_mWorld;
+	Mat		m_mFlipSign;
 	bool	m_bTracking;
 	bool	m_bViewer;
 
