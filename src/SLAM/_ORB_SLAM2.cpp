@@ -25,6 +25,9 @@ _ORB_SLAM2::_ORB_SLAM2()
 	m_vT.init();
 	m_bTracking = false;
 	m_bViewer = false;
+
+	m_mRwc = Mat(3,3,CV_32F);
+	m_mTwc = Mat(3,1,CV_32F);
 }
 
 _ORB_SLAM2::~_ORB_SLAM2()
@@ -98,12 +101,6 @@ bool _ORB_SLAM2::bTracking(void)
 
 void _ORB_SLAM2::reset(void)
 {
-	m_mPrevPose = Mat::eye(4, 4, CV_32F);
-	m_mWorld = Mat::eye(4, 4, CV_32F);
-	m_mFlipSign = (Mat_<float>(4, 4) << 1, -1, -1, 1,
-									 	-1, 1, -1, 1,
-										-1, -1, 1, 1,
-										1, 1, 1, 1);
 }
 
 void _ORB_SLAM2::update(void)
@@ -149,27 +146,26 @@ void _ORB_SLAM2::detect(void)
 
 	m_bTracking = true;
 
-	Mat mT = (m_pose * m_mPrevPose.inv()).mul(m_mFlipSign);
-	m_mWorld = m_mWorld * mT;
-	m_mPrevPose = m_pose.clone();
+	m_mRwc = m_pose.rowRange(0,3).colRange(0,3).t();
+	m_mTwc = -m_mRwc*m_pose.rowRange(0,3).col(3);
 
-	m_vT.x = (double) m_mWorld.at<float>(0, 3); //Right
-	m_vT.y = (double) m_mWorld.at<float>(1, 3); //Down
-	m_vT.z = (double) m_mWorld.at<float>(2, 3); //Front
+	m_vT.x = (double) m_mTwc.at<float>(0); //Right
+	m_vT.y = (double) m_mTwc.at<float>(1); //Down
+	m_vT.z = (double) m_mTwc.at<float>(2); //Front
 
-	Eigen::Matrix3f mWorld;
-	cv2eigen(m_mWorld,mWorld);
+	Eigen::Matrix3f mRwc;
+	cv2eigen(m_mRwc,mRwc);
 	Eigen::Quaternionf qW;
-	qW = mWorld;
-	Eigen::Vector3f vEA = qW.toRotationMatrix().eulerAngles(1,0,2);
+	qW = mRwc;
 
-	m_vR.x = (double) vEA[0]; //yaw
-	m_vR.y = (double) vEA[1]; //pitch
-	m_vR.z = (double) vEA[2]; //roll
+	m_vQ.x = (double) qW.x();
+	m_vQ.y = (double) qW.y();
+	m_vQ.z = (double) qW.z();
+	m_vQ.w = (double) qW.w();
 
 	cout.precision(5);
 	cout << "vT: " << "  " << fixed << m_vT.x << "  " << fixed << m_vT.y << "  " << fixed << m_vT.z << "  " <<
-		    "vR: " << "  " << fixed << m_vR.x << "  " << fixed << m_vR.y << "  " << fixed << m_vR.z << endl;
+			"Q: "  << "  " << fixed << m_vQ.x << "  " << fixed << m_vQ.y << "  " << fixed << m_vQ.z << "  " << fixed << m_vQ.w << endl;
 }
 
 bool _ORB_SLAM2::draw(void)

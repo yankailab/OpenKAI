@@ -64,6 +64,9 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_ORB_SLAM2
 	ADD_MODULE(_ORB_SLAM2);
 #endif
+#ifdef USE_DSO
+	ADD_MODULE(_DSO);
+#endif
 
     return NULL;
 }

@@ -53,7 +53,7 @@ bool _Camera::init(void* pKiss)
 
 	if (!calibFile.empty())
 	{
-		FileStorage fs(presetDir + calibFile, FileStorage::READ);
+		FileStorage fs(calibFile, FileStorage::READ);
 		if (!fs.isOpened())
 		{
 			LOG_E("Calibration file not found:"<<presetDir<<calibFile);
@@ -61,8 +61,8 @@ bool _Camera::init(void* pKiss)
 		}
 		else
 		{
-			fs["camera_matrix"] >> m_cameraMat;
-			fs["distortion_coefficients"] >> m_distCoeffs;
+			fs["cameraMatrix"] >> m_cameraMat;
+			fs["distortion_coeffs"] >> m_distCoeffs;
 			fs.release();
 
 			Mat map1, map2;

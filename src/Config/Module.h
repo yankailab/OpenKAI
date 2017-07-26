@@ -49,6 +49,7 @@
 #include "../Sensor/_LeddarVu.h"
 
 #include "../SLAM/_ORB_SLAM2.h"
+#include "../SLAM/_DSO.h"
 
 #include "../Tracker/_ROITracker.h"
 

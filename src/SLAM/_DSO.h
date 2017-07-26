@@ -1,31 +1,34 @@
 /*
- * _ORB_SLAM2.h
+ * _DSO.h
  *
- *  Created on: Jul 18, 2017
+ *  Created on: Jul 26, 2017
  *      Author: yankai
  */
 
-#ifndef SRC_SLAM_ORB_SLAM2_H_
-#define SRC_SLAM_ORB_SLAM2_H_
+#ifndef SRC_SLAM_DSO_H_
+#define SRC_SLAM_DSO_H_
 
 #include "../Base/common.h"
 
-#ifdef USE_ORB_SLAM2
+#ifdef USE_DSO
 
 #include "../Vision/_VisionBase.h"
-#include <System.h>
-#include <KeyFrame.h>
+#include "FullSystem/FullSystem.h"
+#include "IOWrapper/ImageDisplay.h"
+#include "IOWrapper/Pangolin/PangolinDSOViewer.h"
+#include "DSOoutputWrapper.h"
+
 #include "Eigen/Eigen"
 #include <opencv2/core/eigen.hpp>
 
 namespace kai
 {
 
-class _ORB_SLAM2: public _ThreadBase
+class _DSO: public _ThreadBase
 {
 public:
-	_ORB_SLAM2();
-	virtual ~_ORB_SLAM2();
+	_DSO();
+	virtual ~_DSO();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -40,26 +43,23 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_ORB_SLAM2*) This)->update();
+		((_DSO*) This)->update();
 		return NULL;
 	}
 
 public:
 	int	m_width;
 	int m_height;
+	bool m_bViewer;
+	int m_frameID;
 
 	_VisionBase*	m_pVision;
-	ORB_SLAM2::System* m_pOS;
 	Frame* m_pFrame;
-	uint64_t m_tStartup;
 
-	Mat m_pose;
-	vDouble3 m_vT;
-	vDouble4 m_vQ;
-	Mat		m_mRwc;
-	Mat		m_mTwc;
-	bool	m_bTracking;
-	bool	m_bViewer;
+	dso::FullSystem* m_pDSO;
+	dso::IOWrap::PangolinDSOViewer* m_pPangolin;
+	dso::IOWrap::DSOoutputWrapper* m_pOW;
+	dso::ImageAndExposure* m_pImg;
 
 };
 
