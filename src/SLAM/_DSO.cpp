@@ -22,9 +22,6 @@ _DSO::_DSO()
 	m_bViewer = false;
 
 	m_pDSO = NULL;
-	m_pPangolin = NULL;
-	m_pOW = NULL;
-	m_pImg = NULL;
 	m_frameID = 0;
 
 }
@@ -33,9 +30,6 @@ _DSO::~_DSO()
 {
 	DEL(m_pFrame);
 	DEL(m_pDSO);
-	DEL(m_pPangolin);
-	DEL(m_pOW);
-	DEL(m_pImg);
 }
 
 bool _DSO::init(void* pKiss)
@@ -49,9 +43,11 @@ bool _DSO::init(void* pKiss)
 	KISSm(pK, bViewer);
 
 	m_pFrame = new Frame();
-	reset();
-
-	m_pImg = new dso::ImageAndExposure(m_width, m_height, 0);
+	m_pDSO = new DSOwrap();
+	m_pDSO->m_bViewer = true;
+	m_pDSO->m_width = m_width;
+	m_pDSO->m_height = m_height;
+	m_pDSO->init();
 
 	return true;
 }
@@ -83,31 +79,7 @@ bool _DSO::start(void)
 
 void _DSO::reset(void)
 {
-	DEL(m_pDSO);
-
-	m_pDSO = new dso::FullSystem();
-//	m_pDSO->linearizeOperation = true;
-//	m_pDSO->setGammaFunction(reader->getPhotometricGamma());
-
-	if(!m_pOW)
-	{
-		m_pOW = new dso::IOWrap::DSOoutputWrapper();
-	}
-	m_pOW->reset();
-	m_pDSO->outputWrapper.push_back(m_pOW);
-
-	if(m_bViewer)
-    {
-		if(!m_pPangolin)
-		{
-	        m_pPangolin = new dso::IOWrap::PangolinDSOViewer(1280,720,false);//(wG[0],hG[0], false);
-		}
-    	m_pPangolin->reset();
-        m_pDSO->outputWrapper.push_back(m_pPangolin);
-    }
-
-	m_frameID = 0;
-
+	m_pDSO->reset();
 }
 
 void _DSO::update(void)
@@ -125,13 +97,14 @@ void _DSO::update(void)
 void _DSO::detect(void)
 {
 	NULL_(m_pDSO);
-	if(m_pDSO->initFailed)
+	if(m_pDSO->bInitFailed())
 	{
+		LOG_I("DSO init failed");
 		reset();
 		return;
 	}
 
-	if(m_pDSO->isLost)
+	if(m_pDSO->bLost())
 	{
 		LOG_I("DSO lost");
 		return;
@@ -143,8 +116,15 @@ void _DSO::detect(void)
 	IF_(pGray->empty());
 	m_pFrame->getResizedOf(pGray, m_width, m_height);
 
-	m_pDSO->addActiveFrame();
+	static const double usecBase = 1.0 / ((double) USEC_1SEC);
+	uint64_t tNow = get_time_usec();
+	double t = ((double)tNow) * usecBase;
 
+	static Mat fImg;
+	m_pFrame->getCMat()->convertTo(fImg, CV_32FC1);
+	m_pDSO->addFrame(fImg.data,t);
+
+//	m_pDSO->addFrame(m_pFrame->getCMat()->data);
 }
 
 bool _DSO::draw(void)

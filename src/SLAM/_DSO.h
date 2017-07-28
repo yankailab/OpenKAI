@@ -13,11 +13,7 @@
 #ifdef USE_DSO
 
 #include "../Vision/_VisionBase.h"
-#include "FullSystem/FullSystem.h"
-#include "IOWrapper/ImageDisplay.h"
-#include "IOWrapper/Pangolin/PangolinDSOViewer.h"
-#include "DSOoutputWrapper.h"
-
+#include "DSOwrap.h"
 #include "Eigen/Eigen"
 #include <opencv2/core/eigen.hpp>
 
@@ -55,11 +51,7 @@ public:
 
 	_VisionBase*	m_pVision;
 	Frame* m_pFrame;
-
-	dso::FullSystem* m_pDSO;
-	dso::IOWrap::PangolinDSOViewer* m_pPangolin;
-	dso::IOWrap::DSOoutputWrapper* m_pOW;
-	dso::ImageAndExposure* m_pImg;
+	DSOwrap* m_pDSO;
 
 };
 
