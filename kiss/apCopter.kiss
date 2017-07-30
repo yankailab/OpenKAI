@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -28,9 +28,9 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"apView",
-	"deviceID":1,
-	"width":1280,
-	"height":720,
+	"deviceID":0,
+	"width":640,
+	"height":480,
 	"bFlip":0,
 	"bGray":1,
 	"_calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/logicool_brio.xml",
@@ -74,14 +74,14 @@
 }
 
 {
-	"name":"dso",
-	"class":"_DSO",
+	"name":"LSD_SLAM",
+	"class":"_LSD_SLAM",
 	"FPS":30,
 	"bInst":1,
 	"Window":"apView",
 	"_VisionBase":"brio",
 	"width":640,
-	"height":360,
+	"height":480,
 	"bViewer":1,
 }
 

@@ -1,30 +1,31 @@
 /*
- * _DSO.h
+ * _LSD_SLAM.h
  *
  *  Created on: Jul 26, 2017
  *      Author: yankai
  */
 
-#ifndef SRC_SLAM_DSO_H_
-#define SRC_SLAM_DSO_H_
+#ifndef SRC_SLAM_LSD_SLAM_H_
+#define SRC_SLAM_LSD_SLAM_H_
 
 #include "../Base/common.h"
 
-#ifdef USE_DSO
+#ifdef USE_LSD_SLAM
 
 #include "../Vision/_VisionBase.h"
-#include "DSOwrap.h"
 #include "Eigen/Eigen"
 #include <opencv2/core/eigen.hpp>
+
+#include "LSDSLAM.h"
 
 namespace kai
 {
 
-class _DSO: public _ThreadBase
+class _LSD_SLAM: public _ThreadBase
 {
 public:
-	_DSO();
-	virtual ~_DSO();
+	_LSD_SLAM();
+	virtual ~_LSD_SLAM();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -39,7 +40,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DSO*) This)->update();
+		((_LSD_SLAM*) This)->update();
 		return NULL;
 	}
 
@@ -47,11 +48,10 @@ public:
 	int	m_width;
 	int m_height;
 	bool m_bViewer;
-	int m_frameID;
 
 	_VisionBase*	m_pVision;
+	LSDSLAM*	m_pLSD;
 	Frame* m_pFrame;
-	DSOwrap* m_pDSO;
 
 };
 
