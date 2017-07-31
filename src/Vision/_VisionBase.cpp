@@ -146,6 +146,11 @@ void _VisionBase::setAttitude(double rollRad, double pitchRad, uint64_t timestam
 
 }
 
+Mat* _VisionBase::K(void)
+{
+	return &m_K;
+}
+
 VISION_TYPE _VisionBase::getType(void)
 {
 	return m_type;

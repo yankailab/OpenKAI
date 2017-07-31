@@ -33,7 +33,7 @@
 	"height":480,
 	"bFlip":0,
 	"bGray":1,
-	"_calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/logicool_brio.xml",
+	"calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_640x480.xml",
 }
 
 {
@@ -80,10 +80,13 @@
 	"bInst":1,
 	"Window":"apView",
 	"_VisionBase":"brio",
-	"width":640,
-	"height":480,
+	"scalingW":1.0,
+	"scalingH":1.0,
+	"cropX_":320,
+	"cropY_":120,
+	"cropW_":640,
+	"cropH_":480,
 	"bViewer":1,
-	"fCamConfig":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/lsd_slam/brio_640x480.cfg",
 }
 
 {

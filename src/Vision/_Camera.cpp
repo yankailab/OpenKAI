@@ -62,7 +62,7 @@ bool _Camera::init(void* pKiss)
 		else
 		{
 			fs["cameraMatrix"] >> m_cameraMat;
-			fs["distortion_coeffs"] >> m_distCoeffs;
+			fs["dist_coeffs"] >> m_distCoeffs;
 			fs.release();
 
 			Mat map1, map2;
@@ -79,14 +79,15 @@ bool _Camera::init(void* pKiss)
 			}
 			else
 			{
-				initUndistortRectifyMap(m_cameraMat, m_distCoeffs, Mat(),
-						getOptimalNewCameraMatrix(m_cameraMat, m_distCoeffs,
-								imSize, 1, imSize, 0), imSize,
-						CV_32FC1, map1, map2);
+				m_K = getOptimalNewCameraMatrix(m_cameraMat, m_distCoeffs, imSize, 1, imSize, 0);
+				initUndistortRectifyMap(m_cameraMat, m_distCoeffs, Mat(), m_K, imSize, CV_32FC1, map1, map2);
 			}
 
 			m_Gmap1.upload(map1);
 			m_Gmap2.upload(map2);
+
+			m_bCalibration = true;
+			LOG_I("camera calibration enabled");
 		}
 	}
 

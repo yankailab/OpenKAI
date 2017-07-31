@@ -45,15 +45,15 @@ private:
 	}
 
 public:
-	int	m_width;
-	int m_height;
+	Mat m_K;
+	Rect m_cropBB;
+	vDouble2 m_scaling;
 	bool m_bViewer;
 
 	_VisionBase*	m_pVision;
 	LSDSLAM*	m_pLSD;
-	Frame* m_pFrame;
-	string m_fCamConfig;
-
+	Frame* m_pResizeGray;
+	Frame* m_pCropGray;
 };
 
 }

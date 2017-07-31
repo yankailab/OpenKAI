@@ -51,7 +51,9 @@ public:
 	inline void updatedCMat(void);
 
 	Mat* getCMat(void);
+	void getCropOf(Frame* pFrom, Rect cropBB);
 	void getResizedOf(Frame* pFrom, int width, int height);
+	void getResizedOf(Frame* pFrom, double scaleW, double scaleH);
 	void getGrayOf(Frame* pFrom);
 	void getHSVOf(Frame* pFrom);
 	void getBGRAOf(Frame* pFrom);

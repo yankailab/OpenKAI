@@ -37,6 +37,7 @@ public:
 	virtual Frame* depth(void);
 	virtual Frame* depthNorm(void);
 
+	virtual Mat* K(void);
 	virtual uint8_t getOrientation(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
 
@@ -56,6 +57,7 @@ public:
 	uint8_t m_orientation;
 	bool m_bFlip;
 
+	Mat m_K;
 	bool m_bGimbal;
 	Mat m_rotRoll;
 	uint64_t m_rotTime;

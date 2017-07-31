@@ -31,6 +31,15 @@ void Frame::allocate(int w, int h)
 	updatedCMat();
 }
 
+void Frame::getCropOf(Frame* pFrom, Rect cropBB)
+{
+	NULL_(pFrom);
+	IF_(pFrom->empty());
+
+	GpuMat(*pFrom->getGMat(), cropBB).copyTo(m_GMat.m_mat);
+	updatedGMat();
+}
+
 void Frame::getResizedOf(Frame* pFrom, int width, int height)
 {
 	NULL_(pFrom);
@@ -61,7 +70,38 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 #endif
 
 	}
+}
 
+void Frame::getResizedOf(Frame* pFrom, double scaleW, double scaleH)
+{
+	NULL_(pFrom);
+	IF_(pFrom->empty());
+
+	if(scaleW==1.0 && scaleH==1.0)
+	{
+		this->update(pFrom);
+		return;
+	}
+
+	cv::Size newSize = pFrom->getSize();
+	newSize.height *= scaleH;
+	newSize.width *= scaleW;
+
+#ifdef USE_CUDA
+
+#ifdef USE_OPENCV4TEGRA
+	gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+#else
+	cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
+#endif
+	updatedGMat();
+
+#elif defined USE_OPENCL
+
+#else
+	cv::resize(*pFrom->getNextCMat(), m_CMat.m_mat, newSize);
+	updatedCMat();
+#endif
 }
 
 void Frame::getGrayOf(Frame* pFrom)
