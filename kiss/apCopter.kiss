@@ -83,6 +83,7 @@
 	"width":640,
 	"height":480,
 	"bViewer":1,
+	"fCamConfig":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/lsd_slam/brio_640x480.cfg",
 }
 
 {

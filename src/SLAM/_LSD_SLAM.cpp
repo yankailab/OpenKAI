@@ -21,7 +21,7 @@ _LSD_SLAM::_LSD_SLAM()
 	m_pFrame = NULL;
 	m_pLSD = NULL;
 	m_bViewer = false;
-
+	m_fCamConfig = "";
 }
 
 _LSD_SLAM::~_LSD_SLAM()
@@ -39,18 +39,16 @@ bool _LSD_SLAM::init(void* pKiss)
 	KISSm(pK, width);
 	KISSm(pK, height);
 	KISSm(pK, bViewer);
+	KISSm(pK, fCamConfig);
 
 	m_pFrame = new Frame();
 
 	m_pLSD = new LSDSLAM();
-	m_pLSD->m_width = m_width;
-	m_pLSD->m_height = m_height;
-	m_pLSD->init(
-			(737.56836563250454/1280),
-			(737.56836563250454/720.0),
-			(610.60839638443622/1280),
-			(355.81750712587552/720.0)
-			);
+	if(!m_pLSD->init((void*)m_fCamConfig.c_str()))
+	{
+		LOG_E("lsd_slam init failed");
+		return false;
+	}
 
 	return true;
 }
@@ -109,7 +107,11 @@ void _LSD_SLAM::detect(void)
 	double t = ((double)tNow) * usecBase;
 
 	m_pFrame->getResizedOf(pGray, m_width, m_height);
-	m_pLSD->update(m_pFrame->getCMat()->data,t);
+
+	if(!m_pLSD->update((void*)m_pFrame->getCMat(),t))
+	{
+		m_pLSD->reset();
+	}
 }
 
 bool _LSD_SLAM::draw(void)

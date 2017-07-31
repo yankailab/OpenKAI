@@ -52,6 +52,7 @@ public:
 	_VisionBase*	m_pVision;
 	LSDSLAM*	m_pLSD;
 	Frame* m_pFrame;
+	string m_fCamConfig;
 
 };
 
