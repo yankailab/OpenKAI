@@ -14,13 +14,13 @@ namespace kai
 
 _LSD_SLAM::_LSD_SLAM()
 {
-	m_scaling.x = 1.0;
-	m_scaling.y = 1.0;
 	m_cropBB.x = 0;
 	m_cropBB.y = 0;
 	m_cropBB.width = 640;
 	m_cropBB.height = 480;
-	m_pVision = NULL;
+	m_resize.x = m_cropBB.width;
+	m_resize.y = m_cropBB.height;
+	m_pCam = NULL;
 	m_pResizeGray = NULL;
 	m_pCropGray = NULL;
 	m_pLSD = NULL;
@@ -41,10 +41,8 @@ bool _LSD_SLAM::init(void* pKiss)
 
 	KISSm(pK, bViewer);
 
-	F_INFO(pK->v("scalingW", &m_scaling.x));
-	F_INFO(pK->v("scalingH", &m_scaling.y));
-	F_INFO(pK->v("cropX", &m_cropBB.x));
-	F_INFO(pK->v("cropY", &m_cropBB.y));
+	F_INFO(pK->v("resizeW", &m_resize.x));
+	F_INFO(pK->v("resizeH", &m_resize.y));
 	F_INFO(pK->v("cropW", &m_cropBB.width));
 	F_INFO(pK->v("cropH", &m_cropBB.height));
 
@@ -61,11 +59,38 @@ bool _LSD_SLAM::link(void)
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
-	IF_F(!m_pVision);
+	m_pCam = (_Camera*) (pK->root()->getChildInstByName(&iName));
+	IF_F(!m_pCam);
 
-	m_K = *m_pVision->K();
+	//find the BB
+	IF_F(m_resize.x < m_cropBB.width);
+	IF_F(m_resize.y < m_cropBB.height);
+	m_cropBB.x = (m_resize.x - m_cropBB.width)/2;
+	m_cropBB.y = (m_resize.y - m_cropBB.height)/2;
+
+	//update the K
+	vInt2 camSize;
+	vDouble2 camScale;
+
+	m_pCam->info(&camSize,NULL,NULL);
+	camScale.x = ((double)camSize.x)/((double)m_resize.x);
+	camScale.y = ((double)camSize.y)/((double)m_resize.y);
+	m_K = m_pCam->m_cameraMat;//*m_pCam->K();
+
+	//scaling
+	m_K.at<double>(0, 0) *= camScale.x; //fx
+	m_K.at<double>(1, 1) *= camScale.y; //fy
+	m_K.at<double>(2, 0) *= camScale.x; //cx
+	m_K.at<double>(2, 1) *= camScale.y; //cy
+
+	//crop
+	Size imSize(m_resize.x, m_resize.y);
+	Mat newK = getOptimalNewCameraMatrix(m_K, m_pCam->m_distCoeffs, imSize, 1, imSize, 0);
+	m_K = newK;
+	m_K.at<double>(2, 0) -= (double)m_cropBB.x; //cx
+	m_K.at<double>(2, 1) -= (double)m_cropBB.y; //cy
 	m_K = m_K.t();
+
 	m_pLSD = new LSDSLAM();
 	if(!m_pLSD->init(m_cropBB.width, m_cropBB.height, &m_K))
 	{
@@ -108,8 +133,8 @@ void _LSD_SLAM::update(void)
 void _LSD_SLAM::detect(void)
 {
 	NULL_(m_pLSD);
-	NULL_(m_pVision);
-	Frame* pGray = m_pVision->gray();
+	NULL_(m_pCam);
+	Frame* pGray = m_pCam->gray();
 	NULL_(pGray);
 	IF_(pGray->empty());
 
@@ -117,7 +142,7 @@ void _LSD_SLAM::detect(void)
 	uint64_t tNow = get_time_usec();
 	double t = ((double)tNow) * usecBase;
 
-	m_pResizeGray->getResizedOf(pGray, m_scaling.x, m_scaling.y);
+	m_pResizeGray->getResizedOf(pGray, m_resize.x, m_resize.y);
 	m_pCropGray->getCropOf(m_pResizeGray,m_cropBB);
 
 	if(!m_pLSD->update((void*)m_pCropGray->getCMat()->data,t))

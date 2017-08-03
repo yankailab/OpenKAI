@@ -35,7 +35,7 @@ private:
 		return NULL;
 	}
 
-private:
+public:
 	int m_deviceID;
 	VideoCapture m_camera;
 

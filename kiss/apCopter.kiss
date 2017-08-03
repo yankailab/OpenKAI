@@ -29,11 +29,11 @@
 	"bInst":1,
 	"Window":"apView",
 	"deviceID":0,
-	"width":640,
-	"height":480,
+	"width":1280,
+	"height":720,
 	"bFlip":0,
 	"bGray":1,
-	"calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_640x480.xml",
+	"calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
 }
 
 {
@@ -80,12 +80,10 @@
 	"bInst":1,
 	"Window":"apView",
 	"_VisionBase":"brio",
-	"scalingW":1.0,
-	"scalingH":1.0,
-	"cropX_":320,
-	"cropY_":120,
-	"cropW_":640,
-	"cropH_":480,
+	"resizeW":1280,
+	"resizeH":720,
+	"cropW":640,
+	"cropH":480,
 	"bViewer":1,
 }
 

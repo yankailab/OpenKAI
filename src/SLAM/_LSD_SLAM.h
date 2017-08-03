@@ -12,7 +12,7 @@
 
 #ifdef USE_LSD_SLAM
 
-#include "../Vision/_VisionBase.h"
+#include "../Vision/_Camera.h"
 #include "Eigen/Eigen"
 #include <opencv2/core/eigen.hpp>
 
@@ -47,10 +47,10 @@ private:
 public:
 	Mat m_K;
 	Rect m_cropBB;
-	vDouble2 m_scaling;
+	vInt2 m_resize;
 	bool m_bViewer;
 
-	_VisionBase*	m_pVision;
+	_Camera*	m_pCam;
 	LSDSLAM*	m_pLSD;
 	Frame* m_pResizeGray;
 	Frame* m_pCropGray;
