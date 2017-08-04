@@ -4,7 +4,7 @@ project(OpenKAI)
 
 add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++11")
 
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 OPTION(USE_CUDA "Use NVIDIA CUDA" ON)
 OPTION(USE_OPENCV4TEGRA "Use NVIDIA OpenCV4Tegra for JetsonTX1" ON)
