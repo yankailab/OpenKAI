@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -33,7 +33,7 @@
 	"height":720,
 	"bFlip":0,
 	"bGray":1,
-	"calibFile":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
+	"calibFile_":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
 }
 
 {
@@ -63,13 +63,13 @@
 	"name":"orbSlam2",
 	"class":"_ORB_SLAM2",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"_VisionBase":"brio",
-	"width":1280,
-	"height":720,
+	"width":640,
+	"height":360,
 	"fileVocabulary":"/media/kai/evo/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
-	"fileSetting":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio.yaml",
+	"fileSetting":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
 	"bViewer":1,
 }
 
@@ -77,7 +77,7 @@
 	"name":"LSD_SLAM",
 	"class":"_LSD_SLAM",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"apView",
 	"_VisionBase":"brio",
 	"resizeW":1280,

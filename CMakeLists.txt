@@ -1,20 +1,26 @@
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_BUILD_TYPE Release)
 project(OpenKAI)
+
 add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++11")
+
+LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 OPTION(USE_CUDA "Use NVIDIA CUDA" ON)
 OPTION(USE_OPENCV4TEGRA "Use NVIDIA OpenCV4Tegra for JetsonTX1" ON)
 OPTION(USE_TENSORRT "Use NVIDIA TensorRT" ON)
 OPTION(USE_SSD "Use Caffe SSD branch" OFF)
 OPTION(USE_CAFFE "Use Caffe" OFF)
-OPTION(USE_ZED "Use Stereolabs ZED camera" ON)
+OPTION(USE_ZED "Use Stereolabs ZED camera" OFF)
+OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
+
+find_package(Eigen3 3.1.0 REQUIRED)
+find_package(Pangolin REQUIRED)
 
 set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
-
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
-set(OpenKAI_include /usr/local/include /usr/include)
-set(OpenKAI_lib pthread boost_system glog)
+set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
+set(OpenKAI_lib pthread boost_system glog ${EIGEN3_LIBS})
 
 if(USE_CUDA)
   add_definitions(-DUSE_CUDA)
@@ -69,6 +75,17 @@ if(USE_ZED)
   set(OpenKAI_lib ${OpenKAI_lib} sl_zed sl_core sl_depthcore sl_tracking)
 endif()
 
+if(USE_ORB_SLAM2)
+  add_definitions(-DUSE_ORB_SLAM2)
+  set(ORB_SLAM2_include "/media/kai/evo/dev/orb_slam2_gpu/include" CACHE STRING "")
+  set(ORB_SLAM2_includeThirparty "/media/kai/evo/dev/orb_slam2_gpu" CACHE STRING "")
+  set(ORB_SLAM2_libDir "/media/kai/evo/dev/orb_slam2_gpu/build/lib" CACHE STRING "")
+  set(OpenKAI_include ${OpenKAI_include} ${ORB_SLAM2_include})
+  set(OpenKAI_include ${OpenKAI_include} ${ORB_SLAM2_includeThirparty})
+  set(OpenKAI_include ${OpenKAI_include} ${Pangolin_INCLUDE_DIRS})
+  set(OpenKAI_libDir ${OpenKAI_libDir} ${ORB_SLAM2_libDir})
+  set(OpenKAI_lib ${OpenKAI_lib} ${Pangolin_LIBRARIES} ORB_SLAM2)
+endif()
 
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
