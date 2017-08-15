@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__Cascade_H_
-#define OPENKAI_SRC_DNN__Cascade_H_
+#ifndef OPENKAI_SRC_Detector__Cascade_H_
+#define OPENKAI_SRC_Detector__Cascade_H_
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"

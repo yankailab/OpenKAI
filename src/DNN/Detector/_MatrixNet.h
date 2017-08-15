@@ -9,13 +9,13 @@
 #define OPENKAI_SRC_DNN__MatrixNet_H_
 
 #include "../../Base/common.h"
-#include "_DNNdetectorBase.h"
+#include "../../Detector/_DetectorBase.h"
 #include "_ImageNet.h"
 
 namespace kai
 {
 
-class _MatrixNet: public _DNNdetectorBase
+class _MatrixNet: public _DetectorBase
 {
 public:
 	_MatrixNet();

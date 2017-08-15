@@ -1,16 +1,16 @@
 /*
- * _DNNdetectorBase.h
+ * _detectorBase.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__DNNDETECTORBASE_H_
-#define OPENKAI_SRC_DNN__DNNDETECTORBASE_H_
+#ifndef OPENKAI_SRC_Detector__DETECTORBASE_H_
+#define OPENKAI_SRC_Detector__DETECTORBASE_H_
 
-#include "../../Base/common.h"
-#include "../../Base/_ThreadBase.h"
-#include "../../Vision/_VisionBase.h"
+#include "../Base/common.h"
+#include "../Base/_ThreadBase.h"
+#include "../Vision/_VisionBase.h"
 
 namespace kai
 {
@@ -64,11 +64,11 @@ struct OBJECT
 
 };
 
-class _DNNdetectorBase: public _ThreadBase
+class _DetectorBase: public _ThreadBase
 {
 public:
-	_DNNdetectorBase();
-	virtual ~_DNNdetectorBase();
+	_DetectorBase();
+	virtual ~_DetectorBase();
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
@@ -84,7 +84,7 @@ public:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DNNdetectorBase*) This)->update();
+		((_DetectorBase*) This)->update();
 		return NULL;
 	}
 

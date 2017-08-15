@@ -43,11 +43,9 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_base);
 		ADD_ACTION(APcopter_DNNavoid);
 		ADD_ACTION(APcopter_DNNnav);
-		ADD_ACTION(APcopter_DNNodom);
 		ADD_ACTION(APcopter_sensorAvoid);
 		ADD_ACTION(APcopter_visualFollow);
 		ADD_ACTION(APcopter_visualLanding);
-		ADD_ACTION(APcopter_ZEDodom);
 
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_kickBack);
@@ -63,6 +61,10 @@ bool _AutoPilot::init(void* pKiss)
 #ifndef USE_OPENCV4TEGRA
 		ADD_ACTION(RC_visualFollow);
 #endif
+#ifdef USE_ZED
+		ADD_ACTION(APcopter_ZEDodom);
+#endif
+
 		//Add action modules above
 
 		m_nAction--;

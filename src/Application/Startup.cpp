@@ -122,6 +122,7 @@ void Startup::handleKey(int key)
 	{
 	case 27:
 		m_bRun = false;	//ESC
+		exit(0);
 		break;
 	default:
 		break;

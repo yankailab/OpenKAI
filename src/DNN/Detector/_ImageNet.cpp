@@ -33,7 +33,7 @@ _ImageNet::~_ImageNet()
 
 bool _ImageNet::init(void* pKiss)
 {
-	IF_F(!this->_DNNdetectorBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -56,7 +56,7 @@ bool _ImageNet::init(void* pKiss)
 
 bool _ImageNet::link(void)
 {
-	IF_F(!this->_DNNdetectorBase::link());
+	IF_F(!this->_DetectorBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -200,7 +200,7 @@ int _ImageNet::classify(Frame* pImg, string* pName)
 
 bool _ImageNet::draw(void)
 {
-	IF_F(!this->_DNNdetectorBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }

@@ -12,7 +12,9 @@ namespace kai
 
 _GPS::_GPS()
 {
+#ifdef USE_ZED
 	m_pZED = NULL;
+#endif
 	m_pMavlink = NULL;
 	m_pSF40 = NULL;
 	m_initLL.init();
@@ -66,9 +68,11 @@ bool _GPS::link(void)
 	F_INFO(pK->v("_Mavlink", &iName));
 	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
+#ifdef USE_ZED
 	iName = "";
 	F_INFO(pK->v("_ZED", &iName));
 	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
+#endif
 
 	return true;
 }
@@ -140,6 +144,7 @@ void _GPS::detect(void)
 //		m_pSF40->setHeading(m_LL.m_hdg);
 //		vDouble2 dPos = m_pSF40->getPosDiff();
 	}
+#ifdef USE_ZED
 	else if(m_pZED)
 	{
 		vDouble3 dM;
@@ -154,6 +159,7 @@ void _GPS::detect(void)
 		dPos.y = dM.y;							//Alt
 		dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
 	}
+#endif
 	else
 	{
 		//purely using rpm to identify position translation

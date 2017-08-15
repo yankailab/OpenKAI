@@ -20,8 +20,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Bullseye);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
-	ADD_MODULE(_DetectNet);
-	ADD_MODULE(_DNNGen_odometry);
 	ADD_MODULE(_Flow);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_ImageNet);
@@ -51,6 +49,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_ZED
 	ADD_MODULE(_ZED);
+	ADD_MODULE(_DNNGen_odometry);
 #endif
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);
@@ -66,6 +65,9 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_LSD_SLAM
 	ADD_MODULE(_LSD_SLAM);
+#endif
+#ifdef USE_TENSORRT
+	ADD_MODULE(_DetectNet);
 #endif
 
     return NULL;

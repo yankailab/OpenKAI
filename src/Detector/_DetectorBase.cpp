@@ -2,13 +2,13 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_DNNdetectorBase.h"
+#include "_DetectorBase.h"
 
 
 namespace kai
 {
 
-_DNNdetectorBase::_DNNdetectorBase()
+_DetectorBase::_DetectorBase()
 {
 	m_pStream = NULL;
 	m_modelFile = "";
@@ -29,12 +29,12 @@ _DNNdetectorBase::_DNNdetectorBase()
 	m_contourBlend = 0.125;
 }
 
-_DNNdetectorBase::~_DNNdetectorBase()
+_DetectorBase::~_DetectorBase()
 {
 	DEL(m_pObj);
 }
 
-bool _DNNdetectorBase::init(void* pKiss)
+bool _DetectorBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -86,7 +86,7 @@ bool _DNNdetectorBase::init(void* pKiss)
 	return true;
 }
 
-bool _DNNdetectorBase::link(void)
+bool _DetectorBase::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -98,7 +98,7 @@ bool _DNNdetectorBase::link(void)
 	return true;
 }
 
-bool _DNNdetectorBase::start(void)
+bool _DetectorBase::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -112,12 +112,12 @@ bool _DNNdetectorBase::start(void)
 	return true;
 }
 
-void _DNNdetectorBase::update(void)
+void _DetectorBase::update(void)
 {
 	NULL_(m_pStream);
 }
 
-OBJECT* _DNNdetectorBase::add(OBJECT* pNewObj)
+OBJECT* _DetectorBase::add(OBJECT* pNewObj)
 {
 	NULL_N(pNewObj);
 	m_pObj[m_iObj] = *pNewObj;
@@ -129,19 +129,19 @@ OBJECT* _DNNdetectorBase::add(OBJECT* pNewObj)
 	return pNew;
 }
 
-int _DNNdetectorBase::size(void)
+int _DetectorBase::size(void)
 {
 	return m_nObj;
 }
 
-OBJECT* _DNNdetectorBase::get(int i, int64_t minFrameID)
+OBJECT* _DetectorBase::get(int i, int64_t minFrameID)
 {
 	IF_N(m_pObj[i].m_frameID < minFrameID);
 
 	return &m_pObj[i];
 }
 
-OBJECT* _DNNdetectorBase::getByClass(int iClass, int64_t minFrameID)
+OBJECT* _DetectorBase::getByClass(int iClass, int64_t minFrameID)
 {
 	int i;
 	OBJECT* pObj;
@@ -158,7 +158,7 @@ OBJECT* _DNNdetectorBase::getByClass(int iClass, int64_t minFrameID)
 	return NULL;
 }
 
-bool _DNNdetectorBase::draw(void)
+bool _DetectorBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 

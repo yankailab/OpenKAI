@@ -46,7 +46,9 @@ private:
 	}
 
 public:
+#ifdef USE_ZED
 	_ZED*		m_pZed;
+#endif
 	Frame*		m_pMatrix;
 	vInt2		m_mDim;
 	Median* 	m_pFilteredMatrix[N_FILTER];

@@ -14,6 +14,8 @@
 #include "../../../Utility/util.h"
 #include "../../../Protocol/_Mavlink.h"
 
+#ifdef USE_ZED
+
 namespace kai
 {
 
@@ -76,4 +78,5 @@ public:
 
 }
 
+#endif
 #endif

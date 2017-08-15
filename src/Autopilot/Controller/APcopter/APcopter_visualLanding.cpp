@@ -37,7 +37,7 @@ bool APcopter_visualLanding::link(void)
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
-	m_pAI = (_DNNdetectorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pAI = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 	return true;
 }
 

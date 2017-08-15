@@ -9,7 +9,7 @@
 #define OPENKAI_SRC_DNN__ImageNet_H_
 
 #include "../../Base/common.h"
-#include "_DNNdetectorBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 namespace kai
 {
@@ -19,7 +19,7 @@ enum imageNetMode
 	object, noThread
 };
 
-class _ImageNet: public _DNNdetectorBase
+class _ImageNet: public _DetectorBase
 {
 public:
 	_ImageNet();

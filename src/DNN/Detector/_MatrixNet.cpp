@@ -27,7 +27,7 @@ _MatrixNet::~_MatrixNet()
 
 bool _MatrixNet::init(void* pKiss)
 {
-	IF_F(!this->_DNNdetectorBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -48,7 +48,7 @@ bool _MatrixNet::init(void* pKiss)
 
 bool _MatrixNet::link(void)
 {
-	IF_F(!this->_DNNdetectorBase::link());
+	IF_F(!this->_DetectorBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";

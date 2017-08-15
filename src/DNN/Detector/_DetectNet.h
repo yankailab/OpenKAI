@@ -9,13 +9,17 @@
 #define OPENKAI_SRC_DNN__DetectNet_H_
 
 #include "../../Base/common.h"
+#include "../../Detector/_DetectorBase.h"
 #include "../../Vision/_VisionBase.h"
-#include "_DNNdetectorBase.h"
+
+#ifdef USE_TENSORRT
+#include "detectNet.h"
+#include "cudaMappedMemory.h"
 
 namespace kai
 {
 
-class _DetectNet: public _DNNdetectorBase
+class _DetectNet: public _DetectorBase
 {
 public:
 	_DetectNet();
@@ -37,9 +41,7 @@ private:
 	}
 
 public:
-#ifdef USE_TENSORRT
 	detectNet* m_pDN;
-#endif
 	int m_nBox;
 	int m_nBoxMax;
 	uint32_t m_nClass;
@@ -66,4 +68,5 @@ public:
 
 }
 
+#endif
 #endif

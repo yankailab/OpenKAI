@@ -4,6 +4,8 @@
  */
 #include "_DetectNet.h"
 
+#ifdef USE_TENSORRT
+
 namespace kai
 {
 _DetectNet::_DetectNet()
@@ -19,10 +21,7 @@ _DetectNet::_DetectNet()
 	m_area.z = 1.0;
 	m_area.w = 1.0;
 
-
-#ifdef USE_TENSORRT
 	m_pDN = NULL;
-#endif
 	m_nBox = 0;
 	m_nBoxMax = 0;
 	m_nClass = 0;
@@ -43,7 +42,7 @@ _DetectNet::~_DetectNet()
 
 bool _DetectNet::init(void* pKiss)
 {
-	IF_F(!this->_DNNdetectorBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -66,7 +65,7 @@ bool _DetectNet::init(void* pKiss)
 
 bool _DetectNet::link(void)
 {
-	IF_F(!this->_DNNdetectorBase::link());
+	IF_F(!this->_DetectorBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -88,7 +87,6 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
-#ifdef USE_TENSORRT
 	m_pDN = detectNet::Create(m_modelFile.c_str(), m_trainedFile.c_str(),
 			m_meanFile.c_str(), m_minCofidence);
 	NULL_(m_pDN);
@@ -100,7 +98,6 @@ void _DetectNet::update(void)
 					m_nBoxMax * sizeof(float4)));
 	IF_(	!cudaAllocMapped((void** )&m_confCPU, (void** )&m_confCUDA,
 					m_nBoxMax * m_nClass * sizeof(float)));
-#endif
 
 	while (m_bThreadON)
 	{
@@ -116,9 +113,7 @@ void _DetectNet::update(void)
 void _DetectNet::detect(void)
 {
 	NULL_(m_pStream);
-#ifdef USE_TENSORRT
 	NULL_(m_pDN);
-#endif
 
 	Frame* pBGR = m_pStream->bgr();
 	NULL_(pBGR);
@@ -134,10 +129,8 @@ void _DetectNet::detect(void)
 
 	m_nBox = m_nBoxMax;
 
-#ifdef USE_TENSORRT
-	IF_(
-			!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
-					&m_nBox, m_confCPU));
+	IF_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
+			&m_nBox, m_confCPU));
 
 	LOG_I("Detected BBox: "<<m_nBox);
 
@@ -180,7 +173,6 @@ void _DetectNet::detect(void)
 
 		addOrUpdate(&obj);
 	}
-#endif
 
 }
 
@@ -204,9 +196,12 @@ void _DetectNet::addOrUpdate(OBJECT* pNewObj)
 
 bool _DetectNet::draw(void)
 {
-	IF_F(!this->_DNNdetectorBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }
 
 }
+
+#endif
+

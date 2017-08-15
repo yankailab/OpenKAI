@@ -121,7 +121,9 @@ private:
 	}
 
 public:
+#ifdef USE_ZED
 	_ZED*	m_pZED;
+#endif
 	_Lightware_SF40* m_pSF40;
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;

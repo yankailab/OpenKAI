@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALLANDING_H_
 
 #include "../../../Base/common.h"
-#include "../../../DNN/Detector/_DNNdetectorBase.h"
+#include "../../../Detector/_DetectorBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -54,7 +54,7 @@ private:
 
 private:
 	APcopter_base* m_pAP;
-	_DNNdetectorBase* m_pAI;
+	_DetectorBase* m_pAI;
 
 	LANDING_TARGET	m_target;
 

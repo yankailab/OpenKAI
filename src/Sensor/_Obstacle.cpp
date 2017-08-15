@@ -12,7 +12,9 @@ namespace kai
 
 _Obstacle::_Obstacle()
 {
+#ifdef USE_ZED
 	m_pZed = NULL;
+#endif
 	m_pMatrix = NULL;
 	m_nFilter = 0;
 	m_dBlend = 0.5;
@@ -66,11 +68,14 @@ bool _Obstacle::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
+
+#ifdef USE_ZED
 	F_INFO(pK->v("_ZED", &iName));
 	m_pZed = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
 	IF_F(!m_pZed);
 	m_range = m_pZed->range();
+#endif
 
 	return true;
 }
@@ -102,6 +107,7 @@ void _Obstacle::update(void)
 
 void _Obstacle::detect(void)
 {
+#ifdef USE_ZED
 	NULL_(m_pZed);
 	IF_(!m_pZed->isOpened());
 
@@ -120,11 +126,15 @@ void _Obstacle::detect(void)
 			m_pFilteredMatrix[i*m_mDim.x+j]->input((double)pM->at<float>(i,j));
 		}
 	}
+#endif
 }
 
 double _Obstacle::d(vInt4* pROI, vInt2* pPos)
 {
+#ifdef USE_ZED
 	if(!m_pZed)return -1.0;
+#endif
+
 	if(!pROI)return -1.0;
 
 	double dMin = m_range.y;
@@ -152,7 +162,9 @@ double _Obstacle::d(vInt4* pROI, vInt2* pPos)
 
 double _Obstacle::d(vDouble4* pROI, vInt2* pPos)
 {
+#ifdef USE_ZED
 	if(!m_pZed)return -1.0;
+#endif
 	if(!pROI)return -1.0;
 
 	vInt4 iR;
@@ -208,7 +220,11 @@ bool _Obstacle::draw(void)
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();
 	IF_F(pMat->empty());
+
+#ifdef USE_ZED
 	NULL_F(m_pZed);
+#endif
+
 	IF_F(m_pMatrix->empty());
 
 	Mat mM = *m_pMatrix->getCMat();

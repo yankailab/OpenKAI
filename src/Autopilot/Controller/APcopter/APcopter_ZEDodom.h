@@ -8,6 +8,8 @@
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
+#ifdef USE_ZED
+
 namespace kai
 {
 
@@ -35,5 +37,6 @@ private:
 
 }
 
+#endif
 #endif
 

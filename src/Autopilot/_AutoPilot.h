@@ -8,7 +8,6 @@
 #include "Controller/APcopter/APcopter_base.h"
 #include "Controller/APcopter/APcopter_DNNavoid.h"
 #include "Controller/APcopter/APcopter_DNNnav.h"
-#include "Controller/APcopter/APcopter_DNNodom.h"
 #include "Controller/APcopter/APcopter_sensorAvoid.h"
 #include "Controller/APcopter/APcopter_visualFollow.h"
 #include "Controller/APcopter/APcopter_visualLanding.h"

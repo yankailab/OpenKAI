@@ -1,5 +1,7 @@
 #include "../../Controller/APcopter/APcopter_ZEDodom.h"
 
+#ifdef USE_ZED
+
 namespace kai
 {
 
@@ -96,3 +98,5 @@ bool APcopter_ZEDodom::draw(void)
 }
 
 }
+
+#endif

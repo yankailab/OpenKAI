@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Vision/_VisionBase.h"
-#include "_DNNdetectorBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_SSD
 #include <cuda_runtime.h>
