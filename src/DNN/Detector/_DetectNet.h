@@ -32,7 +32,6 @@ public:
 
 private:
 	void detect(void);
-	void addOrUpdate(OBJECT* pNewObj);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -54,7 +53,6 @@ public:
 
 	double m_minSize;
 	double m_maxSize;
-	double m_overlapMin;
 	vDouble4 m_area;
 
 	float* m_bbCPU;

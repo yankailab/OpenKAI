@@ -76,6 +76,7 @@ public:
 	virtual bool draw(void);
 
 	virtual OBJECT* add(OBJECT* pNewObj);
+	virtual void addOrUpdate(OBJECT* pNewObj);
 	virtual OBJECT* get(int i, int64_t minFrameID);
 	virtual OBJECT* getByClass(int iClass, int64_t minFrameID);
 	virtual int size(void);
@@ -89,7 +90,10 @@ public:
 	}
 
 public:
-	_VisionBase* m_pStream;
+	_VisionBase* m_pVision;
+	_DetectorBase* m_pDetIn;
+	double m_overlapMin;
+	uint64_t m_lifetime;
 
 	string m_modelFile;
 	string m_trainedFile;

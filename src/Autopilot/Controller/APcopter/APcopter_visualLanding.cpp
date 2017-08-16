@@ -54,7 +54,7 @@ void APcopter_visualLanding::landing(void)
 {
 	NULL_(m_pAP);
 	NULL_(m_pAI);
-	_VisionBase* pStream = m_pAI->m_pStream;
+	_VisionBase* pStream = m_pAI->m_pVision;
 	NULL_(pStream);
 
 	vInt2 cSize;

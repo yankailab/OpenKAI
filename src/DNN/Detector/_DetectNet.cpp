@@ -16,7 +16,6 @@ _DetectNet::_DetectNet()
 	m_minCofidence = 0.0;
 	m_minSize = 0.0;
 	m_maxSize = 1.0;
-	m_overlapMin = 1.0;
 	m_area.init();
 	m_area.z = 1.0;
 	m_area.w = 1.0;
@@ -112,10 +111,10 @@ void _DetectNet::update(void)
 
 void _DetectNet::detect(void)
 {
-	NULL_(m_pStream);
+	NULL_(m_pVision);
 	NULL_(m_pDN);
 
-	Frame* pBGR = m_pStream->bgr();
+	Frame* pBGR = m_pVision->bgr();
 	NULL_(pBGR);
 	IF_(pBGR->empty());
 	IF_(m_pRGBA->isNewerThan(pBGR));
@@ -174,24 +173,6 @@ void _DetectNet::detect(void)
 		addOrUpdate(&obj);
 	}
 
-}
-
-void _DetectNet::addOrUpdate(OBJECT* pNewObj)
-{
-	NULL_(pNewObj);
-
-	for (int i = 0; i < m_nObj; i++)
-	{
-		OBJECT* pObj = get(i, 0);
-		IF_CONT(!pObj);
-		IF_CONT(pObj->m_frameID <= 0);
-		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
-
-		*pObj = *pNewObj;
-		return;
-	}
-
-	add(pNewObj);
 }
 
 bool _DetectNet::draw(void)

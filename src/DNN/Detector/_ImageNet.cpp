@@ -110,8 +110,8 @@ void _ImageNet::detect(void)
 #ifdef USE_TENSORRT
 	NULL_(m_pIN);
 #endif
-	NULL_(m_pStream);
-	Frame* pBGR = m_pStream->bgr();
+	NULL_(m_pVision);
+	Frame* pBGR = m_pVision->bgr();
 	NULL_(pBGR);
 	IF_(pBGR->empty());
 

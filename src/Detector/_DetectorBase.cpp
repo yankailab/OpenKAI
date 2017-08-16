@@ -10,7 +10,7 @@ namespace kai
 
 _DetectorBase::_DetectorBase()
 {
-	m_pStream = NULL;
+	m_pVision = NULL;
 	m_modelFile = "";
 	m_trainedFile = "";
 	m_meanFile = "";
@@ -19,6 +19,9 @@ _DetectorBase::_DetectorBase()
 	m_pObj = NULL;
 	m_nObj = 16;
 	m_iObj = 0;
+	m_overlapMin = 1.0;
+	m_pDetIn = NULL;
+	m_lifetime = 30000;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
@@ -57,6 +60,9 @@ bool _DetectorBase::init(void* pKiss)
 	m_meanFile = modelDir + m_meanFile;
 	m_labelFile = modelDir + m_labelFile;
 
+	KISSm(pK, overlapMin);
+	KISSm(pK, lifetime);
+
 	KISSm(pK, sizeName);
 	KISSm(pK, sizeDist);
 
@@ -91,9 +97,15 @@ bool _DetectorBase::link(void)
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
-	string iName = "";
+	string iName;
+
+	iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
-	m_pStream = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
+	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	F_INFO(pK->v("_DetectorBase", &iName));
+	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -114,7 +126,7 @@ bool _DetectorBase::start(void)
 
 void _DetectorBase::update(void)
 {
-	NULL_(m_pStream);
+	NULL_(m_pVision);
 }
 
 OBJECT* _DetectorBase::add(OBJECT* pNewObj)
@@ -127,6 +139,24 @@ OBJECT* _DetectorBase::add(OBJECT* pNewObj)
 		m_iObj = 0;
 
 	return pNew;
+}
+
+void _DetectorBase::addOrUpdate(OBJECT* pNewObj)
+{
+	NULL_(pNewObj);
+
+	for (int i = 0; i < m_nObj; i++)
+	{
+		OBJECT* pObj = get(i, 0);
+		IF_CONT(!pObj);
+		IF_CONT(pObj->m_frameID <= 0);
+		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
+
+		*pObj = *pNewObj;
+		return;
+	}
+
+	add(pNewObj);
 }
 
 int _DetectorBase::size(void)

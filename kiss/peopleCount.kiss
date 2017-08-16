@@ -28,7 +28,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"okView",
-	"deviceID":0,
+	"deviceID":1,
 	"width":1920,
 	"height":1080,
 	"bFlip":0,
