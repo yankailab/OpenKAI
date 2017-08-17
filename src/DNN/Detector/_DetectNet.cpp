@@ -14,6 +14,7 @@ _DetectNet::_DetectNet()
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_minCofidence = 0.0;
+	m_coverageThr = 0.5;
 	m_minSize = 0.0;
 	m_maxSize = 1.0;
 	m_area.init();
@@ -45,11 +46,11 @@ bool _DetectNet::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("minConfidence", &m_minCofidence));
-	F_INFO(pK->v("className", &m_className));
-	F_INFO(pK->v("minSize", &m_minSize));
-	F_INFO(pK->v("maxSize", &m_maxSize));
-	F_INFO(pK->v("overlapMin", &m_overlapMin));
+	KISSm(pK, coverageThr);
+	KISSm(pK, minCofidence);
+	KISSm(pK, className);
+	KISSm(pK, minSize);
+	KISSm(pK, maxSize);
 
 	F_INFO(pK->v("left", &m_area.x));
 	F_INFO(pK->v("top", &m_area.y));
@@ -86,12 +87,16 @@ bool _DetectNet::start(void)
 
 void _DetectNet::update(void)
 {
-	m_pDN = detectNet::Create(m_modelFile.c_str(), m_trainedFile.c_str(),
-			m_meanFile.c_str(), m_minCofidence);
+	m_pDN = detectNet::Create(
+			m_modelFile.c_str(),
+			m_trainedFile.c_str(),
+			m_meanFile.c_str(),
+			m_minCofidence);
 	NULL_(m_pDN);
 
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
 	m_nClass = m_pDN->GetNumClasses();
+	m_pDN->SetThreshold(m_coverageThr);
 
 	IF_(	!cudaAllocMapped((void** )&m_bbCPU, (void** )&m_bbCUDA,
 					m_nBoxMax * sizeof(float4)));
@@ -104,6 +109,7 @@ void _DetectNet::update(void)
 
 		this->_DetectorBase::update();
 		detect();
+		mergeDetector();
 
 		this->autoFPSto();
 	}
@@ -137,10 +143,6 @@ void _DetectNet::detect(void)
 	int camArea = fGMat.cols * fGMat.rows;
 	int minSize = camArea * m_minSize;
 	int maxSize = camArea * m_maxSize;
-//	int bLeft = fGMat.cols * m_area.m_x;
-//	int bRight = fGMat.cols * m_area.m_z;
-//	int bTop = fGMat.rows * m_area.m_y;
-//	int bBottom = fGMat.rows * m_area.m_w;
 
 	uint64_t tNow = get_time_usec();
 
@@ -166,12 +168,7 @@ void _DetectNet::detect(void)
 		IF_CONT(oSize < minSize);
 		IF_CONT(oSize > maxSize);
 
-//		IF_CONT(obj.m_bbox.m_x < bLeft);
-//		IF_CONT(obj.m_bbox.m_z > bRight);
-//		IF_CONT(obj.m_bbox.m_y < bTop);
-//		IF_CONT(obj.m_bbox.m_w > bBottom);
-
-		addOrUpdate(&obj);
+		add(&obj);
 	}
 
 }

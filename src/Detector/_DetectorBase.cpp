@@ -94,7 +94,7 @@ bool _DetectorBase::link(void)
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_DetectorBase", &iName));
+	F_INFO(pK->v("_DetectorIn", &iName));
 	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;

@@ -9,6 +9,7 @@
 #define OPENKAI_SRC_Detector__Cascade_H_
 
 #include "../Base/common.h"
+#include "_DetectorBase.h"
 #include "../Vision/_VisionBase.h"
 
 #ifdef USE_CASCADE
@@ -16,7 +17,7 @@
 namespace kai
 {
 
-class _Cascade: public _AIbase
+class _Cascade: public _DetectorBase
 {
 public:
 	_Cascade();
@@ -28,8 +29,8 @@ public:
 	bool draw(void);
 
 private:
-	void detect(void);
-	void addOrUpdate(OBJECT* pNewObj);
+	void detectCPU(void);
+	void detectGPU(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -39,11 +40,13 @@ private:
 
 public:
 	cv::CascadeClassifier	m_CC;
-//	Ptr<cuda::CascadeClassifier> m_pCascade;
+	Ptr<cuda::CascadeClassifier> m_pGCC;
 
+	bool m_bGPU;
 	double m_minSize;
 	double m_maxSize;
-	double m_overlapMin;
+	double m_scaleFactor;
+	int m_minNeighbors;
 	vDouble4 m_area;
 
 	string m_className;

@@ -50,6 +50,7 @@ public:
 	Frame* m_pRGBA;
 	Frame* m_pRGBAf;
 	double m_minCofidence;
+	double m_coverageThr;
 
 	double m_minSize;
 	double m_maxSize;
