@@ -61,7 +61,113 @@ struct OBJECT
 		m_fBBox.y = m_bbox.y * base;
 		m_fBBox.w = m_bbox.w * base;
 	}
+};
 
+struct OBJECT_ARRAY
+{
+	OBJECT* m_pObj;
+	int m_nObj;
+	int m_iObj;
+
+	bool init(int nObj)
+	{
+		IF_F(nObj<=0);
+
+		m_nObj = nObj;
+		m_iObj = 0;
+		m_pObj = new OBJECT[m_nObj];
+
+		for (int i = 0; i < m_nObj; i++)
+		{
+			m_pObj[i].init();
+		}
+
+		return true;
+	}
+
+	void reset(void)
+	{
+		m_iObj = 0;
+	}
+
+	OBJECT* add(OBJECT* pO)
+	{
+		NULL_N(pO);
+		IF_N(m_iObj >= m_nObj);
+
+		m_pObj[m_iObj++] = *pO;
+
+		return &m_pObj[m_iObj];
+	}
+
+	OBJECT* at(int i)
+	{
+		IF_N(i >= m_iObj);
+		return &m_pObj[i];
+	}
+
+	int size(void)
+	{
+		return m_iObj;
+	}
+
+	void release()
+	{
+		DEL(m_pObj);
+		m_pObj = NULL;
+	}
+
+};
+
+struct OBJECT_DARRAY
+{
+	OBJECT_ARRAY m_objArr[2];
+	OBJECT_ARRAY* m_pPrev;
+	OBJECT_ARRAY* m_pNext;
+	int m_iSwitch;
+
+	bool init(int nObj)
+	{
+		IF_F(nObj<=0);
+
+		m_iSwitch = 0;
+		update();
+
+		IF_F(!m_pPrev->init(nObj));
+		IF_F(!m_pNext->init(nObj));
+
+		return true;
+	}
+
+	void update(void)
+	{
+		m_iSwitch = 1 - m_iSwitch;
+		m_pPrev = &m_objArr[m_iSwitch];
+		m_pNext = &m_objArr[1 - m_iSwitch];
+
+		m_pNext->reset();
+	}
+
+	OBJECT* add(OBJECT* pO)
+	{
+		return m_pNext->add(pO);
+	}
+
+	OBJECT* at(int i)
+	{
+		return m_pPrev->at(i);
+	}
+
+	int size(void)
+	{
+		return m_pPrev->size();
+	}
+
+	void release()
+	{
+		m_objArr[0].release();
+		m_objArr[1].release();
+	}
 };
 
 class _DetectorBase: public _ThreadBase
@@ -75,14 +181,14 @@ public:
 	virtual bool start(void);
 	virtual bool draw(void);
 
-	virtual OBJECT* add(OBJECT* pNewObj);
-	virtual void addOrUpdate(OBJECT* pNewObj);
-	virtual OBJECT* get(int i, int64_t minFrameID);
-	virtual OBJECT* getByClass(int iClass, int64_t minFrameID);
-	virtual int size(void);
+	OBJECT* add(OBJECT* pNewObj);
+	OBJECT* at(int i);
+	void addOrUpdate(OBJECT* pNewObj);
+	int size(void);
+	void mergeDetector(void);
 
 public:
-	void update(void);
+	virtual void update(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_DetectorBase*) This)->update();
@@ -93,16 +199,12 @@ public:
 	_VisionBase* m_pVision;
 	_DetectorBase* m_pDetIn;
 	double m_overlapMin;
-	uint64_t m_lifetime;
+	OBJECT_DARRAY m_obj;
 
 	string m_modelFile;
 	string m_trainedFile;
 	string m_meanFile;
 	string m_labelFile;
-
-	OBJECT* m_pObj;
-	int m_nObj;
-	int m_iObj;
 
 	double m_sizeName;
 	double m_sizeDist;

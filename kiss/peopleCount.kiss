@@ -28,7 +28,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"okView",
-	"deviceID":1,
+	"deviceID":0,
 	"width":1920,
 	"height":1080,
 	"bFlip":0,
@@ -49,7 +49,6 @@
 	"meanFile":"mean.binaryproto",
 	"labelFile":"",
 	"className":"People",
-	"obsLifetime":100000,
 	"nObs":128,
 	"bDrawContour":0,
 }
@@ -57,7 +56,7 @@
 {
 	"name":"dnFace",
 	"class":"_DetectNet",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"Window":"okView",
 	"_VisionBase":"camera",
@@ -68,7 +67,6 @@
 	"meanFile":"",
 	"labelFile":"",
 	"className":"Face",
-	"obsLifetime":100000,
 	"nObs":128,
 	"bDrawContour":0,
 }

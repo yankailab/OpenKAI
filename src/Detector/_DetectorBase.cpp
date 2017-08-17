@@ -16,12 +16,8 @@ _DetectorBase::_DetectorBase()
 	m_meanFile = "";
 	m_labelFile = "";
 
-	m_pObj = NULL;
-	m_nObj = 16;
-	m_iObj = 0;
 	m_overlapMin = 1.0;
 	m_pDetIn = NULL;
-	m_lifetime = 30000;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
@@ -34,7 +30,7 @@ _DetectorBase::_DetectorBase()
 
 _DetectorBase::~_DetectorBase()
 {
-	DEL(m_pObj);
+	m_obj.release();
 }
 
 bool _DetectorBase::init(void* pKiss)
@@ -61,7 +57,6 @@ bool _DetectorBase::init(void* pKiss)
 	m_labelFile = modelDir + m_labelFile;
 
 	KISSm(pK, overlapMin);
-	KISSm(pK, lifetime);
 
 	KISSm(pK, sizeName);
 	KISSm(pK, sizeDist);
@@ -81,15 +76,10 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, bDrawContour);
 	KISSm(pK, contourBlend);
 
-	F_INFO(pK->v("nObj", &m_nObj));
-	m_pObj = new OBJECT[m_nObj];
-	for (int i = 0; i < m_nObj; i++)
-	{
-		m_pObj[i].init();
-	}
-	m_iObj = 0;
+	int n = 16;
+	F_INFO(pK->v("nObj", &n));
+	return m_obj.init(n);
 
-	return true;
 }
 
 bool _DetectorBase::link(void)
@@ -126,66 +116,52 @@ bool _DetectorBase::start(void)
 
 void _DetectorBase::update(void)
 {
-	NULL_(m_pVision);
+	m_obj.update();
+}
+
+int _DetectorBase::size(void)
+{
+	return m_obj.size();
+}
+
+OBJECT* _DetectorBase::at(int i)
+{
+	return m_obj.at(i);
 }
 
 OBJECT* _DetectorBase::add(OBJECT* pNewObj)
 {
-	NULL_N(pNewObj);
-	m_pObj[m_iObj] = *pNewObj;
-	OBJECT* pNew = &m_pObj[m_iObj];
-
-	if (++m_iObj >= m_nObj)
-		m_iObj = 0;
-
-	return pNew;
+	return m_obj.add(pNewObj);
 }
 
 void _DetectorBase::addOrUpdate(OBJECT* pNewObj)
 {
 	NULL_(pNewObj);
 
-	for (int i = 0; i < m_nObj; i++)
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
 	{
-		OBJECT* pObj = get(i, 0);
-		IF_CONT(!pObj);
-		IF_CONT(pObj->m_frameID <= 0);
-		IF_CONT(overlapRatio(&pObj->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
+		IF_CONT(overlapRatio(&pO->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
 
-		*pObj = *pNewObj;
+		*pO = *pNewObj;
 		return;
 	}
 
-	add(pNewObj);
+	m_obj.add(pNewObj);
 }
 
-int _DetectorBase::size(void)
+void _DetectorBase::mergeDetector(void)
 {
-	return m_nObj;
-}
+	NULL_(m_pDetIn);
 
-OBJECT* _DetectorBase::get(int i, int64_t minFrameID)
-{
-	IF_N(m_pObj[i].m_frameID < minFrameID);
-
-	return &m_pObj[i];
-}
-
-OBJECT* _DetectorBase::getByClass(int iClass, int64_t minFrameID)
-{
-	int i;
-	OBJECT* pObj;
-
-	for (i = 0; i < m_nObj; i++)
+	OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
+	OBJECT* pO;
+	int i=0;
+	while((pO = pOA->at(i++)) != NULL)
 	{
-		pObj = &m_pObj[i];
-		IF_CONT(pObj->m_iClass != iClass);
-		IF_CONT(pObj->m_frameID < minFrameID);
-
-		return pObj;
+		addOrUpdate(pO);
 	}
-
-	return NULL;
 }
 
 bool _DetectorBase::draw(void)
@@ -203,18 +179,16 @@ bool _DetectorBase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	for (int i = 0; i < m_nObj; i++)
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
 	{
-		OBJECT* pObj = get(i, 0);
-		IF_CONT(!pObj);
-		IF_CONT(pObj->m_frameID<=0)
-
 		Rect r;
-		vInt42rect(&pObj->m_bbox, &r);
+		vInt42rect(&pO->m_bbox, &r);
 
-		if (pObj->m_iClass>=0)
+		if (pO->m_iClass>=0)
 		{
-			putText(*pMat, pObj->m_name,
+			putText(*pMat, pO->m_name,
 					Point(r.x + r.width / 2, r.y + r.height / 2),
 					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
 		}
@@ -224,7 +198,7 @@ bool _DetectorBase::draw(void)
 
 		if (m_bDrawContour)
 		{
-			drawContours(bg, vector<vector<Point> >(1, pObj->m_contour), -1,
+			drawContours(bg, vector<vector<Point> >(1, pO->m_contour), -1,
 					colObs, CV_FILLED, 8);
 		}
 		else

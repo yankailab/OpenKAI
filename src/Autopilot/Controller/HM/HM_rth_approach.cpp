@@ -81,29 +81,28 @@ void HM_rth_approach::update(void)
 	m_pMN->bSetActive(true);
 
 	m_pTarget = NULL;
-	int i;
-	for (i = 0; i < m_pMN->size(); i++)
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_pMN->at(i++)) != NULL)
 	{
-		OBJECT* pObj = m_pMN->get(i, 0);
-		IF_CONT(!pObj);
 		if(m_targetName=="")
 		{
-			IF_CONT(pObj->m_iClass != m_iTargetClass);
+			IF_CONT(pO->m_iClass != m_iTargetClass);
 		}
 		else
 		{
-			IF_CONT(pObj->m_name != m_targetName);
+			IF_CONT(pO->m_name != m_targetName);
 		}
 
 		if (!m_pTarget)
 		{
-			m_pTarget = pObj;
+			m_pTarget = pO;
 			continue;
 		}
 
-		if (m_pTarget->m_prob < pObj->m_prob)
+		if (m_pTarget->m_prob < pO->m_prob)
 		{
-			m_pTarget = pObj;
+			m_pTarget = pO;
 			continue;
 		}
 	}

@@ -33,6 +33,7 @@ public:
 public:
 	_ImageNet* m_pIN;
 
+	int m_nObj;
 	double m_w;
 	double m_h;
 	double m_dW;

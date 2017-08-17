@@ -64,8 +64,8 @@ bool _MatrixNet::link(void)
 		return false;
 	}
 
-	int nObj = nW * nH;
-	m_ppObj = new OBJECT*[nObj];
+	m_nObj = nW * nH;
+	m_ppObj = new OBJECT*[m_nObj];
 
 	OBJECT mO;
 	int k = 0;
@@ -88,15 +88,12 @@ bool _MatrixNet::link(void)
 		}
 	}
 
-	m_nObj = nObj;
-
 	return true;
 }
 
 void _MatrixNet::bSetActive(bool bActive)
 {
-	int i;
-	for(i=0; i<m_nObj; i++)
+	for(int i=0; i<m_nObj; i++)
 	{
 		m_ppObj[i]->m_bClassify = bActive;
 	}

@@ -66,27 +66,17 @@ void APcopter_visualLanding::landing(void)
 	targetBB.init();
 	uint64_t frameID = get_time_usec() - m_target.m_timeOut;
 
-	int k = 0;
-	for (int i = 0; i < m_pAI->size(); i++)
-	{
-		OBJECT* pObj = m_pAI->get(i, frameID);
-		if (!pObj)
-			continue;
-
-		targetBB = pObj->m_bbox;
-		m_target.m_targetPos.x = pObj->m_bbox.midX();
-		m_target.m_targetPos.y = pObj->m_bbox.midY();
-		k++;
-		break;
-	}
-
-	if (k <= 0)
+	OBJECT* pO = m_pAI->at(0);
+	if (!pO)
 	{
 		m_target.m_targetPos.init();
 		m_target.m_bLocked = false;
 		return;
 	}
 
+	targetBB = pO->m_bbox;
+	m_target.m_targetPos.x = pO->m_bbox.midX();
+	m_target.m_targetPos.y = pO->m_bbox.midY();
 	m_target.m_bLocked = true;
 
 	//Change position to angles

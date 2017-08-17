@@ -85,31 +85,31 @@ void HM_follow::update(void)
 	m_pMN->bSetActive(true);
 
 	m_pTarget = NULL;
-	int i;
-	for (i = 0; i < m_pMN->size(); i++)
+
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_pMN->at(i++)) != NULL)
 	{
-		OBJECT* pObj = m_pMN->get(i, 0);
-		IF_CONT(!pObj);
 		if(m_targetName=="")
 		{
-			IF_CONT(pObj->m_iClass != m_iTargetClass);
+			IF_CONT(pO->m_iClass != m_iTargetClass);
 		}
 		else
 		{
-			IF_CONT(pObj->m_name != m_targetName);
+			IF_CONT(pO->m_name != m_targetName);
 		}
 
-		pObj->m_dist = m_pObs->d(&pObj->m_fBBox, NULL);
+		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);
 
 		if (!m_pTarget)
 		{
-			m_pTarget = pObj;
+			m_pTarget = pO;
 			continue;
 		}
 
-		if (m_pTarget->m_dist > pObj->m_dist)
+		if (m_pTarget->m_dist > pO->m_dist)
 		{
-			m_pTarget = pObj;
+			m_pTarget = pO;
 			continue;
 		}
 	}

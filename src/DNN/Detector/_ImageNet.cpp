@@ -123,40 +123,41 @@ void _ImageNet::detect(void)
 	GpuMat gBB;
 	GpuMat gfBB;
 
-	for (int i = 0; i < m_iObj; i++)
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
 	{
-		OBJECT* pObj = &m_pObj[i];
-		pObj->m_camSize.x = gRGBA.cols;
-		pObj->m_camSize.y = gRGBA.rows;
-		pObj->f2iBBox();
-		IF_CONT(pObj->m_bbox.area() <= 0);
-		if(pObj->m_bbox.area() > m_maxPix)
+		pO->m_camSize.x = gRGBA.cols;
+		pO->m_camSize.y = gRGBA.rows;
+		pO->f2iBBox();
+		IF_CONT(pO->m_bbox.area() <= 0);
+		if(pO->m_bbox.area() > m_maxPix)
 		{
 			LOG_E("Image size exceeds the maxPix for ImageNet");
 			continue;
 		}
 
-		if(!pObj->m_bClassify)
+		if(!pO->m_bClassify)
 		{
-			pObj->m_frameID = -1;
-			pObj->m_iClass = -1;
-			pObj->m_name = "";
+			pO->m_frameID = -1;
+			pO->m_iClass = -1;
+			pO->m_name = "";
 			continue;
 		}
 
-		vInt42rect(&pObj->m_bbox, &bb);
+		vInt42rect(&pO->m_bbox, &bb);
 		gBB = GpuMat(gRGBA, bb);
 		gBB.convertTo(gfBB, CV_32FC4);
 
 #ifdef USE_TENSORRT
 		float prob = 0;
-		pObj->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-		pObj->m_prob = prob;
-		pObj->m_frameID = get_time_usec();
-		if (pObj->m_iClass >= 0)
-			pObj->m_name = m_pIN->GetClassDesc(pObj->m_iClass);
+		pO->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+		pO->m_prob = prob;
+		pO->m_frameID = get_time_usec();
+		if (pO->m_iClass >= 0)
+			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
 		else
-			pObj->m_name = "";
+			pO->m_name = "";
 #endif
 	}
 }

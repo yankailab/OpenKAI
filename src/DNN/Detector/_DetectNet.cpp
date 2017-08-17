@@ -102,6 +102,7 @@ void _DetectNet::update(void)
 	{
 		this->autoFPSfrom();
 
+		this->_DetectorBase::update();
 		detect();
 
 		this->autoFPSto();
