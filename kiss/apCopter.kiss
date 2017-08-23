@@ -33,7 +33,7 @@
 	"height":720,
 	"bFlip":0,
 	"bGray":1,
-	"calibFile_":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
+	"calibFile_":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
 }
 
 {
@@ -68,8 +68,8 @@
 	"_VisionBase":"brio",
 	"width":640,
 	"height":360,
-	"fileVocabulary":"/media/kai/evo/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
-	"fileSetting":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
+	"fileVocabulary":"/home/ubuntu/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
+	"fileSetting":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
 	"bViewer":1,
 }
 
