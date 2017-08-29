@@ -23,6 +23,8 @@
 #include "Controller/HM/HM_rth_approach.h"
 #include "Controller/RC/RC_base.h"
 #include "Controller/RC/RC_visualFollow.h"
+#include "Controller/VEK/VEK_avoid.h"
+#include "Controller/VEK/VEK_base.h"
 
 #define ADD_ACTION(x) if(pAction->m_class==#x){*pA=new x();F_ERROR_F((*pA)->init(pAction));continue;}
 #define N_ACTION 32

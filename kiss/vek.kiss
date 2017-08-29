@@ -1,0 +1,309 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+}
+
+{
+	"name":"VEKview",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/home/ubuntu/src/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textSize":0.5,
+	"textR":0,
+	"textG":255,
+	"textB":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"VEKio",
+	"class":"_SerialPort",
+	"bInst":0,
+	"Window":"VEKview",
+	"portName":"/dev/ttyS1",
+	"baud":921600,
+}
+
+{
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"VEKview",
+	"depthWindow":"winDepth",
+	"orientation":0,
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":30,
+	"zedQuality":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":20,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"obstacle",
+	"class":"_Obstacle",
+	"FPS":30,
+	"bInst":1,
+	"Window":"VEKview",
+	"_Stream":"ZED",
+	"matrixW":20,
+	"matrixH":15,
+	"dBlend":0.25,
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"bLog":0,
+		"windowLen":9,
+	}
+}
+
+{
+	"name":"hmIN",
+	"class":"_ImageNet",
+	"bInst":0,
+	"bDraw":1,
+	"FPS":30,
+	"Window":"VEKview",
+	"_VisionBase":"ZED",
+	"dir":"/home/ubuntu/src/model/hm/grass_128/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_3350.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"blobOut":"softmax",
+	"labelFile":"labels.txt",
+	"nObj":128,
+	"mode":"object",
+	"maxPix":1000000,
+}
+
+{
+	"name":"automaton",
+	"class":"_Automaton",
+	"bInst":1,
+	"FPS":10,
+	"Window":"VEKview",
+	"startState":"VEK_STANDBY",
+
+	{
+		"state":"VEK_STANDBY",
+		"bInst":1,
+	}
+	{
+		"state":"VEK_FOLLOWME",
+		"bInst":1,
+	}
+	{
+		"state":"VEK_RTH",
+		"bInst":1,
+	}
+}
+
+{
+	"name":"autoPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"automaton",
+	"Window":"VEKview",
+	"bInst":1,
+	"FPS":30,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"base",
+			"class":"VEK_base",
+			"bInst":1,
+			"bLog":0,
+			"Window":"VEKview",
+			"_IOBase":"VEKio",
+			"_Automaton":"automaton",
+			"maxRpmT":65535,
+			"maxRpmW":2500,
+			"motorRpmW":0,
+			"defaultRpmT":2500,
+			
+			{
+				"name":"cmd",
+				"class":"TCP",
+				"bInst":0,
+				
+				{
+					"name":"server",
+					"class":"_socket",
+					"bInst":1,
+					"listenPort":19840,
+					"nListen":1,
+					"timeoutRecv":1000,
+					"buf":1024,
+				}
+			}
+		}
+			
+		{
+			"name":"follow",
+			"class":"VEK_follow",
+			"bInst":0,
+			"bLog":1,
+			"_ZED":"ZED",
+			"Window":"VEKview",
+			"VEK_base":"base",
+			"_Automaton":"automaton",
+			"_MatrixNet":"humanMN",
+			"_Obstacle":"obstacle",
+			"distMin":1.0,
+			"distMax":10.0,
+			"rpmT":3000,
+			"rpmSteer":5500,
+			"targetX":0.5,
+			"rTargetX":0.2,
+			"iTargetClass":1,
+			"targetName":"turf",
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"VEK_FOLLOWME",
+					"bInst":1,
+				}				
+			}
+		}
+
+		{
+			"name":"grass",
+			"class":"VEK_grass",
+			"bInst":0,
+			"bDraw":1,
+			"Window":"VEKview",
+			"VEK_base":"base",
+			"_ImageNet":"hmIN",
+			"_Automaton":"automaton",
+			"rpmSteer":1500,
+			"turnTimer":0,
+			"iGrassClass":1,
+			"minProb":0.1,
+			"tTurnRandRange":300000,
+			"nTurnRand":10,
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"VEK_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"VEK_RTH",
+					"bInst":1,
+				}
+			}
+			
+			{
+				"name":"grassBoxL",
+				"bInst":1,
+				"left":0.10,
+				"top":0.84,
+				"right":0.20,
+				"bottom":1.0,
+			}			
+			
+			{
+				"name":"grassBoxF",
+				"bInst":1,
+				"left":0.51,
+				"top":0.78,
+				"right":0.61,
+				"bottom":0.83,
+			}			
+
+			{
+				"name":"grassBoxR",
+				"bInst":1,
+				"left":0.9,
+				"top":0.84,
+				"right":1.0,
+				"bottom":0.92,
+			}
+		}
+		
+		{
+			"name":"avoidance",
+			"class":"VEK_avoid",
+			"bInst":1,
+			"Window":"VEKview",
+			"VEK_base":"base",
+			"_Automaton":"automaton",
+			"_Obstacle":"obstacle",
+			"alertDist":1.2,
+			"rpmSteer":2000,
+			"markerTurnTimer":5000000,
+			"iMarkerClass":1,
+			"minProb":0.0,
+			
+			{
+				"name":"obsBoxL",
+				"bInst":1,
+				"left":0.0,
+				"top":0.25,
+				"right":0.169,
+				"bottom":1.0,
+			}			
+			
+			{
+				"name":"obsBoxF",
+				"bInst":1,
+				"left":0.17,
+				"top":0.25,
+				"right":0.929,
+				"bottom":0.825,
+			}
+			
+			{
+				"name":"obsBoxR",
+				"bInst":1,
+				"left":0.93,
+				"top":0.25,
+				"right":1.0,
+				"bottom":0.92,
+			}			
+			
+			{
+				"name":"activeState",
+				"bInst":1,
+				{
+					"state":"VEK_WORK",
+					"bInst":1,
+				}
+				{
+					"state":"VEK_RTH",
+					"bInst":1,
+				}
+			}
+		}				
+		
+	}
+}
+
+
