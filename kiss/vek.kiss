@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -31,10 +31,10 @@
 {
 	"name":"VEKio",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"Window":"VEKview",
-	"portName":"/dev/ttyS1",
-	"baud":921600,
+	"portName":"/dev/ttyTHS1",
+	"baud":115200,
 }
 
 {
@@ -65,7 +65,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"VEKview",
-	"_Stream":"ZED",
+	"_ZED":"ZED",
 	"matrixW":20,
 	"matrixH":15,
 	"dBlend":0.25,
@@ -104,14 +104,14 @@
 	"bInst":1,
 	"FPS":10,
 	"Window":"VEKview",
-	"startState":"VEK_STANDBY",
+	"startState":"VEK_RUN",
 
 	{
 		"state":"VEK_STANDBY",
 		"bInst":1,
 	}
 	{
-		"state":"VEK_FOLLOWME",
+		"state":"VEK_RUN",
 		"bInst":1,
 	}
 	{
@@ -135,14 +135,14 @@
 			"name":"base",
 			"class":"VEK_base",
 			"bInst":1,
-			"bLog":0,
+			"bLog":1,
 			"Window":"VEKview",
 			"_IOBase":"VEKio",
 			"_Automaton":"automaton",
-			"maxRpmT":65535,
-			"maxRpmW":2500,
-			"motorRpmW":0,
-			"defaultRpmT":2500,
+			"pwmU":2000,
+			"pwmN":1500,
+			"pwmL":1000,
+			"vForward":-0.5,
 			
 			{
 				"name":"cmd",
@@ -251,7 +251,7 @@
 		{
 			"name":"avoidance",
 			"class":"VEK_avoid",
-			"bInst":1,
+			"bInst":0,
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",

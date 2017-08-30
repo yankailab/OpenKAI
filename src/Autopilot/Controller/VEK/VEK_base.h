@@ -32,6 +32,7 @@ public:
 	int m_pwmL;
 	double m_vL;
 	double m_vR;
+	double m_vForward;
 
 	vDouble3 m_dT;
 	vDouble3 m_dRot;

@@ -13,6 +13,7 @@ VEK_base::VEK_base()
 	m_pwmL = 1000;
 	m_vL = 0.0;
 	m_vR = 0.0;
+	m_vForward = 1.0;
 
 	m_dT.init();
 	m_dRot.init();
@@ -31,6 +32,7 @@ bool VEK_base::init(void* pKiss)
 	KISSm(pK,pwmU);
 	KISSm(pK,pwmN);
 	KISSm(pK,pwmL);
+	KISSm(pK,vForward);
 
 	Kiss* pI = pK->o("cmd");
 	IF_T(pI->empty());
@@ -58,7 +60,6 @@ void VEK_base::update(void)
 {
 	this->ActionBase::update();
 	NULL_(m_pAM);
-	NULL_(m_pCMD);
 
 	string* pStateName = m_pAM->getCurrentStateName();
 	if(*pStateName == "VEK_STANDBY")
@@ -68,10 +69,42 @@ void VEK_base::update(void)
 	}
 	else
 	{
-		m_vL = 1.0;
-		m_vR = 1.0;
+		m_vL = m_vForward;
+		m_vR = m_vForward;
 	}
 
+	int pwmL;
+	int pwmR;
+	double dPWML;
+	double dPWMR;
+
+	if(m_vL > 0.0)
+		dPWML = m_pwmU - m_pwmN;
+	else
+		dPWML = m_pwmN - m_pwmL;
+
+	if(m_vR > 0.0)
+		dPWMR = m_pwmU - m_pwmN;
+	else
+		dPWMR = m_pwmN - m_pwmL;
+
+	pwmL = m_pwmN + (int)(dPWML * m_vL);
+	pwmR = m_pwmN + (int)(dPWMR * m_vR);
+
+	NULL_(m_pVEK);
+
+	static uint8_t pVekCMD[5];
+	pVekCMD[0] = 0xff;
+	pVekCMD[1] = pwmL >> 8;
+	pVekCMD[2] = pwmL;
+	pVekCMD[3] = pwmR >> 8;
+	pVekCMD[4] = pwmR;
+
+	m_pVEK->write(pVekCMD,5);
+
+	LOG_I("pwmL: " << pwmL << " pwmR: " << pwmR);
+
+	NULL_(m_pCMD);
 	cmd();
 }
 
