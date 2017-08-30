@@ -40,8 +40,6 @@ _ZED::_ZED()
 	m_zedL2C = 0.0;
 	m_tLastTrack = 0;
 	m_zedViewLR = sl::VIEW_LEFT;
-
-	int a = TOO_FAR;
 }
 
 _ZED::~_ZED()
@@ -116,7 +114,6 @@ bool _ZED::open(void)
 	m_zedRuntime.sensing_mode = (sl::SENSING_MODE) m_zedSenseMode;
 	m_zedRuntime.enable_depth = true;
 	m_zedRuntime.enable_point_cloud = false;
-	m_zedRuntime.move_point_cloud_to_world_frame = false;
 
 	// Create sl and cv Mat to get ZED left image and depth image
 	sl::Resolution zedImgSize = m_pZed->getResolution();
