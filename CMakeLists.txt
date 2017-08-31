@@ -15,7 +15,6 @@ OPTION(USE_ZED "Use Stereolabs ZED camera" OFF)
 OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
-find_package(Pangolin REQUIRED)
 
 set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
@@ -76,6 +75,7 @@ if(USE_ZED)
 endif()
 
 if(USE_ORB_SLAM2)
+  find_package(Pangolin REQUIRED)
   add_definitions(-DUSE_ORB_SLAM2)
   set(ORB_SLAM2_include "/orb_slam2_gpu/include" CACHE STRING "")
   set(ORB_SLAM2_includeThirparty "/orb_slam2_gpu" CACHE STRING "")
