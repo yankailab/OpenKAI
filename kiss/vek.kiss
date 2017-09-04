@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -42,7 +42,6 @@
 	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
-	"bLog":0,
 	"Window":"VEKview",
 	"depthWindow":"winDepth",
 	"orientation":0,
@@ -80,6 +79,27 @@
 }
 
 {
+	"name":"dnPed",
+	"class":"_DetectNet",
+	"bInst":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"VEKview",
+	"_VisionBase":"ZED",
+	"modelDir":"/media/kai/evo/dev/model/ped-100/",
+	"minConfidence":0.01,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"",
+	"className":"",
+	"nObj":16,
+	"coverageThr":0.5,
+	"_DetectorIn":"dnFace",
+	"overlapMin":1.0,
+}
+
+{
 	"name":"hmIN",
 	"class":"_ImageNet",
 	"bInst":0,
@@ -107,11 +127,15 @@
 	"startState":"VEK_RUN",
 
 	{
-		"state":"VEK_STANDBY",
+		"state":"VEK_RUN",
 		"bInst":1,
 	}
 	{
-		"state":"VEK_RUN",
+		"state":"VEK_AVOID",
+		"bInst":1,
+	}
+	{
+		"state":"VEK_FOLLOW",
 		"bInst":1,
 	}
 	{
@@ -135,14 +159,13 @@
 			"name":"base",
 			"class":"VEK_base",
 			"bInst":1,
-			"bLog":1,
 			"Window":"VEKview",
 			"_IOBase":"VEKio",
 			"_Automaton":"automaton",
 			"pwmU":2000,
 			"pwmN":1500,
 			"pwmL":1000,
-			"vForward":-0.5,
+			"vForward":0.5,
 			
 			{
 				"name":"cmd",
@@ -164,140 +187,67 @@
 		{
 			"name":"follow",
 			"class":"VEK_follow",
-			"bInst":0,
-			"bLog":1,
+			"bInst":1,
 			"_ZED":"ZED",
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",
-			"_MatrixNet":"humanMN",
+			"_DetectNet":"dnPed",
 			"_Obstacle":"obstacle",
-			"distMin":1.0,
+			"distMin":0.0,
 			"distMax":10.0,
-			"rpmT":3000,
-			"rpmSteer":5500,
+			"vSteer":0.125,
 			"targetX":0.5,
-			"rTargetX":0.2,
-			"iTargetClass":1,
-			"targetName":"turf",
+			"rTargetX":0.05,
+			"iTargetClass":0,
 			
 			{
 				"name":"activeState",
 				"bInst":1,
 				{
-					"state":"VEK_FOLLOWME",
+					"state":"VEK_RUN",
 					"bInst":1,
 				}				
-			}
-		}
-
-		{
-			"name":"grass",
-			"class":"VEK_grass",
-			"bInst":0,
-			"bDraw":1,
-			"Window":"VEKview",
-			"VEK_base":"base",
-			"_ImageNet":"hmIN",
-			"_Automaton":"automaton",
-			"rpmSteer":1500,
-			"turnTimer":0,
-			"iGrassClass":1,
-			"minProb":0.1,
-			"tTurnRandRange":300000,
-			"nTurnRand":10,
-			
-			{
-				"name":"activeState",
-				"bInst":1,
 				{
-					"state":"VEK_WORK",
+					"state":"VEK_FOLLOW",
 					"bInst":1,
-				}
-				{
-					"state":"VEK_RTH",
-					"bInst":1,
-				}
-			}
-			
-			{
-				"name":"grassBoxL",
-				"bInst":1,
-				"left":0.10,
-				"top":0.84,
-				"right":0.20,
-				"bottom":1.0,
-			}			
-			
-			{
-				"name":"grassBoxF",
-				"bInst":1,
-				"left":0.51,
-				"top":0.78,
-				"right":0.61,
-				"bottom":0.83,
-			}			
-
-			{
-				"name":"grassBoxR",
-				"bInst":1,
-				"left":0.9,
-				"top":0.84,
-				"right":1.0,
-				"bottom":0.92,
+				}				
 			}
 		}
 		
 		{
 			"name":"avoidance",
 			"class":"VEK_avoid",
-			"bInst":0,
+			"bInst":1,
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
-			"alertDist":1.2,
-			"rpmSteer":2000,
-			"markerTurnTimer":5000000,
-			"iMarkerClass":1,
-			"minProb":0.0,
+			"alertDist":1.0,
+			"vSteer":0.25,
 			
 			{
-				"name":"obsBoxL",
+				"name":"obsBox",
 				"bInst":1,
-				"left":0.0,
-				"top":0.25,
-				"right":0.169,
-				"bottom":1.0,
-			}			
-			
-			{
-				"name":"obsBoxF",
-				"bInst":1,
-				"left":0.17,
-				"top":0.25,
-				"right":0.929,
-				"bottom":0.825,
+				"left":0.15,
+				"top":0.0,
+				"right":0.95,
+				"bottom":0.5,
 			}
-			
-			{
-				"name":"obsBoxR",
-				"bInst":1,
-				"left":0.93,
-				"top":0.25,
-				"right":1.0,
-				"bottom":0.92,
-			}			
 			
 			{
 				"name":"activeState",
 				"bInst":1,
 				{
-					"state":"VEK_WORK",
+					"state":"VEK_RUN",
 					"bInst":1,
 				}
 				{
-					"state":"VEK_RTH",
+					"state":"VEK_FOLLOW",
+					"bInst":1,
+				}				
+				{
+					"state":"VEK_AVOID",
 					"bInst":1,
 				}
 			}

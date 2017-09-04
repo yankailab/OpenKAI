@@ -61,17 +61,7 @@ void VEK_base::update(void)
 	this->ActionBase::update();
 	NULL_(m_pAM);
 
-	string* pStateName = m_pAM->getCurrentStateName();
-	if(*pStateName == "VEK_STANDBY")
-	{
-		m_vL = 0;
-		m_vR = 0;
-	}
-	else
-	{
-		m_vL = m_vForward;
-		m_vR = m_vForward;
-	}
+	cmd();
 
 	int pwmL;
 	int pwmR;
@@ -102,20 +92,22 @@ void VEK_base::update(void)
 
 	m_pVEK->write(pVekCMD,5);
 
-	LOG_I("pwmL: " << pwmL << " pwmR: " << pwmR);
+	string stateName = "VEK_RUN";
+	m_pAM->transit(&stateName);
+	m_vL = m_vForward;
+	m_vR = m_vForward;
 
-	NULL_(m_pCMD);
-	cmd();
 }
 
 void VEK_base::cmd(void)
 {
+	NULL_(m_pCMD);
+
 	if (!m_pCMD->isOpen())
 	{
 		m_pCMD->open();
 		return;
 	}
-
 }
 
 bool VEK_base::draw(void)
@@ -127,8 +119,8 @@ bool VEK_base::draw(void)
 	IF_F(pMat->empty());
 
 	string msg = *this->getName()
-			+ ": vL=" + i2str(m_vL)
-			+ ", vR=" + i2str(m_vR);
+			+ ": vL=" + f2str(m_vL)
+			+ ", vR=" + f2str(m_vR);
 	pWin->addMsg(&msg);
 
 	return true;

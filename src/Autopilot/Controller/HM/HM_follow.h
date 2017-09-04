@@ -2,7 +2,6 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
 #include "../../../Sensor/_Obstacle.h"
 #include "../../../DNN/Detector/_MatrixNet.h"
 #include "../../ActionBase.h"
