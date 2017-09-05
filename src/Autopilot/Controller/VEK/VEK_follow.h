@@ -24,7 +24,9 @@ public:
 private:
 	VEK_base* m_pVEK;
 	_Obstacle* m_pObs;
+#ifdef USE_TENSORRT
 	_DetectNet* m_pDN;
+#endif
 
 	double	m_vSteer;
 	double	m_distMin;

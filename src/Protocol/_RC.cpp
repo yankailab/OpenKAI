@@ -4,7 +4,7 @@ namespace kai
 {
 _RC::_RC()
 {
-	m_pSerialPort = NULL;
+	m_pIO = NULL;
 }
 
 _RC::~_RC()
@@ -18,10 +18,8 @@ bool _RC::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	Kiss* pCC = pK->o("serialPort");
-	IF_F(pCC->empty());
-	m_pSerialPort = new _SerialPort();
-	IF_F(!m_pSerialPort->init(pCC));
+	//TODO: Read config
+
 
 	return true;
 }
@@ -29,29 +27,33 @@ bool _RC::init(void* pKiss)
 bool _RC::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
+	Kiss* pK = (Kiss*) m_pKiss;
+
+	string iName;
+
+	iName = "";
+	F_ERROR_F(pK->v("_IOBase", &iName));
+	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
 
 void _RC::close()
 {
-	if (m_pSerialPort)
+	if (m_pIO)
 	{
-		m_pSerialPort->close();
-		delete m_pSerialPort;
+		m_pIO->close();
+		delete m_pIO;
 	}
 	printf("Serial port closed.\n");
 }
 
-// ------------------------------------------------------------------------------
-//   Read Messages
-// ------------------------------------------------------------------------------
 bool _RC::readMessages()
 {
 	uint8_t	inByte;
 	int		byteRead;
 
-	while ((byteRead = m_pSerialPort->read(&inByte,1)) > 0)
+	while ((byteRead = m_pIO->read(&inByte,1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
@@ -84,14 +86,10 @@ bool _RC::readMessages()
 
 }
 
-
-
-// ------------------------------------------------------------------------------
-//   Write Setpoint Message
-// ------------------------------------------------------------------------------
 void _RC::rc_overide(int numChannel, int* pChannels)
 {
-	IF_(!m_pSerialPort->isOpen());
+	NULL_(m_pIO);
+	IF_(!m_pIO->isOpen());
 
 	int len;
 	int pwm;
@@ -108,20 +106,21 @@ void _RC::rc_overide(int numChannel, int* pChannels)
 	}
 
 	len = 4 + numChannel * 2;
-	m_pSerialPort->write(m_pBuf, len);
+	m_pIO->write(m_pBuf, len);
 
 }
 
 void _RC::controlMode(int mode)
 {
-	IF_(!m_pSerialPort->isOpen());
+	NULL_(m_pIO);
+	IF_(!m_pIO->isOpen());
 
 	m_pBuf[0] = 0xFE;//Mavlink begin
 	m_pBuf[1] = 1;
 	m_pBuf[2] = 1;
 	m_pBuf[3] = (unsigned char)mode;
 
-	m_pSerialPort->write(m_pBuf, 4);
+	m_pIO->write(m_pBuf, 4);
 }
 
 bool _RC::start(void)
@@ -131,12 +130,10 @@ bool _RC::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR) << "Return code: "<< retCode << " in VehicleInterface::start().pthread_create()";
+		LOG(ERROR) << "Return code: "<< retCode;
 		m_bThreadON = false;
 		return false;
 	}
-
-	LOG(INFO) << "VehicleInterface.start()";
 
 	return true;
 }
@@ -145,9 +142,11 @@ void _RC::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pSerialPort->isOpen())
+		IF_CONT(!m_pIO);
+
+		if(!m_pIO->isOpen())
 		{
-			if(!m_pSerialPort->open())
+			if(!m_pIO->open())
 			{
 				this->sleepTime(USEC_1SEC);
 				continue;

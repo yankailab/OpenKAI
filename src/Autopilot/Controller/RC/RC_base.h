@@ -4,6 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Script/Kiss.h"
+#include "../../../Protocol/_RC.h"
 #include "../../ActionBase.h"
 
 #define NUM_RC_CHANNEL 8
@@ -83,8 +84,12 @@ public:
 	~RC_base();
 
 	bool init(void* pKiss);
+	bool link(void);
 
 public:
+	_RC* m_pRC;
+	int m_pPWM[NUM_RC_CHANNEL];
+
 	RC_PID m_pidRoll;
 	RC_PID m_pidPitch;
 	RC_PID m_pidYaw;

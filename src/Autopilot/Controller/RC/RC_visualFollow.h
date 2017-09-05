@@ -37,8 +37,8 @@ public:
 	void onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn);
 
 private:
-	_RC* m_pRC;
-	RC_base* m_pRCconfig;
+	_RC* m_pRCIO;
+	RC_base* m_pRCbase;
 
 	//Control
 	RC_CTRL m_roll;

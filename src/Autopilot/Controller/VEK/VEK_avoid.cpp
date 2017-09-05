@@ -13,7 +13,7 @@ VEK_avoid::VEK_avoid()
 	m_obsBox.z = 1.0;
 	m_obsBox.w = 1.0;
 
-	m_alertDist = 0.0;
+	m_dAlert = 0.0;
 	m_distM = 0.0;
 	m_vSteer = 0.5;
 }
@@ -29,7 +29,7 @@ bool VEK_avoid::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,vSteer);
-	KISSm(pK,alertDist);
+	KISSm(pK,dAlert);
 
 	Kiss* pG;
 	pG = pK->o("obsBox");
@@ -71,7 +71,7 @@ void VEK_avoid::update(void)
 
 	//do nothing if no obstacle inside alert distance
 	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
-	IF_(m_distM > m_alertDist);
+	IF_(m_distM > m_dAlert);
 
 	string stateName = "VEK_AVOID";
 	m_pAM->transit(&stateName);
@@ -106,7 +106,7 @@ bool VEK_avoid::draw(void)
 
 	Scalar col = Scalar(0, 255, 0);
 	int bold = 1;
-	if (m_distM < m_alertDist)
+	if (m_distM < m_dAlert)
 	{
 		col = Scalar(0, 0, 255);
 		bold = 2;

@@ -40,8 +40,7 @@ bool _ROITracker::init(void* pKiss)
 	m_pFrame = new Frame();
 
 	// create a tracker object
-//	m_pTracker = Tracker::create("KCF");]
-	//TODO: update to OpenCV 3.2
+	m_pTracker = TrackerKCF::create();
 
 	return true;
 }
@@ -53,7 +52,7 @@ bool _ROITracker::link(void)
 
 	//link instance
 	string iName = "";
-	F_ERROR_F(pK->v("_Stream",&iName));
+	F_ERROR_F(pK->v("_VisionBase",&iName));
 	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
@@ -124,8 +123,7 @@ void _ROITracker::track(void)
 	if (m_newROI.width > 0)
 	{
 		m_pTracker.release();
-//		m_pTracker = Tracker::create("KCF");
-		//TODO: update to OpenCV 3.2
+		m_pTracker = TrackerKCF::create();
 
 		m_ROI = m_newROI;
 		m_pTracker->init(*pMat, m_ROI);

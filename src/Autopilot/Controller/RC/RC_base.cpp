@@ -5,6 +5,7 @@ namespace kai
 
 RC_base::RC_base()
 {
+	m_pRC = NULL;
 }
 
 RC_base::~RC_base()
@@ -84,6 +85,18 @@ bool RC_base::init(void* pKiss)
 	F_ERROR_F(pCC->v("pwmN", &RC.m_pwmN));
 	F_ERROR_F(pCC->v("pwmCh", &RC.m_iCh));
 	m_rcYaw = RC;
+
+	return true;
+}
+
+bool RC_base::link(void)
+{
+	IF_F(!this->ActionBase::link());
+	Kiss* pK = (Kiss*)m_pKiss;
+
+	string iName = "";
+	F_INFO(pK->v("_RC", &iName));
+	m_pRC = (_RC*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

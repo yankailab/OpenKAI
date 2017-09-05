@@ -7,8 +7,8 @@ namespace kai
 
 RC_visualFollow::RC_visualFollow()
 {
-	m_pRC = NULL;
-	m_pRCconfig = NULL;
+	m_pRCIO = NULL;
+	m_pRCbase = NULL;
 	m_pROITracker = NULL;
 	m_pFlow = NULL;
 
@@ -16,10 +16,7 @@ RC_visualFollow::RC_visualFollow()
 	m_pUIassist = NULL;
 	m_pUIdrawRect = NULL;
 
-	m_ROI.x = 0;
-	m_ROI.y = 0;
-	m_ROI.z = 0;
-	m_ROI.w = 0;
+	m_ROI.init();
 	m_bSelect = false;
 	m_ROImode = MODE_ASSIST;
 	m_ROIsize = 100;
@@ -73,10 +70,10 @@ bool RC_visualFollow::link(void)
 	string iName = "";
 
 	F_INFO(pK->v("_RC", &iName));
-	m_pRC = (_RC*) (pK->root()->getChildInstByName(&iName));
+	m_pRCIO = (_RC*) (pK->root()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("RC_base", &iName));
-	m_pRCconfig = (RC_base*) (pK->root()->getChildInstByName(&iName));
+	m_pRCbase = (RC_base*) (pK->root()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("ROItracker", &iName));
 	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
@@ -91,17 +88,17 @@ void RC_visualFollow::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pRC);
+	NULL_(m_pRCIO);
 	NULL_(m_pROITracker);
 	IF_(!isActive());
 
 	if (m_pROITracker->m_bTracking == false)
 	{
-		m_pRCconfig->m_rcRoll.neutral();
-		m_pRCconfig->m_rcPitch.neutral();
+		m_pRCbase->m_rcRoll.neutral();
+		m_pRCbase->m_rcPitch.neutral();
 		m_roll.resetErr();
 		m_pitch.resetErr();
-//		m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
+		m_pRCIO->rc_overide(NUM_RC_CHANNEL, m_pRCbase->m_pPWM);
 		return;
 	}
 
@@ -109,15 +106,15 @@ void RC_visualFollow::update(void)
 	double posPitch;
 	double ovDTime;
 
-	RC_PID* pidRoll = &m_pRCconfig->m_pidRoll;
-	RC_PID* pidPitch = &m_pRCconfig->m_pidPitch;
-	RC_PID* pidAlt = &m_pRCconfig->m_pidAlt;
-	RC_PID* pidYaw = &m_pRCconfig->m_pidYaw;
+	RC_PID* pidRoll = &m_pRCbase->m_pidRoll;
+	RC_PID* pidPitch = &m_pRCbase->m_pidPitch;
+	RC_PID* pidAlt = &m_pRCbase->m_pidAlt;
+	RC_PID* pidYaw = &m_pRCbase->m_pidYaw;
 
-	RC_CHANNEL* pRCroll = &m_pRCconfig->m_rcRoll;
-	RC_CHANNEL* pRCpitch = &m_pRCconfig->m_rcPitch;
-	RC_CHANNEL* pRCalt = &m_pRCconfig->m_rcAlt;
-	RC_CHANNEL* pRCyaw = &m_pRCconfig->m_rcYaw;
+	RC_CHANNEL* pRCroll = &m_pRCbase->m_rcRoll;
+	RC_CHANNEL* pRCpitch = &m_pRCbase->m_rcPitch;
+	RC_CHANNEL* pRCalt = &m_pRCbase->m_rcAlt;
+	RC_CHANNEL* pRCyaw = &m_pRCbase->m_rcYaw;
 
 	ovDTime = (1.0 / m_pROITracker->m_dTime) * 1000; //ms
 	posRoll = m_roll.m_pos;
@@ -155,7 +152,7 @@ void RC_visualFollow::update(void)
 			pRCpitch->m_pwmH);
 
 	//RC output
-//	m_pCtrl->m_pRC->rc_overide(m_pCtrl->m_nRC, m_pCtrl->m_pRC);
+	m_pRCIO->rc_overide(NUM_RC_CHANNEL, m_pRCbase->m_pPWM);
 	return;
 
 }
@@ -197,8 +194,7 @@ bool RC_visualFollow::draw(void)
 		m_pUIdrawRect->draw();
 	}
 
-//	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50,
-//			Scalar(0, 255, 0), 2);
+	circle(*pMat, Point(m_roll.m_targetPos, m_pitch.m_targetPos), 50, Scalar(0, 255, 0), 2);
 
 	return true;
 }
@@ -310,10 +306,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 		if (pBtn->m_name == "MODE")
 		{
-			m_ROI.x = 0;
-			m_ROI.y = 0;
-			m_ROI.z = 0;
-			m_ROI.w = 0;
+			m_ROI.init();
 			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_DRAWRECT;
@@ -366,10 +359,7 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 
 		if (pBtn->m_name == "MODE")
 		{
-			m_ROI.x = 0;
-			m_ROI.y = 0;
-			m_ROI.z = 0;
-			m_ROI.w = 0;
+			m_ROI.init();
 			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_ASSIST;
@@ -387,10 +377,7 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 		roi = getMouseROI(m_ROI);
 		if (roi.width < m_ROIsizeFrom || roi.height < m_ROIsizeFrom)
 		{
-			m_ROI.x = 0;
-			m_ROI.y = 0;
-			m_ROI.z = 0;
-			m_ROI.w = 0;
+			m_ROI.init();
 		}
 		else
 		{

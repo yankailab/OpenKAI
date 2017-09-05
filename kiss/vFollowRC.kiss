@@ -5,11 +5,11 @@
 	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
-	"winMouse":"TrackerView",
+	"winMouse":"vFollowView",
 }
 
 {
-	"name":"TrackerView",
+	"name":"vFollowView",
 	"class":"Window",
 	"bInst":1,
 	"w":1920,
@@ -30,11 +30,11 @@
 }
 
 {
-	"name":"TrackerCam",
+	"name":"vFollowCam",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":1,
-	"Window":"TrackerView",
+	"Window":"vFollowView",
 	"deviceID":0,
 	"width":1920,
 	"height":1080,
@@ -43,20 +43,38 @@
 }
 
 {
-	"name":"targetDrone",
+	"name":"vTarget",
 	"class":"_ROITracker",
 	"bInst":1,
 	"FPS":30,
-	"_VisionBase":"TrackerCam",
-	"_Automaton":"",
+	"_VisionBase":"vFollowCam",
 }
 
 {
-	"name":"autoTracker",
+	"name":"vFollowSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"Window":"vFollowView",	
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"vFollowRC",
+	"class":"_RC",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"vFollowView",
+	"_IOBase":"vFollowSerial",
+}
+
+{
+	"name":"vFollowAuto",
 	"class":"_AutoPilot",
 	"bInst":1,
-	"FPS":30,
-	"Window":"TrackerView",
+	"FPS":60,
+	"Window":"vFollowView",
 	"_Automaton":"",
 	"_Mavlink":"",
 	"_RC":"",
@@ -68,7 +86,67 @@
 		"name":"action",
 		
 		{
-			"name":"visualTracker",
+			"name":"base",
+			"class":"RC_base",
+			"bInst":1,
+			"Window":"vFollowView",
+			"_RC":"vFollowRC",
+			
+			{
+				"name":"roll",
+				"P":-0.3,
+				"I":0.0,
+				"Imax":10.0,
+				"D":-0.5,
+				"dT":900.0,
+				"pwmH":1750,
+				"pwmN":1515,
+				"pwmL":1250,
+				"pwmCh":0,
+			}
+						
+			{
+				"name":"pitch",
+				"P":-0.3,
+				"I":0.0,
+				"Imax":10.0,
+				"D":-0.5,
+				"dT":900.0,
+				"pwmH":1750,
+				"pwmN":1515,
+				"pwmL":1250,
+				"pwmCh":1,
+			}
+			
+			{
+				"name":"alt",
+				"P":1.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":900.0,
+				"pwmH":2000,
+				"pwmN":1500,
+				"pwmL":1000,
+				"pwmCh":2,
+			}
+			
+			{
+				"name":"yaw",
+				"P":200.0,
+				"I":0.0,
+				"Imax":0.0,
+				"D":0.0,
+				"dT":0.0,
+				"pwmH":2000,
+				"pwmN":1500,
+				"pwmL":1000,
+				"pwmCh":3,
+			}
+		}
+		
+		{
+			"name":"vFollow",
 			"bInst":1,
 			"class":"RC_visualFollow",
 			"targetX":960,
@@ -76,16 +154,15 @@
 			"ROIsizeFrom":10,
 			"ROIsizeTo":300,
 			"ROIsizeStep":10,
-			"ROItracker":"targetDrone",
-			"Window":"TrackerView",
+			"ROItracker":"vTarget",
+			"Window":"vFollowView",
 			"bMouse":1,
-			"State":"AIR_FOLLOW",
 			
 			{
 				"name":"assist",
 				"bInst":1,
 				"class":"UI",
-				"Window":"TrackerView",
+				"Window":"vFollowView",
 				
 				{
 					"name":"CLR",
@@ -158,7 +235,7 @@
 				"name":"drawRect",
 				"bInst":1,
 				"class":"UI",
-				"Window":"TrackerView",
+				"Window":"vFollowView",
 
 				{
 					"name":"MODE",

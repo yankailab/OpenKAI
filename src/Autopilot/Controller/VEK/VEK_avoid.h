@@ -24,11 +24,11 @@ private:
 	VEK_base* m_pVEK;
 	_Obstacle* m_pObs;
 
-	double	m_vSteer;
+	double m_vSteer;
 	double m_distM;
+	double m_dAlert;
 	vDouble4 m_obsBox;
 	vInt2 m_posMin;
-	double m_alertDist;
 
 };
 

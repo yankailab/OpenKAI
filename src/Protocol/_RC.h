@@ -33,15 +33,13 @@ public:
 	bool start(void);
 
 	bool readMessages();
-//	void handleMessage(mavlink_message_t message);
-
 	void rc_overide(int numChannel, int* pChannels);
 	void controlMode(int mode);
 
 	MESSAGE m_recvMsg;
 
 private:
-	_SerialPort* m_pSerialPort;
+	_IOBase* m_pIO;
 	uint8_t m_pBuf[256];
 
 	void update(void);

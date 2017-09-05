@@ -6,7 +6,9 @@ namespace kai
 VEK_follow::VEK_follow()
 {
 	m_pVEK = NULL;
+#ifdef USE_TENSORRT
 	m_pDN = NULL;
+#endif
 	m_pObs = NULL;
 	m_vSteer = 0.5;
 
@@ -54,6 +56,7 @@ bool VEK_follow::link(void)
 	F_INFO(pK->v("_Obstacle", &iName));
 	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
 
+#ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_DetectNet", &iName));
 	m_pDN = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
@@ -63,6 +66,7 @@ bool VEK_follow::link(void)
 		LOG_E(iName << " not found");
 		return false;
 	}
+#endif
 
 	return true;
 }
@@ -71,6 +75,7 @@ void VEK_follow::update(void)
 {
 	this->ActionBase::update();
 
+#ifdef USE_TENSORRT
 	NULL_(m_pVEK);
 	NULL_(m_pAM);
 	NULL_(m_pDN);
@@ -108,7 +113,9 @@ void VEK_follow::update(void)
 
 	string stateName = "VEK_follow";
 	m_pAM->transit(&stateName);
-
+#else
+	LOG_I("VEK_follow requires USE_TENSORRT to be turned ON");
+#endif
 }
 
 bool VEK_follow::draw(void)
