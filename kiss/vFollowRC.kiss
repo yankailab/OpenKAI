@@ -54,8 +54,9 @@
 	"name":"vFollowSerial",
 	"class":"_SerialPort",
 	"bInst":1,
+	"FPS":100,
 	"Window":"vFollowView",	
-	"portName":"/dev/ttyACM0",
+	"portName":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -63,7 +64,7 @@
 	"name":"vFollowRC",
 	"class":"_RC",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"vFollowView",
 	"_IOBase":"vFollowSerial",
@@ -149,6 +150,7 @@
 			"name":"vFollow",
 			"bInst":1,
 			"class":"RC_visualFollow",
+			"RC_base":"base",
 			"targetX":960,
 			"targetY":500,
 			"ROIsizeFrom":10,

@@ -69,11 +69,8 @@ bool RC_visualFollow::link(void)
 
 	string iName = "";
 
-	F_INFO(pK->v("_RC", &iName));
-	m_pRCIO = (_RC*) (pK->root()->getChildInstByName(&iName));
-
 	F_INFO(pK->v("RC_base", &iName));
-	m_pRCbase = (RC_base*) (pK->root()->getChildInstByName(&iName));
+	m_pRCbase = (RC_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("ROItracker", &iName));
 	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
@@ -88,9 +85,10 @@ void RC_visualFollow::update(void)
 {
 	this->ActionBase::update();
 
+	NULL_(m_pRCbase);
+	m_pRCIO = m_pRCbase->m_pRC;
 	NULL_(m_pRCIO);
 	NULL_(m_pROITracker);
-	IF_(!isActive());
 
 	if (m_pROITracker->m_bTracking == false)
 	{
@@ -150,6 +148,9 @@ void RC_visualFollow::update(void)
 					-pidPitch->m_Imax);
 	pRCpitch->m_pwm = constrain(pRCpitch->m_pwm, pRCpitch->m_pwmL,
 			pRCpitch->m_pwmH);
+
+	m_pRCbase->m_pPWM[pRCroll->m_iCh] = pRCroll->m_pwm;
+	m_pRCbase->m_pPWM[pRCpitch->m_iCh] = pRCpitch->m_pwm;
 
 	//RC output
 	m_pRCIO->rc_overide(NUM_RC_CHANNEL, m_pRCbase->m_pPWM);
