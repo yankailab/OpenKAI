@@ -124,8 +124,7 @@ void RC_visualFollow::update(void)
 
 	//Update current position with trajectory estimation
 	posRoll = m_roll.m_pos + (m_roll.m_pos - posRoll) * pidRoll->m_dT * ovDTime;
-	posPitch = m_pitch.m_pos
-			+ (m_pitch.m_pos - posPitch) * pidPitch->m_dT * ovDTime;
+	posPitch = m_pitch.m_pos + (m_pitch.m_pos - posPitch) * pidPitch->m_dT * ovDTime;
 
 	//Roll
 	m_roll.m_errOld = m_roll.m_err;

@@ -107,8 +107,6 @@ void _RC::rc_overide(int numChannel, int* pChannels)
 	len = 4 + numChannel * 2;
 	m_pIO->write(m_pBuf, len);
 
-	LOG_I("PWM: " << pChannels[0] << " " << pChannels[1] << " " << pChannels[2] << " " << pChannels[3]);
-
 }
 
 void _RC::controlMode(int mode)
