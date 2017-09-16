@@ -39,6 +39,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDPclient);
 	ADD_MODULE(_UDPserver);
 
+	ADD_MODULE(_BBoxCutOut);
+
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);
 #endif

@@ -61,6 +61,8 @@
 #include "../Vision/FrameGroup.h"
 #include "../Vision/_Flow.h"
 
+#include "../Batch/_BBoxCutOut.h"
+
 #ifdef USE_CASCADE
 #include "../Detector/_Cascade.h"
 #endif
