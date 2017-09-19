@@ -119,6 +119,18 @@ void _ImageNet::detect(void)
 	GpuMat gRGBA = *m_pRGBA->getGMat();
 	IF_(gRGBA.empty());
 
+	if(m_pDetIn)
+	{
+		OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
+		OBJECT* pO;
+		int i=0;
+		while((pO = pOA->at(i++)) != NULL)
+		{
+			add(pO);
+		}
+		m_obj.update();
+	}
+
 	Rect bb;
 	GpuMat gBB;
 	GpuMat gfBB;
