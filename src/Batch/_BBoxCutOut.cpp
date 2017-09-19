@@ -12,6 +12,9 @@ namespace kai
 
 _BBoxCutOut::_BBoxCutOut()
 {
+	m_extImgIn = ".jpeg";
+	m_extImgOut = ".png";
+	m_extTxt = ".txt";
 }
 
 _BBoxCutOut::~_BBoxCutOut()
@@ -24,85 +27,151 @@ bool _BBoxCutOut::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-//	KISSm(pK,baseDir);
+	KISSm(pK, dirIn);
+	KISSm(pK, dirOut);
+	KISSm(pK, extImgIn);
+	KISSm(pK, extImgOut);
+	KISSm(pK, extTxt);
 
-	process();
-
-	exit(0);
 	return true;
 }
 
 bool _BBoxCutOut::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
+	Kiss* pK = (Kiss*) m_pKiss;
+
+	return true;
+}
+
+bool _BBoxCutOut::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
 
 	return true;
 }
 
 void _BBoxCutOut::update(void)
 {
+	process();
 
+	exit(0);
 }
 
 void _BBoxCutOut::process()
 {
-}
+	if (m_dirIn.at(m_dirIn.length() - 1) != '/')
+		m_dirIn.push_back('/');
+	if (m_dirOut.at(m_dirOut.length() - 1) != '/')
+		m_dirOut.push_back('/');
 
-/*
-int _BBoxCutOut::readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead)
-{
-	ifstream ifs;
-	string str;
-	ifs.open(fImgList.c_str(), std::ios::in);
-	if (!ifs)
+	DIR* pDirIn;
+	DIR* pDirOut;
+
+	pDirIn = opendir(m_dirIn.c_str());
+	pDirOut = opendir(m_dirOut.c_str());
+
+	if (!pDirIn)
 	{
-		LOG_E("Cannot open: " << fImgList);
-		return 0;
+		LOG_E("Input directory not found");
+		exit(1);
 	}
 
-	int nImg = 0;
-	while (getline(ifs, str))
+	if (!pDirOut)
 	{
-		vector<string> entry = splitBy(str, '\t');
-		string fName = m_baseDir + entry[0];
-		cout << "reading: " << fName << endl;
-
-		cv::Mat img = cv::imread(fName);
-		if(img.cols != m_width || img.rows != m_height)
+		if(mkdir(m_dirOut.c_str(), 0777) != 0)
 		{
-			cv::Mat rImg;
-			cv::resize(img, rImg, cv::Size(m_width, m_height));
-			img = rImg;
+			LOG_E("Failed to creat output directory");
+			exit(1);
 		}
 
-		for (int y = 0; y < m_height; y++)
-		{
-			int iB = m_width * m_height * m_nChannel * nImg;
+		LOG_I("Created output directory: " << m_dirOut);
+	}
 
-			for (int x = 0; x < m_width; x++)
+	vector<int> PNGcompress;
+	PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	PNGcompress.push_back(0);
+
+	struct dirent *dir;
+	string fileItem;
+	string fileIn;
+	string fileImg;
+	string strBB;
+	size_t extPos;
+	ifstream ifsTxt;
+
+	while ((dir = readdir(pDirIn)) != NULL)
+	{
+		fileIn = m_dirIn + dir->d_name;
+
+		//verify txt file
+		extPos = fileIn.find(m_extTxt);
+		IF_CONT(extPos == std::string::npos);
+		IF_CONT(fileIn.substr(extPos) != m_extTxt);
+		ifsTxt.open(fileIn.c_str(), std::ios::in);
+		IF_CONT(!ifsTxt);
+
+		//skip if no correspondent image file is found
+		fileImg = m_dirIn + dir->d_name;
+		fileImg.erase(fileImg.find(m_extTxt));
+		fileImg += m_extImgIn;
+		Mat mImg = cv::imread(fileImg.c_str());
+		IF_CONT(mImg.empty());
+
+		//get the name without extension
+		fileItem = dir->d_name;
+		fileItem.erase(fileItem.find(m_extTxt));
+
+		//read image and cut out bboxes
+		int nBB = 0;
+		while (getline(ifsTxt, strBB))
+		{
+			vector<string> entry = splitBy(strBB, ' ');
+			IF_CONT(entry.size() < 15);
+
+			string strCat = entry[0];
+			Rect cropBB;
+			cropBB.x = atoi(entry[4].c_str());
+			cropBB.y = atoi(entry[5].c_str());
+			cropBB.width = atoi(entry[6].c_str()) - cropBB.x;
+			cropBB.height = atoi(entry[7].c_str()) - cropBB.y;
+
+			IF_CONT(cropBB.x < 0);
+			IF_CONT(cropBB.y < 0);
+			IF_CONT(cropBB.width <= 0);
+			IF_CONT(cropBB.height <= 0);
+			IF_CONT(cropBB.x + cropBB.width > mImg.cols);
+			IF_CONT(cropBB.y + cropBB.height > mImg.rows);
+
+			Mat mBB = Mat(mImg, cropBB);
+			IF_CONT(mBB.empty());
+
+			//make directory if not existed
+			string dirCat = m_dirOut + strCat + '/';
+			if(!opendir(dirCat.c_str()))
 			{
-				int iA = y * img.cols + x + img.cols * img.rows;
-				int iC = y * img.step + x * img.elemSize();
-
-				pData[iA * 0 + iB] = img.data[iC + 0] - m_meanCol.x;
-				pData[iA * 1 + iB] = img.data[iC + 1] - m_meanCol.y;
-				pData[iA * 2 + iB] = img.data[iC + 2] - m_meanCol.z;
+				IF_CONT(mkdir(dirCat.c_str(), 0777) != 0);
 			}
+
+			string fOut = dirCat + fileItem + "_" + strCat + "_" + i2str(nBB) + m_extImgOut;
+			cv::imwrite(fOut,mBB,PNGcompress);
+
+			nBB++;
+			LOG_I("BBox saved: " << fOut);
 		}
 
-		for (int i = 0; i < m_outputDim; i++)
-		{
-			pLabel[nImg * m_outputDim + i] = (float)(stof(entry[i + 1]) * m_kLabel);
-		}
-
-		nImg++;
-		if(nImg >= nRead)
-			return nImg;
+		ifsTxt.close();
 	}
 
-	return nImg;
+	closedir(pDirIn);
+	closedir(pDirOut);
 }
-*/
+
 }
 

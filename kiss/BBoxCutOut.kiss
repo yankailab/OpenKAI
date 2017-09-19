@@ -1,0 +1,17 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+}
+
+{
+	"name":"BBoxCutOut",
+	"class":"_BBoxCutOut",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"dirIn":"/media/kai/pcie950/dev/data/Okinawa_Day2_R/",
+	"dirOut":"/media/kai/pcie950/dev/data/Okinawa_Day2_R_Classify/",
+}

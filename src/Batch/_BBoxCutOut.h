@@ -23,6 +23,7 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
+	bool start(void);
 
 private:
 	void process();
@@ -32,6 +33,14 @@ private:
 		((_BBoxCutOut*) This)->update();
 		return NULL;
 	}
+
+public:
+	string m_dirIn;
+	string m_dirOut;
+	string m_extTxt;
+	string m_extImgIn;
+	string m_extImgOut;
+
 
 };
 }
