@@ -144,10 +144,10 @@ bool _MatrixNet::draw(void)
 		{
 			putText(*pMat, pObj->m_name,
 					Point(r.x + r.width / 2, r.y + r.height / 2),
-					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
+					FONT_HERSHEY_SIMPLEX, m_sizeName, m_col, 1);
 		}
 
-		Scalar colObs = m_colObs;
+		Scalar colObs = m_col;
 		rectangle(*pMat, r, colObs, 1);
 	}
 

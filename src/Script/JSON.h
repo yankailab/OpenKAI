@@ -29,9 +29,9 @@ public:
 	bool v(string* pName, double* pVal);
 	bool v(string* pName, string* pVal);
 
-	bool array(string* pName, int* pVal, int nArray);
-	bool array(string* pName, double* pVal, int nArray);
-	bool array(string* pName, string* pVal, int nArray);
+	int array(string* pName, int* pVal, int nArray);
+	int array(string* pName, double* pVal, int nArray);
+	int array(string* pName, string* pVal, int nArray);
 	bool array(string* pName, value::array* pVal);
 
 

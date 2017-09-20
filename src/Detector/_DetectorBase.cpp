@@ -15,17 +15,18 @@ _DetectorBase::_DetectorBase()
 	m_trainedFile = "";
 	m_meanFile = "";
 	m_labelFile = "";
+	m_vClassColor.clear();
 
 	m_overlapMin = 1.0;
 	m_pDetIn = NULL;
 
 	m_sizeName = 0.5;
 	m_sizeDist = 0.5;
-	m_colName = Scalar(255,255,0);
-	m_colDist = Scalar(0,255,255);
-	m_colObs = Scalar(255,255,0);
+	m_col = Scalar(0,0,0);
 	m_bDrawContour = false;
 	m_contourBlend = 0.125;
+	m_minConfidence = 0.0;
+
 }
 
 _DetectorBase::~_DetectorBase()
@@ -57,24 +58,34 @@ bool _DetectorBase::init(void* pKiss)
 	m_labelFile = modelDir + m_labelFile;
 
 	KISSm(pK, overlapMin);
+	KISSm(pK, minConfidence);
 
 	KISSm(pK, sizeName);
 	KISSm(pK, sizeDist);
 
-	F_INFO(pK->v("nameB", &m_colName[0]));
-	F_INFO(pK->v("nameG", &m_colName[1]));
-	F_INFO(pK->v("nameR", &m_colName[2]));
-
-	F_INFO(pK->v("distB", &m_colDist[0]));
-	F_INFO(pK->v("distG", &m_colDist[1]));
-	F_INFO(pK->v("distR", &m_colDist[2]));
-
-	F_INFO(pK->v("obsB", &m_colObs[0]));
-	F_INFO(pK->v("obsG", &m_colObs[1]));
-	F_INFO(pK->v("obsR", &m_colObs[2]));
+	F_INFO(pK->v("B", &m_col[0]));
+	F_INFO(pK->v("G", &m_col[1]));
+	F_INFO(pK->v("R", &m_col[2]));
 
 	KISSm(pK, bDrawContour);
 	KISSm(pK, contourBlend);
+
+	int i;
+	m_vClassColor.clear();
+	string pClassColor[N_CLASS];
+	int nClassColor = pK->array("classColor", pClassColor, N_CLASS);
+	if(nClassColor > 0)
+	{
+		for(i=0; i<nClassColor; i++)
+		{
+			vector<string> vClassColor = splitBy(pClassColor[i], ',');
+			Scalar col = m_col;
+			if(vClassColor.size() > 0)col[0]=atoi(vClassColor[0].c_str());
+			if(vClassColor.size() > 1)col[1]=atoi(vClassColor[1].c_str());
+			if(vClassColor.size() > 2)col[2]=atoi(vClassColor[2].c_str());
+			m_vClassColor.push_back(col);
+		}
+	}
 
 	int n = 16;
 	F_INFO(pK->v("nObj", &n));
@@ -183,27 +194,32 @@ bool _DetectorBase::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
+		IF_CONT(pO->m_prob < m_minConfidence);
+
 		Rect r;
 		vInt42rect(&pO->m_bbox, &r);
+
+		Scalar oColor = m_col;
+		if(m_vClassColor.size() > pO->m_iClass)
+			oColor = m_vClassColor[pO->m_iClass];
 
 		if (pO->m_iClass>=0)
 		{
 			putText(*pMat, pO->m_name,
 					Point(r.x + r.width / 2, r.y + r.height / 2),
-					FONT_HERSHEY_SIMPLEX, m_sizeName, m_colName, 1);
+					FONT_HERSHEY_SIMPLEX, m_sizeName, oColor, 1);
 		}
 
-		Scalar colObs = m_colObs;
 		int bolObs = 1;
 
 		if (m_bDrawContour)
 		{
 			drawContours(bg, vector<vector<Point> >(1, pO->m_contour), -1,
-					colObs, CV_FILLED, 8);
+					oColor, CV_FILLED, 8);
 		}
 		else
 		{
-			rectangle(*pMat, r, colObs, bolObs);
+			rectangle(*pMat, r, oColor, bolObs);
 		}
 	}
 

@@ -259,17 +259,17 @@ bool Kiss::v(string name, string* val)
 	return m_json.v(&name, val);
 }
 
-bool Kiss::array(string name, int* pVal, int nArray)
+int Kiss::array(string name, int* pVal, int nArray)
 {
 	return m_json.array(&name, pVal, nArray);
 }
 
-bool Kiss::array(string name, double* pVal, int nArray)
+int Kiss::array(string name, double* pVal, int nArray)
 {
 	return m_json.array(&name, pVal, nArray);
 }
 
-bool Kiss::array(string name, string* pVal, int nArray)
+int Kiss::array(string name, string* pVal, int nArray)
 {
 	return m_json.array(&name, pVal, nArray);
 }

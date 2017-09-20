@@ -94,58 +94,58 @@ bool JSON::array(string* pName, value::array* pVal)
 	return true;
 }
 
-bool JSON::array(string* pName, string* pVal, int nArray)
+int JSON::array(string* pName, string* pVal, int nArray)
 {
 	value::array arr;
-	IF_F(!array(pName, &arr));
+	IF_NEG(!array(pName, &arr));
 
 	value::array::iterator it;
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		IF_T(i >= nArray);
-		IF_F(!it->is<string>());
+		if(i >= nArray)return i;
+		IF_CONT(!it->is<string>());
 		pVal[i] = it->get<string>();
 		i++;
 	}
 
-	return true;
+	return i;
 }
 
-bool JSON::array(string* pName, int* pVal, int nArray)
+int JSON::array(string* pName, int* pVal, int nArray)
 {
 	value::array arr;
-	IF_F(!array(pName, &arr));
+	IF_NEG(!array(pName, &arr));
 
 	value::array::iterator it;
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		IF_T(i >= nArray);
-		IF_F(!it->is<double>());
+		if(i >= nArray)return i;
+		IF_CONT(!it->is<double>());
 		pVal[i] = (int)it->get<double>();
 		i++;
 	}
 
-	return true;
+	return i;
 }
 
-bool JSON::array(string* pName, double* pVal, int nArray)
+int JSON::array(string* pName, double* pVal, int nArray)
 {
 	value::array arr;
-	IF_F(!array(pName, &arr));
+	IF_NEG(!array(pName, &arr));
 
 	value::array::iterator it;
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		IF_T(i >= nArray);
-		IF_F(!it->is<double>());
+		if(i >= nArray)return i;
+		IF_CONT(!it->is<double>());
 		pVal[i] = it->get<double>();
 		i++;
 	}
 
-	return true;
+	return i;
 }
 
 int JSON::checkErrorNum(void)

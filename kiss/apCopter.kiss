@@ -329,8 +329,8 @@
 		}
 
 		{
-			"name":"apVisualAvoid",
-			"class":"APcopter_visualAvoid",
+			"name":"apDNNAvoid",
+			"class":"APcopter_DNNavoid",
 			"bInst":0,
 			"bLog":1,
 			"Window":"apView",

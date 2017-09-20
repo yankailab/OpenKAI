@@ -34,6 +34,7 @@
 #define IF_N(x) if(x){return NULL;}
 #define IF_(x) if(x){return;}
 #define IF_CONT(x) if(x){continue;}
+#define IF_NEG(x) if(x){return -1;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}

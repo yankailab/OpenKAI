@@ -13,7 +13,6 @@ _DetectNet::_DetectNet()
 	num_channels_ = 0;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
-	m_minCofidence = 0.0;
 	m_coverageThr = 0.5;
 	m_minSize = 0.0;
 	m_maxSize = 1.0;
@@ -47,7 +46,6 @@ bool _DetectNet::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK, coverageThr);
-	KISSm(pK, minCofidence);
 	KISSm(pK, className);
 	KISSm(pK, minSize);
 	KISSm(pK, maxSize);
@@ -91,7 +89,7 @@ void _DetectNet::update(void)
 			m_modelFile.c_str(),
 			m_trainedFile.c_str(),
 			m_meanFile.c_str(),
-			m_minCofidence);
+			m_minConfidence);
 	NULL_(m_pDN);
 
 	m_nBoxMax = m_pDN->GetMaxBoundingBoxes();
@@ -156,6 +154,10 @@ void _DetectNet::detect(void)
 		obj.m_bbox.w = (int) bb[3];
 		obj.m_camSize.x = fGMat.cols;
 		obj.m_camSize.y = fGMat.rows;
+		if(obj.m_bbox.x < 0)obj.m_bbox.x = 0;
+		if(obj.m_bbox.y < 0)obj.m_bbox.y = 0;
+		if(obj.m_bbox.z > obj.m_camSize.x)obj.m_bbox.z = obj.m_camSize.x;
+		if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
 		obj.i2fBBox();
 
 		obj.m_iClass = m_confCPU[n*2+1];
@@ -163,6 +165,8 @@ void _DetectNet::detect(void)
 		obj.m_prob = (double)m_confCPU[n*2];
 		obj.m_name = m_className;
 		obj.m_frameID = tNow;
+
+		IF_CONT(obj.m_prob < m_minConfidence);
 
 		int oSize = obj.m_bbox.area();
 		IF_CONT(oSize < minSize);

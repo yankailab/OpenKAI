@@ -39,17 +39,17 @@ bool _ImageNet::init(void* pKiss)
 
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("maxPix", &m_maxPix));
-	F_INFO(pK->v("nBatch", &m_nBatch));
-	F_INFO(pK->v("blobIn", &m_blobIn));
-	F_INFO(pK->v("blobOut", &m_blobOut));
+	KISSm(pK,maxPix);
+	KISSm(pK,nBatch);
+	KISSm(pK,blobIn);
+	KISSm(pK,blobOut);
 
 	m_pRGBA = new Frame();
 
 	string iName = "noThread";
 	F_INFO(pK->v("mode", &iName));
-	if (iName == "object")
-		m_mode = object;
+	if (iName == "thread")
+		m_mode = thread;
 
 	return true;
 }
@@ -92,7 +92,7 @@ void _ImageNet::update(void)
 	{
 		this->autoFPSfrom();
 
-		if (m_mode == object)
+		if (m_mode == thread)
 		{
 			detect();
 		}
@@ -149,13 +149,13 @@ void _ImageNet::detect(void)
 			continue;
 		}
 
-		if(!pO->m_bClassify)
-		{
-			pO->m_frameID = -1;
-			pO->m_iClass = -1;
-			pO->m_name = "";
-			continue;
-		}
+//		if(!pO->m_bClassify)
+//		{
+//			pO->m_frameID = -1;
+//			pO->m_iClass = -1;
+//			pO->m_name = "";
+//			continue;
+//		}
 
 		vInt42rect(&pO->m_bbox, &bb);
 		gBB = GpuMat(gRGBA, bb);
@@ -170,6 +170,8 @@ void _ImageNet::detect(void)
 			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
 		else
 			pO->m_name = "";
+
+		LOG_I("Found: " << pO->m_name);
 #endif
 	}
 }

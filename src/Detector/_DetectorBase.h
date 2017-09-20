@@ -12,6 +12,8 @@
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
+#define N_CLASS 128
+
 namespace kai
 {
 
@@ -208,12 +210,15 @@ public:
 
 	double m_sizeName;
 	double m_sizeDist;
-	Scalar m_colName;
-	Scalar m_colDist;
-	Scalar m_colObs;
+	Scalar m_col;
 
 	double m_contourBlend;
 	bool m_bDrawContour;
+
+	vector<Scalar> m_vClassColor;
+	double m_minConfidence;
+
+
 
 };
 

@@ -16,7 +16,7 @@ namespace kai
 
 enum imageNetMode
 {
-	object, noThread
+	thread, noThread
 };
 
 class _ImageNet: public _DetectorBase
