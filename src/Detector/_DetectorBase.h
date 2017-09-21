@@ -13,6 +13,7 @@
 #include "../Vision/_VisionBase.h"
 
 #define N_CLASS 128
+#define N_OBJ 1024
 
 namespace kai
 {
@@ -30,6 +31,7 @@ struct OBJECT
 	int64_t m_frameID;
 	uint8_t m_safety;
 	bool m_bClassify;
+	bool m_bCluster;
 
 	void init(void)
 	{
@@ -43,6 +45,7 @@ struct OBJECT
 		m_frameID = -1;
 		m_safety = -1;
 		m_bClassify = false;
+		m_bCluster = false;
 	}
 
 	void f2iBBox(void)
@@ -67,58 +70,34 @@ struct OBJECT
 
 struct OBJECT_ARRAY
 {
-	OBJECT* m_pObj;
+	OBJECT m_pObj[N_OBJ];
 	int m_nObj;
-	int m_iObj;
-
-	bool init(int nObj)
-	{
-		IF_F(nObj<=0);
-
-		m_nObj = nObj;
-		m_iObj = 0;
-		m_pObj = new OBJECT[m_nObj];
-
-		for (int i = 0; i < m_nObj; i++)
-		{
-			m_pObj[i].init();
-		}
-
-		return true;
-	}
 
 	void reset(void)
 	{
-		m_iObj = 0;
+		m_nObj = 0;
 	}
 
 	OBJECT* add(OBJECT* pO)
 	{
 		NULL_N(pO);
-		IF_N(m_iObj >= m_nObj);
+		IF_N(m_nObj >= N_OBJ);
 
-		m_pObj[m_iObj++] = *pO;
+		m_pObj[m_nObj++] = *pO;
 
-		return &m_pObj[m_iObj];
+		return &m_pObj[m_nObj];
 	}
 
 	OBJECT* at(int i)
 	{
-		IF_N(i >= m_iObj);
+		IF_N(i >= m_nObj);
 		return &m_pObj[i];
 	}
 
 	int size(void)
 	{
-		return m_iObj;
+		return m_nObj;
 	}
-
-	void release()
-	{
-		DEL(m_pObj);
-		m_pObj = NULL;
-	}
-
 };
 
 struct OBJECT_DARRAY
@@ -128,17 +107,12 @@ struct OBJECT_DARRAY
 	OBJECT_ARRAY* m_pNext;
 	int m_iSwitch;
 
-	bool init(int nObj)
+	void reset(void)
 	{
-		IF_F(nObj<=0);
-
 		m_iSwitch = 0;
 		update();
-
-		IF_F(!m_pPrev->init(nObj));
-		IF_F(!m_pNext->init(nObj));
-
-		return true;
+		m_pPrev->reset();
+		m_pNext->reset();
 	}
 
 	void update(void)
@@ -164,11 +138,21 @@ struct OBJECT_DARRAY
 	{
 		return m_pPrev->size();
 	}
+};
 
-	void release()
+struct CLASS_DRAW
+{
+	Scalar  m_colorBBox;
+	bool	m_bDraw;
+	int		m_n;
+	string  m_name;
+
+	void init(void)
 	{
-		m_objArr[0].release();
-		m_objArr[1].release();
+		m_colorBBox = Scalar(255,255,255);
+		m_bDraw = true;
+		m_n = 0;
+		m_name = "";
 	}
 };
 
@@ -208,17 +192,14 @@ public:
 	string m_meanFile;
 	string m_labelFile;
 
-	double m_sizeName;
-	double m_sizeDist;
-	Scalar m_col;
-
+	double m_defaultDrawTextSize;
+	Scalar m_defaultDrawColor;
 	double m_contourBlend;
 	bool m_bDrawContour;
 
-	vector<Scalar> m_vClassColor;
+	vector<CLASS_DRAW> m_vClassDraw;
+	vInt3 m_classDrawPos;
 	double m_minConfidence;
-
-
 
 };
 

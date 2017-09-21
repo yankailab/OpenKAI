@@ -30,7 +30,7 @@
 #include "../IO/_TCP.h"
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
-#include "../DNN/Detector/_ImageNet.h"
+#include "../DNN/Classifier/_ImageNet.h"
 #include "../DNN/Detector/_MatrixNet.h"
 #include "../DNN/Detector/_DetectNet.h"
 #include "../DNN/Regression/TrainDataGenerator/_DNNGen_odometry.h"

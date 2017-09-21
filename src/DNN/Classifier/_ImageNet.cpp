@@ -92,14 +92,7 @@ void _ImageNet::update(void)
 	{
 		this->autoFPSfrom();
 
-		if (m_mode == thread)
-		{
-			detect();
-		}
-		else
-		{
-			return;
-		}
+		detect();
 
 		this->autoFPSto();
 	}
@@ -110,6 +103,7 @@ void _ImageNet::detect(void)
 #ifdef USE_TENSORRT
 	NULL_(m_pIN);
 #endif
+
 	NULL_(m_pVision);
 	Frame* pBGR = m_pVision->bgr();
 	NULL_(pBGR);
@@ -121,14 +115,7 @@ void _ImageNet::detect(void)
 
 	if(m_pDetIn)
 	{
-		OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
-		OBJECT* pO;
-		int i=0;
-		while((pO = pOA->at(i++)) != NULL)
-		{
-			add(pO);
-		}
-		m_obj.update();
+		m_obj = m_pDetIn->m_obj;
 	}
 
 	Rect bb;
@@ -139,6 +126,8 @@ void _ImageNet::detect(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
+		IF_CONT(!pO->m_bClassify);
+
 		pO->m_camSize.x = gRGBA.cols;
 		pO->m_camSize.y = gRGBA.rows;
 		pO->f2iBBox();
@@ -149,14 +138,6 @@ void _ImageNet::detect(void)
 			continue;
 		}
 
-//		if(!pO->m_bClassify)
-//		{
-//			pO->m_frameID = -1;
-//			pO->m_iClass = -1;
-//			pO->m_name = "";
-//			continue;
-//		}
-
 		vInt42rect(&pO->m_bbox, &bb);
 		gBB = GpuMat(gRGBA, bb);
 		gBB.convertTo(gfBB, CV_32FC4);
@@ -164,12 +145,18 @@ void _ImageNet::detect(void)
 #ifdef USE_TENSORRT
 		float prob = 0;
 		pO->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-		pO->m_prob = prob;
 		pO->m_frameID = get_time_usec();
-		if (pO->m_iClass >= 0)
-			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
-		else
+		if(prob < m_minConfidence)
+		{
+			pO->m_iClass = -1;
 			pO->m_name = "";
+			pO->m_prob = 0.0;
+		}
+		else
+		{
+			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
+			pO->m_prob = prob;
+		}
 
 		LOG_I("Found: " << pO->m_name);
 #endif

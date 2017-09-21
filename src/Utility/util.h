@@ -11,6 +11,18 @@ using namespace std;
 namespace kai
 {
 
+inline int small(int a, int b)
+{
+	if(a>b)return b;
+	return a;
+}
+
+inline int big(int a, int b)
+{
+	if(a>b)return a;
+	return b;
+}
+
 inline double Hdg(double anyDeg)
 {
 	while (anyDeg > 360)

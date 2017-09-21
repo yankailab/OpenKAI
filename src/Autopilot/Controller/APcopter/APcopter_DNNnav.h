@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APcopter_DNNnav_H_
 
 #include "../../../Base/common.h"
-#include "../../../DNN/Detector/_ImageNet.h"
+#include "../../../DNN/Classifier/_ImageNet.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 

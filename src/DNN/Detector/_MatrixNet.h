@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"
-#include "_ImageNet.h"
+#include "../Classifier/_ImageNet.h"
 
 namespace kai
 {
@@ -23,12 +23,22 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
+	bool start(void);
 	bool draw(void);
 
-	OBJECT* get(int i, int64_t minFrameID);
-	bool bFound(int iClass, double minProb, int64_t minFrameID);
-
+	OBJECT* get(int i);
+	bool bFound(int iClass, double minProb);
 	void bSetActive(bool bActive);
+
+private:
+	vInt4 explore(int x, int y, int iClass);
+	void cluster(void);
+	void update(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_MatrixNet*) This)->update();
+		return NULL;
+	}
 
 public:
 	_ImageNet* m_pIN;
@@ -38,6 +48,9 @@ public:
 	double m_h;
 	double m_dW;
 	double m_dH;
+	double m_aW;
+	double m_aH;
+	vInt2 m_size;
 	vDouble4 m_area;
 	OBJECT** m_ppObj;
 

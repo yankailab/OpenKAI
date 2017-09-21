@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../DNN/Detector/_ImageNet.h"
+#include "../../../DNN/Classifier/_ImageNet.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 

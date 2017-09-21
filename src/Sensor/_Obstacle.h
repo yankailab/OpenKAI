@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../DNN/Detector/_ImageNet.h"
+#include "../DNN/Classifier/_ImageNet.h"
 #include "../Filter/Median.h"
 #include "../Sensor/DistSensorBase.h"
 #include "../Vision/_ZED.h"
