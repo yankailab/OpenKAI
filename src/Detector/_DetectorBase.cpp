@@ -124,25 +124,6 @@ bool _DetectorBase::link(void)
 	return true;
 }
 
-bool _DetectorBase::start(void)
-{
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
-}
-
-void _DetectorBase::update(void)
-{
-	m_obj.update();
-}
-
 int _DetectorBase::size(void)
 {
 	return m_obj.size();
@@ -232,7 +213,7 @@ bool _DetectorBase::draw(void)
 		if (pO->m_name.length()>0)
 		{
 			putText(*pMat, pO->m_name,
-					Point(r.x + r.width / 2, r.y + r.height / 2),
+					Point(r.x + 25, r.y + 25),
 					FONT_HERSHEY_SIMPLEX, m_defaultDrawTextSize, oColor, 2);
 		}
 

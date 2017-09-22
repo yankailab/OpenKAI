@@ -20,6 +20,9 @@ _MatrixNet::_MatrixNet()
 	m_nObj = 0;
 	m_ppObj = NULL;
 	m_size.init();
+	m_aW = 1.0;
+	m_aH = 1.0;
+	m_bActive = false;
 }
 
 _MatrixNet::~_MatrixNet()
@@ -35,10 +38,10 @@ bool _MatrixNet::init(void* pKiss)
 	string presetDir = "";
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 
-	KISSm(pK,w);
-	KISSm(pK,h);
-	KISSm(pK,dW);
-	KISSm(pK,dH);
+	KISSm(pK, w);
+	KISSm(pK, h);
+	KISSm(pK, dW);
+	KISSm(pK, dH);
 	F_INFO(pK->v("l", &m_area.x));
 	F_INFO(pK->v("t", &m_area.y));
 	F_INFO(pK->v("r", &m_area.z));
@@ -115,6 +118,8 @@ void _MatrixNet::update(void)
 	{
 		this->autoFPSfrom();
 
+		IF_CONT(!m_bActive);
+
 		cluster();
 
 		m_obj.update();
@@ -125,8 +130,8 @@ void _MatrixNet::update(void)
 
 void _MatrixNet::cluster(void)
 {
-	int y,x;
-	for(x=0; x<m_nObj; x++)
+	int y, x;
+	for (x = 0; x < m_nObj; x++)
 	{
 		m_ppObj[x]->m_bCluster = false;
 	}
@@ -137,23 +142,21 @@ void _MatrixNet::cluster(void)
 		{
 			OBJECT* pO = m_ppObj[m_size.x * y + x];
 			IF_CONT(!pO);
-			IF_CONT(pO->m_iClass<0);
+			IF_CONT(pO->m_iClass < 0);
 
-			vInt4 b = explore(x,y,pO->m_iClass);
+			vInt4 b = explore(x, y, pO->m_iClass);
 			IF_CONT(b.x < 0);
-
-			LOG_I("o: " << b.x << ", " << b.z << ", " << b.y << ", " << b.w);
 
 			OBJECT o = *pO;
 			o.m_fBBox.x = m_area.x + b.x * m_dW * m_aW;
-			o.m_fBBox.z = m_area.x + b.z * m_dW * m_aW;
+			o.m_fBBox.z = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
 			o.m_fBBox.y = m_area.y + b.y * m_dH * m_aH;
-			o.m_fBBox.w = m_area.y + b.w * m_dH * m_aH;
+			o.m_fBBox.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
 			o.f2iBBox();
 			o.m_prob = 1.0;
 			add(&o);
 
-			int i,j;
+			int i, j;
 			for (j = b.y; j < b.w; j++)
 			{
 				for (i = b.x; i < b.z; i++)
@@ -170,17 +173,23 @@ vInt4 _MatrixNet::explore(int x, int y, int iClass)
 	vInt4 vB;
 	vB.x = -1;
 
-	if(x<0)return vB;
-	if(y<0)return vB;
-	if(x>=m_size.x)return vB;
-	if(y>=m_size.y)return vB;
+	if (x < 0)
+		return vB;
+	if (y < 0)
+		return vB;
+	if (x >= m_size.x)
+		return vB;
+	if (y >= m_size.y)
+		return vB;
 
-	int k = m_size.x * y + x;
-	OBJECT* pO = m_ppObj[k];
+	OBJECT* pO = m_ppObj[m_size.x * y + x];
 
-	if(!pO)return vB;
-	if(pO->m_bCluster)return vB;
-	if(pO->m_iClass!=iClass)return vB;
+	if (!pO)
+		return vB;
+	if (pO->m_bCluster)
+		return vB;
+	if (pO->m_iClass != iClass)
+		return vB;
 
 	pO->m_bCluster = true;
 	vB.x = x;
@@ -190,36 +199,49 @@ vInt4 _MatrixNet::explore(int x, int y, int iClass)
 
 	vInt4 b;
 
-	b = explore(x-1, y, iClass);
-	if(b.x >= 0)
+	b = explore(x - 1, y, iClass);
+	if (b.x >= 0)
 	{
-		vB.x = small(vB.x,b.x);
+		vB.x = small(vB.x, b.x);
+		vB.y = small(vB.y, b.y);
+		vB.z = big(vB.z, b.z);
+		vB.w = big(vB.w, b.w);
 	}
 
-	b = explore(x+1, y, iClass);
-	if(b.x >= 0)
+	b = explore(x + 1, y, iClass);
+	if (b.x >= 0)
 	{
-		vB.z = big(vB.z,b.z);
+		vB.x = small(vB.x, b.x);
+		vB.y = small(vB.y, b.y);
+		vB.z = big(vB.z, b.z);
+		vB.w = big(vB.w, b.w);
 	}
 
-	b = explore(x-1, y+1, iClass);
-	if(b.x >= 0)
+	b = explore(x - 1, y + 1, iClass);
+	if (b.x >= 0)
 	{
-		vB.x = small(vB.x,b.x);
-		vB.w = big(vB.w,b.w);
+		vB.x = small(vB.x, b.x);
+		vB.y = small(vB.y, b.y);
+		vB.z = big(vB.z, b.z);
+		vB.w = big(vB.w, b.w);
 	}
 
-	b = explore(x, y+1, iClass);
-	if(b.x >= 0)
+	b = explore(x, y + 1, iClass);
+	if (b.x >= 0)
 	{
-		vB.w = big(vB.w,b.w);
+		vB.x = small(vB.x, b.x);
+		vB.y = small(vB.y, b.y);
+		vB.z = big(vB.z, b.z);
+		vB.w = big(vB.w, b.w);
 	}
 
-	b = explore(x+1, y+1, iClass);
-	if(b.x >= 0)
+	b = explore(x + 1, y + 1, iClass);
+	if (b.x >= 0)
 	{
-		vB.z = big(vB.z,b.z);
-		vB.w = big(vB.w,b.w);
+		vB.x = small(vB.x, b.x);
+		vB.y = small(vB.y, b.y);
+		vB.z = big(vB.z, b.z);
+		vB.w = big(vB.w, b.w);
 	}
 
 	return vB;
@@ -227,10 +249,12 @@ vInt4 _MatrixNet::explore(int x, int y, int iClass)
 
 void _MatrixNet::bSetActive(bool bActive)
 {
-	for(int i=0; i<m_nObj; i++)
+	for (int i = 0; i < m_nObj; i++)
 	{
 		m_ppObj[i]->m_bClassify = bActive;
 	}
+
+	m_bActive = bActive;
 }
 
 OBJECT* _MatrixNet::get(int i)

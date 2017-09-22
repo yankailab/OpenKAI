@@ -85,7 +85,7 @@ struct OBJECT_ARRAY
 
 		m_pObj[m_nObj++] = *pO;
 
-		return &m_pObj[m_nObj];
+		return &m_pObj[m_nObj-1];
 	}
 
 	OBJECT* at(int i)
@@ -164,7 +164,6 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
-	virtual bool start(void);
 	virtual bool draw(void);
 
 	OBJECT* add(OBJECT* pNewObj);
@@ -172,14 +171,6 @@ public:
 	void addOrUpdate(OBJECT* pNewObj);
 	int size(void);
 	void mergeDetector(void);
-
-public:
-	virtual void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_DetectorBase*) This)->update();
-		return NULL;
-	}
 
 public:
 	_VisionBase* m_pVision;

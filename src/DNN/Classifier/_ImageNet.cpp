@@ -144,8 +144,7 @@ void _ImageNet::detect(void)
 
 #ifdef USE_TENSORRT
 		float prob = 0;
-		pO->m_iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
-		pO->m_frameID = get_time_usec();
+		int iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
 		if(prob < m_minConfidence)
 		{
 			pO->m_iClass = -1;
@@ -154,11 +153,11 @@ void _ImageNet::detect(void)
 		}
 		else
 		{
+			pO->m_iClass = iClass;
 			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
 			pO->m_prob = prob;
 		}
-
-		LOG_I("Found: " << pO->m_name);
+		pO->m_frameID = get_time_usec();
 #endif
 	}
 }

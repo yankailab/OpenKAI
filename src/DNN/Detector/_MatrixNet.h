@@ -53,6 +53,7 @@ public:
 	vInt2 m_size;
 	vDouble4 m_area;
 	OBJECT** m_ppObj;
+	bool m_bActive;
 
 };
 
