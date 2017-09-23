@@ -92,6 +92,8 @@ void VEK_base::update(void)
 
 	m_pVEK->write(pVekCMD,5);
 
+	LOG_I("PWM: L=" << pwmL << " R=" << pwmR);
+
 	string stateName = "VEK_RUN";
 	m_pAM->transit(&stateName);
 	m_vL = m_vForward;
