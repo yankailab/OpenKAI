@@ -13,7 +13,7 @@
 	"bInst":1,
 	"w":672,
 	"h":376,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"bRec":0,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,

@@ -87,6 +87,7 @@ void VEK_follow::update(void)
 	for(i=0; i<m_pDN->size(); i++)
 	{
 		pO = m_pDN->at(i);
+		IF_(!pO);
 		IF_CONT(pO->m_iClass != m_iTargetClass);
 		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);
 
