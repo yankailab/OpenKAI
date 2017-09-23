@@ -76,8 +76,8 @@ void VEK_avoid::update(void)
 	string stateName = "VEK_AVOID";
 	m_pAM->transit(&stateName);
 
-	m_pVEK->m_vL = -m_vSteer;
-	m_pVEK->m_vR = m_vSteer;
+	m_pVEK->m_vL = m_vSteer;
+	m_pVEK->m_vR = -m_vSteer;
 
 }
 

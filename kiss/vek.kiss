@@ -166,7 +166,7 @@
 			"pwmU":2000,
 			"pwmN":1500,
 			"pwmL":1000,
-			"vForward":0.15,
+			"vForward":0.2,
 			
 			{
 				"name":"cmd",
@@ -194,7 +194,7 @@
 			"_Automaton":"automaton",
 			"_Obstacle":"obstacle",
 			"dAlert":1.0,
-			"vSteer":0.125,
+			"vSteer":0.2,
 			
 			{
 				"name":"obsBox",
@@ -235,7 +235,7 @@
 			"_Obstacle":"obstacle",
 			"distMin":0.0,
 			"distMax":10.0,
-			"vSteer":-0.125,
+			"vSteer":0.2,
 			"targetX":0.5,
 			"rTargetX":0.05,
 			"iTargetClass":0,
