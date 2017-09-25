@@ -82,19 +82,19 @@
 	"name":"inTarget",
 	"class":"_ImageNet",
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"FPS":30,
 	"Window":"VEKview",
 	"_VisionBase":"ZED",
-	"_modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
-	"modelDir":"/home/ubuntu/src/model/GoogleNet-ILSVRC12-subset/",
+	"modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
+	"_modelDir":"/home/ubuntu/dev/model/GoogleNet-ILSVRC12-subset/",
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_184080.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"blobOut":"softmax",
 	"labelFile":"labels.txt",
 	"mode":"thread",
-	"maxPix":1000000,
+	"maxPix":10000000,
 	"minConfidence":0.5,
 }
 
@@ -102,13 +102,14 @@
 	"name":"cnTarget",
 	"bInst":1,
 	"FPS":30,
+	"bDraw":0,
 	"class":"_ClusterNet",
 	"_ImageNet":"inTarget",
 	"Window":"VEKview",
 	"w":0.25,
 	"h":0.5,
-	"dW":0.125,
-	"dH":0.25,
+	"dW":0.25,
+	"dH":0.5,
 	"left":0.0,
 	"top":0.0,
 	"right":1.0,
@@ -165,7 +166,7 @@
 			"pwmU":2000,
 			"pwmN":1500,
 			"pwmL":1000,
-			"vForward":0.2,
+			"vForward":0.3,
 			
 			{
 				"name":"cmd",
@@ -193,7 +194,7 @@
 			"_Automaton":"automaton",
 			"_ZEDobstacle":"ZEDobs",
 			"dAlert":1.0,
-			"vSteer":0.2,
+			"vSteer":0.18,
 			"activeState":["VEK_RUN","VEK_FOLLOW","VEK_AVOID","VEK_RTH"],
 			
 			{
@@ -214,7 +215,7 @@
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",
-			"_DetectorBase":"cnTarget",
+			"_ClusterNet":"cnTarget",
 			"_ZEDobstacle":"ZEDobs",
 			"distMin":0.0,
 			"distMax":10.0,
@@ -222,7 +223,7 @@
 			"targetX":0.5,
 			"rTargetX":0.05,
 			"iTargetClass":8,
-			"activeState":["VEK_RUN","VEK_FOLLOW"],			
+			"activeState":["VEK_RUN","VEK_FOLLOW","VEK_AVOID","VEK_RTH"],	
 		}
 		
 	}

@@ -30,7 +30,6 @@ struct OBJECT
 	vector<Point> m_contour;
 	int64_t m_frameID;
 	uint8_t m_safety;
-	bool m_bClassify;
 	bool m_bCluster;
 
 	void init(void)
@@ -44,7 +43,6 @@ struct OBJECT
 		m_name = "";
 		m_frameID = -1;
 		m_safety = -1;
-		m_bClassify = false;
 		m_bCluster = false;
 	}
 
@@ -166,6 +164,7 @@ public:
 	virtual bool link(void);
 	virtual bool draw(void);
 
+	void bSetActive(bool bActive);
 	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* at(int i);
 	void addOrUpdate(OBJECT* pNewObj);
@@ -173,6 +172,7 @@ public:
 	void mergeDetector(void);
 
 public:
+	bool m_bActive;
 	_VisionBase* m_pVision;
 	_DetectorBase* m_pDetIn;
 	double m_overlapMin;

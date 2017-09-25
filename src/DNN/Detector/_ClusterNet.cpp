@@ -22,7 +22,6 @@ _ClusterNet::_ClusterNet()
 	m_size.init();
 	m_aW = 1.0;
 	m_aH = 1.0;
-	m_bActive = false;
 }
 
 _ClusterNet::~_ClusterNet()
@@ -56,8 +55,9 @@ bool _ClusterNet::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
-	F_INFO(pK->v("_ImageNet", &iName));
+	F_ERROR_F(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+	IF_F(!m_pIN);
 
 	//create marker detection area instances
 	m_size.x = ((1.0 - m_w) / m_dW) + 1;
@@ -247,21 +247,17 @@ vInt4 _ClusterNet::explore(int x, int y, int iClass)
 	return vB;
 }
 
-void _ClusterNet::bSetActive(bool bActive)
-{
-	for (int i = 0; i < m_nObj; i++)
-	{
-		m_ppObj[i]->m_bClassify = bActive;
-	}
-
-	m_bActive = bActive;
-}
-
 OBJECT* _ClusterNet::get(int i)
 {
 	IF_N(i >= m_nObj);
 
 	return m_ppObj[i];
+}
+
+void _ClusterNet::bSetActive(bool bActive)
+{
+	m_bActive = bActive;
+	m_pIN->bSetActive(m_bActive);
 }
 
 bool _ClusterNet::bFound(int iClass, double minProb)

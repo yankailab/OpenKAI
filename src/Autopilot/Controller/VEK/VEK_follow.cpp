@@ -7,7 +7,7 @@ VEK_follow::VEK_follow()
 {
 	m_pVEK = NULL;
 #ifdef USE_TENSORRT
-	m_pDB = NULL;
+	m_pCN = NULL;
 #endif
 	m_pObs = NULL;
 	m_vSteer = 0.5;
@@ -58,10 +58,10 @@ bool VEK_follow::link(void)
 
 #ifdef USE_TENSORRT
 	iName = "";
-	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDB = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_ClusterNet", &iName));
+	m_pCN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
 
-	if (!m_pDB)
+	if (!m_pCN)
 	{
 		LOG_E(iName << " not found");
 		return false;
@@ -79,15 +79,23 @@ void VEK_follow::update(void)
 #ifdef USE_TENSORRT
 	NULL_(m_pVEK);
 	NULL_(m_pAM);
-	NULL_(m_pDB);
+	NULL_(m_pCN);
 	NULL_(m_pObs);
 	IF_(!isActive());
 
+	string stateName = "VEK_AVOID";
+	if(m_pAM->getCurrentStateIdx()==m_pAM->getStateIdx(&stateName))
+	{
+		m_pCN->bSetActive(false);
+		return;
+	}
+	m_pCN->bSetActive(true);
+
 	OBJECT* pO;
 	int i;
-	for(i=0; i<m_pDB->size(); i++)
+	for(i=0; i<m_pCN->size(); i++)
 	{
-		pO = m_pDB->at(i);
+		pO = m_pCN->at(i);
 		IF_(!pO);
 		IF_CONT(pO->m_iClass != m_iTargetClass);
 		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);
@@ -113,7 +121,7 @@ void VEK_follow::update(void)
 		m_pVEK->m_vR -= vSteer;
 	}
 
-	string stateName = "VEK_follow";
+	stateName = "VEK_FOLLOW";
 	m_pAM->transit(&stateName);
 #else
 	LOG_I("VEK_follow requires USE_TENSORRT to be turned ON");

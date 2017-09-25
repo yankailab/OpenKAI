@@ -104,6 +104,7 @@ void _ImageNet::detect(void)
 	NULL_(m_pIN);
 #endif
 
+	IF_(!m_bActive);
 	NULL_(m_pVision);
 	Frame* pBGR = m_pVision->bgr();
 	NULL_(pBGR);
@@ -126,8 +127,6 @@ void _ImageNet::detect(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(!pO->m_bClassify);
-
 		pO->m_camSize.x = gRGBA.cols;
 		pO->m_camSize.y = gRGBA.rows;
 		pO->f2iBBox();

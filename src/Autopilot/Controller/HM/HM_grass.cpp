@@ -222,9 +222,6 @@ void HM_grass::update(void)
 
 void HM_grass::bSetActive(bool bActive)
 {
-	if(m_pGrassL)m_pGrassL->m_bClassify = bActive;
-	if(m_pGrassF)m_pGrassF->m_bClassify = bActive;
-	if(m_pGrassR)m_pGrassR->m_bClassify = bActive;
 }
 
 bool HM_grass::draw(void)

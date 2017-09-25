@@ -165,7 +165,6 @@ void _DetectNet::detect(void)
 		obj.m_prob = (double)m_confCPU[n*2];
 		obj.m_name = m_className;
 		obj.m_frameID = tNow;
-		obj.m_bClassify = true;
 
 		IF_CONT(obj.m_prob < m_minConfidence);
 

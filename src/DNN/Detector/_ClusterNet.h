@@ -26,9 +26,9 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	void bSetActive(bool bActive);
 	OBJECT* get(int i);
 	bool bFound(int iClass, double minProb);
-	void bSetActive(bool bActive);
 
 private:
 	vInt4 explore(int x, int y, int iClass);
@@ -53,7 +53,6 @@ public:
 	vInt2 m_size;
 	vDouble4 m_area;
 	OBJECT** m_ppObj;
-	bool m_bActive;
 
 };
 

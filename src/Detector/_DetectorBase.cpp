@@ -9,6 +9,7 @@ namespace kai
 
 _DetectorBase::_DetectorBase()
 {
+	m_bActive = false;
 	m_pVision = NULL;
 	m_modelFile = "";
 	m_trainedFile = "";
@@ -29,7 +30,6 @@ _DetectorBase::_DetectorBase()
 	m_classDrawPos.x = 50;
 	m_classDrawPos.y = 50;
 	m_classDrawPos.z = 50;
-
 }
 
 _DetectorBase::~_DetectorBase()
@@ -168,9 +168,15 @@ void _DetectorBase::mergeDetector(void)
 	}
 }
 
+void _DetectorBase::bSetActive(bool bActive)
+{
+	m_bActive = bActive;
+}
+
 bool _DetectorBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
+	IF_T(!m_bActive);
 
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
@@ -191,11 +197,9 @@ bool _DetectorBase::draw(void)
 	i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(pO->m_prob < m_minConfidence);
-
 		Scalar oColor = m_defaultDrawColor;
 		CLASS_DRAW cd;
-		if(pO->m_iClass < m_vClassDraw.size())
+		if(pO->m_iClass < m_vClassDraw.size() && pO->m_iClass>=0)
 		{
 			cd = m_vClassDraw[pO->m_iClass];
 			IF_CONT(!cd.m_bDraw);

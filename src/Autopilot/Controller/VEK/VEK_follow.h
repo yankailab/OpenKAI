@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_VEK_VEK_follow_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../DNN/Detector/_ClusterNet.h"
 #include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "VEK_base.h"
@@ -25,7 +25,7 @@ private:
 	VEK_base* m_pVEK;
 	_ZEDobstacle* m_pObs;
 #ifdef USE_TENSORRT
-	_DetectorBase* m_pDB;
+	_ClusterNet* m_pCN;
 #endif
 
 	double	m_vSteer;
