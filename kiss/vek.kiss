@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -86,8 +86,8 @@
 	"FPS":30,
 	"Window":"VEKview",
 	"_VisionBase":"ZED",
-	"modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
-	"_modelDir":"/home/ubuntu/dev/model/GoogleNet-ILSVRC12-subset/",
+	"_modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
+	"modelDir":"/home/ubuntu/dev/model/GoogleNet-ILSVRC12-subset/",
 	"modelFile":"deploy.prototxt",
 	"trainedFile":"snapshot_iter_184080.caffemodel",
 	"meanFile":"mean.binaryproto",
@@ -194,15 +194,15 @@
 			"_Automaton":"automaton",
 			"_ZEDobstacle":"ZEDobs",
 			"dAlert":1.0,
-			"vSteer":0.18,
+			"vSteer":0.2,
 			"activeState":["VEK_RUN","VEK_FOLLOW","VEK_AVOID","VEK_RTH"],
 			
 			{
 				"name":"obsBox",
 				"bInst":1,
-				"left":0.15,
+				"left":0.2,
 				"top":0.0,
-				"right":0.95,
+				"right":0.9,
 				"bottom":0.5,
 			}			
 		}	
@@ -221,7 +221,7 @@
 			"distMax":10.0,
 			"vSteer":0.2,
 			"targetX":0.5,
-			"rTargetX":0.05,
+			"rTargetX":0.0,
 			"iTargetClass":8,
 			"activeState":["VEK_RUN","VEK_FOLLOW","VEK_AVOID","VEK_RTH"],	
 		}

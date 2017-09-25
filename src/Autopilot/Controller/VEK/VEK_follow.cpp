@@ -116,9 +116,9 @@ void VEK_follow::update(void)
 	double pX = m_targetX - m_pTarget->m_fBBox.midX();
 	if(abs(pX) > m_rTargetX)
 	{
-		double vSteer = m_vSteer * pX;
-		m_pVEK->m_vL += vSteer;
-		m_pVEK->m_vR -= vSteer;
+		double vSteer = m_vSteer * ((pX>0)?1.0:-1.0);
+		m_pVEK->m_vL = vSteer;
+		m_pVEK->m_vR = -vSteer;
 	}
 
 	stateName = "VEK_FOLLOW";
