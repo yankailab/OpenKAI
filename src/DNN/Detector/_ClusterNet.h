@@ -1,12 +1,12 @@
 /*
- * _MatrixNet.h
+ * _ClusterNet.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__MatrixNet_H_
-#define OPENKAI_SRC_DNN__MatrixNet_H_
+#ifndef OpenKAI_src_DNN_Detector__ClusterNet_H_
+#define OpenKAI_src_DNN_Detector__ClusterNet_H_
 
 #include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"
@@ -15,11 +15,11 @@
 namespace kai
 {
 
-class _MatrixNet: public _DetectorBase
+class _ClusterNet: public _DetectorBase
 {
 public:
-	_MatrixNet();
-	~_MatrixNet();
+	_ClusterNet();
+	~_ClusterNet();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -36,7 +36,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_MatrixNet*) This)->update();
+		((_ClusterNet*) This)->update();
 		return NULL;
 	}
 

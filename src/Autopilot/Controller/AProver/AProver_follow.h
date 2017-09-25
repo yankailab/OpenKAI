@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_FOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APROVER_FOLLOW_H_
+#ifndef OpenKAI_src_Autopilot_Controller_AProver_AProver_follow_H_
+#define OpenKAI_src_Autopilot_Controller_AProver_AProver_follow_H_
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
@@ -8,10 +8,9 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Filter/FilterBase.h"
-#include "../../../Sensor/_Obstacle.h"
+#include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "AProver_base.h"
-
 
 namespace kai
 {
@@ -32,7 +31,7 @@ public:
 
 private:
 	AProver_base* m_pAP;
-	_Obstacle*	m_pUniv;
+	_ZEDobstacle*	m_pObs;
 
 	//where target should be on cam coordinate
 	double	m_destX;
@@ -43,13 +42,8 @@ private:
 	double	m_steerP;
 
 	OBJECT* m_pTarget;
-//	kai::FilterBase* m_pTargetX;
-//	kai::FilterBase* m_pTargetY;
-//	kai::FilterBase* m_pTargetArea;
 	int		m_filterWindow;
 	int		m_targetClass;
-
-
 
 };
 

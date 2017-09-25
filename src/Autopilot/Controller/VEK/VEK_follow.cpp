@@ -7,7 +7,7 @@ VEK_follow::VEK_follow()
 {
 	m_pVEK = NULL;
 #ifdef USE_TENSORRT
-	m_pDN = NULL;
+	m_pDB = NULL;
 #endif
 	m_pObs = NULL;
 	m_vSteer = 0.5;
@@ -53,15 +53,15 @@ bool VEK_follow::link(void)
 	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_ZEDobstacle", &iName));
+	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
 
 #ifdef USE_TENSORRT
 	iName = "";
-	F_INFO(pK->v("_DetectNet", &iName));
-	m_pDN = (_DetectNet*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_DetectorBase", &iName));
+	m_pDB = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 
-	if (!m_pDN)
+	if (!m_pDB)
 	{
 		LOG_E(iName << " not found");
 		return false;
@@ -74,19 +74,20 @@ bool VEK_follow::link(void)
 void VEK_follow::update(void)
 {
 	this->ActionBase::update();
+	m_pTarget = NULL;
 
 #ifdef USE_TENSORRT
 	NULL_(m_pVEK);
 	NULL_(m_pAM);
-	NULL_(m_pDN);
+	NULL_(m_pDB);
 	NULL_(m_pObs);
 	IF_(!isActive());
 
 	OBJECT* pO;
 	int i;
-	for(i=0; i<m_pDN->size(); i++)
+	for(i=0; i<m_pDB->size(); i++)
 	{
-		pO = m_pDN->at(i);
+		pO = m_pDB->at(i);
 		IF_(!pO);
 		IF_CONT(pO->m_iClass != m_iTargetClass);
 		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);

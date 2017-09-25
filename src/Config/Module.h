@@ -5,8 +5,8 @@
  *      Author: root
  */
 
-#ifndef OPENKAI_SRC_CONFIG_MODULE_H_
-#define OPENKAI_SRC_CONFIG_MODULE_H_
+#ifndef OpenKAI_src_Config_Module_H_
+#define OpenKAI_src_Config_Module_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
@@ -31,7 +31,7 @@
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
 #include "../DNN/Classifier/_ImageNet.h"
-#include "../DNN/Detector/_MatrixNet.h"
+#include "../DNN/Detector/_ClusterNet.h"
 #include "../DNN/Detector/_DetectNet.h"
 #include "../DNN/Regression/TrainDataGenerator/_DNNGen_odometry.h"
 #include "../DNN/Sensing/_DNNodometry.h"
@@ -43,7 +43,7 @@
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
 
-#include "../Sensor/_Obstacle.h"
+#include "../Sensor/_ZEDobstacle.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Sensor/_LeddarVu.h"

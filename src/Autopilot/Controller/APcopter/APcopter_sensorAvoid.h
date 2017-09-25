@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_sensorAVOID_H_
 
 #include "../../../Base/common.h"
-#include "../../../Sensor/_Obstacle.h"
+#include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 

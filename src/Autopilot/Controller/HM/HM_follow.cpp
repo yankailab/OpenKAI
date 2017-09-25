@@ -53,11 +53,11 @@ bool HM_follow::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
-	m_pMN = (_MatrixNet*) (pK->root()->getChildInstByName(&iName));
+	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
 
 	if (!m_pMN)
 	{

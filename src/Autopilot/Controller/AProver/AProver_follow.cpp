@@ -7,7 +7,7 @@ AProver_follow::AProver_follow()
 {
 	m_pAP = NULL;
 	m_pAM = NULL;
-	m_pUniv = NULL;
+	m_pObs = NULL;
 
 	m_destX = 0.5;
 	m_destY = 0.5;
@@ -62,7 +62,7 @@ bool AProver_follow::link(void)
 	m_pAP = (AProver_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
-	m_pUniv = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -72,7 +72,7 @@ void AProver_follow::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAP);
-	NULL_(m_pUniv);
+	NULL_(m_pObs);
 	IF_(isActive()==false);
 
 	//get visual target and decide motion

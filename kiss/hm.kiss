@@ -310,15 +310,7 @@
 			"rpmBack":-1500,
 			"rpmTurn":1000,
 			"targetHdg":-90,
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_KICKBACK",
-					"bInst":1,
-				}
-			}
+			"activeState":["HM_KICKBACK"],			
 		}
 				
 		{
@@ -340,15 +332,7 @@
 			"rTargetX":0.2,
 			"iTargetClass":1,
 			"targetName":"turf",
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_FOLLOWME",
-					"bInst":1,
-				}				
-			}
+			"activeState":["HM_FOLLOWME"],			
 		}
 
 		{
@@ -366,20 +350,8 @@
 			"minProb":0.1,
 			"tTurnRandRange":300000,
 			"nTurnRand":10,
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_WORK",
-					"bInst":1,
-				}
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-			}
-			
+			"activeState":["HM_WORK","HM_RTH"],
+					
 			{
 				"name":"grassBoxL",
 				"bInst":1,
@@ -421,15 +393,7 @@
 			"rpmSteer":1000,
 			"rWP":0.5,
 			"dHdg":1.0,
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-			}
+			"activeState":["HM_RTH"],
 		}		
 		
 		{
@@ -448,15 +412,7 @@
 			"rTargetX":0.05,
 			"iTargetClass":0,
 			"targetName":"station",
-
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_RTH_APPROACH",
-					"bInst":1,
-				}
-			}
+			"activeState":["HM_RTH_APPROACH"],
 		}
 				
 		{
@@ -473,6 +429,7 @@
 			"markerTurnTimer":5000000,
 			"iMarkerClass":1,
 			"minProb":0.0,
+			"activeState":["HM_WORK","HM_RTH"],
 			
 			{
 				"name":"obsBoxL",
@@ -500,19 +457,6 @@
 				"right":1.0,
 				"bottom":0.92,
 			}			
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"HM_WORK",
-					"bInst":1,
-				}
-				{
-					"state":"HM_RTH",
-					"bInst":1,
-				}
-			}
 		}				
 		
 	}

@@ -98,10 +98,10 @@
 }
 
 {
-	"name":"mnCar",
+	"name":"cnCar",
 	"bInst":1,
 	"FPS":30,
-	"class":"_MatrixNet",
+	"class":"_ClusterNet",
 	"_ImageNet":"inCar",
 	"Window":"okView",
 	"w":0.1,

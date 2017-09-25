@@ -1,11 +1,13 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTIONBASE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTIONBASE_H_
+#ifndef OpenKAI_src_Autopilot_ActionBase_H_
+#define OpenKAI_src_Autopilot_ActionBase_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
 #include "../Automaton/_Automaton.h"
 #include "../UI/Window.h"
+
+#define N_ACTIVESTATE 128
 
 namespace kai
 {

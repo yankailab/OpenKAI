@@ -1,30 +1,30 @@
 /*
- * _Obstacle.h
+ * _ZEDobstacle.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef SRC_NAVIGATION_OBSTACLE_H_
-#define SRC_NAVIGATION_OBSTACLE_H_
+#ifndef OpenKAI_src_Sensor__ZEDobstacle_H_
+#define OpenKAI_src_Sensor__ZEDobstacle_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../DNN/Classifier/_ImageNet.h"
 #include "../Filter/Median.h"
-#include "../Sensor/DistSensorBase.h"
 #include "../Vision/_ZED.h"
+#include "DistSensorBase.h"
 
 #define N_FILTER 1600
 
 namespace kai
 {
 
-class _Obstacle: public _ThreadBase, public DistSensorBase
+class _ZEDobstacle: public _ThreadBase, public DistSensorBase
 {
 public:
-	_Obstacle(void);
-	virtual ~_Obstacle();
+	_ZEDobstacle(void);
+	virtual ~_ZEDobstacle();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -35,19 +35,21 @@ public:
 	DIST_SENSOR_TYPE type(void);
 	double d(vInt4* pROI, vInt2* pPos);
 	double d(vDouble4* pROI, vInt2* pPos);
+	bool bReady(void);
 
 private:
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Obstacle *) This)->update();
+		((_ZEDobstacle *) This)->update();
 		return NULL;
 	}
 
 public:
 #ifdef USE_ZED
 	_ZED*		m_pZed;
+	bool		m_bZEDready;
 #endif
 	Frame*		m_pMatrix;
 	vInt2		m_mDim;

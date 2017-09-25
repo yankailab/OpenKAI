@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../DNN/Detector/_MatrixNet.h"
+#include "../../../DNN/Detector/_ClusterNet.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,7 +23,7 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_MatrixNet* m_pMN;
+	_ClusterNet* m_pMN;
 	_GPS* m_pGPS;
 
 	int		m_rpmT;

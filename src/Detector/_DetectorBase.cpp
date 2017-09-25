@@ -4,7 +4,6 @@
  */
 #include "_DetectorBase.h"
 
-
 namespace kai
 {
 

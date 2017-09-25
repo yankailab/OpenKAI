@@ -47,10 +47,10 @@ bool APcopter_sensorAvoid::link(void)
 		DIST_SENSOR* pDS = &m_pDS[m_nDS];
 		F_ERROR_F(pKds->v("name", &iName));
 		pDS->m_pSensor = NULL;
-		pDS->m_pSensor = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+		pDS->m_pSensor = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
 		NULL_F(pDS->m_pSensor);
 
-		vInt2 mDim = ((_Obstacle*) pDS->m_pSensor)->matrixDim();
+		vInt2 mDim = ((_ZEDobstacle*) pDS->m_pSensor)->matrixDim();
 		Kiss** pItrSeg = pKds->getChildItr();
 		pDS->m_nSeg = 0;
 
@@ -138,7 +138,7 @@ bool APcopter_sensorAvoid::draw(void)
 	for (i = 0; i < m_nDS; i++)
 	{
 		DIST_SENSOR* pDS = &m_pDS[i];
-		vInt2 mDim = ((_Obstacle*) pDS->m_pSensor)->matrixDim();
+		vInt2 mDim = ((_ZEDobstacle*) pDS->m_pSensor)->matrixDim();
 
 		int bW = pMat->cols / mDim.x;
 		int bH = pMat->rows / mDim.y;

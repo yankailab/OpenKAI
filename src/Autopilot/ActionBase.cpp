@@ -35,20 +35,12 @@ bool ActionBase::link(void)
 	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
 	NULL_T(m_pAM);
 
-	Kiss* pAS = pK->o("activeState");
-	IF_T(pAS->empty());
-
 	m_vActiveState.clear();
-	Kiss** pItr = pAS->getChildItr();
-	int i = 0;
-	while (pItr[i])
+	string pAS[N_ACTIVESTATE];
+	int nAS = pK->array("activeState", pAS, N_ACTIVESTATE);
+	for(int i=0; i<nAS; i++)
 	{
-		Kiss* pState = pItr[i++];
-
-		iName="";
-		if(pState->v("state", &iName)==false)continue;
-
-		int iState = m_pAM->getStateIdx(&iName);
+		int iState = m_pAM->getStateIdx(&pAS[i]);
 		if(iState<0)continue;
 
 		m_vActiveState.push_back(iState);

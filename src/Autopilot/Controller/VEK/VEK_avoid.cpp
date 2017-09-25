@@ -54,8 +54,8 @@ bool VEK_avoid::link(void)
 	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(&iName));
 
 	iName = "";
-	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_Obstacle*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_ZEDobstacle", &iName));
+	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -69,13 +69,21 @@ void VEK_avoid::update(void)
 	NULL_(m_pObs);
 	IF_(!isActive());
 
+	string stateName = "VEK_AVOID";
+
+	if(!m_pObs->bReady())
+	{
+		m_pAM->transit(&stateName);
+		m_pVEK->m_vL = 0.0;
+		m_pVEK->m_vR = 0.0;
+		return;
+	}
+
 	//do nothing if no obstacle inside alert distance
 	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
 	IF_(m_distM > m_dAlert);
 
-	string stateName = "VEK_AVOID";
 	m_pAM->transit(&stateName);
-
 	m_pVEK->m_vL = -m_vSteer;
 	m_pVEK->m_vR = m_vSteer;
 

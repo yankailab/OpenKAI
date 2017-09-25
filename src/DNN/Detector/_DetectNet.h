@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__DetectNet_H_
-#define OPENKAI_SRC_DNN__DetectNet_H_
+#ifndef OpenKAI_src_DNN_Detector__DetectNet_H_
+#define OpenKAI_src_DNN_Detector__DetectNet_H_
 
 #include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"

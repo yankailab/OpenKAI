@@ -3,8 +3,8 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../DNN/Detector/_MatrixNet.h"
-#include "../../../Sensor/_Obstacle.h"
+#include "../../../DNN/Detector/_ClusterNet.h"
+#include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -29,8 +29,8 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_Obstacle* m_pObs;
-	_MatrixNet* m_pMN;
+	_ZEDobstacle* m_pObs;
+	_ClusterNet* m_pMN;
 	int m_iMarkerClass;
 
 	AVOID_SEQUENCE m_sequence;

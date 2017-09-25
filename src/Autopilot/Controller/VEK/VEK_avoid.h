@@ -1,8 +1,8 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_VEK_AVOID_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_VEK_AVOID_H_
+#ifndef OpenKAI_src_Autopilot_Controller_VEK_VEK_avoid_H_
+#define OpenKAI_src_Autopilot_Controller_VEK_VEK_avoid_H_
 
 #include "../../../Base/common.h"
-#include "../../../Sensor/_Obstacle.h"
+#include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "VEK_base.h"
 
@@ -22,7 +22,7 @@ public:
 
 private:
 	VEK_base* m_pVEK;
-	_Obstacle* m_pObs;
+	_ZEDobstacle* m_pObs;
 
 	double m_vSteer;
 	double m_distM;

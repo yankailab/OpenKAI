@@ -2,12 +2,12 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_MatrixNet.h"
+#include "_ClusterNet.h"
 
 namespace kai
 {
 
-_MatrixNet::_MatrixNet()
+_ClusterNet::_ClusterNet()
 {
 	m_pIN = NULL;
 	m_w = 0.2;
@@ -25,11 +25,11 @@ _MatrixNet::_MatrixNet()
 	m_bActive = false;
 }
 
-_MatrixNet::~_MatrixNet()
+_ClusterNet::~_ClusterNet()
 {
 }
 
-bool _MatrixNet::init(void* pKiss)
+bool _ClusterNet::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -50,7 +50,7 @@ bool _MatrixNet::init(void* pKiss)
 	return true;
 }
 
-bool _MatrixNet::link(void)
+bool _ClusterNet::link(void)
 {
 	IF_F(!this->_DetectorBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -98,7 +98,7 @@ bool _MatrixNet::link(void)
 	return true;
 }
 
-bool _MatrixNet::start(void)
+bool _ClusterNet::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -112,7 +112,7 @@ bool _MatrixNet::start(void)
 	return true;
 }
 
-void _MatrixNet::update(void)
+void _ClusterNet::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -128,7 +128,7 @@ void _MatrixNet::update(void)
 	}
 }
 
-void _MatrixNet::cluster(void)
+void _ClusterNet::cluster(void)
 {
 	int y, x;
 	for (x = 0; x < m_nObj; x++)
@@ -168,7 +168,7 @@ void _MatrixNet::cluster(void)
 	}
 }
 
-vInt4 _MatrixNet::explore(int x, int y, int iClass)
+vInt4 _ClusterNet::explore(int x, int y, int iClass)
 {
 	vInt4 vB;
 	vB.x = -1;
@@ -247,7 +247,7 @@ vInt4 _MatrixNet::explore(int x, int y, int iClass)
 	return vB;
 }
 
-void _MatrixNet::bSetActive(bool bActive)
+void _ClusterNet::bSetActive(bool bActive)
 {
 	for (int i = 0; i < m_nObj; i++)
 	{
@@ -257,14 +257,14 @@ void _MatrixNet::bSetActive(bool bActive)
 	m_bActive = bActive;
 }
 
-OBJECT* _MatrixNet::get(int i)
+OBJECT* _ClusterNet::get(int i)
 {
 	IF_N(i >= m_nObj);
 
 	return m_ppObj[i];
 }
 
-bool _MatrixNet::bFound(int iClass, double minProb)
+bool _ClusterNet::bFound(int iClass, double minProb)
 {
 	int i;
 	for (i = 0; i < m_nObj; i++)
@@ -279,7 +279,7 @@ bool _MatrixNet::bFound(int iClass, double minProb)
 	return false;
 }
 
-bool _MatrixNet::draw(void)
+bool _ClusterNet::draw(void)
 {
 	IF_F(!this->_DetectorBase::draw());
 

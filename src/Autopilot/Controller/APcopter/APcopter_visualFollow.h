@@ -3,7 +3,7 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../DNN/Detector/_MatrixNet.h"
+#include "../../../DNN/Detector/_ClusterNet.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -24,7 +24,7 @@ public:
 
 private:
 	APcopter_base* m_pAP;
-	_MatrixNet*	m_pMN;
+	_ClusterNet*	m_pMN;
 
 };
 

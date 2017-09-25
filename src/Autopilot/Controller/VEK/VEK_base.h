@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_VEK_base_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_VEK_base_H_
+#ifndef OpenKAI_src_Autopilot_Controller_VEK_VEK_base_H_
+#define OpenKAI_src_Autopilot_Controller_VEK_VEK_base_H_
 
 #include "../../../Base/common.h"
 #include "../../../IO/_TCP.h"

@@ -50,7 +50,7 @@ bool APcopter_visualFollow::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
-	m_pMN = (_MatrixNet*) (pK->root()->getChildInstByName(&iName));
+	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
 
 	if (!m_pMN)
 	{

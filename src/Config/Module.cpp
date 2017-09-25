@@ -26,8 +26,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Mavlink);
-	ADD_MODULE(_MatrixNet);
-	ADD_MODULE(_Obstacle);
+	ADD_MODULE(_ClusterNet);
+	ADD_MODULE(_ZEDobstacle);
 	ADD_MODULE(_Path);
 	ADD_MODULE(_RC);
 	ADD_MODULE(Window);

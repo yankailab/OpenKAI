@@ -1,16 +1,16 @@
 /*
- * _Obstacle.cpp
+ * _ZEDobstacle.cpp
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#include "_Obstacle.h"
+#include "_ZEDobstacle.h"
 
 namespace kai
 {
 
-_Obstacle::_Obstacle()
+_ZEDobstacle::_ZEDobstacle()
 {
 #ifdef USE_ZED
 	m_pZed = NULL;
@@ -20,9 +20,10 @@ _Obstacle::_Obstacle()
 	m_dBlend = 0.5;
 	m_mDim.x = 10;
 	m_mDim.y = 10;
+	m_bZEDready = false;
 }
 
-_Obstacle::~_Obstacle()
+_ZEDobstacle::~_ZEDobstacle()
 {
 	DEL(m_pMatrix);
 
@@ -30,7 +31,7 @@ _Obstacle::~_Obstacle()
 		DEL(m_pFilteredMatrix[i]);
 }
 
-bool _Obstacle::init(void* pKiss)
+bool _ZEDobstacle::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -62,7 +63,7 @@ bool _Obstacle::init(void* pKiss)
 	return true;
 }
 
-bool _Obstacle::link(void)
+bool _ZEDobstacle::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -80,7 +81,7 @@ bool _Obstacle::link(void)
 	return true;
 }
 
-bool _Obstacle::start(void)
+bool _ZEDobstacle::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -93,7 +94,7 @@ bool _Obstacle::start(void)
 	return true;
 }
 
-void _Obstacle::update(void)
+void _ZEDobstacle::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -105,7 +106,7 @@ void _Obstacle::update(void)
 	}
 }
 
-void _Obstacle::detect(void)
+void _ZEDobstacle::detect(void)
 {
 #ifdef USE_ZED
 	NULL_(m_pZed);
@@ -113,7 +114,15 @@ void _Obstacle::detect(void)
 
 	Frame* pDepth = m_pZed->depth();
 	NULL_(pDepth);
-	IF_(pDepth->empty());
+	if(pDepth->empty())
+	{
+		m_bZEDready = false;
+		return;
+	}
+	else
+	{
+		m_bZEDready = true;
+	}
 
 	m_pMatrix->getResizedOf(m_pZed->depth(), m_mDim.x, m_mDim.y);
 	Mat* pM = m_pMatrix->getCMat();
@@ -129,7 +138,7 @@ void _Obstacle::detect(void)
 #endif
 }
 
-double _Obstacle::d(vInt4* pROI, vInt2* pPos)
+double _ZEDobstacle::d(vInt4* pROI, vInt2* pPos)
 {
 #ifdef USE_ZED
 	if(!m_pZed)return -1.0;
@@ -160,7 +169,7 @@ double _Obstacle::d(vInt4* pROI, vInt2* pPos)
 	return dMin;
 }
 
-double _Obstacle::d(vDouble4* pROI, vInt2* pPos)
+double _ZEDobstacle::d(vDouble4* pROI, vInt2* pPos)
 {
 #ifdef USE_ZED
 	if(!m_pZed)return -1.0;
@@ -205,17 +214,22 @@ double _Obstacle::d(vDouble4* pROI, vInt2* pPos)
 	return dMin;
 }
 
-vInt2 _Obstacle::matrixDim(void)
+vInt2 _ZEDobstacle::matrixDim(void)
 {
 	return m_mDim;
 }
 
-DIST_SENSOR_TYPE _Obstacle::type(void)
+DIST_SENSOR_TYPE _ZEDobstacle::type(void)
 {
 	return dsZED;
 }
 
-bool _Obstacle::draw(void)
+bool _ZEDobstacle::bReady(void)
+{
+	return m_bZEDready;
+}
+
+bool _ZEDobstacle::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

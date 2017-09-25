@@ -2,8 +2,8 @@
 #define OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
 
 #include "../../../Base/common.h"
-#include "../../../Sensor/_Obstacle.h"
-#include "../../../DNN/Detector/_MatrixNet.h"
+#include "../../../DNN/Detector/_ClusterNet.h"
+#include "../../../Sensor/_ZEDobstacle.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -22,9 +22,9 @@ public:
 	bool draw(void);
 
 private:
-	_MatrixNet*	m_pMN;
+	_ClusterNet*	m_pMN;
 	HM_base*	m_pHM;
-	_Obstacle* 	m_pObs;
+	_ZEDobstacle* 	m_pObs;
 
 	double		m_rpmT;
 	double		m_rpmSteer;

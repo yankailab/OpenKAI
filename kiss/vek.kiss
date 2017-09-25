@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -59,8 +59,8 @@
 }
 
 {
-	"name":"obstacle",
-	"class":"_Obstacle",
+	"name":"ZEDobs",
+	"class":"_ZEDobstacle",
 	"FPS":30,
 	"bInst":1,
 	"Window":"VEKview",
@@ -79,44 +79,43 @@
 }
 
 {
-	"name":"dnPed",
-	"class":"_DetectNet",
-	"bInst":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"VEKview",
-	"_VisionBase":"ZED",
-	"_modelDir":"/media/kai/evo/dev/model/ped-100/",
-	"modelDir":"/home/ubuntu/dev/model/ped-100/",
-	"minConfidence":0.01,
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70800.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"labelFile":"",
-	"className":"",
-	"nObj":16,
-	"coverageThr":0.5,
-	"overlapMin":1.0,
-}
-
-{
-	"name":"hmIN",
+	"name":"inTarget",
 	"class":"_ImageNet",
-	"bInst":0,
-	"bDraw":1,
+	"bInst":1,
+	"bDraw":0,
 	"FPS":30,
 	"Window":"VEKview",
 	"_VisionBase":"ZED",
-	"dir":"/home/ubuntu/src/model/hm/grass_128/",
+	"_modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
+	"modelDir":"/home/ubuntu/src/model/GoogleNet-ILSVRC12-subset/",
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_3350.caffemodel",
+	"trainedFile":"snapshot_iter_184080.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"blobOut":"softmax",
 	"labelFile":"labels.txt",
-	"nObj":128,
-	"mode":"object",
+	"mode":"thread",
 	"maxPix":1000000,
+	"minConfidence":0.5,
 }
+
+{
+	"name":"cnTarget",
+	"bInst":1,
+	"FPS":30,
+	"class":"_ClusterNet",
+	"_ImageNet":"inTarget",
+	"Window":"VEKview",
+	"w":0.25,
+	"h":0.5,
+	"dW":0.125,
+	"dH":0.25,
+	"left":0.0,
+	"top":0.0,
+	"right":1.0,
+	"bottom":1.0,
+	"defaultDrawTextSize":0.6,
+}
+
 
 {
 	"name":"automaton",
@@ -192,9 +191,10 @@
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",
-			"_Obstacle":"obstacle",
+			"_ZEDobstacle":"ZEDobs",
 			"dAlert":1.0,
 			"vSteer":0.2,
+			"activeState":["VEK_RUN","VEK_FOLLOW","VEK_AVOID","VEK_RTH"],
 			
 			{
 				"name":"obsBox",
@@ -203,55 +203,26 @@
 				"top":0.0,
 				"right":0.95,
 				"bottom":0.5,
-			}
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"VEK_RUN",
-					"bInst":1,
-				}
-				{
-					"state":"VEK_FOLLOW",
-					"bInst":1,
-				}				
-				{
-					"state":"VEK_AVOID",
-					"bInst":1,
-				}
-			}
+			}			
 		}	
 		
 		{
 			"name":"follow",
 			"class":"VEK_follow",
-			"bInst":0,
+			"bInst":1,
 			"_ZED":"ZED",
 			"Window":"VEKview",
 			"VEK_base":"base",
 			"_Automaton":"automaton",
-			"_DetectNet":"dnPed",
-			"_Obstacle":"obstacle",
+			"_DetectorBase":"cnTarget",
+			"_ZEDobstacle":"ZEDobs",
 			"distMin":0.0,
 			"distMax":10.0,
 			"vSteer":0.2,
 			"targetX":0.5,
 			"rTargetX":0.05,
-			"iTargetClass":0,
-			
-			{
-				"name":"activeState",
-				"bInst":1,
-				{
-					"state":"VEK_RUN",
-					"bInst":1,
-				}				
-				{
-					"state":"VEK_FOLLOW",
-					"bInst":1,
-				}				
-			}
+			"iTargetClass":8,
+			"activeState":["VEK_RUN","VEK_FOLLOW"],			
 		}
 		
 	}
