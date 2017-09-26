@@ -219,7 +219,7 @@
 			"_ZEDobstacle":"ZEDobs",
 			"distMin":0.0,
 			"distMax":10.0,
-			"vSteer":0.2,
+			"vSteer":0.0,
 			"targetX":0.5,
 			"rTargetX":0.0,
 			"iTargetClass":8,

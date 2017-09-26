@@ -120,9 +120,6 @@ void VEK_follow::update(void)
 		m_pVEK->m_vR = -vSteer;
 	}
 
-	m_pVEK->m_vL = 0.0;
-	m_pVEK->m_vR = 0.0;
-
 	stateName = "VEK_FOLLOW";
 	m_pAM->transit(&stateName);
 #else
