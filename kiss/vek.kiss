@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -95,7 +95,7 @@
 	"labelFile":"labels.txt",
 	"mode":"thread",
 	"maxPix":10000000,
-	"minConfidence":0.5,
+	"minConfidence":0.25,
 }
 
 {

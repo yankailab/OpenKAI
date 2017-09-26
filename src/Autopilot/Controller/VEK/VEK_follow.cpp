@@ -111,7 +111,6 @@ void VEK_follow::update(void)
 	}
 
 	NULL_(m_pTarget);
-	IF_(m_pTarget->m_dist > m_distMax);
 
 	double pX = m_targetX - m_pTarget->m_fBBox.midX();
 	if(abs(pX) > m_rTargetX)
@@ -120,6 +119,9 @@ void VEK_follow::update(void)
 		m_pVEK->m_vL = vSteer;
 		m_pVEK->m_vR = -vSteer;
 	}
+
+	m_pVEK->m_vL = 0.0;
+	m_pVEK->m_vR = 0.0;
 
 	stateName = "VEK_FOLLOW";
 	m_pAM->transit(&stateName);
