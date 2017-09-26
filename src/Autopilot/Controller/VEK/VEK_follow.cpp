@@ -83,14 +83,6 @@ void VEK_follow::update(void)
 	NULL_(m_pObs);
 	IF_(!isActive());
 
-	string stateName = "VEK_AVOID";
-	if(m_pAM->getCurrentStateIdx()==m_pAM->getStateIdx(&stateName))
-	{
-		m_pCN->bSetActive(false);
-		return;
-	}
-	m_pCN->bSetActive(true);
-
 	OBJECT* pO;
 	int i;
 	for(i=0; i<m_pCN->size(); i++)
@@ -120,7 +112,7 @@ void VEK_follow::update(void)
 		m_pVEK->m_vR = -vSteer;
 	}
 
-	stateName = "VEK_FOLLOW";
+	string stateName = "VEK_FOLLOW";
 	m_pAM->transit(&stateName);
 #else
 	LOG_I("VEK_follow requires USE_TENSORRT to be turned ON");
