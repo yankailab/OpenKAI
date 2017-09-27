@@ -32,32 +32,36 @@
 	"width":1280,
 	"height":720,
 	"bFlip":0,
-	"bGray":1,
+	"bGray":0,
 }
 
 {
 	"name":"dnMultiPed",
 	"class":"_DetectNet",
 	"bInst":1,
-	"bLog":0,
-	"bDraw":0,
-	"FPS":10,
+	"bLog":1,
+	"bDraw":1,
+	"FPS":30,
 	"Window":"okView",
 	"_VisionBase":"camera",
-	"modelDir":"/media/kai/evo/dev/model/multiped-500/",
+	"_modelDir":"/media/kai/evo/dev/model/ped-100/",
+	"modelDir":"/home/ubuntu/dev/model/ped-100/",
 	"minConfidence":0.0,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_178000.caffemodel",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"",
 	"className":"",
 	"coverageThr":0.5,
+	"R":0,
+	"G":255,
+	"B":255,
 }
 
 {
 	"name":"inRescue",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":60,
 	"Window":"okView",
@@ -80,7 +84,7 @@
 {
 	"name":"inCar",
 	"class":"_ImageNet",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":60,
@@ -99,7 +103,7 @@
 
 {
 	"name":"cnCar",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"class":"_ClusterNet",
 	"_ImageNet":"inCar",

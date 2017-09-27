@@ -58,6 +58,8 @@ bool _DetectNet::init(void* pKiss)
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
 
+	bSetActive(true);
+
 	return true;
 }
 
