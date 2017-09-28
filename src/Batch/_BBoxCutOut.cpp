@@ -105,6 +105,7 @@ void _BBoxCutOut::process()
 	string strBB;
 	size_t extPos;
 	ifstream ifsTxt;
+	int nTot = 0;
 
 	while ((dir = readdir(pDirIn)) != NULL)
 	{
@@ -163,12 +164,14 @@ void _BBoxCutOut::process()
 			cv::imwrite(fOut,mBB,PNGcompress);
 
 			nBB++;
-			LOG_I("BBox saved: " << fOut);
+			nTot++;
+			LOG_I(nTot << " " << fOut);
 		}
 
 		ifsTxt.close();
 	}
 
+	LOG_I("Total images cutout: " << nTot);
 	closedir(pDirIn);
 	closedir(pDirOut);
 }

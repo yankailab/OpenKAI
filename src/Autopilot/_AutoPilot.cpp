@@ -62,6 +62,8 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(VEK_avoid);
 		ADD_ACTION(VEK_follow);
 
+		ADD_ACTION(EXT_base);
+
 #ifndef USE_OPENCV4TEGRA
 		ADD_ACTION(RC_base);
 		ADD_ACTION(RC_visualFollow);

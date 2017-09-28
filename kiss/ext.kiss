@@ -1,0 +1,116 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+}
+
+{
+	"name":"EXTview",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/home/ubuntu/src/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textSize":0.5,
+	"textR":0,
+	"textG":255,
+	"textB":0,
+	"textX":20,
+	"textY":20,
+	"pixTab":20,
+	"lineH":20,
+}
+
+{
+	"name":"EXTio",
+	"class":"_SerialPort",
+	"bInst":1,
+	"Window":"EXTview",
+	"portName":"/dev/ttyTHS1",
+	"baud":115200,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"EXTview",
+	"deviceID":0,
+	"width":1280,
+	"height":720,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"inTarget",
+	"class":"_ImageNet",
+	"bInst":1,
+	"bDraw":1,
+	"FPS":30,
+	"Window":"EXTview",
+	"_VisionBase":"ZED",
+	"modelDir":"/media/kai/evo/dev/model/GoogleNet-ILSVRC12-subset/",
+	"_modelDir":"/home/ubuntu/dev/model/GoogleNet-ILSVRC12-subset/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_184080.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"blobOut":"softmax",
+	"labelFile":"labels.txt",
+	"mode":"thread",
+	"maxPix":10000000,
+	"minConfidence":0.25,
+}
+
+{
+	"name":"cnTarget",
+	"bInst":1,
+	"FPS":30,
+	"bDraw":0,
+	"class":"_ClusterNet",
+	"_ImageNet":"inTarget",
+	"Window":"EXTview",
+	"w":1.0,
+	"h":1.0,
+	"dW":1.0,
+	"dH":1.0,
+	"l":0.0,
+	"t":0.0,
+	"r":1.0,
+	"b":1.0,
+	"defaultDrawTextSize":0.6,
+}
+
+{
+	"name":"autoPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"automaton",
+	"Window":"EXTview",
+	"bInst":1,
+	"FPS":30,
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"base",
+			"class":"EXT_base",
+			"bInst":1,
+			"Window":"EXTview",
+			"_IOBase":"EXTio",
+			"_DetectorBase":"cnTarget",
+			"iTargetClass":0,
+		}
+					
+	}
+}
+
+

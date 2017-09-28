@@ -12,6 +12,8 @@
 	"bInst":1,
 	"bLog":1,
 	"FPS":30,
-	"dirIn":"/media/kai/pcie950/dev/data/Okinawa_Day2_R/",
-	"dirOut":"/media/kai/pcie950/dev/data/Okinawa_Day2_R_Classify/",
+	"dirIn":"/home/kai/Downloads/cabbage/Batch1/CabbageAll/",
+	"dirOut":"/home/kai/Downloads/cabbage/Batch1/cabbage/",
+	"extImgIn":".jpg",
+	"extTxt":".txt",
 }
