@@ -14,13 +14,13 @@ _ZEDobstacle::_ZEDobstacle()
 {
 #ifdef USE_ZED
 	m_pZed = NULL;
+	m_bZEDready = false;
 #endif
 	m_pMatrix = NULL;
 	m_nFilter = 0;
 	m_dBlend = 0.5;
 	m_mDim.x = 10;
 	m_mDim.y = 10;
-	m_bZEDready = false;
 }
 
 _ZEDobstacle::~_ZEDobstacle()
@@ -226,7 +226,11 @@ DIST_SENSOR_TYPE _ZEDobstacle::type(void)
 
 bool _ZEDobstacle::bReady(void)
 {
+#ifdef USE_ZED
 	return m_bZEDready;
+#else
+	return false;
+#endif
 }
 
 bool _ZEDobstacle::draw(void)

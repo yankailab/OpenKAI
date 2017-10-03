@@ -71,6 +71,8 @@ void EXT_base::update(void)
 		one += i2str((int)(pO->m_prob*100));
 		one += ";";
 		m_pIO->write((unsigned char*)one.c_str(),one.length());
+
+		LOG_I(one);
 	}
 }
 

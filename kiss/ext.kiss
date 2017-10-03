@@ -44,8 +44,8 @@
 	"bInst":1,
 	"Window":"EXTview",
 	"deviceID":0,
-	"width":1280,
-	"height":720,
+	"width":1920,
+	"height":1080,
 	"bFlip":0,
 	"bGray":0,
 }
