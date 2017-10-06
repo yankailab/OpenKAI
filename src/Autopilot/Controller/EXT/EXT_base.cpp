@@ -49,7 +49,16 @@ void EXT_base::update(void)
 	NULL_(m_pDB);
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
-	IF_(!isActive());
+
+	string one;
+
+	if(m_pDB->size()==0)
+	{
+		one = "0,0,0,0,0;";
+		m_pIO->write((unsigned char*)one.c_str(),one.length());
+		LOG_I(one);
+		return;
+	}
 
 	OBJECT* pO;
 	int i;
@@ -59,7 +68,7 @@ void EXT_base::update(void)
 		IF_(!pO);
 		IF_CONT(pO->m_iClass != m_iTargetClass);
 
-		string one = "";
+		one = "";
 		one += i2str(pO->m_bbox.x);
 		one += ",";
 		one += i2str(pO->m_bbox.y);

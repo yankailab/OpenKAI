@@ -138,8 +138,6 @@ void _DetectNet::detect(void)
 	IF_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
 			&m_nBox, m_confCPU));
 
-	LOG_I("Detected BBox: "<<m_nBox);
-
 	int camArea = fGMat.cols * fGMat.rows;
 	int minSize = camArea * m_minSize;
 	int maxSize = camArea * m_maxSize;
@@ -167,6 +165,8 @@ void _DetectNet::detect(void)
 		obj.m_prob = (double)m_confCPU[n*2];
 		obj.m_name = m_className;
 		obj.m_frameID = tNow;
+
+		LOG_I("BBox: "<< obj.m_iClass << " " << obj.m_prob);
 
 		IF_CONT(obj.m_prob < m_minConfidence);
 

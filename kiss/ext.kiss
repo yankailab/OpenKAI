@@ -33,7 +33,8 @@
 	"class":"_SerialPort",
 	"bInst":1,
 	"Window":"EXTview",
-	"portName":"/dev/ttyTHS1",
+	"_portName":"/dev/ttyTHS1",
+	"portName":"/dev/ttyUSB0",
 	"baud":115200,
 }
 
@@ -51,44 +52,26 @@
 }
 
 {
-	"name":"inTarget",
-	"class":"_ImageNet",
+	"name":"dnTarget",
+	"class":"_DetectNet",
 	"bInst":1,
+	"bLog":0,
 	"bDraw":1,
 	"FPS":30,
 	"Window":"EXTview",
 	"_VisionBase":"camera",
-	"modelDir":"/media/kai/sm/dev/model/CabbageIN256/",
-	"_modelDir":"/home/ubuntu/dev/model/CabbageIN256/",
+	"modelDir":"/media/kai/sm/dev/model/CabbageDN/",
+	"_modelDir":"/home/ubuntu/dev/model/CabbageDN/",
+	"minConfidence":0.0,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_5700.caffemodel",
+	"trainedFile":"snapshot_iter_103950.caffemodel",
 	"meanFile":"mean.binaryproto",
-	"blobOut":"softmax",
-	"labelFile":"labels.txt",
-	"mode":"thread",
-	"maxPix":10000000,
-	"minConfidence":0.25,
-}
-
-{
-	"name":"cnTarget",
-	"class":"_ClusterNet",
-	"bInst":1,
-	"FPS":30,
-	"bDraw":1,
-	"_ImageNet":"inTarget",
-	"Window":"EXTview",
-	"w":0.25,
-	"h":0.25,
-	"dW":0.125,
-	"dH":0.125,
-	"l":0.0,
-	"t":0.0,
-	"r":1.0,
-	"b":1.0,
-	"defaultDrawTextSize":0.6,
-	"classColor":["255,255,255,0","0,200,255,1","0,255,0,0"],
-	"drawInfoPos":[50,160,30],
+	"labelFile":"",
+	"className":"",
+	"coverageThr":0.5,
+	"R":0,
+	"G":255,
+	"B":255,
 }
 
 {
@@ -108,7 +91,7 @@
 			"bInst":1,
 			"Window":"EXTview",
 			"_IOBase":"EXTio",
-			"_DetectorBase":"cnTarget",
+			"_DetectorBase":"dnTarget",
 			"iTargetClass":0,
 		}
 					
