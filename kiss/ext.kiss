@@ -32,6 +32,8 @@
 	"name":"EXTio",
 	"class":"_SerialPort",
 	"bInst":1,
+	"bLog":0,
+	"FPS":100,
 	"Window":"EXTview",
 	"_portName":"/dev/ttyTHS1",
 	"portName":"/dev/ttyUSB0",

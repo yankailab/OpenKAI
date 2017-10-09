@@ -120,6 +120,8 @@ void _SerialPort::writeIO(void)
 	tcdrain(m_fd);
 
 	//if(nW!=nB)?
+
+	LOG_I("Write: " << ioB.m_pB);
 }
 
 void _SerialPort::readIO(void)
@@ -129,6 +131,8 @@ void _SerialPort::readIO(void)
 	ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
 
 	toQueR(&ioB);
+
+	LOG_I("read: " << ioB.m_pB);
 }
 
 bool _SerialPort::setup(void)
