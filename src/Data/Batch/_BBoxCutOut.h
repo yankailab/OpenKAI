@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__BBoxCutOut_H_
-#define OPENKAI_SRC_DNN__BBoxCutOut_H_
+#ifndef OpenKAI_src_Data_Batch__BBoxCutOut_H_
+#define OpenKAI_src_Data_Batch__BBoxCutOut_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
-#include "../Utility/util.h"
+#include "../../Base/common.h"
+#include "../../Base/_ThreadBase.h"
+#include "../../Utility/util.h"
 
 namespace kai
 {
