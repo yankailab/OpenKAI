@@ -29,14 +29,14 @@
 	"bInst":1,
 	"Window":"okView",
 	"deviceID":0,
-	"width":1280,
-	"height":720,
+	"width":1920,
+	"height":1080,
 	"bFlip":0,
 	"bGray":0,
 }
 
 {
-	"name":"dnMultiPed",
+	"name":"dnTarget",
 	"class":"_DetectNet",
 	"bInst":1,
 	"bLog":1,
@@ -44,18 +44,17 @@
 	"FPS":30,
 	"Window":"okView",
 	"_VisionBase":"camera",
-	"_modelDir":"/media/kai/evo/dev/model/ped-100/",
-	"modelDir":"/home/ubuntu/dev/model/ped-100/",
+	"_modelDir":"/media/kai/sm/dev/model/dnDeer/",
+	"modelDir":"/home/ubuntu/dev/model/dnDeer/",
 	"minConfidence":0.0,
 	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70800.caffemodel",
+	"trainedFile":"snapshot_iter_65620.caffemodel",
 	"meanFile":"mean.binaryproto",
 	"labelFile":"",
 	"className":"",
 	"coverageThr":0.5,
-	"R":0,
-	"G":255,
-	"B":255,
+	"defaultDrawColor":[255,255,0],
+	"defaultDrawTextSize":0.8,
 }
 
 {

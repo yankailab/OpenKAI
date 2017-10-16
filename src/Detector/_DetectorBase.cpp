@@ -62,13 +62,14 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, overlapMin);
 	KISSm(pK, minConfidence);
 	KISSm(pK, defaultDrawTextSize);
-
-	F_INFO(pK->v("B", &m_defaultDrawColor[0]));
-	F_INFO(pK->v("G", &m_defaultDrawColor[1]));
-	F_INFO(pK->v("R", &m_defaultDrawColor[2]));
-
 	KISSm(pK, bDrawContour);
 	KISSm(pK, contourBlend);
+
+	int pDefaultDrawColor[3];
+	int nDefaultDrawColor = pK->array("defaultDrawColor", pDefaultDrawColor, 3);
+	if(nDefaultDrawColor > 0)m_defaultDrawColor[0] = pDefaultDrawColor[0];
+	if(nDefaultDrawColor > 1)m_defaultDrawColor[1] = pDefaultDrawColor[1];
+	if(nDefaultDrawColor > 2)m_defaultDrawColor[2] = pDefaultDrawColor[2];
 
 	int i;
 	m_vClassDraw.clear();
