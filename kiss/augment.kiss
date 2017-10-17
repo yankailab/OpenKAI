@@ -1,0 +1,23 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+}
+
+{
+	"name":"Augment",
+	"class":"_Augment",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"dirIn":"/media/kai/evo1/dl/wxt/images_augment/OverKill/",
+	"extIn":[".jpg",".jpeg",".png",".bmp"],
+	"extOut":".png",
+	"bRot":1,
+	"nRot":12,
+	"dRot":30,
+	"bFlip":1,
+	"bDeleteOriginal":1,
+}

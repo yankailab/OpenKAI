@@ -12,8 +12,13 @@ namespace kai
 
 _DataBase::_DataBase()
 {
-	m_extIn = ".jpeg";
+	m_dirIn = "";
+	m_dirOut = "";
 	m_extOut = ".png";
+
+	m_PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	m_PNGcompress.push_back(0);
+
 }
 
 _DataBase::~_DataBase()
@@ -27,9 +32,17 @@ bool _DataBase::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK, dirIn);
+	m_dirOut = m_dirIn;
 	KISSm(pK, dirOut);
-	KISSm(pK, extIn);
 	KISSm(pK, extOut);
+
+	m_vExtIn.clear();
+	string pExtIn[N_EXT];
+	int nExt = pK->array("extIn", pExtIn, N_EXT);
+	for(int i=0; i<nExt; i++)
+	{
+		m_vExtIn.push_back(pExtIn[i]);
+	}
 
 	return true;
 }
@@ -59,7 +72,7 @@ void _DataBase::update(void)
 {
 }
 
-void _DataBase::getInputFileList(void)
+int _DataBase::getDirFileList(void)
 {
 	m_vFileIn.clear();
 
@@ -71,33 +84,48 @@ void _DataBase::getInputFileList(void)
 	if (!pDirIn)
 	{
 		LOG_E("Input directory not found");
-		exit(1);
+		return -1;
 	}
 
 	struct dirent *dir;
-	string fileIn;
-	size_t extPos;
 	ifstream ifs;
 
 	while ((dir = readdir(pDirIn)) != NULL)
 	{
-		fileIn = m_dirIn + dir->d_name;
+		string fileIn = m_dirIn + dir->d_name;
 
-		//verify file extension
-		extPos = fileIn.find(m_extIn);
-		IF_CONT(extPos == std::string::npos);
-		IF_CONT(fileIn.substr(extPos) != m_extIn);
+		IF_CONT(!verifyExtension(&fileIn));
 		ifs.open(fileIn.c_str(), std::ios::in);
 		IF_CONT(!ifs);
 		ifs.close();
 
-		m_vFileIn.push_back(fileIn);
+		m_vFileIn.push_back(dir->d_name);
 	}
 
 	closedir(pDirIn);
+
+	return m_vFileIn.size();
 }
 
-void _DataBase::openOutput(void)
+bool _DataBase::verifyExtension(string* fName)
+{
+	NULL_F(fName);
+
+	int i;
+	for(i=0; i<m_vExtIn.size(); i++)
+	{
+		string ext = m_vExtIn[i];
+		size_t extPos = fName->find(ext);
+		IF_CONT(extPos == std::string::npos);
+		IF_CONT(fName->substr(extPos) != ext);
+
+		return true;
+	}
+
+	return false;
+}
+
+bool _DataBase::openOutput(void)
 {
 	if (m_dirOut.at(m_dirOut.length() - 1) != '/')
 		m_dirOut.push_back('/');
@@ -109,19 +137,14 @@ void _DataBase::openOutput(void)
 		if(mkdir(m_dirOut.c_str(), 0777) != 0)
 		{
 			LOG_E("Failed to creat output directory");
-			exit(1);
+			return false;
 		}
 
 		LOG_I("Created output directory: " << m_dirOut);
 	}
 
-
-
-
-
-
-
 	closedir(pDirOut);
+	return true;
 }
 
 }

@@ -12,9 +12,11 @@ namespace kai
 
 _Augment::_Augment()
 {
-	m_extImgIn = ".jpeg";
-	m_extImgOut = ".png";
-	m_extTxt = ".txt";
+	m_dRot = 0;
+	m_nRot = 0;
+	m_bRot = false;
+	m_bFlip = false;
+	m_bDeleteOriginal = false;
 }
 
 _Augment::~_Augment()
@@ -23,22 +25,22 @@ _Augment::~_Augment()
 
 bool _Augment::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_DataBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, dirIn);
-	KISSm(pK, dirOut);
-	KISSm(pK, extImgIn);
-	KISSm(pK, extImgOut);
-	KISSm(pK, extTxt);
+	KISSm(pK, bFlip);
+	KISSm(pK, bRot);
+	KISSm(pK, dRot);
+	KISSm(pK, nRot);
+	KISSm(pK, bDeleteOriginal);
 
 	return true;
 }
 
 bool _Augment::link(void)
 {
-	IF_F(!this->_ThreadBase::link());
+	IF_F(!this->_DataBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -59,126 +61,62 @@ bool _Augment::start(void)
 
 void _Augment::update(void)
 {
-	process();
+	rotate();
+	move();
+	scaling();
+	crop();
+	flip();
+	tone();
 
 	exit(0);
 }
 
-void _Augment::process()
+void _Augment::rotate(void)
 {
-	if (m_dirIn.at(m_dirIn.length() - 1) != '/')
-		m_dirIn.push_back('/');
-	if (m_dirOut.at(m_dirOut.length() - 1) != '/')
-		m_dirOut.push_back('/');
+	IF_(!m_bRot);
+	IF_(getDirFileList()<=0);
+	IF_(!openOutput());
 
-	DIR* pDirIn;
-	DIR* pDirOut;
-
-	pDirIn = opendir(m_dirIn.c_str());
-	pDirOut = opendir(m_dirOut.c_str());
-
-	if (!pDirIn)
-	{
-		LOG_E("Input directory not found");
-		exit(1);
-	}
-
-	if (!pDirOut)
-	{
-		if(mkdir(m_dirOut.c_str(), 0777) != 0)
-		{
-			LOG_E("Failed to creat output directory");
-			exit(1);
-		}
-
-		LOG_I("Created output directory: " << m_dirOut);
-	}
-
-	vector<int> PNGcompress;
-	PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
-	PNGcompress.push_back(0);
-
-	struct dirent *dir;
-	string fileItem;
-	string fileIn;
-	string fileImg;
-	string strBB;
-	size_t extPos;
-	ifstream ifsTxt;
+	int i;
 	int nTot = 0;
+	Mat mOut;
+	string fName;
 
-	while ((dir = readdir(pDirIn)) != NULL)
+	for(i=0; i<m_vFileIn.size(); i++)
 	{
-		fileIn = m_dirIn + dir->d_name;
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
 
-		//verify txt file
-		extPos = fileIn.find(m_extTxt);
-		IF_CONT(extPos == std::string::npos);
-		IF_CONT(fileIn.substr(extPos) != m_extTxt);
-		ifsTxt.open(fileIn.c_str(), std::ios::in);
-		IF_CONT(!ifsTxt);
+		fName = m_dirOut + uuid() + m_extOut;
+		cv::imwrite(fName, mIn, m_PNGcompress);
 
-		//skip if no correspondent image file is found
-		fileImg = m_dirIn + dir->d_name;
-		fileImg.erase(fileImg.find(m_extTxt));
-		fileImg += m_extImgIn;
-		Mat mImg = cv::imread(fileImg.c_str());
-		IF_CONT(mImg.empty());
+		Point2f pCenter = Point2f(mIn.cols/2,mIn.rows/2);
+		Size s = Size(mIn.cols, mIn.rows);
 
-		//get the name without extension
-		fileItem = dir->d_name;
-		fileItem.erase(fileItem.find(m_extTxt));
+		//TODO: Random rotate angles
 
-		//read image and cut out bboxes
-		int nBB = 0;
-		while (getline(ifsTxt, strBB))
+
+		for(int j=1; j<m_nRot; j++)
 		{
-			vector<string> entry = splitBy(strBB, ' ');
-			IF_CONT(entry.size() < 15);
+			Mat mRot = getRotationMatrix2D(pCenter, m_dRot*j, 1);
+			cv::warpAffine(mIn, mOut, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
 
-			string strCat = entry[0];
-			Rect cropBB;
-			cropBB.x = atoi(entry[4].c_str());
-			cropBB.y = atoi(entry[5].c_str());
-			cropBB.width = atoi(entry[6].c_str()) - cropBB.x;
-			cropBB.height = atoi(entry[7].c_str()) - cropBB.y;
+			fName = m_dirOut + uuid() + m_extOut;
+			cv::imwrite(fName, mOut, m_PNGcompress);
 
-			IF_CONT(cropBB.x < 0);
-			IF_CONT(cropBB.y < 0);
-			IF_CONT(cropBB.width <= 0);
-			IF_CONT(cropBB.height <= 0);
-			IF_CONT(cropBB.x + cropBB.width > mImg.cols);
-			IF_CONT(cropBB.y + cropBB.height > mImg.rows);
-
-			Mat mBB = Mat(mImg, cropBB);
-			IF_CONT(mBB.empty());
-
-			//make directory if not existed
-			string dirCat = m_dirOut + strCat + '/';
-			if(!opendir(dirCat.c_str()))
-			{
-				IF_CONT(mkdir(dirCat.c_str(), 0777) != 0);
-			}
-
-			string fOut = dirCat + fileItem + "_" + strCat + "_" + i2str(nBB) + m_extImgOut;
-			cv::imwrite(fOut,mBB,PNGcompress);
-
-			nBB++;
-			nTot++;
-			LOG_I(nTot << " " << fOut);
+			LOG_I("Rot: " << nTot << " " << fName);
 		}
 
-		ifsTxt.close();
+		if(m_bDeleteOriginal)
+		{
+			remove(fNameIn.c_str());
+		}
+
+		nTot++;
 	}
 
-	LOG_I("Total images cutout: " << nTot);
-	closedir(pDirIn);
-	closedir(pDirOut);
-}
-
-void _Augment::rorate(void)
-{
-
+	LOG_I("Total rotated: " << nTot);
 }
 
 void _Augment::move(void)
@@ -198,7 +136,46 @@ void _Augment::crop(void)
 
 void _Augment::flip(void)
 {
+	IF_(!m_bFlip);
+	IF_(getDirFileList()<=0);
+	IF_(!openOutput());
 
+	int i;
+	int nTot = 0;
+	Mat mOut;
+	string fName;
+
+	for(i=0; i<m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		fName = m_dirOut + uuid() + m_extOut;
+		cv::imwrite(fName, mIn, m_PNGcompress);
+
+		Point2f pCenter = Point2f(mIn.cols/2,mIn.rows/2);
+		Size s = Size(mIn.cols, mIn.rows);
+
+		for(int j=-1; j<2; j++)
+		{
+			cv::flip(mIn, mOut, j);
+
+			fName = m_dirOut + uuid() + m_extOut;
+			cv::imwrite(fName, mOut, m_PNGcompress);
+
+			LOG_I("Flip: " << nTot << " " << fName);
+		}
+
+		if(m_bDeleteOriginal)
+		{
+			remove(fNameIn.c_str());
+		}
+
+		nTot++;
+	}
+
+	LOG_I("Total flipped: " << nTot);
 }
 
 void _Augment::tone(void)

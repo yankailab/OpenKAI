@@ -12,6 +12,8 @@
 #include "../Base/_ThreadBase.h"
 #include "../Utility/util.h"
 
+#define N_EXT 16
+
 namespace kai
 {
 
@@ -24,10 +26,11 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	int getDirFileList(void);
+	bool verifyExtension(string* fName);
+	bool openOutput(void);
 
 private:
-	void getInputFileList(void);
-	void openOutput(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -38,10 +41,11 @@ private:
 public:
 	string m_dirIn;
 	string m_dirOut;
-	string m_extIn;
+	vector<string> m_vExtIn;
 	string m_extOut;
 
 	vector<string> m_vFileIn;
+	vector<int> m_PNGcompress;
 
 
 };

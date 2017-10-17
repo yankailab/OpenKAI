@@ -11,6 +11,18 @@ using namespace std;
 namespace kai
 {
 
+inline string uuid(void)
+{
+	uuid_t uuid;
+	uuid_generate(uuid);
+
+	char cUuid[64];
+	uuid_unparse(uuid, cUuid);
+	string strUuid = cUuid;
+
+	return strUuid;
+}
+
 inline int small(int a, int b)
 {
 	if(a>b)return b;

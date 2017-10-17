@@ -11,11 +11,12 @@
 #include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
 #include "../../Utility/util.h"
+#include "../_DataBase.h"
 
 namespace kai
 {
 
-class _Augment: public _ThreadBase
+class _Augment: public _DataBase
 {
 public:
 	_Augment();
@@ -26,14 +27,13 @@ public:
 	bool start(void);
 
 private:
-	void rorate(void);
+	void rotate(void);
 	void move(void);
 	void scaling(void);
 	void crop(void);
 	void flip(void);
 	void tone(void);
 
-	void process();
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -42,11 +42,14 @@ private:
 	}
 
 public:
-	string m_dirIn;
-	string m_dirOut;
-	string m_extTxt;
-	string m_extImgIn;
-	string m_extImgOut;
+	bool m_bRot;
+	int m_dRot;
+	int m_nRot;
+
+	bool m_bFlip;
+	bool m_bDeleteOriginal;
+
+
 
 
 };

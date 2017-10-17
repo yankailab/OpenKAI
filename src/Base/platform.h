@@ -42,6 +42,7 @@
 #include <utility>
 #include <unistd.h>
 #include <vector>
+#include <uuid/uuid.h>
 
 using namespace std;
 using std::string;
