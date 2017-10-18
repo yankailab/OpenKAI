@@ -15,10 +15,7 @@ _DataBase::_DataBase()
 	m_dirIn = "";
 	m_dirOut = "";
 	m_extOut = ".png";
-
-	m_PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
-	m_PNGcompress.push_back(0);
-
+	m_PNGcompression = 0;
 }
 
 _DataBase::~_DataBase()
@@ -43,6 +40,10 @@ bool _DataBase::init(void* pKiss)
 	{
 		m_vExtIn.push_back(pExtIn[i]);
 	}
+
+	KISSm(pK, PNGcompression);
+	m_PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	m_PNGcompress.push_back(m_PNGcompression);
 
 	return true;
 }

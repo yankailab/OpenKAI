@@ -43,11 +43,15 @@ private:
 
 public:
 	bool m_bRot;
-	int m_dRot;
 	int m_nRot;
 
 	bool m_bFlip;
 	bool m_bDeleteOriginal;
+
+	bool m_bScaling;
+	double m_scaleFrom;
+	double m_scaleTo;
+	int m_nScaling;
 
 
 
