@@ -44,14 +44,12 @@ private:
 public:
 	bool m_bRot;
 	int m_nRot;
-
 	bool m_bFlip;
-	bool m_bDeleteOriginal;
-
 	bool m_bScaling;
 	double m_dScaling;
 	int m_nScaling;
 
+	bool m_bDeleteOriginal;
 	double m_progress;
 
 };

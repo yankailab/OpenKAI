@@ -74,6 +74,8 @@ void _Augment::update(void)
 	crop();
 	flip();
 	tone();
+
+	LOG_I("Completed");
 }
 
 void _Augment::rotate(void)
