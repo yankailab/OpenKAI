@@ -11,6 +11,11 @@ using namespace std;
 namespace kai
 {
 
+inline double NormRand(void)
+{
+	return ((double)rand()) / ((double)RAND_MAX);
+}
+
 inline string uuid(void)
 {
 	uuid_t uuid;

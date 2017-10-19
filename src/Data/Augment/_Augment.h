@@ -49,12 +49,10 @@ public:
 	bool m_bDeleteOriginal;
 
 	bool m_bScaling;
-	double m_scaleFrom;
-	double m_scaleTo;
+	double m_dScaling;
 	int m_nScaling;
 
-
-
+	double m_progress;
 
 };
 }
