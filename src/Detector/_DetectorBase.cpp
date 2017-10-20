@@ -9,7 +9,6 @@ namespace kai
 
 _DetectorBase::_DetectorBase()
 {
-	m_bActive = false;
 	m_pVision = NULL;
 	m_modelFile = "";
 	m_trainedFile = "";
@@ -30,6 +29,9 @@ _DetectorBase::_DetectorBase()
 	m_classDrawPos.x = 50;
 	m_classDrawPos.y = 50;
 	m_classDrawPos.z = 50;
+
+	m_bActive = true;
+	m_mode = thread;
 }
 
 _DetectorBase::~_DetectorBase()
@@ -48,6 +50,14 @@ bool _DetectorBase::init(void* pKiss)
 
 	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("modelDir", &modelDir));
+
+	string iName = "thread";
+	F_INFO(pK->v("mode", &iName));
+	if (iName == "noThread")
+	{
+		m_mode = noThread;
+		bSetActive(false);
+	}
 
 	KISSm(pK, modelFile);
 	KISSm(pK, trainedFile);

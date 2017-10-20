@@ -46,14 +46,6 @@ bool _ImageNet::init(void* pKiss)
 
 	m_pRGBA = new Frame();
 
-	string iName = "noThread";
-	F_INFO(pK->v("mode", &iName));
-	if (iName == "thread")
-	{
-		m_mode = thread;
-		bSetActive(true);
-	}
-
 	return true;
 }
 

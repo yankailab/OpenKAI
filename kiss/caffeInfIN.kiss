@@ -1,0 +1,56 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+}
+
+{
+	"name":"okView",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"deviceID":0,
+	"width":1920,
+	"height":1080,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"caffe",
+	"class":"_Caffe",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"okView",
+	"_VisionBase":"camera",
+	"modelDir":"/media/kai/evo/dev/model/rescuePeople/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_2200.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"labels.txt",
+	"minConfidence":0.0,
+	"__DetectorIn":"",
+	"mode":"thread",
+	"classColor":["255,255,0","0,255,255"],
+	"defaultDrawTextSize":0.8,
+	"drawInfoPos":[50,100,30],
+}

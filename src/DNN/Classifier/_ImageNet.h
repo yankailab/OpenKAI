@@ -14,11 +14,6 @@
 namespace kai
 {
 
-enum imageNetMode
-{
-	thread, noThread
-};
-
 class _ImageNet: public _DetectorBase
 {
 public:
@@ -47,7 +42,6 @@ public:
 #endif
 	Frame* m_pRGBA;
 
-	imageNetMode m_mode;
 	int m_nBatch;
 	string m_blobIn;
 	string m_blobOut;

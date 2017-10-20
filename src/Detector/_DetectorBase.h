@@ -18,6 +18,11 @@
 namespace kai
 {
 
+enum detectorMode
+{
+	thread, noThread
+};
+
 struct OBJECT
 {
 	vDouble4 m_fBBox;
@@ -191,6 +196,8 @@ public:
 	vector<CLASS_DRAW> m_vClassDraw;
 	vInt3 m_classDrawPos;
 	double m_minConfidence;
+	detectorMode m_mode;
+
 
 };
 
