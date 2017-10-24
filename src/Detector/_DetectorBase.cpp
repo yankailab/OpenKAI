@@ -58,6 +58,11 @@ bool _DetectorBase::init(void* pKiss)
 		m_mode = noThread;
 		bSetActive(false);
 	}
+	else if (iName == "batch")
+	{
+		m_mode = batch;
+		bSetActive(false);
+	}
 
 	KISSm(pK, modelFile);
 	KISSm(pK, trainedFile);

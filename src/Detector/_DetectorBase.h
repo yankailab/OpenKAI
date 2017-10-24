@@ -20,7 +20,7 @@ namespace kai
 
 enum detectorMode
 {
-	thread, noThread
+	thread, noThread, batch
 };
 
 struct OBJECT
@@ -197,7 +197,6 @@ public:
 	vInt3 m_classDrawPos;
 	double m_minConfidence;
 	detectorMode m_mode;
-
 
 };
 

@@ -22,6 +22,8 @@
 #include "../../Detector/_DetectorBase.h"
 #include "../../Vision/_VisionBase.h"
 
+#define N_EXT 16
+
 namespace kai
 {
 
@@ -37,7 +39,7 @@ using namespace cv;
 using namespace cuda;
 
 // Pair (label, confidence) representing a prediction
-typedef std::pair<string, float> Prediction;
+typedef pair<string, float> Prediction;
 
 class _Caffe: public _DetectorBase
 {
@@ -52,14 +54,17 @@ public:
 
 	bool setup(void);
 	void updateMode(void);
-	std::vector<vector<Prediction> > Classify(const vector<GpuMat> vImg);
+	vector<vector<Prediction> > Classify(const vector<GpuMat> vImg);
 
 private:
+	int getDirFileList(void);
+	bool verifyExtension(string* fName);
+	vector<string> batchInf(void);
 	void detect(void);
 	void SetMean(const string& meanFile);
-	std::vector<float> Predict(const vector<GpuMat> vImg);
-	void WrapInputLayer(std::vector<std::vector<GpuMat> > *vvInput);
-	void Preprocess(const vector<GpuMat> vImg, std::vector<std::vector<GpuMat> >* vvInputBatch);
+	vector<float> Predict(const vector<GpuMat> vImg);
+	void WrapInputLayer(vector<vector<GpuMat> > *vvInput);
+	void Preprocess(const vector<GpuMat> vImg, vector<vector<GpuMat> >* vvInputBatch);
 
 	void update(void);
 	static void* getUpdateThread(void* This) {
@@ -76,7 +81,12 @@ private:
 	int m_nClass;
 	int m_nBatch;
 
+	Frame* m_pBGR;
 	Frame* m_pRGBA;
+
+	string m_dirIn;
+	vector<string> m_vExtIn;
+	vector<string> m_vFileIn;
 };
 }
 #endif

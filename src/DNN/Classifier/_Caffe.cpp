@@ -16,7 +16,11 @@ _Caffe::_Caffe()
 	m_nChannel = 0;
 	m_nBatch = 0;
 	m_pRGBA = NULL;
+	m_pBGR = NULL;
 	m_nClass = 0;
+
+	m_dirIn = "";
+
 }
 
 _Caffe::~_Caffe()
@@ -29,7 +33,17 @@ bool _Caffe::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	m_pBGR = new Frame();
 	m_pRGBA = new Frame();
+
+	KISSm(pK, dirIn);
+	m_vExtIn.clear();
+	string pExtIn[N_EXT];
+	int nExt = pK->array("extIn", pExtIn, N_EXT);
+	for(int i=0; i<nExt; i++)
+	{
+		m_vExtIn.push_back(pExtIn[i]);
+	}
 
 	return true;
 }
@@ -127,6 +141,12 @@ void _Caffe::update(void)
 	IF_(!setup());
 	IF_(m_mode == noThread);
 
+	if(m_mode == batch)
+	{
+		batchInf();
+		return;
+	}
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -135,6 +155,113 @@ void _Caffe::update(void)
 
 		this->autoFPSto();
 	}
+}
+
+vector<string> _Caffe::batchInf(void)
+{
+	vector <string> vResult;
+
+	if(getDirFileList()<=0)
+	{
+		return vResult;
+	}
+
+	int nTot = 0;
+	double progress = 0.0;
+
+	for(int i=0; i<m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		GpuMat gImg;
+		gImg.upload(mIn);
+
+		m_pBGR->update(&gImg);
+		m_pRGBA->getRGBAOf(m_pBGR);
+		GpuMat gRGBA = *m_pRGBA->getGMat();
+		IF_CONT(gRGBA.empty());
+
+		vector<GpuMat> vBatch;
+		vBatch.clear();
+		vBatch.push_back(gRGBA);
+		std::vector<vector<Prediction> > vPred;
+		vPred.clear();
+
+		vPred = Classify(vBatch);
+
+		for(int i=0; i<vBatch.size(); i++)
+		{
+			vector<Prediction> vP = vPred[i];
+			vResult.push_back(vP[0].first);
+		}
+
+		nTot++;
+		double prog = (double)i/(double)m_vFileIn.size();
+		if(prog - progress > 0.1)
+		{
+			progress = prog;
+			LOG_I("Rot: " << (int)(progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total inferred: " << nTot);
+
+	return vResult;
+}
+
+int _Caffe::getDirFileList(void)
+{
+	m_vFileIn.clear();
+
+	if (m_dirIn.at(m_dirIn.length() - 1) != '/')
+		m_dirIn.push_back('/');
+
+	DIR* pDirIn = opendir(m_dirIn.c_str());
+
+	if (!pDirIn)
+	{
+		LOG_E("Input directory not found");
+		return -1;
+	}
+
+	struct dirent *dir;
+	ifstream ifs;
+
+	while ((dir = readdir(pDirIn)) != NULL)
+	{
+		string fileIn = m_dirIn + dir->d_name;
+
+		IF_CONT(!verifyExtension(&fileIn));
+		ifs.open(fileIn.c_str(), std::ios::in);
+		IF_CONT(!ifs);
+		ifs.close();
+
+		m_vFileIn.push_back(dir->d_name);
+	}
+
+	closedir(pDirIn);
+
+	return m_vFileIn.size();
+}
+
+bool _Caffe::verifyExtension(string* fName)
+{
+	NULL_F(fName);
+
+	int i;
+	for(i=0; i<m_vExtIn.size(); i++)
+	{
+		string ext = m_vExtIn[i];
+		size_t extPos = fName->find(ext);
+		IF_CONT(extPos == std::string::npos);
+		IF_CONT(fName->substr(extPos) != ext);
+
+		return true;
+	}
+
+	return false;
 }
 
 void _Caffe::detect(void)
@@ -203,7 +330,6 @@ void _Caffe::detect(void)
 			pO->m_prob = vP[0].second;
 		}
 	}
-
 }
 
 void _Caffe::updateMode(void)

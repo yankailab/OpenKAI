@@ -112,7 +112,7 @@ void _Augment::rotate(void)
 		}
 
 		nTot++;
-		double prog = (double)nTot/(double)m_vFileIn.size();
+		double prog = (double)i/(double)m_vFileIn.size();
 		if(prog - m_progress > 0.1)
 		{
 			m_progress = prog;
@@ -166,7 +166,7 @@ void _Augment::scaling(void)
 		}
 
 		nTot++;
-		double prog = (double)nTot/(double)m_vFileIn.size();
+		double prog = (double)i/(double)m_vFileIn.size();
 		if(prog - m_progress > 0.1)
 		{
 			m_progress = prog;
@@ -216,7 +216,7 @@ void _Augment::flip(void)
 		}
 
 		nTot++;
-		double prog = (double)nTot/(double)m_vFileIn.size();
+		double prog = (double)i/(double)m_vFileIn.size();
 		if(prog - m_progress > 0.1)
 		{
 			m_progress = prog;
