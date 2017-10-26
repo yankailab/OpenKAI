@@ -41,6 +41,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 	ADD_MODULE(_BBoxCutOut);
 	ADD_MODULE(_Augment);
+	ADD_MODULE(_MultiImageNet);
 
 #ifndef USE_OPENCV4TEGRA
 	ADD_MODULE(_ROITracker);

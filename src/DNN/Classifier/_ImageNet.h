@@ -25,7 +25,8 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	int classify(Frame* pImg, string* pName);
+	int classify(Frame* pBGR, string* pName);
+	bool bReady(void);
 
 private:
 	void detect(void);

@@ -175,6 +175,7 @@ public:
 	void addOrUpdate(OBJECT* pNewObj);
 	int size(void);
 	void mergeDetector(void);
+	bool bReady(void);
 
 public:
 	bool m_bActive;

@@ -139,6 +139,11 @@ bool _DetectorBase::link(void)
 	return true;
 }
 
+bool _DetectorBase::bReady(void)
+{
+	return false;
+}
+
 int _DetectorBase::size(void)
 {
 	return m_obj.size();

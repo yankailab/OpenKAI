@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_BBoxCutOut.h"
+#include "../Image/_BBoxCutOut.h"
 
 namespace kai
 {

@@ -61,8 +61,9 @@
 #include "../Vision/FrameGroup.h"
 #include "../Vision/_Flow.h"
 
-#include "../Data/Batch/_BBoxCutOut.h"
 #include "../Data/Augment/_Augment.h"
+#include "../Data/Image/_BBoxCutOut.h"
+#include "../Data/Inference/_MultiImageNet.h"
 
 #ifdef USE_CASCADE
 #include "../Detector/_Cascade.h"

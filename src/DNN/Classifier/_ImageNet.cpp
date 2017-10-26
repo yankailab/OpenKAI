@@ -93,6 +93,13 @@ void _ImageNet::update(void)
 	}
 }
 
+bool _ImageNet::bReady(void)
+{
+	if(m_pIN)return true;
+
+	return false;
+}
+
 void _ImageNet::detect(void)
 {
 #ifdef USE_TENSORRT
@@ -156,28 +163,29 @@ void _ImageNet::detect(void)
 	}
 }
 
-int _ImageNet::classify(Frame* pImg, string* pName)
+int _ImageNet::classify(Frame* pBGR, string* pName)
 {
-	if (!pImg)
-		return -1;
-	GpuMat* gM = pImg->getGMat();
-	if (!gM)
-		return -1;
-	if (gM->empty())
-		return -1;
+#ifdef USE_TENSORRT
+	if(!m_pIN)return -1;
+#endif
+
+	if(!pBGR)return -1;
+	if(pBGR->empty())return -1;
+
+	m_pRGBA->getRGBAOf(pBGR);
+	GpuMat gRGBA = *m_pRGBA->getGMat();
+	if(gRGBA.empty())return -1;
 
 	GpuMat gfM;
-	gM->convertTo(gfM, CV_32FC3);
+	gRGBA.convertTo(gfM, CV_32FC4);
 
 	int iClass = -1;
+
 #ifdef USE_TENSORRT
-	if (!m_pIN)
-		return -1;
 	float prob = 0;
 	iClass = m_pIN->Classify((float*) gfM.data, gfM.cols, gfM.rows, &prob);
 
-	if (iClass < 0)
-		return -1;
+	if (iClass < 0)return -1;
 
 	if (pName)
 	{
