@@ -33,6 +33,7 @@ private:
 	void crop(void);
 	void flip(void);
 	void tone(void);
+	void noise(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -44,10 +45,17 @@ private:
 public:
 	bool m_bRot;
 	int m_nRot;
+	int m_rotNoiseMean;
+	int m_rotNoiseDev;
+
 	bool m_bFlip;
 	bool m_bScaling;
 	double m_dScaling;
 	int m_nScaling;
+
+	int m_noiseMean;
+	int m_noiseDev;
+	int m_nNoise;
 
 	bool m_bDeleteOriginal;
 	double m_progress;

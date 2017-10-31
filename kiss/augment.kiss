@@ -7,9 +7,30 @@
 }
 
 {
-	"name":"AB",
+	"name":"Test",
 	"class":"_Augment",
 	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"dirIn":"/media/kai/evo3/wxt/AOI/",
+	"extIn":[".jpg",".jpeg",".png",".bmp"],
+	"extOut":".png",
+	"bRot":1,
+	"nRot":1,
+	"rotNoiseMean":0,
+	"rotNoiseDev":128,
+	"bFlip":0,
+	"bScaling":0,
+	"dScaling":0.25,
+	"nScaling":0,	
+	"bDeleteOriginal":0,
+	"PNGcompression":1,
+}
+
+{
+	"name":"AB",
+	"class":"_Augment",
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/AB/",
@@ -28,7 +49,7 @@
 {
 	"name":"Near_open",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/Near_open/",
@@ -47,7 +68,7 @@
 {
 	"name":"Near_short",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/Near_short/",
@@ -66,7 +87,7 @@
 {
 	"name":"Open",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/Open/",
@@ -85,7 +106,7 @@
 {
 	"name":"OverKill",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/OverKill/",
@@ -104,7 +125,7 @@
 {
 	"name":"Pinhole",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/Pinhole/",
@@ -123,7 +144,7 @@
 {
 	"name":"Short",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/Short/",
@@ -142,7 +163,7 @@
 {
 	"name":"OK-image",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/evo3/wxt/images_augment/OK-image/",

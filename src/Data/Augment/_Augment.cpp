@@ -14,12 +14,17 @@ _Augment::_Augment()
 {
 	m_bRot = false;
 	m_nRot = 0;
+	m_rotNoiseMean = 0;
+	m_rotNoiseDev = 0;
 	m_bFlip = false;
 	m_bScaling = false;
 	m_dScaling = 0.25;
-	m_nScaling = 10;
+	m_nScaling = 0;
 	m_bDeleteOriginal = false;
 	m_progress = 0.0;
+	m_nNoise = 0;
+	m_noiseMean = 0;
+	m_noiseDev = 0;
 }
 
 _Augment::~_Augment()
@@ -34,10 +39,15 @@ bool _Augment::init(void* pKiss)
 
 	KISSm(pK, bRot);
 	KISSm(pK, nRot);
+	KISSm(pK, rotNoiseMean);
+	KISSm(pK, rotNoiseDev);
 	KISSm(pK, bFlip);
 	KISSm(pK, bScaling);
 	KISSm(pK, dScaling);
 	KISSm(pK, nScaling);
+	KISSm(pK, nNoise);
+	KISSm(pK, noiseMean);
+	KISSm(pK, noiseDev);
 	KISSm(pK, bDeleteOriginal);
 
 	return true;
@@ -74,6 +84,7 @@ void _Augment::update(void)
 	crop();
 	flip();
 	tone();
+	noise();
 
 	LOG_I("Completed");
 }
@@ -84,8 +95,9 @@ void _Augment::rotate(void)
 	IF_(getDirFileList()<=0);
 	IF_(!openOutput());
 
+	cv::RNG gen(cv::getTickCount());
+
 	int nTot = 0;
-	Mat mOut;
 	m_progress = 0.0;
 
 	for(int i=0; i<m_vFileIn.size(); i++)
@@ -101,12 +113,23 @@ void _Augment::rotate(void)
 		}
 
 		Point2f pCenter = Point2f(mIn.cols/2,mIn.rows/2);
-		Size s = Size(mIn.cols, mIn.rows);
+		Size s = mIn.size();
 
 		for(int j=0; j<m_nRot; j++)
 		{
-			Mat mRot = getRotationMatrix2D(pCenter, rand()%358+1, 1);
+			int rAngle = rand()%358+1;
+			Mat mRot = getRotationMatrix2D(pCenter, rAngle, 1);
+			Mat mMask = Mat::zeros(s,mIn.type());
+			Mat mNoise = Mat::zeros(s,mIn.type());
+			Mat mOut = Mat::zeros(s,mIn.type());
+
+			cv::warpAffine(Mat(s, mIn.type(), Scalar(255,255,255)),
+						   mMask, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
+			gen.fill(mNoise, cv::RNG::NORMAL, cv::Scalar(m_rotNoiseMean,m_rotNoiseMean,m_rotNoiseMean),
+											  cv::Scalar(m_rotNoiseDev,m_rotNoiseDev,m_rotNoiseDev));
 			cv::warpAffine(mIn, mOut, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
+			mOut.copyTo(mNoise, mMask);
+			mOut = mNoise;
 
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
@@ -124,6 +147,11 @@ void _Augment::rotate(void)
 }
 
 void _Augment::move(void)
+{
+
+}
+
+void _Augment::noise(void)
 {
 
 }
