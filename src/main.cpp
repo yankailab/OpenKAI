@@ -7,6 +7,13 @@ int main(int argc, char* argv[])
 	google::InitGoogleLogging("OpenKAI");
 	printEnvironment();
 
+	//Check arg
+	if(argc < 2)
+	{
+		LOG(INFO)<<"Usage: ./OpenKAI [kiss file]";
+		return 1;
+	}
+
 	//Load config
 	LOG(INFO)<<"Kiss file:"<<argv[1];
 
