@@ -44,7 +44,13 @@ bool Window::init(void* pKiss)
 
 	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
 	F_INFO(pK->v("bRec", &m_bRec));
-	IF_F(!m_bWindow && !m_bRec);
+
+	if(!m_bWindow && !m_bRec)
+	{
+		LOG_E("Window mode is disabled. Turn \"bWindow\":1 to enable");
+		return false;
+	}
+
 	pK->m_pInst = this;
 
 	F_ERROR_F(pK->v("w", &m_size.x));

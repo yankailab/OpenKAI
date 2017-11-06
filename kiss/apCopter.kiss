@@ -163,7 +163,7 @@
 
 {
 	"name":"Obstacle",
-	"class":"_Obstacle",
+	"class":"_ZEDobstacle",
 	"FPS":30,
 	"bInst":1,
 	"Window":"apView",
@@ -289,7 +289,7 @@
 		
 				{
 					"name":"Obstacle",
-					"class":"_Obstacle",
+					"class":"_ZEDobstacle",
 
 					{
 						"orientation":0,
