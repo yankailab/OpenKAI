@@ -47,7 +47,7 @@ bool _File::open(void)
 	IF_T(m_ioStatus == io_opened);
 
 	m_file.open(m_name.c_str(),ios::in|ios::out|ios::app);
-	IF_F(!m_file);
+	IF_F(!m_file.is_open());
 	m_file.seekg(0, ios_base::beg);
 	m_buf = "";
 	m_ioStatus = io_opened;

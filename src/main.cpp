@@ -11,18 +11,29 @@ int main(int argc, char* argv[])
 	LOG(INFO)<<"Kiss file:"<<argv[1];
 
 	string kissFile(argv[1]);
-	IF_F(!g_file.open(&kissFile));
+	if(!g_file.open(&kissFile))
+	{
+		LOG(ERROR)<<"Kiss file not found";
+		return 1;
+	}
+
 	string* pKiss = g_file.readAll();
 	if(pKiss==NULL)
 	{
-		LOG(FATAL)<<"Kiss file not found";
+		LOG(ERROR)<<"Cannot open Kiss file";
+		return 1;
+	}
+
+	if(pKiss->empty())
+	{
+		LOG(ERROR)<<"Cannot open Kiss file";
 		return 1;
 	}
 
 	g_pKiss = new Kiss();
 	if(!g_pKiss->parse(pKiss))
 	{
-		LOG(FATAL)<<"Kiss file parsing failed";
+		LOG(ERROR)<<"Kiss file parsing failed";
 		return 1;
 	}
 	g_file.close();
@@ -37,9 +48,9 @@ int main(int argc, char* argv[])
 void printEnvironment(void)
 {
 #ifndef USE_OPENCV4TEGRA
-	LOG(INFO)<<"Optimized code:"<<useOptimized();
+	LOG(INFO)<<"OpenCV optimized code:"<<useOptimized();
 	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
-	LOG(INFO)<<"Current CUDA device:"<<cuda::getDevice();
+	LOG(INFO)<<"Using CUDA device:"<<cuda::getDevice();
 
 	if (ocl::haveOpenCL())
 	{
