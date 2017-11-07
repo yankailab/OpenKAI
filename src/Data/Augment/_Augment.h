@@ -13,6 +13,8 @@
 #include "../../Utility/util.h"
 #include "../_DataBase.h"
 
+#define N_CMD 128
+
 namespace kai
 {
 
@@ -29,11 +31,26 @@ public:
 private:
 	void rotate(void);
 	void move(void);
-	void scaling(void);
+	void shrink(void);
+	void lowResolution(void);
 	void crop(void);
 	void flip(void);
 	void tone(void);
 	void noise(void);
+	void channelShift(void);
+	void contrast(void);
+	void shearing(void);
+	void vignetting(void);
+	void histEqualize(void);
+	void adaptHistEqualize(void);
+	void decolor(void);
+	void invColor(void);
+	void blur(void);
+	void posterize(void);
+	void erosion(void);
+	void brightness(void);
+	void saturation(void);
+	void hue(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -43,23 +60,32 @@ private:
 	}
 
 public:
-	bool m_bRot;
-	int m_nRot;
-	int m_rotNoiseMean;
-	int m_rotNoiseDev;
+	int m_bgNoiseMean;
+	int m_bgNoiseDev;
+	int m_bgNoiseType;
 
-	bool m_bFlip;
-	bool m_bScaling;
-	double m_dScaling;
-	int m_nScaling;
+	int m_nRot;
+
+	double m_dCrop;
+	int m_nCrop;
+
+	double m_dShrink;
+	int m_nShrink;
+
+	double m_minLowResolution;
+	double m_dLowResolution;
+	int m_nLowResolution;
 
 	int m_noiseMean;
 	int m_noiseDev;
 	int m_nNoise;
 
+	vector<string> m_vCmd;
 	bool m_bDeleteOriginal;
 	double m_progress;
 
+	Frame* m_pFrameIn;
+	Frame* m_pFrameOut;
 };
 }
 
