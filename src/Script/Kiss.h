@@ -40,6 +40,7 @@ public:
 
 private:
 	void trim(string* pStr);
+	void delComment(string* pStr);
 	bool addChild(string* pStr);
 
 public:

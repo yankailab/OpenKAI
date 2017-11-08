@@ -100,8 +100,8 @@
 	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
-	"addr":"127.0.0.1",
-	"port":14550,
+	"addr":"127.0.0.1",  /* The addr to cmavnode */
+	"port":14550,  /* The port of cmavnode */
 	"bSendOnly":0,
 	"timeoutRecv":10000,
 }

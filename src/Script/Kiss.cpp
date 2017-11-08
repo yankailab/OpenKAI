@@ -41,6 +41,7 @@ bool Kiss::parse(string* pStr)
 	std::string::size_type from, to;
 
 	trim(pStr);
+	delComment(pStr);
 
 	do
 	{
@@ -124,7 +125,27 @@ void Kiss::trim(string* pStr)
 		pStr->erase(k,1);
 		k = pStr->find('\t');
 	}
+}
 
+void Kiss::delComment(string* pStr)
+{
+	std::string::size_type cFrom;
+	std::string::size_type cTo;
+	string commentFrom = "/*";
+	string commentTo = "*/";
+
+	cFrom = pStr->find(commentFrom);
+	while (cFrom != std::string::npos)
+	{
+		cTo = pStr->find(commentTo, cFrom + commentFrom.length());
+		if(cTo == std::string::npos)
+		{
+			cTo = pStr->length() - commentTo.length();
+		}
+
+		pStr->erase(cFrom, cTo - cFrom + commentTo.length());
+		cFrom = pStr->find(commentFrom);
+	}
 }
 
 bool Kiss::addChild(string* pStr)

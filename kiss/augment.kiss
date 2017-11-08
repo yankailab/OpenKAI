@@ -12,7 +12,7 @@
 	"bInst":1,
 	"bLog":1,
 	"FPS":30,
-	"dirIn":"/media/kai/evo3/wxt/AOI/",
+	"dirIn":"/media/kai/evo3/test/",
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
 	"extOut":".png",
 	"cmd":["rotate","flip","crop","shrink","lowResolution"],
