@@ -124,7 +124,7 @@ void _Augment::update(void)
 		}
 	}
 
-	LOG_I("Completed");
+	LOG_I("------------------------------Completed");
 }
 
 void _Augment::rotate(void)
