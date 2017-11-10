@@ -30,15 +30,17 @@ public:
 
 private:
 	void rotate(void);
-	void move(void);
+	void noise(void);
 	void shrink(void);
 	void lowResolution(void);
 	void crop(void);
 	void flip(void);
-	void tone(void);
-	void noise(void);
-	void channelShift(void);
 	void contrast(void);
+	void brightness(void);
+
+	void move(void);
+	void tone(void);
+	void channelShift(void);
 	void shearing(void);
 	void vignetting(void);
 	void histEqualize(void);
@@ -48,7 +50,6 @@ private:
 	void blur(void);
 	void posterize(void);
 	void erosion(void);
-	void brightness(void);
 	void saturation(void);
 	void hue(void);
 
@@ -76,9 +77,15 @@ public:
 	double m_dLowResolution;
 	int m_nLowResolution;
 
-	int m_noiseMean;
-	int m_noiseDev;
+	int m_dNoise;
 	int m_nNoise;
+	int m_noiseType;
+
+	double m_dContrast;
+	int m_nContrast;
+
+	double m_dBrightness;
+	int m_nBrightness;
 
 	vector<string> m_vCmd;
 	bool m_bDeleteOriginal;
