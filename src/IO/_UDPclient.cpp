@@ -14,7 +14,7 @@ _UDPclient::_UDPclient()
 {
 	m_addr = "127.0.0.1";
 	m_port = DEFAULT_PORT_OUT;
-	m_socket = 0;
+	m_socket = -1;
 	m_nSAddr = 0;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 	m_bSendOnly = false;
