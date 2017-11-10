@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class UDP: public _IOBase
+class _UDP: public _IOBase
 {
 public:
-	UDP();
-	virtual ~UDP();
+	_UDP();
+	virtual ~_UDP();
 
 	bool init(void* pKiss);
 	bool link(void);

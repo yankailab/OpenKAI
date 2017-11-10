@@ -109,7 +109,7 @@
 {
 	"name":"apUDPserver",
 	"class":"_UDPserver",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
@@ -121,7 +121,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"_UDPclient":"apUDPclient",
 	"_UDPserver":"apUDPserver",
@@ -134,7 +134,7 @@
 	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
-	"_IOBase":"apUDPclient",
+	"_IOBase":"apUDP",
 }
 
 {

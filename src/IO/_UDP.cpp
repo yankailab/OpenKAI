@@ -5,22 +5,22 @@
  *      Author: yankai
  */
 
-#include "UDP.h"
+#include "_UDP.h"
 
 namespace kai
 {
 
-UDP::UDP()
+_UDP::_UDP()
 {
 	m_pSender = NULL;
 	m_pReceiver = NULL;
 }
 
-UDP::~UDP()
+_UDP::~_UDP()
 {
 }
 
-bool UDP::init(void* pKiss)
+bool _UDP::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -29,7 +29,7 @@ bool UDP::init(void* pKiss)
 	return true;
 }
 
-bool UDP::link(void)
+bool _UDP::link(void)
 {
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -50,12 +50,12 @@ bool UDP::link(void)
 	return true;
 }
 
-bool UDP::write(uint8_t* pBuf, int nB)
+bool _UDP::write(uint8_t* pBuf, int nB)
 {
 	return m_pSender->write(pBuf,nB);
 }
 
-bool UDP::writeLine(uint8_t* pBuf, int nB)
+bool _UDP::writeLine(uint8_t* pBuf, int nB)
 {
 	const char pCRLF[] = "\x0d\x0a";
 
@@ -63,12 +63,12 @@ bool UDP::writeLine(uint8_t* pBuf, int nB)
 	return write((unsigned char*)pCRLF, 2);
 }
 
-int UDP::read(uint8_t* pBuf, int nB)
+int _UDP::read(uint8_t* pBuf, int nB)
 {
 	return m_pReceiver->read(pBuf, nB);
 }
 
-void UDP::close(void)
+void _UDP::close(void)
 {
 	IF_(m_ioStatus!=io_opened);
 
@@ -78,7 +78,7 @@ void UDP::close(void)
 	this->_IOBase::close();
 }
 
-bool UDP::draw(void)
+bool _UDP::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

@@ -37,8 +37,6 @@
 #include "../DNN/Sensing/_DNNodometry.h"
 #include "../IO/_UDPclient.h"
 #include "../IO/_UDPserver.h"
-#include "../IO/UDP.h"
-
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
@@ -64,6 +62,7 @@
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../IO/_UDP.h"
 
 #ifdef USE_CASCADE
 #include "../Detector/_Cascade.h"
