@@ -37,17 +37,17 @@ private:
 	void flip(void);
 	void contrast(void);
 	void brightness(void);
+	void histEqualize(void);
+	void blur(void);
 
+	void adaptHistEqualize(void);
 	void move(void);
 	void tone(void);
 	void channelShift(void);
 	void shearing(void);
 	void vignetting(void);
-	void histEqualize(void);
-	void adaptHistEqualize(void);
 	void decolor(void);
 	void invColor(void);
-	void blur(void);
 	void posterize(void);
 	void erosion(void);
 	void saturation(void);
@@ -87,8 +87,12 @@ public:
 	double m_dBrightness;
 	int m_nBrightness;
 
+	double m_dBlur;
+	int m_nBlur;
+
 	vector<string> m_vCmd;
 	bool m_bDeleteOriginal;
+	bool m_bSaveOriginalCopy;
 	double m_progress;
 
 	Frame* m_pFrameIn;

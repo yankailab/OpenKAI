@@ -38,7 +38,11 @@ _Augment::_Augment()
 	m_dBrightness = 10;
 	m_nBrightness = 1;
 
+	m_dBlur = 10;
+	m_nBlur = 1;
+
 	m_bDeleteOriginal = false;
+	m_bSaveOriginalCopy = false;
 	m_progress = 0.0;
 	m_pFrameIn = NULL;
 	m_pFrameOut = NULL;
@@ -81,6 +85,11 @@ bool _Augment::init(void* pKiss)
 	KISSm(pK, nBrightness);
 
 	KISSm(pK, bDeleteOriginal);
+	KISSm(pK, bSaveOriginalCopy);
+
+	KISSm(pK, dBlur);
+	KISSm(pK, nBlur);
+
 
 	m_vCmd.clear();
 	string pCmdIn[N_CMD];
@@ -141,6 +150,10 @@ void _Augment::update(void)
 			contrast();
 		else if (cmd == "brightness")
 			brightness();
+		else if (cmd == "histEqualize")
+			histEqualize();
+		else if (cmd == "blur")
+			blur();
 		else
 		{
 			LOG_E("Unrecognized augment cmd: "<<cmd);
@@ -165,11 +178,10 @@ void _Augment::rotate(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		Point2f pCenter = Point2f(mIn.cols / 2, mIn.rows / 2);
 
@@ -223,11 +235,10 @@ void _Augment::noise(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		for (int j = 0; j < m_nNoise; j++)
 		{
@@ -268,11 +279,10 @@ void _Augment::shrink(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		for (int j = 0; j < m_nShrink; j++)
 		{
@@ -326,11 +336,10 @@ void _Augment::lowResolution(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		for (int j = 0; j < m_nShrink; j++)
 		{
@@ -369,11 +378,10 @@ void _Augment::crop(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		for (int j = 0; j < m_nCrop; j++)
 		{
@@ -417,11 +425,10 @@ void _Augment::flip(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		Point2f pCenter = Point2f(mIn.cols / 2, mIn.rows / 2);
 		Size s = Size(mIn.cols, mIn.rows);
@@ -459,11 +466,10 @@ void _Augment::contrast(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		Mat mOut;
 		for (int j = 0; j < m_nContrast; j++)
@@ -498,11 +504,10 @@ void _Augment::brightness(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		if (m_bDeleteOriginal)
-		{
+		if(m_bSaveOriginalCopy)
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
-		}
 
 		Mat mOut;
 		for (int j = 0; j < m_nBrightness; j++)
@@ -521,6 +526,89 @@ void _Augment::brightness(void)
 	}
 
 	LOG_I("Total brightness changed: " << nTot);
+}
+
+void _Augment::histEqualize(void)
+{
+	IF_(getDirFileList() <= 0);
+	IF_(!openOutput());
+
+	int nTot = 0;
+	m_progress = 0.0;
+
+	for (int i = 0; i < m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		if(m_bSaveOriginalCopy)
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
+			remove(fNameIn.c_str());
+
+		Mat mOut;
+        vector<Mat> vChannels;
+
+        //Using reference code from:
+        //https://opencv-srf.blogspot.jp/2013/08/histogram-equalization.html
+
+		cv::cvtColor(mIn, mOut, CV_BGR2YCrCb); 			//change the color image from BGR to YCrCb format
+		split(mOut, vChannels); 						//split the image into channels
+		cv::equalizeHist(vChannels[0], vChannels[0]);   //equalize histogram on the 1st channel (Y)
+		merge(vChannels,mIn); 							//merge 3 channels including the modified 1st channel into one image
+        cv::cvtColor(mIn, mOut, CV_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
+
+		cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+
+		nTot++;
+		double prog = (double) i / (double) m_vFileIn.size();
+		if (prog - m_progress > 0.1)
+		{
+			m_progress = prog;
+			LOG_I("Histogram equalization: " << (int)(m_progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total histogram equalized: " << nTot);
+}
+
+void _Augment::blur(void)
+{
+	IF_(getDirFileList() <= 0);
+	IF_(!openOutput());
+
+	int nTot = 0;
+	m_progress = 0.0;
+
+	for (int i = 0; i < m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		if(m_bSaveOriginalCopy)
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
+			remove(fNameIn.c_str());
+
+		Mat mOut;
+		for (int j = 0; j < m_nBlur; j++)
+		{
+			cv::blur(mIn, mOut, Size(m_dBlur*NormRand(),m_dBlur*NormRand()));
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+		}
+
+		nTot++;
+		double prog = (double) i / (double) m_vFileIn.size();
+		if (prog - m_progress > 0.1)
+		{
+			m_progress = prog;
+			LOG_I("Blur: " << (int)(m_progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total blurred: " << nTot);
 }
 
 void _Augment::tone(void)
