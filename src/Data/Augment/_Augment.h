@@ -39,6 +39,9 @@ private:
 	void brightness(void);
 	void histEqualize(void);
 	void blur(void);
+	void gaussianBlur(void);
+	void medianBlur(void);
+	void bilateralBlur(void);
 
 	void adaptHistEqualize(void);
 	void move(void);
@@ -89,6 +92,15 @@ public:
 
 	double m_dBlur;
 	int m_nBlur;
+
+	double m_dGaussianBlur;
+	int m_nGaussianBlur;
+
+	double m_dMedianBlur;
+	int m_nMedianBlur;
+
+	double m_dBilateralBlur;
+	int m_nBilateralBlur;
 
 	vector<string> m_vCmd;
 	bool m_bDeleteOriginal;

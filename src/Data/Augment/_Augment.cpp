@@ -41,6 +41,15 @@ _Augment::_Augment()
 	m_dBlur = 10;
 	m_nBlur = 1;
 
+	m_dGaussianBlur = 10;
+	m_nGaussianBlur = 1;
+
+	m_dMedianBlur = 10;
+	m_nMedianBlur = 1;
+
+	m_dBilateralBlur = 10;
+	m_nBilateralBlur = 1;
+
 	m_bDeleteOriginal = false;
 	m_bSaveOriginalCopy = false;
 	m_progress = 0.0;
@@ -90,6 +99,14 @@ bool _Augment::init(void* pKiss)
 	KISSm(pK, dBlur);
 	KISSm(pK, nBlur);
 
+	KISSm(pK, dGaussianBlur);
+	KISSm(pK, nGaussianBlur);
+
+	KISSm(pK, dMedianBlur);
+	KISSm(pK, nMedianBlur);
+
+	KISSm(pK, dBilateralBlur);
+	KISSm(pK, nBilateralBlur);
 
 	m_vCmd.clear();
 	string pCmdIn[N_CMD];
@@ -154,6 +171,12 @@ void _Augment::update(void)
 			histEqualize();
 		else if (cmd == "blur")
 			blur();
+		else if (cmd == "gaussianBlur")
+			gaussianBlur();
+		else if (cmd == "medianBlur")
+			medianBlur();
+		else if (cmd == "bilateralBlur")
+			bilateralBlur();
 		else
 		{
 			LOG_E("Unrecognized augment cmd: "<<cmd);
@@ -595,7 +618,7 @@ void _Augment::blur(void)
 		Mat mOut;
 		for (int j = 0; j < m_nBlur; j++)
 		{
-			cv::blur(mIn, mOut, Size(m_dBlur*NormRand(),m_dBlur*NormRand()));
+			cv::blur(mIn, mOut, Size(m_dBlur*NormRand()+1,m_dBlur*NormRand()+1));
 			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
@@ -609,6 +632,132 @@ void _Augment::blur(void)
 	}
 
 	LOG_I("Total blurred: " << nTot);
+}
+
+void _Augment::gaussianBlur(void)
+{
+	IF_(getDirFileList() <= 0);
+	IF_(!openOutput());
+
+	int nTot = 0;
+	m_progress = 0.0;
+
+	for (int i = 0; i < m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		if(m_bSaveOriginalCopy)
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
+			remove(fNameIn.c_str());
+
+		Mat mOut;
+		for (int j = 0; j < m_nGaussianBlur; j++)
+		{
+			int rX = m_dGaussianBlur*NormRand()+1;
+			int rY = m_dGaussianBlur*NormRand()+1;
+
+			if(rX%2==0)rX++;
+			if(rY%2==0)rY++;
+
+			cv::GaussianBlur(mIn, mOut, Size(rX,rY), 0, 0);
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+		}
+
+		nTot++;
+		double prog = (double) i / (double) m_vFileIn.size();
+		if (prog - m_progress > 0.1)
+		{
+			m_progress = prog;
+			LOG_I("Gaussian Blur: " << (int)(m_progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total gaussian blurred: " << nTot);
+}
+
+void _Augment::medianBlur(void)
+{
+	IF_(getDirFileList() <= 0);
+	IF_(!openOutput());
+
+	int nTot = 0;
+	m_progress = 0.0;
+
+	for (int i = 0; i < m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		if(m_bSaveOriginalCopy)
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
+			remove(fNameIn.c_str());
+
+		Mat mOut;
+		for (int j = 0; j < m_nMedianBlur; j++)
+		{
+			int rK = m_dGaussianBlur*NormRand()+1;
+			if(rK%2==0)rK++;
+
+			cv::medianBlur(mIn, mOut, rK);
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+		}
+
+		nTot++;
+		double prog = (double) i / (double) m_vFileIn.size();
+		if (prog - m_progress > 0.1)
+		{
+			m_progress = prog;
+			LOG_I("Median Blur: " << (int)(m_progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total median blurred: " << nTot);
+}
+
+void _Augment::bilateralBlur(void)
+{
+	IF_(getDirFileList() <= 0);
+	IF_(!openOutput());
+
+	int nTot = 0;
+	m_progress = 0.0;
+
+	for (int i = 0; i < m_vFileIn.size(); i++)
+	{
+		string fNameIn = m_dirIn + m_vFileIn[i];
+		Mat mIn = cv::imread(fNameIn.c_str());
+		IF_CONT(mIn.empty());
+
+		if(m_bSaveOriginalCopy)
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+		if (m_bDeleteOriginal)
+			remove(fNameIn.c_str());
+
+		Mat mOut;
+		for (int j = 0; j < m_nBilateralBlur; j++)
+		{
+			int rK = m_dBilateralBlur*NormRand()+1;
+			if(rK%2==0)rK++;
+
+			cv::bilateralFilter(mIn, mOut, rK, rK, rK);
+			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+		}
+
+		nTot++;
+		double prog = (double) i / (double) m_vFileIn.size();
+		if (prog - m_progress > 0.1)
+		{
+			m_progress = prog;
+			LOG_I("Bilateral Blur: " << (int)(m_progress * 100) << "%");
+		}
+	}
+
+	LOG_I("Total bilateral blurred: " << nTot);
 }
 
 void _Augment::tone(void)
