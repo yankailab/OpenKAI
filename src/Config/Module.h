@@ -61,6 +61,7 @@
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Image/_BBoxCutOut.h"
+#include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
 #include "../IO/_UDP.h"
 

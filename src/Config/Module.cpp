@@ -40,6 +40,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDPserver);
 
 	ADD_MODULE(_BBoxCutOut);
+	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_Augment);
 	ADD_MODULE(_MultiImageNet);
 
