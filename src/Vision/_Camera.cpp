@@ -61,8 +61,8 @@ bool _Camera::init(void* pKiss)
 		}
 		else
 		{
-			fs["cameraMatrix"] >> m_cameraMat;
-			fs["dist_coeffs"] >> m_distCoeffs;
+			fs["camera_matrix"] >> m_cameraMat;
+			fs["distortion_coefficients"] >> m_distCoeffs;
 			fs.release();
 
 			Mat map1, map2;

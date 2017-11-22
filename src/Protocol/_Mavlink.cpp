@@ -245,7 +245,7 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max,
 	ds.orientation = orientation;
 	ds.covariance = 255;
 	ds.id = 0;
-	ds.time_boot_ms = 0;
+	ds.time_boot_ms = get_time_boot_ms();
 
 	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
 

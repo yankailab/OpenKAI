@@ -11,6 +11,15 @@ using namespace std;
 namespace kai
 {
 
+inline uint32_t get_time_boot_ms()
+{
+	// get number of milliseconds since boot
+    struct timespec elapsed_from_boot;
+    clock_gettime(CLOCK_BOOTTIME, &elapsed_from_boot);
+
+    return elapsed_from_boot.tv_sec*1000 + elapsed_from_boot.tv_nsec/1000000;
+}
+
 inline double NormRand(void)
 {
 	return ((double)rand()) / ((double)RAND_MAX);

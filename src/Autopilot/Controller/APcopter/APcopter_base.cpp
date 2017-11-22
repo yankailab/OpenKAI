@@ -115,7 +115,7 @@ void APcopter_base::update(void)
 	uint64_t tNow = get_time_usec();
 	if (tNow - m_lastHeartbeat >= USEC_1SEC)
 	{
-//		m_pMavlink->sendHeartbeat();
+		m_pMavlink->sendHeartbeat();
 		m_lastHeartbeat = tNow;
 	}
 
