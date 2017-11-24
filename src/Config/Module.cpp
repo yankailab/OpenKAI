@@ -25,6 +25,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_LeddarVu);
+	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_ClusterNet);
 	ADD_MODULE(_ZEDobstacle);
