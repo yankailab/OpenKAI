@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
-#include "../../Utility/util.h"
+#include "../../Utility/util.h"c
 
 namespace kai
 {
