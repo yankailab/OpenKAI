@@ -189,7 +189,6 @@ void _Augment::update(void)
 void _Augment::rotate(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 	cv::RNG gen(cv::getTickCount());
 
 	int nTot = 0;
@@ -197,12 +196,13 @@ void _Augment::rotate(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -228,7 +228,7 @@ void _Augment::rotate(void)
 			mOut.copyTo(mNoise, mMask);
 			mOut = mNoise;
 
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -246,7 +246,6 @@ void _Augment::rotate(void)
 void _Augment::noise(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 	cv::RNG gen(cv::getTickCount());
 
 	int nTot = 0;
@@ -254,12 +253,13 @@ void _Augment::noise(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -271,7 +271,7 @@ void _Augment::noise(void)
 					cv::Scalar(m_dNoise, m_dNoise, m_dNoise));
 
 			Mat mOut = mIn + mNoise - cv::Scalar(m_dNoise);
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -289,7 +289,6 @@ void _Augment::noise(void)
 void _Augment::shrink(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 	cv::RNG gen(cv::getTickCount());
 
 	int nTot = 0;
@@ -298,12 +297,13 @@ void _Augment::shrink(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -329,7 +329,7 @@ void _Augment::shrink(void)
 									sMat.cols,
 									sMat.rows)));
 
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -347,7 +347,6 @@ void _Augment::shrink(void)
 void _Augment::lowResolution(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	Mat mOut;
@@ -355,12 +354,13 @@ void _Augment::lowResolution(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -371,7 +371,7 @@ void _Augment::lowResolution(void)
 			m_pFrameOut->getResizedOf(m_pFrameIn, scale, scale);
 			mOut = *m_pFrameOut->getCMat();
 
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -389,7 +389,6 @@ void _Augment::lowResolution(void)
 void _Augment::crop(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	Mat mOut;
@@ -397,12 +396,13 @@ void _Augment::crop(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -418,7 +418,7 @@ void _Augment::crop(void)
 
 			mOut = mIn(cv::Rect(dRandX, dRandY, dSizeW, dSizeH));
 
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -436,7 +436,6 @@ void _Augment::crop(void)
 void _Augment::flip(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	Mat mOut;
@@ -444,12 +443,13 @@ void _Augment::flip(void)
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -460,7 +460,7 @@ void _Augment::flip(void)
 		{
 			cv::flip(mIn, mOut, j);
 
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -478,19 +478,19 @@ void _Augment::flip(void)
 void _Augment::contrast(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -498,7 +498,7 @@ void _Augment::contrast(void)
 		for (int j = 0; j < m_nContrast; j++)
 		{
 			mIn.convertTo(mOut, -1, 1.0 + m_dContrast*(NormRand()*2.0-1.0), 0);
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -516,19 +516,19 @@ void _Augment::contrast(void)
 void _Augment::brightness(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -536,7 +536,7 @@ void _Augment::brightness(void)
 		for (int j = 0; j < m_nBrightness; j++)
 		{
 			mIn.convertTo(mOut, -1, 1, m_dBrightness*(NormRand()*2.0-1.0));
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -554,19 +554,19 @@ void _Augment::brightness(void)
 void _Augment::histEqualize(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -582,7 +582,7 @@ void _Augment::histEqualize(void)
 		merge(vChannels,mIn); 							//merge 3 channels including the modified 1st channel into one image
         cv::cvtColor(mIn, mOut, CV_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
 
-		cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+		cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 
 		nTot++;
 		double prog = (double) i / (double) m_vFileIn.size();
@@ -599,19 +599,19 @@ void _Augment::histEqualize(void)
 void _Augment::blur(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -619,7 +619,7 @@ void _Augment::blur(void)
 		for (int j = 0; j < m_nBlur; j++)
 		{
 			cv::blur(mIn, mOut, Size(m_dBlur*NormRand()+1,m_dBlur*NormRand()+1));
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -637,19 +637,19 @@ void _Augment::blur(void)
 void _Augment::gaussianBlur(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -663,7 +663,7 @@ void _Augment::gaussianBlur(void)
 			if(rY%2==0)rY++;
 
 			cv::GaussianBlur(mIn, mOut, Size(rX,rY), 0, 0);
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -681,19 +681,19 @@ void _Augment::gaussianBlur(void)
 void _Augment::medianBlur(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -704,7 +704,7 @@ void _Augment::medianBlur(void)
 			if(rK%2==0)rK++;
 
 			cv::medianBlur(mIn, mOut, rK);
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;
@@ -722,19 +722,19 @@ void _Augment::medianBlur(void)
 void _Augment::bilateralBlur(void)
 {
 	IF_(getDirFileList() <= 0);
-	IF_(!openOutput());
 
 	int nTot = 0;
 	m_progress = 0.0;
 
 	for (int i = 0; i < m_vFileIn.size(); i++)
 	{
-		string fNameIn = m_dirIn + m_vFileIn[i];
+		string fNameIn = m_vFileIn[i];
+		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
 		if(m_bSaveOriginalCopy)
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mIn, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
 		if (m_bDeleteOriginal)
 			remove(fNameIn.c_str());
 
@@ -745,7 +745,7 @@ void _Augment::bilateralBlur(void)
 			if(rK%2==0)rK++;
 
 			cv::bilateralFilter(mIn, mOut, rK, rK, rK);
-			cv::imwrite(m_dirOut + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}
 
 		nTot++;

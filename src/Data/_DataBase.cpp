@@ -13,7 +13,6 @@ namespace kai
 _DataBase::_DataBase()
 {
 	m_dirIn = "";
-	m_dirOut = "";
 	m_extOut = ".png";
 	m_PNGcompression = 0;
 }
@@ -29,8 +28,6 @@ bool _DataBase::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK, dirIn);
-	m_dirOut = m_dirIn;
-	KISSm(pK, dirOut);
 	KISSm(pK, extOut);
 
 	m_vExtIn.clear();
@@ -77,15 +74,21 @@ int _DataBase::getDirFileList(void)
 {
 	m_vFileIn.clear();
 
-	if (m_dirIn.at(m_dirIn.length() - 1) != '/')
-		m_dirIn.push_back('/');
+	m_dirIn = checkDirName(m_dirIn);
+	getDirFileList(&m_dirIn);
 
-	DIR* pDirIn = opendir(m_dirIn.c_str());
+	return m_vFileIn.size();
+}
 
+void _DataBase::getDirFileList(string* pStrDir)
+{
+	NULL_(pStrDir);
+
+	DIR* pDirIn = opendir(pStrDir->c_str());
 	if (!pDirIn)
 	{
-		LOG_E("Input directory not found");
-		return -1;
+		LOG_E("Directory not found: " << *pStrDir);
+		return;
 	}
 
 	struct dirent *dir;
@@ -93,19 +96,26 @@ int _DataBase::getDirFileList(void)
 
 	while ((dir = readdir(pDirIn)) != NULL)
 	{
-		string fileIn = m_dirIn + dir->d_name;
+		IF_CONT(dir->d_name[0] == '.');
 
-		IF_CONT(!verifyExtension(&fileIn));
-		ifs.open(fileIn.c_str(), std::ios::in);
+		string dirIn = *pStrDir + dir->d_name;
+
+		if(dir->d_type == D_TYPE_FOLDER)
+		{
+			dirIn = checkDirName(dirIn);
+			getDirFileList(&dirIn);
+			continue;
+		}
+
+		IF_CONT(!verifyExtension(&dirIn));
+		ifs.open(dirIn.c_str(), std::ios::in);
 		IF_CONT(!ifs);
 		ifs.close();
 
-		m_vFileIn.push_back(dir->d_name);
+		m_vFileIn.push_back(dirIn);
 	}
 
 	closedir(pDirIn);
-
-	return m_vFileIn.size();
 }
 
 bool _DataBase::verifyExtension(string* fName)
@@ -124,28 +134,6 @@ bool _DataBase::verifyExtension(string* fName)
 	}
 
 	return false;
-}
-
-bool _DataBase::openOutput(void)
-{
-	if (m_dirOut.at(m_dirOut.length() - 1) != '/')
-		m_dirOut.push_back('/');
-
-	DIR* pDirOut = opendir(m_dirOut.c_str());
-
-	if (!pDirOut)
-	{
-		if(mkdir(m_dirOut.c_str(), 0777) != 0)
-		{
-			LOG_E("Failed to creat output directory");
-			return false;
-		}
-
-		LOG_I("Created output directory: " << m_dirOut);
-	}
-
-	closedir(pDirOut);
-	return true;
 }
 
 }

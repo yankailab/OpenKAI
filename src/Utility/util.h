@@ -11,6 +11,19 @@ using namespace std;
 namespace kai
 {
 
+inline string getFileDir(string file)
+{
+	return file.erase(file.find_last_of('/')+1, string::npos);
+}
+
+inline string checkDirName(string& dir)
+{
+	if (dir.at(dir.length() - 1) != '/')
+		dir.push_back('/');
+
+	return dir;
+}
+
 inline uint32_t get_time_boot_ms()
 {
 	// get number of milliseconds since boot
