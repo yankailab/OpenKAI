@@ -221,8 +221,7 @@ void _Augment::rotate(void)
 			Mat mRot = getRotationMatrix2D(pCenter, rAngle, 1);
 
 			Mat mOut = Mat::zeros(s, mIn.type());
-			cv::warpAffine(Mat(s, mIn.type(), Scalar(255, 255, 255)), mMask,
-					mRot, s, INTER_LINEAR, BORDER_CONSTANT);
+			cv::warpAffine(Mat(s, mIn.type(), Scalar(255, 255, 255)), mMask, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
 			cv::warpAffine(mIn, mOut, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
 
 			mOut.copyTo(mNoise, mMask);
