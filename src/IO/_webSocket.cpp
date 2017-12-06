@@ -28,7 +28,7 @@ _webSocket::_webSocket()
 
 _webSocket::~_webSocket()
 {
-	complete();
+	reset();
 	pthread_mutex_destroy (&m_mutexSend);
 	pthread_mutex_destroy (&m_mutexRecv);
 }
@@ -255,10 +255,10 @@ void _webSocket::close(void)
 	LOG_I("Closed");
 }
 
-void _webSocket::complete(void)
+void _webSocket::reset(void)
 {
 	close();
-	this->_ThreadBase::complete();
+	this->_ThreadBase::reset();
 }
 
 bool _webSocket::draw(void)

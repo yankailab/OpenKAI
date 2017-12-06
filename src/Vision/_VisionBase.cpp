@@ -38,11 +38,7 @@ _VisionBase::_VisionBase()
 
 _VisionBase::~_VisionBase()
 {
-	DEL(m_pBGR);
-	DEL(m_pHSV);
-	DEL(m_pGray);
-	DEL(m_pDepth);
-	DEL(m_pDepthNorm);
+	reset();
 }
 
 bool _VisionBase::init(void* pKiss)
@@ -83,6 +79,17 @@ bool _VisionBase::init(void* pKiss)
 
 	m_bOpen = false;
 	return true;
+}
+
+void _VisionBase::reset(void)
+{
+	this->_ThreadBase::reset();
+
+	DEL(m_pBGR);
+	DEL(m_pHSV);
+	DEL(m_pGray);
+	DEL(m_pDepth);
+	DEL(m_pDepthNorm);
 }
 
 Frame* _VisionBase::bgr(void)

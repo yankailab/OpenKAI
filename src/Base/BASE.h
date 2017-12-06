@@ -24,13 +24,12 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
+	virtual bool start(void);
+	virtual bool draw(void);
+	virtual void reset(void);
 
 	string* getName(void);
 	string* getClass(void);
-
-	virtual bool start(void);
-	virtual bool draw(void);
-	virtual void complete(void);
 
 public:
 	void*	m_pKiss;

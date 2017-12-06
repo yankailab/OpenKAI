@@ -41,7 +41,7 @@
 	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"Window":"apView",
 	"depthWindow":"apDepth",
 	"angleV":67.1,

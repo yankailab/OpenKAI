@@ -32,7 +32,7 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	void reset(void);
+//	void reset(void);
 
 	double getDistance(double localAngle);
 

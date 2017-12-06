@@ -96,7 +96,7 @@ bool Startup::start(Kiss* pKiss)
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		m_pInst[i]->complete();
+		m_pInst[i]->reset();
 	}
 
 	for (i = 0; i < m_nInst; i++)

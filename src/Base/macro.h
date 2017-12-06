@@ -41,7 +41,7 @@
 #define NULL_N(x) if(x==NULL){return NULL;}
 #define NULL_T(x) if(x==NULL){return true;}
 
-#define DEL(x) if(x){delete x;}
+#define DEL(x) if(x){delete x;x=NULL;}
 #define SWAP(x,y,t) {t=x;x=y;y=t;}
 
 #endif

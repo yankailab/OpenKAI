@@ -30,6 +30,8 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
+	void reset(void);
+
 	vInt2 matrixDim(void);
 
 	DIST_SENSOR_TYPE type(void);

@@ -22,8 +22,7 @@ _Camera::_Camera()
 
 _Camera::~_Camera()
 {
-	complete();
-	DEL(m_pBGR);
+	reset();
 }
 
 bool _Camera::init(void* pKiss)
@@ -93,6 +92,12 @@ bool _Camera::init(void* pKiss)
 
 	LOG_I("Initialized");
 	return true;
+}
+
+void _Camera::reset(void)
+{
+	this->_VisionBase::reset();
+	m_camera.release();
 }
 
 bool _Camera::link(void)
@@ -231,12 +236,6 @@ void _Camera::update(void)
 
 		this->autoFPSto();
 	}
-}
-
-void _Camera::complete(void)
-{
-	this->_VisionBase::complete();
-	m_camera.release();
 }
 
 bool _Camera::draw(void)

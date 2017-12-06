@@ -11,6 +11,7 @@ _AutoPilot::_AutoPilot()
 
 _AutoPilot::~_AutoPilot()
 {
+	reset();
 }
 
 bool _AutoPilot::init(void* pKiss)
@@ -81,6 +82,16 @@ bool _AutoPilot::init(void* pKiss)
 	return true;
 }
 
+void _AutoPilot::reset(void)
+{
+	this->_ThreadBase::reset();
+
+	for(int i=0; i<m_nAction; i++)
+	{
+		delete m_pAction[i];
+	}
+}
+
 bool _AutoPilot::link(void)
 {
 	IF_F(!this->BASE::link());
@@ -121,7 +132,7 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
-		for(int i=0;i<m_nAction;i++)
+		for(int i=0; i<m_nAction; i++)
 		{
 			m_pAction[i]->update();
 		}

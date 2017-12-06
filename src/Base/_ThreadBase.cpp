@@ -30,6 +30,7 @@ _ThreadBase::_ThreadBase()
 
 _ThreadBase::~_ThreadBase()
 {
+	reset();
 	pthread_mutex_destroy(&m_wakeupMutex);
 	pthread_cond_destroy(&m_wakeupSignal);
 }
@@ -44,6 +45,14 @@ bool _ThreadBase::init(void* pKiss)
 	setTargetFPS(FPS);
 
 	return true;
+}
+
+void _ThreadBase::reset(void)
+{
+	m_bThreadON = false;
+	IF_(m_threadID);
+	pthread_cancel(m_threadID);
+	pthread_join(m_threadID, NULL);
 }
 
 bool _ThreadBase::link(void)
@@ -144,13 +153,6 @@ void _ThreadBase::autoFPSto(void)
 	}
 
 	this->updateTime();
-}
-
-void _ThreadBase::complete(void)
-{
-	m_bThreadON = false;
-	pthread_cancel(m_threadID);
-	pthread_join(m_threadID, NULL);
 }
 
 bool _ThreadBase::draw(void)

@@ -25,10 +25,7 @@ _ZEDobstacle::_ZEDobstacle()
 
 _ZEDobstacle::~_ZEDobstacle()
 {
-	DEL(m_pMatrix);
-
-	for (int i = 0; i < m_nFilter; i++)
-		DEL(m_pFilteredMatrix[i]);
+	reset();
 }
 
 bool _ZEDobstacle::init(void* pKiss)
@@ -61,6 +58,14 @@ bool _ZEDobstacle::init(void* pKiss)
 	m_pMatrix = new Frame();
 
 	return true;
+}
+
+void _ZEDobstacle::reset(void)
+{
+	DEL(m_pMatrix);
+
+	for (int i = 0; i < m_nFilter; i++)
+		DEL(m_pFilteredMatrix[i]);
 }
 
 bool _ZEDobstacle::link(void)

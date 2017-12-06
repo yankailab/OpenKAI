@@ -29,7 +29,7 @@ public:
 	bool open(void);
 	void close(void);
 	bool start(void);
-	void complete(void);
+	void reset(void);
 
 private:
 	bool setup(void);

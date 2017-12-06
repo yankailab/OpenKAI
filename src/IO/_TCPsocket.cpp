@@ -28,7 +28,7 @@ _TCPsocket::_TCPsocket()
 
 _TCPsocket::~_TCPsocket()
 {
-	complete();
+	reset();
 	pthread_mutex_destroy (&m_mutexSend);
 	pthread_mutex_destroy (&m_mutexRecv);
 }
@@ -255,10 +255,10 @@ void _TCPsocket::close(void)
 	LOG_I("Closed");
 }
 
-void _TCPsocket::complete(void)
+void _TCPsocket::reset(void)
 {
 	close();
-	this->_ThreadBase::complete();
+	this->_ThreadBase::reset();
 }
 
 bool _TCPsocket::draw(void)

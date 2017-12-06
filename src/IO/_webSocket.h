@@ -30,7 +30,7 @@ public:
 	bool link(void);
 	bool start(void);
 	void close(void);
-	void complete(void);
+	void reset(void);
 	bool draw(void);
 
 	bool write(uint8_t* pBuf, int nByte);

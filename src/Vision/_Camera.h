@@ -24,7 +24,7 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	void complete(void);
+	void reset(void);
 
 private:
 	bool open(void);

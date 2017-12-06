@@ -23,7 +23,7 @@ _webSocketServer::_webSocketServer()
 
 _webSocketServer::~_webSocketServer()
 {
-	complete();
+	reset();
 }
 
 bool _webSocketServer::init(void* pKiss)
@@ -136,7 +136,7 @@ bool _webSocketServer::handler(void)
 				if (!pSocket->m_bConnected)
 				{
 					itr = m_lSocket.erase(itr);
-					pSocket->complete();
+					pSocket->reset();
 					delete pSocket;
 					LOG_I("Deleted disconnected socket");
 				}
@@ -200,10 +200,10 @@ _TCPsocket* _webSocketServer::getFirstSocket(void)
 	return m_lSocket.front();
 }
 
-void _webSocketServer::complete(void)
+void _webSocketServer::reset(void)
 {
 	close(m_socket);
-	this->_ThreadBase::complete();
+	this->_ThreadBase::reset();
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{

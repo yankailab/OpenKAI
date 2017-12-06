@@ -29,7 +29,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	void complete(void);
+	void reset(void);
 	bool draw(void);
 	_TCPsocket* getFirstSocket(void);
 

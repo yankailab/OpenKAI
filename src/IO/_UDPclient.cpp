@@ -22,7 +22,7 @@ _UDPclient::_UDPclient()
 
 _UDPclient::~_UDPclient()
 {
-	complete();
+	reset();
 }
 
 bool _UDPclient::init(void* pKiss)
@@ -37,6 +37,12 @@ bool _UDPclient::init(void* pKiss)
 	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
 
 	return true;
+}
+
+void _UDPclient::reset(void)
+{
+	close();
+	this->_ThreadBase::reset();
 }
 
 bool _UDPclient::link(void)
@@ -68,6 +74,14 @@ bool _UDPclient::open(void)
 
 	m_ioStatus = io_opened;
 	return true;
+}
+
+void _UDPclient::close(void)
+{
+	IF_(m_ioStatus!=io_opened);
+
+	::close(m_socket);
+	this->_IOBase::close();
 }
 
 bool _UDPclient::start(void)
@@ -158,20 +172,6 @@ void _UDPclient::readIO(void)
 	toQueR(&ioB);
 
 	LOG_I("Received "<< ioB.m_nB <<" bytes from " << inet_ntoa(m_sAddr.sin_addr) << ":" << ntohs(m_sAddr.sin_port));
-}
-
-void _UDPclient::close(void)
-{
-	IF_(m_ioStatus!=io_opened);
-
-	::close(m_socket);
-	this->_IOBase::close();
-}
-
-void _UDPclient::complete(void)
-{
-	close();
-	this->_ThreadBase::complete();
 }
 
 bool _UDPclient::draw(void)

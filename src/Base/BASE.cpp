@@ -83,7 +83,7 @@ bool BASE::draw(void)
 	return true;
 }
 
-void BASE::complete(void)
+void BASE::reset(void)
 {
 }
 

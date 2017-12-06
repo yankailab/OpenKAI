@@ -77,8 +77,8 @@ bool _TCP::open(void)
 void _TCP::close(void)
 {
 	m_ioStatus = io_closed;
-	if(m_pServer)m_pServer->complete();
-	else if(m_pSocket)m_pSocket->complete();
+	if(m_pServer)m_pServer->reset();
+	else if(m_pSocket)m_pSocket->reset();
 	LOG_I("Closed");
 }
 

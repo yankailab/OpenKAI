@@ -25,8 +25,8 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
 	virtual bool start(void);
-	virtual void complete(void);
 	virtual bool draw(void);
+	virtual void reset(void);
 
 	void sleep(void);
 	void wakeUp(void);

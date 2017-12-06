@@ -44,7 +44,7 @@ _ZED::_ZED()
 
 _ZED::~_ZED()
 {
-	this->_VisionBase::complete();
+	reset();
 }
 
 bool _ZED::init(void* pKiss)
@@ -70,6 +70,16 @@ bool _ZED::init(void* pKiss)
 	return true;
 }
 
+void _ZED::reset()
+{
+	this->_VisionBase::reset();
+
+	DEL(m_pzImg);
+	DEL(m_pzDepth);
+	DEL(m_pZed);
+	DEL(m_pDepth);
+}
+
 bool _ZED::link(void)
 {
 	IF_F(!this->_VisionBase::link());
@@ -84,8 +94,6 @@ bool _ZED::link(void)
 
 bool _ZED::open(void)
 {
-	m_pZed = new sl::Camera();
-
 	sl::InitParameters zedInit;
 	zedInit.camera_buffer_count_linux = 4;
 	zedInit.camera_disable_self_calib = false;
@@ -100,10 +108,12 @@ bool _ZED::open(void)
 	zedInit.sdk_gpu_id = -1;
 	zedInit.sdk_verbose = true;
 
+	m_pZed = new sl::Camera();
 	sl::ERROR_CODE err = m_pZed->open(zedInit);
 	if (err != sl::SUCCESS)
 	{
-		LOG(ERROR)<< "ZED Error code: " << sl::errorCode2str(err) << std::endl;
+		LOG_E("ZED Error code: " << sl::errorCode2str(err));
+		DEL(m_pZed);
 		return false;
 	}
 
@@ -126,6 +136,9 @@ bool _ZED::open(void)
 
 	// Best way of sharing sl::Mat and cv::Mat :
 	// Create a sl::Mat and then construct a cv::Mat using the ptr to sl::Mat data.
+	DEL(m_pzImg);
+	DEL(m_pzDepth);
+
 	m_pzImg = new sl::Mat(zedImgSize, sl::MAT_TYPE_8U_C4, sl::MEM_GPU);
 	m_gImg = slMat2cvGpuMat(*m_pzImg);
 	m_pzDepth = new sl::Mat(zedImgSize, sl::MAT_TYPE_32F_C1, sl::MEM_GPU);

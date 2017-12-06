@@ -29,6 +29,8 @@ public:
 	virtual ~_VisionBase();
 
 	virtual bool init(void* pKiss);
+	virtual void reset(void);
+
 	virtual VISION_TYPE getType(void);
 
 	virtual Frame* bgr(void);
