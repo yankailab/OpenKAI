@@ -1,36 +1,49 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_DNNAVOID_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_DNNAVOID_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_DNNavoid_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_DNNavoid_H_
 
 #include "../../../Base/common.h"
 #include "../../../DNN/Classifier/_ImageNet.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
-#define N_TERRAIN 16
-#define N_TERRAIN_CLASS 8
-#define N_TERRAIN_ACTION 8
+#define DNNAVOID_N_VISION 16
+#define DNNAVOID_N_PLACE_CLASS 8
+#define DNNAVOID_N_ACTION 8
 
 namespace kai
 {
 
-struct TERRAIN_ACTION
+enum DNN_AVOID_ACTION_TYPE
 {
-	string m_pClass[N_TERRAIN_CLASS];
-	uint8_t m_action;
+	DA_UNKNOWN,DA_SAFE,DA_WARN,DA_FORBID
 };
 
-struct TERRAIN
+struct DNN_AVOID_ACTION
+{
+	string m_pClass[DNNAVOID_N_PLACE_CLASS];
+	int m_nClass;
+	DNN_AVOID_ACTION_TYPE m_action;
+
+	void init(void)
+	{
+		m_nClass = 0;
+		m_action = DA_UNKNOWN;
+	}
+};
+
+struct DNN_AVOID_VISION
 {
 	uint8_t m_orientation;
 	OBJECT* m_pObj;
-	TERRAIN_ACTION m_action[N_TERRAIN_ACTION];
+	DNN_AVOID_ACTION m_pAction[DNNAVOID_N_ACTION];
 	int	m_nAction;
 
 	void init(void)
 	{
 		m_orientation = 0;
 		m_pObj = NULL;
+		m_nAction = 0;
 	}
 };
 
@@ -45,12 +58,17 @@ public:
 	void update(void);
 	bool draw(void);
 
+	DNN_AVOID_ACTION_TYPE str2actionType(string& strAction);
+	string actionType2str(DNN_AVOID_ACTION_TYPE aType);
+
 private:
 	APcopter_base* m_pAP;
 	_ImageNet*	m_pIN;
 
-	TERRAIN m_pTerrain[N_TERRAIN];
-	int m_nTerrain;
+	DNN_AVOID_VISION m_pVision[DNNAVOID_N_VISION];
+	int m_nVision;
+	DNN_AVOID_ACTION_TYPE m_defaultAction;
+	DNN_AVOID_ACTION_TYPE m_action;
 
 };
 

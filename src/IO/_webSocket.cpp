@@ -59,6 +59,14 @@ bool _webSocket::init(void* pKiss)
 	return true;
 }
 
+void _webSocket::reset(void)
+{
+	this->_ThreadBase::reset();
+	close();
+
+	DEL(m_pBuf);
+}
+
 bool _webSocket::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
@@ -253,12 +261,6 @@ void _webSocket::close(void)
 		m_queRecv.pop();
 
 	LOG_I("Closed");
-}
-
-void _webSocket::reset(void)
-{
-	close();
-	this->_ThreadBase::reset();
 }
 
 bool _webSocket::draw(void)

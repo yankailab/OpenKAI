@@ -59,6 +59,7 @@ _Augment::_Augment()
 
 _Augment::~_Augment()
 {
+	reset();
 }
 
 bool _Augment::init(void* pKiss)
@@ -120,6 +121,15 @@ bool _Augment::init(void* pKiss)
 	m_pFrameOut = new Frame();
 
 	return true;
+}
+
+void _Augment::reset(void)
+{
+	this->_DataBase::reset();
+
+	m_vCmd.clear();
+	DEL(m_pFrameIn);
+	DEL(m_pFrameOut);
 }
 
 bool _Augment::link(void)

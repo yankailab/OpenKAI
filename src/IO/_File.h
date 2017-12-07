@@ -1,5 +1,5 @@
-#ifndef AI_IO_FILE_H_
-#define AI_IO_FILE_H_
+#ifndef OpenKAI_src_IO__File_H_
+#define OpenKAI_src_IO__File_H_
 
 #include "../Base/common.h"
 #include "_IOBase.h"
@@ -19,6 +19,7 @@ public:
 	bool init(void* pKiss);
 	bool open(void);
 	void close(void);
+	void reset(void);
 
 	int  read(uint8_t* pBuf, int nByte);
 	bool write(uint8_t* pBuf, int nByte);

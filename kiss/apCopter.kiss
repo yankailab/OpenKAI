@@ -325,26 +325,33 @@
 			"_ImageNet":"apIN",
 			
 			{
+				"name":"downward",
+				"bInst":1,
 				"orientation":0,
 				"l":0.05,
 				"t":0.0,
 				"r":0.95,
 				"b":0.8,
-	
+				"defaultAction":"warn",
+
 				{
-					"class":["house","road"],
-					"action":0,
+					"class":["grass"],
+					"action":"safe",
 				}
 				{
-					"class":["grass","water"],
-					"action":1,
+					"class":["water"],
+					"action":"warn",
+				}
+				{
+					"class":["house","road"],
+					"action":"forbid",
 				}
 			}
 		}
 
 		{
 			"name":"apLanding",
-			"class":"APcopter_landing",
+			"class":"APcopter_DNNlanding",
 			"bInst":0,
 			"Window":"apView",
 			"APcopter_base":"apBase",

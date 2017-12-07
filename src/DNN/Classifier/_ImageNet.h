@@ -24,6 +24,7 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
+	void reset(void);
 
 	int classify(Frame* pBGR, string* pName);
 	bool bReady(void);

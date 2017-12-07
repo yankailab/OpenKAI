@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALLANDING_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_VISUALLANDING_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_DNNlanding_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_DNNlanding_H_
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
@@ -38,11 +38,11 @@ struct LANDING_TARGET
 	}
 };
 
-class APcopter_visualLanding: public ActionBase
+class APcopter_DNNlanding: public ActionBase
 {
 public:
-	APcopter_visualLanding();
-	~APcopter_visualLanding();
+	APcopter_DNNlanding();
+	~APcopter_DNNlanding();
 
 	bool init(void* pKiss);
 	bool link(void);

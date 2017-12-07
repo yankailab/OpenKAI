@@ -21,6 +21,7 @@ _IOBase::_IOBase()
 
 _IOBase::~_IOBase()
 {
+	reset();
 	pthread_mutex_destroy(&m_mutexW);
 	pthread_mutex_destroy(&m_mutexR);
 }
@@ -32,6 +33,11 @@ bool _IOBase::init(void* pKiss)
 	pK->m_pInst = this;
 
 	return true;
+}
+
+void _IOBase::reset(void)
+{
+	this->_ThreadBase::reset();
 }
 
 bool _IOBase::open(void)

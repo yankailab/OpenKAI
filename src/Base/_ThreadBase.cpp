@@ -53,6 +53,7 @@ void _ThreadBase::reset(void)
 	IF_(m_threadID);
 	pthread_cancel(m_threadID);
 	pthread_join(m_threadID, NULL);
+	m_threadID = 0;
 }
 
 bool _ThreadBase::link(void)

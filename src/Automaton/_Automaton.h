@@ -5,8 +5,8 @@
  *      Author: Kai
  */
 
-#ifndef OPENKAI_SRC_AUTOMATON__AUTOMATON_H_
-#define OPENKAI_SRC_AUTOMATON__AUTOMATON_H_
+#ifndef OpenKAI_src_Automaton__Automaton_H_
+#define OpenKAI_src_Automaton__Automaton_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"

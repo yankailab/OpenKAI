@@ -15,6 +15,7 @@ _File::_File(void)
 
 _File::~_File(void)
 {
+	reset();
 }
 
 bool _File::init(void* pKiss)
@@ -29,6 +30,12 @@ bool _File::init(void* pKiss)
 	m_name = presetDir + m_name;
 	m_ioStatus = io_closed;
 	return true;
+}
+
+void _File::reset(void)
+{
+	this->_IOBase::reset();
+	close();
 }
 
 bool _File::open(string* pName)
@@ -62,7 +69,7 @@ void _File::close(void)
 
 	m_file.flush();
 	m_file.close();
-	m_ioStatus = io_closed;
+//	this->_IOBase::close();
 }
 
 int _File::read(uint8_t* pBuf, int nByte)

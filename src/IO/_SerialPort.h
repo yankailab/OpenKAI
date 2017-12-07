@@ -1,5 +1,5 @@
-#ifndef AI_IO_SERIALPORT_H_
-#define AI_IO_SERIALPORT_H_
+#ifndef OpenKAI_src_IO__SerialPort_H_
+#define OpenKAI_src_IO__SerialPort_H_
 
 #include "../Base/common.h"
 #include "_IOBase.h"

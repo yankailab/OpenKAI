@@ -13,9 +13,7 @@ _TCP::_TCP(void)
 
 _TCP::~_TCP(void)
 {
-	close();
-	DEL(m_pServer);
-	DEL(m_pSocket);
+	reset();
 }
 
 bool _TCP::init(void* pKiss)
@@ -48,6 +46,14 @@ bool _TCP::init(void* pKiss)
 
 	LOG_E("TCP mode unknown");
 	return false;
+}
+
+void _TCP::reset(void)
+{
+	this->_IOBase::reset();
+	close();
+	DEL(m_pServer);
+	DEL(m_pSocket);
 }
 
 bool _TCP::open(void)

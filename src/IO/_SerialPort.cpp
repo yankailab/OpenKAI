@@ -61,8 +61,8 @@ void _SerialPort::close(void)
 
 void _SerialPort::reset(void)
 {
+	this->_IOBase::reset();
 	close();
-	this->_ThreadBase::reset();
 }
 
 bool _SerialPort::start(void)

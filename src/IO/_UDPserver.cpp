@@ -40,8 +40,8 @@ bool _UDPserver::init(void* pKiss)
 
 void _UDPserver::reset(void)
 {
+	this->_IOBase::reset();
 	close();
-	this->_ThreadBase::reset();
 }
 
 bool _UDPserver::link(void)

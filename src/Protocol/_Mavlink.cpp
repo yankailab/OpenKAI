@@ -222,8 +222,7 @@ void _Mavlink::commandLongDoSetPositionYawThrust(float steer, float thrust)
 	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST");
 }
 
-void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max,
-		uint16_t min, uint16_t v)
+void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v)
 {
 	/*
 	 time_boot_ms: anything (it’s ignored)

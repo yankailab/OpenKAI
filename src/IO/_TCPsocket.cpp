@@ -59,6 +59,25 @@ bool _TCPsocket::init(void* pKiss)
 	return true;
 }
 
+void _TCPsocket::close(void)
+{
+	::close(m_socket);
+	m_bConnected = false;
+
+	while (!m_queSend.empty())
+		m_queSend.pop();
+	while (!m_queRecv.empty())
+		m_queRecv.pop();
+
+	LOG_I("Closed");
+}
+
+void _TCPsocket::reset(void)
+{
+	this->_ThreadBase::reset();
+	close();
+}
+
 bool _TCPsocket::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
@@ -240,25 +259,6 @@ int _TCPsocket::read(uint8_t* pBuf, int nByte)
 	pthread_mutex_unlock(&m_mutexRecv);
 
 	return i;
-}
-
-void _TCPsocket::close(void)
-{
-	::close(m_socket);
-	m_bConnected = false;
-
-	while (!m_queSend.empty())
-		m_queSend.pop();
-	while (!m_queRecv.empty())
-		m_queRecv.pop();
-
-	LOG_I("Closed");
-}
-
-void _TCPsocket::reset(void)
-{
-	close();
-	this->_ThreadBase::reset();
 }
 
 bool _TCPsocket::draw(void)

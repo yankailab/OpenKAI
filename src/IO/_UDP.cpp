@@ -18,6 +18,7 @@ _UDP::_UDP()
 
 _UDP::~_UDP()
 {
+	reset();
 }
 
 bool _UDP::init(void* pKiss)
@@ -27,6 +28,22 @@ bool _UDP::init(void* pKiss)
 	pK->m_pInst = this;
 
 	return true;
+}
+
+void _UDP::close(void)
+{
+	IF_(m_ioStatus!=io_opened);
+
+	m_pSender->close();
+	m_pReceiver->close();
+
+	this->_IOBase::close();
+}
+
+void _UDP::reset(void)
+{
+	this->_IOBase::reset();
+	close();
 }
 
 bool _UDP::link(void)
@@ -66,16 +83,6 @@ bool _UDP::writeLine(uint8_t* pBuf, int nB)
 int _UDP::read(uint8_t* pBuf, int nB)
 {
 	return m_pReceiver->read(pBuf, nB);
-}
-
-void _UDP::close(void)
-{
-	IF_(m_ioStatus!=io_opened);
-
-	m_pSender->close();
-	m_pReceiver->close();
-
-	this->_IOBase::close();
 }
 
 bool _UDP::draw(void)

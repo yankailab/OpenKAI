@@ -24,11 +24,7 @@ _ImageNet::_ImageNet()
 
 _ImageNet::~_ImageNet()
 {
-	DEL(m_pRGBA);
-#ifdef USE_TENSORRT
-	DEL(m_pIN);
-#endif
-
+	reset();
 }
 
 bool _ImageNet::init(void* pKiss)
@@ -47,6 +43,16 @@ bool _ImageNet::init(void* pKiss)
 	m_pRGBA = new Frame();
 
 	return true;
+}
+
+void _ImageNet::reset(void)
+{
+	this->_DetectorBase::reset();
+
+	DEL(m_pRGBA);
+#ifdef USE_TENSORRT
+	DEL(m_pIN);
+#endif
 }
 
 bool _ImageNet::link(void)

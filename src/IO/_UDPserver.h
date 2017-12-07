@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_IO_UDPreceiver_H_
-#define SRC_IO_UDPreceiver_H_
+#ifndef OpenKAI_src_IO__UDPserver_H_
+#define OpenKAI_src_IO__UDPserver_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"

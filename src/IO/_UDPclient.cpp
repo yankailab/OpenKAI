@@ -41,8 +41,8 @@ bool _UDPclient::init(void* pKiss)
 
 void _UDPclient::reset(void)
 {
+	this->_IOBase::reset();
 	close();
-	this->_ThreadBase::reset();
 }
 
 bool _UDPclient::link(void)

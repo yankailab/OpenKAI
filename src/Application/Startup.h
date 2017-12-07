@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_STARTUP_H_
-#define SRC_STARTUP_H_
+#ifndef OpenKAI_src_Application_Startup_H_
+#define OpenKAI_src_Application_Startup_H_
 
 #include "../Base/common.h"
 #include "../Config/Module.h"

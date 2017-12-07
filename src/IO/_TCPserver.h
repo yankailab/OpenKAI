@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_TCPSERVER_H_
-#define SRC_NETWORK_TCPSERVER_H_
+#ifndef OpenKAI_src_IO__TCPserver_H_
+#define OpenKAI_src_IO__TCPserver_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"

@@ -45,6 +45,13 @@ bool _DataBase::init(void* pKiss)
 	return true;
 }
 
+void _DataBase::reset(void)
+{
+	this->_ThreadBase::reset();
+	m_PNGcompress.clear();
+	m_vExtIn.clear();
+}
+
 bool _DataBase::link(void)
 {
 	IF_F(!this->_ThreadBase::link());

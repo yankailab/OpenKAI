@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDodom_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APMCOPTER_ZEDodom_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_ZEDodom_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_ZEDodom_H_
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_ZED.h"

@@ -39,6 +39,19 @@ bool _TCPserver::init(void* pKiss)
 	return true;
 }
 
+void _TCPserver::reset(void)
+{
+	this->_ThreadBase::reset();
+	close(m_socket);
+
+	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
+	{
+		delete (_TCPsocket*)*itr;
+	}
+
+	m_lSocket.clear();
+}
+
 bool _TCPserver::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
@@ -198,19 +211,6 @@ _TCPsocket* _TCPserver::getFirstSocket(void)
 	IF_N(m_lSocket.empty());
 
 	return m_lSocket.front();
-}
-
-void _TCPserver::reset(void)
-{
-	close(m_socket);
-	this->_ThreadBase::reset();
-
-	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
-	{
-		delete (_TCPsocket*)*itr;
-	}
-
-	m_lSocket.clear();
 }
 
 bool _TCPserver::draw(void)

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_IOBase_H_
-#define SRC_NETWORK_IOBase_H_
+#ifndef OpenKAI_src_IO_IOBase_H_
+#define OpenKAI_src_IO_IOBase_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -59,6 +59,7 @@ public:
 	virtual bool open(void);
 	virtual bool isOpen(void);
 	virtual void close(void);
+	virtual void reset(void);
 	virtual IO_TYPE ioType(void);
 
 	int  read(uint8_t* pBuf, int nB);

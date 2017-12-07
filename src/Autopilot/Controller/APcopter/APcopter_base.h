@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_BASE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_APCOPTER_BASE_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_base_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_base_H_
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"

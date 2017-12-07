@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_UTILITY_UTIL_H_
-#define OPENKAI_SRC_UTILITY_UTIL_H_
+#ifndef OpenKAI_src_Utility_util_H_
+#define OpenKAI_src_Utility_util_H_
 
 #include "../Base/platform.h"
 #include "../Base/cv.h"
