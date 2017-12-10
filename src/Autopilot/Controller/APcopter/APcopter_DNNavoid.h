@@ -67,7 +67,6 @@ private:
 
 	DNN_AVOID_VISION m_pVision[DNNAVOID_N_VISION];
 	int m_nVision;
-	DNN_AVOID_ACTION_TYPE m_defaultAction;
 	DNN_AVOID_ACTION_TYPE m_action;
 
 };

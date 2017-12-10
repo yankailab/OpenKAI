@@ -131,7 +131,7 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apUDP",
@@ -142,7 +142,21 @@
 	"bInst":0,
 	"portName":"/dev/ttyACM1",
 	"baud":115200,
-}	
+}
+
+{
+	"name":"rpLidar",
+	"class":"_RPLIDAR",
+	"FPS":30,
+	"bInst":0,
+	"Window":"apView",
+	"maxDist":100.0,
+	"minDist":0.1,
+	"nDiv":8,
+	"dAngle":10,
+	"portName":"/dev/ttyUSB0",
+	"baud":115200,	
+}
 
 {
 	"name":"leddarVu",
@@ -272,7 +286,7 @@
 			"Window":"apView",
 			"_Mavlink":"apMavlink",
 			"freqAtti":0,
-			"freqGlobalPos":0,
+			"freqGlobalPos":30,
 		}
 
 		{

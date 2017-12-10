@@ -69,7 +69,8 @@ void _File::close(void)
 
 	m_file.flush();
 	m_file.close();
-//	this->_IOBase::close();
+
+	this->_IOBase::close();
 }
 
 int _File::read(uint8_t* pBuf, int nByte)

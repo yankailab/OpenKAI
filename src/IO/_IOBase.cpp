@@ -158,6 +158,8 @@ void _IOBase::close(void)
 		m_queR.pop();
 
 	m_ioStatus = io_closed;
+
+	IF_(m_ioType == io_file);
 	LOG_I("Closed");
 }
 

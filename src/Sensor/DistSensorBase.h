@@ -19,6 +19,7 @@ enum DIST_SENSOR_TYPE
 	dsZED,
 	dsSF40,
 	dsLeddarVu,
+	dsRPLIDAR
 };
 
 class DistSensorBase

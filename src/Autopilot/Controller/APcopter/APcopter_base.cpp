@@ -129,7 +129,7 @@ void APcopter_base::update(void)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
 	}
 
-	if(m_freqGlobalPos)
+	if(m_freqGlobalPos > 0)
 	{
 		if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);

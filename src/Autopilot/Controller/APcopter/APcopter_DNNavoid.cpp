@@ -9,7 +9,6 @@ APcopter_DNNavoid::APcopter_DNNavoid()
 	m_pIN = NULL;
 	m_nVision = 0;
 	m_action = DA_UNKNOWN;
-	m_defaultAction = DA_UNKNOWN;
 }
 
 APcopter_DNNavoid::~APcopter_DNNavoid()
@@ -50,10 +49,6 @@ bool APcopter_DNNavoid::link(void)
 	tO.m_fBBox.z = 1.0;
 	tO.m_fBBox.w = 1.0;
 
-	string strAction = "";
-	F_INFO(pK->v("defaultAction", &strAction));
-	m_defaultAction = str2actionType(strAction);
-
 	m_nVision = 0;
 	while (pItr[m_nVision])
 	{
@@ -83,11 +78,12 @@ bool APcopter_DNNavoid::link(void)
 
 			DNN_AVOID_ACTION* pA = &pV->m_pAction[pV->m_nAction];
 			pA->init();
-			pA->m_nClass = pKA->array("class", pA->m_pClass, DNNAVOID_N_PLACE_CLASS);
+			pA->m_nClass = pKA->array("class", pA->m_pClass,
+					DNNAVOID_N_PLACE_CLASS);
 			IF_CONT(pA->m_nClass <= 0);
 			pV->m_nAction++;
 
-			strAction = "";
+			string strAction = "";
 			F_ERROR_F(pKA->v("action", &strAction));
 			pA->m_action = str2actionType(strAction);
 		}
@@ -110,7 +106,8 @@ DNN_AVOID_ACTION_TYPE APcopter_DNNavoid::str2actionType(string& strAction)
 
 string APcopter_DNNavoid::actionType2str(DNN_AVOID_ACTION_TYPE aType)
 {
-	static const string pType[] = {"unknown","safe","warn","forbid"};
+	static const string pType[] =
+	{ "unknown", "safe", "warn", "forbid" };
 	return pType[aType];
 }
 
@@ -123,42 +120,56 @@ void APcopter_DNNavoid::update(void)
 	NULL_(m_pAP->m_pMavlink);
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 
-	int i,j,k;
-	m_action = m_defaultAction;
-
+	int i, j, k;
 	for (i = 0; i < m_nVision; i++)
 	{
 		DNN_AVOID_VISION* pV = &m_pVision[i];
 		string strPlace = pV->m_pObj->m_name;
 
-
-		for (j=0; j<pV->m_nAction; j++)
+		for (j = 0; j < pV->m_nAction; j++)
 		{
 			DNN_AVOID_ACTION* pA = &pV->m_pAction[j];
 
 			int k;
-			for (k=0; k<pA->m_nClass; k++)
+			for (k = 0; k < pA->m_nClass; k++)
 			{
-				if(strPlace == pA->m_pClass[k])break;
+				if (strPlace == pA->m_pClass[k])
+					break;
 			}
+			//class not defined in the action
 			IF_CONT(k >= pA->m_nClass);
 
+			//class definition found
 			m_action = pA->m_action;
 			break;
 		}
-		IF_CONT(j >= pV->m_nAction);
 
-		LOG_I("Class:" << strPlace <<"; Action: " << actionType2str(m_action));
-		IF_CONT(m_action <= DA_SAFE);
+		if(j >= pV->m_nAction)
+		{
+			//unknown action
+			LOG_I("UNKNOWN:" << strPlace);
+			continue;
+		}
 
-		//WARNING here
-		IF_CONT(m_action <= DA_WARN);
+		if(m_action <= DA_SAFE)
+		{
+			LOG_I("SAFE:" << strPlace);
+			continue;
+		}
+
+		if(m_action <= DA_WARN)
+		{
+			LOG_I("WARNING:" << strPlace);
+
+			continue;
+		}
+
+		LOG_I("FORBID:" << strPlace);
+		double alt = (double)pMavlink->m_msg.global_position_int.relative_alt;
 
 		pMavlink->distanceSensor(0, //type
-					pV->m_orientation,	//orientation
-					1500,
-					100,
-					500);
+				pV->m_orientation,	//orientation
+				1500, 100, 500);
 	}
 
 }

@@ -37,12 +37,8 @@ bool _RPLIDAR::init(void* pKiss)
 
 	F_INFO(pK->v("minDist", &m_dMin));
 	F_INFO(pK->v("maxDist", &m_dMax));
-
-	Kiss* pI;
-	pI = pK->o("input");
-	IF_F(pI->empty());
-	F_INFO(pI->v("portName", &m_portName));
-	F_INFO(pI->v("baud", &m_baud));
+	F_INFO(pK->v("portName", &m_portName));
+	F_INFO(pK->v("baud", &m_baud));
 
 	return true;
 }
@@ -73,14 +69,11 @@ void _RPLIDAR::update(void)
 {
 	while (m_bThreadON)
 	{
-//		if (!m_pMb)
-//		{
-//			if (!open())
-//			{
-//				this->sleepTime(USEC_1SEC);
-//				continue;
-//			}
-//		}
+		if (!open())
+		{
+			this->sleepTime(USEC_1SEC);
+			continue;
+		}
 
 		this->autoFPSfrom();
 
@@ -92,14 +85,7 @@ void _RPLIDAR::update(void)
 
 bool _RPLIDAR::open(void)
 {
-	const char * opt_com_path = NULL;
-	_u32 opt_com_baudrate = 115200;
 	u_result op_result;
-
-	if (!opt_com_path)
-	{
-		opt_com_path = "/dev/ttyUSB0";
-	}
 
 	// create the driver instance
 	RPlidarDriver * drv = RPlidarDriver::CreateDriver(
@@ -112,10 +98,9 @@ bool _RPLIDAR::open(void)
 	}
 
 	// make connection...
-	if (IS_FAIL(drv->connect(opt_com_path, opt_com_baudrate)))
+	if (IS_FAIL(drv->connect(m_portName.c_str(), m_baud)))
 	{
-		fprintf(stderr, "Error, cannot bind to the specified serial port %s.\n",
-				opt_com_path);
+		LOG_E("Error, cannot bind to the specified serial port");
 		goto on_finished;
 	}
 
@@ -184,7 +169,6 @@ bool _RPLIDAR::open(void)
 	drv->stopMotor();
 	// done!
 	on_finished: RPlidarDriver::DisposeDriver(drv);
-	return 0;
 
 	return true;
 }
@@ -220,7 +204,7 @@ bool _RPLIDAR::updateLidar(void)
 
 DIST_SENSOR_TYPE _RPLIDAR::type(void)
 {
-	return dsLeddarVu;
+	return dsRPLIDAR;
 }
 
 vDouble2 _RPLIDAR::range(void)
