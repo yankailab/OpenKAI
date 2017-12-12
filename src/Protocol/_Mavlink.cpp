@@ -16,7 +16,7 @@ _Mavlink::_Mavlink()
 
 _Mavlink::~_Mavlink()
 {
-	close();
+	reset();
 }
 
 bool _Mavlink::init(void* pKiss)
@@ -51,13 +51,10 @@ bool _Mavlink::link(void)
 	return true;
 }
 
-void _Mavlink::close()
+void _Mavlink::reset()
 {
-	if (m_pIO)
-	{
-		m_pIO->close();
-		m_pIO = NULL;
-	}
+	this->_ThreadBase::reset();
+	m_pIO = NULL;
 }
 
 bool _Mavlink::start(void)
@@ -79,8 +76,8 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pIO)continue;
-		if(!m_pIO->isOpen())continue;
+		IF_CONT(!m_pIO);
+		IF_CONT(!m_pIO->isOpen());
 
 		this->autoFPSfrom();
 
@@ -93,6 +90,8 @@ void _Mavlink::update(void)
 
 void _Mavlink::writeMessage(mavlink_message_t message)
 {
+	NULL_(m_pIO);
+
 	uint8_t pBuf[256];
 	int nB = mavlink_msg_to_send_buffer(pBuf, &message);
 

@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_INTERFACE_MAVLINK_H_
-#define OPENKAI_SRC_INTERFACE_MAVLINK_H_
+#ifndef OpenKAI_src_Protocol__Mavlink_H_
+#define OpenKAI_src_Protocol__Mavlink_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -94,10 +94,9 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-
-	void close(void);
 	bool start(void);
 	bool draw(void);
+	void reset(void);
 
 	//Receive
 	void handleMessages();

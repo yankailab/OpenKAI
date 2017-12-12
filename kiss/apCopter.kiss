@@ -148,7 +148,7 @@
 	"name":"rpLidar",
 	"class":"_RPLIDAR",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"maxDist":100.0,
 	"minDist":0.1,

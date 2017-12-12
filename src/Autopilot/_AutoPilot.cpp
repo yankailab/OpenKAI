@@ -88,7 +88,7 @@ void _AutoPilot::reset(void)
 
 	for(int i=0; i<m_nAction; i++)
 	{
-		delete m_pAction[i];
+		DEL(m_pAction[i]);
 	}
 }
 

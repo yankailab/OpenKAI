@@ -29,7 +29,7 @@ struct DIST_SEGMENT
 
 struct DIST_SENSOR
 {
-	DistSensorBase*	m_pSensor;
+	_DistSensorBase*	m_pSensor;
 	int				m_nSeg;
 	DIST_SEGMENT	m_pSeg[N_DS_SEGMENT];
 

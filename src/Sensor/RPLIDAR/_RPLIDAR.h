@@ -5,44 +5,37 @@
  *      Author: yankai
  */
 
-#ifndef SENSOR__RPLIDAR_H_
-#define SENSOR__RPLIDAR_H_
+#ifndef OpenKAI_src_Sensor__RPLIDAR_H_
+#define OpenKAI_src_Sensor__RPLIDAR_H_
 
-#include "../../Base/common.h"
-#include "../../Base/_ThreadBase.h"
-#include "../DistSensorBase.h"
+#include "../_DistSensorBase.h"
 #include "sdk/include/rplidar.h"
 
 #ifndef _countof
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
-
 namespace kai
 {
 using namespace rp::standalone::rplidar;
 
-class _RPLIDAR: public _ThreadBase, public DistSensorBase
+class _RPLIDAR: public _DistSensorBase
 {
 public:
 	_RPLIDAR();
 	~_RPLIDAR();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
-	bool draw(void);
-//	void reset(void);
-
-	double getDistance(double localAngle);
+	void reset(void);
 
 	DIST_SENSOR_TYPE type(void);
-	vDouble2 range(void);
 
 private:
 	bool open(void);
-	bool checkRPLIDARHealth(RPlidarDriver * drv);
-	bool updateLidar(void);
+	void close(void);
+	bool checkRPLIDARHealth(void);
+	void updateLidar(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -53,17 +46,10 @@ private:
 public:
 	string	m_portName;
 	int		m_baud;
+	RPlidarDriver* m_pRPL;
 
-	int		m_nDiv;
-	double	m_dAngle;
-	double	m_angleV;
-	double	m_angleH;
-	double	m_dMin;
-	double	m_dMax;
 
-	uint16_t m_bReady;
-	uint16_t m_nDetection;
-	uint32_t m_timeStamp;
+
 
 };
 

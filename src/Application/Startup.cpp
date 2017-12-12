@@ -9,9 +9,8 @@ void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
 void signalHandler(int signal)
 {
 	if (signal != SIGINT)return;
-	printf("\nSIGINT: Complete\n");
+	printf("\nSIGINT: OpenKAI Shutdown\n");
 	g_pStartup->m_bRun = false;
-	exit(0);
 }
 
 namespace kai
@@ -92,6 +91,11 @@ bool Startup::start(Kiss* pKiss)
 		{
 			sleep(1);
 		}
+	}
+
+	for (i = 0; i < m_nInst; i++)
+	{
+		m_pInst[i]->reset();
 	}
 
 	for (i = 0; i < m_nInst; i++)

@@ -8,19 +8,17 @@
 #ifndef OpenKAI_src_Sensor__ZEDobstacle_H_
 #define OpenKAI_src_Sensor__ZEDobstacle_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../DNN/Classifier/_ImageNet.h"
 #include "../Filter/Median.h"
 #include "../Vision/_ZED.h"
-#include "DistSensorBase.h"
+#include "_DistSensorBase.h"
 
 #define N_FILTER 1600
 
 namespace kai
 {
 
-class _ZEDobstacle: public _ThreadBase, public DistSensorBase
+class _ZEDobstacle: public _DistSensorBase
 {
 public:
 	_ZEDobstacle(void);

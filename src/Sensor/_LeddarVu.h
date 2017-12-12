@@ -8,10 +8,8 @@
 #ifndef SENSOR__LeddarVu_H_
 #define SENSOR__LeddarVu_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../include/libmodbus/modbus.h"
-#include "DistSensorBase.h"
+#include "_DistSensorBase.h"
 
 #define N_SEGMENT 8
 #define LEDDAR_MAX_DETECTIONS 16
@@ -30,7 +28,7 @@ struct SEGMENT_DETECTION
 	uint16_t flags;              // Flags
 };
 
-class _LeddarVu: public _ThreadBase, public DistSensorBase
+class _LeddarVu: public _DistSensorBase
 {
 public:
 	_LeddarVu();
