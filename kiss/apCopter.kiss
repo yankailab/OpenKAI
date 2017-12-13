@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -11,8 +11,8 @@
 	"name":"apView",
 	"class":"Window",
 	"bInst":1,
-	"w":672,
-	"h":376,
+	"w":1280,
+	"h":720,
 	"bFullScreen":0,
 	"bRec":0,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
@@ -149,13 +149,24 @@
 	"class":"_RPLIDAR",
 	"FPS":30,
 	"bInst":1,
+	"bLog":0,
 	"Window":"apView",
-	"maxDist":100.0,
-	"minDist":0.1,
-	"nDiv":8,
-	"dAngle":10,
+	"rMin":0.1,
+	"rMax":100.0,
+	"nDiv":360,
 	"portName":"/dev/ttyUSB0",
 	"baud":115200,	
+	"offsetAngle":90.0,
+	"showScale":30.0,
+	
+	{
+		"name":"filterMed",
+		"windowLen":5,
+	}	
+	{
+		"name":"filterAvr",
+		"windowLen":3,
+	}
 }
 
 {
@@ -180,6 +191,7 @@
 	"class":"_ZEDobstacle",
 	"FPS":30,
 	"bInst":1,
+	"bDraw":0,
 	"Window":"apView",
 	"_ZED":"ZED",
 	"matrixW":20,
@@ -293,6 +305,7 @@
 			"name":"apAvoid",
 			"class":"APcopter_sensorAvoid",
 			"bInst":1,
+			"bDraw":0,
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",

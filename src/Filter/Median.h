@@ -25,8 +25,8 @@ public:
 	void reset(void);
 
 private:
-	unsigned int m_windowLen;
-	unsigned int m_iMid;
+	int m_windowLen;
+	int m_iMid;
 	std::deque<double> m_sort;
 
 

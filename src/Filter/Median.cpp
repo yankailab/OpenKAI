@@ -27,7 +27,7 @@ bool Median::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("windowLen", (int*)&m_windowLen));
+	KISSm(pK,windowLen);
 	if(m_windowLen<3)
 		m_windowLen = 3;
 

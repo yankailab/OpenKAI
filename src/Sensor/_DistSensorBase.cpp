@@ -15,11 +15,12 @@ _DistSensorBase::_DistSensorBase()
 	m_pDiv = NULL;
 	m_nDiv = 0;
 	m_dAngle = 0;
-	m_range.x = 0.0;
-	m_range.y = DBL_MAX;
+	m_rMin = 0.0;
+	m_rMax = DBL_MAX;
 	m_offsetAngle = 0.0;
+	m_hdg = 0.0;
 	m_showScale = 1.0;
-	m_bReady = 0;
+	m_bReady = false;
 }
 
 _DistSensorBase::~_DistSensorBase()
@@ -37,15 +38,17 @@ bool _DistSensorBase::init(void* pKiss)
 	m_dAngle = 360/m_nDiv;
 	KISSm(pK,offsetAngle);
 	KISSm(pK,showScale);
-	F_INFO(pK->v("rangeFrom", &m_range.x));
-	F_INFO(pK->v("rangeTo", &m_range.y));
+	KISSm(pK,rMin);
+	KISSm(pK,rMax);
+
+	void* pKmed = pK->o("filterMed");
+	void* pKavr = pK->o("filterAvr");
 
 	IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
 	m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 	for(int i=0;i<m_nDiv;i++)
 	{
-		m_pDiv[i].init();
-		//TODO: add filter window length
+		m_pDiv[i].init(pKmed, pKavr);
 	}
 
 	return true;
@@ -55,6 +58,23 @@ void _DistSensorBase::reset(void)
 {
 	this->_ThreadBase::reset();
 	DEL(m_pDiv);
+	m_nDiv = 0;
+}
+
+void _DistSensorBase::input(double angle, double d)
+{
+	IF_(d <= m_rMin);
+	IF_(d > m_rMax);
+	IF_(angle < 0);
+
+	angle += m_hdg + m_offsetAngle;
+	while (angle >= DEG_AROUND)
+		angle -= DEG_AROUND;
+
+	int iAngle = (int) (angle / m_dAngle);
+	IF_(iAngle >= m_nDiv);
+
+	m_pDiv[iAngle].input(d);
 }
 
 DIST_SENSOR_TYPE _DistSensorBase::type(void)
@@ -62,9 +82,14 @@ DIST_SENSOR_TYPE _DistSensorBase::type(void)
 	return dsUnknown;
 }
 
-vDouble2 _DistSensorBase::range(void)
+double _DistSensorBase::rMin(void)
 {
-	return m_range;
+	return m_rMin;
+}
+
+double _DistSensorBase::rMax(void)
+{
+	return m_rMax;
 }
 
 double _DistSensorBase::d(void)
@@ -97,20 +122,21 @@ bool _DistSensorBase::draw(void)
 	pWin->tabNext();
 //	pWin->addMsg(&msg);
 	pWin->tabPrev();
+
 	IF_T(m_nDiv <= 0);
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
-/*
+
 	//Plot lidar result
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		Average* pD = &m_pDistAvr[i];
+		Average* pD = &m_pDiv[i].m_fAvr;
 
 		double dist = pD->v();
-		IF_CONT(dist <= m_minDist);
-		IF_CONT(dist > m_maxDist);
+		IF_CONT(dist <= m_rMin);
+		IF_CONT(dist > m_rMax);
 
 		dist *= m_showScale;
 		double rad = m_dAngle * i * DEG_RAD;
@@ -120,7 +146,7 @@ bool _DistSensorBase::draw(void)
 		Scalar col = Scalar(255, 255, 255);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
-*/
+
 	return true;
 }
 

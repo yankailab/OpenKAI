@@ -172,11 +172,17 @@ void _RPLIDAR::updateLidar(void)
 	m_pRPL->ascendScanData(nodes, count);
 	for (int i=0; i < (int) count; i++)
 	{
-		printf("%s theta: %03.2f Dist: %08.2f Q: %d \n",
-				(nodes[i].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ? "S " : "  ",
-				(nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f,
-				nodes[i].distance_q2 / 4.0f,
-				nodes[i].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
+		double angle = (nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) * 0.015625f;// / 64.0f;
+		double d = nodes[i].distance_q2 * 0.00025f;  // /(4.0*1000.0)
+		this->input(angle, d);
+
+		LOG_I("Angle:" << f2str(angle) << " D:" << f2str(d));
+
+//		printf("%s theta: %03.2f Dist: %08.2f Q: %d \n",
+//				(nodes[i].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ? "S " : "  ",
+//				(nodes[i].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT) / 64.0f,
+//				nodes[i].distance_q2 / 4.0f,
+//				nodes[i].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
 	}
 }
 

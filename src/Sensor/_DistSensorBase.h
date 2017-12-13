@@ -32,9 +32,16 @@ struct DIST_SENSOR_DIV
 	Median m_fMed;
 	Average m_fAvr;
 
-	void init(void)
+	void init(void* pKmed, void* pKavr)
 	{
+		m_fMed.init(pKmed);
+		m_fAvr.init(pKavr);
+	}
 
+	void input(double d)
+	{
+		m_fMed.input(d);
+		m_fAvr.input(m_fMed.v());
 	}
 };
 
@@ -49,8 +56,11 @@ public:
 	bool draw(void);
 	void reset(void);
 
+	double rMin(void);
+	double rMax(void);
+	void input(double angle, double d);
+
 	virtual DIST_SENSOR_TYPE type(void);
-	virtual vDouble2 range(void);
 	virtual double d(void);
 	virtual double d(vInt4* pROI, vInt2* pPos);
 	virtual double d(vDouble4* pROI, vInt2* pPos);
@@ -60,8 +70,10 @@ public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
 	double	m_dAngle;
-	vDouble2 m_range;
+	double	m_rMin;
+	double	m_rMax;
 	double	m_offsetAngle;
+	double	m_hdg;	//given by external sensor e.g. compass
 	double  m_showScale;
 	uint16_t m_bReady;
 

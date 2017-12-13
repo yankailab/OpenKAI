@@ -151,15 +151,15 @@ double _ZEDobstacle::d(vInt4* pROI, vInt2* pPos)
 
 	if(!pROI)return -1.0;
 
-	double dMin = m_range.y;
+	double dMin = m_rMax;
 	int i,j;
 	for(i=pROI->y;i<pROI->w;i++)
 	{
 		for(j=pROI->x;j<pROI->z;j++)
 		{
 			double dCell = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			IF_CONT(dCell < m_range.x);
-			IF_CONT(dCell > m_range.y);
+			IF_CONT(dCell < m_rMin);
+			IF_CONT(dCell > m_rMax);
 			IF_CONT(dCell > dMin);
 
 			dMin = dCell;
@@ -196,15 +196,15 @@ double _ZEDobstacle::d(vDouble4* pROI, vInt2* pPos)
 	if (iR.w >= m_mDim.y)
 		iR.w = m_mDim.y - 1;
 
-	double dMin = m_range.y;
+	double dMin = m_rMax;
 	int i,j;
 	for(i=iR.y;i<iR.w;i++)
 	{
 		for(j=iR.x;j<iR.z;j++)
 		{
 			double dCell = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			IF_CONT(dCell < m_range.x);
-			IF_CONT(dCell > m_range.y);
+			IF_CONT(dCell < m_rMin);
+			IF_CONT(dCell > m_rMax);
 			IF_CONT(dCell > dMin);
 
 			dMin = dCell;
@@ -254,7 +254,7 @@ bool _ZEDobstacle::draw(void)
 	IF_F(mM.empty());
 
 	double normD;
-	double baseD = 255.0/(m_range.y - m_range.x);
+	double baseD = 255.0/(m_rMax - m_rMin);
 
     Mat filterM = Mat::zeros(Size(m_mDim.x,m_mDim.y), CV_8UC1);
 	int i,j;
@@ -263,7 +263,7 @@ bool _ZEDobstacle::draw(void)
 		for(j=0;j<m_mDim.x;j++)
 		{
 			normD = m_pFilteredMatrix[i*m_mDim.x+j]->v();
-			normD = (normD - m_range.x) * baseD;
+			normD = (normD - m_rMin) * baseD;
 			filterM.at<uchar>(i,j) = 255 - (uchar)normD;
 		}
 	}

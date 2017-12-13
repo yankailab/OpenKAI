@@ -108,7 +108,8 @@ void APcopter_sensorAvoid::updateMavlink(void)
 	for (i = 0; i < m_nDS; i++)
 	{
 		DIST_SENSOR* pDS = &m_pDS[i];
-		vDouble2 range = pDS->m_pSensor->range() * 100;
+		double rMin = pDS->m_pSensor->rMin() * 100;
+		double rMax = pDS->m_pSensor->rMax() * 100;
 
 		for (j = 0; j < pDS->m_nSeg; j++)
 		{
@@ -116,7 +117,7 @@ void APcopter_sensorAvoid::updateMavlink(void)
 
 			pMavlink->distanceSensor(0, //type
 					pSeg->m_orient,	//orientation
-					range.y, range.x, pDS->m_pSensor->d(&pSeg->m_roi, NULL)*100);
+					rMax, rMin, pDS->m_pSensor->d(&pSeg->m_roi, NULL)*100);
 		}
 	}
 }

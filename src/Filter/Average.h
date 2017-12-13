@@ -25,7 +25,7 @@ public:
 	void reset(void);
 
 private:
-	unsigned int m_windowLen;
+	int m_windowLen;
 
 };
 

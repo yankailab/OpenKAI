@@ -48,9 +48,6 @@ public:
 	int		m_baud;
 	RPlidarDriver* m_pRPL;
 
-
-
-
 };
 
 }
