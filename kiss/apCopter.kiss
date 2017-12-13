@@ -161,10 +161,12 @@
 	
 	{
 		"name":"filterMed",
+		"bLog":0,
 		"windowLen":5,
 	}	
 	{
 		"name":"filterAvr",
+		"bLog":0,
 		"windowLen":3,
 	}
 }
@@ -208,7 +210,7 @@
 }
 
 {
-	"name":"apIN",
+	"name":"dnnAvoid",
 	"class":"_ImageNet",
 	"bInst":0,
 	"bDraw":1,
@@ -349,17 +351,19 @@
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
-			"_ImageNet":"apIN",
+			"_ImageNet":"dnnAvoid",
 			
 			{
-				"name":"downward",
+				"name":"forward",
 				"bInst":1,
 				"orientation":0,
+				"rMin":0,
+				"rMax":100,
+				"angleDeg":30,
 				"l":0.05,
 				"t":0.0,
 				"r":0.95,
 				"b":0.8,
-				"defaultAction":"warn",
 
 				{
 					"class":["grass"],

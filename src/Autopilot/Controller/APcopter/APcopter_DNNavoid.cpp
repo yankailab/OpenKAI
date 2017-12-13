@@ -60,10 +60,18 @@ bool APcopter_DNNavoid::link(void)
 		pV->init();
 
 		F_ERROR_F(pKT->v("orientation", (int* )&pV->m_orientation));
+		F_INFO(pKT->v("rMin", &pV->m_rMin));
+		F_INFO(pKT->v("rMax", &pV->m_rMax));
 		F_INFO(pKT->v("l", &tO.m_fBBox.x));
 		F_INFO(pKT->v("t", &tO.m_fBBox.y));
 		F_INFO(pKT->v("r", &tO.m_fBBox.z));
 		F_INFO(pKT->v("b", &tO.m_fBBox.w));
+
+		double deg;
+		if(pKT->v("angleDeg", &deg))
+		{
+			pV->m_angleTan = tan(deg*DEG_RAD);
+		}
 
 		pV->m_pObj = m_pIN->add(&tO);
 		NULL_F(pV->m_pObj);
@@ -118,7 +126,9 @@ void APcopter_DNNavoid::update(void)
 	NULL_(m_pIN);
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
+
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
+	double alt = (double)pMavlink->m_msg.global_position_int.relative_alt;
 
 	int i, j, k;
 	for (i = 0; i < m_nVision; i++)
@@ -165,11 +175,12 @@ void APcopter_DNNavoid::update(void)
 		}
 
 		LOG_I("FORBID:" << strPlace);
-		double alt = (double)pMavlink->m_msg.global_position_int.relative_alt;
 
 		pMavlink->distanceSensor(0, //type
 				pV->m_orientation,	//orientation
-				1500, 100, 500);
+				pV->m_rMax,
+				pV->m_rMin,
+				constrain(alt*pV->m_angleTan, pV->m_rMin, pV->m_rMax));
 	}
 
 }

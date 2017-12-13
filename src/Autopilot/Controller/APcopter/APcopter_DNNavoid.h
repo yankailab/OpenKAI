@@ -35,6 +35,9 @@ struct DNN_AVOID_ACTION
 struct DNN_AVOID_VISION
 {
 	uint8_t m_orientation;
+	double 	m_angleTan;
+	double	m_rMin;
+	double	m_rMax;
 	OBJECT* m_pObj;
 	DNN_AVOID_ACTION m_pAction[DNNAVOID_N_ACTION];
 	int	m_nAction;
@@ -42,8 +45,11 @@ struct DNN_AVOID_VISION
 	void init(void)
 	{
 		m_orientation = 0;
+		m_angleTan = tan(30.0*DEG_RAD);
 		m_pObj = NULL;
 		m_nAction = 0;
+		m_rMin = 0;
+		m_rMax = 100;
 	}
 };
 
