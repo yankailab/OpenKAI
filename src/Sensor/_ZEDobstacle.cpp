@@ -80,7 +80,9 @@ bool _ZEDobstacle::link(void)
 	m_pZed = (_ZED*) (pK->root()->getChildInstByName(&iName));
 
 	IF_F(!m_pZed);
-	m_range = m_pZed->range();
+	vDouble2 range = m_pZed->range();
+	m_rMin = range.x;
+	m_rMax = range.y;
 #endif
 
 	return true;
