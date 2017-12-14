@@ -12,6 +12,7 @@ APcopter_base::APcopter_base()
 
 	m_freqAtti = 0;
 	m_freqGlobalPos = 0;
+	m_freqHeartbeat = 0;
 
 	m_pidRoll.reset();
 	m_pidPitch.reset();
@@ -36,6 +37,12 @@ bool APcopter_base::init(void* pKiss)
 
 	KISSm(pK,freqAtti);
 	KISSm(pK,freqGlobalPos);
+	KISSm(pK,freqHeartbeat);
+
+	if(m_freqHeartbeat > 0)
+		m_freqHeartbeat = USEC_1SEC / m_freqHeartbeat;
+	else
+		m_freqHeartbeat = 0;
 
 	Kiss* pCC;
 	APcopter_PID cPID;
@@ -111,16 +118,20 @@ void APcopter_base::update(void)
 	this->ActionBase::update();
 	NULL_(m_pMavlink);
 
-	//Sending Heartbeat at 1Hz
-	uint64_t tNow = get_time_usec();
-	if (tNow - m_lastHeartbeat >= USEC_1SEC)
-	{
-		m_pMavlink->sendHeartbeat();
-		m_lastHeartbeat = tNow;
-	}
-
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+
+	uint64_t tNow = get_time_usec();
+
+	//Sending Heartbeat
+	if(m_freqHeartbeat > 0)
+	{
+		if (tNow - m_lastHeartbeat >= m_freqHeartbeat)
+		{
+			m_pMavlink->sendHeartbeat();
+			m_lastHeartbeat = tNow;
+		}
+	}
 
 	//request updates from Mavlink
 	if(m_freqAtti > 0)
