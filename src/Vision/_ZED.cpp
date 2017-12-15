@@ -77,7 +77,6 @@ void _ZED::reset()
 	DEL(m_pzImg);
 	DEL(m_pzDepth);
 	DEL(m_pZed);
-	DEL(m_pDepth);
 }
 
 bool _ZED::link(void)

@@ -78,8 +78,12 @@ bool _ZEDobstacle::link(void)
 #ifdef USE_ZED
 	F_INFO(pK->v("_ZED", &iName));
 	m_pZed = (_ZED*) (pK->root()->getChildInstByName(&iName));
+	if(!m_pZed)
+	{
+		LOG_E(iName << " not found");
+		return false;
+	}
 
-	IF_F(!m_pZed);
 	vDouble2 range = m_pZed->range();
 	m_rMin = range.x;
 	m_rMax = range.y;

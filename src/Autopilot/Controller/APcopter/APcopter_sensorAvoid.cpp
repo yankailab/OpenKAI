@@ -48,7 +48,11 @@ bool APcopter_sensorAvoid::link(void)
 		F_ERROR_F(pKds->v("name", &iName));
 		pDS->m_pSensor = NULL;
 		pDS->m_pSensor = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
-		NULL_F(pDS->m_pSensor);
+		if(!pDS->m_pSensor)
+		{
+			LOG_E(iName << " not found");
+			return false;
+		}
 
 		vInt2 mDim = ((_ZEDobstacle*) pDS->m_pSensor)->matrixDim();
 		Kiss** pItrSeg = pKds->getChildItr();
