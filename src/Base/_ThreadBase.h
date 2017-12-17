@@ -43,8 +43,8 @@ public:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 
-	int64_t m_timeStamp;
-	int64_t m_dTime;
+	uint64_t m_tStamp;
+	uint64_t m_dTime;
 
 	pthread_mutex_t m_wakeupMutex;
 	pthread_cond_t m_wakeupSignal;

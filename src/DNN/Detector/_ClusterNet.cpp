@@ -59,7 +59,7 @@ bool _ClusterNet::link(void)
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 	IF_F(!m_pIN);
 
-	//create marker detection area instances
+	//create detection area instances
 	m_size.x = ((1.0 - m_w) / m_dW) + 1;
 	m_size.y = ((1.0 - m_h) / m_dH) + 1;
 	if (m_size.x <= 0 || m_size.y <= 0)
@@ -153,7 +153,6 @@ void _ClusterNet::cluster(void)
 			o.m_fBBox.y = m_area.y + b.y * m_dH * m_aH;
 			o.m_fBBox.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
 			o.f2iBBox();
-			o.m_prob = 1.0;
 			add(&o);
 
 			int i, j;
@@ -260,14 +259,13 @@ void _ClusterNet::bSetActive(bool bActive)
 	m_pIN->bSetActive(m_bActive);
 }
 
-bool _ClusterNet::bFound(int iClass, double minProb)
+bool _ClusterNet::bFound(int iClass)
 {
 	int i;
 	for (i = 0; i < m_nObj; i++)
 	{
 		OBJECT* pObj = m_ppObj[i];
 		IF_CONT(pObj->m_iClass != iClass);
-		IF_CONT(pObj->m_prob < minProb);
 
 		return true;
 	}

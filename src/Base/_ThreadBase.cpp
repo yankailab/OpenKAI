@@ -14,7 +14,7 @@ _ThreadBase::_ThreadBase()
 {
 	m_bThreadON = false;
 	m_threadID = 0;
-	m_timeStamp = 0;
+	m_tStamp = 0;
 	m_dTime = 1.0;
 	m_FPS = 0;
 	m_targetFPS = DEFAULT_FPS;
@@ -91,7 +91,6 @@ void _ThreadBase::sleepTime(int64_t usec)
 		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
 		pthread_mutex_unlock(&m_wakeupMutex);
 	}
-
 }
 
 void _ThreadBase::sleep(void)
@@ -114,8 +113,8 @@ void _ThreadBase::wakeUp(void)
 void _ThreadBase::updateTime(void)
 {
 	uint64_t newTime = get_time_usec();
-	m_dTime = newTime - m_timeStamp;
-	m_timeStamp = newTime;
+	m_dTime = newTime - m_tStamp;
+	m_tStamp = newTime;
 	m_FPS = USEC_1SEC / m_dTime;
 }
 
@@ -159,9 +158,7 @@ void _ThreadBase::autoFPSto(void)
 bool _ThreadBase::draw(void)
 {
 	IF_F(!this->BASE::draw());
-
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
 	pWin->tabReset();
 
 	string msg = *this->getName() + " FPS: " + i2str(m_FPS);

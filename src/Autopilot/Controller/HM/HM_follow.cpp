@@ -96,7 +96,7 @@ void HM_follow::update(void)
 		}
 		else
 		{
-			IF_CONT(pO->m_name != m_targetName);
+//			IF_CONT(pO->m_name != m_targetName);
 		}
 
 		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);

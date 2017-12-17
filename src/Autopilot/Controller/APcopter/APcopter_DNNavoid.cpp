@@ -43,6 +43,11 @@ bool APcopter_DNNavoid::link(void)
 		return false;
 	}
 
+	while(!m_pIN->bReady())
+	{
+		sleep(1);
+	}
+
 	Kiss** pItr = pK->getChildItr();
 	OBJECT tO;
 	tO.init();
@@ -76,24 +81,43 @@ bool APcopter_DNNavoid::link(void)
 		pV->m_pObj = m_pIN->add(&tO);
 		NULL_F(pV->m_pObj);
 
+		string pClass[DETECTOR_N_CLASS];
 		Kiss** pItrAct = pKT->getChildItr();
-
 		pV->m_nAction = 0;
-		while (pItrAct[pV->m_nAction])
+		int i=0;
+		while (pItrAct[i])
 		{
-			Kiss* pKA = pItrAct[pV->m_nAction];
-			IF_F(pV->m_nAction >= DNNAVOID_N_ACTION);
+			if(pV->m_nAction >= DNNAVOID_N_ACTION)
+			{
+				LOG_E("Exceeded the max number of action:" << DNNAVOID_N_ACTION);
+				return false;
+			}
 
-			DNN_AVOID_ACTION* pA = &pV->m_pAction[pV->m_nAction];
+			Kiss* pKA = pItrAct[i++];
+			int nClass = pKA->array("class", pClass, DETECTOR_N_CLASS);
+			IF_CONT(nClass <= 0);
+
+			DNN_AVOID_ACTION* pA = &pV->m_pAction[pV->m_nAction++];
 			pA->init();
-			pA->m_nClass = pKA->array("class", pA->m_pClass,
-					DNNAVOID_N_PLACE_CLASS);
-			IF_CONT(pA->m_nClass <= 0);
-			pV->m_nAction++;
+			for(int j=0; j<nClass; j++)
+			{
+				pA->addClass(m_pIN->getClassIdx(pClass[j]));
+			}
 
 			string strAction = "";
-			F_ERROR_F(pKA->v("action", &strAction));
+			if(!pKA->v("action", &strAction))
+			{
+				LOG_E("Action not defined");
+				return false;
+			}
+
 			pA->m_action = str2actionType(strAction);
+			if(pA->m_action == DA_UNKNOWN)
+			{
+				LOG_E("Unknown action: " << strAction);
+				return false;
+			}
+
 		}
 	}
 
@@ -126,11 +150,11 @@ void APcopter_DNNavoid::update(void)
 	NULL_(m_pIN);
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
-
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 	double alt = (double)pMavlink->m_msg.global_position_int.relative_alt;
 
-	int i, j, k;
+/*
+ 	int i, j, k;
 	for (i = 0; i < m_nVision; i++)
 	{
 		DNN_AVOID_VISION* pV = &m_pVision[i];
@@ -182,6 +206,8 @@ void APcopter_DNNavoid::update(void)
 				pV->m_rMin,
 				constrain(alt*pV->m_angleTan, pV->m_rMin, pV->m_rMax));
 	}
+
+	*/
 
 }
 

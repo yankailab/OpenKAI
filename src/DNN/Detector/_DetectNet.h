@@ -45,7 +45,6 @@ public:
 	int m_nBoxMax;
 	uint32_t m_nClass;
 
-	int num_channels_;
 	cv::Mat mean_;
 	Frame* m_pRGBA;
 	Frame* m_pRGBAf;

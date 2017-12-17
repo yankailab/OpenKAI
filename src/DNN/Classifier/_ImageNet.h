@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__ImageNet_H_
-#define OPENKAI_SRC_DNN__ImageNet_H_
+#ifndef OpenKAI_src_DNN_Classifier__ImageNet_H_
+#define OpenKAI_src_DNN_Classifier__ImageNet_H_
 
 #include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"
@@ -28,6 +28,7 @@ public:
 
 	int classify(Frame* pBGR, string* pName);
 	bool bReady(void);
+	int getClassIdx(string& className);
 
 private:
 	void detect(void);
@@ -44,10 +45,10 @@ public:
 #endif
 	Frame* m_pRGBA;
 
-	int m_nBatch;
-	string m_blobIn;
-	string m_blobOut;
-	int	   m_maxPix;
+	int		m_nBatch;
+	string	m_blobIn;
+	string	m_blobOut;
+	int		m_maxPix;
 
 };
 

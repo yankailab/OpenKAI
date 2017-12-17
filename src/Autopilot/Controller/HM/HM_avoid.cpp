@@ -130,7 +130,7 @@ void HM_avoid::update(void)
  			m_rpmSteer *= -1;
 
 		//if found marker, start turn for the timer duration
-		if (m_pMN->bFound(m_iMarkerClass, m_minProb))
+		if (m_pMN->bFound(m_iMarkerClass))
 		{
 			m_markerTurnStart = tNow;
 			m_sequence = av_markerTurn;

@@ -14,24 +14,21 @@ _DetectorBase::_DetectorBase()
 	m_trainedFile = "";
 	m_meanFile = "";
 	m_labelFile = "";
-	m_vClassDraw.clear();
-
 	m_overlapMin = 1.0;
 	m_pDetIn = NULL;
-
-	m_defaultDrawTextSize = 0.5;
-	m_defaultDrawColor = Scalar(0,0,0);
-	m_bDrawContour = false;
-	m_contourBlend = 0.125;
 	m_minConfidence = 0.0;
+	m_nClass = DETECTOR_N_CLASS;
+	m_tStamp = 0;
 	m_obj.reset();
-
-	m_classDrawPos.x = 50;
-	m_classDrawPos.y = 50;
-	m_classDrawPos.z = 50;
 
 	m_bActive = true;
 	m_mode = thread;
+
+	m_bDrawSegment = false;
+	m_segmentBlend = 0.125;
+	m_classLegendPos.x = 50;
+	m_classLegendPos.y = 50;
+	m_classLegendPos.z = 25;
 }
 
 _DetectorBase::~_DetectorBase()
@@ -44,13 +41,7 @@ bool _DetectorBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	//Setup model
-	string modelDir = "";
-	string presetDir = "";
-
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("modelDir", &modelDir));
-
+	//mode
 	string iName = "thread";
 	F_INFO(pK->v("mode", &iName));
 	if (iName == "noThread")
@@ -64,6 +55,15 @@ bool _DetectorBase::init(void* pKiss)
 		bSetActive(false);
 	}
 
+	//general
+	KISSm(pK, overlapMin);
+	KISSm(pK, minConfidence);
+	m_obj.reset();
+
+	//model
+	string modelDir = "";
+	F_INFO(pK->v("modelDir", &modelDir));
+
 	KISSm(pK, modelFile);
 	KISSm(pK, trainedFile);
 	KISSm(pK, meanFile);
@@ -74,49 +74,16 @@ bool _DetectorBase::init(void* pKiss)
 	m_meanFile = modelDir + m_meanFile;
 	m_labelFile = modelDir + m_labelFile;
 
-	KISSm(pK, overlapMin);
-	KISSm(pK, minConfidence);
-	KISSm(pK, defaultDrawTextSize);
-	KISSm(pK, bDrawContour);
-	KISSm(pK, contourBlend);
+	//draw
+	KISSm(pK, bDrawSegment);
+	KISSm(pK, segmentBlend);
 
-	int pDefaultDrawColor[3];
-	int nDefaultDrawColor = pK->array("defaultDrawColor", pDefaultDrawColor, 3);
-	if(nDefaultDrawColor > 0)m_defaultDrawColor[0] = pDefaultDrawColor[0];
-	if(nDefaultDrawColor > 1)m_defaultDrawColor[1] = pDefaultDrawColor[1];
-	if(nDefaultDrawColor > 2)m_defaultDrawColor[2] = pDefaultDrawColor[2];
-
+	//statistics
 	int i;
-	m_vClassDraw.clear();
-	CLASS_DRAW cd;
-	string pClassColor[N_CLASS];
-	int nClassColor = pK->array("classColor", pClassColor, N_CLASS);
-	if(nClassColor > 0)
+	for(i=0;i<DETECTOR_N_CLASS;i++)
 	{
-		for(i=0; i<nClassColor; i++)
-		{
-			vector<string> vClassColor = splitBy(pClassColor[i], ',');
-			cd.init();
-			cd.m_colorBBox = m_defaultDrawColor;
-			if(vClassColor.size() > 0)cd.m_colorBBox[0]=atoi(vClassColor[0].c_str());
-			if(vClassColor.size() > 1)cd.m_colorBBox[1]=atoi(vClassColor[1].c_str());
-			if(vClassColor.size() > 2)cd.m_colorBBox[2]=atoi(vClassColor[2].c_str());
-			if(vClassColor.size() > 3)
-			{
-				cd.m_bDraw = (atoi(vClassColor[3].c_str())==0)?false:true;
-			}
-
-			m_vClassDraw.push_back(cd);
-		}
+		m_pClassStatis[i].init();
 	}
-
-	int pInfoPos[3];
-	int nInfoPos = pK->array("drawInfoPos", pInfoPos, 3);
-	if(nInfoPos > 0)m_classDrawPos.x = pInfoPos[0];
-	if(nInfoPos > 1)m_classDrawPos.y = pInfoPos[1];
-	if(nInfoPos > 2)m_classDrawPos.z = pInfoPos[2];
-
-	m_obj.reset();
 
 	return true;
 }
@@ -137,6 +104,43 @@ bool _DetectorBase::link(void)
 	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
+}
+
+void _DetectorBase::reset(void)
+{
+	this->_ThreadBase::reset();
+
+	m_pVision = NULL;
+	m_pDetIn = NULL;
+}
+
+void _DetectorBase::update(void)
+{
+	m_tStamp = get_time_usec();
+}
+
+void _DetectorBase::updateStatistics(void)
+{
+	int i;
+	for(i=0; i<m_nClass; i++)
+	{
+		m_pClassStatis[i].m_n = 0;
+	}
+
+	for(i=0; i<size(); i++)
+	{
+		OBJECT* pO = at(i);
+
+		IF_CONT(pO->m_iClass >= DETECTOR_N_CLASS);
+		IF_CONT(pO->m_iClass < 0);
+
+		m_pClassStatis[pO->m_iClass].m_n++;
+	}
+}
+
+string _DetectorBase::getClassName(int iClass)
+{
+	return "";
 }
 
 bool _DetectorBase::bReady(void)
@@ -205,69 +209,45 @@ bool _DetectorBase::draw(void)
 	IF_F(pMat->empty());
 
 	Mat bg;
-	if (m_bDrawContour)
+	if (m_bDrawSegment)
 	{
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	int i;
-	for(i=0;i<m_vClassDraw.size();i++)
-		m_vClassDraw[i].m_n = 0;
-
+	Scalar oCol = Scalar(0,255,0);
 	OBJECT* pO;
-	i=0;
+	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Scalar oColor = m_defaultDrawColor;
-		CLASS_DRAW cd;
-		if(pO->m_iClass < m_vClassDraw.size() && pO->m_iClass>=0)
-		{
-			cd = m_vClassDraw[pO->m_iClass];
-			IF_CONT(!cd.m_bDraw);
-			oColor = cd.m_colorBBox;
-			m_vClassDraw[pO->m_iClass].m_n++;
-			if(pO->m_name.length()>0)
-			{
-				m_vClassDraw[pO->m_iClass].m_name = pO->m_name;
-			}
-		}
+		int iClass = pO->m_iClass;
+		IF_CONT(iClass >= m_nClass);
+		IF_CONT(iClass < 0);
 
 		Rect r;
 		vInt42rect(&pO->m_bbox, &r);
-		if (pO->m_name.length()>0)
+		rectangle(*pMat, r, oCol, 1);
+
+		string oName = m_pClassStatis[iClass].m_name;
+		if (oName.length()>0)
 		{
-			putText(*pMat, pO->m_name,
+			putText(*pMat, oName,
 					Point(r.x + 25, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, m_defaultDrawTextSize, oColor, 2);
-		}
-
-		int bolObs = 2;
-		if (m_bDrawContour)
-		{
-			drawContours(bg, vector<vector<Point> >(1, pO->m_contour), -1,
-					oColor, CV_FILLED, 8);
-		}
-		else
-		{
-			rectangle(*pMat, r, oColor, bolObs);
+					FONT_HERSHEY_SIMPLEX, 1.0, oCol, 2);
 		}
 	}
 
-	if (m_bDrawContour)
+	if (m_bDrawSegment)
 	{
-		cv::addWeighted(*pMat, 1.0, bg, m_contourBlend, 0.0, *pMat);
+		cv::addWeighted(*pMat, 1.0, bg, m_segmentBlend, 0.0, *pMat);
 	}
 
-	int j=0;
-	for(i=0;i<m_vClassDraw.size();i++)
+	for(i=0; i<m_nClass; i++)
 	{
-		CLASS_DRAW cd = m_vClassDraw[i];
-		IF_CONT(!cd.m_bDraw);
+		CLASS_STATISTICS* pC = &m_pClassStatis[i];
 
-		putText(*pMat, cd.m_name + ": " + i2str(cd.m_n),
-				Point(m_classDrawPos.x,m_classDrawPos.y+j*m_classDrawPos.z),
-				FONT_HERSHEY_SIMPLEX, m_defaultDrawTextSize, cd.m_colorBBox, 2);
-		j++;
+		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
+				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
+				FONT_HERSHEY_SIMPLEX, 1.0, oCol, 2);
 	}
 
 	return true;

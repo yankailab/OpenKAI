@@ -8,9 +8,9 @@
 
 namespace kai
 {
+
 _DetectNet::_DetectNet()
 {
-	num_channels_ = 0;
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
 	m_coverageThr = 0.5;
@@ -135,18 +135,24 @@ void _DetectNet::detect(void)
 
 	m_nBox = m_nBoxMax;
 
-	IF_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU,
-			&m_nBox, m_confCPU));
+	IF_(!m_pDN->Detect((float* )fGMat.data, fGMat.cols, fGMat.rows, m_bbCPU, &m_nBox, m_confCPU));
 
 	int camArea = fGMat.cols * fGMat.rows;
 	int minSize = camArea * m_minSize;
 	int maxSize = camArea * m_maxSize;
 
-	uint64_t tNow = get_time_usec();
+	m_tStamp = get_time_usec();
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)
 	{
+		obj.init();
+		double prob = (double)m_confCPU[n*2];
+		IF_CONT(prob < m_minConfidence);
+
+		obj.addClass((int)m_confCPU[n*2+1]);
+		obj.m_tStamp = m_tStamp;
+
 		float* bb = m_bbCPU + (n * 4);
 		obj.m_bbox.x = (int) bb[0];
 		obj.m_bbox.y = (int) bb[1];
@@ -160,21 +166,13 @@ void _DetectNet::detect(void)
 		if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
 		obj.i2fBBox();
 
-		obj.m_iClass = m_confCPU[n*2+1];
-		obj.m_dist = 0.0;
-		obj.m_prob = (double)m_confCPU[n*2];
-		obj.m_name = m_className;
-		obj.m_frameID = tNow;
-
-		LOG_I("BBox: "<< obj.m_iClass << " " << obj.m_prob);
-
-		IF_CONT(obj.m_prob < m_minConfidence);
-
 		int oSize = obj.m_bbox.area();
 		IF_CONT(oSize < minSize);
 		IF_CONT(oSize > maxSize);
 
 		add(&obj);
+
+		LOG_I("BBox: "<< obj.m_iClass << " " << prob);
 	}
 
 }

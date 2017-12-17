@@ -77,8 +77,8 @@ void EXT_base::update(void)
 		one += ",";
 		one += i2str(pO->m_bbox.w - pO->m_bbox.y);
 		one += ",";
-		one += i2str((int)(pO->m_prob*100));
-		one += ";";
+//		one += i2str((int)(pO->m_prob*100));
+//		one += ";";
 		m_pIO->write((unsigned char*)one.c_str(),one.length());
 
 		LOG_I(one);

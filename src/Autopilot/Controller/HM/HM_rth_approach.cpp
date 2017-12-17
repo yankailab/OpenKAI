@@ -91,7 +91,7 @@ void HM_rth_approach::update(void)
 		}
 		else
 		{
-			IF_CONT(pO->m_name != m_targetName);
+//			IF_CONT(pO->m_name != m_targetName);
 		}
 
 		if (!m_pTarget)
@@ -100,11 +100,11 @@ void HM_rth_approach::update(void)
 			continue;
 		}
 
-		if (m_pTarget->m_prob < pO->m_prob)
-		{
-			m_pTarget = pO;
-			continue;
-		}
+//		if (m_pTarget->m_prob < pO->m_prob)
+//		{
+//			m_pTarget = pO;
+//			continue;
+//		}
 	}
 
 	if(!m_pTarget)

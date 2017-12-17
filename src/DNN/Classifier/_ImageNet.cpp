@@ -18,7 +18,6 @@ _ImageNet::_ImageNet()
 	m_nBatch = 1;
 	m_blobIn = "data";
 	m_blobOut = "prob";
-
 	m_maxPix = 100000;
 }
 
@@ -33,8 +32,6 @@ bool _ImageNet::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	string presetDir = "";
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 	KISSm(pK,maxPix);
 	KISSm(pK,nBatch);
 	KISSm(pK,blobIn);
@@ -80,11 +77,20 @@ bool _ImageNet::start(void)
 void _ImageNet::update(void)
 {
 #ifdef USE_TENSORRT
-	m_pIN = imageNet::Create(m_modelFile.c_str(), m_trainedFile.c_str(),
-			m_meanFile.c_str(), m_labelFile.c_str(), m_blobIn.c_str(),
-			m_blobOut.c_str());
-
+	m_pIN = imageNet::Create(m_modelFile.c_str(),
+							 m_trainedFile.c_str(),
+							 m_meanFile.c_str(),
+							 m_labelFile.c_str(),
+							 m_blobIn.c_str(),
+							 m_blobOut.c_str(),
+							 m_nBatch);
 	NULL_(m_pIN);
+
+	m_nClass = m_pIN->GetNumClasses();
+	for(int i=0; i<m_nClass; i++)
+	{
+		m_pClassStatis[i].m_name = m_pIN->GetClassDesc(i);
+	}
 #endif
 
 	IF_(m_mode == noThread);
@@ -104,6 +110,20 @@ bool _ImageNet::bReady(void)
 	if(m_pIN)return true;
 
 	return false;
+}
+
+int _ImageNet::getClassIdx(string& className)
+{
+	if(!bReady())return -1;
+
+	int i;
+	for(i=0; i<m_nClass; i++)
+	{
+		if(m_pIN->GetClassDesc(i) == className)
+			return i;
+	}
+
+	return -1;
 }
 
 void _ImageNet::detect(void)
@@ -127,10 +147,11 @@ void _ImageNet::detect(void)
 		m_obj = m_pDetIn->m_obj;
 	}
 
+	//TODO: Batch inference
+
 	Rect bb;
 	GpuMat gBB;
 	GpuMat gfBB;
-
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
@@ -155,16 +176,12 @@ void _ImageNet::detect(void)
 		if(prob < m_minConfidence)
 		{
 			pO->m_iClass = -1;
-			pO->m_name = "";
-			pO->m_prob = 0.0;
 		}
 		else
 		{
 			pO->m_iClass = iClass;
-			pO->m_name = m_pIN->GetClassDesc(pO->m_iClass);
-			pO->m_prob = prob;
 		}
-		pO->m_frameID = get_time_usec();
+		pO->m_tStamp = get_time_usec();
 #endif
 	}
 }

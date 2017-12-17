@@ -28,7 +28,7 @@ public:
 
 	void bSetActive(bool bActive);
 	OBJECT* get(int i);
-	bool bFound(int iClass, double minProb);
+	bool bFound(int iClass);
 
 private:
 	vInt4 explore(int x, int y, int iClass);

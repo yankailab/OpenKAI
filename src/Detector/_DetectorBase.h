@@ -5,15 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_Detector__DETECTORBASE_H_
-#define OPENKAI_SRC_Detector__DETECTORBASE_H_
+#ifndef OpenKAI_src_Detector__DetectorBase_H_
+#define OpenKAI_src_Detector__DetectorBase_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
-#define N_CLASS 128
-#define N_OBJ 1024
+#define DETECTOR_N_CLASS 64
+#define DETECTOR_N_OBJ 1024
 
 namespace kai
 {
@@ -27,15 +27,12 @@ struct OBJECT
 {
 	vDouble4 m_fBBox;
 	vInt4 m_bbox;
+	double	m_dist;
 	vInt2 m_camSize;
-	double m_dist;
-	double m_prob;
-	int m_iClass;
-	string m_name;
-	vector<Point> m_contour;
-	int64_t m_frameID;
-	uint8_t m_safety;
-	bool m_bCluster;
+	int8_t m_iClass;		//most probable class
+	uint64_t m_mClass;		//all candidate class mask
+	bool	 m_bCluster;	//clustered class mask
+	int64_t m_tStamp;
 
 	void init(void)
 	{
@@ -43,12 +40,21 @@ struct OBJECT
 		m_bbox.init();
 		m_camSize.init();
 		m_dist = -1.0;
-		m_prob = 0;
-		m_iClass = -1;
-		m_name = "";
-		m_frameID = -1;
-		m_safety = -1;
+		m_tStamp = -1;
 		m_bCluster = false;
+		resetClass();
+	}
+
+	void addClass(int iClass)
+	{
+		m_mClass |= 1 << iClass;
+		m_iClass = iClass;
+	}
+
+	void resetClass(void)
+	{
+		m_iClass = -1;
+		m_mClass = 0;
 	}
 
 	void f2iBBox(void)
@@ -73,7 +79,7 @@ struct OBJECT
 
 struct OBJECT_ARRAY
 {
-	OBJECT m_pObj[N_OBJ];
+	OBJECT m_pObj[DETECTOR_N_OBJ];
 	int m_nObj;
 
 	void reset(void)
@@ -84,7 +90,7 @@ struct OBJECT_ARRAY
 	OBJECT* add(OBJECT* pO)
 	{
 		NULL_N(pO);
-		IF_N(m_nObj >= N_OBJ);
+		IF_N(m_nObj >= DETECTOR_N_OBJ);
 
 		m_pObj[m_nObj++] = *pO;
 
@@ -143,17 +149,13 @@ struct OBJECT_DARRAY
 	}
 };
 
-struct CLASS_DRAW
+struct CLASS_STATISTICS
 {
-	Scalar  m_colorBBox;
-	bool	m_bDraw;
-	int		m_n;
 	string  m_name;
+	int		m_n;
 
 	void init(void)
 	{
-		m_colorBBox = Scalar(255,255,255);
-		m_bDraw = true;
 		m_n = 0;
 		m_name = "";
 	}
@@ -168,6 +170,9 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
 	virtual bool draw(void);
+	virtual void reset(void);
+	virtual void update(void);
+	virtual string getClassName(int iClass);
 
 	void bSetActive(bool bActive);
 	OBJECT* add(OBJECT* pNewObj);
@@ -176,6 +181,7 @@ public:
 	int size(void);
 	void mergeDetector(void);
 	bool bReady(void);
+	void updateStatistics(void);
 
 public:
 	bool m_bActive;
@@ -188,17 +194,16 @@ public:
 	string m_trainedFile;
 	string m_meanFile;
 	string m_labelFile;
-
-	double m_defaultDrawTextSize;
-	Scalar m_defaultDrawColor;
-	double m_contourBlend;
-	bool m_bDrawContour;
-
-	vector<CLASS_DRAW> m_vClassDraw;
-	vInt3 m_classDrawPos;
+	int	   m_nClass;
 	double m_minConfidence;
 	detectorMode m_mode;
+	uint64_t m_tStamp;
 
+	CLASS_STATISTICS m_pClassStatis[DETECTOR_N_CLASS];
+
+	vInt3 m_classLegendPos;
+	bool m_bDrawSegment;
+	double m_segmentBlend;
 };
 
 }

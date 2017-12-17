@@ -8,7 +8,6 @@
 #include "APcopter_base.h"
 
 #define DNNAVOID_N_VISION 16
-#define DNNAVOID_N_PLACE_CLASS 8
 #define DNNAVOID_N_ACTION 8
 
 namespace kai
@@ -21,14 +20,21 @@ enum DNN_AVOID_ACTION_TYPE
 
 struct DNN_AVOID_ACTION
 {
-	string m_pClass[DNNAVOID_N_PLACE_CLASS];
-	int m_nClass;
+	uint64_t m_mClass; //class mask
 	DNN_AVOID_ACTION_TYPE m_action;
 
 	void init(void)
 	{
-		m_nClass = 0;
+		m_mClass = 0;
 		m_action = DA_UNKNOWN;
+	}
+
+	void addClass(int iClass)
+	{
+		IF_(iClass >= DETECTOR_N_CLASS);
+		IF_(iClass < 0);
+
+		m_mClass |= 1 << iClass;
 	}
 };
 
