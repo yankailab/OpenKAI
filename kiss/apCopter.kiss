@@ -210,7 +210,7 @@
 }
 
 {
-	"name":"dnnAvoid",
+	"name":"INavoid",
 	"class":"_ImageNet",
 	"bInst":0,
 	"bDraw":1,
@@ -223,9 +223,10 @@
 	"meanFile":"",
 	"blobOut_":"softmax",
 	"labelFile":"ilsvrc12_synset_words.txt",
-	"nObj":128,
-	"mode":"object",
+	"mode":"thread",
+	"minConfidence":0.0,
 	"maxPix":1000000,
+	"nBatch":3,
 }
 
 {
@@ -352,7 +353,7 @@
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
-			"_ImageNet":"dnnAvoid",
+			"_ImageNet":"INavoid",
 			
 			{
 				"name":"forward",

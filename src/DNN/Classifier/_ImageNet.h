@@ -35,6 +35,7 @@ public:
 
 private:
 	void detect(void);
+	void classifyBatch(int iObj, int nBatch);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -50,6 +51,9 @@ public:
 	string	m_blobIn;
 	string	m_blobOut;
 	int		m_maxPix;
+
+	uint64_t* m_pmClass;
+	int* m_piClass;
 
 };
 

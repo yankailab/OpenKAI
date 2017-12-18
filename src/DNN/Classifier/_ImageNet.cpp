@@ -18,6 +18,8 @@ _ImageNet::_ImageNet()
 	m_blobIn = "data";
 	m_blobOut = "prob";
 	m_maxPix = 100000;
+	m_pmClass = NULL;
+	m_piClass = NULL;
 }
 
 _ImageNet::~_ImageNet()
@@ -37,6 +39,8 @@ bool _ImageNet::init(void* pKiss)
 	KISSm(pK,blobOut);
 
 	m_pRGBA = new Frame();
+	m_pmClass = new uint64_t[m_nBatch];
+	m_piClass = new int[m_nBatch];
 
 	return true;
 }
@@ -47,6 +51,8 @@ void _ImageNet::reset(void)
 
 	DEL(m_pRGBA);
 	DEL(m_pIN);
+	DEL(m_pmClass);
+	DEL(m_piClass);
 }
 
 bool _ImageNet::link(void)
@@ -146,15 +152,13 @@ void _ImageNet::detect(void)
 		m_obj = m_pDetIn->m_obj;
 	}
 
-	//TODO: Batch inference
-
 	Rect bb;
 	GpuMat gfBB;
-	OBJECT* pO;
-
-	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	int iBatch = 0;
+	int iBatchFrom = 0;
+	for(int i=0; i<m_obj.size(); i++)
 	{
+		OBJECT* pO = m_obj.at(i);
 		pO->m_camSize.x = gfRGBA.cols;
 		pO->m_camSize.y = gfRGBA.rows;
 		pO->f2iBBox();
@@ -162,21 +166,39 @@ void _ImageNet::detect(void)
 		if(pO->m_bbox.area() > m_maxPix)
 		{
 			LOG_E("Image size exceeds the maxPix for ImageNet");
-			continue;
+			return;
 		}
 
 		vInt42rect(&pO->m_bbox, &bb);
 		gfBB = GpuMat(gfRGBA, bb);
-		float prob = 0;
-		int iClass = m_pIN->Classify((float*) gfBB.data, gfBB.cols, gfBB.rows, &prob);
+
+		m_pIN->AddImgToBatch(iBatch++, (float*) gfBB.data, gfBB.cols, gfBB.rows);
+		if(iBatch == m_nBatch)
+		{
+			classifyBatch(i, iBatch);
+			iBatch = 0;
+			iBatchFrom = i+1;
+		}
+	}
+	if(iBatch>0)
+	{
+		classifyBatch(iBatchFrom, iBatch);
+	}
+}
+
+void _ImageNet::classifyBatch(int iObj, int nBatch)
+{
+	m_pIN->ClassifyBatch(nBatch, m_pmClass, m_piClass, (float)m_minConfidence);
+	uint64_t tStamp = getTimeUsec();
+
+	for(int i=0; i<nBatch; i++)
+	{
+		OBJECT* pO = m_obj.at(i+iObj);
 
 		pO->resetClass();
-		if(prob >= m_minConfidence)
-		{
-			pO->addClass(iClass);
-		}
-
-		pO->m_tStamp = getTimeUsec();
+		pO->m_mClass = m_pmClass[i];
+		pO->m_iClass = m_piClass[i];
+		pO->m_tStamp = tStamp;
 	}
 }
 
