@@ -41,7 +41,7 @@ struct DNN_AVOID_ACTION
 struct DNN_AVOID_VISION
 {
 	uint8_t m_orientation;
-	double 	m_angleTan;
+	double 	m_angleTan;	//tangent of the degree between gravity and camera direction
 	double	m_rMin;
 	double	m_rMax;
 	OBJECT* m_pObj;

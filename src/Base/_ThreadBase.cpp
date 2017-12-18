@@ -112,7 +112,7 @@ void _ThreadBase::wakeUp(void)
 
 void _ThreadBase::updateTime(void)
 {
-	uint64_t newTime = get_time_usec();
+	uint64_t newTime = getTimeUsec();
 	m_dTime = newTime - m_tStamp;
 	m_tStamp = newTime;
 	m_FPS = USEC_1SEC / m_dTime;
@@ -133,12 +133,12 @@ void _ThreadBase::setTargetFPS(int fps)
 
 void _ThreadBase::autoFPSfrom(void)
 {
-	m_timeFrom = get_time_usec();
+	m_timeFrom = getTimeUsec();
 }
 
 void _ThreadBase::autoFPSto(void)
 {
-	m_timeTo = get_time_usec();
+	m_timeTo = getTimeUsec();
 
 	int uSleep = (int) (m_targetFrameTime - (m_timeTo - m_timeFrom));
 	if (uSleep > 1000)

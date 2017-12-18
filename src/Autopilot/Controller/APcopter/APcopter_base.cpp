@@ -121,7 +121,7 @@ void APcopter_base::update(void)
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 
-	uint64_t tNow = get_time_usec();
+	uint64_t tNow = getTimeUsec();
 
 	//Sending Heartbeat
 	if(m_freqHeartbeat > 0)

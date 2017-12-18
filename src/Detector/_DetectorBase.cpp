@@ -116,7 +116,7 @@ void _DetectorBase::reset(void)
 
 void _DetectorBase::update(void)
 {
-	m_tStamp = get_time_usec();
+	m_tStamp = getTimeUsec();
 }
 
 void _DetectorBase::updateStatistics(void)
@@ -136,6 +136,11 @@ void _DetectorBase::updateStatistics(void)
 
 		m_pClassStatis[pO->m_iClass].m_n++;
 	}
+}
+
+int _DetectorBase::getClassIdx(string& className)
+{
+	return -1;
 }
 
 string _DetectorBase::getClassName(int iClass)

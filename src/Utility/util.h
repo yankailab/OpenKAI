@@ -24,13 +24,22 @@ inline string checkDirName(string& dir)
 	return dir;
 }
 
-inline uint32_t get_time_boot_ms()
+inline uint32_t getTimeBootMs()
 {
 	// get number of milliseconds since boot
-    struct timespec elapsed_from_boot;
-    clock_gettime(CLOCK_BOOTTIME, &elapsed_from_boot);
+    struct timespec tFromBoot;
+    clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 
-    return elapsed_from_boot.tv_sec*1000 + elapsed_from_boot.tv_nsec/1000000;
+    return tFromBoot.tv_sec*1000 + tFromBoot.tv_nsec/1000000;
+}
+
+inline uint64_t getTimeUsec()
+{
+	struct timeval tStamp;
+	gettimeofday(&tStamp, NULL);
+	uint64_t time = (uint64_t) tStamp.tv_sec * (uint64_t) 1000000 + tStamp.tv_usec;
+
+	return time;
 }
 
 inline double NormRand(void)
@@ -191,16 +200,6 @@ inline double constrain(double v, double a, double b)
 		v = min;
 
 	return v;
-}
-
-inline uint64_t get_time_usec()
-{
-	struct timeval _time_stamp;
-	gettimeofday(&_time_stamp, NULL);
-	uint64_t time = (uint64_t) _time_stamp.tv_sec * (uint64_t) 1000000
-			+ _time_stamp.tv_usec;
-
-	return time;
 }
 
 union QBYTE

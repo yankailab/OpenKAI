@@ -13,7 +13,7 @@
 #include "../Vision/_VisionBase.h"
 
 #define DETECTOR_N_CLASS 64
-#define DETECTOR_N_OBJ 1024
+#define DETECTOR_N_OBJ 256
 
 namespace kai
 {
@@ -172,6 +172,7 @@ public:
 	virtual bool draw(void);
 	virtual void reset(void);
 	virtual void update(void);
+	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);
 
 	void bSetActive(bool bActive);

@@ -9,3 +9,6 @@
 //#define USE_CASCADE
 //#define USE_CUDASTEREO
 
+#ifdef USE_TENSORRT
+#define USE_CUDA
+#endif

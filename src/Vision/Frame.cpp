@@ -329,13 +329,13 @@ void Frame::update(Mat* pFrame)
 
 inline void Frame::updatedCMat(void)
 {
-	m_CMat.m_frameID = get_time_usec();
+	m_CMat.m_frameID = getTimeUsec();
 }
 
 #ifdef USE_CUDA
 void Frame::updatedGMat(void)
 {
-	m_GMat.m_frameID = get_time_usec();
+	m_GMat.m_frameID = getTimeUsec();
 }
 #endif
 

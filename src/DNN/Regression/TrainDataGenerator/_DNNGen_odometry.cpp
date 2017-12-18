@@ -152,7 +152,7 @@ void _DNNGen_odometry::mavlink(void)
 	NULL_(m_pMavlink);
 
 	//Sending Heartbeat at 1Hz
-	uint64_t tNow = get_time_usec();
+	uint64_t tNow = getTimeUsec();
 	if (tNow - m_lastHeartbeat >= USEC_1SEC)
 	{
 //		m_pMavlink->sendHeartbeat();
@@ -275,7 +275,7 @@ void _DNNGen_odometry::sample(void)
     struct tm *tm = localtime(&t);
     char strTime[128];
     strftime(strTime, sizeof(strTime), "_%F_%H-%M-%S_", tm);
-    string fName = m_fNamePrefix + strTime + li2str(get_time_usec());
+    string fName = m_fNamePrefix + strTime + li2str(getTimeUsec());
 	m_ofs << fName << "\t" << vT.x << "\t" << vT.y << "\t" << vT.z
 			 	   << "\t" << vR.x << "\t" << vR.y << "\t" << vR.z
 				   << "\t" << zedConfidence << "\t" << dT

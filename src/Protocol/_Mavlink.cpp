@@ -172,7 +172,7 @@ void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
 	mavlink_message_t message;
 	mavlink_landing_target_t ds;
 
-	ds.time_usec = get_time_usec();
+	ds.time_usec = getTimeUsec();
 	ds.target_num = 0;
 	ds.frame = MAV_FRAME_BODY_NED;
 	ds.angle_x = angle_x;
@@ -243,7 +243,7 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, u
 	ds.orientation = orientation;
 	ds.covariance = 255;
 	ds.id = 0;
-	ds.time_boot_ms = get_time_boot_ms();
+	ds.time_boot_ms = getTimeBootMs();
 
 	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
 
@@ -270,7 +270,7 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 
 	mavlink_message_t message;
 	mavlink_vision_position_delta_t dZed;
-	dZed.time_usec = get_time_usec();
+	dZed.time_usec = getTimeUsec();
 	dZed.time_delta_usec = dTime;
 	dZed.angle_delta[0] = (float) pDAngle->x;
 	dZed.angle_delta[1] = (float) pDAngle->y;
@@ -440,7 +440,7 @@ void _Mavlink::handleMessages()
 		m_msg.sysid = message.sysid;
 		m_msg.compid = message.compid;
 
-		uint64_t tNow = get_time_usec();
+		uint64_t tNow = getTimeUsec();
 
 		// Handle Message ID
 		switch (message.msgid)

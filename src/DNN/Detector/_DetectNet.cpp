@@ -141,7 +141,7 @@ void _DetectNet::detect(void)
 	int minSize = camArea * m_minSize;
 	int maxSize = camArea * m_maxSize;
 
-	m_tStamp = get_time_usec();
+	m_tStamp = getTimeUsec();
 
 	OBJECT obj;
 	for (int n = 0; n < m_nBox; n++)

@@ -77,7 +77,7 @@ void AProver_base::sendHeartbeat(void)
 	NULL_(m_pMavlink);
 
 	//Sending Heartbeat at 1Hz
-	uint64_t timeNow = get_time_usec();
+	uint64_t timeNow = getTimeUsec();
 	IF_(timeNow - m_lastHeartbeat < USEC_1SEC);
 
 	m_pMavlink->sendHeartbeat();

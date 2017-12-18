@@ -99,9 +99,16 @@ bool APcopter_DNNavoid::link(void)
 
 			DNN_AVOID_ACTION* pA = &pV->m_pAction[pV->m_nAction++];
 			pA->init();
+
 			for(int j=0; j<nClass; j++)
 			{
 				pA->addClass(m_pIN->getClassIdx(pClass[j]));
+			}
+
+			if(pA->m_mClass == 0)
+			{
+				LOG_E("nClass = 0");
+				return false;
 			}
 
 			string strAction = "";
@@ -153,61 +160,50 @@ void APcopter_DNNavoid::update(void)
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 	double alt = (double)pMavlink->m_msg.global_position_int.relative_alt;
 
-/*
- 	int i, j, k;
+	int i,j;
 	for (i = 0; i < m_nVision; i++)
 	{
 		DNN_AVOID_VISION* pV = &m_pVision[i];
-		string strPlace = pV->m_pObj->m_name;
 
 		for (j = 0; j < pV->m_nAction; j++)
 		{
 			DNN_AVOID_ACTION* pA = &pV->m_pAction[j];
+			IF_CONT(!(pA->m_mClass & pV->m_pObj->m_mClass));
 
-			int k;
-			for (k = 0; k < pA->m_nClass; k++)
-			{
-				if (strPlace == pA->m_pClass[k])
-					break;
-			}
-			//class not defined in the action
-			IF_CONT(k >= pA->m_nClass);
-
-			//class definition found
 			m_action = pA->m_action;
+
+			if(m_action <= DA_SAFE)
+			{
+				LOG_I("SAFE:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+				break;
+			}
+
+			if(m_action <= DA_WARN)
+			{
+				LOG_I("WARNING:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+				break;
+			}
+
+			LOG_I("FORBID:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+
+			pMavlink->distanceSensor(0, //type
+					pV->m_orientation,	//orientation
+					pV->m_rMax,
+					pV->m_rMin,
+					constrain(alt*pV->m_angleTan, pV->m_rMin, pV->m_rMax));
+
 			break;
-		}
-
-		if(j >= pV->m_nAction)
-		{
-			//unknown action
-			LOG_I("UNKNOWN:" << strPlace);
-			continue;
-		}
-
-		if(m_action <= DA_SAFE)
-		{
-			LOG_I("SAFE:" << strPlace);
-			continue;
 		}
 
 		if(m_action <= DA_WARN)
 		{
-			LOG_I("WARNING:" << strPlace);
-
-			continue;
+			pMavlink->distanceSensor(0, //type
+					pV->m_orientation,	//orientation
+					pV->m_rMax,
+					pV->m_rMin,
+					pV->m_rMax);
 		}
-
-		LOG_I("FORBID:" << strPlace);
-
-		pMavlink->distanceSensor(0, //type
-				pV->m_orientation,	//orientation
-				pV->m_rMax,
-				pV->m_rMin,
-				constrain(alt*pV->m_angleTan, pV->m_rMin, pV->m_rMax));
 	}
-
-	*/
 
 }
 

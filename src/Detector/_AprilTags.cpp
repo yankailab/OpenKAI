@@ -85,7 +85,7 @@ void _AprilTags::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		m_frameID = get_time_usec();
+		m_frameID = getTimeUsec();
 		m_tagAliveFrom = m_frameID - m_tagLifetime;
 
 		detect();

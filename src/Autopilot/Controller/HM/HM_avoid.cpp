@@ -110,7 +110,7 @@ void HM_avoid::update(void)
 	}
 
 	m_pMN->bSetActive(true);
-	uint64_t tNow = get_time_usec();
+	uint64_t tNow = getTimeUsec();
 
 	if(m_sequence == av_clear)
 	{

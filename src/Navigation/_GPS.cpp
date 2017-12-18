@@ -47,7 +47,7 @@ bool _GPS::init(void* pKiss)
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	F_INFO(pI->v("hdg", &m_initLL.m_hdg));
 
-	m_tStarted = get_time_usec();
+	m_tStarted = getTimeUsec();
 
 	reset();
 	return true;
@@ -102,7 +102,7 @@ void _GPS::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_tNow = get_time_usec();
+		m_tNow = getTimeUsec();
 		detect();
 
 		this->autoFPSto();
