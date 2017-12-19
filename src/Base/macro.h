@@ -33,8 +33,15 @@
 #define IF_F(x) if(x){return false;}
 #define IF_N(x) if(x){return NULL;}
 #define IF_(x) if(x){return;}
-#define IF_CONT(x) if(x){continue;}
 #define IF_NEG(x) if(x){return -1;}
+#define IF_CONT(x) if(x){continue;}
+
+#define F_l(x,y) if(x==false){LOG_E(y);return;}
+#define IF_Tl(x,y) if(x){LOG_E(y);return true;}
+#define IF_Fl(x,y) if(x){LOG_E(y);return false;}
+#define IF_Nl(x,y) if(x){LOG_E(y);return NULL;}
+#define IF_l(x,y) if(x){LOG_E(y);return;}
+#define IF_NEGl(x,y) if(x){LOG_E(y);return -1;}
 
 #define NULL_(x) if(x==NULL){return;}
 #define NULL_F(x) if(x==NULL){return false;}

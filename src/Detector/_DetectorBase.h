@@ -202,6 +202,8 @@ public:
 
 	CLASS_STATISTICS m_pClassStatis[DETECTOR_N_CLASS];
 
+	std::bitset<64> m_bitSet;
+	bool m_bDrawStatistics;
 	vInt3 m_classLegendPos;
 	bool m_bDrawSegment;
 	double m_segmentBlend;

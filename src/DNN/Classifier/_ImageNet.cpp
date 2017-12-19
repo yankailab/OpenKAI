@@ -12,7 +12,6 @@ namespace kai
 _ImageNet::_ImageNet()
 {
 	m_pIN = NULL;
-	m_mode = noThread;
 	m_pRGBA = NULL;
 	m_nBatch = 1;
 	m_blobIn = "data";
@@ -129,7 +128,7 @@ int _ImageNet::getClassIdx(string& className)
 
 string _ImageNet::getClassName(int iClass)
 {
-	static string className = m_pIN->GetClassDesc(iClass);
+	string className = m_pIN->GetClassDesc(iClass);
 	return className;
 }
 

@@ -26,6 +26,7 @@ _DetectorBase::_DetectorBase()
 
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
+	m_bDrawStatistics = false;
 	m_classLegendPos.x = 50;
 	m_classLegendPos.y = 50;
 	m_classLegendPos.z = 25;
@@ -77,6 +78,7 @@ bool _DetectorBase::init(void* pKiss)
 	//draw
 	KISSm(pK, bDrawSegment);
 	KISSm(pK, segmentBlend);
+	KISSm(pK, bDrawStatistics);
 
 	//statistics
 	int i;
@@ -236,7 +238,7 @@ bool _DetectorBase::draw(void)
 		if (oName.length()>0)
 		{
 			putText(*pMat, oName,
-					Point(r.x + 25, r.y + 25),
+					Point(r.x + 25, r.y + 50),
 					FONT_HERSHEY_SIMPLEX, 1.0, oCol, 2);
 		}
 	}
@@ -246,6 +248,7 @@ bool _DetectorBase::draw(void)
 		cv::addWeighted(*pMat, 1.0, bg, m_segmentBlend, 0.0, *pMat);
 	}
 
+	IF_T(!m_bDrawStatistics);
 	for(i=0; i<m_nClass; i++)
 	{
 		CLASS_STATISTICS* pC = &m_pClassStatis[i];

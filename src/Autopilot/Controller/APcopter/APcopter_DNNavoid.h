@@ -34,7 +34,7 @@ struct DNN_AVOID_ACTION
 		IF_(iClass >= DETECTOR_N_CLASS);
 		IF_(iClass < 0);
 
-		m_mClass |= 1 << iClass;
+		m_mClass |= (1 << iClass);
 	}
 };
 

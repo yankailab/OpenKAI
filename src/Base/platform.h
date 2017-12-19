@@ -1,5 +1,6 @@
 #include <arpa/inet.h>
 #include <algorithm>
+#include <bitset>
 #include <cstdio>
 #include <cmath>
 #include <cstdarg>

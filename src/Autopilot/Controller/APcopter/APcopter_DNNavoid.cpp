@@ -37,11 +37,7 @@ bool APcopter_DNNavoid::link(void)
 	iName = "";
 	F_INFO(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
-	if (!m_pIN)
-	{
-		LOG_E(iName << " not found");
-		return false;
-	}
+	IF_Fl(!m_pIN, iName << " not found");
 
 	while(!m_pIN->bReady())
 	{
@@ -57,9 +53,9 @@ bool APcopter_DNNavoid::link(void)
 	m_nVision = 0;
 	while (pItr[m_nVision])
 	{
-		Kiss* pKT = pItr[m_nVision];
 		IF_F(m_nVision >= DNNAVOID_N_VISION);
 
+		Kiss* pKT = pItr[m_nVision];
 		DNN_AVOID_VISION* pV = &m_pVision[m_nVision];
 		m_nVision++;
 		pV->init();
@@ -80,6 +76,7 @@ bool APcopter_DNNavoid::link(void)
 
 		pV->m_pObj = m_pIN->add(&tO);
 		NULL_F(pV->m_pObj);
+		m_pIN->m_obj.update(); //TOOD:
 
 		string pClass[DETECTOR_N_CLASS];
 		Kiss** pItrAct = pKT->getChildItr();
@@ -87,11 +84,7 @@ bool APcopter_DNNavoid::link(void)
 		int i=0;
 		while (pItrAct[i])
 		{
-			if(pV->m_nAction >= DNNAVOID_N_ACTION)
-			{
-				LOG_E("Exceeded the max number of action:" << DNNAVOID_N_ACTION);
-				return false;
-			}
+			IF_Fl(pV->m_nAction >= DNNAVOID_N_ACTION, "Exceeded the max number of action:" << DNNAVOID_N_ACTION);
 
 			Kiss* pKA = pItrAct[i++];
 			int nClass = pKA->array("class", pClass, DETECTOR_N_CLASS);
@@ -104,26 +97,13 @@ bool APcopter_DNNavoid::link(void)
 			{
 				pA->addClass(m_pIN->getClassIdx(pClass[j]));
 			}
-
-			if(pA->m_mClass == 0)
-			{
-				LOG_E("nClass = 0");
-				return false;
-			}
+			IF_Fl(pA->m_mClass == 0, "nClass = 0");
 
 			string strAction = "";
-			if(!pKA->v("action", &strAction))
-			{
-				LOG_E("Action not defined");
-				return false;
-			}
+			IF_Fl(!pKA->v("action", &strAction), "Action not defined");
 
 			pA->m_action = str2actionType(strAction);
-			if(pA->m_action == DA_UNKNOWN)
-			{
-				LOG_E("Unknown action: " << strAction);
-				return false;
-			}
+			IF_Fl(pA->m_action == DA_UNKNOWN, "Unknown action: " << strAction);
 
 		}
 	}
@@ -155,6 +135,7 @@ void APcopter_DNNavoid::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pIN);
+	IF_(!m_pIN->bReady());
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
@@ -174,17 +155,17 @@ void APcopter_DNNavoid::update(void)
 
 			if(m_action <= DA_SAFE)
 			{
-				LOG_I("SAFE:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+				LOG_I("SAFE: " << m_pIN->getClassName(pV->m_pObj->m_iClass));
 				break;
 			}
 
 			if(m_action <= DA_WARN)
 			{
-				LOG_I("WARNING:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+				LOG_I("WARNING: " << m_pIN->getClassName(pV->m_pObj->m_iClass));
 				break;
 			}
 
-			LOG_I("FORBID:" << m_pIN->getClassName(pV->m_pObj->m_iClass));
+			LOG_I("FORBID: " << m_pIN->getClassName(pV->m_pObj->m_iClass));
 
 			pMavlink->distanceSensor(0, //type
 					pV->m_orientation,	//orientation
