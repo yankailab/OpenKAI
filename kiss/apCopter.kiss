@@ -37,6 +37,17 @@
 }
 
 {
+	"name":"gst1",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"apView",
+	"gstPipeline":"v4l2src ! video/x-raw, framerate=30/1, width=1280, height=720, format=RGB ! videoconvert ! appsink",
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
 	"name":"orbSlam2",
 	"class":"_ORB_SLAM2",
 	"FPS":30,

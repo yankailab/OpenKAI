@@ -1,37 +1,37 @@
 /*
- * Camera.cpp
+ * _Gstreamer.cpp
  *
- *  Created on: Aug 22, 2015
+ *  Created on: Dec 21, 2017
  *      Author: yankai
  */
 
-#include "_Camera.h"
+
+#include "_GStreamer.h"
 
 namespace kai
 {
 
-_Camera::_Camera()
+_GStreamer::_GStreamer()
 {
 	m_type = camera;
-	m_deviceID = 0;
-
+	m_pipeline = "";
 	m_bCalibration = false;
 	m_bFisheye = false;
 	m_bCrop = false;
 }
 
-_Camera::~_Camera()
+_GStreamer::~_GStreamer()
 {
 	reset();
 }
 
-bool _Camera::init(void* pKiss)
+bool _GStreamer::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, deviceID);
+	KISSm(pK, pipeline);
 	KISSm(pK, bCrop);
 	if (m_bCrop != 0)
 	{
@@ -90,33 +90,30 @@ bool _Camera::init(void* pKiss)
 	return true;
 }
 
-void _Camera::reset(void)
+void _GStreamer::reset(void)
 {
 	this->_VisionBase::reset();
-	m_camera.release();
+	m_gst.release();
 }
 
-bool _Camera::link(void)
+bool _GStreamer::link(void)
 {
 	IF_F(!this->_VisionBase::link());
 	return true;
 }
 
-bool _Camera::open(void)
+bool _GStreamer::open(void)
 {
-	m_camera.open(m_deviceID);
-	if (!m_camera.isOpened())
+	m_gst.open(m_pipeline, CAP_GSTREAMER);
+	if (!m_gst.isOpened())
 	{
-		LOG_E("Cannot open camera:" << m_deviceID);
+		LOG_E("Cannot open gst pipeline: " << m_pipeline);
 		return false;
 	}
 
-	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
-	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
-
 	Mat cMat;
 	//Acquire a frame to determine the actual frame size
-	while (!m_camera.read(cMat));
+	while (!m_gst.read(cMat));
 
 	m_width = cMat.cols;
 	m_height = cMat.rows;
@@ -143,7 +140,7 @@ bool _Camera::open(void)
 	return true;
 }
 
-bool _Camera::start(void)
+bool _GStreamer::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -156,7 +153,7 @@ bool _Camera::start(void)
 	return true;
 }
 
-void _Camera::update(void)
+void _GStreamer::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -179,7 +176,7 @@ void _Camera::update(void)
 		GpuMat* pTmp;
 		Mat cMat;
 
-		while (!m_camera.read(cMat));
+		while (!m_gst.read(cMat));
 		m_Gmat.upload(cMat);
 
 		pSrc = &m_Gmat;
@@ -233,7 +230,7 @@ void _Camera::update(void)
 	}
 }
 
-bool _Camera::draw(void)
+bool _GStreamer::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*) this->m_pWindow;

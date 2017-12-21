@@ -22,6 +22,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_Flow);
 	ADD_MODULE(_GPS);
+	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_Lightware_SF40);
 	ADD_MODULE(_LeddarVu);

@@ -55,6 +55,7 @@
 
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
+#include "../Vision/_GStreamer.h"
 #include "../Vision/_VisionBase.h"
 #include "../Vision/_ZED.h"
 #include "../Vision/FrameGroup.h"
