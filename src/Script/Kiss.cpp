@@ -105,12 +105,7 @@ void Kiss::trim(string* pStr)
 {
 	std::string::size_type k;
 
-	k = pStr->find(' ');
-	while (k != std::string::npos)
-	{
-		pStr->erase(k,1);
-		k = pStr->find(' ');
-	}
+	//do NOT delete white spaces as gst pipeline use it for parameter separations
 
 	k = pStr->find('\r');
 	while (k != std::string::npos)

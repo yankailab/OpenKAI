@@ -45,7 +45,6 @@ public:
 public:
 	bool	m_bWindow;
 	bool	m_bFullScreen;
-	bool	m_bRec;
 	Frame*	m_pFrame;
 	vInt2	m_size;
 	vInt2	m_textPos;
@@ -56,9 +55,14 @@ public:
 	double	m_textSize;
 	Scalar	m_textCol;
 
+	string	m_gstOutput;
+	VideoWriter m_gst;
+
+	string m_fileRec;
+	VideoWriter m_VW;
+
 	Frame*	m_pF;
 	Frame*	m_pF2;
-	VideoWriter m_VW;
 };
 
 }

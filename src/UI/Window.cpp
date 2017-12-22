@@ -24,14 +24,15 @@ Window::Window()
 	m_pixTab = TAB_PIX;
 	m_lineHeight = LINE_HEIGHT;
 	m_textSize = 0.5;
-	m_textCol = Scalar(0,255,0);
+	m_textCol = Scalar(0, 255, 0);
 	m_bWindow = true;
-	m_bRec = false;
+	m_gstOutput = "";
+	m_fileRec = "";
 }
 
 Window::~Window()
 {
-	if(m_VW.isOpened())
+	if (m_VW.isOpened())
 	{
 		m_VW.release();
 	}
@@ -43,12 +44,9 @@ bool Window::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
-	F_INFO(pK->v("bRec", &m_bRec));
-
-	if(!m_bWindow && !m_bRec)
+	if (!m_bWindow)
 	{
 		LOG_E("Window mode is disabled. Turn \"bWindow\":1 to enable");
-		return false;
 	}
 
 	pK->m_pInst = this;
@@ -57,53 +55,54 @@ bool Window::init(void* pKiss)
 	F_ERROR_F(pK->v("h", &m_size.y));
 	F_INFO(pK->v("bFullScreen", &m_bFullScreen));
 
-	if(m_size.area()<=0)
+	if (m_size.area() <= 0)
 	{
 		LOG_E("Window size too small");
 		return false;
 	}
 
-	if(m_bRec)
+	KISSm(pK,fileRec);
+	if (!m_fileRec.empty())
 	{
-		string fileRec = "";
-		F_INFO(pK->v("recFile", &fileRec));
-		if(!fileRec.empty())
-		{
-			int recFPS = 30;
-			string reCodec = "MJPG";
-			F_INFO(pK->v("recFPS", &recFPS));
-			F_INFO(pK->v("recCodec", &reCodec));
+		int recFPS = 30;
+		string reCodec = "MJPG";
+		F_INFO(pK->v("recFPS", &recFPS));
+		F_INFO(pK->v("recCodec", &reCodec));
 
-			time_t t = time(NULL);
-		    struct tm *tm = localtime(&t);
-		    char strTime[128];
-		    strftime(strTime, sizeof(strTime), "%c", tm);
-		    fileRec += strTime;
-		    fileRec += ".avi";
+		time_t t = time(NULL);
+		struct tm *tm = localtime(&t);
+		char strTime[128];
+		strftime(strTime, sizeof(strTime), "%c", tm);
+		m_fileRec += strTime;
+		m_fileRec += ".avi";
 
-			if(!m_VW.open(
-					fileRec,
-					CV_FOURCC(
-							reCodec.at(0),
-							reCodec.at(1),
-							reCodec.at(2),
-							reCodec.at(3)),
-					recFPS,
-					cv::Size(m_size.x,
-							m_size.y)
-					))
-			{
-				LOG_E("Cannot open VideoWriter");
-				m_bRec = false;
-			}
-		}
-		else
+		if (!m_VW.open(m_fileRec,
+						CV_FOURCC(reCodec.at(0),
+						reCodec.at(1),
+						reCodec.at(2),
+						reCodec.at(3)),
+						recFPS,
+						cv::Size(m_size.x, m_size.y)))
 		{
-			LOG_E("Incorrect recording file name");
-			m_bRec = false;
+			LOG_E("Cannot open file recording");
+			return false;
 		}
 	}
-	IF_F(!m_bWindow && !m_bRec);
+
+	KISSm(pK,gstOutput);
+	if (!m_gstOutput.empty())
+	{
+		if (!m_gst.open(m_gstOutput,
+						CAP_GSTREAMER,
+						0,
+						30,
+						cv::Size(m_size.x, m_size.y),
+						true))
+		{
+			LOG_E("Cannot open GStreamer output");
+			return false;
+		}
+	}
 
 	F_INFO(pK->v("textX", &m_textStart.x));
 	F_INFO(pK->v("textY", &m_textStart.y));
@@ -120,20 +119,16 @@ bool Window::init(void* pKiss)
 	m_pF = new Frame();
 	m_pF2 = new Frame();
 
-	if(m_bWindow)
+	IF_T(!m_bWindow);
+
+	if (m_bFullScreen)
 	{
-		if (m_bFullScreen)
-		{
-			namedWindow(*this->getName(), CV_WINDOW_NORMAL);
-			setWindowProperty(*this->getName(),
-					CV_WND_PROP_FULLSCREEN,
-					CV_WINDOW_FULLSCREEN);
-		}
-		else
-		{
-			namedWindow(*this->getName(), CV_WINDOW_AUTOSIZE);
-		}
-	//	setMouseCallback(*this->getName(), onMouseGeneral, NULL);
+		namedWindow(*this->getName(), CV_WINDOW_NORMAL);
+		setWindowProperty(*this->getName(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+	}
+	else
+	{
+		namedWindow(*this->getName(), CV_WINDOW_AUTOSIZE);
 	}
 
 	return true;
@@ -149,35 +144,40 @@ bool Window::draw(void)
 	NULL_F(m_pFrame);
 	IF_F(m_pFrame->empty());
 
-	if(m_bWindow)
+	if (m_bWindow)
 	{
 		imshow(*this->getName(), *m_pFrame->getCMat());
 	}
 
-	if(m_VW.isOpened())
+	Frame* pSrc;
+	Frame* pDest;
+	Frame* pTmp;
+	pSrc = m_pF;
+	pDest = m_pF2;
+
+	m_pF->update(m_pFrame->getCMat());
+	Size fSize = pSrc->getSize();
+
+	if (fSize.width != m_size.x || fSize.height != m_size.y)
 	{
-		Frame* pSrc;
-		Frame* pDest;
-		Frame* pTmp;
-		pSrc = m_pF;
-		pDest = m_pF2;
+		pDest->getResizedOf(pSrc, m_size.x, m_size.y);
+		SWAP(pSrc, pDest, pTmp);
+	}
 
-		m_pF->update(m_pFrame->getCMat());
-		Size fSize = pSrc->getSize();
+	if (pSrc->getCMat()->type() != CV_8UC3)
+	{
+		pDest->get8UC3Of(pSrc);
+		SWAP(pSrc, pDest, pTmp);
+	}
 
-		if(fSize.width != m_size.x || fSize.height != m_size.y)
-		{
-			pDest->getResizedOf(pSrc,m_size.x,m_size.y);
-			SWAP(pSrc,pDest,pTmp);
-		}
-
-		if(pSrc->getCMat()->type()!=CV_8UC3)
-		{
-			pDest->get8UC3Of(pSrc);
-			SWAP(pSrc,pDest,pTmp);
-		}
-
+	if (m_VW.isOpened())
+	{
 		m_VW << *pSrc->getCMat();
+	}
+
+	if (m_gst.isOpened())
+	{
+		m_gst << *pSrc->getCMat();
 	}
 
 	m_pFrame->allocate(m_size.x, m_size.y);
@@ -207,7 +207,8 @@ void Window::tabNext(void)
 void Window::tabPrev(void)
 {
 	m_textPos.x -= m_pixTab;
-	if(m_textPos.x < m_textStart.x)m_textPos.x = m_textStart.x;
+	if (m_textPos.x < m_textStart.x)
+		m_textPos.x = m_textStart.x;
 }
 
 void Window::tabReset(void)
@@ -237,16 +238,9 @@ Scalar Window::textColor(void)
 
 void Window::addMsg(string* pMsg)
 {
-	putText(*m_pFrame->getCMat(),
-			*pMsg,
-			*getTextPos(),
-			FONT_HERSHEY_SIMPLEX,
-			m_textSize,
-			m_textCol,
-			1);
+	putText(*m_pFrame->getCMat(), *pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
+			m_textSize, m_textCol, 1);
 	lineNext();
 }
-
-
 
 }
