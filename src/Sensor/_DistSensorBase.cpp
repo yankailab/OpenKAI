@@ -93,6 +93,10 @@ void _DistSensorBase::input(double angle, double d)
 	IF_(angle < 0);
 	IF_(angle > m_fov);
 
+	angle += m_hdg + m_offsetAngle;
+	while (angle >= DEG_AROUND)
+		angle -= DEG_AROUND;
+
 	int iAngle = (int) (angle * m_dAngleInv);
 	if(iAngle >= m_nDiv)iAngle = m_nDiv;
 
@@ -108,7 +112,7 @@ void _DistSensorBase::updateOdometry(void)
 	double pX = 0.0;
 	double pY = 0.0;
 	double nV = 0.0;
-	double rad = (m_hdg + m_offsetAngle) * DEG_RAD;
+	double rad = 0.0;
 	double dRad = m_dAngle * DEG_RAD;
 
 	for (i = 0; i < m_nDiv; i++)
@@ -125,9 +129,6 @@ void _DistSensorBase::updateOdometry(void)
 		IF_CONT(absDD > m_diffMax);
 
 		rad += dRad;
-		while (rad >= RAD_AROUND)
-			rad -= RAD_AROUND;
-
 		pX += dD * cos(rad);
 		pY += -dD * sin(rad);
 		nV += 1.0;
@@ -197,7 +198,7 @@ bool _DistSensorBase::draw(void)
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	//Plot lidar result
-	double rad = (m_hdg + m_offsetAngle) * DEG_RAD;
+	double rad = 0.0;
 	double dRad = m_dAngle * DEG_RAD;
 
 	for (int i = 0; i < m_nDiv; i++)
@@ -210,9 +211,6 @@ bool _DistSensorBase::draw(void)
 		dist *= m_showScale;
 
 		rad += dRad;
-		while (rad >= RAD_AROUND)
-			rad -= RAD_AROUND;
-
 		int pX = -dist * cos(rad);
 		int pY = -dist * sin(rad);
 
