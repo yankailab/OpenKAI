@@ -301,7 +301,7 @@
 			"name":"apDNNAvoid",
 			"class":"APcopter_DNNavoid",
 			"bInst":1,
-			"bLog":1,
+			"bLog":0,
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",

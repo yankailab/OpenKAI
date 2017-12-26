@@ -20,6 +20,7 @@
 #define USEC_10SEC 10000000
 #define NSEC_1SEC 1000000000
 #define DEG_AROUND 360.0
+#define RAD_AROUND 6.283188
 
 #define CR '\x0d'
 #define LF '\x0a'

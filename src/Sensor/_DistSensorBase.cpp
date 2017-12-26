@@ -14,13 +14,20 @@ _DistSensorBase::_DistSensorBase()
 {
 	m_pDiv = NULL;
 	m_nDiv = 0;
+	m_fov = 360;
 	m_dAngle = 0;
+	m_dAngleInv = 0;
 	m_rMin = 0.0;
 	m_rMax = DBL_MAX;
 	m_offsetAngle = 0.0;
 	m_hdg = 0.0;
 	m_showScale = 1.0;
 	m_bReady = false;
+	m_pMavlink = NULL;
+	m_dT.init();
+	m_diffMax = 1.0;
+	m_diffMin = 0.0;
+	m_odoConfidence = 0.0;
 }
 
 _DistSensorBase::~_DistSensorBase()
@@ -34,8 +41,14 @@ bool _DistSensorBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	KISSm(pK,fov);
+	IF_Fl(m_fov <= 0, "angleTo > 0");
+	IF_Fl(m_fov > 360, "angleTo <= 360");
+
 	KISSm(pK,nDiv);
-	m_dAngle = 360/m_nDiv;
+	m_dAngle = m_fov/m_nDiv;
+	m_dAngleInv = 1.0/m_dAngle;
+
 	KISSm(pK,offsetAngle);
 	KISSm(pK,showScale);
 	KISSm(pK,rMin);
@@ -54,6 +67,18 @@ bool _DistSensorBase::init(void* pKiss)
 	return true;
 }
 
+bool _DistSensorBase::link(void)
+{
+	IF_F(!this->_ThreadBase::link());
+	Kiss* pK = (Kiss*)m_pKiss;
+
+	string iName = "";
+	F_INFO(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+
+	return true;
+}
+
 void _DistSensorBase::reset(void)
 {
 	this->_ThreadBase::reset();
@@ -66,15 +91,57 @@ void _DistSensorBase::input(double angle, double d)
 	IF_(d <= m_rMin);
 	IF_(d > m_rMax);
 	IF_(angle < 0);
+	IF_(angle > m_fov);
 
-	angle += m_hdg + m_offsetAngle;
-	while (angle >= DEG_AROUND)
-		angle -= DEG_AROUND;
-
-	int iAngle = (int) (angle / m_dAngle);
-	IF_(iAngle >= m_nDiv);
+	int iAngle = (int) (angle * m_dAngleInv);
+	if(iAngle >= m_nDiv)iAngle = m_nDiv;
 
 	m_pDiv[iAngle].input(d);
+}
+
+void _DistSensorBase::updateOdometry(void)
+{
+	IF_(m_bReady);
+	NULL_(m_pMavlink);
+
+	int i;
+	double pX = 0.0;
+	double pY = 0.0;
+	double nV = 0.0;
+	double rad = (m_hdg + m_offsetAngle) * DEG_RAD;
+	double dRad = m_dAngle * DEG_RAD;
+
+	for (i = 0; i < m_nDiv; i++)
+	{
+		Average* pA = &m_pDiv[i].m_fAvr;
+
+		double dist = pA->v();
+		IF_CONT(dist < m_rMin);
+		IF_CONT(dist > m_rMax);
+
+		double dD = pA->accumlatedDiff();
+		double absDD = abs(dD);
+		IF_CONT(absDD <= m_diffMin);
+		IF_CONT(absDD > m_diffMax);
+
+		rad += dRad;
+		while (rad >= RAD_AROUND)
+			rad -= RAD_AROUND;
+
+		pX += dD * cos(rad);
+		pY += -dD * sin(rad);
+		nV += 1.0;
+	}
+
+	m_odoConfidence = nV/m_nDiv;
+	nV = 1.0/nV;
+	m_dT.x = pX * nV;
+	m_dT.y = pY * nV;
+}
+
+vDouble2 _DistSensorBase::dT(void)
+{
+	return m_dT;
 }
 
 DIST_SENSOR_TYPE _DistSensorBase::type(void)
@@ -130,6 +197,9 @@ bool _DistSensorBase::draw(void)
 	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
 	//Plot lidar result
+	double rad = (m_hdg + m_offsetAngle) * DEG_RAD;
+	double dRad = m_dAngle * DEG_RAD;
+
 	for (int i = 0; i < m_nDiv; i++)
 	{
 		Average* pD = &m_pDiv[i].m_fAvr;
@@ -137,9 +207,12 @@ bool _DistSensorBase::draw(void)
 		double dist = pD->v();
 		IF_CONT(dist <= m_rMin);
 		IF_CONT(dist > m_rMax);
-
 		dist *= m_showScale;
-		double rad = m_dAngle * i * DEG_RAD;
+
+		rad += dRad;
+		while (rad >= RAD_AROUND)
+			rad -= RAD_AROUND;
+
 		int pX = -dist * cos(rad);
 		int pY = -dist * sin(rad);
 

@@ -184,6 +184,8 @@ void _RPLIDAR::updateLidar(void)
 //				nodes[i].distance_q2 / 4.0f,
 //				nodes[i].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT);
 	}
+
+	updateOdometry();
 }
 
 DIST_SENSOR_TYPE _RPLIDAR::type(void)

@@ -12,6 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
+#include "../Protocol/_Mavlink.h"
 
 #define MAX_DIST_SENSOR_DIV 720
 
@@ -53,12 +54,15 @@ public:
 	virtual ~_DistSensorBase();
 
 	bool init(void* pKiss);
+	bool link(void);
 	bool draw(void);
 	void reset(void);
 
 	double rMin(void);
 	double rMax(void);
 	void input(double angle, double d);
+	void updateOdometry(void);
+	vDouble2 dT(void);
 
 	virtual DIST_SENSOR_TYPE type(void);
 	virtual double d(void);
@@ -69,13 +73,24 @@ public:
 public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
+	double	m_fov;
 	double	m_dAngle;
+	double	m_dAngleInv;
 	double	m_rMin;
 	double	m_rMax;
 	double	m_offsetAngle;
 	double	m_hdg;	//given by external sensor e.g. compass
 	double  m_showScale;
 	uint16_t m_bReady;
+
+	//odometry
+	_Mavlink* m_pMavlink;
+	vDouble2 m_dT;	//dTranslation, x, y,
+	double	m_diffMax;
+	double	m_diffMin;
+	double	m_odoConfidence;
+
+
 
 };
 
