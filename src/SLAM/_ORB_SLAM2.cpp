@@ -32,13 +32,7 @@ _ORB_SLAM2::_ORB_SLAM2()
 
 _ORB_SLAM2::~_ORB_SLAM2()
 {
-	if (m_pOS)
-	{
-		m_pOS->Shutdown();
-		delete m_pOS;
-	}
-
-	DEL(m_pFrame);
+	reset();
 }
 
 bool _ORB_SLAM2::init(void* pKiss)
@@ -57,6 +51,10 @@ bool _ORB_SLAM2::init(void* pKiss)
 	F_INFO(pK->v("fileVocabulary", &fileVocabulary));
 	F_INFO(pK->v("fileSetting", &fileSetting));
 
+	ifstream ifs;
+	ifs.open(fileSetting.c_str(), std::ios::in);
+	IF_Fl(!ifs,"setting file not found");
+
 	// Create SLAM system. It initializes all system threads and gets ready to process frames.
 	m_pOS = new ORB_SLAM2::System(fileVocabulary, fileSetting,
 			ORB_SLAM2::System::MONOCULAR, m_bViewer);
@@ -64,9 +62,20 @@ bool _ORB_SLAM2::init(void* pKiss)
 	m_pFrame = new Frame();
 	m_tStartup = 0;
 
-	reset();
-
 	return true;
+}
+
+void _ORB_SLAM2::reset(void)
+{
+	this->_ThreadBase::reset();
+
+	if (m_pOS)
+	{
+		m_pOS->Shutdown();
+		delete m_pOS;
+	}
+
+	DEL(m_pFrame);
 }
 
 bool _ORB_SLAM2::link(void)
@@ -99,10 +108,6 @@ bool _ORB_SLAM2::bTracking(void)
 	return m_bTracking;
 }
 
-void _ORB_SLAM2::reset(void)
-{
-}
-
 void _ORB_SLAM2::update(void)
 {
 	while (m_bThreadON)
@@ -126,7 +131,7 @@ void _ORB_SLAM2::detect(void)
 	IF_(pGray->empty());
 	m_pFrame->getResizedOf(pGray, m_width, m_height);
 
-	uint64_t tNow = get_time_usec();
+	uint64_t tNow = getTimeUsec();
 	if (m_tStartup <= 0)
 	{
 		m_tStartup = tNow;

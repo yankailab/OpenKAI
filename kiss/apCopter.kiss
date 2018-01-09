@@ -10,7 +10,7 @@
 {
 	"name":"apView",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -52,15 +52,15 @@
 	"name":"orbSlam2",
 	"class":"_ORB_SLAM2",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"_VisionBase":"cam1",
 	"width":640,
 	"height":360,
 	"_fileVocabulary":"/home/ubuntu/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
 	"_fileSetting":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
-	"fileVocabulary":"/media/kai/evo/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
-	"fileSetting":"/media/kai/evo/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
+	"fileVocabulary":"/media/kai/sm/dev/orb_slam2_gpu/Vocabulary/ORBvoc.txt",
+	"fileSetting":"/media/kai/sm/dev/workspace/OpenKAI/OpenKAI/data/orb_slam2/logicool_brio_640x360.yaml",
 	"bViewer":1,
 }
 
