@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
 #include "../../../DNN/Detector/_ClusterNet.h"
-#include "../../../Sensor/_ZEDobstacle.h"
+#include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -29,7 +29,7 @@ public:
 
 private:
 	HM_base* m_pHM;
-	_ZEDobstacle* m_pObs;
+	_ZEDdistance* m_pObs;
 	_ClusterNet* m_pMN;
 	int m_iMarkerClass;
 

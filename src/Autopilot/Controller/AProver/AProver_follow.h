@@ -8,7 +8,7 @@
 #include "../../../Automaton/_Automaton.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Filter/FilterBase.h"
-#include "../../../Sensor/_ZEDobstacle.h"
+#include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "AProver_base.h"
 
@@ -31,7 +31,7 @@ public:
 
 private:
 	AProver_base* m_pAP;
-	_ZEDobstacle*	m_pObs;
+	_ZEDdistance*	m_pObs;
 
 	//where target should be on cam coordinate
 	double	m_destX;

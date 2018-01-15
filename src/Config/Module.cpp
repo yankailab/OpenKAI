@@ -29,7 +29,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_ClusterNet);
-	ADD_MODULE(_ZEDobstacle);
+	ADD_MODULE(_ZEDdistance);
 	ADD_MODULE(_Path);
 	ADD_MODULE(_RC);
 	ADD_MODULE(Window);

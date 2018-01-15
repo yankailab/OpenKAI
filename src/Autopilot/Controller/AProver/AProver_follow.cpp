@@ -62,7 +62,7 @@ bool AProver_follow::link(void)
 	m_pAP = (AProver_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_INFO(pK->v("_Universe", &iName));
-	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
+	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

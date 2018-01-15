@@ -55,7 +55,7 @@ bool VEK_avoid::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_ZEDobstacle", &iName));
-	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
+	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

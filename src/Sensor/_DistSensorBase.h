@@ -61,6 +61,7 @@ public:
 	double rMin(void);
 	double rMax(void);
 	void input(double angle, double d);
+	void update(void);
 	void updateOdometry(void);
 	vDouble2 dT(void);
 
@@ -68,7 +69,10 @@ public:
 	virtual double d(void);
 	virtual double d(vInt4* pROI, vInt2* pPos);
 	virtual double d(vDouble4* pROI, vInt2* pPos);
-	virtual double d(int iDiv);
+	virtual double d(double deg);
+	virtual double dMin(double degFrom, double degTo);
+	virtual double dMax(double degFrom, double degTo);
+	virtual double dAvr(double degFrom, double degTo);
 
 public:
 	DIST_SENSOR_DIV* m_pDiv;

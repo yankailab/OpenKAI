@@ -54,7 +54,7 @@ bool VEK_follow::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_ZEDobstacle", &iName));
-	m_pObs = (_ZEDobstacle*) (pK->root()->getChildInstByName(&iName));
+	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 #ifdef USE_TENSORRT
 	iName = "";

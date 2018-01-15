@@ -132,8 +132,8 @@
 }
 
 {
-	"name":"Obstacle",
-	"class":"_ZEDobstacle",
+	"name":"ZEDdist",
+	"class":"_ZEDdistance",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":0,
@@ -250,7 +250,7 @@
 
 		{
 			"name":"apAvoid",
-			"class":"APcopter_sensorAvoid",
+			"class":"APcopter_distZED",
 			"bInst":1,
 			"bDraw":0,
 			"Window":"apView",
@@ -258,13 +258,11 @@
 			"APcopter_base":"apBase",
 
 			{
-				"name":"distSensor",
+				"name":"distZED",
 				"bInst":1,
 		
 				{
-					"name":"Obstacle",
-					"class":"_ZEDobstacle",
-
+					"_ZEDdistance":"ZEDdist",
 					{
 						"orientation":0,
 						"l":0.05,
@@ -273,8 +271,7 @@
 						"b":0.8,
 					}
 				}
-			}
-					
+			}		
 		}
 		
 		{

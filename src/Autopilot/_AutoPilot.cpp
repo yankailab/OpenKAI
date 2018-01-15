@@ -44,7 +44,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_base);
 		ADD_ACTION(APcopter_DNNavoid);
 		ADD_ACTION(APcopter_DNNnav);
-		ADD_ACTION(APcopter_sensorAvoid);
+		ADD_ACTION(APcopter_distZED);
 		ADD_ACTION(APcopter_visualFollow);
 		ADD_ACTION(APcopter_DNNlanding);
 

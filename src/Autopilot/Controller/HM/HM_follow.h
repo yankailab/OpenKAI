@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../DNN/Detector/_ClusterNet.h"
-#include "../../../Sensor/_ZEDobstacle.h"
+#include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -24,7 +24,7 @@ public:
 private:
 	_ClusterNet*	m_pMN;
 	HM_base*	m_pHM;
-	_ZEDobstacle* 	m_pObs;
+	_ZEDdistance* 	m_pObs;
 
 	double		m_rpmT;
 	double		m_rpmSteer;

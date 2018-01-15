@@ -41,7 +41,7 @@
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
 
-#include "../Sensor/_ZEDobstacle.h"
+#include "../Sensor/_ZEDdistance.h"
 #include "../Sensor/_Lightware_SF40_sender.h"
 #include "../Sensor/_Lightware_SF40.h"
 #include "../Sensor/_LeddarVu.h"

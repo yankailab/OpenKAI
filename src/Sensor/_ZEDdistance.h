@@ -1,12 +1,12 @@
 /*
- * _ZEDobstacle.h
+ * _ZEDdistance.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Sensor__ZEDobstacle_H_
-#define OpenKAI_src_Sensor__ZEDobstacle_H_
+#ifndef OpenKAI_src_Sensor__ZEDdistance_H_
+#define OpenKAI_src_Sensor__ZEDdistance_H_
 
 #include "../DNN/Classifier/_ImageNet.h"
 #include "../Filter/Median.h"
@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class _ZEDobstacle: public _DistSensorBase
+class _ZEDdistance: public _DistSensorBase
 {
 public:
-	_ZEDobstacle(void);
-	virtual ~_ZEDobstacle();
+	_ZEDdistance(void);
+	virtual ~_ZEDdistance();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -42,7 +42,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_ZEDobstacle *) This)->update();
+		((_ZEDdistance *) This)->update();
 		return NULL;
 	}
 

@@ -127,7 +127,7 @@
 }
 
 {
-	"name":"rpLidar",
+	"name":"rpLidarH",
 	"class":"_RPLIDAR",
 	"FPS":30,
 	"bInst":1,

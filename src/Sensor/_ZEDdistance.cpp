@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_ZEDobstacle.h"
+#include "_ZEDdistance.h"
 
 namespace kai
 {
 
-_ZEDobstacle::_ZEDobstacle()
+_ZEDdistance::_ZEDdistance()
 {
 #ifdef USE_ZED
 	m_pZed = NULL;
@@ -23,12 +23,12 @@ _ZEDobstacle::_ZEDobstacle()
 	m_mDim.y = 10;
 }
 
-_ZEDobstacle::~_ZEDobstacle()
+_ZEDdistance::~_ZEDdistance()
 {
 	reset();
 }
 
-bool _ZEDobstacle::init(void* pKiss)
+bool _ZEDdistance::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -60,7 +60,7 @@ bool _ZEDobstacle::init(void* pKiss)
 	return true;
 }
 
-void _ZEDobstacle::reset(void)
+void _ZEDdistance::reset(void)
 {
 	DEL(m_pMatrix);
 
@@ -68,7 +68,7 @@ void _ZEDobstacle::reset(void)
 		DEL(m_pFilteredMatrix[i]);
 }
 
-bool _ZEDobstacle::link(void)
+bool _ZEDdistance::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -92,7 +92,7 @@ bool _ZEDobstacle::link(void)
 	return true;
 }
 
-bool _ZEDobstacle::start(void)
+bool _ZEDdistance::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -105,7 +105,7 @@ bool _ZEDobstacle::start(void)
 	return true;
 }
 
-void _ZEDobstacle::update(void)
+void _ZEDdistance::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -117,7 +117,7 @@ void _ZEDobstacle::update(void)
 	}
 }
 
-void _ZEDobstacle::detect(void)
+void _ZEDdistance::detect(void)
 {
 #ifdef USE_ZED
 	NULL_(m_pZed);
@@ -149,7 +149,7 @@ void _ZEDobstacle::detect(void)
 #endif
 }
 
-double _ZEDobstacle::d(vInt4* pROI, vInt2* pPos)
+double _ZEDdistance::d(vInt4* pROI, vInt2* pPos)
 {
 #ifdef USE_ZED
 	if(!m_pZed)return -1.0;
@@ -180,7 +180,7 @@ double _ZEDobstacle::d(vInt4* pROI, vInt2* pPos)
 	return dMin;
 }
 
-double _ZEDobstacle::d(vDouble4* pROI, vInt2* pPos)
+double _ZEDdistance::d(vDouble4* pROI, vInt2* pPos)
 {
 #ifdef USE_ZED
 	if(!m_pZed)return -1.0;
@@ -225,17 +225,17 @@ double _ZEDobstacle::d(vDouble4* pROI, vInt2* pPos)
 	return dMin;
 }
 
-vInt2 _ZEDobstacle::matrixDim(void)
+vInt2 _ZEDdistance::matrixDim(void)
 {
 	return m_mDim;
 }
 
-DIST_SENSOR_TYPE _ZEDobstacle::type(void)
+DIST_SENSOR_TYPE _ZEDdistance::type(void)
 {
 	return dsZED;
 }
 
-bool _ZEDobstacle::bReady(void)
+bool _ZEDdistance::bReady(void)
 {
 #ifdef USE_ZED
 	return m_bZEDready;
@@ -244,7 +244,7 @@ bool _ZEDobstacle::bReady(void)
 #endif
 }
 
-bool _ZEDobstacle::draw(void)
+bool _ZEDdistance::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->getCMat();

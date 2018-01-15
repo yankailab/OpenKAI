@@ -1,0 +1,225 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"apView",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"apView",
+	"depthWindow":"apDepth",
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":100,
+	"zedDepthMode":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":15.0,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bZedSpatialMemory":0,
+	"iZedCPUcore":2,
+	"bGray":1,
+}
+
+{
+	"name":"apSerialJetson",
+	"class":"_SerialPort",
+	"bInst":0,
+	"Window":"apView",
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+}
+
+{
+	"name":"apSerialPC",
+	"class":"_SerialPort",
+	"bInst":0,
+	"Window":"apView",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"apView",
+	"_IOBase":"apSerialPC",
+}
+
+{
+	"name":"ZEDdist",
+	"class":"_ZEDdistance",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":0,
+	"Window":"apView",
+	"_ZED":"ZED",
+	"matrixW":20,
+	"matrixH":15,
+	"dBlend":0.5,
+	
+	{
+		"name":"medianFilter",
+		"class":"Median",
+		"bInst":1,
+		"bLog":0,
+		"windowLen":9,
+	}	
+}
+
+{
+	"name":"rpLidarH",
+	"class":"_RPLIDAR",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"apView",
+	"rMin":0.1,
+	"rMax":16.0,
+	"nDiv":360,
+	"portName":"/dev/ttyUSB0",
+	"baud":115200,	
+	"offsetAngle":90.0,
+	"showScale":30.0,
+	
+	{
+		"name":"filterMed",
+		"bLog":0,
+		"windowLen":5,
+	}	
+	{
+		"name":"filterAvr",
+		"bLog":0,
+		"windowLen":3,
+	}
+}
+
+{
+	"name":"rpLidarV",
+	"class":"_RPLIDAR",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"apView",
+	"rMin":0.1,
+	"rMax":16.0,
+	"nDiv":360,
+	"portName":"/dev/ttyUSB1",
+	"baud":115200,	
+	"offsetAngle":90.0,
+	"showScale":30.0,
+	
+	{
+		"name":"filterMed",
+		"bLog":0,
+		"windowLen":5,
+	}	
+	{
+		"name":"filterAvr",
+		"bLog":0,
+		"windowLen":3,
+	}
+}
+
+{
+	"name":"apState",
+	"class":"_Automaton",
+	"bInst":1,
+	"Window":"apView",
+	"startState":"AP_STANDBY",
+
+	{
+		"state":"AP_STANDBY",
+	}
+
+	{
+		"state":"AP_CRUISE",
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"apState",
+	"bInst":1,
+	"FPS":20,
+	"Window":"apView",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"_Automaton":"apState",
+			"Window":"apView",
+			"_Mavlink":"apMavlink",
+			"freqAtti":30,
+			"freqGlobalPos":30,
+			"freqHeartbeat":0,
+		}
+		
+		{
+			"name":"apDistLidar",
+			"class":"APcopter_distLidar",
+			"bInst":1,
+			"bDraw":0,
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+
+			{
+				"_DistSensorBase":"lidarH",
+				"bInst":1,
+				"orientation":0,
+			}		
+
+			{
+				"_DistSensorBase":"lidarV",
+				"bInst":1,
+				"orientation":0,
+			}		
+		}
+		
+		{
+			"name":"apZedOdom",
+			"class":"APcopter_ZEDodom",
+			"bInst":1,
+			"bLog":0,
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_ZED":"ZED",
+		}
+		
+	}
+}
+
