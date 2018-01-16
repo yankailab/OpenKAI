@@ -248,8 +248,7 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, u
 	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
-	LOG_I(
-			"<- DIST_SENSOR sysID="<<m_systemID<<", d="<< ds.current_distance << ", min="<<ds.min_distance << ", max="<<ds.max_distance);
+	LOG_I("<- DIST_SENSOR sysID=" <<m_systemID << ", orient=" << (int)orientation << ", d=" << (int)ds.current_distance << ", min="<< (int)ds.min_distance << ", max="<< (int)ds.max_distance);
 }
 
 void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,

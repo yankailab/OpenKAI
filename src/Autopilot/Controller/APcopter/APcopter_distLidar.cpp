@@ -74,35 +74,37 @@ void APcopter_distLidar::updateMavlink(void)
 
 	//Horizontal lidar
 	DIST_LIDAR* pDS = &m_pLidar[0];
-	double rMin = pDS->m_pDS->rMin() * 100;
-	double rMax = pDS->m_pDS->rMax() * 100;
+	IF_(!pDS->m_pDS->bReady());
+
+	double rMin = pDS->m_pDS->rMin();
+	double rMax = pDS->m_pDS->rMax();
 
 	//forward
 	double degFrom = 360.0 - 22.5;
 	double degTo = 360.0 + 22.5;
 	double d = pDS->m_pDS->dMin(degFrom, degTo);
-	if(d >= 0.0)
-	{
-		pMavlink->distanceSensor(
-				0, //type
-				0,	//orientation
-				rMax, rMin,
-				d * 100.0);
-	}
+	if(d < rMin)d = rMax;
+
+	pMavlink->distanceSensor(
+			0, //type
+			0,	//orientation
+			(uint16_t)(rMax*100),
+			(uint16_t)(rMin*100),
+			(uint16_t)(d * 100.0));
 
 	degFrom = 22.5;
 	degTo = degFrom + 45.0;
 	for (int j = 0; j < 7; j++)
 	{
 		d = pDS->m_pDS->dMin(degFrom, degTo);
-		if(d >= 0.0)
-		{
-			pMavlink->distanceSensor(
-					0, //type
-					j+1,	//orientation
-					rMax, rMin,
-					d * 100.0);
-		}
+		if(d < rMin)d = rMax;
+
+		pMavlink->distanceSensor(
+				0, //type
+				j+1,	//orientation
+				(uint16_t)(rMax*100),
+				(uint16_t)(rMin*100),
+				(uint16_t)(d * 100.0));
 
 		degFrom += 45.0;
 		degTo = degFrom + 45.0;
@@ -112,24 +114,23 @@ void APcopter_distLidar::updateMavlink(void)
 
 	//Vertical lidar
 	pDS = &m_pLidar[1];
-	rMin = pDS->m_pDS->rMin() * 100;
-	rMax = pDS->m_pDS->rMax() * 100;
+	IF_(!pDS->m_pDS->bReady());
+
+	rMin = pDS->m_pDS->rMin();
+	rMax = pDS->m_pDS->rMax();
 
 	//upward
 	degFrom = 360.0 - 22.5;
 	degTo = 360.0 + 22.5;
 	d = pDS->m_pDS->dMin(degFrom, degTo);
-	if(d >= 0.0)
-	{
-		pMavlink->distanceSensor(
-				0, //type
-				24,	//orientation
-				rMax, rMin,
-				d * 100.0);
-	}
-
+	if(d < 0.0)d = rMax;
+	pMavlink->distanceSensor(
+			0, //type
+			24,	//orientation
+			(uint16_t)(rMax*100),
+			(uint16_t)(rMin*100),
+			(uint16_t)(d * 100.0));
 }
-
 
 bool APcopter_distLidar::draw(void)
 {

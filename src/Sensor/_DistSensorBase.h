@@ -64,6 +64,7 @@ public:
 	void update(void);
 	void updateOdometry(void);
 	vDouble2 dT(void);
+	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);
 	virtual double d(void);
@@ -93,8 +94,6 @@ public:
 	double	m_diffMax;
 	double	m_diffMin;
 	double	m_odoConfidence;
-
-
 
 };
 

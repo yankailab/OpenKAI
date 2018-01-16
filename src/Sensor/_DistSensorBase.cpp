@@ -84,6 +84,12 @@ void _DistSensorBase::reset(void)
 	this->_ThreadBase::reset();
 	DEL(m_pDiv);
 	m_nDiv = 0;
+	m_bReady = false;
+}
+
+bool _DistSensorBase::bReady(void)
+{
+	return m_bReady;
 }
 
 void _DistSensorBase::update(void)
@@ -172,6 +178,7 @@ void _DistSensorBase::input(double angle, double d)
 	IF_(d > m_rMax);
 	IF_(angle < 0);
 	IF_(angle > m_fov);
+	IF_(m_bReady);
 
 	angle += m_hdg + m_offsetAngle;
 	while (angle >= DEG_AROUND)
@@ -185,6 +192,8 @@ void _DistSensorBase::input(double angle, double d)
 
 double _DistSensorBase::d(double deg)
 {
+	if(m_bReady)return -1.0;
+
 	deg += m_hdg + m_offsetAngle;
 	while (deg >= DEG_AROUND)
 		deg -= DEG_AROUND;
@@ -202,6 +211,8 @@ double _DistSensorBase::d(double deg)
 
 double _DistSensorBase::dMin(double degFrom, double degTo)
 {
+	if(m_bReady)return -1.0;
+
 	degFrom += m_hdg + m_offsetAngle;
 	degTo += m_hdg + m_offsetAngle;
 
@@ -234,6 +245,8 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 
 double _DistSensorBase::dMax(double degFrom, double degTo)
 {
+	if(m_bReady)return -1.0;
+
 	degFrom += m_hdg + m_offsetAngle;
 	degTo += m_hdg + m_offsetAngle;
 
@@ -266,6 +279,8 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 
 double _DistSensorBase::dAvr(double degFrom, double degTo)
 {
+	if(m_bReady)return -1.0;
+
 	degFrom += m_hdg + m_offsetAngle;
 	degTo += m_hdg + m_offsetAngle;
 
@@ -301,6 +316,8 @@ bool _DistSensorBase::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
+
+	if(m_bReady)return -1.0;
 
 	pWin->tabNext();
 //	pWin->addMsg(&msg);

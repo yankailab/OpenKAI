@@ -120,6 +120,8 @@ bool _RPLIDAR::open(void)
 	m_pRPL->startMotor();
 	m_pRPL->startScan();
 
+	m_bReady = true;
+
 	return true;
 }
 
