@@ -2,9 +2,39 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"apViewH",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"apViewV",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
 }
 
 {
@@ -34,7 +64,7 @@
 	"angleH":66.7,
 	"zedFPS":100,
 	"zedDepthMode":1,
-	"zedResolution":2,
+	"zedResolution":3,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
 	"bZedFlip":0,
@@ -57,7 +87,7 @@
 {
 	"name":"apSerialPC",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
@@ -74,33 +104,12 @@
 }
 
 {
-	"name":"ZEDdist",
-	"class":"_ZEDdistance",
-	"FPS":30,
-	"bInst":1,
-	"bDraw":0,
-	"Window":"apView",
-	"_ZED":"ZED",
-	"matrixW":20,
-	"matrixH":15,
-	"dBlend":0.5,
-	
-	{
-		"name":"medianFilter",
-		"class":"Median",
-		"bInst":1,
-		"bLog":0,
-		"windowLen":9,
-	}	
-}
-
-{
 	"name":"rpLidarH",
 	"class":"_RPLIDAR",
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apView",
+	"Window":"apViewH",
 	"rMin":0.1,
 	"rMax":16.0,
 	"nDiv":360,
@@ -127,7 +136,7 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apView",
+	"Window":"apViewV",
 	"rMin":0.1,
 	"rMax":16.0,
 	"nDiv":360,
@@ -197,13 +206,13 @@
 			"APcopter_base":"apBase",
 
 			{
-				"_DistSensorBase":"lidarH",
+				"_DistSensorBase":"rpLidarH",
 				"bInst":1,
 				"orientation":0,
 			}		
 
 			{
-				"_DistSensorBase":"lidarV",
+				"_DistSensorBase":"rpLidarV",
 				"bInst":1,
 				"orientation":0,
 			}		

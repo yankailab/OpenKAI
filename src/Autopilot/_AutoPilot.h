@@ -7,6 +7,7 @@
 #include "Controller/RC/RC_base.h"
 #include "Controller/APcopter/APcopter_base.h"
 #include "Controller/APcopter/APcopter_distZED.h"
+#include "Controller/APcopter/APcopter_distLidar.h"
 #include "Controller/APcopter/APcopter_DNNavoid.h"
 #include "Controller/APcopter/APcopter_DNNlanding.h"
 #include "Controller/APcopter/APcopter_DNNnav.h"

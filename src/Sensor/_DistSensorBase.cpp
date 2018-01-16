@@ -94,23 +94,6 @@ void _DistSensorBase::update(void)
 	}
 }
 
-void _DistSensorBase::input(double angle, double d)
-{
-	IF_(d <= m_rMin);
-	IF_(d > m_rMax);
-	IF_(angle < 0);
-	IF_(angle > m_fov);
-
-	angle += m_hdg + m_offsetAngle;
-	while (angle >= DEG_AROUND)
-		angle -= DEG_AROUND;
-
-	int iAngle = (int) (angle * m_dAngleInv);
-	if(iAngle >= m_nDiv)iAngle = m_nDiv;
-
-	m_pDiv[iAngle].input(d);
-}
-
 void _DistSensorBase::updateOdometry(void)
 {
 	IF_(m_bReady);
@@ -181,6 +164,23 @@ double _DistSensorBase::d(vInt4* pROI, vInt2* pPos)
 double _DistSensorBase::d(vDouble4* pROI, vInt2* pPos)
 {
 	return -1.0;
+}
+
+void _DistSensorBase::input(double angle, double d)
+{
+	IF_(d <= m_rMin);
+	IF_(d > m_rMax);
+	IF_(angle < 0);
+	IF_(angle > m_fov);
+
+	angle += m_hdg + m_offsetAngle;
+	while (angle >= DEG_AROUND)
+		angle -= DEG_AROUND;
+
+	int iAngle = (int) (angle * m_dAngleInv);
+	if(iAngle >= m_nDiv)iAngle = m_nDiv;
+
+	m_pDiv[iAngle].input(d);
 }
 
 double _DistSensorBase::d(double deg)
