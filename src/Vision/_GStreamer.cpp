@@ -104,7 +104,11 @@ bool _GStreamer::link(void)
 
 bool _GStreamer::open(void)
 {
+#ifdef USE_OPENCV4TEGRA
+	m_gst.open(m_pipeline);
+#else
 	m_gst.open(m_pipeline, CAP_GSTREAMER);
+#endif
 	if (!m_gst.isOpened())
 	{
 		LOG_E("Cannot open gst pipeline: " << m_pipeline);
