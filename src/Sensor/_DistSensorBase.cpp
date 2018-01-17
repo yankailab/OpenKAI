@@ -311,6 +311,84 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 	return dist/n;
 }
 
+bool _DistSensorBase::dMin(double degFrom, double degTo, double* pDeg, double* pD)
+{
+	IF_F(!m_bReady);
+	NULL_F(pDeg);
+	NULL_F(pD);
+
+	degFrom += m_hdg + m_offsetDeg;
+	degTo += m_hdg + m_offsetDeg;
+
+	int iFrom = (int) (degFrom * m_dDegInv);
+	int iTo = (int) (degTo * m_dDegInv);
+
+	double dist = m_rMax;
+	int iMin = -1;
+
+	for(int i=iFrom; i<iTo; i++)
+	{
+		int iDiv = i;
+		while (iDiv >= m_nDiv)
+			iDiv -= m_nDiv;
+
+		Average* pD = &m_pDiv[iDiv].m_fAvr;
+
+		double d = pD->v();
+		IF_CONT(d <= m_rMin);
+		IF_CONT(d > m_rMax);
+		IF_CONT(d >= dist);
+
+		dist = d;
+		iMin = iDiv;
+	}
+
+	IF_F(iMin < 0);
+
+	*pDeg = iMin * m_dDeg;
+	*pD = dist;
+	return true;
+}
+
+bool _DistSensorBase::dMax(double degFrom, double degTo, double* pDeg, double* pD)
+{
+	IF_F(!m_bReady);
+	NULL_F(pDeg);
+	NULL_F(pD);
+
+	degFrom += m_hdg + m_offsetDeg;
+	degTo += m_hdg + m_offsetDeg;
+
+	int iFrom = (int) (degFrom * m_dDegInv);
+	int iTo = (int) (degTo * m_dDegInv);
+
+	double dist = 0.0;
+	int iMax = -1;
+
+	for(int i=iFrom; i<iTo; i++)
+	{
+		int iDiv = i;
+		while (iDiv >= m_nDiv)
+			iDiv -= m_nDiv;
+
+		Average* pD = &m_pDiv[iDiv].m_fAvr;
+
+		double d = pD->v();
+		IF_CONT(d <= m_rMin);
+		IF_CONT(d > m_rMax);
+		IF_CONT(d <= dist);
+
+		dist = d;
+		iMax = iDiv;
+	}
+
+	IF_F(iMax < 0);
+
+	*pDeg = iMax * m_dDeg;
+	*pD = dist;
+	return true;
+}
+
 bool _DistSensorBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());

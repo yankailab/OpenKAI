@@ -71,9 +71,13 @@ public:
 	virtual double d(vInt4* pROI, vInt2* pPos);
 	virtual double d(vDouble4* pROI, vInt2* pPos);
 	virtual double d(double deg);
+
 	virtual double dMin(double degFrom, double degTo);
 	virtual double dMax(double degFrom, double degTo);
 	virtual double dAvr(double degFrom, double degTo);
+
+	virtual bool dMin(double degFrom, double degTo, double* pDeg, double* pD);
+	virtual bool dMax(double degFrom, double degTo, double* pDeg, double* pD);
 
 public:
 	DIST_SENSOR_DIV* m_pDiv;
