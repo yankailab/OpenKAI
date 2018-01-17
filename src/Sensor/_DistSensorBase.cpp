@@ -15,11 +15,11 @@ _DistSensorBase::_DistSensorBase()
 	m_pDiv = NULL;
 	m_nDiv = 0;
 	m_fov = 360;
-	m_dAngle = 0;
-	m_dAngleInv = 0;
+	m_dDeg = 0;
+	m_dDegInv = 0;
 	m_rMin = 0.0;
 	m_rMax = DBL_MAX;
-	m_offsetAngle = 0.0;
+	m_offsetDeg = 0.0;
 	m_hdg = 0.0;
 	m_showScale = 1.0;
 	m_bReady = false;
@@ -46,10 +46,10 @@ bool _DistSensorBase::init(void* pKiss)
 	IF_Fl(m_fov > 360, "angleTo <= 360");
 
 	KISSm(pK,nDiv);
-	m_dAngle = m_fov/m_nDiv;
-	m_dAngleInv = 1.0/m_dAngle;
+	m_dDeg = m_fov/m_nDiv;
+	m_dDegInv = 1.0/m_dDeg;
 
-	KISSm(pK,offsetAngle);
+	KISSm(pK,offsetDeg);
 	KISSm(pK,showScale);
 	KISSm(pK,rMin);
 	KISSm(pK,rMax);
@@ -102,7 +102,7 @@ void _DistSensorBase::update(void)
 
 void _DistSensorBase::updateOdometry(void)
 {
-	IF_(m_bReady);
+	IF_(!m_bReady);
 	NULL_(m_pMavlink);
 
 	int i;
@@ -110,7 +110,7 @@ void _DistSensorBase::updateOdometry(void)
 	double pY = 0.0;
 	double nV = 0.0;
 	double rad = 0.0;
-	double dRad = m_dAngle * DEG_RAD;
+	double dRad = m_dDeg * DEG_RAD;
 
 	for (i = 0; i < m_nDiv; i++)
 	{
@@ -172,35 +172,36 @@ double _DistSensorBase::d(vDouble4* pROI, vInt2* pPos)
 	return -1.0;
 }
 
-void _DistSensorBase::input(double angle, double d)
+void _DistSensorBase::input(double deg, double d)
 {
-	IF_(d <= m_rMin);
-	IF_(d > m_rMax);
-	IF_(angle < 0);
-	IF_(angle > m_fov);
-	IF_(m_bReady);
+	IF_(!m_bReady);
+	IF_(deg < 0);
+	IF_(deg > m_fov);
 
-	angle += m_hdg + m_offsetAngle;
-	while (angle >= DEG_AROUND)
-		angle -= DEG_AROUND;
+	if(d <= m_rMin)d = m_rMax;
+	if(d > m_rMax)d = m_rMax;
 
-	int iAngle = (int) (angle * m_dAngleInv);
-	if(iAngle >= m_nDiv)iAngle = m_nDiv;
+	deg += m_hdg + m_offsetDeg;
+	while (deg >= DEG_AROUND)
+		deg -= DEG_AROUND;
 
-	m_pDiv[iAngle].input(d);
+	int iDiv = (int) (deg * m_dDegInv);
+	if(iDiv >= m_nDiv)iDiv = m_nDiv;
+
+	m_pDiv[iDiv].input(d);
 }
 
 double _DistSensorBase::d(double deg)
 {
-	if(m_bReady)return -1.0;
+	if(!m_bReady)return -1.0;
 
-	deg += m_hdg + m_offsetAngle;
+	deg += m_hdg + m_offsetDeg;
 	while (deg >= DEG_AROUND)
 		deg -= DEG_AROUND;
 
-	int iAngle = (int) (deg * m_dAngleInv);
-	if(iAngle >= m_nDiv)iAngle = m_nDiv;
-	Average* pD = &m_pDiv[iAngle].m_fAvr;
+	int iDiv = (int) (deg * m_dDegInv);
+	if(iDiv >= m_nDiv)iDiv = m_nDiv;
+	Average* pD = &m_pDiv[iDiv].m_fAvr;
 
 	double d = pD->v();
 	if(d <= m_rMin)return -1.0;
@@ -211,13 +212,13 @@ double _DistSensorBase::d(double deg)
 
 double _DistSensorBase::dMin(double degFrom, double degTo)
 {
-	if(m_bReady)return -1.0;
+	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetAngle;
-	degTo += m_hdg + m_offsetAngle;
+	degFrom += m_hdg + m_offsetDeg;
+	degTo += m_hdg + m_offsetDeg;
 
-	int iFrom = (int) (degFrom * m_dAngleInv);
-	int iTo = (int) (degTo * m_dAngleInv);
+	int iFrom = (int) (degFrom * m_dDegInv);
+	int iTo = (int) (degTo * m_dDegInv);
 
 	double dist = m_rMax;
 	int iMin = -1;
@@ -225,8 +226,8 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 	for(int i=iFrom; i<iTo; i++)
 	{
 		int iDiv = i;
-		while (iDiv >= DEG_AROUND)
-			iDiv -= DEG_AROUND;
+		while (iDiv >= m_nDiv)
+			iDiv -= m_nDiv;
 
 		Average* pD = &m_pDiv[iDiv].m_fAvr;
 
@@ -245,13 +246,13 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 
 double _DistSensorBase::dMax(double degFrom, double degTo)
 {
-	if(m_bReady)return -1.0;
+	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetAngle;
-	degTo += m_hdg + m_offsetAngle;
+	degFrom += m_hdg + m_offsetDeg;
+	degTo += m_hdg + m_offsetDeg;
 
-	int iFrom = (int) (degFrom * m_dAngleInv);
-	int iTo = (int) (degTo * m_dAngleInv);
+	int iFrom = (int) (degFrom * m_dDegInv);
+	int iTo = (int) (degTo * m_dDegInv);
 
 	double dist = 0.0;
 	int iMax = -1;
@@ -259,8 +260,8 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 	for(int i=iFrom; i<iTo; i++)
 	{
 		int iDiv = i;
-		while (iDiv >= DEG_AROUND)
-			iDiv -= DEG_AROUND;
+		while (iDiv >= m_nDiv)
+			iDiv -= m_nDiv;
 
 		Average* pD = &m_pDiv[iDiv].m_fAvr;
 
@@ -279,13 +280,13 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 
 double _DistSensorBase::dAvr(double degFrom, double degTo)
 {
-	if(m_bReady)return -1.0;
+	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetAngle;
-	degTo += m_hdg + m_offsetAngle;
+	degFrom += m_hdg + m_offsetDeg;
+	degTo += m_hdg + m_offsetDeg;
 
-	int iFrom = (int) (degFrom * m_dAngleInv);
-	int iTo = (int) (degTo * m_dAngleInv);
+	int iFrom = (int) (degFrom * m_dDegInv);
+	int iTo = (int) (degTo * m_dDegInv);
 
 	double dist = 0.0;
 	int n = 0;
@@ -293,8 +294,8 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 	for(int i=iFrom; i<iTo; i++)
 	{
 		int iDiv = i;
-		while (iDiv >= DEG_AROUND)
-			iDiv -= DEG_AROUND;
+		while (iDiv >= m_nDiv)
+			iDiv -= m_nDiv;
 
 		Average* pD = &m_pDiv[iDiv].m_fAvr;
 
@@ -306,8 +307,8 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 		n++;
 	}
 
-	if(n<=0)return -1;
-	return dist;
+	if(n<=0)return -1.0;
+	return dist/n;
 }
 
 bool _DistSensorBase::draw(void)
@@ -317,7 +318,7 @@ bool _DistSensorBase::draw(void)
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
 
-	if(m_bReady)return -1.0;
+	IF_F(!m_bReady);
 
 	pWin->tabNext();
 //	pWin->addMsg(&msg);
@@ -331,7 +332,7 @@ bool _DistSensorBase::draw(void)
 
 	//Plot lidar result
 	double rad = 0.0;
-	double dRad = m_dAngle * DEG_RAD;
+	double dRad = m_dDeg * DEG_RAD;
 
 	for (int i = 0; i < m_nDiv; i++)
 	{

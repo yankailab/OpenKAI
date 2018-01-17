@@ -23,7 +23,9 @@ public:
 
 private:
 	APcopter_base* m_pAP;
+#ifdef USE_TENSORRT
 	_ImageNet*	m_pIN;
+#endif
 
 	int m_nTerrain;
 

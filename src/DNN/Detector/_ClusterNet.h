@@ -41,7 +41,10 @@ private:
 	}
 
 public:
+
+#ifdef USE_TENSORRT
 	_ImageNet* m_pIN;
+#endif
 
 	int m_nObj;
 	double m_w;

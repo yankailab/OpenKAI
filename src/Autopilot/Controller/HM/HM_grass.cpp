@@ -5,9 +5,11 @@ namespace kai
 
 HM_grass::HM_grass()
 {
-	m_pHM = NULL;
+#ifdef USE_TENSORRT
 	m_pIN = NULL;
+#endif
 
+	m_pHM = NULL;
 	m_sequence = gt_grass;
 
 	m_grassBoxL.init();
@@ -82,6 +84,7 @@ bool HM_grass::link(void)
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
+#ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
@@ -91,6 +94,7 @@ bool HM_grass::link(void)
 		LOG_E("_ImageNet not found");
 		return true;
 	}
+#endif
 
 //	OBJECT gBlk;
 //
@@ -240,7 +244,7 @@ bool HM_grass::draw(void)
 	msg += *this->getName() + ": turnTime:" + i2str((int) m_tTurnSet);
 	pWin->addMsg(&msg);
 
-	NULL_T(m_pIN);
+//	NULL_T(m_pIN);
 
 	Rect r;
 	Scalar col;

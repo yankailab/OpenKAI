@@ -115,7 +115,7 @@
 	"nDiv":360,
 	"portName":"/dev/ttyUSB0",
 	"baud":115200,	
-	"offsetAngle":90.0,
+	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{
@@ -142,7 +142,7 @@
 	"nDiv":360,
 	"portName":"/dev/ttyUSB1",
 	"baud":115200,	
-	"offsetAngle":90.0,
+	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{

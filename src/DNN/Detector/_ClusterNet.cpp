@@ -9,7 +9,10 @@ namespace kai
 
 _ClusterNet::_ClusterNet()
 {
+#ifdef USE_TENSORRT
 	m_pIN = NULL;
+#endif
+
 	m_w = 0.2;
 	m_h = 0.2;
 	m_dW = 0.5;
@@ -55,6 +58,8 @@ bool _ClusterNet::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
+
+#ifdef USE_TENSORRT
 	F_ERROR_F(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 	IF_F(!m_pIN);
@@ -96,6 +101,10 @@ bool _ClusterNet::link(void)
 	bSetActive(true);
 
 	return true;
+
+#else
+	return false;
+#endif
 }
 
 bool _ClusterNet::start(void)
@@ -256,7 +265,10 @@ OBJECT* _ClusterNet::get(int i)
 void _ClusterNet::bSetActive(bool bActive)
 {
 	m_bActive = bActive;
+
+#ifdef USE_TENSORRT
 	m_pIN->bSetActive(m_bActive);
+#endif
 }
 
 bool _ClusterNet::bFound(int iClass)

@@ -5,8 +5,11 @@ namespace kai
 
 APcopter_DNNavoid::APcopter_DNNavoid()
 {
-	m_pAP = NULL;
+#ifdef USE_TENSORRT
 	m_pIN = NULL;
+#endif
+
+	m_pAP = NULL;
 	m_nVision = 0;
 	m_action = DA_UNKNOWN;
 }
@@ -34,6 +37,7 @@ bool APcopter_DNNavoid::link(void)
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
+#ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_ImageNet", &iName));
 	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
@@ -107,6 +111,7 @@ bool APcopter_DNNavoid::link(void)
 
 		}
 	}
+#endif
 
 	return true;
 }
@@ -134,6 +139,7 @@ void APcopter_DNNavoid::update(void)
 {
 	this->ActionBase::update();
 
+#ifdef USE_TENSORRT
 	NULL_(m_pIN);
 	IF_(!m_pIN->bReady());
 	NULL_(m_pAP);
@@ -185,6 +191,7 @@ void APcopter_DNNavoid::update(void)
 					pV->m_rMax);
 		}
 	}
+#endif
 
 }
 

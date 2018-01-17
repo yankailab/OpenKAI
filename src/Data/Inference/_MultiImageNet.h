@@ -37,9 +37,11 @@ private:
 	}
 
 public:
+#ifdef USE_TENSORRT
 	_ImageNet* m_pIN1;
 	_ImageNet* m_pIN2;
 	_ImageNet* m_pIN3;
+#endif
 
 	Frame* m_pFrame;
 

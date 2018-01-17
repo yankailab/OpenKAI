@@ -29,7 +29,10 @@ public:
 private:
 	void bSetActive(bool bActive);
 
+#ifdef USE_TENSORRT
 	_ImageNet*	m_pIN;
+#endif
+
 	HM_base* m_pHM;
 
 	int			m_rpmSteer;

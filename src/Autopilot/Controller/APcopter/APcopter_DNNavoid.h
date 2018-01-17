@@ -74,8 +74,10 @@ public:
 	string actionType2str(DNN_AVOID_ACTION_TYPE aType);
 
 private:
-	APcopter_base* m_pAP;
+#ifdef USE_TENSORRT
 	_ImageNet*	m_pIN;
+#endif
+	APcopter_base* m_pAP;
 
 	DNN_AVOID_VISION m_pVision[DNNAVOID_N_VISION];
 	int m_nVision;

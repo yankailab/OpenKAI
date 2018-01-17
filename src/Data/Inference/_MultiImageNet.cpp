@@ -12,9 +12,11 @@ namespace kai
 
 _MultiImageNet::_MultiImageNet()
 {
+#ifdef USE_TENSORRT
 	m_pIN1 = NULL;
 	m_pIN2 = NULL;
 	m_pIN3 = NULL;
+#endif
 	m_progress = 0.0;
 	m_pFrame = NULL;
 }
@@ -41,6 +43,7 @@ bool _MultiImageNet::link(void)
 
 	string iName;
 
+#ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_ImageNet1", &iName));
 	m_pIN1 = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
@@ -54,6 +57,9 @@ bool _MultiImageNet::link(void)
 	m_pIN3 = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
+#else
+	return false;
+#endif
 }
 
 bool _MultiImageNet::start(void)
@@ -73,6 +79,7 @@ void _MultiImageNet::update(void)
 {
 	IF_(getDirFileList()<=0);
 
+#ifdef USE_TENSORRT
 	while(!m_pIN1->bReady());
 	while(!m_pIN2->bReady());
 	while(!m_pIN3->bReady());
@@ -107,6 +114,7 @@ void _MultiImageNet::update(void)
 	}
 
 	LOG_I("Completed");
+#endif
 }
 
 void _MultiImageNet::inference(void)

@@ -60,7 +60,7 @@ public:
 
 	double rMin(void);
 	double rMax(void);
-	void input(double angle, double d);
+	void input(double deg, double d);
 	void update(void);
 	void updateOdometry(void);
 	vDouble2 dT(void);
@@ -79,11 +79,11 @@ public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
 	double	m_fov;
-	double	m_dAngle;
-	double	m_dAngleInv;
+	double	m_dDeg;
+	double	m_dDegInv;
 	double	m_rMin;
 	double	m_rMax;
-	double	m_offsetAngle;
+	double	m_offsetDeg;
 	double	m_hdg;	//given by external sensor e.g. compass
 	double  m_showScale;
 	uint16_t m_bReady;
