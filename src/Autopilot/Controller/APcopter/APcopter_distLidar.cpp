@@ -80,8 +80,8 @@ void APcopter_distLidar::updateMavlink(void)
 	double rMax = pDS->m_pDS->rMax();
 
 	//forward
-	double degFrom = 360.0 - 60;
-	double degTo = 360.0 + 60;
+	double degFrom = 360.0 - 85;
+	double degTo = 360.0 + 85;
 	double d;
 	double deg;
 
@@ -89,6 +89,7 @@ void APcopter_distLidar::updateMavlink(void)
 	{
 		//TODO: hdg? relative?
 		d *= cos(deg*DEG_RAD);
+		d = abs(d);
 	}
 	else
 	{

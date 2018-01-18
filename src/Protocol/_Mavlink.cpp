@@ -47,6 +47,7 @@ bool _Mavlink::link(void)
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
 	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+	IF_Fl(!m_pIO,"_IOBase not found");
 
 	return true;
 }

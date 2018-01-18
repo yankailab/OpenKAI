@@ -96,7 +96,7 @@ void _DistSensorBase::update(void)
 {
 	if(m_pMavlink)
 	{
-		m_hdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg))*0.01;
+//		m_hdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg))*0.01;
 	}
 }
 

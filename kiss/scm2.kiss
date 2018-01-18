@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"apLidarH",
+	"name":"apViewH",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -23,7 +23,7 @@
 }
 
 {
-	"name":"apLidarV",
+	"name":"apViewV",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -40,7 +40,7 @@
 {
 	"name":"apView",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -50,6 +50,29 @@
 	"recCodec":"MJPG",	
 	"textX":20,
 	"textY":20,
+}
+
+{
+	"name":"ZED",
+	"class":"_ZED",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Window":"apView",
+	"depthWindow":"apDepth",
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":100,
+	"zedDepthMode":1,
+	"zedResolution":2,
+	"zedMinDist":0.6,
+	"zedMaxDist":15.0,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bZedSpatialMemory":0,
+	"iZedCPUcore":2,
+	"bGray":1,
 }
 
 {
@@ -75,7 +98,7 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apSerialJetson",
@@ -87,11 +110,11 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apLidarH",
+	"Window":"apViewH",
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
-	"portName":"/dev/ttyUSB0",
+	"portName":"/dev/ttyACM1",
 	"baud":115200,	
 	"offsetDeg":90.0,
 	"showScale":30.0,
@@ -114,7 +137,7 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apLidarV",
+	"Window":"apViewV",
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
@@ -152,6 +175,27 @@
 }
 
 {
+	"name":"detectNet",
+	"class":"_DetectNet",
+	"bInst":0,
+	"bLog":1,
+	"bDraw":1,
+	"FPS":30,
+	"Window":"apView",
+	"_VisionBase":"ZED",
+	"modelDir":"/media/kai/sm/dev/model/ped-100/",
+	"minConfidence":0.0,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_70800.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"",
+	"className":"",
+	"coverageThr":0.5,
+	"defaultDrawColor":[255,255,0],
+	"defaultDrawTextSize":0.8,
+}
+
+{
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
@@ -169,8 +213,8 @@
 			"_Automaton":"apState",
 			"Window":"apView",
 			"_Mavlink":"apMavlink",
-			"freqAtti":0,
-			"freqGlobalPos":0,
+			"freqAtti":30,
+			"freqGlobalPos":30,
 			"freqHeartbeat":0,
 		}
 		
@@ -194,6 +238,17 @@
 				"bInst":1,
 				"orientation":0,
 			}		
+		}
+		
+		{
+			"name":"apZedOdom",
+			"class":"APcopter_ZEDodom",
+			"bInst":1,
+			"bLog":0,
+			"Window":"apView",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_ZED":"ZED",
 		}
 		
 	}
