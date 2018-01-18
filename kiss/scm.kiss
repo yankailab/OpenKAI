@@ -40,7 +40,7 @@
 {
 	"name":"apView",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -75,7 +75,7 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apSerialJetson",
@@ -91,9 +91,8 @@
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
-	"portName":"/dev/ttyUSB0",
+	"portName":"/dev/ttyACM1",
 	"baud":115200,	
-	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{
@@ -120,7 +119,6 @@
 	"nDiv":360,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,	
-	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{
@@ -156,6 +154,7 @@
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
 	"bInst":1,
+	"bDraw":1,
 	"FPS":20,
 	"Window":"apView",
 	
@@ -178,8 +177,8 @@
 			"name":"apDistLidar",
 			"class":"APcopter_distLidar",
 			"bInst":1,
-			"bDraw":0,
-			"Window":"apView",
+			"bDraw":1,
+			"Window":"apLidarH",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
 

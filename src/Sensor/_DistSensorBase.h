@@ -79,6 +79,8 @@ public:
 	virtual bool dMin(double degFrom, double degTo, double* pDeg, double* pD);
 	virtual bool dMax(double degFrom, double degTo, double* pDeg, double* pD);
 
+	void setROI(double degFrom, double degTo);
+
 public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
@@ -87,10 +89,12 @@ public:
 	double	m_dDegInv;
 	double	m_rMin;
 	double	m_rMax;
-	double	m_offsetDeg;
 	double	m_hdg;	//given by external sensor e.g. compass
 	double  m_showScale;
 	uint16_t m_bReady;
+
+	double m_roiFrom;
+	double m_roiTo;
 
 	//odometry
 	_Mavlink* m_pMavlink;

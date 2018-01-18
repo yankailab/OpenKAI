@@ -19,7 +19,6 @@ _DistSensorBase::_DistSensorBase()
 	m_dDegInv = 0;
 	m_rMin = 0.0;
 	m_rMax = DBL_MAX;
-	m_offsetDeg = 0.0;
 	m_hdg = 0.0;
 	m_showScale = 1.0;
 	m_bReady = false;
@@ -28,6 +27,9 @@ _DistSensorBase::_DistSensorBase()
 	m_diffMax = 1.0;
 	m_diffMin = 0.0;
 	m_odoConfidence = 0.0;
+
+	m_roiFrom = 0;
+	m_roiTo = 0;
 }
 
 _DistSensorBase::~_DistSensorBase()
@@ -49,7 +51,6 @@ bool _DistSensorBase::init(void* pKiss)
 	m_dDeg = m_fov/m_nDiv;
 	m_dDegInv = 1.0/m_dDeg;
 
-	KISSm(pK,offsetDeg);
 	KISSm(pK,showScale);
 	KISSm(pK,rMin);
 	KISSm(pK,rMax);
@@ -181,7 +182,7 @@ void _DistSensorBase::input(double deg, double d)
 	if(d <= m_rMin)d = m_rMax;
 	if(d > m_rMax)d = m_rMax;
 
-	deg += m_hdg + m_offsetDeg;
+	deg += m_hdg;
 	while (deg >= DEG_AROUND)
 		deg -= DEG_AROUND;
 
@@ -195,7 +196,7 @@ double _DistSensorBase::d(double deg)
 {
 	if(!m_bReady)return -1.0;
 
-	deg += m_hdg + m_offsetDeg;
+	deg += m_hdg;
 	while (deg >= DEG_AROUND)
 		deg -= DEG_AROUND;
 
@@ -214,8 +215,8 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 {
 	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetDeg;
-	degTo += m_hdg + m_offsetDeg;
+	degFrom += m_hdg;
+	degTo += m_hdg;
 
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
@@ -248,8 +249,8 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 {
 	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetDeg;
-	degTo += m_hdg + m_offsetDeg;
+	degFrom += m_hdg;
+	degTo += m_hdg;
 
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
@@ -282,8 +283,8 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 {
 	if(!m_bReady)return -1.0;
 
-	degFrom += m_hdg + m_offsetDeg;
-	degTo += m_hdg + m_offsetDeg;
+	degFrom += m_hdg;
+	degTo += m_hdg;
 
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
@@ -317,8 +318,8 @@ bool _DistSensorBase::dMin(double degFrom, double degTo, double* pDeg, double* p
 	NULL_F(pDeg);
 	NULL_F(pD);
 
-	degFrom += m_hdg + m_offsetDeg;
-	degTo += m_hdg + m_offsetDeg;
+	degFrom += m_hdg;
+	degTo += m_hdg;
 
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
@@ -356,8 +357,8 @@ bool _DistSensorBase::dMax(double degFrom, double degTo, double* pDeg, double* p
 	NULL_F(pDeg);
 	NULL_F(pD);
 
-	degFrom += m_hdg + m_offsetDeg;
-	degTo += m_hdg + m_offsetDeg;
+	degFrom += m_hdg;
+	degTo += m_hdg;
 
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
@@ -387,6 +388,18 @@ bool _DistSensorBase::dMax(double degFrom, double degTo, double* pDeg, double* p
 	*pDeg = iMax * m_dDeg;
 	*pD = dist;
 	return true;
+}
+
+void _DistSensorBase::setROI(double degFrom, double degTo)
+{
+	m_roiFrom = degFrom;
+	m_roiTo = degTo;
+
+	while (m_roiFrom >= DEG_AROUND)
+		m_roiFrom -= DEG_AROUND;
+
+	while (m_roiTo >= DEG_AROUND)
+		m_roiTo -= DEG_AROUND;
 }
 
 bool _DistSensorBase::draw(void)
@@ -426,6 +439,19 @@ bool _DistSensorBase::draw(void)
 		int pY = -dist * sin(rad);
 
 		Scalar col = Scalar(255, 255, 255);
+
+		double deg = rad * RAD_DEG;
+		if(m_roiFrom < m_roiTo)
+		{
+			if(deg > m_roiFrom && deg < m_roiTo)
+				col = Scalar(255,255,0);
+		}
+		else
+		{
+			if(deg > m_roiFrom || deg < m_roiTo)
+				col = Scalar(255,255,0);
+		}
+
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
 

@@ -41,6 +41,11 @@ private:
 	APcopter_base* m_pAP;
 	int	m_nLidar;
 	DIST_LIDAR m_pLidar[N_LIDAR];
+
+	double m_minDH;
+	double m_minDDegH;
+	double m_minDV;
+	double m_minDDegV;
 };
 
 }

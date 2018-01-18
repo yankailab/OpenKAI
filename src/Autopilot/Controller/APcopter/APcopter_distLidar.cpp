@@ -80,21 +80,28 @@ void APcopter_distLidar::updateMavlink(void)
 	double rMax = pDS->m_pDS->rMax();
 
 	//forward
-	double degFrom = 360.0 - 85;
-	double degTo = 360.0 + 85;
+	double degFrom = 360 - 85;
+	double degTo = 360 + 85;
 	double d;
 	double deg;
 
+	pDS->m_pDS->setROI(degFrom,degTo);
+
 	if(pDS->m_pDS->dMin(degFrom, degTo, &deg, &d))
 	{
-		//TODO: hdg? relative?
+		m_minDH = d;
 		d *= cos(deg*DEG_RAD);
-		d = abs(d);
 	}
 	else
 	{
 		d = rMax;
+		deg = 0.0;
+		m_minDH = d;
 	}
+
+	m_minDDegH = deg;
+
+//	LOG_I("minD: " << f2str(d) << " minDeg: " << m_minDDegH);
 
 	pMavlink->distanceSensor(
 			0, //type
@@ -131,10 +138,14 @@ void APcopter_distLidar::updateMavlink(void)
 	rMax = pDS->m_pDS->rMax();
 
 	//upward
-	degFrom = 360.0 - 22.5;
-	degTo = 360.0 + 22.5;
+	degFrom = 0;
+	degTo = 5.0;
 	d = pDS->m_pDS->dMin(degFrom, degTo);
 	if(d < 0.0)d = rMax;
+
+	m_minDV = d;
+	m_minDDegV = deg;
+
 	pMavlink->distanceSensor(
 			0, //type
 			24,	//orientation
@@ -148,6 +159,21 @@ bool APcopter_distLidar::draw(void)
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
+
+	IF_F(m_nLidar <= 0);
+	DIST_LIDAR* pDS = &m_pLidar[0];
+	IF_F(!pDS->m_pDS->bReady());
+
+	Point pCenter(pMat->cols / 2, pMat->rows / 2);
+
+	double rad = m_minDDegH * DEG_RAD;
+	double dist = m_minDH * pDS->m_pDS->m_showScale;
+
+	int pX = -dist * cos(rad);
+	int pY = -dist * sin(rad);
+
+	Scalar col = Scalar(0, 255, 255);
+	circle(*pMat, pCenter + Point(pX, pY), 5, col, 5);
 
 	return true;
 }
