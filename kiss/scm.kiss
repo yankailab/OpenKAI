@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -187,8 +187,8 @@
 			{
 				"bInst":1,
 				"orientation":0,
-				"degFrom":280,
-				"degTo":440,
+				"degFrom":10,
+				"degTo":170,
 			}
 		}
 
@@ -206,8 +206,8 @@
 			{
 				"bInst":1,
 				"orientation":0,
-				"degFrom":0,
-				"degTo":5,
+				"degFrom":265,
+				"degTo":270,
 			}
 		}
 
