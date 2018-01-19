@@ -174,27 +174,43 @@
 		}
 		
 		{
-			"name":"apDistLidar",
+			"name":"apDistLidarH",
 			"class":"APcopter_distLidar",
 			"bInst":1,
+			"bLog":0,
 			"bDraw":1,
 			"Window":"apLidarH",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
+			"_DistSensorBase":"rpLidarH",
 
 			{
-				"_DistSensorBase":"rpLidarH",
 				"bInst":1,
 				"orientation":0,
-			}		
-
-			{
-				"_DistSensorBase":"rpLidarV",
-				"bInst":1,
-				"orientation":0,
-			}		
+				"degFrom":280,
+				"degTo":440,
+			}
 		}
-		
+
+		{
+			"name":"apDistLidarV",
+			"class":"APcopter_distLidar",
+			"bInst":1,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"apLidarV",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_DistSensorBase":"rpLidarV",
+
+			{
+				"bInst":1,
+				"orientation":0,
+				"degFrom":0,
+				"degTo":5,
+			}
+		}
+
 	}
 }
 

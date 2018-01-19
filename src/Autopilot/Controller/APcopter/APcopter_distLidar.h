@@ -7,20 +7,24 @@
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
-#define N_LIDAR 3
+#define N_LIDAR_SECTION 10
 
 namespace kai
 {
 
-struct DIST_LIDAR
+struct DIST_LIDAR_SECTION
 {
-	_DistSensorBase* m_pDS;
 	uint8_t m_orientation;
+	double m_degFrom;
+	double m_degTo;
+	double m_minD;
 
 	void init(void)
 	{
-		m_pDS = NULL;
 		m_orientation = 0;
+		m_degFrom = 360 - 22.5;
+		m_degTo = 360 + 22.5;
+		m_minD = 0.0;
 	}
 };
 
@@ -39,13 +43,10 @@ private:
 	void updateMavlink(void);
 
 	APcopter_base* m_pAP;
-	int	m_nLidar;
-	DIST_LIDAR m_pLidar[N_LIDAR];
+	_DistSensorBase* m_pDS;
 
-	double m_minDH;
-	double m_minDDegH;
-	double m_minDV;
-	double m_minDDegV;
+	int	m_nSection;
+	DIST_LIDAR_SECTION m_pSection[N_LIDAR_SECTION];
 };
 
 }
