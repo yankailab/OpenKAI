@@ -87,7 +87,7 @@ void APcopter_distLidar::updateMavlink(void)
 		DIST_LIDAR_SECTION* pS = &m_pSection[i];
 
 		double d = m_pDS->dMin(pS->m_degFrom, pS->m_degTo);
-		if(d < 0)d = rMax;
+		if(d < rMin)d = rMax;
 		pS->m_minD = d;
 
 		pMavlink->distanceSensor(

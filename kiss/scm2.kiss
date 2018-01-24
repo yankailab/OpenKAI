@@ -2,15 +2,15 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
-	"name":"apViewH",
+	"name":"apLidarH",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -23,7 +23,7 @@
 }
 
 {
-	"name":"apViewV",
+	"name":"apLidarV",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -53,29 +53,6 @@
 }
 
 {
-	"name":"ZED",
-	"class":"_ZED",
-	"FPS":30,
-	"bInst":0,
-	"bLog":1,
-	"Window":"apView",
-	"depthWindow":"apDepth",
-	"angleV":67.1,
-	"angleH":66.7,
-	"zedFPS":100,
-	"zedDepthMode":1,
-	"zedResolution":2,
-	"zedMinDist":0.6,
-	"zedMaxDist":15.0,
-	"bZedFlip":0,
-	"zedConfidence":99,
-	"bFlip":0,
-	"bZedSpatialMemory":0,
-	"iZedCPUcore":2,
-	"bGray":1,
-}
-
-{
 	"name":"apSerialJetson",
 	"class":"_SerialPort",
 	"bInst":1,
@@ -98,25 +75,47 @@
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
 	"_IOBase":"apSerialJetson",
 }
 
 {
-	"name":"rpLidarH",
-	"class":"_RPLIDAR",
+	"name":"ZED",
+	"class":"_ZED",
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apViewH",
+	"Window":"apView",
+	"depthWindow":"apDepth",
+	"angleV":67.1,
+	"angleH":66.7,
+	"zedFPS":100,
+	"zedDepthMode":1,
+	"zedResolution":3,
+	"zedMinDist":0.6,
+	"zedMaxDist":15.0,
+	"bZedFlip":0,
+	"zedConfidence":99,
+	"bFlip":0,
+	"bZedSpatialMemory":0,
+	"iZedCPUcore":2,
+	"bGray":0,
+}
+
+{
+	"name":"rpLidarH",
+	"class":"_RPLIDAR",
+	"FPS":30,
+	"bInst":0,
+	"bLog":0,
+	"Window":"apLidarH",
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
 	"portName":"/dev/ttyACM1",
 	"baud":115200,	
-	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{
@@ -137,13 +136,12 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":0,
-	"Window":"apViewV",
+	"Window":"apLidarV",
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,	
-	"offsetDeg":90.0,
 	"showScale":30.0,
 	
 	{
@@ -175,31 +173,11 @@
 }
 
 {
-	"name":"detectNet",
-	"class":"_DetectNet",
-	"bInst":0,
-	"bLog":1,
-	"bDraw":1,
-	"FPS":30,
-	"Window":"apView",
-	"_VisionBase":"ZED",
-	"modelDir":"/media/kai/sm/dev/model/ped-100/",
-	"minConfidence":0.0,
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70800.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"labelFile":"",
-	"className":"",
-	"coverageThr":0.5,
-	"defaultDrawColor":[255,255,0],
-	"defaultDrawTextSize":0.8,
-}
-
-{
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
 	"bInst":1,
+	"bDraw":1,
 	"FPS":20,
 	"Window":"apView",
 	
@@ -213,31 +191,47 @@
 			"_Automaton":"apState",
 			"Window":"apView",
 			"_Mavlink":"apMavlink",
-			"freqAtti":30,
-			"freqGlobalPos":30,
+			"freqAtti":0,
+			"freqGlobalPos":0,
 			"freqHeartbeat":0,
 		}
 		
 		{
-			"name":"apDistLidar",
+			"name":"apDistLidarH",
 			"class":"APcopter_distLidar",
-			"bInst":1,
-			"bDraw":0,
-			"Window":"apView",
+			"bInst":0,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"apLidarH",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
+			"_DistSensorBase":"rpLidarH",
 
 			{
-				"_DistSensorBase":"rpLidarH",
 				"bInst":1,
 				"orientation":0,
-			}		
+				"degFrom":10,
+				"degTo":170,
+			}
+		}
+
+		{
+			"name":"apDistLidarV",
+			"class":"APcopter_distLidar",
+			"bInst":1,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"apLidarV",
+			"_Automaton":"apState",
+			"APcopter_base":"apBase",
+			"_DistSensorBase":"rpLidarV",
 
 			{
-				"_DistSensorBase":"rpLidarV",
 				"bInst":1,
-				"orientation":0,
-			}		
+				"orientation":24,
+				"degFrom":265,
+				"degTo":270,
+			}
 		}
 		
 		{
@@ -250,7 +244,7 @@
 			"APcopter_base":"apBase",
 			"_ZED":"ZED",
 		}
-		
+
 	}
 }
 
