@@ -107,9 +107,13 @@ void _DetectNet::update(void)
 	{
 		this->autoFPSfrom();
 
+		this->_DetectorBase::update();
+
 		m_obj.update();
 		detect();
 		mergeDetector();
+
+		updateStatistics();
 
 		this->autoFPSto();
 	}
@@ -172,7 +176,7 @@ void _DetectNet::detect(void)
 
 		add(&obj);
 
-		LOG_I("BBox: "<< obj.m_iClass << " " << prob);
+		LOG_I("BBox: "<< i2str(obj.m_iClass) << " Prob: " << f2str(prob));
 	}
 
 }

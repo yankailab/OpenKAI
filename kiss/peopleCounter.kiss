@@ -1,0 +1,56 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"okView",
+	"class":"Window",
+	"bInst":1,
+	"w":672,
+	"h":376,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"deviceID":1,
+	"width":1920,
+	"height":1080,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"dnTarget",
+	"class":"_DetectNet",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"FPS":30,
+	"Window":"okView",
+	"_VisionBase":"camera",
+	"modelDir":"/media/kai/sm/dev/model/multiped-500/",
+	"minConfidence":0.0,
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_178000.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"",
+	"coverageThr":0.5,
+	"bDrawStatistics":1,
+	"classList":["People"],
+}

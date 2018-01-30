@@ -28,7 +28,7 @@ _DetectorBase::_DetectorBase()
 	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
 	m_classLegendPos.x = 50;
-	m_classLegendPos.y = 50;
+	m_classLegendPos.y = 150;
 	m_classLegendPos.z = 25;
 }
 
@@ -80,11 +80,15 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, segmentBlend);
 	KISSm(pK, bDrawStatistics);
 
+	string pClassList[DETECTOR_N_CLASS];
+	m_nClass = pK->array("classList", pClassList, DETECTOR_N_CLASS);
+
 	//statistics
 	int i;
-	for(i=0;i<DETECTOR_N_CLASS;i++)
+	for(i=0; i<m_nClass; i++)
 	{
 		m_pClassStatis[i].init();
+		m_pClassStatis[i].m_name = pClassList[i];
 	}
 
 	return true;
