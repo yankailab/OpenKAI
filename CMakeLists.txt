@@ -40,7 +40,7 @@ endif()
 
 if(USE_TENSORRT)
   add_definitions(-DUSE_TENSORRT)  
-  set(TensorRT_build /jetson-inference/build/${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
+  set(TensorRT_build /jetson-inference-batch/build/${CMAKE_SYSTEM_PROCESSOR} CACHE STRING "")
   set(OpenKAI_libDir ${OpenKAI_libDir} "${TensorRT_build}/lib")
   set(OpenKAI_include ${OpenKAI_include} "${TensorRT_build}/include")
   set(OpenKAI_lib ${OpenKAI_lib} jetson-inference)
