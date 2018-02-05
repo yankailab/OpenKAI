@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -91,7 +91,7 @@
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
-	"portName":"/dev/ttyACM1",
+	"portName":"/dev/ttyUSB0",
 	"baud":115200,	
 	"showScale":30.0,
 	

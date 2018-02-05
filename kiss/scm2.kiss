@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -10,7 +10,7 @@
 {
 	"name":"apLidarH",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -91,9 +91,9 @@
 	"depthWindow":"apDepth",
 	"angleV":67.1,
 	"angleH":66.7,
-	"zedFPS":100,
+	"zedFPS":60,
 	"zedDepthMode":1,
-	"zedResolution":3,
+	"zedResolution":2,
 	"zedMinDist":0.6,
 	"zedMaxDist":15.0,
 	"bZedFlip":0,
@@ -108,13 +108,13 @@
 	"name":"rpLidarH",
 	"class":"_RPLIDAR",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
 	"Window":"apLidarH",
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
-	"portName":"/dev/ttyACM1",
+	"portName":"/dev/ttyUSB0",
 	"baud":115200,	
 	"showScale":30.0,
 	
@@ -140,7 +140,7 @@
 	"rMin":1.0,
 	"rMax":16.0,
 	"nDiv":360,
-	"portName":"/dev/ttyACM0",
+	"portName":"/dev/ttyUSB1",
 	"baud":115200,	
 	"showScale":30.0,
 	
@@ -199,7 +199,7 @@
 		{
 			"name":"apDistLidarH",
 			"class":"APcopter_distLidar",
-			"bInst":0,
+			"bInst":1,
 			"bLog":0,
 			"bDraw":1,
 			"Window":"apLidarH",
@@ -210,8 +210,50 @@
 			{
 				"bInst":1,
 				"orientation":0,
-				"degFrom":10,
-				"degTo":170,
+				"degFrom":338,
+				"degTo":382,
+			}
+			{
+				"bInst":1,
+				"orientation":1,
+				"degFrom":22,
+				"degTo":67,
+			}
+			{
+				"bInst":1,
+				"orientation":2,
+				"degFrom":67,
+				"degTo":112,
+			}
+			{
+				"bInst":1,
+				"orientation":3,
+				"degFrom":112,
+				"degTo":157,
+			}
+			{
+				"bInst":1,
+				"orientation":4,
+				"degFrom":157,
+				"degTo":202,
+			}
+			{
+				"bInst":1,
+				"orientation":5,
+				"degFrom":202,
+				"degTo":247,
+			}
+			{
+				"bInst":1,
+				"orientation":6,
+				"degFrom":247,
+				"degTo":292,
+			}
+			{
+				"bInst":1,
+				"orientation":7,
+				"degFrom":292,
+				"degTo":338,
 			}
 		}
 
@@ -229,8 +271,8 @@
 			{
 				"bInst":1,
 				"orientation":24,
-				"degFrom":265,
-				"degTo":270,
+				"degFrom":355,
+				"degTo":359,
 			}
 		}
 		
