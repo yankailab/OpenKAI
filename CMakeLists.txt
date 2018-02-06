@@ -67,7 +67,7 @@ if(USE_ZED)
   set(ZED_root "/usr/local/zed" CACHE STRING "")
   set(OpenKAI_libDir ${OpenKAI_libDir} "${ZED_root}/lib")
   set(OpenKAI_include ${OpenKAI_include} "${ZED_root}/include")
-  set(OpenKAI_lib ${OpenKAI_lib} sl_zed sl_core sl_input)
+  set(OpenKAI_lib ${OpenKAI_lib} sl_zed sl_core sl_depthcore sl_tracking)
 endif()
 
 if(USE_ORB_SLAM2)
