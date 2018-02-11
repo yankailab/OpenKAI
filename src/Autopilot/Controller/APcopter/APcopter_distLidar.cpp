@@ -87,18 +87,16 @@ void APcopter_distLidar::updateMavlink(void)
 	{
 		DIST_LIDAR_SECTION* pS = &m_pSection[i];
 
-		double rMinScale = rMin * pS->m_sensorScale;
-		double rMaxScale = rMax * pS->m_sensorScale;
-
 		double d = m_pDS->dMin(pS->m_degFrom, pS->m_degTo) * pS->m_sensorScale;
-		if(d < rMinScale)d = rMaxScale;
+		if(d < rMin)d = rMax;
+		if(d > rMax)d = rMax;
 		pS->m_minD = d;
 
 		pMavlink->distanceSensor(
 				0,
 				pS->m_orientation,
-				(uint16_t)(rMaxScale*100),
-				(uint16_t)(rMinScale*100),
+				(uint16_t)(rMax*100),
+				(uint16_t)(rMin*100),
 				(uint16_t)(pS->m_minD * 100));
 
 		LOG_I("orient: " << i2str(pS->m_orientation) << " minD: " << f2str(pS->m_minD));
