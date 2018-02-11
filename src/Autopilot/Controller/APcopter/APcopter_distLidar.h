@@ -18,6 +18,7 @@ struct DIST_LIDAR_SECTION
 	double m_degFrom;
 	double m_degTo;
 	double m_minD;
+	double m_sensorScale;
 
 	void init(void)
 	{
@@ -25,6 +26,7 @@ struct DIST_LIDAR_SECTION
 		m_degFrom = 360 - 22.5;
 		m_degTo = 360 + 22.5;
 		m_minD = 0.0;
+		m_sensorScale = 1.0;
 	}
 };
 
