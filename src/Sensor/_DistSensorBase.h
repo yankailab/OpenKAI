@@ -85,6 +85,8 @@ public:
 	double	m_rMin;
 	double	m_rMax;
 	double	m_hdg;	//given by external sensor e.g. compass
+	double  m_calibScale;
+	double  m_calibOffset;
 	double  m_showScale;
 	uint16_t m_bReady;
 

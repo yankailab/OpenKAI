@@ -35,9 +35,6 @@ bool _SerialPort::init(void* pKiss)
 	F_INFO(pK->v("parity", &m_parity));
 	F_INFO(pK->v("hardwareControl", &m_hardwareControl));
 
-	::sleep(1);
-	open();
-
 	return true;
 }
 
