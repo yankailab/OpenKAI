@@ -20,6 +20,8 @@ _DistSensorBase::_DistSensorBase()
 	m_rMin = 0.0;
 	m_rMax = DBL_MAX;
 	m_hdg = 0.0;
+	m_calibScale = 1.0;
+	m_calibOffset = 0.0;
 	m_showScale = 1.0;
 	m_bReady = false;
 	m_pMavlink = NULL;
@@ -51,6 +53,8 @@ bool _DistSensorBase::init(void* pKiss)
 	KISSm(pK,showScale);
 	KISSm(pK,rMin);
 	KISSm(pK,rMax);
+	KISSm(pK,calibScale);
+	KISSm(pK,calibOffset);
 
 	void* pKmed = pK->o("filterMed");
 	void* pKavr = pK->o("filterAvr");

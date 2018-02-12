@@ -51,7 +51,7 @@ bool APcopter_distLidar::link(void)
 		F_ERROR_F(pKs->v("orientation", (int*)&pS->m_orientation));
 		F_ERROR_F(pKs->v("degFrom", &pS->m_degFrom));
 		F_ERROR_F(pKs->v("degTo", &pS->m_degTo));
-		F_ERROR_F(pKs->v("sensorScale", &pS->m_sensorScale));
+		F_INFO(pKs->v("sensorScale", &pS->m_sensorScale));
 
 		IF_Fl(pS->m_degFrom < 0, "degFrom < 0 deg");
 		IF_Fl(pS->m_degTo < 0, "degTo < 0 deg");
