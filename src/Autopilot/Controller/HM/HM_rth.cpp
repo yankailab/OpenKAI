@@ -85,15 +85,15 @@ void HM_rth::update(void)
 		if(dPos.m_hdg < 0)
 			m_rpmSteer *= -1;
 
-		m_pHM->m_rpmL = m_rpmSteer;
-		m_pHM->m_rpmR = -m_rpmSteer;
+//		m_pHM->m_rpmL = m_rpmSteer;
+//		m_pHM->m_rpmR = -m_rpmSteer;
 
 		return;
 	}
 
 	//Move to approach pos
-	m_pHM->m_rpmL = m_rpmT;
-	m_pHM->m_rpmR = m_rpmT;
+//	m_pHM->m_rpmL = m_rpmT;
+//	m_pHM->m_rpmR = m_rpmT;
 }
 
 bool HM_rth::draw(void)

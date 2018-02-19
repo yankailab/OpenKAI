@@ -24,7 +24,6 @@ public:
 private:
 	HM_base* m_pHM;
 	_ClusterNet* m_pMN;
-	_GPS* m_pGPS;
 
 	int		m_rpmT;
 	int		m_rpmSteer;

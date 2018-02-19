@@ -7,7 +7,6 @@ HM_rth_approach::HM_rth_approach()
 {
 	m_pHM = NULL;
 	m_pMN = NULL;
-	m_pGPS = NULL;
 
 	m_rpmSteer = 0.0;
 	m_rpmT = 0.0;
@@ -47,10 +46,6 @@ bool HM_rth_approach::link(void)
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
-
-	iName = "";
-	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
@@ -109,8 +104,8 @@ void HM_rth_approach::update(void)
 
 	if(!m_pTarget)
 	{
-		m_pHM->m_rpmL = m_rpmSteer;
-		m_pHM->m_rpmR = -m_rpmSteer;
+//		m_pHM->m_rpmL = m_rpmSteer;
+//		m_pHM->m_rpmR = -m_rpmSteer;
 		return;
 	}
 
@@ -120,13 +115,13 @@ void HM_rth_approach::update(void)
 	if(abs(pX) > m_rTargetX)
 	{
 		int rpmSteer = m_rpmSteer * pX;
-		m_pHM->m_rpmL = -rpmSteer;
-		m_pHM->m_rpmR = rpmSteer;
+//		m_pHM->m_rpmL = -rpmSteer;
+//		m_pHM->m_rpmR = rpmSteer;
 		return;
 	}
 
-	m_pHM->m_rpmL = m_rpmT;
-	m_pHM->m_rpmR = m_rpmT;
+//	m_pHM->m_rpmL = m_rpmT;
+//	m_pHM->m_rpmR = m_rpmT;
 }
 
 bool HM_rth_approach::draw(void)
