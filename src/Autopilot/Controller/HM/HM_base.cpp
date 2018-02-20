@@ -18,7 +18,6 @@ HM_base::HM_base()
 	m_defaultSpeed = 1;
 	m_maxYawRate = 100;
 
-	m_maxRpmW = 2500;
 	m_ctrlB0 = 0;
 	m_ctrlB1 = 0;
 
@@ -40,7 +39,6 @@ bool HM_base::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,maxSpeed);
-	KISSm(pK,maxRpmW);
 	KISSm(pK,maxYawRate);
 	KISSm(pK,defaultSpeed);
 	KISSm(pK,bMute);
@@ -214,12 +212,6 @@ void HM_base::updateCAN(void)
 	{
 		m_pCAN->pinOut(m_pinLEDl,0);
 		m_pCAN->pinOut(m_pinLEDm,1);
-		m_pCAN->pinOut(m_pinLEDr,0);
-	}
-	else if(stateName=="HM_FOLLOWME")
-	{
-		m_pCAN->pinOut(m_pinLEDl,1);
-		m_pCAN->pinOut(m_pinLEDm,0);
 		m_pCAN->pinOut(m_pinLEDr,0);
 	}
 	else if(stateName=="HM_STANDBY")

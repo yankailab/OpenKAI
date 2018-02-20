@@ -15,8 +15,8 @@ _ClusterNet::_ClusterNet()
 
 	m_w = 0.2;
 	m_h = 0.2;
-	m_dW = 0.5;
-	m_dH = 0.5;
+	m_dW = 0.2;
+	m_dH = 0.2;
 	m_area.init();
 	m_area.z = 1.0;
 	m_area.w = 1.0;
@@ -25,6 +25,8 @@ _ClusterNet::_ClusterNet()
 	m_size.init();
 	m_aW = 1.0;
 	m_aH = 1.0;
+
+	bSetActive(false);
 }
 
 _ClusterNet::~_ClusterNet()
@@ -36,9 +38,6 @@ bool _ClusterNet::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	string presetDir = "";
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
 
 	KISSm(pK, w);
 	KISSm(pK, h);
@@ -73,17 +72,21 @@ bool _ClusterNet::link(void)
 		return false;
 	}
 
+	int i,j,k;
+
 	m_nObj = m_size.x * m_size.y;
 	m_ppObj = new OBJECT*[m_nObj];
+	for(i=0; i<m_nObj; i++)
+		m_ppObj[i]=NULL;
 
 	OBJECT mO;
-	int k = 0;
+	k = 0;
 	m_aW = m_area.z - m_area.x;
 	m_aH = m_area.w - m_area.y;
 
-	for (int i = 0; i < m_size.y; i++)
+	for (i = 0; i < m_size.y; i++)
 	{
-		for (int j = 0; j < m_size.x; j++)
+		for (j = 0; j < m_size.x; j++)
 		{
 			mO.init();
 			mO.m_fBBox.x = m_area.x + j * m_dW * m_aW;
@@ -267,6 +270,7 @@ void _ClusterNet::bSetActive(bool bActive)
 	m_bActive = bActive;
 
 #ifdef USE_TENSORRT
+	NULL_(m_pIN);
 	m_pIN->bSetActive(m_bActive);
 #endif
 }

@@ -35,7 +35,7 @@ public:
 
 private:
 	void detect(void);
-	void classifyBatch(int iObj, int nBatch);
+	void classifyBatch(int iBatchFrom, int nBatch);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

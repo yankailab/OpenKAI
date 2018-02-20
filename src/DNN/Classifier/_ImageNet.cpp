@@ -153,7 +153,7 @@ void _ImageNet::detect(void)
 
 	Rect bb;
 	GpuMat gfBB;
-	int iBatch = 0;
+	int nBatch = 0;
 	int iBatchFrom = 0;
 	for(int i=0; i<m_obj.size(); i++)
 	{
@@ -171,28 +171,28 @@ void _ImageNet::detect(void)
 		vInt42rect(&pO->m_bbox, &bb);
 		gfBB = GpuMat(gfRGBA, bb);
 
-		m_pIN->AddImgToBatch(iBatch++, (float*) gfBB.data, gfBB.cols, gfBB.rows);
-		if(iBatch == m_nBatch)
+		m_pIN->AddImgToBatch(nBatch++, (float*) gfBB.data, gfBB.cols, gfBB.rows);
+		if(nBatch == m_nBatch)
 		{
-			classifyBatch(i, iBatch);
-			iBatch = 0;
+			classifyBatch(iBatchFrom, nBatch);
+			nBatch = 0;
 			iBatchFrom = i+1;
 		}
 	}
-	if(iBatch>0)
+	if(nBatch>0)
 	{
-		classifyBatch(iBatchFrom, iBatch);
+		classifyBatch(iBatchFrom, nBatch);
 	}
 }
 
-void _ImageNet::classifyBatch(int iObj, int nBatch)
+void _ImageNet::classifyBatch(int iBatchFrom, int nBatch)
 {
 	m_pIN->ClassifyBatch(nBatch, m_pmClass, m_piClass, (float)m_minConfidence);
 	uint64_t tStamp = getTimeUsec();
 
 	for(int i=0; i<nBatch; i++)
 	{
-		OBJECT* pO = m_obj.at(i+iObj);
+		OBJECT* pO = m_obj.at(i+iBatchFrom);
 
 		pO->resetClass();
 		pO->m_mClass = m_pmClass[i];

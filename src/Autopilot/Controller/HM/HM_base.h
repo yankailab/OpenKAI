@@ -34,7 +34,6 @@ public:
 	_IOBase* m_pCMD;
 	string m_strCMD;
 
-	int m_maxRpmW;
 	int m_maxSpeed;
 	int m_maxYawRate;
 	int m_defaultSpeed;
