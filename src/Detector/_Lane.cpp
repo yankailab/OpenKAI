@@ -86,25 +86,26 @@ void _Lane::detectLane(void)
 	m_pFrame->update(m_pVision->bgr());
 	IF_(m_pFrame->empty());
 
+	Mat* pInput = m_pFrame->getCMat();
+
 	// Denoise the image using a Gaussian filter
-	m_imgDenoise = deNoise(*m_pFrame->getCMat());
+	GaussianBlur(*pInput, m_imgDenoise, Size(3, 3), 0, 0);
 
 	// Detect edges in the image
-	m_imgEdges = edgeDetector(m_imgDenoise);
+	edgeDetector();
 
 	// Mask the image so that we only get the ROI
-	m_imgMask = mask(m_imgEdges);
+	mask();
 
-	// Obtain Hough lines in the cropped image
-	m_vLines = houghLines(m_imgMask);
-
+	// rho and theta are selected by trial and error
+	HoughLinesP(m_imgMask, m_vLines, 1, CV_PI / 180, 20, 20, 30);
 	IF_(m_vLines.empty());
 
 	// Separate lines into left and right lines
-	m_vLRlines = lineSeparation(m_vLines, m_imgEdges);
+	lineSeparation();
 
 	// Apply regression to obtain only one line for each side of the lane
-	m_vLane = regression(m_vLRlines, m_frame);
+	regression();
 
 	// Predict the turn by determining the vanishing point of the the lines
 	m_turn = predictTurn();
@@ -148,36 +149,20 @@ bool _Lane::draw(void)
 	return true;
 }
 
-// IMAGE BLURRING
-/**
- *@brief Apply gaussian filter to the input image to denoise it
- *@param inputImage is the frame of a video in which the
- *@param lane is going to be detected
- *@return Blurred and denoised image
- */
-Mat _Lane::deNoise(Mat imgInput)
-{
-	Mat output;
-
-	GaussianBlur(imgInput, output, Size(3, 3), 0, 0);
-
-	return output;
-}
-
 // EDGE DETECTION
 /**
  *@brief Detect all the edges in the blurred frame by filtering the image
  *@param img_noise is the previously blurred frame
  *@return Binary image with only the edges represented in white
  */
-Mat _Lane::edgeDetector(Mat imgNoise)
+void _Lane::edgeDetector(void)
 {
 	Mat output;
 	Mat kernel;
 	Point anchor;
 
 	// Convert image from RGB to gray
-	cv::cvtColor(imgNoise, output, COLOR_RGB2GRAY);
+	cv::cvtColor(m_imgDenoise, output, COLOR_RGB2GRAY);
 	// Binarize gray image
 	cv::threshold(output, output, 140, 255, THRESH_BINARY);
 
@@ -193,7 +178,7 @@ Mat _Lane::edgeDetector(Mat imgNoise)
 	// Filter the binary image to obtain the edges
 	filter2D(output, output, -1, kernel, anchor, 0, BORDER_DEFAULT);
 
-	return output;
+	m_imgEdges = output;
 }
 
 // MASK THE EDGE IMAGE
@@ -202,35 +187,19 @@ Mat _Lane::edgeDetector(Mat imgNoise)
  *@param img_edges is the edges image from the previous function
  *@return Binary image with only the desired edges being represented
  */
-Mat _Lane::mask(Mat imgEdges)
+void _Lane::mask(void)
 {
 	Mat output;
-	Mat mask = Mat::zeros(imgEdges.size(), imgEdges.type());
+	Mat mask = Mat::zeros(m_imgEdges.size(), m_imgEdges.type());
 	Point pts[4] =
 	{ Point(210, 720), Point(550, 450), Point(717, 450), Point(1280, 720) };
 
 	// Create a binary polygon mask
 	fillConvexPoly(mask, pts, 4, Scalar(255, 0, 0));
 	// Multiply the edges image and the mask to get the output
-	cv::bitwise_and(imgEdges, mask, output);
+	cv::bitwise_and(m_imgEdges, mask, output);
 
-	return output;
-}
-
-// HOUGH LINES
-/**
- *@brief Obtain all the line segments in the masked images which are going to be part of the lane boundaries
- *@param img_mask is the masked binary image from the previous function
- *@return Vector that contains all the detected lines in the image
- */
-vector<Vec4i> _Lane::houghLines(Mat imgMask)
-{
-	vector<Vec4i> line;
-
-	// rho and theta are selected by trial and error
-	HoughLinesP(imgMask, line, 1, CV_PI / 180, 20, 20, 30);
-
-	return line;
+	m_imgMask = output;
 }
 
 // SORT RIGHT AND LEFT LINES
@@ -242,7 +211,7 @@ vector<Vec4i> _Lane::houghLines(Mat imgMask)
  *@param img_edges is used for determining the image center
  *@return The output is a vector(2) that contains all the classified lines
  */
-vector<vector<Vec4i> > _Lane::lineSeparation(vector<Vec4i> vLines, Mat imgEdges)
+void _Lane::lineSeparation(void)
 {
 	vector<vector<Vec4i> > output(2);
 	size_t j = 0;
@@ -254,7 +223,7 @@ vector<vector<Vec4i> > _Lane::lineSeparation(vector<Vec4i> vLines, Mat imgEdges)
 	vector<Vec4i> right_lines, left_lines;
 
 	// Calculate the slope of all the detected lines
-	for (auto i : vLines)
+	for (auto i : m_vLines)
 	{
 		ini = Point(i[0], i[1]);
 		fini = Point(i[2], i[3]);
@@ -275,7 +244,7 @@ vector<vector<Vec4i> > _Lane::lineSeparation(vector<Vec4i> vLines, Mat imgEdges)
 	}
 
 	// Split the lines into right and left lines
-	m_imgCenter = static_cast<double>((imgEdges.cols / 2));
+	m_imgCenter = static_cast<double>((m_imgEdges.cols / 2));
 	while (j < selected_lines.size())
 	{
 		ini = Point(selected_lines[j][0], selected_lines[j][1]);
@@ -298,7 +267,7 @@ vector<vector<Vec4i> > _Lane::lineSeparation(vector<Vec4i> vLines, Mat imgEdges)
 	output[0] = right_lines;
 	output[1] = left_lines;
 
-	return output;
+	m_vLRlines = output;
 }
 
 // REGRESSION FOR LEFT AND RIGHT LINES
@@ -309,7 +278,7 @@ vector<vector<Vec4i> > _Lane::lineSeparation(vector<Vec4i> vLines, Mat imgEdges)
  *@param inputImage is used to select where do the lines will end
  *@return output contains the initial and final points of both lane boundary lines
  */
-vector<Point> _Lane::regression(vector<vector<Vec4i> > vLRlines, Mat imgInput)
+void _Lane::regression(void)
 {
 	vector<Point> output(4);
 	Point ini;
@@ -324,7 +293,7 @@ vector<Point> _Lane::regression(vector<vector<Vec4i> > vLRlines, Mat imgInput)
 	// If right lines are being detected, fit a line using all the init and final points of the lines
 	if (m_bRightB == true)
 	{
-		for (auto i : vLRlines[0])
+		for (auto i : m_vLRlines[0])
 		{
 			ini = Point(i[0], i[1]);
 			fini = Point(i[2], i[3]);
@@ -345,7 +314,7 @@ vector<Point> _Lane::regression(vector<vector<Vec4i> > vLRlines, Mat imgInput)
 	// If left lines are being detected, fit a line using all the init and final points of the lines
 	if (m_bLeftB == true)
 	{
-		for (auto j : vLRlines[1])
+		for (auto j : m_vLRlines[1])
 		{
 			ini2 = Point(j[0], j[1]);
 			fini2 = Point(j[2], j[3]);
@@ -364,7 +333,7 @@ vector<Point> _Lane::regression(vector<vector<Vec4i> > vLRlines, Mat imgInput)
 	}
 
 	// One the slope and offset points have been obtained, apply the line equation to obtain the line points
-	int ini_y = imgInput.rows;
+	int ini_y = m_pFrame->getCMat()->rows;
 	int fin_y = 470;
 
 	double right_ini_x = ((ini_y - m_rightB.y) / m_rightM) + m_rightB.x;
@@ -378,7 +347,7 @@ vector<Point> _Lane::regression(vector<vector<Vec4i> > vLRlines, Mat imgInput)
 	output[2] = Point(left_ini_x, ini_y);
 	output[3] = Point(left_fin_x, fin_y);
 
-	return output;
+	m_vLane = output;
 }
 
 // TURN PREDICTION
