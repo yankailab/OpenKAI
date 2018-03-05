@@ -17,6 +17,7 @@
 
 #include "../Detector/_AprilTags.h"
 #include "../Detector/_Bullseye.h"
+#include "../Detector/_Lane.h"
 
 #include "../include/apriltags-cpp/TagDetector.h"
 

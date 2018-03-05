@@ -37,7 +37,6 @@
 #define IF_CONT(x) if(x){continue;}
 
 #define F_l(x,y) if(x==false){LOG_E(y);return;}
-#define IF_Tl(x,y) if(x){LOG_E(y);return true;}
 #define IF_Fl(x,y) if(x){LOG_E(y);return false;}
 #define IF_Nl(x,y) if(x){LOG_E(y);return NULL;}
 #define IF_l(x,y) if(x){LOG_E(y);return;}
@@ -47,6 +46,10 @@
 #define NULL_F(x) if(x==NULL){return false;}
 #define NULL_N(x) if(x==NULL){return NULL;}
 #define NULL_T(x) if(x==NULL){return true;}
+
+#define NULL_l(x,y) if(x==NULL){LOG_E(y);return;}
+#define NULL_Fl(x,y) if(x==NULL){LOG_E(y);return false;}
+#define NULL_Nl(x,y) if(x==NULL){LOG_E(y);return NULL;}
 
 #define DEL(x) if(x){delete x;x=NULL;}
 #define SWAP(x,y,t) {t=x;x=y;y=t;}

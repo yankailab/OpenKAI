@@ -5,8 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef SRC_TRACKER_ROITRACKER_H_
-#define SRC_TRACKER_ROITRACKER_H_
+#ifndef OpenKAI_src_Tracker__ROITracker_H_
+#define OpenKAI_src_Tracker__ROITracker_H_
+
+#ifndef USE_OPENCV4TEGRA
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -51,5 +53,6 @@ public:
 
 }
 
+#endif
 #endif
 #endif
