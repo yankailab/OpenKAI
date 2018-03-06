@@ -1,0 +1,75 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":1,
+	"width":1280,
+	"height":720,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"caffe",
+	"class":"_Caffe",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/model/HM/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_3900.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"labels.txt",
+	"blobOut":"softmax",
+	"mode":"thread",
+	"maxPix":10000000,
+	"nBatch":64,
+	"minConfidence":0.0,
+	"classList":["grass","line","marker1","marker2","marker3","miimo","people","station"],
+}
+
+{
+	"name":"cluster",
+	"class":"_ClusterNet",
+	"bInst":1,
+	"bDraw":1,
+	"FPS":30,
+	"_DetectorBase":"caffe",
+	"Window":"OKview",
+	"w":0.125,
+	"h":0.125,
+	"dW":0.125,
+	"dH":0.125,
+	"l":0.0,
+	"t":0.0,
+	"r":1.0,
+	"b":1.0,
+}
+
+

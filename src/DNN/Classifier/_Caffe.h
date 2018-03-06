@@ -38,8 +38,8 @@ using namespace std;
 using namespace cv;
 using namespace cuda;
 
-// Pair (label, confidence) representing a prediction
-typedef pair<string, float> Prediction;
+// Pair (index, confidence) representing a prediction
+typedef pair<int, float> Prediction;
 
 class _Caffe: public _DetectorBase
 {
@@ -53,13 +53,14 @@ public:
 	bool draw(void);
 
 	bool setup(void);
-	void updateMode(void);
 	vector<vector<Prediction> > Classify(const vector<GpuMat> vImg);
+	int getClassIdx(string& className);
+	string getClassName(int iClass);
 
 private:
 	int getDirFileList(void);
 	bool verifyExtension(string* fName);
-	vector<string> batchInf(void);
+	vector<int> batchInf(void);
 	void detect(void);
 	void SetMean(const string& meanFile);
 	vector<float> Predict(const vector<GpuMat> vImg);
@@ -78,7 +79,6 @@ private:
 	int m_nChannel;
 	GpuMat m_mMean;
 	vector<string> m_vLabel;
-	int m_nClass;
 	int m_nBatch;
 
 	Frame* m_pBGR;

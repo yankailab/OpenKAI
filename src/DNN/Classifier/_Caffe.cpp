@@ -14,7 +14,7 @@ namespace kai
 _Caffe::_Caffe()
 {
 	m_nChannel = 0;
-	m_nBatch = 0;
+	m_nBatch = 1;
 	m_pRGBA = NULL;
 	m_pBGR = NULL;
 	m_nClass = 0;
@@ -32,6 +32,8 @@ bool _Caffe::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
+
+	KISSm(pK,nBatch);
 
 	m_pBGR = new Frame();
 	m_pRGBA = new Frame();
@@ -83,9 +85,11 @@ void _Caffe::SetMean(const string& meanFile)
 
 bool _Caffe::setup(void)
 {
-	updateMode();
-
-	m_nBatch = 1;
+#ifdef CPU_ONLY
+	Caffe::set_mode(Caffe::CPU);
+#else
+	Caffe::set_mode(Caffe::GPU);
+#endif
 
 	m_pNet.reset(new Net<float>(m_modelFile, TEST));
 	m_pNet->CopyTrainedLayersFrom(m_trainedFile);
@@ -110,6 +114,8 @@ bool _Caffe::setup(void)
 
 	Blob<float>* outputLayer = m_pNet->output_blobs()[0];
 	CHECK_EQ(m_vLabel.size(), outputLayer->channels())<< "Number of labels is different from the output layer dimension";
+
+	m_nClass = m_vLabel.size();
 
 	return true;
 }
@@ -157,9 +163,9 @@ void _Caffe::update(void)
 	}
 }
 
-vector<string> _Caffe::batchInf(void)
+vector<int> _Caffe::batchInf(void)
 {
-	vector <string> vResult;
+	vector <int> vResult;
 
 	if(getDirFileList()<=0)
 	{
@@ -202,7 +208,7 @@ vector<string> _Caffe::batchInf(void)
 		if(prog - progress > 0.1)
 		{
 			progress = prog;
-			LOG_I("Rot: " << (int)(progress * 100) << "%");
+			LOG_I("Inference: " << (int)(progress * 100) << "%");
 		}
 	}
 
@@ -299,7 +305,7 @@ void _Caffe::detect(void)
 		vInt42rect(&pO->m_bbox, &bb);
 		vBatch.push_back(GpuMat(gRGBA, bb));
 
-		IF_CONT(vBatch.size()<m_nBatch);
+		IF_CONT(vBatch.size() < m_nBatch);
 
 		vvBatch.push_back(vBatch);
 		vBatch.clear();
@@ -326,19 +332,9 @@ void _Caffe::detect(void)
 			vector<Prediction> vP = vPred[j];
 			pO = m_obj.at(k++);
 
-			pO->m_name = vP[0].first;
-			pO->m_prob = vP[0].second;
+			pO->m_iClass = vP[0].first;
 		}
 	}
-}
-
-void _Caffe::updateMode(void)
-{
-#ifdef CPU_ONLY
-	Caffe::set_mode(Caffe::CPU);
-#else
-	Caffe::set_mode(Caffe::GPU);
-#endif
 }
 
 static bool PairCompare(const std::pair<float, int>& lhs, const std::pair<float, int>& rhs)
@@ -380,7 +376,7 @@ std::vector<vector<Prediction> > _Caffe::Classify(const vector<GpuMat> vImg)
 		for (int i = 0; i < m_nClass; i++)
 		{
 			int idx = vMaxN[i];
-			vPrediction.push_back(make_pair(m_vLabel[idx], output[idx]));
+			vPrediction.push_back(make_pair(idx, output[idx]));
 		}
 
 		vvPrediction.push_back(vector<Prediction>(vPrediction));
@@ -464,14 +460,32 @@ void _Caffe::Preprocess(const vector<GpuMat> vImg, std::vector<std::vector<GpuMa
 		else
 			sample_resized.convertTo(sample_float, CV_32FC1);
 
-		GpuMat sample_normalized;
-		cuda::subtract(sample_float, m_mMean, sample_normalized);
+		GpuMat sample_normalized = sample_float;
+//		cuda::subtract(sample_float, m_mMean, sample_normalized);
 
 		/* This operation will write the separate BGR planes directly to the
 		 * input layer of the network because it is wrapped by the cv::Mat
 		 * objects in input_channels. */
 		cuda::split(sample_normalized, *input_channels);
 	}
+}
+
+int _Caffe::getClassIdx(string& className)
+{
+	int i;
+	for(i=0; i<m_nClass; i++)
+	{
+		if(m_vLabel[i] == className)
+			return i;
+	}
+
+	return -1;
+}
+
+string _Caffe::getClassName(int iClass)
+{
+	string className = m_vLabel[iClass];
+	return className;
 }
 
 bool _Caffe::draw(void)

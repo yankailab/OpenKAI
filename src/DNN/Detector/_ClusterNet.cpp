@@ -9,9 +9,7 @@ namespace kai
 
 _ClusterNet::_ClusterNet()
 {
-#ifdef USE_TENSORRT
-	m_pIN = NULL;
-#endif
+	m_pDet = NULL;
 
 	m_w = 0.2;
 	m_h = 0.2;
@@ -58,10 +56,9 @@ bool _ClusterNet::link(void)
 
 	string iName = "";
 
-#ifdef USE_TENSORRT
-	F_ERROR_F(pK->v("_ImageNet", &iName));
-	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
-	IF_F(!m_pIN);
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	NULL_Fl(m_pDet, "_DetectorBase not found");
 
 	//create detection area instances
 	m_size.x = ((1.0 - m_w) / m_dW) + 1;
@@ -94,20 +91,17 @@ bool _ClusterNet::link(void)
 			mO.m_fBBox.y = m_area.y + i * m_dH * m_aH;
 			mO.m_fBBox.w = mO.m_fBBox.y + m_h * m_aH;
 
-			m_ppObj[k] = m_pIN->add(&mO);
+			m_ppObj[k] = m_pDet->add(&mO);
 			NULL_F(m_ppObj[k]);
 			k++;
 		}
 	}
 
-	m_pIN->m_obj.update();
+	m_pDet->m_obj.update();
 	bSetActive(true);
 
 	return true;
 
-#else
-	return false;
-#endif
 }
 
 bool _ClusterNet::start(void)
@@ -269,10 +263,8 @@ void _ClusterNet::bSetActive(bool bActive)
 {
 	m_bActive = bActive;
 
-#ifdef USE_TENSORRT
-	NULL_(m_pIN);
-	m_pIN->bSetActive(m_bActive);
-#endif
+	NULL_(m_pDet);
+	m_pDet->bSetActive(m_bActive);
 }
 
 bool _ClusterNet::bFound(int iClass)
