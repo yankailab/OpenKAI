@@ -1,7 +1,7 @@
 /*
- * CameraMarkerDetect.cpp
+ * _Lane.cpp
  *
- *  Created on: Aug 21, 2015
+ *  Created on: Mar 5, 2018
  *      Author: yankai
  */
 
@@ -24,6 +24,15 @@ _Lane::_Lane()
 	m_leftM = 0.0;
 	m_rightM = 0.0;
 
+	m_gaussianBlurKsize = 3;
+	m_gaussianBlurSigma = 0;
+
+	m_HLrho = 1;
+	m_HLtheta = CV_PI / 180;
+	m_HLthreshold = 20;
+	m_HLminLineLength = 20;
+	m_HLmaxLineGap = 30;
+
 }
 
 _Lane::~_Lane()
@@ -35,6 +44,15 @@ bool _Lane::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
+
+	KISSim(pK, gaussianBlurKsize);
+	KISSim(pK, gaussianBlurSigma);
+
+	KISSdm(pK,HLrho);
+	KISSdm(pK,HLtheta);
+	KISSm(pK,HLthreshold);
+	KISSdm(pK,HLminLineLength);
+	KISSdm(pK,HLmaxLineGap);
 
 	m_pFrame = new Frame();
 
@@ -74,13 +92,13 @@ void _Lane::update(void)
 	{
 		this->autoFPSfrom();
 
-		detectLane();
+		detect();
 
 		this->autoFPSto();
 	}
 }
 
-void _Lane::detectLane(void)
+void _Lane::detect(void)
 {
 	NULL_(m_pVision);
 	m_pFrame->update(m_pVision->bgr());
@@ -88,17 +106,16 @@ void _Lane::detectLane(void)
 
 	Mat* pInput = m_pFrame->getCMat();
 
-	// Denoise the image using a Gaussian filter
-	GaussianBlur(*pInput, m_imgDenoise, Size(3, 3), 0, 0);
+	GaussianBlur(*pInput, m_imgDenoise,
+					Size(m_gaussianBlurKsize, m_gaussianBlurKsize),
+					m_gaussianBlurSigma, m_gaussianBlurSigma);
 
-	// Detect edges in the image
 	edgeDetector();
 
-	// Mask the image so that we only get the ROI
-	mask();
+	mask();	// Mask to get the ROI
 
 	// rho and theta are selected by trial and error
-	HoughLinesP(m_imgMask, m_vLines, 1, CV_PI / 180, 20, 20, 30);
+	HoughLinesP(m_imgMask, m_vLines, m_HLrho, m_HLtheta, m_HLthreshold, m_HLminLineLength, m_HLmaxLineGap);
 	IF_(m_vLines.empty());
 
 	// Separate lines into left and right lines
@@ -120,10 +137,8 @@ bool _Lane::draw(void)
 	Mat* pMat = pFrame->getCMat();
 	IF_F(pMat->empty());
 
-	NULL_F(m_pFrame);
-	Mat* pInput = m_pFrame->getCMat();
-	NULL_F(pInput);
-	IF_F(pInput->empty());
+	// Plot the turn message
+	pWin->addMsg(&m_turn);
 
 	IF_F(m_vLines.empty());
 
@@ -131,20 +146,17 @@ bool _Lane::draw(void)
 	vector<Point> m_vPolyPoints;
 
 	// Create the transparent polygon for a better visualization of the lane
-	pInput->copyTo(output);
+	pMat->copyTo(output);
 	m_vPolyPoints.push_back(m_vLane[2]);
 	m_vPolyPoints.push_back(m_vLane[0]);
 	m_vPolyPoints.push_back(m_vLane[1]);
 	m_vPolyPoints.push_back(m_vLane[3]);
-	fillConvexPoly(output, m_vPolyPoints, Scalar(0, 0, 255), CV_AA, 0);
-	cv::addWeighted(output, 0.3, *pInput, 1.0 - 0.3, 0, *pMat);
+	fillConvexPoly(output, m_vPolyPoints, Scalar(0, 255, 0), CV_AA, 0);
+	cv::addWeighted(output, 0.25, *pMat, 0.75, 0, *pMat);
 
 	// Plot both lines of the lane boundary
 	line(*pMat, m_vLane[0], m_vLane[1], Scalar(0, 255, 255), 5, CV_AA);
 	line(*pMat, m_vLane[2], m_vLane[3], Scalar(0, 255, 255), 5, CV_AA);
-
-	// Plot the turn message
-	pWin->addMsg(&m_turn);
 
 	return true;
 }

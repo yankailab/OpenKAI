@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__CaffeRegressionInf_H_
-#define OPENKAI_SRC_DNN__CaffeRegressionInf_H_
+#ifndef OpenKAI_src_DNN__CaffeRegressionInf_H_
+#define OpenKAI_src_DNN__CaffeRegressionInf_H_
 
 #include "../../Base/common.h"
 

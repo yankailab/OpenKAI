@@ -27,7 +27,7 @@ public:
 
 
 private:
-	void detectLane(void);
+	void detect(void);
 	void edgeDetector(void);	// Filter the image to obtain only edges
 	void mask(void);			// Mask the edges image to only care about ROI
 	void lineSeparation(void);	// Sprt detected lines by their slope into right and left lines
@@ -51,6 +51,15 @@ private:
 	Point m_leftB;
 	double m_rightM; 	// y = m*x + b
 	double m_leftM;
+
+	uint8_t m_gaussianBlurKsize;
+	uint8_t m_gaussianBlurSigma;
+
+	double	m_HLrho;
+	double	m_HLtheta;
+	int 	m_HLthreshold;
+	double 	m_HLminLineLength;
+	double	m_HLmaxLineGap;
 
     Mat m_imgDenoise;
     Mat m_imgEdges;
