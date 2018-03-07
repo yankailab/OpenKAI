@@ -79,6 +79,8 @@ bool _YOLO::start(void)
 
 void _YOLO::update(void)
 {
+	apiYOLO();
+	return;
 
 	while (m_bThreadON)
 	{

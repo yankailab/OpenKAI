@@ -51,7 +51,7 @@ if(USE_DARKNET)
   add_definitions(-DUSE_DARKNET)  
   set(Darknet_root "/darknet" CACHE STRING "")
   set(OpenKAI_libDir ${OpenKAI_libDir} ${Darknet_root})
-  set(OpenKAI_include ${OpenKAI_include} "${Darknet_root}/include")
+  set(OpenKAI_include ${OpenKAI_include} "${Darknet_root}/api")
   set(OpenKAI_lib ${OpenKAI_lib} darknet)
 endif()
 

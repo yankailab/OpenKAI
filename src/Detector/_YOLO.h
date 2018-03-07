@@ -14,6 +14,10 @@
 
 #ifdef USE_DARKNET
 
+extern "C" {
+#include "api.h"
+}
+
 namespace kai
 {
 
