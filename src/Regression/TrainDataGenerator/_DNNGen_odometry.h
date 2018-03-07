@@ -5,14 +5,14 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_Odometry__DNNGen_odometry_H_
-#define OPENKAI_SRC_Odometry__DNNGen_odometry_H_
+#ifndef OpenKAI_src_Odometry__DNNGen_odometry_H_
+#define OpenKAI_src_Odometry__DNNGen_odometry_H_
 
-#include "../../../Base/common.h"
-#include "../../../Base/_ThreadBase.h"
-#include "../../../Vision/_ZED.h"
-#include "../../../Utility/util.h"
-#include "../../../Protocol/_Mavlink.h"
+#include "../../Base/common.h"
+#include "../../Base/_ThreadBase.h"
+#include "../../Vision/_ZED.h"
+#include "../../Utility/util.h"
+#include "../../Protocol/_Mavlink.h"
 
 #ifdef USE_ZED
 

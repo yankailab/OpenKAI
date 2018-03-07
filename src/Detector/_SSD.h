@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN__SSD_H_
-#define OPENKAI_SRC_DNN__SSD_H_
+#ifndef OpenKAI_src_Detector__SSD_H_
+#define OpenKAI_src_Detector__SSD_H_
 
-#include "../../Base/common.h"
-#include "../../Vision/_VisionBase.h"
-#include "../../Detector/_DetectorBase.h"
+#include "../Base/common.h"
+#include "../Vision/_VisionBase.h"
+#include "_DetectorBase.h"
 
 #ifdef USE_SSD
 #include <cuda_runtime.h>

@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../DNN/Detector/_ClusterNet.h"
+#include "../../../Detector/_ClusterNet.h"
 #include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"

@@ -5,13 +5,13 @@
  *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_DNN_SENSING_DNNodometry_H_
-#define OPENKAI_SRC_DNN_SENSING_DNNodometry_H_
+#ifndef OpenKAI_src_Sensing__DNNodometry_H_
+#define OpenKAI_src_Sensing__DNNodometry_H_
 
-#include "../../Base/common.h"
-#include "../../Base/_ThreadBase.h"
-#include "../../Vision/_Camera.h"
-#include "../../Vision/FrameGroup.h"
+#include "../Base/common.h"
+#include "../Base/_ThreadBase.h"
+#include "../Vision/_Camera.h"
+#include "../Vision/FrameGroup.h"
 
 namespace kai
 {

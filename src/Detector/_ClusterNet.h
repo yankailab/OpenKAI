@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_DNN_Detector__ClusterNet_H_
-#define OpenKAI_src_DNN_Detector__ClusterNet_H_
+#ifndef OpenKAI_src_Detector__ClusterNet_H_
+#define OpenKAI_src_Detector__ClusterNet_H_
 
-#include "../../Base/common.h"
-#include "../../Detector/_DetectorBase.h"
+#include "../Base/common.h"
 #include "../Classifier/_ImageNet.h"
+#include "_DetectorBase.h"
 
 namespace kai
 {

@@ -2,7 +2,7 @@
  * Module.cpp
  *
  *  Created on: Nov 22, 2016
- *      Author: root
+ *      Author: yankai
  */
 
 #include "Module.h"
@@ -61,17 +61,14 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);
 #endif
-#ifdef USE_FCN
-	ADD_MODULE(_FCN);
+#ifdef USE_DARKNET
+	ADD_MODULE(_YOLO);
 #endif
 #ifdef USE_CASCADE
 	ADD_MODULE(_Cascade);
 #endif
 #ifdef USE_ORB_SLAM2
 	ADD_MODULE(_ORB_SLAM2);
-#endif
-#ifdef USE_LSD_SLAM
-	ADD_MODULE(_LSD_SLAM);
 #endif
 #ifdef USE_TENSORRT
 	ADD_MODULE(_ImageNet);
@@ -103,4 +100,4 @@ Module::~Module()
 {
 }
 
-} /* namespace kai */
+}

@@ -11,6 +11,7 @@
 
 namespace kai
 {
+
 _Caffe::_Caffe()
 {
 	m_nChannel = 0;

@@ -3,7 +3,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_DNNavoid_H_
 
 #include "../../../Base/common.h"
-#include "../../../DNN/Classifier/_ImageNet.h"
+#include "../../../Classifier/_ImageNet.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 

@@ -5,11 +5,11 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_DNN_Classifier__ImageNet_H_
-#define OpenKAI_src_DNN_Classifier__ImageNet_H_
+#ifndef OpenKAI_src_Classifier__ImageNet_H_
+#define OpenKAI_src_Classifier__ImageNet_H_
 
-#include "../../Base/common.h"
-#include "../../Detector/_DetectorBase.h"
+#include "../Base/common.h"
+#include "../Detector/_DetectorBase.h"
 
 #ifdef USE_TENSORRT
 

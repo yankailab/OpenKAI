@@ -1,5 +1,5 @@
-#ifndef BASE_COMMON_H_
-#define BASE_COMMON_H_
+#ifndef OpenKAI_src_Base_common_H_
+#define OpenKAI_src_Base_common_H_
 
 #include "../Config/switch.h"
 #include "cv.h"

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector_Lane_H_
-#define OpenKAI_src_Detector_Lane_H_
+#ifndef OpenKAI_src_Detector__Lane_H_
+#define OpenKAI_src_Detector__Lane_H_
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_DNN__CaffeRegressionInf_H_
 #define OpenKAI_src_DNN__CaffeRegressionInf_H_
 
-#include "../../Base/common.h"
+#include "../Base/common.h"
 
 #ifdef USE_CAFFE
 
@@ -17,8 +17,8 @@
 #include <caffe/caffe.hpp>
 #include <caffe/layers/memory_data_layer.hpp>
 
-#include "../../Base/_ThreadBase.h"
-#include "../../Utility/util.h"
+#include "../Base/_ThreadBase.h"
+#include "../Utility/util.h"
 
 namespace kai
 {

@@ -31,11 +31,11 @@
 #include "../IO/_TCP.h"
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
-#include "../DNN/Classifier/_ImageNet.h"
-#include "../DNN/Detector/_ClusterNet.h"
-#include "../DNN/Detector/_DetectNet.h"
-#include "../DNN/Regression/TrainDataGenerator/_DNNGen_odometry.h"
-#include "../DNN/Sensing/_DNNodometry.h"
+#include "../Classifier/_ImageNet.h"
+#include "../Detector/_ClusterNet.h"
+#include "../Detector/_DetectNet.h"
+#include "../Regression/TrainDataGenerator/_DNNGen_odometry.h"
+#include "../Sensing/_DNNodometry.h"
 #include "../IO/_UDPclient.h"
 #include "../IO/_UDPserver.h"
 #include "../Protocol/_Canbus.h"
@@ -72,15 +72,15 @@
 #include "../Detector/_Cascade.h"
 #endif
 #ifdef USE_CAFFE
-#include "../DNN/Classifier/_Caffe.h"
-#include "../DNN/Regression/_CaffeRegressionTrain.h"
-#include "../DNN/Regression/_CaffeRegressionInf.h"
+#include "../Classifier/_Caffe.h"
+#include "../Regression/_CaffeRegressionTrain.h"
+#include "../Regression/_CaffeRegressionInf.h"
 #endif
 #ifdef USE_SSD
-#include "../DNN/_SSD.h"
+#include "../Detector/_SSD.h"
 #endif
-#ifdef USE_FCN
-#include "../DNN/_FCN.h"
+#ifdef USE_DARKNET
+#include "../Detector/_YOLO.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

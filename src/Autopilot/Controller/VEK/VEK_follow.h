@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_VEK_VEK_follow_H_
 
 #include "../../../Base/common.h"
-#include "../../../DNN/Detector/_ClusterNet.h"
+#include "../../../Detector/_ClusterNet.h"
 #include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "VEK_base.h"
