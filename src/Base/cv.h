@@ -21,7 +21,10 @@ using namespace cv::gpu;
 #include <opencv2/features2d.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
+
+#ifdef USE_OPENCV_CONTRIB
 #include <opencv2/tracking.hpp>
+#endif
 
 #ifdef USE_CUDA
 #include <opencv2/cudaobjdetect.hpp>
