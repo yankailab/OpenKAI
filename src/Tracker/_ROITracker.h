@@ -8,13 +8,12 @@
 #ifndef OpenKAI_src_Tracker__ROITracker_H_
 #define OpenKAI_src_Tracker__ROITracker_H_
 
-#ifndef USE_OPENCV4TEGRA
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
@@ -53,6 +52,5 @@ public:
 
 }
 
-#endif
 #endif
 #endif

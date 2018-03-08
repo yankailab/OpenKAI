@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_UI_UI_H_
-#define SRC_UI_UI_H_
+#ifndef OpenKAI_src_UI_UI_H_
+#define OpenKAI_src_UI_UI_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
@@ -73,6 +73,6 @@ public:
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_UI_UI_H_ */
+#endif

@@ -231,7 +231,7 @@ void _ZED::update(void)
 
 		//BGR
 		m_pZed->retrieveImage(*m_pzImg, (sl::VIEW)m_zedViewLR, sl::MEM_GPU);
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 		cuda::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
 #else
 		gpu::cvtColor(m_gImg, m_gImg2, CV_BGRA2BGR);
@@ -241,7 +241,7 @@ void _ZED::update(void)
 
 		if (m_bFlip)
 		{
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 			cuda::flip(*pSrc, *pDest, -1);
 #else
 			gpu::flip(*pSrc,*pDest,-1);
@@ -263,7 +263,7 @@ void _ZED::update(void)
 
 		if (m_bFlip)
 		{
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 			cuda::flip(*pSrc, *pDest, -1);
 #else
 			gpu::flip(*pSrc,*pDest,-1);
@@ -386,7 +386,7 @@ double _ZED::dist(Rect* pR)
 	int intensity = 0;
 	int minPix = pR->area() * 0.5;
 
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 	cuda::calcHist(gMat2, gHist);
 	gHist.download(cHist);
 

@@ -66,7 +66,7 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(EXT_base);
 
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 		ADD_ACTION(RC_base);
 		ADD_ACTION(RC_visualFollow);
 #endif
@@ -165,7 +165,7 @@ void _AutoPilot::onMouse(MOUSE* pMouse)
 
 	for(int i=0;i<m_nAction;i++)
 	{
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 		if(*m_pAction[i]->getClass()=="RC_visualFollow")
 		{
 			((RC_visualFollow*)m_pAction[i])->onMouse(pMouse);

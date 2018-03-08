@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef DETECTOR_APRILTAGS_H_
-#define DETECTOR_APRILTAGS_H_
+#ifndef OpenKAI_src_Detector__AprilTags_H_
+#define OpenKAI_src_Detector__AprilTags_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -74,6 +74,6 @@ public:
 
 };
 
-} /* namespace kai */
+}
 
-#endif /* SRC_MarkerDetector_H_ */
+#endif

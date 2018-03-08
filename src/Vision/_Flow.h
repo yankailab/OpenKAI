@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_VISION_FLOW_H_
-#define SRC_VISION_FLOW_H_
+#ifndef OpenKAI_src_Vision__Flow_H_
+#define OpenKAI_src_Vision__Flow_H_
 
 #include "../Base/common.h"
 #include "../Vision/FrameGroup.h"
@@ -46,7 +46,7 @@ public:
 	_VisionBase*					m_pVision;
 	FrameGroup*						m_pGrayFrames;
 
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 #else
 	Ptr<DenseOpticalFlowExt> m_pFarn;

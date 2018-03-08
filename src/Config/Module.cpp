@@ -46,7 +46,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Augment);
 	ADD_MODULE(_MultiImageNet);
 
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ROITracker);
 #endif
 #ifdef USE_CAFFE

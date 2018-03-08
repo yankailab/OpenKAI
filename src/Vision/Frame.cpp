@@ -55,7 +55,7 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 	{
 #ifdef USE_CUDA
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 		gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
 #else
 		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
@@ -89,7 +89,7 @@ void Frame::getResizedOf(Frame* pFrom, double scaleW, double scaleH)
 
 #ifdef USE_CUDA
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
 #else
 	cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
@@ -111,7 +111,7 @@ void Frame::getGrayOf(Frame* pFrom)
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
 #else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
@@ -135,7 +135,7 @@ void Frame::getHSVOf(Frame* pFrom)
 	//RGB or BGR depends on device
 	IF_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
 #else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
@@ -158,7 +158,7 @@ void Frame::getBGRAOf(Frame* pFrom)
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
 #else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
@@ -181,7 +181,7 @@ void Frame::getRGBAOf(Frame* pFrom)
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
 #else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
@@ -210,7 +210,7 @@ void Frame::get8UC3Of(Frame* pFrom)
 	{
 		if(pFrom->getGMat()->channels()!=1)return;
 
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 		gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
 #else
 		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);

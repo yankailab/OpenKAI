@@ -1,4 +1,4 @@
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/features2d.hpp>

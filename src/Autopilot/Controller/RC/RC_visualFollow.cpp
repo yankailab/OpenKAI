@@ -1,6 +1,6 @@
 #include "../../Controller/RC/RC_visualFollow.h"
 
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {

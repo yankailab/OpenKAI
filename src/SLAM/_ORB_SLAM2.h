@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_SLAM_ORB_SLAM2_H_
-#define SRC_SLAM_ORB_SLAM2_H_
+#ifndef OpenKAI_src_SLAM__ORB_SLAM2_H_
+#define OpenKAI_src_SLAM__ORB_SLAM2_H_
 
 #include "../Base/common.h"
 

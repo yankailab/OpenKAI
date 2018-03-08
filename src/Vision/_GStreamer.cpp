@@ -104,7 +104,7 @@ bool _GStreamer::link(void)
 
 bool _GStreamer::open(void)
 {
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	m_gst.open(m_pipeline);
 #else
 	m_gst.open(m_pipeline, CAP_GSTREAMER);
@@ -188,7 +188,7 @@ void _GStreamer::update(void)
 
 		if (m_bCalibration)
 		{
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 			gpu::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
 #else
 			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
@@ -198,7 +198,7 @@ void _GStreamer::update(void)
 
 		if (m_bGimbal)
 		{
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
 #else
 			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
@@ -208,7 +208,7 @@ void _GStreamer::update(void)
 
 		if (m_bFlip)
 		{
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 			gpu::flip(*pSrc, *pDest, -1);
 #else
 			cuda::flip(*pSrc, *pDest, -1);

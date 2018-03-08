@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "../Vision/_Flow.h"
+#include "_Flow.h"
 
 namespace kai
 {
@@ -33,7 +33,7 @@ bool _Flow::init(void* pKiss)
 	KISSm(pK,width);
 	KISSm(pK,height);
 
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 #else
 	m_pFarn = superres::createOptFlow_Farneback_GPU();

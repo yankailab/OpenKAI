@@ -12,7 +12,7 @@
 #include "../../ActionBase.h"
 #include "RC_base.h"
 
-#ifndef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV_CONTRIB
 
 #define MODE_ASSIST 0
 #define MODE_DRAWRECT 1

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef DETECTOR_BULLSEYE_H_
-#define DETECTOR_BULLSEYE_H_
+#ifndef OpenKAI_src_Detector__Bullseye_H_
+#define OpenKAI_src_Detector__Bullseye_H_
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"

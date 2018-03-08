@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_VISION_FRAMEGROUP_H_
-#define SRC_VISION_FRAMEGROUP_H_
+#ifndef OpenKAI_src_Vision_FrameGroup_H_
+#define OpenKAI_src_Vision_FrameGroup_H_
 
 #include "../Base/common.h"
 #include "Frame.h"

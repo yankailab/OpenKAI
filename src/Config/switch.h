@@ -1,9 +1,10 @@
 
-//#define USE_OPENCV4TEGRA
+//#define USE_OPENCV2X
+//#define USE_OPENCV_CONTRIB
 #define USE_CUDA
 //#define USE_DARKNET
 //#define USE_TENSORRT
-#define USE_CAFFE
+//#define USE_CAFFE
 //#define USE_ZED
 //#define USE_ORB_SLAM2
 //#define USE_SSD

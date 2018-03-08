@@ -8,7 +8,7 @@
 #ifndef SRC_3DFlow_H_
 #define SRC_3DFlow_H_
 
-#ifndef USE_OPENCV4TEGRA
+#ifndef USE_OPENCV2X
 
 #include "../Base/common.h"
 #include "../Vision/_Flow.h"

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_VISION_ZED_H_
-#define SRC_VISION_ZED_H_
+#ifndef OpenKAI_src_Vision_ZED_H_
+#define OpenKAI_src_Vision_ZED_H_
 
 #include "../Base/common.h"
 #include "_VisionBase.h"

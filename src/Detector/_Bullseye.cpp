@@ -137,7 +137,7 @@ void _Bullseye::detectCircleFill(void)
 	m_Val = matHSV[2];
 
 	//Filtering the image
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 	gpu::absdiff(m_Hue, Scalar(90), m_Huered);
 	gpu::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
 	gpu::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16

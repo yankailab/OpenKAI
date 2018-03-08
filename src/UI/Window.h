@@ -5,8 +5,8 @@
  *      Author: Kai Yan
  */
 
-#ifndef OPENKAI_SRC_UI_WINDOW_H_
-#define OPENKAI_SRC_UI_WINDOW_H_
+#ifndef OpenKAI_src_UI_Windows_H_
+#define OpenKAI_src_UI_Windows_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"

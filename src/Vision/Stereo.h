@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_VISION_STEREO_H_
-#define SRC_VISION_STEREO_H_
+#ifndef OpenKAI_src_Vision_Stereo_H_
+#define OpenKAI_src_Vision_Stereo_H_
 
 #include "../Base/common.h"
 #include "../Script/Kiss.h"
@@ -31,13 +31,9 @@ public:
 public:
     int		m_disparity;
 
-#ifndef USE_OPENCV4TEGRA
     Ptr<cuda::StereoBM> m_pBM;
     Ptr<cuda::StereoBeliefPropagation> m_pBP;
     Ptr<cuda::StereoConstantSpaceBP> m_pCSBP;
-#else
-
-#endif
 
 };
 

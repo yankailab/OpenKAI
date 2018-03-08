@@ -92,7 +92,7 @@ bool Window::init(void* pKiss)
 	KISSm(pK,gstOutput);
 	if (!m_gstOutput.empty())
 	{
-#ifdef USE_OPENCV4TEGRA
+#ifdef USE_OPENCV2X
 		if (!m_gst.open(m_gstOutput,
 						0,
 						30,
