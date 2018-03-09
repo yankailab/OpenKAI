@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__YOLO_H_
-#define OpenKAI_src_Detector__YOLO_H_
+#ifndef OpenKAI_src_DNN_Darknet__YOLO_H_
+#define OpenKAI_src_DNN_Darknet__YOLO_H_
 
-#include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
-#include "_DetectorBase.h"
+#include "../../Base/common.h"
+#include "../../Vision/_VisionBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_DARKNET
 

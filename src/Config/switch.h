@@ -1,7 +1,8 @@
 
+#define USE_CUDA
+
 //#define USE_OPENCV2X
 //#define USE_OPENCV_CONTRIB
-#define USE_CUDA
 //#define USE_DARKNET
 //#define USE_TENSORRT
 //#define USE_CAFFE

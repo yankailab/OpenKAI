@@ -5,10 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Classifier__Caffe_H_
-#define OpenKAI_src_Classifier__Caffe_H_
+#ifndef OpenKAI_src_DNN_Caffe__Caffe_H_
+#define OpenKAI_src_DNN_Caffe__Caffe_H_
 
-#include "../Base/common.h"
+#include "../../Base/common.h"
 
 #ifdef USE_CAFFE
 
@@ -19,8 +19,8 @@
 #include <caffe/util/io.hpp>
 #include <caffe/proto/caffe.pb.h>
 
-#include "../Detector/_DetectorBase.h"
-#include "../Vision/_VisionBase.h"
+#include "../../Detector/_DetectorBase.h"
+#include "../../Vision/_VisionBase.h"
 
 #define N_EXT 16
 

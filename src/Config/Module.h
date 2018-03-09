@@ -31,9 +31,9 @@
 #include "../IO/_TCP.h"
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
-#include "../Classifier/_ImageNet.h"
+#include "../DNN/TensorRT/_ImageNet.h"
 #include "../Detector/_ClusterNet.h"
-#include "../Detector/_DetectNet.h"
+#include "../DNN/TensorRT/_DetectNet.h"
 #include "../Regression/TrainDataGenerator/_DNNGen_odometry.h"
 #include "../Sensing/_DNNodometry.h"
 #include "../IO/_UDPclient.h"
@@ -71,15 +71,15 @@
 #include "../Detector/_Cascade.h"
 #endif
 #ifdef USE_CAFFE
-#include "../Classifier/_Caffe.h"
+#include "../DNN/Caffe/_Caffe.h"
 #include "../Regression/_CaffeRegressionTrain.h"
 #include "../Regression/_CaffeRegressionInf.h"
 #endif
 #ifdef USE_SSD
-#include "../Detector/_SSD.h"
+#include "../DNN/SSD/_SSD.h"
 #endif
 #ifdef USE_DARKNET
-#include "../Detector/_YOLO.h"
+#include "../DNN/Darknet/_YOLO.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

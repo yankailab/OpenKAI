@@ -9,7 +9,7 @@
 #define OpenKAI_src_Detector__ClusterNet_H_
 
 #include "../Base/common.h"
-#include "../Classifier/_ImageNet.h"
+#include "../DNN/TensorRT/_ImageNet.h"
 #include "_DetectorBase.h"
 
 namespace kai

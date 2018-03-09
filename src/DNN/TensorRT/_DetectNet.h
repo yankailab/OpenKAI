@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__DetectNet_H_
-#define OpenKAI_src_Detector__DetectNet_H_
+#ifndef OpenKAI_src_DNN_TensorRT__DetectNet_H_
+#define OpenKAI_src_DNN_TensorRT__DetectNet_H_
 
-#include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
-#include "_DetectorBase.h"
+#include "../../Base/common.h"
+#include "../../Vision/_VisionBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_TENSORRT
 

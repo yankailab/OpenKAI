@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor__ZEDdistance_H_
 #define OpenKAI_src_Sensor__ZEDdistance_H_
 
-#include "../Classifier/_ImageNet.h"
+#include "../DNN/TensorRT/_ImageNet.h"
 #include "../Filter/Median.h"
 #include "../Vision/_ZED.h"
 #include "_DistSensorBase.h"

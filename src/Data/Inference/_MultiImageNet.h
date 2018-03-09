@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
-#include "../../Classifier/_ImageNet.h"
+#include "../../DNN/TensorRT/_ImageNet.h"
 #include "../_DataBase.h"
 
 namespace kai
