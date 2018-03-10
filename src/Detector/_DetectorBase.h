@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
-#define DETECTOR_N_CLASS 64
+#define DETECTOR_N_CLASS 128
 #define DETECTOR_N_OBJ 256
 
 namespace kai
@@ -45,9 +45,18 @@ struct OBJECT
 		resetClass();
 	}
 
-	void addClass(int iClass)
+	void addClassIdx(int iClass)
 	{
 		m_mClass |= 1 << iClass;
+	}
+
+	void setClassMask(uint64_t mClass)
+	{
+		m_mClass = mClass;
+	}
+
+	void setTopClass(int iClass)
+	{
 		m_iClass = iClass;
 	}
 

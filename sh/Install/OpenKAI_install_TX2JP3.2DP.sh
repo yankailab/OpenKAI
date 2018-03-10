@@ -90,7 +90,7 @@ make
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/darknet.git
 cd darknet
-make
+make -j4
 mkdir model
 cd model
 wget --no-check-certificate https://pjreddie.com/media/files/yolo.weights

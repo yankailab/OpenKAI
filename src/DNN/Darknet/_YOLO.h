@@ -42,12 +42,12 @@ private:
 	}
 
 public:
-	double m_thresh;			//0.24
-	double m_hier;			//0.5
-	double m_nms; 			//0.4
+	double m_thresh;
+	double m_hier;
+	double m_nms;
+	int m_nPredAvr;
 
 	yolo_object* m_pYoloObj;
-	int m_nMaxDetect;
 	int m_nBatch;
 	Frame* m_pBGR;
 };

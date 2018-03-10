@@ -14,9 +14,9 @@ _YOLO::_YOLO()
 	m_thresh = 0.24;
 	m_hier = 0.5;
 	m_nms = 0.4;
+	m_nPredAvr = 3;
 
 	m_pYoloObj = NULL;
-	m_nMaxDetect = 128;
 	m_nBatch = 1;
 	m_pBGR = NULL;
 }
@@ -36,18 +36,24 @@ bool _YOLO::init(void* pKiss)
 	KISSdm(pK,thresh);
 	KISSdm(pK,hier);
 	KISSdm(pK,nms);
-	KISSm(pK,nMaxDetect);
-	KISSm(pK,nClass);
 	KISSm(pK,nBatch);
+	KISSm(pK,nPredAvr);
 
-	IF_F(!yoloInit( m_modelFile.c_str(),
+	IF_Fl(!yoloInit( m_modelFile.c_str(),
 					m_trainedFile.c_str(),
 					m_labelFile.c_str(),
-					m_nClass,
-					m_nBatch));
+					m_nPredAvr,
+					m_nBatch), "YOLO init failed");
 
-	m_pYoloObj = new yolo_object[m_nMaxDetect];
+	m_pYoloObj = new yolo_object[DETECTOR_N_OBJ];
 	m_pBGR = new Frame();
+
+	m_nClass = yoloNClass();
+	for(int i=0; i<m_nClass; i++)
+	{
+		m_pClassStatis[i].init();
+		m_pClassStatis[i].m_name = yoloGetClassName(i);
+	}
 
 	bSetActive(true);
 	return true;
@@ -103,7 +109,7 @@ void _YOLO::detect(void)
 
 	Mat* pMat = m_pBGR->getCMat();
 	IplImage ipl = *pMat;
-	int nDetected = yoloUpdate(&ipl, m_pYoloObj, m_nMaxDetect, (float)m_thresh, (float)m_hier, (float)m_nms);
+	int nDetected = yoloUpdate(&ipl, m_pYoloObj, DETECTOR_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
 	IF_(nDetected <= 0);
 
 	m_tStamp = getTimeUsec();
@@ -115,7 +121,8 @@ void _YOLO::detect(void)
 
 		obj.init();
 		obj.m_tStamp = m_tStamp;
-		obj.addClass(pYO->m_iClass);
+		obj.setClassMask(pYO->m_mClass);
+		obj.setTopClass(pYO->m_iClass);
 
 		obj.m_fBBox.x = (double)pYO->m_l;
 		obj.m_fBBox.y = (double)pYO->m_t;
@@ -131,7 +138,7 @@ void _YOLO::detect(void)
 
 		add(&obj);
 
-		LOG_I("Class: "<< i2str(obj.m_iClass) << " Name: " << pYO->m_pName << " Prob: " << f2str(pYO->m_prob));
+		LOG_I("Class: "<< i2str(obj.m_iClass));
 	}
 }
 
