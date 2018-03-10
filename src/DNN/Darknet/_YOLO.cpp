@@ -11,25 +11,20 @@ namespace kai
 
 _YOLO::_YOLO()
 {
-	m_pRGBA = NULL;
-	m_pRGBAf = NULL;
-	m_minSize = 0.0;
-	m_maxSize = 1.0;
-	m_area.init();
-	m_area.z = 1.0;
-	m_area.w = 1.0;
+	m_thresh = 0.24;
+	m_hier = 0.5;
+	m_nms = 0.4;
 
-	m_nBox = 0;
-	m_nBoxMax = 0;
-	m_nClass = 0;
-
-	m_className = "";
+	m_pYoloObj = NULL;
+	m_nMaxDetect = 128;
+	m_nBatch = 1;
+	m_pBGR = NULL;
 }
 
 _YOLO::~_YOLO()
 {
-	DEL(m_pRGBA);
-	DEL(m_pRGBAf);
+	DEL(m_pBGR);
+	DEL(m_pYoloObj);
 }
 
 bool _YOLO::init(void* pKiss)
@@ -38,20 +33,23 @@ bool _YOLO::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, className);
-	KISSm(pK, minSize);
-	KISSm(pK, maxSize);
+	KISSdm(pK,thresh);
+	KISSdm(pK,hier);
+	KISSdm(pK,nms);
+	KISSm(pK,nMaxDetect);
+	KISSm(pK,nClass);
+	KISSm(pK,nBatch);
 
-	F_INFO(pK->v("l", &m_area.x));
-	F_INFO(pK->v("t", &m_area.y));
-	F_INFO(pK->v("r", &m_area.z));
-	F_INFO(pK->v("b", &m_area.w));
+	IF_F(!yoloInit( m_modelFile.c_str(),
+					m_trainedFile.c_str(),
+					m_labelFile.c_str(),
+					m_nClass,
+					m_nBatch));
 
-	m_pRGBA = new Frame();
-	m_pRGBAf = new Frame();
+	m_pYoloObj = new yolo_object[m_nMaxDetect];
+	m_pBGR = new Frame();
 
 	bSetActive(true);
-
 	return true;
 }
 
@@ -79,9 +77,6 @@ bool _YOLO::start(void)
 
 void _YOLO::update(void)
 {
-	apiYOLO();
-	return;
-
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
@@ -90,8 +85,6 @@ void _YOLO::update(void)
 
 		m_obj.update();
 		detect();
-
-		updateStatistics();
 
 		this->autoFPSto();
 	}
@@ -105,51 +98,41 @@ void _YOLO::detect(void)
 	Frame* pBGR = m_pVision->bgr();
 	NULL_(pBGR);
 	IF_(pBGR->empty());
-	IF_(m_pRGBA->isNewerThan(pBGR));
+	IF_(!pBGR->isNewerThan(m_pBGR));
+	m_pBGR->update(pBGR);
 
-	m_pRGBA->getRGBAOf(pBGR);
-	GpuMat* pGMat = m_pRGBA->getGMat();
-	IF_(pGMat->empty());
-
-	GpuMat fGMat;
-	pGMat->convertTo(fGMat, CV_32FC4);
-
-	m_nBox = m_nBoxMax;
-
-	int camArea = fGMat.cols * fGMat.rows;
-	int minSize = camArea * m_minSize;
-	int maxSize = camArea * m_maxSize;
+	Mat* pMat = m_pBGR->getCMat();
+	IplImage ipl = *pMat;
+	int nDetected = yoloUpdate(&ipl, m_pYoloObj, m_nMaxDetect, (float)m_thresh, (float)m_hier, (float)m_nms);
+	IF_(nDetected <= 0);
 
 	m_tStamp = getTimeUsec();
 
 	OBJECT obj;
-	for (int n = 0; n < m_nBox; n++)
+	for (int i = 0; i < nDetected; i++)
 	{
-		obj.init();
-		obj.addClass(0);
-		obj.m_tStamp = m_tStamp;
+		yolo_object* pYO = &m_pYoloObj[i];
 
-		obj.m_bbox.x = 0;
-		obj.m_bbox.y = 0;
-		obj.m_bbox.z = 0;
-		obj.m_bbox.w = 0;
-		obj.m_camSize.x = fGMat.cols;
-		obj.m_camSize.y = fGMat.rows;
+		obj.init();
+		obj.m_tStamp = m_tStamp;
+		obj.addClass(pYO->m_iClass);
+
+		obj.m_fBBox.x = (double)pYO->m_l;
+		obj.m_fBBox.y = (double)pYO->m_t;
+		obj.m_fBBox.z = (double)pYO->m_r;
+		obj.m_fBBox.w = (double)pYO->m_b;
+		obj.m_camSize.x = pMat->cols;
+		obj.m_camSize.y = pMat->rows;
+		obj.f2iBBox();
 		if(obj.m_bbox.x < 0)obj.m_bbox.x = 0;
 		if(obj.m_bbox.y < 0)obj.m_bbox.y = 0;
 		if(obj.m_bbox.z > obj.m_camSize.x)obj.m_bbox.z = obj.m_camSize.x;
 		if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
-		obj.i2fBBox();
-
-		int oSize = obj.m_bbox.area();
-		IF_CONT(oSize < minSize);
-		IF_CONT(oSize > maxSize);
 
 		add(&obj);
 
-		LOG_I("BBox: "<< i2str(obj.m_iClass) << " Prob: " << f2str(0.0));
+		LOG_I("Class: "<< i2str(obj.m_iClass) << " Name: " << pYO->m_pName << " Prob: " << f2str(pYO->m_prob));
 	}
-
 }
 
 bool _YOLO::draw(void)
@@ -160,6 +143,4 @@ bool _YOLO::draw(void)
 }
 
 }
-
 #endif
-

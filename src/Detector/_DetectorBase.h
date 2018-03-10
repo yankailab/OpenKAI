@@ -29,7 +29,7 @@ struct OBJECT
 	vInt4		m_bbox;
 	double		m_dist;
 	vInt2		m_camSize;
-	int8_t 		m_iClass;		//most probable class
+	int	 		m_iClass;		//most probable class
 	uint64_t 	m_mClass;		//all candidate class mask
 	bool	 	m_bCluster;	//clustered class mask
 	int64_t 	m_tStamp;

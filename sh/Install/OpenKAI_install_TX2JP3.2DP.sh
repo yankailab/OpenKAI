@@ -94,6 +94,7 @@ make
 mkdir model
 cd model
 wget --no-check-certificate https://pjreddie.com/media/files/yolo.weights
+wget --no-check-certificate https://pjreddie.com/media/files/tiny-yolo-voc.weights
 
 #Build OpenKAI
 cd $FULLDEVDIR

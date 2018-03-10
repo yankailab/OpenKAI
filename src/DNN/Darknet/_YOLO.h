@@ -42,19 +42,14 @@ private:
 	}
 
 public:
-	int m_nBox;
-	int m_nBoxMax;
-	uint32_t m_nClass;
+	double m_thresh;			//0.24
+	double m_hier;			//0.5
+	double m_nms; 			//0.4
 
-	Frame* m_pRGBA;
-	Frame* m_pRGBAf;
-
-	double m_minSize;
-	double m_maxSize;
-	vDouble4 m_area;
-
-	string m_className;
-
+	yolo_object* m_pYoloObj;
+	int m_nMaxDetect;
+	int m_nBatch;
+	Frame* m_pBGR;
 };
 
 }
