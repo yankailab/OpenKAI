@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HMRTHAPPROACH_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_HMRTHAPPROACH_H_
+#ifndef OpenKAI_src_Autopilot_Controller_HM_rth_approach_H_
+#define OpenKAI_src_Autopilot_Controller_HM_rth_approach_H_
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"

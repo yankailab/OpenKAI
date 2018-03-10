@@ -1,4 +1,4 @@
-#include "../../Controller/HM/HM_follow.h"
+#include "HM_follow.h"
 
 namespace kai
 {
@@ -123,13 +123,13 @@ void HM_follow::update(void)
 	if(abs(pX) > m_rTargetX)
 	{
 		int rpmSteer = m_rpmSteer * pX;
-//		m_pHM->m_rpmL = -rpmSteer;
-//		m_pHM->m_rpmR = rpmSteer;
+		m_pHM->m_rpmL = -rpmSteer;
+		m_pHM->m_rpmR = rpmSteer;
 	}
 
 	IF_(m_pTarget->m_dist < m_distMin);
-//	m_pHM->m_rpmL += m_rpmT;
-//	m_pHM->m_rpmR += m_rpmT;
+	m_pHM->m_rpmL += m_rpmT;
+	m_pHM->m_rpmR += m_rpmT;
 }
 
 bool HM_follow::draw(void)

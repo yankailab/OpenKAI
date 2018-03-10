@@ -1,4 +1,4 @@
-#include "../../Controller/HM/HM_rth_approach.h"
+#include "HM_rth_approach.h"
 
 namespace kai
 {

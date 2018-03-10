@@ -1,4 +1,4 @@
-#include "../../Controller/HM/HM_avoid.h"
+#include "HM_avoid.h"
 
 namespace kai
 {
@@ -149,8 +149,8 @@ void HM_avoid::update(void)
 		}
 
 		m_pHM->m_bSpeaker = true;
-//		m_pHM->m_rpmL = m_rpmSteer;
-//		m_pHM->m_rpmR = -m_rpmSteer;
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
 	}
 
 	if(m_sequence == av_markerTurn)
@@ -163,8 +163,8 @@ void HM_avoid::update(void)
 		}
 
 		m_pHM->m_bSpeaker = true;
-//		m_pHM->m_rpmL = m_rpmSteer;
-//		m_pHM->m_rpmR = -m_rpmSteer;
+		m_pHM->m_rpmL = m_rpmSteer;
+		m_pHM->m_rpmR = -m_rpmSteer;
 	}
 
 }

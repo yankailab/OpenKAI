@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_HMFOLLOW_H_
+#ifndef OpenKAI_src_Autopilot_Controller_HM_follow_H_
+#define OpenKAI_src_Autopilot_Controller_HM_follow_H_
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_ClusterNet.h"
@@ -38,6 +38,7 @@ private:
 };
 
 }
+
 
 #endif
 
