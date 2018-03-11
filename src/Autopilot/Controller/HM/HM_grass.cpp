@@ -102,7 +102,7 @@ void HM_grass::update(void)
 	NULL_(m_pDet);
 	IF_(!isActive());
 
-	//standby until ImageNet is ready
+	//standby until Detector is ready
 	if(m_pGrassF->m_iClass < 0)
 	{
 		m_pHM->m_rpmL = 0;

@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_Controller_HM_grass_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"

@@ -86,7 +86,6 @@ void HM_kickBack::update(void)
 
 	if(m_sequence == kb_back)
 	{
-
 		LOG_I("dist:"<<pNew->dist(&m_wpStation));
 
 		if(pNew->dist(&m_wpStation) < m_kickBackDist)
@@ -111,7 +110,6 @@ void HM_kickBack::update(void)
 
 	if(m_sequence == kb_turn)
 	{
-
 		LOG_I("rotHdg:" << rotHdg << " m_hdg:" << m_wpApproach.m_hdg << " newHdg:" << pNew->m_hdg << " dHdg:" <<dHdg(m_wpApproach.m_hdg, pNew->m_hdg));
 
 

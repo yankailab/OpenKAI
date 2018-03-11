@@ -60,23 +60,6 @@
 }
 
 {
-	"name":"APmavlink",
-	"class":"_Mavlink",
-	"bInst":0,
-	"bLog":0,
-	"FPS":100,
-	"Window":"OKview",
-
-	{
-		"name":"input",
-		"class":"SerialPort",
-		"bInst":1,
-		"portName":"/dev/ttyTHS1",
-		"baud":921600,
-	}	
-}
-
-{
 	"name":"hmIN",
 	"class":"_ImageNet",
 	"bInst":1,
@@ -98,21 +81,25 @@
 }
 
 {
-	"name":"hmCN",
-	"class":"_ClusterNet",
+	"name":"tinyYOLO",
+	"class":"_YOLO",
 	"bInst":1,
 	"bDraw":1,
+	"bLog":0,
 	"FPS":30,
-	"_ImageNet":"hmIN",
 	"Window":"OKview",
-	"w":0.25,
-	"h":0.25,
-	"dW":0.25,
-	"dH":0.25,
-	"l":0.0,
-	"t":0.0,
-	"r":1.0,
-	"b":1.0,
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/darknet/",
+	"modelFile":"cfg/tiny-yolo-voc.cfg",
+	"trainedFile":"data/tiny-yolo-voc.weights",
+	"meanFile":"",
+	"labelFile":"data/voc.names",
+	"thresh":0.18,
+	"hier":0.5,
+	"nms":0.4,
+	"nPredAvr":3,
+	"nBatch":1,
+	"mode":"thread",
 }
 
 {
@@ -202,7 +189,7 @@
 		{
 			"name":"kickBack",
 			"class":"HM_kickBack",
-			"bInst":1,
+			"bInst":0,
 			"bLog":1,
 			"Window":"OKview",
 			"HM_base":"base",
@@ -226,36 +213,33 @@
 			"rpmSteer":1500,
 			"turnTimer":0,
 			"iGrassClass":1,
-			"minProb":0.1,
-			"tTurnRandRange":300000,
-			"nTurnRand":10,
 			"activeState":["HM_WORK","HM_RTH"],
 					
 			{
 				"name":"grassBoxL",
 				"bInst":1,
-				"left":0.10,
-				"top":0.84,
-				"right":0.20,
-				"bottom":1.0,
+				"l":0.10,
+				"t":0.84,
+				"r":0.20,
+				"b":1.0,
 			}			
 			
 			{
 				"name":"grassBoxF",
 				"bInst":1,
-				"left":0.51,
-				"top":0.78,
-				"right":0.61,
-				"bottom":0.83,
+				"l":0.51,
+				"t":0.78,
+				"r":0.61,
+				"b":0.83,
 			}			
 
 			{
 				"name":"grassBoxR",
 				"bInst":1,
-				"left":0.9,
-				"top":0.84,
-				"right":1.0,
-				"bottom":0.92,
+				"l":0.9,
+				"t":0.84,
+				"r":1.0,
+				"b":0.92,
 			}
 		}
 				
@@ -278,8 +262,21 @@
 			"rTargetX":0.2,
 			"iTargetClass":1,
 			"targetName":"turf",
-			"activeState":["HM_FOLLOW"],			
+			"activeState":["HM_FOLLOW"],	
 		}
+		
+		{
+			"name":"marker",
+			"class":"HM_marker",
+			"bInst":1,
+			"Window":"OKview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"rpmSteer":2000,
+			"iMarkerClass":1,
+			"activeState":["HM_WORK","HM_RTH"],			
+		}				
+		
 				
 		{
 			"name":"RTH",
@@ -315,11 +312,11 @@
 			"targetName":"station",
 			"activeState":["HM_RTH_APPROACH"],
 		}
-				
+
 		{
 			"name":"avoidance",
 			"class":"HM_avoid",
-			"bInst":1,
+			"bInst":0,
 			"Window":"OKview",
 			"HM_base":"base",
 			"_Automaton":"automaton",

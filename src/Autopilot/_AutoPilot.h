@@ -20,6 +20,7 @@
 #include "Controller/HM/HM_follow.h"
 #include "Controller/HM/HM_grass.h"
 #include "Controller/HM/HM_kickBack.h"
+#include "Controller/HM/HM_marker.h"
 #include "Controller/HM/HM_rth.h"
 #include "Controller/HM/HM_rth_approach.h"
 #include "Controller/RC/RC_base.h"

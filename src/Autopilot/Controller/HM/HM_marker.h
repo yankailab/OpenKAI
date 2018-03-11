@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_HM_follow_H_
-#define OpenKAI_src_Autopilot_Controller_HM_follow_H_
+#ifndef OpenKAI_src_Autopilot_Controller_HM_marker_H_
+#define OpenKAI_src_Autopilot_Controller_HM_marker_H_
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
@@ -9,11 +9,11 @@
 namespace kai
 {
 
-class HM_follow: public ActionBase
+class HM_marker: public ActionBase
 {
 public:
-	HM_follow();
-	~HM_follow();
+	HM_marker();
+	~HM_marker();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -24,20 +24,14 @@ private:
 	_DetectorBase*	m_pDet;
 	HM_base* m_pHM;
 
-	int		m_rpmSteer;
-	double	m_rpmT;
-
-	OBJECT	m_obj;
-	int		m_mTargetClass;
-	double	m_targetX;
-	double	m_rTargetX;
+	int		m_iMarkerClass;
 	double	m_minSize;
-	double	m_maxSize;
+	int		m_rpmSteer;
+	OBJECT	m_obj;
 
 };
 
 }
-
 
 #endif
 
