@@ -7,7 +7,6 @@ HM_base::HM_base()
 {
 	m_pCAN = NULL;
 	m_pCMD = NULL;
-//	m_pGPS = NULL;
 	m_strCMD = "";
 	m_rpmL = 0;
 	m_rpmR = 0;
@@ -28,9 +27,6 @@ HM_base::HM_base()
 	m_pinLEDm = 12;
 	m_pinLEDr = 13;
 
-	m_dT.init();
-	m_dRot.init();
-	m_dir = dir_forward;
 }
 
 HM_base::~HM_base()
@@ -74,10 +70,6 @@ bool HM_base::link(void)
 	F_ERROR_F(pK->v("_Canbus", &iName));
 	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
 
-//	iName = "";
-//	F_ERROR_F(pK->v("_GPS", &iName));
-//	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -87,18 +79,9 @@ void HM_base::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pCMD);
 
-	if(m_rpmL > m_rpmR)
-		m_dir = dir_right;
-	else if(m_rpmL < m_rpmR)
-		m_dir = dir_left;
-	else
-		m_dir = dir_forward;
-
-	updateGPS();
 	updateCAN();
 
 	string* pStateName = m_pAM->getCurrentStateName();
-
 	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME")
 	{
 		m_rpmL = 0;
@@ -114,50 +97,6 @@ void HM_base::update(void)
 	m_bSpeaker = false;
 
 	cmd();
-}
-
-void HM_base::updateGPS(void)
-{
-//	NULL_(m_pGPS);
-
-	const static double tBase = 1.0/(USEC_1SEC*60.0);
-
-	//force rpm to only rot or translation at a time
-	if(abs(m_rpmL) != abs(m_rpmR))
-	{
-		int mid = (m_rpmL + m_rpmR)/2;
-		int absRpm = abs(m_rpmL - mid);
-
-//		if(m_rpmL > m_rpmR)
-//		{
-//			m_rpmL = absRpm;
-//			m_rpmR = -absRpm;
-//		}
-//		else
-//		{
-//			m_rpmL = -absRpm;
-//			m_rpmR = absRpm;
-//		}
-
-		m_dT.z = 0.0;
-		m_dRot.x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
-	}
-	else if(m_rpmL != m_rpmR)
-	{
-		m_dT.z = 0.0;
-		m_dRot.x = 360.0 * (((double)m_rpmL) * tBase * m_wheelR * 2 * PI) / (m_treadW * PI);
-	}
-	else
-	{
-		m_dT.z = ((double)m_rpmL) * tBase * m_wheelR * 2 * PI;
-		m_dRot.x = 0.0;
-	}
-
-	//TODO:Temporal
-	m_dT.z *= 1000000;
-
-//	m_pGPS->setSpeed(&m_dT,&m_dRot);
-//	LOG_I("dZ="<<m_dT.z<<" dYaw="<<m_dRot.x);
 }
 
 void HM_base::cmd(void)
@@ -220,7 +159,6 @@ void HM_base::cmd(void)
 	else if(m_strCMD=="station")
 	{
 		stateName = "HM_STATION";
-//		m_pGPS->reset();
 		m_pAM->transit(&stateName);
 	}
 
@@ -309,7 +247,6 @@ void HM_base::updateCAN(void)
 	IF_(stateName == "HM_KICKBACK");
 
 	stateName = "HM_STATION";
-//	m_pGPS->reset();
 	m_pAM->transit(&stateName);
 
 }
@@ -328,7 +265,5 @@ bool HM_base::draw(void)
 
 	return true;
 }
-
-
 
 }

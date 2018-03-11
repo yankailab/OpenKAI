@@ -3,17 +3,12 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../DNN/TensorRT/_ImageNet.h"
+#include "../../../Detector/_DetectorBase.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
 namespace kai
 {
-
-enum GRASSTURN_SEQUENCE
-{
-	gt_grass,gt_timerSet,gt_turn,gt_randomTurn
-};
 
 class HM_grass: public ActionBase
 {
@@ -29,23 +24,12 @@ public:
 private:
 	void bSetActive(bool bActive);
 
-#ifdef USE_TENSORRT
-	_ImageNet*	m_pIN;
-#endif
-
+	_DetectorBase*	m_pDet;
 	HM_base* m_pHM;
 
 	int			m_rpmSteer;
-	uint64_t	m_turnTimer;
-	uint64_t	m_tTurnSet;
+	int			m_dir;
 
-	GRASSTURN_SEQUENCE m_sequence;
-
-	uint64_t	m_nTurnRand;
-	uint64_t	m_tTurnRandRange;
-	uint64_t	m_tTurnRand;
-
-	double		m_grassMinProb;
 	vDouble4	m_grassBoxL;
 	vDouble4	m_grassBoxF;
 	vDouble4	m_grassBoxR;

@@ -225,7 +225,8 @@ bool _DetectorBase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	Scalar oCol = Scalar(0,255,0);
+	Scalar oCol;
+	int colStep = 255/m_nClass;
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
@@ -234,16 +235,19 @@ bool _DetectorBase::draw(void)
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
+		int col = colStep * iClass;
+		oCol = Scalar(col, (col+85)%255, (col+170)%255);
+
 		Rect r;
 		vInt42rect(&pO->m_bbox, &r);
-		rectangle(*pMat, r, oCol, 1);
+		rectangle(*pMat, r, oCol, 2);
 
 		string oName = m_pClassStatis[iClass].m_name;
 		if (oName.length()>0)
 		{
 			putText(*pMat, oName,
-					Point(r.x + 25, r.y + 50),
-					FONT_HERSHEY_SIMPLEX, 1.0, oCol, 2);
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.8, oCol, 2);
 		}
 	}
 

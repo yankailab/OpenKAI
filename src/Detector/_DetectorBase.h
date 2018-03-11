@@ -31,7 +31,7 @@ struct OBJECT
 	vInt2		m_camSize;
 	int	 		m_iClass;		//most probable class
 	uint64_t 	m_mClass;		//all candidate class mask
-	bool	 	m_bCluster;	//clustered class mask
+	bool	 	m_bCluster;		//clustered class mask
 	int64_t 	m_tStamp;
 
 	void init(void)
@@ -58,6 +58,16 @@ struct OBJECT
 	void setTopClass(int iClass)
 	{
 		m_iClass = iClass;
+	}
+
+	bool bClass(int iClass)
+	{
+		return (m_mClass & (1 << iClass));
+	}
+
+	bool bClassMask(uint64_t mClass)
+	{
+		return m_mClass & mClass;
 	}
 
 	void resetClass(void)

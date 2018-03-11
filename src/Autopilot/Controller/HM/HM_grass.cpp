@@ -5,25 +5,14 @@ namespace kai
 
 HM_grass::HM_grass()
 {
-#ifdef USE_TENSORRT
-	m_pIN = NULL;
-#endif
-
+	m_pDet = NULL;
 	m_pHM = NULL;
-	m_sequence = gt_grass;
+	m_rpmSteer = 0;
+	m_dir = 0;
 
 	m_grassBoxL.init();
 	m_grassBoxF.init();
 	m_grassBoxR.init();
-	m_grassMinProb = 0.5;
-
-	m_turnTimer = USEC_1SEC;
-	m_tTurnSet = 0;
-	m_rpmSteer = 0;
-
-	m_nTurnRand = 10;
-	m_tTurnRandRange = 100000;
-	m_tTurnRand = 0;
 
 	m_iGrassClass = 1;
 	m_pGrassL = NULL;
@@ -42,35 +31,31 @@ bool HM_grass::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
-	F_INFO(pK->v("turnTimer", (int* )&m_turnTimer));
-	F_INFO(pK->v("minProb", &m_grassMinProb));
-	F_INFO(pK->v("nTurnRand", &m_nTurnRand));
-	F_INFO(pK->v("tTurnRandRange", &m_tTurnRandRange));
-	F_INFO(pK->v("iGrassClass", &m_iGrassClass));
+	KISSm(pK, rpmSteer);
+	KISSm(pK, iGrassClass);
 
 	Kiss* pG;
 
 	pG = pK->o("grassBoxL");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxL.x));
-	F_INFO(pG->v("top", &m_grassBoxL.y));
-	F_INFO(pG->v("right", &m_grassBoxL.z));
-	F_INFO(pG->v("bottom", &m_grassBoxL.w));
+	F_INFO(pG->v("l", &m_grassBoxL.x));
+	F_INFO(pG->v("t", &m_grassBoxL.y));
+	F_INFO(pG->v("r", &m_grassBoxL.z));
+	F_INFO(pG->v("b", &m_grassBoxL.w));
 
 	pG = pK->o("grassBoxF");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxF.x));
-	F_INFO(pG->v("top", &m_grassBoxF.y));
-	F_INFO(pG->v("right", &m_grassBoxF.z));
-	F_INFO(pG->v("bottom", &m_grassBoxF.w));
+	F_INFO(pG->v("l", &m_grassBoxF.x));
+	F_INFO(pG->v("t", &m_grassBoxF.y));
+	F_INFO(pG->v("r", &m_grassBoxF.z));
+	F_INFO(pG->v("b", &m_grassBoxF.w));
 
 	pG = pK->o("grassBoxR");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_grassBoxR.x));
-	F_INFO(pG->v("top", &m_grassBoxR.y));
-	F_INFO(pG->v("right", &m_grassBoxR.z));
-	F_INFO(pG->v("bottom", &m_grassBoxR.w));
+	F_INFO(pG->v("l", &m_grassBoxR.x));
+	F_INFO(pG->v("t", &m_grassBoxR.y));
+	F_INFO(pG->v("r", &m_grassBoxR.z));
+	F_INFO(pG->v("b", &m_grassBoxR.w));
 
 	return true;
 }
@@ -84,37 +69,27 @@ bool HM_grass::link(void)
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
-#ifdef USE_TENSORRT
 	iName = "";
-	F_INFO(pK->v("_ImageNet", &iName));
-	m_pIN = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_DetectorBase", &iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	IF_Fl(!m_pDet,"_DetectorBase not found");
 
-	if (!m_pIN)
-	{
-		LOG_E("_ImageNet not found");
-		return true;
-	}
-#endif
+	OBJECT gO;
 
-//	OBJECT gBlk;
-//
-//	gBlk.init();
-//	gBlk.m_name = "";
-//	gBlk.m_fBBox = m_grassBoxL;
-//	m_pGrassL = m_pIN->add(&gBlk);
-//	NULL_F(m_pGrassL);
-//
-//	gBlk.init();
-//	gBlk.m_name = "";
-//	gBlk.m_fBBox = m_grassBoxF;
-//	m_pGrassF = m_pIN->add(&gBlk);
-//	NULL_F(m_pGrassF);
-//
-//	gBlk.init();
-//	gBlk.m_name = "";
-//	gBlk.m_fBBox = m_grassBoxR;
-//	m_pGrassR = m_pIN->add(&gBlk);
-//	NULL_F(m_pGrassR);
+	gO.init();
+	gO.m_fBBox = m_grassBoxL;
+	m_pGrassL = m_pDet->add(&gO);
+	NULL_F(m_pGrassL);
+
+	gO.init();
+	gO.m_fBBox = m_grassBoxF;
+	m_pGrassF = m_pDet->add(&gO);
+	NULL_F(m_pGrassF);
+
+	gO.init();
+	gO.m_fBBox = m_grassBoxR;
+	m_pGrassR = m_pDet->add(&gO);
+	NULL_F(m_pGrassR);
 
 	return true;
 }
@@ -123,105 +98,41 @@ void HM_grass::update(void)
 {
 	this->ActionBase::update();
 
-//	NULL_(m_pHM);
-//	NULL_(m_pAM);
-//	NULL_(m_pIN);
-//	if(!isActive())
-//	{
-//		m_sequence = gt_grass;
-//		bSetActive(false);
-//		return;
-//	}
-//
-//	bSetActive(true);
-//	uint64_t tNow = get_time_usec();
-//
-//	if(m_sequence == gt_grass)
-//	{
-//		//do nothing if already in turning
-//		IF_(m_pHM->m_dir != dir_forward);
-//
-//		//standby until ImageNet is ready
-//		if(m_pGrassF->m_iClass < 0)
-//		{
-//			m_pHM->m_rpmL = 0;
-//			m_pHM->m_rpmR = 0;
-//			return;
-//		}
-//
-//		//on grass, keep going
-//		if(m_pGrassF->m_iClass == m_iGrassClass && m_pGrassF->m_prob > m_grassMinProb)
-//		{
-//			LOG_I("Grass Prob: "<<m_pGrassF->m_prob);
-//			return;
-//		}
-//
-//		//out of grass ahead, set timer for delayed turning
-//		double probL = m_pGrassL->m_prob;
-//		double probR = m_pGrassR->m_prob;
-//		if(m_pGrassL->m_iClass != m_iGrassClass)probL = 0.0;
-//		if(m_pGrassR->m_iClass != m_iGrassClass)probR = 0.0;
-//
-//		//if both sides are unknown, turn to the last direction
-//		if(m_pGrassL->m_iClass == m_iGrassClass || m_pGrassR->m_iClass == m_iGrassClass)
-//		{
-//			m_rpmSteer = abs(m_rpmSteer);
-//			if (probL > probR)
-//				m_rpmSteer *= -1;
-//		}
-//
-//		m_tTurnSet = tNow;
-//		m_sequence = gt_timerSet;
-//		LOG_I("Sequence: timerSet");
-//	}
-//
-//	if(m_sequence == gt_timerSet)
-//	{
-//		//not yet the time to turn
-//		IF_(tNow - m_tTurnSet < m_turnTimer);
-//
-//		if(m_pHM->m_dir != dir_forward)
-//		{
-//			m_rpmSteer = abs(m_rpmSteer);
-//			if (m_pHM->m_dir == dir_left)
-//				m_rpmSteer *= -1;
-//		}
-//
-//		m_sequence = gt_turn;
-//		LOG_I("Sequence: turn");
-//	}
-//
-//	if(m_sequence == gt_turn)
-//	{
-//		if(m_pGrassF->m_prob <= m_grassMinProb)
-//		{
-//			//keep turning
-//			m_pHM->m_rpmL = m_rpmSteer;
-//			m_pHM->m_rpmR = -m_rpmSteer;
-//			return;
-//		}
-//
-//		//start extra random turn
-//		m_tTurnRand = (rand() % m_nTurnRand) * m_tTurnRandRange;
-//		m_tTurnSet = tNow;
-//		m_sequence = gt_randomTurn;
-//		LOG_I("Sequence: randomTurn");
-//	}
-//
-//	if(m_sequence == gt_randomTurn)
-//	{
-//		if (tNow - m_tTurnSet < m_tTurnRand)
-//		{
-//			//keep extra turning
-//			m_pHM->m_rpmL = m_rpmSteer;
-//			m_pHM->m_rpmR = -m_rpmSteer;
-//			return;
-//		}
-//
-//		//reset the timer once finished the random extra turning
-//		m_sequence = gt_grass;
-//		LOG_I("Sequence: grass");
-//	}
+	NULL_(m_pHM);
+	NULL_(m_pDet);
+	IF_(!isActive());
+
+	//standby until ImageNet is ready
+	if(m_pGrassF->m_iClass < 0)
+	{
+		m_pHM->m_rpmL = 0;
+		m_pHM->m_rpmR = 0;
+		return;
+	}
+
+	//on grass, do nothing
+	if(m_pGrassF->bClass(m_iGrassClass))
+	{
+		m_dir = 0;
+		return;
+	}
+
+	//already in turn, do nothing
+	if(m_pHM->m_rpmL != m_pHM->m_rpmR)
+	{
+		m_dir = 0;
+		return;
+	}
+
+	//make new decision on direction
+	if(m_dir == 0)
+	{
+		m_dir = (m_pGrassL->bClass(m_iGrassClass))?1:-1;
+	}
+
+	m_rpmSteer = abs(m_rpmSteer) * m_dir;
+	m_pHM->m_rpmL = m_rpmSteer;
+	m_pHM->m_rpmR = -m_rpmSteer;
 }
 
 void HM_grass::bSetActive(bool bActive)
@@ -236,49 +147,41 @@ bool HM_grass::draw(void)
 	NULL_F(pMat);
 	IF_F(pMat->empty());
 
-	string msg;
-	if (isActive())
-		msg = "* ";
-	else
-		msg = "- ";
-	msg += *this->getName() + ": turnTime:" + i2str((int) m_tTurnSet);
-	pWin->addMsg(&msg);
-
-//	NULL_T(m_pIN);
+	NULL_T(m_pDet);
 
 	Rect r;
 	Scalar col;
 	int bold;
 
-//	vInt42rect(&m_pGrassL->m_bbox, &r);
-//	col = Scalar(200, 200, 200);
-//	bold = 1;
-//	if (m_pGrassL->m_iClass == m_iGrassClass && m_pGrassL->m_prob > m_grassMinProb)
-//	{
-//		col = Scalar(0, 255, 0);
-//		bold = 2;
-//	}
-//	rectangle(*pMat, r, col, bold);
-//
-//	vInt42rect(&m_pGrassF->m_bbox, &r);
-//	col = Scalar(200, 200, 200);
-//	bold = 1;
-//	if (m_pGrassF->m_iClass == m_iGrassClass && m_pGrassF->m_prob > m_grassMinProb)
-//	{
-//		col = Scalar(0, 255, 0);
-//		bold = 2;
-//	}
-//	rectangle(*pMat, r, col, bold);
-//
-//	vInt42rect(&m_pGrassR->m_bbox, &r);
-//	col = Scalar(200, 200, 200);
-//	bold = 1;
-//	if (m_pGrassR->m_iClass == m_iGrassClass && m_pGrassR->m_prob > m_grassMinProb)
-//	{
-//		col = Scalar(0, 255, 0);
-//		bold = 2;
-//	}
-//	rectangle(*pMat, r, col, bold);
+	vInt42rect(&m_pGrassL->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassL->bClass(m_iGrassClass))
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
+	}
+	rectangle(*pMat, r, col, bold);
+
+	vInt42rect(&m_pGrassF->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassF->bClass(m_iGrassClass))
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
+	}
+	rectangle(*pMat, r, col, bold);
+
+	vInt42rect(&m_pGrassR->m_bbox, &r);
+	col = Scalar(200, 200, 200);
+	bold = 1;
+	if (m_pGrassR->bClass(m_iGrassClass))
+	{
+		col = Scalar(0, 255, 0);
+		bold = 2;
+	}
+	rectangle(*pMat, r, col, bold);
 
 	return true;
 }

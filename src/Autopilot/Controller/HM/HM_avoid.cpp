@@ -115,7 +115,7 @@ void HM_avoid::update(void)
 	if(m_sequence == av_clear)
 	{
 		//do nothing if already in turning
-		IF_(m_pHM->m_dir != dir_forward);
+//		IF_(m_pHM->m_dir != dir_forward);
 
 		//do nothing if no obstacle inside alert distance
 		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);

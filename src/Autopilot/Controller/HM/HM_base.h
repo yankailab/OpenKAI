@@ -6,11 +6,6 @@
 #include "../../../Protocol/_Canbus.h"
 #include "../../ActionBase.h"
 
-enum DIRECTION
-{
-	dir_left,dir_forward,dir_right
-};
-
 namespace kai
 {
 
@@ -31,7 +26,6 @@ public:
 
 public:
 	_Canbus* m_pCAN;
-//	_GPS*	m_pGPS;
 	_IOBase* m_pCMD;
 	string m_strCMD;
 
@@ -50,14 +44,10 @@ public:
 
 	double	m_wheelR;
 	double	m_treadW;
-	vDouble3 m_dT;
-	vDouble3 m_dRot;
 
 	uint8_t m_pinLEDl;
 	uint8_t m_pinLEDm;
 	uint8_t m_pinLEDr;
-
-	DIRECTION	m_dir;
 
 };
 
