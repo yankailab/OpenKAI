@@ -91,6 +91,8 @@ bool HM_grass::link(void)
 	m_pGrassR = m_pDet->add(&gO);
 	NULL_F(m_pGrassR);
 
+	m_pDet->m_obj.update();
+
 	return true;
 }
 
@@ -101,6 +103,7 @@ void HM_grass::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pDet);
 	IF_(!isActive());
+	IF_(m_myPriority < m_pHM->m_priority);
 
 	//standby until Detector is ready
 	if(m_pGrassF->m_iClass < 0)
@@ -147,40 +150,37 @@ bool HM_grass::draw(void)
 	NULL_F(pMat);
 	IF_F(pMat->empty());
 
+	//draw messages
+	string msg;
+	if (isActive())
+		msg = "* ";
+	else
+		msg = "- ";
+	msg += *this->getName();
+	pWin->addMsg(&msg);
+
 	NULL_T(m_pDet);
 
 	Rect r;
 	Scalar col;
-	int bold;
+	int bold = 2;
 
 	vInt42rect(&m_pGrassL->m_bbox, &r);
 	col = Scalar(200, 200, 200);
-	bold = 1;
 	if (m_pGrassL->bClass(m_iGrassClass))
-	{
 		col = Scalar(0, 255, 0);
-		bold = 2;
-	}
 	rectangle(*pMat, r, col, bold);
 
 	vInt42rect(&m_pGrassF->m_bbox, &r);
 	col = Scalar(200, 200, 200);
-	bold = 1;
 	if (m_pGrassF->bClass(m_iGrassClass))
-	{
 		col = Scalar(0, 255, 0);
-		bold = 2;
-	}
 	rectangle(*pMat, r, col, bold);
 
 	vInt42rect(&m_pGrassR->m_bbox, &r);
 	col = Scalar(200, 200, 200);
-	bold = 1;
 	if (m_pGrassR->bClass(m_iGrassClass))
-	{
 		col = Scalar(0, 255, 0);
-		bold = 2;
-	}
 	rectangle(*pMat, r, col, bold);
 
 	return true;

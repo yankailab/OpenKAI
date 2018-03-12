@@ -70,6 +70,7 @@ void HM_follow::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pDet);
 	IF_(!isActive());
+	IF_(m_myPriority < m_pHM->m_priority);
 
 	//standby until Detector is ready
 	if(!m_pDet->bReady())
@@ -117,12 +118,13 @@ bool HM_follow::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName();
+	pWin->addMsg(&msg);
 
 	IF_T(!m_obj.bClassMask(m_mTargetClass));
 
 	Rect r;
 	vInt42rect(&m_obj.m_bbox, &r);
-	rectangle(*pMat, r, Scalar(0, 255, 0), 3);
+	rectangle(*pMat, r, Scalar(0, 255, 0), 10);
 
 	return true;
 }

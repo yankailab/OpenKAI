@@ -58,6 +58,7 @@ struct OBJECT
 	void setTopClass(int iClass)
 	{
 		m_iClass = iClass;
+		addClassIdx(iClass);
 	}
 
 	bool bClass(int iClass)
@@ -205,6 +206,7 @@ public:
 
 public:
 	bool m_bActive;
+	bool m_bReady;
 	_VisionBase* m_pVision;
 	_DetectorBase* m_pDetIn;
 	double m_overlapMin;

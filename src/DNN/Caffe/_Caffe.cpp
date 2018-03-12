@@ -21,7 +21,6 @@ _Caffe::_Caffe()
 	m_nClass = 0;
 
 	m_dirIn = "";
-
 }
 
 _Caffe::~_Caffe()
@@ -146,6 +145,7 @@ bool _Caffe::start(void)
 void _Caffe::update(void)
 {
 	IF_(!setup());
+	m_bReady = true;
 	IF_(m_mode == noThread);
 
 	if(m_mode == batch)
@@ -283,21 +283,17 @@ void _Caffe::detect(void)
 	GpuMat gRGBA = *m_pRGBA->getGMat();
 	IF_(gRGBA.empty());
 
-	if(m_pDetIn)
-	{
-		m_obj = m_pDetIn->m_obj;
-	}
-
-	Rect bb;
 	OBJECT* pO;
+	Rect bb;
 	vector<GpuMat> vBatch;
 	vector<vector<GpuMat> > vvBatch;
 	vBatch.clear();
 	vvBatch.clear();
-	int i=0;
+	int i,j,k;
 
-	while((pO = m_obj.at(i++)) != NULL)
+	for(i=0; i<m_obj.size(); i++)
 	{
+		pO = m_obj.at(i);
 		pO->m_camSize.x = gRGBA.cols;
 		pO->m_camSize.y = gRGBA.rows;
 		pO->f2iBBox();
@@ -320,7 +316,6 @@ void _Caffe::detect(void)
 
 	std::vector<vector<Prediction> > vPred;
 	vPred.clear();
-	int j,k;
 	k=0;
 
 	for(i=0; i<vvBatch.size(); i++)
@@ -333,7 +328,8 @@ void _Caffe::detect(void)
 			vector<Prediction> vP = vPred[j];
 			pO = m_obj.at(k++);
 
-			pO->m_iClass = vP[0].first;
+			pO->resetClass();
+			pO->setTopClass(vP[0].first);
 		}
 	}
 }

@@ -25,7 +25,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":1,
+	"deviceID":0,
 	"width":1280,
 	"height":720,
 	"bFlip":0,
@@ -72,5 +72,6 @@
 	"nPredAvr":3,
 	"nBatch":1,
 	"mode":"thread",
+	"bDrawStatistics":1,
 }
 

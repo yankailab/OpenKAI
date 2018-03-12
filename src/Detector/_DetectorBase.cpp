@@ -22,14 +22,15 @@ _DetectorBase::_DetectorBase()
 	m_obj.reset();
 
 	m_bActive = true;
+	m_bReady = false;
 	m_mode = thread;
 
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
-	m_classLegendPos.x = 50;
+	m_classLegendPos.x = 25;
 	m_classLegendPos.y = 150;
-	m_classLegendPos.z = 25;
+	m_classLegendPos.z = 15;
 }
 
 _DetectorBase::~_DetectorBase()
@@ -137,7 +138,7 @@ void _DetectorBase::updateStatistics(void)
 	{
 		OBJECT* pO = at(i);
 
-		IF_CONT(pO->m_iClass >= DETECTOR_N_CLASS);
+		IF_CONT(pO->m_iClass >= m_nClass);
 		IF_CONT(pO->m_iClass < 0);
 
 		m_pClassStatis[pO->m_iClass].m_n++;
@@ -156,7 +157,7 @@ string _DetectorBase::getClassName(int iClass)
 
 bool _DetectorBase::bReady(void)
 {
-	return false;
+	return m_bReady;
 }
 
 int _DetectorBase::size(void)
@@ -226,6 +227,7 @@ bool _DetectorBase::draw(void)
 	}
 
 	Scalar oCol;
+	int col;
 	int colStep = 255/m_nClass;
 	OBJECT* pO;
 	int i=0;
@@ -235,7 +237,7 @@ bool _DetectorBase::draw(void)
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
-		int col = colStep * iClass;
+		col = colStep * iClass;
 		oCol = Scalar(col, (col+85)%255, (col+170)%255);
 
 		Rect r;
@@ -257,13 +259,17 @@ bool _DetectorBase::draw(void)
 	}
 
 	IF_T(!m_bDrawStatistics);
+	updateStatistics();
+
 	for(i=0; i<m_nClass; i++)
 	{
 		CLASS_STATISTICS* pC = &m_pClassStatis[i];
+		col = colStep * i;
+		oCol = Scalar(col, (col+85)%255, (col+170)%255);
 
 		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
 				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
-				FONT_HERSHEY_SIMPLEX, 1.0, oCol, 2);
+				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
 	}
 
 	return true;

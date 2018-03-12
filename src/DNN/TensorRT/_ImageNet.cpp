@@ -93,6 +93,8 @@ void _ImageNet::update(void)
 		m_pClassStatis[i].m_name = m_pIN->GetClassDesc(i);
 	}
 
+	m_bReady = true;
+
 	IF_(m_mode == noThread);
 
 	while (m_bThreadON)
@@ -103,13 +105,6 @@ void _ImageNet::update(void)
 
 		this->autoFPSto();
 	}
-}
-
-bool _ImageNet::bReady(void)
-{
-	if(m_pIN)return true;
-
-	return false;
 }
 
 int _ImageNet::getClassIdx(string& className)

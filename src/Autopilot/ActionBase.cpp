@@ -6,11 +6,12 @@ namespace kai
 ActionBase::ActionBase()
 {
 	m_pAM = NULL;
-	m_timeStamp = 0;
+	m_tStamp = 0;
 	m_dTime = 0;
 	m_vActiveState.clear();
 	m_iLastState = 0;
 	m_bStateChanged = false;
+	m_myPriority = 0;
 }
 
 ActionBase::~ActionBase()
@@ -20,6 +21,9 @@ ActionBase::~ActionBase()
 bool ActionBase::init(void* pKiss)
 {
 	IF_F(!this->BASE::init(pKiss));
+	Kiss* pK = (Kiss*) pKiss;
+
+	KISSm(pK, myPriority);
 
 	m_vActiveState.clear();
 	return true;
@@ -54,8 +58,8 @@ bool ActionBase::link(void)
 void ActionBase::update(void)
 {
 	uint64_t newTime = getTimeUsec();
-	m_dTime = newTime - m_timeStamp;
-	m_timeStamp = newTime;
+	m_dTime = newTime - m_tStamp;
+	m_tStamp = newTime;
 
 	NULL_(m_pAM);
 	int currentState = m_pAM->getCurrentStateIdx();

@@ -31,8 +31,9 @@ public:
 	int m_iLastState;
 	bool m_bStateChanged;
 
-	int64_t m_timeStamp;
+	int64_t m_tStamp;
 	int64_t m_dTime;
+	int		m_myPriority;
 
 };
 

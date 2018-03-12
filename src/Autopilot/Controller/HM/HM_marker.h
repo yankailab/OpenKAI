@@ -26,6 +26,7 @@ private:
 
 	int		m_iMarkerClass;
 	double	m_minSize;
+	double	m_maxSize;
 	int		m_rpmSteer;
 	OBJECT	m_obj;
 

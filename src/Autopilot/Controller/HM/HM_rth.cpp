@@ -63,6 +63,7 @@ void HM_rth::update(void)
 	NULL_(m_pKB);
 	NULL_(m_pGPS);
 	IF_(!isActive());
+	IF_(m_myPriority < m_pHM->m_priority);
 
 	UTM_POS* pNow = m_pGPS->getUTM();
 	NULL_(pNow);

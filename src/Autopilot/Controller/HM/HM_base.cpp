@@ -27,6 +27,8 @@ HM_base::HM_base()
 	m_pinLEDm = 12;
 	m_pinLEDr = 13;
 
+	m_priority = 0;
+
 }
 
 HM_base::~HM_base()
@@ -95,6 +97,7 @@ void HM_base::update(void)
 
 	m_motorRpmW = 0;
 	m_bSpeaker = false;
+	m_priority = 0;
 
 	cmd();
 }
@@ -151,9 +154,9 @@ void HM_base::cmd(void)
 		stateName = "HM_RTH";
 		m_pAM->transit(&stateName);
 	}
-	else if(m_strCMD=="follow_me")
+	else if(m_strCMD=="follow")
 	{
-		stateName = "HM_FOLLOWME";
+		stateName = "HM_FOLLOW";
 		m_pAM->transit(&stateName);
 	}
 	else if(m_strCMD=="station")

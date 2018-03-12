@@ -67,6 +67,8 @@ void HM_rth_approach::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pMN);
+	IF_(m_myPriority < m_pHM->m_priority);
+
 	if(!isActive())
 	{
 		m_pMN->bSetActive(false);

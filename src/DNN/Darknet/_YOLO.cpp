@@ -56,6 +56,7 @@ bool _YOLO::init(void* pKiss)
 	}
 
 	bSetActive(true);
+	m_bReady = true;
 	return true;
 }
 

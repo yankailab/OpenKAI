@@ -9,6 +9,7 @@ HM_marker::HM_marker()
 	m_pDet = NULL;
 	m_iMarkerClass = -1;
 	m_minSize = 0.0;
+	m_maxSize = 0.5;
 	m_rpmSteer = 0;
 	m_obj.init();
 
@@ -27,6 +28,7 @@ bool HM_marker::init(void* pKiss)
 	KISSm(pK,rpmSteer);
 	KISSm(pK,iMarkerClass);
 	KISSm(pK,minSize);
+	KISSm(pK,maxSize);
 
 	return true;
 }
@@ -56,8 +58,7 @@ void HM_marker::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pDet);
 	IF_(!isActive());
-
-	uint64_t tNow = getTimeUsec();
+	IF_(m_myPriority < m_pHM->m_priority);
 
 	//standby until Detector is ready
 	if(!m_pDet->bReady())
@@ -70,11 +71,13 @@ void HM_marker::update(void)
 	//TOOD: if turned angle > desired angle
 
 	//if found new marker, set angle and start to turn
+	m_obj.init();
 	for(int i=0; i<m_pDet->size(); i++)
 	{
 		OBJECT* pO = m_pDet->at(i);
 		IF_CONT(!pO->bClass(m_iMarkerClass));
 		IF_CONT(pO->m_fBBox.area() < m_minSize);
+		IF_CONT(pO->m_fBBox.area() > m_maxSize);
 
 		m_obj = *pO;
 		m_rpmSteer = abs(m_rpmSteer);
@@ -106,7 +109,7 @@ bool HM_marker::draw(void)
 
 	Rect r;
 	vInt42rect(&m_obj.m_bbox, &r);
-	rectangle(*pMat, r, Scalar(0, 255, 255), 3);
+	rectangle(*pMat, r, Scalar(0, 255, 255), 10);
 
 	return true;
 }

@@ -102,6 +102,8 @@ void HM_avoid::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pObs);
 	NULL_(m_pMN);
+	IF_(m_myPriority < m_pHM->m_priority);
+
 	if(!isActive())
 	{
 		m_sequence = av_clear;

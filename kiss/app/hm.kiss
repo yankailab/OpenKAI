@@ -60,9 +60,31 @@
 }
 
 {
-	"name":"hmIN",
-	"class":"_ImageNet",
+	"name":"caffe",
+	"class":"_Caffe",
 	"bInst":1,
+	"bDraw":0,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/model/HM/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_3900.caffemodel",
+	"meanFile":"mean.binaryproto",
+	"labelFile":"labels.txt",
+	"blobOut":"softmax",
+	"mode":"thread",
+	"maxPix":10000000,
+	"nBatch":8,
+	"minConfidence":0.0,
+	"classList":["grass","line","marker1","marker2","marker3","miimo","people","station"],
+}
+
+{
+	"name":"imageNet",
+	"class":"_ImageNet",
+	"bInst":0,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,
@@ -105,7 +127,7 @@
 {
 	"name":"automaton",
 	"class":"_Automaton",
-	"bInst":0,
+	"bInst":1,
 	"FPS":10,
 	"Window":"OKview",
 	"startState":"HM_STATION",
@@ -145,9 +167,8 @@
 	"class":"_AutoPilot",
 	"_Automaton":"automaton",
 	"Window":"OKview",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
-	"bMouse":1,
 	
 	{
 		"name":"action",
@@ -160,9 +181,12 @@
 			"Window":"OKview",
 			"_Canbus":"canbus",
 			"_Automaton":"automaton",
-			"maxSpeed":10.0,
-			"maxYawRate":1.0,
-			"defaultSpeed":1.0,
+			"maxRpmT":65535,
+			"maxRpmW":2500,
+			"motorRpmW":0,
+			"defaultRpmT":2500,
+			"wheelR":0.1,
+			"treadW":0.4,
 			"bMute":1,
 			"canAddrStation":769,
 			"pinLEDl":11,
@@ -187,6 +211,86 @@
 		}
 		
 		{
+			"name":"grass",
+			"class":"HM_grass",
+			"bInst":1,
+			"bDraw":1,
+			"Window":"OKview",
+			"HM_base":"base",
+			"_DetectorBase":"caffe",
+			"_Automaton":"automaton",
+			"rpmSteer":1500,
+			"iGrassClass":0,
+			"activeState":["HM_WORK","HM_RTH"],
+			"myPriority":1,
+			
+			{
+				"name":"grassBoxL",
+				"bInst":1,
+				"l":0.0,
+				"t":0.6,
+				"r":0.2,
+				"b":0.9,
+			}			
+			
+			{
+				"name":"grassBoxF",
+				"bInst":1,
+				"l":0.4,
+				"t":0.6,
+				"r":0.6,
+				"b":0.9,
+			}			
+
+			{
+				"name":"grassBoxR",
+				"bInst":1,
+				"l":0.8,
+				"t":0.6,
+				"r":1.0,
+				"b":0.9,
+			}
+		}
+				
+		{
+			"name":"follow",
+			"class":"HM_follow",
+			"bInst":1,
+			"bDraw":1,
+			"Window":"OKview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_DetectorBase":"tinyYOLO",
+			"rpmT":3000,
+			"rpmSteer":5500,
+			"targetX":0.5,
+			"rTargetX":0.2,
+			"targetList":[14],
+			"minSize":0.0,
+			"maxSize":0.5,			
+			"activeState":["HM_FOLLOW"],	
+			"myPriority":1,			
+		}
+		
+		{
+			"name":"marker",
+			"class":"HM_marker",
+			"bInst":1,
+			"Window":"OKview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_DetectorBase":"tinyYOLO",
+			"rpmSteer":2000,
+			"iMarkerClass":15,
+			"minSize":0.0,
+			"maxSize":0.5,			
+			"activeState":["HM_WORK","HM_RTH"],			
+			"myPriority":1,
+		}
+		
+
+		
+		{
 			"name":"kickBack",
 			"class":"HM_kickBack",
 			"bInst":0,
@@ -200,83 +304,6 @@
 			"targetHdg":-90,
 			"activeState":["HM_KICKBACK"],			
 		}
-		
-		{
-			"name":"grass",
-			"class":"HM_grass",
-			"bInst":1,
-			"bDraw":1,
-			"Window":"OKview",
-			"HM_base":"base",
-			"_ImageNet":"hmIN",
-			"_Automaton":"automaton",
-			"rpmSteer":1500,
-			"turnTimer":0,
-			"iGrassClass":1,
-			"activeState":["HM_WORK","HM_RTH"],
-					
-			{
-				"name":"grassBoxL",
-				"bInst":1,
-				"l":0.10,
-				"t":0.84,
-				"r":0.20,
-				"b":1.0,
-			}			
-			
-			{
-				"name":"grassBoxF",
-				"bInst":1,
-				"l":0.51,
-				"t":0.78,
-				"r":0.61,
-				"b":0.83,
-			}			
-
-			{
-				"name":"grassBoxR",
-				"bInst":1,
-				"l":0.9,
-				"t":0.84,
-				"r":1.0,
-				"b":0.92,
-			}
-		}
-				
-		{
-			"name":"follow",
-			"class":"HM_follow",
-			"bInst":1,
-			"bLog":1,
-			"_ZED":"ZED",
-			"Window":"OKview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"_ClusterNet":"humanMN",
-			"_Obstacle":"obstacle",
-			"distMin":1.0,
-			"distMax":10.0,
-			"rpmT":3000,
-			"rpmSteer":5500,
-			"targetX":0.5,
-			"rTargetX":0.2,
-			"iTargetClass":1,
-			"targetName":"turf",
-			"activeState":["HM_FOLLOW"],	
-		}
-		
-		{
-			"name":"marker",
-			"class":"HM_marker",
-			"bInst":1,
-			"Window":"OKview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"rpmSteer":2000,
-			"iMarkerClass":1,
-			"activeState":["HM_WORK","HM_RTH"],			
-		}				
-		
 				
 		{
 			"name":"RTH",

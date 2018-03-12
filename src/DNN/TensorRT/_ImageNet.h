@@ -29,9 +29,7 @@ public:
 	void reset(void);
 	int getClassIdx(string& className);
 	string getClassName(int iClass);
-
 	int classify(Frame* pBGR, string* pName);
-	bool bReady(void);
 
 private:
 	void detect(void);

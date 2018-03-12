@@ -65,6 +65,8 @@ void HM_kickBack::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pGPS);
+	IF_(m_myPriority < m_pHM->m_priority);
+
 	if(!isActive())
 	{
 		m_sequence = kb_station;
