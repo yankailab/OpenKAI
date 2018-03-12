@@ -5,7 +5,6 @@ namespace kai
 _Canbus::_Canbus()
 {
 	m_pSerialPort = NULL;
-
 	m_nCanData = 0;
 }
 
@@ -20,16 +19,7 @@ bool _Canbus::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	Kiss* pCC = pK->o("input");
-	IF_F(pCC->empty());
-
-	m_pSerialPort = new _SerialPort();
-	IF_F(!m_pSerialPort->init(pCC));
-
-	pCC = pK->o("canbusID");
-	IF_F(pCC->empty());
-	Kiss** pItr = pCC->getChildItr();
-
+	Kiss** pItr = pK->getChildItr();
 	m_nCanData = 0;
 	while (pItr[m_nCanData])
 	{
@@ -47,6 +37,14 @@ bool _Canbus::init(void* pKiss)
 bool _Canbus::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
+	Kiss* pK = (Kiss*)m_pKiss;
+
+	string iName;
+	iName = "";
+	F_ERROR_F(pK->v("_IOBase", &iName));
+	m_pSerialPort = (_SerialPort*) (pK->root()->getChildInstByName(&iName));
+	NULL_Fl(m_pSerialPort,"_IOBase not found");
+
 	return true;
 }
 
@@ -80,6 +78,12 @@ void _Canbus::update(void)
 {
 	while (m_bThreadON)
 	{
+		if(!m_pSerialPort)
+		{
+			this->sleepTime(USEC_1SEC);
+			continue;
+		}
+
 		if(!m_pSerialPort->isOpen())
 		{
 			if(!m_pSerialPort->open())

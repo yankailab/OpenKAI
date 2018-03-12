@@ -32,30 +32,30 @@
 	"bGray":0,
 }
 
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
 {
 	"name":"canbus",
 	"class":"_Canbus",
-	"bInst":0,
-	"bDraw":0,
+	"bInst":1,
+	"bDraw":1,
 	"bLog":0,
 	"Window":"OKview",
-	"FPS":100,	
+	"FPS":100,
+	"_IOBase":"serial",
 
 	{
-		"name":"input",
-		"class":"SerialPort",
+		"addr":769,
 		"bInst":1,
-		"portName":"/dev/ttyACM0",
-		"baud":115200,
-	}
-
-	{
-		"name":"canbusID",
-		"bInst":1,
-		{
-			"addr":769,
-			"bInst":1,
-		}
 	}
 }
 
@@ -187,7 +187,7 @@
 			"defaultRpmT":2500,
 			"wheelR":0.1,
 			"treadW":0.4,
-			"bMute":1,
+			"bMute":0,
 			"canAddrStation":769,
 			"pinLEDl":11,
 			"pinLEDm":12,
