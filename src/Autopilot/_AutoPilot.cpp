@@ -115,7 +115,6 @@ bool _AutoPilot::link(void)
 
 bool _AutoPilot::start(void)
 {
-	//Start thread
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -159,21 +158,5 @@ bool _AutoPilot::draw(void)
 
 	return true;
 }
-
-void _AutoPilot::onMouse(MOUSE* pMouse)
-{
-	NULL_(pMouse);
-
-	for(int i=0;i<m_nAction;i++)
-	{
-#ifdef USE_OPENCV_CONTRIB
-		if(*m_pAction[i]->getClass()=="RC_visualFollow")
-		{
-			((RC_visualFollow*)m_pAction[i])->onMouse(pMouse);
-		}
-#endif
-	}
-}
-
 
 }

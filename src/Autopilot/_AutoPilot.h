@@ -48,8 +48,6 @@ public:
 	bool draw(void);
 	void reset(void);
 
-	void onMouse(MOUSE* pMouse);
-
 public:
 	_Automaton* m_pAM;
 

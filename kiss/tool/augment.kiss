@@ -7,9 +7,27 @@
 }
 
 {
+	"name":"Rotate",
+	"class":"_imgRotate",
+	"bInst":1,
+	"bLog":1,
+	"FPS":30,
+	"dirIn":"/home/kai/dev/augment/",
+	"extIn":[".jpg",".jpeg",".png",".bmp"],
+	"extOut":".png",
+	"bSaveOriginalCopy":0,
+	"bDeleteOriginal":0,
+	"PNGcompression":5,
+	"nProduce":3,
+	"bgNoiseMean":128,
+	"bgNoiseDev":128,
+	"bgNoiseType":1,
+}
+
+{
 	"name":"Test",
 	"class":"_Augment",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":30,
 	"dirIn":"/media/kai/sd960_2/aerialDB/",

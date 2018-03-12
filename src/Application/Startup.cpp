@@ -1,10 +1,6 @@
 #include "Startup.h"
 
 Startup* g_pStartup;
-void onMouseGeneral(int event, int x, int y, int flags, void* userdata)
-{
-	g_pStartup->handleMouse(event, x, y, flags);
-}
 
 void signalHandler(int signal)
 {
@@ -20,11 +16,9 @@ Startup::Startup()
 {
 	for (int i = 0; i < N_INST; i++)
 	{
-		m_pInst[i] = NULL;
-		m_pMouse[i] = NULL;
+		m_ppInst[i] = NULL;
 	}
 	m_nInst = 0;
-	m_nMouse = 0;
 
 	m_appName = "";
 	m_bWindow = true;
@@ -32,7 +26,6 @@ Startup::Startup()
 	m_bRun = true;
 	m_key = 0;
 	m_bLog = true;
-	m_winMouse = "";
 }
 
 Startup::~Startup()
@@ -56,21 +49,18 @@ bool Startup::start(Kiss* pKiss)
 	KISSm(pApp,appName);
 	KISSm(pApp,bWindow);
 	KISSm(pApp,waitKey);
-	KISSm(pApp,winMouse);
 
-	//create instances
 	F_FATAL_F(createAllInst(pKiss));
 
-	//link instances with each other
 	int i;
 	for (i = 0; i < m_nInst; i++)
 	{
-		F_FATAL_F(m_pInst[i]->link());
+		F_FATAL_F(m_ppInst[i]->link());
 	}
 
-	if(m_winMouse != "" && m_bWindow)
+	for (i = 0; i < m_nInst; i++)
 	{
-		setMouseCallback(m_winMouse, onMouseGeneral, 0 );
+		F_FATAL_F(m_ppInst[i]->start());
 	}
 
 	//UI thread
@@ -95,12 +85,12 @@ bool Startup::start(Kiss* pKiss)
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		m_pInst[i]->reset();
+		m_ppInst[i]->reset();
 	}
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		DEL(m_pInst[i]);
+		DEL(m_ppInst[i]);
 	}
 
 	return 0;
@@ -110,9 +100,7 @@ void Startup::draw(void)
 {
 	for (int i = 0; i < m_nInst; i++)
 	{
-		BASE* pInst = m_pInst[i];
-		string* cName = pInst->getClass();
-
+		BASE* pInst = m_ppInst[i];
 		pInst->draw();
 	}
 }
@@ -126,21 +114,6 @@ void Startup::handleKey(int key)
 		break;
 	default:
 		break;
-	}
-}
-
-void Startup::handleMouse(int event, int x, int y, int flags)
-{
-	MOUSE m;
-	m.m_event = event;
-	m.m_flags = flags;
-	m.m_x = x;
-	m.m_y = y;
-
-	int i;
-	for (i = 0; i < m_nMouse; i++)
-	{
-		((_AutoPilot*) m_pMouse[i])->onMouse(&m);
 	}
 }
 
@@ -169,18 +142,8 @@ bool Startup::createAllInst(Kiss* pKiss)
 			return false;
 		}
 
-		m_pInst[m_nInst] = pNew;
+		m_ppInst[m_nInst] = pNew;
 		m_nInst++;
-
-		F_FATAL_F(pNew->start());
-
-		if (*pNew->getClass() != "_AutoPilot")
-			continue;
-		if (!m_bWindow)
-			continue;
-
-		m_pMouse[m_nMouse] = pNew;
-		m_nMouse++;
 	}
 
 	return true;

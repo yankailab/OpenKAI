@@ -5,8 +5,8 @@
  *      Author: Kai Yan
  */
 
-#ifndef OPENKAI_SRC_BASE_BASE_H_
-#define OPENKAI_SRC_BASE_BASE_H_
+#ifndef OpenKAI_src_Base_BASE_H_
+#define OpenKAI_src_Base_BASE_H_
 
 #include "../Vision/Frame.h"
 #include "common.h"

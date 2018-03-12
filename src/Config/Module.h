@@ -61,6 +61,8 @@
 #include "../Vision/FrameGroup.h"
 #include "../Vision/_Flow.h"
 
+#include "../Data/Augment/_imgRotate.h"
+
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"

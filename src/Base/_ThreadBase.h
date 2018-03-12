@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_THREADBASE_H_
-#define SRC_THREADBASE_H_
+#ifndef OpenKAI_src_Base__ThreadBase_H_
+#define OpenKAI_src_Base__ThreadBase_H_
 
 #include "common.h"
 #include "BASE.h"
