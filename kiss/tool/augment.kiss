@@ -15,20 +15,18 @@
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
 	"extOut":".png",
 	"bConvertFormat":0,
-	"PNGcompression":5,
-	"nThread":2,
-	"filter":["rotate","flip"],
-
-	"_filter":["rotate","flip","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise"],
-	/*"gaussianBlur","medianBlur","bilateralBlur"]*/
+	"PNGcompression":9,
+	"nThread":8,
+	"_filter":["rotate"],
+	"filter":["rotate","flip","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"]
 
 	
 	{
 		"name":"rotate",
 		"bInst":1,
-		"bgNoiseMean":128,
-		"bgNoiseDev":128,
-		"bgNoiseType":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
 		"nProduce":1,
 	}
 	
@@ -38,33 +36,114 @@
 		"nProduce":1,
 	}
 	
+	{
+		"name":"crop",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":0.25,	
+	}
 	
+	{
+		"name":"shrink",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":0.25,
+	}
+
+	{
+		"name":"lowResolution",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":0.25,
+		"minScale":0.5,
+	}
+
+	{
+		"name":"histEqualize",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+	}
 	
-	"bgNoiseMean":128,
-	"bgNoiseDev":128,
-	"bgNoiseType":1,
-	"nRot":3,
-	"dCrop":0.25,
-	"nCrop":2,
-	"dShrink":0.25,
-	"nShrink":2,
-	"minLowResolution":0.5,
-	"dLowResolution":0.25,
-	"nLowResolution":2,
-	"dContrast":0.5,
-	"nContrast":1,
-	"dBrightness":100,
-	"nBrightness":1,
-	"dBlur":100,
-	"nBlur":1,
-	"nNoise":1,
-	"dNoise":128,
-	"noiseType":1,
-	"dGaussianBlur":100,
-	"nGaussianBlur":1,
-	"dMedianBlur":100,
-	"nMedianBlur":1,
-	"dBilateralBlur":100,
-	"nBilateralBlur":1,
+	{
+		"name":"contrast",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":0.5,
+	}
+
+	{
+		"name":"brightness",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":100,
+	}
+
+	{
+		"name":"blur",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":100,
+	}
+
+	{
+		"name":"noise",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":128,
+	}
+
+	{
+		"name":"gaussianBlur",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":100,
+	}
+
+	{
+		"name":"medianBlur",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":100,
+	}
+
+	{
+		"name":"bilateralBlur",
+		"bInst":1,
+		"noiseMean":128,
+		"noiseDev":128,
+		"noiseType":1,
+		"nProduce":1,
+		"dRand":100,
+	}
+
 }
 

@@ -1,25 +1,25 @@
 /*
- * _filterRotate.cpp
+ * _filterCrop.cpp
  *
  *  Created on: Mar 12, 2018
  *      Author: yankai
  */
 
-#include "_filterRotate.h"
+#include "_filterCrop.h"
 
 namespace kai
 {
 
-_filterRotate::_filterRotate()
+_filterCrop::_filterCrop()
 {
 }
 
-_filterRotate::~_filterRotate()
+_filterCrop::~_filterCrop()
 {
 	reset();
 }
 
-bool _filterRotate::init(void* pKiss)
+bool _filterCrop::init(void* pKiss)
 {
 	IF_F(!this->_FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -28,7 +28,7 @@ bool _filterRotate::init(void* pKiss)
 	return true;
 }
 
-bool _filterRotate::link(void)
+bool _filterCrop::link(void)
 {
 	IF_F(!this->_DataBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -36,7 +36,7 @@ bool _filterRotate::link(void)
 	return true;
 }
 
-bool _filterRotate::start(void)
+bool _filterCrop::start(void)
 {
 	m_bComplete = false;
 
@@ -51,7 +51,7 @@ bool _filterRotate::start(void)
 	return true;
 }
 
-void _filterRotate::update(void)
+void _filterCrop::update(void)
 {
 	srand(time(NULL));
 	cv::RNG gen(cv::getTickCount());
@@ -66,32 +66,22 @@ void _filterRotate::update(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		Point2f pCenter = Point2f(mIn.cols / 2, mIn.rows / 2);
-		Size s = mIn.size();
-
 		for (int j = 0; j < m_nProduce; j++)
 		{
-			Mat mNoise = Mat::zeros(s, mIn.type());
-			gen.fill(mNoise, m_noiseType,
-					cv::Scalar(m_noiseMean, m_noiseMean, m_noiseMean),
-					cv::Scalar(m_noiseDev, m_noiseDev, m_noiseDev));
+			double rScaleW = 1.0 - m_dRand * NormRand();
+			int dSizeW = ((double) mIn.cols) * rScaleW;
+			int dRandX = ((double) mIn.cols - dSizeW) * NormRand();
 
-			int rAngle = rand() % 358 + 1;
-			Mat mRot = getRotationMatrix2D(pCenter, rAngle, 1);
+			double rScaleH = 1.0 - m_dRand * NormRand();
+			int dSizeH = ((double) mIn.rows) * rScaleH;
+			int dRandY = ((double) mIn.rows - dSizeH) * NormRand();
 
-			Mat mMask = Mat::zeros(s, CV_8UC1);
-			cv::warpAffine(Mat(s, CV_8UC1, 255), mMask, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
-
-			Mat mOut = Mat::zeros(s, mIn.type());
-			cv::warpAffine(mIn, mOut, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
-
-			mOut.copyTo(mNoise, mMask);
-			mOut = mNoise;
+			Mat mOut = mIn(cv::Rect(dRandX, dRandY, dSizeW, dSizeH));
 
 			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
-			nTot++;
 		}
 
+		nTot++;
 		double prog = (double) i / (double) m_vFileIn.size();
 		if (prog - m_progress > 0.1)
 		{
@@ -101,7 +91,6 @@ void _filterRotate::update(void)
 	}
 
 	LOG_I("  - Complete: Total produced: " << nTot);
-
 	m_bComplete = true;
 }
 

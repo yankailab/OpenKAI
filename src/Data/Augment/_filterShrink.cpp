@@ -1,25 +1,25 @@
 /*
- * _filterRotate.cpp
+ * _filterShrink.cpp
  *
  *  Created on: Mar 12, 2018
  *      Author: yankai
  */
 
-#include "_filterRotate.h"
+#include "_filterShrink.h"
 
 namespace kai
 {
 
-_filterRotate::_filterRotate()
+_filterShrink::_filterShrink()
 {
 }
 
-_filterRotate::~_filterRotate()
+_filterShrink::~_filterShrink()
 {
 	reset();
 }
 
-bool _filterRotate::init(void* pKiss)
+bool _filterShrink::init(void* pKiss)
 {
 	IF_F(!this->_FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -28,7 +28,7 @@ bool _filterRotate::init(void* pKiss)
 	return true;
 }
 
-bool _filterRotate::link(void)
+bool _filterShrink::link(void)
 {
 	IF_F(!this->_DataBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -36,7 +36,7 @@ bool _filterRotate::link(void)
 	return true;
 }
 
-bool _filterRotate::start(void)
+bool _filterShrink::start(void)
 {
 	m_bComplete = false;
 
@@ -51,7 +51,7 @@ bool _filterRotate::start(void)
 	return true;
 }
 
-void _filterRotate::update(void)
+void _filterShrink::update(void)
 {
 	srand(time(NULL));
 	cv::RNG gen(cv::getTickCount());
@@ -66,32 +66,29 @@ void _filterRotate::update(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		Point2f pCenter = Point2f(mIn.cols / 2, mIn.rows / 2);
-		Size s = mIn.size();
-
 		for (int j = 0; j < m_nProduce; j++)
 		{
+			Size s = mIn.size();
+			Mat mMask = Mat::zeros(s, mIn.type());
 			Mat mNoise = Mat::zeros(s, mIn.type());
 			gen.fill(mNoise, m_noiseType,
 					cv::Scalar(m_noiseMean, m_noiseMean, m_noiseMean),
 					cv::Scalar(m_noiseDev, m_noiseDev, m_noiseDev));
 
-			int rAngle = rand() % 358 + 1;
-			Mat mRot = getRotationMatrix2D(pCenter, rAngle, 1);
+			m_pFrameIn->update(&mIn);
+			m_pFrameOut->getResizedOf(m_pFrameIn, 1.0 - m_dRand * NormRand(), 1.0 - m_dRand * NormRand());
 
-			Mat mMask = Mat::zeros(s, CV_8UC1);
-			cv::warpAffine(Mat(s, CV_8UC1, 255), mMask, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
-
-			Mat mOut = Mat::zeros(s, mIn.type());
-			cv::warpAffine(mIn, mOut, mRot, s, INTER_LINEAR, BORDER_CONSTANT);
-
-			mOut.copyTo(mNoise, mMask);
-			mOut = mNoise;
+			Mat sMat = *m_pFrameOut->getCMat();
+			Mat mOut = mNoise;
+			sMat.copyTo(mOut(cv::Rect((int) ((double) (mOut.cols - sMat.cols) * NormRand()),
+									  (int) ((double) (mOut.rows - sMat.rows) * NormRand()),
+									sMat.cols,
+									sMat.rows)));
 
 			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
-			nTot++;
 		}
 
+		nTot++;
 		double prog = (double) i / (double) m_vFileIn.size();
 		if (prog - m_progress > 0.1)
 		{
@@ -101,7 +98,6 @@ void _filterRotate::update(void)
 	}
 
 	LOG_I("  - Complete: Total produced: " << nTot);
-
 	m_bComplete = true;
 }
 

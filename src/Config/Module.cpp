@@ -41,8 +41,21 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDPserver);
 	ADD_MODULE(Window);
 
-	ADD_MODULE(_filterRotate);
 	ADD_MODULE(_Augment);
+	ADD_MODULE(_filterBilateralBlur);
+	ADD_MODULE(_filterBlur);
+	ADD_MODULE(_filterBrightness);
+	ADD_MODULE(_filterContrast);
+	ADD_MODULE(_filterCrop);
+	ADD_MODULE(_filterFlip);
+	ADD_MODULE(_filterGaussianBlur);
+	ADD_MODULE(_filterHistEqualize);
+	ADD_MODULE(_filterLowResolution);
+	ADD_MODULE(_filterMedianBlur);
+	ADD_MODULE(_filterNoise);
+	ADD_MODULE(_filterRotate);
+	ADD_MODULE(_filterShrink);
+
 	ADD_MODULE(_BBoxCutOut);
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);

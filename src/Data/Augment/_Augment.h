@@ -13,7 +13,19 @@
 #include "../../Utility/util.h"
 #include "../_DataBase.h"
 #include "_FilterBase.h"
+#include "_filterBilateralBlur.h"
+#include "_filterBlur.h"
+#include "_filterBrightness.h"
+#include "_filterContrast.h"
+#include "_filterCrop.h"
+#include "_filterFlip.h"
+#include "_filterGaussianBlur.h"
+#include "_filterHistEqualize.h"
+#include "_filterLowResolution.h"
+#include "_filterMedianBlur.h"
+#include "_filterNoise.h"
 #include "_filterRotate.h"
+#include "_filterShrink.h"
 
 #define AUGMENT_N_FILTER 128
 #define AUGMENT_N_THREAD 128

@@ -175,29 +175,29 @@ _FilterBase* _Augment::createFilterThread(string& filter)
 	if (filter == "rotate")
 		return new _filterRotate();
 	else if (filter == "shrink")
-		return new _filterRotate();
+		return new _filterShrink();
 	else if (filter == "crop")
-		return new _filterRotate();
+		return new _filterCrop();
 	else if (filter == "flip")
-		return new _filterRotate();
+		return new _filterFlip();
 	else if (filter == "lowResolution")
-		return new _filterRotate();
+		return new _filterLowResolution();
 	else if (filter == "noise")
-		return new _filterRotate();
+		return new _filterNoise();
 	else if (filter == "contrast")
-		return new _filterRotate();
+		return new _filterContrast();
 	else if (filter == "brightness")
-		return new _filterRotate();
+		return new _filterBrightness();
 	else if (filter == "histEqualize")
-		return new _filterRotate();
+		return new _filterHistEqualize();
 	else if (filter == "blur")
-		return new _filterRotate();
+		return new _filterBlur();
 	else if (filter == "gaussianBlur")
-		return new _filterRotate();
+		return new _filterGaussianBlur();
 	else if (filter == "medianBlur")
-		return new _filterRotate();
+		return new _filterMedianBlur();
 	else if (filter == "bilateralBlur")
-		return new _filterRotate();
+		return new _filterBilateralBlur();
 
 	LOG_E("Unrecognized augment filter: " << filter);
 	return NULL;

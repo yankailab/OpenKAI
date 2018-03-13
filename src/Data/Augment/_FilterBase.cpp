@@ -14,11 +14,12 @@ _FilterBase::_FilterBase()
 {
 	m_nProduce = 1;
 	m_progress = 0.0;
+	m_dRand = 1.0;
 	m_bComplete = false;
 
-	m_bgNoiseMean = 0;
-	m_bgNoiseDev = 0;
-	m_bgNoiseType = cv::RNG::NORMAL;
+	m_noiseMean = 0;
+	m_noiseDev = 0;
+	m_noiseType = cv::RNG::NORMAL;
 
 	m_pFrameIn = NULL;
 	m_pFrameOut = NULL;
@@ -35,10 +36,11 @@ bool _FilterBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	KISSdm(pK, dRand);
 	KISSm(pK, nProduce);
-	KISSm(pK, bgNoiseMean);
-	KISSm(pK, bgNoiseDev);
-	KISSm(pK, bgNoiseType);
+	KISSm(pK, noiseMean);
+	KISSm(pK, noiseDev);
+	KISSm(pK, noiseType);
 
 	m_pFrameIn = new Frame();
 	m_pFrameOut = new Frame();
