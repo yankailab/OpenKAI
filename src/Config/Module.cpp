@@ -41,7 +41,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDPserver);
 	ADD_MODULE(Window);
 
-	ADD_MODULE(_imgRotate);
+	ADD_MODULE(_filterRotate);
 	ADD_MODULE(_Augment);
 	ADD_MODULE(_BBoxCutOut);
 	ADD_MODULE(_FrameCutOut);

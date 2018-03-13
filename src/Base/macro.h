@@ -5,8 +5,8 @@
  *      Author: root
  */
 
-#ifndef OPENKAI_SRC_BASE_MACRO_H_
-#define OPENKAI_SRC_BASE_MACRO_H_
+#ifndef OpenKAI_src_Base_macro_H_
+#define OpenKAI_src_Base_macro_H_
 
 #define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;}
 #define LOG_E(x) if(m_bLog){LOG(ERROR)<<*this->getName()<<": "<<x;}
@@ -16,15 +16,15 @@
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
 #define F_INFO(x) if(x==false){LOG_I(#x);}
 
-#define KISSm(x,y) F_INFO(x->v(#y, &m_##y))
+#define KISSm(x,y) x->v(#y, &m_##y)
 #define KISSm_E(x,y) F_ERROR_F(x->v(#y, &m_##y))
 #define KISSm_F(x,y) F_FATAL_F(x->v(#y, &m_##y))
 
-#define KISSim(x,y) F_INFO(x->v(#y, (int*)&m_##y))
+#define KISSim(x,y) x->v(#y, (int*)&m_##y)
 #define KISSim_E(x,y) F_ERROR_F(x->v(#y, (int*)&m_##y))
 #define KISSim_F(x,y) F_FATAL_F(x->v(#y, (int*)&m_##y))
 
-#define KISSdm(x,y) F_INFO(x->v(#y, (double*)&m_##y))
+#define KISSdm(x,y) x->v(#y, (double*)&m_##y)
 #define KISSdm_E(x,y) F_ERROR_F(x->v(#y, (double*)&m_##y))
 #define KISSdm_F(x,y) F_FATAL_F(x->v(#y, (double*)&m_##y))
 

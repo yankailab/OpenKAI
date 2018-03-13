@@ -1,51 +1,34 @@
 /*
- * _imgRotate.cpp
+ * _filterRotate.cpp
  *
  *  Created on: Mar 12, 2018
  *      Author: yankai
  */
 
-#include "_imgRotate.h"
+#include "_filterRotate.h"
 
 namespace kai
 {
 
-_imgRotate::_imgRotate()
+_filterRotate::_filterRotate()
 {
-	m_bgNoiseMean = 0;
-	m_bgNoiseDev = 0;
-	m_bgNoiseType = cv::RNG::NORMAL;
-
-	m_nProduce = 1;
-	m_bDeleteOriginal = false;
-	m_bSaveOriginalCopy = false;
-	m_progress = 0.0;
 }
 
-_imgRotate::~_imgRotate()
+_filterRotate::~_filterRotate()
 {
 	reset();
 }
 
-bool _imgRotate::init(void* pKiss)
+bool _filterRotate::init(void* pKiss)
 {
-	IF_F(!this->_DataBase::init(pKiss));
+	IF_F(!this->_FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, bgNoiseMean);
-	KISSm(pK, bgNoiseDev);
-	KISSm(pK, bgNoiseType);
-
-	KISSm(pK, nProduce);
-	KISSm(pK, bDeleteOriginal);
-	KISSm(pK, bSaveOriginalCopy);
-
-	IF_F(getDirFileList() <= 0);
 	return true;
 }
 
-bool _imgRotate::link(void)
+bool _filterRotate::link(void)
 {
 	IF_F(!this->_DataBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -53,8 +36,10 @@ bool _imgRotate::link(void)
 	return true;
 }
 
-bool _imgRotate::start(void)
+bool _filterRotate::start(void)
 {
+	m_bComplete = false;
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -66,15 +51,9 @@ bool _imgRotate::start(void)
 	return true;
 }
 
-void _imgRotate::update(void)
+void _filterRotate::update(void)
 {
 	srand(time(NULL));
-
-	process();
-}
-
-void _imgRotate::process(void)
-{
 	cv::RNG gen(cv::getTickCount());
 
 	int nTot = 0;
@@ -86,11 +65,6 @@ void _imgRotate::process(void)
 		string dirNameIn = getFileDir(fNameIn);
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
-
-		if(m_bSaveOriginalCopy)
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
-		if (m_bDeleteOriginal)
-			remove(fNameIn.c_str());
 
 		Point2f pCenter = Point2f(mIn.cols / 2, mIn.rows / 2);
 		Size s = mIn.size();
@@ -122,11 +96,13 @@ void _imgRotate::process(void)
 		if (prog - m_progress > 0.1)
 		{
 			m_progress = prog;
-			LOG_I("Progress: " << (int)(m_progress * 100) << "%");
+			LOG_I("  - Progress: " << (int)(m_progress * 100) << "%");
 		}
 	}
 
-	LOG_I("------ Complete: Total produced: " << nTot);
+	LOG_I("  - Complete: Total produced: " << nTot);
+
+	m_bComplete = true;
 }
 
 }

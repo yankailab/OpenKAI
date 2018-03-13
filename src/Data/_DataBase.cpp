@@ -77,6 +77,12 @@ void _DataBase::update(void)
 {
 }
 
+void _DataBase::setFileList(vector<string> vFileIn)
+{
+	m_vFileIn.clear();
+	m_vFileIn = vFileIn;
+}
+
 int _DataBase::getDirFileList(void)
 {
 	m_vFileIn.clear();
@@ -114,7 +120,7 @@ void _DataBase::getDirFileList(string* pStrDir)
 			continue;
 		}
 
-		IF_CONT(!verifyExtension(&dirIn));
+		IF_CONT(!verifyExtension(dirIn));
 		ifs.open(dirIn.c_str(), std::ios::in);
 		IF_CONT(!ifs);
 		ifs.close();
@@ -125,19 +131,20 @@ void _DataBase::getDirFileList(string* pStrDir)
 	closedir(pDirIn);
 }
 
-bool _DataBase::verifyExtension(string* fName)
+string _DataBase::getExtension(string& fName)
 {
-	NULL_F(fName);
+	size_t extPos = fName.find_last_of('.');
+	if(extPos == std::string::npos)
+		return "";
 
-	int i;
-	for(i=0; i<m_vExtIn.size(); i++)
+	return fName.substr(extPos);
+}
+
+bool _DataBase::verifyExtension(string& fName)
+{
+	for(int i=0; i<m_vExtIn.size(); i++)
 	{
-		string ext = m_vExtIn[i];
-		size_t extPos = fName->find(ext);
-		IF_CONT(extPos == std::string::npos);
-		IF_CONT(fName->substr(extPos) != ext);
-
-		return true;
+		IF_T(m_vExtIn[i] == getExtension(fName));
 	}
 
 	return false;

@@ -1,12 +1,12 @@
 /*
- * _imgRotate.h
+ * _FilterBase.h
  *
  *  Created on: Mar 12, 2018
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Data_imgRotate__imgRotate_H_
-#define OpenKAI_src_Data_imgRotate__imgRotate_H_
+#ifndef OpenKAI_src_Data_Augment__FilterBase_H_
+#define OpenKAI_src_Data_Augment__FilterBase_H_
 
 #include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
@@ -16,35 +16,38 @@
 namespace kai
 {
 
-class _imgRotate: public _DataBase
+class _FilterBase: public _DataBase
 {
 public:
-	_imgRotate();
-	~_imgRotate();
+	_FilterBase();
+	~_FilterBase();
 
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	void reset(void);
 
-private:
-	void process(void);
-	void update(void);
+	bool bComplete(void);
+
+	virtual void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_imgRotate*) This)->update();
+		((_FilterBase*) This)->update();
 		return NULL;
 	}
 
 public:
+	bool m_bComplete;
+	int m_nProduce;
+	double m_progress;
+
 	int m_bgNoiseMean;
 	int m_bgNoiseDev;
 	int m_bgNoiseType;
 
-	int m_nProduce;
+	Frame* m_pFrameIn;
+	Frame* m_pFrameOut;
 
-	bool m_bDeleteOriginal;
-	bool m_bSaveOriginalCopy;
-	double m_progress;
 };
 }
 

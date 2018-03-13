@@ -31,7 +31,9 @@ public:
 	void reset(void);
 
 	int getDirFileList(void);
-	bool verifyExtension(string* fName);
+	string getExtension(string& fName);
+	bool verifyExtension(string& fName);
+	void setFileList(vector<string> vFileIn);
 
 private:
 	void getDirFileList(string* pStrDir);
@@ -50,7 +52,6 @@ public:
 	vector<string> m_vFileIn;
 	vector<int> m_PNGcompress;
 	int m_PNGcompression;
-
 
 };
 }

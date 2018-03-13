@@ -56,14 +56,12 @@
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_GStreamer.h"
-#include "../Vision/_VisionBase.h"
 #include "../Vision/_ZED.h"
 #include "../Vision/FrameGroup.h"
 #include "../Vision/_Flow.h"
 
-#include "../Data/Augment/_imgRotate.h"
-
 #include "../Data/Augment/_Augment.h"
+#include "../Data/Augment/_filterRotate.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
