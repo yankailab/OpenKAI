@@ -25,7 +25,9 @@
 #include "_filterMedianBlur.h"
 #include "_filterNoise.h"
 #include "_filterRotate.h"
+#include "_filterSaturation.h"
 #include "_filterShrink.h"
+#include "_filterTone.h"
 
 #define AUGMENT_N_FILTER 128
 #define AUGMENT_N_THREAD 128

@@ -54,7 +54,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_filterMedianBlur);
 	ADD_MODULE(_filterNoise);
 	ADD_MODULE(_filterRotate);
+	ADD_MODULE(_filterSaturation);
 	ADD_MODULE(_filterShrink);
+	ADD_MODULE(_filterTone);
 
 	ADD_MODULE(_BBoxCutOut);
 	ADD_MODULE(_FrameCutOut);

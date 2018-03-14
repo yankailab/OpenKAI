@@ -73,7 +73,9 @@
 #include "../Data/Augment/_filterMedianBlur.h"
 #include "../Data/Augment/_filterNoise.h"
 #include "../Data/Augment/_filterRotate.h"
+#include "../Data/Augment/_filterSaturation.h"
 #include "../Data/Augment/_filterShrink.h"
+#include "../Data/Augment/_filterTone.h"
 
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"

@@ -198,6 +198,10 @@ _FilterBase* _Augment::createFilterThread(string& filter)
 		return new _filterMedianBlur();
 	else if (filter == "bilateralBlur")
 		return new _filterBilateralBlur();
+	else if (filter == "saturation")
+		return new _filterSaturation();
+	else if (filter == "tone")
+		return new _filterTone();
 
 	LOG_E("Unrecognized augment filter: " << filter);
 	return NULL;

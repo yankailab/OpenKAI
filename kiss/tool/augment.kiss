@@ -17,8 +17,8 @@
 	"bConvertFormat":0,
 	"PNGcompression":9,
 	"nThread":8,
-	"_filter":["rotate"],
-	"filter":["rotate","flip","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"]
+	"filter":["tone"],
+	"_filter":["rotate","flip","saturation","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"]
 
 	
 	{
@@ -43,7 +43,7 @@
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
-		"dRand":0.25,	
+		"dRand":0.25,
 	}
 	
 	{
@@ -145,5 +145,19 @@
 		"dRand":100,
 	}
 
+	{
+		"name":"saturation",
+		"bInst":1,
+		"nProduce":1,
+		"dRand":2.0,
+		"dSaturation":100,
+	}
+
+	{
+		"name":"tone",
+		"bInst":1,
+		"nProduce":1,
+		"dRand":1.0,
+	}
 }
 

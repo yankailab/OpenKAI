@@ -137,7 +137,10 @@ string _DataBase::getExtension(string& fName)
 	if(extPos == std::string::npos)
 		return "";
 
-	return fName.substr(extPos);
+	static string ext = fName.substr(extPos);
+	transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
+
+	return ext;
 }
 
 bool _DataBase::verifyExtension(string& fName)
