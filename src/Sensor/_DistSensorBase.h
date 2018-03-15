@@ -62,8 +62,6 @@ public:
 	double rMax(void);
 	void input(double deg, double d);
 	void update(void);
-	void updateOdometry(void);
-	vDouble2 dT(void);
 	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);
@@ -89,13 +87,6 @@ public:
 	double  m_calibOffset;
 	double  m_showScale;
 	uint16_t m_bReady;
-
-	//odometry
-	_Mavlink* m_pMavlink;
-	vDouble2 m_dT;	//dTranslation, x, y,
-	double	m_diffMax;
-	double	m_diffMin;
-	double	m_odoConfidence;
 
 };
 

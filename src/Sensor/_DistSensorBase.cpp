@@ -24,11 +24,6 @@ _DistSensorBase::_DistSensorBase()
 	m_calibOffset = 0.0;
 	m_showScale = 1.0;
 	m_bReady = false;
-	m_pMavlink = NULL;
-	m_dT.init();
-	m_diffMax = 1.0;
-	m_diffMin = 0.0;
-	m_odoConfidence = 0.0;
 }
 
 _DistSensorBase::~_DistSensorBase()
@@ -74,10 +69,6 @@ bool _DistSensorBase::link(void)
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
-	string iName = "";
-	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -96,52 +87,6 @@ bool _DistSensorBase::bReady(void)
 
 void _DistSensorBase::update(void)
 {
-	if(m_pMavlink)
-	{
-//		m_hdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg))*0.01;
-	}
-}
-
-void _DistSensorBase::updateOdometry(void)
-{
-	IF_(!m_bReady);
-	NULL_(m_pMavlink);
-
-	int i;
-	double pX = 0.0;
-	double pY = 0.0;
-	double nV = 0.0;
-	double rad = 0.0;
-	double dRad = m_dDeg * DEG_RAD;
-
-	for (i = 0; i < m_nDiv; i++)
-	{
-		Average* pA = &m_pDiv[i].m_fAvr;
-
-		double dist = pA->v();
-		IF_CONT(dist < m_rMin);
-		IF_CONT(dist > m_rMax);
-
-		double dD = pA->accumlatedDiff();
-		double absDD = abs(dD);
-		IF_CONT(absDD <= m_diffMin);
-		IF_CONT(absDD > m_diffMax);
-
-		rad += dRad;
-		pX += dD * cos(rad);
-		pY += -dD * sin(rad);
-		nV += 1.0;
-	}
-
-	m_odoConfidence = nV/m_nDiv;
-	nV = 1.0/nV;
-	m_dT.x = pX * nV;
-	m_dT.y = pY * nV;
-}
-
-vDouble2 _DistSensorBase::dT(void)
-{
-	return m_dT;
 }
 
 DIST_SENSOR_TYPE _DistSensorBase::type(void)

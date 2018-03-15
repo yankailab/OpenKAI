@@ -45,8 +45,8 @@ bool _LeddarVu::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("minDist", &m_dMin));
-	F_INFO(pK->v("maxDist", &m_dMax));
+	KISSdm(pK, dMin);
+	KISSdm(pK, dMax);
 
 	Kiss* pI;
 	pI = pK->o("input");
@@ -218,8 +218,8 @@ bool _LeddarVu::updateLidar(void)
 	for (i = 0; i < N_SEGMENT; i++)
 	{
 		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
-//		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
-//		m_pSegment[i].flags = reg[15 + 2*N_SEGMENT + i];
+		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
+		m_pSegment[i].flags = reg[15 + 2*N_SEGMENT + i];
 	}
 
 	IF_T(!m_bLog);

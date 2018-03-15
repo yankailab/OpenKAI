@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SENSOR__LeddarVu_H_
-#define SENSOR__LeddarVu_H_
+#ifndef OpenKAI_src_Sensor__LeddarVu_H_
+#define OpenKAI_src_Sensor__LeddarVu_H_
 
 #include "../include/libmodbus/modbus.h"
 #include "_DistSensorBase.h"
