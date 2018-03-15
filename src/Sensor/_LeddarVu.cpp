@@ -48,13 +48,10 @@ bool _LeddarVu::init(void* pKiss)
 	KISSdm(pK, dMin);
 	KISSdm(pK, dMax);
 
-	Kiss* pI;
-	pI = pK->o("input");
-	IF_F(pI->empty());
-	F_INFO(pI->v("portName", &m_portName));
-	F_INFO(pI->v("baud", &m_baud));
-	F_INFO(pI->v("slaveAddr", &m_slaveAddr));
-	F_INFO(pI->v("bUse0x41", &m_bUse0x41));
+	KISSm(pK, portName);
+	KISSm(pK, baud);
+	KISSm(pK, slaveAddr);
+	KISSm(pK, bUse0x41);
 
 	return true;
 }
@@ -96,7 +93,14 @@ void _LeddarVu::update(void)
 
 		this->autoFPSfrom();
 
-		updateLidar();
+		if(m_bUse0x41)
+		{
+			updateLidarFast();
+		}
+		else
+		{
+			updateLidar();
+		}
 
 		this->autoFPSto();
 	}
@@ -211,21 +215,87 @@ bool _LeddarVu::updateLidar(void)
 	m_lightSrcPwr = reg[11];
 	m_timeStamp = reg[13] + (reg[14] << 16);
 
-	const static double BASE_D = 1.0/100.0;
-	const static double BASE_A = 1.0/64.0;
+	const static double BASE_D = 1.0 / 100.0;
+	const static double BASE_A = 1.0 / 64.0;
 
 	int i;
 	for (i = 0; i < N_SEGMENT; i++)
 	{
 		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
 		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
-		m_pSegment[i].flags = reg[15 + 2*N_SEGMENT + i];
+		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
 	}
 
 	IF_T(!m_bLog);
 
 	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
 	for (i = 0; i < N_SEGMENT; i++)
+	{
+		log += " | " + f2str(m_pSegment[i].dDistance);
+	}
+	log += " |";
+	LOG_I(log);
+
+	return true;
+}
+
+bool _LeddarVu::updateLidarFast(void)
+{
+	NULL_F(m_pMb);
+
+	// This version of the ReadDetections function uses the 0x41 function code.
+	// It reduces the overhead and is the recommended way of reading measurements.
+
+	// Read 5 holding registers from address 1
+	uint8_t rawReq[] = { (uint8_t) m_slaveAddr, 0x41 };
+	uint8_t rsp[MODBUS_TCP_MAX_ADU_LENGTH];
+
+//	if (modbus_send_raw_request(m_pMb, rawReq, ARRAYSIZE(rawReq)) < 0)
+	if (modbus_send_raw_request(m_pMb, rawReq, 2) < 0)
+	{
+		LOG_E("Error sending command 0x41, errno = " << i2str(errno));
+		return false;
+	}
+
+	// We had to add support for 0x41 in 'compute_data_length_after_meta()' in "modbus.c".
+	int iResponseLength = modbus_receive_confirmation(m_pMb, rsp);
+	if (iResponseLength < 3)
+	{
+		LOG_E("Error receiving response for command 0x41, length = " << iResponseLength << "; errno = " << i2str(errno));
+		return false;
+	}
+
+	const static double BASE_D = 1.0 / 100.0;
+	const static double BASE_A = 1.0 / 64.0;
+	m_nDetection = rsp[2];
+
+	if (iResponseLength >= 3 + (signed) m_nDetection * 5)
+	{
+		for (uint32_t u = 0; (u < m_nDetection) && (u < LEDDAR_MAX_DETECTIONS); u++)
+		{
+			uint8_t* pDetection = rsp + 3 + 5 * u;
+			m_pSegment[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) * BASE_D;
+			m_pSegment[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) * BASE_A;
+//			tabDetections[u].channel = pDetection[4] >> 4;
+//			tabDetections[u].flags = pDetection[4] & 0x0F;
+		}
+
+		if (iResponseLength >= 3 + (signed) m_nDetection * 5 + 6)
+		{
+			uint8_t* pTrailer = rsp + 3 + 5 * m_nDetection;
+//			uTimestamp = pTrailer[0] + (pTrailer[1] << 8) + (pTrailer[2] << 16) + (pTrailer[3] << 24);
+		}
+	}
+	else
+	{
+		printf("Not enough data received (length=%i)\n", iResponseLength);
+		return false;
+	}
+
+	IF_T(!m_bLog);
+
+	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
+	for (int i = 0; i < N_SEGMENT; i++)
 	{
 		log += " | " + f2str(m_pSegment[i].dDistance);
 	}
@@ -273,62 +343,5 @@ bool _LeddarVu::draw(void)
 
 	return true;
 }
-
-// ***********************************************************************************************
-// IMPLEMENTATION
-// ***********************************************************************************************
-/*
- bool _LeddarVu::ReadDetectionsFast(modbus_t* mb, SDetection tabDetections[LEDDAR_MAX_DETECTIONS],
- uint32_t& nbrDetections, uint32_t& uTimestamp)
- {
- // This version of the ReadDetections function uses the 0x41 function code.
- // It reduces the overhead and is the recommended way of reading measurements.
-
- // Read 5 holding registers from address 1
- uint8_t rawReq[] = { (uint8_t)m_slaveAddr, 0x41 };
- uint8_t rsp[MODBUS_TCP_MAX_ADU_LENGTH];
-
- if (modbus_send_raw_request(mb, rawReq, ARRAYSIZE(rawReq)) < 0)
- {
- printf("Error sending command 0x41 (errno=%i)\n", errno);
- return false;
- }
-
- // We had to add support for 0x41 in 'compute_data_length_after_meta()' in "modbus.c".
- int iResponseLength = modbus_receive_confirmation(mb, rsp);
- if (iResponseLength < 3)
- {
- printf("Error receiving response for command 0x41 (length=%i, errno=%i)\n", iResponseLength, errno);
- return false;
- }
-
- nbrDetections = rsp[2];
-
- if (iResponseLength >= 3 + (signed)nbrDetections*5)
- {
- for (uint32_t u = 0; (u < nbrDetections) && (u < LEDDAR_MAX_DETECTIONS); ++u)
- {
- uint8_t* pDetection = rsp + 3 + 5*u;
- tabDetections[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) / 100.0;
- tabDetections[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) / 64.0;
- tabDetections[u].channel = pDetection[4] >> 4;
- tabDetections[u].flags = pDetection[4] & 0x0F;
- }
-
- if (iResponseLength >= 3 + (signed)nbrDetections*5 + 6)
- {
- uint8_t* pTrailer = rsp + 3 + 5*nbrDetections;
- uTimestamp = pTrailer[0] + (pTrailer[1] << 8) + (pTrailer[2] << 16) + (pTrailer[3] << 24);
- }
- }
- else
- {
- printf("Not enough data received (length=%i)\n", iResponseLength);
- return false;
- }
-
- return true;        // success
- }
- */
 
 }

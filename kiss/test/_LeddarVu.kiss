@@ -34,13 +34,8 @@
 	"dMin":0.1,
 	"nDiv":8,
 	"dAngle":10,
-
-	{
-		"name":"input",
-		"bInst":1,
-		"portName":"/dev/ttyACM0",
-		"baud":115200,
-		"bUse0x41":0,
-		"slaveAddr":1,
-	}
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"bUse0x41":0,
+	"slaveAddr":1,
 }

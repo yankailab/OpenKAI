@@ -41,13 +41,13 @@ public:
 //	void reset(void);
 
 	double getDistance(double localAngle);
-
 	DIST_SENSOR_TYPE type(void);
 	vDouble2 range(void);
 
 private:
 	bool open(void);
 	bool updateLidar(void);
+	bool updateLidarFast(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

@@ -315,6 +315,9 @@ static int compute_data_length_after_meta(modbus_t *ctx, uint8_t *msg,
             function == MODBUS_FC_REPORT_SLAVE_ID ||
             function == MODBUS_FC_WRITE_AND_READ_REGISTERS) {
             length = msg[ctx->backend->header_length + 1];
+        } else if (function == 0x41) {
+			// Modification to support the custom Leddar 0x41 command:
+			length = (5 * msg[ctx->backend->header_length + 1]) + 6;
         } else {
             length = 0;
         }
