@@ -10,24 +10,28 @@ namespace kai
 _LeddarVu::_LeddarVu()
 {
 	m_pMb = NULL;
-	m_nDiv = 0;
-	m_dAngle = 0;
-	m_dMin = 0.1;
-	m_dMax = 100.0;
-	m_angleV = 0.0;
-	m_angleH = 0.0;
-
 	m_portName = "";
 	m_baud = 115200;
 
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
 
-	m_bReady = 0;
 	m_nSegment = N_SEGMENT;
 	m_nDetection = 0;
 	m_lightSrcPwr = 0;
-	m_timeStamp = 0;
+	m_tStamp = 0;
+
+	m_nAccumulationsExpo = 5;
+	m_nOversamplingsExpo = 1;
+	m_lightSrcPwr = 100;
+	m_bAutoLightSrcPwr = false;
+	m_bDemergeObj = true;
+	m_bStaticNoiseRemoval = true;
+	m_bPrecision = true;
+	m_bSaturationCompensation = true;
+	m_bOvershootManagement = true;
+	m_oprMode = 1;
+
 }
 
 _LeddarVu::~_LeddarVu()
@@ -41,17 +45,25 @@ _LeddarVu::~_LeddarVu()
 
 bool _LeddarVu::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	KISSdm(pK, dMin);
-	KISSdm(pK, dMax);
 
 	KISSm(pK, portName);
 	KISSm(pK, baud);
 	KISSm(pK, slaveAddr);
 	KISSm(pK, bUse0x41);
+
+	KISSim(pK, nAccumulationsExpo);
+	KISSim(pK, nOversamplingsExpo);
+	KISSim(pK, lightSrcPwr);
+	KISSm(pK, bAutoLightSrcPwr);
+	KISSm(pK, bDemergeObj);
+	KISSm(pK, bStaticNoiseRemoval);
+	KISSm(pK, bPrecision);
+	KISSm(pK, bSaturationCompensation);
+	KISSm(pK, bOvershootManagement);
+	KISSim(pK, oprMode);
 
 	return true;
 }
@@ -93,7 +105,7 @@ void _LeddarVu::update(void)
 
 		this->autoFPSfrom();
 
-		if(m_bUse0x41)
+		if (m_bUse0x41)
 		{
 			updateLidarFast();
 		}
@@ -146,53 +158,52 @@ bool _LeddarVu::open(void)
 
 	memset(buf, 0, sizeof buf);
 	int nReceived = modbus_receive_confirmation(m_pMb, buf);
-	if (nReceived >= 0)
+	IF_Fl(nReceived < 0, "Error receiving data from the sensor:" << errno);
+
+	LOG_I("Received "<< nReceived <<" bytes from the sensor");
+
+	IF_Fl(nReceived < 155, "Unexpected answer");
+	IF_Fl(!((buf[0] == 1) && (buf[1] == 0x11)), "Bad address or function");
+
+	if ((buf[2 + 150] == 9) && (buf[2 + 151] == 0))
 	{
-		LOG_I("Received "<< nReceived <<" bytes from the sensor");
-
-		if (nReceived >= 155)
-		{
-			if ((buf[0] == 1) && (buf[1] == 0x11))
-			{
-				if ((buf[2 + 150] == 9) && (buf[2 + 151] == 0))
-				{
-					LOG_I("Talking to a M16");
-				}
-				else if ((buf[2 + 150] == 7) && (buf[2 + 151] == 0))
-				{
-					LOG_I("Talking to an evaluation kit");
-				}
-				else if ((buf[2 + 50] == 10) && (buf[2 + 51] == 0))
-				{
-					LOG_I(
-							"Talking to a LeddarOne (please use the LeddarOne sample)");
-				}
-				else
-				{
-					string str = "";
-
-					for (int i = 0; i < nReceived; ++i)
-					{
-						str += (buf[i] >= 32) ? buf[i] : ' ';
-					}
-
-					LOG_I(str);
-				}
-			}
-			else
-			{
-				LOG_I("Unexpected answer (bad address or function)");
-			}
-		}
-		else
-		{
-			LOG_I("Unexpected answer");
-		}
+		LOG_I("Talking to a M16");
+	}
+	else if ((buf[2 + 150] == 7) && (buf[2 + 151] == 0))
+	{
+		LOG_I("Talking to an evaluation kit");
+	}
+	else if ((buf[2 + 50] == 10) && (buf[2 + 51] == 0))
+	{
+		LOG_I("Talking to a LeddarOne (please use the LeddarOne sample)");
 	}
 	else
 	{
-		LOG_I("Error receiving data from the sensor:" << errno);
+		string str = "";
+
+		for (int i = 0; i < nReceived; ++i)
+		{
+			str += (buf[i] >= 32) ? buf[i] : ' ';
+		}
+
+		LOG_I(str);
 	}
+
+	modbus_write_register(m_pMb, 0, m_nAccumulationsExpo);
+	modbus_write_register(m_pMb, 1, m_nOversamplingsExpo);
+	modbus_write_register(m_pMb, 5, m_lightSrcPwr);
+	modbus_write_register(m_pMb, 10, m_oprMode);
+
+	uint16_t acOpt = 0;
+	if(m_bAutoLightSrcPwr)acOpt |= 1;
+	if(m_bDemergeObj)acOpt |= 1 << 1;
+	if(m_bStaticNoiseRemoval)acOpt |= 1 << 2;
+	if(m_bPrecision)acOpt |= 1 << 3;
+	if(m_bSaturationCompensation)acOpt |= 1 << 4;
+	if(m_bOvershootManagement)acOpt |= 1 << 5;
+	modbus_write_register(m_pMb, 6, acOpt);
+
+	m_bReady = 1;
 
 	return true;
 }
@@ -206,32 +217,32 @@ bool _LeddarVu::updateLidar(void)
 
 	int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
 	IF_F(nRead != N_REGISTERS);
-
-	m_bReady = reg[0];
-	IF_F(m_bReady == 0);
+	IF_F(reg[0] == 0);
 
 	m_nSegment = reg[1];
 	m_nDetection = reg[10];
 	m_lightSrcPwr = reg[11];
-	m_timeStamp = reg[13] + (reg[14] << 16);
+	m_tStamp = reg[13] + (reg[14] << 16);
 
 	const static double BASE_D = 1.0 / 100.0;
-	const static double BASE_A = 1.0 / 64.0;
+//	const static double BASE_A = 1.0 / 64.0;
 
 	int i;
 	for (i = 0; i < N_SEGMENT; i++)
 	{
-		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
-		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
-		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
+		this->input(i*m_dDeg, (double) reg[15 + i] * BASE_D);
+//		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
+//		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
+//		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
 	}
 
 	IF_T(!m_bLog);
 
-	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
+	string log = " nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
 	for (i = 0; i < N_SEGMENT; i++)
 	{
-		log += " | " + f2str(m_pSegment[i].dDistance);
+		Average* pD = &m_pDiv[i].m_fAvr;
+		log += " | " + f2str(pD->v());
 	}
 	log += " |";
 	LOG_I(log);
@@ -247,7 +258,8 @@ bool _LeddarVu::updateLidarFast(void)
 	// It reduces the overhead and is the recommended way of reading measurements.
 
 	// Read 5 holding registers from address 1
-	uint8_t rawReq[] = { (uint8_t) m_slaveAddr, 0x41 };
+	uint8_t rawReq[] =
+	{ (uint8_t) m_slaveAddr, 0x41 };
 	uint8_t rsp[MODBUS_TCP_MAX_ADU_LENGTH];
 
 //	if (modbus_send_raw_request(m_pMb, rawReq, ARRAYSIZE(rawReq)) < 0)
@@ -261,7 +273,8 @@ bool _LeddarVu::updateLidarFast(void)
 	int iResponseLength = modbus_receive_confirmation(m_pMb, rsp);
 	if (iResponseLength < 3)
 	{
-		LOG_E("Error receiving response for command 0x41, length = " << iResponseLength << "; errno = " << i2str(errno));
+		LOG_E(
+				"Error receiving response for command 0x41, length = " << iResponseLength << "; errno = " << i2str(errno));
 		return false;
 	}
 
@@ -274,8 +287,9 @@ bool _LeddarVu::updateLidarFast(void)
 		for (uint32_t u = 0; (u < m_nDetection) && (u < LEDDAR_MAX_DETECTIONS); u++)
 		{
 			uint8_t* pDetection = rsp + 3 + 5 * u;
-			m_pSegment[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) * BASE_D;
-			m_pSegment[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) * BASE_A;
+//			m_pSegment[u].dDistance = (pDetection[0] + (pDetection[1] << 8)) * BASE_D;
+//			m_pSegment[u].dAmplitude = (pDetection[2] + (pDetection[3] << 8)) * BASE_A;
+
 //			tabDetections[u].channel = pDetection[4] >> 4;
 //			tabDetections[u].flags = pDetection[4] & 0x0F;
 		}
@@ -297,7 +311,8 @@ bool _LeddarVu::updateLidarFast(void)
 	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
 	for (int i = 0; i < N_SEGMENT; i++)
 	{
-		log += " | " + f2str(m_pSegment[i].dDistance);
+		Average* pD = &m_pDiv[i].m_fAvr;
+		log += " | " + f2str(pD->v());
 	}
 	log += " |";
 	LOG_I(log);
@@ -310,36 +325,12 @@ DIST_SENSOR_TYPE _LeddarVu::type(void)
 	return dsLeddarVu;
 }
 
-vDouble2 _LeddarVu::range(void)
-{
-	vDouble2 r;
-	r.x = m_dMin;
-	r.y = m_dMax;
-	return r;
-}
-
 bool _LeddarVu::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_DistSensorBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
-
-	pWin->tabNext();
-	msg = "";
-	pWin->addMsg(&msg);
-
-	pWin->tabPrev();
-	IF_T(m_nDiv <= 0);
-
-	//Plot center as vehicle position
-	Point pCenter(pMat->cols / 2, pMat->rows / 2);
-	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
-
-	//Plot lidar result
-	for (int i = 0; i < m_nDiv; i++)
-	{
-	}
 
 	return true;
 }

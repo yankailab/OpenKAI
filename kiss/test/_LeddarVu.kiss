@@ -30,12 +30,35 @@
 	"Window":"OKview",
 	"angleV":67.1,
 	"angleH":66.7,
-	"dMax":100.0,
-	"dMin":0.1,
+	"rMin":0.1,
+	"rMax":100.0,
+	"fov":100,
 	"nDiv":8,
+	"showScale":30.0,
 	"dAngle":10,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 	"bUse0x41":0,
 	"slaveAddr":1,
+	"nAccumulationsExpo":5,
+	"nOversamplingsExpo":1,
+	"lightSrcPwr":100,
+	"bAutoLightSrcPwr":0,
+	"bDemergeObj":1,
+	"bStaticNoiseRemoval":1,
+	"bPrecision":1,
+	"bSaturationCompensation":1,
+	"bOvershootManagement":1,
+	"oprMode":1,
+	
+	{
+		"name":"filterMed",
+		"bLog":0,
+		"windowLen":3,
+	}	
+	{
+		"name":"filterAvr",
+		"bLog":0,
+		"windowLen":3,
+	}
 }

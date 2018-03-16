@@ -17,17 +17,6 @@
 namespace kai
 {
 
-using std::string;
-using namespace std;
-using namespace cv;
-
-struct SEGMENT_DETECTION
-{
-	double dDistance;			 // distance from the sensor, in meters
-	double dAmplitude;			 // signal amplitude
-	uint16_t flags;              // Flags
-};
-
 class _LeddarVu: public _DistSensorBase
 {
 public:
@@ -40,9 +29,7 @@ public:
 	bool draw(void);
 //	void reset(void);
 
-	double getDistance(double localAngle);
 	DIST_SENSOR_TYPE type(void);
-	vDouble2 range(void);
 
 private:
 	bool open(void);
@@ -65,21 +52,21 @@ public:
 	// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
 	bool m_bUse0x41;
 
-	int		m_nDiv;
-	double	m_dAngle;
-	double	m_angleV;
-	double	m_angleH;
-	double	m_dMin;
-	double	m_dMax;
-
-	uint16_t m_bReady;
 	uint16_t m_nSegment;
 	uint16_t m_nDetection;
-	uint16_t m_lightSrcPwr;
-	uint32_t m_timeStamp;
+	uint32_t m_tStamp;
 
-	SEGMENT_DETECTION m_pSegment[N_SEGMENT];
-
+	//configurations
+	uint16_t	m_nAccumulationsExpo;
+	uint16_t	m_nOversamplingsExpo;
+	uint16_t	m_lightSrcPwr;
+	bool		m_bAutoLightSrcPwr;
+	bool		m_bDemergeObj;
+	bool		m_bStaticNoiseRemoval;
+	bool		m_bPrecision;
+	bool		m_bSaturationCompensation;
+	bool		m_bOvershootManagement;
+	uint16_t	m_oprMode;
 
 };
 
