@@ -23,6 +23,7 @@ _DistSensorBase::_DistSensorBase()
 	m_calibScale = 1.0;
 	m_calibOffset = 0.0;
 	m_showScale = 1.0;
+	m_showDegOffset = 0.0;
 	m_bReady = false;
 }
 
@@ -46,6 +47,7 @@ bool _DistSensorBase::init(void* pKiss)
 	m_dDegInv = 1.0/m_dDeg;
 
 	KISSm(pK,showScale);
+	KISSm(pK,showDegOffset);
 	KISSm(pK,rMin);
 	KISSm(pK,rMax);
 	KISSm(pK,calibScale);

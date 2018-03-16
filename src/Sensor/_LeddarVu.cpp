@@ -327,10 +327,34 @@ DIST_SENSOR_TYPE _LeddarVu::type(void)
 
 bool _LeddarVu::draw(void)
 {
-	IF_F(!this->_DistSensorBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
+
+	Point pCenter(pMat->cols / 2, pMat->rows / 2);
+	Scalar col = Scalar(0, 255, 0);
+	Scalar colD = Scalar(0, 255, 255);
+	double rMax = m_rMax * m_showScale;
+
+	for(int i=0; i<m_nDiv; i++)
+	{
+		Average* pD = &m_pDiv[i].m_fAvr;
+
+		double radFrom = (i*m_dDeg + m_showDegOffset) * DEG_RAD;
+		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * DEG_RAD;
+		double d = pD->v() * m_showScale;
+
+		vDouble2 pFrom,pTo;
+		pFrom.x = sin(radFrom);
+		pFrom.y = -cos(radFrom);
+		pTo.x = sin(radTo);
+		pTo.y = -cos(radTo);
+
+		line(*pMat, pCenter + Point(pFrom.x*d,pFrom.y*d), pCenter + Point(pTo.x*d,pTo.y*d), colD, 2);
+		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
+		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
+	}
 
 	return true;
 }

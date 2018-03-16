@@ -86,6 +86,7 @@ public:
 	double  m_calibScale;
 	double  m_calibOffset;
 	double  m_showScale;
+	double  m_showDegOffset;
 	uint16_t m_bReady;
 
 };

@@ -35,6 +35,7 @@
 	"fov":100,
 	"nDiv":8,
 	"showScale":30.0,
+	"showDegOffset":-50.0,
 	"dAngle":10,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
