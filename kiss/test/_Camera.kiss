@@ -31,6 +31,8 @@
 	"deviceID":1,
 	"width":1280,
 	"height":720,
+	"fovV":60,
+	"fovH":60,
 	"bFlip":0,
 	"bGray":0,
 }

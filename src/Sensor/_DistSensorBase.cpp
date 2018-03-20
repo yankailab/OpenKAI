@@ -139,6 +139,22 @@ void _DistSensorBase::input(double deg, double d)
 	m_pDiv[iDiv].input(d);
 }
 
+void _DistSensorBase::input(double deg, double d, double a)
+{
+	IF_(!m_bReady);
+	IF_(deg < 0);
+
+	if(d < m_rMin)d = m_rMax;
+	if(d > m_rMax)d = m_rMax;
+
+	deg += m_hdg;
+	int iDiv = (int) (deg * m_dDegInv);
+	while (iDiv >= m_nDiv)
+		iDiv -= m_nDiv;
+
+	m_pDiv[iDiv].input(d,a);
+}
+
 double _DistSensorBase::d(double deg)
 {
 	if(!m_bReady)return -1.0;

@@ -15,6 +15,8 @@ _LeddarVu::_LeddarVu()
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
 	m_pVB = NULL;
+	m_showOriginOffsetX = 0.5;
+	m_showOriginOffsetY = 0.5;
 
 	m_nSegment = N_SEGMENT;
 	m_nDetection = 0;
@@ -53,6 +55,8 @@ bool _LeddarVu::init(void* pKiss)
 	KISSm(pK, baud);
 	KISSm(pK, slaveAddr);
 	KISSm(pK, bUse0x41);
+	KISSdm(pK, showOriginOffsetX);
+	KISSdm(pK, showOriginOffsetY);
 
 	KISSim(pK, nAccumulationsExpo);
 	KISSim(pK, nOversamplingsExpo);
@@ -216,7 +220,7 @@ bool _LeddarVu::updateLidar(void)
 {
 	NULL_F(m_pMb);
 
-	const uint32_t N_REGISTERS = 15 + N_SEGMENT;
+	const uint32_t N_REGISTERS = 15 + N_SEGMENT*2;
 	uint16_t reg[N_REGISTERS];
 
 	int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
@@ -229,12 +233,14 @@ bool _LeddarVu::updateLidar(void)
 	m_tStamp = reg[13] + (reg[14] << 16);
 
 	const static double BASE_D = 1.0 / 100.0;
-//	const static double BASE_A = 1.0 / 64.0;
+	const static double BASE_A = 1.0 / 64.0;
 
 	int i;
 	for (i = 0; i < N_SEGMENT; i++)
 	{
-		this->input(i*m_dDeg, (double) reg[15 + i] * BASE_D);
+		this->input(i*m_dDeg,
+					(double) reg[15 + i] * BASE_D,
+					(double) reg[15 + N_SEGMENT + i] * BASE_A);
 //		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
 //		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
 //		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
@@ -245,8 +251,8 @@ bool _LeddarVu::updateLidar(void)
 	string log = " nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
 	for (i = 0; i < N_SEGMENT; i++)
 	{
-		Average* pD = &m_pDiv[i].m_fAvr;
-		log += " | " + f2str(pD->v());
+		DIST_SENSOR_DIV* pD = &m_pDiv[i];
+		log += " | " + f2str(pD->v()) + " (" + f2str(pD->a()) + ")";
 	}
 	log += " |";
 	LOG_I(log);
@@ -340,22 +346,20 @@ bool _LeddarVu::draw(void)
 	double camFovH = 1.0;
 	if(m_pVB)
 	{
-
-
+		camFovH = m_fovH / (double)m_pVB->m_fovH;
+		camFovV = m_fovV / (double)m_pVB->m_fovV;
 	}
 
-	Point pCenter(pMat->cols / 2, pMat->rows / 2);
+	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);
 	Scalar col = Scalar(0, 255, 0);
 	Scalar colD = Scalar(0, 255, 255);
 	double rMax = m_rMax * m_showScale;
 
 	for(int i=0; i<m_nDiv; i++)
 	{
-		Average* pD = &m_pDiv[i].m_fAvr;
-
-		double radFrom = (i*m_dDeg + m_showDegOffset) * DEG_RAD;
-		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * DEG_RAD;
-		double d = pD->v() * m_showScale;
+		double radFrom = (i*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
+		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
+		double d = m_pDiv[i].v() * m_showScale;
 
 		vDouble2 pFrom,pTo;
 		pFrom.x = sin(radFrom);

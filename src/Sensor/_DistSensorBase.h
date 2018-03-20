@@ -30,6 +30,8 @@ enum DIST_SENSOR_TYPE
 
 struct DIST_SENSOR_DIV
 {
+	double m_d;	//raw input
+	double m_a; //amplitude
 	Median m_fMed;
 	Average m_fAvr;
 
@@ -37,12 +39,31 @@ struct DIST_SENSOR_DIV
 	{
 		m_fMed.init(pKmed);
 		m_fAvr.init(pKavr);
+		m_d = 0.0;
+		m_a = 0.0;
 	}
 
 	void input(double d)
 	{
+		m_d = d;
 		m_fMed.input(d);
 		m_fAvr.input(m_fMed.v());
+	}
+
+	void input(double d, double a)
+	{
+		input(d);
+		m_a = a;
+	}
+
+	double v(void)
+	{
+		return m_d;
+	}
+
+	double a(void)
+	{
+		return m_a;
 	}
 };
 
@@ -61,6 +82,7 @@ public:
 	double rMin(void);
 	double rMax(void);
 	void input(double deg, double d);
+	void input(double deg, double d, double a);
 	void update(void);
 	bool bReady(void);
 

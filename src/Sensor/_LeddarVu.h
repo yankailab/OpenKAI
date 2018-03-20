@@ -53,6 +53,8 @@ public:
 	// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
 	bool m_bUse0x41;
 	_VisionBase* m_pVB;
+	double m_showOriginOffsetX;
+	double m_showOriginOffsetY;
 
 	uint16_t m_nSegment;
 	uint16_t m_nDetection;
