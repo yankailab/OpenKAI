@@ -14,7 +14,8 @@ _DistSensorBase::_DistSensorBase()
 {
 	m_pDiv = NULL;
 	m_nDiv = 0;
-	m_fov = 360;
+	m_fovH = 360;
+	m_fovV = 0.1;
 	m_dDeg = 0;
 	m_dDegInv = 0;
 	m_rMin = 0.0;
@@ -38,12 +39,13 @@ bool _DistSensorBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,fov);
-	IF_Fl(m_fov <= 0, "angleTo > 0");
-	IF_Fl(m_fov > 360, "angleTo <= 360");
+	KISSm(pK,fovH);
+	IF_Fl(m_fovH <= 0, "angleTo > 0");
+	IF_Fl(m_fovH > 360, "angleTo <= 360");
+	KISSm(pK,fovV);
 
 	KISSm(pK,nDiv);
-	m_dDeg = m_fov/m_nDiv;
+	m_dDeg = m_fovH/m_nDiv;
 	m_dDegInv = 1.0/m_dDeg;
 
 	KISSm(pK,showScale);

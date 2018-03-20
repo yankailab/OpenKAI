@@ -54,8 +54,8 @@ public:
 	int m_height;
 	int m_centerH;
 	int m_centerV;
-	int m_angleH;
-	int m_angleV;
+	int m_fovH;
+	int m_fovV;
 	uint8_t m_orientation;
 	bool m_bFlip;
 

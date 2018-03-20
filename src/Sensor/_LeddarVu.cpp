@@ -12,9 +12,9 @@ _LeddarVu::_LeddarVu()
 	m_pMb = NULL;
 	m_portName = "";
 	m_baud = 115200;
-
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
+	m_pVB = NULL;
 
 	m_nSegment = N_SEGMENT;
 	m_nDetection = 0;
@@ -72,6 +72,10 @@ bool _LeddarVu::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
+
+	string iName = "";
+	F_INFO(pK->v("_VisionBase", &iName));
+	m_pVB = (_VisionBase*) (pK->parent()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -331,6 +335,14 @@ bool _LeddarVu::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 	string msg;
+
+	double camFovV = 1.0;
+	double camFovH = 1.0;
+	if(m_pVB)
+	{
+
+
+	}
 
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
 	Scalar col = Scalar(0, 255, 0);

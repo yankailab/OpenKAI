@@ -23,8 +23,8 @@ _VisionBase::_VisionBase()
 	m_isoScale = 1.0;
 	m_rotTime = 0;
 	m_rotPrev = 0;
-	m_angleH = 60;
-	m_angleV = 60;
+	m_fovH = 60;
+	m_fovV = 60;
 	m_bFlip = false;
 
 	m_pBGR = NULL;
@@ -49,8 +49,8 @@ bool _VisionBase::init(void* pKiss)
 
 	KISSm(pK,width);
 	KISSm(pK,height);
-	KISSm(pK,angleV);
-	KISSm(pK,angleH);
+	KISSm(pK,fovV);
+	KISSm(pK,fovH);
 	KISSm(pK,bGimbal);
 	KISSm(pK,isoScale);
 	KISSm(pK,bFlip);
@@ -138,8 +138,8 @@ void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
 
 	if(pAngle)
 	{
-		pAngle->x = m_angleH;
-		pAngle->y = m_angleV;
+		pAngle->x = m_fovH;
+		pAngle->y = m_fovV;
 	}
 }
 

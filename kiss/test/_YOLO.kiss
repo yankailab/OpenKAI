@@ -26,8 +26,8 @@
 	"bInst":1,
 	"Window":"OKview",
 	"deviceID":0,
-	"width":1920,
-	"height":1080,
+	"width":1280,
+	"height":720,
 	"bFlip":0,
 	"bGray":0,
 }

@@ -77,7 +77,8 @@ public:
 public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
-	double	m_fov;
+	double	m_fovH;
+	double	m_fovV;
 	double	m_dDeg;
 	double	m_dDegInv;
 	double	m_rMin;

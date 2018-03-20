@@ -9,6 +9,7 @@
 #define OpenKAI_src_Sensor__LeddarVu_H_
 
 #include "../include/libmodbus/modbus.h"
+#include "../Vision/_VisionBase.h"
 #include "_DistSensorBase.h"
 
 #define N_SEGMENT 8
@@ -51,6 +52,7 @@ public:
 	int m_slaveAddr;
 	// True to use command 0x41 to fetch data; otherwise, we use the standard Modbus registers:
 	bool m_bUse0x41;
+	_VisionBase* m_pVB;
 
 	uint16_t m_nSegment;
 	uint16_t m_nDetection;
