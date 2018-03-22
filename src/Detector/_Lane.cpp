@@ -152,11 +152,11 @@ bool _Lane::draw(void)
 	m_vPolyPoints.push_back(m_vLane[1]);
 	m_vPolyPoints.push_back(m_vLane[3]);
 	fillConvexPoly(output, m_vPolyPoints, Scalar(0, 255, 0), CV_AA, 0);
-	cv::addWeighted(output, 0.25, *pMat, 0.75, 0, *pMat);
+	cv::addWeighted(output, 0.1, *pMat, 1.0, 0, *pMat);
 
 	// Plot both lines of the lane boundary
-	line(*pMat, m_vLane[0], m_vLane[1], Scalar(0, 255, 255), 5, CV_AA);
-	line(*pMat, m_vLane[2], m_vLane[3], Scalar(0, 255, 255), 5, CV_AA);
+	line(*pMat, m_vLane[0], m_vLane[1], Scalar(0, 255, 255), 2, CV_AA);
+	line(*pMat, m_vLane[2], m_vLane[3], Scalar(0, 255, 255), 2, CV_AA);
 
 	return true;
 }

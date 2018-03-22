@@ -64,6 +64,7 @@ public:
 	uint16_t	m_nAccumulationsExpo;
 	uint16_t	m_nOversamplingsExpo;
 	uint16_t	m_lightSrcPwr;
+	uint16_t	m_nPoint;
 	bool		m_bAutoLightSrcPwr;
 	bool		m_bDemergeObj;
 	bool		m_bStaticNoiseRemoval;

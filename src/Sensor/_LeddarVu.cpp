@@ -26,6 +26,7 @@ _LeddarVu::_LeddarVu()
 	m_nAccumulationsExpo = 5;
 	m_nOversamplingsExpo = 1;
 	m_lightSrcPwr = 100;
+	m_nPoint = 18;
 	m_bAutoLightSrcPwr = false;
 	m_bDemergeObj = true;
 	m_bStaticNoiseRemoval = true;
@@ -60,6 +61,7 @@ bool _LeddarVu::init(void* pKiss)
 
 	KISSim(pK, nAccumulationsExpo);
 	KISSim(pK, nOversamplingsExpo);
+	KISSim(pK, nPoint);
 	KISSim(pK, lightSrcPwr);
 	KISSm(pK, bAutoLightSrcPwr);
 	KISSm(pK, bDemergeObj);
@@ -199,6 +201,7 @@ bool _LeddarVu::open(void)
 
 	modbus_write_register(m_pMb, 0, m_nAccumulationsExpo);
 	modbus_write_register(m_pMb, 1, m_nOversamplingsExpo);
+	modbus_write_register(m_pMb, 2, m_nPoint);
 	modbus_write_register(m_pMb, 5, m_lightSrcPwr);
 	modbus_write_register(m_pMb, 10, m_oprMode);
 
@@ -351,8 +354,8 @@ bool _LeddarVu::draw(void)
 	}
 
 	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);
-	Scalar col = Scalar(0, 255, 0);
-	Scalar colD = Scalar(0, 255, 255);
+	Scalar col = Scalar(200, 200, 200);
+	Scalar colD = Scalar(0, 0, 255);
 	double rMax = m_rMax * m_showScale;
 
 	for(int i=0; i<m_nDiv; i++)
@@ -367,9 +370,9 @@ bool _LeddarVu::draw(void)
 		pTo.x = sin(radTo);
 		pTo.y = -cos(radTo);
 
-		line(*pMat, pCenter + Point(pFrom.x*d,pFrom.y*d), pCenter + Point(pTo.x*d,pTo.y*d), colD, 2);
-		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
-		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
+		line(*pMat, pCenter + Point(pFrom.x*d,pFrom.y*d), pCenter + Point(pTo.x*d,pTo.y*d), colD, 5);
+		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 2);
+		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 2);
 	}
 
 	return true;

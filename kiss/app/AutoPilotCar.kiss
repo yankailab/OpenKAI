@@ -1,0 +1,135 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":1,
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":0,
+	"width":1920,
+	"height":1080,
+	"fovV":60,
+	"fovH":90,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"YOLO",
+	"class":"_YOLO",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/darknet/",
+	"modelFile":"cfg/yolo.cfg",
+	"trainedFile":"data/yolo.weights",
+	"meanFile":"",
+	"labelFile":"data/coco.names",
+	"nClass":80,
+	"nPredAvr":3,
+	"nBatch":1,
+	"mode":"thread",
+	"bDrawStatistics":0,
+}
+
+{
+	"name":"tinyYOLO",
+	"class":"_YOLO",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/darknet/",
+	"modelFile":"cfg/tiny-yolo-voc.cfg",
+	"trainedFile":"data/tiny-yolo-voc.weights",
+	"meanFile":"",
+	"labelFile":"data/voc.names",
+	"thresh":0.18,
+	"hier":0.5,
+	"nms":0.4,
+	"nPredAvr":3,
+	"nBatch":1,
+	"mode":"thread",
+	"bDrawStatistics":0,
+}
+
+
+{
+	"name":"leddarVu",
+	"class":"_LeddarVu",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"OKview",
+	"rMin":0.1,
+	"rMax":100.0,
+	"fovH":100,
+	"fovV":0.5,
+	"nDiv":8,
+	"showScale":30.0,
+	"showDegOffset":-50.0,
+	"showOriginOffsetX":0.5,
+	"showOriginOffsetY":1.0,
+	"_VisionBase":"camera",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"bUse0x41":0,
+	"slaveAddr":1,
+	"nAccumulationsExpo":5,
+	"nOversamplingsExpo":1,
+	"nPoint":64,
+	"lightSrcPwr":100,
+	"bAutoLightSrcPwr":0,
+	"bDemergeObj":1,
+	"bStaticNoiseRemoval":1,
+	"bPrecision":1,
+	"bSaturationCompensation":1,
+	"bOvershootManagement":1,
+	"oprMode":1,
+	
+	{
+		"name":"filterMed",
+		"bLog":0,
+		"windowLen":3,
+	}	
+	{
+		"name":"filterAvr",
+		"bLog":0,
+		"windowLen":3,
+	}
+}
+
+{
+	"name":"lane",
+	"class":"_Lane",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+}
+
