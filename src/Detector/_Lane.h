@@ -25,12 +25,20 @@ struct LANE
 struct LANE_BLOCK
 {
 	vDouble4 m_fROI;
-	vInt4 m_iROI;
+	Rect m_iROI;
+	int m_v;
 
 	void init(void)
 	{
 		m_fROI.init();
-		m_iROI.init();
+	}
+
+	void f2iROI(vInt2 camSize)
+	{
+		m_iROI.x = ((double)camSize.x * m_fROI.x);
+		m_iROI.y = ((double)camSize.y * m_fROI.y);
+		m_iROI.width = ((double)camSize.x * m_fROI.z) - m_iROI.x;
+		m_iROI.height = ((double)camSize.y * m_fROI.w) - m_iROI.y;
 	}
 };
 
@@ -47,6 +55,9 @@ public:
 
 private:
 	void updateVisionSize(void);
+	void filter(void);
+	void updateBlock(void);
+	void updateLaneBlock(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -65,10 +76,21 @@ private:
 	Mat m_mPerspective;
 	vInt2 m_sizeOverhead;
 	Mat m_mOverhead;
+	Mat m_mBin;
 
 	Mat m_mLAB;
 	Mat m_mHSV;
 	Mat m_mHLS;
+	cv::Ptr<cv::CLAHE> m_pClaheLAB;
+	cv::Ptr<cv::CLAHE> m_pClaheHSV;
+	cv::Ptr<cv::CLAHE> m_pClaheHLS;
+	int m_tileClahe;
+	double m_clipLimLAB;
+	double m_clipLimHSV;
+	double m_clipLimHLS;
+	int m_thrLAB;
+	int m_thrHSV;
+	int m_thrHLS;
 
 	double m_w;
 	double m_h;

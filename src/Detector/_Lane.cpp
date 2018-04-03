@@ -35,6 +35,15 @@ _Lane::_Lane()
 	m_sizeOverhead.x = 400;
 	m_sizeOverhead.y = 200;
 	m_vSize.init();
+
+	m_tileClahe = 8;
+	m_clipLimLAB = 2.0;
+	m_clipLimHSV = 6.0;
+	m_clipLimHLS = 2.0;
+	m_thrLAB = 150;
+	m_thrHSV = 220;
+	m_thrHLS = 210;
+
 }
 
 _Lane::~_Lane()
@@ -63,6 +72,18 @@ bool _Lane::init(void* pKiss)
 	F_INFO(pK->v("overheadH", &m_sizeOverhead.y));
 
 	m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y),CV_8UC3);
+
+	KISSm(pK, tileClahe);
+	KISSdm(pK, clipLimLAB);
+	KISSdm(pK, clipLimHSV);
+	KISSdm(pK, clipLimHLS);
+	KISSm(pK, thrLAB);
+	KISSm(pK, thrHSV);
+	KISSm(pK, thrHLS);
+
+	m_pClaheLAB = cv::createCLAHE(m_clipLimLAB,Size(m_tileClahe,m_tileClahe));
+	m_pClaheHSV = cv::createCLAHE(m_clipLimHSV,Size(m_tileClahe,m_tileClahe));
+	m_pClaheHLS = cv::createCLAHE(m_clipLimHLS,Size(m_tileClahe,m_tileClahe));
 
 	//create detection area instances
 	m_nBlockX= ((1.0 - m_w) / m_dW) + 1;
@@ -137,6 +158,7 @@ void _Lane::detect(void)
 	Mat* pInput = m_pVision->bgr()->getCMat();
 	IF_(pInput->empty());
 
+	//Warp transform to get overhead view
 	if(m_vSize.x != pInput->cols || m_vSize.y != pInput->rows)
 	{
 		m_vSize.x = pInput->cols;
@@ -146,41 +168,63 @@ void _Lane::detect(void)
 
 	cv::warpPerspective(*pInput, m_mOverhead, m_mPerspective, m_mOverhead.size(), cv::INTER_LINEAR);
 
+	//Filter image to get binary view
+	filter();
+
+	//Update block occupancy
+	updateBlock();
+
+	updateLaneBlock();
+}
+
+void _Lane::updateLaneBlock(void)
+{
+	int i,j;
+
+
+
+}
+
+void _Lane::updateBlock(void)
+{
+	int i,j;
+	for (i = 0; i < m_nBlockY; i++)
+	{
+		for (j = 0; j < m_nBlockX; j++)
+		{
+			LANE_BLOCK* pB = &m_pBlock[i*m_nBlockY+j];
+
+			pB->m_v = cv::countNonZero(m_mBin(pB->m_iROI));
+		}
+	}
+}
+
+void _Lane::filter(void)
+{
+	vector<Mat> vMat(3);
+	Mat tMat;
+	Mat tMatBin;
+	Mat mAll;
+
 	cv::cvtColor(m_mOverhead, m_mLAB, CV_BGR2Lab);
+	split(m_mLAB, vMat);
+	m_pClaheLAB->apply(vMat[2],tMat);
+	cv::threshold(tMat,tMatBin,m_thrLAB,1,cv::THRESH_BINARY);
+	mAll = tMatBin;
+
 	cv::cvtColor(m_mOverhead, m_mHSV, CV_BGR2HSV);
+	split(m_mHSV, vMat);
+	m_pClaheHSV->apply(vMat[2],tMat);
+	cv::threshold(tMat,tMatBin,m_thrHSV,1,cv::THRESH_BINARY);
+	mAll += tMatBin;
+
 	cv::cvtColor(m_mOverhead, m_mHLS, CV_BGR2HLS);
+	split(m_mHLS, vMat);
+	m_pClaheHLS->apply(vMat[1],tMat);
+	cv::threshold(tMat,tMatBin,m_thrHLS,1.0,cv::THRESH_BINARY);
+	mAll += tMatBin;
 
-/*
-# Settings to run thresholding operations on
-        settings = [{'name': 'lab_b', 'cspace': 'LAB', 'channel': 2, 'clipLimit': 2.0, 'threshold': 150},
-                    {'name': 'value', 'cspace': 'HSV', 'channel': 2, 'clipLimit': 6.0, 'threshold': 220},
-                    {'name': 'lightness', 'cspace': 'HLS', 'channel': 1, 'clipLimit': 2.0, 'threshold': 210}]
-
-        # Perform binary thresholding according to each setting and combine them into one image.
-        scores = np.zeros(img.shape[0:2]).astype('uint8')
-        for params in settings:
-            # Change color space
-            color_t = getattr(cv2, 'COLOR_RGB2{}'.format(params['cspace']))
-            gray = cv2.cvtColor(img, color_t)[:, :, params['channel']]
-
-            # Normalize regions of the image using CLAHE
-            clahe = cv2.createCLAHE(params['clipLimit'], tileGridSize=(8, 8))
-            norm_img = clahe.apply(gray)
-
-            # Threshold to binary
-            ret, binary = cv2.threshold(norm_img, params['threshold'], 1, cv2.THRESH_BINARY)
-
-            scores += binary
-
-            # Save images
-            self.viz_save(params['name'], gray)
-            self.viz_save(params['name'] + '_binary', binary)
-
-        return cv2.normalize(scores, None, 0, 255, cv2.NORM_MINMAX)
-
- */
-
-
+	cv::normalize(mAll, m_mBin, 0, 255, cv::NORM_MINMAX);
 }
 
 void _Lane::updateVisionSize(void)
@@ -198,6 +242,16 @@ void _Lane::updateVisionSize(void)
 					   cv::Point2f((float)m_sizeOverhead.x,0)};
 
 	m_mPerspective = getPerspectiveTransform(ptsFrom, ptsTo);
+
+	int i,j;
+	for (i = 0; i < m_nBlockY; i++)
+	{
+		for (j = 0; j < m_nBlockX; j++)
+		{
+			m_pBlock[i*m_nBlockY+j].f2iROI(m_vSize);
+		}
+	}
+
 }
 
 bool _Lane::draw(void)
@@ -211,6 +265,9 @@ bool _Lane::draw(void)
 
 	if(m_mOverhead.empty())return true;
 	imshow("Overhead",m_mOverhead);
+
+	if(m_mBin.empty())return true;
+	imshow("Filter",m_mBin);
 
 //	pWin->addMsg();
 //	Mat output;
@@ -232,59 +289,6 @@ bool _Lane::draw(void)
 	return true;
 }
 
-//// EDGE DETECTION
-///**
-// *@brief Detect all the edges in the blurred frame by filtering the image
-// *@param img_noise is the previously blurred frame
-// *@return Binary image with only the edges represented in white
-// */
-//void _Lane::edgeDetector(void)
-//{
-//	Mat output;
-//	Mat kernel;
-//	Point anchor;
-//
-//	// Convert image from RGB to gray
-//	cv::cvtColor(m_imgDenoise, output, COLOR_RGB2GRAY);
-//	// Binarize gray image
-//	cv::threshold(output, output, 140, 255, THRESH_BINARY);
-//
-//	// Create the kernel [-1 0 1]
-//	// This kernel is based on the one found in the
-//	// Lane Departure Warning System by Mathworks
-//	anchor = Point(-1, -1);
-//	kernel = Mat(1, 3, CV_32F);
-//	kernel.at<float>(0, 0) = -1;
-//	kernel.at<float>(0, 1) = 0;
-//	kernel.at<float>(0, 2) = 1;
-//
-//	// Filter the binary image to obtain the edges
-//	filter2D(output, output, -1, kernel, anchor, 0, BORDER_DEFAULT);
-//
-//	m_imgEdges = output;
-//}
-//
-//// MASK THE EDGE IMAGE
-///**
-// *@brief Mask the image so that only the edges that form part of the lane are detected
-// *@param img_edges is the edges image from the previous function
-// *@return Binary image with only the desired edges being represented
-// */
-//void _Lane::mask(void)
-//{
-//	Mat output;
-//	Mat mask = Mat::zeros(m_imgEdges.size(), m_imgEdges.type());
-//	Point pts[4] =
-//	{ Point(210, 720), Point(550, 450), Point(717, 450), Point(1280, 720) };
-//
-//	// Create a binary polygon mask
-//	fillConvexPoly(mask, pts, 4, Scalar(255, 0, 0));
-//	// Multiply the edges image and the mask to get the output
-//	cv::bitwise_and(m_imgEdges, mask, output);
-//
-//	m_imgMask = output;
-//}
-//
 //// SORT RIGHT AND LEFT LINES
 ///**
 // *@brief Sort all the detected Hough lines by slope.
