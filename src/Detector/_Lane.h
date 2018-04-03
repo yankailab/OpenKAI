@@ -14,6 +14,26 @@
 namespace kai
 {
 
+struct LANE
+{
+	vDouble4 m_roi;
+	vector<Vec4i> m_vLine;
+	vector<Point> m_vPoint;
+
+};
+
+struct LANE_BLOCK
+{
+	vDouble4 m_fROI;
+	vInt4 m_iROI;
+
+	void init(void)
+	{
+		m_fROI.init();
+		m_iROI.init();
+	}
+};
+
 class _Lane: public _ThreadBase
 {
 public:
@@ -25,14 +45,9 @@ public:
 	bool start(void);
 	bool draw(void);
 
-
 private:
+	void updateVisionSize(void);
 	void detect(void);
-	void edgeDetector(void);	// Filter the image to obtain only edges
-	void mask(void);			// Mask the edges image to only care about ROI
-	void lineSeparation(void);	// Sprt detected lines by their slope into right and left lines
-	void regression(void);		// Get only one line for each side of the lane
-	string predictTurn();		// Determine if the lane is turning or not by calculating the position of the vanishing point
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -40,35 +55,32 @@ private:
 		return NULL;
 	}
 
-	_VisionBase*	m_pVision;
-	Frame*			m_pFrame;
+	_VisionBase* m_pVision;
+	vInt2 m_vSize;
 
-	double m_imgSize;
-	double m_imgCenter;
-	bool m_bLeftB; 		// If there's left boundary of lane detected
-	bool m_bRightB; 	// If there's right boundary of lane detected
-	Point m_rightB; 	// Members of both line equations of the lane boundaries:
-	Point m_leftB;
-	double m_rightM; 	// y = m*x + b
-	double m_leftM;
+	vDouble2 m_roiLT;
+	vDouble2 m_roiLB;
+	vDouble2 m_roiRT;
+	vDouble2 m_roiRB;
+	Mat m_mPerspective;
+	vInt2 m_sizeOverhead;
+	Mat m_mOverhead;
 
-	uint8_t m_gaussianBlurKsize;
-	uint8_t m_gaussianBlurSigma;
+	Mat m_mLAB;
+	Mat m_mHSV;
+	Mat m_mHLS;
 
-	double	m_HLrho;
-	double	m_HLtheta;
-	int 	m_HLthreshold;
-	double 	m_HLminLineLength;
-	double	m_HLmaxLineGap;
+	double m_w;
+	double m_h;
+	double m_dW;
+	double m_dH;
+	int m_nBlockX;
+	int m_nBlockY;
+	int m_nBlock;
+	LANE_BLOCK* m_pBlock;
 
-    Mat m_imgDenoise;
-    Mat m_imgEdges;
-    Mat m_imgMask;
-    Mat m_imgLines;
-    vector<Vec4i> m_vLines;
-    vector<vector<Vec4i> > m_vLRlines;
-    vector<Point> m_vLane;
-    string m_turn;
+
+
 };
 
 }
