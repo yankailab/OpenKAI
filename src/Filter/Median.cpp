@@ -21,13 +21,11 @@ Median::~Median()
 {
 }
 
-bool Median::init(void* pKiss)
+bool Median::init(int wLen, int nTraj)
 {
-	IF_F(!FilterBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
+	IF_F(!FilterBase::init(nTraj));
 
-	KISSm(pK,windowLen);
+	m_windowLen = wLen;
 	if(m_windowLen<3)
 		m_windowLen = 3;
 

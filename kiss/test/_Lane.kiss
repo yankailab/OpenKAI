@@ -28,7 +28,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"okView",
-	"deviceID":1,
+	"deviceID":0,
 	"width":1280,
 	"height":720,
 	"bFlip":0,
@@ -52,6 +52,8 @@
 	"roiRBy":1.0,
 	"overheadW":400,
 	"overheadH":300,
+	"nAvr":3,
+	"nMed":3,
 	"bDrawOverhead":1,
 	"bDrawBin":1,
 }

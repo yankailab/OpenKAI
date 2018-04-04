@@ -44,6 +44,8 @@ _Lane::_Lane()
 	m_thrHSV = 220;
 	m_thrHLS = 210;
 
+	m_nFilter = 0;
+
 	m_bDrawOverhead = false;
 	m_bDrawBin = false;
 }
@@ -79,6 +81,24 @@ bool _Lane::init(void* pKiss)
 	m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
 	//filter parameters
+	Kiss** pItrFilter = pK->getChildItr();
+	m_nFilter = 0;
+	while (pItrFilter[m_nFilter])
+	{
+		IF_F(m_nFilter >= N_LANE_FILTER);
+		Kiss* pFK = pItrFilter[m_nFilter];
+
+		LANE_FILTER* pF = &m_pFilter[m_nFilter];
+		F_INFO(pFK->v("iColorSpace", &pF->m_iColorSpace));
+		F_INFO(pFK->v("iChannel", &pF->m_iChannel));
+		F_INFO(pFK->v("nTile", &pF->m_nTile));
+		F_INFO(pFK->v("thr", &pF->m_thr));
+		F_INFO(pFK->v("clipLim", &pF->m_clipLim));
+		pF->init();
+
+		m_nFilter++;
+	}
+
 	KISSm(pK, tileClahe);
 	KISSdm(pK, clipLimLAB);
 	KISSdm(pK, clipLimHSV);
@@ -116,6 +136,14 @@ bool _Lane::init(void* pKiss)
 			pB->m_fROI.w = pB->m_fROI.y + m_h;
 		}
 	}
+
+	int nAvr=0;
+	F_INFO(pK->v("nAvr", &nAvr));
+	int nMed=0;
+	F_INFO(pK->v("nMed", &nMed));
+
+	m_laneL.init(nAvr,nMed);
+	m_laneR.init(nAvr,nMed);
 
 	return true;
 }
@@ -193,6 +221,8 @@ void _Lane::updateLane()
 {
 
 
+
+
 }
 
 void _Lane::updateLaneBlock(void)
@@ -211,7 +241,7 @@ void _Lane::updateLaneBlock(void)
 		for (j = 0; j < m_nBlockX; j++)
 		{
 			LANE_BLOCK* pB = &m_pBlock[iY + j];
-			IF_CONT(pB->m_v < vX);
+			IF_CONT(pB->m_v <= vX);
 
 			vX = pB->m_v;
 			iX = j;
@@ -225,7 +255,7 @@ void _Lane::updateLaneBlock(void)
 		for (j = m_nBlockX - 1; j >= 0; j--)
 		{
 			LANE_BLOCK* pB = &m_pBlock[iY + j];
-			IF_CONT(pB->m_v < vX);
+			IF_CONT(pB->m_v <= vX);
 
 			vX = pB->m_v;
 			iX = j;
@@ -242,9 +272,11 @@ void _Lane::updateBlock(void)
 	int i, j;
 	for (i = 0; i < m_nBlockY; i++)
 	{
+		int iY = i*m_nBlockY;
+
 		for (j = 0; j < m_nBlockX; j++)
 		{
-			LANE_BLOCK* pB = &m_pBlock[i * m_nBlockY + j];
+			LANE_BLOCK* pB = &m_pBlock[iY + j];
 
 			pB->m_v = cv::countNonZero(m_mBin(pB->m_iROI));
 		}

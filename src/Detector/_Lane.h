@@ -14,9 +14,26 @@
 #include "../Filter/Average.h"
 
 #define N_LANE_BLOCK 100
+#define N_LANE_FILTER 3
 
 namespace kai
 {
+
+struct LANE_FILTER
+{
+	Mat m_mat;
+	int m_iColorSpace;
+	int m_iChannel;
+	int m_nTile;
+	int m_thr;
+	double m_clipLim;
+	cv::Ptr<cv::CLAHE> m_pClahe;
+
+	void init(void)
+	{
+
+	}
+};
 
 struct LANE_BLOCK
 {
@@ -44,10 +61,10 @@ struct LANE_DETECTION
 	Average m_fAvr;
 	double m_v;
 
-	void init(void* pKmed, void* pKavr)
+	void init(int nAvr, int nMed)
 	{
-		m_fMed.init(pKmed);
-		m_fAvr.init(pKavr);
+		m_fMed.init(nMed,0);
+		m_fAvr.init(nAvr,0);
 		m_v = 0.0;
 	}
 
@@ -66,8 +83,25 @@ struct LANE_DETECTION
 
 struct LANE
 {
-	double m_QoD;	//Quality of Detection
 	LANE_DETECTION m_laneDet[N_LANE_BLOCK];
+	vector<double> m_vPolyFit;
+	double m_QoD;	//Quality of Detection
+
+	void init(int nAvr, int nMed)
+	{
+		for(int i=0; i<N_LANE_BLOCK; i++)
+		{
+			m_laneDet[i].init(nAvr,nMed);
+		}
+
+		m_vPolyFit.clear();
+	}
+
+	void poly()
+	{
+
+	}
+
 };
 
 class _Lane: public _ThreadBase
@@ -107,6 +141,8 @@ private:
 	Mat m_mOverhead;
 	Mat m_mBin;
 
+	int m_nFilter;
+	LANE_FILTER m_pFilter[N_LANE_FILTER];
 	Mat m_mLAB;
 	Mat m_mHSV;
 	Mat m_mHLS;

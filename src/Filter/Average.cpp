@@ -20,13 +20,11 @@ Average::~Average()
 {
 }
 
-bool Average::init(void* pKiss)
+bool Average::init(int wLen, int nTraj)
 {
-	IF_F(!FilterBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
+	IF_F(!FilterBase::init(nTraj));
 
-	KISSm(pK,windowLen);
+	m_windowLen = wLen;
 	if(m_windowLen<1)
 		m_windowLen = 1;
 

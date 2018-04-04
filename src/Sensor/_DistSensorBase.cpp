@@ -55,14 +55,16 @@ bool _DistSensorBase::init(void* pKiss)
 	KISSm(pK,calibScale);
 	KISSm(pK,calibOffset);
 
-	void* pKmed = pK->o("filterMed");
-	void* pKavr = pK->o("filterAvr");
+	int nMed=0;
+	int nAvr=0;
+	F_INFO(pK->v("nMed", &nMed));
+	F_INFO(pK->v("nAvr", &nAvr));
 
 	IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
 	m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 	for(int i=0;i<m_nDiv;i++)
 	{
-		m_pDiv[i].init(pKmed, pKavr);
+		m_pDiv[i].init(nAvr, nMed);
 	}
 
 	return true;

@@ -47,13 +47,13 @@ bool _ZEDdistance::init(void* pKiss)
 	int i;
 
 	//filter
-	pC = pK->o("medianFilter");
-	IF_F(pC->empty());
+	int nMed=0;
+	F_INFO(pK->v("nMed", &nMed));
 
 	for (i = 0; i < m_nFilter; i++)
 	{
 		m_pFilteredMatrix[i] = new Median();
-		IF_F(!m_pFilteredMatrix[i]->init(pC));
+		IF_F(!m_pFilteredMatrix[i]->init(nMed,0));
 	}
 	m_pMatrix = new Frame();
 

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_ALGORITHM_FILTER_MEDIAN_H_
-#define SRC_ALGORITHM_FILTER_MEDIAN_H_
+#ifndef OpenKAI_src_Filter_Median_H_
+#define OpenKAI_src_Filter_Median_H_
 
 #include "../Base/common.h"
 #include "FilterBase.h"
@@ -20,7 +20,7 @@ public:
 	Median();
 	virtual ~Median();
 
-	bool init(void* pKiss);
+	bool init(int wLen, int nTraj);
 	void input(double v);
 	void reset(void);
 

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_ALGORITHM_FILTER_AVERAGE_H_
-#define SRC_ALGORITHM_FILTER_AVERAGE_H_
+#ifndef OpenKAI_src_Filter_Average_H_
+#define OpenKAI_src_Filter_Average_H_
 
 #include "../Base/common.h"
 #include "FilterBase.h"
@@ -20,7 +20,7 @@ public:
 	Average();
 	virtual ~Average();
 
-	bool init(void* pKiss);
+	bool init(int wLen, int nTraj);
 	void input(double v);
 	void reset(void);
 

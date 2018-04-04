@@ -16,7 +16,6 @@ _GPS::_GPS()
 	m_pZED = NULL;
 #endif
 	m_pMavlink = NULL;
-	m_pSF40 = NULL;
 	m_initLL.init();
 	m_LL.init();
 	m_UTM.init();
@@ -59,10 +58,6 @@ bool _GPS::link(void)
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName;
-
-	iName = "";
-	F_INFO(pK->v("_Lightware_SF40", &iName));
-	m_pSF40 = (_Lightware_SF40*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
@@ -123,9 +118,6 @@ void _GPS::detect(void)
 			m_apmMode = apmMode;
 			setLL(&m_initLL);
 
-			if(m_pSF40)
-				m_pSF40->reset();
-
 			LOG_I("ZED TRACKING START: APM mode: " + i2str(m_apmMode));
 		}
 	}
@@ -138,14 +130,8 @@ void _GPS::detect(void)
 	double cosH = cos(hdgRad);
 	vDouble3 dPos;
 
-	if(m_pSF40)
-	{
-		//estimate position
-//		m_pSF40->setHeading(m_LL.m_hdg);
-//		vDouble2 dPos = m_pSF40->getPosDiff();
-	}
 #ifdef USE_ZED
-	else if(m_pZED)
+	if(m_pZED)
 	{
 		vDouble3 dM;
 		vDouble3 dR;
@@ -160,11 +146,6 @@ void _GPS::detect(void)
 		dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
 	}
 #endif
-	else
-	{
-		//purely using rpm to identify position translation
-		dPos = dT;
-	}
 
 	utm.m_easting += dPos.x;
 	utm.m_northing += dPos.z;

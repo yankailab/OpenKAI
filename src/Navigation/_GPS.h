@@ -12,7 +12,6 @@
 #include "../Base/_ThreadBase.h"
 #include "../Filter/FilterBase.h"
 #include "../Vision/_ZED.h"
-#include "../Sensor/_Lightware_SF40.h"
 #include "../Protocol/_Mavlink.h"
 #include "../include/UTM.h"
 
@@ -124,7 +123,6 @@ public:
 #ifdef USE_ZED
 	_ZED*	m_pZED;
 #endif
-	_Lightware_SF40* m_pSF40;
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;
 	uint32_t m_apmMode;

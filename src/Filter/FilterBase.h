@@ -5,27 +5,24 @@
  *      Author: yankai
  */
 
-#ifndef SRC_ALGORITHM_FILTERBASE_H_
-#define SRC_ALGORITHM_FILTERBASE_H_
+#ifndef OpenKAI_src_Filter_FilterBase_H_
+#define OpenKAI_src_Filter_FilterBase_H_
 
 #include "../Base/common.h"
-#include "../Base/BASE.h"
-#include "../Script/Kiss.h"
 
 namespace kai
 {
 
-class FilterBase: public BASE
+class FilterBase
 {
 public:
 	FilterBase();
 	virtual ~FilterBase();
 
-	virtual bool init(void* pKiss);
+	virtual bool init(int nTraj);
 	virtual void input(double v);
 	virtual double v(void);
 	virtual void reset(void);
-	virtual double accumlatedDiff(void);
 
 public:
 	double	m_v;
@@ -34,9 +31,7 @@ public:
 	unsigned int m_nTraj;
 	std::deque<double> m_traj;
 
-	double	m_accumulatedDiff;
 	double	m_variance;
-
 };
 
 }

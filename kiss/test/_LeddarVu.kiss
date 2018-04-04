@@ -69,15 +69,6 @@
 	"bSaturationCompensation":1,
 	"bOvershootManagement":1,
 	"oprMode":1,
-	
-	{
-		"name":"filterMed",
-		"bLog":0,
-		"windowLen":3,
-	}	
-	{
-		"name":"filterAvr",
-		"bLog":0,
-		"windowLen":3,
-	}
+	"nAvr":3,
+	"nMed":3,
 }

@@ -35,10 +35,10 @@ struct DIST_SENSOR_DIV
 	Median m_fMed;
 	Average m_fAvr;
 
-	void init(void* pKmed, void* pKavr)
+	void init(int nAvr, int nMed)
 	{
-		m_fMed.init(pKmed);
-		m_fAvr.init(pKavr);
+		m_fMed.init(nMed,0);
+		m_fAvr.init(nAvr,0);
 		m_d = 0.0;
 		m_a = 0.0;
 	}
