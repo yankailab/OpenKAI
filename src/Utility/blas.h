@@ -35,7 +35,6 @@ namespace kai
 		coefficients of a polynomial starting at the constant coefficient and
 		ending with the coefficient of power to nDegree. C++0x-compatible
 		compilers make returning locally created vectors very efficient.
-
 */
 template<typename T>
 std::vector<T> polyfit( const std::vector<T>& oX, const std::vector<T>& oY, int nDegree )

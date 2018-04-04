@@ -10,17 +10,13 @@
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
+#include "../Filter/Median.h"
+#include "../Filter/Average.h"
+
+#define N_LANE_BLOCK 100
 
 namespace kai
 {
-
-struct LANE
-{
-	vDouble4 m_roi;
-	vector<Vec4i> m_vLine;
-	vector<Point> m_vPoint;
-
-};
 
 struct LANE_BLOCK
 {
@@ -42,6 +38,38 @@ struct LANE_BLOCK
 	}
 };
 
+struct LANE_DETECTION
+{
+	Median m_fMed;
+	Average m_fAvr;
+	double m_v;
+
+	void init(void* pKmed, void* pKavr)
+	{
+		m_fMed.init(pKmed);
+		m_fAvr.init(pKavr);
+		m_v = 0.0;
+	}
+
+	void input(double v)
+	{
+		m_v = v;
+		m_fMed.input(v);
+		m_fAvr.input(m_fMed.v());
+	}
+
+	double v(void)
+	{
+		return m_v;
+	}
+};
+
+struct LANE
+{
+	double m_QoD;	//Quality of Detection
+	LANE_DETECTION m_laneDet[N_LANE_BLOCK];
+};
+
 class _Lane: public _ThreadBase
 {
 public:
@@ -55,9 +83,10 @@ public:
 
 private:
 	void updateVisionSize(void);
-	void filter(void);
+	void getOverheadBin(void);
 	void updateBlock(void);
 	void updateLaneBlock(void);
+	void updateLane(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -100,6 +129,12 @@ private:
 	int m_nBlockY;
 	int m_nBlock;
 	LANE_BLOCK* m_pBlock;
+
+	LANE m_laneL;
+	LANE m_laneR;
+
+	bool m_bDrawOverhead;
+	bool m_bDrawBin;
 
 
 
