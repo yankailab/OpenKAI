@@ -13,7 +13,6 @@
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 
-#define N_LANE_BLOCK 100
 #define N_LANE_FILTER 3
 
 namespace kai
@@ -21,7 +20,7 @@ namespace kai
 
 struct LANE_FILTER
 {
-	Mat m_mat;
+	Mat m_mBin;
 	int m_iColorSpace;
 	int m_iChannel;
 	int m_nTile;
@@ -31,74 +30,64 @@ struct LANE_FILTER
 
 	void init(void)
 	{
-
-	}
-};
-
-struct LANE_BLOCK
-{
-	vDouble4 m_fROI;
-	Rect m_iROI;
-	int m_v;
-
-	void init(void)
-	{
-		m_fROI.init();
+		m_pClahe = cv::createCLAHE(m_clipLim, Size(m_nTile, m_nTile));
 	}
 
-	void f2iROI(vInt2 camSize)
+	Mat filter(Mat mIn)
 	{
-		m_iROI.x = ((double)camSize.x * m_fROI.x);
-		m_iROI.y = ((double)camSize.y * m_fROI.y);
-		m_iROI.width = ((double)camSize.x * m_fROI.z) - m_iROI.x;
-		m_iROI.height = ((double)camSize.y * m_fROI.w) - m_iROI.y;
-	}
-};
+		vector<Mat> vMat(3);
+		Mat mColor;
+		Mat mClahe;
 
-struct LANE_DETECTION
-{
-	Median m_fMed;
-	Average m_fAvr;
-	double m_v;
+		cv::cvtColor(mIn, mColor, m_iColorSpace);
+		split(mColor, vMat);
+		m_pClahe->apply(vMat[m_iChannel], mClahe);
+		cv::threshold(mClahe, m_mBin, m_thr, 1, cv::THRESH_BINARY);
 
-	void init(int nAvr, int nMed)
-	{
-		m_fMed.init(nMed,0);
-		m_fAvr.init(nAvr,0);
-		m_v = 0.0;
-	}
-
-	void input(double v)
-	{
-		m_v = v;
-		m_fMed.input(v);
-		m_fAvr.input(m_fMed.v());
-	}
-
-	double v(void)
-	{
-		return m_v;
+		return m_mBin;
 	}
 };
 
 struct LANE
 {
-	LANE_DETECTION m_laneDet[N_LANE_BLOCK];
+	Median* m_pMed;
+	Average* m_pAvr;
+	vector<double> m_vX;
+	vector<double> m_vY;
 	vector<double> m_vPolyFit;
-	double m_QoD;	//Quality of Detection
 
-	void init(int nAvr, int nMed)
+	void init(int n, int nAvr, int nMed)
 	{
-		for(int i=0; i<N_LANE_BLOCK; i++)
+		m_pMed = new Median[n];
+		m_pAvr = new Average[n];
+
+		for(int i=0; i<n; i++)
 		{
-			m_laneDet[i].init(nAvr,nMed);
+			m_pMed[i].init(nMed,0);
+			m_pAvr[i].init(nAvr,0);
 		}
 
 		m_vPolyFit.clear();
 	}
 
-	void poly()
+	void input(int i, double v)
 	{
+		m_pMed[i].input(v);
+		m_pAvr[i].input(m_pMed[i].v());
+	}
+
+	double v(int i)
+	{
+		return m_pAvr[i].v();
+	}
+
+	void polyFit(void)
+	{
+		m_vX.clear();
+		m_vY.clear();
+
+		int n = 0;
+
 
 	}
 
@@ -117,10 +106,8 @@ public:
 
 private:
 	void updateVisionSize(void);
-	void getOverheadBin(void);
-	void updateBlock(void);
-	void updateLaneBlock(void);
-	void updateLane(void);
+	void filterBin(void);
+	void findLane(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -143,34 +130,12 @@ private:
 
 	int m_nFilter;
 	LANE_FILTER m_pFilter[N_LANE_FILTER];
-	Mat m_mLAB;
-	Mat m_mHSV;
-	Mat m_mHLS;
-	cv::Ptr<cv::CLAHE> m_pClaheLAB;
-	cv::Ptr<cv::CLAHE> m_pClaheHSV;
-	cv::Ptr<cv::CLAHE> m_pClaheHLS;
-	int m_tileClahe;
-	double m_clipLimLAB;
-	double m_clipLimHSV;
-	double m_clipLimHLS;
-	int m_thrLAB;
-	int m_thrHSV;
-	int m_thrHLS;
-
-	double m_w;
-	double m_h;
-	double m_dW;
-	double m_dH;
-	int m_nBlockX;
-	int m_nBlockY;
-	int m_nBlock;
-	LANE_BLOCK* m_pBlock;
 
 	LANE m_laneL;
 	LANE m_laneR;
 
 	bool m_bDrawOverhead;
-	bool m_bDrawBin;
+	bool m_bDrawFilter;
 
 
 

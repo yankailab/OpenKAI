@@ -42,18 +42,43 @@
 	"bInst":1,
 	"Window":"okView",
 	"_VisionBase":"camera",
-	"roiLTx":0.44,
+	"roiLTx":0.425,
 	"roiLTy":0.63,
 	"roiLBx":0.0,
-	"roiLBy":1.0,
-	"roiRTx":0.5625,
+	"roiLBy":0.9,
+	"roiRTx":0.575,
 	"roiRTy":0.63,
 	"roiRBx":1.0,
-	"roiRBy":1.0,
-	"overheadW":400,
-	"overheadH":300,
-	"nAvr":3,
-	"nMed":3,
+	"roiRBy":0.9,
+	"overheadW":100,
+	"overheadH":100,
+	"nAvr":2,
+	"nMed":5,
 	"bDrawOverhead":1,
-	"bDrawBin":1,
+	"bDrawFilter":1,
+	
+	{
+		"bInst":1,
+		"iColorSpace":44, /*CV_BGR2Lab*/
+		"iChannel":2,
+		"nTile":4,
+		"thr":150,
+		"clipLim":2.0,
+	}
+	{
+		"bInst":1,
+		"iColorSpace":40, /*CV_BGR2HSV*/
+		"iChannel":2,
+		"nTile":4,
+		"thr":220,
+		"clipLim":6.0,
+	}
+	{
+		"bInst":1,
+		"iColorSpace":52, /*CV_BGR2HLS*/
+		"iChannel":1,
+		"nTile":4,
+		"thr":210,
+		"clipLim":2.0,
+	}
 }
