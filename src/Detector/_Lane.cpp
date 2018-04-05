@@ -148,6 +148,9 @@ void _Lane::detect(void)
 
 	findLane();
 
+	m_laneL.poly();
+	m_laneR.poly();
+
 }
 
 void _Lane::findLane(void)
@@ -212,6 +215,7 @@ void _Lane::updateVisionSize(void)
 	  cv::Point2f((float) m_sizeOverhead.x, 0) };
 
 	m_mPerspective = getPerspectiveTransform(ptsFrom, ptsTo);
+	m_mPerspectiveInv = getPerspectiveTransform(ptsTo, ptsFrom);
 }
 
 bool _Lane::draw(void)
@@ -223,22 +227,64 @@ bool _Lane::draw(void)
 	Mat* pMat = pFrame->getCMat();
 	IF_F(pMat->empty());
 
+	int i;
+	string msg;
+
+	pWin->tabNext();
+	if(m_laneL.m_pPoly)
+	{
+		msg = "L: " + f2str(m_laneL.m_pPoly[0]) + " " + f2str(m_laneL.m_pPoly[1]) + " " + f2str(m_laneL.m_pPoly[2]);
+		pWin->addMsg(&msg);
+	}
+	if(m_laneR.m_pPoly)
+	{
+		msg = "R: " + f2str(m_laneR.m_pPoly[0]) + " " + f2str(m_laneR.m_pPoly[1]) + " " + f2str(m_laneR.m_pPoly[2]);
+		pWin->addMsg(&msg);
+	}
+	pWin->tabPrev();
+
+	IF_F(m_mPerspectiveInv.empty());
+
+	//visualization of the lane
+	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC3);
+	Mat mOverlay = Mat::zeros(pMat->size(), CV_8UC3);
+	vector<Point> m_vLane;
+
+	for(i=0; i<m_sizeOverhead.y; i++)
+	{
+		m_vLane.push_back(Point(m_laneL.m_pPoly[0]+
+								m_laneL.m_pPoly[1]*i+
+								m_laneL.m_pPoly[2]*i*i,
+								i));
+	}
+
+	for(i=m_sizeOverhead.y-1; i>=0; i--)
+	{
+		m_vLane.push_back(Point(m_laneR.m_pPoly[0]+
+								m_laneR.m_pPoly[1]*i+
+								m_laneR.m_pPoly[2]*i*i,
+								i));
+	}
+
+	fillConvexPoly(mLane, m_vLane, Scalar(0, 255, 0), CV_AA, 0);
+	cv::warpPerspective(mLane, mOverlay, m_mPerspectiveInv, mOverlay.size(), cv::INTER_LINEAR);
+	cv::addWeighted(mOverlay, 0.25, *pMat, 1.0, 0, *pMat);
+
 	if(m_bDrawOverhead && !m_mOverhead.empty())
 	{
 		Mat mO = m_mOverhead.clone();
-		int i;
 
 		for (i = 0; i < m_sizeOverhead.y; i++)
 		{
 			//L lane
 			circle(mO,
 				   Point(m_laneL.v(i), i),
-				   1, Scalar(255, 0, 0), 1);
+				   1, Scalar(0, 255, 0), 1);
 
 			//R lane
 			circle(mO,
-				   Point(m_laneR.v(i)+1, i),
-				   1, Scalar(0, 0, 255), 1);
+				   Point(m_laneR.v(i), i),
+				   1, Scalar(0, 255, 0), 1);
 		}
 
 		imshow("Overhead", mO);
@@ -248,24 +294,6 @@ bool _Lane::draw(void)
 	{
 		imshow("Bin", m_mBin);
 	}
-
-
-//	pWin->addMsg();
-//	Mat output;
-//	vector<Point> m_vPolyPoints;
-//
-//	// Create the transparent polygon for a better visualization of the lane
-//	pMat->copyTo(output);
-//	m_vPolyPoints.push_back(m_vLane[2]);
-//	m_vPolyPoints.push_back(m_vLane[0]);
-//	m_vPolyPoints.push_back(m_vLane[1]);
-//	m_vPolyPoints.push_back(m_vLane[3]);
-//	fillConvexPoly(output, m_vPolyPoints, Scalar(0, 255, 0), CV_AA, 0);
-//	cv::addWeighted(output, 0.1, *pMat, 1.0, 0, *pMat);
-//
-//	// Plot both lines of the lane boundary
-//	line(*pMat, m_vLane[0], m_vLane[1], Scalar(0, 255, 255), 2, CV_AA);
-//	line(*pMat, m_vLane[2], m_vLane[3], Scalar(0, 255, 255), 2, CV_AA);
 
 	return true;
 }

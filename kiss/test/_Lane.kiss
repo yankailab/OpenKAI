@@ -54,8 +54,8 @@
 	"overheadH":100,
 	"nAvr":2,
 	"nMed":5,
-	"bDrawOverhead":1,
-	"bDrawFilter":1,
+	"bDrawOverhead":0,
+	"bDrawFilter":0,
 	
 	{
 		"bInst":1,

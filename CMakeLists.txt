@@ -21,7 +21,7 @@ find_package(Eigen3 3.1.0 REQUIRED)
 set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS})
+set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas)
 
 if(USE_CUDA)
   add_definitions(-DUSE_CUDA)

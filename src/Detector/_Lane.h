@@ -12,6 +12,7 @@
 #include "../Vision/_VisionBase.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
+#include <gsl/gsl_multifit.h>
 
 #define N_LANE_FILTER 3
 
@@ -50,24 +51,54 @@ struct LANE_FILTER
 
 struct LANE
 {
-	Median* m_pMed;
-	Average* m_pAvr;
-	vector<double> m_vX;
-	vector<double> m_vY;
-	vector<double> m_vPolyFit;
+	int m_n;
+	Median* m_pMed = NULL;
+	Average* m_pAvr = NULL;
+
+	double* m_pX = NULL;
+	double* m_pY = NULL;
+	double* m_pPoly = NULL;
+	int m_degPoly;
+	gsl_multifit_linear_workspace *m_gWS;
+	gsl_matrix *m_gCov, *m_gX;
+	gsl_vector *m_gY, *m_gC;
 
 	void init(int n, int nAvr, int nMed)
 	{
+		m_n = n;
 		m_pMed = new Median[n];
 		m_pAvr = new Average[n];
 
-		for(int i=0; i<n; i++)
+		for (int i = 0; i < n; i++)
 		{
-			m_pMed[i].init(nMed,0);
-			m_pAvr[i].init(nAvr,0);
+			m_pMed[i].init(nMed, 0);
+			m_pAvr[i].init(nAvr, 0);
 		}
 
-		m_vPolyFit.clear();
+		m_pX = new double[n];
+		m_pY = new double[n];
+		m_degPoly = 3;
+		m_pPoly = new double[m_degPoly];
+
+		m_gX = gsl_matrix_alloc(n, m_degPoly);
+		m_gY = gsl_vector_alloc(n);
+		m_gC = gsl_vector_alloc(m_degPoly);
+		m_gCov = gsl_matrix_alloc(m_degPoly, m_degPoly);
+	}
+
+	void reset(void)
+	{
+		DEL(m_pMed);
+		DEL(m_pAvr);
+		DEL(m_pX);
+		DEL(m_pY);
+		DEL(m_pPoly);
+
+		gsl_multifit_linear_free(m_gWS);
+		gsl_matrix_free(m_gX);
+		gsl_matrix_free(m_gCov);
+		gsl_vector_free(m_gY);
+		gsl_vector_free(m_gC);
 	}
 
 	void input(int i, double v)
@@ -81,14 +112,27 @@ struct LANE
 		return m_pAvr[i].v();
 	}
 
-	void polyFit(void)
+	void poly(void)
 	{
-		m_vX.clear();
-		m_vY.clear();
+		double chisq;
+		int i, j;
 
-		int n = 0;
+		for (i = 0; i < m_n; i++)
+		{
+			for (j = 0; j < m_degPoly; j++)
+			{
+				gsl_matrix_set(m_gX, i, j, pow(i, j));
+			}
+			gsl_vector_set(m_gY, i, m_pAvr[i].v());
+		}
 
+		m_gWS = gsl_multifit_linear_alloc(m_n, m_degPoly);
+		gsl_multifit_linear(m_gX, m_gY, m_gC, m_gCov, &chisq, m_gWS);
 
+		for (i = 0; i < m_degPoly; i++)
+		{
+			m_pPoly[i] = gsl_vector_get(m_gC, i);
+		}
 	}
 
 };
@@ -124,6 +168,7 @@ private:
 	vDouble2 m_roiRT;
 	vDouble2 m_roiRB;
 	Mat m_mPerspective;
+	Mat m_mPerspectiveInv;
 	vInt2 m_sizeOverhead;
 	Mat m_mOverhead;
 	Mat m_mBin;
@@ -136,8 +181,6 @@ private:
 
 	bool m_bDrawOverhead;
 	bool m_bDrawFilter;
-
-
 
 };
 
