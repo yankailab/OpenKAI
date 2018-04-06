@@ -61,7 +61,7 @@ bool _GStreamer::init(void* pKiss)
 			fs.release();
 
 			Mat map1, map2;
-			cv::Size imSize(m_width, m_height);
+			cv::Size imSize(m_w, m_h);
 
 			if (m_bFisheye)
 			{
@@ -119,8 +119,8 @@ bool _GStreamer::open(void)
 	//Acquire a frame to determine the actual frame size
 	while (!m_gst.read(cMat));
 
-	m_width = cMat.cols;
-	m_height = cMat.rows;
+	m_w = cMat.cols;
+	m_h = cMat.rows;
 
 	if (m_bCrop)
 	{
@@ -133,12 +133,12 @@ bool _GStreamer::open(void)
 		if (m_cropBB.height > i)
 			m_cropBB.height = i;
 
-		m_width = m_cropBB.width;
-		m_height = m_cropBB.height;
+		m_w = m_cropBB.width;
+		m_h = m_cropBB.height;
 	}
 
-	m_centerH = m_width / 2;
-	m_centerV = m_height / 2;
+	m_cW = m_w / 2;
+	m_cH = m_h / 2;
 
 	m_bOpen = true;
 	return true;

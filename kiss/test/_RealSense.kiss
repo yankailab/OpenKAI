@@ -23,8 +23,8 @@
 }
 
 {
-	"name":"camera",
-	"class":"_Camera",
+	"name":"realsense",
+	"class":"_RealSense",
 	"FPS":30,
 	"bInst":1,
 	"Window":"okView",
@@ -37,14 +37,3 @@
 	"bGray":0,
 }
 
-{
-	"name":"gst1",
-	"class":"_GStreamer",
-	"FPS":30,
-	"bInst":0,
-	"Window":"okView",
-	"pipeline":"v4l2src ! video/x-raw, framerate=30/1, width=1280, height=720, format=YUY2 ! videoconvert ! appsink",
-	"pipeline_":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
-	"bFlip":0,
-	"bGray":0,
-}

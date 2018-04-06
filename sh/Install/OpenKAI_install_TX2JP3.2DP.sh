@@ -8,6 +8,7 @@ FULLDEVDIR=$HOME/$DEVDIR
 cd $HOME
 mkdir $DEVDIR
 
+# For Jetson TX2 only
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local
 set +H
@@ -19,7 +20,7 @@ sudo chmod a+x /home/ubuntu/jetson_clocks.sh
 # Prerequisites
 # Base
 sudo apt-get update
-sudo apt-get -y install build-essential cmake cmake-curses-gui git libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev
+sudo apt-get -y install build-essential cmake　pkg-config cmake-curses-gui git libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev
 
 # BLAS
 sudo apt-get -y install libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev libgsl0ldbl
@@ -31,7 +32,7 @@ sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng12-dev l
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 
 # GUI
-sudo apt-get -y install libgtk2.0-dev libglew-dev
+sudo apt-get -y install libgtk2.0-dev libglew-dev　libgtk-3-dev libglfw3-dev
 
 # Add CUDA to bash
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
@@ -97,7 +98,20 @@ wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
 wget --no-check-certificate https://pjreddie.com/media/files/tiny-yolo-voc.weights
 
-#Build OpenKAI
+# RealSense
+cd $FULLDEVDIR
+git clone https://github.com/IntelRealSense/librealsense.git
+cd librealsense/
+sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules && udevadm trigger
+./scripts/patch-realsense-ubuntu-xenial.sh
+mkdir build
+cd build
+cmake ../
+make -j4
+
+
+# OpenKAI
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/OpenKAI.git
 cd OpenKAI

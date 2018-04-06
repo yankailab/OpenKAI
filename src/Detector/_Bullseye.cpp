@@ -247,7 +247,7 @@ bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 	int i;
 	vDouble3* pMarker = &m_pCircle[0];
 	vDouble3* pCompare;
-	int camCenter = (m_pStream->m_width+m_pStream->m_height)/2;
+	int camCenter = (m_pStream->m_w+m_pStream->m_h)/2;
 
 	//Find the closest point
 	for(i=1; i<num; i++)

@@ -1,5 +1,5 @@
 /*
- * CamBase.cpp
+ * _VisionBase.cpp
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
@@ -14,26 +14,21 @@ _VisionBase::_VisionBase()
 {
 	m_bOpen = false;
 	m_type = unknownStream;
-	m_orientation = 0;
-	m_width = 1280;
-	m_height = 720;
-	m_centerH = 640;
-	m_centerV = 360;
+	m_w = 1280;
+	m_h = 720;
+	m_cW = 640;
+	m_cH = 360;
 	m_bGimbal = false;
 	m_isoScale = 1.0;
 	m_rotTime = 0;
 	m_rotPrev = 0;
+	m_fovW = 60;
 	m_fovH = 60;
-	m_fovV = 60;
 	m_bFlip = false;
 
 	m_pBGR = NULL;
 	m_pHSV = NULL;
 	m_pGray = NULL;
-	m_pDepth = NULL;
-	m_pDepthNorm = NULL;
-	m_depthNormInt.x = 0.0;
-	m_depthNormInt.y = 15.0;
 }
 
 _VisionBase::~_VisionBase()
@@ -47,16 +42,13 @@ bool _VisionBase::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,width);
-	KISSm(pK,height);
-	KISSm(pK,fovV);
+	KISSm(pK,w);
+	KISSm(pK,h);
+	KISSm(pK,fovW);
 	KISSm(pK,fovH);
 	KISSm(pK,bGimbal);
 	KISSm(pK,isoScale);
 	KISSm(pK,bFlip);
-	KISSim(pK,orientation);
-	F_INFO(pK->v("depthNormFrom", &m_depthNormInt.x));
-	F_INFO(pK->v("depthNormTo", &m_depthNormInt.y));
 
 	m_pBGR = new Frame();
 
@@ -70,13 +62,6 @@ bool _VisionBase::init(void* pKiss)
 	if (bParam)
 		m_pHSV = new Frame();
 
-	bParam = false;
-	F_INFO(pK->v("bDepthNorm", &bParam));
-	if (bParam)
-	{
-		m_pDepthNorm = new Frame();
-	}
-
 	m_bOpen = false;
 	return true;
 }
@@ -88,8 +73,6 @@ void _VisionBase::reset(void)
 	DEL(m_pBGR);
 	DEL(m_pHSV);
 	DEL(m_pGray);
-	DEL(m_pDepth);
-	DEL(m_pDepthNorm);
 }
 
 Frame* _VisionBase::bgr(void)
@@ -107,45 +90,30 @@ Frame* _VisionBase::gray(void)
 	return m_pGray;
 }
 
-Frame* _VisionBase::depth(void)
-{
-	return m_pDepth;
-}
-
-Frame* _VisionBase::depthNorm(void)
-{
-	return m_pDepthNorm;
-}
-
-uint8_t _VisionBase::getOrientation(void)
-{
-	return m_orientation;
-}
-
 void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
 {
 	if(pSize)
 	{
-		pSize->x = m_width;
-		pSize->y = m_height;
+		pSize->x = m_w;
+		pSize->y = m_h;
 	}
 
 	if(pCenter)
 	{
-		pCenter->x = m_centerH;
-		pCenter->y = m_centerV;
+		pCenter->x = m_cW;
+		pCenter->y = m_cH;
 	}
 
 	if(pAngle)
 	{
-		pAngle->x = m_fovH;
-		pAngle->y = m_fovV;
+		pAngle->x = m_fovW;
+		pAngle->y = m_fovH;
 	}
 }
 
 void _VisionBase::setAttitude(double rollRad, double pitchRad, uint64_t timestamp)
 {
-	Point2f center(m_centerH, m_centerV);
+	Point2f center(m_cW, m_cH);
 	double deg = -rollRad * 180.0 * OneOvPI;
 
 	m_rotRoll = getRotationMatrix2D(center, deg, m_isoScale);
@@ -168,5 +136,16 @@ bool _VisionBase::isOpened(void)
 	return m_bOpen;
 }
 
+bool _VisionBase::draw(void)
+{
+	IF_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+
+	IF_F(m_pBGR->empty());
+	pFrame->update(m_pBGR);
+
+	return true;
+}
 
 }

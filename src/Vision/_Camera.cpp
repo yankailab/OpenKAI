@@ -61,7 +61,7 @@ bool _Camera::init(void* pKiss)
 			fs.release();
 
 			Mat map1, map2;
-			cv::Size imSize(m_width, m_height);
+			cv::Size imSize(m_w, m_h);
 
 			if (m_bFisheye)
 			{
@@ -111,15 +111,15 @@ bool _Camera::open(void)
 		return false;
 	}
 
-	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_width);
-	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_height);
+	m_camera.set(CV_CAP_PROP_FRAME_WIDTH, m_w);
+	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_h);
 
 	Mat cMat;
 	//Acquire a frame to determine the actual frame size
 	while (!m_camera.read(cMat));
 
-	m_width = cMat.cols;
-	m_height = cMat.rows;
+	m_w = cMat.cols;
+	m_h = cMat.rows;
 
 	if (m_bCrop)
 	{
@@ -132,12 +132,12 @@ bool _Camera::open(void)
 		if (m_cropBB.height > i)
 			m_cropBB.height = i;
 
-		m_width = m_cropBB.width;
-		m_height = m_cropBB.height;
+		m_w = m_cropBB.width;
+		m_h = m_cropBB.height;
 	}
 
-	m_centerH = m_width / 2;
-	m_centerV = m_height / 2;
+	m_cW = m_w / 2;
+	m_cH = m_h / 2;
 
 	m_bOpen = true;
 	return true;
@@ -231,19 +231,6 @@ void _Camera::update(void)
 
 		this->autoFPSto();
 	}
-}
-
-bool _Camera::draw(void)
-{
-	IF_F(!this->BASE::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-
-	IF_F(m_pBGR->empty());
-	pFrame->update(m_pBGR);
-	this->_VisionBase::draw();
-
-	return true;
 }
 
 }

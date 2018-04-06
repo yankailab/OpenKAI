@@ -94,6 +94,9 @@
 #ifdef USE_DARKNET
 #include "../DNN/Darknet/_YOLO.h"
 #endif
+#ifdef USE_REALSENSE
+#include "../Vision/_RealSense.h"
+#endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

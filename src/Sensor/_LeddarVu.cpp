@@ -349,8 +349,8 @@ bool _LeddarVu::draw(void)
 	double camFovH = 1.0;
 	if(m_pVB)
 	{
-		camFovH = m_fovH / (double)m_pVB->m_fovH;
-		camFovV = m_fovV / (double)m_pVB->m_fovV;
+		camFovH = m_fovH / (double)m_pVB->m_fovW;
+		camFovV = m_fovV / (double)m_pVB->m_fovH;
 	}
 
 	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);

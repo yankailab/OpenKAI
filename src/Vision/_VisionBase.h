@@ -20,6 +20,7 @@ enum VISION_TYPE
 	camera,
 	video,
 	zed,
+	realsense,
 };
 
 class _VisionBase: public _ThreadBase
@@ -30,17 +31,14 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual void reset(void);
+	virtual bool draw(void);
 
 	virtual VISION_TYPE getType(void);
-
 	virtual Frame* bgr(void);
 	virtual Frame* hsv(void);
 	virtual Frame* gray(void);
-	virtual Frame* depth(void);
-	virtual Frame* depthNorm(void);
 
 	virtual Mat* K(void);
-	virtual uint8_t getOrientation(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
 
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
@@ -50,13 +48,12 @@ public:
 	bool m_bOpen;
 	VISION_TYPE m_type;
 
-	int m_width;
-	int m_height;
-	int m_centerH;
-	int m_centerV;
+	int m_w;
+	int m_h;
+	int m_cW;
+	int m_cH;
+	int m_fovW;
 	int m_fovH;
-	int m_fovV;
-	uint8_t m_orientation;
 	bool m_bFlip;
 
 	Mat m_K;
@@ -70,11 +67,6 @@ public:
 	Frame*	m_pBGR;
 	Frame*	m_pGray;
 	Frame*	m_pHSV;
-	Frame*	m_pDepth;
-	Frame*  m_pDepthNorm;
-
-	vDouble2 m_depthNormInt;
-
 };
 
 }
