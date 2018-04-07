@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_ClusterNet.h"
-#include "../../../Sensor/_ZEDdistance.h"
+//#include "../../../Sensor/_ZEDdistance.h"
 #include "../../ActionBase.h"
 #include "VEK_base.h"
 
@@ -23,7 +23,7 @@ public:
 
 private:
 	VEK_base* m_pVEK;
-	_ZEDdistance* m_pObs;
+//	_ZEDdistance* m_pObs;
 #ifdef USE_TENSORRT
 	_ClusterNet* m_pCN;
 #endif

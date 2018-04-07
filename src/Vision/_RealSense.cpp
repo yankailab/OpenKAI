@@ -139,6 +139,8 @@ void _RealSense::update(void)
 		}
 		m_pDepth->update(pSrc);
 
+		updateFilter();
+
 		this->autoFPSto();
 	}
 }

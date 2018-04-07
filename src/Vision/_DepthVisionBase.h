@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "_VisionBase.h"
+#include "../Filter/Median.h"
 
 namespace kai
 {
@@ -26,8 +27,13 @@ public:
 	virtual void reset(void);
 	virtual bool draw(void);
 
+	virtual void updateFilter(void);
 	virtual Frame* depth(void);
 	virtual vDouble2 range(void);
+
+	vInt2 matrixDim(void);
+	double d(vInt4* pROI, vInt2* pPos);
+	double d(vDouble4* pROI, vInt2* pPos);
 
 public:
 	int m_wD;
@@ -37,6 +43,11 @@ public:
 	vDouble2 m_range;
 	Mat m_mZ;
 	Mat m_mD;
+
+	vInt2		m_mDim;
+	Median* 	m_pFilterMatrix;
+	int			m_nFilter;
+	Frame*		m_pMatrixFrame;
 
 	Frame*	m_pDepthShow;
 	Window* m_pDepthWin;

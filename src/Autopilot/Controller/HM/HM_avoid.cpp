@@ -6,7 +6,7 @@ namespace kai
 HM_avoid::HM_avoid()
 {
 	m_pHM = NULL;
-	m_pObs = NULL;
+//	m_pObs = NULL;
 	m_pMN = NULL;
 	m_iMarkerClass = -1;
 
@@ -83,9 +83,9 @@ bool HM_avoid::link(void)
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_Obstacle", &iName));
-	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
+//	iName = "";
+//	F_INFO(pK->v("_Obstacle", &iName));
+//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
@@ -100,7 +100,7 @@ void HM_avoid::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-	NULL_(m_pObs);
+//	NULL_(m_pObs);
 	NULL_(m_pMN);
 	IF_(m_myPriority < m_pHM->m_priority);
 
@@ -119,17 +119,17 @@ void HM_avoid::update(void)
 		//do nothing if already in turning
 //		IF_(m_pHM->m_dir != dir_forward);
 
-		//do nothing if no obstacle inside alert distance
-		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
-		IF_(m_distM > m_alertDist);
-
-		//decide direction by obstacles in left and right
-		double dL = m_pObs->d(&m_obsBoxL, NULL);
-		double dR = m_pObs->d(&m_obsBoxR, NULL);
+//		//do nothing if no obstacle inside alert distance
+//		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
+//		IF_(m_distM > m_alertDist);
+//
+//		//decide direction by obstacles in left and right
+//		double dL = m_pObs->d(&m_obsBoxL, NULL);
+//		double dR = m_pObs->d(&m_obsBoxR, NULL);
 
 		m_rpmSteer = abs(m_rpmSteer);
-		if (dL > dR)
- 			m_rpmSteer *= -1;
+//		if (dL > dR)
+// 			m_rpmSteer *= -1;
 
 		//if found marker, start turn for the timer duration
 		if (m_pMN->bFound(m_iMarkerClass))
@@ -143,7 +143,7 @@ void HM_avoid::update(void)
 
 	if(m_sequence == av_turn)
 	{
-		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
+//		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
 		if(m_distM > m_alertDist)
 		{
 			m_sequence = av_clear;
@@ -217,14 +217,14 @@ bool HM_avoid::draw(void)
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
 	//draw obstacle indicator
-	if(m_pObs)
-	{
-		vInt2 mDim = m_pObs->matrixDim();
-		circle(*pMat,
-				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
-						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
-				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
-	}
+//	if(m_pObs)
+//	{
+//		vInt2 mDim = m_pObs->matrixDim();
+//		circle(*pMat,
+//				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
+//						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
+//				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
+//	}
 
 	return true;
 }

@@ -6,7 +6,7 @@ namespace kai
 VEK_avoid::VEK_avoid()
 {
 	m_pVEK = NULL;
-	m_pObs = NULL;
+//	m_pObs = NULL;
 
 	m_obsBox.x = 0.0;
 	m_obsBox.y = 0.0;
@@ -53,9 +53,9 @@ bool VEK_avoid::link(void)
 	F_INFO(pK->v("VEK_base", &iName));
 	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_ZEDobstacle", &iName));
-	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
+//	iName = "";
+//	F_INFO(pK->v("_ZEDobstacle", &iName));
+//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -66,22 +66,22 @@ void VEK_avoid::update(void)
 
 	NULL_(m_pVEK);
 	NULL_(m_pAM);
-	NULL_(m_pObs);
+//	NULL_(m_pObs);
 	IF_(!isActive());
 
 	string stateName = "VEK_AVOID";
 
-	if(!m_pObs->bReady())
-	{
-		m_pAM->transit(&stateName);
-		m_pVEK->m_vL = 0.0;
-		m_pVEK->m_vR = 0.0;
-		return;
-	}
+//	if(!m_pObs->bReady())
+//	{
+//		m_pAM->transit(&stateName);
+//		m_pVEK->m_vL = 0.0;
+//		m_pVEK->m_vR = 0.0;
+//		return;
+//	}
 
 	//do nothing if no obstacle inside alert distance
-	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
-	IF_(m_distM > m_dAlert);
+//	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
+//	IF_(m_distM > m_dAlert);
 
 	m_pAM->transit(&stateName);
 	m_pVEK->m_vL = -m_vSteer;
@@ -122,14 +122,14 @@ bool VEK_avoid::draw(void)
 	rectangle(*pMat, r, col, bold);
 
 	//draw obstacle indicator
-	if(m_pObs)
-	{
-		vInt2 mDim = m_pObs->matrixDim();
-		circle(*pMat,
-				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
-						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
-				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
-	}
+//	if(m_pObs)
+//	{
+//		vInt2 mDim = m_pObs->matrixDim();
+//		circle(*pMat,
+//				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
+//						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
+//				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
+//	}
 
 	return true;
 }

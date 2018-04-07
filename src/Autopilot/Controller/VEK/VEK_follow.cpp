@@ -9,7 +9,7 @@ VEK_follow::VEK_follow()
 #ifdef USE_TENSORRT
 	m_pCN = NULL;
 #endif
-	m_pObs = NULL;
+//	m_pObs = NULL;
 	m_vSteer = 0.5;
 
 	m_distMin = 0.0;
@@ -52,9 +52,9 @@ bool VEK_follow::link(void)
 	F_INFO(pK->v("VEK_base", &iName));
 	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_ZEDobstacle", &iName));
-	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
+//	iName = "";
+//	F_INFO(pK->v("_ZEDobstacle", &iName));
+//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
 
 #ifdef USE_TENSORRT
 	iName = "";

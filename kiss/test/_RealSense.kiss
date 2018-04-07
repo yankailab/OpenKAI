@@ -44,7 +44,6 @@
 	"bInst":1,
 	"Window":"okView",
 	"depthWindow":"depthView",
-	"deviceID":1,
 	"w":1280,
 	"h":720,
 	"rsFPS":30,

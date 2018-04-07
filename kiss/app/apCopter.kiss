@@ -10,7 +10,7 @@
 {
 	"name":"apView",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -23,10 +23,25 @@
 }
 
 {
-	"name":"cam1",
+	"name":"depthView",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"recFile_":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"apView",
 	"deviceID":0,
 	"width":1280,
@@ -37,7 +52,7 @@
 }
 
 {
-	"name":"gst1",
+	"name":"gst",
 	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":0,
@@ -49,10 +64,34 @@
 }
 
 {
+	"name":"realsense",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"Window":"apView",
+	"depthWindow":"depthView",
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":1,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"nMed":3,
+	"mW":10,
+	"mH":10,	
+}
+
+{
 	"name":"orbSlam2",
 	"class":"_ORB_SLAM2",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"apView",
 	"_VisionBase":"cam1",
 	"width":640,
@@ -76,7 +115,7 @@
 {
 	"name":"apSerialPC",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"Window":"apView",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
@@ -85,7 +124,7 @@
 {
 	"name":"apUDPclient",
 	"class":"_UDPclient",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"FPS":100,
 	"Window":"apView",
@@ -98,7 +137,7 @@
 {
 	"name":"apUDPserver",
 	"class":"_UDPserver",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
@@ -110,7 +149,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bInst":0,
 	"Window":"apView",
 	"_UDPclient":"apUDPclient",
 	"_UDPserver":"apUDPserver",
@@ -123,111 +162,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"apView",
-	"_IOBase":"apUDP",
-}
-
-{
-	"name":"rpLidarH",
-	"class":"_RPLIDAR",
-	"FPS":30,
-	"bInst":1,
-	"bLog":0,
-	"Window":"apView",
-	"rMin":0.1,
-	"rMax":100.0,
-	"nDiv":360,
-	"portName":"/dev/ttyUSB0",
-	"baud":115200,	
-	"offsetAngle":90.0,
-	"showScale":30.0,
-	
-	{
-		"name":"filterMed",
-		"bLog":0,
-		"windowLen":5,
-	}	
-	{
-		"name":"filterAvr",
-		"bLog":0,
-		"windowLen":3,
-	}
-}
-
-{
-	"name":"INavoid",
-	"class":"_ImageNet",
-	"bInst":1,
-	"bDraw":1,
-	"FPS":30,
-	"Window":"apView",
-	"_VisionBase":"cam1",
-	"modelDir":"/media/kai/sm/dev/OpenKAI_model/Aerial/Aerial_20171204/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_765600.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"blobOut":"softmax",
-	"labelFile":"labels.txt",
-	"mode":"thread",
-	"minConfidence":0.5,
-	"maxPix":1000000,
-	"nBatch":3,
-}
-
-{
-	"name":"INmarker",
-	"class":"_ImageNet",
-	"bInst":0,
-	"bDraw":1,
-	"FPS":30,
-	"Window":"apView",
-	"_VisionBase":"cam1",
-	"modelDir":"/media/kai/sm/dev/OpenKAI_model/Aerial/Aerial_20171204/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_765600.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"blobOut":"softmax",
-	"labelFile":"labels.txt",
-	"mode":"thread",
-	"minConfidence":0.5,
-	"maxPix":1000000,
-	"nBatch":3,
-}
-
-{
-	"name":"MNlanding",
-	"bInst":0,
-	"bDraw":0,
-	"FPS":30,
-	"class":"_MatrixNet",
-	"_ImageNet":"INmarker",
-	"Window":"apView",
-	"w":0.1,
-	"h":0.15,
-	"dW":0.1,
-	"dH":0.15,
-	"l":0.0,
-	"t":0.0,
-	"r":1.0,
-	"b":0.5,
-}
-
-{
-	"name":"detectNet",
-	"class":"_DetectNet",
-	"bInst":0,
-	"FPS":30,
-	"Window":"apView",
-	"_Stream":"cam1",
-	"modelDir":"/home/ubuntu/src/model/ped-100/",
-	"minConfidence":0.05,
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70800.caffemodel",
-	"meanFile":"mean.binaryproto",
-	"labelFile":"model/coco_labels.txt",
-	"className":"target",
-	"obsLifetime":200000,
-	"nObs":16,
-	"bDrawContour":0,
+	"_IOBase":"apSerialPC",
 }
 
 {
@@ -271,36 +206,28 @@
 
 		{
 			"name":"apAvoid",
-			"class":"APcopter_sensorAvoid",
-			"bInst":0,
-			"bDraw":0,
+			"class":"APcopter_depthVision",
+			"bInst":1,
+			"bDraw":1,
 			"Window":"apView",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
+			"_DepthVisionBase":"realsense",
 
 			{
-				"name":"distSensor",
-				"bInst":1,
-		
-				{
-					"name":"Obstacle",
-					"class":"_ZEDobstacle",
-
-					{
-						"orientation":0,
-						"l":0.05,
-						"t":0.0,
-						"r":0.95,
-						"b":0.8,
-					}
-				}
+				"orientation":0,
+				"l":0.05,
+				"t":0.0,
+				"r":0.95,
+				"b":0.8,
+				"dScale":1.0,
 			}	
 		}
 
 		{
 			"name":"apDNNAvoid",
 			"class":"APcopter_DNNavoid",
-			"bInst":1,
+			"bInst":0,
 			"bLog":0,
 			"Window":"apView",
 			"_Automaton":"apState",
