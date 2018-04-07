@@ -64,6 +64,8 @@ public:
 	double m_isoScale;
 
 	//frame
+	Mat  	m_mTemp;
+	GpuMat  m_mgTemp;
 	Frame*	m_pBGR;
 	Frame*	m_pGray;
 	Frame*	m_pHSV;

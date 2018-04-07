@@ -27,6 +27,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	void reset(void);
+	bool draw(void);
 
 private:
 	bool open(void);
@@ -39,6 +40,11 @@ private:
 
 public:
 	rs2::pipeline m_rsPipe;
+	int	m_rsFPS;
+	int m_rsDFPS;
+
+	rs2::frame m_rsColor;
+	rs2::frame m_rsDepth;
 
 };
 

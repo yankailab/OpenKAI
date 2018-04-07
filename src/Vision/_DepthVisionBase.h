@@ -27,7 +27,6 @@ public:
 	virtual bool draw(void);
 
 	virtual Frame* depth(void);
-	virtual double dist(Rect* pR);
 	virtual vDouble2 range(void);
 
 public:
@@ -36,9 +35,11 @@ public:
 
 	Frame*	m_pDepth;
 	vDouble2 m_range;
+	Mat m_mZ;
+	Mat m_mD;
 
+	Frame*	m_pDepthShow;
 	Window* m_pDepthWin;
-
 
 };
 

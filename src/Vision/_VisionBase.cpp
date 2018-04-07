@@ -138,14 +138,14 @@ bool _VisionBase::isOpened(void)
 
 bool _VisionBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	NULL_F(m_pWindow);
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
 	IF_F(m_pBGR->empty());
 	pFrame->update(m_pBGR);
 
-	return true;
+	return this->_ThreadBase::draw();
 }
 
 }

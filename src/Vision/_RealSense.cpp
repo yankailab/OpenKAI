@@ -15,6 +15,9 @@ _RealSense::_RealSense()
 {
 	m_type = realsense;
 	m_pDepthWin = NULL;
+
+	m_rsFPS = 30;
+	m_rsDFPS = 30;
 }
 
 _RealSense::~_RealSense()
@@ -28,7 +31,8 @@ bool _RealSense::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-//	KISSm(pK,);
+	KISSm(pK,rsFPS);
+	KISSm(pK,rsDFPS);
 
 	return true;
 }
@@ -41,12 +45,23 @@ void _RealSense::reset()
 
 bool _RealSense::open(void)
 {
-	m_rsPipe.start();
+	rs2::config cfg;
+    cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
+    cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
 
-//	m_width = ;
-//	m_height = ;
-//	m_centerH = m_width / 2;
-//	m_centerV = m_height / 2;
+	m_rsPipe.start(cfg);
+
+	rs2::frameset rsFrame = m_rsPipe.wait_for_frames();
+
+	m_rsColor = rsFrame.get_color_frame();
+	m_w = m_rsColor.as<rs2::video_frame>().get_width();
+	m_h = m_rsColor.as<rs2::video_frame>().get_height();
+	m_cW = m_w / 2;
+	m_cH = m_h / 2;
+
+	m_rsDepth = rsFrame.get_depth_frame();
+	m_wD = m_rsDepth.as<rs2::video_frame>().get_width();
+	m_hD = m_rsDepth.as<rs2::video_frame>().get_height();
 
 	m_bOpen = true;
 	return true;
@@ -84,17 +99,14 @@ void _RealSense::update(void)
 		Mat* pSrc;
 		Mat* pDest;
 		Mat* pTmp;
-		Mat  mTemp;
 
 		//Color
 		rs2::frameset rsFrame = m_rsPipe.wait_for_frames();
-		rs2::frame rsColor = rsFrame.get_color_frame();
-		m_w = rsColor.as<rs2::video_frame>().get_width();
-		m_h = rsColor.as<rs2::video_frame>().get_height();
+		m_rsColor = rsFrame.get_color_frame();
 
-		Mat mColor(Size(m_w, m_h), CV_8UC3, (void*)rsColor.get_data(), Mat::AUTO_STEP);
+		Mat mColor(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP);
 		pSrc = &mColor;
-		pDest = &mTemp;
+		pDest = &m_mTemp;
 
 		if (m_bFlip)
 		{
@@ -107,16 +119,18 @@ void _RealSense::update(void)
 		if (m_pHSV)
 			m_pHSV->getHSVOf(m_pBGR);
 
-
 		//Depth
-		rs2::colorizer rsColorMap;
-		rs2::frame rsDepth = rsColorMap(rsFrame.get_depth_frame());
-		m_wD = rsDepth.as<rs2::video_frame>().get_width();
-		m_hD = rsDepth.as<rs2::video_frame>().get_height();
-		Mat mDepth(Size(m_wD, m_hD), CV_8UC3, (void*) rsDepth.get_data(), Mat::AUTO_STEP);
+		m_rsDepth = rsFrame.get_depth_frame();
+		m_mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*) m_rsDepth.get_data(), Mat::AUTO_STEP);
+	    m_mZ.convertTo(m_mD, CV_32FC1);
+	    auto depth_scale = m_rsPipe.get_active_profile()
+	        .get_device()
+	        .first<rs2::depth_sensor>()
+	        .get_depth_scale();
+	    m_mD *= depth_scale;
 
-		pSrc = &mDepth;
-		pDest = &mTemp;
+		pSrc = &m_mD;
+		pDest = &m_mTemp;
 
 		if (m_bFlip)
 		{
@@ -125,21 +139,20 @@ void _RealSense::update(void)
 		}
 		m_pDepth->update(pSrc);
 
-//		//Normalized Depth
-//		if(m_pDepthNorm)
-//		{
-//			if (m_depthNormInt.x != m_depthNormInt.y)
-//			{
-//				double alpha = 255.0/(m_depthNormInt.y-m_depthNormInt.x);
-//				double beta = -alpha * m_depthNormInt.x;
-//
-//				m_pDepth->getGMat()->convertTo(*m_pDepthNorm->getGMat(), CV_8U, alpha, beta);
-//				m_pDepthNorm->updatedGMat();
-//			}
-//		}
-
 		this->autoFPSto();
 	}
+}
+
+bool _RealSense::draw(void)
+{
+	IF_F(m_pDepth->empty());
+
+	rs2::colorizer rsColorMap;
+	rs2::frame dColor = rsColorMap(m_rsDepth);
+	Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
+	m_pDepthShow->update(&mDColor);
+
+	return this->_DepthVisionBase::draw();
 }
 
 }
