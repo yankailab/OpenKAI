@@ -3,15 +3,9 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Detector/_ClusterNet.h"
-//#include "../../../Sensor/_ZEDdistance.h"
+#include "../../../Vision/_DepthVisionBase.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
-
-enum AVOID_SEQUENCE
-{
-	av_clear,av_turn,av_markerTurn
-};
 
 namespace kai
 {
@@ -29,23 +23,15 @@ public:
 
 private:
 	HM_base* m_pHM;
-//	_ZEDdistance* m_pObs;
-	_ClusterNet* m_pMN;
-	int m_iMarkerClass;
+	_DepthVisionBase* m_pDV;
 
-	AVOID_SEQUENCE m_sequence;
 	int		m_rpmSteer;
 	double m_distM;
-	vDouble4 m_obsBoxF;
-	vDouble4 m_obsBoxL;
-	vDouble4 m_obsBoxR;
+	vDouble4 m_dROIf;
+	vDouble4 m_dROIl;
+	vDouble4 m_dROIr;
 	vInt2 m_posMin;
 	double m_alertDist;
-
-	uint64_t m_markerTurnStart;
-	uint64_t m_markerTurnTimer;
-
-	double m_minProb;
 
 };
 

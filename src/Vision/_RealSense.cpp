@@ -15,6 +15,7 @@ _RealSense::_RealSense()
 {
 	m_type = realsense;
 	m_pDepthWin = NULL;
+	m_vPreset = "High Density";
 
 	m_rsFPS = 30;
 	m_rsDFPS = 30;
@@ -33,6 +34,7 @@ bool _RealSense::init(void* pKiss)
 
 	KISSm(pK,rsFPS);
 	KISSm(pK,rsDFPS);
+	KISSm(pK,vPreset);
 
 	return true;
 }
@@ -49,7 +51,25 @@ bool _RealSense::open(void)
     cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
     cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
 
-	m_rsPipe.start(cfg);
+    auto profile = m_rsPipe.start(cfg);
+	auto sensor = profile.get_device().first<rs2::depth_sensor>();
+
+    // TODO: At the moment the SDK does not offer a closed enum for D400 visual presets
+    // (because they keep changing)
+    // As a work-around we try to find the High-Density preset by name
+    // We do this to reduce the number of black pixels
+    // The hardware can perform hole-filling much better and much more power efficient then our software
+    auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
+    for (auto i = range.min; i < range.max; i += range.step)
+    {
+        IF_CONT(std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i)) != m_vPreset);
+
+        sensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
+        break;
+    }
+
+    auto stream = profile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
+    auto intrinsics = stream.get_intrinsics();
 
 	rs2::frameset rsFrame = m_rsPipe.wait_for_frames();
 
@@ -147,12 +167,13 @@ void _RealSense::update(void)
 
 bool _RealSense::draw(void)
 {
-	IF_F(m_pDepth->empty());
-
-	rs2::colorizer rsColorMap;
-	rs2::frame dColor = rsColorMap(m_rsDepth);
-	Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
-	m_pDepthShow->update(&mDColor);
+	if(m_pDepthShow && !m_pDepth->empty())
+	{
+		rs2::colorizer rsColorMap;
+		rs2::frame dColor = rsColorMap(m_rsDepth);
+		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
+		m_pDepthShow->update(&mDColor);
+	}
 
 	return this->_DepthVisionBase::draw();
 }

@@ -44,6 +44,7 @@
 	"bInst":1,
 	"Window":"okView",
 	"depthWindow":"depthView",
+	"vPreset":"High Density",
 	"w":1280,
 	"h":720,
 	"rsFPS":30,
@@ -54,5 +55,10 @@
 	"fovH":60,
 	"bFlip":0,
 	"bGray":0,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"nMed":3,
+	"mW":10,
+	"mH":10,
 }
 

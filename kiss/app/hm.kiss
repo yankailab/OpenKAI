@@ -23,7 +23,7 @@
 	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"width":1280,
@@ -32,6 +32,30 @@
 	"bGray":0,
 }
 
+{
+	"name":"realsense",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":1,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"nMed":3,
+	"mW":10,
+	"mH":10,	
+}
 
 {
 	"name":"serial",
@@ -62,7 +86,7 @@
 {
 	"name":"caffe",
 	"class":"_Caffe",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
@@ -103,9 +127,9 @@
 }
 
 {
-	"name":"tinyYOLO",
+	"name":"YOLO",
 	"class":"_YOLO",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -130,7 +154,7 @@
 	"bInst":1,
 	"FPS":10,
 	"Window":"OKview",
-	"startState":"HM_STATION",
+	"startState":"HM_WORK",
 
 	{
 		"state":"HM_STATION",
@@ -211,9 +235,49 @@
 		}
 		
 		{
+			"name":"avoid",
+			"class":"HM_avoid",
+			"bInst":1,
+			"Window":"OKview",
+			"HM_base":"base",
+			"_Automaton":"automaton",
+			"_DepthVisionBase":"realsense",
+			"alertDist":1.0,
+			"rpmSteer":2000,
+			"activeState":["HM_WORK","HM_RTH"],
+			
+			{
+				"name":"dROIl",
+				"bInst":1,
+				"l":0.0,
+				"t":0.25,
+				"r":0.169,
+				"b":1.0,
+			}			
+			
+			{
+				"name":"dROIf",
+				"bInst":1,
+				"l":0.17,
+				"t":0.25,
+				"r":0.929,
+				"b":0.825,
+			}
+			
+			{
+				"name":"dROIr",
+				"bInst":1,
+				"l":0.93,
+				"t":0.25,
+				"r":1.0,
+				"b":0.92,
+			}			
+		}
+		
+		{
 			"name":"grass",
 			"class":"HM_grass",
-			"bInst":1,
+			"bInst":0,
 			"bDraw":1,
 			"Window":"OKview",
 			"HM_base":"base",
@@ -255,7 +319,7 @@
 		{
 			"name":"follow",
 			"class":"HM_follow",
-			"bInst":1,
+			"bInst":0,
 			"bDraw":1,
 			"Window":"OKview",
 			"HM_base":"base",
@@ -275,7 +339,7 @@
 		{
 			"name":"marker",
 			"class":"HM_marker",
-			"bInst":1,
+			"bInst":0,
 			"Window":"OKview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
@@ -339,50 +403,6 @@
 			"targetName":"station",
 			"activeState":["HM_RTH_APPROACH"],
 		}
-
-		{
-			"name":"avoidance",
-			"class":"HM_avoid",
-			"bInst":0,
-			"Window":"OKview",
-			"HM_base":"base",
-			"_Automaton":"automaton",
-			"_Obstacle":"obstacle",
-			"_ClusterNet":"markerMN",
-			"alertDist":1.2,
-			"rpmSteer":2000,
-			"markerTurnTimer":5000000,
-			"iMarkerClass":1,
-			"minProb":0.0,
-			"activeState":["HM_WORK","HM_RTH"],
-			
-			{
-				"name":"obsBoxL",
-				"bInst":1,
-				"left":0.0,
-				"top":0.25,
-				"right":0.169,
-				"bottom":1.0,
-			}			
-			
-			{
-				"name":"obsBoxF",
-				"bInst":1,
-				"left":0.17,
-				"top":0.25,
-				"right":0.929,
-				"bottom":0.825,
-			}
-			
-			{
-				"name":"obsBoxR",
-				"bInst":1,
-				"left":0.93,
-				"top":0.25,
-				"right":1.0,
-				"bottom":0.92,
-			}			
-		}				
 		
 	}
 }

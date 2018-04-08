@@ -6,27 +6,18 @@ namespace kai
 HM_avoid::HM_avoid()
 {
 	m_pHM = NULL;
-//	m_pObs = NULL;
-	m_pMN = NULL;
-	m_iMarkerClass = -1;
+	m_pDV = NULL;
 
-	m_sequence = av_clear;
-
-	m_obsBoxF.x = 0.0;
-	m_obsBoxF.y = 0.0;
-	m_obsBoxF.z = 1.0;
-	m_obsBoxF.w = 1.0;
-	m_obsBoxL.init();
-	m_obsBoxR.init();
+	m_dROIf.x = 0.0;
+	m_dROIf.y = 0.0;
+	m_dROIf.z = 1.0;
+	m_dROIf.w = 1.0;
+	m_dROIl.init();
+	m_dROIr.init();
 
 	m_alertDist = 0.0;
 	m_distM = 0.0;
-
-	m_markerTurnStart = 0;
-	m_markerTurnTimer = USEC_1SEC;
 	m_rpmSteer = 0;
-
-	m_minProb = 0.0;
 }
 
 HM_avoid::~HM_avoid()
@@ -42,32 +33,28 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("alertDist", &m_alertDist));
 
-	F_INFO(pK->v("markerTurnTimer", &m_markerTurnTimer));
-	F_INFO(pK->v("iMarkerClass", &m_iMarkerClass));
-	F_INFO(pK->v("minProb", &m_minProb));
-
 	Kiss* pG;
 
-	pG = pK->o("obsBoxL");
+	pG = pK->o("dROIl");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxL.x));
-	F_INFO(pG->v("top", &m_obsBoxL.y));
-	F_INFO(pG->v("right", &m_obsBoxL.z));
-	F_INFO(pG->v("bottom", &m_obsBoxL.w));
+	F_INFO(pG->v("l", &m_dROIl.x));
+	F_INFO(pG->v("t", &m_dROIl.y));
+	F_INFO(pG->v("r", &m_dROIl.z));
+	F_INFO(pG->v("b", &m_dROIl.w));
 
-	pG = pK->o("obsBoxF");
+	pG = pK->o("dROIf");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxF.x));
-	F_INFO(pG->v("top", &m_obsBoxF.y));
-	F_INFO(pG->v("right", &m_obsBoxF.z));
-	F_INFO(pG->v("bottom", &m_obsBoxF.w));
+	F_INFO(pG->v("l", &m_dROIf.x));
+	F_INFO(pG->v("t", &m_dROIf.y));
+	F_INFO(pG->v("r", &m_dROIf.z));
+	F_INFO(pG->v("b", &m_dROIf.w));
 
-	pG = pK->o("obsBoxR");
+	pG = pK->o("dROIr");
 	IF_F(pG->empty());
-	F_INFO(pG->v("left", &m_obsBoxR.x));
-	F_INFO(pG->v("top", &m_obsBoxR.y));
-	F_INFO(pG->v("right", &m_obsBoxR.z));
-	F_INFO(pG->v("bottom", &m_obsBoxR.w));
+	F_INFO(pG->v("l", &m_dROIr.x));
+	F_INFO(pG->v("t", &m_dROIr.y));
+	F_INFO(pG->v("r", &m_dROIr.z));
+	F_INFO(pG->v("b", &m_dROIr.w));
 
 	return true;
 }
@@ -83,13 +70,9 @@ bool HM_avoid::link(void)
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
 
-//	iName = "";
-//	F_INFO(pK->v("_Obstacle", &iName));
-//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
-
 	iName = "";
-	F_INFO(pK->v("_MatrixNet", &iName));
-	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
+	F_INFO(pK->v("_DepthVisionBase", &iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -100,74 +83,20 @@ void HM_avoid::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pAM);
-//	NULL_(m_pObs);
-	NULL_(m_pMN);
+	NULL_(m_pDV);
 	IF_(m_myPriority < m_pHM->m_priority);
+	IF_(!isActive());
 
-	if(!isActive())
-	{
-		m_sequence = av_clear;
-		m_pMN->bSetActive(false);
-		return;
-	}
-
-	m_pMN->bSetActive(true);
 	uint64_t tNow = getTimeUsec();
 
-	if(m_sequence == av_clear)
-	{
-		//do nothing if already in turning
-//		IF_(m_pHM->m_dir != dir_forward);
+	//do nothing if no obstacle inside alert distance
+	m_distM = m_pDV->d(&m_dROIf, &m_posMin);
+	IF_(m_distM > m_alertDist);
 
-//		//do nothing if no obstacle inside alert distance
-//		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
-//		IF_(m_distM > m_alertDist);
-//
-//		//decide direction by obstacles in left and right
-//		double dL = m_pObs->d(&m_obsBoxL, NULL);
-//		double dR = m_pObs->d(&m_obsBoxR, NULL);
-
-		m_rpmSteer = abs(m_rpmSteer);
-//		if (dL > dR)
-// 			m_rpmSteer *= -1;
-
-		//if found marker, start turn for the timer duration
-		if (m_pMN->bFound(m_iMarkerClass))
-		{
-			m_markerTurnStart = tNow;
-			m_sequence = av_markerTurn;
-		}
-
-		m_sequence = av_turn;
-	}
-
-	if(m_sequence == av_turn)
-	{
-//		m_distM = m_pObs->d(&m_obsBoxF, &m_posMin);
-		if(m_distM > m_alertDist)
-		{
-			m_sequence = av_clear;
-			return;
-		}
-
-		m_pHM->m_bSpeaker = true;
-		m_pHM->m_rpmL = m_rpmSteer;
-		m_pHM->m_rpmR = -m_rpmSteer;
-	}
-
-	if(m_sequence == av_markerTurn)
-	{
-		//keep turning until the time
-		if (tNow - m_markerTurnStart >= m_markerTurnTimer)
-		{
-			m_sequence = av_clear;
-			return;
-		}
-
-		m_pHM->m_bSpeaker = true;
-		m_pHM->m_rpmL = m_rpmSteer;
-		m_pHM->m_rpmR = -m_rpmSteer;
-	}
+	m_rpmSteer = abs(m_rpmSteer);
+	m_pHM->m_rpmL = m_rpmSteer;
+	m_pHM->m_rpmR = -m_rpmSteer;
+	m_pHM->m_bSpeaker = true;
 
 }
 
@@ -184,16 +113,15 @@ bool HM_avoid::draw(void)
 		msg = "* ";
 	else
 		msg = "- ";
-	msg += *this->getName() + ": dist=" + f2str(m_distM) + ", markerTurn:"
-			+ i2str((int) m_markerTurnStart);
+	msg += *this->getName() + ": dist=" + f2str(m_distM);
 	pWin->addMsg(&msg);
 
 	//draw obstacle detection boxes
 	Rect r;
-	r.x = m_obsBoxF.x * ((double) pMat->cols);
-	r.y = m_obsBoxF.y * ((double) pMat->rows);
-	r.width = m_obsBoxF.z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxF.w * ((double) pMat->rows) - r.y;
+	r.x = m_dROIf.x * ((double) pMat->cols);
+	r.y = m_dROIf.y * ((double) pMat->rows);
+	r.width = m_dROIf.z * ((double) pMat->cols) - r.x;
+	r.height = m_dROIf.w * ((double) pMat->rows) - r.y;
 
 	Scalar col = Scalar(0, 255, 0);
 	int bold = 1;
@@ -204,27 +132,27 @@ bool HM_avoid::draw(void)
 	}
 	rectangle(*pMat, r, col, bold);
 
-	r.x = m_obsBoxL.x * ((double) pMat->cols);
-	r.y = m_obsBoxL.y * ((double) pMat->rows);
-	r.width = m_obsBoxL.z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxL.w * ((double) pMat->rows) - r.y;
+	r.x = m_dROIl.x * ((double) pMat->cols);
+	r.y = m_dROIl.y * ((double) pMat->rows);
+	r.width = m_dROIl.z * ((double) pMat->cols) - r.x;
+	r.height = m_dROIl.w * ((double) pMat->rows) - r.y;
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
-	r.x = m_obsBoxR.x * ((double) pMat->cols);
-	r.y = m_obsBoxR.y * ((double) pMat->rows);
-	r.width = m_obsBoxR.z * ((double) pMat->cols) - r.x;
-	r.height = m_obsBoxR.w * ((double) pMat->rows) - r.y;
+	r.x = m_dROIr.x * ((double) pMat->cols);
+	r.y = m_dROIr.y * ((double) pMat->rows);
+	r.width = m_dROIr.z * ((double) pMat->cols) - r.x;
+	r.height = m_dROIr.w * ((double) pMat->rows) - r.y;
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
 	//draw obstacle indicator
-//	if(m_pObs)
-//	{
-//		vInt2 mDim = m_pObs->matrixDim();
-//		circle(*pMat,
-//				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
-//						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
-//				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
-//	}
+	if(m_pDV)
+	{
+		vInt2 mDim = m_pDV->matrixDim();
+		circle(*pMat,
+				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
+						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
+				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
+	}
 
 	return true;
 }
