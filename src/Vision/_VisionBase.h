@@ -16,11 +16,12 @@ namespace kai
 
 enum VISION_TYPE
 {
-	unknownStream,
+	unknownVision,
 	camera,
 	video,
 	zed,
 	realsense,
+	pylon,
 };
 
 class _VisionBase: public _ThreadBase

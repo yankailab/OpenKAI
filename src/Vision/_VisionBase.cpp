@@ -13,7 +13,7 @@ namespace kai
 _VisionBase::_VisionBase()
 {
 	m_bOpen = false;
-	m_type = unknownStream;
+	m_type = unknownVision;
 	m_w = 1280;
 	m_h = 720;
 	m_cW = 640;

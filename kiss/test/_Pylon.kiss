@@ -1,0 +1,39 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"okView",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"recFile_":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"Pylon",
+	"class":"_Pylon",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"deviceID":1,
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":0,
+}
+

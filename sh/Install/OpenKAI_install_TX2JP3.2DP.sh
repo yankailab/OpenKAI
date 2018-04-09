@@ -38,6 +38,9 @@ sudo apt-get -y install libgtk2.0-dev libglew-dev　libgtk-3-dev libglfw3-dev
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
 bash
 
+sudo echo -e "export LD_LIBRARY_PATH=/opt/pylon5/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
+bash
+
 # Eigen
 cd $FULLDEVDIR
 wget --no-check-certificate http://bitbucket.org/eigen/eigen/get/3.3.4.tar.gz

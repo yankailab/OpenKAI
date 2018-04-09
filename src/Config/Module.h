@@ -96,6 +96,9 @@
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
 #endif
+#ifdef USE_PYLON
+#include "../Vision/_Pylon.h"
+#endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

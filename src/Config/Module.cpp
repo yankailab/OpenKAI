@@ -81,6 +81,9 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSense);
 #endif
+#ifdef USE_PYLON
+	ADD_MODULE(_Pylon);
+#endif
 #ifdef USE_CASCADE
 	ADD_MODULE(_Cascade);
 #endif
