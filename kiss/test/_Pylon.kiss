@@ -28,7 +28,8 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"okView",
-	"deviceID":1,
+	"SN":"", /*Leave blank for using the first device automatically*/
+	"grabTimeout":5000,
 	"w":1280,
 	"h":720,
 	"fovW":60,

@@ -19,8 +19,11 @@ _Pylon::_Pylon()
 	m_bCalibration = false;
 	m_bFisheye = false;
 	m_bCrop = false;
+	m_SN = "";
 
 	m_pPylonCam = NULL;
+	m_pylonFC.OutputPixelFormat = PixelType_BGR8packed;
+	m_grabTimeout = 5000;
 }
 
 _Pylon::~_Pylon()
@@ -43,6 +46,8 @@ bool _Pylon::init(void* pKiss)
 		F_INFO(pK->v("cropH", &m_cropBB.height));
 	}
 
+	KISSm(pK, grabTimeout);
+	KISSm(pK, SN);
 	KISSm(pK, bCalibration);
 	KISSm(pK, bFisheye);
 	string calibFile = "";
@@ -90,7 +95,6 @@ bool _Pylon::init(void* pKiss)
 		}
 	}
 
-	LOG_I("Initialized");
 	return true;
 }
 
@@ -107,37 +111,46 @@ bool _Pylon::link(void)
 
 bool _Pylon::open(void)
 {
-	// create pylon image format converter and pylon image
-	m_pylonFC.OutputPixelFormat = PixelType_BGR8packed;
+	try
+	{
+		if(m_SN.empty())
+		{
+			m_pPylonCam = new CInstantCamera(CTlFactory::GetInstance().CreateFirstDevice());
+		}
+		else
+		{
+			CDeviceInfo dInfo;
+			dInfo.SetSerialNumber(m_SN.c_str());
+			m_pPylonCam = new CInstantCamera(CTlFactory::GetInstance().CreateFirstDevice(dInfo));
+		}
+	}
+	catch (const GenericException &e)
+	{
+		LOG_E(e.GetDescription());
+		DEL(m_pPylonCam);
+		return false;
+	}
 
-	// Create an instant camera object with the camera device found first.
-	m_pPylonCam = new CInstantCamera(CTlFactory::GetInstance().CreateFirstDevice());
-
-	// or use a device info object to use a specific camera
-	//CDeviceInfo info;
-	//info.SetSerialNumber("21694497");
-	//CInstantCamera camera( CTlFactory::GetInstance().CreateFirstDevice(info));
-	LOG_I("Using device: " << m_pPylonCam->GetDeviceInfo().GetModelName());
+	LOG_I("Using model: " << m_pPylonCam->GetDeviceInfo().GetModelName() <<
+		  ", SN: " << m_pPylonCam->GetDeviceInfo().GetSerialNumber());
 
 	// The parameter MaxNumBuffer can be used to control the count of buffers
 	// allocated for grabbing. The default value of this parameter is 10.
 	m_pPylonCam->MaxNumBuffer = 10;
 
-	// Start the grabbing of c_countOfImagesToGrab images.
 	// The camera device is parameterized with a default configuration which
 	// sets up free-running continuous acquisition.
-	m_pPylonCam->StartGrabbing();//GrabStrategy_LatestImages);
+	m_pPylonCam->StartGrabbing(GrabStrategy_LatestImageOnly);
 	while (!m_pPylonCam->IsGrabbing());
 
-	CGrabResultPtr pylonGrab;
 	while (m_pPylonCam->IsGrabbing())
 	{
-		IF_CONT(!m_pPylonCam->RetrieveResult(1000, pylonGrab, TimeoutHandling_Return));
-		if (pylonGrab->GrabSucceeded())break;
+		m_pPylonCam->RetrieveResult(m_grabTimeout, m_pylonGrab, TimeoutHandling_Return);
+		if (m_pylonGrab->GrabSucceeded())break;
 	}
 
-	m_w = pylonGrab->GetWidth();
-	m_h = pylonGrab->GetHeight();
+	m_w = m_pylonGrab->GetWidth();
+	m_h = m_pylonGrab->GetHeight();
 
 	if (m_bCrop)
 	{
@@ -197,14 +210,13 @@ void _Pylon::update(void)
 		GpuMat* pTmp;
 		Mat cMat;
 
-		CGrabResultPtr pylonGrab;
 		while (m_pPylonCam->IsGrabbing())
 		{
-			IF_CONT(!m_pPylonCam->RetrieveResult(1000, pylonGrab, TimeoutHandling_Return));
-			if (pylonGrab->GrabSucceeded())break;
+			m_pPylonCam->RetrieveResult(m_grabTimeout, m_pylonGrab, TimeoutHandling_Return);
+			if (m_pylonGrab->GrabSucceeded())break;
 		}
 
-		m_pylonFC.Convert(m_pylonImg, pylonGrab);
+		m_pylonFC.Convert(m_pylonImg, m_pylonGrab);
 		cMat = Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer());
 
 		m_Gmat.upload(cMat);

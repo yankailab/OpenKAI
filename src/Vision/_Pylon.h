@@ -44,6 +44,10 @@ public:
 	CInstantCamera* m_pPylonCam;
 	CImageFormatConverter m_pylonFC;
 	CPylonImage m_pylonImg;
+	CGrabResultPtr m_pylonGrab;
+
+	string m_SN;
+	int	m_grabTimeout;
 
 	//calibration
 	bool m_bCalibration;
