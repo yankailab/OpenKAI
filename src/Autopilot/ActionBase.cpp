@@ -11,7 +11,7 @@ ActionBase::ActionBase()
 	m_vActiveState.clear();
 	m_iLastState = 0;
 	m_bStateChanged = false;
-	m_myPriority = 0;
+	m_iPriority = 0;
 }
 
 ActionBase::~ActionBase()
@@ -23,7 +23,7 @@ bool ActionBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, myPriority);
+	KISSm(pK, iPriority);
 
 	m_vActiveState.clear();
 	return true;

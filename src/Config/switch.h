@@ -1,11 +1,10 @@
 
 #define USE_CUDA
 
-//#define USE_OPENCV2X
 //#define USE_OPENCV_CONTRIB
 #define USE_DARKNET
 #define USE_REALSENSE
-#define USE_PYLON
+//#define USE_PYLON
 //#define USE_TENSORRT
 //#define USE_CAFFE
 //#define USE_ZED

@@ -33,7 +33,7 @@ public:
 
 	int64_t m_tStamp;
 	int64_t m_dTime;
-	int		m_myPriority;
+	int		m_iPriority;
 
 };
 

@@ -26,9 +26,6 @@ HM_base::HM_base()
 	m_pinLEDl = 11;
 	m_pinLEDm = 12;
 	m_pinLEDr = 13;
-
-	m_priority = 0;
-
 }
 
 HM_base::~HM_base()
@@ -97,7 +94,7 @@ void HM_base::update(void)
 
 	m_motorRpmW = 0;
 	m_bSpeaker = false;
-	m_priority = 0;
+	m_iPriority = 0;
 
 	cmd();
 }

@@ -3,10 +3,8 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Navigation/_GPS.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
-#include "HM_kickBack.h"
 
 namespace kai
 {
@@ -24,13 +22,9 @@ public:
 
 private:
 	HM_base* m_pHM;
-	HM_kickBack* m_pKB;
-	_GPS* m_pGPS;
 
 	int		m_rpmSteer;
 	int		m_rpmT;
-	double	m_rWP;
-	double	m_dHdg;
 
 };
 

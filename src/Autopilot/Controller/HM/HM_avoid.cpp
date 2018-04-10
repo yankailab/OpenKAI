@@ -84,7 +84,7 @@ void HM_avoid::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pAM);
 	NULL_(m_pDV);
-	IF_(m_myPriority < m_pHM->m_priority);
+	IF_(m_iPriority < m_pHM->m_iPriority);
 	IF_(!isActive());
 
 	uint64_t tNow = getTimeUsec();
@@ -128,7 +128,7 @@ bool HM_avoid::draw(void)
 	if (m_distM < m_alertDist)
 	{
 		col = Scalar(0, 0, 255);
-		bold = 2;
+		bold = 10;
 	}
 	rectangle(*pMat, r, col, bold);
 

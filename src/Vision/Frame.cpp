@@ -54,12 +54,7 @@ void Frame::getResizedOf(Frame* pFrom, int width, int height)
 	else
 	{
 #ifdef USE_CUDA
-
-#ifdef USE_OPENCV2X
-		gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
-#else
 		cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
-#endif
 		updatedGMat();
 
 #elif defined USE_OPENCL
@@ -88,12 +83,7 @@ void Frame::getResizedOf(Frame* pFrom, double scaleW, double scaleH)
 	newSize.width *= scaleW;
 
 #ifdef USE_CUDA
-
-#ifdef USE_OPENCV2X
-	gpu::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
-#else
 	cuda::resize(*pFrom->getGMat(), m_GMat.m_mat, newSize);
-#endif
 	updatedGMat();
 
 #elif defined USE_OPENCL
@@ -110,14 +100,9 @@ void Frame::getGrayOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
-
-#ifdef USE_OPENCV2X
-	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
-#else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2GRAY);
-#endif
-
 	updatedGMat();
+
 #elif defined USE_OPENCL
 
 #else
@@ -134,13 +119,7 @@ void Frame::getHSVOf(Frame* pFrom)
 #ifdef USE_CUDA
 	//RGB or BGR depends on device
 	IF_(pFrom->getGMat()->channels()!=3);
-
-#ifdef USE_OPENCV2X
-	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
-#else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2HSV);
-#endif
-
 	updatedGMat();
 #elif defined USE_OPENCL
 
@@ -157,13 +136,7 @@ void Frame::getBGRAOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
-
-#ifdef USE_OPENCV2X
-	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
-#else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2BGRA);
-#endif
-
 	updatedGMat();
 #elif defined USE_OPENCL
 
@@ -180,13 +153,7 @@ void Frame::getRGBAOf(Frame* pFrom)
 
 #ifdef USE_CUDA
 	IF_(pFrom->getGMat()->channels()!=3);
-
-#ifdef USE_OPENCV2X
-	gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
-#else
 	cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_BGR2RGBA);
-#endif
-
 	updatedGMat();
 #elif defined USE_OPENCL
 
@@ -209,12 +176,7 @@ void Frame::get8UC3Of(Frame* pFrom)
 	else
 	{
 		if(pFrom->getGMat()->channels()!=1)return;
-
-#ifdef USE_OPENCV2X
-		gpu::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
-#else
 		cuda::cvtColor(*pFrom->getGMat(), m_GMat.m_mat, CV_GRAY2BGR);
-#endif
 	}
 
 	updatedGMat();
