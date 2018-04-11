@@ -154,7 +154,7 @@ void _DetectNet::detect(void)
 		double prob = (double)m_confCPU[n*2];
 		IF_CONT(prob < m_minConfidence);
 
-		obj.addClass((int)m_confCPU[n*2+1]);
+		obj.setTopClass((int)m_confCPU[n*2+1]);
 		obj.m_tStamp = m_tStamp;
 
 		float* bb = m_bbCPU + (n * 4);

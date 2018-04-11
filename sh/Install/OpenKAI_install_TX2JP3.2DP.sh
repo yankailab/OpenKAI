@@ -78,7 +78,6 @@ make -j4
 cd data
 wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
-wget --no-check-certificate https://pjreddie.com/media/files/tiny-yolo-voc.weights
 
 # RealSense on PC
 cd $FULLDEVDIR
@@ -89,7 +88,7 @@ sudo udevadm control --reload-rules && udevadm trigger
 ./scripts/patch-realsense-ubuntu-xenial.sh
 mkdir build
 cd build
-cmake ../
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j4
 
 # RealSense on TX2
@@ -100,6 +99,7 @@ git branch v2.9.1
 git checkout -b v2.9.1
 sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && udevadm trigger
+sudo reboot now
 mkdir build
 cd build
 cmake ../
@@ -128,6 +128,6 @@ git clone https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DCUDA_ARCH=62 -DUSE_OPENCV2X=OFF -DUSE_OPENCV_CONTRIB=ON -DTensorRT_build=/home/nvidia/jetson-inference/build/aarch64 ../
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=ON -DCUDA_ARCH=62 -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_TENSORRT=ON -DTensorRT_build=/home/ubuntu/dev/jetson-inference-batch/build/aarch64 ../
 make all -j4
 

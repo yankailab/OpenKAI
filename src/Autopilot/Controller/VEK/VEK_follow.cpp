@@ -80,7 +80,7 @@ void VEK_follow::update(void)
 	NULL_(m_pVEK);
 	NULL_(m_pAM);
 	NULL_(m_pCN);
-	NULL_(m_pObs);
+//	NULL_(m_pObs);
 	IF_(!isActive());
 
 	OBJECT* pO;
@@ -90,7 +90,7 @@ void VEK_follow::update(void)
 		pO = m_pCN->at(i);
 		IF_(!pO);
 		IF_CONT(pO->m_iClass != m_iTargetClass);
-		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);
+//		pO->m_dist = m_pObs->d(&pO->m_fBBox, NULL);
 
 		if (!m_pTarget)
 		{
