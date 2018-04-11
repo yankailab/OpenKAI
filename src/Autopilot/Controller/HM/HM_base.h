@@ -27,7 +27,6 @@ public:
 public:
 	_Canbus* m_pCAN;
 	_TCP* m_pCMD;
-	string 	m_strCMD;
 
 	int m_maxRpmT;
 	int m_maxRpmW;

@@ -22,6 +22,7 @@ Startup::Startup()
 
 	m_appName = "";
 	m_bWindow = true;
+	m_bDraw = true;
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
@@ -48,6 +49,7 @@ bool Startup::start(Kiss* pKiss)
 
 	KISSm(pApp,appName);
 	KISSm(pApp,bWindow);
+	KISSm(pApp,bDraw);
 	KISSm(pApp,waitKey);
 
 	F_FATAL_F(createAllInst(pKiss));
@@ -73,6 +75,14 @@ bool Startup::start(Kiss* pKiss)
 			draw();
 			m_key = waitKey(m_waitKey);
 			handleKey(m_key);
+		}
+	}
+	else if (m_bDraw)
+	{
+		while (m_bRun)
+		{
+			draw();
+			waitKey(m_waitKey);
 		}
 	}
 	else

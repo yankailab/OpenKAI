@@ -7,7 +7,6 @@ HM_base::HM_base()
 {
 	m_pCAN = NULL;
 	m_pCMD = NULL;
-	m_strCMD = "";
 	m_rpmL = 0;
 	m_rpmR = 0;
 	m_motorRpmW = 0;
@@ -81,12 +80,12 @@ void HM_base::update(void)
 	updateCAN();
 
 	string* pStateName = m_pAM->getCurrentStateName();
-	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME")
+	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME" || *pStateName=="HM_MANUAL")
 	{
 		m_rpmL = 0;
 		m_rpmR = 0;
 	}
-	else
+	else if(*pStateName == "HM_WORK")
 	{
 		m_rpmL = m_defaultRpmT;
 		m_rpmR = m_defaultRpmT;
@@ -108,61 +107,68 @@ void HM_base::cmd(void)
 	}
 
 	char buf;
-	while (m_pCMD->read((uint8_t*) &buf, 1) > 0)
-	{
-		if (buf == ',')break;
-		IF_CONT(buf==LF);
-		IF_CONT(buf==CR);
-
-		m_strCMD += buf;
-	}
-
-	IF_(buf!=',');
-
-	LOG_I("CMD: "<<m_strCMD);
-
 	string stateName;
-	if(m_strCMD=="start")
-	{
-		stateName = *m_pAM->getCurrentStateName();
 
-		if(stateName=="HM_STATION")
-		{
-			stateName = "HM_KICKBACK";
-			m_pAM->transit(&stateName);
-		}
-		else if(stateName=="HM_STANDBY")
-		{
-			m_pAM->transit(m_pAM->getLastStateIdx());
-		}
-	}
-	else if(m_strCMD=="stop")
+	IF_(m_pCMD->read((uint8_t*) &buf, 1) <= 0);
+
+	switch (buf)
 	{
+	case '1':	//standby
 		stateName = "HM_STANDBY";
 		m_pAM->transit(&stateName);
-	}
-	else if(m_strCMD=="work")
-	{
-		stateName = "HM_WORK";
-		m_pAM->transit(&stateName);
-	}
-	else if(m_strCMD=="back_to_home")
-	{
-		stateName = "HM_RTH";
-		m_pAM->transit(&stateName);
-	}
-	else if(m_strCMD=="follow")
-	{
-		stateName = "HM_FOLLOW";
-		m_pAM->transit(&stateName);
-	}
-	else if(m_strCMD=="station")
-	{
+		break;
+	case '2':	//station
 		stateName = "HM_STATION";
 		m_pAM->transit(&stateName);
+		break;
+	case '3':	//kickback
+		stateName = "HM_KICKBACK";
+		m_pAM->transit(&stateName);
+		break;
+	case '4':	//work
+		stateName = "HM_WORK";
+		m_pAM->transit(&stateName);
+		break;
+	case '5':	//follow
+		stateName = "HM_FOLLOW";
+		m_pAM->transit(&stateName);
+		break;
+	case '6':	//rth
+		stateName = "HM_RTH";
+		m_pAM->transit(&stateName);
+		break;
+	case '0':	//manual
+		stateName = "HM_MANUAL";
+		m_pAM->transit(&stateName);
+		m_rpmL = 0;
+		m_rpmR = 0;
+		break;
+	case 'w':
+		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		m_rpmL = m_defaultRpmT;
+		m_rpmR = m_defaultRpmT;
+		break;
+	case 'a':
+		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		m_rpmL = -m_defaultRpmT;
+		m_rpmR = m_defaultRpmT;
+		break;
+	case 's':
+		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		m_rpmL = -m_defaultRpmT;
+		m_rpmR = -m_defaultRpmT;
+		break;
+	case 'd':
+		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		m_rpmL = m_defaultRpmT;
+		m_rpmR = -m_defaultRpmT;
+		break;
+	case 'b':
+		m_bSpeaker = true;
+		break;
+	default:
+		break;
 	}
-
-	m_strCMD = "";
 }
 
 void HM_base::updateCAN(void)
@@ -243,11 +249,11 @@ void HM_base::updateCAN(void)
 
 	//CAN-ID301h 1byte 4bit "AC-input"
 	//1:ON-Docking/0:OFF-area
-	IF_(!((pCanData[1] >> 4) & 1));
-	IF_(stateName == "HM_KICKBACK");
-
-	stateName = "HM_STATION";
-	m_pAM->transit(&stateName);
+//	IF_(!((pCanData[1] >> 4) & 1));
+//	IF_(stateName == "HM_KICKBACK");
+//
+//	stateName = "HM_STATION";
+//	m_pAM->transit(&stateName);
 
 }
 

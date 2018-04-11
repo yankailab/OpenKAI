@@ -92,17 +92,6 @@ bool Window::init(void* pKiss)
 	KISSm(pK,gstOutput);
 	if (!m_gstOutput.empty())
 	{
-#ifdef USE_OPENCV2X
-		if (!m_gst.open(m_gstOutput,
-						0,
-						30,
-						cv::Size(m_size.x, m_size.y),
-						true))
-		{
-			LOG_E("Cannot open GStreamer output");
-			return false;
-		}
-#else
 		if (!m_gst.open(m_gstOutput,
 						CAP_GSTREAMER,
 						0,
@@ -113,7 +102,6 @@ bool Window::init(void* pKiss)
 			LOG_E("Cannot open GStreamer output");
 			return false;
 		}
-#endif
 	}
 
 	F_INFO(pK->v("textX", &m_textStart.x));

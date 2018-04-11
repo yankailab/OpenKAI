@@ -54,7 +54,6 @@ int main(int argc, char* argv[])
 
 void printEnvironment(void)
 {
-#ifndef USE_OPENCV2X
 	LOG(INFO)<<"OpenCV optimized code:"<<useOptimized();
 	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
 	LOG(INFO)<<"Using CUDA device:"<<cuda::getDevice();
@@ -72,7 +71,6 @@ void printEnvironment(void)
 	{
 		LOG(INFO)<<"OpenCL not found";
 	}
-#endif
 }
 
 

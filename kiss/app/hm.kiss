@@ -2,7 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
+	"bDraw":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -14,7 +15,8 @@
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.200 port=5678",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.101 port=5678",
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678",
 	"textX":20,
 	"textY":20,
 }
@@ -22,7 +24,7 @@
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -128,7 +130,8 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"realsense",
-	"modelDir":"/home/kai/dev/darknet/",
+	"_modelDir":"/home/kai/dev/darknet/",
+	"modelDir":"/home/ubuntu/dev/darknet/",
 	"modelFile":"cfg/yolov2.cfg",
 	"trainedFile":"data/yolov2.weights",
 	"meanFile":"",
@@ -195,8 +198,12 @@
 	"bInst":1,
 	"FPS":10,
 	"Window":"OKview",
-	"startState":"HM_WORK",
+	"startState":"HM_MANUAL",
 
+	{
+		"state":"HM_MANUAL",
+		"bInst":1,
+	}
 	{
 		"state":"HM_STATION",
 		"bInst":1,
@@ -279,7 +286,7 @@
 			"name":"avoid",
 			"class":"HM_avoid",
 			"bInst":1,
-			"Window":"depthView",
+			"Window":"OKview",
 			"HM_base":"base",
 			"_Automaton":"automaton",
 			"_DepthVisionBase":"realsense",
