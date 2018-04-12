@@ -37,19 +37,6 @@
 }
 
 {
-	"name":"camera",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"deviceID":0,
-	"width":1280,
-	"height":720,
-	"bFlip":0,
-	"bGray":0,
-}
-
-{
 	"name":"realsense",
 	"class":"_RealSense",
 	"FPS":30,
@@ -145,50 +132,67 @@
 }
 
 {
-	"name":"lane",
+	"name":"Lane",
 	"class":"_Lane",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"_VisionBase":"realsense",
-	"roiLTx":0.425,
-	"roiLTy":0.63,
+	"roiLTx":0.2,
+	"roiLTy":0.65,
 	"roiLBx":0.0,
-	"roiLBy":0.9,
-	"roiRTx":0.575,
-	"roiRTy":0.63,
+	"roiLBy":0.99,
+	"roiRTx":0.8,
+	"roiRTy":0.65,
 	"roiRBx":1.0,
-	"roiRBy":0.9,
+	"roiRBy":0.99,
 	"overheadW":100,
 	"overheadH":100,
+	"binMed":3,
 	"nAvr":2,
-	"nMed":5,
-	"bDrawOverhead":1,
+	"nMed":10,
+	"bDrawOverhead":0,
 	"bDrawFilter":0,
 	
 	{
+		"name":"colorFilter",
 		"bInst":1,
-		"iColorSpace":44, /*CV_BGR2Lab*/
-		"iChannel":2,
-		"nTile":4,
-		"thr":150,
-		"clipLim":2.0,
+		{
+			"bInst":1,
+			"iColorSpace":44, /*CV_BGR2Lab*/
+			"iChannel":2,
+			"nTile":4,
+			"thr":150,
+			"clipLim":2.0,
+		}
+		{
+			"bInst":1,
+			"iColorSpace":40, /*CV_BGR2HSV*/
+			"iChannel":2,
+			"nTile":4,
+			"thr":220,
+			"clipLim":6.0,
+		}
+		{
+			"bInst":1,
+			"iColorSpace":52, /*CV_BGR2HLS*/
+			"iChannel":1,
+			"nTile":4,
+			"thr":210,
+			"clipLim":2.0,
+		}
 	}
+	
 	{
+		"name":"lane",
 		"bInst":1,
-		"iColorSpace":40, /*CV_BGR2HSV*/
-		"iChannel":2,
-		"nTile":4,
-		"thr":220,
-		"clipLim":6.0,
-	}
-	{
-		"bInst":1,
-		"iColorSpace":52, /*CV_BGR2HLS*/
-		"iChannel":1,
-		"nTile":4,
-		"thr":210,
-		"clipLim":2.0,
+		{
+			"bInst":1,
+			"l":0.0,
+			"t":0.0,
+			"r":1.0,
+			"b":1.0,
+		}
 	}
 }
 
@@ -300,23 +304,23 @@
 				"bInst":1,
 				"l":0.0,
 				"t":0.2,
-				"r":0.15,
+				"r":0.25,
 				"b":0.8,
 			}			
 			
 			{
 				"name":"dROIf",
 				"bInst":1,
-				"l":0.15,
+				"l":0.25,
 				"t":0.2,
-				"r":0.85,
+				"r":0.8,
 				"b":0.8,
 			}
 			
 			{
 				"name":"dROIr",
 				"bInst":1,
-				"l":0.85,
+				"l":0.8,
 				"t":0.2,
 				"r":1.0,
 				"b":0.8,

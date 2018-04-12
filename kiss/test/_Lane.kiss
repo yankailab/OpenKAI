@@ -26,13 +26,38 @@
 	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"okView",
 	"deviceID":0,
 	"width":1280,
 	"height":720,
 	"bFlip":0,
 	"bGray":0,
+}
+
+{
+	"name":"camera",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":1,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"nMed":3,
+	"mW":10,
+	"mH":10,	
 }
 
 {
@@ -52,33 +77,50 @@
 	"roiRBy":0.9,
 	"overheadW":100,
 	"overheadH":100,
+	"binMed":3,
 	"nAvr":2,
 	"nMed":5,
-	"bDrawOverhead":0,
+	"bDrawOverhead":1,
 	"bDrawFilter":0,
+
+	{
+		"name":"colorFilter",
+		"bInst":1,
+		{
+			"bInst":1,
+			"iColorSpace":44, /*CV_BGR2Lab*/
+			"iChannel":2,
+			"nTile":4,
+			"thr":150,
+			"clipLim":2.0,
+		}
+		{
+			"bInst":1,
+			"iColorSpace":40, /*CV_BGR2HSV*/
+			"iChannel":2,
+			"nTile":4,
+			"thr":220,
+			"clipLim":6.0,
+		}
+		{
+			"bInst":1,
+			"iColorSpace":52, /*CV_BGR2HLS*/
+			"iChannel":1,
+			"nTile":4,
+			"thr":210,
+			"clipLim":2.0,
+		}
+	}
 	
 	{
+		"name":"lane",
 		"bInst":1,
-		"iColorSpace":44, /*CV_BGR2Lab*/
-		"iChannel":2,
-		"nTile":4,
-		"thr":150,
-		"clipLim":2.0,
-	}
-	{
-		"bInst":1,
-		"iColorSpace":40, /*CV_BGR2HSV*/
-		"iChannel":2,
-		"nTile":4,
-		"thr":220,
-		"clipLim":6.0,
-	}
-	{
-		"bInst":1,
-		"iColorSpace":52, /*CV_BGR2HLS*/
-		"iChannel":1,
-		"nTile":4,
-		"thr":210,
-		"clipLim":2.0,
+		{
+			"bInst":1,
+			"l":0.0,
+			"t":0.0,
+			"r":1.0,
+			"b":1.0,
+		}
 	}
 }

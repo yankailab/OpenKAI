@@ -15,6 +15,7 @@
 #include <gsl/gsl_multifit.h>
 
 #define N_LANE_FILTER 3
+#define N_LANE 3
 
 namespace kai
 {
@@ -54,6 +55,8 @@ struct LANE
 	int m_n;
 	Median* m_pMed = NULL;
 	Average* m_pAvr = NULL;
+	double m_deviation;
+	vDouble4 m_ROI;
 
 	double* m_pX = NULL;
 	double* m_pY = NULL;
@@ -66,6 +69,10 @@ struct LANE
 	void init(int n, int nAvr, int nMed)
 	{
 		m_n = n;
+		m_deviation = 0.0;
+		m_ROI.init();
+		m_ROI.z = 1.0;
+		m_ROI.w = 1.0;
 		m_pMed = new Median[n];
 		m_pAvr = new Average[n];
 
@@ -107,12 +114,39 @@ struct LANE
 		m_pAvr[i].input(m_pMed[i].v());
 	}
 
-	double v(int i)
+	double vFilter(int i)
 	{
 		return m_pAvr[i].v();
 	}
 
-	void poly(void)
+	void findLane(Mat& mBin)
+	{
+		double vMax;
+		Point iMax;
+
+		Rect r;
+		r.x = m_ROI.x * mBin.cols;
+		r.y = m_ROI.y * mBin.rows;
+		r.width = m_ROI.z * mBin.cols - r.x;
+		r.height = m_ROI.w * mBin.rows - r.y;
+		Mat mROI = mBin(r);
+
+		Rect rX;
+		rX.x = 0;
+		rX.width = r.width;
+		rX.height = 1;
+
+		for(int i=0; i<mROI.rows; i++)
+		{
+			rX.y = i;
+			cv::minMaxLoc(mBin(rX),NULL,&vMax,NULL,&iMax);
+			IF_CONT(vMax <= 0);
+
+			input(r.y+i, r.x+iMax.x);
+		}
+	}
+
+	void updatePolyFit(void)
 	{
 		double chisq;
 		int i, j;
@@ -135,6 +169,31 @@ struct LANE
 		}
 	}
 
+	double vPoly(int iY)
+	{
+		double iX = 0;
+		double pow = 1.0;
+
+		for (int i = 0; i < m_degPoly; i++)
+		{
+			iX += m_pPoly[i] * pow;
+			pow *= (double) iY;
+		}
+
+		return iX;
+	}
+
+	void updateDeviation(void)
+	{
+		double d = 0.0;
+		for (int i = 0; i < m_n; i++)
+		{
+			d += abs(vFilter(i)-vPoly(i));
+		}
+
+		m_deviation = d/(double)m_n;
+	}
+
 };
 
 class _Lane: public _ThreadBase
@@ -151,7 +210,6 @@ public:
 private:
 	void updateVisionSize(void);
 	void filterBin(void);
-	void findLane(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -172,13 +230,16 @@ private:
 	vInt2 m_sizeOverhead;
 	Mat m_mOverhead;
 	Mat m_mBin;
+	int m_binMed;
 
 	int m_nFilter;
 	LANE_FILTER m_pFilter[N_LANE_FILTER];
 
-	LANE m_laneL;
-	LANE m_laneR;
+	int m_nLane;
+	LANE m_pLane[N_LANE];
 
+	Point** m_ppPoint;
+	int* m_pNp;
 	bool m_bDrawOverhead;
 	bool m_bDrawFilter;
 

@@ -26,8 +26,12 @@ _Lane::_Lane()
 	m_sizeOverhead.x = 400;
 	m_sizeOverhead.y = 300;
 	m_vSize.init();
+	m_binMed = 3;
 
 	m_nFilter = 0;
+	m_nLane = 0;
+	m_ppPoint = NULL;
+	m_pNp = NULL;
 	m_bDrawOverhead = false;
 	m_bDrawFilter = false;
 }
@@ -44,6 +48,7 @@ bool _Lane::init(void* pKiss)
 
 	KISSm(pK, bDrawOverhead);
 	KISSm(pK, bDrawFilter);
+	KISSm(pK, binMed);
 
 	F_INFO(pK->v("roiLTx", &m_roiLT.x));
 	F_INFO(pK->v("roiLTy", &m_roiLT.y));
@@ -58,32 +63,64 @@ bool _Lane::init(void* pKiss)
 
 	m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
-	//filter parameters
-	Kiss** pItrFilter = pK->getChildItr();
+	Kiss* pO = NULL;
+	Kiss** pItr = NULL;
+
+	// color filters
+	Kiss* pKF = pK->o("colorFilter");
+	NULL_Fl(pKF,"colorFilter not found");
+
+	pItr = pKF->getChildItr();
 	m_nFilter = 0;
-	while (pItrFilter[m_nFilter])
+	while (pItr[m_nFilter])
 	{
 		IF_F(m_nFilter >= N_LANE_FILTER);
-		Kiss* pFK = pItrFilter[m_nFilter];
+		pO = pItr[m_nFilter];
 
 		LANE_FILTER* pF = &m_pFilter[m_nFilter];
-		F_INFO(pFK->v("iColorSpace", &pF->m_iColorSpace));
-		F_INFO(pFK->v("iChannel", &pF->m_iChannel));
-		F_INFO(pFK->v("nTile", &pF->m_nTile));
-		F_INFO(pFK->v("thr", &pF->m_thr));
-		F_INFO(pFK->v("clipLim", &pF->m_clipLim));
+		F_INFO(pO->v("iColorSpace", &pF->m_iColorSpace));
+		F_INFO(pO->v("iChannel", &pF->m_iChannel));
+		F_INFO(pO->v("nTile", &pF->m_nTile));
+		F_INFO(pO->v("thr", &pF->m_thr));
+		F_INFO(pO->v("clipLim", &pF->m_clipLim));
 		pF->init();
 
 		m_nFilter++;
 	}
 
+	// lanes
 	int nAvr=0;
 	F_INFO(pK->v("nAvr", &nAvr));
 	int nMed=0;
 	F_INFO(pK->v("nMed", &nMed));
 
-	m_laneL.init(m_sizeOverhead.y,nAvr,nMed);
-	m_laneR.init(m_sizeOverhead.y,nAvr,nMed);
+	Kiss* pKL = pK->o("lane");
+	NULL_Fl(pKL,"lane not found");
+
+	pItr = pKL->getChildItr();
+	m_nLane = 0;
+	while (pItr[m_nLane])
+	{
+		IF_F(m_nLane >= N_LANE_FILTER);
+		pO = pItr[m_nLane];
+
+		LANE* pLane = &m_pLane[m_nLane];
+		pLane->init(m_sizeOverhead.y,nAvr,nMed);
+		F_INFO(pO->v("l", &pLane->m_ROI.x));
+		F_INFO(pO->v("t", &pLane->m_ROI.y));
+		F_INFO(pO->v("r", &pLane->m_ROI.z));
+		F_INFO(pO->v("b", &pLane->m_ROI.w));
+
+		m_nLane++;
+	}
+
+	m_ppPoint = new Point*[m_nLane];
+	m_pNp = new int[m_nLane];
+	for(int i=0; i<m_nLane; i++)
+	{
+		m_ppPoint[i] = new Point[m_sizeOverhead.y];
+		m_pNp[i] = m_sizeOverhead.y;
+	}
 
 	return true;
 }
@@ -146,40 +183,12 @@ void _Lane::detect(void)
 	//Filter image to get binary view
 	filterBin();
 
-	findLane();
-
-	m_laneL.poly();
-	m_laneR.poly();
-
-}
-
-void _Lane::findLane(void)
-{
-	double vMax;
-	Point iMax;
-	Rect ROI;
-	ROI.width = m_sizeOverhead.x / 2;
-	ROI.height = 1;
-
-	for(int i=0; i<m_sizeOverhead.y; i++)
+	for(int i=0;i<m_nLane;i++)
 	{
-		ROI.y = i;
-
-		//L lane
-		ROI.x = 0;
-		cv::minMaxLoc(m_mBin(ROI),NULL,&vMax,NULL,&iMax);
-		if(vMax > 0)
-		{
-			m_laneL.input(i,iMax.x);
-		}
-
-		//R lane
-		ROI.x = ROI.width;
-		cv::minMaxLoc(m_mBin(ROI),NULL,&vMax,NULL,&iMax);
-		if(vMax > 0)
-		{
-			m_laneR.input(i,ROI.x + iMax.x);
-		}
+		LANE* pL = &m_pLane[i];
+		pL->findLane(m_mBin);
+		pL->updatePolyFit();
+		pL->updateDeviation();
 	}
 }
 
@@ -192,7 +201,8 @@ void _Lane::filterBin(void)
 		mAll += m_pFilter[i].filter(m_mOverhead);
 	}
 
-	cv::normalize(mAll, m_mBin, 0, 255, cv::NORM_MINMAX);
+	cv::normalize(mAll, mAll, 0, 255, cv::NORM_MINMAX);
+	cv::medianBlur(mAll, m_mBin, m_binMed);
 }
 
 void _Lane::updateVisionSize(void)
@@ -227,18 +237,16 @@ bool _Lane::draw(void)
 	Mat* pMat = pFrame->getCMat();
 	IF_F(pMat->empty());
 
-	int i;
+	int i,j;
+	LANE* pL;
 	string msg;
 
 	pWin->tabNext();
-	if(m_laneL.m_pPoly)
+	for(i=0; i<m_nLane; i++)
 	{
-		msg = "L: " + f2str(m_laneL.m_pPoly[0]) + " " + f2str(m_laneL.m_pPoly[1]) + " " + f2str(m_laneL.m_pPoly[2]);
-		pWin->addMsg(&msg);
-	}
-	if(m_laneR.m_pPoly)
-	{
-		msg = "R: " + f2str(m_laneR.m_pPoly[0]) + " " + f2str(m_laneR.m_pPoly[1]) + " " + f2str(m_laneR.m_pPoly[2]);
+		pL = &m_pLane[i];
+		IF_CONT(!pL->m_pPoly);
+		msg = "Lane "+ i2str(i) +": " + f2str(pL->m_pPoly[0]) + " " + f2str(pL->m_pPoly[1]) + " " + f2str(pL->m_pPoly[2]);
 		pWin->addMsg(&msg);
 	}
 	pWin->tabPrev();
@@ -248,43 +256,37 @@ bool _Lane::draw(void)
 	//visualization of the lane
 	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC3);
 	Mat mOverlay = Mat::zeros(pMat->size(), CV_8UC3);
-	vector<Point> m_vLane;
 
-	for(i=0; i<m_sizeOverhead.y; i++)
+	for(i=0; i<m_nLane; i++)
 	{
-		m_vLane.push_back(Point(m_laneL.m_pPoly[0]+
-								m_laneL.m_pPoly[1]*i+
-								m_laneL.m_pPoly[2]*i*i,
-								i));
+		pL = &m_pLane[i];
+		IF_CONT(!pL->m_pPoly);
+
+		for(j=0; j<m_sizeOverhead.y; j++)
+		{
+			m_ppPoint[i][j] = Point(pL->vPoly(j), j);
+		}
+
+		polylines(mLane, m_ppPoint, m_pNp, m_nLane, false, cv::Scalar(0,0,255), 3, 4);
 	}
 
-	for(i=m_sizeOverhead.y-1; i>=0; i--)
-	{
-		m_vLane.push_back(Point(m_laneR.m_pPoly[0]+
-								m_laneR.m_pPoly[1]*i+
-								m_laneR.m_pPoly[2]*i*i,
-								i));
-	}
-
-	fillConvexPoly(mLane, m_vLane, Scalar(0, 255, 0), CV_AA, 0);
 	cv::warpPerspective(mLane, mOverlay, m_mPerspectiveInv, mOverlay.size(), cv::INTER_LINEAR);
-	cv::addWeighted(mOverlay, 0.25, *pMat, 1.0, 0, *pMat);
+	cv::addWeighted(mOverlay, 0.8, *pMat, 1.0, 0, *pMat);
 
 	if(m_bDrawOverhead && !m_mOverhead.empty())
 	{
 		Mat mO = m_mOverhead.clone();
 
-		for (i = 0; i < m_sizeOverhead.y; i++)
+		for(i=0; i<m_nLane; i++)
 		{
-			//L lane
-			circle(mO,
-				   Point(m_laneL.v(i), i),
-				   1, Scalar(0, 255, 0), 1);
+			pL = &m_pLane[i];
+			IF_CONT(!pL->m_pPoly);
 
-			//R lane
-			circle(mO,
-				   Point(m_laneR.v(i), i),
-				   1, Scalar(0, 255, 0), 1);
+			for(j=0; j<m_sizeOverhead.y; j++)
+			{
+				circle(mO, Point(pL->vPoly(j), j), 1, Scalar(0, 255, 0), 1);
+				circle(mO, Point(pL->vFilter(j), j), 1, Scalar(0, 0, 255), 1);
+			}
 		}
 
 		imshow("Overhead", mO);
