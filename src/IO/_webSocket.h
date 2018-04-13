@@ -11,11 +11,8 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Protocol/Peer.h"
-#include "../Script/Kiss.h"
-#include "../UI/Window.h"
 
 #define N_BUF_IO 128
-#define TIMEOUT_RECV_USEC 1000
 
 namespace kai
 {
@@ -37,7 +34,6 @@ public:
 	int  read(uint8_t* pBuf, int nByte);
 
 private:
-	bool connect(void);
 	void send(void);
 	void recv(void);
 
@@ -49,16 +45,9 @@ private:
 	}
 
 public:
-	string	m_strStatus;
-
 	struct sockaddr_in m_serverAddr;
 	string	m_strAddr;
 	uint16_t m_port;
-
-	bool m_bClient;
-	bool m_bConnected;
-	int m_webSocket;
-	uint32_t m_timeoutRecv;
 
 	int m_nBuf;
 	uint8_t* m_pBuf;
@@ -67,7 +56,6 @@ public:
 
 	pthread_mutex_t m_mutexSend;
 	pthread_mutex_t m_mutexRecv;
-
 
 };
 

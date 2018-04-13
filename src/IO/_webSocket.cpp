@@ -15,15 +15,10 @@ _webSocket::_webSocket()
 	pthread_mutex_init(&m_mutexSend, NULL);
 	pthread_mutex_init(&m_mutexRecv, NULL);
 
-	m_strStatus = "";
 	m_strAddr = "";
 	m_port = 0;
-	m_bClient = true;
-	m_bConnected = false;
-	m_webSocket = 0;
 	m_pBuf = NULL;
 	m_nBuf = N_BUF_IO;
-	m_timeoutRecv = TIMEOUT_RECV_USEC;
 }
 
 _webSocket::~_webSocket()
@@ -41,20 +36,12 @@ bool _webSocket::init(void* pKiss)
 
 	F_INFO(pK->v("addr", &m_strAddr));
 	F_INFO(pK->v("port", (int* )&m_port));
-	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
-
-	if (m_timeoutRecv < TIMEOUT_RECV_USEC)
-		m_timeoutRecv = TIMEOUT_RECV_USEC;
 
 	F_INFO(pK->v("buf", &m_nBuf));
 	if (m_nBuf < N_BUF_IO)
 		m_nBuf = N_BUF_IO;
 	m_pBuf = new uint8_t[m_nBuf];
 	NULL_F(m_pBuf);
-
-	m_strStatus = "Initialized";
-	m_bClient = true;
-	m_bConnected = false;
 
 	return true;
 }
@@ -96,22 +83,6 @@ void _webSocket::update(void)
 	//client mode always trying to connect to the server
 	while (m_bThreadON)
 	{
-		if (m_bClient && !m_bConnected)
-		{
-			if (!connect())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-		else
-		{
-			if (!m_bConnected)
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
 
 		this->autoFPSfrom();
 
@@ -123,44 +94,8 @@ void _webSocket::update(void)
 
 }
 
-bool _webSocket::connect(void)
-{
-	IF_T(m_bConnected);
-
-	m_webSocket = socket(AF_INET, SOCK_STREAM, 0);
-	IF_F(m_webSocket < 0);
-
-	struct sockaddr_in server;
-	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
-	server.sin_family = AF_INET;
-	server.sin_port = htons(m_port);
-	m_strStatus = "Connecting";
-	LOG_I(m_strStatus);
-
-	int ret = ::connect(m_webSocket, (struct sockaddr *) &server, sizeof(server));
-	if (ret < 0)
-	{
-		close();
-		m_strStatus = "Connection failed";
-		LOG_I(m_strStatus);
-		return false;
-	}
-
-	struct timeval timeout;
-	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
-	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	setsockopt(m_webSocket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
-	m_bConnected = true;
-	m_strStatus = "CONNECTED";
-	LOG_I(m_strStatus);
-
-	return true;
-}
-
 void _webSocket::send(void)
 {
-	IF_(!m_bConnected);
 	IF_(m_queSend.empty());
 
 	pthread_mutex_lock(&m_mutexSend);
@@ -172,50 +107,31 @@ void _webSocket::send(void)
 	}
 	pthread_mutex_unlock(&m_mutexSend);
 
-	int nSend = ::write(m_webSocket, m_pBuf, nByte);
-	if (nSend == -1)
-	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("write error: "<<errno);
-		close();
-		return;
-	}
+//	int nSend = ::write(m_webSocket, m_pBuf, nByte);
+//	if (nSend == -1)
+//	{
+//		IF_(errno == EAGAIN);
+//		IF_(errno == EWOULDBLOCK);
+//		LOG_E("write error: "<<errno);
+//		close();
+//		return;
+//	}
 }
 
 void _webSocket::recv(void)
 {
-	IF_(!m_bConnected);
-
-	int nRecv = ::recv(m_webSocket, m_pBuf, m_nBuf, 0);
-
-	if (nRecv == -1)
-	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("recv error: "<<errno);
-		close();
-		return;
-	}
-
-	if(nRecv == 0)
-	{
-		LOG_E("socket is shutdown by peer");
-		close();
-		return;
-	}
+//	int nRecv = ::recv(m_webSocket, m_pBuf, m_nBuf, 0);
 
 	pthread_mutex_lock(&m_mutexRecv);
-	for(int i=0;i<nRecv;i++)
-	{
-		m_queRecv.push(m_pBuf[i]);
-	}
+//	for(int i=0; i<nRecv; i++)
+//	{
+//		m_queRecv.push(m_pBuf[i]);
+//	}
 	pthread_mutex_unlock(&m_mutexRecv);
 }
 
 bool _webSocket::write(uint8_t* pBuf, int nByte)
 {
-	IF_F(!m_bConnected);
 	IF_F(nByte <= 0);
 	NULL_F(pBuf);
 
@@ -232,7 +148,6 @@ bool _webSocket::write(uint8_t* pBuf, int nByte)
 
 int _webSocket::read(uint8_t* pBuf, int nByte)
 {
-	if(!m_bConnected)return -1;
 	if(pBuf==NULL)return -1;
 	if(nByte<=0)return 0;
 
@@ -252,9 +167,6 @@ int _webSocket::read(uint8_t* pBuf, int nByte)
 
 void _webSocket::close(void)
 {
-	::close(m_webSocket);
-	m_bConnected = false;
-
 	while (!m_queSend.empty())
 		m_queSend.pop();
 	while (!m_queRecv.empty())
@@ -269,8 +181,7 @@ bool _webSocket::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
-			+ m_strStatus + ((m_bClient) ? "; Client" : "; Server");
+	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port);
 	pWin->addMsg(&msg);
 
 	return true;

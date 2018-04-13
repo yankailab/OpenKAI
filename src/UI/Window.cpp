@@ -19,7 +19,8 @@ Window::Window()
 	m_textPos.init();
 	m_textStart.x = 15;
 	m_textStart.y = 15;
-	m_size.init();
+	m_size.x = 1280;
+	m_size.y = 720;
 	m_bFullScreen = false;
 	m_pixTab = TAB_PIX;
 	m_lineHeight = LINE_HEIGHT;
@@ -51,8 +52,8 @@ bool Window::init(void* pKiss)
 
 	pK->m_pInst = this;
 
-	F_ERROR_F(pK->v("w", &m_size.x));
-	F_ERROR_F(pK->v("h", &m_size.y));
+	F_INFO(pK->v("w", &m_size.x));
+	F_INFO(pK->v("h", &m_size.y));
 	F_INFO(pK->v("bFullScreen", &m_bFullScreen));
 
 	if (m_size.area() <= 0)

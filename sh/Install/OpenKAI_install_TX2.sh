@@ -122,6 +122,13 @@ cd orb_slam2_gpu
 chmod +x build.sh
 ./build.sh
 
+# gwsocket
+git clone https://github.com/allinurl/gwsocket.git
+cd gwsocket
+autoreconf -fiv
+./configure
+make
+
 # OpenKAI
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/OpenKAI.git
