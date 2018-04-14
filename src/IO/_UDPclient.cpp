@@ -18,6 +18,7 @@ _UDPclient::_UDPclient()
 	m_nSAddr = 0;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 	m_bSendOnly = false;
+	m_ioType = io_udp;
 }
 
 _UDPclient::~_UDPclient()

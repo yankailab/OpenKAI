@@ -10,6 +10,20 @@ using namespace std;
 
 namespace kai
 {
+inline size_t pack_uint32(void* buf, uint32_t val)
+{
+  uint32_t v32 = htonl(val);
+  memcpy(buf, &v32, sizeof(uint32_t));
+  return sizeof(uint32_t);
+}
+
+inline size_t unpack_uint32 (const void *b, uint32_t * val)
+{
+  uint32_t v32 = 0;
+  memcpy (&v32, b, sizeof (uint32_t));
+  *val = ntohl (v32);
+  return sizeof (uint32_t);
+}
 
 inline string getFileDir(string file)
 {

@@ -85,8 +85,12 @@ int _File::read(uint8_t* pBuf, int nByte)
 		m_iByte = 0;
 	}
 
-	if(m_iByte+nByte>=m_buf.size())nByte=m_buf.size()-m_iByte;
+	if(m_iByte + nByte >= m_buf.size())
+	{
+		nByte = m_buf.size()-m_iByte;
+	}
 	if(nByte<=0)return 0;
+
 	m_buf.copy((char*)pBuf, nByte, m_iByte);
 	m_iByte += nByte;
 	return nByte;

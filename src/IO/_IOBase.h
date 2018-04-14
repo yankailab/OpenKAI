@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 
-#define N_IO_BUF 256
+#define N_IO_BUF 1024
 
 namespace kai
 {
@@ -23,7 +23,8 @@ enum IO_TYPE
 	io_serialport,
 	io_file,
 	io_tcp,
-	io_udp
+	io_udp,
+	io_fifo
 };
 
 enum IO_STATUS
