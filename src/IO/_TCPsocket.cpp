@@ -12,25 +12,18 @@ namespace kai
 
 _TCPsocket::_TCPsocket()
 {
-	pthread_mutex_init(&m_mutexSend, NULL);
-	pthread_mutex_init(&m_mutexRecv, NULL);
-
-	m_strStatus = "";
 	m_strAddr = "";
 	m_port = 0;
 	m_bClient = true;
-	m_bConnected = false;
 	m_socket = 0;
-	m_pBuf = NULL;
-	m_nBuf = N_BUF_IO;
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
+	m_ioType = io_tcp;
+	m_ioStatus = io_unknown;
 }
 
 _TCPsocket::~_TCPsocket()
 {
 	reset();
-	pthread_mutex_destroy (&m_mutexSend);
-	pthread_mutex_destroy (&m_mutexRecv);
 }
 
 bool _TCPsocket::init(void* pKiss)
@@ -46,35 +39,50 @@ bool _TCPsocket::init(void* pKiss)
 	if (m_timeoutRecv < TIMEOUT_RECV_USEC)
 		m_timeoutRecv = TIMEOUT_RECV_USEC;
 
-	F_INFO(pK->v("buf", &m_nBuf));
-	if (m_nBuf < N_BUF_IO)
-		m_nBuf = N_BUF_IO;
-	m_pBuf = new uint8_t[m_nBuf];
-	NULL_F(m_pBuf);
-
-	m_strStatus = "Initialized";
 	m_bClient = true;
-	m_bConnected = false;
+	return true;
+}
+
+bool _TCPsocket::open(void)
+{
+	m_socket = socket(AF_INET, SOCK_STREAM, 0);
+	IF_F(m_socket < 0);
+
+	struct sockaddr_in server;
+	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
+	server.sin_family = AF_INET;
+	server.sin_port = htons(m_port);
+	LOG_I("connecting");
+
+	int ret = ::connect(m_socket, (struct sockaddr *) &server, sizeof(server));
+	if (ret < 0)
+	{
+		close();
+		LOG_E("connec failed");
+		return false;
+	}
+
+	struct timeval timeout;
+	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
+	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
+	IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
+
+	m_ioStatus = io_opened;
+	LOG_I("connected");
 
 	return true;
 }
 
 void _TCPsocket::close(void)
 {
+	IF_(m_ioStatus!=io_opened);
 	::close(m_socket);
-	m_bConnected = false;
-
-	while (!m_queSend.empty())
-		m_queSend.pop();
-	while (!m_queRecv.empty())
-		m_queRecv.pop();
-
-	LOG_I("Closed");
+	this->_IOBase::close();
 }
 
 void _TCPsocket::reset(void)
 {
-	this->_ThreadBase::reset();
+	this->_IOBase::reset();
 	close();
 }
 
@@ -104,20 +112,11 @@ bool _TCPsocket::start(void)
 
 void _TCPsocket::update(void)
 {
-	//client mode always trying to connect to the server
 	while (m_bThreadON)
 	{
-		if (m_bClient && !m_bConnected)
+		if (!isOpen())
 		{
-			if (!connect())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-		else
-		{
-			if (!m_bConnected)
+			if (!open())
 			{
 				this->sleepTime(USEC_1SEC);
 				continue;
@@ -126,81 +125,41 @@ void _TCPsocket::update(void)
 
 		this->autoFPSfrom();
 
-		send();
-		recv();
+		writeIO();
+		readIO();
 
 		this->autoFPSto();
 	}
-
 }
 
-bool _TCPsocket::connect(void)
+void _TCPsocket::writeIO(void)
 {
-	IF_T(m_bConnected);
+	IF_(m_ioStatus != io_opened);
 
-	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	IF_F(m_socket < 0);
+	IO_BUF ioB;
+	toBufW(&ioB);
+	IF_(ioB.bEmpty());
 
-	struct sockaddr_in server;
-	server.sin_addr.s_addr = inet_addr(m_strAddr.c_str());
-	server.sin_family = AF_INET;
-	server.sin_port = htons(m_port);
-	m_strStatus = "Connecting";
-	LOG_I(m_strStatus);
+	int nSent = ::send(m_socket, ioB.m_pB, ioB.m_nB, 0);
 
-	int ret = ::connect(m_socket, (struct sockaddr *) &server, sizeof(server));
-	if (ret < 0)
-	{
-		close();
-		m_strStatus = "Connection failed";
-		LOG_I(m_strStatus);
-		return false;
-	}
-
-	struct timeval timeout;
-	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
-	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
-
-	m_bConnected = true;
-	m_strStatus = "CONNECTED";
-	LOG_I(m_strStatus);
-
-	return true;
-}
-
-void _TCPsocket::send(void)
-{
-	IF_(!m_bConnected);
-	IF_(m_queSend.empty());
-
-	pthread_mutex_lock(&m_mutexSend);
-	int nByte = 0;
-	while (!m_queSend.empty() && nByte < m_nBuf)
-	{
-		m_pBuf[nByte++] = m_queSend.front();
-		m_queSend.pop();
-	}
-	pthread_mutex_unlock(&m_mutexSend);
-
-	int nSend = ::write(m_socket, m_pBuf, nByte);
-	if (nSend == -1)
+	if (nSent == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
-		LOG_E("write error: "<<errno);
+		LOG_E("send error: "<<errno);
 		close();
 		return;
 	}
 }
 
-void _TCPsocket::recv(void)
+void _TCPsocket::readIO(void)
 {
-	IF_(!m_bConnected);
+	IF_(m_ioStatus != io_opened);
 
-	int nRecv = ::recv(m_socket, m_pBuf, m_nBuf, 0);
+	IO_BUF ioB;
+	ioB.m_nB = ::recv(m_socket, ioB.m_pB, N_IO_BUF, 0);
 
-	if (nRecv == -1)
+	if (ioB.m_nB == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
@@ -209,66 +168,25 @@ void _TCPsocket::recv(void)
 		return;
 	}
 
-	if(nRecv == 0)
+	if(ioB.m_nB == 0)
 	{
-		LOG_E("socket is shutdown by peer");
+		LOG_E("socket is shutdown");
 		close();
 		return;
 	}
 
-	pthread_mutex_lock(&m_mutexRecv);
-	for(int i=0;i<nRecv;i++)
-	{
-		m_queRecv.push(m_pBuf[i]);
-	}
-	pthread_mutex_unlock(&m_mutexRecv);
-}
+	toQueR(&ioB);
 
-bool _TCPsocket::write(uint8_t* pBuf, int nByte)
-{
-	IF_F(!m_bConnected);
-	IF_F(nByte <= 0);
-	NULL_F(pBuf);
-
-	pthread_mutex_lock(&m_mutexSend);
-
-	int i;
-	for (i = 0; i < nByte; i++)
-		m_queSend.push(pBuf[i]);
-
-	pthread_mutex_unlock(&m_mutexSend);
-
-	return true;
-}
-
-int _TCPsocket::read(uint8_t* pBuf, int nByte)
-{
-	if(!m_bConnected)return -1;
-	if(pBuf==NULL)return -1;
-	if(nByte<=0)return 0;
-
-	pthread_mutex_lock(&m_mutexRecv);
-
-	int i=0;
-	while(!m_queRecv.empty() && i<nByte)
-	{
-		pBuf[i++] = m_queRecv.front();
-		m_queRecv.pop();
-	}
-
-	pthread_mutex_unlock(&m_mutexRecv);
-
-	return i;
+//	LOG_I("Received "<< ioB.m_nB <<" bytes from " << inet_ntoa(m_sAddr.sin_addr) << ":" << ntohs(m_sAddr.sin_port));
 }
 
 bool _TCPsocket::draw(void)
 {
-	IF_F(!this->BASE::draw());
+	IF_F(!this->_IOBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + "; STATUS: "
-			+ m_strStatus + ((m_bClient) ? "; Client" : "; Server");
+	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
 	pWin->addMsg(&msg);
 
 	return true;

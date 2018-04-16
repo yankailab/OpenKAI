@@ -69,9 +69,7 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 		nW += ioB.m_nB;
 
 		pthread_mutex_lock(&m_mutexW);
-
 		m_queW.push(ioB);
-
 		pthread_mutex_unlock(&m_mutexW);
 	}
 
@@ -98,10 +96,8 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 	}
 
 	pthread_mutex_lock(&m_mutexR);
-
 	IO_BUF ioB = m_queR.front();
 	m_queR.pop();
-
 	pthread_mutex_unlock(&m_mutexR);
 
 	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
@@ -158,10 +154,6 @@ void _IOBase::close(void)
 		m_queR.pop();
 
 	m_ioStatus = io_closed;
-
-	IF_(m_ioType == io_file);
-	LOG_I("Closed");
 }
-
 
 }

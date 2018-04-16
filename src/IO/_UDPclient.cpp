@@ -19,6 +19,7 @@ _UDPclient::_UDPclient()
 	m_timeoutRecv = TIMEOUT_RECV_USEC;
 	m_bSendOnly = false;
 	m_ioType = io_udp;
+	m_ioStatus = io_unknown;
 }
 
 _UDPclient::~_UDPclient()
@@ -177,7 +178,7 @@ void _UDPclient::readIO(void)
 
 bool _UDPclient::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_IOBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 

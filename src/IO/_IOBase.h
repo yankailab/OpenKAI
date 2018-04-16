@@ -12,7 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 
-#define N_IO_BUF 1024
+#define N_IO_BUF 256
 
 namespace kai
 {

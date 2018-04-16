@@ -5,14 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NETWORK_TCPSOCKET_H_
-#define SRC_NETWORK_TCPSOCKET_H_
+#ifndef OpenKAI_src_IO__TCPsocket_H_
+#define OpenKAI_src_IO__TCPsocket_H_
 
 #include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
+#include "_IOBase.h"
 #include "../Protocol/Peer.h"
-#include "../Script/Kiss.h"
-#include "../UI/Window.h"
 
 #define N_BUF_IO 128
 #define TIMEOUT_RECV_USEC 1000
@@ -20,7 +18,7 @@
 namespace kai
 {
 
-class _TCPsocket: public _ThreadBase
+class _TCPsocket: public _IOBase
 {
 public:
 	_TCPsocket();
@@ -29,17 +27,14 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
+	bool open(void);
 	void close(void);
 	void reset(void);
 	bool draw(void);
 
-	bool write(uint8_t* pBuf, int nByte);
-	int  read(uint8_t* pBuf, int nByte);
-
 private:
-	bool connect(void);
-	void send(void);
-	void recv(void);
+	void readIO(void);
+	void writeIO(void);
 
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -49,28 +44,14 @@ private:
 	}
 
 public:
-	string	m_strStatus;
-
 	struct sockaddr_in m_serverAddr;
 	string	m_strAddr;
 	uint16_t m_port;
 
 	bool m_bClient;
-	bool m_bConnected;
 	int m_socket;
 	uint32_t m_timeoutRecv;
-
-	int m_nBuf;
-	uint8_t* m_pBuf;
-	std::queue<uint8_t> m_queSend;
-	std::queue<uint8_t> m_queRecv;
-
-	pthread_mutex_t m_mutexSend;
-	pthread_mutex_t m_mutexRecv;
-
-
 };
 
 }
-
 #endif

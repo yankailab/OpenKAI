@@ -132,8 +132,7 @@ bool _TCPserver::handler(void)
 	struct sockaddr_in clientAddr;
 	int c = sizeof(struct sockaddr_in);
 
-	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr,
-			(socklen_t*) &c)) >= 0)
+	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr, (socklen_t*) &c)) >= 0)
 	{
 		LOG_I("Accepted new connection");
 
@@ -146,7 +145,7 @@ bool _TCPserver::handler(void)
 			while (itr != m_lSocket.end())
 			{
 				_TCPsocket* pSocket = *itr;
-				if (!pSocket->m_bConnected)
+				if(pSocket->m_ioStatus != io_opened)
 				{
 					itr = m_lSocket.erase(itr);
 					pSocket->reset();
@@ -159,8 +158,7 @@ bool _TCPserver::handler(void)
 				}
 			}
 
-			if (m_lSocket.size() >= m_nSocket)
-				continue;
+			IF_CONT(m_lSocket.size() >= m_nSocket);
 		}
 
 		_TCPsocket* pSocket = new _TCPsocket();
@@ -175,7 +173,7 @@ bool _TCPserver::handler(void)
 		struct sockaddr_in *pAddr = (struct sockaddr_in *) &clientAddr;
 		pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
 		pSocket->m_socket = socketNew;
-		pSocket->m_bConnected = true;
+		pSocket->m_ioStatus = io_opened;
 		pSocket->m_bClient = false;
 
 		struct timeval timeout;
