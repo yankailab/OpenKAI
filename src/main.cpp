@@ -2,45 +2,49 @@
 
 int main(int argc, char* argv[])
 {
+	//Check arg
+	if(argc < 2)
+	{
+		printf("Usage: ./OpenKAI [kiss file]");
+		return 0;
+	}
+
+	string argStr(argv[1]);
+	if(argStr == "-h" || argStr == "--help")
+	{
+		printf("Usage: ./OpenKAI [kiss file]");
+		return 0;
+	}
+
 	//Init Logger
 	FLAGS_logtostderr = 1;
 	google::InitGoogleLogging("OpenKAI");
 	printEnvironment();
 
-	//Check arg
-	if(argc < 2)
+	LOG(INFO) << "Kiss file: " << argStr;
+	if(!g_file.open(&argStr))
 	{
-		LOG(INFO)<<"Usage: ./OpenKAI [kiss file]";
-		return 1;
-	}
-
-	//Load config
-	LOG(INFO)<<"Kiss file:"<<argv[1];
-
-	string kissFile(argv[1]);
-	if(!g_file.open(&kissFile))
-	{
-		LOG(ERROR)<<"Kiss file not found";
+		LOG(ERROR) << "Kiss file not found";
 		return 1;
 	}
 
 	string* pKiss = g_file.readAll();
 	if(pKiss==NULL)
 	{
-		LOG(ERROR)<<"Cannot open Kiss file";
+		LOG(ERROR) << "Cannot open Kiss file";
 		return 1;
 	}
 
 	if(pKiss->empty())
 	{
-		LOG(ERROR)<<"Cannot open Kiss file";
+		LOG(ERROR) << "Cannot open Kiss file";
 		return 1;
 	}
 
 	g_pKiss = new Kiss();
 	if(!g_pKiss->parse(pKiss))
 	{
-		LOG(ERROR)<<"Kiss file parsing failed";
+		LOG(ERROR) << "Kiss file parsing failed";
 		return 1;
 	}
 	g_file.close();

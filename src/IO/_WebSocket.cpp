@@ -12,25 +12,32 @@ namespace kai
 
 _WebSocket::_WebSocket()
 {
-	m_fifo = "/tmp/wspipeout.fifo";
-	m_fd = 0;
+	m_fifoW = "/tmp/wspipein.fifo";
+	m_fifoR = "/tmp/wspipeout.fifo";
+	m_fdW = 0;
+	m_fdR = 0;
 	m_ioType = io_fifo;
 	m_ioStatus = io_unknown;
-	m_iMB = 0;
+
+	resetDecodeMsg();
+	pthread_mutex_init(&m_mutexCR, NULL);
+
 }
 
 _WebSocket::~_WebSocket()
 {
 	reset();
+	pthread_mutex_destroy(&m_mutexCR);
 }
 
 bool _WebSocket::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, fifo);
+	KISSm(pK, fifoW);
+	KISSm(pK, fifoR);
 
 	m_vClient.clear();
 	return true;
@@ -38,8 +45,11 @@ bool _WebSocket::init(void* pKiss)
 
 bool _WebSocket::open(void)
 {
-	m_fd = ::open(m_fifo.c_str(), O_RDWR);
-	IF_F(m_fd < 0);
+	m_fdW = ::open(m_fifoW.c_str(), O_WRONLY);
+	IF_Fl(m_fdW < 0, "Cannot open:" << m_fifoW);
+
+	m_fdR = ::open(m_fifoR.c_str(), O_RDWR | O_NONBLOCK);
+	IF_Fl(m_fdR < 0, "Cannot open:" << m_fifoR);
 
 	m_ioStatus = io_opened;
 	return true;
@@ -56,7 +66,10 @@ void _WebSocket::close(void)
 {
 	IF_(m_ioStatus != io_opened);
 
-	::close(m_fd);
+	::close(m_fdW);
+	::close(m_fdR);
+	m_fdW = 0;
+	m_fdR = 0;
 	this->_IOBase::close();
 }
 
@@ -109,13 +122,16 @@ void _WebSocket::update(void)
 
 bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB)
 {
-	uint8_t pH[12];
-	pack_uint32(&pH[0], id);
-	pack_uint32(&pH[4], 0x2);
-	pack_uint32(&pH[8], nB);
-	IF_F(!write(pH,WS_N_HEADER));
+	NULL_F(pBuf);
+	IF_F(nB > WS_N_BUF - WS_N_HEADER);
 
-	return write(pBuf, nB);
+	uint8_t pB[WS_N_BUF];
+	pack_uint32(&pB[0], id);
+	pack_uint32(&pB[4], 0x2);
+	pack_uint32(&pB[8], nB);
+	memcpy(&pB[12], pBuf, nB);
+
+	return write(pB, WS_N_HEADER + nB);
 }
 
 int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
@@ -134,10 +150,10 @@ int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
 	if (pC->m_qR.empty())
 		return 0;
 
-	pthread_mutex_lock(&m_mutexR);
+	pthread_mutex_lock(&m_mutexCR);
 	IO_BUF ioB = pC->m_qR.front();
 	pC->m_qR.pop();
-	pthread_mutex_unlock(&m_mutexR);
+	pthread_mutex_unlock(&m_mutexCR);
 
 	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
 	return ioB.m_nB;
@@ -149,7 +165,7 @@ void _WebSocket::writeIO(void)
 	toBufW(&ioB);
 	IF_(ioB.bEmpty());
 
-	int nSent = ::write(m_fd, ioB.m_pB, ioB.m_nB);
+	int nSent = ::write(m_fdW, ioB.m_pB, ioB.m_nB);
 
 	if (nSent == -1)
 	{
@@ -164,78 +180,116 @@ void _WebSocket::writeIO(void)
 void _WebSocket::readIO(void)
 {
 	IO_BUF ioB;
-	ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
+	ioB.m_nB = ::read(m_fdR, ioB.m_pB, N_IO_BUF);
 
 	if (ioB.m_nB == -1)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
-		LOG_E("recv error: "<<errno);
+		LOG_E("read error: "<<errno);
 		close();
 		return;
 	}
 
 	if (ioB.m_nB == 0)
 	{
-		LOG_E("socket is shutdown");
+		LOG_E("gwsocket is shutdown");
 		close();
 		return;
 	}
 
 	toQueR(&ioB);
+}
 
-//	LOG_I("Received "<< ioB.m_nB <<" bytes from " << inet_ntoa(m_sAddr.sin_addr) << ":" << ntohs(m_sAddr.sin_port));
+void _WebSocket::resetDecodeMsg(void)
+{
+	m_iMsg = 0;
+	m_nMsg = 0;
+	m_nB = 0;
+	m_iB = 0;
+	m_pC = NULL;
+
+	if(m_fdR!=0)
+	{
+		::tcflush(m_fdR, TCIFLUSH);
+	}
 }
 
 void _WebSocket::decodeMsg(void)
 {
-	int iR = read(&m_pMB[m_iMB], WS_N_MSG - m_iMB);
-	IF_(iR <= 0);
+	int i;
 
-	m_iMB += iR;
-	IF_(m_iMB < WS_N_HEADER);
-
-	uint32_t nPayload;
-	unpack_uint32(&m_pMB[8], &nPayload);
-	uint32_t nMsg = nPayload + WS_N_HEADER;
-	IF_(m_iMB < nMsg);
-
-	uint32_t id;
-	unpack_uint32(m_pMB, &id);
-	WS_CLIENT* pC = findClientById(id);
-	if (!pC)
+	//move data to front
+	if(m_iB>0)
 	{
-		WS_CLIENT wc;
-		wc.init(id);
-		m_vClient.push_back(wc);
-		pC = &m_vClient[m_vClient.size() - 1];
+		if(m_nB > m_iB)
+		{
+			for(i=0; m_iB<m_nB; i++,m_iB++)
+			{
+				m_pMB[i] = m_pMB[m_iB];
+			}
+			m_nB = i;
+		}
+		else
+		{
+			m_nB = 0;
+		}
+		m_iB = 0;
 	}
 
-	IO_BUF ioB;
-	int nW = 0;
-	while (nW < nPayload)
+	m_nB += read(&m_pMB[m_nB], N_IO_BUF);
+	IF_(m_nB <= 0);
+
+	//decode new msg
+	if(m_iMsg >= m_nMsg)
 	{
-		ioB.m_nB = nPayload - nW;
-		if (ioB.m_nB > N_IO_BUF)
-			ioB.m_nB = N_IO_BUF;
+		IF_(m_nB - m_iB < WS_N_HEADER);
 
-		memcpy(ioB.m_pB, &m_pMB[nW + WS_N_HEADER], ioB.m_nB);
-		nW += ioB.m_nB;
+		//decode header
+		uint32_t id = unpack_uint32(&m_pMB[m_iB]);
+		m_pC = findClientById(id);
+		if (!m_pC)
+		{
+			WS_CLIENT wc;
+			wc.init(id);
+			m_vClient.push_back(wc);
+			m_pC = &m_vClient[m_vClient.size() - 1];
 
-		pthread_mutex_lock(&m_mutexR);
-		pC->m_qR.push(ioB);
-		pthread_mutex_unlock(&m_mutexR);
+			LOG_I("Created new client id: "<< i2str(id));
+		}
+
+		//decode payload
+		m_nMsg = WS_N_HEADER + unpack_uint32(&m_pMB[m_iB+8]);
+		m_iMsg = WS_N_HEADER;
+		m_iB += WS_N_HEADER;
+
+		if(m_nMsg >= WS_N_MSG)
+		{
+			resetDecodeMsg();
+			return;
+		}
+
+		LOG_I("Received from: "<< i2str(id) <<", size: " << i2str(m_nMsg));
 	}
 
-	int nNext = m_iMB - nMsg;
-	m_iMB = 0;
-	IF_(nNext <= 0);
-
-	for (int i = 0; i < nNext; i++)
+	//payload decoding
+	while(m_iMsg < m_nMsg)
 	{
-		m_pMB[i] = m_pMB[nMsg + i];
+		IF_(m_iB >= m_nB);
+
+		IO_BUF ioB;
+		ioB.m_nB = m_nMsg - m_iMsg;
+		if(ioB.m_nB > (m_nB - m_iB))ioB.m_nB = (m_nB - m_iB);
+		if(ioB.m_nB > N_IO_BUF)ioB.m_nB = N_IO_BUF;
+
+		memcpy(ioB.m_pB, &m_pMB[m_iB], ioB.m_nB);
+		pthread_mutex_lock(&m_mutexCR);
+		m_pC->m_qR.push(ioB);
+		pthread_mutex_unlock(&m_mutexCR);
+
+		m_iB += ioB.m_nB;
+		m_iMsg += ioB.m_nB;
 	}
-	m_iMB = nNext;
 }
 
 WS_CLIENT* _WebSocket::findClientById(uint32_t id)

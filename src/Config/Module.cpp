@@ -37,6 +37,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDP);
 	ADD_MODULE(_UDPclient);
 	ADD_MODULE(_UDPserver);
+	ADD_MODULE(_WebSocket);
 	ADD_MODULE(Window);
 
 	ADD_MODULE(_Augment);

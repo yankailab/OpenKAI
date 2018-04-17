@@ -16,11 +16,11 @@ inline void pack_uint32(void* pBuf, uint32_t v)
   memcpy(pBuf, &v32, sizeof(uint32_t));
 }
 
-inline void unpack_uint32 (const void* pBuf, uint32_t* v)
+inline uint32_t unpack_uint32 (const void* pBuf)
 {
   uint32_t v32 = 0;
   memcpy(&v32, pBuf, sizeof (uint32_t));
-  *v = ntohl(v32);
+  return ntohl(v32);
 }
 
 inline string getFileDir(string file)

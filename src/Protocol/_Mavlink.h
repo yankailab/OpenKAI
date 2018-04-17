@@ -103,7 +103,7 @@ public:
 	bool readMessage(mavlink_message_t &message);
 
 	//Send
-	void  writeMessage(mavlink_message_t message);
+	void writeMessage(mavlink_message_t message);
 	void requestDataStream(uint8_t stream_id, int rate);
 	void sendHeartbeat(void);
 

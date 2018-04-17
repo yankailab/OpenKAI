@@ -59,6 +59,8 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 	IO_BUF ioB;
 	int nW = 0;
 
+	pthread_mutex_lock(&m_mutexW);
+
 	while (nW < nB)
 	{
 		ioB.m_nB = nB - nW;
@@ -68,10 +70,10 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 		memcpy(ioB.m_pB, &pBuf[nW], ioB.m_nB);
 		nW += ioB.m_nB;
 
-		pthread_mutex_lock(&m_mutexW);
 		m_queW.push(ioB);
-		pthread_mutex_unlock(&m_mutexW);
 	}
+
+	pthread_mutex_unlock(&m_mutexW);
 
 	return true;
 }
@@ -86,14 +88,10 @@ bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 
 int _IOBase::read(uint8_t* pBuf, int nB)
 {
-	if(m_ioStatus != io_opened)return -1;
+	if(m_ioStatus != io_opened)return 0;
+	if(pBuf == NULL)return 0;
+	if(nB < N_IO_BUF)return 0;
 	if(m_queR.empty())return 0;
-	if(pBuf == NULL)return -1;
-	if(nB <= N_IO_BUF)
-	{
-		LOG_E("nB should be >= " << N_IO_BUF << " bytes");
-		return -1;
-	}
 
 	pthread_mutex_lock(&m_mutexR);
 	IO_BUF ioB = m_queR.front();

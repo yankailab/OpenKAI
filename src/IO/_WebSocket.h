@@ -12,7 +12,8 @@
 #include "_IOBase.h"
 
 #define WS_N_HEADER 12
-#define WS_N_MSG 1024
+#define WS_N_BUF 1024
+#define WS_N_MSG 10240
 
 namespace kai
 {
@@ -56,6 +57,7 @@ public:
 private:
 	void readIO(void);
 	void writeIO(void);
+	void resetDecodeMsg(void);
 	void decodeMsg(void);
 	WS_CLIENT* findClientById(uint32_t id);
 
@@ -67,13 +69,20 @@ private:
 	}
 
 public:
-	string	m_fifo;
-	int		m_fd;
+	string	m_fifoW;
+	string	m_fifoR;
+	int		m_fdW;
+	int		m_fdR;
 
 	vector<WS_CLIENT> m_vClient;
+	pthread_mutex_t m_mutexCR;
 
-	int	m_iMB;
-	uint8_t m_pMB[WS_N_MSG];
+	int m_iMsg;
+	int m_nMsg;
+	int m_nB;
+	int m_iB;
+	WS_CLIENT* m_pC;
+	uint8_t m_pMB[WS_N_BUF];
 
 };
 
