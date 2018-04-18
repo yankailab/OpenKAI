@@ -51,12 +51,15 @@ public:
 	void reset(void);
 	bool draw(void);
 
+	bool write(uint8_t* pBuf, int nB);
+	int  read(uint8_t* pBuf, int nB);
+
 	bool writeTo(uint32_t id, uint8_t* pBuf, int nB);
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
-
 private:
 	void readIO(void);
 	void writeIO(void);
+	int	 readFrameBuf(uint8_t* pBuf, int nB);
 	void resetDecodeMsg(void);
 	void decodeMsg(void);
 	WS_CLIENT* findClientById(uint32_t id);

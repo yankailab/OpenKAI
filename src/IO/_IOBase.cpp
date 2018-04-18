@@ -88,9 +88,9 @@ bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 
 int _IOBase::read(uint8_t* pBuf, int nB)
 {
-	if(m_ioStatus != io_opened)return 0;
-	if(pBuf == NULL)return 0;
-	if(nB < N_IO_BUF)return 0;
+	if(m_ioStatus != io_opened)return -1;
+	if(pBuf == NULL)return -1;
+	if(nB < N_IO_BUF)return -1;
 	if(m_queR.empty())return 0;
 
 	pthread_mutex_lock(&m_mutexR);

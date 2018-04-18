@@ -120,35 +120,62 @@ void _WebSocket::update(void)
 	}
 }
 
+bool _WebSocket::write(uint8_t* pBuf, int nB)
+{
+	IF_F(m_vClient.empty());
+	return writeTo(m_vClient[0].m_id,pBuf,nB);
+}
+
+int _WebSocket::read(uint8_t* pBuf, int nB)
+{
+	if(m_vClient.empty())return 0;
+	return readFrom(m_vClient[0].m_id,pBuf,nB);
+}
+
 bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB)
 {
+	IF_F(m_ioStatus != io_opened);
 	NULL_F(pBuf);
-	IF_F(nB > WS_N_BUF - WS_N_HEADER);
+	IF_F(nB <= 0);
 
-	uint8_t pB[WS_N_BUF];
-	pack_uint32(&pB[0], id);
-	pack_uint32(&pB[4], 0x2);
-	pack_uint32(&pB[8], nB);
-	memcpy(&pB[12], pBuf, nB);
+	IO_BUF ioB;
+	ioB.m_nB = WS_N_HEADER;
+	pack_uint32(&ioB.m_pB[0], id);
+	pack_uint32(&ioB.m_pB[4], 0x2);
+	pack_uint32(&ioB.m_pB[8], nB);
 
-	return write(pB, WS_N_HEADER + nB);
+	pthread_mutex_lock(&m_mutexW);
+
+	//put header
+	m_queW.push(ioB);
+
+	//put payload
+	int nW = 0;
+	while (nW < nB)
+	{
+		ioB.m_nB = nB - nW;
+		if(ioB.m_nB > N_IO_BUF)
+			ioB.m_nB = N_IO_BUF;
+
+		memcpy(ioB.m_pB, &pBuf[nW], ioB.m_nB);
+		nW += ioB.m_nB;
+
+		m_queW.push(ioB);
+	}
+
+	pthread_mutex_unlock(&m_mutexW);
+
+	return true;
 }
 
 int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
 {
-	if (pBuf == NULL)
-		return -1;
-	if (nB <= N_IO_BUF)
-	{
-		LOG_E("nB should be >= " << N_IO_BUF << " bytes");
-		return -1;
-	}
+	if (!pBuf)return -1;
+	if (nB <= N_IO_BUF)return -1;
 
 	WS_CLIENT* pC = findClientById(id);
-	if (!pC)
-		return -1;
-	if (pC->m_qR.empty())
-		return 0;
+	if (!pC)return -1;
+	if (pC->m_qR.empty())return 0;
 
 	pthread_mutex_lock(&m_mutexCR);
 	IO_BUF ioB = pC->m_qR.front();
@@ -201,18 +228,9 @@ void _WebSocket::readIO(void)
 	toQueR(&ioB);
 }
 
-void _WebSocket::resetDecodeMsg(void)
+int _WebSocket::readFrameBuf(uint8_t* pBuf, int nB)
 {
-	m_iMsg = 0;
-	m_nMsg = 0;
-	m_nB = 0;
-	m_iB = 0;
-	m_pC = NULL;
-
-	if(m_fdR!=0)
-	{
-		::tcflush(m_fdR, TCIFLUSH);
-	}
+	return this->_IOBase::read(pBuf, nB);
 }
 
 void _WebSocket::decodeMsg(void)
@@ -237,7 +255,8 @@ void _WebSocket::decodeMsg(void)
 		m_iB = 0;
 	}
 
-	m_nB += read(&m_pMB[m_nB], N_IO_BUF);
+	int iR = readFrameBuf(&m_pMB[m_nB], N_IO_BUF);
+	if(iR > 0)m_nB += iR;
 	IF_(m_nB <= 0);
 
 	//decode new msg
@@ -304,6 +323,20 @@ WS_CLIENT* _WebSocket::findClientById(uint32_t id)
 	IF_N(i >= nClient);
 
 	return &m_vClient[i];
+}
+
+void _WebSocket::resetDecodeMsg(void)
+{
+	m_iMsg = 0;
+	m_nMsg = 0;
+	m_nB = 0;
+	m_iB = 0;
+	m_pC = NULL;
+
+	if(m_fdR!=0)
+	{
+		::tcflush(m_fdR, TCIFLUSH);
+	}
 }
 
 bool _WebSocket::draw(void)

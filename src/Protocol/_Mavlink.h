@@ -2,14 +2,13 @@
 #define OpenKAI_src_Protocol__Mavlink_H_
 
 #include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/_IOBase.h"
-#include "../UI/Window.h"
 
-#define NUM_MSG_HANDLE 10
-#define N_MAVBUF 512
+#define MAV_N_MSG_HANDLE 10
+#define MAV_N_BUF 512
+#define MAV_N_PEER 16
 
 namespace kai
 {
@@ -136,6 +135,9 @@ public:
 	Mavlink_Messages m_msg;
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
+
+	_Mavlink* m_pPeer[MAV_N_PEER];
+	int	m_nPeer;
 };
 
 }

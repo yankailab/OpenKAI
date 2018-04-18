@@ -7,6 +7,7 @@ namespace kai
 _Mavlink::_Mavlink()
 {
 	m_pIO = NULL;
+	m_nPeer = 0;
 	m_systemID = 1;
 	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
@@ -394,13 +395,13 @@ void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
 
 bool _Mavlink::readMessage(mavlink_message_t &message)
 {
-	uint8_t	rBuf[N_MAVBUF];
+	uint8_t	rBuf[MAV_N_BUF];
 	static int nRead = 0;
 	static int iRead = 0;
 
 	if(nRead == 0)
 	{
-		nRead = m_pIO->read(rBuf, N_MAVBUF);
+		nRead = m_pIO->read(rBuf, MAV_N_BUF);
 		IF_F(nRead <= 0);
 		iRead = 0;
 	}
@@ -560,7 +561,7 @@ void _Mavlink::handleMessages()
 
 		}
 
-		IF_(++nMsgHandled >= NUM_MSG_HANDLE);
+		IF_(++nMsgHandled >= MAV_N_MSG_HANDLE);
 	}
 
 }
