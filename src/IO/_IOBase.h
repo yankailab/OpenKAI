@@ -20,11 +20,11 @@ namespace kai
 enum IO_TYPE
 {
 	io_none,
-	io_serialport,
+	io_serialPort,
 	io_file,
 	io_tcp,
 	io_udp,
-	io_fifo
+	io_webSocket
 };
 
 enum IO_STATUS

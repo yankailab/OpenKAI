@@ -8,7 +8,7 @@ _SerialPort::_SerialPort(void)
 {
 	m_fd = -1;
 	m_name = "";
-	m_ioType = io_serialport;
+	m_ioType = io_serialPort;
 
 	m_baud = 115200;
 	m_dataBits = 8;

@@ -7,7 +7,6 @@ namespace kai
 _Mavlink::_Mavlink()
 {
 	m_pIO = NULL;
-	m_nPeer = 0;
 	m_systemID = 1;
 	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
 	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
@@ -35,6 +34,8 @@ bool _Mavlink::init(void* pKiss)
 	m_msg.compid = 0;
 	m_status.packet_rx_drop_count = 0;
 
+	m_vPeer.clear();
+
 	return true;
 }
 
@@ -50,6 +51,28 @@ bool _Mavlink::link(void)
 	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pIO,"_IOBase not found");
 
+	Kiss** pItr = pK->getChildItr();
+	int i=0;
+	while (pItr[i])
+	{
+		Kiss* pP = pItr[i];
+		IF_F(i >= MAV_N_PEER);
+		i++;
+
+		MAVLINK_PEER mP;
+		mP.init();
+
+		iName = "";
+		F_ERROR_F(pP->v("_Mavlink", &iName));
+		mP.m_pPeer = pK->root()->getChildInstByName(&iName);
+		if(!mP.m_pPeer)
+		{
+			LOG_I("_Mavlink not found: " << iName);
+			continue;
+		}
+
+		m_vPeer.push_back(mP);
+	}
 	return true;
 }
 
@@ -97,7 +120,15 @@ void _Mavlink::writeMessage(mavlink_message_t message)
 	uint8_t pBuf[256];
 	int nB = mavlink_msg_to_send_buffer(pBuf, &message);
 
-	m_pIO->write(pBuf, nB);
+	if(m_pIO->ioType()!=io_webSocket)
+	{
+		m_pIO->write(pBuf, nB);
+	}
+	else
+	{
+		_WebSocket* pWS = (_WebSocket*)m_pIO;
+		pWS->write(pBuf, nB);
+	}
 }
 
 void _Mavlink::sendHeartbeat(void)
@@ -559,6 +590,17 @@ void _Mavlink::handleMessages()
 			break;
 		}
 
+		}
+
+		//Message routing
+		for(int i=0; i<m_vPeer.size(); i++)
+		{
+			MAVLINK_PEER* pMP = &m_vPeer[i];
+			IF_CONT(!pMP->bCmdRoute(message.msgid));
+
+			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
+			IF_CONT(!pM);
+			pM->writeMessage(message);
 		}
 
 		IF_(++nMsgHandled >= MAV_N_MSG_HANDLE);

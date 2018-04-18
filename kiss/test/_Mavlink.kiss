@@ -1,0 +1,144 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"okView",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"recFile_":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"apSerialJetson",
+	"class":"_SerialPort",
+	"bInst":0,
+	"Window":"okView",
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+}
+
+{
+	"name":"apSerialPC",
+	"class":"_SerialPort",
+	"bInst":1,
+	"bLog":0,
+	"Window":"okView",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apUDPclient",
+	"class":"_UDPclient",
+	"bInst":0,
+	"bLog":1,
+	"FPS":100,
+	"Window":"okView",
+	"addr":"127.0.0.1",
+	"port":14550,
+	"bSendOnly":0,
+	"timeoutRecv":10000,
+}
+
+{
+	"name":"apUDPserver",
+	"class":"_UDPserver",
+	"bInst":0,
+	"bLog":0,
+	"FPS":100,
+	"Window":"okView",
+	"port":14550,
+	"bReceiveOnly":0,
+	"timeoutRecv":10000,
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":0,
+	"Window":"okView",
+	"_UDPclient":"apUDPclient",
+	"_UDPserver":"apUDPserver",
+}
+
+{
+	"name":"webSocket",
+	"class":"_WebSocket",
+	"FPS":100,
+	"bInst":1,
+	"Window":"okView",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":1,
+	"FPS":100,
+	"Window":"okView",
+	"_IOBase":"apSerialPC",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
+}
+
+{
+	"name":"mavWS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":1,
+	"FPS":100,
+	"Window":"okView",
+	"_IOBase":"webSocket",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":0,
+	"bLog":1,
+	"FPS":100,
+	"Window":"okView",
+	"_IOBase":"apSerialPC",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
+}

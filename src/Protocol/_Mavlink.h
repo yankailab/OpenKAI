@@ -5,10 +5,13 @@
 #include "../include/mavlink/ardupilotmega/mavlink.h"
 #include "../include/mavlink/mavlink_conversions.h"
 #include "../IO/_IOBase.h"
+#include "../IO/_WebSocket.h"
 
 #define MAV_N_MSG_HANDLE 10
 #define MAV_N_BUF 512
 #define MAV_N_PEER 16
+#define MAV_N_CMD_U64 4
+#define MAV_N_CMD 256
 
 namespace kai
 {
@@ -82,7 +85,33 @@ struct Mavlink_Messages
 	{
 		time_stamps.init();
 	}
+};
 
+struct MAVLINK_PEER
+{
+	void* m_pPeer;
+	uint64_t m_pCmdRoute[MAV_N_CMD_U64]; //index of bit correspondes to Mavlink CMD ID
+
+	void init(void)
+	{
+		m_pPeer = NULL;
+		reset();
+	}
+
+	void reset(void)
+	{
+		for(int i=0; i<MAV_N_CMD_U64; i++)
+		{
+			m_pCmdRoute[i] = 0xffffffffffffffff;
+		}
+	}
+
+	bool bCmdRoute(uint32_t iCmd)
+	{
+		IF_F(iCmd >= MAV_N_CMD);
+
+		return m_pCmdRoute[iCmd / sizeof(uint64_t)] & (1 << (iCmd % sizeof(uint64_t)));
+	}
 };
 
 class _Mavlink: public _ThreadBase
@@ -136,8 +165,7 @@ public:
 	mavlink_set_position_target_local_ned_t m_initPos;
 	mavlink_status_t m_status;
 
-	_Mavlink* m_pPeer[MAV_N_PEER];
-	int	m_nPeer;
+	vector<MAVLINK_PEER> m_vPeer;
 };
 
 }

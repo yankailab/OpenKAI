@@ -16,7 +16,7 @@ _WebSocket::_WebSocket()
 	m_fifoR = "/tmp/wspipeout.fifo";
 	m_fdW = 0;
 	m_fdR = 0;
-	m_ioType = io_fifo;
+	m_ioType = io_webSocket;
 	m_ioStatus = io_unknown;
 
 	resetDecodeMsg();
