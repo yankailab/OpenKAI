@@ -17,15 +17,32 @@
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.181 port=5678",
 	"textX":20,
 	"textY":20,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"deviceID":3,
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":0,
 }
 
 {
 	"name":"apSerialJetson",
 	"class":"_SerialPort",
 	"bInst":0,
+	"bLog":0,
+	"FPS":100,
 	"Window":"okView",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
@@ -36,43 +53,22 @@
 	"class":"_SerialPort",
 	"bInst":1,
 	"bLog":0,
+	"FPS":100,
 	"Window":"okView",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 }
 
 {
-	"name":"apUDPclient",
-	"class":"_UDPclient",
-	"bInst":0,
-	"bLog":1,
-	"FPS":100,
-	"Window":"okView",
-	"addr":"127.0.0.1",
-	"port":14550,
-	"bSendOnly":0,
-	"timeoutRecv":10000,
-}
-
-{
 	"name":"apUDPserver",
 	"class":"_UDPserver",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"port":14550,
+	"port":19840,
 	"bReceiveOnly":0,
 	"timeoutRecv":10000,
-}
-
-{
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":0,
-	"Window":"okView",
-	"_UDPclient":"apUDPclient",
-	"_UDPserver":"apUDPserver",
 }
 
 {
@@ -87,7 +83,7 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
 	"_IOBase":"apSerialPC",
@@ -107,7 +103,7 @@
 	"name":"mavWS",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
 	"_IOBase":"webSocket",
@@ -126,11 +122,11 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":0,
-	"bLog":1,
+	"bInst":1,
+	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"_IOBase":"apSerialPC",
+	"_IOBase":"apUDPserver",
 	
 	{
 		"bInst":1,

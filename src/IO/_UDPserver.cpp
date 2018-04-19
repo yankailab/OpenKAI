@@ -59,6 +59,7 @@ bool _UDPserver::open(void)
 
 	m_nSAddrPeer = sizeof(m_sAddrPeer);
 	m_nSAddr = sizeof(m_sAddr);
+
     memset((char *) &m_sAddr, 0, m_nSAddr);
 	m_sAddr.sin_family = AF_INET;
 	m_sAddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -144,8 +145,8 @@ void _UDPserver::writeIO(void)
 	{
 		IF_(errno == EAGAIN);
 		IF_(errno == EWOULDBLOCK);
-		LOG_E("write error: "<<errno);
-		close();
+		LOG_I("sendto error: "<<errno);
+//		close();
 		return;
 	}
 }

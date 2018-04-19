@@ -116,6 +116,11 @@ void _WebSocket::update(void)
 		readIO();
 		decodeMsg();
 
+		if(!this->bEmptyW())
+			this->disableSleep(true);
+		else
+			this->disableSleep(false);
+
 		this->autoFPSto();
 	}
 }

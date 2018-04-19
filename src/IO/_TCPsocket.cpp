@@ -128,6 +128,11 @@ void _TCPsocket::update(void)
 		writeIO();
 		readIO();
 
+		if(!this->bEmptyW())
+			this->disableSleep(true);
+		else
+			this->disableSleep(false);
+
 		this->autoFPSto();
 	}
 }

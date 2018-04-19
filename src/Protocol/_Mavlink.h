@@ -110,7 +110,7 @@ struct MAVLINK_PEER
 	{
 		IF_F(iCmd >= MAV_N_CMD);
 
-		return m_pCmdRoute[iCmd / sizeof(uint64_t)] & (1 << (iCmd % sizeof(uint64_t)));
+		return m_pCmdRoute[iCmd / 64] & (1 << (iCmd % 64));
 	}
 };
 

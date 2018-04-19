@@ -14,7 +14,7 @@
 #include "_IOBase.h"
 
 #define TIMEOUT_RECV_USEC 1000
-#define DEFAULT_PORT_IN 19849
+#define DEFAULT_PORT_IN 19840
 
 namespace kai
 {
