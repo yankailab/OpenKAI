@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"apView",
+	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -16,8 +16,8 @@
 	"bFullScreen":0,
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
-	"recCodec":"MJPG",	
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=localhost port=5678",
+	"recCodec":"MJPG",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168. port=5678",
 	"textX":20,
 	"textY":20,
 }
@@ -25,7 +25,7 @@
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -38,17 +38,18 @@
 }
 
 {
-	"name":"camera",
+	"name":"cam1",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
-	"Window":"apView",
-	"deviceID":0,
-	"width":1280,
-	"height":720,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":3,
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
 	"bFlip":0,
-	"bGray":1,
-	"calibFile_":"/home/ubuntu/dev/workspace/OpenKAI/OpenKAI/data/calibration/brio_1280x720.xml",
+	"bGray":0,
 }
 
 {
@@ -56,7 +57,7 @@
 	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":0,
-	"Window":"okView",
+	"Window":"OKview",
 	"pipeline":"v4l2src ! video/x-raw, framerate=30/1, width=1280, height=720, format=YUY2 ! videoconvert ! appsink",
 	"pipeline_":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"bFlip":0,
@@ -64,11 +65,11 @@
 }
 
 {
-	"name":"realsense",
+	"name":"cam1",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
-	"Window":"apView",
+	"bInst":0,
+	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"w":1280,
@@ -93,7 +94,7 @@
 	"class":"_ORB_SLAM2",
 	"FPS":30,
 	"bInst":0,
-	"Window":"apView",
+	"Window":"OKview",
 	"_VisionBase":"cam1",
 	"width":640,
 	"height":360,
@@ -105,72 +106,134 @@
 }
 
 {
-	"name":"apSerialJetson",
+	"name":"YOLO",
+	"class":"_YOLO",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam1",
+	"modelDir":"/home/ubuntu/dev/darknet/",
+	"modelFile":"cfg/yolov2.cfg",
+	"trainedFile":"data/yolov2.weights",
+	"meanFile":"",
+	"labelFile":"data/coco.names",
+	"nClass":80,
+	"nPredAvr":3,
+	"thresh":0.25,
+	"nBatch":1,
+	"mode":"thread",
+	"bDrawStatistics":0,
+}
+
+{
+	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":0,
-	"Window":"apView",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"OKview",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
 }
 
 {
-	"name":"apSerialPC",
+	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
-	"Window":"apView",
+	"bInst":0,
+	"bLog":0,
+	"FPS":100,
+	"Window":"OKview",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 }
 
 {
-	"name":"apUDPclient",
-	"class":"_UDPclient",
-	"bInst":0,
-	"bLog":1,
-	"FPS":100,
-	"Window":"apView",
-	"addr":"127.0.0.1",
-	"port":14550,
-	"bSendOnly":0,
-	"timeoutRecv":10000,
-}
-
-{
 	"name":"apUDPserver",
 	"class":"_UDPserver",
-	"bInst":0,
+	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"apView",
-	"port":14550,
+	"Window":"OKview",
+	"port":19840,
 	"bReceiveOnly":0,
 	"timeoutRecv":10000,
 }
 
 {
-	"name":"apUDP",
-	"class":"_UDP",
+	"name":"webSocket",
+	"class":"_WebSocket",
+	"FPS":100,
 	"bInst":0,
-	"Window":"apView",
-	"_UDPclient":"apUDPclient",
-	"_UDPserver":"apUDPserver",
+	"Window":"OKview",
 }
 
 {
-	"name":"apMavlink",
+	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"apView",
-	"_IOBase":"apSerialPC",
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
+}
+
+{
+	"name":"mavWS",
+	"class":"_Mavlink",
+	"bInst":0,
+	"bLog":0,
+	"FPS":100,
+	"Window":"OKview",
+	"_IOBase":"webSocket",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"OKview",
+	"_IOBase":"apUDPserver",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
 }
 
 {
 	"name":"apState",
 	"class":"_Automaton",
 	"bInst":1,
-	"Window":"apView",
+	"Window":"OKview",
 	"startState":"AP_STANDBY",
 
 	{
@@ -188,7 +251,7 @@
 	"_Automaton":"apState",
 	"bInst":1,
 	"FPS":20,
-	"Window":"apView",
+	"Window":"OKview",
 	
 	{
 		"name":"action",
@@ -198,7 +261,7 @@
 			"class":"APcopter_base",
 			"bInst":1,
 			"_Automaton":"apState",
-			"Window":"apView",
+			"Window":"OKview",
 			"_Mavlink":"apMavlink",
 			"freqAtti":0,
 			"freqGlobalPos":30,
@@ -208,12 +271,12 @@
 		{
 			"name":"apAvoid",
 			"class":"APcopter_depthVision",
-			"bInst":1,
+			"bInst":0,
 			"bDraw":1,
-			"Window":"apView",
+			"Window":"OKview",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
-			"_DepthVisionBase":"realsense",
+			"_DepthVisionBase":"cam1",
 
 			{
 				"orientation":0,
@@ -230,7 +293,7 @@
 			"class":"APcopter_DNNavoid",
 			"bInst":0,
 			"bLog":0,
-			"Window":"apView",
+			"Window":"OKview",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
 			"_ImageNet":"INavoid",
@@ -262,7 +325,7 @@
 			"name":"apLanding",
 			"class":"APcopter_DNNlanding",
 			"bInst":0,
-			"Window":"apView",
+			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"_Stream":"cam1",
 			"_AIbase":"detectNet",
