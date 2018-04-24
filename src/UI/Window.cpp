@@ -239,6 +239,8 @@ Scalar Window::textColor(void)
 
 void Window::addMsg(string* pMsg)
 {
+	IF_(!m_bDraw);
+
 	putText(*m_pFrame->getCMat(), *pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);
 	lineNext();
