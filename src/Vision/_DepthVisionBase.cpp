@@ -170,7 +170,8 @@ vDouble2 _DepthVisionBase::range(void)
 
 bool _DepthVisionBase::draw(void)
 {
-	IF_F(!this->_VisionBase::draw());
+	this->_VisionBase::draw();
+
 	NULL_F(m_pDepthWin);
 	NULL_F(m_pDepthShow);
 	IF_F(m_pDepthShow->empty());

@@ -10,12 +10,11 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":0,
 	"w":640,
 	"h":360,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
@@ -26,39 +25,25 @@
 
 {
 	"name":"cam1",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"deviceID":3,
-	"w":1280,
-	"h":720,
-	"fovW":60,
-	"fovH":60,
-	"bFlip":0,
-	"bGray":0,
-}
-
-{
-	"name":"cam1",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
-	"pipeline":"v4l2src ! video/x-raw, framerate=30/1, width=1280, height=720, format=YUY2 ! videoconvert ! appsink",
-	"pipeline_":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"bFlip":0,
 	"bGray":0,
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
-	"name":"cam1",
+	"name":"depth1",
 	"class":"_RealSense",
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
+	"rsRGB":0,
 	"w":1280,
 	"h":720,
 	"rsFPS":30,
@@ -263,7 +248,7 @@
 			"Window":"OKview",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
-			"_DepthVisionBase":"cam1",
+			"_DepthVisionBase":"depth1",
 
 			{
 				"orientation":0,

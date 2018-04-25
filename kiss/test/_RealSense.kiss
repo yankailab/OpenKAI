@@ -45,6 +45,7 @@
 	"Window":"okView",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
+	"rsRGB":0,
 	"w":1280,
 	"h":720,
 	"rsFPS":30,
@@ -60,5 +61,17 @@
 	"nMed":3,
 	"mW":10,
 	"mH":10,
+}
+
+{
+	"name":"gst1",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"okView",
+	"bFlip":0,
+	"bGray":0,
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 

@@ -16,6 +16,7 @@ _RealSense::_RealSense()
 	m_type = realsense;
 	m_pDepthWin = NULL;
 	m_vPreset = "High Density";
+	m_rsRGB = true;
 
 	m_rsFPS = 30;
 	m_rsDFPS = 30;
@@ -35,6 +36,7 @@ bool _RealSense::init(void* pKiss)
 	KISSm(pK,rsFPS);
 	KISSm(pK,rsDFPS);
 	KISSm(pK,vPreset);
+	KISSm(pK,rsRGB);
 
 	return true;
 }
@@ -48,8 +50,11 @@ void _RealSense::reset()
 bool _RealSense::open(void)
 {
 	rs2::config cfg;
-    cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
     cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
+    if(m_rsRGB)
+    {
+        cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
+    }
 
     auto profile = m_rsPipe.start(cfg);
 	auto sensor = profile.get_device().first<rs2::depth_sensor>();
@@ -73,11 +78,14 @@ bool _RealSense::open(void)
 
 	rs2::frameset rsFrame = m_rsPipe.wait_for_frames();
 
-	m_rsColor = rsFrame.get_color_frame();
-	m_w = m_rsColor.as<rs2::video_frame>().get_width();
-	m_h = m_rsColor.as<rs2::video_frame>().get_height();
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
+    if(m_rsRGB)
+    {
+    	m_rsColor = rsFrame.get_color_frame();
+    	m_w = m_rsColor.as<rs2::video_frame>().get_width();
+    	m_h = m_rsColor.as<rs2::video_frame>().get_height();
+    	m_cW = m_w / 2;
+    	m_cH = m_h / 2;
+    }
 
 	m_rsDepth = rsFrame.get_depth_frame();
 	m_wD = m_rsDepth.as<rs2::video_frame>().get_width();
@@ -120,24 +128,28 @@ void _RealSense::update(void)
 		Mat* pDest;
 		Mat* pTmp;
 
-		//Color
 		rs2::frameset rsFrame = m_rsPipe.wait_for_frames();
-		m_rsColor = rsFrame.get_color_frame();
 
-		Mat mColor(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP);
-		pSrc = &mColor;
-		pDest = &m_mTemp;
-
-		if (m_bFlip)
+		//Color
+		if(m_rsRGB)
 		{
-			cv::flip(*pSrc, *pDest, -1);
-			SWAP(pSrc, pDest, pTmp);
+			m_rsColor = rsFrame.get_color_frame();
+
+			Mat mColor(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP);
+			pSrc = &mColor;
+			pDest = &m_mTemp;
+
+			if (m_bFlip)
+			{
+				cv::flip(*pSrc, *pDest, -1);
+				SWAP(pSrc, pDest, pTmp);
+			}
+			m_pBGR->update(pSrc);
+			if(m_pGray)
+				m_pGray->getGrayOf(m_pBGR);
+			if (m_pHSV)
+				m_pHSV->getHSVOf(m_pBGR);
 		}
-		m_pBGR->update(pSrc);
-		if(m_pGray)
-			m_pGray->getGrayOf(m_pBGR);
-		if (m_pHSV)
-			m_pHSV->getHSVOf(m_pBGR);
 
 		//Depth
 		m_rsDepth = rsFrame.get_depth_frame();

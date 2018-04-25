@@ -42,6 +42,7 @@ public:
 	rs2::pipeline m_rsPipe;
 	int	m_rsFPS;
 	int m_rsDFPS;
+	bool m_rsRGB;
 	string m_vPreset;
 
 	rs2::frame m_rsColor;
