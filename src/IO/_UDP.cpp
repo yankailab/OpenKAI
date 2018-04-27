@@ -1,5 +1,5 @@
 /*
- * UDP.cpp
+ * _UDP.cpp
  *
  *  Created on: June 16, 2016
  *      Author: yankai
@@ -12,8 +12,18 @@ namespace kai
 
 _UDP::_UDP()
 {
-	m_pSender = NULL;
-	m_pReceiver = NULL;
+	m_socket = -1;
+
+	m_addrW = "";
+	m_portW = DEFAULT_UDP_PORT;
+	m_nSAddrW = 0;
+
+	m_addrR = "";
+	m_portR = DEFAULT_UDP_PORT;
+	m_nSAddrR = 0;
+
+	m_ioType = io_udp;
+	m_ioStatus = io_unknown;
 }
 
 _UDP::~_UDP()
@@ -27,17 +37,13 @@ bool _UDP::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	KISSm(pK, addrW);
+	F_INFO(pK->v("portW", (int*)&m_portW));
+
+	KISSm(pK, addrR);
+	F_INFO(pK->v("portR", (int*)&m_portR));
+
 	return true;
-}
-
-void _UDP::close(void)
-{
-	IF_(m_ioStatus!=io_opened);
-
-	m_pSender->close();
-	m_pReceiver->close();
-
-	this->_IOBase::close();
 }
 
 void _UDP::reset(void)
@@ -51,48 +57,152 @@ bool _UDP::link(void)
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
-	string iName;
+	return true;
+}
 
-	iName = "";
-	F_ERROR_F(pK->v("_UDPclient", &iName));
-	m_pSender = (_UDPclient*) (pK->root()->getChildInstByName(&iName));
+bool _UDP::open(void)
+{
+	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	IF_F(m_socket < 0);
 
-	iName = "";
-	F_ERROR_F(pK->v("_UDPserver", &iName));
-	m_pReceiver = (_UDPserver*) (pK->root()->getChildInstByName(&iName));
+	m_nSAddrW = sizeof(m_sAddrW);
+	m_nSAddrR = sizeof(m_sAddrR);
 
-	m_pSender->m_bSendOnly = true;
-	m_pReceiver->m_bReceiveOnly = true;
+	memset((char *) &m_sAddrR, 0, m_nSAddrR);
+	m_sAddrR.sin_family = AF_INET;
+	m_sAddrR.sin_port = htons(m_portR);
+
+	if(!m_addrW.empty())
+	{
+		m_sAddrR.sin_addr.s_addr = inet_addr(m_addrW.c_str());
+		m_sAddrR.sin_port = htons(m_portW);
+	}
+	else
+	{
+		m_sAddrR.sin_addr.s_addr = htonl(INADDR_ANY);
+	    IF_F(bind(m_socket , (struct sockaddr*)&m_sAddrR, m_nSAddrR) == -1);
+	}
+
+	m_ioStatus = io_opened;
+	return true;
+}
+
+void _UDP::close(void)
+{
+	IF_(m_ioStatus!=io_opened);
+
+	::close(m_socket);
+	this->_IOBase::close();
+}
+
+bool _UDP::start(void)
+{
+	int retCode;
+
+	if(!m_pThreadW->m_bThreadON)
+	{
+		m_pThreadW->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadW->m_threadID, 0, getUpdateThreadW, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadW->m_bThreadON = false;
+			return false;
+		}
+	}
+
+	if(!m_pThreadR->m_bThreadON)
+	{
+		m_pThreadR->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadR->m_threadID, 0, getUpdateThreadR, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadR->m_bThreadON = false;
+			return false;
+		}
+	}
 
 	return true;
 }
 
-bool _UDP::write(uint8_t* pBuf, int nB)
+void _UDP::updateW(void)
 {
-	return m_pSender->write(pBuf,nB);
+	while (m_pThreadW->m_bThreadON)
+	{
+		if (!isOpen())
+		{
+			if (!open())
+			{
+				m_pThreadW->sleepTime(USEC_1SEC);
+				continue;
+			}
+		}
+
+		m_pThreadW->autoFPSfrom();
+
+		IO_BUF ioB;
+		while(1)
+		{
+			toBufW(&ioB);
+			if(ioB.bEmpty())break;
+
+			int nSend = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddrR, m_nSAddrR);
+			if (nSend == -1)
+			{
+				LOG_I("sendto error: "<<errno);
+			}
+		}
+
+		m_pThreadW->autoFPSto();
+	}
 }
 
-bool _UDP::writeLine(uint8_t* pBuf, int nB)
+void _UDP::updateR(void)
 {
-	const char pCRLF[] = "\x0d\x0a";
+	while (m_pThreadR->m_bThreadON)
+	{
+		if (!isOpen())
+		{
+			m_pThreadR->sleepTime(USEC_1SEC);
+			continue;
+		}
 
-	IF_F(!write(pBuf, nB));
-	return write((unsigned char*)pCRLF, 2);
-}
+		IO_BUF ioB;
+		ioB.m_nB = ::recvfrom(m_socket, ioB.m_pB, N_IO_BUF, 0, (struct sockaddr *) &m_sAddrR, &m_nSAddrR);
 
-int _UDP::read(uint8_t* pBuf, int nB)
-{
-	return m_pReceiver->read(pBuf, nB);
+		if (ioB.m_nB == -1)
+		{
+			LOG_E("recv error: "<<errno);
+			close();
+			continue;
+		}
+
+		if(ioB.m_nB == 0)
+		{
+			LOG_E("socket is shutdown by peer");
+			close();
+			continue;
+		}
+
+		toQueR(&ioB);
+
+		LOG_I("Received from ip:" << inet_ntoa(m_sAddrW.sin_addr) << ", port:" << ntohs(m_sAddrW.sin_port));
+	}
 }
 
 bool _UDP::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_IOBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg;
+	pWin->tabNext();
+
+	string msg = "Port:" + i2str(m_portW);
 	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }

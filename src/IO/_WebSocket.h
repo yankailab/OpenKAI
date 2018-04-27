@@ -56,18 +56,24 @@ public:
 
 	bool writeTo(uint32_t id, uint8_t* pBuf, int nB);
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
+
 private:
-	void readIO(void);
-	void writeIO(void);
 	int	 readFrameBuf(uint8_t* pBuf, int nB);
 	void resetDecodeMsg(void);
 	void decodeMsg(void);
 	WS_CLIENT* findClientById(uint32_t id);
 
-	void update(void);
-	static void* getUpdateThread(void* This)
+	void updateW(void);
+	static void* getUpdateThreadW(void* This)
 	{
-		((_WebSocket*) This)->update();
+		((_WebSocket*) This)->updateW();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateThreadR(void* This)
+	{
+		((_WebSocket*) This)->updateR();
 		return NULL;
 	}
 

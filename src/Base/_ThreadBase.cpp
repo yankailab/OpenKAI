@@ -50,9 +50,9 @@ bool _ThreadBase::init(void* pKiss)
 void _ThreadBase::reset(void)
 {
 	m_bThreadON = false;
-	IF_(m_threadID);
+	IF_(m_threadID==0);
 	pthread_cancel(m_threadID);
-	pthread_join(m_threadID, NULL);
+//	pthread_join(m_threadID, NULL);
 	m_threadID = 0;
 }
 

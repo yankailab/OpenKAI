@@ -17,6 +17,9 @@ _IOBase::_IOBase()
 
 	pthread_mutex_init(&m_mutexW, NULL);
 	pthread_mutex_init(&m_mutexR, NULL);
+
+	m_pThreadW = new _ThreadBase();
+	m_pThreadR = new _ThreadBase();
 }
 
 _IOBase::~_IOBase()
@@ -24,11 +27,17 @@ _IOBase::~_IOBase()
 	reset();
 	pthread_mutex_destroy(&m_mutexW);
 	pthread_mutex_destroy(&m_mutexR);
+
+	DEL(m_pThreadW);
+	DEL(m_pThreadR);
 }
 
 bool _IOBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
+	IF_F(!m_pThreadW->init(pKiss));
+	IF_F(!m_pThreadR->init(pKiss));
+
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -37,7 +46,10 @@ bool _IOBase::init(void* pKiss)
 
 void _IOBase::reset(void)
 {
-	this->_ThreadBase::reset();
+	this->BASE::reset();
+
+	m_pThreadW->reset();
+	m_pThreadR->reset();
 }
 
 bool _IOBase::open(void)
@@ -152,6 +164,14 @@ void _IOBase::close(void)
 		m_queR.pop();
 
 	m_ioStatus = io_closed;
+}
+
+bool _IOBase::draw(void)
+{
+	IF_F(!this->BASE::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+
+	return true;
 }
 
 }

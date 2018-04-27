@@ -48,7 +48,7 @@ bool _WebSocket::open(void)
 	m_fdW = ::open(m_fifoW.c_str(), O_WRONLY);
 	IF_Fl(m_fdW < 0, "Cannot open:" << m_fifoW);
 
-	m_fdR = ::open(m_fifoR.c_str(), O_RDWR | O_NONBLOCK);
+	m_fdR = ::open(m_fifoR.c_str(), O_RDWR);
 	IF_Fl(m_fdR < 0, "Cannot open:" << m_fifoR);
 
 	m_ioStatus = io_opened;
@@ -75,7 +75,7 @@ void _WebSocket::close(void)
 
 bool _WebSocket::link(void)
 {
-	IF_F(!this->_ThreadBase::link());
+	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -83,45 +83,90 @@ bool _WebSocket::link(void)
 
 bool _WebSocket::start(void)
 {
-	IF_T(m_bThreadON);
+	int retCode;
 
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
+	if(!m_pThreadW->m_bThreadON)
 	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
+		m_pThreadW->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadW->m_threadID, 0, getUpdateThreadW, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadW->m_bThreadON = false;
+			return false;
+		}
+	}
+
+	if(!m_pThreadR->m_bThreadON)
+	{
+		m_pThreadR->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadR->m_threadID, 0, getUpdateThreadR, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadR->m_bThreadON = false;
+			return false;
+		}
 	}
 
 	return true;
 }
 
-void _WebSocket::update(void)
+void _WebSocket::updateW(void)
 {
-	while (m_bThreadON)
+	while (m_pThreadW->m_bThreadON)
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pThreadW->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pThreadW->autoFPSfrom();
 
-		writeIO();
-		readIO();
+		IO_BUF ioB;
+		while(1)
+		{
+			toBufW(&ioB);
+			if(ioB.bEmpty())break;
+
+			int nSent = ::write(m_fdW, ioB.m_pB, ioB.m_nB);
+			if (nSent == -1)
+			{
+				LOG_E("write error: "<<errno);
+				close();
+				break;
+			}
+		}
+
+		m_pThreadW->autoFPSto();
+	}
+}
+
+void _WebSocket::updateR(void)
+{
+	while (m_pThreadR->m_bThreadON)
+	{
+		if (!isOpen())
+		{
+			m_pThreadR->sleepTime(USEC_1SEC);
+			continue;
+		}
+
+		//blocking mode, no FPS control
+		IO_BUF ioB;
+		ioB.m_nB = ::read(m_fdR, ioB.m_pB, N_IO_BUF);
+		if (ioB.m_nB <= 0)
+		{
+			close();
+			continue;
+		}
+
+		toQueR(&ioB);
 		decodeMsg();
-
-		if(!this->bEmptyW())
-			this->disableSleep(true);
-		else
-			this->disableSleep(false);
-
-		this->autoFPSto();
 	}
 }
 
@@ -189,48 +234,6 @@ int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
 
 	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
 	return ioB.m_nB;
-}
-
-void _WebSocket::writeIO(void)
-{
-	IO_BUF ioB;
-	toBufW(&ioB);
-	IF_(ioB.bEmpty());
-
-	int nSent = ::write(m_fdW, ioB.m_pB, ioB.m_nB);
-
-	if (nSent == -1)
-	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("write error: "<<errno);
-		close();
-		return;
-	}
-}
-
-void _WebSocket::readIO(void)
-{
-	IO_BUF ioB;
-	ioB.m_nB = ::read(m_fdR, ioB.m_pB, N_IO_BUF);
-
-	if (ioB.m_nB == -1)
-	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("read error: "<<errno);
-		close();
-		return;
-	}
-
-	if (ioB.m_nB == 0)
-	{
-		LOG_E("gwsocket is shutdown");
-		close();
-		return;
-	}
-
-	toQueR(&ioB);
 }
 
 int _WebSocket::readFrameBuf(uint8_t* pBuf, int nB)

@@ -42,8 +42,7 @@ bool _SerialPort::open(void)
 {
 	IF_F(m_name.empty());
 
-//	m_fd = open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_NONBLOCK);	// | O_NDELAY);
-	m_fd = ::open(m_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+	m_fd = ::open(m_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
 	IF_F(m_fd == -1);
 	fcntl(m_fd, F_SETFL, 0);
 
@@ -67,98 +66,104 @@ void _SerialPort::reset(void)
 
 bool _SerialPort::start(void)
 {
-	IF_T(m_bThreadON);
+	int retCode;
 
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
+	if(!m_pThreadW->m_bThreadON)
 	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
+		m_pThreadW->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadW->m_threadID, 0, getUpdateThreadW, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadW->m_bThreadON = false;
+			return false;
+		}
+	}
+
+	if(!m_pThreadR->m_bThreadON)
+	{
+		m_pThreadR->m_bThreadON = true;
+		retCode = pthread_create(&m_pThreadR->m_threadID, 0, getUpdateThreadR, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_pThreadR->m_bThreadON = false;
+			return false;
+		}
 	}
 
 	return true;
 }
 
-void _SerialPort::update(void)
+void _SerialPort::updateW(void)
 {
-	while (m_bThreadON)
+	while (m_pThreadW->m_bThreadON)
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pThreadW->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pThreadW->autoFPSfrom();
 
-		writeIO();
-		readIO();
+		IO_BUF ioB;
+		while(1)
+		{
+			toBufW(&ioB);
+			if(ioB.bEmpty())break;
 
-		if(!this->bEmptyW())
-			this->disableSleep(true);
-		else
-			this->disableSleep(false);
+			int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
 
-		this->autoFPSto();
+			LOG_I("Write: " << ioB.m_pB);
+		}
+
+		// Wait until all data has been written
+		tcdrain(m_fd);
+
+		m_pThreadW->autoFPSto();
 	}
 }
 
-void _SerialPort::writeIO(void)
+void _SerialPort::updateR(void)
 {
-	IO_BUF ioB;
-	toBufW(&ioB);
-	IF_(ioB.bEmpty());
+	while (m_pThreadR->m_bThreadON)
+	{
+		if (!isOpen())
+		{
+			m_pThreadR->sleepTime(USEC_1SEC);
+			continue;
+		}
 
-	int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
+		//blocking mode, no FPS control
+		IO_BUF ioB;
 
-	// Wait until all data has been written
-	tcdrain(m_fd);
+		ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
+		if(ioB.m_nB <= 0)continue;
 
-	//if(nW!=nB)?
-
-	LOG_I("Write: " << ioB.m_pB);
-}
-
-void _SerialPort::readIO(void)
-{
-	IO_BUF ioB;
-
-	ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
-
-	toQueR(&ioB);
-
-	LOG_I("read: " << ioB.m_pB);
+		toQueR(&ioB);
+		LOG_I("read: " << ioB.m_pB);
+	}
 }
 
 bool _SerialPort::setup(void)
 {
 	// Check file descriptor
-	if (!isatty(m_fd))
-	{
-		printf("ERROR: file descriptor is NOT a serial port\n");
-		return false;
-	}
+	IF_Fl(!isatty(m_fd), "file descriptor is NOT a serial port");
 
 	// Read file descritor configuration
 	struct termios config;
-	if (tcgetattr(m_fd, &config) < 0)
-	{
-		printf("\nERROR: could not read configuration of fd\n");
-		return false;
-	}
+	IF_Fl(tcgetattr(m_fd, &config) < 0, "could not read configuration of fd");
 
 	// Input flags - Turn off input processing
 	// convert break to null byte, no CR to NL translation,
 	// no NL to CR translation, don't mark parity errors or breaks
 	// no input parity check, don't strip high bit off,
 	// no XON/XOFF software flow control
-	config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK
-			| ISTRIP | IXON);
+	config.c_iflag &= ~(IGNBRK | BRKINT | ICRNL | INLCR | PARMRK | INPCK | ISTRIP | IXON);
 //	config.c_iflag &= ~(IXON | IXOFF | IXANY); // | BRKINT | ICRNL | INPCK | ISTRIP | IXON | IUCLC | INLCR| IXANY); // turn off s/w flow ctrl
 //	config.c_iflag |= IGNPAR;
 
@@ -215,7 +220,7 @@ bool _SerialPort::setup(void)
 	case 1200:
 		if (cfsetispeed(&config, B1200) < 0 || cfsetospeed(&config, B1200) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
@@ -235,7 +240,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B38400) < 0
 				|| cfsetospeed(&config, B38400) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
@@ -243,7 +248,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
@@ -251,7 +256,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
@@ -262,7 +267,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B460800) < 0
 				|| cfsetospeed(&config, B460800) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
@@ -270,24 +275,20 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B921600) < 0
 				|| cfsetospeed(&config, B921600) < 0)
 		{
-			LOG(ERROR)<<"Could not set baud:"<<m_baud;
+			LOG_E("Could not set baud:"<<m_baud);
 			return false;
 		}
 		break;
 	default:
-		LOG(ERROR)<<"Could not set baud:"<<m_baud;
+		LOG_E("Could not set baud:"<<m_baud);
 		return false;
 		break;
 	}
 
 	//apply the configuration
-//	if (tcsetattr(m_fd, TCSANOW, &toptions) < 0)
-//  fcntl(m_fd, F_SETFL, FNDELAY);
-//	tcflush(m_fd, TCIOFLUSH);
-
 	if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
 	{
-		LOG(ERROR)<<"Could not set configuration of fd:"<<m_fd;
+		LOG_E("Could not set configuration of fd: " << m_fd);
 		return false;
 	}
 

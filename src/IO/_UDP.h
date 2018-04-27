@@ -1,5 +1,5 @@
 /*
- * UDP.h
+ * _UDP.h
  *
  *  Created on: June 16, 2016
  *      Author: yankai
@@ -12,8 +12,8 @@
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
 #include "_IOBase.h"
-#include "_UDPclient.h"
-#include "_UDPserver.h"
+
+#define DEFAULT_UDP_PORT 19840
 
 namespace kai
 {
@@ -26,19 +26,42 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
+	bool start(void);
 	void close(void);
-	bool draw(void);
 	void reset(void);
+	bool draw(void);
+	bool open(void);
 
-	int  read(uint8_t* pBuf, int nB);
-	bool write(uint8_t* pBuf, int nB);
-	bool writeLine(uint8_t* pBuf, int nB);
+private:
+	void readIO(void);
+	void writeIO(void);
+
+	void updateW(void);
+	static void* getUpdateThreadW(void* This)
+	{
+		((_UDP*) This)->updateW();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateThreadR(void* This)
+	{
+		((_UDP*) This)->updateR();
+		return NULL;
+	}
 
 public:
-	_UDPclient* m_pSender;
-	_UDPserver* m_pReceiver;
+	sockaddr_in m_sAddrR;
+	unsigned int m_nSAddrR;
+	sockaddr_in m_sAddrW;
+	unsigned int m_nSAddrW;
 
+	string	m_addrR;
+	uint16_t m_portR;
+	string	m_addrW;
+	uint16_t m_portW;
 
+	int m_socket;
 };
 
 }

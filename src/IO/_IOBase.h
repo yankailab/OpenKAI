@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Script/Kiss.h"
 
 #define N_IO_BUF 256
 
@@ -50,7 +49,7 @@ struct IO_BUF
 	}
 };
 
-class _IOBase: public _ThreadBase
+class _IOBase: public BASE
 {
 public:
 	_IOBase();
@@ -61,6 +60,7 @@ public:
 	virtual bool isOpen(void);
 	virtual void close(void);
 	virtual void reset(void);
+	virtual bool draw(void);
 	virtual IO_TYPE ioType(void);
 
 	int  read(uint8_t* pBuf, int nB);
@@ -80,6 +80,9 @@ public:
 
 	pthread_mutex_t m_mutexW;
 	pthread_mutex_t m_mutexR;
+
+	_ThreadBase* m_pThreadW;
+	_ThreadBase* m_pThreadR;
 
 };
 

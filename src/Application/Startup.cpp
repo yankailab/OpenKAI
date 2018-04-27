@@ -90,6 +90,7 @@ bool Startup::start(Kiss* pKiss)
 		while (m_bRun)
 		{
 			sleep(1);
+			//TODO: curese output
 		}
 	}
 

@@ -17,28 +17,13 @@
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.181 port=5678",
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.181 port=5678",
 	"textX":20,
 	"textY":20,
 }
 
 {
-	"name":"camera",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":1,
-	"Window":"okView",
-	"deviceID":3,
-	"w":1280,
-	"h":720,
-	"fovW":60,
-	"fovH":60,
-	"bFlip":0,
-	"bGray":0,
-}
-
-{
-	"name":"apSerialJetson",
+	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":0,
 	"bLog":0,
@@ -49,7 +34,7 @@
 }
 
 {
-	"name":"apSerialPC",
+	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":1,
 	"bLog":0,
@@ -60,19 +45,17 @@
 }
 
 {
-	"name":"apUDPserver",
-	"class":"_UDPserver",
+	"name":"apUDP",
+	"class":"_UDP",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"port":19840,
-	"bReceiveOnly":0,
-	"timeoutRecv":10000,
+	"portR":19840,
 }
 
 {
-	"name":"webSocket",
+	"name":"apWS",
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
@@ -86,7 +69,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"_IOBase":"apSerialPC",
+	"_IOBase":"apSerial",
 	
 	{
 		"bInst":1,
@@ -106,7 +89,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"_IOBase":"webSocket",
+	"_IOBase":"apWS",
 	
 	{
 		"bInst":1,
@@ -126,7 +109,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"okView",
-	"_IOBase":"apUDPserver",
+	"_IOBase":"apUDP",
 	
 	{
 		"bInst":1,

@@ -32,8 +32,6 @@
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
 #include "../IO/_UDP.h"
-#include "../IO/_UDPclient.h"
-#include "../IO/_UDPserver.h"
 #include "../IO/_WebSocket.h"
 #include "../DNN/TensorRT/_ImageNet.h"
 #include "../Detector/_ClusterNet.h"

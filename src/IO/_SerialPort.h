@@ -33,13 +33,18 @@ public:
 
 private:
 	bool setup(void);
-	void readIO(void);
-	void writeIO(void);
 
-	void update(void);
-	static void* getUpdateThread(void* This)
+	void updateW(void);
+	static void* getUpdateThreadW(void* This)
 	{
-		((_SerialPort*) This)->update();
+		((_SerialPort*) This)->updateW();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateThreadR(void* This)
+	{
+		((_SerialPort*) This)->updateR();
 		return NULL;
 	}
 

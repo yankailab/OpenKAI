@@ -28,7 +28,7 @@ _TCPsocket::~_TCPsocket()
 
 bool _TCPsocket::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -88,7 +88,7 @@ void _TCPsocket::reset(void)
 
 bool _TCPsocket::link(void)
 {
-	IF_F(!this->_ThreadBase::link());
+	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -96,45 +96,45 @@ bool _TCPsocket::link(void)
 
 bool _TCPsocket::start(void)
 {
-	IF_T(m_bThreadON);
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
+//	IF_T(m_bThreadON);
+//
+//	m_bThreadON = true;
+//	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+//	if (retCode != 0)
+//	{
+//		LOG_E(retCode);
+//		m_bThreadON = false;
+//		return false;
+//	}
 
 	return true;
 }
 
 void _TCPsocket::update(void)
 {
-	while (m_bThreadON)
-	{
-		if (!isOpen())
-		{
-			if (!open())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-
-		this->autoFPSfrom();
-
-		writeIO();
-		readIO();
-
-		if(!this->bEmptyW())
-			this->disableSleep(true);
-		else
-			this->disableSleep(false);
-
-		this->autoFPSto();
-	}
+//	while (m_bThreadON)
+//	{
+//		if (!isOpen())
+//		{
+//			if (!open())
+//			{
+//				this->sleepTime(USEC_1SEC);
+//				continue;
+//			}
+//		}
+//
+//		this->autoFPSfrom();
+//
+//		writeIO();
+//		readIO();
+//
+//		if(!this->bEmptyW())
+//			this->disableSleep(true);
+//		else
+//			this->disableSleep(false);
+//
+//		this->autoFPSto();
+//	}
 }
 
 void _TCPsocket::writeIO(void)
