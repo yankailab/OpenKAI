@@ -2,9 +2,9 @@
 #define OpenKAI_src_Autopilot_Controller_HM_base_H_
 
 #include "../../../Base/common.h"
-#include "../../../IO/_TCP.h"
 #include "../../../Protocol/_Canbus.h"
 #include "../../ActionBase.h"
+#include "../../../Protocol/_Mavlink.h"
 
 namespace kai
 {
@@ -26,7 +26,7 @@ public:
 
 public:
 	_Canbus* m_pCAN;
-	_TCP* m_pCMD;
+	_Mavlink* m_pMavlink;
 
 	int m_maxRpmT;
 	int m_maxRpmW;

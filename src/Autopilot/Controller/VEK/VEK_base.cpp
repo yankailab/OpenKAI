@@ -34,11 +34,6 @@ bool VEK_base::init(void* pKiss)
 	KISSm(pK,pwmL);
 	KISSm(pK,vForward);
 
-	Kiss* pI = pK->o("cmd");
-	IF_T(pI->empty());
-	m_pCMD = new _TCP();
-	F_ERROR_F(m_pCMD->init(pI));
-
 	return true;
 }
 

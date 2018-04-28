@@ -46,7 +46,7 @@ void _TCPserver::reset(void)
 
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
 	{
-		delete (_TCPsocket*)*itr;
+		delete (_TCPclient*)*itr;
 	}
 
 	m_lSocket.clear();
@@ -144,7 +144,7 @@ bool _TCPserver::handler(void)
 			auto itr = m_lSocket.begin();
 			while (itr != m_lSocket.end())
 			{
-				_TCPsocket* pSocket = *itr;
+				_TCPclient* pSocket = *itr;
 				if(pSocket->m_ioStatus != io_opened)
 				{
 					itr = m_lSocket.erase(itr);
@@ -161,7 +161,7 @@ bool _TCPserver::handler(void)
 			IF_CONT(m_lSocket.size() >= m_nSocket);
 		}
 
-		_TCPsocket* pSocket = new _TCPsocket();
+		_TCPclient* pSocket = new _TCPclient();
 		if (!pSocket)
 		{
 			LOG_E("_socket create failed");
@@ -204,7 +204,7 @@ bool _TCPserver::handler(void)
 	return true;
 }
 
-_TCPsocket* _TCPserver::getFirstSocket(void)
+_TCPclient* _TCPserver::getFirstSocket(void)
 {
 	IF_N(m_lSocket.empty());
 
@@ -222,7 +222,7 @@ bool _TCPserver::draw(void)
 	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
-		((_TCPsocket*) *itr)->draw();
+		((_TCPclient*) *itr)->draw();
 	}
 	pWin->tabPrev();
 

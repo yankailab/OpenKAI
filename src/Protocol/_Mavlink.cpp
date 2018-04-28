@@ -618,7 +618,7 @@ bool _Mavlink::draw(void)
 	if (!m_pIO->isOpen())
 	{
 		pWin->tabNext();
-		msg + ": Not Connected";
+		msg = "Not Connected";
 		pWin->addMsg(&msg);
 		pWin->tabPrev();
 		return true;

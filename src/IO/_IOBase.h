@@ -49,7 +49,7 @@ struct IO_BUF
 	}
 };
 
-class _IOBase: public BASE
+class _IOBase: public _ThreadBase
 {
 public:
 	_IOBase();
@@ -81,8 +81,8 @@ public:
 	pthread_mutex_t m_mutexW;
 	pthread_mutex_t m_mutexR;
 
-	_ThreadBase* m_pThreadW;
-	_ThreadBase* m_pThreadR;
+	pthread_t m_rThreadID;
+	bool	m_bRThreadON;
 
 };
 

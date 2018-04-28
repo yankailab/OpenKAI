@@ -32,8 +32,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_TCPserver);
-	ADD_MODULE(_TCPsocket);
-	ADD_MODULE(_TCP);
+	ADD_MODULE(_TCPclient);
 	ADD_MODULE(_UDP);
 	ADD_MODULE(_WebSocket);
 	ADD_MODULE(Window);

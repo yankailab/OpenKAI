@@ -85,26 +85,26 @@ bool _WebSocket::start(void)
 {
 	int retCode;
 
-	if(!m_pThreadW->m_bThreadON)
+	if(!m_bThreadON)
 	{
-		m_pThreadW->m_bThreadON = true;
-		retCode = pthread_create(&m_pThreadW->m_threadID, 0, getUpdateThreadW, this);
+		m_bThreadON = true;
+		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
-			m_pThreadW->m_bThreadON = false;
+			m_bThreadON = false;
 			return false;
 		}
 	}
 
-	if(!m_pThreadR->m_bThreadON)
+	if(!m_bRThreadON)
 	{
-		m_pThreadR->m_bThreadON = true;
-		retCode = pthread_create(&m_pThreadR->m_threadID, 0, getUpdateThreadR, this);
+		m_bRThreadON = true;
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
-			m_pThreadR->m_bThreadON = false;
+			m_bRThreadON = false;
 			return false;
 		}
 	}
@@ -114,18 +114,18 @@ bool _WebSocket::start(void)
 
 void _WebSocket::updateW(void)
 {
-	while (m_pThreadW->m_bThreadON)
+	while (m_bThreadON)
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				m_pThreadW->sleepTime(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		m_pThreadW->autoFPSfrom();
+		this->autoFPSfrom();
 
 		IO_BUF ioB;
 		while(1)
@@ -142,17 +142,17 @@ void _WebSocket::updateW(void)
 			}
 		}
 
-		m_pThreadW->autoFPSto();
+		this->autoFPSto();
 	}
 }
 
 void _WebSocket::updateR(void)
 {
-	while (m_pThreadR->m_bThreadON)
+	while (m_bRThreadON)
 	{
 		if (!isOpen())
 		{
-			m_pThreadR->sleepTime(USEC_1SEC);
+			::sleep(1);
 			continue;
 		}
 
@@ -353,8 +353,12 @@ bool _WebSocket::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->getCMat();
 
-	string msg = "Peer IP: ";
+	pWin->tabNext();
+
+	string msg = "nClients: " + i2str(m_vClient.size());
 	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }

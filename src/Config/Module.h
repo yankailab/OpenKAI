@@ -27,8 +27,7 @@
 #include "../Autopilot/_AutoPilot.h"
 
 #include "../IO/_TCPserver.h"
-#include "../IO/_TCPsocket.h"
-#include "../IO/_TCP.h"
+#include "../IO/_TCPclient.h"
 #include "../IO/_File.h"
 #include "../IO/_SerialPort.h"
 #include "../IO/_UDP.h"

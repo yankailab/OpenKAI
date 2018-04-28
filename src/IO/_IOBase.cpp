@@ -12,14 +12,13 @@ namespace kai
 
 _IOBase::_IOBase()
 {
+	m_rThreadID = 0;
+	m_bRThreadON = false;
 	m_ioType = io_none;
 	m_ioStatus = io_unknown;
 
 	pthread_mutex_init(&m_mutexW, NULL);
 	pthread_mutex_init(&m_mutexR, NULL);
-
-	m_pThreadW = new _ThreadBase();
-	m_pThreadR = new _ThreadBase();
 }
 
 _IOBase::~_IOBase()
@@ -27,17 +26,11 @@ _IOBase::~_IOBase()
 	reset();
 	pthread_mutex_destroy(&m_mutexW);
 	pthread_mutex_destroy(&m_mutexR);
-
-	DEL(m_pThreadW);
-	DEL(m_pThreadR);
 }
 
 bool _IOBase::init(void* pKiss)
 {
-	IF_F(!this->BASE::init(pKiss));
-	IF_F(!m_pThreadW->init(pKiss));
-	IF_F(!m_pThreadR->init(pKiss));
-
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -46,10 +39,7 @@ bool _IOBase::init(void* pKiss)
 
 void _IOBase::reset(void)
 {
-	this->BASE::reset();
-
-	m_pThreadW->reset();
-	m_pThreadR->reset();
+	this->_ThreadBase::reset();
 }
 
 bool _IOBase::open(void)
@@ -168,7 +158,7 @@ void _IOBase::close(void)
 
 bool _IOBase::draw(void)
 {
-	IF_F(!this->BASE::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	return true;

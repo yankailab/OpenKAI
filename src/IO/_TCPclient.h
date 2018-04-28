@@ -1,5 +1,5 @@
 /*
- * _TCPsocket.h
+ * _TCPclient.h
  *
  *  Created on: August 8, 2016
  *      Author: yankai
@@ -18,11 +18,11 @@
 namespace kai
 {
 
-class _TCPsocket: public _IOBase
+class _TCPclient: public _IOBase
 {
 public:
-	_TCPsocket();
-	virtual ~_TCPsocket();
+	_TCPclient();
+	virtual ~_TCPclient();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -33,13 +33,17 @@ public:
 	bool draw(void);
 
 private:
-	void readIO(void);
-	void writeIO(void);
-
-	void update(void);
-	static void* getUpdateThread(void* This)
+	void updateW(void);
+	static void* getUpdateThreadW(void* This)
 	{
-		((_TCPsocket*) This)->update();
+		((_TCPclient*) This)->updateW();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateThreadR(void* This)
+	{
+		((_TCPclient*) This)->updateR();
 		return NULL;
 	}
 

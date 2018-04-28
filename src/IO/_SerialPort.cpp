@@ -68,26 +68,26 @@ bool _SerialPort::start(void)
 {
 	int retCode;
 
-	if(!m_pThreadW->m_bThreadON)
+	if(!m_bThreadON)
 	{
-		m_pThreadW->m_bThreadON = true;
-		retCode = pthread_create(&m_pThreadW->m_threadID, 0, getUpdateThreadW, this);
+		m_bThreadON = true;
+		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
-			m_pThreadW->m_bThreadON = false;
+			m_bThreadON = false;
 			return false;
 		}
 	}
 
-	if(!m_pThreadR->m_bThreadON)
+	if(!m_bRThreadON)
 	{
-		m_pThreadR->m_bThreadON = true;
-		retCode = pthread_create(&m_pThreadR->m_threadID, 0, getUpdateThreadR, this);
+		m_bRThreadON = true;
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
-			m_pThreadR->m_bThreadON = false;
+			m_bRThreadON = false;
 			return false;
 		}
 	}
@@ -97,18 +97,18 @@ bool _SerialPort::start(void)
 
 void _SerialPort::updateW(void)
 {
-	while (m_pThreadW->m_bThreadON)
+	while (m_bThreadON)
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				m_pThreadW->sleepTime(USEC_1SEC);
+				this->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		m_pThreadW->autoFPSfrom();
+		this->autoFPSfrom();
 
 		IO_BUF ioB;
 		while(1)
@@ -124,17 +124,17 @@ void _SerialPort::updateW(void)
 		// Wait until all data has been written
 		tcdrain(m_fd);
 
-		m_pThreadW->autoFPSto();
+		this->autoFPSto();
 	}
 }
 
 void _SerialPort::updateR(void)
 {
-	while (m_pThreadR->m_bThreadON)
+	while (m_bRThreadON)
 	{
 		if (!isOpen())
 		{
-			m_pThreadR->sleepTime(USEC_1SEC);
+			::sleep(1);
 			continue;
 		}
 

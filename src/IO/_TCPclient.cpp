@@ -1,16 +1,16 @@
 /*
- * _TCPsocket.cpp
+ * _TCPclient.cpp
  *
  *  Created on: August 8, 2016
  *      Author: yankai
  */
 
-#include "_TCPsocket.h"
+#include "_TCPclient.h"
 
 namespace kai
 {
 
-_TCPsocket::_TCPsocket()
+_TCPclient::_TCPclient()
 {
 	m_strAddr = "";
 	m_port = 0;
@@ -21,12 +21,12 @@ _TCPsocket::_TCPsocket()
 	m_ioStatus = io_unknown;
 }
 
-_TCPsocket::~_TCPsocket()
+_TCPclient::~_TCPclient()
 {
 	reset();
 }
 
-bool _TCPsocket::init(void* pKiss)
+bool _TCPclient::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -43,7 +43,7 @@ bool _TCPsocket::init(void* pKiss)
 	return true;
 }
 
-bool _TCPsocket::open(void)
+bool _TCPclient::open(void)
 {
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
 	IF_F(m_socket < 0);
@@ -58,7 +58,7 @@ bool _TCPsocket::open(void)
 	if (ret < 0)
 	{
 		close();
-		LOG_E("connec failed");
+		LOG_E("connect failed");
 		return false;
 	}
 
@@ -73,20 +73,20 @@ bool _TCPsocket::open(void)
 	return true;
 }
 
-void _TCPsocket::close(void)
+void _TCPclient::close(void)
 {
 	IF_(m_ioStatus!=io_opened);
 	::close(m_socket);
 	this->_IOBase::close();
 }
 
-void _TCPsocket::reset(void)
+void _TCPclient::reset(void)
 {
 	this->_IOBase::reset();
 	close();
 }
 
-bool _TCPsocket::link(void)
+bool _TCPclient::link(void)
 {
 	IF_F(!this->_IOBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -94,98 +94,100 @@ bool _TCPsocket::link(void)
 	return true;
 }
 
-bool _TCPsocket::start(void)
+bool _TCPclient::start(void)
 {
-//	IF_T(m_bThreadON);
-//
-//	m_bThreadON = true;
-//	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-//	if (retCode != 0)
-//	{
-//		LOG_E(retCode);
-//		m_bThreadON = false;
-//		return false;
-//	}
+	int retCode;
+
+	if(!m_bThreadON)
+	{
+		m_bThreadON = true;
+		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_bThreadON = false;
+			return false;
+		}
+	}
+
+	if(!m_bRThreadON)
+	{
+		m_bRThreadON = true;
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
+		if (retCode != 0)
+		{
+			LOG_E(retCode);
+			m_bRThreadON = false;
+			return false;
+		}
+	}
 
 	return true;
 }
 
-void _TCPsocket::update(void)
+void _TCPclient::updateW(void)
 {
-//	while (m_bThreadON)
-//	{
-//		if (!isOpen())
-//		{
-//			if (!open())
-//			{
-//				this->sleepTime(USEC_1SEC);
-//				continue;
-//			}
-//		}
-//
-//		this->autoFPSfrom();
-//
-//		writeIO();
-//		readIO();
-//
-//		if(!this->bEmptyW())
-//			this->disableSleep(true);
-//		else
-//			this->disableSleep(false);
-//
-//		this->autoFPSto();
-//	}
-}
-
-void _TCPsocket::writeIO(void)
-{
-	IF_(m_ioStatus != io_opened);
-
-	IO_BUF ioB;
-	toBufW(&ioB);
-	IF_(ioB.bEmpty());
-
-	int nSent = ::send(m_socket, ioB.m_pB, ioB.m_nB, 0);
-
-	if (nSent == -1)
+	while (m_bThreadON)
 	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("send error: "<<errno);
-		close();
-		return;
+		if (!isOpen())
+		{
+			if (!open())
+			{
+				this->sleepTime(USEC_1SEC);
+				continue;
+			}
+		}
+
+		this->autoFPSfrom();
+
+		IO_BUF ioB;
+		while(1)
+		{
+			toBufW(&ioB);
+			if(ioB.bEmpty())break;
+
+			int nSend = ::send(m_socket, ioB.m_pB, ioB.m_nB, 0);
+			if (nSend == -1)
+			{
+				if(errno == EAGAIN)break;
+				if(errno == EWOULDBLOCK)break;
+				LOG_E("send error: "<<errno);
+				close();
+				break;
+			}
+		}
+
+		this->autoFPSto();
 	}
 }
 
-void _TCPsocket::readIO(void)
+void _TCPclient::updateR(void)
 {
-	IF_(m_ioStatus != io_opened);
-
-	IO_BUF ioB;
-	ioB.m_nB = ::recv(m_socket, ioB.m_pB, N_IO_BUF, 0);
-
-	if (ioB.m_nB == -1)
+	while (m_bRThreadON)
 	{
-		IF_(errno == EAGAIN);
-		IF_(errno == EWOULDBLOCK);
-		LOG_E("recv error: "<<errno);
-		close();
-		return;
+		if (!isOpen())
+		{
+			::sleep(1);
+			continue;
+		}
+
+		IO_BUF ioB;
+		ioB.m_nB = ::recv(m_socket, ioB.m_pB, N_IO_BUF, 0);
+
+		if (ioB.m_nB <= 0)
+		{
+			LOG_E("recv error: "<<errno);
+			close();
+			continue;
+		}
+
+		toQueR(&ioB);
+
+		LOG_I("Received bytes:" << ioB.m_nB);
 	}
-
-	if(ioB.m_nB == 0)
-	{
-		LOG_E("socket is shutdown");
-		close();
-		return;
-	}
-
-	toQueR(&ioB);
-
-//	LOG_I("Received "<< ioB.m_nB <<" bytes from " << inet_ntoa(m_sAddr.sin_addr) << ":" << ntohs(m_sAddr.sin_port));
 }
 
-bool _TCPsocket::draw(void)
+bool _TCPclient::draw(void)
 {
 	IF_F(!this->_IOBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

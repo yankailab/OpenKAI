@@ -33,9 +33,6 @@ public:
 	bool open(void);
 
 private:
-	void readIO(void);
-	void writeIO(void);
-
 	void updateW(void);
 	static void* getUpdateThreadW(void* This)
 	{
@@ -51,16 +48,11 @@ private:
 	}
 
 public:
-	sockaddr_in m_sAddrR;
-	unsigned int m_nSAddrR;
-	sockaddr_in m_sAddrW;
-	unsigned int m_nSAddrW;
+	string	m_addr;
+	uint16_t m_port;
 
-	string	m_addrR;
-	uint16_t m_portR;
-	string	m_addrW;
-	uint16_t m_portW;
-
+	sockaddr_in m_sAddr;
+	unsigned int m_nSAddr;
 	int m_socket;
 };
 

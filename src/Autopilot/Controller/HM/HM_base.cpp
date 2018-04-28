@@ -6,7 +6,7 @@ namespace kai
 HM_base::HM_base()
 {
 	m_pCAN = NULL;
-	m_pCMD = NULL;
+	m_pMavlink = NULL;
 	m_rpmL = 0;
 	m_rpmR = 0;
 	m_motorRpmW = 0;
@@ -49,11 +49,6 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("pinLEDm", (int*)&m_pinLEDm));
 	F_INFO(pK->v("pinLEDr", (int*)&m_pinLEDr));
 
-	Kiss* pI = pK->o("cmd");
-	IF_T(pI->empty());
-	m_pCMD = new _TCP();
-	F_ERROR_F(m_pCMD->init(pI));
-
 	return true;
 }
 
@@ -68,6 +63,10 @@ bool HM_base::link(void)
 	F_ERROR_F(pK->v("_Canbus", &iName));
 	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
 
+	iName = "";
+	F_INFO(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
@@ -75,7 +74,7 @@ void HM_base::update(void)
 {
 	this->ActionBase::update();
 	NULL_(m_pAM);
-	NULL_(m_pCMD);
+	NULL_(m_pMavlink);
 
 	updateCAN();
 
@@ -100,16 +99,10 @@ void HM_base::update(void)
 
 void HM_base::cmd(void)
 {
-	if (!m_pCMD->isOpen())
-	{
-		m_pCMD->open();
-		return;
-	}
-
 	char buf;
 	string stateName;
 
-	IF_(m_pCMD->read((uint8_t*) &buf, 1) <= 0);
+//	IF_(m_pCMD->read((uint8_t*) &buf, 1) <= 0);
 
 	switch (buf)
 	{

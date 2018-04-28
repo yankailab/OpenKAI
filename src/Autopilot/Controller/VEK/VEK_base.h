@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_VEK_VEK_base_H_
 
 #include "../../../Base/common.h"
-#include "../../../IO/_TCP.h"
+#include "../../../Protocol/_Mavlink.h"
 #include "../../../Protocol/_Canbus.h"
 #include "../../ActionBase.h"
 #include "../../../Navigation/_GPS.h"
