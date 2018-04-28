@@ -35,9 +35,9 @@ public:
 	virtual bool draw(void);
 
 	virtual VISION_TYPE getType(void);
-	virtual Frame* bgr(void);
-	virtual Frame* hsv(void);
-	virtual Frame* gray(void);
+	virtual Frame* BGR(void);
+	virtual Frame* HSV(void);
+	virtual Frame* Gray(void);
 
 	virtual Mat* K(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);

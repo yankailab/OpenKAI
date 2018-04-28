@@ -108,7 +108,7 @@ bool APcopter_distLidar::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
 	Scalar col = Scalar(0, 255, 0);

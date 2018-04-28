@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Base_BASE_H_
 #define OpenKAI_src_Base_BASE_H_
 
-#include "../Vision/Frame.h"
 #include "common.h"
+#include "../Vision/Frame.h"
 
 using namespace std;
 

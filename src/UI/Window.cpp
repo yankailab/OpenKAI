@@ -13,9 +13,6 @@ namespace kai
 
 Window::Window()
 {
-	m_pFrame = NULL;
-	m_pF = NULL;
-	m_pF2 = NULL;
 	m_textPos.init();
 	m_textStart.x = 15;
 	m_textStart.y = 15;
@@ -114,11 +111,7 @@ bool Window::init(void* pKiss)
 	F_INFO(pK->v("textG", &m_textCol[1]));
 	F_INFO(pK->v("textR", &m_textCol[2]));
 
-	m_pFrame = new Frame();
-	m_pFrame->allocate(m_size.x, m_size.y);
-
-	m_pF = new Frame();
-	m_pF2 = new Frame();
+	m_frame.allocate(m_size.x, m_size.y);
 
 	IF_T(!m_bWindow);
 
@@ -142,46 +135,45 @@ bool Window::link(void)
 
 bool Window::draw(void)
 {
-	NULL_F(m_pFrame);
-	IF_F(m_pFrame->empty());
+	IF_F(m_frame.bEmpty());
 
 	if (m_bWindow)
 	{
-		imshow(*this->getName(), *m_pFrame->getCMat());
+		imshow(*this->getName(), *m_frame.m());
 	}
 
 	Frame* pSrc;
 	Frame* pDest;
 	Frame* pTmp;
-	pSrc = m_pF;
-	pDest = m_pF2;
+	pSrc = &m_F;
+	pDest = &m_F2;
 
-	m_pF->update(m_pFrame->getCMat());
-	Size fSize = pSrc->getSize();
+	m_F.copy(m_frame);
+	Size fSize = pSrc->size();
 
 	if (fSize.width != m_size.x || fSize.height != m_size.y)
 	{
-		pDest->getResizedOf(pSrc, m_size.x, m_size.y);
+		*pDest = pSrc->resize(m_size.x, m_size.y);
 		SWAP(pSrc, pDest, pTmp);
 	}
 
-	if (pSrc->getCMat()->type() != CV_8UC3)
+	if (pSrc->m()->type() != CV_8UC3)
 	{
-		pDest->get8UC3Of(pSrc);
+		*pSrc = pDest->f8UC3();
 		SWAP(pSrc, pDest, pTmp);
 	}
 
 	if (m_VW.isOpened())
 	{
-		m_VW << *pSrc->getCMat();
+		m_VW << *pSrc->m();
 	}
 
 	if (m_gst.isOpened())
 	{
-		m_gst << *pSrc->getCMat();
+		m_gst << *pSrc->m();
 	}
 
-	m_pFrame->allocate(m_size.x, m_size.y);
+	m_frame.allocate(m_size.x, m_size.y);
 	tabReset();
 	lineReset();
 
@@ -190,7 +182,7 @@ bool Window::draw(void)
 
 Frame* Window::getFrame(void)
 {
-	return m_pFrame;
+	return &m_frame;
 }
 
 Point* Window::getTextPos(void)
@@ -241,7 +233,7 @@ void Window::addMsg(string* pMsg)
 {
 	IF_(!m_bDraw);
 
-	putText(*m_pFrame->getCMat(), *pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
+	putText(*m_frame.m(), *pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);
 	lineNext();
 }

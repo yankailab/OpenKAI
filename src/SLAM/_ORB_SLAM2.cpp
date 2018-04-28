@@ -126,10 +126,10 @@ void _ORB_SLAM2::detect(void)
 
 	NULL_(m_pOS);
 	NULL_(m_pVision);
-	Frame* pGray = m_pVision->gray();
+	Frame* pGray = m_pVision->Gray();
 	NULL_(pGray);
-	IF_(pGray->empty());
-	m_pFrame->getResizedOf(pGray, m_width, m_height);
+	IF_(pGray->bEmpty());
+	*m_pFrame = pGray->resize(m_width, m_height);
 
 	uint64_t tNow = getTimeUsec();
 	if (m_tStartup <= 0)
@@ -139,7 +139,7 @@ void _ORB_SLAM2::detect(void)
 
 	double t = ((double) (tNow - m_tStartup)) * usecBase;
 
-	m_pose = m_pOS->TrackMonocular(*m_pFrame->getCMat(), t);
+	m_pose = m_pOS->TrackMonocular(*m_pFrame->m(), t);
 	if (m_pose.empty())
 	{
 		m_bTracking = false;

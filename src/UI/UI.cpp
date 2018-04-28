@@ -80,7 +80,7 @@ bool UI::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 
 	int i;
 	for(i=0; i<m_nBtn;i++)

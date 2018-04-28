@@ -209,13 +209,14 @@ void _Camera::update(void)
 			SWAP(pSrc, pDest, pTmp);
 		}
 
-		m_pBGR->update(pSrc);
+		pSrc->download(cMat);
+		*m_pBGR = cMat;
 
 		if(m_pGray)
-			m_pGray->getGrayOf(m_pBGR);
+			*m_pGray = m_pBGR->gray();
 
 		if(m_pHSV)
-			m_pHSV->getHSVOf(m_pBGR);
+			*m_pHSV = m_pBGR->hsv();
 
 		this->autoFPSto();
 	}

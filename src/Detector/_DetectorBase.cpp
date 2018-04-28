@@ -217,7 +217,7 @@ bool _DetectorBase::draw(void)
 
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->getCMat();
+	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
 
 	Mat bg;

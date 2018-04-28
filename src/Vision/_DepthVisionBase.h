@@ -28,7 +28,7 @@ public:
 	virtual bool draw(void);
 
 	virtual void updateFilter(void);
-	virtual Frame* depth(void);
+	virtual Frame* Depth(void);
 	virtual vDouble2 range(void);
 
 	vInt2 matrixDim(void);
@@ -39,7 +39,7 @@ public:
 	int m_wD;
 	int m_hD;
 
-	Frame*	m_pDepth;
+	Frame	m_fDepth;
 	vDouble2 m_range;
 	Mat m_mZ;
 	Mat m_mD;
@@ -47,7 +47,7 @@ public:
 	vInt2		m_mDim;
 	Median* 	m_pFilterMatrix;
 	int			m_nFilter;
-	Frame*		m_pMatrixFrame;
+	Frame		m_fMatrixFrame;
 
 	Frame*	m_pDepthShow;
 	Window* m_pDepthWin;

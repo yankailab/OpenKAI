@@ -75,10 +75,10 @@ void _filterShrink::update(void)
 					cv::Scalar(m_noiseMean, m_noiseMean, m_noiseMean),
 					cv::Scalar(m_noiseDev, m_noiseDev, m_noiseDev));
 
-			m_pFrameIn->update(&mIn);
-			m_pFrameOut->getResizedOf(m_pFrameIn, 1.0 - m_dRand * NormRand(), 1.0 - m_dRand * NormRand());
+			m_pFrameIn->copy(mIn);
+			*m_pFrameOut = m_pFrameIn->resize(1.0 - m_dRand * NormRand(), 1.0 - m_dRand * NormRand());
 
-			Mat sMat = *m_pFrameOut->getCMat();
+			Mat sMat = *m_pFrameOut->m();
 			Mat mOut = mNoise;
 			sMat.copyTo(mOut(cv::Rect((int) ((double) (mOut.cols - sMat.cols) * NormRand()),
 									  (int) ((double) (mOut.rows - sMat.rows) * NormRand()),

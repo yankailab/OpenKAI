@@ -125,12 +125,12 @@ void _DetectNet::detect(void)
 	NULL_(m_pVision);
 	NULL_(m_pDN);
 
-	Frame* pBGR = m_pVision->bgr();
+	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
-	IF_(pBGR->empty());
-	IF_(m_pRGBA->isNewerThan(pBGR));
+	IF_(pBGR->bEmpty());
+	IF_(*pBGR <= *m_pRGBA);
 
-	m_pRGBA->getRGBAOf(pBGR);
+	*m_pRGBA = pBGR->rgba();
 	GpuMat* pGMat = m_pRGBA->getGMat();
 	IF_(pGMat->empty());
 

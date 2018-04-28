@@ -285,7 +285,7 @@ bool _DistSensorBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	string msg;
 
 	IF_F(!m_bReady);

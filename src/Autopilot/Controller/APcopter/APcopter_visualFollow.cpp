@@ -77,7 +77,7 @@ bool APcopter_visualFollow::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 
 	return true;
 }

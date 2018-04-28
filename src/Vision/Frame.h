@@ -8,80 +8,11 @@
 #ifndef OpenKAI_src_Vision_Frame_H_
 #define OpenKAI_src_Vision_Frame_H_
 
-#include "../Base/common.h"
+#include "FrameBase.h"
 
 namespace kai
 {
-
-struct CPU_MAT
-{
-	uint64_t m_frameID;
-	Mat m_mat;
-};
-
-#ifdef USE_CUDA
-struct GPU_MAT
-{
-	//	//Time for last update, updated in each frame update
-	uint64_t m_frameID;
-	GpuMat m_mat;
-};
-#endif
-
-#ifdef USE_OPENCL
-struct U_MAT
-{
-	uint64_t m_frameID;
-	UMat m_mat;
-};
-#endif
-
-
-
-class Frame
-{
-public:
-	Frame();
-	virtual ~Frame();
-
-	void allocate(int w, int h);
-
-	void update(Mat* pFrame);
-	void update(Frame* pFrame);
-	inline void updatedCMat(void);
-
-	Mat* getCMat(void);
-	void getCropOf(Frame* pFrom, Rect cropBB);
-	void getResizedOf(Frame* pFrom, int width, int height);
-	void getResizedOf(Frame* pFrom, double scaleW, double scaleH);
-	void getGrayOf(Frame* pFrom);
-	void getHSVOf(Frame* pFrom);
-	void getBGRAOf(Frame* pFrom);
-	void getRGBAOf(Frame* pFrom);
-	void get8UC3Of(Frame* pFrom);
-	void get32FC4Of(Frame* pFrom);
-
-	Size getSize(void);
-
-	bool isNewerThan(Frame* pFrame);
-	uint64_t getFrameID(void);
-	bool	 empty(void);
-
-#ifdef USE_CUDA
-	void update(GpuMat* pGpuFrame);
-	void updatedGMat(void);
-	GpuMat* getGMat(void);
-#endif
-
-private:
-	CPU_MAT	m_CMat;
-
-#ifdef USE_CUDA
-	GPU_MAT	m_GMat;
-#endif
-
-};
-
+	typedef FrameBase Frame;
 }
 
 #endif

@@ -75,17 +75,17 @@ void _VisionBase::reset(void)
 	DEL(m_pGray);
 }
 
-Frame* _VisionBase::bgr(void)
+Frame* _VisionBase::BGR(void)
 {
 	return m_pBGR;
 }
 
-Frame* _VisionBase::hsv(void)
+Frame* _VisionBase::HSV(void)
 {
 	return m_pHSV;
 }
 
-Frame* _VisionBase::gray(void)
+Frame* _VisionBase::Gray(void)
 {
 	return m_pGray;
 }
@@ -142,8 +142,8 @@ bool _VisionBase::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_pBGR->empty());
-	pFrame->update(m_pBGR);
+	IF_F(m_pBGR->bEmpty());
+	pFrame->copy(*m_pBGR);
 
 	return this->_ThreadBase::draw();
 }

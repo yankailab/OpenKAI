@@ -33,12 +33,7 @@ bool _Flow::init(void* pKiss)
 	KISSm(pK,width);
 	KISSm(pK,height);
 
-#ifndef USE_OPENCV2X
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-#else
-	m_pFarn = superres::createOptFlow_Farneback_GPU();
-#endif
-
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 
@@ -94,20 +89,21 @@ void _Flow::detect(void)
 	GpuMat* pNext;
 
 	NULL_(m_pVision);
-	pGray = m_pVision->gray();
+	pGray = m_pVision->Gray();
 	NULL_(pGray);
-	IF_(pGray->empty());
+	IF_(pGray->bEmpty());
 
 	pNextFrame = m_pGrayFrames->getLastFrame();
-	if(pGray->getFrameID() <= pNextFrame->getFrameID())return;
+	if(*pGray <= *pNextFrame)return;
 
 	m_pGrayFrames->updateFrameIndex();
 	pNextFrame = m_pGrayFrames->getLastFrame();
 	pPrevFrame = m_pGrayFrames->getPrevFrame();
 
-	pNextFrame->getResizedOf(pGray, m_width, m_height);
-	pPrev = pPrevFrame->getGMat();
-	pNext = pNextFrame->getGMat();
+	*pNextFrame = pGray->resize(m_width, m_height);
+//	pPrev = pPrevFrame->getGMat();
+//	pNext = pNextFrame->getGMat();
+	//TODO:
 
 	if(pPrev->empty())return;
 	if(pNext->empty())return;
@@ -123,24 +119,26 @@ bool _Flow::addFrame(bool bFrame, Frame* pGray)
 	Frame* pFrameB;
 
 	NULL_F(pGray);
-	IF_F(pGray->empty());
+	IF_F(pGray->bEmpty());
 
 	if(!bFrame)
 	{
 		pFrameA = m_pGrayFrames->getPrevFrame();
-		pFrameA->getResizedOf(pGray, m_width, m_height);
+		*pFrameA = pGray->resize(m_width, m_height);
 		return true;
 	}
 
 	pFrameA = m_pGrayFrames->getPrevFrame();
 	pFrameB = m_pGrayFrames->getLastFrame();
-	pFrameB->getResizedOf(pGray, m_width, m_height);
+	*pFrameB = pGray->resize(m_width, m_height);
 
-	IF_F(pFrameA->empty());
-	IF_F(pFrameB->empty());
-	IF_F(pFrameA->getGMat()->size() != pFrameB->getGMat()->size());
+	IF_F(pFrameA->bEmpty());
+	IF_F(pFrameB->bEmpty());
+//	IF_F(pFrameA->getGMat()->size() != pFrameB->getGMat()->size());
 
-	m_pFarn->calc(*pFrameA->getGMat(), *pFrameB->getGMat(), m_gFlow);
+//	m_pFarn->calc(*pFrameA->getGMat(), *pFrameB->getGMat(), m_gFlow);
+
+	//TODO
 
 	return true;
 }
@@ -157,7 +155,8 @@ bool _Flow::draw(void)
 	Frame* pFrame = pWin->getFrame();
 
 	IF_F(m_gFlow.empty());
-	pFrame->update(&m_gFlow);
+//	*pFrame = m_gFlow;
+//TODO:
 
 	return true;
 }

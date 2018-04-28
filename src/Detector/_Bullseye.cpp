@@ -120,38 +120,30 @@ void _Bullseye::detectCircleFill(void)
 	Frame* pRGB;
 
 	if(!m_pStream)return;
-	pHSV = m_pStream->hsv();
-	pRGB = m_pStream->bgr();
-	if(pRGB->empty())return;
-	if(pHSV->empty())return;
+	pHSV = m_pStream->HSV();
+	pRGB = m_pStream->BGR();
+	if(pRGB->bEmpty())return;
+	if(pHSV->bEmpty())return;
 
 	vector<GpuMat> matHSV(3);
 	matHSV[0] = m_Hue;
 	matHSV[1] = m_Sat;
 	matHSV[2] = m_Val;
 
-	split(*(pHSV->getGMat()), matHSV);
+//	split(*(pHSV->getGMat()), matHSV);
+//TODO:
 
 	m_Hue = matHSV[0];
 	m_Sat = matHSV[1];
 	m_Val = matHSV[2];
 
 	//Filtering the image
-#ifdef USE_OPENCV2X
-	gpu::absdiff(m_Hue, Scalar(90), m_Huered);
-	gpu::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
-	gpu::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
-	gpu::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
-	gpu::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
-//	gpu::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
-#else
 	cuda::absdiff(m_Hue, Scalar(90), m_Huered);
 	cuda::multiply(m_Huered, Scalar(0.25), m_Scalehuered);	//1/4
 	cuda::multiply(m_Sat, Scalar(0.0625), m_Scalesat);	//1/16
 	cuda::multiply(m_Scalehuered, m_Scalesat, m_Balloonyness);
 	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY);
 //	cuda::threshold(m_Balloonyness, m_Thresh, 200, 255, THRESH_BINARY_INV);
-#endif
 
 	m_Thresh.download(matThresh);
 
@@ -184,11 +176,11 @@ void _Bullseye::detectCircleHough(void)
 {
 	if(!m_pStream)return;
 
-	Frame* pFrame = m_pStream->hsv();
+	Frame* pFrame = m_pStream->HSV();
 	NULL_(pFrame);
-	IF_(pFrame->empty());
-	if(!pFrame->isNewerThan(m_pFrame))return;
-	m_pFrame->update(pFrame);
+	IF_(pFrame->bEmpty());
+	if(*pFrame >= *m_pFrame)return;
+	*m_pFrame = *pFrame;
 
 //	cv::Mat bgr_image = *m_pFrame->getCMat();
 //	cv::medianBlur(bgr_image, bgr_image, m_kSize);
@@ -198,7 +190,7 @@ void _Bullseye::detectCircleHough(void)
 //	cv::cvtColor(bgr_image, hsv_image, cv::COLOR_BGR2HSV);
 
 	// Convert input image to HSV
-	cv::Mat hsv_image = *m_pFrame->getCMat();
+	cv::Mat hsv_image = *m_pFrame->m();
 //	cv::medianBlur(hsv_image, hsv_image, 3);
 
 	// Threshold the HSV image, keep only the red pixels
@@ -266,5 +258,4 @@ bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 	return true;
 }
 
-
-} /* namespace kai */
+}

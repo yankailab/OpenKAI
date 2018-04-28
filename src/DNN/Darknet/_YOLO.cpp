@@ -102,13 +102,13 @@ void _YOLO::detect(void)
 {
 	NULL_(m_pVision);
 
-	Frame* pBGR = m_pVision->bgr();
+	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
-	IF_(pBGR->empty());
-	IF_(!pBGR->isNewerThan(m_pBGR));
-	m_pBGR->update(pBGR);
+	IF_(pBGR->bEmpty());
+	IF_(*pBGR <= *m_pBGR);
+	*m_pBGR = *pBGR;
 
-	Mat* pMat = m_pBGR->getCMat();
+	Mat* pMat = m_pBGR->m();
 	IplImage ipl = *pMat;
 	int nDetected = yoloUpdate(&ipl, m_pYoloObj, DETECTOR_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
 	IF_(nDetected <= 0);

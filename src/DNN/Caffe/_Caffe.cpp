@@ -275,11 +275,11 @@ void _Caffe::detect(void)
 {
 	IF_(!m_bActive);
 	NULL_(m_pVision);
-	Frame* pBGR = m_pVision->bgr();
+	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
-	IF_(pBGR->empty());
+	IF_(pBGR->bEmpty());
 
-	m_pRGBA->getRGBAOf(pBGR);
+	*m_pRGBA = pBGR->rgba();
 	GpuMat gRGBA = *m_pRGBA->getGMat();
 	IF_(gRGBA.empty());
 

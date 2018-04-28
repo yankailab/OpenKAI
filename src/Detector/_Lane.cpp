@@ -166,7 +166,7 @@ void _Lane::update(void)
 void _Lane::detect(void)
 {
 	NULL_(m_pVision);
-	Mat* pInput = m_pVision->bgr()->getCMat();
+	Mat* pInput = m_pVision->BGR()->m();
 	IF_(pInput->empty());
 
 	//Warp transform to get overhead view
@@ -234,7 +234,7 @@ bool _Lane::draw(void)
 
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->getCMat();
+	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
 
 	int i,j;

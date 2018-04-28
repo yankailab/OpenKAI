@@ -130,7 +130,7 @@ bool HM_rth_approach::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	NULL_F(pMat);
 	IF_F(pMat->empty());
 

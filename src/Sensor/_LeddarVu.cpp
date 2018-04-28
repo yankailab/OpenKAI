@@ -342,7 +342,7 @@ bool _LeddarVu::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	string msg;
 
 	double camFovV = 1.0;

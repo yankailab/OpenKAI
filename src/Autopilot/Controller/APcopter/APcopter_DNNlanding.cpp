@@ -95,7 +95,7 @@ bool APcopter_DNNlanding::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	string msg;
 
 	if (m_target.m_bLocked)

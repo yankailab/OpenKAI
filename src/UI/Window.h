@@ -31,21 +31,18 @@ public:
 	Point* getTextPos(void);
 
 	void addMsg(string* pMsg);
-
 	void tabNext(void);
 	void tabPrev(void);
 	void tabReset(void);
-
 	void lineNext(void);
 	void lineReset(void);
-
 	double textSize(void);
 	Scalar textColor(void);
 
 public:
 	bool	m_bWindow;
 	bool	m_bFullScreen;
-	Frame*	m_pFrame;
+	Frame	m_frame;
 	vInt2	m_size;
 	vInt2	m_textPos;
 	vInt2	m_textStart;
@@ -61,8 +58,8 @@ public:
 	string m_fileRec;
 	VideoWriter m_VW;
 
-	Frame*	m_pF;
-	Frame*	m_pF2;
+	Frame	m_F;
+	Frame	m_F2;
 };
 
 }

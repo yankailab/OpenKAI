@@ -98,11 +98,11 @@ void _AprilTags::update(void)
 void _AprilTags::detect(void)
 {
 	NULL_(!m_pStream);
-	m_pFrame->update(m_pStream->bgr());
-	IF_(m_pFrame->empty());
+	*m_pFrame = *m_pStream->BGR();
+	IF_(m_pFrame->bEmpty());
 
 	TagDetectionArray detections;
-	Mat* pImg = m_pFrame->getCMat();
+	Mat* pImg = m_pFrame->m();
 	double scaling = 1.0;
 
 	while (std::max(pImg->rows, pImg->cols) > m_tagSizeLim)
@@ -190,7 +190,7 @@ bool _AprilTags::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	pWin->lineNext();
 
 	int i,j;
@@ -217,4 +217,4 @@ bool _AprilTags::draw(void)
 	return true;
 }
 
-} /* namespace kai */
+}

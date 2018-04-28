@@ -12,7 +12,6 @@ namespace kai
 
 _DepthVisionBase::_DepthVisionBase()
 {
-	m_pDepth = NULL;
 	m_pDepthWin = NULL;
 	m_pDepthShow = NULL;
 	m_range.x = 0.0;
@@ -20,7 +19,6 @@ _DepthVisionBase::_DepthVisionBase()
 	m_wD = 1280;
 	m_hD = 720;
 
-	m_pMatrixFrame = NULL;
 	m_pFilterMatrix = NULL;
 	m_nFilter = 0;
 	m_mDim.x = 10;
@@ -55,9 +53,6 @@ bool _DepthVisionBase::init(void* pKiss)
 		m_pFilterMatrix[i].init(nMed,0);
 	}
 
-	m_pDepth = new Frame();
-	m_pMatrixFrame = new Frame();
-
 	return true;
 }
 
@@ -66,9 +61,7 @@ void _DepthVisionBase::reset(void)
 	this->_VisionBase::reset();
 
 	DEL(m_pFilterMatrix);
-	DEL(m_pDepth);
 	DEL(m_pDepthShow);
-	DEL(m_pMatrixFrame);
 }
 
 bool _DepthVisionBase::link(void)
@@ -89,11 +82,10 @@ bool _DepthVisionBase::link(void)
 
 void _DepthVisionBase::updateFilter(void)
 {
-	NULL_(m_pDepth);
-	IF_(m_pDepth->empty());
+	IF_(m_fDepth.bEmpty());
 
-	m_pMatrixFrame->getResizedOf(m_pDepth, m_mDim.x, m_mDim.y);
-	Mat* pM = m_pMatrixFrame->getCMat();
+	m_fMatrixFrame = m_fDepth.resize(m_mDim.x, m_mDim.y);
+	Mat* pM = m_fMatrixFrame.m();
 
 	int i,j;
 	for(i=0;i<m_mDim.y;i++)
@@ -158,9 +150,9 @@ vInt2 _DepthVisionBase::matrixDim(void)
 	return m_mDim;
 }
 
-Frame* _DepthVisionBase::depth(void)
+Frame* _DepthVisionBase::Depth(void)
 {
-	return m_pDepth;
+	return &m_fDepth;
 }
 
 vDouble2 _DepthVisionBase::range(void)
@@ -174,10 +166,10 @@ bool _DepthVisionBase::draw(void)
 
 	NULL_F(m_pDepthWin);
 	NULL_F(m_pDepthShow);
-	IF_F(m_pDepthShow->empty());
+	IF_F(m_pDepthShow->bEmpty());
 
 	Frame* pFrame = m_pDepthWin->getFrame();
-	pFrame->update(m_pDepthShow);
+	pFrame->copy(*m_pDepthShow);
 
 	return true;
 }

@@ -72,9 +72,9 @@ void _filterLowResolution::update(void)
 		for (int j = 0; j < m_nProduce; j++)
 		{
 			double scale = m_minScale + m_dRand * NormRand();
-			m_pFrameIn->update(&mIn);
-			m_pFrameOut->getResizedOf(m_pFrameIn, scale, scale);
-			Mat mOut = *m_pFrameOut->getCMat();
+			*m_pFrameIn = mIn;
+			*m_pFrameOut = m_pFrameIn->resize(scale, scale);
+			Mat mOut = *m_pFrameOut->m();
 
 			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 		}

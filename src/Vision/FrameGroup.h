@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "Frame.h"
 
-#define NUM_FRAME 10
+#define FRAMGROUP_N_FRAME 2
 
 namespace kai
 {
@@ -22,16 +22,16 @@ public:
 	FrameGroup();
 	virtual ~FrameGroup();
 
-	bool init(int numFrame);
+	bool init(int nFrame);
 
 	void updateFrameIndex(void);
 	Frame* getPrevFrame(void);
 	Frame* getLastFrame(void);
 
 private:
-	int		m_numFrame;
+	int		m_nFrame;
 	int 	m_iFrame;
-	Frame* m_pFrame[NUM_FRAME];
+	Frame   m_pFrame[FRAMGROUP_N_FRAME];
 };
 
 }

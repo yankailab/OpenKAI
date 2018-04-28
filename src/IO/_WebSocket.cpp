@@ -351,7 +351,7 @@ bool _WebSocket::draw(void)
 {
 	IF_F(!this->_IOBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 
 	pWin->tabNext();
 

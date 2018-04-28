@@ -82,7 +82,7 @@ bool BASE::draw(void)
 	Window* pWin = (Window*)m_pWindow;
 	NULL_F(pWin->getFrame());
 
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
 
 	return true;

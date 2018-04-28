@@ -87,7 +87,7 @@ void _ROITracker::update(void)
 void _ROITracker::setROI(Rect2d roi)
 {
 	Mat* pMat;
-	pMat = m_pFrame->getCMat();
+	pMat = m_pFrame->m();
 
 	if (pMat->empty())
 		return;
@@ -111,12 +111,12 @@ void _ROITracker::track(void)
 	IF_(!m_bTracking);
 	IF_(m_pTracker.empty());
 
-	pFrame = m_pStream->bgr();
+	pFrame = m_pStream->BGR();
 	NULL_(pFrame);
-	IF_(!pFrame->isNewerThan(m_pFrame));
-	m_pFrame->update(pFrame);
+	IF_(*pFrame <= *m_pFrame);
+	*m_pFrame = *pFrame;
 
-	pMat = m_pFrame->getCMat();
+	pMat = m_pFrame->m();
 	if (pMat->empty())
 		return;
 

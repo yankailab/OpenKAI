@@ -146,7 +146,7 @@ bool _AutoPilot::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->getCMat();
+	Mat* pMat = pWin->getFrame()->m();
 
 	pWin->tabNext();
 	for(int i=0;i<m_nAction;i++)

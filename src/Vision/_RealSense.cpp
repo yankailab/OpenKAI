@@ -144,11 +144,12 @@ void _RealSense::update(void)
 				cv::flip(*pSrc, *pDest, -1);
 				SWAP(pSrc, pDest, pTmp);
 			}
-			m_pBGR->update(pSrc);
+
+			*m_pBGR = *pSrc;
 			if(m_pGray)
-				m_pGray->getGrayOf(m_pBGR);
+				*m_pGray = m_pBGR->gray();
 			if (m_pHSV)
-				m_pHSV->getHSVOf(m_pBGR);
+				*m_pHSV = m_pBGR->hsv();
 		}
 
 		//Depth
@@ -169,7 +170,8 @@ void _RealSense::update(void)
 			cv::flip(*pSrc, *pDest, -1);
 			SWAP(pSrc, pDest, pTmp);
 		}
-		m_pDepth->update(pSrc);
+
+		m_fDepth = (*pSrc);
 
 		updateFilter();
 
@@ -179,12 +181,12 @@ void _RealSense::update(void)
 
 bool _RealSense::draw(void)
 {
-	if(m_pDepthShow && !m_pDepth->empty())
+	if(m_pDepthShow && !m_fDepth.bEmpty())
 	{
 		rs2::colorizer rsColorMap;
 		rs2::frame dColor = rsColorMap(m_rsDepth);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
-		m_pDepthShow->update(&mDColor);
+		*m_pDepthShow = mDColor;
 	}
 
 	return this->_DepthVisionBase::draw();

@@ -133,12 +133,12 @@ void _ImageNet::detect(void)
 	IF_(!m_bActive);
 
 	NULL_(m_pVision);
-	Frame* pBGR = m_pVision->bgr();
+	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
-	IF_(pBGR->empty());
+	IF_(pBGR->bEmpty());
 
 	GpuMat gfRGBA;
-	m_pRGBA->getRGBAOf(pBGR);
+	*m_pRGBA = pBGR->rgba();
 	m_pRGBA->getGMat()->convertTo(gfRGBA, CV_32FC4);
 
 	if(m_pDetIn)
@@ -200,9 +200,9 @@ int _ImageNet::classify(Frame* pBGR, string* pName)
 {
 	if(!m_pIN)return -1;
 	if(!pBGR)return -1;
-	if(pBGR->empty())return -1;
+	if(pBGR->bEmpty())return -1;
 
-	m_pRGBA->getRGBAOf(pBGR);
+	*m_pRGBA = pBGR->rgba();
 	GpuMat gRGBA = *m_pRGBA->getGMat();
 	if(gRGBA.empty())return -1;
 

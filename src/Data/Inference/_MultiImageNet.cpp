@@ -95,7 +95,7 @@ void _MultiImageNet::update(void)
 		Mat mIn = cv::imread(fNameIn.c_str());
 		IF_CONT(mIn.empty());
 
-		m_pFrame->update(&mIn);
+		*m_pFrame = mIn;
 
 		IF_CONT(m_pIN1->classify(m_pFrame, &step1)<0);
 		IF_CONT(m_pIN2->classify(m_pFrame, &step2)<0);

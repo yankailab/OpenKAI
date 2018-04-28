@@ -104,11 +104,7 @@ bool _GStreamer::link(void)
 
 bool _GStreamer::open(void)
 {
-#ifdef USE_OPENCV2X
-	m_gst.open(m_pipeline);
-#else
 	m_gst.open(m_pipeline, CAP_GSTREAMER);
-#endif
 	if (!m_gst.isOpened())
 	{
 		LOG_E("Cannot open gst pipeline: " << m_pipeline);
@@ -188,31 +184,19 @@ void _GStreamer::update(void)
 
 		if (m_bCalibration)
 		{
-#ifdef USE_OPENCV2X
-			gpu::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-#else
 			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-#endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
 		if (m_bGimbal)
 		{
-#ifdef USE_OPENCV2X
-			gpu::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
-#else
 			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
-#endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
 		if (m_bFlip)
 		{
-#ifdef USE_OPENCV2X
-			gpu::flip(*pSrc, *pDest, -1);
-#else
 			cuda::flip(*pSrc, *pDest, -1);
-#endif
 			SWAP(pSrc, pDest, pTmp);
 		}
 
@@ -222,13 +206,14 @@ void _GStreamer::update(void)
 			SWAP(pSrc, pDest, pTmp);
 		}
 
-		m_pBGR->update(pSrc);
+		pSrc->download(cMat);
+		*m_pBGR = cMat;
 
 		if(m_pGray)
-			m_pGray->getGrayOf(m_pBGR);
+			*m_pGray = m_pBGR->gray();
 
 		if(m_pHSV)
-			m_pHSV->getHSVOf(m_pBGR);
+			*m_pHSV = m_pBGR->hsv();
 
 		this->autoFPSto();
 	}
@@ -240,8 +225,8 @@ bool _GStreamer::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_pBGR->empty());
-	pFrame->update(m_pBGR);
+	IF_F(m_pBGR->bEmpty());
+	*pFrame = *m_pBGR;
 	this->_VisionBase::draw();
 
 	return true;
