@@ -64,8 +64,6 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(VEK_avoid);
 		ADD_ACTION(VEK_follow);
 
-		ADD_ACTION(EXT_base);
-
 #ifdef USE_OPENCV_CONTRIB
 		ADD_ACTION(RC_base);
 		ADD_ACTION(RC_visualFollow);
@@ -139,7 +137,6 @@ void _AutoPilot::update(void)
 
 		this->autoFPSto();
 	}
-
 }
 
 bool _AutoPilot::draw(void)

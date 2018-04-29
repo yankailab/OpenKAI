@@ -7,6 +7,8 @@
 
 #include "_Flow.h"
 
+#ifdef USE_CUDA
+
 namespace kai
 {
 
@@ -162,3 +164,4 @@ bool _Flow::draw(void)
 }
 
 }
+#endif

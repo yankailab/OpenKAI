@@ -16,7 +16,6 @@
 #include "../Automaton/_Automaton.h"
 
 #include "../Detector/_AprilTags.h"
-#include "../Detector/_Bullseye.h"
 #include "../Detector/_Lane.h"
 
 #include "../include/apriltags-cpp/TagDetector.h"
@@ -51,9 +50,7 @@
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_GStreamer.h"
-#include "../Vision/_ZED.h"
 #include "../Vision/FrameGroup.h"
-#include "../Vision/_Flow.h"
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"
@@ -76,6 +73,11 @@
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
 
+#ifdef USE_CUDA
+#include "../Vision/_Flow.h"
+#include "../Vision/_ZED.h"
+#include "../Detector/_Bullseye.h"
+#endif
 #ifdef USE_CASCADE
 #include "../Detector/_Cascade.h"
 #endif

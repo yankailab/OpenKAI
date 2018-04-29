@@ -2,7 +2,7 @@
  * State.cpp
  *
  *  Created on: Aug 27, 2016
- *      Author: root
+ *      Author: Kai
  */
 
 #include "_Automaton.h"

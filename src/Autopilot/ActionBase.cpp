@@ -97,5 +97,4 @@ bool ActionBase::draw(void)
 	return this->BASE::draw();
 }
 
-
 }

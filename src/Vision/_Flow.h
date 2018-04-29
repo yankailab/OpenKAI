@@ -12,6 +12,8 @@
 #include "FrameGroup.h"
 #include "_VisionBase.h"
 
+#ifdef USE_CUDA
+
 namespace kai
 {
 
@@ -52,5 +54,5 @@ public:
 };
 
 }
-
+#endif
 #endif

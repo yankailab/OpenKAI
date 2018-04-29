@@ -49,7 +49,7 @@ public:
 
 	yolo_object* m_pYoloObj;
 	int m_nBatch;
-	Frame* m_pBGR;
+	Frame m_BGR;
 };
 
 }

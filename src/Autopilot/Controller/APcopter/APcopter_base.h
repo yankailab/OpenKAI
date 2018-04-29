@@ -116,6 +116,4 @@ enum control_mode_t {
  */
 
 }
-
 #endif
-

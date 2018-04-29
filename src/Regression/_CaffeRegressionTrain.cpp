@@ -8,6 +8,7 @@
 #include "_CaffeRegressionTrain.h"
 
 #ifdef USE_CAFFE
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -299,4 +300,5 @@ int _CaffeRegressionTrain::readImgListToFloat(string fImgList, float *pData, flo
 
 }
 
+#endif
 #endif

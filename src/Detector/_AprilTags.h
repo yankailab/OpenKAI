@@ -24,7 +24,7 @@ namespace kai
 struct APRIL_TAG
 {
 	TagDetection m_tag;
-	uint64_t	m_frameID;
+	uint64_t	m_tStamp;
 	uint64_t	m_detInterval;
 };
 
@@ -57,9 +57,9 @@ public:
 	int		  m_numTags;
 	APRIL_TAG m_pTag[NUM_TAGS][NUM_PER_TAG];
 
-	_VisionBase* m_pStream;
-	Frame*		 m_pFrame;
-	uint64_t	 m_frameID;
+	_VisionBase* m_pVision;
+	Frame		 m_BGR;
+	uint64_t	 m_tStamp;
 
 	TagDetector*		m_pTagDetector;
 	TagDetectionArray	m_tagArray;

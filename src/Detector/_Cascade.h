@@ -13,6 +13,7 @@
 #include "../Vision/_VisionBase.h"
 
 #ifdef USE_CASCADE
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -55,5 +56,6 @@ public:
 
 }
 
+#endif
 #endif
 #endif

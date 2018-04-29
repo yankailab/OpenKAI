@@ -8,6 +8,7 @@
 #include "_DNNGen_odometry.h"
 
 #ifdef USE_ZED
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -314,5 +315,7 @@ bool _DNNGen_odometry::draw(void)
 }
 
 }
+
+#endif
 #endif
 

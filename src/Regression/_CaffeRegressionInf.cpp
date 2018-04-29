@@ -8,6 +8,7 @@
 #include "_CaffeRegressionInf.h"
 
 #ifdef USE_CAFFE
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -198,4 +199,5 @@ double* _CaffeRegressionInf::getOutput(void)
 
 }
 
+#endif
 #endif

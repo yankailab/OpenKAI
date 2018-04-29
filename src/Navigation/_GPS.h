@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NAVIGATION_GPS_H_
-#define SRC_NAVIGATION_GPS_H_
+#ifndef OpenKAI_src_Navigation__GPS_H_
+#define OpenKAI_src_Navigation__GPS_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"

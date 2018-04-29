@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_RC_VISUALFOLLOW_H_
+#ifndef OpenKAI_src_AutoPilot_Controller_RC_visualFollow_H_
+#define OpenKAI_src_AutoPilot_Controller_RC_visualFollow_H_
 
 #include "../../../Base/common.h"
 #include "../../../Filter/FilterBase.h"

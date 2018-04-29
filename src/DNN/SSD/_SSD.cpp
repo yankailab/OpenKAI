@@ -6,6 +6,7 @@
 #include "_SSD.h"
 
 #ifdef USE_SSD
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -405,4 +406,5 @@ bool _SSD::draw(void)
 */
 }
 
+#endif
 #endif

@@ -45,11 +45,6 @@ public:
 	int m_noiseMean;
 	int m_noiseDev;
 	int m_noiseType;
-
-	Frame* m_pFrameIn;
-	Frame* m_pFrameOut;
-
 };
 }
-
 #endif

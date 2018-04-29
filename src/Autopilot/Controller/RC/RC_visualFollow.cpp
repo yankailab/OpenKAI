@@ -395,6 +395,4 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 }
 
 }
-
 #endif
-

@@ -37,8 +37,8 @@ private:
 public:
 	double m_progress;
 
-	Frame* m_pFrameIn;
-	Frame* m_pFrameOut;
+	Frame m_frameIn;
+	Frame m_frameOut;
 };
 }
 

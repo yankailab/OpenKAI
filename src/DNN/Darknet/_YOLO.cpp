@@ -18,12 +18,10 @@ _YOLO::_YOLO()
 
 	m_pYoloObj = NULL;
 	m_nBatch = 1;
-	m_pBGR = NULL;
 }
 
 _YOLO::~_YOLO()
 {
-	DEL(m_pBGR);
 	DEL(m_pYoloObj);
 }
 
@@ -46,7 +44,6 @@ bool _YOLO::init(void* pKiss)
 					m_nBatch), "YOLO init failed");
 
 	m_pYoloObj = new yolo_object[DETECTOR_N_OBJ];
-	m_pBGR = new Frame();
 
 	m_nClass = yoloNClass();
 	for(int i=0; i<m_nClass; i++)
@@ -105,10 +102,10 @@ void _YOLO::detect(void)
 	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
 	IF_(pBGR->bEmpty());
-	IF_(pBGR->tStamp() <= m_pBGR->tStamp());
-	*m_pBGR = *pBGR;
+	IF_(pBGR->tStamp() <= m_BGR.tStamp());
+	m_BGR = *pBGR;
 
-	Mat* pMat = m_pBGR->m();
+	Mat* pMat = m_BGR.m();
 	IplImage ipl = *pMat;
 	int nDetected = yoloUpdate(&ipl, m_pYoloObj, DETECTOR_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
 	IF_(nDetected <= 0);

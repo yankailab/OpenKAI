@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef SRC_NAVIGATION_PATH_H_
-#define SRC_NAVIGATION_PATH_H_
+#ifndef OpenKAI_src_Navigation__Path_H_
+#define OpenKAI_src_Navigation__Path_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"

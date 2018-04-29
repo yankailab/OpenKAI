@@ -8,7 +8,6 @@
 #ifndef OPENKAI_SRC_BASE_CONSTANT_H_
 #define OPENKAI_SRC_BASE_CONSTANT_H_
 
-//User defined default parameters
 #define N_INST 128
 #define DEFAULT_FPS 30
 
@@ -25,4 +24,4 @@
 #define CR '\x0d'
 #define LF '\x0a'
 
-#endif /* OPENKAI_SRC_BASE_CONSTANT_H_ */
+#endif

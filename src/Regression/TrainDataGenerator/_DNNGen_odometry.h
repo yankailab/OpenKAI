@@ -15,6 +15,7 @@
 #include "../../Protocol/_Mavlink.h"
 
 #ifdef USE_ZED
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -78,5 +79,6 @@ public:
 
 }
 
+#endif
 #endif
 #endif

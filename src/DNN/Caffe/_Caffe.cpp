@@ -8,6 +8,7 @@
 #include "_Caffe.h"
 
 #ifdef USE_CAFFE
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -493,4 +494,5 @@ bool _Caffe::draw(void)
 
 }
 
+#endif
 #endif

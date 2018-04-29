@@ -122,6 +122,4 @@ bool VEK_base::draw(void)
 	return true;
 }
 
-
-
 }

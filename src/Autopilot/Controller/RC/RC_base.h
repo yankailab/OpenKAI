@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_AUTOPILOT_ACTION_RC_BASE_H_
-#define OPENKAI_SRC_AUTOPILOT_ACTION_RC_BASE_H_
+#ifndef OpenKAI_src_AutoPilot_Controller_RC_base_H_
+#define OpenKAI_src_AutoPilot_Controller_RC_base_H_
 
 #include "../../../Base/common.h"
 #include "../../../Script/Kiss.h"
@@ -103,6 +103,4 @@ public:
 };
 
 }
-
 #endif
-

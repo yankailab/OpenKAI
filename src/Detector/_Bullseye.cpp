@@ -7,6 +7,8 @@
 
 #include "_Bullseye.h"
 
+#ifdef USE_CUDA
+
 namespace kai
 {
 
@@ -259,3 +261,4 @@ bool _Bullseye::getCircleCenter(vDouble3* pCenter)
 }
 
 }
+#endif

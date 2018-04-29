@@ -12,8 +12,7 @@ namespace kai
 
 _AprilTags::_AprilTags()
 {
-	m_pStream = NULL;
-	m_pFrame = NULL;
+	m_pVision = NULL;
 	m_tagFamily = DEFAULT_TAG_FAMILY;
 	m_tagErr = 0;
 	m_numTags = NUM_TAGS;
@@ -45,8 +44,6 @@ bool _AprilTags::init(void* pKiss)
 	F_INFO(pK->v("scaling", &m_tagScaling));
 	F_INFO(pK->v("sizeLim", &m_tagSizeLim));
 
-	m_pFrame = new Frame();
-
 	return true;
 }
 
@@ -55,10 +52,9 @@ bool _AprilTags::link(void)
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
-	//link instance
 	string iName = "";
-	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_VisionBase",&iName));
+	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -85,8 +81,8 @@ void _AprilTags::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		m_frameID = getTimeUsec();
-		m_tagAliveFrom = m_frameID - m_tagLifetime;
+		m_tStamp = getTimeUsec();
+		m_tagAliveFrom = m_tStamp - m_tagLifetime;
 
 		detect();
 
@@ -97,12 +93,12 @@ void _AprilTags::update(void)
 
 void _AprilTags::detect(void)
 {
-	NULL_(!m_pStream);
-	*m_pFrame = *m_pStream->BGR();
-	IF_(m_pFrame->bEmpty());
+	NULL_(!m_pVision);
+	m_BGR = *m_pVision->BGR();
+	IF_(m_BGR.bEmpty());
 
 	TagDetectionArray detections;
-	Mat* pImg = m_pFrame->m();
+	Mat* pImg = m_BGR.m();
 	double scaling = 1.0;
 
 	while (std::max(pImg->rows, pImg->cols) > m_tagSizeLim)
@@ -142,11 +138,11 @@ void _AprilTags::detect(void)
 		{
 			APRIL_TAG* pAT = &m_pTag[pD->id][j];
 
-			if(abs(pAT->m_tag.cxy.x-pD->cxy.x)+abs(pAT->m_tag.cxy.y-pD->cxy.y) > m_tagDistThr && pAT->m_frameID>m_tagAliveFrom)continue;
+			if(abs(pAT->m_tag.cxy.x-pD->cxy.x)+abs(pAT->m_tag.cxy.y-pD->cxy.y) > m_tagDistThr && pAT->m_tStamp>m_tagAliveFrom)continue;
 
 			pAT->m_tag = *pD;
-			pAT->m_detInterval = (m_frameID - pAT->m_frameID);
-			pAT->m_frameID = m_frameID;
+			pAT->m_detInterval = (m_tStamp - pAT->m_tStamp);
+			pAT->m_tStamp = m_tStamp;
 			break;
 		}
 	}
@@ -165,7 +161,7 @@ int _AprilTags::getTags(int tagID, APRIL_TAG* pTag)
 	for(i=0; i<NUM_PER_TAG;i++)
 	{
 		APRIL_TAG* pAT = &m_pTag[tagID][i];
-		if (pAT->m_frameID < m_tagAliveFrom)continue;
+		if (pAT->m_tStamp < m_tagAliveFrom)continue;
 
 		pTag[k]=*pAT;
 		k++;
@@ -180,7 +176,7 @@ void _AprilTags::reset(void)
 	{
 		for(int j=0; j<NUM_PER_TAG; j++)
 		{
-			m_pTag[i][j].m_frameID = 0;
+			m_pTag[i][j].m_tStamp = 0;
 			m_pTag[i][j].m_detInterval = 0;
 		}
 	}
@@ -201,7 +197,7 @@ bool _AprilTags::draw(void)
 		for(j=0;j<NUM_PER_TAG;j++)
 		{
 			pTag = &m_pTag[i][j];
-			if(pTag->m_frameID < m_tagAliveFrom)continue;
+			if(pTag->m_tStamp < m_tagAliveFrom)continue;
 			if(pTag->m_detInterval > m_tagAliveInterval)continue;
 
 			line(*pMat, pTag->m_tag.p[0], pTag->m_tag.p[1], Scalar(0, 0, 255), 1);

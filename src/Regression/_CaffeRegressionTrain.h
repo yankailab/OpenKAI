@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 
 #ifdef USE_CAFFE
+#ifdef USE_CUDA
 
 #include <boost/smart_ptr.hpp>
 #include <cuda_runtime.h>
@@ -82,5 +83,6 @@ private:
 };
 }
 
+#endif
 #endif
 #endif

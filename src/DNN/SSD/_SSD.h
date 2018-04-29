@@ -13,6 +13,8 @@
 #include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_SSD
+#ifdef USE_CUDA
+
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
 #include <caffe/blob.hpp>
@@ -77,5 +79,6 @@ private:
 
 }
 
+#endif
 #endif
 #endif

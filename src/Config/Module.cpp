@@ -17,11 +17,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_AprilTags);
 	ADD_MODULE(_Automaton);
-	ADD_MODULE(_Bullseye);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);
-	ADD_MODULE(_Flow);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_Lane);
@@ -58,6 +56,10 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 
+#ifdef USE_CUDA
+	ADD_MODULE(_Flow);
+	ADD_MODULE(_Bullseye);
+#endif
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ROITracker);
 #endif

@@ -20,9 +20,6 @@ _FilterBase::_FilterBase()
 	m_noiseMean = 0;
 	m_noiseDev = 0;
 	m_noiseType = cv::RNG::NORMAL;
-
-	m_pFrameIn = NULL;
-	m_pFrameOut = NULL;
 }
 
 _FilterBase::~_FilterBase()
@@ -42,18 +39,12 @@ bool _FilterBase::init(void* pKiss)
 	KISSm(pK, noiseDev);
 	KISSm(pK, noiseType);
 
-	m_pFrameIn = new Frame();
-	m_pFrameOut = new Frame();
-
 	return true;
 }
 
 void _FilterBase::reset(void)
 {
 	this->_DataBase::reset();
-
-	DEL(m_pFrameIn);
-	DEL(m_pFrameOut);
 }
 
 bool _FilterBase::link(void)

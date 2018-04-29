@@ -11,6 +11,7 @@
 #include "../../Base/common.h"
 
 #ifdef USE_CAFFE
+#ifdef USE_CUDA
 
 #include <cuda_runtime.h>
 #include <caffe/caffe.hpp>
@@ -89,5 +90,7 @@ private:
 	vector<string> m_vFileIn;
 };
 }
+
+#endif
 #endif
 #endif

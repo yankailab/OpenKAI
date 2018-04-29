@@ -5,6 +5,7 @@
 #include "_Cascade.h"
 
 #ifdef USE_CASCADE
+#ifdef USE_CUDA
 
 namespace kai
 {
@@ -192,5 +193,6 @@ bool _Cascade::draw(void)
 }
 
 }
+#endif
 #endif
 

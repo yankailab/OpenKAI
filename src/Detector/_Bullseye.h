@@ -11,6 +11,8 @@
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
 
+#ifdef USE_CUDA
+
 #define NUM_MARKER 128
 
 #define METHOD_FILL 0
@@ -63,7 +65,6 @@ public:
 	_VisionBase*	m_pStream;
 	Frame*			m_pFrame;
 
-#ifdef USE_CUDA
 	GpuMat m_HSV;
 	GpuMat m_Hue;
 	GpuMat m_Sat;
@@ -76,11 +77,8 @@ public:
 	GpuMat  m_Thresh;
 
 	int		m_cudaDeviceID;
-#else
-
-#endif
 };
-
 }
 
+#endif
 #endif

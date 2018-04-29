@@ -6,7 +6,7 @@ add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++11")
 
 LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-OPTION(USE_CUDA "Use NVIDIA CUDA" ON)
+OPTION(USE_CUDA "Use NVIDIA CUDA" OFF)
 OPTION(USE_OPENCV_CONTRIB "Use OpenCV contribution" OFF)
 OPTION(USE_DARKNET "Use Darknet" OFF)
 OPTION(USE_REALSENSE "Use Intel RealSense camera" OFF)
@@ -108,19 +108,23 @@ endif()
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
 
-# setup CUDA
+if(USE_CUDA)
 find_package(CUDA)
-
 set(
 	CUDA_NVCC_FLAGS
 	${CUDA_NVCC_FLAGS}; 
     -O3 -gencode arch=compute_${CUDA_ARCH},code=sm_${CUDA_ARCH}
 )
+endif()
 
 # File
 file(GLOB OpenKAI_cpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp src/*/*/*/*/*/*.cpp src/*/*/*/*/*/*/*.cpp src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c src/*/*/*/*/*.c src/*/*/*/*/*/*.c src/*/*/*/*/*/*/*.c)
 
+if(USE_CUDA)
 cuda_add_executable(OpenKAI ${OpenKAI_cpp})
+else()
+add_executable(OpenKAI ${OpenKAI_cpp})
+endif()
 
 # C/C++ settings
 include_directories(${OpenKAI_include})
