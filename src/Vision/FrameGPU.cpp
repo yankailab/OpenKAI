@@ -1,86 +1,88 @@
 /*
- * FrameBase.cpp
+ * FrameGPU.cpp
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#include "FrameBase.h"
+#include "FrameGPU.h"
+
+#ifdef USE_CUDA
 
 namespace kai
 {
 
-FrameBase::FrameBase()
+FrameGPU::FrameGPU()
 {
 	m_tStamp = 0;
 }
 
-FrameBase::~FrameBase()
+FrameGPU::~FrameGPU()
 {
 }
 
-uint64_t FrameBase::tStamp(void)
+uint64_t FrameGPU::tStamp(void)
 {
 	return m_tStamp;
 }
 
-void FrameBase::operator=(const FrameBase& f)
+void FrameGPU::operator=(const FrameGPU& f)
 {
 	m_mat = f.m_mat;
 	m_tStamp = f.m_tStamp;
 }
 
-void FrameBase::operator=(const Mat& m)
+void FrameGPU::operator=(const Mat& m)
 {
 	m_mat = m;
 	m_tStamp = getTimeUsec();
 }
 
-void FrameBase::allocate(int w, int h)
+void FrameGPU::allocate(int w, int h)
 {
 	m_mat = Mat::zeros(Size(w,h), CV_8UC3);
 	m_tStamp = getTimeUsec();
 }
 
-void FrameBase::copy(const FrameBase& f)
+void FrameGPU::copy(const FrameGPU& f)
 {
 	f.m_mat.copyTo(m_mat);
 	m_tStamp = f.m_tStamp;
 }
 
-void FrameBase::copy(const Mat& m)
+void FrameGPU::copy(const Mat& m)
 {
 	m.copyTo(m_mat);
 	m_tStamp = getTimeUsec();
 }
 
-Mat* FrameBase::m(void)
+Mat* FrameGPU::m(void)
 {
 	return &m_mat;
 }
 
-bool FrameBase::bEmpty(void)
+bool FrameGPU::bEmpty(void)
 {
 	return m_mat.empty();
 }
 
-Size FrameBase::size(void)
+Size FrameGPU::size(void)
 {
 	return m_mat.size();
 }
 
-FrameBase FrameBase::crop(Rect bb)
+FrameGPU FrameGPU::crop(Rect bb)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	fb.m_mat = m_mat(bb);
 	fb.m_tStamp = getTimeUsec();
 
 	return fb;
 }
 
-FrameBase FrameBase::resize(int w, int h)
+FrameGPU FrameGPU::resize(int w, int h)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	Size s = Size(w,h);
 
 	if(s == this->size())
@@ -95,99 +97,98 @@ FrameBase FrameBase::resize(int w, int h)
 	return fb;
 }
 
-FrameBase FrameBase::resize(double scaleW, double scaleH)
+FrameGPU FrameGPU::resize(double scaleW, double scaleH)
 {
 	Size s = this->size();
 	return resize(s.width*scaleW, s.height*scaleH);
 }
 
-FrameBase FrameBase::gray(void)
+FrameGPU FrameGPU::gray(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2GRAY);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::hsv(void)
+FrameGPU FrameGPU::hsv(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2HSV);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::bgra(void)
+FrameGPU FrameGPU::bgra(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2BGRA);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::rgba(void)
+FrameGPU FrameGPU::rgba(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2RGBA);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::f8UC3(void)
+FrameGPU FrameGPU::f8UC3(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::cvtColor(m_mat, fb.m_mat, CV_GRAY2BGR);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::f32FC4(void)
+FrameGPU FrameGPU::f32FC4(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	m_mat.convertTo(fb.m_mat, CV_32FC4);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-void FrameBase::setRemap(Mat& mX, Mat& mY)
+void FrameGPU::setRemap(Mat& mX, Mat& mY)
 {
 	m_mapX = mX;
 	m_mapY = mY;
 }
 
-FrameBase FrameBase::remap(void)
+FrameGPU FrameGPU::remap(void)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::remap(m_mat, fb.m_mat, m_mapX, m_mapY, INTER_LINEAR);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::warpAffine(Mat& mWA)
+FrameGPU FrameGPU::warpAffine(Mat& mWA)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::warpAffine(m_mat, fb.m_mat, mWA, m_mat.size());
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-FrameBase FrameBase::flip(int iOpt)
+FrameGPU FrameGPU::flip(int iOpt)
 {
-	FrameBase fb;
+	FrameGPU fb;
 	cv::flip(m_mat, fb.m_mat, iOpt);
 	fb.m_tStamp = m_tStamp;
 
 	return fb;
 }
 
-
 }
-
+#endif

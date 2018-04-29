@@ -9,10 +9,15 @@
 #define OpenKAI_src_Vision_Frame_H_
 
 #include "FrameBase.h"
+#include "FrameGPU.h"
 
 namespace kai
 {
-	typedef FrameBase Frame;
+#ifdef USE_CUDA
+typedef FrameGPU Frame;
+#else
+typedef FrameBase Frame;
+#endif
 }
 
 #endif
