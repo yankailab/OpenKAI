@@ -14,13 +14,9 @@ namespace kai
 
 _Pylon::_Pylon()
 {
-	m_type = camera;
+	m_type = pylon;
 
-	m_bCalibration = false;
-	m_bFisheye = false;
-	m_bCrop = false;
 	m_SN = "";
-
 	m_pPylonCam = NULL;
 	m_pylonFC.OutputPixelFormat = PixelType_BGR8packed;
 	m_grabTimeout = 5000;
@@ -37,63 +33,8 @@ bool _Pylon::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, bCrop);
-	if (m_bCrop != 0)
-	{
-		F_INFO(pK->v("cropX", &m_cropBB.x));
-		F_INFO(pK->v("cropY", &m_cropBB.y));
-		F_INFO(pK->v("cropW", &m_cropBB.width));
-		F_INFO(pK->v("cropH", &m_cropBB.height));
-	}
-
 	KISSm(pK, grabTimeout);
 	KISSm(pK, SN);
-	KISSm(pK, bCalibration);
-	KISSm(pK, bFisheye);
-	string calibFile = "";
-	F_INFO(pK->v("calibFile", &calibFile));
-
-	if (!calibFile.empty())
-	{
-		FileStorage fs(calibFile, FileStorage::READ);
-		if (!fs.isOpened())
-		{
-			LOG_E("Calibration file not found:"<<calibFile);
-			m_bCalibration = false;
-		}
-		else
-		{
-			fs["camera_matrix"] >> m_cameraMat;
-			fs["distortion_coefficients"] >> m_distCoeffs;
-			fs.release();
-
-			Mat map1, map2;
-			cv::Size imSize(m_w, m_h);
-
-			if (m_bFisheye)
-			{
-				Mat newCamMat;
-				fisheye::estimateNewCameraMatrixForUndistortRectify(m_cameraMat,
-						m_distCoeffs, imSize, Matx33d::eye(), newCamMat, 1);
-				fisheye::initUndistortRectifyMap(m_cameraMat, m_distCoeffs,
-						Matx33d::eye(), newCamMat, imSize,
-						CV_32F/*CV_16SC2*/, map1, map2);
-			}
-			else
-			{
-				m_K = getOptimalNewCameraMatrix(m_cameraMat, m_distCoeffs,
-						imSize, 1, imSize, 0);
-				initUndistortRectifyMap(m_cameraMat, m_distCoeffs, Mat(), m_K,
-						imSize, CV_32FC1, map1, map2);
-			}
-
-			m_Gmap1.upload(map1);
-			m_Gmap2.upload(map2);
-
-			m_bCalibration = true;
-			LOG_I("camera calibration enabled");
-		}
-	}
 
 	return true;
 }
@@ -202,14 +143,6 @@ void _Pylon::update(void)
 
 		this->autoFPSfrom();
 
-		GpuMat m_Gmat;
-		GpuMat m_Gmat2;
-
-		GpuMat* pSrc;
-		GpuMat* pDest;
-		GpuMat* pTmp;
-		Mat cMat;
-
 		while (m_pPylonCam->IsGrabbing())
 		{
 			m_pPylonCam->RetrieveResult(m_grabTimeout, m_pylonGrab, TimeoutHandling_Return);
@@ -217,45 +150,9 @@ void _Pylon::update(void)
 		}
 
 		m_pylonFC.Convert(m_pylonImg, m_pylonGrab);
-		cMat = Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer());
+		m_fBGR = Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer());
 
-		m_Gmat.upload(cMat);
-
-		pSrc = &m_Gmat;
-		pDest = &m_Gmat2;
-
-		if (m_bCalibration)
-		{
-			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bGimbal)
-		{
-			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bFlip)
-		{
-			cuda::flip(*pSrc, *pDest, -1);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bCrop)
-		{
-			*pDest = GpuMat(*pSrc, m_cropBB);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		pSrc->download(cMat);
-		*m_pBGR = cMat;
-
-		if (m_pGray)
-			*m_pGray = m_pBGR->gray();
-
-		if (m_pHSV)
-			*m_pHSV = m_pBGR->hsv();
+		postProcess();
 
 		this->autoFPSto();
 	}

@@ -94,7 +94,7 @@ void _Flow::detect(void)
 	IF_(pGray->bEmpty());
 
 	pNextFrame = m_pGrayFrames->getLastFrame();
-	if(*pGray <= *pNextFrame)return;
+	if(pGray->tStamp() <= pNextFrame->tStamp())return;
 
 	m_pGrayFrames->updateFrameIndex();
 	pNextFrame = m_pGrayFrames->getLastFrame();

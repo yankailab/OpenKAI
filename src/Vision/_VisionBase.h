@@ -18,6 +18,7 @@ enum VISION_TYPE
 {
 	unknownVision,
 	camera,
+	gstreamer,
 	video,
 	zed,
 	realsense,
@@ -38,10 +39,10 @@ public:
 	virtual Frame* BGR(void);
 	virtual Frame* HSV(void);
 	virtual Frame* Gray(void);
-
 	virtual Mat* K(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
 
+	void postProcess(void);
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
 	bool isOpened(void);
 
@@ -57,6 +58,15 @@ public:
 	int m_fovH;
 	bool m_bFlip;
 
+	//calibration
+	bool m_bCalibration;
+	bool m_bFisheye;
+
+	//crop
+	bool m_bCrop;
+	Rect m_cropBB;
+
+	//gimbal
 	Mat m_K;
 	bool m_bGimbal;
 	Mat m_rotRoll;
@@ -65,9 +75,7 @@ public:
 	double m_isoScale;
 
 	//frame
-	Mat  	m_mTemp;
-	GpuMat  m_mgTemp;
-	Frame*	m_pBGR;
+	Frame	m_fBGR;
 	Frame*	m_pGray;
 	Frame*	m_pHSV;
 };

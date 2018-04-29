@@ -179,7 +179,7 @@ void _Bullseye::detectCircleHough(void)
 	Frame* pFrame = m_pStream->HSV();
 	NULL_(pFrame);
 	IF_(pFrame->bEmpty());
-	if(*pFrame >= *m_pFrame)return;
+	if(pFrame->tStamp() <= m_pFrame->tStamp())return;
 	*m_pFrame = *pFrame;
 
 //	cv::Mat bgr_image = *m_pFrame->getCMat();

@@ -113,7 +113,7 @@ void _ROITracker::track(void)
 
 	pFrame = m_pStream->BGR();
 	NULL_(pFrame);
-	IF_(*pFrame <= *m_pFrame);
+	IF_(pFrame->tStamp() <= m_pFrame->tStamp());
 	*m_pFrame = *pFrame;
 
 	pMat = m_pFrame->m();

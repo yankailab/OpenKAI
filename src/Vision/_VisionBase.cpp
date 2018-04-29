@@ -26,9 +26,12 @@ _VisionBase::_VisionBase()
 	m_fovH = 60;
 	m_bFlip = false;
 
-	m_pBGR = NULL;
 	m_pHSV = NULL;
 	m_pGray = NULL;
+
+	m_bCalibration = false;
+	m_bFisheye = false;
+	m_bCrop = false;
 }
 
 _VisionBase::~_VisionBase()
@@ -50,8 +53,6 @@ bool _VisionBase::init(void* pKiss)
 	KISSm(pK,isoScale);
 	KISSm(pK,bFlip);
 
-	m_pBGR = new Frame();
-
 	bool bParam = false;
 	F_INFO(pK->v("bGray", &bParam));
 	if (bParam)
@@ -62,22 +63,98 @@ bool _VisionBase::init(void* pKiss)
 	if (bParam)
 		m_pHSV = new Frame();
 
+	KISSm(pK, bCrop);
+	if (m_bCrop != 0)
+	{
+		F_INFO(pK->v("cropX", &m_cropBB.x));
+		F_INFO(pK->v("cropY", &m_cropBB.y));
+		F_INFO(pK->v("cropW", &m_cropBB.width));
+		F_INFO(pK->v("cropH", &m_cropBB.height));
+	}
+
+	KISSm(pK, bCalibration);
+	KISSm(pK, bFisheye);
+	string calibFile = "";
+	F_INFO(pK->v("calibFile", &calibFile));
+
+	if (!calibFile.empty())
+	{
+		FileStorage fs(calibFile, FileStorage::READ);
+		if (!fs.isOpened())
+		{
+			LOG_E("Calibration file not found:"<<calibFile);
+			m_bCalibration = false;
+		}
+		else
+		{
+			Mat mCamera;
+			Mat mDistCoeffs;
+
+			fs["camera_matrix"] >> mCamera;
+			fs["distortion_coefficients"] >> mDistCoeffs;
+			fs.release();
+
+			Mat map1, map2;
+			cv::Size imSize(m_w, m_h);
+
+			if (m_bFisheye)
+			{
+				Mat newCamMat;
+				fisheye::estimateNewCameraMatrixForUndistortRectify(mCamera,
+						mDistCoeffs, imSize, Matx33d::eye(), newCamMat, 1);
+				fisheye::initUndistortRectifyMap(mCamera, mDistCoeffs,
+						Matx33d::eye(), newCamMat, imSize,
+						CV_32F/*CV_16SC2*/, map1, map2);
+			}
+			else
+			{
+				m_K = getOptimalNewCameraMatrix(mCamera, mDistCoeffs, imSize, 1, imSize, 0);
+				initUndistortRectifyMap(mCamera, mDistCoeffs, Mat(), m_K, imSize, CV_32FC1, map1, map2);
+			}
+
+			m_fBGR.setRemap(map1,map2);
+
+			m_bCalibration = true;
+			LOG_I("camera calibration enabled");
+		}
+	}
+
 	m_bOpen = false;
 	return true;
+}
+
+void _VisionBase::postProcess(void)
+{
+	if (m_bCalibration)
+		m_fBGR = m_fBGR.remap();
+
+	if (m_bGimbal)
+		m_fBGR = m_fBGR.warpAffine(m_rotRoll);
+
+	if (m_bFlip)
+		m_fBGR = m_fBGR.flip(-1);
+
+	if (m_bCrop)
+		m_fBGR = m_fBGR.crop(m_cropBB);
+
+	if (m_pGray)
+		*m_pGray = m_fBGR.gray();
+
+	if (m_pHSV)
+		*m_pHSV = m_fBGR.hsv();
 }
 
 void _VisionBase::reset(void)
 {
 	this->_ThreadBase::reset();
 
-	DEL(m_pBGR);
 	DEL(m_pHSV);
 	DEL(m_pGray);
 }
 
 Frame* _VisionBase::BGR(void)
 {
-	return m_pBGR;
+	return &m_fBGR;
 }
 
 Frame* _VisionBase::HSV(void)
@@ -142,8 +219,8 @@ bool _VisionBase::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_pBGR->bEmpty());
-	pFrame->copy(*m_pBGR);
+	IF_F(m_fBGR.bEmpty());
+	pFrame->copy(m_fBGR);
 
 	return this->_ThreadBase::draw();
 }

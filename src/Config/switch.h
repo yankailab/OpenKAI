@@ -4,7 +4,7 @@
 #define USE_OPENCV_CONTRIB
 #define USE_DARKNET
 #define USE_REALSENSE
-//#define USE_PYLON
+#define USE_PYLON
 //#define USE_TENSORRT
 //#define USE_CAFFE
 //#define USE_ORB_SLAM2

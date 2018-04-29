@@ -105,7 +105,7 @@ void _YOLO::detect(void)
 	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);
 	IF_(pBGR->bEmpty());
-	IF_(*pBGR <= *m_pBGR);
+	IF_(pBGR->tStamp() <= m_pBGR->tStamp());
 	*m_pBGR = *pBGR;
 
 	Mat* pMat = m_pBGR->m();

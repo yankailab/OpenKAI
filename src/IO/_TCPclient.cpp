@@ -16,7 +16,6 @@ _TCPclient::_TCPclient()
 	m_port = 0;
 	m_bClient = true;
 	m_socket = 0;
-	m_timeoutRecv = TIMEOUT_RECV_USEC;
 	m_ioType = io_tcp;
 	m_ioStatus = io_unknown;
 }
@@ -34,10 +33,6 @@ bool _TCPclient::init(void* pKiss)
 
 	F_INFO(pK->v("addr", &m_strAddr));
 	F_INFO(pK->v("port", (int* )&m_port));
-	F_INFO(pK->v("timeoutRecv", (int*)&m_timeoutRecv));
-
-	if (m_timeoutRecv < TIMEOUT_RECV_USEC)
-		m_timeoutRecv = TIMEOUT_RECV_USEC;
 
 	m_bClient = true;
 	return true;
@@ -61,11 +56,6 @@ bool _TCPclient::open(void)
 		LOG_E("connect failed");
 		return false;
 	}
-
-	struct timeval timeout;
-	timeout.tv_sec = m_timeoutRecv / USEC_1SEC;
-	timeout.tv_usec = m_timeoutRecv % USEC_1SEC;
-	IF_F(setsockopt(m_socket, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout))<0);
 
 	m_ioStatus = io_opened;
 	LOG_I("connected");

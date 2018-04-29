@@ -176,11 +176,6 @@ bool _TCPserver::handler(void)
 		pSocket->m_ioStatus = io_opened;
 		pSocket->m_bClient = false;
 
-		struct timeval timeout;
-		timeout.tv_sec = pSocket->m_timeoutRecv / USEC_1SEC;
-		timeout.tv_usec = pSocket->m_timeoutRecv % USEC_1SEC;
-		setsockopt(socketNew, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout));
-
 		if (!pSocket->start())
 		{
 			LOG_E("Socket start failed");

@@ -26,6 +26,7 @@ public:
 	virtual bool link(void);
 	virtual void reset(void);
 	virtual bool draw(void);
+	virtual void postProcessDepth(void);
 
 	virtual void updateFilter(void);
 	virtual Frame* Depth(void);

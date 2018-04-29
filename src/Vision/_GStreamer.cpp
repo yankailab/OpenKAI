@@ -13,11 +13,8 @@ namespace kai
 
 _GStreamer::_GStreamer()
 {
-	m_type = camera;
+	m_type = gstreamer;
 	m_pipeline = "";
-	m_bCalibration = false;
-	m_bFisheye = false;
-	m_bCrop = false;
 }
 
 _GStreamer::~_GStreamer()
@@ -32,61 +29,6 @@ bool _GStreamer::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK, pipeline);
-	KISSm(pK, bCrop);
-	if (m_bCrop != 0)
-	{
-		F_INFO(pK->v("cropX", &m_cropBB.x));
-		F_INFO(pK->v("cropY", &m_cropBB.y));
-		F_INFO(pK->v("cropW", &m_cropBB.width));
-		F_INFO(pK->v("cropH", &m_cropBB.height));
-	}
-
-	KISSm(pK, bCalibration);
-	KISSm(pK, bFisheye);
-	string calibFile = "";
-	F_INFO(pK->v("calibFile", &calibFile));
-
-	if (!calibFile.empty())
-	{
-		FileStorage fs(calibFile, FileStorage::READ);
-		if (!fs.isOpened())
-		{
-			LOG_E("Calibration file not found:"<<calibFile);
-			m_bCalibration = false;
-		}
-		else
-		{
-			fs["camera_matrix"] >> m_cameraMat;
-			fs["distortion_coefficients"] >> m_distCoeffs;
-			fs.release();
-
-			Mat map1, map2;
-			cv::Size imSize(m_w, m_h);
-
-			if (m_bFisheye)
-			{
-				Mat newCamMat;
-				fisheye::estimateNewCameraMatrixForUndistortRectify(m_cameraMat,
-						m_distCoeffs, imSize, Matx33d::eye(), newCamMat, 1);
-				fisheye::initUndistortRectifyMap(m_cameraMat, m_distCoeffs,
-						Matx33d::eye(), newCamMat, imSize,
-						CV_32F/*CV_16SC2*/, map1, map2);
-			}
-			else
-			{
-				m_K = getOptimalNewCameraMatrix(m_cameraMat, m_distCoeffs, imSize, 1, imSize, 0);
-				initUndistortRectifyMap(m_cameraMat, m_distCoeffs, Mat(), m_K, imSize, CV_32FC1, map1, map2);
-			}
-
-			m_Gmap1.upload(map1);
-			m_Gmap2.upload(map2);
-
-			m_bCalibration = true;
-			LOG_I("camera calibration enabled");
-		}
-	}
-
-	LOG_I("Initialized");
 	return true;
 }
 
@@ -168,52 +110,11 @@ void _GStreamer::update(void)
 
 		this->autoFPSfrom();
 
-		GpuMat m_Gmat;
-		GpuMat m_Gmat2;
+		Mat mCam;
+		while (!m_gst.read(mCam));
 
-		GpuMat* pSrc;
-		GpuMat* pDest;
-		GpuMat* pTmp;
-		Mat cMat;
-
-		while (!m_gst.read(cMat));
-		m_Gmat.upload(cMat);
-
-		pSrc = &m_Gmat;
-		pDest = &m_Gmat2;
-
-		if (m_bCalibration)
-		{
-			cuda::remap(*pSrc, *pDest, m_Gmap1, m_Gmap2, INTER_LINEAR);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bGimbal)
-		{
-			cuda::warpAffine(*pSrc, *pDest, m_rotRoll, m_Gmat.size());
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bFlip)
-		{
-			cuda::flip(*pSrc, *pDest, -1);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		if (m_bCrop)
-		{
-			*pDest = GpuMat(*pSrc, m_cropBB);
-			SWAP(pSrc, pDest, pTmp);
-		}
-
-		pSrc->download(cMat);
-		*m_pBGR = cMat;
-
-		if(m_pGray)
-			*m_pGray = m_pBGR->gray();
-
-		if(m_pHSV)
-			*m_pHSV = m_pBGR->hsv();
+		m_fBGR = mCam;
+		postProcess();
 
 		this->autoFPSto();
 	}
@@ -225,8 +126,8 @@ bool _GStreamer::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_pBGR->bEmpty());
-	*pFrame = *m_pBGR;
+	IF_F(m_fBGR.bEmpty());
+	*pFrame = m_fBGR;
 	this->_VisionBase::draw();
 
 	return true;

@@ -38,18 +38,6 @@ public:
 	int m_deviceID;
 	VideoCapture m_camera;
 
-	//calibration
-	bool m_bCalibration;
-	bool m_bFisheye;
-	Mat m_cameraMat;
-	Mat m_distCoeffs;
-	GpuMat m_Gmap1;
-	GpuMat m_Gmap2;
-
-	//crop
-	bool m_bCrop;
-	Rect m_cropBB;
-
 };
 
 }

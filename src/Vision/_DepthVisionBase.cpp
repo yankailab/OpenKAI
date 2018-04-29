@@ -80,6 +80,21 @@ bool _DepthVisionBase::link(void)
 	return true;
 }
 
+void _DepthVisionBase::postProcessDepth(void)
+{
+	if (m_bCalibration)
+		m_fDepth = m_fDepth.remap();
+
+	if (m_bGimbal)
+		m_fDepth = m_fDepth.warpAffine(m_rotRoll);
+
+	if (m_bFlip)
+		m_fDepth = m_fDepth.flip(-1);
+
+	if (m_bCrop)
+		m_fDepth = m_fDepth.crop(m_cropBB);
+}
+
 void _DepthVisionBase::updateFilter(void)
 {
 	IF_(m_fDepth.bEmpty());

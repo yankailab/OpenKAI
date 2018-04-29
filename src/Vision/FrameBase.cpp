@@ -19,24 +19,9 @@ FrameBase::~FrameBase()
 {
 }
 
-bool FrameBase::operator>(const FrameBase& f)
+uint64_t FrameBase::tStamp(void)
 {
-	return (this->m_tStamp > f.m_tStamp)?true:false;
-}
-
-bool FrameBase::operator>=(const FrameBase& f)
-{
-	return (this->m_tStamp >= f.m_tStamp)?true:false;
-}
-
-bool FrameBase::operator<(const FrameBase& f)
-{
-	return (this->m_tStamp < f.m_tStamp)?true:false;
-}
-
-bool FrameBase::operator<=(const FrameBase& f)
-{
-	return (this->m_tStamp <= f.m_tStamp)?true:false;
+	return m_tStamp;
 }
 
 void FrameBase::operator=(const FrameBase& f)
@@ -169,6 +154,40 @@ FrameBase FrameBase::f32FC4(void)
 
 	return fb;
 }
+
+void FrameBase::setRemap(Mat& mX, Mat& mY)
+{
+	m_mapX = mX;
+	m_mapY = mY;
+}
+
+FrameBase FrameBase::remap(void)
+{
+	FrameBase fb;
+	cv::remap(m_mat, fb.m_mat, m_mapX, m_mapY, INTER_LINEAR);
+	fb.m_tStamp = m_tStamp;
+
+	return fb;
+}
+
+FrameBase FrameBase::warpAffine(Mat& mWA)
+{
+	FrameBase fb;
+	cv::warpAffine(m_mat, fb.m_mat, mWA, m_mat.size());
+	fb.m_tStamp = m_tStamp;
+
+	return fb;
+}
+
+FrameBase FrameBase::flip(int iOpt)
+{
+	FrameBase fb;
+	cv::flip(m_mat, fb.m_mat, iOpt);
+	fb.m_tStamp = m_tStamp;
+
+	return fb;
+}
+
 
 }
 

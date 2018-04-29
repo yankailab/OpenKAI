@@ -5,15 +5,12 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_IO__TCPsocket_H_
-#define OpenKAI_src_IO__TCPsocket_H_
+#ifndef OpenKAI_src_IO__TCPclient_H_
+#define OpenKAI_src_IO__TCPclient_H_
 
 #include "../Base/common.h"
 #include "_IOBase.h"
 #include "../Protocol/Peer.h"
-
-#define N_BUF_IO 128
-#define TIMEOUT_RECV_USEC 1000
 
 namespace kai
 {
@@ -54,7 +51,6 @@ public:
 
 	bool m_bClient;
 	int m_socket;
-	uint32_t m_timeoutRecv;
 };
 
 }
