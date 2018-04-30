@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"okView",
+	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -27,6 +27,6 @@
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
-	"Window":"okView",
+	"Window":"OKview",
 }
 

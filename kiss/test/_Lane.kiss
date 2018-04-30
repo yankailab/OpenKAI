@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"okView",
+	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -27,7 +27,7 @@
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":0,
-	"Window":"okView",
+	"Window":"OKview",
 	"deviceID":0,
 	"width":1280,
 	"height":720,
@@ -40,7 +40,7 @@
 	"class":"_RealSense",
 	"FPS":30,
 	"bInst":1,
-	"Window":"okView",
+	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"w":1280,
@@ -65,7 +65,7 @@
 	"class":"_Lane",
 	"FPS":30,
 	"bInst":1,
-	"Window":"okView",
+	"Window":"OKview",
 	"_VisionBase":"camera",
 	"roiLTx":0.425,
 	"roiLTy":0.63,

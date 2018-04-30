@@ -19,9 +19,7 @@ public:
 	FrameBase();
 	virtual ~FrameBase();
 
-	virtual void operator=(const FrameBase& f);
 	virtual void operator=(const Mat& m);
-
 	virtual void allocate(int w, int h);
 	virtual void copy(const FrameBase& f);
 	virtual void copy(const Mat& m);

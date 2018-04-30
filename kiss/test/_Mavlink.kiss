@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"okView",
+	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -28,7 +28,7 @@
 	"bInst":0,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
 }
@@ -39,7 +39,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 }
@@ -50,7 +50,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"portR":19840,
 }
 
@@ -59,7 +59,7 @@
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
-	"Window":"okView",
+	"Window":"OKview",
 }
 
 {
@@ -68,7 +68,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
 	{
@@ -88,7 +88,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"_IOBase":"apWS",
 	
 	{
@@ -108,7 +108,7 @@
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
-	"Window":"okView",
+	"Window":"OKview",
 	"_IOBase":"apUDP",
 	
 	{

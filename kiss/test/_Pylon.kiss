@@ -8,7 +8,7 @@
 }
 
 {
-	"name":"okView",
+	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
 	"w":1280,
@@ -27,7 +27,7 @@
 	"class":"_Pylon",
 	"FPS":30,
 	"bInst":1,
-	"Window":"okView",
+	"Window":"OKview",
 	"SN":"", /*Leave blank for using the first device automatically*/
 	"grabTimeout":5000,
 	"w":1280,

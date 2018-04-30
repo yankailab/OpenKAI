@@ -15,6 +15,7 @@ namespace kai
 FrameGPU::FrameGPU()
 {
 	m_tStamp = 0;
+	m_tStampG = 0;
 }
 
 FrameGPU::~FrameGPU()
@@ -23,76 +24,116 @@ FrameGPU::~FrameGPU()
 
 uint64_t FrameGPU::tStamp(void)
 {
-	return m_tStamp;
+	return (m_tStamp > m_tStampG) ? m_tStamp : m_tStampG;
 }
 
-void FrameGPU::operator=(const FrameGPU& f)
+void FrameGPU::updateTstamp(uint64_t t)
 {
-	m_mat = f.m_mat;
-	m_tStamp = f.m_tStamp;
+	m_tStamp = t;
+	m_tStampG = 0;
+}
+
+void FrameGPU::updateTstampG(uint64_t t)
+{
+	m_tStamp = 0;
+	m_tStampG = t;
 }
 
 void FrameGPU::operator=(const Mat& m)
 {
 	m_mat = m;
-	m_tStamp = getTimeUsec();
+	updateTstamp(getTimeUsec());
+}
+
+void FrameGPU::operator=(const GpuMat& m)
+{
+	m_matG = m;
+	updateTstampG(getTimeUsec());
 }
 
 void FrameGPU::allocate(int w, int h)
 {
 	m_mat = Mat::zeros(Size(w,h), CV_8UC3);
-	m_tStamp = getTimeUsec();
+	updateTstamp(getTimeUsec());
 }
 
 void FrameGPU::copy(const FrameGPU& f)
 {
-	f.m_mat.copyTo(m_mat);
-	m_tStamp = f.m_tStamp;
+	if(f.m_tStamp > f.m_tStampG)
+	{
+		f.m_mat.copyTo(m_mat);
+		updateTstamp(f.m_tStamp);
+	}
+	else
+	{
+		f.m_matG.copyTo(m_matG);
+		updateTstampG(f.m_tStampG);
+	}
 }
 
 void FrameGPU::copy(const Mat& m)
 {
 	m.copyTo(m_mat);
-	m_tStamp = getTimeUsec();
+	updateTstamp(getTimeUsec());
+}
+
+void FrameGPU::copy(const GpuMat& m)
+{
+	m.copyTo(m_matG);
+	updateTstampG(getTimeUsec());
 }
 
 Mat* FrameGPU::m(void)
 {
+	update();
 	return &m_mat;
+}
+
+GpuMat* FrameGPU::gm(void)
+{
+	updateG();
+	return &m_matG;
 }
 
 bool FrameGPU::bEmpty(void)
 {
-	return m_mat.empty();
+	if(m_tStamp > m_tStampG)return m_mat.empty();
+
+	return m_matG.empty();
 }
 
 Size FrameGPU::size(void)
 {
-	return m_mat.size();
+	if(m_tStamp > m_tStampG)return m_mat.size();
+
+	return m_matG.size();
 }
 
 FrameGPU FrameGPU::crop(Rect bb)
 {
 	FrameGPU fb;
-	fb.m_mat = m_mat(bb);
-	fb.m_tStamp = getTimeUsec();
+
+	if(m_tStamp > m_tStampG)
+	{
+		fb.m_mat = m_mat(bb);
+		fb.updateTstamp(m_tStamp);
+	}
+	else
+	{
+		fb.m_matG = m_matG(bb);
+		fb.updateTstampG(m_tStampG);
+	}
 
 	return fb;
 }
 
 FrameGPU FrameGPU::resize(int w, int h)
 {
+	updateG();
+
 	FrameGPU fb;
-	Size s = Size(w,h);
-
-	if(s == this->size())
-	{
-		fb = m_mat;
-		return fb;
-	}
-
-	cv::resize(m_mat, fb.m_mat, s);
-	fb.m_tStamp = m_tStamp;
+	cuda::resize(m_matG, fb.m_matG, Size(w,h));
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
@@ -105,89 +146,129 @@ FrameGPU FrameGPU::resize(double scaleW, double scaleH)
 
 FrameGPU FrameGPU::gray(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2GRAY);
-	fb.m_tStamp = m_tStamp;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2GRAY);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::hsv(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2HSV);
-	fb.m_tStamp = m_tStamp;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2HSV);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::bgra(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2BGRA);
-	fb.m_tStamp = m_tStamp;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2BGRA);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::rgba(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2RGBA);
-	fb.m_tStamp = m_tStamp;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2RGBA);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::f8UC3(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::cvtColor(m_mat, fb.m_mat, CV_GRAY2BGR);
-	fb.m_tStamp = m_tStamp;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_GRAY2BGR);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::f32FC4(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	m_mat.convertTo(fb.m_mat, CV_32FC4);
-	fb.m_tStamp = m_tStamp;
+	m_matG.convertTo(fb.m_matG, CV_32FC4);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 void FrameGPU::setRemap(Mat& mX, Mat& mY)
 {
-	m_mapX = mX;
-	m_mapY = mY;
+	m_mapX.upload(mX);
+	m_mapY.upload(mY);
 }
 
 FrameGPU FrameGPU::remap(void)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::remap(m_mat, fb.m_mat, m_mapX, m_mapY, INTER_LINEAR);
-	fb.m_tStamp = m_tStamp;
+	cuda::remap(m_matG, fb.m_matG, m_mapX, m_mapY, INTER_LINEAR);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::warpAffine(Mat& mWA)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::warpAffine(m_mat, fb.m_mat, mWA, m_mat.size());
-	fb.m_tStamp = m_tStamp;
+	cuda::warpAffine(m_matG, fb.m_matG, mWA, m_matG.size());
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
 FrameGPU FrameGPU::flip(int iOpt)
 {
+	updateG();
+
 	FrameGPU fb;
-	cv::flip(m_mat, fb.m_mat, iOpt);
-	fb.m_tStamp = m_tStamp;
+	cuda::flip(m_matG, fb.m_matG, iOpt);
+	fb.updateTstampG(m_tStampG);
 
 	return fb;
+}
+
+void FrameGPU::update(void)
+{
+	IF_(m_tStamp >= m_tStampG);
+
+	m_matG.download(m_mat);
+	m_tStamp = m_tStampG;
+}
+
+void FrameGPU::updateG(void)
+{
+	IF_(m_tStamp <= m_tStampG);
+
+	m_matG.upload(m_mat);
+	m_tStampG = m_tStamp;
+}
+
+void FrameGPU::sync(void)
+{
+	update();
+	updateG();
 }
 
 }

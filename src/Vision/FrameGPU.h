@@ -21,9 +21,7 @@ public:
 	FrameGPU();
 	virtual ~FrameGPU();
 
-	virtual void operator=(const FrameGPU& f);
 	virtual void operator=(const Mat& m);
-
 	virtual void allocate(int w, int h);
 	virtual void copy(const FrameGPU& f);
 	virtual void copy(const Mat& m);
@@ -46,15 +44,29 @@ public:
 	virtual Size size(void);
 	virtual bool bEmpty(void);
 
-	uint64_t tStamp(void);
+	virtual void operator=(const GpuMat& m);
+	virtual void copy(const GpuMat& m);
+	virtual GpuMat* gm(void);
+	virtual uint64_t tStamp(void);
+
+private:
+	void sync(void);
+	void updateG(void);
+	void update(void);
+
+	void updateTstamp(uint64_t t);
+	void updateTstampG(uint64_t t);
 
 public:
 	uint64_t m_tStamp;
 	Mat m_mat;
 
+	uint64_t m_tStampG;
+	GpuMat m_matG;
+
 	//calibration remap
-	Mat m_mapX;
-	Mat m_mapY;
+	GpuMat m_mapX;
+	GpuMat m_mapY;
 
 };
 
