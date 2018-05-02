@@ -105,7 +105,6 @@ void _ThreadBase::disableSleep(bool bDisable)
 
 void _ThreadBase::wakeUp(void)
 {
-	IF_(!m_bSleep);
 	m_bSleep = false;
 	pthread_cond_signal(&m_wakeupSignal);
 }

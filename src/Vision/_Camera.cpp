@@ -95,6 +95,13 @@ bool _Camera::start(void)
 		return false;
 	}
 
+	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
 	return true;
 }
 
@@ -117,9 +124,18 @@ void _Camera::update(void)
 		while (!m_camera.read(mCam));
 
 		m_fBGR = mCam;
-		postProcess();
+		m_pTPP->wakeUp();
 
 		this->autoFPSto();
+	}
+}
+
+void _Camera::updateTPP(void)
+{
+	while (m_bThreadON)
+	{
+		m_pTPP->sleepTime(0);
+		postProcess();
 	}
 }
 

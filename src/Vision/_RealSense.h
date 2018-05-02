@@ -38,6 +38,13 @@ private:
 		return NULL;
 	}
 
+	void updateTPP(void);
+	static void* getTPP(void* This)
+	{
+		((_RealSense*) This)->updateTPP();
+		return NULL;
+	}
+
 public:
 	rs2::pipeline m_rsPipe;
 	int	m_rsFPS;

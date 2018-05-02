@@ -125,6 +125,13 @@ bool _Pylon::start(void)
 		return false;
 	}
 
+	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
 	return true;
 }
 
@@ -152,9 +159,18 @@ void _Pylon::update(void)
 		m_pylonFC.Convert(m_pylonImg, m_pylonGrab);
 		m_fBGR = Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer());
 
-		postProcess();
+		m_pTPP->wakeUp();
 
 		this->autoFPSto();
+	}
+}
+
+void _Pylon::updateTPP(void)
+{
+	while (m_bThreadON)
+	{
+		m_pTPP->sleepTime(0);
+		postProcess();
 	}
 }
 

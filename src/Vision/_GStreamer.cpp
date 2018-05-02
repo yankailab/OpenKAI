@@ -92,6 +92,13 @@ bool _GStreamer::start(void)
 		return false;
 	}
 
+	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
 	return true;
 }
 
@@ -114,23 +121,19 @@ void _GStreamer::update(void)
 		while (!m_gst.read(mCam));
 
 		m_fBGR = mCam;
-		postProcess();
+		m_pTPP->wakeUp();
 
 		this->autoFPSto();
 	}
 }
 
-bool _GStreamer::draw(void)
+void _GStreamer::updateTPP(void)
 {
-	IF_F(!this->BASE::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-
-	IF_F(m_fBGR.bEmpty());
-	*pFrame = m_fBGR;
-	this->_VisionBase::draw();
-
-	return true;
+	while (m_bThreadON)
+	{
+		m_pTPP->sleepTime(0);
+		postProcess();
+	}
 }
 
 }

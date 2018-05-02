@@ -30,14 +30,20 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Camera *) This)->update();
+		((_Camera*) This)->update();
+		return NULL;
+	}
+
+	void updateTPP(void);
+	static void* getTPP(void* This)
+	{
+		((_Camera*) This)->updateTPP();
 		return NULL;
 	}
 
 public:
 	int m_deviceID;
 	VideoCapture m_camera;
-
 };
 
 }

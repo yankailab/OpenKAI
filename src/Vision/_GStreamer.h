@@ -23,7 +23,6 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	bool draw(void);
 	void reset(void);
 
 private:
@@ -31,7 +30,14 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_GStreamer *) This)->update();
+		((_GStreamer*) This)->update();
+		return NULL;
+	}
+
+	void updateTPP(void);
+	static void* getTPP(void* This)
+	{
+		((_GStreamer*) This)->updateTPP();
 		return NULL;
 	}
 

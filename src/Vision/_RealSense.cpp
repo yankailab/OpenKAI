@@ -105,6 +105,13 @@ bool _RealSense::start(void)
 		return false;
 	}
 
+	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
+	if (retCode != 0)
+	{
+		m_bThreadON = false;
+		return false;
+	}
+
 	return true;
 }
 
@@ -131,7 +138,6 @@ void _RealSense::update(void)
 		{
 			m_rsColor = rsFrame.get_color_frame();
 			m_fBGR = Mat(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP);
-			postProcess();
 		}
 
 		//Depth
@@ -143,13 +149,27 @@ void _RealSense::update(void)
 	        .first<rs2::depth_sensor>()
 	        .get_depth_scale();
 	    m_mD *= depth_scale;
-
 	    m_fDepth = m_mD;
-	    postProcessDepth();
 
-		updateFilter();
+		m_pTPP->wakeUp();
 
 		this->autoFPSto();
+	}
+}
+
+void _RealSense::updateTPP(void)
+{
+	while (m_bThreadON)
+	{
+		m_pTPP->sleepTime(0);
+
+		if(m_rsRGB)
+		{
+			postProcess();
+		}
+
+		postProcessDepth();
+		updateFilter();
 	}
 }
 

@@ -32,11 +32,15 @@ _VisionBase::_VisionBase()
 	m_bCalibration = false;
 	m_bFisheye = false;
 	m_bCrop = false;
+
+	m_pTPP = new _ThreadBase();
 }
 
 _VisionBase::~_VisionBase()
 {
 	reset();
+
+	DEL(m_pTPP);
 }
 
 bool _VisionBase::init(void* pKiss)
@@ -147,6 +151,7 @@ void _VisionBase::postProcess(void)
 void _VisionBase::reset(void)
 {
 	this->_ThreadBase::reset();
+	m_pTPP->reset();
 
 	DEL(m_pHSV);
 	DEL(m_pGray);

@@ -78,6 +78,10 @@ public:
 	Frame	m_fBGR;
 	Frame*	m_pGray;
 	Frame*	m_pHSV;
+
+	//post processing thread
+	_ThreadBase* m_pTPP;
+
 };
 
 }

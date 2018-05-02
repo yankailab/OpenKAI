@@ -35,7 +35,14 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Pylon *) This)->update();
+		((_Pylon*) This)->update();
+		return NULL;
+	}
+
+	void updateTPP(void);
+	static void* getTPP(void* This)
+	{
+		((_Pylon*) This)->updateTPP();
 		return NULL;
 	}
 
