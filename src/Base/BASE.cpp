@@ -74,6 +74,16 @@ bool BASE::start(void)
 	return true;
 }
 
+int BASE::serialize(uint8_t* pB, int nB)
+{
+	return 0;
+}
+
+int BASE::deSerialize(uint8_t* pB, int nB)
+{
+	return 0;
+}
+
 bool BASE::draw(void)
 {
 	IF_F(!m_bDraw);
