@@ -14,10 +14,6 @@
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
-	"recFile_":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.181 port=5678",
 	"textX":20,
 	"textY":20,
 }
@@ -36,11 +32,22 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",
 	"portName":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"bLog":0,
+	"FPS":100,
+	"Window":"OKview",
+	"portName":"/dev/ttyAMA0",
 	"baud":115200,
 }
 
@@ -58,7 +65,7 @@
 	"name":"apWS",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 }
 
@@ -85,7 +92,7 @@
 {
 	"name":"mavWS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",

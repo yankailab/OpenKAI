@@ -59,8 +59,11 @@ int main(int argc, char* argv[])
 void printEnvironment(void)
 {
 	LOG(INFO)<<"OpenCV optimized code:"<<useOptimized();
+
+#ifdef USE_CUDA
 	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
 	LOG(INFO)<<"Using CUDA device:"<<cuda::getDevice();
+#endif
 
 	if (ocl::haveOpenCL())
 	{
