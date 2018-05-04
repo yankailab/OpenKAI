@@ -1,0 +1,30 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"gst1",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"bFlip":0,
+	"bGray":0,
+	"pipeline":"rpicamsrc bitrate=1000000 ! 'video/x-h264,width=1280, height=720' ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+}

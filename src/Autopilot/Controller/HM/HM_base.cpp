@@ -44,7 +44,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("wheelR", &m_wheelR));
 	F_INFO(pK->v("treadW", &m_treadW));
 	F_INFO(pK->v("bMute", &m_bMute));
-	F_INFO(pK->v("canAddrStation", &m_canAddrStation));
+	F_INFO(pK->v("canAddrStation", (int*)&m_canAddrStation));
 	F_INFO(pK->v("pinLEDl", (int*)&m_pinLEDl));
 	F_INFO(pK->v("pinLEDm", (int*)&m_pinLEDm));
 	F_INFO(pK->v("pinLEDr", (int*)&m_pinLEDr));
