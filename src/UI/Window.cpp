@@ -142,35 +142,28 @@ bool Window::draw(void)
 		imshow(*this->getName(), *m_frame.m());
 	}
 
-	Frame* pSrc;
-	Frame* pDest;
-	Frame* pTmp;
-	pSrc = &m_F;
-	pDest = &m_F2;
-
-	m_F.copy(m_frame);
-	Size fSize = pSrc->size();
-
-	if (fSize.width != m_size.x || fSize.height != m_size.y)
+	if(m_VW.isOpened() || m_gst.isOpened())
 	{
-		*pDest = pSrc->resize(m_size.x, m_size.y);
-		SWAP(pSrc, pDest, pTmp);
-	}
+		m_F.copy(m_frame);
+		Size fs = m_F.size();
 
-	if (pSrc->m()->type() != CV_8UC3)
-	{
-		*pSrc = pDest->f8UC3();
-		SWAP(pSrc, pDest, pTmp);
-	}
+		if (fs.width != m_size.x || fs.height != m_size.y)
+		{
+			m_F2 = m_F.resize(m_size.x, m_size.y);
+			m_F = m_F2;
+		}
 
-	if (m_VW.isOpened())
-	{
-		m_VW << *pSrc->m();
-	}
+		if (m_F.m()->type() != CV_8UC3)
+		{
+			m_F2 = m_F.f8UC3();
+			m_F = m_F2;
+		}
 
-	if (m_gst.isOpened())
-	{
-		m_gst << *pSrc->m();
+		if (m_VW.isOpened())
+			m_VW << *m_F.m();
+
+		if (m_gst.isOpened())
+			m_gst << *m_F.m();
 	}
 
 	m_frame.allocate(m_size.x, m_size.y);

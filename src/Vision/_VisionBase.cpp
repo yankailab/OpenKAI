@@ -221,10 +221,9 @@ bool _VisionBase::isOpened(void)
 bool _VisionBase::draw(void)
 {
 	NULL_F(m_pWindow);
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-
+	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
 	IF_F(m_fBGR.bEmpty());
+
 	pFrame->copy(m_fBGR);
 
 	return this->_ThreadBase::draw();

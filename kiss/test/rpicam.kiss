@@ -3,6 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
+	"bDraw":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -26,8 +27,6 @@
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-	/* sudo modprobe bcm2835-v4l2 */
-	/*  add the bcm2835-v4l2 line to /etc/modules-load.d/modules.conf */
-	"_pipeline":"v4l2src device=/dev/video0 ! videoflip method=2 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-h264,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! omxh264dec ! videoconvert ! appsink t. ! queue ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"_pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
