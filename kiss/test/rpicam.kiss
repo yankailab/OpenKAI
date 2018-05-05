@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -11,7 +11,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -27,6 +27,5 @@
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-h264,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! omxh264dec ! videoconvert ! appsink t. ! queue ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-	"_pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
 }
