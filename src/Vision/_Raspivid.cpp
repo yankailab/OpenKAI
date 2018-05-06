@@ -19,6 +19,8 @@ _Raspivid::_Raspivid()
 	m_cmdW = "";
 	m_pFw = NULL;
 	m_iFw = -1;
+	m_nFB = 0;
+	m_pFB = NULL;
 }
 
 _Raspivid::~_Raspivid()
@@ -35,12 +37,18 @@ bool _Raspivid::init(void* pKiss)
 	KISSm(pK, cmdR);
 	KISSm(pK, cmdW);
 
+	m_nFB = m_w * m_h;
+	m_pFB = new uint8_t[m_nFB];
+
 	return true;
 }
 
 void _Raspivid::reset(void)
 {
 	this->_VisionBase::reset();
+
+	m_nFB = 0;
+	DEL(m_pFB);
 
 	m_bOpen = false;
 	m_vImg.clear();
@@ -115,12 +123,6 @@ bool _Raspivid::start(void)
 
 void _Raspivid::update(void)
 {
-	bool bSkip = true;
-	bool bImgReady = false;
-	bool bFF = false;
-	int nB = -1;
-	uint8_t pB[RASPIVID_N_BUF];
-
 	while (m_bThreadON)
 	{
 		if (!m_bOpen)
@@ -134,55 +136,19 @@ void _Raspivid::update(void)
 
 		this->autoFPSfrom();
 
-		nB = read(m_iFr, pB, RASPIVID_N_BUF);
-
-		for (int i = 0; i < nB; i++)
+		int nB = read(m_iFr, m_pFB, m_nFB);
+		if(nB == m_nFB)
 		{
-			uint8_t c = pB[i];
-
-			if (bFF && c == (uint8_t) 0xd8)
-			{
-				bSkip = false;
-				m_vImg.push_back((uint8_t) 0xff);
-			}
-
-			if (bFF && c == 0xd9)
-			{
-				bImgReady = true;
-				m_vImg.push_back((uint8_t) 0xd9);
-				bSkip = true;
-			}
-
-			bFF = c == 0xff;
-			if (!bSkip)
-			{
-				m_vImg.push_back(c);
-			}
-
-			IF_CONT(!bImgReady);
-
-			if (m_vImg.size() != 0)
-			{
-				cv::Mat vM(m_vImg);
-				m_fBGR = imdecode(vM, 1);
-
-				Size s = m_fBGR.size();
-				m_w = s.width;
-				m_h = s.height;
-				m_cW = m_w / 2;
-				m_cH = m_h / 2;
-
-				m_pTPP->wakeUp();
-			}
-
-			bImgReady = false;
-			bSkip = true;
-			m_vImg.clear();
+			m_fBGR = Mat(m_h, m_w, CV_8UC1, m_pFB);
+			//m_fBGR = m_fBGR.f8UC3();
+			//cv::cvtColor(m_fBGR.m_mat, m_fBGR.m_mat, CV_YUV2BGR);
 		}
+
+		m_pTPP->wakeUp();
 
 		if(m_iFw > 0)
 		{
-			write(m_iFw, pB, nB);
+			write(m_iFw, m_pFB, m_nFB);
 		}
 
 		this->autoFPSto();

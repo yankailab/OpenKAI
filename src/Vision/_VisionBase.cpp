@@ -51,6 +51,9 @@ bool _VisionBase::init(void* pKiss)
 
 	KISSm(pK,w);
 	KISSm(pK,h);
+	m_cW = m_w / 2;
+	m_cH = m_h / 2;
+
 	KISSm(pK,fovW);
 	KISSm(pK,fovH);
 	KISSm(pK,bGimbal);

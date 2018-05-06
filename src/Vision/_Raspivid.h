@@ -11,8 +11,6 @@
 #include "../Base/common.h"
 #include "_VisionBase.h"
 
-#define RASPIVID_N_BUF 10240
-
 namespace kai
 {
 
@@ -52,8 +50,9 @@ public:
     FILE* m_pFw;
     int m_iFw;
 
+    int m_nFB;
+    uint8_t* m_pFB;
     std::vector<uint8_t> m_vImg;
-
 };
 
 }
