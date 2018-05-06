@@ -23,6 +23,7 @@ enum VISION_TYPE
 	zed,
 	realsense,
 	pylon,
+	raspivid,
 };
 
 class _VisionBase: public _ThreadBase
