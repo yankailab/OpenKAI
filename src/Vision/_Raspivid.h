@@ -43,7 +43,10 @@ private:
 
 public:
 	string m_cmdR;
-    FILE* m_pFr;
+	string m_option;
+	int	m_nChannel;
+	int m_mType;
+	FILE* m_pFr;
     int m_iFr;
 
 	string m_cmdW;

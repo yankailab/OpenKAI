@@ -13,7 +13,10 @@ namespace kai
 _Raspivid::_Raspivid()
 {
 	m_type = raspivid;
+	m_nChannel = 3;
+	m_mType = CV_8UC3;
 	m_cmdR = "";
+	m_option = "";
 	m_pFr = NULL;
 	m_iFr = -1;
 	m_cmdW = "";
@@ -35,10 +38,17 @@ bool _Raspivid::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK, cmdR);
+	KISSm(pK, option);
+	KISSm(pK, nChannel);
 	KISSm(pK, cmdW);
 
-	m_nFB = m_w * m_h;
+	m_nFB = m_w * m_h * m_nChannel;
 	m_pFB = new uint8_t[m_nFB];
+
+	if(m_nChannel == 3)
+		m_mType = CV_8UC3;
+	else if(m_nChannel == 1)
+		m_mType = CV_8UC1;
 
 	return true;
 }
@@ -77,7 +87,20 @@ bool _Raspivid::link(void)
 
 bool _Raspivid::open(void)
 {
-	m_pFr = popen(m_cmdR.c_str(), "r");
+	string cmdR = m_cmdR + " "
+			+ "-w " + i2str(m_w) + " "
+			+ "-h " + i2str(m_h) + " "
+			+ "-fps " + i2str(m_targetFPS) + " "
+			+ "-t 0 "
+			+ "-o - "
+			+ m_option + " ";
+
+	if(m_nChannel <= 1)
+	{
+		cmdR += "--luma";
+	}
+
+	m_pFr = popen(cmdR.c_str(), "r");
 	if( m_pFr <= 0 )
 	{
 		LOG_E("popen failed: " << m_cmdR);
@@ -136,19 +159,27 @@ void _Raspivid::update(void)
 
 		this->autoFPSfrom();
 
+		fflush(m_pFr);
+
 		int nB = read(m_iFr, m_pFB, m_nFB);
 		if(nB == m_nFB)
 		{
-			m_fBGR = Mat(m_h, m_w, CV_8UC1, m_pFB);
-			//m_fBGR = m_fBGR.f8UC3();
-			//cv::cvtColor(m_fBGR.m_mat, m_fBGR.m_mat, CV_YUV2BGR);
-		}
+			Mat m = Mat(m_h, m_w, m_mType, m_pFB);
 
-		m_pTPP->wakeUp();
+			if(m_nChannel==1)
+			{
+				m_fBGR = m;
+			}
+			else
+			{
+				m_fBGR = m_fBGR.f8UC3();
+				cv::cvtColor(m_fBGR.m_mat, m_fBGR.m_mat, CV_YUV2BGR);
+			}
 
-		if(m_iFw > 0)
-		{
-			write(m_iFw, m_pFB, m_nFB);
+			m_pTPP->wakeUp();
+
+			if(m_iFw > 0)
+				write(m_iFw, m_pFB, m_nFB);
 		}
 
 		this->autoFPSto();
