@@ -14,6 +14,12 @@
 namespace kai
 {
 
+enum RASPIVID_MODE
+{
+	raspivid_yuv,
+	raspivid_y,
+};
+
 class _Raspivid: public _VisionBase
 {
 public:
@@ -44,8 +50,7 @@ private:
 public:
 	string m_cmdR;
 	string m_option;
-	int	m_nChannel;
-	int m_mType;
+	RASPIVID_MODE m_cMode;
 	FILE* m_pFr;
     int m_iFr;
 

@@ -13,8 +13,7 @@ namespace kai
 _Raspivid::_Raspivid()
 {
 	m_type = raspivid;
-	m_nChannel = 3;
-	m_mType = CV_8UC3;
+	m_cMode = raspivid_yuv;
 	m_cmdR = "";
 	m_option = "";
 	m_pFr = NULL;
@@ -39,16 +38,24 @@ bool _Raspivid::init(void* pKiss)
 
 	KISSm(pK, cmdR);
 	KISSm(pK, option);
-	KISSm(pK, nChannel);
 	KISSm(pK, cmdW);
 
-	m_nFB = m_w * m_h * m_nChannel;
-	m_pFB = new uint8_t[m_nFB];
+	string cMode = "YUV";
+	F_INFO(pK->v("cMode", &cMode));
 
-	if(m_nChannel == 3)
-		m_mType = CV_8UC3;
-	else if(m_nChannel == 1)
-		m_mType = CV_8UC1;
+	if(cMode == "YUV")
+	{
+		m_cMode = raspivid_yuv;
+		m_nFB = m_w * m_h * 3 / 2;
+	}
+	else
+	{
+		//Y only
+		m_cMode = raspivid_y;
+		m_nFB = m_w * m_h;
+	}
+
+	m_pFB = new uint8_t[m_nFB];
 
 	return true;
 }
@@ -76,7 +83,6 @@ void _Raspivid::reset(void)
 		pclose(m_pFw);
 		m_pFw = NULL;
 	}
-
 }
 
 bool _Raspivid::link(void)
@@ -95,7 +101,7 @@ bool _Raspivid::open(void)
 			+ "-o - "
 			+ m_option + " ";
 
-	if(m_nChannel <= 1)
+	if(m_cMode == raspivid_y)
 	{
 		cmdR += "--luma";
 	}
@@ -164,16 +170,17 @@ void _Raspivid::update(void)
 		int nB = read(m_iFr, m_pFB, m_nFB);
 		if(nB == m_nFB)
 		{
-			Mat m = Mat(m_h, m_w, m_mType, m_pFB);
-
-			if(m_nChannel==1)
+			if(m_cMode==raspivid_y)
 			{
-				m_fBGR = m;
+				m_fBGR = Mat(m_h, m_w, CV_8UC1, m_pFB);
 			}
 			else
 			{
-				m_fBGR = m_fBGR.f8UC3();
-				cv::cvtColor(m_fBGR.m_mat, m_fBGR.m_mat, CV_YUV2BGR);
+				Mat mYUV = Mat(m_h*3/2, m_w, CV_8UC1, m_pFB);
+				Mat mBGR;
+		        cv::cvtColor(mYUV, mBGR, CV_YUV2BGR_I420);
+
+		        m_fBGR = mBGR;
 			}
 
 			m_pTPP->wakeUp();
