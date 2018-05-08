@@ -13,7 +13,7 @@ namespace kai
 _Raspivid::_Raspivid()
 {
 	m_type = raspivid;
-	m_cMode = raspivid_yuv;
+	m_cMode = raspivid_rgb;
 	m_cmdR = "";
 	m_option = "";
 	m_pFr = NULL;
@@ -40,17 +40,21 @@ bool _Raspivid::init(void* pKiss)
 	KISSm(pK, option);
 	KISSm(pK, cmdW);
 
-	string cMode = "YUV";
+	//round up resolution for Raspividyuv output
+	//https://picamera.readthedocs.io/en/latest/recipes2.html#unencoded-image-capture-yuv-format
+	m_w = (m_w+31)/32*32;
+	m_h = (m_h+15)/16*16;
+
+	string cMode = "rgb";
 	F_INFO(pK->v("cMode", &cMode));
 
-	if(cMode == "YUV")
+	if(cMode == "rgb")
 	{
-		m_cMode = raspivid_yuv;
-		m_nFB = m_w * m_h * 3 / 2;
+		m_cMode = raspivid_rgb;
+		m_nFB = m_w * m_h * 3;
 	}
 	else
 	{
-		//Y only
 		m_cMode = raspivid_y;
 		m_nFB = m_w * m_h;
 	}
@@ -101,7 +105,16 @@ bool _Raspivid::open(void)
 			+ "-o - "
 			+ m_option + " ";
 
-	if(m_cMode == raspivid_y)
+	if(m_bFlip)
+	{
+		cmdR += "-rot 180 ";
+	}
+
+	if(m_cMode == raspivid_rgb)
+	{
+		cmdR += "-rgb";
+	}
+	else
 	{
 		cmdR += "--luma";
 	}
@@ -165,22 +178,19 @@ void _Raspivid::update(void)
 
 		this->autoFPSfrom();
 
-		fflush(m_pFr);
+		tcflush(m_iFr,TCIFLUSH);
 
 		int nB = read(m_iFr, m_pFB, m_nFB);
 		if(nB == m_nFB)
 		{
 			if(m_cMode==raspivid_y)
 			{
-				m_fBGR = Mat(m_h, m_w, CV_8UC1, m_pFB);
+				m_fBGR.copy(Mat(m_h, m_w, CV_8UC1, m_pFB));
 			}
 			else
 			{
-				Mat mYUV = Mat(m_h*3/2, m_w, CV_8UC1, m_pFB);
-				Mat mBGR;
-		        cv::cvtColor(mYUV, mBGR, CV_YUV2BGR_I420);
-
-		        m_fBGR = mBGR;
+				m_fBGR.copy(Mat(m_h, m_w, CV_8UC3, m_pFB));
+				m_fBGR = m_fBGR.rgb2bgr();
 			}
 
 			m_pTPP->wakeUp();

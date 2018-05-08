@@ -110,6 +110,15 @@ FrameBase FrameBase::hsv(void)
 	return fb;
 }
 
+FrameBase FrameBase::rgb2bgr(void)
+{
+	FrameBase fb;
+	fb.m_tStamp = m_tStamp;
+	cv::cvtColor(m_mat, fb.m_mat, CV_RGB2BGR);
+
+	return fb;
+}
+
 FrameBase FrameBase::bgra(void)
 {
 	FrameBase fb;

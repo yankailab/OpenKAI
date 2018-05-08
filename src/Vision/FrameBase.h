@@ -33,6 +33,8 @@ public:
 	virtual FrameBase resize(double scaleW, double scaleH);
 	virtual FrameBase gray(void);
 	virtual FrameBase hsv(void);
+	virtual FrameBase rgb2bgr(void);
+
 	virtual FrameBase bgra(void);
 	virtual FrameBase rgba(void);
 	virtual FrameBase f8UC3(void);

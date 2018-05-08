@@ -16,7 +16,7 @@ namespace kai
 
 enum RASPIVID_MODE
 {
-	raspivid_yuv,
+	raspivid_rgb,
 	raspivid_y,
 };
 

@@ -166,6 +166,17 @@ FrameGPU FrameGPU::hsv(void)
 	return fb;
 }
 
+FrameGPU FrameGPU::rgb2bgr(void)
+{
+	updateG();
+
+	FrameGPU fb;
+	cuda::cvtColor(m_matG, fb.m_matG, CV_RGB2BGR);
+	fb.updateTstampG(m_tStampG);
+
+	return fb;
+}
+
 FrameGPU FrameGPU::bgra(void)
 {
 	updateG();
