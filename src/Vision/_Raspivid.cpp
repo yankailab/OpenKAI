@@ -105,11 +105,6 @@ bool _Raspivid::open(void)
 			+ "-o - "
 			+ m_option + " ";
 
-	if(m_bFlip)
-	{
-		cmdR += "-rot 180 ";
-	}
-
 	if(m_cMode == raspivid_rgb)
 	{
 		cmdR += "-rgb";
@@ -189,8 +184,9 @@ void _Raspivid::update(void)
 			}
 			else
 			{
-				m_fBGR.copy(Mat(m_h, m_w, CV_8UC3, m_pFB));
-				m_fBGR = m_fBGR.rgb2bgr();
+				Frame fRGB;
+				fRGB = Mat(m_h, m_w, CV_8UC3, m_pFB);
+				m_fBGR.copy(fRGB.rgb2bgr());
 			}
 
 			m_pTPP->wakeUp();
