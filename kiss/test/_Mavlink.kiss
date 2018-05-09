@@ -2,15 +2,15 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
+	"bDraw":0,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"bFullScreen":0,
@@ -58,7 +58,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",
-	"portR":19840,
+	"port":19840,
 }
 
 {
