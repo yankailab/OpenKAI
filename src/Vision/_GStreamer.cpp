@@ -120,7 +120,7 @@ void _GStreamer::update(void)
 		Mat mCam;
 		while (!m_gst.read(mCam));
 
-		m_fBGR = mCam;
+		m_fBGR.copy(mCam);
 		m_pTPP->wakeUp();
 
 		this->autoFPSto();

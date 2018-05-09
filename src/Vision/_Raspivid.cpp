@@ -38,13 +38,13 @@ bool _Raspivid::init(void* pKiss)
 
 	//round up resolution for Raspividyuv output
 	//https://picamera.readthedocs.io/en/latest/recipes2.html#unencoded-image-capture-yuv-format
-	m_w = (m_w+31)/32*32;
-	m_h = (m_h+15)/16*16;
+	m_w = (m_w + 31) / 32 * 32;
+	m_h = (m_h + 15) / 16 * 16;
 
 	string cMode = "rgb";
 	F_INFO(pK->v("cMode", &cMode));
 
-	if(cMode == "rgb")
+	if (cMode == "rgb")
 	{
 		m_cMode = raspivid_rgb;
 		m_nFB = m_w * m_h * 3;
@@ -71,7 +71,7 @@ void _Raspivid::reset(void)
 	m_vImg.clear();
 
 	m_iFr = -1;
-	if(m_pFr)
+	if (m_pFr)
 	{
 		pclose(m_pFr);
 		m_pFr = NULL;
@@ -86,15 +86,11 @@ bool _Raspivid::link(void)
 
 bool _Raspivid::open(void)
 {
-	string cmdR = m_cmd + " "
-			+ "-w " + i2str(m_w) + " "
-			+ "-h " + i2str(m_h) + " "
-			+ "-fps " + i2str(m_targetFPS) + " "
-			+ "-t 0 "
-			+ "-o - "
+	string cmdR = m_cmd + " " + "-w " + i2str(m_w) + " " + "-h " + i2str(m_h)
+			+ " " + "-fps " + i2str(m_targetFPS) + " " + "-t 0 " + "-o - "
 			+ m_option + " ";
 
-	if(m_cMode == raspivid_rgb)
+	if (m_cMode == raspivid_rgb)
 	{
 		cmdR += "-rgb";
 	}
@@ -104,7 +100,7 @@ bool _Raspivid::open(void)
 	}
 
 	m_pFr = popen(cmdR.c_str(), "r");
-	if( m_pFr <= 0 )
+	if (m_pFr <= 0)
 	{
 		LOG_E("popen failed: " << m_cmd);
 		return false;
@@ -151,24 +147,20 @@ void _Raspivid::update(void)
 
 		this->autoFPSfrom();
 
-		tcflush(m_iFr,TCIFLUSH);
+		while (read(m_iFr, m_pFB, m_nFB) != m_nFB);
 
-		int nB = read(m_iFr, m_pFB, m_nFB);
-		if(nB == m_nFB)
+		if (m_cMode == raspivid_y)
 		{
-			if(m_cMode==raspivid_y)
-			{
-				m_fBGR.copy(Mat(m_h, m_w, CV_8UC1, m_pFB));
-			}
-			else
-			{
-				Frame fRGB;
-				fRGB = Mat(m_h, m_w, CV_8UC3, m_pFB);
-				m_fBGR.copy(fRGB.rgb2bgr());
-			}
-
-			m_pTPP->wakeUp();
+			m_fBGR.copy(Mat(m_h, m_w, CV_8UC1, m_pFB));
 		}
+		else
+		{
+			Frame fRGB;
+			fRGB = Mat(m_h, m_w, CV_8UC3, m_pFB);
+			m_fBGR.copy(fRGB.rgb2bgr());
+		}
+
+		m_pTPP->wakeUp();
 
 		this->autoFPSto();
 	}

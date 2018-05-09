@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"waitKey":30,
-	"rc":"sudo modprobe bcm2835-v4l2",
+	"rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180",
 }
 
 {
@@ -17,18 +17,17 @@
 	"bFullScreen":0,
 	"textX":20,
 	"textY":20,
-	"_gstOutput":"appsrc ! videoconvert ! queue ! omxh264enc ! queue ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
 	"name":"gstRaspiV4l2",
 	"class":"_GStreamer",
-	"FPS":30,
+	"FPS":60,
 	"bInst":1,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=2 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
