@@ -14,13 +14,10 @@ _Raspivid::_Raspivid()
 {
 	m_type = raspivid;
 	m_cMode = raspivid_rgb;
-	m_cmdR = "";
+	m_cmd = "";
 	m_option = "";
 	m_pFr = NULL;
 	m_iFr = -1;
-	m_cmdW = "";
-	m_pFw = NULL;
-	m_iFw = -1;
 	m_nFB = 0;
 	m_pFB = NULL;
 }
@@ -36,9 +33,8 @@ bool _Raspivid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, cmdR);
+	KISSm(pK, cmd);
 	KISSm(pK, option);
-	KISSm(pK, cmdW);
 
 	//round up resolution for Raspividyuv output
 	//https://picamera.readthedocs.io/en/latest/recipes2.html#unencoded-image-capture-yuv-format
@@ -80,13 +76,6 @@ void _Raspivid::reset(void)
 		pclose(m_pFr);
 		m_pFr = NULL;
 	}
-
-	m_iFw = -1;
-	if(m_pFw)
-	{
-		pclose(m_pFw);
-		m_pFw = NULL;
-	}
 }
 
 bool _Raspivid::link(void)
@@ -97,7 +86,7 @@ bool _Raspivid::link(void)
 
 bool _Raspivid::open(void)
 {
-	string cmdR = m_cmdR + " "
+	string cmdR = m_cmd + " "
 			+ "-w " + i2str(m_w) + " "
 			+ "-h " + i2str(m_h) + " "
 			+ "-fps " + i2str(m_targetFPS) + " "
@@ -117,22 +106,11 @@ bool _Raspivid::open(void)
 	m_pFr = popen(cmdR.c_str(), "r");
 	if( m_pFr <= 0 )
 	{
-		LOG_E("popen failed: " << m_cmdR);
+		LOG_E("popen failed: " << m_cmd);
 		return false;
 	}
 	m_iFr = fileno(m_pFr);
 	m_vImg.clear();
-
-	if(!m_cmdW.empty())
-	{
-		m_pFw = popen(m_cmdW.c_str(), "w");
-		if( m_pFw <= 0 )
-		{
-			LOG_E("popen failed: " << m_cmdW);
-			return false;
-		}
-		m_iFw = fileno(m_pFw);
-	}
 
 	m_bOpen = true;
 	return true;
@@ -190,9 +168,6 @@ void _Raspivid::update(void)
 			}
 
 			m_pTPP->wakeUp();
-
-			if(m_iFw > 0)
-				write(m_iFw, m_pFB, m_nFB);
 		}
 
 		this->autoFPSto();

@@ -42,6 +42,7 @@ public:
 	bool	m_bDraw;
 	int		m_waitKey;
 	bool	m_bLog;
+	string	m_rc;
 };
 
 }

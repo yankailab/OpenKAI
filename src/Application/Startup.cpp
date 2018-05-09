@@ -27,6 +27,7 @@ Startup::Startup()
 	m_bRun = true;
 	m_key = 0;
 	m_bLog = true;
+	m_rc = "";
 }
 
 Startup::~Startup()
@@ -51,6 +52,12 @@ bool Startup::start(Kiss* pKiss)
 	KISSm(pApp,bWindow);
 	KISSm(pApp,bDraw);
 	KISSm(pApp,waitKey);
+	KISSm(pApp,rc);
+
+	if(!m_rc.empty())
+	{
+		system(m_rc.c_str());
+	}
 
 	F_FATAL_F(createAllInst(pKiss));
 

@@ -48,15 +48,11 @@ private:
 	}
 
 public:
-	string m_cmdR;
+	string m_cmd;
 	string m_option;
 	RASPIVID_MODE m_cMode;
 	FILE* m_pFr;
     int m_iFr;
-
-	string m_cmdW;
-    FILE* m_pFw;
-    int m_iFw;
 
     int m_nFB;
     uint8_t* m_pFB;
