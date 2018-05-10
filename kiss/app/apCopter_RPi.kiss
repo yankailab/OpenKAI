@@ -1,0 +1,135 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"waitKey":30,
+	"rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180",
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bDraw":0,
+	"w":640,
+	"h":360,
+}
+
+{
+	"name":"gstRaspiV4l2",
+	"class":"_GStreamer",
+	"FPS":60,
+	"bInst":1,
+	"Window":"OKview",
+	"bFlip":0,
+	"bGray":0,
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+}
+
+{
+	"name":"raspivid",
+	"class":"_Raspivid",
+	"FPS":90,
+	"bInst":0,
+	"Window":"OKview",
+	"bFlip":0,
+	"bGray":0,
+	"w":640,
+	"h":480,
+	"cMode":"y",
+	"option":"--nopreview -rot 180",
+	"cmd":"raspividyuv",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyAMA0",
+	"baud":921600,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"apWS",
+	"class":"_WebSocket",
+	"bInst":0,
+	"FPS":30,
+	"Window":"OKview",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
+}
+
+{
+	"name":"mavWS",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apWS",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavWS",
+	}
+}
