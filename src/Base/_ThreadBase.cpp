@@ -23,6 +23,7 @@ _ThreadBase::_ThreadBase()
 	m_timeTo = 0;
 	m_bSleep = false;
 	m_bDisableSleep = false;
+	m_pWakeUp = NULL;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -59,6 +60,14 @@ void _ThreadBase::reset(void)
 bool _ThreadBase::link(void)
 {
 	IF_F(!this->BASE::link());
+	Kiss* pK = (Kiss*) m_pKiss;
+
+	string iName;
+
+	iName = "";
+	F_INFO(pK->v("_wakeUp", &iName));
+	m_pWakeUp = (_ThreadBase*) (pK->root()->getChildInstByName(&iName));
+
 	return true;
 }
 
@@ -160,7 +169,10 @@ bool _ThreadBase::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	pWin->tabReset();
 
-	string msg = *this->getName() + " FPS: " + i2str(m_FPS);
+	string msg = *this->getName();
+	if(m_FPS > 0)
+		msg += " FPS: " + i2str(m_FPS);
+
 	pWin->addMsg(&msg);
 
 	return true;

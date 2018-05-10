@@ -57,6 +57,7 @@ public:
 	bool	m_bSleep;
 	bool	m_bDisableSleep;
 
+	_ThreadBase* m_pWakeUp;
 };
 
 }

@@ -119,7 +119,6 @@ void _Mavlink::update(void)
 
 		this->autoFPSto();
 	}
-
 }
 
 void _Mavlink::writeMessage(mavlink_message_t message)

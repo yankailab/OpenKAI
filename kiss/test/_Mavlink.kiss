@@ -22,50 +22,54 @@
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":0,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
+	"_wakeUp":"mavAP",
 }
 
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":0,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
+	"_wakeUp":"mavAP",
 }
 
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":1,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"portName":"/dev/ttyAMA0",
 	"baud":921600,
+	"_wakeUp":"mavAP",
 }
 
 {
 	"name":"apUDP",
 	"class":"_UDP",
 	"bInst":1,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"port":19840,
+	"_wakeUp":"mavGCS",
 }
 
 {
 	"name":"apWS",
 	"class":"_WebSocket",
-	"FPS":100,
 	"bInst":0,
+	"FPS":30,
 	"Window":"OKview",
 }
 
@@ -73,8 +77,8 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -93,8 +97,8 @@
 	"name":"mavWS",
 	"class":"_Mavlink",
 	"bInst":0,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"_IOBase":"apWS",
 	
@@ -113,8 +117,8 @@
 	"name":"mavGCS",
 	"class":"_Mavlink",
 	"bInst":1,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	

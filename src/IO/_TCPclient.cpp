@@ -131,11 +131,8 @@ void _TCPclient::updateW(void)
 		this->autoFPSfrom();
 
 		IO_BUF ioB;
-		while(1)
+		while(toBufW(&ioB))
 		{
-			toBufW(&ioB);
-			if(ioB.bEmpty())break;
-
 			int nSend = ::send(m_socket, ioB.m_pB, ioB.m_nB, 0);
 			if (nSend == -1)
 			{
@@ -179,7 +176,7 @@ void _TCPclient::updateR(void)
 
 bool _TCPclient::draw(void)
 {
-	IF_F(!this->_IOBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 

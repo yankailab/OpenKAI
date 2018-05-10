@@ -134,11 +134,8 @@ void _UDP::updateW(void)
 		this->autoFPSfrom();
 
 		IO_BUF ioB;
-		while(1)
+		while(toBufW(&ioB))
 		{
-			toBufW(&ioB);
-			if(ioB.bEmpty())break;
-
 			int nSend = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 			if (nSend == -1)
 			{
@@ -179,7 +176,7 @@ void _UDP::updateR(void)
 
 bool _UDP::draw(void)
 {
-	IF_F(!this->_IOBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 
 	pWin->tabNext();

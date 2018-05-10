@@ -77,6 +77,8 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 
 	pthread_mutex_unlock(&m_mutexW);
 
+	this->wakeUp();
+
 	return true;
 }
 
@@ -110,22 +112,17 @@ bool _IOBase::bEmptyW(void)
 	return m_queW.empty();
 }
 
-void _IOBase::toBufW(IO_BUF* pB)
+bool _IOBase::toBufW(IO_BUF* pB)
 {
-	NULL_(pB);
-
-	if(m_queW.empty())
-	{
-		pB->init();
-		return;
-	}
+	NULL_F(pB);
+	IF_F(m_queW.empty());
 
 	pthread_mutex_lock(&m_mutexW);
-
 	*pB = m_queW.front();
 	m_queW.pop();
-
 	pthread_mutex_unlock(&m_mutexW);
+
+	return true;
 }
 
 void _IOBase::toQueR(IO_BUF* pB)
@@ -134,10 +131,13 @@ void _IOBase::toQueR(IO_BUF* pB)
 	IF_(pB->bEmpty());
 
 	pthread_mutex_lock(&m_mutexR);
-
 	m_queR.push(*pB);
-
 	pthread_mutex_unlock(&m_mutexR);
+
+	if(m_pWakeUp)
+	{
+		m_pWakeUp->wakeUp();
+	}
 }
 
 IO_TYPE _IOBase::ioType(void)

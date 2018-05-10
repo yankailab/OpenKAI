@@ -111,18 +111,14 @@ void _SerialPort::updateW(void)
 		this->autoFPSfrom();
 
 		IO_BUF ioB;
-		while(1)
+		while(toBufW(&ioB))
 		{
-			toBufW(&ioB);
-			if(ioB.bEmpty())break;
-
 			int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
 
 			LOG_I("Write: " << ioB.m_pB);
 		}
 
-		// Wait until all data has been written
-//		tcdrain(m_fd);
+		tcdrain(m_fd);
 
 		this->autoFPSto();
 	}
@@ -209,7 +205,7 @@ bool _SerialPort::setup(void)
 	// One input byte is enough to return from read()
 	// Inter-character timer off
 	config.c_cc[VMIN] = 0;
-	config.c_cc[VTIME] = 0; // was 0
+	config.c_cc[VTIME] = 0;
 	// see: http://unixwiz.net/techtips/termios-vmin-vtime.html
 //	toptions.c_cc[VMIN] = 0;
 //	toptions.c_cc[VTIME] = 10;

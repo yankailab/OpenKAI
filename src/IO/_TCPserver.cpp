@@ -80,16 +80,11 @@ void _TCPserver::update(void)
 {
 	while (m_bThreadON)
 	{
-		this->autoFPSfrom();
-
 		if(!handler())
 		{
 			this->sleepTime(USEC_1SEC);
 		}
-
-		this->autoFPSto();
 	}
-
 }
 
 bool _TCPserver::handler(void)
