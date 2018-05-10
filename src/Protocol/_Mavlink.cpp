@@ -101,8 +101,17 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		IF_CONT(!m_pIO);
-		IF_CONT(!m_pIO->isOpen());
+		if(!m_pIO)
+		{
+			this->sleepTime(USEC_1SEC);
+			continue;
+		}
+
+		if(!m_pIO->isOpen())
+		{
+			this->sleepTime(USEC_1SEC);
+			continue;
+		}
 
 		this->autoFPSfrom();
 
@@ -463,7 +472,6 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 void _Mavlink::handleMessages()
 {
 	mavlink_message_t message;
-	int nMsgHandled = 0;
 
 	//Handle Message while new message is received
 	while (readMessage(message))
@@ -602,10 +610,7 @@ void _Mavlink::handleMessages()
 			IF_CONT(!pM);
 			pM->writeMessage(message);
 		}
-
-		IF_(++nMsgHandled >= MAV_N_MSG_HANDLE);
 	}
-
 }
 
 bool _Mavlink::draw(void)

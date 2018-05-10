@@ -48,7 +48,7 @@
 	"FPS":100,
 	"Window":"OKview",
 	"portName":"/dev/ttyAMA0",
-	"baud":115200,
+	"baud":921600,
 }
 
 {

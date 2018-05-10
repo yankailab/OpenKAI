@@ -14,10 +14,27 @@ sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nexit 
 set -H
 sudo chmod a+x /etc/rc.local
 
+# Setup
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade
+#sudo rpi-update
+
+# To use hardware UART on RPi3 to communicate with Flight controller
+sudo raspi-config
+# Disable OS use of UART and Enable UART hardware
+set +H
+sudo sh -c "echo 'dtoverlay=pi3-disable-bt\n' >> /boot/config.txt"
+set -H
+sudo systemctl disable hciuart
+sudo systemctl stop serial-getty@ttyAMA0.service
+sudo systemctl disable serial-getty@ttyAMA0.service
+sudo systemctl stop serial-getty@ttyS0.service
+sudo systemctl disable serial-getty@ttyS0.service
+sudo reboot now
+
 # Prerequisites
 # Base
-sudo apt-get update
-sudo apt-get dist-upgrade
 sudo apt-get -y install build-essential cmake cmake-curses-gui git libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev pkg-config
 
 # BLAS
@@ -33,7 +50,7 @@ sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 sudo apt-get -y install libgtk2.0-dev libglew-dev libgtk-3-dev libglfw3-dev
 	
 # Raspberry camera
-sudo apt-get -y install autoconf automake libtool pkg-config libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev libraspberrypi-dev
+sudo apt-get -y install autoconf automake libtool pkg-config libgstreamer1.0-dev libgstreamer1.0-* libgstreamer-plugins-base1.0-dev libraspberrypi-dev
 cd $FULLDEVDIR
 git clone https://github.com/thaytan/gst-rpicamsrc.git
 cd gst-rpicamsrc

@@ -122,7 +122,7 @@ void _SerialPort::updateW(void)
 		}
 
 		// Wait until all data has been written
-		tcdrain(m_fd);
+//		tcdrain(m_fd);
 
 		this->autoFPSto();
 	}
