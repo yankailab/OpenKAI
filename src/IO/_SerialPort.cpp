@@ -7,7 +7,7 @@ namespace kai
 _SerialPort::_SerialPort(void)
 {
 	m_fd = -1;
-	m_name = "";
+	m_portName = "";
 	m_ioType = io_serialPort;
 
 	m_baud = 115200;
@@ -28,21 +28,21 @@ bool _SerialPort::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	F_INFO(pK->v("portName", &m_name));
-	F_INFO(pK->v("baud", &m_baud));
-	F_INFO(pK->v("dataBits", &m_dataBits));
-	F_INFO(pK->v("stopBits", &m_stopBits));
-	F_INFO(pK->v("parity", &m_parity));
-	F_INFO(pK->v("hardwareControl", &m_hardwareControl));
+	KISSm(pK,portName);
+	KISSm(pK,baud);
+	KISSm(pK,dataBits);
+	KISSm(pK,stopBits);
+	KISSm(pK,parity);
+	KISSm(pK,hardwareControl);
 
 	return true;
 }
 
 bool _SerialPort::open(void)
 {
-	IF_F(m_name.empty());
+	IF_F(m_portName.empty());
 
-	m_fd = ::open(m_name.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
+	m_fd = ::open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
 	IF_F(m_fd == -1);
 	fcntl(m_fd, F_SETFL, 0);
 

@@ -33,8 +33,8 @@ bool _TCPserver::init(void* pKiss)
 	pK->m_pInst = this;
 
 	F_INFO(pK->v("listenPort", (int* )&m_listenPort));
-	F_INFO(pK->v("nListen", &m_nListen));
-	F_INFO(pK->v("nSocket", &m_nSocket));
+	KISSm(pK,nListen);
+	KISSm(pK,nSocket);
 
 	return true;
 }

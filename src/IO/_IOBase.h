@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 
-#define N_IO_BUF 256
+#define N_IO_BUF 288
 
 namespace kai
 {
@@ -31,6 +31,12 @@ enum IO_STATUS
 	io_unknown,
 	io_closed,
 	io_opened
+};
+
+enum IO_MODE
+{
+	io_sequential,
+	io_cmdLatest,
 };
 
 struct IO_BUF
@@ -66,15 +72,20 @@ public:
 	int  read(uint8_t* pBuf, int nB);
 	bool write(uint8_t* pBuf, int nB);
 	bool writeLine(uint8_t* pBuf, int nB);
+	bool write(IO_BUF& ioB);
 
-	bool bEmptyW(void);
 	bool toBufW(IO_BUF* pB);
 	void toQueR(IO_BUF* pB);
 
 public:
 	IO_TYPE		m_ioType;
 	IO_STATUS	m_ioStatus;
+	IO_MODE		m_ioMode;
 
+	IO_BUF*		m_pCmdW;
+	int			m_nCmdW;
+	int			m_nCmdType;
+	int			m_iCmdID;
 	std::queue<IO_BUF> m_queW;
 	std::queue<IO_BUF> m_queR;
 

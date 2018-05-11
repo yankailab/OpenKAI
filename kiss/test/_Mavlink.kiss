@@ -28,6 +28,7 @@
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
 	"_wakeUp":"mavAP",
+	"_ioMode":"cmdLatest",
 }
 
 {
@@ -40,6 +41,7 @@
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"mavAP",
+	"_ioMode":"cmdLatest",
 }
 
 {
@@ -52,6 +54,7 @@
 	"portName":"/dev/ttyAMA0",
 	"baud":921600,
 	"_wakeUp":"mavAP",
+	"_ioMode":"cmdLatest",
 }
 
 {
@@ -63,6 +66,7 @@
 	"Window":"OKview",
 	"port":19840,
 	"_wakeUp":"mavGCS",
+	"_ioMode":"cmdLatest",
 }
 
 {

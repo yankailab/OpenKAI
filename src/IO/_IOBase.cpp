@@ -15,7 +15,12 @@ _IOBase::_IOBase()
 	m_rThreadID = 0;
 	m_bRThreadON = false;
 	m_ioType = io_none;
+	m_ioMode = io_sequential;
 	m_ioStatus = io_unknown;
+	m_pCmdW = NULL;
+	m_nCmdW = 0;
+	m_nCmdType = 256;
+	m_iCmdID = 5; //Default: Message ID in Mavlink v1.0
 
 	pthread_mutex_init(&m_mutexW, NULL);
 	pthread_mutex_init(&m_mutexR, NULL);
@@ -34,12 +39,33 @@ bool _IOBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	string ioMode = "";
+	F_INFO(pK->v("ioMode", &ioMode));
+	if(ioMode != "cmdLatest")return true;
+
+	m_ioMode = io_cmdLatest;
+
+	KISSm(pK, iCmdID);
+	IF_Fl(m_iCmdID < 0, "iCmdID < 0");
+
+	KISSm(pK, nCmdType);
+	IF_Fl(m_nCmdType <= 0, "nCmdType <= 0");
+
+	m_pCmdW = new IO_BUF[m_nCmdType];
+	for(int i=0; i<m_nCmdType; i++)
+	{
+		m_pCmdW[i].init();
+	}
+
 	return true;
 }
 
 void _IOBase::reset(void)
 {
 	this->_ThreadBase::reset();
+
+	m_nCmdW = 0;
+	DEL(m_pCmdW);
 }
 
 bool _IOBase::open(void)
@@ -52,11 +78,59 @@ bool _IOBase::isOpen(void)
 	return (m_ioStatus == io_opened);
 }
 
+IO_TYPE _IOBase::ioType(void)
+{
+	return m_ioType;
+}
+
+void _IOBase::close(void)
+{
+	while (!m_queW.empty())
+		m_queW.pop();
+
+	while (!m_queR.empty())
+		m_queR.pop();
+
+	m_ioStatus = io_closed;
+}
+
+bool _IOBase::write(IO_BUF& ioB)
+{
+	IF_F(m_ioStatus != io_opened);
+	IF_F(ioB.bEmpty());
+
+	if(m_ioMode == io_sequential)
+	{
+		pthread_mutex_lock(&m_mutexW);
+
+		m_queW.push(ioB);
+
+		pthread_mutex_unlock(&m_mutexW);
+	}
+	else if(m_ioMode == io_cmdLatest)
+	{
+		IF_F(ioB.m_nB <= m_iCmdID);
+		uint8_t iCmdID = ioB.m_pB[m_iCmdID];
+		IF_F(iCmdID >= m_nCmdType);
+
+		pthread_mutex_lock(&m_mutexW);
+
+		m_pCmdW[iCmdID] = ioB;
+		m_nCmdW++;
+
+		pthread_mutex_unlock(&m_mutexW);
+	}
+
+	this->wakeUp();
+	return true;
+}
+
 bool _IOBase::write(uint8_t* pBuf, int nB)
 {
 	IF_F(m_ioStatus != io_opened);
 	IF_F(nB <= 0);
 	NULL_F(pBuf);
+	IF_Fl(m_ioMode == io_cmdLatest, "cmdLatest mode not supported, use _IOBase::write(IO_BUF&) instead");
 
 	IO_BUF ioB;
 	int nW = 0;
@@ -78,7 +152,6 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 	pthread_mutex_unlock(&m_mutexW);
 
 	this->wakeUp();
-
 	return true;
 }
 
@@ -88,6 +161,42 @@ bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 
 	IF_F(!write(pBuf, nB));
 	return write((unsigned char*)pCRLF, 2);
+}
+
+bool _IOBase::toBufW(IO_BUF* pB)
+{
+	NULL_F(pB);
+
+	if(m_ioMode == io_sequential)
+	{
+		IF_F(m_queW.empty());
+
+		pthread_mutex_lock(&m_mutexW);
+		*pB = m_queW.front();
+		m_queW.pop();
+		pthread_mutex_unlock(&m_mutexW);
+	}
+	else if(m_ioMode == io_cmdLatest)
+	{
+		IF_F(m_nCmdW <= 0);
+
+		pthread_mutex_lock(&m_mutexW);
+
+		for(int i=0; i<m_nCmdType; i++)
+		{
+			IO_BUF* pIOB = &m_pCmdW[i];
+			IF_CONT(pIOB->bEmpty());
+
+			*pB = *pIOB;
+			pIOB->init();
+			m_nCmdW--;
+			break;
+		}
+
+		pthread_mutex_unlock(&m_mutexW);
+	}
+
+	return true;
 }
 
 int _IOBase::read(uint8_t* pBuf, int nB)
@@ -103,26 +212,7 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 	pthread_mutex_unlock(&m_mutexR);
 
 	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
-
 	return ioB.m_nB;
-}
-
-bool _IOBase::bEmptyW(void)
-{
-	return m_queW.empty();
-}
-
-bool _IOBase::toBufW(IO_BUF* pB)
-{
-	NULL_F(pB);
-	IF_F(m_queW.empty());
-
-	pthread_mutex_lock(&m_mutexW);
-	*pB = m_queW.front();
-	m_queW.pop();
-	pthread_mutex_unlock(&m_mutexW);
-
-	return true;
 }
 
 void _IOBase::toQueR(IO_BUF* pB)
@@ -138,22 +228,6 @@ void _IOBase::toQueR(IO_BUF* pB)
 	{
 		m_pWakeUp->wakeUp();
 	}
-}
-
-IO_TYPE _IOBase::ioType(void)
-{
-	return m_ioType;
-}
-
-void _IOBase::close(void)
-{
-	while (!m_queW.empty())
-		m_queW.pop();
-
-	while (!m_queR.empty())
-		m_queR.pop();
-
-	m_ioStatus = io_closed;
 }
 
 bool _IOBase::draw(void)

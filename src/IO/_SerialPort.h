@@ -50,7 +50,7 @@ private:
 
 private:
 	int m_fd;
-	string m_name;
+	string m_portName;
 	int m_baud;
 	int m_dataBits;
 	int m_stopBits;
