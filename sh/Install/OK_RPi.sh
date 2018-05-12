@@ -161,3 +161,15 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=OFF -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_TENSORRT=OFF ../
 make all
 
+# Wifi Setup
+# Disable the internal Wifi
+cat << EOF | sudo tee -a /etc/modprobe.d/raspi-blacklist.conf
+#wifi
+blacklist brcmfmac
+blacklist brcmutil
+EOF
+sudo reboot now
+
+#Plug USB wifi and run
+sudo sh -c 'wpa_passphrase (ssid) (passphrase) | grep -v "#psk=" >> /etc/wpa_supplicant/wpa_supplicant.conf'
+sudo reboot now

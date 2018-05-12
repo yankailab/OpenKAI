@@ -33,12 +33,6 @@ enum IO_STATUS
 	io_opened
 };
 
-enum IO_MODE
-{
-	io_sequential,
-	io_cmdLatest,
-};
-
 struct IO_BUF
 {
 	uint8_t m_pB[N_IO_BUF];
@@ -80,14 +74,18 @@ public:
 public:
 	IO_TYPE		m_ioType;
 	IO_STATUS	m_ioStatus;
-	IO_MODE		m_ioMode;
 
+	// for stream mode
+	bool				m_bStream;
+	std::queue<IO_BUF>	m_queW;
+	std::queue<IO_BUF>	m_queR;
+
+	// for cmdLatest mode
 	IO_BUF*		m_pCmdW;
 	int			m_nCmdW;
+	int			m_iCmdW;
 	int			m_nCmdType;
 	int			m_iCmdID;
-	std::queue<IO_BUF> m_queW;
-	std::queue<IO_BUF> m_queR;
 
 	pthread_mutex_t m_mutexW;
 	pthread_mutex_t m_mutexR;

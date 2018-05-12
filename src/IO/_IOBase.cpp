@@ -15,12 +15,13 @@ _IOBase::_IOBase()
 	m_rThreadID = 0;
 	m_bRThreadON = false;
 	m_ioType = io_none;
-	m_ioMode = io_sequential;
 	m_ioStatus = io_unknown;
+	m_bStream = true;
 	m_pCmdW = NULL;
 	m_nCmdW = 0;
 	m_nCmdType = 256;
 	m_iCmdID = 5; //Default: Message ID in Mavlink v1.0
+	m_iCmdW = 0;
 
 	pthread_mutex_init(&m_mutexW, NULL);
 	pthread_mutex_init(&m_mutexR, NULL);
@@ -39,12 +40,10 @@ bool _IOBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	string ioMode = "";
-	F_INFO(pK->v("ioMode", &ioMode));
-	if(ioMode != "cmdLatest")return true;
+	KISSm(pK,bStream);
+	IF_T(m_bStream);
 
-	m_ioMode = io_cmdLatest;
-
+	// for stream mode
 	KISSm(pK, iCmdID);
 	IF_Fl(m_iCmdID < 0, "iCmdID < 0");
 
@@ -57,6 +56,9 @@ bool _IOBase::init(void* pKiss)
 		m_pCmdW[i].init();
 	}
 
+	m_iCmdW = 0;
+	m_nCmdW = 0;
+
 	return true;
 }
 
@@ -64,7 +66,6 @@ void _IOBase::reset(void)
 {
 	this->_ThreadBase::reset();
 
-	m_nCmdW = 0;
 	DEL(m_pCmdW);
 }
 
@@ -99,7 +100,7 @@ bool _IOBase::write(IO_BUF& ioB)
 	IF_F(m_ioStatus != io_opened);
 	IF_F(ioB.bEmpty());
 
-	if(m_ioMode == io_sequential)
+	if(m_bStream)
 	{
 		pthread_mutex_lock(&m_mutexW);
 
@@ -107,7 +108,7 @@ bool _IOBase::write(IO_BUF& ioB)
 
 		pthread_mutex_unlock(&m_mutexW);
 	}
-	else if(m_ioMode == io_cmdLatest)
+	else
 	{
 		IF_F(ioB.m_nB <= m_iCmdID);
 		uint8_t iCmdID = ioB.m_pB[m_iCmdID];
@@ -130,7 +131,7 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 	IF_F(m_ioStatus != io_opened);
 	IF_F(nB <= 0);
 	NULL_F(pBuf);
-	IF_Fl(m_ioMode == io_cmdLatest, "cmdLatest mode not supported, use _IOBase::write(IO_BUF&) instead");
+	IF_Fl(!m_bStream, "cmd mode not supported, use _IOBase::write(IO_BUF&) instead");
 
 	IO_BUF ioB;
 	int nW = 0;
@@ -167,7 +168,7 @@ bool _IOBase::toBufW(IO_BUF* pB)
 {
 	NULL_F(pB);
 
-	if(m_ioMode == io_sequential)
+	if(m_bStream)
 	{
 		IF_F(m_queW.empty());
 
@@ -176,23 +177,20 @@ bool _IOBase::toBufW(IO_BUF* pB)
 		m_queW.pop();
 		pthread_mutex_unlock(&m_mutexW);
 	}
-	else if(m_ioMode == io_cmdLatest)
+	else
 	{
 		IF_F(m_nCmdW <= 0);
 
-		pthread_mutex_lock(&m_mutexW);
-
-		for(int i=0; i<m_nCmdType; i++)
+		IO_BUF* pIOB;
+		while((pIOB = &m_pCmdW[m_iCmdW])->bEmpty())
 		{
-			IO_BUF* pIOB = &m_pCmdW[i];
-			IF_CONT(pIOB->bEmpty());
-
-			*pB = *pIOB;
-			pIOB->init();
-			m_nCmdW--;
-			break;
+			if(++m_iCmdW >= m_nCmdType)m_iCmdW=0;
 		}
 
+		pthread_mutex_lock(&m_mutexW);
+		*pB = *pIOB;
+		pIOB->init();
+		m_nCmdW--;
 		pthread_mutex_unlock(&m_mutexW);
 	}
 
