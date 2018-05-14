@@ -26,7 +26,7 @@ Startup::Startup()
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
-	m_bLog = true;
+	m_bLog = false;
 	m_rc = "";
 }
 
@@ -51,6 +51,7 @@ bool Startup::start(Kiss* pKiss)
 	KISSm(pApp,appName);
 	KISSm(pApp,bWindow);
 	KISSm(pApp,bDraw);
+	KISSm(pApp,bLog);
 	KISSm(pApp,waitKey);
 	KISSm(pApp,rc);
 
@@ -74,32 +75,41 @@ bool Startup::start(Kiss* pKiss)
 
 	//UI thread
 	m_bRun = true;
+	int uWaitKey = m_waitKey * 1000;
 
-	if (m_bWindow)
+	initscr();
+	noecho();
+	cbreak();
+	start_color();
+	use_default_colors();
+	init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
+	init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
+	init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
+	init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
+
+	while (m_bRun)
 	{
-		while (m_bRun)
+		clear();
+		cli();
+	    refresh();
+
+		if(m_bDraw)
 		{
 			draw();
 			m_key = waitKey(m_waitKey);
+		}
+		else
+		{
+			usleep(uWaitKey);
+		}
+
+		if(m_bWindow)
+		{
 			handleKey(m_key);
 		}
 	}
-	else if (m_bDraw)
-	{
-		while (m_bRun)
-		{
-			draw();
-			waitKey(m_waitKey);
-		}
-	}
-	else
-	{
-		while (m_bRun)
-		{
-			sleep(1);
-			//TODO: curese output
-		}
-	}
+
+	endwin();
 
 	for (i = 0; i < m_nInst; i++)
 	{
@@ -120,6 +130,20 @@ void Startup::draw(void)
 	{
 		BASE* pInst = m_ppInst[i];
 		pInst->draw();
+	}
+}
+
+void Startup::cli(void)
+{
+	COL_TITLE;
+    mvaddstr(0, 0, m_appName.c_str());
+	int iY = 1;
+
+	for (int i = 0; i < m_nInst; i++)
+	{
+		BASE* pInst = m_ppInst[i];
+		pInst->cli(iY);
+		iY++;
 	}
 }
 

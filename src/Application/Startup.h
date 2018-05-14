@@ -24,6 +24,7 @@ public:
 
 	bool start(Kiss* pKiss);
 	void draw(void);
+	void cli(void);
 	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
 

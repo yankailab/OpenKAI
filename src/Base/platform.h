@@ -5,6 +5,7 @@
 #include <cmath>
 #include <cstdarg>
 #include <cstdlib>
+#include <curses.h>
 #include <deque>
 #include <dirent.h>
 #include <fcntl.h>

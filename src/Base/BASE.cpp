@@ -16,7 +16,7 @@ BASE::BASE()
 {
 	m_pKiss = NULL;
 	m_pWindow = NULL;
-	m_bLog = true;
+	m_bLog = false;
 	m_bDraw = true;
 }
 
@@ -34,7 +34,12 @@ bool BASE::init(void* pKiss)
 	F_FATAL_F(pK->v("name",&name));
 	IF_F(name.empty());
 
-	pK->v("bLog",&m_bLog);
+	pK->root()->o("APP")->v("bLog",&m_bLog);
+	if(m_bLog)
+	{
+		pK->v("bLog",&m_bLog);
+	}
+
 	pK->v("bDraw",&m_bDraw);
 
 	m_pKiss = pKiss;
@@ -94,6 +99,14 @@ bool BASE::draw(void)
 
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
+
+	return true;
+}
+
+bool BASE::cli(int& iY)
+{
+	COL_NAME;
+    mvaddstr(iY, CLI_X_NAME, this->getName()->c_str());
 
 	return true;
 }

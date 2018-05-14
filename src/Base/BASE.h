@@ -26,6 +26,7 @@ public:
 	virtual bool link(void);
 	virtual bool start(void);
 	virtual bool draw(void);
+	virtual bool cli(int& iY);
 	virtual void reset(void);
 	virtual int serialize(uint8_t* pB, int nB);
 	virtual int deSerialize(uint8_t* pB, int nB);

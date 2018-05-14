@@ -178,4 +178,16 @@ bool _ThreadBase::draw(void)
 	return true;
 }
 
+bool _ThreadBase::cli(int& iY)
+{
+	IF_F(!this->BASE::cli(iY));
+
+	string msg = "FPS: " + i2str(m_FPS);
+
+	COL_FPS;
+	mvaddstr(iY, CLI_X_FPS, msg.c_str());
+
+	return true;
+}
+
 }
