@@ -89,7 +89,7 @@ bool Startup::start(Kiss* pKiss)
 
 	while (m_bRun)
 	{
-		clear();
+		erase();
 		cli();
 	    refresh();
 
