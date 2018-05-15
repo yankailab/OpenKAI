@@ -90,7 +90,7 @@ bool _Automaton::transit(int nextStateIdx)
 	m_iLastState = m_iState;
 	m_iState = nextStateIdx;
 
-	LOG_I("Transit: "<<m_pStateName[m_iState]);
+	LOG_I("Transit: " + m_pStateName[m_iState]);
 	return true;
 }
 

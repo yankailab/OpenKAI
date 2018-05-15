@@ -18,6 +18,9 @@ BASE::BASE()
 	m_pWindow = NULL;
 	m_bLog = false;
 	m_bDraw = true;
+
+	m_cliMsg = "";
+	m_cliMsgLevel = -1;
 }
 
 BASE::~BASE()
@@ -31,11 +34,12 @@ bool BASE::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 
 	string name="";
-	F_FATAL_F(pK->v("name",&name));
+	F_ERROR_F(pK->v("name",&name));
 	IF_F(name.empty());
 
-	pK->root()->o("APP")->v("bLog",&m_bLog);
-	if(m_bLog)
+	bool bLog = false;
+	pK->root()->o("APP")->v("bLog",&bLog);
+	if(bLog)
 	{
 		pK->v("bLog",&m_bLog);
 	}
@@ -108,7 +112,14 @@ bool BASE::cli(int& iY)
 	COL_NAME;
     mvaddstr(iY, CLI_X_NAME, this->getName()->c_str());
 
-	return true;
+    if(m_cliMsgLevel > 0)
+    	COL_ERROR;
+    else
+    	COL_MSG;
+
+    mvaddstr(iY, CLI_X_MSG, m_cliMsg.c_str());
+
+    return true;
 }
 
 }

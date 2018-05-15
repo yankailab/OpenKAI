@@ -139,7 +139,7 @@ void _UDP::updateW(void)
 			int nSend = ::sendto(m_socket, ioB.m_pB, ioB.m_nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 			if (nSend == -1)
 			{
-				LOG_I("sendto error: "<<errno);
+				LOG_I("sendto error: " + i2str(errno));
 				break;
 			}
 		}
@@ -163,14 +163,14 @@ void _UDP::updateR(void)
 
 		if (ioB.m_nB <= 0)
 		{
-			LOG_E("recvfrom error: "<<errno);
+			LOG_E("recvfrom error: " + i2str(errno));
 			close();
 			continue;
 		}
 
 		toQueR(&ioB);
 
-		LOG_I("Received from ip:" << inet_ntoa(m_sAddr.sin_addr) << ", port:" << ntohs(m_sAddr.sin_port));
+		LOG_I("Received from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 	}
 }
 

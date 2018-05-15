@@ -54,7 +54,7 @@ bool APcopter_visualFollow::link(void)
 
 	if (!m_pMN)
 	{
-		LOG_E(iName << " not found");
+		LOG_E(iName + " not found");
 		return false;
 	}
 

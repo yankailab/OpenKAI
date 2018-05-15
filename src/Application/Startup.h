@@ -44,6 +44,9 @@ public:
 	int		m_waitKey;
 	bool	m_bLog;
 	string	m_rc;
+
+	string	m_cliMsg;
+	int8_t m_cliMsgLevel;
 };
 
 }

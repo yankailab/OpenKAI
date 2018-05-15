@@ -102,7 +102,7 @@ bool _Raspivid::open(void)
 	m_pFr = popen(cmdR.c_str(), "r");
 	if (m_pFr <= 0)
 	{
-		LOG_E("popen failed: " << m_cmd);
+		LOG_E("popen failed: " + m_cmd);
 		return false;
 	}
 	m_iFr = fileno(m_pFr);

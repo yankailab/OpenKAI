@@ -40,10 +40,10 @@ bool _SerialPort::init(void* pKiss)
 
 bool _SerialPort::open(void)
 {
-	IF_F(m_portName.empty());
+	IF_Fl(m_portName.empty(), "portName is empty");
 
 	m_fd = ::open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
-	IF_F(m_fd == -1);
+	IF_Fl(m_fd == -1, "Cannot open: " + m_portName);
 	fcntl(m_fd, F_SETFL, 0);
 
 	m_ioStatus = io_opened;
@@ -115,7 +115,7 @@ void _SerialPort::updateW(void)
 		{
 			int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
 
-			LOG_I("Write: " << ioB.m_pB);
+			LOG_I("write: " + i2str(nW) + " bytes");
 		}
 
 		tcdrain(m_fd);
@@ -136,12 +136,11 @@ void _SerialPort::updateR(void)
 
 		//blocking mode, no FPS control
 		IO_BUF ioB;
-
 		ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
 		if(ioB.m_nB <= 0)continue;
 
 		toQueR(&ioB);
-		LOG_I("read: " << ioB.m_pB);
+		LOG_I("read: " + i2str(ioB.m_nB) + " bytes");
 	}
 }
 
@@ -216,7 +215,7 @@ bool _SerialPort::setup(void)
 	case 1200:
 		if (cfsetispeed(&config, B1200) < 0 || cfsetospeed(&config, B1200) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
@@ -236,7 +235,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B38400) < 0
 				|| cfsetospeed(&config, B38400) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
@@ -244,7 +243,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B57600) < 0
 				|| cfsetospeed(&config, B57600) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
@@ -252,7 +251,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B115200) < 0
 				|| cfsetospeed(&config, B115200) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
@@ -263,7 +262,7 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B460800) < 0
 				|| cfsetospeed(&config, B460800) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
@@ -271,12 +270,12 @@ bool _SerialPort::setup(void)
 		if (cfsetispeed(&config, B921600) < 0
 				|| cfsetospeed(&config, B921600) < 0)
 		{
-			LOG_E("Could not set baud:"<<m_baud);
+			LOG_E("Could not set baud: " + i2str(m_baud));
 			return false;
 		}
 		break;
 	default:
-		LOG_E("Could not set baud:"<<m_baud);
+		LOG_E("Could not set baud: " + i2str(m_baud));
 		return false;
 		break;
 	}
@@ -284,7 +283,7 @@ bool _SerialPort::setup(void)
 	//apply the configuration
 	if (tcsetattr(m_fd, TCSAFLUSH, &config) < 0)
 	{
-		LOG_E("Could not set configuration of fd: " << m_fd);
+		LOG_E("Could not set configuration of fd: " + i2str(m_fd));
 		return false;
 	}
 

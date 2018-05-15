@@ -217,7 +217,7 @@ void _GPS::getMavGPS(void)
 	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	setLL(&m_LL);
 
-	LOG_I("hdg:"<<m_LL.m_hdg);
+	LOG_I("hdg: " + i2str(m_LL.m_hdg));
 }
 
 void _GPS::setLL(LL_POS* pLL)

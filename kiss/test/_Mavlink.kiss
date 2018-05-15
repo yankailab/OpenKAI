@@ -27,11 +27,11 @@
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
 	"bStream":1,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
+	"portName":"/dev/ttyACM1",
+	"baud":115200,
 	"_portName":"/dev/ttyTHS1",
-	"portName":"/dev/ttyAMA0",
-	"baud":921600,
+	"_portName":"/dev/ttyAMA0",
+	"_baud":921600,
 }
 
 {
@@ -49,7 +49,7 @@
 {
 	"name":"apWS",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"OKview",
 }
@@ -77,7 +77,7 @@
 {
 	"name":"mavWS",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",

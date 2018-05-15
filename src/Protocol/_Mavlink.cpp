@@ -67,7 +67,7 @@ bool _Mavlink::link(void)
 		mP.m_pPeer = pK->root()->getChildInstByName(&iName);
 		if(!mP.m_pPeer)
 		{
-			LOG_I("_Mavlink not found: " << iName);
+			LOG_I("_Mavlink not found: " + iName);
 			continue;
 		}
 
@@ -134,8 +134,8 @@ void _Mavlink::writeMessage(mavlink_message_t message)
 	}
 	else
 	{
-//		_WebSocket* pWS = (_WebSocket*)m_pIO;
-//		pWS->write(pBuf, nB);
+		_WebSocket* pWS = (_WebSocket*)m_pIO;
+		pWS->write(ioB.m_pB, ioB.m_nB);
 	}
 }
 
@@ -203,8 +203,10 @@ void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust,
 
 	writeMessage(message);
 
-	LOG_I(
-			"<- SET_ATTITUDE_TARGET: ROLL:"<< pAtti[0] <<" PITCH:"<< pAtti[1] <<" YAW:"<< pAtti[2] <<" THR:"<<thrust);
+	LOG_I("<- SET_ATTITUDE_TARGET: ROLL:" + f2str(pAtti[0]) +
+			" PITCH:" + f2str(pAtti[1]) +
+			" YAW:" + f2str(pAtti[2]) +
+			" THR:" + f2str(thrust));
 }
 
 void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
@@ -225,7 +227,7 @@ void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
 
 	writeMessage(message);
 
-	LOG_I("<- LANDING_TARGET: ANGLE_X:"<< angle_x << " ANGLE_Y:" << angle_y);
+	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(angle_x) + " ANGLE_Y:" + f2str(angle_y));
 }
 
 //void _Mavlink::command_long_doSetMode(int mode)
@@ -289,7 +291,11 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, u
 	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
 
 	writeMessage(message);
-	LOG_I("<- DIST_SENSOR sysID=" <<m_systemID << ", orient=" << (int)orientation << ", d=" << (int)ds.current_distance << ", min="<< (int)ds.min_distance << ", max="<< (int)ds.max_distance);
+	LOG_I("<- DIST_SENSOR sysID = " + i2str(m_systemID) +
+			", orient = " + i2str((int)orientation) +
+			", d = " + i2str((int)ds.current_distance) +
+			", min = " + i2str((int)ds.min_distance) +
+			", max = " + i2str((int)ds.max_distance));
 }
 
 void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
@@ -324,14 +330,14 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 			m_myComponentID, &message, &dZed);
 
 	writeMessage(message);
-	LOG_I("<- VISION_POSITION_DELTA dT=" << dTime
-			<< ", forward=" << pDPos->x
-			<< ", right=" << pDPos->y
-			<< ", down=" << pDPos->z
-			<< "; roll=" << pDAngle->x
-			<< ", pitch=" << pDAngle->y
-			<< ", yaw=" << pDAngle->z
-			<< ", confidence=" << dZed.confidence);
+	LOG_I("<- VISION_POSITION_DELTA dT=" + i2str(dTime)
+			+ ", forward=" + i2str(pDPos->x)
+			+ ", right=" + i2str(pDPos->y)
+			+ ", down=" + i2str(pDPos->z)
+			+ "; roll=" + i2str(pDAngle->x)
+			+ ", pitch=" + i2str(pDAngle->y)
+			+ ", yaw=" + i2str(pDAngle->z)
+			+ ", confidence=" + i2str(dZed.confidence));
 }
 
 void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t* pD)
@@ -367,19 +373,19 @@ void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t* pD)
 			m_myComponentID, &message, pD);
 
 	writeMessage(message);
-	LOG_I("<- POS_TARGET_LOCAL_NED x=" << pD->x
-			<< ", y=" << pD->y
-			<< ", z=" << pD->z
-			<< ", vx=" << pD->vx
-			<< ", vy=" << pD->vy
-			<< ", vz=" << pD->vz
-			<< ", afx=" << pD->afx
-			<< ", afy=" << pD->afy
-			<< ", afz=" << pD->afz
-			<< ", yaw=" << pD->yaw
-			<< ", yawRate=" << pD->yaw_rate
-			<< ", cFrame=" << pD->coordinate_frame
-			<< ", typeMask=" << pD->type_mask
+	LOG_I("<- POS_TARGET_LOCAL_NED x=" + i2str(pD->x)
+			+ ", y=" + i2str(pD->y)
+			+ ", z=" + i2str(pD->z)
+			+ ", vx=" + i2str(pD->vx)
+			+ ", vy=" + i2str(pD->vy)
+			+ ", vz=" + i2str(pD->vz)
+			+ ", afx=" + i2str(pD->afx)
+			+ ", afy=" + i2str(pD->afy)
+			+ ", afz=" + i2str(pD->afz)
+			+ ", yaw=" + i2str(pD->yaw)
+			+ ", yawRate=" + i2str(pD->yaw_rate)
+			+ ", cFrame=" + i2str(pD->coordinate_frame)
+			+ ", typeMask=" + i2str(pD->type_mask)
 			);
 }
 
@@ -416,19 +422,19 @@ void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
 			m_myComponentID, &message, pD);
 
 	writeMessage(message);
-	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" << pD->lat_int
-			<< ", lng=" << pD->lon_int
-			<< ", alt=" << pD->alt
-			<< ", vx=" << pD->vx
-			<< ", vy=" << pD->vy
-			<< ", vz=" << pD->vz
-			<< ", afx=" << pD->afx
-			<< ", afy=" << pD->afy
-			<< ", afz=" << pD->afz
-			<< ", yaw=" << pD->yaw
-			<< ", yawRate=" << pD->yaw_rate
-			<< ", cFrame=" << pD->coordinate_frame
-			<< ", typeMask=" << pD->type_mask
+	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" + i2str(pD->lat_int)
+			+ ", lng=" + i2str(pD->lon_int)
+			+ ", alt=" + i2str(pD->alt)
+			+ ", vx=" + i2str(pD->vx)
+			+ ", vy=" + i2str(pD->vy)
+			+ ", vz=" + i2str(pD->vz)
+			+ ", afx=" + i2str(pD->afx)
+			+ ", afy=" + i2str(pD->afy)
+			+ ", afz=" + i2str(pD->afz)
+			+ ", yaw=" + i2str(pD->yaw)
+			+ ", yawRate=" + i2str(pD->yaw_rate)
+			+ ", cFrame=" + i2str(pD->coordinate_frame)
+			+ ", typeMask=" + i2str(pD->type_mask)
 			);
 }
 
@@ -460,7 +466,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 		else if (result == 2)
 		{
 			//Bad CRC
-			LOG_I("-> DROPPED PACKETS:" << status.packet_rx_drop_count);
+			LOG_I("-> DROPPED PACKETS:" + i2str(status.packet_rx_drop_count));
 		}
 	}
 
@@ -496,11 +502,13 @@ void _Mavlink::handleMessages()
 				m_systemID = m_msg.sysid;
 				m_targetComponentID = m_msg.compid;
 
-				LOG_I("   SYSTEM_ID:"<<m_systemID <<" COMPONENT_ID:"<<m_myComponentID <<" TARGET_COMPONENT_ID:"<<m_targetComponentID);
+				LOG_I("SYSTEM_ID: " + i2str(m_systemID) +
+						" COMPONENT_ID: " + i2str(m_myComponentID) +
+						" TARGET_COMPONENT_ID: " + i2str(m_targetComponentID));
 			}
 			else
 			{
-				LOG_I("   HEARTBEAT FROM MAV_TYPE_GCS");
+				LOG_I("HEARTBEAT FROM MAV_TYPE_GCS");
 			}
 			break;
 		}
@@ -587,13 +595,13 @@ void _Mavlink::handleMessages()
 			mavlink_msg_command_ack_decode(&message, &(m_msg.command_ack));
 			m_msg.time_stamps.attitude = tNow;
 
-			LOG_I("-> MAVLINK_MSG_ID_COMMAND_ACK:"<<m_msg.command_ack.result);
+			LOG_I("-> MAVLINK_MSG_ID_COMMAND_ACK: " + i2str(m_msg.command_ack.result));
 			break;
 		}
 
 		default:
 		{
-			LOG_I("-> UNKNOWN MSG_ID:"<<message.msgid);
+			LOG_I("-> UNKNOWN MSG_ID:" + i2str(message.msgid));
 			break;
 		}
 

@@ -42,7 +42,7 @@ bool _ThreadBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	int FPS = DEFAULT_FPS;
-	F_INFO(pK->v("FPS", &FPS));
+	pK->v("FPS", &FPS);
 	setTargetFPS(FPS);
 
 	return true;
@@ -65,7 +65,7 @@ bool _ThreadBase::link(void)
 	string iName;
 
 	iName = "";
-	F_INFO(pK->v("_wakeUp", &iName));
+	pK->v("_wakeUp", &iName);
 	m_pWakeUp = (_ThreadBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;

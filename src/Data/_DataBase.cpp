@@ -100,7 +100,7 @@ void _DataBase::getDirFileList(string* pStrDir)
 	DIR* pDirIn = opendir(pStrDir->c_str());
 	if (!pDirIn)
 	{
-		LOG_E("Directory not found: " << *pStrDir);
+		LOG_E("Directory not found: " + *pStrDir);
 		return;
 	}
 

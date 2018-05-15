@@ -49,7 +49,7 @@ bool _Camera::open(void)
 	m_camera.open(m_deviceID);
 	if (!m_camera.isOpened())
 	{
-		LOG_E("Cannot open camera:" << m_deviceID);
+		LOG_E("Cannot open camera: " + i2str(m_deviceID));
 		return false;
 	}
 

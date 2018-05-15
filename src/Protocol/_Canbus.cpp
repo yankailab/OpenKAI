@@ -163,11 +163,11 @@ void _Canbus::recvMsg(void)
 			pCan->m_len = m_recvMsg.m_pBuf[7];
 			memcpy (pCan->m_pData, &m_recvMsg.m_pBuf[8], 8);
 
-			LOG_I("Updated data for CANID:" << i2str(addr));
+			LOG_I("Updated data for CANID:" + i2str(addr));
 			return;
 		}
 
-		LOG_I("CANID:" << i2str(addr));
+		LOG_I("CANID:" + i2str(addr));
 	}
 }
 

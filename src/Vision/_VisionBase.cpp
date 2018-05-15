@@ -89,7 +89,7 @@ bool _VisionBase::init(void* pKiss)
 		FileStorage fs(calibFile, FileStorage::READ);
 		if (!fs.isOpened())
 		{
-			LOG_E("Calibration file not found:"<<calibFile);
+			LOG_E("Calibration file not found: " + calibFile);
 			m_bCalibration = false;
 		}
 		else

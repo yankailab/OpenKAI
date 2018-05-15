@@ -28,6 +28,8 @@ Startup::Startup()
 	m_key = 0;
 	m_bLog = false;
 	m_rc = "";
+	m_cliMsg = "";
+	m_cliMsgLevel = -1;
 }
 
 Startup::~Startup()
@@ -60,38 +62,46 @@ bool Startup::start(Kiss* pKiss)
 		system(m_rc.c_str());
 	}
 
-	F_FATAL_F(createAllInst(pKiss));
+	if(!m_bLog)
+	{
+		initscr();
+		noecho();
+		cbreak();
+		start_color();
+		use_default_colors();
+		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
+		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
+		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
+		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
+		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
+	}
+
+	F_ERROR_F(createAllInst(pKiss));
 
 	int i;
 	for (i = 0; i < m_nInst; i++)
 	{
-		F_FATAL_F(m_ppInst[i]->link());
+		F_ERROR_F(m_ppInst[i]->link());
 	}
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		F_FATAL_F(m_ppInst[i]->start());
+		F_ERROR_F(m_ppInst[i]->start());
 	}
 
 	//UI thread
 	m_bRun = true;
 	int uWaitKey = m_waitKey * 1000;
 
-	initscr();
-	noecho();
-	cbreak();
-	start_color();
-	use_default_colors();
-	init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
-	init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
-	init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
-	init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
-
 	while (m_bRun)
 	{
-		erase();
-		cli();
-	    refresh();
+		if(!m_bLog)
+		{
+			erase();
+			cli();
+			move(0,0);
+		    refresh();
+		}
 
 		if(m_bDraw)
 		{
@@ -109,7 +119,10 @@ bool Startup::start(Kiss* pKiss)
 		}
 	}
 
-	endwin();
+	if(!m_bLog)
+	{
+		endwin();
+	}
 
 	for (i = 0; i < m_nInst; i++)
 	{
@@ -136,7 +149,7 @@ void Startup::draw(void)
 void Startup::cli(void)
 {
 	COL_TITLE;
-    mvaddstr(0, 0, m_appName.c_str());
+    mvaddstr(0, 1, m_appName.c_str());
 	int iY = 1;
 
 	for (int i = 0; i < m_nInst; i++)
@@ -175,7 +188,7 @@ bool Startup::createAllInst(Kiss* pKiss)
 		if (pNew == NULL)
 		{
 			LOG_E("Create instance failed: " + pK->m_name);
-			continue;
+			return false;
 		}
 
 		if (m_nInst >= N_INST)

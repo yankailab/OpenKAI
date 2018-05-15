@@ -36,6 +36,8 @@ bool _WebSocket::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	IF_Fl(!m_bStream, "_WebSocket only supports m_bStream = 1");
+
 	KISSm(pK, fifoW);
 	KISSm(pK, fifoR);
 
@@ -46,10 +48,10 @@ bool _WebSocket::init(void* pKiss)
 bool _WebSocket::open(void)
 {
 	m_fdW = ::open(m_fifoW.c_str(), O_WRONLY);
-	IF_Fl(m_fdW < 0, "Cannot open:" << m_fifoW);
+	IF_Fl(m_fdW < 0, "Cannot open: " + m_fifoW);
 
 	m_fdR = ::open(m_fifoR.c_str(), O_RDWR);
-	IF_Fl(m_fdR < 0, "Cannot open:" << m_fifoR);
+	IF_Fl(m_fdR < 0, "Cannot open: " + m_fifoR);
 
 	m_ioStatus = io_opened;
 	return true;
@@ -133,7 +135,7 @@ void _WebSocket::updateW(void)
 			int nSent = ::write(m_fdW, ioB.m_pB, ioB.m_nB);
 			if (nSent == -1)
 			{
-				LOG_E("write error: "<<errno);
+				LOG_E("write error: " + i2str(errno));
 				close();
 				break;
 			}
@@ -279,7 +281,7 @@ void _WebSocket::decodeMsg(void)
 			m_vClient.push_back(wc);
 			m_pC = &m_vClient[m_vClient.size() - 1];
 
-			LOG_I("Created new client id: "<< i2str(id));
+			LOG_I("Created new client id: " + i2str(id));
 		}
 
 		//decode payload
@@ -293,7 +295,7 @@ void _WebSocket::decodeMsg(void)
 			return;
 		}
 
-		LOG_I("Received from: "<< i2str(id) <<", size: " << i2str(m_nMsg));
+		LOG_I("Received from: " + i2str(id) + ", size: " + i2str(m_nMsg));
 	}
 
 	//payload decoding

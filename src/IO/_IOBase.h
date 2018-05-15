@@ -86,6 +86,7 @@ public:
 	int			m_iCmdW;
 	int			m_nCmdType;
 	int			m_iCmdID;
+	int			m_iCmdSeq;
 
 	pthread_mutex_t m_mutexW;
 	pthread_mutex_t m_mutexR;

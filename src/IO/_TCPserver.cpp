@@ -187,7 +187,7 @@ bool _TCPserver::handler(void)
 	if (socketNew < 0)
 	{
 		m_strStatus = "Accept failed";
-		LOG_E(m_strStatus + ": "<<errno);
+		LOG_E(m_strStatus + ": " + i2str(errno));
 		return false;
 	}
 

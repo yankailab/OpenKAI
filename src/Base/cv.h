@@ -1,19 +1,3 @@
-#ifdef USE_OPENCV2X
-#include <opencv2/opencv.hpp>
-#include <opencv2/core.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/superres/optical_flow.hpp>
-using namespace cv::superres;
-
-#ifdef USE_CUDA
-#include <opencv2/gpu/gpu.hpp>
-#include <opencv2/gpu/gpumat.hpp>
-using namespace cv::gpu;
-#endif
-
-#else
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
@@ -38,9 +22,4 @@ using namespace cv::gpu;
 using namespace cv::cuda;
 #endif
 
-#endif
-
 using namespace cv;
-
-
-

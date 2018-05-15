@@ -22,6 +22,7 @@ _IOBase::_IOBase()
 	m_nCmdType = 256;
 	m_iCmdID = 5; //Default: Message ID in Mavlink v1.0
 	m_iCmdW = 0;
+	m_iCmdSeq = 2;
 
 	pthread_mutex_init(&m_mutexW, NULL);
 	pthread_mutex_init(&m_mutexR, NULL);
@@ -113,10 +114,19 @@ bool _IOBase::write(IO_BUF& ioB)
 		IF_F(ioB.m_nB <= m_iCmdID);
 		uint8_t iCmdID = ioB.m_pB[m_iCmdID];
 		IF_F(iCmdID >= m_nCmdType);
+		uint8_t iCmdSeq = ioB.m_pB[m_iCmdSeq];
+
+		IO_BUF* pI = &m_pCmdW[iCmdID];
+		if(!pI->bEmpty())
+		{
+			uint8_t iExistingCmdSeq = pI->m_pB[m_iCmdSeq];
+			IF_F(iExistingCmdSeq < 250 && iCmdSeq < iExistingCmdSeq);
+			//TODO: verify
+		}
 
 		pthread_mutex_lock(&m_mutexW);
 
-		m_pCmdW[iCmdID] = ioB;
+		*pI = ioB;
 		m_nCmdW++;
 
 		pthread_mutex_unlock(&m_mutexW);

@@ -138,7 +138,7 @@ void _TCPclient::updateW(void)
 			{
 				if(errno == EAGAIN)break;
 				if(errno == EWOULDBLOCK)break;
-				LOG_E("send error: "<<errno);
+				LOG_E("send error: " + i2str(errno));
 				close();
 				break;
 			}
@@ -163,14 +163,14 @@ void _TCPclient::updateR(void)
 
 		if (ioB.m_nB <= 0)
 		{
-			LOG_E("recv error: "<<errno);
+			LOG_E("recv error: " + i2str(errno));
 			close();
 			continue;
 		}
 
 		toQueR(&ioB);
 
-		LOG_I("Received bytes:" << ioB.m_nB);
+		LOG_I("Received bytes:" + i2str(ioB.m_nB));
 	}
 }
 

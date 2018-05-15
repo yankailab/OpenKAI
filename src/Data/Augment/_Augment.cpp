@@ -78,7 +78,7 @@ void _Augment::update(void)
 
 	for (i = 0; i < m_vFilter.size(); i++)
 	{
-		LOG_I("- Filter stage " << i2str(i) << ": " << m_vFilter[i]);
+		LOG_I("- Filter stage " + i2str(i) + ": " + m_vFilter[i]);
 
 		//create filter threads
 		string filter = m_vFilter[i];
@@ -114,10 +114,10 @@ void _Augment::update(void)
 			IF_(getDirFileList() <= 0);
 		}
 
-		LOG_I("- nFiles found: " << m_vFileIn.size());
+		LOG_I("- nFiles found: " + i2str(m_vFileIn.size()));
 
 		//allocate to filter threads
-		LOG_I("- nThreads created: " << m_nThread);
+		LOG_I("- nThreads created: " + i2str(m_nThread));
 
 		int nTFile = (m_vFileIn.size() / m_nThread) + 1;
 		vector<string> vTFile;
@@ -142,10 +142,10 @@ void _Augment::update(void)
 			pFB->setFileList(vTFile);
 			IF_l(!pFB->start(), "Filter thread start failed");
 			nThread++;
-			LOG_I(" - iThread started: " << j);
+			LOG_I(" - iThread started: " + i2str(j));
 		}
 
-		LOG_I("- nThreads started: " << nThread);
+		LOG_I("- nThreads started: " + i2str(nThread));
 
 		//wait for filter threads to complete
 		int nComplete = 0;
@@ -203,7 +203,7 @@ _FilterBase* _Augment::createFilterThread(string& filter)
 	else if (filter == "tone")
 		return new _filterTone();
 
-	LOG_E("Unrecognized augment filter: " << filter);
+	LOG_E("Unrecognized augment filter: " + filter);
 	return NULL;
 
 }

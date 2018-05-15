@@ -91,7 +91,7 @@ void _BBoxCutOut::process()
 			exit(1);
 		}
 
-		LOG_I("Created output directory: " << m_dirOut);
+		LOG_I("Created output directory: " + m_dirOut);
 	}
 
 	vector<int> PNGcompress;
@@ -165,13 +165,13 @@ void _BBoxCutOut::process()
 
 			nBB++;
 			nTot++;
-			LOG_I(nTot << " " << fOut);
+			LOG_I(i2str(nTot) + " " + fOut);
 		}
 
 		ifsTxt.close();
 	}
 
-	LOG_I("Total images cutout: " << nTot);
+	LOG_I("Total images cutout: " + i2str(nTot));
 	closedir(pDirIn);
 	closedir(pDirOut);
 }

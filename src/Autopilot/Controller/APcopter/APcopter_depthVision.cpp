@@ -36,7 +36,7 @@ bool APcopter_depthVision::link(void)
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
 	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
-	IF_Fl(!m_pDV, iName << " not found");
+	IF_Fl(!m_pDV, iName + " not found");
 
 	Kiss** pItrDS = pK->getChildItr();
 	m_nROI = 0;
@@ -94,7 +94,7 @@ void APcopter_depthVision::updateMavlink(void)
 				(uint16_t)(range.x*100),
 				(uint16_t)(pR->m_minD * 100));
 
-		LOG_I("orient: " << i2str(pR->m_orientation) << " minD: " << f2str(pR->m_minD));
+		LOG_I("orient: " + i2str(pR->m_orientation) + " minD: " + f2str(pR->m_minD));
 	}
 }
 

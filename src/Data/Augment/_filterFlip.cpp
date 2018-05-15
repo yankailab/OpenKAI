@@ -81,11 +81,11 @@ void _filterFlip::update(void)
 		if (prog - m_progress > 0.1)
 		{
 			m_progress = prog;
-			LOG_I("  - Progress: " << (int)(m_progress * 100) << "%");
+			LOG_I("  - Progress: " + i2str((int)(m_progress * 100)) + "%");
 		}
 	}
 
-	LOG_I("  - Complete: Total produced: " << nTot);
+	LOG_I("  - Complete: Total produced: " + i2str(nTot));
 	m_bComplete = true;
 }
 

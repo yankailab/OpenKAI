@@ -39,6 +39,9 @@ public:
 	void*	m_pWindow;
 	bool	m_bLog;
 	bool	m_bDraw;
+
+	string	m_cliMsg;
+	int8_t m_cliMsgLevel;
 };
 
 }

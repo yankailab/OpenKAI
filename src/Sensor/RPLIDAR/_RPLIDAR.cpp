@@ -144,12 +144,12 @@ bool _RPLIDAR::checkRPLIDARHealth(void)
 	rpResult = m_pRPL->getHealth(healthinfo);
 	if (!IS_OK(rpResult))
 	{
-		LOG_E("Cannot retrieve the RPLIDAR health code: " << rpResult);
+		LOG_E("Cannot retrieve the RPLIDAR health code: " + i2str(rpResult));
 		return false;
 	}
 
 	// the macro IS_OK is the preperred way to judge whether the operation is succeed.
-	LOG_I("RPLidar health status : " << healthinfo.status);
+	LOG_I("RPLidar health status : " + i2str(healthinfo.status));
 
 	if (healthinfo.status == RPLIDAR_STATUS_ERROR)
 	{
@@ -178,7 +178,7 @@ void _RPLIDAR::updateLidar(void)
 		double d = nodes[i].distance_q2 * 0.00025f;  // /(4.0*1000.0)
 		this->input(angle, d);
 
-		LOG_I("Angle:" << f2str(angle) << " D:" << f2str(d));
+		LOG_I("Angle:" + f2str(angle) + " D:" + f2str(d));
 
 //		printf("%s theta: %03.2f Dist: %08.2f Q: %d \n",
 //				(nodes[i].sync_quality & RPLIDAR_RESP_MEASUREMENT_SYNCBIT) ? "S " : "  ",

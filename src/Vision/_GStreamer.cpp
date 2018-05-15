@@ -49,7 +49,7 @@ bool _GStreamer::open(void)
 	m_gst.open(m_pipeline, CAP_GSTREAMER);
 	if (!m_gst.isOpened())
 	{
-		LOG_E("Cannot open gst pipeline: " << m_pipeline);
+		LOG_E("Cannot open gst pipeline: " + m_pipeline);
 		return false;
 	}
 

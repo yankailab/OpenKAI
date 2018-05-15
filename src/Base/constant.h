@@ -2,11 +2,11 @@
  * constant.h
  *
  *  Created on: Nov 21, 2016
- *      Author: root
+ *      Author: yankai
  */
 
-#ifndef OPENKAI_SRC_BASE_CONSTANT_H_
-#define OPENKAI_SRC_BASE_CONSTANT_H_
+#ifndef OpenKAI_src_Base_constant_H_
+#define OpenKAI_src_Base_constant_H_
 
 #define N_INST 128
 #define DEFAULT_FPS 30
@@ -28,10 +28,12 @@
 #define CLI_COL_NAME 2
 #define CLI_COL_FPS 3
 #define CLI_COL_MSG 4
+#define CLI_COL_ERROR 5
 #define COL_TITLE attrset(COLOR_PAIR(CLI_COL_TITLE)|A_BOLD)
 #define COL_NAME attrset(COLOR_PAIR(CLI_COL_NAME)|A_BOLD)
 #define COL_FPS attrset(COLOR_PAIR(CLI_COL_FPS))
 #define COL_MSG attrset(COLOR_PAIR(CLI_COL_MSG))
+#define COL_ERROR attrset(COLOR_PAIR(CLI_COL_ERROR)|A_BOLD)
 #define CLI_X_NAME 0
 #define CLI_X_FPS 20
 #define CLI_X_MSG 30

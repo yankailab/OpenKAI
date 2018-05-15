@@ -168,9 +168,9 @@ bool _LeddarVu::open(void)
 
 	memset(buf, 0, sizeof buf);
 	int nReceived = modbus_receive_confirmation(m_pMb, buf);
-	IF_Fl(nReceived < 0, "Error receiving data from the sensor:" << errno);
+	IF_Fl(nReceived < 0, "Error receiving data from the sensor: " + i2str(errno));
 
-	LOG_I("Received "<< nReceived <<" bytes from the sensor");
+	LOG_I("Received " + i2str(nReceived) + " bytes from the sensor");
 
 	IF_Fl(nReceived < 155, "Unexpected answer");
 	IF_Fl(!((buf[0] == 1) && (buf[1] == 0x11)), "Bad address or function");
@@ -278,7 +278,7 @@ bool _LeddarVu::updateLidarFast(void)
 //	if (modbus_send_raw_request(m_pMb, rawReq, ARRAYSIZE(rawReq)) < 0)
 	if (modbus_send_raw_request(m_pMb, rawReq, 2) < 0)
 	{
-		LOG_E("Error sending command 0x41, errno = " << i2str(errno));
+		LOG_E("Error sending command 0x41, errno = " + i2str(errno));
 		return false;
 	}
 
@@ -286,8 +286,7 @@ bool _LeddarVu::updateLidarFast(void)
 	int iResponseLength = modbus_receive_confirmation(m_pMb, rsp);
 	if (iResponseLength < 3)
 	{
-		LOG_E(
-				"Error receiving response for command 0x41, length = " << iResponseLength << "; errno = " << i2str(errno));
+		LOG_E("Error receiving response for command 0x41, length = " + i2str(iResponseLength) + "; errno = " + i2str(errno));
 		return false;
 	}
 

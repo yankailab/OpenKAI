@@ -136,7 +136,7 @@ void _YOLO::detect(void)
 
 		add(&obj);
 
-		LOG_I("Class: "<< i2str(obj.m_iClass));
+		LOG_I("Class: "+ i2str(obj.m_iClass));
 	}
 }
 

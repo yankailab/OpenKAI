@@ -36,7 +36,7 @@ bool APcopter_distLidar::link(void)
 	iName = "";
 	F_INFO(pK->v("_DistSensorBase", &iName));
 	m_pDS = (_DistSensorBase*) (pK->root()->getChildInstByName(&iName));
-	IF_Fl(!m_pDS,iName << " not found");
+	IF_Fl(!m_pDS,iName + " not found");
 
 	Kiss** pItrDS = pK->getChildItr();
 	m_nSection = 0;
@@ -99,7 +99,7 @@ void APcopter_distLidar::updateMavlink(void)
 				(uint16_t)(rMin*100),
 				(uint16_t)(pS->m_minD * 100));
 
-		LOG_I("orient: " << i2str(pS->m_orientation) << " minD: " << f2str(pS->m_minD));
+		LOG_I("orient: " + f2str(pS->m_orientation) + " minD: " + f2str(pS->m_minD));
 	}
 
 }
