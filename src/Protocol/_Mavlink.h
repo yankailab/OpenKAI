@@ -143,6 +143,7 @@ public:
 	void visionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t* pD);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t* pD);
+	void rcChannelsOverride(mavlink_rc_channels_override_t* pD);
 	//	void command_long_doSetMode(int mode);
 
 public:

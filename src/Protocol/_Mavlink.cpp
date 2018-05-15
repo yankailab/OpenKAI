@@ -438,6 +438,43 @@ void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
 			);
 }
 
+void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t* pD)
+{
+	/**
+	 * @brief Send a rc_channels_override message
+	 * @param chan MAVLink channel to send the message
+	 *
+	 * @param target_system System ID
+	 * @param target_component Component ID
+	 * @param chan1_raw RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan2_raw RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan3_raw RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan4_raw RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan5_raw RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan6_raw RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan7_raw RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 * @param chan8_raw RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
+	 */
+
+	NULL_(pD);
+
+	mavlink_message_t message;
+	mavlink_msg_rc_channels_override_encode(
+			m_systemID,
+			m_myComponentID, &message, pD);
+
+	writeMessage(message);
+	LOG_I("<- RC OVERRIDE chan1=" + i2str(pD->chan1_raw)
+			+ ", chan2=" + i2str(pD->chan2_raw)
+			+ ", chan3=" + i2str(pD->chan3_raw)
+			+ ", chan4=" + i2str(pD->chan4_raw)
+			+ ", chan5=" + i2str(pD->chan5_raw)
+			+ ", chan6=" + i2str(pD->chan6_raw)
+			+ ", chan7=" + i2str(pD->chan7_raw)
+			+ ", chan8=" + i2str(pD->chan8_raw)
+			);
+}
+
 bool _Mavlink::readMessage(mavlink_message_t &message)
 {
 	uint8_t	rBuf[MAV_N_BUF];
