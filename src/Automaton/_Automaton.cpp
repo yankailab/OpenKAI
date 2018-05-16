@@ -12,8 +12,6 @@ namespace kai
 
 _Automaton::_Automaton()
 {
-	BASE();
-
 	m_nState = 0;
 	m_iState = 0;
 	m_iLastState = 0;
@@ -25,7 +23,7 @@ _Automaton::~_Automaton()
 
 bool _Automaton::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -47,17 +45,14 @@ bool _Automaton::init(void* pKiss)
 	m_iState = getStateIdx(&startState);
 	IF_F(m_iState<0);
 
+	LOG_I(m_pStateName[m_iState]);
+
 	return true;
 }
 
 bool _Automaton::link(void)
 {
-	IF_F(!this->_ThreadBase::link());
-	return true;
-}
-
-bool _Automaton::start(void)
-{
+	IF_F(!this->BASE::link());
 	return true;
 }
 
@@ -90,7 +85,7 @@ bool _Automaton::transit(int nextStateIdx)
 	m_iLastState = m_iState;
 	m_iState = nextStateIdx;
 
-	LOG_I("Transit: " + m_pStateName[m_iState]);
+	LOG_I(m_pStateName[m_iState]);
 	return true;
 }
 

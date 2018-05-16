@@ -146,11 +146,24 @@ bool _AutoPilot::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	pWin->tabNext();
-	for(int i=0;i<m_nAction;i++)
+	for(int i=0; i<m_nAction; i++)
 	{
 		m_pAction[i]->draw();
 	}
 	pWin->tabPrev();
+
+	return true;
+}
+
+bool _AutoPilot::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	for(int i=0; i<m_nAction; i++)
+	{
+		iY++;
+		m_pAction[i]->cli(iY);
+	}
 
 	return true;
 }

@@ -16,7 +16,7 @@
 namespace kai
 {
 
-class _Automaton: public _ThreadBase
+class _Automaton: public BASE
 {
 public:
 	_Automaton();
@@ -24,7 +24,6 @@ public:
 
 	bool init(void* pKiss);
 	bool link(void);
-	bool start(void);
 	bool draw(void);
 
 	int getStateIdx(string* pStateName);

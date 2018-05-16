@@ -6,7 +6,6 @@ namespace kai
 APcopter_visualFollow::APcopter_visualFollow()
 {
 	m_pAP = NULL;
-	m_pMN = NULL;
 
 }
 
@@ -48,25 +47,12 @@ bool APcopter_visualFollow::link(void)
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_MatrixNet", &iName));
-	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
-
-	if (!m_pMN)
-	{
-		LOG_E(iName + " not found");
-		return false;
-	}
-
 	return true;
 }
 
 void APcopter_visualFollow::update(void)
 {
 	this->ActionBase::update();
-
-	NULL_(m_pMN);
-
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);

@@ -32,6 +32,7 @@ struct Time_Stamps
 	uint64_t position_target_global_int;
 	uint64_t highres_imu;
 	uint64_t attitude;
+	uint64_t rc_channels_override;
 
 	void init()
 	{
@@ -45,6 +46,7 @@ struct Time_Stamps
 		position_target_global_int = 0;
 		highres_imu = 0;
 		attitude = 0;
+		rc_channels_override = 0;
 	}
 
 };
@@ -66,6 +68,7 @@ struct Mavlink_Messages
 	mavlink_position_target_global_int_t position_target_global_int;
 	mavlink_highres_imu_t highres_imu;
 	mavlink_attitude_t attitude;
+	mavlink_rc_channels_override_t rc_channels_override;
 	Time_Stamps time_stamps;
 
 	void init(void)
@@ -123,6 +126,7 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
+	bool cli(int& iY);
 	void reset(void);
 
 	//Receive

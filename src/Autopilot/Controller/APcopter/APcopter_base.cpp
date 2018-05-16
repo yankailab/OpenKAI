@@ -49,48 +49,48 @@ bool APcopter_base::init(void* pKiss)
 
 	pCC = pK->o("roll");
 	cPID.reset();
-	F_INFO(pCC->v("P", &cPID.m_P));
-	F_INFO(pCC->v("I", &cPID.m_I));
-	F_INFO(pCC->v("Imax", &cPID.m_Imax));
-	F_INFO(pCC->v("D", &cPID.m_D));
-	F_INFO(pCC->v("dT", &cPID.m_dT));
-	F_INFO(pCC->v("rate", &cPID.m_rate));
-	F_INFO(pCC->v("lim", &cPID.m_lim));
+	pCC->v("P", &cPID.m_P);
+	pCC->v("I", &cPID.m_I);
+	pCC->v("Imax", &cPID.m_Imax);
+	pCC->v("D", &cPID.m_D);
+	pCC->v("dT", &cPID.m_dT);
+	pCC->v("rate", &cPID.m_rate);
+	pCC->v("lim", &cPID.m_lim);
 	cPID.m_lim *= DEG_RAD;
 	m_pidRoll = cPID;
 
 	pCC = pK->o("pitch");
 	cPID.reset();
-	F_INFO(pCC->v("P", &cPID.m_P));
-	F_INFO(pCC->v("I", &cPID.m_I));
-	F_INFO(pCC->v("Imax", &cPID.m_Imax));
-	F_INFO(pCC->v("D", &cPID.m_D));
-	F_INFO(pCC->v("dT", &cPID.m_dT));
-	F_INFO(pCC->v("rate", &cPID.m_rate));
-	F_INFO(pCC->v("lim", &cPID.m_lim));
+	pCC->v("P", &cPID.m_P);
+	pCC->v("I", &cPID.m_I);
+	pCC->v("Imax", &cPID.m_Imax);
+	pCC->v("D", &cPID.m_D);
+	pCC->v("dT", &cPID.m_dT);
+	pCC->v("rate", &cPID.m_rate);
+	pCC->v("lim", &cPID.m_lim);
 	cPID.m_lim *= DEG_RAD;
 	m_pidPitch = cPID;
 
 	pCC = pK->o("thr");
 	cPID.reset();
-	F_INFO(pCC->v("P", &cPID.m_P));
-	F_INFO(pCC->v("I", &cPID.m_I));
-	F_INFO(pCC->v("Imax", &cPID.m_Imax));
-	F_INFO(pCC->v("D", &cPID.m_D));
-	F_INFO(pCC->v("dT", &cPID.m_dT));
-	F_INFO(pCC->v("rate", &cPID.m_rate));
-	F_INFO(pCC->v("lim", &cPID.m_lim));
+	pCC->v("P", &cPID.m_P);
+	pCC->v("I", &cPID.m_I);
+	pCC->v("Imax", &cPID.m_Imax);
+	pCC->v("D", &cPID.m_D);
+	pCC->v("dT", &cPID.m_dT);
+	pCC->v("rate", &cPID.m_rate);
+	pCC->v("lim", &cPID.m_lim);
 	m_pidThr = cPID;
 
 	pCC = pK->o("yaw");
 	cPID.reset();
-	F_INFO(pCC->v("P", &cPID.m_P));
-	F_INFO(pCC->v("I", &cPID.m_I));
-	F_INFO(pCC->v("Imax", &cPID.m_Imax));
-	F_INFO(pCC->v("D", &cPID.m_D));
-	F_INFO(pCC->v("dT", &cPID.m_dT));
-	F_INFO(pCC->v("rate", &cPID.m_rate));
-	F_INFO(pCC->v("lim", &cPID.m_lim));
+	pCC->v("P", &cPID.m_P);
+	pCC->v("I", &cPID.m_I);
+	pCC->v("Imax", &cPID.m_Imax);
+	pCC->v("D", &cPID.m_D);
+	pCC->v("dT", &cPID.m_dT);
+	pCC->v("rate", &cPID.m_rate);
+	pCC->v("lim", &cPID.m_lim);
 	cPID.m_lim *= DEG_RAD;
 	m_pidYaw = cPID;
 
@@ -118,10 +118,10 @@ void APcopter_base::update(void)
 	this->ActionBase::update();
 	NULL_(m_pMavlink);
 
+	uint64_t tNow = getTimeUsec();
+
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
-
-	uint64_t tNow = getTimeUsec();
 
 	//Sending Heartbeat
 	if(m_freqHeartbeat > 0)
@@ -146,6 +146,23 @@ void APcopter_base::update(void)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 	}
 
+
+	//test
+	static int rcPWM = 1100;
+	rcPWM += 5;
+	if(rcPWM >= 1900)rcPWM = 1100;
+
+	__mavlink_rc_channels_override_t rc;
+	rc.chan1_raw = 1500;
+	rc.chan2_raw = 1500;
+	rc.chan3_raw = rcPWM;
+	rc.chan4_raw = 1500;
+	rc.chan5_raw = 1500;
+	rc.chan6_raw = 1500;
+	rc.chan7_raw = 1500;
+	rc.chan8_raw = 1500;
+	m_pMavlink->rcChannelsOverride(&rc);
+	LOG_I("RC PWM: "+i2str(rcPWM));
 }
 
 bool APcopter_base::draw(void)
@@ -159,7 +176,5 @@ bool APcopter_base::draw(void)
 
 	return true;
 }
-
-
 
 }

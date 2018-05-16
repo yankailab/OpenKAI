@@ -24,7 +24,7 @@ public:
 
 private:
 	APcopter_base* m_pAP;
-	_ClusterNet*	m_pMN;
+
 
 };
 

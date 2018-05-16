@@ -460,11 +460,12 @@ void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t* pD)
 
 	mavlink_message_t message;
 	mavlink_msg_rc_channels_override_encode(
-			m_systemID,
-			m_myComponentID, &message, pD);
+			1,//255,//m_systemID,
+			1,//m_myComponentID,
+			&message, pD);
 
 	writeMessage(message);
-	LOG_I("<- RC OVERRIDE chan1=" + i2str(pD->chan1_raw)
+	LOG_I("<- RC OVERRIDE, chan1=" + i2str(pD->chan1_raw)
 			+ ", chan2=" + i2str(pD->chan2_raw)
 			+ ", chan3=" + i2str(pD->chan3_raw)
 			+ ", chan4=" + i2str(pD->chan4_raw)
@@ -636,6 +637,25 @@ void _Mavlink::handleMessages()
 			break;
 		}
 
+		case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
+		{
+			mavlink_msg_rc_channels_override_decode(&message, &(m_msg.rc_channels_override));
+			m_msg.time_stamps.rc_channels_override = tNow;
+
+			LOG_I("-> RC OVERRIDE, systemID=" + i2str(m_msg.rc_channels_override.target_system)
+					+ ", targetComponent=" + i2str(m_msg.rc_channels_override.target_component)
+					+ ", chan1=" + i2str(m_msg.rc_channels_override.chan1_raw)
+					+ ", chan2=" + i2str(m_msg.rc_channels_override.chan2_raw)
+					+ ", chan3=" + i2str(m_msg.rc_channels_override.chan3_raw)
+					+ ", chan4=" + i2str(m_msg.rc_channels_override.chan4_raw)
+					+ ", chan5=" + i2str(m_msg.rc_channels_override.chan5_raw)
+					+ ", chan6=" + i2str(m_msg.rc_channels_override.chan6_raw)
+					+ ", chan7=" + i2str(m_msg.rc_channels_override.chan7_raw)
+					+ ", chan8=" + i2str(m_msg.rc_channels_override.chan8_raw)
+					);
+			break;
+		}
+
 		default:
 		{
 			LOG_I("-> UNKNOWN MSG_ID:" + i2str(message.msgid));
@@ -649,6 +669,7 @@ void _Mavlink::handleMessages()
 		{
 			MAVLINK_PEER* pMP = &m_vPeer[i];
 			IF_CONT(!pMP->bCmdRoute(message.msgid));
+			IF_CONT(message.msgid == MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE);
 
 			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
 			IF_CONT(!pM);
@@ -687,6 +708,30 @@ bool _Mavlink::draw(void)
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
+
+	return true;
+}
+
+bool _Mavlink::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	string msg;
+
+	msg = "SYSTEM_ID: " + i2str(m_systemID);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "COMPONENT_ID: " + i2str(m_myComponentID);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "TARGET_COMPONENT_ID: " + i2str(m_targetComponentID);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }
