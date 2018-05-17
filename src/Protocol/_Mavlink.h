@@ -148,7 +148,10 @@ public:
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t* pD);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t* pD);
 	void rcChannelsOverride(mavlink_rc_channels_override_t* pD);
-	//	void command_long_doSetMode(int mode);
+	void setMode(mavlink_set_mode_t* pD);
+
+	void cmdLongDoSetMode(int mode);
+	void cmdLongComponentArmDisarm(int p);
 
 public:
 	void sendMessage(void);

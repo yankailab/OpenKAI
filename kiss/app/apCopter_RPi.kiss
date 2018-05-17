@@ -4,6 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
+	"bLog":0,
 	"waitKey":30,
 	"rc":"sudo modprobe bcm2835-v4l2\nv4l2-ctl -d /dev/video0 --set-ctrl=rotate=180",
 }
@@ -121,7 +122,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	

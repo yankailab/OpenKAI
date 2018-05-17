@@ -98,6 +98,8 @@ bool APcopter_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
+	m_rcPWM = 1100;
+
 	return true;
 }
 
@@ -146,23 +148,30 @@ void APcopter_base::update(void)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 	}
 
-
 	//test
-	static int rcPWM = 1100;
-	rcPWM += 5;
-	if(rcPWM >= 1900)rcPWM = 1100;
+	m_rcPWM += 10;
+	if(m_rcPWM >= 1900)m_rcPWM = 1100;
+
+	uint16_t rcN = 1500;
 
 	__mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = 1500;
-	rc.chan2_raw = 1500;
-	rc.chan3_raw = rcPWM;
-	rc.chan4_raw = 1500;
-	rc.chan5_raw = 1500;
-	rc.chan6_raw = 1500;
-	rc.chan7_raw = 1500;
-	rc.chan8_raw = 1500;
+	rc.chan1_raw = rcN;
+	rc.chan2_raw = rcN;
+	rc.chan3_raw = m_rcPWM;
+	rc.chan4_raw = rcN;
+	rc.chan5_raw = rcN;
+	rc.chan6_raw = rcN;
+	rc.chan7_raw = rcN;
+	rc.chan8_raw = rcN;
+	rc.target_component = 1;
+	rc.target_system = 1;
 	m_pMavlink->rcChannelsOverride(&rc);
-	LOG_I("RC PWM: "+i2str(rcPWM));
+	LOG_I("RC PWM: "+i2str(m_rcPWM));
+
+	m_pMavlink->cmdLongComponentArmDisarm(1);
+
+//	rcN = UINT16_MAX;
+
 }
 
 bool APcopter_base::draw(void)

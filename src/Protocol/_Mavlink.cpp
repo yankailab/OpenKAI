@@ -27,8 +27,8 @@ bool _Mavlink::init(void* pKiss)
 
 	//init param
 	m_systemID = 1;
-	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
-	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
+	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;//MAV_COMP_ID_PATHPLANNER;
+	m_type = MAV_TYPE_GCS;//ONBOARD_CONTROLLER;
 	m_targetComponentID = 0;
 	m_msg.sysid = 0;
 	m_msg.compid = 0;
@@ -230,21 +230,35 @@ void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
 	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(angle_x) + " ANGLE_Y:" + f2str(angle_y));
 }
 
-//void _Mavlink::command_long_doSetMode(int mode)
-//{
-//	mavlink_message_t message;
-//	mavlink_command_long_t ds;
-//
-//	ds.target_system = m_systemID;
-//	ds.target_component = m_targetComponentID;
-//	ds.command = MAV_CMD_DO_SET_MODE;
-//	ds.param1 = mode;
-//	mavlink_msg_command_long_encode(m_systemID, m_componentID, &message, &ds);
-//
-//	writeMessage(message);
-//
-//	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_MODE");
-//}
+void _Mavlink::cmdLongDoSetMode(int mode)
+{
+	mavlink_message_t message;
+	mavlink_command_long_t ds;
+
+	ds.target_system = m_systemID;
+	ds.target_component = m_targetComponentID;
+	ds.command = MAV_CMD_DO_SET_MODE;
+	ds.param1 = mode;
+	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message, &ds);
+
+	writeMessage(message);
+	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
+}
+
+void _Mavlink::cmdLongComponentArmDisarm(int p)
+{
+	mavlink_message_t message;
+	mavlink_command_long_t ds;
+
+	ds.target_system = m_systemID;
+	ds.target_component = m_targetComponentID;
+	ds.command = MAV_CMD_COMPONENT_ARM_DISARM;
+	ds.param1 = p;
+	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message, &ds);
+
+	writeMessage(message);
+	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(p));
+}
 
 void _Mavlink::commandLongDoSetPositionYawThrust(float steer, float thrust)
 {
@@ -460,8 +474,8 @@ void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t* pD)
 
 	mavlink_message_t message;
 	mavlink_msg_rc_channels_override_encode(
-			1,//255,//m_systemID,
-			1,//m_myComponentID,
+			255,//m_systemID,
+			m_myComponentID,
 			&message, pD);
 
 	writeMessage(message);
@@ -474,6 +488,30 @@ void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t* pD)
 			+ ", chan7=" + i2str(pD->chan7_raw)
 			+ ", chan8=" + i2str(pD->chan8_raw)
 			);
+}
+
+void _Mavlink::setMode(mavlink_set_mode_t* pD)
+{
+	/**
+	 * @brief Encode a set_mode struct
+	 * @param system_id ID of this system
+	 * @param component_id ID of this component (e.g. 200 for IMU)
+	 * @param msg The MAVLink message to compress the data into
+	 * @param set_mode C-struct to read the message contents from
+	 */
+
+	NULL_(pD);
+
+	mavlink_message_t message;
+	mavlink_msg_set_mode_encode(
+			m_systemID,
+			m_myComponentID,
+			&message, pD);
+
+	writeMessage(message);
+	LOG_I("<- setMode, base_mode=" + i2str(pD->base_mode)
+			+ ", custom_mode=" + i2str(pD->custom_mode));
+
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &message)
@@ -535,19 +573,15 @@ void _Mavlink::handleMessages()
 			mavlink_msg_heartbeat_decode(&message, &(m_msg.heartbeat));
 			m_msg.time_stamps.heartbeat = tNow;
 
-			if (m_msg.heartbeat.type != MAV_TYPE_GCS)
-			{
-				m_systemID = m_msg.sysid;
-				m_targetComponentID = m_msg.compid;
+			if (m_msg.heartbeat.type == MAV_TYPE_GCS)break;
 
-				LOG_I("SYSTEM_ID: " + i2str(m_systemID) +
-						" COMPONENT_ID: " + i2str(m_myComponentID) +
-						" TARGET_COMPONENT_ID: " + i2str(m_targetComponentID));
-			}
-			else
-			{
-				LOG_I("HEARTBEAT FROM MAV_TYPE_GCS");
-			}
+			m_systemID = m_msg.sysid;
+			m_targetComponentID = m_msg.compid;
+
+			LOG_I("SYSTEM_ID: " + i2str(m_systemID) +
+  				  " COMPONENT_ID: " + i2str(m_myComponentID) +
+				  " TARGET_COMPONENT_ID: " + i2str(m_targetComponentID));
+
 			break;
 		}
 
@@ -642,8 +676,8 @@ void _Mavlink::handleMessages()
 			mavlink_msg_rc_channels_override_decode(&message, &(m_msg.rc_channels_override));
 			m_msg.time_stamps.rc_channels_override = tNow;
 
-			LOG_I("-> RC OVERRIDE, systemID=" + i2str(m_msg.rc_channels_override.target_system)
-					+ ", targetComponent=" + i2str(m_msg.rc_channels_override.target_component)
+			LOG_I("-> RC OVERRIDE, systemID=" + i2str(m_msg.sysid)
+					+ ", targetComponent=" + i2str(m_msg.compid)
 					+ ", chan1=" + i2str(m_msg.rc_channels_override.chan1_raw)
 					+ ", chan2=" + i2str(m_msg.rc_channels_override.chan2_raw)
 					+ ", chan3=" + i2str(m_msg.rc_channels_override.chan3_raw)

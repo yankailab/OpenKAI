@@ -88,6 +88,9 @@ public:
 	int m_freqGlobalPos;
 	int m_freqHeartbeat;
 
+	uint16_t m_rcPWM;
+
+
 };
 
 /*
