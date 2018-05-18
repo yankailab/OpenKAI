@@ -37,15 +37,15 @@ struct APcopter_CTRL
 	double m_predPos;
 	double m_targetPos;
 
-	double m_err;
-	double m_errOld;
-	double m_errInteg;
+	double m_e;
+	double m_eOld;
+	double m_eInteg;
 
 	void resetErr(void)
 	{
-		m_err = 0;
-		m_errOld = 0;
-		m_errInteg = 0;
+		m_e = 0;
+		m_eOld = 0;
+		m_eInteg = 0;
 	}
 
 	void reset(void)
@@ -87,8 +87,6 @@ public:
 	int m_freqAtti;
 	int m_freqGlobalPos;
 	int m_freqHeartbeat;
-
-	uint16_t m_rcPWM;
 
 
 };

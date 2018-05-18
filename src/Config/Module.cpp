@@ -26,6 +26,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Path);
+	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_RC);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);

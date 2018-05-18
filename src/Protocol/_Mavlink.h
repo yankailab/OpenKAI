@@ -151,9 +151,10 @@ public:
 	void setMode(mavlink_set_mode_t& D);
 
 	//Cmd long
-	void cmdLongComponentArmDisarm(bool bArm);
-	void cmdLongDoSetMode(int mode);
-	void cmdLongDoSetPositionYawThrust(float steer, float thrust);
+	void clComponentArmDisarm(bool bArm);
+	void clDoSetMode(int mode);
+	void clDoSetPositionYawThrust(float steer, float thrust);
+	void clDoSetServo(int iServo, int PWM);
 
 public:
 	void sendMessage(void);

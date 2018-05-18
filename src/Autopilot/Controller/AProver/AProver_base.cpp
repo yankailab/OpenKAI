@@ -89,7 +89,7 @@ void AProver_base::sendHeartbeat(void)
 void AProver_base::sendSteerThrust(void)
 {
 	NULL_(m_pMavlink);
-	m_pMavlink->cmdLongDoSetPositionYawThrust(m_steer, m_thrust);
+	m_pMavlink->clDoSetPositionYawThrust(m_steer, m_thrust);
 
 }
 

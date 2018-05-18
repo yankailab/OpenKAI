@@ -98,8 +98,6 @@ bool APcopter_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	m_rcPWM = 1100;
-
 	return true;
 }
 
@@ -149,27 +147,27 @@ void APcopter_base::update(void)
 	}
 
 	//test
-	m_rcPWM += 10;
-	if(m_rcPWM >= 1900)m_rcPWM = 1100;
+	static uint16_t rcPWM = 1100;
+	rcPWM += 10;
+	if(rcPWM >= 1900)rcPWM = 1100;
 
 	uint16_t rcN = 1500;
 
 	__mavlink_rc_channels_override_t rc;
 	rc.chan1_raw = rcN;
 	rc.chan2_raw = rcN;
-	rc.chan3_raw = m_rcPWM;
+	rc.chan3_raw = (uint16_t)rcPWM;
 	rc.chan4_raw = rcN;
 	rc.chan5_raw = rcN;
-	rc.chan6_raw = rcN;
+	rc.chan6_raw = (uint16_t)rcPWM;
 	rc.chan7_raw = rcN;
 	rc.chan8_raw = rcN;
 	m_pMavlink->rcChannelsOverride(rc);
-	LOG_I("RC PWM: "+i2str(m_rcPWM));
+	LOG_I("RC PWM: "+i2str(rcPWM));
 
-	m_pMavlink->cmdLongComponentArmDisarm(1);
+	m_pMavlink->clComponentArmDisarm(1);
 
-//	rcN = UINT16_MAX;
-
+	m_pMavlink->clDoSetServo(9,rcPWM);
 }
 
 bool APcopter_base::draw(void)

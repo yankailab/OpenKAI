@@ -225,7 +225,7 @@ void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(D.angle_x) + " ANGLE_Y:" + f2str(D.angle_y));
 }
 
-void _Mavlink::cmdLongDoSetMode(int mode)
+void _Mavlink::clDoSetMode(int mode)
 {
 	mavlink_command_long_t D;
 	D.target_system = m_mySystemID;
@@ -240,10 +240,10 @@ void _Mavlink::cmdLongDoSetMode(int mode)
 	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
 }
 
-void _Mavlink::cmdLongComponentArmDisarm(bool bArm)
+void _Mavlink::clComponentArmDisarm(bool bArm)
 {
 	mavlink_command_long_t D;
-	D.target_system = m_mySystemID;
+	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 	D.command = MAV_CMD_COMPONENT_ARM_DISARM;
 	D.param1 = (bArm)?1:0;
@@ -255,7 +255,7 @@ void _Mavlink::cmdLongComponentArmDisarm(bool bArm)
 	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(bArm));
 }
 
-void _Mavlink::cmdLongDoSetPositionYawThrust(float steer, float thrust)
+void _Mavlink::clDoSetPositionYawThrust(float steer, float thrust)
 {
 	mavlink_command_long_t D;
 	D.target_system = m_devSystemID;
@@ -269,7 +269,24 @@ void _Mavlink::cmdLongDoSetPositionYawThrust(float steer, float thrust)
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST");
+	LOG_I("<- cmdLongDoSetPositionYawTrust");
+}
+
+void _Mavlink::clDoSetServo(int iServo, int PWM)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_DO_SET_SERVO;
+	D.param1 = iServo;
+	D.param2 = PWM;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongDoSetServo: servo="+i2str(iServo)
+			+ " pwm=" + i2str(PWM));
 }
 
 void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)

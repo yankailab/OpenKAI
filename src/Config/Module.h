@@ -25,6 +25,8 @@
 
 #include "../Autopilot/_AutoPilot.h"
 
+#include "../Control/PIDctrl.h"
+
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"
 #include "../IO/_File.h"
