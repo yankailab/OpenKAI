@@ -86,9 +86,16 @@ void APcopter_DNNlanding::landing(void)
 			* cAngle.y * DEG_RAD * m_target.m_orientY;
 
 	//Send Mavlink command
-	m_pAP->m_pMavlink->landingTarget(MAV_DATA_STREAM_ALL, MAV_FRAME_BODY_NED,
-			m_target.m_angleX, m_target.m_angleY, 0, 0, 0);
+	mavlink_landing_target_t D;
+	D.target_num = 0;
+	D.frame = MAV_FRAME_BODY_NED;
+	D.angle_x = m_target.m_angleX;
+	D.angle_y = m_target.m_angleY;
+	D.distance = 0;
+	D.size_x = 0;
+	D.size_y = 0;
 
+	m_pAP->m_pMavlink->landingTarget(D);
 }
 
 bool APcopter_DNNlanding::draw(void)

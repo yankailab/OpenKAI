@@ -200,7 +200,7 @@ void _GPS::setMavGPS(void)
 	mavGPS.time_week_ms = (m_tNow-m_tStarted) / 1000;
 	mavGPS.ignore_flags = 0b11111111;
 
-	m_pMavlink->gpsInput(&mavGPS);
+	m_pMavlink->gpsInput(mavGPS);
 }
 
 void _GPS::getMavGPS(void)

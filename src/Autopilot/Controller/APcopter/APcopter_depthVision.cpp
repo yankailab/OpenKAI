@@ -77,6 +77,7 @@ void APcopter_depthVision::updateMavlink(void)
 	NULL_(m_pDV);
 
 	vDouble2 range = m_pDV->range();
+	mavlink_distance_sensor_t D;
 
 	for(int i=0; i<m_nROI; i++)
 	{
@@ -87,13 +88,14 @@ void APcopter_depthVision::updateMavlink(void)
 		if(d > range.y)d = range.y;
 		pR->m_minD = d;
 
-		pMavlink->distanceSensor(
-				0,
-				pR->m_orientation,
-				(uint16_t)(range.y*100),
-				(uint16_t)(range.x*100),
-				(uint16_t)(pR->m_minD * 100));
+		D.type = 0;
+		D.max_distance = (uint16_t)(range.y*100);	//unit: centimeters
+		D.min_distance = (uint16_t)(range.x*100);
+		D.current_distance = (uint16_t)(pR->m_minD * 100);
+		D.orientation = pR->m_orientation;
+		D.covariance = 255;
 
+		pMavlink->distanceSensor(D);
 		LOG_I("orient: " + i2str(pR->m_orientation) + " minD: " + f2str(pR->m_minD));
 	}
 }

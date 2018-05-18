@@ -163,9 +163,7 @@ void APcopter_base::update(void)
 	rc.chan6_raw = rcN;
 	rc.chan7_raw = rcN;
 	rc.chan8_raw = rcN;
-	rc.target_component = 1;
-	rc.target_system = 1;
-	m_pMavlink->rcChannelsOverride(&rc);
+	m_pMavlink->rcChannelsOverride(rc);
 	LOG_I("RC PWM: "+i2str(m_rcPWM));
 
 	m_pMavlink->cmdLongComponentArmDisarm(1);

@@ -7,11 +7,15 @@ namespace kai
 _Mavlink::_Mavlink()
 {
 	m_pIO = NULL;
-	m_systemID = 1;
-	m_myComponentID = MAV_COMP_ID_PATHPLANNER;
-	m_type = MAV_TYPE_ONBOARD_CONTROLLER;
-	m_targetComponentID = 0;
 	m_msg.init();
+
+	m_mySystemID = 255;
+	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
+	m_myType = MAV_TYPE_GCS;
+
+	m_devSystemID = 0;
+	m_devComponentID = 0;
+	m_devType = 0;
 }
 
 _Mavlink::~_Mavlink()
@@ -25,15 +29,17 @@ bool _Mavlink::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	//init param
-	m_systemID = 1;
-	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;//MAV_COMP_ID_PATHPLANNER;
-	m_type = MAV_TYPE_GCS;//ONBOARD_CONTROLLER;
-	m_targetComponentID = 0;
+	KISSm(pK,mySystemID);
+	KISSm(pK,myComponentID);
+	KISSm(pK,myType);
+
+	KISSm(pK,devSystemID);
+	KISSm(pK,devComponentID);
+	KISSm(pK,devType);
+
 	m_msg.sysid = 0;
 	m_msg.compid = 0;
 	m_status.packet_rx_drop_count = 0;
-
 	m_vPeer.clear();
 
 	return true;
@@ -121,12 +127,12 @@ void _Mavlink::update(void)
 	}
 }
 
-void _Mavlink::writeMessage(mavlink_message_t message)
+void _Mavlink::writeMessage(mavlink_message_t msg)
 {
 	NULL_(m_pIO);
 
 	IO_BUF ioB;
-	ioB.m_nB = mavlink_msg_to_send_buffer(ioB.m_pB, &message);
+	ioB.m_nB = mavlink_msg_to_send_buffer(ioB.m_pB, &msg);
 
 	if(m_pIO->ioType()!=io_webSocket)
 	{
@@ -141,144 +147,132 @@ void _Mavlink::writeMessage(mavlink_message_t message)
 
 void _Mavlink::sendHeartbeat(void)
 {
-	mavlink_message_t message;
-	mavlink_msg_heartbeat_pack(m_systemID, m_myComponentID, &message, m_type, 0,
-			0, 0, MAV_STATE_ACTIVE);
+	mavlink_message_t msg;
+	mavlink_msg_heartbeat_pack(
+			m_mySystemID,
+			m_myComponentID,
+			&msg,
+			m_myType,
+			0, 0, 0, MAV_STATE_ACTIVE);
 
-	writeMessage(message);
-
-	LOG_I("<- HEARTBEAT");
+	writeMessage(msg);
+	LOG_I("<- heartBeat");
 }
 
 void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 {
-	mavlink_message_t message;
-	mavlink_request_data_stream_t ds;
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.req_stream_id = stream_id;
-	ds.req_message_rate = rate;
-	ds.start_stop = 1;
-	mavlink_msg_request_data_stream_encode(m_systemID, m_myComponentID, &message, &ds);
+	mavlink_request_data_stream_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.req_stream_id = stream_id;
+	D.req_message_rate = rate;
+	D.start_stop = 1;
 
-	writeMessage(message);
+	mavlink_message_t msg;
+	mavlink_msg_request_data_stream_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	LOG_I("<- REQUEST_DATA_STREAM");
+	writeMessage(msg);
+	LOG_I("<- requestDataStream");
 }
 
-void _Mavlink::gpsInput(mavlink_gps_input_t* pGPSinput)
+void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 {
-	NULL_(pGPSinput);
+	mavlink_message_t msg;
+	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	mavlink_message_t message;
-	mavlink_msg_gps_input_encode(m_systemID, m_myComponentID, &message, pGPSinput);
-
-	writeMessage(message);
-
-	LOG_I("<- GPS_INPUT");
+	writeMessage(msg);
+	LOG_I("<- gpsInput");
 }
 
-void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust,
-		uint8_t mask)
+void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust, uint8_t mask)
 {
-	mavlink_message_t message;
-	mavlink_set_attitude_target_t ds;
+	mavlink_set_attitude_target_t D;
 
 	//pAtti: Roll, Pitch, Yaw
 	float pQ[4];
 	mavlink_euler_to_quaternion(pAtti[0], pAtti[1], pAtti[2], pQ);
 
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.q[0] = pQ[0];
-	ds.q[1] = pQ[1];
-	ds.q[2] = pQ[2];
-	ds.q[3] = pQ[3];
-	ds.body_roll_rate = pRate[0];
-	ds.body_pitch_rate = pRate[1];
-	ds.body_yaw_rate = pRate[2];
-	ds.thrust = thrust;
-	ds.type_mask = mask;
-	mavlink_msg_set_attitude_target_encode(m_systemID, m_myComponentID, &message, &ds);
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.q[0] = pQ[0];
+	D.q[1] = pQ[1];
+	D.q[2] = pQ[2];
+	D.q[3] = pQ[3];
+	D.body_roll_rate = pRate[0];
+	D.body_pitch_rate = pRate[1];
+	D.body_yaw_rate = pRate[2];
+	D.thrust = thrust;
+	D.type_mask = mask;
 
-	writeMessage(message);
+	mavlink_message_t msg;
+	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	LOG_I("<- SET_ATTITUDE_TARGET: ROLL:" + f2str(pAtti[0]) +
-			" PITCH:" + f2str(pAtti[1]) +
-			" YAW:" + f2str(pAtti[2]) +
-			" THR:" + f2str(thrust));
+	writeMessage(msg);
+	LOG_I("<- setTargetAttitude: r=" + f2str(pAtti[0]) +
+			", p=" + f2str(pAtti[1]) +
+			", y=" + f2str(pAtti[2]) +
+			", thr=" + f2str(thrust));
 }
 
-void _Mavlink::landingTarget(uint8_t stream_id, uint8_t frame, float angle_x,
-		float angle_y, float distance, float size_x, float size_y)
+void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 {
-	mavlink_message_t message;
-	mavlink_landing_target_t ds;
+	D.time_usec = getTimeUsec();
 
-	ds.time_usec = getTimeUsec();
-	ds.target_num = 0;
-	ds.frame = MAV_FRAME_BODY_NED;
-	ds.angle_x = angle_x;
-	ds.angle_y = angle_y;
-	ds.distance = distance;
-	ds.size_x = size_x;
-	ds.size_y = size_y;
-	mavlink_msg_landing_target_encode(m_systemID, m_myComponentID, &message, &ds);
+	mavlink_message_t msg;
+	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	writeMessage(message);
-
-	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(angle_x) + " ANGLE_Y:" + f2str(angle_y));
+	writeMessage(msg);
+	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(D.angle_x) + " ANGLE_Y:" + f2str(D.angle_y));
 }
 
 void _Mavlink::cmdLongDoSetMode(int mode)
 {
-	mavlink_message_t message;
-	mavlink_command_long_t ds;
+	mavlink_command_long_t D;
+	D.target_system = m_mySystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_DO_SET_MODE;
+	D.param1 = mode;
 
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.command = MAV_CMD_DO_SET_MODE;
-	ds.param1 = mode;
-	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message, &ds);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	writeMessage(message);
+	writeMessage(msg);
 	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
 }
 
-void _Mavlink::cmdLongComponentArmDisarm(int p)
+void _Mavlink::cmdLongComponentArmDisarm(bool bArm)
 {
-	mavlink_message_t message;
-	mavlink_command_long_t ds;
+	mavlink_command_long_t D;
+	D.target_system = m_mySystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_COMPONENT_ARM_DISARM;
+	D.param1 = (bArm)?1:0;
 
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.command = MAV_CMD_COMPONENT_ARM_DISARM;
-	ds.param1 = p;
-	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message, &ds);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(p));
+	writeMessage(msg);
+	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(bArm));
 }
 
-void _Mavlink::commandLongDoSetPositionYawThrust(float steer, float thrust)
+void _Mavlink::cmdLongDoSetPositionYawThrust(float steer, float thrust)
 {
-	mavlink_message_t message;
-	mavlink_command_long_t ds;
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = 213; //MAV_CMD_DO_SET_POSITION_YAW_THRUST;
+	D.confirmation = 0;
+	D.param1 = steer;
+	D.param2 = thrust;
 
-	ds.target_system = m_systemID;
-	ds.target_component = m_targetComponentID;
-	ds.command = 213; //MAV_CMD_DO_SET_POSITION_YAW_THRUST;
-	ds.confirmation = 0;
-	ds.param1 = steer;
-	ds.param2 = thrust;
-	mavlink_msg_command_long_encode(m_systemID, m_myComponentID, &message,
-			&ds);
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	writeMessage(message);
+	writeMessage(msg);
 	LOG_I("<- COMMAND_LONG: MAV_CMD_DO_SET_POSITION_YAW_THRUST");
 }
 
-void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v)
+void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 {
 	/*
 	 time_boot_ms: anything (it’s ignored)
@@ -291,25 +285,18 @@ void _Mavlink::distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, u
 	 covariance: 255 (ignored for now)
 	 */
 
-	mavlink_message_t message;
-	mavlink_distance_sensor_t ds;
-	ds.type = type;
-	ds.max_distance = max;	//unit: centimeters
-	ds.min_distance = min;
-	ds.current_distance = v;
-	ds.orientation = orientation;
-	ds.covariance = 255;
-	ds.id = 0;
-	ds.time_boot_ms = getTimeBootMs();
+	D.id = 0;
+	D.time_boot_ms = getTimeBootMs();
 
-	mavlink_msg_distance_sensor_encode(m_systemID, m_myComponentID, &message, &ds);
+	mavlink_message_t msg;
+	mavlink_msg_distance_sensor_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- DIST_SENSOR sysID = " + i2str(m_systemID) +
-			", orient = " + i2str((int)orientation) +
-			", d = " + i2str((int)ds.current_distance) +
-			", min = " + i2str((int)ds.min_distance) +
-			", max = " + i2str((int)ds.max_distance));
+	writeMessage(msg);
+	LOG_I("<- DIST_SENSOR sysID = " + i2str(m_mySystemID) +
+			", orient = " + i2str((int)D.orientation) +
+			", d = " + i2str((int)D.current_distance) +
+			", min = " + i2str((int)D.min_distance) +
+			", max = " + i2str((int)D.max_distance));
 }
 
 void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
@@ -320,30 +307,28 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 	 * float angle_delta[3];
 	 * Rotation in radians in body frame from previous to current frame
 	 * using right-hand coordinate system (0=roll, 1=pitch, 2=yaw)
-	 *
 	 * float position_delta[3];
 	 * Change in position in meters from previous to current frame
 	 * rotated into body frame (0=forward, 1=right, 2=down)
-	 *
 	 * float confidence; //< normalised confidence value from 0 to 100
 	 * */
 
-	mavlink_message_t message;
-	mavlink_vision_position_delta_t dZed;
-	dZed.time_usec = getTimeUsec();
-	dZed.time_delta_usec = dTime;
-	dZed.angle_delta[0] = (float) pDAngle->x;
-	dZed.angle_delta[1] = (float) pDAngle->y;
-	dZed.angle_delta[2] = (float) pDAngle->z;
-	dZed.position_delta[0] = (float) pDPos->x;
-	dZed.position_delta[1] = (float) pDPos->y;
-	dZed.position_delta[2] = (float) pDPos->z;
-	dZed.confidence = (float) confidence;
+	mavlink_message_t msg;
+	mavlink_vision_position_delta_t D;
+	D.time_usec = getTimeUsec();
+	D.time_delta_usec = dTime;
+	D.angle_delta[0] = (float) pDAngle->x;
+	D.angle_delta[1] = (float) pDAngle->y;
+	D.angle_delta[2] = (float) pDAngle->z;
+	D.position_delta[0] = (float) pDPos->x;
+	D.position_delta[1] = (float) pDPos->y;
+	D.position_delta[2] = (float) pDPos->z;
+	D.confidence = (float) confidence;
 
-	mavlink_msg_vision_position_delta_encode(m_systemID,
-			m_myComponentID, &message, &dZed);
+	mavlink_msg_vision_position_delta_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
 
-	writeMessage(message);
+	writeMessage(msg);
 	LOG_I("<- VISION_POSITION_DELTA dT=" + i2str(dTime)
 			+ ", forward=" + i2str(pDPos->x)
 			+ ", right=" + i2str(pDPos->y)
@@ -351,170 +336,98 @@ void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 			+ "; roll=" + i2str(pDAngle->x)
 			+ ", pitch=" + i2str(pDAngle->y)
 			+ ", yaw=" + i2str(pDAngle->z)
-			+ ", confidence=" + i2str(dZed.confidence));
+			+ ", confidence=" + i2str(D.confidence));
 }
 
-void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t* pD)
+void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
 {
-	/**
-	 * @brief Pack a position_target_local_ned message
-	 * @param system_id ID of this system
-	 * @param component_id ID of this component (e.g. 200 for IMU)
-	 * @param msg The MAVLink message to compress the data into
-	 *
-	 * @param time_boot_ms Timestamp in milliseconds since system boot
-	 * @param coordinate_frame Valid options are: MAV_FRAME_LOCAL_NED = 1, MAV_FRAME_LOCAL_OFFSET_NED = 7, MAV_FRAME_BODY_NED = 8, MAV_FRAME_BODY_OFFSET_NED = 9
-	 * @param type_mask Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate
-	 * @param x X Position in NED frame in meters
-	 * @param y Y Position in NED frame in meters
-	 * @param z Z Position in NED frame in meters (note, altitude is negative in NED)
-	 * @param vx X velocity in NED frame in meter / s
-	 * @param vy Y velocity in NED frame in meter / s
-	 * @param vz Z velocity in NED frame in meter / s
-	 * @param afx X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param afy Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param afz Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param yaw yaw setpoint in rad
-	 * @param yaw_rate yaw rate setpoint in rad/s
-	 * @return length of the message in bytes (excluding serial stream start sign)
-	 */
+	D.time_boot_ms = getTimeBootMs();
 
-	NULL_(pD);
-
-	mavlink_message_t message;
+	mavlink_message_t msg;
 	mavlink_msg_position_target_local_ned_encode(
-			m_systemID,
-			m_myComponentID, &message, pD);
+			m_mySystemID,
+			m_myComponentID, &msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- POS_TARGET_LOCAL_NED x=" + i2str(pD->x)
-			+ ", y=" + i2str(pD->y)
-			+ ", z=" + i2str(pD->z)
-			+ ", vx=" + i2str(pD->vx)
-			+ ", vy=" + i2str(pD->vy)
-			+ ", vz=" + i2str(pD->vz)
-			+ ", afx=" + i2str(pD->afx)
-			+ ", afy=" + i2str(pD->afy)
-			+ ", afz=" + i2str(pD->afz)
-			+ ", yaw=" + i2str(pD->yaw)
-			+ ", yawRate=" + i2str(pD->yaw_rate)
-			+ ", cFrame=" + i2str(pD->coordinate_frame)
-			+ ", typeMask=" + i2str(pD->type_mask)
+	writeMessage(msg);
+	LOG_I("<- POS_TARGET_LOCAL_NED x=" + i2str(D.x)
+			+ ", y=" + i2str(D.y)
+			+ ", z=" + i2str(D.z)
+			+ ", vx=" + i2str(D.vx)
+			+ ", vy=" + i2str(D.vy)
+			+ ", vz=" + i2str(D.vz)
+			+ ", afx=" + i2str(D.afx)
+			+ ", afy=" + i2str(D.afy)
+			+ ", afz=" + i2str(D.afz)
+			+ ", yaw=" + i2str(D.yaw)
+			+ ", yawRate=" + i2str(D.yaw_rate)
+			+ ", cFrame=" + i2str(D.coordinate_frame)
+			+ ", typeMask=" + i2str(D.type_mask)
 			);
 }
 
-void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t* pD)
+void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t& D)
 {
-	/**
-	 * @brief Pack a position_target_global_int message
-	 * @param system_id ID of this system
-	 * @param component_id ID of this component (e.g. 200 for IMU)
-	 * @param msg The MAVLink message to compress the data into
-	 *
-	 * @param time_boot_ms Timestamp in milliseconds since system boot. The rationale for the timestamp in the setpoint is to allow the system to compensate for the transport delay of the setpoint. This allows the system to compensate processing latency.
-	 * @param coordinate_frame Valid options are: MAV_FRAME_GLOBAL_INT = 5, MAV_FRAME_GLOBAL_RELATIVE_ALT_INT = 6, MAV_FRAME_GLOBAL_TERRAIN_ALT_INT = 11
-	 * @param type_mask Bitmask to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate
-	 * @param lat_int X Position in WGS84 frame in 1e7 * meters
-	 * @param lon_int Y Position in WGS84 frame in 1e7 * meters
-	 * @param alt Altitude in meters in AMSL altitude, not WGS84 if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
-	 * @param vx X velocity in NED frame in meter / s
-	 * @param vy Y velocity in NED frame in meter / s
-	 * @param vz Z velocity in NED frame in meter / s
-	 * @param afx X acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param afy Y acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param afz Z acceleration or force (if bit 10 of type_mask is set) in NED frame in meter / s^2 or N
-	 * @param yaw yaw setpoint in rad
-	 * @param yaw_rate yaw rate setpoint in rad/s
-	 * @return length of the message in bytes (excluding serial stream start sign)
-	 */
-
-	NULL_(pD);
-
-	mavlink_message_t message;
+	mavlink_message_t msg;
 	mavlink_msg_position_target_global_int_encode(
-			m_systemID,
-			m_myComponentID, &message, pD);
+			m_mySystemID,
+			m_myComponentID, &msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" + i2str(pD->lat_int)
-			+ ", lng=" + i2str(pD->lon_int)
-			+ ", alt=" + i2str(pD->alt)
-			+ ", vx=" + i2str(pD->vx)
-			+ ", vy=" + i2str(pD->vy)
-			+ ", vz=" + i2str(pD->vz)
-			+ ", afx=" + i2str(pD->afx)
-			+ ", afy=" + i2str(pD->afy)
-			+ ", afz=" + i2str(pD->afz)
-			+ ", yaw=" + i2str(pD->yaw)
-			+ ", yawRate=" + i2str(pD->yaw_rate)
-			+ ", cFrame=" + i2str(pD->coordinate_frame)
-			+ ", typeMask=" + i2str(pD->type_mask)
+	writeMessage(msg);
+	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" + i2str(D.lat_int)
+			+ ", lng=" + i2str(D.lon_int)
+			+ ", alt=" + i2str(D.alt)
+			+ ", vx=" + i2str(D.vx)
+			+ ", vy=" + i2str(D.vy)
+			+ ", vz=" + i2str(D.vz)
+			+ ", afx=" + i2str(D.afx)
+			+ ", afy=" + i2str(D.afy)
+			+ ", afz=" + i2str(D.afz)
+			+ ", yaw=" + i2str(D.yaw)
+			+ ", yawRate=" + i2str(D.yaw_rate)
+			+ ", cFrame=" + i2str(D.coordinate_frame)
+			+ ", typeMask=" + i2str(D.type_mask)
 			);
 }
 
-void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t* pD)
+void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t& D)
 {
-	/**
-	 * @brief Send a rc_channels_override message
-	 * @param chan MAVLink channel to send the message
-	 *
-	 * @param target_system System ID
-	 * @param target_component Component ID
-	 * @param chan1_raw RC channel 1 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan2_raw RC channel 2 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan3_raw RC channel 3 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan4_raw RC channel 4 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan5_raw RC channel 5 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan6_raw RC channel 6 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan7_raw RC channel 7 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 * @param chan8_raw RC channel 8 value, in microseconds. A value of UINT16_MAX means to ignore this field.
-	 */
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
 
-	NULL_(pD);
-
-	mavlink_message_t message;
+	mavlink_message_t msg;
 	mavlink_msg_rc_channels_override_encode(
-			255,//m_systemID,
+			m_mySystemID,
 			m_myComponentID,
-			&message, pD);
+			&msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- RC OVERRIDE, chan1=" + i2str(pD->chan1_raw)
-			+ ", chan2=" + i2str(pD->chan2_raw)
-			+ ", chan3=" + i2str(pD->chan3_raw)
-			+ ", chan4=" + i2str(pD->chan4_raw)
-			+ ", chan5=" + i2str(pD->chan5_raw)
-			+ ", chan6=" + i2str(pD->chan6_raw)
-			+ ", chan7=" + i2str(pD->chan7_raw)
-			+ ", chan8=" + i2str(pD->chan8_raw)
+	writeMessage(msg);
+	LOG_I("<- rcChannelsOverride, c1=" + i2str(D.chan1_raw)
+			+ ", c2=" + i2str(D.chan2_raw)
+			+ ", c3=" + i2str(D.chan3_raw)
+			+ ", c4=" + i2str(D.chan4_raw)
+			+ ", c5=" + i2str(D.chan5_raw)
+			+ ", c6=" + i2str(D.chan6_raw)
+			+ ", c7=" + i2str(D.chan7_raw)
+			+ ", c8=" + i2str(D.chan8_raw)
 			);
 }
 
-void _Mavlink::setMode(mavlink_set_mode_t* pD)
+void _Mavlink::setMode(mavlink_set_mode_t& D)
 {
-	/**
-	 * @brief Encode a set_mode struct
-	 * @param system_id ID of this system
-	 * @param component_id ID of this component (e.g. 200 for IMU)
-	 * @param msg The MAVLink message to compress the data into
-	 * @param set_mode C-struct to read the message contents from
-	 */
+	D.target_system = m_devSystemID;
 
-	NULL_(pD);
-
-	mavlink_message_t message;
+	mavlink_message_t msg;
 	mavlink_msg_set_mode_encode(
-			m_systemID,
+			m_mySystemID,
 			m_myComponentID,
-			&message, pD);
+			&msg, &D);
 
-	writeMessage(message);
-	LOG_I("<- setMode, base_mode=" + i2str(pD->base_mode)
-			+ ", custom_mode=" + i2str(pD->custom_mode));
-
+	writeMessage(msg);
+	LOG_I("<- setMode, base_mode=" + i2str(D.base_mode)
+			+ ", custom_mode=" + i2str(D.custom_mode));
 }
 
-bool _Mavlink::readMessage(mavlink_message_t &message)
+bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
 	uint8_t	rBuf[MAV_N_BUF];
 	static int nRead = 0;
@@ -530,7 +443,7 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 	while(iRead < nRead)
 	{
 		mavlink_status_t status;
-		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, rBuf[iRead], &message, &status);
+		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, rBuf[iRead], &msg, &status);
 		iRead++;
 
 		if (result == 1)
@@ -552,133 +465,119 @@ bool _Mavlink::readMessage(mavlink_message_t &message)
 
 void _Mavlink::handleMessages()
 {
-	mavlink_message_t message;
+	mavlink_message_t msg;
 
-	//Handle Message while new message is received
-	while (readMessage(message))
+	while (readMessage(msg))
 	{
-		// Note this doesn't handle multiple message sources.
-		m_msg.sysid = message.sysid;
-		m_msg.compid = message.compid;
-
 		uint64_t tNow = getTimeUsec();
+		m_msg.sysid = msg.sysid;
+		m_msg.compid = msg.compid;
 
-		// Handle Message ID
-		switch (message.msgid)
+		switch (msg.msgid)
 		{
 
 		case MAVLINK_MSG_ID_HEARTBEAT:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
-			mavlink_msg_heartbeat_decode(&message, &(m_msg.heartbeat));
+			mavlink_msg_heartbeat_decode(&msg, &m_msg.heartbeat);
 			m_msg.time_stamps.heartbeat = tNow;
 
-			if (m_msg.heartbeat.type == MAV_TYPE_GCS)break;
+			m_devSystemID = m_msg.sysid;
+			m_devComponentID = m_msg.compid;
+			m_devType = m_msg.heartbeat.type;
 
-			m_systemID = m_msg.sysid;
-			m_targetComponentID = m_msg.compid;
-
-			LOG_I("SYSTEM_ID: " + i2str(m_systemID) +
-  				  " COMPONENT_ID: " + i2str(m_myComponentID) +
-				  " TARGET_COMPONENT_ID: " + i2str(m_targetComponentID));
-
+			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
+			LOG_I("devSystemID: " + i2str(m_devSystemID) +
+  				  " devComponentID: " + i2str(m_devComponentID) +
+				  " devType: " + i2str(m_devType));
 			break;
 		}
 
 		case MAVLINK_MSG_ID_SYS_STATUS:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_SYS_STATUS");
-			mavlink_msg_sys_status_decode(&message, &(m_msg.sys_status));
+			mavlink_msg_sys_status_decode(&msg, &m_msg.sys_status);
 			m_msg.time_stamps.sys_status = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_SYS_STATUS");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_BATTERY_STATUS:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_BATTERY_STATUS");
-			mavlink_msg_battery_status_decode(&message,
-					&(m_msg.battery_status));
+			mavlink_msg_battery_status_decode(&msg, &m_msg.battery_status);
 			m_msg.time_stamps.battery_status = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_BATTERY_STATUS");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_RADIO_STATUS:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_RADIO_STATUS");
-			mavlink_msg_radio_status_decode(&message, &(m_msg.radio_status));
+			mavlink_msg_radio_status_decode(&msg, &m_msg.radio_status);
 			m_msg.time_stamps.radio_status = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_RADIO_STATUS");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED");
-			mavlink_msg_local_position_ned_decode(&message,
-					&(m_msg.local_position_ned));
+			mavlink_msg_local_position_ned_decode(&msg, &m_msg.local_position_ned);
 			m_msg.time_stamps.local_position_ned = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT");
-			mavlink_msg_global_position_int_decode(&message,
-					&(m_msg.global_position_int));
+			mavlink_msg_global_position_int_decode(&msg, &m_msg.global_position_int);
 			m_msg.time_stamps.global_position_int = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED");
-			mavlink_msg_position_target_local_ned_decode(&message,
-					&(m_msg.position_target_local_ned));
+			mavlink_msg_position_target_local_ned_decode(&msg, &m_msg.position_target_local_ned);
 			m_msg.time_stamps.position_target_local_ned = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT");
-			mavlink_msg_position_target_global_int_decode(&message,
-					&(m_msg.position_target_global_int));
+			mavlink_msg_position_target_global_int_decode(&msg, &m_msg.position_target_global_int);
 			m_msg.time_stamps.position_target_global_int = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_HIGHRES_IMU:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_HIGHRES_IMU");
-			mavlink_msg_highres_imu_decode(&message, &(m_msg.highres_imu));
+			mavlink_msg_highres_imu_decode(&msg, &m_msg.highres_imu);
 			m_msg.time_stamps.highres_imu = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_HIGHRES_IMU");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_ATTITUDE:
 		{
-			LOG_I("-> MAVLINK_MSG_ID_ATTITUDE");
-			mavlink_msg_attitude_decode(&message, &(m_msg.attitude));
+			mavlink_msg_attitude_decode(&msg, &m_msg.attitude);
 			m_msg.time_stamps.attitude = tNow;
+			LOG_I("-> MAVLINK_MSG_ID_ATTITUDE");
 			break;
 		}
 
 		case MAVLINK_MSG_ID_COMMAND_ACK:
 		{
-			mavlink_msg_command_ack_decode(&message, &(m_msg.command_ack));
+			mavlink_msg_command_ack_decode(&msg, &m_msg.command_ack);
 			m_msg.time_stamps.attitude = tNow;
-
 			LOG_I("-> MAVLINK_MSG_ID_COMMAND_ACK: " + i2str(m_msg.command_ack.result));
 			break;
 		}
 
 		case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
 		{
-			mavlink_msg_rc_channels_override_decode(&message, &(m_msg.rc_channels_override));
+			mavlink_msg_rc_channels_override_decode(&msg, &(m_msg.rc_channels_override));
 			m_msg.time_stamps.rc_channels_override = tNow;
 
-			LOG_I("-> RC OVERRIDE, systemID=" + i2str(m_msg.sysid)
-					+ ", targetComponent=" + i2str(m_msg.compid)
-					+ ", chan1=" + i2str(m_msg.rc_channels_override.chan1_raw)
+			LOG_I("-> RC_OVERRIDE: chan1=" + i2str(m_msg.rc_channels_override.chan1_raw)
 					+ ", chan2=" + i2str(m_msg.rc_channels_override.chan2_raw)
 					+ ", chan3=" + i2str(m_msg.rc_channels_override.chan3_raw)
 					+ ", chan4=" + i2str(m_msg.rc_channels_override.chan4_raw)
@@ -692,7 +591,7 @@ void _Mavlink::handleMessages()
 
 		default:
 		{
-			LOG_I("-> UNKNOWN MSG_ID:" + i2str(message.msgid));
+			LOG_I("-> UNKNOWN MSG_ID:" + i2str(msg.msgid));
 			break;
 		}
 
@@ -702,12 +601,11 @@ void _Mavlink::handleMessages()
 		for(int i=0; i<m_vPeer.size(); i++)
 		{
 			MAVLINK_PEER* pMP = &m_vPeer[i];
-			IF_CONT(!pMP->bCmdRoute(message.msgid));
-			IF_CONT(message.msgid == MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE);
+			IF_CONT(!pMP->bCmdRoute(msg.msgid));
 
 			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
 			IF_CONT(!pM);
-			pM->writeMessage(message);
+			pM->writeMessage(msg);
 		}
 	}
 }
@@ -752,17 +650,16 @@ bool _Mavlink::cli(int& iY)
 
 	string msg;
 
-	msg = "SYSTEM_ID: " + i2str(m_systemID);
+	msg = "mySysID=" + i2str(m_mySystemID)
+			+ " myComID=" + i2str(m_myComponentID)
+			+ " myType=" + i2str(m_myType);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
-	msg = "COMPONENT_ID: " + i2str(m_myComponentID);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
-
-	msg = "TARGET_COMPONENT_ID: " + i2str(m_targetComponentID);
+	msg = "devSysID=" + i2str(m_devSystemID)
+			+ " devComID=" + i2str(m_devComponentID)
+			+ " devType=" + i2str(m_devType);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
@@ -771,4 +668,3 @@ bool _Mavlink::cli(int& iY)
 }
 
 }
-

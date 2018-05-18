@@ -92,7 +92,7 @@ struct Mavlink_Messages
 struct MAVLINK_PEER
 {
 	void* m_pPeer;
-	uint64_t m_pCmdRoute[MAV_N_CMD_U64]; //index of bit correspondes to Mavlink CMD ID
+	uint64_t m_pCmdRoute[MAV_N_CMD_U64]; //index of bit corresponds to Mavlink CMD ID
 
 	void init(void)
 	{
@@ -135,23 +135,25 @@ public:
 
 	//Send
 	void writeMessage(mavlink_message_t message);
+
+	//Cmd
 	void requestDataStream(uint8_t stream_id, int rate);
 	void sendHeartbeat(void);
-
-	//Commands
-	void gpsInput(mavlink_gps_input_t* pGPSinput);
 	void setAttitudeTarget(float* pAttitude, float* pRate, float thrust, uint8_t mask);
-	void landingTarget(uint8_t stream_id, uint8_t frame, float angle_x, float angle_y, float distance, float size_x, float size_y);
-	void commandLongDoSetPositionYawThrust(float steer, float thrust);
-	void distanceSensor(uint8_t type, uint8_t orientation, uint16_t max, uint16_t min, uint16_t v);
 	void visionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence);
-	void positionTargetLocalNed(mavlink_position_target_local_ned_t* pD);
-	void positionTargetGlobalInt(mavlink_position_target_global_int_t* pD);
-	void rcChannelsOverride(mavlink_rc_channels_override_t* pD);
-	void setMode(mavlink_set_mode_t* pD);
 
+	void distanceSensor(mavlink_distance_sensor_t& D);
+	void gpsInput(mavlink_gps_input_t& D);
+	void landingTarget(mavlink_landing_target_t& D);
+	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
+	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);
+	void rcChannelsOverride(mavlink_rc_channels_override_t& D);
+	void setMode(mavlink_set_mode_t& D);
+
+	//Cmd long
+	void cmdLongComponentArmDisarm(bool bArm);
 	void cmdLongDoSetMode(int mode);
-	void cmdLongComponentArmDisarm(int p);
+	void cmdLongDoSetPositionYawThrust(float steer, float thrust);
 
 public:
 	void sendMessage(void);
@@ -163,10 +165,14 @@ public:
 	}
 
 	_IOBase* m_pIO;
-	int m_systemID;
+
+	int m_mySystemID;
 	int m_myComponentID;
-	int m_type;
-	int m_targetComponentID;
+	int m_myType;
+
+	int m_devSystemID;
+	int m_devComponentID;
+	int m_devType;
 
 	Mavlink_Messages m_msg;
 	mavlink_set_position_target_local_ned_t m_initPos;
