@@ -144,78 +144,23 @@ FrameGPU FrameGPU::resize(double scaleW, double scaleH)
 	return resize(s.width*scaleW, s.height*scaleH);
 }
 
-FrameGPU FrameGPU::gray(void)
+FrameGPU FrameGPU::cvtTo(int rType)
 {
 	updateG();
 
 	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2GRAY);
+	m_matG.convertTo(fb.m_matG, CV_MAKETYPE(rType,(m_matG.channels())));
 	fb.updateTstampG(m_tStampG);
 
 	return fb;
 }
 
-FrameGPU FrameGPU::hsv(void)
+FrameGPU FrameGPU::cvtColor(int code)
 {
 	updateG();
 
 	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2HSV);
-	fb.updateTstampG(m_tStampG);
-
-	return fb;
-}
-
-FrameGPU FrameGPU::rgb2bgr(void)
-{
-	updateG();
-
-	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_RGB2BGR);
-	fb.updateTstampG(m_tStampG);
-
-	return fb;
-}
-
-FrameGPU FrameGPU::bgra(void)
-{
-	updateG();
-
-	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2BGRA);
-	fb.updateTstampG(m_tStampG);
-
-	return fb;
-}
-
-FrameGPU FrameGPU::rgba(void)
-{
-	updateG();
-
-	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_BGR2RGBA);
-	fb.updateTstampG(m_tStampG);
-
-	return fb;
-}
-
-FrameGPU FrameGPU::f8UC3(void)
-{
-	updateG();
-
-	FrameGPU fb;
-	cuda::cvtColor(m_matG, fb.m_matG, CV_GRAY2BGR);
-	fb.updateTstampG(m_tStampG);
-
-	return fb;
-}
-
-FrameGPU FrameGPU::f32FC4(void)
-{
-	updateG();
-
-	FrameGPU fb;
-	m_matG.convertTo(fb.m_matG, CV_32FC4);
+	cuda::cvtColor(m_matG, fb.m_matG, code);
 	fb.updateTstampG(m_tStampG);
 
 	return fb;

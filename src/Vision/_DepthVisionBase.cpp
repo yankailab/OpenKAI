@@ -101,6 +101,7 @@ void _DepthVisionBase::updateFilter(void)
 
 	m_fMatrixFrame = m_fDepth.resize(m_mDim.x, m_mDim.y);
 	Mat* pM = m_fMatrixFrame.m();
+	IF_(pM->empty());
 
 	int i,j;
 	for(i=0;i<m_mDim.y;i++)

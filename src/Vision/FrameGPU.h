@@ -33,14 +33,8 @@ public:
 	virtual FrameGPU crop(Rect bb);
 	virtual FrameGPU resize(int w, int h);
 	virtual FrameGPU resize(double scaleW, double scaleH);
-	virtual FrameGPU gray(void);
-	virtual FrameGPU hsv(void);
-	virtual FrameGPU rgb2bgr(void);
-
-	virtual FrameGPU bgra(void);
-	virtual FrameGPU rgba(void);
-	virtual FrameGPU f8UC3(void);
-	virtual FrameGPU f32FC4(void);
+	virtual FrameGPU cvtTo(int rType);
+	virtual FrameGPU cvtColor(int code);
 
 	virtual Mat* m(void);
 	virtual Size size(void);

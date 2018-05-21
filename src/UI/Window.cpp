@@ -155,7 +155,7 @@ bool Window::draw(void)
 
 		if (m_F.m()->type() != CV_8UC3)
 		{
-			m_F2 = m_F.f8UC3();
+			m_F2 = m_F.cvtColor(CV_GRAY2BGR);
 			m_F = m_F2;
 		}
 

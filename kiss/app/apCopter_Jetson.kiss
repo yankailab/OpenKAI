@@ -2,7 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
@@ -10,7 +12,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"bDraw":0,
 	"w":640,
 	"h":360,
@@ -20,7 +22,7 @@
 {
 	"name":"depthView",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -31,8 +33,8 @@
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
@@ -52,7 +54,7 @@
 	"rsDFPS":30,
 	"fovW":60,
 	"fovH":60,
-	"bFlip":0,
+	"bFlip":1,
 	"bGray":1,
 	"rFrom":0.1,
 	"rTo":15.0,
@@ -86,7 +88,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam1",
-	"modelDir":"/home/ubuntu/dev/darknet/",
+	"modelDir":"/home/kai/dev/darknet/",
 	"modelFile":"cfg/yolov2.cfg",
 	"trainedFile":"data/yolov2.weights",
 	"meanFile":"",
@@ -108,29 +110,19 @@
 	"Window":"OKview",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
+	"_portName":"/dev/ttyACM0",
+	"_baud":115200,
 }
 
 {
-	"name":"apSerial",
-	"class":"_SerialPort",
-	"bInst":0,
-	"bLog":0,
-	"FPS":100,
-	"Window":"OKview",
-	"portName":"/dev/ttyACM0",
-	"baud":115200,
-}
-
-{
-	"name":"apUDPserver",
-	"class":"_UDPserver",
+	"name":"apUDP",
+	"class":"_UDP",
 	"bInst":1,
+	"FPS":30,
 	"bLog":0,
-	"FPS":100,
 	"Window":"OKview",
 	"port":19840,
-	"bReceiveOnly":0,
-	"timeoutRecv":10000,
+	"_wakeUp":"mavGCS",
 }
 
 {
@@ -188,7 +180,7 @@
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",
-	"_IOBase":"apUDPserver",
+	"_IOBase":"apUDP",
 	
 	{
 		"bInst":1,

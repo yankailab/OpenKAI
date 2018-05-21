@@ -31,14 +31,8 @@ public:
 	virtual FrameBase crop(Rect bb);
 	virtual FrameBase resize(int w, int h);
 	virtual FrameBase resize(double scaleW, double scaleH);
-	virtual FrameBase gray(void);
-	virtual FrameBase hsv(void);
-	virtual FrameBase rgb2bgr(void);
-
-	virtual FrameBase bgra(void);
-	virtual FrameBase rgba(void);
-	virtual FrameBase f8UC3(void);
-	virtual FrameBase f32FC4(void);
+	virtual FrameBase cvtTo(int rType);
+	virtual FrameBase cvtColor(int code);
 
 	virtual Mat* m(void);
 	virtual Size size(void);

@@ -92,65 +92,20 @@ FrameBase FrameBase::resize(double scaleW, double scaleH)
 	return resize(s.width*scaleW, s.height*scaleH);
 }
 
-FrameBase FrameBase::gray(void)
+FrameBase FrameBase::cvtTo(int rType)
 {
 	FrameBase fb;
 	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2GRAY);
+	m_mat.convertTo(fb.m_mat, CV_MAKETYPE(rType,(m_mat.channels())));
 
 	return fb;
 }
 
-FrameBase FrameBase::hsv(void)
+FrameBase FrameBase::cvtColor(int code)
 {
 	FrameBase fb;
 	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2HSV);
-
-	return fb;
-}
-
-FrameBase FrameBase::rgb2bgr(void)
-{
-	FrameBase fb;
-	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_RGB2BGR);
-
-	return fb;
-}
-
-FrameBase FrameBase::bgra(void)
-{
-	FrameBase fb;
-	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2BGRA);
-
-	return fb;
-}
-
-FrameBase FrameBase::rgba(void)
-{
-	FrameBase fb;
-	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_BGR2RGBA);
-
-	return fb;
-}
-
-FrameBase FrameBase::f8UC3(void)
-{
-	FrameBase fb;
-	fb.m_tStamp = m_tStamp;
-	cv::cvtColor(m_mat, fb.m_mat, CV_GRAY2BGR);
-
-	return fb;
-}
-
-FrameBase FrameBase::f32FC4(void)
-{
-	FrameBase fb;
-	fb.m_tStamp = m_tStamp;
-	m_mat.convertTo(fb.m_mat, CV_32FC4);
+	cv::cvtColor(m_mat, fb.m_mat, code);
 
 	return fb;
 }

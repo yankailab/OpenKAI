@@ -160,14 +160,14 @@ void APcopter_base::update(void)
 	rc.chan4_raw = rcN;
 	rc.chan5_raw = rcN;
 	rc.chan6_raw = (uint16_t)rcPWM;
-	rc.chan7_raw = rcN;
+	rc.chan7_raw = (uint16_t)rcPWM;
 	rc.chan8_raw = rcN;
 	m_pMavlink->rcChannelsOverride(rc);
 	LOG_I("RC PWM: "+i2str(rcPWM));
 
 	m_pMavlink->clComponentArmDisarm(1);
 
-	m_pMavlink->clDoSetServo(9,rcPWM);
+//	m_pMavlink->clDoSetServo(6,rcPWM);
 }
 
 bool APcopter_base::draw(void)

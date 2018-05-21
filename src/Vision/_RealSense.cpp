@@ -181,6 +181,9 @@ bool _RealSense::draw(void)
 		rs2::frame dColor = rsColorMap(m_rsDepth);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
 		*m_pDepthShow = mDColor;
+
+		if (m_bFlip)
+			*m_pDepthShow = m_pDepthShow->flip(-1);
 	}
 
 	return this->_DepthVisionBase::draw();
