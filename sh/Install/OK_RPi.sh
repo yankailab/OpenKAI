@@ -38,7 +38,7 @@ sudo apt-get -y install build-essential cmake cmake-curses-gui git libssl-dev li
 sudo apt-get -y install libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev
 
 # Codecs
-sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils gstreamer1.0-tools gstreamer1.0-plugins-ugly libvorbis-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev
+sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils gstreamer1.0-tools gstreamer-tools gstreamer1.0-plugins-good gstreamer1.0-plugins-ugly libvorbis-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev
 
 # IO
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
@@ -47,7 +47,7 @@ sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 sudo apt-get -y install libgtk2.0-dev libglew-dev libgtk-3-dev libglfw3-dev
 	
 # Raspberry camera
-sudo apt-get -y install autoconf automake libtool pkg-config libgstreamer1.0-dev libgstreamer1.0-* libgstreamer-plugins-base1.0-dev libraspberrypi-dev
+sudo apt-get -y install autoconf automake libtool pkg-config gstreamer1.0-omx libgstreamer1.0-dev libgstreamer1.0-* libgstreamer-plugins-base1.0-dev libraspberrypi-dev
 cd $FULLDEVDIR
 git clone https://github.com/thaytan/gst-rpicamsrc.git
 cd gst-rpicamsrc
