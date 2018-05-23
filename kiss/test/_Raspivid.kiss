@@ -12,11 +12,7 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":0,
-	"w":1280,
-	"h":720,
 	"bFullScreen":0,
-	"textX":20,
-	"textY":20,
 }
 
 {

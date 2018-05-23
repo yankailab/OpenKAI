@@ -14,8 +14,8 @@ namespace kai
 Window::Window()
 {
 	m_textPos.init();
-	m_textStart.x = 15;
-	m_textStart.y = 15;
+	m_textStart.x = 20;
+	m_textStart.y = 20;
 	m_size.x = 1280;
 	m_size.y = 720;
 	m_bFullScreen = false;
@@ -48,10 +48,9 @@ bool Window::init(void* pKiss)
 	}
 
 	pK->m_pInst = this;
-
-	F_INFO(pK->v("w", &m_size.x));
-	F_INFO(pK->v("h", &m_size.y));
-	F_INFO(pK->v("bFullScreen", &m_bFullScreen));
+	pK->v("w", &m_size.x);
+	pK->v("h", &m_size.y);
+	pK->v("bFullScreen", &m_bFullScreen);
 
 	if (m_size.area() <= 0)
 	{
@@ -64,8 +63,8 @@ bool Window::init(void* pKiss)
 	{
 		int recFPS = 30;
 		string reCodec = "MJPG";
-		F_INFO(pK->v("recFPS", &recFPS));
-		F_INFO(pK->v("recCodec", &reCodec));
+		pK->v("recFPS", &recFPS);
+		pK->v("recCodec", &reCodec);
 
 		time_t t = time(NULL);
 		struct tm *tm = localtime(&t);
@@ -102,14 +101,14 @@ bool Window::init(void* pKiss)
 		}
 	}
 
-	F_INFO(pK->v("textX", &m_textStart.x));
-	F_INFO(pK->v("textY", &m_textStart.y));
-	F_INFO(pK->v("pixTab", &m_pixTab));
-	F_INFO(pK->v("lineH", &m_lineHeight));
-	F_INFO(pK->v("textSize", &m_textSize));
-	F_INFO(pK->v("textB", &m_textCol[0]));
-	F_INFO(pK->v("textG", &m_textCol[1]));
-	F_INFO(pK->v("textR", &m_textCol[2]));
+	pK->v("textX", &m_textStart.x);
+	pK->v("textY", &m_textStart.y);
+	pK->v("pixTab", &m_pixTab);
+	pK->v("lineH", &m_lineHeight);
+	pK->v("textSize", &m_textSize);
+	pK->v("textB", &m_textCol[0]);
+	pK->v("textG", &m_textCol[1]);
+	pK->v("textR", &m_textCol[2]);
 
 	m_frame.allocate(m_size.x, m_size.y);
 

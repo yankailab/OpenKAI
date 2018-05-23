@@ -124,7 +124,7 @@ void _Camera::update(void)
 		Mat mCam;
 		while (!m_camera.read(mCam));
 
-		m_fBGR = mCam;
+		m_fBGR.copy(mCam);
 		m_pTPP->wakeUp();
 
 		this->autoFPSto();

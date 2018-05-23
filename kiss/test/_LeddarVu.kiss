@@ -11,15 +11,11 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"w":1280,
-	"h":720,
 	"bFullScreen":1,
 	"bRec":0,
 	"recFile":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",	
-	"textX":20,
-	"textY":20,
 }
 
 {

@@ -6,29 +6,24 @@
 	"bDraw":1,
 	"bLog":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"w":1280,
-	"h":720,
 	"bFullScreen":0,
 	"recFile_":"/media/ubuntu/data/OpenKAI_",
 	"recFPS":15,
 	"recCodec":"MJPG",
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"textX":20,
-	"textY":20,
 }
 
 {
 	"name":"camera",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -43,10 +38,9 @@
 	"name":"gst1",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
-	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 	"_pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"_pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
 	"bFlip":0,
