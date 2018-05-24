@@ -13,7 +13,6 @@ namespace kai
 _UDP::_UDP()
 {
 	m_socket = -1;
-
 	m_addr = "";
 	m_port = DEFAULT_UDP_PORT;
 	m_nSAddr = 0;
@@ -24,7 +23,7 @@ _UDP::_UDP()
 
 _UDP::~_UDP()
 {
-	reset();
+	close();
 }
 
 bool _UDP::init(void* pKiss)
@@ -37,12 +36,6 @@ bool _UDP::init(void* pKiss)
 	F_INFO(pK->v("port", (int*)&m_port));
 
 	return true;
-}
-
-void _UDP::reset(void)
-{
-	this->_IOBase::reset();
-	close();
 }
 
 bool _UDP::link(void)

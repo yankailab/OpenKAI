@@ -59,7 +59,6 @@ public:
 	virtual bool open(void);
 	virtual bool isOpen(void);
 	virtual void close(void);
-	virtual void reset(void);
 	virtual bool draw(void);
 	virtual IO_TYPE ioType(void);
 

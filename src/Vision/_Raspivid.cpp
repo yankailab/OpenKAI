@@ -24,7 +24,18 @@ _Raspivid::_Raspivid()
 
 _Raspivid::~_Raspivid()
 {
-	reset();
+	m_nFB = 0;
+	DEL(m_pFB);
+
+	m_bOpen = false;
+	m_vImg.clear();
+
+	m_iFr = -1;
+	if (m_pFr)
+	{
+		pclose(m_pFr);
+		m_pFr = NULL;
+	}
 }
 
 bool _Raspivid::init(void* pKiss)
@@ -58,24 +69,6 @@ bool _Raspivid::init(void* pKiss)
 	m_pFB = new uint8_t[m_nFB];
 
 	return true;
-}
-
-void _Raspivid::reset(void)
-{
-	this->_VisionBase::reset();
-
-	m_nFB = 0;
-	DEL(m_pFB);
-
-	m_bOpen = false;
-	m_vImg.clear();
-
-	m_iFr = -1;
-	if (m_pFr)
-	{
-		pclose(m_pFr);
-		m_pFr = NULL;
-	}
 }
 
 bool _Raspivid::link(void)

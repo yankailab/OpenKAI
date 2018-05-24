@@ -33,7 +33,6 @@ public:
 	virtual ~_VisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual void reset(void);
 	virtual bool draw(void);
 
 	virtual VISION_TYPE getType(void);

@@ -16,7 +16,6 @@ _filterBlur::_filterBlur()
 
 _filterBlur::~_filterBlur()
 {
-	reset();
 }
 
 bool _filterBlur::init(void* pKiss)

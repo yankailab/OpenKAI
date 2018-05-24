@@ -48,7 +48,6 @@ public:
 	bool start(void);
 	bool open(void);
 	void close(void);
-	void reset(void);
 	bool draw(void);
 
 	bool write(uint8_t* pBuf, int nB);

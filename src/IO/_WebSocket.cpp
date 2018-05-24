@@ -26,7 +26,8 @@ _WebSocket::_WebSocket()
 
 _WebSocket::~_WebSocket()
 {
-	reset();
+	m_vClient.clear();
+	close();
 	pthread_mutex_destroy(&m_mutexCR);
 }
 
@@ -55,13 +56,6 @@ bool _WebSocket::open(void)
 
 	m_ioStatus = io_opened;
 	return true;
-}
-
-void _WebSocket::reset(void)
-{
-	m_vClient.clear();
-	this->_IOBase::reset();
-	close();
 }
 
 void _WebSocket::close(void)

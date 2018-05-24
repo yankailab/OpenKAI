@@ -64,11 +64,6 @@ bool PIDctrl::cli(int& iY)
 	return true;
 }
 
-void PIDctrl::reset(void)
-{
-
-}
-
 void PIDctrl::resetState(void)
 {
 	m_v = 0.0;

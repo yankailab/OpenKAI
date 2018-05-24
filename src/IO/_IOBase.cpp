@@ -30,7 +30,7 @@ _IOBase::_IOBase()
 
 _IOBase::~_IOBase()
 {
-	reset();
+	DEL(m_pCmdW);
 	pthread_mutex_destroy(&m_mutexW);
 	pthread_mutex_destroy(&m_mutexR);
 }
@@ -61,13 +61,6 @@ bool _IOBase::init(void* pKiss)
 	m_nCmdW = 0;
 
 	return true;
-}
-
-void _IOBase::reset(void)
-{
-	this->_ThreadBase::reset();
-
-	DEL(m_pCmdW);
 }
 
 bool _IOBase::open(void)

@@ -186,11 +186,6 @@ bool _CaffeRegressionInf::addImg(cv::Mat& img)
 	return true;
 }
 
-void _CaffeRegressionInf::reset(void)
-{
-	m_iImg = 0;
-}
-
 double* _CaffeRegressionInf::getOutput(void)
 {
 	return m_pOutput;

@@ -23,7 +23,14 @@ _TCPserver::_TCPserver()
 
 _TCPserver::~_TCPserver()
 {
-	reset();
+	close(m_socket);
+
+	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
+	{
+		delete (_TCPclient*)*itr;
+	}
+
+	m_lSocket.clear();
 }
 
 bool _TCPserver::init(void* pKiss)
@@ -37,19 +44,6 @@ bool _TCPserver::init(void* pKiss)
 	KISSm(pK,nSocket);
 
 	return true;
-}
-
-void _TCPserver::reset(void)
-{
-	this->_ThreadBase::reset();
-	close(m_socket);
-
-	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); itr++)
-	{
-		delete (_TCPclient*)*itr;
-	}
-
-	m_lSocket.clear();
 }
 
 bool _TCPserver::link(void)
@@ -143,7 +137,6 @@ bool _TCPserver::handler(void)
 				if(pSocket->m_ioStatus != io_opened)
 				{
 					itr = m_lSocket.erase(itr);
-					pSocket->reset();
 					delete pSocket;
 					LOG_I("Deleted disconnected socket");
 				}

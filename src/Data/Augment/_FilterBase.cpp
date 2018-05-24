@@ -24,7 +24,6 @@ _FilterBase::_FilterBase()
 
 _FilterBase::~_FilterBase()
 {
-	reset();
 }
 
 bool _FilterBase::init(void* pKiss)
@@ -40,11 +39,6 @@ bool _FilterBase::init(void* pKiss)
 	KISSm(pK, noiseType);
 
 	return true;
-}
-
-void _FilterBase::reset(void)
-{
-	this->_DataBase::reset();
 }
 
 bool _FilterBase::link(void)

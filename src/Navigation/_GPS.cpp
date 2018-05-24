@@ -48,7 +48,8 @@ bool _GPS::init(void* pKiss)
 
 	m_tStarted = getTimeUsec();
 
-	reset();
+	setLL(&m_initLL);
+	m_initUTM = *getUTM();
 	return true;
 }
 
@@ -70,12 +71,6 @@ bool _GPS::link(void)
 #endif
 
 	return true;
-}
-
-void _GPS::reset(void)
-{
-	setLL(&m_initLL);
-	m_initUTM = *getUTM();
 }
 
 bool _GPS::start(void)

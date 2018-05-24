@@ -30,7 +30,9 @@ _DistSensorBase::_DistSensorBase()
 
 _DistSensorBase::~_DistSensorBase()
 {
-	reset();
+	m_nDiv = 0;
+	m_bReady = false;
+	DEL_ARRAY(m_pDiv);
 }
 
 bool _DistSensorBase::init(void* pKiss)
@@ -57,10 +59,11 @@ bool _DistSensorBase::init(void* pKiss)
 
 	int nMed=0;
 	int nAvr=0;
-	F_INFO(pK->v("nMed", &nMed));
-	F_INFO(pK->v("nAvr", &nAvr));
+	pK->v("nMed", &nMed);
+	pK->v("nAvr", &nAvr);
 
 	IF_F(m_nDiv >= MAX_DIST_SENSOR_DIV);
+
 	m_pDiv = new DIST_SENSOR_DIV[m_nDiv];
 	for(int i=0;i<m_nDiv;i++)
 	{
@@ -76,14 +79,6 @@ bool _DistSensorBase::link(void)
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	return true;
-}
-
-void _DistSensorBase::reset(void)
-{
-	this->_ThreadBase::reset();
-	DEL(m_pDiv);
-	m_nDiv = 0;
-	m_bReady = false;
 }
 
 bool _DistSensorBase::bReady(void)
@@ -167,9 +162,8 @@ double _DistSensorBase::d(double deg)
 
 	int iDiv = (int) (deg * m_dDegInv);
 	if(iDiv >= m_nDiv)iDiv = m_nDiv;
-	Average* pD = &m_pDiv[iDiv].m_fAvr;
 
-	double d = pD->v();
+	double d = m_pDiv[iDiv].vAvr();
 	if(d <= m_rMin)return -1.0;
 	if(d > m_rMax)return -1.0;
 
@@ -196,9 +190,7 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		Average* pD = &m_pDiv[iDiv].m_fAvr;
-
-		double d = pD->v();
+		double d = m_pDiv[iDiv].vAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax * 0.99);
 
@@ -233,9 +225,7 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		Average* pD = &m_pDiv[iDiv].m_fAvr;
-
-		double d = pD->v();
+		double d = m_pDiv[iDiv].vAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax);
 		IF_CONT(d <= dist);
@@ -267,9 +257,7 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		Average* pD = &m_pDiv[iDiv].m_fAvr;
-
-		double d = pD->v();
+		double d = m_pDiv[iDiv].vAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax);
 
@@ -289,11 +277,6 @@ bool _DistSensorBase::draw(void)
 	string msg;
 
 	IF_F(!m_bReady);
-
-	pWin->tabNext();
-//	pWin->addMsg(&msg);
-	pWin->tabPrev();
-
 	IF_T(m_nDiv <= 0);
 
 	//Plot center as vehicle position
@@ -306,9 +289,7 @@ bool _DistSensorBase::draw(void)
 
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		Average* pD = &m_pDiv[i].m_fAvr;
-
-		double dist = pD->v();
+		double dist = m_pDiv[i].vAvr();
 		IF_CONT(dist <= m_rMin);
 		IF_CONT(dist > m_rMax);
 		dist *= m_showScale;
@@ -317,9 +298,26 @@ bool _DistSensorBase::draw(void)
 		int pX = dist * sin(rad);
 		int pY = -dist * cos(rad);
 
-		Scalar col = Scalar(255, 255, 255);
+		Scalar col = Scalar(0, 255, 0);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
+
+	return true;
+}
+
+bool _DistSensorBase::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	string msg = "| ";
+	for (int i = 0; i < m_nDiv; i++)
+	{
+		msg += f2str(m_pDiv[i].vAvr()) + " | ";
+	}
+
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

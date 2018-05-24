@@ -22,7 +22,6 @@ public:
 
 	bool init(int wLen, int nTraj);
 	void input(double v);
-	void reset(void);
 
 private:
 	int m_windowLen;
@@ -30,5 +29,4 @@ private:
 };
 
 }
-
 #endif

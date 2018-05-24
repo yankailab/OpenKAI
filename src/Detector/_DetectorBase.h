@@ -190,7 +190,6 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
 	virtual bool draw(void);
-	virtual void reset(void);
 	virtual void update(void);
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);

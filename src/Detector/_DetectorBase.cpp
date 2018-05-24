@@ -113,14 +113,6 @@ bool _DetectorBase::link(void)
 	return true;
 }
 
-void _DetectorBase::reset(void)
-{
-	this->_ThreadBase::reset();
-
-	m_pVision = NULL;
-	m_pDetIn = NULL;
-}
-
 void _DetectorBase::update(void)
 {
 	m_tStamp = getTimeUsec();

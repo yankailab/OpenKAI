@@ -127,7 +127,6 @@ public:
 	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);
-	void reset(void);
 
 	//Receive
 	void handleMessages();

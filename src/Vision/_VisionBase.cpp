@@ -38,9 +38,9 @@ _VisionBase::_VisionBase()
 
 _VisionBase::~_VisionBase()
 {
-	reset();
-
 	DEL(m_pTPP);
+	DEL(m_pHSV);
+	DEL(m_pGray);
 }
 
 bool _VisionBase::init(void* pKiss)
@@ -149,15 +149,6 @@ void _VisionBase::postProcess(void)
 
 	if (m_pHSV)
 		*m_pHSV = m_fBGR.cvtColor(CV_BGR2HSV);
-}
-
-void _VisionBase::reset(void)
-{
-	this->_ThreadBase::reset();
-	m_pTPP->reset();
-
-	DEL(m_pHSV);
-	DEL(m_pGray);
 }
 
 Frame* _VisionBase::BGR(void)

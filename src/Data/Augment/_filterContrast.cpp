@@ -16,7 +16,6 @@ _filterContrast::_filterContrast()
 
 _filterContrast::~_filterContrast()
 {
-	reset();
 }
 
 bool _filterContrast::init(void* pKiss)

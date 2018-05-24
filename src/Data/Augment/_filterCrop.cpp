@@ -16,7 +16,6 @@ _filterCrop::_filterCrop()
 
 _filterCrop::~_filterCrop()
 {
-	reset();
 }
 
 bool _filterCrop::init(void* pKiss)

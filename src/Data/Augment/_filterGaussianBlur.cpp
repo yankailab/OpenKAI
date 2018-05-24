@@ -16,7 +16,6 @@ _filterGaussianBlur::_filterGaussianBlur()
 
 _filterGaussianBlur::~_filterGaussianBlur()
 {
-	reset();
 }
 
 bool _filterGaussianBlur::init(void* pKiss)

@@ -16,7 +16,6 @@ _filterShrink::_filterShrink()
 
 _filterShrink::~_filterShrink()
 {
-	reset();
 }
 
 bool _filterShrink::init(void* pKiss)

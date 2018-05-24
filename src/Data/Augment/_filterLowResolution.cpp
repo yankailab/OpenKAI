@@ -17,7 +17,6 @@ _filterLowResolution::_filterLowResolution()
 
 _filterLowResolution::~_filterLowResolution()
 {
-	reset();
 }
 
 bool _filterLowResolution::init(void* pKiss)

@@ -26,7 +26,6 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	void reset(void);
 	int getClassIdx(string& className);
 	string getClassName(int iClass);
 	int classify(Frame* pBGR, string* pName);

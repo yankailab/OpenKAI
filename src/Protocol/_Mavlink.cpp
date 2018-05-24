@@ -20,7 +20,6 @@ _Mavlink::_Mavlink()
 
 _Mavlink::~_Mavlink()
 {
-	reset();
 }
 
 bool _Mavlink::init(void* pKiss)
@@ -80,12 +79,6 @@ bool _Mavlink::link(void)
 		m_vPeer.push_back(mP);
 	}
 	return true;
-}
-
-void _Mavlink::reset()
-{
-	this->_ThreadBase::reset();
-	m_pIO = NULL;
 }
 
 bool _Mavlink::start(void)

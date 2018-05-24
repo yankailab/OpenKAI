@@ -19,7 +19,7 @@ _SerialPort::_SerialPort(void)
 
 _SerialPort::~_SerialPort()
 {
-	reset();
+	close();
 }
 
 bool _SerialPort::init(void* pKiss)
@@ -56,12 +56,6 @@ void _SerialPort::close(void)
 
 	::close(m_fd);
 	this->_IOBase::close();
-}
-
-void _SerialPort::reset(void)
-{
-	this->_IOBase::reset();
-	close();
 }
 
 bool _SerialPort::start(void)

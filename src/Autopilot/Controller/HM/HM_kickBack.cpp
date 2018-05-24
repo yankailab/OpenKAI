@@ -79,7 +79,6 @@ void HM_kickBack::update(void)
 
 	if(m_sequence == kb_station)
 	{
-		m_pGPS->reset();
 		pNew = m_pGPS->getUTM();
 		m_wpStation = *pNew;
 		m_sequence = kb_back;

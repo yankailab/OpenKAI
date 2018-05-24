@@ -57,9 +57,4 @@ void Average::input(double v)
 	this->FilterBase::input(v);
 }
 
-void Average::reset(void)
-{
-	this->FilterBase::reset();
-}
-
 }

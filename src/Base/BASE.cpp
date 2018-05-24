@@ -25,7 +25,6 @@ BASE::BASE()
 
 BASE::~BASE()
 {
-	reset();
 }
 
 bool BASE::init(void* pKiss)
@@ -48,10 +47,6 @@ bool BASE::init(void* pKiss)
 
 	m_pKiss = pKiss;
 	return true;
-}
-
-void BASE::reset(void)
-{
 }
 
 bool BASE::link(void)

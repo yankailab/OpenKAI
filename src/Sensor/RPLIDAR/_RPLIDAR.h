@@ -27,7 +27,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void reset(void);
 
 	DIST_SENSOR_TYPE type(void);
 
@@ -51,5 +50,4 @@ public:
 };
 
 }
-
 #endif

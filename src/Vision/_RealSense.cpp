@@ -24,7 +24,6 @@ _RealSense::_RealSense()
 
 _RealSense::~_RealSense()
 {
-	reset();
 }
 
 bool _RealSense::init(void* pKiss)
@@ -39,12 +38,6 @@ bool _RealSense::init(void* pKiss)
 	KISSm(pK,rsRGB);
 
 	return true;
-}
-
-void _RealSense::reset()
-{
-	this->_DepthVisionBase::reset();
-
 }
 
 bool _RealSense::open(void)

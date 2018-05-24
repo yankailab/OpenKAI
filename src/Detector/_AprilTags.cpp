@@ -22,11 +22,27 @@ _AprilTags::_AprilTags()
 	m_tagScaling = 0.8;
 	m_tagSizeLim = 800;
 
-	reset();
+	for (int i = 0; i < m_numTags; i++)
+	{
+		for(int j=0; j<NUM_PER_TAG; j++)
+		{
+			m_pTag[i][j].m_tStamp = 0;
+			m_pTag[i][j].m_detInterval = 0;
+		}
+	}
 }
 
 _AprilTags::~_AprilTags()
 {
+	for (int i = 0; i < m_numTags; i++)
+	{
+		for(int j=0; j<NUM_PER_TAG; j++)
+		{
+			m_pTag[i][j].m_tStamp = 0;
+			m_pTag[i][j].m_detInterval = 0;
+		}
+	}
+
 }
 
 bool _AprilTags::init(void* pKiss)
@@ -168,18 +184,6 @@ int _AprilTags::getTags(int tagID, APRIL_TAG* pTag)
 	}
 
 	return k;
-}
-
-void _AprilTags::reset(void)
-{
-	for (int i = 0; i < m_numTags; i++)
-	{
-		for(int j=0; j<NUM_PER_TAG; j++)
-		{
-			m_pTag[i][j].m_tStamp = 0;
-			m_pTag[i][j].m_detInterval = 0;
-		}
-	}
 }
 
 bool _AprilTags::draw(void)

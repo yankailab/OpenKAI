@@ -25,7 +25,6 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	void reset(void);
 
 	bool bComplete(void);
 

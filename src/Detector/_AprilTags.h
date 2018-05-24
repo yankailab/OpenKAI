@@ -41,7 +41,6 @@ public:
 	bool draw(void);
 
 	int getTags(int tagID, APRIL_TAG* pTag);
-	void reset(void);
 
 private:
 	void detect(void);

@@ -16,7 +16,6 @@ _filterNoise::_filterNoise()
 
 _filterNoise::~_filterNoise()
 {
-	reset();
 }
 
 bool _filterNoise::init(void* pKiss)

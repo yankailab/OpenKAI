@@ -16,7 +16,6 @@ _filterFlip::_filterFlip()
 
 _filterFlip::~_filterFlip()
 {
-	reset();
 }
 
 bool _filterFlip::init(void* pKiss)

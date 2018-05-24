@@ -24,7 +24,6 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
-	virtual void reset(void);
 	virtual bool draw(void);
 	virtual void postProcessDepth(void);
 

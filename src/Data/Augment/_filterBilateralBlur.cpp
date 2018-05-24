@@ -16,7 +16,6 @@ _filterBilateralBlur::_filterBilateralBlur()
 
 _filterBilateralBlur::~_filterBilateralBlur()
 {
-	reset();
 }
 
 bool _filterBilateralBlur::init(void* pKiss)

@@ -19,7 +19,7 @@ _GStreamer::_GStreamer()
 
 _GStreamer::~_GStreamer()
 {
-	reset();
+	m_gst.release();
 }
 
 bool _GStreamer::init(void* pKiss)
@@ -30,12 +30,6 @@ bool _GStreamer::init(void* pKiss)
 
 	KISSm(pK, pipeline);
 	return true;
-}
-
-void _GStreamer::reset(void)
-{
-	this->_VisionBase::reset();
-	m_gst.release();
 }
 
 bool _GStreamer::link(void)

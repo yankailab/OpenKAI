@@ -45,7 +45,6 @@ public:
 	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);
-	void reset(void);
 
 public:
 	_Automaton* m_pAM;

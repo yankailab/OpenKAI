@@ -32,7 +32,13 @@ _ORB_SLAM2::_ORB_SLAM2()
 
 _ORB_SLAM2::~_ORB_SLAM2()
 {
-	reset();
+	if (m_pOS)
+	{
+		m_pOS->Shutdown();
+		delete m_pOS;
+	}
+
+	DEL(m_pFrame);
 }
 
 bool _ORB_SLAM2::init(void* pKiss)
@@ -63,19 +69,6 @@ bool _ORB_SLAM2::init(void* pKiss)
 	m_tStartup = 0;
 
 	return true;
-}
-
-void _ORB_SLAM2::reset(void)
-{
-	this->_ThreadBase::reset();
-
-	if (m_pOS)
-	{
-		m_pOS->Shutdown();
-		delete m_pOS;
-	}
-
-	DEL(m_pFrame);
 }
 
 bool _ORB_SLAM2::link(void)

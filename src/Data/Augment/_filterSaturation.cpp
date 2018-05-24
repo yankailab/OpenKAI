@@ -17,7 +17,6 @@ _filterSaturation::_filterSaturation()
 
 _filterSaturation::~_filterSaturation()
 {
-	reset();
 }
 
 bool _filterSaturation::init(void* pKiss)

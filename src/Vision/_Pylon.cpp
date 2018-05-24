@@ -24,7 +24,6 @@ _Pylon::_Pylon()
 
 _Pylon::~_Pylon()
 {
-	reset();
 }
 
 bool _Pylon::init(void* pKiss)
@@ -37,11 +36,6 @@ bool _Pylon::init(void* pKiss)
 	KISSm(pK, SN);
 
 	return true;
-}
-
-void _Pylon::reset(void)
-{
-	this->_VisionBase::reset();
 }
 
 bool _Pylon::link(void)

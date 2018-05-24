@@ -16,7 +16,6 @@ _filterHistEqualize::_filterHistEqualize()
 
 _filterHistEqualize::~_filterHistEqualize()
 {
-	reset();
 }
 
 bool _filterHistEqualize::init(void* pKiss)

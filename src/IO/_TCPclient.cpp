@@ -22,7 +22,7 @@ _TCPclient::_TCPclient()
 
 _TCPclient::~_TCPclient()
 {
-	reset();
+	close();
 }
 
 bool _TCPclient::init(void* pKiss)
@@ -68,12 +68,6 @@ void _TCPclient::close(void)
 	IF_(m_ioStatus!=io_opened);
 	::close(m_socket);
 	this->_IOBase::close();
-}
-
-void _TCPclient::reset(void)
-{
-	this->_IOBase::reset();
-	close();
 }
 
 bool _TCPclient::link(void)

@@ -19,6 +19,8 @@ _DataBase::_DataBase()
 
 _DataBase::~_DataBase()
 {
+	m_PNGcompress.clear();
+	m_vExtIn.clear();
 }
 
 bool _DataBase::init(void* pKiss)
@@ -43,13 +45,6 @@ bool _DataBase::init(void* pKiss)
 	m_PNGcompress.push_back(m_PNGcompression);
 
 	return true;
-}
-
-void _DataBase::reset(void)
-{
-	this->_ThreadBase::reset();
-	m_PNGcompress.clear();
-	m_vExtIn.clear();
 }
 
 bool _DataBase::link(void)

@@ -30,7 +30,6 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	void reset(void);
 
 	double dist(Rect* pR);
 	int getMotionDelta(vDouble3* pT, vDouble3* pR, uint64_t* pDT);

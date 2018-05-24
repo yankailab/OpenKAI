@@ -18,7 +18,6 @@ _LeddarVu::_LeddarVu()
 	m_showOriginOffsetX = 0.5;
 	m_showOriginOffsetY = 0.5;
 
-	m_nSegment = N_SEGMENT;
 	m_nDetection = 0;
 	m_lightSrcPwr = 0;
 	m_tStamp = 0;
@@ -34,7 +33,6 @@ _LeddarVu::_LeddarVu()
 	m_bSaturationCompensation = true;
 	m_bOvershootManagement = true;
 	m_oprMode = 1;
-
 }
 
 _LeddarVu::~_LeddarVu()
@@ -134,7 +132,7 @@ bool _LeddarVu::open(void)
 	if (m_pMb == nullptr)
 	{
 		m_pMb = NULL;
-		LOG_E("Unable to create the libmodbus context");
+		LOG_E("Cannot create the libmodbus context");
 		return false;
 	}
 
@@ -169,7 +167,6 @@ bool _LeddarVu::open(void)
 	memset(buf, 0, sizeof buf);
 	int nReceived = modbus_receive_confirmation(m_pMb, buf);
 	IF_Fl(nReceived < 0, "Error receiving data from the sensor: " + i2str(errno));
-
 	LOG_I("Received " + i2str(nReceived) + " bytes from the sensor");
 
 	IF_Fl(nReceived < 155, "Unexpected answer");
@@ -177,23 +174,26 @@ bool _LeddarVu::open(void)
 
 	if ((buf[2 + 150] == 9) && (buf[2 + 151] == 0))
 	{
-		LOG_I("Talking to a M16");
+		LOG_I("LeddarTech M16");
 	}
 	else if ((buf[2 + 150] == 7) && (buf[2 + 151] == 0))
 	{
-		LOG_I("Talking to an evaluation kit");
+		LOG_I("LeddarTech evaluation kit");
 	}
 	else if ((buf[2 + 50] == 10) && (buf[2 + 51] == 0))
 	{
-		LOG_I("Talking to a LeddarOne (please use the LeddarOne sample)");
+		LOG_I("LeddarOne (please use the LeddarOne sample)");
 	}
 	else
 	{
 		string str = "";
-
-		for (int i = 0; i < nReceived; ++i)
-		{
+		for (int i = 0; i < nReceived; i++)
 			str += (buf[i] >= 32) ? buf[i] : ' ';
+
+		string::size_type iSensor = str.find("Sensor");
+		if(iSensor != string::npos)
+		{
+			str = str.substr(iSensor,20);
 		}
 
 		LOG_I(str);
@@ -223,14 +223,14 @@ bool _LeddarVu::updateLidar(void)
 {
 	NULL_F(m_pMb);
 
-	const uint32_t N_REGISTERS = 15 + N_SEGMENT*2;
+	const uint32_t N_REGISTERS = 15 + m_nDiv*2;
 	uint16_t reg[N_REGISTERS];
 
 	int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
 	IF_F(nRead != N_REGISTERS);
 	IF_F(reg[0] == 0);
 
-	m_nSegment = reg[1];
+	m_nDiv = reg[1];
 	m_nDetection = reg[10];
 	m_lightSrcPwr = reg[11];
 	m_tStamp = reg[13] + (reg[14] << 16);
@@ -239,11 +239,11 @@ bool _LeddarVu::updateLidar(void)
 	const static double BASE_A = 1.0 / 64.0;
 
 	int i;
-	for (i = 0; i < N_SEGMENT; i++)
+	for (i = 0; i < m_nDiv; i++)
 	{
 		this->input(i*m_dDeg,
 					(double) reg[15 + i] * BASE_D,
-					(double) reg[15 + N_SEGMENT + i] * BASE_A);
+					(double) reg[15 + m_nDiv + i] * BASE_A);
 //		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
 //		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
 //		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
@@ -251,8 +251,8 @@ bool _LeddarVu::updateLidar(void)
 
 	IF_T(!m_bLog);
 
-	string log = " nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
-	for (i = 0; i < N_SEGMENT; i++)
+	string log = " nDiv:" + i2str(m_nDiv) + " nDet:" + i2str(m_nDetection);
+	for (i = 0; i < m_nDiv; i++)
 	{
 		DIST_SENSOR_DIV* pD = &m_pDiv[i];
 		log += " | " + f2str(pD->v()) + " (" + f2str(pD->a()) + ")";
@@ -320,11 +320,10 @@ bool _LeddarVu::updateLidarFast(void)
 
 	IF_T(!m_bLog);
 
-	string log = "nSeg:" + i2str(m_nSegment) + " nDet:" + i2str(m_nDetection);
-	for (int i = 0; i < N_SEGMENT; i++)
+	string log = "nSeg:" + i2str(m_nDiv) + " nDet:" + i2str(m_nDetection);
+	for (int i = 0; i < m_nDiv; i++)
 	{
-		Average* pD = &m_pDiv[i].m_fAvr;
-		log += " | " + f2str(pD->v());
+		log += " | " + f2str(m_pDiv[i].vAvr());
 	}
 	log += " |";
 	LOG_I(log);
@@ -353,7 +352,7 @@ bool _LeddarVu::draw(void)
 	}
 
 	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);
-	Scalar col = Scalar(200, 200, 200);
+	Scalar col = Scalar(0, 255, 0);
 	Scalar colD = Scalar(0, 0, 255);
 	double rMax = m_rMax * m_showScale;
 
@@ -369,10 +368,27 @@ bool _LeddarVu::draw(void)
 		pTo.x = sin(radTo);
 		pTo.y = -cos(radTo);
 
-		line(*pMat, pCenter + Point(pFrom.x*d,pFrom.y*d), pCenter + Point(pTo.x*d,pTo.y*d), colD, 5);
-		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 2);
-		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 2);
+		line(*pMat, pCenter + Point(pFrom.x*d,pFrom.y*d), pCenter + Point(pTo.x*d,pTo.y*d), colD, 2);
+		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
+		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
 	}
+
+	return true;
+}
+
+bool _LeddarVu::cli(int& iY)
+{
+	IF_F(!this->_DistSensorBase::cli(iY));
+
+	string msg;
+	msg += "nDiv=" + i2str(m_nDiv);
+	msg += " nDet=" + i2str(m_nDetection);
+	msg += " lightSrcPwr=" + i2str(m_lightSrcPwr);
+	msg += " tStamp=" + i2str(m_tStamp);
+
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

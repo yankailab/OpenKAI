@@ -31,7 +31,12 @@ _ThreadBase::_ThreadBase()
 
 _ThreadBase::~_ThreadBase()
 {
-	reset();
+	m_bThreadON = false;
+	IF_(m_threadID==0);
+	pthread_cancel(m_threadID);
+//	pthread_join(m_threadID, NULL);
+	m_threadID = 0;
+
 	pthread_mutex_destroy(&m_wakeupMutex);
 	pthread_cond_destroy(&m_wakeupSignal);
 }
@@ -46,15 +51,6 @@ bool _ThreadBase::init(void* pKiss)
 	setTargetFPS(FPS);
 
 	return true;
-}
-
-void _ThreadBase::reset(void)
-{
-	m_bThreadON = false;
-	IF_(m_threadID==0);
-	pthread_cancel(m_threadID);
-//	pthread_join(m_threadID, NULL);
-	m_threadID = 0;
 }
 
 bool _ThreadBase::link(void)

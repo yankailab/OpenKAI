@@ -29,9 +29,7 @@ private:
 	int m_iMid;
 	std::deque<double> m_sort;
 
-
 };
 
 }
-
 #endif

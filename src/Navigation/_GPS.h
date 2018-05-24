@@ -104,7 +104,6 @@ public:
 	UTM_POS* getUTM(void);
 	LL_POS* getInitLL(void);
 	UTM_POS* getInitUTM(void);
-	void reset(void);
 
 	void setSpeed(vDouble3* pDT, vDouble3* pDRot);
 

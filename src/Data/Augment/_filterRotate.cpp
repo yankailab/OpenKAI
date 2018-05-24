@@ -16,7 +16,6 @@ _filterRotate::_filterRotate()
 
 _filterRotate::~_filterRotate()
 {
-	reset();
 }
 
 bool _filterRotate::init(void* pKiss)

@@ -18,7 +18,7 @@ _Camera::_Camera()
 
 _Camera::~_Camera()
 {
-	reset();
+	m_camera.release();
 }
 
 bool _Camera::init(void* pKiss)
@@ -30,12 +30,6 @@ bool _Camera::init(void* pKiss)
 	KISSm(pK, deviceID);
 
 	return true;
-}
-
-void _Camera::reset(void)
-{
-	this->_VisionBase::reset();
-	m_camera.release();
 }
 
 bool _Camera::link(void)

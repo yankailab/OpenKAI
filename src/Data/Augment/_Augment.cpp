@@ -18,7 +18,6 @@ _Augment::_Augment()
 
 _Augment::~_Augment()
 {
-	reset();
 }
 
 bool _Augment::init(void* pKiss)
@@ -41,13 +40,6 @@ bool _Augment::init(void* pKiss)
 	}
 
 	return true;
-}
-
-void _Augment::reset(void)
-{
-	this->_DataBase::reset();
-
-	m_vFilter.clear();
 }
 
 bool _Augment::link(void)

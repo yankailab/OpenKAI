@@ -44,7 +44,9 @@ _ZED::_ZED()
 
 _ZED::~_ZED()
 {
-	reset();
+	DEL(m_pzImg);
+	DEL(m_pzDepth);
+	DEL(m_pZed);
 }
 
 bool _ZED::init(void* pKiss)
@@ -68,15 +70,6 @@ bool _ZED::init(void* pKiss)
 	m_pDepth = new Frame();
 
 	return true;
-}
-
-void _ZED::reset()
-{
-	this->_VisionBase::reset();
-
-	DEL(m_pzImg);
-	DEL(m_pzDepth);
-	DEL(m_pZed);
 }
 
 bool _ZED::link(void)

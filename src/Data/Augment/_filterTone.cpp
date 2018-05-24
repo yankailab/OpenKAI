@@ -16,7 +16,6 @@ _filterTone::_filterTone()
 
 _filterTone::~_filterTone()
 {
-	reset();
 }
 
 bool _filterTone::init(void* pKiss)

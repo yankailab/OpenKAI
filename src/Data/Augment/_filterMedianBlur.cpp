@@ -16,7 +16,6 @@ _filterMedianBlur::_filterMedianBlur()
 
 _filterMedianBlur::~_filterMedianBlur()
 {
-	reset();
 }
 
 bool _filterMedianBlur::init(void* pKiss)

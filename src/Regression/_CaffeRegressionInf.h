@@ -37,7 +37,6 @@ public:
 
 	bool addImg(cv::Mat& img);
 	double* getOutput(void);
-	void reset(void);
 
 private:
 	void update(void);

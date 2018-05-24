@@ -65,8 +65,23 @@ struct DIST_SENSOR_DIV
 	{
 		return m_a;
 	}
-};
 
+	double vAvr(void)
+	{
+		return m_fAvr.v();
+	}
+
+	double vMed(void)
+	{
+		return m_fMed.v();
+	}
+
+	void reset(void)
+	{
+		m_fMed.reset();
+		m_fAvr.reset();
+	}
+};
 
 class _DistSensorBase: public _ThreadBase
 {
@@ -77,7 +92,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool draw(void);
-	void reset(void);
+	bool cli(int& iY);
 
 	double rMin(void);
 	double rMax(void);
@@ -115,5 +130,4 @@ public:
 };
 
 }
-
 #endif

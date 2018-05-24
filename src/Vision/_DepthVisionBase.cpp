@@ -27,7 +27,8 @@ _DepthVisionBase::_DepthVisionBase()
 
 _DepthVisionBase::~_DepthVisionBase()
 {
-	reset();
+	DEL(m_pFilterMatrix);
+	DEL(m_pDepthShow);
 }
 
 bool _DepthVisionBase::init(void* pKiss)
@@ -54,14 +55,6 @@ bool _DepthVisionBase::init(void* pKiss)
 	}
 
 	return true;
-}
-
-void _DepthVisionBase::reset(void)
-{
-	this->_VisionBase::reset();
-
-	DEL(m_pFilterMatrix);
-	DEL(m_pDepthShow);
 }
 
 bool _DepthVisionBase::link(void)

@@ -34,7 +34,6 @@ public:
 	int array(string* pName, string* pVal, int nArray);
 	bool array(string* pName, value::array* pVal);
 
-
 };
 
 }

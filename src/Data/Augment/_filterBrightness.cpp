@@ -16,7 +16,6 @@ _filterBrightness::_filterBrightness()
 
 _filterBrightness::~_filterBrightness()
 {
-	reset();
 }
 
 bool _filterBrightness::init(void* pKiss)

@@ -16,7 +16,7 @@ _RPLIDAR::_RPLIDAR()
 
 _RPLIDAR::~_RPLIDAR()
 {
-	reset();
+	close();
 }
 
 bool _RPLIDAR::init(void* pKiss)
@@ -29,12 +29,6 @@ bool _RPLIDAR::init(void* pKiss)
 	KISSm(pK,baud);
 
 	return true;
-}
-
-void _RPLIDAR::reset(void)
-{
-	this->_DistSensorBase::reset();
-	close();
 }
 
 bool _RPLIDAR::start(void)

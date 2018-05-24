@@ -126,11 +126,6 @@ bool Startup::start(Kiss* pKiss)
 
 	for (i = 0; i < m_nInst; i++)
 	{
-		m_ppInst[i]->reset();
-	}
-
-	for (i = 0; i < m_nInst; i++)
-	{
 		DEL(m_ppInst[i]);
 	}
 

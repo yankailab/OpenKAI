@@ -53,6 +53,7 @@
 #define NULL_Nl(x,y) if(x==NULL){LOG_E(y);return NULL;}
 
 #define DEL(x) if(x){delete x;x=NULL;}
+#define DEL_ARRAY(x) if(x){delete[] x;x=NULL;}
 #define SWAP(x,y,t) {t=x;x=y;y=t;}
 
 #endif

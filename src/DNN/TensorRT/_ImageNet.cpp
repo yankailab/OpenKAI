@@ -23,7 +23,10 @@ _ImageNet::_ImageNet()
 
 _ImageNet::~_ImageNet()
 {
-	reset();
+	DEL(m_pRGBA);
+	DEL(m_pIN);
+	DEL(m_pmClass);
+	DEL(m_piClass);
 }
 
 bool _ImageNet::init(void* pKiss)
@@ -42,16 +45,6 @@ bool _ImageNet::init(void* pKiss)
 	m_piClass = new int[m_nBatch];
 
 	return true;
-}
-
-void _ImageNet::reset(void)
-{
-	this->_DetectorBase::reset();
-
-	DEL(m_pRGBA);
-	DEL(m_pIN);
-	DEL(m_pmClass);
-	DEL(m_piClass);
 }
 
 bool _ImageNet::link(void)
