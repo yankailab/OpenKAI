@@ -21,14 +21,6 @@
 #define KISSm_E(x,y) F_ERROR_F(x->v(#y, &m_##y))
 #define KISSm_F(x,y) F_FATAL_F(x->v(#y, &m_##y))
 
-#define KISSim(x,y) x->v(#y, (int*)&m_##y)
-#define KISSim_E(x,y) F_ERROR_F(x->v(#y, (int*)&m_##y))
-#define KISSim_F(x,y) F_FATAL_F(x->v(#y, (int*)&m_##y))
-
-#define KISSdm(x,y) x->v(#y, (double*)&m_##y)
-#define KISSdm_E(x,y) F_ERROR_F(x->v(#y, (double*)&m_##y))
-#define KISSdm_F(x,y) F_FATAL_F(x->v(#y, (double*)&m_##y))
-
 #define F_(x) if(x==false){return;}
 #define IF_T(x) if(x){return true;}
 #define IF_F(x) if(x){return false;}

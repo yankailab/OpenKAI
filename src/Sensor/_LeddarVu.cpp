@@ -54,20 +54,20 @@ bool _LeddarVu::init(void* pKiss)
 	KISSm(pK, baud);
 	KISSm(pK, slaveAddr);
 	KISSm(pK, bUse0x41);
-	KISSdm(pK, showOriginOffsetX);
-	KISSdm(pK, showOriginOffsetY);
+	KISSm(pK, showOriginOffsetX);
+	KISSm(pK, showOriginOffsetY);
 
-	KISSim(pK, nAccumulationsExpo);
-	KISSim(pK, nOversamplingsExpo);
-	KISSim(pK, nPoint);
-	KISSim(pK, lightSrcPwr);
+	KISSm(pK, nAccumulationsExpo);
+	KISSm(pK, nOversamplingsExpo);
+	KISSm(pK, nPoint);
+	KISSm(pK, lightSrcPwr);
 	KISSm(pK, bAutoLightSrcPwr);
 	KISSm(pK, bDemergeObj);
 	KISSm(pK, bStaticNoiseRemoval);
 	KISSm(pK, bPrecision);
 	KISSm(pK, bSaturationCompensation);
 	KISSm(pK, bOvershootManagement);
-	KISSim(pK, oprMode);
+	KISSm(pK, oprMode);
 
 	return true;
 }

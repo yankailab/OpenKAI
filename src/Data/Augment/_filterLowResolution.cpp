@@ -25,7 +25,7 @@ bool _filterLowResolution::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSdm(pK, minScale);
+	KISSm(pK, minScale);
 
 	return true;
 }

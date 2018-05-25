@@ -25,7 +25,7 @@ bool _filterSaturation::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSdm(pK,dSaturation);
+	KISSm(pK,dSaturation);
 
 	return true;
 }

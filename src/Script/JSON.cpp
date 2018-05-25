@@ -42,7 +42,31 @@ bool JSON::v(string* pName, bool* pVal)
 	value var = m_JSON.get(*pName);
 	IF_F(!var.is<int>());
 
-	*pVal = (((int) var.get<double>()) == 1 ? true : false);
+	*pVal = (((int) var.get<double>()) != 0 ? true : false);
+	return true;
+}
+
+bool JSON::v(string* pName, uint16_t* pVal)
+{
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
+
+	value var = m_JSON.get(*pName);
+	IF_F(!var.is<int>());
+
+	*pVal = (uint16_t) var.get<double>();
+	return true;
+}
+
+bool JSON::v(string* pName, uint32_t* pVal)
+{
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
+
+	value var = m_JSON.get(*pName);
+	IF_F(!var.is<int>());
+
+	*pVal = (uint32_t) var.get<double>();
 	return true;
 }
 
@@ -52,7 +76,7 @@ bool JSON::v(string* pName, uint64_t* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(*pName);
-	IF_F(!var.is<double>());
+	IF_F(!var.is<int>());
 
 	*pVal = (uint64_t) var.get<double>();
 	return true;
@@ -122,7 +146,7 @@ int JSON::array(string* pName, int* pVal, int nArray)
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
 		if(i >= nArray)return i;
-		IF_CONT(!it->is<double>());
+		IF_CONT(!it->is<int>());
 		pVal[i] = (int)it->get<double>();
 		i++;
 	}

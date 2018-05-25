@@ -32,7 +32,7 @@ bool _FilterBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSdm(pK, dRand);
+	KISSm(pK, dRand);
 	KISSm(pK, nProduce);
 	KISSm(pK, noiseMean);
 	KISSm(pK, noiseDev);
