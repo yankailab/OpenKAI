@@ -14,6 +14,10 @@ APcopter_base::APcopter_base()
 	m_freqGlobalPos = 0;
 	m_freqHeartbeat = 0;
 
+	m_pRoll = NULL;
+	m_pPitch = NULL;
+	m_pYaw = NULL;
+	m_pAlt = NULL;
 }
 
 APcopter_base::~APcopter_base()
@@ -46,9 +50,27 @@ bool APcopter_base::link(void)
 	IF_F(!this->ActionBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
-	string iName = "";
-	F_INFO(pK->v("_Mavlink", &iName));
+	string iName;
+
+	iName = "";
+	pK->v("_Mavlink", &iName);
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	pK->v("PIDroll", &iName);
+	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	pK->v("PIDpitch", &iName);
+	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	pK->v("PIDyaw", &iName);
+	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+
+	iName = "";
+	pK->v("PIDalt", &iName);
+	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

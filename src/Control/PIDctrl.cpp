@@ -17,6 +17,8 @@ PIDctrl::PIDctrl()
 	m_Imax = 0;
 	m_D = 0;
 	m_dT = 0;
+	m_min = 0.0;
+	m_max = 0.0;
 
 	resetState();
 }
@@ -35,6 +37,8 @@ bool PIDctrl::init(void* pKiss)
 	KISSm(pK, Imax);
 	KISSm(pK, D);
 	KISSm(pK, dT);
+	KISSm(pK, min);
+	KISSm(pK, max);
 
 	return true;
 }
@@ -47,7 +51,7 @@ bool PIDctrl::link(void)
 	return true;
 }
 
-void PIDctrl::update(double v, double vTarget)
+double PIDctrl::update(double v, double vTarget)
 {
 	const static double ovT = 1.0/USEC_1SEC;
 	uint64_t tNow = getTimeUsec();
@@ -56,6 +60,25 @@ void PIDctrl::update(double v, double vTarget)
 	m_v = v;
 	m_vTarget = vTarget;
 
+	double ovDT = 1.0 / (double)(tNow - m_tLastUpdate);
+	m_tLastUpdate = tNow;
+
+	m_eOld = m_e;
+	m_e = m_vTarget - m_vPred;
+	m_eInteg += m_e;
+
+	double o = m_P * m_e
+			 + m_D * (m_e - m_eOld) * ovDT
+			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
+
+	m_output = constrain(o, m_min, m_max);
+
+	return m_output;
+}
+
+double PIDctrl::o(void)
+{
+	return m_output;
 }
 
 bool PIDctrl::draw(void)
@@ -66,6 +89,14 @@ bool PIDctrl::draw(void)
 bool PIDctrl::cli(int& iY)
 {
 	IF_F(!this->ControlBase::cli(iY));
+
+	string msg;
+	msg = "v=" + f2str(m_v)
+			+ " vPred=" + f2str(m_vPred)
+			+ " vTarget=" + f2str(m_vTarget);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }
@@ -80,6 +111,7 @@ void PIDctrl::resetState(void)
 	m_eOld = 0.0;
 	m_eInteg = 0.0;
 
+	m_tLastUpdate = 0;
 }
 
 }

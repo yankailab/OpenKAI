@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
+#include "../../../Control/PIDctrl.h"
 #include "../../ActionBase.h"
 
 namespace kai
@@ -20,6 +21,11 @@ public:
 	bool draw(void);
 
 public:
+	PIDctrl* m_pRoll;
+	PIDctrl* m_pPitch;
+	PIDctrl* m_pYaw;
+	PIDctrl* m_pAlt;
+
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
@@ -28,7 +34,6 @@ public:
 	int m_freqAtti;
 	int m_freqGlobalPos;
 	int m_freqHeartbeat;
-
 
 };
 
@@ -54,8 +59,6 @@ enum control_mode_t {
     AVOID_ADSB =   19,  // automatic avoidance of obstacles in the macro scale - e.g. full-sized aircraft
     GUIDED_NOGPS = 20,  // guided mode but only accepts attitude and altitude
 };
-
  */
-
 }
 #endif

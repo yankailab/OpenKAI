@@ -21,7 +21,8 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
-	virtual void update(double v, double vTarget);
+	virtual double update(double v, double vTarget);
+	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 	virtual void resetState(void);
@@ -40,6 +41,12 @@ public:
 	double m_e;
 	double m_eOld;
 	double m_eInteg;
+
+	double m_min;
+	double m_max;
+	double m_output;
+
+	uint64_t m_tLastUpdate;
 
 };
 
