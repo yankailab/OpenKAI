@@ -14,15 +14,6 @@ APcopter_base::APcopter_base()
 	m_freqGlobalPos = 0;
 	m_freqHeartbeat = 0;
 
-	m_pidRoll.reset();
-	m_pidPitch.reset();
-	m_pidYaw.reset();
-	m_pidThr.reset();
-
-	m_ctrlRoll.reset();
-	m_ctrlPitch.reset();
-	m_ctrlYaw.reset();
-	m_ctrlThr.reset();
 }
 
 APcopter_base::~APcopter_base()
@@ -44,57 +35,6 @@ bool APcopter_base::init(void* pKiss)
 	else
 		m_freqHeartbeat = 0;
 
-	Kiss* pCC;
-	APcopter_PID cPID;
-
-	pCC = pK->o("roll");
-	cPID.reset();
-	pCC->v("P", &cPID.m_P);
-	pCC->v("I", &cPID.m_I);
-	pCC->v("Imax", &cPID.m_Imax);
-	pCC->v("D", &cPID.m_D);
-	pCC->v("dT", &cPID.m_dT);
-	pCC->v("rate", &cPID.m_rate);
-	pCC->v("lim", &cPID.m_lim);
-	cPID.m_lim *= DEG_RAD;
-	m_pidRoll = cPID;
-
-	pCC = pK->o("pitch");
-	cPID.reset();
-	pCC->v("P", &cPID.m_P);
-	pCC->v("I", &cPID.m_I);
-	pCC->v("Imax", &cPID.m_Imax);
-	pCC->v("D", &cPID.m_D);
-	pCC->v("dT", &cPID.m_dT);
-	pCC->v("rate", &cPID.m_rate);
-	pCC->v("lim", &cPID.m_lim);
-	cPID.m_lim *= DEG_RAD;
-	m_pidPitch = cPID;
-
-	pCC = pK->o("thr");
-	cPID.reset();
-	pCC->v("P", &cPID.m_P);
-	pCC->v("I", &cPID.m_I);
-	pCC->v("Imax", &cPID.m_Imax);
-	pCC->v("D", &cPID.m_D);
-	pCC->v("dT", &cPID.m_dT);
-	pCC->v("rate", &cPID.m_rate);
-	pCC->v("lim", &cPID.m_lim);
-	m_pidThr = cPID;
-
-	pCC = pK->o("yaw");
-	cPID.reset();
-	pCC->v("P", &cPID.m_P);
-	pCC->v("I", &cPID.m_I);
-	pCC->v("Imax", &cPID.m_Imax);
-	pCC->v("D", &cPID.m_D);
-	pCC->v("dT", &cPID.m_dT);
-	pCC->v("rate", &cPID.m_rate);
-	pCC->v("lim", &cPID.m_lim);
-	cPID.m_lim *= DEG_RAD;
-	m_pidYaw = cPID;
-
-	//init controls
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 

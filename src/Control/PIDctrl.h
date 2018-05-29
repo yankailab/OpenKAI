@@ -21,10 +21,9 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
-	virtual void update(void);
+	virtual void update(double v, double vTarget);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
-
 	virtual void resetState(void);
 
 public:

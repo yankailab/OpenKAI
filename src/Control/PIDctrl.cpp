@@ -47,8 +47,14 @@ bool PIDctrl::link(void)
 	return true;
 }
 
-void PIDctrl::update(void)
+void PIDctrl::update(double v, double vTarget)
 {
+	const static double ovT = 1.0/USEC_1SEC;
+	uint64_t tNow = getTimeUsec();
+
+	m_vPred = v + (v - m_v) * ovT * m_dT;
+	m_v = v;
+	m_vTarget = vTarget;
 
 }
 
@@ -73,6 +79,7 @@ void PIDctrl::resetState(void)
 	m_e = 0.0;
 	m_eOld = 0.0;
 	m_eInteg = 0.0;
+
 }
 
 }
