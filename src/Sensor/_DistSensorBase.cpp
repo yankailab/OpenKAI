@@ -170,9 +170,32 @@ double _DistSensorBase::d(double deg)
 	return d;
 }
 
+double _DistSensorBase::dMin(void)
+{
+	if(!m_bReady)return -1.0;
+
+	double dist = m_rMax;
+	int iMin = -1;
+
+	for(int i=0; i<m_nDiv; i++)
+	{
+		double d = m_pDiv[i].vAvr();
+		IF_CONT(d <= m_rMin);
+		IF_CONT(d > m_rMax * 0.99);
+		IF_CONT(d >= dist);
+
+		dist = d;
+		iMin = i;
+	}
+
+	if(iMin < 0)return -1.0;
+
+	return dist;
+}
+
 double _DistSensorBase::dMin(double degFrom, double degTo)
 {
-	IF_F(!m_bReady);
+	if(!m_bReady)return -1.0;
 
 	degFrom += m_hdg;
 	degTo += m_hdg;

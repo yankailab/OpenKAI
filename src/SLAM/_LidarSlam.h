@@ -12,6 +12,8 @@
 #include "../Sensor/_DistSensorBase.h"
 #include "_SlamBase.h"
 
+#define LIDARSLAM_N_LIDAR 3
+
 namespace kai
 {
 
@@ -37,7 +39,10 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 
+	void reset(void);
+
 private:
+	void updateAxis(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -47,7 +52,8 @@ private:
 	}
 
 public:
-	LIDARSLAM_LIDAR* m_pDS;
+	LIDARSLAM_LIDAR m_pDS[LIDARSLAM_N_LIDAR];
+	int	m_nDS;
 
 };
 

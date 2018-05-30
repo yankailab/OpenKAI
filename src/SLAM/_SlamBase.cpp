@@ -12,7 +12,8 @@ namespace kai
 
 _SlamBase::_SlamBase()
 {
-	resetState();
+	m_bReady = false;
+	reset();
 }
 
 _SlamBase::~_SlamBase()
@@ -72,7 +73,7 @@ bool _SlamBase::cli(int& iY)
 	return true;
 }
 
-void _SlamBase::resetState(void)
+void _SlamBase::reset(void)
 {
 	m_pos.init();
 }

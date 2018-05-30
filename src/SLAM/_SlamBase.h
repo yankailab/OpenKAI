@@ -26,9 +26,10 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 
-	void resetState(void);
+	void reset(void);
 
 public:
+	bool	 m_bReady;
 	vDouble3 m_pos;
 
 };

@@ -12,7 +12,9 @@ namespace kai
 
 _LidarSlam::_LidarSlam()
 {
-	m_pDS = NULL;
+	m_nDS = 0;
+
+	reset();
 }
 
 _LidarSlam::~_LidarSlam()
@@ -25,8 +27,6 @@ bool _LidarSlam::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-//	KISSm(pK, width);
-
 	return true;
 }
 
@@ -37,9 +37,30 @@ bool _LidarSlam::link(void)
 
 	string iName;
 
-//	iName = "";
-//	pK->v("_VisionBase", &iName);
-//	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
+	Kiss** pItr = pK->getChildItr();
+	int i=0;
+	while (pItr[i])
+	{
+		Kiss* pP = pItr[i];
+		IF_F(m_nDS >= LIDARSLAM_N_LIDAR);
+		i++;
+
+		LIDARSLAM_LIDAR* pL = &m_pDS[m_nDS];
+		pL->init();
+
+		iName = "";
+		F_ERROR_F(pP->v("_DistSensorBase", &iName));
+		pL->m_pD = (_DistSensorBase*)(pK->getChildInstByName(&iName));
+		if(!pL->m_pD)
+		{
+			LOG_I("_DistSensorBase not found: " + iName);
+			continue;
+		}
+
+		m_nDS++;
+	}
+
+	m_bReady = true;
 
 	return true;
 }
@@ -71,6 +92,14 @@ void _LidarSlam::update(void)
 
 void _LidarSlam::detect(void)
 {
+	IF_(!m_bReady);
+
+	_DistSensorBase* pX = m_pDS[0].m_pD;
+	_DistSensorBase* pY = m_pDS[1].m_pD;
+	_DistSensorBase* pZ = m_pDS[2].m_pD;
+
+
+
 }
 
 bool _LidarSlam::draw(void)
@@ -98,6 +127,11 @@ bool _LidarSlam::cli(int& iY)
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
+}
+
+void _LidarSlam::reset(void)
+{
+	this->_SlamBase::reset();
 }
 
 }

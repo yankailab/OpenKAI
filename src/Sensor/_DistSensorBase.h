@@ -107,6 +107,7 @@ public:
 	virtual double d(vDouble4* pROI, vInt2* pPos);
 	virtual double d(double deg);
 
+	virtual double dMin(void);
 	virtual double dMin(double degFrom, double degTo);
 	virtual double dMax(double degFrom, double degTo);
 	virtual double dAvr(double degFrom, double degTo);
