@@ -39,8 +39,8 @@ struct DIST_SENSOR_DIV
 	{
 		m_fMed.init(nMed,0);
 		m_fAvr.init(nAvr,0);
-		m_d = 0.0;
-		m_a = 0.0;
+		m_d = -1.0;
+		m_a = -1.0;
 	}
 
 	void input(double d)
@@ -56,7 +56,7 @@ struct DIST_SENSOR_DIV
 		m_a = a;
 	}
 
-	double v(void)
+	double d(void)
 	{
 		return m_d;
 	}
@@ -66,12 +66,12 @@ struct DIST_SENSOR_DIV
 		return m_a;
 	}
 
-	double vAvr(void)
+	double dAvr(void)
 	{
 		return m_fAvr.v();
 	}
 
-	double vMed(void)
+	double dMed(void)
 	{
 		return m_fMed.v();
 	}
@@ -108,6 +108,7 @@ public:
 	virtual double d(double deg);
 
 	virtual double dMin(void);
+	virtual double dMax(void);
 	virtual double dMin(double degFrom, double degTo);
 	virtual double dMax(double degFrom, double degTo);
 	virtual double dAvr(double degFrom, double degTo);
@@ -127,7 +128,6 @@ public:
 	double  m_showScale;
 	double  m_showDegOffset;
 	uint16_t m_bReady;
-
 };
 
 }

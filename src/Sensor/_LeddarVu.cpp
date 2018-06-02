@@ -255,7 +255,7 @@ bool _LeddarVu::updateLidar(void)
 	for (i = 0; i < m_nDiv; i++)
 	{
 		DIST_SENSOR_DIV* pD = &m_pDiv[i];
-		log += " | " + f2str(pD->v()) + " (" + f2str(pD->a()) + ")";
+		log += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
 	}
 	log += " |";
 	LOG_I(log);
@@ -323,7 +323,7 @@ bool _LeddarVu::updateLidarFast(void)
 	string log = "nSeg:" + i2str(m_nDiv) + " nDet:" + i2str(m_nDetection);
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		log += " | " + f2str(m_pDiv[i].vAvr());
+		log += " | " + f2str(m_pDiv[i].dAvr());
 	}
 	log += " |";
 	LOG_I(log);
@@ -360,7 +360,7 @@ bool _LeddarVu::draw(void)
 	{
 		double radFrom = (i*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
 		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
-		double d = m_pDiv[i].v() * m_showScale;
+		double d = m_pDiv[i].d() * m_showScale;
 
 		vDouble2 pFrom,pTo;
 		pFrom.x = sin(radFrom);

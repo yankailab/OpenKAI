@@ -20,10 +20,24 @@ namespace kai
 struct LIDARSLAM_LIDAR
 {
 	_DistSensorBase* m_pD;
+	double	m_d;
 
 	void init(void)
 	{
 		m_pD = NULL;
+		m_d = -1;
+	}
+
+	void update(void)
+	{
+		IF_(!m_pD);
+		m_d = m_pD->dMin();
+	}
+
+	bool bLock(void)
+	{
+		IF_F(m_d < 0.0);
+		return true;
 	}
 };
 

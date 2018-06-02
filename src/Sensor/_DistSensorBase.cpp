@@ -163,7 +163,7 @@ double _DistSensorBase::d(double deg)
 	int iDiv = (int) (deg * m_dDegInv);
 	if(iDiv >= m_nDiv)iDiv = m_nDiv;
 
-	double d = m_pDiv[iDiv].vAvr();
+	double d = m_pDiv[iDiv].dAvr();
 	if(d <= m_rMin)return -1.0;
 	if(d > m_rMax)return -1.0;
 
@@ -174,14 +174,17 @@ double _DistSensorBase::dMin(void)
 {
 	if(!m_bReady)return -1.0;
 
+	double degMid = 0.5 * m_fovH;
 	double dist = m_rMax;
 	int iMin = -1;
 
 	for(int i=0; i<m_nDiv; i++)
 	{
-		double d = m_pDiv[i].vAvr();
+		double d = m_pDiv[i].dAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax * 0.99);
+
+		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
 		IF_CONT(d >= dist);
 
 		dist = d;
@@ -189,7 +192,31 @@ double _DistSensorBase::dMin(void)
 	}
 
 	if(iMin < 0)return -1.0;
+	return dist;
+}
 
+double _DistSensorBase::dMax(void)
+{
+	if(!m_bReady)return -1.0;
+
+	double degMid = 0.5 * m_fovH;
+	double dist = 0.0;
+	int iMax = -1;
+
+	for(int i=0; i<m_nDiv; i++)
+	{
+		double d = m_pDiv[i].dAvr();
+		IF_CONT(d <= m_rMin);
+		IF_CONT(d > m_rMax);
+
+		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		IF_CONT(d <= dist);
+
+		dist = d;
+		iMax = i;
+	}
+
+	if(iMax < 0)return -1.0;
 	return dist;
 }
 
@@ -200,7 +227,6 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 	degFrom += m_hdg;
 	degTo += m_hdg;
 	double degMid = 0.5 * (degFrom + degTo);
-
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
 
@@ -213,10 +239,9 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		double d = m_pDiv[iDiv].vAvr();
+		double d = m_pDiv[iDiv].dAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax * 0.99);
-
 		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
 		IF_CONT(d >= dist);
 
@@ -225,7 +250,6 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 	}
 
 	if(iMin < 0)return -1.0;
-
 	return dist;
 }
 
@@ -235,7 +259,7 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 
 	degFrom += m_hdg;
 	degTo += m_hdg;
-
+	double degMid = 0.5 * (degFrom + degTo);
 	int iFrom = (int) (degFrom * m_dDegInv);
 	int iTo = (int) (degTo * m_dDegInv);
 
@@ -248,9 +272,10 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		double d = m_pDiv[iDiv].vAvr();
+		double d = m_pDiv[iDiv].dAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax);
+		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
 		IF_CONT(d <= dist);
 
 		dist = d;
@@ -280,7 +305,7 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 		while (iDiv >= m_nDiv)
 			iDiv -= m_nDiv;
 
-		double d = m_pDiv[iDiv].vAvr();
+		double d = m_pDiv[iDiv].dAvr();
 		IF_CONT(d <= m_rMin);
 		IF_CONT(d > m_rMax);
 
@@ -312,7 +337,7 @@ bool _DistSensorBase::draw(void)
 
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		double dist = m_pDiv[i].vAvr();
+		double dist = m_pDiv[i].dAvr();
 		IF_CONT(dist <= m_rMin);
 		IF_CONT(dist > m_rMax);
 		dist *= m_showScale;
@@ -335,7 +360,7 @@ bool _DistSensorBase::cli(int& iY)
 	string msg = "| ";
 	for (int i = 0; i < m_nDiv; i++)
 	{
-		msg += f2str(m_pDiv[i].vAvr()) + " | ";
+		msg += f2str(m_pDiv[i].dAvr()) + " | ";
 	}
 
 	COL_MSG;

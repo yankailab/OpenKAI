@@ -94,12 +94,16 @@ void _LidarSlam::detect(void)
 {
 	IF_(!m_bReady);
 
-	_DistSensorBase* pX = m_pDS[0].m_pD;
-	_DistSensorBase* pY = m_pDS[1].m_pD;
-	_DistSensorBase* pZ = m_pDS[2].m_pD;
+	int i;
+	for(i=0; i<m_nDS; i++)
+	{
+		LIDARSLAM_LIDAR* pD = &m_pDS[i];
+		pD->update();
+	}
 
-
-
+	m_pos.x = m_pDS[0].m_d;
+	m_pos.y = m_pDS[1].m_d;
+	m_pos.z = m_pDS[2].m_d;
 }
 
 bool _LidarSlam::draw(void)

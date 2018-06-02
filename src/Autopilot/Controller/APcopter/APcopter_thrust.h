@@ -3,6 +3,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_thrust_H_
 
 #include "../../../Base/common.h"
+#include "../../../SLAM/_SlamBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -24,6 +25,9 @@ private:
 	void updateMavlink(void);
 
 	APcopter_base* m_pAP;
+	_SlamBase* m_pSB;
+
+	vDouble3 m_pTarget;
 
 };
 
