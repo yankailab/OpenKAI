@@ -21,6 +21,7 @@ public:
 	void update(void);
 	bool draw(void);
 	bool cli(int& iY);
+	void cmd(void);
 
 public:
 	PIDctrl* m_pRoll;
@@ -33,6 +34,8 @@ public:
 	_IOBase* m_pCmd;
 
 	vDouble3 m_pTarget;
+	vDouble3 m_pTargetMin;
+	vDouble3 m_pTargetMax;
 	uint16_t m_pwmLow;
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;

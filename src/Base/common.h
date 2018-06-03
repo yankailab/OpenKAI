@@ -83,6 +83,14 @@ struct vDouble4
 		return v;
 	}
 
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
+		z = r;
+		w = r;
+	}
+
 	inline void operator+=(vDouble4& r)
     {
 		x += r.x;
@@ -170,6 +178,13 @@ struct vDouble3
 		return v;
 	}
 
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
+		z = r;
+	}
+
 	inline void operator+=(vDouble3& r)
     {
 		x += r.x;
@@ -245,6 +260,12 @@ struct vDouble2
 		v.x = x / r;
 		v.y = y / r;
 		return v;
+	}
+
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
 	}
 
 	inline void operator+=(vDouble2& r)

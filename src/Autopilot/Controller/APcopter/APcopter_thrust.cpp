@@ -8,9 +8,9 @@ APcopter_thrust::APcopter_thrust()
 	m_pAP = NULL;
 	m_pSB = NULL;
 	m_pCmd = NULL;
-	m_pTarget.x = -1;
-	m_pTarget.y = -1;
-	m_pTarget.z = -1;
+	m_pTarget = -1;
+	m_pTargetMin = 0;
+	m_pTargetMax = DBL_MAX;
 	m_pwmLow = 1000;
 	m_pwmMid = 1500;
 	m_pwmHigh = 2000;
@@ -48,6 +48,14 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->v("targetX", &m_pTarget.x);
 	pK->v("targetY", &m_pTarget.y);
 	pK->v("targetZ", &m_pTarget.z);
+
+	pK->v("targetXmin", &m_pTargetMin.x);
+	pK->v("targetYmin", &m_pTargetMin.y);
+	pK->v("targetZmin", &m_pTargetMin.z);
+
+	pK->v("targetXmax", &m_pTargetMax.x);
+	pK->v("targetYmax", &m_pTargetMax.y);
+	pK->v("targetZmax", &m_pTargetMax.z);
 
 	return true;
 }
@@ -108,11 +116,7 @@ void APcopter_thrust::update(void)
 	NULL_(m_pYaw);
 	NULL_(m_pAlt);
 
-	//mode change
-	if(m_pCmd)
-	{
-
-	}
+	cmd();
 
 	//update thrust output
 	vDouble3* pV = &m_pSB->m_pos;
@@ -158,8 +162,46 @@ void APcopter_thrust::update(void)
 	m_rc.chan6_raw = pwmR;
 	m_rc.chan7_raw = pwmB;
 	m_rc.chan8_raw = pwmL;
+
+	IF_(!isActive());
 	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
 
+}
+
+void APcopter_thrust::cmd(void)
+{
+	char buf[32];
+	string str;
+
+	NULL_(m_pCmd);
+	IF_(m_pCmd->read((uint8_t*) &buf, 32) <= 0);
+	str = buf;
+
+	std::string::size_type iDiv = str.find(' ');
+	if(iDiv == std::string::npos)
+	{
+		iDiv = str.length()+1;
+	}
+
+	string cmd = str.substr(0, iDiv-1);
+	string v = str.substr(iDiv+1, str.length()-iDiv);
+
+	if(cmd=="state")
+	{
+		m_pAM->transit(&v);
+	}
+	else if(cmd=="x")
+	{
+		m_pTarget.x = constrain(atof(v.c_str()), m_pTargetMin.x, m_pTargetMax.x);
+	}
+	else if(cmd=="y")
+	{
+		m_pTarget.y = constrain(atof(v.c_str()), m_pTargetMin.y, m_pTargetMax.y);
+	}
+	else if(cmd=="z")
+	{
+		m_pTarget.z = constrain(atof(v.c_str()), m_pTargetMin.z, m_pTargetMax.z);
+	}
 }
 
 bool APcopter_thrust::draw(void)
