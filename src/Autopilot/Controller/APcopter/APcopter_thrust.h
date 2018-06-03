@@ -20,14 +20,24 @@ public:
 	bool link(void);
 	void update(void);
 	bool draw(void);
+	bool cli(int& iY);
 
-private:
-	void updateMavlink(void);
+public:
+	PIDctrl* m_pRoll;
+	PIDctrl* m_pPitch;
+	PIDctrl* m_pYaw;
+	PIDctrl* m_pAlt;
 
 	APcopter_base* m_pAP;
 	_SlamBase* m_pSB;
+	_IOBase* m_pCmd;
 
 	vDouble3 m_pTarget;
+	uint16_t m_pwmLow;
+	uint16_t m_pwmMid;
+	uint16_t m_pwmHigh;
+
+	__mavlink_rc_channels_override_t m_rc;
 
 };
 

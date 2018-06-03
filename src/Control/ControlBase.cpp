@@ -52,7 +52,7 @@ bool ControlBase::cli(int& iY)
 	return true;
 }
 
-void ControlBase::resetState(void)
+void ControlBase::reset(void)
 {
 
 }

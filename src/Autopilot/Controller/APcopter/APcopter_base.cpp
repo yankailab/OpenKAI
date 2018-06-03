@@ -13,11 +13,6 @@ APcopter_base::APcopter_base()
 	m_freqAtti = 0;
 	m_freqGlobalPos = 0;
 	m_freqHeartbeat = 0;
-
-	m_pRoll = NULL;
-	m_pPitch = NULL;
-	m_pYaw = NULL;
-	m_pAlt = NULL;
 }
 
 APcopter_base::~APcopter_base()
@@ -56,22 +51,6 @@ bool APcopter_base::link(void)
 	pK->v("_Mavlink", &iName);
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 
-	iName = "";
-	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
-
-	iName = "";
-	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
-
-	iName = "";
-	pK->v("PIDyaw", &iName);
-	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
-
-	iName = "";
-	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -108,28 +87,7 @@ void APcopter_base::update(void)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 	}
 
-	//test
-	static uint16_t rcPWM = 1100;
-	rcPWM += 10;
-	if(rcPWM >= 1900)rcPWM = 1100;
-
-	uint16_t rcN = 1500;
-
-	__mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = rcN;
-	rc.chan2_raw = rcN;
-	rc.chan3_raw = (uint16_t)rcPWM;
-	rc.chan4_raw = rcN;
-	rc.chan5_raw = rcN;
-	rc.chan6_raw = (uint16_t)rcPWM;
-	rc.chan7_raw = (uint16_t)rcPWM;
-	rc.chan8_raw = rcN;
-	m_pMavlink->rcChannelsOverride(rc);
-	LOG_I("RC PWM: "+i2str(rcPWM));
-
-	m_pMavlink->clComponentArmDisarm(1);
-
-//	m_pMavlink->clDoSetServo(6,rcPWM);
+	//m_pMavlink->clComponentArmDisarm(1);
 }
 
 bool APcopter_base::draw(void)

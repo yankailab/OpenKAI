@@ -27,7 +27,7 @@ public:
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 
-	virtual void resetState(void);
+	virtual void reset(void);
 
 public:
 

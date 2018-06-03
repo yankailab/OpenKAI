@@ -18,9 +18,10 @@ PIDctrl::PIDctrl()
 	m_D = 0;
 	m_dT = 0;
 	m_min = 0.0;
-	m_max = 0.0;
+	m_max = DBL_MAX;
+	m_K = 1.0;
 
-	resetState();
+	reset();
 }
 
 PIDctrl::~PIDctrl()
@@ -39,6 +40,7 @@ bool PIDctrl::init(void* pKiss)
 	KISSm(pK, dT);
 	KISSm(pK, min);
 	KISSm(pK, max);
+	KISSm(pK, K);
 
 	return true;
 }
@@ -71,7 +73,7 @@ double PIDctrl::update(double v, double vTarget)
 			 + m_D * (m_e - m_eOld) * ovDT
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
 
-	m_output = constrain(o, m_min, m_max);
+	m_output = constrain(o*m_K, m_min, m_max);
 
 	return m_output;
 }
@@ -101,7 +103,7 @@ bool PIDctrl::cli(int& iY)
 	return true;
 }
 
-void PIDctrl::resetState(void)
+void PIDctrl::reset(void)
 {
 	m_v = 0.0;
 	m_vPred = 0.0;

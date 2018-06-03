@@ -21,11 +21,6 @@ public:
 	bool draw(void);
 
 public:
-	PIDctrl* m_pRoll;
-	PIDctrl* m_pPitch;
-	PIDctrl* m_pYaw;
-	PIDctrl* m_pAlt;
-
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;

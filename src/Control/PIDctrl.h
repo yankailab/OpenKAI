@@ -25,7 +25,7 @@ public:
 	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
-	virtual void resetState(void);
+	virtual void reset(void);
 
 public:
 	double m_P;
@@ -44,6 +44,7 @@ public:
 
 	double m_min;
 	double m_max;
+	double m_K;
 	double m_output;
 
 	uint64_t m_tLastUpdate;
