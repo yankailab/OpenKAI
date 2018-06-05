@@ -11,6 +11,7 @@ APcopter_thrust::APcopter_thrust()
 	m_pTarget = -1;
 	m_pTargetMin = 0;
 	m_pTargetMax = DBL_MAX;
+	m_dCollision = 2.0;
 	m_pwmLow = 1000;
 	m_pwmMid = 1500;
 	m_pwmHigh = 2000;
@@ -20,15 +21,14 @@ APcopter_thrust::APcopter_thrust()
 	m_pYaw = NULL;
 	m_pAlt = NULL;
 
-	m_rc.chan1_raw = UINT16_MAX;
-	m_rc.chan2_raw = UINT16_MAX;
-	m_rc.chan3_raw = UINT16_MAX;
-	m_rc.chan4_raw = UINT16_MAX;
+	m_rc.chan1_raw = m_pwmMid;
+	m_rc.chan2_raw = m_pwmMid;
+	m_rc.chan3_raw = m_pwmMid;
+	m_rc.chan4_raw = m_pwmMid;
 	m_rc.chan5_raw = m_pwmLow;
 	m_rc.chan6_raw = m_pwmLow;
 	m_rc.chan7_raw = m_pwmLow;
 	m_rc.chan8_raw = m_pwmLow;
-
 }
 
 APcopter_thrust::~APcopter_thrust()
@@ -56,6 +56,10 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->v("targetXmax", &m_pTargetMax.x);
 	pK->v("targetYmax", &m_pTargetMax.y);
 	pK->v("targetZmax", &m_pTargetMax.z);
+
+	pK->v("dCollisionX", &m_dCollision.x);
+	pK->v("dCollisionY", &m_dCollision.y);
+	pK->v("dCollisionZ", &m_dCollision.y);
 
 	return true;
 }
@@ -117,17 +121,18 @@ void APcopter_thrust::update(void)
 	NULL_(m_pAlt);
 
 	cmd();
-
-	//update thrust output
-	vDouble3* pV = &m_pSB->m_pos;
+	uint64_t tNow = getTimeUsec();
+	vDouble3* pPos = &m_pSB->m_pos;
 	double o;
+
+	//TODO: collision avoid
 
 	//Pitch = Y axis
 	uint16_t pwmF = m_pwmLow;
 	uint16_t pwmB = m_pwmLow;
-	if(pV->y > 0 && m_pTarget.y > 0)
+	if(pPos->y > 0 && m_pTarget.y > 0)
 	{
-		o = m_pPitch->update(pV->y, m_pTarget.y);
+		o = m_pPitch->update(pPos->y, m_pTarget.y);
 		if(o > 0)
 			pwmF += (uint16_t)abs(o);
 		else
@@ -137,9 +142,9 @@ void APcopter_thrust::update(void)
 	//Roll = X axis
 	uint16_t pwmL = m_pwmLow;
 	uint16_t pwmR = m_pwmLow;
-	if(pV->x > 0 && m_pTarget.x > 0)
+	if(pPos->x > 0 && m_pTarget.x > 0)
 	{
-		o = m_pPitch->update(pV->x, m_pTarget.x);
+		o = m_pPitch->update(pPos->x, m_pTarget.x);
 		if(o > 0)
 			pwmR += (uint16_t)abs(o);
 		else
@@ -147,25 +152,35 @@ void APcopter_thrust::update(void)
 	}
 
 	//Alt = Z axis
-	uint16_t pwmA = UINT16_MAX;
-	if(pV->z > 0 && m_pTarget.z > 0)
+	uint16_t pwmA = m_pwmMid;
+	if(pPos->z > 0 && m_pTarget.z > 0)
 	{
-		pwmA += (uint16_t)m_pAlt->update(pV->z, m_pTarget.z);
+		pwmA += (uint16_t)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
 
 	//Mavlink rc override to rc 1-4 is always alive, thrust only controls thrust fans
-	m_rc.chan1_raw = UINT16_MAX;
-	m_rc.chan2_raw = UINT16_MAX;
+	_Mavlink* pM = m_pAP->m_pMavlink;
+	mavlink_rc_channels_override_t* pRC = &pM->m_msg.rc_channels_override;
+
+	m_rc.chan1_raw = pRC->chan1_raw;
+	m_rc.chan2_raw = pRC->chan2_raw;
 	m_rc.chan3_raw = pwmA;
-	m_rc.chan4_raw = UINT16_MAX;
+	m_rc.chan4_raw = pRC->chan3_raw;
 	m_rc.chan5_raw = pwmF;
 	m_rc.chan6_raw = pwmR;
 	m_rc.chan7_raw = pwmB;
 	m_rc.chan8_raw = pwmL;
 
-	IF_(!isActive());
-	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
+	if(!isActive() || pM->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
+	{
+		pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
+		return;
+	}
 
+	pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
+	IF_(tNow - pM->m_msg.time_stamps.rc_channels_override > 30000);
+
+	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
 }
 
 void APcopter_thrust::cmd(void)
@@ -202,6 +217,11 @@ void APcopter_thrust::cmd(void)
 	{
 		m_pTarget.z = constrain(atof(v.c_str()), m_pTargetMin.z, m_pTargetMax.z);
 	}
+	else
+	{
+		str = "Invalid Cmd: " + cmd;
+		m_pCmd->writeLine((uint8_t*)str.c_str(), str.length());
+	}
 }
 
 bool APcopter_thrust::draw(void)
@@ -219,37 +239,32 @@ bool APcopter_thrust::cli(int& iY)
 
 	NULL_F(m_pAP->m_pMavlink);
 	NULL_F(m_pSB);
-	vDouble3* pV = &m_pSB->m_pos;
+	vDouble3* pPos = &m_pSB->m_pos;
 
 	string msg;
-	string pwmA;
-	string pwmB;
 
 	//Roll = X axis
-	pwmA = i2str(m_rc.chan8_raw);
-	pwmB = i2str(m_rc.chan6_raw);
-	msg = "targetX=" + f2str(m_pTarget.x) + " | X=" + f2str(pV->x) + " | pwmL=" + pwmA  + " | pwmR=" + pwmB ;
-
+	msg = "targetX=" + f2str(m_pTarget.x) +
+		  " | X=" + f2str(pPos->x) +
+		  " | pwmL=" + i2str((int)m_rc.chan8_raw) +
+		  " | pwmR=" + i2str((int)m_rc.chan6_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	//Pitch = Y axis
-	pwmA = i2str(m_rc.chan5_raw);
-	pwmB = i2str(m_rc.chan7_raw);
-	msg = "targetY=" + f2str(m_pTarget.y) + " | Y=" + f2str(pV->y) + " | pwmF=" + pwmA  + " | pwmB=" + pwmB ;
-
+	msg = "targetY=" + f2str(m_pTarget.y) +
+		  " | Y=" + f2str(pPos->y) +
+		  " | pwmF=" + i2str((int)m_rc.chan5_raw)  +
+		  " | pwmB=" + i2str((int)m_rc.chan7_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	//Alt = Z axis
-	if(m_rc.chan3_raw == UINT16_MAX)
-		pwmA = "-";
-	else
-		pwmA = i2str(m_rc.chan3_raw);
-	msg = "targetZ=" + f2str(m_pTarget.z) + " | Z=" + f2str(pV->z) + " | pwm=" + pwmA;
-
+	msg = "targetZ=" + f2str(m_pTarget.z) +
+		  " | Z=" + f2str(pPos->z) +
+		  " | pwm=" + i2str((int)m_rc.chan3_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

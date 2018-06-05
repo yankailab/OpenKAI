@@ -36,11 +36,12 @@ public:
 	vDouble3 m_pTarget;
 	vDouble3 m_pTargetMin;
 	vDouble3 m_pTargetMax;
+	vDouble3 m_dCollision;
 	uint16_t m_pwmLow;
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;
 
-	__mavlink_rc_channels_override_t m_rc;
+	mavlink_rc_channels_override_t m_rc;
 
 };
 

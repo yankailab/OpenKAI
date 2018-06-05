@@ -17,11 +17,6 @@ namespace kai
 
 struct Time_Stamps
 {
-	Time_Stamps()
-	{
-		init();
-	}
-
 	uint64_t heartbeat;
 	uint64_t sys_status;
 	uint64_t battery_status;
@@ -48,7 +43,6 @@ struct Time_Stamps
 		attitude = 0;
 		rc_channels_override = 0;
 	}
-
 };
 
 // Struct containing information on the MAV we are currently connected to
@@ -79,12 +73,8 @@ struct Mavlink_Messages
 		attitude.pitchspeed = 0;
 		attitude.roll = 0;
 		attitude.rollspeed = 0;
-
 		global_position_int.alt = 0;
-	}
 
-	void reset_timestamps()
-	{
 		time_stamps.init();
 	}
 };
@@ -111,8 +101,17 @@ struct MAVLINK_PEER
 	bool bCmdRoute(uint32_t iCmd)
 	{
 		IF_F(iCmd >= MAV_N_CMD);
-
 		return m_pCmdRoute[iCmd / 64] & (1 << (iCmd % 64));
+	}
+
+	void setCmdRoute(uint32_t iCmd, bool bON)
+	{
+		IF_(iCmd >= MAV_N_CMD);
+
+		if(bON)
+			m_pCmdRoute[iCmd / 64] |= (1 << (iCmd % 64));
+		else
+			m_pCmdRoute[iCmd / 64] &= ~(1 << (iCmd % 64));
 	}
 };
 
@@ -154,6 +153,9 @@ public:
 	void clDoSetMode(int mode);
 	void clDoSetPositionYawThrust(float steer, float thrust);
 	void clDoSetServo(int iServo, int PWM);
+
+	//Msg routing
+	void setCmdRoute(uint32_t iCmd, bool bON);
 
 public:
 	void sendMessage(void);
@@ -230,5 +232,3 @@ http://mavlink.org/messages/common#LANDING_TARGET
 		Anyway, we don't use it anyway for now
 	"size_x", "size_y" - the horizontal and vertical size of the object in radians.  Also not used.
  */
-
-

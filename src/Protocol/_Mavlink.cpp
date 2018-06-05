@@ -620,6 +620,14 @@ void _Mavlink::handleMessages()
 	}
 }
 
+void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
+{
+	for(int i=0; i<m_vPeer.size(); i++)
+	{
+		m_vPeer[i].setCmdRoute(iCmd, bON);
+	}
+}
+
 bool _Mavlink::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
