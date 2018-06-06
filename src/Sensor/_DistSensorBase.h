@@ -43,17 +43,18 @@ struct DIST_SENSOR_DIV
 		m_a = -1.0;
 	}
 
-	void input(double d)
-	{
-		m_d = d;
-		m_fMed.input(d);
-		m_fAvr.input(m_fMed.v());
-	}
-
 	void input(double d, double a)
 	{
-		input(d);
 		m_a = a;
+		m_d = d;
+		if(d >= 0.0)
+		{
+			m_fMed.input(d);
+			m_fAvr.input(m_fMed.v());
+			return;
+		}
+
+		reset();
 	}
 
 	double d(void)
@@ -68,11 +69,13 @@ struct DIST_SENSOR_DIV
 
 	double dAvr(void)
 	{
+		if(m_d < 0.0)return -1.0;
 		return m_fAvr.v();
 	}
 
 	double dMed(void)
 	{
+		if(m_d < 0.0)return -1.0;
 		return m_fMed.v();
 	}
 
@@ -102,11 +105,7 @@ public:
 	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);
-	virtual double d(void);
-	virtual double d(vInt4* pROI, vInt2* pPos);
-	virtual double d(vDouble4* pROI, vInt2* pPos);
 	virtual double d(double deg);
-
 	virtual double dMin(void);
 	virtual double dMax(void);
 	virtual double dMin(double degFrom, double degTo);

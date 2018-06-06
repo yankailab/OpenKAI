@@ -59,7 +59,7 @@ bool APcopter_thrust::init(void* pKiss)
 
 	pK->v("dCollisionX", &m_dCollision.x);
 	pK->v("dCollisionY", &m_dCollision.y);
-	pK->v("dCollisionZ", &m_dCollision.y);
+	pK->v("dCollisionZ", &m_dCollision.z);
 
 	return true;
 }

@@ -48,7 +48,7 @@
 {
 	"name":"apWS",
 	"class":"_WebSocket",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"Window":"OKview",
 }
@@ -315,19 +315,18 @@
 		}
 		
 		{
-			"name":"apThrudt",
+			"name":"apThrust",
 			"class":"APcopter_thrust",
-			"bInst":0,
-			"bDraw":1,
+			"bInst":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
 			"APcopter_base":"apBase",
-			"_SlamBase":"",
-			"_IOBase":"",
-			"PIDroll":"",
-			"PIDpitch":"",
-			"PIDyaw":"",
-			"PIDalt":"",
+			"_SlamBase":"lidarSlam",
+			"_IOBase":"apWS",
+			"PIDroll":"PIDroll",
+			"PIDpitch":"PIDpitch",
+			"PIDyaw":"PIDyaw",
+			"PIDalt":"PIDalt",
 			"pwmLow":1000,
 			"pwmMid":1500,
 			"pwmHigh":2000,

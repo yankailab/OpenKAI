@@ -32,6 +32,7 @@ bool PIDctrl::init(void* pKiss)
 {
 	IF_F(!this->ControlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+	pK->m_pInst = this;
 
 	KISSm(pK, P);
 	KISSm(pK, I);
