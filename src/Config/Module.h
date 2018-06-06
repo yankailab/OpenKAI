@@ -14,17 +14,14 @@
 #include "switch.h"
 
 #include "../Automaton/_Automaton.h"
-
 #include "../Detector/_AprilTags.h"
-#include "../Detector/_Lane.h"
-
 #include "../include/apriltags-cpp/TagDetector.h"
+#include "../Detector/_Lane.h"
 
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_Path.h"
 
 #include "../Autopilot/_AutoPilot.h"
-
 #include "../Control/PIDctrl.h"
 
 #include "../IO/_TCPserver.h"
@@ -44,6 +41,7 @@
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
+#include "../SLAM/_LidarSlam.h"
 #include "../Tracker/_ROITracker.h"
 
 #include "../UI/UI.h"

@@ -13,7 +13,6 @@ namespace kai
 _LidarSlam::_LidarSlam()
 {
 	m_nDS = 0;
-
 	reset();
 }
 
@@ -50,7 +49,7 @@ bool _LidarSlam::link(void)
 
 		iName = "";
 		F_ERROR_F(pP->v("_DistSensorBase", &iName));
-		pL->m_pD = (_DistSensorBase*)(pK->getChildInstByName(&iName));
+		pL->m_pD = (_DistSensorBase*)(pK->root()->getChildInstByName(&iName));
 		if(!pL->m_pD)
 		{
 			LOG_I("_DistSensorBase not found: " + iName);
@@ -61,7 +60,6 @@ bool _LidarSlam::link(void)
 	}
 
 	m_bReady = true;
-
 	return true;
 }
 
@@ -124,11 +122,11 @@ bool _LidarSlam::cli(int& iY)
 {
 	IF_F(!this->_SlamBase::cli(iY));
 
-	string msg;
-
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+//	string msg;
+//
+//	COL_MSG;
+//	iY++;
+//	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

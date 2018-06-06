@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
 	if(pKiss->empty())
 	{
-		LOG(ERROR) << "Cannot open Kiss file";
+		LOG(ERROR) << "Kiss file is empty";
 		return 1;
 	}
 

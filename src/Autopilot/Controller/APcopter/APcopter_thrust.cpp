@@ -130,7 +130,7 @@ void APcopter_thrust::update(void)
 	//Pitch = Y axis
 	uint16_t pwmF = m_pwmLow;
 	uint16_t pwmB = m_pwmLow;
-	if(pPos->y > 0 && m_pTarget.y > 0)
+	if(pPos->y > 0 && m_pTarget.y > m_pTargetMin.y)
 	{
 		o = m_pPitch->update(pPos->y, m_pTarget.y);
 		if(o > 0)
@@ -142,7 +142,7 @@ void APcopter_thrust::update(void)
 	//Roll = X axis
 	uint16_t pwmL = m_pwmLow;
 	uint16_t pwmR = m_pwmLow;
-	if(pPos->x > 0 && m_pTarget.x > 0)
+	if(pPos->x > 0 && m_pTarget.x > m_pTargetMin.x)
 	{
 		o = m_pPitch->update(pPos->x, m_pTarget.x);
 		if(o > 0)
@@ -153,7 +153,7 @@ void APcopter_thrust::update(void)
 
 	//Alt = Z axis
 	uint16_t pwmA = m_pwmMid;
-	if(pPos->z > 0 && m_pTarget.z > 0)
+	if(pPos->z > 0 && m_pTarget.z > m_pTargetMin.z)
 	{
 		pwmA += (uint16_t)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
@@ -204,6 +204,10 @@ void APcopter_thrust::cmd(void)
 	if(cmd=="state")
 	{
 		m_pAM->transit(&v);
+	}
+	else if(cmd=="set")
+	{
+		m_pTarget = m_pSB->m_pos;
 	}
 	else if(cmd=="x")
 	{

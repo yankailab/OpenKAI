@@ -96,6 +96,8 @@ bool PIDctrl::cli(int& iY)
 	msg = "v=" + f2str(m_v)
 			+ " vPred=" + f2str(m_vPred)
 			+ " vTarget=" + f2str(m_vTarget);
+			+ " output=" + f2str(m_output);
+
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
