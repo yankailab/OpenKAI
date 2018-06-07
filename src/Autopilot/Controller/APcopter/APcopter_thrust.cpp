@@ -9,8 +9,8 @@ APcopter_thrust::APcopter_thrust()
 	m_pSB = NULL;
 	m_pCmd = NULL;
 	m_pTarget = -1;
-	m_pTargetMin = 0;
-	m_pTargetMax = DBL_MAX;
+	m_targetMin = 0;
+	m_targetMax = DBL_MAX;
 	m_dCollision = 2.0;
 	m_pwmLow = 1000;
 	m_pwmMid = 1500;
@@ -49,17 +49,9 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->v("targetY", &m_pTarget.y);
 	pK->v("targetZ", &m_pTarget.z);
 
-	pK->v("targetXmin", &m_pTargetMin.x);
-	pK->v("targetYmin", &m_pTargetMin.y);
-	pK->v("targetZmin", &m_pTargetMin.z);
-
-	pK->v("targetXmax", &m_pTargetMax.x);
-	pK->v("targetYmax", &m_pTargetMax.y);
-	pK->v("targetZmax", &m_pTargetMax.z);
-
-	pK->v("dCollisionX", &m_dCollision.x);
-	pK->v("dCollisionY", &m_dCollision.y);
-	pK->v("dCollisionZ", &m_dCollision.z);
+	KISSm(pK,targetMin);
+	KISSm(pK,targetMax);
+	KISSm(pK,dCollision);
 
 	return true;
 }
@@ -81,8 +73,8 @@ bool APcopter_thrust::link(void)
 	IF_Fl(!m_pSB, iName + ": not found");
 
 	iName = "";
-	pK->v("_IOBase", &iName);
-	m_pCmd = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+	pK->v("_WebSocket", &iName);
+	m_pCmd = (_WebSocket*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pCmd, iName + ": not found");
 
 	iName = "";
@@ -130,7 +122,7 @@ void APcopter_thrust::update(void)
 	//Pitch = Y axis
 	uint16_t pwmF = m_pwmLow;
 	uint16_t pwmB = m_pwmLow;
-	if(pPos->y > 0 && m_pTarget.y > m_pTargetMin.y)
+	if(pPos->y > 0 && m_pTarget.y > m_targetMin)
 	{
 		o = m_pPitch->update(pPos->y, m_pTarget.y);
 		if(o > 0)
@@ -142,9 +134,9 @@ void APcopter_thrust::update(void)
 	//Roll = X axis
 	uint16_t pwmL = m_pwmLow;
 	uint16_t pwmR = m_pwmLow;
-	if(pPos->x > 0 && m_pTarget.x > m_pTargetMin.x)
+	if(pPos->x > 0 && m_pTarget.x > m_targetMin)
 	{
-		o = m_pPitch->update(pPos->x, m_pTarget.x);
+		o = m_pRoll->update(pPos->x, m_pTarget.x);
 		if(o > 0)
 			pwmR += (uint16_t)abs(o);
 		else
@@ -153,7 +145,7 @@ void APcopter_thrust::update(void)
 
 	//Alt = Z axis
 	uint16_t pwmA = m_pwmMid;
-	if(pPos->z > 0 && m_pTarget.z > m_pTargetMin.z)
+	if(pPos->z > 0 && m_pTarget.z > m_targetMin)
 	{
 		pwmA += (uint16_t)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
@@ -185,47 +177,81 @@ void APcopter_thrust::update(void)
 
 void APcopter_thrust::cmd(void)
 {
-	char buf[32];
-	string str;
-
 	NULL_(m_pCmd);
-	IF_(m_pCmd->read((uint8_t*) &buf, 32) <= 0);
-	str = buf;
+
+	char buf[N_IO_BUF];
+	int nB = m_pCmd->read((uint8_t*) &buf, N_IO_BUF);
+	IF_(nB <= 0);
+	buf[nB]=0;
+	string str = buf;
+	string cmd;
+	double v;
 
 	std::string::size_type iDiv = str.find(' ');
 	if(iDiv == std::string::npos)
 	{
-		iDiv = str.length()+1;
+		cmd = str;
+		v = -1.0;
+	}
+	else
+	{
+		cmd = str.substr(0, iDiv);
+		IF_(++iDiv >= str.length());
+		v = atof(str.substr(iDiv, str.length()-iDiv).c_str());
 	}
 
-	string cmd = str.substr(0, iDiv-1);
-	string v = str.substr(iDiv+1, str.length()-iDiv);
-
-	if(cmd=="state")
+	if(cmd=="on")
 	{
-		m_pAM->transit(&v);
+		string strOn = "CC_ON";
+		m_pAM->transit(&strOn);
+		str = "State: " + strOn;
+	}
+	else if(cmd=="off")
+	{
+		string strOff = "CC_STANDBY";
+		m_pAM->transit(&strOff);
+		str = "State: " + strOff;
 	}
 	else if(cmd=="set")
 	{
 		m_pTarget = m_pSB->m_pos;
+		str = "Set target: X=" + f2str(m_pTarget.x) +
+				", Y=" + f2str(m_pTarget.y) +
+				", Z=" + f2str(m_pTarget.y);
 	}
 	else if(cmd=="x")
 	{
-		m_pTarget.x = constrain(atof(v.c_str()), m_pTargetMin.x, m_pTargetMax.x);
+		if(v < m_targetMin || v > m_targetMax)v = -1.0;
+
+		m_pTarget.x = v;
+		str = "Set target: X=" + f2str(m_pTarget.x) +
+				", Y=" + f2str(m_pTarget.y) +
+				", Z=" + f2str(m_pTarget.y);
 	}
 	else if(cmd=="y")
 	{
-		m_pTarget.y = constrain(atof(v.c_str()), m_pTargetMin.y, m_pTargetMax.y);
+		if(v < m_targetMin || v > m_targetMax)v = -1.0;
+
+		m_pTarget.y = v;
+		str = "Set target: X=" + f2str(m_pTarget.x) +
+				", Y=" + f2str(m_pTarget.y) +
+				", Z=" + f2str(m_pTarget.y);
 	}
 	else if(cmd=="z")
 	{
-		m_pTarget.z = constrain(atof(v.c_str()), m_pTargetMin.z, m_pTargetMax.z);
+		if(v < m_targetMin || v > m_targetMax)v = -1.0;
+
+		m_pTarget.z = v;
+		str = "Set target: X=" + f2str(m_pTarget.x) +
+				", Y=" + f2str(m_pTarget.y) +
+				", Z=" + f2str(m_pTarget.y);
 	}
 	else
 	{
 		str = "Invalid Cmd: " + cmd;
-		m_pCmd->writeLine((uint8_t*)str.c_str(), str.length());
 	}
+
+	m_pCmd->write((uint8_t*)str.c_str(), str.length(), WS_MODE_TXT);
 }
 
 bool APcopter_thrust::draw(void)

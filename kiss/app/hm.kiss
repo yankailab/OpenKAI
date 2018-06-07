@@ -401,7 +401,7 @@
 			"rTargetX":0.2,
 			"targetList":[14],
 			"minSize":0.0,
-			"maxSize":0.5,			
+			"maxSize":0.5,
 			"activeState":["HM_FOLLOW"],
 			"iPriority":1,			
 		}

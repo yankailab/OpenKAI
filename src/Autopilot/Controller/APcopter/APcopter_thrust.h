@@ -31,12 +31,12 @@ public:
 
 	APcopter_base* m_pAP;
 	_SlamBase* m_pSB;
-	_IOBase* m_pCmd;
+	_WebSocket* m_pCmd;
 
 	vDouble3 m_pTarget;
-	vDouble3 m_pTargetMin;
-	vDouble3 m_pTargetMax;
-	vDouble3 m_dCollision;
+	double m_targetMin;
+	double m_targetMax;
+	double m_dCollision;
 	uint16_t m_pwmLow;
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;

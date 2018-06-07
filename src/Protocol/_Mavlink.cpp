@@ -134,7 +134,7 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 	else
 	{
 		_WebSocket* pWS = (_WebSocket*)m_pIO;
-		pWS->write(ioB.m_pB, ioB.m_nB);
+		pWS->write(ioB.m_pB, ioB.m_nB, WS_MODE_BIN);
 	}
 }
 

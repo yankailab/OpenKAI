@@ -15,6 +15,9 @@
 #define WS_N_BUF 1024
 #define WS_N_MSG 10240
 
+#define WS_MODE_TXT 0x1
+#define WS_MODE_BIN 0x2
+
 namespace kai
 {
 
@@ -50,10 +53,10 @@ public:
 	void close(void);
 	bool draw(void);
 
-	bool write(uint8_t* pBuf, int nB);
+	bool write(uint8_t* pBuf, int nB, uint32_t mode);
 	int  read(uint8_t* pBuf, int nB);
 
-	bool writeTo(uint32_t id, uint8_t* pBuf, int nB);
+	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode);
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
 
 private:

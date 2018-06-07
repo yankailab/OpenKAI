@@ -50,6 +50,7 @@
 	"class":"_WebSocket",
 	"bInst":1,
 	"FPS":30,
+	"bLog":0,
 	"Window":"OKview",
 }
 
@@ -100,7 +101,7 @@
 	"showDegOffset":-24.0,
 	"showOriginOffsetX":0.5,
 	"showOriginOffsetY":1.0,
-	"portName":"/dev/ttyACM0",
+	"portName":"/dev/ttyACM3",
 	"baud":115200,
 	"bUse0x41":0,
 	"slaveAddr":1,
@@ -320,9 +321,10 @@
 			"bInst":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
+			"activeState":["CC_ON"],
 			"APcopter_base":"apBase",
 			"_SlamBase":"lidarSlam",
-			"_IOBase":"apWS",
+			"_WebSocket":"apWS",
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",
@@ -330,15 +332,9 @@
 			"pwmLow":1000,
 			"pwmMid":1500,
 			"pwmHigh":2000,
-			"targetXmin":0.5,
-			"targetYmin":0.5,
-			"targetZmin":0.5,
-			"targetXmax":20,
-			"targetYmax":20,
-			"targetZmax":20,
-			"dCollisionX":3.0,
-			"dCollisionY":3.0,
-			"dCollisionZ":3.0,
+			"targetMin":0.5,
+			"targetMax":20,
+			"dCollision":3.0,
 		}
 		
 	}

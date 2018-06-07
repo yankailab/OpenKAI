@@ -163,19 +163,19 @@ void _WebSocket::updateR(void)
 	}
 }
 
-bool _WebSocket::write(uint8_t* pBuf, int nB)
+bool _WebSocket::write(uint8_t* pBuf, int nB, uint32_t mode)
 {
 	IF_F(m_vClient.empty());
-	return writeTo(m_vClient[0].m_id,pBuf,nB);
+	return writeTo(m_vClient[0].m_id, pBuf, nB, mode);
 }
 
 int _WebSocket::read(uint8_t* pBuf, int nB)
 {
 	if(m_vClient.empty())return 0;
-	return readFrom(m_vClient[0].m_id,pBuf,nB);
+	return readFrom(m_vClient[0].m_id, pBuf, nB);
 }
 
-bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB)
+bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode)
 {
 	IF_F(m_ioStatus != io_opened);
 	NULL_F(pBuf);
@@ -184,7 +184,7 @@ bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB)
 	IO_BUF ioB;
 	ioB.m_nB = WS_N_HEADER;
 	pack_uint32(&ioB.m_pB[0], id);
-	pack_uint32(&ioB.m_pB[4], 0x2);
+	pack_uint32(&ioB.m_pB[4], mode);
 	pack_uint32(&ioB.m_pB[8], nB);
 
 	pthread_mutex_lock(&m_mutexW);
@@ -214,7 +214,7 @@ bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB)
 int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
 {
 	if (!pBuf)return -1;
-	if (nB <= N_IO_BUF)return -1;
+	if (nB < N_IO_BUF)return -1;
 
 	WS_CLIENT* pC = findClientById(id);
 	if (!pC)return -1;
