@@ -167,32 +167,33 @@ void APcopter_thrust::update(void)
 	mavlink_rc_channels_override_t* pRC = &m_pMavGCS->m_msg.rc_channels_override;
 	m_rc.chan1_raw = pRC->chan1_raw;
 	m_rc.chan2_raw = pRC->chan2_raw;
-	m_rc.chan3_raw = pwmA;	//TODO
+	m_rc.chan3_raw = pwmA;
 	m_rc.chan4_raw = pRC->chan4_raw;
 	m_rc.chan5_raw = pwmF;
 	m_rc.chan6_raw = pwmR;
 	m_rc.chan7_raw = pwmB;
 	m_rc.chan8_raw = pwmL;
 
+	if(abs(((int)pRC->chan3_raw) - ((int)m_pwmMid)) > 100)
+	{
+		m_rc.chan3_raw = pRC->chan3_raw;
+	}
+
 	if(!isActive() || m_pMavAP->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
 	{
 		m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
 		if(m_pMavAP->m_msg.heartbeat.custom_mode != 2)
 		{
-			LOG_I("Flight mode: NOT ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
+			LOG_F("Flight mode: NOT ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
 		}
 		else
 		{
-			LOG_I("Not Activated");
+			LOG_F("Not Activated");
 		}
 		return;
 	}
 
-	if(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut)
-	{
-		LOG_I("CC_ON FAILED: NO RC from GCS");
-		return;
-	}
+	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
 
 	m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
 	m_pMavAP->rcChannelsOverride(m_rc);
