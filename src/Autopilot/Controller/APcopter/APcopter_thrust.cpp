@@ -85,7 +85,7 @@ bool APcopter_thrust::link(void)
 
 	iName = "";
 	pK->v("_Mavlink_GCS", &iName);
-	m_pMavGCS = (_Mavlink*) (pK->parent()->getChildInstByName(&iName));
+	m_pMavGCS = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pMavGCS, iName + ": not found");
 
 	iName = "";
