@@ -168,7 +168,7 @@ void APcopter_thrust::update(void)
 	m_rc.chan1_raw = pRC->chan1_raw;
 	m_rc.chan2_raw = pRC->chan2_raw;
 	m_rc.chan3_raw = pwmA;	//TODO
-	m_rc.chan4_raw = pRC->chan3_raw;
+	m_rc.chan4_raw = pRC->chan4_raw;
 	m_rc.chan5_raw = pwmF;
 	m_rc.chan6_raw = pwmR;
 	m_rc.chan7_raw = pwmB;
@@ -188,7 +188,11 @@ void APcopter_thrust::update(void)
 		return;
 	}
 
-	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
+	if(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut)
+	{
+		LOG_I("CC_ON FAILED: NO RC from GCS");
+		return;
+	}
 
 	m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
 	m_pMavAP->rcChannelsOverride(m_rc);
