@@ -15,6 +15,7 @@ APcopter_thrust::APcopter_thrust()
 	m_pwmLow = 1000;
 	m_pwmMid = 1500;
 	m_pwmHigh = 2000;
+	m_rcTimeOut = USEC_1SEC;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -40,6 +41,8 @@ bool APcopter_thrust::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
+
+	KISSm(pK,rcTimeOut);
 
 	KISSm(pK,pwmLow);
 	KISSm(pK,pwmMid);
@@ -168,12 +171,12 @@ void APcopter_thrust::update(void)
 		pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
 		if(pM->m_msg.heartbeat.custom_mode != 2)
 		{
-			LOG_I("Flight mode: NOT ALT_HOLD");
+			LOG_I("Flight mode: NOT ALT_HOLD: " + i2str(pM->m_msg.heartbeat.custom_mode));
 		}
 		return;
 	}
 
-	IF_l(tNow - pM->m_msg.time_stamps.rc_channels_override > 30000, "CC_ON FAILED: NO RC from GCS");
+	IF_l(tNow - pM->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
 
 	pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
 	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);

@@ -12,12 +12,12 @@
 {
 	"name":"gstRaspiV4l2",
 	"class":"_GStreamer",
-	"FPS":60,
-	"bInst":0,
+	"FPS":15,
+	"bInst":1,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.2.240 port=5678",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=15/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.2.240 port=5678",
 }
 
 {
@@ -313,6 +313,7 @@
 			"APcopter_base":"apBase",
 			"_SlamBase":"lidarSlam",
 			"_WebSocket":"apWS",
+			"rcTimeOut":1000000,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",

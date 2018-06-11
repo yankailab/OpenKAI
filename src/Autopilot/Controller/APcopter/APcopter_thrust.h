@@ -40,6 +40,7 @@ public:
 	uint16_t m_pwmLow;
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;
+	uint64_t m_rcTimeOut;
 
 	mavlink_rc_channels_override_t m_rc;
 
