@@ -17,7 +17,7 @@
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"pipeline":"v4l2src device=/dev/video0 ! video/x-raw,format=I420,width=640,height=480,framerate=60/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.2.240 port=5678",
 }
 
 {
@@ -27,10 +27,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_portName":"/dev/ttyAMA0",
-	"_baud":921600,
-	"portName":"/dev/ttyACM",
-	"baud":115200,
+	"portName":"/dev/ttyAMA0",
+	"baud":921600,
+	"_portName":"/dev/ttyACM",
+	"_baud":115200,
 	"_wakeUp":"mavAP",
 }
 
