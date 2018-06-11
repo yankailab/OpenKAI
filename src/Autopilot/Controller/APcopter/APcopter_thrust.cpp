@@ -166,13 +166,19 @@ void APcopter_thrust::update(void)
 	if(!isActive() || pM->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
 	{
 		pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
+		if(pM->m_msg.heartbeat.custom_mode != 2)
+		{
+			LOG_I("Flight mode: NOT ALT_HOLD");
+		}
 		return;
 	}
 
-	pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
-	IF_(tNow - pM->m_msg.time_stamps.rc_channels_override > 30000);
+	IF_l(tNow - pM->m_msg.time_stamps.rc_channels_override > 30000, "CC_ON FAILED: NO RC from GCS");
 
+	pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
 	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
+
+	LOG_I("CC_ON: Mavlink RC Override ON");
 }
 
 void APcopter_thrust::cmd(void)
@@ -215,9 +221,13 @@ void APcopter_thrust::cmd(void)
 	else if(cmd=="set")
 	{
 		m_pTarget = m_pSB->m_pos;
+		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
+		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
+		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
+
 		str = "Set target: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.y);
+				", Z=" + f2str(m_pTarget.z);
 	}
 	else if(cmd=="x")
 	{
@@ -226,7 +236,7 @@ void APcopter_thrust::cmd(void)
 		m_pTarget.x = v;
 		str = "Set target: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.y);
+				", Z=" + f2str(m_pTarget.z);
 	}
 	else if(cmd=="y")
 	{
@@ -235,7 +245,7 @@ void APcopter_thrust::cmd(void)
 		m_pTarget.y = v;
 		str = "Set target: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.y);
+				", Z=" + f2str(m_pTarget.z);
 	}
 	else if(cmd=="z")
 	{
@@ -244,7 +254,7 @@ void APcopter_thrust::cmd(void)
 		m_pTarget.z = v;
 		str = "Set target: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.y);
+				", Z=" + f2str(m_pTarget.z);
 	}
 	else
 	{
