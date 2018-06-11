@@ -184,21 +184,21 @@ void APcopter_thrust::update(void)
 		m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
 		if(m_pMavAP->m_msg.heartbeat.custom_mode != 2)
 		{
-			LOG_F("Flight mode: NOT ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
+			LOG_F("OFF: Not ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
 		}
 		else
 		{
-			LOG_F("Not Activated");
+			LOG_F("OFF");
 		}
 		return;
 	}
 
-	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
+	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "OFF: NO RC from GCS");
 
 	m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
 	m_pMavAP->rcChannelsOverride(m_rc);
 
-	LOG_I("CC_ON: Mavlink RC Override ON");
+	LOG_I("ON: Mavlink RC Override ON");
 }
 
 void APcopter_thrust::cmd(void)
