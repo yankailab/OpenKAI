@@ -8,6 +8,9 @@ APcopter_thrust::APcopter_thrust()
 	m_pAP = NULL;
 	m_pSB = NULL;
 	m_pCmd = NULL;
+	m_pMavAP = NULL;
+	m_pMavGCS = NULL;
+
 	m_pTarget = -1;
 	m_targetMin = 0;
 	m_targetMax = DBL_MAX;
@@ -81,6 +84,11 @@ bool APcopter_thrust::link(void)
 	IF_Fl(!m_pCmd, iName + ": not found");
 
 	iName = "";
+	pK->v("_Mavlink_GCS", &iName);
+	m_pMavGCS = (_Mavlink*) (pK->parent()->getChildInstByName(&iName));
+	IF_Fl(!m_pMavGCS, iName + ": not found");
+
+	iName = "";
 	pK->v("PIDroll", &iName);
 	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pRoll, iName + ": not found");
@@ -108,7 +116,9 @@ void APcopter_thrust::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pAP);
-	NULL_(m_pAP->m_pMavlink);
+	m_pMavAP = m_pAP->m_pMavlink;
+	NULL_(m_pMavAP);
+	NULL_(m_pMavGCS);
 	NULL_(m_pSB);
 	NULL_(m_pRoll);
 	NULL_(m_pPitch);
@@ -154,32 +164,31 @@ void APcopter_thrust::update(void)
 	}
 
 	//Mavlink rc override to rc 1-4 is always alive, thrust only controls thrust fans
-	_Mavlink* pM = m_pAP->m_pMavlink;
-	mavlink_rc_channels_override_t* pRC = &pM->m_msg.rc_channels_override;
+	mavlink_rc_channels_override_t* pRC = &m_pMavAP->m_msg.rc_channels_override;
 
 	m_rc.chan1_raw = pRC->chan1_raw;
 	m_rc.chan2_raw = pRC->chan2_raw;
-	m_rc.chan3_raw = pwmA;
+	m_rc.chan3_raw = pwmA;	//TODO
 	m_rc.chan4_raw = pRC->chan3_raw;
 	m_rc.chan5_raw = pwmF;
 	m_rc.chan6_raw = pwmR;
 	m_rc.chan7_raw = pwmB;
 	m_rc.chan8_raw = pwmL;
 
-	if(!isActive() || pM->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
+	if(!isActive() || m_pMavAP->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
 	{
-		pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
-		if(pM->m_msg.heartbeat.custom_mode != 2)
+		m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
+		if(m_pMavAP->m_msg.heartbeat.custom_mode != 2)
 		{
-			LOG_I("Flight mode: NOT ALT_HOLD: " + i2str(pM->m_msg.heartbeat.custom_mode));
+			LOG_I("Flight mode: NOT ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
 		}
 		return;
 	}
 
-	IF_l(tNow - pM->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
+	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "CC_ON FAILED: NO RC from GCS");
 
-	pM->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
-	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
+	m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
+	m_pMavAP->rcChannelsOverride(m_rc);
 
 	LOG_I("CC_ON: Mavlink RC Override ON");
 }

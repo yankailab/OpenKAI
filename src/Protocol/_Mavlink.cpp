@@ -496,9 +496,6 @@ void _Mavlink::handleMessages()
 			m_devType = m_msg.heartbeat.type;
 
 			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
-			LOG_I("devSystemID: " + i2str(m_devSystemID) +
-  				  " devComponentID: " + i2str(m_devComponentID) +
-				  " devType: " + i2str(m_devType));
 			break;
 		}
 
@@ -677,7 +674,9 @@ bool _Mavlink::cli(int& iY)
 
 	msg = "devSysID=" + i2str(m_devSystemID)
 			+ " devComID=" + i2str(m_devComponentID)
-			+ " devType=" + i2str(m_devType);
+			+ " devType=" + i2str(m_devType)
+	 	 	+ " custom_mode=" + i2str((int)m_msg.heartbeat.custom_mode);
+
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

@@ -313,6 +313,7 @@
 			"APcopter_base":"apBase",
 			"_SlamBase":"lidarSlam",
 			"_WebSocket":"apWS",
+			"_Mavlink_GCS":"mavGCS",
 			"rcTimeOut":1000000,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
