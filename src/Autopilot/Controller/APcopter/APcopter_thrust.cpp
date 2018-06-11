@@ -164,8 +164,7 @@ void APcopter_thrust::update(void)
 	}
 
 	//Mavlink rc override to rc 1-4 is always alive, thrust only controls thrust fans
-	mavlink_rc_channels_override_t* pRC = &m_pMavAP->m_msg.rc_channels_override;
-
+	mavlink_rc_channels_override_t* pRC = &m_pMavGCS->m_msg.rc_channels_override;
 	m_rc.chan1_raw = pRC->chan1_raw;
 	m_rc.chan2_raw = pRC->chan2_raw;
 	m_rc.chan3_raw = pwmA;	//TODO
@@ -181,6 +180,10 @@ void APcopter_thrust::update(void)
 		if(m_pMavAP->m_msg.heartbeat.custom_mode != 2)
 		{
 			LOG_I("Flight mode: NOT ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
+		}
+		else
+		{
+			LOG_I("Not Activated");
 		}
 		return;
 	}
