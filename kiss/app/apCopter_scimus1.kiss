@@ -316,6 +316,7 @@
 			"_WebSocket":"apWS",
 			"_Mavlink_GCS":"mavGCS",
 			"rcTimeOut":1000000,
+			"rcDeadband":100,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",

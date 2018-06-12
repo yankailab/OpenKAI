@@ -7,6 +7,8 @@
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
+#define RC_IN(x) (abs(((int)x) - ((int)m_pwmMid))>(int)m_rcDeadband)
+
 namespace kai
 {
 
@@ -43,6 +45,7 @@ public:
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;
 	uint64_t m_rcTimeOut;
+	uint16_t m_rcDeadband;
 
 	mavlink_rc_channels_override_t m_rc;
 

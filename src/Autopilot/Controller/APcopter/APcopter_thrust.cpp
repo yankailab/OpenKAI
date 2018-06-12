@@ -19,6 +19,7 @@ APcopter_thrust::APcopter_thrust()
 	m_pwmMid = 1500;
 	m_pwmHigh = 2000;
 	m_rcTimeOut = USEC_1SEC;
+	m_rcDeadband = 100;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -46,6 +47,7 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,rcTimeOut);
+	KISSm(pK,rcDeadband);
 
 	KISSm(pK,pwmLow);
 	KISSm(pK,pwmMid);
@@ -174,9 +176,13 @@ void APcopter_thrust::update(void)
 	m_rc.chan7_raw = pwmB;
 	m_rc.chan8_raw = pwmL;
 
-	if(abs(((int)pRC->chan3_raw) - ((int)m_pwmMid)) > 100)
+	if(RC_IN(pRC->chan1_raw) || RC_IN(pRC->chan2_raw) || RC_IN(pRC->chan3_raw) || RC_IN(pRC->chan4_raw))
 	{
 		m_rc.chan3_raw = pRC->chan3_raw;
+		m_rc.chan5_raw = m_pwmLow;
+		m_rc.chan6_raw = m_pwmLow;
+		m_rc.chan7_raw = m_pwmLow;
+		m_rc.chan8_raw = m_pwmLow;
 	}
 
 	if(!isActive() || m_pMavAP->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
