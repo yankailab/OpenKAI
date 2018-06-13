@@ -183,6 +183,28 @@ double _DistSensorBase::dMax(void)
 	return dist;
 }
 
+double _DistSensorBase::dAvr(void)
+{
+	if(!m_bReady)return -1.0;
+
+	double degMid = 0.5 * m_fovH;
+	double dist = 0.0;
+	int n = 0;
+
+	for(int i=0; i<m_nDiv; i++)
+	{
+		double d = m_pDiv[i].dAvr();
+		IF_CONT(d < 0.0);
+
+		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		dist += d;
+		n++;
+	}
+
+	if(n<=0)return -1.0;
+	return dist/n;
+}
+
 double _DistSensorBase::dMin(double degFrom, double degTo)
 {
 	if(!m_bReady)return -1.0;

@@ -20,20 +20,23 @@ APcopter_thrust::APcopter_thrust()
 	m_pwmHigh = 2000;
 	m_rcTimeOut = USEC_1SEC;
 	m_rcDeadband = 100;
+	m_enableAPmode = 2;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
 	m_pYaw = NULL;
 	m_pAlt = NULL;
 
-	m_rc.chan1_raw = m_pwmMid;
-	m_rc.chan2_raw = m_pwmMid;
-	m_rc.chan3_raw = m_pwmMid;
-	m_rc.chan4_raw = m_pwmMid;
-	m_rc.chan5_raw = m_pwmLow;
-	m_rc.chan6_raw = m_pwmLow;
-	m_rc.chan7_raw = m_pwmLow;
-	m_rc.chan8_raw = m_pwmLow;
+	m_tF.m_iChan = 9;
+	m_tB.m_iChan = 10;
+	m_tL.m_iChan = 11;
+	m_tR.m_iChan = 12;
+
+	m_tF.m_sign = 1;
+	m_tB.m_sign = -1;
+	m_tL.m_sign = 1;
+	m_tR.m_sign = -1;
+	resetAllPwm();
 }
 
 APcopter_thrust::~APcopter_thrust()
@@ -48,6 +51,7 @@ bool APcopter_thrust::init(void* pKiss)
 
 	KISSm(pK,rcTimeOut);
 	KISSm(pK,rcDeadband);
+	KISSm(pK,enableAPmode);
 
 	KISSm(pK,pwmLow);
 	KISSm(pK,pwmMid);
@@ -60,6 +64,11 @@ bool APcopter_thrust::init(void* pKiss)
 	KISSm(pK,targetMin);
 	KISSm(pK,targetMax);
 	KISSm(pK,dCollision);
+
+	pK->v("chanF", &m_tF.m_iChan);
+	pK->v("chanB", &m_tF.m_iChan);
+	pK->v("chanL", &m_tF.m_iChan);
+	pK->v("chanR", &m_tF.m_iChan);
 
 	return true;
 }
@@ -128,83 +137,80 @@ void APcopter_thrust::update(void)
 	NULL_(m_pAlt);
 
 	cmd();
-	uint64_t tNow = getTimeUsec();
 	vDouble3* pPos = &m_pSB->m_pos;
-	double o;
+	int o;
 
 	//TODO: collision avoid
 
 	//Pitch = Y axis
-	uint16_t pwmF = m_pwmLow;
-	uint16_t pwmB = m_pwmLow;
 	if(pPos->y > 0 && m_pTarget.y > m_targetMin)
 	{
-		o = m_pPitch->update(pPos->y, m_pTarget.y);
-		if(o > 0)
-			pwmF += (uint16_t)abs(o);
-		else
-			pwmB += (uint16_t)abs(o);
+		o = (int)m_pPitch->update(pPos->y, m_pTarget.y);
+		m_tF.m_pwm = constrain(m_pwmLow + o*m_tF.m_sign, m_pwmLow, m_pwmHigh);
+		m_tB.m_pwm = constrain(m_pwmLow + o*m_tB.m_sign, m_pwmLow, m_pwmHigh);
 	}
 
 	//Roll = X axis
-	uint16_t pwmL = m_pwmLow;
-	uint16_t pwmR = m_pwmLow;
 	if(pPos->x > 0 && m_pTarget.x > m_targetMin)
 	{
-		o = m_pRoll->update(pPos->x, m_pTarget.x);
-		if(o > 0)
-			pwmR += (uint16_t)abs(o);
-		else
-			pwmL += (uint16_t)abs(o);
+		o = (int)m_pRoll->update(pPos->x, m_pTarget.x);
+		m_tL.m_pwm = constrain(m_pwmLow + o*m_tL.m_sign, m_pwmLow, m_pwmHigh);
+		m_tR.m_pwm = constrain(m_pwmLow + o*m_tR.m_sign, m_pwmLow, m_pwmHigh);
 	}
 
 	//Alt = Z axis
-	uint16_t pwmA = m_pwmMid;
 	if(pPos->z > 0 && m_pTarget.z > m_targetMin)
 	{
-		pwmA += (uint16_t)m_pAlt->update(pPos->z, m_pTarget.z);
+		m_pwmAlt = (int)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
 
-	//Mavlink rc override to rc 1-4 is always alive, thrust only controls thrust fans
-	mavlink_rc_channels_override_t* pRC = &m_pMavGCS->m_msg.rc_channels_override;
-	m_rc.chan1_raw = pRC->chan1_raw;
-	m_rc.chan2_raw = pRC->chan2_raw;
-	m_rc.chan3_raw = pwmA;
-	m_rc.chan4_raw = pRC->chan4_raw;
-	m_rc.chan5_raw = pwmF;
-	m_rc.chan6_raw = pwmR;
-	m_rc.chan7_raw = pwmB;
-	m_rc.chan8_raw = pwmL;
-
-	if(RC_IN(pRC->chan1_raw) || RC_IN(pRC->chan2_raw) || RC_IN(pRC->chan3_raw) || RC_IN(pRC->chan4_raw))
+	if(!isActive())
 	{
-		m_rc.chan3_raw = pRC->chan3_raw;
-		m_rc.chan5_raw = m_pwmLow;
-		m_rc.chan6_raw = m_pwmLow;
-		m_rc.chan7_raw = m_pwmLow;
-		m_rc.chan8_raw = m_pwmLow;
+		resetAllPwm();
+		LOG_F("OFF: Disabled");
 	}
 
-	if(!isActive() || m_pMavAP->m_msg.heartbeat.custom_mode != 2) //2:ALT_HOLD
+	if(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode)
 	{
-		m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, true);
-		if(m_pMavAP->m_msg.heartbeat.custom_mode != 2)
-		{
-			LOG_F("OFF: Not ALT_HOLD: " + i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode));
-		}
-		else
-		{
-			LOG_F("OFF");
-		}
-		return;
+		resetAllPwm();
+		LOG_F("OFF: Flight mode = " +
+				i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode) +
+				" != " + i2str((int)m_enableAPmode));
 	}
 
-	IF_l(tNow - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut, "OFF: NO RC from GCS");
+	LOG_I("ON");
+	m_pMavAP->clDoSetServo(m_tF.m_iChan, m_tF.m_pwm);
+	m_pMavAP->clDoSetServo(m_tB.m_iChan, m_tB.m_pwm);
+	m_pMavAP->clDoSetServo(m_tL.m_iChan, m_tL.m_pwm);
+	m_pMavAP->clDoSetServo(m_tR.m_iChan, m_tR.m_pwm);
 
-	m_pMavGCS->setCmdRoute(MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE, false);
-	m_pMavAP->rcChannelsOverride(m_rc);
+	IF_((double)getTimeUsec() - (double)m_pMavAP->m_msg.time_stamps.rc_channels_raw > (double)m_rcTimeOut);
 
-	LOG_I("ON: Mavlink RC Override ON");
+	uint16_t rcMode = m_pMavAP->m_msg.rc_channels_raw.chan6_raw;
+	IF_(rcMode < 1250);
+
+	LOG_I("ON + ALT");
+
+	mavlink_rc_channels_override_t rc;
+	rc.chan1_raw = UINT16_MAX;
+	rc.chan2_raw = UINT16_MAX;
+	rc.chan3_raw = UINT16_MAX;
+	rc.chan4_raw = UINT16_MAX;
+	rc.chan5_raw = UINT16_MAX;
+	rc.chan6_raw = UINT16_MAX;
+	rc.chan7_raw = UINT16_MAX;
+	rc.chan8_raw = UINT16_MAX;
+
+	m_pMavAP->rcChannelsOverride(rc);
+}
+
+void APcopter_thrust::resetAllPwm(void)
+{
+	m_tF.m_pwm = m_pwmLow;
+	m_tB.m_pwm = m_pwmLow;
+	m_tL.m_pwm = m_pwmLow;
+	m_tR.m_pwm = m_pwmLow;
+	m_pwmAlt = m_pwmMid;
 }
 
 void APcopter_thrust::cmd(void)
@@ -232,19 +238,7 @@ void APcopter_thrust::cmd(void)
 		v = atof(str.substr(iDiv, str.length()-iDiv).c_str());
 	}
 
-	if(cmd=="on")
-	{
-		string strOn = "CC_ON";
-		m_pAM->transit(&strOn);
-		str = "State: " + strOn;
-	}
-	else if(cmd=="off")
-	{
-		string strOff = "CC_STANDBY";
-		m_pAM->transit(&strOff);
-		str = "State: " + strOff;
-	}
-	else if(cmd=="set")
+	if(cmd=="set")
 	{
 		m_pTarget = m_pSB->m_pos;
 		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
@@ -254,6 +248,15 @@ void APcopter_thrust::cmd(void)
 		str = "Set target: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
 				", Z=" + f2str(m_pTarget.z);
+
+		string strOn = "CC_ON";
+		m_pAM->transit(&strOn);
+	}
+	else if(cmd=="off")
+	{
+		string strOff = "CC_STANDBY";
+		m_pAM->transit(&strOff);
+		str = "State: " + strOff;
 	}
 	else if(cmd=="x")
 	{
@@ -312,8 +315,8 @@ bool APcopter_thrust::cli(int& iY)
 	//Roll = X axis
 	msg = "targetX=" + f2str(m_pTarget.x) +
 		  " | X=" + f2str(pPos->x) +
-		  " | pwmL=" + i2str((int)m_rc.chan8_raw) +
-		  " | pwmR=" + i2str((int)m_rc.chan6_raw);
+		  " | pwmL=" + i2str(m_tL.m_pwm) +
+		  " | pwmR=" + i2str(m_tR.m_pwm);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
@@ -321,8 +324,8 @@ bool APcopter_thrust::cli(int& iY)
 	//Pitch = Y axis
 	msg = "targetY=" + f2str(m_pTarget.y) +
 		  " | Y=" + f2str(pPos->y) +
-		  " | pwmF=" + i2str((int)m_rc.chan5_raw)  +
-		  " | pwmB=" + i2str((int)m_rc.chan7_raw);
+		  " | pwmF=" + i2str(m_tF.m_pwm)  +
+		  " | pwmB=" + i2str(m_tB.m_pwm);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
@@ -330,7 +333,7 @@ bool APcopter_thrust::cli(int& iY)
 	//Alt = Z axis
 	msg = "targetZ=" + f2str(m_pTarget.z) +
 		  " | Z=" + f2str(pPos->z) +
-		  " | pwm=" + i2str((int)m_rc.chan3_raw);
+		  " | pwm=" + i2str(m_pwmAlt);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

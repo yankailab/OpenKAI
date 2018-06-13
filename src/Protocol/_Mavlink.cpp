@@ -272,7 +272,7 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 	D.target_component = m_devComponentID;
 	D.command = MAV_CMD_DO_SET_SERVO;
 	D.param1 = iServo;
-	D.param2 = PWM;
+	D.param2 = (float)PWM;
 
 	mavlink_message_t msg;
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -592,6 +592,23 @@ void _Mavlink::handleMessages()
 					+ ", chan6=" + i2str(m_msg.rc_channels_override.chan6_raw)
 					+ ", chan7=" + i2str(m_msg.rc_channels_override.chan7_raw)
 					+ ", chan8=" + i2str(m_msg.rc_channels_override.chan8_raw)
+					);
+			break;
+		}
+
+		case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
+		{
+			mavlink_msg_rc_channels_raw_decode(&msg, &(m_msg.rc_channels_raw));
+			m_msg.time_stamps.rc_channels_raw = tNow;
+
+			LOG_I("-> RC_RAW: chan1=" + i2str(m_msg.rc_channels_raw.chan1_raw)
+					+ ", chan2=" + i2str(m_msg.rc_channels_raw.chan2_raw)
+					+ ", chan3=" + i2str(m_msg.rc_channels_raw.chan3_raw)
+					+ ", chan4=" + i2str(m_msg.rc_channels_raw.chan4_raw)
+					+ ", chan5=" + i2str(m_msg.rc_channels_raw.chan5_raw)
+					+ ", chan6=" + i2str(m_msg.rc_channels_raw.chan6_raw)
+					+ ", chan7=" + i2str(m_msg.rc_channels_raw.chan7_raw)
+					+ ", chan8=" + i2str(m_msg.rc_channels_raw.chan8_raw)
 					);
 			break;
 		}

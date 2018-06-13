@@ -25,6 +25,7 @@ public:
 
 	bool v(string* pName, int* pVal);
 	bool v(string* pName, bool* pVal);
+	bool v(string* pName, uint8_t* pVal);
 	bool v(string* pName, uint16_t* pVal);
 	bool v(string* pName, uint32_t* pVal);
 	bool v(string* pName, uint64_t* pVal);

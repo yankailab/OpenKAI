@@ -108,6 +108,7 @@ public:
 	virtual double d(double deg);
 	virtual double dMin(void);
 	virtual double dMax(void);
+	virtual double dAvr(void);
 	virtual double dMin(double degFrom, double degTo);
 	virtual double dMax(double degFrom, double degTo);
 	virtual double dAvr(double degFrom, double degTo);

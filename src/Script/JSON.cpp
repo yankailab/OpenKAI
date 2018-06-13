@@ -46,6 +46,18 @@ bool JSON::v(string* pName, bool* pVal)
 	return true;
 }
 
+bool JSON::v(string* pName, uint8_t* pVal)
+{
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
+
+	value var = m_JSON.get(*pName);
+	IF_F(!var.is<int>());
+
+	*pVal = (uint8_t) var.get<double>();
+	return true;
+}
+
 bool JSON::v(string* pName, uint16_t* pVal)
 {
 	IF_F(!pName);

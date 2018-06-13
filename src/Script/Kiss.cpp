@@ -260,6 +260,11 @@ bool Kiss::v(string name, bool* val)
 	return m_json.v(&name, val);
 }
 
+bool Kiss::v(string name, uint8_t* val)
+{
+	return m_json.v(&name, val);
+}
+
 bool Kiss::v(string name, uint16_t* val)
 {
 	return m_json.v(&name, val);

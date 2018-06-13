@@ -29,6 +29,7 @@ public:
 	int m_freqAtti;
 	int m_freqGlobalPos;
 	int m_freqHeartbeat;
+	int m_freqRC;
 
 };
 

@@ -31,7 +31,7 @@ struct LIDARSLAM_LIDAR
 	void update(void)
 	{
 		IF_(!m_pD);
-		m_d = m_pD->dMin();
+		m_d = m_pD->dAvr();
 	}
 
 	bool bLock(void)

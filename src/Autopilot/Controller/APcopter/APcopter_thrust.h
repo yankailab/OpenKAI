@@ -12,6 +12,13 @@
 namespace kai
 {
 
+struct THRUST_CHANNEL
+{
+	uint8_t m_iChan;
+	int	m_pwm;
+	int m_sign;
+};
+
 class APcopter_thrust: public ActionBase
 {
 public:
@@ -24,6 +31,8 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 	void cmd(void);
+
+	void resetAllPwm(void);
 
 public:
 	PIDctrl* m_pRoll;
@@ -46,8 +55,13 @@ public:
 	uint16_t m_pwmHigh;
 	uint64_t m_rcTimeOut;
 	uint16_t m_rcDeadband;
+	uint32_t m_enableAPmode;
 
-	mavlink_rc_channels_override_t m_rc;
+	THRUST_CHANNEL m_tF;
+	THRUST_CHANNEL m_tB;
+	THRUST_CHANNEL m_tL;
+	THRUST_CHANNEL m_tR;
+	int	m_pwmAlt;
 
 };
 

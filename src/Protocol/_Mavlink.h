@@ -28,6 +28,7 @@ struct Time_Stamps
 	uint64_t highres_imu;
 	uint64_t attitude;
 	uint64_t rc_channels_override;
+	uint64_t rc_channels_raw;
 
 	void init()
 	{
@@ -42,6 +43,7 @@ struct Time_Stamps
 		highres_imu = 0;
 		attitude = 0;
 		rc_channels_override = 0;
+		rc_channels_raw = 0;
 	}
 };
 
@@ -63,6 +65,7 @@ struct Mavlink_Messages
 	mavlink_highres_imu_t highres_imu;
 	mavlink_attitude_t attitude;
 	mavlink_rc_channels_override_t rc_channels_override;
+	mavlink_rc_channels_raw_t rc_channels_raw;
 	Time_Stamps time_stamps;
 
 	void init(void)

@@ -30,6 +30,7 @@ public:
 
 	bool v(string name, int* val);
 	bool v(string name, bool* val);
+	bool v(string name, uint8_t* pVal);
 	bool v(string name, uint16_t* pVal);
 	bool v(string name, uint32_t* pVal);
 	bool v(string name, uint64_t* val);

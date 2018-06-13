@@ -13,6 +13,7 @@ APcopter_base::APcopter_base()
 	m_freqAtti = 0;
 	m_freqGlobalPos = 0;
 	m_freqHeartbeat = 0;
+	m_freqRC = 0;
 }
 
 APcopter_base::~APcopter_base()
@@ -28,6 +29,7 @@ bool APcopter_base::init(void* pKiss)
 	KISSm(pK,freqAtti);
 	KISSm(pK,freqGlobalPos);
 	KISSm(pK,freqHeartbeat);
+	KISSm(pK,freqRC);
 
 	if(m_freqHeartbeat > 0)
 		m_freqHeartbeat = USEC_1SEC / m_freqHeartbeat;
@@ -85,6 +87,12 @@ void APcopter_base::update(void)
 	{
 		if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
+	}
+
+	if(m_freqRC > 0)
+	{
+		if(tNow - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
+			m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 	}
 
 	//m_pMavlink->clComponentArmDisarm(1);
