@@ -40,17 +40,17 @@ window.onload = function() {
         socket.send("off");
         $('#messages').innerHTML = 'Sent:<br>off<br>';
     };
-    
-    $('#btnON').onclick = function(e) {
-        socket.send("on");
-        $('#messages').innerHTML = 'Sent:<br>on<br>';
-    };
-    
+        
     $('#btnSET').onclick = function(e) {
         socket.send("set");
         $('#messages').innerHTML = 'Sent:<br>set<br>';
     };
     
+    $('#btnSETALT').onclick = function(e) {
+        socket.send("set_alt");
+        $('#messages').innerHTML = 'Sent:<br>set<br>';
+    };
+
     $('#btnOFF').onclick = function(e) {
         socket.send("off");
         $('#messages').innerHTML = 'Sent:<br>off<br>';
@@ -103,8 +103,8 @@ window.onload = function() {
     <pre id="messages">Connecting...</pre>
     
     <button id="btnOFF" style="WIDTH:150px; HEIGHT: 50px">OFF</button>
-    <button id="btnON" style="WIDTH: 100px; HEIGHT: 50px">ON</button>
     <button id="btnSET" style="WIDTH: 100px; HEIGHT: 50px">SET</button>
+    <button id="btnSETALT" style="WIDTH: 100px; HEIGHT: 50px">SET_ALT</button>
     </br></br>
     
     <button id="btnX" style="WIDTH: 100px; HEIGHT: 50px">Send X</button>

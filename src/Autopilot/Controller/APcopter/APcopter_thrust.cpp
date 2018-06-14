@@ -140,7 +140,7 @@ void APcopter_thrust::update(void)
 	vDouble3* pPos = &m_pSB->m_pos;
 	int o;
 
-	//TODO: collision avoid
+	resetAllPwm();
 
 	//Pitch = Y axis
 	if(pPos->y > 0 && m_pTarget.y > m_targetMin)
@@ -161,8 +161,11 @@ void APcopter_thrust::update(void)
 	//Alt = Z axis
 	if(pPos->z > 0 && m_pTarget.z > m_targetMin)
 	{
-		m_pwmAlt = (int)m_pAlt->update(pPos->z, m_pTarget.z);
+		m_pwmAlt += (int)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
+
+	//TODO: collision avoid
+
 
 	if(!isActive())
 	{
@@ -178,30 +181,26 @@ void APcopter_thrust::update(void)
 				" != " + i2str((int)m_enableAPmode));
 	}
 
-	LOG_I("ON");
 	m_pMavAP->clDoSetServo(m_tF.m_iChan, m_tF.m_pwm);
 	m_pMavAP->clDoSetServo(m_tB.m_iChan, m_tB.m_pwm);
 	m_pMavAP->clDoSetServo(m_tL.m_iChan, m_tL.m_pwm);
 	m_pMavAP->clDoSetServo(m_tR.m_iChan, m_tR.m_pwm);
+	LOG_I("ON");
 
-	IF_((double)getTimeUsec() - (double)m_pMavAP->m_msg.time_stamps.rc_channels_raw > (double)m_rcTimeOut);
-
-	uint16_t rcMode = m_pMavAP->m_msg.rc_channels_raw.chan6_raw;
-	IF_(rcMode < 1250);
-
-	LOG_I("ON + ALT");
+	IF_(*m_pAM->getCurrentStateName() != "CC_ON_ALT");
 
 	mavlink_rc_channels_override_t rc;
 	rc.chan1_raw = UINT16_MAX;
 	rc.chan2_raw = UINT16_MAX;
-	rc.chan3_raw = UINT16_MAX;
+	rc.chan3_raw = (uint16_t)m_pwmAlt;
 	rc.chan4_raw = UINT16_MAX;
 	rc.chan5_raw = UINT16_MAX;
 	rc.chan6_raw = UINT16_MAX;
 	rc.chan7_raw = UINT16_MAX;
 	rc.chan8_raw = UINT16_MAX;
-
 	m_pMavAP->rcChannelsOverride(rc);
+	LOG_I("ON + ALT");
+
 }
 
 void APcopter_thrust::resetAllPwm(void)
@@ -245,25 +244,39 @@ void APcopter_thrust::cmd(void)
 		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
 		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
 
-		str = "Set target: X=" + f2str(m_pTarget.x) +
+		str = "SET: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
 				", Z=" + f2str(m_pTarget.z);
 
 		string strOn = "CC_ON";
 		m_pAM->transit(&strOn);
 	}
+	else if(cmd=="set_alt")
+	{
+		m_pTarget = m_pSB->m_pos;
+		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
+		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
+		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
+
+		str = "SET_ALT: X=" + f2str(m_pTarget.x) +
+				", Y=" + f2str(m_pTarget.y) +
+				", Z=" + f2str(m_pTarget.z);
+
+		string strOn = "CC_ON_ALT";
+		m_pAM->transit(&strOn);
+	}
 	else if(cmd=="off")
 	{
 		string strOff = "CC_STANDBY";
 		m_pAM->transit(&strOff);
-		str = "State: " + strOff;
+		str = "OFF";
 	}
 	else if(cmd=="x")
 	{
 		if(v < m_targetMin || v > m_targetMax)v = -1.0;
 
 		m_pTarget.x = v;
-		str = "Set target: X=" + f2str(m_pTarget.x) +
+		str = "SET: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
 				", Z=" + f2str(m_pTarget.z);
 	}
@@ -272,7 +285,7 @@ void APcopter_thrust::cmd(void)
 		if(v < m_targetMin || v > m_targetMax)v = -1.0;
 
 		m_pTarget.y = v;
-		str = "Set target: X=" + f2str(m_pTarget.x) +
+		str = "SET: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
 				", Z=" + f2str(m_pTarget.z);
 	}
@@ -281,7 +294,7 @@ void APcopter_thrust::cmd(void)
 		if(v < m_targetMin || v > m_targetMax)v = -1.0;
 
 		m_pTarget.z = v;
-		str = "Set target: X=" + f2str(m_pTarget.x) +
+		str = "SET: X=" + f2str(m_pTarget.x) +
 				", Y=" + f2str(m_pTarget.y) +
 				", Z=" + f2str(m_pTarget.z);
 	}
