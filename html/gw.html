@@ -19,7 +19,8 @@ window.onload = function() {
         return document.querySelector(selector);
     }
     
-    var socket = new WebSocket('ws://192.168.2.239:7890');
+    /*var socket = new WebSocket('ws://192.168.2.239:7890');*/
+    var socket = new WebSocket('ws://192.168.1.140:7890');
     socket.onopen = function(event) {
         $('#messages').innerHTML = 'Connected<br>';
     };

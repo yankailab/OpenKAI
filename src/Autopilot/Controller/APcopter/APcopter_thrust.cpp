@@ -172,22 +172,25 @@ void APcopter_thrust::update(void)
 		resetAllPwm();
 		LOG_F("OFF: Disabled");
 	}
-
-	if(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode)
+	else if(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode)
 	{
 		resetAllPwm();
 		LOG_F("OFF: Flight mode = " +
 				i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode) +
 				" != " + i2str((int)m_enableAPmode));
 	}
+	else
+	{
+		LOG_I("ON");
+	}
 
 	m_pMavAP->clDoSetServo(m_tF.m_iChan, m_tF.m_pwm);
 	m_pMavAP->clDoSetServo(m_tB.m_iChan, m_tB.m_pwm);
 	m_pMavAP->clDoSetServo(m_tL.m_iChan, m_tL.m_pwm);
 	m_pMavAP->clDoSetServo(m_tR.m_iChan, m_tR.m_pwm);
-	LOG_I("ON");
 
 	IF_(*m_pAM->getCurrentStateName() != "CC_ON_ALT");
+	IF_(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode);
 
 	mavlink_rc_channels_override_t rc;
 	rc.chan1_raw = UINT16_MAX;
