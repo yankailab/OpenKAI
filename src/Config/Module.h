@@ -16,6 +16,7 @@
 #include "../Automaton/_Automaton.h"
 #include "../Detector/_AprilTags.h"
 #include "../include/apriltags-cpp/TagDetector.h"
+#include "../Detector/_ArUco.h"
 #include "../Detector/_Lane.h"
 
 #include "../Navigation/_GPS.h"

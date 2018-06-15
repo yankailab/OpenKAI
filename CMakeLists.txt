@@ -39,7 +39,7 @@ endif()
 
 if(USE_OPENCV_CONTRIB)
   add_definitions(-DUSE_OPENCV_CONTRIB)
-  set(OpenKAI_lib ${OpenKAI_lib} opencv_xobjdetect opencv_tracking)
+  set(OpenKAI_lib ${OpenKAI_lib} opencv_xobjdetect opencv_tracking opencv_aruco)
 endif()
 
 if(USE_DARKNET)

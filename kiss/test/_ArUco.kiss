@@ -1,0 +1,40 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":0,
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":0,
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"dict":0,
+}

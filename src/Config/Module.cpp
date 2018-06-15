@@ -64,6 +64,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Bullseye);
 #endif
 #ifdef USE_OPENCV_CONTRIB
+	ADD_MODULE(_ArUco);
 	ADD_MODULE(_ROITracker);
 #endif
 #ifdef USE_CAFFE
