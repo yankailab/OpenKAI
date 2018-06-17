@@ -66,9 +66,9 @@ bool APcopter_thrust::init(void* pKiss)
 	KISSm(pK,dCollision);
 
 	pK->v("chanF", &m_tF.m_iChan);
-	pK->v("chanB", &m_tF.m_iChan);
-	pK->v("chanL", &m_tF.m_iChan);
-	pK->v("chanR", &m_tF.m_iChan);
+	pK->v("chanB", &m_tB.m_iChan);
+	pK->v("chanL", &m_tL.m_iChan);
+	pK->v("chanR", &m_tR.m_iChan);
 
 	return true;
 }
