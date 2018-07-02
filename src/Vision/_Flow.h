@@ -12,8 +12,6 @@
 #include "FrameGroup.h"
 #include "_VisionBase.h"
 
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -29,11 +27,8 @@ public:
 	bool draw(void);
 
 	bool addFrame(bool bFrame, Frame* pGray);
-	GpuMat* flowMat(void);
 
 private:
-//	void generateFlowMap(const GpuMat& d_flow);
-
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -48,11 +43,12 @@ public:
 	_VisionBase*					m_pVision;
 	FrameGroup*						m_pGrayFrames;
 
+#ifdef USE_CUDA
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	GpuMat							m_gFlow;
+#endif
 
 };
 
 }
-#endif
 #endif

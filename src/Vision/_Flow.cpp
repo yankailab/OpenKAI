@@ -7,8 +7,6 @@
 
 #include "_Flow.h"
 
-#ifdef USE_CUDA
-
 namespace kai
 {
 
@@ -19,7 +17,6 @@ _Flow::_Flow()
 
 	m_pVision = NULL;
 	m_pGrayFrames = NULL;
-
 }
 
 _Flow::~_Flow()
@@ -35,9 +32,12 @@ bool _Flow::init(void* pKiss)
 	KISSm(pK,width);
 	KISSm(pK,height);
 
-	m_pFarn = cuda::FarnebackOpticalFlow::create();
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
+
+#ifdef USE_CUDA
+	m_pFarn = cuda::FarnebackOpticalFlow::create();
+#endif
 
 	return true;
 }
@@ -84,6 +84,7 @@ void _Flow::update(void)
 
 void _Flow::detect(void)
 {
+#ifdef USE_CUDA
 	Frame* pGray;
 	Frame* pNextFrame;
 	Frame* pPrevFrame;
@@ -112,7 +113,7 @@ void _Flow::detect(void)
 	if(pPrev->size() != pNext->size())return;
 
 	m_pFarn->calc(*pPrev, *pNext, m_gFlow);
-
+#endif
 }
 
 bool _Flow::addFrame(bool bFrame, Frame* pGray)
@@ -145,18 +146,13 @@ bool _Flow::addFrame(bool bFrame, Frame* pGray)
 	return true;
 }
 
-GpuMat* _Flow::flowMat(void)
-{
-	return &m_gFlow;
-}
-
 bool _Flow::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_gFlow.empty());
+//	IF_F(m_gFlow.empty());
 //	*pFrame = m_gFlow;
 //TODO:
 
@@ -164,4 +160,3 @@ bool _Flow::draw(void)
 }
 
 }
-#endif
