@@ -56,28 +56,24 @@ bool PIDctrl::link(void)
 
 double PIDctrl::update(double v, double vTarget)
 {
-	const static double ovT = 1.0/USEC_1SEC;
 	uint64_t tNow = getTimeUsec();
 
-	m_vPred = v + (v - m_v) * ovT * m_dT;
+	m_vPred = v + (v - m_v) * m_dT;
 	m_v = v;
 	m_vTarget = vTarget;
-
-	double ovDT = 1.0 / (double)(tNow - m_tLastUpdate);
-	m_tLastUpdate = tNow;
 
 	m_eOld = m_e;
 	m_e = m_vTarget - m_vPred;
 	m_eInteg += m_e;
 
-	//PID should be of the same simbol
-
+	//PID should be of the same symbol
 	double o = m_P * m_e
-			 + m_D * (m_e - m_eOld) * ovDT
+			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (double)(tNow - m_tLastUpdate)) // unit: sec
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
 
 	m_output = constrain(o*m_K, m_min, m_max);
 
+	m_tLastUpdate = tNow;
 	return m_output;
 }
 
