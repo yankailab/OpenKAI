@@ -1,0 +1,97 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"w":1280,
+	"h":720,
+	"bFullScreen":0,
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"textX":20,
+	"textY":20,
+}
+
+{
+	"name":"depthView",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+}
+
+{
+	"name":"realsense",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":0,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":1,
+	"bGray":0,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"nMed":3,
+	"mW":10,
+	"mH":10,
+}
+
+{
+	"name":"gst1",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"bFlip":0,
+	"bGray":0,
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+}
+
+{
+	"name":"YOLO",
+	"class":"_YOLO",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+	"modelDir":"/home/kai/dev/darknet/",
+	"modelFile":"cfg/yolo.cfg",
+	"trainedFile":"data/yolo.weights",
+	"meanFile":"",
+	"labelFile":"data/coco.names",
+	"nClass":80,
+	"nPredAvr":3,
+	"nBatch":1,
+	"mode":"thread",
+	"bDrawStatistics":0,
+}
+
+{
+	"name":"lane",
+	"class":"_Lane",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"camera",
+}
+
