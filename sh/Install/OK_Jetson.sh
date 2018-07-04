@@ -16,6 +16,7 @@ sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nexit 
 set -H
 sudo chmod a+x /etc/rc.local
 sudo chmod a+x /home/ubuntu/jetson_clocks.sh
+#sudo nvpmodel -q --verbose
 
 # Prerequisites
 # Base
@@ -40,6 +41,15 @@ sudo apt-get -y install libgtk2.0-dev libglew-dev libgtk-3-dev libglfw3-dev
 # Add CUDA to bash
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
 bash
+
+# Update CMake
+cd $FULLDEVDIR
+wget https://cmake.org/files/v3.8/cmake-3.8.2.tar.gz
+tar xvf cmake-3.8.2.tar.gz
+cd cmake-3.8.2
+./bootstrap
+make -j6
+sudo make install
 
 # Eigen
 cd $FULLDEVDIR
@@ -77,7 +87,7 @@ make
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/darknet.git
 cd darknet
-make -j4
+make -j6
 cd data
 wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
@@ -92,13 +102,12 @@ sudo udevadm control --reload-rules && udevadm trigger
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j4
+make -j6
 
 # RealSense on TX2
 cd $FULLDEVDIR
 git clone https://github.com/IntelRealSense/librealsense.git
 cd librealsense/
-git branch v2.9.1
 git checkout -b v2.9.1
 sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && udevadm trigger
@@ -106,7 +115,7 @@ sudo reboot now
 mkdir build
 cd build
 cmake ../
-make -j4
+make -j6
 
 # Pangolin
 cd $FULLDEVDIR
@@ -130,7 +139,7 @@ git clone https://github.com/allinurl/gwsocket.git
 cd gwsocket
 autoreconf -fiv
 ./configure
-make
+make -j6
 
 # OpenKAI
 cd $FULLDEVDIR
