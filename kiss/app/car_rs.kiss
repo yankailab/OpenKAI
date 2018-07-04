@@ -13,7 +13,7 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
@@ -70,6 +70,7 @@
 	"Window":"OKview",
 	"_VisionBase":"gst1",
 	"modelDir":"/home/kai/dev/darknet/",
+	"_modelDir":"/home/ubuntu/dev/darknet/",
 	"modelFile":"cfg/yolov2.cfg",
 	"trainedFile":"data/yolov2.weights",
 	"meanFile":"",
