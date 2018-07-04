@@ -219,6 +219,7 @@ bool _DetectorBase::draw(void)
 	}
 
 	Scalar oCol;
+	Scalar bCol = Scalar(100,100,100);
 	int col;
 	int colStep = 255/m_nClass;
 	OBJECT* pO;
@@ -230,7 +231,7 @@ bool _DetectorBase::draw(void)
 		IF_CONT(iClass < 0);
 
 		col = colStep * iClass;
-		oCol = Scalar(col, (col+85)%255, (col+170)%255);
+		oCol = Scalar(col, (col+85)%255, (col+170)%255) + bCol;
 
 		Rect r;
 		vInt42rect(&pO->m_bbox, &r);
@@ -257,7 +258,7 @@ bool _DetectorBase::draw(void)
 	{
 		CLASS_STATISTICS* pC = &m_pClassStatis[i];
 		col = colStep * i;
-		oCol = Scalar(col, (col+85)%255, (col+170)%255);
+		oCol = Scalar(col, (col+85)%255, (col+170)%255) + bCol;
 
 		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
 				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),

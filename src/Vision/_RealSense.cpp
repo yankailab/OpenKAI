@@ -168,15 +168,15 @@ void _RealSense::updateTPP(void)
 
 bool _RealSense::draw(void)
 {
-	if(m_pDepthShow && !m_fDepth.bEmpty())
+	if(!m_fDepth.bEmpty())
 	{
 		rs2::colorizer rsColorMap;
 		rs2::frame dColor = rsColorMap(m_rsDepth);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
-		*m_pDepthShow = mDColor;
+		m_depthShow = mDColor;
 
 		if (m_bFlip)
-			*m_pDepthShow = m_pDepthShow->flip(-1);
+			m_depthShow = m_depthShow.flip(-1);
 	}
 
 	return this->_DepthVisionBase::draw();

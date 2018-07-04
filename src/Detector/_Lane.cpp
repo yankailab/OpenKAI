@@ -254,8 +254,8 @@ bool _Lane::draw(void)
 	IF_F(m_mPerspectiveInv.empty());
 
 	//visualization of the lane
-	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC3);
-	Mat mOverlay = Mat::zeros(pMat->size(), CV_8UC3);
+	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC1);
+	Mat mOverlay = Mat::zeros(pMat->size(), CV_8UC1);
 
 	for(i=0; i<m_nLane; i++)
 	{
@@ -266,12 +266,17 @@ bool _Lane::draw(void)
 		{
 			m_ppPoint[i][j] = Point(pL->vPoly(j), j);
 		}
-
-		polylines(mLane, m_ppPoint, m_pNp, m_nLane, false, cv::Scalar(0,0,255), 3, 4);
 	}
 
+	polylines(mLane, m_ppPoint, m_pNp, m_nLane, false, cv::Scalar(255), 3, 4);
 	cv::warpPerspective(mLane, mOverlay, m_mPerspectiveInv, mOverlay.size(), cv::INTER_LINEAR);
-	cv::addWeighted(mOverlay, 0.8, *pMat, 1.0, 0, *pMat);
+
+	vector<cv::Mat> vBGR;
+	cv::split(*pMat, vBGR);
+	vBGR[0] -= mOverlay;
+	vBGR[1] -= mOverlay;
+	vBGR[2] += mOverlay;
+	cv::merge(vBGR, *pMat);
 
 	if(m_bDrawOverhead && !m_mOverhead.empty())
 	{

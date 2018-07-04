@@ -31,9 +31,9 @@ bool _YOLO::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSdm(pK,thresh);
-	KISSdm(pK,hier);
-	KISSdm(pK,nms);
+	KISSm(pK,thresh);
+	KISSm(pK,hier);
+	KISSm(pK,nms);
 	KISSm(pK,nBatch);
 	KISSm(pK,nPredAvr);
 

@@ -13,11 +13,11 @@ namespace kai
 _DepthVisionBase::_DepthVisionBase()
 {
 	m_pDepthWin = NULL;
-	m_pDepthShow = NULL;
 	m_range.x = 0.0;
 	m_range.y = 10.0;
 	m_wD = 1280;
 	m_hD = 720;
+	m_dShowAlpha = 0.5;
 
 	m_pFilterMatrix = NULL;
 	m_nFilter = 0;
@@ -28,7 +28,6 @@ _DepthVisionBase::_DepthVisionBase()
 _DepthVisionBase::~_DepthVisionBase()
 {
 	DEL(m_pFilterMatrix);
-	DEL(m_pDepthShow);
 }
 
 bool _DepthVisionBase::init(void* pKiss)
@@ -39,6 +38,7 @@ bool _DepthVisionBase::init(void* pKiss)
 
 	KISSm(pK,wD);
 	KISSm(pK,hD);
+	KISSm(pK,dShowAlpha);
 	F_INFO(pK->v("rFrom", &m_range.x));
 	F_INFO(pK->v("rTo", &m_range.y));
 
@@ -65,10 +65,6 @@ bool _DepthVisionBase::link(void)
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
 	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));
-	if(m_pDepthWin)
-	{
-		m_pDepthShow = new Frame();
-	}
 
 	return true;
 }
@@ -172,16 +168,21 @@ vDouble2 _DepthVisionBase::range(void)
 bool _DepthVisionBase::draw(void)
 {
 	this->_VisionBase::draw();
+	IF_F(m_depthShow.bEmpty());
 
-	NULL_F(m_pDepthWin);
-	NULL_F(m_pDepthShow);
-	IF_F(m_pDepthShow->bEmpty());
-
-	Frame* pFrame = m_pDepthWin->getFrame();
-	pFrame->copy(*m_pDepthShow);
+	if(m_pDepthWin)
+	{
+		Frame* pFrame = m_pDepthWin->getFrame();
+		pFrame->copy(m_depthShow);
+	}
+	else if(m_pWindow)
+	{
+		Frame* pFrame = ((Window*)m_pWindow)->getFrame();
+		Mat* pM = pFrame->m();
+		cv::addWeighted(*m_depthShow.m(), m_dShowAlpha, *pM, 1.0, 0, *pM);
+	}
 
 	return true;
 }
-
 
 }

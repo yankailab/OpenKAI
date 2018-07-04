@@ -49,7 +49,8 @@ public:
 	int			m_nFilter;
 	Frame		m_fMatrixFrame;
 
-	Frame*	m_pDepthShow;
+	Frame	m_depthShow;
+	double	m_dShowAlpha;
 	Window* m_pDepthWin;
 
 };
