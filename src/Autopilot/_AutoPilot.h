@@ -5,6 +5,7 @@
 #include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
 #include "Controller/RC/RC_base.h"
+#include "Controller/APcopter/APcopter_arucoLanding.h"
 #include "Controller/APcopter/APcopter_base.h"
 #include "Controller/APcopter/APcopter_thrust.h"
 #include "Controller/APcopter/APcopter_depthVision.h"

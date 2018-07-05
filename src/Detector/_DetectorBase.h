@@ -28,6 +28,8 @@ struct OBJECT
 	vDouble4	m_fBBox;
 	vInt4		m_bbox;
 	double		m_dist;
+	vDouble3	m_velo;
+	bool		m_bTracked;
 	vInt2		m_camSize;
 	int	 		m_iClass;		//most probable class
 	uint64_t 	m_mClass;		//all candidate class mask
@@ -40,6 +42,8 @@ struct OBJECT
 		m_bbox.init();
 		m_camSize.init();
 		m_dist = -1.0;
+		m_velo.init();
+		m_bTracked = false;
 		m_tStamp = -1;
 		m_bCluster = false;
 		resetClass();
