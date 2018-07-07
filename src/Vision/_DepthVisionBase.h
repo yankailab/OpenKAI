@@ -52,6 +52,8 @@ public:
 	Frame	m_depthShow;
 	double	m_dShowAlpha;
 	Window* m_pDepthWin;
+	bool	m_bShowRawDepth;
+	double	m_dShowRawBase;
 
 };
 

@@ -216,8 +216,8 @@ bool _VisionBase::draw(void)
 {
 	NULL_F(m_pWindow);
 	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
-	IF_F(m_fBGR.bEmpty());
 
+	IF_T(m_fBGR.bEmpty());
 	pFrame->copy(m_fBGR);
 
 	return this->_ThreadBase::draw();

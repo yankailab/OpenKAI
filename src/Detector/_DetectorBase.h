@@ -201,17 +201,16 @@ public:
 	void bSetActive(bool bActive);
 	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* at(int i);
-	void addOrUpdate(OBJECT* pNewObj);
 	int size(void);
-	void mergeDetector(void);
 	bool bReady(void);
 	void updateStatistics(void);
+	//	void mergeDetector(void);
 
 public:
 	bool m_bActive;
 	bool m_bReady;
 	_VisionBase* m_pVision;
-	_DetectorBase* m_pDetIn;
+	//	_DetectorBase* m_pDetIn;
 	double m_overlapMin;
 	OBJECT_DARRAY m_obj;
 
@@ -221,6 +220,8 @@ public:
 	string m_labelFile;
 	int	   m_nClass;
 	double m_minConfidence;
+	double m_minArea;
+	double m_maxArea;
 	detectorMode m_mode;
 	uint64_t m_tStamp;
 
@@ -231,6 +232,8 @@ public:
 	vInt3 m_classLegendPos;
 	bool m_bDrawSegment;
 	double m_segmentBlend;
+	double m_drawVeloScale;
+
 };
 
 }

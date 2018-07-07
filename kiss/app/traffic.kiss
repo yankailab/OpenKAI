@@ -57,7 +57,7 @@
 	"nMed":3,
 	"mW":10,
 	"mH":10,
-	"dShowAlpha":0.25,
+	"dShowAlpha":0.0,
 	"bShowRawDepth":1,
 	"dShowRawBase":0.05,
 }
@@ -81,80 +81,9 @@
 	"nPredAvr":3,
 	"nBatch":1,
 	"mode":"thread",
-	"overlapMin":0.1,
-	"bDrawStatistics":0,
-}
-
-{
-	"name":"lane",
-	"class":"_Lane",
-	"FPS":30,
-	"bInst":1,
-	"Window":"OKview",
-	"_VisionBase":"gst1",
-	"roiLTx":0.425,
-	"roiLTy":0.63,
-	"roiLBx":0.0,
-	"roiLBy":0.9,
-	"roiRTx":0.575,
-	"roiRTy":0.63,
-	"roiRBx":1.0,
-	"roiRBy":0.9,
-	"overheadW":100,
-	"overheadH":100,
-	"binMed":3,
-	"nAvr":2,
-	"nMed":5,
-	"bDrawOverhead":0,
-	"bDrawFilter":0,
-
-	{
-		"name":"colorFilter",
-		"bInst":1,
-		{
-			"bInst":1,
-			"iColorSpace":44, /*CV_BGR2Lab*/
-			"iChannel":2,
-			"nTile":4,
-			"thr":150,
-			"clipLim":2.0,
-		}
-		{
-			"bInst":1,
-			"iColorSpace":40, /*CV_BGR2HSV*/
-			"iChannel":2,
-			"nTile":4,
-			"thr":220,
-			"clipLim":6.0,
-		}
-		{
-			"bInst":1,
-			"iColorSpace":52, /*CV_BGR2HLS*/
-			"iChannel":1,
-			"nTile":4,
-			"thr":210,
-			"clipLim":2.0,
-		}
-	}
-	
-	{
-		"name":"lane",
-		"bInst":1,
-		
-		{
-			"bInst":1,
-			"l":0.0,
-			"t":0.0,
-			"r":0.5,
-			"b":1.0,
-		}
-		
-		{
-			"bInst":1,
-			"l":0.5,
-			"t":0.0,
-			"r":1.0,
-			"b":1.0,
-		}
-	}
+	"overlapMin":0.5,
+	"minArea":0.0,
+	"maxArea":0.2,
+	"drawVeloScale":2.0,
+	"bDrawStatistics":1,
 }

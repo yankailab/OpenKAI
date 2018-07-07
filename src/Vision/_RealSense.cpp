@@ -168,7 +168,7 @@ void _RealSense::updateTPP(void)
 
 bool _RealSense::draw(void)
 {
-	if(!m_fDepth.bEmpty())
+	if(m_bShowRawDepth && !m_fDepth.bEmpty())
 	{
 		rs2::colorizer rsColorMap;
 		rs2::frame dColor = rsColorMap(m_rsDepth);

@@ -18,6 +18,8 @@ _DepthVisionBase::_DepthVisionBase()
 	m_wD = 1280;
 	m_hD = 720;
 	m_dShowAlpha = 0.5;
+	m_bShowRawDepth = false;
+	m_dShowRawBase = 1.0/15.0;
 
 	m_pFilterMatrix = NULL;
 	m_nFilter = 0;
@@ -39,6 +41,9 @@ bool _DepthVisionBase::init(void* pKiss)
 	KISSm(pK,wD);
 	KISSm(pK,hD);
 	KISSm(pK,dShowAlpha);
+	KISSm(pK,bShowRawDepth);
+	KISSm(pK,dShowRawBase);
+
 	F_INFO(pK->v("rFrom", &m_range.x));
 	F_INFO(pK->v("rTo", &m_range.y));
 
@@ -167,19 +172,41 @@ vDouble2 _DepthVisionBase::range(void)
 
 bool _DepthVisionBase::draw(void)
 {
-	this->_VisionBase::draw();
-	IF_F(m_depthShow.bEmpty());
+	IF_F(!this->_VisionBase::draw());
+	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
+
+	if(m_bShowRawDepth)
+	{
+		IF_F(m_depthShow.bEmpty());
+	}
+	else
+	{
+		IF_F(pFrame->bEmpty());
+
+		Mat mF = Mat::zeros(m_mDim.x, m_mDim.y, CV_8UC3);
+
+		int i,j;
+		for(i=0; i<m_mDim.y; i++)
+		{
+			for(j=0; j<m_mDim.x; j++)
+			{
+				mF.at<Vec3b>(i,j)[2] = 255 * (1.0 - (m_pFilterMatrix[i*m_mDim.x+j].v() * m_dShowRawBase));
+			}
+		}
+
+		Frame fF;
+		fF.copy(mF);
+		Mat* pM = pFrame->m();
+		m_depthShow = fF.resize(pM->cols, pM->rows);
+	}
 
 	if(m_pDepthWin)
 	{
-		Frame* pFrame = m_pDepthWin->getFrame();
-		pFrame->copy(m_depthShow);
+		m_pDepthWin->getFrame()->copy(*m_depthShow.m());
 	}
 	else if(m_pWindow)
 	{
-		Frame* pFrame = ((Window*)m_pWindow)->getFrame();
-		Mat* pM = pFrame->m();
-		cv::addWeighted(*m_depthShow.m(), m_dShowAlpha, *pM, 1.0, 0, *pM);
+		cv::addWeighted(*m_depthShow.m(), m_dShowAlpha, *pFrame->m(), 1.0, 0, *pFrame->m());
 	}
 
 	return true;

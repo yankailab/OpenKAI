@@ -15,8 +15,10 @@ _DetectorBase::_DetectorBase()
 	m_meanFile = "";
 	m_labelFile = "";
 	m_overlapMin = 1.0;
-	m_pDetIn = NULL;
+//	m_pDetIn = NULL;
 	m_minConfidence = 0.0;
+	m_minArea = 0.0;
+	m_maxArea = 1.0;
 	m_nClass = DETECTOR_N_CLASS;
 	m_tStamp = 0;
 	m_obj.reset();
@@ -25,6 +27,7 @@ _DetectorBase::_DetectorBase()
 	m_bReady = false;
 	m_mode = thread;
 
+	m_drawVeloScale = 1.0;
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
@@ -60,6 +63,8 @@ bool _DetectorBase::init(void* pKiss)
 	//general
 	KISSm(pK, overlapMin);
 	KISSm(pK, minConfidence);
+	KISSm(pK, minArea);
+	KISSm(pK, maxArea);
 	m_obj.reset();
 
 	//model
@@ -80,6 +85,7 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, bDrawSegment);
 	KISSm(pK, segmentBlend);
 	KISSm(pK, bDrawStatistics);
+	KISSm(pK, drawVeloScale);
 
 	string pClassList[DETECTOR_N_CLASS];
 	m_nClass = pK->array("classList", pClassList, DETECTOR_N_CLASS);
@@ -106,9 +112,9 @@ bool _DetectorBase::link(void)
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
-	iName = "";
-	F_INFO(pK->v("_DetectorIn", &iName));
-	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+//	iName = "";
+//	F_INFO(pK->v("_DetectorIn", &iName));
+//	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -162,40 +168,43 @@ OBJECT* _DetectorBase::at(int i)
 	return m_obj.at(i);
 }
 
-OBJECT* _DetectorBase::add(OBJECT* pNewObj)
+OBJECT* _DetectorBase::add(OBJECT* pNewO)
 {
-	return m_obj.add(pNewObj);
-}
+	NULL_N(pNewO);
 
-void _DetectorBase::addOrUpdate(OBJECT* pNewObj)
-{
-	NULL_(pNewObj);
+	double area = pNewO->m_fBBox.area();
+	IF_N(area < m_minArea);
+	IF_N(area > m_maxArea);
 
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(overlapRatio(&pO->m_bbox, &pNewObj->m_bbox) < m_overlapMin);
+		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_overlapMin);
+		IF_CONT(pO->m_iClass != pNewO->m_iClass);
+//		IF_CONT((pO->m_mClass | pNewO->m_mClass) == 0);
 
-		*pO = *pNewObj;
-		return;
+		pNewO->m_bTracked = true;
+		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
+		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
+		break;
 	}
 
-	m_obj.add(pNewObj);
+	return m_obj.add(pNewO);
 }
 
-void _DetectorBase::mergeDetector(void)
-{
-	NULL_(m_pDetIn);
-
-	OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
-	OBJECT* pO;
-	int i=0;
-	while((pO = pOA->at(i++)) != NULL)
-	{
-		addOrUpdate(pO);
-	}
-}
+//void _DetectorBase::mergeDetector(void)
+//{
+//	NULL_(m_pDetIn);
+//
+//	OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
+//	OBJECT* pO;
+//	int i=0;
+//	while((pO = pOA->at(i++)) != NULL)
+//	{
+//		addOrUpdate(pO);
+//	}
+//}
 
 void _DetectorBase::bSetActive(bool bActive)
 {
@@ -233,10 +242,18 @@ bool _DetectorBase::draw(void)
 		col = colStep * iClass;
 		oCol = Scalar(col, (col+85)%255, (col+170)%255) + bCol;
 
+		//draw bbox
 		Rect r;
 		vInt42rect(&pO->m_bbox, &r);
 		rectangle(*pMat, r, oCol, 2);
 
+		//draw velocity
+		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
+		Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
+		circle(*pMat, pC, 3, oCol, 2);
+		line(*pMat, pC, pC - pV, oCol, 2);
+
+		//draw name
 		string oName = m_pClassStatis[iClass].m_name;
 		if (oName.length()>0)
 		{
