@@ -13,10 +13,9 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"w":640,
 	"h":360,
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 }
 
 {
@@ -58,9 +57,22 @@
 }
 
 {
+	"name":"arUco",
+	"class":"_ArUco",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam1",
+	"mode":"thread",
+	"dict":0,
+}
+
+{
 	"name":"YOLO",
 	"class":"_YOLO",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -104,14 +116,6 @@
 }
 
 {
-	"name":"webSocket",
-	"class":"_WebSocket",
-	"FPS":100,
-	"bInst":0,
-	"Window":"OKview",
-}
-
-{
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
@@ -123,31 +127,6 @@
 	{
 		"bInst":1,
 		"_Mavlink":"mavGCS",
-	}
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavWS",
-	}
-}
-
-{
-	"name":"mavWS",
-	"class":"_Mavlink",
-	"bInst":0,
-	"bLog":0,
-	"FPS":100,
-	"Window":"OKview",
-	"_IOBase":"webSocket",
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavGCS",
-	}
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavAP",
 	}
 }
 
@@ -163,11 +142,6 @@
 	{
 		"bInst":1,
 		"_Mavlink":"mavAP",
-	}
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavWS",
 	}
 }
 
@@ -209,25 +183,24 @@
 			"freqGlobalPos":30,
 			"freqHeartbeat":0,
 		}
-
+		
 		{
-			"name":"apLanding",
-			"class":"APcopter_DNNlanding",
-			"bInst":0,
+			"name":"apAruco",
+			"class":"APcopter_arucoLanding",
+			"bInst":1,
 			"Window":"OKview",
 			"APcopter_base":"apBase",
-			"_Stream":"cam1",
-			"_AIbase":"detectNet",
+			"_VisionBase":"cam1",
+			"_ArUco":"arUco",
 			"_Automaton":"apState",
 			"orientationX":1,
 			"orientationY":1,
-			"timeout":1000,
-			"minSize":0.0,
-			"maxSize":0.5,
+			"minArea":0.0,
+			"maxArea":0.5,
 
 			{
-				"class":["beach","bridge","lake","water","lake","ocean","river","ship","playground","ruin","harbor"],
-				"action":"warn",
+				"code":1,
+				"angle":0,
 			}
 		}
 		

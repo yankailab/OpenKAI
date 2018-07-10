@@ -1,19 +1,19 @@
 /*
- * _detectorBase.h
+ * _ObjectBase.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__DetectorBase_H_
-#define OpenKAI_src_Detector__DetectorBase_H_
+#ifndef OpenKAI_src_Base__ObjectBase_H_
+#define OpenKAI_src_Base__ObjectBase_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
-#define DETECTOR_N_CLASS 128
-#define DETECTOR_N_OBJ 256
+#define OBJECT_N_CLASS 128
+#define OBJECT_N_OBJ 256
 
 namespace kai
 {
@@ -103,7 +103,7 @@ struct OBJECT
 
 struct OBJECT_ARRAY
 {
-	OBJECT m_pObj[DETECTOR_N_OBJ];
+	OBJECT m_pObj[OBJECT_N_OBJ];
 	int m_nObj;
 
 	void reset(void)
@@ -114,7 +114,7 @@ struct OBJECT_ARRAY
 	OBJECT* add(OBJECT* pO)
 	{
 		NULL_N(pO);
-		IF_N(m_nObj >= DETECTOR_N_OBJ);
+		IF_N(m_nObj >= OBJECT_N_OBJ);
 
 		m_pObj[m_nObj++] = *pO;
 
@@ -185,11 +185,11 @@ struct CLASS_STATISTICS
 	}
 };
 
-class _DetectorBase: public _ThreadBase
+class _ObjectBase: public _ThreadBase
 {
 public:
-	_DetectorBase();
-	virtual ~_DetectorBase();
+	_ObjectBase();
+	virtual ~_ObjectBase();
 
 	virtual bool init(void* pKiss);
 	virtual bool link(void);
@@ -199,34 +199,41 @@ public:
 	virtual string getClassName(int iClass);
 
 	void bSetActive(bool bActive);
+
 	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* at(int i);
+	void merge(_ObjectBase* pO);
+	void updateStatistics(void);
+
 	int size(void);
 	bool bReady(void);
-	void updateStatistics(void);
-	//	void mergeDetector(void);
 
 public:
-	bool m_bActive;
-	bool m_bReady;
+	//input
 	_VisionBase* m_pVision;
-	//	_DetectorBase* m_pDetIn;
-	double m_overlapMin;
 	OBJECT_DARRAY m_obj;
 
+	//control
+	bool m_bActive;
+	bool m_bReady;
+	uint64_t m_tStamp;
+	detectorMode m_mode;
+
+	//config
+	double m_minOverlap;
+	double m_minConfidence;
+	double m_minArea;
+	double m_maxArea;
+
+	//model
 	string m_modelFile;
 	string m_trainedFile;
 	string m_meanFile;
 	string m_labelFile;
 	int	   m_nClass;
-	double m_minConfidence;
-	double m_minArea;
-	double m_maxArea;
-	detectorMode m_mode;
-	uint64_t m_tStamp;
+	CLASS_STATISTICS m_pClassStatis[OBJECT_N_CLASS];
 
-	CLASS_STATISTICS m_pClassStatis[DETECTOR_N_CLASS];
-
+	//show
 	std::bitset<64> m_bitSet;
 	bool m_bDrawStatistics;
 	vInt3 m_classLegendPos;
@@ -237,5 +244,4 @@ public:
 };
 
 }
-
 #endif

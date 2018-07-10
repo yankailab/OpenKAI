@@ -6,7 +6,7 @@ namespace kai
 APcopter_arucoLanding::APcopter_arucoLanding()
 {
 	m_pAP = NULL;
-	m_pDet = NULL;
+	m_pArUco = NULL;
 
 	m_tAngle.init();
 	m_bLocked = false;
@@ -34,11 +34,10 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	int i = 0;
 	while (pItrT[i])
 	{
-		Kiss* pKs = pItrT[i];
+		Kiss* pKs = pItrT[i++];
 		L.init();
 		F_ERROR_F(pKs->v("code", &L.m_code));
 		pKs->v("angle", &L.m_angle);
-		pKs->v("priority", &L.m_iPriority);
 		m_vTarget.push_back(L);
 	}
 
@@ -54,8 +53,8 @@ bool APcopter_arucoLanding::link(void)
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
 
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	F_ERROR_F(pK->v("_ArUco", &iName));
+	m_pArUco = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -71,8 +70,8 @@ void APcopter_arucoLanding::navigation(void)
 {
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
-	NULL_(m_pDet);
-	_VisionBase* pV = m_pDet->m_pVision;
+	NULL_(m_pArUco);
+	_VisionBase* pV = m_pArUco->m_pVision;
 	NULL_(pV);
 
 	vInt2 cSize;
@@ -81,26 +80,31 @@ void APcopter_arucoLanding::navigation(void)
 	pV->info(&cSize, &cCenter, &cAngle);
 
 	int iDet = 0;
+	int iPriority = INT_MAX;
 	LANDING_TARGET_ARUCO* pTarget = NULL;
+
 	while(1)
 	{
-		OBJECT* pO = m_pDet->at(iDet++);
+		OBJECT* pO = m_pArUco->at(iDet++);
 		if(!pO)break;
 
-		for(int i=0; i<m_vTarget.size(); i++)
+		LANDING_TARGET_ARUCO* pT = NULL;
+		int i;
+		for(i=0; i<m_vTarget.size(); i++)
 		{
-			LANDING_TARGET_ARUCO* pT = &m_vTarget[i];
-			IF_CONT(pO->m_iClass != pT->m_code);
+			LANDING_TARGET_ARUCO* pTi = &m_vTarget[i];
+			IF_CONT(pO->m_iClass != pTi->m_code);
 
-			if(pTarget)
-			{
-				if(pTarget->m_iPriority <= pT->m_iPriority)break;
-			}
-
-			pTarget = pT;
-			m_target = *pO;
+			pT = pTi;
 			break;
 		}
+
+		IF_CONT(!pT);
+		IF_CONT(i >= iPriority);
+
+		pTarget = pT;
+		iPriority = i;
+		m_target = *pO;
 	}
 
 	if(!pTarget)

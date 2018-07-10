@@ -36,8 +36,8 @@ bool HM_follow::init(void* pKiss)
 	KISSm(pK,minSize);
 	KISSm(pK,maxSize);
 
-	int pTargetList[DETECTOR_N_CLASS];
-	int nTarget = pK->array("targetList", pTargetList, DETECTOR_N_CLASS);
+	int pTargetList[OBJECT_N_CLASS];
+	int nTarget = pK->array("targetList", pTargetList, OBJECT_N_CLASS);
 	m_mTargetClass = 0;
 	for(int i=0; i<nTarget; i++)
 	{
@@ -58,7 +58,7 @@ bool HM_follow::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

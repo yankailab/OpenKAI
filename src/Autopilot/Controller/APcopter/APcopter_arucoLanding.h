@@ -3,7 +3,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_arucoLanding_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Base/_ObjectBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -14,13 +14,11 @@ struct LANDING_TARGET_ARUCO
 {
 	int m_code;
 	double m_angle;
-	int m_iPriority;
 
 	void init(void)
 	{
 		m_code = -1;
 		m_angle = -1.0;
-		m_iPriority = 0;
 	}
 };
 
@@ -40,7 +38,7 @@ public:
 
 public:
 	APcopter_base* m_pAP;
-	_DetectorBase* m_pDet;
+	_ObjectBase* m_pArUco;
 
 	OBJECT 	 m_target;
 	vDouble2 m_orientation;

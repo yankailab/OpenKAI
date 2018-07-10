@@ -27,7 +27,7 @@ _YOLO::~_YOLO()
 
 bool _YOLO::init(void* pKiss)
 {
-	IF_F(!this->_DetectorBase::init(pKiss));
+	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -43,7 +43,7 @@ bool _YOLO::init(void* pKiss)
 					m_nPredAvr,
 					m_nBatch), "YOLO init failed");
 
-	m_pYoloObj = new yolo_object[DETECTOR_N_OBJ];
+	m_pYoloObj = new yolo_object[OBJECT_N_OBJ];
 
 	m_nClass = yoloNClass();
 	for(int i=0; i<m_nClass; i++)
@@ -59,7 +59,7 @@ bool _YOLO::init(void* pKiss)
 
 bool _YOLO::link(void)
 {
-	IF_F(!this->_DetectorBase::link());
+	IF_F(!this->_ObjectBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	return true;
@@ -85,7 +85,7 @@ void _YOLO::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_DetectorBase::update();
+		this->_ObjectBase::update();
 
 		m_obj.update();
 		detect();
@@ -107,7 +107,7 @@ void _YOLO::detect(void)
 
 	Mat* pMat = m_BGR.m();
 	IplImage ipl = *pMat;
-	int nDetected = yoloUpdate(&ipl, m_pYoloObj, DETECTOR_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
+	int nDetected = yoloUpdate(&ipl, m_pYoloObj, OBJECT_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
 	IF_(nDetected <= 0);
 
 	m_tStamp = getTimeUsec();
@@ -142,7 +142,7 @@ void _YOLO::detect(void)
 
 bool _YOLO::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	IF_F(!this->_ObjectBase::draw());
 
 	return true;
 }

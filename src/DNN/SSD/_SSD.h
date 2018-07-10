@@ -9,8 +9,8 @@
 #define OpenKAI_src_DNN_SSD__SSD_H_
 
 #include "../../Base/common.h"
+#include "../../Base/_ObjectBase.h"
 #include "../../Vision/_VisionBase.h"
-#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_SSD
 #ifdef USE_CUDA

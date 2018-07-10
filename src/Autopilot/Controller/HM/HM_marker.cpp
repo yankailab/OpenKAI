@@ -46,7 +46,7 @@ bool HM_marker::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }

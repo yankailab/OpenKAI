@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_HM_grass_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Base/_ObjectBase.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -23,7 +23,7 @@ public:
 private:
 	void bSetActive(bool bActive);
 
-	_DetectorBase*	m_pDet;
+	_ObjectBase*	m_pDet;
 	HM_base* m_pHM;
 
 	int			m_rpmSteer;

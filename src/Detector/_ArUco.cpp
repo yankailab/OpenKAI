@@ -25,7 +25,7 @@ _ArUco::~_ArUco()
 
 bool _ArUco::init(void* pKiss)
 {
-	IF_F(!this->_DetectorBase::init(pKiss));
+	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
@@ -38,7 +38,7 @@ bool _ArUco::init(void* pKiss)
 
 bool _ArUco::link(void)
 {
-	IF_F(!this->_DetectorBase::link());
+	IF_F(!this->_ObjectBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
 
 	string iName = "";
@@ -67,7 +67,7 @@ void _ArUco::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_DetectorBase::update();
+		this->_ObjectBase::update();
 		m_obj.update();
 		detect();
 
@@ -150,7 +150,7 @@ bool _ArUco::draw(void)
 
 bool _ArUco::cli(int& iY)
 {
-	IF_F(!this->_DetectorBase::cli(iY));
+	IF_F(!this->_ObjectBase::cli(iY));
 
 	string msg = "| ";
 	for (int i = 0; i < m_vID.size(); i++)

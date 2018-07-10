@@ -2,24 +2,23 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_DetectorBase.h"
+#include "_ObjectBase.h"
 
 namespace kai
 {
 
-_DetectorBase::_DetectorBase()
+_ObjectBase::_ObjectBase()
 {
 	m_pVision = NULL;
 	m_modelFile = "";
 	m_trainedFile = "";
 	m_meanFile = "";
 	m_labelFile = "";
-	m_overlapMin = 1.0;
-//	m_pDetIn = NULL;
+	m_minOverlap = 1.0;
 	m_minConfidence = 0.0;
 	m_minArea = 0.0;
 	m_maxArea = 1.0;
-	m_nClass = DETECTOR_N_CLASS;
+	m_nClass = OBJECT_N_CLASS;
 	m_tStamp = 0;
 	m_obj.reset();
 
@@ -36,11 +35,11 @@ _DetectorBase::_DetectorBase()
 	m_classLegendPos.z = 15;
 }
 
-_DetectorBase::~_DetectorBase()
+_ObjectBase::~_ObjectBase()
 {
 }
 
-bool _DetectorBase::init(void* pKiss)
+bool _ObjectBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -61,7 +60,7 @@ bool _DetectorBase::init(void* pKiss)
 	}
 
 	//general
-	KISSm(pK, overlapMin);
+	KISSm(pK, minOverlap);
 	KISSm(pK, minConfidence);
 	KISSm(pK, minArea);
 	KISSm(pK, maxArea);
@@ -87,8 +86,8 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, bDrawStatistics);
 	KISSm(pK, drawVeloScale);
 
-	string pClassList[DETECTOR_N_CLASS];
-	m_nClass = pK->array("classList", pClassList, DETECTOR_N_CLASS);
+	string pClassList[OBJECT_N_CLASS];
+	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
 
 	//statistics
 	int i;
@@ -101,7 +100,7 @@ bool _DetectorBase::init(void* pKiss)
 	return true;
 }
 
-bool _DetectorBase::link(void)
+bool _ObjectBase::link(void)
 {
 	IF_F(!this->_ThreadBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
@@ -119,12 +118,12 @@ bool _DetectorBase::link(void)
 	return true;
 }
 
-void _DetectorBase::update(void)
+void _ObjectBase::update(void)
 {
 	m_tStamp = getTimeUsec();
 }
 
-void _DetectorBase::updateStatistics(void)
+void _ObjectBase::updateStatistics(void)
 {
 	int i;
 	for(i=0; i<m_nClass; i++)
@@ -143,32 +142,32 @@ void _DetectorBase::updateStatistics(void)
 	}
 }
 
-int _DetectorBase::getClassIdx(string& className)
+int _ObjectBase::getClassIdx(string& className)
 {
 	return -1;
 }
 
-string _DetectorBase::getClassName(int iClass)
+string _ObjectBase::getClassName(int iClass)
 {
 	return "";
 }
 
-bool _DetectorBase::bReady(void)
+bool _ObjectBase::bReady(void)
 {
 	return m_bReady;
 }
 
-int _DetectorBase::size(void)
+int _ObjectBase::size(void)
 {
 	return m_obj.size();
 }
 
-OBJECT* _DetectorBase::at(int i)
+OBJECT* _ObjectBase::at(int i)
 {
 	return m_obj.at(i);
 }
 
-OBJECT* _DetectorBase::add(OBJECT* pNewO)
+OBJECT* _ObjectBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
@@ -180,7 +179,7 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_overlapMin);
+		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
 		IF_CONT(pO->m_iClass != pNewO->m_iClass);
 //		IF_CONT((pO->m_mClass | pNewO->m_mClass) == 0);
 
@@ -193,25 +192,24 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	return m_obj.add(pNewO);
 }
 
-//void _DetectorBase::mergeDetector(void)
-//{
-//	NULL_(m_pDetIn);
-//
-//	OBJECT_DARRAY* pOA = &m_pDetIn->m_obj;
-//	OBJECT* pO;
-//	int i=0;
-//	while((pO = pOA->at(i++)) != NULL)
-//	{
-//		addOrUpdate(pO);
-//	}
-//}
+void _ObjectBase::merge(_ObjectBase* pO)
+{
+	NULL_(pO);
 
-void _DetectorBase::bSetActive(bool bActive)
+	OBJECT* pObj;
+	int i=0;
+	while((pObj = pO->at(i++)) != NULL)
+	{
+		add(pObj);
+	}
+}
+
+void _ObjectBase::bSetActive(bool bActive)
 {
 	m_bActive = bActive;
 }
 
-bool _DetectorBase::draw(void)
+bool _ObjectBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	IF_T(!m_bActive);

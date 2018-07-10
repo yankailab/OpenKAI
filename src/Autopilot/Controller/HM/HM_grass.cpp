@@ -71,7 +71,7 @@ bool HM_grass::link(void)
 
 	iName = "";
 	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pDet,"_DetectorBase not found");
 
 	OBJECT gO;

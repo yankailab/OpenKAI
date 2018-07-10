@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Vision/_VisionBase.h"
-#include "../../Detector/_DetectorBase.h"
+#include "../../Base/_ObjectBase.h"
 
 #ifdef USE_TENSORRT
 

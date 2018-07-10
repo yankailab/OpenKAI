@@ -33,7 +33,7 @@ _ClusterNet::~_ClusterNet()
 
 bool _ClusterNet::init(void* pKiss)
 {
-	IF_F(!this->_DetectorBase::init(pKiss));
+	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
@@ -51,13 +51,13 @@ bool _ClusterNet::init(void* pKiss)
 
 bool _ClusterNet::link(void)
 {
-	IF_F(!this->_DetectorBase::link());
+	IF_F(!this->_ObjectBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
 
 	string iName = "";
 
 	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
 	NULL_Fl(m_pDet, "_DetectorBase not found");
 
 	//create detection area instances
@@ -283,7 +283,7 @@ bool _ClusterNet::bFound(int iClass)
 
 bool _ClusterNet::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	IF_F(!this->_ObjectBase::draw());
 
 	return true;
 }

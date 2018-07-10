@@ -31,7 +31,7 @@ struct DNN_AVOID_ACTION
 
 	void addClass(int iClass)
 	{
-		IF_(iClass >= DETECTOR_N_CLASS);
+		IF_(iClass >= OBJECT_N_CLASS);
 		IF_(iClass < 0);
 
 		m_mClass |= (1 << iClass);

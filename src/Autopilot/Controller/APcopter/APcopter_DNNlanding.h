@@ -3,7 +3,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_DNNlanding_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Base/_ObjectBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -54,7 +54,7 @@ private:
 
 private:
 	APcopter_base* m_pAP;
-	_DetectorBase* m_pAI;
+	_ObjectBase* m_pAI;
 
 	LANDING_TARGET	m_target;
 

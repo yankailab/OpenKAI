@@ -9,8 +9,8 @@
 #define OpenKAI_src_Detector__Cascade_H_
 
 #include "../Base/common.h"
-#include "_DetectorBase.h"
 #include "../Vision/_VisionBase.h"
+#include "../Base/_ObjectBase.h"
 
 #ifdef USE_CASCADE
 #ifdef USE_CUDA
