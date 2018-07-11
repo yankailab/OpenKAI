@@ -16,6 +16,9 @@ _ArUco::_ArUco()
 {
 	m_pVision = NULL;
 	m_dict = aruco::DICT_4X4_50;//DICT_APRILTAG_16h5;
+	m_minArea = DBL_MIN;
+	m_maxArea = DBL_MAX;
+
 }
 
 _ArUco::~_ArUco()
@@ -81,21 +84,23 @@ void _ArUco::detect(void)
 	Mat m = *m_pVision->BGR()->m();
 	IF_(m.empty());
 
-    cv::aruco::detectMarkers(m, m_pDict, m_vvCorner, m_vID);
+    std::vector<int> vID;
+    std::vector<std::vector<cv::Point2f> > vvCorner;
+    cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
 	OBJECT obj;
 	double dx,dy;
 
-	for (int i = 0; i < m_vID.size(); i++)
+	for (int i = 0; i < vID.size(); i++)
 	{
 		obj.init();
 		obj.m_tStamp = m_tStamp;
-		obj.setTopClass(m_vID[i]);
+		obj.setTopClass(vID[i]);
 
-		Point2f pLT = m_vvCorner[i][0];
-		Point2f pRT = m_vvCorner[i][1];
-		Point2f pRB = m_vvCorner[i][2];
-		Point2f pLB = m_vvCorner[i][3];
+		Point2f pLT = vvCorner[i][0];
+		Point2f pRT = vvCorner[i][1];
+		Point2f pRB = vvCorner[i][2];
+		Point2f pLB = vvCorner[i][3];
 
 		// center position
 		obj.m_fBBox.x = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
@@ -125,9 +130,9 @@ bool _ArUco::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = "nID: " + i2str(m_vID.size());
+	string msg = "nID: " + i2str(this->size());
 	pWin->addMsg(&msg);
-	IF_T(m_vID.size() <= 0);
+	IF_T(this->size() <= 0);
 
 	OBJECT* pO;
 	int i=0;
@@ -153,9 +158,11 @@ bool _ArUco::cli(int& iY)
 	IF_F(!this->_ObjectBase::cli(iY));
 
 	string msg = "| ";
-	for (int i = 0; i < m_vID.size(); i++)
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
 	{
-		msg += i2str(m_vID[i]) + " | ";
+		msg += i2str(pO->m_iClass) + " | ";
 	}
 
 	COL_MSG;

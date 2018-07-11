@@ -41,14 +41,11 @@ private:
 public:
 	_VisionBase* m_pVision;
 	cv::Ptr<cv::aruco::Dictionary> m_pDict;
-    std::vector<int> m_vID;
-    std::vector<std::vector<cv::Point2f> > m_vvCorner;
 
 	uint8_t m_dict;
 
 };
 
 }
-
 #endif
 #endif
