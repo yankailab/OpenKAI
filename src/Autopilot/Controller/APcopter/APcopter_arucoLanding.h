@@ -12,12 +12,12 @@ namespace kai
 
 struct LANDING_TARGET_ARUCO
 {
-	int m_code;
+	int m_tag;
 	double m_angle;
 
 	void init(void)
 	{
-		m_code = -1;
+		m_tag = -1;
 		m_angle = -1.0;
 	}
 };

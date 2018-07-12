@@ -36,7 +36,7 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	{
 		Kiss* pKs = pItrT[i++];
 		L.init();
-		F_ERROR_F(pKs->v("code", &L.m_code));
+		F_ERROR_F(pKs->v("tag", &L.m_tag));
 		pKs->v("angle", &L.m_angle);
 		m_vTarget.push_back(L);
 	}
@@ -93,7 +93,7 @@ void APcopter_arucoLanding::navigation(void)
 		for(i=0; i<m_vTarget.size(); i++)
 		{
 			LANDING_TARGET_ARUCO* pTi = &m_vTarget[i];
-			IF_CONT(pO->m_iClass != pTi->m_code);
+			IF_CONT(pO->m_iClass != pTi->m_tag);
 
 			pT = pTi;
 			break;
@@ -145,14 +145,14 @@ bool APcopter_arucoLanding::draw(void)
 		circle(*pMat, Point(m_oTarget.m_fBBox.x, m_oTarget.m_fBBox.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
-		msg = "id = " + i2str(m_oTarget.m_iClass)
-				+ ", angle=("
+		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
+				+ ", angle = ("
 				+ f2str(m_tAngle.x) + " , "
 				+ f2str(m_tAngle.y) + ")";
 	}
 	else
 	{
-		msg = "Landing_Target: Target not found";
+		msg = "Target tag not found";
 	}
 
 	pWin->addMsg(&msg);
@@ -163,13 +163,21 @@ bool APcopter_arucoLanding::draw(void)
 bool APcopter_arucoLanding::cli(int& iY)
 {
 	IF_F(!this->ActionBase::cli(iY));
-
 	NULL_F(m_pAP->m_pMavlink);
 
-	string msg = "id = " + i2str(m_oTarget.m_iClass)
-			+ "angle=("
-			+ f2str(m_tAngle.x) + " , "
-			+ f2str(m_tAngle.y) + ")";
+	string msg;
+
+	if (m_bLocked)
+	{
+		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
+				+ ", angle = ("
+				+ f2str(m_tAngle.x) + " , "
+				+ f2str(m_tAngle.y) + ")";
+	}
+	else
+	{
+		msg = "Target tag not found";
+	}
 
 	COL_MSG;
 	iY++;
