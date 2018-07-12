@@ -34,7 +34,7 @@ bool _ArUco::init(void* pKiss)
 
 	KISSm(pK, dict);
 
-	m_pDict = aruco::getPredefinedDictionary(aruco::DICT_4X4_50);//DICT_APRILTAG_16h5
+	m_pDict = aruco::getPredefinedDictionary(m_dict);
 
 	return true;
 }
