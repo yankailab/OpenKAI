@@ -59,7 +59,7 @@ void APcopter_DNNlanding::landing(void)
 
 	vInt2 cSize;
 	vInt2 cCenter;
-	vInt2 cAngle;
+	vDouble2 cAngle;
 	pStream->info(&cSize, &cCenter, &cAngle);
 
 	vInt4 targetBB;

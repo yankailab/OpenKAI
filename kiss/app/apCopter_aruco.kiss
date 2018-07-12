@@ -26,15 +26,17 @@
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
-	"pipeline":"v4l2src device=/dev/video3 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
-	"_pipeline":"v4l2src device=/dev/video2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
+	"fovW":69.4,
+	"fovH":42.5,
+	"_pipeline":"v4l2src device=/dev/video3 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"pipeline":"v4l2src device=/dev/video2 ! video/x-raw,format=YUY2,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
 {
 	"name":"depth1",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"Window":"OKview",
 	"vPreset":"High Density",
@@ -45,8 +47,8 @@
 	"wD":1280,
 	"hD":720,
 	"rsDFPS":30,
-	"fovW":60,
-	"fovH":60,
+	"fovW":69.4,
+	"fovH":42.5,
 	"bFlip":0,
 	"bGray":1,
 	"rFrom":0.1,
@@ -69,29 +71,7 @@
 	"Window":"OKview",
 	"_VisionBase":"cam1",
 	"mode":"thread",
-	"dict":0,
-}
-
-{
-	"name":"YOLO",
-	"class":"_YOLO",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam1",
-	"modelDir":"/home/kai/dev/darknet/",
-	"modelFile":"cfg/yolov2.cfg",
-	"trainedFile":"data/yolov2.weights",
-	"meanFile":"",
-	"labelFile":"data/coco.names",
-	"nClass":80,
-	"nPredAvr":3,
-	"thresh":0.25,
-	"nBatch":1,
-	"mode":"thread",
-	"bDrawStatistics":0,
+	"dict":17,
 }
 
 {
@@ -108,44 +88,13 @@
 }
 
 {
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":19840,
-	"_wakeUp":"mavGCS",
-}
-
-{
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
 	"bLog":0,
 	"FPS":100,
 	"Window":"OKview",
-	"_IOBase":"apSerial",
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavGCS",
-	}
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bInst":1,
-	"bLog":0,
-	"FPS":100,
-	"Window":"OKview",
-	"_IOBase":"apUDP",
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavAP",
-	}
+	"_IOBase":"apSerial",	
 }
 
 {
@@ -168,7 +117,7 @@
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
-	"bInst":0,
+	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
 	
@@ -181,7 +130,7 @@
 			"bInst":1,
 			"_Automaton":"apState",
 			"Window":"OKview",
-			"_Mavlink":"apMavlink",
+			"_Mavlink":"mavAP",
 			"freqAtti":0,
 			"freqGlobalPos":30,
 			"freqHeartbeat":0,
@@ -198,8 +147,6 @@
 			"_Automaton":"apState",
 			"orientationX":1,
 			"orientationY":1,
-			"minArea":0.0,
-			"maxArea":0.5,
 
 			{
 				"code":1,

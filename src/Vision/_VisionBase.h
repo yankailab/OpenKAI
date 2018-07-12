@@ -40,7 +40,7 @@ public:
 	virtual Frame* HSV(void);
 	virtual Frame* Gray(void);
 	virtual Mat* K(void);
-	virtual void info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle);
+	virtual void info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle);
 
 	void postProcess(void);
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
@@ -54,8 +54,8 @@ public:
 	int m_h;
 	int m_cW;
 	int m_cH;
-	int m_fovW;
-	int m_fovH;
+	double m_fovW;
+	double m_fovH;
 	bool m_bFlip;
 
 	//calibration

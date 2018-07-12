@@ -27,7 +27,7 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
 
-	m_target.init();
+	m_oTarget.init();
 
 	Kiss** pItrT = pK->getChildItr();
 	LANDING_TARGET_ARUCO L;
@@ -76,7 +76,7 @@ void APcopter_arucoLanding::navigation(void)
 
 	vInt2 cSize;
 	vInt2 cCenter;
-	vInt2 cAngle;
+	vDouble2 cAngle;
 	pV->info(&cSize, &cCenter, &cAngle);
 
 	int iDet = 0;
@@ -104,7 +104,7 @@ void APcopter_arucoLanding::navigation(void)
 
 		pTarget = pT;
 		iPriority = i;
-		m_target = *pO;
+		m_oTarget = *pO;
 	}
 
 	if(!pTarget)
@@ -115,9 +115,9 @@ void APcopter_arucoLanding::navigation(void)
 	m_bLocked = true;
 
 	//Change position to angles
-	m_tAngle.x = ((double)(m_target.m_fBBox.x - cCenter.x) / (double)cSize.x)
+	m_tAngle.x = ((double)(m_oTarget.m_fBBox.x - cCenter.x) / (double)cSize.x)
 				* cAngle.x * DEG_RAD * m_orientation.x;
-	m_tAngle.y = ((double)(m_target.m_fBBox.y - cCenter.y) / (double)cSize.y)
+	m_tAngle.y = ((double)(m_oTarget.m_fBBox.y - cCenter.y) / (double)cSize.y)
 				* cAngle.y * DEG_RAD * m_orientation.y;
 
 	//Send Mavlink command
@@ -142,10 +142,11 @@ bool APcopter_arucoLanding::draw(void)
 
 	if (m_bLocked)
 	{
-		circle(*pMat, Point(m_target.m_fBBox.x, m_target.m_fBBox.y),
+		circle(*pMat, Point(m_oTarget.m_fBBox.x, m_oTarget.m_fBBox.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
-		msg = "angle=("
+		msg = "id = " + i2str(m_oTarget.m_iClass)
+				+ ", angle=("
 				+ f2str(m_tAngle.x) + " , "
 				+ f2str(m_tAngle.y) + ")";
 	}
@@ -165,7 +166,8 @@ bool APcopter_arucoLanding::cli(int& iY)
 
 	NULL_F(m_pAP->m_pMavlink);
 
-	string msg = "angle=("
+	string msg = "id = " + i2str(m_oTarget.m_iClass)
+			+ "angle=("
 			+ f2str(m_tAngle.x) + " , "
 			+ f2str(m_tAngle.y) + ")";
 
@@ -177,4 +179,3 @@ bool APcopter_arucoLanding::cli(int& iY)
 }
 
 }
-

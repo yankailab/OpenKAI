@@ -40,7 +40,7 @@ public:
 	APcopter_base* m_pAP;
 	_ObjectBase* m_pArUco;
 
-	OBJECT 	 m_target;
+	OBJECT 	 m_oTarget;
 	vDouble2 m_orientation;
 	vDouble2 m_tAngle;
 	bool	 m_bLocked;

@@ -166,7 +166,7 @@ Frame* _VisionBase::Gray(void)
 	return m_pGray;
 }
 
-void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vInt2* pAngle)
+void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle)
 {
 	if(pSize)
 	{
