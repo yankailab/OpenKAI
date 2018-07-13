@@ -1,21 +1,24 @@
 #!/bin/bash
 
 DEVDIR=dev
-
 FULLDEVDIR=$HOME/$DEVDIR
 
 # Put everything into dev
 cd $HOME
 mkdir $DEVDIR
 
+# Copy startup sh into home
+cp $FULLDEVDIR/OpenKAI/sh/Startup/ok.sh $HOME
+
 # For Jetson TX2 only
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local
 set +H
-sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nexit 0\n' >> /etc/rc.local"
+sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\n/home/ubuntu/ok.sh\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
-sudo chmod a+x /home/ubuntu/jetson_clocks.sh
+sudo chmod a+x $HOME/jetson_clocks.sh
+sudo chmod a+x $HOME/ok.sh
 #sudo nvpmodel -q --verbose
 
 # Prerequisites
