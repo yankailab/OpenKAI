@@ -135,12 +135,14 @@ void _RealSense::update(void)
 
 		//Depth
 		m_rsDepth = rsFrame.get_depth_frame();
-		m_mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*) m_rsDepth.get_data(), Mat::AUTO_STEP);
+		m_mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*)m_rsDepth.get_data(), Mat::AUTO_STEP);
 	    m_mZ.convertTo(m_mD, CV_32FC1);
+
 	    auto depth_scale = m_rsPipe.get_active_profile()
 	        .get_device()
 	        .first<rs2::depth_sensor>()
 	        .get_depth_scale();
+
 	    m_mD *= depth_scale;
 	    m_fDepth = m_mD;
 

@@ -206,7 +206,12 @@ bool _DepthVisionBase::draw(void)
 	}
 	else if(m_pWindow)
 	{
-		cv::addWeighted(*m_depthShow.m(), m_dShowAlpha, *pFrame->m(), 1.0, 0, *pFrame->m());
+		Mat mW;
+		Mat* pM = pFrame->m();
+		Mat* pD = m_depthShow.m();
+		IF_F(pM->cols != pD->cols || pM->rows != pD->rows);
+		cv::addWeighted(*pD, m_dShowAlpha, *pM, 1.0, 0, mW);
+		pFrame->copy(mW);
 	}
 
 	return true;

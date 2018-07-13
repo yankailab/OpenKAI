@@ -3,6 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
+	"bDraw":1,
 	"bLog":1,
 	"waitKey":30,
 }
@@ -44,8 +45,8 @@
 	"wD":1280,
 	"hD":720,
 	"rsDFPS":30,
-	"fovW":60,
-	"fovH":60,
+	"fovW":69.4,
+	"fovH":42.5,
 	"bFlip":1,
 	"bGray":0,
 	"rFrom":0.1,
@@ -53,6 +54,9 @@
 	"nMed":3,
 	"mW":10,
 	"mH":10,
+	"dShowAlpha":0.5,
+	"bShowRawDepth":1,
+	"dShowRawBase":0.05,
 }
 
 {
