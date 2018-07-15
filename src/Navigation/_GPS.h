@@ -10,10 +10,10 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Dependency/UTM.h"
 #include "../Filter/FilterBase.h"
 #include "../Vision/_ZED.h"
 #include "../Protocol/_Mavlink.h"
-#include "../include/UTM.h"
 
 /*
 APM setting to use MAV_GPS

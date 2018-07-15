@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor__LeddarVu_H_
 #define OpenKAI_src_Sensor__LeddarVu_H_
 
-#include "../include/libmodbus/modbus.h"
+#include "../Dependency/libmodbus/modbus.h"
 #include "../Vision/_VisionBase.h"
 #include "_DistSensorBase.h"
 

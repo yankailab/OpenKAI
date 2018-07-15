@@ -15,11 +15,11 @@ BASE* Module::createInstance(Kiss* pK)
 	IF_N(!pK);
 
 	ADD_MODULE(_AutoPilot);
-	ADD_MODULE(_AprilTags);
 	ADD_MODULE(_Automaton);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);
+	ADD_MODULE(_ECO);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_Lane);
