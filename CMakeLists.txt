@@ -119,7 +119,7 @@ set(
 endif()
 
 # File
-file(GLOB OpenKAI_cpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp src/*/*/*/*/*/*.cpp src/*/*/*/*/*/*/*.cpp src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c src/*/*/*/*/*.c src/*/*/*/*/*/*.c src/*/*/*/*/*/*/*.c)
+file(GLOB OpenKAI_cpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp src/*/*/*/*/*/*.cpp src/*/*/*/*/*/*/*.cpp src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c src/*/*/*/*/*.c src/*/*/*/*/*/*.c src/*/*/*/*/*/*/*.c src/*.cc src/*/*.cc src/*/*/*.cc src/*/*/*/*.cc src/*/*/*/*/*.cc src/*/*/*/*/*/*.cc src/*/*/*/*/*/*/*.cc)
 
 if(USE_CUDA)
 cuda_add_executable(OpenKAI ${OpenKAI_cpp})
