@@ -66,7 +66,7 @@ cmake ../
 sudo make install
 
 # OpenCV
-sudo apt-get install liblapacke-dev
+sudo apt-get -y install liblapacke-dev
 sudo ln -s /usr/include/lapacke.h /usr/include/openblas/
 cd $FULLDEVDIR
 git clone --branch 3.4.2 https://github.com/opencv/opencv.git
