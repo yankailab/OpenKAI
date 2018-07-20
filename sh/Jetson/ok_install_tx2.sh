@@ -7,9 +7,6 @@ FULLDEVDIR=$HOME/$DEVDIR
 cd $HOME
 mkdir $DEVDIR
 
-# Copy startup sh into home
-cp $FULLDEVDIR/OpenKAI/sh/Startup/ok.sh $HOME
-
 # For Jetson TX2 only
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local
@@ -18,7 +15,6 @@ sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\n/home
 set -H
 sudo chmod a+x /etc/rc.local
 sudo chmod a+x $HOME/jetson_clocks.sh
-sudo chmod a+x $HOME/ok.sh
 #sudo nvpmodel -q --verbose
 
 # Prerequisites
@@ -155,3 +151,6 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=ON -DCUDA_ARCH=62 -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_TENSORRT=ON -DTensorRT_build=/home/ubuntu/dev/jetson-inference-batch/build/aarch64 ../
 make all -j6
 
+# Copy startup sh into home
+cp $FULLDEVDIR/OpenKAI/sh/Jetson/ok.sh $HOME
+sudo chmod a+x $HOME/ok.sh

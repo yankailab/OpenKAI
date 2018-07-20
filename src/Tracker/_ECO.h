@@ -11,9 +11,9 @@
 #include "../Base/common.h"
 #include "../Base/_ObjectBase.h"
 
-#include "../Dependency/OpenTracker/eco/eco.hpp"
+//#include "../Dependency/OpenTracker/eco/eco.hpp"
 
-using namespace eco;
+//using namespace eco;
 
 namespace kai
 {
@@ -42,7 +42,7 @@ private:
 
 public:
 	_VisionBase* m_pVision;
-    ECO m_tracker;
+//    ECO m_tracker;
 
     vDouble4 m_roi;
 	bool m_bTracking;
