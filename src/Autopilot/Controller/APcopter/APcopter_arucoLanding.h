@@ -4,6 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
+#include "../../../Vision/_DepthVisionBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -39,11 +40,12 @@ public:
 public:
 	APcopter_base* m_pAP;
 	_ObjectBase* m_pArUco;
+	_DepthVisionBase* m_pDV;
 
-	OBJECT 	 m_oTarget;
 	vDouble2 m_orientation;
-	vDouble2 m_tAngle;
 	bool	 m_bLocked;
+	OBJECT 	 m_oTarget;
+	mavlink_landing_target_t m_D;
 	vector<LANDING_TARGET_ARUCO> m_vTarget;
 
 };

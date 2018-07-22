@@ -34,6 +34,7 @@ public:
 	vInt2 matrixDim(void);
 	double d(vInt4* pROI, vInt2* pPos);
 	double d(vDouble4* pROI, vInt2* pPos);
+	double dMedian(void);
 
 public:
 	int m_wD;

@@ -155,6 +155,27 @@ double _DepthVisionBase::d(vInt4* pROI, vInt2* pPos)
 	return dMin;
 }
 
+double _DepthVisionBase::dMedian(void)
+{
+	std::deque<double> m_sort;
+	m_sort.clear();
+
+	int nD=0;
+	for (int i=0; i<m_nFilter; i++)
+	{
+		double d = m_pFilterMatrix[i].v();
+		IF_CONT(d < m_range.x);
+		IF_CONT(d > m_range.y);
+
+		m_sort.push_back(d);
+		nD++;
+	}
+	if(nD <= 0)return -1.0;
+
+	std::sort(m_sort.begin(),m_sort.end());
+	return m_sort.at(nD/2);
+}
+
 vInt2 _DepthVisionBase::matrixDim(void)
 {
 	return m_mDim;
@@ -173,7 +194,8 @@ vDouble2 _DepthVisionBase::range(void)
 bool _DepthVisionBase::draw(void)
 {
 	IF_F(!this->_VisionBase::draw());
-	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
+	Window* pWin = (Window*)this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
 
 	if(m_bShowRawDepth)
 	{
@@ -213,6 +235,9 @@ bool _DepthVisionBase::draw(void)
 		cv::addWeighted(*pD, m_dShowAlpha, *pM, 1.0, 0, mW);
 		pFrame->copy(mW);
 	}
+
+	string msg = "dMedian: " + f2str(this->dMedian());
+	pWin->addMsg(&msg);
 
 	return true;
 }

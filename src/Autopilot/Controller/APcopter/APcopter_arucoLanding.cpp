@@ -7,8 +7,8 @@ APcopter_arucoLanding::APcopter_arucoLanding()
 {
 	m_pAP = NULL;
 	m_pArUco = NULL;
+	m_pDV = NULL;
 
-	m_tAngle.init();
 	m_bLocked = false;
 	m_orientation.x = 1.0;
 	m_orientation.y = 1.0;
@@ -55,6 +55,9 @@ bool APcopter_arucoLanding::link(void)
 
 	F_ERROR_F(pK->v("_ArUco", &iName));
 	m_pArUco = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
+
+	F_INFO(pK->v("_DepthVisionBase", &iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -114,23 +117,26 @@ void APcopter_arucoLanding::navigation(void)
 	}
 	m_bLocked = true;
 
+	m_D.target_num = 0;
+	m_D.frame = MAV_FRAME_BODY_NED;
+	m_D.distance = 0;
+	m_D.size_x = 0;
+	m_D.size_y = 0;
+
 	//Change position to angles
-	m_tAngle.x = ((double)(m_oTarget.m_fBBox.x - cCenter.x) / (double)cSize.x)
-				* cAngle.x * DEG_RAD * m_orientation.x;
-	m_tAngle.y = ((double)(m_oTarget.m_fBBox.y - cCenter.y) / (double)cSize.y)
-				* cAngle.y * DEG_RAD * m_orientation.y;
+	m_D.angle_x = (float)((double)(m_oTarget.m_fBBox.x - cCenter.x) / (double)cSize.x)
+							* cAngle.x * DEG_RAD * m_orientation.x;
+	m_D.angle_y = (float)((double)(m_oTarget.m_fBBox.y - cCenter.y) / (double)cSize.y)
+							* cAngle.y * DEG_RAD * m_orientation.y;
 
-	//Send Mavlink command
-	mavlink_landing_target_t D;
-	D.target_num = 0;
-	D.frame = MAV_FRAME_BODY_NED;
-	D.angle_x = m_tAngle.x;
-	D.angle_y = m_tAngle.y;
-	D.distance = 0;
-	D.size_x = 0;
-	D.size_y = 0;
+	//Use depth if available
+	if(m_pDV)
+	{
+		m_D.distance = (float)m_pDV->dMedian();
+		if(m_D.distance < 0.0)m_D.distance = 0.0;
+	}
 
-	m_pAP->m_pMavlink->landingTarget(D);
+	m_pAP->m_pMavlink->landingTarget(m_D);
 }
 
 bool APcopter_arucoLanding::draw(void)
@@ -147,8 +153,9 @@ bool APcopter_arucoLanding::draw(void)
 
 		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
 				+ ", angle = ("
-				+ f2str(m_tAngle.x) + " , "
-				+ f2str(m_tAngle.y) + ")";
+				+ f2str((double)m_D.angle_x) + " , "
+				+ f2str((double)m_D.angle_y) + ")"
+				+ ", d=" + f2str(m_D.distance);
 	}
 	else
 	{
@@ -171,8 +178,9 @@ bool APcopter_arucoLanding::cli(int& iY)
 	{
 		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
 				+ ", angle = ("
-				+ f2str(m_tAngle.x) + " , "
-				+ f2str(m_tAngle.y) + ")";
+				+ f2str((double)m_D.angle_x) + " , "
+				+ f2str((double)m_D.angle_y) + ")"
+				+ ", d=" + f2str(m_D.distance);
 	}
 	else
 	{
