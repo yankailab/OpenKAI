@@ -130,7 +130,7 @@ void _RealSense::update(void)
 		if(m_rsRGB)
 		{
 			m_rsColor = rsFrame.get_color_frame();
-			m_fBGR = Mat(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP);
+			m_fBGR.copy(Mat(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP));
 		}
 
 		//Depth

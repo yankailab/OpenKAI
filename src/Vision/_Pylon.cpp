@@ -151,7 +151,7 @@ void _Pylon::update(void)
 		}
 
 		m_pylonFC.Convert(m_pylonImg, m_pylonGrab);
-		m_fBGR = Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer());
+		m_fBGR.copy(Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer()));
 
 		m_pTPP->wakeUp();
 
