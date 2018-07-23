@@ -164,7 +164,7 @@ void _RealSense::updateTPP(void)
 		}
 
 		postProcessDepth();
-		updateFilter();
+		updateFilteredDistance();
 	}
 }
 

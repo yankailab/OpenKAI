@@ -25,6 +25,7 @@ _DepthVisionBase::_DepthVisionBase()
 	m_nFilter = 0;
 	m_mDim.x = 10;
 	m_mDim.y = 10;
+	m_dMedian = -1.0;
 }
 
 _DepthVisionBase::~_DepthVisionBase()
@@ -89,7 +90,7 @@ void _DepthVisionBase::postProcessDepth(void)
 		m_fDepth = m_fDepth.crop(m_cropBB);
 }
 
-void _DepthVisionBase::updateFilter(void)
+void _DepthVisionBase::updateFilteredDistance(void)
 {
 	IF_(m_fDepth.bEmpty());
 
@@ -105,6 +106,29 @@ void _DepthVisionBase::updateFilter(void)
 			m_pFilterMatrix[i*m_mDim.x+j].input((double)pM->at<float>(i,j));
 		}
 	}
+
+	//Median distance
+	std::deque<double> qSort;
+	qSort.clear();
+
+	for (i=0,j=0; i<m_nFilter; i++)
+	{
+		double d = m_pFilterMatrix[i].v();
+		IF_CONT(d < m_range.x);
+		IF_CONT(d > m_range.y);
+
+		qSort.push_back(d);
+		j++;
+	}
+
+	if(j <= 0)
+	{
+		m_dMedian = -1.0;
+		return;
+	}
+
+	std::sort(qSort.begin(),qSort.end());
+	m_dMedian = qSort.at(j/2);
 }
 
 double _DepthVisionBase::d(vDouble4* pROI, vInt2* pPos)
@@ -157,23 +181,7 @@ double _DepthVisionBase::d(vInt4* pROI, vInt2* pPos)
 
 double _DepthVisionBase::dMedian(void)
 {
-	std::deque<double> m_sort;
-	m_sort.clear();
-
-	int nD=0;
-	for (int i=0; i<m_nFilter; i++)
-	{
-		double d = m_pFilterMatrix[i].v();
-		IF_CONT(d < m_range.x);
-		IF_CONT(d > m_range.y);
-
-		m_sort.push_back(d);
-		nD++;
-	}
-	if(nD <= 0)return -1.0;
-
-	std::sort(m_sort.begin(),m_sort.end());
-	return m_sort.at(nD/2);
+	return m_dMedian;
 }
 
 vInt2 _DepthVisionBase::matrixDim(void)

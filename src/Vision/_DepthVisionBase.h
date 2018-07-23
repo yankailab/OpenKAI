@@ -27,7 +27,7 @@ public:
 	virtual bool draw(void);
 	virtual void postProcessDepth(void);
 
-	virtual void updateFilter(void);
+	virtual void updateFilteredDistance(void);
 	virtual Frame* Depth(void);
 	virtual vDouble2 range(void);
 
@@ -49,6 +49,7 @@ public:
 	Median* 	m_pFilterMatrix;
 	int			m_nFilter;
 	Frame		m_fMatrixFrame;
+	double		m_dMedian;
 
 	Frame	m_depthShow;
 	double	m_dShowAlpha;

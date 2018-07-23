@@ -2,27 +2,31 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bDraw":1,
-	"w":640,
-	"h":360,
+	"bFullScreen":0,
+}
+
+{
+	"name":"depthView",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
 }
 
 {
 	"name":"gst",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
@@ -38,10 +42,10 @@
 	"class":"_RealSense",
 	"FPS":30,
 	"bInst":1,
-	"bDraw":1,
 	"Window":"OKview",
+	"depthWindow":"depthView",
 	"vPreset":"High Density",
-	"rsRGB":0,
+	"rsRGB":1,
 	"w":1280,
 	"h":720,
 	"rsFPS":30,
@@ -51,7 +55,7 @@
 	"fovW":69.4,
 	"fovH":42.5,
 	"bFlip":0,
-	"bGray":1,
+	"bGray":0,
 	"rFrom":0.1,
 	"rTo":15.0,
 	"nMed":3,
@@ -70,7 +74,7 @@
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
-	"_VisionBase":"gst",
+	"_VisionBase":"rs",
 	"mode":"thread",
 	"dict":17,
 }
@@ -92,7 +96,7 @@
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":100,
 	"Window":"OKview",
 	"_IOBase":"apSerial",	
@@ -133,7 +137,7 @@
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
-			"freqGlobalPos":30,
+			"freqGlobalPos":0,
 			"freqHeartbeat":0,
 		}
 		
@@ -144,12 +148,33 @@
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"_ArUco":"arUco",
+			"_DepthVisionBase":"rs",
 			"_Automaton":"apState",
 			"orientationX":1,
 			"orientationY":1,
 
 			{
+				"tag":0,
+				"angle":0,
+			}
+			{
+				"tag":1,
+				"angle":0,
+			}
+			{
 				"tag":2,
+				"angle":0,
+			}
+			{
+				"tag":3,
+				"angle":0,
+			}
+			{
+				"tag":4,
+				"angle":0,
+			}
+			{
+				"tag":5,
 				"angle":0,
 			}
 		}

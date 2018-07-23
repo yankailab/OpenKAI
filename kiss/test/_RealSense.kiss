@@ -13,10 +13,6 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"recFile_":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
 {
@@ -24,10 +20,6 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"recFile_":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",
-	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
 {

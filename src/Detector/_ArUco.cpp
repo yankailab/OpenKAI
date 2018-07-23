@@ -130,7 +130,7 @@ bool _ArUco::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = "nID: " + i2str(this->size());
+	string msg = "nTag: " + i2str(this->size());
 	pWin->addMsg(&msg);
 	IF_T(this->size() <= 0);
 

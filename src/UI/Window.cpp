@@ -165,7 +165,6 @@ bool Window::draw(void)
 			m_gst << *m_F.m();
 	}
 
-	m_frame.allocate(m_size.x, m_size.y);
 	tabReset();
 	lineReset();
 

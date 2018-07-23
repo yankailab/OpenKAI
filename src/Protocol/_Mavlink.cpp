@@ -215,7 +215,9 @@ void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- LANDING_TARGET: ANGLE_X:" + f2str(D.angle_x) + " ANGLE_Y:" + f2str(D.angle_y));
+	LOG_I("<- landingTarget: angleX=" + f2str(D.angle_x)
+						 + ", angleY=" + f2str(D.angle_y)
+						 + ", distance=" + f2str(D.distance));
 }
 
 void _Mavlink::clDoSetMode(int mode)
