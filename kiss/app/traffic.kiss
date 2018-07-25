@@ -72,7 +72,7 @@
 	"Window":"OKview",
 	"_VisionBase":"gst1",
 	"_modelDir":"/home/kai/dev/darknet/",
-	"_modelDir":"/home/ubuntu/dev/darknet/",
+	"modelDir":"/home/ubuntu/dev/darknet/",
 	"modelFile":"cfg/yolov2.cfg",
 	"trainedFile":"data/yolov2.weights",
 	"meanFile":"",
