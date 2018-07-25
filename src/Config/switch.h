@@ -1,9 +1,9 @@
 
-#define USE_CUDA
-#define USE_OPENCV_CONTRIB
-#define USE_DARKNET
-#define USE_REALSENSE
-#define USE_OPENTRACKER
+//#define USE_CUDA
+//#define USE_OPENCV_CONTRIB
+//#define USE_DARKNET
+//#define USE_REALSENSE
+//#define USE_OPENTRACKER
 //#define USE_PYLON
 //#define USE_TENSORRT
 //#define USE_CAFFE

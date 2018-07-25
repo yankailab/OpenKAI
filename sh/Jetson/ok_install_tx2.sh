@@ -113,6 +113,7 @@ git checkout -b v2.9.1
 sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules && udevadm trigger
 sudo reboot now
+cd $FULLDEVDIR/librealsense
 mkdir build
 cd build
 cmake ../
