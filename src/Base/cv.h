@@ -6,6 +6,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/aruco.hpp>
+#include <opencv2/bgsegm.hpp>
 
 #ifdef USE_OPENCV_CONTRIB
 #include <opencv2/tracking.hpp>

@@ -16,6 +16,7 @@
 #include "../Automaton/_Automaton.h"
 #include "../Detector/_ArUco.h"
 #include "../Detector/_Lane.h"
+#include "../Detector/_MotionDetector.h"
 
 #include "../Navigation/_GPS.h"
 #include "../Navigation/_Path.h"

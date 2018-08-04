@@ -26,6 +26,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Mavlink);
+	ADD_MODULE(_MotionDetector);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_RC);
