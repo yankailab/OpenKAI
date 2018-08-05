@@ -195,6 +195,7 @@ public:
 	virtual bool link(void);
 	virtual bool draw(void);
 	virtual void update(void);
+	virtual bool cli(int& iY);
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);
 

@@ -283,5 +283,16 @@ bool _ObjectBase::draw(void)
 	return true;
 }
 
+bool _ObjectBase::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	string msg = "nObj="+m_obj.size();
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	return true;
 }
 
+}

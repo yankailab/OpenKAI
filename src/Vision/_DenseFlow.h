@@ -1,5 +1,5 @@
 /*
- * _Flow.h
+ * _DenseFlow.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
@@ -12,28 +12,32 @@
 #include "FrameGroup.h"
 #include "_VisionBase.h"
 
+#ifdef USE_CUDA
+
 namespace kai
 {
 
-class _Flow: public _ThreadBase
+class _DenseFlow: public _ThreadBase
 {
 public:
-	_Flow();
-	virtual ~_Flow();
+	_DenseFlow();
+	virtual ~_DenseFlow();
 
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
 	bool draw(void);
 
-	bool addFrame(bool bFrame, Frame* pGray);
+	bool isFlowCorrect(Point2f u);
+	Vec3b computeColor(float fx, float fy);
+	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
 
 private:
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Flow*) This)->update();
+		((_DenseFlow*) This)->update();
 		return NULL;
 	}
 
@@ -43,12 +47,11 @@ public:
 	_VisionBase*					m_pVision;
 	FrameGroup*						m_pGrayFrames;
 
-#ifdef USE_CUDA
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	GpuMat							m_gFlow;
-#endif
 
 };
 
 }
+#endif
 #endif

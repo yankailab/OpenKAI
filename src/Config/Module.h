@@ -77,7 +77,7 @@
 #include "../Data/Inference/_MultiImageNet.h"
 
 #ifdef USE_CUDA
-#include "../Vision/_Flow.h"
+#include "../Vision/_DenseFlow.h"
 #include "../Vision/_ZED.h"
 #include "../Detector/_Bullseye.h"
 #endif

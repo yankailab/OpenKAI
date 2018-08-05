@@ -294,12 +294,12 @@ bool _Lane::draw(void)
 			}
 		}
 
-		imshow("Overhead", mO);
+		imshow(*this->getName()+":Overhead", mO);
 	}
 
 	if(m_bDrawOverhead && !m_mBin.empty())
 	{
-		imshow("Bin", m_mBin);
+		imshow(*this->getName()+":Bin", m_mBin);
 	}
 
 	return true;

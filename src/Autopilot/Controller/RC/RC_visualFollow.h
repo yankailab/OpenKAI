@@ -7,8 +7,8 @@
 #include "../../../Protocol/_RC.h"
 #include "../../../Vision/Frame.h"
 #include "../../../Tracker/_ROITracker.h"
-#include "../../../Vision/_Flow.h"
 #include "../../../UI/UI.h"
+#include "../../../Vision/_DenseFlow.h"
 #include "../../ActionBase.h"
 #include "RC_base.h"
 
@@ -48,7 +48,7 @@ private:
 
 	//Detectors
 	_ROITracker* m_pROITracker;
-	_Flow* m_pFlow;
+	_DenseFlow* m_pFlow;
 
 	//UI
 	bool m_bUI;

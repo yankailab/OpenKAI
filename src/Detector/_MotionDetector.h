@@ -40,7 +40,10 @@ private:
 
 public:
 	_VisionBase* m_pVision;
+	string m_algorithm;
 	cv::Ptr<cv::BackgroundSubtractor> m_pBS;
+	double m_learningRate;
+	Mat m_mFG;
 
 };
 

@@ -61,7 +61,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_MultiImageNet);
 
 #ifdef USE_CUDA
-	ADD_MODULE(_Flow);
+	ADD_MODULE(_DenseFlow);
 	ADD_MODULE(_Bullseye);
 #endif
 #ifdef USE_OPENCV_CONTRIB
