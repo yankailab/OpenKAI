@@ -1,55 +1,59 @@
 /*
- * _Gstreamer.cpp
+ * _VideoFile.cpp
  *
- *  Created on: Dec 21, 2017
+ *  Created on: Aug 5, 2018
  *      Author: yankai
  */
 
-
-#include "_GStreamer.h"
+#include "_VideoFile.h"
 
 namespace kai
 {
 
-_GStreamer::_GStreamer()
+_VideoFile::_VideoFile()
 {
-	m_type = vision_gstreamer;
-	m_pipeline = "";
+	m_type = vision_file;
+	m_videoFile = "";
 }
 
-_GStreamer::~_GStreamer()
+_VideoFile::~_VideoFile()
 {
-	m_gst.release();
+	m_vc.release();
 }
 
-bool _GStreamer::init(void* pKiss)
+bool _VideoFile::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, pipeline);
+	KISSm(pK, videoFile);
+
 	return true;
 }
 
-bool _GStreamer::link(void)
+bool _VideoFile::link(void)
 {
 	IF_F(!this->_VisionBase::link());
 	return true;
 }
 
-bool _GStreamer::open(void)
+bool _VideoFile::open(void)
 {
-	m_gst.open(m_pipeline, CAP_GSTREAMER);
-	if (!m_gst.isOpened())
+	m_vc.open(m_videoFile);
+	if (!m_vc.isOpened())
 	{
-		LOG_E("Cannot open gst pipeline: " + m_pipeline);
+		LOG_E("Cannot open file: " + m_videoFile);
 		return false;
 	}
 
+	m_vc.set(CV_CAP_PROP_FRAME_WIDTH, m_w);
+	m_vc.set(CV_CAP_PROP_FRAME_HEIGHT, m_h);
+	m_vc.set(CV_CAP_PROP_FPS, m_targetFPS);
+
 	Mat cMat;
 	//Acquire a frame to determine the actual frame size
-	while (!m_gst.read(cMat));
+	while (!m_vc.read(cMat));
 
 	m_w = cMat.cols;
 	m_h = cMat.rows;
@@ -76,7 +80,7 @@ bool _GStreamer::open(void)
 	return true;
 }
 
-bool _GStreamer::start(void)
+bool _VideoFile::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -96,7 +100,7 @@ bool _GStreamer::start(void)
 	return true;
 }
 
-void _GStreamer::update(void)
+void _VideoFile::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -112,7 +116,7 @@ void _GStreamer::update(void)
 		this->autoFPSfrom();
 
 		Mat mCam;
-		while (!m_gst.read(mCam));
+		while (!m_vc.read(mCam));
 
 		m_fBGR.copy(mCam);
 		m_pTPP->wakeUp();
@@ -121,7 +125,7 @@ void _GStreamer::update(void)
 	}
 }
 
-void _GStreamer::updateTPP(void)
+void _VideoFile::updateTPP(void)
 {
 	while (m_bThreadON)
 	{

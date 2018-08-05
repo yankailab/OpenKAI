@@ -19,7 +19,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -45,10 +45,25 @@
 }
 
 {
+	"name":"vf",
+	"class":"_VideoFile",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"videoFile":"/home/kai/Videos/suzhou.ts",
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":1,
+}
+
+{
 	"name":"df",
 	"class":"_DenseFlow",
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"_VisionBase":"cam",
+	"_VisionBase":"vf",
 }

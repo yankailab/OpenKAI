@@ -16,14 +16,15 @@ namespace kai
 
 enum VISION_TYPE
 {
-	unknownVision,
-	camera,
-	gstreamer,
-	video,
-	zed,
-	realsense,
-	pylon,
-	raspivid,
+	vision_unknown,
+	vision_camera,
+	vision_gstreamer,
+	vision_video,
+	vision_zed,
+	vision_realsense,
+	vision_pylon,
+	vision_raspivid,
+	vision_file,
 };
 
 class _VisionBase: public _ThreadBase
@@ -39,11 +40,13 @@ public:
 	virtual Frame* BGR(void);
 	virtual Frame* HSV(void);
 	virtual Frame* Gray(void);
+	virtual Frame* Pers(void);
 	virtual Mat* K(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle);
 
 	void postProcess(void);
 	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
+	void updateVisionSize(void);
 	bool isOpened(void);
 
 public:
@@ -67,12 +70,26 @@ public:
 	Rect m_cropBB;
 
 	//gimbal
-	Mat m_K;
 	bool m_bGimbal;
+	Mat m_K;
 	Mat m_rotRoll;
 	uint64_t m_rotTime;
 	double m_rotPrev;
 	double m_isoScale;
+
+	//Perspective
+	bool m_bPers;
+	bool m_bShowPers;
+	vDouble2 m_persLT;
+	vDouble2 m_persLB;
+	vDouble2 m_persRT;
+	vDouble2 m_persRB;
+	Mat m_mPersT;
+	Mat m_mPersInvT;
+	vInt2 m_persSize;
+	Mat m_mPers;
+	Frame* m_pPers;
+	vInt2 m_vSize;
 
 	//frame
 	Frame	m_fBGR;
@@ -85,5 +102,4 @@ public:
 };
 
 }
-
 #endif

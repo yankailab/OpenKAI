@@ -12,7 +12,7 @@ namespace kai
 
 _Raspivid::_Raspivid()
 {
-	m_type = raspivid;
+	m_type = vision_raspivid;
 	m_cMode = raspivid_rgb;
 	m_cmd = "";
 	m_option = "";

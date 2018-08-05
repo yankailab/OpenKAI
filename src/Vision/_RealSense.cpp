@@ -13,7 +13,7 @@ namespace kai
 {
 _RealSense::_RealSense()
 {
-	m_type = realsense;
+	m_type = vision_realsense;
 
 	m_pDepthWin = NULL;
 	m_vPreset = "High Density";

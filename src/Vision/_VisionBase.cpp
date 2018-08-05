@@ -13,7 +13,7 @@ namespace kai
 _VisionBase::_VisionBase()
 {
 	m_bOpen = false;
-	m_type = unknownVision;
+	m_type = vision_unknown;
 	m_w = 1280;
 	m_h = 720;
 	m_cW = 640;
@@ -32,6 +32,10 @@ _VisionBase::_VisionBase()
 	m_bCalibration = false;
 	m_bFisheye = false;
 	m_bCrop = false;
+	m_bPers = false;
+	m_bShowPers = false;
+	m_vSize.init();
+	m_pPers = NULL;
 
 	m_pTPP = new _ThreadBase();
 }
@@ -41,6 +45,7 @@ _VisionBase::~_VisionBase()
 	DEL(m_pTPP);
 	DEL(m_pHSV);
 	DEL(m_pGray);
+	DEL(m_pPers);
 }
 
 bool _VisionBase::init(void* pKiss)
@@ -126,6 +131,26 @@ bool _VisionBase::init(void* pKiss)
 		}
 	}
 
+	KISSm(pK,bPers);
+	if(m_bPers)
+	{
+		KISSm(pK,bShowPers);
+
+		F_INFO(pK->v("persLTx", &m_persLT.x));
+		F_INFO(pK->v("persLTy", &m_persLT.y));
+		F_INFO(pK->v("persLBx", &m_persLB.x));
+		F_INFO(pK->v("persLBy", &m_persLB.y));
+		F_INFO(pK->v("persRTx", &m_persRT.x));
+		F_INFO(pK->v("persRTy", &m_persRT.y));
+		F_INFO(pK->v("persRBx", &m_persRB.x));
+		F_INFO(pK->v("persRBy", &m_persRB.y));
+		F_INFO(pK->v("persW", &m_persSize.x));
+		F_INFO(pK->v("persH", &m_persSize.y));
+
+		m_mPers = Mat(Size(m_persSize.x, m_persSize.y), CV_8UC3);
+		m_pPers = new Frame();
+	}
+
 	m_bOpen = false;
 	return true;
 }
@@ -149,6 +174,55 @@ void _VisionBase::postProcess(void)
 
 	if (m_pHSV)
 		*m_pHSV = m_fBGR.cvtColor(CV_BGR2HSV);
+
+	if (m_bPers)
+	{
+		Size s = m_fBGR.size();
+		if (m_vSize.x != s.width || m_vSize.y != s.height)
+		{
+			m_vSize.x = s.width;
+			m_vSize.y = s.height;
+			updateVisionSize();
+		}
+
+		if(!m_mPersT.empty())
+		{
+			cv::warpPerspective(*m_fBGR.m(),
+								m_mPers,
+								m_mPersT,
+								m_mPers.size(),
+								cv::INTER_LINEAR);
+			*m_pPers = m_mPers;
+		}
+	}
+}
+
+void _VisionBase::updateVisionSize(void)
+{
+	Point2f LT = Point2f((float) (m_persLT.x * m_vSize.x),
+						 (float) (m_persLT.y * m_vSize.y));
+	Point2f LB = Point2f((float) (m_persLB.x * m_vSize.x),
+						 (float) (m_persLB.y * m_vSize.y));
+	Point2f RT = Point2f((float) (m_persRT.x * m_vSize.x),
+						 (float) (m_persRT.y * m_vSize.y));
+	Point2f RB = Point2f((float) (m_persRB.x * m_vSize.x),
+						 (float) (m_persRB.y * m_vSize.y));
+
+	//LT, LB, RB, RT
+	Point2f ptsFrom[] = { LT, LB, RB, RT };
+	Point2f ptsTo[] =
+	{ cv::Point2f(0, 0),
+	  cv::Point2f(0, (float) m_persSize.y),
+	  cv::Point2f((float) m_persSize.x, (float) m_persSize.y),
+	  cv::Point2f((float) m_persSize.x, 0) };
+
+	m_mPersT = getPerspectiveTransform(ptsFrom, ptsTo);
+	m_mPersInvT = getPerspectiveTransform(ptsTo, ptsFrom);
+}
+
+Frame* _VisionBase::Pers(void)
+{
+	return m_pPers;
 }
 
 Frame* _VisionBase::BGR(void)
@@ -220,6 +294,11 @@ bool _VisionBase::draw(void)
 	if(!m_fBGR.bEmpty())
 	{
 		pFrame->copy(m_fBGR);
+	}
+
+	if(!m_mPers.empty() && m_bShowPers)
+	{
+		imshow(*this->getName()+":Perspective", m_mPers);
 	}
 
 	return this->_ThreadBase::draw();

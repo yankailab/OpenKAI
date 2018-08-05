@@ -1,5 +1,5 @@
 /*
- * Camera.cpp
+ * _Camera.cpp
  *
  *  Created on: Aug 22, 2015
  *      Author: yankai
@@ -12,7 +12,7 @@ namespace kai
 
 _Camera::_Camera()
 {
-	m_type = camera;
+	m_type = vision_camera;
 	m_deviceID = 0;
 }
 
