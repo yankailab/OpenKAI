@@ -5,8 +5,8 @@
 #include "../../../Filter/FilterBase.h"
 #include "../../../Script/Kiss.h"
 #include "../../../Protocol/_RC.h"
+#include "../../../Tracker/_SingleTracker.h"
 #include "../../../Vision/Frame.h"
-#include "../../../Tracker/_ROITracker.h"
 #include "../../../UI/UI.h"
 #include "../../../Vision/_DenseFlow.h"
 #include "../../ActionBase.h"
@@ -47,7 +47,7 @@ private:
 	RC_CTRL m_alt;
 
 	//Detectors
-	_ROITracker* m_pROITracker;
+	_SingleTracker* m_pROITracker;
 	_DenseFlow* m_pFlow;
 
 	//UI
@@ -62,7 +62,6 @@ private:
 	int m_ROIsizeFrom;
 	int m_ROIsizeTo;
 	int m_ROIsizeStep;
-
 
 };
 

@@ -3,6 +3,8 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,	
 	"waitKey":30,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
@@ -29,6 +31,33 @@
 }
 
 {
+	"name":"vf",
+	"class":"_VideoFile",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"videoFile":"/home/kai/Videos/suzhou.ts",
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+	"bFlip":0,
+	"bGray":0,
+	"bPers":0,
+	"persLTx":0.6,
+	"persLTy":0.1,
+	"persLBx":0.0,
+	"persLBy":1.0,
+	"persRTx":0.68,
+	"persRTy":0.1,
+	"persRBx":0.68,
+	"persRBy":1.0,
+	"persW":1000,
+	"persH":1000,
+	"bShowPers":1,
+}
+
+{
 	"name":"YOLO",
 	"class":"_YOLO",
 	"bInst":1,
@@ -36,7 +65,7 @@
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
-	"_VisionBase":"camera",
+	"_VisionBase":"vf",
 	"modelDir":"/home/kai/dev/darknet/",
 	"modelFile":"cfg/yolov2.cfg",
 	"trainedFile":"data/yolov2.weights",
@@ -45,6 +74,9 @@
 	"nClass":80,
 	"nPredAvr":3,
 	"nBatch":1,
+	"thresh":0.1,
+	"minArea":0.001,
+	"maxArea":0.1,
 	"mode":"thread",
 	"bDrawStatistics":1,
 }

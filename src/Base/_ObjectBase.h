@@ -29,7 +29,7 @@ struct OBJECT
 	vInt4		m_bbox;
 	double		m_dist;
 	vDouble3	m_velo;
-	bool		m_bTracked;
+	void*		m_pTracker;
 	vInt2		m_camSize;
 	int	 		m_iClass;		//most probable class
 	uint64_t 	m_mClass;		//all candidate class mask
@@ -43,7 +43,7 @@ struct OBJECT
 		m_camSize.init();
 		m_dist = -1.0;
 		m_velo.init();
-		m_bTracked = false;
+		m_pTracker = NULL;
 		m_tStamp = -1;
 		m_bCluster = false;
 		resetClass();
@@ -160,6 +160,11 @@ struct OBJECT_DARRAY
 	OBJECT* add(OBJECT* pO)
 	{
 		return m_pNext->add(pO);
+	}
+
+	OBJECT* addPrev(OBJECT* pO)
+	{
+		return m_pPrev->add(pO);
 	}
 
 	OBJECT* at(int i)

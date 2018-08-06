@@ -19,7 +19,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);
-	ADD_MODULE(_ECO);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_Lane);
@@ -67,7 +66,8 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);
-	ADD_MODULE(_ROITracker);
+	ADD_MODULE(_SingleTracker);
+	ADD_MODULE(_MultiTracker);
 #endif
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);

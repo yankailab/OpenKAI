@@ -1,16 +1,16 @@
 /*
- * _ROITracker.h
+ * _SingleTracker.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Tracker__ROITracker_H_
-#define OpenKAI_src_Tracker__ROITracker_H_
-
+#ifndef OpenKAI_src_Tracker__SingleTracker_H_
+#define OpenKAI_src_Tracker__SingleTracker_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+#include "../Base/_ObjectBase.h"
 #include "../Vision/_VisionBase.h"
 
 #ifdef USE_OPENCV_CONTRIB
@@ -18,39 +18,40 @@
 namespace kai
 {
 
-class _ROITracker: public _ThreadBase
+class _SingleTracker: public _ThreadBase
 {
 public:
-	_ROITracker();
-	virtual ~_ROITracker();
+	_SingleTracker();
+	virtual
+	~_SingleTracker();
 
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
 
-	void setROI(Rect2d roi);
-	void tracking(bool bTracking);
+	void createTracker(void);
+	bool setROI(vInt4 roi);
+	bool bTracking(void);
 
 private:
 	void track(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_ROITracker*) This)->update();
+		((_SingleTracker*) This)->update();
 		return NULL;
 	}
 
 public:
-	_VisionBase* m_pStream;
+	_VisionBase* m_pVision;
 	Rect2d m_ROI;
-	Rect2d m_newROI;
-	Frame* m_pFrame;
-	bool m_bTracking;
-
 	Ptr<Tracker> m_pTracker;
+	string m_trackerType;
+	uint64_t m_tStampBGR;
+	bool	m_bTracking;
+	OBJECT* m_pObj;
 };
 
 }
-
 #endif
 #endif

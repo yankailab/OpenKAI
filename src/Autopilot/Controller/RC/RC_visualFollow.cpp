@@ -73,7 +73,7 @@ bool RC_visualFollow::link(void)
 	m_pRCbase = (RC_base*) (pK->parent()->getChildInstByName(&iName));
 
 	F_ERROR_F(pK->v("ROItracker", &iName));
-	m_pROITracker = (_ROITracker*) (pK->root()->getChildInstByName(&iName));
+	m_pROITracker = (_SingleTracker*) (pK->root()->getChildInstByName(&iName));
 
 	IF_F(!m_pUIassist->link());
 	IF_F(!m_pUIdrawRect->link());
@@ -90,15 +90,15 @@ void RC_visualFollow::update(void)
 	NULL_(m_pRCIO);
 	NULL_(m_pROITracker);
 
-	if (m_pROITracker->m_bTracking == false)
-	{
-		m_pRCbase->m_rcRoll.neutral();
-		m_pRCbase->m_rcPitch.neutral();
-		m_roll.resetErr();
-		m_pitch.resetErr();
-		m_pRCIO->rc_overide(NUM_RC_CHANNEL, m_pRCbase->m_pPWM);
-		return;
-	}
+//	if (m_pROITracker->m_bTracking == false)
+//	{
+//		m_pRCbase->m_rcRoll.neutral();
+//		m_pRCbase->m_rcPitch.neutral();
+//		m_roll.resetErr();
+//		m_pitch.resetErr();
+//		m_pRCIO->rc_overide(NUM_RC_CHANNEL, m_pRCbase->m_pPWM);
+//		return;
+//	}
 
 	double posRoll;
 	double posPitch;
@@ -168,22 +168,22 @@ bool RC_visualFollow::draw(void)
 	Rect2d roi;
 
 	// draw the tracked object
-	if (m_bSelect)
-	{
-		roi = getMouseROI(m_ROI);
-		if (roi.height > 0 || roi.width > 0)
-		{
-			rectangle(*pMat, roi, Scalar(0, 255, 0), 2);
-		}
-	}
-	else if (m_pROITracker->m_bTracking)
-	{
-		roi = m_pROITracker->m_ROI;
-		if (roi.height > 0 || roi.width > 0)
-		{
-			rectangle(*pMat, roi, Scalar(0, 0, 255), 2);
-		}
-	}
+//	if (m_bSelect)
+//	{
+//		roi = getMouseROI(m_ROI);
+//		if (roi.height > 0 || roi.width > 0)
+//		{
+//			rectangle(*pMat, roi, Scalar(0, 255, 0), 2);
+//		}
+//	}
+//	else if (m_pROITracker->m_bTracking)
+//	{
+//		roi = m_pROITracker->m_ROI;
+//		if (roi.height > 0 || roi.width > 0)
+//		{
+//			rectangle(*pMat, roi, Scalar(0, 0, 255), 2);
+//		}
+//	}
 
 	if (m_ROImode == MODE_ASSIST)
 	{
@@ -246,8 +246,8 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			m_ROI.z = pMouse->m_x + ROIhalf;
 			m_ROI.w = pMouse->m_y + ROIhalf;
 			roi = getMouseROI(m_ROI);
-			m_pROITracker->setROI(roi);
-			m_pROITracker->tracking(true);
+//			m_pROITracker->setROI(roi);
+//			m_pROITracker->tracking(true);
 			m_bSelect = true;
 			return;
 		}
@@ -255,7 +255,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 		if (pBtn->m_name == "CLR")
 		{
 			//Clear ROI
-			m_pROITracker->tracking(false);
+//			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			return;
 		}
@@ -267,7 +267,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 			IF_(m_ROIsize >= m_ROIsizeTo);
 			m_ROIsize += m_ROIsizeStep;
-			IF_(!m_pROITracker->m_bTracking);
+//			IF_(!m_pROITracker->m_bTracking);
 
 			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
@@ -278,7 +278,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			m_ROI.z = roi.x + ROIhalf;
 			m_ROI.w = roi.y + ROIhalf;
 			roi = getMouseROI(m_ROI);
-			m_pROITracker->setROI(roi);
+//			m_pROITracker->setROI(roi);
 			return;
 		}
 
@@ -289,7 +289,7 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 
 			IF_(m_ROIsize <= m_ROIsizeFrom);
 			m_ROIsize -= m_ROIsizeStep;
-			IF_(!m_pROITracker->m_bTracking);
+//			IF_(!m_pROITracker->m_bTracking);
 
 			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
 			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
@@ -300,14 +300,14 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			m_ROI.z = roi.x + ROIhalf;
 			m_ROI.w = roi.y + ROIhalf;
 			roi = getMouseROI(m_ROI);
-			m_pROITracker->setROI(roi);
+//			m_pROITracker->setROI(roi);
 			return;
 		}
 
 		if (pBtn->m_name == "MODE")
 		{
 			m_ROI.init();
-			m_pROITracker->tracking(false);
+//			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_DRAWRECT;
 			return;
@@ -323,8 +323,8 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 		m_ROI.z = pMouse->m_x + ROIhalf;
 		m_ROI.w = pMouse->m_y + ROIhalf;
 		roi = getMouseROI(m_ROI);
-		m_pROITracker->setROI(roi);
-		m_pROITracker->tracking(true);
+//		m_pROITracker->setROI(roi);
+//		m_pROITracker->tracking(true);
 		break;
 	case EVENT_LBUTTONUP:
 		m_bSelect = false;
@@ -348,7 +348,7 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 	case EVENT_LBUTTONDOWN:
 		if (!pBtn)
 		{
-			m_pROITracker->tracking(false);
+//			m_pROITracker->tracking(false);
 			m_ROI.x = pMouse->m_x;
 			m_ROI.y = pMouse->m_y;
 			m_ROI.z = pMouse->m_x;
@@ -360,7 +360,7 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 		if (pBtn->m_name == "MODE")
 		{
 			m_ROI.init();
-			m_pROITracker->tracking(false);
+//			m_pROITracker->tracking(false);
 			m_bSelect = false;
 			m_ROImode = MODE_ASSIST;
 			return;
@@ -381,8 +381,8 @@ void RC_visualFollow::onMouseDrawRect(MOUSE* pMouse, BUTTON* pBtn)
 		}
 		else
 		{
-			m_pROITracker->setROI(roi);
-			m_pROITracker->tracking(true);
+//			m_pROITracker->setROI(roi);
+//			m_pROITracker->tracking(true);
 		}
 		m_bSelect = false;
 		break;

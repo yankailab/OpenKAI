@@ -111,10 +111,6 @@ bool _ObjectBase::link(void)
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
-//	iName = "";
-//	F_INFO(pK->v("_DetectorIn", &iName));
-//	m_pDetIn = (_DetectorBase*) (pK->root()->getChildInstByName(&iName));
-
 	return true;
 }
 
@@ -183,7 +179,7 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 		IF_CONT(pO->m_iClass != pNewO->m_iClass);
 //		IF_CONT((pO->m_mClass | pNewO->m_mClass) == 0);
 
-		pNewO->m_bTracked = true;
+//		pNewO->m_trackID = true;
 		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
 		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
 		break;

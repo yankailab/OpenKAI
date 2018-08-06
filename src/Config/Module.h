@@ -43,8 +43,8 @@
 #include "../SLAM/_ORB_SLAM2.h"
 #include "../SLAM/_LidarSlam.h"
 
-#include "../Tracker/_ECO.h"
-#include "../Tracker/_ROITracker.h"
+#include "../Tracker/_SingleTracker.h"
+#include "../Tracker/_MultiTracker.h"
 
 #include "../UI/UI.h"
 #include "../UI/Window.h"
