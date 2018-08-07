@@ -31,22 +31,20 @@ bool _YOLO::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,thresh);
-	KISSm(pK,hier);
-	KISSm(pK,nms);
-	KISSm(pK,nBatch);
-	KISSm(pK,nPredAvr);
+	KISSm(pK, thresh);
+	KISSm(pK, hier);
+	KISSm(pK, nms);
+	KISSm(pK, nBatch);
+	KISSm(pK, nPredAvr);
 
-	IF_Fl(!yoloInit( m_modelFile.c_str(),
-					m_trainedFile.c_str(),
-					m_labelFile.c_str(),
-					m_nPredAvr,
-					m_nBatch), "YOLO init failed");
+	IF_Fl(!yoloInit(m_modelFile.c_str(), m_trainedFile.c_str(),
+					m_labelFile.c_str(), m_nPredAvr, m_nBatch),
+			"YOLO init failed");
 
 	m_pYoloObj = new yolo_object[OBJECT_N_OBJ];
 
 	m_nClass = yoloNClass();
-	for(int i=0; i<m_nClass; i++)
+	for (int i = 0; i < m_nClass; i++)
 	{
 		m_pClassStatis[i].init();
 		m_pClassStatis[i].m_name = yoloGetClassName(i);
@@ -106,49 +104,56 @@ void _YOLO::detect(void)
 	m_BGR = *pBGR;
 	Mat mBGR = *m_BGR.m();
 
-	for(int r=0; r<m_vROI.size(); r++)
+	vInt4 iRoi;
+	iRoi.x = mBGR.cols * m_roi.x;
+	iRoi.y = mBGR.rows * m_roi.y;
+	iRoi.z = mBGR.cols * m_roi.z;
+	iRoi.w = mBGR.rows * m_roi.w;
+	Rect rRoi;
+	vInt42rect(iRoi, rRoi);
+
+	IplImage ipl = mBGR(rRoi);
+	int nDet = yoloUpdate(&ipl,
+						  m_pYoloObj,
+						  OBJECT_N_OBJ,
+						  (float) m_thresh,
+						  (float) m_hier,
+						  (float) m_nms);
+	IF_(nDet <= 0);
+
+	OBJECT obj;
+	for (int i = 0; i < nDet; i++)
 	{
-		vDouble4 fRoi = m_vROI[r].m_roi;
-		fRoi.x *= mBGR.cols;
-		fRoi.y *= mBGR.rows;
-		fRoi.z *= mBGR.cols;
-		fRoi.w *= mBGR.rows;
-		vInt4 iRoi;
-		iRoi = fRoi;
-		Rect rRoi;
-		vInt42rect(iRoi,rRoi);
+		yolo_object* pYO = &m_pYoloObj[i];
+		double area = (double)((pYO->m_r - pYO->m_l)*(pYO->m_b - pYO->m_t));
+		IF_CONT(area < m_minArea);
+		IF_CONT(area > m_maxArea);
 
-		IplImage ipl = mBGR(rRoi);
-		int nDet = yoloUpdate(&ipl, m_pYoloObj, OBJECT_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
-		IF_CONT(nDet <= 0);
+		obj.init();
+		obj.m_tStamp = m_tStamp;
+		obj.setClassMask(pYO->m_mClass);
+		obj.setTopClass(pYO->m_topClass, (double) pYO->m_topProb);
 
-		OBJECT obj;
-		for (int i = 0; i < nDet; i++)
-		{
-			yolo_object* pYO = &m_pYoloObj[i];
+		obj.m_bbox.x = rRoi.x + rRoi.width * pYO->m_l;
+		obj.m_bbox.y = rRoi.y + rRoi.height * pYO->m_t;
+		obj.m_bbox.z = rRoi.x + rRoi.width * pYO->m_r;
+		obj.m_bbox.w = rRoi.y + rRoi.height * pYO->m_b;
 
-			obj.init();
-			obj.m_tStamp = m_tStamp;
-			obj.setClassMask(pYO->m_mClass);
-			obj.setTopClass(pYO->m_topClass, (double)pYO->m_topProb);
+		obj.m_camSize.x = mBGR.cols;
+		obj.m_camSize.y = mBGR.rows;
+		obj.i2fBBox();
 
-			obj.m_bbox.x = rRoi.x + rRoi.width * pYO->m_l;
-			obj.m_bbox.y = rRoi.y + rRoi.height * pYO->m_t;
-			obj.m_bbox.z = rRoi.x + rRoi.width * pYO->m_r;
-			obj.m_bbox.w = rRoi.y + rRoi.height * pYO->m_b;
+		if (obj.m_bbox.x < 0)
+			obj.m_bbox.x = 0;
+		if (obj.m_bbox.y < 0)
+			obj.m_bbox.y = 0;
+		if (obj.m_bbox.z > obj.m_camSize.x)
+			obj.m_bbox.z = obj.m_camSize.x;
+		if (obj.m_bbox.w > obj.m_camSize.y)
+			obj.m_bbox.w = obj.m_camSize.y;
 
-			obj.m_camSize.x = mBGR.cols;
-			obj.m_camSize.y = mBGR.rows;
-			obj.i2fBBox();
-
-			if(obj.m_bbox.x < 0)obj.m_bbox.x = 0;
-			if(obj.m_bbox.y < 0)obj.m_bbox.y = 0;
-			if(obj.m_bbox.z > obj.m_camSize.x)obj.m_bbox.z = obj.m_camSize.x;
-			if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
-
-			add(&obj);
-			LOG_I("Class: "+ i2str(obj.m_topClass));
-		}
+		this->add(&obj);
+		LOG_I("Class: " + i2str(obj.m_topClass));
 	}
 
 	m_tStamp = getTimeUsec();

@@ -21,6 +21,9 @@ _ObjectBase::_ObjectBase()
 	m_nClass = OBJECT_N_CLASS;
 	m_tStamp = 0;
 	m_obj.reset();
+	m_roi.init();
+	m_roi.z = 1.0;
+	m_roi.w = 1.0;
 
 	m_bActive = true;
 	m_bReady = false;
@@ -98,29 +101,10 @@ bool _ObjectBase::init(void* pKiss)
 	}
 
 	//ROI
-	Kiss* pR = pK->o("ROI");
-	NULL_T(pR);
-	Kiss** pItrR = pR->getChildItr();
-	DETECT_ROI R;
-	i = 0;
-	while (pItrR[i])
-	{
-		pR = pItrR[i++];
-		R.init();
-		pR->v("x", &R.m_roi.x);
-		pR->v("y", &R.m_roi.y);
-		pR->v("z", &R.m_roi.z);
-		pR->v("w", &R.m_roi.w);
-		m_vROI.push_back(R);
-	}
-
-	if(m_vROI.size()<=0)
-	{
-		R.init();
-		R.m_roi.z = 1.0;
-		R.m_roi.w = 1.0;
-		m_vROI.push_back(R);
-	}
+	F_INFO(pK->v("rX", &m_roi.x));
+	F_INFO(pK->v("rY", &m_roi.y));
+	F_INFO(pK->v("rZ", &m_roi.z));
+	F_INFO(pK->v("rW", &m_roi.w));
 
 	return true;
 }
@@ -192,16 +176,16 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
-	double area = pNewO->m_fBBox.area();
-	IF_N(area < m_minArea);
-	IF_N(area > m_maxArea);
+//	double area = pNewO->m_fBBox.area();
+//	IF_N(area < m_minArea);
+//	IF_N(area > m_maxArea);
 
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
-		IF_CONT(pO->m_topClass != pNewO->m_topClass);
+//		IF_CONT(pO->m_topClass != pNewO->m_topClass);
 
 		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
 		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
@@ -257,18 +241,18 @@ bool _ObjectBase::draw(void)
 		IF_CONT(iClass < 0);
 
 		col = colStep * iClass;
-		oCol = Scalar(col, (col+85)%255, (col+170)%255) + bCol;
+		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		//draw bbox
 		Rect r;
 		vInt42rect(pO->m_bbox, r);
-		rectangle(*pMat, r, oCol, 2);
+		rectangle(*pMat, r, oCol, 1);
 
 		//draw velocity
 		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
 		Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
-		circle(*pMat, pC, 3, oCol, 2);
-		line(*pMat, pC, pC - pV, oCol, 2);
+		circle(*pMat, pC, 3, oCol, 1);
+		line(*pMat, pC, pC - pV, oCol, 1);
 
 		//draw name
 		string oName = m_pClassStatis[iClass].m_name;
@@ -276,7 +260,7 @@ bool _ObjectBase::draw(void)
 		{
 			putText(*pMat, oName,
 					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.8, oCol, 2);
+					FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
 		}
 	}
 
@@ -292,7 +276,7 @@ bool _ObjectBase::draw(void)
 	{
 		CLASS_STATISTICS* pC = &m_pClassStatis[i];
 		col = colStep * i;
-		oCol = Scalar(col, (col+85)%255, (col+170)%255) + bCol;
+		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
 				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),

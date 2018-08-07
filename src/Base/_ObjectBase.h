@@ -189,16 +189,6 @@ struct CLASS_STATISTICS
 	}
 };
 
-struct DETECT_ROI
-{
-	vDouble4 m_roi;
-
-	void init(void)
-	{
-		m_roi.init();
-	}
-};
-
 class _ObjectBase: public _ThreadBase
 {
 public:
@@ -239,6 +229,7 @@ public:
 	double m_minConfidence;
 	double m_minArea;
 	double m_maxArea;
+	vDouble4 m_roi;
 
 	//model
 	string m_modelFile;
@@ -247,9 +238,6 @@ public:
 	string m_labelFile;
 	int	   m_nClass;
 	CLASS_STATISTICS m_pClassStatis[OBJECT_N_CLASS];
-
-	//roi
-	vector<DETECT_ROI> m_vROI;
 
 	//show
 	std::bitset<64> m_bitSet;
