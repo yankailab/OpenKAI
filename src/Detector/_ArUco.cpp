@@ -95,7 +95,7 @@ void _ArUco::detect(void)
 	{
 		obj.init();
 		obj.m_tStamp = m_tStamp;
-		obj.setTopClass(vID[i]);
+		obj.setTopClass(vID[i],1.0);
 
 		Point2f pLT = vvCorner[i][0];
 		Point2f pRT = vvCorner[i][1];
@@ -120,7 +120,7 @@ void _ArUco::detect(void)
 		obj.m_camSize.y = m.rows;
 
 		add(&obj);
-		LOG_I("ID: "+ i2str(obj.m_iClass));
+		LOG_I("ID: "+ i2str(obj.m_topClass));
 	}
 }
 
@@ -141,7 +141,7 @@ bool _ArUco::draw(void)
 		Point pCenter = Point(pO->m_fBBox.x, pO->m_fBBox.y);
 		circle(*pMat, pCenter, pO->m_fBBox.z, Scalar(0, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_iClass) + " / " + i2str(pO->m_fBBox.w),
+		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_fBBox.w),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 
@@ -162,7 +162,7 @@ bool _ArUco::cli(int& iY)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		msg += i2str(pO->m_iClass) + " | ";
+		msg += i2str(pO->m_topClass) + " | ";
 	}
 
 	COL_MSG;

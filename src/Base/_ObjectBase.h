@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
+#include "../Tracker/_SingleTracker.h"
 
 #define OBJECT_N_CLASS 128
 #define OBJECT_N_OBJ 256
@@ -20,7 +21,7 @@ namespace kai
 
 enum detectorMode
 {
-	thread, noThread, batch
+	det_thread, det_noThread, det_batch
 };
 
 struct OBJECT
@@ -29,9 +30,10 @@ struct OBJECT
 	vInt4		m_bbox;
 	double		m_dist;
 	vDouble3	m_velo;
-	void*		m_pTracker;
+	_SingleTracker*	m_pTracker;
 	vInt2		m_camSize;
-	int	 		m_iClass;		//most probable class
+	int	 		m_topClass;		//most probable class
+	double		m_topProb;
 	uint64_t 	m_mClass;		//all candidate class mask
 	bool	 	m_bCluster;		//clustered class mask
 	int64_t 	m_tStamp;
@@ -59,9 +61,10 @@ struct OBJECT
 		m_mClass = mClass;
 	}
 
-	void setTopClass(int iClass)
+	void setTopClass(int iClass, double prob)
 	{
-		m_iClass = iClass;
+		m_topClass = iClass;
+		m_topProb = prob;
 		addClassIdx(iClass);
 	}
 
@@ -77,7 +80,8 @@ struct OBJECT
 
 	void resetClass(void)
 	{
-		m_iClass = -1;
+		m_topClass = -1;
+		m_topProb = 0.0;
 		m_mClass = 0;
 	}
 
@@ -162,11 +166,6 @@ struct OBJECT_DARRAY
 		return m_pNext->add(pO);
 	}
 
-	OBJECT* addPrev(OBJECT* pO)
-	{
-		return m_pPrev->add(pO);
-	}
-
 	OBJECT* at(int i)
 	{
 		return m_pPrev->at(i);
@@ -187,6 +186,16 @@ struct CLASS_STATISTICS
 	{
 		m_n = 0;
 		m_name = "";
+	}
+};
+
+struct DETECT_ROI
+{
+	vDouble4 m_roi;
+
+	void init(void)
+	{
+		m_roi.init();
 	}
 };
 
@@ -238,6 +247,9 @@ public:
 	string m_labelFile;
 	int	   m_nClass;
 	CLASS_STATISTICS m_pClassStatis[OBJECT_N_CLASS];
+
+	//roi
+	vector<DETECT_ROI> m_vROI;
 
 	//show
 	std::bitset<64> m_bitSet;

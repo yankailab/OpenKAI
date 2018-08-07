@@ -139,7 +139,7 @@ bool VEK_follow::draw(void)
 
 	NULL_T(m_pTarget);
 	Rect r;
-	vInt42rect(&m_pTarget->m_bbox, &r);
+	vInt42rect(m_pTarget->m_bbox, r);
 	rectangle(*pMat, r, Scalar(0, 0, 255), 2);
 
 	return true;

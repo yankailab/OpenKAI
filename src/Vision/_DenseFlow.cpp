@@ -16,8 +16,9 @@ _DenseFlow::_DenseFlow()
 {
 	m_pVision = NULL;
 	m_pGrayFrames = NULL;
-	m_width = 640;
-	m_height = 480;
+	m_w = 640;
+	m_h = 480;
+	m_bShowFlow = false;
 }
 
 _DenseFlow::~_DenseFlow()
@@ -30,13 +31,16 @@ bool _DenseFlow::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK,width);
-	KISSm(pK,height);
-	m_gFlow = GpuMat(m_height, m_width, CV_32FC2);
+	KISSm(pK,w);
+	KISSm(pK,h);
+	m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
+    m_mFlow = Mat::zeros(m_h, m_w, CV_32FC2);
+
+	KISSm(pK,bShowFlow);
 
 	return true;
 }
@@ -93,7 +97,7 @@ void _DenseFlow::detect(void)
 	Frame* pPrevFrame = m_pGrayFrames->getPrevFrame();
 	m_pGrayFrames->updateFrameIndex();
 
-	pNextFrame->copy(pGray->resize(m_width, m_height));
+	pNextFrame->copy(pGray->resize(m_w, m_h));
 	GpuMat* pPrev = pPrevFrame->gm();
 	GpuMat* pNext = pNextFrame->gm();
 
@@ -102,6 +106,87 @@ void _DenseFlow::detect(void)
 	IF_(pPrev->size() != pNext->size());
 
 	m_pFarn->calc(*pPrev, *pNext, m_gFlow);
+	m_gFlow.download(m_mFlow);
+}
+
+vDouble2 _DenseFlow::vFlow(vDouble4* pROI)
+{
+	vDouble2 vF;
+	vF.init();
+	if(!pROI)return vF;
+
+	vInt4 iR;
+	iR.x = pROI->x * m_w;
+	iR.y = pROI->y * m_h;
+	iR.z = pROI->z * m_w;
+	iR.w = pROI->w * m_h;
+
+	if (iR.x < 0)
+		iR.x = 0;
+	if (iR.y < 0)
+		iR.y = 0;
+	if (iR.z >= m_w)
+		iR.z = m_w - 1;
+	if (iR.w >= m_h)
+		iR.w = m_h - 1;
+
+	return vFlow(&iR);
+}
+
+vDouble2 _DenseFlow::vFlow(vInt4* pROI)
+{
+	vDouble2 vF;
+	vF.init();
+	if(!pROI)return vF;
+
+	int nX=0;
+	int nY=0;
+	for(int i=pROI->y; i<pROI->w; i++)
+	{
+		for(int j=pROI->x; j<pROI->z; j++)
+		{
+			Vec2f v = m_mFlow.at<Vec2f>(i,j);
+
+			if(v.val[0] != 0.0)
+			{
+				vF.x += v.val[0];
+				nX++;
+			}
+
+			if(v.val[1] != 0.0)
+			{
+				vF.y += v.val[1];
+				nY++;
+			}
+		}
+	}
+
+	if(nX>0)vF.x /= (double)nX;
+	if(nY>0)vF.y /= (double)nY;
+
+	return vF;
+}
+
+bool _DenseFlow::draw(void)
+{
+	IF_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+
+	IF_T(!m_bShowFlow);
+	IF_F(m_gFlow.empty());
+
+    GpuMat planes[2];
+    cuda::split(m_gFlow, planes);
+
+    Mat flowx(planes[0]);
+    Mat flowy(planes[1]);
+
+    Mat out;
+    drawOpticalFlow(flowx, flowy, out, 10);
+    imshow(*this->getName(), out);
+
+	return true;
 }
 
 bool _DenseFlow::isFlowCorrect(Point2f u)
@@ -214,28 +299,6 @@ void _DenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& fl
                 dst.at<Vec3b>(y, x) = computeColor(u.x / maxrad, u.y / maxrad);
         }
     }
-}
-
-bool _DenseFlow::draw(void)
-{
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-
-	IF_F(m_gFlow.empty());
-
-    GpuMat planes[2];
-    cuda::split(m_gFlow, planes);
-
-    Mat flowx(planes[0]);
-    Mat flowy(planes[1]);
-
-    Mat out;
-    drawOpticalFlow(flowx, flowy, out, 10);
-
-    imshow(*this->getName(), out);
-
-	return true;
 }
 
 }

@@ -44,8 +44,6 @@
 #include "../SLAM/_LidarSlam.h"
 
 #include "../Tracker/_SingleTracker.h"
-#include "../Tracker/_MultiTracker.h"
-
 #include "../UI/UI.h"
 #include "../UI/Window.h"
 
@@ -76,6 +74,7 @@
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../Application/_TrafficTracker.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"

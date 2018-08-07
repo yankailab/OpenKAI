@@ -50,7 +50,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/suzhou.ts",
+	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
 	"h":720,
 	"fovW":60,

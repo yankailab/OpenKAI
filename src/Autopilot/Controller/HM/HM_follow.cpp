@@ -92,7 +92,7 @@ void HM_follow::update(void)
 		m_obj = *pO;
 	}
 
-	IF_(m_obj.m_iClass < 0);
+	IF_(m_obj.m_topClass < 0);
 
 	double pX = m_targetX - m_obj.m_fBBox.midX();
 	if(abs(pX) > m_rTargetX)
@@ -123,7 +123,7 @@ bool HM_follow::draw(void)
 	IF_T(!m_obj.bClassMask(m_mTargetClass));
 
 	Rect r;
-	vInt42rect(&m_obj.m_bbox, &r);
+	vInt42rect(m_obj.m_bbox, r);
 	rectangle(*pMat, r, Scalar(0, 255, 0), 10);
 
 	return true;

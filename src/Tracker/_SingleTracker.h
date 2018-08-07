@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/_ObjectBase.h"
 #include "../Vision/_VisionBase.h"
 
 #ifdef USE_OPENCV_CONTRIB
@@ -30,7 +29,7 @@ public:
 	bool start(void);
 
 	void createTracker(void);
-	bool setROI(vInt4 roi);
+	bool updateROI(vInt4 roi);
 	bool bTracking(void);
 
 private:
@@ -49,7 +48,6 @@ public:
 	string m_trackerType;
 	uint64_t m_tStampBGR;
 	bool	m_bTracking;
-	OBJECT* m_pObj;
 };
 
 }

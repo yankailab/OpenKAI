@@ -24,7 +24,7 @@ _ObjectBase::_ObjectBase()
 
 	m_bActive = true;
 	m_bReady = false;
-	m_mode = thread;
+	m_mode = det_thread;
 
 	m_drawVeloScale = 1.0;
 	m_bDrawSegment = false;
@@ -50,12 +50,12 @@ bool _ObjectBase::init(void* pKiss)
 	F_INFO(pK->v("mode", &iName));
 	if (iName == "noThread")
 	{
-		m_mode = noThread;
+		m_mode = det_noThread;
 		bSetActive(false);
 	}
 	else if (iName == "batch")
 	{
-		m_mode = batch;
+		m_mode = det_batch;
 		bSetActive(false);
 	}
 
@@ -97,6 +97,31 @@ bool _ObjectBase::init(void* pKiss)
 		m_pClassStatis[i].m_name = pClassList[i];
 	}
 
+	//ROI
+	Kiss* pR = pK->o("ROI");
+	NULL_T(pR);
+	Kiss** pItrR = pR->getChildItr();
+	DETECT_ROI R;
+	i = 0;
+	while (pItrR[i])
+	{
+		pR = pItrR[i++];
+		R.init();
+		pR->v("x", &R.m_roi.x);
+		pR->v("y", &R.m_roi.y);
+		pR->v("z", &R.m_roi.z);
+		pR->v("w", &R.m_roi.w);
+		m_vROI.push_back(R);
+	}
+
+	if(m_vROI.size()<=0)
+	{
+		R.init();
+		R.m_roi.z = 1.0;
+		R.m_roi.w = 1.0;
+		m_vROI.push_back(R);
+	}
+
 	return true;
 }
 
@@ -131,10 +156,10 @@ void _ObjectBase::updateStatistics(void)
 	{
 		OBJECT* pO = at(i);
 
-		IF_CONT(pO->m_iClass >= m_nClass);
-		IF_CONT(pO->m_iClass < 0);
+		IF_CONT(pO->m_topClass >= m_nClass);
+		IF_CONT(pO->m_topClass < 0);
 
-		m_pClassStatis[pO->m_iClass].m_n++;
+		m_pClassStatis[pO->m_topClass].m_n++;
 	}
 }
 
@@ -176,10 +201,8 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
-		IF_CONT(pO->m_iClass != pNewO->m_iClass);
-//		IF_CONT((pO->m_mClass | pNewO->m_mClass) == 0);
+		IF_CONT(pO->m_topClass != pNewO->m_topClass);
 
-//		pNewO->m_trackID = true;
 		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
 		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
 		break;
@@ -229,7 +252,7 @@ bool _ObjectBase::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		int iClass = pO->m_iClass;
+		int iClass = pO->m_topClass;
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
@@ -238,7 +261,7 @@ bool _ObjectBase::draw(void)
 
 		//draw bbox
 		Rect r;
-		vInt42rect(&pO->m_bbox, &r);
+		vInt42rect(pO->m_bbox, r);
 		rectangle(*pMat, r, oCol, 2);
 
 		//draw velocity

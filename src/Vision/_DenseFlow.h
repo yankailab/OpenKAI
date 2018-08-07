@@ -28,11 +28,13 @@ public:
 	bool start(void);
 	bool draw(void);
 
+	vDouble2 vFlow(vInt4* pROI);
+	vDouble2 vFlow(vDouble4* pROI);
+
+private:
 	bool isFlowCorrect(Point2f u);
 	Vec3b computeColor(float fx, float fy);
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
-
-private:
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -42,13 +44,14 @@ private:
 	}
 
 public:
-	int	m_width;
-	int m_height;
+	int	m_w;
+	int m_h;
 	_VisionBase*					m_pVision;
 	FrameGroup*						m_pGrayFrames;
-
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	GpuMat							m_gFlow;
+	Mat								m_mFlow;
+	bool							m_bShowFlow;
 
 };
 

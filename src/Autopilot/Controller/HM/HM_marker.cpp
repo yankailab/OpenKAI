@@ -108,7 +108,7 @@ bool HM_marker::draw(void)
 	IF_T(!m_obj.bClass(m_iMarkerClass));
 
 	Rect r;
-	vInt42rect(&m_obj.m_bbox, &r);
+	vInt42rect(m_obj.m_bbox, r);
 	rectangle(*pMat, r, Scalar(0, 255, 255), 10);
 
 	return true;

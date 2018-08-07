@@ -154,20 +154,28 @@ inline double overlapRatio(vInt4* pA, vInt4* pB)
 	return rX * rY;
 }
 
-inline void rect2vInt4(Rect* pR, vInt4* pV)
+inline void rect2vInt4(Rect& r, vInt4& v)
 {
-	pV->x = pR->x;
-	pV->y = pR->y;
-	pV->z = pR->x + pR->width;
-	pV->w = pR->y + pR->height;
+	v.x = r.x;
+	v.y = r.y;
+	v.z = r.x + r.width;
+	v.w = r.y + r.height;
 }
 
-inline void vInt42rect(kai::vInt4* pV, Rect* pR)
+inline void vInt42rect(vInt4& v, Rect& r)
 {
-	pR->x = pV->x;
-	pR->y = pV->y;
-	pR->width = pV->z - pV->x;
-	pR->height = pV->w - pV->y;
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
+}
+
+inline void vInt42rect(vInt4& v, Rect2d& r)
+{
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
 }
 
 inline int constrain(int v, int a, int b)

@@ -119,7 +119,7 @@ void _MotionDetector::detect(void)
 	    vContourPoly.clear();
 
 	    obj.init();
-	    obj.setTopClass(0);
+	    obj.setTopClass(-1,0);
 	    obj.m_tStamp = m_tStamp;
 
    		obj.m_bbox.x = bbox.x;

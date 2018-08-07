@@ -148,9 +148,9 @@ void _ClusterNet::cluster(void)
 		{
 			OBJECT* pO = m_ppObj[m_size.x * y + x];
 			IF_CONT(!pO);
-			IF_CONT(pO->m_iClass < 0);
+			IF_CONT(pO->m_topClass < 0);
 
-			vInt4 b = explore(x, y, pO->m_iClass);
+			vInt4 b = explore(x, y, pO->m_topClass);
 			IF_CONT(b.x < 0);
 
 			OBJECT o = *pO;
@@ -193,7 +193,7 @@ vInt4 _ClusterNet::explore(int x, int y, int iClass)
 		return vB;
 	if (pO->m_bCluster)
 		return vB;
-	if (pO->m_iClass != iClass)
+	if (pO->m_topClass != iClass)
 		return vB;
 
 	pO->m_bCluster = true;
@@ -273,7 +273,7 @@ bool _ClusterNet::bFound(int iClass)
 	for (i = 0; i < m_nObj; i++)
 	{
 		OBJECT* pObj = m_ppObj[i];
-		IF_CONT(pObj->m_iClass != iClass);
+		IF_CONT(pObj->m_topClass != iClass);
 
 		return true;
 	}

@@ -18,7 +18,6 @@ _SingleTracker::_SingleTracker()
 	m_trackerType = "";
 	m_tStampBGR = 0;
 	m_bTracking = false;
-	m_pObj = NULL;
 }
 
 _SingleTracker::~_SingleTracker()
@@ -95,17 +94,14 @@ void _SingleTracker::update(void)
 	}
 }
 
-bool _SingleTracker::setROI(vInt4 roi)
+bool _SingleTracker::updateROI(vInt4 roi)
 {
 	NULL_F(m_pVision);
 	Mat* pMat = m_pVision->BGR()->m();
 	IF_F(pMat->empty());
 
 	Rect2d rRoi;
-	rRoi.x = roi.x;
-	rRoi.y = roi.y;
-	rRoi.width = roi.z - roi.x;
-	rRoi.height = roi.w - roi.y;
+	vInt42rect(roi,rRoi);
 
 	IF_F(rRoi.width == 0 || rRoi.height == 0);
 
@@ -116,6 +112,8 @@ bool _SingleTracker::setROI(vInt4 roi)
 	m_pTracker->init(*pMat, rRoi);
 	m_ROI = rRoi;
 	m_bTracking = true;
+
+	return true;
 }
 
 void _SingleTracker::track(void)
@@ -132,17 +130,6 @@ void _SingleTracker::track(void)
 	IF_(pMat->empty());
 
 	m_pTracker->update(*pMat, m_ROI);
-
-	if(m_pObj)
-	{
-		m_pObj->m_bbox.x = m_ROI.x;
-		m_pObj->m_bbox.y = m_ROI.y;
-		m_pObj->m_bbox.z = m_ROI.x + m_ROI.width;
-		m_pObj->m_bbox.w = m_ROI.y + m_ROI.height;
-		m_pObj->i2fBBox();
-
-		//TODO:vector
-	}
 }
 
 bool _SingleTracker::bTracking(void)

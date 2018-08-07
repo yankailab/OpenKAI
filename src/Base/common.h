@@ -336,6 +336,14 @@ struct vInt4
 	int z;
 	int w;
 
+	inline void operator=(vDouble4& r)
+    {
+		x = r.x;
+		y = r.y;
+		z = r.z;
+		w = r.w;
+	}
+
 	int midX(void)
 	{
 		return (x + z) / 2;

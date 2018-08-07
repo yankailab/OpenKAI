@@ -104,40 +104,54 @@ void _YOLO::detect(void)
 	IF_(pBGR->bEmpty());
 	IF_(pBGR->tStamp() <= m_BGR.tStamp());
 	m_BGR = *pBGR;
+	Mat mBGR = *m_BGR.m();
 
-	Mat* pMat = m_BGR.m();
-	IplImage ipl = *pMat;
-	int nDetected = yoloUpdate(&ipl, m_pYoloObj, OBJECT_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
-	IF_(nDetected <= 0);
+	for(int r=0; r<m_vROI.size(); r++)
+	{
+		vDouble4 fRoi = m_vROI[r].m_roi;
+		fRoi.x *= mBGR.cols;
+		fRoi.y *= mBGR.rows;
+		fRoi.z *= mBGR.cols;
+		fRoi.w *= mBGR.rows;
+		vInt4 iRoi;
+		iRoi = fRoi;
+		Rect rRoi;
+		vInt42rect(iRoi,rRoi);
+
+		IplImage ipl = mBGR(rRoi);
+		int nDet = yoloUpdate(&ipl, m_pYoloObj, OBJECT_N_OBJ, (float)m_thresh, (float)m_hier, (float)m_nms);
+		IF_CONT(nDet <= 0);
+
+		OBJECT obj;
+		for (int i = 0; i < nDet; i++)
+		{
+			yolo_object* pYO = &m_pYoloObj[i];
+
+			obj.init();
+			obj.m_tStamp = m_tStamp;
+			obj.setClassMask(pYO->m_mClass);
+			obj.setTopClass(pYO->m_topClass, (double)pYO->m_topProb);
+
+			obj.m_bbox.x = rRoi.x + rRoi.width * pYO->m_l;
+			obj.m_bbox.y = rRoi.y + rRoi.height * pYO->m_t;
+			obj.m_bbox.z = rRoi.x + rRoi.width * pYO->m_r;
+			obj.m_bbox.w = rRoi.y + rRoi.height * pYO->m_b;
+
+			obj.m_camSize.x = mBGR.cols;
+			obj.m_camSize.y = mBGR.rows;
+			obj.i2fBBox();
+
+			if(obj.m_bbox.x < 0)obj.m_bbox.x = 0;
+			if(obj.m_bbox.y < 0)obj.m_bbox.y = 0;
+			if(obj.m_bbox.z > obj.m_camSize.x)obj.m_bbox.z = obj.m_camSize.x;
+			if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
+
+			add(&obj);
+			LOG_I("Class: "+ i2str(obj.m_topClass));
+		}
+	}
 
 	m_tStamp = getTimeUsec();
-
-	OBJECT obj;
-	for (int i = 0; i < nDetected; i++)
-	{
-		yolo_object* pYO = &m_pYoloObj[i];
-
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setClassMask(pYO->m_mClass);
-		obj.setTopClass(pYO->m_iClass);
-
-		obj.m_fBBox.x = (double)pYO->m_l;
-		obj.m_fBBox.y = (double)pYO->m_t;
-		obj.m_fBBox.z = (double)pYO->m_r;
-		obj.m_fBBox.w = (double)pYO->m_b;
-		obj.m_camSize.x = pMat->cols;
-		obj.m_camSize.y = pMat->rows;
-		obj.f2iBBox();
-		if(obj.m_bbox.x < 0)obj.m_bbox.x = 0;
-		if(obj.m_bbox.y < 0)obj.m_bbox.y = 0;
-		if(obj.m_bbox.z > obj.m_camSize.x)obj.m_bbox.z = obj.m_camSize.x;
-		if(obj.m_bbox.w > obj.m_camSize.y)obj.m_bbox.w = obj.m_camSize.y;
-
-		add(&obj);
-
-		LOG_I("Class: "+ i2str(obj.m_iClass));
-	}
 }
 
 bool _YOLO::draw(void)

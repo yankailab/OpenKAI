@@ -96,7 +96,7 @@ void APcopter_arucoLanding::navigation(void)
 		for(i=0; i<m_vTarget.size(); i++)
 		{
 			LANDING_TARGET_ARUCO* pTi = &m_vTarget[i];
-			IF_CONT(pO->m_iClass != pTi->m_tag);
+			IF_CONT(pO->m_topClass != pTi->m_tag);
 
 			pT = pTi;
 			break;
@@ -151,7 +151,7 @@ bool APcopter_arucoLanding::draw(void)
 		circle(*pMat, Point(m_oTarget.m_fBBox.x, m_oTarget.m_fBBox.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
-		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
+		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
 				+ ", angle = ("
 				+ f2str((double)m_D.angle_x) + " , "
 				+ f2str((double)m_D.angle_y) + ")"
@@ -176,7 +176,7 @@ bool APcopter_arucoLanding::cli(int& iY)
 
 	if (m_bLocked)
 	{
-		msg = "Target tag = " + i2str(m_oTarget.m_iClass)
+		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
 				+ ", angle = ("
 				+ f2str((double)m_D.angle_x) + " , "
 				+ f2str((double)m_D.angle_y) + ")"

@@ -106,7 +106,7 @@ void HM_grass::update(void)
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
 	//standby until Detector is ready
-	if(m_pGrassF->m_iClass < 0)
+	if(m_pGrassF->m_topClass < 0)
 	{
 		m_pHM->m_rpmL = 0;
 		m_pHM->m_rpmR = 0;
@@ -165,19 +165,19 @@ bool HM_grass::draw(void)
 	Scalar col;
 	int bold = 2;
 
-	vInt42rect(&m_pGrassL->m_bbox, &r);
+	vInt42rect(m_pGrassL->m_bbox, r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassL->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);
 	rectangle(*pMat, r, col, bold);
 
-	vInt42rect(&m_pGrassF->m_bbox, &r);
+	vInt42rect(m_pGrassF->m_bbox, r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassF->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);
 	rectangle(*pMat, r, col, bold);
 
-	vInt42rect(&m_pGrassR->m_bbox, &r);
+	vInt42rect(m_pGrassR->m_bbox, r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassR->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);

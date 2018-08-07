@@ -5,10 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef SRC_OPENKAI_MAIN_H_
-#define SRC_OPENKAI_MAIN_H_
+#ifndef OpenKAI_src_main_H_
+#define OpenKAI_src_main_H_
 
-#include "Application/Startup.h"
+#include "Startup/Startup.h"
 #include "IO/_File.h"
 
 
