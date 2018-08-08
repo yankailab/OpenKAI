@@ -30,6 +30,8 @@ struct OBJECT
 	vInt4		m_bbox;
 	double		m_dist;
 	vDouble3	m_velo;
+	uint64_t	m_trackID;
+	double		m_speed;
 	_SingleTracker*	m_pTracker;
 	vInt2		m_camSize;
 	int	 		m_topClass;		//most probable class
@@ -45,6 +47,8 @@ struct OBJECT
 		m_camSize.init();
 		m_dist = -1.0;
 		m_velo.init();
+		m_trackID = 0;
+		m_speed = 0.0;
 		m_pTracker = NULL;
 		m_tStamp = -1;
 		m_bCluster = false;
@@ -223,6 +227,7 @@ public:
 	bool m_bReady;
 	uint64_t m_tStamp;
 	detectorMode m_mode;
+	uint64_t m_trackID;
 
 	//config
 	double m_minOverlap;
@@ -246,6 +251,8 @@ public:
 	bool m_bDrawSegment;
 	double m_segmentBlend;
 	double m_drawVeloScale;
+	bool m_bDrawObjClass;
+	bool m_bDrawObjVelo;
 
 };
 

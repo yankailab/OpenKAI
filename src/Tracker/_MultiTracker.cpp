@@ -1,18 +1,18 @@
 /*
- * _TrafficTracker.cpp
+ * _MultiTracker.cpp
  *
  *  Created on: June 15, 2018
  *      Author: yankai
  */
 
-#include "_TrafficTracker.h"
+#include "_MultiTracker.h"
 
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
 
-_TrafficTracker::_TrafficTracker()
+_MultiTracker::_MultiTracker()
 {
 	m_pOB = NULL;
 	m_tStampOB = 0;
@@ -21,11 +21,11 @@ _TrafficTracker::_TrafficTracker()
 	m_oBoundary = 0.0;
 }
 
-_TrafficTracker::~_TrafficTracker()
+_MultiTracker::~_MultiTracker()
 {
 }
 
-bool _TrafficTracker::init(void* pKiss)
+bool _MultiTracker::init(void* pKiss)
 {
 	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -37,7 +37,7 @@ bool _TrafficTracker::init(void* pKiss)
 	return true;
 }
 
-bool _TrafficTracker::link(void)
+bool _MultiTracker::link(void)
 {
 	IF_F(!this->_ObjectBase::link());
 	Kiss* pK = (Kiss*)m_pKiss;
@@ -53,7 +53,7 @@ bool _TrafficTracker::link(void)
 	return true;
 }
 
-bool _TrafficTracker::start(void)
+bool _MultiTracker::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -66,7 +66,7 @@ bool _TrafficTracker::start(void)
 	return true;
 }
 
-void _TrafficTracker::update(void)
+void _MultiTracker::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -81,7 +81,7 @@ void _TrafficTracker::update(void)
 	}
 }
 
-void _TrafficTracker::addNewTarget(void)
+void _MultiTracker::addNewTarget(void)
 {
 	NULL_(m_pOB);
 	IF_(m_tStampOB >= m_pOB->m_tStamp);
@@ -136,7 +136,7 @@ void _TrafficTracker::addNewTarget(void)
 	}
 }
 
-void _TrafficTracker::updateTarget(void)
+void _MultiTracker::updateTarget(void)
 {
 	OBJECT* pO;
 	int i=0;
@@ -155,7 +155,7 @@ void _TrafficTracker::updateTarget(void)
 	}
 }
 
-bool _TrafficTracker::draw(void)
+bool _MultiTracker::draw(void)
 {
 	IF_F(!this->_ObjectBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
@@ -166,7 +166,7 @@ bool _TrafficTracker::draw(void)
 	return true;
 }
 
-bool _TrafficTracker::cli(int& iY)
+bool _MultiTracker::cli(int& iY)
 {
 	IF_F(!this->_ObjectBase::cli(iY));
 

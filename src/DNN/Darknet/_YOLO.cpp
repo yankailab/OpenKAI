@@ -83,10 +83,9 @@ void _YOLO::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ObjectBase::update();
-
-		m_obj.update();
 		detect();
+		m_obj.update();
+		this->_ObjectBase::update();
 
 		this->autoFPSto();
 	}
@@ -125,9 +124,6 @@ void _YOLO::detect(void)
 	for (int i = 0; i < nDet; i++)
 	{
 		yolo_object* pYO = &m_pYoloObj[i];
-		double area = (double)((pYO->m_r - pYO->m_l)*(pYO->m_b - pYO->m_t));
-		IF_CONT(area < m_minArea);
-		IF_CONT(area > m_maxArea);
 
 		obj.init();
 		obj.m_tStamp = m_tStamp;

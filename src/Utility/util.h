@@ -109,7 +109,18 @@ inline double dHdg(double hFrom, double hTo)
 	return d;
 }
 
-inline bool isOverlapped(vInt4* pA, vInt4* pB)
+inline bool bOverlapped(vInt4* pA, vInt4* pB)
+{
+	if (pA->z < pB->x || pA->x > pB->z)
+		return false;
+
+	if (pA->w < pB->y || pA->y > pB->w)
+		return false;
+
+	return true;
+}
+
+inline bool bOverlapped(vDouble4* pA, vDouble4* pB)
 {
 	if (pA->z < pB->x || pA->x > pB->z)
 		return false;
@@ -122,7 +133,7 @@ inline bool isOverlapped(vInt4* pA, vInt4* pB)
 
 inline double overlapRatio(vInt4* pA, vInt4* pB)
 {
-	if (!isOverlapped(pA, pB))
+	if (!bOverlapped(pA, pB))
 		return 0.0;
 
 	vInt4* pT;

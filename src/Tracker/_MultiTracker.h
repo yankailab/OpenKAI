@@ -1,12 +1,12 @@
 /*
- * _TrafficTracker.h
+ * _MultiTracker.h
  *
  *  Created on: June 15, 2018
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application__TrafficTracker_H_
-#define OpenKAI_src_Application__TrafficTracker_H_
+#ifndef OpenKAI_src_Application__MultiTracker_H_
+#define OpenKAI_src_Application__MultiTracker_H_
 
 #include "../Base/common.h"
 #include "../Base/_ObjectBase.h"
@@ -17,11 +17,11 @@
 namespace kai
 {
 
-class _TrafficTracker : public _ObjectBase
+class _MultiTracker : public _ObjectBase
 {
 public:
-	_TrafficTracker();
-	virtual ~_TrafficTracker();
+	_MultiTracker();
+	virtual ~_MultiTracker();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -35,7 +35,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_TrafficTracker*) This)->update();
+		((_MultiTracker*) This)->update();
 		return NULL;
 	}
 

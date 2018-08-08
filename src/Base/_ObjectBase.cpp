@@ -24,6 +24,7 @@ _ObjectBase::_ObjectBase()
 	m_roi.init();
 	m_roi.z = 1.0;
 	m_roi.w = 1.0;
+	m_trackID = 1;
 
 	m_bActive = true;
 	m_bReady = false;
@@ -36,6 +37,8 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.x = 25;
 	m_classLegendPos.y = 150;
 	m_classLegendPos.z = 15;
+	m_bDrawObjClass = false;
+	m_bDrawObjVelo = false;
 }
 
 _ObjectBase::~_ObjectBase()
@@ -88,6 +91,8 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, segmentBlend);
 	KISSm(pK, bDrawStatistics);
 	KISSm(pK, drawVeloScale);
+	KISSm(pK, bDrawObjClass);
+	KISSm(pK, bDrawObjVelo);
 
 	string pClassList[OBJECT_N_CLASS];
 	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
@@ -176,19 +181,26 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
-//	double area = pNewO->m_fBBox.area();
-//	IF_N(area < m_minArea);
-//	IF_N(area > m_maxArea);
+	double area = pNewO->m_fBBox.area();
+	IF_N(area < m_minArea);
+	IF_N(area > m_maxArea);
 
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
-//		IF_CONT(pO->m_topClass != pNewO->m_topClass);
+		IF_CONT(pO->m_topClass != pNewO->m_topClass);
 
 		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
 		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
+		pNewO->m_speed = pO->m_speed;
+
+		if(pO->m_trackID>0)
+			pNewO->m_trackID = pO->m_trackID;
+		else
+			pNewO->m_trackID = m_trackID++;
+
 		break;
 	}
 
@@ -242,25 +254,36 @@ bool _ObjectBase::draw(void)
 
 		col = colStep * iClass;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
+		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
 
-		//draw bbox
+		//bbox
 		Rect r;
 		vInt42rect(pO->m_bbox, r);
 		rectangle(*pMat, r, oCol, 1);
 
-		//draw velocity
-		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
-		Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
-		circle(*pMat, pC, 3, oCol, 1);
-		line(*pMat, pC, pC - pV, oCol, 1);
-
-		//draw name
-		string oName = m_pClassStatis[iClass].m_name;
-		if (oName.length()>0)
+		//velocity
+		if(m_bDrawObjVelo)
 		{
-			putText(*pMat, oName,
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
+			Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
+			line(*pMat, pC, pC - pV, oCol, 1);
+		}
+
+		//trackID
+		if(pO->m_trackID>0)
+		{
+			circle(*pMat, pC, 5, oCol, 3);
+		}
+
+		//class
+		if(m_bDrawObjClass)
+		{
+			string oName = m_pClassStatis[iClass].m_name;
+			if (oName.length()>0)
+			{
+				putText(*pMat, oName,
+						Point(r.x + 15, r.y + 25),
+						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
+			}
 		}
 	}
 

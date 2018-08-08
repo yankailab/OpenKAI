@@ -67,7 +67,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);
 	ADD_MODULE(_SingleTracker);
-	ADD_MODULE(_TrafficTracker);
+	ADD_MODULE(_MultiTracker);
 #endif
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);

@@ -54,6 +54,8 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_visualFollow);
 		ADD_ACTION(APcopter_DNNlanding);
 
+		ADD_ACTION(AProver_base);
+
 		ADD_ACTION(HM_base);
 		ADD_ACTION(HM_kickBack);
 		ADD_ACTION(HM_grass);
@@ -63,7 +65,8 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(HM_marker);
 		ADD_ACTION(HM_follow);
 
-		ADD_ACTION(AProver_base);
+		ADD_ACTION(Traffic_base);
+		ADD_ACTION(Traffic_speed);
 
 		ADD_ACTION(VEK_base);
 		ADD_ACTION(VEK_avoid);
