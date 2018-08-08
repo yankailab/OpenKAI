@@ -27,6 +27,7 @@
 #include "Controller/RC/RC_base.h"
 #include "Controller/RC/RC_visualFollow.h"
 #include "Controller/Traffic/Traffic_base.h"
+#include "Controller/Traffic/Traffic_count.h"
 #include "Controller/Traffic/Traffic_speed.h"
 #include "Controller/VEK/VEK_avoid.h"
 #include "Controller/VEK/VEK_base.h"

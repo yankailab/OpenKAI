@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"waitKey":30,
+	"waitKey":60,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
@@ -77,11 +77,11 @@
 	"name":"df",
 	"class":"_DenseFlow",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"bShowFlow":1,
+	"bShowFlow":0,
 	"w":160,
 	"h":90,
 }
@@ -92,7 +92,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
-	"FPS":10,
+	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"modelDir":"/home/kai/dev/darknet/",
@@ -101,18 +101,78 @@
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
-	"nPredAvr":1,
+	"nPredAvr":3,
 	"nBatch":1,
 	"thresh":0.05,
 	"minArea":0.0001,
-	"maxArea":0.025,
-	"minOverlap":0.6,
+	"maxArea":0.05,
+	"minOverlap":0.5,
 	"mode":"thread",
-	"bDrawStatistics":1,
-	"bDrawObjClass":1,
-	"bDrawObjVelo":1,
+	"bDrawStatistics":0,
+	"bDrawObjClass":0,
+	"bDrawObjVelo":0,
 	"rX":0.0,
 	"rY":0.05,
 	"rZ":0.8,
 	"rW":1.0,
 }
+
+{
+	"name":"trState",
+	"class":"_Automaton",
+	"bInst":1,
+	"Window":"OKview",
+	"startState":"TR_NORMAL",
+
+	{
+		"state":"TR_NORMAL",
+	}
+}
+
+{
+	"name":"trMonitor",
+	"class":"_AutoPilot",
+	"_Automaton":"trState",
+	"bInst":1,
+	"FPS":30,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"trBase",
+			"class":"Traffic_base",
+			"bInst":1,
+			"_Automaton":"trState",
+			"Window":"OKview",
+			"_ObjectBase":"yl",
+		}
+		
+		{
+			"name":"trCount",
+			"class":"Traffic_count",
+			"bInst":1,
+			"_Automaton":"trState",
+			"Window":"OKview",
+			"Traffic_base":"trBase",
+			"x":0.525,
+			"y":0.6,
+			"z":0.65,
+			"w":0.605,
+			"scaleBBox_x":1.0,
+			"scaleBBox_y":0.5,
+		}
+		
+		{
+			"name":"trSpeed",
+			"class":"Traffic_speed",
+			"bInst":1,
+			"_Automaton":"trState",
+			"Window":"OKview",
+			"Traffic_base":"trBase",
+		}		
+		
+	}
+}
+

@@ -39,6 +39,7 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
 	m_bDrawObjVelo = false;
+
 }
 
 _ObjectBase::~_ObjectBase()
@@ -256,6 +257,12 @@ bool _ObjectBase::draw(void)
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
 
+		//trackID
+		if(pO->m_trackID > 0)
+		{
+			oCol = Scalar(255,255,0);
+		}
+
 		//bbox
 		Rect r;
 		vInt42rect(pO->m_bbox, r);
@@ -266,12 +273,6 @@ bool _ObjectBase::draw(void)
 		{
 			Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
 			line(*pMat, pC, pC - pV, oCol, 1);
-		}
-
-		//trackID
-		if(pO->m_trackID>0)
-		{
-			circle(*pMat, pC, 5, oCol, 3);
 		}
 
 		//class
