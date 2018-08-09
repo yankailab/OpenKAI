@@ -66,8 +66,8 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(HM_follow);
 
 		ADD_ACTION(Traffic_base);
-		ADD_ACTION(Traffic_count);
 		ADD_ACTION(Traffic_speed);
+		ADD_ACTION(Traffic_alert);
 
 		ADD_ACTION(VEK_base);
 		ADD_ACTION(VEK_avoid);

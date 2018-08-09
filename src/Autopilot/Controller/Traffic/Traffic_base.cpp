@@ -14,7 +14,7 @@ Traffic_base::~Traffic_base()
 
 bool Traffic_base::init(void* pKiss)
 {
-	IF_F(this->ActionBase::init(pKiss)==false);
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 

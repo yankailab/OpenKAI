@@ -9,6 +9,44 @@
 namespace kai
 {
 
+struct TRAFFIC_SPEED_BAR
+{
+	vDouble4		m_roi;
+	int				m_nCount;
+	int				m_nCountTot;
+	bool			m_bTouch;
+
+	void init(void)
+	{
+		m_roi.init();
+		m_nCountTot = 0;
+		m_bTouch = false;
+		resetCount();
+	}
+
+	void resetCount(void)
+	{
+		m_nCount = 0;
+	}
+
+	bool bTouch(vDouble4* pBbox)
+	{
+		IF_F(!bOverlapped(&m_roi, pBbox));
+		return true;
+	}
+
+	void count(bool bTouch)
+	{
+		if(!m_bTouch && bTouch)
+		{
+			m_nCount++;
+			m_nCountTot++;
+		}
+
+		m_bTouch = bTouch;
+	}
+};
+
 class Traffic_speed: public ActionBase
 {
 public:
@@ -23,7 +61,15 @@ public:
 public:
 	Traffic_base*	m_pTB;
 	uint64_t		m_tStampOB;
-	double			m_avrSpeed;
+
+	TRAFFIC_SPEED_BAR	m_barFrom;
+	TRAFFIC_SPEED_BAR	m_barTo;
+	double				m_dist;
+	double				m_speed;
+	uint64_t			m_tFrom;
+	uint64_t			m_tTo;
+	int					m_nInside;
+	vDouble2			m_scaleBBox;
 };
 
 }

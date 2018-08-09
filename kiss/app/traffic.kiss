@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"waitKey":60,
+	"waitKey":90,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
@@ -74,19 +74,6 @@
 }
 
 {
-	"name":"df",
-	"class":"_DenseFlow",
-	"FPS":30,
-	"bInst":1,
-	"bDraw":1,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"bShowFlow":0,
-	"w":160,
-	"h":90,
-}
-
-{
 	"name":"yl",
 	"class":"_YOLO",
 	"bInst":1,
@@ -150,24 +137,35 @@
 		}
 		
 		{
-			"name":"trCount",
-			"class":"Traffic_count",
+			"name":"trSpeed",
+			"class":"Traffic_speed",
 			"bInst":1,
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"Traffic_base":"trBase",
-			"x":0.525,
-			"y":0.6,
-			"z":0.65,
-			"w":0.605,
-			"scaleBBox_x":1.0,
-			"scaleBBox_y":0.5,
+			"scaleBBox_x":0.8,
+			"scaleBBox_y":0.25,
+			"dist":10.0,
+			{
+				"name":"barFrom",
+				"x":0.55,
+				"y":0.6,
+				"z":0.65,
+				"w":0.605,
+			}
+			{
+				"name":"barTo",
+				"x":0.61,
+				"y":0.39,
+				"z":0.67,
+				"w":0.395,
+			}
 		}
 		
 		{
-			"name":"trSpeed",
-			"class":"Traffic_speed",
-			"bInst":1,
+			"name":"trAlert",
+			"class":"Traffic_alert",
+			"bInst":0,
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"Traffic_base":"trBase",
