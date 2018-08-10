@@ -69,7 +69,7 @@ void Traffic_speed::update(void)
 		IF_CONT(a > m_max);
 
 		vDouble2 vF = m_pDF->vFlow(&pO->m_fBBox);
-		pO->m_speed = vF.x + vF.y;
+		pO->m_speed = sqrt(vF.x*vF.x + vF.y*vF.y);
 		nCount++;
 		speed += pO->m_speed;
 	}

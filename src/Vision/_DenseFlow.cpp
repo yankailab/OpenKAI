@@ -18,7 +18,6 @@ _DenseFlow::_DenseFlow()
 	m_pGrayFrames = NULL;
 	m_w = 640;
 	m_h = 480;
-	m_bShowFlow = false;
 }
 
 _DenseFlow::~_DenseFlow()
@@ -38,9 +37,6 @@ bool _DenseFlow::init(void* pKiss)
 	m_pGrayFrames = new FrameGroup();
 	m_pGrayFrames->init(2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
-    m_mFlow = Mat::zeros(m_h, m_w, CV_32FC2);
-
-	KISSm(pK,bShowFlow);
 
 	return true;
 }
@@ -106,7 +102,10 @@ void _DenseFlow::detect(void)
 	IF_(pPrev->size() != pNext->size());
 
 	m_pFarn->calc(*pPrev, *pNext, m_gFlow);
-	m_gFlow.download(m_mFlow);
+
+	Mat mFlow;
+	m_gFlow.download(mFlow);
+    cv::split(mFlow, m_mFlow);
 }
 
 vDouble2 _DenseFlow::vFlow(vDouble4* pROI)
@@ -125,10 +124,16 @@ vDouble2 _DenseFlow::vFlow(vDouble4* pROI)
 		iR.x = 0;
 	if (iR.y < 0)
 		iR.y = 0;
+
 	if (iR.z >= m_w)
 		iR.z = m_w - 1;
 	if (iR.w >= m_h)
 		iR.w = m_h - 1;
+
+	if (iR.z < iR.x)
+		iR.z = iR.x;
+	if (iR.w < iR.y)
+		iR.w = iR.y;
 
 	return vFlow(&iR);
 }
@@ -139,30 +144,14 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 	vF.init();
 	if(!pROI)return vF;
 
-	int nX=0;
-	int nY=0;
-	for(int i=pROI->y; i<pROI->w; i++)
-	{
-		for(int j=pROI->x; j<pROI->z; j++)
-		{
-			Vec2f v = m_mFlow.at<Vec2f>(i,j);
+	if(m_mFlow[0].empty())return vF;
+	if(m_mFlow[1].empty())return vF;
 
-			if(v.val[0] != 0.0)
-			{
-				vF.x += v.val[0];
-				nX++;
-			}
+	Rect r;
+	vInt42rect(*pROI, r);
 
-			if(v.val[1] != 0.0)
-			{
-				vF.y += v.val[1];
-				nY++;
-			}
-		}
-	}
-
-	if(nX>0)vF.x /= (double)nX;
-	if(nY>0)vF.y /= (double)nY;
+	vF.x = medianMat(m_mFlow[0](r), 100, 10.0, true, false);
+	vF.y = medianMat(m_mFlow[1](r), 100, 10.0, true, false);
 
 	return vF;
 }
@@ -173,18 +162,12 @@ bool _DenseFlow::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_T(!m_bShowFlow);
-	IF_F(m_gFlow.empty());
+	IF_F(m_mFlow[0].empty());
+	IF_F(m_mFlow[1].empty());
 
-    GpuMat planes[2];
-    cuda::split(m_gFlow, planes);
-
-    Mat flowx(planes[0]);
-    Mat flowy(planes[1]);
-
-    Mat out;
-    drawOpticalFlow(flowx, flowy, out, 10);
-    imshow(*this->getName(), out);
+    Mat mF;
+    drawOpticalFlow(m_mFlow[0], m_mFlow[1], mF, 10);
+    imshow(*this->getName(), mF);
 
 	return true;
 }

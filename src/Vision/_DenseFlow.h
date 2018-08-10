@@ -50,9 +50,7 @@ public:
 	FrameGroup*						m_pGrayFrames;
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	GpuMat							m_gFlow;
-	Mat								m_mFlow;
-	bool							m_bShowFlow;
-
+	Mat								m_mFlow[2];
 };
 
 }

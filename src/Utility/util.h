@@ -10,22 +10,56 @@ using namespace std;
 
 namespace kai
 {
-inline void pack_uint32(void* pBuf, uint32_t v)
+
+inline double medianMat(cv::Mat mIn, int nHist, float fRange, bool bUniform, bool bAccum)
 {
-  uint32_t v32 = htonl(v);
-  memcpy(pBuf, &v32, sizeof(uint32_t));
+	// COMPUTE HISTOGRAM OF SINGLE CHANNEL MATRIX
+	float range[] = { 0, fRange };
+	const float* histRange = { range };
+//	bool uniform = true;
+//	bool accumulate = false;
+	Mat mHist;
+	calcHist(&mIn, 1, 0, Mat(), mHist, 1, &nHist, &histRange, bUniform, bAccum);
+
+	// COMPUTE CUMULATIVE DISTRIBUTION FUNCTION (CDF)
+	Mat cdf;
+	mHist.copyTo(cdf);
+	for (int i = 1; i <= nHist - 1; i++)
+	{
+		cdf.at<float>(i) += cdf.at<float>(i - 1);
+	}
+	cdf /= mIn.total();
+
+	// COMPUTE MEDIAN
+	double medianVal;
+	for (int i = 0; i <= nHist - 1; i++)
+	{
+		if (cdf.at<float>(i) >= 0.5)
+		{
+			medianVal = i;
+			break;
+		}
+	}
+
+	return medianVal / nHist;
 }
 
-inline uint32_t unpack_uint32 (const void* pBuf)
+inline void pack_uint32(void* pBuf, uint32_t v)
 {
-  uint32_t v32 = 0;
-  memcpy(&v32, pBuf, sizeof (uint32_t));
-  return ntohl(v32);
+	uint32_t v32 = htonl(v);
+	memcpy(pBuf, &v32, sizeof(uint32_t));
+}
+
+inline uint32_t unpack_uint32(const void* pBuf)
+{
+	uint32_t v32 = 0;
+	memcpy(&v32, pBuf, sizeof(uint32_t));
+	return ntohl(v32);
 }
 
 inline string getFileDir(string file)
 {
-	return file.erase(file.find_last_of('/')+1, string::npos);
+	return file.erase(file.find_last_of('/') + 1, string::npos);
 }
 
 inline string checkDirName(string& dir)
@@ -39,24 +73,25 @@ inline string checkDirName(string& dir)
 inline uint32_t getTimeBootMs()
 {
 	// get number of milliseconds since boot
-    struct timespec tFromBoot;
-    clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
+	struct timespec tFromBoot;
+	clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 
-    return tFromBoot.tv_sec*1000 + tFromBoot.tv_nsec/1000000;
+	return tFromBoot.tv_sec * 1000 + tFromBoot.tv_nsec / 1000000;
 }
 
 inline uint64_t getTimeUsec()
 {
 	struct timeval tStamp;
 	gettimeofday(&tStamp, NULL);
-	uint64_t time = (uint64_t) tStamp.tv_sec * (uint64_t) 1000000 + tStamp.tv_usec;
+	uint64_t time = (uint64_t) tStamp.tv_sec * (uint64_t) 1000000
+			+ tStamp.tv_usec;
 
 	return time;
 }
 
 inline double NormRand(void)
 {
-	return ((double)rand()) / ((double)RAND_MAX);
+	return ((double) rand()) / ((double) RAND_MAX);
 }
 
 inline string uuid(void)
@@ -73,25 +108,29 @@ inline string uuid(void)
 
 inline int small(int a, int b)
 {
-	if(a>b)return b;
+	if (a > b)
+		return b;
 	return a;
 }
 
 inline int big(int a, int b)
 {
-	if(a>b)return a;
+	if (a > b)
+		return a;
 	return b;
 }
 
 inline double small(double a, double b)
 {
-	if(a>b)return b;
+	if (a > b)
+		return b;
 	return a;
 }
 
 inline double big(double a, double b)
 {
-	if(a>b)return a;
+	if (a > b)
+		return a;
 	return b;
 }
 
