@@ -74,6 +74,18 @@
 }
 
 {
+	"name":"df",
+	"class":"_DenseFlow",
+	"FPS":10,
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"bShowFlow":1,
+	"w":320,
+	"h":240,
+}
+
+{
 	"name":"yl",
 	"class":"_YOLO",
 	"bInst":1,
@@ -98,6 +110,7 @@
 	"bDrawStatistics":0,
 	"bDrawObjClass":0,
 	"bDrawObjVelo":0,
+	"bDrawObjSpeed":1,
 	"rX":0.0,
 	"rY":0.05,
 	"rZ":0.8,
@@ -135,7 +148,7 @@
 			"Window":"OKview",
 			"_ObjectBase":"yl",
 		}
-		
+				
 		{
 			"name":"trSpeed",
 			"class":"Traffic_speed",
@@ -143,23 +156,9 @@
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"Traffic_base":"trBase",
-			"scaleBBox_x":0.8,
-			"scaleBBox_y":0.25,
-			"dist":10.0,
-			{
-				"name":"barFrom",
-				"x":0.55,
-				"y":0.6,
-				"z":0.65,
-				"w":0.605,
-			}
-			{
-				"name":"barTo",
-				"x":0.61,
-				"y":0.39,
-				"z":0.67,
-				"w":0.395,
-			}
+			"_DenseFlow":"df",
+			"min":0.005,
+			"max":0.2;
 		}
 		
 		{

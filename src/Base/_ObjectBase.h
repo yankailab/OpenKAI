@@ -31,8 +31,8 @@ struct OBJECT
 	double		m_dist;
 	vDouble3	m_velo;
 	uint64_t	m_trackID;
-	double		m_speed;
 	_SingleTracker*	m_pTracker;
+	double		m_speed;
 	vInt2		m_camSize;
 	int	 		m_topClass;		//most probable class
 	double		m_topProb;
@@ -253,6 +253,7 @@ public:
 	double m_drawVeloScale;
 	bool m_bDrawObjClass;
 	bool m_bDrawObjVelo;
+	bool m_bDrawObjSpeed;
 
 };
 

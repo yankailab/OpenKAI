@@ -39,6 +39,7 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
 	m_bDrawObjVelo = false;
+	m_bDrawObjSpeed = false;
 
 }
 
@@ -94,6 +95,7 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, drawVeloScale);
 	KISSm(pK, bDrawObjClass);
 	KISSm(pK, bDrawObjVelo);
+	KISSm(pK, bDrawObjSpeed);
 
 	string pClassList[OBJECT_N_CLASS];
 	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
@@ -283,6 +285,17 @@ bool _ObjectBase::draw(void)
 			{
 				putText(*pMat, oName,
 						Point(r.x + 15, r.y + 25),
+						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
+			}
+		}
+
+		//class
+		if(m_bDrawObjSpeed)
+		{
+			if (pO->m_speed>0)
+			{
+				putText(*pMat, f2str(pO->m_speed),
+						Point(r.x + 15, r.y + 50),
 						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
 			}
 		}

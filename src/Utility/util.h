@@ -83,6 +83,18 @@ inline int big(int a, int b)
 	return b;
 }
 
+inline double small(double a, double b)
+{
+	if(a>b)return b;
+	return a;
+}
+
+inline double big(double a, double b)
+{
+	if(a>b)return a;
+	return b;
+}
+
 inline double Hdg(double anyDeg)
 {
 	while (anyDeg > 360)
