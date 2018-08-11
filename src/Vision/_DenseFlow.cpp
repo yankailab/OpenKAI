@@ -156,6 +156,23 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 	return vF;
 }
 
+vDouble2 _DenseFlow::vFlow(vDouble2 p)
+{
+	vDouble2 vF;
+	vF.init();
+
+	if(m_mFlow[0].empty())return vF;
+	if(m_mFlow[1].empty())return vF;
+
+	int pX = p.x * m_w;
+	int pY = p.y * m_h;
+
+	vF.x = m_mFlow[0].at<double>(pY, pX);
+	vF.y = m_mFlow[1].at<double>(pY, pX);
+
+	return vF;
+}
+
 bool _DenseFlow::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());

@@ -124,9 +124,9 @@ void APcopter_arucoLanding::navigation(void)
 	m_D.size_y = 0;
 
 	//Change position to angles
-	m_D.angle_x = (float)((double)(m_oTarget.m_fBBox.x - cCenter.x) / (double)cSize.x)
+	m_D.angle_x = (float)((double)(m_oTarget.m_bb.x - cCenter.x) / (double)cSize.x)
 							* cAngle.x * DEG_RAD * m_orientation.x;
-	m_D.angle_y = (float)((double)(m_oTarget.m_fBBox.y - cCenter.y) / (double)cSize.y)
+	m_D.angle_y = (float)((double)(m_oTarget.m_bb.y - cCenter.y) / (double)cSize.y)
 							* cAngle.y * DEG_RAD * m_orientation.y;
 
 	//Use depth if available
@@ -148,7 +148,7 @@ bool APcopter_arucoLanding::draw(void)
 
 	if (m_bLocked)
 	{
-		circle(*pMat, Point(m_oTarget.m_fBBox.x, m_oTarget.m_fBBox.y),
+		circle(*pMat, Point(m_oTarget.m_bb.x, m_oTarget.m_bb.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
 		msg = "Target tag = " + i2str(m_oTarget.m_topClass)

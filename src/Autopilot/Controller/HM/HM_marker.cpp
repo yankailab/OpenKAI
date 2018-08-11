@@ -76,8 +76,8 @@ void HM_marker::update(void)
 	{
 		OBJECT* pO = m_pDet->at(i);
 		IF_CONT(!pO->bClass(m_iMarkerClass));
-		IF_CONT(pO->m_fBBox.area() < m_minSize);
-		IF_CONT(pO->m_fBBox.area() > m_maxSize);
+		IF_CONT(pO->m_bb.area() < m_minSize);
+		IF_CONT(pO->m_bb.area() > m_maxSize);
 
 		m_obj = *pO;
 		m_rpmSteer = abs(m_rpmSteer);
@@ -107,8 +107,13 @@ bool HM_marker::draw(void)
 
 	IF_T(!m_obj.bClass(m_iMarkerClass));
 
+	vInt2 cSize;
+	cSize.x = pMat->cols;
+	cSize.y = pMat->rows;
+	vInt4 iBB = m_obj.iBBox(cSize);
+
 	Rect r;
-	vInt42rect(m_obj.m_bbox, r);
+	vInt42rect(iBB, r);
 	rectangle(*pMat, r, Scalar(0, 255, 255), 10);
 
 	return true;

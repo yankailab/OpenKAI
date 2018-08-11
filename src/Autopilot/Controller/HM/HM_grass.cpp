@@ -77,17 +77,17 @@ bool HM_grass::link(void)
 	OBJECT gO;
 
 	gO.init();
-	gO.m_fBBox = m_grassBoxL;
+	gO.m_bb = m_grassBoxL;
 	m_pGrassL = m_pDet->add(&gO);
 	NULL_F(m_pGrassL);
 
 	gO.init();
-	gO.m_fBBox = m_grassBoxF;
+	gO.m_bb = m_grassBoxF;
 	m_pGrassF = m_pDet->add(&gO);
 	NULL_F(m_pGrassF);
 
 	gO.init();
-	gO.m_fBBox = m_grassBoxR;
+	gO.m_bb = m_grassBoxR;
 	m_pGrassR = m_pDet->add(&gO);
 	NULL_F(m_pGrassR);
 
@@ -164,20 +164,23 @@ bool HM_grass::draw(void)
 	Rect r;
 	Scalar col;
 	int bold = 2;
+	vInt2 cSize;
+	cSize.x = pMat->cols;
+	cSize.y = pMat->rows;
 
-	vInt42rect(m_pGrassL->m_bbox, r);
+	vInt42rect(m_pGrassL->iBBox(cSize), r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassL->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);
 	rectangle(*pMat, r, col, bold);
 
-	vInt42rect(m_pGrassF->m_bbox, r);
+	vInt42rect(m_pGrassF->iBBox(cSize), r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassF->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);
 	rectangle(*pMat, r, col, bold);
 
-	vInt42rect(m_pGrassR->m_bbox, r);
+	vInt42rect(m_pGrassR->iBBox(cSize), r);
 	col = Scalar(200, 200, 200);
 	if (m_pGrassR->bClass(m_iGrassClass))
 		col = Scalar(0, 255, 0);

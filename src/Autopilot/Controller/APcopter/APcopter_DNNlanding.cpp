@@ -54,13 +54,13 @@ void APcopter_DNNlanding::landing(void)
 {
 	NULL_(m_pAP);
 	NULL_(m_pAI);
-	_VisionBase* pStream = m_pAI->m_pVision;
-	NULL_(pStream);
+	_VisionBase* pVision = m_pAI->m_pVision;
+	NULL_(pVision);
 
 	vInt2 cSize;
 	vInt2 cCenter;
 	vDouble2 cAngle;
-	pStream->info(&cSize, &cCenter, &cAngle);
+	pVision->info(&cSize, &cCenter, &cAngle);
 
 	vInt4 targetBB;
 	targetBB.init();
@@ -74,9 +74,9 @@ void APcopter_DNNlanding::landing(void)
 		return;
 	}
 
-	targetBB = pO->m_bbox;
-	m_target.m_targetPos.x = pO->m_bbox.midX();
-	m_target.m_targetPos.y = pO->m_bbox.midY();
+	targetBB = pO->iBBox(cSize);
+	m_target.m_targetPos.x = targetBB.midX();
+	m_target.m_targetPos.y = targetBB.midY();
 	m_target.m_bLocked = true;
 
 	//Change position to angles

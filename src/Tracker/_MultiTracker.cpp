@@ -83,6 +83,7 @@ void _MultiTracker::update(void)
 
 void _MultiTracker::addNewTarget(void)
 {
+	NULL_(m_pVision);
 	NULL_(m_pOB);
 	IF_(m_tStampOB >= m_pOB->m_tStamp);
 	m_tStampOB = m_pOB->m_tStamp;
@@ -95,10 +96,10 @@ void _MultiTracker::addNewTarget(void)
 		int j=0;
 		while((pO = m_obj.at(j++)) != NULL)
 		{
-			IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
+			IF_CONT(overlapRatio(&pO->m_bb, &pNewO->m_bb) < m_dMaxTrack);
 
 			//the obj is already being tracked, update its ROI size
-			pO->m_pTracker->updateROI(pNewO->m_bbox);
+			pO->m_pTracker->updateROI(pNewO->m_bb);
 			if(pNewO->m_topProb > pO->m_topProb)
 			{
 				pO->m_topProb = pNewO->m_topProb;
@@ -110,10 +111,10 @@ void _MultiTracker::addNewTarget(void)
 		IF_CONT(pO);
 
 		//verify if the target is completely inside screen
-		IF_CONT(pNewO->m_fBBox.x <= m_oBoundary);
-		IF_CONT(pNewO->m_fBBox.y <= m_oBoundary);
-		IF_CONT(pNewO->m_fBBox.z >= 1.0 - m_oBoundary);
-		IF_CONT(pNewO->m_fBBox.w >= 1.0 - m_oBoundary);
+		IF_CONT(pNewO->m_bb.x <= m_oBoundary);
+		IF_CONT(pNewO->m_bb.y <= m_oBoundary);
+		IF_CONT(pNewO->m_bb.z >= 1.0 - m_oBoundary);
+		IF_CONT(pNewO->m_bb.w >= 1.0 - m_oBoundary);
 
 		//new target found, allocate new tracker
 		_SingleTracker* pT = new _SingleTracker();
@@ -125,7 +126,7 @@ void _MultiTracker::addNewTarget(void)
 			delete pT;
 			continue;
 		}
-		if(!pT->updateROI(pNewO->m_bbox))
+		if(!pT->updateROI(pNewO->m_bb))
 		{
 			delete pT;
 			continue;
@@ -140,16 +141,15 @@ void _MultiTracker::updateTarget(void)
 {
 	OBJECT* pO;
 	int i=0;
+	vInt2 cSize = m_pVision->getSize();
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		_SingleTracker* pT = pO->m_pTracker;
 		IF_CONT(!pT);
 
-		pO->m_bbox.x = pT->m_ROI.x;
-		pO->m_bbox.y = pT->m_ROI.y;
-		pO->m_bbox.z = pT->m_ROI.x + pT->m_ROI.width;
-		pO->m_bbox.w = pT->m_ROI.y + pT->m_ROI.height;
-		pO->i2fBBox();
+		vInt4 iBB;
+		rect2vInt4(pT->m_ROI, iBB);
+		pO->setBB(iBB, cSize);
 
 		m_obj.add(pO);
 	}

@@ -110,6 +110,9 @@ void _MotionDetector::detect(void)
 	vector<Vec4i> vHierarchy;
 	findContours(m_mFG, vContours, vHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
 
+	vInt2 cSize;
+	cSize.x = m.cols;
+	cSize.y = m.rows;
 	OBJECT obj;
 	for( int i = 0; i < vContours.size(); i++ )
 	{
@@ -122,14 +125,13 @@ void _MotionDetector::detect(void)
 	    obj.setTopClass(-1,0);
 	    obj.m_tStamp = m_tStamp;
 
-   		obj.m_bbox.x = bbox.x;
-   		obj.m_bbox.y = bbox.y;
-   		obj.m_bbox.z = bbox.x + bbox.width;
-   		obj.m_bbox.w = bbox.y + bbox.height;
-   		obj.m_camSize.x = m.cols;
-	  	obj.m_camSize.y = m.rows;
+		vInt4 iBB;
+		iBB.x = bbox.x;
+		iBB.y = bbox.y;
+		iBB.z = bbox.x + bbox.width;
+		iBB.w = bbox.y + bbox.height;
+		obj.setBB(iBB,cSize);
 
-	  	obj.f2iBBox();
 	    add(&obj);
 	}
 }

@@ -30,6 +30,7 @@ public:
 
 	vDouble2 vFlow(vInt4* pROI);
 	vDouble2 vFlow(vDouble4* pROI);
+	vDouble2 vFlow(vDouble2 p);
 
 private:
 	bool isFlowCorrect(Point2f u);

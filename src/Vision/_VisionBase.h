@@ -36,6 +36,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
 
+	virtual vInt2 getSize(void);
 	virtual VISION_TYPE getType(void);
 	virtual Frame* BGR(void);
 	virtual Frame* HSV(void);

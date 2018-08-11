@@ -14,21 +14,20 @@ namespace kai
 inline double medianMat(cv::Mat mIn, int nHist, float fRange, bool bUniform, bool bAccum)
 {
 	// COMPUTE HISTOGRAM OF SINGLE CHANNEL MATRIX
-	float range[] = { 0, fRange };
+	float range[] = { -fRange, fRange };
 	const float* histRange = { range };
-//	bool uniform = true;
-//	bool accumulate = false;
 	Mat mHist;
 	calcHist(&mIn, 1, 0, Mat(), mHist, 1, &nHist, &histRange, bUniform, bAccum);
 
 	// COMPUTE CUMULATIVE DISTRIBUTION FUNCTION (CDF)
+	float ovTot = mIn.total();
 	Mat cdf;
 	mHist.copyTo(cdf);
 	for (int i = 1; i <= nHist - 1; i++)
 	{
 		cdf.at<float>(i) += cdf.at<float>(i - 1);
 	}
-	cdf /= mIn.total();
+	cdf *= ovTot;
 
 	// COMPUTE MEDIAN
 	double medianVal;
@@ -216,7 +215,41 @@ inline double overlapRatio(vInt4* pA, vInt4* pB)
 	return rX * rY;
 }
 
-inline void rect2vInt4(Rect& r, vInt4& v)
+inline double overlapRatio(vDouble4* pA, vDouble4* pB)
+{
+	if (!bOverlapped(pA, pB))
+		return 0.0;
+
+	vDouble4* pT;
+	if (pA->area() < pB->area())
+	{
+		SWAP(pA, pB, pT);
+	}
+
+	//pA > pB
+	double w = pA->width();
+	if (pB->width() > w)
+		w = pB->width();
+	double h = pA->height();
+	if (pB->height() > h)
+		h = pB->height();
+
+	double rX = pB->z - pA->x;
+	if (pB->x > pA->x)
+		rX = pA->z - pB->x;
+
+	rX /= w;
+
+	double rY = pB->w - pA->y;
+	if (pB->y > pA->y)
+		rY = pA->w - pB->y;
+
+	rY /= h;
+
+	return rX * rY;
+}
+
+inline void rect2vInt4(Rect r, vInt4& v)
 {
 	v.x = r.x;
 	v.y = r.y;
@@ -224,7 +257,15 @@ inline void rect2vInt4(Rect& r, vInt4& v)
 	v.w = r.y + r.height;
 }
 
-inline void vInt42rect(vInt4& v, Rect& r)
+inline void rect2vInt4(Rect2d r, vInt4& v)
+{
+	v.x = r.x;
+	v.y = r.y;
+	v.z = r.x + r.width;
+	v.w = r.y + r.height;
+}
+
+inline void vInt42rect(vInt4 v, Rect& r)
 {
 	r.x = v.x;
 	r.y = v.y;
@@ -232,7 +273,7 @@ inline void vInt42rect(vInt4& v, Rect& r)
 	r.height = v.w - v.y;
 }
 
-inline void vInt42rect(vInt4& v, Rect2d& r)
+inline void vInt42rect(vInt4 v, Rect2d& r)
 {
 	r.x = v.x;
 	r.y = v.y;

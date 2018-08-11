@@ -94,14 +94,20 @@ void _SingleTracker::update(void)
 	}
 }
 
-bool _SingleTracker::updateROI(vInt4 roi)
+bool _SingleTracker::updateROI(vDouble4& roi)
 {
 	NULL_F(m_pVision);
 	Mat* pMat = m_pVision->BGR()->m();
 	IF_F(pMat->empty());
 
+	vInt4 iRoi;
+	iRoi.x = roi.x * pMat->cols;
+	iRoi.y = roi.y * pMat->rows;
+	iRoi.z = roi.z * pMat->cols;
+	iRoi.w = roi.w * pMat->rows;
+
 	Rect2d rRoi;
-	vInt42rect(roi,rRoi);
+	vInt42rect(iRoi,rRoi);
 
 	IF_F(rRoi.width == 0 || rRoi.height == 0);
 

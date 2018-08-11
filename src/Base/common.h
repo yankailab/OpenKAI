@@ -12,6 +12,89 @@
 //Common structures
 namespace kai
 {
+struct vDouble2
+{
+	double x;
+	double y;
+
+	void init(void)
+	{
+		x = 0.0;
+		y = 0.0;
+	}
+
+	inline vDouble2 operator+(vDouble2& r)
+    {
+		vDouble2 v;
+		v.x = x + r.x;
+		v.y = y + r.y;
+		return v;
+	}
+
+	inline vDouble2 operator-(vDouble2& r)
+    {
+		vDouble2 v;
+		v.x = x - r.x;
+		v.y = y - r.y;
+		return v;
+	}
+
+	inline vDouble2 operator*(double r)
+    {
+		vDouble2 v;
+		v.x = x * r;
+		v.y = y * r;
+		return v;
+	}
+
+	inline vDouble2 operator/(double r)
+    {
+		vDouble2 v;
+		v.x = x / r;
+		v.y = y / r;
+		return v;
+	}
+
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
+	}
+
+	inline void operator+=(vDouble2& r)
+    {
+		x += r.x;
+		y += r.y;
+	}
+
+	inline void operator-=(vDouble2& r)
+    {
+		x -= r.x;
+		y -= r.y;
+	}
+
+	inline void operator*=(double r)
+    {
+		x *= r;
+		y *= r;
+	}
+
+	inline void operator/=(double r)
+    {
+		x /= r;
+		y /= r;
+	}
+
+	double mid(void)
+	{
+		return (x + y) * 0.5;
+	}
+
+	double len(void)
+	{
+		return sqrt(x*x + y*y);
+	}
+};
 
 struct vDouble4
 {
@@ -28,6 +111,24 @@ struct vDouble4
 	double midY(void)
 	{
 		return (y + w) * 0.5;
+	}
+
+	vDouble2 center(void)
+	{
+		vDouble2 vC;
+		vC.x = midX();
+		vC.y = midY();
+		return vC;
+	}
+
+	double width(void)
+	{
+		return z - x;
+	}
+
+	double height(void)
+	{
+		return w - y;
 	}
 
 	double area(void)
@@ -216,85 +317,6 @@ struct vDouble3
 	double len(void)
 	{
 		return sqrt(x*x + y*y + z*z);
-	}
-};
-
-struct vDouble2
-{
-	double x;
-	double y;
-
-	void init(void)
-	{
-		x = 0.0;
-		y = 0.0;
-	}
-
-	inline vDouble2 operator+(vDouble2& r)
-    {
-		vDouble2 v;
-		v.x = x + r.x;
-		v.y = y + r.y;
-		return v;
-	}
-
-	inline vDouble2 operator-(vDouble2& r)
-    {
-		vDouble2 v;
-		v.x = x - r.x;
-		v.y = y - r.y;
-		return v;
-	}
-
-	inline vDouble2 operator*(double r)
-    {
-		vDouble2 v;
-		v.x = x * r;
-		v.y = y * r;
-		return v;
-	}
-
-	inline vDouble2 operator/(double r)
-    {
-		vDouble2 v;
-		v.x = x / r;
-		v.y = y / r;
-		return v;
-	}
-
-	inline void operator=(double r)
-    {
-		x = r;
-		y = r;
-	}
-
-	inline void operator+=(vDouble2& r)
-    {
-		x += r.x;
-		y += r.y;
-	}
-
-	inline void operator-=(vDouble2& r)
-    {
-		x -= r.x;
-		y -= r.y;
-	}
-
-	inline void operator*=(double r)
-    {
-		x *= r;
-		y *= r;
-	}
-
-	inline void operator/=(double r)
-    {
-		x /= r;
-		y /= r;
-	}
-
-	double len(void)
-	{
-		return sqrt(x*x + y*y);
 	}
 };
 

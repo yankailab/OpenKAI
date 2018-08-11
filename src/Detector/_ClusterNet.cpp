@@ -86,10 +86,10 @@ bool _ClusterNet::link(void)
 		for (j = 0; j < m_size.x; j++)
 		{
 			mO.init();
-			mO.m_fBBox.x = m_area.x + j * m_dW * m_aW;
-			mO.m_fBBox.z = mO.m_fBBox.x + m_w * m_aW;
-			mO.m_fBBox.y = m_area.y + i * m_dH * m_aH;
-			mO.m_fBBox.w = mO.m_fBBox.y + m_h * m_aH;
+			mO.m_bb.x = m_area.x + j * m_dW * m_aW;
+			mO.m_bb.z = mO.m_bb.x + m_w * m_aW;
+			mO.m_bb.y = m_area.y + i * m_dH * m_aH;
+			mO.m_bb.w = mO.m_bb.y + m_h * m_aH;
 
 			m_ppObj[k] = m_pDet->add(&mO);
 			NULL_F(m_ppObj[k]);
@@ -139,7 +139,7 @@ void _ClusterNet::cluster(void)
 	int y, x;
 	for (x = 0; x < m_nObj; x++)
 	{
-		m_ppObj[x]->m_bCluster = false;
+//		m_ppObj[x]->m_bCluster = false;
 	}
 
 	for (y = 0; y < m_size.y; y++)
@@ -154,11 +154,10 @@ void _ClusterNet::cluster(void)
 			IF_CONT(b.x < 0);
 
 			OBJECT o = *pO;
-			o.m_fBBox.x = m_area.x + b.x * m_dW * m_aW;
-			o.m_fBBox.z = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
-			o.m_fBBox.y = m_area.y + b.y * m_dH * m_aH;
-			o.m_fBBox.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
-			o.f2iBBox();
+			o.m_bb.x = m_area.x + b.x * m_dW * m_aW;
+			o.m_bb.z = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
+			o.m_bb.y = m_area.y + b.y * m_dH * m_aH;
+			o.m_bb.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
 			add(&o);
 
 			int i, j;
@@ -166,7 +165,7 @@ void _ClusterNet::cluster(void)
 			{
 				for (i = b.x; i < b.z; i++)
 				{
-					m_ppObj[m_size.x * j + i]->m_bCluster = true;
+//					m_ppObj[m_size.x * j + i]->m_bCluster = true;
 				}
 			}
 		}
@@ -191,12 +190,12 @@ vInt4 _ClusterNet::explore(int x, int y, int iClass)
 
 	if (!pO)
 		return vB;
-	if (pO->m_bCluster)
-		return vB;
+//	if (pO->m_bCluster)
+//		return vB;
 	if (pO->m_topClass != iClass)
 		return vB;
 
-	pO->m_bCluster = true;
+//	pO->m_bCluster = true;
 	vB.x = x;
 	vB.y = y;
 	vB.z = x;

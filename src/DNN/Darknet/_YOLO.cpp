@@ -111,6 +111,10 @@ void _YOLO::detect(void)
 	Rect rRoi;
 	vInt42rect(iRoi, rRoi);
 
+	vInt2 cSize;
+	cSize.x = mBGR.cols;
+	cSize.y = mBGR.rows;
+
 	IplImage ipl = mBGR(rRoi);
 	int nDet = yoloUpdate(&ipl,
 						  m_pYoloObj,
@@ -130,23 +134,12 @@ void _YOLO::detect(void)
 		obj.setClassMask(pYO->m_mClass);
 		obj.setTopClass(pYO->m_topClass, (double) pYO->m_topProb);
 
-		obj.m_bbox.x = rRoi.x + rRoi.width * pYO->m_l;
-		obj.m_bbox.y = rRoi.y + rRoi.height * pYO->m_t;
-		obj.m_bbox.z = rRoi.x + rRoi.width * pYO->m_r;
-		obj.m_bbox.w = rRoi.y + rRoi.height * pYO->m_b;
-
-		obj.m_camSize.x = mBGR.cols;
-		obj.m_camSize.y = mBGR.rows;
-		obj.i2fBBox();
-
-		if (obj.m_bbox.x < 0)
-			obj.m_bbox.x = 0;
-		if (obj.m_bbox.y < 0)
-			obj.m_bbox.y = 0;
-		if (obj.m_bbox.z > obj.m_camSize.x)
-			obj.m_bbox.z = obj.m_camSize.x;
-		if (obj.m_bbox.w > obj.m_camSize.y)
-			obj.m_bbox.w = obj.m_camSize.y;
+		vInt4 iBB;
+		iBB.x = rRoi.x + rRoi.width * pYO->m_l;
+		iBB.y = rRoi.y + rRoi.height * pYO->m_t;
+		iBB.z = rRoi.x + rRoi.width * pYO->m_r;
+		iBB.w = rRoi.y + rRoi.height * pYO->m_b;
+		obj.setBB(iBB,cSize);
 
 		this->add(&obj);
 		LOG_I("Class: " + i2str(obj.m_topClass));

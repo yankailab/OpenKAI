@@ -16,6 +16,11 @@
 namespace kai
 {
 
+enum threadMode
+{
+	mode_thread, mode_noThread, mode_batch
+};
+
 class _ThreadBase: public BASE
 {
 public:

@@ -29,7 +29,7 @@ public:
 	bool start(void);
 
 	void createTracker(void);
-	bool updateROI(vInt4 roi);
+	bool updateROI(vDouble4& roi);
 	bool bTracking(void);
 
 private:

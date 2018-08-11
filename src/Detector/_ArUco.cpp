@@ -103,21 +103,18 @@ void _ArUco::detect(void)
 		Point2f pLB = vvCorner[i][3];
 
 		// center position
-		obj.m_fBBox.x = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
-		obj.m_fBBox.y = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
+		obj.m_bb.x = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
+		obj.m_bb.y = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
 
 		// radius
-		dx = obj.m_fBBox.x - pLT.x;
-		dy = obj.m_fBBox.y - pLT.y;
-		obj.m_fBBox.z = sqrt(dx*dx + dy*dy);
+		dx = obj.m_bb.x - pLT.x;
+		dy = obj.m_bb.y - pLT.y;
+		obj.m_bb.z = sqrt(dx*dx + dy*dy);
 
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		obj.m_fBBox.w = -atan2(dx,dy) * RAD_DEG;
-
-		obj.m_camSize.x = m.cols;
-		obj.m_camSize.y = m.rows;
+		obj.m_bb.w = -atan2(dx,dy) * RAD_DEG;
 
 		add(&obj);
 		LOG_I("ID: "+ i2str(obj.m_topClass));
@@ -138,15 +135,15 @@ bool _ArUco::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_fBBox.x, pO->m_fBBox.y);
-		circle(*pMat, pCenter, pO->m_fBBox.z, Scalar(0, 255, 0), 2);
+		Point pCenter = Point(pO->m_bb.x, pO->m_bb.y);
+		circle(*pMat, pCenter, pO->m_bb.z, Scalar(0, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_fBBox.w),
+		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_bb.w),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 
-		double rad = -pO->m_fBBox.w * DEG_RAD;
-		Point pD = Point(pO->m_fBBox.z*sin(rad), pO->m_fBBox.z*cos(rad));
+		double rad = -pO->m_bb.w * DEG_RAD;
+		Point pD = Point(pO->m_bb.z*sin(rad), pO->m_bb.z*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 

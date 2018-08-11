@@ -276,6 +276,14 @@ Mat* _VisionBase::K(void)
 	return &m_K;
 }
 
+vInt2 _VisionBase::getSize(void)
+{
+	vInt2 s;
+	s.x = m_w;
+	s.y = m_h;
+	return s;
+}
+
 VISION_TYPE _VisionBase::getType(void)
 {
 	return m_type;

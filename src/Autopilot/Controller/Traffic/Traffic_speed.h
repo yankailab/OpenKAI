@@ -27,8 +27,12 @@ public:
 	uint64_t		m_tStampOB;
 
 	double			m_avrSpeed;
-	double			m_min;
-	double			m_max;
+	double			m_minArea;
+	double			m_maxArea;
+
+	bool			m_bDrawObjVopt;
+	double			m_drawVscale;
+
 };
 
 }

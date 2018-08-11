@@ -138,8 +138,11 @@ bool VEK_follow::draw(void)
 	pWin->addMsg(&msg);
 
 	NULL_T(m_pTarget);
+	vInt2 cSize;
+	cSize.x = pMat->cols;
+	cSize.y = pMat->rows;
 	Rect r;
-	vInt42rect(m_pTarget->m_bbox, r);
+	vInt42rect(m_pTarget->iBBox(cSize), r);
 	rectangle(*pMat, r, Scalar(0, 0, 255), 2);
 
 	return true;

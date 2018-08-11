@@ -19,39 +19,28 @@
 namespace kai
 {
 
-enum detectorMode
-{
-	det_thread, det_noThread, det_batch
-};
-
 struct OBJECT
 {
-	vDouble4	m_fBBox;
-	vInt4		m_bbox;
+	vDouble4	m_bb;
 	double		m_dist;
-	vDouble3	m_velo;
+	vDouble2	m_vOpt;
+	vDouble2	m_vTrack;
 	uint64_t	m_trackID;
 	_SingleTracker*	m_pTracker;
-	double		m_speed;
-	vInt2		m_camSize;
 	int	 		m_topClass;		//most probable class
 	double		m_topProb;
 	uint64_t 	m_mClass;		//all candidate class mask
-	bool	 	m_bCluster;		//clustered class mask
 	int64_t 	m_tStamp;
 
 	void init(void)
 	{
-		m_fBBox.init();
-		m_bbox.init();
-		m_camSize.init();
+		m_bb.init();
 		m_dist = -1.0;
-		m_velo.init();
+		m_vOpt.init();
+		m_vTrack.init();
 		m_trackID = 0;
-		m_speed = 0.0;
 		m_pTracker = NULL;
 		m_tStamp = -1;
-		m_bCluster = false;
 		resetClass();
 	}
 
@@ -89,23 +78,26 @@ struct OBJECT
 		m_mClass = 0;
 	}
 
-	void f2iBBox(void)
+	vInt4 iBBox(vInt2 cSize)
 	{
-		m_bbox.x = m_fBBox.x * m_camSize.x;
-		m_bbox.z = m_fBBox.z * m_camSize.x;
-		m_bbox.y = m_fBBox.y * m_camSize.y;
-		m_bbox.w = m_fBBox.w * m_camSize.y;
+		vInt4 iBB;
+		iBB.x = m_bb.x * cSize.x;
+		iBB.z = m_bb.z * cSize.x;
+		iBB.y = m_bb.y * cSize.y;
+		iBB.w = m_bb.w * cSize.y;
+
+		return iBB;
 	}
 
-	void i2fBBox(void)
+	void setBB(vInt4 iBB, vInt2 cSize)
 	{
 		double base;
-		base = 1.0/m_camSize.x;
-		m_fBBox.x = m_bbox.x * base;
-		m_fBBox.z = m_bbox.z * base;
-		base = 1.0/m_camSize.y;
-		m_fBBox.y = m_bbox.y * base;
-		m_fBBox.w = m_bbox.w * base;
+		base = 1.0/cSize.x;
+		m_bb.x = iBB.x * base;
+		m_bb.z = iBB.z * base;
+		base = 1.0/cSize.y;
+		m_bb.y = iBB.y * base;
+		m_bb.w = iBB.w * base;
 	}
 };
 
@@ -132,6 +124,7 @@ struct OBJECT_ARRAY
 	OBJECT* at(int i)
 	{
 		IF_N(i >= m_nObj);
+		IF_N(i < 0);
 		return &m_pObj[i];
 	}
 
@@ -226,11 +219,11 @@ public:
 	bool m_bActive;
 	bool m_bReady;
 	uint64_t m_tStamp;
-	detectorMode m_mode;
+	threadMode m_mode;
 	uint64_t m_trackID;
 
 	//config
-	double m_minOverlap;
+	double m_dMaxTrack;
 	double m_minConfidence;
 	double m_minArea;
 	double m_maxArea;
@@ -250,10 +243,9 @@ public:
 	vInt3 m_classLegendPos;
 	bool m_bDrawSegment;
 	double m_segmentBlend;
-	double m_drawVeloScale;
+	double m_drawVscale;
 	bool m_bDrawObjClass;
-	bool m_bDrawObjVelo;
-	bool m_bDrawObjSpeed;
+	bool m_bDrawObjVtrack;
 
 };
 

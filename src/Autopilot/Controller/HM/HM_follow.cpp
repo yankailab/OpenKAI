@@ -85,16 +85,16 @@ void HM_follow::update(void)
 	{
 		OBJECT* pO = m_pDet->at(i);
 		IF_CONT(!pO->bClassMask(m_mTargetClass));
-		IF_CONT(pO->m_fBBox.area() < m_minSize);
-		IF_CONT(pO->m_fBBox.area() > m_maxSize);
-		IF_CONT(pO->m_fBBox.area() < m_obj.m_fBBox.area());
+		IF_CONT(pO->m_bb.area() < m_minSize);
+		IF_CONT(pO->m_bb.area() > m_maxSize);
+		IF_CONT(pO->m_bb.area() < m_obj.m_bb.area());
 
 		m_obj = *pO;
 	}
 
 	IF_(m_obj.m_topClass < 0);
 
-	double pX = m_targetX - m_obj.m_fBBox.midX();
+	double pX = m_targetX - m_obj.m_bb.midX();
 	if(abs(pX) > m_rTargetX)
 	{
 		int rpmSteer = m_rpmSteer * pX;
@@ -122,8 +122,11 @@ bool HM_follow::draw(void)
 
 	IF_T(!m_obj.bClassMask(m_mTargetClass));
 
+	vInt2 cSize;
+	cSize.x = pMat->cols;
+	cSize.y = pMat->rows;
 	Rect r;
-	vInt42rect(m_obj.m_bbox, r);
+	vInt42rect(m_obj.iBBox(cSize), r);
 	rectangle(*pMat, r, Scalar(0, 255, 0), 10);
 
 	return true;

@@ -14,7 +14,7 @@ _ObjectBase::_ObjectBase()
 	m_trainedFile = "";
 	m_meanFile = "";
 	m_labelFile = "";
-	m_minOverlap = 1.0;
+	m_dMaxTrack = 1.0;
 	m_minConfidence = 0.0;
 	m_minArea = 0.0;
 	m_maxArea = 1.0;
@@ -28,9 +28,9 @@ _ObjectBase::_ObjectBase()
 
 	m_bActive = true;
 	m_bReady = false;
-	m_mode = det_thread;
+	m_mode = mode_thread;
 
-	m_drawVeloScale = 1.0;
+	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
@@ -38,8 +38,7 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.y = 150;
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
-	m_bDrawObjVelo = false;
-	m_bDrawObjSpeed = false;
+	m_bDrawObjVtrack = false;
 
 }
 
@@ -58,17 +57,17 @@ bool _ObjectBase::init(void* pKiss)
 	F_INFO(pK->v("mode", &iName));
 	if (iName == "noThread")
 	{
-		m_mode = det_noThread;
+		m_mode = mode_noThread;
 		bSetActive(false);
 	}
 	else if (iName == "batch")
 	{
-		m_mode = det_batch;
+		m_mode = mode_batch;
 		bSetActive(false);
 	}
 
 	//general
-	KISSm(pK, minOverlap);
+	KISSm(pK, dMaxTrack);
 	KISSm(pK, minConfidence);
 	KISSm(pK, minArea);
 	KISSm(pK, maxArea);
@@ -92,10 +91,9 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, bDrawSegment);
 	KISSm(pK, segmentBlend);
 	KISSm(pK, bDrawStatistics);
-	KISSm(pK, drawVeloScale);
+	KISSm(pK, drawVscale);
 	KISSm(pK, bDrawObjClass);
-	KISSm(pK, bDrawObjVelo);
-	KISSm(pK, bDrawObjSpeed);
+	KISSm(pK, bDrawObjVtrack);
 
 	string pClassList[OBJECT_N_CLASS];
 	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
@@ -184,27 +182,38 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
-	double area = pNewO->m_fBBox.area();
+	double area = pNewO->m_bb.area();
 	IF_N(area < m_minArea);
 	IF_N(area > m_maxArea);
 
 	OBJECT* pO;
+	double minD = DBL_MAX;
+	int iD = -1;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(overlapRatio(&pO->m_bbox, &pNewO->m_bbox) < m_minOverlap);
+		double dX = pO->m_bb.midX() - pNewO->m_bb.midX();
+		double dY = pO->m_bb.midY() - pNewO->m_bb.midY();
+		double d = sqrt(dX * dX + dY * dY);
+
+		IF_CONT(d > m_dMaxTrack);
+		IF_CONT(d > minD);
 		IF_CONT(pO->m_topClass != pNewO->m_topClass);
 
-		pNewO->m_velo.x = pNewO->m_bbox.midX() - pO->m_bbox.midX();
-		pNewO->m_velo.y = pNewO->m_bbox.midY() - pO->m_bbox.midY();
-		pNewO->m_speed = pO->m_speed;
+		minD = d;
+		iD = i - 1;
+	}
+
+	pO = m_obj.at(iD);
+	if(pO)
+	{
+		pNewO->m_vTrack.x = pNewO->m_bb.midX() - pO->m_bb.midX();
+		pNewO->m_vTrack.y = pNewO->m_bb.midY() - pO->m_bb.midY();
 
 		if(pO->m_trackID>0)
 			pNewO->m_trackID = pO->m_trackID;
 		else
 			pNewO->m_trackID = m_trackID++;
-
-		break;
 	}
 
 	return m_obj.add(pNewO);
@@ -243,6 +252,9 @@ bool _ObjectBase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
+	vInt2 cSize;
+	cSize.x = pMat->cols;
+	cSize.y = pMat->rows;
 	Scalar oCol;
 	Scalar bCol = Scalar(100,100,100);
 	int col;
@@ -257,23 +269,24 @@ bool _ObjectBase::draw(void)
 
 		col = colStep * iClass;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
-		Point pC = Point(pO->m_bbox.midX(), pO->m_bbox.midY());
+
+		vInt4 iBB = pO->iBBox(cSize);
+		Point pC = Point(iBB.midX(), iBB.midY());
 
 		//trackID
 		if(pO->m_trackID > 0)
-		{
-			oCol = Scalar(255,255,0);
-		}
+			oCol += Scalar(100, 100, 100);
 
 		//bbox
 		Rect r;
-		vInt42rect(pO->m_bbox, r);
+		vInt42rect(iBB, r);
 		rectangle(*pMat, r, oCol, 1);
 
-		//velocity
-		if(m_bDrawObjVelo)
+		//vTrack
+		if(m_bDrawObjVtrack)
 		{
-			Point pV = Point(pO->m_velo.x * m_drawVeloScale, pO->m_velo.y * m_drawVeloScale);
+			Point pV = Point(pO->m_vTrack.x * cSize.x * m_drawVscale,
+							 pO->m_vTrack.y * cSize.x * m_drawVscale);
 			line(*pMat, pC, pC - pV, oCol, 1);
 		}
 
@@ -285,17 +298,6 @@ bool _ObjectBase::draw(void)
 			{
 				putText(*pMat, oName,
 						Point(r.x + 15, r.y + 25),
-						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
-			}
-		}
-
-		//class
-		if(m_bDrawObjSpeed)
-		{
-			if (pO->m_speed>0)
-			{
-				putText(*pMat, f2str(pO->m_speed),
-						Point(r.x + 15, r.y + 50),
 						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
 			}
 		}

@@ -77,7 +77,7 @@
 	"name":"df",
 	"class":"_DenseFlow",
 	"FPS":10,
-	"bInst":1,
+	"bInst":0,
 	"bDraw":0,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -105,12 +105,12 @@
 	"thresh":0.05,
 	"minArea":0.0001,
 	"maxArea":0.05,
-	"minOverlap":0.5,
+	"dMaxTrack":0.1,
 	"mode":"thread",
 	"bDrawStatistics":0,
 	"bDrawObjClass":0,
-	"bDrawObjVelo":0,
-	"bDrawObjSpeed":1,
+	"bDrawObjVtrack":1,
+	"drawVscale":1.0,
 	"rX":0.0,
 	"rY":0.05,
 	"rZ":0.8,
@@ -135,6 +135,7 @@
 	"_Automaton":"trState",
 	"bInst":1,
 	"FPS":30,
+	"bDraw":1,
 	"Window":"OKview",
 	
 	{
@@ -152,13 +153,15 @@
 		{
 			"name":"trSpeed",
 			"class":"Traffic_speed",
-			"bInst":1,
+			"bInst":0,
+			"bDraw":1,
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"Traffic_base":"trBase",
 			"_DenseFlow":"df",
-			"min":0.005,
-			"max":0.2;
+			"minArea":0.0,
+			"maxArea":0.3,
+			"drawVscale":100.0,
 		}
 		
 		{
