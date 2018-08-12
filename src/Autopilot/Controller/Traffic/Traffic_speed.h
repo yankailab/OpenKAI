@@ -3,7 +3,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
-#include "../../../Vision/_DenseFlow.h"
 #include "../../ActionBase.h"
 #include "Traffic_base.h"
 
@@ -21,16 +20,24 @@ public:
 	void update(void);
 	bool draw(void);
 
+private:
+	bool bInsideROI(vDouble4& bb);
+
 public:
 	Traffic_base*	m_pTB;
-	_DenseFlow*		m_pDF;
 	uint64_t		m_tStampOB;
+	OBJECT_DARRAY	m_obj;
+	OBJECT_DARRAY	m_objHdgAlert;
+	OBJECT_DARRAY	m_objSpeedAlert;
 
+	vector<Point2f>	m_vROI;
+	vDouble2		m_vHdgLimit;
+	vDouble2		m_vSpeedLimit;
+	double			m_kSpeed;
 	double			m_avrSpeed;
 	double			m_minArea;
 	double			m_maxArea;
 
-	bool			m_bDrawObjVopt;
 	double			m_drawVscale;
 
 };
