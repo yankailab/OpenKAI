@@ -8,12 +8,10 @@ Traffic_speed::Traffic_speed()
 	m_pTB = NULL;
 	m_tStampOB = 0;
 	m_avrSpeed = 0.0;
-	m_minArea = 0.0;
-	m_maxArea = 1.0;
 	m_drawVscale = 1.0;
 	m_obj.reset();
 	m_kSpeed = 1.0;
-
+	m_hdgMeasureMinSpeed = 3.0;
 	m_vHdgLimit.x = -1.0;
 	m_vHdgLimit.y = -1.0;
 	m_vSpeedLimit.x = -1.0;
@@ -31,10 +29,9 @@ bool Traffic_speed::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	pK->m_pInst = this;
 
-	KISSm(pK, minArea);
-	KISSm(pK, maxArea);
 	KISSm(pK, kSpeed);
 	KISSm(pK, drawVscale);
+	KISSm(pK, hdgMeasureMinSpeed);
 
 	if(pK->v("hdgFrom", &m_vHdgLimit.x))
 		m_vHdgLimit.x = Hdg(m_vHdgLimit.x);
@@ -92,9 +89,6 @@ void Traffic_speed::update(void)
 	double speed = 0.0;
 	while((pO = pOB->at(i++)) != NULL)
 	{
-		double a = pO->m_bb.area();
-		IF_CONT(a < m_minArea);
-		IF_CONT(a > m_maxArea);
 		IF_CONT(!bInsideROI(pO->m_bb));
 
 		m_obj.add(pO);
@@ -110,7 +104,7 @@ void Traffic_speed::update(void)
 		speed += s;
 
 		//heading
-		if(m_vHdgLimit.x >= 0.0 && s > 1.0)
+		if(m_vHdgLimit.x >= 0.0 && s > m_hdgMeasureMinSpeed)
 		{
 			double h = -atan2(pO->m_vTrack.x,
 							  -pO->m_vTrack.y) * RAD_DEG;
@@ -150,11 +144,6 @@ bool Traffic_speed::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
-
-	NULL_F(m_pTB);
-	_ObjectBase* pOB = m_pTB->m_pOB;
-	NULL_F(pOB);
-	NULL_F(pOB->m_pVision);
 
 	string msg = "avrSpeed=" + f2str(m_avrSpeed);
 	pWin->addMsg(&msg);

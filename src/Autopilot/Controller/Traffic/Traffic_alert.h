@@ -9,6 +9,36 @@
 namespace kai
 {
 
+struct TRAFFIC_ALERT
+{
+	uint64_t m_mClass;
+
+	void init(void)
+	{
+		m_mClass = 0;
+	}
+
+	bool addClass(int iClass)
+	{
+		IF_F(iClass < 0);
+
+		m_mClass |= (1<<iClass);
+
+		return true;
+	}
+
+	bool bAlert(int iClass)
+	{
+		IF_F(iClass < 0);
+		return m_mClass & (1<<iClass);
+	}
+
+	bool bAlert(uint64_t mClass)
+	{
+		return m_mClass & mClass;
+	}
+};
+
 class Traffic_alert: public ActionBase
 {
 public:
@@ -23,7 +53,9 @@ public:
 public:
 	Traffic_base*	m_pTB;
 	uint64_t		m_tStampOB;
-	double			m_avrSpeed;
+
+	OBJECT_DARRAY	m_obj;
+	TRAFFIC_ALERT	m_alert;
 };
 
 }

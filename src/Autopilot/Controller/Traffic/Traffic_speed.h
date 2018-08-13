@@ -32,12 +32,10 @@ public:
 
 	vector<Point2f>	m_vROI;
 	vDouble2		m_vHdgLimit;
+	double			m_hdgMeasureMinSpeed;
 	vDouble2		m_vSpeedLimit;
 	double			m_kSpeed;
 	double			m_avrSpeed;
-	double			m_minArea;
-	double			m_maxArea;
-
 	double			m_drawVscale;
 
 };
