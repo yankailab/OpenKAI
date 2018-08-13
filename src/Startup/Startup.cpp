@@ -27,6 +27,7 @@ Startup::Startup()
 	m_bRun = true;
 	m_key = 0;
 	m_bLog = false;
+	m_bStdErr = true;
 	m_rc = "";
 	m_cliMsg = "";
 	m_cliMsgLevel = -1;
@@ -54,12 +55,18 @@ bool Startup::start(Kiss* pKiss)
 	KISSm(pApp,bWindow);
 	KISSm(pApp,bDraw);
 	KISSm(pApp,bLog);
+	KISSm(pApp,bStdErr);
 	KISSm(pApp,waitKey);
 	KISSm(pApp,rc);
 
 	if(!m_rc.empty())
 	{
 		system(m_rc.c_str());
+	}
+
+	if(!m_bStdErr)
+	{
+		freopen("/dev/null", "w", stderr);
 	}
 
 	if(!m_bLog)

@@ -97,4 +97,35 @@ bool Traffic_alert::draw(void)
 	return true;
 }
 
+bool Traffic_alert::cli(int& iY)
+{
+	IF_F(!this->ActionBase::cli(iY));
+	NULL_F(m_pTB);
+	_ObjectBase* pOB = m_pTB->m_pOB;
+	NULL_F(pOB);
+
+	int nAlert = m_obj.size();
+	string msg = "nAlert=" + i2str(nAlert);
+
+	if(nAlert <= 0)
+	{
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		return true;
+	}
+
+	COL_ERROR;
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
+	{
+		msg = pOB->getClassName(pO->m_topClass);
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	}
+
+	return true;
+}
+
 }

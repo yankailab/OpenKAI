@@ -155,12 +155,20 @@ void _ObjectBase::updateStatistics(void)
 
 int _ObjectBase::getClassIdx(string& className)
 {
+	for(int i=0; i<m_nClass; i++)
+	{
+		if(m_pClassStatis[i].m_name == className)return i;
+	}
+
 	return -1;
 }
 
 string _ObjectBase::getClassName(int iClass)
 {
-	return "";
+	if(iClass < 0)return "";
+	if(iClass >= m_nClass)return "";
+
+	return m_pClassStatis[iClass].m_name;
 }
 
 bool _ObjectBase::bReady(void)
@@ -329,7 +337,7 @@ bool _ObjectBase::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
-	string msg = "nObj="+m_obj.size();
+	string msg = "nObj=" + i2str(m_obj.size());
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

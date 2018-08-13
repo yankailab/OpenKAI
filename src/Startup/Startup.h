@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application_Startup_H_
-#define OpenKAI_src_Application_Startup_H_
+#ifndef OpenKAI_src_Startup_Startup_H_
+#define OpenKAI_src_Startup_Startup_H_
 
 #include "../Base/common.h"
 #include "../Config/Module.h"
@@ -43,6 +43,7 @@ public:
 	bool	m_bDraw;
 	int		m_waitKey;
 	bool	m_bLog;
+	bool	m_bStdErr;
 	string	m_rc;
 
 	string	m_cliMsg;

@@ -49,6 +49,7 @@ public:
 	bool link(void);
 	void update(void);
 	bool draw(void);
+	bool cli(int& iY);
 
 public:
 	Traffic_base*	m_pTB;

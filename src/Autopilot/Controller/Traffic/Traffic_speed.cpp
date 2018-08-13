@@ -10,6 +10,8 @@ Traffic_speed::Traffic_speed()
 	m_avrSpeed = 0.0;
 	m_drawVscale = 1.0;
 	m_obj.reset();
+	m_objSpeedAlert.reset();
+	m_objHdgAlert.reset();
 	m_kSpeed = 1.0;
 	m_hdgMeasureMinSpeed = 3.0;
 	m_vHdgLimit.x = -1.0;
@@ -90,12 +92,12 @@ void Traffic_speed::update(void)
 	while((pO = pOB->at(i++)) != NULL)
 	{
 		IF_CONT(!bInsideROI(pO->m_bb));
-
 		m_obj.add(pO);
+		IF_CONT(pO->m_trackID <= 0);
 
 		//speed
 		double s = pO->m_vTrack.len()*m_kSpeed;
-		if(m_vSpeedLimit.x >= 0.0)
+		if(m_vSpeedLimit.x >= 0.0 && s >= 0.0)
 		{
 			if(s < m_vSpeedLimit.x || s > m_vSpeedLimit.y)
 				m_objSpeedAlert.add(pO);
@@ -148,7 +150,7 @@ bool Traffic_speed::draw(void)
 	string msg = "avrSpeed=" + f2str(m_avrSpeed);
 	pWin->addMsg(&msg);
 
-	Scalar col = Scalar(228, 228, 128);
+	Scalar col = Scalar(255, 255, 128);
 	Scalar colSpeedAlert = Scalar(0, 255, 255);
 	Scalar colHdgAlert = Scalar(0, 0, 255);
 
@@ -183,7 +185,7 @@ bool Traffic_speed::draw(void)
 	{
 		iBB = pO->iBBox(cSize);
 		vInt42rect(iBB, r);
-		rectangle(*pMat, r, colSpeedAlert, 1);
+		rectangle(*pMat, r, colSpeedAlert, 2);
 	}
 
 	//heading alert
@@ -192,7 +194,7 @@ bool Traffic_speed::draw(void)
 	{
 		iBB = pO->iBBox(cSize);
 		vInt42rect(iBB, r);
-		rectangle(*pMat, r, colHdgAlert, 1);
+		rectangle(*pMat, r, colHdgAlert, 2);
 	}
 
 	//ROI
@@ -207,7 +209,40 @@ bool Traffic_speed::draw(void)
 		pB.x *= cSize.x;
 		pB.y *= cSize.y;
 
-		line(*pMat, pA, pB, Scalar(255,255,200), 3, 8 );
+		line(*pMat, pA, pB, Scalar(255,255,200), 3, 10);
+	}
+
+	return true;
+}
+
+bool Traffic_speed::cli(int& iY)
+{
+	IF_F(!this->ActionBase::cli(iY));
+
+	string msg = "avrSpeed=" + f2str(m_avrSpeed);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	int nAlert;
+	COL_ERROR;
+
+	//speed alert
+	nAlert = m_objSpeedAlert.size();
+	if(nAlert>0)
+	{
+		msg = "nSpeedAlert=" + i2str(nAlert);
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	}
+
+	//heading alert
+	nAlert = m_objHdgAlert.size();
+	if(nAlert>0)
+	{
+		msg = "nHeadingAlert=" + i2str(nAlert);
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
 	}
 
 	return true;
