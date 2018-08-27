@@ -4,9 +4,9 @@
 	"appName":"Traffic_Monitor",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bStdErr":0,
-	"waitKey":100,
+	"waitKey":50,
 	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
@@ -14,7 +14,7 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":0,
+	"bFullScreen":1,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
@@ -22,9 +22,9 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
-	"deviceID":0,
+	"deviceID":1,
 	"width":1280,
 	"height":720,
 	"bFlip":0,
@@ -51,9 +51,11 @@
 	"name":"cam",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/sz.ts",
+	"videoFile":"/home/kai/Videos/jam.ts",
+	"_videoFile":"/home/kai/Videos/bike.ts",
+	"_videoFile":"/home/kai/Videos/night.ts",
 	"w":1280,
 	"h":720,
 	"fovW":60,
@@ -150,12 +152,33 @@
 			"hdgFrom":-1,
 			"hdgTo":-1,
 			"kSpeed":100.0,
+			"_speedFrom":0.0,
 			"speedFrom":0.2,
 			"speedTo":100.0,
 			"drawVscale":1.0,
 
 			{
 				"name":"ROI",
+				{
+					"x":0.0,
+					"y":0.0,
+				}
+				{
+					"x":1.0,
+					"y":0.0,
+				}
+				{
+					"x":1.0,
+					"y":1.0,
+				}
+				{
+					"x":0.0,
+					"y":1.0,
+				}
+			}
+			
+			{
+				"name":"_ROI",
 				{
 					"x":0.7,
 					"y":0.05,
@@ -177,6 +200,7 @@
 					"y":0.05,
 				}			
 			}
+			
 		}
 		
 		{
