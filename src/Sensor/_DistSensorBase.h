@@ -96,12 +96,12 @@ public:
 	bool link(void);
 	bool draw(void);
 	bool cli(int& iY);
+	void update(void);
 
 	double rMin(void);
 	double rMax(void);
 	void input(double deg, double d);
 	void input(double deg, double d, double a);
-	void update(void);
 	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);

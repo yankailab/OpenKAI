@@ -14,10 +14,6 @@ namespace kai
 
 _SingleTracker::_SingleTracker()
 {
-	m_pVision = NULL;
-	m_trackerType = "";
-	m_tStampBGR = 0;
-	m_bTracking = false;
 }
 
 _SingleTracker::~_SingleTracker()
@@ -28,11 +24,9 @@ _SingleTracker::~_SingleTracker()
 
 bool _SingleTracker::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_TrackerBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
-
-	KISSm(pK,trackerType);
 
 	return true;
 }
@@ -59,12 +53,8 @@ void _SingleTracker::createTracker(void)
 
 bool _SingleTracker::link(void)
 {
-	IF_F(!this->_ThreadBase::link());
+	IF_F(!this->_TrackerBase::link());
 	Kiss* pK = (Kiss*) m_pKiss;
-
-	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
 }
@@ -96,27 +86,14 @@ void _SingleTracker::update(void)
 
 bool _SingleTracker::updateROI(vDouble4& roi)
 {
-	NULL_F(m_pVision);
-	Mat* pMat = m_pVision->BGR()->m();
-	IF_F(pMat->empty());
-
-	vInt4 iRoi;
-	iRoi.x = roi.x * pMat->cols;
-	iRoi.y = roi.y * pMat->rows;
-	iRoi.z = roi.z * pMat->cols;
-	iRoi.w = roi.w * pMat->rows;
-
-	Rect2d rRoi;
-	vInt42rect(iRoi,rRoi);
-
-	IF_F(rRoi.width == 0 || rRoi.height == 0);
+	IF_F(!this->_TrackerBase::updateROI(roi));
 
 	if(!m_pTracker.empty())
 		m_pTracker.release();
 
 	createTracker();
-	m_pTracker->init(*pMat, rRoi);
-	m_ROI = rRoi;
+	Mat* pMat = m_pVision->BGR()->m();
+	m_pTracker->init(*pMat, m_ROI);
 	m_bTracking = true;
 
 	return true;
@@ -136,11 +113,6 @@ void _SingleTracker::track(void)
 	IF_(pMat->empty());
 
 	m_pTracker->update(*pMat, m_ROI);
-}
-
-bool _SingleTracker::bTracking(void)
-{
-	return m_bTracking;
 }
 
 }

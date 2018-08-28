@@ -164,9 +164,6 @@ void APcopter_thrust::update(void)
 		m_pwmAlt += (int)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
 
-	//TODO: collision avoid
-
-
 	if(!isActive())
 	{
 		resetAllPwm();

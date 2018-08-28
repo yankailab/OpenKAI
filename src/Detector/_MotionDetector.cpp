@@ -35,27 +35,27 @@ bool _MotionDetector::init(void* pKiss)
 	KISSm(pK, algorithm);
 	KISSm(pK, learningRate);
 
-	if(m_algorithm == "cnt")
-	{
-		m_pBS = cv::bgsegm::createBackgroundSubtractorCNT();
-	}
-	else if(m_algorithm == "gmg")
-	{
-		m_pBS = cv::bgsegm::createBackgroundSubtractorGMG();
-	}
-	else if(m_algorithm == "lsbp")
-	{
-		m_pBS = cv::bgsegm::createBackgroundSubtractorLSBP();
-	}
-	else if(m_algorithm == "mog")
-	{
-		m_pBS = cv::bgsegm::createBackgroundSubtractorMOG();
-	}
-	else
-	{
-		m_pBS = cv::bgsegm::createBackgroundSubtractorGSOC();
-	}
-
+//	if(m_algorithm == "cnt")
+//	{
+//		m_pBS = cv::bgsegm::createBackgroundSubtractorCNT();
+//	}
+//	else if(m_algorithm == "gmg")
+//	{
+//		m_pBS = cv::bgsegm::createBackgroundSubtractorGMG();
+//	}
+//	else if(m_algorithm == "lsbp")
+//	{
+//		m_pBS = cv::bgsegm::createBackgroundSubtractorLSBP();
+//	}
+//	else if(m_algorithm == "mog")
+//	{
+//		m_pBS = cv::bgsegm::createBackgroundSubtractorMOG();
+//	}
+//	else
+//	{
+//		m_pBS = cv::bgsegm::createBackgroundSubtractorGSOC();
+//	}
+//
 	return true;
 }
 

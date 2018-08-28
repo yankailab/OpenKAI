@@ -28,7 +28,7 @@ struct OBJECT
 	uint64_t	m_trackID;
 	_SingleTracker*	m_pTracker;
 	int	 		m_topClass;		//most probable class
-	double		m_topProb;
+	double		m_topProb;		//prob for the topClass
 	uint64_t 	m_mClass;		//all candidate class mask
 	int64_t 	m_tStamp;
 

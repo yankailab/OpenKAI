@@ -69,6 +69,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_SingleTracker);
 	ADD_MODULE(_MultiTracker);
 #endif
+#ifdef USE_OPENTRACKER
+	ADD_MODULE(_OpenTracker);
+#endif
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);
 	ADD_MODULE(_CaffeRegressionTrain);

@@ -1,34 +1,35 @@
 /*
- * _SingleTracker.h
+ * _OpenTracker.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Tracker__SingleTracker_H_
-#define OpenKAI_src_Tracker__SingleTracker_H_
+#ifndef OpenKAI_src_Tracker__OpenTracker_H_
+#define OpenKAI_src_Tracker__OpenTracker_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 #include "_TrackerBase.h"
 
-#ifdef USE_OPENCV_CONTRIB
+#ifdef USE_OPENTRACKER
+
+#include "eco.hpp"
+using namespace eco;
 
 namespace kai
 {
 
-class _SingleTracker: public _TrackerBase
+class _OpenTracker: public _TrackerBase
 {
 public:
-	_SingleTracker();
-	virtual	~_SingleTracker();
+	_OpenTracker();
+	virtual	~_OpenTracker();
 
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-
-	void createTracker(void);
 	bool updateROI(vDouble4& roi);
 
 private:
@@ -36,12 +37,13 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_SingleTracker*) This)->update();
+		((_OpenTracker*) This)->update();
 		return NULL;
 	}
 
 public:
-	Ptr<Tracker> m_pTracker;
+    ECO m_eco;
+
 };
 
 }
