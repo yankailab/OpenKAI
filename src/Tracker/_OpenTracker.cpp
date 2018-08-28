@@ -26,6 +26,8 @@ bool _OpenTracker::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
+	m_param.max_score_threshhold = 0.2; // you can also change other parameters, check file: eco/parameters.hpp
+
 	return true;
 }
 
@@ -69,7 +71,7 @@ bool _OpenTracker::updateROI(vDouble4& roi)
 	createTracker();
 	Mat* pMat = m_pVision->BGR()->m();
 	Rect2f r = m_ROI;
-	m_eco.init(*pMat, r);
+	m_eco.init(*pMat, r, m_param);
 	m_bTracking = true;
 
 	return true;

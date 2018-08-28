@@ -43,6 +43,8 @@ private:
 
 public:
     ECO m_eco;
+	EcoParameters m_param;
+
 
 };
 
