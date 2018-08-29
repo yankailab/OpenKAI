@@ -44,8 +44,9 @@
 #include "../SLAM/_LidarSlam.h"
 
 #include "../Tracker/_SingleTracker.h"
-#include "../Tracker/_OpenTracker.h"
 #include "../Tracker/_MultiTracker.h"
+#include "../Tracker/_EcoTracker.h"
+
 #include "../UI/UI.h"
 #include "../UI/Window.h"
 

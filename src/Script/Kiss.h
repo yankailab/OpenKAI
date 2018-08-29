@@ -35,6 +35,7 @@ public:
 	bool v(string name, uint32_t* pVal);
 	bool v(string name, uint64_t* val);
 	bool v(string name, double* val);
+	bool v(string name, float* val);
 	bool v(string name, string* val);
 
 	int array(string name, int* pVal, int nArray);

@@ -106,6 +106,18 @@ bool JSON::v(string* pName, double* pVal)
 	return true;
 }
 
+bool JSON::v(string* pName, float* pVal)
+{
+	IF_F(!pName);
+	IF_F(!m_JSON.is<object>());
+
+	value var = m_JSON.get(*pName);
+	IF_F(!var.is<double>());
+
+	*pVal = (float)var.get<double>();
+	return true;
+}
+
 bool JSON::v(string* pName, string* pVal)
 {
 	IF_F(!pName);

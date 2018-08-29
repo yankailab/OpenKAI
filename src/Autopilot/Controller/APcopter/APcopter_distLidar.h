@@ -52,7 +52,4 @@ private:
 };
 
 }
-
-
 #endif
-

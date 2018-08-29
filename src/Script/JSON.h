@@ -30,6 +30,7 @@ public:
 	bool v(string* pName, uint32_t* pVal);
 	bool v(string* pName, uint64_t* pVal);
 	bool v(string* pName, double* pVal);
+	bool v(string* pName, float* pVal);
 	bool v(string* pName, string* pVal);
 
 	int array(string* pName, int* pVal, int nArray);

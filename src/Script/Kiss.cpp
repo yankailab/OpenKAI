@@ -285,6 +285,11 @@ bool Kiss::v(string name, double* val)
 	return m_json.v(&name, val);
 }
 
+bool Kiss::v(string name, float* val)
+{
+	return m_json.v(&name, val);
+}
+
 bool Kiss::v(string name, string* val)
 {
 	return m_json.v(&name, val);

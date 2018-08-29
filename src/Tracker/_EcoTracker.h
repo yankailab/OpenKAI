@@ -1,12 +1,12 @@
 /*
- * _OpenTracker.h
+ * _EcoTracker.h
  *
  *  Created on: Aug 21, 2015
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Tracker__OpenTracker_H_
-#define OpenKAI_src_Tracker__OpenTracker_H_
+#ifndef OpenKAI_src_Tracker__EcoTracker_H_
+#define OpenKAI_src_Tracker__EcoTracker_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -21,11 +21,11 @@ using namespace eco;
 namespace kai
 {
 
-class _OpenTracker: public _TrackerBase
+class _EcoTracker: public _TrackerBase
 {
 public:
-	_OpenTracker();
-	virtual	~_OpenTracker();
+	_EcoTracker();
+	virtual	~_EcoTracker();
 
 	bool init(void* pKiss);
 	bool link(void);
@@ -37,7 +37,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_OpenTracker*) This)->update();
+		((_EcoTracker*) This)->update();
 		return NULL;
 	}
 

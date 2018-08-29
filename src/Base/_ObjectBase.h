@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
-#include "../Tracker/_SingleTracker.h"
 
 #define OBJECT_N_CLASS 128
 #define OBJECT_N_OBJ 256
@@ -26,7 +25,7 @@ struct OBJECT
 	vDouble2	m_vOpt;
 	vDouble2	m_vTrack;
 	uint64_t	m_trackID;
-	_SingleTracker*	m_pTracker;
+	void*		m_pTracker;
 	int	 		m_topClass;		//most probable class
 	double		m_topProb;		//prob for the topClass
 	uint64_t 	m_mClass;		//all candidate class mask

@@ -122,11 +122,13 @@ bool _LidarSlam::cli(int& iY)
 {
 	IF_F(!this->_SlamBase::cli(iY));
 
-//	string msg;
-//
-//	COL_MSG;
-//	iY++;
-//	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	string msg = "x=" + f2str(m_pos.x) +
+				 ", y=" + f2str(m_pos.y) +
+				 ", z=" + f2str(m_pos.z);
+
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

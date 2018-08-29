@@ -25,7 +25,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Mavlink);
-	ADD_MODULE(_MotionDetector);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_RC);
@@ -68,9 +67,10 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ArUco);
 	ADD_MODULE(_SingleTracker);
 	ADD_MODULE(_MultiTracker);
+	ADD_MODULE(_MotionDetector);
 #endif
 #ifdef USE_OPENTRACKER
-	ADD_MODULE(_OpenTracker);
+	ADD_MODULE(_EcoTracker);
 #endif
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);
