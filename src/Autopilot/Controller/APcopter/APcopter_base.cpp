@@ -61,37 +61,35 @@ void APcopter_base::update(void)
 	this->ActionBase::update();
 	NULL_(m_pMavlink);
 
-	uint64_t tNow = getTimeUsec();
-
 	//update APM status from heartbeat msg
 	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 
 	//Sending Heartbeat
 	if(m_freqHeartbeat > 0)
 	{
-		if (tNow - m_lastHeartbeat >= m_freqHeartbeat)
+		if (m_tStamp - m_lastHeartbeat >= m_freqHeartbeat)
 		{
 			m_pMavlink->sendHeartbeat();
-			m_lastHeartbeat = tNow;
+			m_lastHeartbeat = m_tStamp;
 		}
 	}
 
 	//request updates from Mavlink
 	if(m_freqAtti > 0)
 	{
-		if(tNow - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+		if(m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
 	}
 
 	if(m_freqGlobalPos > 0)
 	{
-		if(tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+		if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 	}
 
 	if(m_freqRC > 0)
 	{
-		if(tNow - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
+		if(m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 	}
 

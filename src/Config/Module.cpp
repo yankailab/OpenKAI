@@ -120,7 +120,6 @@ template <typename T> BASE* Module::createInst(Kiss* pKiss)
     return pInst;
 }
 
-
 Module::Module()
 {
 }

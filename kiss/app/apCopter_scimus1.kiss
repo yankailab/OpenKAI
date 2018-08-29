@@ -13,7 +13,7 @@
 	"name":"gstRaspiV4l2",
 	"class":"_GStreamer",
 	"FPS":15,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"bFlip":0,
 	"bGray":0,
@@ -27,31 +27,23 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyAMA0",
-	"baud":921600,
-	"_portName":"/dev/ttyACM",
-	"_baud":115200,
+	"_portName":"/dev/ttyAMA0",
+	"_baud":921600,
+	"portName":"/dev/ttyUSB0",
+	"baud":57600,
+
 	"_wakeUp":"mavAP",
 }
 
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"port":19840,
 	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"apWS",
-	"class":"_WebSocket",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
 }
 
 {
@@ -72,7 +64,7 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -239,14 +231,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-0.2,
+	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"min":-500,
-	"max":500,
-	"K":500,
+	"min":-250,
+	"max":250,
+	"K":250,
 }
 
 {
@@ -274,12 +266,6 @@
 	{
 		"state":"CC_STANDBY",
 	}
-	{
-		"state":"CC_ON",
-	}
-	{
-		"state":"CC_ON_ALT",
-	}
 }
 
 {
@@ -302,7 +288,8 @@
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
 			"freqGlobalPos":0,
-			"freqHeartbeat":0,
+			"freqHeartbeat":1,
+			"freqRC":10,
 		}
 		
 		{
@@ -312,14 +299,11 @@
 			"bLog":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_ON","CC_ON_ALT"],
+			"activeState":["CC_STANDBY"],
 			"APcopter_base":"apBase",
 			"_SlamBase":"lidarSlam",
-			"_WebSocket":"apWS",
 			"_Mavlink_GCS":"mavGCS",
 			"rcTimeOut":1000000,
-			"rcDeadband":100,
-			"enableAPmode":2,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",
@@ -329,7 +313,6 @@
 			"pwmHigh":2000,
 			"targetMin":1.5,
 			"targetMax":15,
-			"dCollision":3.0,
 			"chanF":9,
 			"chanB":10,
 			"chanL":11,

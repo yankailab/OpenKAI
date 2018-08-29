@@ -7,20 +7,20 @@ APcopter_thrust::APcopter_thrust()
 {
 	m_pAP = NULL;
 	m_pSB = NULL;
-	m_pCmd = NULL;
 	m_pMavAP = NULL;
 	m_pMavGCS = NULL;
 
 	m_pTarget = -1;
 	m_targetMin = 0;
 	m_targetMax = DBL_MAX;
-	m_dCollision = 2.0;
 	m_pwmLow = 1000;
 	m_pwmMid = 1500;
 	m_pwmHigh = 2000;
+
 	m_rcTimeOut = USEC_1SEC;
-	m_rcDeadband = 100;
-	m_enableAPmode = 2;
+	m_switch = THRUST_OFF;
+	m_action = THRUST_SET;
+	m_dMove = 5.0;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -50,8 +50,7 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->m_pInst = this;
 
 	KISSm(pK,rcTimeOut);
-	KISSm(pK,rcDeadband);
-	KISSm(pK,enableAPmode);
+	KISSm(pK,dMove);
 
 	KISSm(pK,pwmLow);
 	KISSm(pK,pwmMid);
@@ -63,7 +62,6 @@ bool APcopter_thrust::init(void* pKiss)
 
 	KISSm(pK,targetMin);
 	KISSm(pK,targetMax);
-	KISSm(pK,dCollision);
 
 	pK->v("chanF", &m_tF.m_iChan);
 	pK->v("chanB", &m_tB.m_iChan);
@@ -88,11 +86,6 @@ bool APcopter_thrust::link(void)
 	pK->v("_SlamBase", &iName);
 	m_pSB = (_SlamBase*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pSB, iName + ": not found");
-
-	iName = "";
-	pK->v("_WebSocket", &iName);
-	m_pCmd = (_WebSocket*) (pK->root()->getChildInstByName(&iName));
-	IF_Fl(!m_pCmd, iName + ": not found");
 
 	iName = "";
 	pK->v("_Mavlink_GCS", &iName);
@@ -137,9 +130,9 @@ void APcopter_thrust::update(void)
 	NULL_(m_pAlt);
 
 	cmd();
+
 	vDouble3* pPos = &m_pSB->m_pos;
 	int o;
-
 	resetAllPwm();
 
 	//Pitch = Y axis
@@ -164,21 +157,10 @@ void APcopter_thrust::update(void)
 		m_pwmAlt += (int)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
 
-	if(!isActive())
+	if(m_switch == THRUST_OFF)
 	{
 		resetAllPwm();
-		LOG_F("OFF: Disabled");
-	}
-	else if(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode)
-	{
-		resetAllPwm();
-		LOG_F("OFF: Flight mode = " +
-				i2str((int)m_pMavAP->m_msg.heartbeat.custom_mode) +
-				" != " + i2str((int)m_enableAPmode));
-	}
-	else
-	{
-		LOG_I("ON");
+		return;
 	}
 
 	m_pMavAP->clDoSetServo(m_tF.m_iChan, m_tF.m_pwm);
@@ -186,8 +168,7 @@ void APcopter_thrust::update(void)
 	m_pMavAP->clDoSetServo(m_tL.m_iChan, m_tL.m_pwm);
 	m_pMavAP->clDoSetServo(m_tR.m_iChan, m_tR.m_pwm);
 
-	IF_(*m_pAM->getCurrentStateName() != "CC_ON_ALT");
-	IF_(m_pMavAP->m_msg.heartbeat.custom_mode != m_enableAPmode);
+	IF_(m_switch != THRUST_ALT);
 
 	mavlink_rc_channels_override_t rc;
 	rc.chan1_raw = UINT16_MAX;
@@ -199,7 +180,6 @@ void APcopter_thrust::update(void)
 	rc.chan7_raw = UINT16_MAX;
 	rc.chan8_raw = UINT16_MAX;
 	m_pMavAP->rcChannelsOverride(rc);
-	LOG_I("ON + ALT");
 
 }
 
@@ -214,96 +194,62 @@ void APcopter_thrust::resetAllPwm(void)
 
 void APcopter_thrust::cmd(void)
 {
-	NULL_(m_pCmd);
-
-	char buf[N_IO_BUF];
-	int nB = m_pCmd->read((uint8_t*) &buf, N_IO_BUF);
-	IF_(nB <= 0);
-	buf[nB]=0;
-	string str = buf;
-	string cmd;
-	double v;
-
-	std::string::size_type iDiv = str.find(' ');
-	if(iDiv == std::string::npos)
+	string str;
+	if(this->m_tStamp - m_pMavAP->m_msg.time_stamps.rc_channels_raw > m_rcTimeOut)
 	{
-		cmd = str;
-		v = -1.0;
-	}
-	else
-	{
-		cmd = str.substr(0, iDiv);
-		IF_(++iDiv >= str.length());
-		v = atof(str.substr(iDiv, str.length()-iDiv).c_str());
+		resetAllPwm();
+		return;
 	}
 
-	if(cmd=="set")
+	uint8_t pos;
+	pos = pwmPos(m_pMavAP->m_msg.rc_channels_raw.chan7_raw);
+	m_switch = pos;
+
+	bool bChanged = false;
+	pos = pwmPos(m_pMavAP->m_msg.rc_channels_raw.chan8_raw);
+	if(pos != m_action)
+		bChanged = true;
+	m_action = pos;
+
+	if(m_switch == THRUST_OFF)
 	{
-		m_pTarget = m_pSB->m_pos;
-		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
-		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
-		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
-
-		str = "SET: X=" + f2str(m_pTarget.x) +
-				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.z);
-
-		string strOn = "CC_ON";
-		m_pAM->transit(&strOn);
+		resetAllPwm();
+		return;
 	}
-	else if(cmd=="set_alt")
+
+	IF_(!bChanged);
+
+	if(m_action == THRUST_SET)
 	{
 		m_pTarget = m_pSB->m_pos;
 		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
 		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
 		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
-
-		str = "SET_ALT: X=" + f2str(m_pTarget.x) +
-				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.z);
-
-		string strOn = "CC_ON_ALT";
-		m_pAM->transit(&strOn);
 	}
-	else if(cmd=="off")
+	else if(m_action == THRUST_FORWARD)
 	{
-		string strOff = "CC_STANDBY";
-		m_pAM->transit(&strOff);
-		str = "OFF";
+		if(m_pTarget.y > m_targetMin)
+		{
+			m_pTarget.y += m_dMove;
+		}
 	}
-	else if(cmd=="x")
+	else if(m_action == THRUST_BACKWARD)
 	{
-		if(v < m_targetMin || v > m_targetMax)v = -1.0;
-
-		m_pTarget.x = v;
-		str = "SET: X=" + f2str(m_pTarget.x) +
-				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.z);
+		if(m_pTarget.y > m_targetMin)
+		{
+			m_pTarget.y -= m_dMove;
+		}
 	}
-	else if(cmd=="y")
-	{
-		if(v < m_targetMin || v > m_targetMax)v = -1.0;
+}
 
-		m_pTarget.y = v;
-		str = "SET: X=" + f2str(m_pTarget.x) +
-				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.z);
-	}
-	else if(cmd=="z")
-	{
-		if(v < m_targetMin || v > m_targetMax)v = -1.0;
-
-		m_pTarget.z = v;
-		str = "SET: X=" + f2str(m_pTarget.x) +
-				", Y=" + f2str(m_pTarget.y) +
-				", Z=" + f2str(m_pTarget.z);
-	}
+uint8_t APcopter_thrust::pwmPos(uint16_t pwm)
+{
+	if(pwm < 1250)
+		return 0;
+	else if(pwm < 1750)
+		return 1;
 	else
-	{
-		str = "Invalid Cmd: " + cmd;
-	}
-
-	m_pCmd->write((uint8_t*)str.c_str(), str.length(), WS_MODE_TXT);
+		return 2;
 }
 
 bool APcopter_thrust::draw(void)
@@ -324,6 +270,24 @@ bool APcopter_thrust::cli(int& iY)
 	vDouble3* pPos = &m_pSB->m_pos;
 
 	string msg;
+
+	//Switch
+	if(m_switch == THRUST_OFF)msg = "OFF: ";
+	else if(m_switch == THRUST_ON)msg = "ON: ";
+	else if(m_switch == THRUST_ALT)msg = "ALT: ";
+	msg += i2str(m_pMavAP->m_msg.rc_channels_raw.chan7_raw);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	//Action
+	if(m_action == THRUST_FORWARD)msg = "FORWARD: ";
+	else if(m_action == THRUST_SET)msg = "SET: ";
+	else if(m_action == THRUST_BACKWARD)msg = "BACKWARD: ";
+	msg += i2str(m_pMavAP->m_msg.rc_channels_raw.chan8_raw);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	//Roll = X axis
 	msg = "targetX=" + f2str(m_pTarget.x) +

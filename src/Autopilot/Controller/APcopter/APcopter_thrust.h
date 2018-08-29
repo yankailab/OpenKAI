@@ -12,6 +12,14 @@
 namespace kai
 {
 
+#define THRUST_OFF 2
+#define THRUST_ON 1
+#define THRUST_ALT 0
+
+#define THRUST_FORWARD 0
+#define THRUST_SET 1
+#define THRUST_BACKWARD 2
+
 struct THRUST_CHANNEL
 {
 	uint8_t m_iChan;
@@ -31,6 +39,7 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 	void cmd(void);
+	uint8_t pwmPos(uint16_t pwm);
 
 	void resetAllPwm(void);
 
@@ -42,26 +51,26 @@ public:
 
 	APcopter_base* m_pAP;
 	_SlamBase* m_pSB;
-	_WebSocket* m_pCmd;
 	_Mavlink* m_pMavAP;
 	_Mavlink* m_pMavGCS;
 
 	vDouble3 m_pTarget;
 	double m_targetMin;
 	double m_targetMax;
-	double m_dCollision;
 	uint16_t m_pwmLow;
 	uint16_t m_pwmMid;
 	uint16_t m_pwmHigh;
-	uint64_t m_rcTimeOut;
-	uint16_t m_rcDeadband;
-	uint32_t m_enableAPmode;
 
 	THRUST_CHANNEL m_tF;
 	THRUST_CHANNEL m_tB;
 	THRUST_CHANNEL m_tL;
 	THRUST_CHANNEL m_tR;
 	int	m_pwmAlt;
+
+	uint64_t m_rcTimeOut;
+	uint8_t m_switch;
+	uint8_t m_action;
+	double m_dMove;
 
 };
 

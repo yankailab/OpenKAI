@@ -78,6 +78,16 @@ bool _Mavlink::link(void)
 
 		m_vPeer.push_back(mP);
 	}
+
+	//cmd routing
+	int pNoRouteCmd[MAV_N_CMD];
+	int m_nCmd = pK->array("noRouteCmd", pNoRouteCmd, MAV_N_CMD);
+	IF_T(m_nCmd <= 0);
+	for(int i=0; i<m_nCmd; i++)
+	{
+		setCmdRoute(pNoRouteCmd[i],false);
+	}
+
 	return true;
 }
 
