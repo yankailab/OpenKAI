@@ -55,14 +55,6 @@ bool _YOLO::init(void* pKiss)
 	return true;
 }
 
-bool _YOLO::link(void)
-{
-	IF_F(!this->_ObjectBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _YOLO::start(void)
 {
 	m_bThreadON = true;

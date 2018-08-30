@@ -27,14 +27,6 @@ bool _filterContrast::init(void* pKiss)
 	return true;
 }
 
-bool _filterContrast::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterContrast::start(void)
 {
 	m_bComplete = false;

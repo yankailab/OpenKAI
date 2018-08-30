@@ -84,7 +84,6 @@ public:
 	~RC_base();
 
 	bool init(void* pKiss);
-	bool link(void);
 
 public:
 	_RC* m_pRC;

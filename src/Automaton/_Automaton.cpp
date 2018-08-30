@@ -50,12 +50,6 @@ bool _Automaton::init(void* pKiss)
 	return true;
 }
 
-bool _Automaton::link(void)
-{
-	IF_F(!this->BASE::link());
-	return true;
-}
-
 int _Automaton::getStateIdx(string* pStateName)
 {
 	if(pStateName==NULL)return -1;

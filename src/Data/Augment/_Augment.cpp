@@ -42,14 +42,6 @@ bool _Augment::init(void* pKiss)
 	return true;
 }
 
-bool _Augment::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _Augment::start(void)
 {
 	m_bThreadON = true;

@@ -27,14 +27,6 @@ bool _filterShrink::init(void* pKiss)
 	return true;
 }
 
-bool _filterShrink::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterShrink::start(void)
 {
 	m_bComplete = false;

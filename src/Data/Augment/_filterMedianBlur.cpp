@@ -27,14 +27,6 @@ bool _filterMedianBlur::init(void* pKiss)
 	return true;
 }
 
-bool _filterMedianBlur::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterMedianBlur::start(void)
 {
 	m_bComplete = false;

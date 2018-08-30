@@ -27,14 +27,6 @@ bool _filterFlip::init(void* pKiss)
 	return true;
 }
 
-bool _filterFlip::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterFlip::start(void)
 {
 	m_bComplete = false;

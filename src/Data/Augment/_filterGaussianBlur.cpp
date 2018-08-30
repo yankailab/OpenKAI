@@ -27,14 +27,6 @@ bool _filterGaussianBlur::init(void* pKiss)
 	return true;
 }
 
-bool _filterGaussianBlur::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterGaussianBlur::start(void)
 {
 	m_bComplete = false;

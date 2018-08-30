@@ -42,7 +42,6 @@ public:
 	~_Augment();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 private:

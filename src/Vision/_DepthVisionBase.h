@@ -23,7 +23,6 @@ public:
 	virtual ~_DepthVisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool link(void);
 	virtual bool draw(void);
 	virtual void postProcessDepth(void);
 

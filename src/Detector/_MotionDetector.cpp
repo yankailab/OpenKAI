@@ -56,14 +56,8 @@ bool _MotionDetector::init(void* pKiss)
 //		m_pBS = cv::bgsegm::createBackgroundSubtractorGSOC();
 //	}
 //
-	return true;
-}
 
-bool _MotionDetector::link(void)
-{
-	IF_F(!this->_ObjectBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase",&iName));
 	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(&iName));

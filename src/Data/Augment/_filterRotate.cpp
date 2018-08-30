@@ -27,14 +27,6 @@ bool _filterRotate::init(void* pKiss)
 	return true;
 }
 
-bool _filterRotate::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterRotate::start(void)
 {
 	m_bComplete = false;

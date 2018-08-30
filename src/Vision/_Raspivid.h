@@ -27,7 +27,6 @@ public:
 	virtual ~_Raspivid();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 private:

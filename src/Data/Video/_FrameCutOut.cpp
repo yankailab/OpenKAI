@@ -28,14 +28,6 @@ bool _FrameCutOut::init(void* pKiss)
 	return true;
 }
 
-bool _FrameCutOut::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _FrameCutOut::start(void)
 {
 	m_bThreadON = true;

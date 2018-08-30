@@ -34,14 +34,7 @@ bool _MultiTracker::init(void* pKiss)
 	KISSm(pK,trackerType);
 	KISSm(pK,oBoundary);
 
-	return true;
-}
-
-bool _MultiTracker::link(void)
-{
-	IF_F(!this->_ObjectBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 
 	F_ERROR_F(pK->v("_ObjectBase",&iName));

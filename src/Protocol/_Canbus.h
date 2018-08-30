@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_INTERFACE_CANBUS_H_
-#define OPENKAI_SRC_INTERFACE_CANBUS_H_
+#ifndef OpenKAI_src_Protocol__Canbus_H_
+#define OpenKAI_src_Protocol__Canbus_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -52,7 +52,6 @@ public:
 	~_Canbus();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void close(void);
 	bool start(void);
 	bool draw(void);

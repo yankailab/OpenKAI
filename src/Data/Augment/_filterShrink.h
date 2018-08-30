@@ -23,7 +23,6 @@ public:
 	~_filterShrink();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 private:

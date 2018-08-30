@@ -16,7 +16,6 @@ public:
 	~Traffic_speed();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 	bool cli(int& iY);

@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_INTERFACE_RC_H_
-#define OPENKAI_SRC_INTERFACE_RC_H_
+#ifndef OpenKAI_src_Protocol__RC_H_
+#define OpenKAI_src_Protocol__RC_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -28,7 +28,6 @@ public:
 	~_RC();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void close(void);
 	bool start(void);
 

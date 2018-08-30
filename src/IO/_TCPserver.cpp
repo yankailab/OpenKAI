@@ -46,14 +46,6 @@ bool _TCPserver::init(void* pKiss)
 	return true;
 }
 
-bool _TCPserver::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _TCPserver::start(void)
 {
 	IF_T(m_bThreadON);

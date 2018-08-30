@@ -59,14 +59,8 @@ bool RC_visualFollow::init(void* pKiss)
 	F_FATAL_F(m_pUIdrawRect->init(pC));
 
 	pK->m_pInst = this;
-	return true;
-}
 
-bool RC_visualFollow::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 
 	F_INFO(pK->v("RC_base", &iName));

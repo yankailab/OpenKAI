@@ -38,12 +38,6 @@ bool _Pylon::init(void* pKiss)
 	return true;
 }
 
-bool _Pylon::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	return true;
-}
-
 bool _Pylon::open(void)
 {
 	try

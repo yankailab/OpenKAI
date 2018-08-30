@@ -23,7 +23,6 @@ public:
 	~_filterBlur();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 private:

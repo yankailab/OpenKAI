@@ -30,7 +30,6 @@ public:
 	virtual ~_Bullseye();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 	bool getCircleCenter(vDouble3* pCenter);

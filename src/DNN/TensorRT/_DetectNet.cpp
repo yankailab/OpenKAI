@@ -63,14 +63,6 @@ bool _DetectNet::init(void* pKiss)
 	return true;
 }
 
-bool _DetectNet::link(void)
-{
-	IF_F(!this->_DetectorBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _DetectNet::start(void)
 {
 	m_bThreadON = true;

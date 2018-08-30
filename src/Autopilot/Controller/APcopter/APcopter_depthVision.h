@@ -35,7 +35,6 @@ public:
 	~APcopter_depthVision();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 

@@ -50,14 +50,8 @@ bool _GPS::init(void* pKiss)
 
 	setLL(&m_initLL);
 	m_initUTM = *getUTM();
-	return true;
-}
 
-bool _GPS::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

@@ -49,14 +49,7 @@ bool HM_base::init(void* pKiss)
 	F_INFO(pK->v("pinLEDm", (int*)&m_pinLEDm));
 	F_INFO(pK->v("pinLEDr", (int*)&m_pinLEDr));
 
-	return true;
-}
-
-bool HM_base::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

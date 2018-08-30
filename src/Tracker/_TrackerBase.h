@@ -23,7 +23,6 @@ public:
 	~_TrackerBase();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 
 	virtual void createTracker(void);

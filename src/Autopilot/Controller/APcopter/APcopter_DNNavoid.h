@@ -66,7 +66,6 @@ public:
 	~APcopter_DNNavoid();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 

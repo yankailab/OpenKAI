@@ -25,7 +25,6 @@ public:
 	virtual	~_SingleTracker();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 	void createTracker(void);

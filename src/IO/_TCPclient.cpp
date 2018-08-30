@@ -70,14 +70,6 @@ void _TCPclient::close(void)
 	this->_IOBase::close();
 }
 
-bool _TCPclient::link(void)
-{
-	IF_F(!this->_IOBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _TCPclient::start(void)
 {
 	int retCode;

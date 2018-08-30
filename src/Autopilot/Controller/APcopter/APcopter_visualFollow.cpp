@@ -34,13 +34,7 @@ bool APcopter_visualFollow::init(void* pKiss)
 //		m_nTerrain++;
 //	}
 
-	return true;
-}
-
-bool APcopter_visualFollow::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
+	//link
 	string iName;
 
 	iName = "";

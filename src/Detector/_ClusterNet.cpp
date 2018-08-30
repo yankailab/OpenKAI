@@ -46,14 +46,7 @@ bool _ClusterNet::init(void* pKiss)
 	F_INFO(pK->v("r", &m_area.z));
 	F_INFO(pK->v("b", &m_area.w));
 
-	return true;
-}
-
-bool _ClusterNet::link(void)
-{
-	IF_F(!this->_ObjectBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 
 	F_ERROR_F(pK->v("_DetectorBase", &iName));

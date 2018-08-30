@@ -41,14 +41,7 @@ bool APcopter_arucoLanding::init(void* pKiss)
 		m_vTarget.push_back(L);
 	}
 
-	return true;
-}
-
-bool APcopter_arucoLanding::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));

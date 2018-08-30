@@ -69,14 +69,6 @@ void _WebSocket::close(void)
 	this->_IOBase::close();
 }
 
-bool _WebSocket::link(void)
-{
-	IF_F(!this->_IOBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _WebSocket::start(void)
 {
 	int retCode;

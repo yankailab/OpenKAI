@@ -69,14 +69,7 @@ bool _ZED::init(void* pKiss)
 
 	m_pDepth = new Frame();
 
-	return true;
-}
-
-bool _ZED::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
 	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));

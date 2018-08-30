@@ -39,14 +39,7 @@ bool VEK_avoid::init(void* pKiss)
 	F_INFO(pG->v("right", &m_obsBox.z));
 	F_INFO(pG->v("bottom", &m_obsBox.w));
 
-	return true;
-}
-
-bool VEK_avoid::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

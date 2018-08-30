@@ -121,14 +121,6 @@ bool _Caffe::setup(void)
 	return true;
 }
 
-bool _Caffe::link(void)
-{
-	IF_F(!this->_DetectorBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _Caffe::start(void)
 {
 	m_bThreadON = true;

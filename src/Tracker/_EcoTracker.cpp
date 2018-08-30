@@ -121,14 +121,6 @@ bool _EcoTracker::init(void* pKiss)
 	return true;
 }
 
-bool _EcoTracker::link(void)
-{
-	IF_F(!this->_TrackerBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _EcoTracker::start(void)
 {
 	m_bThreadON = true;

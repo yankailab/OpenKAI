@@ -39,19 +39,12 @@ bool APcopter_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	return true;
-}
-
-bool APcopter_base::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
-
 	iName = "";
 	pK->v("_Mavlink", &iName);
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+	NULL_F(m_pMavlink);
 
 	return true;
 }

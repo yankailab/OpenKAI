@@ -26,14 +26,7 @@ bool _LidarSlam::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	return true;
-}
-
-bool _LidarSlam::link(void)
-{
-	IF_F(!this->_SlamBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	Kiss** pItr = pK->getChildItr();

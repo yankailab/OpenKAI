@@ -18,7 +18,6 @@ public:
 	~APcopter_visualFollow();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 
@@ -29,6 +28,4 @@ private:
 };
 
 }
-
 #endif
-

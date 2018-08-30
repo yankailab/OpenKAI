@@ -41,14 +41,6 @@ bool _FilterBase::init(void* pKiss)
 	return true;
 }
 
-bool _FilterBase::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _FilterBase::start(void)
 {
 	m_bComplete = false;

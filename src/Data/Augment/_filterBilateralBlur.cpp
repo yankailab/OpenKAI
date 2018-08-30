@@ -27,14 +27,6 @@ bool _filterBilateralBlur::init(void* pKiss)
 	return true;
 }
 
-bool _filterBilateralBlur::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterBilateralBlur::start(void)
 {
 	m_bComplete = false;

@@ -4,6 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
+	"bLog":1,
 	"waitKey":30,
 }
 
@@ -23,8 +24,8 @@
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
 	"bStream":1,
-	"portName":"/dev/ttyACM1",
-	"baud":115200,
+	"portName":"/dev/ttyACM0",
+	"baud":57600,
 	"_portName":"/dev/ttyTHS1",
 	"_portName":"/dev/ttyAMA0",
 	"_baud":921600,
@@ -55,7 +56,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	

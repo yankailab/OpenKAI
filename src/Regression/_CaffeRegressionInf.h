@@ -32,7 +32,6 @@ public:
 	~_CaffeRegressionInf();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 	bool addImg(cv::Mat& img);

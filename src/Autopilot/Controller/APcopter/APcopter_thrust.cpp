@@ -8,6 +8,7 @@ APcopter_thrust::APcopter_thrust()
 	m_pAP = NULL;
 	m_pSB = NULL;
 	m_pMavAP = NULL;
+	m_pMavGCS = NULL;
 
 	m_pTarget = -1;
 	m_targetMin = 0;
@@ -67,13 +68,7 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->v("chanL", &m_tL.m_iChan);
 	pK->v("chanR", &m_tR.m_iChan);
 
-	return true;
-}
-
-bool APcopter_thrust::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
+	//link
 	string iName;
 
 	iName = "";
@@ -85,6 +80,11 @@ bool APcopter_thrust::link(void)
 	pK->v("_SlamBase", &iName);
 	m_pSB = (_SlamBase*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pSB, iName + ": not found");
+
+	iName = "";
+	pK->v("_MavlinkGCS", &iName);
+	m_pMavGCS = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+	IF_Fl(!m_pMavGCS, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDroll", &iName);
@@ -116,6 +116,7 @@ void APcopter_thrust::update(void)
 	NULL_(m_pAP);
 	m_pMavAP = m_pAP->m_pMavlink;
 	NULL_(m_pMavAP);
+	NULL_(m_pMavGCS);
 	NULL_(m_pSB);
 	NULL_(m_pRoll);
 	NULL_(m_pPitch);
@@ -188,18 +189,18 @@ void APcopter_thrust::resetAllPwm(void)
 void APcopter_thrust::cmd(void)
 {
 	string str;
-	if(this->m_tStamp - m_pMavAP->m_msg.time_stamps.rc_channels_raw > m_rcTimeOut)
+	if(this->m_tStamp - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut)
 	{
 		resetAllPwm();
 		return;
 	}
 
 	uint8_t pos;
-	pos = pwmPos(m_pMavAP->m_msg.rc_channels_raw.chan7_raw);
+	pos = pwmPos(m_pMavGCS->m_msg.rc_channels_override.chan3_raw);
 	m_switch = pos;
 
 	bool bChanged = false;
-	pos = pwmPos(m_pMavAP->m_msg.rc_channels_raw.chan8_raw);
+	pos = pwmPos(m_pMavGCS->m_msg.rc_channels_override.chan2_raw);
 	if(pos != m_action)
 		bChanged = true;
 	m_action = pos;
@@ -258,8 +259,10 @@ bool APcopter_thrust::cli(int& iY)
 {
 	IF_F(!this->ActionBase::cli(iY));
 
+	NULL_F(m_pAP);
 	NULL_F(m_pAP->m_pMavlink);
 	NULL_F(m_pMavAP);
+	NULL_F(m_pMavGCS);
 	NULL_F(m_pSB);
 	vDouble3* pPos = &m_pSB->m_pos;
 
@@ -269,7 +272,7 @@ bool APcopter_thrust::cli(int& iY)
 	if(m_switch == THRUST_OFF)msg = "OFF: ";
 	else if(m_switch == THRUST_ON)msg = "ON: ";
 	else if(m_switch == THRUST_ALT)msg = "ALT: ";
-	msg += i2str(m_pMavAP->m_msg.rc_channels_raw.chan7_raw);
+	msg += i2str(m_pMavGCS->m_msg.rc_channels_override.chan3_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
@@ -278,7 +281,7 @@ bool APcopter_thrust::cli(int& iY)
 	if(m_action == THRUST_FORWARD)msg = "FORWARD: ";
 	else if(m_action == THRUST_SET)msg = "SET: ";
 	else if(m_action == THRUST_BACKWARD)msg = "BACKWARD: ";
-	msg += i2str(m_pMavAP->m_msg.rc_channels_raw.chan8_raw);
+	msg += i2str(m_pMavGCS->m_msg.rc_channels_override.chan2_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

@@ -44,14 +44,7 @@ bool HM_follow::init(void* pKiss)
 		m_mTargetClass |= (1 << pTargetList[i]);
 	}
 
-	return true;
-}
-
-bool HM_follow::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));

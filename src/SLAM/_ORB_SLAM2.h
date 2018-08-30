@@ -28,7 +28,6 @@ public:
 	virtual ~_ORB_SLAM2();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 

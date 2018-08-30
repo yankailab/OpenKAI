@@ -16,7 +16,6 @@ public:
 	~HM_base();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	void updateCAN(void);
 	bool draw(void);

@@ -55,14 +55,7 @@ bool AProver_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	return true;
-}
-
-bool AProver_base::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 
 	F_INFO(pK->v("_Mavlink", &iName));

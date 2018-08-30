@@ -47,14 +47,6 @@ bool _DataBase::init(void* pKiss)
 	return true;
 }
 
-bool _DataBase::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _DataBase::start(void)
 {
 	m_bThreadON = true;

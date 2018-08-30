@@ -35,14 +35,7 @@ bool HM_rth_approach::init(void* pKiss)
 	F_INFO(pK->v("iTargetClass", &m_iTargetClass));
 	F_INFO(pK->v("targetName", &m_targetName));
 
-	return true;
-}
-
-bool HM_rth_approach::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));

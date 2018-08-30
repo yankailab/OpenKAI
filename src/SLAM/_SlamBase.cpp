@@ -29,14 +29,6 @@ bool _SlamBase::init(void* pKiss)
 	return true;
 }
 
-bool _SlamBase::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 void _SlamBase::detect(void)
 {
 }

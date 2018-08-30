@@ -28,7 +28,6 @@ public:
 	virtual	~_EcoTracker();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool updateROI(vDouble4& roi);
 

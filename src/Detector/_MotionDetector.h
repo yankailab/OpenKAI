@@ -23,7 +23,6 @@ public:
 	virtual ~_MotionDetector();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);

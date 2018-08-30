@@ -5,8 +5,8 @@
  *      Author: root
  */
 
-#ifndef OPENKAI_SRC_PROTOCOL_PEER_H_
-#define OPENKAI_SRC_PROTOCOL_PEER_H_
+#ifndef OpenKAI_src_Protocol_Peer_H_
+#define OpenKAI_src_Protocol_Peer_H_
 
 #include "../Base/common.h"
 #include "../Utility/util.h"
@@ -77,6 +77,5 @@ public:
 
 };
 
-} /* namespace kai */
-
-#endif /* OPENKAI_SRC_BASE_MESSAGE_H_ */
+}
+#endif

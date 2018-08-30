@@ -23,7 +23,6 @@ public:
 	virtual ~_Automaton();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool draw(void);
 
 	int getStateIdx(string* pStateName);

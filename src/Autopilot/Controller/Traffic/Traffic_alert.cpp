@@ -29,14 +29,7 @@ bool Traffic_alert::init(void* pKiss)
 		m_alert.addClass(pClassList[i]);
 	}
 
-	return true;
-}
-
-bool Traffic_alert::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 	iName = "";
 	pK->v("Traffic_base", &iName);

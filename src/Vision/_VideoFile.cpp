@@ -32,12 +32,6 @@ bool _VideoFile::init(void* pKiss)
 	return true;
 }
 
-bool _VideoFile::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	return true;
-}
-
 bool _VideoFile::open(void)
 {
 	m_vc.open(m_videoFile);

@@ -78,14 +78,6 @@ bool _CaffeRegressionInf::init(void* pKiss)
 	return true;
 }
 
-bool _CaffeRegressionInf::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _CaffeRegressionInf::start(void)
 {
 	m_bThreadON = true;

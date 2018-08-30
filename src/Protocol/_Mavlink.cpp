@@ -41,14 +41,7 @@ bool _Mavlink::init(void* pKiss)
 	m_status.packet_rx_drop_count = 0;
 	m_vPeer.clear();
 
-	return true;
-}
-
-bool _Mavlink::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

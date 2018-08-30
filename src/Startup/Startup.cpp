@@ -14,12 +14,6 @@ namespace kai
 
 Startup::Startup()
 {
-	for (int i = 0; i < N_INST; i++)
-	{
-		m_ppInst[i] = NULL;
-	}
-	m_nInst = 0;
-
 	m_appName = "";
 	m_bWindow = true;
 	m_bDraw = true;
@@ -31,10 +25,12 @@ Startup::Startup()
 	m_rc = "";
 	m_cliMsg = "";
 	m_cliMsgLevel = -1;
+	m_vInst.clear();
 }
 
 Startup::~Startup()
 {
+	m_vInst.clear();
 }
 
 string* Startup::getName(void)
@@ -86,14 +82,14 @@ bool Startup::start(Kiss* pKiss)
 	F_ERROR_F(createAllInst(pKiss));
 
 	int i;
-	for (i = 0; i < m_nInst; i++)
+	for (i = 0; i < m_vInst.size(); i++)
 	{
-		F_ERROR_F(m_ppInst[i]->link());
+		F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
 	}
 
-	for (i = 0; i < m_nInst; i++)
+	for (i = 0; i < m_vInst.size(); i++)
 	{
-		F_ERROR_F(m_ppInst[i]->start());
+		F_ERROR_F(m_vInst[i].m_pInst->start());
 	}
 
 	//UI thread
@@ -131,9 +127,9 @@ bool Startup::start(Kiss* pKiss)
 		endwin();
 	}
 
-	for (i = 0; i < m_nInst; i++)
+	for (i = 0; i < m_vInst.size(); i++)
 	{
-		DEL(m_ppInst[i]);
+		DEL(m_vInst[i].m_pInst);
 	}
 
 	return 0;
@@ -141,10 +137,9 @@ bool Startup::start(Kiss* pKiss)
 
 void Startup::draw(void)
 {
-	for (int i = 0; i < m_nInst; i++)
+	for (int i = 0; i < m_vInst.size(); i++)
 	{
-		BASE* pInst = m_ppInst[i];
-		pInst->draw();
+		m_vInst[i].m_pInst->draw();
 	}
 }
 
@@ -154,10 +149,9 @@ void Startup::cli(void)
     mvaddstr(0, 1, m_appName.c_str());
 	int iY = 1;
 
-	for (int i = 0; i < m_nInst; i++)
+	for (int i = 0; i < m_vInst.size(); i++)
 	{
-		BASE* pInst = m_ppInst[i];
-		pInst->cli(iY);
+		m_vInst[i].m_pInst->cli(iY);
 		iY++;
 	}
 }
@@ -179,28 +173,20 @@ bool Startup::createAllInst(Kiss* pKiss)
 	NULL_F(pKiss);
 	Kiss** pItr = pKiss->root()->getChildItr();
 
+	OK_INST o;
 	int i = 0;
 	while (pItr[i])
 	{
 		Kiss* pK = pItr[i++];
-		if (pK->m_class == "Startup")
-			continue;
+		IF_CONT(pK->m_class == "Startup");
 
-		BASE* pNew = m_module.createInstance(pK);
-		if (pNew == NULL)
-		{
-			LOG_E("Create instance failed: " + pK->m_name);
-			return false;
-		}
+		o.m_pInst = m_module.createInstance(pK);
+		IF_Fl(!o.m_pInst, "Create instance failed: " + pK->m_name);
 
-		if (m_nInst >= N_INST)
-		{
-			LOG_E("Number of module instances reached limit");
-			return false;
-		}
+		o.m_pKiss = pK;
+		m_vInst.push_back(o);
 
-		m_ppInst[m_nInst] = pNew;
-		m_nInst++;
+		pK->m_pInst = o.m_pInst;
 	}
 
 	return true;

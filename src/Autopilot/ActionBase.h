@@ -19,7 +19,6 @@ public:
 	~ActionBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool link(void);
 	virtual void update(void);
 	virtual bool draw(void);
 	virtual bool isActive(void);

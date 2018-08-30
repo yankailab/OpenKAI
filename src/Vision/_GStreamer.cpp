@@ -32,12 +32,6 @@ bool _GStreamer::init(void* pKiss)
 	return true;
 }
 
-bool _GStreamer::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	return true;
-}
-
 bool _GStreamer::open(void)
 {
 	m_gst.open(m_pipeline, CAP_GSTREAMER);

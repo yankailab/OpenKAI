@@ -6,15 +6,16 @@ namespace kai
 _AutoPilot::_AutoPilot()
 {
 	m_pAM = NULL;
-	m_nAction = 0;
 }
 
 _AutoPilot::~_AutoPilot()
 {
-	for(int i=0; i<m_nAction; i++)
+	for(int i=0; i<m_vAction.size(); i++)
 	{
-		DEL(m_pAction[i]);
+		DEL(m_vAction[i]);
 	}
+
+	m_vAction.clear();
 }
 
 bool _AutoPilot::init(void* pKiss)
@@ -35,12 +36,10 @@ bool _AutoPilot::init(void* pKiss)
 		i++;
 
 		bool bInst = false;
-		F_INFO(pAction->v("bInst", &bInst));
-		if (!bInst)continue;
-		if (m_nAction >= N_ACTION)LOG(FATAL);
+		pAction->v("bInst", &bInst);
+		IF_CONT(!bInst);
 
-		ActionBase** pA = &m_pAction[m_nAction];
-		m_nAction++;
+		ActionBase* pA = NULL;
 
 		//Add action modules below
 
@@ -83,23 +82,9 @@ bool _AutoPilot::init(void* pKiss)
 
 		//Add action modules above
 
-		m_nAction--;
-		LOG_E("Unknown action class: "+pAction->m_class);
-	}
+		IF_Fl(!pA, "Unknown action class: "+pAction->m_class);
 
-	return true;
-}
-
-bool _AutoPilot::link(void)
-{
-	IF_F(!this->BASE::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	int i;
-	for(i=0;i<m_nAction;i++)
-	{
-		ActionBase* pA = m_pAction[i];
-		F_ERROR_F(pA->link());
+		m_vAction.push_back(pA);
 	}
 
 	string iName="";
@@ -129,9 +114,9 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
-		for(int i=0; i<m_nAction; i++)
+		for(int i=0; i<m_vAction.size(); i++)
 		{
-			m_pAction[i]->update();
+			m_vAction[i]->update();
 		}
 
 		this->autoFPSto();
@@ -145,9 +130,9 @@ bool _AutoPilot::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	pWin->tabNext();
-	for(int i=0; i<m_nAction; i++)
+	for(int i=0; i<m_vAction.size(); i++)
 	{
-		m_pAction[i]->draw();
+		m_vAction[i]->draw();
 	}
 	pWin->tabPrev();
 
@@ -158,10 +143,10 @@ bool _AutoPilot::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
-	for(int i=0; i<m_nAction; i++)
+	for(int i=0; i<m_vAction.size(); i++)
 	{
 		iY++;
-		m_pAction[i]->cli(iY);
+		m_vAction[i]->cli(iY);
 	}
 
 	return true;

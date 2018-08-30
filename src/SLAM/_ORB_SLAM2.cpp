@@ -68,14 +68,7 @@ bool _ORB_SLAM2::init(void* pKiss)
 	m_pFrame = new Frame();
 	m_tStartup = 0;
 
-	return true;
-}
-
-bool _ORB_SLAM2::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));

@@ -21,7 +21,6 @@ public:
 	virtual ~_SlamBase();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void detect(void);
 	bool draw(void);
 	bool cli(int& iY);

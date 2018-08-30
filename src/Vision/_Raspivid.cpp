@@ -71,12 +71,6 @@ bool _Raspivid::init(void* pKiss)
 	return true;
 }
 
-bool _Raspivid::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	return true;
-}
-
 bool _Raspivid::open(void)
 {
 	string cmdR = m_cmd + " " + "-w " + i2str(m_w) + " " + "-h " + i2str(m_h)

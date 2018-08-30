@@ -55,14 +55,6 @@ bool _SSD::init(void* pKiss)
 	return true;
 }
 
-bool _SSD::link(void)
-{
-	IF_F(!this->_AIbase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 void _SSD::setup(const string& model_file, const string& trained_file,
 		const string& mean_file, const string& label_file)
 {

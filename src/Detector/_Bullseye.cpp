@@ -56,15 +56,7 @@ bool _Bullseye::init(void* pKiss)
 
 	m_pFrame = new Frame();
 
-	return true;
-}
-
-bool _Bullseye::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	//link instance
+	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
 	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));

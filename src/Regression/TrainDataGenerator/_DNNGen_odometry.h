@@ -27,7 +27,6 @@ public:
 	virtual ~_DNNGen_odometry();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 

@@ -38,14 +38,6 @@ bool _UDP::init(void* pKiss)
 	return true;
 }
 
-bool _UDP::link(void)
-{
-	IF_F(!this->_IOBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _UDP::open(void)
 {
 	m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);

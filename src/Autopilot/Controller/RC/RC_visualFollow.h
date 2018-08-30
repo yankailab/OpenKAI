@@ -27,7 +27,6 @@ public:
 	~RC_visualFollow();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 	Rect2d getMouseROI(vInt4 mouseROI);

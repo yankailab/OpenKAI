@@ -192,7 +192,6 @@ public:
 	virtual ~_ObjectBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool link(void);
 	virtual bool draw(void);
 	virtual void update(void);
 	virtual bool cli(int& iY);

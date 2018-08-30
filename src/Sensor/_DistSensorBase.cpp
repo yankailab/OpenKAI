@@ -73,14 +73,6 @@ bool _DistSensorBase::init(void* pKiss)
 	return true;
 }
 
-bool _DistSensorBase::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	return true;
-}
-
 bool _DistSensorBase::bReady(void)
 {
 	return m_bReady;

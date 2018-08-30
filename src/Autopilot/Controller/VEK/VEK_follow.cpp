@@ -38,14 +38,7 @@ bool VEK_follow::init(void* pKiss)
 	KISSm(pK,rTargetX);
 	KISSm(pK,iTargetClass);
 
-	return true;
-}
-
-bool VEK_follow::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

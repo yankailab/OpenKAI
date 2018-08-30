@@ -27,11 +27,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyAMA0",
-	"baud":921600,
-	"_portName":"/dev/ttyUSB0",
-	"_baud":57600,
-
+	"_portName":"/dev/ttyAMA0",
+	"_baud":921600,	
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -40,7 +39,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -53,7 +52,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -64,16 +63,17 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
+	"noRouteCmd":[70],
 	
 	{
 		"bInst":1,
 		"_Mavlink":"mavAP",
-	}	
+	}
 }
 
 {
@@ -273,7 +273,7 @@
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
 	"bInst":1,
-	"FPS":30,
+	"FPS":20,
 	"Window":"OKview",
 	
 	{
@@ -289,7 +289,7 @@
 			"freqAtti":0,
 			"freqGlobalPos":0,
 			"freqHeartbeat":1,
-			"freqRC":10,
+			"freqRC":5,
 		}
 		
 		{
@@ -301,8 +301,8 @@
 			"_Automaton":"apState",
 			"activeState":["CC_STANDBY"],
 			"APcopter_base":"apBase",
+			"_MavlinkGCS":"mavGCS",
 			"_SlamBase":"lidarSlam",
-			"_Mavlink_GCS":"mavGCS",
 			"rcTimeOut":1000000,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",

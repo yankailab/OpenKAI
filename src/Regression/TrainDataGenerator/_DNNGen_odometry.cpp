@@ -91,14 +91,7 @@ bool _DNNGen_odometry::init(void* pKiss)
 	KISSm(pK,freqAtti);
 	KISSm(pK,freqGlobalPos);
 
-	return true;
-}
-
-bool _DNNGen_odometry::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

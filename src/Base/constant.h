@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Base_constant_H_
 #define OpenKAI_src_Base_constant_H_
 
-#define N_INST 128
 #define DEFAULT_FPS 30
 
 #define PI 3.141592653589793

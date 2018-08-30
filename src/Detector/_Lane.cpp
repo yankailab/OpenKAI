@@ -122,14 +122,7 @@ bool _Lane::init(void* pKiss)
 		m_pNp[i] = m_sizeOverhead.y;
 	}
 
-	return true;
-}
-
-bool _Lane::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));

@@ -12,9 +12,9 @@
 namespace kai
 {
 
-#define THRUST_OFF 2
-#define THRUST_ON 1
-#define THRUST_ALT 0
+#define THRUST_OFF 1
+#define THRUST_ON 0
+#define THRUST_ALT 2
 
 #define THRUST_FORWARD 0
 #define THRUST_SET 1
@@ -34,7 +34,6 @@ public:
 	~APcopter_thrust();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 	bool cli(int& iY);
@@ -52,6 +51,7 @@ public:
 	APcopter_base* m_pAP;
 	_SlamBase* m_pSB;
 	_Mavlink* m_pMavAP;
+	_Mavlink* m_pMavGCS;
 
 	vDouble3 m_pTarget;
 	double m_targetMin;

@@ -31,6 +31,7 @@ bool BASE::init(void* pKiss)
 {
 	NULL_F(pKiss);
 	Kiss* pK = (Kiss*)pKiss;
+	m_pKiss = pKiss;
 
 	string name="";
 	F_ERROR_F(pK->v("name",&name));
@@ -45,18 +46,9 @@ bool BASE::init(void* pKiss)
 
 	pK->v("bDraw",&m_bDraw);
 
-	m_pKiss = pKiss;
-	return true;
-}
-
-bool BASE::link(void)
-{
-	NULL_F(m_pKiss);
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	string iName = "";
-	F_INFO(pK->v("Window",&iName));
-	m_pWindow = (Window*)(pK->root()->getChildInstByName(&iName));
+	name = "";
+	F_INFO(pK->v("Window",&name));
+	m_pWindow = (Window*)(pK->root()->getChildInstByName(&name));
 
 	return true;
 }

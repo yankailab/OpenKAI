@@ -38,14 +38,7 @@ bool _DenseFlow::init(void* pKiss)
 	m_pGrayFrames->init(2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
-	return true;
-}
-
-bool _DenseFlow::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase",&iName));
 	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(&iName));

@@ -28,14 +28,6 @@ bool ControlBase::init(void* pKiss)
 	return true;
 }
 
-bool ControlBase::link(void)
-{
-	IF_F(!this->BASE::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	return true;
-}
-
 void ControlBase::update(void)
 {
 

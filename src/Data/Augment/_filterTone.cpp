@@ -27,14 +27,6 @@ bool _filterTone::init(void* pKiss)
 	return true;
 }
 
-bool _filterTone::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterTone::start(void)
 {
 	m_bComplete = false;

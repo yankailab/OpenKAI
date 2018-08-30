@@ -46,14 +46,6 @@ bool PIDctrl::init(void* pKiss)
 	return true;
 }
 
-bool PIDctrl::link(void)
-{
-	IF_F(!this->ControlBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
-	return true;
-}
-
 double PIDctrl::update(double v, double vTarget)
 {
 	uint64_t tNow = getTimeUsec();

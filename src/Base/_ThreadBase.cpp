@@ -50,17 +50,7 @@ bool _ThreadBase::init(void* pKiss)
 	pK->v("FPS", &FPS);
 	setTargetFPS(FPS);
 
-	return true;
-}
-
-bool _ThreadBase::link(void)
-{
-	IF_F(!this->BASE::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	string iName;
-
-	iName = "";
+	string iName = "";
 	pK->v("_wakeUp", &iName);
 	m_pWakeUp = (_ThreadBase*) (pK->root()->getChildInstByName(&iName));
 

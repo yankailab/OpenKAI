@@ -58,14 +58,7 @@ bool Traffic_speed::init(void* pKiss)
 		m_vROI.push_back(Point2f((float)x,(float)y));
 	}
 
-	return true;
-}
-
-bool Traffic_speed::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

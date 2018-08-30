@@ -36,14 +36,6 @@ bool _BBoxCutOut::init(void* pKiss)
 	return true;
 }
 
-bool _BBoxCutOut::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _BBoxCutOut::start(void)
 {
 	m_bThreadON = true;

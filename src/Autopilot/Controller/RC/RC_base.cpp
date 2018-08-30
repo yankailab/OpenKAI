@@ -94,14 +94,7 @@ bool RC_base::init(void* pKiss)
 
 	m_pPWM[m_rcYaw.m_iCh] = m_rcYaw.m_pwmN;
 
-	return true;
-}
-
-bool RC_base::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("_RC", &iName));
 	m_pRC = (_RC*) (pK->root()->getChildInstByName(&iName));

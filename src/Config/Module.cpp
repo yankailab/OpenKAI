@@ -112,11 +112,11 @@ template <typename T> BASE* Module::createInst(Kiss* pKiss)
 	IF_N(!pKiss);
 
 	T* pInst = new T();
-	if(!pInst->init(pKiss))
-	{
-		delete pInst;
-		return NULL;
-	}
+//	if(!pInst->init(pKiss))
+//	{
+//		delete pInst;
+//		return NULL;
+//	}
     return pInst;
 }
 

@@ -30,14 +30,6 @@ bool _filterLowResolution::init(void* pKiss)
 	return true;
 }
 
-bool _filterLowResolution::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _filterLowResolution::start(void)
 {
 	m_bComplete = false;

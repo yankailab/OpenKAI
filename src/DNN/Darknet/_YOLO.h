@@ -28,7 +28,6 @@ public:
 	~_YOLO();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 

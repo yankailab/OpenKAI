@@ -16,6 +16,12 @@ using namespace kai;
 namespace kai
 {
 
+struct OK_INST
+{
+	BASE* m_pInst;
+	Kiss* m_pKiss;
+};
+
 class Startup
 {
 public:
@@ -33,8 +39,7 @@ private:
 
 public:
 	Module	m_module;
-	int		m_nInst;
-	BASE* 	m_ppInst[N_INST];
+	vector<OK_INST> m_vInst;
 
 	string	m_appName;
 	int		m_key;

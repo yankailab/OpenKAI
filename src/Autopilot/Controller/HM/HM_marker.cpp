@@ -30,14 +30,7 @@ bool HM_marker::init(void* pKiss)
 	KISSm(pK,minSize);
 	KISSm(pK,maxSize);
 
-	return true;
-}
-
-bool HM_marker::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

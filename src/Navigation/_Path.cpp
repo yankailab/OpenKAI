@@ -36,14 +36,8 @@ bool _Path::init(void* pKiss)
 	F_INFO(pK->v("distCompress", &m_distCompress));
 
 	reset();
-	return true;
-}
 
-bool _Path::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

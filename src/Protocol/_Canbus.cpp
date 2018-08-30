@@ -31,14 +31,7 @@ bool _Canbus::init(void* pKiss)
 		m_nCanData++;
 	}
 
-	return true;
-}
-
-bool _Canbus::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));

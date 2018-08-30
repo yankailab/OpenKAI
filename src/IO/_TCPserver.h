@@ -27,7 +27,6 @@ public:
 	virtual ~_TCPserver();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 	_TCPclient* getFirstSocket(void);

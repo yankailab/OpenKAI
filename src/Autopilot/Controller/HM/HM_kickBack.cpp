@@ -37,14 +37,7 @@ bool HM_kickBack::init(void* pKiss)
 	F_INFO(pK->v("kickBackDist", &m_kickBackDist));
 	F_INFO(pK->v("targetHdg", &m_targetHdg));
 
-	return true;
-}
-
-bool HM_kickBack::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

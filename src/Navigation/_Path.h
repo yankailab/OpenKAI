@@ -22,7 +22,6 @@ public:
 	virtual ~_Path();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 

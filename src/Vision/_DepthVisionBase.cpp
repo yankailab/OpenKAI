@@ -60,14 +60,7 @@ bool _DepthVisionBase::init(void* pKiss)
 		m_pFilterMatrix[i].init(nMed,0);
 	}
 
-	return true;
-}
-
-bool _DepthVisionBase::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
 	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));

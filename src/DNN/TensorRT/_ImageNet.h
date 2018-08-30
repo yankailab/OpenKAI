@@ -23,7 +23,6 @@ public:
 	~_ImageNet();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 	int getClassIdx(string& className);

@@ -56,14 +56,7 @@ bool HM_avoid::init(void* pKiss)
 	F_INFO(pG->v("r", &m_dROIr.z));
 	F_INFO(pG->v("b", &m_dROIr.w));
 
-	return true;
-}
-
-bool HM_avoid::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

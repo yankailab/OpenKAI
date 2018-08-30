@@ -112,16 +112,7 @@ bool _ObjectBase::init(void* pKiss)
 	F_INFO(pK->v("rZ", &m_roi.z));
 	F_INFO(pK->v("rW", &m_roi.w));
 
-	return true;
-}
-
-bool _ObjectBase::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	string iName;
-
+	//link
 	iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));

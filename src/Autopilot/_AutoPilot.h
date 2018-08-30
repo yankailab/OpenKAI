@@ -33,8 +33,7 @@
 #include "Controller/VEK/VEK_base.h"
 #include "Controller/VEK/VEK_follow.h"
 
-#define ADD_ACTION(x) if(pAction->m_class==#x){*pA=new x();F_ERROR_F((*pA)->init(pAction));continue;}
-#define N_ACTION 32
+#define ADD_ACTION(x) if(pAction->m_class==#x){pA=new x();if(!pA->init(pAction)){delete pA;LOG_E(pAction->m_name);return false;}}
 
 namespace kai
 {
@@ -46,16 +45,13 @@ public:
 	~_AutoPilot();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);
 
 public:
 	_Automaton* m_pAM;
-
-	int m_nAction;
-	ActionBase* m_pAction[N_ACTION];
+	vector<ActionBase*> m_vAction;
 
 	//Thread
 	void update(void);

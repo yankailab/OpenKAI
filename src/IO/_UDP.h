@@ -25,7 +25,6 @@ public:
 	virtual ~_UDP();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	void close(void);
 	bool draw(void);

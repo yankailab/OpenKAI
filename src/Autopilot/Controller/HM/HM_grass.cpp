@@ -57,14 +57,7 @@ bool HM_grass::init(void* pKiss)
 	F_INFO(pG->v("r", &m_grassBoxR.z));
 	F_INFO(pG->v("b", &m_grassBoxR.w));
 
-	return true;
-}
-
-bool HM_grass::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
 	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));

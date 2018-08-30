@@ -24,13 +24,7 @@ bool APcopter_DNNavoid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 	pK->m_pInst = this;
 
-	return true;
-}
-
-bool APcopter_DNNavoid::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
+	//link
 	string iName;
 
 	iName = "";

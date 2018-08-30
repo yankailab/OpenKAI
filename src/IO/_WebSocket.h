@@ -47,7 +47,6 @@ public:
 	virtual ~_WebSocket();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 	bool open(void);
 	void close(void);

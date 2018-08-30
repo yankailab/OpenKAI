@@ -57,14 +57,6 @@ bool _Cascade::init(void* pKiss)
 	return true;
 }
 
-bool _Cascade::link(void)
-{
-	IF_F(!this->_DetectorBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _Cascade::start(void)
 {
 	m_bThreadON = true;

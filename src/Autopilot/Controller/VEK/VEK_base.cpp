@@ -34,14 +34,7 @@ bool VEK_base::init(void* pKiss)
 	KISSm(pK,pwmL);
 	KISSm(pK,vForward);
 
-	return true;
-}
-
-bool VEK_base::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

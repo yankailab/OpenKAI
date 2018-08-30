@@ -32,12 +32,6 @@ bool _Camera::init(void* pKiss)
 	return true;
 }
 
-bool _Camera::link(void)
-{
-	IF_F(!this->_VisionBase::link());
-	return true;
-}
-
 bool _Camera::open(void)
 {
 	m_camera.open(m_deviceID);

@@ -17,7 +17,6 @@ public:
 	~VEK_base();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void update(void);
 	bool draw(void);
 

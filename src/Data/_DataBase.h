@@ -26,7 +26,6 @@ public:
 	~_DataBase();
 
 	bool init(void* pKiss);
-	bool link(void);
 	bool start(void);
 
 	int getDirFileList(void);

@@ -57,7 +57,6 @@ public:
 	~AProver_base();
 
 	bool init(void* pKiss);
-	bool link(void);
 	void sendHeartbeat(void);
 	void sendSteerThrust(void);
 

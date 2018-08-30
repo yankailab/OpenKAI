@@ -47,14 +47,6 @@ bool _ImageNet::init(void* pKiss)
 	return true;
 }
 
-bool _ImageNet::link(void)
-{
-	IF_F(!this->_DetectorBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _ImageNet::start(void)
 {
 	m_bThreadON = true;

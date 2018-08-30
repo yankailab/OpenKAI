@@ -20,15 +20,7 @@ bool _RC::init(void* pKiss)
 
 	//TODO: Read config
 
-
-	return true;
-}
-
-bool _RC::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 	iName = "";

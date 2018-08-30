@@ -24,14 +24,7 @@ bool APcopter_DNNlanding::init(void* pKiss)
 	F_INFO(pK->v("orientationY", &m_target.m_orientY));
 	F_INFO(pK->v("timeout", &m_target.m_timeOut));
 
-	return true;
-}
-
-bool APcopter_DNNlanding::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));

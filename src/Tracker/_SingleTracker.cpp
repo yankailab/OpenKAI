@@ -51,14 +51,6 @@ void _SingleTracker::createTracker(void)
 		m_pTracker = TrackerKCF::create();
 }
 
-bool _SingleTracker::link(void)
-{
-	IF_F(!this->_TrackerBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _SingleTracker::start(void)
 {
 	m_bThreadON = true;

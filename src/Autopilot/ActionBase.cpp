@@ -26,14 +26,8 @@ bool ActionBase::init(void* pKiss)
 	KISSm(pK, iPriority);
 
 	m_vActiveState.clear();
-	return true;
-}
 
-bool ActionBase::link(void)
-{
-	IF_F(!this->BASE::link());
-	Kiss* pK = (Kiss*)m_pKiss;
-
+	//link
 	string iName="";
 	F_INFO(pK->v("_Automaton", &iName));
 	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));

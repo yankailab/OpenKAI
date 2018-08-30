@@ -44,14 +44,6 @@ bool _TFdetect::init(void* pKiss)
 	return true;
 }
 
-bool _TFdetect::link(void)
-{
-	IF_F(!this->_ObjectBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
-	return true;
-}
-
 bool _TFdetect::start(void)
 {
 	m_bThreadON = true;

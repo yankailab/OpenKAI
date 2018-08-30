@@ -24,13 +24,7 @@ bool HM_rth::init(void* pKiss)
 	F_INFO(pK->v("rpmSteer", &m_rpmSteer));
 	F_INFO(pK->v("rpmT", &m_rpmT));
 
-	return true;
-}
-
-bool HM_rth::link(void)
-{
-	IF_F(!this->ActionBase::link());
-	Kiss* pK = (Kiss*)m_pKiss;
+	//link
 	string iName;
 
 	iName = "";

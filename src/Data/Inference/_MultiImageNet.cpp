@@ -33,14 +33,7 @@ bool _MultiImageNet::init(void* pKiss)
 
 	m_pFrame = new Frame();
 
-	return true;
-}
-
-bool _MultiImageNet::link(void)
-{
-	IF_F(!this->_DataBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName;
 
 #ifdef USE_TENSORRT

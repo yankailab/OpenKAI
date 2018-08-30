@@ -30,23 +30,16 @@ bool _TrackerBase::init(void* pKiss)
 
 	KISSm(pK,trackerType);
 
-	return true;
-}
-
-void _TrackerBase::createTracker(void)
-{
-}
-
-bool _TrackerBase::link(void)
-{
-	IF_F(!this->_ThreadBase::link());
-	Kiss* pK = (Kiss*) m_pKiss;
-
+	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
 
 	return true;
+}
+
+void _TrackerBase::createTracker(void)
+{
 }
 
 void _TrackerBase::update(void)
