@@ -24,7 +24,6 @@ bool _EcoTracker::init(void* pKiss)
 {
 	IF_F(!this->_TrackerBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	pK->v("useDeepFeature", &m_param.useDeepFeature);
 	pK->v("useHogFeature", &m_param.useHogFeature);

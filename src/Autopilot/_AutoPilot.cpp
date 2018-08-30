@@ -22,7 +22,6 @@ bool _AutoPilot::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	//create action instance
 	Kiss* pCC = pK->o("action");
@@ -84,6 +83,7 @@ bool _AutoPilot::init(void* pKiss)
 
 		IF_Fl(!pA, "Unknown action class: "+pAction->m_class);
 
+		pAction->m_pInst = pA;
 		m_vAction.push_back(pA);
 	}
 

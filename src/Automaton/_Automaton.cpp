@@ -25,7 +25,6 @@ bool _Automaton::init(void* pKiss)
 {
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	//create state instances
 	Kiss** pItr = pK->getChildItr();

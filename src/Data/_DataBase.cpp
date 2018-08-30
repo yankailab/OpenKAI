@@ -27,7 +27,6 @@ bool _DataBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, dirIn);
 	KISSm(pK, extOut);

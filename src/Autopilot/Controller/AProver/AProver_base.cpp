@@ -26,7 +26,6 @@ bool AProver_base::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	Kiss* pCC;
 	AProver_PID cPID;

@@ -18,7 +18,6 @@ bool Traffic_alert::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	m_alert.init();
 	int pClassList[OBJECT_N_CLASS];

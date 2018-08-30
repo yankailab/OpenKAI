@@ -36,7 +36,6 @@ bool _GPS::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
 

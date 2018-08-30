@@ -26,7 +26,6 @@ bool _Mavlink::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,mySystemID);
 	KISSm(pK,myComponentID);
@@ -317,7 +316,6 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
 		vDouble3* pDPos, uint8_t confidence)
 {
-
 	/*
 	 * float angle_delta[3];
 	 * Rotation in radians in body frame from previous to current frame

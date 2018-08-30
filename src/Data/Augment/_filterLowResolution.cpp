@@ -23,7 +23,6 @@ bool _filterLowResolution::init(void* pKiss)
 {
 	IF_F(!this->_FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, minScale);
 

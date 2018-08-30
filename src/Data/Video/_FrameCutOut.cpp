@@ -23,7 +23,6 @@ bool _FrameCutOut::init(void* pKiss)
 {
 	IF_F(!this->_DataBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	return true;
 }

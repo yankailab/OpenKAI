@@ -30,7 +30,6 @@ bool HM_kickBack::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("rpmBack", &m_rpmBack));
 	F_INFO(pK->v("rpmTurn", &m_rpmTurn));

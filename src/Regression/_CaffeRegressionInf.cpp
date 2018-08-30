@@ -41,14 +41,12 @@ _CaffeRegressionInf::~_CaffeRegressionInf()
 	DEL(m_pData);
 	DEL(m_pDummy);
 	DEL(m_pOutput);
-
 }
 
 bool _CaffeRegressionInf::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, baseDir);
 	KISSm(pK, width);

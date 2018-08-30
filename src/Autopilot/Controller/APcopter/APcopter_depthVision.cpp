@@ -18,7 +18,6 @@ bool APcopter_depthVision::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	//link
 	string iName;

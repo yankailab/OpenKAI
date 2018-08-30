@@ -35,7 +35,6 @@ bool _ClusterNet::init(void* pKiss)
 {
 	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, w);
 	KISSm(pK, h);

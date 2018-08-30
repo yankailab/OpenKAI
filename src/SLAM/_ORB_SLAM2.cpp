@@ -45,7 +45,6 @@ bool _ORB_SLAM2::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, width);
 	KISSm(pK, height);

@@ -37,7 +37,6 @@ bool _DepthVisionBase::init(void* pKiss)
 {
 	IF_F(!this->_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,wD);
 	KISSm(pK,hD);

@@ -27,7 +27,6 @@ bool _SSD::init(void* pKiss)
 {
 	IF_F(!this->_AIbase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	//Setup Caffe Classifier
 	string caffeDir = "";

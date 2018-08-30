@@ -39,7 +39,6 @@ bool _Bullseye::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	//format params
 	F_ERROR_F(pK->v("areaRatio", &m_areaRatio));

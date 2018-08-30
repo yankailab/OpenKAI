@@ -29,7 +29,6 @@ bool _Path::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("dInterval", &m_dInterval));
 	F_INFO(pK->v("showScale", &m_showScale));

@@ -35,7 +35,6 @@ bool HM_base::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("maxSpeedT", &m_maxRpmT));
 	F_INFO(pK->v("maxSpeedW", &m_maxRpmW));

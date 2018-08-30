@@ -24,7 +24,6 @@ bool _LidarSlam::init(void* pKiss)
 {
 	IF_F(!this->_SlamBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	//link
 	string iName;

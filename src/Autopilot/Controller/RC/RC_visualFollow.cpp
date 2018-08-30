@@ -58,8 +58,6 @@ bool RC_visualFollow::init(void* pKiss)
 	m_pUIdrawRect = new UI();
 	F_FATAL_F(m_pUIdrawRect->init(pC));
 
-	pK->m_pInst = this;
-
 	//link
 	string iName = "";
 

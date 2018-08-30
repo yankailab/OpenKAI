@@ -61,7 +61,6 @@ bool UI::init(void* pKiss)
 
 	}
 
-	pK->m_pInst = this;
 	return true;
 }
 

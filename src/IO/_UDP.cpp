@@ -30,7 +30,6 @@ bool _UDP::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK, addr);
 	F_INFO(pK->v("port", (int*)&m_port));

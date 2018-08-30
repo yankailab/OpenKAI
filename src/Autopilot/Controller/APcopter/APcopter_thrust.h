@@ -16,9 +16,7 @@ namespace kai
 #define THRUST_ON 0
 #define THRUST_ALT 2
 
-#define THRUST_FORWARD 0
 #define THRUST_SET 1
-#define THRUST_BACKWARD 2
 
 struct THRUST_CHANNEL
 {
@@ -38,7 +36,7 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 	void cmd(void);
-	uint8_t pwmPos(uint16_t pwm);
+	int pwmPos(uint16_t pwm);
 
 	void resetAllPwm(void);
 
@@ -67,8 +65,9 @@ public:
 	int	m_pwmAlt;
 
 	uint64_t m_rcTimeOut;
-	uint8_t m_switch;
-	uint8_t m_action;
+	int m_switchIn;
+	int m_pitchIn;
+	int m_rollIn;
 	double m_dMove;
 
 };

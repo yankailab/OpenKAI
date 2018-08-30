@@ -24,7 +24,6 @@ bool APcopter_base::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss)==false);
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,freqAtti);
 	KISSm(pK,freqGlobalPos);

@@ -26,7 +26,6 @@ bool HM_rth_approach::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("rpmT", &m_rpmT));
 	F_INFO(pK->v("rpmSteer", &m_rpmSteer));

@@ -22,7 +22,6 @@ bool _filterHistEqualize::init(void* pKiss)
 {
 	IF_F(!this->_FilterBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	return true;
 }

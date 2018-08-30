@@ -27,10 +27,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_portName":"/dev/ttyAMA0",
-	"_baud":921600,	
-	"portName":"/dev/ttyACM0",
-	"baud":115200,
+	"portName":"/dev/ttyAMA0",
+	"baud":921600,	
+	"_portName":"/dev/ttyACM0",
+	"_baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -304,6 +304,7 @@
 			"_MavlinkGCS":"mavGCS",
 			"_SlamBase":"lidarSlam",
 			"rcTimeOut":1000000,
+			"dMove":2.0,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",
@@ -313,10 +314,14 @@
 			"pwmHigh":2000,
 			"targetMin":1.5,
 			"targetMax":15,
-			"chanF":9,
-			"chanB":10,
+			"chanF":10,
+			"chanB":9,
 			"chanL":11,
 			"chanR":12,
+			"signF":-1,
+			"signB":1,
+			"signL":1,
+			"signR":-1,
 		}
 		
 	}

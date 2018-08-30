@@ -18,9 +18,10 @@ APcopter_thrust::APcopter_thrust()
 	m_pwmHigh = 2000;
 
 	m_rcTimeOut = USEC_1SEC;
-	m_switch = THRUST_OFF;
-	m_action = THRUST_SET;
-	m_dMove = 5.0;
+	m_switchIn = THRUST_OFF;
+	m_pitchIn = THRUST_SET;
+	m_rollIn = THRUST_SET;
+	m_dMove = 1.0;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -47,7 +48,6 @@ bool APcopter_thrust::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,rcTimeOut);
 	KISSm(pK,dMove);
@@ -67,6 +67,11 @@ bool APcopter_thrust::init(void* pKiss)
 	pK->v("chanB", &m_tB.m_iChan);
 	pK->v("chanL", &m_tL.m_iChan);
 	pK->v("chanR", &m_tR.m_iChan);
+
+	pK->v("signF", &m_tF.m_sign);
+	pK->v("signB", &m_tB.m_sign);
+	pK->v("signL", &m_tL.m_sign);
+	pK->v("signR", &m_tR.m_sign);
 
 	//link
 	string iName;
@@ -151,9 +156,26 @@ void APcopter_thrust::update(void)
 		m_pwmAlt += (int)m_pAlt->update(pPos->z, m_pTarget.z);
 	}
 
-	if(m_switch == THRUST_OFF)
+	mavlink_rc_channels_override_t rc;
+
+	if(m_switchIn == THRUST_OFF)
 	{
 		resetAllPwm();
+
+		m_pMavAP->clDoSetServo(m_tF.m_iChan, m_pwmLow);
+		m_pMavAP->clDoSetServo(m_tB.m_iChan, m_pwmLow);
+		m_pMavAP->clDoSetServo(m_tL.m_iChan, m_pwmLow);
+		m_pMavAP->clDoSetServo(m_tR.m_iChan, m_pwmLow);
+
+		rc.chan1_raw = 0;
+		rc.chan2_raw = 0;
+		rc.chan3_raw = 0;
+		rc.chan4_raw = 0;
+		rc.chan5_raw = 0;
+		rc.chan6_raw = 0;
+		rc.chan7_raw = 0;
+		rc.chan8_raw = 0;
+		m_pMavAP->rcChannelsOverride(rc);
 		return;
 	}
 
@@ -162,9 +184,8 @@ void APcopter_thrust::update(void)
 	m_pMavAP->clDoSetServo(m_tL.m_iChan, m_tL.m_pwm);
 	m_pMavAP->clDoSetServo(m_tR.m_iChan, m_tR.m_pwm);
 
-	IF_(m_switch != THRUST_ALT);
+	IF_(m_switchIn != THRUST_ALT);
 
-	mavlink_rc_channels_override_t rc;
 	rc.chan1_raw = UINT16_MAX;
 	rc.chan2_raw = UINT16_MAX;
 	rc.chan3_raw = (uint16_t)m_pwmAlt;
@@ -188,55 +209,55 @@ void APcopter_thrust::resetAllPwm(void)
 
 void APcopter_thrust::cmd(void)
 {
-	string str;
 	if(this->m_tStamp - m_pMavGCS->m_msg.time_stamps.rc_channels_override > m_rcTimeOut)
 	{
-		resetAllPwm();
+		m_switchIn = THRUST_OFF;
 		return;
 	}
 
 	uint8_t pos;
+
 	pos = pwmPos(m_pMavGCS->m_msg.rc_channels_override.chan3_raw);
-	m_switch = pos;
+	bool bSwitchChanged = (pos != m_switchIn);
+	m_switchIn = pos;
 
-	bool bChanged = false;
 	pos = pwmPos(m_pMavGCS->m_msg.rc_channels_override.chan2_raw);
-	if(pos != m_action)
-		bChanged = true;
-	m_action = pos;
+	bool bPitchChanged = (pos != m_pitchIn);
+	m_pitchIn = pos;
 
-	if(m_switch == THRUST_OFF)
+	pos = pwmPos(m_pMavGCS->m_msg.rc_channels_override.chan1_raw);
+	bool bRollChanged = (pos != m_rollIn);
+	m_rollIn = pos;
+
+	if(m_switchIn == THRUST_OFF)
 	{
-		resetAllPwm();
+		m_pTarget = -1.0;
 		return;
 	}
 
-	IF_(!bChanged);
-
-	if(m_action == THRUST_SET)
+	if(bSwitchChanged ||
+		(bPitchChanged && m_pitchIn == THRUST_SET) ||
+		(bRollChanged && m_rollIn == THRUST_SET))
 	{
 		m_pTarget = m_pSB->m_pos;
 		if(m_pTarget.x < m_targetMin || m_pTarget.x > m_targetMax)m_pTarget.x = -1.0;
 		if(m_pTarget.y < m_targetMin || m_pTarget.y > m_targetMax)m_pTarget.y = -1.0;
 		if(m_pTarget.z < m_targetMin || m_pTarget.z > m_targetMax)m_pTarget.z = -1.0;
+		return;
 	}
-	else if(m_action == THRUST_FORWARD)
+
+	if(bPitchChanged)
 	{
-		if(m_pTarget.y > m_targetMin)
-		{
-			m_pTarget.y += m_dMove;
-		}
+		m_pTarget.y = constrain(m_pTarget.y + (m_pitchIn - THRUST_SET)*m_dMove, m_targetMin, m_targetMax);
 	}
-	else if(m_action == THRUST_BACKWARD)
+
+	if(bRollChanged)
 	{
-		if(m_pTarget.y > m_targetMin)
-		{
-			m_pTarget.y -= m_dMove;
-		}
+		m_pTarget.x = constrain(m_pTarget.x + (m_rollIn - THRUST_SET)*m_dMove, m_targetMin, m_targetMax);
 	}
 }
 
-uint8_t APcopter_thrust::pwmPos(uint16_t pwm)
+int APcopter_thrust::pwmPos(uint16_t pwm)
 {
 	if(pwm < 1250)
 		return 0;
@@ -269,19 +290,21 @@ bool APcopter_thrust::cli(int& iY)
 	string msg;
 
 	//Switch
-	if(m_switch == THRUST_OFF)msg = "OFF: ";
-	else if(m_switch == THRUST_ON)msg = "ON: ";
-	else if(m_switch == THRUST_ALT)msg = "ALT: ";
+	if(m_switchIn == THRUST_OFF)msg = "OFF: ";
+	else if(m_switchIn == THRUST_ON)msg = "ON: ";
+	else if(m_switchIn == THRUST_ALT)msg = "ALT: ";
 	msg += i2str(m_pMavGCS->m_msg.rc_channels_override.chan3_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	//Action
-	if(m_action == THRUST_FORWARD)msg = "FORWARD: ";
-	else if(m_action == THRUST_SET)msg = "SET: ";
-	else if(m_action == THRUST_BACKWARD)msg = "BACKWARD: ";
-	msg += i2str(m_pMavGCS->m_msg.rc_channels_override.chan2_raw);
+	msg = "Pitch: " + i2str(m_pMavGCS->m_msg.rc_channels_override.chan2_raw);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Roll: " + i2str(m_pMavGCS->m_msg.rc_channels_override.chan1_raw);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

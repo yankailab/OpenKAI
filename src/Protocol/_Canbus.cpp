@@ -17,7 +17,6 @@ bool _Canbus::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-	pK->m_pInst = this;
 
 	Kiss** pItr = pK->getChildItr();
 	m_nCanData = 0;

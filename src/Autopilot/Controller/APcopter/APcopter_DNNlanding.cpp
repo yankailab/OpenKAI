@@ -18,7 +18,6 @@ bool APcopter_DNNlanding::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	F_INFO(pK->v("orientationX", &m_target.m_orientX));
 	F_INFO(pK->v("orientationY", &m_target.m_orientY));

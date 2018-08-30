@@ -47,7 +47,6 @@ bool Window::init(void* pKiss)
 		LOG_E("Window mode is disabled. Turn \"bWindow\":1 to enable");
 	}
 
-	pK->m_pInst = this;
 	pK->v("w", &m_size.x);
 	pK->v("h", &m_size.y);
 	pK->v("bFullScreen", &m_bFullScreen);

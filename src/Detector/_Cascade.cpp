@@ -30,7 +30,6 @@ bool _Cascade::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,className);
 	KISSm(pK,minSize);

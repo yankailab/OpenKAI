@@ -26,7 +26,6 @@ bool _SerialPort::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,portName);
 	KISSm(pK,baud);

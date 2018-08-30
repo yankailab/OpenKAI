@@ -191,4 +191,4 @@ bool Peer::encode(uint32_t cmd, string* pInstTo, string* pInstFrom,
 	return true;
 }
 
-} /* namespace kai */
+}

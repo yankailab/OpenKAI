@@ -30,7 +30,6 @@ bool _RealSense::init(void* pKiss)
 {
 	IF_F(!_DepthVisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,rsFPS);
 	KISSm(pK,rsDFPS);

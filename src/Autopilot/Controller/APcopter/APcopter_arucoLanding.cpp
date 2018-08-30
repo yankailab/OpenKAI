@@ -22,7 +22,6 @@ bool APcopter_arucoLanding::init(void* pKiss)
 {
 	IF_F(this->ActionBase::init(pKiss) == false);
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);

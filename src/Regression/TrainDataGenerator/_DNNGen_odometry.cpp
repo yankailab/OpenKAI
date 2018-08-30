@@ -52,7 +52,6 @@ bool _DNNGen_odometry::init(void* pKiss)
 {
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	KISSm(pK,outDir);
 	KISSm(pK,nGen);

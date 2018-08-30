@@ -10,6 +10,14 @@
 namespace kai
 {
 
+Module::Module()
+{
+}
+
+Module::~Module()
+{
+}
+
 BASE* Module::createInstance(Kiss* pK)
 {
 	IF_N(!pK);
@@ -112,20 +120,7 @@ template <typename T> BASE* Module::createInst(Kiss* pKiss)
 	IF_N(!pKiss);
 
 	T* pInst = new T();
-//	if(!pInst->init(pKiss))
-//	{
-//		delete pInst;
-//		return NULL;
-//	}
     return pInst;
-}
-
-Module::Module()
-{
-}
-
-Module::~Module()
-{
 }
 
 }

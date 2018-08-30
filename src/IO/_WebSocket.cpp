@@ -35,7 +35,6 @@ bool _WebSocket::init(void* pKiss)
 {
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-	pK->m_pInst = this;
 
 	IF_Fl(!m_bStream, "_WebSocket only supports m_bStream = 1");
 
