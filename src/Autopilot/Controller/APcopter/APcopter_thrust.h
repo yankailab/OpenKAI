@@ -52,7 +52,6 @@ public:
 	APcopter_base* m_pAP;
 	_SlamBase* m_pSB;
 	_Mavlink* m_pMavAP;
-	_Mavlink* m_pMavGCS;
 
 	vDouble3 m_pTarget;
 	double m_targetMin;

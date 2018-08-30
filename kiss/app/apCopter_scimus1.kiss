@@ -27,23 +27,12 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_portName":"/dev/ttyAMA0",
-	"_baud":921600,
-	"portName":"/dev/ttyUSB0",
-	"baud":57600,
+	"portName":"/dev/ttyAMA0",
+	"baud":921600,
+	"_portName":"/dev/ttyUSB0",
+	"_baud":57600,
 
 	"_wakeUp":"mavAP",
-}
-
-{
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":19840,
-	"_wakeUp":"mavGCS",
 }
 
 {
@@ -59,6 +48,17 @@
 		"bInst":1,
 		"_Mavlink":"mavGCS",
 	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
 }
 
 {

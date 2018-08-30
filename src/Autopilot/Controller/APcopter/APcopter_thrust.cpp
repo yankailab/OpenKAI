@@ -8,7 +8,6 @@ APcopter_thrust::APcopter_thrust()
 	m_pAP = NULL;
 	m_pSB = NULL;
 	m_pMavAP = NULL;
-	m_pMavGCS = NULL;
 
 	m_pTarget = -1;
 	m_targetMin = 0;
@@ -88,11 +87,6 @@ bool APcopter_thrust::link(void)
 	IF_Fl(!m_pSB, iName + ": not found");
 
 	iName = "";
-	pK->v("_Mavlink_GCS", &iName);
-	m_pMavGCS = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
-	IF_Fl(!m_pMavGCS, iName + ": not found");
-
-	iName = "";
 	pK->v("PIDroll", &iName);
 	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
 	IF_Fl(!m_pRoll, iName + ": not found");
@@ -122,7 +116,6 @@ void APcopter_thrust::update(void)
 	NULL_(m_pAP);
 	m_pMavAP = m_pAP->m_pMavlink;
 	NULL_(m_pMavAP);
-	NULL_(m_pMavGCS);
 	NULL_(m_pSB);
 	NULL_(m_pRoll);
 	NULL_(m_pPitch);
@@ -266,6 +259,7 @@ bool APcopter_thrust::cli(int& iY)
 	IF_F(!this->ActionBase::cli(iY));
 
 	NULL_F(m_pAP->m_pMavlink);
+	NULL_F(m_pMavAP);
 	NULL_F(m_pSB);
 	vDouble3* pPos = &m_pSB->m_pos;
 
