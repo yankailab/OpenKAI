@@ -37,6 +37,8 @@
 	"wD":1280,
 	"hD":720,
 	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
 	"fovW":69.4,
 	"fovH":42.5,
 	"bFlip":0,

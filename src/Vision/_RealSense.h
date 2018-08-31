@@ -46,17 +46,22 @@ private:
 
 public:
 	rs2::pipeline m_rsPipe;
+	rs2::frame m_rsColor;
+	rs2::frame m_rsDepth;
+	rs2::frame m_rsDepthShow;
+	rs2::align* m_rspAlign;
+    rs2::spatial_filter m_rsfSpat;
+    rs2::decimation_filter m_rsfDec;
+    float m_fDec;
+    float m_fSpat;
+
 	int	m_rsFPS;
 	int m_rsDFPS;
 	bool m_rsRGB;
 	string m_vPreset;
 
-	rs2::frame m_rsColor;
-	rs2::frame m_rsDepth;
-
 };
 
 }
-
 #endif
 #endif
