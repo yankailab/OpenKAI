@@ -75,16 +75,16 @@ void _SingleTracker::update(void)
 	}
 }
 
-bool _SingleTracker::updateROI(vDouble4& roi)
+bool _SingleTracker::updateBB(vDouble4& bb)
 {
-	IF_F(!this->_TrackerBase::updateROI(roi));
+	IF_F(!this->_TrackerBase::updateBB(bb));
 
 	if(!m_pTracker.empty())
 		m_pTracker.release();
 
 	createTracker();
 	Mat* pMat = m_pVision->BGR()->m();
-	m_pTracker->init(*pMat, m_ROI);
+	m_pTracker->init(*pMat, m_rBB);
 	m_bTracking = true;
 
 	return true;
@@ -103,7 +103,15 @@ void _SingleTracker::track(void)
 	Mat* pMat = pFrame->m();
 	IF_(pMat->empty());
 
-	m_pTracker->update(*pMat, m_ROI);
+	m_pTracker->update(*pMat, m_rBB);
+
+	vInt4 iBB;
+	rect2vInt4(m_rBB,iBB);
+
+	m_bb.x = (double)iBB.x / (double)pMat->cols;
+	m_bb.y = (double)iBB.y / (double)pMat->rows;
+	m_bb.z = (double)iBB.z / (double)pMat->cols;
+	m_bb.w = (double)iBB.w / (double)pMat->rows;
 }
 
 }

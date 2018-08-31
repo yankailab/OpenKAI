@@ -36,6 +36,7 @@
 #define IF_NEGl(x,y) if(x){LOG_E(y);return -1;}
 
 #define NULL_(x) if(x==NULL){return;}
+#define NULL__(x,y) if(x==NULL){return y;}
 #define NULL_F(x) if(x==NULL){return false;}
 #define NULL_N(x) if(x==NULL){return NULL;}
 #define NULL_T(x) if(x==NULL){return true;}

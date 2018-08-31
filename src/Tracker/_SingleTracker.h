@@ -28,7 +28,7 @@ public:
 	bool start(void);
 
 	void createTracker(void);
-	bool updateROI(vDouble4& roi);
+	bool updateBB(vDouble4& bb);
 
 private:
 	void track(void);

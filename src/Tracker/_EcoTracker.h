@@ -29,7 +29,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool updateROI(vDouble4& roi);
+	bool updateBB(vDouble4& bb);
 
 private:
 	void track(void);

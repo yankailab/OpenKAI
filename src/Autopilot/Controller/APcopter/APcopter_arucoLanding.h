@@ -1,4 +1,3 @@
-
 #ifndef OpenKAI_src_Autopilot_Controller_APcopter_arucoLanding_H_
 #define OpenKAI_src_Autopilot_Controller_APcopter_arucoLanding_H_
 

@@ -13,7 +13,7 @@
 #include "Controller/APcopter/APcopter_DNNavoid.h"
 #include "Controller/APcopter/APcopter_DNNlanding.h"
 #include "Controller/APcopter/APcopter_DNNnav.h"
-#include "Controller/APcopter/APcopter_visualFollow.h"
+#include "Controller/APcopter/APcopter_DNNfollow.h"
 #include "Controller/APcopter/APcopter_ZEDodom.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/HM/HM_avoid.h"

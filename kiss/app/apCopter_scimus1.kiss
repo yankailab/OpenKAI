@@ -289,7 +289,7 @@
 			"freqAtti":0,
 			"freqGlobalPos":0,
 			"freqHeartbeat":1,
-			"freqRC":5,
+			"freqRC":0,
 		}
 		
 		{

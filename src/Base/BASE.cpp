@@ -70,6 +70,11 @@ bool BASE::start(void)
 	return true;
 }
 
+int BASE::check(void)
+{
+	return -1;
+}
+
 int BASE::serialize(uint8_t* pB, int nB)
 {
 	return 0;

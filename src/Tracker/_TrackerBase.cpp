@@ -16,6 +16,7 @@ _TrackerBase::_TrackerBase()
 	m_trackerType = "";
 	m_tStampBGR = 0;
 	m_bTracking = false;
+	m_bb.init();
 }
 
 _TrackerBase::~_TrackerBase()
@@ -50,23 +51,29 @@ bool _TrackerBase::bTracking(void)
 	return m_bTracking;
 }
 
-bool _TrackerBase::updateROI(vDouble4& roi)
+vDouble4* _TrackerBase::getBB(void)
+{
+	return &m_bb;
+}
+
+bool _TrackerBase::updateBB(vDouble4& bb)
 {
 	NULL_F(m_pVision);
 	Mat* pMat = m_pVision->BGR()->m();
 	IF_F(pMat->empty());
 
-	vInt4 iRoi;
-	iRoi.x = roi.x * pMat->cols;
-	iRoi.y = roi.y * pMat->rows;
-	iRoi.z = roi.z * pMat->cols;
-	iRoi.w = roi.w * pMat->rows;
+	vInt4 iBB;
+	iBB.x = bb.x * pMat->cols;
+	iBB.y = bb.y * pMat->rows;
+	iBB.z = bb.z * pMat->cols;
+	iBB.w = bb.w * pMat->rows;
 
-	Rect2d rRoi;
-	vInt42rect(iRoi,rRoi);
-	IF_F(rRoi.width == 0 || rRoi.height == 0);
+	Rect2d rBB;
+	vInt42rect(iBB,rBB);
+	IF_F(rBB.width == 0 || rBB.height == 0);
 
-	m_ROI = rRoi;
+	m_rBB = rBB;
+	m_bb = bb;
 	return true;
 }
 

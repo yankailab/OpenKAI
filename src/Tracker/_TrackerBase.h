@@ -26,12 +26,14 @@ public:
 	void update(void);
 
 	virtual void createTracker(void);
-	bool updateROI(vDouble4& roi);
+	bool updateBB(vDouble4& bb);
 	bool bTracking(void);
+	vDouble4* getBB(void);
 
 public:
 	_VisionBase* m_pVision;
-	Rect2d m_ROI;
+	Rect2d m_rBB;
+	vDouble4 m_bb;
 	string m_trackerType;
 	uint64_t m_tStampBGR;
 	bool	m_bTracking;

@@ -157,17 +157,28 @@ void _EcoTracker::track(void)
 	Mat* pMat = pFrame->m();
 	IF_(pMat->empty());
 
-	Rect2f r = m_ROI;
+	Rect2f r = m_rBB;
 	m_eco.update(*pMat, r);
+	m_rBB = r;
+
+	vInt4 iBB;
+	rect2vInt4(m_rBB,iBB);
+
+	m_bb.x = (double)iBB.x / (double)pMat->cols;
+	m_bb.y = (double)iBB.y / (double)pMat->rows;
+	m_bb.z = (double)iBB.z / (double)pMat->cols;
+	m_bb.w = (double)iBB.w / (double)pMat->rows;
+
+	//TODO: determine if tracker is lost?
 }
 
-bool _EcoTracker::updateROI(vDouble4& roi)
+bool _EcoTracker::updateBB(vDouble4& bb)
 {
-	IF_F(!this->_TrackerBase::updateROI(roi));
+	IF_F(!this->_TrackerBase::updateBB(bb));
 
 	createTracker();
 	Mat* pMat = m_pVision->BGR()->m();
-	Rect2f r = m_ROI;
+	Rect2f r = m_rBB;
 	m_eco.init(*pMat, r, m_param);
 	m_bTracking = true;
 
