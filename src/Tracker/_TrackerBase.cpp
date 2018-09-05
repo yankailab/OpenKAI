@@ -56,11 +56,16 @@ vDouble4* _TrackerBase::getBB(void)
 	return &m_bb;
 }
 
-bool _TrackerBase::updateBB(vDouble4& bb)
+bool _TrackerBase::startTrack(vDouble4& bb)
 {
 	NULL_F(m_pVision);
 	Mat* pMat = m_pVision->BGR()->m();
 	IF_F(pMat->empty());
+
+	bb.x = constrain(bb.x,0.0,1.0);
+	bb.y = constrain(bb.y,0.0,1.0);
+	bb.z = constrain(bb.z,0.0,1.0);
+	bb.w = constrain(bb.w,0.0,1.0);
 
 	vInt4 iBB;
 	iBB.x = bb.x * pMat->cols;
@@ -74,6 +79,38 @@ bool _TrackerBase::updateBB(vDouble4& bb)
 
 	m_rBB = rBB;
 	m_bb = bb;
+	return true;
+}
+
+void _TrackerBase::stopTrack(void)
+{
+	m_bTracking = false;
+}
+
+bool _TrackerBase::draw(void)
+{
+	IF_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+	IF_F(pMat->empty());
+
+	rectangle(*pMat, m_rBB, Scalar(255,255,0), 1);
+
+	return true;
+}
+
+bool _TrackerBase::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	string msg = "Tracking pos = ("
+				+ f2str(m_bb.midX()) + ", "
+				+ f2str(m_bb.midY()) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
 	return true;
 }
 

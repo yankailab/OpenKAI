@@ -92,6 +92,8 @@ make -j6
 cd data
 wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
+wget --no-check-certificate https://pjreddie.com/media/files/yolov3-tiny.weights
+wget --no-check-certificate https://pjreddie.com/media/files/yolov3-spp.weights
 
 # RealSense on PC
 cd $FULLDEVDIR

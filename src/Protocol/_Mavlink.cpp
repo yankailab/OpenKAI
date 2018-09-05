@@ -179,34 +179,25 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 	LOG_I("<- gpsInput");
 }
 
-void _Mavlink::setAttitudeTarget(float* pAtti, float* pRate, float thrust, uint8_t mask)
+void _Mavlink::setAttitudeTarget(mavlink_set_attitude_target_t& D)
 {
-	mavlink_set_attitude_target_t D;
+	//  pAtti: Roll, Pitch, Yaw
+	//	mavlink_euler_to_quaternion(pAtti[0], pAtti[1], pAtti[2], D.q);
+	//	D.body_roll_rate = pRate[0];
+	//	D.body_pitch_rate = pRate[1];
+	//	D.body_yaw_rate = pRate[2];
+	//	D.thrust = thrust;
+	//	D.type_mask = mask;
 
-	//pAtti: Roll, Pitch, Yaw
-	float pQ[4];
-	mavlink_euler_to_quaternion(pAtti[0], pAtti[1], pAtti[2], pQ);
-
+	D.time_boot_ms = getTimeBootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
-	D.q[0] = pQ[0];
-	D.q[1] = pQ[1];
-	D.q[2] = pQ[2];
-	D.q[3] = pQ[3];
-	D.body_roll_rate = pRate[0];
-	D.body_pitch_rate = pRate[1];
-	D.body_yaw_rate = pRate[2];
-	D.thrust = thrust;
-	D.type_mask = mask;
 
 	mavlink_message_t msg;
 	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- setTargetAttitude: r=" + f2str(pAtti[0]) +
-			", p=" + f2str(pAtti[1]) +
-			", y=" + f2str(pAtti[2]) +
-			", thr=" + f2str(thrust));
+	LOG_I("<- setTargetAttitude");
 }
 
 void _Mavlink::landingTarget(mavlink_landing_target_t& D)

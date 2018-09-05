@@ -164,7 +164,7 @@ public:
 	//Cmd
 	void requestDataStream(uint8_t stream_id, int rate);
 	void sendHeartbeat(void);
-	void setAttitudeTarget(float* pAttitude, float* pRate, float thrust, uint8_t mask);
+	void setAttitudeTarget(mavlink_set_attitude_target_t& D);
 	void visionPositionDelta(uint64_t dTime, vDouble3* pDAngle, vDouble3* pDPos, uint8_t confidence);
 
 	void distanceSensor(mavlink_distance_sensor_t& D);

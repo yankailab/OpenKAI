@@ -56,7 +56,7 @@ if(USE_OPENTRACKER)
   set(OpenTracker_root "/OpenTracker" CACHE STRING "")
   set(OpenKAI_libDir ${OpenKAI_libDir} "${OpenTracker_root}/eco")
   set(OpenKAI_include ${OpenKAI_include} "${OpenTracker_root}/eco")
-  set(OpenKAI_lib ${OpenKAI_lib} opentracker)
+  set(OpenKAI_lib ${OpenKAI_lib} ecotracker)
 endif()
 
 if(USE_REALSENSE)

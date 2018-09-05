@@ -14,10 +14,12 @@ namespace kai
 
 _EcoTracker::_EcoTracker()
 {
+	pthread_mutex_init(&m_ecoMutex, NULL);
 }
 
 _EcoTracker::~_EcoTracker()
 {
+	pthread_mutex_destroy(&m_ecoMutex);
 }
 
 bool _EcoTracker::init(void* pKiss)
@@ -157,9 +159,13 @@ void _EcoTracker::track(void)
 	Mat* pMat = pFrame->m();
 	IF_(pMat->empty());
 
-	Rect2f r = m_rBB;
+	pthread_mutex_lock(&m_ecoMutex);
+
+	Rect2f r;
 	m_eco.update(*pMat, r);
 	m_rBB = r;
+
+	pthread_mutex_unlock(&m_ecoMutex);
 
 	vInt4 iBB;
 	rect2vInt4(m_rBB,iBB);
@@ -172,14 +178,19 @@ void _EcoTracker::track(void)
 	//TODO: determine if tracker is lost?
 }
 
-bool _EcoTracker::updateBB(vDouble4& bb)
+bool _EcoTracker::startTrack(vDouble4& bb)
 {
-	IF_F(!this->_TrackerBase::updateBB(bb));
+	IF_F(!this->_TrackerBase::startTrack(bb));
 
-	createTracker();
 	Mat* pMat = m_pVision->BGR()->m();
 	Rect2f r = m_rBB;
+
+	pthread_mutex_lock(&m_ecoMutex);
+
 	m_eco.init(*pMat, r, m_param);
+
+	pthread_mutex_unlock(&m_ecoMutex);
+
 	m_bTracking = true;
 
 	return true;

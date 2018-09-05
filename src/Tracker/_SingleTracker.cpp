@@ -75,9 +75,9 @@ void _SingleTracker::update(void)
 	}
 }
 
-bool _SingleTracker::updateBB(vDouble4& bb)
+bool _SingleTracker::startTrack(vDouble4& bb)
 {
-	IF_F(!this->_TrackerBase::updateBB(bb));
+	IF_F(!this->_TrackerBase::startTrack(bb));
 
 	if(!m_pTracker.empty())
 		m_pTracker.release();

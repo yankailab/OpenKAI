@@ -67,9 +67,6 @@ bool RC_visualFollow::init(void* pKiss)
 	F_ERROR_F(pK->v("ROItracker", &iName));
 	m_pROITracker = (_SingleTracker*) (pK->root()->getChildInstByName(&iName));
 
-	IF_F(!m_pUIassist->link());
-	IF_F(!m_pUIdrawRect->link());
-
 	return true;
 }
 
@@ -111,8 +108,8 @@ void RC_visualFollow::update(void)
 	posPitch = m_pitch.m_pos;
 
 	//Update pos from ROI tracker
-	m_roll.m_pos = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width * 0.5;
-	m_pitch.m_pos = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height * 0.5;
+	m_roll.m_pos = m_pROITracker->m_rBB.x + m_pROITracker->m_rBB.width * 0.5;
+	m_pitch.m_pos = m_pROITracker->m_rBB.y + m_pROITracker->m_rBB.height * 0.5;
 
 	//Update current position with trajectory estimation
 	posRoll = m_roll.m_pos + (m_roll.m_pos - posRoll) * pidRoll->m_dT * ovDTime;
@@ -261,8 +258,8 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			m_ROIsize += m_ROIsizeStep;
 //			IF_(!m_pROITracker->m_bTracking);
 
-			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
-			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
+			roi.x = m_pROITracker->m_rBB.x + m_pROITracker->m_rBB.width / 2;
+			roi.y = m_pROITracker->m_rBB.y + m_pROITracker->m_rBB.height / 2;
 			ROIhalf = m_ROIsize / 2;
 
 			m_ROI.x = roi.x - ROIhalf;
@@ -283,8 +280,8 @@ void RC_visualFollow::onMouseAssist(MOUSE* pMouse, BUTTON* pBtn)
 			m_ROIsize -= m_ROIsizeStep;
 //			IF_(!m_pROITracker->m_bTracking);
 
-			roi.x = m_pROITracker->m_ROI.x + m_pROITracker->m_ROI.width / 2;
-			roi.y = m_pROITracker->m_ROI.y + m_pROITracker->m_ROI.height / 2;
+			roi.x = m_pROITracker->m_rBB.x + m_pROITracker->m_rBB.width / 2;
+			roi.y = m_pROITracker->m_rBB.y + m_pROITracker->m_rBB.height / 2;
 			ROIhalf = m_ROIsize / 2;
 
 			m_ROI.x = roi.x - ROIhalf;

@@ -24,9 +24,12 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
+	virtual bool draw(void);
+	virtual bool cli(int& iY);
 
 	virtual void createTracker(void);
-	bool updateBB(vDouble4& bb);
+	virtual bool startTrack(vDouble4& bb);
+	virtual void stopTrack(void);
 	bool bTracking(void);
 	vDouble4* getBB(void);
 

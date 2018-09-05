@@ -23,7 +23,7 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
-	OBJECT* newFound(void);
+	int newFound(OBJECT* pObj);
 	void releaseRC(void);
 
 public:
@@ -35,8 +35,8 @@ public:
 
 	int		 m_iClass;
 	vDouble3 m_vTarget;
+	vDouble3 m_vPos;
 	uint32_t m_iModeEnable;
-	OBJECT 	 m_oTarget;
 
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;
@@ -44,7 +44,10 @@ public:
 	PIDctrl* m_pAlt;
 
 	uint16_t m_pwmLow;
-	uint16_t m_pwmMid;
+	uint16_t m_pwmMidR;
+	uint16_t m_pwmMidP;
+	uint16_t m_pwmMidY;
+	uint16_t m_pwmMidA;
 	uint16_t m_pwmHigh;
 
 };

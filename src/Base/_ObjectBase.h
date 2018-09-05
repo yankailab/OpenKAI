@@ -192,8 +192,8 @@ public:
 	virtual ~_ObjectBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool draw(void);
 	virtual void update(void);
+	virtual bool draw(void);
 	virtual bool cli(int& iY);
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);

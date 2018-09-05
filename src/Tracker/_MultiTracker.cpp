@@ -91,7 +91,7 @@ void _MultiTracker::addNewTarget(void)
 			IF_CONT(overlapRatio(&pO->m_bb, &pNewO->m_bb) < m_dMaxTrack);
 
 			//the obj is already being tracked, update its ROI size
-			((_SingleTracker*)pO->m_pTracker)->updateBB(pNewO->m_bb);
+			((_SingleTracker*)pO->m_pTracker)->startTrack(pNewO->m_bb);
 			if(pNewO->m_topProb > pO->m_topProb)
 			{
 				pO->m_topProb = pNewO->m_topProb;
@@ -118,7 +118,7 @@ void _MultiTracker::addNewTarget(void)
 			delete pT;
 			continue;
 		}
-		if(!pT->updateBB(pNewO->m_bb))
+		if(!pT->startTrack(pNewO->m_bb))
 		{
 			delete pT;
 			continue;
