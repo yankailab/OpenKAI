@@ -37,6 +37,11 @@ public:
 	_VisionBase* m_pVision;
 	Rect2d m_rBB;
 	vDouble4 m_bb;
+
+	Rect2f	m_newBB;
+	int		m_iSet;
+	int		m_iInit;
+
 	string m_trackerType;
 	uint64_t m_tStampBGR;
 	bool	m_bTracking;

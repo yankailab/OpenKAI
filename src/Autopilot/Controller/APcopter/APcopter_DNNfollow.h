@@ -23,7 +23,7 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
-	int newFound(OBJECT* pObj);
+	OBJECT* newFound(void);
 	void releaseRC(void);
 
 public:
@@ -32,6 +32,8 @@ public:
 	uint64_t m_tStampDet;
 	_DepthVisionBase* m_pDV;
 	_TrackerBase* m_pTracker;
+	uint64_t m_timeOut;
+	uint64_t m_timeOn;
 
 	int		 m_iClass;
 	vDouble3 m_vTarget;

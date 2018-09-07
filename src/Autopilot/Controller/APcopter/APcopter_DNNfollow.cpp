@@ -32,6 +32,9 @@ APcopter_DNNfollow::APcopter_DNNfollow()
 	m_pwmMidA = 1500;
 	m_pwmHigh = 2000;
 
+	m_timeOn = 0;
+	m_timeOut = USEC_1SEC * 180;
+
 }
 
 APcopter_DNNfollow::~APcopter_DNNfollow()
@@ -51,6 +54,9 @@ bool APcopter_DNNfollow::init(void* pKiss)
 	KISSm(pK,pwmMidY);
 	KISSm(pK,pwmMidA);
 	KISSm(pK,pwmHigh);
+
+	KISSm(pK,timeOut);
+	m_timeOut *= USEC_1SEC;
 
 	pK->v("x", &m_vTarget.x);
 	pK->v("y", &m_vTarget.y);
@@ -122,6 +128,7 @@ void APcopter_DNNfollow::update(void)
 	this->ActionBase::update();
 
 	IF_(check()<0);
+
 	_Mavlink* pMav = m_pAP->m_pMavlink;
 	if(pMav->m_msg.heartbeat.custom_mode != m_iModeEnable)
 	{
@@ -129,32 +136,38 @@ void APcopter_DNNfollow::update(void)
 		return;
 	}
 
+	if(m_timeOn == 0)
+	{
+		m_timeOn = m_tStamp;
+	}
+	else if(m_tStamp - m_timeOn >= m_timeOut)
+	{
+		releaseRC();
+		mavlink_set_mode_t D;
+		D.custom_mode = RTL;
+		pMav->setMode(D);
+		m_pTracker->stopTrack();
+		return;
+	}
+
+	OBJECT* pO = newFound();
 	if(!m_pTracker->bTracking())
 	{
-		OBJECT o;
-		int nO = newFound(&o);
-		if(nO == 0)
-		{
-			//no target found
-//			m_pTracker->stopTrack();
-			releaseRC();
-			return;
-		}
+		if(pO)
+			m_pTracker->startTrack(pO->m_bb);
 
-		if(nO > 0)
-		{
-			//found new target
-			m_pTracker->startTrack(o.m_bb);
-		}
+		releaseRC();
+		return;
 	}
 
 	vDouble4* pBB = m_pTracker->getBB();
 	m_vPos.x = pBB->midX();
 	m_vPos.y = pBB->midY();
+	m_vPos.z = (double)pMav->m_msg.global_position_int.relative_alt * 0.001;
 
 	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = (uint16_t)(m_pwmMidP + (int)m_pPitch->update(m_vPos.y, m_vTarget.y));
-	rc.chan2_raw = (uint16_t)(m_pwmMidR + (int)m_pRoll->update(m_vPos.x, m_vTarget.x));
+	rc.chan1_raw = (uint16_t)(m_pwmMidP + (int)m_pPitch->update(m_vPos.y, m_vTarget.y, m_vPos.z));
+	rc.chan2_raw = (uint16_t)(m_pwmMidR + (int)m_pRoll->update(m_vPos.x, m_vTarget.x, m_vPos.z));
 	rc.chan3_raw = 0;
 	rc.chan4_raw = 0;
 	rc.chan5_raw = 0;
@@ -164,12 +177,8 @@ void APcopter_DNNfollow::update(void)
 	m_pAP->m_pMavlink->rcChannelsOverride(rc);
 }
 
-int APcopter_DNNfollow::newFound(OBJECT* pObj)
+OBJECT* APcopter_DNNfollow::newFound(void)
 {
-//	if(m_pDet->m_tStamp <= m_tStampDet)
-//		return -1;
-//
-//	m_tStampDet = m_pDet->m_tStamp;
 	OBJECT* pO;
 	OBJECT* tO = NULL;
 	double topProb = 0.0;
@@ -183,11 +192,7 @@ int APcopter_DNNfollow::newFound(OBJECT* pObj)
 		topProb = pO->m_topProb;
 	}
 
-	if(!tO)
-		return 0;
-
-	*pObj = *tO;
-	return 1;
+	return tO;
 }
 
 void APcopter_DNNfollow::releaseRC(void)
@@ -219,11 +224,13 @@ bool APcopter_DNNfollow::draw(void)
 							m_vPos.y * pMat->rows),
 				pMat->cols * pMat->rows * 0.00005, Scalar(0, 0, 255), 2);
 
-		msg = "Target pos = (" + f2str(m_vPos.x) + ", " + f2str(m_vPos.y)+")";
+		msg = "Target pos = (" + f2str(m_vPos.x) + ", "
+							   + f2str(m_vPos.y) + ", "
+							   + f2str(m_vPos.z) + ")";
 	}
 	else
 	{
-		msg = "Target tag not found";
+		msg = "Target not found";
 	}
 
 	pWin->addMsg(&msg);
@@ -243,11 +250,13 @@ bool APcopter_DNNfollow::cli(int& iY)
 	string msg;
 	if (m_pTracker->bTracking())
 	{
-		msg = "Target pos = (" + f2str(m_vPos.x) + ", " + f2str(m_vPos.y)+")";
+		msg = "Target pos = (" + f2str(m_vPos.x) + ", "
+							   + f2str(m_vPos.y) + ", "
+							   + f2str(m_vPos.z) + ")";
 	}
 	else
 	{
-		msg = "Target tag not found";
+		msg = "Target not found";
 	}
 
 	COL_MSG;

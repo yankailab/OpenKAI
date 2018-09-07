@@ -17,6 +17,9 @@ _TrackerBase::_TrackerBase()
 	m_tStampBGR = 0;
 	m_bTracking = false;
 	m_bb.init();
+	m_iSet = 0;
+	m_iInit = 0;
+
 }
 
 _TrackerBase::~_TrackerBase()
@@ -77,8 +80,9 @@ bool _TrackerBase::startTrack(vDouble4& bb)
 	vInt42rect(iBB,rBB);
 	IF_F(rBB.width == 0 || rBB.height == 0);
 
-	m_rBB = rBB;
-	m_bb = bb;
+	m_newBB = rBB;
+
+	m_iSet++;
 	return true;
 }
 
@@ -94,6 +98,7 @@ bool _TrackerBase::draw(void)
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
+	IF_F(!m_bTracking);
 
 	rectangle(*pMat, m_rBB, Scalar(255,255,0), 1);
 

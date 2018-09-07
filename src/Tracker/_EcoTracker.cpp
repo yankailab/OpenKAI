@@ -14,12 +14,10 @@ namespace kai
 
 _EcoTracker::_EcoTracker()
 {
-	pthread_mutex_init(&m_ecoMutex, NULL);
 }
 
 _EcoTracker::~_EcoTracker()
 {
-	pthread_mutex_destroy(&m_ecoMutex);
 }
 
 bool _EcoTracker::init(void* pKiss)
@@ -150,8 +148,6 @@ void _EcoTracker::update(void)
 void _EcoTracker::track(void)
 {
 	NULL_(m_pVision);
-	IF_(!m_bTracking);
-
 	Frame* pFrame = m_pVision->BGR();
 	IF_(pFrame->tStamp() <= m_tStampBGR);
 	m_tStampBGR = pFrame->tStamp();
@@ -159,13 +155,26 @@ void _EcoTracker::track(void)
 	Mat* pMat = pFrame->m();
 	IF_(pMat->empty());
 
-	pthread_mutex_lock(&m_ecoMutex);
+	if(m_iSet > m_iInit)
+	{
+		m_eco.init(*pMat, m_newBB, m_param);
+		m_bTracking = true;
+		m_rBB = m_newBB;
+		m_iInit = m_iSet;
+	}
+	else
+	{
+		IF_(!m_bTracking);
 
-	Rect2f r;
-	m_eco.update(*pMat, r);
-	m_rBB = r;
+		Rect2f r;
+		if(!m_eco.update(*pMat, r))
+		{
+			m_bTracking = false;
+			return;
+		}
 
-	pthread_mutex_unlock(&m_ecoMutex);
+		m_rBB = r;
+	}
 
 	vInt4 iBB;
 	rect2vInt4(m_rBB,iBB);
@@ -174,26 +183,6 @@ void _EcoTracker::track(void)
 	m_bb.y = (double)iBB.y / (double)pMat->rows;
 	m_bb.z = (double)iBB.z / (double)pMat->cols;
 	m_bb.w = (double)iBB.w / (double)pMat->rows;
-
-	//TODO: determine if tracker is lost?
-}
-
-bool _EcoTracker::startTrack(vDouble4& bb)
-{
-	IF_F(!this->_TrackerBase::startTrack(bb));
-
-	Mat* pMat = m_pVision->BGR()->m();
-	Rect2f r = m_rBB;
-
-	pthread_mutex_lock(&m_ecoMutex);
-
-	m_eco.init(*pMat, r, m_param);
-
-	pthread_mutex_unlock(&m_ecoMutex);
-
-	m_bTracking = true;
-
-	return true;
 }
 
 }

@@ -29,7 +29,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool startTrack(vDouble4& bb);
 
 private:
 	void track(void);
@@ -43,7 +42,6 @@ private:
 public:
     ECO m_eco;
 	EcoParameters m_param;
-	pthread_mutex_t m_ecoMutex;
 
 };
 

@@ -71,7 +71,7 @@
 	"bInst":1,
 	"bDraw":0,
 	"bLog":0,
-	"FPS":2,
+	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
@@ -97,11 +97,12 @@
 	"name":"tracker",
 	"class":"_EcoTracker",
 	"bInst":1,
-	"bDraw":1,
+	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"maxScoreThresh":0.25,
 }
 
 {
@@ -133,14 +134,27 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-0.1,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.0,
 	"dT":0.85,
 	"min":-500,
 	"max":500,
-	"K":500,
+	"K":300,
+
+	{
+		"name":"PIDset1",
+		"P":0.1,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":5.0,
+	}
+	{
+		"name":"PIDset2",
+		"P":0.1,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":50.0,
+	}
 }
 
 {
@@ -148,14 +162,27 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":0.1,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
 	"dT":0.85,
 	"min":-500,
 	"max":500,
 	"K":500,
+
+	{
+		"name":"PIDset1",
+		"P":0.1,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":5.0,
+	}
+	{
+		"name":"PIDset2",
+		"P":0.1,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":50.0,
+	}
 }
 
 {
@@ -163,14 +190,27 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":0.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
+	"dT":0.85,
 	"min":-500,
 	"max":500,
 	"K":500,
+
+	{
+		"name":"PIDset1",
+		"P":0.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":5.0,
+	}
+	{
+		"name":"PIDset2",
+		"P":0.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":50.0,
+	}
 }
 
 {
@@ -178,14 +218,27 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
+	"dT":0.85,
 	"min":-500,
 	"max":500,
 	"K":500,
+
+	{
+		"name":"PIDset1",
+		"P":0.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":5.0,
+	}
+	{
+		"name":"PIDset2",
+		"P":0.0,
+		"I":0.0,
+		"Imax":0.0,
+		"D":0.0,
+		"h":50.0,
+	}
 }
 
 {
@@ -197,6 +250,12 @@
 
 	{
 		"state":"CC_STANDBY",
+	}
+	{
+		"state":"CC_FOLLOW",
+	}
+	{
+		"state":"CC_RTL",
 	}
 }
 
@@ -219,7 +278,7 @@
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
-			"freqGlobalPos":0,
+			"freqGlobalPos":30,
 			"freqHeartbeat":1,
 			"freqRC":0,
 		}
@@ -231,12 +290,12 @@
 			"bLog":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_STANDBY"],
+			"activeState":["CC_STANDBY","CC_FOLLOW"],
 			"APcopter_base":"apBase",
 			"_ObjectBase":"yolo",
 			"_TrackerBase":"tracker",
 			"iClass":0,
-			"iModeEnable":0,
+			"iModeEnable":16,
 			"PIDroll":"PIDroll",
 			"PIDpitch":"PIDpitch",
 			"PIDyaw":"PIDyaw",
