@@ -33,8 +33,6 @@ public:
 	bool draw(void);
 	bool cli(int& iY);
 
-	void navigation(void);
-
 public:
 	APcopter_base* m_pAP;
 	_ObjectBase* m_pArUco;

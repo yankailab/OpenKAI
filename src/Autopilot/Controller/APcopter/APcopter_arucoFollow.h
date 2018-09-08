@@ -1,21 +1,20 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_DNNfollow_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_DNNfollow_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_arucoFollow_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_arucoFollow_H_
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
 #include "../../../Vision/_DepthVisionBase.h"
-#include "../../../Tracker/_TrackerBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
 namespace kai
 {
 
-class APcopter_DNNfollow: public ActionBase
+class APcopter_arucoFollow: public ActionBase
 {
 public:
-	APcopter_DNNfollow();
-	~APcopter_DNNfollow();
+	APcopter_arucoFollow();
+	~APcopter_arucoFollow();
 
 	bool init(void* pKiss);
 	void update(void);
@@ -24,21 +23,17 @@ public:
 	int check(void);
 
 	OBJECT* newFound(void);
-	void search(void);
 	void releaseRC(void);
 
 public:
 	APcopter_base* m_pAP;
-	_ObjectBase* m_pDet;
-	uint64_t m_tStampDet;
+	_ObjectBase* m_pArUco;
 	_DepthVisionBase* m_pDV;
-	_TrackerBase* m_pTracker;
-	uint64_t m_timeOut;
-	uint64_t m_timeOn;
 
-	bool	 m_bUseTracker;
+	int 	 m_tag;
+	double 	 m_angle;
 	bool	 m_bFollowing;
-	int		 m_iClass;
+
 	vDouble3 m_vTarget;
 	vDouble3 m_vPos;
 	uint32_t m_iModeEnable;
@@ -54,10 +49,6 @@ public:
 	uint16_t m_pwmMidY;
 	uint16_t m_pwmMidA;
 	uint16_t m_pwmHigh;
-
-	uint16_t m_pwmYawSearch;
-	double m_searchFrom;
-	double m_searchTo;
 
 };
 

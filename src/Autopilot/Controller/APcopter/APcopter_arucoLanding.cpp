@@ -58,16 +58,13 @@ void APcopter_arucoLanding::update(void)
 {
 	this->ActionBase::update();
 
-	navigation();
-}
-
-void APcopter_arucoLanding::navigation(void)
-{
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
 	NULL_(m_pArUco);
 	_VisionBase* pV = m_pArUco->m_pVision;
 	NULL_(pV);
+
+	IF_(!isActive());
 
 	vInt2 cSize;
 	vInt2 cCenter;
@@ -136,14 +133,18 @@ bool APcopter_arucoLanding::draw(void)
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	string msg = *this->getName() + ": ";
 
-	if (m_bLocked)
+	if(!isActive())
+	{
+		msg += "Inactive";
+	}
+	else if (m_bLocked)
 	{
 		circle(*pMat, Point(m_oTarget.m_bb.x, m_oTarget.m_bb.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
-		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
+		msg += "Target tag = " + i2str(m_oTarget.m_topClass)
 				+ ", angle = ("
 				+ f2str((double)m_D.angle_x) + " , "
 				+ f2str((double)m_D.angle_y) + ")"
@@ -151,7 +152,7 @@ bool APcopter_arucoLanding::draw(void)
 	}
 	else
 	{
-		msg = "Target tag not found";
+		msg += "Target tag not found";
 	}
 
 	pWin->addMsg(&msg);
@@ -166,7 +167,11 @@ bool APcopter_arucoLanding::cli(int& iY)
 
 	string msg;
 
-	if (m_bLocked)
+	if(!isActive())
+	{
+		msg = "Inactive";
+	}
+	else if (m_bLocked)
 	{
 		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
 				+ ", angle = ("

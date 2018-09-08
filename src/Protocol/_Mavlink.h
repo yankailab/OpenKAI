@@ -102,6 +102,8 @@ struct Mavlink_Messages
 		attitude.roll = 0;
 		attitude.rollspeed = 0;
 		global_position_int.alt = 0;
+		global_position_int.relative_alt = 0;
+		heartbeat.custom_mode = 0;
 
 		time_stamps.init();
 	}
