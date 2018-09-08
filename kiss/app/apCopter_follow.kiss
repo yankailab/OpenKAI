@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":1,
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
 	"waitKey":50,
 }
 
@@ -63,6 +63,7 @@
 	"bGray":0,
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -297,7 +298,7 @@
 		{
 			"name":"apDNNfollow",
 			"class":"APcopter_DNNfollow",
-			"bInst":1,
+			"bInst":0,
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
@@ -330,7 +331,7 @@
 		{
 			"name":"apArucoFollow",
 			"class":"APcopter_arucoFollow",
-			"bInst":0,
+			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
