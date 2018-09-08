@@ -75,7 +75,7 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"modelDir":"/home/kai/dev/darknet/",
+	"modelDir":"/home/ubuntu/dev/darknet/",
 	"modelFile":"cfg/yolov3.cfg",
 	"trainedFile":"data/yolov3.weights",
 	"meanFile":"",
@@ -148,7 +148,7 @@
 		"h":5.0,
 	}
 	{
-		"name":"PIDset2",
+		"name":"PIDset2_",
 		"P":0.1,
 		"I":0.0,
 		"Imax":0.0,
@@ -176,7 +176,7 @@
 		"h":5.0,
 	}
 	{
-		"name":"PIDset2",
+		"name":"PIDset2_",
 		"P":0.1,
 		"I":0.0,
 		"Imax":0.0,

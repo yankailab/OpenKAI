@@ -145,6 +145,13 @@ autoreconf -fiv
 ./configure
 make -j6
 
+# OpenTracker
+cd $FULLDEVDIR
+git clone https://github.com/rockkingjy/OpenTracker
+cd OpenTracker/eco
+#edit makefile -> USE_SIMD=2
+make -j6
+
 # OpenKAI
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/OpenKAI.git

@@ -62,7 +62,7 @@ bool _EcoTracker::init(void* pKiss)
 	pK->v("initCGiter", &m_param.init_CG_iter);
 	pK->v("initGNiter", &m_param.init_GN_iter);
 	pK->v("CGuseFR", &m_param.CG_use_FR);
-	pK->v("pCGstandardAlpha", &m_param.pCG_standard_alpha);
+	pK->v("CGstandardAlpha", &m_param.CG_standard_alpha);
 	pK->v("CGforgettingRate", &m_param.CG_forgetting_rate);
 	pK->v("precondfDataParam", &m_param.precond_data_param);
 	pK->v("precondRegParam", &m_param.precond_reg_param);
