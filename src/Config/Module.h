@@ -33,7 +33,6 @@
 #include "../DNN/TensorRT/_ImageNet.h"
 #include "../Detector/_ClusterNet.h"
 #include "../DNN/TensorRT/_DetectNet.h"
-#include "../Regression/TrainDataGenerator/_DNNGen_odometry.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
@@ -80,7 +79,6 @@
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
-#include "../Vision/_ZED.h"
 #include "../Detector/_Bullseye.h"
 #endif
 #ifdef USE_CASCADE

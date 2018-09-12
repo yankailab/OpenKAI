@@ -52,6 +52,8 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_distLidar);
 		ADD_ACTION(APcopter_DNNfollow);
 		ADD_ACTION(APcopter_DNNlanding);
+		ADD_ACTION(APcopter_edgeHold);
+		ADD_ACTION(APcopter_posCtrlRC);
 
 		ADD_ACTION(AProver_base);
 
@@ -76,9 +78,6 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(RC_base);
 		ADD_ACTION(RC_visualFollow);
 #endif
-#ifdef USE_ZED
-		ADD_ACTION(APcopter_ZEDodom);
-#endif
 
 		//Add action modules above
 
@@ -90,7 +89,7 @@ bool _AutoPilot::init(void* pKiss)
 
 	string iName="";
 	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(&iName));
+	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

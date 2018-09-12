@@ -41,7 +41,7 @@ bool _Automaton::init(void* pKiss)
 
 	string startState = "";
 	F_ERROR_F(pK->v("startState", &startState));
-	m_iState = getStateIdx(&startState);
+	m_iState = getStateIdx(startState);
 	IF_F(m_iState<0);
 
 	LOG_I(m_pStateName[m_iState]);
@@ -49,22 +49,19 @@ bool _Automaton::init(void* pKiss)
 	return true;
 }
 
-int _Automaton::getStateIdx(string* pStateName)
+int _Automaton::getStateIdx(const string& stateName)
 {
-	if(pStateName==NULL)return -1;
-
 	for(int i=0;i<m_nState;i++)
 	{
-		if(m_pStateName[i]==*pStateName)return i;
+		if(m_pStateName[i] == stateName)return i;
 	}
 
 	return -1;
 }
 
-bool _Automaton::transit(string* pNextStateName)
+bool _Automaton::transit(const string& nextStateName)
 {
-	NULL_F(pNextStateName);
-	int iNext = getStateIdx(pNextStateName);
+	int iNext = getStateIdx(nextStateName);
 
 	return transit(iNext);
 }

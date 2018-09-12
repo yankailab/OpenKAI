@@ -24,11 +24,11 @@ bool APcopter_distLidar::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DistSensorBase", &iName));
-	m_pDS = (_DistSensorBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDS = (_DistSensorBase*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pDS,iName + " not found");
 
 	Kiss** pItrDS = pK->getChildItr();

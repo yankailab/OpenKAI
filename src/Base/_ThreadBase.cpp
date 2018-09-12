@@ -52,7 +52,7 @@ bool _ThreadBase::init(void* pKiss)
 
 	string iName = "";
 	pK->v("_wakeUp", &iName);
-	m_pWakeUp = (_ThreadBase*) (pK->root()->getChildInstByName(&iName));
+	m_pWakeUp = (_ThreadBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

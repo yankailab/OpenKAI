@@ -87,16 +87,10 @@ bool Kiss::parse(string* pStr)
 	if (!m_json.parse("{" + (*pStr) + "}"))
 		return false;
 
-	string name;
-	name = "name";
-	m_json.v(&name, &m_name);
-
-	name = "class";
-	m_json.v(&name, &m_class);
-
+	m_json.v("name", &m_name);
+	m_json.v("class", &m_class);
 	bool bInst = true;
-	name = "bInst";
-	m_json.v(&name, &bInst);
+	m_json.v("bInst", &bInst);
 
 	return bInst;
 }
@@ -164,7 +158,7 @@ bool Kiss::addChild(string* pStr)
 	return true;
 }
 
-Kiss* Kiss::o(string name)
+Kiss* Kiss::o(const string& name)
 {
 	if (name.empty())
 		return m_pNULL;
@@ -202,10 +196,9 @@ JSON* Kiss::json(void)
 	return &m_json;
 }
 
-Kiss** Kiss::getClassItr(string* pClassName)
+Kiss** Kiss::getClassItr(const string& className)
 {
-	if(pClassName==NULL)return NULL;
-	if(pClassName->empty())return NULL;
+	if(className.empty())return NULL;
 
 	int i;
 	int nFound = 0;
@@ -214,7 +207,7 @@ Kiss** Kiss::getClassItr(string* pClassName)
 	for(i=0; i<m_nChild; i++)
 	{
 		Kiss* pC = m_pChild[i];
-		if(pC->m_class != (*pClassName))continue;
+		IF_CONT(pC->m_class != className);
 
 		m_ppItr[nFound]=pC;
 		nFound++;
@@ -235,10 +228,9 @@ Kiss** Kiss::getChildItr(void)
 	return m_pChild;
 }
 
-void* Kiss::getChildInstByName(string* pName)
+void* Kiss::getChildInstByName(const string& name)
 {
-	NULL_N(pName);
-	Kiss* pC = o(*pName);
+	Kiss* pC = o(name);
 	IF_N(!pC);
 	IF_N(pC->empty());
 
@@ -250,64 +242,64 @@ bool Kiss::empty(void)
 	return m_bNULL;
 }
 
-bool Kiss::v(string name, int* val)
+bool Kiss::v(const string& name, int* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, bool* val)
+bool Kiss::v(const string& name, bool* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, uint8_t* val)
+bool Kiss::v(const string& name, uint8_t* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, uint16_t* val)
+bool Kiss::v(const string& name, uint16_t* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, uint32_t* val)
+bool Kiss::v(const string& name, uint32_t* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, uint64_t* val)
+bool Kiss::v(const string& name, uint64_t* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, double* val)
+bool Kiss::v(const string& name, double* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, float* val)
+bool Kiss::v(const string& name, float* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-bool Kiss::v(string name, string* val)
+bool Kiss::v(const string& name, string* val)
 {
-	return m_json.v(&name, val);
+	return m_json.v(name, val);
 }
 
-int Kiss::array(string name, int* pVal, int nArray)
+int Kiss::array(const string& name, int* pVal, int nArray)
 {
-	return m_json.array(&name, pVal, nArray);
+	return m_json.array(name, pVal, nArray);
 }
 
-int Kiss::array(string name, double* pVal, int nArray)
+int Kiss::array(const string& name, double* pVal, int nArray)
 {
-	return m_json.array(&name, pVal, nArray);
+	return m_json.array(name, pVal, nArray);
 }
 
-int Kiss::array(string name, string* pVal, int nArray)
+int Kiss::array(const string& name, string* pVal, int nArray)
 {
-	return m_json.array(&name, pVal, nArray);
+	return m_json.array(name, pVal, nArray);
 }
 
 }

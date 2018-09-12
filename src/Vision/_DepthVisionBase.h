@@ -44,10 +44,10 @@ public:
 	Mat m_mZ;
 	Mat m_mD;
 
-	vInt2		m_mDim;
-	Median* 	m_pFilterMatrix;
-	int			m_nFilter;
-	Frame		m_fMatrixFrame;
+	bool		m_bFilter;
+	vInt2		m_dimFilterMat;
+	Median* 	m_pFilterMat;
+	int			m_nFilterMat;
 	double		m_dMedian;
 
 	Frame	m_depthShow;

@@ -53,11 +53,11 @@ bool HM_base::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_Canbus", &iName));
-	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(&iName));
+	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -92,39 +92,31 @@ void HM_base::update(void)
 void HM_base::cmd(void)
 {
 	char buf;
-	string stateName;
 
 //	IF_(m_pCMD->read((uint8_t*) &buf, 1) <= 0);
 
 	switch (buf)
 	{
 	case '1':	//standby
-		stateName = "HM_STANDBY";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_STANDBY");
 		break;
 	case '2':	//station
-		stateName = "HM_STATION";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_STANDBY");
 		break;
 	case '3':	//kickback
-		stateName = "HM_KICKBACK";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_KICKBACK");
 		break;
 	case '4':	//work
-		stateName = "HM_WORK";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_WORK");
 		break;
 	case '5':	//follow
-		stateName = "HM_FOLLOW";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_FOLLOW");
 		break;
 	case '6':	//rth
-		stateName = "HM_RTH";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_RTH");
 		break;
 	case '0':	//manual
-		stateName = "HM_MANUAL";
-		m_pAM->transit(&stateName);
+		m_pAM->transit("HM_MANUAL");
 		m_rpmL = 0;
 		m_rpmR = 0;
 		break;

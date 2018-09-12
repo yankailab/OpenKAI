@@ -12,9 +12,6 @@ namespace kai
 
 _GPS::_GPS()
 {
-#ifdef USE_ZED
-	m_pZED = NULL;
-#endif
 	m_pMavlink = NULL;
 	m_initLL.init();
 	m_LL.init();
@@ -55,13 +52,7 @@ bool _GPS::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(&iName));
-
-#ifdef USE_ZED
-	iName = "";
-	F_INFO(pK->v("_ZED", &iName));
-	m_pZED = (_ZED*) (pK->root()->getChildInstByName(&iName));
-#endif
+	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -117,23 +108,6 @@ void _GPS::detect(void)
 	double sinH = sin(hdgRad);
 	double cosH = cos(hdgRad);
 	vDouble3 dPos;
-
-#ifdef USE_ZED
-	if(m_pZED)
-	{
-		vDouble3 dM;
-		vDouble3 dR;
-		uint64_t dTime;
-		m_pZED->getMotionDelta(&dM,&dR,&dTime);
-		dM.x = constrain(dM.x, -dT.x, dT.x);	//Siding
-		dM.y = constrain(dM.y, -dT.y, dT.y);	//Alt
-		dM.z = constrain(dM.z, -dT.z, dT.z);	//Heading
-
-		dPos.x = dM.x * cosH + dM.z * sinH;	//Easting
-		dPos.y = dM.y;							//Alt
-		dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
-	}
-#endif
 
 	utm.m_easting += dPos.x;
 	utm.m_northing += dPos.z;

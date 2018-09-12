@@ -45,7 +45,7 @@ bool _Mavlink::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pIO,"_IOBase not found");
 
 	Kiss** pItr = pK->getChildItr();
@@ -61,7 +61,7 @@ bool _Mavlink::init(void* pKiss)
 
 		iName = "";
 		F_ERROR_F(pP->v("_Mavlink", &iName));
-		mP.m_pPeer = pK->root()->getChildInstByName(&iName);
+		mP.m_pPeer = pK->root()->getChildInstByName(iName);
 		if(!mP.m_pPeer)
 		{
 			LOG_I("_Mavlink not found: " + iName);

@@ -43,11 +43,11 @@ bool VEK_avoid::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("VEK_base", &iName));
-	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(iName));
 
 //	iName = "";
 //	F_INFO(pK->v("_ZEDobstacle", &iName));
-//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(&iName));
+//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -75,7 +75,7 @@ void VEK_avoid::update(void)
 //	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
 //	IF_(m_distM > m_dAlert);
 
-	m_pAM->transit(&stateName);
+	m_pAM->transit(stateName);
 	m_pVEK->m_vL = -m_vSteer;
 	m_pVEK->m_vR = m_vSteer;
 

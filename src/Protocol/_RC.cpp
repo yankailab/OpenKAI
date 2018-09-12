@@ -24,7 +24,7 @@ bool _RC::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+	m_pIO = (_IOBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

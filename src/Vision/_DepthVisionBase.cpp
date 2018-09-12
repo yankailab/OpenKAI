@@ -21,16 +21,17 @@ _DepthVisionBase::_DepthVisionBase()
 	m_bShowRawDepth = false;
 	m_dShowRawBase = 1.0/15.0;
 
-	m_pFilterMatrix = NULL;
-	m_nFilter = 0;
-	m_mDim.x = 10;
-	m_mDim.y = 10;
+	m_bFilter = false;
+	m_pFilterMat = NULL;
+	m_dimFilterMat.x = 10;
+	m_dimFilterMat.y = 10;
+	m_nFilterMat = m_dimFilterMat.area();
 	m_dMedian = -1.0;
 }
 
 _DepthVisionBase::~_DepthVisionBase()
 {
-	DEL(m_pFilterMatrix);
+	DEL(m_pFilterMat);
 }
 
 bool _DepthVisionBase::init(void* pKiss)
@@ -40,6 +41,7 @@ bool _DepthVisionBase::init(void* pKiss)
 
 	KISSm(pK,wD);
 	KISSm(pK,hD);
+	KISSm(pK,bFilter);
 	KISSm(pK,dShowAlpha);
 	KISSm(pK,bShowRawDepth);
 	KISSm(pK,dShowRawBase);
@@ -47,22 +49,22 @@ bool _DepthVisionBase::init(void* pKiss)
 	F_INFO(pK->v("rFrom", &m_range.x));
 	F_INFO(pK->v("rTo", &m_range.y));
 
-	F_INFO(pK->v("mW", &m_mDim.x));
-	F_INFO(pK->v("mH", &m_mDim.y));
-	m_nFilter = m_mDim.area();
-	m_pFilterMatrix = new Median[m_nFilter];
+	F_INFO(pK->v("mW", &m_dimFilterMat.x));
+	F_INFO(pK->v("mH", &m_dimFilterMat.y));
+	m_nFilterMat = m_dimFilterMat.area();
+	m_pFilterMat = new Median[m_nFilterMat];
 
 	int nMed=0;
 	F_INFO(pK->v("nMed", &nMed));
-	for (int i = 0; i < m_nFilter; i++)
+	for (int i = 0; i < m_nFilterMat; i++)
 	{
-		m_pFilterMatrix[i].init(nMed,0);
+		m_pFilterMat[i].init(nMed,0);
 	}
 
 	//link
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
-	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(&iName));
+	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -80,22 +82,25 @@ void _DepthVisionBase::postProcessDepth(void)
 
 	if (m_bCrop)
 		m_fDepth = m_fDepth.crop(m_cropBB);
+
+	if (m_bFilter)
+		updateFilteredDistance();
 }
 
 void _DepthVisionBase::updateFilteredDistance(void)
 {
 	IF_(m_fDepth.bEmpty());
 
-	m_fMatrixFrame = m_fDepth.resize(m_mDim.x, m_mDim.y);
-	Mat* pM = m_fMatrixFrame.m();
+	Frame fMatrixFrame = m_fDepth.resize(m_dimFilterMat.x, m_dimFilterMat.y);
+	Mat* pM = fMatrixFrame.m();
 	IF_(pM->empty());
 
 	int i,j;
-	for(i=0;i<m_mDim.y;i++)
+	for(i=0;i<m_dimFilterMat.y;i++)
 	{
-		for(j=0;j<m_mDim.x;j++)
+		for(j=0;j<m_dimFilterMat.x;j++)
 		{
-			m_pFilterMatrix[i*m_mDim.x+j].input((double)pM->at<float>(i,j));
+			m_pFilterMat[i*m_dimFilterMat.x+j].input((double)pM->at<float>(i,j));
 		}
 	}
 
@@ -103,9 +108,9 @@ void _DepthVisionBase::updateFilteredDistance(void)
 	std::deque<double> qSort;
 	qSort.clear();
 
-	for (i=0,j=0; i<m_nFilter; i++)
+	for (i=0,j=0; i<m_nFilterMat; i++)
 	{
-		double d = m_pFilterMatrix[i].v();
+		double d = m_pFilterMat[i].v();
 		IF_CONT(d < m_range.x);
 		IF_CONT(d > m_range.y);
 
@@ -128,19 +133,19 @@ double _DepthVisionBase::d(vDouble4* pROI, vInt2* pPos)
 	if(!pROI)return -1.0;
 
 	vInt4 iR;
-	iR.x = pROI->x * m_mDim.x;
-	iR.y = pROI->y * m_mDim.y;
-	iR.z = pROI->z * m_mDim.x;
-	iR.w = pROI->w * m_mDim.y;
+	iR.x = pROI->x * m_dimFilterMat.x;
+	iR.y = pROI->y * m_dimFilterMat.y;
+	iR.z = pROI->z * m_dimFilterMat.x;
+	iR.w = pROI->w * m_dimFilterMat.y;
 
 	if (iR.x < 0)
 		iR.x = 0;
 	if (iR.y < 0)
 		iR.y = 0;
-	if (iR.z >= m_mDim.x)
-		iR.z = m_mDim.x - 1;
-	if (iR.w >= m_mDim.y)
-		iR.w = m_mDim.y - 1;
+	if (iR.z >= m_dimFilterMat.x)
+		iR.z = m_dimFilterMat.x - 1;
+	if (iR.w >= m_dimFilterMat.y)
+		iR.w = m_dimFilterMat.y - 1;
 
 	return d(&iR, pPos);
 }
@@ -154,7 +159,7 @@ double _DepthVisionBase::d(vInt4* pROI, vInt2* pPos)
 	{
 		for(int j=pROI->x; j<pROI->z; j++)
 		{
-			double dCell = m_pFilterMatrix[i*m_mDim.x+j].v();
+			double dCell = m_pFilterMat[i*m_dimFilterMat.x+j].v();
 			IF_CONT(dCell < m_range.x);
 			IF_CONT(dCell > m_range.y);
 			IF_CONT(dCell > dMin);
@@ -178,7 +183,7 @@ double _DepthVisionBase::dMedian(void)
 
 vInt2 _DepthVisionBase::matrixDim(void)
 {
-	return m_mDim;
+	return m_dimFilterMat;
 }
 
 Frame* _DepthVisionBase::Depth(void)
@@ -205,14 +210,14 @@ bool _DepthVisionBase::draw(void)
 	{
 		IF_F(pFrame->bEmpty());
 
-		Mat mF = Mat::zeros(m_mDim.x, m_mDim.y, CV_8UC3);
+		Mat mF = Mat::zeros(m_dimFilterMat.x, m_dimFilterMat.y, CV_8UC3);
 
 		int i,j;
-		for(i=0; i<m_mDim.y; i++)
+		for(i=0; i<m_dimFilterMat.y; i++)
 		{
-			for(j=0; j<m_mDim.x; j++)
+			for(j=0; j<m_dimFilterMat.x; j++)
 			{
-				mF.at<Vec3b>(i,j)[2] = 255 * (1.0 - (m_pFilterMatrix[i*m_mDim.x+j].v() * m_dShowRawBase));
+				mF.at<Vec3b>(i,j)[2] = 255 * (1.0 - (m_pFilterMat[i*m_dimFilterMat.x+j].v() * m_dShowRawBase));
 			}
 		}
 

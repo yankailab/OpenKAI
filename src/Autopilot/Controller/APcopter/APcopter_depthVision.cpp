@@ -24,11 +24,11 @@ bool APcopter_depthVision::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
 	Kiss** pItrDS = pK->getChildItr();

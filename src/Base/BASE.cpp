@@ -48,7 +48,7 @@ bool BASE::init(void* pKiss)
 
 	name = "";
 	F_INFO(pK->v("Window",&name));
-	m_pWindow = (Window*)(pK->root()->getChildInstByName(&name));
+	m_pWindow = (Window*)(pK->root()->getChildInstByName(name));
 
 	return true;
 }

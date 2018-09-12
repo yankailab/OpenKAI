@@ -80,42 +80,42 @@ bool APcopter_DNNfollow::init(void* pKiss)
 	{
 		iName = "";
 		pK->v("_TrackerBase", &iName);
-		m_pTracker = (_TrackerBase*) (pK->root()->getChildInstByName(&iName));
+		m_pTracker = (_TrackerBase*) (pK->root()->getChildInstByName(iName));
 		IF_Fl(!m_pTracker, iName + ": not found");
 	}
 
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_ObjectBase", &iName);
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pDet, iName + ": not found");
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
 
 	iName = "";
 	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pRoll, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pPitch, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDyaw", &iName);
-	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pYaw, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(&iName));
+	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pAlt, iName + ": not found");
 
 	return true;
@@ -154,8 +154,7 @@ void APcopter_DNNfollow::update(void)
 		releaseRC();
 		if(pMav->m_msg.heartbeat.custom_mode == RTL)
 		{
-			string stateName = "CC_RTL";
-			m_pAM->transit(&stateName);
+			m_pAM->transit("CC_RTL");
 		}
 		return;
 	}

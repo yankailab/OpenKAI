@@ -62,7 +62,7 @@ bool Traffic_speed::init(void* pKiss)
 
 	iName = "";
 	pK->v("Traffic_base", &iName);
-	m_pTB = (Traffic_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pTB = (Traffic_base*) (pK->parent()->getChildInstByName(iName));
 
 	return true;
 }

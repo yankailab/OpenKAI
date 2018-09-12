@@ -23,20 +23,20 @@ public:
 	bool parse(string json);
 	int checkErrorNum(void);
 
-	bool v(string* pName, int* pVal);
-	bool v(string* pName, bool* pVal);
-	bool v(string* pName, uint8_t* pVal);
-	bool v(string* pName, uint16_t* pVal);
-	bool v(string* pName, uint32_t* pVal);
-	bool v(string* pName, uint64_t* pVal);
-	bool v(string* pName, double* pVal);
-	bool v(string* pName, float* pVal);
-	bool v(string* pName, string* pVal);
+	bool v(const string& name, int* pVal);
+	bool v(const string& name, bool* pVal);
+	bool v(const string& name, uint8_t* pVal);
+	bool v(const string& name, uint16_t* pVal);
+	bool v(const string& name, uint32_t* pVal);
+	bool v(const string& name, uint64_t* pVal);
+	bool v(const string& name, double* pVal);
+	bool v(const string& name, float* pVal);
+	bool v(const string& name, string* pVal);
 
-	int array(string* pName, int* pVal, int nArray);
-	int array(string* pName, double* pVal, int nArray);
-	int array(string* pName, string* pVal, int nArray);
-	bool array(string* pName, value::array* pVal);
+	int array(const string& name, int* pVal, int nArray);
+	int array(const string& name, double* pVal, int nArray);
+	int array(const string& name, string* pVal, int nArray);
+	bool array(const string& name, value::array* pVal);
 
 };
 

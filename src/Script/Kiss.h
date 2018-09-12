@@ -19,28 +19,28 @@ public:
 	~Kiss(void);
 
 	bool parse(string* pStr);
-	Kiss* o(string name);
+	Kiss* o(const string& name);
 	JSON* json(void);
-	Kiss** getClassItr(string* pClassName);
+	Kiss** getClassItr(const string& className);
 	Kiss** getChildItr(void);
-	void* getChildInstByName(string* pName);
+	void* getChildInstByName(const string& name);
 	Kiss* root(void);
 	Kiss* parent(void);
 	bool empty(void);
 
-	bool v(string name, int* val);
-	bool v(string name, bool* val);
-	bool v(string name, uint8_t* pVal);
-	bool v(string name, uint16_t* pVal);
-	bool v(string name, uint32_t* pVal);
-	bool v(string name, uint64_t* val);
-	bool v(string name, double* val);
-	bool v(string name, float* val);
-	bool v(string name, string* val);
+	bool v(const string& name, int* val);
+	bool v(const string& name, bool* val);
+	bool v(const string& name, uint8_t* pVal);
+	bool v(const string& name, uint16_t* pVal);
+	bool v(const string& name, uint32_t* pVal);
+	bool v(const string& name, uint64_t* val);
+	bool v(const string& name, double* val);
+	bool v(const string& name, float* val);
+	bool v(const string& name, string* val);
 
-	int array(string name, int* pVal, int nArray);
-	int array(string name, double* pVal, int nArray);
-	int array(string name, string* pVal, int nArray);
+	int array(const string& name, int* pVal, int nArray);
+	int array(const string& name, double* pVal, int nArray);
+	int array(const string& name, string* pVal, int nArray);
 
 private:
 	void trim(string* pStr);

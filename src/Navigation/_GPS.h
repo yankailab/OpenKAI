@@ -12,7 +12,6 @@
 #include "../Base/_ThreadBase.h"
 #include "../Dependency/UTM.h"
 #include "../Filter/FilterBase.h"
-#include "../Vision/_ZED.h"
 #include "../Protocol/_Mavlink.h"
 
 /*
@@ -118,9 +117,6 @@ private:
 	}
 
 public:
-#ifdef USE_ZED
-	_ZED*	m_pZED;
-#endif
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;
 	uint32_t m_apmMode;
@@ -135,7 +131,6 @@ public:
 
 	vDouble3	m_vT;
 	vDouble3	m_vRot;
-
 
 };
 

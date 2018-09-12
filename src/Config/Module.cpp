@@ -85,10 +85,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_CaffeRegressionTrain);
 	ADD_MODULE(_CaffeRegressionInf);
 #endif
-#ifdef USE_ZED
-	ADD_MODULE(_ZED);
-	ADD_MODULE(_DNNGen_odometry);
-#endif
 #ifdef USE_SSD
 	ADD_MODULE(_SSD);
 #endif

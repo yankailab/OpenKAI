@@ -41,7 +41,7 @@ bool _LidarSlam::init(void* pKiss)
 
 		iName = "";
 		F_ERROR_F(pP->v("_DistSensorBase", &iName));
-		pL->m_pD = (_DistSensorBase*)(pK->root()->getChildInstByName(&iName));
+		pL->m_pD = (_DistSensorBase*)(pK->root()->getChildInstByName(iName));
 		if(!pL->m_pD)
 		{
 			LOG_I("_DistSensorBase not found: " + iName);

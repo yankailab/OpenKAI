@@ -22,130 +22,120 @@ bool JSON::parse(string json)
 	return true;
 }
 
-bool JSON::v(string* pName, int* pVal)
+bool JSON::v(const string& name, int* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (int) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, bool* pVal)
+bool JSON::v(const string& name, bool* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (((int) var.get<double>()) != 0 ? true : false);
 	return true;
 }
 
-bool JSON::v(string* pName, uint8_t* pVal)
+bool JSON::v(const string& name, uint8_t* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (uint8_t) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, uint16_t* pVal)
+bool JSON::v(const string& name, uint16_t* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (uint16_t) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, uint32_t* pVal)
+bool JSON::v(const string& name, uint32_t* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (uint32_t) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, uint64_t* pVal)
+bool JSON::v(const string& name, uint64_t* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<int>());
 
 	*pVal = (uint64_t) var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, double* pVal)
+bool JSON::v(const string& name, double* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<double>());
 
 	*pVal = var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, float* pVal)
+bool JSON::v(const string& name, float* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<double>());
 
 	*pVal = (float)var.get<double>();
 	return true;
 }
 
-bool JSON::v(string* pName, string* pVal)
+bool JSON::v(const string& name, string* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<string>());
 
 	*pVal = var.get<string>();
 	return true;
 }
 
-bool JSON::array(string* pName, value::array* pVal)
+bool JSON::array(const string& name, value::array* pVal)
 {
-	IF_F(!pName);
 	IF_F(!m_JSON.is<object>());
 
-	value var = m_JSON.get(*pName);
+	value var = m_JSON.get(name);
 	IF_F(!var.is<value::array>());
 
 	*pVal = var.get<value::array>();
 	return true;
 }
 
-int JSON::array(string* pName, string* pVal, int nArray)
+int JSON::array(const string& name, string* pVal, int nArray)
 {
 	value::array arr;
-	IF_NEG(!array(pName, &arr));
+	IF__(!array(name, &arr),-1);
 
 	value::array::iterator it;
 	int i = 0;
@@ -160,10 +150,10 @@ int JSON::array(string* pName, string* pVal, int nArray)
 	return i;
 }
 
-int JSON::array(string* pName, int* pVal, int nArray)
+int JSON::array(const string& name, int* pVal, int nArray)
 {
 	value::array arr;
-	IF_NEG(!array(pName, &arr));
+	IF__(!array(name, &arr),-1);
 
 	value::array::iterator it;
 	int i = 0;
@@ -178,10 +168,10 @@ int JSON::array(string* pName, int* pVal, int nArray)
 	return i;
 }
 
-int JSON::array(string* pName, double* pVal, int nArray)
+int JSON::array(const string& name, double* pVal, int nArray)
 {
 	value::array arr;
-	IF_NEG(!array(pName, &arr));
+	IF__(!array(name, &arr),-1);
 
 	value::array::iterator it;
 	int i = 0;
@@ -201,7 +191,7 @@ int JSON::checkErrorNum(void)
 	int numError;
 	string errorDesc;
 	string err = "error";
-	if (!v(&err, &numError))
+	if (!v(err, &numError))
 	{
 		return -1;
 	}

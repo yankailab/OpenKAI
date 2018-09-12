@@ -41,11 +41,11 @@ bool HM_kickBack::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(&iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -109,8 +109,7 @@ void HM_kickBack::update(void)
 		if(abs(dHdg(m_wpApproach.m_hdg, pNew->m_hdg)) > abs(rotHdg))
 		{
 			//turn complete, change to work mode
-			string stateName = "HM_WORK";
-			m_pAM->transit(&stateName);
+			m_pAM->transit("HM_WORK");
 			m_sequence = kb_station;
 			LOG_I("KickBack turn complete");
 			return;

@@ -60,11 +60,11 @@ bool HM_avoid::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

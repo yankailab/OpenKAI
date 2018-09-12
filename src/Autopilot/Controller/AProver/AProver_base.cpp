@@ -58,7 +58,7 @@ bool AProver_base::init(void* pKiss)
 	string iName = "";
 
 	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(&iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

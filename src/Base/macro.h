@@ -26,7 +26,7 @@
 #define IF_F(x) if(x){return false;}
 #define IF_N(x) if(x){return NULL;}
 #define IF_(x) if(x){return;}
-#define IF_NEG(x) if(x){return -1;}
+#define IF__(x,y) if(x){return y;}
 #define IF_CONT(x) if(x){continue;}
 
 #define F_l(x,y) if(x==false){LOG_E(y);return;}

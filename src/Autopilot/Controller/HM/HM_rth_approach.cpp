@@ -37,11 +37,11 @@ bool HM_rth_approach::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_MatrixNet", &iName));
-	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(&iName));
+	m_pMN = (_ClusterNet*) (pK->root()->getChildInstByName(iName));
 
 	if (!m_pMN)
 	{

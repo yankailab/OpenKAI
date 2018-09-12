@@ -58,7 +58,7 @@ bool _Bullseye::init(void* pKiss)
 	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
+	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(iName));
 
 	return true;
 }

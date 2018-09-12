@@ -25,11 +25,11 @@ public:
 	bool init(void* pKiss);
 	bool draw(void);
 
-	int getStateIdx(string* pStateName);
+	int getStateIdx(const string& stateName);
 	int getCurrentStateIdx(void);
 	string* getCurrentStateName(void);
 	int getLastStateIdx(void);
-	bool transit(string* pNextStateName);
+	bool transit(const string& nextStateName);
 	bool transit(int nextStateIdx);
 
 public:

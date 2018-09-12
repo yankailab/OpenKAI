@@ -46,11 +46,11 @@ bool HM_follow::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

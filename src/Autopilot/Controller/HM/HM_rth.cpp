@@ -28,7 +28,7 @@ bool HM_rth::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	return true;
 }

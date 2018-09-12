@@ -59,11 +59,11 @@ bool HM_grass::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(&iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DetectorBase", &iName));
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(&iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
 	IF_Fl(!m_pDet,"_DetectorBase not found");
 
 	OBJECT gO;

@@ -38,7 +38,7 @@ bool _ArUco::init(void* pKiss)
 	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase",&iName));
-	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(&iName));
+	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(iName));
 
 	return true;
 }

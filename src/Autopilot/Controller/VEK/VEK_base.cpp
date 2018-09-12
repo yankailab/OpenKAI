@@ -38,7 +38,7 @@ bool VEK_base::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pVEK = (_IOBase*) (pK->root()->getChildInstByName(&iName));
+	m_pVEK = (_IOBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
@@ -80,8 +80,7 @@ void VEK_base::update(void)
 	m_pVEK->write(pVekCMD,5);
 	LOG_I("PWM: L=" + i2str(pwmL) + " R=" + i2str(pwmR));
 
-	string stateName = "VEK_RUN";
-	m_pAM->transit(&stateName);
+	m_pAM->transit("VEK_RUN");
 	m_vL = -m_vForward;
 	m_vR = -m_vForward;
 

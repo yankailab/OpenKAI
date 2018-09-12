@@ -18,6 +18,10 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	bool draw(void);
+	int check(void);
+
+	void releaseRC(void);
+
 
 public:
 	_Mavlink* m_pMavlink;

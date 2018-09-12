@@ -96,7 +96,7 @@ bool RC_base::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("_RC", &iName));
-	m_pRC = (_RC*) (pK->root()->getChildInstByName(&iName));
+	m_pRC = (_RC*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }

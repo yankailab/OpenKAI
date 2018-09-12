@@ -37,10 +37,10 @@ bool _MultiTracker::init(void* pKiss)
 	string iName = "";
 
 	F_ERROR_F(pK->v("_ObjectBase",&iName));
-	m_pOB = (_ObjectBase*)(pK->root()->getChildInstByName(&iName));
+	m_pOB = (_ObjectBase*)(pK->root()->getChildInstByName(iName));
 
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(&iName));
+	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(iName));
 
 	return true;
 }
