@@ -7,17 +7,23 @@ APcopter_edgeHold::APcopter_edgeHold()
 {
 	m_pAP = NULL;
 	m_pDV = NULL;
-	m_iModeEnable = ALT_HOLD;
+	m_pPC = NULL;
 
 	m_vTarget.x = 0.5;
 	m_vTarget.y = 0.5;
 	m_vTarget.z = 10.0;
+	m_vTarget.w = 0.0;
+
 	m_vPos.x = 0.5;
 	m_vPos.y = 0.5;
 	m_vPos.z = 10.0;
+	m_vPos.w = 0.0;
 
 	m_edgeTop = 0.0;
 	m_edgeBottom = 0.0;
+
+	m_wD = 320;
+	m_hD = 200;
 
 }
 
@@ -30,11 +36,13 @@ bool APcopter_edgeHold::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iModeEnable);
+	KISSm(pK,wD);
+	KISSm(pK,hD);
 
 	pK->v("x", &m_vTarget.x);
 	pK->v("y", &m_vTarget.y);
 	pK->v("z", &m_vTarget.z);
+	pK->v("w", &m_vTarget.w);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -45,16 +53,20 @@ bool APcopter_edgeHold::init(void* pKiss)
 
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
+	pK->v("APcopter_posCtrlRC", &iName);
+	m_pPC = (APcopter_posCtrlRC*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pPC, iName + ": not found");
+
+	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + ": not found");
 
-
-	m_pf.init(m_pDV->m_dimFilterMat.y,2);
+	m_pf.init(m_hD,2);
 
 	return true;
 }
@@ -73,15 +85,10 @@ void APcopter_edgeHold::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 	IF_(!isActive());
-	_Mavlink* pMav = m_pAP->m_pMavlink;
-	IF_(pMav->m_msg.heartbeat.custom_mode != m_iModeEnable);
 
 	double iEdge = detectEdge();
 	IF_(iEdge < 0.0);
 	m_fMed.input(iEdge);
-
-
-
 
 }
 
@@ -90,18 +97,19 @@ double APcopter_edgeHold::detectEdge(void)
 	Frame* pfDepth = m_pDV->Depth();
 	IF__(pfDepth->bEmpty(), -1);
 
-	Mat* pM = pfDepth->m();
-	IF__(pM->empty(), -1);
+	Frame fD = pfDepth->resize(m_wD, m_hD);
+	Mat mF;
+	cv::threshold(*fD.m(), mF, 2.0, 30.0, THRESH_BINARY);//TODO
 
 	int i,j;
-	for(i=0; i<pM->rows; i++)
+	for(i=0; i<mF.rows; i++)
 	{
 		double dEdge = 0;
 		double iEdge = 0;
 
-		for(j=0; j<pM->cols-1; j++)
+		for(j=0; j<mF.cols-1; j++)
 		{
-			double d = abs((double)pM->at<float>(i,j+1) - (double)pM->at<float>(i,j));
+			double d = abs((double)mF.at<float>(i,j+1) - (double)mF.at<float>(i,j));
 			IF_CONT(d < dEdge);
 
 			dEdge = d;
@@ -112,7 +120,11 @@ double APcopter_edgeHold::detectEdge(void)
 	}
 
 	m_pf.fit();
-	return (m_pf.yPoly(0) + m_pf.yPoly(pM->rows-1))*0.5;
+	double ovW = 1.0/(double)mF.cols;
+	m_edgeTop = m_pf.yPoly(0) * ovW;
+	m_edgeBottom = m_pf.yPoly(mF.rows-1) * ovW;
+
+	return (m_edgeTop + m_edgeBottom)*0.5;
 }
 
 bool APcopter_edgeHold::draw(void)
@@ -135,16 +147,14 @@ bool APcopter_edgeHold::draw(void)
 							m_vPos.y * pMat->rows),
 				pMat->cols * pMat->rows * 0.00005, Scalar(0, 0, 255), 2);
 
-		msg += "Edge pos = (" + f2str(m_vPos.x) + ", "
-							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ")";
+		msg += "Edge top = " + f2str(m_edgeTop) + ", bottom = " + f2str(m_edgeBottom);
 	}
 
 	pWin->addMsg(&msg);
 
 	line(*pMat,
 		 Point(m_edgeTop * pMat->cols, 0),
-		 Point(m_edgeBottom * pMat->cols, 0),
+		 Point(m_edgeBottom * pMat->cols, pMat->rows),
 		 Scalar(0,255,0), 6);
 
 	return true;
@@ -163,9 +173,7 @@ bool APcopter_edgeHold::cli(int& iY)
 	}
 	else
 	{
-		msg += "Edge pos = (" + f2str(m_vPos.x) + ", "
-							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ")";
+		msg += "Edge top = " + f2str(m_edgeTop) + ", bottom = " + f2str(m_edgeBottom);
 	}
 
 	COL_MSG;

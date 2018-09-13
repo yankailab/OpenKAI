@@ -13,25 +13,12 @@ namespace kai
 _DepthVisionBase::_DepthVisionBase()
 {
 	m_pDepthWin = NULL;
-	m_range.x = 0.0;
-	m_range.y = 10.0;
 	m_wD = 1280;
 	m_hD = 720;
-	m_dShowAlpha = 0.5;
-	m_bShowRawDepth = false;
-	m_dShowRawBase = 1.0/15.0;
-
-	m_bFilter = false;
-	m_pFilterMat = NULL;
-	m_dimFilterMat.x = 10;
-	m_dimFilterMat.y = 10;
-	m_nFilterMat = m_dimFilterMat.area();
-	m_dMedian = -1.0;
 }
 
 _DepthVisionBase::~_DepthVisionBase()
 {
-	DEL(m_pFilterMat);
 }
 
 bool _DepthVisionBase::init(void* pKiss)
@@ -41,159 +28,55 @@ bool _DepthVisionBase::init(void* pKiss)
 
 	KISSm(pK,wD);
 	KISSm(pK,hD);
-	KISSm(pK,bFilter);
-	KISSm(pK,dShowAlpha);
-	KISSm(pK,bShowRawDepth);
-	KISSm(pK,dShowRawBase);
-
-	F_INFO(pK->v("rFrom", &m_range.x));
-	F_INFO(pK->v("rTo", &m_range.y));
-
-	F_INFO(pK->v("mW", &m_dimFilterMat.x));
-	F_INFO(pK->v("mH", &m_dimFilterMat.y));
-	m_nFilterMat = m_dimFilterMat.area();
-	m_pFilterMat = new Median[m_nFilterMat];
-
-	int nMed=0;
-	F_INFO(pK->v("nMed", &nMed));
-	for (int i = 0; i < m_nFilterMat; i++)
-	{
-		m_pFilterMat[i].init(nMed,0);
-	}
 
 	//link
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
-	m_pDepthWin = (Window*) (pK->root()->getChildInstByName(iName));
+	m_pDepthWin = (Window*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
 
-void _DepthVisionBase::postProcessDepth(void)
-{
-	if (m_bCalibration)
-		m_fDepth = m_fDepth.remap();
-
-	if (m_bGimbal)
-		m_fDepth = m_fDepth.warpAffine(m_rotRoll);
-
-	if (m_bFlip)
-		m_fDepth = m_fDepth.flip(-1);
-
-	if (m_bCrop)
-		m_fDepth = m_fDepth.crop(m_cropBB);
-
-	if (m_bFilter)
-		updateFilteredDistance();
-}
-
-void _DepthVisionBase::updateFilteredDistance(void)
-{
-	IF_(m_fDepth.bEmpty());
-
-	Frame fMatrixFrame = m_fDepth.resize(m_dimFilterMat.x, m_dimFilterMat.y);
-	Mat* pM = fMatrixFrame.m();
-	IF_(pM->empty());
-
-	int i,j;
-	for(i=0;i<m_dimFilterMat.y;i++)
-	{
-		for(j=0;j<m_dimFilterMat.x;j++)
-		{
-			m_pFilterMat[i*m_dimFilterMat.x+j].input((double)pM->at<float>(i,j));
-		}
-	}
-
-	//Median distance
-	std::deque<double> qSort;
-	qSort.clear();
-
-	for (i=0,j=0; i<m_nFilterMat; i++)
-	{
-		double d = m_pFilterMat[i].v();
-		IF_CONT(d < m_range.x);
-		IF_CONT(d > m_range.y);
-
-		qSort.push_back(d);
-		j++;
-	}
-
-	if(j <= 0)
-	{
-		m_dMedian = -1.0;
-		return;
-	}
-
-	std::sort(qSort.begin(),qSort.end());
-	m_dMedian = qSort.at(j/2);
-}
-
 double _DepthVisionBase::d(vDouble4* pROI, vInt2* pPos)
 {
-	if(!pROI)return -1.0;
+	IF__(!pROI, -1.0);
+	IF__(m_fDepth.bEmpty(),-1.0);
+
+	Size s = m_fDepth.size();
 
 	vInt4 iR;
-	iR.x = pROI->x * m_dimFilterMat.x;
-	iR.y = pROI->y * m_dimFilterMat.y;
-	iR.z = pROI->z * m_dimFilterMat.x;
-	iR.w = pROI->w * m_dimFilterMat.y;
+	iR.x = pROI->x * s.width;
+	iR.y = pROI->y * s.height;
+	iR.z = pROI->z * s.width;
+	iR.w = pROI->w * s.height;
 
 	if (iR.x < 0)
 		iR.x = 0;
 	if (iR.y < 0)
 		iR.y = 0;
-	if (iR.z >= m_dimFilterMat.x)
-		iR.z = m_dimFilterMat.x - 1;
-	if (iR.w >= m_dimFilterMat.y)
-		iR.w = m_dimFilterMat.y - 1;
+	if (iR.z > s.width)
+		iR.z = s.width;
+	if (iR.w > s.height)
+		iR.w = s.height;
 
 	return d(&iR, pPos);
 }
 
 double _DepthVisionBase::d(vInt4* pROI, vInt2* pPos)
 {
-	if(!pROI)return -1.0;
+	IF__(!pROI, -1.0);
+	IF__(m_fDepth.bEmpty(),-1.0);
 
-	double dMin = m_range.y;
-	for(int i=pROI->y; i<pROI->w; i++)
-	{
-		for(int j=pROI->x; j<pROI->z; j++)
-		{
-			double dCell = m_pFilterMat[i*m_dimFilterMat.x+j].v();
-			IF_CONT(dCell < m_range.x);
-			IF_CONT(dCell > m_range.y);
-			IF_CONT(dCell > dMin);
+	Rect roi;
+	vInt42rect(*pROI, roi);
+	double d = cv::sum((*m_fDepth.m())(roi))[0];
 
-			dMin = dCell;
-			if(pPos)
-			{
-				pPos->x = j;
-				pPos->y = i;
-			}
-		}
-	}
-
-	return dMin;
-}
-
-double _DepthVisionBase::dMedian(void)
-{
-	return m_dMedian;
-}
-
-vInt2 _DepthVisionBase::matrixDim(void)
-{
-	return m_dimFilterMat;
+	return d/(roi.width*roi.height);
 }
 
 Frame* _DepthVisionBase::Depth(void)
 {
 	return &m_fDepth;
-}
-
-vDouble2 _DepthVisionBase::range(void)
-{
-	return m_range;
 }
 
 bool _DepthVisionBase::draw(void)
@@ -202,47 +85,10 @@ bool _DepthVisionBase::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	if(m_bShowRawDepth)
-	{
-		IF_F(m_depthShow.bEmpty());
-	}
-	else
-	{
-		IF_F(pFrame->bEmpty());
+	IF_F(m_depthShow.bEmpty());
+	IF_F(!m_pDepthWin);
 
-		Mat mF = Mat::zeros(m_dimFilterMat.x, m_dimFilterMat.y, CV_8UC3);
-
-		int i,j;
-		for(i=0; i<m_dimFilterMat.y; i++)
-		{
-			for(j=0; j<m_dimFilterMat.x; j++)
-			{
-				mF.at<Vec3b>(i,j)[2] = 255 * (1.0 - (m_pFilterMat[i*m_dimFilterMat.x+j].v() * m_dShowRawBase));
-			}
-		}
-
-		Frame fF;
-		fF.copy(mF);
-		Mat* pM = pFrame->m();
-		m_depthShow = fF.resize(pM->cols, pM->rows);
-	}
-
-	if(m_pDepthWin)
-	{
-		m_pDepthWin->getFrame()->copy(*m_depthShow.m());
-	}
-	else if(m_pWindow)
-	{
-		Mat mW;
-		Mat* pM = pFrame->m();
-		Mat* pD = m_depthShow.m();
-		IF_F(pM->cols != pD->cols || pM->rows != pD->rows);
-		cv::addWeighted(*pD, m_dShowAlpha, *pM, 1.0, 0, mW);
-		pFrame->copy(mW);
-	}
-
-	string msg = "dMedian: " + f2str(this->dMedian());
-	pWin->addMsg(&msg);
+	m_pDepthWin->getFrame()->copy(*m_depthShow.m());
 
 	return true;
 }

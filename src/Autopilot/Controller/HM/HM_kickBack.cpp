@@ -41,11 +41,11 @@ bool HM_kickBack::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

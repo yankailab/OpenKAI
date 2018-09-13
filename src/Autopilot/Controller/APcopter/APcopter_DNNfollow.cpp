@@ -6,16 +6,10 @@ namespace kai
 APcopter_DNNfollow::APcopter_DNNfollow()
 {
 	m_pAP = NULL;
+	m_pPC = NULL;
 	m_pDet = NULL;
-	m_pDV = NULL;
 	m_pTracker = NULL;
-	m_iModeEnable = POSHOLD;
 	m_tStampDet = 0;
-
-	m_pRoll = NULL;
-	m_pPitch = NULL;
-	m_pYaw = NULL;
-	m_pAlt = NULL;
 
 	m_iClass = -1;
 	m_vTarget.x = 0.5;
@@ -24,23 +18,8 @@ APcopter_DNNfollow::APcopter_DNNfollow()
 	m_vPos.x = 0.5;
 	m_vPos.y = 0.5;
 	m_vPos.z = 10.0;
-	m_bFollowing = false;
+	m_bTarget = false;
 	m_bUseTracker = false;
-
-	m_pwmLow = 1000;
-	m_pwmMidR = 1500;
-	m_pwmMidP = 1500;
-	m_pwmMidY = 1500;
-	m_pwmMidA = 1500;
-	m_pwmHigh = 2000;
-
-	m_timeOn = 0;
-	m_timeOut = USEC_1SEC * 180;
-
-	m_pwmYawSearch = 1500;
-	m_searchFrom = 0;
-	m_searchTo = 360;
-
 }
 
 APcopter_DNNfollow::~APcopter_DNNfollow()
@@ -52,26 +31,13 @@ bool APcopter_DNNfollow::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iModeEnable);
 	KISSm(pK,iClass);
-	KISSm(pK,pwmLow);
-	KISSm(pK,pwmMidR);
-	KISSm(pK,pwmMidP);
-	KISSm(pK,pwmMidY);
-	KISSm(pK,pwmMidA);
-	KISSm(pK,pwmHigh);
 	KISSm(pK,bUseTracker);
-
-	KISSm(pK,pwmYawSearch);
-	KISSm(pK,searchFrom);
-	KISSm(pK,searchTo);
-
-	KISSm(pK,timeOut);
-	m_timeOut *= USEC_1SEC;
 
 	pK->v("x", &m_vTarget.x);
 	pK->v("y", &m_vTarget.y);
 	pK->v("z", &m_vTarget.z);
+	pK->v("w", &m_vTarget.w);
 
 	//link
 	string iName;
@@ -80,43 +46,24 @@ bool APcopter_DNNfollow::init(void* pKiss)
 	{
 		iName = "";
 		pK->v("_TrackerBase", &iName);
-		m_pTracker = (_TrackerBase*) (pK->root()->getChildInstByName(iName));
+		m_pTracker = (_TrackerBase*) (pK->root()->getChildInst(iName));
 		IF_Fl(!m_pTracker, iName + ": not found");
 	}
 
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_ObjectBase", &iName);
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDet, iName + ": not found");
 
 	iName = "";
-	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
-
-	iName = "";
-	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pRoll, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pPitch, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDyaw", &iName);
-	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pYaw, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pAlt, iName + ": not found");
+	pK->v("APcopter_posCtrlRC", &iName);
+	m_pPC = (APcopter_posCtrlRC*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pPC, iName + ": not found");
 
 	return true;
 }
@@ -126,17 +73,8 @@ int APcopter_DNNfollow::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 	NULL__(m_pDet,-1);
-	NULL__(m_pRoll,-1);
-	NULL__(m_pPitch,-1);
-	NULL__(m_pYaw,-1);
-	NULL__(m_pAlt,-1);
-
 	if(m_bUseTracker)
-	{
 		NULL__(m_pTracker,-1);
-	}
-
-	NULL__(m_pDV,0);
 
 	return 1;
 }
@@ -144,32 +82,11 @@ int APcopter_DNNfollow::check(void)
 void APcopter_DNNfollow::update(void)
 {
 	this->ActionBase::update();
-
 	IF_(check()<0);
-	IF_(!isActive());
-
-	_Mavlink* pMav = m_pAP->m_pMavlink;
-	if(pMav->m_msg.heartbeat.custom_mode != m_iModeEnable)
+	if(!isActive())
 	{
-		releaseRC();
-		if(pMav->m_msg.heartbeat.custom_mode == RTL)
-		{
-			m_pAM->transit("CC_RTL");
-		}
-		return;
-	}
-
-	if(m_timeOn == 0)
-	{
-		m_timeOn = m_tStamp;
-	}
-	else if(m_timeOut > 0 && m_tStamp - m_timeOn >= m_timeOut)
-	{
-		releaseRC();
-		mavlink_set_mode_t D;
-		D.custom_mode = RTL;
-		pMav->setMode(D);
-		m_bFollowing = false;
+		m_bTarget = false;
+		m_pPC->bON(false);
 		if(m_bUseTracker)
 			m_pTracker->stopTrack();
 
@@ -186,14 +103,10 @@ void APcopter_DNNfollow::update(void)
 			if(pO)
 			{
 				m_pTracker->startTrack(pO->m_bb);
-				releaseRC();
-			}
-			else
-			{
-				search();
 			}
 
-			m_bFollowing = false;
+			m_bTarget = false;
+			m_pPC->bON(false);
 			return;
 		}
 
@@ -203,29 +116,22 @@ void APcopter_DNNfollow::update(void)
 	{
 		if(!pO)
 		{
-			m_bFollowing = false;
-			search();
+			m_bTarget = false;
+			m_pPC->bON(false);
 			return;
 		}
 
 		bb = pO->m_bb;
 	}
 
-	m_bFollowing = true;
 	m_vPos.x = bb.midX();
 	m_vPos.y = bb.midY();
-	m_vPos.z = (double)pMav->m_msg.global_position_int.relative_alt * 0.001;
+	m_vPos.z = (double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt * 0.001;
+	m_vPos.w = 0.0;
 
-	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = (uint16_t)(m_pwmMidR + (int)m_pRoll->update(m_vPos.x, m_vTarget.x, m_vPos.z));
-	rc.chan2_raw = (uint16_t)(m_pwmMidP + (int)m_pPitch->update(m_vPos.y, m_vTarget.y, m_vPos.z));
-	rc.chan3_raw = 0;
-	rc.chan4_raw = 0;
-	rc.chan5_raw = 0;
-	rc.chan6_raw = 0;
-	rc.chan7_raw = 0;
-	rc.chan8_raw = 0;
-	m_pAP->m_pMavlink->rcChannelsOverride(rc);
+	m_bTarget = true;
+	m_pPC->bON(true);
+	m_pPC->setPos(m_vPos);
 }
 
 OBJECT* APcopter_DNNfollow::newFound(void)
@@ -246,34 +152,6 @@ OBJECT* APcopter_DNNfollow::newFound(void)
 	return tO;
 }
 
-void APcopter_DNNfollow::releaseRC(void)
-{
-	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = 0;
-	rc.chan2_raw = 0;
-	rc.chan3_raw = 0;
-	rc.chan4_raw = 0;
-	rc.chan5_raw = 0;
-	rc.chan6_raw = 0;
-	rc.chan7_raw = 0;
-	rc.chan8_raw = 0;
-	m_pAP->m_pMavlink->rcChannelsOverride(rc);
-}
-
-void APcopter_DNNfollow::search(void)
-{
-	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = 0;
-	rc.chan2_raw = 0;
-	rc.chan3_raw = 0;
-	rc.chan4_raw = m_pwmYawSearch;
-	rc.chan5_raw = 0;
-	rc.chan6_raw = 0;
-	rc.chan7_raw = 0;
-	rc.chan8_raw = 0;
-	m_pAP->m_pMavlink->rcChannelsOverride(rc);
-}
-
 bool APcopter_DNNfollow::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
@@ -288,7 +166,7 @@ bool APcopter_DNNfollow::draw(void)
 	{
 		msg += "Inactive";
 	}
-	else if (m_bFollowing)
+	else if (m_bTarget)
 	{
 		circle(*pMat, Point(m_vPos.x * pMat->cols,
 							m_vPos.y * pMat->rows),
@@ -296,7 +174,8 @@ bool APcopter_DNNfollow::draw(void)
 
 		msg += "Target pos = (" + f2str(m_vPos.x) + ", "
 							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ")";
+							   + f2str(m_vPos.z) + ", "
+							   + f2str(m_vPos.w) + ")";
 	}
 	else
 	{
@@ -322,11 +201,12 @@ bool APcopter_DNNfollow::cli(int& iY)
 	{
 		msg = "Inactive";
 	}
-	else if (m_bFollowing)
+	else if (m_bTarget)
 	{
 		msg = "Target pos = (" + f2str(m_vPos.x) + ", "
 							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ")";
+							   + f2str(m_vPos.z) + ", "
+							   + f2str(m_vPos.w) + ")";
 	}
 	else
 	{

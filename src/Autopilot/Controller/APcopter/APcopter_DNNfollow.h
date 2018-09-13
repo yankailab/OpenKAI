@@ -7,6 +7,7 @@
 #include "../../../Tracker/_TrackerBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
+#include "APcopter_posCtrlRC.h"
 
 namespace kai
 {
@@ -24,41 +25,20 @@ public:
 	int check(void);
 
 	OBJECT* newFound(void);
-	void search(void);
-	void releaseRC(void);
 
 public:
 	APcopter_base* m_pAP;
+	APcopter_posCtrlRC* m_pPC;
 	_ObjectBase* m_pDet;
 	uint64_t m_tStampDet;
-	_DepthVisionBase* m_pDV;
 	_TrackerBase* m_pTracker;
-	uint64_t m_timeOut;
-	uint64_t m_timeOn;
 
 	bool	 m_bUseTracker;
-	bool	 m_bFollowing;
+	bool	 m_bTarget;
 	int		 m_iClass;
-	vDouble3 m_vTarget;
-	vDouble3 m_vPos;
-	uint32_t m_iModeEnable;
 
-	PIDctrl* m_pRoll;
-	PIDctrl* m_pPitch;
-	PIDctrl* m_pYaw;
-	PIDctrl* m_pAlt;
-
-	uint16_t m_pwmLow;
-	uint16_t m_pwmMidR;
-	uint16_t m_pwmMidP;
-	uint16_t m_pwmMidY;
-	uint16_t m_pwmMidA;
-	uint16_t m_pwmHigh;
-
-	uint16_t m_pwmYawSearch;
-	double m_searchFrom;
-	double m_searchTo;
-
+	vDouble4 m_vTarget;
+	vDouble4 m_vPos;
 };
 
 }

@@ -40,7 +40,7 @@ bool _DenseFlow::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase",&iName));
-	m_pVision = (_VisionBase*)(pK->root()->getChildInstByName(iName));
+	m_pVision = (_VisionBase*)(pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -75,7 +75,7 @@ void _DenseFlow::update(void)
 void _DenseFlow::detect(void)
 {
 	NULL_(m_pVision);
-	Frame* pGray = m_pVision->Gray();
+	Frame* pGray;//TODO = m_pVision->Gray();
 	NULL_(pGray);
 	IF_(pGray->bEmpty());
 

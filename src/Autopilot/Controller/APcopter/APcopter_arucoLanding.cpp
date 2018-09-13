@@ -43,13 +43,13 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 
 	F_ERROR_F(pK->v("_ArUco", &iName));
-	m_pArUco = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
+	m_pArUco = (_ObjectBase*) (pK->root()->getChildInst(iName));
 
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -121,7 +121,7 @@ void APcopter_arucoLanding::update(void)
 	//Use depth if available
 	if(m_pDV)
 	{
-		m_D.distance = (float)m_pDV->dMedian();
+//		m_D.distance = (float)m_pDV->dMedian();
 		if(m_D.distance < 0.0)m_D.distance = 0.0;
 	}
 

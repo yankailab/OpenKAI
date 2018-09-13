@@ -141,7 +141,7 @@ bool Kiss::addChild(string* pStr)
 {
 	if (m_bNULL)
 		return false;
-	if (m_nChild >= NUM_CHILDREN)
+	if (m_nChild >= N_CHILDREN)
 		return false;
 
 	Kiss* pChild = new Kiss();
@@ -160,8 +160,6 @@ bool Kiss::addChild(string* pStr)
 
 Kiss* Kiss::o(const string& name)
 {
-	if (name.empty())
-		return m_pNULL;
 	if (m_bNULL)
 		return m_pNULL;
 
@@ -212,7 +210,7 @@ Kiss** Kiss::getClassItr(const string& className)
 		m_ppItr[nFound]=pC;
 		nFound++;
 
-		if(nFound == NUM_CHILDREN-1)break;
+		if(nFound == N_CHILDREN-1)break;
 	}
 
 	m_ppItr[nFound]=NULL;
@@ -228,7 +226,7 @@ Kiss** Kiss::getChildItr(void)
 	return m_pChild;
 }
 
-void* Kiss::getChildInstByName(const string& name)
+void* Kiss::getChildInst(const string& name)
 {
 	Kiss* pC = o(name);
 	IF_N(!pC);

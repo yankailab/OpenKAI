@@ -26,10 +26,10 @@ bool APcopter_DNNlanding::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 
 	F_ERROR_F(pK->v("_AIbase", &iName));
-	m_pAI = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
+	m_pAI = (_ObjectBase*) (pK->root()->getChildInst(iName));
 	return true;
 }
 

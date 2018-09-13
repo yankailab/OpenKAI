@@ -24,37 +24,18 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
-	virtual void postProcessDepth(void);
 
-	virtual void updateFilteredDistance(void);
 	virtual Frame* Depth(void);
-	virtual vDouble2 range(void);
-
-	vInt2 matrixDim(void);
 	double d(vInt4* pROI, vInt2* pPos);
 	double d(vDouble4* pROI, vInt2* pPos);
-	double dMedian(void);
 
 public:
 	int m_wD;
 	int m_hD;
-
 	Frame	m_fDepth;
-	vDouble2 m_range;
-	Mat m_mZ;
-	Mat m_mD;
-
-	bool		m_bFilter;
-	vInt2		m_dimFilterMat;
-	Median* 	m_pFilterMat;
-	int			m_nFilterMat;
-	double		m_dMedian;
 
 	Frame	m_depthShow;
-	double	m_dShowAlpha;
 	Window* m_pDepthWin;
-	bool	m_bShowRawDepth;
-	double	m_dShowRawBase;
 
 };
 

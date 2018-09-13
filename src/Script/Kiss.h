@@ -7,7 +7,7 @@
 
 using namespace std;
 
-#define NUM_CHILDREN 128
+#define N_CHILDREN 128
 
 namespace kai
 {
@@ -23,7 +23,7 @@ public:
 	JSON* json(void);
 	Kiss** getClassItr(const string& className);
 	Kiss** getChildItr(void);
-	void* getChildInstByName(const string& name);
+	void* getChildInst(const string& name);
 	Kiss* root(void);
 	Kiss* parent(void);
 	bool empty(void);
@@ -55,12 +55,12 @@ public:
 
 	Kiss* m_pParent;
 	int m_nChild;
-	Kiss* m_pChild[NUM_CHILDREN];
+	Kiss* m_pChild[N_CHILDREN];
 
 	Kiss* m_pNULL;
 	bool m_bNULL;
 
-	Kiss* m_ppItr[NUM_CHILDREN];
+	Kiss* m_ppItr[N_CHILDREN];
 
 };
 

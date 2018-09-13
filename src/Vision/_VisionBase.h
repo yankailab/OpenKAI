@@ -20,7 +20,6 @@ enum VISION_TYPE
 	vision_camera,
 	vision_gstreamer,
 	vision_video,
-	vision_zed,
 	vision_realsense,
 	vision_pylon,
 	vision_raspivid,
@@ -39,15 +38,7 @@ public:
 	virtual vInt2 getSize(void);
 	virtual VISION_TYPE getType(void);
 	virtual Frame* BGR(void);
-	virtual Frame* HSV(void);
-	virtual Frame* Gray(void);
-	virtual Frame* Pers(void);
-	virtual Mat* K(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle);
-
-	void postProcess(void);
-	void setAttitude(double rollRad, double pitchRad, uint64_t timestamp);
-	void updateVisionSize(void);
 	bool isOpened(void);
 
 public:
@@ -60,46 +51,8 @@ public:
 	int m_cH;
 	double m_fovW;
 	double m_fovH;
-	bool m_bFlip;
 
-	//calibration
-	bool m_bCalibration;
-	bool m_bFisheye;
-
-	//crop
-	bool m_bCrop;
-	Rect m_cropBB;
-
-	//gimbal
-	bool m_bGimbal;
-	Mat m_K;
-	Mat m_rotRoll;
-	uint64_t m_rotTime;
-	double m_rotPrev;
-	double m_isoScale;
-
-	//Perspective
-	bool m_bPers;
-	bool m_bShowPers;
-	vDouble2 m_persLT;
-	vDouble2 m_persLB;
-	vDouble2 m_persRT;
-	vDouble2 m_persRB;
-	Mat m_mPersT;
-	Mat m_mPersInvT;
-	vInt2 m_persSize;
-	Mat m_mPers;
-	Frame* m_pPers;
-	vInt2 m_vSize;
-
-	//frame
 	Frame	m_fBGR;
-	Frame*	m_pGray;
-	Frame*	m_pHSV;
-
-	//post processing thread
-	_ThreadBase* m_pTPP;
-
 };
 
 }

@@ -41,7 +41,7 @@ bool _Path::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->root()->getChildInstByName(iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

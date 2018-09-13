@@ -53,11 +53,11 @@ bool HM_base::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_Canbus", &iName));
-	m_pCAN = (_Canbus*) (pK->root()->getChildInstByName(iName));
+	m_pCAN = (_Canbus*) (pK->root()->getChildInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

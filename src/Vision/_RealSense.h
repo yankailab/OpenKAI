@@ -54,11 +54,15 @@ public:
     rs2::decimation_filter m_rsfDec;
     float m_fDec;
     float m_fSpat;
+    bool m_bAlign;
 
 	int	m_rsFPS;
 	int m_rsDFPS;
 	bool m_rsRGB;
 	string m_vPreset;
+
+	//depth filter processing thread
+	_ThreadBase* m_pTPP;
 
 };
 

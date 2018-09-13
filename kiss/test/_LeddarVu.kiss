@@ -31,8 +31,6 @@
 	"height":1080,
 	"fovV":60,
 	"fovH":90,
-	"bFlip":0,
-	"bGray":0,
 }
 
 {

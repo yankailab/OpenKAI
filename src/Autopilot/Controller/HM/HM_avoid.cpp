@@ -60,11 +60,11 @@ bool HM_avoid::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("HM_base", &iName));
-	m_pHM = (HM_base*) (pK->parent()->getChildInstByName(iName));
+	m_pHM = (HM_base*) (pK->parent()->getChildInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -137,14 +137,14 @@ bool HM_avoid::draw(void)
 	rectangle(*pMat, r, Scalar(0, 255, 0), 1);
 
 	//draw obstacle indicator
-	if(m_pDV)
-	{
-		vInt2 mDim = m_pDV->matrixDim();
-		circle(*pMat,
-				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
-						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
-				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
-	}
+//	if(m_pDV)
+//	{
+//		vInt2 mDim = m_pDV->matrixDim();
+//		circle(*pMat,
+//				Point((m_posMin.x + 0.5) * (pMat->cols / mDim.x),
+//						(m_posMin.y + 0.5) * (pMat->rows / mDim.y)),
+//				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
+//	}
 
 	return true;
 }

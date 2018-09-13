@@ -89,7 +89,7 @@ bool _AutoPilot::init(void* pKiss)
 
 	string iName="";
 	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(iName));
+	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

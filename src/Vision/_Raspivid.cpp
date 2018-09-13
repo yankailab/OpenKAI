@@ -108,13 +108,6 @@ bool _Raspivid::start(void)
 		return false;
 	}
 
-	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
 	return true;
 }
 
@@ -146,18 +139,7 @@ void _Raspivid::update(void)
 			m_fBGR.copy(fRGB.cvtColor(CV_RGB2BGR));
 		}
 
-		m_pTPP->wakeUp();
-
 		this->autoFPSto();
-	}
-}
-
-void _Raspivid::updateTPP(void)
-{
-	while (m_bThreadON)
-	{
-		m_pTPP->sleepTime(0);
-		postProcess();
 	}
 }
 

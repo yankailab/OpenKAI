@@ -14,8 +14,7 @@ namespace kai
 
 _Pylon::_Pylon()
 {
-	m_type = pylon;
-
+	m_type = vision_pylon;
 	m_SN = "";
 	m_pPylonCam = NULL;
 	m_pylonFC.OutputPixelFormat = PixelType_BGR8packed;
@@ -59,8 +58,8 @@ bool _Pylon::open(void)
 		return false;
 	}
 
-	LOG_I("Using model: " << m_pPylonCam->GetDeviceInfo().GetModelName() <<
-		  ", SN: " << m_pPylonCam->GetDeviceInfo().GetSerialNumber());
+	LOG_I("Using model: " + m_pPylonCam->GetDeviceInfo().GetModelName()
+			+ ", SN: " + m_pPylonCam->GetDeviceInfo().GetSerialNumber());
 
 	// The parameter MaxNumBuffer can be used to control the count of buffers
 	// allocated for grabbing. The default value of this parameter is 10.
@@ -80,21 +79,6 @@ bool _Pylon::open(void)
 	m_w = m_pylonGrab->GetWidth();
 	m_h = m_pylonGrab->GetHeight();
 
-	if (m_bCrop)
-	{
-		int i;
-		i = m_w - m_cropBB.x;
-		if (m_cropBB.width > i)
-			m_cropBB.width = i;
-
-		i = m_h - m_cropBB.y;
-		if (m_cropBB.height > i)
-			m_cropBB.height = i;
-
-		m_w = m_cropBB.width;
-		m_h = m_cropBB.height;
-	}
-
 	m_cW = m_w / 2;
 	m_cH = m_h / 2;
 
@@ -106,13 +90,6 @@ bool _Pylon::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -146,21 +123,9 @@ void _Pylon::update(void)
 		m_pylonFC.Convert(m_pylonImg, m_pylonGrab);
 		m_fBGR.copy(Mat(m_h, m_w, CV_8UC3, (uint8_t*) m_pylonImg.GetBuffer()));
 
-		m_pTPP->wakeUp();
-
 		this->autoFPSto();
 	}
 }
 
-void _Pylon::updateTPP(void)
-{
-	while (m_bThreadON)
-	{
-		m_pTPP->sleepTime(0);
-		postProcess();
-	}
 }
-
-}
-
 #endif

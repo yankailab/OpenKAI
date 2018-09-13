@@ -34,7 +34,7 @@ bool _Canbus::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pSerialPort = (_SerialPort*) (pK->root()->getChildInstByName(iName));
+	m_pSerialPort = (_SerialPort*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pSerialPort,"_IOBase not found");
 
 	return true;

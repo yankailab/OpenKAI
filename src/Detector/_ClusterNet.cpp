@@ -49,7 +49,7 @@ bool _ClusterNet::init(void* pKiss)
 	string iName = "";
 
 	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pDet, "_DetectorBase not found");
 
 	//create detection area instances

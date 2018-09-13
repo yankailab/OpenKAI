@@ -23,7 +23,7 @@ bool Traffic_base::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_ObjectBase", &iName);
-	m_pOB = (_ObjectBase*) (pK->root()->getChildInstByName(iName));
+	m_pOB = (_ObjectBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

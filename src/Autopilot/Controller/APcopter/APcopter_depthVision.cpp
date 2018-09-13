@@ -24,11 +24,11 @@ bool APcopter_depthVision::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInstByName(iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
 	Kiss** pItrDS = pK->getChildItr();
@@ -69,7 +69,7 @@ void APcopter_depthVision::updateMavlink(void)
 
 	NULL_(m_pDV);
 
-	vDouble2 range = m_pDV->range();
+	vDouble2 range;// = m_pDV->range();
 	mavlink_distance_sensor_t D;
 
 	for(int i=0; i<m_nROI; i++)
@@ -106,29 +106,29 @@ bool APcopter_depthVision::draw(void)
 
 	NULL_F(m_pDV);
 
-	vInt2 mDim = m_pDV->matrixDim();
-	int bW = pMat->cols / mDim.x;
-	int bH = pMat->rows / mDim.y;
-
-	for (int i = 0; i < m_nROI; i++)
-	{
-		DEPTH_ROI* pR = &m_pROI[i];
-		vDouble4 roi = pR->m_roi;
-		vInt2 pMin;
-		int d = m_pDV->d(&roi,&pMin)*100;
-
-		Rect r;
-		r.x = roi.x * pMat->cols;
-		r.y = roi.y * pMat->rows;
-		r.width = roi.z * pMat->cols - r.x;
-		r.height = roi.w * pMat->rows - r.y;
-		rectangle(*pMat, r, Scalar(0, 255, 255), 1);
-
-		circle(*pMat,
-				Point((pMin.x + 0.5) * bW,
-					  (pMin.y + 0.5) * bH),
-				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
-	}
+//	vInt2 mDim = m_pDV->matrixDim();
+//	int bW = pMat->cols / mDim.x;
+//	int bH = pMat->rows / mDim.y;
+//
+//	for (int i = 0; i < m_nROI; i++)
+//	{
+//		DEPTH_ROI* pR = &m_pROI[i];
+//		vDouble4 roi = pR->m_roi;
+//		vInt2 pMin;
+//		int d = m_pDV->d(&roi,&pMin)*100;
+//
+//		Rect r;
+//		r.x = roi.x * pMat->cols;
+//		r.y = roi.y * pMat->rows;
+//		r.width = roi.z * pMat->cols - r.x;
+//		r.height = roi.w * pMat->rows - r.y;
+//		rectangle(*pMat, r, Scalar(0, 255, 255), 1);
+//
+//		circle(*pMat,
+//				Point((pMin.x + 0.5) * bW,
+//					  (pMin.y + 0.5) * bH),
+//				0.000025 * pMat->cols * pMat->rows, Scalar(0, 255, 255), 2);
+//	}
 
 	return true;
 }

@@ -51,21 +51,6 @@ bool _Camera::open(void)
 	m_w = cMat.cols;
 	m_h = cMat.rows;
 
-	if (m_bCrop)
-	{
-		int i;
-		i = cMat.cols - m_cropBB.x;
-		if (m_cropBB.width > i)
-			m_cropBB.width = i;
-
-		i = cMat.rows - m_cropBB.y;
-		if (m_cropBB.height > i)
-			m_cropBB.height = i;
-
-		m_w = m_cropBB.width;
-		m_h = m_cropBB.height;
-	}
-
 	m_cW = m_w / 2;
 	m_cH = m_h / 2;
 
@@ -77,13 +62,6 @@ bool _Camera::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -110,20 +88,9 @@ void _Camera::update(void)
 
 		Mat mCam;
 		while (!m_camera.read(mCam));
-
 		m_fBGR.copy(mCam);
-		m_pTPP->wakeUp();
 
 		this->autoFPSto();
-	}
-}
-
-void _Camera::updateTPP(void)
-{
-	while (m_bThreadON)
-	{
-		m_pTPP->sleepTime(0);
-		postProcess();
 	}
 }
 

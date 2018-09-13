@@ -32,13 +32,6 @@ private:
 		return NULL;
 	}
 
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_VideoFile*) This)->updateTPP();
-		return NULL;
-	}
-
 public:
 	VideoCapture m_vc;
 	string m_videoFile;

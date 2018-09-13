@@ -42,7 +42,7 @@ bool APcopter_base::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_Mavlink", &iName);
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInstByName(iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 	NULL_F(m_pMavlink);
 
 	return true;
@@ -93,22 +93,6 @@ void APcopter_base::update(void)
 	}
 
 	//m_pMavlink->clComponentArmDisarm(1);
-}
-
-void APcopter_base::releaseRC(void)
-{
-	IF_(check()<0);
-
-	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = 0;
-	rc.chan2_raw = 0;
-	rc.chan3_raw = 0;
-	rc.chan4_raw = 0;
-	rc.chan5_raw = 0;
-	rc.chan6_raw = 0;
-	rc.chan7_raw = 0;
-	rc.chan8_raw = 0;
-	m_pMavlink->rcChannelsOverride(rc);
 }
 
 bool APcopter_base::draw(void)

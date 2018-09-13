@@ -24,10 +24,8 @@
 	"bInst":1,
 	"Window":"OKview",
 	"deviceID":0,
-	"width":1280,
-	"height":1720,
-	"bFlip":0,
-	"bGray":0,
+	"w":1280,
+	"h":1720,
 }
 
 {
@@ -41,20 +39,6 @@
 	"h":720,
 	"fovW":60,
 	"fovH":60,
-	"bFlip":0,
-	"bGray":0,
-	"bPers":0,
-	"persLTx":0.6,
-	"persLTy":0.1,
-	"persLBx":0.0,
-	"persLBy":1.0,
-	"persRTx":0.68,
-	"persRTy":0.1,
-	"persRBx":0.68,
-	"persRBy":1.0,
-	"persW":1000,
-	"persH":1000,
-	"bShowPers":1,
 }
 
 {

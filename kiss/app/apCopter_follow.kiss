@@ -27,6 +27,7 @@
 	"class":"_RealSense",
 	"FPS":30,
 	"bInst":0,
+	"bLog":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
@@ -41,16 +42,9 @@
 	"fSpat":0,
 	"fovW":69.4,
 	"fovH":42.5,
-	"bFlip":0,
-	"bGray":0,
 	"rFrom":0.1,
 	"rTo":15.0,
-	"nMed":3,
-	"mW":10,
-	"mH":10,
-	"dShowAlpha":0.5,
-	"bShowRawDepth":1,
-	"dShowRawBase":0.05,
+	"bAlign":0,
 }
 
 {

@@ -26,8 +26,6 @@
 	"h":720,
 	"fovW":60,
 	"fovH":60,
-	"bFlip":0,
-	"bGray":0,
 }
 
 {
@@ -40,8 +38,6 @@
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 	"_pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"_pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678"
-	"bFlip":0,
-	"bGray":0,
 }
 
 {
@@ -55,8 +51,6 @@
 	"h":720,
 	"fovW":60,
 	"fovH":60,
-	"bFlip":0,
-	"bGray":0,
 }
 
 {

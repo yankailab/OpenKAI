@@ -6,23 +6,17 @@ namespace kai
 APcopter_posCtrlRC::APcopter_posCtrlRC()
 {
 	m_pAP = NULL;
-	m_iModeEnable = ALT_HOLD;
-
-	m_pRoll = NULL;
-	m_pPitch = NULL;
-	m_pYaw = NULL;
-	m_pAlt = NULL;
+	m_fCtrl = 0;
+	m_bON = false;
 
 	m_vTarget.init();
 	m_vPos.init();
 
-	m_pwmLow = 1000;
-	m_pwmMidR = 1500;
-	m_pwmMidP = 1500;
-	m_pwmMidY = 1500;
-	m_pwmMidA = 1500;
-	m_pwmHigh = 2000;
-
+	m_rcRoll.init();
+	m_rcPitch.init();
+	m_rcYaw.init();
+	m_rcAlt.init();
+	resetRC();
 }
 
 APcopter_posCtrlRC::~APcopter_posCtrlRC()
@@ -34,45 +28,67 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iModeEnable);
-	KISSm(pK,pwmLow);
-	KISSm(pK,pwmMidR);
-	KISSm(pK,pwmMidP);
-	KISSm(pK,pwmMidY);
-	KISSm(pK,pwmMidA);
-	KISSm(pK,pwmHigh);
-
-	pK->v("x", &m_vTarget.x);
-	pK->v("y", &m_vTarget.y);
-	pK->v("z", &m_vTarget.z);
-
-	//link
+	m_fCtrl = 0;
+	Kiss* pR;
 	string iName;
 
+	pR = pK->o("roll");
+	if(!pR->empty())
+	{
+		iName = "";
+		pR->v("PIDctrl", &iName);
+		m_rcRoll.m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_rcRoll.m_pPID, iName + ": not found");
+		pR->v("pwmL", &m_rcRoll.m_pwmL);
+		pR->v("pwmM", &m_rcRoll.m_pwmM);
+		pR->v("pwmH", &m_rcRoll.m_pwmH);
+		m_fCtrl |= (1 << RC_CHAN_ROLL);
+	}
+
+	pR = pK->o("pitch");
+	if(!pR->empty())
+	{
+		iName = "";
+		pR->v("PIDctrl", &iName);
+		m_rcPitch.m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_rcPitch.m_pPID, iName + ": not found");
+		pR->v("pwmL", &m_rcPitch.m_pwmL);
+		pR->v("pwmM", &m_rcPitch.m_pwmM);
+		pR->v("pwmH", &m_rcPitch.m_pwmH);
+		m_fCtrl |= (1 << RC_CHAN_PITCH);
+	}
+
+	pR = pK->o("yaw");
+	if(!pR->empty())
+	{
+		iName = "";
+		pR->v("PIDctrl", &iName);
+		m_rcYaw.m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_rcYaw.m_pPID, iName + ": not found");
+		pR->v("pwmL", &m_rcYaw.m_pwmL);
+		pR->v("pwmM", &m_rcYaw.m_pwmM);
+		pR->v("pwmH", &m_rcYaw.m_pwmH);
+		m_fCtrl |= (1 << RC_CHAN_YAW);
+	}
+
+	pR = pK->o("alt");
+	if(!pR->empty())
+	{
+		iName = "";
+		pR->v("PIDctrl", &iName);
+		m_rcAlt.m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_rcAlt.m_pPID, iName + ": not found");
+		pR->v("pwmL", &m_rcAlt.m_pwmL);
+		pR->v("pwmM", &m_rcAlt.m_pwmM);
+		pR->v("pwmH", &m_rcAlt.m_pwmH);
+		m_fCtrl |= (1 << RC_CHAN_ALT);
+	}
+
+	//link
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pRoll, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pPitch, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDyaw", &iName);
-	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pYaw, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(iName));
-	IF_Fl(!m_pAlt, iName + ": not found");
 
 	return true;
 }
@@ -81,10 +97,6 @@ int APcopter_posCtrlRC::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
-	NULL__(m_pRoll,-1);
-	NULL__(m_pPitch,-1);
-	NULL__(m_pYaw,-1);
-	NULL__(m_pAlt,-1);
 
 	return 0;
 }
@@ -93,30 +105,83 @@ void APcopter_posCtrlRC::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	IF_(!isActive());
-	_Mavlink* pMav = m_pAP->m_pMavlink;
-	IF_(pMav->m_msg.heartbeat.custom_mode != m_iModeEnable);
+	if(!isActive() || !m_bON)
+	{
+		releaseRC();
+		return;
+	}
 
-	mavlink_rc_channels_override_t rc;
-	rc.chan1_raw = (uint16_t)(m_pwmMidP + (int)m_pPitch->update(m_vPos.y, m_vTarget.y, m_vPos.z));
-	rc.chan2_raw = (uint16_t)(m_pwmMidR + (int)m_pRoll->update(m_vPos.x, m_vTarget.x, m_vPos.z));
-	rc.chan3_raw = 0;
-	rc.chan4_raw = 0;
-	rc.chan5_raw = 0;
-	rc.chan6_raw = 0;
-	rc.chan7_raw = 0;
-	rc.chan8_raw = 0;
-	m_pAP->m_pMavlink->rcChannelsOverride(rc);
+	resetRC();
+	if(m_fCtrl & (1 << RC_CHAN_PITCH))
+		m_rc.chan1_raw = (uint16_t)(m_rcPitch.m_pwmM + (int)m_rcPitch.m_pPID->update(m_vPos.y, m_vTarget.y));
+
+	if(m_fCtrl & (1 << RC_CHAN_ROLL))
+		m_rc.chan2_raw = (uint16_t)(m_rcRoll.m_pwmM + (int)m_rcRoll.m_pPID->update(m_vPos.x, m_vTarget.x));
+
+	if(m_fCtrl & (1 << RC_CHAN_ALT))
+		m_rc.chan3_raw = (uint16_t)(m_rcAlt.m_pwmM + (int)m_rcAlt.m_pPID->update(m_vPos.z, m_vTarget.z));
+
+	if(m_fCtrl & (1 << RC_CHAN_YAW))
+		m_rc.chan4_raw = (uint16_t)(m_rcYaw.m_pwmM + (int)m_rcYaw.m_pPID->update(m_vPos.w, m_vTarget.w));
+
+	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
 }
 
-void APcopter_posCtrlRC::setTargetPos(vDouble3& vT)
+void APcopter_posCtrlRC::setTargetPos(vDouble4& vT, uint8_t fSet)
 {
-	m_vTarget = vT;
+	if(m_rcRoll.m_pPID && (fSet & (1<<RC_CHAN_ROLL)))
+	{
+		m_vTarget.x = vT.x;
+		m_rcRoll.m_pPID->reset();
+	}
+
+	if(m_rcPitch.m_pPID && (fSet & (1<<RC_CHAN_PITCH)))
+	{
+		m_vTarget.y = vT.y;
+		m_rcPitch.m_pPID->reset();
+	}
+
+	if(m_rcAlt.m_pPID && (fSet & (1<<RC_CHAN_ALT)))
+	{
+		m_vTarget.z = vT.z;
+		m_rcAlt.m_pPID->reset();
+	}
+
+	if(m_rcYaw.m_pPID && (fSet & (1<<RC_CHAN_YAW)))
+	{
+		m_vTarget.w = vT.w;
+		m_rcYaw.m_pPID->reset();
+	}
 }
 
-void APcopter_posCtrlRC::setPos(vDouble3& vT)
+void APcopter_posCtrlRC::setPos(vDouble4& vP)
 {
-	m_vPos = vT;
+	m_vPos = vP;
+}
+
+void APcopter_posCtrlRC::bON(bool bON)
+{
+	m_bON = bON;
+}
+
+void APcopter_posCtrlRC::resetRC(void)
+{
+	m_rc.chan1_raw = 0;
+	m_rc.chan2_raw = 0;
+	m_rc.chan3_raw = 0;
+	m_rc.chan4_raw = 0;
+	m_rc.chan5_raw = 0;
+	m_rc.chan6_raw = 0;
+	m_rc.chan7_raw = 0;
+	m_rc.chan8_raw = 0;
+}
+
+void APcopter_posCtrlRC::releaseRC(void)
+{
+	IF_(check()<0);
+
+	resetRC();
+	m_pAP->m_pMavlink->rcChannelsOverride(m_rc);
 }
 
 bool APcopter_posCtrlRC::draw(void)

@@ -38,7 +38,7 @@ bool VEK_base::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pVEK = (_IOBase*) (pK->root()->getChildInstByName(iName));
+	m_pVEK = (_IOBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

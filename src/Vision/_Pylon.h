@@ -37,13 +37,6 @@ private:
 		return NULL;
 	}
 
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_Pylon*) This)->updateTPP();
-		return NULL;
-	}
-
 public:
 	PylonAutoInitTerm m_pylonAutoInit;
 	CInstantCamera* m_pPylonCam;
@@ -57,6 +50,5 @@ public:
 };
 
 }
-
 #endif
 #endif

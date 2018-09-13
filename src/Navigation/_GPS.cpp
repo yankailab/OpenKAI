@@ -52,7 +52,7 @@ bool _GPS::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink= (_Mavlink*) (pK->root()->getChildInstByName(iName));
+	m_pMavlink= (_Mavlink*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

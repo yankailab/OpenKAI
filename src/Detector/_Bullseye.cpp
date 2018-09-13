@@ -58,7 +58,7 @@ bool _Bullseye::init(void* pKiss)
 	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_Stream",&iName));
-	m_pStream = (_VisionBase*)(pK->root()->getChildInstByName(iName));
+	m_pStream = (_VisionBase*)(pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -113,7 +113,7 @@ void _Bullseye::detectCircleFill(void)
 	Frame* pRGB;
 
 	if(!m_pStream)return;
-	pHSV = m_pStream->HSV();
+//TODO	pHSV = m_pStream->HSV();
 	pRGB = m_pStream->BGR();
 	if(pRGB->bEmpty())return;
 	if(pHSV->bEmpty())return;
@@ -169,7 +169,7 @@ void _Bullseye::detectCircleHough(void)
 {
 	if(!m_pStream)return;
 
-	Frame* pFrame = m_pStream->HSV();
+	Frame* pFrame;//TODO = m_pStream->HSV();
 	NULL_(pFrame);
 	IF_(pFrame->bEmpty());
 	if(pFrame->tStamp() <= m_pFrame->tStamp())return;

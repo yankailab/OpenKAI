@@ -38,15 +38,15 @@ bool _MultiImageNet::init(void* pKiss)
 #ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_ImageNet1", &iName));
-	m_pIN1 = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+	m_pIN1 = (_ImageNet*) (pK->root()->getChildInst(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_ImageNet2", &iName));
-	m_pIN2 = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+	m_pIN2 = (_ImageNet*) (pK->root()->getChildInst(&iName));
 
 	iName = "";
 	F_INFO(pK->v("_ImageNet3", &iName));
-	m_pIN3 = (_ImageNet*) (pK->root()->getChildInstByName(&iName));
+	m_pIN3 = (_ImageNet*) (pK->root()->getChildInst(&iName));
 
 	return true;
 #else

@@ -30,7 +30,7 @@ bool ActionBase::init(void* pKiss)
 	//link
 	string iName="";
 	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInstByName(iName));
+	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
 	NULL_T(m_pAM);
 
 	m_vActiveState.clear();

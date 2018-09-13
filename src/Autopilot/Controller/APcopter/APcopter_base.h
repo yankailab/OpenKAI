@@ -20,9 +20,6 @@ public:
 	bool draw(void);
 	int check(void);
 
-	void releaseRC(void);
-
-
 public:
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;

@@ -7,6 +7,7 @@
 #include "../../../Arithmetic/PolyFit.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
+#include "APcopter_posCtrlRC.h"
 
 namespace kai
 {
@@ -27,13 +28,15 @@ public:
 
 public:
 	APcopter_base* m_pAP;
+	APcopter_posCtrlRC* m_pPC;
 	_DepthVisionBase* m_pDV;
 
+	int m_wD;
+	int m_hD;
 	PolyFit m_pf;
 	Median	 m_fMed;
-	vDouble3 m_vTarget;
-	vDouble3 m_vPos;
-	uint32_t m_iModeEnable;
+	vDouble4 m_vTarget;
+	vDouble4 m_vPos;
 
 	double m_edgeTop;
 	double m_edgeBottom;

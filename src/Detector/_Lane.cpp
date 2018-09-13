@@ -124,7 +124,7 @@ bool _Lane::init(void* pKiss)
 	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInstByName(iName));
+	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pVision, "_VisionBase is NULL");
 
 	return true;

@@ -62,10 +62,10 @@ bool RC_visualFollow::init(void* pKiss)
 	string iName = "";
 
 	F_INFO(pK->v("RC_base", &iName));
-	m_pRCbase = (RC_base*) (pK->parent()->getChildInstByName(iName));
+	m_pRCbase = (RC_base*) (pK->parent()->getChildInst(iName));
 
 	F_ERROR_F(pK->v("ROItracker", &iName));
-	m_pROITracker = (_SingleTracker*) (pK->root()->getChildInstByName(iName));
+	m_pROITracker = (_SingleTracker*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

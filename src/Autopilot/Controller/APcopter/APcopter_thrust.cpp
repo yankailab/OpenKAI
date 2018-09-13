@@ -78,37 +78,37 @@ bool APcopter_thrust::init(void* pKiss)
 
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInstByName(iName));
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_SlamBase", &iName);
-	m_pSB = (_SlamBase*) (pK->root()->getChildInstByName(iName));
+	m_pSB = (_SlamBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pSB, iName + ": not found");
 
 	iName = "";
 	pK->v("_MavlinkGCS", &iName);
-	m_pMavGCS = (_Mavlink*) (pK->root()->getChildInstByName(iName));
+	m_pMavGCS = (_Mavlink*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pMavGCS, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInstByName(iName));
+	m_pRoll = (PIDctrl*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pRoll, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInstByName(iName));
+	m_pPitch = (PIDctrl*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pPitch, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDyaw", &iName);
-	m_pYaw = (PIDctrl*) (pK->root()->getChildInstByName(iName));
+	m_pYaw = (PIDctrl*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pYaw, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInstByName(iName));
+	m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pAlt, iName + ": not found");
 
 	return true;

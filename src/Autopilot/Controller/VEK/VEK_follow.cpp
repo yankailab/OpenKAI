@@ -42,16 +42,16 @@ bool VEK_follow::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("VEK_base", &iName));
-	m_pVEK = (VEK_base*) (pK->parent()->getChildInstByName(iName));
+	m_pVEK = (VEK_base*) (pK->parent()->getChildInst(iName));
 
 //	iName = "";
 //	F_INFO(pK->v("_ZEDobstacle", &iName));
-//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInstByName(iName));
+//	m_pObs = (_ZEDdistance*) (pK->root()->getChildInst(iName));
 
 #ifdef USE_TENSORRT
 	iName = "";
 	F_INFO(pK->v("_ClusterNet", &iName));
-	m_pCN = (_ClusterNet*) (pK->root()->getChildInstByName(iName));
+	m_pCN = (_ClusterNet*) (pK->root()->getChildInst(iName));
 
 	if (!m_pCN)
 	{

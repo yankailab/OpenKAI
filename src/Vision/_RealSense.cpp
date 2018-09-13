@@ -15,7 +15,6 @@ namespace kai
 _RealSense::_RealSense()
 {
 	m_type = vision_realsense;
-
 	m_pDepthWin = NULL;
 	m_vPreset = "High Density";
 	m_rsRGB = true;
@@ -23,11 +22,16 @@ _RealSense::_RealSense()
 	m_rsDFPS = 30;
 	m_fDec = 0.0;
 	m_fSpat = 0.0;
+	m_bAlign = false;
 	m_rspAlign = NULL;
+
+	m_pTPP = new _ThreadBase();
 }
 
 _RealSense::~_RealSense()
 {
+	DEL(m_pTPP);
+	DEL(m_rspAlign);
 }
 
 bool _RealSense::init(void* pKiss)
@@ -41,6 +45,7 @@ bool _RealSense::init(void* pKiss)
 	KISSm(pK,rsRGB);
 	KISSm(pK,fDec);
 	KISSm(pK,fSpat);
+	KISSm(pK,bAlign);
 
 	return true;
 }
@@ -80,16 +85,23 @@ bool _RealSense::open(void)
 
     if(m_rsRGB)
     {
-        m_rspAlign = new rs2::align(rs2_stream::RS2_STREAM_COLOR);
+    	if(m_bAlign)
+    	{
+            m_rspAlign = new rs2::align(rs2_stream::RS2_STREAM_COLOR);
+            rs2::frameset rsFramesetAlign = m_rspAlign->process( rsFrameset );
+            m_rsColor = rsFramesetAlign.get_color_frame();
+        	m_rsDepth = rsFramesetAlign.get_depth_frame();
+    	}
+    	else
+    	{
+            m_rsColor = rsFrameset.get_color_frame();
+        	m_rsDepth = rsFrameset.get_depth_frame();
+    	}
 
-        rs2::frameset rsFramesetAlign = m_rspAlign->process( rsFrameset );
-        m_rsColor = rsFramesetAlign.get_color_frame();
     	m_w = m_rsColor.as<rs2::video_frame>().get_width();
     	m_h = m_rsColor.as<rs2::video_frame>().get_height();
     	m_cW = m_w / 2;
     	m_cH = m_h / 2;
-
-    	m_rsDepth = rsFramesetAlign.get_depth_frame();
     }
     else
     {
@@ -148,11 +160,19 @@ void _RealSense::update(void)
 
 		if(m_rsRGB)
 		{
-			rs2::frameset rsFramesetAlign = m_rspAlign->process( rsFrameset );
-	        m_rsColor = rsFramesetAlign.get_color_frame();
-			m_fBGR.copy(Mat(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP));
+			if(m_bAlign)
+			{
+				rs2::frameset rsFramesetAlign = m_rspAlign->process( rsFrameset );
+		        m_rsColor = rsFramesetAlign.get_color_frame();
+		    	m_rsDepth = rsFramesetAlign.get_depth_frame();
+			}
+			else
+			{
+		        m_rsColor = rsFrameset.get_color_frame();
+		    	m_rsDepth = rsFrameset.get_depth_frame();
+			}
 
-	    	m_rsDepth = rsFramesetAlign.get_depth_frame();
+			m_fBGR.copy(Mat(Size(m_w, m_h), CV_8UC3, (void*)m_rsColor.get_data(), Mat::AUTO_STEP));
 		}
 		else
 		{
@@ -175,40 +195,30 @@ void _RealSense::updateTPP(void)
 			m_rsDepth = m_rsfDec.process(m_rsDepth);
 		if(m_fSpat > 0.0)
 			m_rsDepth = m_rsfSpat.process(m_rsDepth);
-		if(m_bShowRawDepth)
+		if(m_pDepthWin)
 			m_rsDepthShow = m_rsDepth;
 
-		m_mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*)m_rsDepth.get_data(), Mat::AUTO_STEP);
-		m_mZ.convertTo(m_mD, CV_32FC1);
+		Mat mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*)m_rsDepth.get_data(), Mat::AUTO_STEP);
+		Mat mD;
+		mZ.convertTo(mD, CV_32FC1);
 
 		auto depth_scale = m_rsPipe.get_active_profile()
 		        .get_device()
 		        .first<rs2::depth_sensor>()
 		        .get_depth_scale();
-
-		m_mD *= depth_scale;
-		m_fDepth = m_mD;
-
-		if(m_rsRGB)
-		{
-			postProcess();
-		}
-
-		postProcessDepth();
+		m_fDepth = mD * depth_scale;
 	}
 }
 
 bool _RealSense::draw(void)
 {
-	if(m_bShowRawDepth && !m_fDepth.bEmpty())
+	if(m_pDepthWin)
 	{
+		IF_F(m_fDepth.bEmpty());
 		rs2::colorizer rsColorMap;
 		rs2::frame dColor = rsColorMap(m_rsDepthShow);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
 		m_depthShow = mDColor;
-
-		if (m_bFlip)
-			m_depthShow = m_depthShow.flip(-1);
 	}
 
 	return this->_DepthVisionBase::draw();

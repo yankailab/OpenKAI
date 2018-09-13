@@ -27,8 +27,6 @@
 	"deviceID":0,
 	"width":1280,
 	"height":720,
-	"bFlip":0,
-	"bGray":0,
 }
 
 {
@@ -47,13 +45,8 @@
 	"rsDFPS":30,
 	"fovW":60,
 	"fovH":60,
-	"bFlip":0,
-	"bGray":1,
 	"rFrom":0.1,
 	"rTo":15.0,
-	"nMed":3,
-	"mW":10,
-	"mH":10,	
 }
 
 {

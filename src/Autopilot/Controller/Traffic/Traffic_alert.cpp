@@ -32,7 +32,7 @@ bool Traffic_alert::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("Traffic_base", &iName);
-	m_pTB = (Traffic_base*) (pK->parent()->getChildInstByName(iName));
+	m_pTB = (Traffic_base*) (pK->parent()->getChildInst(iName));
 
 	return true;
 }

@@ -38,13 +38,6 @@ private:
 		return NULL;
 	}
 
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_Raspivid*) This)->updateTPP();
-		return NULL;
-	}
-
 public:
 	string m_cmd;
 	string m_option;

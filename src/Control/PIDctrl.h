@@ -13,24 +13,6 @@
 namespace kai
 {
 
-struct PID_SET
-{
-	double m_P;
-	double m_I;
-	double m_Imax;
-	double m_D;
-	double m_h;
-
-	void init(void)
-	{
-		m_P = 0;
-		m_I = 0;
-		m_Imax = 0;
-		m_D = 0;
-		m_h = 0.0;
-	}
-};
-
 class PIDctrl: public ControlBase
 {
 public:
@@ -39,20 +21,16 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual double update(double v, double vTarget);
-	virtual double update(double v, double vTarget, double h);
 	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 	virtual void reset(void);
 
 public:
-	PID_SET m_pid1;
-	PID_SET m_pid2;
-	double m_ovdH;
-	double m_dP;
-	double m_dI;
-	double m_dImax;
-	double m_dD;
+	double m_P;
+	double m_I;
+	double m_Imax;
+	double m_D;
 
 	double m_v;
 	double m_vPred;
