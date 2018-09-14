@@ -82,7 +82,7 @@ void HM_avoid::update(void)
 	uint64_t tNow = getTimeUsec();
 
 	//do nothing if no obstacle inside alert distance
-	m_distM = m_pDV->d(&m_dROIf, &m_posMin);
+	m_distM = m_pDV->d(&m_dROIf);
 	IF_(m_distM > m_alertDist);
 
 	m_rpmSteer = abs(m_rpmSteer);

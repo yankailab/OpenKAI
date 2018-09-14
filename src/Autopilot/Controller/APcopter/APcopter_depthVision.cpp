@@ -76,7 +76,7 @@ void APcopter_depthVision::updateMavlink(void)
 	{
 		DEPTH_ROI* pR = &m_pROI[i];
 
-		double d = m_pDV->d(&pR->m_roi,NULL) * pR->m_dScale;
+		double d = m_pDV->d(&pR->m_roi) * pR->m_dScale;
 		if(d < range.x)d = range.y;
 		if(d > range.y)d = range.y;
 		pR->m_minD = d;

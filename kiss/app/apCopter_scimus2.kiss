@@ -45,7 +45,30 @@
 	"rFrom":0.1,
 	"rTo":15.0,
 	"bAlign":0,
+	"fDec":0,
+	"fSpat":3,
 }
+
+{
+	"name":"depthEdge",
+	"class":"_DepthEdge",
+	"bInst":1,
+	"Window":"OKview",
+	"_DepthVisionBase":"rs",
+	"wD":320,
+	"hD":200,
+	"nMorphOpen":10,
+	"nMorphClose":0,
+
+	{
+		"name":"BBedge",
+		"x":0.2,
+		"y":0.2,
+		"z":0.8,
+		"w":0.8,				
+	}	
+}
+
 
 {
 	"name":"apSerial",
@@ -259,11 +282,7 @@
 			"activeState":["CC_STANDBY"],
 			"APcopter_base":"apBase",
 			"APcopter_posCtrlRC":"apPosCtrl",
-			"_DepthVisionBase":"rs",
-			"PIDroll":"PIDroll",
-			"PIDpitch":"PIDpitch",
-			"PIDyaw":"PIDyaw",
-			"PIDalt":"PIDalt",
+			"_DepthEdge":"depthEdge",
 		}		
 		
 	}

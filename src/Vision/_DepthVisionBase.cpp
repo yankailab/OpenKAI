@@ -37,7 +37,7 @@ bool _DepthVisionBase::init(void* pKiss)
 	return true;
 }
 
-double _DepthVisionBase::d(vDouble4* pROI, vInt2* pPos)
+double _DepthVisionBase::d(vDouble4* pROI)
 {
 	IF__(!pROI, -1.0);
 	IF__(m_fDepth.bEmpty(),-1.0);
@@ -59,10 +59,10 @@ double _DepthVisionBase::d(vDouble4* pROI, vInt2* pPos)
 	if (iR.w > s.height)
 		iR.w = s.height;
 
-	return d(&iR, pPos);
+	return d(&iR);
 }
 
-double _DepthVisionBase::d(vInt4* pROI, vInt2* pPos)
+double _DepthVisionBase::d(vInt4* pROI)
 {
 	IF__(!pROI, -1.0);
 	IF__(m_fDepth.bEmpty(),-1.0);

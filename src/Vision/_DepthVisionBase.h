@@ -26,8 +26,8 @@ public:
 	virtual bool draw(void);
 
 	virtual Frame* Depth(void);
-	double d(vInt4* pROI, vInt2* pPos);
-	double d(vDouble4* pROI, vInt2* pPos);
+	double d(vInt4* pROI);
+	double d(vDouble4* pROI);
 
 public:
 	int m_wD;
