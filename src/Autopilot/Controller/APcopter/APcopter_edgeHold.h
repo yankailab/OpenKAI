@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DepthEdge.h"
+#include "../../../Sensor/_DistSensorBase.h"
 #include "../../../Filter/Median.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
@@ -28,10 +29,10 @@ public:
 	APcopter_base* m_pAP;
 	APcopter_posCtrlRC* m_pPC;
 	_DepthEdge* m_pDE;
+	_DistSensorBase* m_pDB;
 
 	Median m_fX;
 	Median m_fY;
-	Median m_fZ;
 
 	vDouble4 m_vTarget;
 	vDouble4 m_vPos;
