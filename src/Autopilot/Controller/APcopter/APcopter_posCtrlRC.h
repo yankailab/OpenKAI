@@ -12,6 +12,7 @@ namespace kai
 #define RC_CHAN_PITCH 0
 #define RC_CHAN_YAW 3
 #define RC_CHAN_ALT 2
+#define N_RC_CHAN 4
 
 struct AP_POS_CTRL_RC
 {
@@ -19,6 +20,9 @@ struct AP_POS_CTRL_RC
 	int m_pwmL;
 	int m_pwmM;
 	int m_pwmH;
+	bool m_bON;
+	uint8_t m_iChan;
+	uint16_t* m_pMavChanRaw;
 
 	void init(void)
 	{
@@ -26,6 +30,49 @@ struct AP_POS_CTRL_RC
 		m_pwmL = 1000;
 		m_pwmM = 1500;
 		m_pwmH = 2000;
+		m_bON = false;
+		m_iChan = 0;
+		m_pMavChanRaw = NULL;
+	}
+
+	void setRCChannel(mavlink_rc_channels_override_t* pRCO)
+	{
+		NULL_(pRCO);
+		if(m_iChan == 1)
+			m_pMavChanRaw = &pRCO->chan1_raw;
+		else if(m_iChan == 2)
+			m_pMavChanRaw = &pRCO->chan2_raw;
+		else if(m_iChan == 3)
+			m_pMavChanRaw = &pRCO->chan3_raw;
+		else if(m_iChan == 4)
+			m_pMavChanRaw = &pRCO->chan4_raw;
+		else if(m_iChan == 5)
+			m_pMavChanRaw = &pRCO->chan5_raw;
+		else if(m_iChan == 6)
+			m_pMavChanRaw = &pRCO->chan6_raw;
+		else if(m_iChan == 7)
+			m_pMavChanRaw = &pRCO->chan7_raw;
+		else if(m_iChan == 8)
+			m_pMavChanRaw = &pRCO->chan8_raw;
+		else
+			m_pMavChanRaw = NULL;
+	}
+
+	bool updatePWM(uint16_t pwm)
+	{
+		NULL_F(m_pMavChanRaw);
+		IF_F(!m_bON);
+
+		*m_pMavChanRaw = pwm;
+		return true;
+	}
+
+	void bON(bool bON)
+	{
+		if(!m_bON && bON)
+			m_pPID->reset();
+
+		m_bON = bON;
 	}
 };
 
@@ -41,8 +88,9 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
-	void setTargetPos(vDouble4& vT, uint8_t fSet);
+	void setTargetPos(vDouble4& vT);
 	void setPos(vDouble4& vP);
+	void setCtrl(uint8_t iChan, bool bON);
 
 	void bON(bool bON);
 	void resetRC(void);
@@ -50,17 +98,13 @@ public:
 
 public:
 	APcopter_base* m_pAP;
-	uint8_t m_fCtrl;
 	bool	m_bON;
 
 	vDouble4 m_vTarget;
 	vDouble4 m_vPos;
 
-	AP_POS_CTRL_RC m_rcRoll;
-	AP_POS_CTRL_RC m_rcPitch;
-	AP_POS_CTRL_RC m_rcYaw;
-	AP_POS_CTRL_RC m_rcAlt;
-	mavlink_rc_channels_override_t m_rc;
+	AP_POS_CTRL_RC m_rc[N_RC_CHAN];
+	mavlink_rc_channels_override_t m_rcO;
 
 };
 

@@ -57,8 +57,9 @@
 	"_DepthVisionBase":"rs",
 	"wD":320,
 	"hD":200,
-	"nMorphOpen":10,
-	"nMorphClose":0,
+	"nMorphOpen":5,
+	"nMorphClose":5,
+	"sobelK":7,
 
 	{
 		"name":"BBedge",
@@ -92,38 +93,6 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavGCS",
-	}	
-}
-
-{
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":19840,
-	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_IOBase":"apUDP",
-	"noRouteCmd":[70],
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavAP",
-	}
 }
 
 {
@@ -163,14 +132,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-0.8,
+	"P":-0.1,
 	"I":0.0,
 	"Imax":0.0,
-	"D":-3.0,
+	"D":-0.0,
 	"dT":0.85,
-	"min":-1000,
-	"max":1000,
-	"K":1000,
+	"min":-200,
+	"max":200,
+	"K":500,
 }
 
 {
@@ -178,14 +147,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":0.8,
+	"P":0.1,
 	"I":0.0,
 	"Imax":0.0,
-	"D":3.0,
+	"D":0.0,
 	"dT":0.85,
-	"min":-1000,
-	"max":1000,
-	"K":1000,
+	"min":-200,
+	"max":200,
+	"K":500,
 }
 
 {
@@ -246,7 +215,7 @@
 			"bLog":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_STANDBY_"],
+			"activeState":["CC_STANDBY"],
 			"APcopter_base":"apBase",
 
 			{
@@ -255,6 +224,7 @@
 				"pwmL":1000,
 				"pwmM":1515,
 				"pwmH":2000,
+				"iChan":2,
 			}
 			{
 				"name":"pitch",
@@ -262,6 +232,7 @@
 				"pwmL":1000,
 				"pwmM":1515,
 				"pwmH":2000,
+				"iChan":1,
 			}
 			{
 				"name":"alt",
@@ -269,6 +240,7 @@
 				"pwmL":1000,
 				"pwmM":1500,
 				"pwmH":2000,
+				"iChan":3,
 			}
 		}
 		
@@ -283,6 +255,13 @@
 			"APcopter_base":"apBase",
 			"APcopter_posCtrlRC":"apPosCtrl",
 			"_DepthEdge":"depthEdge",
+			"_DistSensorBase":"leddarU",
+			"nMedian":3,
+			"x":0.5,
+			"y":6.0,
+			"z":50.0,
+			"zMin":10.0,
+			
 		}		
 		
 	}

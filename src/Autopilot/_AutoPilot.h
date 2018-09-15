@@ -8,7 +8,6 @@
 #include "Controller/APcopter/APcopter_arucoLanding.h"
 #include "Controller/APcopter/APcopter_arucoFollow.h"
 #include "Controller/APcopter/APcopter_base.h"
-#include "Controller/APcopter/APcopter_thrust.h"
 #include "Controller/APcopter/APcopter_depthVision.h"
 #include "Controller/APcopter/APcopter_distLidar.h"
 #include "Controller/APcopter/APcopter_DNNavoid.h"

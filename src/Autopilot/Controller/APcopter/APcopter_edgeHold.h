@@ -9,7 +9,6 @@
 #include "APcopter_base.h"
 #include "APcopter_posCtrlRC.h"
 
-
 namespace kai
 {
 
@@ -34,9 +33,9 @@ public:
 	Median m_fX;
 	Median m_fY;
 
+	double m_zMin;
 	vDouble4 m_vTarget;
 	vDouble4 m_vPos;
-
 };
 
 }

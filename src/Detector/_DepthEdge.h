@@ -54,6 +54,7 @@ public:
 
 	int m_nMorphOpen;
 	int m_nMorphClose;
+	int m_sobelK;
 
 	PolyFit m_pf;
 	Mat m_mF;

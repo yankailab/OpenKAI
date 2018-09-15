@@ -37,6 +37,7 @@ _DepthEdge::_DepthEdge()
 
 	m_nMorphOpen = 0;
 	m_nMorphClose = 0;
+	m_sobelK = 1;
 
 }
 
@@ -54,6 +55,7 @@ bool _DepthEdge::init(void* pKiss)
 	KISSm(pK,hD);
 	KISSm(pK,nMorphOpen);
 	KISSm(pK,nMorphClose);
+	KISSm(pK,sobelK);
 
 	Kiss* pB;
 
@@ -142,10 +144,13 @@ void _DepthEdge::detect(void)
 	m_dL = m_pDV->d(&m_vBBL);
 	m_dR = m_pDV->d(&m_vBBR);
 
-	int thrBin = THRESH_BINARY;
-	m_vPos.y = m_dL;
-
-	if(m_dL > m_dR)
+	int thrBin;
+	if(m_dL < m_dR)
+	{
+		thrBin = THRESH_BINARY;
+		m_vPos.y = m_dL;
+	}
+	else
 	{
 		thrBin = THRESH_BINARY_INV;
 		m_vPos.y = m_dR;
@@ -158,7 +163,7 @@ void _DepthEdge::detect(void)
 	if(m_nMorphClose>0)
 		cv::morphologyEx(mD, mD, MORPH_CLOSE, cv::Mat(), cv::Point(-1,-1), m_nMorphClose);
 
-	cv::Sobel(mD, mD, mD.type(), 1, 0, 3, 1, 0, BORDER_DEFAULT);
+	cv::Sobel(mD, mD, mD.type(), 1, 0, m_sobelK, 1, 0, BORDER_DEFAULT);
 	m_mF = mD;
 
 	cv::reduce(mD, mD, 0, CV_REDUCE_SUM, -1);
