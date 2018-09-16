@@ -216,7 +216,7 @@ bool _RealSense::draw(void)
 	{
 		IF_F(m_fDepth.bEmpty());
 		rs2::colorizer rsColorMap;
-		rs2::frame dColor = rsColorMap(m_rsDepthShow);
+		rs2::frame dColor = rsColorMap.process(m_rsDepthShow);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*)dColor.get_data(), Mat::AUTO_STEP);
 		m_depthShow = mDColor;
 	}
