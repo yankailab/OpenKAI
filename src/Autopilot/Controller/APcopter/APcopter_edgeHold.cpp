@@ -9,12 +9,15 @@ APcopter_edgeHold::APcopter_edgeHold()
 	m_pPC = NULL;
 	m_pDE = NULL;
 	m_pDB = NULL;
+	m_iModeON = ALT_HOLD;
 
 	m_vTarget.x = 0.5;
 	m_vTarget.y = 6.0;
 	m_vTarget.z = 50.0;
 	m_vTarget.w = 0.0;
-	m_zMin = 6.0;
+
+	m_zUp = 10.0;
+	m_zDown = 30.0;
 
 	m_vPos.init();
 }
@@ -28,7 +31,9 @@ bool APcopter_edgeHold::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,zMin);
+	KISSm(pK,iModeON);
+	KISSm(pK,zUp);
+	KISSm(pK,zDown);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -62,7 +67,6 @@ bool APcopter_edgeHold::init(void* pKiss)
 	F_ERROR_F(pK->v("_DistSensorBase", &iName));
 	m_pDB = (_DistSensorBase*)(pK->root()->getChildInst(iName));
 
-
 	m_pPC->setTargetPos(m_vTarget);
 
 	return true;
@@ -83,6 +87,16 @@ void APcopter_edgeHold::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
+
+	if(m_iModeON == m_pAP->m_flightMode)
+	{
+		m_pAM->transit("CC_CONTROL");
+	}
+	else
+	{
+		m_pAM->transit("CC_STANDBY");
+	}
+
 	if(!isActive())
 	{
 		m_pPC->bON(false);
@@ -90,6 +104,7 @@ void APcopter_edgeHold::update(void)
 	}
 
 	m_pPC->bON(true);
+
 	vDouble4* pPos = m_pDE->pos();
 
 	if(pPos->x > 0.0)
@@ -115,7 +130,7 @@ void APcopter_edgeHold::update(void)
 	}
 
 	m_vPos.z = m_pDB->dAvr();
-	if(m_vPos.z > 0.0 && m_vPos.z < m_zMin)
+	if(m_vPos.z > 0.0)
 	{
 		m_pPC->setCtrl(RC_CHAN_ALT, true);
 	}
@@ -124,7 +139,42 @@ void APcopter_edgeHold::update(void)
 		m_pPC->setCtrl(RC_CHAN_ALT, false);
 	}
 
+	mode();
+
+	m_pPC->setTargetPos(m_vTarget);
 	m_pPC->setPos(m_vPos);
+}
+
+void APcopter_edgeHold::mode(void)
+{
+	uint8_t altMode = 0;
+
+	uint16_t pwmZ = m_pAP->m_pMavlink->m_msg.rc_channels_raw.chan3_raw;
+	if(pwmZ < 1000)
+		altMode = 0;
+	else if(pwmZ > 800 && pwmZ < 1250)
+		altMode = 1;
+	else if(pwmZ > 1250 && pwmZ < 1750)
+		altMode = 2;
+	else if(pwmZ > 1750 && pwmZ < 2200)
+		altMode = 3;
+
+	if(altMode == 0)
+	{
+		m_pPC->setCtrl(RC_CHAN_ALT, false);
+	}
+	else if(altMode == 1)
+	{
+		m_vTarget.z = m_zDown;
+	}
+	else if(altMode == 2)
+	{
+		m_pPC->setCtrl(RC_CHAN_ALT, false);
+	}
+	else if(altMode == 3)
+	{
+		m_vTarget.z = m_zUp;
+	}
 }
 
 bool APcopter_edgeHold::draw(void)
@@ -148,9 +198,9 @@ bool APcopter_edgeHold::draw(void)
 							pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
 		msg += "Edge pos = (" +
-				f2str(m_vPos.x) +
-				f2str(m_vPos.y) +
-				f2str(m_vPos.z) +
+				f2str(m_vPos.x) + ", " +
+				f2str(m_vPos.y) + ", " +
+				f2str(m_vPos.z) + ", " +
 				f2str(m_vPos.w) + ")";
 	}
 
@@ -164,18 +214,18 @@ bool APcopter_edgeHold::cli(int& iY)
 	IF_F(!this->ActionBase::cli(iY));
 	IF_F(check()<0);
 
-	string msg = *this->getName() + ": ";
+	string msg;
 
 	if(!isActive())
 	{
-		msg += "Inactive";
+		msg = "Inactive";
 	}
 	else
 	{
-		msg += "Edge pos = (" +
-				f2str(m_vPos.x) +
-				f2str(m_vPos.y) +
-				f2str(m_vPos.z) +
+		msg = "Edge pos = (" +
+				f2str(m_vPos.x) + ", " +
+				f2str(m_vPos.y) + ", " +
+				f2str(m_vPos.z) + ", " +
 				f2str(m_vPos.w) + ")";
 	}
 

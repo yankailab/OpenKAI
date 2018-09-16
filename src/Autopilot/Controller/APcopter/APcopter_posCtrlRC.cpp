@@ -191,25 +191,32 @@ bool APcopter_posCtrlRC::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string msg = *this->getName() + ": ";
+	string msg = *this->getName();
+	pWin->addMsg(&msg);
+
+	pWin->tabNext();
 
 	if(!isActive())
 	{
-		msg += "Inactive";
+		msg = "Inactive";
+		pWin->addMsg(&msg);
 	}
 	else
 	{
-		circle(*pMat, Point(m_vPos.x * pMat->cols,
-							m_vPos.y * pMat->rows),
-				pMat->cols * pMat->rows * 0.00005, Scalar(0, 0, 255), 2);
+		msg = "Pos = (" + f2str(m_vPos.x) + ", "
+						 + f2str(m_vPos.y) + ", "
+						 + f2str(m_vPos.z) + ", "
+						 + f2str(m_vPos.w) + ")";
+		pWin->addMsg(&msg);
 
-		msg += "Pos = (" + f2str(m_vPos.x) + ", "
-							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ", "
-							   + f2str(m_vPos.w) + ")";
+		msg = "Target = (" + f2str(m_vTarget.x) + ", "
+						    + f2str(m_vTarget.y) + ", "
+						    + f2str(m_vTarget.z) + ", "
+						    + f2str(m_vTarget.w) + ")";
+		pWin->addMsg(&msg);
 	}
 
-	pWin->addMsg(&msg);
+	pWin->tabPrev();
 
 	return true;
 }
@@ -224,18 +231,28 @@ bool APcopter_posCtrlRC::cli(int& iY)
 	if(!isActive())
 	{
 		msg = "Inactive";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
 	}
 	else
 	{
 		msg = "Pos = (" + f2str(m_vPos.x) + ", "
-							   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ", "
-							   + f2str(m_vPos.w) + ")";
-	}
+						+ f2str(m_vPos.y) + ", "
+						+ f2str(m_vPos.z) + ", "
+						+ f2str(m_vPos.w) + ")";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		msg = "Target = (" + f2str(m_vTarget.x) + ", "
+						   + f2str(m_vTarget.y) + ", "
+						   + f2str(m_vTarget.z) + ", "
+						   + f2str(m_vTarget.w) + ")";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	}
 
 	return true;
 }

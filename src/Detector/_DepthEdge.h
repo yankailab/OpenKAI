@@ -38,7 +38,6 @@ private:
 		return NULL;
 	}
 
-
 public:
 	_DepthVisionBase* m_pDV;
 
@@ -51,6 +50,10 @@ public:
 	vDouble4 m_vBBR;
 	double m_dL;
 	double m_dR;
+
+	double m_minEdgeD;
+	vDouble4 m_rMin;
+	vDouble4 m_rMax;
 
 	int m_nMorphOpen;
 	int m_nMorphClose;

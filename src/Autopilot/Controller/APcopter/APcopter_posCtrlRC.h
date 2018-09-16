@@ -61,9 +61,12 @@ struct AP_POS_CTRL_RC
 	bool updatePWM(uint16_t pwm)
 	{
 		NULL_F(m_pMavChanRaw);
-		IF_F(!m_bON);
 
-		*m_pMavChanRaw = pwm;
+		if(m_bON)
+			*m_pMavChanRaw = pwm;
+		else
+			*m_pMavChanRaw = 0;
+
 		return true;
 	}
 

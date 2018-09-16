@@ -101,7 +101,7 @@ bool APcopter_base::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = *this->getName()+": Flight Mode=" + i2str(m_flightMode);
+	string msg = *this->getName()+": Flight Mode = " + i2str(m_flightMode);
 	pWin->addMsg(&msg);
 
 	return true;
