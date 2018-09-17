@@ -32,6 +32,7 @@ public:
 	void update(void);
 	bool draw(void);
 	bool cli(int& iY);
+	int check(void);
 
 public:
 	APcopter_base* m_pAP;
@@ -43,6 +44,8 @@ public:
 	OBJECT 	 m_oTarget;
 	mavlink_landing_target_t m_D;
 	vector<LANDING_TARGET_ARUCO> m_vTarget;
+
+	vDouble3 m_vGimbal;
 
 };
 

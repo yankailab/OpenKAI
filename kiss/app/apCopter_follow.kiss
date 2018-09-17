@@ -143,27 +143,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
+	"P":-0.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":-0.0,
 	"dT":0.85,
-	"min":-300,
-	"max":300,
+	"min":-150,
+	"max":150,
 	"K":500,
-
-	{
-		"name":"PIDset1",
-		"P":-0.1,
-		"I":0.0,
-		"Imax":0.0,
-		"D":-0.0,
-		"h":5.0,
-	}
-	{
-		"name":"PIDset2_",
-		"P":-0.1,
-		"I":0.0,
-		"Imax":0.0,
-		"D":-0.0,
-		"h":50.0,
-	}
 }
 
 {
@@ -171,27 +158,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
+	"P":0.1,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
 	"dT":0.85,
-	"min":-300,
-	"max":300,
+	"min":-150,
+	"max":150,
 	"K":500,
-
-	{
-		"name":"PIDset1",
-		"P":-0.1,
-		"I":0.0,
-		"Imax":0.0,
-		"D":-0.0,
-		"h":5.0,
-	}
-	{
-		"name":"PIDset2_",
-		"P":-0.1,
-		"I":0.0,
-		"Imax":0.0,
-		"D":-0.0,
-		"h":50.0,
-	}
 }
 
 {
@@ -199,55 +173,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"dT":0.85,
-	"min":-500,
-	"max":500,
+	"P":-0.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"min":-150,
+	"max":150,
 	"K":500,
-
-	{
-		"name":"PIDset1",
-		"P":0.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"h":5.0,
-	}
-	{
-		"name":"PIDset2",
-		"P":0.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"h":50.0,
-	}
-}
-
-{
-	"name":"PIDyaw",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"dT":0.85,
-	"min":-500,
-	"max":500,
-	"K":500,
-
-	{
-		"name":"PIDset1",
-		"P":0.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"h":5.0,
-	}
-	{
-		"name":"PIDset2",
-		"P":0.0,
-		"I":0.0,
-		"Imax":0.0,
-		"D":0.0,
-		"h":50.0,
-	}
 }
 
 {
@@ -255,8 +188,11 @@
 	"class":"_Automaton",
 	"bInst":1,
 	"Window":"OKview",
-	"startState":"CC_FOLLOW",
+	"startState":"CC_STANDBY",
 
+	{
+		"state":"CC_STANDBY",
+	}
 	{
 		"state":"CC_FOLLOW",
 	}
@@ -290,6 +226,42 @@
 		}
 		
 		{
+			"name":"apPosCtrl",
+			"class":"APcopter_posCtrlRC",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_FOLLOW"],
+			"APcopter_base":"apBase",
+
+			{
+				"name":"roll",
+				"PIDctrl":"PIDroll",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":1,
+			}
+			{
+				"name":"pitch",
+				"PIDctrl":"PIDpitch",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":2,
+			}
+			{
+				"name":"alt",
+				"PIDctrl":"PIDalt",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":3,
+			}
+		}
+		
+		{
 			"name":"apDNNfollow",
 			"class":"APcopter_DNNfollow",
 			"bInst":0,
@@ -300,56 +272,21 @@
 			"APcopter_base":"apBase",
 			"_ObjectBase":"yolo",
 			"_TrackerBase":"tracker",
+			"APcopter_posCtrlRC":"apPosCtrl",
 			"bUseTracker":0,
 			"iClass":0,
-			"iModeEnable":0,
-			"PIDroll":"PIDroll",
-			"PIDpitch":"PIDpitch",
-			"PIDyaw":"PIDyaw",
-			"PIDalt":"PIDalt",
 			"x":0.5,
 			"y":0.5,
 			"z":10.0,
-			"pwmLow":1000,
-			"pwmMidR":1500,
-			"pwmMidP":1500,
-			"pwmMidY":1500,
-			"pwmMidA":1500,
-			"pwmHigh":2000,
-			"pwmYawSearch":1500,
-			"searchFrom":0,
-			"searchTo":360,
-			"timeOut":0,
+	
+			{
+				"name":"gimbal",
+				"pitch":60,
+				"roll":0,
+				"yaw":0,
+			}
 		}
 
-		{
-			"name":"apArucoFollow",
-			"class":"APcopter_arucoFollow",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-			"_ArUco":"arUco",
-			"tag":2,
-			"angle":-1.0,
-			"iModeEnable":0,
-			"PIDroll":"PIDroll",
-			"PIDpitch":"PIDpitch",
-			"PIDyaw":"PIDyaw",
-			"PIDalt":"PIDalt",
-			"x":0.5,
-			"y":0.5,
-			"z":10.0,			
-			"pwmLow":1000,
-			"pwmMidR":1500,
-			"pwmMidP":1500,
-			"pwmMidY":1500,
-			"pwmMidA":1500,
-			"pwmHigh":2000,
-		}
-		
 		{
 			"name":"apLanding",
 			"class":"APcopter_arucoLanding",
@@ -362,31 +299,42 @@
 			"activeState":["CC_RTL"],
 			"orientationX":1,
 			"orientationY":1,
-
+			
 			{
-				"tag":0,
-				"angle":0,
+				"name":"gimbal",
+				"pitch":0,
+				"roll":0,
+				"yaw":0,
 			}
+			
 			{
-				"tag":1,
-				"angle":0,
+				"name":"tags",
+				{
+					"tag":0,
+					"angle":0,
+				}
+				{
+					"tag":1,
+					"angle":0,
+				}
+				{
+					"tag":2,
+					"angle":0,
+				}
+				{
+					"tag":3,
+					"angle":0,
+				}
+				{
+					"tag":4,
+					"angle":0,
+				}
+				{
+					"tag":5,
+					"angle":0,
+				}			
 			}
-			{
-				"tag":2,
-				"angle":0,
-			}
-			{
-				"tag":3,
-				"angle":0,
-			}
-			{
-				"tag":4,
-				"angle":0,
-			}
-			{
-				"tag":5,
-				"angle":0,
-			}
+			
 		}
 		
 	}

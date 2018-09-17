@@ -39,7 +39,25 @@ public:
 
 	vDouble4 m_vTarget;
 	vDouble4 m_vPos;
+
+	vDouble3 m_vGimbal;
 };
 
 }
 #endif
+
+
+/*
+MAV_CMD_DO_MOUNT_CONFIGURE
+mavutil.mavlink.MAV_MOUNT_MODE_MAVLINK_TARGETING,
+#mount_mode
+1, # stabilize roll
+1, # stabilize pitch
+1, # stabilize yaw
+
+MAV_CMD_DO_MOUNT_CONTROL
+pitch 100, # pitch is in centidegrees
+roll 100, # roll
+yaw * 100, # yaw is in centidegrees
+0) # save position
+ */

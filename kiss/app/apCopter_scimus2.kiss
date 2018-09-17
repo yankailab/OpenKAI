@@ -139,8 +139,8 @@
 	"Imax":0.0,
 	"D":-0.0,
 	"dT":0.85,
-	"min":-200,
-	"max":200,
+	"min":-150,
+	"max":150,
 	"K":500,
 }
 
@@ -209,7 +209,7 @@
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
 			"freqGlobalPos":0,
-			"freqHeartbeat":3,
+			"freqHeartbeat":1,
 			"freqRC":3,
 		}
 		

@@ -140,141 +140,20 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 	}
 }
 
-void _Mavlink::sendHeartbeat(void)
+void _Mavlink::cmdInt(mavlink_command_int_t& D)
 {
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
 	mavlink_message_t msg;
-	mavlink_msg_heartbeat_pack(
+	mavlink_msg_command_int_encode(
 			m_mySystemID,
 			m_myComponentID,
-			&msg,
-			m_myType,
-			0, 0, 0, MAV_STATE_ACTIVE);
+			&msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- heartBeat");
-}
 
-void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
-{
-	mavlink_request_data_stream_t D;
-	D.target_system = m_devSystemID;
-	D.target_component = m_devComponentID;
-	D.req_stream_id = stream_id;
-	D.req_message_rate = rate;
-	D.start_stop = 1;
-
-	mavlink_message_t msg;
-	mavlink_msg_request_data_stream_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- requestDataStream");
-}
-
-void _Mavlink::gpsInput(mavlink_gps_input_t& D)
-{
-	mavlink_message_t msg;
-	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- gpsInput");
-}
-
-void _Mavlink::setAttitudeTarget(mavlink_set_attitude_target_t& D)
-{
-	//  pAtti: Roll, Pitch, Yaw
-	//	mavlink_euler_to_quaternion(pAtti[0], pAtti[1], pAtti[2], D.q);
-	//	D.body_roll_rate = pRate[0];
-	//	D.body_pitch_rate = pRate[1];
-	//	D.body_yaw_rate = pRate[2];
-	//	D.thrust = thrust;
-	//	D.type_mask = mask;
-
-	D.time_boot_ms = getTimeBootMs();
-	D.target_system = m_devSystemID;
-	D.target_component = m_devComponentID;
-
-	mavlink_message_t msg;
-	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- setTargetAttitude");
-}
-
-void _Mavlink::landingTarget(mavlink_landing_target_t& D)
-{
-	D.time_usec = getTimeUsec();
-
-	mavlink_message_t msg;
-	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- landingTarget: angleX=" + f2str(D.angle_x)
-						 + ", angleY=" + f2str(D.angle_y)
-						 + ", distance=" + f2str(D.distance));
-}
-
-void _Mavlink::clDoSetMode(int mode)
-{
-	mavlink_command_long_t D;
-	D.target_system = m_mySystemID;
-	D.target_component = m_devComponentID;
-	D.command = MAV_CMD_DO_SET_MODE;
-	D.param1 = mode;
-
-	mavlink_message_t msg;
-	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
-}
-
-void _Mavlink::clComponentArmDisarm(bool bArm)
-{
-	mavlink_command_long_t D;
-	D.target_system = m_devSystemID;
-	D.target_component = m_devComponentID;
-	D.command = MAV_CMD_COMPONENT_ARM_DISARM;
-	D.param1 = (bArm)?1:0;
-
-	mavlink_message_t msg;
-	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(bArm));
-}
-
-void _Mavlink::clDoSetPositionYawThrust(float steer, float thrust)
-{
-	mavlink_command_long_t D;
-	D.target_system = m_devSystemID;
-	D.target_component = m_devComponentID;
-	D.command = 213; //MAV_CMD_DO_SET_POSITION_YAW_THRUST;
-	D.confirmation = 0;
-	D.param1 = steer;
-	D.param2 = thrust;
-
-	mavlink_message_t msg;
-	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetPositionYawTrust");
-}
-
-void _Mavlink::clDoSetServo(int iServo, int PWM)
-{
-	mavlink_command_long_t D;
-	D.target_system = m_devSystemID;
-	D.target_component = m_devComponentID;
-	D.command = MAV_CMD_DO_SET_SERVO;
-	D.param1 = iServo;
-	D.param2 = (float)PWM;
-
-	mavlink_message_t msg;
-	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
-
-	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetServo: servo="+i2str(iServo)
-			+ " pwm=" + i2str(PWM));
+	LOG_I("<- CMD_INT command = " + i2str(D.command));
 }
 
 void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
@@ -297,50 +176,32 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 	mavlink_msg_distance_sensor_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- DIST_SENSOR sysID = " + i2str(m_mySystemID) +
-			", orient = " + i2str((int)D.orientation) +
+	LOG_I("<- DIST_SENSOR orient = " + i2str((int)D.orientation) +
 			", d = " + i2str((int)D.current_distance) +
 			", min = " + i2str((int)D.min_distance) +
 			", max = " + i2str((int)D.max_distance));
 }
 
-void _Mavlink::visionPositionDelta(uint64_t dTime, vDouble3* pDAngle,
-		vDouble3* pDPos, uint8_t confidence)
+void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 {
-	/*
-	 * float angle_delta[3];
-	 * Rotation in radians in body frame from previous to current frame
-	 * using right-hand coordinate system (0=roll, 1=pitch, 2=yaw)
-	 * float position_delta[3];
-	 * Change in position in meters from previous to current frame
-	 * rotated into body frame (0=forward, 1=right, 2=down)
-	 * float confidence; //< normalised confidence value from 0 to 100
-	 * */
-
 	mavlink_message_t msg;
-	mavlink_vision_position_delta_t D;
-	D.time_usec = getTimeUsec();
-	D.time_delta_usec = dTime;
-	D.angle_delta[0] = (float) pDAngle->x;
-	D.angle_delta[1] = (float) pDAngle->y;
-	D.angle_delta[2] = (float) pDAngle->z;
-	D.position_delta[0] = (float) pDPos->x;
-	D.position_delta[1] = (float) pDPos->y;
-	D.position_delta[2] = (float) pDPos->z;
-	D.confidence = (float) confidence;
-
-	mavlink_msg_vision_position_delta_encode(m_mySystemID,
-			m_myComponentID, &msg, &D);
+	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- VISION_POSITION_DELTA dT=" + i2str(dTime)
-			+ ", forward=" + i2str(pDPos->x)
-			+ ", right=" + i2str(pDPos->y)
-			+ ", down=" + i2str(pDPos->z)
-			+ "; roll=" + i2str(pDAngle->x)
-			+ ", pitch=" + i2str(pDAngle->y)
-			+ ", yaw=" + i2str(pDAngle->z)
-			+ ", confidence=" + i2str(D.confidence));
+	LOG_I("<- gpsInput");
+}
+
+void _Mavlink::landingTarget(mavlink_landing_target_t& D)
+{
+	D.time_usec = getTimeUsec();
+
+	mavlink_message_t msg;
+	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- landingTarget: angleX=" + f2str(D.angle_x)
+						 + ", angleY=" + f2str(D.angle_y)
+						 + ", distance=" + f2str(D.distance));
 }
 
 void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
@@ -416,6 +277,57 @@ void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t& D)
 			);
 }
 
+void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
+{
+	mavlink_request_data_stream_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.req_stream_id = stream_id;
+	D.req_message_rate = rate;
+	D.start_stop = 1;
+
+	mavlink_message_t msg;
+	mavlink_msg_request_data_stream_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- requestDataStream");
+}
+
+void _Mavlink::sendHeartbeat(void)
+{
+	mavlink_message_t msg;
+	mavlink_msg_heartbeat_pack(
+			m_mySystemID,
+			m_myComponentID,
+			&msg,
+			m_myType,
+			0, 0, 0, MAV_STATE_ACTIVE);
+
+	writeMessage(msg);
+	LOG_I("<- heartBeat");
+}
+
+void _Mavlink::setAttitudeTarget(mavlink_set_attitude_target_t& D)
+{
+	//  pAtti: Roll, Pitch, Yaw
+	//	mavlink_euler_to_quaternion(pAtti[0], pAtti[1], pAtti[2], D.q);
+	//	D.body_roll_rate = pRate[0];
+	//	D.body_pitch_rate = pRate[1];
+	//	D.body_yaw_rate = pRate[2];
+	//	D.thrust = thrust;
+	//	D.type_mask = mask;
+
+	D.time_boot_ms = getTimeBootMs();
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- setTargetAttitude");
+}
+
 void _Mavlink::setMode(mavlink_set_mode_t& D)
 {
 	D.base_mode = 1;
@@ -430,6 +342,109 @@ void _Mavlink::setMode(mavlink_set_mode_t& D)
 	writeMessage(msg);
 	LOG_I("<- setMode, base_mode=" + i2str(D.base_mode)
 			+ ", custom_mode=" + i2str(D.custom_mode));
+}
+
+void _Mavlink::visionPositionDelta(mavlink_vision_position_delta_t& D)
+{
+	/*
+	 * float angle_delta[3];
+	 * Rotation in radians in body frame from previous to current frame
+	 * using right-hand coordinate system (0=roll, 1=pitch, 2=yaw)
+	 * float position_delta[3];
+	 * Change in position in meters from previous to current frame
+	 * rotated into body frame (0=forward, 1=right, 2=down)
+	 * float confidence; //< normalised confidence value from 0 to 100
+	D.time_delta_usec = dTime;
+	D.angle_delta[0] = (float) pDAngle->x;
+	D.angle_delta[1] = (float) pDAngle->y;
+	D.angle_delta[2] = (float) pDAngle->z;
+	D.position_delta[0] = (float) pDPos->x;
+	D.position_delta[1] = (float) pDPos->y;
+	D.position_delta[2] = (float) pDPos->z;
+	D.confidence = (float) confidence;
+	 * */
+
+	mavlink_message_t msg;
+	D.time_usec = getTimeUsec();
+
+	mavlink_msg_vision_position_delta_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- VISION_POSITION_DELTA dT=" + i2str(D.time_delta_usec)
+			+ ", forward=" + f2str(D.position_delta[0])
+			+ ", right=" + f2str(D.position_delta[2])
+			+ ", down=" + f2str(D.position_delta[0])
+			+ "; roll=" + f2str(D.angle_delta[0])
+			+ ", pitch=" + f2str(D.angle_delta[1])
+			+ ", yaw=" + f2str(D.angle_delta[2])
+			+ ", confidence=" + f2str(D.confidence));
+}
+
+//CMD_LONG
+
+void _Mavlink::clComponentArmDisarm(bool bArm)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_COMPONENT_ARM_DISARM;
+	D.param1 = (bArm)?1:0;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(bArm));
+}
+
+void _Mavlink::clDoSetMode(int mode)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_mySystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_DO_SET_MODE;
+	D.param1 = mode;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
+}
+
+void _Mavlink::clDoSetPositionYawThrust(float steer, float thrust)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = 213; //MAV_CMD_DO_SET_POSITION_YAW_THRUST;
+	D.confirmation = 0;
+	D.param1 = steer;
+	D.param2 = thrust;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongDoSetPositionYawTrust");
+}
+
+void _Mavlink::clDoSetServo(int iServo, int PWM)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_DO_SET_SERVO;
+	D.param1 = iServo;
+	D.param2 = (float)PWM;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongDoSetServo: servo="+i2str(iServo)
+			+ " pwm=" + i2str(PWM));
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &msg)

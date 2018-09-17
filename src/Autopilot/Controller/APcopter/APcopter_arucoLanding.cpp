@@ -12,6 +12,8 @@ APcopter_arucoLanding::APcopter_arucoLanding()
 	m_bLocked = false;
 	m_orientation.x = 1.0;
 	m_orientation.y = 1.0;
+
+	m_vGimbal.init();
 }
 
 APcopter_arucoLanding::~APcopter_arucoLanding()
@@ -26,18 +28,30 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
 
+	Kiss* pG = pK->o("gimbal");
+	if(!pG->empty())
+	{
+		pG->v("pitch", &m_vGimbal.x);
+		pG->v("roll", &m_vGimbal.y);
+		pG->v("yaw", &m_vGimbal.z);
+	}
+
 	m_oTarget.init();
 
-	Kiss** pItrT = pK->getChildItr();
-	LANDING_TARGET_ARUCO L;
-	int i = 0;
-	while (pItrT[i])
+	pG = pK->o("tags");
+	if(!pG->empty())
 	{
-		Kiss* pKs = pItrT[i++];
-		L.init();
-		F_ERROR_F(pKs->v("tag", &L.m_tag));
-		pKs->v("angle", &L.m_angle);
-		m_vTarget.push_back(L);
+		Kiss** pItrT = pG->getChildItr();
+		LANDING_TARGET_ARUCO L;
+		int i = 0;
+		while (pItrT[i])
+		{
+			Kiss* pKs = pItrT[i++];
+			L.init();
+			F_ERROR_F(pKs->v("tag", &L.m_tag));
+			pKs->v("angle", &L.m_angle);
+			m_vTarget.push_back(L);
+		}
 	}
 
 	//link
@@ -54,18 +68,43 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	return true;
 }
 
+int APcopter_arucoLanding::check(void)
+{
+	NULL__(m_pAP,-1);
+	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pArUco,-1);
+	_VisionBase* pV = m_pArUco->m_pVision;
+	NULL__(pV,-1);
+
+	return 0;
+}
+
 void APcopter_arucoLanding::update(void)
 {
 	this->ActionBase::update();
+	IF_(check()<0);
+	if(!isActive())
+	{
 
-	NULL_(m_pAP);
-	NULL_(m_pAP->m_pMavlink);
-	NULL_(m_pArUco);
+		return;
+	}
+
+	//enable camera gimbal and set to the right angle
+	mavlink_command_int_t D;
+
+	D.command = MAV_CMD_DO_MOUNT_CONFIGURE;
+	D.param1 = 1;
+	D.param2 = 1;
+	D.param3 = 1;
+	m_pAP->m_pMavlink->cmdInt(D);
+
+	D.command = MAV_CMD_DO_MOUNT_CONTROL;
+	D.param1 = m_vGimbal.x;
+	D.param2 = m_vGimbal.y;
+	D.param3 = m_vGimbal.z;
+	m_pAP->m_pMavlink->cmdInt(D);
+
 	_VisionBase* pV = m_pArUco->m_pVision;
-	NULL_(pV);
-
-	IF_(!isActive());
-
 	vInt2 cSize;
 	vInt2 cCenter;
 	vDouble2 cAngle;
