@@ -58,24 +58,33 @@ struct AP_POS_CTRL_RC
 			m_pMavChanRaw = NULL;
 	}
 
-	bool updatePWM(uint16_t pwm)
+	bool updatePWM(double pos, double target)
 	{
+		NULL_F(m_pPID);
 		NULL_F(m_pMavChanRaw);
 
-		if(m_bON)
-			*m_pMavChanRaw = pwm;
-		else
+		if(!m_bON)
+		{
 			*m_pMavChanRaw = 0;
+			return false;
+		}
 
+		*m_pMavChanRaw = (uint16_t)(m_pwmM + (int)m_pPID->update(pos, target));
 		return true;
 	}
 
 	void bON(bool bON)
 	{
+		NULL_(m_pPID);
+		NULL_(m_pMavChanRaw);
+
 		if(!m_bON && bON)
 			m_pPID->reset();
 
 		m_bON = bON;
+
+		if(!m_bON)
+			*m_pMavChanRaw = 0;
 	}
 };
 

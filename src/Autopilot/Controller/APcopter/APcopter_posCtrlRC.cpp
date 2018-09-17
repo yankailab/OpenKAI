@@ -120,23 +120,11 @@ void APcopter_posCtrlRC::update(void)
 	}
 
 	resetRC();
-	AP_POS_CTRL_RC* pRC;
 
-	pRC = &m_rc[RC_CHAN_ROLL];
-	if(pRC->m_bON)
-		pRC->updatePWM((uint16_t)(pRC->m_pwmM + (int)pRC->m_pPID->update(m_vPos.x, m_vTarget.x)));
-
-	pRC = &m_rc[RC_CHAN_PITCH];
-	if(pRC->m_bON)
-		pRC->updatePWM((uint16_t)(pRC->m_pwmM + (int)pRC->m_pPID->update(m_vPos.y, m_vTarget.y)));
-
-	pRC = &m_rc[RC_CHAN_ALT];
-	if(pRC->m_bON)
-		pRC->updatePWM((uint16_t)(pRC->m_pwmM + (int)pRC->m_pPID->update(m_vPos.z, m_vTarget.z)));
-
-	pRC = &m_rc[RC_CHAN_YAW];
-	if(pRC->m_bON)
-		pRC->updatePWM((uint16_t)(pRC->m_pwmM + (int)pRC->m_pPID->update(m_vPos.w, m_vTarget.w)));
+	m_rc[RC_CHAN_ROLL].updatePWM(m_vPos.x, m_vTarget.x);
+	m_rc[RC_CHAN_PITCH].updatePWM(m_vPos.y, m_vTarget.y);
+	m_rc[RC_CHAN_ALT].updatePWM(m_vPos.z, m_vTarget.z);
+	m_rc[RC_CHAN_YAW].updatePWM(m_vPos.w, m_vTarget.w);
 
 	m_pAP->m_pMavlink->rcChannelsOverride(m_rcO);
 }

@@ -149,7 +149,7 @@ void APcopter_edgeHold::mode(void)
 {
 	uint8_t altMode = 0;
 
-	uint16_t pwmZ = m_pAP->m_pMavlink->m_msg.rc_channels_raw.chan3_raw;
+	uint16_t pwmZ = m_pAP->m_pMavlink->m_msg.rc_channels_raw.chan8_raw;
 	if(pwmZ < 1000)
 		altMode = 0;
 	else if(pwmZ > 800 && pwmZ < 1250)
