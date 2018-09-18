@@ -166,6 +166,7 @@ public:
 	//Cmd
 	void cmdInt(mavlink_command_int_t& D);
 	void distanceSensor(mavlink_distance_sensor_t& D);
+	void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t& D);
 	void gpsInput(mavlink_gps_input_t& D);
 	void landingTarget(mavlink_landing_target_t& D);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
@@ -176,6 +177,7 @@ public:
 	void setAttitudeTarget(mavlink_set_attitude_target_t& D);
 	void setMode(mavlink_set_mode_t& D);
 	void visionPositionDelta(mavlink_vision_position_delta_t& D);
+	void visionPositionEstimate(mavlink_vision_position_estimate_t& D);
 
 	//Cmd long
 	void clComponentArmDisarm(bool bArm);

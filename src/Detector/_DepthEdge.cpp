@@ -43,7 +43,7 @@ _DepthEdge::_DepthEdge()
 	m_rMin.w = 0.0;
 
 	m_rMax.x = 0.9;
-	m_rMax.y = 10.0;
+	m_rMax.y = 15.0;
 	m_rMax.z = 50.0;
 	m_rMax.w = 360.0;
 

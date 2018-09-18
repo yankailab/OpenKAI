@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":1,
 	"waitKey":30,
 }
@@ -61,16 +61,44 @@
 	"nMorphOpen":10,
 	"nMorphClose":10,
 	"sobelK":7,
+	
+	{
+		"name":"rangeX",
+		"min":0.1,
+		"max":0.9,
+	}
+	
+	{
+		"name":"rangeY",
+		"min":1.0,
+		"max":15.0,
+	}
 
 	{
 		"name":"BBedge",
 		"x":0.2,
 		"y":0.2,
 		"z":0.8,
-		"w":0.6,				
+		"w":0.6,			
 	}	
+	
+	{
+		"name":"BBL",
+		"x":0.45,
+		"y":0.4,
+		"z":0.55,
+		"w":0.5,			
+	}	
+	
+	{
+		"name":"BBR",
+		"x":0.45,
+		"y":0.4,
+		"z":0.55,
+		"w":0.5,			
+	}	
+	
 }
-
 
 {
 	"name":"apSerial",
@@ -130,48 +158,22 @@
 }
 
 {
-	"name":"PIDroll",
-	"class":"PIDctrl",
+	"name":"mavGPS",
+	"class":"_GPS",
 	"bInst":1,
+	"bLog":1,
+	"FPS":10,
 	"Window":"OKview",
-	"P":-0.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.0,
-	"dT":0.85,
-	"min":-150,
-	"max":150,
-	"K":500,
-}
-
-{
-	"name":"PIDpitch",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":0.1,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.85,
-	"min":-150,
-	"max":150,
-	"K":500,
-}
-
-{
-	"name":"PIDalt",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":-0.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"min":-150,
-	"max":150,
-	"K":500,
+	"_Mavlink":"mavAP",
+	"mavDSfreq":30,
+		
+	{
+		"name":"initLL",
+		"place":"scimus2",
+		"bInst":1,
+		"lat":35.854676,
+		"lng":139.517692,
+	}	
 }
 
 {
@@ -179,11 +181,8 @@
 	"class":"_Automaton",
 	"bInst":1,
 	"Window":"OKview",
-	"startState":"CC_STANDBY",
+	"startState":"CC_CONTROL",
 
-	{
-		"state":"CC_STANDBY",
-	}
 	{
 		"state":"CC_CONTROL",
 	}
@@ -214,61 +213,23 @@
 		}
 		
 		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlRC",
-			"bInst":1,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_CONTROL"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":1,
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":2,
-			}
-			{
-				"name":"alt",
-				"PIDctrl":"PIDalt",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":3,
-			}
-		}
-		
-		{
 			"name":"apEdgeHold",
 			"class":"APcopter_edgeHold",
 			"bInst":1,
 			"bLog":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_STANDBY","CC_CONTROL"],
+			"activeState":["CC_CONTROL"],
 			"APcopter_base":"apBase",
-			"APcopter_posCtrlRC":"apPosCtrl",
 			"_DepthEdge":"depthEdge",
 			"_DistSensorBase":"leddarU",
+			"_GPS":"mavGPS",
 			"nMedian":3,
-			"iModeON":2,
 			"x":0.5,
 			"y":6.0,
 			"z":30.0,
-			"zUp":10.0,
-			"zDown":30.0,			
-		}		
+			"zTop":50.0,
+		}
 		
 	}
 }

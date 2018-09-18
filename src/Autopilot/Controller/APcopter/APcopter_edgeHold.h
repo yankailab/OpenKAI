@@ -4,6 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DepthEdge.h"
 #include "../../../Sensor/_DistSensorBase.h"
+#include "../../../Navigation/_GPS.h"
 #include "../../../Filter/Median.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
@@ -24,23 +25,16 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
-	void mode(void);
-
 public:
 	APcopter_base* m_pAP;
-	APcopter_posCtrlRC* m_pPC;
 	_DepthEdge* m_pDE;
 	_DistSensorBase* m_pDB;
-
-	uint32_t m_iModeON;
+	_GPS* m_pGPS;
 
 	Median m_fX;
 	Median m_fY;
 
-	double m_zUp;
-	double m_zDown;
-
-	vDouble4 m_vTarget;
+	double m_zTop;
 	vDouble4 m_vPos;
 };
 

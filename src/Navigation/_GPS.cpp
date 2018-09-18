@@ -15,14 +15,10 @@ _GPS::_GPS()
 	m_pMavlink = NULL;
 	m_initLL.init();
 	m_LL.init();
+	m_initUTM.init();
 	m_UTM.init();
+	m_vDpos.init();
 	m_mavDSfreq = 30;
-	m_tStarted = 0;
-	m_tNow = 0;
-	m_apmMode = 0;
-
-	m_vT.init();
-	m_vRot.init();
 }
 
 _GPS::~_GPS()
@@ -42,14 +38,11 @@ bool _GPS::init(void* pKiss)
 	F_INFO(pI->v("lng", &m_initLL.m_lng));
 	F_INFO(pI->v("hdg", &m_initLL.m_hdg));
 
-	m_tStarted = getTimeUsec();
-
 	setLL(&m_initLL);
 	m_initUTM = *getUTM();
 
 	//link
 	string iName;
-
 	iName = "";
 	F_INFO(pK->v("_Mavlink", &iName));
 	m_pMavlink= (_Mavlink*) (pK->root()->getChildInst(iName));
@@ -76,110 +69,65 @@ void _GPS::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_tNow = getTimeUsec();
-		detect();
+		setMavGPS();
 
 		this->autoFPSto();
 	}
 }
 
-void _GPS::detect(void)
-{
-	if(m_pMavlink)
-	{
-		getMavGPS();
-
-		//reset init pos in mode change
-		uint32_t apmMode = m_pMavlink->m_msg.heartbeat.custom_mode;
-		if(apmMode == 0)apmMode = m_apmMode;
-		if(apmMode != m_apmMode)
-		{
-			m_apmMode = apmMode;
-			setLL(&m_initLL);
-
-			LOG_I("ZED TRACKING START: APM mode: " + i2str(m_apmMode));
-		}
-	}
-
-	UTM_POS utm = *getUTM();
-	vDouble3 dT = m_vT * (double)this->m_dTime;
-	vDouble3 dRot = m_vRot * (double)this->m_dTime;
-	double hdgRad = utm.m_hdg * DEG_RAD;
-	double sinH = sin(hdgRad);
-	double cosH = cos(hdgRad);
-	vDouble3 dPos;
-
-	utm.m_easting += dPos.x;
-	utm.m_northing += dPos.z;
-	utm.m_alt += dPos.y;
-	if(!m_pMavlink)
-		utm.m_hdg += dRot.x;
-
-	setUTM(&utm);
-
-	if(m_pMavlink)
-	{
-		setMavGPS();
-	}
-}
-
-void _GPS::setSpeed(vDouble3* pDT, vDouble3* pDRot)
-{
-	//dT: m/s in xyz
-	//dRot: rad/s in ypr
-
-	if(pDT)m_vT = *pDT;
-	if(pDRot)m_vRot = *pDRot;
-}
-
 void _GPS::setMavGPS(void)
 {
-	/*
-	time_week
-	time_week_ms
-	lat
-	lon
-	alt (optional)
-	hdop (optinal)
-	vdop (optinal)
-	vn, ve, vd (optional)
-	speed_accuracy (optional)
-	horizontal_accuracy (optional)
-	satellites_visible <-- required
-	fix_type <-- required
-	 */
-
 	NULL_(m_pMavlink);
+	IF_(!getMavHdg());
 
-	mavlink_gps_input_t mavGPS;
-	mavGPS.lat = m_LL.m_lat * 1e7;
-	mavGPS.lon = m_LL.m_lng * 1e7;
-	mavGPS.alt = 0.0;
-	mavGPS.gps_id = 0;
-	mavGPS.fix_type = 3;
-	mavGPS.satellites_visible = 10;
-	mavGPS.time_week = 1;
-	mavGPS.time_week_ms = (m_tNow-m_tStarted) / 1000;
-	mavGPS.ignore_flags = 0b11111111;
+	double hdgRad = m_LL.m_hdg * DEG_RAD;
+	double sinH = sin(hdgRad);
+	double cosH = cos(hdgRad);
 
-	m_pMavlink->gpsInput(mavGPS);
+//	dPos.x = dM.x * cosH + dM.z * sinH;	//Easting dM.x=Right,dM.z=Forward
+//	dPos.y = dM.y;						//Alt
+//	dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
+
+	UTM_POS pUTM = m_initUTM;
+	pUTM.m_easting += m_vDpos.y * cosH + m_vDpos.x * sinH;
+	pUTM.m_northing += m_vDpos.x * cosH - m_vDpos.y * sinH;
+	pUTM.m_alt += m_vDpos.z;
+	pUTM.m_hdg = m_UTM.m_hdg;
+	setUTM(&pUTM);
+
+	mavlink_gps_input_t D;
+	D.lat = m_LL.m_lat * 1e7;
+	D.lon = m_LL.m_lng * 1e7;
+	D.alt = m_LL.m_alt;
+	D.gps_id = 0;
+	D.fix_type = 3;
+	D.satellites_visible = 10;
+	D.ignore_flags = 0b11111111;
+	m_pMavlink->gpsInput(D);
 }
 
-void _GPS::getMavGPS(void)
+bool _GPS::getMavHdg(void)
 {
-	NULL_(m_pMavlink);
+	NULL_F(m_pMavlink);
 
-	if(m_tNow - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	if(getTimeUsec() - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_mavDSfreq);
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_mavDSfreq);
-		return;
+		return true;
 	}
 
 	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	setLL(&m_LL);
 
 	LOG_I("hdg: " + i2str(m_LL.m_hdg));
+
+	return true;
+}
+
+void _GPS::setRelPos(vDouble3& dPos)
+{
+	m_vDpos = dPos;
 }
 
 void _GPS::setLL(LL_POS* pLL)
@@ -231,16 +179,40 @@ bool _GPS::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 	string msg;
 
-	double dX = m_UTM.m_easting - m_initUTM.m_easting;
-	double dY = m_UTM.m_northing - m_initUTM.m_northing;
-	double dZ = m_UTM.m_alt - m_initUTM.m_alt;
+	double dE = m_UTM.m_easting - m_initUTM.m_easting;
+	double dN = m_UTM.m_northing - m_initUTM.m_northing;
+	double dA = m_UTM.m_alt - m_initUTM.m_alt;
 
 	pWin->tabNext();
+
 	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
 	pWin->addMsg(&msg);
-	msg = "Dist: X=" + f2str(dX) + ", Y=" + f2str(dY) + ", Z=" + f2str(dZ);
+	msg = "Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA);
 	pWin->addMsg(&msg);
+
 	pWin->tabPrev();
+
+	return true;
+}
+
+bool _GPS::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	double dE = m_UTM.m_easting - m_initUTM.m_easting;
+	double dN = m_UTM.m_northing - m_initUTM.m_northing;
+	double dA = m_UTM.m_alt - m_initUTM.m_alt;
+
+	string msg;
+	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

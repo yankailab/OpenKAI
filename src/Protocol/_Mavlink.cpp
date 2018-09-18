@@ -182,13 +182,64 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 			", max = " + i2str((int)D.max_distance));
 }
 
+void _Mavlink::globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t& D)
+{
+	/*
+	 *  uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot)
+ float x; /*< Global X position
+ float y; /*< Global Y position
+ float z; /*< Global Z position
+ float roll; /*< Roll angle in rad
+ float pitch; /*< Pitch angle in rad
+ float yaw; /*< Yaw angle in rad
+	 */
+
+	mavlink_message_t msg;
+	D.usec = getTimeBootMs();
+
+	mavlink_msg_global_vision_position_estimate_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- GLOBAL_VISION_POSITION_ESTIMATE T=" + i2str(D.usec)
+			+ ", x=" + f2str(D.x)
+			+ ", y=" + f2str(D.y)
+			+ ", z=" + f2str(D.z)
+			+ "; roll=" + f2str(D.roll)
+			+ ", pitch=" + f2str(D.pitch)
+			+ ", yaw=" + f2str(D.yaw));
+}
+
 void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 {
+	/*
+	time_week
+	time_week_ms
+	lat
+	lon
+	alt (optional)
+	hdop (optinal)
+	vdop (optinal)
+	vn, ve, vd (optional)
+	speed_accuracy (optional)
+	horizontal_accuracy (optional)
+	satellites_visible <-- required
+	fix_type <-- required
+
+	D.time_week = 1;
+	D.time_week_ms = getTimeBootMs();//(m_tNow-m_tStarted) / 1000;
+	 */
+
+	D.time_week = 1;
+	D.time_week_ms = getTimeBootMs();
+
 	mavlink_message_t msg;
 	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- gpsInput");
+	LOG_I("<- GPS_INPUT lat=" + i2str(D.lat)
+			+ ", lon=" + i2str(D.lon)
+			+ ", alt=" + f2str(D.alt));
 }
 
 void _Mavlink::landingTarget(mavlink_landing_target_t& D)
@@ -379,6 +430,34 @@ void _Mavlink::visionPositionDelta(mavlink_vision_position_delta_t& D)
 			+ ", pitch=" + f2str(D.angle_delta[1])
 			+ ", yaw=" + f2str(D.angle_delta[2])
 			+ ", confidence=" + f2str(D.confidence));
+}
+
+void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t& D)
+{
+	/*
+	 *  uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot)
+ float x; /*< Global X position
+ float y; /*< Global Y position
+ float z; /*< Global Z position
+ float roll; /*< Roll angle in rad
+ float pitch; /*< Pitch angle in rad
+ float yaw; /*< Yaw angle in rad
+	 */
+
+	mavlink_message_t msg;
+	D.usec = getTimeBootMs();
+
+	mavlink_msg_vision_position_estimate_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- VISION_POSITION_ESTIMATE T=" + i2str(D.usec)
+			+ ", x=" + f2str(D.x)
+			+ ", y=" + f2str(D.y)
+			+ ", z=" + f2str(D.z)
+			+ "; roll=" + f2str(D.roll)
+			+ ", pitch=" + f2str(D.pitch)
+			+ ", yaw=" + f2str(D.yaw));
 }
 
 //CMD_LONG

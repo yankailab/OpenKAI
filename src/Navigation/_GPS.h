@@ -95,7 +95,9 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool draw(void);
+	bool cli(int& iY);
 
+	void setRelPos(vDouble3& dPos);
 	void setLL(LL_POS* pLL);
 	void setUTM(UTM_POS* pUTM);
 	LL_POS* getLL(void);
@@ -103,12 +105,9 @@ public:
 	LL_POS* getInitLL(void);
 	UTM_POS* getInitUTM(void);
 
-	void setSpeed(vDouble3* pDT, vDouble3* pDRot);
-
 private:
+	bool getMavHdg(void);
 	void setMavGPS(void);
-	void getMavGPS(void);
-	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -119,19 +118,13 @@ private:
 public:
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;
-	uint32_t m_apmMode;
-
-	uint64_t m_tStarted;
-	uint64_t m_tNow;
 
 	LL_POS	m_LL;
 	LL_POS	m_initLL;
 	UTM_POS m_UTM;
 	UTM_POS m_initUTM;
 
-	vDouble3	m_vT;
-	vDouble3	m_vRot;
-
+	vDouble3 m_vDpos;	//relative pos to the initial LL
 };
 
 }
