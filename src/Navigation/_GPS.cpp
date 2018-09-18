@@ -30,13 +30,13 @@ bool _GPS::init(void* pKiss)
 	IF_F(!_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	F_INFO(pK->v("mavDSfreq", &m_mavDSfreq));
+	pK->v("mavDSfreq", &m_mavDSfreq);
 
 	Kiss* pI = pK->o("initLL");
 	IF_T(pI->empty());
-	F_INFO(pI->v("lat", &m_initLL.m_lat));
-	F_INFO(pI->v("lng", &m_initLL.m_lng));
-	F_INFO(pI->v("hdg", &m_initLL.m_hdg));
+	pI->v("lat", &m_initLL.m_lat);
+	pI->v("lng", &m_initLL.m_lng);
+	pI->v("hdg", &m_initLL.m_hdg);
 
 	setLL(&m_initLL);
 	m_initUTM = *getUTM();
@@ -44,8 +44,8 @@ bool _GPS::init(void* pKiss)
 	//link
 	string iName;
 	iName = "";
-	F_INFO(pK->v("_Mavlink", &iName));
-	m_pMavlink= (_Mavlink*) (pK->root()->getChildInst(iName));
+	F_ERROR_F(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -185,7 +185,7 @@ bool _GPS::draw(void)
 
 	pWin->tabNext();
 
-	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
+	msg = "Pos: lat=" + f2str(m_LL.m_lat*10e7) + ", lng=" + f2str(m_LL.m_lng*10e7) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
 	pWin->addMsg(&msg);
 	msg = "Dist: E=" + f2str(dE) + ", N=" + f2str(dN) + ", A=" + f2str(dA);
 	pWin->addMsg(&msg);
@@ -204,7 +204,7 @@ bool _GPS::cli(int& iY)
 	double dA = m_UTM.m_alt - m_initUTM.m_alt;
 
 	string msg;
-	msg = "Pos: lat=" + f2str(m_LL.m_lat) + ", lng=" + f2str(m_LL.m_lng) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
+	msg = "Pos: lat=" + f2str(m_LL.m_lat*10e7) + ", lng=" + f2str(m_LL.m_lng*10e7) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

@@ -86,7 +86,7 @@ bool _DepthEdge::init(void* pKiss)
 		pB->v("max", &m_rMax.y);
 	}
 
-	pB = pK->o("BBL");
+	pB = pK->o("bbL");
 	if(!pB->empty())
 	{
 		pB->v("x", &m_vBBL.x);
@@ -95,7 +95,7 @@ bool _DepthEdge::init(void* pKiss)
 		pB->v("w", &m_vBBL.w);
 	}
 
-	pB = pK->o("BBR");
+	pB = pK->o("bbR");
 	if(!pB->empty())
 	{
 		pB->v("x", &m_vBBR.x);
@@ -104,7 +104,7 @@ bool _DepthEdge::init(void* pKiss)
 		pB->v("w", &m_vBBR.w);
 	}
 
-	pB = pK->o("BBedge");
+	pB = pK->o("bbEdge");
 	if(!pB->empty())
 	{
 		pB->v("x", &m_vBBedge.x);
@@ -266,7 +266,9 @@ bool _DepthEdge::draw(void)
 			f2str(m_vPos.y) + ", " +
 			f2str(m_vPos.z) + ", " +
 			f2str(m_vPos.w) + ")";
+	pWin->addMsg(&msg);
 
+	msg = "dL = " +	f2str(m_dL) + ", dR = " + f2str(m_dR);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -316,7 +318,11 @@ bool _DepthEdge::cli(int& iY)
 			f2str(m_vPos.y) + ", " +
 			f2str(m_vPos.z) + ", " +
 			f2str(m_vPos.w) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
+	msg = "dL = " +	f2str(m_dL) + ", dR = " + f2str(m_dR);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

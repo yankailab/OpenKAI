@@ -33,6 +33,9 @@ public:
 	int m_wD;
 	int m_hD;
 	Frame	m_fDepth;
+	int m_nHistLev;
+	vDouble2 m_vRange;
+	double m_minHistD;
 
 	Frame	m_depthShow;
 	Window* m_pDepthWin;

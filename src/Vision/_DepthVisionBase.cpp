@@ -15,6 +15,11 @@ _DepthVisionBase::_DepthVisionBase()
 	m_pDepthWin = NULL;
 	m_wD = 1280;
 	m_hD = 720;
+
+	m_nHistLev = 128;
+	m_vRange.x = 0.8;
+	m_vRange.y = 16.0;
+	m_minHistD = 0.25;
 }
 
 _DepthVisionBase::~_DepthVisionBase()
@@ -28,6 +33,11 @@ bool _DepthVisionBase::init(void* pKiss)
 
 	KISSm(pK,wD);
 	KISSm(pK,hD);
+	KISSm(pK,nHistLev);
+	KISSm(pK,minHistD);
+
+	pK->v("rFrom", &m_vRange.x);
+	pK->v("rTo", &m_vRange.y);
 
 	//link
 	string iName = "";
@@ -67,11 +77,28 @@ double _DepthVisionBase::d(vInt4* pROI)
 	IF__(!pROI, -1.0);
 	IF__(m_fDepth.bEmpty(),-1.0);
 
+    vector<int> vHistLev = { m_nHistLev };
+	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
+	vector<int> vChannel = { 0 };
+
 	Rect roi;
 	vInt42rect(*pROI, roi);
-	double d = cv::sum((*m_fDepth.m())(roi))[0];
+	Mat mRoi = (*m_fDepth.m())(roi);
+	vector<Mat> vRoi = {mRoi};
+	Mat mHist;
+	cv::calcHist(vRoi, vChannel, Mat(),
+	            mHist, vHistLev, vRange,
+	            true	//accumulate
+				);
 
-	return d/(roi.width*roi.height);
+	int nMinHist = m_minHistD * mRoi.cols * mRoi.rows;
+	int i;
+	for(i=0; i<m_nHistLev; i++)
+	{
+		if(mHist.at<float>(i) >= nMinHist)break;
+	}
+
+	return m_vRange.x + (((double)i)/(double)m_nHistLev) * (m_vRange.y - m_vRange.x);
 }
 
 Frame* _DepthVisionBase::Depth(void)

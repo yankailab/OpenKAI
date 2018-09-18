@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"bLog":1,
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":0,
 	"waitKey":30,
 }
 
@@ -42,11 +42,13 @@
 	"fSpat":0,
 	"fovW":69.4,
 	"fovH":42.5,
-	"rFrom":0.1,
-	"rTo":15.0,
 	"bAlign":0,
 	"fDec":0,
 	"fSpat":3,
+	"nHistLev":128,
+	"minHistD":0.25,
+	"rFrom":0.8,
+	"rTo":16.0,
 }
 
 {
@@ -75,26 +77,26 @@
 	}
 
 	{
-		"name":"BBedge",
+		"name":"bbEdge",
 		"x":0.2,
 		"y":0.2,
 		"z":0.8,
-		"w":0.6,			
+		"w":0.5,
 	}	
 	
 	{
-		"name":"BBL",
-		"x":0.45,
-		"y":0.4,
-		"z":0.55,
-		"w":0.5,			
-	}	
+		"name":"bbL",
+		"x":0.1,
+		"y":0.2,
+		"z":0.3,
+		"w":0.5,
+	}
 	
 	{
-		"name":"BBR",
-		"x":0.45,
-		"y":0.4,
-		"z":0.55,
+		"name":"bbR",
+		"x":0.7,
+		"y":0.2,
+		"z":0.9,
 		"w":0.5,			
 	}	
 	
@@ -165,14 +167,14 @@
 	"FPS":10,
 	"Window":"OKview",
 	"_Mavlink":"mavAP",
-	"mavDSfreq":30,
+	"mavDSfreq":10,
 		
 	{
 		"name":"initLL",
 		"place":"scimus2",
 		"bInst":1,
-		"lat":35.854676,
-		"lng":139.517692,
+		"lat":35.1676755,
+		"lng":138.5942851,
 	}	
 }
 
@@ -207,9 +209,9 @@
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
-			"freqGlobalPos":0,
+			"freqGlobalPos":10,
 			"freqHeartbeat":1,
-			"freqRC":3,
+			"freqRC":0,
 		}
 		
 		{
