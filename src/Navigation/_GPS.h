@@ -125,6 +125,7 @@ public:
 	UTM_POS m_initUTM;
 
 	vDouble3 m_vDpos;	//relative pos to the initial LL
+	uint8_t m_nSat;
 };
 
 }

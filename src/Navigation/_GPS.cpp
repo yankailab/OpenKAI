@@ -19,6 +19,7 @@ _GPS::_GPS()
 	m_UTM.init();
 	m_vDpos.init();
 	m_mavDSfreq = 30;
+	m_nSat = 10;
 }
 
 _GPS::~_GPS()
@@ -101,7 +102,7 @@ void _GPS::setMavGPS(void)
 	D.alt = m_LL.m_alt;
 	D.gps_id = 0;
 	D.fix_type = 3;
-	D.satellites_visible = 10;
+	D.satellites_visible = m_nSat;
 	D.ignore_flags = 0b11111111;
 	m_pMavlink->gpsInput(D);
 }

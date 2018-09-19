@@ -87,6 +87,12 @@ void APcopter_edgeHold::update(void)
 			m_vPos.x = - m_fY.v() * tan((m_fX.v() - 0.5) * pDV->m_fovW * DEG_RAD);
 			//negative is needed according to the reference
 		}
+
+		m_pGPS->m_nSat = 10;
+	}
+	else
+	{
+		m_pGPS->m_nSat = 0;
 	}
 
 	double z = m_pDB->dAvr();

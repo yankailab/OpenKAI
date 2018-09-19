@@ -213,6 +213,9 @@ void _DepthEdge::detect(void)
 		pX = (double)iMax.x/(double)mD.cols;
 	}
 
+//	m_vPos.x = pX;
+//	m_vPos.y = pY;
+
 	//check varidity
 	if(pX < m_rMin.x || pX > m_rMax.x)
 		pX = -1.0;

@@ -95,7 +95,7 @@ double _DepthVisionBase::d(vInt4* pROI)
 	int i;
 	for(i=0; i<m_nHistLev; i++)
 	{
-		if(mHist.at<float>(i) >= nMinHist)break;
+		if(mHist.at<float>(i) >= (float)nMinHist)break;
 	}
 
 	return m_vRange.x + (((double)i)/(double)m_nHistLev) * (m_vRange.y - m_vRange.x);

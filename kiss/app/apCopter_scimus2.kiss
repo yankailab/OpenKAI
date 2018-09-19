@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":0,
 	"waitKey":30,
 }
@@ -45,10 +45,10 @@
 	"bAlign":0,
 	"fDec":0,
 	"fSpat":3,
-	"nHistLev":128,
-	"minHistD":0.25,
-	"rFrom":0.8,
-	"rTo":16.0,
+	"nHistLev":100,
+	"minHistD":0.025,
+	"rFrom":1.0,
+	"rTo":15.0,
 }
 
 {
@@ -78,26 +78,43 @@
 
 	{
 		"name":"bbEdge",
-		"x":0.2,
+		"x":0.15,
 		"y":0.2,
-		"z":0.8,
+		"z":0.85,
 		"w":0.5,
 	}	
 	
 	{
-		"name":"bbL",
-		"x":0.1,
-		"y":0.2,
-		"z":0.3,
+		"name":"bbL_",
+		"x":0.4,
+		"y":0.3,
+		"z":0.6,
 		"w":0.5,
 	}
 	
 	{
+		"name":"bbR_",
+		"x":0.4,
+		"y":0.3,
+		"z":0.6,
+		"w":0.5,
+	}	
+	
+	
+	{
+		"name":"bbL",
+		"x":0.1,
+		"y":0.1,
+		"z":0.4,
+		"w":0.8,
+	}
+	
+	{
 		"name":"bbR",
-		"x":0.7,
-		"y":0.2,
+		"x":0.6,
+		"y":0.1,
 		"z":0.9,
-		"w":0.5,			
+		"w":0.8,			
 	}	
 	
 }
