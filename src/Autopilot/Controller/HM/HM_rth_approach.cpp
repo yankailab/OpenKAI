@@ -63,11 +63,11 @@ void HM_rth_approach::update(void)
 
 	if(!isActive())
 	{
-		m_pMN->bSetActive(false);
+		m_pMN->sleep();
 		return;
 	}
 
-	m_pMN->bSetActive(true);
+	m_pMN->wakeUp();
 
 	m_pTarget = NULL;
 	OBJECT* pO;

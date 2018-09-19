@@ -63,8 +63,13 @@ void _ArUco::update(void)
 		this->autoFPSfrom();
 
 		this->_ObjectBase::update();
-		m_obj.update();
 		detect();
+		m_obj.update();
+
+		if(m_bSleep)
+		{
+			m_obj.m_pPrev->reset();
+		}
 
 		this->autoFPSto();
 	}

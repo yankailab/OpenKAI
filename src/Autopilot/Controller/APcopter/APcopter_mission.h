@@ -22,6 +22,9 @@ public:
 public:
 	APcopter_base* m_pAP;
 
+	uint64_t m_tStart;
+	uint64_t m_tRTL;
+
 };
 
 }

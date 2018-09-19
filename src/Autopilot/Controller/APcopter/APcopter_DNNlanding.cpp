@@ -56,7 +56,6 @@ void APcopter_DNNlanding::landing(void)
 
 	vInt4 targetBB;
 	targetBB.init();
-	uint64_t frameID = getTimeUsec() - m_target.m_timeOut;
 
 	OBJECT* pO = m_pAI->at(0);
 	if (!pO)

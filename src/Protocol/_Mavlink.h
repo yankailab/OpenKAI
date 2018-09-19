@@ -168,6 +168,7 @@ public:
 	void distanceSensor(mavlink_distance_sensor_t& D);
 	void globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t& D);
 	void gpsInput(mavlink_gps_input_t& D);
+	void globalPositionInt(mavlink_global_position_int_t& D);
 	void landingTarget(mavlink_landing_target_t& D);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);

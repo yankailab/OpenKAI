@@ -49,6 +49,13 @@ bool ActionBase::init(void* pKiss)
 	return true;
 }
 
+int ActionBase::check(void)
+{
+	NULL__(m_pAM,-1);
+
+	return 0;
+}
+
 void ActionBase::update(void)
 {
 	uint64_t newTime = getTimeUsec();

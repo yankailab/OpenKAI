@@ -198,8 +198,6 @@ public:
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);
 
-	void bSetActive(bool bActive);
-
 	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* at(int i);
 	void merge(_ObjectBase* pO);
@@ -214,7 +212,6 @@ public:
 	OBJECT_DARRAY m_obj;
 
 	//control
-	bool m_bActive;
 	bool m_bReady;
 	uint64_t m_tStamp;
 	threadMode m_mode;

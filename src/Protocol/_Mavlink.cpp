@@ -242,6 +242,25 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 			+ ", alt=" + f2str(D.alt));
 }
 
+void _Mavlink::globalPositionInt(mavlink_global_position_int_t& D)
+{
+	D.time_boot_ms = getTimeBootMs();
+
+	mavlink_message_t msg;
+	mavlink_msg_global_position_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- GLOBAL_POS_INT lat=" + i2str(D.lat)
+			+ ", lon=" + i2str(D.lon)
+			+ ", alt=" + i2str(D.alt)
+			+ ", relative_alt=" + i2str(D.relative_alt)
+			+ ", vx=" + i2str(D.vx)
+			+ ", vy=" + i2str(D.vy)
+			+ ", vz=" + i2str(D.vz)
+			+ ", hdg=" + i2str(D.hdg)
+			);
+}
+
 void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 {
 	D.time_usec = getTimeUsec();

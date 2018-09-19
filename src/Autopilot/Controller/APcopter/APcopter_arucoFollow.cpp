@@ -78,7 +78,16 @@ void APcopter_arucoFollow::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	IF_(!isActive());
+	if(!isActive())
+	{
+		m_pArUco->sleep();
+		return;
+	}
+
+	if(m_bStateChanged)
+	{
+		m_pArUco->wakeUp();
+	}
 
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vInt2 cSize;
@@ -87,7 +96,7 @@ void APcopter_arucoFollow::update(void)
 	OBJECT* pO = newFound();
 	if(!pO)
 	{
-		m_pPC->bON(false);
+		m_pAM->transit("CC_SEARCH");
 		m_bTarget = false;
 		return;
 	}
@@ -98,7 +107,7 @@ void APcopter_arucoFollow::update(void)
 	m_vPos.w = pO->m_bb.w;	//angle
 
 	m_bTarget = true;
-	m_pPC->bON(true);
+	m_pAM->transit("CC_FOLLOW");
 	m_pPC->setPos(m_vPos);
 }
 

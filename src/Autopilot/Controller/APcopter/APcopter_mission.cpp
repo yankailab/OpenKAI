@@ -6,6 +6,8 @@ namespace kai
 APcopter_mission::APcopter_mission()
 {
 	m_pAP = NULL;
+	m_tRTL = USEC_1SEC * 60 * 5;
+	m_tStart = 0;
 
 }
 
@@ -15,10 +17,13 @@ APcopter_mission::~APcopter_mission()
 
 bool APcopter_mission::init(void* pKiss)
 {
-	IF_F(this->ActionBase::init(pKiss)==false);
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-//	KISSm(pK,iClass);
+	if(pK->v("tRTL",&m_tRTL))
+	{
+		m_tRTL *= USEC_1SEC;
+	}
 
 	//link
 	string iName;
@@ -35,13 +40,23 @@ int APcopter_mission::check(void)
 {
 	NULL__(m_pAP,-1);
 
-	return 0;
+	return this->ActionBase::check();
 }
 
 void APcopter_mission::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
+
+	string* pState = m_pAM->getCurrentStateName();
+
+	switch (m_pAP->m_flightMode)
+	{
+	case POSHOLD:
+		if(*pState!="CC_FOLLOW" || *pState!="CC_SEARCH")
+			m_pAM->transit("CC_FOLLOW");
+		break;
+	}
 
 }
 

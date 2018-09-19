@@ -23,6 +23,7 @@ public:
 	virtual bool draw(void);
 	virtual bool isActive(void);
 	virtual bool isStateChanged(void);
+	virtual int check(void);
 
 public:
 	_Automaton* m_pAM;

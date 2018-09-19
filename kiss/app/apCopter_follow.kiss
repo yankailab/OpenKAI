@@ -16,38 +16,6 @@
 }
 
 {
-	"name":"depthView",
-	"class":"Window",
-	"bInst":0,
-	"bFullScreen":0,
-}
-
-{
-	"name":"cam",
-	"class":"_RealSense",
-	"FPS":30,
-	"bInst":0,
-	"bLog":1,
-	"Window":"OKview",
-	"depthWindow":"depthView",
-	"vPreset":"High Density",
-	"rsRGB":1,
-	"w":1280,
-	"h":720,
-	"rsFPS":30,
-	"wD":1280,
-	"hD":720,
-	"rsDFPS":30,
-	"fDec":0,
-	"fSpat":0,
-	"fovW":69.4,
-	"fovH":42.5,
-	"rFrom":0.1,
-	"rTo":15.0,
-	"bAlign":0,
-}
-
-{
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
@@ -194,6 +162,9 @@
 		"state":"CC_STANDBY",
 	}
 	{
+		"state":"CC_SEARCH",
+	}
+	{
 		"state":"CC_FOLLOW",
 	}
 	{
@@ -220,9 +191,18 @@
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
-			"freqGlobalPos":30,
+			"freqGlobalPos":10,
 			"freqHeartbeat":1,
 			"freqRC":0,
+		}
+
+		{
+			"name":"apMission",
+			"class":"APcopter_mission",
+			"bInst":1,
+			"_Automaton":"apState",
+			"Window":"OKview",
+			"APcopter_base":"apBase",
 		}
 		
 		{
@@ -268,7 +248,7 @@
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
+			"activeState":["CC_SEARCH","CC_FOLLOW"],
 			"APcopter_base":"apBase",
 			"_ObjectBase":"yolo",
 			"_TrackerBase":"tracker",

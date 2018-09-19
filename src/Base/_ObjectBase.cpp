@@ -26,7 +26,6 @@ _ObjectBase::_ObjectBase()
 	m_roi.w = 1.0;
 	m_trackID = 1;
 
-	m_bActive = true;
 	m_bReady = false;
 	m_mode = mode_thread;
 
@@ -57,12 +56,12 @@ bool _ObjectBase::init(void* pKiss)
 	if (iName == "noThread")
 	{
 		m_mode = mode_noThread;
-		bSetActive(false);
+		this->sleep();
 	}
 	else if (iName == "batch")
 	{
 		m_mode = mode_batch;
-		bSetActive(false);
+		this->sleep();
 	}
 
 	//general
@@ -229,15 +228,9 @@ void _ObjectBase::merge(_ObjectBase* pO)
 	}
 }
 
-void _ObjectBase::bSetActive(bool bActive)
-{
-	m_bActive = bActive;
-}
-
 bool _ObjectBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
-	IF_T(!m_bActive);
 
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();

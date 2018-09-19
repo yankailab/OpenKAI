@@ -22,7 +22,7 @@ APcopter_arucoLanding::~APcopter_arucoLanding()
 
 bool APcopter_arucoLanding::init(void* pKiss)
 {
-	IF_F(this->ActionBase::init(pKiss) == false);
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("orientationX", &m_orientation.x);
@@ -76,7 +76,7 @@ int APcopter_arucoLanding::check(void)
 	_VisionBase* pV = m_pArUco->m_pVision;
 	NULL__(pV,-1);
 
-	return 0;
+	return this->ActionBase::check();
 }
 
 void APcopter_arucoLanding::update(void)
@@ -85,8 +85,13 @@ void APcopter_arucoLanding::update(void)
 	IF_(check()<0);
 	if(!isActive())
 	{
-
+		m_pArUco->sleep();
 		return;
+	}
+
+	if(m_bStateChanged)
+	{
+		m_pArUco->wakeUp();
 	}
 
 	//enable camera gimbal and set to the right angle

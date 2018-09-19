@@ -22,7 +22,7 @@ APcopter_base::~APcopter_base()
 
 bool APcopter_base::init(void* pKiss)
 {
-	IF_F(this->ActionBase::init(pKiss)==false);
+	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,freqAtti);
@@ -52,7 +52,7 @@ int APcopter_base::check(void)
 {
 	NULL__(m_pMavlink,-1);
 
-	return 0;
+	return this->ActionBase::check();
 }
 
 void APcopter_base::update(void)

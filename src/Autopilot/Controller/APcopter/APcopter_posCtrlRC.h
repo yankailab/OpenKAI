@@ -104,13 +104,11 @@ public:
 	void setPos(vDouble4& vP);
 	void setCtrl(uint8_t iChan, bool bON);
 
-	void bON(bool bON);
 	void resetRC(void);
 	void releaseRC(void);
 
 public:
 	APcopter_base* m_pAP;
-	bool	m_bON;
 
 	vDouble4 m_vTarget;
 	vDouble4 m_vPos;

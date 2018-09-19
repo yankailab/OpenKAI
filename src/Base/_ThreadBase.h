@@ -32,7 +32,7 @@ public:
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 
-	void sleep(void);
+	virtual void sleep(void);
 	void wakeUp(void);
 	void sleepTime(int64_t usec);
 	void disableSleep(bool bDisable);

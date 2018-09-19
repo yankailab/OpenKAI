@@ -23,8 +23,6 @@ _ClusterNet::_ClusterNet()
 	m_size.init();
 	m_aW = 1.0;
 	m_aH = 1.0;
-
-	bSetActive(false);
 }
 
 _ClusterNet::~_ClusterNet()
@@ -90,10 +88,8 @@ bool _ClusterNet::init(void* pKiss)
 	}
 
 	m_pDet->m_obj.update();
-	bSetActive(true);
 
 	return true;
-
 }
 
 bool _ClusterNet::start(void)
@@ -115,8 +111,6 @@ void _ClusterNet::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-
-		IF_CONT(!m_bActive);
 
 		cluster();
 
@@ -248,14 +242,6 @@ OBJECT* _ClusterNet::get(int i)
 	IF_N(i >= m_nObj);
 
 	return m_ppObj[i];
-}
-
-void _ClusterNet::bSetActive(bool bActive)
-{
-	m_bActive = bActive;
-
-	NULL_(m_pDet);
-	m_pDet->bSetActive(m_bActive);
 }
 
 bool _ClusterNet::bFound(int iClass)

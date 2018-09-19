@@ -25,7 +25,6 @@ public:
 	bool start(void);
 	bool draw(void);
 
-	void bSetActive(bool bActive);
 	OBJECT* get(int i);
 	bool bFound(int iClass);
 

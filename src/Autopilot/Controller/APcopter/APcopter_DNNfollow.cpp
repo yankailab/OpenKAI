@@ -86,7 +86,7 @@ int APcopter_DNNfollow::check(void)
 	if(m_bUseTracker)
 		NULL__(m_pTracker,-1);
 
-	return 0;
+	return this->ActionBase::check();
 }
 
 void APcopter_DNNfollow::update(void)
@@ -96,10 +96,16 @@ void APcopter_DNNfollow::update(void)
 	if(!isActive())
 	{
 		m_bTarget = false;
+		m_pDet->sleep();
 		if(m_bUseTracker)
 			m_pTracker->stopTrack();
 
 		return;
+	}
+
+	if(m_bStateChanged)
+	{
+		m_pDet->wakeUp();
 	}
 
 	//enable camera gimbal and set to the right angle
@@ -131,7 +137,7 @@ void APcopter_DNNfollow::update(void)
 			}
 
 			m_bTarget = false;
-			m_pPC->bON(false);
+			m_pAM->transit("CC_SEARCH");
 			return;
 		}
 
@@ -142,7 +148,7 @@ void APcopter_DNNfollow::update(void)
 		if(!pO)
 		{
 			m_bTarget = false;
-			m_pPC->bON(false);
+			m_pAM->transit("CC_SEARCH");
 			return;
 		}
 
@@ -155,7 +161,7 @@ void APcopter_DNNfollow::update(void)
 	m_vPos.w = 0.0;
 
 	m_bTarget = true;
-	m_pPC->bON(true);
+	m_pAM->transit("CC_FOLLOW");
 	m_pPC->setPos(m_vPos);
 }
 

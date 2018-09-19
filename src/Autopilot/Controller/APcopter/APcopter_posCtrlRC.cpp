@@ -6,8 +6,6 @@ namespace kai
 APcopter_posCtrlRC::APcopter_posCtrlRC()
 {
 	m_pAP = NULL;
-	m_bON = false;
-
 	m_vTarget.init();
 	m_vPos.init();
 
@@ -106,14 +104,14 @@ int APcopter_posCtrlRC::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 
-	return 0;
+	return this->ActionBase::check();
 }
 
 void APcopter_posCtrlRC::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!isActive() || !m_bON)
+	if(!isActive())
 	{
 		releaseRC();
 		return;
@@ -144,11 +142,6 @@ void APcopter_posCtrlRC::setCtrl(uint8_t iChan, bool bON)
 	IF_(iChan >= N_RC_CHAN);
 
 	m_rc[iChan].bON(bON);
-}
-
-void APcopter_posCtrlRC::bON(bool bON)
-{
-	m_bON = bON;
 }
 
 void APcopter_posCtrlRC::resetRC(void)
