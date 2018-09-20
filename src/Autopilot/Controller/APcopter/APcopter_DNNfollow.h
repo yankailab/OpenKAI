@@ -46,7 +46,6 @@ public:
 }
 #endif
 
-
 /*
 MAV_CMD_DO_MOUNT_CONFIGURE
 mavutil.mavlink.MAV_MOUNT_MODE_MAVLINK_TARGETING,

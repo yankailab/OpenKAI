@@ -8,7 +8,9 @@ APcopter_base::APcopter_base()
 	m_pMavlink = NULL;
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
-	m_flightMode = 0;
+	m_apMode = 0;
+	m_lastApMode = 0xffffffff;
+	m_bApModeChanged = false;
 
 	m_freqAtti = 0;
 	m_freqGlobalPos = 0;
@@ -38,7 +40,6 @@ bool APcopter_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	//link
 	string iName;
 	iName = "";
 	pK->v("_Mavlink", &iName);
@@ -60,8 +61,17 @@ void APcopter_base::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	//update APM status from heartbeat msg
-	m_flightMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+	//update Ardupilot mode
+	m_apMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+	if(m_apMode != m_lastApMode)
+	{
+		m_bApModeChanged = true;
+		m_lastApMode = m_apMode;
+	}
+	else
+	{
+		m_bApModeChanged = false;
+	}
 
 	//Sending Heartbeat
 	if(m_freqHeartbeat > 0)
@@ -92,7 +102,42 @@ void APcopter_base::update(void)
 			m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 	}
 
-	//m_pMavlink->clComponentArmDisarm(1);
+}
+
+void APcopter_base::setApMode(uint32_t iMode)
+{
+	IF_(check()<0);
+
+	mavlink_set_mode_t D;
+	D.custom_mode = iMode;
+	m_pMavlink->setMode(D);
+}
+
+uint32_t APcopter_base::getApMode(void)
+{
+	return m_apMode;
+}
+
+void APcopter_base::setApArm(bool bArm)
+{
+	IF_(check()<0);
+
+	m_pMavlink->clComponentArmDisarm(bArm);
+}
+
+bool APcopter_base::getApArm(void)
+{
+	return false; //TODO
+}
+
+bool APcopter_base::bApModeChanged(void)
+{
+	return m_bApModeChanged;
+}
+
+uint32_t APcopter_base::apMode(void)
+{
+	return m_apMode;
 }
 
 bool APcopter_base::draw(void)
@@ -101,8 +146,27 @@ bool APcopter_base::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = *this->getName()+": Flight Mode = " + i2str(m_flightMode);
+	pWin->tabNext();
+
+	string msg = "apMode = " + i2str(m_apMode);
 	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
+
+	return true;
+}
+
+bool APcopter_base::cli(int& iY)
+{
+	IF_F(!this->ActionBase::cli(iY));
+	IF_F(check()<0);
+
+	string msg;
+
+	msg = "apMode = " + i2str(m_apMode);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

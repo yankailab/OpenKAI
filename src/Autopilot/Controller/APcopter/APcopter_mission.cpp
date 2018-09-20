@@ -25,7 +25,6 @@ bool APcopter_mission::init(void* pKiss)
 		m_tRTL *= USEC_1SEC;
 	}
 
-	//link
 	string iName;
 
 	iName = "";
@@ -49,13 +48,31 @@ void APcopter_mission::update(void)
 	IF_(check()<0);
 
 	string* pState = m_pAM->getCurrentStateName();
+	uint32_t apMode = m_pAP->apMode();
 
-	switch (m_pAP->m_flightMode)
+	if(apMode == POSHOLD)
 	{
-	case POSHOLD:
+		if(m_pAP->bApModeChanged())
+			m_tStart = m_tStamp;
+
 		if(*pState!="CC_FOLLOW" || *pState!="CC_SEARCH")
 			m_pAM->transit("CC_FOLLOW");
-		break;
+
+		if(m_tStamp - m_tStart > m_tRTL)
+		{
+			m_pAM->transit("CC_RTL");
+			m_pAP->setApMode(RTL);
+		}
+	}
+	else if(apMode == AUTO)
+	{
+		if(*pState!="CC_STANDBY")
+			m_pAM->transit("CC_STANDBY");
+	}
+	else if(apMode == LAND)
+	{
+		if(*pState!="CC_RTL")
+			m_pAM->transit("CC_RTL");
 	}
 
 }
@@ -66,8 +83,29 @@ bool APcopter_mission::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = *this->getName();
+	pWin->tabNext();
+
+	string msg;
+	msg = "tRTL = " + i2str((int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC));
+
 	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
+
+	return true;
+}
+
+bool APcopter_mission::cli(int& iY)
+{
+	IF_F(!this->ActionBase::cli(iY));
+	IF_F(check()<0);
+
+	string msg;
+
+	msg = "tRTL = " + i2str((int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC));
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

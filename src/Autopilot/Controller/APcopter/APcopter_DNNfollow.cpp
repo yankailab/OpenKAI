@@ -83,6 +83,8 @@ int APcopter_DNNfollow::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 	NULL__(m_pDet,-1);
+	_VisionBase* pV = m_pDet->m_pVision;
+	NULL__(pV,-1);
 	if(m_bUseTracker)
 		NULL__(m_pTracker,-1);
 
@@ -112,15 +114,15 @@ void APcopter_DNNfollow::update(void)
 	mavlink_command_int_t D;
 
 	D.command = MAV_CMD_DO_MOUNT_CONFIGURE;
-	D.param1 = 1;
-	D.param2 = 1;
-	D.param3 = 1;
+	D.param1 = 1;	//roll
+	D.param2 = 1;	//pitch
+	D.param3 = 1;	//yaw
 	m_pAP->m_pMavlink->cmdInt(D);
 
 	D.command = MAV_CMD_DO_MOUNT_CONTROL;
-	D.param1 = m_vGimbal.x;
-	D.param2 = m_vGimbal.y;
-	D.param3 = m_vGimbal.z;
+	D.param1 = m_vGimbal.x;	//pitch
+	D.param2 = m_vGimbal.y;	//roll
+	D.param3 = m_vGimbal.z;	//yaw
 	m_pAP->m_pMavlink->cmdInt(D);
 
 	//find target
@@ -155,14 +157,28 @@ void APcopter_DNNfollow::update(void)
 		bb = pO->m_bb;
 	}
 
+//	_VisionBase* pV = m_pDet->m_pVision;
+//	vDouble2 cAngle;
+//	pV->info(NULL, NULL, &cAngle);
+//
+//	double radX = (bb.midX() - 0.5) * cAngle.x * DEG_RAD;
+//	double radY = (bb.midY() - 0.5) * cAngle.y * DEG_RAD;
+//	radY += m_vGimbal.x * DEG_RAD;
+//
+//	m_vPos.z = (double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt * 0.001;
+//	m_vPos.x = m_vPos.z * tan(radX);
+//	m_vPos.y = m_vPos.z * tan(radY);
+//	m_vPos.w = 0.0;
+
+	m_vPos.z = (double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt * 0.001;
 	m_vPos.x = bb.midX();
 	m_vPos.y = bb.midY();
-	m_vPos.z = (double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt * 0.001;
 	m_vPos.w = 0.0;
 
 	m_bTarget = true;
 	m_pAM->transit("CC_FOLLOW");
 	m_pPC->setPos(m_vPos);
+	m_pPC->setTargetPos(m_vTarget);
 }
 
 OBJECT* APcopter_DNNfollow::newFound(void)
@@ -203,15 +219,22 @@ bool APcopter_DNNfollow::draw(void)
 							m_vPos.y * pMat->rows),
 				pMat->cols * pMat->rows * 0.00005, Scalar(0, 0, 255), 2);
 
-		msg += "Target pos = (" + f2str(m_vPos.x) + ", "
+		msg += "Pos = (" + f2str(m_vPos.x) + ", "
 							   + f2str(m_vPos.y) + ", "
 							   + f2str(m_vPos.z) + ", "
 							   + f2str(m_vPos.w) + ")";
 	}
 	else
 	{
-		msg += "Target not found";
+		msg += "Not found";
 	}
+
+	pWin->addMsg(&msg);
+
+	msg = "Target pos = (" + f2str(m_vTarget.x) + ", "
+						   + f2str(m_vTarget.y) + ", "
+						   + f2str(m_vTarget.z) + ", "
+						   + f2str(m_vTarget.w) + ")";
 
 	pWin->addMsg(&msg);
 
@@ -234,15 +257,24 @@ bool APcopter_DNNfollow::cli(int& iY)
 	}
 	else if (m_bTarget)
 	{
-		msg = "Target pos = (" + f2str(m_vPos.x) + ", "
+		msg = "Pos = (" + f2str(m_vPos.x) + ", "
 							   + f2str(m_vPos.y) + ", "
 							   + f2str(m_vPos.z) + ", "
 							   + f2str(m_vPos.w) + ")";
 	}
 	else
 	{
-		msg = "Target not found";
+		msg = "Not found";
 	}
+
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Target pos = (" + f2str(m_vTarget.x) + ", "
+						   + f2str(m_vTarget.y) + ", "
+						   + f2str(m_vTarget.z) + ", "
+						   + f2str(m_vTarget.w) + ")";
 
 	COL_MSG;
 	iY++;

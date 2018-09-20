@@ -27,6 +27,14 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	Kiss* pR;
+	pR = pK->o("target");
+	if(!pR->empty())
+	{
+		pR->v("x", &m_vTarget.x);
+		pR->v("y", &m_vTarget.y);
+		pR->v("z", &m_vTarget.z);
+	}
+
 	string iName;
 	AP_POS_CTRL_RC* pRC = NULL;
 

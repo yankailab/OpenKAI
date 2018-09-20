@@ -16,15 +16,26 @@ public:
 	~APcopter_base();
 
 	bool init(void* pKiss);
+	int check(void);
 	void update(void);
 	bool draw(void);
-	int check(void);
+	bool cli(int& iY);
+
+	void setApMode(uint32_t iMode);
+	uint32_t getApMode(void);
+	void setApArm(bool bArm);
+	bool getApArm(void);
+	bool bApModeChanged(void);
+	uint32_t apMode(void);
 
 public:
 	_Mavlink* m_pMavlink;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
-	uint32_t m_flightMode;
+
+	uint32_t m_apMode;
+	uint32_t m_lastApMode;
+	bool	 m_bApModeChanged;
 
 	int m_freqAtti;
 	int m_freqGlobalPos;

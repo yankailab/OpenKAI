@@ -15,9 +15,10 @@ public:
 	~APcopter_mission();
 
 	bool init(void* pKiss);
+	int check(void);
 	void update(void);
 	bool draw(void);
-	int check(void);
+	bool cli(int& iY);
 
 public:
 	APcopter_base* m_pAP;

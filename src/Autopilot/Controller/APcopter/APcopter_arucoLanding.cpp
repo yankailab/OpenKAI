@@ -178,6 +178,11 @@ bool APcopter_arucoLanding::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 	string msg = *this->getName() + ": ";
+	IF_F(check()<0);
+
+	_VisionBase* pV = m_pArUco->m_pVision;
+	vDouble2 cAngle;
+	pV->info(NULL, NULL, &cAngle);
 
 	if(!isActive())
 	{
@@ -192,6 +197,9 @@ bool APcopter_arucoLanding::draw(void)
 				+ ", angle = ("
 				+ f2str((double)m_D.angle_x) + " , "
 				+ f2str((double)m_D.angle_y) + ")"
+				+ ", fov = ("
+				+ f2str(cAngle.x) + " , "
+				+ f2str(cAngle.y) + ")"
 				+ ", d=" + f2str(m_D.distance);
 	}
 	else
@@ -207,7 +215,11 @@ bool APcopter_arucoLanding::draw(void)
 bool APcopter_arucoLanding::cli(int& iY)
 {
 	IF_F(!this->ActionBase::cli(iY));
-	NULL_F(m_pAP->m_pMavlink);
+	IF_F(check()<0);
+
+	_VisionBase* pV = m_pArUco->m_pVision;
+	vDouble2 cAngle;
+	pV->info(NULL, NULL, &cAngle);
 
 	string msg;
 
@@ -221,6 +233,9 @@ bool APcopter_arucoLanding::cli(int& iY)
 				+ ", angle = ("
 				+ f2str((double)m_D.angle_x) + " , "
 				+ f2str((double)m_D.angle_y) + ")"
+				+ ", fov = ("
+				+ f2str(cAngle.x) + " , "
+				+ f2str(cAngle.y) + ")"
 				+ ", d=" + f2str(m_D.distance);
 	}
 	else
