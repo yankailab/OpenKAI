@@ -55,7 +55,7 @@ void APcopter_mission::update(void)
 		if(m_pAP->bApModeChanged())
 			m_tStart = m_tStamp;
 
-		if(*pState!="CC_FOLLOW" || *pState!="CC_SEARCH")
+		if(*pState!="CC_FOLLOW" && *pState!="CC_SEARCH")
 			m_pAM->transit("CC_FOLLOW");
 
 		if(m_tStamp - m_tStart > m_tRTL)
@@ -64,15 +64,15 @@ void APcopter_mission::update(void)
 			m_pAP->setApMode(RTL);
 		}
 	}
-	else if(apMode == AUTO)
-	{
-		if(*pState!="CC_STANDBY")
-			m_pAM->transit("CC_STANDBY");
-	}
-	else if(apMode == LAND)
+	else if(apMode == LAND || apMode == RTL)
 	{
 		if(*pState!="CC_RTL")
 			m_pAM->transit("CC_RTL");
+	}
+	else
+	{
+		if(*pState!="CC_STANDBY")
+			m_pAM->transit("CC_STANDBY");
 	}
 
 }

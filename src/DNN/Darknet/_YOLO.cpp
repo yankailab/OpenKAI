@@ -89,7 +89,7 @@ void _YOLO::update(void)
 void _YOLO::detect(void)
 {
 	NULL_(m_pVision);
-	IF_(m_bReady);
+	IF_(!m_bReady);
 
 	Frame* pBGR = m_pVision->BGR();
 	NULL_(pBGR);

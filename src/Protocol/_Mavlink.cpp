@@ -274,6 +274,36 @@ void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 						 + ", distance=" + f2str(D.distance));
 }
 
+void _Mavlink::mountConfigure(mavlink_mount_configure_t& D)
+{
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_mount_configure_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- mountConfigure: roll=" + i2str(D.stab_roll)
+						 + ", pitch=" + i2str(D.stab_pitch)
+						 + ", yaw=" + i2str(D.stab_yaw)
+						 + ", mode=" + i2str(D.mount_mode));
+}
+
+void _Mavlink::mountControl(mavlink_mount_control_t& D)
+{
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_mount_control_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- mountControl: pitch=" + i2str(D.input_a)
+						 + ", roll=" + i2str(D.input_b)
+						 + ", yaw=" + i2str(D.input_c)
+						 + ", savePos=" + i2str(D.save_position));
+}
+
 void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
 {
 	D.time_boot_ms = getTimeBootMs();
@@ -590,6 +620,8 @@ void _Mavlink::handleMessages()
 		uint64_t tNow = getTimeUsec();
 		m_msg.sysid = msg.sysid;
 		m_msg.compid = msg.compid;
+
+		if(m_msg.sysid == 255)continue;
 
 		switch (msg.msgid)
 		{

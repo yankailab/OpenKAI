@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":1,
 	"waitKey":50,
 }
@@ -23,9 +23,9 @@
 	"Window":"OKview",
 	"fovW":69.4,
 	"fovH":42.5,
-	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -38,10 +38,12 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"_modelDir":"/home/ubuntu/dev/darknet/",
-	"modelDir":"/home/kai/dev/darknet/",
+	"modelDir":"/home/ubuntu/dev/darknet/",
 	"modelFile":"cfg/yolov3-tiny.cfg",
 	"trainedFile":"data/yolov3-tiny.weights",
+	"_modelDir":"/home/kai/dev/darknet/",
+	"_modelFile":"cfg/yolov3.cfg",
+	"_trainedFile":"data/yolov3.weights",
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
@@ -245,7 +247,7 @@
 		{
 			"name":"apDNNfollow",
 			"class":"APcopter_DNNfollow",
-			"bInst":0,
+			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
@@ -262,7 +264,7 @@
 	
 			{
 				"name":"gimbal",
-				"pitch":60,
+				"pitch":80,
 				"roll":0,
 				"yaw":0,
 			}

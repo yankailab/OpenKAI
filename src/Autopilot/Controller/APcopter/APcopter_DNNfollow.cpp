@@ -111,19 +111,19 @@ void APcopter_DNNfollow::update(void)
 	}
 
 	//enable camera gimbal and set to the right angle
-	mavlink_command_int_t D;
+	mavlink_mount_configure_t D;
+	D.stab_pitch = 1;
+	D.stab_roll = 1;
+	D.stab_yaw = 1;
+	D.mount_mode = 2;
+	m_pAP->m_pMavlink->mountConfigure(D);
 
-	D.command = MAV_CMD_DO_MOUNT_CONFIGURE;
-	D.param1 = 1;	//roll
-	D.param2 = 1;	//pitch
-	D.param3 = 1;	//yaw
-	m_pAP->m_pMavlink->cmdInt(D);
-
-	D.command = MAV_CMD_DO_MOUNT_CONTROL;
-	D.param1 = m_vGimbal.x;	//pitch
-	D.param2 = m_vGimbal.y;	//roll
-	D.param3 = m_vGimbal.z;	//yaw
-	m_pAP->m_pMavlink->cmdInt(D);
+	mavlink_mount_control_t C;
+	C.input_a = m_vGimbal.x * 100;	//pitch
+	C.input_b = m_vGimbal.y * 100;	//roll
+	C.input_c = m_vGimbal.z * 100;	//yaw
+	C.save_position = 0;
+	m_pAP->m_pMavlink->mountControl(C);
 
 	//find target
 	OBJECT* pO = newFound();
@@ -177,6 +177,9 @@ void APcopter_DNNfollow::update(void)
 
 	m_bTarget = true;
 	m_pAM->transit("CC_FOLLOW");
+	m_pPC->setCtrl(RC_CHAN_ROLL,true);
+	m_pPC->setCtrl(RC_CHAN_PITCH,true);
+
 	m_pPC->setPos(m_vPos);
 	m_pPC->setTargetPos(m_vTarget);
 }

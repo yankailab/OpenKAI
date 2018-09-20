@@ -170,6 +170,8 @@ public:
 	void gpsInput(mavlink_gps_input_t& D);
 	void globalPositionInt(mavlink_global_position_int_t& D);
 	void landingTarget(mavlink_landing_target_t& D);
+	void mountConfigure(mavlink_mount_configure_t& D);
+	void mountControl(mavlink_mount_control_t& D);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);
 	void rcChannelsOverride(mavlink_rc_channels_override_t& D);
