@@ -1,17 +1,16 @@
 /*
- * _GPS.h
+ * GPS.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Navigation__GPS_H_
-#define OpenKAI_src_Navigation__GPS_H_
+#ifndef OpenKAI_src_Navigation_GPS_H_
+#define OpenKAI_src_Navigation_GPS_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Dependency/UTM.h"
-#include "../Filter/FilterBase.h"
 #include "../Protocol/_Mavlink.h"
 
 /*
@@ -86,16 +85,19 @@ struct UTM_POS
 
 };
 
-class _GPS: public _ThreadBase
+class GPS: public BASE
 {
 public:
-	_GPS(void);
-	virtual ~_GPS();
+	GPS(void);
+	virtual ~GPS();
 
 	bool init(void* pKiss);
 	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);
+
+	bool getMavHdg(void);
+	void setMavGPS(void);
 
 	void setRelPos(vDouble3& dPos);
 	void setLL(LL_POS* pLL);
@@ -105,24 +107,15 @@ public:
 	LL_POS* getInitLL(void);
 	UTM_POS* getInitUTM(void);
 
-private:
-	bool getMavHdg(void);
-	void setMavGPS(void);
-	void update(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_GPS *) This)->update();
-		return NULL;
-	}
-
 public:
 	_Mavlink* m_pMavlink;
 	int	m_mavDSfreq;
 
+	LL_POS	m_originLL;
+	UTM_POS m_originUTM;
+
 	LL_POS	m_LL;
-	LL_POS	m_initLL;
 	UTM_POS m_UTM;
-	UTM_POS m_initUTM;
 
 	vDouble3 m_vDpos;	//relative pos to the initial LL
 	uint8_t m_nSat;

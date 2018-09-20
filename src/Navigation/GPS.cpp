@@ -1,46 +1,46 @@
 /*
- * _GPS.cpp
+ * GPS.cpp
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#include "_GPS.h"
+#include "GPS.h"
 
 namespace kai
 {
 
-_GPS::_GPS()
+GPS::GPS()
 {
 	m_pMavlink = NULL;
-	m_initLL.init();
+	m_originLL.init();
 	m_LL.init();
-	m_initUTM.init();
+	m_originUTM.init();
 	m_UTM.init();
 	m_vDpos.init();
 	m_mavDSfreq = 30;
 	m_nSat = 10;
 }
 
-_GPS::~_GPS()
+GPS::~GPS()
 {
 }
 
-bool _GPS::init(void* pKiss)
+bool GPS::init(void* pKiss)
 {
-	IF_F(!_ThreadBase::init(pKiss));
+	IF_F(!BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("mavDSfreq", &m_mavDSfreq);
 
 	Kiss* pI = pK->o("initLL");
 	IF_T(pI->empty());
-	pI->v("lat", &m_initLL.m_lat);
-	pI->v("lng", &m_initLL.m_lng);
-	pI->v("hdg", &m_initLL.m_hdg);
+	pI->v("lat", &m_originLL.m_lat);
+	pI->v("lng", &m_originLL.m_lng);
+	pI->v("hdg", &m_originLL.m_hdg);
 
-	setLL(&m_initLL);
-	m_initUTM = *getUTM();
+	setLL(&m_originLL);
+	m_originUTM = *getUTM();
 
 	//link
 	string iName;
@@ -51,32 +51,7 @@ bool _GPS::init(void* pKiss)
 	return true;
 }
 
-bool _GPS::start(void)
-{
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
-}
-
-void _GPS::update(void)
-{
-	while (m_bThreadON)
-	{
-		this->autoFPSfrom();
-
-		setMavGPS();
-
-		this->autoFPSto();
-	}
-}
-
-void _GPS::setMavGPS(void)
+void GPS::setMavGPS(void)
 {
 	NULL_(m_pMavlink);
 	IF_(!getMavHdg());
@@ -89,7 +64,7 @@ void _GPS::setMavGPS(void)
 //	dPos.y = dM.y;						//Alt
 //	dPos.z = dM.z * cosH - dM.x * sinH;	//Northing
 
-	UTM_POS pUTM = m_initUTM;
+	UTM_POS pUTM = m_originUTM;
 	pUTM.m_easting += m_vDpos.y * cosH + m_vDpos.x * sinH;
 	pUTM.m_northing += m_vDpos.x * cosH - m_vDpos.y * sinH;
 	pUTM.m_alt += m_vDpos.z;
@@ -107,7 +82,7 @@ void _GPS::setMavGPS(void)
 	m_pMavlink->gpsInput(D);
 }
 
-bool _GPS::getMavHdg(void)
+bool GPS::getMavHdg(void)
 {
 	NULL_F(m_pMavlink);
 
@@ -126,12 +101,12 @@ bool _GPS::getMavHdg(void)
 	return true;
 }
 
-void _GPS::setRelPos(vDouble3& dPos)
+void GPS::setRelPos(vDouble3& dPos)
 {
 	m_vDpos = dPos;
 }
 
-void _GPS::setLL(LL_POS* pLL)
+void GPS::setLL(LL_POS* pLL)
 {
 	NULL_(pLL);
 	m_LL = *pLL;
@@ -143,7 +118,7 @@ void _GPS::setLL(LL_POS* pLL)
 	m_UTM.m_hdg = m_LL.m_hdg;
 }
 
-void _GPS::setUTM(UTM_POS* pUTM)
+void GPS::setUTM(UTM_POS* pUTM)
 {
 	NULL_(pUTM);
 	m_UTM = *pUTM;
@@ -153,36 +128,36 @@ void _GPS::setUTM(UTM_POS* pUTM)
 	m_LL.m_hdg = m_UTM.m_hdg;
 }
 
-LL_POS* _GPS::getLL(void)
+LL_POS* GPS::getLL(void)
 {
 	return &m_LL;
 }
 
-UTM_POS* _GPS::getUTM(void)
+UTM_POS* GPS::getUTM(void)
 {
 	return &m_UTM;
 }
 
-LL_POS* _GPS::getInitLL(void)
+LL_POS* GPS::getInitLL(void)
 {
-	return &m_initLL;
+	return &m_originLL;
 }
 
-UTM_POS* _GPS::getInitUTM(void)
+UTM_POS* GPS::getInitUTM(void)
 {
-	return &m_initUTM;
+	return &m_originUTM;
 }
 
-bool _GPS::draw(void)
+bool GPS::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 	string msg;
 
-	double dE = m_UTM.m_easting - m_initUTM.m_easting;
-	double dN = m_UTM.m_northing - m_initUTM.m_northing;
-	double dA = m_UTM.m_alt - m_initUTM.m_alt;
+	double dE = m_UTM.m_easting - m_originUTM.m_easting;
+	double dN = m_UTM.m_northing - m_originUTM.m_northing;
+	double dA = m_UTM.m_alt - m_originUTM.m_alt;
 
 	pWin->tabNext();
 
@@ -196,13 +171,13 @@ bool _GPS::draw(void)
 	return true;
 }
 
-bool _GPS::cli(int& iY)
+bool GPS::cli(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->BASE::cli(iY));
 
-	double dE = m_UTM.m_easting - m_initUTM.m_easting;
-	double dN = m_UTM.m_northing - m_initUTM.m_northing;
-	double dA = m_UTM.m_alt - m_initUTM.m_alt;
+	double dE = m_UTM.m_easting - m_originUTM.m_easting;
+	double dN = m_UTM.m_northing - m_originUTM.m_northing;
+	double dA = m_UTM.m_alt - m_originUTM.m_alt;
 
 	string msg;
 	msg = "Pos: lat=" + f2str(m_LL.m_lat*10e7) + ", lng=" + f2str(m_LL.m_lng*10e7) + ", alt=" + f2str(m_LL.m_alt) + ", hdg=" + f2str(m_LL.m_hdg);

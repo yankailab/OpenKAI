@@ -13,7 +13,7 @@ _Mavlink::_Mavlink()
 	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
 	m_myType = MAV_TYPE_GCS;
 
-	m_devSystemID = 0;
+	m_devSystemID = -1;
 	m_devComponentID = 0;
 	m_devType = 0;
 }
@@ -185,13 +185,13 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 void _Mavlink::globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t& D)
 {
 	/*
-	 *  uint64_t usec; /*< Timestamp (microseconds, synced to UNIX time or since system boot)
- float x; /*< Global X position
- float y; /*< Global Y position
- float z; /*< Global Z position
- float roll; /*< Roll angle in rad
- float pitch; /*< Pitch angle in rad
- float yaw; /*< Yaw angle in rad
+	 *  uint64_t usec; // Timestamp (microseconds, synced to UNIX time or since system boot)
+ float x; // Global X position
+ float y; // Global Y position
+ float z; // Global Z position
+ float roll; // Roll angle in rad
+ float pitch; // Pitch angle in rad
+ float yaw; // Yaw angle in rad
 	 */
 
 	mavlink_message_t msg;
@@ -621,7 +621,10 @@ void _Mavlink::handleMessages()
 		m_msg.sysid = msg.sysid;
 		m_msg.compid = msg.compid;
 
-		if(m_msg.sysid == 255)continue;
+		if(m_devSystemID > 0)
+		{
+			IF_CONT(m_msg.sysid != m_devSystemID);
+		}
 
 		switch (msg.msgid)
 		{

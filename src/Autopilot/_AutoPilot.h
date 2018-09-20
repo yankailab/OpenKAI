@@ -4,7 +4,6 @@
 #include "../Base/common.h"
 #include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
-#include "Controller/RC/RC_base.h"
 #include "Controller/APcopter/APcopter_arucoLanding.h"
 #include "Controller/APcopter/APcopter_arucoFollow.h"
 #include "Controller/APcopter/APcopter_base.h"
@@ -26,8 +25,6 @@
 #include "Controller/HM/HM_marker.h"
 #include "Controller/HM/HM_rth.h"
 #include "Controller/HM/HM_rth_approach.h"
-#include "Controller/RC/RC_base.h"
-#include "Controller/RC/RC_visualFollow.h"
 #include "Controller/Traffic/Traffic_alert.h"
 #include "Controller/Traffic/Traffic_base.h"
 #include "Controller/Traffic/Traffic_speed.h"
@@ -35,10 +32,22 @@
 #include "Controller/VEK/VEK_base.h"
 #include "Controller/VEK/VEK_follow.h"
 
-#define ADD_ACTION(x) if(pAction->m_class==#x){pA=new x();if(!pA->init(pAction)){delete pA;LOG_E(pAction->m_name);return false;}}
+#define ADD_ACTION(x) if(pAction->m_class==#x){A.m_pInst=new x();A.m_pKiss=pAction;}
 
 namespace kai
 {
+
+struct ACTION_INST
+{
+	ActionBase* m_pInst;
+	Kiss* m_pKiss;
+
+	void init(void)
+	{
+		m_pInst = NULL;
+		m_pKiss = NULL;
+	}
+};
 
 class _AutoPilot: public _ThreadBase
 {
@@ -53,7 +62,7 @@ public:
 
 public:
 	_Automaton* m_pAM;
-	vector<ActionBase*> m_vAction;
+	vector<ACTION_INST> m_vAction;
 
 	//Thread
 	void update(void);

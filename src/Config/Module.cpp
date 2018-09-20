@@ -28,7 +28,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);
 	ADD_MODULE(_DepthEdge);
-	ADD_MODULE(_GPS);
+	ADD_MODULE(GPS);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_LidarSlam);

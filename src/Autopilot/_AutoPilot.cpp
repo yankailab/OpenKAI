@@ -10,9 +10,9 @@ _AutoPilot::_AutoPilot()
 
 _AutoPilot::~_AutoPilot()
 {
-	for(int i=0; i<m_vAction.size(); i++)
+	for(unsigned int i=0; i<m_vAction.size(); i++)
 	{
-		DEL(m_vAction[i]);
+		DEL(m_vAction[i].m_pInst);
 	}
 
 	m_vAction.clear();
@@ -28,17 +28,17 @@ bool _AutoPilot::init(void* pKiss)
 	IF_T(pCC->empty());
 	Kiss** pItr = pCC->getChildItr();
 
-	int i = 0;
+	ACTION_INST A;
+	unsigned int i = 0;
 	while (pItr[i])
 	{
-		Kiss* pAction = pItr[i];
-		i++;
+		Kiss* pAction = pItr[i++];
 
 		bool bInst = false;
 		pAction->v("bInst", &bInst);
 		IF_CONT(!bInst);
 
-		ActionBase* pA = NULL;
+		A.init();
 
 		//Add action modules below
 
@@ -74,17 +74,18 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(VEK_avoid);
 		ADD_ACTION(VEK_follow);
 
-#ifdef USE_OPENCV_CONTRIB
-		ADD_ACTION(RC_base);
-		ADD_ACTION(RC_visualFollow);
-#endif
-
 		//Add action modules above
 
-		IF_Fl(!pA, "Unknown action class: "+pAction->m_class);
+		IF_Fl(!A.m_pInst, "Unknown action class: "+pAction->m_class);
 
-		pAction->m_pInst = pA;
-		m_vAction.push_back(pA);
+		pAction->m_pInst = A.m_pInst;
+		m_vAction.push_back(A);
+	}
+
+	for(i=0; i<m_vAction.size();i++)
+	{
+		ACTION_INST* pA = &m_vAction[i];
+		IF_Fl(!pA->m_pInst->init(pA->m_pKiss), pA->m_pKiss->m_name+": init failed");
 	}
 
 	string iName="";
@@ -114,9 +115,9 @@ void _AutoPilot::update(void)
 	{
 		this->autoFPSfrom();
 
-		for(int i=0; i<m_vAction.size(); i++)
+		for(unsigned int i=0; i<m_vAction.size(); i++)
 		{
-			m_vAction[i]->update();
+			m_vAction[i].m_pInst->update();
 		}
 
 		this->autoFPSto();
@@ -130,9 +131,9 @@ bool _AutoPilot::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	pWin->tabNext();
-	for(int i=0; i<m_vAction.size(); i++)
+	for(unsigned int i=0; i<m_vAction.size(); i++)
 	{
-		m_vAction[i]->draw();
+		m_vAction[i].m_pInst->draw();
 	}
 	pWin->tabPrev();
 
@@ -143,10 +144,10 @@ bool _AutoPilot::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
-	for(int i=0; i<m_vAction.size(); i++)
+	for(unsigned int i=0; i<m_vAction.size(); i++)
 	{
 		iY++;
-		m_vAction[i]->cli(iY);
+		m_vAction[i].m_pInst->cli(iY);
 	}
 
 	return true;

@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":1,
+	"bLog":0,
 	"waitKey":50,
 }
 
@@ -25,7 +25,7 @@
 	"fovH":42.5,
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -38,12 +38,12 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"modelDir":"/home/ubuntu/dev/darknet/",
-	"modelFile":"cfg/yolov3-tiny.cfg",
-	"trainedFile":"data/yolov3-tiny.weights",
-	"_modelDir":"/home/kai/dev/darknet/",
-	"_modelFile":"cfg/yolov3.cfg",
-	"_trainedFile":"data/yolov3.weights",
+	"_modelDir":"/home/ubuntu/dev/darknet/",
+	"_modelFile":"cfg/yolov3-tiny.cfg",
+	"_trainedFile":"data/yolov3-tiny.weights",
+	"modelDir":"/home/kai/dev/darknet/",
+	"modelFile":"cfg/yolov3.cfg",
+	"trainedFile":"data/yolov3.weights",
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
@@ -92,10 +92,12 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,
+	"_portName":"/dev/ttyTHS1",
+	"_baud":921600,
 	"_portName":"/dev/ttyACM0",
 	"_baud":115200,
+	"portName":"/dev/ttyUSB0",
+	"baud":57600,
 }
 
 {
@@ -105,7 +107,8 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apSerial",	
+	"_IOBase":"apSerial",
+	"devSystemID":1,
 }
 
 {
@@ -207,43 +210,7 @@
 			"APcopter_base":"apBase",
 			"tRTL":300,
 		}
-		
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlRC",
-			"bInst":1,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":1,
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":2,
-			}
-			{
-				"name":"alt",
-				"PIDctrl":"PIDalt",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":3,
-			}
-		}
-		
+				
 		{
 			"name":"apDNNfollow",
 			"class":"APcopter_DNNfollow",
@@ -316,9 +283,45 @@
 					"tag":5,
 					"angle":0,
 				}			
-			}
-			
+			}	
 		}
+		
+		{
+			"name":"apPosCtrl",
+			"class":"APcopter_posCtrlRC",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_FOLLOW"],
+			"APcopter_base":"apBase",
+
+			{
+				"name":"roll",
+				"PIDctrl":"PIDroll",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":1,
+			}
+			{
+				"name":"pitch",
+				"PIDctrl":"PIDpitch",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":2,
+			}
+			{
+				"name":"alt",
+				"PIDctrl":"PIDalt",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":3,
+			}
+		}
+		
 		
 	}
 }

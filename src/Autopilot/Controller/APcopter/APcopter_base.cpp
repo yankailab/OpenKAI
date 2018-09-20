@@ -140,6 +140,13 @@ uint32_t APcopter_base::apMode(void)
 	return m_apMode;
 }
 
+string APcopter_base::apModeName(void)
+{
+	if(m_apMode >= AP_N_CUSTOM_MODE)return "Unknown";
+
+	return custom_mode_name[m_apMode];
+}
+
 bool APcopter_base::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
@@ -148,7 +155,8 @@ bool APcopter_base::draw(void)
 
 	pWin->tabNext();
 
-	string msg = "apMode = " + i2str(m_apMode);
+	string msg;
+	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName() ;
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -163,7 +171,7 @@ bool APcopter_base::cli(int& iY)
 
 	string msg;
 
-	msg = "apMode = " + i2str(m_apMode);
+	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName() ;
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

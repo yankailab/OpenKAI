@@ -5,7 +5,7 @@
 #include "../../../Protocol/_Mavlink.h"
 #include "../../../Protocol/_Canbus.h"
 #include "../../ActionBase.h"
-#include "../../../Navigation/_GPS.h"
+#include "../../../Navigation/GPS.h"
 
 namespace kai
 {

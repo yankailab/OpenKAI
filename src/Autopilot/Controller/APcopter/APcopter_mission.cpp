@@ -85,8 +85,11 @@ bool APcopter_mission::draw(void)
 
 	pWin->tabNext();
 
+	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	tRTL = constrain(tRTL, 0, INT_MAX);
+
 	string msg;
-	msg = "tRTL = " + i2str((int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC));
+	msg = "tRTL = " + i2str(tRTL);
 
 	pWin->addMsg(&msg);
 
@@ -100,9 +103,11 @@ bool APcopter_mission::cli(int& iY)
 	IF_F(!this->ActionBase::cli(iY));
 	IF_F(check()<0);
 
-	string msg;
+	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	tRTL = constrain(tRTL, 0, INT_MAX);
 
-	msg = "tRTL = " + i2str((int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC));
+	string msg;
+	msg = "tRTL = " + i2str(tRTL);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

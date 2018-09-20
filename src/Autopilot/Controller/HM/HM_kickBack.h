@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Automaton/_Automaton.h"
-#include "../../../Navigation/_GPS.h"
+#include "../../../Navigation/GPS.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -30,7 +30,7 @@ public:
 
 public:
 	HM_base* m_pHM;
-	_GPS* m_pGPS;
+	GPS* m_pGPS;
 
 	int		m_rpmBack;
 	int		m_rpmTurn;

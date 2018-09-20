@@ -19,7 +19,6 @@
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
 
-#include "../Navigation/_GPS.h"
 #include "../Navigation/_Path.h"
 
 #include "../Autopilot/_AutoPilot.h"
@@ -47,7 +46,6 @@
 #include "../Tracker/_MultiTracker.h"
 #include "../Tracker/_EcoTracker.h"
 
-#include "../UI/UI.h"
 #include "../UI/Window.h"
 
 #include "../Vision/Frame.h"
@@ -77,6 +75,7 @@
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../Navigation/GPS.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"

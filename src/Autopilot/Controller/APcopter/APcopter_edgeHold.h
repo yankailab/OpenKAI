@@ -4,8 +4,8 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DepthEdge.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../../Navigation/_GPS.h"
 #include "../../../Filter/Median.h"
+#include "../../../Navigation/GPS.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 #include "APcopter_posCtrlRC.h"
@@ -29,7 +29,7 @@ public:
 	APcopter_base* m_pAP;
 	_DepthEdge* m_pDE;
 	_DistSensorBase* m_pDB;
-	_GPS* m_pGPS;
+	GPS* m_pGPS;
 
 	Median m_fX;
 	Median m_fY;

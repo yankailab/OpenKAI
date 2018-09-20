@@ -81,7 +81,7 @@ bool Startup::start(Kiss* pKiss)
 
 	F_ERROR_F(createAllInst(pKiss));
 
-	int i;
+	unsigned int i;
 	for (i = 0; i < m_vInst.size(); i++)
 	{
 		F_ERROR_F(m_vInst[i].m_pInst->init(m_vInst[i].m_pKiss));
@@ -137,7 +137,7 @@ bool Startup::start(Kiss* pKiss)
 
 void Startup::draw(void)
 {
-	for (int i = 0; i < m_vInst.size(); i++)
+	for (unsigned int i = 0; i < m_vInst.size(); i++)
 	{
 		m_vInst[i].m_pInst->draw();
 	}
@@ -149,7 +149,7 @@ void Startup::cli(void)
     mvaddstr(0, 1, m_appName.c_str());
 	int iY = 1;
 
-	for (int i = 0; i < m_vInst.size(); i++)
+	for (unsigned int i = 0; i < m_vInst.size(); i++)
 	{
 		m_vInst[i].m_pInst->cli(iY);
 		iY++;

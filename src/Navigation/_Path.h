@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Navigation/_GPS.h"
+#include "../Navigation/GPS.h"
 
 namespace kai
 {
@@ -43,7 +43,7 @@ private:
 	}
 
 public:
-	_GPS*	m_pGPS;
+	GPS*	m_pGPS;
 
 	bool	m_bRecord;
 	double	m_dInterval;
