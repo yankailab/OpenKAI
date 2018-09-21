@@ -10,6 +10,8 @@
 
 #include "../Base/common.h"
 #include "../Dependency/UTM.h"
+#include "../Protocol/_Mavlink.h"
+
 
 /*
 APM setting to use MAV_GPS
@@ -102,12 +104,20 @@ public:
 	GPS(void);
 	virtual ~GPS();
 
-	UTM_POS getAbsPos(UTM_POS& pOrigin, vDouble3 dNED);
+	void update(_Mavlink* pMav);
+	void update(LL_POS& pLL);
+	void update(UTM_POS& pUTM);
+
+	UTM_POS getUTM(void);
+	LL_POS getLL(void);
+	UTM_POS getPos(vDouble3& dNEA);
 
 	UTM_POS LL2UTM(LL_POS& pLL);
 	LL_POS UTM2LL(UTM_POS& pUTM);
 
 public:
+	UTM_POS m_UTM;
+	LL_POS m_LL;
 };
 
 }

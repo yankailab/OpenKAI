@@ -26,6 +26,7 @@ public:
 	int check(void);
 
 	OBJECT* newFound(void);
+	void updateGimbal(void);
 
 public:
 	APcopter_base* m_pAP;
@@ -35,30 +36,16 @@ public:
 	_TrackerBase* m_pTracker;
 	GPS m_GPS;
 
-	bool	 m_bUseTracker;
-	bool	 m_bTarget;
-	int		 m_iClass;
+	bool	m_bUseFOL;
+	bool	m_bUseTracker;
+	bool	m_bTarget;
+	int		m_iClass;
 
-	vDouble4 m_vTarget;
-	vDouble4 m_vPos;
-
-	vDouble3 m_vGimbal;
+	vDouble3 m_vTargetPos;	//Pos of the following target in local NEA
+	vDouble3 m_vRelPos;		//Pos relative to camera center to lock the target in local NEA
+	vDouble3 m_vMyPos;		//Pos that the vechiel should be going in local NEA
+	vDouble3 m_vGimbal;		//x:pitch, y:roll, z:yaw
 };
 
 }
 #endif
-
-/*
-MAV_CMD_DO_MOUNT_CONFIGURE
-mavutil.mavlink.MAV_MOUNT_MODE_MAVLINK_TARGETING,
-#mount_mode
-1, # stabilize roll
-1, # stabilize pitch
-1, # stabilize yaw
-
-MAV_CMD_DO_MOUNT_CONTROL
-pitch 100, # pitch is in centidegrees
-roll 100, # roll
-yaw * 100, # yaw is in centidegrees
-0) # save position
- */
