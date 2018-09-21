@@ -197,8 +197,8 @@
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
 			"freqGlobalPos":10,
-			"freqHeartbeat":1,
 			"freqRC":0,
+			"freqSendHeartbeat":1,
 		}
 
 		{

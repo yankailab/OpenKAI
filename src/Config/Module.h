@@ -75,7 +75,6 @@
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
-#include "../Navigation/GPS.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"

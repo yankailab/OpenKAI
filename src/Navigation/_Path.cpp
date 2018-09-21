@@ -12,7 +12,6 @@ namespace kai
 
 _Path::_Path()
 {
-	m_pGPS = NULL;
 	m_vWP.clear();
 	m_dInterval = 0;
 	m_lastWP.init();
@@ -35,13 +34,6 @@ bool _Path::init(void* pKiss)
 	F_INFO(pK->v("distCompress", &m_distCompress));
 
 	reset();
-
-	//link
-	string iName;
-
-	iName = "";
-	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (GPS*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -73,20 +65,18 @@ void _Path::update(void)
 
 void _Path::updateGPS(void)
 {
-	NULL_(m_pGPS);
 	IF_(!m_bRecord);
 
-	UTM_POS newP = *m_pGPS->getUTM();
-	IF_(newP.dist(&m_lastWP) < m_dInterval);
+//	UTM_POS newP = *m_pGPS->getUTM();
+//	IF_(newP.dist(&m_lastWP) < m_dInterval);
 
-	m_vWP.push_back(newP);
-	m_lastWP = newP;
+//	m_vWP.push_back(newP);
+//	m_lastWP = newP;
 }
 
 UTM_POS* _Path::getCurrentPos(void)
 {
-	NULL_N(m_pGPS);
-	return m_pGPS->getUTM();
+//	return m_pGPS->getUTM();
 }
 
 void _Path::startRecord(void)
@@ -143,7 +133,7 @@ bool _Path::draw(void)
 
 	UTM_POS* pWP1 = &m_vWP[1];
 	UTM_POS* pWP2;
-	UTM_POS initWP = *m_pGPS->getInitUTM();
+	UTM_POS initWP;// = *m_pGPS->getInitUTM();
 	vDouble2 pI;
 	pI.x = initWP.m_easting;
 	pI.y = initWP.m_northing;

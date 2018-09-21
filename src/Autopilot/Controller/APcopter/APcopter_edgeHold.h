@@ -29,7 +29,7 @@ public:
 	APcopter_base* m_pAP;
 	_DepthEdge* m_pDE;
 	_DistSensorBase* m_pDB;
-	GPS* m_pGPS;
+	GPS m_GPS;
 
 	Median m_fX;
 	Median m_fY;

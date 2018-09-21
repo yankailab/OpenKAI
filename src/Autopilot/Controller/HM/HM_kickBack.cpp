@@ -66,12 +66,12 @@ void HM_kickBack::update(void)
 	}
 
 	static double rotHdg;
-	UTM_POS* pNew = m_pGPS->getUTM();
+	UTM_POS* pNew;// = m_pGPS->getUTM();
 	NULL_(pNew);
 
 	if(m_sequence == kb_station)
 	{
-		pNew = m_pGPS->getUTM();
+//		pNew = m_pGPS->getUTM();
 		m_wpStation = *pNew;
 		m_sequence = kb_back;
 		LOG_I("Station Pos Set");

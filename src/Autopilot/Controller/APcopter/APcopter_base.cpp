@@ -14,7 +14,7 @@ APcopter_base::APcopter_base()
 
 	m_freqAtti = 0;
 	m_freqGlobalPos = 0;
-	m_freqHeartbeat = 0;
+	m_freqSendHeartbeat = 1;
 	m_freqRC = 0;
 }
 
@@ -29,13 +29,13 @@ bool APcopter_base::init(void* pKiss)
 
 	KISSm(pK,freqAtti);
 	KISSm(pK,freqGlobalPos);
-	KISSm(pK,freqHeartbeat);
+	KISSm(pK,freqSendHeartbeat);
 	KISSm(pK,freqRC);
 
-	if(m_freqHeartbeat > 0)
-		m_freqHeartbeat = USEC_1SEC / m_freqHeartbeat;
+	if(m_freqSendHeartbeat > 0)
+		m_freqSendHeartbeat = USEC_1SEC / m_freqSendHeartbeat;
 	else
-		m_freqHeartbeat = 0;
+		m_freqSendHeartbeat = 0;
 
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
@@ -73,34 +73,22 @@ void APcopter_base::update(void)
 		m_bApModeChanged = false;
 	}
 
-	//Sending Heartbeat
-	if(m_freqHeartbeat > 0)
+	//Send Heartbeat
+	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
 	{
-		if (m_tStamp - m_lastHeartbeat >= m_freqHeartbeat)
-		{
-			m_pMavlink->sendHeartbeat();
-			m_lastHeartbeat = m_tStamp;
-		}
+		m_pMavlink->sendHeartbeat();
+		m_lastHeartbeat = m_tStamp;
 	}
 
 	//request updates from Mavlink
-	if(m_freqAtti > 0)
-	{
-		if(m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
-			m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
-	}
+	if(m_freqAtti > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
 
-	if(m_freqGlobalPos > 0)
-	{
-		if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
-			m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
-	}
+	if(m_freqGlobalPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
 
-	if(m_freqRC > 0)
-	{
-		if(m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
-			m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
-	}
+	if(m_freqRC > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 
 }
 

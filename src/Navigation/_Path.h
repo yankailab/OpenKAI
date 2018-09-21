@@ -43,7 +43,7 @@ private:
 	}
 
 public:
-	GPS*	m_pGPS;
+	GPS	m_GPS;
 
 	bool	m_bRecord;
 	double	m_dInterval;

@@ -9,9 +9,7 @@
 #define OpenKAI_src_Navigation_GPS_H_
 
 #include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../Dependency/UTM.h"
-#include "../Protocol/_Mavlink.h"
 
 /*
 APM setting to use MAV_GPS
@@ -58,7 +56,7 @@ struct UTM_POS
 		m_zone = "";
 	}
 
-	inline double dist(UTM_POS* pPos)
+	double dist(UTM_POS* pPos)
 	{
 		if(pPos==NULL)return -1.0;
 
@@ -69,7 +67,21 @@ struct UTM_POS
 		return sqrt(e*e + n*n + a*a);
 	}
 
-	inline UTM_POS operator-(UTM_POS rPos)
+	UTM_POS operator+(UTM_POS dPos)
+	{
+		UTM_POS pos;
+		pos.init();
+
+		pos.m_easting = this->m_easting + dPos.m_easting;
+		pos.m_northing = this->m_northing + dPos.m_northing;
+		pos.m_alt = this->m_alt + dPos.m_alt;
+		pos.m_zone = this->m_zone;
+		pos.m_hdg = Hdg(this->m_hdg + dPos.m_hdg);
+
+		return pos;
+	}
+
+	UTM_POS operator-(UTM_POS rPos)
 	{
 		UTM_POS dPos;
 		dPos.init();
@@ -82,43 +94,20 @@ struct UTM_POS
 
 		return dPos;
 	}
-
 };
 
-class GPS: public BASE
+class GPS
 {
 public:
 	GPS(void);
 	virtual ~GPS();
 
-	bool init(void* pKiss);
-	bool start(void);
-	bool draw(void);
-	bool cli(int& iY);
+	UTM_POS getAbsPos(UTM_POS& pOrigin, vDouble3 dNED);
 
-	bool getMavHdg(void);
-	void setMavGPS(void);
-
-	void setRelPos(vDouble3& dPos);
-	void setLL(LL_POS* pLL);
-	void setUTM(UTM_POS* pUTM);
-	LL_POS* getLL(void);
-	UTM_POS* getUTM(void);
-	LL_POS* getInitLL(void);
-	UTM_POS* getInitUTM(void);
+	UTM_POS LL2UTM(LL_POS& pLL);
+	LL_POS UTM2LL(UTM_POS& pUTM);
 
 public:
-	_Mavlink* m_pMavlink;
-	int	m_mavDSfreq;
-
-	LL_POS	m_originLL;
-	UTM_POS m_originUTM;
-
-	LL_POS	m_LL;
-	UTM_POS m_UTM;
-
-	vDouble3 m_vDpos;	//relative pos to the initial LL
-	uint8_t m_nSat;
 };
 
 }

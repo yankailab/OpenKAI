@@ -8,7 +8,6 @@ APcopter_edgeHold::APcopter_edgeHold()
 	m_pAP = NULL;
 	m_pDE = NULL;
 	m_pDB = NULL;
-	m_pGPS = NULL;
 
 	m_zTop = 50.0;
 	m_vPos.init();
@@ -48,11 +47,6 @@ bool APcopter_edgeHold::init(void* pKiss)
 	m_pDB = (_DistSensorBase*)(pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDB, iName + ": not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (GPS*)(pK->root()->getChildInst(iName));
-	IF_Fl(!m_pGPS, iName + ": not found");
-
 	return true;
 }
 
@@ -62,7 +56,6 @@ int APcopter_edgeHold::check(void)
 	NULL__(m_pAP->m_pMavlink,-1);
 	NULL__(m_pDE,-1);
 	NULL__(m_pDB,-1);
-	NULL__(m_pGPS,-1);
 
 	return 0;
 }
@@ -87,12 +80,6 @@ void APcopter_edgeHold::update(void)
 			m_vPos.x = - m_fY.v() * tan((m_fX.v() - 0.5) * pDV->m_fovW * DEG_RAD);
 			//negative is needed according to the reference
 		}
-
-		m_pGPS->m_nSat = 10;
-	}
-	else
-	{
-		m_pGPS->m_nSat = 0;
 	}
 
 	double z = m_pDB->dAvr();
@@ -104,7 +91,20 @@ void APcopter_edgeHold::update(void)
 	dPos.y = m_vPos.x; //Right
 	dPos.z = m_vPos.z;
 
-	m_pGPS->setRelPos(dPos);
+//	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+//	setLL(&m_LL);
+//
+//
+//	mavlink_gps_input_t D;
+//	D.lat = m_LL.m_lat * 1e7;
+//	D.lon = m_LL.m_lng * 1e7;
+//	D.alt = m_LL.m_alt;
+//	D.gps_id = 0;
+//	D.fix_type = 3;
+//	D.satellites_visible = m_nSat;
+//	D.ignore_flags = 0b11111111;
+//	m_pMavlink->gpsInput(D);
+
 }
 
 bool APcopter_edgeHold::draw(void)

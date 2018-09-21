@@ -5,6 +5,7 @@
 #include "../../../Base/_ObjectBase.h"
 #include "../../../Vision/_DepthVisionBase.h"
 #include "../../../Tracker/_TrackerBase.h"
+#include "../../../Navigation/GPS.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 #include "APcopter_posCtrlRC.h"
@@ -32,6 +33,7 @@ public:
 	_ObjectBase* m_pDet;
 	uint64_t m_tStampDet;
 	_TrackerBase* m_pTracker;
+	GPS m_GPS;
 
 	bool	 m_bUseTracker;
 	bool	 m_bTarget;
