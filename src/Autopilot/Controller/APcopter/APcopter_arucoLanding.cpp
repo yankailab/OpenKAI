@@ -94,21 +94,7 @@ void APcopter_arucoLanding::update(void)
 		m_pArUco->wakeUp();
 	}
 
-	//enable camera gimbal and set to the right angle
-	//enable camera gimbal and set to the right angle
-	mavlink_mount_configure_t D;
-	D.stab_pitch = 1;
-	D.stab_roll = 1;
-	D.stab_yaw = 1;
-	D.mount_mode = 2;
-	m_pAP->m_pMavlink->mountConfigure(D);
-
-	mavlink_mount_control_t C;
-	C.input_a = m_vGimbal.x * 100;	//pitch
-	C.input_b = m_vGimbal.y * 100;	//roll
-	C.input_c = m_vGimbal.z * 100;	//yaw
-	C.save_position = 0;
-	m_pAP->m_pMavlink->mountControl(C);
+	updateGimbal();
 
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vInt2 cSize;
@@ -166,11 +152,28 @@ void APcopter_arucoLanding::update(void)
 	//Use depth if available
 	if(m_pDV)
 	{
-//		m_D.distance = (float)m_pDV->dMedian();
 		if(m_D.distance < 0.0)m_D.distance = 0.0;
 	}
 
 	m_pAP->m_pMavlink->landingTarget(m_D);
+}
+
+void APcopter_arucoLanding::updateGimbal(void)
+{
+	//enable camera gimbal and set to the right angle
+	mavlink_mount_configure_t D;
+	D.stab_pitch = 1;
+	D.stab_roll = 1;
+	D.stab_yaw = 1;
+	D.mount_mode = 2;
+	m_pAP->m_pMavlink->mountConfigure(D);
+
+	mavlink_mount_control_t C;
+	C.input_a = m_vGimbal.x * 100;	//pitch
+	C.input_b = m_vGimbal.y * 100;	//roll
+	C.input_c = m_vGimbal.z * 100;	//yaw
+	C.save_position = 0;
+	m_pAP->m_pMavlink->mountControl(C);
 }
 
 bool APcopter_arucoLanding::draw(void)

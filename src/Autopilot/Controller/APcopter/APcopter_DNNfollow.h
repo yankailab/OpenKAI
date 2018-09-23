@@ -36,15 +36,17 @@ public:
 	_TrackerBase* m_pTracker;
 	GPS m_GPS;
 
-	bool	m_bUseFOL;
 	bool	m_bUseTracker;
-	bool	m_bTarget;
 	int		m_iClass;
 
-	vDouble3 m_vTargetPos;	//Pos of the following target in local NEA
-	vDouble3 m_vRelPos;		//Pos relative to camera center to lock the target in local NEA
-	vDouble3 m_vMyPos;		//Pos that the vechiel should be going in local NEA
+	UTM_POS m_utmV;	//global vehicle pos
+	vDouble3 m_vCamNEA;
+	vDouble3 m_vCamRelNEA;	//relative to camera center to lock the target in local NEA
+	vDouble3 m_vTargetNEA;	//following target in local NEA
+	vDouble3 m_vMyDestNEA;	//vechiel should be going in local NEA
 	vDouble3 m_vGimbal;		//x:pitch, y:roll, z:yaw
+
+	vDouble4 m_vTarget;
 };
 
 }

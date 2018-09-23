@@ -225,9 +225,6 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 	horizontal_accuracy (optional)
 	satellites_visible <-- required
 	fix_type <-- required
-
-	D.time_week = 1;
-	D.time_week_ms = getTimeBootMs();//(m_tNow-m_tStarted) / 1000;
 	 */
 
 	D.time_week = 1;

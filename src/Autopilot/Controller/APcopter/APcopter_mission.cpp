@@ -50,15 +50,16 @@ void APcopter_mission::update(void)
 	string* pState = m_pAM->getCurrentStateName();
 	uint32_t apMode = m_pAP->apMode();
 
-	if(apMode == POSHOLD)
+	if(apMode == FOLLOW || apMode == POSHOLD)
 	{
+		if(*pState!="CC_FOLLOW_RC" && *pState!="CC_FOLLOW_FOL" && *pState!="CC_SEARCH")
+			m_pAM->transit("CC_SEARCH");
+
 		if(m_pAP->bApModeChanged())
+		{
 			m_tStart = m_tStamp;
-
-		if(*pState!="CC_FOLLOW" && *pState!="CC_SEARCH")
-			m_pAM->transit("CC_FOLLOW");
-
-		if(m_tStamp - m_tStart > m_tRTL)
+		}
+		else if(m_tStamp - m_tStart > m_tRTL)
 		{
 			m_pAM->transit("CC_RTL");
 			m_pAP->setApMode(RTL);

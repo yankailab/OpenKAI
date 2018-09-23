@@ -142,21 +142,6 @@
 }
 
 {
-	"name":"PIDalt",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":-0.0,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"min":-150,
-	"max":150,
-	"K":500,
-}
-
-{
 	"name":"apState",
 	"class":"_Automaton",
 	"bInst":1,
@@ -170,7 +155,10 @@
 		"state":"CC_SEARCH",
 	}
 	{
-		"state":"CC_FOLLOW",
+		"state":"CC_FOLLOW_FOL",
+	}
+	{
+		"state":"CC_FOLLOW_RC",
 	}
 	{
 		"state":"CC_RTL",
@@ -218,7 +206,7 @@
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_SEARCH","CC_FOLLOW"],
+			"activeState":["CC_SEARCH","CC_FOLLOW_FOL","CC_FOLLOW_RC"],
 			"APcopter_base":"apBase",
 			"_ObjectBase":"yolo",
 			"_TrackerBase":"tracker",
@@ -234,6 +222,34 @@
 				"pitch":80,
 				"roll":0,
 				"yaw":0,
+			}
+		}
+
+		{
+			"name":"apPosCtrl",
+			"class":"APcopter_posCtrlRC",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_FOLLOW_RC"],
+			"APcopter_base":"apBase",
+
+			{
+				"name":"roll",
+				"PIDctrl":"PIDroll",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":1,
+			}
+			{
+				"name":"pitch",
+				"PIDctrl":"PIDpitch",
+				"pwmL":1000,
+				"pwmM":1500,
+				"pwmH":2000,
+				"iChan":2,
 			}
 		}
 
@@ -284,44 +300,7 @@
 					"angle":0,
 				}			
 			}	
-		}
-		
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlRC",
-			"bInst":1,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":1,
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":2,
-			}
-			{
-				"name":"alt",
-				"PIDctrl":"PIDalt",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":3,
-			}
-		}
-		
+		}		
 		
 	}
 }

@@ -34,6 +34,8 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
+	void updateGimbal(void);
+
 public:
 	APcopter_base* m_pAP;
 	_ObjectBase* m_pArUco;
