@@ -441,6 +441,50 @@ void _Mavlink::setMode(mavlink_set_mode_t& D)
 			+ ", custom_mode=" + i2str(D.custom_mode));
 }
 
+void _Mavlink::setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t& D)
+{
+	D.time_boot_ms = getTimeBootMs();
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_set_position_target_local_ned_encode(
+			m_mySystemID,
+			m_myComponentID,
+			&msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- setPositionTargetLocalNED, x=" + f2str(D.x)
+			+ ", y=" + f2str(D.y)
+			+ ", z=" + f2str(D.z)
+			+ ", vx=" + f2str(D.vx)
+			+ ", vy=" + f2str(D.vy)
+			+ ", vz=" + f2str(D.vz)
+			);
+}
+
+void _Mavlink::setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t& D)
+{
+	D.time_boot_ms = getTimeBootMs();
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_set_position_target_global_int_encode(
+			m_mySystemID,
+			m_myComponentID,
+			&msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- setPositionTargetGlobalINT, lat=" + i2str(D.lat_int)
+			+ ", lon=" + i2str(D.lon_int)
+			+ ", alt=" + f2str(D.alt)
+			+ ", vx=" + f2str(D.vx)
+			+ ", vy=" + f2str(D.vy)
+			+ ", vz=" + f2str(D.vz)
+			);
+}
+
 void _Mavlink::visionPositionDelta(mavlink_vision_position_delta_t& D)
 {
 	/*

@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"bLog":0,
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
 	"waitKey":50,
 }
 
@@ -155,10 +155,7 @@
 		"state":"CC_SEARCH",
 	}
 	{
-		"state":"CC_FOLLOW_FOL",
-	}
-	{
-		"state":"CC_FOLLOW_RC",
+		"state":"CC_FOLLOW",
 	}
 	{
 		"state":"CC_RTL",
@@ -198,27 +195,58 @@
 			"APcopter_base":"apBase",
 			"tRTL":300,
 		}
-				
+
 		{
-			"name":"apDNNfollow",
-			"class":"APcopter_DNNfollow",
+			"name":"apFollowPos",
+			"class":"APcopter_followPos",
 			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_SEARCH","CC_FOLLOW_FOL","CC_FOLLOW_RC"],
+			"activeState":["CC_SEARCH","CC_FOLLOW"],
 			"APcopter_base":"apBase",
 			"_ObjectBase":"yolo",
 			"_TrackerBase":"tracker",
-			"APcopter_posCtrlRC":"apPosCtrl",
 			"bUseTracker":0,
 			"iClass":0,
-			"x":0.5,
-			"y":0.5,
-			"z":10.0,
 	
 			{
-				"name":"gimbal",
+				"name":"gimbalOut",
+				"pitch":80,
+				"roll":0,
+				"yaw":0,
+			}
+			{
+				"name":"gimbalReal",
+				"pitch":80,
+				"roll":0,
+				"yaw":0,
+			}
+		}
+
+		{
+			"name":"apFollowRC",
+			"class":"APcopter_followRC",
+			"bInst":0,
+			"bLog":0,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_SEARCH","CC_FOLLOW"],
+			"APcopter_base":"apBase",
+			"_ObjectBase":"yolo",
+			"_TrackerBase":"tracker",
+			"bUseTracker":0,
+			"iClass":0,
+			"APcopter_posCtrlRC":"apPosCtrl",
+	
+			{
+				"name":"gimbalOut",
+				"pitch":80,
+				"roll":0,
+				"yaw":0,
+			}
+			{
+				"name":"gimbalReal",
 				"pitch":80,
 				"roll":0,
 				"yaw":0,
@@ -228,11 +256,11 @@
 		{
 			"name":"apPosCtrl",
 			"class":"APcopter_posCtrlRC",
-			"bInst":1,
+			"bInst":0,
 			"bLog":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW_RC"],
+			"activeState":["CC_FOLLOW"],
 			"APcopter_base":"apBase",
 
 			{
