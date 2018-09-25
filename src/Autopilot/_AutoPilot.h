@@ -17,6 +17,7 @@
 #include "Controller/APcopter/APcopter_followLocal.h"
 #include "Controller/APcopter/APcopter_posCtrlRC.h"
 #include "Controller/APcopter/APcopter_posCtrlTarget.h"
+#include "Controller/APcopter/APcopter_takePhoto.h"
 #include "Controller/APcopter/APcopter_mission.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/HM/HM_avoid.h"

@@ -39,8 +39,6 @@ public:
 	bool draw(void);
 
 private:
-	void updateMavlink(void);
-
 	APcopter_base* m_pAP;
 	_DepthVisionBase* m_pDV;
 
@@ -52,4 +50,3 @@ private:
 }
 
 #endif
-

@@ -43,6 +43,20 @@ inline double medianMat(cv::Mat mIn, int nHist, float fRange, bool bUniform, boo
 	return medianVal / nHist;
 }
 
+inline string tFormat(void)
+{
+	time_t timer;
+	char buffer[26];
+	struct tm* tm_info;
+	time(&timer);
+	tm_info = localtime(&timer);
+	strftime(buffer, 26, "%Y-%m-%d_%H:%M:%S", tm_info);
+	puts(buffer);
+
+	string str = buffer;
+	return str;
+}
+
 inline void pack_uint32(void* pBuf, uint32_t v)
 {
 	uint32_t v32 = htonl(v);
