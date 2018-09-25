@@ -68,13 +68,16 @@ void APcopter_mission::update(void)
 	{
 		if(*pState!="CC_RTL")
 			m_pAM->transit("CC_RTL");
+
+		m_tStart = m_tStamp;
 	}
 	else
 	{
 		if(*pState!="CC_STANDBY")
 			m_pAM->transit("CC_STANDBY");
-	}
 
+		m_tStart = m_tStamp;
+	}
 }
 
 bool APcopter_mission::draw(void)

@@ -1,9 +1,9 @@
-#include "APcopter_followPos.h"
+#include "APcopter_followGlobal.h"
 
 namespace kai
 {
 
-APcopter_followPos::APcopter_followPos()
+APcopter_followGlobal::APcopter_followGlobal()
 {
 	m_utmV.init();
 	m_vCamNEA.init();
@@ -13,11 +13,11 @@ APcopter_followPos::APcopter_followPos()
 	m_vMove.init();
 }
 
-APcopter_followPos::~APcopter_followPos()
+APcopter_followGlobal::~APcopter_followGlobal()
 {
 }
 
-bool APcopter_followPos::init(void* pKiss)
+bool APcopter_followGlobal::init(void* pKiss)
 {
 	IF_F(!this->APcopter_followBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -30,12 +30,12 @@ bool APcopter_followPos::init(void* pKiss)
 	return true;
 }
 
-int APcopter_followPos::check(void)
+int APcopter_followGlobal::check(void)
 {
 	return this->APcopter_followBase::check();
 }
 
-void APcopter_followPos::update(void)
+void APcopter_followGlobal::update(void)
 {
 	this->APcopter_followBase::update();
 	IF_(check()<0);
@@ -62,7 +62,7 @@ void APcopter_followPos::update(void)
 
 	//desired target position in local NEA
 	vDouble3 vCamNEA = m_vCamRelNEA;
-	vCamNEA.x += m_utmV.m_alt * tan(m_vGimbalRad.x);	//Northing
+	vCamNEA.x += m_utmV.m_altRel * tan(m_vGimbalRad.x);	//Northing
 
 	//target position in local NEA
 	_VisionBase* pV = m_pDet->m_pVision;
@@ -73,8 +73,8 @@ void APcopter_followPos::update(void)
 	double radE = (m_vTarget.x - 0.5) * cAngle.x * DEG_RAD + m_vGimbalRad.y;
 
 	vDouble3 vTargetNEA;
-	vTargetNEA.x = m_utmV.m_alt * tan(radN);				//N
-	vTargetNEA.y = m_utmV.m_alt / cos(radN) * tan(radE);	//E
+	vTargetNEA.x = m_utmV.m_altRel * tan(radN);				//N
+	vTargetNEA.y = m_utmV.m_altRel / cos(radN) * tan(radE);	//E
 	vTargetNEA.z = 0.0;
 
 	//global pos that vehicle should go
@@ -90,7 +90,7 @@ void APcopter_followPos::update(void)
 		mavlink_global_position_int_t D;
 		D.lat = vLL.m_lat * 1e7;
 		D.lon = vLL.m_lng * 1e7;
-		D.relative_alt = vLL.m_alt * 1000;
+		D.relative_alt = vLL.m_altRel * 1000;
 		D.alt = m_pAP->m_pMavlink->m_msg.global_position_int.alt;
 		D.hdg = m_pAP->m_pMavlink->m_msg.global_position_int.hdg;
 		D.vx = 0;
@@ -104,7 +104,7 @@ void APcopter_followPos::update(void)
 		D.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
 		D.lat_int = vLL.m_lat * 1e7;
 		D.lon_int = vLL.m_lng * 1e7;
-		D.alt = vLL.m_alt;
+		D.alt = vLL.m_altRel;
 		D.vx = 0;
 		D.vy = 0;
 		D.vz = 0;
@@ -112,23 +112,9 @@ void APcopter_followPos::update(void)
 		D.type_mask = 0b0000111111111000;
 		m_pAP->m_pMavlink->setPositionTargetGlobalINT(D);
 	}
-/*	else if(apMode == GUIDED)
-	{
-		mavlink_set_position_target_local_ned_t D;
-		D.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-		D.x = (float)m_vMove.x;
-		D.y = (float)m_vMove.y;
-		D.z = (float)m_vMove.z;
-		D.vx = 0;
-		D.vy = 0;
-		D.vz = 0;
-		D.type_mask = 0b0000111111111000;
-		m_pAP->m_pMavlink->setPositionTargetLocalNED(D);
-	}
-*/
 }
 
-bool APcopter_followPos::draw(void)
+bool APcopter_followGlobal::draw(void)
 {
 	IF_F(!this->APcopter_followBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -142,7 +128,8 @@ bool APcopter_followPos::draw(void)
 
 	msg = "UTM Vehicle: N=" + f2str(m_utmV.m_northing)
 					+ ", E=" + f2str(m_utmV.m_easting)
-					+ ", A=" + f2str(m_utmV.m_alt)
+					+ ", A_abs=" + f2str(m_utmV.m_altAbs)
+					+ ", A_rel=" + f2str(m_utmV.m_altRel)
 					+ ", Hdg=" + f2str(m_utmV.m_hdg);
 	pWin->addMsg(&msg);
 
@@ -168,7 +155,7 @@ bool APcopter_followPos::draw(void)
 
 	msg = "vMove: N=" + f2str(m_vMove.x)
 				    + ", E=" + f2str(m_vMove.y)
-					+ ", A=" + f2str(m_vMove.z) + ")";
+					+ ", A=" + f2str(m_vMove.z);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -176,7 +163,7 @@ bool APcopter_followPos::draw(void)
 	return true;
 }
 
-bool APcopter_followPos::cli(int& iY)
+bool APcopter_followGlobal::cli(int& iY)
 {
 	IF_F(!this->APcopter_followBase::cli(iY));
 	IF_F(check()<0);
@@ -185,7 +172,8 @@ bool APcopter_followPos::cli(int& iY)
 
 	msg = "UTM Vehicle: N=" + f2str(m_utmV.m_northing)
 					+ ", E=" + f2str(m_utmV.m_easting)
-					+ ", A=" + f2str(m_utmV.m_alt)
+					+ ", A_abs=" + f2str(m_utmV.m_altAbs)
+					+ ", A_rel=" + f2str(m_utmV.m_altRel)
 					+ ", Hdg=" + f2str(m_utmV.m_hdg);
 	COL_MSG;
 	iY++;
@@ -221,7 +209,7 @@ bool APcopter_followPos::cli(int& iY)
 
 	msg = "vMove: N=" + f2str(m_vMove.x)
 				    + ", E=" + f2str(m_vMove.y)
-					+ ", A=" + f2str(m_vMove.z) + ")";
+					+ ", A=" + f2str(m_vMove.z);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

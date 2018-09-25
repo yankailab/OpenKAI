@@ -5,11 +5,7 @@ namespace kai
 
 APcopter_posCtrlRC::APcopter_posCtrlRC()
 {
-	m_pAP = NULL;
-	m_vTarget.init();
-	m_vPos.init();
-
-	for(int i=0;i<N_RC_CHAN;i++)
+	for(int i=0;i<N_CTRL;i++)
 	{
 		m_rc[i].init();
 	}
@@ -23,18 +19,10 @@ APcopter_posCtrlRC::~APcopter_posCtrlRC()
 
 bool APcopter_posCtrlRC::init(void* pKiss)
 {
-	IF_F(!this->ActionBase::init(pKiss));
+	IF_F(!this->APcopter_posCtrlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	Kiss* pR;
-	pR = pK->o("target");
-	if(!pR->empty())
-	{
-		pR->v("x", &m_vTarget.x);
-		pR->v("y", &m_vTarget.y);
-		pR->v("z", &m_vTarget.z);
-	}
-
 	string iName;
 	AP_POS_CTRL_RC* pRC = NULL;
 
@@ -43,7 +31,7 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_rc[RC_CHAN_ROLL];
+		pRC = &m_rc[CTRL_ROLL];
 		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pRC->m_pPID, iName + ": not found");
 		pR->v("pwmL", &pRC->m_pwmL);
@@ -58,7 +46,7 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_rc[RC_CHAN_PITCH];
+		pRC = &m_rc[CTRL_PITCH];
 		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pRC->m_pPID, iName + ": not found");
 		pR->v("pwmL", &pRC->m_pwmL);
@@ -73,7 +61,7 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_rc[RC_CHAN_YAW];
+		pRC = &m_rc[CTRL_YAW];
 		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pRC->m_pPID, iName + ": not found");
 		pR->v("pwmL", &pRC->m_pwmL);
@@ -88,7 +76,7 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_rc[RC_CHAN_ALT];
+		pRC = &m_rc[CTRL_ALT];
 		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pRC->m_pPID, iName + ": not found");
 		pR->v("pwmL", &pRC->m_pwmL);
@@ -98,39 +86,31 @@ bool APcopter_posCtrlRC::init(void* pKiss)
 		pRC->setRCChannel(&m_rcO);
 	}
 
-	//link
-	iName = "";
-	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
-
 	return true;
 }
 
 int APcopter_posCtrlRC::check(void)
 {
-	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
-
-	return this->ActionBase::check();
+	return this->APcopter_posCtrlBase::check();
 }
 
 void APcopter_posCtrlRC::update(void)
 {
-	this->ActionBase::update();
+	this->APcopter_posCtrlBase::update();
 	IF_(check()<0);
 	if(!isActive())
 	{
 		releaseRC();
+		clear();
 		return;
 	}
 
 	resetRC();
 
-	m_rc[RC_CHAN_ROLL].updatePWM(m_vPos.x, m_vTarget.x);
-	m_rc[RC_CHAN_PITCH].updatePWM(m_vPos.y, m_vTarget.y);
-	m_rc[RC_CHAN_ALT].updatePWM(m_vPos.z, m_vTarget.z);
-	m_rc[RC_CHAN_YAW].updatePWM(m_vPos.w, m_vTarget.w);
+	m_rc[CTRL_PITCH].update(m_vPos.y, m_vTarget.y);
+	m_rc[CTRL_ROLL].update(m_vPos.x, m_vTarget.x);
+	m_rc[CTRL_ALT].update(m_vPos.z, m_vTarget.z);
+	m_rc[CTRL_YAW].update(m_vPos.w, m_vTarget.w);
 
 	m_pAP->m_pMavlink->rcChannelsOverride(m_rcO);
 }
@@ -145,11 +125,12 @@ void APcopter_posCtrlRC::setPos(vDouble4& vP)
 	m_vPos = vP;
 }
 
-void APcopter_posCtrlRC::setCtrl(uint8_t iChan, bool bON)
+void APcopter_posCtrlRC::clear(void)
 {
-	IF_(iChan >= N_RC_CHAN);
-
-	m_rc[iChan].bON(bON);
+	m_rc[CTRL_PITCH].clear();
+	m_rc[CTRL_ROLL].clear();
+	m_rc[CTRL_ALT].clear();
+	m_rc[CTRL_YAW].clear();
 }
 
 void APcopter_posCtrlRC::resetRC(void)
@@ -174,7 +155,7 @@ void APcopter_posCtrlRC::releaseRC(void)
 
 bool APcopter_posCtrlRC::draw(void)
 {
-	IF_F(!this->ActionBase::draw());
+	IF_F(!this->APcopter_posCtrlBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
@@ -185,25 +166,15 @@ bool APcopter_posCtrlRC::draw(void)
 
 	pWin->tabNext();
 
-	if(!isActive())
-	{
-		msg = "Inactive";
-		pWin->addMsg(&msg);
-	}
-	else
-	{
-		msg = "Pos = (" + f2str(m_vPos.x) + ", "
-						 + f2str(m_vPos.y) + ", "
-						 + f2str(m_vPos.z) + ", "
-						 + f2str(m_vPos.w) + ")";
-		pWin->addMsg(&msg);
-
-		msg = "Target = (" + f2str(m_vTarget.x) + ", "
-						    + f2str(m_vTarget.y) + ", "
-						    + f2str(m_vTarget.z) + ", "
-						    + f2str(m_vTarget.w) + ")";
-		pWin->addMsg(&msg);
-	}
+	msg = "PWM = (" + i2str(m_rcO.chan1_raw) + ", "
+					 + i2str(m_rcO.chan2_raw) + ", "
+					 + i2str(m_rcO.chan3_raw) + ", "
+					 + i2str(m_rcO.chan4_raw) + ", "
+					 + i2str(m_rcO.chan5_raw) + ", "
+					 + i2str(m_rcO.chan6_raw) + ", "
+					 + i2str(m_rcO.chan7_raw) + ", "
+					 + i2str(m_rcO.chan8_raw) + ")";
+	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
 
@@ -212,36 +183,22 @@ bool APcopter_posCtrlRC::draw(void)
 
 bool APcopter_posCtrlRC::cli(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->APcopter_posCtrlBase::cli(iY));
 	IF_F(check()<0);
 
 	string msg;
 
-	if(!isActive())
-	{
-		msg = "Inactive";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
-	}
-	else
-	{
-		msg = "Pos = (" + f2str(m_vPos.x) + ", "
-						+ f2str(m_vPos.y) + ", "
-						+ f2str(m_vPos.z) + ", "
-						+ f2str(m_vPos.w) + ")";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
-
-		msg = "Target = (" + f2str(m_vTarget.x) + ", "
-						   + f2str(m_vTarget.y) + ", "
-						   + f2str(m_vTarget.z) + ", "
-						   + f2str(m_vTarget.w) + ")";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
-	}
+	msg = "PWM = (" + i2str(m_rcO.chan1_raw) + ", "
+					 + i2str(m_rcO.chan2_raw) + ", "
+					 + i2str(m_rcO.chan3_raw) + ", "
+					 + i2str(m_rcO.chan4_raw) + ", "
+					 + i2str(m_rcO.chan5_raw) + ", "
+					 + i2str(m_rcO.chan6_raw) + ", "
+					 + i2str(m_rcO.chan7_raw) + ", "
+					 + i2str(m_rcO.chan8_raw) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	return true;
 }

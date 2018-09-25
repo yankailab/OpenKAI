@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"waitKey":50,
 }
 
@@ -25,7 +25,7 @@
 	"fovH":42.5,
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -42,8 +42,8 @@
 	"_modelFile":"cfg/yolov3-tiny.cfg",
 	"_trainedFile":"data/yolov3-tiny.weights",
 	"modelDir":"/home/kai/dev/darknet/",
-	"modelFile":"cfg/yolov3.cfg",
-	"trainedFile":"data/yolov3.weights",
+	"modelFile":"cfg/yolov3-tiny.cfg",
+	"trainedFile":"data/yolov3-tiny.weights",
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
@@ -94,10 +94,10 @@
 	"_wakeUp":"mavAP",
 	"_portName":"/dev/ttyTHS1",
 	"_baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
-	"portName":"/dev/ttyUSB0",
-	"baud":57600,
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"_portName":"/dev/ttyUSB0",
+	"_baud":57600,
 }
 
 {
@@ -112,9 +112,9 @@
 }
 
 {
-	"name":"PIDroll",
+	"name":"PIDroll_rc",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"P":-0.5,
 	"I":0.0,
@@ -127,9 +127,9 @@
 }
 
 {
-	"name":"PIDpitch",
+	"name":"PIDpitch_rc",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"P":-0.2,
 	"I":0.0,
@@ -139,6 +139,36 @@
 	"min":-200,
 	"max":200,
 	"K":500,
+}
+
+{
+	"name":"PIDroll_target",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":-0.5,
+	"I":0.0,
+	"Imax":0.0,
+	"D":-0.03,
+	"dT":0.99,
+	"min":-10.0,
+	"max":10.0,
+	"K":10.0,
+}
+
+{
+	"name":"PIDpitch_target",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":0.2,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.008,
+	"dT":0.99,
+	"min":-10.0,
+	"max":10.0,
+	"K":10.0,
 }
 
 {
@@ -197,8 +227,8 @@
 		}
 
 		{
-			"name":"apFollowPos",
-			"class":"APcopter_followPos",
+			"name":"apFollow",
+			"class":"APcopter_followLocal",
 			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
@@ -209,35 +239,7 @@
 			"_TrackerBase":"tracker",
 			"bUseTracker":0,
 			"iClass":0,
-	
-			{
-				"name":"gimbalOut",
-				"pitch":80,
-				"roll":0,
-				"yaw":0,
-			}
-			{
-				"name":"gimbalReal",
-				"pitch":80,
-				"roll":0,
-				"yaw":0,
-			}
-		}
-
-		{
-			"name":"apFollowRC",
-			"class":"APcopter_followRC",
-			"bInst":0,
-			"bLog":0,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_SEARCH","CC_FOLLOW"],
-			"APcopter_base":"apBase",
-			"_ObjectBase":"yolo",
-			"_TrackerBase":"tracker",
-			"bUseTracker":0,
-			"iClass":0,
-			"APcopter_posCtrlRC":"apPosCtrl",
+			"APcopter_posCtrlBase":"apPosCtrl",
 	
 			{
 				"name":"gimbalOut",
@@ -255,6 +257,26 @@
 
 		{
 			"name":"apPosCtrl",
+			"class":"APcopter_posCtrlTarget",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_FOLLOW"],
+			"APcopter_base":"apBase",
+
+			{
+				"name":"roll",
+				"PIDctrl":"PIDroll_target",
+			}
+			{
+				"name":"pitch",
+				"PIDctrl":"PIDpitch_target",
+			}
+		}
+
+		{
+			"name":"apPosCtrl",
 			"class":"APcopter_posCtrlRC",
 			"bInst":0,
 			"bLog":1,
@@ -265,7 +287,7 @@
 
 			{
 				"name":"roll",
-				"PIDctrl":"PIDroll",
+				"PIDctrl":"PIDroll_rc",
 				"pwmL":1000,
 				"pwmM":1500,
 				"pwmH":2000,
@@ -273,7 +295,7 @@
 			}
 			{
 				"name":"pitch",
-				"PIDctrl":"PIDpitch",
+				"PIDctrl":"PIDpitch_rc",
 				"pwmL":1000,
 				"pwmM":1500,
 				"pwmH":2000,

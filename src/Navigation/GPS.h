@@ -29,14 +29,16 @@ struct LL_POS
 {
 	double	m_lat;
 	double	m_lng;
-	double	m_alt;
+	double	m_altRel;
+	double	m_altAbs;
 	double	m_hdg;
 
 	void init(void)
 	{
 		m_lat = 0.0;
 		m_lng = 0.0;
-		m_alt = 0.0;
+		m_altRel = 0.0;
+		m_altAbs = 0.0;
 		m_hdg = 0.0;
 	}
 };
@@ -45,7 +47,8 @@ struct UTM_POS
 {
 	double m_easting;
 	double m_northing;
-	double m_alt;
+	double m_altRel;
+	double m_altAbs;
 	double m_hdg;
 	string m_zone;
 
@@ -53,7 +56,8 @@ struct UTM_POS
 	{
 		m_easting = 0.0;
 		m_northing = 0.0;
-		m_alt = 0.0;
+		m_altRel = 0.0;
+		m_altAbs = 0.0;
 		m_hdg = 0.0;
 		m_zone = "";
 	}
@@ -64,7 +68,7 @@ struct UTM_POS
 
 		double e = pPos->m_easting - this->m_easting;
 		double n = pPos->m_northing - this->m_northing;
-		double a = pPos->m_alt - this->m_alt;
+		double a = pPos->m_altRel - this->m_altRel;
 
 		return sqrt(e*e + n*n + a*a);
 	}
@@ -76,7 +80,8 @@ struct UTM_POS
 
 		pos.m_easting = this->m_easting + dPos.m_easting;
 		pos.m_northing = this->m_northing + dPos.m_northing;
-		pos.m_alt = this->m_alt + dPos.m_alt;
+		pos.m_altRel = this->m_altRel + dPos.m_altRel;
+		pos.m_altAbs = this->m_altAbs + dPos.m_altAbs;
 		pos.m_zone = this->m_zone;
 		pos.m_hdg = Hdg(this->m_hdg + dPos.m_hdg);
 
@@ -90,7 +95,8 @@ struct UTM_POS
 
 		dPos.m_easting = this->m_easting - rPos.m_easting;
 		dPos.m_northing = this->m_northing - rPos.m_northing;
-		dPos.m_alt = this->m_alt - rPos.m_alt;
+		dPos.m_altRel = this->m_altRel - rPos.m_altRel;
+		dPos.m_altAbs = this->m_altAbs - rPos.m_altAbs;
 		dPos.m_zone = this->m_zone;
 		dPos.m_hdg = dHdg(rPos.m_hdg, this->m_hdg);
 

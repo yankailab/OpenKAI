@@ -49,11 +49,12 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_DNNnav);
 		ADD_ACTION(APcopter_depthVision);
 		ADD_ACTION(APcopter_distLidar);
-		ADD_ACTION(APcopter_followPos);
-		ADD_ACTION(APcopter_followRC);
+		ADD_ACTION(APcopter_followGlobal);
+		ADD_ACTION(APcopter_followLocal);
 		ADD_ACTION(APcopter_DNNlanding);
 		ADD_ACTION(APcopter_edgeHold);
 		ADD_ACTION(APcopter_posCtrlRC);
+		ADD_ACTION(APcopter_posCtrlTarget);
 		ADD_ACTION(APcopter_mission);
 
 		ADD_ACTION(AProver_base);

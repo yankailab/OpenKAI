@@ -1,18 +1,10 @@
 #ifndef OpenKAI_src_Autopilot_Controller_APcopter_posCtrlRC_H_
 #define OpenKAI_src_Autopilot_Controller_APcopter_posCtrlRC_H_
 
-#include "../../../Base/common.h"
-#include "../../ActionBase.h"
-#include "APcopter_base.h"
+#include "APcopter_posCtrlBase.h"
 
 namespace kai
 {
-
-#define RC_CHAN_ROLL 1
-#define RC_CHAN_PITCH 0
-#define RC_CHAN_YAW 3
-#define RC_CHAN_ALT 2
-#define N_RC_CHAN 4
 
 struct AP_POS_CTRL_RC
 {
@@ -20,7 +12,6 @@ struct AP_POS_CTRL_RC
 	int m_pwmL;
 	int m_pwmM;
 	int m_pwmH;
-	bool m_bON;
 	uint8_t m_iChan;
 	uint16_t* m_pMavChanRaw;
 
@@ -30,7 +21,6 @@ struct AP_POS_CTRL_RC
 		m_pwmL = 1000;
 		m_pwmM = 1500;
 		m_pwmH = 2000;
-		m_bON = false;
 		m_iChan = 0;
 		m_pMavChanRaw = NULL;
 	}
@@ -58,37 +48,26 @@ struct AP_POS_CTRL_RC
 			m_pMavChanRaw = NULL;
 	}
 
-	bool updatePWM(double pos, double target)
+	bool update(double pos, double target)
 	{
 		NULL_F(m_pPID);
 		NULL_F(m_pMavChanRaw);
-
-		if(!m_bON)
-		{
-			*m_pMavChanRaw = 0;
-			return false;
-		}
 
 		*m_pMavChanRaw = (uint16_t)(m_pwmM + (int)m_pPID->update(pos, target));
 		return true;
 	}
 
-	void bON(bool bON)
+	void clear(void)
 	{
-		NULL_(m_pPID);
-		NULL_(m_pMavChanRaw);
-
-		if(!m_bON && bON)
+		if(m_pPID)
 			m_pPID->reset();
 
-		m_bON = bON;
-
-		if(!m_bON)
+		if(m_pMavChanRaw)
 			*m_pMavChanRaw = 0;
 	}
 };
 
-class APcopter_posCtrlRC: public ActionBase
+class APcopter_posCtrlRC: public APcopter_posCtrlBase
 {
 public:
 	APcopter_posCtrlRC();
@@ -102,18 +81,13 @@ public:
 
 	void setTargetPos(vDouble4& vT);
 	void setPos(vDouble4& vP);
-	void setCtrl(uint8_t iChan, bool bON);
+	void clear(void);
 
 	void resetRC(void);
 	void releaseRC(void);
 
 public:
-	APcopter_base* m_pAP;
-
-	vDouble4 m_vTarget;
-	vDouble4 m_vPos;
-
-	AP_POS_CTRL_RC m_rc[N_RC_CHAN];
+	AP_POS_CTRL_RC m_rc[N_CTRL];
 	mavlink_rc_channels_override_t m_rcO;
 
 };

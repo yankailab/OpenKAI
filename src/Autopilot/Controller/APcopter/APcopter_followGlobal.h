@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_followPos_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_followPos_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_followGlobal_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_followGlobal_H_
 
 #include "../../../Navigation/GPS.h"
 #include "APcopter_followBase.h"
@@ -7,11 +7,11 @@
 namespace kai
 {
 
-class APcopter_followPos: public APcopter_followBase
+class APcopter_followGlobal: public APcopter_followBase
 {
 public:
-	APcopter_followPos();
-	~APcopter_followPos();
+	APcopter_followGlobal();
+	~APcopter_followGlobal();
 
 	bool init(void* pKiss);
 	void update(void);

@@ -26,7 +26,8 @@ void GPS::update(_Mavlink* pMav)
 
 	m_LL.m_lat = pMav->m_msg.global_position_int.lat * 0.0000001;
 	m_LL.m_lng = pMav->m_msg.global_position_int.lon * 0.0000001;
-	m_LL.m_alt = (double)pMav->m_msg.global_position_int.relative_alt * 0.001;
+	m_LL.m_altRel = (double)pMav->m_msg.global_position_int.relative_alt * 0.001;
+	m_LL.m_altAbs = (double)pMav->m_msg.global_position_int.alt * 0.001;
 	m_LL.m_hdg = pMav->m_msg.global_position_int.hdg * 0.01;
 
 	update(m_LL);
@@ -63,7 +64,8 @@ UTM_POS GPS::getPos(vDouble3& dNEA)
 	UTM_POS pUTM = m_UTM;
 	pUTM.m_northing += dNEA.x * cosH - dNEA.y * sinH;
 	pUTM.m_easting += dNEA.y * cosH + dNEA.x * sinH;
-	pUTM.m_alt += dNEA.z;
+	pUTM.m_altRel += dNEA.z;
+	pUTM.m_altAbs += dNEA.z;
 
 	return pUTM;
 }
@@ -74,7 +76,8 @@ UTM_POS GPS::LL2UTM(LL_POS& pLL)
 	char pUTMzone[8];
 	UTM::LLtoUTM(pLL.m_lat, pLL.m_lng, pUTM.m_northing, pUTM.m_easting, pUTMzone);
 	pUTM.m_zone = pUTMzone;
-	pUTM.m_alt = pLL.m_alt;
+	pUTM.m_altRel = pLL.m_altRel;
+	pUTM.m_altAbs = pLL.m_altAbs;
 	pUTM.m_hdg = pLL.m_hdg;
 
 	return pUTM;
@@ -84,7 +87,8 @@ LL_POS GPS::UTM2LL(UTM_POS& pUTM)
 {
 	LL_POS pLL;
 	UTM::UTMtoLL(pUTM.m_northing, pUTM.m_easting, pUTM.m_zone.c_str(), pLL.m_lat, pLL.m_lng);
-	pLL.m_alt = pUTM.m_alt;
+	pLL.m_altRel = pUTM.m_altRel;
+	pLL.m_altAbs = pUTM.m_altAbs;
 	pLL.m_hdg = pUTM.m_hdg;
 
 	return pLL;

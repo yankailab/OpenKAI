@@ -1,39 +1,45 @@
-#include "APcopter_followRC.h"
+#include "APcopter_followLocal.h"
 
 namespace kai
 {
 
-APcopter_followRC::APcopter_followRC()
+APcopter_followLocal::APcopter_followLocal()
 {
 	m_pPC = NULL;
+	m_vCam.init();
+	m_vCam.x = 0.5;
+	m_vCam.y = 0.5;
 }
 
-APcopter_followRC::~APcopter_followRC()
+APcopter_followLocal::~APcopter_followLocal()
 {
 }
 
-bool APcopter_followRC::init(void* pKiss)
+bool APcopter_followLocal::init(void* pKiss)
 {
 	IF_F(!this->APcopter_followBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("camX", &m_vCam.x);
+	pK->v("camY", &m_vCam.y);
 
 	//link
 	string iName;
 
 	iName = "";
-	pK->v("APcopter_posCtrlRC", &iName);
-	m_pPC = (APcopter_posCtrlRC*) (pK->parent()->getChildInst(iName));
+	pK->v("APcopter_posCtrlBase", &iName);
+	m_pPC = (APcopter_posCtrlBase*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pPC, iName + ": not found");
 
 	return true;
 }
 
-int APcopter_followRC::check(void)
+int APcopter_followLocal::check(void)
 {
 	return this->APcopter_followBase::check();
 }
 
-void APcopter_followRC::update(void)
+void APcopter_followLocal::update(void)
 {
 	this->APcopter_followBase::update();
 	IF_(check()<0);
@@ -54,24 +60,11 @@ void APcopter_followRC::update(void)
 	updateGimbal();
 	IF_(!find());
 
-	vDouble4 vTarget;
-	vTarget.init();
-	vTarget.x = m_vTarget.x - 0.5;	//roll
-	vTarget.y = m_vTarget.y - 0.5;	//pitch
-	m_pPC->setPos(vTarget);
-
-	vDouble4 vCam;
-	vCam.init();
-	vCam.x = 0.5;
-	vCam.y = 0.5;
-	m_pPC->setTargetPos(vCam);
-
-	//Use RC override
-	m_pPC->setCtrl(RC_CHAN_ROLL,true);
-	m_pPC->setCtrl(RC_CHAN_PITCH,true);
+	m_pPC->setPos(m_vTarget);
+	m_pPC->setTargetPos(m_vCam);
 }
 
-bool APcopter_followRC::draw(void)
+bool APcopter_followLocal::draw(void)
 {
 	IF_F(!this->APcopter_followBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -84,7 +77,7 @@ bool APcopter_followRC::draw(void)
 	return true;
 }
 
-bool APcopter_followRC::cli(int& iY)
+bool APcopter_followLocal::cli(int& iY)
 {
 	IF_F(!this->APcopter_followBase::cli(iY));
 	IF_F(check()<0);
