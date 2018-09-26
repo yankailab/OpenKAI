@@ -1,0 +1,142 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"depthView",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"realsense",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":0,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"fovW":69.4,
+	"fovH":42.5,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"bAlign":0,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":10,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":3,
+	"w":1280,
+	"h":720,
+	"fovW":60,
+	"fovH":60,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_wakeUp":"mavAP",
+	"_portName":"/dev/ttyTHS1",
+	"_baud":921600,
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"_portName":"/dev/ttyUSB0",
+	"_baud":57600,
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	"devSystemID":1,
+}
+
+{
+	"name":"apState",
+	"class":"_Automaton",
+	"bInst":1,
+	"Window":"OKview",
+	"startState":"CC_STANDBY",
+
+	{
+		"state":"CC_STANDBY",
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"apState",
+	"bInst":1,
+	"FPS":10,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"_Automaton":"apState",
+			"Window":"OKview",
+			"_Mavlink":"mavAP",
+			"freqAtti":0,
+			"freqGlobalPos":10,
+			"freqRC":0,
+			"freqSendHeartbeat":1,
+		}
+
+		{
+			"name":"apTakePhoto",
+			"class":"APcopter_takePhoto",
+			"bInst":1,
+			"bLog":0,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_STANDBY"],
+			"APcopter_base":"apBase",
+			"_DepthVisionBase":"realsense",
+			"_VisionBase":"cam",
+			"tInterval":10,
+			"dir":"/home/kai/dev/test/",
+			"subDir":"",
+		}
+	}
+}

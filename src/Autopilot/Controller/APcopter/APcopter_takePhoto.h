@@ -20,15 +20,17 @@ public:
 
 private:
 	APcopter_base* m_pAP;
+	_VisionBase* m_pV;
 	_DepthVisionBase* m_pDV;
 
 	string m_dir;
 	string m_subDir;
 	uint64_t m_tInterval;
 	uint64_t m_tLastTake;
+	int m_iTake;
 
-	vector<int> m_PNGcompress;
-	int m_PNGcompression;
+	vector<int> m_compress;
+	int m_quality;
 
 };
 
