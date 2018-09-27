@@ -21,8 +21,8 @@ _ThreadBase::_ThreadBase()
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
 	m_timeFrom = 0;
 	m_timeTo = 0;
-	m_bSleep = false;
-	m_bDisableSleep = false;
+	m_bGoSleep = false;
+	m_bSleeping = false;
 	m_pWakeUp = NULL;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
@@ -66,8 +66,6 @@ void _ThreadBase::sleepTime(int64_t usec)
 {
 	if(usec>0)
 	{
-		IF_(m_bDisableSleep);
-
 		struct timeval now;
 		struct timespec timeout;
 
@@ -82,25 +80,27 @@ void _ThreadBase::sleepTime(int64_t usec)
 	}
 	else
 	{
+		m_bSleeping = true;
 		pthread_mutex_lock(&m_wakeupMutex);
 		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
 		pthread_mutex_unlock(&m_wakeupMutex);
 	}
 }
 
-void _ThreadBase::sleep(void)
+void _ThreadBase::goSleep(void)
 {
-	m_bSleep = true;
+	m_bGoSleep = true;
 }
 
-void _ThreadBase::disableSleep(bool bDisable)
+bool _ThreadBase::bSleeping(void)
 {
-	m_bDisableSleep = bDisable;
+	return m_bSleeping;
 }
 
 void _ThreadBase::wakeUp(void)
 {
-	m_bSleep = false;
+	m_bGoSleep = false;
+	m_bSleeping = false;
 	pthread_cond_signal(&m_wakeupSignal);
 }
 
@@ -140,7 +140,7 @@ void _ThreadBase::autoFPSto(void)
 		this->sleepTime(uSleep);
 	}
 
-	if(m_bSleep)
+	if(m_bGoSleep)
 	{
 		m_FPS = 0;
 		this->sleepTime(0);

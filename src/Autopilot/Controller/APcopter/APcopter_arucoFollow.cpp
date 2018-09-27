@@ -80,7 +80,7 @@ void APcopter_arucoFollow::update(void)
 	IF_(check()<0);
 	if(!isActive())
 	{
-		m_pArUco->sleep();
+		m_pArUco->goSleep();
 		return;
 	}
 

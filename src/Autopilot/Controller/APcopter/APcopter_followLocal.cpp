@@ -45,7 +45,7 @@ void APcopter_followLocal::update(void)
 	IF_(check()<0);
 	if(!isActive())
 	{
-		m_pDet->sleep();
+		m_pDet->goSleep();
 		if(m_bUseTracker)
 			m_pTracker->stopTrack();
 

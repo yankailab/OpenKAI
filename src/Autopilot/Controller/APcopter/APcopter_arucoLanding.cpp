@@ -85,7 +85,7 @@ void APcopter_arucoLanding::update(void)
 	IF_(check()<0);
 	if(!isActive())
 	{
-		m_pArUco->sleep();
+		m_pArUco->goSleep();
 		return;
 	}
 

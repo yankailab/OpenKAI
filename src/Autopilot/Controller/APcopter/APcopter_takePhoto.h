@@ -4,6 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
+#include "../../../Vision/_RealSense.h"
 #include "APcopter_base.h"
 
 namespace kai
@@ -21,7 +22,7 @@ public:
 private:
 	APcopter_base* m_pAP;
 	_VisionBase* m_pV;
-	_DepthVisionBase* m_pDV;
+	_RealSense* m_pDV;
 
 	string m_dir;
 	string m_subDir;

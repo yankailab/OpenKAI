@@ -36,6 +36,9 @@ sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 
 # GUI
 sudo apt-get -y install libgtk2.0-dev libglew-dev libgtk-3-dev libglfw3-dev
+	
+# Exiftool
+sudo apt-get -y install libimage-exiftool-perl
 
 # Add CUDA to bash
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc

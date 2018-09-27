@@ -63,7 +63,7 @@ void HM_rth_approach::update(void)
 
 	if(!isActive())
 	{
-		m_pMN->sleep();
+		m_pMN->goSleep();
 		return;
 	}
 

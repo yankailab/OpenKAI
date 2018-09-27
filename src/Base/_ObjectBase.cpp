@@ -56,12 +56,12 @@ bool _ObjectBase::init(void* pKiss)
 	if (iName == "noThread")
 	{
 		m_mode = mode_noThread;
-		this->sleep();
+		this->goSleep();
 	}
 	else if (iName == "batch")
 	{
 		m_mode = mode_batch;
-		this->sleep();
+		this->goSleep();
 	}
 
 	//general

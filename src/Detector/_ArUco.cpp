@@ -66,7 +66,7 @@ void _ArUco::update(void)
 		detect();
 		m_obj.update();
 
-		if(m_bSleep)
+		if(m_bGoSleep)
 		{
 			m_obj.m_pPrev->reset();
 		}

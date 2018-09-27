@@ -2,10 +2,11 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":1,
 	"waitKey":30,
+	"rc":"modprobe uvcvideo quirks=128 nodrop=1 timeout=6000",
 }
 
 {
@@ -49,13 +50,22 @@
 
 {
 	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":10,
+	"bInst":0,
+	"Window":"OKview",
+	"pipeline":"v4l2src device=/dev/video4 ! videoflip method=0 ! video/x-raw,format=YUV,width=3840,height=2160,framerate=10/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"cam",
 	"class":"_Camera",
 	"FPS":10,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":3,
-	"w":1280,
-	"h":720,
+	"deviceID":1,
+	"w":3840,
+	"h":2160,
 	"fovW":60,
 	"fovH":60,
 }
@@ -134,7 +144,7 @@
 			"APcopter_base":"apBase",
 			"_DepthVisionBase":"realsense",
 			"_VisionBase":"cam",
-			"tInterval":10,
+			"tInterval":3,
 			"dir":"/home/kai/dev/test/",
 			"subDir":"",
 		}

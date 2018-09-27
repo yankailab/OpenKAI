@@ -74,18 +74,8 @@ public:
 	IO_TYPE		m_ioType;
 	IO_STATUS	m_ioStatus;
 
-	// for stream mode
-	bool				m_bStream;
 	std::queue<IO_BUF>	m_queW;
 	std::queue<IO_BUF>	m_queR;
-
-	// for cmdLatest mode
-	IO_BUF*		m_pCmdW;
-	int			m_nCmdW;
-	int			m_iCmdW;
-	int			m_nCmdType;
-	int			m_iCmdID;
-	int			m_iCmdSeq;
 
 	pthread_mutex_t m_mutexW;
 	pthread_mutex_t m_mutexR;

@@ -32,16 +32,16 @@ public:
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 
-	virtual void sleep(void);
-	void wakeUp(void);
-	void sleepTime(int64_t usec);
-	void disableSleep(bool bDisable);
+	virtual void goSleep(void);
+	virtual void wakeUp(void);
+	virtual void sleepTime(int64_t usec);
+	virtual bool bSleeping(void);
 
-	void updateTime(void);
-	double getFrameRate(void);
-	void setTargetFPS(int fps);
-	void autoFPSfrom(void);
-	void autoFPSto(void);
+	virtual void updateTime(void);
+	virtual double getFrameRate(void);
+	virtual void setTargetFPS(int fps);
+	virtual void autoFPSfrom(void);
+	virtual void autoFPSto(void);
 
 public:
 	pthread_t m_threadID;
@@ -58,8 +58,8 @@ public:
 	int64_t m_targetFrameTime;
 	int64_t m_timeFrom;
 	int64_t m_timeTo;
-	bool	m_bSleep;
-	bool	m_bDisableSleep;
+	bool	m_bGoSleep;
+	bool	m_bSleeping;
 
 	_ThreadBase* m_pWakeUp;
 };

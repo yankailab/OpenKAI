@@ -64,7 +64,7 @@ bool APcopter_takePhoto::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pDV = (_RealSense*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
 	return true;
@@ -84,13 +84,26 @@ void APcopter_takePhoto::update(void)
 	IF_(m_tStamp - m_tLastTake < m_tInterval);
 	m_tLastTake = m_tStamp;
 
+	m_pV->goSleep();
+	m_pDV->goSleep();
+
+	while(!m_pV->bSleeping());
+	while(!m_pDV->bSleeping());
+	while(!m_pDV->m_pTPP->bSleeping());
+
 	Mat mRGB;
 	m_pV->BGR()->m()->copyTo(mRGB);
-	IF_(mRGB.empty());
-
 	Mat mD;
 	m_pDV->Depth()->m()->copyTo(mD);
+
+	m_pV->wakeUp();
+	m_pDV->wakeUp();
+
+	IF_(mRGB.empty());
 	IF_(mD.empty());
+
+	Mat mDscale;
+	mD.convertTo(mDscale,CV_8UC1,100);
 
 	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001);
 	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001);
@@ -101,14 +114,14 @@ void APcopter_takePhoto::update(void)
 	string cmd;
 
 	//rgb
-	fName = m_subDir + "rgb_" + i2str(m_iTake) + ".jpg";
+	fName = m_subDir + i2str(m_iTake) + "_rgb" + ".jpg";
 	cv::imwrite(fName, mRGB, m_compress);
 	cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());
 
 	//depth
-	fName = m_subDir + "d_" + i2str(m_iTake) + ".jpg";
-	cv::imwrite(fName, mD, m_compress);
+	fName = m_subDir + i2str(m_iTake) + "_d" + ".jpg";
+	cv::imwrite(fName, mDscale, m_compress);
 	cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());
 
