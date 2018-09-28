@@ -1,5 +1,7 @@
 #include "APcopter_takePhoto.h"
 
+#ifdef USE_REALSENSE
+
 namespace kai
 {
 
@@ -129,3 +131,4 @@ void APcopter_takePhoto::update(void)
 }
 
 }
+#endif

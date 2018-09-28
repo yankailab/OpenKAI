@@ -34,7 +34,7 @@ _ObjectBase::_ObjectBase()
 	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
 	m_classLegendPos.x = 25;
-	m_classLegendPos.y = 150;
+	m_classLegendPos.y = 100;
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
 	m_bDrawObjVtrack = false;

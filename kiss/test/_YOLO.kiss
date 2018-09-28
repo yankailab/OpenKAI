@@ -6,19 +6,17 @@
 	"bDraw":1,
 	"bLog":1,	
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":0,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 }
 
 {
-	"name":"camera",
+	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":1,
@@ -32,7 +30,7 @@
 	"name":"vf",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
@@ -42,31 +40,35 @@
 }
 
 {
-	"name":"YOLO",
+	"name":"yl",
 	"class":"_YOLO",
 	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
-	"_VisionBase":"vf",
+	"_VisionBase":"cam",
+	"mode":"thread",
 	"modelDir":"/home/kai/dev/darknet/",
-	"modelFile":"cfg/yolov2.cfg",
-	"trainedFile":"data/yolov2.weights",
+	"modelFile":"cfg/yolov3.cfg",
+	"trainedFile":"data/yolov3.weights",
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
 	"nPredAvr":3,
 	"nBatch":1,
-	"thresh":0.1,
+	"thresh":0.09,
 	"minArea":0.0,
-	"maxArea":0.3,
-	"mode":"thread",
+	"maxArea":0.5,
+	"dMaxTrack":0.1,
 	"bDrawStatistics":1,
-	"rX":0.25,
+	"bDrawObjClass":1,
+	"bDrawObjVtrack":0,
+	"drawVscale":1.0,
+	"rX":0.0,
 	"rY":0.05,
 	"rZ":0.8,
-	"rW":0.5,
+	"rW":1.0,
 }
 
 {

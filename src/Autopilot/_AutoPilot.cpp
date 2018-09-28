@@ -55,7 +55,6 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_edgeHold);
 		ADD_ACTION(APcopter_posCtrlRC);
 		ADD_ACTION(APcopter_posCtrlTarget);
-		ADD_ACTION(APcopter_takePhoto);
 		ADD_ACTION(APcopter_mission);
 
 		ADD_ACTION(AProver_base);
@@ -76,6 +75,10 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(VEK_base);
 		ADD_ACTION(VEK_avoid);
 		ADD_ACTION(VEK_follow);
+
+#ifdef USE_REALSENSE
+		ADD_ACTION(APcopter_takePhoto);
+#endif
 
 		//Add action modules above
 

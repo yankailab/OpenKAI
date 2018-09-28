@@ -7,6 +7,8 @@
 #include "../../../Vision/_RealSense.h"
 #include "APcopter_base.h"
 
+#ifdef USE_REALSENSE
+
 namespace kai
 {
 
@@ -37,4 +39,5 @@ private:
 
 }
 
+#endif
 #endif
