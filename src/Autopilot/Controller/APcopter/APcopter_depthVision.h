@@ -17,12 +17,10 @@ struct DEPTH_ROI
 	uint8_t			m_orientation;
 	vDouble4		m_roi;
 	double 			m_minD;
-	double 			m_dScale;
 
 	void init(void)
 	{
 		m_minD = 0.0;
-		m_dScale = 1.0;
 		m_orientation = 0;
 		m_roi.init();
 	}

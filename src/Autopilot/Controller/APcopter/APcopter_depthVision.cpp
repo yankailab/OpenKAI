@@ -46,7 +46,6 @@ bool APcopter_depthVision::init(void* pKiss)
 		F_ERROR_F(pKs->v("t", &pR->m_roi.y));
 		F_ERROR_F(pKs->v("r", &pR->m_roi.z));
 		F_ERROR_F(pKs->v("b", &pR->m_roi.w));
-		F_INFO(pKs->v("dScale", &pR->m_dScale));
 
 		m_nROI++;
 	}
@@ -70,8 +69,8 @@ void APcopter_depthVision::update(void)
 	{
 		DEPTH_ROI* pR = &m_pROI[i];
 
-		double d = m_pDV->d(&pR->m_roi) * pR->m_dScale;
-		if(d < range.x)d = range.y;
+		double d = m_pDV->d(&pR->m_roi);
+		if(d <= range.x)d = range.y;
 		if(d > range.y)d = range.y;
 		pR->m_minD = d;
 
@@ -104,7 +103,7 @@ bool APcopter_depthVision::draw(void)
 	{
 		DEPTH_ROI* pR = &m_pROI[i];
 		vDouble4 roi = pR->m_roi;
-		double d = m_pDV->d(&roi) * pR->m_dScale;
+		double d = m_pDV->d(&roi);
 
 		Rect r;
 		r.x = roi.x * pMat->cols;

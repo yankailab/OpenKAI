@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":1,
 	"waitKey":30,
 }
@@ -30,11 +30,11 @@
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":1280,
-	"h":720,
+	"w":640,
+	"h":360,
 	"rsFPS":30,
-	"wD":1280,
-	"hD":720,
+	"wD":640,
+	"hD":360,
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
@@ -42,7 +42,7 @@
 	"fovH":42.5,
 	"bAlign":0,
 	"fDec":0,
-	"fSpat":3,
+	"fSpat":0,
 	"nHistLev":100,
 	"minHistD":0.025,
 	"rFrom":1.0,
@@ -53,23 +53,23 @@
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":1,
-	"bLog":0,
-	"FPS":100,
+	"FPS":30,
+	"bLog":1,
 	"Window":"OKview",
+	"_wakeUp":"mavAP",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
 }
 
 {
 	"name":"mavAP",
 	"class":"_Mavlink",
 	"bInst":1,
-	"bLog":0,
-	"FPS":100,
+	"FPS":30,
+	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apSerial",	
+	"_IOBase":"apSerial",
+	"devSystemID":1,
 }
 
 {
@@ -119,11 +119,10 @@
 
 			{
 				"orientation":0,
-				"l":0.05,
-				"t":0.0,
-				"r":0.95,
-				"b":0.8,
-				"dScale":1.0,
+				"l":0.1,
+				"t":0.1,
+				"r":0.9,
+				"b":0.6,
 			}	
 		}
 	}
