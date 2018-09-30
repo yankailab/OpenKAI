@@ -50,7 +50,7 @@ inline string tFormat(void)
 	struct tm* tm_info;
 	time(&timer);
 	tm_info = localtime(&timer);
-	strftime(buffer, 26, "%Y-%m-%d_%H:%M:%S", tm_info);
+	strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
 	puts(buffer);
 
 	string str = buffer;

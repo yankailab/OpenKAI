@@ -150,7 +150,7 @@
 			"_DepthVisionBase":"realsense",
 			"_VisionBase":"cam",
 			"tInterval":3,
-			"dir":"/home/ubuntu/photo/",
+			"dir":"/mnt/sd/",
 			"subDir":"",
 		}
 	}
