@@ -22,20 +22,14 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	bool open(void);
+	void close(void);
 
 private:
-	bool open(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_GStreamer*) This)->update();
-		return NULL;
-	}
-
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_GStreamer*) This)->updateTPP();
 		return NULL;
 	}
 

@@ -20,6 +20,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
+	int check(void);
 
 private:
 	APcopter_base* m_pAP;

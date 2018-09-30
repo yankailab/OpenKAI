@@ -82,9 +82,19 @@ VISION_TYPE _VisionBase::getType(void)
 	return m_type;
 }
 
+bool _VisionBase::open(void)
+{
+	return false;
+}
+
 bool _VisionBase::isOpened(void)
 {
 	return m_bOpen;
+}
+
+void _VisionBase::close(void)
+{
+	m_bOpen = false;
 }
 
 bool _VisionBase::draw(void)

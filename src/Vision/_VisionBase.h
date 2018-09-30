@@ -35,11 +35,14 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
 
+	virtual bool open(void);
+	virtual bool isOpened(void);
+	virtual void close(void);
+
 	virtual vInt2 getSize(void);
 	virtual VISION_TYPE getType(void);
 	virtual Frame* BGR(void);
 	virtual void info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle);
-	bool isOpened(void);
 
 public:
 	bool m_bOpen;

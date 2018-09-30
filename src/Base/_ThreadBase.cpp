@@ -24,6 +24,7 @@ _ThreadBase::_ThreadBase()
 	m_bGoSleep = false;
 	m_bSleeping = false;
 	m_pWakeUp = NULL;
+	m_threadMode = T_THREAD;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -46,6 +47,8 @@ bool _ThreadBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	KISSm(pK, threadMode);
+
 	int FPS = DEFAULT_FPS;
 	pK->v("FPS", &FPS);
 	setTargetFPS(FPS);
@@ -59,6 +62,7 @@ bool _ThreadBase::init(void* pKiss)
 
 bool _ThreadBase::start(void)
 {
+	IF_F(m_threadMode != T_THREAD);
 	return true;
 }
 

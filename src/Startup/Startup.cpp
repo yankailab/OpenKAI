@@ -89,7 +89,7 @@ bool Startup::start(Kiss* pKiss)
 
 	for (i = 0; i < m_vInst.size(); i++)
 	{
-		F_ERROR_F(m_vInst[i].m_pInst->start());
+		m_vInst[i].m_pInst->start();
 	}
 
 	//UI thread

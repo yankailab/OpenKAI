@@ -72,45 +72,49 @@ bool APcopter_takePhoto::init(void* pKiss)
 	return true;
 }
 
+int APcopter_takePhoto::check(void)
+{
+	NULL__(m_pAP,-1);
+	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pV,-1);
+	NULL__(m_pDV,-1);
+
+	return this->ActionBase::check();
+}
+
 void APcopter_takePhoto::update(void)
 {
 	this->ActionBase::update();
 
-	NULL_(m_pAP);
-	NULL_(m_pAP->m_pMavlink);
-	NULL_(m_pV);
-	IF_(!m_pV->m_bOpen);
-	NULL_(m_pDV);
-	IF_(!m_pDV->m_bOpen);
-
+	IF_(check()<0);
 	IF_(m_tStamp - m_tLastTake < m_tInterval);
 	m_tLastTake = m_tStamp;
 
-	m_pV->goSleep();
-	m_pDV->goSleep();
+	//RGB
+	m_pV->open();
+	m_pV->close();
 
-	while(!m_pV->bSleeping());
+	//Depth
+	m_pDV->wakeUp();
+	m_pDV->goSleep();
 	while(!m_pDV->bSleeping());
 	while(!m_pDV->m_pTPP->bSleeping());
-
-	Mat mRGB;
-	m_pV->BGR()->m()->copyTo(mRGB);
-	Mat mD;
-	m_pDV->Depth()->m()->copyTo(mD);
-
-	m_pV->wakeUp();
-	m_pDV->wakeUp();
-
-	IF_(mRGB.empty());
-	IF_(mD.empty());
-
-	Mat mDscale;
-	mD.convertTo(mDscale,CV_8UC1,100);
 
 	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001);
 	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001);
 	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001);
 	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01);
+
+	Mat mRGB;
+	m_pV->BGR()->m()->copyTo(mRGB);
+	IF_(mRGB.empty());
+
+	Mat mD;
+	m_pDV->Depth()->m()->copyTo(mD);
+	IF_(mD.empty());
+
+	Mat mDscale;
+	mD.convertTo(mDscale,CV_8UC1,100);
 
 	string fName;
 	string cmd;

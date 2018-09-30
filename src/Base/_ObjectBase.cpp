@@ -27,8 +27,6 @@ _ObjectBase::_ObjectBase()
 	m_trackID = 1;
 
 	m_bReady = false;
-	m_mode = mode_thread;
-
 	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
@@ -49,20 +47,6 @@ bool _ObjectBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	//mode
-	string iName = "thread";
-	F_INFO(pK->v("mode", &iName));
-	if (iName == "noThread")
-	{
-		m_mode = mode_noThread;
-		this->goSleep();
-	}
-	else if (iName == "batch")
-	{
-		m_mode = mode_batch;
-		this->goSleep();
-	}
 
 	//general
 	KISSm(pK, dMaxTrack);
@@ -111,7 +95,7 @@ bool _ObjectBase::init(void* pKiss)
 	F_INFO(pK->v("rW", &m_roi.w));
 
 	//link
-	iName = "";
+	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
 

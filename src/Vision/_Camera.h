@@ -22,9 +22,10 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	bool open(void);
+	void close(void);
 
 private:
-	bool open(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -42,6 +43,7 @@ private:
 public:
 	int m_deviceID;
 	VideoCapture m_camera;
+	int m_nInitRead;
 };
 
 }

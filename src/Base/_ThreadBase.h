@@ -13,13 +13,11 @@
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
 
+#define T_THREAD 0
+#define T_NOTHREAD 1
+
 namespace kai
 {
-
-enum threadMode
-{
-	mode_thread, mode_noThread, mode_batch
-};
 
 class _ThreadBase: public BASE
 {
@@ -46,6 +44,7 @@ public:
 public:
 	pthread_t m_threadID;
 	bool m_bThreadON;
+	int m_threadMode;
 
 	uint64_t m_tStamp;
 	uint64_t m_dTime;

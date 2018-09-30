@@ -54,6 +54,15 @@ bool _GStreamer::open(void)
 	return true;
 }
 
+void _GStreamer::close(void)
+{
+	goSleep();
+	while(!bSleeping());
+
+	m_gst.release();
+	this->_VisionBase::close();
+}
+
 bool _GStreamer::start(void)
 {
 	m_bThreadON = true;

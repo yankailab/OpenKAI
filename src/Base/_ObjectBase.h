@@ -214,7 +214,6 @@ public:
 	//control
 	bool m_bReady;
 	uint64_t m_tStamp;
-	threadMode m_mode;
 	uint64_t m_trackID;
 
 	//config

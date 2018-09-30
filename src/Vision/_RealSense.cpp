@@ -52,6 +52,8 @@ bool _RealSense::init(void* pKiss)
 
 bool _RealSense::open(void)
 {
+	IF_T(m_bOpen);
+
 	rs2::config cfg;
     cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
     if(m_rsRGB)
@@ -120,8 +122,23 @@ bool _RealSense::open(void)
 	return true;
 }
 
+void _RealSense::close(void)
+{
+	if(m_threadMode==T_THREAD)
+	{
+		goSleep();
+		while(!bSleeping());
+		while(!m_pTPP->bSleeping());
+	}
+
+	m_rsPipe.stop();
+	this->_VisionBase::close();
+}
+
 bool _RealSense::start(void)
 {
+	IF_F(!this->_ThreadBase::start());
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
