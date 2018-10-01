@@ -119,17 +119,23 @@ void APcopter_takePhoto::update(void)
 	string fName;
 	string cmd;
 
+	LOG_I("Take: " + i2str(m_iTake));
+
 	//rgb
 	fName = m_subDir + i2str(m_iTake) + "_rgb" + ".jpg";
 	cv::imwrite(fName, mRGB, m_compress);
 	cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());
 
+	LOG_I("RGB: " + fName);
+
 	//depth
 	fName = m_subDir + i2str(m_iTake) + "_d" + ".jpg";
 	cv::imwrite(fName, mDscale, m_compress);
 	cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());
+
+	LOG_I("Depth: " + fName);
 
 	m_iTake++;
 }
