@@ -11,7 +11,7 @@ mkdir $DEVDIR
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local
 set +H
-sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\n/home/ubuntu/ok.sh\nexit 0\n' >> /etc/rc.local"
+sudo sh -c "echo '#!/bin/sh\n/home/ubuntu/jetson_clocks.sh\nnvpmodel -m 0\nmount /dev/mmcblk1p1 /mnt/sd\n/home/ubuntu/ok.sh\nexit 0\n' >> /etc/rc.local"
 set -H
 sudo chmod a+x /etc/rc.local
 sudo chmod a+x $HOME/jetson_clocks.sh
@@ -41,7 +41,7 @@ sudo apt-get -y install libgtk2.0-dev libglew-dev libgtk-3-dev libglfw3-dev
 sudo apt-get -y install libimage-exiftool-perl
 
 # Add CUDA to bash
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH" >> ~/.bashrc
+sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 bash
 
 # Update CMake

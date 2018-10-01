@@ -14,7 +14,7 @@ _Camera::_Camera()
 {
 	m_type = vision_camera;
 	m_deviceID = 0;
-	m_nInitRead = 0;
+	m_nInitRead = 1;
 }
 
 _Camera::~_Camera()
@@ -54,7 +54,6 @@ bool _Camera::open(void)
 	{
 		while (!m_camera.read(mCam));
 	}
-
 	m_fBGR.copy(mCam);
 
 	m_w = mCam.cols;

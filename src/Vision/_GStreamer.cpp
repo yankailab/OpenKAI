@@ -15,11 +15,12 @@ _GStreamer::_GStreamer()
 {
 	m_type = vision_gstreamer;
 	m_pipeline = "";
+	m_nInitRead = 1;
 }
 
 _GStreamer::~_GStreamer()
 {
-	m_gst.release();
+	close();
 }
 
 bool _GStreamer::init(void* pKiss)
@@ -28,6 +29,8 @@ bool _GStreamer::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, pipeline);
+	KISSm(pK, nInitRead);
+
 	return true;
 }
 
@@ -40,12 +43,15 @@ bool _GStreamer::open(void)
 		return false;
 	}
 
-	Mat cMat;
-	//Acquire a frame to determine the actual frame size
-	while (!m_gst.read(cMat));
+	Mat mCam;
+	for(int i=0; i<m_nInitRead; i++)
+	{
+		while (!m_gst.read(mCam));
+	}
+	m_fBGR.copy(mCam);
 
-	m_w = cMat.cols;
-	m_h = cMat.rows;
+	m_w = mCam.cols;
+	m_h = mCam.rows;
 
 	m_cW = m_w / 2;
 	m_cH = m_h / 2;
@@ -56,8 +62,11 @@ bool _GStreamer::open(void)
 
 void _GStreamer::close(void)
 {
-	goSleep();
-	while(!bSleeping());
+	if(m_threadMode==T_THREAD)
+	{
+		goSleep();
+		while(!bSleeping());
+	}
 
 	m_gst.release();
 	this->_VisionBase::close();
