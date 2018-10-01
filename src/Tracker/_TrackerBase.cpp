@@ -19,6 +19,7 @@ _TrackerBase::_TrackerBase()
 	m_bb.init();
 	m_iSet = 0;
 	m_iInit = 0;
+	m_margin = 0.0;
 
 }
 
@@ -32,6 +33,7 @@ bool _TrackerBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,trackerType);
+	KISSm(pK,margin);
 
 	//link
 	string iName = "";
@@ -65,10 +67,13 @@ bool _TrackerBase::startTrack(vDouble4& bb)
 	Mat* pMat = m_pVision->BGR()->m();
 	IF_F(pMat->empty());
 
-	bb.x = constrain(bb.x,0.0,1.0);
-	bb.y = constrain(bb.y,0.0,1.0);
-	bb.z = constrain(bb.z,0.0,1.0);
-	bb.w = constrain(bb.w,0.0,1.0);
+	double mBig = 1.0 + m_margin;
+	double mSmall = 1.0 - m_margin;
+
+	bb.x = constrain(bb.x * mSmall, 0.0, 1.0);
+	bb.y = constrain(bb.y * mSmall, 0.0, 1.0);
+	bb.z = constrain(bb.z * mBig, 0.0, 1.0);
+	bb.w = constrain(bb.w * mBig, 0.0, 1.0);
 
 	vInt4 iBB;
 	iBB.x = bb.x * pMat->cols;

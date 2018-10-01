@@ -9,21 +9,14 @@
 #define OpenKAI_src_Detector__Bullseye_H_
 
 #include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
+#include "../Base/_ObjectBase.h"
 
 #ifdef USE_CUDA
-
-#define NUM_MARKER 128
-
-#define METHOD_FILL 0
-#define METHOD_HOUGH 1
-#define MARKER_AREA_RATIO 0.8
-#define MIN_MARKER_SIZE 10
 
 namespace kai
 {
 
-class _Bullseye : public _ThreadBase
+class _Bullseye : public _ObjectBase
 {
 public:
 	_Bullseye();
@@ -31,11 +24,10 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 
-	bool getCircleCenter(vDouble3* pCenter);
 private:
-	void detectCircleFill(void);
-	void detectCircleHough(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -44,38 +36,12 @@ private:
 	}
 
 public:
-	int		 m_numCircle;
-	vDouble3 m_pCircle[NUM_MARKER];
+	double	m_abs;
+	double	m_scale1;
+	double	m_scale2;
+	double	m_thr1;
+	double	m_thr2;
 
-	int		m_method;
-
-	double	m_minMarkerSize;
-	double  m_areaRatio;
-
-	int		m_kSize;
-	int		m_houghMinDist;
-	int		m_houghParam1;
-	int		m_houghParam2;
-	int		m_houghMinR;
-	int		m_houghMaxR;
-
-	Ptr<SimpleBlobDetector> m_pBlobDetector;
-
-	_VisionBase*	m_pStream;
-	Frame*			m_pFrame;
-
-	GpuMat m_HSV;
-	GpuMat m_Hue;
-	GpuMat m_Sat;
-	GpuMat m_Val;
-
-	GpuMat  m_Huered;
-	GpuMat  m_Scalehuered;
-	GpuMat  m_Scalesat;
-	GpuMat  m_Balloonyness;
-	GpuMat  m_Thresh;
-
-	int		m_cudaDeviceID;
 };
 }
 

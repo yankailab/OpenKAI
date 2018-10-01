@@ -37,6 +37,7 @@ public:
 	_VisionBase* m_pVision;
 	Rect2d m_rBB;
 	vDouble4 m_bb;
+	double m_margin;
 
 	Rect2f	m_newBB;
 	int		m_iSet;
