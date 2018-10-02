@@ -10,14 +10,16 @@ APcopter_takePhoto::APcopter_takePhoto()
 	m_pAP = NULL;
 	m_pV = NULL;
 	m_pDV = NULL;
+	m_pIO = NULL;
 
 	m_dir = "/home/";
 	m_subDir = "";
 
-	m_tInterval = USEC_1SEC * 3;
+	m_tInterval = USEC_1SEC;
 	m_tLastTake = 0;
 	m_quality = 100;
 	m_iTake = 0;
+	m_bAuto = false;
 }
 
 APcopter_takePhoto::~APcopter_takePhoto()
@@ -32,10 +34,8 @@ bool APcopter_takePhoto::init(void* pKiss)
 	KISSm(pK,quality);
 	KISSm(pK,dir);
 	KISSm(pK,subDir);
-	if(pK->v("tInterval",&m_tInterval))
-	{
-		m_tInterval *= USEC_1SEC;
-	}
+	KISSm(pK,tInterval);
+	KISSm(pK,bAuto);
 
 	if(m_subDir.empty())
 	{
@@ -69,6 +69,11 @@ bool APcopter_takePhoto::init(void* pKiss)
 	m_pDV = (_RealSense*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
+	iName = "";
+	F_INFO(pK->v("_IOBase", &iName));
+	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pIO, iName + " not found");
+
 	return true;
 }
 
@@ -85,10 +90,48 @@ int APcopter_takePhoto::check(void)
 void APcopter_takePhoto::update(void)
 {
 	this->ActionBase::update();
-
 	IF_(check()<0);
-	IF_(m_tStamp - m_tLastTake < m_tInterval);
-	m_tLastTake = m_tStamp;
+
+	//receive cmd to take one shot
+	cmd();
+
+	//Auto take
+	if(m_bAuto)
+	{
+		IF_(m_tStamp - m_tLastTake < m_tInterval);
+		m_tLastTake = m_tStamp;
+		take();
+	}
+}
+
+void APcopter_takePhoto::cmd(void)
+{
+	char buf;
+	IF_(m_pIO->read((uint8_t*) &buf, 1) <= 0);
+
+	switch (buf)
+	{
+	case 't':
+		take();
+		break;
+	case 'a':
+		m_bAuto = true;
+		break;
+	case 's':
+		m_bAuto = false;
+		break;
+	default:
+		if(buf > '1' && buf < '9')
+		{
+			m_tInterval = USEC_1SEC / (double)(buf-48);
+		}
+		break;
+	}
+}
+
+void APcopter_takePhoto::take(void)
+{
+	IF_(check()<0);
 
 	//RGB
 	m_pV->open();
