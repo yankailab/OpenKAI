@@ -52,6 +52,7 @@ public:
 	void close(void);
 	bool draw(void);
 
+	bool write(uint8_t* pBuf, int nB);
 	bool write(uint8_t* pBuf, int nB, uint32_t mode);
 	int  read(uint8_t* pBuf, int nB);
 
@@ -83,6 +84,7 @@ public:
 	string	m_fifoR;
 	int		m_fdW;
 	int		m_fdR;
+	uint32_t m_mode;
 
 	vector<WS_CLIENT> m_vClient;
 	pthread_mutex_t m_mutexCR;

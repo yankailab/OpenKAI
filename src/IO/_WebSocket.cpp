@@ -18,6 +18,7 @@ _WebSocket::_WebSocket()
 	m_fdR = 0;
 	m_ioType = io_webSocket;
 	m_ioStatus = io_unknown;
+	m_mode = WS_MODE_TXT;
 
 	resetDecodeMsg();
 	pthread_mutex_init(&m_mutexCR, NULL);
@@ -38,6 +39,7 @@ bool _WebSocket::init(void* pKiss)
 
 	KISSm(pK, fifoW);
 	KISSm(pK, fifoR);
+	KISSm(pK, mode);
 
 	m_vClient.clear();
 	return true;
@@ -150,6 +152,12 @@ void _WebSocket::updateR(void)
 		toQueR(&ioB);
 		decodeMsg();
 	}
+}
+
+bool _WebSocket::write(uint8_t* pBuf, int nB)
+{
+	IF_F(m_vClient.empty());
+	return writeTo(m_vClient[0].m_id, pBuf, nB, m_mode);
 }
 
 bool _WebSocket::write(uint8_t* pBuf, int nB, uint32_t mode)

@@ -109,16 +109,24 @@ void APcopter_takePhoto::cmd(void)
 	char buf;
 	IF_(m_pIO->read((uint8_t*) &buf, 1) <= 0);
 
+	string msg = "";
+
 	switch (buf)
 	{
 	case 't':
 		take();
+		msg = "Photo take: " + i2str(m_iTake);
+		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
 		break;
 	case 'a':
 		m_bAuto = true;
+		msg = "Auto Interval Started";
+		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
 		break;
 	case 's':
 		m_bAuto = false;
+		msg = "Auto Interval Stopped";
+		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
 		break;
 	default:
 		if(buf > '1' && buf < '9')

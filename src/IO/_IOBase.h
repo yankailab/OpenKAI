@@ -62,10 +62,10 @@ public:
 	virtual bool draw(void);
 	virtual IO_TYPE ioType(void);
 
-	int  read(uint8_t* pBuf, int nB);
-	bool write(uint8_t* pBuf, int nB);
-	bool writeLine(uint8_t* pBuf, int nB);
-	bool write(IO_BUF& ioB);
+	virtual int  read(uint8_t* pBuf, int nB);
+	virtual bool write(uint8_t* pBuf, int nB);
+	virtual bool writeLine(uint8_t* pBuf, int nB);
+	virtual bool write(IO_BUF& ioB);
 
 	bool toBufW(IO_BUF* pB);
 	void toQueR(IO_BUF* pB);
