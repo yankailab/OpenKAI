@@ -8,6 +8,7 @@ APcopter_mission::APcopter_mission()
 	m_pAP = NULL;
 	m_tRTL = USEC_1SEC * 60 * 5;
 	m_tStart = 0;
+	m_iMissionSeq = UINT16_MAX;
 
 }
 
@@ -19,6 +20,8 @@ bool APcopter_mission::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	KISSm(pK,iMissionSeq);
 
 	if(pK->v("tRTL",&m_tRTL))
 	{
@@ -38,6 +41,7 @@ bool APcopter_mission::init(void* pKiss)
 int APcopter_mission::check(void)
 {
 	NULL__(m_pAP,-1);
+	NULL__(m_pAP->m_pMavlink,-1);
 
 	return this->ActionBase::check();
 }
@@ -50,7 +54,9 @@ void APcopter_mission::update(void)
 	string* pState = m_pAM->getCurrentStateName();
 	uint32_t apMode = m_pAP->apMode();
 
-	if(apMode == FOLLOW || apMode == POSHOLD || apMode == GUIDED)
+	if(apMode == FOLLOW ||
+	   apMode == POSHOLD ||
+	   apMode == GUIDED)
 	{
 		if(*pState!="CC_FOLLOW" && *pState!="CC_SEARCH")
 			m_pAM->transit("CC_SEARCH");
@@ -71,6 +77,12 @@ void APcopter_mission::update(void)
 
 		m_tStart = m_tStamp;
 	}
+	else if(apMode == AUTO && m_pAP->m_pMavlink->m_msg.mission_current.seq >= m_iMissionSeq)
+	{
+		m_pAP->setApMode(GUIDED);
+
+		m_tStart = m_tStamp;
+	}
 	else
 	{
 		if(*pState!="CC_STANDBY")
@@ -85,6 +97,7 @@ bool APcopter_mission::draw(void)
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
+	IF_F(check()<0);
 
 	pWin->tabNext();
 
@@ -92,7 +105,9 @@ bool APcopter_mission::draw(void)
 	tRTL = constrain(tRTL, 0, INT_MAX);
 
 	string msg;
-	msg = "tRTL = " + i2str(tRTL);
+	msg = "tRTL = " + i2str(tRTL) +
+		  ", mission current = " + i2str(m_pAP->m_pMavlink->m_msg.mission_current.seq) +
+		  "/" + i2str(m_iMissionSeq);
 
 	pWin->addMsg(&msg);
 
@@ -110,7 +125,9 @@ bool APcopter_mission::cli(int& iY)
 	tRTL = constrain(tRTL, 0, INT_MAX);
 
 	string msg;
-	msg = "tRTL = " + i2str(tRTL);
+	msg = "tRTL = " + i2str(tRTL) +
+		  ", mission current = " + i2str(m_pAP->m_pMavlink->m_msg.mission_current.seq) +
+		  "/" + i2str(m_iMissionSeq);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

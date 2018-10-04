@@ -35,10 +35,12 @@ public:
 	_TrackerBase*	m_pTracker;
 	bool			m_bUseTracker;
 
-	vDouble3 m_vGimbalReal;
-	vDouble3 m_vGimbalOut;		//x:pitch, y:roll, z:yaw
-	vDouble3 m_vGimbalRad;
+	vDouble3 m_vGimbal;		//x:pitch, y:roll, z:yaw
 	vDouble4 m_vTarget;
+
+	mavlink_mount_control_t m_gimbalControl;
+	mavlink_mount_configure_t m_gimbalConfig;
+
 };
 
 }

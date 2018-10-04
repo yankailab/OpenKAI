@@ -25,6 +25,7 @@ public:
 
 	uint64_t m_tStart;
 	uint64_t m_tRTL;
+	uint16_t m_iMissionSeq;
 
 };
 

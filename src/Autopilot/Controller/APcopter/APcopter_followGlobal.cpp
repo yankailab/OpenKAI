@@ -62,15 +62,15 @@ void APcopter_followGlobal::update(void)
 
 	//desired target position in local NEA
 	vDouble3 vCamNEA = m_vCamRelNEA;
-	vCamNEA.x += m_utmV.m_altRel * tan(m_vGimbalRad.x);	//Northing
+	vCamNEA.x += m_utmV.m_altRel * tan(m_vGimbal.x * DEG_RAD);	//Northing
 
 	//target position in local NEA
 	_VisionBase* pV = m_pDet->m_pVision;
 	vDouble2 cAngle;
 	pV->info(NULL, NULL, &cAngle);
 
-	double radN = (m_vTarget.y - 0.5) * cAngle.y * DEG_RAD + m_vGimbalRad.x;
-	double radE = (m_vTarget.x - 0.5) * cAngle.x * DEG_RAD + m_vGimbalRad.y;
+	double radN = (m_vTarget.y - 0.5) * cAngle.y * DEG_RAD + m_vGimbal.x * DEG_RAD;
+	double radE = (m_vTarget.x - 0.5) * cAngle.x * DEG_RAD + m_vGimbal.y * DEG_RAD;
 
 	vDouble3 vTargetNEA;
 	vTargetNEA.x = m_utmV.m_altRel * tan(radN);				//N

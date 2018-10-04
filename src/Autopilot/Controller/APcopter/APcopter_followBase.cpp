@@ -12,10 +12,18 @@ APcopter_followBase::APcopter_followBase()
 	m_iClass = -1;
 	m_bUseTracker = false;
 
-	m_vGimbalReal.init();
-	m_vGimbalOut.init();
-	m_vGimbalRad.init();
 	m_vTarget.init();
+
+	m_vGimbal.init();
+	m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
+	m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
+	m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
+	m_gimbalControl.save_position = 0;
+
+	m_gimbalConfig.stab_pitch = 1;
+	m_gimbalConfig.stab_roll = 1;
+	m_gimbalConfig.stab_yaw = 1;
+	m_gimbalConfig.mount_mode = 2;
 }
 
 APcopter_followBase::~APcopter_followBase()
@@ -30,20 +38,22 @@ bool APcopter_followBase::init(void* pKiss)
 	KISSm(pK,iClass);
 	KISSm(pK,bUseTracker);
 
-	Kiss* pG = pK->o("gimbalOut");
+	Kiss* pG = pK->o("gimbal");
 	if(!pG->empty())
 	{
-		pG->v("pitch", &m_vGimbalOut.x);
-		pG->v("roll", &m_vGimbalOut.y);
-		pG->v("yaw", &m_vGimbalOut.z);
-	}
+		pG->v("pitch", &m_vGimbal.x);
+		pG->v("roll", &m_vGimbal.y);
+		pG->v("yaw", &m_vGimbal.z);
 
-	pG = pK->o("gimbalReal");
-	if(!pG->empty())
-	{
-		pG->v("pitch", &m_vGimbalReal.x);
-		pG->v("roll", &m_vGimbalReal.y);
-		pG->v("yaw", &m_vGimbalReal.z);
+		m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
+		m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
+		m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
+		m_gimbalControl.save_position = 0;
+
+		pG->v("stabPitch", &m_gimbalConfig.stab_pitch);
+		pG->v("stabRoll", &m_gimbalConfig.stab_roll);
+		pG->v("stabYaw", &m_gimbalConfig.stab_yaw);
+		pG->v("mountMode", &m_gimbalConfig.mount_mode);
 	}
 
 	//link
@@ -137,22 +147,8 @@ bool APcopter_followBase::find(void)
 
 void APcopter_followBase::updateGimbal(void)
 {
-	m_vGimbalRad = m_vGimbalReal * DEG_RAD;
-
-	//enable camera gimbal and set to the right angle
-	mavlink_mount_configure_t D;
-	D.stab_pitch = 1;
-	D.stab_roll = 1;
-	D.stab_yaw = 1;
-	D.mount_mode = 2;
-	m_pAP->m_pMavlink->mountConfigure(D);
-
-	mavlink_mount_control_t C;
-	C.input_a = m_vGimbalOut.x * 100;	//pitch
-	C.input_b = m_vGimbalOut.y * 100;	//roll
-	C.input_c = m_vGimbalOut.z * 100;	//yaw
-	C.save_position = 0;
-	m_pAP->m_pMavlink->mountControl(C);
+	m_pAP->m_pMavlink->mountConfigure(m_gimbalConfig);
+	m_pAP->m_pMavlink->mountControl(m_gimbalControl);
 }
 
 bool APcopter_followBase::draw(void)

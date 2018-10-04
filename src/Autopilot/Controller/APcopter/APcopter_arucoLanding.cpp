@@ -14,6 +14,15 @@ APcopter_arucoLanding::APcopter_arucoLanding()
 	m_orientation.y = 1.0;
 
 	m_vGimbal.init();
+	m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
+	m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
+	m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
+	m_gimbalControl.save_position = 0;
+
+	m_gimbalConfig.stab_pitch = 1;
+	m_gimbalConfig.stab_roll = 1;
+	m_gimbalConfig.stab_yaw = 1;
+	m_gimbalConfig.mount_mode = 2;
 }
 
 APcopter_arucoLanding::~APcopter_arucoLanding()
@@ -34,6 +43,16 @@ bool APcopter_arucoLanding::init(void* pKiss)
 		pG->v("pitch", &m_vGimbal.x);
 		pG->v("roll", &m_vGimbal.y);
 		pG->v("yaw", &m_vGimbal.z);
+
+		m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
+		m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
+		m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
+		m_gimbalControl.save_position = 0;
+
+		pG->v("stabPitch", &m_gimbalConfig.stab_pitch);
+		pG->v("stabRoll", &m_gimbalConfig.stab_roll);
+		pG->v("stabYaw", &m_gimbalConfig.stab_yaw);
+		pG->v("mountMode", &m_gimbalConfig.mount_mode);
 	}
 
 	m_oTarget.init();
@@ -160,20 +179,8 @@ void APcopter_arucoLanding::update(void)
 
 void APcopter_arucoLanding::updateGimbal(void)
 {
-	//enable camera gimbal and set to the right angle
-	mavlink_mount_configure_t D;
-	D.stab_pitch = 1;
-	D.stab_roll = 1;
-	D.stab_yaw = 1;
-	D.mount_mode = 2;
-	m_pAP->m_pMavlink->mountConfigure(D);
-
-	mavlink_mount_control_t C;
-	C.input_a = m_vGimbal.x * 100;	//pitch
-	C.input_b = m_vGimbal.y * 100;	//roll
-	C.input_c = m_vGimbal.z * 100;	//yaw
-	C.save_position = 0;
-	m_pAP->m_pMavlink->mountControl(C);
+	m_pAP->m_pMavlink->mountControl(m_gimbalControl);
+	m_pAP->m_pMavlink->mountConfigure(m_gimbalConfig);
 }
 
 bool APcopter_arucoLanding::draw(void)

@@ -48,6 +48,8 @@ public:
 	vector<LANDING_TARGET_ARUCO> m_vTarget;
 
 	vDouble3 m_vGimbal;
+	mavlink_mount_control_t m_gimbalControl;
+	mavlink_mount_configure_t m_gimbalConfig;
 
 };
 

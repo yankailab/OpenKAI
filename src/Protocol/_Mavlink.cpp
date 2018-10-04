@@ -679,7 +679,7 @@ void _Mavlink::handleMessages()
 			m_devComponentID = m_msg.compid;
 			m_devType = m_msg.heartbeat.type;
 
-			LOG_I("-> MAVLINK_MSG_ID_HEARTBEAT");
+			LOG_I("-> HEARTBEAT");
 			break;
 		}
 
@@ -687,7 +687,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_sys_status_decode(&msg, &m_msg.sys_status);
 			m_msg.time_stamps.sys_status = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_SYS_STATUS");
+			LOG_I("-> SYS_STATUS");
 			break;
 		}
 
@@ -695,7 +695,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_battery_status_decode(&msg, &m_msg.battery_status);
 			m_msg.time_stamps.battery_status = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_BATTERY_STATUS");
+			LOG_I("-> BATTERY_STATUS");
 			break;
 		}
 
@@ -703,7 +703,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_radio_status_decode(&msg, &m_msg.radio_status);
 			m_msg.time_stamps.radio_status = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_RADIO_STATUS");
+			LOG_I("-> RADIO_STATUS");
 			break;
 		}
 
@@ -711,7 +711,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_local_position_ned_decode(&msg, &m_msg.local_position_ned);
 			m_msg.time_stamps.local_position_ned = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_LOCAL_POSITION_NED");
+			LOG_I("-> LOCAL_POSITION_NED");
 			break;
 		}
 
@@ -719,7 +719,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_global_position_int_decode(&msg, &m_msg.global_position_int);
 			m_msg.time_stamps.global_position_int = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_GLOBAL_POSITION_INT");
+			LOG_I("-> GLOBAL_POSITION_INT");
 			break;
 		}
 
@@ -727,7 +727,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_position_target_local_ned_decode(&msg, &m_msg.position_target_local_ned);
 			m_msg.time_stamps.position_target_local_ned = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED");
+			LOG_I("-> POSITION_TARGET_LOCAL_NED");
 			break;
 		}
 
@@ -735,7 +735,15 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_position_target_global_int_decode(&msg, &m_msg.position_target_global_int);
 			m_msg.time_stamps.position_target_global_int = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT");
+			LOG_I("-> POSITION_TARGET_GLOBAL_INT");
+			break;
+		}
+
+		case MAVLINK_MSG_ID_MISSION_CURRENT:
+		{
+			mavlink_msg_mission_current_decode(&msg, &m_msg.mission_current);
+			m_msg.time_stamps.mission_current = tNow;
+			LOG_I("-> MISSION_CURRENT");
 			break;
 		}
 
@@ -743,7 +751,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_highres_imu_decode(&msg, &m_msg.highres_imu);
 			m_msg.time_stamps.highres_imu = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_HIGHRES_IMU");
+			LOG_I("-> HIGHRES_IMU");
 			break;
 		}
 
@@ -751,7 +759,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_attitude_decode(&msg, &m_msg.attitude);
 			m_msg.time_stamps.attitude = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_ATTITUDE");
+			LOG_I("-> ATTITUDE");
 			break;
 		}
 
@@ -759,7 +767,7 @@ void _Mavlink::handleMessages()
 		{
 			mavlink_msg_command_ack_decode(&msg, &m_msg.command_ack);
 			m_msg.time_stamps.attitude = tNow;
-			LOG_I("-> MAVLINK_MSG_ID_COMMAND_ACK: " + i2str(m_msg.command_ack.result));
+			LOG_I("-> COMMAND_ACK: " + i2str(m_msg.command_ack.result));
 			break;
 		}
 

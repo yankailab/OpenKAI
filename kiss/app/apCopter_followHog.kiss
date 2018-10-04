@@ -112,48 +112,18 @@
 }
 
 {
-	"name":"PIDroll_rc",
-	"class":"PIDctrl",
-	"bInst":0,
-	"Window":"OKview",
-	"P":-0.5,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.03,
-	"dT":0.99,
-	"min":-200,
-	"max":200,
-	"K":500,
-}
-
-{
-	"name":"PIDpitch_rc",
-	"class":"PIDctrl",
-	"bInst":0,
-	"Window":"OKview",
-	"P":-0.2,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.008,
-	"dT":0.99,
-	"min":-200,
-	"max":200,
-	"K":500,
-}
-
-{
 	"name":"PIDroll_target",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-0.5,
+	"P":-1.5,
 	"I":0.0,
 	"Imax":0.0,
-	"D":-0.03,
+	"D":-0.5,
 	"dT":0.99,
-	"min":-10.0,
-	"max":10.0,
-	"K":10.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
 }
 
 {
@@ -161,14 +131,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":0.2,
+	"P":1.6,
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.008,
+	"D":0.5,
 	"dT":0.99,
-	"min":-10.0,
-	"max":10.0,
-	"K":10.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
 }
 
 {
@@ -224,6 +194,7 @@
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"tRTL":300,
+			"iMissionSeq":1000,
 		}
 
 		{
@@ -242,16 +213,14 @@
 			"APcopter_posCtrlBase":"apPosCtrl",
 	
 			{
-				"name":"gimbalOut",
+				"name":"gimbal",
 				"pitch":80,
 				"roll":0,
 				"yaw":0,
-			}
-			{
-				"name":"gimbalReal",
-				"pitch":80,
-				"roll":0,
-				"yaw":0,
+				"stabPitch":1,
+				"stabRoll":1,
+				"stabYaw":1,
+				"mountMode":2,
 			}
 		}
 
@@ -276,34 +245,6 @@
 		}
 
 		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlRC",
-			"bInst":0,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll_rc",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":1,
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch_rc",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":2,
-			}
-		}
-
-		{
 			"name":"apLanding",
 			"class":"APcopter_arucoLanding",
 			"bInst":1,
@@ -321,6 +262,10 @@
 				"pitch":0,
 				"roll":0,
 				"yaw":0,
+				"stabPitch":0,
+				"stabRoll":0,
+				"stabYaw":0,
+				"mountMode":2,
 			}
 			
 			{

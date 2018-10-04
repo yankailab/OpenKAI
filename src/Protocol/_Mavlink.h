@@ -29,6 +29,7 @@ struct Time_Stamps
 	uint64_t attitude;
 	uint64_t rc_channels_override;
 	uint64_t rc_channels_raw;
+	uint64_t mission_current;
 
 	void init()
 	{
@@ -44,6 +45,7 @@ struct Time_Stamps
 		attitude = 0;
 		rc_channels_override = 0;
 		rc_channels_raw = 0;
+		mission_current = 0;
 	}
 };
 
@@ -66,6 +68,7 @@ struct Mavlink_Messages
 	mavlink_attitude_t attitude;
 	mavlink_rc_channels_override_t rc_channels_override;
 	mavlink_rc_channels_raw_t rc_channels_raw;
+	mavlink_mission_current_t mission_current;
 	Time_Stamps time_stamps;
 
 	void init(void)
@@ -79,6 +82,7 @@ struct Mavlink_Messages
 		global_position_int.alt = 0;
 		global_position_int.relative_alt = 0;
 		heartbeat.custom_mode = 0;
+		mission_current.seq = 0;
 
 		time_stamps.init();
 	}
