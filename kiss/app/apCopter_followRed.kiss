@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":1,
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
 	"waitKey":50,
 }
 
@@ -23,9 +23,8 @@
 	"Window":"OKview",
 	"fovW":69.4,
 	"fovH":42.5,
-	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
 }
 
 {
@@ -97,12 +96,8 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
-	"_portName":"/dev/ttyUSB0",
-	"_baud":57600,
+	"portName":"/dev/ttyUSB0",
+	"baud":115200,
 }
 
 {
@@ -117,63 +112,31 @@
 }
 
 {
-	"name":"PIDroll_rc",
-	"class":"PIDctrl",
-	"bInst":0,
-	"Window":"OKview",
-	"P":-0.5,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.03,
-	"dT":0.99,
-	"min":-200,
-	"max":200,
-	"K":500,
-}
-
-{
-	"name":"PIDpitch_rc",
-	"class":"PIDctrl",
-	"bInst":0,
-	"Window":"OKview",
-	"P":-0.2,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.008,
-	"dT":0.99,
-	"min":-200,
-	"max":200,
-	"K":500,
-}
-
-{
-	"name":"PIDroll_target",
+	"name":"PIDroll",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-1.5,
+	"P":-50,
 	"I":0.0,
 	"Imax":0.0,
-	"D":-0.5,
-	"dT":0.99,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
+	"D":-50,
+	"dT":1.00,
+	"min":-50.0,
+	"max":50.0,
 }
 
 {
-	"name":"PIDpitch_target",
+	"name":"PIDpitch",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":1.6,
+	"P":50,
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.5,
-	"dT":0.99,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
+	"D":50,
+	"dT":1.0,
+	"min":-50.0,
+	"max":50.0,
 }
 
 {
@@ -215,9 +178,10 @@
 			"_Automaton":"apState",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqAtti":0,
-			"freqGlobalPos":10,
+			"freqExtra1":0,
+			"freqPos":10,
 			"freqRC":0,
+			"freqExtStat":0,
 			"freqSendHeartbeat":1,
 		}
 
@@ -229,6 +193,7 @@
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"tRTL":300,
+			"iMissionSeq":1000,
 		}
 
 		{
@@ -247,16 +212,14 @@
 			"APcopter_posCtrlBase":"apPosCtrl",
 	
 			{
-				"name":"gimbalOut",
-				"pitch":80,
+				"name":"gimbal",
+				"pitch":0,
 				"roll":0,
 				"yaw":0,
-			}
-			{
-				"name":"gimbalReal",
-				"pitch":80,
-				"roll":0,
-				"yaw":0,
+				"stabPitch":1,
+				"stabRoll":1,
+				"stabYaw":1,
+				"mountMode":2,
 			}
 		}
 
@@ -272,40 +235,13 @@
 
 			{
 				"name":"roll",
-				"PIDctrl":"PIDroll_target",
+				"PIDctrl":"PIDroll",
 			}
 			{
 				"name":"pitch",
-				"PIDctrl":"PIDpitch_target",
+				"PIDctrl":"PIDpitch",
 			}
 		}
 
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlRC",
-			"bInst":0,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll_rc",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":1,
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch_rc",
-				"pwmL":1000,
-				"pwmM":1500,
-				"pwmH":2000,
-				"iChan":2,
-			}
-		}
 	}
 }

@@ -12,10 +12,11 @@ APcopter_base::APcopter_base()
 	m_lastApMode = 0xffffffff;
 	m_bApModeChanged = false;
 
-	m_freqAtti = 0;
-	m_freqGlobalPos = 0;
+	m_freqExtra1 = 1;
+	m_freqPos = 1;
 	m_freqSendHeartbeat = 1;
 	m_freqRC = 0;
+	m_freqExtStat = 1;
 }
 
 APcopter_base::~APcopter_base()
@@ -27,10 +28,11 @@ bool APcopter_base::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,freqAtti);
-	KISSm(pK,freqGlobalPos);
+	KISSm(pK,freqExtra1);
+	KISSm(pK,freqPos);
 	KISSm(pK,freqSendHeartbeat);
 	KISSm(pK,freqRC);
+	KISSm(pK,freqExtStat);
 
 	if(m_freqSendHeartbeat > 0)
 		m_freqSendHeartbeat = USEC_1SEC / m_freqSendHeartbeat;
@@ -81,15 +83,17 @@ void APcopter_base::update(void)
 	}
 
 	//request updates from Mavlink
-	if(m_freqAtti > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqAtti);
+	if(m_freqExtra1 > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqExtra1);
 
-	if(m_freqGlobalPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqGlobalPos);
+	if(m_freqPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqPos);
 
 	if(m_freqRC > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 
+	if(m_freqExtStat > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.mission_current > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_freqExtStat);
 }
 
 void APcopter_base::setApMode(uint32_t iMode)

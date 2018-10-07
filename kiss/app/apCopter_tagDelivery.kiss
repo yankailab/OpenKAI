@@ -1,7 +1,7 @@
 {
 	"name":"APP",
 	"class":"Startup",
-	"appName":"OpenKAI",
+	"appName":"OpenKAI_TagDelivery",
 	"bWindow":0,
 	"bDraw":0,
 	"bLog":0,
@@ -26,37 +26,6 @@
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
-}
-
-{
-	"name":"yolo",
-	"class":"_YOLO",
-	"bInst":1,
-	"bDraw":0,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"mode":"thread",
-	"modelDir":"/home/ubuntu/dev/darknet/",
-	"modelFile":"cfg/yolov3-tiny.cfg",
-	"trainedFile":"data/yolov3-tiny.weights",
-	"_modelDir":"/home/kai/dev/darknet/",
-	"_modelFile":"cfg/yolov3-tiny.cfg",
-	"_trainedFile":"data/yolov3-tiny.weights",
-	"meanFile":"",
-	"labelFile":"data/coco.names",
-	"nClass":80,
-	"nPredAvr":3,
-	"nBatch":1,
-	"thresh":0.1,
-	"minArea":0.0,
-	"maxArea":0.5,
-	"dMaxTrack":0.1,
-	"bDrawStatistics":0,
-	"bDrawObjClass":0,
-	"bDrawObjVtrack":0,
-	"drawVscale":1.0,
 }
 
 {
@@ -94,10 +63,6 @@
 	"_wakeUp":"mavAP",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
-	"_portName":"/dev/ttyUSB0",
-	"_baud":57600,
 }
 
 {
@@ -112,36 +77,6 @@
 }
 
 {
-	"name":"PIDroll_target",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":-1.5,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.5,
-	"dT":0.99,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
-}
-
-{
-	"name":"PIDpitch_target",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":1.6,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.5,
-	"dT":0.99,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
-}
-
-{
 	"name":"apState",
 	"class":"_Automaton",
 	"bInst":1,
@@ -150,15 +85,6 @@
 
 	{
 		"state":"CC_STANDBY",
-	}
-	{
-		"state":"CC_SEARCH",
-	}
-	{
-		"state":"CC_FOLLOW",
-	}
-	{
-		"state":"CC_RTL",
 	}
 }
 
@@ -183,66 +109,8 @@
 			"freqExtra1":0,
 			"freqPos":10,
 			"freqRC":0,
-			"freqExtStat":10,
+			"freqExtStat":1,
 			"freqSendHeartbeat":1,			
-		}
-
-		{
-			"name":"apMission",
-			"class":"APcopter_mission",
-			"bInst":1,
-			"_Automaton":"apState",
-			"Window":"OKview",
-			"APcopter_base":"apBase",
-			"tRTL":300,
-			"iMissionSeq":1000,
-		}
-
-		{
-			"name":"apFollow",
-			"class":"APcopter_followLocal",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_SEARCH","CC_FOLLOW"],
-			"APcopter_base":"apBase",
-			"_ObjectBase":"yolo",
-			"_TrackerBase":"tracker",
-			"bUseTracker":0,
-			"iClass":0,
-			"APcopter_posCtrlBase":"apPosCtrl",
-	
-			{
-				"name":"gimbal",
-				"pitch":80,
-				"roll":0,
-				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
-				"stabYaw":1,
-				"mountMode":2,
-			}
-		}
-
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlTarget",
-			"bInst":1,
-			"bLog":1,
-			"Window":"OKview",
-			"_Automaton":"apState",
-			"activeState":["CC_FOLLOW"],
-			"APcopter_base":"apBase",
-
-			{
-				"name":"roll",
-				"PIDctrl":"PIDroll_target",
-			}
-			{
-				"name":"pitch",
-				"PIDctrl":"PIDpitch_target",
-			}
 		}
 
 		{
@@ -254,7 +122,7 @@
 			"_ArUco":"arUco",
 			"_DepthVisionBase":"rs",
 			"_Automaton":"apState",
-			"activeState":["CC_RTL"],
+			"activeState":["CC_STANDBY"],
 			"orientationX":1,
 			"orientationY":1,
 			
@@ -263,9 +131,9 @@
 				"pitch":0,
 				"roll":0,
 				"yaw":0,
-				"stabPitch":0,
-				"stabRoll":0,
-				"stabYaw":0,
+				"stabPitch":1,
+				"stabRoll":1,
+				"stabYaw":1,
 				"mountMode":2,
 			}
 			
