@@ -19,14 +19,12 @@ _ObjectBase::_ObjectBase()
 	m_minArea = 0.0;
 	m_maxArea = 1.0;
 	m_nClass = OBJECT_N_CLASS;
-	m_tStamp = 0;
 	m_obj.reset();
 	m_roi.init();
 	m_roi.z = 1.0;
 	m_roi.w = 1.0;
 	m_trackID = 1;
 
-	m_bReady = false;
 	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
 	m_segmentBlend = 0.125;
@@ -36,7 +34,6 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
 	m_bDrawObjVtrack = false;
-
 }
 
 _ObjectBase::~_ObjectBase()
@@ -102,11 +99,6 @@ bool _ObjectBase::init(void* pKiss)
 	return true;
 }
 
-void _ObjectBase::update(void)
-{
-	m_tStamp = getTimeUsec();
-}
-
 void _ObjectBase::updateStatistics(void)
 {
 	int i;
@@ -142,11 +134,6 @@ string _ObjectBase::getClassName(int iClass)
 	if(iClass >= m_nClass)return "";
 
 	return m_pClassStatis[iClass].m_name;
-}
-
-bool _ObjectBase::bReady(void)
-{
-	return m_bReady;
 }
 
 int _ObjectBase::size(void)
@@ -188,8 +175,10 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 	pO = m_obj.at(iD);
 	if(pO)
 	{
-		pNewO->m_vTrack.x = pNewO->m_bb.midX() - pO->m_bb.midX();
-		pNewO->m_vTrack.y = pNewO->m_bb.midY() - pO->m_bb.midY();
+		vInt2 cSize = m_pVision->getSize();
+
+		pNewO->m_vTrack.x = (pNewO->m_bb.midX() - pO->m_bb.midX()) / (double)cSize.x;
+		pNewO->m_vTrack.y = (pNewO->m_bb.midY() - pO->m_bb.midY()) / (double)cSize.y;
 
 		if(pO->m_trackID>0)
 			pNewO->m_trackID = pO->m_trackID;

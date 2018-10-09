@@ -26,6 +26,7 @@ bool APcopter_posCtrlBase::init(void* pKiss)
 		pR->v("x", &m_vTarget.x);
 		pR->v("y", &m_vTarget.y);
 		pR->v("z", &m_vTarget.z);
+		pR->v("yaw", &m_vTarget.w);
 	}
 
 	//link

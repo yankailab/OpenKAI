@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_edgeHold_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_edgeHold_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_slam_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_slam_H_
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DepthEdge.h"
@@ -13,11 +13,11 @@
 namespace kai
 {
 
-class APcopter_edgeHold: public ActionBase
+class APcopter_slam: public ActionBase
 {
 public:
-	APcopter_edgeHold();
-	~APcopter_edgeHold();
+	APcopter_slam();
+	~APcopter_slam();
 
 	bool init(void* pKiss);
 	void update(void);
@@ -40,3 +40,13 @@ public:
 
 }
 #endif
+
+/*
+Byte | Content
+1 | 0xFF packet start mark
+2~5 | int32  Coordinate X * 1000
+6~9 | int32  Coordinate Y * 1000
+10~13 | int32  Coordinate Z * 1000 (Not used at the moment)
+14~17 | int32  Heading in Degree * 1000
+18 | uint8 Confidence 0 to 100, (set to 255 if confidence is not provided)
+ */

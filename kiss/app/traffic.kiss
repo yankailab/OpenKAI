@@ -5,30 +5,32 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":50,
-	"presetDir":"/home/ubuntu/src/workspace/OpenKAI/OpenKAI/data/",
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":1,
+	"bLog":1,
+	"bFullScreen":0,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"fileRec":"/home/kai/dev/test/tr_",
+	"recFPS":25,
+	"w":1920,
+	"h":1080,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":1,
-	"width":1280,
-	"height":720,
-	"bFlip":0,
-	"bGray":0,
+	"w":1280,
+	"h":720,
 }
 
 {
@@ -37,8 +39,6 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"bFlip":0,
-	"bGray":0,
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
 	"_pipeline":"v4l2src device=/dev/video3 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.164 port=5678",
@@ -51,29 +51,11 @@
 	"name":"cam",
 	"class":"_VideoFile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/jam.ts",
-	"_videoFile":"/home/kai/Videos/bike.ts",
-	"_videoFile":"/home/kai/Videos/night.ts",
-	"w":1280,
-	"h":720,
-	"fovW":60,
-	"fovH":60,
-	"bFlip":0,
-	"bGray":1,
-	"bPers":0,
-	"persLTx":0.6,
-	"persLTy":0.1,
-	"persLBx":0.0,
-	"persLBy":1.0,
-	"persRTx":0.68,
-	"persRTy":0.1,
-	"persRBx":0.68,
-	"persRBy":1.0,
-	"persW":1000,
-	"persH":1000,
-	"bShowPers":1,
+	"videoFile":"/home/kai/Videos/traffic.ts",
+	"w":1920,
+	"h":1080,
 }
 
 {
@@ -87,14 +69,14 @@
 	"_VisionBase":"cam",
 	"mode":"thread",
 	"modelDir":"/home/kai/dev/darknet/",
-	"modelFile":"cfg/yolov3-416.cfg",
-	"trainedFile":"data/yolov3-416.weights",
+	"modelFile":"cfg/yolov3-608.cfg",
+	"trainedFile":"data/yolov3.weights",
 	"meanFile":"",
 	"labelFile":"data/coco.names",
 	"nClass":80,
 	"nPredAvr":3,
 	"nBatch":1,
-	"thresh":0.09,
+	"thresh":0.1,
 	"minArea":0.0,
 	"maxArea":0.06,
 	"dMaxTrack":0.1,
@@ -126,6 +108,7 @@
 	"_Automaton":"trState",
 	"bInst":1,
 	"FPS":30,
+	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
 	
@@ -139,43 +122,6 @@
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"_ObjectBase":"yl",
-		}
-				
-		{
-			"name":"trSpeed",
-			"class":"Traffic_speed",
-			"bInst":1,
-			"bDraw":1,
-			"_Automaton":"trState",
-			"Window":"OKview",
-			"Traffic_base":"trBase",
-			"hdgFrom":-1,
-			"hdgTo":-1,
-			"kSpeed":100.0,
-			"_speedFrom":0.0,
-			"speedFrom":0.2,
-			"speedTo":100.0,
-			"drawVscale":1.0,
-
-			{
-				"name":"ROI",
-				{
-					"x":0.0,
-					"y":0.0,
-				}
-				{
-					"x":1.0,
-					"y":0.0,
-				}
-				{
-					"x":1.0,
-					"y":1.0,
-				}
-				{
-					"x":0.0,
-					"y":1.0,
-				}
-			}
 			
 			{
 				"name":"_ROI",
@@ -200,7 +146,26 @@
 					"y":0.05,
 				}			
 			}
-			
+		}
+				
+		{
+			"name":"trSpeed",
+			"class":"Traffic_speed",
+			"bInst":1,
+			"bDraw":1,
+			"_Automaton":"trState",
+			"Window":"OKview",
+			"Traffic_base":"trBase",
+			"hdgFrom":-1,
+			"hdgTo":-1,
+			"kSpeed":100.0,
+			"kSpeedX":0.0,
+			"kSpeedY":1.0,
+			"speedFrom":0.00005,
+			"speedTo":1000.0,
+			"drawVscale":1.0,
+			"nAlert":25,
+			"nMed":5,
 		}
 		
 		{
@@ -211,8 +176,16 @@
 			"Window":"OKview",
 			"Traffic_base":"trBase",
 			"classList":[0,1,3],
-		}		
+		}	
 		
+		{
+			"name":"trVideo",
+			"class":"Traffic_videoOut",
+			"bInst":1,
+			"_Automaton":"trState",
+			"Window":"OKview",
+			"Traffic_base":"trBase",
+		}
 	}
 }
 

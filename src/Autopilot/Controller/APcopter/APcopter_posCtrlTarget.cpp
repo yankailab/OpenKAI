@@ -5,6 +5,9 @@ namespace kai
 
 APcopter_posCtrlTarget::APcopter_posCtrlTarget()
 {
+	m_yawRate = 180;
+	m_bSetV = true;
+
 	for(int i=0;i<N_CTRL;i++)
 	{
 		m_ctrl[i].init();
@@ -19,6 +22,9 @@ bool APcopter_posCtrlTarget::init(void* pKiss)
 {
 	IF_F(!this->APcopter_posCtrlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	KISSm(pK,yawRate);
+	KISSm(pK,bSetV);
 
 	Kiss* pR;
 	string iName;
@@ -89,14 +95,29 @@ void APcopter_posCtrlTarget::update(void)
 	m_ctrl[CTRL_YAW].update(m_vPos.w, m_vTarget.w);
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.x = 0.0;
-	m_spt.y = 0.0;
-	m_spt.z = 0.0;
-	m_spt.vx = m_ctrl[CTRL_PITCH].m_v;		//forward
-	m_spt.vy = m_ctrl[CTRL_ROLL].m_v;		//right
-	m_spt.vz = m_ctrl[CTRL_ALT].m_v;		//down
-//	m_spt.type_mask = 0b0000111111111000;	//position
-	m_spt.type_mask = 0b0000111111000111;	//velocity
+	m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
+	m_spt.yaw_rate = (float)m_yawRate * DEG_RAD;
+
+	if(m_bSetV)
+	{
+		m_spt.x = 0.0;
+		m_spt.y = 0.0;
+		m_spt.z = 0.0;
+		m_spt.vx = m_ctrl[CTRL_PITCH].m_v;		//forward
+		m_spt.vy = m_ctrl[CTRL_ROLL].m_v;		//right
+		m_spt.vz = m_ctrl[CTRL_ALT].m_v;		//down
+		m_spt.type_mask = 0b0000100111000111;	//velocity
+	}
+	else
+	{
+		m_spt.x = m_ctrl[CTRL_PITCH].m_v;		//forward
+		m_spt.y = m_ctrl[CTRL_ROLL].m_v;		//right
+		m_spt.z = m_ctrl[CTRL_ALT].m_v;			//down
+		m_spt.vx = 0.0;
+		m_spt.vy = 0.0;
+		m_spt.vz = 0.0;
+		m_spt.type_mask = 0b0000100111111000;	//position
+	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
@@ -130,8 +151,7 @@ void APcopter_posCtrlTarget::releaseCtrl(void)
 	m_spt.vx = 0;
 	m_spt.vy = 0;
 	m_spt.vz = 0;
-//	m_spt.type_mask = 0b0000111111111000;	//position
-	m_spt.type_mask = 0b0000111111000111;	//velocity
+	m_spt.type_mask = 0b0000111111000000;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 

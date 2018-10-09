@@ -64,7 +64,6 @@ void _MultiTracker::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ObjectBase::update();
 		addNewTarget();
 		updateTarget();
 		m_obj.update();

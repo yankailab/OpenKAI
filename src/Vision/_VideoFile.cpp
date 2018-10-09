@@ -45,7 +45,6 @@ bool _VideoFile::open(void)
 	m_vc.set(CV_CAP_PROP_FPS, m_targetFPS);
 
 	Mat cMat;
-	//Acquire a frame to determine the actual frame size
 	while (!m_vc.read(cMat));
 
 	m_w = cMat.cols;

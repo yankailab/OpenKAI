@@ -22,6 +22,7 @@ bool APcopter_followLocal::init(void* pKiss)
 
 	pK->v("camX", &m_vCam.x);
 	pK->v("camY", &m_vCam.y);
+	pK->v("camYaw", &m_vCam.w);
 
 	//link
 	string iName;

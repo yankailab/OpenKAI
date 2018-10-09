@@ -137,6 +137,7 @@ void _ThreadBase::autoFPSfrom(void)
 void _ThreadBase::autoFPSto(void)
 {
 	m_timeTo = getTimeUsec();
+	this->updateTime();
 
 	int uSleep = (int) (m_targetFrameTime - (m_timeTo - m_timeFrom));
 	if (uSleep > 1000)
@@ -149,8 +150,6 @@ void _ThreadBase::autoFPSto(void)
 		m_FPS = 0;
 		this->sleepTime(0);
 	}
-
-	this->updateTime();
 }
 
 bool _ThreadBase::draw(void)

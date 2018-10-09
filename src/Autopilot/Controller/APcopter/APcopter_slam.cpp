@@ -1,9 +1,9 @@
-#include "APcopter_edgeHold.h"
+#include "APcopter_slam.h"
 
 namespace kai
 {
 
-APcopter_edgeHold::APcopter_edgeHold()
+APcopter_slam::APcopter_slam()
 {
 	m_pAP = NULL;
 	m_pDE = NULL;
@@ -13,11 +13,11 @@ APcopter_edgeHold::APcopter_edgeHold()
 	m_vPos.init();
 }
 
-APcopter_edgeHold::~APcopter_edgeHold()
+APcopter_slam::~APcopter_slam()
 {
 }
 
-bool APcopter_edgeHold::init(void* pKiss)
+bool APcopter_slam::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -50,7 +50,7 @@ bool APcopter_edgeHold::init(void* pKiss)
 	return true;
 }
 
-int APcopter_edgeHold::check(void)
+int APcopter_slam::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -60,7 +60,7 @@ int APcopter_edgeHold::check(void)
 	return 0;
 }
 
-void APcopter_edgeHold::update(void)
+void APcopter_slam::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
@@ -107,7 +107,7 @@ void APcopter_edgeHold::update(void)
 
 }
 
-bool APcopter_edgeHold::draw(void)
+bool APcopter_slam::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -139,7 +139,7 @@ bool APcopter_edgeHold::draw(void)
 	return true;
 }
 
-bool APcopter_edgeHold::cli(int& iY)
+bool APcopter_slam::cli(int& iY)
 {
 	IF_F(!this->ActionBase::cli(iY));
 	IF_F(check()<0);

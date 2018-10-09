@@ -852,15 +852,15 @@ bool _Mavlink::draw(void)
 
 	pWin->tabNext();
 
-	msg = "y=" + f2str((double)m_msg.attitude.yaw) +
-			" p=" + f2str((double)m_msg.attitude.pitch) +
-			" r=" + f2str((double)m_msg.attitude.roll);
+	msg = "mySysID=" + i2str(m_mySystemID)
+			+ " myComID=" + i2str(m_myComponentID)
+			+ " myType=" + i2str(m_myType);
 	pWin->addMsg(&msg);
 
-	msg = "hdg=" + f2str(((double)m_msg.global_position_int.hdg)*0.01);
-	pWin->addMsg(&msg);
-
-	msg = "height=" + f2str(((double)m_msg.global_position_int.alt)*0.001);
+	msg = "devSysID=" + i2str(m_devSystemID)
+			+ " devComID=" + i2str(m_devComponentID)
+			+ " devType=" + i2str(m_devType)
+	 	 	+ " custom_mode=" + i2str((int)m_msg.heartbeat.custom_mode);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -873,6 +873,15 @@ bool _Mavlink::cli(int& iY)
 	IF_F(!this->_ThreadBase::cli(iY));
 
 	string msg;
+
+	if (!m_pIO->isOpen())
+	{
+		msg = "Not Connected";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		return true;
+	}
 
 	msg = "mySysID=" + i2str(m_mySystemID)
 			+ " myComID=" + i2str(m_myComponentID)

@@ -212,6 +212,7 @@
 			"bUseTracker":0,
 			"iClass":0,
 			"APcopter_posCtrlBase":"apPosCtrl",
+			"camYaw":30.0,
 	
 			{
 				"name":"gimbal",
@@ -234,6 +235,8 @@
 			"_Automaton":"apState",
 			"activeState":["CC_FOLLOW"],
 			"APcopter_base":"apBase",
+			"yawRate":180,
+			"bSetV":1,
 
 			{
 				"name":"roll",

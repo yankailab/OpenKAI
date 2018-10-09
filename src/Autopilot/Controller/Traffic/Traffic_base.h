@@ -18,8 +18,13 @@ public:
 	void update(void);
 	bool draw(void);
 
+	bool bInsideROI(vDouble4& bb);
+
 public:
 	_ObjectBase* m_pOB;
+
+	vector<Point2f>	m_vROI;
+
 
 };
 

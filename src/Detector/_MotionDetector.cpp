@@ -83,7 +83,6 @@ void _MotionDetector::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ObjectBase::update();
 		m_obj.update();
 		detect();
 

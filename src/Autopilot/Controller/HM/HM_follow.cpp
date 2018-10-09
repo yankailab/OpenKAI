@@ -64,14 +64,6 @@ void HM_follow::update(void)
 	IF_(!isActive());
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
-	//standby until Detector is ready
-	if(!m_pDet->bReady())
-	{
-		m_pHM->m_rpmL = 0;
-		m_pHM->m_rpmR = 0;
-		return;
-	}
-
 	m_obj.init();
 	for(int i=0; i<m_pDet->size(); i++)
 	{

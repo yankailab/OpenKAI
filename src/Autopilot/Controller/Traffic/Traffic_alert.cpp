@@ -37,13 +37,20 @@ bool Traffic_alert::init(void* pKiss)
 	return true;
 }
 
+int Traffic_alert::check(void)
+{
+	NULL__(m_pTB,-1);
+	NULL__(m_pTB->m_pOB,-1);
+
+	return this->ActionBase::check();
+}
+
 void Traffic_alert::update(void)
 {
 	this->ActionBase::update();
+	IF_(check()<0);
 
-	NULL_(m_pTB);
 	_ObjectBase* pOB = m_pTB->m_pOB;
-	NULL_(pOB);
 	IF_(pOB->m_tStamp <= m_tStampOB);
 	m_tStampOB = pOB->m_tStamp;
 

@@ -13,12 +13,16 @@ Traffic_speed::Traffic_speed()
 	m_objSpeedAlert.reset();
 	m_objHdgAlert.reset();
 	m_kSpeed = 1.0;
+	m_kSpeedX = 0;
+	m_kSpeedY = 0;
 	m_hdgMeasureMinSpeed = 3.0;
 	m_vHdgLimit.x = -1.0;
 	m_vHdgLimit.y = -1.0;
 	m_vSpeedLimit.x = -1.0;
 	m_vSpeedLimit.y = -1.0;
-	m_vROI.clear();
+
+	m_nAlert = 25;
+	m_nMed = 3;
 }
 
 Traffic_speed::~Traffic_speed()
@@ -31,6 +35,9 @@ bool Traffic_speed::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK, kSpeed);
+	KISSm(pK, kSpeedX);
+	KISSm(pK, kSpeedY);
+	KISSm(pK, nAlert);
 	KISSm(pK, drawVscale);
 	KISSm(pK, hdgMeasureMinSpeed);
 
@@ -42,20 +49,8 @@ bool Traffic_speed::init(void* pKiss)
 	pK->v("speedFrom", &m_vSpeedLimit.x);
 	pK->v("speedTo", &m_vSpeedLimit.y);
 
-	//ROI
-	Kiss* pR = pK->o("ROI");
-	NULL_T(pR);
-
-	Kiss** ppP = pR->getChildItr();
-	int i=0;
-	while((pR = ppP[i++])!=NULL)
-	{
-		double x = 0;
-		double y = 0;
-		pR->v("x",&x);
-		pR->v("y",&y);
-		m_vROI.push_back(Point2f((float)x,(float)y));
-	}
+	KISSm(pK,nMed);
+	m_fNspeedAlert.init(m_nMed,3);
 
 	//link
 	string iName;
@@ -67,13 +62,20 @@ bool Traffic_speed::init(void* pKiss)
 	return true;
 }
 
+int Traffic_speed::check(void)
+{
+	NULL__(m_pTB,-1);
+	NULL__(m_pTB->m_pOB,-1);
+
+	return this->ActionBase::check();
+}
+
 void Traffic_speed::update(void)
 {
 	this->ActionBase::update();
+	IF_(check()<0);
 
-	NULL_(m_pTB);
 	_ObjectBase* pOB = m_pTB->m_pOB;
-	NULL_(pOB);
 	IF_(pOB->m_tStamp <= m_tStampOB);
 	m_tStampOB = pOB->m_tStamp;
 
@@ -83,7 +85,7 @@ void Traffic_speed::update(void)
 	double speed = 0.0;
 	while((pO = pOB->at(i++)) != NULL)
 	{
-		IF_CONT(!bInsideROI(pO->m_bb));
+		IF_CONT(!m_pTB->bInsideROI(pO->m_bb));
 		m_obj.add(pO);
 		IF_CONT(pO->m_trackID <= 0);
 
@@ -91,7 +93,11 @@ void Traffic_speed::update(void)
 		double s = pO->m_vTrack.len()*m_kSpeed;
 		if(m_vSpeedLimit.x >= 0.0 && s >= 0.0)
 		{
-			if(s < m_vSpeedLimit.x || s > m_vSpeedLimit.y)
+			vDouble2 pC = pO->m_bb.center();
+			double kCam = (1.0 + pC.x * m_kSpeedX) * (1.0 + pC.y * m_kSpeedY);
+
+			if(s < m_vSpeedLimit.x * kCam ||
+			   s > m_vSpeedLimit.y * kCam)
 				m_objSpeedAlert.add(pO);
 		}
 		nCount++;
@@ -120,16 +126,8 @@ void Traffic_speed::update(void)
 	m_obj.update();
 	m_objSpeedAlert.update();
 	m_objHdgAlert.update();
-}
 
-bool Traffic_speed::bInsideROI(vDouble4& bb)
-{
-	if(m_vROI.empty())return true;
-
-	double d = pointPolygonTest( m_vROI, Point2f((float)bb.midX(),(float)bb.midY()), false );
-	if(d >= 0)return true;
-
-	return false;
+	m_fNspeedAlert.input(m_objSpeedAlert.size());
 }
 
 bool Traffic_speed::draw(void)
@@ -180,6 +178,14 @@ bool Traffic_speed::draw(void)
 		rectangle(*pMat, r, colSpeedAlert, 2);
 	}
 
+	if(m_fNspeedAlert.v() > (double)m_nAlert)
+	{
+		msg = "CONGESTION";
+		putText(*pMat, msg,
+				Point(0.01 * cSize.x, 0.6 * cSize.y),
+				FONT_HERSHEY_SIMPLEX, 2.0, colSpeedAlert, 5);
+	}
+
 	//heading alert
 	i=0;
 	while((pO = m_objHdgAlert.at(i++)) != NULL)
@@ -187,21 +193,6 @@ bool Traffic_speed::draw(void)
 		iBB = pO->iBBox(cSize);
 		vInt42rect(iBB, r);
 		rectangle(*pMat, r, colHdgAlert, 2);
-	}
-
-	//ROI
-	int nP = m_vROI.size();
-	for(i=0; i<m_vROI.size(); i++)
-	{
-		Point2f pA = m_vROI[i];
-		pA.x *= cSize.x;
-		pA.y *= cSize.y;
-
-		Point2f pB = m_vROI[(i+1)%nP];
-		pB.x *= cSize.x;
-		pB.y *= cSize.y;
-
-		line(*pMat, pA, pB, Scalar(255,255,200), 3, 10);
 	}
 
 	return true;

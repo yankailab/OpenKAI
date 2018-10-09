@@ -54,6 +54,9 @@ public:
 	AP_POS_CTRL_TARGET m_ctrl[N_CTRL];
 	mavlink_set_position_target_local_ned_t m_spt;
 
+	double m_yawRate;
+	bool	m_bSetV;
+
 };
 
 }

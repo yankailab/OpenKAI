@@ -48,7 +48,6 @@ bool _Camera::open(void)
 	m_camera.set(CV_CAP_PROP_FRAME_HEIGHT, m_h);
 	m_camera.set(CV_CAP_PROP_FPS, m_targetFPS);
 
-	//Acquire a frame to determine the actual frame size
 	Mat mCam;
 	for(int i=0; i<m_nInitRead; i++)
 	{

@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
+#include "../../../Filter/Median.h"
 #include "../../ActionBase.h"
 #include "Traffic_base.h"
 
@@ -19,9 +20,7 @@ public:
 	void update(void);
 	bool draw(void);
 	bool cli(int& iY);
-
-private:
-	bool bInsideROI(vDouble4& bb);
+	int check(void);
 
 public:
 	Traffic_base*	m_pTB;
@@ -30,13 +29,18 @@ public:
 	OBJECT_DARRAY	m_objHdgAlert;
 	OBJECT_DARRAY	m_objSpeedAlert;
 
-	vector<Point2f>	m_vROI;
 	vDouble2		m_vHdgLimit;
 	double			m_hdgMeasureMinSpeed;
 	vDouble2		m_vSpeedLimit;
 	double			m_kSpeed;
+	double			m_kSpeedX;
+	double			m_kSpeedY;
 	double			m_avrSpeed;
 	double			m_drawVscale;
+
+	int				m_nAlert;
+	int				m_nMed;
+	Median			m_fNspeedAlert;
 
 };
 

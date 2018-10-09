@@ -145,10 +145,22 @@ bool APcopter_base::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
+	string msg;
+
 	pWin->tabNext();
 
-	string msg;
-	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName() ;
+	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
+	pWin->addMsg(&msg);
+
+	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
+			" p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
+			" r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
+	pWin->addMsg(&msg);
+
+	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
+	pWin->addMsg(&msg);
+
+	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -163,7 +175,24 @@ bool APcopter_base::cli(int& iY)
 
 	string msg;
 
-	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName() ;
+	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
+			" p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
+			" r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

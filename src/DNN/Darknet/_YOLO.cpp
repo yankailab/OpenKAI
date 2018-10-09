@@ -49,7 +49,6 @@ bool _YOLO::init(void* pKiss)
 		m_pClassStatis[i].m_name = yoloGetClassName(i);
 	}
 
-	m_bReady = true;
 	return true;
 }
 
@@ -73,8 +72,8 @@ void _YOLO::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ObjectBase::update();
-		detect();
+		IF_CONT(!detect());
+
 		m_obj.update();
 
 		if(m_bGoSleep)
@@ -86,15 +85,13 @@ void _YOLO::update(void)
 	}
 }
 
-void _YOLO::detect(void)
+bool _YOLO::detect(void)
 {
-	NULL_(m_pVision);
-	IF_(!m_bReady);
-
+	NULL_F(m_pVision);
 	Frame* pBGR = m_pVision->BGR();
-	NULL_(pBGR);
-	IF_(pBGR->bEmpty());
-	IF_(pBGR->tStamp() <= m_BGR.tStamp());
+	NULL_F(pBGR);
+	IF_F(pBGR->bEmpty());
+	IF_F(pBGR->tStamp() <= m_BGR.tStamp());
 	m_BGR = *pBGR;
 	Mat mBGR = *m_BGR.m();
 
@@ -117,7 +114,6 @@ void _YOLO::detect(void)
 						  (float) m_thresh,
 						  (float) m_hier,
 						  (float) m_nms);
-	IF_(nDet <= 0);
 
 	OBJECT obj;
 	for (int i = 0; i < nDet; i++)
@@ -139,6 +135,8 @@ void _YOLO::detect(void)
 		this->add(&obj);
 		LOG_I("Class: " + i2str(obj.m_topClass));
 	}
+
+	return true;
 }
 
 bool _YOLO::draw(void)

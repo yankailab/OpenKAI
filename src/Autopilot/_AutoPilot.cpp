@@ -52,7 +52,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_followGlobal);
 		ADD_ACTION(APcopter_followLocal);
 		ADD_ACTION(APcopter_DNNlanding);
-		ADD_ACTION(APcopter_edgeHold);
+		ADD_ACTION(APcopter_slam);
 		ADD_ACTION(APcopter_posCtrlRC);
 		ADD_ACTION(APcopter_posCtrlTarget);
 		ADD_ACTION(APcopter_mission);
@@ -71,6 +71,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(Traffic_base);
 		ADD_ACTION(Traffic_speed);
 		ADD_ACTION(Traffic_alert);
+		ADD_ACTION(Traffic_videoOut);
 
 		ADD_ACTION(VEK_base);
 		ADD_ACTION(VEK_avoid);

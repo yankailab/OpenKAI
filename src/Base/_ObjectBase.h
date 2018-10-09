@@ -192,7 +192,6 @@ public:
 	virtual ~_ObjectBase();
 
 	virtual bool init(void* pKiss);
-	virtual void update(void);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 	virtual int getClassIdx(string& className);
@@ -202,9 +201,7 @@ public:
 	OBJECT* at(int i);
 	void merge(_ObjectBase* pO);
 	void updateStatistics(void);
-
 	int size(void);
-	bool bReady(void);
 
 public:
 	//input
@@ -212,8 +209,6 @@ public:
 	OBJECT_DARRAY m_obj;
 
 	//control
-	bool m_bReady;
-	uint64_t m_tStamp;
 	uint64_t m_trackID;
 
 	//config

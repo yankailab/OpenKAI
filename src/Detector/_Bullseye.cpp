@@ -60,7 +60,6 @@ void _Bullseye::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ObjectBase::update();
 		detect();
 		m_obj.update();
 

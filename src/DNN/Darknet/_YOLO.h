@@ -32,7 +32,7 @@ public:
 	bool draw(void);
 
 private:
-	void detect(void);
+	bool detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
