@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
+#include "../../../Filter/Median.h"
 #include "../../ActionBase.h"
 #include "Traffic_base.h"
 
@@ -57,6 +58,10 @@ public:
 
 	OBJECT_DARRAY	m_obj;
 	TRAFFIC_ALERT	m_alert;
+
+	int				m_nAlert;
+	int				m_nMed;
+	Median			m_fNalert;
 };
 
 }

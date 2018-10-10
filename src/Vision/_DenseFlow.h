@@ -29,7 +29,6 @@ public:
 
 	vDouble2 vFlow(vInt4* pROI);
 	vDouble2 vFlow(vDouble4* pROI);
-	vDouble2 vFlow(vDouble2 p);
 
 private:
 	bool isFlowCorrect(Point2f u);
@@ -50,7 +49,12 @@ public:
 	FrameGroup*						m_pGrayFrames;
 	Ptr<cuda::FarnebackOpticalFlow> m_pFarn;
 	GpuMat							m_gFlow;
-	Mat								m_mFlow[2];
+	Mat								m_pFlow[2];
+
+	int m_nHistLev;
+	vDouble2 m_vRange;
+	double m_minHistD;
+
 };
 
 }

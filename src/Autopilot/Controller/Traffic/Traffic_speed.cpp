@@ -90,14 +90,13 @@ void Traffic_speed::update(void)
 		IF_CONT(pO->m_trackID <= 0);
 
 		//speed
-		double s = pO->m_vTrack.len()*m_kSpeed;
+		double s = pO->m_vTrack.len();
 		if(m_vSpeedLimit.x >= 0.0 && s >= 0.0)
 		{
 			vDouble2 pC = pO->m_bb.center();
-			double kCam = (1.0 + pC.x * m_kSpeedX) * (1.0 + pC.y * m_kSpeedY);
+			double sCam = s * (1.0 + pC.x * m_kSpeedX) * (1.0 + pC.y * m_kSpeedY) * m_kSpeed;
 
-			if(s < m_vSpeedLimit.x * kCam ||
-			   s > m_vSpeedLimit.y * kCam)
+			if(sCam < m_vSpeedLimit.x || sCam > m_vSpeedLimit.y)
 				m_objSpeedAlert.add(pO);
 		}
 		nCount++;
@@ -182,8 +181,8 @@ bool Traffic_speed::draw(void)
 	{
 		msg = "CONGESTION";
 		putText(*pMat, msg,
-				Point(0.01 * cSize.x, 0.6 * cSize.y),
-				FONT_HERSHEY_SIMPLEX, 2.0, colSpeedAlert, 5);
+				Point(0.3 * cSize.x, 0.8 * cSize.y),
+				FONT_HERSHEY_SIMPLEX, 2.0, colSpeedAlert, 6);
 	}
 
 	//heading alert

@@ -45,6 +45,7 @@ public:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 	int m_threadMode;
+	bool m_bRealTime;
 
 	uint64_t m_tStamp;
 	uint64_t m_dTime;

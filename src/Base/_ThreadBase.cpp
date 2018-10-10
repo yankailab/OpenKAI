@@ -25,6 +25,7 @@ _ThreadBase::_ThreadBase()
 	m_bSleeping = false;
 	m_pWakeUp = NULL;
 	m_threadMode = T_THREAD;
+	m_bRealTime = true;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -48,6 +49,7 @@ bool _ThreadBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, threadMode);
+	KISSm(pK, bRealTime);
 
 	int FPS = DEFAULT_FPS;
 	pK->v("FPS", &FPS);

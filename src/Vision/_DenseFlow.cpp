@@ -18,6 +18,11 @@ _DenseFlow::_DenseFlow()
 	m_pGrayFrames = NULL;
 	m_w = 640;
 	m_h = 480;
+
+	m_nHistLev = 128;
+	m_vRange.x = 0.0;
+	m_vRange.y = 1.0;
+	m_minHistD = 0.25;
 }
 
 _DenseFlow::~_DenseFlow()
@@ -75,17 +80,17 @@ void _DenseFlow::update(void)
 void _DenseFlow::detect(void)
 {
 	NULL_(m_pVision);
-	Frame* pGray;//TODO = m_pVision->Gray();
+	Frame* pGray = m_pVision->BGR();
 	NULL_(pGray);
 	IF_(pGray->bEmpty());
 
 	Frame* pNextFrame = m_pGrayFrames->getLastFrame();
 	IF_(pGray->tStamp() <= pNextFrame->tStamp());
-
 	Frame* pPrevFrame = m_pGrayFrames->getPrevFrame();
+
 	m_pGrayFrames->updateFrameIndex();
 
-	pNextFrame->copy(pGray->resize(m_w, m_h));
+	pNextFrame->copy(pGray->resize(m_w, m_h).cvtColor(COLOR_BGR2GRAY));
 	GpuMat* pPrev = pPrevFrame->gm();
 	GpuMat* pNext = pNextFrame->gm();
 
@@ -97,7 +102,7 @@ void _DenseFlow::detect(void)
 
 	Mat mFlow;
 	m_gFlow.download(mFlow);
-    cv::split(mFlow, m_mFlow);
+    cv::split(mFlow, m_pFlow);
 }
 
 vDouble2 _DenseFlow::vFlow(vDouble4* pROI)
@@ -117,10 +122,10 @@ vDouble2 _DenseFlow::vFlow(vDouble4* pROI)
 	if (iR.y < 0)
 		iR.y = 0;
 
-	if (iR.z >= m_w)
-		iR.z = m_w - 1;
-	if (iR.w >= m_h)
-		iR.w = m_h - 1;
+	if (iR.z > m_w)
+		iR.z = m_w;
+	if (iR.w > m_h)
+		iR.w = m_h;
 
 	if (iR.z < iR.x)
 		iR.z = iR.x;
@@ -134,33 +139,45 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 {
 	vDouble2 vF;
 	vF.init();
-	if(!pROI)return vF;
 
-	if(m_mFlow[0].empty())return vF;
-	if(m_mFlow[1].empty())return vF;
+	IF__(!pROI,vF);
+	IF__(m_pFlow[0].empty(),vF);
+	IF__(m_pFlow[1].empty(),vF);
 
-	Rect r;
-	vInt42rect(*pROI, r);
+    vector<int> vHistLev = { m_nHistLev };
+	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
+	vector<int> vChannel = { 0 };
 
-	vF.x = medianMat(m_mFlow[0](r), 100, 10.0, true, false);
-	vF.y = medianMat(m_mFlow[1](r), 100, 10.0, true, false);
+	Rect roi;
+	vInt42rect(*pROI, roi);
+	double nBase = (m_vRange.y - m_vRange.x)/(double)m_nHistLev;
+	float nMinHist = (float)(m_minHistD * pROI->area());
+	Mat mHist;
+	int i;
 
-	return vF;
-}
+	Mat mRoiX = m_pFlow[0](roi);
+	vector<Mat> vRoiX = {mRoiX};
+	cv::calcHist(vRoiX, vChannel, Mat(),
+	            mHist, vHistLev, vRange,
+	            true	//accumulate
+				);
+	for(i=0; i<m_nHistLev; i++)
+	{
+		if(mHist.at<float>(i) >= nMinHist)break;
+	}
+	vF.x = m_vRange.x + ((double)i)*nBase;
 
-vDouble2 _DenseFlow::vFlow(vDouble2 p)
-{
-	vDouble2 vF;
-	vF.init();
-
-	if(m_mFlow[0].empty())return vF;
-	if(m_mFlow[1].empty())return vF;
-
-	int pX = p.x * m_w;
-	int pY = p.y * m_h;
-
-	vF.x = m_mFlow[0].at<double>(pY, pX);
-	vF.y = m_mFlow[1].at<double>(pY, pX);
+	Mat mRoiY = m_pFlow[1](roi);
+	vector<Mat> vRoiY = {mRoiY};
+	cv::calcHist(vRoiY, vChannel, Mat(),
+	            mHist, vHistLev, vRange,
+	            true	//accumulate
+				);
+	for(i=0; i<m_nHistLev; i++)
+	{
+		if(mHist.at<float>(i) >= nMinHist)break;
+	}
+	vF.y = m_vRange.x + ((double)i)*nBase;
 
 	return vF;
 }
@@ -171,11 +188,11 @@ bool _DenseFlow::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_mFlow[0].empty());
-	IF_F(m_mFlow[1].empty());
+	IF_F(m_pFlow[0].empty());
+	IF_F(m_pFlow[1].empty());
 
     Mat mF;
-    drawOpticalFlow(m_mFlow[0], m_mFlow[1], mF, 10);
+    drawOpticalFlow(m_pFlow[0], m_pFlow[1], mF, 10);
     imshow(*this->getName(), mF);
 
 	return true;

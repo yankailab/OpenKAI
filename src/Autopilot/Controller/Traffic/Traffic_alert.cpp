@@ -8,6 +8,9 @@ Traffic_alert::Traffic_alert()
 	m_pTB = NULL;
 	m_tStampOB = 0;
 	m_obj.reset();
+
+	m_nAlert = 1;
+	m_nMed = 3;
 }
 
 Traffic_alert::~Traffic_alert()
@@ -18,6 +21,10 @@ bool Traffic_alert::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	KISSm(pK, nAlert);
+	KISSm(pK,nMed);
+	m_fNalert.init(m_nMed,3);
 
 	m_alert.init();
 	int pClassList[OBJECT_N_CLASS];
@@ -58,11 +65,31 @@ void Traffic_alert::update(void)
 	int i=0;
 	while((pO = pOB->at(i++)) != NULL)
 	{
+		IF_CONT(!m_pTB->bInsideROI(pO->m_bb));
 		IF_CONT(!m_alert.bAlert(pO->m_topClass));
+
+		//find if inside a car
+		OBJECT* pT;
+		OBJECT* pOverlap = NULL;
+		int j=0;
+		while((pT = pOB->at(j++)) != NULL)
+		{
+			IF_CONT(j==i);
+			IF_CONT(pT->m_bb.x > pO->m_bb.x ||
+					pT->m_bb.y > pO->m_bb.y ||
+					pT->m_bb.z < pO->m_bb.z ||
+					pT->m_bb.w < pO->m_bb.w);
+
+			pOverlap = pT;
+			break;
+		}
+
+		IF_CONT(pOverlap);
 		m_obj.add(pO);
 	}
 
 	m_obj.update();
+	m_fNalert.input(m_obj.size());
 }
 
 bool Traffic_alert::draw(void)
@@ -79,7 +106,6 @@ bool Traffic_alert::draw(void)
 	cSize.x = pMat->cols;
 	cSize.y = pMat->rows;
 
-	//all
 	vInt4 iBB;
 	Point pC;
 	Rect r;
@@ -91,6 +117,14 @@ bool Traffic_alert::draw(void)
 		pC = Point(iBB.midX(), iBB.midY());
 		vInt42rect(iBB, r);
 		rectangle(*pMat, r, col, 3);
+	}
+
+	if(m_fNalert.v() > (double)m_nAlert)
+	{
+		msg = "INTRUSION/ACCIDENT";
+		putText(*pMat, msg,
+				Point(0.3 * cSize.x, 0.9 * cSize.y),
+				FONT_HERSHEY_SIMPLEX, 2.0, col, 6);
 	}
 
 	return true;

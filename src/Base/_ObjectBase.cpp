@@ -24,6 +24,7 @@ _ObjectBase::_ObjectBase()
 	m_roi.z = 1.0;
 	m_roi.w = 1.0;
 	m_trackID = 1;
+	m_bTrack = false;
 
 	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
@@ -46,6 +47,7 @@ bool _ObjectBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
+	KISSm(pK, bTrack);
 	KISSm(pK, dMaxTrack);
 	KISSm(pK, minConfidence);
 	KISSm(pK, minArea);
@@ -154,36 +156,49 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 	IF_N(area < m_minArea);
 	IF_N(area > m_maxArea);
 
-	OBJECT* pO;
-	double minD = DBL_MAX;
-	int iD = -1;
-	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	if(m_bTrack)
 	{
-		double dX = pO->m_bb.midX() - pNewO->m_bb.midX();
-		double dY = pO->m_bb.midY() - pNewO->m_bb.midY();
-		double d = sqrt(dX * dX + dY * dY);
+		OBJECT* pO;
+		double minD = DBL_MAX;
+		int iD = -1;
+		int i=0;
+		while((pO = m_obj.at(i++)) != NULL)
+		{
+			double dX = pO->m_bb.midX() - pNewO->m_bb.midX();
+			double dY = pO->m_bb.midY() - pNewO->m_bb.midY();
+			double d = sqrt(dX * dX + dY * dY);
 
-		IF_CONT(d > m_dMaxTrack);
-		IF_CONT(d > minD);
-		IF_CONT(pO->m_topClass != pNewO->m_topClass);
+			IF_CONT(d > m_dMaxTrack);
+			IF_CONT(d > minD);
+			IF_CONT(pO->m_topClass != pNewO->m_topClass);
 
-		minD = d;
-		iD = i - 1;
-	}
+			minD = d;
+			iD = i - 1;
+		}
 
-	pO = m_obj.at(iD);
-	if(pO)
-	{
-		vInt2 cSize = m_pVision->getSize();
+		pO = m_obj.at(iD);
+		if(pO)
+		{
+			double tBase;
+			if(m_bRealTime)
+			{
+				tBase = USEC_1SEC / m_dTime;
+			}
+			else
+			{
+				tBase = 25;
+			}
 
-		pNewO->m_vTrack.x = (pNewO->m_bb.midX() - pO->m_bb.midX()) / (double)cSize.x;
-		pNewO->m_vTrack.y = (pNewO->m_bb.midY() - pO->m_bb.midY()) / (double)cSize.y;
+			vInt2 cSize = m_pVision->getSize();
 
-		if(pO->m_trackID>0)
-			pNewO->m_trackID = pO->m_trackID;
-		else
-			pNewO->m_trackID = m_trackID++;
+			pNewO->m_vTrack.x = tBase * (pNewO->m_bb.midX() - pO->m_bb.midX()) / (double)cSize.x;
+			pNewO->m_vTrack.y = tBase * (pNewO->m_bb.midY() - pO->m_bb.midY()) / (double)cSize.y;
+
+			if(pO->m_trackID>0)
+				pNewO->m_trackID = pO->m_trackID;
+			else
+				pNewO->m_trackID = m_trackID++;
+		}
 	}
 
 	return m_obj.add(pNewO);

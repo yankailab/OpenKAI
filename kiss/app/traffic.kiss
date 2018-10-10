@@ -53,15 +53,28 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/traffic.ts",
+	"videoFile":"/home/kai/Videos/sz/er/er1.ts",
 	"w":1920,
 	"h":1080,
+}
+
+{
+	"name":"df",
+	"class":"_DenseFlow",
+	"FPS":30,
+	"bInst":0,
+	"bDraw":1,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"w":320,
+	"h":200,
 }
 
 {
 	"name":"yl",
 	"class":"_YOLO",
 	"bInst":1,
+	"bRealTime":0,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
@@ -78,16 +91,17 @@
 	"nBatch":1,
 	"thresh":0.1,
 	"minArea":0.0,
-	"maxArea":0.06,
+	"maxArea":0.5,
 	"dMaxTrack":0.1,
 	"bDrawStatistics":0,
 	"bDrawObjClass":0,
 	"bDrawObjVtrack":0,
 	"drawVscale":1.0,
 	"rX":0.0,
-	"rY":0.05,
-	"rZ":0.8,
+	"rY":0.035,
+	"rZ":1.0,
 	"rW":1.0,
+	"bTrack":1,
 }
 
 {
@@ -160,12 +174,12 @@
 			"hdgTo":-1,
 			"kSpeed":100.0,
 			"kSpeedX":0.0,
-			"kSpeedY":1.0,
-			"speedFrom":0.00005,
-			"speedTo":1000.0,
+			"kSpeedY":-0.9,
+			"speedFrom":0.001,
+			"speedTo":1.0,
 			"drawVscale":1.0,
-			"nAlert":25,
-			"nMed":5,
+			"nAlert":15,
+			"nMed":9,
 		}
 		
 		{
@@ -176,6 +190,7 @@
 			"Window":"OKview",
 			"Traffic_base":"trBase",
 			"classList":[0,1,3],
+			"nMed":9,
 		}	
 		
 		{

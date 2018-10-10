@@ -210,6 +210,7 @@ public:
 
 	//control
 	uint64_t m_trackID;
+	bool	 m_bTrack;
 
 	//config
 	double m_dMaxTrack;
