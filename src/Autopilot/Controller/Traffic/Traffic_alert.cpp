@@ -123,8 +123,8 @@ bool Traffic_alert::draw(void)
 	{
 		msg = "INTRUSION/ACCIDENT";
 		putText(*pMat, msg,
-				Point(0.3 * cSize.x, 0.9 * cSize.y),
-				FONT_HERSHEY_SIMPLEX, 2.0, col, 6);
+				Point(0.3 * cSize.x, 0.8 * cSize.y),
+				FONT_HERSHEY_SIMPLEX, 5.0, col, 10);
 	}
 
 	return true;

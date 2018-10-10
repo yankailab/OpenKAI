@@ -16,10 +16,10 @@
 	"bLog":1,
 	"bFullScreen":0,
 	"_gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"fileRec":"/home/kai/dev/test/tr_",
+	"fileRec":"/home/kai/dev/test/er_",
 	"recFPS":25,
-	"w":1920,
-	"h":1080,
+	"w":1280,
+	"h":720,
 }
 
 {
@@ -53,7 +53,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/sz/er/er1.ts",
+	"videoFile":"/home/kai/Videos/sz/er/er3.ts",
 	"w":1920,
 	"h":1080,
 }
@@ -91,7 +91,9 @@
 	"nBatch":1,
 	"thresh":0.1,
 	"minArea":0.0,
-	"maxArea":0.5,
+	"maxArea":0.35,
+	"maxW":0.3,
+	"maxH":0.3,
 	"dMaxTrack":0.1,
 	"bDrawStatistics":0,
 	"bDrawObjClass":0,
@@ -136,15 +138,23 @@
 			"_Automaton":"trState",
 			"Window":"OKview",
 			"_ObjectBase":"yl",
-			
+
 			{
-				"name":"_ROI",
+				"name":"ROI",
 				{
-					"x":0.7,
-					"y":0.05,
+					"x":0.48,
+					"y":0.18,
 				}
 				{
-					"x":0.7,
+					"x":0.58,
+					"y":0.18,
+				}
+				{
+					"x":1.0,
+					"y":0.61,
+				}
+				{
+					"x":1.0,
 					"y":1.0,
 				}
 				{
@@ -153,12 +163,54 @@
 				}
 				{
 					"x":0.0,
-					"y":0.5,
+					"y":0.35,
+				}
+			}			
+			{
+				"name":"ROI_er2",
+				{
+					"x":0.56,
+					"y":0.0,
 				}
 				{
-					"x":0.65,
-					"y":0.05,
-				}			
+					"x":0.85,
+					"y":0.0,
+				}
+				{
+					"x":1.0,
+					"y":0.3,
+				}
+				{
+					"x":1.0,
+					"y":1.0,
+				}
+				{
+					"x":0.0,
+					"y":1.0,
+				}
+				{
+					"x":0.0,
+					"y":0.25,
+				}
+			}
+			{
+				"name":"ROI_er1",
+				{
+					"x":0.48,
+					"y":0.0,
+				}
+				{
+					"x":1.0,
+					"y":0.0,
+				}
+				{
+					"x":1.0,
+					"y":1.0,
+				}
+				{
+					"x":0.125,
+					"y":1.0,
+				}
 			}
 		}
 				
@@ -178,7 +230,7 @@
 			"speedFrom":0.001,
 			"speedTo":1.0,
 			"drawVscale":1.0,
-			"nAlert":15,
+			"nAlert":30,
 			"nMed":9,
 		}
 		

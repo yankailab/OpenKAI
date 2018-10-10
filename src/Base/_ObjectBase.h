@@ -217,6 +217,8 @@ public:
 	double m_minConfidence;
 	double m_minArea;
 	double m_maxArea;
+	double m_maxW;
+	double m_maxH;
 	vDouble4 m_roi;
 
 	//model

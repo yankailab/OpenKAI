@@ -18,6 +18,8 @@ _ObjectBase::_ObjectBase()
 	m_minConfidence = 0.0;
 	m_minArea = 0.0;
 	m_maxArea = 1.0;
+	m_maxW = 1.0;
+	m_maxH = 1.0;
 	m_nClass = OBJECT_N_CLASS;
 	m_obj.reset();
 	m_roi.init();
@@ -52,6 +54,8 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, minConfidence);
 	KISSm(pK, minArea);
 	KISSm(pK, maxArea);
+	KISSm(pK, maxW);
+	KISSm(pK, maxH);
 	m_obj.reset();
 
 	//model
@@ -155,6 +159,8 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 	double area = pNewO->m_bb.area();
 	IF_N(area < m_minArea);
 	IF_N(area > m_maxArea);
+	IF_N(pNewO->m_bb.width() > m_maxW);
+	IF_N(pNewO->m_bb.height() > m_maxH);
 
 	if(m_bTrack)
 	{

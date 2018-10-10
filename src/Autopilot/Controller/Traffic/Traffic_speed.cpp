@@ -160,7 +160,7 @@ bool Traffic_speed::draw(void)
 
 		//bbox
 		vInt42rect(iBB, r);
-		rectangle(*pMat, r, col, 1);
+		rectangle(*pMat, r, col, 2);
 
 		//speed
 		Point pV = Point(pO->m_vTrack.x * cSize.x * m_drawVscale,
@@ -181,8 +181,8 @@ bool Traffic_speed::draw(void)
 	{
 		msg = "CONGESTION";
 		putText(*pMat, msg,
-				Point(0.3 * cSize.x, 0.8 * cSize.y),
-				FONT_HERSHEY_SIMPLEX, 2.0, colSpeedAlert, 6);
+				Point(0.3 * cSize.x, 0.5 * cSize.y),
+				FONT_HERSHEY_SIMPLEX, 5.0, colSpeedAlert, 10);
 	}
 
 	//heading alert
