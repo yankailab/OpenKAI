@@ -22,7 +22,7 @@ bool Traffic_alert::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK, nAlert);
+	KISSm(pK,nAlert);
 	KISSm(pK,nMed);
 	m_fNalert.init(m_nMed,3);
 
