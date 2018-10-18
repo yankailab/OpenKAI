@@ -2,13 +2,13 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_slam_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DepthEdge.h"
-#include "../../../Sensor/_DistSensorBase.h"
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/GPS.h"
+#include "../../../IO/_IOBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
-#include "APcopter_posCtrlRC.h"
+
+#define MG_PACKET_N 18
 
 namespace kai
 {
@@ -25,17 +25,25 @@ public:
 	bool cli(int& iY);
 	int check(void);
 
+	void updatePos(void);
+
 public:
 	APcopter_base* m_pAP;
-	_DepthEdge* m_pDE;
-	_DistSensorBase* m_pDB;
+	_IOBase* m_pIO;
 	GPS m_GPS;
 
 	Median m_fX;
 	Median m_fY;
+	Median m_fHdg;
 
 	double m_zTop;
+	vDouble4 m_vGPSorigin;
+	vDouble4 m_vOrigin;
 	vDouble4 m_vPos;
+
+	uint8_t	m_pCmd[MG_PACKET_N];
+	int m_iCmd;
+
 };
 
 }

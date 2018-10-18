@@ -341,13 +341,29 @@ inline double constrain(double v, double a, double b)
 
 union QBYTE
 {
+	int32_t m_int32;
+	uint8_t m_uint8[4];
+};
+
+inline int32_t makeINT32(uint8_t* pBuf)
+{
+	QBYTE n;
+	n.m_uint8[0] = pBuf[0];
+	n.m_uint8[1] = pBuf[1];
+	n.m_uint8[2] = pBuf[2];
+	n.m_uint8[3] = pBuf[3];
+	return n.m_int32;
+}
+
+union UQBYTE
+{
 	uint32_t m_uint32;
 	uint8_t m_uint8[4];
 };
 
 inline uint32_t makeUINT32(uint8_t* pBuf)
 {
-	QBYTE n;
+	UQBYTE n;
 	n.m_uint8[0] = pBuf[0];
 	n.m_uint8[1] = pBuf[1];
 	n.m_uint8[2] = pBuf[2];
@@ -378,7 +394,7 @@ inline double makeDouble(uint8_t* pBuf)
 
 inline void copyByte(uint32_t v, uint8_t* pBuf)
 {
-	QBYTE n;
+	UQBYTE n;
 	n.m_uint32 = v;
 	pBuf[0] = n.m_uint8[0];
 	pBuf[1] = n.m_uint8[1];
