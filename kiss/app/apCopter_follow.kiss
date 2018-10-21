@@ -25,13 +25,15 @@
 	"fovH":42.5,
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
-	"name":"yolo",
+	"name":"det",
 	"class":"_YOLO",
-	"bInst":0,
+	"bInst":1,
 	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
@@ -60,9 +62,9 @@
 }
 
 {
-	"name":"red",
+	"name":"det",
 	"class":"_Bullseye",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -90,6 +92,19 @@
 }
 
 {
+	"name":"arUco",
+	"class":"_ArUco",
+	"bInst":1,
+	"bDraw":0,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"mode":"thread",
+	"dict":17,
+}
+
+{
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":1,
@@ -97,8 +112,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyUSB0",
-	"baud":115200,
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+	"_portName":"/dev/ttyACM0",
+	"_baud":115200,
 }
 
 {
@@ -106,38 +123,40 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	"devSystemID":1,
 }
 
 {
-	"name":"PIDroll",
+	"name":"PIDroll_target",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-50,
+	"P":-1.5,
 	"I":0.0,
 	"Imax":0.0,
-	"D":-50,
-	"dT":1.00,
-	"min":-50.0,
-	"max":50.0,
+	"D":-0.5,
+	"dT":0.99,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
 }
 
 {
-	"name":"PIDpitch",
+	"name":"PIDpitch_target",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":50,
+	"P":1.6,
 	"I":0.0,
 	"Imax":0.0,
-	"D":50,
-	"dT":1.0,
-	"min":-50.0,
-	"max":50.0,
+	"D":0.5,
+	"dT":0.99,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
 }
 
 {
@@ -165,7 +184,7 @@
 	"name":"apPilot",
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
-	"bInst":0,
+	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
 	
@@ -182,8 +201,8 @@
 			"freqExtra1":0,
 			"freqPos":10,
 			"freqRC":0,
-			"freqExtStat":0,
-			"freqSendHeartbeat":1,
+			"freqExtStat":10,
+			"freqSendHeartbeat":1,			
 		}
 
 		{
@@ -206,7 +225,7 @@
 			"_Automaton":"apState",
 			"activeState":["CC_SEARCH","CC_FOLLOW"],
 			"APcopter_base":"apBase",
-			"_ObjectBase":"red",
+			"_ObjectBase":"det",
 			"_TrackerBase":"tracker",
 			"bUseTracker":0,
 			"iClass":0,
@@ -215,7 +234,7 @@
 	
 			{
 				"name":"gimbal",
-				"pitch":0,
+				"pitch":80,
 				"roll":0,
 				"yaw":0,
 				"stabPitch":1,
@@ -239,13 +258,66 @@
 
 			{
 				"name":"roll",
-				"PIDctrl":"PIDroll",
+				"PIDctrl":"PIDroll_target",
 			}
 			{
 				"name":"pitch",
-				"PIDctrl":"PIDpitch",
+				"PIDctrl":"PIDpitch_target",
 			}
 		}
 
+		{
+			"name":"apLanding",
+			"class":"APcopter_arucoLanding",
+			"bInst":1,
+			"Window":"OKview",
+			"APcopter_base":"apBase",
+			"_ArUco":"arUco",
+			"_DepthVisionBase":"rs",
+			"_Automaton":"apState",
+			"activeState":["CC_RTL"],
+			"orientationX":1,
+			"orientationY":1,
+			
+			{
+				"name":"gimbal",
+				"pitch":0,
+				"roll":0,
+				"yaw":0,
+				"stabPitch":0,
+				"stabRoll":0,
+				"stabYaw":0,
+				"mountMode":2,
+			}
+			
+			{
+				"name":"tags",
+				{
+					"tag":0,
+					"angle":0,
+				}
+				{
+					"tag":1,
+					"angle":0,
+				}
+				{
+					"tag":2,
+					"angle":0,
+				}
+				{
+					"tag":3,
+					"angle":0,
+				}
+				{
+					"tag":4,
+					"angle":0,
+				}
+				{
+					"tag":5,
+					"angle":0,
+				}			
+			}	
+		}		
+		
 	}
 }

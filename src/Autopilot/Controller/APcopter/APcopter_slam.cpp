@@ -149,18 +149,18 @@ bool APcopter_slam::draw(void)
 	if(!isActive())
 	{
 		msg += "Inactive";
+		pWin->addMsg(&msg);
+		msg = "";
 	}
-	else
-	{
-		circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
-							0.5 * pMat->rows),
-							pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
-		msg += "SLAM pos = (" +
-				f2str(m_vSlamPos.x) + ", " +
-				f2str(m_vSlamPos.y) + ", " +
-				f2str(m_vSlamPos.z) + ")";
-	}
+	circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
+						0.5 * pMat->rows),
+						pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
+
+	msg += "SLAM pos = (" +
+			f2str(m_vSlamPos.x) + ", " +
+			f2str(m_vSlamPos.y) + ", " +
+			f2str(m_vSlamPos.z) + ")";
 
 	pWin->addMsg(&msg);
 
@@ -177,14 +177,16 @@ bool APcopter_slam::cli(int& iY)
 	if(!isActive())
 	{
 		msg = "Inactive";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		msg = "";
 	}
-	else
-	{
-		msg += "SLAM pos = (" +
-				f2str(m_vSlamPos.x) + ", " +
-				f2str(m_vSlamPos.y) + ", " +
-				f2str(m_vSlamPos.z) + ")";
-	}
+
+	msg += "SLAM pos = (" +
+			f2str(m_vSlamPos.x) + ", " +
+			f2str(m_vSlamPos.y) + ", " +
+			f2str(m_vSlamPos.z) + ")";
 
 	COL_MSG;
 	iY++;

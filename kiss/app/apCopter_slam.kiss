@@ -1,0 +1,107 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,	
+	"_portName":"/dev/ttyACM0",
+	"_baud":115200,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"port":19840,
+}
+
+{
+	"name":"apState",
+	"class":"_Automaton",
+	"bInst":1,
+	"Window":"OKview",
+	"startState":"CC_CONTROL",
+
+	{
+		"state":"CC_CONTROL",
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"_Automaton":"apState",
+	"bInst":1,
+	"FPS":20,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"_Automaton":"apState",
+			"Window":"OKview",
+			"_Mavlink":"mavAP",
+			"freqAtti":0,
+			"freqGlobalPos":10,
+			"freqRC":0,
+			"freqHeartbeat":1,
+		}
+		
+		{
+			"name":"apSlam",
+			"class":"APcopter_slam",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_Automaton":"apState",
+			"activeState":["CC_CONTROL"],
+			"APcopter_base":"apBase",
+			"_IOBase":"udp",
+			"nMedian":3,
+			"x":0.5,
+			"y":6.0,
+			"z":30.0,
+			"zTop":50.0,
+			"lat":35.1676755,
+			"lng":138.5942851,
+		}
+		
+	}
+}
