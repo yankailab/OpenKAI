@@ -9,10 +9,14 @@ APcopter_slam::APcopter_slam()
 	m_pIO = NULL;
 	m_iCmd = 0;
 
+	m_gpsID = 0;
+	m_iFixType = 3;
+	m_nSat = 10;
+
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
-	m_vOrigin.init();
-	m_vPos.init();
+	m_vSlamOrigin.init();
+	m_vSlamPos.init();
 }
 
 APcopter_slam::~APcopter_slam()
@@ -25,11 +29,15 @@ bool APcopter_slam::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,zTop);
-	pK->v("originX", &m_vGPSorigin.x);
-	pK->v("originY", &m_vGPSorigin.y);
-	pK->v("originZ", &m_vGPSorigin.z);
-	m_vOrigin.init();
-	m_vPos = m_vGPSorigin;
+	pK->v("lat", &m_vGPSorigin.m_lat);
+	pK->v("lng", &m_vGPSorigin.m_lng);
+	m_vSlamOrigin.init();
+	m_vSlamPos.init();
+	m_GPS.update(m_vGPSorigin);
+
+	KISSm(pK,gpsID);
+	KISSm(pK,iFixType);
+	KISSm(pK,nSat);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -74,25 +82,26 @@ void APcopter_slam::update(void)
 	{
 		if(m_pAP->bApModeChanged())
 		{
-			m_vOrigin = m_vPos;
+			m_vSlamOrigin = m_vSlamPos;
 		}
 	}
 
-//	vDouble4 vPos = m_vGPSorigin + (m_vPos - m_vOrigin);
-	//TODO: convert LL and UTM
+	vDouble3 dPos = m_vSlamPos - m_vSlamOrigin;
+	UTM_POS pUTM = m_GPS.getPos(dPos);
+	LL_POS pLL = m_GPS.UTM2LL(pUTM);
 
-//	m_LL.m_hdg = ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-//	setLL(&m_LL);
-//
-//	mavlink_gps_input_t D;
-//	D.lat = m_LL.m_lat * 1e7;
-//	D.lon = m_LL.m_lng * 1e7;
-//	D.alt = m_LL.m_alt;
-//	D.gps_id = 0;
-//	D.fix_type = 3;
-//	D.satellites_visible = m_nSat;
-//	D.ignore_flags = 0b11111111;
-//	m_pMavlink->gpsInput(D);
+	pLL.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	pLL.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
+
+	mavlink_gps_input_t D;
+	D.lat = pLL.m_lat * 1e7;
+	D.lon = pLL.m_lng * 1e7;
+	D.alt = (float)pLL.m_altRel;
+	D.gps_id = m_gpsID;
+	D.fix_type = m_iFixType;
+	D.satellites_visible = m_nSat;
+	D.ignore_flags = 0b11111111;
+	m_pAP->m_pMavlink->gpsInput(D);
 
 }
 
@@ -119,6 +128,10 @@ void APcopter_slam::updatePos(void)
 			m_fY.input((double)makeINT32(&m_pCmd[5]) * 0.001);
 			m_fHdg.input((double)makeINT32(&m_pCmd[13]) * 0.001);
 			m_iCmd = 0;
+
+			m_vSlamPos.x = m_fX.v();
+			m_vSlamPos.y = m_fY.v();
+			m_vSlamPos.z = 0;
 		}
 	}
 }
@@ -139,15 +152,14 @@ bool APcopter_slam::draw(void)
 	}
 	else
 	{
-		circle(*pMat, Point(m_vPos.x * pMat->cols,
+		circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
 							0.5 * pMat->rows),
 							pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
-		msg += "Edge pos = (" +
-				f2str(m_vPos.x) + ", " +
-				f2str(m_vPos.y) + ", " +
-				f2str(m_vPos.z) + ", " +
-				f2str(m_vPos.w) + ")";
+		msg += "SLAM pos = (" +
+				f2str(m_vSlamPos.x) + ", " +
+				f2str(m_vSlamPos.y) + ", " +
+				f2str(m_vSlamPos.z) + ")";
 	}
 
 	pWin->addMsg(&msg);
@@ -168,11 +180,10 @@ bool APcopter_slam::cli(int& iY)
 	}
 	else
 	{
-		msg = "Edge pos = (" +
-				f2str(m_vPos.x) + ", " +
-				f2str(m_vPos.y) + ", " +
-				f2str(m_vPos.z) + ", " +
-				f2str(m_vPos.w) + ")";
+		msg += "SLAM pos = (" +
+				f2str(m_vSlamPos.x) + ", " +
+				f2str(m_vSlamPos.y) + ", " +
+				f2str(m_vSlamPos.z) + ")";
 	}
 
 	COL_MSG;

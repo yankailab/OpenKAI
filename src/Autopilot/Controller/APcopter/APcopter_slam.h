@@ -37,12 +37,16 @@ public:
 	Median m_fHdg;
 
 	double m_zTop;
-	vDouble4 m_vGPSorigin;
-	vDouble4 m_vOrigin;
-	vDouble4 m_vPos;
+	LL_POS m_vGPSorigin;
+	vDouble3 m_vSlamOrigin;
+	vDouble3 m_vSlamPos;
 
 	uint8_t	m_pCmd[MG_PACKET_N];
 	int m_iCmd;
+
+	int m_gpsID;
+	int m_iFixType;
+	int m_nSat;
 
 };
 
