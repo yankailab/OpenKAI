@@ -153,12 +153,14 @@ void _EcoTracker::track(void)
 	IF_(pFrame->tStamp() <= m_tStampBGR);
 	m_tStampBGR = pFrame->tStamp();
 
-	Mat* pMat = pFrame->m();
-	IF_(pMat->empty());
+	Mat mImg = *pFrame->m();
+	IF_(mImg.empty());
 
 	if(m_iSet > m_iInit)
 	{
-		m_eco.init(*pMat, m_newBB, m_param);
+		//temporal fix
+		m_param.hog_features.fparams.cell_size = 6;
+		m_eco.init(mImg, m_newBB, m_param);
 		m_trackState = track_update;
 		m_rBB = m_newBB;
 		m_iInit = m_iSet;
@@ -168,7 +170,7 @@ void _EcoTracker::track(void)
 		IF_(m_trackState != track_update);
 
 		Rect2f r;
-		if(!m_eco.update(*pMat, r))
+		if(!m_eco.update(mImg, r))
 		{
 			m_trackState = track_stop;
 			return;
@@ -180,10 +182,10 @@ void _EcoTracker::track(void)
 	vInt4 iBB;
 	rect2vInt4(m_rBB,iBB);
 
-	m_bb.x = (double)iBB.x / (double)pMat->cols;
-	m_bb.y = (double)iBB.y / (double)pMat->rows;
-	m_bb.z = (double)iBB.z / (double)pMat->cols;
-	m_bb.w = (double)iBB.w / (double)pMat->rows;
+	m_bb.x = (double)iBB.x / (double)mImg.cols;
+	m_bb.y = (double)iBB.y / (double)mImg.rows;
+	m_bb.z = (double)iBB.z / (double)mImg.cols;
+	m_bb.w = (double)iBB.w / (double)mImg.rows;
 }
 
 }

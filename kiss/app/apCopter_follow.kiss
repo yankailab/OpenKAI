@@ -83,7 +83,7 @@
 	"class":"_EcoTracker",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -91,6 +91,10 @@
 	"margin":0.0,
 	"useCnFeature":0,
 	"cnFeatureTable":"/home/kai/opentracker/eco/look_tables/CNnorm.txt",
+	{
+		"name":"Hog",
+		"cellSize":6,
+	}
 }
 
 {
@@ -98,7 +102,7 @@
 	"class":"_EcoTracker",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -106,6 +110,10 @@
 	"margin":0.0,
 	"useCnFeature":0,
 	"cnFeatureTable":"/home/kai/opentracker/eco/look_tables/CNnorm.txt",
+	{
+		"name":"Hog",
+		"cellSize":6,
+	}
 }
 
 {
