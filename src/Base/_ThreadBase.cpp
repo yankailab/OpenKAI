@@ -161,8 +161,7 @@ bool _ThreadBase::draw(void)
 	pWin->tabReset();
 
 	string msg = *this->getName();
-	if(m_FPS > 0)
-		msg += " FPS: " + i2str(m_FPS);
+	msg += " FPS: " + i2str(m_FPS);
 
 	pWin->addMsg(&msg);
 
@@ -174,7 +173,6 @@ bool _ThreadBase::cli(int& iY)
 	IF_F(!this->BASE::cli(iY));
 
 	string msg = "FPS: " + i2str(m_FPS);
-
 	COL_FPS;
 	mvaddstr(iY, CLI_X_FPS, msg.c_str());
 

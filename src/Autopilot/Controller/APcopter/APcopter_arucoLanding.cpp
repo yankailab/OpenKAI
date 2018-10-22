@@ -186,14 +186,16 @@ void APcopter_arucoLanding::updateGimbal(void)
 bool APcopter_arucoLanding::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
+	IF_F(check()<0);
+
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
-	string msg = *this->getName() + ": ";
-	IF_F(check()<0);
 
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vDouble2 cAngle;
 	pV->info(NULL, NULL, &cAngle);
+
+	string msg = *this->getName() + ": ";
 
 	if(!isActive())
 	{

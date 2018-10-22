@@ -32,8 +32,12 @@ public:
 	_ObjectBase*	m_pDet;
 	uint64_t		m_tStampDet;
 	int				m_iClass;
-	_TrackerBase*	m_pTracker;
+
 	bool			m_bUseTracker;
+	_TrackerBase*	m_pTracker[2];
+	_TrackerBase*	m_pTnow;
+	_TrackerBase*	m_pTnew;
+	int				m_iTracker;
 
 	vDouble3 m_vGimbal;		//x:pitch, y:roll, z:yaw
 	vDouble4 m_vTarget;

@@ -145,12 +145,12 @@ bool APcopter_base::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg;
+	string msg = *this->getName();
+	pWin->addMsg(&msg);
 
 	pWin->tabNext();
 
 	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
-	pWin->addMsg(&msg);
 
 	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
 			" p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +

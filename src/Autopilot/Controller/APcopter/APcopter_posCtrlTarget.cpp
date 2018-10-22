@@ -160,17 +160,14 @@ void APcopter_posCtrlTarget::releaseCtrl(void)
 bool APcopter_posCtrlTarget::draw(void)
 {
 	IF_F(!this->APcopter_posCtrlBase::draw());
+	IF_F(check()<0);
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
-	IF_F(check()<0);
-
-	string msg = *this->getName();
-	pWin->addMsg(&msg);
 
 	pWin->tabNext();
 
-	msg = "set target V = (" + f2str(m_spt.vx) + ", "
+	string msg = "set target V = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "

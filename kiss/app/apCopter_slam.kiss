@@ -44,8 +44,9 @@
 	"class":"_UDP",
 	"FPS":30,
 	"bInst":1,
+	"bLog":1,
 	"Window":"OKview",
-	"port":19840,
+	"port":5005,
 }
 
 {

@@ -136,10 +136,9 @@ void _UDP::updateR(void)
 {
 	while (m_bRThreadON)
 	{
-		if (!isOpen())
+		while(!isOpen())
 		{
 			::sleep(1);
-			continue;
 		}
 
 		IO_BUF ioB;

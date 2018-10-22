@@ -15,7 +15,7 @@ _TrackerBase::_TrackerBase()
 	m_pVision = NULL;
 	m_trackerType = "";
 	m_tStampBGR = 0;
-	m_bTracking = false;
+	m_trackState = track_stop;
 	m_bb.init();
 	m_iSet = 0;
 	m_iInit = 0;
@@ -51,9 +51,14 @@ void _TrackerBase::update(void)
 {
 }
 
-bool _TrackerBase::bTracking(void)
+void _TrackerBase::stopTrack(void)
 {
-	return m_bTracking;
+	m_trackState = track_stop;
+}
+
+TRACK_STATE _TrackerBase::trackState(void)
+{
+	return m_trackState;
 }
 
 vDouble4* _TrackerBase::getBB(void)
@@ -88,12 +93,8 @@ bool _TrackerBase::startTrack(vDouble4& bb)
 	m_newBB = rBB;
 
 	m_iSet++;
+	m_trackState = track_init;
 	return true;
-}
-
-void _TrackerBase::stopTrack(void)
-{
-	m_bTracking = false;
 }
 
 bool _TrackerBase::draw(void)
@@ -103,9 +104,9 @@ bool _TrackerBase::draw(void)
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
-	IF_F(!m_bTracking);
+	IF_F(m_trackState != track_update);
 
-	rectangle(*pMat, m_rBB, Scalar(255,255,0), 1);
+	rectangle(*pMat, m_rBB, Scalar(0,255,0), 2);
 
 	return true;
 }

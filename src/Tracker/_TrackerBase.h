@@ -15,6 +15,13 @@
 namespace kai
 {
 
+enum TRACK_STATE
+{
+	track_init,
+	track_update,
+	track_stop
+};
+
 class _TrackerBase: public _ThreadBase
 {
 public:
@@ -30,7 +37,7 @@ public:
 	virtual void createTracker(void);
 	virtual bool startTrack(vDouble4& bb);
 	virtual void stopTrack(void);
-	bool bTracking(void);
+	TRACK_STATE trackState(void);
 	vDouble4* getBB(void);
 
 public:
@@ -45,7 +52,7 @@ public:
 
 	string m_trackerType;
 	uint64_t m_tStampBGR;
-	bool	m_bTracking;
+	TRACK_STATE	m_trackState;
 };
 
 }

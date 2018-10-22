@@ -28,6 +28,7 @@ bool _EcoTracker::init(void* pKiss)
 	pK->v("useDeepFeature", &m_param.useDeepFeature);
 	pK->v("useHogFeature", &m_param.useHogFeature);
 	pK->v("useCnFeature", &m_param.useCnFeature);
+	pK->v("cnFeatureTable", &m_param.cn_features.fparams.tablename);//"YOURPATH/opentracker/eco/look_tables/CNnorm.txt";
 
 	pK->v("maxScoreThresh", &m_param.max_score_threshhold);
 
@@ -158,18 +159,18 @@ void _EcoTracker::track(void)
 	if(m_iSet > m_iInit)
 	{
 		m_eco.init(*pMat, m_newBB, m_param);
-		m_bTracking = true;
+		m_trackState = track_update;
 		m_rBB = m_newBB;
 		m_iInit = m_iSet;
 	}
 	else
 	{
-		IF_(!m_bTracking);
+		IF_(m_trackState != track_update);
 
 		Rect2f r;
 		if(!m_eco.update(*pMat, r))
 		{
-			m_bTracking = false;
+			m_trackState = track_stop;
 			return;
 		}
 

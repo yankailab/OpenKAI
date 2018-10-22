@@ -85,7 +85,7 @@ bool _SingleTracker::startTrack(vDouble4& bb)
 	createTracker();
 	Mat* pMat = m_pVision->BGR()->m();
 	m_pTracker->init(*pMat, m_rBB);
-	m_bTracking = true;
+	m_trackState = track_update;
 
 	return true;
 }
@@ -93,7 +93,7 @@ bool _SingleTracker::startTrack(vDouble4& bb)
 void _SingleTracker::track(void)
 {
 	NULL_(m_pVision);
-	IF_(!m_bTracking);
+	IF_(m_trackState != track_update);
 	IF_(m_pTracker.empty());
 
 	Frame* pFrame = m_pVision->BGR();

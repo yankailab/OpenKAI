@@ -43,7 +43,10 @@ void APcopter_followGlobal::update(void)
 	{
 		m_pDet->goSleep();
 		if(m_bUseTracker)
-			m_pTracker->stopTrack();
+		{
+			m_pTracker[0]->stopTrack();
+			m_pTracker[1]->stopTrack();
+		}
 
 		return;
 	}
