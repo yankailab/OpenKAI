@@ -244,7 +244,7 @@
 
 		{
 			"name":"apFollow",
-			"class":"APcopter_followLocal",
+			"class":"APcopter_follow",
 			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
@@ -266,7 +266,7 @@
 				"yaw":0,
 				"stabPitch":1,
 				"stabRoll":1,
-				"stabYaw":1,
+				"stabYaw":0,
 				"mountMode":2,
 			}
 		}

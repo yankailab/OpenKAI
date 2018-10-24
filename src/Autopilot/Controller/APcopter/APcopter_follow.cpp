@@ -25,9 +25,9 @@ APcopter_follow::APcopter_follow()
 	m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
 	m_gimbalControl.save_position = 0;
 
-	m_gimbalConfig.stab_pitch = 1;
-	m_gimbalConfig.stab_roll = 1;
-	m_gimbalConfig.stab_yaw = 1;
+	m_gimbalConfig.stab_pitch = 0;
+	m_gimbalConfig.stab_roll = 0;
+	m_gimbalConfig.stab_yaw = 0;
 	m_gimbalConfig.mount_mode = 2;
 
 	m_pPC = NULL;

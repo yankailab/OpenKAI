@@ -114,8 +114,8 @@
 		}
 
 		{
-			"name":"apLanding",
-			"class":"APcopter_arucoLanding",
+			"name":"apTarget",
+			"class":"APcopter_arucoTarget",
 			"bInst":1,
 			"Window":"OKview",
 			"APcopter_base":"apBase",
