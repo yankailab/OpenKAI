@@ -124,13 +124,13 @@ void APcopter_slam::updatePos(void)
 		if(m_iCmd >= MG_PACKET_N)
 		{
 			//decode one packet
-			m_fX.input((double)makeINT32(&m_pCmd[1]) * 0.001);
-			m_fY.input((double)makeINT32(&m_pCmd[5]) * 0.001);
-			m_fHdg.input((double)makeINT32(&m_pCmd[13]) * 0.001);
+			m_fX.input(((double)makeINT32(&m_pCmd[1], false)) * 0.001);
+			m_fY.input(((double)makeINT32(&m_pCmd[5], false)) * 0.001);
+			m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
 			m_iCmd = 0;
 
 			m_vSlamPos.x = m_fX.v();
-			m_vSlamPos.y = m_fY.v();
+			m_vSlamPos.y = -m_fY.v();
 			m_vSlamPos.z = 0;
 		}
 	}

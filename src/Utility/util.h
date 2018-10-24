@@ -345,13 +345,25 @@ union QBYTE
 	uint8_t m_uint8[4];
 };
 
-inline int32_t makeINT32(uint8_t* pBuf)
+inline int32_t makeINT32(uint8_t* pBuf, bool bOrder)
 {
 	QBYTE n;
-	n.m_uint8[0] = pBuf[0];
-	n.m_uint8[1] = pBuf[1];
-	n.m_uint8[2] = pBuf[2];
-	n.m_uint8[3] = pBuf[3];
+
+	if(bOrder)
+	{
+		n.m_uint8[0] = pBuf[0];
+		n.m_uint8[1] = pBuf[1];
+		n.m_uint8[2] = pBuf[2];
+		n.m_uint8[3] = pBuf[3];
+	}
+	else
+	{
+		n.m_uint8[0] = pBuf[3];
+		n.m_uint8[1] = pBuf[2];
+		n.m_uint8[2] = pBuf[1];
+		n.m_uint8[3] = pBuf[0];
+	}
+
 	return n.m_int32;
 }
 
