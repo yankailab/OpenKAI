@@ -43,15 +43,14 @@ bool _AutoPilot::init(void* pKiss)
 		//Add action modules below
 
 		ADD_ACTION(APcopter_arucoFollow);
-		ADD_ACTION(APcopter_arucoLanding);
+		ADD_ACTION(APcopter_arucoTarget);
 		ADD_ACTION(APcopter_base);
 		ADD_ACTION(APcopter_DNNavoid);
 		ADD_ACTION(APcopter_DNNnav);
 		ADD_ACTION(APcopter_depthVision);
 		ADD_ACTION(APcopter_distLidar);
-		ADD_ACTION(APcopter_followGlobal);
-		ADD_ACTION(APcopter_followLocal);
 		ADD_ACTION(APcopter_DNNlanding);
+		ADD_ACTION(APcopter_follow);
 		ADD_ACTION(APcopter_slam);
 		ADD_ACTION(APcopter_posCtrlRC);
 		ADD_ACTION(APcopter_posCtrlTarget);

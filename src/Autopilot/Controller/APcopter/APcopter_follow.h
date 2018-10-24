@@ -8,21 +8,22 @@
 #include "../../../Navigation/GPS.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
-#include "APcopter_posCtrlRC.h"
+#include "APcopter_posCtrlBase.h"
 
 namespace kai
 {
 
-class APcopter_followBase: public ActionBase
+class APcopter_follow: public ActionBase
 {
 public:
-	APcopter_followBase();
-	~APcopter_followBase();
+	APcopter_follow();
+	~APcopter_follow();
 
 	virtual	bool init(void* pKiss);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
 	virtual int check(void);
+	virtual void update(void);
 
 	virtual bool find(void);
 	virtual void updateGimbal(void);
@@ -32,6 +33,9 @@ public:
 	_ObjectBase*	m_pDet;
 	uint64_t		m_tStampDet;
 	int				m_iClass;
+
+	APcopter_posCtrlBase* m_pPC;
+	vDouble4 m_vCam;
 
 	bool			m_bUseTracker;
 	_TrackerBase*	m_pTracker[2];

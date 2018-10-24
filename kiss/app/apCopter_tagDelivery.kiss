@@ -133,7 +133,7 @@
 				"yaw":0,
 				"stabPitch":1,
 				"stabRoll":1,
-				"stabYaw":1,
+				"stabYaw":0,
 				"mountMode":2,
 			}
 			

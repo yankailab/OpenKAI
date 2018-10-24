@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_arucoLanding_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_arucoLanding_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_arucoTarget_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_arucoTarget_H_
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
@@ -10,7 +10,7 @@
 namespace kai
 {
 
-struct LANDING_TARGET_ARUCO
+struct ARUCO_TARGET
 {
 	int m_tag;
 	double m_angle;
@@ -22,11 +22,11 @@ struct LANDING_TARGET_ARUCO
 	}
 };
 
-class APcopter_arucoLanding: public ActionBase
+class APcopter_arucoTarget: public ActionBase
 {
 public:
-	APcopter_arucoLanding();
-	~APcopter_arucoLanding();
+	APcopter_arucoTarget();
+	~APcopter_arucoTarget();
 
 	bool init(void* pKiss);
 	void update(void);
@@ -45,7 +45,7 @@ public:
 	bool	 m_bLocked;
 	OBJECT 	 m_oTarget;
 	mavlink_landing_target_t m_D;
-	vector<LANDING_TARGET_ARUCO> m_vTarget;
+	vector<ARUCO_TARGET> m_vTarget;
 
 	vDouble3 m_vGimbal;
 	mavlink_mount_control_t m_gimbalControl;

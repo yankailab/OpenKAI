@@ -1,9 +1,9 @@
-#include "APcopter_arucoLanding.h"
+#include "APcopter_arucoTarget.h"
 
 namespace kai
 {
 
-APcopter_arucoLanding::APcopter_arucoLanding()
+APcopter_arucoTarget::APcopter_arucoTarget()
 {
 	m_pAP = NULL;
 	m_pArUco = NULL;
@@ -19,17 +19,17 @@ APcopter_arucoLanding::APcopter_arucoLanding()
 	m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
 	m_gimbalControl.save_position = 0;
 
-	m_gimbalConfig.stab_pitch = 1;
-	m_gimbalConfig.stab_roll = 1;
-	m_gimbalConfig.stab_yaw = 1;
+	m_gimbalConfig.stab_pitch = 0;
+	m_gimbalConfig.stab_roll = 0;
+	m_gimbalConfig.stab_yaw = 0;
 	m_gimbalConfig.mount_mode = 2;
 }
 
-APcopter_arucoLanding::~APcopter_arucoLanding()
+APcopter_arucoTarget::~APcopter_arucoTarget()
 {
 }
 
-bool APcopter_arucoLanding::init(void* pKiss)
+bool APcopter_arucoTarget::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -61,7 +61,7 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	if(!pG->empty())
 	{
 		Kiss** pItrT = pG->getChildItr();
-		LANDING_TARGET_ARUCO L;
+		ARUCO_TARGET L;
 		int i = 0;
 		while (pItrT[i])
 		{
@@ -87,7 +87,7 @@ bool APcopter_arucoLanding::init(void* pKiss)
 	return true;
 }
 
-int APcopter_arucoLanding::check(void)
+int APcopter_arucoTarget::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -98,7 +98,7 @@ int APcopter_arucoLanding::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_arucoLanding::update(void)
+void APcopter_arucoTarget::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
@@ -123,18 +123,18 @@ void APcopter_arucoLanding::update(void)
 
 	int iDet = 0;
 	int iPriority = INT_MAX;
-	LANDING_TARGET_ARUCO* pTarget = NULL;
+	ARUCO_TARGET* pTarget = NULL;
 
 	while(1)
 	{
 		OBJECT* pO = m_pArUco->at(iDet++);
 		if(!pO)break;
 
-		LANDING_TARGET_ARUCO* pT = NULL;
+		ARUCO_TARGET* pT = NULL;
 		int i;
 		for(i=0; i<m_vTarget.size(); i++)
 		{
-			LANDING_TARGET_ARUCO* pTi = &m_vTarget[i];
+			ARUCO_TARGET* pTi = &m_vTarget[i];
 			IF_CONT(pO->m_topClass != pTi->m_tag);
 
 			pT = pTi;
@@ -177,13 +177,13 @@ void APcopter_arucoLanding::update(void)
 	m_pAP->m_pMavlink->landingTarget(m_D);
 }
 
-void APcopter_arucoLanding::updateGimbal(void)
+void APcopter_arucoTarget::updateGimbal(void)
 {
 	m_pAP->m_pMavlink->mountControl(m_gimbalControl);
 	m_pAP->m_pMavlink->mountConfigure(m_gimbalConfig);
 }
 
-bool APcopter_arucoLanding::draw(void)
+bool APcopter_arucoTarget::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	IF_F(check()<0);
@@ -225,7 +225,7 @@ bool APcopter_arucoLanding::draw(void)
 	return true;
 }
 
-bool APcopter_arucoLanding::cli(int& iY)
+bool APcopter_arucoTarget::cli(int& iY)
 {
 	IF_F(!this->ActionBase::cli(iY));
 	IF_F(check()<0);
