@@ -207,6 +207,7 @@ public:
 	//input
 	_VisionBase* m_pVision;
 	OBJECT_DARRAY m_obj;
+	Frame m_BGR;
 
 	//control
 	uint64_t m_trackID;

@@ -134,6 +134,14 @@ bool _EcoTracker::start(void)
 	return true;
 }
 
+int _EcoTracker::check(void)
+{
+	NULL__(m_pVision,-1);
+	NULL__(m_pDet,-1);
+
+	return 0;
+}
+
 void _EcoTracker::update(void)
 {
 	while (m_bThreadON)
@@ -148,18 +156,20 @@ void _EcoTracker::update(void)
 
 void _EcoTracker::track(void)
 {
-	NULL_(m_pVision);
-	Frame* pFrame = m_pVision->BGR();
-	IF_(pFrame->tStamp() <= m_tStampBGR);
-	m_tStampBGR = pFrame->tStamp();
-
-	Mat mImg = *pFrame->m();
-	IF_(mImg.empty());
+	IF_(check()<0);
+	Frame* pFrame;
+	Mat mImg;
 
 	if(m_iSet > m_iInit)
 	{
+		//init a new track target
+		pFrame = &m_pDet->m_BGR;
+		mImg = *pFrame->m();
+		IF_(mImg.empty());
+
 		//temporal fix
 		m_param.hog_features.fparams.cell_size = 6;
+
 		m_eco.init(mImg, m_newBB, m_param);
 		m_trackState = track_update;
 		m_rBB = m_newBB;
@@ -167,6 +177,13 @@ void _EcoTracker::track(void)
 	}
 	else
 	{
+		//track update
+		pFrame = m_pVision->BGR();
+		IF_(pFrame->tStamp() <= m_tStampBGR);
+		m_tStampBGR = pFrame->tStamp();
+		mImg = *pFrame->m();
+		IF_(mImg.empty());
+
 		IF_(m_trackState != track_update);
 
 		Rect2f r;

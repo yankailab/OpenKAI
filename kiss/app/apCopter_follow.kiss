@@ -52,8 +52,8 @@
 	"thresh":0.1,
 	"minArea":0.0,
 	"maxArea":0.5,
-	"dMaxTrack":0.1,
 	"bTrack":0,
+	"dMaxTrack":0.1,
 	"bDrawStatistics":0,
 	"bDrawObjClass":1,
 	"bDrawObjVtrack":0,
@@ -83,10 +83,11 @@
 	"class":"_EcoTracker",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"_ObjectBase":"det",
 	"maxScoreThresh":0.1,
 	"margin":0.0,
 	"useCnFeature":0,
@@ -102,10 +103,11 @@
 	"class":"_EcoTracker",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"_ObjectBase":"det",
 	"maxScoreThresh":0.1,
 	"margin":0.0,
 	"useCnFeature":0,
@@ -155,7 +157,7 @@
 }
 
 {
-	"name":"PIDroll_target",
+	"name":"PIDroll",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
@@ -170,7 +172,7 @@
 }
 
 {
-	"name":"PIDpitch_target",
+	"name":"PIDpitch",
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
@@ -275,7 +277,7 @@
 			"name":"apPosCtrl",
 			"class":"APcopter_posCtrlTarget",
 			"bInst":1,
-			"bLog":1,
+			"bLog":0,
 			"Window":"OKview",
 			"_Automaton":"apState",
 			"activeState":["CC_FOLLOW"],
@@ -285,17 +287,17 @@
 
 			{
 				"name":"roll",
-				"PIDctrl":"PIDroll_target",
+				"PIDctrl":"PIDroll",
 			}
 			{
 				"name":"pitch",
-				"PIDctrl":"PIDpitch_target",
+				"PIDctrl":"PIDpitch",
 			}
 		}
 
 		{
 			"name":"apLanding",
-			"class":"APcopter_arucoLanding",
+			"class":"APcopter_arucoTarget",
 			"bInst":1,
 			"Window":"OKview",
 			"APcopter_base":"apBase",

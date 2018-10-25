@@ -125,7 +125,6 @@ int APcopter_follow::check(void)
 
 void APcopter_follow::update(void)
 {
-	this->APcopter_follow::update();
 	IF_(check()<0);
 	if(!isActive())
 	{

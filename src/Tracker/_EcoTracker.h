@@ -29,6 +29,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 
 private:
 	void track(void);

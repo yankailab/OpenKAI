@@ -92,7 +92,7 @@ bool _YOLO::detect(void)
 	NULL_F(pBGR);
 	IF_F(pBGR->bEmpty());
 	IF_F(pBGR->tStamp() <= m_BGR.tStamp());
-	m_BGR = *pBGR;
+	m_BGR.copy(*pBGR);
 	Mat mBGR = *m_BGR.m();
 
 	vInt4 iRoi;

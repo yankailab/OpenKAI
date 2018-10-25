@@ -13,6 +13,7 @@ namespace kai
 _TrackerBase::_TrackerBase()
 {
 	m_pVision = NULL;
+	m_pDet = NULL;
 	m_trackerType = "";
 	m_tStampBGR = 0;
 	m_trackState = track_stop;
@@ -39,6 +40,10 @@ bool _TrackerBase::init(void* pKiss)
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
+
+	iName = "";
+	F_ERROR_F(pK->v("_ObjectBase", &iName));
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
