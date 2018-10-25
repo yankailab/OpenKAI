@@ -79,10 +79,11 @@
 			"_Automaton":"apState",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqAtti":0,
-			"freqGlobalPos":10,
+			"freqExtra1":10,
+			"freqPos":10,
 			"freqRC":0,
-			"freqHeartbeat":1,
+			"freqExtStat":10,
+			"freqSendHeartbeat":1,			
 		}
 		
 		{

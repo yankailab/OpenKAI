@@ -86,12 +86,12 @@ void APcopter_slam::update(void)
 		}
 	}
 
+	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
+
 	vDouble3 dPos = m_vSlamPos - m_vSlamOrigin;
 	UTM_POS pUTM = m_GPS.getPos(dPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
-
-	pLL.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-	pLL.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
 	mavlink_gps_input_t D;
 	D.lat = pLL.m_lat * 1e7;

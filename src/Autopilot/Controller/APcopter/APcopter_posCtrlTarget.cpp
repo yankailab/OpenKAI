@@ -106,7 +106,7 @@ void APcopter_posCtrlTarget::update(void)
 		m_spt.vx = m_ctrl[CTRL_PITCH].m_v;		//forward
 		m_spt.vy = m_ctrl[CTRL_ROLL].m_v;		//right
 		m_spt.vz = m_ctrl[CTRL_ALT].m_v;		//down
-		m_spt.type_mask = 0b0000100111000111;	//velocity
+		m_spt.type_mask = 0b0000111111000111;	//velocity
 	}
 	else
 	{
@@ -116,7 +116,7 @@ void APcopter_posCtrlTarget::update(void)
 		m_spt.vx = 0.0;
 		m_spt.vy = 0.0;
 		m_spt.vz = 0.0;
-		m_spt.type_mask = 0b0000100111111000;	//position
+		m_spt.type_mask = 0b0000111111111000;	//position
 	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
@@ -153,7 +153,7 @@ void APcopter_posCtrlTarget::releaseCtrl(void)
 	m_spt.vz = 0;
 	m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
 	m_spt.yaw_rate = (float)m_yawRate * DEG_RAD;
-	m_spt.type_mask = 0b0000100111000000;
+	m_spt.type_mask = 0b0000111111000000;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 

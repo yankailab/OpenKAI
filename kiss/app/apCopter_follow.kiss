@@ -27,7 +27,7 @@
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -40,8 +40,8 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"_modelDir":"/home/ubuntu/dev/model/yolov3-tiny/",
-	"modelDir":"/home/kai/dev/model/yolov3-tiny/",
+	"modelDir":"/home/ubuntu/dev/model/yolov3-tiny/",
+	"_modelDir":"/home/kai/dev/model/yolov3-tiny/",
 	"modelFile":"yolov3.cfg",
 	"trainedFile":"yolov3.weights",
 	"labelFile":"class.names",
@@ -191,8 +191,7 @@
 	"class":"_Automaton",
 	"bInst":1,
 	"Window":"OKview",
-	"_startState":"CC_STANDBY",
-	"startState":"CC_SEARCH",
+	"startState":"CC_STANDBY",
 
 	{
 		"state":"CC_STANDBY",
@@ -236,12 +235,12 @@
 		{
 			"name":"apMission",
 			"class":"APcopter_mission",
-			"bInst":0,
+			"bInst":1,
 			"_Automaton":"apState",
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"tRTL":300,
-			"iMissionSeq":1000,
+			"iMissionSeq":4,
 		}
 
 		{
@@ -259,7 +258,7 @@
 			"bUseTracker":0,
 			"iClass":0,
 			"APcopter_posCtrlBase":"apPosCtrl",
-			"camYaw":30.0,
+			"camYaw":0.0,
 	
 			{
 				"name":"gimbal",
@@ -313,8 +312,8 @@
 				"pitch":0,
 				"roll":0,
 				"yaw":0,
-				"stabPitch":0,
-				"stabRoll":0,
+				"stabPitch":1,
+				"stabRoll":1,
 				"stabYaw":0,
 				"mountMode":2,
 			}
