@@ -269,6 +269,9 @@
 				"stabRoll":1,
 				"stabYaw":0,
 				"mountMode":2,
+				"pointingA":0,
+				"pointingB":0,
+				"pointingC":0,
 			}
 		}
 
@@ -316,6 +319,9 @@
 				"stabRoll":1,
 				"stabYaw":0,
 				"mountMode":2,
+				"pointingA":0,
+				"pointingB":0,
+				"pointingC":0,
 			}
 			
 			{

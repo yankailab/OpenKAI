@@ -14,15 +14,20 @@ APcopter_arucoTarget::APcopter_arucoTarget()
 	m_orientation.y = 1.0;
 
 	m_vGimbal.init();
-	m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
-	m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
-	m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
-	m_gimbalControl.save_position = 0;
+	m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
+	m_mountControl.input_b = m_vGimbal.y * 100;	//roll
+	m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
+	m_mountControl.save_position = 0;
 
-	m_gimbalConfig.stab_pitch = 0;
-	m_gimbalConfig.stab_roll = 0;
-	m_gimbalConfig.stab_yaw = 0;
-	m_gimbalConfig.mount_mode = 2;
+	m_mountConfig.stab_pitch = 0;
+	m_mountConfig.stab_roll = 0;
+	m_mountConfig.stab_yaw = 0;
+	m_mountConfig.mount_mode = 2;
+
+	m_mountStatus.pointing_a = 0;
+	m_mountStatus.pointing_b = 0;
+	m_mountStatus.pointing_c = 0;
+
 }
 
 APcopter_arucoTarget::~APcopter_arucoTarget()
@@ -44,15 +49,20 @@ bool APcopter_arucoTarget::init(void* pKiss)
 		pG->v("roll", &m_vGimbal.y);
 		pG->v("yaw", &m_vGimbal.z);
 
-		m_gimbalControl.input_a = m_vGimbal.x * 100;	//pitch
-		m_gimbalControl.input_b = m_vGimbal.y * 100;	//roll
-		m_gimbalControl.input_c = m_vGimbal.z * 100;	//yaw
-		m_gimbalControl.save_position = 0;
+		m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
+		m_mountControl.input_b = m_vGimbal.y * 100;	//roll
+		m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
+		m_mountControl.save_position = 0;
 
-		pG->v("stabPitch", &m_gimbalConfig.stab_pitch);
-		pG->v("stabRoll", &m_gimbalConfig.stab_roll);
-		pG->v("stabYaw", &m_gimbalConfig.stab_yaw);
-		pG->v("mountMode", &m_gimbalConfig.mount_mode);
+		pG->v("stabPitch", &m_mountConfig.stab_pitch);
+		pG->v("stabRoll", &m_mountConfig.stab_roll);
+		pG->v("stabYaw", &m_mountConfig.stab_yaw);
+		pG->v("mountMode", &m_mountConfig.mount_mode);
+
+		pG->v("pointingA", &m_mountStatus.pointing_a);
+		pG->v("pointingB", &m_mountStatus.pointing_b);
+		pG->v("pointingC", &m_mountStatus.pointing_c);
+
 	}
 
 	m_oTarget.init();
@@ -179,8 +189,9 @@ void APcopter_arucoTarget::update(void)
 
 void APcopter_arucoTarget::updateGimbal(void)
 {
-	m_pAP->m_pMavlink->mountControl(m_gimbalControl);
-	m_pAP->m_pMavlink->mountConfigure(m_gimbalConfig);
+	m_pAP->m_pMavlink->mountControl(m_mountControl);
+	m_pAP->m_pMavlink->mountConfigure(m_mountConfig);
+	m_pAP->m_pMavlink->mountStatus(m_mountStatus);
 }
 
 bool APcopter_arucoTarget::draw(void)

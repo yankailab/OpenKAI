@@ -151,6 +151,7 @@ public:
 	void landingTarget(mavlink_landing_target_t& D);
 	void mountConfigure(mavlink_mount_configure_t& D);
 	void mountControl(mavlink_mount_control_t& D);
+	void mountStatus(mavlink_mount_status_t& D);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);
 	void rcChannelsOverride(mavlink_rc_channels_override_t& D);

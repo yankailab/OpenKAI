@@ -225,6 +225,19 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 	horizontal_accuracy (optional)
 	satellites_visible <-- required
 	fix_type <-- required
+
+typedef enum GPS_INPUT_IGNORE_FLAGS
+{
+	   GPS_INPUT_IGNORE_FLAG_ALT=1,
+	   GPS_INPUT_IGNORE_FLAG_HDOP=2,
+	   GPS_INPUT_IGNORE_FLAG_VDOP=4,
+	   GPS_INPUT_IGNORE_FLAG_VEL_HORIZ=8,
+	   GPS_INPUT_IGNORE_FLAG_VEL_VERT=16,
+	   GPS_INPUT_IGNORE_FLAG_SPEED_ACCURACY=32,
+	   GPS_INPUT_IGNORE_FLAG_HORIZONTAL_ACCURACY=64,
+	   GPS_INPUT_IGNORE_FLAG_VERTICAL_ACCURACY=128,
+	   GPS_INPUT_IGNORE_FLAGS_ENUM_END=129,
+} GPS_INPUT_IGNORE_FLAGS;
 	 */
 
 	D.time_week = 1;
@@ -299,6 +312,20 @@ void _Mavlink::mountControl(mavlink_mount_control_t& D)
 						 + ", roll=" + i2str(D.input_b)
 						 + ", yaw=" + i2str(D.input_c)
 						 + ", savePos=" + i2str(D.save_position));
+}
+
+void _Mavlink::mountStatus(mavlink_mount_status_t& D)
+{
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+
+	mavlink_message_t msg;
+	mavlink_msg_mount_status_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- mountControl: a=" + i2str(D.pointing_a)
+						 + ", b=" + i2str(D.pointing_b)
+						 + ", c=" + i2str(D.pointing_c));
 }
 
 void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)

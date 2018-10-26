@@ -47,6 +47,8 @@ public:
 	int m_gpsID;
 	int m_iFixType;
 	int m_nSat;
+	double m_hdop;
+	double m_vdop;
 
 };
 

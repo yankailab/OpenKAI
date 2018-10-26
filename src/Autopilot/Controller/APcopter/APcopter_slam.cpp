@@ -12,6 +12,8 @@ APcopter_slam::APcopter_slam()
 	m_gpsID = 0;
 	m_iFixType = 3;
 	m_nSat = 10;
+	m_hdop = 0;
+	m_vdop = 0;
 
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
@@ -38,6 +40,8 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,gpsID);
 	KISSm(pK,iFixType);
 	KISSm(pK,nSat);
+	KISSm(pK,hdop);
+	KISSm(pK,vdop);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -100,6 +104,8 @@ void APcopter_slam::update(void)
 	D.gps_id = m_gpsID;
 	D.fix_type = m_iFixType;
 	D.satellites_visible = m_nSat;
+	D.hdop = (float)m_hdop;
+	D.vdop = (float)m_vdop;
 	D.ignore_flags = 0b11111111;
 	m_pAP->m_pMavlink->gpsInput(D);
 
@@ -129,6 +135,7 @@ void APcopter_slam::updatePos(void)
 			m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
 			m_iCmd = 0;
 
+			//TODO: confirm the axis
 			m_vSlamPos.x = m_fX.v();
 			m_vSlamPos.y = -m_fY.v();
 			m_vSlamPos.z = 0;

@@ -82,7 +82,7 @@
 			"freqExtra1":10,
 			"freqPos":10,
 			"freqRC":0,
-			"freqExtStat":10,
+			"freqExtStat":0,
 			"freqSendHeartbeat":1,			
 		}
 		
@@ -97,9 +97,6 @@
 			"APcopter_base":"apBase",
 			"_IOBase":"udp",
 			"nMedian":3,
-			"x":0.5,
-			"y":6.0,
-			"z":30.0,
 			"zTop":50.0,
 
 			"_lat":35.1676755,
