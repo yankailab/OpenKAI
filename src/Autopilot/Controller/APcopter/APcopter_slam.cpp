@@ -135,9 +135,8 @@ void APcopter_slam::updatePos(void)
 			m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
 			m_iCmd = 0;
 
-			//TODO: confirm the axis
-			m_vSlamPos.x = m_fX.v();
-			m_vSlamPos.y = -m_fY.v();
+			m_vSlamPos.x = m_fY.v();
+			m_vSlamPos.y = -m_fX.v();
 			m_vSlamPos.z = 0;
 		}
 	}
