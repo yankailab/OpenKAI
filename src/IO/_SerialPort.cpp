@@ -103,11 +103,11 @@ void _SerialPort::updateW(void)
 
 		this->autoFPSfrom();
 
-		IO_BUF ioB;
-		while(toBufW(&ioB))
+		uint8_t pB[N_BUF];
+		int nB;
+		while((nB = m_fifoW.output(pB, N_BUF)) > 0)
 		{
-			int nW = ::write(m_fd, ioB.m_pB, ioB.m_nB);
-
+			int nW = ::write(m_fd, pB, nB);
 			LOG_I("write: " + i2str(nW) + " bytes");
 		}
 
@@ -128,12 +128,14 @@ void _SerialPort::updateR(void)
 		}
 
 		//blocking mode, no FPS control
-		IO_BUF ioB;
-		ioB.m_nB = ::read(m_fd, ioB.m_pB, N_IO_BUF);
-		if(ioB.m_nB <= 0)continue;
+		uint8_t pB[N_BUF];
+		int nR = ::read(m_fd, pB, N_BUF);
+		IF_CONT(nR <= 0);
 
-		toQueR(&ioB);
-		LOG_I("read: " + i2str(ioB.m_nB) + " bytes");
+		m_fifoR.input(pB,nR);
+		this->wakeUpLinked();
+
+		LOG_I("read: " + i2str(nR) + " bytes");
 	}
 }
 

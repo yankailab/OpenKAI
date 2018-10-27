@@ -16,21 +16,24 @@ _IOBase::_IOBase()
 	m_bRThreadON = false;
 	m_ioType = io_none;
 	m_ioStatus = io_unknown;
-
-	pthread_mutex_init(&m_mutexW, NULL);
-	pthread_mutex_init(&m_mutexR, NULL);
+	m_nFIFO = 1024000;
 }
 
 _IOBase::~_IOBase()
 {
-	pthread_mutex_destroy(&m_mutexW);
-	pthread_mutex_destroy(&m_mutexR);
+	m_fifoW.release();
+	m_fifoR.release();
 }
 
 bool _IOBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	KISSm(pK,nFIFO);
+
+	IF_F(!m_fifoW.init(m_nFIFO));
+	IF_F(!m_fifoR.init(m_nFIFO));
 
 	return true;
 }
@@ -52,54 +55,17 @@ IO_TYPE _IOBase::ioType(void)
 
 void _IOBase::close(void)
 {
-	while (!m_queW.empty())
-		m_queW.pop();
-
-	while (!m_queR.empty())
-		m_queR.pop();
+	m_fifoW.clear();
+	m_fifoR.clear();
 
 	m_ioStatus = io_closed;
-}
-
-bool _IOBase::write(IO_BUF& ioB)
-{
-	IF_F(m_ioStatus != io_opened);
-	IF_F(ioB.bEmpty());
-
-	pthread_mutex_lock(&m_mutexW);
-
-	m_queW.push(ioB);
-
-	pthread_mutex_unlock(&m_mutexW);
-
-	this->wakeUp();
-	return true;
 }
 
 bool _IOBase::write(uint8_t* pBuf, int nB)
 {
 	IF_F(m_ioStatus != io_opened);
-	IF_F(nB <= 0);
-	NULL_F(pBuf);
 
-	IO_BUF ioB;
-	int nW = 0;
-
-	pthread_mutex_lock(&m_mutexW);
-
-	while (nW < nB)
-	{
-		ioB.m_nB = nB - nW;
-		if(ioB.m_nB > N_IO_BUF)
-			ioB.m_nB = N_IO_BUF;
-
-		memcpy(ioB.m_pB, &pBuf[nW], ioB.m_nB);
-		nW += ioB.m_nB;
-
-		m_queW.push(ioB);
-	}
-
-	pthread_mutex_unlock(&m_mutexW);
+	IF_F(!m_fifoW.input(pBuf,nB));
 
 	this->wakeUp();
 	return true;
@@ -113,48 +79,11 @@ bool _IOBase::writeLine(uint8_t* pBuf, int nB)
 	return write((unsigned char*)pCRLF, 2);
 }
 
-bool _IOBase::toBufW(IO_BUF* pB)
-{
-	NULL_F(pB);
-	IF_F(m_queW.empty());
-
-	pthread_mutex_lock(&m_mutexW);
-	*pB = m_queW.front();
-	m_queW.pop();
-	pthread_mutex_unlock(&m_mutexW);
-
-	return true;
-}
-
 int _IOBase::read(uint8_t* pBuf, int nB)
 {
 	if(m_ioStatus != io_opened)return -1;
-	if(pBuf == NULL)return -1;
-	if(nB < N_IO_BUF)return -1;
-	if(m_queR.empty())return 0;
 
-	pthread_mutex_lock(&m_mutexR);
-	IO_BUF ioB = m_queR.front();
-	m_queR.pop();
-	pthread_mutex_unlock(&m_mutexR);
-
-	memcpy(pBuf, ioB.m_pB, ioB.m_nB);
-	return ioB.m_nB;
-}
-
-void _IOBase::toQueR(IO_BUF* pB)
-{
-	NULL_(pB);
-	IF_(pB->bEmpty());
-
-	pthread_mutex_lock(&m_mutexR);
-	m_queR.push(*pB);
-	pthread_mutex_unlock(&m_mutexR);
-
-	if(m_pWakeUp)
-	{
-		m_pWakeUp->wakeUp();
-	}
+	return m_fifoR.output(pBuf,nB);
 }
 
 bool _IOBase::draw(void)

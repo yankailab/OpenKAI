@@ -31,9 +31,10 @@ public:
 	virtual bool cli(int& iY);
 
 	virtual void goSleep(void);
-	virtual void wakeUp(void);
 	virtual void sleepTime(int64_t usec);
 	virtual bool bSleeping(void);
+	virtual void wakeUp(void);
+	virtual void wakeUpLinked(void);
 
 	virtual void updateTime(void);
 	virtual double getFrameRate(void);

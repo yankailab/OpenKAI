@@ -18,6 +18,7 @@
 #define WS_MODE_TXT 0x1
 #define WS_MODE_BIN 0x2
 
+/*
 namespace kai
 {
 
@@ -99,5 +100,5 @@ public:
 };
 
 }
-
+*/
 #endif

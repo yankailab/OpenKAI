@@ -115,10 +115,11 @@ void _TCPclient::updateW(void)
 
 		this->autoFPSfrom();
 
-		IO_BUF ioB;
-		while(toBufW(&ioB))
+		uint8_t pB[N_BUF];
+		int nB;
+		while((nB = m_fifoW.output(pB, N_BUF)) > 0)
 		{
-			int nSend = ::send(m_socket, ioB.m_pB, ioB.m_nB, 0);
+			int nSend = ::send(m_socket, pB, nB, 0);
 			if (nSend == -1)
 			{
 				if(errno == EAGAIN)break;
@@ -127,6 +128,8 @@ void _TCPclient::updateW(void)
 				close();
 				break;
 			}
+
+			LOG_I("send: " + i2str(nSend) + " bytes");
 		}
 
 		this->autoFPSto();
@@ -143,19 +146,20 @@ void _TCPclient::updateR(void)
 			continue;
 		}
 
-		IO_BUF ioB;
-		ioB.m_nB = ::recv(m_socket, ioB.m_pB, N_IO_BUF, 0);
-
-		if (ioB.m_nB <= 0)
+		//blocking mode, no FPS control
+		uint8_t pB[N_BUF];
+		int nR = ::recv(m_socket, pB, N_BUF, 0);
+		if (nR <= 0)
 		{
 			LOG_E("recv error: " + i2str(errno));
 			close();
 			continue;
 		}
 
-		toQueR(&ioB);
+		m_fifoR.input(pB,nR);
+		this->wakeUpLinked();
 
-		LOG_I("Received bytes:" + i2str(ioB.m_nB));
+		LOG_I("received: " + i2str(nR) + " bytes");
 	}
 }
 

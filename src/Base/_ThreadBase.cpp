@@ -110,6 +110,13 @@ void _ThreadBase::wakeUp(void)
 	pthread_cond_signal(&m_wakeupSignal);
 }
 
+void _ThreadBase::wakeUpLinked(void)
+{
+	NULL_(m_pWakeUp);
+
+	m_pWakeUp->wakeUp();
+}
+
 void _ThreadBase::updateTime(void)
 {
 	uint64_t newTime = getTimeUsec();

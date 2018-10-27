@@ -6,7 +6,7 @@
  */
 
 #include "_WebSocket.h"
-
+/*
 namespace kai
 {
 
@@ -354,3 +354,4 @@ bool _WebSocket::draw(void)
 }
 
 }
+*/
