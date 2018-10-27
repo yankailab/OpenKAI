@@ -139,10 +139,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"_portName":"/dev/ttyTHS1",
-	"_baud":921600,
-	"portName":"/dev/ttyACM0",
-	"baud":115200,
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+	"_portName":"/dev/ttyACM0",
+	"_baud":115200,
 }
 
 {
