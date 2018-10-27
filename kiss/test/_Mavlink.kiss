@@ -25,7 +25,7 @@
 	"_wakeUp":"mavAP",
 	"bStream":1,
 	"portName":"/dev/ttyACM0",
-	"baud":57600,
+	"baud":115200,
 	"_portName":"/dev/ttyTHS1",
 	"_portName":"/dev/ttyAMA0",
 	"_baud":921600,
@@ -40,7 +40,6 @@
 	"Window":"OKview",
 	"port":19841,
 	"_wakeUp":"mavGCS",
-	"bStream":1,
 }
 
 {
@@ -56,7 +55,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -96,7 +95,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	

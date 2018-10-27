@@ -14,6 +14,7 @@ APcopter_slam::APcopter_slam()
 	m_nSat = 10;
 	m_hdop = 0;
 	m_vdop = 0;
+	m_fModeOriginReset = 0;
 
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
@@ -42,6 +43,7 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,nSat);
 	KISSm(pK,hdop);
 	KISSm(pK,vdop);
+	KISSm(pK,fModeOriginReset);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -82,7 +84,7 @@ void APcopter_slam::update(void)
 	updatePos();
 
 	uint32_t apMode = m_pAP->apMode();
-	if(apMode == LOITER || apMode == AUTO)
+	if((1 << apMode) & m_fModeOriginReset)
 	{
 		if(m_pAP->bApModeChanged())
 		{
@@ -170,6 +172,13 @@ bool APcopter_slam::draw(void)
 
 	pWin->addMsg(&msg);
 
+	msg = "SLAM origin = (" +
+			f2str(m_vSlamOrigin.x) + ", " +
+			f2str(m_vSlamOrigin.y) + ", " +
+			f2str(m_vSlamOrigin.z) + ")";
+
+	pWin->addMsg(&msg);
+
 	return true;
 }
 
@@ -193,7 +202,14 @@ bool APcopter_slam::cli(int& iY)
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
 			f2str(m_vSlamPos.z) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
+	msg = "SLAM origin = (" +
+			f2str(m_vSlamOrigin.x) + ", " +
+			f2str(m_vSlamOrigin.y) + ", " +
+			f2str(m_vSlamOrigin.z) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

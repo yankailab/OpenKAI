@@ -24,10 +24,6 @@ APcopter_arucoTarget::APcopter_arucoTarget()
 	m_mountConfig.stab_yaw = 0;
 	m_mountConfig.mount_mode = 2;
 
-	m_mountStatus.pointing_a = 0;
-	m_mountStatus.pointing_b = 0;
-	m_mountStatus.pointing_c = 0;
-
 }
 
 APcopter_arucoTarget::~APcopter_arucoTarget()
@@ -58,10 +54,6 @@ bool APcopter_arucoTarget::init(void* pKiss)
 		pG->v("stabRoll", &m_mountConfig.stab_roll);
 		pG->v("stabYaw", &m_mountConfig.stab_yaw);
 		pG->v("mountMode", &m_mountConfig.mount_mode);
-
-		pG->v("pointingA", &m_mountStatus.pointing_a);
-		pG->v("pointingB", &m_mountStatus.pointing_b);
-		pG->v("pointingC", &m_mountStatus.pointing_c);
 
 	}
 
@@ -191,7 +183,20 @@ void APcopter_arucoTarget::updateGimbal(void)
 {
 	m_pAP->m_pMavlink->mountControl(m_mountControl);
 	m_pAP->m_pMavlink->mountConfigure(m_mountConfig);
-	m_pAP->m_pMavlink->mountStatus(m_mountStatus);
+
+	mavlink_param_set_t D;
+	D.param_type = MAV_PARAM_TYPE_INT8;
+	string id;
+
+	D.param_value = m_mountConfig.stab_pitch;
+	id = "MNT_STAB_TILT";
+	strcpy(D.param_id, id.c_str());
+	m_pAP->m_pMavlink->param_set(D);
+
+	D.param_value = m_mountConfig.stab_roll;
+	id = "MNT_STAB_ROLL";
+	strcpy(D.param_id,id.c_str());
+	m_pAP->m_pMavlink->param_set(D);
 }
 
 bool APcopter_arucoTarget::draw(void)

@@ -98,10 +98,21 @@
 			"_IOBase":"udp",
 			"nMedian":3,
 			"zTop":50.0,
-
+			"fModeOriginReset":4,
+			
+			/*Fujikawa*/
 			"_lat":35.1676755,
 			"_lng":138.5942851,
 			
+			/*Hamamatsu1*/
+			"_lat":34.830251,
+			"_lng":137.957461,
+						
+			/*Hamamatsu2*/
+			"_lat":34.844155,
+			"_lng":138.000570,
+			
+			/*Saitama*/
 			"lat":35.854676,
 			"lng":139.517742,
 		}

@@ -17,19 +17,21 @@ namespace kai
 
 struct Time_Stamps
 {
-	uint64_t heartbeat;
-	uint64_t sys_status;
+	uint64_t attitude;
 	uint64_t battery_status;
-	uint64_t radio_status;
-	uint64_t local_position_ned;
 	uint64_t global_position_int;
+	uint64_t heartbeat;
+	uint64_t highres_imu;
+	uint64_t local_position_ned;
+	uint64_t mission_current;
+	uint64_t mount_status;
+	uint64_t param_set;
 	uint64_t position_target_local_ned;
 	uint64_t position_target_global_int;
-	uint64_t highres_imu;
-	uint64_t attitude;
+	uint64_t radio_status;
 	uint64_t rc_channels_override;
 	uint64_t rc_channels_raw;
-	uint64_t mission_current;
+	uint64_t sys_status;
 
 	void init()
 	{
@@ -46,6 +48,8 @@ struct Time_Stamps
 		rc_channels_override = 0;
 		rc_channels_raw = 0;
 		mission_current = 0;
+		mount_status = 0;
+		param_set = 0;
 	}
 };
 
@@ -55,20 +59,23 @@ struct Mavlink_Messages
 	int sysid;
 	int compid;
 
-	mavlink_heartbeat_t heartbeat;
-	mavlink_command_ack_t command_ack;
-	mavlink_sys_status_t sys_status;
-	mavlink_battery_status_t battery_status;
-	mavlink_radio_status_t radio_status;
-	mavlink_local_position_ned_t local_position_ned;
-	mavlink_global_position_int_t global_position_int;
-	mavlink_position_target_local_ned_t position_target_local_ned;
-	mavlink_position_target_global_int_t position_target_global_int;
-	mavlink_highres_imu_t highres_imu;
-	mavlink_attitude_t attitude;
-	mavlink_rc_channels_override_t rc_channels_override;
-	mavlink_rc_channels_raw_t rc_channels_raw;
-	mavlink_mission_current_t mission_current;
+	mavlink_attitude_t						attitude;
+	mavlink_battery_status_t				battery_status;
+	mavlink_command_ack_t					command_ack;
+	mavlink_global_position_int_t			global_position_int;
+	mavlink_heartbeat_t						heartbeat;
+	mavlink_highres_imu_t					highres_imu;
+	mavlink_local_position_ned_t			local_position_ned;
+	mavlink_mission_current_t				mission_current;
+	mavlink_mount_status_t					mount_status;
+	mavlink_param_set_t						param_set;
+	mavlink_position_target_local_ned_t		position_target_local_ned;
+	mavlink_position_target_global_int_t	position_target_global_int;
+	mavlink_radio_status_t					radio_status;
+	mavlink_rc_channels_override_t			rc_channels_override;
+	mavlink_rc_channels_raw_t				rc_channels_raw;
+	mavlink_sys_status_t					sys_status;
+
 	Time_Stamps time_stamps;
 
 	void init(void)
@@ -152,6 +159,7 @@ public:
 	void mountConfigure(mavlink_mount_configure_t& D);
 	void mountControl(mavlink_mount_control_t& D);
 	void mountStatus(mavlink_mount_status_t& D);
+	void param_set(mavlink_param_set_t& D);
 	void positionTargetLocalNed(mavlink_position_target_local_ned_t& D);
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);
 	void rcChannelsOverride(mavlink_rc_channels_override_t& D);

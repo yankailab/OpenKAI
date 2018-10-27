@@ -50,7 +50,6 @@ public:
 	vDouble3 m_vGimbal;
 	mavlink_mount_control_t m_mountControl;
 	mavlink_mount_configure_t m_mountConfig;
-	mavlink_mount_status_t m_mountStatus;
 
 };
 

@@ -122,7 +122,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
@@ -139,10 +139,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
+	"_portName":"/dev/ttyTHS1",
+	"_baud":921600,
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
 }
 
 {
@@ -150,7 +150,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	"devSystemID":1,
@@ -269,9 +269,6 @@
 				"stabRoll":1,
 				"stabYaw":0,
 				"mountMode":2,
-				"pointingA":0,
-				"pointingB":0,
-				"pointingC":0,
 			}
 		}
 
@@ -315,13 +312,10 @@
 				"pitch":0,
 				"roll":0,
 				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
+				"stabPitch":0,
+				"stabRoll":0,
 				"stabYaw":0,
 				"mountMode":2,
-				"pointingA":0,
-				"pointingB":0,
-				"pointingC":0,
 			}
 			
 			{
