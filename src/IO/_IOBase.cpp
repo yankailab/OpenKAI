@@ -16,7 +16,7 @@ _IOBase::_IOBase()
 	m_bRThreadON = false;
 	m_ioType = io_none;
 	m_ioStatus = io_unknown;
-	m_nFIFO = 1024000;
+	m_nFIFO = 1280000;
 }
 
 _IOBase::~_IOBase()
