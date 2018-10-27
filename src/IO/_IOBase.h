@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 
-#define N_BUF 512
+#define N_IO_BUF 512
 
 namespace kai
 {
@@ -142,6 +142,7 @@ public:
 	virtual bool isOpen(void);
 	virtual void close(void);
 	virtual bool draw(void);
+	virtual bool cli(int& iY);
 	virtual IO_TYPE ioType(void);
 
 	virtual int  read(uint8_t* pBuf, int nB);

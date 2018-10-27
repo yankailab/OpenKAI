@@ -8,7 +8,6 @@ ActionBase::ActionBase()
 	m_pAM = NULL;
 	m_tStamp = 0;
 	m_dTime = 0;
-	m_vActiveState.clear();
 	m_iLastState = 0;
 	m_bStateChanged = false;
 	m_iPriority = 0;
@@ -25,15 +24,12 @@ bool ActionBase::init(void* pKiss)
 
 	KISSm(pK, iPriority);
 
-	m_vActiveState.clear();
-
 	//link
 	string iName="";
 	F_INFO(pK->v("_Automaton", &iName));
 	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
 	NULL_T(m_pAM);
 
-	m_vActiveState.clear();
 	string pAS[N_ACTIVESTATE];
 	int nAS = pK->array("activeState", pAS, N_ACTIVESTATE);
 	for(int i=0; i<nAS; i++)

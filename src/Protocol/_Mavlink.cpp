@@ -38,7 +38,6 @@ bool _Mavlink::init(void* pKiss)
 	m_msg.sysid = 0;
 	m_msg.compid = 0;
 	m_status.packet_rx_drop_count = 0;
-	m_vPeer.clear();
 
 	//link
 	string iName;
@@ -126,7 +125,7 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 {
 	NULL_(m_pIO);
 
-	uint8_t pB[N_BUF];
+	uint8_t pB[N_IO_BUF];
 	int nB = mavlink_msg_to_send_buffer(pB, &msg);
 
 	if(m_pIO->ioType()!=io_webSocket)
@@ -667,13 +666,13 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
-	uint8_t	rBuf[MAV_N_BUF];
+	static uint8_t rBuf[N_IO_BUF];
 	static int nRead = 0;
 	static int iRead = 0;
 
 	if(nRead == 0)
 	{
-		nRead = m_pIO->read(rBuf, MAV_N_BUF);
+		nRead = m_pIO->read(rBuf, N_IO_BUF);
 		IF_F(nRead <= 0);
 		iRead = 0;
 	}

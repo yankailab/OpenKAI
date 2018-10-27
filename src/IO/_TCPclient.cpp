@@ -115,9 +115,9 @@ void _TCPclient::updateW(void)
 
 		this->autoFPSfrom();
 
-		uint8_t pB[N_BUF];
+		static uint8_t pB[N_IO_BUF];
 		int nB;
-		while((nB = m_fifoW.output(pB, N_BUF)) > 0)
+		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
 		{
 			int nSend = ::send(m_socket, pB, nB, 0);
 			if (nSend == -1)
@@ -147,8 +147,8 @@ void _TCPclient::updateR(void)
 		}
 
 		//blocking mode, no FPS control
-		uint8_t pB[N_BUF];
-		int nR = ::recv(m_socket, pB, N_BUF, 0);
+		static uint8_t pB[N_IO_BUF];
+		int nR = ::recv(m_socket, pB, N_IO_BUF, 0);
 		if (nR <= 0)
 		{
 			LOG_E("recv error: " + i2str(errno));

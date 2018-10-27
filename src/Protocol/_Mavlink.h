@@ -7,7 +7,6 @@
 #include "../IO/_IOBase.h"
 #include "../IO/_WebSocket.h"
 
-#define MAV_N_BUF 512
 #define MAV_N_PEER 16
 #define MAV_N_CMD_U64 4
 #define MAV_N_CMD 256

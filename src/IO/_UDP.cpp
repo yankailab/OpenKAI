@@ -117,9 +117,9 @@ void _UDP::updateW(void)
 
 		this->autoFPSfrom();
 
-		uint8_t pB[N_BUF];
+		static uint8_t pB[N_IO_BUF];
 		int nB;
-		while((nB = m_fifoW.output(pB, N_BUF)) > 0)
+		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
 		{
 			int nSend = ::sendto(m_socket, pB, nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 			if (nSend == -1)
@@ -143,8 +143,8 @@ void _UDP::updateR(void)
 			::sleep(1);
 		}
 
-		uint8_t pB[N_BUF];
-		int nR = ::recvfrom(m_socket, pB, N_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
+		static uint8_t pB[N_IO_BUF];
+		int nR = ::recvfrom(m_socket, pB, N_IO_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 		if (nR <= 0)
 		{
 			LOG_E("recvfrom error: " + i2str(errno));

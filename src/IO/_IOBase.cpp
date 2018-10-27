@@ -94,4 +94,20 @@ bool _IOBase::draw(void)
 	return true;
 }
 
+bool _IOBase::cli(int& iY)
+{
+	IF_F(!this->_ThreadBase::cli(iY));
+
+	string msg;
+
+	msg = "nFifoW=" + i2str(m_fifoW.m_nData) +
+			", nFifoR=" + i2str(m_fifoR.m_nData);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	return true;
+}
+
+
 }

@@ -115,8 +115,8 @@ void APcopter_slam::update(void)
 
 void APcopter_slam::updatePos(void)
 {
-	uint8_t	pBuf[N_BUF];
-	int nRead = m_pIO->read(pBuf, N_BUF);
+	uint8_t	pBuf[N_IO_BUF];
+	int nRead = m_pIO->read(pBuf, N_IO_BUF);
 	IF_(nRead <= 0);
 
 	for(int i=0; i<nRead; i++)
