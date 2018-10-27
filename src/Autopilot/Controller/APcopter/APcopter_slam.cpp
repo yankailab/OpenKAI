@@ -115,7 +115,7 @@ void APcopter_slam::update(void)
 
 void APcopter_slam::updatePos(void)
 {
-	uint8_t	pBuf[N_IO_BUF];
+	static uint8_t pBuf[N_IO_BUF];
 	int nRead = m_pIO->read(pBuf, N_IO_BUF);
 	IF_(nRead <= 0);
 
@@ -128,19 +128,17 @@ void APcopter_slam::updatePos(void)
 
 		m_pCmd[m_iCmd] = pBuf[i];
 		m_iCmd++;
+		IF_CONT(m_iCmd < MG_PACKET_N);
 
-		if(m_iCmd >= MG_PACKET_N)
-		{
-			//decode one packet
-			m_fX.input(((double)makeINT32(&m_pCmd[1], false)) * 0.001);
-			m_fY.input(((double)makeINT32(&m_pCmd[5], false)) * 0.001);
-			m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
-			m_iCmd = 0;
+		//decode one packet
+		m_fX.input(((double)makeINT32(&m_pCmd[1], false)) * 0.001);
+		m_fY.input(((double)makeINT32(&m_pCmd[5], false)) * 0.001);
+		m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
+		m_iCmd = 0;
 
-			m_vSlamPos.x = m_fY.v();
-			m_vSlamPos.y = -m_fX.v();
-			m_vSlamPos.z = 0;
-		}
+		m_vSlamPos.x = m_fY.v();
+		m_vSlamPos.y = -m_fX.v();
+		m_vSlamPos.z = 0;
 	}
 }
 
