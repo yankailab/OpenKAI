@@ -15,6 +15,7 @@ APcopter_slam::APcopter_slam()
 	m_hdop = 0;
 	m_vdop = 0;
 	m_fModeOriginReset = 0;
+	m_yawOffset = 0.0;
 
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
@@ -44,6 +45,7 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,hdop);
 	KISSm(pK,vdop);
 	KISSm(pK,fModeOriginReset);
+	KISSm(pK,yawOffset);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -93,6 +95,7 @@ void APcopter_slam::update(void)
 	}
 
 	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	m_GPS.m_UTM.m_hdg += m_yawOffset;
 	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
 	vDouble3 dPos = m_vSlamPos - m_vSlamOrigin;
@@ -167,15 +170,17 @@ bool APcopter_slam::draw(void)
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
 			f2str(m_vSlamPos.z) + ")";
-
 	pWin->addMsg(&msg);
 
 	msg = "SLAM origin = (" +
 			f2str(m_vSlamOrigin.x) + ", " +
 			f2str(m_vSlamOrigin.y) + ", " +
 			f2str(m_vSlamOrigin.z) + ")";
-
 	pWin->addMsg(&msg);
+
+	msg = "yawOffset = " + f2str(m_yawOffset);
+	pWin->addMsg(&msg);
+
 
 	return true;
 }
@@ -208,6 +213,11 @@ bool APcopter_slam::cli(int& iY)
 			f2str(m_vSlamOrigin.x) + ", " +
 			f2str(m_vSlamOrigin.y) + ", " +
 			f2str(m_vSlamOrigin.z) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "yawOffset = " + f2str(m_yawOffset);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

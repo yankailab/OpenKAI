@@ -41,6 +41,7 @@ public:
 	vDouble3 m_vSlamOrigin;
 	vDouble3 m_vSlamPos;
 	uint32_t m_fModeOriginReset;
+	double	m_yawOffset;
 
 	uint8_t	m_pCmd[MG_PACKET_N];
 	int m_iCmd;

@@ -99,6 +99,7 @@
 			"nMedian":3,
 			"zTop":50.0,
 			"fModeOriginReset":4,
+			"yawOffset":0,
 			
 			/*Fujikawa*/
 			"_lat":35.1676755,
