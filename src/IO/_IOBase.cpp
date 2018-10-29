@@ -109,5 +109,4 @@ bool _IOBase::cli(int& iY)
 	return true;
 }
 
-
 }

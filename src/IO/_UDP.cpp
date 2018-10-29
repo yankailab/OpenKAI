@@ -117,11 +117,11 @@ void _UDP::updateW(void)
 
 		this->autoFPSfrom();
 
-		static uint8_t pB[N_IO_BUF];
+		static uint8_t pBw[N_IO_BUF];
 		int nB;
-		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+		while((nB = m_fifoW.output(pBw, N_IO_BUF)) > 0)
 		{
-			int nSend = ::sendto(m_socket, pB, nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
+			int nSend = ::sendto(m_socket, pBw, nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 			if (nSend == -1)
 			{
 				LOG_I("sendto error: " + i2str(errno));
@@ -143,8 +143,8 @@ void _UDP::updateR(void)
 			::sleep(1);
 		}
 
-		static uint8_t pB[N_IO_BUF];
-		int nR = ::recvfrom(m_socket, pB, N_IO_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
+		static uint8_t pBr[N_IO_BUF];
+		int nR = ::recvfrom(m_socket, pBr, N_IO_BUF, 0, (struct sockaddr *) &m_sAddr, &m_nSAddr);
 		if (nR <= 0)
 		{
 			LOG_E("recvfrom error: " + i2str(errno));
@@ -152,7 +152,7 @@ void _UDP::updateR(void)
 			continue;
 		}
 
-		m_fifoR.input(pB,nR);
+		m_fifoR.input(pBr,nR);
 		this->wakeUpLinked();
 
 		LOG_I("Received from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));

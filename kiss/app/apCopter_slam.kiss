@@ -83,7 +83,7 @@
 			"freqPos":10,
 			"freqRC":0,
 			"freqExtStat":0,
-			"freqSendHeartbeat":1,			
+			"freqSendHeartbeat":1,
 		}
 		
 		{
@@ -98,7 +98,7 @@
 			"_IOBase":"udp",
 			"nMedian":3,
 			"zTop":50.0,
-			"fModeOriginReset":4,
+			"fModeOriginReset":0,
 			"yawOffset":0,
 			
 			/*Fujikawa*/
@@ -106,16 +106,16 @@
 			"_lng":138.5942851,
 			
 			/*Hamamatsu1*/
-			"_lat":34.830251,
-			"_lng":137.957461,
+			"lat":34.830251,
+			"lng":137.957461,
 						
 			/*Hamamatsu2*/
 			"_lat":34.844155,
 			"_lng":138.000570,
 			
 			/*Saitama*/
-			"lat":35.854676,
-			"lng":139.517742,
+			"_lat":35.854676,
+			"_lng":139.517742,
 		}
 		
 	}
