@@ -18,26 +18,28 @@
 #define WS_MODE_TXT 0x1
 #define WS_MODE_BIN 0x2
 
-/*
 namespace kai
 {
 
 struct WS_CLIENT
 {
 	uint32_t m_id;
-	std::queue<IO_BUF> m_qR;
+	IO_FIFO m_fifo;
 	uint64_t m_tStamp;
 
-	void init(uint32_t id)
+	bool init(uint32_t id, int nB)
 	{
 		m_id = id;
 		m_tStamp = getTimeUsec();
+		IF_F(!m_fifo.init(nB));
 		reset();
+
+		return true;
 	}
 
 	void reset(void)
 	{
-		while (!m_qR.empty())m_qR.pop();
+		m_fifo.clear();
 	}
 };
 
@@ -61,7 +63,6 @@ public:
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
 
 private:
-	int	 readFrameBuf(uint8_t* pBuf, int nB);
 	void resetDecodeMsg(void);
 	void decodeMsg(void);
 	WS_CLIENT* findClientById(uint32_t id);
@@ -81,24 +82,23 @@ private:
 	}
 
 public:
-	string	m_fifoW;
-	string	m_fifoR;
+	string	m_fifoIn;
+	string	m_fifoOut;
 	int		m_fdW;
 	int		m_fdR;
 	uint32_t m_mode;
+	pthread_mutex_t m_mutexW;
 
 	vector<WS_CLIENT> m_vClient;
-	pthread_mutex_t m_mutexCR;
 
 	int m_iMsg;
 	int m_nMsg;
 	int m_nB;
 	int m_iB;
 	WS_CLIENT* m_pC;
-	uint8_t m_pMB[WS_N_BUF];
 
 };
 
 }
-*/
+
 #endif

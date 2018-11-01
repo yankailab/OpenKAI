@@ -889,15 +889,15 @@ void _Mavlink::handleMessages()
 		}
 
 		//Message routing
-//		for(int i=0; i<m_vPeer.size(); i++)
-//		{
-//			MAVLINK_PEER* pMP = &m_vPeer[i];
-//			IF_CONT(!pMP->bCmdRoute(msg.msgid));
-//
-//			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
-//			IF_CONT(!pM);
-//			pM->writeMessage(msg);
-//		}
+		for(int i=0; i<m_vPeer.size(); i++)
+		{
+			MAVLINK_PEER* pMP = &m_vPeer[i];
+			IF_CONT(!pMP->bCmdRoute(msg.msgid));
+
+			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
+			IF_CONT(!pM);
+			pM->writeMessage(msg);
+		}
 	}
 }
 
