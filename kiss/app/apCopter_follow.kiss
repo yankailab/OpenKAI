@@ -2,9 +2,9 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"bLog":0,
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
 	"waitKey":50,
 }
 
@@ -27,7 +27,7 @@
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
 	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
 {
@@ -36,16 +36,16 @@
 	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
-	"FPS":30,
+	"FPS":1,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"modelDir":"/home/ubuntu/dev/model/wildhog2/",
-	"modelFile":"yolov3-tiny.cfg",
-	"trainedFile":"yolov3-tiny_70000.weights",
-	"_modelDir":"/home/kai/dev/model/yolov3-tiny/",
+	"_modelDir":"/home/ubuntu/dev/model/yolov3/",
 	"_modelFile":"yolov3.cfg",
 	"_trainedFile":"yolov3.weights",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
 	"labelFile":"class.names",
 	"meanFile":"",
 	"nClass":80,
@@ -83,7 +83,7 @@
 {
 	"name":"tracker1",
 	"class":"_EcoTracker",
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -103,7 +103,7 @@
 {
 	"name":"tracker2",
 	"class":"_EcoTracker",
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -193,7 +193,7 @@
 	"class":"_Automaton",
 	"bInst":1,
 	"Window":"OKview",
-	"startState":"CC_STANDBY",
+	"startState":"CC_SEARCH",
 
 	{
 		"state":"CC_STANDBY",
@@ -237,7 +237,7 @@
 		{
 			"name":"apMission",
 			"class":"APcopter_mission",
-			"bInst":1,
+			"bInst":0,
 			"_Automaton":"apState",
 			"Window":"OKview",
 			"APcopter_base":"apBase",
@@ -250,6 +250,7 @@
 			"class":"APcopter_follow",
 			"bInst":1,
 			"bLog":0,
+			"bDraw":1,
 			"Window":"OKview",
 			"_Automaton":"apState",
 			"activeState":["CC_SEARCH","CC_FOLLOW"],
@@ -257,7 +258,7 @@
 			"_ObjectBase":"det",
 			"_TrackerBase1":"tracker1",
 			"_TrackerBase2":"tracker2",
-			"bUseTracker":0,
+			"bUseTracker":1,
 			"iClass":0,
 			"APcopter_posCtrlBase":"apPosCtrl",
 			"camYaw":0.0,
@@ -299,7 +300,7 @@
 		{
 			"name":"apLanding",
 			"class":"APcopter_arucoTarget",
-			"bInst":1,
+			"bInst":0,
 			"Window":"OKview",
 			"APcopter_base":"apBase",
 			"_ArUco":"arUco",

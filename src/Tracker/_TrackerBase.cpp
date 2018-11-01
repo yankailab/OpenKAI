@@ -109,9 +109,26 @@ bool _TrackerBase::draw(void)
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
-	IF_F(m_trackState != track_update);
 
-	rectangle(*pMat, m_rBB, Scalar(0,255,0), 2);
+	Scalar col;
+	string msg = "Stop";
+
+	if(m_trackState == track_init)
+	{
+		col = Scalar(0,255,255);
+		rectangle(*pMat, m_newBB, col, 2);
+		msg = "Init";
+	}
+	else if(m_trackState == track_update)
+	{
+		col = Scalar(0,255,0);
+		rectangle(*pMat, m_rBB, col, 2);
+		msg = "Update";
+	}
+
+	pWin->tabNext();
+	pWin->addMsg(&msg);
+	pWin->tabPrev();
 
 	return true;
 }
@@ -120,9 +137,22 @@ bool _TrackerBase::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
-	string msg = "Tracking pos = ("
-				+ f2str(m_bb.midX()) + ", "
-				+ f2str(m_bb.midY()) + ")";
+	string msg = "Stop";
+	if(m_trackState == track_init)
+	{
+		msg = "Init";
+	}
+	else if(m_trackState == track_update)
+	{
+		msg = "Update";
+	}
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Tracking pos = ("
+			+ f2str(m_bb.midX()) + ", "
+			+ f2str(m_bb.midY()) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

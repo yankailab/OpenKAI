@@ -183,7 +183,6 @@ void _EcoTracker::track(void)
 		m_tStampBGR = pFrame->tStamp();
 		mImg = *pFrame->m();
 		IF_(mImg.empty());
-
 		IF_(m_trackState != track_update);
 
 		Rect2f r;
