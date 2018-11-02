@@ -1,4 +1,6 @@
-# OpenKAI
+<p align="center">
+<img src="https://github.com/yankailab/OpenKAI/raw/master/data/OpenKAI.png" alt="OpenKAI" width="350px">
+</p>
 
 ## What is it?
 OpenKAI (Kinetic AI) is a framework that combines AI and robot controllers. OpenKAI is designed to be highly customizable for versatile applications, yet light weight to run on embedded hardwares, and a simple code architecture that is easy for expansion and maintenance.
