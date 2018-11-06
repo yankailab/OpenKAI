@@ -53,20 +53,11 @@
 
 {
 	"name":"cam",
-	"class":"_GStreamer",
-	"FPS":10,
-	"bInst":0,
-	"Window":"OKview",
-	"pipeline":"v4l2src device=/dev/video4 ! videoflip method=0 ! video/x-raw,format=BGR,width=3840,height=2160,framerate=10/1 ! videoconvert ! appsink",
-}
-
-{
-	"name":"cam",
 	"class":"_Camera",
 	"FPS":10,
 	"bInst":1,
 	"threadMode":1,
-	"nInitRead":10,
+	"nInitRead":3,
 	"Window":"OKview",
 	"deviceID":3,
 	"w":3840,
@@ -85,8 +76,6 @@
 	"_wakeUp":"mavAP",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
 	"_portName":"/dev/ttyUSB0",
 	"_baud":57600,
 }
@@ -100,6 +89,45 @@
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	"devSystemID":1,
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_wakeUp":"mavGCS",
+	"port":56789,
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"bInst":1,
+	"FPS":30,
+	"Window":"OKview",
 }
 
 {
@@ -119,7 +147,7 @@
 	"class":"_AutoPilot",
 	"_Automaton":"apState",
 	"bInst":1,
-	"FPS":10,
+	"FPS":20,
 	"Window":"OKview",
 	
 	{
@@ -132,9 +160,10 @@
 			"_Automaton":"apState",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqAtti":0,
-			"freqGlobalPos":10,
+			"freqExtra1":10,
+			"freqPos":10,
 			"freqRC":0,
+			"freqExtStat":0,
 			"freqSendHeartbeat":1,
 		}
 
@@ -144,13 +173,15 @@
 			"bInst":1,
 			"bLog":0,
 			"Window":"OKview",
+			"_IOBase":"ws",
 			"_Automaton":"apState",
 			"activeState":["CC_STANDBY"],
 			"APcopter_base":"apBase",
 			"_DepthVisionBase":"realsense",
 			"_VisionBase":"cam",
-			"tInterval":3,
+			"tInterval":1,
 			"dir":"/mnt/sd/",
+			"_dir":"/home/kai/dev/test/",
 			"subDir":"",
 		}
 	}

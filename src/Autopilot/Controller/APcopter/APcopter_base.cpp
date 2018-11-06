@@ -160,7 +160,13 @@ bool APcopter_base::draw(void)
 	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
 	pWin->addMsg(&msg);
 
-	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
+	pWin->addMsg(&msg);
+
+	double ov1e7 = 0.0000001;
+	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
+	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -192,7 +198,15 @@ bool APcopter_base::cli(int& iY)
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
-	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	double ov1e7 = 0.0000001;
+	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
+	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
