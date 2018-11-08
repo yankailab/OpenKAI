@@ -2,6 +2,7 @@
 /Debug/
 /Release/
 /build/
+.vscode/
 *.prefs
 .project
 .cproject

@@ -27,9 +27,9 @@ External camera (Click to jump to YouTube):
 
 
 ## Build & Run
-###[Build on NVIDIA Jetson TX1](https://github.com/yankailab/OpenKAI/blob/master/doc/JetsonTX1/build.md)
+### [Build on NVIDIA Jetson TX1](https://github.com/yankailab/OpenKAI/blob/master/doc/JetsonTX1/build.md)
 
-###[Build on Ubuntu desktop systems](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/build.md)
+### [Build on Ubuntu desktop systems](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/build.md)
 
 ## Application implementation
 There are two ways of implement an application based on OpenKAI: compilation vs. script.
@@ -37,7 +37,7 @@ There are two ways of implement an application based on OpenKAI: compilation vs.
 ### Compilation
 OpenKAI is implemented purely in C++, it is very easy to implement your application as C/C++ and compile with OpenKAI together. Refer to "OpenKAI/src/Application/Startup.cpp" as a starting point for application integration, and this guide:
 
-###[Develop OpenKAI apps with Eclipse CDT](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/eclipse.md)
+### [Develop OpenKAI apps with Eclipse CDT](https://github.com/yankailab/OpenKAI/blob/master/doc/x86_64/Ubuntu/eclipse.md)
 
 ### Kiss (OpenKai Simple Script)
 If the existing function Modules from OpenKAI already meet your needs, you can write a json-like Kiss script to define your application. Note that Kiss is treated as a config file and will be parsed all at once at the beginning of OpenKAI program execution. The Modules defined by Kiss file are statically created and get started to run. Therefore there is no difference in execution speed between the Compilation way and application defined by Kiss (To be updated).

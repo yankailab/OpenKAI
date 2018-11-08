@@ -42,9 +42,14 @@
 #include "../SLAM/_ORB_SLAM2.h"
 #include "../SLAM/_LidarSlam.h"
 
+#ifdef USE_OPENCV_CONTRIB
 #include "../Tracker/_SingleTracker.h"
 #include "../Tracker/_MultiTracker.h"
+#endif
+
+#ifdef USE_OPENTRACKER
 #include "../Tracker/_EcoTracker.h"
+#endif
 
 #include "../UI/Window.h"
 
