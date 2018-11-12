@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Autopilot__AutoPilot_H_
 #define OpenKAI_src_Autopilot__AutoPilot_H_
 
+#include "../Mission/_MissionControl.h"
 #include "../Base/common.h"
-#include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
 #include "Controller/APcopter/APcopter_arucoTarget.h"
 #include "Controller/APcopter/APcopter_base.h"
@@ -63,7 +63,7 @@ public:
 	bool cli(int& iY);
 
 public:
-	_Automaton* m_pAM;
+	_MissionControl* m_pAM;
 	vector<ACTION_INST> m_vAction;
 
 	//Thread

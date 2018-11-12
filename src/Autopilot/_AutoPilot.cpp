@@ -94,8 +94,8 @@ bool _AutoPilot::init(void* pKiss)
 	}
 
 	string iName="";
-	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
+	F_INFO(pK->v("_MissionControl", &iName));
+	m_pAM = (_MissionControl*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

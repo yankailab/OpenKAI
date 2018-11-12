@@ -13,13 +13,13 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
-#include "../Automaton/_Automaton.h"
 #include "../Detector/_ArUco.h"
 #include "../Detector/_DepthEdge.h"
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
 
 #include "../Navigation/_Path.h"
+#include "../Mission/_MissionControl.h"
 
 #include "../Autopilot/_AutoPilot.h"
 #include "../Control/PIDctrl.h"

@@ -4,7 +4,7 @@
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
-#include "../Automaton/_Automaton.h"
+#include "../Mission/_MissionControl.h"
 #include "../UI/Window.h"
 
 #define N_ACTIVESTATE 128
@@ -26,7 +26,7 @@ public:
 	virtual int check(void);
 
 public:
-	_Automaton* m_pAM;
+	_MissionControl* m_pAM;
 	std::vector<int>	m_vActiveState;
 	int m_iLastState;
 	bool m_bStateChanged;

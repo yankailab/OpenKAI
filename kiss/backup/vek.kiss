@@ -119,8 +119,8 @@
 
 
 {
-	"name":"automaton",
-	"class":"_Automaton",
+	"name":"Mission",
+	"class":"_MissionControl",
 	"bInst":1,
 	"bLog":0,
 	"FPS":10,
@@ -148,7 +148,7 @@
 {
 	"name":"autoPilot",
 	"class":"_AutoPilot",
-	"_Automaton":"automaton",
+	"_MissionControl":"Mission",
 	"Window":"VEKview",
 	"bInst":1,
 	"FPS":30,
@@ -162,7 +162,7 @@
 			"bInst":1,
 			"Window":"VEKview",
 			"_IOBase":"VEKio",
-			"_Automaton":"automaton",
+			"_MissionControl":"Mission",
 			"pwmU":2000,
 			"pwmN":1500,
 			"pwmL":1000,
@@ -191,7 +191,7 @@
 			"bInst":1,
 			"Window":"VEKview",
 			"VEK_base":"base",
-			"_Automaton":"automaton",
+			"_MissionControl":"Mission",
 			"_ZEDobstacle":"ZEDobs",
 			"dAlert":1.0,
 			"vSteer":0.2,
@@ -214,7 +214,7 @@
 			"_ZED":"ZED",
 			"Window":"VEKview",
 			"VEK_base":"base",
-			"_Automaton":"automaton",
+			"_MissionControl":"Mission",
 			"_ClusterNet":"cnTarget",
 			"_ZEDobstacle":"ZEDobs",
 			"distMin":0.0,

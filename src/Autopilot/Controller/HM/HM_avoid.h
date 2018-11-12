@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_HM_avoid_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
+#include "../../../Mission/_MissionControl.h"
 #include "../../../Vision/_DepthVisionBase.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"

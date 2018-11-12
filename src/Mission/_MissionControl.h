@@ -1,12 +1,12 @@
 /*
- * _Automaton.h
+ * _MissionControl.h
  *
  *  Created on: Aug 27, 2016
  *      Author: Kai
  */
 
-#ifndef OpenKAI_src_Automaton__Automaton_H_
-#define OpenKAI_src_Automaton__Automaton_H_
+#ifndef OpenKAI_src_Mission__MissionControl_H_
+#define OpenKAI_src_Mission__MissionControl_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -16,11 +16,11 @@
 namespace kai
 {
 
-class _Automaton: public BASE
+class _MissionControl: public BASE
 {
 public:
-	_Automaton();
-	virtual ~_Automaton();
+	_MissionControl();
+	virtual ~_MissionControl();
 
 	bool init(void* pKiss);
 	bool draw(void);

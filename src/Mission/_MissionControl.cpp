@@ -1,27 +1,27 @@
 /*
- * State.cpp
+ * _MissionControl.cpp
  *
  *  Created on: Aug 27, 2016
  *      Author: Kai
  */
 
-#include "_Automaton.h"
+#include "_MissionControl.h"
 
 namespace kai
 {
 
-_Automaton::_Automaton()
+_MissionControl::_MissionControl()
 {
 	m_nState = 0;
 	m_iState = 0;
 	m_iLastState = 0;
 }
 
-_Automaton::~_Automaton()
+_MissionControl::~_MissionControl()
 {
 }
 
-bool _Automaton::init(void* pKiss)
+bool _MissionControl::init(void* pKiss)
 {
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -49,7 +49,7 @@ bool _Automaton::init(void* pKiss)
 	return true;
 }
 
-int _Automaton::getStateIdx(const string& stateName)
+int _MissionControl::getStateIdx(const string& stateName)
 {
 	for(int i=0;i<m_nState;i++)
 	{
@@ -59,14 +59,14 @@ int _Automaton::getStateIdx(const string& stateName)
 	return -1;
 }
 
-bool _Automaton::transit(const string& nextStateName)
+bool _MissionControl::transit(const string& nextStateName)
 {
 	int iNext = getStateIdx(nextStateName);
 
 	return transit(iNext);
 }
 
-bool _Automaton::transit(int nextStateIdx)
+bool _MissionControl::transit(int nextStateIdx)
 {
 	IF_F(nextStateIdx < 0);
 	IF_F(nextStateIdx >= m_nState);
@@ -79,22 +79,22 @@ bool _Automaton::transit(int nextStateIdx)
 	return true;
 }
 
-int _Automaton::getCurrentStateIdx(void)
+int _MissionControl::getCurrentStateIdx(void)
 {
 	return m_iState;
 }
 
-string* _Automaton::getCurrentStateName(void)
+string* _MissionControl::getCurrentStateName(void)
 {
 	return &m_pStateName[m_iState];
 }
 
-int _Automaton::getLastStateIdx(void)
+int _MissionControl::getLastStateIdx(void)
 {
 	return m_iLastState;
 }
 
-bool _Automaton::draw(void)
+bool _MissionControl::draw(void)
 {
 	IF_F(!this->BASE::draw());
 	Window* pWin = (Window*)this->m_pWindow;

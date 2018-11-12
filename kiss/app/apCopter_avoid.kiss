@@ -74,7 +74,7 @@
 
 {
 	"name":"apState",
-	"class":"_Automaton",
+	"class":"_MissionControl",
 	"bInst":1,
 	"Window":"OKview",
 	"startState":"AP_STANDBY",
@@ -87,7 +87,7 @@
 {
 	"name":"apPilot",
 	"class":"_AutoPilot",
-	"_Automaton":"apState",
+	"_MissionControl":"apState",
 	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
@@ -99,7 +99,7 @@
 			"name":"apBase",
 			"class":"APcopter_base",
 			"bInst":1,
-			"_Automaton":"apState",
+			"_MissionControl":"apState",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqAtti":0,
@@ -113,7 +113,7 @@
 			"bInst":1,
 			"bDraw":1,
 			"Window":"OKview",
-			"_Automaton":"apState",
+			"_MissionControl":"apState",
 			"APcopter_base":"apBase",
 			"_DepthVisionBase":"rs",
 
