@@ -110,7 +110,7 @@ void APcopter_arucoTarget::update(void)
 		return;
 	}
 
-	if(m_bStateChanged)
+	if(m_bMissionChanged)
 	{
 		m_pArUco->wakeUp();
 	}

@@ -51,7 +51,7 @@ void APcopter_mission::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pAM->getCurrentMissionName();
 	uint32_t apMode = m_pAP->apMode();
 
 	if(apMode == FOLLOW ||

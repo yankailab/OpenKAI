@@ -8,8 +8,8 @@ ActionBase::ActionBase()
 	m_pAM = NULL;
 	m_tStamp = 0;
 	m_dTime = 0;
-	m_iLastState = 0;
-	m_bStateChanged = false;
+	m_iLastMission = 0;
+	m_bMissionChanged = false;
 	m_iPriority = 0;
 }
 
@@ -30,17 +30,17 @@ bool ActionBase::init(void* pKiss)
 	m_pAM = (_MissionControl*) (pK->root()->getChildInst(iName));
 	NULL_T(m_pAM);
 
-	string pAS[N_ACTIVESTATE];
-	int nAS = pK->array("activeState", pAS, N_ACTIVESTATE);
+	string pAS[N_ACTIVEMISSION];
+	int nAS = pK->array("activeState", pAS, N_ACTIVEMISSION);
 	for(int i=0; i<nAS; i++)
 	{
-		int iState = m_pAM->getStateIdx(pAS[i]);
-		if(iState<0)continue;
+		int iMission = m_pAM->getMissionIdx(pAS[i]);
+		if(iMission<0)continue;
 
-		m_vActiveState.push_back(iState);
+		m_vActiveMission.push_back(iMission);
 	}
 
-	m_iLastState = m_pAM->getCurrentStateIdx();
+	m_iLastMission = m_pAM->getCurrentMissionIdx();
 
 	return true;
 }
@@ -59,15 +59,15 @@ void ActionBase::update(void)
 	m_tStamp = newTime;
 
 	NULL_(m_pAM);
-	int currentState = m_pAM->getCurrentStateIdx();
-	if(m_iLastState != currentState)
+	int currentMission = m_pAM->getCurrentMissionIdx();
+	if(m_iLastMission != currentMission)
 	{
-		m_bStateChanged = true;
-		m_iLastState = currentState;
+		m_bMissionChanged = true;
+		m_iLastMission = currentMission;
 	}
 	else
 	{
-		m_bStateChanged = false;
+		m_bMissionChanged = false;
 	}
 }
 
@@ -75,10 +75,10 @@ bool ActionBase::isActive(void)
 {
 	NULL_F(m_pAM);
 
-	int iState = m_pAM->getCurrentStateIdx();
-	for (int i : m_vActiveState)
+	int iMission = m_pAM->getCurrentMissionIdx();
+	for (int i : m_vActiveMission)
 	{
-		if(iState == i)return true;
+		if(iMission == i)return true;
 	}
 
 	return false;
@@ -86,7 +86,7 @@ bool ActionBase::isActive(void)
 
 bool ActionBase::isStateChanged(void)
 {
-	return m_bStateChanged;
+	return m_bMissionChanged;
 }
 
 bool ActionBase::draw(void)

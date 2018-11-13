@@ -7,7 +7,7 @@
 #include "../Mission/_MissionControl.h"
 #include "../UI/Window.h"
 
-#define N_ACTIVESTATE 128
+#define N_ACTIVEMISSION 128
 
 namespace kai
 {
@@ -27,9 +27,9 @@ public:
 
 public:
 	_MissionControl* m_pAM;
-	std::vector<int>	m_vActiveState;
-	int m_iLastState;
-	bool m_bStateChanged;
+	std::vector<int> m_vActiveMission;
+	int m_iLastMission;
+	bool m_bMissionChanged;
 
 	int64_t m_tStamp;
 	int64_t m_dTime;

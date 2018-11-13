@@ -139,7 +139,7 @@ void APcopter_follow::update(void)
 		return;
 	}
 
-	if(m_bStateChanged)
+	if(m_bMissionChanged)
 	{
 		m_pDet->wakeUp();
 	}
@@ -303,7 +303,7 @@ bool APcopter_follow::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pAM->getCurrentMissionName();
 	string msg;
 
 	pWin->tabNext();
@@ -340,7 +340,7 @@ bool APcopter_follow::cli(int& iY)
 	IF_F(!this->ActionBase::cli(iY));
 	IF_F(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pAM->getCurrentMissionName();
 	string msg;
 
 	if(!isActive())

@@ -70,7 +70,7 @@ void HM_base::update(void)
 
 	updateCAN();
 
-	string* pStateName = m_pAM->getCurrentStateName();
+	string* pStateName = m_pAM->getCurrentMissionName();
 	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME" || *pStateName=="HM_MANUAL")
 	{
 		m_rpmL = 0;
@@ -121,22 +121,22 @@ void HM_base::cmd(void)
 		m_rpmR = 0;
 		break;
 	case 'w':
-		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = m_defaultRpmT;
 		m_rpmR = m_defaultRpmT;
 		break;
 	case 'a':
-		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = -m_defaultRpmT;
 		m_rpmR = m_defaultRpmT;
 		break;
 	case 's':
-		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = -m_defaultRpmT;
 		m_rpmR = -m_defaultRpmT;
 		break;
 	case 'd':
-		IF_(*m_pAM->getCurrentStateName() != "HM_MANUAL");
+		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = m_defaultRpmT;
 		m_rpmR = -m_defaultRpmT;
 		break;
@@ -188,7 +188,7 @@ void HM_base::updateCAN(void)
 	m_pCAN->send(addr, 8, cmd);
 
 	//status LED
-	string stateName = *m_pAM->getCurrentStateName();
+	string stateName = *m_pAM->getCurrentMissionName();
 	if(stateName=="HM_WORK" || stateName=="HM_RTH")
 	{
 		m_pCAN->pinOut(m_pinLEDl,0);

@@ -1,5 +1,5 @@
 /*
- * _MissionBase.h
+ * MissionBase.h
  *
  *  Created on: Nov 13, 2018
  *      Author: yankai
@@ -14,17 +14,17 @@
 namespace kai
 {
 
-class _MissionBase: public _ThreadBase
+class MissionBase: public BASE
 {
 public:
-	_MissionBase();
-	virtual ~_MissionBase();
+	MissionBase();
+	virtual ~MissionBase();
 
 	virtual bool init(void* pKiss);
+	virtual int check(void);
+	virtual bool update(void);
 	virtual bool draw(void);
 	virtual bool cli(int& iY);
-
-public:
 
 };
 
