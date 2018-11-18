@@ -26,7 +26,7 @@ public:
 	virtual int check(void);
 
 public:
-	_MissionControl* m_pAM;
+	_MissionControl* m_pMC;
 	std::vector<int> m_vActiveMission;
 	int m_iLastMission;
 	bool m_bMissionChanged;

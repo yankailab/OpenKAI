@@ -21,7 +21,6 @@ APcopter_slam::APcopter_slam()
 
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
-	m_vSlamOrigin.init();
 	m_vSlamPos.init();
 }
 
@@ -37,7 +36,6 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,zTop);
 	pK->v("lat", &m_vGPSorigin.m_lat);
 	pK->v("lng", &m_vGPSorigin.m_lng);
-	m_vSlamOrigin.init();
 	m_vSlamPos.init();
 	m_GPS.update(m_vGPSorigin);
 
@@ -87,21 +85,11 @@ void APcopter_slam::update(void)
 
 	updatePos();
 
-	uint32_t apMode = m_pAP->apMode();
-	if((1 << apMode) & m_fModeOriginReset)
-	{
-		if(m_pAP->bApModeChanged())
-		{
-			m_vSlamOrigin = m_vSlamPos;
-		}
-	}
-
 	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	m_GPS.m_UTM.m_hdg += m_yawOffset;
 	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
-	vDouble3 dPos = m_vSlamPos - m_vSlamOrigin;
-	UTM_POS pUTM = m_GPS.getPos(dPos);
+	UTM_POS pUTM = m_GPS.getPos(m_vSlamPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
 
 	double tBase = (double)USEC_1SEC/(double)m_dTime;
@@ -183,12 +171,6 @@ bool APcopter_slam::draw(void)
 			f2str(m_vSlamPos.z) + ")";
 	pWin->addMsg(&msg);
 
-	msg = "origin = (" +
-			f2str(m_vSlamOrigin.x) + ", " +
-			f2str(m_vSlamOrigin.y) + ", " +
-			f2str(m_vSlamOrigin.z) + ")";
-	pWin->addMsg(&msg);
-
 	msg = "yawOffset = " + f2str(m_yawOffset);
 	pWin->addMsg(&msg);
 
@@ -221,14 +203,6 @@ bool APcopter_slam::cli(int& iY)
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
 			f2str(m_vSlamPos.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
-
-	msg = "origin = (" +
-			f2str(m_vSlamOrigin.x) + ", " +
-			f2str(m_vSlamOrigin.y) + ", " +
-			f2str(m_vSlamOrigin.z) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

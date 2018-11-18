@@ -74,7 +74,7 @@ void HM_avoid::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 	NULL_(m_pDV);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 	IF_(!isActive());

@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "MissionBase.h"
-#include "../Mission/Waypoint.h"
+#include "Waypoint.h"
 
 #define ADD_MISSION(x) if(pKM->m_class==#x){M.m_pInst=new x();M.m_pKiss=pKM;}
 
@@ -42,6 +42,7 @@ public:
 	int check(void);
 
 	int getMissionIdx(const string& missionName);
+	MissionBase* getCurrentMission(void);
 	int getCurrentMissionIdx(void);
 	string* getCurrentMissionName(void);
 	int getLastMissionIdx(void);

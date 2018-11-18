@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":50,
 }
 
@@ -53,21 +53,9 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"videoFile":"/home/kai/Videos/sz/n/n3.ts",
+	"videoFile":"/home/kai/Videos/sz/3.ts",
 	"w":1920,
 	"h":1080,
-}
-
-{
-	"name":"df",
-	"class":"_DenseFlow",
-	"FPS":30,
-	"bInst":0,
-	"bDraw":1,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"w":320,
-	"h":200,
 }
 
 {
@@ -76,7 +64,7 @@
 	"bInst":1,
 	"bRealTime":0,
 	"bDraw":0,
-	"bLog":0,
+	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -90,9 +78,9 @@
 	"nPredAvr":3,
 	"nBatch":1,
 	"thresh":0.1,
-	"minArea":0.001,
+	"minArea":0.0,
 	"maxArea":0.5,
-	"maxW":0.25,
+	"maxW":0.3,
 	"maxH":0.3,
 	"dMaxTrack":0.1,
 	"bDrawStatistics":0,
@@ -112,10 +100,6 @@
 	"bInst":1,
 	"Window":"OKview",
 	"startState":"TR_NORMAL",
-
-	{
-		"state":"TR_NORMAL",
-	}
 }
 
 {
@@ -175,7 +159,7 @@
 				}
 			}			
 			{
-				"name":"ROI",
+				"name":"_ROI",
 				{
 					"x":0.75,
 					"y":0.0,
@@ -542,14 +526,14 @@
 			"speedFrom":0.001,
 			"speedTo":1.0,
 			"drawVscale":1.0,
-			"nAlert":10,
+			"nAlert":100,
 			"nMed":9,
 		}
 		
 		{
 			"name":"trAlert",
 			"class":"Traffic_alert",
-			"bInst":1,
+			"bInst":0,
 			"_MissionControl":"trState",
 			"Window":"OKview",
 			"Traffic_base":"trBase",

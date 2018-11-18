@@ -5,7 +5,7 @@ namespace kai
 
 ActionBase::ActionBase()
 {
-	m_pAM = NULL;
+	m_pMC = NULL;
 	m_tStamp = 0;
 	m_dTime = 0;
 	m_iLastMission = 0;
@@ -27,27 +27,27 @@ bool ActionBase::init(void* pKiss)
 	//link
 	string iName="";
 	F_INFO(pK->v("_MissionControl", &iName));
-	m_pAM = (_MissionControl*) (pK->root()->getChildInst(iName));
-	NULL_T(m_pAM);
+	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
+	NULL_T(m_pMC);
 
 	string pAS[N_ACTIVEMISSION];
-	int nAS = pK->array("activeState", pAS, N_ACTIVEMISSION);
+	int nAS = pK->array("activeMission", pAS, N_ACTIVEMISSION);
 	for(int i=0; i<nAS; i++)
 	{
-		int iMission = m_pAM->getMissionIdx(pAS[i]);
+		int iMission = m_pMC->getMissionIdx(pAS[i]);
 		if(iMission<0)continue;
 
 		m_vActiveMission.push_back(iMission);
 	}
 
-	m_iLastMission = m_pAM->getCurrentMissionIdx();
+	m_iLastMission = m_pMC->getCurrentMissionIdx();
 
 	return true;
 }
 
 int ActionBase::check(void)
 {
-	NULL__(m_pAM,-1);
+	NULL__(m_pMC,-1);
 
 	return 0;
 }
@@ -58,8 +58,8 @@ void ActionBase::update(void)
 	m_dTime = newTime - m_tStamp;
 	m_tStamp = newTime;
 
-	NULL_(m_pAM);
-	int currentMission = m_pAM->getCurrentMissionIdx();
+	NULL_(m_pMC);
+	int currentMission = m_pMC->getCurrentMissionIdx();
 	if(m_iLastMission != currentMission)
 	{
 		m_bMissionChanged = true;
@@ -73,9 +73,9 @@ void ActionBase::update(void)
 
 bool ActionBase::isActive(void)
 {
-	NULL_F(m_pAM);
+	NULL_F(m_pMC);
 
-	int iMission = m_pAM->getCurrentMissionIdx();
+	int iMission = m_pMC->getCurrentMissionIdx();
 	for (int i : m_vActiveMission)
 	{
 		if(iMission == i)return true;

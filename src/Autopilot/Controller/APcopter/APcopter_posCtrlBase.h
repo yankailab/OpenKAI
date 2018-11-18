@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_posCtrlBase_H_
 
 #include "../../../Base/common.h"
+#include "../../../Control/PIDctrl.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 

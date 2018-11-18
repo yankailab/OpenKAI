@@ -104,6 +104,12 @@ bool _MissionControl::transit(int nextMissionIdx)
 	return true;
 }
 
+MissionBase* _MissionControl::getCurrentMission(void)
+{
+	IF_N(m_iMission >= m_vMission.size());
+	return m_vMission[m_iMission].m_pInst;
+}
+
 int _MissionControl::getCurrentMissionIdx(void)
 {
 	return m_iMission;
@@ -111,6 +117,7 @@ int _MissionControl::getCurrentMissionIdx(void)
 
 string* _MissionControl::getCurrentMissionName(void)
 {
+	IF_N(m_iMission >= m_vMission.size());
 	static string currentMissionName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	return &currentMissionName;
 }
@@ -121,6 +128,7 @@ bool _MissionControl::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
+	IF_T(m_iMission<=0);
 	string msg = *this->getName()+": " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	pWin->addMsg(&msg);
 
@@ -138,6 +146,7 @@ bool _MissionControl::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
+	IF_T(m_iMission<=0);
 	string msg = "Current mission: " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	COL_MSG;
 	iY++;

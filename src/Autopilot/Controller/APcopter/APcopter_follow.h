@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_followBase_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_followBase_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_follow_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_follow_H_
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"

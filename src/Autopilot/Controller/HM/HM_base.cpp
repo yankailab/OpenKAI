@@ -65,12 +65,12 @@ bool HM_base::init(void* pKiss)
 void HM_base::update(void)
 {
 	this->ActionBase::update();
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 	NULL_(m_pMavlink);
 
 	updateCAN();
 
-	string* pStateName = m_pAM->getCurrentMissionName();
+	string* pStateName = m_pMC->getCurrentMissionName();
 	if(*pStateName == "HM_STANDBY" || *pStateName == "HM_STATION" || *pStateName=="HM_FOLLOWME" || *pStateName=="HM_MANUAL")
 	{
 		m_rpmL = 0;
@@ -98,45 +98,45 @@ void HM_base::cmd(void)
 	switch (buf)
 	{
 	case '1':	//standby
-		m_pAM->transit("HM_STANDBY");
+		m_pMC->transit("HM_STANDBY");
 		break;
 	case '2':	//station
-		m_pAM->transit("HM_STANDBY");
+		m_pMC->transit("HM_STANDBY");
 		break;
 	case '3':	//kickback
-		m_pAM->transit("HM_KICKBACK");
+		m_pMC->transit("HM_KICKBACK");
 		break;
 	case '4':	//work
-		m_pAM->transit("HM_WORK");
+		m_pMC->transit("HM_WORK");
 		break;
 	case '5':	//follow
-		m_pAM->transit("HM_FOLLOW");
+		m_pMC->transit("HM_FOLLOW");
 		break;
 	case '6':	//rth
-		m_pAM->transit("HM_RTH");
+		m_pMC->transit("HM_RTH");
 		break;
 	case '0':	//manual
-		m_pAM->transit("HM_MANUAL");
+		m_pMC->transit("HM_MANUAL");
 		m_rpmL = 0;
 		m_rpmR = 0;
 		break;
 	case 'w':
-		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
+		IF_(*m_pMC->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = m_defaultRpmT;
 		m_rpmR = m_defaultRpmT;
 		break;
 	case 'a':
-		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
+		IF_(*m_pMC->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = -m_defaultRpmT;
 		m_rpmR = m_defaultRpmT;
 		break;
 	case 's':
-		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
+		IF_(*m_pMC->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = -m_defaultRpmT;
 		m_rpmR = -m_defaultRpmT;
 		break;
 	case 'd':
-		IF_(*m_pAM->getCurrentMissionName() != "HM_MANUAL");
+		IF_(*m_pMC->getCurrentMissionName() != "HM_MANUAL");
 		m_rpmL = m_defaultRpmT;
 		m_rpmR = -m_defaultRpmT;
 		break;
@@ -188,7 +188,7 @@ void HM_base::updateCAN(void)
 	m_pCAN->send(addr, 8, cmd);
 
 	//status LED
-	string stateName = *m_pAM->getCurrentMissionName();
+	string stateName = *m_pMC->getCurrentMissionName();
 	if(stateName=="HM_WORK" || stateName=="HM_RTH")
 	{
 		m_pCAN->pinOut(m_pinLEDl,0);

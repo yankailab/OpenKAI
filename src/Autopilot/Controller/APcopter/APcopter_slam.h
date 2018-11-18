@@ -39,7 +39,6 @@ public:
 	double m_zTop;
 	UTM_POS m_utm;
 	LL_POS m_vGPSorigin;
-	vDouble3 m_vSlamOrigin;
 	vDouble3 m_vSlamPos;
 	vDouble3 m_vVelo;
 	uint32_t m_fModeOriginReset;

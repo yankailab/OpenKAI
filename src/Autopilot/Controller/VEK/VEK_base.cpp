@@ -46,7 +46,7 @@ bool VEK_base::init(void* pKiss)
 void VEK_base::update(void)
 {
 	this->ActionBase::update();
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 
 	cmd();
 
@@ -80,7 +80,7 @@ void VEK_base::update(void)
 	m_pVEK->write(pVekCMD,5);
 	LOG_I("PWM: L=" + i2str(pwmL) + " R=" + i2str(pwmR));
 
-	m_pAM->transit("VEK_RUN");
+	m_pMC->transit("VEK_RUN");
 	m_vL = -m_vForward;
 	m_vR = -m_vForward;
 

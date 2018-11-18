@@ -12,6 +12,8 @@ namespace kai
 
 MissionBase::MissionBase()
 {
+	m_nextMission = "";
+	m_iNextMission = -1;
 }
 
 MissionBase::~MissionBase()
@@ -23,7 +25,7 @@ bool MissionBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-//	KISSm(pK,nFIFO);
+	KISSm(pK,nextMission);
 
 	return true;
 }
@@ -36,6 +38,11 @@ int MissionBase::check(void)
 bool MissionBase::update(void)
 {
 	return false;
+}
+
+int	MissionBase::iNextMission(void)
+{
+	return m_iNextMission;
 }
 
 bool MissionBase::draw(void)

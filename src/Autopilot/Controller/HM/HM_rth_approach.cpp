@@ -57,7 +57,7 @@ void HM_rth_approach::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 	NULL_(m_pMN);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 

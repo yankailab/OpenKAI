@@ -57,7 +57,7 @@ void VEK_avoid::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pVEK);
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 //	NULL_(m_pObs);
 	IF_(!isActive());
 
@@ -75,7 +75,7 @@ void VEK_avoid::update(void)
 //	m_distM = m_pObs->d(&m_obsBox, &m_posMin);
 //	IF_(m_distM > m_dAlert);
 
-	m_pAM->transit(stateName);
+	m_pMC->transit(stateName);
 	m_pVEK->m_vL = -m_vSteer;
 	m_pVEK->m_vR = m_vSteer;
 
