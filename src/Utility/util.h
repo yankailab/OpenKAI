@@ -404,6 +404,16 @@ inline double makeDouble(uint8_t* pBuf)
 	return n.m_double;
 }
 
+inline void copyByte(int32_t v, uint8_t* pBuf)
+{
+	QBYTE n;
+	n.m_int32 = v;
+	pBuf[0] = n.m_uint8[0];
+	pBuf[1] = n.m_uint8[1];
+	pBuf[2] = n.m_uint8[2];
+	pBuf[3] = n.m_uint8[3];
+}
+
 inline void copyByte(uint32_t v, uint8_t* pBuf)
 {
 	UQBYTE n;

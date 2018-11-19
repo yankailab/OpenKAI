@@ -10,6 +10,7 @@
 
 #include "MissionBase.h"
 #include "../Protocol/_Mavlink.h"
+#include "../Sensor/_DistSensorBase.h"
 
 namespace kai
 {
@@ -28,14 +29,15 @@ public:
 
 public:
 	_Mavlink* m_pMavlink;
+	_DistSensorBase* m_pDS;
 
 	vDouble3 m_vWP;		//lat, lon, alt(m)
+	vDouble3 m_vPos;	//lat, lon, alt(m)
 	vDouble3 m_vD;		//lat, lon, alt(m)
-	vDouble3 m_vSpeed;	//vertical(m/s), horizontal(m/s)
-	double	 m_yaw;
-	double	 m_yawSpeed;
+	double	 m_speedV;
+	double	 m_speedH;
+	double	 m_hdg;
 	double	 m_r;		//radius(m)
-
 
 };
 

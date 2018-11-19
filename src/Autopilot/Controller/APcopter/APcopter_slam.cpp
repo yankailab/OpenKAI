@@ -117,18 +117,18 @@ void APcopter_slam::update(void)
 
 void APcopter_slam::updatePos(void)
 {
-	static uint8_t pBuf[N_IO_BUF];
-	int nRead = m_pIO->read(pBuf, N_IO_BUF);
+	static uint8_t pBufR[N_IO_BUF];
+	int nRead = m_pIO->read(pBufR, N_IO_BUF);
 	IF_(nRead <= 0);
 
 	for(int i=0; i<nRead; i++)
 	{
 		if(m_iCmd == 0)
 		{
-			IF_CONT(pBuf[i] != 0xff);
+			IF_CONT(pBufR[i] != MG_CMD_START);
 		}
 
-		m_pCmd[m_iCmd] = pBuf[i];
+		m_pCmd[m_iCmd] = pBufR[i];
 		m_iCmd++;
 		IF_CONT(m_iCmd < MG_PACKET_N);
 
@@ -142,6 +142,25 @@ void APcopter_slam::updatePos(void)
 		m_vSlamPos.y = m_fY.v();
 		m_vSlamPos.z = m_fHdg.v();
 	}
+}
+
+void APcopter_slam::sendState(void)
+{
+	static uint8_t pBufW[N_IO_BUF];
+
+	pBufW[0] = MG_CMD_START;
+	pBufW[1] = MG_CMD_ATTITUDE;
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.roll*1000, &pBufW[2]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.pitch*1000, &pBufW[6]);
+	copyByte((int32_t)(m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000, &pBufW[10]);
+	m_pIO->write(pBufW, 14);
+
+	pBufW[0] = MG_CMD_START;
+	pBufW[1] = MG_CMD_RAW_MAG;
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.xmag, &pBufW[2]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.ymag, &pBufW[6]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.zmag, &pBufW[10]);
+	m_pIO->write(pBufW, 14);
 }
 
 bool APcopter_slam::draw(void)

@@ -23,7 +23,6 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
-
 	vDouble4 m_vPos;
 	vDouble4 m_vTarget;
 };

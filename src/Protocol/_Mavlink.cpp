@@ -880,6 +880,14 @@ void _Mavlink::handleMessages()
 			break;
 		}
 
+		case MAVLINK_MSG_ID_RAW_IMU:
+		{
+			mavlink_msg_raw_imu_decode(&msg, &m_msg.raw_imu);
+			m_msg.time_stamps.raw_imu = tNow;
+			LOG_I(" -> RAW_IMU");
+			break;
+		}
+
 		default:
 		{
 			LOG_I(" -> UNKNOWN MSG_ID:" + i2str(msg.msgid));
