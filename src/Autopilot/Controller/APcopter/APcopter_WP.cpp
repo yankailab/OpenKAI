@@ -49,17 +49,16 @@ void APcopter_WP::update(void)
 	vDouble3 dPos = pWP->m_vD;
 
 	mavlink_set_position_target_local_ned_t spt;
-	spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
+	spt.coordinate_frame = MAV_FRAME_LOCAL_OFFSET_NED;//MAV_FRAME_BODY_OFFSET_NED;
 	spt.yaw = (float)pWP->m_yaw * DEG_RAD;
 	spt.yaw_rate = (float)pWP->m_yawSpeed * DEG_RAD;
 	spt.x = 0.0;
 	spt.y = 0.0;
 	spt.z = 0.0;
-	//TODO:
 	spt.vx = 0;		//forward
 	spt.vy = 0;		//right
 	spt.vz = 0;		//down
-	spt.type_mask = 0b0000111111000111;	//velocity
+	spt.type_mask = 0b0000000111000111;	//velocity
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(spt);
 }
