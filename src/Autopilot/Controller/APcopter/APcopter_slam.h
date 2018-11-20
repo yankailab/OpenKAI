@@ -33,7 +33,8 @@ public:
 
 public:
 	APcopter_base* m_pAP;
-	_IOBase* m_pIO;
+	_IOBase* m_pIOr;
+	_IOBase* m_pIOw;
 	GPS m_GPS;
 
 	Median m_fX;

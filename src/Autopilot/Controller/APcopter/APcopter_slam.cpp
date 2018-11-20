@@ -6,7 +6,8 @@ namespace kai
 APcopter_slam::APcopter_slam()
 {
 	m_pAP = NULL;
-	m_pIO = NULL;
+	m_pIOr = NULL;
+	m_pIOw = NULL;
 	m_iCmd = 0;
 
 	m_gpsID = 0;
@@ -62,9 +63,14 @@ bool APcopter_slam::init(void* pKiss)
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pIO, iName + ": not found");
+	F_ERROR_F(pK->v("_IOBaseR", &iName));
+	m_pIOr = (_IOBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pIOr, iName + ": not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_IOBaseW", &iName));
+	m_pIOw = (_IOBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pIOw, iName + ": not found");
 
 	return true;
 }
@@ -73,7 +79,8 @@ int APcopter_slam::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
-	NULL__(m_pIO,-1);
+	NULL__(m_pIOr,-1);
+	NULL__(m_pIOw,-1);
 
 	return 0;
 }
@@ -118,7 +125,7 @@ void APcopter_slam::update(void)
 void APcopter_slam::updatePos(void)
 {
 	static uint8_t pBufR[N_IO_BUF];
-	int nRead = m_pIO->read(pBufR, N_IO_BUF);
+	int nRead = m_pIOr->read(pBufR, N_IO_BUF);
 	IF_(nRead <= 0);
 
 	for(int i=0; i<nRead; i++)
@@ -153,14 +160,14 @@ void APcopter_slam::sendState(void)
 	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.roll*1000, &pBufW[2]);
 	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.pitch*1000, &pBufW[6]);
 	copyByte((int32_t)(m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000, &pBufW[10]);
-	m_pIO->write(pBufW, 14);
+	m_pIOw->write(pBufW, 14);
 
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = MG_CMD_RAW_MAG;
 	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.xmag, &pBufW[2]);
 	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.ymag, &pBufW[6]);
 	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.zmag, &pBufW[10]);
-	m_pIO->write(pBufW, 14);
+	m_pIOw->write(pBufW, 14);
 }
 
 bool APcopter_slam::draw(void)

@@ -42,21 +42,24 @@ void APcopter_WP::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 	IF_(!isActive());
-
 	Waypoint* pWP = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pWP);
 
-	vDouble3 dPos = pWP->m_vD;
-	//TODO: add PID pos ctrl?
+	vDouble3 vErr = pWP->m_vErr;
+	double dZ = 0.0;
+	if(vErr.z > 0)
+		dZ = -pWP->m_speedV;
+	else if(vErr.z < 0)
+		dZ = pWP->m_speedV;
 
 	mavlink_set_position_target_local_ned_t spt;
 	spt.coordinate_frame = MAV_FRAME_LOCAL_OFFSET_NED;//MAV_FRAME_BODY_OFFSET_NED;
 	spt.x = 0.0;
 	spt.y = 0.0;
 	spt.z = 0.0;
-	spt.vx = 0;				//forward
-	spt.vy = 0;				//right
-	spt.vz = pWP->m_speedV;	//down
+	spt.vx = 0;		//forward
+	spt.vy = 0;		//right
+	spt.vz = (float)dZ;	//down
 	spt.yaw = (float)pWP->m_hdg * DEG_RAD;
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
 	spt.type_mask = 0b0000000111000111;	//velocity

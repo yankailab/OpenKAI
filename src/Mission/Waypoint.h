@@ -33,7 +33,7 @@ public:
 
 	vDouble3 m_vWP;		//lat, lon, alt(m)
 	vDouble3 m_vPos;	//lat, lon, alt(m)
-	vDouble3 m_vD;		//lat, lon, alt(m)
+	vDouble3 m_vErr;	//lat, lon, alt(m)
 	double	 m_speedV;
 	double	 m_speedH;
 	double	 m_hdg;

@@ -5,6 +5,7 @@
 	"bWindow":0,
 	"bDraw":0,
 	"bLog":0,
+	"stdErr":0,
 	"waitKey":30,
 }
 
@@ -22,10 +23,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,	
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
+	"_portName":"/dev/ttyTHS1",
+	"_baud":921600,	
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -40,7 +41,7 @@
 }
 
 {
-	"name":"udp",
+	"name":"udpR",
 	"class":"_UDP",
 	"FPS":30,
 	"bInst":1,
@@ -50,15 +51,14 @@
 }
 
 {
-	"name":"apState",
-	"class":"_MissionControl",
+	"name":"udpW",
+	"class":"_UDP",
+	"FPS":30,
 	"bInst":1,
+	"bLog":0,
 	"Window":"OKview",
-	"startState":"CC_CONTROL",
-
-	{
-		"state":"CC_CONTROL",
-	}
+	"addr":"127.0.0.1",
+	"port":56790,
 }
 
 {
@@ -98,9 +98,32 @@
 }
 
 {
+	"name":"apMission",
+	"class":"_MissionControl",
+	"bInst":1,
+	"Window":"OKview",
+	"startMission":"wp1",
+
+	{
+		"name":"mission",
+
+		{
+			"name":"wp1",
+			"class":"Waypoint",
+			"bInst":1,
+			"nextMission":"wp1",
+			"Window":"OKview",
+			"alt":25,
+			"_Mavlink":"mavAP",
+			"_DistSensorBase":"LidarUp",
+		}
+	}
+}
+
+{
 	"name":"apPilot",
 	"class":"_AutoPilot",
-	"_MissionControl":"apState",
+	"_MissionControl":"apMission",
 	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
@@ -112,7 +135,7 @@
 			"name":"apBase",
 			"class":"APcopter_base",
 			"bInst":1,
-			"_MissionControl":"apState",
+			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqExtra1":10,
@@ -128,10 +151,11 @@
 			"bInst":1,
 			"bLog":1,
 			"Window":"OKview",
-			"_MissionControl":"apState",
-			"activeState":["CC_CONTROL"],
+			"_MissionControl":"apMission",
+			"activeState":["wp1"],
 			"APcopter_base":"apBase",
-			"_IOBase":"udp",
+			"_IOBaseR":"udpR",
+			"_IOBaseW":"udpW",
 			"nMedian":3,
 			"zTop":50.0,
 			"fModeOriginReset":0,
@@ -152,6 +176,16 @@
 			/*Saitama*/
 			"_lat":35.854676,
 			"_lng":139.517742,
+		}
+		
+		{
+			"name":"apWP",
+			"class":"APcopter_WP",
+			"bInst":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeState":["wp1"],
+			"APcopter_base":"apBase",
 		}
 		
 	}

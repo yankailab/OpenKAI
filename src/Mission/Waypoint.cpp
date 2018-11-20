@@ -16,7 +16,7 @@ Waypoint::Waypoint()
 	m_pDS = NULL;
 	m_vWP.init();
 	m_vPos.init();
-	m_vD.init();
+	m_vErr.init();
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
@@ -58,7 +58,6 @@ bool Waypoint::init(void* pKiss)
 int Waypoint::check(void)
 {
 	IF__(!m_pMavlink,-1);
-	IF__(!m_pDS,-1);
 
 	return this->MissionBase::check();
 }
@@ -69,23 +68,25 @@ bool Waypoint::update(void)
 
 	m_vPos.x = ((double)m_pMavlink->m_msg.global_position_int.lat) * 0.0000001;
 	m_vPos.y = ((double)m_pMavlink->m_msg.global_position_int.lon) * 0.0000001;
-//	m_vPos.z = ((double)m_pMavlink->m_msg.global_position_int.relative_alt) * 0.001;
-
-	m_vPos.z = m_pDS->dAvr();
-	if(m_vPos.z < 0.0)
+	if(!m_pDS)
 	{
-		//Lidar out of range
-		m_vPos.z = DBL_MAX;
+		m_vPos.z = ((double)m_pMavlink->m_msg.global_position_int.relative_alt) * 0.001;
+	}
+	else
+	{
+		m_vPos.z = m_pDS->dAvr();
+		if(m_vPos.z < 0.0)
+		{
+			//Lidar out of range
+			m_vPos.z = DBL_MAX;
+		}
 	}
 
-	m_vD = m_vWP - m_vPos;
-	double d = m_vD.len();
+	m_vErr = m_vWP - m_vPos;
+	double d = m_vErr.len();
 
-	if(d < m_r)
-	{
-		//Mission complete
-		return true;
-	}
+	//Mission complete
+	IF_T(d < m_r);
 
 	return false;
 }
@@ -94,6 +95,21 @@ bool Waypoint::draw(void)
 {
 	IF_F(!this->MissionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
+	string msg;
+
+	pWin->tabNext();
+
+	msg = "WP = (" + f2str(m_vWP.x) + ", "
+				   + f2str(m_vWP.y) + ", "
+		           + f2str(m_vWP.z) + ")";
+	pWin->addMsg(&msg);
+
+	msg = "Pos = (" + f2str(m_vPos.x) + ", "
+				   + f2str(m_vPos.y) + ", "
+		           + f2str(m_vPos.z) + ")";
+	pWin->addMsg(&msg);
+
+	pWin->tabPrev();
 
 	return true;
 }
@@ -102,7 +118,18 @@ bool Waypoint::cli(int& iY)
 {
 	IF_F(!this->MissionBase::cli(iY));
 
-	string msg = "Waypoint";
+	string msg;
+
+	msg = "WP = (" + f2str(m_vWP.x) + ", "
+				   + f2str(m_vWP.y) + ", "
+		           + f2str(m_vWP.z) + ")";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Pos = (" + f2str(m_vPos.x) + ", "
+				   + f2str(m_vPos.y) + ", "
+		           + f2str(m_vPos.z) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

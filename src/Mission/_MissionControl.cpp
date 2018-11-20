@@ -64,10 +64,10 @@ bool _MissionControl::init(void* pKiss)
 		IF_Fl(!pM->m_pInst->init(pM->m_pKiss), pM->m_pKiss->m_name+": init failed");
 	}
 
-//	string startState = "";
-//	F_ERROR_F(pK->v("startState", &startState));
-//	m_iMission = getStateIdx(startState);
-//	IF_F(m_iMission<0);
+	string startMission = "";
+	F_ERROR_F(pK->v("startMission", &startMission));
+	m_iMission = getMissionIdx(startMission);
+	IF_F(m_iMission < 0);
 
 	return true;
 }
@@ -128,7 +128,7 @@ bool _MissionControl::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	IF_T(m_iMission<=0);
+	IF_T(m_vMission.size() <= 0);
 	string msg = *this->getName()+": " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	pWin->addMsg(&msg);
 
@@ -146,7 +146,7 @@ bool _MissionControl::cli(int& iY)
 {
 	IF_F(!this->_ThreadBase::cli(iY));
 
-	IF_T(m_iMission<=0);
+	IF_T(m_vMission.size() <= 0);
 	string msg = "Current mission: " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	COL_MSG;
 	iY++;

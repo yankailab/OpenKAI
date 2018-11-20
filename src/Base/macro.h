@@ -10,8 +10,8 @@
 
 #define CLI_MSG(x,y) m_cliMsgLevel=y;m_cliMsg=x;
 #define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;}else{CLI_MSG(x,0);}
-#define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;if(!m_bLog){CLI_MSG(x,1);}
-#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;if(m_bLog){CLI_MSG(x,2);}
+#define LOG_E(x) if(m_bLog){LOG(ERROR)<<*this->getName()<<": "<<x;}else{CLI_MSG(x,1);}
+#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;if(!m_bLog){CLI_MSG(x,2);}
 
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
