@@ -12,7 +12,7 @@ namespace kai
 
 _MissionControl::_MissionControl()
 {
-	m_iMission = 0;
+	m_iMission = -1;
 }
 
 _MissionControl::~_MissionControl()
@@ -72,16 +72,50 @@ bool _MissionControl::init(void* pKiss)
 	return true;
 }
 
+bool _MissionControl::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG_E(retCode);
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
 int _MissionControl::check(void)
 {
 	return 0;
+}
+
+void _MissionControl::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		IF_CONT(check()<0);
+		IF_CONT(m_iMission<0);
+
+		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+
+		if(pMission->update())
+		{
+			//TODO:transit to next Mission
+		}
+
+		this->autoFPSto();
+	}
 }
 
 int _MissionControl::getMissionIdx(const string& missionName)
 {
 	for(int i=0;i<m_vMission.size();i++)
 	{
-		if(((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name == missionName)
+		if(((Kiss*)m_vMission[i].m_pInst->m_pKiss)->m_name == missionName)
 			return i;
 	}
 
@@ -129,6 +163,8 @@ bool _MissionControl::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	IF_T(m_vMission.size() <= 0);
+	IF_T(m_iMission < 0);
+
 	string msg = *this->getName()+": " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	pWin->addMsg(&msg);
 
@@ -147,6 +183,8 @@ bool _MissionControl::cli(int& iY)
 	IF_F(!this->_ThreadBase::cli(iY));
 
 	IF_T(m_vMission.size() <= 0);
+	IF_T(m_iMission < 0);
+
 	string msg = "Current mission: " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	COL_MSG;
 	iY++;

@@ -78,7 +78,7 @@ bool Waypoint::update(void)
 		if(m_vPos.z < 0.0)
 		{
 			//Lidar out of range
-			m_vPos.z = DBL_MAX;
+			m_vPos.z = 1000.0;
 		}
 	}
 
@@ -128,8 +128,8 @@ bool Waypoint::cli(int& iY)
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
 	msg = "Pos = (" + f2str(m_vPos.x) + ", "
-				   + f2str(m_vPos.y) + ", "
-		           + f2str(m_vPos.z) + ")";
+				    + f2str(m_vPos.y) + ", "
+		            + f2str(m_vPos.z) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

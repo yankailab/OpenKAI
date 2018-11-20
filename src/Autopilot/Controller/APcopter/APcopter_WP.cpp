@@ -48,9 +48,9 @@ void APcopter_WP::update(void)
 	vDouble3 vErr = pWP->m_vErr;
 	double dZ = 0.0;
 	if(vErr.z > 0)
-		dZ = -pWP->m_speedV;
-	else if(vErr.z < 0)
 		dZ = pWP->m_speedV;
+	else if(vErr.z < 0)
+		dZ = -pWP->m_speedV;
 
 	mavlink_set_position_target_local_ned_t spt;
 	spt.coordinate_frame = MAV_FRAME_LOCAL_OFFSET_NED;//MAV_FRAME_BODY_OFFSET_NED;

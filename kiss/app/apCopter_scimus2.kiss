@@ -23,10 +23,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_portName":"/dev/ttyTHS1",
-	"_baud":921600,	
-	"portName":"/dev/ttyACM0",
-	"baud":115200,
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,	
+	"_portName":"/dev/ttyACM1",
+	"_baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -57,6 +57,7 @@
 	"bInst":1,
 	"bLog":0,
 	"Window":"OKview",
+	"_addr":"192.168.1.106",
 	"addr":"127.0.0.1",
 	"port":56790,
 }
@@ -100,6 +101,7 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
+	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
 	"startMission":"wp1",
@@ -113,9 +115,12 @@
 			"bInst":1,
 			"nextMission":"wp1",
 			"Window":"OKview",
-			"alt":25,
 			"_Mavlink":"mavAP",
 			"_DistSensorBase":"LidarUp",
+			"alt":6,
+			"hdg":0,
+			"speedV":0.3,
+			"r":3,
 		}
 	}
 }
@@ -138,11 +143,12 @@
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqExtra1":10,
-			"freqPos":10,
-			"freqRC":0,
-			"freqExtStat":0,
 			"freqSendHeartbeat":1,
+			"freqRawSensors":20,
+			"freqExtStat":0,
+			"freqRC":0,
+			"freqPos":10,
+			"freqExtra1":10,
 		}
 		
 		{
@@ -152,7 +158,7 @@
 			"bLog":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
-			"activeState":["wp1"],
+			"activeMission":["wp1"],
 			"APcopter_base":"apBase",
 			"_IOBaseR":"udpR",
 			"_IOBaseW":"udpW",
@@ -166,16 +172,16 @@
 			"_lng":138.5942851,
 			
 			/*Hamamatsu1*/
-			"lat":34.830251,
-			"lng":137.957461,
+			"_lat":34.830251,
+			"_lng":137.957461,
 						
 			/*Hamamatsu2*/
 			"_lat":34.844155,
 			"_lng":138.000570,
 			
 			/*Saitama*/
-			"_lat":35.854676,
-			"_lng":139.517742,
+			"lat":35.854676,
+			"lng":139.517742,
 		}
 		
 		{
@@ -184,7 +190,7 @@
 			"bInst":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
-			"activeState":["wp1"],
+			"activeMission":["wp1"],
 			"APcopter_base":"apBase",
 		}
 		

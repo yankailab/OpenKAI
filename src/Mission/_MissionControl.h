@@ -37,6 +37,7 @@ public:
 	virtual ~_MissionControl();
 
 	bool init(void* pKiss);
+	bool start(void);
 	bool draw(void);
 	bool cli(int& iY);
 	int check(void);

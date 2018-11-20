@@ -90,10 +90,11 @@ public:
 	uint32_t m_lastApMode;
 	bool	 m_bApModeChanged;
 
-	int m_freqExtra1;
-	int m_freqPos;
-	int m_freqRC;
+	int m_freqRawSensors;
 	int m_freqExtStat;
+	int m_freqRC;
+	int m_freqPos;
+	int m_freqExtra1;
 
 	int m_freqSendHeartbeat;
 };

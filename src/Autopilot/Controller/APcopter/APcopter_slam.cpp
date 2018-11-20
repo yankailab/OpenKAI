@@ -91,6 +91,7 @@ void APcopter_slam::update(void)
 	IF_(check()<0);
 
 	updatePos();
+	sendState();
 
 	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	m_GPS.m_UTM.m_hdg += m_yawOffset;
