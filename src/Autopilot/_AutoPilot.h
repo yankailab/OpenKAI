@@ -17,6 +17,7 @@
 #include "Controller/APcopter/APcopter_takePhoto.h"
 #include "Controller/APcopter/APcopter_mission.h"
 #include "Controller/APcopter/APcopter_slam.h"
+#include "Controller/APcopter/APcopter_slamCalib.h"
 #include "Controller/APcopter/APcopter_WP.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/HM/HM_avoid.h"

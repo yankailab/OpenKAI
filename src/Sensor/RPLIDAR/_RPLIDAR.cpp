@@ -93,11 +93,11 @@ bool _RPLIDAR::open(void)
 	char pBuf[128];
 	for (int pos = 0; pos < 16; ++pos)
 	{
-		sprintf(&pBuf[pos], "%02X", devinfo.serialnum[pos]);
+		snprintf(&pBuf[pos], 128, "%02X", devinfo.serialnum[pos]);
 	}
 	strRP += pBuf;
 
-	sprintf(pBuf, "; Firmware Ver: %d.%02d; Hardware Rev: %d;",
+	snprintf(pBuf, 128, "; Firmware Ver: %d.%02d; Hardware Rev: %d;",
 			devinfo.firmware_version >> 8, devinfo.firmware_version & 0xFF,
 			(int) devinfo.hardware_version);
 	strRP += pBuf;

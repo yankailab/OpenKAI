@@ -11,38 +11,6 @@ using namespace std;
 namespace kai
 {
 
-inline double medianMat(cv::Mat mIn, int nHist, float fRange, bool bUniform, bool bAccum)
-{
-	// COMPUTE HISTOGRAM OF SINGLE CHANNEL MATRIX
-	float range[] = { -fRange, fRange };
-	const float* histRange = { range };
-	Mat mHist;
-	calcHist(&mIn, 1, 0, Mat(), mHist, 1, &nHist, &histRange, bUniform, bAccum);
-
-	// COMPUTE CUMULATIVE DISTRIBUTION FUNCTION (CDF)
-	float ovTot = mIn.total();
-	Mat cdf;
-	mHist.copyTo(cdf);
-	for (int i = 1; i <= nHist - 1; i++)
-	{
-		cdf.at<float>(i) += cdf.at<float>(i - 1);
-	}
-	cdf *= ovTot;
-
-	// COMPUTE MEDIAN
-	double medianVal;
-	for (int i = 0; i <= nHist - 1; i++)
-	{
-		if (cdf.at<float>(i) >= 0.5)
-		{
-			medianVal = i;
-			break;
-		}
-	}
-
-	return medianVal / nHist;
-}
-
 inline string tFormat(void)
 {
 	time_t timer;
@@ -438,24 +406,34 @@ inline void copyByte(double v, uint8_t* pBuf)
 	pBuf[7] = n.m_uint8[7];
 }
 
-inline string f2str(double val)
-{
-	char buf[128];
-	sprintf(buf, "%.3f", val);
-	return string(buf);
-}
+#define UTIL_BUF 32
 
 inline string i2str(int val)
 {
-	char buf[128];
-	sprintf(buf, "%d", val);
+	char buf[UTIL_BUF];
+	snprintf(buf, UTIL_BUF, "%d", val);
 	return string(buf);
 }
 
 inline string li2str(long val)
 {
-	char buf[128];
-	sprintf(buf, "%ld", val);
+	char buf[UTIL_BUF];
+	snprintf(buf, UTIL_BUF, "%ld", val);
+	return string(buf);
+}
+
+inline string f2str(double val)
+{
+	char buf[UTIL_BUF];
+	snprintf(buf, UTIL_BUF, "%.3f", val);
+	return string(buf);
+}
+
+inline string f2str(double val, int nDigit)
+{
+	char buf[UTIL_BUF];
+	string format = "%."+i2str(nDigit)+"f";
+	snprintf(buf, UTIL_BUF, format.c_str(), val);
 	return string(buf);
 }
 

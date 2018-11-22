@@ -28,6 +28,7 @@
 
 #define RAD_TO_DEG 57.295779513
 #define DEG_TO_RAD 0.01745329252
+#define UTM_BUF 128
 
 namespace UTM
 {
@@ -135,7 +136,7 @@ namespace UTM
         LongOriginRad = LongOrigin * DEG_TO_RAD;
 
         //compute the UTM Zone from the latitude and longitude
-        sprintf(UTMZone, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
+        snprintf(UTMZone, UTM_BUF, "%d%c", ZoneNumber, UTMLetterDesignator(Lat));
 
         eccPrimeSquared = (eccSquared)/(1-eccSquared);
 

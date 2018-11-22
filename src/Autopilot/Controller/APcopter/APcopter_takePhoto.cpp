@@ -154,10 +154,10 @@ void APcopter_takePhoto::take(void)
 	while(!m_pDV->bSleeping());
 	while(!m_pDV->m_pTPP->bSleeping());
 
-	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001);
-	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001);
-	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001);
-	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01);
+	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001, 7);
+	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001, 7);
+	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001, 3);
+	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01, 2);
 
 	Mat mRGB;
 	m_pV->BGR()->m()->copyTo(mRGB);
