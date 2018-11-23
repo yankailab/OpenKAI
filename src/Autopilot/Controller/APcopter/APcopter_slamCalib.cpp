@@ -85,9 +85,9 @@ bool APcopter_slamCalib::draw(void)
 	return true;
 }
 
-bool APcopter_slamCalib::cli(int& iY)
+bool APcopter_slamCalib::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string* pState = m_pMC->getCurrentMissionName();

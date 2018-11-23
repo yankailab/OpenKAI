@@ -53,9 +53,9 @@ bool MissionBase::draw(void)
 	return true;
 }
 
-bool MissionBase::cli(int& iY)
+bool MissionBase::console(int& iY)
 {
-	IF_F(!this->BASE::cli(iY));
+	IF_F(!this->BASE::console(iY));
 
 	return true;
 }

@@ -24,7 +24,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual void update(void);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 
 	virtual void reset(void);
 

@@ -99,7 +99,7 @@ bool BASE::draw(void)
 	return true;
 }
 
-bool BASE::cli(int& iY)
+bool BASE::console(int& iY)
 {
 	COL_NAME;
     mvaddstr(iY, CLI_X_NAME, this->getName()->c_str());

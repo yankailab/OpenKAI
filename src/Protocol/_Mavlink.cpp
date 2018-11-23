@@ -951,9 +951,9 @@ bool _Mavlink::draw(void)
 	return true;
 }
 
-bool _Mavlink::cli(int& iY)
+bool _Mavlink::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
 

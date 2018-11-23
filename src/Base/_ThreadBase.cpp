@@ -175,9 +175,9 @@ bool _ThreadBase::draw(void)
 	return true;
 }
 
-bool _ThreadBase::cli(int& iY)
+bool _ThreadBase::console(int& iY)
 {
-	IF_F(!this->BASE::cli(iY));
+	IF_F(!this->BASE::console(iY));
 
 	string msg = "FPS: " + i2str(m_FPS);
 	COL_FPS;

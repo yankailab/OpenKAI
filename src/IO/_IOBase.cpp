@@ -94,9 +94,9 @@ bool _IOBase::draw(void)
 	return true;
 }
 
-bool _IOBase::cli(int& iY)
+bool _IOBase::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
 

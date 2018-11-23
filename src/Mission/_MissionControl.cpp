@@ -178,9 +178,9 @@ bool _MissionControl::draw(void)
 	return true;
 }
 
-bool _MissionControl::cli(int& iY)
+bool _MissionControl::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	IF_T(m_vMission.size() <= 0);
 	IF_T(m_iMission < 0);
@@ -193,7 +193,7 @@ bool _MissionControl::cli(int& iY)
 	for(unsigned int i=0; i<m_vMission.size(); i++)
 	{
 		iY++;
-		m_vMission[i].m_pInst->cli(iY);
+		m_vMission[i].m_pInst->console(iY);
 	}
 
 	return true;

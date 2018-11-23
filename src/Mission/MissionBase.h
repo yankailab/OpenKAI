@@ -24,7 +24,7 @@ public:
 	virtual int check(void);
 	virtual bool update(void);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 
 	virtual int	iNextMission(void);
 

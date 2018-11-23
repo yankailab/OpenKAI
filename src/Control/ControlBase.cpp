@@ -38,9 +38,9 @@ bool ControlBase::draw(void)
 	return this->BASE::draw();
 }
 
-bool ControlBase::cli(int& iY)
+bool ControlBase::console(int& iY)
 {
-	return this->BASE::cli(iY);
+	return this->BASE::console(iY);
 }
 
 void ControlBase::reset(void)

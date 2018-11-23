@@ -23,7 +23,7 @@ public:
 	bool init(void* pKiss);
 	void detect(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 	void reset(void);
 

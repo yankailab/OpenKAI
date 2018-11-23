@@ -241,9 +241,9 @@ bool APcopter_arucoTarget::draw(void)
 	return true;
 }
 
-bool APcopter_arucoTarget::cli(int& iY)
+bool APcopter_arucoTarget::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	_VisionBase* pV = m_pArUco->m_pVision;

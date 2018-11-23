@@ -197,9 +197,9 @@ bool Traffic_speed::draw(void)
 	return true;
 }
 
-bool Traffic_speed::cli(int& iY)
+bool Traffic_speed::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 
 	string msg = "avrSpeed=" + f2str(m_avrSpeed);
 	COL_MSG;

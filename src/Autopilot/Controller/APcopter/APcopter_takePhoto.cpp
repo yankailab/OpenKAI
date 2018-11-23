@@ -108,35 +108,37 @@ void APcopter_takePhoto::update(void)
 void APcopter_takePhoto::cmd(void)
 {
 	char buf;
-	IF_(m_pIO->read((uint8_t*) &buf, 1) <= 0);
+	string msg;
 
-	string msg = "";
-
-	switch (buf)
+	while(m_pIO->read((uint8_t*) &buf, 1) > 0)
 	{
-	case 't':
-		take();
-		msg = "Photo take: " + i2str(m_iTake);
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	case 'a':
-		m_bAuto = true;
-		msg = "Auto interval started in " + i2str(m_tInterval) + " Hz";
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	case 's':
-		m_bAuto = false;
-		msg = "Auto interval stopped, " + i2str(m_iTake) + " photos taken in total.";
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	default:
-		if(buf >= '1' && buf <= '9')
+
+		switch (buf)
 		{
-			m_tInterval = (uint64_t)(buf-'0');
-			msg = "Set interval to " + i2str(m_tInterval) +" Hz";
+		case 't':
+			take();
+			msg = "Photo take: " + i2str(m_iTake);
 			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		case 'a':
+			m_bAuto = true;
+			msg = "Auto interval started in " + i2str(m_tInterval) + " Hz";
+			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		case 's':
+			m_bAuto = false;
+			msg = "Auto interval stopped, " + i2str(m_iTake) + " photos taken in total.";
+			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		default:
+			if(buf >= '1' && buf <= '9')
+			{
+				m_tInterval = (uint64_t)(buf-'0');
+				msg = "Set interval to " + i2str(m_tInterval) +" Hz";
+				m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -229,9 +231,9 @@ bool APcopter_takePhoto::draw(void)
 	return true;
 }
 
-bool APcopter_takePhoto::cli(int& iY)
+bool APcopter_takePhoto::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;

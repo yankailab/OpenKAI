@@ -30,9 +30,10 @@ public:
 
 	bool start(Kiss* pKiss);
 	void draw(void);
-	void cli(void);
+	void console(void);
 	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
+	void printEnvironment(void);
 
 private:
 	string* getName(void);
@@ -47,6 +48,7 @@ public:
 	bool	m_bWindow;
 	bool	m_bDraw;
 	int		m_waitKey;
+	bool	m_bConsole;
 	bool	m_bLog;
 	bool	m_bStdErr;
 	string	m_rc;

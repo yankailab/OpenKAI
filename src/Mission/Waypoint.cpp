@@ -114,9 +114,9 @@ bool Waypoint::draw(void)
 	return true;
 }
 
-bool Waypoint::cli(int& iY)
+bool Waypoint::console(int& iY)
 {
-	IF_F(!this->MissionBase::cli(iY));
+	IF_F(!this->MissionBase::console(iY));
 
 	string msg;
 

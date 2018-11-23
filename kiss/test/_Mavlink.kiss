@@ -4,7 +4,8 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":1,
+	"bConsole":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -46,7 +47,7 @@
 	}
 	
 	{
-		"bInst":0,
+		"bInst":1,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -77,7 +78,7 @@
 	}
 	
 	{
-		"bInst":0,
+		"bInst":1,
 		"_Mavlink":"mavWS",
 	}
 }

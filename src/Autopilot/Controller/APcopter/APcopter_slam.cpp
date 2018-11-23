@@ -210,9 +210,9 @@ bool APcopter_slam::draw(void)
 	return true;
 }
 
-bool APcopter_slam::cli(int& iY)
+bool APcopter_slam::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;

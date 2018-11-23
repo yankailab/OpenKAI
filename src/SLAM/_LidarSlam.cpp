@@ -110,9 +110,9 @@ bool _LidarSlam::draw(void)
 	return true;
 }
 
-bool _LidarSlam::cli(int& iY)
+bool _LidarSlam::console(int& iY)
 {
-	IF_F(!this->_SlamBase::cli(iY));
+	IF_F(!this->_SlamBase::console(iY));
 
 	string msg = "x=" + f2str(m_pos.x) +
 				 ", y=" + f2str(m_pos.y) +

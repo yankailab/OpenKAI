@@ -146,9 +146,9 @@ bool _ArUco::draw(void)
 	return true;
 }
 
-bool _ArUco::cli(int& iY)
+bool _ArUco::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::cli(iY));
+	IF_F(!this->_ObjectBase::console(iY));
 
 	string msg = "| ";
 	OBJECT* pO;

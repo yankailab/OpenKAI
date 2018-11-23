@@ -94,7 +94,7 @@ public:
 
 	bool init(void* pKiss);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 	void update(void);
 
 	double rMin(void);

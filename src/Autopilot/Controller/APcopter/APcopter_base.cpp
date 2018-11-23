@@ -180,9 +180,9 @@ bool APcopter_base::draw(void)
 	return true;
 }
 
-bool APcopter_base::cli(int& iY)
+bool APcopter_base::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;

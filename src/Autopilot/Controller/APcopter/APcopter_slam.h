@@ -25,7 +25,7 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 	int check(void);
 
 	void updatePos(void);

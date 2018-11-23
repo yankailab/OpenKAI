@@ -108,9 +108,9 @@ bool APcopter_WP::draw(void)
 	return true;
 }
 
-bool APcopter_WP::cli(int& iY)
+bool APcopter_WP::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string* pState = m_pMC->getCurrentMissionName();

@@ -25,7 +25,7 @@ public:
 	int check(void);
 	bool update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 public:
 	_Mavlink* m_pMavlink;

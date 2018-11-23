@@ -181,9 +181,9 @@ bool APcopter_posCtrlRC::draw(void)
 	return true;
 }
 
-bool APcopter_posCtrlRC::cli(int& iY)
+bool APcopter_posCtrlRC::console(int& iY)
 {
-	IF_F(!this->APcopter_posCtrlBase::cli(iY));
+	IF_F(!this->APcopter_posCtrlBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;

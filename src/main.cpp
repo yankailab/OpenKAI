@@ -16,35 +16,30 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
-	//Init Logger
-	FLAGS_logtostderr = 1;
-	google::InitGoogleLogging("OpenKAI");
-	printEnvironment();
-
-	LOG(INFO) << "Kiss file: " << argStr;
+	printf("Kiss file: %s", argStr);
 	if(!g_file.open(&argStr))
 	{
-		LOG(ERROR) << "Kiss file not found";
+		printf("Kiss file not found");
 		return 1;
 	}
 
 	string* pKiss = g_file.readAll();
 	if(pKiss==NULL)
 	{
-		LOG(ERROR) << "Cannot open Kiss file";
+		printf("Cannot open Kiss file");
 		return 1;
 	}
 
 	if(pKiss->empty())
 	{
-		LOG(ERROR) << "Kiss file is empty";
+		printf("Kiss file is empty");
 		return 1;
 	}
 
 	g_pKiss = new Kiss();
 	if(!g_pKiss->parse(pKiss))
 	{
-		LOG(ERROR) << "Kiss file parsing failed";
+		printf("Kiss file parsing failed");
 		return 1;
 	}
 	g_file.close();
@@ -55,29 +50,3 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-
-void printEnvironment(void)
-{
-	LOG(INFO)<<"OpenCV optimized code:"<<useOptimized();
-
-#ifdef USE_CUDA
-	LOG(INFO)<<"CUDA devices:"<<cuda::getCudaEnabledDeviceCount();
-	LOG(INFO)<<"Using CUDA device:"<<cuda::getDevice();
-#endif
-
-	if (ocl::haveOpenCL())
-	{
-		LOG(INFO)<<"OpenCL is found";
-		ocl::setUseOpenCL(true);
-		if (ocl::useOpenCL())
-		{
-			LOG(INFO)<<"Using OpenCL";
-		}
-	}
-	else
-	{
-		LOG(INFO)<<"OpenCL not found";
-	}
-}
-
-

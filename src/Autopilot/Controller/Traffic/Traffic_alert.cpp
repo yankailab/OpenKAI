@@ -130,9 +130,9 @@ bool Traffic_alert::draw(void)
 	return true;
 }
 
-bool Traffic_alert::cli(int& iY)
+bool Traffic_alert::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	NULL_F(m_pTB);
 	_ObjectBase* pOB = m_pTB->m_pOB;
 	NULL_F(pOB);

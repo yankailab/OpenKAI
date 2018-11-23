@@ -335,9 +335,9 @@ bool APcopter_follow::draw(void)
 	return true;
 }
 
-bool APcopter_follow::cli(int& iY)
+bool APcopter_follow::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string* pState = m_pMC->getCurrentMissionName();

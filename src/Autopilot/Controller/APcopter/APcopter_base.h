@@ -71,7 +71,7 @@ public:
 	int check(void);
 	void update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 	void setApMode(uint32_t iMode);
 	uint32_t getApMode(void);

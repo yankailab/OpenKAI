@@ -39,7 +39,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 	int check(void);
 
 	int getMissionIdx(const string& missionName);

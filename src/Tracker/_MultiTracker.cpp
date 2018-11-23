@@ -157,9 +157,9 @@ bool _MultiTracker::draw(void)
 	return true;
 }
 
-bool _MultiTracker::cli(int& iY)
+bool _MultiTracker::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::cli(iY));
+	IF_F(!this->_ObjectBase::console(iY));
 
 //	string msg = "| ";
 //	OBJECT* pO;

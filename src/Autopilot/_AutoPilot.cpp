@@ -147,14 +147,14 @@ bool _AutoPilot::draw(void)
 	return true;
 }
 
-bool _AutoPilot::cli(int& iY)
+bool _AutoPilot::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	for(unsigned int i=0; i<m_vAction.size(); i++)
 	{
 		iY++;
-		m_vAction[i].m_pInst->cli(iY);
+		m_vAction[i].m_pInst->console(iY);
 	}
 
 	return true;

@@ -22,7 +22,7 @@ public:
 	void update(void);
 	int check(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 private:
 	void take(void);

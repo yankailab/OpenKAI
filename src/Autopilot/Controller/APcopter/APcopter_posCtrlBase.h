@@ -23,7 +23,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 	virtual int check(void);
 
 	virtual void setTargetPos(vDouble4& vT);

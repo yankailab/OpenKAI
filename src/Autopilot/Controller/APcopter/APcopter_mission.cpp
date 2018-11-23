@@ -116,9 +116,9 @@ bool APcopter_mission::draw(void)
 	return true;
 }
 
-bool APcopter_mission::cli(int& iY)
+bool APcopter_mission::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);

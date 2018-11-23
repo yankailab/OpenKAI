@@ -193,7 +193,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);
 

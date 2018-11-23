@@ -18,7 +18,6 @@ _WebSocket::_WebSocket()
 	m_fdR = 0;
 	m_ioType = io_webSocket;
 	m_ioStatus = io_unknown;
-	m_mode = WS_MODE_TXT;
 
 	resetDecodeMsg();
 	pthread_mutex_init(&m_mutexW, NULL);
@@ -38,7 +37,6 @@ bool _WebSocket::init(void* pKiss)
 
 	KISSm(pK, fifoIn);
 	KISSm(pK, fifoOut);
-	KISSm(pK, mode);
 
 	m_vClient.clear();
 	return true;
@@ -155,22 +153,22 @@ void _WebSocket::updateR(void)
 	}
 }
 
-bool _WebSocket::write(uint8_t* pBuf, int nB)
+int _WebSocket::nClient(void)
 {
-	IF_F(m_vClient.empty());
-	return writeTo(m_vClient[0].m_id, pBuf, nB, m_mode);
+	return m_vClient.size();
 }
 
 bool _WebSocket::write(uint8_t* pBuf, int nB, uint32_t mode)
 {
 	IF_F(m_vClient.empty());
-	return writeTo(m_vClient[0].m_id, pBuf, nB, mode);
-}
 
-int _WebSocket::read(uint8_t* pBuf, int nB)
-{
-	if(m_vClient.empty())return 0;
-	return readFrom(m_vClient[0].m_id, pBuf, nB);
+	bool bResult = true;
+	for(uint32_t i=0; i<m_vClient.size(); i++)
+	{
+		writeTo(m_vClient[i].m_id, pBuf, nB, mode);
+	}
+
+	return bResult;
 }
 
 bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode)
@@ -190,6 +188,12 @@ bool _WebSocket::writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode)
 	pthread_mutex_unlock(&m_mutexW);
 
 	return true;
+}
+
+int _WebSocket::read(uint8_t* pBuf, int nB)
+{
+	if(m_vClient.empty())return 0;
+	return readFrom(m_vClient[0].m_id, pBuf, nB);
 }
 
 int _WebSocket::readFrom(uint32_t id, uint8_t* pBuf, int nB)
