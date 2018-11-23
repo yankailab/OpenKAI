@@ -22,32 +22,13 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_wakeUp":"mavAP",
 	"bStream":1,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
 	"_portName":"/dev/ttyTHS1",
 	"_portName":"/dev/ttyAMA0",
 	"_baud":921600,
-}
-
-{
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":19841,
-	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"apWS",
-	"class":"_WebSocket",
-	"bInst":1,
-	"FPS":30,
-	"Window":"OKview",
+	"_wakeUp":"mavAP",
 }
 
 {
@@ -65,15 +46,54 @@
 	}
 	
 	{
-		"bInst":1,
+		"bInst":0,
 		"_Mavlink":"mavWS",
 	}
 }
 
 {
-	"name":"mavWS",
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
 	"class":"_Mavlink",
 	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}
+	
+	{
+		"bInst":0,
+		"_Mavlink":"mavWS",
+	}
+}
+
+{
+	"name":"apWS",
+	"class":"_WebSocket",
+	"bInst":0,
+	"FPS":30,
+	"Window":"OKview",
+}
+
+{
+	"name":"mavWS",
+	"class":"_Mavlink",
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -87,25 +107,5 @@
 	{
 		"bInst":1,
 		"_Mavlink":"mavAP",
-	}
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bInst":1,
-	"FPS":30,
-	"bLog":1,
-	"Window":"OKview",
-	"_IOBase":"apUDP",
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavAP",
-	}
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavWS",
 	}
 }

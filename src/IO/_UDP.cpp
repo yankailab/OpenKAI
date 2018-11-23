@@ -56,7 +56,7 @@ bool _UDP::open(void)
 	{
 		//server mode
 		m_sAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	    IF_F(bind(m_socket , (struct sockaddr*)&m_sAddr, m_nSAddr) == -1);
+		IF_F(bind(m_socket , (struct sockaddr*)&m_sAddr, m_nSAddr) == -1);
 	}
 
 	m_ioStatus = io_opened;
@@ -127,7 +127,7 @@ void _UDP::updateW(void)
 				LOG_I("sendto error: " + i2str(errno));
 				break;
 			}
-			LOG_I("send: " + i2str(nSend) + " bytes");
+			LOG_I("send: " + i2str(nSend) + " bytes to " + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 		}
 
 		this->autoFPSto();
@@ -155,7 +155,7 @@ void _UDP::updateR(void)
 		m_fifoR.input(pBr,nR);
 		this->wakeUpLinked();
 
-		LOG_I("Received from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
+		LOG_I("Received "+ i2str(nR) +" bytes from ip:" + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 	}
 }
 
