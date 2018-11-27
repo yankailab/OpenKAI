@@ -4,6 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
+#include "APcopter_slam.h"
 
 namespace kai
 {
@@ -22,11 +23,12 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
+	APcopter_slam*	m_pSlam;
 
-	vector<vDouble2> m_vPos;
-	bool			 m_bCalibrating;
 	uint32_t 		 m_apModeCalib;
-	float			 m_yawOffset;
+	double			 m_dist;
+	vector<vDouble2> m_vPos;
+	double			 m_yawOffset;
 
 };
 

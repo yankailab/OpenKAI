@@ -67,20 +67,6 @@ bool Startup::start(Kiss* pKiss)
 		freopen("/dev/null", "w", stderr);
 	}
 
-	if(m_bConsole)
-	{
-		initscr();
-		noecho();
-		cbreak();
-		start_color();
-		use_default_colors();
-		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
-		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
-		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
-		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
-		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
-	}
-
 	FLAGS_logtostderr = 1;
 	google::InitGoogleLogging("OpenKAI");
 	printEnvironment();
@@ -96,6 +82,20 @@ bool Startup::start(Kiss* pKiss)
 	for (i = 0; i < m_vInst.size(); i++)
 	{
 		m_vInst[i].m_pInst->start();
+	}
+
+	if(m_bConsole)
+	{
+		initscr();
+		noecho();
+		cbreak();
+		start_color();
+		use_default_colors();
+		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
+		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
+		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
+		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
+		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
 	}
 
 	//UI thread

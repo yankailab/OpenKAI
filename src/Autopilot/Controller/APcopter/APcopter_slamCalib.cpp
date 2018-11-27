@@ -6,7 +6,8 @@ namespace kai
 APcopter_slamCalib::APcopter_slamCalib()
 {
 	m_pAP = NULL;
-	m_bCalibrating = false;
+	m_pSlam = NULL;
+	m_dist = 1.0;
 	m_apModeCalib = POSHOLD;
 	m_yawOffset = 0.0;
 }
@@ -21,13 +22,20 @@ bool APcopter_slamCalib::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, apModeCalib);
+	KISSm(pK, dist);
 
 	//link
 	string iName;
+
 	iName = "";
 	pK->v("APcopter_base", &iName);
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
+
+	iName = "";
+	pK->v("APcopter_slam", &iName);
+	m_pSlam = (APcopter_slam*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pSlam, iName + ": not found");
 
 	return true;
 }
@@ -36,6 +44,7 @@ int APcopter_slamCalib::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pSlam,-1);
 
 	return this->ActionBase::check();
 }
@@ -50,8 +59,23 @@ void APcopter_slamCalib::update(void)
 	if(m_pAP->m_bApModeChanged)
 	{
 		m_vPos.clear();
+		vDouble2 iPos;
+		iPos.init();
+		m_vPos.push_back(iPos);
 	}
 
+	vDouble2 cPos;
+	cPos.x = m_pSlam->m_vSlamPos.x;
+	cPos.y = m_pSlam->m_vSlamPos.y;
+
+	int i = m_vPos.size()- 1;
+	vDouble2 dPos =  m_vPos[i] - cPos;
+
+	IF_(dPos.len() < m_dist);
+
+	m_vPos.push_back(m_vPos[i]);
+
+	//TODO: approximate the path to line
 
 
 }
