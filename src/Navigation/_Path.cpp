@@ -77,6 +77,7 @@ void _Path::updateGPS(void)
 UTM_POS* _Path::getCurrentPos(void)
 {
 //	return m_pGPS->getUTM();
+	return NULL;
 }
 
 void _Path::startRecord(void)

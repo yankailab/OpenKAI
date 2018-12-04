@@ -7,7 +7,7 @@ pre {
     padding: 10px;
 }
 #page-wrapper {
-    border-top: 5px solid #69c773;
+    border-top: 0px solid #CCC;
     margin: 1em auto;
     width: 600px;
 }
@@ -19,7 +19,7 @@ window.onload = function() {
         return document.querySelector(selector);
     }
     
-    var socket = new WebSocket('ws://localhost:7890');
+    var socket = new WebSocket('ws://127.0.0.1:7890');
     socket.onopen = function(event) {
         $('#messages').innerHTML = 'Connected<br>';
     };
@@ -35,8 +35,8 @@ window.onload = function() {
     };
     
     $('#btnStart').onclick = function(e) {
-        socket.send("a");
 		socket.send($('#autoHz').value);
+        socket.send("a");
     };
     
     $('#btnStop').onclick = function(e) {
@@ -48,6 +48,7 @@ window.onload = function() {
 </script>
 
 <div id="page-wrapper">
+	<img border="0" src="ok.png" width="350" alt="OpenKAI">
     <pre id="messages">Connecting...</pre>
     
     <button id="btnOne" style="WIDTH:150px; HEIGHT: 50px">Take One Shot</button>

@@ -20,7 +20,8 @@ Startup::Startup()
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
-	m_bLog = false;
+	m_bConsole = true;
+	m_bLog = true;
 	m_bStdErr = true;
 	m_rc = "";
 	m_cliMsg = "";
@@ -50,6 +51,7 @@ bool Startup::start(Kiss* pKiss)
 	KISSm(pApp,appName);
 	KISSm(pApp,bWindow);
 	KISSm(pApp,bDraw);
+	KISSm(pApp,bConsole);
 	KISSm(pApp,bLog);
 	KISSm(pApp,bStdErr);
 	KISSm(pApp,waitKey);
@@ -65,19 +67,9 @@ bool Startup::start(Kiss* pKiss)
 		freopen("/dev/null", "w", stderr);
 	}
 
-	if(!m_bLog)
-	{
-		initscr();
-		noecho();
-		cbreak();
-		start_color();
-		use_default_colors();
-		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
-		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
-		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
-		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
-		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
-	}
+	FLAGS_logtostderr = 1;
+	google::InitGoogleLogging("OpenKAI");
+	printEnvironment();
 
 	F_ERROR_F(createAllInst(pKiss));
 
@@ -92,16 +84,30 @@ bool Startup::start(Kiss* pKiss)
 		m_vInst[i].m_pInst->start();
 	}
 
+	if(m_bConsole)
+	{
+		initscr();
+		noecho();
+		cbreak();
+		start_color();
+		use_default_colors();
+		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
+		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
+		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
+		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
+		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
+	}
+
 	//UI thread
 	m_bRun = true;
 	int uWaitKey = m_waitKey * 1000;
 
 	while (m_bRun)
 	{
-		if(!m_bLog)
+		if(m_bConsole)
 		{
 			erase();
-			cli();
+			console();
 			move(0,0);
 		    refresh();
 		}
@@ -122,7 +128,7 @@ bool Startup::start(Kiss* pKiss)
 		}
 	}
 
-	if(!m_bLog)
+	if(m_bConsole)
 	{
 		endwin();
 	}
@@ -143,7 +149,7 @@ void Startup::draw(void)
 	}
 }
 
-void Startup::cli(void)
+void Startup::console(void)
 {
 	COL_TITLE;
     mvaddstr(0, 1, m_appName.c_str());
@@ -151,7 +157,7 @@ void Startup::cli(void)
 
 	for (unsigned int i = 0; i < m_vInst.size(); i++)
 	{
-		m_vInst[i].m_pInst->cli(iY);
+		m_vInst[i].m_pInst->console(iY);
 		iY++;
 	}
 }
@@ -190,6 +196,30 @@ bool Startup::createAllInst(Kiss* pKiss)
 	}
 
 	return true;
+}
+
+void Startup::printEnvironment(void)
+{
+	LOG_I("OpenCV optimized code:" + i2str(useOptimized()));
+
+#ifdef USE_CUDA
+	LOG_I("CUDA devices:" + i2str(cuda::getCudaEnabledDeviceCount()));
+	LOG_I("Using CUDA device:" + i2str(cuda::getDevice()));
+#endif
+
+	if (ocl::haveOpenCL())
+	{
+		LOG_I("OpenCL is found");
+		ocl::setUseOpenCL(true);
+		if (ocl::useOpenCL())
+		{
+			LOG_I("Using OpenCL");
+		}
+	}
+	else
+	{
+		LOG_I("OpenCL not found");
+	}
 }
 
 }

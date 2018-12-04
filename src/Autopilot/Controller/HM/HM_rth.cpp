@@ -38,7 +38,7 @@ void HM_rth::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 	IF_(!isActive());
 

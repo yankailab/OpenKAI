@@ -21,6 +21,8 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	int check(void);
+	bool draw(void);
+	bool console(int& iY);
 
 private:
 	void take(void);

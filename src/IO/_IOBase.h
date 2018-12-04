@@ -142,7 +142,7 @@ public:
 	virtual bool isOpen(void);
 	virtual void close(void);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 	virtual IO_TYPE ioType(void);
 
 	virtual int  read(uint8_t* pBuf, int nB);

@@ -49,9 +49,9 @@ bool _SlamBase::draw(void)
 	return true;
 }
 
-bool _SlamBase::cli(int& iY)
+bool _SlamBase::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
 	msg = "pos=(" + f2str(m_pos.x) + ", "

@@ -26,8 +26,8 @@ struct AP_POS_CTRL_TARGET
 
 	void clear(void)
 	{
-		NULL_(m_pPID);
 		m_v = 0.0;
+		NULL_(m_pPID);
 		m_pPID->reset();
 	}
 };
@@ -41,7 +41,7 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 	int check(void);
 
 	void setTargetPos(vDouble4& vT);

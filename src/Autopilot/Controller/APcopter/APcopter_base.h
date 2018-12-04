@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../../Control/PIDctrl.h"
+#include "../../../Mission/_MissionControl.h"
 #include "../../ActionBase.h"
 
 #define AP_N_CUSTOM_MODE 24
@@ -71,7 +71,7 @@ public:
 	int check(void);
 	void update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 	void setApMode(uint32_t iMode);
 	uint32_t getApMode(void);
@@ -91,10 +91,11 @@ public:
 	uint32_t m_lastApMode;
 	bool	 m_bApModeChanged;
 
-	int m_freqExtra1;
-	int m_freqPos;
-	int m_freqRC;
+	int m_freqRawSensors;
 	int m_freqExtStat;
+	int m_freqRC;
+	int m_freqPos;
+	int m_freqExtra1;
 
 	int m_freqSendHeartbeat;
 };

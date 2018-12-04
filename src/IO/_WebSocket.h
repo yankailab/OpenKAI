@@ -55,12 +55,12 @@ public:
 	void close(void);
 	bool draw(void);
 
-	bool write(uint8_t* pBuf, int nB);
 	bool write(uint8_t* pBuf, int nB, uint32_t mode);
-	int  read(uint8_t* pBuf, int nB);
-
 	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode);
+	int  read(uint8_t* pBuf, int nB);
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
+
+	int nClient(void);
 
 private:
 	void resetDecodeMsg(void);
@@ -86,7 +86,6 @@ public:
 	string	m_fifoOut;
 	int		m_fdW;
 	int		m_fdR;
-	uint32_t m_mode;
 	pthread_mutex_t m_mutexW;
 
 	vector<WS_CLIENT> m_vClient;

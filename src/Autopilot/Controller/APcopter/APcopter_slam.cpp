@@ -6,7 +6,8 @@ namespace kai
 APcopter_slam::APcopter_slam()
 {
 	m_pAP = NULL;
-	m_pIO = NULL;
+	m_pIOr = NULL;
+	m_pIOw = NULL;
 	m_iCmd = 0;
 
 	m_gpsID = 0;
@@ -21,7 +22,6 @@ APcopter_slam::APcopter_slam()
 
 	m_zTop = 50.0;
 	m_vGPSorigin.init();
-	m_vSlamOrigin.init();
 	m_vSlamPos.init();
 }
 
@@ -37,7 +37,6 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,zTop);
 	pK->v("lat", &m_vGPSorigin.m_lat);
 	pK->v("lng", &m_vGPSorigin.m_lng);
-	m_vSlamOrigin.init();
 	m_vSlamPos.init();
 	m_GPS.update(m_vGPSorigin);
 
@@ -64,9 +63,14 @@ bool APcopter_slam::init(void* pKiss)
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pIO, iName + ": not found");
+	F_ERROR_F(pK->v("_IOBaseR", &iName));
+	m_pIOr = (_IOBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pIOr, iName + ": not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_IOBaseW", &iName));
+	m_pIOw = (_IOBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pIOw, iName + ": not found");
 
 	return true;
 }
@@ -75,7 +79,8 @@ int APcopter_slam::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
-	NULL__(m_pIO,-1);
+	NULL__(m_pIOr,-1);
+	NULL__(m_pIOw,-1);
 
 	return 0;
 }
@@ -86,22 +91,13 @@ void APcopter_slam::update(void)
 	IF_(check()<0);
 
 	updatePos();
-
-	uint32_t apMode = m_pAP->apMode();
-	if((1 << apMode) & m_fModeOriginReset)
-	{
-		if(m_pAP->bApModeChanged())
-		{
-			m_vSlamOrigin = m_vSlamPos;
-		}
-	}
+	sendState();
 
 	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	m_GPS.m_UTM.m_hdg += m_yawOffset;
 	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
-	vDouble3 dPos = m_vSlamPos - m_vSlamOrigin;
-	UTM_POS pUTM = m_GPS.getPos(dPos);
+	UTM_POS pUTM = m_GPS.getPos(m_vSlamPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
 
 	double tBase = (double)USEC_1SEC/(double)m_dTime;
@@ -129,18 +125,18 @@ void APcopter_slam::update(void)
 
 void APcopter_slam::updatePos(void)
 {
-	static uint8_t pBuf[N_IO_BUF];
-	int nRead = m_pIO->read(pBuf, N_IO_BUF);
+	static uint8_t pBufR[N_IO_BUF];
+	int nRead = m_pIOr->read(pBufR, N_IO_BUF);
 	IF_(nRead <= 0);
 
 	for(int i=0; i<nRead; i++)
 	{
 		if(m_iCmd == 0)
 		{
-			IF_CONT(pBuf[i] != 0xff);
+			IF_CONT(pBufR[i] != MG_CMD_START);
 		}
 
-		m_pCmd[m_iCmd] = pBuf[i];
+		m_pCmd[m_iCmd] = pBufR[i];
 		m_iCmd++;
 		IF_CONT(m_iCmd < MG_PACKET_N);
 
@@ -154,6 +150,25 @@ void APcopter_slam::updatePos(void)
 		m_vSlamPos.y = m_fY.v();
 		m_vSlamPos.z = m_fHdg.v();
 	}
+}
+
+void APcopter_slam::sendState(void)
+{
+	static uint8_t pBufW[N_IO_BUF];
+
+	pBufW[0] = MG_CMD_START;
+	pBufW[1] = MG_CMD_ATTITUDE;
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.roll*1000, &pBufW[2]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.pitch*1000, &pBufW[6]);
+	copyByte((int32_t)(m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000, &pBufW[10]);
+	m_pIOw->write(pBufW, 14);
+
+	pBufW[0] = MG_CMD_START;
+	pBufW[1] = MG_CMD_RAW_MAG;
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.xmag, &pBufW[2]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.ymag, &pBufW[6]);
+	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.zmag, &pBufW[10]);
+	m_pIOw->write(pBufW, 14);
 }
 
 bool APcopter_slam::draw(void)
@@ -183,12 +198,6 @@ bool APcopter_slam::draw(void)
 			f2str(m_vSlamPos.z) + ")";
 	pWin->addMsg(&msg);
 
-	msg = "origin = (" +
-			f2str(m_vSlamOrigin.x) + ", " +
-			f2str(m_vSlamOrigin.y) + ", " +
-			f2str(m_vSlamOrigin.z) + ")";
-	pWin->addMsg(&msg);
-
 	msg = "yawOffset = " + f2str(m_yawOffset);
 	pWin->addMsg(&msg);
 
@@ -201,9 +210,9 @@ bool APcopter_slam::draw(void)
 	return true;
 }
 
-bool APcopter_slam::cli(int& iY)
+bool APcopter_slam::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;
@@ -221,14 +230,6 @@ bool APcopter_slam::cli(int& iY)
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
 			f2str(m_vSlamPos.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
-
-	msg = "origin = (" +
-			f2str(m_vSlamOrigin.x) + ", " +
-			f2str(m_vSlamOrigin.y) + ", " +
-			f2str(m_vSlamOrigin.z) + ")";
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

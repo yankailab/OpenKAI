@@ -125,17 +125,17 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 {
 	NULL_(m_pIO);
 
-	uint8_t pB[N_IO_BUF];
-	int nB = mavlink_msg_to_send_buffer(pB, &msg);
+	static uint8_t s_pSendBuf[N_IO_BUF];
+	int nB = mavlink_msg_to_send_buffer(s_pSendBuf, &msg);
 
 	if(m_pIO->ioType()!=io_webSocket)
 	{
-		m_pIO->write(pB, nB);
+		m_pIO->write(s_pSendBuf, nB);
 	}
 	else
 	{
-//		_WebSocket* pWS = (_WebSocket*)m_pIO;
-//		pWS->write(ioB.m_pB, ioB.m_nB, WS_MODE_BIN);
+		_WebSocket* pWS = (_WebSocket*)m_pIO;
+		pWS->write(s_pSendBuf, nB, WS_MODE_BIN);
 	}
 }
 
@@ -880,6 +880,14 @@ void _Mavlink::handleMessages()
 			break;
 		}
 
+		case MAVLINK_MSG_ID_RAW_IMU:
+		{
+			mavlink_msg_raw_imu_decode(&msg, &m_msg.raw_imu);
+			m_msg.time_stamps.raw_imu = tNow;
+			LOG_I(" -> RAW_IMU");
+			break;
+		}
+
 		default:
 		{
 			LOG_I(" -> UNKNOWN MSG_ID:" + i2str(msg.msgid));
@@ -943,9 +951,9 @@ bool _Mavlink::draw(void)
 	return true;
 }
 
-bool _Mavlink::cli(int& iY)
+bool _Mavlink::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
 

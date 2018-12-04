@@ -51,7 +51,7 @@ public:
 	bool link(void);
 	bool start(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 	void reset(void);
 

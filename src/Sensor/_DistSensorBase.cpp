@@ -328,9 +328,9 @@ bool _DistSensorBase::draw(void)
 	return true;
 }
 
-bool _DistSensorBase::cli(int& iY)
+bool _DistSensorBase::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg = "| ";
 	for (int i = 0; i < m_nDiv; i++)

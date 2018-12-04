@@ -5,11 +5,11 @@ namespace kai
 
 ActionBase::ActionBase()
 {
-	m_pAM = NULL;
+	m_pMC = NULL;
 	m_tStamp = 0;
 	m_dTime = 0;
-	m_iLastState = 0;
-	m_bStateChanged = false;
+	m_iLastMission = 0;
+	m_bMissionChanged = false;
 	m_iPriority = 0;
 }
 
@@ -26,28 +26,28 @@ bool ActionBase::init(void* pKiss)
 
 	//link
 	string iName="";
-	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
-	NULL_T(m_pAM);
+	F_INFO(pK->v("_MissionControl", &iName));
+	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
+	NULL_T(m_pMC);
 
-	string pAS[N_ACTIVESTATE];
-	int nAS = pK->array("activeState", pAS, N_ACTIVESTATE);
+	string pAS[N_ACTIVEMISSION];
+	int nAS = pK->array("activeMission", pAS, N_ACTIVEMISSION);
 	for(int i=0; i<nAS; i++)
 	{
-		int iState = m_pAM->getStateIdx(pAS[i]);
-		if(iState<0)continue;
+		int iMission = m_pMC->getMissionIdx(pAS[i]);
+		if(iMission<0)continue;
 
-		m_vActiveState.push_back(iState);
+		m_vActiveMission.push_back(iMission);
 	}
 
-	m_iLastState = m_pAM->getCurrentStateIdx();
+	m_iLastMission = m_pMC->getCurrentMissionIdx();
 
 	return true;
 }
 
 int ActionBase::check(void)
 {
-	NULL__(m_pAM,-1);
+	NULL__(m_pMC,-1);
 
 	return 0;
 }
@@ -58,27 +58,27 @@ void ActionBase::update(void)
 	m_dTime = newTime - m_tStamp;
 	m_tStamp = newTime;
 
-	NULL_(m_pAM);
-	int currentState = m_pAM->getCurrentStateIdx();
-	if(m_iLastState != currentState)
+	NULL_(m_pMC);
+	int currentMission = m_pMC->getCurrentMissionIdx();
+	if(m_iLastMission != currentMission)
 	{
-		m_bStateChanged = true;
-		m_iLastState = currentState;
+		m_bMissionChanged = true;
+		m_iLastMission = currentMission;
 	}
 	else
 	{
-		m_bStateChanged = false;
+		m_bMissionChanged = false;
 	}
 }
 
 bool ActionBase::isActive(void)
 {
-	NULL_F(m_pAM);
+	NULL_F(m_pMC);
 
-	int iState = m_pAM->getCurrentStateIdx();
-	for (int i : m_vActiveState)
+	int iMission = m_pMC->getCurrentMissionIdx();
+	for (int i : m_vActiveMission)
 	{
-		if(iState == i)return true;
+		if(iMission == i)return true;
 	}
 
 	return false;
@@ -86,7 +86,7 @@ bool ActionBase::isActive(void)
 
 bool ActionBase::isStateChanged(void)
 {
-	return m_bStateChanged;
+	return m_bMissionChanged;
 }
 
 bool ActionBase::draw(void)

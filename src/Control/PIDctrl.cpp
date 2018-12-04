@@ -78,9 +78,9 @@ bool PIDctrl::draw(void)
 	return this->ControlBase::draw();
 }
 
-bool PIDctrl::cli(int& iY)
+bool PIDctrl::console(int& iY)
 {
-	IF_F(!this->ControlBase::cli(iY));
+	IF_F(!this->ControlBase::console(iY));
 
 	string msg;
 	msg = "v=" + f2str(m_v)

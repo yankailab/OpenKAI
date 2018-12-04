@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Autopilot__AutoPilot_H_
 #define OpenKAI_src_Autopilot__AutoPilot_H_
 
+#include "../Mission/_MissionControl.h"
 #include "../Base/common.h"
-#include "../Automaton/_Automaton.h"
 #include "ActionBase.h"
 #include "Controller/APcopter/APcopter_arucoTarget.h"
 #include "Controller/APcopter/APcopter_base.h"
@@ -17,6 +17,8 @@
 #include "Controller/APcopter/APcopter_takePhoto.h"
 #include "Controller/APcopter/APcopter_mission.h"
 #include "Controller/APcopter/APcopter_slam.h"
+#include "Controller/APcopter/APcopter_slamCalib.h"
+#include "Controller/APcopter/APcopter_WP.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/HM/HM_avoid.h"
 #include "Controller/HM/HM_base.h"
@@ -60,10 +62,10 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 public:
-	_Automaton* m_pAM;
+	_MissionControl* m_pAM;
 	vector<ACTION_INST> m_vAction;
 
 	//Thread

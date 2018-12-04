@@ -28,6 +28,7 @@ struct Time_Stamps
 	uint64_t position_target_local_ned;
 	uint64_t position_target_global_int;
 	uint64_t radio_status;
+	uint64_t raw_imu;
 	uint64_t rc_channels_override;
 	uint64_t rc_channels_raw;
 	uint64_t sys_status;
@@ -44,6 +45,7 @@ struct Time_Stamps
 		position_target_global_int = 0;
 		highres_imu = 0;
 		attitude = 0;
+		raw_imu = 0;
 		rc_channels_override = 0;
 		rc_channels_raw = 0;
 		mission_current = 0;
@@ -71,6 +73,7 @@ struct Mavlink_Messages
 	mavlink_position_target_local_ned_t		position_target_local_ned;
 	mavlink_position_target_global_int_t	position_target_global_int;
 	mavlink_radio_status_t					radio_status;
+	mavlink_raw_imu_t						raw_imu;
 	mavlink_rc_channels_override_t			rc_channels_override;
 	mavlink_rc_channels_raw_t				rc_channels_raw;
 	mavlink_sys_status_t					sys_status;
@@ -139,7 +142,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 	//Receive
 	void handleMessages();

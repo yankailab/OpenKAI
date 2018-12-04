@@ -310,9 +310,9 @@ bool _ObjectBase::draw(void)
 	return true;
 }
 
-bool _ObjectBase::cli(int& iY)
+bool _ObjectBase::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg = "nObj=" + i2str(m_obj.size());
 	COL_MSG;

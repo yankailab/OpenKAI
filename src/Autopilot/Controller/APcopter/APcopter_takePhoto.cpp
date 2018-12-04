@@ -15,7 +15,7 @@ APcopter_takePhoto::APcopter_takePhoto()
 	m_dir = "/home/";
 	m_subDir = "";
 
-	m_tInterval = USEC_1SEC;
+	m_tInterval = 1;
 	m_tLastTake = 0;
 	m_quality = 100;
 	m_iTake = 0;
@@ -34,8 +34,8 @@ bool APcopter_takePhoto::init(void* pKiss)
 	KISSm(pK,quality);
 	KISSm(pK,dir);
 	KISSm(pK,subDir);
-	KISSm(pK,tInterval);
 	KISSm(pK,bAuto);
+	KISSm(pK,tInterval);
 
 	if(m_subDir.empty())
 	{
@@ -98,7 +98,8 @@ void APcopter_takePhoto::update(void)
 	//Auto take
 	if(m_bAuto)
 	{
-		IF_(m_tStamp - m_tLastTake < m_tInterval);
+		uint64_t tInt = USEC_1SEC / m_tInterval;
+		IF_(m_tStamp - m_tLastTake < tInt);
 		m_tLastTake = m_tStamp;
 		take();
 	}
@@ -107,33 +108,37 @@ void APcopter_takePhoto::update(void)
 void APcopter_takePhoto::cmd(void)
 {
 	char buf;
-	IF_(m_pIO->read((uint8_t*) &buf, 1) <= 0);
+	string msg;
 
-	string msg = "";
-
-	switch (buf)
+	while(m_pIO->read((uint8_t*) &buf, 1) > 0)
 	{
-	case 't':
-		take();
-		msg = "Photo take: " + i2str(m_iTake);
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	case 'a':
-		m_bAuto = true;
-		msg = "Auto Interval Started";
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	case 's':
-		m_bAuto = false;
-		msg = "Auto Interval Stopped";
-		m_pIO->write((unsigned char*)msg.c_str(), msg.length());
-		break;
-	default:
-		if(buf > '1' && buf < '9')
+
+		switch (buf)
 		{
-			m_tInterval = USEC_1SEC / (double)(buf-48);
+		case 't':
+			take();
+			msg = "Photo take: " + i2str(m_iTake);
+			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		case 'a':
+			m_bAuto = true;
+			msg = "Auto interval started in " + i2str(m_tInterval) + " Hz";
+			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		case 's':
+			m_bAuto = false;
+			msg = "Auto interval stopped, " + i2str(m_iTake) + " photos taken in total.";
+			m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			break;
+		default:
+			if(buf >= '1' && buf <= '9')
+			{
+				m_tInterval = (uint64_t)(buf-'0');
+				msg = "Set interval to " + i2str(m_tInterval) +" Hz";
+				m_pIO->write((unsigned char*)msg.c_str(), msg.length());
+			}
+			break;
 		}
-		break;
 	}
 }
 
@@ -151,10 +156,10 @@ void APcopter_takePhoto::take(void)
 	while(!m_pDV->bSleeping());
 	while(!m_pDV->m_pTPP->bSleeping());
 
-	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001);
-	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001);
-	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001);
-	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01);
+	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001, 7);
+	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001, 7);
+	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001, 3);
+	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01, 2);
 
 	Mat mRGB;
 	m_pV->BGR()->m()->copyTo(mRGB);
@@ -189,6 +194,83 @@ void APcopter_takePhoto::take(void)
 	LOG_I("Depth: " + fName);
 
 	m_iTake++;
+}
+
+bool APcopter_takePhoto::draw(void)
+{
+	IF_F(!this->ActionBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->m();
+	IF_F(pMat->empty());
+	IF_F(check()<0);
+
+	string msg = *this->getName() + ": ";
+
+	if(!isActive())
+	{
+		msg += "Inactive";
+		pWin->addMsg(&msg);
+		msg = "";
+	}
+
+	if(m_bAuto)
+		msg += "AUTO INTERVAL";
+	else
+		msg += "MANUAL";
+	pWin->addMsg(&msg);
+
+	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
+	pWin->addMsg(&msg);
+
+	msg = "iTake = " + i2str(m_iTake);
+	pWin->addMsg(&msg);
+
+	msg = "Dir = " + m_subDir;
+	pWin->addMsg(&msg);
+
+	return true;
+}
+
+bool APcopter_takePhoto::console(int& iY)
+{
+	IF_F(!this->ActionBase::console(iY));
+	IF_F(check()<0);
+
+	string msg;
+
+	if(!isActive())
+	{
+		msg += "Inactive";
+		COL_MSG;
+		iY++;
+		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		msg = "";
+	}
+
+	if(m_bAuto)
+		msg += "AUTO INTERVAL";
+	else
+		msg += "MANUAL";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "iTake = " + i2str(m_iTake);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	msg = "Dir = " + m_subDir;
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	return true;
 }
 
 }

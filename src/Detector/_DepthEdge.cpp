@@ -312,9 +312,9 @@ bool _DepthEdge::draw(void)
 	return true;
 }
 
-bool _DepthEdge::cli(int& iY)
+bool _DepthEdge::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg = "Edge pos = (" +
 			f2str(m_vPos.x) + ", " +

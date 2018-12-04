@@ -368,9 +368,9 @@ bool _LeddarVu::draw(void)
 	return true;
 }
 
-bool _LeddarVu::cli(int& iY)
+bool _LeddarVu::console(int& iY)
 {
-	IF_F(!this->_DistSensorBase::cli(iY));
+	IF_F(!this->_DistSensorBase::console(iY));
 
 	string msg;
 	msg += "nDiv=" + i2str(m_nDiv);

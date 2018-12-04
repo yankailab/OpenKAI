@@ -51,7 +51,7 @@ void APcopter_mission::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pMC->getCurrentMissionName();
 	uint32_t apMode = m_pAP->apMode();
 
 	if(apMode == FOLLOW ||
@@ -59,7 +59,7 @@ void APcopter_mission::update(void)
 	   apMode == GUIDED)
 	{
 		if(*pState!="CC_FOLLOW" && *pState!="CC_SEARCH")
-			m_pAM->transit("CC_SEARCH");
+			m_pMC->transit("CC_SEARCH");
 
 		if(m_pAP->bApModeChanged())
 		{
@@ -73,7 +73,7 @@ void APcopter_mission::update(void)
 	else if(apMode == LAND || apMode == RTL)
 	{
 		if(*pState!="CC_RTL")
-			m_pAM->transit("CC_RTL");
+			m_pMC->transit("CC_RTL");
 
 		m_tStart = m_tStamp;
 	}
@@ -86,7 +86,7 @@ void APcopter_mission::update(void)
 	else
 	{
 		if(*pState!="CC_STANDBY")
-			m_pAM->transit("CC_STANDBY");
+			m_pMC->transit("CC_STANDBY");
 
 		m_tStart = m_tStamp;
 	}
@@ -116,9 +116,9 @@ bool APcopter_mission::draw(void)
 	return true;
 }
 
-bool APcopter_mission::cli(int& iY)
+bool APcopter_mission::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);

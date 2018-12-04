@@ -55,7 +55,7 @@ void HM_kickBack::update(void)
 	this->ActionBase::update();
 
 	NULL_(m_pHM);
-	NULL_(m_pAM);
+	NULL_(m_pMC);
 	NULL_(m_pGPS);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
@@ -109,7 +109,7 @@ void HM_kickBack::update(void)
 		if(abs(dHdg(m_wpApproach.m_hdg, pNew->m_hdg)) > abs(rotHdg))
 		{
 			//turn complete, change to work mode
-			m_pAM->transit("HM_WORK");
+			m_pMC->transit("HM_WORK");
 			m_sequence = kb_station;
 			LOG_I("KickBack turn complete");
 			return;

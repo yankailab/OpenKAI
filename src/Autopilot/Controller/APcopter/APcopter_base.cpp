@@ -12,11 +12,12 @@ APcopter_base::APcopter_base()
 	m_lastApMode = 0xffffffff;
 	m_bApModeChanged = false;
 
-	m_freqExtra1 = 1;
-	m_freqPos = 1;
 	m_freqSendHeartbeat = 1;
-	m_freqRC = 0;
+	m_freqRawSensors = 0;
 	m_freqExtStat = 1;
+	m_freqRC = 0;
+	m_freqPos = 1;
+	m_freqExtra1 = 1;
 }
 
 APcopter_base::~APcopter_base()
@@ -28,11 +29,12 @@ bool APcopter_base::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,freqExtra1);
-	KISSm(pK,freqPos);
 	KISSm(pK,freqSendHeartbeat);
-	KISSm(pK,freqRC);
+	KISSm(pK,freqRawSensors);
 	KISSm(pK,freqExtStat);
+	KISSm(pK,freqRC);
+	KISSm(pK,freqPos);
+	KISSm(pK,freqExtra1);
 
 	if(m_freqSendHeartbeat > 0)
 		m_freqSendHeartbeat = USEC_1SEC / m_freqSendHeartbeat;
@@ -83,17 +85,21 @@ void APcopter_base::update(void)
 	}
 
 	//request updates from Mavlink
-	if(m_freqExtra1 > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqExtra1);
+	if(m_freqRawSensors > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.raw_imu > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS, m_freqRawSensors);
 
-	if(m_freqPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqPos);
+	if(m_freqExtStat > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.mission_current > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_freqExtStat);
 
 	if(m_freqRC > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 
-	if(m_freqExtStat > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.mission_current > USEC_1SEC)
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_freqExtStat);
+	if(m_freqPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqPos);
+
+	if(m_freqExtra1 > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqExtra1);
+
 }
 
 void APcopter_base::setApMode(uint32_t iMode)
@@ -160,7 +166,13 @@ bool APcopter_base::draw(void)
 	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
 	pWin->addMsg(&msg);
 
-	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
+	pWin->addMsg(&msg);
+
+	double ov1e7 = 0.0000001;
+	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
+	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
 	pWin->addMsg(&msg);
 
 	pWin->tabPrev();
@@ -168,9 +180,9 @@ bool APcopter_base::draw(void)
 	return true;
 }
 
-bool APcopter_base::cli(int& iY)
+bool APcopter_base::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
 	string msg;
@@ -192,7 +204,15 @@ bool APcopter_base::cli(int& iY)
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());
 
-	msg = "height=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
+	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
+	COL_MSG;
+	iY++;
+	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+
+	double ov1e7 = 0.0000001;
+	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
+	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
 	COL_MSG;
 	iY++;
 	mvaddstr(iY, CLI_X_MSG, msg.c_str());

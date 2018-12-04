@@ -142,9 +142,9 @@ bool _MotionDetector::draw(void)
 	return true;
 }
 
-bool _MotionDetector::cli(int& iY)
+bool _MotionDetector::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::cli(iY));
+	IF_F(!this->_ObjectBase::console(iY));
 
 	return true;
 }

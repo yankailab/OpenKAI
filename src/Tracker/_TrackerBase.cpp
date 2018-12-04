@@ -133,9 +133,9 @@ bool _TrackerBase::draw(void)
 	return true;
 }
 
-bool _TrackerBase::cli(int& iY)
+bool _TrackerBase::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg = "Stop";
 	if(m_trackState == track_init)

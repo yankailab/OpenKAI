@@ -23,7 +23,7 @@ BASE* Module::createInstance(Kiss* pK)
 	IF_N(!pK);
 
 	ADD_MODULE(_AutoPilot);
-	ADD_MODULE(_Automaton);
+	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);

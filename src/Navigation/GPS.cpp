@@ -73,7 +73,7 @@ UTM_POS GPS::getPos(vDouble3& dNEA)
 UTM_POS GPS::LL2UTM(LL_POS& pLL)
 {
 	UTM_POS pUTM;
-	char pUTMzone[8];
+	char pUTMzone[UTM_BUF];
 	UTM::LLtoUTM(pLL.m_lat, pLL.m_lng, pUTM.m_northing, pUTM.m_easting, pUTMzone);
 	pUTM.m_zone = pUTMzone;
 	pUTM.m_altRel = pLL.m_altRel;

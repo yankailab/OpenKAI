@@ -28,7 +28,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual bool draw(void);
-	virtual bool cli(int& iY);
+	virtual bool console(int& iY);
 
 	virtual void goSleep(void);
 	virtual void sleepTime(int64_t usec);

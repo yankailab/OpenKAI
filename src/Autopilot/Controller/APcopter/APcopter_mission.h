@@ -18,7 +18,7 @@ public:
 	int check(void);
 	void update(void);
 	bool draw(void);
-	bool cli(int& iY);
+	bool console(int& iY);
 
 public:
 	APcopter_base* m_pAP;

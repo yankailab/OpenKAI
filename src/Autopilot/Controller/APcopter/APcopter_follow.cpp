@@ -139,7 +139,7 @@ void APcopter_follow::update(void)
 		return;
 	}
 
-	if(m_bStateChanged)
+	if(m_bMissionChanged)
 	{
 		m_pDet->wakeUp();
 	}
@@ -251,7 +251,7 @@ bool APcopter_follow::find(void)
 
 		if(m_pTnow->trackState() != track_update)
 		{
-			m_pAM->transit("CC_SEARCH");
+			m_pMC->transit("CC_SEARCH");
 			return false;
 		}
 
@@ -261,7 +261,7 @@ bool APcopter_follow::find(void)
 	{
 		if(!tO)
 		{
-			m_pAM->transit("CC_SEARCH");
+			m_pMC->transit("CC_SEARCH");
 			return false;
 		}
 
@@ -270,7 +270,7 @@ bool APcopter_follow::find(void)
 
 	m_vTarget.x = bb.midX();
 	m_vTarget.y = bb.midY();
-	m_pAM->transit("CC_FOLLOW");
+	m_pMC->transit("CC_FOLLOW");
 
 	return true;
 }
@@ -303,7 +303,7 @@ bool APcopter_follow::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
 	pWin->tabNext();
@@ -335,12 +335,12 @@ bool APcopter_follow::draw(void)
 	return true;
 }
 
-bool APcopter_follow::cli(int& iY)
+bool APcopter_follow::console(int& iY)
 {
-	IF_F(!this->ActionBase::cli(iY));
+	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
-	string* pState = m_pAM->getCurrentStateName();
+	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
 	if(!isActive())

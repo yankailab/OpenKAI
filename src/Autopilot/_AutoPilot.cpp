@@ -51,9 +51,11 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_DNNlanding);
 		ADD_ACTION(APcopter_follow);
 		ADD_ACTION(APcopter_slam);
+		ADD_ACTION(APcopter_slamCalib);
 		ADD_ACTION(APcopter_posCtrlRC);
 		ADD_ACTION(APcopter_posCtrlTarget);
 		ADD_ACTION(APcopter_mission);
+		ADD_ACTION(APcopter_WP);
 
 		ADD_ACTION(AProver_base);
 
@@ -94,8 +96,8 @@ bool _AutoPilot::init(void* pKiss)
 	}
 
 	string iName="";
-	F_INFO(pK->v("_Automaton", &iName));
-	m_pAM = (_Automaton*) (pK->root()->getChildInst(iName));
+	F_INFO(pK->v("_MissionControl", &iName));
+	m_pAM = (_MissionControl*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -145,14 +147,14 @@ bool _AutoPilot::draw(void)
 	return true;
 }
 
-bool _AutoPilot::cli(int& iY)
+bool _AutoPilot::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::cli(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 
 	for(unsigned int i=0; i<m_vAction.size(); i++)
 	{
 		iY++;
-		m_vAction[i].m_pInst->cli(iY);
+		m_vAction[i].m_pInst->console(iY);
 	}
 
 	return true;

@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_HM_rth_approach_H_
 
 #include "../../../Base/common.h"
-#include "../../../Automaton/_Automaton.h"
+#include "../../../Mission/_MissionControl.h"
 #include "../../../Detector/_ClusterNet.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
