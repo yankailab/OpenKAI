@@ -26,11 +26,8 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
-	virtual int	iNextMission(void);
-
 public:
 	string m_nextMission;
-	int	   m_iNextMission;
 
 };
 

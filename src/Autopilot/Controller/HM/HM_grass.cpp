@@ -94,7 +94,7 @@ void HM_grass::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pDet);
-	IF_(!isActive());
+	IF_(!bActive());
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
 	//standby until Detector is ready
@@ -144,7 +144,7 @@ bool HM_grass::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

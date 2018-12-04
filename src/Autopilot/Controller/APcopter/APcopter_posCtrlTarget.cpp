@@ -82,7 +82,7 @@ void APcopter_posCtrlTarget::update(void)
 {
 	this->APcopter_posCtrlBase::update();
 	IF_(check()<0);
-	if(!isActive())
+	if(!bActive())
 	{
 		releaseCtrl();
 		clear();
@@ -195,7 +195,7 @@ bool APcopter_posCtrlTarget::console(int& iY)
 					 + f2str(m_spt.z) + ")";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

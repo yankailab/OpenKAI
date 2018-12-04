@@ -20,7 +20,6 @@ APcopter_slam::APcopter_slam()
 	m_utm.init();
 	m_vVelo.init();
 
-	m_zTop = 50.0;
 	m_vGPSorigin.init();
 	m_vSlamPos.init();
 }
@@ -34,7 +33,6 @@ bool APcopter_slam::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,zTop);
 	pK->v("lat", &m_vGPSorigin.m_lat);
 	pK->v("lng", &m_vGPSorigin.m_lng);
 	m_vSlamPos.init();
@@ -181,7 +179,7 @@ bool APcopter_slam::draw(void)
 
 	string msg = *this->getName() + ": ";
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg += "Inactive";
 		pWin->addMsg(&msg);
@@ -217,12 +215,10 @@ bool APcopter_slam::console(int& iY)
 
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		C_MSG;
 		msg = "";
 	}
 
@@ -230,22 +226,16 @@ bool APcopter_slam::console(int& iY)
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
 			f2str(m_vSlamPos.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	msg = "yawOffset = " + f2str(m_yawOffset);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	msg = "velocity = (" +
 			f2str(m_vVelo.x) + ", " +
 			f2str(m_vVelo.y) + ", " +
 			f2str(m_vVelo.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	return true;
 }

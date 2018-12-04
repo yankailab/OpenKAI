@@ -59,7 +59,7 @@ void VEK_avoid::update(void)
 	NULL_(m_pVEK);
 	NULL_(m_pMC);
 //	NULL_(m_pObs);
-	IF_(!isActive());
+	IF_(!bActive());
 
 	string stateName = "VEK_AVOID";
 
@@ -90,7 +90,7 @@ bool VEK_avoid::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

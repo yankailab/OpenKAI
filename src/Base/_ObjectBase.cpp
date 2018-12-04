@@ -317,7 +317,7 @@ bool _ObjectBase::console(int& iY)
 	string msg = "nObj=" + i2str(m_obj.size());
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

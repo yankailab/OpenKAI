@@ -181,7 +181,7 @@ bool _ThreadBase::console(int& iY)
 
 	string msg = "FPS: " + i2str(m_FPS);
 	COL_FPS;
-	mvaddstr(iY, CLI_X_FPS, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
 
 	return true;
 }

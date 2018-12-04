@@ -73,7 +73,7 @@ void VEK_follow::update(void)
 	NULL_(m_pAM);
 	NULL_(m_pCN);
 //	NULL_(m_pObs);
-	IF_(!isActive());
+	IF_(!bActive());
 
 	OBJECT* pO;
 	int i;
@@ -119,7 +119,7 @@ bool VEK_follow::draw(void)
 	IF_F(pMat->empty());
 
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

@@ -61,7 +61,7 @@ void HM_follow::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pDet);
-	IF_(!isActive());
+	IF_(!bActive());
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
 	m_obj.init();
@@ -97,7 +97,7 @@ bool HM_follow::draw(void)
 	IF_F(pMat->empty());
 
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

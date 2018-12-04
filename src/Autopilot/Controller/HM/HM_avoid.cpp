@@ -77,7 +77,7 @@ void HM_avoid::update(void)
 	NULL_(m_pMC);
 	NULL_(m_pDV);
 	IF_(m_iPriority < m_pHM->m_iPriority);
-	IF_(!isActive());
+	IF_(!bActive());
 
 	uint64_t tNow = getTimeUsec();
 
@@ -101,7 +101,7 @@ bool HM_avoid::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

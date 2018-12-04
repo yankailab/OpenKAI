@@ -48,7 +48,7 @@ public:
 	string* getCurrentMissionName(void);
 	int getLastMissionIdx(void);
 	bool transit(const string& nextMissionName);
-	bool transit(int nextMissionIdx);
+	bool transit(int iNextMission);
 
 public:
 	void update(void);
@@ -59,7 +59,7 @@ public:
 	}
 
 	vector<MISSION_INST> m_vMission;
-	int	m_iMission;
+	int		m_iMission;
 
 };
 

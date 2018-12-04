@@ -127,7 +127,7 @@ void APcopter_follow::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!isActive())
+	if(!bActive())
 	{
 		m_pDet->goSleep();
 		if(m_bUseTracker)
@@ -308,7 +308,7 @@ bool APcopter_follow::draw(void)
 
 	pWin->tabNext();
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 		pWin->addMsg(&msg);
@@ -343,7 +343,7 @@ bool APcopter_follow::console(int& iY)
 	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 	}
@@ -357,7 +357,7 @@ bool APcopter_follow::console(int& iY)
 	}
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "Cam Target = (" + f2str(m_vTarget.x) + ", "
 				     	 	   + f2str(m_vTarget.y) + ", "
@@ -365,7 +365,7 @@ bool APcopter_follow::console(int& iY)
 							   + f2str(m_vTarget.w) + ")";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

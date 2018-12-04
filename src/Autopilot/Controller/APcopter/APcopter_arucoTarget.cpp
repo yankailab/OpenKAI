@@ -104,7 +104,7 @@ void APcopter_arucoTarget::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!isActive())
+	if(!bActive())
 	{
 		m_pArUco->goSleep();
 		return;
@@ -213,7 +213,7 @@ bool APcopter_arucoTarget::draw(void)
 
 	string msg = *this->getName() + ": ";
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg += "Inactive";
 	}
@@ -252,7 +252,7 @@ bool APcopter_arucoTarget::console(int& iY)
 
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 	}
@@ -274,7 +274,7 @@ bool APcopter_arucoTarget::console(int& iY)
 
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Mission/Waypoint.h"
+#include "../../../Control/PIDctrl.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
@@ -23,6 +24,8 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
+	PIDctrl* m_pPIDalt;
+
 	vDouble4 m_vPos;
 	vDouble4 m_vTarget;
 };

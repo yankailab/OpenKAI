@@ -19,8 +19,8 @@ BASE::BASE()
 	m_bLog = false;
 	m_bDraw = true;
 
-	m_cliMsg = "";
-	m_cliMsgLevel = -1;
+	m_consoleMsg = "";
+	m_consoleMsgLevel = -1;
 }
 
 BASE::~BASE()
@@ -102,14 +102,14 @@ bool BASE::draw(void)
 bool BASE::console(int& iY)
 {
 	COL_NAME;
-    mvaddstr(iY, CLI_X_NAME, this->getName()->c_str());
+    mvaddstr(iY, CONSOLE_X_NAME, this->getName()->c_str());
 
-    if(m_cliMsgLevel > 0)
+    if(m_consoleMsgLevel > 0)
     	COL_ERROR;
     else
     	COL_MSG;
 
-    mvaddstr(iY, CLI_X_MSG, m_cliMsg.c_str());
+    mvaddstr(iY, CONSOLE_X_MSG, m_consoleMsg.c_str());
 
     return true;
 }

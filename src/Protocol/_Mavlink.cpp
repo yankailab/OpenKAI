@@ -962,7 +962,7 @@ bool _Mavlink::console(int& iY)
 		msg = "Not Connected";
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 		return true;
 	}
 
@@ -971,7 +971,7 @@ bool _Mavlink::console(int& iY)
 			+ " myType=" + i2str(m_myType);
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "devSysID=" + i2str(m_devSystemID)
 			+ " devComID=" + i2str(m_devComponentID)
@@ -980,7 +980,7 @@ bool _Mavlink::console(int& iY)
 
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

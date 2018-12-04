@@ -3,7 +3,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../../Mission/_MissionControl.h"
 #include "../../ActionBase.h"
 
 #define AP_N_CUSTOM_MODE 24
