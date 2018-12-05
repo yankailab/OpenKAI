@@ -59,9 +59,9 @@ void APcopter_WP::update(void)
 	spt.alt = (float)(pWP->m_vPos.z - vZ);
 
 	//velocity, ignored at the moment
-	spt.vx = (float)pWP->m_speedH;		//forward
-	spt.vy = (float)pWP->m_speedH;		//right
-	spt.vz = (float)vZ;					//down
+	spt.vx = 0.0;//(float)pWP->m_speedH;		//forward
+	spt.vy = 0.0;//(float)pWP->m_speedH;		//right
+	spt.vz = 0.0;//(float)vZ;					//down
 
 	//heading
 	spt.yaw = (float)pWP->m_hdg * DEG_RAD;

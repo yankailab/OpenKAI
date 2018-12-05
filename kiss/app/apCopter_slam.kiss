@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":1,
+	"bLog":0,
 	"bConsole":1,
 	"bStdErr":0,
 	"waitKey":30,
@@ -36,7 +36,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -153,8 +153,8 @@
 			"nextMission":"wp1",
 
 			"hdg":150,
-			"lat":35.854676,
-			"lng":139.517742,
+			"lat":35.854697,
+			"lng":139.517741,
 		}
 		
 		{
@@ -171,8 +171,8 @@
 			"nextMission":"wp3",
 
 			"hdg":150,
-			"lat":35.854676,
-			"lng":139.517742,
+			"lat":35.854661,
+			"lng":139.517775,
 		}
 		
 		{
@@ -189,8 +189,8 @@
 			"nextMission":"wp4",
 
 			"hdg":150,
-			"lat":35.854676,
-			"lng":139.517742,
+			"lat":35.854626,
+			"lng":139.517720,
 		}
 		
 		{
@@ -207,8 +207,8 @@
 			"nextMission":"wp1",
 
 			"hdg":150,
-			"lat":35.854676,
-			"lng":139.517742,
+			"lat":35.854672,
+			"lng":139.517681,
 		}
 		
 	}
@@ -244,7 +244,7 @@
 			"name":"apSlam",
 			"class":"APcopter_slam",
 			"bInst":1,
-			"bLog":1,
+			"bLog":0,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
 			"APcopter_base":"apBase",
@@ -266,8 +266,8 @@
 			"_lng":138.000570,
 			
 			/*Saitama*/
-			"lat":35.854676,
-			"lng":139.517742,
+			"lat":35.854697,
+			"lng":139.517741,			
 		}
 		
 		{

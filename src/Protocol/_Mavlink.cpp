@@ -125,17 +125,17 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 {
 	NULL_(m_pIO);
 
-	static uint8_t s_pSendBuf[N_IO_BUF];
-	int nB = mavlink_msg_to_send_buffer(s_pSendBuf, &msg);
+	uint8_t pSendBuf[N_IO_BUF];
+	int nB = mavlink_msg_to_send_buffer(pSendBuf, &msg);
 
 	if(m_pIO->ioType()!=io_webSocket)
 	{
-		m_pIO->write(s_pSendBuf, nB);
+		m_pIO->write(pSendBuf, nB);
 	}
 	else
 	{
 		_WebSocket* pWS = (_WebSocket*)m_pIO;
-		pWS->write(s_pSendBuf, nB, WS_MODE_BIN);
+		pWS->write(pSendBuf, nB, WS_MODE_BIN);
 	}
 }
 
