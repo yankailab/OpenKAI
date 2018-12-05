@@ -149,7 +149,7 @@ bool HM_grass::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	NULL_T(m_pDet);
 

@@ -236,7 +236,7 @@ bool APcopter_arucoTarget::draw(void)
 		msg += "Target tag not found";
 	}
 
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

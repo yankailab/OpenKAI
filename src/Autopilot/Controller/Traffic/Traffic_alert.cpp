@@ -99,7 +99,7 @@ bool Traffic_alert::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	string msg = "nAlert=" + i2str(m_obj.size());
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	Scalar col = Scalar(0, 0, 255);
 	vInt2 cSize;

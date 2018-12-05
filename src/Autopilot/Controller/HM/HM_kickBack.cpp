@@ -136,7 +136,7 @@ bool HM_kickBack::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

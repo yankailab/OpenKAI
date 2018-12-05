@@ -165,36 +165,30 @@ bool APcopter_base::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	string msg = *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(*this->getName());
 
 	pWin->tabNext();
 
-	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
+	pWin->addMsg("apMode = " + i2str(m_apMode) + ": " + apModeName());
 
-	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
+	pWin->addMsg("y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
 			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
-	pWin->addMsg(&msg);
+			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll));
 
-	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
-	pWin->addMsg(&msg);
+	pWin->addMsg("hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01));
 
-	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
-	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
-	pWin->addMsg(&msg);
+	pWin->addMsg("alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001)
+				 + ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001));
 
 	double ov1e7 = 0.0000001;
-	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
-	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
-	pWin->addMsg(&msg);
+	pWin->addMsg("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7)
+				 = ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7));
 
 	if(m_freqRawSensors > 0)
 	{
-		msg = "xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag);
-		msg += ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag);
-		msg += ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag);
-		pWin->addMsg(&msg);
+		pWin->addMsg("xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
+					 + ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
+					 + ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
 	}
 
 	pWin->tabPrev();
@@ -209,34 +203,26 @@ bool APcopter_base::console(int& iY)
 
 	string msg;
 
-	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG("apMode = " + i2str(m_apMode) + ": " + apModeName());
 
-	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
+	C_MSG("y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
 			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
-	C_MSG;
+			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll));
 
-	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
-	C_MSG;
+	C_MSG("hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01));
 
-	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
-	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
-	C_MSG;
+	C_MSG("alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001)
+		  + ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001));
 
 	double ov1e7 = 0.0000001;
-	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
-	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
-	C_MSG;
+	C_MSG("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7)
+		  + ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7));
 
 	if(m_freqRawSensors > 0)
 	{
-		msg = "xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag);
-		msg += ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag);
-		msg += ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag);
-		C_MSG;
+		C_MSG("xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
+			  + ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
+			  + ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
 	}
 
 	return true;

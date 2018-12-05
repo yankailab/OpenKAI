@@ -209,7 +209,7 @@ bool APcopter_takePhoto::draw(void)
 	if(!isActive())
 	{
 		msg += "Inactive";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 		msg = "";
 	}
 
@@ -217,16 +217,16 @@ bool APcopter_takePhoto::draw(void)
 		msg += "AUTO INTERVAL";
 	else
 		msg += "MANUAL";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "iTake = " + i2str(m_iTake);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "Dir = " + m_subDir;
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

@@ -30,7 +30,7 @@ public:
 	Frame* getFrame(void);
 	Point* getTextPos(void);
 
-	void addMsg(string* pMsg);
+	void addMsg(const string& pMsg);
 	void tabNext(void);
 	void tabPrev(void);
 	void tabReset(void);

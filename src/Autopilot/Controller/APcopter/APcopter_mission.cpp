@@ -104,12 +104,9 @@ bool APcopter_mission::draw(void)
 	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);
 	tRTL = constrain(tRTL, 0, INT_MAX);
 
-	string msg;
-	msg = "tRTL = " + i2str(tRTL) +
+	pWin->addMsg("tRTL = " + i2str(tRTL) +
 		  ", mission current = " + i2str(m_pAP->m_pMavlink->m_msg.mission_current.seq) +
-		  "/" + i2str(m_iMissionSeq);
-
-	pWin->addMsg(&msg);
+		  "/" + i2str(m_iMissionSeq));
 
 	pWin->tabPrev();
 

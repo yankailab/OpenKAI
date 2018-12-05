@@ -104,7 +104,7 @@ bool _LidarSlam::draw(void)
 	string msg;
 
 	pWin->tabNext();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 	pWin->tabPrev();
 
 	return true;

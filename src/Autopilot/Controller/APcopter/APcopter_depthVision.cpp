@@ -95,7 +95,7 @@ bool APcopter_depthVision::draw(void)
 
 	string msg;
 	msg = *this->getName() + " nROI=" + i2str(m_nROI);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	NULL_F(m_pDV);
 

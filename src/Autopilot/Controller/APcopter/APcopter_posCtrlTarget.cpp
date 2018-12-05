@@ -173,7 +173,7 @@ bool APcopter_posCtrlTarget::draw(void)
 					 + f2str(m_spt.x) + ", "
 					 + f2str(m_spt.y) + ", "
 					 + f2str(m_spt.z) + ")";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

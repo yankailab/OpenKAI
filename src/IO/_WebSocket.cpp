@@ -314,7 +314,7 @@ bool _WebSocket::draw(void)
 	pWin->tabNext();
 
 	string msg = "nClients: " + i2str(m_vClient.size());
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

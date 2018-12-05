@@ -102,7 +102,7 @@ bool HM_follow::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	IF_T(!m_obj.bClassMask(m_mTargetClass));
 

@@ -124,7 +124,7 @@ bool _ArUco::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	string msg = "nTag: " + i2str(this->size());
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 	IF_T(this->size() <= 0);
 
 	OBJECT* pO;

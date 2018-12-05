@@ -160,12 +160,16 @@ bool _MissionControl::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	IF_T(m_vMission.size() <= 0);
-	IF_T(m_iMission < 0);
-	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
+	pWin->addMsg(*this->getName());
 
-	string msg = *this->getName()+": " + ((Kiss*)pMB->m_pKiss)->m_name;
-	pWin->addMsg(&msg);
+	pWin->addMsg("nMission: "+i2str(m_vMission.size()));
+	IF_T(m_vMission.size() <= 0);
+
+	pWin->addMsg("iMission: "+i2str(m_iMission));
+	IF_T(m_iMission < 0);
+
+	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
+	pWin->addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name);
 
 	pWin->tabNext();
 	pMB->draw();
@@ -177,13 +181,16 @@ bool _MissionControl::draw(void)
 bool _MissionControl::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
+	string msg;
 
+	C_MSG("nMission: "+i2str(m_vMission.size()));
 	IF_T(m_vMission.size() <= 0);
-	IF_T(m_iMission < 0);
-	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
 
-	string msg = "Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name;
-	C_MSG;
+	C_MSG("iMission: "+i2str(m_iMission));
+	IF_T(m_iMission < 0);
+
+	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
+	C_MSG("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name);
 
 	iY++;
 	pMB->console(iY);

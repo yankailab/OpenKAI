@@ -311,24 +311,24 @@ bool APcopter_follow::draw(void)
 	if(!bActive())
 	{
 		msg = "Inactive";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 	else if (*pState=="CC_FOLLOW")
 	{
 		msg = "Following";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 	else
 	{
 		msg = "Searching";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 
 	msg = "Cam Target = (" + f2str(m_vTarget.x) + ", "
 							   + f2str(m_vTarget.y) + ", "
 					           + f2str(m_vTarget.z) + ", "
 				           	   + f2str(m_vTarget.w) + ")";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

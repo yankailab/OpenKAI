@@ -45,7 +45,6 @@ public:
 	LL_POS m_vGPSorigin;
 	vDouble3 m_vSlamPos;
 	vDouble3 m_vVelo;
-	uint32_t m_fModeOriginReset;
 	double	m_yawOffset;
 
 	uint8_t	m_pCmd[MG_PACKET_N];

@@ -239,7 +239,7 @@ bool _Lane::draw(void)
 		pL = &m_pLane[i];
 		IF_CONT(!pL->m_pPoly);
 		msg = "Lane "+ i2str(i) +": " + f2str(pL->m_pPoly[0]) + " " + f2str(pL->m_pPoly[1]) + " " + f2str(pL->m_pPoly[2]);
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 	pWin->tabPrev();
 

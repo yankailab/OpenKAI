@@ -170,7 +170,7 @@ bool _TCPclient::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 
 	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

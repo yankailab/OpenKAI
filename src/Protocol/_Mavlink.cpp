@@ -928,7 +928,7 @@ bool _Mavlink::draw(void)
 	{
 		pWin->tabNext();
 		msg = "Not Connected";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 		pWin->tabPrev();
 		return true;
 	}
@@ -938,13 +938,13 @@ bool _Mavlink::draw(void)
 	msg = "mySysID=" + i2str(m_mySystemID)
 			+ " myComID=" + i2str(m_myComponentID)
 			+ " myType=" + i2str(m_myType);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "devSysID=" + i2str(m_devSystemID)
 			+ " devComID=" + i2str(m_devComponentID)
 			+ " devType=" + i2str(m_devType)
 	 	 	+ " custom_mode=" + i2str((int)m_msg.heartbeat.custom_mode);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 
@@ -959,28 +959,18 @@ bool _Mavlink::console(int& iY)
 
 	if (!m_pIO->isOpen())
 	{
-		msg = "Not Connected";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+		C_MSG("Not Connected");
 		return true;
 	}
 
-	msg = "mySysID=" + i2str(m_mySystemID)
+	C_MSG("mySysID=" + i2str(m_mySystemID)
 			+ " myComID=" + i2str(m_myComponentID)
-			+ " myType=" + i2str(m_myType);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+			+ " myType=" + i2str(m_myType));
 
-	msg = "devSysID=" + i2str(m_devSystemID)
+	C_MSG("devSysID=" + i2str(m_devSystemID)
 			+ " devComID=" + i2str(m_devComponentID)
 			+ " devType=" + i2str(m_devType)
-	 	 	+ " custom_mode=" + i2str((int)m_msg.heartbeat.custom_mode);
-
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	 	 	+ " custom_mode=" + i2str((int)m_msg.heartbeat.custom_mode));
 
 	return true;
 }

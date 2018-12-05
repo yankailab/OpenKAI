@@ -269,10 +269,10 @@ bool _DepthEdge::draw(void)
 			f2str(m_vPos.y) + ", " +
 			f2str(m_vPos.z) + ", " +
 			f2str(m_vPos.w) + ")";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "dL = " +	f2str(m_dL) + ", dR = " + f2str(m_dR);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

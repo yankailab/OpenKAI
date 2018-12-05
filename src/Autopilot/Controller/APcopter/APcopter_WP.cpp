@@ -6,7 +6,6 @@ namespace kai
 APcopter_WP::APcopter_WP()
 {
 	m_pAP = NULL;
-	m_pPIDalt = NULL;
 	m_vPos.init();
 	m_vTarget.init();
 }
@@ -28,11 +27,6 @@ bool APcopter_WP::init(void* pKiss)
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
-	iName = "";
-	pK->v("PIDalt", &iName);
-	m_pPIDalt = (PIDctrl*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pPIDalt, iName + ": not found");
-
 	return true;
 }
 
@@ -40,7 +34,6 @@ int APcopter_WP::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
-	NULL__(m_pPIDalt,-1);
 
 	return this->ActionBase::check();
 }
@@ -55,22 +48,26 @@ void APcopter_WP::update(void)
 
 	double vZ = 0;
 	if(pWP->m_dSensor >= 0)
-		vZ = m_pPIDalt->update(pWP->m_dSensor, pWP->m_vWP.z);
+		vZ = pWP->m_vWP.z - pWP->m_dSensor;
 
 	mavlink_set_position_target_global_int_t spt;
 	spt.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
 
-	spt.lat_int = 1e7;
-	spt.lon_int = 1e7;
+	//target position
+	spt.lat_int = pWP->m_vWP.x*1e7;
+	spt.lon_int = pWP->m_vWP.y*1e7;
 	spt.alt = (float)(pWP->m_vPos.z - vZ);
 
+	//velocity, ignored at the moment
 	spt.vx = (float)pWP->m_speedH;		//forward
 	spt.vy = (float)pWP->m_speedH;		//right
 	spt.vz = (float)vZ;					//down
 
+	//heading
 	spt.yaw = (float)pWP->m_hdg * DEG_RAD;
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
-	spt.type_mask = 0b0000000111000000;
+
+	spt.type_mask = 0b0000000111111000;
 
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);
 }
@@ -84,32 +81,27 @@ bool APcopter_WP::draw(void)
 	IF_F(check()<0);
 
 	string* pMission = m_pMC->getCurrentMissionName();
-	string msg;
 
 	pWin->tabNext();
 
 	if(!bActive())
 	{
-		msg = "Inactive";
-		pWin->addMsg(&msg);
+		pWin->addMsg("Inactive");
 	}
 	else
 	{
-		msg = "Waypoint";
-		pWin->addMsg(&msg);
+		pWin->addMsg("Waypoint");
 	}
 
-	msg = "Pos = (" + f2str(m_vPos.x) + ", "
+	pWin->addMsg("Pos = (" + f2str(m_vPos.x) + ", "
 							   + f2str(m_vPos.y) + ", "
 					           + f2str(m_vPos.z) + ", "
-				           	   + f2str(m_vPos.w) + ")";
-	pWin->addMsg(&msg);
+				           	   + f2str(m_vPos.w) + ")");
 
-	msg = "Target Pos = (" + f2str(m_vTarget.x) + ", "
+	pWin->addMsg("Target Pos = (" + f2str(m_vTarget.x) + ", "
 							   + f2str(m_vTarget.y) + ", "
 					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")";
-	pWin->addMsg(&msg);
+				           	   + f2str(m_vTarget.w) + ")");
 
 	pWin->tabPrev();
 
@@ -126,25 +118,22 @@ bool APcopter_WP::console(int& iY)
 
 	if(!bActive())
 	{
-		msg = "Inactive";
+		C_MSG("Inactive");
 	}
 	else
 	{
-		msg = "Waypoint";
+		C_MSG("Waypoint");
 	}
-	C_MSG;
 
-	msg = "Pos = (" + f2str(m_vPos.x) + ", "
+	C_MSG("Pos = (" + f2str(m_vPos.x) + ", "
 				     	 	   + f2str(m_vPos.y) + ", "
 							   + f2str(m_vPos.z) + ", "
-							   + f2str(m_vPos.w) + ")";
-	C_MSG;
+							   + f2str(m_vPos.w) + ")");
 
-	msg = "Target Pos = (" + f2str(m_vTarget.x) + ", "
+	C_MSG("Target Pos = (" + f2str(m_vTarget.x) + ", "
 							   + f2str(m_vTarget.y) + ", "
 					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")";
-	C_MSG;
+				           	   + f2str(m_vTarget.w) + ")");
 
 	return true;
 }
