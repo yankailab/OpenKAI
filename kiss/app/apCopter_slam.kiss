@@ -233,11 +233,11 @@
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
 			"freqSendHeartbeat":1,
-			"freqRawSensors":20,
+			"freqRawSensors":10,
 			"freqExtStat":0,
 			"freqRC":0,
 			"freqPos":10,
-			"freqExtra1":10,
+			"freqExtra1":0,
 		}
 		
 		{

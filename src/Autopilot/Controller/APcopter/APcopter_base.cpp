@@ -215,8 +215,8 @@ bool APcopter_base::console(int& iY)
 		  + ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001));
 
 	double ov1e7 = 0.0000001;
-	C_MSG("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7)
-		  + ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7));
+	C_MSG("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat,7)*ov1e7)
+		  + ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon,7)*ov1e7));
 
 	if(m_freqRawSensors > 0)
 	{

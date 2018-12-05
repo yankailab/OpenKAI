@@ -96,15 +96,15 @@ bool Waypoint::draw(void)
 
 	pWin->tabNext();
 
-	msg = "WP = (" + f2str(m_vWP.x) + ", "
+	pWin->addMsg("WP = (" + f2str(m_vWP.x) + ", "
 				   + f2str(m_vWP.y) + ", "
-		           + f2str(m_vWP.z) + ")";
-	pWin->addMsg(msg);
+		           + f2str(m_vWP.z) + ")");
 
-	msg = "Pos = (" + f2str(m_vPos.x) + ", "
+	pWin->addMsg("Pos = (" + f2str(m_vPos.x) + ", "
 				   + f2str(m_vPos.y) + ", "
-		           + f2str(m_vPos.z) + ")";
-	pWin->addMsg(msg);
+		           + f2str(m_vPos.z) + ")");
+
+	pWin->addMsg("dSensor = " + f2str(m_dSensor));
 
 	pWin->tabPrev();
 
@@ -124,6 +124,8 @@ bool Waypoint::console(int& iY)
 	C_MSG("Pos = (" + f2str(m_vPos.x) + ", "
 				    + f2str(m_vPos.y) + ", "
 		            + f2str(m_vPos.z) + ")");
+
+	C_MSG("dSensor = " + f2str(m_dSensor));
 
 	return true;
 }
