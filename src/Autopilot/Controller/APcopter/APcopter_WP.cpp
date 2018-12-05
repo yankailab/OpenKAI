@@ -6,8 +6,6 @@ namespace kai
 APcopter_WP::APcopter_WP()
 {
 	m_pAP = NULL;
-	m_vPos.init();
-	m_vTarget.init();
 }
 
 APcopter_WP::~APcopter_WP()
@@ -93,16 +91,6 @@ bool APcopter_WP::draw(void)
 		pWin->addMsg("Waypoint");
 	}
 
-	pWin->addMsg("Pos = (" + f2str(m_vPos.x) + ", "
-							   + f2str(m_vPos.y) + ", "
-					           + f2str(m_vPos.z) + ", "
-				           	   + f2str(m_vPos.w) + ")");
-
-	pWin->addMsg("Target Pos = (" + f2str(m_vTarget.x) + ", "
-							   + f2str(m_vTarget.y) + ", "
-					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")");
-
 	pWin->tabPrev();
 
 	return true;
@@ -124,16 +112,6 @@ bool APcopter_WP::console(int& iY)
 	{
 		C_MSG("Waypoint");
 	}
-
-	C_MSG("Pos = (" + f2str(m_vPos.x) + ", "
-				     	 	   + f2str(m_vPos.y) + ", "
-							   + f2str(m_vPos.z) + ", "
-							   + f2str(m_vPos.w) + ")");
-
-	C_MSG("Target Pos = (" + f2str(m_vTarget.x) + ", "
-							   + f2str(m_vTarget.y) + ", "
-					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")");
 
 	return true;
 }

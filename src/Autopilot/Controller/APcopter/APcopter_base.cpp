@@ -171,18 +171,17 @@ bool APcopter_base::draw(void)
 
 	pWin->addMsg("apMode = " + i2str(m_apMode) + ": " + apModeName());
 
-	pWin->addMsg("y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
-			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll));
+	pWin->addMsg("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
+			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
+			", r=" + f2str(m_pMavlink->m_msg.attitude.roll));
 
-	pWin->addMsg("hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01));
+	pWin->addMsg("hdg=" + f2str(((float)m_pMavlink->m_msg.global_position_int.hdg)*1e-2));
 
-	pWin->addMsg("alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001)
-				 + ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001));
+	pWin->addMsg("alt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.alt)*1e-3)
+		  + ", relAlt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.relative_alt)*1e-3));
 
-	double ov1e7 = 0.0000001;
-	pWin->addMsg("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7)
-				 = ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7));
+	pWin->addMsg("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
+		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
 
 	if(m_freqRawSensors > 0)
 	{
@@ -205,18 +204,17 @@ bool APcopter_base::console(int& iY)
 
 	C_MSG("apMode = " + i2str(m_apMode) + ": " + apModeName());
 
-	C_MSG("y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
-			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll));
+	C_MSG("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
+			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
+			", r=" + f2str(m_pMavlink->m_msg.attitude.roll));
 
-	C_MSG("hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01));
+	C_MSG("hdg=" + f2str(((float)m_pMavlink->m_msg.global_position_int.hdg)*1e-2));
 
-	C_MSG("alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001)
-		  + ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001));
+	C_MSG("alt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.alt)*1e-3)
+		  + ", relAlt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.relative_alt)*1e-3));
 
-	double ov1e7 = 0.0000001;
-	C_MSG("lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat,7)*ov1e7)
-		  + ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon,7)*ov1e7));
+	C_MSG("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
+		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
 
 	if(m_freqRawSensors > 0)
 	{

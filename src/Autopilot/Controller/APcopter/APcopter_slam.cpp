@@ -176,33 +176,23 @@ bool APcopter_slam::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string msg = *this->getName() + ": ";
-
-	if(!bActive())
-	{
-		msg += "Inactive";
-		pWin->addMsg(msg);
-		msg = "";
-	}
-
 	circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
 						0.5 * pMat->rows),
 						pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
-	msg += "pos = (" +
+	pWin->addMsg(*this->getName());
+
+	pWin->addMsg("pos = (" +
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
-			f2str(m_vSlamPos.z) + ")";
-	pWin->addMsg(msg);
+			f2str(m_vSlamPos.z) + ")");
 
-	msg = "yawOffset = " + f2str(m_yawOffset);
-	pWin->addMsg(msg);
+	pWin->addMsg("yawOffset = " + f2str(m_yawOffset));
 
-	msg = "velocity = (" +
+	pWin->addMsg("velocity = (" +
 			f2str(m_vVelo.x) + ", " +
 			f2str(m_vVelo.y) + ", " +
-			f2str(m_vVelo.z) + ")";
-	pWin->addMsg(msg);
+			f2str(m_vVelo.z) + ")");
 
 	return true;
 }
@@ -213,11 +203,6 @@ bool APcopter_slam::console(int& iY)
 	IF_F(check()<0);
 
 	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-	}
 
 	C_MSG("pos = (" +
 			f2str(m_vSlamPos.x) + ", " +
