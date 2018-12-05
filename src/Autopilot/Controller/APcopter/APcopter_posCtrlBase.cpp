@@ -75,7 +75,7 @@ bool APcopter_posCtrlBase::draw(void)
 
 	pWin->tabNext();
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 		pWin->addMsg(&msg);
@@ -114,12 +114,12 @@ bool APcopter_posCtrlBase::console(int& iY)
 
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 	}
 	else
 	{
@@ -129,7 +129,7 @@ bool APcopter_posCtrlBase::console(int& iY)
 						+ f2str(m_vPos.w) + ")";
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 		msg = "Target = (" + f2str(m_vTarget.x) + ", "
 						   + f2str(m_vTarget.y) + ", "
@@ -137,7 +137,7 @@ bool APcopter_posCtrlBase::console(int& iY)
 						   + f2str(m_vTarget.w) + ")";
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 	}
 
 	return true;

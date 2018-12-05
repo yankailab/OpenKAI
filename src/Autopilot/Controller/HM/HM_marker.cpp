@@ -49,7 +49,7 @@ void HM_marker::update(void)
 
 	NULL_(m_pHM);
 	NULL_(m_pDet);
-	IF_(!isActive());
+	IF_(!bActive());
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
 	//TOOD: if turned angle > desired angle
@@ -82,7 +82,7 @@ bool HM_marker::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

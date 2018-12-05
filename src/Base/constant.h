@@ -24,18 +24,18 @@
 #define CR '\x0d'
 #define LF '\x0a'
 
-#define CLI_COL_TITLE 1
-#define CLI_COL_NAME 2
-#define CLI_COL_FPS 3
-#define CLI_COL_MSG 4
-#define CLI_COL_ERROR 5
-#define COL_TITLE attrset(COLOR_PAIR(CLI_COL_TITLE)|A_BOLD)
-#define COL_NAME attrset(COLOR_PAIR(CLI_COL_NAME)|A_BOLD)
-#define COL_FPS attrset(COLOR_PAIR(CLI_COL_FPS))
-#define COL_MSG attrset(COLOR_PAIR(CLI_COL_MSG))
-#define COL_ERROR attrset(COLOR_PAIR(CLI_COL_ERROR)|A_BOLD)
-#define CLI_X_NAME 0
-#define CLI_X_FPS 20
-#define CLI_X_MSG 30
+#define CONSOLE_COL_TITLE 1
+#define CONSOLE_COL_NAME 2
+#define CONSOLE_COL_FPS 3
+#define CONSOLE_COL_MSG 4
+#define CONSOLE_COL_ERROR 5
+#define COL_TITLE attrset(COLOR_PAIR(CONSOLE_COL_TITLE)|A_BOLD)
+#define COL_NAME attrset(COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD)
+#define COL_FPS attrset(COLOR_PAIR(CONSOLE_COL_FPS))
+#define COL_MSG attrset(COLOR_PAIR(CONSOLE_COL_MSG))
+#define COL_ERROR attrset(COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD)
+#define CONSOLE_X_NAME 0
+#define CONSOLE_X_FPS 20
+#define CONSOLE_X_MSG 30
 
 #endif

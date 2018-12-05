@@ -98,7 +98,7 @@ void APcopter_posCtrlRC::update(void)
 {
 	this->APcopter_posCtrlBase::update();
 	IF_(check()<0);
-	if(!isActive())
+	if(!bActive())
 	{
 		releaseRC();
 		clear();
@@ -198,7 +198,7 @@ bool APcopter_posCtrlRC::console(int& iY)
 					 + i2str(m_rcO.chan8_raw) + ")";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

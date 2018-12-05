@@ -40,7 +40,7 @@ void HM_rth::update(void)
 	NULL_(m_pHM);
 	NULL_(m_pMC);
 	IF_(m_iPriority < m_pHM->m_iPriority);
-	IF_(!isActive());
+	IF_(!bActive());
 
 }
 
@@ -51,7 +51,7 @@ bool HM_rth::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

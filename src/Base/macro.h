@@ -8,10 +8,14 @@
 #ifndef OpenKAI_src_Base_macro_H_
 #define OpenKAI_src_Base_macro_H_
 
-#define CLI_MSG(x,y) m_cliMsgLevel=y;m_cliMsg=x;
-#define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;CLI_MSG(x,0);}
-#define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;CLI_MSG(x,1);
-#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;CLI_MSG(x,2);
+#define CONSOLE_MSG(x,y) m_consoleMsgLevel=y;m_consoleMsg=x;
+#define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,0);}
+#define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,1);
+#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,2);
+
+#define C_NAME COL_NAME;iY++;mvaddstr(iY, CONSOLE_X_NAME, msg.c_str());
+#define C_FPS COL_FPS;iY++;mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
+#define C_MSG COL_MSG;iY++;mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
@@ -41,6 +45,7 @@
 #define NULL_N(x) if(x==NULL){return NULL;}
 #define NULL_T(x) if(x==NULL){return true;}
 
+#define NULLl(x,y) if(x==NULL){LOG_E(y);}
 #define NULL_l(x,y) if(x==NULL){LOG_E(y);return;}
 #define NULL_Fl(x,y) if(x==NULL){LOG_E(y);return false;}
 #define NULL_Nl(x,y) if(x==NULL){LOG_E(y);return NULL;}

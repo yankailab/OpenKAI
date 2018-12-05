@@ -77,6 +77,20 @@ void APcopter_base::update(void)
 		m_bApModeChanged = false;
 	}
 
+	//start mission in Guided mode
+	if(m_pMC)
+	{
+		if(m_apMode==GUIDED)
+		{
+			if(m_bApModeChanged)
+				m_pMC->transit(0);
+		}
+		else
+		{
+			m_pMC->transit(-1);
+		}
+	}
+
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
 	{
@@ -159,8 +173,8 @@ bool APcopter_base::draw(void)
 	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
 
 	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
-			" p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			" r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
+			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
+			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
 	pWin->addMsg(&msg);
 
 	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
@@ -174,6 +188,14 @@ bool APcopter_base::draw(void)
 	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
 	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
 	pWin->addMsg(&msg);
+
+	if(m_freqRawSensors > 0)
+	{
+		msg = "xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag);
+		msg += ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag);
+		msg += ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag);
+		pWin->addMsg(&msg);
+	}
 
 	pWin->tabPrev();
 
@@ -190,32 +212,32 @@ bool APcopter_base::console(int& iY)
 	msg = "apMode = " + i2str(m_apMode) + ": " + apModeName();
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "y=" + f2str((double)m_pMavlink->m_msg.attitude.yaw) +
-			" p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
-			" r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+			", p=" + f2str((double)m_pMavlink->m_msg.attitude.pitch) +
+			", r=" + f2str((double)m_pMavlink->m_msg.attitude.roll);
+	C_MSG;
 
 	msg = "hdg=" + f2str(((double)m_pMavlink->m_msg.global_position_int.hdg)*0.01);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	msg = "alt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.alt)*0.001);
 	msg += ", relAlt=" + f2str(((double)m_pMavlink->m_msg.global_position_int.relative_alt)*0.001);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	double ov1e7 = 0.0000001;
 	msg = "lat=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lat)*ov1e7);
 	msg += ", lon=" + f2str(((double)m_pMavlink->m_msg.global_position_int.lon)*ov1e7);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
+
+	if(m_freqRawSensors > 0)
+	{
+		msg = "xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag);
+		msg += ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag);
+		msg += ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag);
+		C_MSG;
+	}
 
 	return true;
 }

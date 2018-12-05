@@ -30,10 +30,11 @@ public:
 public:
 	_Mavlink* m_pMavlink;
 	_DistSensorBase* m_pDS;
+	double	m_dSensor;
 
-	vDouble3 m_vWP;		//lat, lon, alt(m)
-	vDouble3 m_vPos;	//lat, lon, alt(m)
-	vDouble3 m_vErr;	//lat, lon, alt(m)
+	vDouble3 m_vWP;		//lat, lon, relative_alt(m)
+	vDouble3 m_vPos;
+	vDouble3 m_vErr;
 	double	 m_speedV;
 	double	 m_speedH;
 	double	 m_hdg;

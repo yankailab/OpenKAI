@@ -65,9 +65,8 @@ bool _MissionControl::init(void* pKiss)
 	}
 
 	string startMission = "";
-	F_ERROR_F(pK->v("startMission", &startMission));
+	F_INFO(pK->v("startMission", &startMission));
 	m_iMission = getMissionIdx(startMission);
-	IF_F(m_iMission < 0);
 
 	return true;
 }
@@ -97,14 +96,15 @@ void _MissionControl::update(void)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(check()<0);
-		IF_CONT(m_iMission<0);
+		IF_CONT(check() < 0);
+		IF_CONT(m_iMission < 0);
+		IF_CONT(m_iMission >= m_vMission.size());
 
 		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
 
 		if(pMission->update())
 		{
-			//TODO:transit to next Mission
+			m_iMission = getMissionIdx(pMission->m_nextMission);
 		}
 
 		this->autoFPSto();
@@ -128,19 +128,16 @@ bool _MissionControl::transit(const string& nextMissionName)
 	return transit(iNext);
 }
 
-bool _MissionControl::transit(int nextMissionIdx)
+bool _MissionControl::transit(int iNextMission)
 {
-	IF_F(nextMissionIdx < 0);
-	IF_F(nextMissionIdx >= m_vMission.size());
-	IF_F(nextMissionIdx == m_iMission);
-
-	m_iMission = nextMissionIdx;
+	m_iMission = iNextMission;
 	return true;
 }
 
 MissionBase* _MissionControl::getCurrentMission(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
+	IF_N(m_iMission < 0);
 	return m_vMission[m_iMission].m_pInst;
 }
 
@@ -152,8 +149,9 @@ int _MissionControl::getCurrentMissionIdx(void)
 string* _MissionControl::getCurrentMissionName(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
-	static string currentMissionName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
-	return &currentMissionName;
+	IF_N(m_iMission < 0);
+	static string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
+	return &mName;
 }
 
 bool _MissionControl::draw(void)
@@ -164,15 +162,13 @@ bool _MissionControl::draw(void)
 
 	IF_T(m_vMission.size() <= 0);
 	IF_T(m_iMission < 0);
+	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
 
-	string msg = *this->getName()+": " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
+	string msg = *this->getName()+": " + ((Kiss*)pMB->m_pKiss)->m_name;
 	pWin->addMsg(&msg);
 
 	pWin->tabNext();
-	for(unsigned int i=0; i<m_vMission.size(); i++)
-	{
-		m_vMission[i].m_pInst->draw();
-	}
+	pMB->draw();
 	pWin->tabPrev();
 
 	return true;
@@ -184,17 +180,13 @@ bool _MissionControl::console(int& iY)
 
 	IF_T(m_vMission.size() <= 0);
 	IF_T(m_iMission < 0);
+	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
 
-	string msg = "Current mission: " + ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
-	COL_MSG;
+	string msg = "Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name;
+	C_MSG;
+
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
-
-	for(unsigned int i=0; i<m_vMission.size(); i++)
-	{
-		iY++;
-		m_vMission[i].m_pInst->console(iY);
-	}
+	pMB->console(iY);
 
 	return true;
 }

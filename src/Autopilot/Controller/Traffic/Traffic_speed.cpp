@@ -204,7 +204,7 @@ bool Traffic_speed::console(int& iY)
 	string msg = "avrSpeed=" + f2str(m_avrSpeed);
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	int nAlert;
 	COL_ERROR;
@@ -215,7 +215,7 @@ bool Traffic_speed::console(int& iY)
 	{
 		msg = "nSpeedAlert=" + i2str(nAlert);
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 	}
 
 	//heading alert
@@ -224,7 +224,7 @@ bool Traffic_speed::console(int& iY)
 	{
 		msg = "nHeadingAlert=" + i2str(nAlert);
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 	}
 
 	return true;

@@ -39,8 +39,8 @@ public:
 	bool	m_bLog;
 	bool	m_bDraw;
 
-	string	m_cliMsg;
-	int8_t m_cliMsgLevel;
+	string	m_consoleMsg;
+	int8_t m_consoleMsgLevel;
 };
 
 }

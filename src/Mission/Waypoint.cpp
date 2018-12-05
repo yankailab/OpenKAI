@@ -21,6 +21,7 @@ Waypoint::Waypoint()
 	m_speedH = 1.0;
 	m_hdg = 0.0;
 	m_r = 3.0;
+	m_dSensor = -1.0;
 }
 
 Waypoint::~Waypoint()
@@ -45,12 +46,12 @@ bool Waypoint::init(void* pKiss)
 	iName = "";
 	pK->v("_Mavlink", &iName);
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
-	NULL_F(m_pMavlink);
+	NULL_Fl(m_pMavlink, iName + " not found");
 
 	iName = "";
-	F_INFO(pK->v("_DistSensorBase", &iName));
+	pK->v("_DistSensorBase", &iName);
 	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pDS,iName + " not found");
+	NULLl(m_pDS, iName + " not found");
 
 	return true;
 }
@@ -66,23 +67,16 @@ bool Waypoint::update(void)
 {
 	IF_F(check()<0);
 
-	m_vPos.x = ((double)m_pMavlink->m_msg.global_position_int.lat) * 0.0000001;
-	m_vPos.y = ((double)m_pMavlink->m_msg.global_position_int.lon) * 0.0000001;
-	if(!m_pDS)
+	m_vPos.x = ((double)m_pMavlink->m_msg.global_position_int.lat) * 1e-7;
+	m_vPos.y = ((double)m_pMavlink->m_msg.global_position_int.lon) * 1e-7;
+	m_vPos.z = ((double)m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	if(m_pDS)
 	{
-		m_vPos.z = ((double)m_pMavlink->m_msg.global_position_int.relative_alt) * 0.001;
-	}
-	else
-	{
-		m_vPos.z = m_pDS->dAvr();
-		if(m_vPos.z < 0.0)
-		{
-			//Lidar out of range
-			m_vPos.z = 1000.0;
-		}
+		m_dSensor = m_pDS->dAvr();
 	}
 
 	m_vErr = m_vWP - m_vPos;
+	m_vErr.z = 0.0;
 	double d = m_vErr.len();
 
 	//Mission complete
@@ -123,16 +117,12 @@ bool Waypoint::console(int& iY)
 	msg = "WP = (" + f2str(m_vWP.x) + ", "
 				   + f2str(m_vWP.y) + ", "
 		           + f2str(m_vWP.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	msg = "Pos = (" + f2str(m_vPos.x) + ", "
 				    + f2str(m_vPos.y) + ", "
 		            + f2str(m_vPos.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	C_MSG;
 
 	return true;
 }

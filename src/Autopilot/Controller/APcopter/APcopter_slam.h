@@ -41,7 +41,6 @@ public:
 	Median m_fY;
 	Median m_fHdg;
 
-	double m_zTop;
 	UTM_POS m_utm;
 	LL_POS m_vGPSorigin;
 	vDouble3 m_vSlamPos;

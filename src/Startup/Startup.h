@@ -53,8 +53,8 @@ public:
 	bool	m_bStdErr;
 	string	m_rc;
 
-	string	m_cliMsg;
-	int8_t m_cliMsgLevel;
+	string	m_consoleMsg;
+	int8_t m_consoleMsgLevel;
 };
 
 }

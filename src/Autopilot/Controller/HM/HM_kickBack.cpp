@@ -59,7 +59,7 @@ void HM_kickBack::update(void)
 	NULL_(m_pGPS);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
-	if(!isActive())
+	if(!bActive())
 	{
 		m_sequence = kb_station;
 		return;
@@ -131,7 +131,7 @@ bool HM_kickBack::draw(void)
 
 	//draw messages
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

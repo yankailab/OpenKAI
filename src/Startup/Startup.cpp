@@ -24,8 +24,8 @@ Startup::Startup()
 	m_bLog = true;
 	m_bStdErr = true;
 	m_rc = "";
-	m_cliMsg = "";
-	m_cliMsgLevel = -1;
+	m_consoleMsg = "";
+	m_consoleMsgLevel = -1;
 	m_vInst.clear();
 }
 
@@ -91,11 +91,11 @@ bool Startup::start(Kiss* pKiss)
 		cbreak();
 		start_color();
 		use_default_colors();
-		init_pair(CLI_COL_TITLE, COLOR_WHITE, -1);
-		init_pair(CLI_COL_NAME, COLOR_GREEN, -1);
-		init_pair(CLI_COL_FPS, COLOR_YELLOW, -1);
-		init_pair(CLI_COL_MSG, COLOR_WHITE, -1);
-		init_pair(CLI_COL_ERROR, COLOR_RED, -1);
+		init_pair(CONSOLE_COL_TITLE, COLOR_WHITE, -1);
+		init_pair(CONSOLE_COL_NAME, COLOR_GREEN, -1);
+		init_pair(CONSOLE_COL_FPS, COLOR_YELLOW, -1);
+		init_pair(CONSOLE_COL_MSG, COLOR_WHITE, -1);
+		init_pair(CONSOLE_COL_ERROR, COLOR_RED, -1);
 	}
 
 	//UI thread

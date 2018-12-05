@@ -61,7 +61,7 @@ void HM_rth_approach::update(void)
 	NULL_(m_pMN);
 	IF_(m_iPriority < m_pHM->m_iPriority);
 
-	if(!isActive())
+	if(!bActive())
 	{
 		m_pMN->goSleep();
 		return;
@@ -127,7 +127,7 @@ bool HM_rth_approach::draw(void)
 	IF_F(pMat->empty());
 
 	string msg;
-	if (isActive())
+	if (bActive())
 		msg = "* ";
 	else
 		msg = "- ";

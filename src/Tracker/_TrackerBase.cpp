@@ -148,14 +148,14 @@ bool _TrackerBase::console(int& iY)
 	}
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "Tracking pos = ("
 			+ f2str(m_bb.midX()) + ", "
 			+ f2str(m_bb.midY()) + ")";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

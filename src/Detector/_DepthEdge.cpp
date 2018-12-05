@@ -323,12 +323,12 @@ bool _DepthEdge::console(int& iY)
 			f2str(m_vPos.w) + ")";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "dL = " +	f2str(m_dL) + ", dR = " + f2str(m_dR);
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

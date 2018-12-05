@@ -53,7 +53,7 @@ void APcopter_slamCalib::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	IF_(!isActive());
+	IF_(!bActive());
 	IF_(m_pAP->m_apMode != m_apModeCalib);
 
 	if(m_pAP->m_bApModeChanged)
@@ -93,7 +93,7 @@ bool APcopter_slamCalib::draw(void)
 
 	pWin->tabNext();
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 		pWin->addMsg(&msg);
@@ -117,7 +117,7 @@ bool APcopter_slamCalib::console(int& iY)
 	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
 		msg = "Inactive";
 	}
@@ -127,7 +127,7 @@ bool APcopter_slamCalib::console(int& iY)
 	}
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }

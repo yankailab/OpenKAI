@@ -144,7 +144,7 @@ bool Traffic_alert::console(int& iY)
 	{
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 		return true;
 	}
 
@@ -155,7 +155,7 @@ bool Traffic_alert::console(int& iY)
 	{
 		msg = pOB->getClassName(pO->m_topClass);
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 	}
 
 	return true;

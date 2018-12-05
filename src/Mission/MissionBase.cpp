@@ -13,7 +13,6 @@ namespace kai
 MissionBase::MissionBase()
 {
 	m_nextMission = "";
-	m_iNextMission = -1;
 }
 
 MissionBase::~MissionBase()
@@ -38,11 +37,6 @@ int MissionBase::check(void)
 bool MissionBase::update(void)
 {
 	return false;
-}
-
-int	MissionBase::iNextMission(void)
-{
-	return m_iNextMission;
 }
 
 bool MissionBase::draw(void)

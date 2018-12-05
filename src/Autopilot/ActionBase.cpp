@@ -24,7 +24,6 @@ bool ActionBase::init(void* pKiss)
 
 	KISSm(pK, iPriority);
 
-	//link
 	string iName="";
 	F_INFO(pK->v("_MissionControl", &iName));
 	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
@@ -71,7 +70,7 @@ void ActionBase::update(void)
 	}
 }
 
-bool ActionBase::isActive(void)
+bool ActionBase::bActive(void)
 {
 	NULL_F(m_pMC);
 
@@ -84,7 +83,7 @@ bool ActionBase::isActive(void)
 	return false;
 }
 
-bool ActionBase::isStateChanged(void)
+bool ActionBase::bMissionChanged(void)
 {
 	return m_bMissionChanged;
 }

@@ -243,7 +243,7 @@ bool APcopter_takePhoto::console(int& iY)
 		msg += "Inactive";
 		COL_MSG;
 		iY++;
-		mvaddstr(iY, CLI_X_MSG, msg.c_str());
+		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 		msg = "";
 	}
 
@@ -253,22 +253,22 @@ bool APcopter_takePhoto::console(int& iY)
 		msg += "MANUAL";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "iTake = " + i2str(m_iTake);
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	msg = "Dir = " + m_subDir;
 	COL_MSG;
 	iY++;
-	mvaddstr(iY, CLI_X_MSG, msg.c_str());
+	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 	return true;
 }
