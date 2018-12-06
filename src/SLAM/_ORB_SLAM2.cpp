@@ -174,10 +174,10 @@ bool _ORB_SLAM2::draw(void)
 	{
 		msg = "Tracking lost";
 	}
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	msg = "Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

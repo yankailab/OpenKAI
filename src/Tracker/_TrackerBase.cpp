@@ -127,7 +127,7 @@ bool _TrackerBase::draw(void)
 	}
 
 	pWin->tabNext();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 	pWin->tabPrev();
 
 	return true;

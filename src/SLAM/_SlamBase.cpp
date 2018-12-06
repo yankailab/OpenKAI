@@ -43,7 +43,7 @@ bool _SlamBase::draw(void)
 				  + f2str(m_pos.z) + ")";
 
 	pWin->tabNext();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 	pWin->tabPrev();
 
 	return true;

@@ -108,7 +108,7 @@ bool VEK_base::draw(void)
 	string msg = *this->getName()
 			+ ": vL=" + f2str(m_vL)
 			+ ", vR=" + f2str(m_vR);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

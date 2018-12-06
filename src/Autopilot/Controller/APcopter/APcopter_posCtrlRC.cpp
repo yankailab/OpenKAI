@@ -162,7 +162,7 @@ bool APcopter_posCtrlRC::draw(void)
 	IF_F(check()<0);
 
 	string msg = *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabNext();
 
@@ -174,7 +174,7 @@ bool APcopter_posCtrlRC::draw(void)
 					 + i2str(m_rcO.chan6_raw) + ", "
 					 + i2str(m_rcO.chan7_raw) + ", "
 					 + i2str(m_rcO.chan8_raw) + ")";
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 

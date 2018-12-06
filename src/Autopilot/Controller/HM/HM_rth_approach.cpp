@@ -135,7 +135,7 @@ bool HM_rth_approach::draw(void)
 
 	if(m_pTarget)
 		msg += ": dist=" + f2str(m_pTarget->m_dist);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	NULL_T(m_pTarget);
 	vInt2 cSize;

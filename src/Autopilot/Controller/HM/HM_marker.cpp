@@ -87,7 +87,7 @@ bool HM_marker::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	IF_T(!m_obj.bClass(m_iMarkerClass));
 

@@ -219,11 +219,11 @@ Scalar Window::textColor(void)
 	return m_textCol;
 }
 
-void Window::addMsg(string* pMsg)
+void Window::addMsg(const string& pMsg)
 {
 	IF_(!m_bDraw);
 
-	putText(*m_frame.m(), *pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
+	putText(*m_frame.m(), pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);
 	lineNext();
 }

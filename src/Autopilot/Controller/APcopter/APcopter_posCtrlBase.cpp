@@ -71,14 +71,14 @@ bool APcopter_posCtrlBase::draw(void)
 	IF_F(check()<0);
 
 	string msg = *this->getName();
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabNext();
 
 	if(!bActive())
 	{
 		msg = "Inactive";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 	else
 	{
@@ -86,13 +86,13 @@ bool APcopter_posCtrlBase::draw(void)
 						 + f2str(m_vPos.y) + ", "
 						 + f2str(m_vPos.z) + ", "
 						 + f2str(m_vPos.w) + ")";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 
 		msg = "Target = (" + f2str(m_vTarget.x) + ", "
 						    + f2str(m_vTarget.y) + ", "
 						    + f2str(m_vTarget.z) + ", "
 						    + f2str(m_vTarget.w) + ")";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 
 	pWin->tabPrev();

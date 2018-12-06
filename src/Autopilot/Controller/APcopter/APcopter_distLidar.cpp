@@ -95,7 +95,7 @@ void APcopter_distLidar::updateMavlink(void)
 		D.covariance = 255;
 
 		pMavlink->distanceSensor(D);
-		LOG_I("orient: " + f2str(pS->m_orientation) + " minD: " + f2str(pS->m_minD));
+		LOG_I("orient: " + i2str(pS->m_orientation) + " minD: " + f2str(pS->m_minD));
 	}
 }
 

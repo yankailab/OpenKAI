@@ -244,7 +244,7 @@ bool HM_base::draw(void)
 
 	string msg = *this->getName() + ": rpmL=" + i2str(m_rpmL)
 			+ ", rpmR=" + i2str(m_rpmR);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

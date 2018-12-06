@@ -109,7 +109,7 @@ bool APcopter_DNNlanding::draw(void)
 		msg = "Landing_Target: Target not found";
 	}
 
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

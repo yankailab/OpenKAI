@@ -137,7 +137,7 @@ bool Traffic_speed::draw(void)
 	IF_F(pMat->empty());
 
 	string msg = "avrSpeed=" + f2str(m_avrSpeed);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	Scalar col = Scalar(255, 255, 128);
 	Scalar colSpeedAlert = Scalar(0, 255, 255);

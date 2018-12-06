@@ -170,7 +170,7 @@ bool _ThreadBase::draw(void)
 	string msg = *this->getName();
 	msg += " FPS: " + i2str(m_FPS);
 
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

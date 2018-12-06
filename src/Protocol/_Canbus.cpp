@@ -238,7 +238,7 @@ bool _Canbus::draw(void)
 	else
 		msg += ": Not connected";
 
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	return true;
 }

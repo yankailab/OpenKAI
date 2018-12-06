@@ -106,7 +106,7 @@ bool HM_avoid::draw(void)
 	else
 		msg = "- ";
 	msg += *this->getName() + ": dist=" + f2str(m_distM);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	//draw obstacle detection boxes
 	Rect r;

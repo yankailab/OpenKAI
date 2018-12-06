@@ -408,7 +408,7 @@ inline void copyByte(double v, uint8_t* pBuf)
 
 #define UTIL_BUF 32
 
-inline string i2str(int val)
+inline string i2str(int32_t val)
 {
 	char buf[UTIL_BUF];
 	snprintf(buf, UTIL_BUF, "%d", val);
@@ -422,14 +422,29 @@ inline string li2str(long val)
 	return string(buf);
 }
 
-inline string f2str(double val)
+inline string f2str(float val)
 {
 	char buf[UTIL_BUF];
 	snprintf(buf, UTIL_BUF, "%.3f", val);
 	return string(buf);
 }
 
-inline string f2str(double val, int nDigit)
+inline string f2str(float val, int nDigit)
+{
+	char buf[UTIL_BUF];
+	string format = "%."+i2str(nDigit)+"f";
+	snprintf(buf, UTIL_BUF, format.c_str(), val);
+	return string(buf);
+}
+
+inline string lf2str(double val)
+{
+	char buf[UTIL_BUF];
+	snprintf(buf, UTIL_BUF, "%.3f", val);
+	return string(buf);
+}
+
+inline string lf2str(double val, int nDigit)
 {
 	char buf[UTIL_BUF];
 	string format = "%."+i2str(nDigit)+"f";

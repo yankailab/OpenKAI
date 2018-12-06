@@ -96,12 +96,12 @@ bool APcopter_slamCalib::draw(void)
 	if(!bActive())
 	{
 		msg = "Inactive";
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 	else
 	{
 		msg = "Calibrating: " + i2str(m_vPos.size()) + " Points; yawOffset = " + f2str((double)m_yawOffset);
-		pWin->addMsg(&msg);
+		pWin->addMsg(msg);
 	}
 
 	pWin->tabPrev();

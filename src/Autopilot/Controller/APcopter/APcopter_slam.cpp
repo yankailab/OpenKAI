@@ -15,7 +15,6 @@ APcopter_slam::APcopter_slam()
 	m_nSat = 10;
 	m_hdop = 0;
 	m_vdop = 0;
-	m_fModeOriginReset = 0;
 	m_yawOffset = 0.0;
 	m_utm.init();
 	m_vVelo.init();
@@ -43,7 +42,6 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,nSat);
 	KISSm(pK,hdop);
 	KISSm(pK,vdop);
-	KISSm(pK,fModeOriginReset);
 	KISSm(pK,yawOffset);
 
 	int n = 3;
@@ -91,8 +89,9 @@ void APcopter_slam::update(void)
 	updatePos();
 	sendState();
 
-	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-	m_GPS.m_UTM.m_hdg += m_yawOffset;
+//	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+//	m_GPS.m_UTM.m_hdg += m_yawOffset;
+	m_GPS.m_UTM.m_hdg = m_yawOffset;
 	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
 	UTM_POS pUTM = m_GPS.getPos(m_vSlamPos);
@@ -177,33 +176,23 @@ bool APcopter_slam::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string msg = *this->getName() + ": ";
-
-	if(!bActive())
-	{
-		msg += "Inactive";
-		pWin->addMsg(&msg);
-		msg = "";
-	}
-
 	circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
 						0.5 * pMat->rows),
 						pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
-	msg += "pos = (" +
+	pWin->addMsg(*this->getName());
+
+	pWin->addMsg("pos = (" +
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
-			f2str(m_vSlamPos.z) + ")";
-	pWin->addMsg(&msg);
+			f2str(m_vSlamPos.z) + ")");
 
-	msg = "yawOffset = " + f2str(m_yawOffset);
-	pWin->addMsg(&msg);
+	pWin->addMsg("yawOffset = " + f2str(m_yawOffset));
 
-	msg = "velocity = (" +
+	pWin->addMsg("velocity = (" +
 			f2str(m_vVelo.x) + ", " +
 			f2str(m_vVelo.y) + ", " +
-			f2str(m_vVelo.z) + ")";
-	pWin->addMsg(&msg);
+			f2str(m_vVelo.z) + ")");
 
 	return true;
 }
@@ -215,27 +204,17 @@ bool APcopter_slam::console(int& iY)
 
 	string msg;
 
-	if(!bActive())
-	{
-		msg = "Inactive";
-		C_MSG;
-		msg = "";
-	}
-
-	msg += "pos = (" +
+	C_MSG("pos = (" +
 			f2str(m_vSlamPos.x) + ", " +
 			f2str(m_vSlamPos.y) + ", " +
-			f2str(m_vSlamPos.z) + ")";
-	C_MSG;
+			f2str(m_vSlamPos.z) + ")");
 
-	msg = "yawOffset = " + f2str(m_yawOffset);
-	C_MSG;
+	C_MSG("yawOffset = " + f2str(m_yawOffset));
 
-	msg = "velocity = (" +
+	C_MSG("velocity = (" +
 			f2str(m_vVelo.x) + ", " +
 			f2str(m_vVelo.y) + ", " +
-			f2str(m_vVelo.z) + ")";
-	C_MSG;
+			f2str(m_vVelo.z) + ")");
 
 	return true;
 }

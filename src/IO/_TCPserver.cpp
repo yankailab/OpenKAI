@@ -191,7 +191,7 @@ bool _TCPserver::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg = "Server port: " + i2str(m_listenPort) + " STATUS: " + m_strStatus;
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)

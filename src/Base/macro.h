@@ -13,9 +13,9 @@
 #define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,1);
 #define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,2);
 
-#define C_NAME COL_NAME;iY++;mvaddstr(iY, CONSOLE_X_NAME, msg.c_str());
-#define C_FPS COL_FPS;iY++;mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
-#define C_MSG COL_MSG;iY++;mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+#define C_NAME(x) msg=x; COL_NAME;iY++;mvaddstr(iY, CONSOLE_X_NAME, msg.c_str());
+#define C_FPS(x) msg=x;COL_FPS;iY++;mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
+#define C_MSG(x) msg=x;COL_MSG;iY++;mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}

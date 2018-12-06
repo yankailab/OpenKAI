@@ -167,7 +167,7 @@ bool _UDP::draw(void)
 	pWin->tabNext();
 
 	string msg = "Port:" + i2str(m_port);
-	pWin->addMsg(&msg);
+	pWin->addMsg(msg);
 
 	pWin->tabPrev();
 
