@@ -135,12 +135,12 @@ void APcopter_slam::updatePos(void)
 
 		m_pCmd[m_iCmd] = pBufR[i];
 		m_iCmd++;
-		IF_CONT(m_iCmd < MG_PACKET_N);
+		IF_CONT(m_iCmd < 11);
 
-		//decode one packet
-		m_fX.input(((double)makeINT32(&m_pCmd[1], false)) * 0.001);
-		m_fY.input(((double)makeINT32(&m_pCmd[5], false)) * 0.001);
-		m_fHdg.input(((double)makeINT32(&m_pCmd[13], false)) * 0.001);
+		//decode one command
+		m_fX.input(((double)unpack_int16(&m_pCmd[2])) * 0.001);
+		m_fY.input(((double)unpack_int16(&m_pCmd[4])) * 0.001);
+		m_fHdg.input(((double)unpack_int16(&m_pCmd[8])) * 0.001);
 		m_iCmd = 0;
 
 		m_vSlamPos.x = m_fX.v();
@@ -155,17 +155,23 @@ void APcopter_slam::sendState(void)
 
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = MG_CMD_ATTITUDE;
-	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.roll*1000, &pBufW[2]);
-	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.attitude.pitch*1000, &pBufW[6]);
-	copyByte((int32_t)(m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000, &pBufW[10]);
-	m_pIOw->write(pBufW, 14);
+	pack_int16(&pBufW[2], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.roll*1000));
+	pack_int16(&pBufW[4], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.pitch*1000));
+	pack_int16(&pBufW[6], (int16_t)((m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000));
+	m_pIOw->write(pBufW, 8);
 
 	pBufW[0] = MG_CMD_START;
-	pBufW[1] = MG_CMD_RAW_MAG;
-	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.xmag, &pBufW[2]);
-	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.ymag, &pBufW[6]);
-	copyByte((int32_t)m_pAP->m_pMavlink->m_msg.raw_imu.zmag, &pBufW[10]);
-	m_pIOw->write(pBufW, 14);
+	pBufW[1] = MG_CMD_RAW_IMU;
+	pack_int16(&pBufW[2], m_pAP->m_pMavlink->m_msg.raw_imu.xacc);
+	pack_int16(&pBufW[4], m_pAP->m_pMavlink->m_msg.raw_imu.yacc);
+	pack_int16(&pBufW[6], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
+	pack_int16(&pBufW[8], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
+	pack_int16(&pBufW[10], m_pAP->m_pMavlink->m_msg.raw_imu.ygyro);
+	pack_int16(&pBufW[12], m_pAP->m_pMavlink->m_msg.raw_imu.zgyro);
+	pack_int16(&pBufW[14], m_pAP->m_pMavlink->m_msg.raw_imu.xmag);
+	pack_int16(&pBufW[16], m_pAP->m_pMavlink->m_msg.raw_imu.ymag);
+	pack_int16(&pBufW[18], m_pAP->m_pMavlink->m_msg.raw_imu.zmag);
+	m_pIOw->write(pBufW, 20);
 }
 
 bool APcopter_slam::draw(void)

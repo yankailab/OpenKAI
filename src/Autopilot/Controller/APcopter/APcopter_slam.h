@@ -8,10 +8,11 @@
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
-#define MG_PACKET_N 18
+#define MG_BUF_N 32
 #define MG_CMD_START 0xff
+#define MG_CMD_POS 0
 #define MG_CMD_ATTITUDE 1
-#define MG_CMD_RAW_MAG 2
+#define MG_CMD_RAW_IMU 2
 
 namespace kai
 {
@@ -47,7 +48,7 @@ public:
 	vDouble3 m_vVelo;
 	double	m_yawOffset;
 
-	uint8_t	m_pCmd[MG_PACKET_N];
+	uint8_t	m_pCmd[MG_BUF_N];
 	int m_iCmd;
 
 	int m_gpsID;
@@ -64,23 +65,30 @@ public:
 /*
 Byte | Content
 1 | 0xFF packet start mark
-2~5 | int32  Coordinate X * 1000
-6~9 | int32  Coordinate Y * 1000
-10~13 | int32  Coordinate Z * 1000 (Not used at the moment)
-14~17 | int32  Heading in Degree * 1000
-18 | uint8 Confidence 0 to 100, (set to 255 if confidence is not provided)
+2 | 0x00 MG_CMD_POS
+3~4 | int16  Coordinate X * 1000
+5~6 | int16  Coordinate Y * 1000
+7~8 | int16  Coordinate Z * 1000
+9~10 | int16  Heading in Degree * 1000
+11 | uint8 Confidence 0 to 100, (set to 255 if confidence is not provided)
 
 Byte | Content
 1 | 0xFF packet start mark
-2 | 0x01 CMD_ATTITUDE
-3~6 | int32  Roll in rad * 1000 (-pi ~ pi)
-7~10 | int32  Pitch in rad * 1000 (-pi ~ pi)
-11~14 | int32  Yaw (Heading) in rad * 1000 (0 ~ 2pi, 0 is North)
+2 | 0x01 MG_CMD_ATTITUDE
+3~4 | int16  Roll in rad * 1000 (-pi ~ pi)
+5~6 | int16  Pitch in rad * 1000 (-pi ~ pi)
+7~8 | int16  Yaw (Heading) in rad * 1000 (0 ~ 2pi, 0 is North)
 
 Byte | Content
 1 | 0xFF packet start mark
-2 | 0x02 CMD_RAW_MAG
-3~6 | int32  X in milligauss
-7~10 | int32  Y in milligauss
-11~14 | int32  Z in milligause
+2 | 0x02 MG_CMD_RAW_IMU
+3~4 | int16  xAcc
+5~6 | int16  yAcc
+7~8 | int16  zAcc
+9~10 | int16  xGyro
+11~12 | int16  yGyro
+13~14 | int16  zGyro
+15~16 | int16  xMag in milligauss
+17~18 | int16  yMag in milligauss
+19~20 | int16  zMag in milligause
  */

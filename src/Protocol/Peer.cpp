@@ -65,7 +65,7 @@ int Peer::handle(uint8_t* pBuf, uint32_t nByte)
 
 			if (m_iByte == 5)
 			{
-				m_nMsg = makeUINT32(&m_pBuf[1]);
+//				m_nMsg = makeUINT32(&m_pBuf[1]);
 				if (m_nMsg > MSG_LEN_MAX)
 				{
 					//invalid msg
@@ -101,7 +101,7 @@ bool Peer::decode(void)
 	IF_F(m_iByte < m_nMsg);
 
 	int iM = 5;
-	m_cmd = makeUINT32(&m_pBuf[iM]);
+//	m_cmd = makeUINT32(&m_pBuf[iM]);
 	iM += 4;
 
 	m_nInstTo = m_pBuf[iM++];
@@ -118,10 +118,10 @@ bool Peer::decode(void)
 		iM += m_nInstFrom;
 	}
 
-	m_checksum = makeUINT32(&m_pBuf[iM]);
+//	m_checksum = makeUINT32(&m_pBuf[iM]);
 	iM += 4;
 
-	m_nPayload = makeUINT32(&m_pBuf[iM]);
+//	m_nPayload = makeUINT32(&m_pBuf[iM]);
 	iM += 4;
 	m_pPayload = &m_pBuf[iM];
 
@@ -156,10 +156,10 @@ bool Peer::encode(uint32_t cmd, string* pInstTo, string* pInstFrom,
 	m_iByte = 0;
 	m_pBuf[m_iByte++] = KMSG_BEGIN;
 
-	copyByte(m_nMsg, &m_pBuf[m_iByte]);
+//	copyByte(m_nMsg, &m_pBuf[m_iByte]);
 	m_iByte += 4;
 
-	copyByte(m_cmd, &m_pBuf[m_iByte]);
+//	copyByte(m_cmd, &m_pBuf[m_iByte]);
 	m_iByte += 4;
 
 	m_pBuf[m_iByte++] = m_nInstTo;
@@ -176,10 +176,10 @@ bool Peer::encode(uint32_t cmd, string* pInstTo, string* pInstFrom,
 		m_iByte += m_nInstFrom;
 	}
 
-	copyByte(m_checksum, &m_pBuf[m_iByte]);
+//	copyByte(m_checksum, &m_pBuf[m_iByte]);
 	m_iByte += 4;
 
-	copyByte(m_nPayload, &m_pBuf[m_iByte]);
+//	copyByte(m_nPayload, &m_pBuf[m_iByte]);
 	m_iByte += 4;
 
 	if(m_nPayload)

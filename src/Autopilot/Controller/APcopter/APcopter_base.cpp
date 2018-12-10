@@ -185,9 +185,17 @@ bool APcopter_base::draw(void)
 
 	if(m_freqRawSensors > 0)
 	{
-		pWin->addMsg("xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
-					 + ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
-					 + ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
+		pWin->addMsg("xAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xacc)
+					 + ", yAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.yacc)
+					 + ", zAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zacc));
+
+		pWin->addMsg("xGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xgyro)
+					 + ", yGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ygyro)
+					 + ", zGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zgyro));
+
+		pWin->addMsg("xMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
+					 + ", yMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
+					 + ", zMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
 	}
 
 	pWin->tabPrev();
@@ -218,9 +226,17 @@ bool APcopter_base::console(int& iY)
 
 	if(m_freqRawSensors > 0)
 	{
-		C_MSG("xmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
-			  + ", ymag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
-			  + ", zmag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
+		C_MSG("xAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xacc)
+					 + ", yAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.yacc)
+					 + ", zAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zacc));
+
+		C_MSG("xGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xgyro)
+					 + ", yGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ygyro)
+					 + ", zGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zgyro));
+
+		C_MSG("xMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
+					 + ", yMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
+					 + ", zMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
 	}
 
 	return true;

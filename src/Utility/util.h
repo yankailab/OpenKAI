@@ -25,19 +25,6 @@ inline string tFormat(void)
 	return str;
 }
 
-inline void pack_uint32(void* pBuf, uint32_t v)
-{
-	uint32_t v32 = htonl(v);
-	memcpy(pBuf, &v32, sizeof(uint32_t));
-}
-
-inline uint32_t unpack_uint32(const void* pBuf)
-{
-	uint32_t v32 = 0;
-	memcpy(&v32, pBuf, sizeof(uint32_t));
-	return ntohl(v32);
-}
-
 inline string getFileDir(string file)
 {
 	return file.erase(file.find_last_of('/') + 1, string::npos);
@@ -307,103 +294,80 @@ inline double constrain(double v, double a, double b)
 	return v;
 }
 
-union QBYTE
+inline void pack_int16(void* pB, int16_t v, bool bOrder = true)
 {
-	int32_t m_int32;
-	uint8_t m_uint8[4];
-};
+	if(bOrder)
+		v = htonl(v);
 
-inline int32_t makeINT32(uint8_t* pBuf, bool bOrder)
+	memcpy(pB, &v, sizeof(int16_t));
+}
+
+inline int16_t unpack_int16(const void* pB, bool bOrder = true)
 {
-	QBYTE n;
+	int16_t v = 0;
+	memcpy(&v, pB, sizeof(int16_t));
 
 	if(bOrder)
-	{
-		n.m_uint8[0] = pBuf[0];
-		n.m_uint8[1] = pBuf[1];
-		n.m_uint8[2] = pBuf[2];
-		n.m_uint8[3] = pBuf[3];
-	}
-	else
-	{
-		n.m_uint8[0] = pBuf[3];
-		n.m_uint8[1] = pBuf[2];
-		n.m_uint8[2] = pBuf[1];
-		n.m_uint8[3] = pBuf[0];
-	}
+		v = ntohl(v);
 
-	return n.m_int32;
+	return v;
 }
 
-union UQBYTE
+inline void pack_uint16(void* pB, uint16_t v, bool bOrder = true)
 {
-	uint32_t m_uint32;
-	uint8_t m_uint8[4];
-};
+	if(bOrder)
+		v = htonl(v);
 
-inline uint32_t makeUINT32(uint8_t* pBuf)
-{
-	UQBYTE n;
-	n.m_uint8[0] = pBuf[0];
-	n.m_uint8[1] = pBuf[1];
-	n.m_uint8[2] = pBuf[2];
-	n.m_uint8[3] = pBuf[3];
-	return n.m_uint32;
+	memcpy(pB, &v, sizeof(uint16_t));
 }
 
-union OBYTE
+inline uint16_t unpack_uint16(const void* pB, bool bOrder = true)
 {
-	uint64_t m_uint32;
-	uint8_t m_uint8[8];
-	double m_double;
-};
+	uint16_t v = 0;
+	memcpy(&v, pB, sizeof(uint16_t));
 
-inline double makeDouble(uint8_t* pBuf)
-{
-	OBYTE n;
-	n.m_uint8[0] = pBuf[0];
-	n.m_uint8[1] = pBuf[1];
-	n.m_uint8[2] = pBuf[2];
-	n.m_uint8[3] = pBuf[3];
-	n.m_uint8[4] = pBuf[4];
-	n.m_uint8[5] = pBuf[5];
-	n.m_uint8[6] = pBuf[6];
-	n.m_uint8[7] = pBuf[7];
-	return n.m_double;
+	if(bOrder)
+		v = ntohl(v);
+
+	return v;
 }
 
-inline void copyByte(int32_t v, uint8_t* pBuf)
+inline void pack_int32(void* pB, int32_t v, bool bOrder = true)
 {
-	QBYTE n;
-	n.m_int32 = v;
-	pBuf[0] = n.m_uint8[0];
-	pBuf[1] = n.m_uint8[1];
-	pBuf[2] = n.m_uint8[2];
-	pBuf[3] = n.m_uint8[3];
+	if(bOrder)
+		v = htonl(v);
+
+	memcpy(pB, &v, sizeof(int32_t));
 }
 
-inline void copyByte(uint32_t v, uint8_t* pBuf)
+inline int32_t unpack_int32(const void* pB, bool bOrder = true)
 {
-	UQBYTE n;
-	n.m_uint32 = v;
-	pBuf[0] = n.m_uint8[0];
-	pBuf[1] = n.m_uint8[1];
-	pBuf[2] = n.m_uint8[2];
-	pBuf[3] = n.m_uint8[3];
+	int32_t v = 0;
+	memcpy(&v, pB, sizeof(int32_t));
+
+	if(bOrder)
+		v = ntohl(v);
+
+	return v;
 }
 
-inline void copyByte(double v, uint8_t* pBuf)
+inline void pack_uint32(void* pB, uint32_t v, bool bOrder = true)
 {
-	OBYTE n;
-	n.m_double = v;
-	pBuf[0] = n.m_uint8[0];
-	pBuf[1] = n.m_uint8[1];
-	pBuf[2] = n.m_uint8[2];
-	pBuf[3] = n.m_uint8[3];
-	pBuf[4] = n.m_uint8[4];
-	pBuf[5] = n.m_uint8[5];
-	pBuf[6] = n.m_uint8[6];
-	pBuf[7] = n.m_uint8[7];
+	if(bOrder)
+		v = htonl(v);
+
+	memcpy(pB, &v, sizeof(uint32_t));
+}
+
+inline uint32_t unpack_uint32(const void* pB, bool bOrder = true)
+{
+	uint32_t v = 0;
+	memcpy(&v, pB, sizeof(uint32_t));
+
+	if(bOrder)
+		v = ntohl(v);
+
+	return v;
 }
 
 #define UTIL_BUF 32
