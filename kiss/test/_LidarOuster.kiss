@@ -1,0 +1,32 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"waitKey":30,
+	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+/*
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+	"bRec":0,
+	"recFile":"/media/ubuntu/data/OpenKAI_",
+	"recFPS":15,
+	"recCodec":"MJPG",	
+}
+*/
+{
+	"name":"LidarOuster",
+	"class":"_LidarOuster",
+	"FPS":10000,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"hostname":"192.168.100.70",
+	"udp_dest_host": "192.168.100.95",
+}

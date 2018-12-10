@@ -37,14 +37,20 @@
 #include "../Protocol/_Mavlink.h"
 #include "../Protocol/_RC.h"
 
+#include "../Sensor/LidarOuster/_LidarOuster.h"
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
 #include "../SLAM/_LidarSlam.h"
 
+#ifdef USE_OPENCV_CONTRIB
 #include "../Tracker/_SingleTracker.h"
 #include "../Tracker/_MultiTracker.h"
+#endif
+
+#ifdef USE_OPENTRACKER
 #include "../Tracker/_EcoTracker.h"
+#endif
 
 #include "../UI/Window.h"
 
