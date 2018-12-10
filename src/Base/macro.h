@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Base_macro_H_
 #define OpenKAI_src_Base_macro_H_
 
-#define CONSOLE_MSG(x,y) m_consoleMsgLevel=y;m_consoleMsg=x;
+#define CONSOLE_MSG(x,y) {m_consoleMsgLevel=y;m_consoleMsg=x;}
 #define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,0);}
-#define LOG_E(x) LOG(ERROR)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,1);
-#define LOG_F(x) LOG(FATAL)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,2);
+#define LOG_E(x) {LOG(ERROR)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,1)};
+#define LOG_F(x) {LOG(FATAL)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,2)};
 
-#define C_NAME(x) msg=x; COL_NAME;iY++;mvaddstr(iY, CONSOLE_X_NAME, msg.c_str());
-#define C_FPS(x) msg=x;COL_FPS;iY++;mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
-#define C_MSG(x) msg=x;COL_MSG;iY++;mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+#define C_NAME(x) {msg=x; COL_NAME;iY++;mvaddstr(iY, CONSOLE_X_NAME, msg.c_str());}
+#define C_FPS(x) {msg=x;COL_FPS;iY++;mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());}
+#define C_MSG(x) {msg=x;COL_MSG;iY++;mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());}
 
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}

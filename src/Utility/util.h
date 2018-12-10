@@ -297,7 +297,7 @@ inline double constrain(double v, double a, double b)
 inline void pack_int16(void* pB, int16_t v, bool bOrder = true)
 {
 	if(bOrder)
-		v = htonl(v);
+		v = (int16_t)htons((uint16_t)v);
 
 	memcpy(pB, &v, sizeof(int16_t));
 }
@@ -308,7 +308,7 @@ inline int16_t unpack_int16(const void* pB, bool bOrder = true)
 	memcpy(&v, pB, sizeof(int16_t));
 
 	if(bOrder)
-		v = ntohl(v);
+		v = (int16_t)ntohs((uint16_t)v);
 
 	return v;
 }
@@ -316,7 +316,7 @@ inline int16_t unpack_int16(const void* pB, bool bOrder = true)
 inline void pack_uint16(void* pB, uint16_t v, bool bOrder = true)
 {
 	if(bOrder)
-		v = htonl(v);
+		v = htons(v);
 
 	memcpy(pB, &v, sizeof(uint16_t));
 }
@@ -327,7 +327,7 @@ inline uint16_t unpack_uint16(const void* pB, bool bOrder = true)
 	memcpy(&v, pB, sizeof(uint16_t));
 
 	if(bOrder)
-		v = ntohl(v);
+		v = ntohs(v);
 
 	return v;
 }
@@ -335,7 +335,7 @@ inline uint16_t unpack_uint16(const void* pB, bool bOrder = true)
 inline void pack_int32(void* pB, int32_t v, bool bOrder = true)
 {
 	if(bOrder)
-		v = htonl(v);
+		v = (int32_t)htonl((uint32_t)v);
 
 	memcpy(pB, &v, sizeof(int32_t));
 }
@@ -346,7 +346,7 @@ inline int32_t unpack_int32(const void* pB, bool bOrder = true)
 	memcpy(&v, pB, sizeof(int32_t));
 
 	if(bOrder)
-		v = ntohl(v);
+		v = (int32_t)ntohl((uint32_t)v);
 
 	return v;
 }

@@ -5,7 +5,6 @@ namespace kai
 
 _AutoPilot::_AutoPilot()
 {
-	m_pAM = NULL;
 }
 
 _AutoPilot::~_AutoPilot()
@@ -94,10 +93,6 @@ bool _AutoPilot::init(void* pKiss)
 		ACTION_INST* pA = &m_vAction[i];
 		IF_Fl(!pA->m_pInst->init(pA->m_pKiss), pA->m_pKiss->m_name+": init failed");
 	}
-
-	string iName="";
-	F_INFO(pK->v("_MissionControl", &iName));
-	m_pAM = (_MissionControl*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

@@ -2,10 +2,12 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":1,
-	"waitKey":50,
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"bConsole":1,
+	"bStdErr":0,
+	"waitKey":30,
 }
 
 {
@@ -36,14 +38,12 @@
 	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
-	"FPS":1,
+	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"_modelDir":"/home/ubuntu/dev/model/yolov3/",
-	"_modelFile":"yolov3.cfg",
-	"_trainedFile":"yolov3.weights",
-	"modelDir":"/home/kai/dev/model/yolov3/",
+	"_modelDir":"/home/ubuntu/dev/model/phantom/",
+	"modelDir":"/home/kai/dev/model/phantom/",
 	"modelFile":"yolov3.cfg",
 	"trainedFile":"yolov3.weights",
 	"labelFile":"class.names",
@@ -83,7 +83,7 @@
 {
 	"name":"tracker1",
 	"class":"_EcoTracker",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -103,7 +103,7 @@
 {
 	"name":"tracker2",
 	"class":"_EcoTracker",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -123,7 +123,7 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
@@ -140,11 +140,11 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,
+	"portName":"/dev/ttyS0",
+	"baud":921600,	
 	"_portName":"/dev/ttyACM0",
 	"_baud":115200,
+	"_wakeUp":"mavAP",
 }
 
 {
@@ -152,10 +152,40 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
-	"devSystemID":1,
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}	
 }
 
 {
@@ -191,28 +221,15 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
-	"bInst":1,
+	"FPS":30,
+	"bInst":0,
 	"Window":"OKview",
-	"startState":"CC_SEARCH",
-
-	{
-		"state":"CC_STANDBY",
-	}
-	{
-		"state":"CC_SEARCH",
-	}
-	{
-		"state":"CC_FOLLOW",
-	}
-	{
-		"state":"CC_RTL",
-	}
+	"startMission":"wp1",
 }
 
 {
 	"name":"apPilot",
 	"class":"_AutoPilot",
-	"_MissionControl":"apMission",
 	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
@@ -235,17 +252,6 @@
 		}
 
 		{
-			"name":"apMission",
-			"class":"APcopter_mission",
-			"bInst":0,
-			"_MissionControl":"apMission",
-			"Window":"OKview",
-			"APcopter_base":"apBase",
-			"tRTL":300,
-			"iMissionSeq":4,
-		}
-
-		{
 			"name":"apFollow",
 			"class":"APcopter_follow",
 			"bInst":1,
@@ -253,12 +259,12 @@
 			"bDraw":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
-			"activeState":["CC_SEARCH","CC_FOLLOW"],
 			"APcopter_base":"apBase",
+			"/activeMission":["wp1"],
 			"_ObjectBase":"det",
 			"_TrackerBase1":"tracker1",
 			"_TrackerBase2":"tracker2",
-			"bUseTracker":1,
+			"bUseTracker":0,
 			"iClass":0,
 			"APcopter_posCtrlBase":"apPosCtrl",
 			"camYaw":0.0,
@@ -282,7 +288,7 @@
 			"bLog":0,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
-			"activeState":["CC_FOLLOW"],
+			"/activeMission":["wp1"],
 			"APcopter_base":"apBase",
 			"yawRate":180,
 			"bSetV":1,

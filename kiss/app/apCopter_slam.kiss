@@ -24,10 +24,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyTHS1",
-	"baud":921600,	
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
+	"/portName":"/dev/ttyTHS1",
+	"/baud":921600,	
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -217,7 +217,6 @@
 {
 	"name":"apPilot",
 	"class":"_AutoPilot",
-	"_MissionControl":"apMission",
 	"bInst":1,
 	"FPS":20,
 	"Window":"OKview",
@@ -237,7 +236,7 @@
 			"freqExtStat":0,
 			"freqRC":0,
 			"freqPos":10,
-			"freqExtra1":0,
+			"freqExtra1":10,
 		}
 		
 		{

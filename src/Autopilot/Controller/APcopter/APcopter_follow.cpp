@@ -127,7 +127,7 @@ void APcopter_follow::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!bActive())
+	if(m_pAP->m_apMode != GUIDED)
 	{
 		m_pDet->goSleep();
 		if(m_bUseTracker)
@@ -150,66 +150,6 @@ void APcopter_follow::update(void)
 	m_pPC->setPos(m_vTarget);
 	m_pPC->setTargetPos(m_vCam);
 
-
-	/*
-	//global vehicle pos
-	m_GPS.update(m_pAP->m_pMavlink);
-	m_utmV = m_GPS.getUTM();
-
-	//desired target position in local NEA
-	vDouble3 vCamNEA = m_vCamRelNEA;
-	vCamNEA.x += m_utmV.m_altRel * tan(m_vGimbal.x * DEG_RAD);	//Northing
-
-	//target position in local NEA
-	_VisionBase* pV = m_pDet->m_pVision;
-	vDouble2 cAngle;
-	pV->info(NULL, NULL, &cAngle);
-
-	double radN = (m_vTarget.y - 0.5) * cAngle.y * DEG_RAD + m_vGimbal.x * DEG_RAD;
-	double radE = (m_vTarget.x - 0.5) * cAngle.x * DEG_RAD + m_vGimbal.y * DEG_RAD;
-
-	vDouble3 vTargetNEA;
-	vTargetNEA.x = m_utmV.m_altRel * tan(radN);				//N
-	vTargetNEA.y = m_utmV.m_altRel / cos(radN) * tan(radE);	//E
-	vTargetNEA.z = 0.0;
-
-	//global pos that vehicle should go
-	m_vMove = vTargetNEA - vCamNEA;
-	m_vMove.z = 0.0;
-	UTM_POS utmDest = m_GPS.getPos(m_vMove);
-	LL_POS vLL = m_GPS.UTM2LL(utmDest);
-
-	uint32_t apMode = m_pAP->apMode();
-
-	if(apMode == FOLLOW)
-	{
-		mavlink_global_position_int_t D;
-		D.lat = vLL.m_lat * 1e7;
-		D.lon = vLL.m_lng * 1e7;
-		D.relative_alt = vLL.m_altRel * 1000;
-		D.alt = m_pAP->m_pMavlink->m_msg.global_position_int.alt;
-		D.hdg = m_pAP->m_pMavlink->m_msg.global_position_int.hdg;
-		D.vx = 0;
-		D.vy = 0;
-		D.vz = 0;
-		m_pAP->m_pMavlink->globalPositionInt(D);
-	}
-	else if(apMode == GUIDED)
-	{
-		mavlink_set_position_target_global_int_t D;
-		D.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
-		D.lat_int = vLL.m_lat * 1e7;
-		D.lon_int = vLL.m_lng * 1e7;
-		D.alt = vLL.m_altRel;
-		D.vx = 0;
-		D.vy = 0;
-		D.vz = 0;
-		D.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-		D.type_mask = 0b0000111111111000;
-		m_pAP->m_pMavlink->setPositionTargetGlobalINT(D);
-	}
-	 *
-	 */
 }
 
 bool APcopter_follow::find(void)
@@ -303,32 +243,15 @@ bool APcopter_follow::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string* pState = m_pMC->getCurrentMissionName();
-	string msg;
-
 	pWin->tabNext();
 
-	if(!bActive())
-	{
-		msg = "Inactive";
-		pWin->addMsg(msg);
-	}
-	else if (*pState=="CC_FOLLOW")
-	{
-		msg = "Following";
-		pWin->addMsg(msg);
-	}
-	else
-	{
-		msg = "Searching";
-		pWin->addMsg(msg);
-	}
+	if(!bActive() || m_pAP->m_apMode!=GUIDED)
+		pWin->addMsg("Inactive");
 
-	msg = "Cam Target = (" + f2str(m_vTarget.x) + ", "
+	pWin->addMsg("Cam Target = (" + f2str(m_vTarget.x) + ", "
 							   + f2str(m_vTarget.y) + ", "
 					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")";
-	pWin->addMsg(msg);
+				           	   + f2str(m_vTarget.w) + ")");
 
 	pWin->tabPrev();
 
@@ -340,32 +263,17 @@ bool APcopter_follow::console(int& iY)
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
-	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
-	if(!bActive())
+	if(!bActive() || m_pAP->m_apMode!=GUIDED)
 	{
-		msg = "Inactive";
+		C_MSG("Inactive");
 	}
-	else if (*pState=="CC_FOLLOW")
-	{
-		msg = "Following";
-	}
-	else
-	{
-		msg = "Searching";
-	}
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
 
-	msg = "Cam Target = (" + f2str(m_vTarget.x) + ", "
+	C_MSG("Cam Target = (" + f2str(m_vTarget.x) + ", "
 				     	 	   + f2str(m_vTarget.y) + ", "
 							   + f2str(m_vTarget.z) + ", "
-							   + f2str(m_vTarget.w) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+							   + f2str(m_vTarget.w) + ")");
 
 	return true;
 }

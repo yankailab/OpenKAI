@@ -82,7 +82,7 @@ void APcopter_posCtrlTarget::update(void)
 {
 	this->APcopter_posCtrlBase::update();
 	IF_(check()<0);
-	if(!bActive())
+	if(m_pAP->m_apMode != GUIDED)
 	{
 		releaseCtrl();
 		clear();
@@ -95,8 +95,11 @@ void APcopter_posCtrlTarget::update(void)
 	m_ctrl[CTRL_YAW].update(m_vPos.w, m_vTarget.w);
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
 	m_spt.yaw_rate = (float)m_yawRate * DEG_RAD;
+	m_spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
+	if(m_vTarget.w >= 0)
+		m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
+
 
 	if(m_bSetV)
 	{
@@ -106,7 +109,7 @@ void APcopter_posCtrlTarget::update(void)
 		m_spt.vx = m_ctrl[CTRL_PITCH].m_v;		//forward
 		m_spt.vy = m_ctrl[CTRL_ROLL].m_v;		//right
 		m_spt.vz = m_ctrl[CTRL_ALT].m_v;		//down
-		m_spt.type_mask = 0b0000111111000111;	//velocity
+		m_spt.type_mask = 0b0000000111000111;	//velocity
 	}
 	else
 	{
@@ -116,7 +119,7 @@ void APcopter_posCtrlTarget::update(void)
 		m_spt.vx = 0.0;
 		m_spt.vy = 0.0;
 		m_spt.vz = 0.0;
-		m_spt.type_mask = 0b0000111111111000;	//position
+		m_spt.type_mask = 0b0000000111111000;	//position
 	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
@@ -151,9 +154,9 @@ void APcopter_posCtrlTarget::releaseCtrl(void)
 	m_spt.vx = 0;
 	m_spt.vy = 0;
 	m_spt.vz = 0;
-	m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
+	m_spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
 	m_spt.yaw_rate = (float)m_yawRate * DEG_RAD;
-	m_spt.type_mask = 0b0000111111000000;
+	m_spt.type_mask = 0b0000000111000000;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 
@@ -167,13 +170,12 @@ bool APcopter_posCtrlTarget::draw(void)
 
 	pWin->tabNext();
 
-	string msg = "set target V = (" + f2str(m_spt.vx) + ", "
+	pWin->addMsg("set target V = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "
 					 + f2str(m_spt.y) + ", "
-					 + f2str(m_spt.z) + ")";
-	pWin->addMsg(msg);
+					 + f2str(m_spt.z) + ")");
 
 	pWin->tabPrev();
 
@@ -187,15 +189,12 @@ bool APcopter_posCtrlTarget::console(int& iY)
 
 	string msg;
 
-	msg = "set target V = (" + f2str(m_spt.vx) + ", "
+	C_MSG("set target V = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "
 					 + f2str(m_spt.y) + ", "
-					 + f2str(m_spt.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+					 + f2str(m_spt.z) + ")");
 
 	return true;
 }

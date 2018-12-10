@@ -32,6 +32,7 @@ struct Time_Stamps
 	uint64_t rc_channels_override;
 	uint64_t rc_channels_raw;
 	uint64_t sys_status;
+	uint64_t scaled_imu;
 
 	void init()
 	{
@@ -51,6 +52,7 @@ struct Time_Stamps
 		mission_current = 0;
 		mount_status = 0;
 		param_set = 0;
+		scaled_imu = 0;
 	}
 };
 
@@ -77,6 +79,7 @@ struct Mavlink_Messages
 	mavlink_rc_channels_override_t			rc_channels_override;
 	mavlink_rc_channels_raw_t				rc_channels_raw;
 	mavlink_sys_status_t					sys_status;
+	mavlink_scaled_imu_t					scaled_imu;
 
 	Time_Stamps time_stamps;
 

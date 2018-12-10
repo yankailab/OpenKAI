@@ -872,19 +872,27 @@ void _Mavlink::handleMessages()
 			break;
 		}
 
-		case MAVLINK_MSG_ID_SYS_STATUS:
-		{
-			mavlink_msg_sys_status_decode(&msg, &m_msg.sys_status);
-			m_msg.time_stamps.sys_status = tNow;
-			LOG_I(" -> SYS_STATUS");
-			break;
-		}
-
 		case MAVLINK_MSG_ID_RAW_IMU:
 		{
 			mavlink_msg_raw_imu_decode(&msg, &m_msg.raw_imu);
 			m_msg.time_stamps.raw_imu = tNow;
 			LOG_I(" -> RAW_IMU");
+			break;
+		}
+
+		case MAVLINK_MSG_ID_SCALED_IMU:
+		{
+			mavlink_msg_scaled_imu_decode(&msg, &m_msg.scaled_imu);
+			m_msg.time_stamps.scaled_imu = tNow;
+			LOG_I(" -> SCALED_IMU");
+			break;
+		}
+
+		case MAVLINK_MSG_ID_SYS_STATUS:
+		{
+			mavlink_msg_sys_status_decode(&msg, &m_msg.sys_status);
+			m_msg.time_stamps.sys_status = tNow;
+			LOG_I(" -> SYS_STATUS");
 			break;
 		}
 

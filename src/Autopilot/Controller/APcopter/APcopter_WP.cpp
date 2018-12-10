@@ -62,8 +62,10 @@ void APcopter_WP::update(void)
 	spt.vz = 0.0;//(float)vZ;					//down
 
 	//heading
-	spt.yaw = (float)pWP->m_hdg * DEG_RAD;
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
+	spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
+	if(pWP->m_hdg >= 0)
+		spt.yaw = (float)pWP->m_hdg * DEG_RAD;
 
 	spt.type_mask = 0b0000000111111000;
 
@@ -78,18 +80,12 @@ bool APcopter_WP::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string* pMission = m_pMC->getCurrentMissionName();
-
 	pWin->tabNext();
 
 	if(!bActive())
-	{
 		pWin->addMsg("Inactive");
-	}
 	else
-	{
 		pWin->addMsg("Waypoint");
-	}
 
 	pWin->tabPrev();
 
@@ -101,7 +97,6 @@ bool APcopter_WP::console(int& iY)
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
-	string* pState = m_pMC->getCurrentMissionName();
 	string msg;
 
 	if(!bActive())
