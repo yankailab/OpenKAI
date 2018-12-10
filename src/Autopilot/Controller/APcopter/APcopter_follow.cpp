@@ -127,7 +127,7 @@ void APcopter_follow::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(m_pAP->m_apMode != GUIDED)
+	if(!bActive())
 	{
 		m_pDet->goSleep();
 		if(m_bUseTracker)
@@ -156,7 +156,6 @@ bool APcopter_follow::find(void)
 {
 	IF__(check()<0, false);
 
-	//find target
 	OBJECT* pO;
 	OBJECT* tO = NULL;
 	double topProb = 0.0;
@@ -191,7 +190,7 @@ bool APcopter_follow::find(void)
 
 		if(m_pTnow->trackState() != track_update)
 		{
-			m_pMC->transit("CC_SEARCH");
+			m_pMC->transit("search");
 			return false;
 		}
 
@@ -201,7 +200,7 @@ bool APcopter_follow::find(void)
 	{
 		if(!tO)
 		{
-			m_pMC->transit("CC_SEARCH");
+			m_pMC->transit("search");
 			return false;
 		}
 
@@ -210,7 +209,7 @@ bool APcopter_follow::find(void)
 
 	m_vTarget.x = bb.midX();
 	m_vTarget.y = bb.midY();
-	m_pMC->transit("CC_FOLLOW");
+	m_pMC->transit("follow");
 
 	return true;
 }
@@ -245,7 +244,7 @@ bool APcopter_follow::draw(void)
 
 	pWin->tabNext();
 
-	if(!bActive() || m_pAP->m_apMode!=GUIDED)
+	if(!bActive())
 		pWin->addMsg("Inactive");
 
 	pWin->addMsg("Cam Target = (" + f2str(m_vTarget.x) + ", "
@@ -265,7 +264,7 @@ bool APcopter_follow::console(int& iY)
 
 	string msg;
 
-	if(!bActive() || m_pAP->m_apMode!=GUIDED)
+	if(!bActive())
 	{
 		C_MSG("Inactive");
 	}

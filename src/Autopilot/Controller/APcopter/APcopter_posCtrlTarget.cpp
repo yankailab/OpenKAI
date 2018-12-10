@@ -82,7 +82,7 @@ void APcopter_posCtrlTarget::update(void)
 {
 	this->APcopter_posCtrlBase::update();
 	IF_(check()<0);
-	if(m_pAP->m_apMode != GUIDED)
+	if(!bActive())
 	{
 		releaseCtrl();
 		clear();
@@ -168,9 +168,11 @@ bool APcopter_posCtrlTarget::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
 
+	IF_T(!bActive());
+
 	pWin->tabNext();
 
-	pWin->addMsg("set target V = (" + f2str(m_spt.vx) + ", "
+	pWin->addMsg("set target = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "
@@ -186,10 +188,10 @@ bool APcopter_posCtrlTarget::console(int& iY)
 {
 	IF_F(!this->APcopter_posCtrlBase::console(iY));
 	IF_F(check()<0);
-
+	IF_T(!bActive());
 	string msg;
 
-	C_MSG("set target V = (" + f2str(m_spt.vx) + ", "
+	C_MSG("set target = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "
