@@ -26,7 +26,7 @@ public:
 	virtual bool console(int& iY);
 	virtual int check(void);
 
-	virtual void setTargetPos(vDouble4& vT);
+	virtual void setTargetPos(vDouble4& vP);
 	virtual void setPos(vDouble4& vP);
 	virtual void clear(void);
 

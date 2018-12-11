@@ -6,6 +6,7 @@ namespace kai
 APcopter_follow::APcopter_follow()
 {
 	m_pAP = NULL;
+	m_pPC = NULL;
 	m_pDet = NULL;
 	m_tStampDet = 0;
 	m_iClass = -1;
@@ -29,12 +30,6 @@ APcopter_follow::APcopter_follow()
 	m_mountConfig.stab_roll = 0;
 	m_mountConfig.stab_yaw = 0;
 	m_mountConfig.mount_mode = 2;
-
-	m_pPC = NULL;
-	m_vCam.init();
-	m_vCam.x = 0.5;
-	m_vCam.y = 0.5;
-
 }
 
 APcopter_follow::~APcopter_follow()
@@ -48,9 +43,6 @@ bool APcopter_follow::init(void* pKiss)
 
 	KISSm(pK,iClass);
 	KISSm(pK,bUseTracker);
-	pK->v("camX", &m_vCam.x);
-	pK->v("camY", &m_vCam.y);
-	pK->v("camYaw", &m_vCam.w);
 
 	Kiss* pG = pK->o("gimbal");
 	if(!pG->empty())
@@ -111,6 +103,7 @@ int APcopter_follow::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pPC,-1);
 	NULL__(m_pDet,-1);
 	_VisionBase* pV = m_pDet->m_pVision;
 	NULL__(pV,-1);
@@ -129,6 +122,7 @@ void APcopter_follow::update(void)
 	IF_(check()<0);
 	if(!bActive())
 	{
+		m_pPC->setPos(m_pPC->m_vTarget);
 		m_pDet->goSleep();
 		if(m_bUseTracker)
 		{
@@ -145,11 +139,13 @@ void APcopter_follow::update(void)
 	}
 
 	updateGimbal();
-	IF_(!find());
+	if(!find())
+	{
+		m_pPC->setPos(m_pPC->m_vTarget);
+		return;
+	}
 
 	m_pPC->setPos(m_vTarget);
-	m_pPC->setTargetPos(m_vCam);
-
 }
 
 bool APcopter_follow::find(void)
@@ -247,7 +243,7 @@ bool APcopter_follow::draw(void)
 	if(!bActive())
 		pWin->addMsg("Inactive");
 
-	pWin->addMsg("Cam Target = (" + f2str(m_vTarget.x) + ", "
+	pWin->addMsg("Target = (" + f2str(m_vTarget.x) + ", "
 							   + f2str(m_vTarget.y) + ", "
 					           + f2str(m_vTarget.z) + ", "
 				           	   + f2str(m_vTarget.w) + ")");
@@ -269,10 +265,10 @@ bool APcopter_follow::console(int& iY)
 		C_MSG("Inactive");
 	}
 
-	C_MSG("Cam Target = (" + f2str(m_vTarget.x) + ", "
-				     	 	   + f2str(m_vTarget.y) + ", "
-							   + f2str(m_vTarget.z) + ", "
-							   + f2str(m_vTarget.w) + ")");
+	C_MSG("Target = (" + f2str(m_vTarget.x) + ", "
+				     	 + f2str(m_vTarget.y) + ", "
+						 + f2str(m_vTarget.z) + ", "
+						 + f2str(m_vTarget.w) + ")");
 
 	return true;
 }

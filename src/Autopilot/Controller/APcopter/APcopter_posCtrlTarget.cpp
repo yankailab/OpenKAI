@@ -100,7 +100,6 @@ void APcopter_posCtrlTarget::update(void)
 	if(m_vTarget.w >= 0)
 		m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
 
-
 	if(m_bSetV)
 	{
 		m_spt.x = 0.0;
@@ -125,9 +124,9 @@ void APcopter_posCtrlTarget::update(void)
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 
-void APcopter_posCtrlTarget::setTargetPos(vDouble4& vT)
+void APcopter_posCtrlTarget::setTargetPos(vDouble4& vP)
 {
-	m_vTarget = vT;
+	m_vTarget = vP;
 }
 
 void APcopter_posCtrlTarget::setPos(vDouble4& vP)
@@ -172,7 +171,7 @@ bool APcopter_posCtrlTarget::draw(void)
 
 	pWin->tabNext();
 
-	pWin->addMsg("set target = (" + f2str(m_spt.vx) + ", "
+	pWin->addMsg("set target: V = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "
@@ -191,7 +190,7 @@ bool APcopter_posCtrlTarget::console(int& iY)
 	IF_T(!bActive());
 	string msg;
 
-	C_MSG("set target = (" + f2str(m_spt.vx) + ", "
+	C_MSG("set target: V = (" + f2str(m_spt.vx) + ", "
 					 + f2str(m_spt.vy) + ", "
 					 + f2str(m_spt.vz) + "), P = ("
 					 + f2str(m_spt.x) + ", "

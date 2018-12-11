@@ -30,12 +30,10 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
+	APcopter_posCtrlBase* m_pPC;
 	_ObjectBase*	m_pDet;
 	uint64_t		m_tStampDet;
 	int				m_iClass;
-
-	APcopter_posCtrlBase* m_pPC;
-	vDouble4 m_vCam;
 
 	bool			m_bUseTracker;
 	_TrackerBase*	m_pTracker[2];

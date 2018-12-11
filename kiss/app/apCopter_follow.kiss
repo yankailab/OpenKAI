@@ -2,12 +2,12 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
-	"bLog":1,
-	"bConsole":0,
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"bConsole":1,
 	"bStdErr":1,
-	"waitKey":30,
+	"waitKey":100,
 }
 
 {
@@ -25,10 +25,10 @@
 	"Window":"OKview",
 	"fovW":69.4,
 	"fovH":42.5,
-	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678",
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
-	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
+	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.1.1.200 port=5678",
+	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.1.1.200 port=5678",
 	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
 }
 
@@ -135,10 +135,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyS0",
-	"baud":921600,	
-	"_portName":"/dev/ttyACM0",
-	"_baud":115200,
+	"/portName":"/dev/ttyS0",
+	"/baud":921600,	
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
 	"_wakeUp":"mavAP",
 }
 
@@ -147,7 +147,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -226,20 +226,14 @@
 
 		{
 			"name":"search",
-			"class":"Waypoint",
+			"class":"MissionBase",
 			"bInst":1,
-			"Window":"OKview",
-			"_Mavlink":"mavAP",
-			"nextMission":"search",
 		}
 		
 		{
 			"name":"follow",
-			"class":"Waypoint",
+			"class":"MissionBase",
 			"bInst":1,
-			"Window":"OKview",
-			"_Mavlink":"mavAP",
-			"nextMission":"follow",
 		}		
 	}
 }
@@ -309,6 +303,14 @@
 			"APcopter_base":"apBase",
 			"yawRate":180,
 			"bSetV":1,
+			
+			{
+				"name":"target",
+				"x":0.5,
+				"y":0.5,
+				"z":-1.0,
+				"yaw":-1.0,
+			}
 
 			{
 				"name":"roll",

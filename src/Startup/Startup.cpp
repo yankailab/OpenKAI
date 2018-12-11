@@ -100,7 +100,7 @@ bool Startup::start(Kiss* pKiss)
 
 	//UI thread
 	m_bRun = true;
-	int uWaitKey = m_waitKey * 1000;
+	unsigned int uWaitKey = m_waitKey * 1000;
 
 	while (m_bRun)
 	{

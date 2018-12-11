@@ -17,10 +17,10 @@ struct AP_POS_CTRL_TARGET
 		m_v = 0.0;
 	}
 
-	bool update(double pos, double target)
+	bool update(double v, double vTarget)
 	{
 		NULL_F(m_pPID);
-		m_v = m_pPID->update(pos, target);
+		m_v = m_pPID->update(v, vTarget);
 		return true;
 	}
 
@@ -44,7 +44,7 @@ public:
 	bool console(int& iY);
 	int check(void);
 
-	void setTargetPos(vDouble4& vT);
+	void setTargetPos(vDouble4& vP);
 	void setPos(vDouble4& vP);
 	void clear(void);
 

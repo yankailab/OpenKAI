@@ -25,8 +25,8 @@ bool APcopter_posCtrlBase::init(void* pKiss)
 	{
 		pR->v("x", &m_vTarget.x);
 		pR->v("y", &m_vTarget.y);
-		pR->v("z", &m_vTarget.z);
-		pR->v("yaw", &m_vTarget.w);
+		pR->v("z", &m_vTarget.z);	//distance
+		pR->v("yaw", &m_vTarget.w);	//heading
 	}
 
 	//link
@@ -48,9 +48,9 @@ int APcopter_posCtrlBase::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_posCtrlBase::setTargetPos(vDouble4& vT)
+void APcopter_posCtrlBase::setTargetPos(vDouble4& vP)
 {
-	m_vTarget = vT;
+	m_vTarget = vP;
 }
 
 void APcopter_posCtrlBase::setPos(vDouble4& vP)
@@ -70,29 +70,24 @@ bool APcopter_posCtrlBase::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
-	string msg = *this->getName();
-	pWin->addMsg(msg);
-
+	pWin->addMsg(*this->getName());
 	pWin->tabNext();
 
 	if(!bActive())
 	{
-		msg = "Inactive";
-		pWin->addMsg(msg);
+		pWin->addMsg("Inactive");
 	}
 	else
 	{
-		msg = "Pos = (" + f2str(m_vPos.x) + ", "
+		pWin->addMsg("Pos = (" + f2str(m_vPos.x) + ", "
 						 + f2str(m_vPos.y) + ", "
 						 + f2str(m_vPos.z) + ", "
-						 + f2str(m_vPos.w) + ")";
-		pWin->addMsg(msg);
+						 + f2str(m_vPos.w) + ")");
 
-		msg = "Target = (" + f2str(m_vTarget.x) + ", "
+		pWin->addMsg("Target = (" + f2str(m_vTarget.x) + ", "
 						    + f2str(m_vTarget.y) + ", "
 						    + f2str(m_vTarget.z) + ", "
-						    + f2str(m_vTarget.w) + ")";
-		pWin->addMsg(msg);
+						    + f2str(m_vTarget.w) + ")");
 	}
 
 	pWin->tabPrev();
@@ -116,28 +111,19 @@ bool APcopter_posCtrlBase::console(int& iY)
 
 	if(!bActive())
 	{
-		msg = "Inactive";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+		C_MSG("Inactive");
 	}
 	else
 	{
-		msg = "Pos = (" + f2str(m_vPos.x) + ", "
+		C_MSG("Pos = (" + f2str(m_vPos.x) + ", "
 						+ f2str(m_vPos.y) + ", "
 						+ f2str(m_vPos.z) + ", "
-						+ f2str(m_vPos.w) + ")";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+						+ f2str(m_vPos.w) + ")");
 
-		msg = "Target = (" + f2str(m_vTarget.x) + ", "
+		C_MSG("Target = (" + f2str(m_vTarget.x) + ", "
 						   + f2str(m_vTarget.y) + ", "
 						   + f2str(m_vTarget.z) + ", "
-						   + f2str(m_vTarget.w) + ")";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+						   + f2str(m_vTarget.w) + ")");
 	}
 
 	return true;
