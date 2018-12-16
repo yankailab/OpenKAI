@@ -34,8 +34,8 @@ bool APcopter_slam::init(void* pKiss)
 
 	pK->v("lat", &m_vGPSorigin.m_lat);
 	pK->v("lng", &m_vGPSorigin.m_lng);
-	m_vSlamPos.init();
 	m_GPS.update(m_vGPSorigin);
+	m_vSlamPos.init();
 
 	KISSm(pK,gpsID);
 	KISSm(pK,iFixType);

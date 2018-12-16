@@ -29,6 +29,10 @@ bool MissionBase::init(void* pKiss)
 	return true;
 }
 
+void MissionBase::missionStart(void)
+{
+}
+
 int MissionBase::check(void)
 {
 	return 0;

@@ -21,6 +21,7 @@ public:
 	virtual ~MissionBase();
 
 	virtual bool init(void* pKiss);
+	virtual void missionStart(void);
 	virtual int check(void);
 	virtual bool update(void);
 	virtual bool draw(void);
