@@ -22,7 +22,8 @@ Waypoint::Waypoint()
 	m_hdg = 0.0;
 	m_r = 3.0;
 	m_dSensor = -1.0;
-	m_bOffset = false;
+	m_bHoffset = false;
+	m_bVoffset = false;
 	m_bHdgOffset = false;
 }
 
@@ -35,11 +36,12 @@ bool Waypoint::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("lat", &m_vWP.x);
-	pK->v("lng", &m_vWP.y);
-	pK->v("alt", &m_vWP.z);
+	pK->v("x", &m_vWP.x);	//lat/northing
+	pK->v("y", &m_vWP.y);	//lng/easting
+	pK->v("z", &m_vWP.z);	//alt
 
-	KISSm(pK,bOffset);
+	KISSm(pK,bHoffset);
+	KISSm(pK,bVoffset);
 	KISSm(pK,bHdgOffset);
 	KISSm(pK,speedV);
 	KISSm(pK,speedH);
@@ -64,7 +66,6 @@ void Waypoint::missionStart(void)
 {
 	IF_(check()<0);
 	updatePos();
-	IF_(!m_bOffset);
 
 	if(m_bHdgOffset)
 	{
@@ -72,18 +73,26 @@ void Waypoint::missionStart(void)
 		m_hdg = Hdg(m_hdg);
 	}
 
-	GPS gps;
-	LL_POS pLL;
-	pLL.m_lat = m_vPos.x;
-	pLL.m_lng = m_vPos.y;
-	pLL.m_hdg = m_hdg;
-	gps.update(pLL);
+	if(m_bHoffset)
+	{
+		GPS gps;
+		LL_POS pLL;
+		pLL.m_lat = m_vPos.x;
+		pLL.m_lng = m_vPos.y;
+		pLL.m_hdg = m_hdg;
+		gps.update(pLL);
 
-	UTM_POS pUTM = gps.getPos(m_vWP);
-	pLL = gps.UTM2LL(pUTM);
-	m_vWP.x = pLL.m_lat;
-	m_vWP.y = pLL.m_lng;
-	m_vWP.z = pLL.m_altRel;
+		UTM_POS pUTM = gps.getPos(m_vWP);
+		pLL = gps.UTM2LL(pUTM);
+
+		m_vWP.x = pLL.m_lat;
+		m_vWP.y = pLL.m_lng;
+	}
+
+	if(m_bVoffset)
+	{
+		m_vWP.z += m_vPos.z;
+	}
 }
 
 int Waypoint::check(void)
@@ -96,13 +105,19 @@ int Waypoint::check(void)
 bool Waypoint::update(void)
 {
 	IF_F(check()<0);
-
 	updatePos();
 
-	m_vErr = m_vWP - m_vPos;
-	m_vErr.z = 0.0;
-	double d = m_vErr.len();
+	if(m_pDS)
+	{
+		if(m_dSensor < 0.0)
+		{
+			return false;
+		}
+		m_vPos.z = m_dSensor;
+	}
 
+	m_vErr = m_vWP - m_vPos;
+	double d = m_vErr.len();
 	if(d < m_r)
 	{
 		LOG_I("Mission complete");

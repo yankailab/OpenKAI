@@ -11,6 +11,7 @@
 #include "Controller/APcopter/APcopter_DNNlanding.h"
 #include "Controller/APcopter/APcopter_DNNnav.h"
 #include "Controller/APcopter/APcopter_follow.h"
+#include "Controller/APcopter/APcopter_land.h"
 #include "Controller/APcopter/APcopter_posCtrlRC.h"
 #include "Controller/APcopter/APcopter_posCtrlTarget.h"
 #include "Controller/APcopter/APcopter_takePhoto.h"

@@ -12,6 +12,7 @@
 #include "../Base/_ThreadBase.h"
 #include "MissionBase.h"
 #include "Waypoint.h"
+#include "Land.h"
 
 #define ADD_MISSION(x) if(pKM->m_class==#x){M.m_pInst=new x();M.m_pKiss=pKM;}
 

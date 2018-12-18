@@ -50,6 +50,7 @@ bool _MissionControl::init(void* pKiss)
 
 		ADD_MISSION(MissionBase);
 		ADD_MISSION(Waypoint);
+		ADD_MISSION(Land);
 
 		//Add action modules above
 

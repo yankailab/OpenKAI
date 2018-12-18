@@ -29,23 +29,26 @@ public:
 	bool draw(void);
 	bool console(int& iY);
 
-public:
 	void updatePos(void);
 
+public:
 	_Mavlink* m_pMavlink;
+
+	bool m_bHoffset;
+	bool m_bVoffset;
+	bool m_bHdgOffset;
+
 	_DistSensorBase* m_pDS;
 	double	m_dSensor;
 
-	bool m_bOffset;
-	bool m_bHdgOffset;
-	vDouble3 m_vWP;		//lat, lon, relative_alt(m)
+	vDouble3 m_vWP;		//lat, lon, alt
 	vDouble3 m_vPos;
 	vDouble3 m_vErr;
+
 	double	 m_speedV;
 	double	 m_speedH;
 	double	 m_hdg;
 	double	 m_r;		//radius(m)
-
 };
 
 }

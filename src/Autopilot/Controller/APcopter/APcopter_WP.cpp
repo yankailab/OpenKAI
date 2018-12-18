@@ -6,6 +6,8 @@ namespace kai
 APcopter_WP::APcopter_WP()
 {
 	m_pAP = NULL;
+	m_dZdefault = 0.0;
+	m_kZsensor = 1.0;
 }
 
 APcopter_WP::~APcopter_WP()
@@ -17,7 +19,9 @@ bool APcopter_WP::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	//link
+	KISSm(pK,dZdefault);
+	KISSm(pK,kZsensor);
+
 	string iName;
 
 	iName = "";
@@ -44,9 +48,18 @@ void APcopter_WP::update(void)
 	Waypoint* pWP = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pWP);
 
-	double vZ = 0;
-	if(pWP->m_dSensor >= 0)
-		vZ = pWP->m_vWP.z - pWP->m_dSensor;
+	double tZ;
+	if(pWP->m_pDS)
+	{
+		if(pWP->m_dSensor >= 0)
+			tZ = pWP->m_vPos.z + (pWP->m_vWP.z - pWP->m_dSensor) * m_kZsensor;
+		else
+			tZ = pWP->m_vPos.z + m_dZdefault;
+	}
+	else
+	{
+		tZ = pWP->m_vWP.z;
+	}
 
 	mavlink_set_position_target_global_int_t spt;
 	spt.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
@@ -54,7 +67,7 @@ void APcopter_WP::update(void)
 	//target position
 	spt.lat_int = pWP->m_vWP.x*1e7;
 	spt.lon_int = pWP->m_vWP.y*1e7;
-	spt.alt = (float)(pWP->m_vPos.z - vZ);
+	spt.alt = (float)tZ;
 
 	//velocity, ignored at the moment
 	spt.vx = 0.0;//(float)pWP->m_speedH;		//forward

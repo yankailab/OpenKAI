@@ -23,6 +23,8 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
+	double	m_dZdefault;
+	double	m_kZsensor;
 };
 
 }
