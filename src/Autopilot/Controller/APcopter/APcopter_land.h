@@ -45,6 +45,7 @@ public:
 	vDouble2 m_orientation;
 	mavlink_landing_target_t m_D;
 
+	bool	 m_bGimbal;
 	vDouble3 m_vGimbal;
 	mavlink_mount_control_t m_mountControl;
 	mavlink_mount_configure_t m_mountConfig;

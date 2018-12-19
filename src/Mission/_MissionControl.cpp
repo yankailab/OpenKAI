@@ -106,7 +106,7 @@ void _MissionControl::update(void)
 
 		if(pMission->update())
 		{
-			m_iMission = getMissionIdx(pMission->m_nextMission);
+			transit(pMission->m_nextMission);
 		}
 
 		this->autoFPSto();
@@ -133,6 +133,12 @@ bool _MissionControl::transit(const string& nextMissionName)
 bool _MissionControl::transit(int iNextMission)
 {
 	m_iMission = iNextMission;
+	IF_F(m_iMission < 0);
+	IF_F(m_iMission >= m_vMission.size());
+
+	MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+	pMission->missionStart();
+
 	return true;
 }
 

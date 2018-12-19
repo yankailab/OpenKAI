@@ -15,6 +15,7 @@ APcopter_land::APcopter_land()
 	m_orientation.x = 1.0;
 	m_orientation.y = 1.0;
 
+	m_bGimbal = false;
 	m_vGimbal.init();
 	m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
 	m_mountControl.input_b = m_vGimbal.y * 100;	//roll
@@ -47,6 +48,7 @@ bool APcopter_land::init(void* pKiss)
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
 
+	KISSm(pK,bGimbal);
 	Kiss* pG = pK->o("gimbal");
 	if(!pG->empty())
 	{
@@ -103,9 +105,23 @@ void APcopter_land::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	IF_(!bActive());
+	if(!bActive())
+	{
+		if(m_mode != land_simple)
+		{
+			m_pArUco->goSleep();
+			return;
+		}
+	}
 
-	m_pAP->setApMode(LAND);
+	if(m_bMissionChanged)
+	{
+		if(m_mode != land_simple)
+		{
+			m_pArUco->wakeUp();
+		}
+	}
+
 	updateGimbal();
 
 	if(m_mode == land_simple)
@@ -119,21 +135,13 @@ void APcopter_land::update(void)
 
 void APcopter_land::updateSimple(void)
 {
+	m_pAP->setApMode(LAND);
 
 }
 
 void APcopter_land::updateLandingTarget(void)
 {
-	if(!bActive())
-	{
-		m_pArUco->goSleep();
-		return;
-	}
-
-	if(m_bMissionChanged)
-	{
-		m_pArUco->wakeUp();
-	}
+	m_pAP->setApMode(LAND);
 
 	Land* pLD = (Land*)m_pMC->getCurrentMission();
 	NULL_(pLD);
@@ -188,17 +196,6 @@ void APcopter_land::updateLandingTarget(void)
 
 void APcopter_land::updatePosTarget(void)
 {
-	if(!bActive())
-	{
-		m_pArUco->goSleep();
-		return;
-	}
-
-	if(m_bMissionChanged)
-	{
-		m_pArUco->wakeUp();
-	}
-
 	Land* pLD = (Land*)m_pMC->getCurrentMission();
 	NULL_(pLD);
 
@@ -229,6 +226,8 @@ void APcopter_land::updatePosTarget(void)
 
 void APcopter_land::updateGimbal(void)
 {
+	IF_(!m_bGimbal);
+
 	m_pAP->m_pMavlink->mountControl(m_mountControl);
 	m_pAP->m_pMavlink->mountConfigure(m_mountConfig);
 
@@ -281,7 +280,7 @@ bool APcopter_land::draw(void)
 	}
 	else
 	{
-		msg += "Target tag not found";
+//		msg += "Target tag not found";
 	}
 
 	pWin->addMsg(msg);
@@ -317,12 +316,10 @@ bool APcopter_land::console(int& iY)
 	}
 	else
 	{
-		msg = "Target tag not found";
+//		msg = "Target tag not found";
 	}
 
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG(msg);
 
 	return true;
 }

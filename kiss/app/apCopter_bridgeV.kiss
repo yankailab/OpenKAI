@@ -99,7 +99,7 @@
 	"bInst":1,
 	"bLog":0,
 	"Window":"OKview",
-	"rMin":0.5,
+	"rMin":1.0,
 	"rMax":80.0,
 	"fovH":20,
 	"fovV":0.3,
@@ -227,7 +227,7 @@
 			"_IOBaseR":"udpSlamR",
 			"_IOBaseW":"udpSlamW",
 			"nMedian":3,
-			"yawOffset":150,
+			"yawOffset":0,
 			
 			/*Fujikawa*/
 			"lat":35.1676755,
@@ -254,6 +254,8 @@
 			"APcopter_base":"apBase",
 			"_MissionControl":"apMission",
 			"activeMission":["wp1","wp2"],
+			"dZdefault":3.0,
+			"kZsensor":-1.0,
 		}
 		
 	}
