@@ -268,6 +268,7 @@
 			"activeMission":["land"],
 			"bGimbal":0,
 			"mode":"simple",
+			"iLandMode":0,
 		}
 		
 	}
