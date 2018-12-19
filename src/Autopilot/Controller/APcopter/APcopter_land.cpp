@@ -44,6 +44,8 @@ bool APcopter_land::init(void* pKiss)
 		m_mode = land_apLandingTarget;
 	else if(str=="posTarget")
 		m_mode = land_apPosTarget;
+	else
+		m_mode = land_simple;
 
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
@@ -285,6 +287,17 @@ bool APcopter_land::draw(void)
 
 	pWin->addMsg(msg);
 
+	if(m_mode==land_simple)
+		msg = "Simple";
+	else if(m_mode==land_apLandingTarget)
+		msg = "ApLandingTarget";
+	else if(m_mode==land_apPosTarget)
+		msg = "ApPosTarget";
+	else
+		msg = "Unknown mode";
+
+	pWin->addMsg(msg);
+
 	return true;
 }
 
@@ -318,6 +331,17 @@ bool APcopter_land::console(int& iY)
 	{
 //		msg = "Target tag not found";
 	}
+
+	C_MSG(msg);
+
+	if(m_mode==land_simple)
+		msg = "Simple";
+	else if(m_mode==land_apLandingTarget)
+		msg = "ApLandingTarget";
+	else if(m_mode==land_apPosTarget)
+		msg = "ApPosTarget";
+	else
+		msg = "Unknown mode";
 
 	C_MSG(msg);
 

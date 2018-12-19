@@ -107,16 +107,13 @@ bool Waypoint::update(void)
 	IF_F(check()<0);
 	updatePos();
 
+	m_vErr = m_vWP - m_vPos;
 	if(m_pDS)
 	{
-		if(m_dSensor < 0.0)
-		{
-			return false;
-		}
-		m_vPos.z = m_dSensor;
+		IF_F(m_dSensor < 0.0);
+		m_vErr.z = m_vWP.z - m_dSensor;
 	}
 
-	m_vErr = m_vWP - m_vPos;
 	double d = m_vErr.len();
 	if(d < m_r)
 	{

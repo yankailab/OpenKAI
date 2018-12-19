@@ -169,7 +169,7 @@
 			"speedV":0.5,
 			"speedH":0.5,
 			"r":0.00001,
-			"nextMission":"wp3",
+			"nextMission":"land",
 
 			"bHoffset":1,
 			"bVoffset":0,
@@ -181,13 +181,13 @@
 		}
 		
 		{
-			"name":"wp3",
+			"name":"land",
 			"class":"Land",
 			"bInst":1,
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"nextMission":"wp3",
-		}		
+			"nextMission":"land",
+		}
 	}
 }
 
@@ -256,6 +256,18 @@
 			"activeMission":["wp1","wp2"],
 			"dZdefault":3.0,
 			"kZsensor":-1.0,
+		}
+		
+		{
+			"name":"apLand",
+			"class":"APcopter_land",
+			"bInst":1,
+			"Window":"OKview",
+			"APcopter_base":"apBase",
+			"_MissionControl":"apMission",
+			"activeMission":["land"],
+			"bGimbal":0,
+			"mode":"simple",
 		}
 		
 	}
