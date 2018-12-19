@@ -138,7 +138,6 @@ void APcopter_land::update(void)
 void APcopter_land::updateSimple(void)
 {
 	m_pAP->setApMode(LAND);
-
 }
 
 void APcopter_land::updateLandingTarget(void)
@@ -256,11 +255,13 @@ bool APcopter_land::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
+	string msg;
+/*
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vDouble2 cAngle;
 	pV->info(NULL, NULL, &cAngle);
 
-	string msg = *this->getName() + ": ";
+	msg = *this->getName() + ": ";
 
 	if(!bActive())
 	{
@@ -268,24 +269,25 @@ bool APcopter_land::draw(void)
 	}
 	else if (m_bLocked)
 	{
-//		circle(*pMat, Point(m_oTarget.m_bb.x, m_oTarget.m_bb.y),
-//				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
-//
-//		msg += "Target tag = " + i2str(m_oTarget.m_topClass)
-//				+ ", angle = ("
-//				+ f2str((double)m_D.angle_x) + " , "
-//				+ f2str((double)m_D.angle_y) + ")"
-//				+ ", fov = ("
-//				+ f2str(cAngle.x) + " , "
-//				+ f2str(cAngle.y) + ")"
-//				+ ", d=" + f2str(m_D.distance);
+		circle(*pMat, Point(m_oTarget.m_bb.x, m_oTarget.m_bb.y),
+				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
+
+		msg += "Target tag = " + i2str(m_oTarget.m_topClass)
+				+ ", angle = ("
+				+ f2str((double)m_D.angle_x) + " , "
+				+ f2str((double)m_D.angle_y) + ")"
+				+ ", fov = ("
+				+ f2str(cAngle.x) + " , "
+				+ f2str(cAngle.y) + ")"
+				+ ", d=" + f2str(m_D.distance);
 	}
 	else
 	{
-//		msg += "Target tag not found";
+		msg += "Target tag not found";
 	}
 
 	pWin->addMsg(msg);
+*/
 
 	if(m_mode==land_simple)
 		msg = "Simple";
@@ -306,11 +308,12 @@ bool APcopter_land::console(int& iY)
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
+	string msg;
+
+/*
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vDouble2 cAngle;
 	pV->info(NULL, NULL, &cAngle);
-
-	string msg;
 
 	if(!bActive())
 	{
@@ -318,22 +321,22 @@ bool APcopter_land::console(int& iY)
 	}
 	else if (m_bLocked)
 	{
-//		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
-//				+ ", angle = ("
-//				+ f2str((double)m_D.angle_x) + " , "
-//				+ f2str((double)m_D.angle_y) + ")"
-//				+ ", fov = ("
-//				+ f2str(cAngle.x) + " , "
-//				+ f2str(cAngle.y) + ")"
-//				+ ", d=" + f2str(m_D.distance);
+		msg = "Target tag = " + i2str(m_oTarget.m_topClass)
+				+ ", angle = ("
+				+ f2str((double)m_D.angle_x) + " , "
+				+ f2str((double)m_D.angle_y) + ")"
+				+ ", fov = ("
+				+ f2str(cAngle.x) + " , "
+				+ f2str(cAngle.y) + ")"
+				+ ", d=" + f2str(m_D.distance);
 	}
 	else
 	{
-//		msg = "Target tag not found";
+		msg = "Target tag not found";
 	}
 
 	C_MSG(msg);
-
+*/
 	if(m_mode==land_simple)
 		msg = "Simple";
 	else if(m_mode==land_apLandingTarget)
