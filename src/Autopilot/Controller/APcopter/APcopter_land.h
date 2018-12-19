@@ -10,6 +10,13 @@
 namespace kai
 {
 
+enum APCOPTER_LAND_MODE
+{
+	land_simple,
+	land_apLandingTarget,
+	land_apPosTarget,
+};
+
 class APcopter_land: public ActionBase
 {
 public:
@@ -23,21 +30,24 @@ public:
 	int check(void);
 
 	void updateGimbal(void);
+	void updateSimple(void);
+	void updateLandingTarget(void);
+	void updatePosTarget(void);
 
 public:
-
 	APcopter_base* m_pAP;
 	_ObjectBase* m_pArUco;
 	_DepthVisionBase* m_pDV;
 
-	vDouble2 m_orientation;
+	APCOPTER_LAND_MODE m_mode;
 	bool	 m_bLocked;
+
+	vDouble2 m_orientation;
 	mavlink_landing_target_t m_D;
 
 	vDouble3 m_vGimbal;
 	mavlink_mount_control_t m_mountControl;
 	mavlink_mount_configure_t m_mountConfig;
-
 };
 
 }

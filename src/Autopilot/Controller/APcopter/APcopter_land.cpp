@@ -9,7 +9,9 @@ APcopter_land::APcopter_land()
 	m_pArUco = NULL;
 	m_pDV = NULL;
 
+	m_mode = land_simple,
 	m_bLocked = false;
+
 	m_orientation.x = 1.0;
 	m_orientation.y = 1.0;
 
@@ -34,6 +36,13 @@ bool APcopter_land::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	string str;
+	pK->v("mode", &str);
+	if(str=="landingTarget")
+		m_mode = land_apLandingTarget;
+	else if(str=="posTarget")
+		m_mode = land_apPosTarget;
 
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
@@ -62,11 +71,15 @@ bool APcopter_land::init(void* pKiss)
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
 
-	F_ERROR_F(pK->v("_ArUco", &iName));
-	m_pArUco = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	if(m_mode != land_simple)
+	{
+		F_ERROR_F(pK->v("_ArUco", &iName));
+		m_pArUco = (_ObjectBase*) (pK->root()->getChildInst(iName));
+		NULL_F(m_pArUco);
 
-	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+		F_INFO(pK->v("_DepthVisionBase", &iName));
+		m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	}
 
 	return true;
 }
@@ -75,9 +88,13 @@ int APcopter_land::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
-	NULL__(m_pArUco,-1);
-	_VisionBase* pV = m_pArUco->m_pVision;
-	NULL__(pV,-1);
+
+	if(m_mode != land_simple)
+	{
+		NULL__(m_pArUco,-1);
+		_VisionBase* pV = m_pArUco->m_pVision;
+		NULL__(pV,-1);
+	}
 
 	return this->ActionBase::check();
 }
@@ -86,6 +103,27 @@ void APcopter_land::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
+	IF_(!bActive());
+
+	m_pAP->setApMode(LAND);
+	updateGimbal();
+
+	if(m_mode == land_simple)
+		updateSimple();
+	else if(m_mode == land_apLandingTarget)
+		updateLandingTarget();
+	else if(m_mode == land_apPosTarget)
+		updatePosTarget();
+
+}
+
+void APcopter_land::updateSimple(void)
+{
+
+}
+
+void APcopter_land::updateLandingTarget(void)
+{
 	if(!bActive())
 	{
 		m_pArUco->goSleep();
@@ -97,24 +135,30 @@ void APcopter_land::update(void)
 		m_pArUco->wakeUp();
 	}
 
-	updateGimbal();
+	Land* pLD = (Land*)m_pMC->getCurrentMission();
+	NULL_(pLD);
 
 	_VisionBase* pV = m_pArUco->m_pVision;
 	vInt2 cSize;
 	vInt2 cCenter;
 	vDouble2 cAngle;
 	pV->info(&cSize, &cCenter, &cAngle);
-/*
-	int iDet = 0;
 
+	int iDet = 0;
+	OBJECT* pO = NULL;
+	vDouble4 bb;
 	while(1)
 	{
-		OBJECT* pO = m_pArUco->at(iDet++);
+		pO = m_pArUco->at(iDet++);
 		if(!pO)break;
-		IF_CONT(pO->m_topClass != tag);
+		if(pO->m_topClass == pLD->m_tag)
+		{
+			bb = pO->m_bb;
+			break;
+		}
 	}
 
-	if(!pTarget)
+	if(!pO)
 	{
 		m_bLocked = false;
 		return;
@@ -128,9 +172,9 @@ void APcopter_land::update(void)
 	m_D.size_y = 0;
 
 	//Change position to angles
-	m_D.angle_x = (float)((double)(m_oTarget.m_bb.x - cCenter.x) / (double)cSize.x)
+	m_D.angle_x = (float)((double)(bb.x - cCenter.x) / (double)cSize.x)
 							* cAngle.x * DEG_RAD * m_orientation.x;
-	m_D.angle_y = (float)((double)(m_oTarget.m_bb.y - cCenter.y) / (double)cSize.y)
+	m_D.angle_y = (float)((double)(bb.y - cCenter.y) / (double)cSize.y)
 							* cAngle.y * DEG_RAD * m_orientation.y;
 
 	//Use depth if available
@@ -140,7 +184,47 @@ void APcopter_land::update(void)
 	}
 
 	m_pAP->m_pMavlink->landingTarget(m_D);
-	*/
+}
+
+void APcopter_land::updatePosTarget(void)
+{
+	if(!bActive())
+	{
+		m_pArUco->goSleep();
+		return;
+	}
+
+	if(m_bMissionChanged)
+	{
+		m_pArUco->wakeUp();
+	}
+
+	Land* pLD = (Land*)m_pMC->getCurrentMission();
+	NULL_(pLD);
+
+	int iDet = 0;
+	OBJECT* pO = NULL;
+	vDouble4 bb;
+	while(1)
+	{
+		pO = m_pArUco->at(iDet++);
+		if(!pO)break;
+		if(pO->m_topClass == pLD->m_tag)
+		{
+			bb = pO->m_bb;
+			break;
+		}
+	}
+
+	if(!pO)
+	{
+		m_bLocked = false;
+		return;
+	}
+	m_bLocked = true;
+
+	//TODO
+
 }
 
 void APcopter_land::updateGimbal(void)
