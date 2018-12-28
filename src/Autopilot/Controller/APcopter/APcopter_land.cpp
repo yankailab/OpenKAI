@@ -10,7 +10,6 @@ APcopter_land::APcopter_land()
 	m_pDV = NULL;
 
 	m_mode = land_simple;
-	m_iLandMode = LAND;
 	m_bLocked = false;
 
 	m_orientation.x = 1.0;
@@ -47,8 +46,6 @@ bool APcopter_land::init(void* pKiss)
 		m_mode = land_apPosTarget;
 	else
 		m_mode = land_simple;
-
-	KISSm(pK,iLandMode);
 
 	pK->v("orientationX", &m_orientation.x);
 	pK->v("orientationY", &m_orientation.y);
@@ -140,12 +137,12 @@ void APcopter_land::update(void)
 
 void APcopter_land::updateSimple(void)
 {
-	m_pAP->setApMode(m_iLandMode);
+	m_pAP->setApMode(LAND);
 }
 
 void APcopter_land::updateLandingTarget(void)
 {
-	m_pAP->setApMode(m_iLandMode);
+	m_pAP->setApMode(LAND);
 
 	Land* pLD = (Land*)m_pMC->getCurrentMission();
 	NULL_(pLD);

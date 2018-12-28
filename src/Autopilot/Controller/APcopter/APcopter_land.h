@@ -40,7 +40,6 @@ public:
 	_DepthVisionBase* m_pDV;
 
 	APCOPTER_LAND_MODE m_mode;
-	int		 m_iLandMode;
 	bool	 m_bLocked;
 
 	vDouble2 m_orientation;
