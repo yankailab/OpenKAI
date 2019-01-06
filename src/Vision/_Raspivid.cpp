@@ -136,7 +136,7 @@ void _Raspivid::update(void)
 		{
 			Frame fRGB;
 			fRGB = Mat(m_h, m_w, CV_8UC3, m_pFB);
-			m_fBGR.copy(fRGB.cvtColor(CV_RGB2BGR));
+			m_fBGR.copy(fRGB.cvtColor(COLOR_RGB2BGR));
 		}
 
 		this->autoFPSto();

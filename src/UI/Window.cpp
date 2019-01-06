@@ -73,7 +73,7 @@ bool Window::init(void* pKiss)
 		m_fileRec += ".avi";
 
 		if (!m_VW.open(m_fileRec,
-						CV_FOURCC(reCodec.at(0),
+						VideoWriter::fourcc(reCodec.at(0),
 						reCodec.at(1),
 						reCodec.at(2),
 						reCodec.at(3)),
@@ -115,12 +115,12 @@ bool Window::init(void* pKiss)
 
 	if (m_bFullScreen)
 	{
-		namedWindow(*this->getName(), CV_WINDOW_NORMAL);
-		setWindowProperty(*this->getName(), CV_WND_PROP_FULLSCREEN, CV_WINDOW_FULLSCREEN);
+		namedWindow(*this->getName(), WINDOW_NORMAL);
+		setWindowProperty(*this->getName(), WND_PROP_FULLSCREEN, WINDOW_FULLSCREEN);
 	}
 	else
 	{
-		namedWindow(*this->getName(), CV_WINDOW_AUTOSIZE);
+		namedWindow(*this->getName(), WINDOW_AUTOSIZE);
 	}
 
 	return true;
@@ -153,7 +153,7 @@ bool Window::draw(void)
 
 		if (m_F.m()->type() != CV_8UC3)
 		{
-			m_F2 = m_F.cvtColor(CV_GRAY2BGR);
+			m_F2 = m_F.cvtColor(COLOR_GRAY2BGR);
 			m_F = m_F2;
 		}
 

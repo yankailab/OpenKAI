@@ -36,7 +36,6 @@ private:
 		return NULL;
 	}
 
-
 public:
 	_VisionBase* m_pVision;
 	cv::Ptr<cv::aruco::Dictionary> m_pDict;

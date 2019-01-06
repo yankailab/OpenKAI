@@ -86,7 +86,7 @@ void _BBoxCutOut::process()
 	}
 
 	vector<int> PNGcompress;
-	PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	PNGcompress.push_back(IMWRITE_PNG_COMPRESSION);
 	PNGcompress.push_back(0);
 
 	struct dirent *dir;

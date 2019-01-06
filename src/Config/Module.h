@@ -14,7 +14,6 @@
 #include "switch.h"
 
 #include "../Detector/_ArUco.h"
-#include "../Detector/_DepthEdge.h"
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
 

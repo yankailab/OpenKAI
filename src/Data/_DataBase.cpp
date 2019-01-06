@@ -40,7 +40,7 @@ bool _DataBase::init(void* pKiss)
 	}
 
 	KISSm(pK, PNGcompression);
-	m_PNGcompress.push_back(CV_IMWRITE_PNG_COMPRESSION);
+	m_PNGcompress.push_back(IMWRITE_PNG_COMPRESSION);
 	m_PNGcompress.push_back(m_PNGcompression);
 
 	return true;

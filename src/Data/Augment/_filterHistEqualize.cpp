@@ -62,11 +62,11 @@ void _filterHistEqualize::update(void)
         //Using reference code from:
         //https://opencv-srf.blogspot.jp/2013/08/histogram-equalization.html
 
-		cv::cvtColor(mIn, mOut, CV_BGR2YCrCb); 			//change the color image from BGR to YCrCb format
+		cv::cvtColor(mIn, mOut, COLOR_BGR2YCrCb); 			//change the color image from BGR to YCrCb format
 		split(mOut, vChannels); 						//split the image into channels
 		cv::equalizeHist(vChannels[0], vChannels[0]);   //equalize histogram on the 1st channel (Y)
 		merge(vChannels,mIn); 							//merge 3 channels including the modified 1st channel into one image
-        cv::cvtColor(mIn, mOut, CV_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
+        cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
 
 		cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
 
