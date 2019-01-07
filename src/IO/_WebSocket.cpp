@@ -111,11 +111,11 @@ void _WebSocket::updateW(void)
 
 		this->autoFPSfrom();
 
-		static uint8_t pBw[N_IO_BUF];
+		uint8_t pB[N_IO_BUF];
 		int nB;
-		while((nB = m_fifoW.output(pBw, N_IO_BUF)) > 0)
+		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
 		{
-			int nSent = ::write(m_fdW, pBw, nB);
+			int nSent = ::write(m_fdW, pB, nB);
 			if (nSent == -1)
 			{
 				LOG_E("write error: " + i2str(errno));
@@ -138,15 +138,15 @@ void _WebSocket::updateR(void)
 			continue;
 		}
 
-		static uint8_t pBr[N_IO_BUF];
-		int nR = ::read(m_fdR, pBr, N_IO_BUF);
+		uint8_t pB[N_IO_BUF];
+		int nR = ::read(m_fdR, pB, N_IO_BUF);
 		if (nR <= 0)
 		{
 			close();
 			continue;
 		}
 
-		m_fifoR.input(pBr, nR);
+		m_fifoR.input(pB, nR);
 		decodeMsg();
 
 		this->wakeUpLinked();

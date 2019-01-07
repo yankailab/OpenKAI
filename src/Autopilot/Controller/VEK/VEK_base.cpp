@@ -70,7 +70,7 @@ void VEK_base::update(void)
 
 	NULL_(m_pVEK);
 
-	static uint8_t pVekCMD[5];
+	uint8_t pVekCMD[5];
 	pVekCMD[0] = 0xff;
 	pVekCMD[1] = pwmL >> 8;
 	pVekCMD[2] = pwmL;

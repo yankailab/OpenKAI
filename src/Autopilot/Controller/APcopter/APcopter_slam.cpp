@@ -122,7 +122,7 @@ void APcopter_slam::update(void)
 
 void APcopter_slam::updatePos(void)
 {
-	static uint8_t pBufR[N_IO_BUF];
+	uint8_t pBufR[N_IO_BUF];
 	int nRead = m_pIOr->read(pBufR, N_IO_BUF);
 	IF_(nRead <= 0);
 
@@ -151,7 +151,7 @@ void APcopter_slam::updatePos(void)
 
 void APcopter_slam::sendState(void)
 {
-	static uint8_t pBufW[N_IO_BUF];
+	uint8_t pBufW[N_IO_BUF];
 
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = MG_CMD_ATTITUDE;

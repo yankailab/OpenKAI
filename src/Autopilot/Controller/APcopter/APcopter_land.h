@@ -36,12 +36,10 @@ public:
 
 public:
 	APcopter_base* m_pAP;
-	_ObjectBase* m_pArUco;
-	_DepthVisionBase* m_pDV;
+	_ObjectBase* m_pDet;
 
 	APCOPTER_LAND_MODE m_mode;
-	bool	 m_bLocked;
-
+	OBJECT m_tO;
 	vDouble2 m_orientation;
 	mavlink_landing_target_t m_D;
 

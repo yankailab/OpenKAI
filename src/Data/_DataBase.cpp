@@ -123,7 +123,7 @@ string _DataBase::getExtension(string& fName)
 	if(extPos == std::string::npos)
 		return "";
 
-	static string ext = fName.substr(extPos);
+	string ext = fName.substr(extPos);
 	transform(ext.begin(), ext.end(), ext.begin(), ::tolower);
 
 	return ext;

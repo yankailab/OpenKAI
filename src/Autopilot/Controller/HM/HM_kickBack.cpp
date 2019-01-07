@@ -65,7 +65,7 @@ void HM_kickBack::update(void)
 		return;
 	}
 
-	static double rotHdg;
+	double rotHdg;
 	UTM_POS* pNew;// = m_pGPS->getUTM();
 	NULL_(pNew);
 

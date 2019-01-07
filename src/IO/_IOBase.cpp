@@ -99,12 +99,7 @@ bool _IOBase::console(int& iY)
 	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
-
-	msg = "nFifoW=" + i2str(m_fifoW.m_nData) +
-			", nFifoR=" + i2str(m_fifoR.m_nData);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData));
 
 	return true;
 }

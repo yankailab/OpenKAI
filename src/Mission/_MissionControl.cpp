@@ -158,7 +158,7 @@ string* _MissionControl::getCurrentMissionName(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
 	IF_N(m_iMission < 0);
-	static string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
+	string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	return &mName;
 }
 

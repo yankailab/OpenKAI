@@ -186,8 +186,7 @@ public:
 	//Msg routing
 	void setCmdRoute(uint32_t iCmd, bool bON);
 
-public:
-	void sendMessage(void);
+private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -195,21 +194,23 @@ public:
 		return NULL;
 	}
 
-	_IOBase* m_pIO;
+public:
+	Mavlink_Messages m_msg;
+	mavlink_status_t m_status;
+	vector<MAVLINK_PEER> m_vPeer;
 
+private:
+	_IOBase* m_pIO;
 	int m_mySystemID;
 	int m_myComponentID;
 	int m_myType;
-
 	int m_devSystemID;
 	int m_devComponentID;
 	int m_devType;
 
-	Mavlink_Messages m_msg;
-	mavlink_set_position_target_local_ned_t m_initPos;
-	mavlink_status_t m_status;
-
-	vector<MAVLINK_PEER> m_vPeer;
+	uint8_t m_rBuf[N_IO_BUF];
+	int m_nRead;
+	int m_iRead;
 };
 
 }

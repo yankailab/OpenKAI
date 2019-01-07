@@ -16,6 +16,9 @@ _Mavlink::_Mavlink()
 	m_devSystemID = -1;
 	m_devComponentID = 0;
 	m_devType = 0;
+
+	m_nRead = 0;
+	m_iRead = 0;
 }
 
 _Mavlink::~_Mavlink()
@@ -125,17 +128,17 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 {
 	NULL_(m_pIO);
 
-	uint8_t pSendBuf[N_IO_BUF];
-	int nB = mavlink_msg_to_send_buffer(pSendBuf, &msg);
+	uint8_t pB[N_IO_BUF];
+	int nB = mavlink_msg_to_send_buffer(pB, &msg);
 
 	if(m_pIO->ioType()!=io_webSocket)
 	{
-		m_pIO->write(pSendBuf, nB);
+		m_pIO->write(pB, nB);
 	}
 	else
 	{
 		_WebSocket* pWS = (_WebSocket*)m_pIO;
-		pWS->write(pSendBuf, nB, WS_MODE_BIN);
+		pWS->write(pB, nB, WS_MODE_BIN);
 	}
 }
 
@@ -666,22 +669,18 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
-	static uint8_t rBuf[N_IO_BUF];
-	static int nRead = 0;
-	static int iRead = 0;
-
-	if(nRead == 0)
+	if(m_nRead == 0)
 	{
-		nRead = m_pIO->read(rBuf, N_IO_BUF);
-		IF_F(nRead <= 0);
-		iRead = 0;
+		m_nRead = m_pIO->read(m_rBuf, N_IO_BUF);
+		IF_F(m_nRead <= 0);
+		m_iRead = 0;
 	}
 
-	while(iRead < nRead)
+	while(m_iRead < m_nRead)
 	{
 		mavlink_status_t status;
-		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, rBuf[iRead], &msg, &status);
-		iRead++;
+		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead], &msg, &status);
+		m_iRead++;
 
 		if (result == 1)
 		{
@@ -696,7 +695,7 @@ bool _Mavlink::readMessage(mavlink_message_t &msg)
 		}
 	}
 
-	nRead = 0;
+	m_nRead = 0;
 	return false;
 }
 
@@ -802,7 +801,7 @@ void _Mavlink::handleMessages()
 
 			if(m_bLog)
 			{
-				static char id[17];
+				char id[17];
 				memcpy(id,m_msg.param_set.param_id,16);
 				id[16]=0;
 
