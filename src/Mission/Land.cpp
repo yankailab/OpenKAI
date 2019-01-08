@@ -14,6 +14,7 @@ Land::Land()
 {
 	m_tag = -1;
 	m_hdg = -1.0;
+	m_speed = 1.0;
 }
 
 Land::~Land()
@@ -27,6 +28,7 @@ bool Land::init(void* pKiss)
 
 	KISSm(pK,tag);
 	KISSm(pK,hdg);
+	KISSm(pK,speed);
 
 	return true;
 }

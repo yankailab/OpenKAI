@@ -92,8 +92,8 @@ bool APcopter_follow::init(void* pKiss)
 	IF_Fl(!m_pDet, iName + ": not found");
 
 	iName = "";
-	pK->v("APcopter_posCtrlBase", &iName);
-	m_pPC = (APcopter_posCtrlBase*) (pK->parent()->getChildInst(iName));
+	pK->v("APcopter_posCtrl", &iName);
+	m_pPC = (APcopter_posCtrl*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pPC, iName + ": not found");
 
 	return true;

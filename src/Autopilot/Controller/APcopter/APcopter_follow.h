@@ -8,7 +8,7 @@
 #include "../../../Navigation/GPS.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
-#include "APcopter_posCtrlBase.h"
+#include "APcopter_posCtrl.h"
 
 namespace kai
 {
@@ -30,7 +30,7 @@ public:
 
 public:
 	APcopter_base* 	m_pAP;
-	APcopter_posCtrlBase* m_pPC;
+	APcopter_posCtrl* m_pPC;
 	_ObjectBase*	m_pDet;
 	uint64_t		m_tStampDet;
 	int				m_iClass;

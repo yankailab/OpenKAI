@@ -29,6 +29,7 @@ public:
 public:
 	int m_tag;
 	double m_hdg;
+	double m_speed;
 
 };
 

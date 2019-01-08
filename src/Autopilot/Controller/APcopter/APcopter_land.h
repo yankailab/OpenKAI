@@ -6,16 +6,10 @@
 #include "../../../Vision/_DepthVisionBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
+#include "APcopter_posCtrl.h"
 
 namespace kai
 {
-
-enum APCOPTER_LAND_MODE
-{
-	land_simple,
-	land_apLandingTarget,
-	land_apPosTarget,
-};
 
 class APcopter_land: public ActionBase
 {
@@ -30,18 +24,12 @@ public:
 	int check(void);
 
 	void updateGimbal(void);
-	void updateSimple(void);
-	void updateLandingTarget(void);
-	void updatePosTarget(void);
 
 public:
 	APcopter_base* m_pAP;
+	APcopter_posCtrl* m_pPC;
 	_ObjectBase* m_pDet;
-
-	APCOPTER_LAND_MODE m_mode;
 	OBJECT m_tO;
-	vDouble2 m_orientation;
-	mavlink_landing_target_t m_D;
 
 	bool	 m_bGimbal;
 	vDouble3 m_vGimbal;

@@ -1,10 +1,19 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_posCtrlTarget_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_posCtrlTarget_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_posCtrl_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_posCtrl_H_
 
-#include "APcopter_posCtrlBase.h"
+#include "../../../Base/common.h"
+#include "../../../Control/PIDctrl.h"
+#include "../../ActionBase.h"
+#include "APcopter_base.h"
 
 namespace kai
 {
+
+#define C_PITCH 0
+#define C_ROLL 1
+#define C_ALT 2
+#define C_YAW 3
+#define N_CTRL 4
 
 struct AP_POS_CTRL_TARGET
 {
@@ -32,11 +41,11 @@ struct AP_POS_CTRL_TARGET
 	}
 };
 
-class APcopter_posCtrlTarget: public APcopter_posCtrlBase
+class APcopter_posCtrl: public ActionBase
 {
 public:
-	APcopter_posCtrlTarget();
-	~APcopter_posCtrlTarget();
+	APcopter_posCtrl();
+	~APcopter_posCtrl();
 
 	bool init(void* pKiss);
 	void update(void);
@@ -51,11 +60,16 @@ public:
 	void releaseCtrl(void);
 
 public:
+	APcopter_base* m_pAP;
+	vDouble4 m_vTarget;
+	vDouble4 m_vPos;
+
 	AP_POS_CTRL_TARGET m_ctrl[N_CTRL];
 	mavlink_set_position_target_local_ned_t m_spt;
 
-	double m_yawRate;
+	double	m_vYaw;
 	bool	m_bSetV;
+	bool	m_bSetP;
 
 };
 

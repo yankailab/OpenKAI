@@ -57,7 +57,7 @@ double PIDctrl::update(double v, double vTarget)
 	m_e = m_vTarget - m_vPred;
 	m_eInteg += m_e;
 
-	//PID should be of the same symbol
+	//P,I,D should be of the same symbol
 	double o = m_P * m_e
 			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (double)(tNow - m_tLastUpdate)) // unit: sec
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
