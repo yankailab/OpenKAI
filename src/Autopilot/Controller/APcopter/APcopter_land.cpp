@@ -10,13 +10,15 @@ APcopter_land::APcopter_land()
 	m_pDet = NULL;
 	m_tO.m_topClass = -1;
 
-	m_bGimbal = false;
-	m_vGimbal.init();
-	m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
-	m_mountControl.input_b = m_vGimbal.y * 100;	//roll
-	m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
-	m_mountControl.save_position = 0;
+	m_vMyPos.init();
+	m_vMyPos.x = 0.5;
+	m_vMyPos.y = 0.5;
+	m_vTargetPos.init();
 
+	m_mountControl.input_a = 0;	//pitch
+	m_mountControl.input_b = 0;	//roll
+	m_mountControl.input_c = 0;	//yaw
+	m_mountControl.save_position = 0;
 	m_mountConfig.stab_pitch = 0;
 	m_mountConfig.stab_roll = 0;
 	m_mountConfig.stab_yaw = 0;
@@ -32,23 +34,41 @@ bool APcopter_land::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,bGimbal);
 	Kiss* pG = pK->o("gimbal");
 	if(!pG->empty())
 	{
-		pG->v("pitch", &m_vGimbal.x);
-		pG->v("roll", &m_vGimbal.y);
-		pG->v("yaw", &m_vGimbal.z);
+		double p=0, r=0, y=0;
+		pG->v("pitch", &p);
+		pG->v("roll", &r);
+		pG->v("yaw", &y);
 
-		m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
-		m_mountControl.input_b = m_vGimbal.y * 100;	//roll
-		m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
+		m_mountControl.input_a = p * 100;	//pitch
+		m_mountControl.input_b = r * 100;	//roll
+		m_mountControl.input_c = y * 100;	//yaw
 		m_mountControl.save_position = 0;
 
 		pG->v("stabPitch", &m_mountConfig.stab_pitch);
 		pG->v("stabRoll", &m_mountConfig.stab_roll);
 		pG->v("stabYaw", &m_mountConfig.stab_yaw);
 		pG->v("mountMode", &m_mountConfig.mount_mode);
+	}
+
+	pG = pK->o("targetPos");
+	if(!pG->empty())
+	{
+		pG->v("x", &m_vTargetPos.x);
+		pG->v("y", &m_vTargetPos.y);
+		pG->v("z", &m_vTargetPos.z);
+		pG->v("w", &m_vTargetPos.w);
+	}
+
+	pG = pK->o("myPos");
+	if(!pG->empty())
+	{
+		pG->v("x", &m_vMyPos.x);
+		pG->v("y", &m_vMyPos.y);
+		pG->v("z", &m_vMyPos.z);
+		pG->v("w", &m_vMyPos.w);
 	}
 
 	//link
@@ -97,11 +117,14 @@ void APcopter_land::update(void)
 	Land* pLD = (Land*)m_pMC->getCurrentMission();
 	NULL_(pLD);
 
-	double speed = pLD->m_speed;
+	m_vTargetPos.x = -1;	//roll
+	m_vTargetPos.y = -1;	//pitch
+	m_vTargetPos.z = pLD->m_speed;
+	m_vTargetPos.w = pLD->m_hdg;
 
 	if(m_pDet)
 	{
-		updateGimbal();
+		m_pAP->setGimbal(m_mountControl, m_mountConfig);
 
 		int iDet = 0;
 		OBJECT* pO = NULL;
@@ -117,33 +140,16 @@ void APcopter_land::update(void)
 			}
 		}
 
-		IF_(m_tO.m_topClass < 0);
-
-		//TODO
+		if(m_tO.m_topClass >= 0)
+		{
+			m_vTargetPos.x = m_tO.m_bb.x;
+			m_vTargetPos.y = m_tO.m_bb.y;
+			m_vTargetPos.z *= (1.0 - constrain(big(abs(m_vTargetPos.x-0.5),abs(m_vTargetPos.y-0.5))*2, 0.0, 1.0));
+		}
 	}
 
-}
+	m_pPC->setPos(m_vMyPos, m_vTargetPos);
 
-void APcopter_land::updateGimbal(void)
-{
-	IF_(!m_bGimbal);
-
-	m_pAP->m_pMavlink->mountControl(m_mountControl);
-	m_pAP->m_pMavlink->mountConfigure(m_mountConfig);
-
-	mavlink_param_set_t D;
-	D.param_type = MAV_PARAM_TYPE_INT8;
-	string id;
-
-	D.param_value = m_mountConfig.stab_pitch;
-	id = "MNT_STAB_TILT";
-	strcpy(D.param_id, id.c_str());
-	m_pAP->m_pMavlink->param_set(D);
-
-	D.param_value = m_mountConfig.stab_roll;
-	id = "MNT_STAB_ROLL";
-	strcpy(D.param_id,id.c_str());
-	m_pAP->m_pMavlink->param_set(D);
 }
 
 bool APcopter_land::draw(void)
@@ -161,7 +167,7 @@ bool APcopter_land::draw(void)
 	{
 		msg = "Inactive";
 	}
-	else if (m_tO.m_topClass >= 0.0)
+	else if (m_tO.m_topClass >= 0)
 	{
 		circle(*pMat, Point(m_tO.m_bb.x, m_tO.m_bb.y),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
@@ -189,7 +195,7 @@ bool APcopter_land::console(int& iY)
 	{
 		C_MSG("Inactive");
 	}
-	else if (m_tO.m_topClass >= 0.0)
+	else if (m_tO.m_topClass >= 0)
 	{
 		C_MSG("Target tag = " + i2str(m_tO.m_topClass));
 	}

@@ -159,6 +159,28 @@ string APcopter_base::apModeName(void)
 	return custom_mode_name[m_apMode];
 }
 
+void APcopter_base::setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig)
+{
+	IF_(check()<0);
+
+	m_pMavlink->mountControl(mControl);
+	m_pMavlink->mountConfigure(mConfig);
+
+	mavlink_param_set_t D;
+	D.param_type = MAV_PARAM_TYPE_INT8;
+	string id;
+
+	D.param_value = mConfig.stab_pitch;
+	id = "MNT_STAB_TILT";
+	strcpy(D.param_id, id.c_str());
+	m_pMavlink->param_set(D);
+
+	D.param_value = mConfig.stab_roll;
+	id = "MNT_STAB_ROLL";
+	strcpy(D.param_id,id.c_str());
+	m_pMavlink->param_set(D);
+}
+
 bool APcopter_base::draw(void)
 {
 	IF_F(!this->ActionBase::draw());

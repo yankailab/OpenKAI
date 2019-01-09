@@ -79,8 +79,8 @@ public:
 	uint32_t getApMode(void);
 	void setApArm(bool bArm);
 	bool getApArm(void);
+	void setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig);
 	bool bApModeChanged(void);
-
 	uint32_t apMode(void);
 	string apModeName(void);
 

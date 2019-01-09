@@ -137,6 +137,14 @@ struct vDouble4
 		w = 0.0;
 	}
 
+	void init(double v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
 	inline vDouble4 operator+(vDouble4& r)
     {
 		vDouble4 v;

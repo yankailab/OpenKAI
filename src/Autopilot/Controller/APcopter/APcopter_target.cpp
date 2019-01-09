@@ -1,15 +1,16 @@
-#include "APcopter_follow.h"
+#include "APcopter_target.h"
 
 namespace kai
 {
 
-APcopter_follow::APcopter_follow()
+APcopter_target::APcopter_target()
 {
 	m_pAP = NULL;
 	m_pPC = NULL;
 	m_pDet = NULL;
 	m_tStampDet = 0;
 	m_iClass = -1;
+	m_tO.m_topClass = -1;
 
 	m_iTracker = 0;
 	m_bUseTracker = false;
@@ -18,25 +19,26 @@ APcopter_follow::APcopter_follow()
 	m_pTnow = NULL;
 	m_pTnew = NULL;
 
-	m_vTarget.init();
+	m_vMyPos.init();
+	m_vMyPos.x = 0.5;
+	m_vMyPos.y = 0.5;
+	m_vTargetPos.init();
 
-	m_vGimbal.init();
-	m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
-	m_mountControl.input_b = m_vGimbal.y * 100;	//roll
-	m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
+	m_mountControl.input_a = 0;	//pitch
+	m_mountControl.input_b = 0;	//roll
+	m_mountControl.input_c = 0;	//yaw
 	m_mountControl.save_position = 0;
-
 	m_mountConfig.stab_pitch = 0;
 	m_mountConfig.stab_roll = 0;
 	m_mountConfig.stab_yaw = 0;
 	m_mountConfig.mount_mode = 2;
 }
 
-APcopter_follow::~APcopter_follow()
+APcopter_target::~APcopter_target()
 {
 }
 
-bool APcopter_follow::init(void* pKiss)
+bool APcopter_target::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -47,13 +49,14 @@ bool APcopter_follow::init(void* pKiss)
 	Kiss* pG = pK->o("gimbal");
 	if(!pG->empty())
 	{
-		pG->v("pitch", &m_vGimbal.x);
-		pG->v("roll", &m_vGimbal.y);
-		pG->v("yaw", &m_vGimbal.z);
+		double p=0, r=0, y=0;
+		pG->v("pitch", &p);
+		pG->v("roll", &r);
+		pG->v("yaw", &y);
 
-		m_mountControl.input_a = m_vGimbal.x * 100;	//pitch
-		m_mountControl.input_b = m_vGimbal.y * 100;	//roll
-		m_mountControl.input_c = m_vGimbal.z * 100;	//yaw
+		m_mountControl.input_a = p * 100;	//pitch
+		m_mountControl.input_b = r * 100;	//roll
+		m_mountControl.input_c = y * 100;	//yaw
 		m_mountControl.save_position = 0;
 
 		pG->v("stabPitch", &m_mountConfig.stab_pitch);
@@ -62,7 +65,24 @@ bool APcopter_follow::init(void* pKiss)
 		pG->v("mountMode", &m_mountConfig.mount_mode);
 	}
 
-	//link
+	pG = pK->o("targetPos");
+	if(!pG->empty())
+	{
+		pG->v("x", &m_vTargetPos.x);
+		pG->v("y", &m_vTargetPos.y);
+		pG->v("z", &m_vTargetPos.z);
+		pG->v("w", &m_vTargetPos.w);
+	}
+
+	pG = pK->o("myPos");
+	if(!pG->empty())
+	{
+		pG->v("x", &m_vMyPos.x);
+		pG->v("y", &m_vMyPos.y);
+		pG->v("z", &m_vMyPos.z);
+		pG->v("w", &m_vMyPos.w);
+	}
+
 	string iName;
 
 	if(m_bUseTracker)
@@ -99,7 +119,7 @@ bool APcopter_follow::init(void* pKiss)
 	return true;
 }
 
-int APcopter_follow::check(void)
+int APcopter_target::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -107,6 +127,7 @@ int APcopter_follow::check(void)
 	NULL__(m_pDet,-1);
 	_VisionBase* pV = m_pDet->m_pVision;
 	NULL__(pV,-1);
+
 	if(m_bUseTracker)
 	{
 		NULL__(m_pTracker[0],-1);
@@ -116,13 +137,13 @@ int APcopter_follow::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_follow::update(void)
+void APcopter_target::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
 	if(!bActive())
 	{
-		m_pPC->setPos(m_pPC->m_vTarget);
+		m_pPC->setPos(m_vMyPos, m_pPC->m_vTargetPos);
 		m_pDet->goSleep();
 		if(m_bUseTracker)
 		{
@@ -138,17 +159,18 @@ void APcopter_follow::update(void)
 		m_pDet->wakeUp();
 	}
 
-	updateGimbal();
+	m_pAP->setGimbal(m_mountControl, m_mountConfig);
+
 	if(!find())
 	{
-		m_pPC->setPos(m_pPC->m_vTarget);
+		m_pPC->setPos(m_vMyPos, m_pPC->m_vTargetPos);
 		return;
 	}
 
-	m_pPC->setPos(m_vTarget);
+	m_pPC->setPos(m_vMyPos, m_vTargetPos);
 }
 
-bool APcopter_follow::find(void)
+bool APcopter_target::find(void)
 {
 	IF__(check()<0, false);
 
@@ -203,34 +225,14 @@ bool APcopter_follow::find(void)
 		bb = tO->m_bb;
 	}
 
-	m_vTarget.x = bb.midX();
-	m_vTarget.y = bb.midY();
+	m_vTargetPos.x = bb.midX();
+	m_vTargetPos.y = bb.midY();
 	m_pMC->transit("follow");
 
 	return true;
 }
 
-void APcopter_follow::updateGimbal(void)
-{
-	m_pAP->m_pMavlink->mountConfigure(m_mountConfig);
-	m_pAP->m_pMavlink->mountControl(m_mountControl);
-
-	mavlink_param_set_t D;
-	D.param_type = MAV_PARAM_TYPE_INT8;
-	string id;
-
-	D.param_value = m_mountConfig.stab_pitch;
-	id = "MNT_STAB_TILT";
-	strcpy(D.param_id, id.c_str());
-	m_pAP->m_pMavlink->param_set(D);
-
-	D.param_value = m_mountConfig.stab_roll;
-	id = "MNT_STAB_ROLL";
-	strcpy(D.param_id,id.c_str());
-	m_pAP->m_pMavlink->param_set(D);
-}
-
-bool APcopter_follow::draw(void)
+bool APcopter_target::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -243,17 +245,17 @@ bool APcopter_follow::draw(void)
 	if(!bActive())
 		pWin->addMsg("Inactive");
 
-	pWin->addMsg("Target = (" + f2str(m_vTarget.x) + ", "
-							   + f2str(m_vTarget.y) + ", "
-					           + f2str(m_vTarget.z) + ", "
-				           	   + f2str(m_vTarget.w) + ")");
+	pWin->addMsg("Target = (" + f2str(m_vTargetPos.x) + ", "
+							   + f2str(m_vTargetPos.y) + ", "
+					           + f2str(m_vTargetPos.z) + ", "
+				           	   + f2str(m_vTargetPos.w) + ")");
 
 	pWin->tabPrev();
 
 	return true;
 }
 
-bool APcopter_follow::console(int& iY)
+bool APcopter_target::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
@@ -265,10 +267,10 @@ bool APcopter_follow::console(int& iY)
 		C_MSG("Inactive");
 	}
 
-	C_MSG("Target = (" + f2str(m_vTarget.x) + ", "
-				     	 + f2str(m_vTarget.y) + ", "
-						 + f2str(m_vTarget.z) + ", "
-						 + f2str(m_vTarget.w) + ")");
+	C_MSG("Target = (" + f2str(m_vTargetPos.x) + ", "
+				     	 + f2str(m_vTargetPos.y) + ", "
+						 + f2str(m_vTargetPos.z) + ", "
+						 + f2str(m_vTargetPos.w) + ")");
 
 	return true;
 }

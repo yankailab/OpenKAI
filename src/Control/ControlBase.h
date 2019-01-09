@@ -25,7 +25,6 @@ public:
 	virtual void update(void);
 	virtual bool draw(void);
 	virtual bool console(int& iY);
-
 	virtual void reset(void);
 
 public:

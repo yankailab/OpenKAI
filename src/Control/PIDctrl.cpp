@@ -1,7 +1,7 @@
 /*
  * PIDctrl.cpp
  *
- *  Created on: May 18, 2015
+ *  Created on: May 18, 2018
  *      Author: yankai
  */
 
@@ -13,8 +13,10 @@ namespace kai
 PIDctrl::PIDctrl()
 {
 	m_dT = 0;
-	m_min = 0.0;
-	m_max = DBL_MAX;
+	m_oMin = DBL_MIN;
+	m_oMax = DBL_MAX;
+	m_vMin = DBL_MIN;
+	m_vMax = DBL_MAX;
 	m_K = 1.0;
 	m_P = 0;
 	m_I = 0;
@@ -32,9 +34,11 @@ bool PIDctrl::init(void* pKiss)
 	IF_F(!this->ControlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	KISSm(pK, vMin);
+	KISSm(pK, vMax);
 	KISSm(pK, dT);
-	KISSm(pK, min);
-	KISSm(pK, max);
+	KISSm(pK, oMin);
+	KISSm(pK, oMax);
 	KISSm(pK, K);
 
 	KISSm(pK, P);
@@ -45,9 +49,16 @@ bool PIDctrl::init(void* pKiss)
 	return true;
 }
 
-double PIDctrl::update(double v, double vTarget)
+double PIDctrl::update(double v, double vTarget, uint64_t t)
 {
-	uint64_t tNow = getTimeUsec();
+	if(t <= m_tLastUpdate)
+		return m_output;
+
+	if(v < m_vMin || v > m_vMax || vTarget < m_vMin || vTarget > m_vMax)
+	{
+		reset();
+		return 0;
+	}
 
 	m_vPred = v + (v - m_v) * m_dT;
 	m_v = v;
@@ -59,40 +70,18 @@ double PIDctrl::update(double v, double vTarget)
 
 	//P,I,D should be of the same symbol
 	double o = m_P * m_e
-			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (double)(tNow - m_tLastUpdate)) // unit: sec
+			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (double)(t - m_tLastUpdate)) // unit: sec
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
 
-	m_output = constrain(o*m_K, m_min, m_max);
+	m_output = constrain(o*m_K, m_oMin, m_oMax);
 
-	m_tLastUpdate = tNow;
+	m_tLastUpdate = t;
 	return m_output;
 }
 
 double PIDctrl::o(void)
 {
 	return m_output;
-}
-
-bool PIDctrl::draw(void)
-{
-	return this->ControlBase::draw();
-}
-
-bool PIDctrl::console(int& iY)
-{
-	IF_F(!this->ControlBase::console(iY));
-
-	string msg;
-	msg = "v=" + f2str(m_v)
-			+ " vPred=" + f2str(m_vPred)
-			+ " vTarget=" + f2str(m_vTarget);
-			+ " output=" + f2str(m_output);
-
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	return true;
 }
 
 void PIDctrl::reset(void)
@@ -106,6 +95,24 @@ void PIDctrl::reset(void)
 	m_eInteg = 0.0;
 
 	m_tLastUpdate = 0;
+}
+
+bool PIDctrl::draw(void)
+{
+	return this->ControlBase::draw();
+}
+
+bool PIDctrl::console(int& iY)
+{
+	IF_F(!this->ControlBase::console(iY));
+
+	string msg;
+	C_MSG("v=" + f2str(m_v)
+			+ " vPred=" + f2str(m_vPred)
+			+ " vTarget=" + f2str(m_vTarget);
+			+ " output=" + f2str(m_output));
+
+	return true;
 }
 
 }

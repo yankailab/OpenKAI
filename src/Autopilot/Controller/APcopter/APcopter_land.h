@@ -23,16 +23,14 @@ public:
 	bool console(int& iY);
 	int check(void);
 
-	void updateGimbal(void);
-
 public:
 	APcopter_base* m_pAP;
 	APcopter_posCtrl* m_pPC;
 	_ObjectBase* m_pDet;
 	OBJECT m_tO;
+	vDouble4 m_vTargetPos;	//roll, pitch, alt, yaw
+	vDouble4 m_vMyPos;
 
-	bool	 m_bGimbal;
-	vDouble3 m_vGimbal;
 	mavlink_mount_control_t m_mountControl;
 	mavlink_mount_configure_t m_mountConfig;
 };

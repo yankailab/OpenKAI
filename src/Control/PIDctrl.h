@@ -1,7 +1,7 @@
 /*
  * PIDctrl.h
  *
- *  Created on: May 18, 2015
+ *  Created on: May 18, 2018
  *      Author: yankai
  */
 
@@ -20,7 +20,7 @@ public:
 	virtual ~PIDctrl();
 
 	virtual bool init(void* pKiss);
-	virtual double update(double v, double vTarget);
+	virtual double update(double v, double vTarget, uint64_t t);
 	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool console(int& iY);
@@ -35,15 +35,17 @@ public:
 	double m_v;
 	double m_vPred;
 	double m_vTarget;
+	double m_vMin;
+	double m_vMax;
 
 	double m_e;
 	double m_eOld;
 	double m_eInteg;
 
-	double m_min;
-	double m_max;
 	double m_dT;
 	double m_K;
+	double m_oMin;
+	double m_oMax;
 	double m_output;
 
 	uint64_t m_tLastUpdate;

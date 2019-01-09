@@ -6,17 +6,16 @@ namespace kai
 APcopter_posCtrl::APcopter_posCtrl()
 {
 	m_pAP = NULL;
-	m_vTarget.init();
-	m_vPos.init();
+	m_vTargetPos.init();
+	m_vMyPos.init();
 
-	m_vYaw = 180;
+	m_pRoll = NULL;
+	m_pPitch = NULL;
+	m_pAlt = NULL;
+	m_vYaw = 180.0;
+
 	m_bSetV = true;
 	m_bSetP = false;
-
-	for(int i=0;i<N_CTRL;i++)
-	{
-		m_ctrl[i].init();
-	}
 }
 
 APcopter_posCtrl::~APcopter_posCtrl()
@@ -34,16 +33,14 @@ bool APcopter_posCtrl::init(void* pKiss)
 
 	Kiss* pR;
 	string iName;
-	AP_POS_CTRL_TARGET* pRC = NULL;
 
 	pR = pK->o("roll");
 	if(!pR->empty())
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_ctrl[C_ROLL];
-		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!pRC->m_pPID, iName + ": not found");
+		m_pRoll = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_pRoll, iName + ": not found");
 	}
 
 	pR = pK->o("pitch");
@@ -51,19 +48,8 @@ bool APcopter_posCtrl::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_ctrl[C_PITCH];
-		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!pRC->m_pPID, iName + ": not found");
-	}
-
-	pR = pK->o("yaw");
-	if(!pR->empty())
-	{
-		iName = "";
-		pR->v("PIDctrl", &iName);
-		pRC = &m_ctrl[C_YAW];
-		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!pRC->m_pPID, iName + ": not found");
+		m_pPitch = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_pPitch, iName + ": not found");
 	}
 
 	pR = pK->o("alt");
@@ -71,18 +57,8 @@ bool APcopter_posCtrl::init(void* pKiss)
 	{
 		iName = "";
 		pR->v("PIDctrl", &iName);
-		pRC = &m_ctrl[C_ALT];
-		pRC->m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!pRC->m_pPID, iName + ": not found");
-	}
-
-	pR = pK->o("target");
-	if(!pR->empty())
-	{
-		pR->v("x", &m_vTarget.x);
-		pR->v("y", &m_vTarget.y);
-		pR->v("z", &m_vTarget.z);	//distance
-		pR->v("yaw", &m_vTarget.w);	//heading
+		m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
+		IF_Fl(!m_pAlt, iName + ": not found");
 	}
 
 	//link
@@ -113,54 +89,55 @@ void APcopter_posCtrl::update(void)
 		return;
 	}
 
-	m_ctrl[C_PITCH].update(m_vPos.y, m_vTarget.y);
-	m_ctrl[C_ROLL].update(m_vPos.x, m_vTarget.x);
-	m_ctrl[C_ALT].update(m_vPos.z, m_vTarget.z);
-	m_ctrl[C_YAW].update(m_vPos.w, m_vTarget.w);
+	double p=0,r=0,a=0;
+	if(m_pRoll)
+		r = m_pRoll->update(m_vMyPos.x, m_vTargetPos.x, m_tStamp);
+
+	if(m_pPitch)
+		p = m_pPitch->update(m_vMyPos.y, m_vTargetPos.y, m_tStamp);
+
+	if(m_pAlt)
+		a = m_pAlt->update(m_vMyPos.z, m_vTargetPos.z, m_tStamp);
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_spt.yaw_rate = (float)m_vYaw * DEG_RAD;
-	m_spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
-	if(m_vTarget.w >= 0)
-		m_spt.yaw = (float)m_vTarget.w * DEG_RAD;
+	m_spt.yaw = (float)m_vTargetPos.w * DEG_RAD;
 
 	m_spt.type_mask = 0b0000000111111111;
 
 	if(m_bSetV)
 	{
-		m_spt.vx = m_ctrl[C_PITCH].m_v;			//forward
-		m_spt.vy = m_ctrl[C_ROLL].m_v;			//right
-		m_spt.vz = m_ctrl[C_ALT].m_v;			//down
-		m_spt.type_mask &= 0b1111111111000111;	//velocity
+		m_spt.vx = p;			//forward
+		m_spt.vy = r;			//right
+		m_spt.vz = a;			//down
+		m_spt.type_mask &= 0b1111111111000111;
 	}
 
 	if(m_bSetP)
 	{
-		m_spt.x = m_ctrl[C_PITCH].m_v;			//forward
-		m_spt.y = m_ctrl[C_ROLL].m_v;			//right
-		m_spt.z = m_ctrl[C_ALT].m_v;			//down
-		m_spt.type_mask &= 0b1111111111111000;	//velocity
+		m_spt.x = p;			//forward
+		m_spt.y = r;			//right
+		m_spt.z = a;			//down
+		m_spt.type_mask &= 0b1111111111111000;
 	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 
-void APcopter_posCtrl::setTargetPos(vDouble4& vP)
+void APcopter_posCtrl::setPos(vDouble4& vMyPos, vDouble4& vTargetPos)
 {
-	m_vTarget = vP;
-}
-
-void APcopter_posCtrl::setPos(vDouble4& vP)
-{
-	m_vPos = vP;
+	m_vMyPos = vMyPos;
+	m_vTargetPos = vTargetPos;
 }
 
 void APcopter_posCtrl::clear(void)
 {
-	m_ctrl[C_PITCH].clear();
-	m_ctrl[C_ROLL].clear();
-	m_ctrl[C_ALT].clear();
-	m_ctrl[C_YAW].clear();
+	if(m_pRoll)
+		m_pRoll->reset();
+	if(m_pPitch)
+		m_pPitch->reset();
+	if(m_pAlt)
+		m_pAlt->reset();
 }
 
 void APcopter_posCtrl::releaseCtrl(void)
@@ -197,15 +174,15 @@ bool APcopter_posCtrl::draw(void)
 	}
 	else
 	{
-		pWin->addMsg("Pos = (" + f2str(m_vPos.x) + ", "
-						 + f2str(m_vPos.y) + ", "
-						 + f2str(m_vPos.z) + ", "
-						 + f2str(m_vPos.w) + ")");
+		pWin->addMsg("Pos = (" + f2str(m_vMyPos.x) + ", "
+						 + f2str(m_vMyPos.y) + ", "
+						 + f2str(m_vMyPos.z) + ", "
+						 + f2str(m_vMyPos.w) + ")");
 
-		pWin->addMsg("Target = (" + f2str(m_vTarget.x) + ", "
-						    + f2str(m_vTarget.y) + ", "
-						    + f2str(m_vTarget.z) + ", "
-						    + f2str(m_vTarget.w) + ")");
+		pWin->addMsg("Target = (" + f2str(m_vTargetPos.x) + ", "
+						    + f2str(m_vTargetPos.y) + ", "
+						    + f2str(m_vTargetPos.z) + ", "
+						    + f2str(m_vTargetPos.w) + ")");
 
 		pWin->addMsg("set target: V = (" + f2str(m_spt.vx) + ", "
 						 + f2str(m_spt.vy) + ", "
@@ -217,10 +194,10 @@ bool APcopter_posCtrl::draw(void)
 
 	pWin->tabPrev();
 
-	circle(*pMat, Point(m_vPos.x*pMat->cols, m_vPos.y*pMat->rows),
+	circle(*pMat, Point(m_vMyPos.x*pMat->cols, m_vMyPos.y*pMat->rows),
 			pMat->cols*pMat->rows*0.00005,
 			Scalar(0, 255, 0), 2);
-	circle(*pMat, Point(m_vTarget.x*pMat->cols, m_vTarget.y*pMat->rows),
+	circle(*pMat, Point(m_vTargetPos.x*pMat->cols, m_vTargetPos.y*pMat->rows),
 			pMat->cols*pMat->rows*0.00005,
 			Scalar(0, 0, 255), 2);
 
@@ -240,15 +217,15 @@ bool APcopter_posCtrl::console(int& iY)
 	}
 	else
 	{
-		C_MSG("Pos = (" + f2str(m_vPos.x) + ", "
-						+ f2str(m_vPos.y) + ", "
-						+ f2str(m_vPos.z) + ", "
-						+ f2str(m_vPos.w) + ")");
+		C_MSG("Pos = (" + f2str(m_vMyPos.x) + ", "
+						+ f2str(m_vMyPos.y) + ", "
+						+ f2str(m_vMyPos.z) + ", "
+						+ f2str(m_vMyPos.w) + ")");
 
-		C_MSG("Target = (" + f2str(m_vTarget.x) + ", "
-						   + f2str(m_vTarget.y) + ", "
-						   + f2str(m_vTarget.z) + ", "
-						   + f2str(m_vTarget.w) + ")");
+		C_MSG("Target = (" + f2str(m_vTargetPos.x) + ", "
+						   + f2str(m_vTargetPos.y) + ", "
+						   + f2str(m_vTargetPos.z) + ", "
+						   + f2str(m_vTargetPos.w) + ")");
 
 		C_MSG("set target: V = (" + f2str(m_spt.vx) + ", "
 						 + f2str(m_spt.vy) + ", "
