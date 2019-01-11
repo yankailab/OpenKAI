@@ -8,16 +8,9 @@ APcopter_target::APcopter_target()
 	m_pAP = NULL;
 	m_pPC = NULL;
 	m_pDet = NULL;
-	m_tStampDet = 0;
+
 	m_iClass = -1;
 	m_tO.m_topClass = -1;
-
-	m_iTracker = 0;
-	m_bUseTracker = false;
-	m_pTracker[0] = NULL;
-	m_pTracker[1] = NULL;
-	m_pTnow = NULL;
-	m_pTnew = NULL;
 
 	m_vMyPos.init();
 	m_vMyPos.x = 0.5;
@@ -32,6 +25,14 @@ APcopter_target::APcopter_target()
 	m_mountConfig.stab_roll = 0;
 	m_mountConfig.stab_yaw = 0;
 	m_mountConfig.mount_mode = 2;
+
+	m_iTracker = 0;
+	m_bUseTracker = false;
+	m_pTracker[0] = NULL;
+	m_pTracker[1] = NULL;
+	m_pTnow = NULL;
+	m_pTnew = NULL;
+
 }
 
 APcopter_target::~APcopter_target()
@@ -85,6 +86,21 @@ bool APcopter_target::init(void* pKiss)
 
 	string iName;
 
+	iName = "";
+	pK->v("APcopter_base", &iName);
+	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pAP, iName + ": not found");
+
+	iName = "";
+	pK->v("_ObjectBase", &iName);
+	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDet, iName + ": not found");
+
+	iName = "";
+	pK->v("APcopter_posCtrl", &iName);
+	m_pPC = (APcopter_posCtrl*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pPC, iName + ": not found");
+
 	if(m_bUseTracker)
 	{
 		iName = "";
@@ -100,21 +116,6 @@ bool APcopter_target::init(void* pKiss)
 		m_pTnow = m_pTracker[m_iTracker];
 		m_pTnew = m_pTracker[1-m_iTracker];
 	}
-
-	iName = "";
-	pK->v("APcopter_base", &iName);
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
-
-	iName = "";
-	pK->v("_ObjectBase", &iName);
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pDet, iName + ": not found");
-
-	iName = "";
-	pK->v("APcopter_posCtrl", &iName);
-	m_pPC = (APcopter_posCtrl*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pPC, iName + ": not found");
 
 	return true;
 }

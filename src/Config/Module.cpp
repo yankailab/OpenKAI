@@ -27,6 +27,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_ClusterNet);
+	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_LidarSlam);
@@ -83,9 +84,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Caffe);
 	ADD_MODULE(_CaffeRegressionTrain);
 	ADD_MODULE(_CaffeRegressionInf);
-#endif
-#ifdef USE_SSD
-	ADD_MODULE(_SSD);
 #endif
 #ifdef USE_DARKNET
 	ADD_MODULE(_YOLO);

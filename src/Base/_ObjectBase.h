@@ -12,8 +12,8 @@
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
 
-#define OBJECT_N_CLASS 128
 #define OBJECT_N_OBJ 256
+#define OBJECT_N_CLASS 256
 
 namespace kai
 {
@@ -173,7 +173,7 @@ struct OBJECT_DARRAY
 	}
 };
 
-struct CLASS_STATISTICS
+struct OBJECT_CLASS
 {
 	string  m_name;
 	int		m_n;
@@ -228,7 +228,7 @@ public:
 	string m_meanFile;
 	string m_labelFile;
 	int	   m_nClass;
-	CLASS_STATISTICS m_pClassStatis[OBJECT_N_CLASS];
+	vector<OBJECT_CLASS> m_vClass;
 
 	//show
 	std::bitset<64> m_bitSet;

@@ -7,6 +7,7 @@
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/aruco.hpp>
 #include <opencv2/bgsegm.hpp>
+#include <opencv2/dnn.hpp>
 
 #ifdef USE_OPENCV_CONTRIB
 #include <opencv2/tracking.hpp>
@@ -25,3 +26,22 @@ using namespace cv::cuda;
 #endif
 
 using namespace cv;
+using namespace dnn;
+
+#if CV_VERSION_MAJOR==3
+#define COLOR_BGR2YCrCb CV_BGR2YCrCb
+#define COLOR_YCrCb2BGR CV_YCrCb2BGR
+#define COLOR_GRAY2BGR CV_GRAY2BGR
+#define COLOR_RGB2BGR CV_RGB2BGR
+
+#define IMWRITE_PNG_COMPRESSION CV_IMWRITE_PMG_COMPRESSION
+
+#define WINDOW_NORMAL CV_WINDOW_NORMAL
+#define WND_PROP_FULLSCREEN CV_WND_PROP_FULLSCREEN
+#define WINDOW_FULLSCREEN CV_WINDOW_FULLSCREEN
+#define WINDOW_AUTOSIZE CV_WINDOW_AUTOSIZE
+
+#define CAP_PROP_FRAME_WIDTH CV_CAP_PROP_FRAME_WIDTH
+#define CAP_PROP_FRAME_HEIGHT CV_CAP_PROP_FRAME_HEIGHT
+#define CAP_PROP_FPS CV_CAP_PROP_FPS
+#endif

@@ -20,7 +20,7 @@ _ObjectBase::_ObjectBase()
 	m_maxArea = 1.0;
 	m_maxW = 1.0;
 	m_maxH = 1.0;
-	m_nClass = OBJECT_N_CLASS;
+	m_nClass = 0;
 	m_obj.reset();
 	m_roi.init();
 	m_roi.z = 1.0;
@@ -83,12 +83,13 @@ bool _ObjectBase::init(void* pKiss)
 	string pClassList[OBJECT_N_CLASS];
 	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
 
-	//statistics
 	int i;
 	for(i=0; i<m_nClass; i++)
 	{
-		m_pClassStatis[i].init();
-		m_pClassStatis[i].m_name = pClassList[i];
+		OBJECT_CLASS oc;
+		oc.init();
+		oc.m_name = pClassList[i];
+		m_vClass.push_back(oc);
 	}
 
 	//ROI
@@ -110,7 +111,7 @@ void _ObjectBase::updateStatistics(void)
 	int i;
 	for(i=0; i<m_nClass; i++)
 	{
-		m_pClassStatis[i].m_n = 0;
+		m_vClass[i].m_n = 0;
 	}
 
 	for(i=0; i<size(); i++)
@@ -120,7 +121,7 @@ void _ObjectBase::updateStatistics(void)
 		IF_CONT(pO->m_topClass >= m_nClass);
 		IF_CONT(pO->m_topClass < 0);
 
-		m_pClassStatis[pO->m_topClass].m_n++;
+		m_vClass[pO->m_topClass].m_n++;
 	}
 }
 
@@ -128,7 +129,7 @@ int _ObjectBase::getClassIdx(string& className)
 {
 	for(int i=0; i<m_nClass; i++)
 	{
-		if(m_pClassStatis[i].m_name == className)return i;
+		if(m_vClass[i].m_name == className)return i;
 	}
 
 	return -1;
@@ -139,7 +140,7 @@ string _ObjectBase::getClassName(int iClass)
 	if(iClass < 0)return "";
 	if(iClass >= m_nClass)return "";
 
-	return m_pClassStatis[iClass].m_name;
+	return m_vClass[iClass].m_name;
 }
 
 int _ObjectBase::size(void)
@@ -278,7 +279,7 @@ bool _ObjectBase::draw(void)
 		//class
 		if(m_bDrawObjClass)
 		{
-			string oName = m_pClassStatis[iClass].m_name;
+			string oName = m_vClass[iClass].m_name;
 			if (oName.length()>0)
 			{
 				putText(*pMat, oName,
@@ -298,7 +299,7 @@ bool _ObjectBase::draw(void)
 
 	for(i=0; i<m_nClass; i++)
 	{
-		CLASS_STATISTICS* pC = &m_pClassStatis[i];
+		OBJECT_CLASS* pC = &m_vClass[i];
 		col = colStep * i;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 

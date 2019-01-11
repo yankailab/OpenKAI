@@ -73,7 +73,12 @@ bool Window::init(void* pKiss)
 		m_fileRec += ".avi";
 
 		if (!m_VW.open(m_fileRec,
-						VideoWriter::fourcc(reCodec.at(0),
+#if CV_VERSION_MAJOR==3
+				CV_FOURCC
+#else
+				VideoWriter::fourcc
+#endif
+						(reCodec.at(0),
 						reCodec.at(1),
 						reCodec.at(2),
 						reCodec.at(3)),

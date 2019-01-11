@@ -18,20 +18,21 @@ public:
 	~APcopter_target();
 
 	virtual	bool init(void* pKiss);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
 	virtual int check(void);
 	virtual void update(void);
+	virtual bool draw(void);
+	virtual bool console(int& iY);
 	virtual bool find(void);
 
 public:
 	APcopter_base*	m_pAP;
 	APcopter_posCtrl* m_pPC;
 	_ObjectBase*	m_pDet;
+
 	OBJECT			m_tO;
-	uint64_t		m_tStampDet;
 	int				m_iClass;
-	vDouble4 		m_vTargetPos;
+
+	vDouble4 		m_vTargetPos; 	//roll, pitch, alt, yaw
 	vDouble4 		m_vMyPos;
 
 	bool			m_bUseTracker;

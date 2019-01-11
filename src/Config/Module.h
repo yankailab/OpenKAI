@@ -16,6 +16,7 @@
 #include "../Detector/_ArUco.h"
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
+#include "../Detector/_DNNdetect.h"
 
 #include "../Navigation/_Path.h"
 #include "../Mission/_MissionControl.h"
@@ -86,9 +87,6 @@
 #include "../DNN/Caffe/_Caffe.h"
 #include "../Regression/_CaffeRegressionTrain.h"
 #include "../Regression/_CaffeRegressionInf.h"
-#endif
-#ifdef USE_SSD
-#include "../DNN/SSD/_SSD.h"
 #endif
 #ifdef USE_DARKNET
 #include "../DNN/Darknet/_YOLO.h"
