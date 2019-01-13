@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
 	"waitKey":30,
@@ -17,7 +17,7 @@
 }
 
 {
-	"name":"camera",
+	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":1,
@@ -52,4 +52,23 @@
 	"h":720,
 	"fovW":60,
 	"fovH":60,
+}
+
+{
+	"name":"DNNdetect",
+	"class":"_DNNdetect",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"mode":"thread",
+	"modelDir":"/home/kai/dev/DNNmodel/YOLOv3-tiny/",
+	"modelFile":"yolov3-tiny.cfg",
+	"trainedFile":"yolov3-tiny.weights",
+	"classFile":"coco.txt",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"bDrawObjClass":1,
 }

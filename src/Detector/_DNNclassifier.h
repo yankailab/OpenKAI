@@ -1,12 +1,12 @@
 /*
- * _DNNdetect.h
+ * _DNNclassifier.h
  *
- *  Created on: Jan 11, 2019
+ *  Created on: Jan 13, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_DNN_Darknet__DNNdetect_H_
-#define OpenKAI_src_DNN_Darknet__DNNdetect_H_
+#ifndef OpenKAI_src_DNN_Darknet__DNNclassifier_H_
+#define OpenKAI_src_DNN_Darknet__DNNclassifier_H_
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
@@ -15,11 +15,11 @@
 namespace kai
 {
 
-class _DNNdetect: public _ObjectBase
+class _DNNclassifier: public _ObjectBase
 {
 public:
-	_DNNdetect();
-	~_DNNdetect();
+	_DNNclassifier();
+	~_DNNclassifier();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -27,25 +27,22 @@ public:
 	int check(void);
 
 private:
-	bool detect(void);
+	bool classify(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DNNdetect*) This)->update();
+		((_DNNclassifier*) This)->update();
 		return NULL;
 	}
 
 public:
 	cv::dnn::Net m_net;
-	double	m_thr;
-	double	m_nms;
 	int		m_nW;
 	int		m_nH;
 	bool	m_bSwapRB;
 	float	m_scale;
 	vInt3	m_vMean;
 	Mat		m_blob;
-	vector<string> m_vLayerName;
 
 	int m_iBackend;
 	int m_iTarget;

@@ -13,6 +13,9 @@ _DNNdetect::_DNNdetect()
 	m_nms = 0.4;
 	m_nW = 416;
 	m_nH = 416;
+	m_bSwapRB = true;
+	m_vMean.init();
+	m_scale = 1.0/255.0;
 
 	m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
 	m_iTarget = cv::dnn::DNN_TARGET_CPU;
@@ -33,6 +36,11 @@ bool _DNNdetect::init(void* pKiss)
 	KISSm(pK, nH);
 	KISSm(pK, iBackend);
 	KISSm(pK, iTarget);
+	KISSm(pK, bSwapRB);
+	KISSm(pK, scale);
+	pK->v("meanB",&m_vMean.x);
+	pK->v("meanG",&m_vMean.y);
+	pK->v("meanR",&m_vMean.z);
 
 	m_net = readNetFromDarknet(m_modelFile, m_trainedFile);
 	IF_Fl(m_net.empty(), "read Net failed");
@@ -67,17 +75,6 @@ bool _DNNdetect::start(void)
 	return true;
 }
 
-int _DNNdetect::check(void)
-{
-	NULL__(m_pVision, -1);
-	Frame* pBGR = m_pVision->BGR();
-	NULL__(pBGR, -1);
-	IF__(pBGR->bEmpty(), -1);
-	IF__(pBGR->tStamp() <= m_BGR.tStamp(), -1);
-
-	return this->_ObjectBase::check();
-}
-
 void _DNNdetect::update(void)
 {
 	while (m_bThreadON)
@@ -97,6 +94,17 @@ void _DNNdetect::update(void)
 	}
 }
 
+int _DNNdetect::check(void)
+{
+	NULL__(m_pVision, -1);
+	Frame* pBGR = m_pVision->BGR();
+	NULL__(pBGR, -1);
+	IF__(pBGR->bEmpty(), -1);
+	IF__(pBGR->tStamp() <= m_BGR.tStamp(), -1);
+
+	return 0;
+}
+
 bool _DNNdetect::detect(void)
 {
 	IF_F(check() < 0);
@@ -114,7 +122,12 @@ bool _DNNdetect::detect(void)
 	vInt42rect(iRoi, rRoi);
 	Mat mBGR = mIn(rRoi);
 
-	m_blob = blobFromImage(mBGR, 1 / 255.0, Size(m_nW, m_nH), Scalar(0, 0, 0), true, false);
+	m_blob = blobFromImage(mBGR,
+							m_scale,
+							Size(m_nW, m_nH),
+							Scalar(m_vMean.x, m_vMean.y, m_vMean.z),
+							m_bSwapRB,
+							false);
 	m_net.setInput(m_blob);
 
 	// Runs the forward pass to get output of the output layers

@@ -17,6 +17,7 @@
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
 #include "../Detector/_DNNdetect.h"
+#include "../Detector/_DNNclassifier.h"
 
 #include "../Navigation/_Path.h"
 #include "../Mission/_MissionControl.h"

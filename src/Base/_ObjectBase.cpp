@@ -14,6 +14,7 @@ _ObjectBase::_ObjectBase()
 	m_trainedFile = "";
 	m_meanFile = "";
 	m_labelFile = "";
+	m_classFile = "";
 	m_dMaxTrack = 1.0;
 	m_minConfidence = 0.0;
 	m_minArea = 0.0;
@@ -66,11 +67,47 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, trainedFile);
 	KISSm(pK, meanFile);
 	KISSm(pK, labelFile);
+	KISSm(pK, classFile);
 
 	m_modelFile = modelDir + m_modelFile;
 	m_trainedFile = modelDir + m_trainedFile;
 	m_meanFile = modelDir + m_meanFile;
 	m_labelFile = modelDir + m_labelFile;
+
+	//class
+	if(!m_classFile.empty())
+	{
+		m_classFile = modelDir + m_classFile;
+		ifstream ifs(m_classFile.c_str());
+	    IF_Fl(!ifs.is_open(),"File " + m_classFile + " not found");
+
+	    string line;
+		while (std::getline(ifs, line))
+		{
+			OBJECT_CLASS oc;
+			oc.init();
+			oc.m_name = line;
+			m_vClass.push_back(oc);
+		}
+
+		m_nClass = m_vClass.size();
+		ifs.close();
+	}
+	else
+	{
+		string* pClassList = new string[OBJECT_N_CLASS];
+		m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
+
+		for(int i=0; i<m_nClass; i++)
+		{
+			OBJECT_CLASS oc;
+			oc.init();
+			oc.m_name = pClassList[i];
+			m_vClass.push_back(oc);
+		}
+
+		DEL(pClassList);
+	}
 
 	//draw
 	KISSm(pK, bDrawSegment);
@@ -79,18 +116,6 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, drawVscale);
 	KISSm(pK, bDrawObjClass);
 	KISSm(pK, bDrawObjVtrack);
-
-	string pClassList[OBJECT_N_CLASS];
-	m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
-
-	int i;
-	for(i=0; i<m_nClass; i++)
-	{
-		OBJECT_CLASS oc;
-		oc.init();
-		oc.m_name = pClassList[i];
-		m_vClass.push_back(oc);
-	}
 
 	//ROI
 	F_INFO(pK->v("rX", &m_roi.x));
@@ -315,10 +340,8 @@ bool _ObjectBase::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
 
-	string msg = "nObj=" + i2str(m_obj.size());
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	string msg;
+	C_MSG("nObj=" + i2str(m_obj.size()));
 
 	return true;
 }

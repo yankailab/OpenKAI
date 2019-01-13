@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
 	"waitKey":30,
@@ -17,7 +17,7 @@
 }
 
 {
-	"name":"camera",
+	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":1,
@@ -52,4 +52,25 @@
 	"h":720,
 	"fovW":60,
 	"fovH":60,
+}
+
+{
+	"name":"DNNclassifier",
+	"class":"_DNNclassifier",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"mode":"thread",
+	"modelDir":"/home/kai/dev/DNNmodel/caffeGooglenet/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"bvlc_googlenet.caffemodel",
+	"classFile":"classification_classes_ILSVRC2012.txt",
+	"meanB":104,
+	"meanG":117,
+	"meanR":123,
+	"bSwapRB":1,
+	"bDrawObjClass":1,
 }
