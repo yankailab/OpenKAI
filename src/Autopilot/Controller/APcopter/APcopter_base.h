@@ -62,7 +62,6 @@ const string custom_mode_name[] =
 "FOLLOW",
 };
 
-
 class APcopter_base: public ActionBase
 {
 public:
@@ -77,12 +76,13 @@ public:
 
 	void setApMode(uint32_t iMode);
 	uint32_t getApMode(void);
+	bool bApModeChanged(void);
+	string apModeName(void);
+
 	void setApArm(bool bArm);
 	bool getApArm(void);
 	void setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig);
-	bool bApModeChanged(void);
-	uint32_t apMode(void);
-	string apModeName(void);
+	bool homePos(vDouble3* pHome);
 
 public:
 	_Mavlink* m_pMavlink;
@@ -98,8 +98,10 @@ public:
 	int m_freqRC;
 	int m_freqPos;
 	int m_freqExtra1;
-
 	int m_freqSendHeartbeat;
+
+	bool	 m_bHomeSet;
+	vDouble3 m_vHomePos;
 };
 
 }

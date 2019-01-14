@@ -319,6 +319,11 @@ struct vDouble3
 	{
 		return sqrt(x*x + y*y + z*z);
 	}
+
+	double sum(void)
+	{
+		return x+y+z;
+	}
 };
 
 struct vInt2

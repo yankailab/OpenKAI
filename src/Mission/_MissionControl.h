@@ -13,6 +13,8 @@
 #include "MissionBase.h"
 #include "Waypoint.h"
 #include "Land.h"
+#include "Loiter.h"
+#include "RTH.h"
 
 #define ADD_MISSION(x) if(pKM->m_class==#x){M.m_pInst=new x();M.m_pKiss=pKM;}
 
@@ -61,6 +63,7 @@ public:
 
 	vector<MISSION_INST> m_vMission;
 	int		m_iMission;
+	bool	m_bMissionInit;
 
 };
 

@@ -42,7 +42,6 @@ bool _Mavlink::init(void* pKiss)
 	m_msg.compid = 0;
 	m_status.packet_rx_drop_count = 0;
 
-	//link
 	string iName;
 
 	iName = "";
@@ -667,6 +666,20 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 			+ " pwm=" + i2str(PWM));
 }
 
+void _Mavlink::clGetHomePosition(void)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_GET_HOME_POSITION;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongGetHomePosition");
+}
+
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
 	if(m_nRead == 0)
@@ -767,6 +780,14 @@ void _Mavlink::handleMessages()
 			mavlink_msg_highres_imu_decode(&msg, &m_msg.highres_imu);
 			m_msg.time_stamps.highres_imu = tNow;
 			LOG_I(" -> HIGHRES_IMU");
+			break;
+		}
+
+		case MAVLINK_MSG_ID_HOME_POSITION:
+		{
+			mavlink_msg_home_position_decode(&msg, &m_msg.home_position);
+			m_msg.time_stamps.home_position = tNow;
+			LOG_I(" -> HOME_POSITION");
 			break;
 		}
 

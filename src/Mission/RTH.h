@@ -1,24 +1,23 @@
 /*
- * Waypoint.h
+ * RTH.h
  *
- *  Created on: Nov 13, 2018
+ *  Created on: Jan 14, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Waypoint_H_
-#define OpenKAI_src_Mission_Waypoint_H_
+#ifndef OpenKAI_src_Mission_RTH_H_
+#define OpenKAI_src_Mission_RTH_H_
 
 #include "MissionBase.h"
-#include "../Navigation/GPS.h"
 
 namespace kai
 {
 
-class Waypoint: public MissionBase
+class RTH: public MissionBase
 {
 public:
-	Waypoint();
-	virtual ~Waypoint();
+	RTH();
+	virtual ~RTH();
 
 	bool init(void* pKiss);
 	bool missionStart(void);
@@ -27,17 +26,14 @@ public:
 	bool draw(void);
 	bool console(int& iY);
 
+	void setHome(vDouble3& p);
 	void setPos(vDouble3& p);
 
 public:
-	bool m_bPos;
+	bool	m_bHome;
+	bool	m_bPos;
 
-	bool m_bHoffset;
-	bool m_bVoffset;
-	bool m_bHdgOffset;
-
-	vDouble3 m_vWPtarget;	//lat, lon, alt
-	vDouble3 m_vWP;
+	vDouble3 m_vHome;		//lat, lon, alt
 	vDouble3 m_vPos;
 	vDouble3 m_vErr;
 

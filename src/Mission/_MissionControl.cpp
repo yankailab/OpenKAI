@@ -13,6 +13,7 @@ namespace kai
 _MissionControl::_MissionControl()
 {
 	m_iMission = -1;
+	m_bMissionInit = false;
 }
 
 _MissionControl::~_MissionControl()
@@ -51,6 +52,8 @@ bool _MissionControl::init(void* pKiss)
 		ADD_MISSION(MissionBase);
 		ADD_MISSION(Waypoint);
 		ADD_MISSION(Land);
+		ADD_MISSION(Loiter);
+		ADD_MISSION(RTH);
 
 		//Add action modules above
 
@@ -104,9 +107,16 @@ void _MissionControl::update(void)
 
 		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
 
+		if(!m_bMissionInit)
+		{
+			m_bMissionInit = pMission->missionStart();
+			IF_CONT(!m_bMissionInit);
+		}
+
 		if(pMission->update())
 		{
 			transit(pMission->m_nextMission);
+			m_bMissionInit = false;
 		}
 
 		this->autoFPSto();
@@ -135,9 +145,6 @@ bool _MissionControl::transit(int iNextMission)
 	m_iMission = iNextMission;
 	IF_F(m_iMission < 0);
 	IF_F(m_iMission >= m_vMission.size());
-
-	MissionBase* pMission = m_vMission[m_iMission].m_pInst;
-	pMission->missionStart();
 
 	return true;
 }

@@ -18,6 +18,9 @@ APcopter_base::APcopter_base()
 	m_freqRC = 0;
 	m_freqPos = 1;
 	m_freqExtra1 = 1;
+
+	m_bHomeSet = false;
+	m_vHomePos.init();
 }
 
 APcopter_base::~APcopter_base()
@@ -57,7 +60,7 @@ int APcopter_base::check(void)
 {
 	NULL__(m_pMavlink,-1);
 
-	return this->ActionBase::check();
+	return 0;
 }
 
 void APcopter_base::update(void)
@@ -65,7 +68,7 @@ void APcopter_base::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	//update Ardupilot mode
+	//update Ardupilot
 	m_apMode = m_pMavlink->m_msg.heartbeat.custom_mode;
 	if(m_apMode != m_lastApMode)
 	{
@@ -77,18 +80,12 @@ void APcopter_base::update(void)
 		m_bApModeChanged = false;
 	}
 
-	//start mission in Guided mode
-	if(m_pMC)
+	if(m_pMavlink->m_msg.time_stamps.home_position > 0)
 	{
-		if(m_apMode==GUIDED)
-		{
-			if(m_bApModeChanged)
-				m_pMC->transit(0);
-		}
-		else
-		{
-			m_pMC->transit(-1);
-		}
+		m_vHomePos.x = ((double)(m_pMavlink->m_msg.home_position.latitude)) * 1e-7;
+		m_vHomePos.y = ((double)(m_pMavlink->m_msg.home_position.longitude)) * 1e-7;
+		m_vHomePos.z = ((double)(m_pMavlink->m_msg.home_position.altitude)) * 1e-3;
+		m_bHomeSet = true;
 	}
 
 	//Send Heartbeat
@@ -130,6 +127,18 @@ uint32_t APcopter_base::getApMode(void)
 	return m_apMode;
 }
 
+string APcopter_base::apModeName(void)
+{
+	if(m_apMode >= AP_N_CUSTOM_MODE)return "UNDEFINED";
+
+	return custom_mode_name[m_apMode];
+}
+
+bool APcopter_base::bApModeChanged(void)
+{
+	return m_bApModeChanged;
+}
+
 void APcopter_base::setApArm(bool bArm)
 {
 	IF_(check()<0);
@@ -142,21 +151,13 @@ bool APcopter_base::getApArm(void)
 	return false; //TODO
 }
 
-bool APcopter_base::bApModeChanged(void)
+bool APcopter_base::homePos(vDouble3* pHome)
 {
-	return m_bApModeChanged;
-}
+	NULL_F(!pHome);
+	IF_F(!m_bHomeSet);
 
-uint32_t APcopter_base::apMode(void)
-{
-	return m_apMode;
-}
-
-string APcopter_base::apModeName(void)
-{
-	if(m_apMode >= AP_N_CUSTOM_MODE)return "Unknown";
-
-	return custom_mode_name[m_apMode];
+	*pHome = m_vHomePos;
+	return true;
 }
 
 void APcopter_base::setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig)

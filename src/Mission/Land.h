@@ -9,7 +9,6 @@
 #define OpenKAI_src_Mission_Land_H_
 
 #include "MissionBase.h"
-#include "../Protocol/_Mavlink.h"
 
 namespace kai
 {
@@ -21,7 +20,6 @@ public:
 	virtual ~Land();
 
 	bool init(void* pKiss);
-	int check(void);
 	bool update(void);
 	bool draw(void);
 	bool console(int& iY);

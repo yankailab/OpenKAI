@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_mission_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_mission_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_mode_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_mode_H_
 
 #include "../../../Base/common.h"
 #include "../../ActionBase.h"
@@ -8,11 +8,11 @@
 namespace kai
 {
 
-class APcopter_mission: public ActionBase
+class APcopter_mode: public ActionBase
 {
 public:
-	APcopter_mission();
-	~APcopter_mission();
+	APcopter_mode();
+	~APcopter_mode();
 
 	bool init(void* pKiss);
 	int check(void);
@@ -24,7 +24,7 @@ public:
 	APcopter_base* m_pAP;
 
 	uint64_t m_tStart;
-	uint64_t m_tRTL;
+	uint64_t m_tReturn;
 	uint16_t m_iMissionSeq;
 
 };

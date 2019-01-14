@@ -1,31 +1,31 @@
-#include "../../Controller/APcopter/APcopter_mission.h"
+#include "APcopter_mode.h"
 
 namespace kai
 {
 
-APcopter_mission::APcopter_mission()
+APcopter_mode::APcopter_mode()
 {
 	m_pAP = NULL;
-	m_tRTL = USEC_1SEC * 60 * 5;
+	m_tReturn = USEC_1SEC * 60 * 5;
 	m_tStart = 0;
 	m_iMissionSeq = UINT16_MAX;
 
 }
 
-APcopter_mission::~APcopter_mission()
+APcopter_mode::~APcopter_mode()
 {
 }
 
-bool APcopter_mission::init(void* pKiss)
+bool APcopter_mode::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,iMissionSeq);
 
-	if(pK->v("tRTL",&m_tRTL))
+	if(pK->v("tRTL",&m_tReturn))
 	{
-		m_tRTL *= USEC_1SEC;
+		m_tReturn *= USEC_1SEC;
 	}
 
 	string iName;
@@ -38,7 +38,7 @@ bool APcopter_mission::init(void* pKiss)
 	return true;
 }
 
-int APcopter_mission::check(void)
+int APcopter_mode::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -46,13 +46,26 @@ int APcopter_mission::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_mission::update(void)
+void APcopter_mode::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
 
+	uint32_t apMode = m_pAP->getApMode();
+
+	//start mission in Guided mode
+	if(apMode==GUIDED)
+	{
+		if(m_pAP->bApModeChanged())
+			m_pMC->transit(0);
+	}
+	else
+	{
+		m_pMC->transit(-1);
+	}
+
+//
 	string* pState = m_pMC->getCurrentMissionName();
-	uint32_t apMode = m_pAP->apMode();
 
 	if(apMode == FOLLOW ||
 	   apMode == POSHOLD ||
@@ -65,7 +78,7 @@ void APcopter_mission::update(void)
 		{
 			m_tStart = m_tStamp;
 		}
-		else if(m_tStamp - m_tStart > m_tRTL)
+		else if(m_tStamp - m_tStart > m_tReturn)
 		{
 			m_pAP->setApMode(RTL);
 		}
@@ -92,7 +105,7 @@ void APcopter_mission::update(void)
 	}
 }
 
-bool APcopter_mission::draw(void)
+bool APcopter_mode::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
@@ -101,7 +114,7 @@ bool APcopter_mission::draw(void)
 
 	pWin->tabNext();
 
-	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	int tRTL = (int)((double)(m_tReturn - (m_tStamp - m_tStart))*OV_USEC_1SEC);
 	tRTL = constrain(tRTL, 0, INT_MAX);
 
 	pWin->addMsg("tRTL = " + i2str(tRTL) +
@@ -113,12 +126,12 @@ bool APcopter_mission::draw(void)
 	return true;
 }
 
-bool APcopter_mission::console(int& iY)
+bool APcopter_mode::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
 
-	int tRTL = (int)((double)(m_tRTL - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	int tRTL = (int)((double)(m_tReturn - (m_tStamp - m_tStart))*OV_USEC_1SEC);
 	tRTL = constrain(tRTL, 0, INT_MAX);
 
 	string msg;

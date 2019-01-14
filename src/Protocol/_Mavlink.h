@@ -21,6 +21,7 @@ struct Time_Stamps
 	uint64_t global_position_int;
 	uint64_t heartbeat;
 	uint64_t highres_imu;
+	uint64_t home_position;
 	uint64_t local_position_ned;
 	uint64_t mission_current;
 	uint64_t mount_status;
@@ -41,6 +42,7 @@ struct Time_Stamps
 		battery_status = 0;
 		radio_status = 0;
 		local_position_ned = 0;
+		home_position = 0;
 		global_position_int = 0;
 		position_target_local_ned = 0;
 		position_target_global_int = 0;
@@ -68,6 +70,7 @@ struct Mavlink_Messages
 	mavlink_global_position_int_t			global_position_int;
 	mavlink_heartbeat_t						heartbeat;
 	mavlink_highres_imu_t					highres_imu;
+	mavlink_home_position_t					home_position;
 	mavlink_local_position_ned_t			local_position_ned;
 	mavlink_mission_current_t				mission_current;
 	mavlink_mount_status_t					mount_status;
@@ -182,6 +185,7 @@ public:
 	void clDoSetMode(int mode);
 	void clDoSetPositionYawThrust(float steer, float thrust);
 	void clDoSetServo(int iServo, int PWM);
+	void clGetHomePosition(void);
 
 	//Msg routing
 	void setCmdRoute(uint32_t iCmd, bool bON);

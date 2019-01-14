@@ -49,17 +49,17 @@ void APcopter_WP::update(void)
 	NULL_(pWP);
 
 	double tZ;
-	if(pWP->m_pDS)
-	{
-		if(pWP->m_dSensor > 0)
-			tZ = pWP->m_vPos.z + (pWP->m_vWP.z - pWP->m_dSensor) * m_kZsensor;
-		else
-			tZ = pWP->m_vPos.z + m_dZdefault;
-	}
-	else
-	{
+//	if(pWP->m_pDS)
+//	{
+//		if(pWP->m_dSensor > 0)
+//			tZ = pWP->m_vPos.z + (pWP->m_vWP.z - pWP->m_dSensor) * m_kZsensor;
+//		else
+//			tZ = pWP->m_vPos.z + m_dZdefault;
+//	}
+//	else
+//	{
 		tZ = pWP->m_vWP.z;
-	}
+//	}
 
 	mavlink_set_position_target_global_int_t spt;
 	spt.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;

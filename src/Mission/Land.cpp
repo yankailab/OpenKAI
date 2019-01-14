@@ -33,15 +33,8 @@ bool Land::init(void* pKiss)
 	return true;
 }
 
-int Land::check(void)
-{
-	return this->MissionBase::check();
-}
-
 bool Land::update(void)
 {
-	IF_F(check()<0);
-
 	return false;
 }
 

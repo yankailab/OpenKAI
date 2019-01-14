@@ -12,19 +12,17 @@ namespace kai
 
 Waypoint::Waypoint()
 {
-	m_pMavlink = NULL;
-	m_pDS = NULL;
 	m_vWP.init();
-	m_vPos.init();
-	m_vErr.init();
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
 	m_r = 3.0;
-	m_dSensor = -1.0;
+
 	m_bHoffset = false;
 	m_bVoffset = false;
 	m_bHdgOffset = false;
+
+	reset();
 }
 
 Waypoint::~Waypoint()
@@ -48,33 +46,17 @@ bool Waypoint::init(void* pKiss)
 	KISSm(pK,hdg);
 	KISSm(pK,r);
 
-	string iName;
-	iName = "";
-	pK->v("_Mavlink", &iName);
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pMavlink, iName + " not found");
-
-	iName = "";
-	pK->v("_DistSensorBase", &iName);
-	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
-	NULLl(m_pDS, iName + " not found");
-
 	return true;
 }
 
-void Waypoint::missionStart(void)
+bool Waypoint::missionStart(void)
 {
-	IF_(check()<0);
-	updatePos();
-
-	if(m_bHdgOffset)
-	{
-		m_hdg += ((double)m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-		m_hdg = Hdg(m_hdg);
-	}
+	m_vWPtarget = m_vWP;
 
 	if(m_bHoffset)
 	{
+		IF_F(!m_bPos);
+
 		GPS gps;
 		LL_POS pLL;
 		pLL.m_lat = m_vPos.x;
@@ -85,54 +67,49 @@ void Waypoint::missionStart(void)
 		UTM_POS pUTM = gps.getPos(m_vWP);
 		pLL = gps.UTM2LL(pUTM);
 
-		m_vWP.x = pLL.m_lat;
-		m_vWP.y = pLL.m_lng;
+		m_vWPtarget.x = pLL.m_lat;
+		m_vWPtarget.y = pLL.m_lng;
 	}
 
 	if(m_bVoffset)
 	{
-		m_vWP.z += m_vPos.z;
+		IF_F(!m_bPos);
+
+		m_vWPtarget.z += m_vPos.z;
 	}
-}
 
-int Waypoint::check(void)
-{
-	IF__(!m_pMavlink,-1);
-
-	return this->MissionBase::check();
+	return this->MissionBase::missionStart();
 }
 
 bool Waypoint::update(void)
 {
-	IF_F(check()<0);
-	updatePos();
-
 	m_vErr = m_vWP - m_vPos;
-	if(m_pDS)
-	{
-		IF_F(m_dSensor < 0.0);
-		m_vErr.z = m_vWP.z - m_dSensor;
-	}
 
 	double d = m_vErr.len();
 	if(d < m_r)
 	{
 		LOG_I("Mission complete");
+		reset();
 		return true;
 	}
 
 	return false;
 }
 
-void Waypoint::updatePos(void)
+void Waypoint::reset(void)
 {
-	m_vPos.x = ((double)m_pMavlink->m_msg.global_position_int.lat) * 1e-7;
-	m_vPos.y = ((double)m_pMavlink->m_msg.global_position_int.lon) * 1e-7;
-	m_vPos.z = ((double)m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
-	if(m_pDS)
-	{
-		m_dSensor = m_pDS->dAvr();
-	}
+	m_bPos = false;
+
+	m_vPos.init();
+	m_vWPtarget.init();
+	m_vErr.init();
+	this->MissionBase::reset();
+}
+
+void Waypoint::setPos(vDouble3& p)
+{
+	m_vPos = p;
+	m_bPos = true;
 }
 
 bool Waypoint::draw(void)
@@ -150,8 +127,6 @@ bool Waypoint::draw(void)
 	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")");
-
-	pWin->addMsg("dSensor = " + f2str(m_dSensor));
 
 	pWin->tabPrev();
 
@@ -171,8 +146,6 @@ bool Waypoint::console(int& iY)
 	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
 				    + f2str(m_vPos.y,7) + ", "
 		            + f2str(m_vPos.z,7) + ")");
-
-	C_MSG("dSensor = " + f2str(m_dSensor));
 
 	return true;
 }

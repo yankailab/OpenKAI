@@ -21,15 +21,17 @@ public:
 	virtual ~MissionBase();
 
 	virtual bool init(void* pKiss);
-	virtual void missionStart(void);
-	virtual int check(void);
+	virtual bool missionStart(void);
 	virtual bool update(void);
+	virtual void reset(void);
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
 public:
 	string m_nextMission;
 
+	uint64_t m_tStart;
+	uint64_t m_tTimeout;
 };
 
 }
