@@ -152,7 +152,7 @@ bool _DNNdetect::detect(void)
 			double conf;
 
 			// Get the value and location of the maximum score
-			minMaxLoc(mScore, 0, &conf, 0, &pClassID);
+			cv::minMaxLoc(mScore, 0, &conf, 0, &pClassID);
 			IF_CONT(conf < m_thr);
 
 			int cX = (int) (pData[0] * mBGR.cols);

@@ -43,17 +43,16 @@ public:
 	bool start(void);
 	bool draw(void);
 	bool console(int& iY);
-	int check(void);
 
 	int getMissionIdx(const string& missionName);
 	MissionBase* getCurrentMission(void);
 	int getCurrentMissionIdx(void);
 	string* getCurrentMissionName(void);
 	int getLastMissionIdx(void);
-	bool transit(const string& nextMissionName);
-	bool transit(int iNextMission);
+	void transit(const string& nextMissionName);
+	void transit(int iNextMission);
 
-public:
+private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -63,7 +62,6 @@ public:
 
 	vector<MISSION_INST> m_vMission;
 	int		m_iMission;
-	bool	m_bMissionInit;
 
 };
 

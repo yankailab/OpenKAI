@@ -2,12 +2,12 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
-	"bLog":0,
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
 	"bConsole":1,
-	"bStdErr":1,
-	"waitKey":100,
+	"bStdErr":0,
+	"waitKey":30,
 }
 
 {
@@ -21,27 +21,38 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"fovW":69.4,
 	"fovH":42.5,
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678",
 	"_pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.1.1.200 port=5678",
+	"_pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.1.1.200 port=5678",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"_pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+	"pipeline":"v4l2src device=/dev/video3 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":3,
+	"w":1280,
+	"h":720,
 }
 
 {
 	"name":"det",
 	"class":"_YOLO",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"mode":"thread",
 	"_modelDir":"/home/ubuntu/dev/model/phantom/",
 	"modelDir":"/home/kai/dev/model/phantom/",
 	"modelFile":"yolov3.cfg",
@@ -59,19 +70,22 @@
 
 {
 	"name":"det",
-	"class":"_Bullseye",
-	"bInst":0,
+	"class":"_DNNdetect",
+	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"abs":90,
-	"scale1":0.25,
-	"scale2":0.0625,
-	"thr1":200,
-	"thr2":255,
-	"minArea":0.001,
+	"modelDir":"/home/kai/dev/DNNmodel/YOLOv3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
+	"classFile":"name.txt",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"bDrawObjClass":1,
+	"thr":0.1,
+	"minArea":0.0,
 	"maxArea":1.0,
 }
 
@@ -118,13 +132,12 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"mode":"thread",
 	"dict":17,
 }
 
@@ -135,10 +148,10 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"/portName":"/dev/ttyS0",
-	"/baud":921600,	
+	"/portName":"/dev/ttyTHS1",
+	"/baud":921600,
 	"portName":"/dev/ttyACM0",
-	"baud":115200,
+	"baud":921600,
 	"_wakeUp":"mavAP",
 }
 
@@ -219,21 +232,37 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"startMission":"search",
+	"startMission":"",
 
 	{
 		"name":"mission",
 
 		{
-			"name":"search",
-			"class":"MissionBase",
 			"bInst":1,
-		}
-		
-		{
 			"name":"follow",
-			"class":"MissionBase",
+			"class":"Loiter",
+			"hdg":0,
+			"tTimeout":300,
+			"nextMission":"rth",
+		}
+		{
 			"bInst":1,
+			"name":"rth",
+			"class":"RTH",
+			"speedV":3.0,
+			"speedH":3.0,
+			"hdg":0,
+			"r":3.0,
+			"nextMission":"land",
+		}		
+		{
+			"bInst":1,
+			"name":"land",
+			"class":"Land",
+			"tag":1,
+			"hdg":0,
+			"speed":1.0,
+			"nextMission":"",
 		}		
 	}
 }
@@ -243,6 +272,7 @@
 	"class":"_AutoPilot",
 	"bInst":1,
 	"FPS":20,
+	"bDraw":1,
 	"Window":"OKview",
 	
 	{
@@ -252,33 +282,58 @@
 			"name":"apBase",
 			"class":"APcopter_base",
 			"bInst":1,
+			"bDraw":1,
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqExtra1":10,
-			"freqPos":10,
+			"freqSendHeartbeat":1,
+			"freqRawSensors":0,
+			"freqExtStat":0,
 			"freqRC":0,
-			"freqExtStat":10,
-			"freqSendHeartbeat":1,			
+			"freqPos":10,
+			"freqExtra1":10,
 		}
-
+		
 		{
-			"name":"apFollow",
-			"class":"APcopter_follow",
+			"name":"apMode",
+			"class":"APcopter_mode",
 			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"APcopter_base":"apBase",
+			"bReset":0,
+			
+			{
+				"bInst":0,
+				"fromApMode":"AUTO",
+				"fromApMissionSeq":"4",
+				"toApMode":"GUIDED",
+				"toMission":"follow",
+			}
+			{
+				"bInst":1,
+				"fromApMode":"GUIDED",
+				"toMission":"follow",
+			}
+		}
+		
+		{
+			"name":"apTarget",
+			"class":"APcopter_target",
+			"bInst":0,
 			"bLog":0,
 			"bDraw":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
 			"APcopter_base":"apBase",
-			"activeMission":["search","follow"],
+			"activeMission":["follow"],
 			"_ObjectBase":"det",
+			"bUseTracker":0,
 			"_TrackerBase1":"tracker1",
 			"_TrackerBase2":"tracker2",
-			"bUseTracker":0,
 			"iClass":0,
-			"APcopter_posCtrlBase":"apPosCtrl",
-			"camYaw":0.0,
+			"APcopter_posCtrl":"apPosCtrl",
 	
 			{
 				"name":"gimbal",
@@ -294,24 +349,17 @@
 
 		{
 			"name":"apPosCtrl",
-			"class":"APcopter_posCtrlTarget",
-			"bInst":1,
+			"class":"APcopter_posCtrl",
+			"bInst":0,
 			"bLog":0,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
 			"activeMission":["follow"],
 			"APcopter_base":"apBase",
-			"yawRate":180,
+			"vYaw":180,
 			"bSetV":1,
+			"bSetP":0,
 			
-			{
-				"name":"target",
-				"x":0.5,
-				"y":0.5,
-				"z":-1.0,
-				"yaw":-1.0,
-			}
-
 			{
 				"name":"roll",
 				"PIDctrl":"PIDroll",
@@ -321,58 +369,41 @@
 				"PIDctrl":"PIDpitch",
 			}
 		}
+		
+		{
+			"name":"apRTH",
+			"class":"APcopter_WP",
+			"bInst":0,
+			"bLog":0,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeMission":["rth"],
+			"APcopter_base":"apBase",
+		}
 
 		{
-			"name":"apLanding",
-			"class":"APcopter_arucoTarget",
+			"name":"apLand",
+			"class":"APcopter_land",
 			"bInst":0,
 			"Window":"OKview",
 			"APcopter_base":"apBase",
-			"_ArUco":"arUco",
-			"_DepthVisionBase":"rs",
 			"_MissionControl":"apMission",
-			"activeState":["rtl"],
-			"orientationX":1,
-			"orientationY":1,
+			"activeMission":["land"],
+			"_ObjectBase":"arUco",
+			"bUseTracker":0,
+			"_TrackerBase1":"tracker1",
+			"_TrackerBase2":"tracker2",			
 			
 			{
 				"name":"gimbal",
-				"pitch":0,
+				"pitch":90,
 				"roll":0,
 				"yaw":0,
-				"stabPitch":0,
-				"stabRoll":0,
+				"stabPitch":1,
+				"stabRoll":1,
 				"stabYaw":0,
 				"mountMode":2,
 			}
-			
-			{
-				"name":"tags",
-				{
-					"tag":0,
-					"angle":0,
-				}
-				{
-					"tag":1,
-					"angle":0,
-				}
-				{
-					"tag":2,
-					"angle":0,
-				}
-				{
-					"tag":3,
-					"angle":0,
-				}
-				{
-					"tag":4,
-					"angle":0,
-				}
-				{
-					"tag":5,
-					"angle":0,
-				}			
-			}	
 		}		
 		
 	}

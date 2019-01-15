@@ -21,7 +21,6 @@ public:
 	virtual ~MissionBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool missionStart(void);
 	virtual bool update(void);
 	virtual void reset(void);
 	virtual bool draw(void);
@@ -31,6 +30,7 @@ public:
 	string m_nextMission;
 
 	uint64_t m_tStart;
+	uint64_t m_tStamp;
 	uint64_t m_tTimeout;
 };
 

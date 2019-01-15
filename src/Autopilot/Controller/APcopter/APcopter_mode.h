@@ -8,6 +8,24 @@
 namespace kai
 {
 
+struct AP_MODE_MISSION
+{
+	int m_fromApMode;
+	int m_fromApMissionSeq;
+
+	int m_toApMode;
+	int m_toMissionIdx;
+
+	void init(void)
+	{
+		m_fromApMode = -1;
+		m_fromApMissionSeq = -1;
+
+		m_toApMode = -1;
+		m_toMissionIdx = -1;
+	}
+};
+
 class APcopter_mode: public ActionBase
 {
 public:
@@ -22,11 +40,9 @@ public:
 
 public:
 	APcopter_base* m_pAP;
+	vector<AP_MODE_MISSION> m_vMM;
 
-	uint64_t m_tStart;
-	uint64_t m_tReturn;
-	uint16_t m_iMissionSeq;
-
+	bool m_bReset;
 };
 
 }

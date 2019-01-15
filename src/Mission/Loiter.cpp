@@ -30,19 +30,12 @@ bool Loiter::init(void* pKiss)
 	return true;
 }
 
-bool Loiter::missionStart(void)
-{
-	IF_F(!m_bPos);
-
-	return this->MissionBase::missionStart();
-}
-
 bool Loiter::update(void)
 {
-	IF_F(m_tStart <= 0);
-	IF_F(m_tTimeout <= 0);
+	this->MissionBase::update();
 
-	if(getTimeUsec() > m_tStart + m_tTimeout)
+	IF_F(m_tTimeout <= 0);
+	if(m_tStamp > m_tStart + m_tTimeout)
 	{
 		LOG_I("Mission complete");
 		reset();
@@ -54,7 +47,6 @@ bool Loiter::update(void)
 
 void Loiter::reset(void)
 {
-	m_bPos = false;
 	m_vPos.init();
 	this->MissionBase::reset();
 }
@@ -62,7 +54,6 @@ void Loiter::reset(void)
 void Loiter::setPos(vDouble3& p)
 {
 	m_vPos = p;
-	m_bPos = true;
 }
 
 bool Loiter::draw(void)
@@ -76,6 +67,10 @@ bool Loiter::draw(void)
 	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")");
+
+	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	tOut = constrain(tOut, 0, INT_MAX);
+	pWin->addMsg("Timeout = " + i2str(tOut));
 
 	pWin->tabPrev();
 
@@ -91,6 +86,10 @@ bool Loiter::console(int& iY)
 	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
 				    + f2str(m_vPos.y,7) + ", "
 		            + f2str(m_vPos.z,7) + ")");
+
+	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	tOut = constrain(tOut, 0, INT_MAX);
+	C_MSG("Timeout = " + i2str(tOut));
 
 	return true;
 }

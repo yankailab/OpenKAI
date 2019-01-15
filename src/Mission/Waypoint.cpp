@@ -49,40 +49,39 @@ bool Waypoint::init(void* pKiss)
 	return true;
 }
 
-bool Waypoint::missionStart(void)
-{
-	m_vWPtarget = m_vWP;
-
-	if(m_bHoffset)
-	{
-		IF_F(!m_bPos);
-
-		GPS gps;
-		LL_POS pLL;
-		pLL.m_lat = m_vPos.x;
-		pLL.m_lng = m_vPos.y;
-		pLL.m_hdg = m_hdg;
-		gps.update(pLL);
-
-		UTM_POS pUTM = gps.getPos(m_vWP);
-		pLL = gps.UTM2LL(pUTM);
-
-		m_vWPtarget.x = pLL.m_lat;
-		m_vWPtarget.y = pLL.m_lng;
-	}
-
-	if(m_bVoffset)
-	{
-		IF_F(!m_bPos);
-
-		m_vWPtarget.z += m_vPos.z;
-	}
-
-	return this->MissionBase::missionStart();
-}
-
 bool Waypoint::update(void)
 {
+	if(!m_bWPset)
+	{
+		m_vWPtarget = m_vWP;
+
+		if(m_bHoffset)
+		{
+			IF_F(!m_vPos.sum()<=0.0);
+
+			GPS gps;
+			LL_POS pLL;
+			pLL.m_lat = m_vPos.x;
+			pLL.m_lng = m_vPos.y;
+			pLL.m_hdg = m_hdg;
+			gps.update(pLL);
+
+			UTM_POS pUTM = gps.getPos(m_vWP);
+			pLL = gps.UTM2LL(pUTM);
+
+			m_vWPtarget.x = pLL.m_lat;
+			m_vWPtarget.y = pLL.m_lng;
+		}
+
+		if(m_bVoffset)
+		{
+			IF_F(!m_vPos.sum()<=0.0);
+			m_vWPtarget.z += m_vPos.z;
+		}
+
+		m_bWPset = true;
+	}
+
 	m_vErr = m_vWP - m_vPos;
 
 	double d = m_vErr.len();
@@ -98,18 +97,16 @@ bool Waypoint::update(void)
 
 void Waypoint::reset(void)
 {
-	m_bPos = false;
-
+	m_bWPset = false;
+	m_vErr.init();
 	m_vPos.init();
 	m_vWPtarget.init();
 	m_vErr.init();
-	this->MissionBase::reset();
 }
 
 void Waypoint::setPos(vDouble3& p)
 {
 	m_vPos = p;
-	m_bPos = true;
 }
 
 bool Waypoint::draw(void)

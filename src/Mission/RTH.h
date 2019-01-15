@@ -20,19 +20,15 @@ public:
 	virtual ~RTH();
 
 	bool init(void* pKiss);
-	bool missionStart(void);
 	bool update(void);
-	void reset(void);
 	bool draw(void);
 	bool console(int& iY);
 
+	void reset(void);
 	void setHome(vDouble3& p);
 	void setPos(vDouble3& p);
 
-public:
-	bool	m_bHome;
-	bool	m_bPos;
-
+private:
 	vDouble3 m_vHome;		//lat, lon, alt
 	vDouble3 m_vPos;
 	vDouble3 m_vErr;

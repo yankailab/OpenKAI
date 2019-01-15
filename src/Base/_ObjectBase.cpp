@@ -95,7 +95,7 @@ bool _ObjectBase::init(void* pKiss)
 	}
 	else
 	{
-		string* pClassList = new string[OBJECT_N_CLASS];
+		string pClassList[OBJECT_N_CLASS];
 		m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
 
 		for(int i=0; i<m_nClass; i++)
@@ -105,8 +105,6 @@ bool _ObjectBase::init(void* pKiss)
 			oc.m_name = pClassList[i];
 			m_vClass.push_back(oc);
 		}
-
-		DEL(pClassList);
 	}
 
 	//draw

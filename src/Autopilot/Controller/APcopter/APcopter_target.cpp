@@ -209,7 +209,7 @@ bool APcopter_target::find(void)
 
 		if(m_pTnow->trackState() != track_update)
 		{
-			m_pMC->transit("search");
+//			m_pMC->transit("search");
 			return false;
 		}
 
@@ -219,7 +219,7 @@ bool APcopter_target::find(void)
 	{
 		if(!tO)
 		{
-			m_pMC->transit("search");
+//			m_pMC->transit("search");
 			return false;
 		}
 
@@ -228,7 +228,7 @@ bool APcopter_target::find(void)
 
 	m_vTargetPos.x = bb.midX();
 	m_vTargetPos.y = bb.midY();
-	m_pMC->transit("follow");
+//	m_pMC->transit("follow");
 
 	return true;
 }

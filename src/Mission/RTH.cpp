@@ -12,7 +12,6 @@ namespace kai
 
 RTH::RTH()
 {
-	m_vErr.init();
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
@@ -38,18 +37,12 @@ bool RTH::init(void* pKiss)
 	return true;
 }
 
-bool RTH::missionStart(void)
-{
-	IF_F(!m_bHome);
-	IF_F(!m_bPos);
-
-	return this->MissionBase::missionStart();
-}
-
 bool RTH::update(void)
 {
-	m_vErr = m_vHome - m_vPos;
+	IF_F(m_vPos.sum()<=0.0);
+	IF_F(m_vHome.sum()<=0.0);
 
+	m_vErr = m_vHome - m_vPos;
 	double d = m_vErr.len();
 	if(d < m_r)
 	{
@@ -63,24 +56,19 @@ bool RTH::update(void)
 
 void RTH::reset(void)
 {
-	m_bHome = false;
-	m_bPos = false;
-
+	m_vErr.init();
 	m_vHome.init();
 	m_vPos.init();
-	this->MissionBase::reset();
 }
 
 void RTH::setHome(vDouble3& p)
 {
 	m_vHome = p;
-	m_bHome = true;
 }
 
 void RTH::setPos(vDouble3& p)
 {
 	m_vPos = p;
-	m_bPos = true;
 }
 
 bool RTH::draw(void)

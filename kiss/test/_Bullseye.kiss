@@ -20,17 +20,28 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":3,
+	"deviceID":0,
 	"w":1280,
 	"h":720,
+	"fovW":60,
+	"fovH":60,
 }
 
 {
-	"name":"arUco",
-	"class":"_ArUco",
+	"name":"det",
+	"class":"_Bullseye",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":0,
 	"FPS":30,
-	"bInst":1,
 	"Window":"OKview",
 	"_VisionBase":"camera",
-	"dict":17,
+	"abs":90,
+	"scale1":0.25,
+	"scale2":0.0625,
+	"thr1":200,
+	"thr2":255,
+	"minArea":0.001,
+	"maxArea":1.0,
 }
+

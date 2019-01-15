@@ -76,8 +76,9 @@ public:
 
 	void setApMode(uint32_t iMode);
 	uint32_t getApMode(void);
+	string getApModeName(void);
+	int getApModeByName(const string& name);
 	bool bApModeChanged(void);
-	string apModeName(void);
 
 	void setApArm(bool bArm);
 	bool getApArm(void);

@@ -21,7 +21,6 @@ public:
 	virtual ~Waypoint();
 
 	bool init(void* pKiss);
-	bool missionStart(void);
 	bool update(void);
 	void reset(void);
 	bool draw(void);
@@ -30,7 +29,7 @@ public:
 	void setPos(vDouble3& p);
 
 public:
-	bool m_bPos;
+	bool m_bWPset;
 
 	bool m_bHoffset;
 	bool m_bVoffset;

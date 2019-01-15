@@ -127,11 +127,22 @@ uint32_t APcopter_base::getApMode(void)
 	return m_apMode;
 }
 
-string APcopter_base::apModeName(void)
+string APcopter_base::getApModeName(void)
 {
 	if(m_apMode >= AP_N_CUSTOM_MODE)return "UNDEFINED";
 
 	return custom_mode_name[m_apMode];
+}
+
+int APcopter_base::getApModeByName(const string& name)
+{
+	for(int i=0; i<AP_N_CUSTOM_MODE; i++)
+	{
+		IF_CONT(custom_mode_name[i] != name);
+		return i;
+	}
+
+	return -1;
 }
 
 bool APcopter_base::bApModeChanged(void)
@@ -192,7 +203,7 @@ bool APcopter_base::draw(void)
 
 	pWin->tabNext();
 
-	pWin->addMsg("apMode = " + i2str(m_apMode) + ": " + apModeName());
+	pWin->addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName());
 
 	pWin->addMsg("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
 			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
@@ -205,6 +216,11 @@ bool APcopter_base::draw(void)
 
 	pWin->addMsg("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
 		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
+
+	pWin->addMsg("Home: lat=" + f2str(m_vHomePos.x, 7)
+				 + ", lon=" + f2str(m_vHomePos.y, 7)
+				 + ", alt=" + f2str(m_vHomePos.z, 7)
+				 );
 
 	if(m_freqRawSensors > 0)
 	{
@@ -233,7 +249,7 @@ bool APcopter_base::console(int& iY)
 
 	string msg;
 
-	C_MSG("apMode = " + i2str(m_apMode) + ": " + apModeName());
+	C_MSG("apMode = " + i2str(m_apMode) + ": " + getApModeName());
 
 	C_MSG("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
 			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
@@ -246,6 +262,11 @@ bool APcopter_base::console(int& iY)
 
 	C_MSG("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
 		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
+
+	C_MSG("Home: lat=" + f2str(m_vHomePos.x, 7)
+				 + ", lon=" + f2str(m_vHomePos.y, 7)
+				 + ", alt=" + f2str(m_vHomePos.z, 7)
+				 );
 
 	if(m_freqRawSensors > 0)
 	{

@@ -119,7 +119,7 @@ bool _DNNclassifier::classify(void)
 
     Point pClassID;
     double conf;
-    minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
 
 	OBJECT obj;
 	obj.init();

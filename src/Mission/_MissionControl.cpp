@@ -13,7 +13,6 @@ namespace kai
 _MissionControl::_MissionControl()
 {
 	m_iMission = -1;
-	m_bMissionInit = false;
 }
 
 _MissionControl::~_MissionControl()
@@ -40,11 +39,6 @@ bool _MissionControl::init(void* pKiss)
 	while (pItr[i])
 	{
 		Kiss* pKM = pItr[i++];
-
-		bool bInst = false;
-		pKM->v("bInst", &bInst);
-		IF_CONT(!bInst);
-
 		M.init();
 
 		//Add action modules below
@@ -90,37 +84,34 @@ bool _MissionControl::start(void)
 	return true;
 }
 
-int _MissionControl::check(void)
-{
-	return 0;
-}
-
 void _MissionControl::update(void)
 {
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(check() < 0);
-		IF_CONT(m_iMission < 0);
-		IF_CONT(m_iMission >= m_vMission.size());
-
-		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
-
-		if(!m_bMissionInit)
+		if(m_iMission >=0 && m_iMission < m_vMission.size())
 		{
-			m_bMissionInit = pMission->missionStart();
-			IF_CONT(!m_bMissionInit);
-		}
-
-		if(pMission->update())
-		{
-			transit(pMission->m_nextMission);
-			m_bMissionInit = false;
+			MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+			if(pMission->update())
+			{
+				transit(pMission->m_nextMission);
+			}
 		}
 
 		this->autoFPSto();
 	}
+}
+
+void _MissionControl::transit(const string& nextMissionName)
+{
+	int iNext = getMissionIdx(nextMissionName);
+	transit(iNext);
+}
+
+void _MissionControl::transit(int iNextMission)
+{
+	m_iMission = iNextMission;
 }
 
 int _MissionControl::getMissionIdx(const string& missionName)
@@ -132,21 +123,6 @@ int _MissionControl::getMissionIdx(const string& missionName)
 	}
 
 	return -1;
-}
-
-bool _MissionControl::transit(const string& nextMissionName)
-{
-	int iNext = getMissionIdx(nextMissionName);
-	return transit(iNext);
-}
-
-bool _MissionControl::transit(int iNextMission)
-{
-	m_iMission = iNextMission;
-	IF_F(m_iMission < 0);
-	IF_F(m_iMission >= m_vMission.size());
-
-	return true;
 }
 
 MissionBase* _MissionControl::getCurrentMission(void)

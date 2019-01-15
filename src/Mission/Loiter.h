@@ -20,7 +20,6 @@ public:
 	virtual ~Loiter();
 
 	bool init(void* pKiss);
-	bool missionStart(void);
 	bool update(void);
 	void reset(void);
 	bool draw(void);
@@ -29,8 +28,6 @@ public:
 	void setPos(vDouble3& p);
 
 private:
-	bool	m_bPos;
-
 	vDouble3 m_vPos;	//lat, lon, alt
 	double	 m_hdg;
 };

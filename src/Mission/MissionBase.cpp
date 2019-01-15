@@ -13,9 +13,9 @@ namespace kai
 MissionBase::MissionBase()
 {
 	m_nextMission = "";
+	m_tStart = 0;
+	m_tStamp = 0;
 	m_tTimeout = 0;
-
-	reset();
 }
 
 MissionBase::~MissionBase()
@@ -28,19 +28,21 @@ bool MissionBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,nextMission);
-	KISSm(pK,tTimeout);
 
-	return true;
-}
+	if(pK->v("tTimeout",&m_tTimeout))
+	{
+		m_tTimeout *= USEC_1SEC;
+	}
 
-bool MissionBase::missionStart(void)
-{
-	m_tStart = getTimeUsec();
 	return true;
 }
 
 bool MissionBase::update(void)
 {
+	m_tStamp = getTimeUsec();
+	if(m_tStart <= 0)
+		m_tStart = m_tStamp;
+
 	return false;
 }
 
