@@ -45,8 +45,10 @@ bool _YOLO::init(void* pKiss)
 	m_nClass = yoloNClass();
 	for (int i = 0; i < m_nClass; i++)
 	{
-		m_pClassStatis[i].init();
-		m_pClassStatis[i].m_name = yoloGetClassName(i);
+		OBJECT_CLASS oc;
+		oc.init();
+		oc.m_name = yoloGetClassName(i);
+		m_vClass.push_back(oc);
 	}
 
 	return true;

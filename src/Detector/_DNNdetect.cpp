@@ -132,7 +132,9 @@ bool _DNNdetect::detect(void)
 
 	// Runs the forward pass to get output of the output layers
 	vector<Mat> vO;
+#if CV_VERSION_MAJOR > 3
 	m_net.forward(vO, m_vLayerName);
+#endif
 
 	// Remove the bounding boxes with low confidence
 	vector<int> vClassID;

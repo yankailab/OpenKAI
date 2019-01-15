@@ -206,27 +206,23 @@ bool APcopter_takePhoto::draw(void)
 
 	string msg = *this->getName() + ": ";
 
-	if(!isActive())
+	if(!bActive())
 	{
-		msg += "Inactive";
-		pWin->addMsg(msg);
-		msg = "";
+		pWin->addMsg("Inactive");
 	}
 
 	if(m_bAuto)
-		msg += "AUTO INTERVAL";
+	{
+		pWin->addMsg("AUTO INTERVAL");
+	}
 	else
-		msg += "MANUAL";
-	pWin->addMsg(msg);
+	{
+		pWin->addMsg("MANUAL");
+	}
 
-	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
-	pWin->addMsg(msg);
-
-	msg = "iTake = " + i2str(m_iTake);
-	pWin->addMsg(msg);
-
-	msg = "Dir = " + m_subDir;
-	pWin->addMsg(msg);
+	pWin->addMsg("Inteval = " + i2str(m_tInterval) + " Hz");
+	pWin->addMsg("iTake = " + i2str(m_iTake));
+	pWin->addMsg("Dir = " + m_subDir);
 
 	return true;
 }
@@ -238,37 +234,23 @@ bool APcopter_takePhoto::console(int& iY)
 
 	string msg;
 
-	if(!isActive())
+	if(!bActive())
 	{
-		msg += "Inactive";
-		COL_MSG;
-		iY++;
-		mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-		msg = "";
+		C_MSG("Inactive");
 	}
 
 	if(m_bAuto)
-		msg += "AUTO INTERVAL";
+	{
+		C_MSG("AUTO INTERVAL");
+	}
 	else
-		msg += "MANUAL";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	{
+		C_MSG("MANUAL");
+	}
 
-	msg = "Inteval = " + i2str(m_tInterval) + " Hz";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	msg = "iTake = " + i2str(m_iTake);
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	msg = "Dir = " + m_subDir;
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG("Inteval = " + i2str(m_tInterval) + " Hz");
+	C_MSG("iTake = " + i2str(m_iTake));
+	C_MSG("Dir = " + m_subDir);
 
 	return true;
 }
