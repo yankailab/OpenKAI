@@ -17,7 +17,7 @@ OPTION(USE_CAFFE "Use Caffe" OFF)
 OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
-find_package(OpenCV 4 REQUIRED)
+# find_package(OpenCV 4 REQUIRED)
 
 set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
@@ -28,7 +28,7 @@ set(OpenCV_include "/usr/include" CACHE STRING "")
 set(OpenCV_lib "/usr/lib" CACHE STRING "")
 set(OpenKAI_libDir ${OpenKAI_libDir} ${OpenCV_lib})
 set(OpenKAI_include ${OpenKAI_include} ${OpenCV_include})
-set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_objdetect opencv_features2d)
+set(OpenKAI_lib ${OpenKAI_lib} opencv_core opencv_imgcodecs opencv_highgui opencv_imgproc opencv_videoio opencv_calib3d opencv_objdetect opencv_features2d opencv_dnn)
 
 if(USE_CUDA)
   add_definitions(-DUSE_CUDA)

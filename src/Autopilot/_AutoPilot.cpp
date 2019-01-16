@@ -52,6 +52,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(APcopter_posCtrl);
 		ADD_ACTION(APcopter_mode);
 		ADD_ACTION(APcopter_WP);
+		ADD_ACTION(APcopter_RTH);
 
 		ADD_ACTION(AProver_base);
 

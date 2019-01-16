@@ -22,8 +22,8 @@ public:
 	bool console(int& iY);
 
 public:
-
+	double m_altLanded;
+	double m_apAlt;
 };
-
 }
 #endif

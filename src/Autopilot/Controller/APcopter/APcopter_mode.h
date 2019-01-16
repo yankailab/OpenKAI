@@ -41,8 +41,6 @@ public:
 public:
 	APcopter_base* m_pAP;
 	vector<AP_MODE_MISSION> m_vMM;
-
-	bool m_bReset;
 };
 
 }

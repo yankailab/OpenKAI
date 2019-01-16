@@ -6,7 +6,6 @@ namespace kai
 APcopter_mode::APcopter_mode()
 {
 	m_pAP = NULL;
-	m_bReset = false;
 }
 
 APcopter_mode::~APcopter_mode()
@@ -17,8 +16,6 @@ bool APcopter_mode::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-
-	KISSm(pK,bReset);
 
 	string iName;
 	iName = "";
@@ -91,13 +88,8 @@ void APcopter_mode::update(void)
 			m_pMC->transit(pMM->m_toMissionIdx);
 		}
 
-		LOG_I("Transit: "+i2str(pMM->m_toMissionIdx));
+		LOG_I("Transit to Mission: "+i2str(pMM->m_toMissionIdx));
 		return;
-	}
-
-	if(m_bReset)
-	{
-		m_pMC->transit(-1);
 	}
 }
 

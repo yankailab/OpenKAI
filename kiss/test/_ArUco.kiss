@@ -20,7 +20,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":3,
+	"deviceID":1,
 	"w":1280,
 	"h":720,
 }
@@ -30,6 +30,7 @@
 	"class":"_ArUco",
 	"FPS":30,
 	"bInst":1,
+	"bDraw":1,
 	"Window":"OKview",
 	"_VisionBase":"camera",
 	"dict":17,

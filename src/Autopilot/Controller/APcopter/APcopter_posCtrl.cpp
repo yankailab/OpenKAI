@@ -16,6 +16,7 @@ APcopter_posCtrl::APcopter_posCtrl()
 
 	m_bSetV = true;
 	m_bSetP = false;
+	m_bSetON = false;
 }
 
 APcopter_posCtrl::~APcopter_posCtrl()
@@ -31,35 +32,19 @@ bool APcopter_posCtrl::init(void* pKiss)
 	KISSm(pK,bSetV);
 	KISSm(pK,bSetP);
 
-	Kiss* pR;
 	string iName;
 
-	pR = pK->o("roll");
-	if(!pR->empty())
-	{
-		iName = "";
-		pR->v("PIDctrl", &iName);
-		m_pRoll = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pRoll, iName + ": not found");
-	}
+	iName = "";
+	pK->v("PIDroll", &iName);
+	m_pRoll = (PIDctrl*) (pK->root()->getChildInst(iName));
 
-	pR = pK->o("pitch");
-	if(!pR->empty())
-	{
-		iName = "";
-		pR->v("PIDctrl", &iName);
-		m_pPitch = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pPitch, iName + ": not found");
-	}
+	iName = "";
+	pK->v("PIDpitch", &iName);
+	m_pPitch = (PIDctrl*) (pK->root()->getChildInst(iName));
 
-	pR = pK->o("alt");
-	if(!pR->empty())
-	{
-		iName = "";
-		pR->v("PIDctrl", &iName);
-		m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pAlt, iName + ": not found");
-	}
+	iName = "";
+	pK->v("PIDalt", &iName);
+	m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
 
 	//link
 	iName = "";
@@ -82,22 +67,23 @@ void APcopter_posCtrl::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!bActive())
+	if(!bActive() || !m_bSetON)
 	{
-		releaseCtrl();
 		clear();
 		return;
 	}
 
 	double p=0,r=0,a=0;
 	if(m_pRoll)
-		r = m_pRoll->update(m_vMyPos.x, m_vTargetPos.x, m_tStamp);
+		r = m_pRoll->update(m_vTargetPos.x, m_vMyPos.x, m_tStamp);
 
 	if(m_pPitch)
-		p = m_pPitch->update(m_vMyPos.y, m_vTargetPos.y, m_tStamp);
+		p = m_pPitch->update(m_vTargetPos.y, m_vMyPos.y, m_tStamp);
 
 	if(m_pAlt)
-		a = m_pAlt->update(m_vMyPos.z, m_vTargetPos.z, m_tStamp);
+		a = m_pAlt->update(m_vTargetPos.z, m_vMyPos.z, m_tStamp);
+	else
+		a = m_vTargetPos.z;
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_spt.yaw_rate = (float)m_vYaw * DEG_RAD;
@@ -107,17 +93,17 @@ void APcopter_posCtrl::update(void)
 
 	if(m_bSetV)
 	{
-		m_spt.vx = p;			//forward
-		m_spt.vy = r;			//right
-		m_spt.vz = a;			//down
+		m_spt.vx = (float)p;		//forward
+		m_spt.vy = (float)r;		//right
+		m_spt.vz = (float)a;		//down
 		m_spt.type_mask &= 0b1111111111000111;
 	}
 
 	if(m_bSetP)
 	{
-		m_spt.x = p;			//forward
-		m_spt.y = r;			//right
-		m_spt.z = a;			//down
+		m_spt.x = (float)p;			//forward
+		m_spt.y = (float)r;			//right
+		m_spt.z = (float)a;			//down
 		m_spt.type_mask &= 0b1111111111111000;
 	}
 
@@ -128,6 +114,11 @@ void APcopter_posCtrl::setPos(vDouble4& vMyPos, vDouble4& vTargetPos)
 {
 	m_vMyPos = vMyPos;
 	m_vTargetPos = vTargetPos;
+}
+
+void APcopter_posCtrl::setON(bool bON)
+{
+	m_bSetON = bON;
 }
 
 void APcopter_posCtrl::clear(void)
@@ -151,7 +142,7 @@ void APcopter_posCtrl::releaseCtrl(void)
 	m_spt.vx = 0;
 	m_spt.vy = 0;
 	m_spt.vz = 0;
-	m_spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
+	m_spt.yaw = (float)m_vTargetPos.w * DEG_RAD;
 	m_spt.yaw_rate = (float)m_vYaw * DEG_RAD;
 	m_spt.type_mask = 0b0000000111000000;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
@@ -168,7 +159,7 @@ bool APcopter_posCtrl::draw(void)
 	pWin->addMsg(*this->getName());
 	pWin->tabNext();
 
-	if(!bActive())
+	if(!bActive() || !m_bSetON)
 	{
 		pWin->addMsg("Inactive");
 	}
@@ -211,7 +202,7 @@ bool APcopter_posCtrl::console(int& iY)
 
 	string msg;
 
-	if(!bActive())
+	if(!bActive() || !m_bSetON)
 	{
 		C_MSG("Inactive");
 	}

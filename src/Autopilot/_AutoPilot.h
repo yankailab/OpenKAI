@@ -15,6 +15,7 @@
 #include "Controller/APcopter/APcopter_slam.h"
 #include "Controller/APcopter/APcopter_target.h"
 #include "Controller/APcopter/APcopter_WP.h"
+#include "Controller/APcopter/APcopter_RTH.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/HM/HM_avoid.h"
 #include "Controller/HM/HM_base.h"

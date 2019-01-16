@@ -24,6 +24,7 @@ public:
 	void setPos(vDouble4& vMyPos, vDouble4& vTargetPos);
 	void clear(void);
 	void releaseCtrl(void);
+	void setON(bool bON);
 
 public:
 	APcopter_base* m_pAP;
@@ -37,6 +38,7 @@ public:
 
 	bool	m_bSetV;
 	bool	m_bSetP;
+	bool	m_bSetON;
 	mavlink_set_position_target_local_ned_t m_spt;
 
 };

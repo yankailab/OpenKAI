@@ -29,7 +29,8 @@ public:
 	void setPos(vDouble3& p);
 
 public:
-	bool m_bWPset;
+	bool m_bSetWP;
+	bool m_bSetPos;
 
 	bool m_bHoffset;
 	bool m_bVoffset;

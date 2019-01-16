@@ -12,6 +12,7 @@ namespace kai
 
 RTH::RTH()
 {
+	m_alt = 20.0;
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
@@ -29,6 +30,7 @@ bool RTH::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	KISSm(pK,alt);
 	KISSm(pK,speedV);
 	KISSm(pK,speedH);
 	KISSm(pK,hdg);
@@ -39,8 +41,7 @@ bool RTH::init(void* pKiss)
 
 bool RTH::update(void)
 {
-	IF_F(m_vPos.sum()<=0.0);
-	IF_F(m_vHome.sum()<=0.0);
+	IF_F(!m_bSetHome);
 
 	m_vErr = m_vHome - m_vPos;
 	double d = m_vErr.len();
@@ -51,6 +52,7 @@ bool RTH::update(void)
 		return true;
 	}
 
+	LOG_I("Err = " + f2str(d));
 	return false;
 }
 
@@ -59,11 +61,13 @@ void RTH::reset(void)
 	m_vErr.init();
 	m_vHome.init();
 	m_vPos.init();
+	m_bSetHome = false;
 }
 
 void RTH::setHome(vDouble3& p)
 {
 	m_vHome = p;
+	m_bSetHome = true;
 }
 
 void RTH::setPos(vDouble3& p)

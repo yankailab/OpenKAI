@@ -44,11 +44,11 @@ const string custom_mode_name[] =
 "LOITER",
 "RTL",
 "CIRCLE",
-"UNDEFINED"
+"UNDEFINED",
 "LAND",
-"UNDEFINED"
+"UNDEFINED",
 "DRIFT",
-"UNDEFINED"
+"UNDEFINED",
 "SPORT",
 "FLIP",
 "AUTOTUNE",

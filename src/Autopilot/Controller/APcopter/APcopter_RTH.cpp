@@ -1,26 +1,24 @@
-#include "APcopter_WP.h"
+#include "APcopter_RTH.h"
 
 namespace kai
 {
 
-APcopter_WP::APcopter_WP()
+APcopter_RTH::APcopter_RTH()
 {
 	m_pAP = NULL;
-	m_dZdefault = 0.0;
-	m_kZsensor = 1.0;
 	m_pDS = NULL;
+	m_kZsensor = 1.0;
 }
 
-APcopter_WP::~APcopter_WP()
+APcopter_RTH::~APcopter_RTH()
 {
 }
 
-bool APcopter_WP::init(void* pKiss)
+bool APcopter_RTH::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,dZdefault);
 	KISSm(pK,kZsensor);
 
 	string iName;
@@ -37,7 +35,7 @@ bool APcopter_WP::init(void* pKiss)
 	return true;
 }
 
-int APcopter_WP::check(void)
+int APcopter_RTH::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -45,34 +43,43 @@ int APcopter_WP::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_WP::update(void)
+void APcopter_RTH::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
-	Waypoint* pWP = (Waypoint*)m_pMC->getCurrentMission();
-	NULL_(pWP);
+	RTH* pRTH = (RTH*)m_pMC->getCurrentMission();
+	NULL_(pRTH);
 
-	double alt = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	vDouble3 p;
+
+	IF_(!m_pAP->homePos(&p));
+	p.z = pRTH->m_alt;
+	pRTH->setHome(p);
+
+	p.x = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.lat) * 1e-7;
+	p.y = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.lon) * 1e-7;
+	p.z = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	pRTH->setPos(p);
+
+	double alt = p.z;
 	if(m_pDS)
 	{
 		double dS = m_pDS->dAvr();
 		if(dS > 0)
-			alt += (pWP->m_vWP.z - dS) * m_kZsensor;
-		else
-			alt += m_dZdefault;
+			alt += (pRTH->m_vHome.z - dS) * m_kZsensor;
 	}
 	else
 	{
-		alt = pWP->m_vWP.z;
+		alt = pRTH->m_vHome.z;
 	}
 
 	mavlink_set_position_target_global_int_t spt;
 	spt.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
 
 	//target position
-	spt.lat_int = pWP->m_vWP.x*1e7;
-	spt.lon_int = pWP->m_vWP.y*1e7;
+	spt.lat_int = pRTH->m_vHome.x*1e7;
+	spt.lon_int = pRTH->m_vHome.y*1e7;
 	spt.alt = (float)alt;
 
 	//velocity, ignored at the moment
@@ -83,15 +90,14 @@ void APcopter_WP::update(void)
 	//heading
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
 	spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
-	if(pWP->m_hdg >= 0)
-		spt.yaw = (float)pWP->m_hdg * DEG_RAD;
+	if(pRTH->m_hdg >= 0)
+		spt.yaw = (float)pRTH->m_hdg * DEG_RAD;
 
 	spt.type_mask = 0b0000000111111000;
-
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);
 }
 
-bool APcopter_WP::draw(void)
+bool APcopter_RTH::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -104,14 +110,14 @@ bool APcopter_WP::draw(void)
 	if(!bActive())
 		pWin->addMsg("Inactive");
 	else
-		pWin->addMsg("Waypoint");
+		pWin->addMsg("RTH");
 
 	pWin->tabPrev();
 
 	return true;
 }
 
-bool APcopter_WP::console(int& iY)
+bool APcopter_RTH::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
@@ -124,7 +130,7 @@ bool APcopter_WP::console(int& iY)
 	}
 	else
 	{
-		C_MSG("Waypoint");
+		C_MSG("RTH");
 	}
 
 	return true;

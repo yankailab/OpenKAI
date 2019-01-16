@@ -22,7 +22,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":3,
+	"deviceID":1,
 	"w":1280,
 	"h":720,
 	"fovW":60,

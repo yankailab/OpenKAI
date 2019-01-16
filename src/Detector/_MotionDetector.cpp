@@ -15,8 +15,6 @@ namespace kai
 _MotionDetector::_MotionDetector()
 {
 	m_pVision = NULL;
-	m_minArea = DBL_MIN;
-	m_maxArea = DBL_MAX;
 	m_algorithm = "";
 	m_learningRate = -1;
 }

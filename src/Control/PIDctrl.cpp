@@ -13,9 +13,9 @@ namespace kai
 PIDctrl::PIDctrl()
 {
 	m_dT = 0;
-	m_oMin = DBL_MIN;
+	m_oMin = -DBL_MAX;
 	m_oMax = DBL_MAX;
-	m_vMin = DBL_MIN;
+	m_vMin = -DBL_MAX;
 	m_vMax = DBL_MAX;
 	m_K = 1.0;
 	m_P = 0;

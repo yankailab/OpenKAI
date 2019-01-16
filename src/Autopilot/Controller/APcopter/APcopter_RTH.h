@@ -1,20 +1,20 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_WP_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_WP_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_RTH_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_RTH_H_
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../../Mission/Waypoint.h"
+#include "../../../Mission/RTH.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 
 namespace kai
 {
 
-class APcopter_WP: public ActionBase
+class APcopter_RTH: public ActionBase
 {
 public:
-	APcopter_WP();
-	~APcopter_WP();
+	APcopter_RTH();
+	~APcopter_RTH();
 
 	virtual	bool init(void* pKiss);
 	virtual bool draw(void);
@@ -26,8 +26,8 @@ public:
 	APcopter_base* 	m_pAP;
 	_DistSensorBase* m_pDS;
 
-	double	m_dZdefault;
 	double	m_kZsensor;
+
 };
 
 }

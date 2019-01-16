@@ -51,13 +51,13 @@ bool Waypoint::init(void* pKiss)
 
 bool Waypoint::update(void)
 {
-	if(!m_bWPset)
+	if(!m_bSetWP)
 	{
 		m_vWPtarget = m_vWP;
 
 		if(m_bHoffset)
 		{
-			IF_F(!m_vPos.sum()<=0.0);
+			IF_F(!m_bSetPos);
 
 			GPS gps;
 			LL_POS pLL;
@@ -75,15 +75,14 @@ bool Waypoint::update(void)
 
 		if(m_bVoffset)
 		{
-			IF_F(!m_vPos.sum()<=0.0);
+			IF_F(!m_bSetPos);
 			m_vWPtarget.z += m_vPos.z;
 		}
 
-		m_bWPset = true;
+		m_bSetWP = true;
 	}
 
 	m_vErr = m_vWP - m_vPos;
-
 	double d = m_vErr.len();
 	if(d < m_r)
 	{
@@ -92,12 +91,15 @@ bool Waypoint::update(void)
 		return true;
 	}
 
+	LOG_I("Err = " + f2str(d));
+
 	return false;
 }
 
 void Waypoint::reset(void)
 {
-	m_bWPset = false;
+	m_bSetWP = false;
+	m_bSetPos = false;
 	m_vErr.init();
 	m_vPos.init();
 	m_vWPtarget.init();
@@ -107,6 +109,7 @@ void Waypoint::reset(void)
 void Waypoint::setPos(vDouble3& p)
 {
 	m_vPos = p;
+	m_bSetPos = true;
 }
 
 bool Waypoint::draw(void)

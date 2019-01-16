@@ -12,9 +12,10 @@ namespace kai
 
 Land::Land()
 {
-	m_tag = -1;
-	m_hdg = -1.0;
+	m_tag = 0;
+	m_hdg = 0.0;
 	m_speed = 1.0;
+	reset();
 }
 
 Land::~Land()
@@ -35,7 +36,24 @@ bool Land::init(void* pKiss)
 
 bool Land::update(void)
 {
+	if(m_bLanded)
+	{
+		reset();
+		LOG_I("Landed");
+		return true;
+	}
+
 	return false;
+}
+
+void Land::reset(void)
+{
+	m_bLanded = false;
+}
+
+void Land::setLanded(bool bLanded)
+{
+	m_bLanded = bLanded;
 }
 
 bool Land::draw(void)

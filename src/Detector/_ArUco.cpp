@@ -16,14 +16,14 @@ _ArUco::_ArUco()
 {
 	m_pVision = NULL;
 	m_dict = aruco::DICT_4X4_50;//DICT_APRILTAG_16h5;
-	m_minArea = DBL_MIN;
+	m_minArea = -DBL_MAX;
 	m_maxArea = DBL_MAX;
-
+	m_maxW = DBL_MAX;
+	m_maxH = DBL_MAX;
 }
 
 _ArUco::~_ArUco()
 {
-
 }
 
 bool _ArUco::init(void* pKiss)
@@ -80,6 +80,9 @@ void _ArUco::detect(void)
 	Mat m = *m_pVision->BGR()->m();
 	IF_(m.empty());
 
+	double bW = 1.0/(double)m.cols;
+	double bH = 1.0/(double)m.rows;
+
     std::vector<int> vID;
     std::vector<std::vector<cv::Point2f> > vvCorner;
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
@@ -87,7 +90,7 @@ void _ArUco::detect(void)
 	OBJECT obj;
 	double dx,dy;
 
-	for (int i = 0; i < vID.size(); i++)
+	for (unsigned int i = 0; i < vID.size(); i++)
 	{
 		obj.init();
 		obj.m_tStamp = m_tStamp;
@@ -99,12 +102,14 @@ void _ArUco::detect(void)
 		Point2f pLB = vvCorner[i][3];
 
 		// center position
-		obj.m_bb.x = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
-		obj.m_bb.y = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
+		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
+		dy = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
+		obj.m_bb.x = dx * bW;
+		obj.m_bb.y = dy * bH;
 
 		// radius
-		dx = obj.m_bb.x - pLT.x;
-		dy = obj.m_bb.y - pLT.y;
+		dx -= pLT.x;
+		dy -= pLT.y;
 		obj.m_bb.z = sqrt(dx*dx + dy*dy);
 
 		// angle in deg
@@ -131,7 +136,8 @@ bool _ArUco::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_bb.x, pO->m_bb.y);
+		Point pCenter = Point(pO->m_bb.x * pMat->cols,
+							  pO->m_bb.y * pMat->rows);
 		circle(*pMat, pCenter, pO->m_bb.z, Scalar(0, 255, 0), 2);
 
 		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_bb.w),
@@ -158,9 +164,7 @@ bool _ArUco::console(int& iY)
 		msg += i2str(pO->m_topClass) + " | ";
 	}
 
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG(msg);
 
 	return true;
 }

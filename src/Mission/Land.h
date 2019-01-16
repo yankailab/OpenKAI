@@ -21,13 +21,18 @@ public:
 
 	bool init(void* pKiss);
 	bool update(void);
+	void reset(void);
 	bool draw(void);
 	bool console(int& iY);
+
+	void setLanded(bool bLanded);
 
 public:
 	int m_tag;
 	double m_hdg;
 	double m_speed;
+
+	bool m_bLanded;
 
 };
 

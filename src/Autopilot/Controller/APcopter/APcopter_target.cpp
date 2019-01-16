@@ -144,7 +144,8 @@ void APcopter_target::update(void)
 	IF_(check()<0);
 	if(!bActive())
 	{
-		m_pPC->setPos(m_vMyPos, m_pPC->m_vTargetPos);
+		m_vTargetPos = m_vMyPos;
+		m_pPC->setPos(m_vMyPos, m_vMyPos);
 		m_pDet->goSleep();
 		if(m_bUseTracker)
 		{
@@ -164,7 +165,8 @@ void APcopter_target::update(void)
 
 	if(!find())
 	{
-		m_pPC->setPos(m_vMyPos, m_pPC->m_vTargetPos);
+		m_vTargetPos = m_vMyPos;
+		m_pPC->setPos(m_vMyPos, m_vMyPos);
 		return;
 	}
 
@@ -209,7 +211,8 @@ bool APcopter_target::find(void)
 
 		if(m_pTnow->trackState() != track_update)
 		{
-//			m_pMC->transit("search");
+			m_pPC->setON(false);
+			m_pPC->releaseCtrl();
 			return false;
 		}
 
@@ -219,7 +222,8 @@ bool APcopter_target::find(void)
 	{
 		if(!tO)
 		{
-//			m_pMC->transit("search");
+			m_pPC->setON(false);
+			m_pPC->releaseCtrl();
 			return false;
 		}
 
@@ -228,7 +232,7 @@ bool APcopter_target::find(void)
 
 	m_vTargetPos.x = bb.midX();
 	m_vTargetPos.y = bb.midY();
-//	m_pMC->transit("follow");
+	m_pPC->setON(true);
 
 	return true;
 }
