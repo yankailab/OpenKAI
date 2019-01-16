@@ -361,19 +361,17 @@ void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
 			m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- POS_TARGET_LOCAL_NED x=" + i2str(D.x)
-			+ ", y=" + i2str(D.y)
-			+ ", z=" + i2str(D.z)
-			+ ", vx=" + i2str(D.vx)
-			+ ", vy=" + i2str(D.vy)
-			+ ", vz=" + i2str(D.vz)
-			+ ", afx=" + i2str(D.afx)
-			+ ", afy=" + i2str(D.afy)
-			+ ", afz=" + i2str(D.afz)
-			+ ", yaw=" + i2str(D.yaw)
-			+ ", yawRate=" + i2str(D.yaw_rate)
-			+ ", cFrame=" + i2str(D.coordinate_frame)
-			+ ", typeMask=" + i2str(D.type_mask)
+	LOG_I("<- POS_TARGET_LOCAL_NED x=" + f2str(D.x)
+			+ ", y=" + f2str(D.y)
+			+ ", z=" + f2str(D.z)
+			+ ", vx=" + f2str(D.vx)
+			+ ", vy=" + f2str(D.vy)
+			+ ", vz=" + f2str(D.vz)
+			+ ", afx=" + f2str(D.afx)
+			+ ", afy=" + f2str(D.afy)
+			+ ", afz=" + f2str(D.afz)
+			+ ", yaw=" + f2str(D.yaw)
+			+ ", yawRate=" + f2str(D.yaw_rate)
 			);
 }
 
@@ -387,17 +385,15 @@ void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t& D)
 	writeMessage(msg);
 	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" + i2str(D.lat_int)
 			+ ", lng=" + i2str(D.lon_int)
-			+ ", alt=" + i2str(D.alt)
-			+ ", vx=" + i2str(D.vx)
-			+ ", vy=" + i2str(D.vy)
-			+ ", vz=" + i2str(D.vz)
-			+ ", afx=" + i2str(D.afx)
-			+ ", afy=" + i2str(D.afy)
-			+ ", afz=" + i2str(D.afz)
-			+ ", yaw=" + i2str(D.yaw)
-			+ ", yawRate=" + i2str(D.yaw_rate)
-			+ ", cFrame=" + i2str(D.coordinate_frame)
-			+ ", typeMask=" + i2str(D.type_mask)
+			+ ", alt=" + f2str(D.alt)
+			+ ", vx=" + f2str(D.vx)
+			+ ", vy=" + f2str(D.vy)
+			+ ", vz=" + f2str(D.vz)
+			+ ", afx=" + f2str(D.afx)
+			+ ", afy=" + f2str(D.afy)
+			+ ", afz=" + f2str(D.afz)
+			+ ", yaw=" + f2str(D.yaw)
+			+ ", yawRate=" + f2str(D.yaw_rate)
 			);
 }
 
@@ -487,7 +483,7 @@ void _Mavlink::setMode(mavlink_set_mode_t& D)
 			&msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- setMode, base_mode=" + i2str(D.base_mode)
+	LOG_I("<- setMode, base_mode=" + i2str((int32_t)D.base_mode)
 			+ ", custom_mode=" + i2str(D.custom_mode));
 }
 
