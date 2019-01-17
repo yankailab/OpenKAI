@@ -12,11 +12,13 @@ namespace kai
 
 RTH::RTH()
 {
-	m_alt = 20.0;
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
 	m_r = 3.0;
+	m_vHome.init();
+	m_vHome.z = 20.0;
+	m_bAlt = true;
 
 	reset();
 }
@@ -30,11 +32,12 @@ bool RTH::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,alt);
 	KISSm(pK,speedV);
 	KISSm(pK,speedH);
 	KISSm(pK,hdg);
 	KISSm(pK,r);
+	KISSm(pK,bAlt);
+	pK->v("alt",&m_vHome.z);
 
 	return true;
 }
@@ -43,36 +46,47 @@ bool RTH::update(void)
 {
 	IF_F(!m_bSetHome);
 
-	m_vErr = m_vHome - m_vPos;
-	double d = m_vErr.len();
-	if(d < m_r)
-	{
-		LOG_I("Mission complete");
-		reset();
-		return true;
-	}
+	m_eH = dEarth(m_vHome.x, m_vHome.y, m_vPos.x, m_vPos.y);
+	m_eV = abs(m_vHome.z - m_vPos.z);
 
-	LOG_I("Err = " + f2str(d));
-	return false;
+	IF_F(m_eH > m_r);
+	IF_T(!m_bAlt);
+	IF_F(m_eV > m_r);
+
+	LOG_I("RTH complete");
+	return true;
 }
 
 void RTH::reset(void)
 {
-	m_vErr.init();
+	m_eH = 0.0;
+	m_eV = 0.0;
 	m_vHome.init();
 	m_vPos.init();
 	m_bSetHome = false;
+	this->MissionBase::reset();
 }
 
 void RTH::setHome(vDouble3& p)
 {
-	m_vHome = p;
+	m_vHome.x = p.x;
+	m_vHome.y = p.y;
 	m_bSetHome = true;
 }
 
 void RTH::setPos(vDouble3& p)
 {
 	m_vPos = p;
+}
+
+vDouble3 RTH::getHome(void)
+{
+	return m_vHome;
+}
+
+double RTH::getHdg(void)
+{
+	return m_hdg;
 }
 
 bool RTH::draw(void)
@@ -90,6 +104,9 @@ bool RTH::draw(void)
 	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")");
+
+	pWin->addMsg("eH = " + f2str(m_eH,7) +
+				 ", eV = " + f2str(m_eV,7));
 
 	pWin->tabPrev();
 
@@ -109,6 +126,9 @@ bool RTH::console(int& iY)
 	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
 				    + f2str(m_vPos.y,7) + ", "
 		            + f2str(m_vPos.z,7) + ")");
+
+	C_MSG("eH = " + f2str(m_eH,7) +
+		  ", eV = " + f2str(m_eV,7));
 
 	return true;
 }

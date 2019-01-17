@@ -35,14 +35,10 @@ bool Loiter::update(void)
 	this->MissionBase::update();
 
 	IF_F(m_tTimeout <= 0);
-	if(m_tStamp > m_tStart + m_tTimeout)
-	{
-		LOG_I("Mission complete");
-		reset();
-		return true;
-	}
+	IF_F(m_tStamp < m_tStart + m_tTimeout);
 
-	return false;
+	LOG_I("Timeout");
+	return true;
 }
 
 void Loiter::reset(void)

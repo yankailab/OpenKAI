@@ -65,7 +65,7 @@ void APcopter_mode::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	uint32_t apMode = m_pAP->getApMode();
+	int apMode = m_pAP->getApMode();
 	int apMissionSeq = m_pAP->m_pMavlink->m_msg.mission_current.seq;
 
 	for(int i=0; i<m_vMM.size(); i++)

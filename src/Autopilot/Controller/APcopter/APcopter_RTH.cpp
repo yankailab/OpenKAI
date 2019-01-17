@@ -53,33 +53,31 @@ void APcopter_RTH::update(void)
 
 	vDouble3 p;
 
-	IF_(!m_pAP->homePos(&p));
-	p.z = pRTH->m_alt;
+	IF_(!m_pAP->getHomePos(&p));
 	pRTH->setHome(p);
 
-	p.x = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.lat) * 1e-7;
-	p.y = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.lon) * 1e-7;
-	p.z = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	p = m_pAP->getPos();
 	pRTH->setPos(p);
 
+	vDouble3 pHome = pRTH->getHome();
 	double alt = p.z;
 	if(m_pDS)
 	{
 		double dS = m_pDS->dAvr();
 		if(dS > 0)
-			alt += (pRTH->m_vHome.z - dS) * m_kZsensor;
+			alt += (pHome.z - dS) * m_kZsensor;
 	}
 	else
 	{
-		alt = pRTH->m_vHome.z;
+		alt = pHome.z;
 	}
 
 	mavlink_set_position_target_global_int_t spt;
 	spt.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
 
 	//target position
-	spt.lat_int = pRTH->m_vHome.x*1e7;
-	spt.lon_int = pRTH->m_vHome.y*1e7;
+	spt.lat_int = pHome.x*1e7;
+	spt.lon_int = pHome.y*1e7;
 	spt.alt = (float)alt;
 
 	//velocity, ignored at the moment
@@ -90,8 +88,9 @@ void APcopter_RTH::update(void)
 	//heading
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
 	spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
-	if(pRTH->m_hdg >= 0)
-		spt.yaw = (float)pRTH->m_hdg * DEG_RAD;
+	double hdg = pRTH->getHdg();
+	if(hdg >= 0)
+		spt.yaw = (float)hdg * DEG_RAD;
 
 	spt.type_mask = 0b0000000111111000;
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);

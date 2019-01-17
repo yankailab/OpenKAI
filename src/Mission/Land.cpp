@@ -36,19 +36,16 @@ bool Land::init(void* pKiss)
 
 bool Land::update(void)
 {
-	if(m_bLanded)
-	{
-		reset();
-		LOG_I("Landed");
-		return true;
-	}
+	IF_F(!m_bLanded);
 
-	return false;
+	LOG_I("Landed");
+	return true;
 }
 
 void Land::reset(void)
 {
 	m_bLanded = false;
+	this->MissionBase::reset();
 }
 
 void Land::setLanded(bool bLanded)

@@ -39,7 +39,9 @@ public:
 	vDouble3 m_vWPtarget;	//lat, lon, alt
 	vDouble3 m_vWP;
 	vDouble3 m_vPos;
-	vDouble3 m_vErr;
+	double	 m_eH;
+	double	 m_eV;
+	bool	 m_bAlt;
 
 	double	 m_speedV;
 	double	 m_speedH;

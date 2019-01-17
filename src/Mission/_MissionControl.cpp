@@ -12,7 +12,7 @@ namespace kai
 
 _MissionControl::_MissionControl()
 {
-	m_iMission = -1;
+	m_iMission = 0;
 }
 
 _MissionControl::~_MissionControl()
@@ -66,6 +66,8 @@ bool _MissionControl::init(void* pKiss)
 	string startMission = "";
 	F_INFO(pK->v("startMission", &startMission));
 	m_iMission = getMissionIdx(startMission);
+	if(m_iMission < 0)
+		m_iMission = 0;
 
 	return true;
 }
@@ -90,13 +92,10 @@ void _MissionControl::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(m_iMission >=0 && m_iMission < m_vMission.size())
+		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+		if(pMission->update())
 		{
-			MissionBase* pMission = m_vMission[m_iMission].m_pInst;
-			if(pMission->update())
-			{
-				transit(pMission->m_nextMission);
-			}
+			transit(pMission->m_nextMission);
 		}
 
 		this->autoFPSto();
@@ -111,6 +110,13 @@ void _MissionControl::transit(const string& nextMissionName)
 
 void _MissionControl::transit(int iNextMission)
 {
+	IF_(iNextMission < 0);
+	IF_(iNextMission >= m_vMission.size());
+	IF_(iNextMission == m_iMission);
+
+	MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+	pMission->reset();
+
 	m_iMission = iNextMission;
 }
 

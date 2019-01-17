@@ -5,7 +5,7 @@ namespace kai
 
 APcopter_land::APcopter_land()
 {
-	m_altLanded = 2.0;
+	m_altLanded = 3.0;
 	m_apAlt = 0.0;
 }
 

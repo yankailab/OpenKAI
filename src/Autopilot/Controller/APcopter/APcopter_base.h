@@ -83,7 +83,8 @@ public:
 	void setApArm(bool bArm);
 	bool getApArm(void);
 	void setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig);
-	bool homePos(vDouble3* pHome);
+	bool getHomePos(vDouble3* pHome);
+	vDouble3 getPos(void);
 
 public:
 	_Mavlink* m_pMavlink;
@@ -103,6 +104,7 @@ public:
 
 	bool	 m_bHomeSet;
 	vDouble3 m_vHomePos;
+	vDouble3 m_vPos;	//lat, lon, alt in meters
 };
 
 }

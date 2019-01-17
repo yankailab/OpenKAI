@@ -21,6 +21,7 @@ Waypoint::Waypoint()
 	m_bHoffset = false;
 	m_bVoffset = false;
 	m_bHdgOffset = false;
+	m_bAlt = true;
 
 	reset();
 }
@@ -34,10 +35,6 @@ bool Waypoint::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("x", &m_vWP.x);	//lat/northing
-	pK->v("y", &m_vWP.y);	//lng/easting
-	pK->v("z", &m_vWP.z);	//alt
-
 	KISSm(pK,bHoffset);
 	KISSm(pK,bVoffset);
 	KISSm(pK,bHdgOffset);
@@ -45,6 +42,11 @@ bool Waypoint::init(void* pKiss)
 	KISSm(pK,speedH);
 	KISSm(pK,hdg);
 	KISSm(pK,r);
+	KISSm(pK,bAlt);
+
+	pK->v("x", &m_vWP.x);	//lat/northing
+	pK->v("y", &m_vWP.y);	//lng/easting
+	pK->v("alt",&m_vWP.z);
 
 	return true;
 }
@@ -82,28 +84,26 @@ bool Waypoint::update(void)
 		m_bSetWP = true;
 	}
 
-	m_vErr = m_vWP - m_vPos;
-	double d = m_vErr.len();
-	if(d < m_r)
-	{
-		LOG_I("Mission complete");
-		reset();
-		return true;
-	}
+	m_eH = dEarth(m_vWP.x, m_vWP.y, m_vPos.x, m_vPos.y);
+	m_eV = abs(m_vWP.z - m_vPos.z);
 
-	LOG_I("Err = " + f2str(d));
+	IF_F(m_eH > m_r);
+	IF_T(!m_bAlt);
+	IF_F(m_eV > m_r);
 
-	return false;
+	LOG_I("WP complete");
+	return true;
 }
 
 void Waypoint::reset(void)
 {
 	m_bSetWP = false;
 	m_bSetPos = false;
-	m_vErr.init();
+	m_eH = 0.0;
+	m_eV = 0.0;
 	m_vPos.init();
 	m_vWPtarget.init();
-	m_vErr.init();
+	this->MissionBase::reset();
 }
 
 void Waypoint::setPos(vDouble3& p)
@@ -128,6 +128,9 @@ bool Waypoint::draw(void)
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")");
 
+	pWin->addMsg("eH = " + f2str(m_eH,7) +
+				 ", eV = " + f2str(m_eV,7));
+
 	pWin->tabPrev();
 
 	return true;
@@ -146,6 +149,9 @@ bool Waypoint::console(int& iY)
 	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
 				    + f2str(m_vPos.y,7) + ", "
 		            + f2str(m_vPos.z,7) + ")");
+
+	C_MSG("eH = " + f2str(m_eH,7) +
+		  ", eV = " + f2str(m_eV,7));
 
 	return true;
 }

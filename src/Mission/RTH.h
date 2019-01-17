@@ -27,14 +27,17 @@ public:
 	void reset(void);
 	void setHome(vDouble3& p);
 	void setPos(vDouble3& p);
+	vDouble3 getHome(void);
+	double getHdg(void);
 
-public:
+private:
 	bool	m_bSetHome;
 
 	vDouble3 m_vHome;	//lat, lon, alt
-	double	 m_alt;
 	vDouble3 m_vPos;
-	vDouble3 m_vErr;
+	double	 m_eH;
+	double	 m_eV;
+	bool	 m_bAlt;
 
 	double	 m_speedV;
 	double	 m_speedH;
