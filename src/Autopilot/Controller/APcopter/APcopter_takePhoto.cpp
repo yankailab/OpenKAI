@@ -20,6 +20,8 @@ APcopter_takePhoto::APcopter_takePhoto()
 	m_quality = 100;
 	m_iTake = 0;
 	m_bAuto = false;
+	m_bFlipRGB = false;
+	m_bFlipD = false;
 }
 
 APcopter_takePhoto::~APcopter_takePhoto()
@@ -36,6 +38,8 @@ bool APcopter_takePhoto::init(void* pKiss)
 	KISSm(pK,subDir);
 	KISSm(pK,bAuto);
 	KISSm(pK,tInterval);
+	KISSm(pK,bFlipRGB);
+	KISSm(pK,bFlipD);
 
 	if(m_subDir.empty())
 	{
@@ -156,17 +160,23 @@ void APcopter_takePhoto::take(void)
 	while(!m_pDV->bSleeping());
 	while(!m_pDV->m_pTPP->bSleeping());
 
-	string lat = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lat * 0.0000001, 7);
-	string lon = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.lon * 0.0000001, 7);
-	string alt = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.alt * 0.001, 3);
-	string hnd = f2str(m_pAP->m_pMavlink->m_msg.global_position_int.hdg * 0.01, 2);
+	vDouble3 vP = m_pAP->getPos();
 
-	Mat mRGB;
-	m_pV->BGR()->m()->copyTo(mRGB);
-	IF_(mRGB.empty());
+	string lat = lf2str(vP.x, 7);
+	string lon = lf2str(vP.y, 7);
+	string alt = lf2str(vP.z, 3);
+	string hnd = lf2str(m_pAP->getHdg(), 2);
 
+	Frame fBGR = *m_pV->BGR();
+	if(m_bFlipRGB)fBGR = fBGR.flip(-1);
+	Mat mBGR;
+	fBGR.m()->copyTo(mBGR);
+	IF_(mBGR.empty());
+
+	Frame fD = *m_pDV->Depth();
+	if(m_bFlipD)fD = fD.flip(-1);
 	Mat mD;
-	m_pDV->Depth()->m()->copyTo(mD);
+	fD.m()->copyTo(mD);
 	IF_(mD.empty());
 
 	Mat mDscale;
@@ -179,7 +189,7 @@ void APcopter_takePhoto::take(void)
 
 	//rgb
 	fName = m_subDir + i2str(m_iTake) + "_rgb" + ".jpg";
-	cv::imwrite(fName, mRGB, m_compress);
+	cv::imwrite(fName, mBGR, m_compress);
 	cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());
 

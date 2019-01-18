@@ -175,7 +175,7 @@
 			"Window":"OKview",
 			"_IOBase":"ws",
 			"_MissionControl":"apMission",
-			"activeState":["CC_STANDBY"],
+			"activeMission":["CC_STANDBY"],
 			"APcopter_base":"apBase",
 			"_DepthVisionBase":"realsense",
 			"_VisionBase":"cam",

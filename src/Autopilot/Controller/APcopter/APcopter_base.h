@@ -85,6 +85,7 @@ public:
 	void setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig);
 	bool getHomePos(vDouble3* pHome);
 	vDouble3 getPos(void);
+	double getHdg(void);
 
 public:
 	_Mavlink* m_pMavlink;
@@ -105,6 +106,7 @@ public:
 	bool	 m_bHomeSet;
 	vDouble3 m_vHomePos;
 	vDouble3 m_vPos;	//lat, lon, alt in meters
+	double	 m_hdg;		//heading in degree
 };
 
 }

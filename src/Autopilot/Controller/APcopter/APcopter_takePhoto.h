@@ -37,6 +37,9 @@ private:
 	string m_subDir;
 
 	bool m_bAuto;
+	bool m_bFlipRGB;
+	bool m_bFlipD;
+
 	uint64_t m_tInterval;
 	uint64_t m_tLastTake;
 	int m_iTake;

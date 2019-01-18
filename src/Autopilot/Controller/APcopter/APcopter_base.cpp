@@ -22,6 +22,7 @@ APcopter_base::APcopter_base()
 	m_bHomeSet = false;
 	m_vHomePos.init();
 	m_vPos.init();
+	m_hdg = 0.0;
 }
 
 APcopter_base::~APcopter_base()
@@ -95,9 +96,10 @@ void APcopter_base::update(void)
 	}
 
 	//get position
-	m_vPos.x = (double)(m_pMavlink->m_msg.global_position_int.lat) * 1e-7;
-	m_vPos.y = (double)(m_pMavlink->m_msg.global_position_int.lon) * 1e-7;
-	m_vPos.z = (double)(m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	m_vPos.x = ((double)(m_pMavlink->m_msg.global_position_int.lat)) * 1e-7;
+	m_vPos.y = ((double)(m_pMavlink->m_msg.global_position_int.lon)) * 1e-7;
+	m_vPos.z = ((double)(m_pMavlink->m_msg.global_position_int.relative_alt)) * 1e-3;
+	m_hdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
 
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
@@ -185,6 +187,11 @@ bool APcopter_base::getHomePos(vDouble3* pHome)
 vDouble3 APcopter_base::getPos(void)
 {
 	return m_vPos;
+}
+
+double APcopter_base::getHdg(void)
+{
+	return m_hdg;
 }
 
 void APcopter_base::setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig)
