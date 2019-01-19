@@ -4,7 +4,9 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":1,
+	"bLog":0,
+	"bConsole":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -31,17 +33,13 @@
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
-	"rsRGB":1,
-	"w":640,
-	"h":360,
+	"rsRGB":0,
 	"rsFPS":30,
 	"wD":640,
 	"hD":360,
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"fovW":69.4,
-	"fovH":42.5,
 	"bAlign":0,
 	"fDec":0,
 	"fSpat":0,
@@ -62,8 +60,16 @@
 	"deviceID":3,
 	"w":3840,
 	"h":2160,
-	"fovW":60,
-	"fovH":60,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":10,
+	"bInst":0,
+	"Window":"OKview",
+	"/pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
 
 {
@@ -76,8 +82,8 @@
 	"_wakeUp":"mavAP",
 	"portName":"/dev/ttyTHS1",
 	"baud":921600,
-	"_portName":"/dev/ttyUSB0",
-	"_baud":57600,
+	"/portName":"/dev/ttyACM0",
+	"/baud":115200,
 }
 
 {
@@ -133,12 +139,20 @@
 {
 	"name":"apMission",
 	"class":"_MissionControl",
+	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"startState":"CC_STANDBY",
+	"startMission":"STANDBY",
 
 	{
-		"state":"CC_STANDBY",
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
 	}
 }
 
@@ -160,11 +174,12 @@
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_Mavlink":"mavAP",
-			"freqExtra1":10,
-			"freqPos":10,
-			"freqRC":0,
-			"freqExtStat":0,
 			"freqSendHeartbeat":1,
+			"freqRawSensors":0,
+			"freqExtStat":0,
+			"freqRC":0,
+			"freqPos":10,
+			"freqExtra1":10,
 		}
 
 		{
@@ -175,14 +190,23 @@
 			"Window":"OKview",
 			"_IOBase":"ws",
 			"_MissionControl":"apMission",
-			"activeMission":["CC_STANDBY"],
+			"activeMission":["STANDBY"],
 			"APcopter_base":"apBase",
 			"_DepthVisionBase":"realsense",
 			"_VisionBase":"cam",
 			"tInterval":1,
 			"dir":"/mnt/sd/",
-			"_dir":"/home/kai/dev/test/",
+			"/dir":"/home/kai/dev/test/",
 			"subDir":"",
+			"bAuto":1,
+			"bFlipRGB":0,
+			"bFlipD":1,
+			{
+				"name":"GPSoffset",
+				"x":0,
+				"y":0,
+				"z":0,
+			}
 		}
 	}
 }

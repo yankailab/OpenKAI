@@ -62,7 +62,7 @@ bool APcopter_takePhoto::init(void* pKiss)
 	string cmd = "mkdir " + m_subDir;
 	system(cmd.c_str());
 
-	m_compress.push_back(CV_IMWRITE_JPEG_QUALITY);
+	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 
 	//link

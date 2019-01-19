@@ -8,6 +8,7 @@ APcopter_RTH::APcopter_RTH()
 	m_pAP = NULL;
 	m_pDS = NULL;
 	m_kZsensor = 1.0;
+	m_apMount.init();
 }
 
 APcopter_RTH::~APcopter_RTH()
@@ -20,6 +21,25 @@ bool APcopter_RTH::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,kZsensor);
+
+	Kiss* pG = pK->o("mount");
+	if(!pG->empty())
+	{
+		double p=0, r=0, y=0;
+		pG->v("pitch", &p);
+		pG->v("roll", &r);
+		pG->v("yaw", &y);
+
+		m_apMount.m_control.input_a = p * 100;	//pitch
+		m_apMount.m_control.input_b = r * 100;	//roll
+		m_apMount.m_control.input_c = y * 100;	//yaw
+		m_apMount.m_control.save_position = 0;
+
+		pG->v("stabPitch", &m_apMount.m_config.stab_pitch);
+		pG->v("stabRoll", &m_apMount.m_config.stab_roll);
+		pG->v("stabYaw", &m_apMount.m_config.stab_yaw);
+		pG->v("mountMode", &m_apMount.m_config.mount_mode);
+	}
 
 	string iName;
 
@@ -50,6 +70,8 @@ void APcopter_RTH::update(void)
 	IF_(!bActive());
 	RTH* pRTH = (RTH*)m_pMC->getCurrentMission();
 	NULL_(pRTH);
+
+	m_pAP->setMount(m_apMount);
 
 	vDouble3 p;
 

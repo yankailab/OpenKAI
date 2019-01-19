@@ -22,7 +22,7 @@ APcopter_base::APcopter_base()
 	m_bHomeSet = false;
 	m_vHomePos.init();
 	m_vPos.init();
-	m_hdg = 0.0;
+	m_apHdg = 0.0;
 }
 
 APcopter_base::~APcopter_base()
@@ -99,7 +99,7 @@ void APcopter_base::update(void)
 	m_vPos.x = ((double)(m_pMavlink->m_msg.global_position_int.lat)) * 1e-7;
 	m_vPos.y = ((double)(m_pMavlink->m_msg.global_position_int.lon)) * 1e-7;
 	m_vPos.z = ((double)(m_pMavlink->m_msg.global_position_int.relative_alt)) * 1e-3;
-	m_hdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
+	m_apHdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
 
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
@@ -191,26 +191,31 @@ vDouble3 APcopter_base::getPos(void)
 
 double APcopter_base::getHdg(void)
 {
-	return m_hdg;
+	return getApHdg();
 }
 
-void APcopter_base::setGimbal(mavlink_mount_control_t& mControl, mavlink_mount_configure_t& mConfig)
+double APcopter_base::getApHdg(void)
+{
+	return m_apHdg;
+}
+
+void APcopter_base::setMount(AP_MOUNT& m)
 {
 	IF_(check()<0);
 
-	m_pMavlink->mountControl(mControl);
-	m_pMavlink->mountConfigure(mConfig);
+	m_pMavlink->mountControl(m.m_control);
+	m_pMavlink->mountConfigure(m.m_config);
 
 	mavlink_param_set_t D;
 	D.param_type = MAV_PARAM_TYPE_INT8;
 	string id;
 
-	D.param_value = mConfig.stab_pitch;
+	D.param_value = m.m_config.stab_pitch;
 	id = "MNT_STAB_TILT";
 	strcpy(D.param_id, id.c_str());
 	m_pMavlink->param_set(D);
 
-	D.param_value = mConfig.stab_roll;
+	D.param_value = m.m_config.stab_roll;
 	id = "MNT_STAB_ROLL";
 	strcpy(D.param_id,id.c_str());
 	m_pMavlink->param_set(D);

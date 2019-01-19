@@ -28,6 +28,7 @@ public:
 
 	double	m_kZsensor;
 
+	AP_MOUNT m_apMount;
 };
 
 }

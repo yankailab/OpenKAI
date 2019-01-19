@@ -16,15 +16,7 @@ APcopter_target::APcopter_target()
 	m_vMyPos.x = 0.5;
 	m_vMyPos.y = 0.5;
 	m_vTargetPos.init();
-
-	m_mountControl.input_a = 0;	//pitch
-	m_mountControl.input_b = 0;	//roll
-	m_mountControl.input_c = 0;	//yaw
-	m_mountControl.save_position = 0;
-	m_mountConfig.stab_pitch = 0;
-	m_mountConfig.stab_roll = 0;
-	m_mountConfig.stab_yaw = 0;
-	m_mountConfig.mount_mode = 2;
+	m_apMount.init();
 
 	m_iTracker = 0;
 	m_bUseTracker = false;
@@ -47,7 +39,7 @@ bool APcopter_target::init(void* pKiss)
 	KISSm(pK,iClass);
 	KISSm(pK,bUseTracker);
 
-	Kiss* pG = pK->o("gimbal");
+	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
 	{
 		double p=0, r=0, y=0;
@@ -55,15 +47,15 @@ bool APcopter_target::init(void* pKiss)
 		pG->v("roll", &r);
 		pG->v("yaw", &y);
 
-		m_mountControl.input_a = p * 100;	//pitch
-		m_mountControl.input_b = r * 100;	//roll
-		m_mountControl.input_c = y * 100;	//yaw
-		m_mountControl.save_position = 0;
+		m_apMount.m_control.input_a = p * 100;	//pitch
+		m_apMount.m_control.input_b = r * 100;	//roll
+		m_apMount.m_control.input_c = y * 100;	//yaw
+		m_apMount.m_control.save_position = 0;
 
-		pG->v("stabPitch", &m_mountConfig.stab_pitch);
-		pG->v("stabRoll", &m_mountConfig.stab_roll);
-		pG->v("stabYaw", &m_mountConfig.stab_yaw);
-		pG->v("mountMode", &m_mountConfig.mount_mode);
+		pG->v("stabPitch", &m_apMount.m_config.stab_pitch);
+		pG->v("stabRoll", &m_apMount.m_config.stab_roll);
+		pG->v("stabYaw", &m_apMount.m_config.stab_yaw);
+		pG->v("mountMode", &m_apMount.m_config.mount_mode);
 	}
 
 	pG = pK->o("targetPos");
@@ -161,7 +153,7 @@ void APcopter_target::update(void)
 		m_pDet->wakeUp();
 	}
 
-	m_pAP->setGimbal(m_mountControl, m_mountConfig);
+	m_pAP->setMount(m_apMount);
 
 	if(!find())
 	{

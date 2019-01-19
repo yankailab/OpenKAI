@@ -6,9 +6,10 @@ namespace kai
 APcopter_WP::APcopter_WP()
 {
 	m_pAP = NULL;
+	m_pDS = NULL;
 	m_dZdefault = 0.0;
 	m_kZsensor = 1.0;
-	m_pDS = NULL;
+	m_apMount.init();
 }
 
 APcopter_WP::~APcopter_WP()
@@ -22,6 +23,25 @@ bool APcopter_WP::init(void* pKiss)
 
 	KISSm(pK,dZdefault);
 	KISSm(pK,kZsensor);
+
+	Kiss* pG = pK->o("mount");
+	if(!pG->empty())
+	{
+		double p=0, r=0, y=0;
+		pG->v("pitch", &p);
+		pG->v("roll", &r);
+		pG->v("yaw", &y);
+
+		m_apMount.m_control.input_a = p * 100;	//pitch
+		m_apMount.m_control.input_b = r * 100;	//roll
+		m_apMount.m_control.input_c = y * 100;	//yaw
+		m_apMount.m_control.save_position = 0;
+
+		pG->v("stabPitch", &m_apMount.m_config.stab_pitch);
+		pG->v("stabRoll", &m_apMount.m_config.stab_roll);
+		pG->v("stabYaw", &m_apMount.m_config.stab_yaw);
+		pG->v("mountMode", &m_apMount.m_config.mount_mode);
+	}
 
 	string iName;
 
@@ -52,6 +72,8 @@ void APcopter_WP::update(void)
 	IF_(!bActive());
 	Waypoint* pWP = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pWP);
+
+	m_pAP->setMount(m_apMount);
 
 	double alt = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
 	if(m_pDS)

@@ -62,7 +62,7 @@ void APcopter_land::update(void)
 		return;
 	}
 
-	m_pAP->setGimbal(m_mountControl, m_mountConfig);
+	m_pAP->setMount(m_apMount);
 
 	m_vTargetPos.x = m_vMyPos.x; //roll
 	m_vTargetPos.y = m_vMyPos.y; //pitch

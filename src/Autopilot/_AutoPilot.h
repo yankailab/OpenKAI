@@ -3,7 +3,6 @@
 
 #include "../Base/common.h"
 #include "ActionBase.h"
-#include "Controller/APcopter/APcopter_arucoTarget.h"
 #include "Controller/APcopter/APcopter_base.h"
 #include "Controller/APcopter/APcopter_depthVision.h"
 #include "Controller/APcopter/APcopter_distLidar.h"

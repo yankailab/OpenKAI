@@ -46,7 +46,10 @@ bool RTH::update(void)
 {
 	IF_F(!m_bSetHome);
 
-	m_eH = dEarth(m_vHome.x, m_vHome.y, m_vPos.x, m_vPos.y);
+	vDouble2 dH;
+	dH.x = m_vPos.x - m_vHome.x;
+	dH.y = m_vPos.y - m_vHome.y;
+	m_eH = dH.len() * 1e5;	//1deg ~= 10^5m
 	m_eV = abs(m_vHome.z - m_vPos.z);
 
 	IF_F(m_eH > m_r);

@@ -41,8 +41,7 @@ public:
 	_TrackerBase*	m_pTnew;
 	int				m_iTracker;
 
-	mavlink_mount_control_t m_mountControl;
-	mavlink_mount_configure_t m_mountConfig;
+	AP_MOUNT		m_apMount;
 };
 
 }
