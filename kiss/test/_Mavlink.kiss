@@ -4,8 +4,9 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
+	"bLog":0,
 	"bConsole":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -26,9 +27,9 @@
 	"bStream":1,
 	"portName":"/dev/ttyACM0",
 	"baud":115200,
-	"_portName":"/dev/ttyTHS1",
-	"_portName":"/dev/ttyAMA0",
-	"_baud":921600,
+	"/portName":"/dev/ttyTHS1",
+	"/portName":"/dev/ttyAMA0",
+	"/baud":921600,
 	"_wakeUp":"mavAP",
 }
 
@@ -44,10 +45,9 @@
 	{
 		"bInst":1,
 		"_Mavlink":"mavGCS",
-	}
-	
+	}	
 	{
-		"bInst":1,
+		"bInst":0,
 		"_Mavlink":"mavWS",
 	}
 }
@@ -78,7 +78,7 @@
 	}
 	
 	{
-		"bInst":1,
+		"bInst":0,
 		"_Mavlink":"mavWS",
 	}
 }

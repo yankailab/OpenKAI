@@ -172,7 +172,7 @@ public:
 	void positionTargetGlobalInt(mavlink_position_target_global_int_t& D);
 	void rcChannelsOverride(mavlink_rc_channels_override_t& D);
 	void requestDataStream(uint8_t stream_id, int rate);
-	void sendHeartbeat(void);
+	void heartbeat(void);
 	void setAttitudeTarget(mavlink_set_attitude_target_t& D);
 	void setMode(mavlink_set_mode_t& D);
 	void setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t& D);

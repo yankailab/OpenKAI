@@ -104,7 +104,7 @@ void APcopter_base::update(void)
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
 	{
-		m_pMavlink->sendHeartbeat();
+		m_pMavlink->heartbeat();
 		m_lastHeartbeat = m_tStamp;
 	}
 

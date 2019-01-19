@@ -121,6 +121,8 @@ void _UDP::updateW(void)
 		int nB;
 		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
 		{
+			IF_CONT(m_sAddr.sin_addr.s_addr == htonl(INADDR_ANY));
+
 			int nSend = ::sendto(m_socket, pB, nB, 0, (struct sockaddr *) &m_sAddr, m_nSAddr);
 			if (nSend == -1)
 			{

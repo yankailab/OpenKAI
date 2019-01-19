@@ -139,6 +139,8 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 		_WebSocket* pWS = (_WebSocket*)m_pIO;
 		pWS->write(pB, nB, WS_MODE_BIN);
 	}
+
+	LOG_I("<- MSG_ID = " + i2str(msg.msgid) + ", seq = " + i2str((uint32_t)msg.seq));
 }
 
 void _Mavlink::cmdInt(mavlink_command_int_t& D)
@@ -436,7 +438,7 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	LOG_I("<- requestDataStream");
 }
 
-void _Mavlink::sendHeartbeat(void)
+void _Mavlink::heartbeat(void)
 {
 	mavlink_message_t msg;
 	mavlink_msg_heartbeat_pack(
@@ -767,7 +769,9 @@ void _Mavlink::handleMessages()
 			m_devComponentID = m_msg.compid;
 			m_devType = m_msg.heartbeat.type;
 
-			LOG_I(" -> HEARTBEAT");
+			LOG_I(" -> HEARTBEAT: sysid=" + i2str(msg.sysid) +
+					", compid=" + i2str((uint32_t)msg.compid) +
+					", seq=" + i2str((uint32_t)msg.seq));
 			break;
 		}
 

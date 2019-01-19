@@ -72,7 +72,7 @@ void AProver_base::sendHeartbeat(void)
 	uint64_t timeNow = getTimeUsec();
 	IF_(timeNow - m_lastHeartbeat < USEC_1SEC);
 
-	m_pMavlink->sendHeartbeat();
+	m_pMavlink->heartbeat();
 	m_lastHeartbeat = timeNow;
 
 	LOG(INFO)<<"APMrover HEARTBEAT:"<<++m_iHeartbeat;
