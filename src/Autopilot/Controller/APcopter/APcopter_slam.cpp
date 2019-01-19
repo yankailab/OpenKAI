@@ -16,10 +16,10 @@ APcopter_slam::APcopter_slam()
 	m_hdop = 0;
 	m_vdop = 0;
 	m_yawOffset = 0.0;
-	m_utm.init();
+	m_utmPos.init();
 	m_vVelo.init();
 
-	m_vGPSorigin.init();
+	m_llGPSorigin.init();
 	m_vSlamPos.init();
 }
 
@@ -32,9 +32,9 @@ bool APcopter_slam::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("lat", &m_vGPSorigin.m_lat);
-	pK->v("lng", &m_vGPSorigin.m_lng);
-	m_GPS.update(m_vGPSorigin);
+	pK->v("lat", &m_llGPSorigin.m_lat);
+	pK->v("lng", &m_llGPSorigin.m_lng);
+	m_utmGPSorigin = m_GPS.LL2UTM(m_llGPSorigin);
 	m_vSlamPos.init();
 
 	KISSm(pK,gpsID);
@@ -91,17 +91,17 @@ void APcopter_slam::update(void)
 
 //	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 //	m_GPS.m_UTM.m_hdg += m_yawOffset;
-	m_GPS.m_UTM.m_hdg = m_yawOffset;
-	m_GPS.m_UTM.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
+	m_utmGPSorigin.m_hdg = m_yawOffset;
+	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
-	UTM_POS pUTM = m_GPS.getPos(m_vSlamPos);
+	UTM_POS pUTM = m_GPS.offset(m_utmGPSorigin, m_vSlamPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
 
 	double tBase = (double)USEC_1SEC/(double)m_dTime;
-	m_vVelo.x = (pUTM.m_northing - m_utm.m_northing)*tBase;
-	m_vVelo.y = (pUTM.m_easting - m_utm.m_easting)*tBase;
-	m_vVelo.z = (pUTM.m_altRel - m_utm.m_altRel)*tBase;
-	m_utm = pUTM;
+	m_vVelo.x = (pUTM.m_northing - m_utmPos.m_northing)*tBase;
+	m_vVelo.y = (pUTM.m_easting - m_utmPos.m_easting)*tBase;
+	m_vVelo.z = (pUTM.m_altRel - m_utmPos.m_altRel)*tBase;
+	m_utmPos = pUTM;
 
 	mavlink_gps_input_t D;
 	D.lat = pLL.m_lat * 1e7;

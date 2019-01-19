@@ -42,8 +42,10 @@ public:
 	Median m_fY;
 	Median m_fHdg;
 
-	UTM_POS m_utm;
-	LL_POS m_vGPSorigin;
+	UTM_POS m_utmPos;
+	LL_POS m_llGPSorigin;
+	UTM_POS m_utmGPSorigin;
+
 	vDouble3 m_vSlamPos;
 	vDouble3 m_vVelo;
 	double	m_yawOffset;

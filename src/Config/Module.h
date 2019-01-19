@@ -18,6 +18,7 @@
 #include "../Detector/_MotionDetector.h"
 #include "../Detector/_DNNdetect.h"
 #include "../Detector/_DNNclassifier.h"
+#include "../Detector/_Thermal.h"
 
 #include "../Navigation/_Path.h"
 #include "../Mission/_MissionControl.h"

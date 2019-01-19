@@ -42,6 +42,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);
+	ADD_MODULE(_Thermal);
 	ADD_MODULE(_UDP);
 	ADD_MODULE(_VideoFile);
 	ADD_MODULE(_WebSocket);

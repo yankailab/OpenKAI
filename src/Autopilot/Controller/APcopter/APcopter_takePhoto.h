@@ -40,6 +40,8 @@ private:
 	bool m_bFlipRGB;
 	bool m_bFlipD;
 
+	vDouble3 m_vGPSoffset;
+
 	uint64_t m_tInterval;
 	uint64_t m_tLastTake;
 	int m_iTake;

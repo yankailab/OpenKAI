@@ -61,14 +61,14 @@ bool Waypoint::update(void)
 		{
 			IF_F(!m_bSetPos);
 
-			GPS gps;
 			LL_POS pLL;
 			pLL.m_lat = m_vPos.x;
 			pLL.m_lng = m_vPos.y;
 			pLL.m_hdg = m_hdg;
-			gps.update(pLL);
 
-			UTM_POS pUTM = gps.getPos(m_vWP);
+			GPS gps;
+			UTM_POS pUTM = gps.LL2UTM(pLL);
+			pUTM = gps.offset(pUTM, m_vWP);
 			pLL = gps.UTM2LL(pUTM);
 
 			m_vWPtarget.x = pLL.m_lat;

@@ -22,6 +22,7 @@ APcopter_takePhoto::APcopter_takePhoto()
 	m_bAuto = false;
 	m_bFlipRGB = false;
 	m_bFlipD = false;
+	m_vGPSoffset.init();
 }
 
 APcopter_takePhoto::~APcopter_takePhoto()
@@ -40,6 +41,14 @@ bool APcopter_takePhoto::init(void* pKiss)
 	KISSm(pK,tInterval);
 	KISSm(pK,bFlipRGB);
 	KISSm(pK,bFlipD);
+
+	Kiss* pG = pK->o("GPSoffset");
+	if(pG)
+	{
+		pG->v("x", &m_vGPSoffset.x);
+		pG->v("y", &m_vGPSoffset.y);
+		pG->v("z", &m_vGPSoffset.z);
+	}
 
 	if(m_subDir.empty())
 	{
@@ -162,10 +171,23 @@ void APcopter_takePhoto::take(void)
 
 	vDouble3 vP = m_pAP->getPos();
 
-	string lat = lf2str(vP.x, 7);
-	string lon = lf2str(vP.y, 7);
-	string alt = lf2str(vP.z, 3);
-	string hnd = lf2str(m_pAP->getHdg(), 2);
+	LL_POS pLL;
+	pLL.init();
+	pLL.m_lat = vP.x;
+	pLL.m_lng = vP.y;
+	pLL.m_hdg = m_pAP->getHdg();
+	pLL.m_altAbs = vP.z;
+	pLL.m_altRel = vP.z;
+
+	GPS gps;
+	UTM_POS pUTM = gps.LL2UTM(pLL);
+	pUTM = gps.offset(pUTM, m_vGPSoffset);
+	pLL = gps.UTM2LL(pUTM);
+
+	string lat = lf2str(pLL.m_lat, 7);
+	string lon = lf2str(pLL.m_lng, 7);
+	string alt = lf2str(pLL.m_altRel, 3);
+	string hnd = lf2str(pLL.m_hdg, 2);
 
 	Frame fBGR = *m_pV->BGR();
 	if(m_bFlipRGB)fBGR = fBGR.flip(-1);

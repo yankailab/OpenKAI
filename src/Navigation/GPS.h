@@ -11,7 +11,7 @@
 #include "../Base/common.h"
 #include "../Dependency/UTM.h"
 #include "../Protocol/_Mavlink.h"
-
+#include "../Navigation/GPS.h"
 
 /*
 APM setting to use MAV_GPS
@@ -24,6 +24,9 @@ SERIAL2_PROTOCOL = 1
 
 namespace kai
 {
+
+#define R_EARTH 6371230
+#define OV_R_EARTH 0.000000157
 
 struct LL_POS
 {
@@ -110,20 +113,12 @@ public:
 	GPS(void);
 	virtual ~GPS();
 
-	void update(_Mavlink* pMav);
-	void update(LL_POS& pLL);
-	void update(UTM_POS& pUTM);
-
-	UTM_POS getUTM(void);
-	LL_POS getLL(void);
-	UTM_POS getPos(vDouble3& dNEA);
-
 	UTM_POS LL2UTM(LL_POS& pLL);
 	LL_POS UTM2LL(UTM_POS& pUTM);
 
-public:
-	UTM_POS m_UTM;
-	LL_POS m_LL;
+	UTM_POS offset(UTM_POS& UTM, vDouble3& dNEA);
+	LL_POS offset(LL_POS& LL, vDouble3& dNEA);
+
 };
 
 }

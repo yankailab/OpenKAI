@@ -12,56 +12,19 @@ namespace kai
 
 GPS::GPS()
 {
-	m_LL.init();
-	m_UTM.init();
 }
 
 GPS::~GPS()
 {
 }
 
-void GPS::update(_Mavlink* pMav)
+UTM_POS GPS::offset(UTM_POS& UTM, vDouble3& dNEA)
 {
-	NULL_(pMav);
-
-	m_LL.m_lat = pMav->m_msg.global_position_int.lat * 0.0000001;
-	m_LL.m_lng = pMav->m_msg.global_position_int.lon * 0.0000001;
-	m_LL.m_altRel = (double)pMav->m_msg.global_position_int.relative_alt * 0.001;
-	m_LL.m_altAbs = (double)pMav->m_msg.global_position_int.alt * 0.001;
-	m_LL.m_hdg = pMav->m_msg.global_position_int.hdg * 0.01;
-
-	update(m_LL);
-}
-
-void GPS::update(LL_POS& pLL)
-{
-	m_LL = pLL;
-	m_UTM = LL2UTM(pLL);
-}
-
-void GPS::update(UTM_POS& pUTM)
-{
-	m_UTM = pUTM;
-	m_LL = UTM2LL(m_UTM);
-}
-
-UTM_POS GPS::getUTM(void)
-{
-	return m_UTM;
-}
-
-LL_POS GPS::getLL(void)
-{
-	return m_LL;
-}
-
-UTM_POS GPS::getPos(vDouble3& dNEA)
-{
-	double hdgRad = m_UTM.m_hdg * DEG_RAD;
+	double hdgRad = UTM.m_hdg * DEG_RAD;
 	double sinH = sin(hdgRad);
 	double cosH = cos(hdgRad);
 
-	UTM_POS pUTM = m_UTM;
+	UTM_POS pUTM = UTM;
 	pUTM.m_northing += dNEA.x * cosH - dNEA.y * sinH;
 	pUTM.m_easting += dNEA.y * cosH + dNEA.x * sinH;
 	pUTM.m_altRel += dNEA.z;
@@ -70,11 +33,30 @@ UTM_POS GPS::getPos(vDouble3& dNEA)
 	return pUTM;
 }
 
+LL_POS GPS::offset(LL_POS& LL, vDouble3& dNEA)
+{
+	//http://www.edwilliams.org/avform.htm#LL
+
+	LL_POS oLL = LL;
+	double d = sqrt(dNEA.x*dNEA.x + dNEA.y*dNEA.y) * OV_R_EARTH;
+	double tc = oLL.m_hdg*DEG_RAD + atan2(dNEA.y, dNEA.x);	//true course
+
+	double sinLat = sin(LL.m_lat);
+	double cosLat = cos(LL.m_lat);
+
+	oLL.m_lat = asin(sinLat * cos(d) + cosLat * sin(d) * cos(tc));
+	double dLon = atan2(sin(tc) * sin(d) * cosLat, cos(d) - sinLat * sin(oLL.m_lat));
+	oLL.m_lng = fmod(LL.m_lng + dLon + PI, 2*PI) - PI;
+
+	return oLL;
+}
+
 UTM_POS GPS::LL2UTM(LL_POS& pLL)
 {
 	UTM_POS pUTM;
 	char pUTMzone[UTM_BUF];
-	UTM::LLtoUTM(pLL.m_lat, pLL.m_lng, pUTM.m_northing, pUTM.m_easting, pUTMzone);
+	UTM::LLtoUTM(pLL.m_lat, pLL.m_lng, pUTM.m_northing, pUTM.m_easting,
+			pUTMzone);
 	pUTM.m_zone = pUTMzone;
 	pUTM.m_altRel = pLL.m_altRel;
 	pUTM.m_altAbs = pLL.m_altAbs;
@@ -86,7 +68,8 @@ UTM_POS GPS::LL2UTM(LL_POS& pLL)
 LL_POS GPS::UTM2LL(UTM_POS& pUTM)
 {
 	LL_POS pLL;
-	UTM::UTMtoLL(pUTM.m_northing, pUTM.m_easting, pUTM.m_zone.c_str(), pLL.m_lat, pLL.m_lng);
+	UTM::UTMtoLL(pUTM.m_northing, pUTM.m_easting, pUTM.m_zone.c_str(),
+			pLL.m_lat, pLL.m_lng);
 	pLL.m_altRel = pUTM.m_altRel;
 	pLL.m_altAbs = pUTM.m_altAbs;
 	pLL.m_hdg = pUTM.m_hdg;
