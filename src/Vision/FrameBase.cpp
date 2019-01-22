@@ -89,7 +89,9 @@ FrameBase FrameBase::resize(int w, int h)
 FrameBase FrameBase::resize(double scaleW, double scaleH)
 {
 	Size s = this->size();
-	return resize(s.width*scaleW, s.height*scaleH);
+	int sw = s.width*scaleW;
+	int sh = s.height*scaleH;
+	return resize(sw, sh);
 }
 
 FrameBase FrameBase::cvtTo(int rType)

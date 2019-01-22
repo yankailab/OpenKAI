@@ -3,7 +3,11 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
-	"waitKey":30,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,	
 }
 
 {
@@ -11,15 +15,14 @@
 	"class":"_Augment",
 	"bInst":1,
 	"bLog":1,
-	"dirIn":"/home/kai/dev/augment/",
+	"dirIn":"/home/kai/dev/DNNmodel/test/",
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
 	"extOut":".png",
 	"bConvertFormat":0,
 	"PNGcompression":9,
 	"nThread":8,
-	"filter":["tone"],
-	"_filter":["rotate","flip","saturation","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"]
-
+	"/filter":["rotate","flip","saturation","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"],
+	"filter":["lowResolution"],
 	
 	{
 		"name":"rotate",

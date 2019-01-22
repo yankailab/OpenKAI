@@ -141,7 +141,9 @@ FrameGPU FrameGPU::resize(int w, int h)
 FrameGPU FrameGPU::resize(double scaleW, double scaleH)
 {
 	Size s = this->size();
-	return resize(s.width*scaleW, s.height*scaleH);
+	int sw = s.width*scaleW;
+	int sh = s.height*scaleH;
+	return resize(sw, sh);
 }
 
 FrameGPU FrameGPU::cvtTo(int rType)

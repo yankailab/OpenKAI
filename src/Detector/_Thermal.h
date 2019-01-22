@@ -24,6 +24,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	int check(void);
+	bool draw(void);
 
 private:
 	void detect(void);
@@ -35,15 +36,10 @@ private:
 	}
 
 public:
-	double	m_abs;
-	double	m_scale1;
-	double	m_scale2;
-	double	m_thr1;
-	double	m_thr2;
+	Mat m_mThr;
 
-#ifdef USE_CUDA
-
-#endif
+	double	m_thr;
+	double	m_max;
 
 };
 }

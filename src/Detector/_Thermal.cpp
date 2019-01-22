@@ -12,11 +12,8 @@ namespace kai
 
 _Thermal::_Thermal()
 {
-	m_abs = 90;
-	m_scale1 = 0.25;
-	m_scale2 = 0.0625;
-	m_thr1 = 200;
-	m_thr2 = 255;
+	m_thr = 0.5;
+	m_max = 255;
 }
 
 _Thermal::~_Thermal()
@@ -28,14 +25,11 @@ bool _Thermal::init(void* pKiss)
 	IF_F(!this->_ObjectBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,abs);
-	KISSm(pK,scale1);
-	KISSm(pK,scale2);
-	KISSm(pK,thr1);
-	KISSm(pK,thr2);
+	KISSm(pK,max);
+	KISSm(pK,thr);
+	m_thr *= m_max;
 
 	m_nClass = 1;
-
 	return true;
 }
 
@@ -78,125 +72,38 @@ int _Thermal::check(void)
 	return 0;
 }
 
+void _Thermal::detect(void)
+{
+	IF_(check()<0);
+
 #ifdef USE_CUDA
-void _Thermal::detect(void)
-{
-	IF_(check()<0);
 
+	GpuMat gBGR = *(m_pVision->BGR()->gm());
+	GpuMat gGray;
+	cuda::cvtColor(gBGR, gGray, COLOR_BGR2GRAY);
 
-/*
-    vector<int> vHistLev = { m_nHistLev };
-	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
-	vector<int> vChannel = { 0 };
+	GpuMat gThr;
+	cuda::threshold(gGray, gThr, m_thr, m_max, THRESH_BINARY); //THRESH_BINARY_INV);
 
-	Rect roi;
-	vInt42rect(*pROI, roi);
-	Mat mRoi = (*m_fDepth.m())(roi);
-	vector<Mat> vRoi = {mRoi};
-	Mat mHist;
-	cv::calcHist(vRoi, vChannel, Mat(),
-	            mHist, vHistLev, vRange,
-	            true	//accumulate
-				);
+	gThr.download(m_mThr);
 
-	int nMinHist = m_minHistD * mRoi.cols * mRoi.rows;
-	int i;
-	for(i=0; i<m_nHistLev; i++)
-	{
-		if(mHist.at<float>(i) >= (float)nMinHist)break;
-	}
-
-	return m_vRange.x + (((double)i)/(double)m_nHistLev) * (m_vRange.y - m_vRange.x);
-
-
-
-
-
-
-	GpuMat mBGR = *(m_pVision->BGR()->gm());
-	GpuMat mHSV;
-	cuda::cvtColor(mBGR, mHSV, COLOR_BGR2HSV);
-
-	vector<GpuMat> vmHSV(3);
-	split(mHSV, vmHSV);
-	GpuMat mH = vmHSV[0];
-	GpuMat mS = vmHSV[1];
-	GpuMat mV = vmHSV[2];
-
-	GpuMat  gHred;
-	GpuMat  gScaleHred;
-	GpuMat  gScaleS;
-	GpuMat  gBulleye;
-	GpuMat  gThr;
-	cuda::absdiff(mH, Scalar(m_abs), gHred);
-	cuda::multiply(gHred, Scalar(m_scale1), gScaleHred);
-	cuda::multiply(mS, Scalar(m_scale2), gScaleS);
-	cuda::multiply(gScaleHred, gScaleS, gBulleye);
-	cuda::threshold(gBulleye, gThr, m_thr1, m_thr2, THRESH_BINARY); //THRESH_BINARY_INV);
-
-	Mat mThr;
-	gThr.download(mThr);
-	vector< vector< Point > > vvContours;
-	findContours(mThr, vvContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
-
-	vInt2 cSize;
-	m_pVision->info(&cSize, NULL, NULL);
-
-	OBJECT obj;
-	vector<Point> vPoly;
-	for (unsigned int i=0; i<vvContours.size(); i++)
-	{
-		vPoly.clear();
-		approxPolyDP( vvContours[i], vPoly, 3, true );
-		Rect rBB = boundingRect(vPoly);
-		vInt4 iBB;
-		rect2vInt4(rBB,iBB);
-
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setBB(iBB, cSize);
-		obj.setTopClass(0, obj.m_bb.area());
-
-		add(&obj);
-		LOG_I("ID: "+ i2str(obj.m_topClass));
-	}
-	*/
-}
 #else
-void _Thermal::detect(void)
-{
-	IF_(check()<0);
-/*
-	GpuMat mBGR = *(m_pVision->BGR()->gm());
-	GpuMat mHSV;
-	cuda::cvtColor(mBGR, mHSV, COLOR_BGR2HSV);
 
-	vector<GpuMat> vmHSV(3);
-	split(mHSV, vmHSV);
-	GpuMat mH = vmHSV[0];
-	GpuMat mS = vmHSV[1];
-	GpuMat mV = vmHSV[2];
+	Mat mBGR = *(m_pVision->BGR()->m());
+	Mat mGray;
+	cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
 
-	GpuMat  gHred;
-	GpuMat  gScaleHred;
-	GpuMat  gScaleS;
-	GpuMat  gBulleye;
-	GpuMat  gThr;
-	cuda::absdiff(mH, Scalar(m_abs), gHred);
-	cuda::multiply(gHred, Scalar(m_scale1), gScaleHred);
-	cuda::multiply(mS, Scalar(m_scale2), gScaleS);
-	cuda::multiply(gScaleHred, gScaleS, gBulleye);
-	cuda::threshold(gBulleye, gThr, m_thr1, m_thr2, THRESH_BINARY); //THRESH_BINARY_INV);
+	cv::threshold(mGray, m_mThr, m_thr, m_max, THRESH_BINARY); //THRESH_BINARY_INV);
 
-	Mat mThr;
-	gThr.download(mThr);
+#endif
+
 	vector< vector< Point > > vvContours;
-	findContours(mThr, vvContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	findContours(m_mThr, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-	vInt2 cSize;
-	m_pVision->info(&cSize, NULL, NULL);
+	vInt2 cs;
+	m_pVision->info(&cs, NULL, NULL);
 
-	OBJECT obj;
+	OBJECT o;
 	vector<Point> vPoly;
 	for (unsigned int i=0; i<vvContours.size(); i++)
 	{
@@ -206,16 +113,28 @@ void _Thermal::detect(void)
 		vInt4 iBB;
 		rect2vInt4(rBB,iBB);
 
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setBB(iBB, cSize);
-		obj.setTopClass(0, obj.m_bb.area());
+		o.init();
+		o.m_tStamp = m_tStamp;
+		o.setBB(iBB, cs);
+		o.setTopClass(0, o.m_bb.area());
 
-		add(&obj);
-		LOG_I("ID: "+ i2str(obj.m_topClass));
+		add(&o);
+		LOG_I("ID: "+ i2str(o.m_topClass));
 	}
-	*/
 }
-#endif
+
+bool _Thermal::draw(void)
+{
+	IF_F(!this->_ObjectBase::draw());
+	Window* pWin = (Window*)this->m_pWindow;
+	Mat* pMat = pWin->getFrame()->m();
+
+	if(!m_mThr.empty())
+	{
+		imshow(*this->getName()+":Thr", m_mThr);
+	}
+
+	return true;
+}
 
 }
