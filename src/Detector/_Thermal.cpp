@@ -12,8 +12,8 @@ namespace kai
 
 _Thermal::_Thermal()
 {
-	m_rL = 0.5;
-	m_rU = 1.0;
+	m_rL = 200;
+	m_rU = 255;
 }
 
 _Thermal::~_Thermal()
