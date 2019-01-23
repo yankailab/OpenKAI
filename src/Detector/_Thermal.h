@@ -36,10 +36,9 @@ private:
 	}
 
 public:
-	Mat m_mThr;
-
-	double	m_thr;
-	double	m_max;
+	Mat m_mR;
+	double	m_rL;
+	double	m_rU;
 
 };
 }

@@ -38,8 +38,9 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"camera",
-	"thr":0.8,
-	"minArea":0.0001,
+	"rL":200,
+	"rU":255,
+	"minArea":0.0005,
 	"maxArea":0.9,
 }
 
