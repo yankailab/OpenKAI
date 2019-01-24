@@ -15,14 +15,14 @@
 	"class":"_Augment",
 	"bInst":1,
 	"bLog":1,
-	"dirIn":"/home/kai/dev/DNNmodel/test/",
+	"dirIn":"/home/kai/dev/DNNmodel/train/TRAIN/",
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
 	"extOut":".png",
 	"bConvertFormat":0,
 	"PNGcompression":9,
 	"nThread":8,
 	"/filter":["rotate","flip","saturation","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"],
-	"filter":["lowResolution"],
+	"filter":["saturation","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"],
 	
 	{
 		"name":"rotate",
