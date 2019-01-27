@@ -249,7 +249,6 @@ void _ObjectBase::merge(_ObjectBase* pO)
 bool _ObjectBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
-
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
@@ -261,9 +260,9 @@ bool _ObjectBase::draw(void)
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
 
-	vInt2 cSize;
-	cSize.x = pMat->cols;
-	cSize.y = pMat->rows;
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
 	Scalar oCol;
 	Scalar bCol = Scalar(100,100,100);
 	int col;
@@ -279,7 +278,7 @@ bool _ObjectBase::draw(void)
 		col = colStep * iClass;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
-		vInt4 iBB = pO->iBBox(cSize);
+		vInt4 iBB = pO->iBBox(cs);
 		Point pC = Point(iBB.midX(), iBB.midY());
 
 		//trackID
@@ -294,8 +293,8 @@ bool _ObjectBase::draw(void)
 		//vTrack
 		if(m_bDrawObjVtrack)
 		{
-			Point pV = Point(pO->m_vTrack.x * cSize.x * m_drawVscale,
-							 pO->m_vTrack.y * cSize.x * m_drawVscale);
+			Point pV = Point(pO->m_vTrack.x * cs.x * m_drawVscale,
+							 pO->m_vTrack.y * cs.x * m_drawVscale);
 			line(*pMat, pC, pC - pV, oCol, 1);
 		}
 

@@ -120,6 +120,7 @@ bool _DNNclassifier::classify(void)
     Point pClassID;
     double conf;
     cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+    IF_T(conf < m_minConfidence);
 
 	OBJECT obj;
 	obj.init();
@@ -139,6 +140,24 @@ bool _DNNclassifier::classify(void)
 bool _DNNclassifier::draw(void)
 {
 	IF_F(!this->_ObjectBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+	IF_F(pMat->empty());
+	OBJECT* pO = m_obj.at(0);
+	NULL_F(pO);
+
+	int iClass = pO->m_topClass;
+	IF_F(iClass >= m_nClass);
+	IF_F(iClass < 0);
+
+	string oName = m_vClass[iClass].m_name;
+	if (oName.length()>0)
+	{
+		putText(*pMat, oName,
+				Point(25, 100),
+				FONT_HERSHEY_SIMPLEX, 2.0, Scalar(0,0,255), 5);
+	}
 
 	return true;
 }
