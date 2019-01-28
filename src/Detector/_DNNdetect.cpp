@@ -16,6 +16,7 @@ _DNNdetect::_DNNdetect()
 	m_bSwapRB = true;
 	m_vMean.init();
 	m_scale = 1.0/255.0;
+	m_iClassDraw = 0;
 
 	m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
 	m_iTarget = cv::dnn::DNN_TARGET_CPU;
@@ -38,6 +39,7 @@ bool _DNNdetect::init(void* pKiss)
 	KISSm(pK, iTarget);
 	KISSm(pK, bSwapRB);
 	KISSm(pK, scale);
+	KISSm(pK, iClassDraw);
 	pK->v("meanB",&m_vMean.x);
 	pK->v("meanG",&m_vMean.y);
 	pK->v("meanR",&m_vMean.z);
@@ -203,7 +205,39 @@ bool _DNNdetect::detect(void)
 
 bool _DNNdetect::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_ThreadBase::draw());
+	Window* pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+	IF_F(pMat->empty());
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Scalar col = Scalar(0,0,255);
+
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_obj.at(i++)) != NULL)
+	{
+		int iClass = pO->m_topClass;
+		IF_CONT(iClass != m_iClassDraw);
+		IF_CONT(iClass >= m_nClass);
+		IF_CONT(iClass < 0);
+
+		Rect r;
+		vInt4 iBB = pO->iBBox(cs);
+		vInt42rect(iBB, r);
+		rectangle(*pMat, r, col, 1);
+
+		string oName = m_vClass[iClass].m_name;
+		if (oName.length()>0)
+		{
+			putText(*pMat, oName,
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 2.0, col, 5);
+		}
+	}
 
 	return true;
 }

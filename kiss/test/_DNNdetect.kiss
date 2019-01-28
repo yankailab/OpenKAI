@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":1,
 	"bConsole":0,
@@ -14,6 +14,7 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
 
 {
@@ -25,8 +26,6 @@
 	"deviceID":0,
 	"w":1280,
 	"h":720,
-	"fovW":60,
-	"fovH":60,
 }
 
 {
@@ -59,17 +58,17 @@
 	"class":"_DNNdetect",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"modelDir":"/home/kai/dev/DNNmodel/wildhog-tiny/",
-	"modelFile":"yolov3-tiny.cfg",
-	"trainedFile":"yolov3-tiny.weights",
+	"modelDir":"/home/ubuntu/dev/DNN/YOLOv3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
 	"classFile":"name.txt",
 	"bSwapRB":1,
 	"scale":0.00392,
-	"bDrawObjClass":1,
 	"thr":0.1,
+	"iClassDraw":6,
 }

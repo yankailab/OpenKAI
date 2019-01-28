@@ -46,6 +46,7 @@ public:
 	vInt3	m_vMean;
 	Mat		m_blob;
 	vector<string> m_vLayerName;
+	int		m_iClassDraw;
 
 	int m_iBackend;
 	int m_iTarget;
