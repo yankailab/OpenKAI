@@ -76,7 +76,7 @@ void APcopter_mode::update(void)
 				pMM->m_fromApMode != apMode);
 
 		IF_CONT(pMM->m_fromApMissionSeq >= 0 &&
-				pMM->m_fromApMissionSeq > apMissionSeq);
+				pMM->m_fromApMissionSeq != apMissionSeq);
 
 		if(pMM->m_toApMode >= 0 && apMode != pMM->m_toApMode)
 		{
