@@ -52,6 +52,7 @@
 
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
+#include "../Vision/_Hiphen.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"

@@ -23,6 +23,7 @@ APcopter_takePhoto::APcopter_takePhoto()
 	m_bFlipRGB = false;
 	m_bFlipD = false;
 	m_vGPSoffset.init();
+	m_bCont = true;
 }
 
 APcopter_takePhoto::~APcopter_takePhoto()
@@ -41,6 +42,7 @@ bool APcopter_takePhoto::init(void* pKiss)
 	KISSm(pK,tInterval);
 	KISSm(pK,bFlipRGB);
 	KISSm(pK,bFlipD);
+	KISSm(pK,bCont);
 
 	Kiss* pG = pK->o("GPSoffset");
 	if(pG)
@@ -159,15 +161,18 @@ void APcopter_takePhoto::take(void)
 {
 	IF_(check()<0);
 
-	//RGB
-	m_pV->open();
-	m_pV->close();
+	if(!m_bCont)
+	{
+		//RGB
+		m_pV->open();
+		m_pV->close();
 
-	//Depth
-	m_pDV->wakeUp();
-	m_pDV->goSleep();
-	while(!m_pDV->bSleeping());
-	while(!m_pDV->m_pTPP->bSleeping());
+		//Depth
+		m_pDV->wakeUp();
+		m_pDV->goSleep();
+		while(!m_pDV->bSleeping());
+		while(!m_pDV->m_pTPP->bSleeping());
+	}
 
 	vDouble3 vP = m_pAP->getPos();
 

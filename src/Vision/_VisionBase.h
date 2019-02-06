@@ -24,6 +24,7 @@ enum VISION_TYPE
 	vision_pylon,
 	vision_raspivid,
 	vision_file,
+	vision_hiphen,
 };
 
 class _VisionBase: public _ThreadBase

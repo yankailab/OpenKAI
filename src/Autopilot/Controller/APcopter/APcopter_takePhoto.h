@@ -39,6 +39,7 @@ private:
 	bool m_bAuto;
 	bool m_bFlipRGB;
 	bool m_bFlipD;
+	bool m_bCont;
 
 	vDouble3 m_vGPSoffset;
 
