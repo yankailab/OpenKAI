@@ -67,6 +67,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_filterTone);
 
 	ADD_MODULE(_BBoxCutOut);
+	ADD_MODULE(_CutOut);
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 

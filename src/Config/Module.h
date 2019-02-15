@@ -76,6 +76,7 @@
 #include "../Data/Augment/_filterTone.h"
 
 #include "../Data/Image/_BBoxCutOut.h"
+#include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
 

@@ -48,6 +48,13 @@ inline string checkDirName(string& dir)
 	return dir;
 }
 
+inline string getFileExt(string& file)
+{
+	size_t extPos = file.find_last_of(".");
+	if(extPos == std::string::npos)return "";
+	return file.substr(extPos);
+}
+
 inline uint32_t getTimeBootMs()
 {
 	// get number of milliseconds since boot
