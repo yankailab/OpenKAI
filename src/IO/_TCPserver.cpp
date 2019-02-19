@@ -118,8 +118,6 @@ bool _TCPserver::handler(void)
 
 		if (m_lSocket.size() >= m_nSocket)
 		{
-			LOG_I("Incoming socket number reached limit");
-
 			//clear up disconnected sockets
 			auto itr = m_lSocket.begin();
 			while (itr != m_lSocket.end())
@@ -137,7 +135,10 @@ bool _TCPserver::handler(void)
 				}
 			}
 
-			IF_CONT(m_lSocket.size() >= m_nSocket);
+			if(m_lSocket.size() >= m_nSocket)
+			{
+				LOG_I("Incoming socket number reached limit");
+			}
 		}
 
 		_TCPclient* pSocket = new _TCPclient();

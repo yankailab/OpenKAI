@@ -1,0 +1,42 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"hpIMG",
+	"class":"_TCPserver",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"listenPort":2378,
+	"nListen":128,
+	"nSocket":16,
+	"/_wakeUp":"mavGCS",
+}
+
+{
+	"name":"HiphenCMD",
+	"class":"_HiphenCMD",
+	"bInst":1,
+	"FPS":10,
+	"bLog":0,
+	"Window":"OKview",
+	"addr":"192.168.221.15",
+	"port":2377,
+}

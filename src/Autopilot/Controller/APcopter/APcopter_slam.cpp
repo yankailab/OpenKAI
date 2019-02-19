@@ -159,24 +159,26 @@ void APcopter_slam::sendState(void)
 	uint8_t pBufW[N_IO_BUF];
 
 	pBufW[0] = MG_CMD_START;
-	pBufW[1] = MG_CMD_ATTITUDE;
-	pack_int16(&pBufW[2], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.roll*1000));
-	pack_int16(&pBufW[4], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.pitch*1000));
-	pack_int16(&pBufW[6], (int16_t)((m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000));
-	m_pIOw->write(pBufW, 8);
+	pBufW[1] = 0;
+	pBufW[2] = MG_CMD_ATTITUDE;
+	pack_int16(&pBufW[3], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.roll*1000));
+	pack_int16(&pBufW[5], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.pitch*1000));
+	pack_int16(&pBufW[7], (int16_t)((m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000));
+	m_pIOw->write(pBufW, 9);
 
 	pBufW[0] = MG_CMD_START;
-	pBufW[1] = MG_CMD_RAW_IMU;
-	pack_int16(&pBufW[2], m_pAP->m_pMavlink->m_msg.raw_imu.xacc);
+	pBufW[1] = 0;
+	pBufW[2] = MG_CMD_RAW_IMU;
+	pack_int16(&pBufW[3], m_pAP->m_pMavlink->m_msg.raw_imu.xacc);
 	pack_int16(&pBufW[4], m_pAP->m_pMavlink->m_msg.raw_imu.yacc);
-	pack_int16(&pBufW[6], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
-	pack_int16(&pBufW[8], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
-	pack_int16(&pBufW[10], m_pAP->m_pMavlink->m_msg.raw_imu.ygyro);
-	pack_int16(&pBufW[12], m_pAP->m_pMavlink->m_msg.raw_imu.zgyro);
-	pack_int16(&pBufW[14], m_pAP->m_pMavlink->m_msg.raw_imu.xmag);
-	pack_int16(&pBufW[16], m_pAP->m_pMavlink->m_msg.raw_imu.ymag);
-	pack_int16(&pBufW[18], m_pAP->m_pMavlink->m_msg.raw_imu.zmag);
-	m_pIOw->write(pBufW, 20);
+	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
+	pack_int16(&pBufW[6], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
+	pack_int16(&pBufW[11], m_pAP->m_pMavlink->m_msg.raw_imu.ygyro);
+	pack_int16(&pBufW[13], m_pAP->m_pMavlink->m_msg.raw_imu.zgyro);
+	pack_int16(&pBufW[15], m_pAP->m_pMavlink->m_msg.raw_imu.xmag);
+	pack_int16(&pBufW[17], m_pAP->m_pMavlink->m_msg.raw_imu.ymag);
+	pack_int16(&pBufW[19], m_pAP->m_pMavlink->m_msg.raw_imu.zmag);
+	m_pIOw->write(pBufW, 21);
 }
 
 bool APcopter_slam::draw(void)

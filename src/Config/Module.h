@@ -52,7 +52,6 @@
 
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
-#include "../Vision/_Hiphen.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
@@ -79,6 +78,7 @@
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../Vision/_HiphenCMD.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
