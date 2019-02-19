@@ -9,6 +9,7 @@ APcopter_slam::APcopter_slam()
 	m_pIOr = NULL;
 	m_pIOw = NULL;
 	m_iCmd = 0;
+	m_iSeq = 0;
 
 	m_gpsID = 0;
 	m_iFixType = 3;
@@ -135,17 +136,21 @@ void APcopter_slam::updatePos(void)
 
 		m_pCmd[m_iCmd] = pBufR[i];
 		m_iCmd++;
-		IF_CONT(m_iCmd < 11);
+		IF_CONT(m_iCmd < 12);
+		m_iCmd = 0;
 
 		//decode one command
-		m_fX.input(((double)unpack_int16(&m_pCmd[2])) * 0.001);
-		m_fY.input(((double)unpack_int16(&m_pCmd[4])) * 0.001);
-		m_fHdg.input(((double)unpack_int16(&m_pCmd[8])) * 0.001);
-		m_iCmd = 0;
+		IF_CONT(m_pCmd[2] != MG_CMD_POS);
+		m_iSeq = m_pCmd[1];
+		m_fX.input(((double)unpack_int16(&m_pCmd[3])) * 0.001);
+		m_fY.input(((double)unpack_int16(&m_pCmd[5])) * 0.001);
+		m_fHdg.input(((double)unpack_int16(&m_pCmd[9])) * 0.001);
 
 		m_vSlamPos.x = m_fX.v();
 		m_vSlamPos.y = m_fY.v();
 		m_vSlamPos.z = m_fHdg.v();
+
+		LOG_I("iSeq=" + i2str((uint32_t)m_iSeq));
 	}
 }
 

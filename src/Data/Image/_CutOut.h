@@ -37,10 +37,10 @@ struct CutOutDir
 		m_dirRGBOut = "";
 		m_dirSegOut = "";
 
-		m_w = 0.5;
-		m_h = 0.5;
-		m_dW = 0.05;
-		m_dH = 0.05;
+		m_w = 0.6;
+		m_h = 0.6;
+		m_dW = 0.1;
+		m_dH = 0.1;
 
 		m_vBB.clear();
 	}

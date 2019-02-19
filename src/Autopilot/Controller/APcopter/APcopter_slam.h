@@ -52,6 +52,7 @@ public:
 
 	uint8_t	m_pCmd[MG_BUF_N];
 	int m_iCmd;
+	uint8_t m_iSeq;
 
 	int m_gpsID;
 	int m_iFixType;
@@ -66,7 +67,8 @@ public:
 
 /*
 Byte | Content
-1 | 0xFF packet start mark
+0 | 0xFF packet start mark
+1 | uint8 Global sequence id looping from 0 to 255
 2 | 0x00 MG_CMD_POS
 3~4 | int16  Coordinate X * 1000
 5~6 | int16  Coordinate Y * 1000
@@ -75,14 +77,16 @@ Byte | Content
 11 | uint8 Confidence 0 to 100, (set to 255 if confidence is not provided)
 
 Byte | Content
-1 | 0xFF packet start mark
+0 | 0xFF packet start mark
+1 | uint8 Global sequence id looping from 0 to 255
 2 | 0x01 MG_CMD_ATTITUDE
 3~4 | int16  Roll in rad * 1000 (-pi ~ pi)
 5~6 | int16  Pitch in rad * 1000 (-pi ~ pi)
 7~8 | int16  Yaw (Heading) in rad * 1000 (0 ~ 2pi, 0 is North)
 
 Byte | Content
-1 | 0xFF packet start mark
+0 | 0xFF packet start mark
+1 | uint8 Global sequence id looping from 0 to 255
 2 | 0x02 MG_CMD_RAW_IMU
 3~4 | int16  xAcc
 5~6 | int16  yAcc
