@@ -1,7 +1,7 @@
 /*
  * _HiphenCMD.cpp
  *
- *  Created on: Aug 22, 2015
+ *  Created on: Feb 19, 2019
  *      Author: yankai
  */
 
@@ -77,9 +77,8 @@ void _HiphenCMD::updateW(void)
 
 		this->autoFPSfrom();
 
-		string cmd = "{\"command\":\"get_status\"}";
+		string cmd = "{\"command\":\"start_record\"}";
 		m_fifoW.input((uint8_t*)cmd.c_str(), cmd.length());
-
 
 		uint8_t pB[N_IO_BUF];
 		int nB;
@@ -122,7 +121,7 @@ void _HiphenCMD::updateR(void)
 			continue;
 		}
 
-//		m_fifoR.input(pB,nR);
+		pB[nR]=0;
 		string strR((char*)pB);
 		LOG_I("Received: " + strR);
 

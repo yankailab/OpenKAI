@@ -11,23 +11,14 @@
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
-	"bInst":0,
-	"bFullScreen":0,
-}
-
-{
 	"name":"hpIMG",
-	"class":"_TCPserver",
-	"bInst":0,
+	"class":"_HiphenIMG",
+	"bInst":1,
 	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
+	"bLog":1,
 	"listenPort":2378,
 	"nListen":128,
 	"nSocket":16,
-	"/_wakeUp":"mavGCS",
 }
 
 {
@@ -35,8 +26,7 @@
 	"class":"_HiphenCMD",
 	"bInst":1,
 	"FPS":10,
-	"bLog":0,
-	"Window":"OKview",
+	"bLog":1,
 	"addr":"192.168.221.15",
 	"port":2377,
 }

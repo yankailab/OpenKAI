@@ -170,9 +170,9 @@ void APcopter_slam::sendState(void)
 	pBufW[1] = 0;
 	pBufW[2] = MG_CMD_RAW_IMU;
 	pack_int16(&pBufW[3], m_pAP->m_pMavlink->m_msg.raw_imu.xacc);
-	pack_int16(&pBufW[4], m_pAP->m_pMavlink->m_msg.raw_imu.yacc);
-	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
-	pack_int16(&pBufW[6], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
+	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_msg.raw_imu.yacc);
+	pack_int16(&pBufW[7], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
+	pack_int16(&pBufW[9], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
 	pack_int16(&pBufW[11], m_pAP->m_pMavlink->m_msg.raw_imu.ygyro);
 	pack_int16(&pBufW[13], m_pAP->m_pMavlink->m_msg.raw_imu.zgyro);
 	pack_int16(&pBufW[15], m_pAP->m_pMavlink->m_msg.raw_imu.xmag);
