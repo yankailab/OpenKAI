@@ -1,24 +1,24 @@
 /*
- * GPS.cpp
+ * Coordinate.cpp
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
  */
 
-#include "GPS.h"
+#include "Coordinate.h"
 
 namespace kai
 {
 
-GPS::GPS()
+Coordinate::Coordinate()
 {
 }
 
-GPS::~GPS()
+Coordinate::~Coordinate()
 {
 }
 
-UTM_POS GPS::offset(UTM_POS& UTM, vDouble3& dNEA)
+UTM_POS Coordinate::offset(UTM_POS& UTM, vDouble3& dNEA)
 {
 	double hdgRad = UTM.m_hdg * DEG_RAD;
 	double sinH = sin(hdgRad);
@@ -33,7 +33,7 @@ UTM_POS GPS::offset(UTM_POS& UTM, vDouble3& dNEA)
 	return pUTM;
 }
 
-LL_POS GPS::offset(LL_POS& LL, vDouble3& dNEA)
+LL_POS Coordinate::offset(LL_POS& LL, vDouble3& dNEA)
 {
 	//http://www.edwilliams.org/avform.htm#LL
 
@@ -51,7 +51,7 @@ LL_POS GPS::offset(LL_POS& LL, vDouble3& dNEA)
 	return oLL;
 }
 
-UTM_POS GPS::LL2UTM(LL_POS& pLL)
+UTM_POS Coordinate::LL2UTM(LL_POS& pLL)
 {
 	UTM_POS pUTM;
 	char pUTMzone[UTM_BUF];
@@ -65,7 +65,7 @@ UTM_POS GPS::LL2UTM(LL_POS& pLL)
 	return pUTM;
 }
 
-LL_POS GPS::UTM2LL(UTM_POS& pUTM)
+LL_POS Coordinate::UTM2LL(UTM_POS& pUTM)
 {
 	LL_POS pLL;
 	UTM::UTMtoLL(pUTM.m_northing, pUTM.m_easting, pUTM.m_zone.c_str(),

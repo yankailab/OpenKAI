@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Mission/_MissionControl.h"
-#include "../../../Navigation/GPS.h"
+#include "../../../Navigation/Coordinate.h"
 #include "../../ActionBase.h"
 #include "HM_base.h"
 
@@ -30,7 +30,7 @@ public:
 
 public:
 	HM_base* m_pHM;
-	GPS* m_pGPS;
+	Coordinate* m_pGPS;
 
 	int		m_rpmBack;
 	int		m_rpmTurn;

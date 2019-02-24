@@ -45,7 +45,7 @@ bool HM_kickBack::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("_GPS", &iName));
-	m_pGPS = (GPS*) (pK->root()->getChildInst(iName));
+	m_pGPS = (Coordinate*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

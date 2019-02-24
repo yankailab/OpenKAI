@@ -23,7 +23,28 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 
-private:
+	void getID(void);
+	void getStatus(void);
+	void getTime(void);
+	void getBatteryLevel(void);
+	void getGPScoordinates(void);
+	void getImageInfo(void);
+	void setImageInfo(string& opr, string& imgDesc);
+	void getTriggerSettings(void);
+	void setTriggerSettings(string& tIn, string& tOut);
+	void getExposureMode(void);
+	void setExposureMode(string& mode);
+	void getIntegrationTime(int iSensor);
+	void setIntegrationTime(int iSensor, int tInt);
+	void getGainMode(void);
+	void setGainMode(string& mode);
+	void getGain(int iSensor);
+	void setGain(int iSensor, int gain);
+	void startRecord(void);
+	void stopRecord(void);
+	void snapshot(int nSnapshot, string& mode);
+
+public:
 	void updateW(void);
 	static void* getUpdateThreadW(void* This)
 	{

@@ -64,41 +64,7 @@ bool _HiphenCMD::start(void)
 
 void _HiphenCMD::updateW(void)
 {
-	while (m_bThreadON)
-	{
-		if (!isOpen())
-		{
-			if (!open())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-
-		this->autoFPSfrom();
-
-		string cmd = "{\"command\":\"start_record\"}";
-		m_fifoW.input((uint8_t*)cmd.c_str(), cmd.length());
-
-		uint8_t pB[N_IO_BUF];
-		int nB;
-		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
-		{
-			int nSend = ::send(m_socket, pB, nB, 0);
-			if (nSend == -1)
-			{
-				if(errno == EAGAIN)break;
-				if(errno == EWOULDBLOCK)break;
-				LOG_E("send error: " + i2str(errno));
-				close();
-				break;
-			}
-
-			LOG_I("send: " + i2str(nSend) + " bytes");
-		}
-
-		this->autoFPSto();
-	}
+	this->_TCPclient::updateW();
 }
 
 void _HiphenCMD::updateR(void)
@@ -124,9 +90,153 @@ void _HiphenCMD::updateR(void)
 		pB[nR]=0;
 		string strR((char*)pB);
 		LOG_I("Received: " + strR);
+		//TODO: add JSON decode for strR;
 
 		this->wakeUpLinked();
 	}
+}
+
+void _HiphenCMD::getID(void)
+{
+	const string cmd = "{\"command\":\"get_id\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getStatus(void)
+{
+	const string cmd = "{\"command\":\"get_status\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getTime(void)
+{
+	const string cmd = "{\"command\":\"get_time\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getBatteryLevel(void)
+{
+	const string cmd = "{\"command\":\"get_battery_level\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getGPScoordinates(void)
+{
+	const string cmd = "{\"command\":\"get_gps_coordinates\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getImageInfo(void)
+{
+	const string cmd = "{\"command\":\"get_image_info\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setImageInfo(string& opr, string& imgDesc)
+{
+	string cmd = "{\"command\":\"set_image_info\",\"operator\":\""
+			+ opr
+			+"\",\"image_description\":\"" + imgDesc
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getTriggerSettings(void)
+{
+	const string cmd = "{\"command\":\"get_trigger_settings\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setTriggerSettings(string& tIn, string& tOut)
+{
+	string cmd = "{\"command\":\"set_trigger_settings\",\"trigger_in\":\""
+			+ tIn
+			+"\",\"trigger_out\":\"" + tOut
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getExposureMode(void)
+{
+	const string cmd = "{\"command\":\"get_exposure_mode\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setExposureMode(string& mode)
+{
+	string cmd = "{\"command\":\"set_exposure_mode\",\"exposure_mode\":\""
+			+ mode
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getIntegrationTime(int iSensor)
+{
+	string cmd = "{\"command\":\"get_integration_time\",\"sensor\":\""
+			+ i2str(iSensor)
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setIntegrationTime(int iSensor, int tInt)
+{
+	string cmd = "{\"command\":\"set_integration_time\",\"sensor\":\""
+			+ i2str(iSensor)
+			+"\",\"integration_time\":\"" + i2str(tInt)
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getGainMode(void)
+{
+	const string cmd = "{\"command\":\"get_gain_mode\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setGainMode(string& mode)
+{
+	string cmd = "{\"command\":\"set_gain_time\",\"gain_mode\":\""
+			+ mode
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::getGain(int iSensor)
+{
+	string cmd = "{\"command\":\"get_gain\",\"sensor\":\""
+			+ i2str(iSensor)
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::setGain(int iSensor, int gain)
+{
+	string cmd = "{\"command\":\"set_gain\",\"sensor\":\""
+			+ i2str(iSensor)
+			+"\",\"gain\":\"" + i2str(gain)
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::startRecord(void)
+{
+	const string cmd = "{\"command\":\"start_record\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::stopRecord(void)
+{
+	const string cmd = "{\"command\":\"stop_record\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
+}
+
+void _HiphenCMD::snapshot(int nSnapshot, string& mode)
+{
+	string cmd = "{\"command\":\"snapshot\",\"snapshot_number\":\""
+			+ i2str(nSnapshot)
+			+"\",\"snapshot_mode\":\"" + mode
+			+"\"}";
+	write((uint8_t*)cmd.c_str(), cmd.length());
 }
 
 }

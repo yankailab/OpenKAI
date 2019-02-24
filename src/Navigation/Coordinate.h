@@ -1,5 +1,5 @@
 /*
- * GPS.h
+ * Coordinate.h
  *
  *  Created on: Jan 6, 2017
  *      Author: yankai
@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Dependency/UTM.h"
 #include "../Protocol/_Mavlink.h"
-#include "../Navigation/GPS.h"
 
 /*
 APM setting to use MAV_GPS
@@ -107,11 +106,11 @@ struct UTM_POS
 	}
 };
 
-class GPS
+class Coordinate
 {
 public:
-	GPS(void);
-	virtual ~GPS();
+	Coordinate(void);
+	virtual ~Coordinate();
 
 	UTM_POS LL2UTM(LL_POS& pLL);
 	LL_POS UTM2LL(UTM_POS& pUTM);

@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Filter/Median.h"
-#include "../../../Navigation/GPS.h"
+#include "../../../Navigation/Coordinate.h"
 #include "../../../IO/_IOBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
@@ -36,7 +36,7 @@ public:
 	APcopter_base* m_pAP;
 	_IOBase* m_pIOr;
 	_IOBase* m_pIOw;
-	GPS m_GPS;
+	Coordinate m_GPS;
 
 	Median m_fX;
 	Median m_fY;

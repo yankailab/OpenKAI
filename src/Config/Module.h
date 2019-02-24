@@ -21,6 +21,7 @@
 #include "../Detector/_Thermal.h"
 
 #include "../Navigation/_Path.h"
+#include "../Navigation/_GPS.h"
 #include "../Mission/_MissionControl.h"
 
 #include "../Autopilot/_AutoPilot.h"

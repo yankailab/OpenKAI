@@ -66,7 +66,7 @@ bool Waypoint::update(void)
 			pLL.m_lng = m_vPos.y;
 			pLL.m_hdg = m_hdg;
 
-			GPS gps;
+			Coordinate gps;
 			UTM_POS pUTM = gps.LL2UTM(pLL);
 			pUTM = gps.offset(pUTM, m_vWP);
 			pLL = gps.UTM2LL(pUTM);

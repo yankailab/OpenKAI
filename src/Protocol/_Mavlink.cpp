@@ -982,14 +982,9 @@ bool _Mavlink::draw(void)
 bool _Mavlink::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
+	IF_Fl(!m_pIO->isOpen(), "Not connected");
 
 	string msg;
-
-	if (!m_pIO->isOpen())
-	{
-		C_MSG("Not Connected");
-		return true;
-	}
 
 	C_MSG("mySysID=" + i2str(m_mySystemID)
 			+ " myComID=" + i2str(m_myComponentID)

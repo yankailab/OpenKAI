@@ -30,6 +30,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_GStreamer);
+	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenIMG);
 	ADD_MODULE(_Lane);

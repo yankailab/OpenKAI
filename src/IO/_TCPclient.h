@@ -27,7 +27,7 @@ public:
 	void close(void);
 	bool draw(void);
 
-private:
+public:
 	void updateW(void);
 	static void* getUpdateThreadW(void* This)
 	{
