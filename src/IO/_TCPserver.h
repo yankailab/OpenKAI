@@ -31,7 +31,8 @@ public:
 	bool draw(void);
 	_TCPclient* getFirstSocket(void);
 
-private:
+	bool setup(void);
+	void cleanupClient(void);
 	bool handler(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -43,16 +44,13 @@ private:
 public:
 	uint16_t	m_listenPort;
 	int			m_nListen;
-	string		m_strStatus;
 
 	int m_socket;
 	struct sockaddr_in m_serverAddr;
-
 	list<_TCPclient*> m_lSocket;
-	int			m_nSocket;
+	unsigned int	  m_nSocket;
 
 };
 
 }
-
 #endif

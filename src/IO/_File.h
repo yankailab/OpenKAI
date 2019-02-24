@@ -15,22 +15,19 @@ public:
 	_File(void);
 	~_File(void);
 
-	//common
 	bool init(void* pKiss);
 	bool open(void);
 	void close(void);
 	void reset(void);
 
-	int  read(uint8_t* pBuf, int nByte);
-	bool write(uint8_t* pBuf, int nByte);
-	bool writeLine(uint8_t* pBuf, int nByte);
+	int  read(uint8_t* pBuf, int nB);
+	bool write(uint8_t* pBuf, int nB);
+	bool writeLine(uint8_t* pBuf, int nB);
 
-	//File
 	bool open(string* pName);
 	string* readAll(void);
 
 private:
-
 	string m_name;
 	string m_buf;
 	fstream m_file;
@@ -39,5 +36,4 @@ private:
 };
 
 }
-
 #endif

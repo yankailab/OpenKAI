@@ -32,7 +32,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenCMD);
-	ADD_MODULE(_HiphenIMG);
+	ADD_MODULE(_HiphenServer);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);

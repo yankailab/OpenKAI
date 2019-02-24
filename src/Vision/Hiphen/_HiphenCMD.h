@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Vision__HiphenCMD_H_
 #define OpenKAI_src_Vision__HiphenCMD_H_
 
-#include "../Base/common.h"
-#include "../IO/_TCPclient.h"
+#include "../../Base/common.h"
+#include "../../IO/_TCPclient.h"
 
 namespace kai
 {
@@ -66,5 +66,4 @@ public:
 };
 
 }
-
 #endif

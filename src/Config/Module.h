@@ -57,9 +57,8 @@
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
 #include "../Vision/FrameGroup.h"
-#include "../Vision/_HiphenCMD.h"
-#include "../Vision/_HiphenIMG.h"
-
+#include "../Vision/Hiphen/_HiphenServer.h"
+#include "../Vision/Hiphen/_HiphenCMD.h"
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"
 #include "../Data/Augment/_filterBlur.h"
@@ -81,6 +80,7 @@
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../Vision/Hiphen/_HiphenServer.h"
 
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
