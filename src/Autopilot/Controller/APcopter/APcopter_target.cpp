@@ -10,7 +10,10 @@ APcopter_target::APcopter_target()
 	m_pDet = NULL;
 
 	m_iClass = -1;
-	m_tO.m_topClass = -1;
+	m_bAvoid = false;
+	m_bFound = false;
+	m_apMode = -1;
+	m_tO.init();
 
 	m_vMyPos.init();
 	m_vMyPos.x = 0.5;
@@ -38,6 +41,8 @@ bool APcopter_target::init(void* pKiss)
 
 	KISSm(pK,iClass);
 	KISSm(pK,bUseTracker);
+	KISSm(pK,bAvoid);
+	KISSm(pK,apMode);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -159,10 +164,29 @@ void APcopter_target::update(void)
 	{
 		m_vTargetPos = m_vMyPos;
 		m_pPC->setPos(m_vMyPos, m_vMyPos);
+		m_bFound = false;
+
+		if(m_pAP->getApMode() == m_apMode)
+			m_pAP->setApMode(GUIDED);
+
 		return;
 	}
 
+	m_bFound = true;
+	if(m_bAvoid)
+	{
+		if(m_vTargetPos.x < 0.5)
+			m_vTargetPos.x = 1.0;
+		else
+			m_vTargetPos.x = 0.0;
+
+		m_vTargetPos.y = m_vMyPos.y;
+	}
+
 	m_pPC->setPos(m_vMyPos, m_vTargetPos);
+
+	if(m_apMode >= 0)
+		m_pAP->setApMode(m_apMode);
 }
 
 bool APcopter_target::find(void)
@@ -227,6 +251,11 @@ bool APcopter_target::find(void)
 	m_pPC->setON(true);
 
 	return true;
+}
+
+bool APcopter_target::bFound(void)
+{
+	return m_bFound;
 }
 
 bool APcopter_target::draw(void)

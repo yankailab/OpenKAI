@@ -18,6 +18,7 @@ _TCPclient::_TCPclient()
 	m_socket = 0;
 	m_ioType = io_tcp;
 	m_ioStatus = io_unknown;
+	m_bComplete = false;
 }
 
 _TCPclient::~_TCPclient()
@@ -161,6 +162,11 @@ void _TCPclient::updateR(void)
 
 		LOG_I("received: " + i2str(nR) + " bytes");
 	}
+}
+
+bool _TCPclient::bComplete(void)
+{
+	return m_bComplete;
 }
 
 bool _TCPclient::draw(void)

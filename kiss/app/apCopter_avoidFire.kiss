@@ -1,0 +1,192 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"bConsole":1,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"fovW":69.4,
+	"fovH":42.5,
+	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+}
+
+{
+	"name":"det",
+	"class":"_Thermal",
+	"bInst":1,
+	"bDraw":0,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"rL":185,
+	"rU":255,
+	"minArea":0.00001,
+	"maxArea":0.25,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyTHS1",
+	"baud":921600,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",	
+}
+
+{
+	"name":"PIDroll",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":-1.8,
+	"I":0.0,
+	"Imax":0.0,
+	"D":-0.8,
+	"dT":1.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
+}
+
+{
+	"name":"PIDpitch",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":1.9,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.8,
+	"dT":1.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
+}
+
+{
+	"name":"apMission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"bInst":1,
+	"FPS":20,
+	"bDraw":1,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"bDraw":1,
+			"_MissionControl":"apMission",
+			"Window":"OKview",
+			"_Mavlink":"mavAP",
+			"freqSendHeartbeat":1,
+			"freqRawSensors":0,
+			"freqExtStat":0,
+			"freqRC":0,
+			"freqPos":10,
+			"freqExtra1":10,
+		}
+		
+		{
+			"name":"apTarget",
+			"class":"APcopter_target",
+			"bInst":1,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"APcopter_base":"apBase",
+			"activeMission":["STANDBY"],
+			"_ObjectBase":"det",
+			"bUseTracker":0,
+			"iClass":0,
+			"bAvoid":1,
+			"apMode":3,
+			
+			"APcopter_posCtrl":"apPosCtrl",
+	
+			{
+				"name":"mount",
+				"pitch":30,
+				"roll":0,
+				"yaw":0,
+				"stabPitch":1,
+				"stabRoll":1,
+				"stabYaw":0,
+				"mountMode":2,
+			}
+		}
+
+		{
+			"name":"apPosCtrl",
+			"class":"APcopter_posCtrl",
+			"bInst":1,
+			"bLog":0,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeMission":["STANDBY"],
+			"APcopter_base":"apBase",
+			"vYaw":180,
+			"bSetV":1,
+			"bSetP":0,
+			"PIDroll":"PIDroll",
+			"PIDpitch":"PIDpitch",
+		}
+
+	}
+}

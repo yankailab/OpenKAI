@@ -77,7 +77,8 @@ void _HiphenCMD::updateR(void)
 			continue;
 		}
 
-		//blocking mode, no FPS control
+		this->startRecord();
+
 		uint8_t pB[N_IO_BUF];
 		int nR = ::recv(m_socket, pB, N_IO_BUF, 0);
 		if (nR <= 0)

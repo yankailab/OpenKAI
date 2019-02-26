@@ -23,6 +23,7 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 	virtual bool find(void);
+	virtual bool bFound(void);
 
 public:
 	APcopter_base*	m_pAP;
@@ -31,6 +32,9 @@ public:
 
 	OBJECT			m_tO;
 	int				m_iClass;
+	bool			m_bAvoid;
+	bool			m_bFound;
+	int				m_apMode;
 
 	vDouble4 		m_vTargetPos; 	//roll, pitch, alt, yaw
 	vDouble4 		m_vMyPos;

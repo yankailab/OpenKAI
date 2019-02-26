@@ -16,6 +16,8 @@ namespace kai
 
 #define N_HIPHEN_BUF 3000000
 #define N_HIPHEN_HEADER 136
+#define N_HIPHEN_FILESIZE 8
+#define N_HIPHEN_FILENAME 128
 
 class _HiphenIMG: public _TCPclient
 {
@@ -26,7 +28,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	void decodeData(void);
-	bool bComplete(void);
+	void decodeHeader(void);
 
 	void updateR(void);
 	static void* getUpdateThreadR(void* This)
@@ -40,7 +42,10 @@ public:
 	int m_iB;
 	int m_nB;
 	int m_nbImg;
-	bool m_bComplete;
+
+	string m_dir;
+	string m_subDir;
+	string m_fileName;
 };
 
 }

@@ -11,22 +11,23 @@
 }
 
 {
-	"name":"hpIMG",
-	"class":"_HiphenIMG",
+	"name":"HiphenCMD",
+	"class":"_HiphenCMD",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"addr":"192.168.221.15",
+	"port":2377,
+}
+
+{
+	"name":"HiphenServer",
+	"class":"_HiphenServer",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"listenPort":2378,
-	"nListen":128,
-	"nSocket":16,
-}
-
-{
-	"name":"HiphenCMD",
-	"class":"_HiphenCMD",
-	"bInst":1,
-	"FPS":10,
-	"bLog":1,
-	"addr":"192.168.221.15",
-	"port":2377,
+	"nListen":1,
+	"nSocket":1,
+	"dir":"/home/kai/dev/test/",
 }

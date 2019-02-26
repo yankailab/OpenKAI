@@ -55,14 +55,7 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(AProver_base);
 
-		ADD_ACTION(HM_base);
-		ADD_ACTION(HM_kickBack);
-		ADD_ACTION(HM_grass);
-		ADD_ACTION(HM_rth);
-		ADD_ACTION(HM_rth_approach);
-		ADD_ACTION(HM_avoid);
-		ADD_ACTION(HM_marker);
-		ADD_ACTION(HM_follow);
+		ADD_ACTION(Generic_hiphenRGB);
 
 		ADD_ACTION(Traffic_base);
 		ADD_ACTION(Traffic_speed);

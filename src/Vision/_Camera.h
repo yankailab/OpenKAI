@@ -44,6 +44,7 @@ public:
 	int m_deviceID;
 	VideoCapture m_camera;
 	int m_nInitRead;
+	bool m_bResetCam;
 };
 
 }

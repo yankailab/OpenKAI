@@ -26,6 +26,7 @@ public:
 	bool open(void);
 	void close(void);
 	bool draw(void);
+	bool bComplete(void);
 
 public:
 	void updateW(void);
@@ -49,6 +50,7 @@ public:
 
 	bool m_bClient;
 	int m_socket;
+	bool m_bComplete;
 };
 
 }

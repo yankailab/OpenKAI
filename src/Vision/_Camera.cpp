@@ -15,6 +15,7 @@ _Camera::_Camera()
 	m_type = vision_camera;
 	m_deviceID = 0;
 	m_nInitRead = 1;
+	m_bResetCam = false;
 }
 
 _Camera::~_Camera()
@@ -29,6 +30,7 @@ bool _Camera::init(void* pKiss)
 
 	KISSm(pK, deviceID);
 	KISSm(pK, nInitRead);
+	KISSm(pK, bResetCam);
 
 	return true;
 }
@@ -110,6 +112,12 @@ void _Camera::update(void)
 		Mat mCam;
 		while (!m_camera.read(mCam));
 		m_fBGR.copy(mCam);
+
+		if(m_bResetCam)
+		{
+			m_camera.release();
+			m_bOpen = false;
+		}
 
 		this->autoFPSto();
 	}
