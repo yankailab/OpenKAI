@@ -1,0 +1,76 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"portName":"/dev/ttyUSB0",
+	"baud":115200,
+	"_wakeUp":"GPS",
+}
+
+{
+	"name":"GPS",
+	"class":"_GPS",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"_IOBase":"serial",
+}
+
+{
+	"name":"rgb",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"deviceID":0,
+	"w":3840,
+	"h":2160,
+	"nInitRead":1,
+	"bResetCam":1,
+}
+
+{
+	"name":"HiphenCMD",
+	"class":"_HiphenCMD",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"addr":"192.168.221.15",
+	"port":2377,
+}
+
+{
+	"name":"HiphenServer",
+	"class":"_HiphenServer",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"listenPort":2378,
+	"nListen":128,
+	"nSocket":128,
+	"dir":"/home/kai/dev/test/",
+}
+
+{
+	"name":"HiphenRGB",
+	"class":"_HiphenRGB",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"_GPS":"GPS",
+	"_Camera":"rgb",
+	"_HiphenServer":"HiphenServer",
+}

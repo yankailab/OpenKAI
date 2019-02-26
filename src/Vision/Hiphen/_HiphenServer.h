@@ -26,6 +26,8 @@ public:
 
 	bool handler(void);
 	void cleanupClient(void);
+	int getImgSetIdx(void);
+	string getDir(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -36,6 +38,10 @@ public:
 public:
 	string m_dir;
 	string m_subDir;
+
+	int m_iImg;
+	int	m_iImgSet;
+	int	m_nImgPerSet;
 
 };
 

@@ -10,6 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../IO/_TCPclient.h"
+#include "../../Navigation/_GPS.h"
 
 namespace kai
 {
@@ -38,6 +39,8 @@ public:
 	}
 
 public:
+	_GPS* m_pGPS;
+
 	uint8_t m_pBuf[N_HIPHEN_BUF];
 	int m_iB;
 	int m_nB;

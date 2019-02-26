@@ -13,6 +13,9 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
+#include "../Application/_HiphenRGB.h"
+#include "../Autopilot/_AutoPilot.h"
+#include "../Control/PIDctrl.h"
 #include "../Detector/_ArUco.h"
 #include "../Detector/_Lane.h"
 #include "../Detector/_MotionDetector.h"
@@ -23,9 +26,6 @@
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
 #include "../Mission/_MissionControl.h"
-
-#include "../Autopilot/_AutoPilot.h"
-#include "../Control/PIDctrl.h"
 
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"

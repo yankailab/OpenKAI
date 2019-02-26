@@ -60,8 +60,6 @@ public:
 	}
 
 public:
-	int m_nSave;
-	int m_nSnap;
 
 };
 

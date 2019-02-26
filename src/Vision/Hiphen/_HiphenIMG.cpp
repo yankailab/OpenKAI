@@ -12,12 +12,12 @@ namespace kai
 
 _HiphenIMG::_HiphenIMG()
 {
+	m_pGPS = NULL;
 	m_iB = 0;
 	m_nB = 0;
 	m_nbImg = 0;
 	m_dir = "";
 	m_fileName = "";
-
 }
 
 _HiphenIMG::~_HiphenIMG()
@@ -29,6 +29,13 @@ bool _HiphenIMG::init(void* pKiss)
 {
 	IF_F(!this->_TCPclient::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	string iName;
+
+	iName = "";
+	F_ERROR_F(pK->v("_GPS", &iName));
+	m_pGPS = (_GPS*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pGPS, iName + " not found");
 
 	return true;
 }
@@ -117,7 +124,16 @@ void _HiphenIMG::decodeData(void)
 	of.write((char*)&m_pBuf[N_HIPHEN_HEADER], m_nbImg);
 	of.close();
 
-	//TODO: add exif GPS data
+	if(m_pGPS)
+	{
+		LL_POS pLL = m_pGPS->getLLpos();
+		string lat = lf2str(pLL.m_lat, 7);
+		string lon = lf2str(pLL.m_lng, 7);
+		string alt = lf2str(pLL.m_altRel, 3);
+		string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + m_fileName;
+		system(cmd.c_str());
+	}
+
 }
 
 }

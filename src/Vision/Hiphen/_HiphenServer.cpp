@@ -14,7 +14,9 @@ _HiphenServer::_HiphenServer()
 {
 	m_dir = "/home/";
 	m_subDir = "";
-
+	m_iImg = 0;
+	m_iImgSet = 0;
+	m_nImgPerSet = 6;
 }
 
 _HiphenServer::~_HiphenServer()
@@ -28,6 +30,7 @@ bool _HiphenServer::init(void* pKiss)
 
 	KISSm(pK,dir);
 	KISSm(pK,subDir);
+	KISSm(pK,nImgPerSet);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -77,11 +80,8 @@ bool _HiphenServer::handler(void)
 
 	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr, (socklen_t*) &c)) >= 0)
 	{
-		if (m_lSocket.size() >= m_nSocket)
-		{
-			cleanupClient();
-			IF_CONT(m_lSocket.size() >= m_nSocket);
-		}
+		cleanupClient();
+		IF_CONT(m_lSocket.size() >= m_nSocket);
 
 		_HiphenIMG* pImgSock = new _HiphenIMG();
 		IF_CONT(!pImgSock);
@@ -100,6 +100,8 @@ bool _HiphenServer::handler(void)
 		}
 
 		m_lSocket.push_back(pImgSock);
+		m_iImg++;
+		m_iImgSet = m_iImg / m_nImgPerSet;
 	}
 
 	close(m_socket);
@@ -116,12 +118,23 @@ void _HiphenServer::cleanupClient(void)
 		{
 			itr = m_lSocket.erase(itr);
 			delete pSocket;
+			return;
 		}
 		else
 		{
 			itr++;
 		}
 	}
+}
+
+int _HiphenServer::getImgSetIdx(void)
+{
+	return m_iImgSet;
+}
+
+string _HiphenServer::getDir(void)
+{
+	return m_subDir;
 }
 
 }

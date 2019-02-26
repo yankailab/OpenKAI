@@ -80,11 +80,8 @@ bool _TCPserver::handler(void)
 
 	while ((socketNew = accept(m_socket, (struct sockaddr *) &clientAddr, (socklen_t*) &c)) >= 0)
 	{
-		if (m_lSocket.size() >= m_nSocket)
-		{
-			cleanupClient();
-			IF_CONT(m_lSocket.size() >= m_nSocket);
-		}
+		cleanupClient();
+		IF_CONT(m_lSocket.size() >= m_nSocket);
 
 		_TCPclient* pSocket = new _TCPclient();
 		IF_CONT(!pSocket);

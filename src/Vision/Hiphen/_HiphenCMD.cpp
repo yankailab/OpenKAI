@@ -12,8 +12,6 @@ namespace kai
 
 _HiphenCMD::_HiphenCMD()
 {
-	m_nSave = 1;
-	m_nSnap = 3;
 }
 
 _HiphenCMD::~_HiphenCMD()
@@ -24,9 +22,6 @@ bool _HiphenCMD::init(void* pKiss)
 {
 	IF_F(!_TCPclient::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	KISSm(pK, nSave);
-	KISSm(pK, nSnap);
 
 	return true;
 }

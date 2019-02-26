@@ -55,8 +55,6 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(AProver_base);
 
-		ADD_ACTION(Generic_hiphenRGB);
-
 		ADD_ACTION(Traffic_base);
 		ADD_ACTION(Traffic_speed);
 		ADD_ACTION(Traffic_alert);

@@ -108,6 +108,10 @@ void _GPS::decodeNMEA(void)
 		{
 			if (minmea_parse_rmc(&m_rmc, m_msg.c_str()))
 			{
+				m_LL.m_lat = minmea_tocoord(&m_rmc.latitude);
+				m_LL.m_lng = minmea_tocoord(&m_rmc.longitude);
+				m_UTM = m_coord.LL2UTM(m_LL);
+
 				LOG_I("$xxRMC: raw coordinates and speed: lat="
 						+ i2str(m_rmc.latitude.value)
 						+ "/"  + i2str(m_rmc.latitude.scale)
