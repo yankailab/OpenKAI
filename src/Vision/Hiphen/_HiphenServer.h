@@ -24,8 +24,8 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 
-	void cleanupClient(void);
 	bool handler(void);
+	void cleanupClient(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -34,6 +34,8 @@ public:
 	}
 
 public:
+	string m_dir;
+	string m_subDir;
 
 };
 

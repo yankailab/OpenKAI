@@ -12,6 +12,9 @@ namespace kai
 
 _HiphenServer::_HiphenServer()
 {
+	m_dir = "/home/";
+	m_subDir = "";
+
 }
 
 _HiphenServer::~_HiphenServer()
@@ -22,6 +25,17 @@ bool _HiphenServer::init(void* pKiss)
 {
 	IF_F(!_TCPserver::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	KISSm(pK,dir);
+	KISSm(pK,subDir);
+
+	if(m_subDir.empty())
+		m_subDir = m_dir + tFormat() + "/";
+	else
+		m_subDir = m_dir + m_subDir;
+
+	string cmd = "mkdir " + m_subDir;
+	system(cmd.c_str());
 
 	return true;
 }
@@ -69,22 +83,23 @@ bool _HiphenServer::handler(void)
 			IF_CONT(m_lSocket.size() >= m_nSocket);
 		}
 
-		_HiphenIMG* pSocket = new _HiphenIMG();
-		IF_CONT(!pSocket);
-		pSocket->init(m_pKiss);
+		_HiphenIMG* pImgSock = new _HiphenIMG();
+		IF_CONT(!pImgSock);
+		pImgSock->init(m_pKiss);
 		struct sockaddr_in *pAddr = (struct sockaddr_in *) &clientAddr;
-		pSocket->m_strAddr = inet_ntoa(pAddr->sin_addr);
-		pSocket->m_socket = socketNew;
-		pSocket->m_ioStatus = io_opened;
-		pSocket->m_bClient = false;
+		pImgSock->m_strAddr = inet_ntoa(pAddr->sin_addr);
+		pImgSock->m_socket = socketNew;
+		pImgSock->m_ioStatus = io_opened;
+		pImgSock->m_bClient = false;
+		pImgSock->m_dir = m_subDir;
 
-		if (!pSocket->start())
+		if (!pImgSock->start())
 		{
-			delete pSocket;
+			delete pImgSock;
 			continue;
 		}
 
-		m_lSocket.push_back(pSocket);
+		m_lSocket.push_back(pImgSock);
 	}
 
 	close(m_socket);

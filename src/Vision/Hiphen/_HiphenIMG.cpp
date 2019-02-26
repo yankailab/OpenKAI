@@ -15,9 +15,9 @@ _HiphenIMG::_HiphenIMG()
 	m_iB = 0;
 	m_nB = 0;
 	m_nbImg = 0;
+	m_dir = "";
+	m_fileName = "";
 
-	m_dir = "/home/";
-	m_subDir = "";
 }
 
 _HiphenIMG::~_HiphenIMG()
@@ -29,9 +29,6 @@ bool _HiphenIMG::init(void* pKiss)
 {
 	IF_F(!this->_TCPclient::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	KISSm(pK,dir);
-	KISSm(pK,subDir);
 
 	return true;
 }
@@ -61,27 +58,23 @@ void _HiphenIMG::updateR(void)
 		int nR = ::recv(m_socket, &m_pBuf[m_iB], N_HIPHEN_BUF - m_iB, 0);
 		m_iB += nR;
 
-		if (m_nB > 0)
+		if(m_nB <= 0 && m_iB >= N_HIPHEN_HEADER)
 		{
-			if(m_iB >= m_nB)
-			{
-				close();
-				decodeData();
-				m_bComplete = true;
-				return;
-			}
+			decodeHeader();
+			m_nB = N_HIPHEN_HEADER + m_nbImg;
 		}
-		else
+
+		if(m_nB > 0 && m_iB >= m_nB)
 		{
-			if(m_iB >= N_HIPHEN_HEADER)
-			{
-				decodeHeader();
-				m_nB = N_HIPHEN_HEADER + m_nbImg;
-			}
+			close();
+			decodeData();
+			m_bComplete = true;
+			return;
 		}
 
 		if(nR == 0)
 		{
+			close();
 			m_bComplete = true;
 			return;
 		}
@@ -110,23 +103,18 @@ void _HiphenIMG::decodeHeader(void)
 
 void _HiphenIMG::decodeData(void)
 {
-	if(m_subDir.empty())
-		m_subDir = m_dir + tFormat() + "/";
-	else
-		m_subDir = m_dir + m_subDir;
-
-	string cmd = "mkdir " + m_subDir;
-	system(cmd.c_str());
-
 	IF_(m_fileName.length()<=0);
 	IF_(m_nbImg <= 0);
 
-	m_fileName = m_subDir + m_fileName;
+	m_fileName = m_dir + m_fileName;
 	ofstream of(m_fileName.c_str(), ofstream::binary);
-	IF_(!of.is_open());
-	of.write((char*)&m_pBuf[N_HIPHEN_HEADER], m_nbImg);
+	if(!of.is_open())
+	{
+		LOG_E("File open failed: " + m_fileName);
+		return;
+	}
 
-	of.flush();
+	of.write((char*)&m_pBuf[N_HIPHEN_HEADER], m_nbImg);
 	of.close();
 
 	//TODO: add exif GPS data

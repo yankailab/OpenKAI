@@ -43,9 +43,8 @@ public:
 	int m_nB;
 	int m_nbImg;
 
-	string m_dir;
-	string m_subDir;
 	string m_fileName;
+	string m_dir;
 };
 
 }

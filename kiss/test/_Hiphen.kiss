@@ -25,9 +25,9 @@
 	"class":"_HiphenServer",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"listenPort":2378,
-	"nListen":1,
-	"nSocket":1,
+	"nListen":128,
+	"nSocket":128,
 	"dir":"/home/kai/dev/test/",
 }

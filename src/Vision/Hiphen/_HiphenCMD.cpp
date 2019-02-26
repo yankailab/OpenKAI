@@ -64,7 +64,41 @@ bool _HiphenCMD::start(void)
 
 void _HiphenCMD::updateW(void)
 {
-	this->_TCPclient::updateW();
+	while (m_bThreadON)
+	{
+		if (!isOpen())
+		{
+			if (!open())
+			{
+				this->sleepTime(USEC_1SEC);
+				continue;
+			}
+
+			this->startRecord();
+		}
+
+		this->autoFPSfrom();
+
+		uint8_t pB[N_IO_BUF];
+		int nB;
+		while((nB = m_fifoW.output(pB, N_IO_BUF)) > 0)
+		{
+			int nSend = ::send(m_socket, pB, nB, 0);
+			if (nSend == -1)
+			{
+				if(errno == EAGAIN)break;
+				if(errno == EWOULDBLOCK)break;
+				LOG_E("send error: " + i2str(errno));
+				close();
+				break;
+			}
+
+			LOG_I("send: " + i2str(nSend) + " bytes");
+		}
+
+		this->autoFPSto();
+	}
+
 }
 
 void _HiphenCMD::updateR(void)
@@ -76,8 +110,6 @@ void _HiphenCMD::updateR(void)
 			::sleep(1);
 			continue;
 		}
-
-		this->startRecord();
 
 		uint8_t pB[N_IO_BUF];
 		int nR = ::recv(m_socket, pB, N_IO_BUF, 0);
