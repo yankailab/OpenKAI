@@ -34,6 +34,7 @@ bool _HiphenRGB::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,bFlip);
+	KISSm(pK,quality);
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 

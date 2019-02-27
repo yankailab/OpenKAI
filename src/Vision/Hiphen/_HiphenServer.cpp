@@ -118,7 +118,6 @@ void _HiphenServer::cleanupClient(void)
 		{
 			itr = m_lSocket.erase(itr);
 			delete pSocket;
-			return;
 		}
 		else
 		{

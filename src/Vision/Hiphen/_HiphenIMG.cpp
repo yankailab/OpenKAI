@@ -133,7 +133,6 @@ void _HiphenIMG::decodeData(void)
 		string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + m_fileName;
 		system(cmd.c_str());
 	}
-
 }
 
 }

@@ -4,8 +4,8 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":1,
-	"bConsole":0,
+	"bLog":0,
+	"bConsole":1,
 	"bStdErr":1,
 	"waitKey":30,
 }
@@ -33,12 +33,12 @@
 {
 	"name":"rgb",
 	"class":"_Camera",
-	"FPS":30,
+	"FPS":15,
 	"bInst":1,
 	"deviceID":0,
 	"w":3840,
 	"h":2160,
-	"nInitRead":1,
+	"nInitRead":2,
 	"bResetCam":1,
 }
 
@@ -61,7 +61,8 @@
 	"listenPort":2378,
 	"nListen":128,
 	"nSocket":128,
-	"dir":"/home/kai/dev/test/",
+	"_GPS":"GPS",
+	"dir":"/home/lab/hiphen/",
 }
 
 {
@@ -69,8 +70,9 @@
 	"class":"_HiphenRGB",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"_GPS":"GPS",
 	"_Camera":"rgb",
 	"_HiphenServer":"HiphenServer",
+	"quality":100,
 }
