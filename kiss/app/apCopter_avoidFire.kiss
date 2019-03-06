@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
-	"bDraw":0,
+	"bDraw":1,
 	"bLog":0,
 	"bConsole":1,
 	"bStdErr":1,
@@ -15,16 +15,16 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
 
 {
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video1 ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video1 ! videoflip method=0 ! videoconvert ! appsink",
 }
@@ -33,9 +33,9 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
-	"deviceID":1,
+	"deviceID":0,
 	"w":640,
 	"h":512,
 }
@@ -74,7 +74,38 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_IOBase":"apSerial",	
+	"_IOBase":"apSerial",
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}	
 }
 
 {
@@ -173,7 +204,7 @@
 	
 			{
 				"name":"mount",
-				"pitch":30,
+				"pitch":-60,
 				"roll":0,
 				"yaw":0,
 				"stabPitch":1,
