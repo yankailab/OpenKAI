@@ -36,6 +36,7 @@ public:
 	PIDctrl* m_pAlt;
 	double	m_vYaw;
 
+	bool	m_bFixYaw;
 	bool	m_bSetV;
 	bool	m_bSetP;
 	bool	m_bSetON;

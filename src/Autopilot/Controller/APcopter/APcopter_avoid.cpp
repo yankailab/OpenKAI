@@ -1,9 +1,9 @@
-#include "APcopter_target.h"
+#include "APcopter_avoid.h"
 
 namespace kai
 {
 
-APcopter_target::APcopter_target()
+APcopter_avoid::APcopter_avoid()
 {
 	m_pAP = NULL;
 	m_pPC = NULL;
@@ -29,11 +29,11 @@ APcopter_target::APcopter_target()
 
 }
 
-APcopter_target::~APcopter_target()
+APcopter_avoid::~APcopter_avoid()
 {
 }
 
-bool APcopter_target::init(void* pKiss)
+bool APcopter_avoid::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -115,7 +115,7 @@ bool APcopter_target::init(void* pKiss)
 	return true;
 }
 
-int APcopter_target::check(void)
+int APcopter_avoid::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -133,7 +133,7 @@ int APcopter_target::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_target::update(void)
+void APcopter_avoid::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
@@ -170,6 +170,14 @@ void APcopter_target::update(void)
 		return;
 	}
 
+	//TODO: change to map based avoidance
+
+	if(m_vTargetPos.x < 0.5)
+		m_vTargetPos.x = 1.0;
+	else
+		m_vTargetPos.x = 0.0;
+	m_vTargetPos.y = m_vMyPos.y;
+
 	m_bFound = true;
 	m_pPC->setPos(m_vMyPos, m_vTargetPos);
 
@@ -177,7 +185,7 @@ void APcopter_target::update(void)
 		m_pAP->setApMode(GUIDED);
 }
 
-bool APcopter_target::find(void)
+bool APcopter_avoid::find(void)
 {
 	IF__(check()<0, false);
 
@@ -241,12 +249,12 @@ bool APcopter_target::find(void)
 	return true;
 }
 
-bool APcopter_target::bFound(void)
+bool APcopter_avoid::bFound(void)
 {
 	return m_bFound;
 }
 
-bool APcopter_target::draw(void)
+bool APcopter_avoid::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -259,7 +267,7 @@ bool APcopter_target::draw(void)
 	if(!bActive())
 		pWin->addMsg("Inactive");
 
-	pWin->addMsg("Target = (" + f2str(m_vTargetPos.x) + ", "
+	pWin->addMsg("Avoid Target = (" + f2str(m_vTargetPos.x) + ", "
 							   + f2str(m_vTargetPos.y) + ", "
 					           + f2str(m_vTargetPos.z) + ", "
 				           	   + f2str(m_vTargetPos.w) + ")");
@@ -269,7 +277,7 @@ bool APcopter_target::draw(void)
 	return true;
 }
 
-bool APcopter_target::console(int& iY)
+bool APcopter_avoid::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);
@@ -281,7 +289,7 @@ bool APcopter_target::console(int& iY)
 		C_MSG("Inactive");
 	}
 
-	C_MSG("Target = (" + f2str(m_vTargetPos.x) + ", "
+	C_MSG("Avoid Target = (" + f2str(m_vTargetPos.x) + ", "
 				     	 + f2str(m_vTargetPos.y) + ", "
 						 + f2str(m_vTargetPos.z) + ", "
 						 + f2str(m_vTargetPos.w) + ")");

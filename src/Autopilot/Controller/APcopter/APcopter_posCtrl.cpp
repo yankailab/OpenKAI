@@ -17,6 +17,7 @@ APcopter_posCtrl::APcopter_posCtrl()
 	m_bSetV = true;
 	m_bSetP = false;
 	m_bSetON = false;
+	m_bFixYaw = true;
 }
 
 APcopter_posCtrl::~APcopter_posCtrl()
@@ -31,6 +32,7 @@ bool APcopter_posCtrl::init(void* pKiss)
 	KISSm(pK,vYaw);
 	KISSm(pK,bSetV);
 	KISSm(pK,bSetP);
+	KISSm(pK,bFixYaw);
 
 	string iName;
 
@@ -71,6 +73,16 @@ void APcopter_posCtrl::update(void)
 	{
 		clear();
 		return;
+	}
+
+	if(m_bFixYaw)
+	{
+		mavlink_param_set_t D;
+		D.param_type = MAV_PARAM_TYPE_INT8;
+		D.param_value = 0;
+		string id = "WP_YAW_BEHAVIOR";
+		strcpy(D.param_id, id.c_str());
+		m_pAP->m_pMavlink->param_set(D);
 	}
 
 	double p=0,r=0,a=0;

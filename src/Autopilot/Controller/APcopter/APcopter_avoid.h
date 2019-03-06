@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Controller_APcopter_target_H_
-#define OpenKAI_src_Autopilot_Controller_APcopter_target_H_
+#ifndef OpenKAI_src_Autopilot_Controller_APcopter_avoid_H_
+#define OpenKAI_src_Autopilot_Controller_APcopter_avoid_H_
 
 #include "../../../Base/common.h"
 #include "../../../Base/_ObjectBase.h"
@@ -11,11 +11,11 @@
 namespace kai
 {
 
-class APcopter_target: public ActionBase
+class APcopter_avoid: public ActionBase
 {
 public:
-	APcopter_target();
-	~APcopter_target();
+	APcopter_avoid();
+	~APcopter_avoid();
 
 	virtual	bool init(void* pKiss);
 	virtual int check(void);
