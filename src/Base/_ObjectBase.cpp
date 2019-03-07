@@ -17,10 +17,10 @@ _ObjectBase::_ObjectBase()
 	m_classFile = "";
 	m_dMaxTrack = 1.0;
 	m_minConfidence = 0.0;
-	m_minArea = 0.0;
-	m_maxArea = 1.0;
-	m_maxW = 1.0;
-	m_maxH = 1.0;
+	m_minArea = -1.0;
+	m_maxArea = -1.0;
+	m_maxW = -1.0;
+	m_maxH = -1.0;
 	m_nClass = 0;
 	m_obj.reset();
 	m_roi.init();
@@ -181,10 +181,23 @@ OBJECT* _ObjectBase::add(OBJECT* pNewO)
 	NULL_N(pNewO);
 
 	double area = pNewO->m_bb.area();
-	IF_N(area < m_minArea);
-	IF_N(area > m_maxArea);
-	IF_N(pNewO->m_bb.width() > m_maxW);
-	IF_N(pNewO->m_bb.height() > m_maxH);
+	if(m_minArea >= 0)
+	{
+		IF_N(area < m_minArea);
+	}
+	if(m_maxArea >= 0)
+	{
+		IF_N(area > m_maxArea);
+	}
+
+	if(m_maxW >= 0)
+	{
+		IF_N(pNewO->m_bb.width() > m_maxW);
+	}
+	if(m_maxH >= 0)
+	{
+		IF_N(pNewO->m_bb.height() > m_maxH);
+	}
 
 	if(m_bTrack)
 	{

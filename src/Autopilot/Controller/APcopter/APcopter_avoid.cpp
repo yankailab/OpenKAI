@@ -181,6 +181,7 @@ void APcopter_avoid::update(void)
 	m_bFound = true;
 	m_pPC->setPos(m_vMyPos, m_vTargetPos);
 
+	//TODO: transmitter mode switch is disrupted by this line
 	if(m_pAP->getApMode() == m_apMode)
 		m_pAP->setApMode(GUIDED);
 }

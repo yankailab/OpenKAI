@@ -21,6 +21,7 @@ namespace kai
 struct OBJECT
 {
 	vDouble4	m_bb;
+	vDouble4	m_bb2;
 	double		m_dist;
 	vDouble2	m_vOpt;
 	vDouble2	m_vTrack;
@@ -34,6 +35,7 @@ struct OBJECT
 	void init(void)
 	{
 		m_bb.init();
+		m_bb2.init();
 		m_dist = -1.0;
 		m_vOpt.init();
 		m_vTrack.init();

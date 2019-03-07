@@ -16,7 +16,7 @@ _DNNdetect::_DNNdetect()
 	m_bSwapRB = true;
 	m_vMean.init();
 	m_scale = 1.0/255.0;
-	m_iClassDraw = 0;
+	m_iClassDraw = -1;
 
 	m_iBackend = cv::dnn::DNN_BACKEND_OPENCV;
 	m_iTarget = cv::dnn::DNN_TARGET_CPU;
@@ -221,7 +221,10 @@ bool _DNNdetect::draw(void)
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
-		IF_CONT(iClass != m_iClassDraw);
+		if(m_iClassDraw >= 0)
+		{
+			IF_CONT(iClass != m_iClassDraw);
+		}
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 

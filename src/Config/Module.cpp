@@ -29,6 +29,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ClusterNet);
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
+	ADD_MODULE(_DNNtext);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenRGB);

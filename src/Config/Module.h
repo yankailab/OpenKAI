@@ -21,6 +21,7 @@
 #include "../Detector/_MotionDetector.h"
 #include "../Detector/_DNNdetect.h"
 #include "../Detector/_DNNclassifier.h"
+#include "../Detector/_DNNtext.h"
 #include "../Detector/_Thermal.h"
 
 #include "../Navigation/_Path.h"
