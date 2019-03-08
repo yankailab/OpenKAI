@@ -11,6 +11,7 @@
 //#define USE_ORB_SLAM2
 //#define USE_CASCADE
 //#define USE_CUDASTEREO
+//#define USE_OCR
 
 #ifdef USE_TENSORRT
 #define USE_CUDA

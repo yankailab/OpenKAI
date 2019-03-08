@@ -66,7 +66,7 @@ bool _ClusterNet::init(void* pKiss)
 	for(i=0; i<m_nObj; i++)
 		m_ppObj[i]=NULL;
 
-	OBJECT mO;
+	OBJECT o;
 	k = 0;
 	m_aW = m_area.z - m_area.x;
 	m_aH = m_area.w - m_area.y;
@@ -75,14 +75,14 @@ bool _ClusterNet::init(void* pKiss)
 	{
 		for (j = 0; j < m_size.x; j++)
 		{
-			mO.init();
-			mO.m_pBB[0].x = m_area.x + j * m_dW * m_aW;
-			mO.m_pBB[1].x = mO.m_pBB[0].x + m_w * m_aW;
-			mO.m_pBB[0].y = m_area.y + i * m_dH * m_aH;
-			mO.m_pBB[1].y = mO.m_pBB[0].y + m_h * m_aH;
-			mO.m_nBBp = 2;
+			o.init();
+			o.m_type = obj_bb2;
+			o.m_o.m_bb2.m_bb.x = m_area.x + j * m_dW * m_aW;
+			o.m_o.m_bb2.m_bb.z = o.m_o.m_bb2.m_bb.x + m_w * m_aW;
+			o.m_o.m_bb2.m_bb.y = m_area.y + i * m_dH * m_aH;
+			o.m_o.m_bb2.m_bb.w = o.m_o.m_bb2.m_bb.y + m_h * m_aH;
 
-			m_ppObj[k] = m_pDet->add(&mO);
+			m_ppObj[k] = m_pDet->add(&o);
 			NULL_F(m_ppObj[k]);
 			k++;
 		}
@@ -141,11 +141,10 @@ void _ClusterNet::cluster(void)
 			IF_CONT(b.x < 0);
 
 			OBJECT o = *pO;
-			o.m_pBB[0].x = m_area.x + b.x * m_dW * m_aW;
-			o.m_pBB[1].x = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
-			o.m_pBB[0].y = m_area.y + b.y * m_dH * m_aH;
-			o.m_pBB[1].y = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
-			o.m_nBBp = 2;
+			o.m_o.m_bb2.m_bb.x = m_area.x + b.x * m_dW * m_aW;
+			o.m_o.m_bb2.m_bb.z = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
+			o.m_o.m_bb2.m_bb.y = m_area.y + b.y * m_dH * m_aH;
+			o.m_o.m_bb2.m_bb.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
 			add(&o);
 
 			int i, j;

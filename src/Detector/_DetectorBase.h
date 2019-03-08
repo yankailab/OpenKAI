@@ -14,15 +14,162 @@
 
 #define OBJECT_N_OBJ 256
 #define OBJECT_N_CLASS 256
-#define OBJECT_N_BBP 4
 
 namespace kai
 {
 
+struct OBJ_BB2
+{
+	vFloat4		m_bb;
+
+	void setBB(Rect& r, vInt2& cs)
+	{
+		float b;
+		b = 1.0 / cs.x;
+		m_bb.x = r.x * b;
+		m_bb.z = (r.x + r.width) * b;
+		b = 1.0 / cs.y;
+		m_bb.y = r.y * b;
+		m_bb.w = (r.y + r.height) * b;
+	}
+
+	Rect getRect(vInt2& cs)
+	{
+		Rect r;
+		r.x = m_bb.x * cs.x;
+		r.y = m_bb.y * cs.y;
+		r.width = m_bb.z * cs.x - r.x;
+		r.height = m_bb.w * cs.y - r.y;
+		return r;
+	}
+};
+
+struct OBJ_BB4
+{
+	vFloat4		m_bb;
+	vFloat2		m_pP[4];
+
+	Rect getRect(void)
+	{
+		vector<Point> vP;
+		Point p;
+		for(int i=0;i<4;i++)
+		{
+			p.x = m_pP[i].x;
+			p.y = m_pP[i].y;
+			vP.push_back(p);
+		}
+		return boundingRect(vP);
+	}
+
+	vFloat4 getBB(vInt2& cs)
+	{
+		Rect r = getRect();
+
+		float b;
+		b = 1.0 / cs.x;
+		m_bb.x = r.x * b;
+		m_bb.z = (r.x + r.width) * b;
+		b = 1.0 / cs.y;
+		m_bb.y = r.y * b;
+		m_bb.w = (r.y + r.height) * b;
+
+		return m_bb;
+	}
+
+	Rect getRect(vInt2& cs)
+	{
+		Rect r;
+		r.x = m_bb.x * cs.x;
+		r.y = m_bb.y * cs.y;
+		r.width = m_bb.z * cs.x - r.x;
+		r.height = m_bb.w * cs.y - r.y;
+		return r;
+	}
+};
+
+struct OBJ_MARKER
+{
+	vFloat2		m_p;
+	float		m_r;
+	float		m_angle;
+};
+
+#ifdef USE_OCR
+#define OBJ_TEXT_N_BUF 16
+struct OBJ_TEXT
+{
+	vFloat4		m_bb;
+	vFloat2		m_pP[4];
+	char		m_pText[OBJ_TEXT_N_BUF];
+
+	Rect getRect(void)
+	{
+		vector<Point> vP;
+		Point p;
+		for(int i=0;i<4;i++)
+		{
+			p.x = m_pP[i].x;
+			p.y = m_pP[i].y;
+			vP.push_back(p);
+		}
+		return boundingRect(vP);
+	}
+
+	vFloat4 getBB(vInt2& cs)
+	{
+		Rect r = getRect();
+
+		float b;
+		b = 1.0 / cs.x;
+		m_bb.x = r.x * b;
+		m_bb.z = (r.x + r.width) * b;
+		b = 1.0 / cs.y;
+		m_bb.y = r.y * b;
+		m_bb.w = (r.y + r.height) * b;
+
+		return m_bb;
+	}
+
+	Rect getRect(vInt2& cs)
+	{
+		Rect r;
+		r.x = m_bb.x * cs.x;
+		r.y = m_bb.y * cs.y;
+		r.width = m_bb.z * cs.x - r.x;
+		r.height = m_bb.w * cs.y - r.y;
+		return r;
+	}
+};
+#endif
+
+union UNI_OBJECT
+{
+	OBJ_BB2 m_bb2;
+	OBJ_BB4 m_bb4;
+	OBJ_MARKER m_marker;
+
+#ifdef USE_OCR
+	OBJ_TEXT m_text;
+#endif
+};
+
+enum OBJ_TYPE
+{
+	obj_unknown,
+	obj_bb2,
+	obj_bb4,
+	obj_marker,
+
+#ifdef USE_OCR
+	obj_text,
+#endif
+};
+
 struct OBJECT
 {
-	vFloat2		m_pBB[OBJECT_N_BBP];
-	int			m_nBBp;
+	UNI_OBJECT	m_o;
+	OBJ_TYPE	m_type;
 	int			m_topClass;		//most probable class
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
@@ -31,7 +178,7 @@ struct OBJECT
 
 	void init(void)
 	{
-		resetBB();
+		m_type = obj_unknown;
 		resetClass();
 		m_pTracker = NULL;
 		m_tStamp = -1;
@@ -71,65 +218,44 @@ struct OBJECT
 		m_mClass = 0;
 	}
 
-	void resetBB(void)
+	float area(void)
 	{
-		for(int i=0;i<OBJECT_N_BBP;i++)
+		switch (m_type)
 		{
-			m_pBB[i].init();
+		case obj_bb2:
+			return m_o.m_bb2.m_bb.area();
+		case obj_bb4:
+			return m_o.m_bb4.m_bb.area();
+		default:
+			return -1;
 		}
-
-		m_nBBp = 0;
-	}
-
-	void setBB(Rect& r, vInt2& cs)
-	{
-		float b;
-		b = 1.0 / cs.x;
-		m_pBB[0].x = r.x * b;
-		m_pBB[1].x = (r.x + r.width) * b;
-		b = 1.0 / cs.y;
-		m_pBB[0].y = r.y * b;
-		m_pBB[1].y = (r.y + r.height) * b;
-
-		m_nBBp = 2;
-	}
-
-	vFloat4 getBB(void)
-	{
-		vFloat4 bb;
-		bb.x = m_pBB[0].x;
-		bb.y = m_pBB[0].y;
-		bb.z = m_pBB[1].x;
-		bb.w = m_pBB[1].y;
-		return bb;
-	}
-
-	Rect getRect(vInt2& cs)
-	{
-		Rect r;
-		r.x = m_pBB[0].x * cs.x;
-		r.y = m_pBB[0].y * cs.y;
-		r.width = m_pBB[1].x * cs.x - r.x;
-		r.height = m_pBB[1].y * cs.y - r.y;
-
-		return r;
 	}
 
 	float width(void)
 	{
-		return abs(m_pBB[1].x - m_pBB[0].x);
+		switch (m_type)
+		{
+		case obj_bb2:
+			return m_o.m_bb2.m_bb.width();
+		case obj_bb4:
+			return m_o.m_bb4.m_bb.width();
+		default:
+			return -1;
+		}
 	}
 
 	float height(void)
 	{
-		return abs(m_pBB[1].y - m_pBB[0].y);
+		switch (m_type)
+		{
+		case obj_bb2:
+			return m_o.m_bb2.m_bb.height();
+		case obj_bb4:
+			return m_o.m_bb4.m_bb.height();
+		default:
+			return -1;
+		}
 	}
-
-	float area(void)
-	{
-		return width()*height();
-	}
-
 };
 
 struct OBJECT_ARRAY

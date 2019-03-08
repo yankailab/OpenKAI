@@ -25,6 +25,7 @@ public:
 	int check(void);
 
 private:
+	void ocr(void);
 	void decode(const Mat& mScores, const Mat& mGeometry, float scoreThresh,
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
 	bool detect(void);
@@ -37,6 +38,15 @@ private:
 
 public:
 	vDouble3 m_vMean;
+
+#ifdef USE_OCR
+	bool	m_bOCR;
+	tesseract::TessBaseAPI* m_pOCR;
+	string	m_ocrDataDir;
+	string	m_ocrLanguage;
+	int		m_ocrMode;
+	int		m_ocrPageMode;
+#endif
 
 };
 

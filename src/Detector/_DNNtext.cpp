@@ -17,10 +17,26 @@ _DNNtext::_DNNtext()
 	m_vMean.y = 116.78;
 	m_vMean.z = 103.94;
 	m_scale = 1.0;
+
+#ifdef USE_OCR
+	m_bOCR = false;
+	m_pOCR = NULL;
+	m_ocrDataDir = "";
+	m_ocrLanguage = "eng";
+	m_ocrMode = tesseract::OEM_LSTM_ONLY;
+	m_ocrPageMode = tesseract::PSM_AUTO;
+#endif
 }
 
 _DNNtext::~_DNNtext()
 {
+#ifdef USE_OCR
+	if(m_pOCR)
+	{
+		m_pOCR->End();
+		delete m_pOCR;
+	}
+#endif
 }
 
 bool _DNNtext::init(void* pKiss)
@@ -50,6 +66,19 @@ bool _DNNtext::init(void* pKiss)
 	m_vLayerName.resize(2);
 	m_vLayerName[0] = "feature_fusion/Conv_7/Sigmoid";
 	m_vLayerName[1] = "feature_fusion/concat_3";
+
+#ifdef USE_OCR
+	KISSm(pK, bOCR);
+	KISSm(pK, ocrDataDir);
+	KISSm(pK, ocrLanguage);
+	KISSm(pK, ocrMode);
+	KISSm(pK, ocrPageMode);
+
+	IF_T(!m_bOCR);
+	m_pOCR = new tesseract::TessBaseAPI();
+	m_pOCR->Init(m_ocrDataDir.c_str(), m_ocrLanguage.c_str(), (tesseract::OcrEngineMode)m_ocrMode);
+	m_pOCR->SetPageSegMode((tesseract::PageSegMode)m_ocrPageMode);
+#endif
 
 	return true;
 }
@@ -134,29 +163,51 @@ bool _DNNtext::detect(void)
 	std::vector<int> vIndices;
 	NMSBoxes(vBoxes, vConfidences, m_thr, m_nms, vIndices);
 
-	float bX = 1.0 / (float) mIn.cols;
-	float bY = 1.0 / (float) mIn.rows;
-	float rX = (float) mIn.cols / (float) m_nW;
-	float rY = (float) mIn.rows / (float) m_nH;
+	vInt2 cs;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
+	float rX = (float) mBGR.cols / (float) m_nW;
+	float rY = (float) mBGR.rows / (float) m_nH;
 
 	for (size_t i = 0; i < vIndices.size(); i++)
 	{
 		OBJECT o;
 		o.init();
+#ifdef USE_OCR
+		o.m_tStamp = obj_text;
+#else
+		o.m_type = obj_bb4;
+#endif
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
 
 		Point2f pV[4];
 		RotatedRect& box = vBoxes[vIndices[i]];
 		box.points(pV);
-		for(int p=0; p<4; p++)
+		for (int p = 0; p < 4; p++)
 		{
-			o.m_pBB[p].x = (pV[p].x * rX + rRoi.x) * bX;
-			o.m_pBB[p].y = (pV[p].y * rY + rRoi.y) * bY;
+#ifdef USE_OCR
+			o.m_o.m_text.m_pP[p].x = (pV[p].x * rX + rRoi.x);
+			o.m_o.m_text.m_pP[p].y = (pV[p].y * rY + rRoi.y);
+#else
+			o.m_o.m_bb4.m_pP[p].x = (pV[p].x * rX + rRoi.x);
+			o.m_o.m_bb4.m_pP[p].y = (pV[p].y * rY + rRoi.y);
+#endif
 		}
+
+#ifdef USE_OCR
+		o.m_o.m_text.getBB(cs);
+#else
+		o.m_o.m_bb4.getBB(cs);
+#endif
 
 		this->add(&o);
 	}
+
+#ifdef USE_OCR
+	if(m_bOCR)
+		ocr();
+#endif
 
 	return true;
 }
@@ -213,6 +264,42 @@ void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
 	}
 }
 
+void _DNNtext::ocr(void)
+{
+#ifdef USE_OCR
+	Mat mIn = *m_BGR.m();
+
+//	vInt4 iRoi;
+//	iRoi.x = mIn.cols * m_roi.x;
+//	iRoi.y = mIn.rows * m_roi.y;
+//	iRoi.z = mIn.cols * m_roi.z;
+//	iRoi.w = mIn.rows * m_roi.w;
+//	Rect rRoi;
+//	vInt42rect(iRoi, rRoi);
+//	Mat mBGR = mIn(rRoi);
+
+	Mat mBGR = mIn;
+	m_pOCR->SetImage(mBGR.data, mBGR.cols, mBGR.rows, 3, mBGR.step);
+
+	vInt2 cs;
+	cs.x = mBGR.cols;
+	cs.y = mBGR.rows;
+
+	OBJECT* pO;
+	int i = 0;
+	while ((pO = m_obj.at(i++)) != NULL)
+	{
+		Rect r = pO->m_o.m_text.getRect(cs);
+		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
+		string strOCR = string(m_pOCR->GetUTF8Text());
+		strncpy(pO->m_o.m_text.m_pText, strOCR.c_str(), OBJ_TEXT_N_BUF);
+		pO->m_o.m_text.m_pText[OBJ_TEXT_N_BUF-1] = 0;
+
+		LOG_I(strOCR);
+	}
+#endif
+}
+
 bool _DNNtext::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
@@ -224,27 +311,42 @@ bool _DNNtext::draw(void)
 	vInt2 cs;
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
-	Scalar col = Scalar(0, 0, 255);
+	Scalar col = Scalar(0, 255, 0);
+	int t = 1;
 
 	OBJECT* pO;
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
-        line(*pMat, Point2f(pO->m_pBB[0].x*cs.x, pO->m_pBB[0].y*cs.y),
-        			Point2f(pO->m_pBB[1].x*cs.x, pO->m_pBB[1].y*cs.y),
-					col, 1);
+#ifdef USE_OCR
+		vFloat2* pP = pO->m_o.m_text.m_pP;
+#else
+		vFloat2* pP = pO->m_o.m_bb4.m_pP;
+#endif
 
-        line(*pMat, Point2f(pO->m_pBB[1].x*cs.x, pO->m_pBB[1].y*cs.y),
-        			Point2f(pO->m_pBB[2].x*cs.x, pO->m_pBB[2].y*cs.y),
-					col, 1);
+		line(*pMat, Point2f(pP[0].x, pP[0].y),
+					Point2f(pP[1].x, pP[1].y), col, t);
 
-        line(*pMat, Point2f(pO->m_pBB[2].x*cs.x, pO->m_pBB[2].y*cs.y),
-        			Point2f(pO->m_pBB[3].x*cs.x, pO->m_pBB[3].y*cs.y),
-					col, 1);
+		line(*pMat, Point2f(pP[1].x, pP[1].y),
+					Point2f(pP[2].x, pP[2].y), col, t);
 
-        line(*pMat, Point2f(pO->m_pBB[3].x*cs.x, pO->m_pBB[3].y*cs.y),
-        			Point2f(pO->m_pBB[0].x*cs.x, pO->m_pBB[0].y*cs.y),
-					col, 1);
+		line(*pMat, Point2f(pP[2].x, pP[2].y),
+					Point2f(pP[3].x, pP[3].y), col, t);
+
+		line(*pMat, Point2f(pP[3].x, pP[3].y),
+					Point2f(pP[0].x, pP[0].y), col, t);
+
+
+#ifdef USE_OCR
+		Rect r = pO->m_o.m_text.getRect(cs);
+		rectangle(*pMat, r, col, t);
+
+		IF_CONT(!m_bOCR);
+		putText(*pMat, string(pO->m_o.m_text.m_pText),
+				Point(pO->m_o.m_text.m_bb.x * pMat->cols,
+					  pO->m_o.m_text.m_bb.w * pMat->rows),
+				FONT_HERSHEY_SIMPLEX, 1.5, col, 2);
+#endif
 	}
 
 	return true;

@@ -41,10 +41,14 @@ public:
 	Median m_fX;
 	Median m_fY;
 	Median m_fHdg;
+	bool	m_bAxisXY;
+	float	m_kX;
+	float	m_kY;
 
 	UTM_POS m_utmPos;
 	LL_POS m_llGPSorigin;
 	UTM_POS m_utmGPSorigin;
+	bool	m_bUseApOrigin;
 
 	vDouble3 m_vSlamPos;
 	vDouble3 m_vVelo;

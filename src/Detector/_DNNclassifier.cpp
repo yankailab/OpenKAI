@@ -122,17 +122,18 @@ bool _DNNclassifier::classify(void)
     cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
     IF_T(conf < m_minConfidence);
 
-	OBJECT obj;
-	obj.init();
-	obj.m_tStamp = m_tStamp;
-	obj.setTopClass(pClassID.x, conf);
+	OBJECT o;
+	o.init();
+	o.m_type = obj_bb2;
+	o.m_tStamp = m_tStamp;
+	o.setTopClass(pClassID.x, conf);
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-	obj.setBB(rRoi, cs);
+	o.m_o.m_bb2.setBB(rRoi, cs);
 
-	this->add(&obj);
-	LOG_I("Class: " + i2str(obj.m_topClass));
+	this->add(&o);
+	LOG_I("Class: " + i2str(o.m_topClass));
 
 	return true;
 }

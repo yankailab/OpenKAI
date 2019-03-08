@@ -183,14 +183,15 @@ bool _DNNdetect::detect(void)
 	{
 		int idx = vIndex[i];
 
-		OBJECT obj;
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setTopClass(vClassID[idx], (double)vConfidence[idx]);
-		obj.setBB(vRect[idx], cs);
+		OBJECT o;
+		o.init();
+		o.m_type = obj_bb2;
+		o.m_tStamp = m_tStamp;
+		o.setTopClass(vClassID[idx], (double)vConfidence[idx]);
+		o.m_o.m_bb2.setBB(vRect[idx], cs);
 
-		this->add(&obj);
-		LOG_I("Class: " + i2str(obj.m_topClass));
+		this->add(&o);
+		LOG_I("Class: " + i2str(o.m_topClass));
 	}
 
 	return true;
@@ -214,14 +215,11 @@ bool _DNNdetect::draw(void)
 	while((pO = m_obj.at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
-		if(m_iClassDraw >= 0)
-		{
-			IF_CONT(iClass != m_iClassDraw);
-		}
+		IF_CONT(m_iClassDraw >= 0 && iClass != m_iClassDraw);
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
-		Rect r = pO->getRect(cs);
+		Rect r = pO->m_o.m_bb2.getRect(cs);
 		rectangle(*pMat, r, col, 1);
 
 		string oName = m_vClass[iClass].m_name;
@@ -229,7 +227,7 @@ bool _DNNdetect::draw(void)
 		{
 			putText(*pMat, oName,
 					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 2.0, col, 5);
+					FONT_HERSHEY_SIMPLEX, 1.0, col, 2);
 		}
 	}
 

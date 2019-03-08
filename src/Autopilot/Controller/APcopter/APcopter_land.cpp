@@ -85,8 +85,8 @@ void APcopter_land::update(void)
 
 	if(m_tO.m_topClass >= 0)
 	{
-		m_vTargetPos.x = m_tO.m_pBB[0].x;
-		m_vTargetPos.y = m_tO.m_pBB[0].y;
+		m_vTargetPos.x = m_tO.m_o.m_marker.m_p.x;
+		m_vTargetPos.y = m_tO.m_o.m_marker.m_p.y;
 		m_vTargetPos.z *= (1.0 - constrain(big(abs(m_vTargetPos.x-0.5),abs(m_vTargetPos.y-0.5))*2, 0.0, 1.0));
 	}
 
@@ -113,8 +113,8 @@ bool APcopter_land::draw(void)
 
 	if (m_tO.m_topClass >= 0)
 	{
-		circle(*pMat, Point(m_tO.m_pBB[0].x * pMat->cols,
-							m_tO.m_pBB[0].y * pMat->rows),
+		circle(*pMat, Point(m_tO.m_o.m_bb2.m_bb.x * pMat->cols,
+							m_tO.m_o.m_bb2.m_bb.y * pMat->rows),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
 
 		pWin->addMsg("Target tag = " + i2str(m_tO.m_topClass));

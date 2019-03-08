@@ -91,17 +91,17 @@ struct vFloat2
 
 struct vFloat4
 {
-	double x;
-	double y;
-	double z;
-	double w;
+	float x;
+	float y;
+	float z;
+	float w;
 
-	double midX(void)
+	float midX(void)
 	{
 		return (x + z) * 0.5;
 	}
 
-	double midY(void)
+	float midY(void)
 	{
 		return (y + w) * 0.5;
 	}
@@ -114,17 +114,17 @@ struct vFloat4
 		return vC;
 	}
 
-	double width(void)
+	float width(void)
 	{
 		return z - x;
 	}
 
-	double height(void)
+	float height(void)
 	{
 		return w - y;
 	}
 
-	double area(void)
+	float area(void)
 	{
 		return abs((z - x) * (w - y));
 	}
@@ -137,7 +137,7 @@ struct vFloat4
 		w = 0.0;
 	}
 
-	void init(double v)
+	void init(float v)
 	{
 		x = v;
 		y = v;
@@ -165,7 +165,7 @@ struct vFloat4
 		return v;
 	}
 
-	inline vFloat4 operator*(double r)
+	inline vFloat4 operator*(float r)
     {
 		vFloat4 v;
 		v.x = x * r;
@@ -175,7 +175,7 @@ struct vFloat4
 		return v;
 	}
 
-	inline vFloat4 operator/(double r)
+	inline vFloat4 operator/(float r)
     {
 		vFloat4 v;
 		v.x = x / r;
@@ -185,7 +185,7 @@ struct vFloat4
 		return v;
 	}
 
-	inline void operator=(double r)
+	inline void operator=(float r)
     {
 		x = r;
 		y = r;
@@ -209,7 +209,7 @@ struct vFloat4
 		w -= r.w;
 	}
 
-	inline void operator*=(double r)
+	inline void operator*=(float r)
     {
 		x *= r;
 		y *= r;
@@ -217,7 +217,7 @@ struct vFloat4
 		w *= r;
 	}
 
-	inline void operator/=(double r)
+	inline void operator/=(float r)
     {
 		x /= r;
 		y /= r;
@@ -225,7 +225,7 @@ struct vFloat4
 		w /= r;
 	}
 
-	double len(void)
+	float len(void)
 	{
 		return sqrt(x*x + y*y + z*z + w*w);
 	}

@@ -173,7 +173,7 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
-	double area = pNewO->area();
+	float area = pNewO->area();
 	IF_N(m_minArea >= 0 && area < m_minArea);
 	IF_N(m_maxArea >= 0 && area > m_maxArea);
 	IF_N(m_maxW >= 0 && pNewO->width() > m_maxW);
@@ -227,7 +227,7 @@ bool _DetectorBase::draw(void)
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		//bb
-		Rect r = pO->getRect(cs);
+		Rect r = pO->m_o.m_bb2.getRect(cs);
 		rectangle(*pMat, r, oCol, 1);
 
 		//class

@@ -87,14 +87,15 @@ void _ArUco::detect(void)
     std::vector<std::vector<cv::Point2f> > vvCorner;
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
-	OBJECT obj;
+	OBJECT o;
 	float dx,dy;
 
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setTopClass(vID[i],1.0);
+		o.init();
+		o.m_type = obj_marker;
+		o.m_tStamp = m_tStamp;
+		o.setTopClass(vID[i],1.0);
 
 		Point2f pLT = vvCorner[i][0];
 		Point2f pRT = vvCorner[i][1];
@@ -104,21 +105,21 @@ void _ArUco::detect(void)
 		// center position
 		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
 		dy = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
-		obj.m_pBB[0].x = dx * bW;
-		obj.m_pBB[0].y = dy * bH;
+		o.m_o.m_marker.m_p.x = dx * bW;
+		o.m_o.m_marker.m_p.y = dy * bH;
 
 		// radius
 		dx -= pLT.x;
 		dy -= pLT.y;
-		obj.m_pBB[1].x = sqrt(dx*dx + dy*dy);
+		o.m_o.m_marker.m_r = sqrt(dx*dx + dy*dy);
 
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		obj.m_pBB[1].y = -atan2(dx,dy) * RAD_DEG;
+		o.m_o.m_marker.m_angle = -atan2(dx,dy) * RAD_DEG;
 
-		add(&obj);
-		LOG_I("ID: "+ i2str(obj.m_topClass));
+		add(&o);
+		LOG_I("ID: "+ i2str(o.m_topClass));
 	}
 }
 
@@ -136,16 +137,16 @@ bool _ArUco::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_pBB[0].x * pMat->cols,
-							  pO->m_pBB[0].y * pMat->rows);
-		circle(*pMat, pCenter, pO->m_pBB[1].x, Scalar(0, 255, 0), 2);
+		Point pCenter = Point(pO->m_o.m_marker.m_p.x * pMat->cols,
+							  pO->m_o.m_marker.m_p.y * pMat->rows);
+		circle(*pMat, pCenter, pO->m_o.m_marker.m_r, Scalar(0, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_pBB[1].y),
+		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_o.m_marker.m_angle),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 
-		double rad = -pO->m_pBB[1].y * DEG_RAD;
-		Point pD = Point(pO->m_pBB[1].x*sin(rad), pO->m_pBB[1].x*cos(rad));
+		double rad = -pO->m_o.m_marker.m_angle * DEG_RAD;
+		Point pD = Point(pO->m_o.m_marker.m_r*sin(rad), pO->m_o.m_marker.m_r*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 

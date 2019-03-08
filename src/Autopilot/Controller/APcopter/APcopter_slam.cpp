@@ -10,6 +10,9 @@ APcopter_slam::APcopter_slam()
 	m_pIOw = NULL;
 	m_iCmd = 0;
 	m_iSeq = 0;
+	m_bAxisXY = true;
+	m_kX = 1.0;
+	m_kY = 1.0;
 
 	m_gpsID = 0;
 	m_iFixType = 3;
@@ -20,6 +23,7 @@ APcopter_slam::APcopter_slam()
 	m_utmPos.init();
 	m_vVelo.init();
 
+	m_bUseApOrigin = true;
 	m_llGPSorigin.init();
 	m_vSlamPos.init();
 }
@@ -44,6 +48,9 @@ bool APcopter_slam::init(void* pKiss)
 	KISSm(pK,hdop);
 	KISSm(pK,vdop);
 	KISSm(pK,yawOffset);
+	KISSm(pK,bAxisXY);
+	KISSm(pK,kX);
+	KISSm(pK,kY);
 
 	int n = 3;
 	pK->v("nMedian", &n);
@@ -90,9 +97,19 @@ void APcopter_slam::update(void)
 	updatePos();
 	sendState();
 
-//	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
-//	m_GPS.m_UTM.m_hdg += m_yawOffset;
+	if(m_bUseApOrigin)
+	{
+		vDouble3 vHome;
+		IF_(!m_pAP->getHomePos(&vHome));
+
+		m_llGPSorigin.m_lat = vHome.x;
+		m_llGPSorigin.m_lng = vHome.y;
+		m_utmGPSorigin = m_GPS.LL2UTM(m_llGPSorigin);
+	}
+
 	m_utmGPSorigin.m_hdg = m_yawOffset;
+	//	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
+	//	m_GPS.m_UTM.m_hdg += m_yawOffset;
 	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
 
 	UTM_POS pUTM = m_GPS.offset(m_utmGPSorigin, m_vSlamPos);
@@ -146,8 +163,17 @@ void APcopter_slam::updatePos(void)
 		m_fY.input(((double)unpack_int16(&m_pCmd[5])) * 0.001);
 		m_fHdg.input(((double)unpack_int16(&m_pCmd[9])) * 0.001);
 
-		m_vSlamPos.x = m_fX.v();
-		m_vSlamPos.y = m_fY.v();
+		if(m_bAxisXY)
+		{
+			m_vSlamPos.x = m_kX * m_fX.v();
+			m_vSlamPos.y = m_kY * m_fY.v();
+		}
+		else
+		{
+			m_vSlamPos.x = m_kX * m_fY.v();
+			m_vSlamPos.y = m_kY * m_fX.v();
+		}
+
 		m_vSlamPos.z = m_fHdg.v();
 
 		LOG_I("iSeq=" + i2str((uint32_t)m_iSeq));

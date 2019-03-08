@@ -103,7 +103,7 @@ void _MotionDetector::detect(void)
 	vInt2 cs;
 	cs.x = m.cols;
 	cs.y = m.rows;
-	OBJECT obj;
+	OBJECT o;
 	for( int i = 0; i < vContours.size(); i++ )
 	{
 		vector<Point> vContourPoly;
@@ -111,12 +111,13 @@ void _MotionDetector::detect(void)
 	    Rect r = boundingRect( Mat(vContourPoly) );
 	    vContourPoly.clear();
 
-	    obj.init();
-	    obj.setTopClass(-1,0);
-	    obj.m_tStamp = m_tStamp;
-		obj.setBB(r,cs);
+	    o.init();
+	    o.m_type = obj_bb2;
+	    o.setTopClass(-1,0);
+	    o.m_tStamp = m_tStamp;
+		o.m_o.m_bb2.setBB(r,cs);
 
-	    add(&obj);
+	    add(&o);
 	}
 }
 

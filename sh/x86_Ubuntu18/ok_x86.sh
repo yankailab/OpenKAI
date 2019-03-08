@@ -25,8 +25,14 @@ sudo apt-get -y install libimage-exiftool-perl
 # Apache
 sudo apt-get -y install apache2
 
+# (Optional) Tesseract
+sudo apt-get -y install tesseract-ocr libtesseract-dev
+
 # (Optional) CUDA
-sudo apt -y install nvidia-cuda-toolkit nvidia-driver-390
+sudo add-apt-repository ppa:graphics-drivers/ppa 
+sudo apt-get update 
+sudo apt-get install nvidia-415
+sudo apt -y install nvidia-cuda-toolkit nvidia-driver-415
 sudo reboot
 
 sudo apt autoremove
