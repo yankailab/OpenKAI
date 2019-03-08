@@ -184,10 +184,10 @@ void APcopter_takePhoto::take(void)
 	pLL.m_altAbs = vP.z;
 	pLL.m_altRel = vP.z;
 
-	GPS gps;
-	UTM_POS pUTM = gps.LL2UTM(pLL);
-	pUTM = gps.offset(pUTM, m_vGPSoffset);
-	pLL = gps.UTM2LL(pUTM);
+	Coordinate coord;
+	UTM_POS pUTM = coord.LL2UTM(pLL);
+	pUTM = coord.offset(pUTM, m_vGPSoffset);
+	pLL = coord.UTM2LL(pUTM);
 
 	string lat = lf2str(pLL.m_lat, 7);
 	string lon = lf2str(pLL.m_lng, 7);

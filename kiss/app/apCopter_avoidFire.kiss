@@ -195,7 +195,7 @@
 			"_MissionControl":"apMission",
 			"APcopter_base":"apBase",
 			"activeMission":["STANDBY"],
-			"_ObjectBase":"det",
+			"_DetectorBase":"det",
 			"bUseTracker":0,
 			"iClass":0,
 			"apMode":5,

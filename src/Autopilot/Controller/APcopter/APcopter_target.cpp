@@ -87,8 +87,8 @@ bool APcopter_target::init(void* pKiss)
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
-	pK->v("_ObjectBase", &iName);
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	pK->v("_DetectorBase", &iName);
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDet, iName + ": not found");
 
 	iName = "";
@@ -194,14 +194,14 @@ bool APcopter_target::find(void)
 		topProb = pO->m_topProb;
 	}
 
-	vDouble4 bb;
+	vFloat4 bb;
 	if(m_bUseTracker)
 	{
 		if(tO)
 		{
 			if(m_pTnew->trackState() == track_stop)
 			{
-				m_pTnew->startTrack(tO->m_bb);
+//				m_pTnew->startTrack(tO->m_bb);
 			}
 		}
 
@@ -220,7 +220,7 @@ bool APcopter_target::find(void)
 			return false;
 		}
 
-		bb = *m_pTnow->getBB();
+//		bb = *m_pTnow->getBB();
 	}
 	else
 	{
@@ -231,7 +231,7 @@ bool APcopter_target::find(void)
 			return false;
 		}
 
-		bb = tO->m_bb;
+		bb = tO->getBB();
 	}
 
 	m_vTargetPos.x = bb.midX();

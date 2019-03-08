@@ -27,7 +27,7 @@ _Bullseye::~_Bullseye()
 
 bool _Bullseye::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,abs);
@@ -110,8 +110,8 @@ void _Bullseye::detect(void)
 	vector< vector< Point > > vvContours;
 	findContours(mThr, vvContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
 
-	vInt2 cSize;
-	m_pVision->info(&cSize, NULL, NULL);
+	vInt2 cs;
+	m_pVision->info(&cs, NULL, NULL);
 
 	OBJECT obj;
 	vector<Point> vPoly;
@@ -120,13 +120,11 @@ void _Bullseye::detect(void)
 		vPoly.clear();
 		approxPolyDP( vvContours[i], vPoly, 3, true );
 		Rect rBB = boundingRect(vPoly);
-		vInt4 iBB;
-		rect2vInt4(rBB,iBB);
 
 		obj.init();
 		obj.m_tStamp = m_tStamp;
-		obj.setBB(iBB, cSize);
-		obj.setTopClass(0, obj.m_bb.area());
+		obj.setBB(rBB, cs);
+		obj.setTopClass(0, obj.area());
 
 		add(&obj);
 		LOG_I("ID: "+ i2str(obj.m_topClass));

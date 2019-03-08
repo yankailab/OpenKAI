@@ -36,8 +36,8 @@ bool Traffic_base::init(void* pKiss)
 	//link
 	string iName;
 	iName = "";
-	pK->v("_ObjectBase", &iName);
-	m_pOB = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	pK->v("_DetectorBase", &iName);
+	m_pOB = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

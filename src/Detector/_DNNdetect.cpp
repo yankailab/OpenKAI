@@ -28,7 +28,7 @@ _DNNdetect::~_DNNdetect()
 
 bool _DNNdetect::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, thr);
@@ -175,26 +175,19 @@ bool _DNNdetect::detect(void)
 	// Perform non maximum suppression to eliminate redundant overlapping boxes with lower confidences
 	vector<int> vIndex;
 	NMSBoxes(vRect, vConfidence, m_thr, m_nms, vIndex);
-	vInt2 cSize;
-	cSize.x = mIn.cols;
-	cSize.y = mIn.rows;
+	vInt2 cs;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
 
 	for (size_t i = 0; i < vIndex.size(); i++)
 	{
 		int idx = vIndex[i];
-		Rect rBB = vRect[idx];
 
 		OBJECT obj;
 		obj.init();
 		obj.m_tStamp = m_tStamp;
 		obj.setTopClass(vClassID[idx], (double)vConfidence[idx]);
-
-		vInt4 iBB;
-		iBB.x = rRoi.x + rBB.x;
-		iBB.y = rRoi.y + rBB.y;
-		iBB.z = iBB.x + rBB.width;
-		iBB.w = iBB.y + rBB.height;
-		obj.setBB(iBB, cSize);
+		obj.setBB(vRect[idx], cs);
 
 		this->add(&obj);
 		LOG_I("Class: " + i2str(obj.m_topClass));
@@ -228,9 +221,7 @@ bool _DNNdetect::draw(void)
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
-		Rect r;
-		vInt4 iBB = pO->iBBox(cs);
-		vInt42rect(iBB, r);
+		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, col, 1);
 
 		string oName = m_vClass[iClass].m_name;

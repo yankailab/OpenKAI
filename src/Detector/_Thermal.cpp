@@ -22,7 +22,7 @@ _Thermal::~_Thermal()
 
 bool _Thermal::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,rL);
@@ -93,13 +93,11 @@ void _Thermal::detect(void)
 		vPoly.clear();
 		approxPolyDP( vvContours[i], vPoly, 3, true );
 		Rect rBB = boundingRect(vPoly);
-		vInt4 iBB;
-		rect2vInt4(rBB,iBB);
 
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setBB(iBB, cs);
-		o.setTopClass(0, o.m_bb.area());
+		o.setBB(rBB, cs);
+		o.setTopClass(0, o.area());
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));
@@ -108,7 +106,7 @@ void _Thermal::detect(void)
 
 bool _Thermal::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 

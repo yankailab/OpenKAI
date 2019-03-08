@@ -10,14 +10,14 @@
 
 #include "../../Base/common.h"
 #include "../../Vision/_VisionBase.h"
-#include "../../Base/_ObjectBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_TENSORFLOW
 
 namespace kai
 {
 
-class _TFdetect: public _ObjectBase
+class _TFdetect: public _DetectorBase
 {
 public:
 	_TFdetect();

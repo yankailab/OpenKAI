@@ -23,7 +23,6 @@
 #include "Controller/Traffic/Traffic_videoOut.h"
 #include "Controller/VEK/VEK_avoid.h"
 #include "Controller/VEK/VEK_base.h"
-#include "Controller/VEK/VEK_follow.h"
 
 #define ADD_ACTION(x) if(pAction->m_class==#x){A.m_pInst=new x();A.m_pKiss=pAction;}
 

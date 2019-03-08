@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_Traffic_speed_H_
 
 #include "../../../Base/common.h"
-#include "../../../Base/_ObjectBase.h"
+#include "../../../Detector/_DetectorBase.h"
 #include "../../../Filter/Median.h"
 #include "../../ActionBase.h"
 #include "Traffic_base.h"

@@ -9,14 +9,14 @@
 #define OpenKAI_src_Detector__Bullseye_H_
 
 #include "../Base/common.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 
 #ifdef USE_CUDA
 
 namespace kai
 {
 
-class _Bullseye : public _ObjectBase
+class _Bullseye : public _DetectorBase
 {
 public:
 	_Bullseye();

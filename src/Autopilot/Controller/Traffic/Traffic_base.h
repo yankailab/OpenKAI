@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_Traffic_base_H_
 
 #include "../../../Base/common.h"
-#include "../../../Base/_ObjectBase.h"
+#include "../../../Detector/_DetectorBase.h"
 #include "../../ActionBase.h"
 
 namespace kai
@@ -21,7 +21,7 @@ public:
 	bool bInsideROI(vDouble4& bb);
 
 public:
-	_ObjectBase* m_pOB;
+	_DetectorBase* m_pOB;
 
 	vector<Point2f>	m_vROI;
 

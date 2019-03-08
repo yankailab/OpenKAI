@@ -20,7 +20,7 @@ _TFdetect::~_TFdetect()
 
 bool _TFdetect::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, nPredAvr);
@@ -65,7 +65,7 @@ void _TFdetect::update(void)
 
 		detect();
 		m_obj.update();
-		this->_ObjectBase::update();
+		this->_DetectorBase::update();
 
 		this->autoFPSto();
 	}
@@ -130,7 +130,7 @@ void _TFdetect::detect(void)
 
 bool _TFdetect::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }

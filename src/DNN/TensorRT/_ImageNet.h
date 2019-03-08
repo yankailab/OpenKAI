@@ -9,7 +9,7 @@
 #define OpenKAI_src_DNN_TensorRT__ImageNet_H_
 
 #include "../../Base/common.h"
-#include "../../Base/_ObjectBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_TENSORRT
 

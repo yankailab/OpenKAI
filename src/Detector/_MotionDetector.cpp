@@ -26,7 +26,7 @@ _MotionDetector::~_MotionDetector()
 
 bool _MotionDetector::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK, algorithm);
@@ -98,29 +98,23 @@ void _MotionDetector::detect(void)
 
 	vector< vector< Point > > vContours;
 	vector<Vec4i> vHierarchy;
-	findContours(m_mFG, vContours, vHierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(m_mFG, vContours, vHierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
 
-	vInt2 cSize;
-	cSize.x = m.cols;
-	cSize.y = m.rows;
+	vInt2 cs;
+	cs.x = m.cols;
+	cs.y = m.rows;
 	OBJECT obj;
 	for( int i = 0; i < vContours.size(); i++ )
 	{
 		vector<Point> vContourPoly;
 		approxPolyDP( Mat(vContours[i]), vContourPoly, 3, true );
-	    Rect bbox = boundingRect( Mat(vContourPoly) );
+	    Rect r = boundingRect( Mat(vContourPoly) );
 	    vContourPoly.clear();
 
 	    obj.init();
 	    obj.setTopClass(-1,0);
 	    obj.m_tStamp = m_tStamp;
-
-		vInt4 iBB;
-		iBB.x = bbox.x;
-		iBB.y = bbox.y;
-		iBB.z = bbox.x + bbox.width;
-		iBB.w = bbox.y + bbox.height;
-		obj.setBB(iBB,cSize);
+		obj.setBB(r,cs);
 
 	    add(&obj);
 	}
@@ -128,7 +122,7 @@ void _MotionDetector::detect(void)
 
 bool _MotionDetector::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
@@ -142,7 +136,7 @@ bool _MotionDetector::draw(void)
 
 bool _MotionDetector::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::console(iY));
+	IF_F(!this->_DetectorBase::console(iY));
 
 	return true;
 }

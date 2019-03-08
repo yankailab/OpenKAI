@@ -9,14 +9,14 @@
 #define OpenKAI_src_Detector__MotionDetector_H_
 
 #include "../Base/common.h"
-#include "../Base/_ObjectBase.h"
+#include "_DetectorBase.h"
 
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
 
-class _MotionDetector : public _ObjectBase
+class _MotionDetector : public _DetectorBase
 {
 public:
 	_MotionDetector();

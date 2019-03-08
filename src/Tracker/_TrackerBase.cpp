@@ -42,8 +42,8 @@ bool _TrackerBase::init(void* pKiss)
 	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
 
 	iName = "";
-	F_ERROR_F(pK->v("_ObjectBase", &iName));
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }

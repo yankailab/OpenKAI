@@ -63,7 +63,6 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(VEK_base);
 		ADD_ACTION(VEK_avoid);
-		ADD_ACTION(VEK_follow);
 
 #ifdef USE_REALSENSE
 		ADD_ACTION(APcopter_takePhoto);

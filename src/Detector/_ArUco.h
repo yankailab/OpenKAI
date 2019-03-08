@@ -9,14 +9,14 @@
 #define OpenKAI_src_Detector__ArUco_H_
 
 #include "../Base/common.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
 
-class _ArUco : public _ObjectBase
+class _ArUco : public _DetectorBase
 {
 public:
 	_ArUco();

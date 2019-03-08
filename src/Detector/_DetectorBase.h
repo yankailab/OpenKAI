@@ -1,12 +1,12 @@
 /*
- * _ObjectBase.h
+ * _DetectorBase.h
  *
  *  Created on: Aug 17, 2016
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Base__ObjectBase_H_
-#define OpenKAI_src_Base__ObjectBase_H_
+#ifndef OpenKAI_src_Base__DetectorBase_H_
+#define OpenKAI_src_Base__DetectorBase_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
@@ -14,35 +14,27 @@
 
 #define OBJECT_N_OBJ 256
 #define OBJECT_N_CLASS 256
+#define OBJECT_N_BBP 4
 
 namespace kai
 {
 
 struct OBJECT
 {
-	vDouble4	m_bb;
-	vDouble4	m_bb2;
-	double		m_dist;
-	vDouble2	m_vOpt;
-	vDouble2	m_vTrack;
-	uint64_t	m_trackID;
+	vFloat2		m_pBB[OBJECT_N_BBP];
+	int			m_nBBp;
+	int			m_topClass;		//most probable class
+	float		m_topProb;		//prob for the topClass
+	uint64_t	m_mClass;		//all candidate class mask
 	void*		m_pTracker;
-	int	 		m_topClass;		//most probable class
-	double		m_topProb;		//prob for the topClass
-	uint64_t 	m_mClass;		//all candidate class mask
-	int64_t 	m_tStamp;
+	int64_t		m_tStamp;
 
 	void init(void)
 	{
-		m_bb.init();
-		m_bb2.init();
-		m_dist = -1.0;
-		m_vOpt.init();
-		m_vTrack.init();
-		m_trackID = 0;
+		resetBB();
+		resetClass();
 		m_pTracker = NULL;
 		m_tStamp = -1;
-		resetClass();
 	}
 
 	void addClassIdx(int iClass)
@@ -79,27 +71,65 @@ struct OBJECT
 		m_mClass = 0;
 	}
 
-	vInt4 iBBox(vInt2 cSize)
+	void resetBB(void)
 	{
-		vInt4 iBB;
-		iBB.x = m_bb.x * cSize.x;
-		iBB.z = m_bb.z * cSize.x;
-		iBB.y = m_bb.y * cSize.y;
-		iBB.w = m_bb.w * cSize.y;
+		for(int i=0;i<OBJECT_N_BBP;i++)
+		{
+			m_pBB[i].init();
+		}
 
-		return iBB;
+		m_nBBp = 0;
 	}
 
-	void setBB(vInt4 iBB, vInt2 cSize)
+	void setBB(Rect& r, vInt2& cs)
 	{
-		double base;
-		base = 1.0/cSize.x;
-		m_bb.x = iBB.x * base;
-		m_bb.z = iBB.z * base;
-		base = 1.0/cSize.y;
-		m_bb.y = iBB.y * base;
-		m_bb.w = iBB.w * base;
+		float b;
+		b = 1.0 / cs.x;
+		m_pBB[0].x = r.x * b;
+		m_pBB[1].x = (r.x + r.width) * b;
+		b = 1.0 / cs.y;
+		m_pBB[0].y = r.y * b;
+		m_pBB[1].y = (r.y + r.height) * b;
+
+		m_nBBp = 2;
 	}
+
+	vFloat4 getBB(void)
+	{
+		vFloat4 bb;
+		bb.x = m_pBB[0].x;
+		bb.y = m_pBB[0].y;
+		bb.z = m_pBB[1].x;
+		bb.w = m_pBB[1].y;
+		return bb;
+	}
+
+	Rect getRect(vInt2& cs)
+	{
+		Rect r;
+		r.x = m_pBB[0].x * cs.x;
+		r.y = m_pBB[0].y * cs.y;
+		r.width = m_pBB[1].x * cs.x - r.x;
+		r.height = m_pBB[1].y * cs.y - r.y;
+
+		return r;
+	}
+
+	float width(void)
+	{
+		return abs(m_pBB[1].x - m_pBB[0].x);
+	}
+
+	float height(void)
+	{
+		return abs(m_pBB[1].y - m_pBB[0].y);
+	}
+
+	float area(void)
+	{
+		return width()*height();
+	}
+
 };
 
 struct OBJECT_ARRAY
@@ -119,7 +149,7 @@ struct OBJECT_ARRAY
 
 		m_pObj[m_nObj++] = *pO;
 
-		return &m_pObj[m_nObj-1];
+		return &m_pObj[m_nObj - 1];
 	}
 
 	OBJECT* at(int i)
@@ -177,8 +207,8 @@ struct OBJECT_DARRAY
 
 struct OBJECT_CLASS
 {
-	string  m_name;
-	int		m_n;
+	string m_name;
+	int m_n;
 
 	void init(void)
 	{
@@ -187,11 +217,11 @@ struct OBJECT_CLASS
 	}
 };
 
-class _ObjectBase: public _ThreadBase
+class _DetectorBase: public _ThreadBase
 {
 public:
-	_ObjectBase();
-	virtual ~_ObjectBase();
+	_DetectorBase();
+	virtual ~_DetectorBase();
 
 	virtual bool init(void* pKiss);
 	virtual bool draw(void);
@@ -201,22 +231,17 @@ public:
 
 	OBJECT* add(OBJECT* pNewObj);
 	OBJECT* at(int i);
-	void merge(_ObjectBase* pO);
+	void merge(_DetectorBase* pO);
 	void updateStatistics(void);
 	int size(void);
 
 public:
 	//input
 	_VisionBase* m_pVision;
-	OBJECT_DARRAY m_obj;
 	Frame m_BGR;
-
-	//control
-	uint64_t m_trackID;
-	bool	 m_bTrack;
+	OBJECT_DARRAY m_obj;
 
 	//config
-	double m_dMaxTrack;
 	double m_minConfidence;
 	double m_minArea;
 	double m_maxArea;
@@ -230,7 +255,7 @@ public:
 	string m_meanFile;
 	string m_labelFile;
 	string m_classFile;
-	int	   m_nClass;
+	int m_nClass;
 	vector<OBJECT_CLASS> m_vClass;
 
 	//show
@@ -241,7 +266,6 @@ public:
 	double m_segmentBlend;
 	double m_drawVscale;
 	bool m_bDrawObjClass;
-	bool m_bDrawObjVtrack;
 
 };
 

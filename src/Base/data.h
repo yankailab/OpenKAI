@@ -5,6 +5,232 @@
 namespace kai
 {
 
+struct vFloat2
+{
+	float x;
+	float y;
+
+	void init(void)
+	{
+		x = 0.0;
+		y = 0.0;
+	}
+
+	inline vFloat2 operator+(vFloat2& r)
+    {
+		vFloat2 v;
+		v.x = x + r.x;
+		v.y = y + r.y;
+		return v;
+	}
+
+	inline vFloat2 operator-(vFloat2& r)
+    {
+		vFloat2 v;
+		v.x = x - r.x;
+		v.y = y - r.y;
+		return v;
+	}
+
+	inline vFloat2 operator*(double r)
+    {
+		vFloat2 v;
+		v.x = x * r;
+		v.y = y * r;
+		return v;
+	}
+
+	inline vFloat2 operator/(double r)
+    {
+		vFloat2 v;
+		v.x = x / r;
+		v.y = y / r;
+		return v;
+	}
+
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
+	}
+
+	inline void operator+=(vFloat2& r)
+    {
+		x += r.x;
+		y += r.y;
+	}
+
+	inline void operator-=(vFloat2& r)
+    {
+		x -= r.x;
+		y -= r.y;
+	}
+
+	inline void operator*=(float r)
+    {
+		x *= r;
+		y *= r;
+	}
+
+	inline void operator/=(float r)
+    {
+		x /= r;
+		y /= r;
+	}
+
+	double mid(void)
+	{
+		return (x + y) * 0.5;
+	}
+
+	double len(void)
+	{
+		return sqrt(x*x + y*y);
+	}
+};
+
+struct vFloat4
+{
+	double x;
+	double y;
+	double z;
+	double w;
+
+	double midX(void)
+	{
+		return (x + z) * 0.5;
+	}
+
+	double midY(void)
+	{
+		return (y + w) * 0.5;
+	}
+
+	vFloat2 center(void)
+	{
+		vFloat2 vC;
+		vC.x = midX();
+		vC.y = midY();
+		return vC;
+	}
+
+	double width(void)
+	{
+		return z - x;
+	}
+
+	double height(void)
+	{
+		return w - y;
+	}
+
+	double area(void)
+	{
+		return abs((z - x) * (w - y));
+	}
+
+	void init(void)
+	{
+		x = 0.0;
+		y = 0.0;
+		z = 0.0;
+		w = 0.0;
+	}
+
+	void init(double v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
+	inline vFloat4 operator+(vFloat4& r)
+    {
+		vFloat4 v;
+		v.x = r.x + x;
+		v.y = r.y + y;
+		v.z = r.z + z;
+		v.w = r.w + w;
+		return v;
+	}
+
+	inline vFloat4 operator-(vFloat4& r)
+    {
+		vFloat4 v;
+		v.x = x - r.x;
+		v.y = y - r.y;
+		v.z = z - r.z;
+		v.w = w - r.w;
+		return v;
+	}
+
+	inline vFloat4 operator*(double r)
+    {
+		vFloat4 v;
+		v.x = x * r;
+		v.y = y * r;
+		v.z = z * r;
+		v.w = w * r;
+		return v;
+	}
+
+	inline vFloat4 operator/(double r)
+    {
+		vFloat4 v;
+		v.x = x / r;
+		v.y = y / r;
+		v.z = z / r;
+		v.w = w / r;
+		return v;
+	}
+
+	inline void operator=(double r)
+    {
+		x = r;
+		y = r;
+		z = r;
+		w = r;
+	}
+
+	inline void operator+=(vFloat4& r)
+    {
+		x += r.x;
+		y += r.y;
+		z += r.z;
+		w += r.w;
+	}
+
+	inline void operator-=(vFloat4& r)
+    {
+		x -= r.x;
+		y -= r.y;
+		z -= r.z;
+		w -= r.w;
+	}
+
+	inline void operator*=(double r)
+    {
+		x *= r;
+		y *= r;
+		z *= r;
+		w *= r;
+	}
+
+	inline void operator/=(double r)
+    {
+		x /= r;
+		y /= r;
+		z /= r;
+		w /= r;
+	}
+
+	double len(void)
+	{
+		return sqrt(x*x + y*y + z*z + w*w);
+	}
+};
+
 struct vDouble2
 {
 	double x;

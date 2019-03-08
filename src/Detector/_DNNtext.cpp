@@ -25,7 +25,7 @@ _DNNtext::~_DNNtext()
 
 bool _DNNtext::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, thr);
@@ -146,18 +146,14 @@ bool _DNNtext::detect(void)
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
 
-		RotatedRect& box = vBoxes[vIndices[i]];
 		Point2f pV[4];
+		RotatedRect& box = vBoxes[vIndices[i]];
 		box.points(pV);
-
-		o.m_bb.x = (pV[0].x * rX + rRoi.x) * bX;
-		o.m_bb.y = (pV[0].y * rY + rRoi.y) * bY;
-		o.m_bb.z = (pV[1].x * rX + rRoi.x) * bX;
-		o.m_bb.w = (pV[1].y * rY + rRoi.y) * bY;
-		o.m_bb2.x = (pV[2].x * rX + rRoi.x) * bX;
-		o.m_bb2.y = (pV[2].y * rY + rRoi.y) * bY;
-		o.m_bb2.z = (pV[3].x * rX + rRoi.x) * bX;
-		o.m_bb2.w = (pV[3].y * rY + rRoi.y) * bY;
+		for(int p=0; p<4; p++)
+		{
+			o.m_pBB[p].x = (pV[p].x * rX + rRoi.x) * bX;
+			o.m_pBB[p].y = (pV[p].y * rY + rRoi.y) * bY;
+		}
 
 		this->add(&o);
 	}
@@ -234,20 +230,20 @@ bool _DNNtext::draw(void)
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
-        line(*pMat, Point2f(pO->m_bb.x*cs.x, pO->m_bb.y*cs.y),
-        			Point2f(pO->m_bb.z*cs.x, pO->m_bb.w*cs.y),
+        line(*pMat, Point2f(pO->m_pBB[0].x*cs.x, pO->m_pBB[0].y*cs.y),
+        			Point2f(pO->m_pBB[1].x*cs.x, pO->m_pBB[1].y*cs.y),
 					col, 1);
 
-        line(*pMat, Point2f(pO->m_bb.z*cs.x, pO->m_bb.w*cs.y),
-        			Point2f(pO->m_bb2.x*cs.x, pO->m_bb2.y*cs.y),
+        line(*pMat, Point2f(pO->m_pBB[1].x*cs.x, pO->m_pBB[1].y*cs.y),
+        			Point2f(pO->m_pBB[2].x*cs.x, pO->m_pBB[2].y*cs.y),
 					col, 1);
 
-        line(*pMat, Point2f(pO->m_bb2.x*cs.x, pO->m_bb2.y*cs.y),
-        			Point2f(pO->m_bb2.z*cs.x, pO->m_bb2.w*cs.y),
+        line(*pMat, Point2f(pO->m_pBB[2].x*cs.x, pO->m_pBB[2].y*cs.y),
+        			Point2f(pO->m_pBB[3].x*cs.x, pO->m_pBB[3].y*cs.y),
 					col, 1);
 
-        line(*pMat, Point2f(pO->m_bb2.z*cs.x, pO->m_bb2.w*cs.y),
-        			Point2f(pO->m_bb.x*cs.x, pO->m_bb.y*cs.y),
+        line(*pMat, Point2f(pO->m_pBB[3].x*cs.x, pO->m_pBB[3].y*cs.y),
+        			Point2f(pO->m_pBB[0].x*cs.x, pO->m_pBB[0].y*cs.y),
 					col, 1);
 	}
 

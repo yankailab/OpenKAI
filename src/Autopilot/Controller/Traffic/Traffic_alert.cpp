@@ -57,7 +57,7 @@ void Traffic_alert::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	_ObjectBase* pOB = m_pTB->m_pOB;
+	_DetectorBase* pOB = m_pTB->m_pOB;
 	IF_(pOB->m_tStamp <= m_tStampOB);
 	m_tStampOB = pOB->m_tStamp;
 
@@ -65,6 +65,7 @@ void Traffic_alert::update(void)
 	int i=0;
 	while((pO = pOB->at(i++)) != NULL)
 	{
+/*
 		IF_CONT(!m_pTB->bInsideROI(pO->m_bb));
 		IF_CONT(!m_alert.bAlert(pO->m_topClass));
 
@@ -86,6 +87,7 @@ void Traffic_alert::update(void)
 
 		IF_CONT(pOverlap);
 		m_obj.add(pO);
+		*/
 	}
 
 	m_obj.update();
@@ -102,9 +104,9 @@ bool Traffic_alert::draw(void)
 	pWin->addMsg(msg);
 
 	Scalar col = Scalar(0, 0, 255);
-	vInt2 cSize;
-	cSize.x = pMat->cols;
-	cSize.y = pMat->rows;
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
 
 	vInt4 iBB;
 	Point pC;
@@ -113,7 +115,7 @@ bool Traffic_alert::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		iBB = pO->iBBox(cSize);
+//		iBB = pO->iBBox(cs);
 		pC = Point(iBB.midX(), iBB.midY());
 		vInt42rect(iBB, r);
 		rectangle(*pMat, r, col, 3);
@@ -123,7 +125,7 @@ bool Traffic_alert::draw(void)
 	{
 		msg = "INTRUSION/ACCIDENT";
 		putText(*pMat, msg,
-				Point(0.3 * cSize.x, 0.8 * cSize.y),
+				Point(0.3 * cs.x, 0.8 * cs.y),
 				FONT_HERSHEY_SIMPLEX, 5.0, col, 10);
 	}
 
@@ -134,7 +136,7 @@ bool Traffic_alert::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	NULL_F(m_pTB);
-	_ObjectBase* pOB = m_pTB->m_pOB;
+	_DetectorBase* pOB = m_pTB->m_pOB;
 	NULL_F(pOB);
 
 	int nAlert = m_obj.size();

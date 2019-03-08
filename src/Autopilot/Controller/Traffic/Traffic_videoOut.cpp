@@ -48,7 +48,7 @@ void Traffic_videoOut::update(void)
 	pV->goSleep();
 	while(!pV->bSleeping());
 
-	_ObjectBase* pOB = m_pTB->m_pOB;
+	_DetectorBase* pOB = m_pTB->m_pOB;
 	while(pOB->m_tStamp <= m_tStampOB);
 	m_tStampOB = pOB->m_tStamp;
 

@@ -10,7 +10,7 @@
 
 #include "../../Base/common.h"
 #include "../../Vision/_VisionBase.h"
-#include "../../Base/_ObjectBase.h"
+#include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_DARKNET
 
@@ -21,7 +21,7 @@ extern "C" {
 namespace kai
 {
 
-class _YOLO: public _ObjectBase
+class _YOLO: public _DetectorBase
 {
 public:
 	_YOLO();

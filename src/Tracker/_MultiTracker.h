@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application__MultiTracker_H_
 
 #include "../Base/common.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 #include "../Tracker/_SingleTracker.h"
 
 #ifdef USE_OPENCV_CONTRIB
@@ -17,7 +17,7 @@
 namespace kai
 {
 
-class _MultiTracker : public _ObjectBase
+class _MultiTracker : public _DetectorBase
 {
 public:
 	_MultiTracker();
@@ -39,7 +39,7 @@ private:
 	}
 
 public:
-	_ObjectBase*	m_pOB;
+	_DetectorBase*	m_pOB;
 	uint64_t		m_tStampOB;
 	_VisionBase*	m_pVision;
 	string			m_trackerType;

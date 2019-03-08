@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 #include "../Vision/_VisionBase.h"
 
 namespace kai
@@ -43,7 +43,7 @@ public:
 
 public:
 	_VisionBase* m_pVision;
-	_ObjectBase* m_pDet;
+	_DetectorBase* m_pDet;
 	Rect2d m_rBB;
 	vDouble4 m_bb;
 	double m_margin;

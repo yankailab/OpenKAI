@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 
 #ifdef USE_CASCADE
 #ifdef USE_CUDA

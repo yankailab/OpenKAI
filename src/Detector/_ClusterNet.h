@@ -10,12 +10,12 @@
 
 #include "../Base/common.h"
 #include "../DNN/TensorRT/_ImageNet.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 
 namespace kai
 {
 
-class _ClusterNet: public _ObjectBase
+class _ClusterNet: public _DetectorBase
 {
 public:
 	_ClusterNet();
@@ -39,7 +39,7 @@ private:
 	}
 
 public:
-	_ObjectBase* m_pDet;
+	_DetectorBase* m_pDet;
 
 	int m_nObj;
 	double m_w;

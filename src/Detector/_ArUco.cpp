@@ -28,7 +28,7 @@ _ArUco::~_ArUco()
 
 bool _ArUco::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK, dict);
@@ -88,7 +88,7 @@ void _ArUco::detect(void)
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
 	OBJECT obj;
-	double dx,dy;
+	float dx,dy;
 
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
@@ -104,18 +104,18 @@ void _ArUco::detect(void)
 		// center position
 		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
 		dy = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
-		obj.m_bb.x = dx * bW;
-		obj.m_bb.y = dy * bH;
+		obj.m_pBB[0].x = dx * bW;
+		obj.m_pBB[0].y = dy * bH;
 
 		// radius
 		dx -= pLT.x;
 		dy -= pLT.y;
-		obj.m_bb.z = sqrt(dx*dx + dy*dy);
+		obj.m_pBB[1].x = sqrt(dx*dx + dy*dy);
 
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		obj.m_bb.w = -atan2(dx,dy) * RAD_DEG;
+		obj.m_pBB[1].y = -atan2(dx,dy) * RAD_DEG;
 
 		add(&obj);
 		LOG_I("ID: "+ i2str(obj.m_topClass));
@@ -136,16 +136,16 @@ bool _ArUco::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_bb.x * pMat->cols,
-							  pO->m_bb.y * pMat->rows);
-		circle(*pMat, pCenter, pO->m_bb.z, Scalar(0, 255, 0), 2);
+		Point pCenter = Point(pO->m_pBB[0].x * pMat->cols,
+							  pO->m_pBB[0].y * pMat->rows);
+		circle(*pMat, pCenter, pO->m_pBB[1].x, Scalar(0, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_bb.w),
+		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_pBB[1].y),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 
-		double rad = -pO->m_bb.w * DEG_RAD;
-		Point pD = Point(pO->m_bb.z*sin(rad), pO->m_bb.z*cos(rad));
+		double rad = -pO->m_pBB[1].y * DEG_RAD;
+		Point pD = Point(pO->m_pBB[1].x*sin(rad), pO->m_pBB[1].x*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 
@@ -154,7 +154,7 @@ bool _ArUco::draw(void)
 
 bool _ArUco::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::console(iY));
+	IF_F(!this->_DetectorBase::console(iY));
 
 	string msg = "| ";
 	OBJECT* pO;

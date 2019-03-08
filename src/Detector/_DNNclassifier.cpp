@@ -25,7 +25,7 @@ _DNNclassifier::~_DNNclassifier()
 
 bool _DNNclassifier::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, nW);
@@ -126,10 +126,10 @@ bool _DNNclassifier::classify(void)
 	obj.init();
 	obj.m_tStamp = m_tStamp;
 	obj.setTopClass(pClassID.x, conf);
-	vInt2 cSize;
-	cSize.x = mIn.cols;
-	cSize.y = mIn.rows;
-	obj.setBB(iRoi, cSize);
+	vInt2 cs;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
+	obj.setBB(rRoi, cs);
 
 	this->add(&obj);
 	LOG_I("Class: " + i2str(obj.m_topClass));
@@ -139,7 +139,7 @@ bool _DNNclassifier::classify(void)
 
 bool _DNNclassifier::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();

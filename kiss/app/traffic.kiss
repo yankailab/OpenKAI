@@ -121,7 +121,7 @@
 			"bInst":1,
 			"_MissionControl":"trState",
 			"Window":"OKview",
-			"_ObjectBase":"yl",
+			"_DetectorBase":"yl",
 
 			{
 				"name":"ROI_n4-5",

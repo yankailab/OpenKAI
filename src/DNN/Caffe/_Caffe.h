@@ -20,7 +20,7 @@
 #include <caffe/util/io.hpp>
 #include <caffe/proto/caffe.pb.h>
 
-#include "../../Base/_ObjectBase.h"
+#include "../../Detector/_DetectorBase.h"
 #include "../../Vision/_VisionBase.h"
 
 #define N_EXT 16

@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_target_H_
 
 #include "../../../Base/common.h"
-#include "../../../Base/_ObjectBase.h"
+#include "../../../Detector/_DetectorBase.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
@@ -28,7 +28,7 @@ public:
 public:
 	APcopter_base*	m_pAP;
 	APcopter_posCtrl* m_pPC;
-	_ObjectBase*	m_pDet;
+	_DetectorBase*	m_pDet;
 
 	OBJECT			m_tO;
 	int				m_iClass;

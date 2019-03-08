@@ -10,12 +10,12 @@
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "../Base/_ObjectBase.h"
+#include "../Detector/_DetectorBase.h"
 
 namespace kai
 {
 
-class _DNNclassifier: public _ObjectBase
+class _DNNclassifier: public _DetectorBase
 {
 public:
 	_DNNclassifier();

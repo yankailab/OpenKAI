@@ -75,10 +75,10 @@ void Traffic_speed::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	_ObjectBase* pOB = m_pTB->m_pOB;
+	_DetectorBase* pOB = m_pTB->m_pOB;
 	IF_(pOB->m_tStamp <= m_tStampOB);
 	m_tStampOB = pOB->m_tStamp;
-
+/*
 	OBJECT* pO;
 	int i=0;
 	int nCount = 0;
@@ -127,6 +127,7 @@ void Traffic_speed::update(void)
 	m_objHdgAlert.update();
 
 	m_fNspeedAlert.input(m_objSpeedAlert.size());
+	*/
 }
 
 bool Traffic_speed::draw(void)
@@ -146,7 +147,7 @@ bool Traffic_speed::draw(void)
 	vInt2 cSize;
 	cSize.x = pMat->cols;
 	cSize.y = pMat->rows;
-
+/*
 	//all
 	vInt4 iBB;
 	Point pC;
@@ -193,7 +194,7 @@ bool Traffic_speed::draw(void)
 		vInt42rect(iBB, r);
 		rectangle(*pMat, r, colHdgAlert, 2);
 	}
-
+*/
 	return true;
 }
 

@@ -27,7 +27,7 @@ _YOLO::~_YOLO()
 
 bool _YOLO::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, thresh);
@@ -143,7 +143,7 @@ bool _YOLO::detect(void)
 
 bool _YOLO::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }

@@ -31,7 +31,7 @@ _ClusterNet::~_ClusterNet()
 
 bool _ClusterNet::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, w);
@@ -47,7 +47,7 @@ bool _ClusterNet::init(void* pKiss)
 	string iName = "";
 
 	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_ObjectBase*) (pK->root()->getChildInst(iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pDet, "_DetectorBase not found");
 
 	//create detection area instances
@@ -76,10 +76,11 @@ bool _ClusterNet::init(void* pKiss)
 		for (j = 0; j < m_size.x; j++)
 		{
 			mO.init();
-			mO.m_bb.x = m_area.x + j * m_dW * m_aW;
-			mO.m_bb.z = mO.m_bb.x + m_w * m_aW;
-			mO.m_bb.y = m_area.y + i * m_dH * m_aH;
-			mO.m_bb.w = mO.m_bb.y + m_h * m_aH;
+			mO.m_pBB[0].x = m_area.x + j * m_dW * m_aW;
+			mO.m_pBB[1].x = mO.m_pBB[0].x + m_w * m_aW;
+			mO.m_pBB[0].y = m_area.y + i * m_dH * m_aH;
+			mO.m_pBB[1].y = mO.m_pBB[0].y + m_h * m_aH;
+			mO.m_nBBp = 2;
 
 			m_ppObj[k] = m_pDet->add(&mO);
 			NULL_F(m_ppObj[k]);
@@ -140,10 +141,11 @@ void _ClusterNet::cluster(void)
 			IF_CONT(b.x < 0);
 
 			OBJECT o = *pO;
-			o.m_bb.x = m_area.x + b.x * m_dW * m_aW;
-			o.m_bb.z = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
-			o.m_bb.y = m_area.y + b.y * m_dH * m_aH;
-			o.m_bb.w = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
+			o.m_pBB[0].x = m_area.x + b.x * m_dW * m_aW;
+			o.m_pBB[1].x = m_area.x + (b.z * m_dW + m_w) * m_aW * m_aW;
+			o.m_pBB[0].y = m_area.y + b.y * m_dH * m_aH;
+			o.m_pBB[1].y = m_area.y + (b.w * m_dH + m_h) * m_aH * m_aH;
+			o.m_nBBp = 2;
 			add(&o);
 
 			int i, j;
@@ -260,7 +262,7 @@ bool _ClusterNet::bFound(int iClass)
 
 bool _ClusterNet::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 
 	return true;
 }

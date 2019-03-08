@@ -5,6 +5,7 @@
 #include "../../../Base/common.h"
 #include "../../../Vision/_RealSense.h"
 #include "../../../IO/_IOBase.h"
+#include "../../../Navigation/Coordinate.h"
 #include "APcopter_base.h"
 
 #ifdef USE_REALSENSE

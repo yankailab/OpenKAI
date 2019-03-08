@@ -2,12 +2,12 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_ObjectBase.h"
+#include "_DetectorBase.h"
 
 namespace kai
 {
 
-_ObjectBase::_ObjectBase()
+_DetectorBase::_DetectorBase()
 {
 	m_pVision = NULL;
 	m_modelFile = "";
@@ -15,7 +15,6 @@ _ObjectBase::_ObjectBase()
 	m_meanFile = "";
 	m_labelFile = "";
 	m_classFile = "";
-	m_dMaxTrack = 1.0;
 	m_minConfidence = 0.0;
 	m_minArea = -1.0;
 	m_maxArea = -1.0;
@@ -26,8 +25,6 @@ _ObjectBase::_ObjectBase()
 	m_roi.init();
 	m_roi.z = 1.0;
 	m_roi.w = 1.0;
-	m_trackID = 1;
-	m_bTrack = false;
 
 	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
@@ -37,21 +34,18 @@ _ObjectBase::_ObjectBase()
 	m_classLegendPos.y = 100;
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
-	m_bDrawObjVtrack = false;
 }
 
-_ObjectBase::~_ObjectBase()
+_DetectorBase::~_DetectorBase()
 {
 }
 
-bool _ObjectBase::init(void* pKiss)
+bool _DetectorBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
-	KISSm(pK, bTrack);
-	KISSm(pK, dMaxTrack);
 	KISSm(pK, minConfidence);
 	KISSm(pK, minArea);
 	KISSm(pK, maxArea);
@@ -113,7 +107,6 @@ bool _ObjectBase::init(void* pKiss)
 	KISSm(pK, bDrawStatistics);
 	KISSm(pK, drawVscale);
 	KISSm(pK, bDrawObjClass);
-	KISSm(pK, bDrawObjVtrack);
 
 	//ROI
 	F_INFO(pK->v("rX", &m_roi.x));
@@ -129,7 +122,7 @@ bool _ObjectBase::init(void* pKiss)
 	return true;
 }
 
-void _ObjectBase::updateStatistics(void)
+void _DetectorBase::updateStatistics(void)
 {
 	int i;
 	for(i=0; i<m_nClass; i++)
@@ -148,7 +141,7 @@ void _ObjectBase::updateStatistics(void)
 	}
 }
 
-int _ObjectBase::getClassIdx(string& className)
+int _DetectorBase::getClassIdx(string& className)
 {
 	for(int i=0; i<m_nClass; i++)
 	{
@@ -158,7 +151,7 @@ int _ObjectBase::getClassIdx(string& className)
 	return -1;
 }
 
-string _ObjectBase::getClassName(int iClass)
+string _DetectorBase::getClassName(int iClass)
 {
 	if(iClass < 0)return "";
 	if(iClass >= m_nClass)return "";
@@ -166,88 +159,30 @@ string _ObjectBase::getClassName(int iClass)
 	return m_vClass[iClass].m_name;
 }
 
-int _ObjectBase::size(void)
+int _DetectorBase::size(void)
 {
 	return m_obj.size();
 }
 
-OBJECT* _ObjectBase::at(int i)
+OBJECT* _DetectorBase::at(int i)
 {
 	return m_obj.at(i);
 }
 
-OBJECT* _ObjectBase::add(OBJECT* pNewO)
+OBJECT* _DetectorBase::add(OBJECT* pNewO)
 {
 	NULL_N(pNewO);
 
-	double area = pNewO->m_bb.area();
-	if(m_minArea >= 0)
-	{
-		IF_N(area < m_minArea);
-	}
-	if(m_maxArea >= 0)
-	{
-		IF_N(area > m_maxArea);
-	}
-
-	if(m_maxW >= 0)
-	{
-		IF_N(pNewO->m_bb.width() > m_maxW);
-	}
-	if(m_maxH >= 0)
-	{
-		IF_N(pNewO->m_bb.height() > m_maxH);
-	}
-
-	if(m_bTrack)
-	{
-		OBJECT* pO;
-		double minD = DBL_MAX;
-		int iD = -1;
-		int i=0;
-		while((pO = m_obj.at(i++)) != NULL)
-		{
-			double dX = pO->m_bb.midX() - pNewO->m_bb.midX();
-			double dY = pO->m_bb.midY() - pNewO->m_bb.midY();
-			double d = sqrt(dX * dX + dY * dY);
-
-			IF_CONT(d > m_dMaxTrack);
-			IF_CONT(d > minD);
-			IF_CONT(pO->m_topClass != pNewO->m_topClass);
-
-			minD = d;
-			iD = i - 1;
-		}
-
-		pO = m_obj.at(iD);
-		if(pO)
-		{
-			double tBase;
-			if(m_bRealTime)
-			{
-				tBase = USEC_1SEC / m_dTime;
-			}
-			else
-			{
-				tBase = 25;
-			}
-
-			vInt2 cSize = m_pVision->getSize();
-
-			pNewO->m_vTrack.x = tBase * (pNewO->m_bb.midX() - pO->m_bb.midX()) / (double)cSize.x;
-			pNewO->m_vTrack.y = tBase * (pNewO->m_bb.midY() - pO->m_bb.midY()) / (double)cSize.y;
-
-			if(pO->m_trackID>0)
-				pNewO->m_trackID = pO->m_trackID;
-			else
-				pNewO->m_trackID = m_trackID++;
-		}
-	}
+	double area = pNewO->area();
+	IF_N(m_minArea >= 0 && area < m_minArea);
+	IF_N(m_maxArea >= 0 && area > m_maxArea);
+	IF_N(m_maxW >= 0 && pNewO->width() > m_maxW);
+	IF_N(m_maxH >= 0 && pNewO->height() > m_maxH);
 
 	return m_obj.add(pNewO);
 }
 
-void _ObjectBase::merge(_ObjectBase* pO)
+void _DetectorBase::merge(_DetectorBase* pO)
 {
 	NULL_(pO);
 
@@ -259,7 +194,7 @@ void _ObjectBase::merge(_ObjectBase* pO)
 	}
 }
 
-bool _ObjectBase::draw(void)
+bool _DetectorBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -291,25 +226,9 @@ bool _ObjectBase::draw(void)
 		col = colStep * iClass;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
-		vInt4 iBB = pO->iBBox(cs);
-		Point pC = Point(iBB.midX(), iBB.midY());
-
-		//trackID
-		if(pO->m_trackID > 0)
-			oCol += Scalar(100, 100, 100);
-
-		//bbox
-		Rect r;
-		vInt42rect(iBB, r);
+		//bb
+		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, oCol, 1);
-
-		//vTrack
-		if(m_bDrawObjVtrack)
-		{
-			Point pV = Point(pO->m_vTrack.x * cs.x * m_drawVscale,
-							 pO->m_vTrack.y * cs.x * m_drawVscale);
-			line(*pMat, pC, pC - pV, oCol, 1);
-		}
 
 		//class
 		if(m_bDrawObjClass)
@@ -346,7 +265,7 @@ bool _ObjectBase::draw(void)
 	return true;
 }
 
-bool _ObjectBase::console(int& iY)
+bool _DetectorBase::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
 

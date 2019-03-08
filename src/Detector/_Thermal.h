@@ -9,13 +9,12 @@
 #define OpenKAI_src_Detector__Thermal_H_
 
 #include "../Base/common.h"
-#include "../Base/_ObjectBase.h"
-
+#include "_DetectorBase.h"
 
 namespace kai
 {
 
-class _Thermal : public _ObjectBase
+class _Thermal : public _DetectorBase
 {
 public:
 	_Thermal();

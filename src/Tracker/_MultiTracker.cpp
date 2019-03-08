@@ -27,7 +27,7 @@ _MultiTracker::~_MultiTracker()
 
 bool _MultiTracker::init(void* pKiss)
 {
-	IF_F(!this->_ObjectBase::init(pKiss));
+	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,trackerType);
@@ -36,8 +36,8 @@ bool _MultiTracker::init(void* pKiss)
 	//link
 	string iName = "";
 
-	F_ERROR_F(pK->v("_ObjectBase",&iName));
-	m_pOB = (_ObjectBase*)(pK->root()->getChildInst(iName));
+	F_ERROR_F(pK->v("_DetectorBase",&iName));
+	m_pOB = (_DetectorBase*)(pK->root()->getChildInst(iName));
 
 	F_ERROR_F(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
@@ -83,6 +83,7 @@ void _MultiTracker::addNewTarget(void)
 	int i=0;
 	while((pNewO = m_pOB->at(i++)) != NULL)
 	{
+		/*
 		OBJECT* pO;
 		int j=0;
 		while((pO = m_obj.at(j++)) != NULL)
@@ -125,6 +126,7 @@ void _MultiTracker::addNewTarget(void)
 
 		pNewO->m_pTracker = pT;
 		m_obj.add(pNewO);
+		*/
 	}
 }
 
@@ -135,6 +137,7 @@ void _MultiTracker::updateTarget(void)
 	vInt2 cSize = m_pVision->getSize();
 	while((pO = m_obj.at(i++)) != NULL)
 	{
+		/*
 		_SingleTracker* pT = (_SingleTracker*)pO->m_pTracker;
 		IF_CONT(!pT);
 
@@ -143,12 +146,13 @@ void _MultiTracker::updateTarget(void)
 		pO->setBB(iBB, cSize);
 
 		m_obj.add(pO);
+		*/
 	}
 }
 
 bool _MultiTracker::draw(void)
 {
-	IF_F(!this->_ObjectBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
@@ -159,7 +163,7 @@ bool _MultiTracker::draw(void)
 
 bool _MultiTracker::console(int& iY)
 {
-	IF_F(!this->_ObjectBase::console(iY));
+	IF_F(!this->_DetectorBase::console(iY));
 
 //	string msg = "| ";
 //	OBJECT* pO;
