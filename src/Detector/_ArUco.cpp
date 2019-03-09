@@ -93,7 +93,6 @@ void _ArUco::detect(void)
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
 		o.init();
-		o.m_type = obj_marker;
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(vID[i],1.0);
 
@@ -105,18 +104,18 @@ void _ArUco::detect(void)
 		// center position
 		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
 		dy = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
-		o.m_o.m_marker.m_p.x = dx * bW;
-		o.m_o.m_marker.m_p.y = dy * bH;
+		o.m_c.x = dx * bW;
+		o.m_c.y = dy * bH;
 
 		// radius
 		dx -= pLT.x;
 		dy -= pLT.y;
-		o.m_o.m_marker.m_r = sqrt(dx*dx + dy*dy);
+		o.m_r = sqrt(dx*dx + dy*dy);
 
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		o.m_o.m_marker.m_angle = -atan2(dx,dy) * RAD_DEG;
+		o.m_angle = -atan2(dx,dy) * RAD_DEG;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));
@@ -137,16 +136,16 @@ bool _ArUco::draw(void)
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_o.m_marker.m_p.x * pMat->cols,
-							  pO->m_o.m_marker.m_p.y * pMat->rows);
-		circle(*pMat, pCenter, pO->m_o.m_marker.m_r, Scalar(0, 255, 0), 2);
+		Point pCenter = Point(pO->m_c.x * pMat->cols,
+							  pO->m_c.y * pMat->rows);
+		circle(*pMat, pCenter, pO->m_r, Scalar(0, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_o.m_marker.m_angle),
+		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_angle),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
 
-		double rad = -pO->m_o.m_marker.m_angle * DEG_RAD;
-		Point pD = Point(pO->m_o.m_marker.m_r*sin(rad), pO->m_o.m_marker.m_r*cos(rad));
+		double rad = -pO->m_angle * DEG_RAD;
+		Point pD = Point(pO->m_r*sin(rad), pO->m_r*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 

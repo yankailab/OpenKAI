@@ -227,7 +227,7 @@ bool _DetectorBase::draw(void)
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		//bb
-		Rect r = pO->m_o.m_bb2.getRect(cs);
+		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, oCol, 1);
 
 		//class

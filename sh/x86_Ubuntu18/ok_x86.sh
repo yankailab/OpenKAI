@@ -43,6 +43,11 @@ tar xzvf cudnn-9.1-linux-x64-v7.1.tgz
 sudo cp -a cuda/lib64/* /usr/lib/x86_64-linux-gnu/
 sudo cp -a cuda/include/* /usr/include/
 
+# (Optional) RealSense on PC
+sudo apt-key adv --keyserver keys.gnupg.net --recv-key C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key C8B3A55A6F3EFCDE
+sudo add-apt-repository "deb http://realsense-hw-public.s3.amazonaws.com/Debian/apt-repo bionic main" -u
+sudo apt-get install librealsense2-dkms librealsense2-utils librealsense2-dev
+
 # Update bash
 # sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 # bash
@@ -132,18 +137,6 @@ wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3-tiny.weights
 wget --no-check-certificate https://pjreddie.com/media/files/yolov3-spp.weights
-
-# RealSense on PC
-cd $FULLDEVDIR
-git clone https://github.com/IntelRealSense/librealsense.git
-cd librealsense/
-sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
-sudo udevadm control --reload-rules && udevadm trigger
-./scripts/patch-realsense-ubuntu-lts.sh
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j6
 
 # Pangolin
 cd $FULLDEVDIR

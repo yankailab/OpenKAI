@@ -173,11 +173,6 @@ bool _DNNtext::detect(void)
 	{
 		OBJECT o;
 		o.init();
-#ifdef USE_OCR
-		o.m_tStamp = obj_text;
-#else
-		o.m_type = obj_bb4;
-#endif
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
 
@@ -186,20 +181,11 @@ bool _DNNtext::detect(void)
 		box.points(pV);
 		for (int p = 0; p < 4; p++)
 		{
-#ifdef USE_OCR
-			o.m_o.m_text.m_pP[p].x = (pV[p].x * rX + rRoi.x);
-			o.m_o.m_text.m_pP[p].y = (pV[p].y * rY + rRoi.y);
-#else
-			o.m_o.m_bb4.m_pP[p].x = (pV[p].x * rX + rRoi.x);
-			o.m_o.m_bb4.m_pP[p].y = (pV[p].y * rY + rRoi.y);
-#endif
+			o.m_pV[p].x = (pV[p].x * rX + rRoi.x);
+			o.m_pV[p].y = (pV[p].y * rY + rRoi.y);
 		}
-
-#ifdef USE_OCR
-		o.m_o.m_text.getBB(cs);
-#else
-		o.m_o.m_bb4.getBB(cs);
-#endif
+		o.m_nV = 4;
+		o.updateBB(cs);
 
 		this->add(&o);
 	}
@@ -289,13 +275,11 @@ void _DNNtext::ocr(void)
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
-		Rect r = pO->m_o.m_text.getRect(cs);
+		Rect r = pO->getRect(cs);
 		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
 		string strOCR = string(m_pOCR->GetUTF8Text());
-		strncpy(pO->m_o.m_text.m_pText, strOCR.c_str(), OBJ_TEXT_N_BUF);
-		pO->m_o.m_text.m_pText[OBJ_TEXT_N_BUF-1] = 0;
-
-		LOG_I(strOCR);
+		strncpy(pO->m_pText, strOCR.c_str(), OBJ_N_CHAR);
+		pO->m_pText[OBJ_N_CHAR-1] = 0;
 	}
 #endif
 }
@@ -318,33 +302,26 @@ bool _DNNtext::draw(void)
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
-#ifdef USE_OCR
-		vFloat2* pP = pO->m_o.m_text.m_pP;
-#else
-		vFloat2* pP = pO->m_o.m_bb4.m_pP;
-#endif
+		line(*pMat, Point2f(pO->m_pV[0].x, pO->m_pV[0].y),
+					Point2f(pO->m_pV[1].x, pO->m_pV[1].y), col, t);
 
-		line(*pMat, Point2f(pP[0].x, pP[0].y),
-					Point2f(pP[1].x, pP[1].y), col, t);
+		line(*pMat, Point2f(pO->m_pV[1].x, pO->m_pV[1].y),
+					Point2f(pO->m_pV[2].x, pO->m_pV[2].y), col, t);
 
-		line(*pMat, Point2f(pP[1].x, pP[1].y),
-					Point2f(pP[2].x, pP[2].y), col, t);
+		line(*pMat, Point2f(pO->m_pV[2].x, pO->m_pV[2].y),
+					Point2f(pO->m_pV[3].x, pO->m_pV[3].y), col, t);
 
-		line(*pMat, Point2f(pP[2].x, pP[2].y),
-					Point2f(pP[3].x, pP[3].y), col, t);
+		line(*pMat, Point2f(pO->m_pV[3].x, pO->m_pV[3].y),
+					Point2f(pO->m_pV[0].x, pO->m_pV[0].y), col, t);
 
-		line(*pMat, Point2f(pP[3].x, pP[3].y),
-					Point2f(pP[0].x, pP[0].y), col, t);
-
+		Rect r = pO->getRect(cs);
+		rectangle(*pMat, r, col, t+1);
 
 #ifdef USE_OCR
-		Rect r = pO->m_o.m_text.getRect(cs);
-		rectangle(*pMat, r, col, t);
-
 		IF_CONT(!m_bOCR);
-		putText(*pMat, string(pO->m_o.m_text.m_pText),
-				Point(pO->m_o.m_text.m_bb.x * pMat->cols,
-					  pO->m_o.m_text.m_bb.w * pMat->rows),
+		putText(*pMat, string(pO->m_pText),
+				Point(pO->m_bb.x * pMat->cols,
+					  pO->m_bb.w * pMat->rows),
 				FONT_HERSHEY_SIMPLEX, 1.5, col, 2);
 #endif
 	}

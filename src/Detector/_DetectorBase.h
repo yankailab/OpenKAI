@@ -14,171 +14,45 @@
 
 #define OBJECT_N_OBJ 256
 #define OBJECT_N_CLASS 256
+#define OBJ_N_CHAR 32
+#define OBJ_N_VERTICES 32
 
 namespace kai
 {
 
-struct OBJ_BB2
-{
-	vFloat4		m_bb;
-
-	void setBB(Rect& r, vInt2& cs)
-	{
-		float b;
-		b = 1.0 / cs.x;
-		m_bb.x = r.x * b;
-		m_bb.z = (r.x + r.width) * b;
-		b = 1.0 / cs.y;
-		m_bb.y = r.y * b;
-		m_bb.w = (r.y + r.height) * b;
-	}
-
-	Rect getRect(vInt2& cs)
-	{
-		Rect r;
-		r.x = m_bb.x * cs.x;
-		r.y = m_bb.y * cs.y;
-		r.width = m_bb.z * cs.x - r.x;
-		r.height = m_bb.w * cs.y - r.y;
-		return r;
-	}
-};
-
-struct OBJ_BB4
-{
-	vFloat4		m_bb;
-	vFloat2		m_pP[4];
-
-	Rect getRect(void)
-	{
-		vector<Point> vP;
-		Point p;
-		for(int i=0;i<4;i++)
-		{
-			p.x = m_pP[i].x;
-			p.y = m_pP[i].y;
-			vP.push_back(p);
-		}
-		return boundingRect(vP);
-	}
-
-	vFloat4 getBB(vInt2& cs)
-	{
-		Rect r = getRect();
-
-		float b;
-		b = 1.0 / cs.x;
-		m_bb.x = r.x * b;
-		m_bb.z = (r.x + r.width) * b;
-		b = 1.0 / cs.y;
-		m_bb.y = r.y * b;
-		m_bb.w = (r.y + r.height) * b;
-
-		return m_bb;
-	}
-
-	Rect getRect(vInt2& cs)
-	{
-		Rect r;
-		r.x = m_bb.x * cs.x;
-		r.y = m_bb.y * cs.y;
-		r.width = m_bb.z * cs.x - r.x;
-		r.height = m_bb.w * cs.y - r.y;
-		return r;
-	}
-};
-
-struct OBJ_MARKER
-{
-	vFloat2		m_p;
-	float		m_r;
-	float		m_angle;
-};
-
-#ifdef USE_OCR
-#define OBJ_TEXT_N_BUF 16
-struct OBJ_TEXT
-{
-	vFloat4		m_bb;
-	vFloat2		m_pP[4];
-	char		m_pText[OBJ_TEXT_N_BUF];
-
-	Rect getRect(void)
-	{
-		vector<Point> vP;
-		Point p;
-		for(int i=0;i<4;i++)
-		{
-			p.x = m_pP[i].x;
-			p.y = m_pP[i].y;
-			vP.push_back(p);
-		}
-		return boundingRect(vP);
-	}
-
-	vFloat4 getBB(vInt2& cs)
-	{
-		Rect r = getRect();
-
-		float b;
-		b = 1.0 / cs.x;
-		m_bb.x = r.x * b;
-		m_bb.z = (r.x + r.width) * b;
-		b = 1.0 / cs.y;
-		m_bb.y = r.y * b;
-		m_bb.w = (r.y + r.height) * b;
-
-		return m_bb;
-	}
-
-	Rect getRect(vInt2& cs)
-	{
-		Rect r;
-		r.x = m_bb.x * cs.x;
-		r.y = m_bb.y * cs.y;
-		r.width = m_bb.z * cs.x - r.x;
-		r.height = m_bb.w * cs.y - r.y;
-		return r;
-	}
-};
-#endif
-
-union UNI_OBJECT
-{
-	OBJ_BB2 m_bb2;
-	OBJ_BB4 m_bb4;
-	OBJ_MARKER m_marker;
-
-#ifdef USE_OCR
-	OBJ_TEXT m_text;
-#endif
-};
-
-enum OBJ_TYPE
-{
-	obj_unknown,
-	obj_bb2,
-	obj_bb4,
-	obj_marker,
-
-#ifdef USE_OCR
-	obj_text,
-#endif
-};
-
 struct OBJECT
 {
-	UNI_OBJECT	m_o;
-	OBJ_TYPE	m_type;
+	//BBox normalized to 0.0 to 1.0
+	vFloat4		m_bb;
+
+	//Vertices in pixel unit
+	vFloat2		m_pV[OBJ_N_VERTICES];
+	int			m_nV;
+
+	//Center position and radius/angle
+	vFloat2		m_c;
+	float		m_r;
+	float		m_angle;
+
+	//Text
+	char		m_pText[OBJ_N_CHAR];
+
+	//Classification
 	int			m_topClass;		//most probable class
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
+
+	//Tracker
 	void*		m_pTracker;
+
+	//Properties
 	int64_t		m_tStamp;
 
 	void init(void)
 	{
-		m_type = obj_unknown;
+		m_bb.init();
+		m_nV = 0;
+
 		resetClass();
 		m_pTracker = NULL;
 		m_tStamp = -1;
@@ -218,43 +92,59 @@ struct OBJECT
 		m_mClass = 0;
 	}
 
+	void setBB(Rect& r, vInt2& cs)
+	{
+		float b;
+		b = 1.0 / cs.x;
+		m_bb.x = r.x * b;
+		m_bb.z = (r.x + r.width) * b;
+		b = 1.0 / cs.y;
+		m_bb.y = r.y * b;
+		m_bb.w = (r.y + r.height) * b;
+	}
+
+	Rect getBoundingRect(void)
+	{
+		vector<Point> vP;
+		Point p;
+		for(int i=0; i<m_nV; i++)
+		{
+			p.x = m_pV[i].x;
+			p.y = m_pV[i].y;
+			vP.push_back(p);
+		}
+		return boundingRect(vP);
+	}
+
+	void updateBB(vInt2& cs)
+	{
+		Rect r = getBoundingRect();
+		setBB(r,cs);
+	}
+
+	Rect getRect(vInt2& cs)
+	{
+		Rect r;
+		r.x = m_bb.x * cs.x;
+		r.y = m_bb.y * cs.y;
+		r.width = m_bb.z * cs.x - r.x;
+		r.height = m_bb.w * cs.y - r.y;
+		return r;
+	}
+
 	float area(void)
 	{
-		switch (m_type)
-		{
-		case obj_bb2:
-			return m_o.m_bb2.m_bb.area();
-		case obj_bb4:
-			return m_o.m_bb4.m_bb.area();
-		default:
-			return -1;
-		}
+		return m_bb.area();
 	}
 
 	float width(void)
 	{
-		switch (m_type)
-		{
-		case obj_bb2:
-			return m_o.m_bb2.m_bb.width();
-		case obj_bb4:
-			return m_o.m_bb4.m_bb.width();
-		default:
-			return -1;
-		}
+		return m_bb.width();
 	}
 
 	float height(void)
 	{
-		switch (m_type)
-		{
-		case obj_bb2:
-			return m_o.m_bb2.m_bb.height();
-		case obj_bb4:
-			return m_o.m_bb4.m_bb.height();
-		default:
-			return -1;
-		}
+		return m_bb.height();
 	}
 };
 

@@ -21,7 +21,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":1,
 	"w":1280,
@@ -54,6 +54,21 @@
 }
 
 {
+	"name":"cam",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"bAlign":0,
+}
+
+{
 	"name":"DNNtext",
 	"class":"_DNNtext",
 	"bInst":1,
@@ -68,5 +83,5 @@
 	"thr":0.01,
 	"bSwapRB":1,
 	"bOCR":1,
-	"ocrDataDir":"/home/kai/dev/model/Tesseract",
+	"ocrDataDir":"/home/kai/dev/model/tesseract",
 }

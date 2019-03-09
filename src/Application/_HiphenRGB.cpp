@@ -110,7 +110,9 @@ void _HiphenRGB::take(void)
 	fBGR.m()->copyTo(mBGR);
 	IF_(mBGR.empty());
 
-	string fName = m_pHiphen->getDir() + i2str(m_iImg) + "_rgb" + ".jpg";
+	IF_(mBGR.cols*mBGR.rows < m_pCam->m_w*m_pCam->m_h);
+
+	string fName = m_pHiphen->getDir() + i2str(m_iImg) + "_rgb" + ".tiff";
 	cv::imwrite(fName, mBGR, m_compress);
 	string cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 	system(cmd.c_str());

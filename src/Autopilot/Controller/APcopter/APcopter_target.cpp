@@ -231,7 +231,7 @@ bool APcopter_target::find(void)
 			return false;
 		}
 
-		bb = tO->m_o.m_bb2.m_bb;
+		bb = tO->m_bb;
 	}
 
 	m_vTargetPos.x = bb.midX();

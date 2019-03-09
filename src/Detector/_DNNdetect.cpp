@@ -185,10 +185,9 @@ bool _DNNdetect::detect(void)
 
 		OBJECT o;
 		o.init();
-		o.m_type = obj_bb2;
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(vClassID[idx], (double)vConfidence[idx]);
-		o.m_o.m_bb2.setBB(vRect[idx], cs);
+		o.setBB(vRect[idx], cs);
 
 		this->add(&o);
 		LOG_I("Class: " + i2str(o.m_topClass));
@@ -219,7 +218,7 @@ bool _DNNdetect::draw(void)
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
-		Rect r = pO->m_o.m_bb2.getRect(cs);
+		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, col, 1);
 
 		string oName = m_vClass[iClass].m_name;

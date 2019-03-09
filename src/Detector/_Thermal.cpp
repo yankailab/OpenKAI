@@ -95,10 +95,9 @@ void _Thermal::detect(void)
 		Rect rBB = boundingRect(vPoly);
 
 		o.init();
-		o.m_type = obj_bb2;
 		o.m_tStamp = m_tStamp;
-		o.m_o.m_bb2.setBB(rBB, cs);
-		o.setTopClass(0, o.m_o.m_bb2.m_bb.area());
+		o.setBB(rBB, cs);
+		o.setTopClass(0, o.area());
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));

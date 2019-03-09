@@ -124,13 +124,12 @@ bool _DNNclassifier::classify(void)
 
 	OBJECT o;
 	o.init();
-	o.m_type = obj_bb2;
 	o.m_tStamp = m_tStamp;
 	o.setTopClass(pClassID.x, conf);
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-	o.m_o.m_bb2.setBB(rRoi, cs);
+	o.setBB(rRoi, cs);
 
 	this->add(&o);
 	LOG_I("Class: " + i2str(o.m_topClass));
