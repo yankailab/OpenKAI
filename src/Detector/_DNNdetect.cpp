@@ -50,11 +50,8 @@ bool _DNNdetect::init(void* pKiss)
 	m_net.setPreferableBackend(m_iBackend);
 	m_net.setPreferableTarget(m_iTarget);
 
-	//Get the indices of the output layers, i.e. the layers with unconnected outputs
 	vector<int> outLayers = m_net.getUnconnectedOutLayers();
-	//get the names of all the layers in the network
 	vector<String> layersNames = m_net.getLayerNames();
-	// Get the names of the output layers in names
 	m_vLayerName.resize(outLayers.size());
 
 	for (size_t i = 0; i < outLayers.size(); i++)

@@ -13,6 +13,12 @@
 namespace kai
 {
 
+struct DNNTEXT_FILTER
+{
+	string m_contain;
+	vFloat4 m_roi;
+};
+
 class _DNNtext: public _DNNdetect
 {
 public:
