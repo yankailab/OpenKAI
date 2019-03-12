@@ -61,7 +61,7 @@
 	"name":"histEqualize",
 	"class":"_HistEqualize",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 }
@@ -70,10 +70,10 @@
 	"name":"contrast",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"FilterView",
-	"_VisionBase":"histEqualize",
-	"alpha":2.0,
+	"_VisionBase":"cam",
+	"alpha":1.5,
 	"beta":0.0,
 }
 
@@ -99,12 +99,13 @@
 	"name":"thr",
 	"class":"_Threshold",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"FilterView",
 	"_VisionBase":"contrast",
 
 	{
 		"type":0,
+		"bAutoThr":1,
 		"vMax":255.0,
 		"thr":150.0,
 		"thrType":0,

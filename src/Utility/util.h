@@ -11,6 +11,21 @@ using namespace std;
 namespace kai
 {
 
+inline string UTF8toASCII(const char* pUTF)
+{
+	string asc = "";
+	if(!pUTF)return asc;
+
+	int i=0;
+	while(pUTF[i]!=0)
+	{
+		unsigned char pC = pUTF[i++];
+		if((pC & 0x80) == 0)asc += pC;
+	}
+
+	return asc;
+}
+
 inline double dEarth(double lat1, double lon1, double lat2, double lon2)
 {
   double p = 0.017453292519943295;    // Math.PI / 180

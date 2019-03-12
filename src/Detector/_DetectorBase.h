@@ -101,6 +101,11 @@ struct OBJECT
 		b = 1.0 / cs.y;
 		m_bb.y = r.y * b;
 		m_bb.w = (r.y + r.height) * b;
+
+		m_bb.x = constrain(m_bb.x, 0.0, 1.0);
+		m_bb.y = constrain(m_bb.y, 0.0, 1.0);
+		m_bb.z = constrain(m_bb.z, 0.0, 1.0);
+		m_bb.w = constrain(m_bb.w, 0.0, 1.0);
 	}
 
 	Rect getBoundingRect(void)
@@ -261,7 +266,9 @@ public:
 	double m_minConfidence;
 	double m_minArea;
 	double m_maxArea;
+	double m_minW;
 	double m_maxW;
+	double m_minH;
 	double m_maxH;
 	vDouble4 m_roi;
 

@@ -131,9 +131,13 @@ bool _DNNtext::detect(void)
 {
 	IF_F(check() < 0);
 
-	Frame* pBGR = m_pVision->BGR();
-	m_BGR.copy(*pBGR);
-	Mat mIn = *m_BGR.m();
+	m_BGR.copy(*m_pVision->BGR());
+
+	Mat mIn;
+	if(m_BGR.m()->channels()<3)
+		mIn = *m_BGR.cvtColor(CV_GRAY2RGB).m();
+	else
+		mIn = *m_BGR.m();
 
 	vInt4 iRoi;
 	iRoi.x = mIn.cols * m_roi.x;
@@ -253,18 +257,7 @@ void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
 void _DNNtext::ocr(void)
 {
 #ifdef USE_OCR
-	Mat mIn = *m_BGR.m();
-
-//	vInt4 iRoi;
-//	iRoi.x = mIn.cols * m_roi.x;
-//	iRoi.y = mIn.rows * m_roi.y;
-//	iRoi.z = mIn.cols * m_roi.z;
-//	iRoi.w = mIn.rows * m_roi.w;
-//	Rect rRoi;
-//	vInt42rect(iRoi, rRoi);
-//	Mat mBGR = mIn(rRoi);
-
-	Mat mBGR = mIn;
+	Mat mBGR = *m_BGR.m();
 	m_pOCR->SetImage(mBGR.data, mBGR.cols, mBGR.rows, 3, mBGR.step);
 
 	vInt2 cs;
@@ -277,9 +270,16 @@ void _DNNtext::ocr(void)
 	{
 		Rect r = pO->getRect(cs);
 		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
-		string strOCR = string(m_pOCR->GetUTF8Text());
-		strncpy(pO->m_pText, strOCR.c_str(), OBJ_N_CHAR);
-		pO->m_pText[OBJ_N_CHAR-1] = 0;
+		string strO = string(m_pOCR->GetUTF8Text());
+
+		int n = strO.length();
+		if(n+1 > OBJ_N_CHAR)
+			n = OBJ_N_CHAR-1;
+		if(n>0)
+			strncpy(pO->m_pText, strO.c_str(), n);
+		pO->m_pText[n] = 0;
+
+		LOG_I(strO);
 	}
 #endif
 }

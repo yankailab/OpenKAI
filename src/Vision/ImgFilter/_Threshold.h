@@ -25,6 +25,7 @@ struct IMG_THRESHOLD
 	int		m_type;
 	double	m_vMax;
 	int		m_method;
+	bool	m_bAutoThr;
 	double	m_thr;
 	int		m_thrType;
 	int		m_blockSize;
@@ -34,6 +35,7 @@ struct IMG_THRESHOLD
 	{
 		m_type = img_thr_adaptive;
 		m_vMax = 1.0;
+		m_bAutoThr = false;
 		m_thr = 0.0;
 		m_method = ADAPTIVE_THRESH_GAUSSIAN_C;//ADAPTIVE_THRESH_MEDIAN_C
 		m_thrType = THRESH_BINARY;//THRESH_BINARY_INV

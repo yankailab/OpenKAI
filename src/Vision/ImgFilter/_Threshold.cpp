@@ -36,6 +36,7 @@ bool _Threshold::init(void* pKiss)
 		t.init();
 		pM->v("type", &t.m_type);
 		pM->v("vMax", &t.m_vMax);
+		pM->v("bAutoThr", &t.m_bAutoThr);
 		pM->v("thr", &t.m_thr);
 		pM->v("method", &t.m_method);
 		pM->v("thrType", &t.m_thrType);
@@ -134,10 +135,20 @@ void _Threshold::filter(void)
 		}
 		else if(pI->m_type == img_thr)
 		{
-			cv::threshold(*pM1, *pM2,
-					pI->m_thr,
-					pI->m_vMax,
-					pI->m_thrType);
+			if(pI->m_bAutoThr)
+			{
+				cv::threshold(*pM1, *pM2,
+						0,
+						255,
+						pI->m_thrType|THRESH_OTSU);
+			}
+			else
+			{
+				cv::threshold(*pM1, *pM2,
+						pI->m_thr,
+						pI->m_vMax,
+						pI->m_thrType);
+			}
 		}
 
 		SWAP(pM1,pM2,pT);

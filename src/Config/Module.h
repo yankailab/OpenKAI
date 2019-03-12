@@ -14,6 +14,8 @@
 #include "switch.h"
 
 #include "../Application/_HiphenRGB.h"
+#include "../Application/_ANR.h"
+
 #include "../Autopilot/_AutoPilot.h"
 #include "../Control/PIDctrl.h"
 #include "../Detector/_ArUco.h"

@@ -18,7 +18,9 @@ _DetectorBase::_DetectorBase()
 	m_minConfidence = 0.0;
 	m_minArea = -1.0;
 	m_maxArea = -1.0;
+	m_minW = -1.0;
 	m_maxW = -1.0;
+	m_minH = -1.0;
 	m_maxH = -1.0;
 	m_nClass = 0;
 	m_obj.reset();
@@ -176,7 +178,9 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	float area = pNewO->area();
 	IF_N(m_minArea >= 0 && area < m_minArea);
 	IF_N(m_maxArea >= 0 && area > m_maxArea);
+	IF_N(m_minW >= 0 && pNewO->width() < m_minW);
 	IF_N(m_maxW >= 0 && pNewO->width() > m_maxW);
+	IF_N(m_minH >= 0 && pNewO->height() < m_minW);
 	IF_N(m_maxH >= 0 && pNewO->height() > m_maxH);
 
 	return m_obj.add(pNewO);
