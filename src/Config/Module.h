@@ -61,6 +61,10 @@
 #include "../Vision/Hiphen/_HiphenServer.h"
 #include "../Vision/Hiphen/_HiphenCMD.h"
 #include "../Vision/ImgFilter/_Morphology.h"
+#include "../Vision/ImgFilter/_Threshold.h"
+#include "../Vision/ImgFilter/_Contrast.h"
+#include "../Vision/ImgFilter/_Erode.h"
+#include "../Vision/ImgFilter/_HistEqualize.h"
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"

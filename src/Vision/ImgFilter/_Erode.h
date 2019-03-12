@@ -1,12 +1,12 @@
 /*
- * _Morphology.h
+ * _Erode.h
  *
- *  Created on: March 11, 2019
+ *  Created on: March 12, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__Morphology_H_
-#define OpenKAI_src_Vision__Morphology_H_
+#ifndef OpenKAI_src_Vision__Erode_H_
+#define OpenKAI_src_Vision__Erode_H_
 
 #include "../../Base/common.h"
 #include "../_VisionBase.h"
@@ -14,9 +14,8 @@
 namespace kai
 {
 
-struct IMG_MORPH
+struct IMG_ERODE
 {
-	int m_morphOp;
 	int m_nItr;
 	int m_kShape;
 	int	m_kW;
@@ -27,13 +26,12 @@ struct IMG_MORPH
 
 	void init(void)
 	{
-		m_morphOp = cv::MORPH_OPEN;
 		m_nItr = 1;
-		m_kShape = cv::MORPH_RECT;
 		m_kW = 3;
 		m_kH = 3;
 		m_aX = -1;
 		m_aY = -1;
+		m_kShape = cv::MORPH_RECT;
 	}
 
 	void updateKernel(void)
@@ -42,11 +40,11 @@ struct IMG_MORPH
 	}
 };
 
-class _Morphology: public _VisionBase
+class _Erode: public _VisionBase
 {
 public:
-	_Morphology();
-	virtual ~_Morphology();
+	_Erode();
+	virtual ~_Erode();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -58,14 +56,14 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Morphology*) This)->update();
+		((_Erode*) This)->update();
 		return NULL;
 	}
 
 public:
 	_VisionBase* m_pV;
 	Frame m_fIn;
-	vector<IMG_MORPH> m_vFilter;
+	vector<IMG_ERODE> m_vFilter;
 
 };
 

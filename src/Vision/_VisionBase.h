@@ -26,6 +26,10 @@ enum VISION_TYPE
 	vision_file,
 	vision_hiphen,
 	vision_morphology,
+	vision_threshold,
+	vision_erode,
+	vision_contrast,
+	vision_histEqualize,
 };
 
 class _VisionBase: public _ThreadBase

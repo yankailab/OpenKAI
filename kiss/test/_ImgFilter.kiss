@@ -17,7 +17,7 @@
 }
 
 {
-	"name":"MorphView",
+	"name":"FilterView",
 	"class":"Window",
 	"bInst":1,
 }
@@ -55,26 +55,98 @@
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
 	"h":720,
-	"fovW":60,
-	"fovH":60,
+}
+
+{
+	"name":"histEqualize",
+	"class":"_HistEqualize",
+	"FPS":30,
+	"bInst":1,
+	"Window":"FilterView",
+	"_VisionBase":"cam",
+}
+
+{
+	"name":"contrast",
+	"class":"_Contrast",
+	"FPS":30,
+	"bInst":0,
+	"Window":"FilterView",
+	"_VisionBase":"histEqualize",
+	"alpha":2.0,
+	"beta":0.0,
+}
+
+{
+	"name":"thr",
+	"class":"_Threshold",
+	"FPS":30,
+	"bInst":0,
+	"Window":"FilterView",
+	"_VisionBase":"contrast",
+
+	{
+		"type":1,
+		"vMax":255.0,
+		"method":0,
+		"thrType":0,
+		"blockSize":9,
+		"C":0,
+	}
+}
+
+{
+	"name":"thr",
+	"class":"_Threshold",
+	"FPS":30,
+	"bInst":0,
+	"Window":"FilterView",
+	"_VisionBase":"contrast",
+
+	{
+		"type":0,
+		"vMax":255.0,
+		"thr":150.0,
+		"thrType":0,
+	}
 }
 
 {
 	"name":"morph",
 	"class":"_Morphology",
 	"FPS":30,
-	"bInst":1,
-	"Window":"MorphView",
+	"bInst":0,
+	"Window":"FilterView",
 	"_VisionBase":"cam",
 
 	{
-		"morphOp":2,
-		"nItr":2,
+		"bInst":1,	
+		"morphOp":2, /*open*/
+		"nItr":1,
+		"kW":3,
+		"kH":3,
+		"aX":1,
+		"aY":1,
 	}
 	
 	{
-		"morphOp":3,
+		"bInst":0,
+		"morphOp":3, /*close*/
 		"nItr":2,
 	}
-	
+}
+
+{
+	"name":"erode",
+	"class":"_Erode",
+	"FPS":30,
+	"bInst":0,
+	"Window":"FilterView",
+	"_VisionBase":"thr",
+
+	{
+		"nItr":1,
+		"kW":3,
+		"kH":3,
+	}
 }

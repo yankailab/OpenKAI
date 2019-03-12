@@ -26,15 +26,18 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
+	ADD_MODULE(_Contrast);
 	ADD_MODULE(_ClusterNet);
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
+	ADD_MODULE(_Erode);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenRGB);
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenServer);
+	ADD_MODULE(_HistEqualize);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
@@ -49,6 +52,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);
 	ADD_MODULE(_Thermal);
+	ADD_MODULE(_Threshold);
 	ADD_MODULE(_UDP);
 	ADD_MODULE(_VideoFile);
 	ADD_MODULE(_WebSocket);

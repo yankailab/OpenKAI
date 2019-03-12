@@ -1,27 +1,27 @@
 /*
- * _Morphology.cpp
+ * _Erode.cpp
  *
- *  Created on: March 11, 2019
+ *  Created on: March 12, 2019
  *      Author: yankai
  */
 
-#include "_Morphology.h"
+#include "_Erode.h"
 
 namespace kai
 {
 
-_Morphology::_Morphology()
+_Erode::_Erode()
 {
-	m_type = vision_morphology;
+	m_type = vision_erode;
 	m_pV = NULL;
 }
 
-_Morphology::~_Morphology()
+_Erode::~_Erode()
 {
 	close();
 }
 
-bool _Morphology::init(void* pKiss)
+bool _Erode::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -32,18 +32,17 @@ bool _Morphology::init(void* pKiss)
 	{
 		Kiss* pM = ppM[i++];
 
-		IMG_MORPH m;
-		m.init();
-		pM->v("morphOp", &m.m_morphOp);
-		pM->v("nItr", &m.m_nItr);
-		pM->v("kShape", &m.m_kShape);
-		pM->v("kW", &m.m_kW);
-		pM->v("kH", &m.m_kH);
-		pM->v("aX", &m.m_aX);
-		pM->v("aY", &m.m_aY);
-		m.updateKernel();
+		IMG_ERODE e;
+		e.init();
+		pM->v("nItr", &e.m_nItr);
+		pM->v("kShape", &e.m_kShape);
+		pM->v("kW", &e.m_kW);
+		pM->v("kH", &e.m_kH);
+		pM->v("aX", &e.m_aX);
+		pM->v("aY", &e.m_aY);
+		e.updateKernel();
 
-		m_vFilter.push_back(m);
+		m_vFilter.push_back(e);
 	}
 
 	string iName;
@@ -55,7 +54,7 @@ bool _Morphology::init(void* pKiss)
 	return true;
 }
 
-bool _Morphology::open(void)
+bool _Erode::open(void)
 {
 	NULL_F(m_pV);
 	m_bOpen = m_pV->isOpened();
@@ -63,7 +62,7 @@ bool _Morphology::open(void)
 	return m_bOpen;
 }
 
-void _Morphology::close(void)
+void _Erode::close(void)
 {
 	if(m_threadMode==T_THREAD)
 	{
@@ -74,7 +73,7 @@ void _Morphology::close(void)
 	this->_VisionBase::close();
 }
 
-bool _Morphology::start(void)
+bool _Erode::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -89,7 +88,7 @@ bool _Morphology::start(void)
 	return true;
 }
 
-void _Morphology::update(void)
+void _Erode::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -110,7 +109,7 @@ void _Morphology::update(void)
 	}
 }
 
-void _Morphology::filter(void)
+void _Erode::filter(void)
 {
 	m_fIn.copy(*m_pV->BGR());
 
@@ -120,15 +119,14 @@ void _Morphology::filter(void)
 	Mat* pM2 = &m2;
 	Mat* pT;
 
-	for(int i=0;i<m_vFilter.size();i++)
+	for(int i=0; i<m_vFilter.size(); i++)
 	{
-		IMG_MORPH* pM = &m_vFilter[i];
+		IMG_ERODE* pI = &m_vFilter[i];
 
-		cv::morphologyEx(*pM1, *pM2,
-				pM->m_morphOp,
-				pM->m_kernel,
-				cv::Point(pM->m_aX, pM->m_aY),
-				pM->m_nItr);
+		cv::erode(*pM1, *pM2,
+				pI->m_kernel,
+				cv::Point(pI->m_aX, pI->m_aY),
+				pI->m_nItr);
 
 		SWAP(pM1,pM2,pT);
 	}
