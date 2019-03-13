@@ -15,6 +15,8 @@
 namespace kai
 {
 
+#define N_PREFIX_CANDIDATE 128
+
 class _ANR: public _ThreadBase
 {
 public:
@@ -41,11 +43,15 @@ private:
 	_DetectorBase* m_pD;
 
 	string m_cnPrefix;
-	float  m_cnPos;
+	vector<string> m_vPrefixCandidate;
+	float  m_cnPosMargin;
 	string m_cn;
+	int		m_nCNdigit;
+	vFloat4 m_cnPrefixBB;
 	vFloat4 m_cnBB;
 	uint64_t m_tStampCNprefix;
 	uint64_t m_tStampCN;
+	uint64_t m_timeOut;
 
 };
 

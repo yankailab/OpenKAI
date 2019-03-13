@@ -91,7 +91,7 @@ bool _TrackerBase::startTrack(vDouble4& bb)
 	iBB.z = bb.z * pMat->cols;
 	iBB.w = bb.w * pMat->rows;
 
-	Rect2d rBB;
+	Rect rBB;
 	vInt42rect(iBB,rBB);
 	IF_F(rBB.width == 0 || rBB.height == 0);
 

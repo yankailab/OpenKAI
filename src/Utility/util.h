@@ -11,18 +11,35 @@ using namespace std;
 namespace kai
 {
 
-inline string UTF8toASCII(const char* pUTF)
+inline string deleteNonASCII(const char* pStr)
 {
 	string asc = "";
-	if(!pUTF)return asc;
+	if(!pStr)return asc;
 
 	int i=0;
-	while(pUTF[i]!=0)
+	while(pStr[i]!=0)
 	{
-		unsigned char pC = pUTF[i++];
-		if((pC & 0x80) == 0)asc += pC;
+		char c = pStr[i++];
+		IF_CONT(c<0);
+		IF_CONT(c>=128);
+		asc += c;
 	}
+	return asc;
+}
 
+inline string deleteNonNumber(const char* pStr)
+{
+	string asc = "";
+	if(!pStr)return asc;
+
+	int i=0;
+	while(pStr[i]!=0)
+	{
+		char c = pStr[i++];
+		IF_CONT(c<48);
+		IF_CONT(c>57);
+		asc += c;
+	}
 	return asc;
 }
 
@@ -106,35 +123,21 @@ inline string uuid(void)
 	return strUuid;
 }
 
-inline int small(int a, int b)
+template <typename T> inline T small(T a, T b)
 {
 	if (a > b)
 		return b;
 	return a;
 }
 
-inline int big(int a, int b)
+template <typename T> inline T big(T a, T b)
 {
 	if (a > b)
 		return a;
 	return b;
 }
 
-inline double small(double a, double b)
-{
-	if (a > b)
-		return b;
-	return a;
-}
-
-inline double big(double a, double b)
-{
-	if (a > b)
-		return a;
-	return b;
-}
-
-inline double Hdg(double anyDeg)
+template <typename T> inline T Hdg(T anyDeg)
 {
 	while (anyDeg > 360)
 		anyDeg -= 360;
@@ -145,12 +148,12 @@ inline double Hdg(double anyDeg)
 	return anyDeg;
 }
 
-inline double dHdg(double hFrom, double hTo)
+template <typename T> inline T dHdg(T hFrom, T hTo)
 {
 	hFrom = Hdg(hFrom);
 	hTo = Hdg(hTo);
 
-	double d = hTo - hFrom;
+	T d = hTo - hFrom;
 
 	if (d > 180)
 		d -= 360;
@@ -160,105 +163,41 @@ inline double dHdg(double hFrom, double hTo)
 	return d;
 }
 
-inline bool bOverlapped(vInt4* pA, vInt4* pB)
+template <typename T> inline T bbScale(T& bb, float k)
 {
-	if (pA->z < pB->x || pA->x > pB->z)
-		return false;
+	float s = abs(1.0 - k) * 0.5;
+	float dW = bb.width() * s;
+	float dH = bb.height() * s;
 
-	if (pA->w < pB->y || pA->y > pB->w)
-		return false;
+	T B = bb;
 
-	return true;
-}
-
-inline bool bOverlapped(vDouble4* pA, vDouble4* pB)
-{
-	if (pA->z < pB->x || pA->x > pB->z)
-		return false;
-
-	if (pA->w < pB->y || pA->y > pB->w)
-		return false;
-
-	return true;
-}
-
-inline double overlapRatio(vInt4* pA, vInt4* pB)
-{
-	if (!bOverlapped(pA, pB))
-		return 0.0;
-
-	vInt4* pT;
-	if (pA->area() < pB->area())
+	if(k > 1.0)
 	{
-		SWAP(pA, pB, pT);
+		B.x -= dW;
+		B.y -= dH;
+		B.z += dW;
+		B.w += dH;
+	}
+	else
+	{
+		B.x += dW;
+		B.y += dH;
+		B.z -= dW;
+		B.w -= dH;
 	}
 
-	//pA > pB
-	double w = pA->width();
-	if (pB->width() > w)
-		w = pB->width();
-	double h = pA->height();
-	if (pB->height() > h)
-		h = pB->height();
-
-	double rX = pB->z - pA->x;
-	if (pB->x > pA->x)
-		rX = pA->z - pB->x;
-
-	rX /= w;
-
-	double rY = pB->w - pA->y;
-	if (pB->y > pA->y)
-		rY = pA->w - pB->y;
-
-	rY /= h;
-
-	return rX * rY;
+	return B;
 }
 
-inline double overlapRatio(vDouble4* pA, vDouble4* pB)
+template <typename T> inline bool bOverlapped(T& pA, T& pB)
 {
-	if (!bOverlapped(pA, pB))
-		return 0.0;
+	IF_F(pA.z < pB.x || pA.x > pB.z);
+	IF_F(pA.w < pB.y || pA.y > pB.w);
 
-	vDouble4* pT;
-	if (pA->area() < pB->area())
-	{
-		SWAP(pA, pB, pT);
-	}
-
-	//pA > pB
-	double w = pA->width();
-	if (pB->width() > w)
-		w = pB->width();
-	double h = pA->height();
-	if (pB->height() > h)
-		h = pB->height();
-
-	double rX = pB->z - pA->x;
-	if (pB->x > pA->x)
-		rX = pA->z - pB->x;
-
-	rX /= w;
-
-	double rY = pB->w - pA->y;
-	if (pB->y > pA->y)
-		rY = pA->w - pB->y;
-
-	rY /= h;
-
-	return rX * rY;
+	return true;
 }
 
 inline void rect2vInt4(Rect r, vInt4& v)
-{
-	v.x = r.x;
-	v.y = r.y;
-	v.z = r.x + r.width;
-	v.w = r.y + r.height;
-}
-
-inline void rect2vInt4(Rect2d r, vInt4& v)
 {
 	v.x = r.x;
 	v.y = r.y;
@@ -274,39 +213,9 @@ inline void vInt42rect(vInt4 v, Rect& r)
 	r.height = v.w - v.y;
 }
 
-inline void vInt42rect(vInt4 v, Rect2d& r)
+template <typename T> inline T constrain(T v, T a, T b)
 {
-	r.x = v.x;
-	r.y = v.y;
-	r.width = v.z - v.x;
-	r.height = v.w - v.y;
-}
-
-inline int constrain(int v, int a, int b)
-{
-	int min, max;
-	if (a < b)
-	{
-		min = a;
-		max = b;
-	}
-	else
-	{
-		max = a;
-		min = b;
-	}
-
-	if (v > max)
-		v = max;
-	else if (v < min)
-		v = min;
-
-	return v;
-}
-
-inline double constrain(double v, double a, double b)
-{
-	double min, max;
+	T min, max;
 	if (a < b)
 	{
 		min = a;

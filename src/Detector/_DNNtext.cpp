@@ -18,6 +18,8 @@ _DNNtext::_DNNtext()
 	m_vMean.z = 103.94;
 	m_scale = 1.0;
 
+	m_bDetect = true;
+
 #ifdef USE_OCR
 	m_bOCR = false;
 	m_pOCR = NULL;
@@ -52,10 +54,28 @@ bool _DNNtext::init(void* pKiss)
 	KISSm(pK, iTarget);
 	KISSm(pK, bSwapRB);
 	KISSm(pK, scale);
+	KISSm(pK, bDetect);
 	KISSm(pK, iClassDraw);
 	pK->v("meanB", &m_vMean.x);
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);
+
+	Kiss** ppR = pK->getChildItr();
+	int i=0;
+	while (ppR[i])
+	{
+		Kiss* pR = ppR[i++];
+
+		DNNTEXT_ROI r;
+		r.init();
+		pR->v("x", &r.m_roi.x);
+		pR->v("y", &r.m_roi.y);
+		pR->v("z", &r.m_roi.z);
+		pR->v("w", &r.m_roi.w);
+		pR->v("bInvert", &r.m_bInvert);
+
+		m_vROI.push_back(r);
+	}
 
 	m_net = readNet(m_modelFile);
 	IF_Fl(m_net.empty(), "read Net failed");
@@ -103,13 +123,50 @@ void _DNNtext::update(void)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(!detect());
-
-		m_obj.update();
-
-		if (m_bGoSleep)
+		if(check()>=0)
 		{
-			m_obj.m_pPrev->reset();
+			m_fBGR.copy(*m_pVision->BGR());
+			if(m_fBGR.m()->channels()<3)
+				m_fBGR.copy(m_fBGR.cvtColor(CV_GRAY2RGB));
+
+			cv::bitwise_not(*m_fBGR.m(),*m_fBGRinv.m());
+
+			if(m_bDetect)
+			{
+				detect(&m_fBGR, false);
+				detect(&m_fBGRinv, true);
+			}
+
+			for (int i = 0; i < m_vROI.size(); i++)
+			{
+				DNNTEXT_ROI* pR = &m_vROI[i];
+
+				OBJECT o;
+				o.init();
+				o.m_tStamp = m_tStamp;
+				o.setTopClass(0, 1.0);
+				o.m_nV = 4;
+				o.m_bb = pR->m_roi;
+				if(pR->m_bInvert)
+					o.m_iImg = 1;
+				this->add(&o);
+			}
+
+#ifdef USE_OCR
+			if(m_bOCR)
+			{
+				ocr(&m_fBGR, 0);
+				ocr(&m_fBGRinv, 1);
+			}
+#endif
+
+			m_obj.update();
+
+			if (m_bGoSleep)
+			{
+				m_obj.m_pPrev->reset();
+			}
+
 		}
 
 		this->autoFPSto();
@@ -122,22 +179,16 @@ int _DNNtext::check(void)
 	Frame* pBGR = m_pVision->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
-	IF__(pBGR->tStamp() <= m_BGR.tStamp(), -1);
+	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
 
 	return 0;
 }
 
-bool _DNNtext::detect(void)
+bool _DNNtext::detect(Frame* pFrame, int iImg)
 {
-	IF_F(check() < 0);
+	NULL_F(pFrame);
 
-	m_BGR.copy(*m_pVision->BGR());
-
-	Mat mIn;
-	if(m_BGR.m()->channels()<3)
-		mIn = *m_BGR.cvtColor(CV_GRAY2RGB).m();
-	else
-		mIn = *m_BGR.m();
+	Mat mIn = *pFrame->m();
 
 	vInt4 iRoi;
 	iRoi.x = mIn.cols * m_roi.x;
@@ -179,6 +230,7 @@ bool _DNNtext::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
+		o.m_iImg = iImg;
 
 		Point2f pV[4];
 		RotatedRect& box = vBoxes[vIndices[i]];
@@ -193,11 +245,6 @@ bool _DNNtext::detect(void)
 
 		this->add(&o);
 	}
-
-#ifdef USE_OCR
-	if(m_bOCR)
-		ocr();
-#endif
 
 	return true;
 }
@@ -254,12 +301,13 @@ void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
 	}
 }
 
-void _DNNtext::ocr(void)
+void _DNNtext::ocr(Frame* pFrame, int iImg)
 {
 #ifdef USE_OCR
-	Mat mBGR = *m_BGR.m();
-	m_pOCR->SetImage(mBGR.data, mBGR.cols, mBGR.rows, 3, mBGR.step);
+	NULL_(pFrame);
 
+	Mat mBGR = *pFrame->m();
+	m_pOCR->SetImage(mBGR.data, mBGR.cols, mBGR.rows, 3, mBGR.step);
 	vInt2 cs;
 	cs.x = mBGR.cols;
 	cs.y = mBGR.rows;
@@ -268,6 +316,8 @@ void _DNNtext::ocr(void)
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
+		IF_CONT(pO->m_iImg != iImg);
+
 		Rect r = pO->getRect(cs);
 		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
 		string strO = string(m_pOCR->GetUTF8Text());
@@ -281,12 +331,13 @@ void _DNNtext::ocr(void)
 
 		LOG_I(strO);
 	}
+
 #endif
 }
 
 bool _DNNtext::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();

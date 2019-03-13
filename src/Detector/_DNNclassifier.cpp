@@ -86,7 +86,7 @@ int _DNNclassifier::check(void)
 	Frame* pBGR = m_pVision->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
-	IF__(pBGR->tStamp() <= m_BGR.tStamp(), -1);
+	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
 
 	return 0;
 }
@@ -95,8 +95,8 @@ bool _DNNclassifier::classify(void)
 {
 	IF_F(check() < 0);
 	Frame* pBGR = m_pVision->BGR();
-	m_BGR.copy(*pBGR);
-	Mat mIn = *m_BGR.m();
+	m_fBGR.copy(*pBGR);
+	Mat mIn = *m_fBGR.m();
 
 	vInt4 iRoi;
 	iRoi.x = mIn.cols * m_roi.x;
