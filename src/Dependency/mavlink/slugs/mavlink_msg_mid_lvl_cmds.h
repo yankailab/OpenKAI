@@ -5,10 +5,10 @@
 
 MAVPACKED(
 typedef struct __mavlink_mid_lvl_cmds_t {
- float hCommand; /*< Commanded Altitude in meters*/
- float uCommand; /*< Commanded Airspeed in m/s*/
- float rCommand; /*< Commanded Turnrate in rad/s*/
- uint8_t target; /*< The system setting the commands*/
+ float hCommand; /*< [m] Commanded altitude (MSL)*/
+ float uCommand; /*< [m/s] Commanded Airspeed*/
+ float rCommand; /*< [rad/s] Commanded Turnrate*/
+ uint8_t target; /*<  The system setting the commands*/
 }) mavlink_mid_lvl_cmds_t;
 
 #define MAVLINK_MSG_ID_MID_LVL_CMDS_LEN 13
@@ -26,20 +26,20 @@ typedef struct __mavlink_mid_lvl_cmds_t {
     180, \
     "MID_LVL_CMDS", \
     4, \
-    {  { "hCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mid_lvl_cmds_t, hCommand) }, \
+    {  { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_mid_lvl_cmds_t, target) }, \
+         { "hCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mid_lvl_cmds_t, hCommand) }, \
          { "uCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_mid_lvl_cmds_t, uCommand) }, \
          { "rCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_mid_lvl_cmds_t, rCommand) }, \
-         { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_mid_lvl_cmds_t, target) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_MID_LVL_CMDS { \
     "MID_LVL_CMDS", \
     4, \
-    {  { "hCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mid_lvl_cmds_t, hCommand) }, \
+    {  { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_mid_lvl_cmds_t, target) }, \
+         { "hCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mid_lvl_cmds_t, hCommand) }, \
          { "uCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_mid_lvl_cmds_t, uCommand) }, \
          { "rCommand", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_mid_lvl_cmds_t, rCommand) }, \
-         { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_mid_lvl_cmds_t, target) }, \
          } \
 }
 #endif
@@ -50,10 +50,10 @@ typedef struct __mavlink_mid_lvl_cmds_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target The system setting the commands
- * @param hCommand Commanded Altitude in meters
- * @param uCommand Commanded Airspeed in m/s
- * @param rCommand Commanded Turnrate in rad/s
+ * @param target  The system setting the commands
+ * @param hCommand [m] Commanded altitude (MSL)
+ * @param uCommand [m/s] Commanded Airspeed
+ * @param rCommand [rad/s] Commanded Turnrate
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mid_lvl_cmds_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -87,10 +87,10 @@ static inline uint16_t mavlink_msg_mid_lvl_cmds_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target The system setting the commands
- * @param hCommand Commanded Altitude in meters
- * @param uCommand Commanded Airspeed in m/s
- * @param rCommand Commanded Turnrate in rad/s
+ * @param target  The system setting the commands
+ * @param hCommand [m] Commanded altitude (MSL)
+ * @param uCommand [m/s] Commanded Airspeed
+ * @param rCommand [rad/s] Commanded Turnrate
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mid_lvl_cmds_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -150,10 +150,10 @@ static inline uint16_t mavlink_msg_mid_lvl_cmds_encode_chan(uint8_t system_id, u
  * @brief Send a mid_lvl_cmds message
  * @param chan MAVLink channel to send the message
  *
- * @param target The system setting the commands
- * @param hCommand Commanded Altitude in meters
- * @param uCommand Commanded Airspeed in m/s
- * @param rCommand Commanded Turnrate in rad/s
+ * @param target  The system setting the commands
+ * @param hCommand [m] Commanded altitude (MSL)
+ * @param uCommand [m/s] Commanded Airspeed
+ * @param rCommand [rad/s] Commanded Turnrate
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -230,7 +230,7 @@ static inline void mavlink_msg_mid_lvl_cmds_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field target from mid_lvl_cmds message
  *
- * @return The system setting the commands
+ * @return  The system setting the commands
  */
 static inline uint8_t mavlink_msg_mid_lvl_cmds_get_target(const mavlink_message_t* msg)
 {
@@ -240,7 +240,7 @@ static inline uint8_t mavlink_msg_mid_lvl_cmds_get_target(const mavlink_message_
 /**
  * @brief Get field hCommand from mid_lvl_cmds message
  *
- * @return Commanded Altitude in meters
+ * @return [m] Commanded altitude (MSL)
  */
 static inline float mavlink_msg_mid_lvl_cmds_get_hCommand(const mavlink_message_t* msg)
 {
@@ -250,7 +250,7 @@ static inline float mavlink_msg_mid_lvl_cmds_get_hCommand(const mavlink_message_
 /**
  * @brief Get field uCommand from mid_lvl_cmds message
  *
- * @return Commanded Airspeed in m/s
+ * @return [m/s] Commanded Airspeed
  */
 static inline float mavlink_msg_mid_lvl_cmds_get_uCommand(const mavlink_message_t* msg)
 {
@@ -260,7 +260,7 @@ static inline float mavlink_msg_mid_lvl_cmds_get_uCommand(const mavlink_message_
 /**
  * @brief Get field rCommand from mid_lvl_cmds message
  *
- * @return Commanded Turnrate in rad/s
+ * @return [rad/s] Commanded Turnrate
  */
 static inline float mavlink_msg_mid_lvl_cmds_get_rCommand(const mavlink_message_t* msg)
 {

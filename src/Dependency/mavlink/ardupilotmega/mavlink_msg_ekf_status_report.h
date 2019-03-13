@@ -5,12 +5,12 @@
 
 MAVPACKED(
 typedef struct __mavlink_ekf_status_report_t {
- float velocity_variance; /*< Velocity variance*/
- float pos_horiz_variance; /*< Horizontal Position variance*/
- float pos_vert_variance; /*< Vertical Position variance*/
- float compass_variance; /*< Compass variance*/
- float terrain_alt_variance; /*< Terrain Altitude variance*/
- uint16_t flags; /*< Flags*/
+ float velocity_variance; /*<  Velocity variance.*/
+ float pos_horiz_variance; /*<  Horizontal Position variance.*/
+ float pos_vert_variance; /*<  Vertical Position variance.*/
+ float compass_variance; /*<  Compass variance.*/
+ float terrain_alt_variance; /*<  Terrain Altitude variance.*/
+ uint16_t flags; /*<  Flags.*/
 }) mavlink_ekf_status_report_t;
 
 #define MAVLINK_MSG_ID_EKF_STATUS_REPORT_LEN 22
@@ -28,24 +28,24 @@ typedef struct __mavlink_ekf_status_report_t {
     193, \
     "EKF_STATUS_REPORT", \
     6, \
-    {  { "velocity_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_ekf_status_report_t, velocity_variance) }, \
+    {  { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_ekf_status_report_t, flags) }, \
+         { "velocity_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_ekf_status_report_t, velocity_variance) }, \
          { "pos_horiz_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_ekf_status_report_t, pos_horiz_variance) }, \
          { "pos_vert_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_ekf_status_report_t, pos_vert_variance) }, \
          { "compass_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_ekf_status_report_t, compass_variance) }, \
          { "terrain_alt_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_ekf_status_report_t, terrain_alt_variance) }, \
-         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_ekf_status_report_t, flags) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_EKF_STATUS_REPORT { \
     "EKF_STATUS_REPORT", \
     6, \
-    {  { "velocity_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_ekf_status_report_t, velocity_variance) }, \
+    {  { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_ekf_status_report_t, flags) }, \
+         { "velocity_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_ekf_status_report_t, velocity_variance) }, \
          { "pos_horiz_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_ekf_status_report_t, pos_horiz_variance) }, \
          { "pos_vert_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_ekf_status_report_t, pos_vert_variance) }, \
          { "compass_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_ekf_status_report_t, compass_variance) }, \
          { "terrain_alt_variance", NULL, MAVLINK_TYPE_FLOAT, 0, 16, offsetof(mavlink_ekf_status_report_t, terrain_alt_variance) }, \
-         { "flags", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_ekf_status_report_t, flags) }, \
          } \
 }
 #endif
@@ -56,12 +56,12 @@ typedef struct __mavlink_ekf_status_report_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param flags Flags
- * @param velocity_variance Velocity variance
- * @param pos_horiz_variance Horizontal Position variance
- * @param pos_vert_variance Vertical Position variance
- * @param compass_variance Compass variance
- * @param terrain_alt_variance Terrain Altitude variance
+ * @param flags  Flags.
+ * @param velocity_variance  Velocity variance.
+ * @param pos_horiz_variance  Horizontal Position variance.
+ * @param pos_vert_variance  Vertical Position variance.
+ * @param compass_variance  Compass variance.
+ * @param terrain_alt_variance  Terrain Altitude variance.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ekf_status_report_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -99,12 +99,12 @@ static inline uint16_t mavlink_msg_ekf_status_report_pack(uint8_t system_id, uin
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param flags Flags
- * @param velocity_variance Velocity variance
- * @param pos_horiz_variance Horizontal Position variance
- * @param pos_vert_variance Vertical Position variance
- * @param compass_variance Compass variance
- * @param terrain_alt_variance Terrain Altitude variance
+ * @param flags  Flags.
+ * @param velocity_variance  Velocity variance.
+ * @param pos_horiz_variance  Horizontal Position variance.
+ * @param pos_vert_variance  Vertical Position variance.
+ * @param compass_variance  Compass variance.
+ * @param terrain_alt_variance  Terrain Altitude variance.
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_ekf_status_report_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -168,12 +168,12 @@ static inline uint16_t mavlink_msg_ekf_status_report_encode_chan(uint8_t system_
  * @brief Send a ekf_status_report message
  * @param chan MAVLink channel to send the message
  *
- * @param flags Flags
- * @param velocity_variance Velocity variance
- * @param pos_horiz_variance Horizontal Position variance
- * @param pos_vert_variance Vertical Position variance
- * @param compass_variance Compass variance
- * @param terrain_alt_variance Terrain Altitude variance
+ * @param flags  Flags.
+ * @param velocity_variance  Velocity variance.
+ * @param pos_horiz_variance  Horizontal Position variance.
+ * @param pos_vert_variance  Vertical Position variance.
+ * @param compass_variance  Compass variance.
+ * @param terrain_alt_variance  Terrain Altitude variance.
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -258,7 +258,7 @@ static inline void mavlink_msg_ekf_status_report_send_buf(mavlink_message_t *msg
 /**
  * @brief Get field flags from ekf_status_report message
  *
- * @return Flags
+ * @return  Flags.
  */
 static inline uint16_t mavlink_msg_ekf_status_report_get_flags(const mavlink_message_t* msg)
 {
@@ -268,7 +268,7 @@ static inline uint16_t mavlink_msg_ekf_status_report_get_flags(const mavlink_mes
 /**
  * @brief Get field velocity_variance from ekf_status_report message
  *
- * @return Velocity variance
+ * @return  Velocity variance.
  */
 static inline float mavlink_msg_ekf_status_report_get_velocity_variance(const mavlink_message_t* msg)
 {
@@ -278,7 +278,7 @@ static inline float mavlink_msg_ekf_status_report_get_velocity_variance(const ma
 /**
  * @brief Get field pos_horiz_variance from ekf_status_report message
  *
- * @return Horizontal Position variance
+ * @return  Horizontal Position variance.
  */
 static inline float mavlink_msg_ekf_status_report_get_pos_horiz_variance(const mavlink_message_t* msg)
 {
@@ -288,7 +288,7 @@ static inline float mavlink_msg_ekf_status_report_get_pos_horiz_variance(const m
 /**
  * @brief Get field pos_vert_variance from ekf_status_report message
  *
- * @return Vertical Position variance
+ * @return  Vertical Position variance.
  */
 static inline float mavlink_msg_ekf_status_report_get_pos_vert_variance(const mavlink_message_t* msg)
 {
@@ -298,7 +298,7 @@ static inline float mavlink_msg_ekf_status_report_get_pos_vert_variance(const ma
 /**
  * @brief Get field compass_variance from ekf_status_report message
  *
- * @return Compass variance
+ * @return  Compass variance.
  */
 static inline float mavlink_msg_ekf_status_report_get_compass_variance(const mavlink_message_t* msg)
 {
@@ -308,7 +308,7 @@ static inline float mavlink_msg_ekf_status_report_get_compass_variance(const mav
 /**
  * @brief Get field terrain_alt_variance from ekf_status_report message
  *
- * @return Terrain Altitude variance
+ * @return  Terrain Altitude variance.
  */
 static inline float mavlink_msg_ekf_status_report_get_terrain_alt_variance(const mavlink_message_t* msg)
 {

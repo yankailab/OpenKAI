@@ -5,13 +5,13 @@
 
 MAVPACKED(
 typedef struct __mavlink_isr_location_t {
- float latitude; /*< ISR Latitude*/
- float longitude; /*< ISR Longitude*/
- float height; /*< ISR Height*/
- uint8_t target; /*< The system reporting the action*/
- uint8_t option1; /*< Option 1*/
- uint8_t option2; /*< Option 2*/
- uint8_t option3; /*< Option 3*/
+ float latitude; /*< [deg] ISR Latitude*/
+ float longitude; /*< [deg] ISR Longitude*/
+ float height; /*<  ISR Height*/
+ uint8_t target; /*<  The system reporting the action*/
+ uint8_t option1; /*<  Option 1*/
+ uint8_t option2; /*<  Option 2*/
+ uint8_t option3; /*<  Option 3*/
 }) mavlink_isr_location_t;
 
 #define MAVLINK_MSG_ID_ISR_LOCATION_LEN 16
@@ -29,10 +29,10 @@ typedef struct __mavlink_isr_location_t {
     189, \
     "ISR_LOCATION", \
     7, \
-    {  { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_isr_location_t, latitude) }, \
+    {  { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_isr_location_t, target) }, \
+         { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_isr_location_t, latitude) }, \
          { "longitude", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_isr_location_t, longitude) }, \
          { "height", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_isr_location_t, height) }, \
-         { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_isr_location_t, target) }, \
          { "option1", NULL, MAVLINK_TYPE_UINT8_T, 0, 13, offsetof(mavlink_isr_location_t, option1) }, \
          { "option2", NULL, MAVLINK_TYPE_UINT8_T, 0, 14, offsetof(mavlink_isr_location_t, option2) }, \
          { "option3", NULL, MAVLINK_TYPE_UINT8_T, 0, 15, offsetof(mavlink_isr_location_t, option3) }, \
@@ -42,10 +42,10 @@ typedef struct __mavlink_isr_location_t {
 #define MAVLINK_MESSAGE_INFO_ISR_LOCATION { \
     "ISR_LOCATION", \
     7, \
-    {  { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_isr_location_t, latitude) }, \
+    {  { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_isr_location_t, target) }, \
+         { "latitude", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_isr_location_t, latitude) }, \
          { "longitude", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_isr_location_t, longitude) }, \
          { "height", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_isr_location_t, height) }, \
-         { "target", NULL, MAVLINK_TYPE_UINT8_T, 0, 12, offsetof(mavlink_isr_location_t, target) }, \
          { "option1", NULL, MAVLINK_TYPE_UINT8_T, 0, 13, offsetof(mavlink_isr_location_t, option1) }, \
          { "option2", NULL, MAVLINK_TYPE_UINT8_T, 0, 14, offsetof(mavlink_isr_location_t, option2) }, \
          { "option3", NULL, MAVLINK_TYPE_UINT8_T, 0, 15, offsetof(mavlink_isr_location_t, option3) }, \
@@ -59,13 +59,13 @@ typedef struct __mavlink_isr_location_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param target The system reporting the action
- * @param latitude ISR Latitude
- * @param longitude ISR Longitude
- * @param height ISR Height
- * @param option1 Option 1
- * @param option2 Option 2
- * @param option3 Option 3
+ * @param target  The system reporting the action
+ * @param latitude [deg] ISR Latitude
+ * @param longitude [deg] ISR Longitude
+ * @param height  ISR Height
+ * @param option1  Option 1
+ * @param option2  Option 2
+ * @param option3  Option 3
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_isr_location_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -105,13 +105,13 @@ static inline uint16_t mavlink_msg_isr_location_pack(uint8_t system_id, uint8_t 
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param target The system reporting the action
- * @param latitude ISR Latitude
- * @param longitude ISR Longitude
- * @param height ISR Height
- * @param option1 Option 1
- * @param option2 Option 2
- * @param option3 Option 3
+ * @param target  The system reporting the action
+ * @param latitude [deg] ISR Latitude
+ * @param longitude [deg] ISR Longitude
+ * @param height  ISR Height
+ * @param option1  Option 1
+ * @param option2  Option 2
+ * @param option3  Option 3
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_isr_location_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -177,13 +177,13 @@ static inline uint16_t mavlink_msg_isr_location_encode_chan(uint8_t system_id, u
  * @brief Send a isr_location message
  * @param chan MAVLink channel to send the message
  *
- * @param target The system reporting the action
- * @param latitude ISR Latitude
- * @param longitude ISR Longitude
- * @param height ISR Height
- * @param option1 Option 1
- * @param option2 Option 2
- * @param option3 Option 3
+ * @param target  The system reporting the action
+ * @param latitude [deg] ISR Latitude
+ * @param longitude [deg] ISR Longitude
+ * @param height  ISR Height
+ * @param option1  Option 1
+ * @param option2  Option 2
+ * @param option3  Option 3
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -272,7 +272,7 @@ static inline void mavlink_msg_isr_location_send_buf(mavlink_message_t *msgbuf, 
 /**
  * @brief Get field target from isr_location message
  *
- * @return The system reporting the action
+ * @return  The system reporting the action
  */
 static inline uint8_t mavlink_msg_isr_location_get_target(const mavlink_message_t* msg)
 {
@@ -282,7 +282,7 @@ static inline uint8_t mavlink_msg_isr_location_get_target(const mavlink_message_
 /**
  * @brief Get field latitude from isr_location message
  *
- * @return ISR Latitude
+ * @return [deg] ISR Latitude
  */
 static inline float mavlink_msg_isr_location_get_latitude(const mavlink_message_t* msg)
 {
@@ -292,7 +292,7 @@ static inline float mavlink_msg_isr_location_get_latitude(const mavlink_message_
 /**
  * @brief Get field longitude from isr_location message
  *
- * @return ISR Longitude
+ * @return [deg] ISR Longitude
  */
 static inline float mavlink_msg_isr_location_get_longitude(const mavlink_message_t* msg)
 {
@@ -302,7 +302,7 @@ static inline float mavlink_msg_isr_location_get_longitude(const mavlink_message
 /**
  * @brief Get field height from isr_location message
  *
- * @return ISR Height
+ * @return  ISR Height
  */
 static inline float mavlink_msg_isr_location_get_height(const mavlink_message_t* msg)
 {
@@ -312,7 +312,7 @@ static inline float mavlink_msg_isr_location_get_height(const mavlink_message_t*
 /**
  * @brief Get field option1 from isr_location message
  *
- * @return Option 1
+ * @return  Option 1
  */
 static inline uint8_t mavlink_msg_isr_location_get_option1(const mavlink_message_t* msg)
 {
@@ -322,7 +322,7 @@ static inline uint8_t mavlink_msg_isr_location_get_option1(const mavlink_message
 /**
  * @brief Get field option2 from isr_location message
  *
- * @return Option 2
+ * @return  Option 2
  */
 static inline uint8_t mavlink_msg_isr_location_get_option2(const mavlink_message_t* msg)
 {
@@ -332,7 +332,7 @@ static inline uint8_t mavlink_msg_isr_location_get_option2(const mavlink_message
 /**
  * @brief Get field option3 from isr_location message
  *
- * @return Option 3
+ * @return  Option 3
  */
 static inline uint8_t mavlink_msg_isr_location_get_option3(const mavlink_message_t* msg)
 {

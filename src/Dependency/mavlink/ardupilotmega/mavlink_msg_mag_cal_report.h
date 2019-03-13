@@ -5,20 +5,20 @@
 
 MAVPACKED(
 typedef struct __mavlink_mag_cal_report_t {
- float fitness; /*< RMS milligauss residuals*/
- float ofs_x; /*< X offset*/
- float ofs_y; /*< Y offset*/
- float ofs_z; /*< Z offset*/
- float diag_x; /*< X diagonal (matrix 11)*/
- float diag_y; /*< Y diagonal (matrix 22)*/
- float diag_z; /*< Z diagonal (matrix 33)*/
- float offdiag_x; /*< X off-diagonal (matrix 12 and 21)*/
- float offdiag_y; /*< Y off-diagonal (matrix 13 and 31)*/
- float offdiag_z; /*< Z off-diagonal (matrix 32 and 23)*/
- uint8_t compass_id; /*< Compass being calibrated*/
- uint8_t cal_mask; /*< Bitmask of compasses being calibrated*/
- uint8_t cal_status; /*< Status (see MAG_CAL_STATUS enum)*/
- uint8_t autosaved; /*< 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters*/
+ float fitness; /*< [mgauss] RMS milligauss residuals.*/
+ float ofs_x; /*<  X offset.*/
+ float ofs_y; /*<  Y offset.*/
+ float ofs_z; /*<  Z offset.*/
+ float diag_x; /*<  X diagonal (matrix 11).*/
+ float diag_y; /*<  Y diagonal (matrix 22).*/
+ float diag_z; /*<  Z diagonal (matrix 33).*/
+ float offdiag_x; /*<  X off-diagonal (matrix 12 and 21).*/
+ float offdiag_y; /*<  Y off-diagonal (matrix 13 and 31).*/
+ float offdiag_z; /*<  Z off-diagonal (matrix 32 and 23).*/
+ uint8_t compass_id; /*<  Compass being calibrated.*/
+ uint8_t cal_mask; /*<  Bitmask of compasses being calibrated.*/
+ uint8_t cal_status; /*<  Calibration Status.*/
+ uint8_t autosaved; /*<  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.*/
 }) mavlink_mag_cal_report_t;
 
 #define MAVLINK_MSG_ID_MAG_CAL_REPORT_LEN 44
@@ -36,7 +36,11 @@ typedef struct __mavlink_mag_cal_report_t {
     192, \
     "MAG_CAL_REPORT", \
     14, \
-    {  { "fitness", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mag_cal_report_t, fitness) }, \
+    {  { "compass_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_mag_cal_report_t, compass_id) }, \
+         { "cal_mask", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_mag_cal_report_t, cal_mask) }, \
+         { "cal_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 42, offsetof(mavlink_mag_cal_report_t, cal_status) }, \
+         { "autosaved", NULL, MAVLINK_TYPE_UINT8_T, 0, 43, offsetof(mavlink_mag_cal_report_t, autosaved) }, \
+         { "fitness", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mag_cal_report_t, fitness) }, \
          { "ofs_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_mag_cal_report_t, ofs_x) }, \
          { "ofs_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_mag_cal_report_t, ofs_y) }, \
          { "ofs_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_mag_cal_report_t, ofs_z) }, \
@@ -46,17 +50,17 @@ typedef struct __mavlink_mag_cal_report_t {
          { "offdiag_x", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_mag_cal_report_t, offdiag_x) }, \
          { "offdiag_y", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_mag_cal_report_t, offdiag_y) }, \
          { "offdiag_z", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_mag_cal_report_t, offdiag_z) }, \
-         { "compass_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_mag_cal_report_t, compass_id) }, \
-         { "cal_mask", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_mag_cal_report_t, cal_mask) }, \
-         { "cal_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 42, offsetof(mavlink_mag_cal_report_t, cal_status) }, \
-         { "autosaved", NULL, MAVLINK_TYPE_UINT8_T, 0, 43, offsetof(mavlink_mag_cal_report_t, autosaved) }, \
          } \
 }
 #else
 #define MAVLINK_MESSAGE_INFO_MAG_CAL_REPORT { \
     "MAG_CAL_REPORT", \
     14, \
-    {  { "fitness", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mag_cal_report_t, fitness) }, \
+    {  { "compass_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_mag_cal_report_t, compass_id) }, \
+         { "cal_mask", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_mag_cal_report_t, cal_mask) }, \
+         { "cal_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 42, offsetof(mavlink_mag_cal_report_t, cal_status) }, \
+         { "autosaved", NULL, MAVLINK_TYPE_UINT8_T, 0, 43, offsetof(mavlink_mag_cal_report_t, autosaved) }, \
+         { "fitness", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mag_cal_report_t, fitness) }, \
          { "ofs_x", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_mag_cal_report_t, ofs_x) }, \
          { "ofs_y", NULL, MAVLINK_TYPE_FLOAT, 0, 8, offsetof(mavlink_mag_cal_report_t, ofs_y) }, \
          { "ofs_z", NULL, MAVLINK_TYPE_FLOAT, 0, 12, offsetof(mavlink_mag_cal_report_t, ofs_z) }, \
@@ -66,10 +70,6 @@ typedef struct __mavlink_mag_cal_report_t {
          { "offdiag_x", NULL, MAVLINK_TYPE_FLOAT, 0, 28, offsetof(mavlink_mag_cal_report_t, offdiag_x) }, \
          { "offdiag_y", NULL, MAVLINK_TYPE_FLOAT, 0, 32, offsetof(mavlink_mag_cal_report_t, offdiag_y) }, \
          { "offdiag_z", NULL, MAVLINK_TYPE_FLOAT, 0, 36, offsetof(mavlink_mag_cal_report_t, offdiag_z) }, \
-         { "compass_id", NULL, MAVLINK_TYPE_UINT8_T, 0, 40, offsetof(mavlink_mag_cal_report_t, compass_id) }, \
-         { "cal_mask", NULL, MAVLINK_TYPE_UINT8_T, 0, 41, offsetof(mavlink_mag_cal_report_t, cal_mask) }, \
-         { "cal_status", NULL, MAVLINK_TYPE_UINT8_T, 0, 42, offsetof(mavlink_mag_cal_report_t, cal_status) }, \
-         { "autosaved", NULL, MAVLINK_TYPE_UINT8_T, 0, 43, offsetof(mavlink_mag_cal_report_t, autosaved) }, \
          } \
 }
 #endif
@@ -80,20 +80,20 @@ typedef struct __mavlink_mag_cal_report_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param autosaved 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters
- * @param fitness RMS milligauss residuals
- * @param ofs_x X offset
- * @param ofs_y Y offset
- * @param ofs_z Z offset
- * @param diag_x X diagonal (matrix 11)
- * @param diag_y Y diagonal (matrix 22)
- * @param diag_z Z diagonal (matrix 33)
- * @param offdiag_x X off-diagonal (matrix 12 and 21)
- * @param offdiag_y Y off-diagonal (matrix 13 and 31)
- * @param offdiag_z Z off-diagonal (matrix 32 and 23)
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param autosaved  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.
+ * @param fitness [mgauss] RMS milligauss residuals.
+ * @param ofs_x  X offset.
+ * @param ofs_y  Y offset.
+ * @param ofs_z  Z offset.
+ * @param diag_x  X diagonal (matrix 11).
+ * @param diag_y  Y diagonal (matrix 22).
+ * @param diag_z  Z diagonal (matrix 33).
+ * @param offdiag_x  X off-diagonal (matrix 12 and 21).
+ * @param offdiag_y  Y off-diagonal (matrix 13 and 31).
+ * @param offdiag_z  Z off-diagonal (matrix 32 and 23).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mag_cal_report_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
@@ -147,20 +147,20 @@ static inline uint16_t mavlink_msg_mag_cal_report_pack(uint8_t system_id, uint8_
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param autosaved 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters
- * @param fitness RMS milligauss residuals
- * @param ofs_x X offset
- * @param ofs_y Y offset
- * @param ofs_z Z offset
- * @param diag_x X diagonal (matrix 11)
- * @param diag_y Y diagonal (matrix 22)
- * @param diag_z Z diagonal (matrix 33)
- * @param offdiag_x X off-diagonal (matrix 12 and 21)
- * @param offdiag_y Y off-diagonal (matrix 13 and 31)
- * @param offdiag_z Z off-diagonal (matrix 32 and 23)
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param autosaved  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.
+ * @param fitness [mgauss] RMS milligauss residuals.
+ * @param ofs_x  X offset.
+ * @param ofs_y  Y offset.
+ * @param ofs_z  Z offset.
+ * @param diag_x  X diagonal (matrix 11).
+ * @param diag_y  Y diagonal (matrix 22).
+ * @param diag_z  Z diagonal (matrix 33).
+ * @param offdiag_x  X off-diagonal (matrix 12 and 21).
+ * @param offdiag_y  Y off-diagonal (matrix 13 and 31).
+ * @param offdiag_z  Z off-diagonal (matrix 32 and 23).
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mag_cal_report_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
@@ -240,20 +240,20 @@ static inline uint16_t mavlink_msg_mag_cal_report_encode_chan(uint8_t system_id,
  * @brief Send a mag_cal_report message
  * @param chan MAVLink channel to send the message
  *
- * @param compass_id Compass being calibrated
- * @param cal_mask Bitmask of compasses being calibrated
- * @param cal_status Status (see MAG_CAL_STATUS enum)
- * @param autosaved 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters
- * @param fitness RMS milligauss residuals
- * @param ofs_x X offset
- * @param ofs_y Y offset
- * @param ofs_z Z offset
- * @param diag_x X diagonal (matrix 11)
- * @param diag_y Y diagonal (matrix 22)
- * @param diag_z Z diagonal (matrix 33)
- * @param offdiag_x X off-diagonal (matrix 12 and 21)
- * @param offdiag_y Y off-diagonal (matrix 13 and 31)
- * @param offdiag_z Z off-diagonal (matrix 32 and 23)
+ * @param compass_id  Compass being calibrated.
+ * @param cal_mask  Bitmask of compasses being calibrated.
+ * @param cal_status  Calibration Status.
+ * @param autosaved  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.
+ * @param fitness [mgauss] RMS milligauss residuals.
+ * @param ofs_x  X offset.
+ * @param ofs_y  Y offset.
+ * @param ofs_z  Z offset.
+ * @param diag_x  X diagonal (matrix 11).
+ * @param diag_y  Y diagonal (matrix 22).
+ * @param diag_z  Z diagonal (matrix 33).
+ * @param offdiag_x  X off-diagonal (matrix 12 and 21).
+ * @param offdiag_y  Y off-diagonal (matrix 13 and 31).
+ * @param offdiag_z  Z off-diagonal (matrix 32 and 23).
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
@@ -370,7 +370,7 @@ static inline void mavlink_msg_mag_cal_report_send_buf(mavlink_message_t *msgbuf
 /**
  * @brief Get field compass_id from mag_cal_report message
  *
- * @return Compass being calibrated
+ * @return  Compass being calibrated.
  */
 static inline uint8_t mavlink_msg_mag_cal_report_get_compass_id(const mavlink_message_t* msg)
 {
@@ -380,7 +380,7 @@ static inline uint8_t mavlink_msg_mag_cal_report_get_compass_id(const mavlink_me
 /**
  * @brief Get field cal_mask from mag_cal_report message
  *
- * @return Bitmask of compasses being calibrated
+ * @return  Bitmask of compasses being calibrated.
  */
 static inline uint8_t mavlink_msg_mag_cal_report_get_cal_mask(const mavlink_message_t* msg)
 {
@@ -390,7 +390,7 @@ static inline uint8_t mavlink_msg_mag_cal_report_get_cal_mask(const mavlink_mess
 /**
  * @brief Get field cal_status from mag_cal_report message
  *
- * @return Status (see MAG_CAL_STATUS enum)
+ * @return  Calibration Status.
  */
 static inline uint8_t mavlink_msg_mag_cal_report_get_cal_status(const mavlink_message_t* msg)
 {
@@ -400,7 +400,7 @@ static inline uint8_t mavlink_msg_mag_cal_report_get_cal_status(const mavlink_me
 /**
  * @brief Get field autosaved from mag_cal_report message
  *
- * @return 0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters
+ * @return  0=requires a MAV_CMD_DO_ACCEPT_MAG_CAL, 1=saved to parameters.
  */
 static inline uint8_t mavlink_msg_mag_cal_report_get_autosaved(const mavlink_message_t* msg)
 {
@@ -410,7 +410,7 @@ static inline uint8_t mavlink_msg_mag_cal_report_get_autosaved(const mavlink_mes
 /**
  * @brief Get field fitness from mag_cal_report message
  *
- * @return RMS milligauss residuals
+ * @return [mgauss] RMS milligauss residuals.
  */
 static inline float mavlink_msg_mag_cal_report_get_fitness(const mavlink_message_t* msg)
 {
@@ -420,7 +420,7 @@ static inline float mavlink_msg_mag_cal_report_get_fitness(const mavlink_message
 /**
  * @brief Get field ofs_x from mag_cal_report message
  *
- * @return X offset
+ * @return  X offset.
  */
 static inline float mavlink_msg_mag_cal_report_get_ofs_x(const mavlink_message_t* msg)
 {
@@ -430,7 +430,7 @@ static inline float mavlink_msg_mag_cal_report_get_ofs_x(const mavlink_message_t
 /**
  * @brief Get field ofs_y from mag_cal_report message
  *
- * @return Y offset
+ * @return  Y offset.
  */
 static inline float mavlink_msg_mag_cal_report_get_ofs_y(const mavlink_message_t* msg)
 {
@@ -440,7 +440,7 @@ static inline float mavlink_msg_mag_cal_report_get_ofs_y(const mavlink_message_t
 /**
  * @brief Get field ofs_z from mag_cal_report message
  *
- * @return Z offset
+ * @return  Z offset.
  */
 static inline float mavlink_msg_mag_cal_report_get_ofs_z(const mavlink_message_t* msg)
 {
@@ -450,7 +450,7 @@ static inline float mavlink_msg_mag_cal_report_get_ofs_z(const mavlink_message_t
 /**
  * @brief Get field diag_x from mag_cal_report message
  *
- * @return X diagonal (matrix 11)
+ * @return  X diagonal (matrix 11).
  */
 static inline float mavlink_msg_mag_cal_report_get_diag_x(const mavlink_message_t* msg)
 {
@@ -460,7 +460,7 @@ static inline float mavlink_msg_mag_cal_report_get_diag_x(const mavlink_message_
 /**
  * @brief Get field diag_y from mag_cal_report message
  *
- * @return Y diagonal (matrix 22)
+ * @return  Y diagonal (matrix 22).
  */
 static inline float mavlink_msg_mag_cal_report_get_diag_y(const mavlink_message_t* msg)
 {
@@ -470,7 +470,7 @@ static inline float mavlink_msg_mag_cal_report_get_diag_y(const mavlink_message_
 /**
  * @brief Get field diag_z from mag_cal_report message
  *
- * @return Z diagonal (matrix 33)
+ * @return  Z diagonal (matrix 33).
  */
 static inline float mavlink_msg_mag_cal_report_get_diag_z(const mavlink_message_t* msg)
 {
@@ -480,7 +480,7 @@ static inline float mavlink_msg_mag_cal_report_get_diag_z(const mavlink_message_
 /**
  * @brief Get field offdiag_x from mag_cal_report message
  *
- * @return X off-diagonal (matrix 12 and 21)
+ * @return  X off-diagonal (matrix 12 and 21).
  */
 static inline float mavlink_msg_mag_cal_report_get_offdiag_x(const mavlink_message_t* msg)
 {
@@ -490,7 +490,7 @@ static inline float mavlink_msg_mag_cal_report_get_offdiag_x(const mavlink_messa
 /**
  * @brief Get field offdiag_y from mag_cal_report message
  *
- * @return Y off-diagonal (matrix 13 and 31)
+ * @return  Y off-diagonal (matrix 13 and 31).
  */
 static inline float mavlink_msg_mag_cal_report_get_offdiag_y(const mavlink_message_t* msg)
 {
@@ -500,7 +500,7 @@ static inline float mavlink_msg_mag_cal_report_get_offdiag_y(const mavlink_messa
 /**
  * @brief Get field offdiag_z from mag_cal_report message
  *
- * @return Z off-diagonal (matrix 32 and 23)
+ * @return  Z off-diagonal (matrix 32 and 23).
  */
 static inline float mavlink_msg_mag_cal_report_get_offdiag_z(const mavlink_message_t* msg)
 {

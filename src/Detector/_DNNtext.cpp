@@ -127,7 +127,7 @@ void _DNNtext::update(void)
 		{
 			m_fBGR.copy(*m_pVision->BGR());
 			if(m_fBGR.m()->channels()<3)
-				m_fBGR.copy(m_fBGR.cvtColor(CV_GRAY2RGB));
+				m_fBGR.copy(m_fBGR.cvtColor(8));
 
 			cv::bitwise_not(*m_fBGR.m(),*m_fBGRinv.m());
 
