@@ -38,8 +38,8 @@ union int16Bytes
 #define PIN_PWM_L A0
 #define PIN_PWM_R A1
 #define PIN_PWM_MODE A2
-#define PIN_LED1 10
-#define PIN_LED2 11
+#define PIN_LED1 8
+#define PIN_LED2 10
 #define PIN_LED3 12
 #define PWM_MID 1500
 #define PWM_MID_DZ 100
@@ -165,6 +165,12 @@ void setup()
   pinMode(PIN_LED1, OUTPUT);
   pinMode(PIN_LED2, OUTPUT);
   pinMode(PIN_LED3, OUTPUT);
+  pinMode(13, OUTPUT);
+
+  digitalWrite(PIN_LED1, HIGH);
+  digitalWrite(PIN_LED2, HIGH);
+  digitalWrite(PIN_LED3, HIGH);
+  digitalWrite(13, HIGH);
 
   pinMode(PIN_PWM_L, INPUT);
   pinMode(PIN_PWM_R, INPUT);
@@ -172,7 +178,12 @@ void setup()
 
   Serial.begin(115200);
 
+//  digitalWrite(PIN_LED1, LOW);
+//  digitalWrite(PIN_LED2, LOW);
+//  digitalWrite(PIN_LED3, LOW);
   digitalWrite(PIN_LED1, HIGH);
+  digitalWrite(PIN_LED2, HIGH);
+  digitalWrite(PIN_LED3, HIGH);
 }
 
 void loop()
