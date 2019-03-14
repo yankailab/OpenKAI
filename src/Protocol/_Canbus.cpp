@@ -4,13 +4,13 @@ namespace kai
 {
 _Canbus::_Canbus()
 {
-	m_pSerialPort = NULL;
+	m_pIO = NULL;
 	m_nCanData = 0;
+	m_recvMsg.init();
 }
 
 _Canbus::~_Canbus()
 {
-	close();
 }
 
 bool _Canbus::init(void* pKiss)
@@ -34,21 +34,10 @@ bool _Canbus::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pSerialPort = (_SerialPort*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pSerialPort,"_IOBase not found");
+	m_pIO = (_SerialPort*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pIO,"_IOBase not found");
 
 	return true;
-}
-
-void _Canbus::close()
-{
-	if (m_pSerialPort)
-	{
-		m_pSerialPort->close();
-		delete m_pSerialPort;
-	}
-
-	LOG_I("Closed");
 }
 
 bool _Canbus::start(void)
@@ -70,15 +59,15 @@ void _Canbus::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pSerialPort)
+		if(!m_pIO)
 		{
 			this->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		if(!m_pSerialPort->isOpen())
+		if(!m_pIO->isOpen())
 		{
-			if(!m_pSerialPort->open())
+			if(!m_pIO->open())
 			{
 				this->sleepTime(USEC_1SEC);
 				continue;
@@ -100,7 +89,7 @@ bool _Canbus::recv()
 	unsigned char inByte;
 	int byteRead;
 
-	while ((byteRead = m_pSerialPort->read(&inByte, 1)) > 0)
+	while ((byteRead = m_pIO->read(&inByte, 1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
@@ -142,7 +131,7 @@ void _Canbus::recvMsg(void)
 {
 	uint8_t cmd = m_recvMsg.m_pBuf[2];
 
-	if(cmd == CMD_CAN_SEND)
+	if(cmd == CAN_CMD_CAN_SEND)
 	{
 		uint32_t* pAddr = (uint32_t*)(&m_recvMsg.m_pBuf[3]);
 		uint32_t addr = *pAddr;
@@ -179,14 +168,14 @@ uint8_t* _Canbus::get(unsigned long addr)
 void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 {
 	IF_(len+8 > CAN_BUF);
-	IF_(!m_pSerialPort->isOpen());
+	IF_(!m_pIO->isOpen());
 
 	unsigned char pBuf[CAN_BUF];
 
 	//Link header
 	pBuf[0] = 0xFE; //Mavlink begin
 	pBuf[1] = 5 + len;	//Payload Length
-	pBuf[2] = CMD_CAN_SEND;
+	pBuf[2] = CAN_CMD_CAN_SEND;
 
 	//Payload from here
 	//CAN addr
@@ -204,19 +193,19 @@ void _Canbus::send(unsigned long addr, unsigned char len, unsigned char* pData)
 	}
 	//Payload to here
 
-	m_pSerialPort->write(pBuf, len + 8);
+	m_pIO->write(pBuf, len + 8);
 }
 
 void _Canbus::pinOut(uint8_t pin, uint8_t output)
 {
-	IF_(!m_pSerialPort->isOpen());
+	IF_(!m_pIO->isOpen());
 
 	unsigned char pBuf[CAN_BUF];
 
 	//Link header
 	pBuf[0] = 0xFE; //Mavlink begin
 	pBuf[1] = 2;	//Payload Length
-	pBuf[2] = CMD_PIN_OUTPUT;
+	pBuf[2] = CAN_CMD_PIN_OUTPUT;
 
 	//Payload from here
 	//CAN addr
@@ -224,7 +213,7 @@ void _Canbus::pinOut(uint8_t pin, uint8_t output)
 	pBuf[4] = output;
 	//Payload to here
 
-	m_pSerialPort->write(pBuf, 5);
+	m_pIO->write(pBuf, 5);
 }
 
 bool _Canbus::draw(void)
@@ -233,7 +222,7 @@ bool _Canbus::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 
 	string msg = *this->getName();
-	if (m_pSerialPort->isOpen())
+	if (m_pIO->isOpen())
 		msg += ": CONNECTED";
 	else
 		msg += ": Not connected";

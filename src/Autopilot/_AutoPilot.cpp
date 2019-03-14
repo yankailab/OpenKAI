@@ -61,8 +61,7 @@ bool _AutoPilot::init(void* pKiss)
 		ADD_ACTION(Traffic_alert);
 		ADD_ACTION(Traffic_videoOut);
 
-		ADD_ACTION(VEK_base);
-		ADD_ACTION(VEK_avoid);
+		ADD_ACTION(Rover_base);
 
 #ifdef USE_REALSENSE
 		ADD_ACTION(APcopter_takePhoto);

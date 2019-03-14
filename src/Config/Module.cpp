@@ -24,6 +24,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_ANR);
+	ADD_MODULE(_Arduino);
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
@@ -47,7 +48,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
-	ADD_MODULE(_RC);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_SerialPort);

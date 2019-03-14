@@ -41,8 +41,7 @@
 #include "../DNN/TensorRT/_DetectNet.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
-#include "../Protocol/_RC.h"
-
+#include "../Protocol/_Arduino.h"
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"

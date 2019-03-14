@@ -1,0 +1,42 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"bStream":1,
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"Arduino",
+}
+
+{
+	"name":"Arduino",
+	"class":"_Arduino",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+}
+

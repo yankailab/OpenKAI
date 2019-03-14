@@ -15,8 +15,8 @@
 #define MAVLINK_BEGIN 0xFE
 #define MAVLINK_HEADDER_LEN 3
 
-#define CMD_CAN_SEND 0
-#define CMD_PIN_OUTPUT 2
+#define CAN_CMD_CAN_SEND 0
+#define CAN_CMD_PIN_OUTPUT 2
 #define CAN_BUF 256
 
 #define N_CANDATA 256
@@ -24,12 +24,19 @@
 namespace kai
 {
 
-struct MESSAGE
+struct CAN_MESSAGE
 {
 	int m_cmd;
 	int m_iByte;
 	int m_payloadLen;
 	char m_pBuf[CAN_BUF];
+
+	void init(void)
+	{
+		m_cmd = 0;
+		m_iByte = 0;
+		m_payloadLen = 0;
+	}
 };
 
 struct CAN_DATA
@@ -52,7 +59,6 @@ public:
 	~_Canbus();
 
 	bool init(void* pKiss);
-	void close(void);
 	bool start(void);
 	bool draw(void);
 
@@ -70,9 +76,9 @@ public:
 		return NULL;
 	}
 
-	_SerialPort* m_pSerialPort;
+	_SerialPort* m_pIO;
 
-	MESSAGE m_recvMsg;
+	CAN_MESSAGE m_recvMsg;
 	CAN_DATA m_pCanData[N_CANDATA];
 	int m_nCanData;
 
