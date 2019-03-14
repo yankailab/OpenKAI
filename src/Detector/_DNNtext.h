@@ -13,18 +13,6 @@
 namespace kai
 {
 
-struct DNNTEXT_ROI
-{
-	vFloat4 m_roi;
-	bool m_bInvert;
-
-	void init(void)
-	{
-		m_roi.init();
-		m_bInvert = false;
-	}
-};
-
 class _DNNtext: public _DNNdetect
 {
 public:
@@ -39,8 +27,8 @@ public:
 private:
 	void decode(const Mat& mScores, const Mat& mGeometry, float scoreThresh,
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
-	bool detect(Frame* pFrame, int iImg);
-	void ocr(Frame* pFrame, int iImg);
+	bool detect(void);
+	void ocr(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -49,13 +37,14 @@ private:
 	}
 
 public:
-	Frame	m_fBGRinv;
 	vDouble3 m_vMean;
 	bool	m_bDetect;
-	vector<DNNTEXT_ROI>	m_vROI;
+	vector<vFloat4>	m_vROI;
 
 #ifdef USE_OCR
 	bool	m_bOCR;
+	_VisionBase* m_pVocr;
+	Frame	m_fOCR;
 	tesseract::TessBaseAPI* m_pOCR;
 	string	m_ocrDataDir;
 	string	m_ocrLanguage;

@@ -30,6 +30,7 @@ enum VISION_TYPE
 	vision_erode,
 	vision_contrast,
 	vision_histEqualize,
+	vision_invert,
 };
 
 class _VisionBase: public _ThreadBase

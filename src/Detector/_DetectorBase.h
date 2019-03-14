@@ -41,7 +41,6 @@ struct OBJECT
 	int			m_topClass;		//most probable class
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
-	uint8_t		m_iImg;
 
 	//Tracker
 	void*		m_pTracker;
@@ -53,7 +52,6 @@ struct OBJECT
 	{
 		m_bb.init();
 		m_nV = 0;
-		m_iImg = 0;
 
 		resetClass();
 		m_pTracker = NULL;
@@ -104,15 +102,7 @@ struct OBJECT
 		m_bb.y = r.y * b;
 		m_bb.w = (r.y + r.height) * b;
 
-		bbBound();
-	}
-
-	void bbBound(void)
-	{
-		m_bb.x = constrain<float>(m_bb.x, 0.0, 1.0);
-		m_bb.y = constrain<float>(m_bb.y, 0.0, 1.0);
-		m_bb.z = constrain<float>(m_bb.z, 0.0, 1.0);
-		m_bb.w = constrain<float>(m_bb.w, 0.0, 1.0);
+		m_bb.constrain(0.0,1.0);
 	}
 
 	Rect getBoundingRect(void)

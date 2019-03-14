@@ -79,12 +79,7 @@ void _HistEqualize::update(void)
 		this->autoFPSfrom();
 
 		if(m_bOpen)
-		{
-			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
-			{
-				filter();
-			}
-		}
+			filter();
 
 		this->autoFPSto();
 	}
@@ -92,21 +87,20 @@ void _HistEqualize::update(void)
 
 void _HistEqualize::filter(void)
 {
-	m_fIn.copy(*m_pV->BGR());
-
-	Mat m;
+	Mat mIn;
+	Mat mOut;
     vector<Mat> vChannels;
 
     //Using reference code from:
     //https://opencv-srf.blogspot.jp/2013/08/histogram-equalization.html
 
-	cv::cvtColor(*m_fIn.m(), m, COLOR_BGR2YCrCb); 	//change the color image from BGR to YCrCb format
-	split(m, vChannels); 							//split the image into channels
+	cv::cvtColor(*m_pV->BGR()->m(), mIn, COLOR_BGR2YCrCb);	//change the color image from BGR to YCrCb format
+	split(mIn, vChannels); 							//split the image into channels
 	cv::equalizeHist(vChannels[0], vChannels[0]);   //equalize histogram on the 1st channel (Y)
-	merge(vChannels,*m_fIn.m()); 					//merge 3 channels including the modified 1st channel into one image
-    cv::cvtColor(*m_fIn.m(), m, COLOR_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
+	merge(vChannels, mIn); 							//merge 3 channels including the modified 1st channel into one image
+    cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR); 		//change the color image from YCrCb to BGR format (to display image properly)
 
-	m_fBGR.copy(m);
+	m_fBGR.copy(mOut);
 }
 
 }

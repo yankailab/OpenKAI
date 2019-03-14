@@ -19,8 +19,9 @@
 {
 	"name":"filterView",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 }
+
 
 {
 	"name":"cam",
@@ -58,32 +59,48 @@
 }
 
 {
-	"name":"cam_cont",
-	"class":"_Contrast",
+	"name":"thr",
+	"class":"_Threshold",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"filterView",
 	"_VisionBase":"cam",
-	"alpha":1.0,
-	"beta":0.0,
+
+	{
+		"type":0,
+		"bAutoThr":1,
+		"vMax":255.0,
+		"thr":150.0,
+		"thrType":0,
+	}
 }
 
 {
-	"name":"DNNtext",
+	"name":"cam_inv",
+	"class":"_Invert",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/filterView",
+	"_VisionBase":"cam",
+}
+
+{
+	"name":"DNNtextCN",
 	"class":"_DNNtext",
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"_VisionOCR":"thr",
 	"mode":"thread",
 	"modelDir":"/home/kai/dev/model/EAST/",
 	"modelFile":"frozen_east_text_detection.pb",
 	"thr":0.01,
 	"bSwapRB":1,
 	"bOCR":1,
-	"bMerge":1,
+	"bMerge":0,
 	"kMerge":0.8,
 	"scaleBB":1.05,
 	"minArea":0.001,
@@ -99,6 +116,36 @@
 }
 
 {
+	"name":"DNNtextLP",
+	"class":"_DNNtext",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam_inv",
+	"mode":"thread",
+	"modelDir":"/home/kai/dev/model/EAST/",
+	"modelFile":"frozen_east_text_detection.pb",
+	"thr":0.01,
+	"bSwapRB":1,
+	"bOCR":1,
+	"bMerge":0,
+	"kMerge":0.8,
+	"scaleBB":1.5,
+	"minArea":0.001,
+	"minW":0.01,
+	"minH":0.01,
+	"ocrMode":1,
+	"ocrPageMode":6,
+	"ocrDataDir":"/home/kai/dev/model/tesseractJP",
+	"rX":0.4,
+	"rY":0.8,
+	"rZ":0.6,
+	"rW":1.0,
+}
+
+{
 	"name":"anr",
 	"class":"_ANR",
 	"FPS":30,
@@ -106,7 +153,7 @@
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"_DetectorBase":"DNNtext",
+	"_DetectorBase":"DNNtextCN",
 	"cnPrefix":"DKKU ",
 	"prefixList":["DKKU","DKK","DK","KK","D","U","u"],
 	"cnPosMargin":0.05,

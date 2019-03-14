@@ -1,12 +1,12 @@
 /*
- * _HistEqualize.h
+ * _Invert.h
  *
- *  Created on: March 12, 2019
+ *  Created on: March 14, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__HistEqualize_H_
-#define OpenKAI_src_Vision__HistEqualize_H_
+#ifndef OpenKAI_src_Vision__Invert_H_
+#define OpenKAI_src_Vision__Invert_H_
 
 #include "../../Base/common.h"
 #include "../_VisionBase.h"
@@ -14,11 +14,11 @@
 namespace kai
 {
 
-class _HistEqualize: public _VisionBase
+class _Invert: public _VisionBase
 {
 public:
-	_HistEqualize();
-	virtual ~_HistEqualize();
+	_Invert();
+	virtual ~_Invert();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -30,7 +30,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_HistEqualize*) This)->update();
+		((_Invert*) This)->update();
 		return NULL;
 	}
 

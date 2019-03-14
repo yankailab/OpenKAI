@@ -21,6 +21,7 @@ _DNNtext::_DNNtext()
 	m_bDetect = true;
 
 #ifdef USE_OCR
+	m_pVocr = NULL;
 	m_bOCR = false;
 	m_pOCR = NULL;
 	m_ocrDataDir = "";
@@ -65,15 +66,13 @@ bool _DNNtext::init(void* pKiss)
 	while (ppR[i])
 	{
 		Kiss* pR = ppR[i++];
-
-		DNNTEXT_ROI r;
+		vFloat4 r;
 		r.init();
-		pR->v("x", &r.m_roi.x);
-		pR->v("y", &r.m_roi.y);
-		pR->v("z", &r.m_roi.z);
-		pR->v("w", &r.m_roi.w);
-		pR->v("bInvert", &r.m_bInvert);
-
+		pR->v("x", &r.x);
+		pR->v("y", &r.y);
+		pR->v("z", &r.z);
+		pR->v("w", &r.w);
+		r.constrain(0.0, 1.0);
 		m_vROI.push_back(r);
 	}
 
@@ -98,6 +97,12 @@ bool _DNNtext::init(void* pKiss)
 	m_pOCR = new tesseract::TessBaseAPI();
 	m_pOCR->Init(m_ocrDataDir.c_str(), m_ocrLanguage.c_str(), (tesseract::OcrEngineMode)m_ocrMode);
 	m_pOCR->SetPageSegMode((tesseract::PageSegMode)m_ocrPageMode);
+
+	string iName = "";
+	F_INFO(pK->v("_VisionOCR", &iName));
+	m_pVocr = (_VisionBase*) (pK->root()->getChildInst(iName));
+	if(!m_pVocr)
+		m_pVocr = m_pVision;
 #endif
 
 	return true;
@@ -125,39 +130,23 @@ void _DNNtext::update(void)
 
 		if(check()>=0)
 		{
-			m_fBGR.copy(*m_pVision->BGR());
-			if(m_fBGR.m()->channels()<3)
-				m_fBGR.copy(m_fBGR.cvtColor(8));
-
-			cv::bitwise_not(*m_fBGR.m(),*m_fBGRinv.m());
-
 			if(m_bDetect)
-			{
-				detect(&m_fBGR, false);
-				detect(&m_fBGRinv, true);
-			}
+				detect();
 
 			for (int i = 0; i < m_vROI.size(); i++)
 			{
-				DNNTEXT_ROI* pR = &m_vROI[i];
-
 				OBJECT o;
 				o.init();
 				o.m_tStamp = m_tStamp;
 				o.setTopClass(0, 1.0);
 				o.m_nV = 4;
-				o.m_bb = pR->m_roi;
-				if(pR->m_bInvert)
-					o.m_iImg = 1;
+				o.m_bb = m_vROI[i];
 				this->add(&o);
 			}
 
 #ifdef USE_OCR
 			if(m_bOCR)
-			{
-				ocr(&m_fBGR, 0);
-				ocr(&m_fBGRinv, 1);
-			}
+				ocr();
 #endif
 
 			m_obj.update();
@@ -184,11 +173,13 @@ int _DNNtext::check(void)
 	return 0;
 }
 
-bool _DNNtext::detect(Frame* pFrame, int iImg)
+bool _DNNtext::detect(void)
 {
-	NULL_F(pFrame);
+	m_fBGR.copy(*m_pVision->BGR());
+	if(m_fBGR.m()->channels()<3)
+		m_fBGR.copy(m_fBGR.cvtColor(8));
 
-	Mat mIn = *pFrame->m();
+	Mat mIn = *m_fBGR.m();
 
 	vInt4 iRoi;
 	iRoi.x = mIn.cols * m_roi.x;
@@ -197,9 +188,9 @@ bool _DNNtext::detect(Frame* pFrame, int iImg)
 	iRoi.w = mIn.rows * m_roi.w;
 	Rect rRoi;
 	vInt42rect(iRoi, rRoi);
-	Mat mBGR = mIn(rRoi);
+	Mat mROI = mIn(rRoi);
 
-	m_blob = blobFromImage(mBGR, m_scale, Size(m_nW, m_nH),
+	m_blob = blobFromImage(mROI, m_scale, Size(m_nW, m_nH),
 			Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 	m_net.setInput(m_blob);
 
@@ -221,8 +212,8 @@ bool _DNNtext::detect(Frame* pFrame, int iImg)
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-	float rX = (float) mBGR.cols / (float) m_nW;
-	float rY = (float) mBGR.rows / (float) m_nH;
+	float rX = (float) mROI.cols / (float) m_nW;
+	float rY = (float) mROI.rows / (float) m_nH;
 
 	for (size_t i = 0; i < vIndices.size(); i++)
 	{
@@ -230,7 +221,6 @@ bool _DNNtext::detect(Frame* pFrame, int iImg)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
-		o.m_iImg = iImg;
 
 		Point2f pV[4];
 		RotatedRect& box = vBoxes[vIndices[i]];
@@ -301,23 +291,23 @@ void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
 	}
 }
 
-void _DNNtext::ocr(Frame* pFrame, int iImg)
+void _DNNtext::ocr(void)
 {
 #ifdef USE_OCR
-	NULL_(pFrame);
+	m_fOCR.copy(*m_pVocr->BGR());
+	if(m_fOCR.m()->channels()<3)
+		m_fOCR.copy(m_fOCR.cvtColor(8));
 
-	Mat mBGR = *pFrame->m();
-	m_pOCR->SetImage(mBGR.data, mBGR.cols, mBGR.rows, 3, mBGR.step);
+	Mat mIn = *m_fOCR.m();
+	m_pOCR->SetImage(mIn.data, mIn.cols, mIn.rows, 3, mIn.step);
 	vInt2 cs;
-	cs.x = mBGR.cols;
-	cs.y = mBGR.rows;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
 
 	OBJECT* pO;
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
-		IF_CONT(pO->m_iImg != iImg);
-
 		Rect r = pO->getRect(cs);
 		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
 		string strO = string(m_pOCR->GetUTF8Text());

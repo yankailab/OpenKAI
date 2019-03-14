@@ -36,7 +36,6 @@ private:
 
 public:
 	_VisionBase* m_pV;
-	Frame m_fIn;
 	double m_alpha;
 	double m_beta;
 };

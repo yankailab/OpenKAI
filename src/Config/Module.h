@@ -67,6 +67,7 @@
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Erode.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
+#include "../Vision/ImgFilter/_Invert.h"
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"

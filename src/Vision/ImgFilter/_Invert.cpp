@@ -1,36 +1,30 @@
 /*
- * _Contrast.cpp
+ * _Invert.cpp
  *
- *  Created on: March 12, 2019
+ *  Created on: March 14, 2019
  *      Author: yankai
  */
 
-#include "_Contrast.h"
+#include "_Invert.h"
 
 namespace kai
 {
 
-_Contrast::_Contrast()
+_Invert::_Invert()
 {
-	m_type = vision_contrast;
+	m_type = vision_invert;
 	m_pV = NULL;
-
-	m_alpha = 1.0;
-	m_beta = 0.0;
 }
 
-_Contrast::~_Contrast()
+_Invert::~_Invert()
 {
 	close();
 }
 
-bool _Contrast::init(void* pKiss)
+bool _Invert::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	KISSm(pK,alpha);
-	KISSm(pK,beta);
 
 	string iName;
 	iName = "";
@@ -41,7 +35,7 @@ bool _Contrast::init(void* pKiss)
 	return true;
 }
 
-bool _Contrast::open(void)
+bool _Invert::open(void)
 {
 	NULL_F(m_pV);
 	m_bOpen = m_pV->isOpened();
@@ -49,7 +43,7 @@ bool _Contrast::open(void)
 	return m_bOpen;
 }
 
-void _Contrast::close(void)
+void _Invert::close(void)
 {
 	if(m_threadMode==T_THREAD)
 	{
@@ -60,7 +54,7 @@ void _Contrast::close(void)
 	this->_VisionBase::close();
 }
 
-bool _Contrast::start(void)
+bool _Invert::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -75,7 +69,7 @@ bool _Contrast::start(void)
 	return true;
 }
 
-void _Contrast::update(void)
+void _Invert::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -85,18 +79,16 @@ void _Contrast::update(void)
 		this->autoFPSfrom();
 
 		if(m_bOpen)
-		{
 			filter();
-		}
 
 		this->autoFPSto();
 	}
 }
 
-void _Contrast::filter(void)
+void _Invert::filter(void)
 {
 	Mat m;
-	m_pV->BGR()->m()->convertTo(m, -1, m_alpha, m_beta);
+	cv::bitwise_not(*m_pV->BGR()->m(),m);
 	m_fBGR.copy(m);
 }
 

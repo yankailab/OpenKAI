@@ -39,6 +39,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenServer);
 	ADD_MODULE(_HistEqualize);
+	ADD_MODULE(_Invert);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);

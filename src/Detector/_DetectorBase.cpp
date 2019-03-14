@@ -226,7 +226,7 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	if(m_scaleBB > 0.0)
 	{
 		pNewO->m_bb = bbScale(pNewO->m_bb, m_scaleBB);
-		pNewO->bbBound();
+		pNewO->m_bb.constrain(0.0, 1.0);
 	}
 
 	return m_obj.add(pNewO);

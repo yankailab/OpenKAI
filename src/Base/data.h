@@ -32,7 +32,7 @@ struct vFloat2
 		return v;
 	}
 
-	inline vFloat2 operator*(double r)
+	inline vFloat2 operator*(float r)
     {
 		vFloat2 v;
 		v.x = x * r;
@@ -40,7 +40,7 @@ struct vFloat2
 		return v;
 	}
 
-	inline vFloat2 operator/(double r)
+	inline vFloat2 operator/(float r)
     {
 		vFloat2 v;
 		v.x = x / r;
@@ -48,7 +48,7 @@ struct vFloat2
 		return v;
 	}
 
-	inline void operator=(double r)
+	inline void operator=(float r)
     {
 		x = r;
 		y = r;
@@ -78,12 +78,12 @@ struct vFloat2
 		y /= r;
 	}
 
-	double mid(void)
+	float mid(void)
 	{
 		return (x + y) * 0.5;
 	}
 
-	double len(void)
+	float len(void)
 	{
 		return sqrt(x*x + y*y);
 	}
@@ -228,6 +228,18 @@ struct vFloat4
 	float len(void)
 	{
 		return sqrt(x*x + y*y + z*z + w*w);
+	}
+
+	void constrain(float a, float b)
+	{
+		x = (x<a)?a:x;
+		x = (x>b)?b:x;
+		y = (y<a)?a:y;
+		y = (y>b)?b:y;
+		z = (z<a)?a:z;
+		z = (z>b)?b:z;
+		w = (w<a)?a:w;
+		w = (w>b)?b:w;
 	}
 };
 
