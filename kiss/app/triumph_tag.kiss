@@ -1,0 +1,175 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":0,
+	"bConsole":1,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"bAlign":0,
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"bLog":1,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"dict":17,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"roverCMD",
+}
+
+{
+	"name":"rvCMD",
+	"class":"_RoverCMD",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",	
+}
+
+{
+	"name":"rvPID",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":1.9,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.8,
+	"dT":1.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
+}
+
+{
+	"name":"apMission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"IDLE",
+			"class":"MissionBase",
+			"nextMission":"MOVE",
+		}
+		{
+			"bInst":1,
+			"name":"MOVE",
+			"class":"Move",
+			"tTimeout":60,
+			"nextMission":"TAG",
+		}
+		{
+			"bInst":1,
+			"name":"TAG",
+			"class":"Loiter",
+			"tTimeout":30,
+			"nextMission":"MOVE",
+		}
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"bInst":1,
+	"FPS":20,
+	"bDraw":1,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"rvBase",
+			"class":"Rover_base",
+			"bInst":1,
+			"bDraw":1,
+			"_MissionControl":"apMission",
+			"Window":"OKview",
+			"_RoverCMD":"rvCMD",
+		}
+		
+		{
+			"name":"rvMove",
+			"class":"Rover_move",
+			"bInst":0,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeMission":["MOVE"],
+			"Rover_base":"rvBase",
+			"PIDctrl":"rvPID",
+		}
+
+		{
+			"name":"rvTag",
+			"class":"Rover_tag",
+			"bInst":0,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeMission":["TAG"],
+			"Rover_base":"rvBase",
+			"PIDctrl":"rvPID",
+			"_DetectorBase":"_arUco",
+		}
+		
+	}
+}

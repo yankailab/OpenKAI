@@ -50,6 +50,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);
+	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);

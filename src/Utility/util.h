@@ -316,21 +316,21 @@ inline uint32_t unpack_uint32(const void* pB, bool bOrder = true)
 inline string i2str(int32_t val)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%d", val);
+	snprintf(buf, UTIL_BUF, "%d", (int32_t)val);
 	return string(buf);
 }
 
 inline string li2str(long val)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%ld", val);
+	snprintf(buf, UTIL_BUF, "%ld", (long)val);
 	return string(buf);
 }
 
 inline string f2str(float val)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", val);
+	snprintf(buf, UTIL_BUF, "%.3f", (float)val);
 	return string(buf);
 }
 
@@ -338,14 +338,14 @@ inline string f2str(float val, int nDigit)
 {
 	char buf[UTIL_BUF];
 	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), val);
+	snprintf(buf, UTIL_BUF, format.c_str(), (float)val);
 	return string(buf);
 }
 
 inline string lf2str(double val)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", val);
+	snprintf(buf, UTIL_BUF, "%.3f", (double)val);
 	return string(buf);
 }
 
@@ -353,7 +353,7 @@ inline string lf2str(double val, int nDigit)
 {
 	char buf[UTIL_BUF];
 	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), val);
+	snprintf(buf, UTIL_BUF, format.c_str(), (double)val);
 	return string(buf);
 }
 

@@ -5,25 +5,25 @@
 #include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
 
-#define CMD_BEGIN 0xFE
-#define CMD_HEADDER_LEN 3
-#define CMD_BUF_LEN 256
-#define CMD_PWM 0
-#define CMD_PIN_OUTPUT 1
-#define CMD_STATUS 2
+#define ARDU_CMD_N_BUF 256
+#define ARDU_CMD_BEGIN 0xFE
+#define ARDU_CMD_N_HEADER 3
+#define ARDU_CMD_PWM 0
+#define ARDU_CMD_PIN_OUTPUT 1
+#define ARDU_CMD_STATUS 2
 
-struct ARDUINO_MESSAGE
+struct ARDUINO_CMD
 {
 	int m_cmd;
+	int m_nPayload;
 	int m_iByte;
-	int m_payloadLen;
-	char m_pBuf[256];
+	char m_pBuf[ARDU_CMD_N_BUF];
 
 	void init(void)
 	{
 		m_cmd = 0;
 		m_iByte = 0;
-		m_payloadLen = 0;
+		m_nPayload = 0;
 	}
 };
 
@@ -36,17 +36,18 @@ public:
 	_Arduino();
 	~_Arduino();
 
-	bool init(void* pKiss);
-	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	virtual bool init(void* pKiss);
+	virtual bool start(void);
+	virtual bool draw(void);
+	virtual bool console(int& iY);
 
-	void readMessages(void);
-	void handleMessage(void);
+	virtual bool readCMD(void);
+	virtual void handleCMD(void);
+
 	void setPWM(int nChan, int* pChan);
 	void pinOut(int iPin, int state);
 
-public:
+private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -54,11 +55,12 @@ public:
 		return NULL;
 	}
 
-	_IOBase* m_pIO;
-	uint8_t m_pBuf[CMD_BUF_LEN];
-	ARDUINO_MESSAGE m_recvMsg;
+public:
 
-	uint32_t m_pState[8];
+	_IOBase*	m_pIO;
+	uint8_t		m_pBuf[ARDU_CMD_N_BUF];
+	ARDUINO_CMD m_recvMsg;
+	uint64_t	m_nCMDrecv;
 
 };
 

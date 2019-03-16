@@ -6,6 +6,7 @@ _Arduino::_Arduino()
 {
 	m_pIO = NULL;
 	m_recvMsg.init();
+	m_nCMDrecv = 0;
 }
 
 _Arduino::~_Arduino()
@@ -58,13 +59,17 @@ void _Arduino::update(void)
 
 		this->autoFPSfrom();
 
-		readMessages();
+		while(readCMD())
+		{
+			handleCMD();
+			m_nCMDrecv++;
+		}
 
 		this->autoFPSto();
 	}
 }
 
-void _Arduino::readMessages()
+bool _Arduino::readCMD(void)
 {
 	uint8_t	inByte;
 	int		byteRead;
@@ -76,39 +81,30 @@ void _Arduino::readMessages()
 			m_recvMsg.m_pBuf[m_recvMsg.m_iByte] = inByte;
 			m_recvMsg.m_iByte++;
 
-			if (m_recvMsg.m_iByte == 2)	//Payload length
+			if (m_recvMsg.m_iByte == 3)
 			{
-				m_recvMsg.m_payloadLen = inByte;
+				m_recvMsg.m_nPayload = inByte;
 			}
-			else if (m_recvMsg.m_iByte == m_recvMsg.m_payloadLen + CMD_HEADDER_LEN)
+			else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + ARDU_CMD_N_HEADER)
 			{
-				handleMessage();
-				m_recvMsg.init();
+				return true;
 			}
 		}
-		else if (inByte == CMD_BEGIN)
+		else if (inByte == ARDU_CMD_BEGIN)
 		{
 			m_recvMsg.m_cmd = inByte;
 			m_recvMsg.m_pBuf[0] = inByte;
 			m_recvMsg.m_iByte = 1;
-			m_recvMsg.m_payloadLen = 0;
+			m_recvMsg.m_nPayload = 0;
 		}
 	}
+
+	return false;
 }
 
-void _Arduino::handleMessage(void)
+void _Arduino::handleCMD(void)
 {
-	switch (m_recvMsg.m_pBuf[2])
-	{
-	case CMD_STATUS:
-		m_pState[0] = (uint32_t)unpack_int16(&m_recvMsg.m_pBuf[3], false);
-		m_pState[1] = (uint32_t)unpack_int16(&m_recvMsg.m_pBuf[5], false);
-		m_pState[2] = (uint32_t)unpack_int16(&m_recvMsg.m_pBuf[7], false);
-		LOG_I("State: " + i2str(m_pState[0]) + ", " + i2str(m_pState[1]) + ", " + i2str(m_pState[2]) + ", ");
-		break;
-	default:
-		break;
-	}
+	m_recvMsg.init();
 }
 
 void _Arduino::setPWM(int nChan, int* pChan)
@@ -117,17 +113,17 @@ void _Arduino::setPWM(int nChan, int* pChan)
 	IF_(!m_pIO->isOpen());
 	IF_(nChan <= 0);
 
-	m_pBuf[0] = CMD_BEGIN;
+	m_pBuf[0] = ARDU_CMD_BEGIN;
 	m_pBuf[1] = 1 + nChan * 2;
-	m_pBuf[2] = CMD_PWM;
+	m_pBuf[2] = ARDU_CMD_PWM;
 
 	for (int i = 0; i < nChan; i++)
 	{
-		m_pBuf[CMD_HEADDER_LEN + i * 2] = (uint8_t)(pChan[i] & 0xFF);
-		m_pBuf[CMD_HEADDER_LEN + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
+		m_pBuf[ARDU_CMD_N_HEADER + i * 2] = (uint8_t)(pChan[i] & 0xFF);
+		m_pBuf[ARDU_CMD_N_HEADER + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
 	}
 
-	m_pIO->write(m_pBuf, CMD_HEADDER_LEN + nChan * 2);
+	m_pIO->write(m_pBuf, ARDU_CMD_N_HEADER + nChan * 2);
 }
 
 void _Arduino::pinOut(int iPin, int state)
@@ -135,9 +131,9 @@ void _Arduino::pinOut(int iPin, int state)
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
 
-	m_pBuf[0] = CMD_BEGIN;
+	m_pBuf[0] = ARDU_CMD_BEGIN;
 	m_pBuf[1] = 2;
-	m_pBuf[2] = CMD_PIN_OUTPUT;
+	m_pBuf[2] = ARDU_CMD_PIN_OUTPUT;
 	m_pBuf[3] = (uint8_t)iPin;
 	m_pBuf[4] = (uint8_t)state;
 
@@ -156,11 +152,11 @@ bool _Arduino::draw(void)
 		msg = "Not Connected";
 		pWin->addMsg(msg);
 		pWin->tabPrev();
-		return true;
+		return false;
 	}
 
 	pWin->tabNext();
-	msg = "State = " + i2str(m_pState[0]) + ", " + i2str(m_pState[1]) + ", " + i2str(m_pState[2]) + ", ";
+	msg = "nCMD = " + i2str(m_nCMDrecv);
 	pWin->addMsg(msg);
 	pWin->tabPrev();
 
@@ -173,8 +169,7 @@ bool _Arduino::console(int& iY)
 	IF_Fl(!m_pIO->isOpen(), "Not connected");
 	string msg;
 
-	C_MSG("State = " + i2str(m_pState[0]) + ", " + i2str(m_pState[1]) + ", " + i2str(m_pState[2]) + ", ");
-
+	C_MSG("nCMD = " + i2str(m_nCMDrecv));
 	return true;
 }
 

@@ -1,30 +1,27 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-//temporal
-//0 START MARK
-//1 PAYLOAD LENGTH
-//2 COMMAND
+//0 ARDU_CMD_BEGIN
+//1 COMMAND
+//2 PAYLOAD LENGTH
 //3 Payload...
 
 //Protocol
-#define CMD_BUF_LEN 256
-#define CMD_BEGIN 0xFE
-#define CMD_HEADDER_LEN 3
+#define ARDU_CMD_N_BUF 256
+#define ARDU_CMD_BEGIN 0xFE
+#define ARDU_CMD_N_HEADER 3
+#define ARDU_CMD_PWM 0
+#define ARDU_CMD_PIN_OUTPUT 1
+#define ARDU_CMD_STATUS 2
 
-//Commands
-#define CMD_PWM 0
-#define CMD_PIN_OUTPUT 1
-#define CMD_STATUS 2
-
-struct CMD_STREAM
+struct ARDUINO_CMD
 {
   uint8_t m_cmd;
-  uint8_t m_payloadLen;
+  uint8_t m_nPayload;
   uint16_t m_iByte;
-  uint8_t m_pBuf[CMD_BUF_LEN];
+  uint8_t m_pBuf[ARDU_CMD_N_BUF];
 };
-CMD_STREAM m_cmd;
+ARDUINO_CMD m_cmd;
 
 union int16Bytes
 {
@@ -44,15 +41,18 @@ union int16Bytes
 #define PWM_MID 1500
 #define PWM_MID_DZ 100
 #define PWM_LOW 600
-#define AP_TIMEOUT 2000
+#define PWM_LIM 300
+
+#define AP_TIMEOUT 1000
 #define PWM_TIMEOUT 3000
 
 #define MODE_IDLE 0
 #define MODE_MANUAL 1
-#define MODE_FORWARD 2
-#define MODE_BACKWARD 3
+#define MODE_AUTO 2
+#define MODE_FORWARD 3
+#define MODE_BACKWARD 4
 
-int8_t g_Mode;
+uint8_t g_Mode;
 
 int g_pwmLin;
 int g_pwmRin;
@@ -69,22 +69,22 @@ Servo g_motorR;
 
 void command(void)
 {
-  switch (m_cmd.m_pBuf[2])
+  switch (m_cmd.m_pBuf[1])
   {
-  case CMD_PWM:
+  case ARDU_CMD_PWM:
     g_pwmLap = *((int16_t*)(&m_cmd.m_pBuf[3]));
     g_pwmRap = *((int16_t*)(&m_cmd.m_pBuf[5]));
+    g_tAP = millis();
     break;
 
-  case CMD_PIN_OUTPUT:
+  case ARDU_CMD_PIN_OUTPUT:
     digitalWrite(m_cmd.m_pBuf[3], m_cmd.m_pBuf[4]);
+    g_tAP = millis();
     break;
 
   default:
     break;
   }
-
-  g_tAP = millis();
 }
 
 bool receive(void)
@@ -100,11 +100,11 @@ bool receive(void)
       m_cmd.m_pBuf[m_cmd.m_iByte] = inByte;
       m_cmd.m_iByte++;
 
-      if (m_cmd.m_iByte == 2) //Payload length
+      if (m_cmd.m_iByte == 3) //Payload length
       {
-        m_cmd.m_payloadLen = inByte;
+        m_cmd.m_nPayload = inByte;
       }
-      else if (m_cmd.m_iByte == m_cmd.m_payloadLen + CMD_HEADDER_LEN)
+      else if (m_cmd.m_iByte == m_cmd.m_nPayload + ARDU_CMD_N_HEADER)
       {
         //decode the command
         command();
@@ -114,12 +114,12 @@ bool receive(void)
         return true;
       }
     }
-    else if (inByte == CMD_BEGIN)
+    else if (inByte == ARDU_CMD_BEGIN)
     {
       m_cmd.m_cmd = inByte;
       m_cmd.m_pBuf[0] = inByte;
       m_cmd.m_iByte = 1;
-      m_cmd.m_payloadLen = 0;
+      m_cmd.m_nPayload = 0;
     }
   }
 
@@ -128,7 +128,7 @@ bool receive(void)
 
 void mode()
 {
-  if(g_pwmModeIn <= PWM_LOW)
+  if(g_pwmModeIn <= PWM_LOW || g_pwmLin <= PWM_LOW || g_pwmRin <= PWM_LOW)
   {
     g_Mode = MODE_IDLE;
     return;
@@ -137,19 +137,45 @@ void mode()
   if(abs(g_pwmModeIn-PWM_MID) < PWM_MID_DZ)
   {
     g_Mode = MODE_MANUAL;
+    return;
   }
-  else if(g_tNow - g_tAP < AP_TIMEOUT)
+  
+  if(g_tNow - g_tAP > AP_TIMEOUT)
   {
-    if(g_pwmModeIn > PWM_MID)
+    g_Mode = MODE_IDLE;
+    return;
+  }
+
+  if(g_pwmModeIn > PWM_MID)
       g_Mode = MODE_FORWARD;
-    else
+  else
       g_Mode = MODE_BACKWARD;
-    
+
+}
+
+void updateLED(void)
+{
+  if(g_Mode == MODE_IDLE)
+  {
+    digitalWrite(13, HIGH);
+    digitalWrite(PIN_LED1, LOW);
+    digitalWrite(PIN_LED2, LOW);
+    digitalWrite(PIN_LED3, LOW);
+  }
+  else if(g_Mode == MODE_MANUAL)
+  {
+    digitalWrite(13, LOW);
+    digitalWrite(PIN_LED1, HIGH);
+    digitalWrite(PIN_LED2, LOW);
+    digitalWrite(PIN_LED3, LOW);
   }
   else
   {
-    g_Mode = MODE_MANUAL;
-  }
+    digitalWrite(13, LOW);
+    digitalWrite(PIN_LED1, HIGH);
+    digitalWrite(PIN_LED2, HIGH);
+    digitalWrite(PIN_LED3, LOW);
+  } 
 }
 
 void setup()
@@ -167,27 +193,20 @@ void setup()
   pinMode(PIN_LED3, OUTPUT);
   pinMode(13, OUTPUT);
 
-  digitalWrite(PIN_LED1, HIGH);
-  digitalWrite(PIN_LED2, HIGH);
-  digitalWrite(PIN_LED3, HIGH);
-  digitalWrite(13, HIGH);
-
   pinMode(PIN_PWM_L, INPUT);
   pinMode(PIN_PWM_R, INPUT);
   pinMode(PIN_PWM_MODE, INPUT);
 
   Serial.begin(115200);
 
-//  digitalWrite(PIN_LED1, LOW);
-//  digitalWrite(PIN_LED2, LOW);
-//  digitalWrite(PIN_LED3, LOW);
-  digitalWrite(PIN_LED1, HIGH);
-  digitalWrite(PIN_LED2, HIGH);
-  digitalWrite(PIN_LED3, HIGH);
+  digitalWrite(13, LOW);
+  digitalWrite(PIN_LED1, LOW);
+  digitalWrite(PIN_LED2, LOW);
+  digitalWrite(PIN_LED3, LOW);
 }
 
 void loop()
-{  
+{
   g_pwmLin = pulseIn(PIN_PWM_L, HIGH, PWM_TIMEOUT);
   g_pwmRin = pulseIn(PIN_PWM_R, HIGH, PWM_TIMEOUT);
   g_pwmModeIn = pulseIn(PIN_PWM_MODE, HIGH, PWM_TIMEOUT);
@@ -195,35 +214,37 @@ void loop()
   receive();
   g_tNow = millis();
   mode();
-
+  updateLED();
 
   int pwmL;
   int pwmR;
-  if(g_Mode == MODE_MANUAL)
-  {
-    pwmL = g_pwmLin;
-    pwmR = g_pwmRin;
-    digitalWrite(13, LOW);
-  }
-  else if(g_Mode == MODE_IDLE)
+
+  if(g_Mode == MODE_IDLE)
   {
     pwmL = PWM_MID;
     pwmR = PWM_MID;
-    digitalWrite(13, HIGH);
+  }
+  else if(g_Mode == MODE_MANUAL)
+  {
+    pwmL = g_pwmLin;
+    pwmR = g_pwmRin;
   }
   else
   {
     pwmL = g_pwmLap;
     pwmR = g_pwmRap;
-    digitalWrite(13, LOW);
   }
-  
+
+  pwmL = constrain(pwmL, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
+  pwmR = constrain(pwmR, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
   g_motorL.writeMicroseconds(pwmL);
   g_motorR.writeMicroseconds(pwmR);
 
-  Serial.write(CMD_BEGIN);            //start mark
-  Serial.write(6);                    //payload len
-  Serial.write((uint8_t)CMD_STATUS);  //cmd
+
+  Serial.write(ARDU_CMD_BEGIN);            //start mark
+  Serial.write((uint8_t)ARDU_CMD_STATUS);  //cmd
+  Serial.write(7);                         //payload len
+  Serial.write((uint8_t)g_Mode);
   Serial.write((uint8_t)(g_pwmModeIn & 0xFF));
   Serial.write((uint8_t)((g_pwmModeIn >> 8) & 0xFF));
   Serial.write((uint8_t)(g_pwmLin & 0xFF));
