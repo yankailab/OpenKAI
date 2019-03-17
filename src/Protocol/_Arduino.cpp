@@ -114,8 +114,8 @@ void _Arduino::setPWM(int nChan, int* pChan)
 	IF_(nChan <= 0);
 
 	m_pBuf[0] = ARDU_CMD_BEGIN;
-	m_pBuf[1] = 1 + nChan * 2;
-	m_pBuf[2] = ARDU_CMD_PWM;
+	m_pBuf[1] = ARDU_CMD_PWM;
+	m_pBuf[2] = nChan * 2;
 
 	for (int i = 0; i < nChan; i++)
 	{

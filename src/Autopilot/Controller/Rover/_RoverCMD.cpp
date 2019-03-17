@@ -8,6 +8,8 @@ _RoverCMD::_RoverCMD()
 	m_pwmModeIn = 0;
 	m_pwmLin = 0;
 	m_pwmRin = 0;
+	m_pwmLmot = 0;
+	m_pwmRmot = 0;
 }
 
 _RoverCMD::~_RoverCMD()
@@ -73,11 +75,16 @@ void _RoverCMD::handleCMD(void)
 		m_pwmModeIn = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4], false);
 		m_pwmLin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[6], false);
 		m_pwmRin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[8], false);
+		m_pwmLmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[10], false);
+		m_pwmRmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[12], false);
 
 		LOG_I("Mode: " + i2str(m_mode) +
 				", pwmModein=" + i2str(m_pwmModeIn) +
 				", pwmLin=" + i2str(m_pwmLin) +
-				", pwmRin=" + i2str(m_pwmRin));
+				", pwmRin=" + i2str(m_pwmRin) +
+				", pwmLmot=" + i2str(m_pwmLmot) +
+				", pwmRmot=" + i2str(m_pwmRmot)
+				);
 		break;
 	default:
 		break;
@@ -94,7 +101,12 @@ bool _RoverCMD::draw(void)
 	string msg;
 
 	pWin->tabNext();
-	msg = "";
+	msg = "Mode: " + c_roverModeName[m_mode] +
+			", pwmModein=" + i2str(m_pwmModeIn) +
+			", pwmLin=" + i2str(m_pwmLin) +
+			", pwmRin=" + i2str(m_pwmRin) +
+			", pwmLmot=" + i2str(m_pwmLmot) +
+			", pwmRmot=" + i2str(m_pwmRmot);
 	pWin->addMsg(msg);
 	pWin->tabPrev();
 
@@ -106,7 +118,13 @@ bool _RoverCMD::console(int& iY)
 	IF_F(!this->_Arduino::console(iY));
 	string msg;
 
-	C_MSG("");
+	C_MSG("Mode: " + c_roverModeName[m_mode]);
+	C_MSG("pwmModein=" + i2str(m_pwmModeIn) +
+			", pwmLin=" + i2str(m_pwmLin) +
+			", pwmRin=" + i2str(m_pwmRin) +
+			", pwmLmot=" + i2str(m_pwmLmot) +
+			", pwmRmot=" + i2str(m_pwmRmot)
+			);
 
 	return true;
 }

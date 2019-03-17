@@ -32,19 +32,20 @@ union int16Bytes
 //Pin assign
 #define PIN_MOT_L 5
 #define PIN_MOT_R 6
-#define PIN_PWM_L A0
-#define PIN_PWM_R A1
-#define PIN_PWM_MODE A2
-#define PIN_LED1 8
-#define PIN_LED2 10
-#define PIN_LED3 12
+#define PIN_PWM_L 7
+#define PIN_PWM_R 8
+#define PIN_PWM_MODE 9
+#define PIN_LED_IDLE A0
+#define PIN_LED_MANUAL A1
+#define PIN_LED_AUTO A2
+#define PIN_LED_INDICATOR A3
 #define PWM_MID 1500
 #define PWM_MID_DZ 100
-#define PWM_LOW 600
+#define PWM_LOW 500
 #define PWM_LIM 300
 
 #define AP_TIMEOUT 1000
-#define PWM_TIMEOUT 3000
+#define PWM_TIMEOUT 1000000
 
 #define MODE_IDLE 0
 #define MODE_MANUAL 1
@@ -58,8 +59,8 @@ int g_pwmLin;
 int g_pwmRin;
 int g_pwmModeIn;
 
-int16_t g_pwmLap;
-int16_t g_pwmRap;
+uint16_t g_pwmLap;
+uint16_t g_pwmRap;
 long g_tAP;
 long g_tNow;
 
@@ -72,8 +73,8 @@ void command(void)
   switch (m_cmd.m_pBuf[1])
   {
   case ARDU_CMD_PWM:
-    g_pwmLap = *((int16_t*)(&m_cmd.m_pBuf[3]));
-    g_pwmRap = *((int16_t*)(&m_cmd.m_pBuf[5]));
+    g_pwmLap = *((uint16_t*)(&m_cmd.m_pBuf[3]));
+    g_pwmRap = *((uint16_t*)(&m_cmd.m_pBuf[5]));
     g_tAP = millis();
     break;
 
@@ -155,26 +156,22 @@ void mode()
 
 void updateLED(void)
 {
+  digitalWrite(PIN_LED_IDLE, LOW);
+  digitalWrite(PIN_LED_MANUAL, LOW);
+  digitalWrite(PIN_LED_AUTO, LOW);
+  digitalWrite(PIN_LED_INDICATOR, LOW);
+
   if(g_Mode == MODE_IDLE)
   {
-    digitalWrite(13, HIGH);
-    digitalWrite(PIN_LED1, LOW);
-    digitalWrite(PIN_LED2, LOW);
-    digitalWrite(PIN_LED3, LOW);
+    digitalWrite(PIN_LED_IDLE, HIGH);
   }
   else if(g_Mode == MODE_MANUAL)
   {
-    digitalWrite(13, LOW);
-    digitalWrite(PIN_LED1, HIGH);
-    digitalWrite(PIN_LED2, LOW);
-    digitalWrite(PIN_LED3, LOW);
+    digitalWrite(PIN_LED_MANUAL, HIGH);
   }
   else
   {
-    digitalWrite(13, LOW);
-    digitalWrite(PIN_LED1, HIGH);
-    digitalWrite(PIN_LED2, HIGH);
-    digitalWrite(PIN_LED3, LOW);
+    digitalWrite(PIN_LED_AUTO, HIGH);
   } 
 }
 
@@ -188,26 +185,21 @@ void setup()
   g_motorL.writeMicroseconds(PWM_MID);
   g_motorR.writeMicroseconds(PWM_MID);
 
-  pinMode(PIN_LED1, OUTPUT);
-  pinMode(PIN_LED2, OUTPUT);
-  pinMode(PIN_LED3, OUTPUT);
-  pinMode(13, OUTPUT);
+  pinMode(PIN_LED_IDLE, OUTPUT);
+  pinMode(PIN_LED_MANUAL, OUTPUT);
+  pinMode(PIN_LED_AUTO, OUTPUT);
+  pinMode(PIN_LED_INDICATOR, OUTPUT);
 
   pinMode(PIN_PWM_L, INPUT);
   pinMode(PIN_PWM_R, INPUT);
   pinMode(PIN_PWM_MODE, INPUT);
 
   Serial.begin(115200);
-
-  digitalWrite(13, LOW);
-  digitalWrite(PIN_LED1, LOW);
-  digitalWrite(PIN_LED2, LOW);
-  digitalWrite(PIN_LED3, LOW);
 }
 
 void loop()
 {
-  g_pwmLin = pulseIn(PIN_PWM_L, HIGH, PWM_TIMEOUT);
+  g_pwmLin = pulseIn(PIN_PWM_L, HIGH,PWM_TIMEOUT);
   g_pwmRin = pulseIn(PIN_PWM_R, HIGH, PWM_TIMEOUT);
   g_pwmModeIn = pulseIn(PIN_PWM_MODE, HIGH, PWM_TIMEOUT);
   
@@ -216,8 +208,8 @@ void loop()
   mode();
   updateLED();
 
-  int pwmL;
-  int pwmR;
+  uint16_t pwmL;
+  uint16_t pwmR;
 
   if(g_Mode == MODE_IDLE)
   {
@@ -233,17 +225,17 @@ void loop()
   {
     pwmL = g_pwmLap;
     pwmR = g_pwmRap;
+    pwmL = constrain(pwmL, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
+    pwmR = constrain(pwmR, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
   }
 
-  pwmL = constrain(pwmL, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
-  pwmR = constrain(pwmR, PWM_MID-PWM_LIM, PWM_MID+PWM_LIM);
   g_motorL.writeMicroseconds(pwmL);
   g_motorR.writeMicroseconds(pwmR);
 
 
   Serial.write(ARDU_CMD_BEGIN);            //start mark
   Serial.write((uint8_t)ARDU_CMD_STATUS);  //cmd
-  Serial.write(7);                         //payload len
+  Serial.write(11);                         //payload len
   Serial.write((uint8_t)g_Mode);
   Serial.write((uint8_t)(g_pwmModeIn & 0xFF));
   Serial.write((uint8_t)((g_pwmModeIn >> 8) & 0xFF));
@@ -251,4 +243,9 @@ void loop()
   Serial.write((uint8_t)((g_pwmLin >> 8) & 0xFF));
   Serial.write((uint8_t)(g_pwmRin & 0xFF));
   Serial.write((uint8_t)((g_pwmRin >> 8) & 0xFF));
+  Serial.write((uint8_t)(pwmL & 0xFF));
+  Serial.write((uint8_t)((pwmL >> 8) & 0xFF));
+  Serial.write((uint8_t)(pwmR & 0xFF));
+  Serial.write((uint8_t)((pwmR >> 8) & 0xFF));
+
 }

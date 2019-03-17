@@ -15,6 +15,15 @@ enum ROVER_MODE
 	rover_backward = 4,
 };
 
+const string c_roverModeName[] =
+{
+	"IDLE",
+	"MANUAL",
+	"AUTO",
+	"FORWARD",
+	"BACKWARD",
+};
+
 class _RoverCMD: public _Arduino
 {
 public:
@@ -42,6 +51,8 @@ public:
 	uint16_t m_pwmLin;
 	uint16_t m_pwmRin;
 
+	uint16_t m_pwmLmot;
+	uint16_t m_pwmRmot;
 };
 
 }

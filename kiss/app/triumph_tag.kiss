@@ -4,9 +4,9 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bDraw":0,
-	"bLog":0,
-	"bConsole":1,
-	"bStdErr":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -21,7 +21,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
@@ -44,7 +44,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":1,
 	"Window":"OKview",
@@ -77,7 +77,7 @@
 {
 	"name":"rvPID",
 	"class":"PIDctrl",
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"P":1.9,
 	"I":0.0,
@@ -95,7 +95,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"startMission":"STANDBY",
+	"startMission":"IDLE",
 
 	{
 		"name":"mission",

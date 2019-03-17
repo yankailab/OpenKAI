@@ -40,6 +40,11 @@ void Rover_base::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
+	uint16_t pPWM[2];
+	pPWM[0] = 1300;
+	pPWM[1] = 1600;
+	m_pCMD->setPWM(2,(int*)pPWM);
+
 }
 
 void Rover_base::cmd(void)
@@ -58,6 +63,17 @@ bool Rover_base::draw(void)
 			+ ": hdg=" + f2str(m_hdg)
 			+ ", speed=" + f2str(m_speed);
 	pWin->addMsg(msg);
+
+	return true;
+}
+
+bool Rover_base::console(int& iY)
+{
+	IF_F(!this->ActionBase::console(iY));
+	IF_F(check()<0);
+
+	string msg;
+	C_MSG("hdg=" + f2str(m_hdg) + ", speed=" + f2str(m_speed));
 
 	return true;
 }
