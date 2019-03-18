@@ -42,7 +42,7 @@ union int16Bytes
 #define PWM_MID 1500
 #define PWM_MID_DZ 100
 #define PWM_LOW 500
-#define PWM_LIM 300
+#define PWM_LIM 500
 
 #define AP_TIMEOUT 1000
 #define PWM_TIMEOUT 1000000
@@ -88,9 +88,10 @@ void command(void)
   }
 }
 
-bool receive(void)
+void receive(void)
 {
   byte  inByte;
+  int iMsg = 0;
 
   while (Serial.available() > 0)
   {
@@ -111,8 +112,8 @@ bool receive(void)
         command();
         m_cmd.m_cmd = 0;
 
-        //Execute one command at a time
-        return true;
+        iMsg++;
+        if(iMsg >= 20)return;
       }
     }
     else if (inByte == ARDU_CMD_BEGIN)
@@ -123,8 +124,6 @@ bool receive(void)
       m_cmd.m_nPayload = 0;
     }
   }
-
-  return false;
 }
 
 void mode()
@@ -159,15 +158,16 @@ void updateLED(void)
   digitalWrite(PIN_LED_IDLE, LOW);
   digitalWrite(PIN_LED_MANUAL, LOW);
   digitalWrite(PIN_LED_AUTO, LOW);
-  digitalWrite(PIN_LED_INDICATOR, LOW);
 
   if(g_Mode == MODE_IDLE)
   {
     digitalWrite(PIN_LED_IDLE, HIGH);
+    digitalWrite(PIN_LED_INDICATOR, LOW);
   }
   else if(g_Mode == MODE_MANUAL)
   {
     digitalWrite(PIN_LED_MANUAL, HIGH);
+    digitalWrite(PIN_LED_INDICATOR, LOW);
   }
   else
   {

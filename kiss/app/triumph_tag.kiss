@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
+	"bWindow":1,
+	"bDraw":1,
 	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
@@ -21,14 +21,14 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":1280,
-	"h":720,
+	"w":1920,
+	"h":1080,
 	"rsFPS":30,
 	"wD":1280,
 	"hD":720,
@@ -44,12 +44,34 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"dict":17,
+}
+
+{
+	"name":"rvSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"portName":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"rvCMD",
+}
+
+{
+	"name":"rvCMD",
+	"class":"_RoverCMD",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"rvSerial",	
 }
 
 {
@@ -59,17 +81,17 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyACM0",
+	"portName":"/dev/ttyACM1",
 	"baud":115200,
-	"_wakeUp":"roverCMD",
+	"_wakeUp":"apMavlink",
 }
 
 {
-	"name":"rvCMD",
-	"class":"_RoverCMD",
+	"name":"apMavlink",
+	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",	
 }
@@ -77,16 +99,16 @@
 {
 	"name":"rvPID",
 	"class":"PIDctrl",
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
-	"P":1.9,
+	"P":0.05,
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.8,
-	"dT":1.0,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
+	"D":0.0,
+	"dT":0.0,
+	"min":-1.0,
+	"max":1.0,
+	"K":0.5,
 }
 
 {
@@ -94,6 +116,7 @@
 	"class":"_MissionControl",
 	"FPS":30,
 	"bInst":1,
+	"bDraw":1,
 	"Window":"OKview",
 	"startMission":"IDLE",
 
@@ -103,28 +126,32 @@
 		{
 			"bInst":1,
 			"name":"IDLE",
+			"Window":"OKview",
+			"bDraw":1,
 			"class":"MissionBase",
 			"nextMission":"MOVE",
 		}
 		{
 			"bInst":1,
 			"name":"MOVE",
+			"Window":"OKview",
+			"bDraw":1,
 			"class":"Move",
-			"tTimeout":60,
-			"nextMission":"TAG",
 		}
 		{
 			"bInst":1,
 			"name":"TAG",
+			"Window":"OKview",
+			"bDraw":1,
 			"class":"Loiter",
-			"tTimeout":30,
+			"tTimeout":15,
 			"nextMission":"MOVE",
 		}
 	}
 }
 
 {
-	"name":"apPilot",
+	"name":"RoverPilot",
 	"class":"_AutoPilot",
 	"bInst":1,
 	"FPS":20,
@@ -142,34 +169,40 @@
 			"_MissionControl":"apMission",
 			"Window":"OKview",
 			"_RoverCMD":"rvCMD",
+			"PIDhdg":"rvPID",
+			
+			{
+				"iChan":0,
+				"H":2000,
+				"M":1500,
+				"L":1000,
+				"kDirection":1.0,
+				"sDirection":1.0,
+			}
+			{
+				"iChan":1,
+				"H":2000,
+				"M":1500,
+				"L":1000,
+				"kDirection":1.0,
+				"sDirection":-1.0,
+			}
 		}
 		
 		{
 			"name":"rvMove",
 			"class":"Rover_move",
-			"bInst":0,
+			"bInst":1,
 			"bLog":0,
 			"bDraw":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
-			"activeMission":["MOVE"],
+			"activeMission":["IDLE","MOVE","TAG"],
 			"Rover_base":"rvBase",
-			"PIDctrl":"rvPID",
+			"_DetectorBase":"arUco",
+			"_Mavlink":"apMavlink",
+			"nSpeed":0.3,
+			"iPinLEDtag":21,
 		}
-
-		{
-			"name":"rvTag",
-			"class":"Rover_tag",
-			"bInst":0,
-			"bLog":0,
-			"bDraw":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["TAG"],
-			"Rover_base":"rvBase",
-			"PIDctrl":"rvPID",
-			"_DetectorBase":"_arUco",
-		}
-		
 	}
 }

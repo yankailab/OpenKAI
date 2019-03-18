@@ -144,12 +144,12 @@ int _MissionControl::getCurrentMissionIdx(void)
 	return m_iMission;
 }
 
-string* _MissionControl::getCurrentMissionName(void)
+string _MissionControl::getCurrentMissionName(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
 	IF_N(m_iMission < 0);
 	string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
-	return &mName;
+	return mName;
 }
 
 bool _MissionControl::draw(void)

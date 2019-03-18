@@ -44,8 +44,8 @@ public:
 	virtual bool readCMD(void);
 	virtual void handleCMD(void);
 
-	void setPWM(int nChan, int* pChan);
-	void pinOut(int iPin, int state);
+	void setPWM(int nChan, uint16_t* pChan);
+	void pinOut(uint8_t iPin, uint8_t state);
 
 private:
 	void update(void);

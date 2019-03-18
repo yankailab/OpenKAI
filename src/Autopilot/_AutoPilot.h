@@ -18,6 +18,7 @@
 #include "Controller/APcopter/APcopter_RTH.h"
 #include "Controller/AProver/AProver_base.h"
 #include "Controller/Rover/Rover_base.h"
+#include "Controller/Rover/Rover_move.h"
 #include "Controller/Traffic/Traffic_alert.h"
 #include "Controller/Traffic/Traffic_base.h"
 #include "Controller/Traffic/Traffic_speed.h"

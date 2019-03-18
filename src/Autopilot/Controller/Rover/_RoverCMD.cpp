@@ -78,7 +78,7 @@ void _RoverCMD::handleCMD(void)
 		m_pwmLmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[10], false);
 		m_pwmRmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[12], false);
 
-		LOG_I("Mode: " + i2str(m_mode) +
+		LOG_I("Mode: " + c_roverModeName[m_mode] +
 				", pwmModein=" + i2str(m_pwmModeIn) +
 				", pwmLin=" + i2str(m_pwmLin) +
 				", pwmRin=" + i2str(m_pwmRin) +

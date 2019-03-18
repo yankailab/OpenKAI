@@ -48,7 +48,7 @@ public:
 	int getMissionIdx(const string& missionName);
 	MissionBase* getCurrentMission(void);
 	int getCurrentMissionIdx(void);
-	string* getCurrentMissionName(void);
+	string getCurrentMissionName(void);
 	int getLastMissionIdx(void);
 	void transit(const string& nextMissionName);
 	void transit(int iNextMission);

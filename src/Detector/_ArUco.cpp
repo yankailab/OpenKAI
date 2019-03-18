@@ -115,7 +115,7 @@ void _ArUco::detect(void)
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		o.m_angle = -atan2(dx,dy) * RAD_DEG;
+		o.m_angle = -atan2(dx,dy) * RAD_DEG + 180.0;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));

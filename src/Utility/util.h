@@ -137,15 +137,15 @@ template <typename T> inline T big(T a, T b)
 	return b;
 }
 
-template <typename T> inline T Hdg(T anyDeg)
+template <typename T> inline T Hdg(T deg)
 {
-	while (anyDeg > 360)
-		anyDeg -= 360;
+	while (deg >= 360)
+		deg -= 360;
 
-	while (anyDeg < 0)
-		anyDeg += 360;
+	while (deg < 0)
+		deg += 360;
 
-	return anyDeg;
+	return deg;
 }
 
 template <typename T> inline T dHdg(T hFrom, T hTo)

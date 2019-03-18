@@ -23,6 +23,7 @@ bool _Arduino::init(void* pKiss)
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
 	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pIO, iName + ": not found");
 
 	return true;
 }
@@ -107,7 +108,7 @@ void _Arduino::handleCMD(void)
 	m_recvMsg.init();
 }
 
-void _Arduino::setPWM(int nChan, int* pChan)
+void _Arduino::setPWM(int nChan, uint16_t* pChan)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
@@ -126,16 +127,16 @@ void _Arduino::setPWM(int nChan, int* pChan)
 	m_pIO->write(m_pBuf, ARDU_CMD_N_HEADER + nChan * 2);
 }
 
-void _Arduino::pinOut(int iPin, int state)
+void _Arduino::pinOut(uint8_t iPin, uint8_t state)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
 
 	m_pBuf[0] = ARDU_CMD_BEGIN;
-	m_pBuf[1] = 2;
-	m_pBuf[2] = ARDU_CMD_PIN_OUTPUT;
-	m_pBuf[3] = (uint8_t)iPin;
-	m_pBuf[4] = (uint8_t)state;
+	m_pBuf[1] = ARDU_CMD_PIN_OUTPUT;
+	m_pBuf[2] = 2;
+	m_pBuf[3] = iPin;
+	m_pBuf[4] = state;
 
 	m_pIO->write(m_pBuf, 5);
 }
