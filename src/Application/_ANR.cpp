@@ -12,7 +12,8 @@ namespace kai
 
 _ANR::_ANR()
 {
-	m_pD = NULL;
+	m_pDcn = NULL;
+	m_pDlp = NULL;
 	m_cnPrefix = "";
 	m_cnPosMargin = 0.05;
 	m_cn = "";
@@ -22,6 +23,10 @@ _ANR::_ANR()
 	m_tStampCN = 0;
 	m_timeOut = USEC_1SEC;
 	m_nCNdigit = 6;
+
+	m_lp = "";
+	m_lpBB.init();
+	m_tStampLP = 0;
 }
 
 _ANR::~_ANR()
@@ -48,9 +53,14 @@ bool _ANR::init(void* pKiss)
 	string iName;
 
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pD = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pD, iName + " not found");
+	F_ERROR_F(pK->v("_DetectorBaseCN", &iName));
+	m_pDcn = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDcn, iName + " not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_DetectorBaseLP", &iName));
+	m_pDlp = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDlp, iName + " not found");
 
 	return true;
 }
@@ -75,7 +85,7 @@ void _ANR::update(void)
 		this->autoFPSfrom();
 
 		cn();
-//		lp();
+		lp();
 
 		this->autoFPSto();
 	}
@@ -83,7 +93,7 @@ void _ANR::update(void)
 
 int _ANR::check(void)
 {
-	NULL__(m_pD,-1);
+	NULL__(m_pDcn,-1);
 
 	return 0;
 }
@@ -94,7 +104,7 @@ void _ANR::cn(void)
 
 	OBJECT* pO;
 	int i = 0;
-	while ((pO = m_pD->at(i++)) != NULL)
+	while ((pO = m_pDcn->at(i++)) != NULL)
 	{
 		vFloat4 bb = pO->m_bb;
 		string s = string(pO->m_pText);
@@ -125,7 +135,7 @@ void _ANR::cn(void)
 	}
 
 	i=0;
-	while ((pO = m_pD->at(i++)) != NULL)
+	while ((pO = m_pDcn->at(i++)) != NULL)
 	{
 		vFloat4 bb = pO->m_bb;
 
@@ -148,14 +158,34 @@ void _ANR::cn(void)
 		return;
 	}
 
-	LOG_I("Number: " + m_cn);
+	LOG_I("C Number: " + m_cn);
 }
 
 void _ANR::lp(void)
 {
 	IF_(check()<0);
 
-	LOG_I("Number: ");
+	OBJECT* pO;
+	int i = 0;
+	while ((pO = m_pDcn->at(i++)) != NULL)
+	{
+		string s = string(pO->m_pText);
+		s = deleteNonNumber(s.c_str());
+		IF_CONT(s.length() < 1);
+		IF_CONT(s.length() > 4);
+
+		m_lp = s.substr(0,4);
+		m_lpBB = pO->m_bb;
+		m_tStampLP = getTimeUsec();
+	}
+
+	if(getTimeUsec() - m_tStampLP > m_timeOut)
+	{
+		m_lp = "";
+		return;
+	}
+
+	LOG_I("L Number: " + m_lp);
 }
 
 bool _ANR::draw(void)
@@ -177,6 +207,16 @@ bool _ANR::draw(void)
 	r.y = m_cnPrefixBB.y * pMat->rows;
 	r.width = m_cnBB.z * pMat->cols - r.x;
 	r.height = m_cnBB.w * pMat->rows - r.y;
+	rectangle(*pMat, r, col, 2);
+
+	putText(*pMat, string(m_lp),
+			Point(10, pMat->rows*0.9),
+			FONT_HERSHEY_SIMPLEX, 1.0, col, 1);
+
+	r.x = m_lpBB.x * pMat->cols;
+	r.y = m_lpBB.y * pMat->rows;
+	r.width = m_lpBB.z * pMat->cols - r.x;
+	r.height = m_lpBB.w * pMat->rows - r.y;
 	rectangle(*pMat, r, col, 2);
 
 	return true;

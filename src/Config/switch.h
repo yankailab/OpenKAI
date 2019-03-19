@@ -12,6 +12,7 @@
 //#define USE_CASCADE
 //#define USE_CUDASTEREO
 //#define USE_OCR
+//#define USE_OPENALPR
 
 #ifdef USE_TENSORRT
 #define USE_CUDA

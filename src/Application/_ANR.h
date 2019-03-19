@@ -40,7 +40,8 @@ private:
 	}
 
 private:
-	_DetectorBase* m_pD;
+	_DetectorBase* m_pDcn;
+	_DetectorBase* m_pDlp;
 
 	string m_cnPrefix;
 	vector<string> m_vPrefixCandidate;
@@ -52,6 +53,11 @@ private:
 	uint64_t m_tStampCNprefix;
 	uint64_t m_tStampCN;
 	uint64_t m_timeOut;
+
+	string m_lp;
+	vFloat4 m_lpBB;
+	uint64_t m_tStampLP;
+
 
 };
 

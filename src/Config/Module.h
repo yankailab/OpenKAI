@@ -91,6 +91,9 @@
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
 
+#ifdef USE_OPENALPR
+#include "../Detector/_OpenALPR.h"
+#endif
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #include "../Detector/_Bullseye.h"

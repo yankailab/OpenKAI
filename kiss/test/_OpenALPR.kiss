@@ -1,0 +1,44 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"deviceID":1,
+	"w":1920,
+	"h":1080,
+}
+
+{
+	"name":"oalpr",
+	"class":"_OpenALPR",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"mode":"thread",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelFile":"",
+	"trainedFile":"",
+	"classFile":"class.names",
+}

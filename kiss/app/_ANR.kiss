@@ -19,7 +19,7 @@
 {
 	"name":"filterView",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 }
 
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"deviceID":0,
+	"deviceID":1,
 	"w":1920,
 	"h":1080,
 }
@@ -80,7 +80,7 @@
 	"class":"_Invert",
 	"FPS":30,
 	"bInst":1,
-	"Window":"/filterView",
+	"Window":"filterView",
 	"_VisionBase":"cam",
 }
 
@@ -88,7 +88,7 @@
 	"name":"DNNtextCN",
 	"class":"_DNNtext",
 	"bInst":1,
-	"bDraw":1,
+	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
@@ -119,7 +119,7 @@
 	"name":"DNNtextLP",
 	"class":"_DNNtext",
 	"bInst":1,
-	"bDraw":1,
+	"bDraw":0,
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
@@ -132,13 +132,14 @@
 	"bOCR":1,
 	"bMerge":0,
 	"kMerge":0.8,
-	"scaleBB":1.5,
+	"scaleBB":2.0,
 	"minArea":0.001,
 	"minW":0.01,
 	"minH":0.01,
 	"ocrMode":1,
 	"ocrPageMode":6,
-	"ocrDataDir":"/home/kai/dev/model/tesseractJP",
+	"ocrLanguage":"jpn",
+	"ocrDataDir":"/home/kai/dev/model/tesseract",
 	"rX":0.4,
 	"rY":0.8,
 	"rZ":0.6,
@@ -153,10 +154,11 @@
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"_DetectorBase":"DNNtextCN",
+	"_DetectorBaseCN":"DNNtextCN",
 	"cnPrefix":"DKKU ",
 	"prefixList":["DKKU","DKK","DK","KK","D","U","u"],
 	"cnPosMargin":0.05,
 	"nCNdigit":6,
 	"timeOut":5,
+	"_DetectorBaseLP":"DNNtextLP",
 }
