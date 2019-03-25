@@ -29,6 +29,13 @@ bool _OpenALPR::init(void* pKiss)
 	KISSm(pK, config);
 	KISSm(pK, runtime);
 
+//	char *old_ctype = strdup(setlocale(LC_ALL, NULL));
+	setlocale(LC_ALL, "C");
+//	tesseract::TessBaseAPI api;
+//	api.InitForAnalysePage();
+//	setlocale(LC_ALL, old_ctype);
+//	free(old_ctype);
+
 	// Initialize the library using United States-style license plates.
 	// You can use other countries/regions as well (for example: "eu", "au", or "kr").
 	m_pAlpr = new alpr::Alpr(m_region,

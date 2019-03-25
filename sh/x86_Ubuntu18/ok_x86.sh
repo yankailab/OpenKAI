@@ -16,9 +16,6 @@ sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev lib
 # IO
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 
-# Dependencies
-sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev
-
 # GUI
 sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
 	
@@ -27,9 +24,6 @@ sudo apt-get -y install libimage-exiftool-perl
 
 # Apache
 sudo apt-get -y install apache2
-
-# (Optional) Tesseract
-sudo apt-get -y install tesseract-ocr libtesseract-dev
 
 # (Optional) CUDA
 sudo add-apt-repository ppa:graphics-drivers/ppa 
@@ -101,11 +95,26 @@ autoreconf -fiv
 ./configure
 make -j8
 
-# OpenTracker
-git clone https://github.com/rockkingjy/OpenTracker
-cd OpenTracker/eco
-#edit makefile -> USE_SIMD=2
-make -j8
+# (Optional) Tesseract
+sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev
+git clone https://github.com/tesseract-ocr/tesseract.git
+cd tesseract
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j8
+sudo make install
+
+# (Optional) OpenALPR
+git clone https://github.com/yankailab/openalpr.git
+cd openalpr
+cd src
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j8
+sudo make install
+sudo ldconfig
 
 # OpenKAI
 git clone https://github.com/yankailab/OpenKAI.git
@@ -119,6 +128,12 @@ make all -j8
 
 
 # Outdated, to be updated
+
+# OpenTracker
+git clone https://github.com/rockkingjy/OpenTracker
+cd OpenTracker/eco
+#edit makefile -> USE_SIMD=2
+make -j8
 
 # Jetson-inference-batch
 cd $FULLDEVDIR
