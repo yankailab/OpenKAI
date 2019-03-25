@@ -11,6 +11,9 @@ namespace kai
 _OpenALPR::_OpenALPR()
 {
 	m_pAlpr = NULL;
+	m_region = "us";
+	m_config = "";
+	m_runtime = "";
 }
 
 _OpenALPR::~_OpenALPR()
@@ -22,11 +25,15 @@ bool _OpenALPR::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-//	KISSm(pK, );
+	KISSm(pK, region);
+	KISSm(pK, config);
+	KISSm(pK, runtime);
 
 	// Initialize the library using United States-style license plates.
 	// You can use other countries/regions as well (for example: "eu", "au", or "kr").
-	m_pAlpr = new alpr::Alpr("us", "/path/to/openalpr.conf");
+	m_pAlpr = new alpr::Alpr(m_region,
+							m_config,
+							m_runtime);
 
 	// Optionally, you can specify the top N possible plates to return (with confidences). The default is ten.
 	m_pAlpr->setTopN(10);
@@ -97,28 +104,22 @@ bool _OpenALPR::detect(void)
 
 	vector<alpr::AlprRegionOfInterest> vROI;
 
-	m_pAlpr->recognize(mIn.data, mIn.elemSize(), mIn.cols, mIn.rows, vROI);
+	alpr::AlprResults results = m_pAlpr->recognize(mIn.data, mIn.elemSize(), mIn.cols, mIn.rows, vROI);
 
+	// Carefully observe the results. There may be multiple plates in an image,
+	// and each plate returns the top N candidates.
+	for (int i = 0; i < results.plates.size(); i++)
+	{
+	  alpr::AlprPlateResult plate = results.plates[i];
+	  std::cout << "plate" << i << ": " << plate.topNPlates.size() << " results" << std::endl;
 
-
-//	// Recognize an image file. Alternatively, you could provide the image bytes in-memory.
-//	alpr::AlprResults results = openalpr.recognize("/path/to/image.jpg");
-//
-//	// Carefully observe the results. There may be multiple plates in an image,
-//	// and each plate returns the top N candidates.
-//	for (int i = 0; i < results.plates.size(); i++)
-//	{
-//	  alpr::AlprPlateResult plate = results.plates[i];
-//	  std::cout << "plate" << i << ": " << plate.topNPlates.size() << " results" << std::endl;
-//
-//	    for (int k = 0; k < plate.topNPlates.size(); k++)
-//	    {
-//	      alpr::AlprPlate candidate = plate.topNPlates[k];
-//	      std::cout << "    - " << candidate.characters << "\t confidence: " << candidate.overall_confidence;
-//	      std::cout << "\t pattern_match: " << candidate.matches_template << std::endl;
-//	    }
-//	}
-
+	    for (int k = 0; k < plate.topNPlates.size(); k++)
+	    {
+	      alpr::AlprPlate candidate = plate.topNPlates[k];
+	      std::cout << "    - " << candidate.characters << "\t confidence: " << candidate.overall_confidence;
+	      std::cout << "\t pattern_match: " << candidate.matches_template << std::endl;
+	    }
+	}
 
 	return true;
 }

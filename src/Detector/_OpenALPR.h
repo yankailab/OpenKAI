@@ -40,6 +40,9 @@ private:
 
 public:
 	alpr::Alpr* m_pAlpr;
+	string m_region;
+	string m_config;
+	string m_runtime;
 
 };
 

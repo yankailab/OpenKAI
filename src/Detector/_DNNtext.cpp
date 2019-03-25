@@ -233,6 +233,9 @@ bool _DNNtext::detect(void)
 		o.m_nV = 4;
 		o.updateBB(cs);
 
+		o.m_bb.z += 0.05;
+		o.m_bb.constrain(0.0,1.0);
+
 		this->add(&o);
 	}
 

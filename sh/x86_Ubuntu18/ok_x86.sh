@@ -16,6 +16,9 @@ sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev lib
 # IO
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 
+# Dependencies
+sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev
+
 # GUI
 sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
 	

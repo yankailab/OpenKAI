@@ -139,7 +139,7 @@ void _ANR::cn(void)
 	{
 		vFloat4 bb = pO->m_bb;
 
-		IF_CONT(bb.x < m_cnPrefixBB.z);
+		IF_CONT(bb.x < m_cnPrefixBB.x);
 		IF_CONT(abs(bb.y - m_cnPrefixBB.y) > m_cnPosMargin);
 		IF_CONT(abs(bb.w - m_cnPrefixBB.w) > m_cnPosMargin);
 
@@ -185,7 +185,7 @@ void _ANR::lp(void)
 		return;
 	}
 
-	LOG_I("L Number: " + m_lp);
+//	LOG_I("L Number: " + m_lp);
 }
 
 bool _ANR::draw(void)
