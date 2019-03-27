@@ -43,7 +43,7 @@ tar xzvf cudnn-9.1-linux-x64-v7.1.tgz
 sudo cp -a cuda/lib64/* /usr/lib/x86_64-linux-gnu/
 sudo cp -a cuda/include/* /usr/include/
 
-# (Optional) RealSense on PC
+# (Optional) RealSense
 git clone https://github.com/IntelRealSense/librealsense.git
 cd librealsense
 sudo cp config/99-realsense-libusb.rules /etc/udev/rules.d/
@@ -137,7 +137,8 @@ cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=ON -DCUDA_ARCH=62 -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_TENSORRT=ON -DTensorRT_build=/home/ubuntu/dev/jetson-inference-batch/build/aarch64 ../
 make all -j8
 
-
+# Copy startup sh into home
+sudo chmod a+x $HOME/ok.sh
 
 
 # Outdated, to be updated
@@ -147,16 +148,6 @@ git clone https://github.com/rockkingjy/OpenTracker
 cd OpenTracker/eco
 #edit makefile -> USE_SIMD=2
 make -j8
-
-# Jetson-inference-batch
-cd $FULLDEVDIR
-git clone https://github.com/yankailab/jetson-inference-batch.git
-cd jetson-inference-batch
-cp CMakeLists_tegra.txt CMakeLists.txt
-mkdir build
-cd build
-cmake ../
-make
 
 # Darknet
 cd $FULLDEVDIR
@@ -185,3 +176,13 @@ git clone https://github.com/yankailab/orb_slam2_gpu.git
 cd orb_slam2_gpu
 chmod +x build.sh
 ./build.sh
+
+# Jetson-inference-batch
+cd $FULLDEVDIR
+git clone https://github.com/yankailab/jetson-inference-batch.git
+cd jetson-inference-batch
+cp CMakeLists_tegra.txt CMakeLists.txt
+mkdir build
+cd build
+cmake ../
+make
