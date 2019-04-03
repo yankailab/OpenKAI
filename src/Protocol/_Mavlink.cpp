@@ -162,7 +162,7 @@ void _Mavlink::cmdInt(mavlink_command_int_t& D)
 void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 {
 	/*
-	 time_boot_ms: anything (it’s ignored)
+	 time_boot_ms: anything
 	 min_distance: 100 (i.e. 1m)
 	 max_distance: 1500 (i.e. 15m)
 	 current_distance: depth-from-zed-in-cm

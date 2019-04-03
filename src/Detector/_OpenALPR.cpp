@@ -14,6 +14,7 @@ _OpenALPR::_OpenALPR()
 	m_region = "us";
 	m_config = "";
 	m_runtime = "";
+	m_nTop = 10;
 }
 
 _OpenALPR::~_OpenALPR()
@@ -28,6 +29,7 @@ bool _OpenALPR::init(void* pKiss)
 	KISSm(pK, region);
 	KISSm(pK, config);
 	KISSm(pK, runtime);
+	KISSm(pK, nTop);
 
 //	char *old_ctype = strdup(setlocale(LC_ALL, NULL));
 	setlocale(LC_ALL, "C");
@@ -38,19 +40,15 @@ bool _OpenALPR::init(void* pKiss)
 
 	// Initialize the library using United States-style license plates.
 	// You can use other countries/regions as well (for example: "eu", "au", or "kr").
-	m_pAlpr = new alpr::Alpr(m_region,
-							m_config,
-							m_runtime);
+	m_pAlpr = new alpr::Alpr(m_region, m_config, m_runtime);
 
 	// Optionally, you can specify the top N possible plates to return (with confidences). The default is ten.
-	m_pAlpr->setTopN(10);
+	m_pAlpr->setTopN(m_nTop);
 
 	// Optionally, you can provide the library with a region for pattern matching. This improves accuracy by
 	// comparing the plate text with the regional pattern.
-//	m_pAlpr->setDefaultRegion("md");
+	//	m_pAlpr->setDefaultRegion("md");
 
-	// Make sure the library loads before continuing.
-	// For example, it could fail if the config/runtime_data is not found.
 	IF_Fl(!m_pAlpr->isLoaded(), "Error loading OpenALPR");
 
 	return true;
@@ -96,7 +94,7 @@ int _OpenALPR::check(void)
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
-	NULL__(m_pAlpr,-1);
+	NULL__(m_pAlpr, -1);
 
 	return 0;
 }
@@ -110,22 +108,48 @@ bool _OpenALPR::detect(void)
 	Mat mIn = *m_fBGR.m();
 
 	vector<alpr::AlprRegionOfInterest> vROI;
+	alpr::AlprResults results = m_pAlpr->recognize(mIn.data, mIn.elemSize(),
+			mIn.cols, mIn.rows, vROI);
 
-	alpr::AlprResults results = m_pAlpr->recognize(mIn.data, mIn.elemSize(), mIn.cols, mIn.rows, vROI);
+	vInt2 cs;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
 
-	// Carefully observe the results. There may be multiple plates in an image,
-	// and each plate returns the top N candidates.
-	for (int i = 0; i < results.plates.size(); i++)
+	for (unsigned int i=0; i < results.plates.size(); i++)
 	{
-	  alpr::AlprPlateResult plate = results.plates[i];
-	  std::cout << "plate" << i << ": " << plate.topNPlates.size() << " results" << std::endl;
+		alpr::AlprPlateResult plate = results.plates[i];
+		LOG_I("plate" + i2str(i) + ": " + i2str(plate.topNPlates.size()) + " results");
 
-	    for (int k = 0; k < plate.topNPlates.size(); k++)
-	    {
-	      alpr::AlprPlate candidate = plate.topNPlates[k];
-	      std::cout << "    - " << candidate.characters << "\t confidence: " << candidate.overall_confidence;
-	      std::cout << "\t pattern_match: " << candidate.matches_template << std::endl;
-	    }
+		if(m_bLog)
+		{
+			for (unsigned int k = 0; k < plate.topNPlates.size(); k++)
+			{
+				alpr::AlprPlate candidate = plate.topNPlates[k];
+				LOG_I("    - " + candidate.characters + " confidence: " + f2str(candidate.overall_confidence));
+				LOG_I("pattern_match: " + i2str(candidate.matches_template));
+			}
+		}
+
+		OBJECT o;
+		o.init();
+		o.m_tStamp = m_tStamp;
+		alpr::AlprPlate content = plate.topNPlates[0];
+		o.setTopClass(0, content.overall_confidence);
+
+		int n = constrain((int)content.characters.length(), 0, OBJ_N_CHAR-1);
+		strncpy(o.m_pText, content.characters.c_str(), n);
+		o.m_pText[n] = 0;
+
+		Point2f pV[4];
+		for (int p = 0; p < 4; p++)
+		{
+			o.m_pV[p].x = plate.plate_points[p].x;
+			o.m_pV[p].y = plate.plate_points[p].y;
+		}
+		o.m_nV = 4;
+		o.updateBB(cs);
+
+		this->add(&o);
 	}
 
 	return true;
@@ -142,26 +166,19 @@ bool _OpenALPR::draw(void)
 	vInt2 cs;
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
-	Scalar col = Scalar(0,0,255);
+	Scalar col = Scalar(0, 0, 255);
 
 	OBJECT* pO;
-	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	int i = 0;
+	while ((pO = m_obj.at(i++)) != NULL)
 	{
-		int iClass = pO->m_topClass;
-		IF_CONT(iClass >= m_nClass);
-		IF_CONT(iClass < 0);
-
 		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, col, 1);
 
-		string oName = m_vClass[iClass].m_name;
-		if (oName.length()>0)
-		{
-			putText(*pMat, oName,
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 1.0, col, 2);
-		}
+		putText(*pMat, string(pO->m_pText),
+				Point(pO->m_bb.x * pMat->cols,
+					  pO->m_bb.w * pMat->rows),
+				FONT_HERSHEY_SIMPLEX, 1.5, col, 2);
 	}
 
 	return true;

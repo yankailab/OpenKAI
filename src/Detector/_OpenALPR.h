@@ -43,6 +43,7 @@ public:
 	string m_region;
 	string m_config;
 	string m_runtime;
+	int		m_nTop;
 
 };
 
