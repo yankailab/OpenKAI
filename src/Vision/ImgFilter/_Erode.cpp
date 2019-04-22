@@ -100,9 +100,7 @@ void _Erode::update(void)
 		if(m_bOpen)
 		{
 			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
-			{
 				filter();
-			}
 		}
 
 		this->autoFPSto();
@@ -111,6 +109,8 @@ void _Erode::update(void)
 
 void _Erode::filter(void)
 {
+	IF_(m_pV->BGR()->bEmpty());
+
 	m_fIn.copy(*m_pV->BGR());
 
 	Mat m1 = *m_fIn.m();

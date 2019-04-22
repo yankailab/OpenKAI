@@ -1,24 +1,24 @@
 /*
- * _Invert.h
+ * _Depth2Gray.h
  *
- *  Created on: March 14, 2019
+ *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__Invert_H_
-#define OpenKAI_src_Vision__Invert_H_
+#ifndef OpenKAI_src_Vision__Depth2Gray_H_
+#define OpenKAI_src_Vision__Depth2Gray_H_
 
 #include "../../Base/common.h"
-#include "../_VisionBase.h"
+#include "../_DepthVisionBase.h"
 
 namespace kai
 {
 
-class _Invert: public _VisionBase
+class _Depth2Gray: public _VisionBase
 {
 public:
-	_Invert();
-	virtual ~_Invert();
+	_Depth2Gray();
+	virtual ~_Depth2Gray();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -30,12 +30,12 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Invert*) This)->update();
+		((_Depth2Gray*) This)->update();
 		return NULL;
 	}
 
 public:
-	_VisionBase* m_pV;
+	_DepthVisionBase* m_pV;
 	Frame m_fIn;
 
 };

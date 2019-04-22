@@ -9,6 +9,7 @@
 #include "Controller/APcopter/APcopter_distLidar.h"
 #include "Controller/APcopter/APcopter_DNNavoid.h"
 #include "Controller/APcopter/APcopter_land.h"
+#include "Controller/APcopter/APcopter_line.h"
 #include "Controller/APcopter/APcopter_mode.h"
 #include "Controller/APcopter/APcopter_takePhoto.h"
 #include "Controller/APcopter/APcopter_posCtrl.h"

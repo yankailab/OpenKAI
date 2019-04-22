@@ -79,7 +79,10 @@ void _Invert::update(void)
 		this->autoFPSfrom();
 
 		if(m_bOpen)
-			filter();
+		{
+			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				filter();
+		}
 
 		this->autoFPSto();
 	}
@@ -87,6 +90,8 @@ void _Invert::update(void)
 
 void _Invert::filter(void)
 {
+	IF_(m_pV->BGR()->bEmpty());
+
 	Mat m;
 	cv::bitwise_not(*m_pV->BGR()->m(),m);
 	m_fBGR.copy(m);

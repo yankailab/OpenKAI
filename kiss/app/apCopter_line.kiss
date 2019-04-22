@@ -1,0 +1,117 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"depthView",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"filterView",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"rs",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"rFrom":0.3,
+	"rTo":10.0,
+	"bAlign":0,
+}
+
+{
+	"name":"dg",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/filterView",
+	"_DepthVisionBase":"rs",
+}
+
+{
+	"name":"resize",
+	"class":"_Resize",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/filterView",
+	"_VisionBase":"dg",
+	"w":320,
+	"h":180,
+}
+
+{
+	"name":"morph",
+	"class":"_Morphology",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/filterView",
+	"_VisionBase":"resize",
+	
+	{
+		"morphOp":2,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+	
+	{
+		"morphOp":3,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+	
+}
+
+{
+	"name":"ir",
+	"class":"_InRange",
+	"FPS":30,
+	"bInst":1,
+	"Window":"filterView",
+	"_VisionBase":"morph",
+	"rFrom":10,
+	"rTo":250,
+}
+
+{
+	"name":"line",
+	"class":"_Line",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"ir",
+}
+

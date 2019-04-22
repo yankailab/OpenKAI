@@ -87,6 +87,8 @@ void _HistEqualize::update(void)
 
 void _HistEqualize::filter(void)
 {
+	IF_(m_pV->BGR()->bEmpty());
+
 	Mat mIn;
 	Mat mOut;
     vector<Mat> vChannels;

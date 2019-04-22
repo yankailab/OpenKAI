@@ -22,7 +22,6 @@
 	"bInst":1,
 }
 
-
 {
 	"name":"cam",
 	"class":"_Camera",

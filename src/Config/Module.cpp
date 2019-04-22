@@ -33,6 +33,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
+	ADD_MODULE(_Depth2Gray);
 	ADD_MODULE(_Erode);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);
@@ -41,7 +42,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_HiphenServer);
 	ADD_MODULE(_HistEqualize);
 	ADD_MODULE(_Invert);
+	ADD_MODULE(_InRange);
 	ADD_MODULE(_Lane);
+	ADD_MODULE(_Line);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Morphology);
@@ -50,6 +53,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);
+	ADD_MODULE(_Resize);
 	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_TCPserver);

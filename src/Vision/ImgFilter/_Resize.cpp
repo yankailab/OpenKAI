@@ -1,36 +1,30 @@
 /*
- * _Contrast.cpp
+ * _Resize.cpp
  *
- *  Created on: March 12, 2019
+ *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#include "_Contrast.h"
+#include "_Resize.h"
 
 namespace kai
 {
 
-_Contrast::_Contrast()
+_Resize::_Resize()
 {
-	m_type = vision_contrast;
+	m_type = vision_resize;
 	m_pV = NULL;
-
-	m_alpha = 1.0;
-	m_beta = 0.0;
 }
 
-_Contrast::~_Contrast()
+_Resize::~_Resize()
 {
 	close();
 }
 
-bool _Contrast::init(void* pKiss)
+bool _Resize::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	KISSm(pK,alpha);
-	KISSm(pK,beta);
 
 	string iName;
 	iName = "";
@@ -41,7 +35,7 @@ bool _Contrast::init(void* pKiss)
 	return true;
 }
 
-bool _Contrast::open(void)
+bool _Resize::open(void)
 {
 	NULL_F(m_pV);
 	m_bOpen = m_pV->isOpened();
@@ -49,7 +43,7 @@ bool _Contrast::open(void)
 	return m_bOpen;
 }
 
-void _Contrast::close(void)
+void _Resize::close(void)
 {
 	if(m_threadMode==T_THREAD)
 	{
@@ -60,7 +54,7 @@ void _Contrast::close(void)
 	this->_VisionBase::close();
 }
 
-bool _Contrast::start(void)
+bool _Resize::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -75,7 +69,7 @@ bool _Contrast::start(void)
 	return true;
 }
 
-void _Contrast::update(void)
+void _Resize::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -86,20 +80,19 @@ void _Contrast::update(void)
 
 		if(m_bOpen)
 		{
-			filter();
+			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				filter();
 		}
 
 		this->autoFPSto();
 	}
 }
 
-void _Contrast::filter(void)
+void _Resize::filter(void)
 {
 	IF_(m_pV->BGR()->bEmpty());
 
-	Mat m;
-	m_pV->BGR()->m()->convertTo(m, -1, m_alpha, m_beta);
-	m_fBGR.copy(m);
+	m_fBGR.copy(m_pV->BGR()->resize(m_w, m_h));
 }
 
 }

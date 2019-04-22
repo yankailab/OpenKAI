@@ -80,6 +80,9 @@ void _ArUco::detect(void)
 	Mat m = *m_pVision->BGR()->m();
 	IF_(m.empty());
 
+	vInt2 cs;
+	cs.x = m.cols;
+	cs.y = m.rows;
 	double bW = 1.0/(double)m.cols;
 	double bH = 1.0/(double)m.rows;
 
@@ -100,6 +103,15 @@ void _ArUco::detect(void)
 		Point2f pRT = vvCorner[i][1];
 		Point2f pRB = vvCorner[i][2];
 		Point2f pLB = vvCorner[i][3];
+
+		// bbox
+//		for (int p = 0; p < 4; p++)
+//		{
+//			o.m_pV[p].x = vvCorner[i][p].x * bW;
+//			o.m_pV[p].y = vvCorner[i][p].y * bH;
+//		}
+//		o.m_nV = 4;
+//		o.updateBB(cs);
 
 		// center position
 		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
@@ -124,7 +136,7 @@ void _ArUco::detect(void)
 
 bool _ArUco::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 

@@ -1,12 +1,12 @@
 /*
- * _Invert.h
+ * _InRange.h
  *
- *  Created on: March 14, 2019
+ *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision__Invert_H_
-#define OpenKAI_src_Vision__Invert_H_
+#ifndef OpenKAI_src_Vision__InRange_H_
+#define OpenKAI_src_Vision__InRange_H_
 
 #include "../../Base/common.h"
 #include "../_VisionBase.h"
@@ -14,11 +14,11 @@
 namespace kai
 {
 
-class _Invert: public _VisionBase
+class _InRange: public _VisionBase
 {
 public:
-	_Invert();
-	virtual ~_Invert();
+	_InRange();
+	virtual ~_InRange();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -30,13 +30,15 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_Invert*) This)->update();
+		((_InRange*) This)->update();
 		return NULL;
 	}
 
 public:
 	_VisionBase* m_pV;
 	Frame m_fIn;
+	double	m_rFrom;
+	double	m_rTo;
 
 };
 

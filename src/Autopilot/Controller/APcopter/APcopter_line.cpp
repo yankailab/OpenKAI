@@ -1,9 +1,9 @@
-#include "APcopter_target.h"
+#include "APcopter_line.h"
 
 namespace kai
 {
 
-APcopter_target::APcopter_target()
+APcopter_line::APcopter_line()
 {
 	m_pAP = NULL;
 	m_pPC = NULL;
@@ -29,11 +29,11 @@ APcopter_target::APcopter_target()
 
 }
 
-APcopter_target::~APcopter_target()
+APcopter_line::~APcopter_line()
 {
 }
 
-bool APcopter_target::init(void* pKiss)
+bool APcopter_line::init(void* pKiss)
 {
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -115,7 +115,7 @@ bool APcopter_target::init(void* pKiss)
 	return true;
 }
 
-int APcopter_target::check(void)
+int APcopter_line::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -133,7 +133,7 @@ int APcopter_target::check(void)
 	return this->ActionBase::check();
 }
 
-void APcopter_target::update(void)
+void APcopter_line::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
@@ -177,7 +177,7 @@ void APcopter_target::update(void)
 //		m_pAP->setApMode(GUIDED);
 }
 
-bool APcopter_target::find(void)
+bool APcopter_line::find(void)
 {
 	IF__(check()<0, false);
 
@@ -246,12 +246,12 @@ bool APcopter_target::find(void)
 	return true;
 }
 
-bool APcopter_target::bFound(void)
+bool APcopter_line::bFound(void)
 {
 	return m_bFound;
 }
 
-bool APcopter_target::draw(void)
+bool APcopter_line::draw(void)
 {
 	IF_F(!this->ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -274,7 +274,7 @@ bool APcopter_target::draw(void)
 	return true;
 }
 
-bool APcopter_target::console(int& iY)
+bool APcopter_line::console(int& iY)
 {
 	IF_F(!this->ActionBase::console(iY));
 	IF_F(check()<0);

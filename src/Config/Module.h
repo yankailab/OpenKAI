@@ -24,6 +24,7 @@
 #include "../Detector/_DNNdetect.h"
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
+#include "../Detector/_Line.h"
 #include "../Detector/_Thermal.h"
 
 #include "../Navigation/_Path.h"
@@ -65,9 +66,12 @@
 #include "../Vision/ImgFilter/_Morphology.h"
 #include "../Vision/ImgFilter/_Threshold.h"
 #include "../Vision/ImgFilter/_Contrast.h"
+#include "../Vision/ImgFilter/_Depth2Gray.h"
 #include "../Vision/ImgFilter/_Erode.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
 #include "../Vision/ImgFilter/_Invert.h"
+#include "../Vision/ImgFilter/_InRange.h"
+#include "../Vision/ImgFilter/_Resize.h"
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"

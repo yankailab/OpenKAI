@@ -112,6 +112,8 @@ void _Morphology::update(void)
 
 void _Morphology::filter(void)
 {
+	IF_(m_pV->BGR()->bEmpty());
+
 	m_fIn.copy(*m_pV->BGR());
 
 	Mat m1 = *m_fIn.m();

@@ -1,47 +1,41 @@
 /*
- * _Contrast.cpp
+ * _Depth2Gray.cpp
  *
- *  Created on: March 12, 2019
+ *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#include "_Contrast.h"
+#include "_Depth2Gray.h"
 
 namespace kai
 {
 
-_Contrast::_Contrast()
+_Depth2Gray::_Depth2Gray()
 {
-	m_type = vision_contrast;
+	m_type = vision_depth2Gray;
 	m_pV = NULL;
-
-	m_alpha = 1.0;
-	m_beta = 0.0;
 }
 
-_Contrast::~_Contrast()
+_Depth2Gray::~_Depth2Gray()
 {
 	close();
 }
 
-bool _Contrast::init(void* pKiss)
+bool _Depth2Gray::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,alpha);
-	KISSm(pK,beta);
-
 	string iName;
 	iName = "";
-	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->parent()->getChildInst(iName));
+	pK->v("_DepthVisionBase", &iName);
+	m_pV = (_DepthVisionBase*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pV, iName + ": not found");
 
 	return true;
 }
 
-bool _Contrast::open(void)
+bool _Depth2Gray::open(void)
 {
 	NULL_F(m_pV);
 	m_bOpen = m_pV->isOpened();
@@ -49,7 +43,7 @@ bool _Contrast::open(void)
 	return m_bOpen;
 }
 
-void _Contrast::close(void)
+void _Depth2Gray::close(void)
 {
 	if(m_threadMode==T_THREAD)
 	{
@@ -60,7 +54,7 @@ void _Contrast::close(void)
 	this->_VisionBase::close();
 }
 
-bool _Contrast::start(void)
+bool _Depth2Gray::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -75,7 +69,7 @@ bool _Contrast::start(void)
 	return true;
 }
 
-void _Contrast::update(void)
+void _Depth2Gray::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -86,20 +80,24 @@ void _Contrast::update(void)
 
 		if(m_bOpen)
 		{
-			filter();
+			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+				filter();
 		}
 
 		this->autoFPSto();
 	}
 }
 
-void _Contrast::filter(void)
+void _Depth2Gray::filter(void)
 {
 	IF_(m_pV->BGR()->bEmpty());
 
-	Mat m;
-	m_pV->BGR()->m()->convertTo(m, -1, m_alpha, m_beta);
-	m_fBGR.copy(m);
+	Mat mD = *m_pV->Depth()->m();
+	Mat mGray;
+	mD.convertTo(mGray,
+				 255.0/(m_pV->m_vRange.y - m_pV->m_vRange.x),
+				 0);
+	m_fBGR.copy(mD);
 }
 
 }
