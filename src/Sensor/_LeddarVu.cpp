@@ -68,7 +68,6 @@ bool _LeddarVu::init(void* pKiss)
 	KISSm(pK, bOvershootManagement);
 	KISSm(pK, oprMode);
 
-	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVB = (_VisionBase*) (pK->parent()->getChildInst(iName));

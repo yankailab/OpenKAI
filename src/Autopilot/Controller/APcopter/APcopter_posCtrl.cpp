@@ -48,7 +48,6 @@ bool APcopter_posCtrl::init(void* pKiss)
 	pK->v("PIDalt", &iName);
 	m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
 
-	//link
 	iName = "";
 	pK->v("APcopter_base", &iName);
 	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));

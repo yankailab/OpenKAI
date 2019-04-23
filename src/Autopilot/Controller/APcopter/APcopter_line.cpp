@@ -8,25 +8,20 @@ APcopter_line::APcopter_line()
 	m_pAP = NULL;
 	m_pPC = NULL;
 	m_pDet = NULL;
+	m_pDS = NULL;
 
-	m_iClass = -1;
 	m_bFound = false;
-	m_apMode = -1;
 	m_tO.init();
 
-	m_vMyPos.init();
-	m_vMyPos.x = 0.5;
-	m_vMyPos.y = 0.5;
-	m_vTargetPos.init();
+	m_vMyPos.x = 0.5;	//roll in screen scale
+	m_vMyPos.y = 6.0;	//pitch in m
+	m_vMyPos.z = 0.5;	//alt in screen scale
+	m_vMyPos.w = 0.0;	//north
+	m_vTargetPos = m_vMyPos;
+
+	m_bAltDir = false;
+	m_rollSpd = 1.0;
 	m_apMount.init();
-
-	m_iTracker = 0;
-	m_bUseTracker = false;
-	m_pTracker[0] = NULL;
-	m_pTracker[1] = NULL;
-	m_pTnow = NULL;
-	m_pTnew = NULL;
-
 }
 
 APcopter_line::~APcopter_line()
@@ -38,9 +33,12 @@ bool APcopter_line::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iClass);
-	KISSm(pK,bUseTracker);
-	KISSm(pK,apMode);
+	KISSm(pK, rollSpd);
+	KISSm(pK, bAltDir);
+
+	int n;
+	pK->v("nMed",&n);
+	m_fMed.init(n,0);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -96,21 +94,10 @@ bool APcopter_line::init(void* pKiss)
 	m_pPC = (APcopter_posCtrl*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pPC, iName + ": not found");
 
-	if(m_bUseTracker)
-	{
-		iName = "";
-		pK->v("_TrackerBase1", &iName);
-		m_pTracker[0] = (_TrackerBase*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pTracker[0], iName + ": not found");
-
-		iName = "";
-		pK->v("_TrackerBase2", &iName);
-		m_pTracker[1] = (_TrackerBase*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pTracker[1], iName + ": not found");
-
-		m_pTnow = m_pTracker[m_iTracker];
-		m_pTnew = m_pTracker[1-m_iTracker];
-	}
+	iName = "";
+	pK->v("_DistSensorBase", &iName);
+	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDS, iName + ": not found");
 
 	return true;
 }
@@ -121,14 +108,9 @@ int APcopter_line::check(void)
 	NULL__(m_pAP->m_pMavlink,-1);
 	NULL__(m_pPC,-1);
 	NULL__(m_pDet,-1);
+	NULL__(m_pDS,-1);
 	_VisionBase* pV = m_pDet->m_pVision;
 	NULL__(pV,-1);
-
-	if(m_bUseTracker)
-	{
-		NULL__(m_pTracker[0],-1);
-		NULL__(m_pTracker[1],-1);
-	}
 
 	return this->ActionBase::check();
 }
@@ -140,20 +122,8 @@ void APcopter_line::update(void)
 	if(!bActive())
 	{
 		m_vTargetPos = m_vMyPos;
-		m_pPC->setPos(m_vMyPos, m_vMyPos);
-		m_pDet->goSleep();
-		if(m_bUseTracker)
-		{
-			m_pTracker[0]->stopTrack();
-			m_pTracker[1]->stopTrack();
-		}
-
+		m_pPC->setON(false);
 		return;
-	}
-
-	if(m_bMissionChanged)
-	{
-		m_pDet->wakeUp();
 	}
 
 	m_pAP->setMount(m_apMount);
@@ -162,86 +132,50 @@ void APcopter_line::update(void)
 	{
 		m_bFound = false;
 		m_vTargetPos = m_vMyPos;
-		m_pPC->setPos(m_vMyPos, m_vMyPos);
-
-//		if(m_pAP->getApMode() == GUIDED && m_apMode>=0)
-//			m_pAP->setApMode(m_apMode);
-
+		m_pPC->setON(false);
+		m_pPC->releaseCtrl();
 		return;
 	}
 
 	m_bFound = true;
 	m_pPC->setPos(m_vMyPos, m_vTargetPos);
-
-//	if(m_pAP->getApMode() == m_apMode)
-//		m_pAP->setApMode(GUIDED);
+	m_pPC->setON(true);
 }
 
 bool APcopter_line::find(void)
 {
 	IF__(check()<0, false);
 
-	OBJECT* pO;
+	//alt
 	OBJECT* tO = NULL;
-	double topProb = 0.0;
+	OBJECT* pO;
 	int i=0;
 	while((pO = m_pDet->at(i++)) != NULL)
 	{
-		IF_CONT(pO->m_topClass != m_iClass);
-		IF_CONT(pO->m_topProb < topProb);
-
 		tO = pO;
-		topProb = pO->m_topProb;
+		break;		//TODO: multiple lines
 	}
 
-	vFloat4 bb;
-	if(m_bUseTracker)
+	if(tO)
 	{
-		if(tO)
-		{
-			if(m_pTnew->trackState() == track_stop)
-			{
-//				m_pTnew->startTrack(tO->m_bb);
-			}
-		}
-
-		if(m_pTnew->trackState() == track_update)
-		{
-			m_iTracker = 1 - m_iTracker;
-			m_pTnow = m_pTracker[m_iTracker];
-			m_pTnew = m_pTracker[1-m_iTracker];
-			m_pTnew->stopTrack();
-		}
-
-		if(m_pTnow->trackState() != track_update)
-		{
-			m_pPC->setON(false);
-			m_pPC->releaseCtrl();
-			return false;
-		}
-
-//		bb = *m_pTnow->getBB();
+		m_fMed.input((double)tO->m_bb.midX());
+		m_vTargetPos.z = m_fMed.v();
+		if(m_bAltDir)m_vTargetPos.z = 1.0 - m_vTargetPos.z;
 	}
 	else
 	{
-		if(!tO)
-		{
-			m_pPC->setON(false);
-			m_pPC->releaseCtrl();
-			return false;
-		}
-
-		bb = tO->m_bb;
+		m_vTargetPos.z = m_vMyPos.z;
 	}
 
-	m_vTargetPos.x = bb.midX();
-	m_vTargetPos.y = bb.midY();
+	//pitch
+	double ds = m_pDS->dMin();
+	if(ds > 0.0)
+		m_vTargetPos.y = ds;
+	else
+		m_vTargetPos.y = m_vMyPos.y;
 
-	//Temporal
-	m_vTargetPos.x = tO->m_c.x;
-	m_vTargetPos.y = tO->m_c.y;
-
-	m_pPC->setON(true);
+	//roll
+	m_vTargetPos.x = m_vMyPos.x + m_rollSpd;
 
 	return true;
 }
@@ -269,6 +203,11 @@ bool APcopter_line::draw(void)
 					           + f2str(m_vTargetPos.z) + ", "
 				           	   + f2str(m_vTargetPos.w) + ")");
 
+	pWin->addMsg("MyPos = (" + f2str(m_vMyPos.x) + ", "
+							   + f2str(m_vMyPos.y) + ", "
+					           + f2str(m_vMyPos.z) + ", "
+				           	   + f2str(m_vMyPos.w) + ")");
+
 	pWin->tabPrev();
 
 	return true;
@@ -290,6 +229,11 @@ bool APcopter_line::console(int& iY)
 				     	 + f2str(m_vTargetPos.y) + ", "
 						 + f2str(m_vTargetPos.z) + ", "
 						 + f2str(m_vTargetPos.w) + ")");
+
+	C_MSG("MyPos = (" + f2str(m_vMyPos.x) + ", "
+				     	 + f2str(m_vMyPos.y) + ", "
+						 + f2str(m_vMyPos.z) + ", "
+						 + f2str(m_vMyPos.w) + ")");
 
 	return true;
 }

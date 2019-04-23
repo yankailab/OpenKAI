@@ -28,7 +28,8 @@ public:
 
 public:
 	APcopter_base* m_pAP;
-	vDouble4 m_vTargetPos;	//roll, pitch, alt, yaw
+	//roll, pitch, alt, yaw
+	vDouble4 m_vTargetPos;
 	vDouble4 m_vMyPos;
 
 	PIDctrl* m_pRoll;
