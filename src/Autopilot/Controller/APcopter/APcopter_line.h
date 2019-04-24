@@ -2,9 +2,8 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_line_H_
 
 #include "../../../Base/common.h"
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Detector/_Line.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../../Tracker/_TrackerBase.h"
 #include "../../ActionBase.h"
 #include "APcopter_base.h"
 #include "APcopter_posCtrl.h"
@@ -29,7 +28,7 @@ public:
 public:
 	APcopter_base*		m_pAP;
 	APcopter_posCtrl*	m_pPC;
-	_DetectorBase*		m_pDet;
+	_Line*				m_pDet;
 	_DistSensorBase*	m_pDS;
 
 	OBJECT			m_tO;

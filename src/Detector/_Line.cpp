@@ -16,6 +16,8 @@ _Line::_Line()
 	m_rDim = 0;
 	m_wSlide = 10;
 	m_vThr = 10;
+	m_vTower = 150;
+	m_bTower = false;
 }
 
 _Line::~_Line()
@@ -27,6 +29,7 @@ bool _Line::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
+	KISSm(pK,vTower);
 	KISSm(pK,rDim);
 	KISSm(pK,wSlide);
 	m_wSlide /= 2;
@@ -86,6 +89,16 @@ void _Line::detect(void)
 	IF_(check()<0);
 
 	m_pV->BGR()->m()->copyTo(m_mIn);
+
+	if((cv::sum(m_mIn)[0]/(m_mIn.rows*m_mIn.cols)) > m_vTower)
+	{
+		m_bTower = true;
+	}
+	else
+	{
+		m_bTower = false;
+	}
+
 	Mat vSum;
 	cv::reduce(m_mIn, vSum, m_rDim, CV_REDUCE_SUM, CV_32SC1);
 
@@ -153,6 +166,16 @@ bool _Line::draw(void)
 //	{
 //		imshow(*this->getName(), m_mIn);
 //	}
+
+	return true;
+}
+
+bool _Line::console(int& iY)
+{
+	IF_F(!this->_DetectorBase::console(iY));
+
+	string msg;
+	C_MSG("bTower = " + i2str(m_bTower));
 
 	return true;
 }

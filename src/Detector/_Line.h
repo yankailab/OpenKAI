@@ -25,6 +25,7 @@ public:
 	bool start(void);
 	int check(void);
 	bool draw(void);
+	bool console(int& iY);
 
 private:
 	void detect(void);
@@ -41,6 +42,8 @@ public:
 	int		m_pSlide[1280];
 	int		m_wSlide;
 	double	m_vThr;
+	double	m_vTower;
+	bool	m_bTower;
 	Mat		m_mIn;
 
 };

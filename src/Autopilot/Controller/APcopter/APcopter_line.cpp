@@ -86,7 +86,7 @@ bool APcopter_line::init(void* pKiss)
 
 	iName = "";
 	pK->v("_DetectorBase", &iName);
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDet = (_Line*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDet, iName + ": not found");
 
 	iName = "";
@@ -127,6 +127,16 @@ void APcopter_line::update(void)
 	}
 
 	m_pAP->setMount(m_apMount);
+
+//	if(m_pDet->m_bTower)
+//	{
+//		m_bFound = true;
+//		m_vTargetPos = m_vMyPos;
+//		m_vTargetPos.z += 0.1;
+//		m_pPC->setPos(m_vMyPos, m_vTargetPos);
+//		m_pPC->setON(true);
+//		return;
+//	}
 
 	if(!find())
 	{
