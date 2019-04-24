@@ -13,14 +13,13 @@ APcopter_line::APcopter_line()
 	m_bFound = false;
 	m_tO.init();
 
-	m_vMyPos.x = 0.5;	//roll in screen scale
-	m_vMyPos.y = 6.0;	//pitch in m
-	m_vMyPos.z = 0.5;	//alt in screen scale
-	m_vMyPos.w = 0.0;	//north
-	m_vTargetPos = m_vMyPos;
+	m_vSetP.x = 0.5;	//roll in screen scale
+	m_vSetP.y = 6.0;	//pitch in m
+	m_vSetP.z = 0.5;	//alt in screen scale
+	m_vSetP.w = 0.0;	//north
+	m_vTargetP = m_vSetP;
 
 	m_bAltDir = false;
-	m_rollSpd = 1.0;
 	m_apMount.init();
 }
 
@@ -33,7 +32,6 @@ bool APcopter_line::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, rollSpd);
 	KISSm(pK, bAltDir);
 
 	int n;
@@ -62,19 +60,19 @@ bool APcopter_line::init(void* pKiss)
 	pG = pK->o("targetPos");
 	if(!pG->empty())
 	{
-		pG->v("x", &m_vTargetPos.x);
-		pG->v("y", &m_vTargetPos.y);
-		pG->v("z", &m_vTargetPos.z);
-		pG->v("w", &m_vTargetPos.w);
+		pG->v("x", &m_vTargetP.x);
+		pG->v("y", &m_vTargetP.y);
+		pG->v("z", &m_vTargetP.z);
+		pG->v("w", &m_vTargetP.w);
 	}
 
 	pG = pK->o("myPos");
 	if(!pG->empty())
 	{
-		pG->v("x", &m_vMyPos.x);
-		pG->v("y", &m_vMyPos.y);
-		pG->v("z", &m_vMyPos.z);
-		pG->v("w", &m_vMyPos.w);
+		pG->v("x", &m_vSetP.x);
+		pG->v("y", &m_vSetP.y);
+		pG->v("z", &m_vSetP.z);
+		pG->v("w", &m_vSetP.w);
 	}
 
 	string iName;
@@ -121,7 +119,7 @@ void APcopter_line::update(void)
 	IF_(check()<0);
 	if(!bActive())
 	{
-		m_vTargetPos = m_vMyPos;
+		m_vTargetP = m_vSetP;
 		m_pPC->setON(false);
 		return;
 	}
@@ -141,14 +139,14 @@ void APcopter_line::update(void)
 	if(!find())
 	{
 		m_bFound = false;
-		m_vTargetPos = m_vMyPos;
+		m_vTargetP = m_vSetP;
 		m_pPC->setON(false);
 		m_pPC->releaseCtrl();
 		return;
 	}
 
 	m_bFound = true;
-	m_pPC->setPos(m_vMyPos, m_vTargetPos);
+	m_pPC->setPos(m_vSetP, m_vTargetP);
 	m_pPC->setON(true);
 }
 
@@ -169,23 +167,20 @@ bool APcopter_line::find(void)
 	if(tO)
 	{
 		m_fMed.input((double)tO->m_bb.midX());
-		m_vTargetPos.z = m_fMed.v();
-		if(m_bAltDir)m_vTargetPos.z = 1.0 - m_vTargetPos.z;
+		m_vTargetP.z = m_fMed.v();
+		if(m_bAltDir)m_vTargetP.z = 1.0 - m_vTargetP.z;
 	}
 	else
 	{
-		m_vTargetPos.z = m_vMyPos.z;
+		m_vTargetP.z = m_vSetP.z;
 	}
 
 	//pitch
 	double ds = m_pDS->dMin();
 	if(ds > 0.0)
-		m_vTargetPos.y = ds;
+		m_vTargetP.y = ds;
 	else
-		m_vTargetPos.y = m_vMyPos.y;
-
-	//roll
-	m_vTargetPos.x = m_vMyPos.x + m_rollSpd;
+		m_vTargetP.y = m_vSetP.y;
 
 	return true;
 }
@@ -203,20 +198,21 @@ bool APcopter_line::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check()<0);
 
+	pWin->addMsg(*this->getName());
 	pWin->tabNext();
 
 	if(!bActive())
 		pWin->addMsg("Inactive");
 
-	pWin->addMsg("Target = (" + f2str(m_vTargetPos.x) + ", "
-							   + f2str(m_vTargetPos.y) + ", "
-					           + f2str(m_vTargetPos.z) + ", "
-				           	   + f2str(m_vTargetPos.w) + ")");
+	pWin->addMsg("Target = (" + f2str(m_vTargetP.x) + ", "
+							   + f2str(m_vTargetP.y) + ", "
+					           + f2str(m_vTargetP.z) + ", "
+				           	   + f2str(m_vTargetP.w) + ")");
 
-	pWin->addMsg("MyPos = (" + f2str(m_vMyPos.x) + ", "
-							   + f2str(m_vMyPos.y) + ", "
-					           + f2str(m_vMyPos.z) + ", "
-				           	   + f2str(m_vMyPos.w) + ")");
+	pWin->addMsg("MyPos = (" + f2str(m_vSetP.x) + ", "
+							   + f2str(m_vSetP.y) + ", "
+					           + f2str(m_vSetP.z) + ", "
+				           	   + f2str(m_vSetP.w) + ")");
 
 	pWin->tabPrev();
 
@@ -235,15 +231,15 @@ bool APcopter_line::console(int& iY)
 		C_MSG("Inactive");
 	}
 
-	C_MSG("Target = (" + f2str(m_vTargetPos.x) + ", "
-				     	 + f2str(m_vTargetPos.y) + ", "
-						 + f2str(m_vTargetPos.z) + ", "
-						 + f2str(m_vTargetPos.w) + ")");
+	C_MSG("Target = (" + f2str(m_vTargetP.x) + ", "
+				     	 + f2str(m_vTargetP.y) + ", "
+						 + f2str(m_vTargetP.z) + ", "
+						 + f2str(m_vTargetP.w) + ")");
 
-	C_MSG("MyPos = (" + f2str(m_vMyPos.x) + ", "
-				     	 + f2str(m_vMyPos.y) + ", "
-						 + f2str(m_vMyPos.z) + ", "
-						 + f2str(m_vMyPos.w) + ")");
+	C_MSG("MyPos = (" + f2str(m_vSetP.x) + ", "
+				     	 + f2str(m_vSetP.y) + ", "
+						 + f2str(m_vSetP.z) + ", "
+						 + f2str(m_vSetP.w) + ")");
 
 	return true;
 }

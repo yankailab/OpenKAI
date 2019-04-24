@@ -41,8 +41,9 @@ public:
 	int		m_rDim;
 	int		m_pSlide[1280];
 	int		m_wSlide;
-	double	m_vThr;
-	double	m_vTower;
+	float	m_minPixLine;
+	float	m_line;
+	float	m_minPixTower;
 	bool	m_bTower;
 	Mat		m_mIn;
 

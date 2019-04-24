@@ -49,12 +49,12 @@ bool PIDctrl::init(void* pKiss)
 	return true;
 }
 
-double PIDctrl::update(double v, double vTarget, uint64_t t)
+double PIDctrl::update(double v, double vSet, uint64_t t)
 {
 	if(t <= m_tLastUpdate)
 		return m_output;
 
-	if(v < m_vMin || v > m_vMax || vTarget < m_vMin || vTarget > m_vMax)
+	if(v < m_vMin || v > m_vMax || vSet < m_vMin || vSet > m_vMax)
 	{
 		reset();
 		return 0;
@@ -62,7 +62,7 @@ double PIDctrl::update(double v, double vTarget, uint64_t t)
 
 	m_vPred = v + (v - m_v) * m_dT;
 	m_v = v;
-	m_vTarget = vTarget;
+	m_vTarget = vSet;
 
 	m_eOld = m_e;
 	m_e = m_vTarget - m_vPred;

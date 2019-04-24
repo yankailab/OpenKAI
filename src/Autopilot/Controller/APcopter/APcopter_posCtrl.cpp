@@ -6,8 +6,8 @@ namespace kai
 APcopter_posCtrl::APcopter_posCtrl()
 {
 	m_pAP = NULL;
-	m_vTargetPos.init();
-	m_vMyPos.init();
+	m_vTargetP.init();
+	m_vSetP.init();
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -86,19 +86,19 @@ void APcopter_posCtrl::update(void)
 
 	double p=0,r=0,a=0;
 	if(m_pRoll)
-		r = m_pRoll->update(m_vTargetPos.x, m_vMyPos.x, m_tStamp);
+		r = m_pRoll->update(m_vTargetP.x, m_vSetP.x, m_tStamp);
 
 	if(m_pPitch)
-		p = m_pPitch->update(m_vTargetPos.y, m_vMyPos.y, m_tStamp);
+		p = m_pPitch->update(m_vTargetP.y, m_vSetP.y, m_tStamp);
 
 	if(m_pAlt)
-		a = m_pAlt->update(m_vTargetPos.z, m_vMyPos.z, m_tStamp);
+		a = m_pAlt->update(m_vTargetP.z, m_vSetP.z, m_tStamp);
 	else
-		a = m_vTargetPos.z;
+		a = m_vTargetP.z;
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_spt.yaw_rate = (float)m_vYaw * DEG_RAD;
-	m_spt.yaw = (float)m_vTargetPos.w * DEG_RAD;
+	m_spt.yaw = (float)m_vTargetP.w * DEG_RAD;
 
 	m_spt.type_mask = 0b0000000111111111;
 
@@ -121,10 +121,10 @@ void APcopter_posCtrl::update(void)
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 
-void APcopter_posCtrl::setPos(vDouble4& vMyPos, vDouble4& vTargetPos)
+void APcopter_posCtrl::setPos(vDouble4& vSetP, vDouble4& vTargetP)
 {
-	m_vMyPos = vMyPos;
-	m_vTargetPos = vTargetPos;
+	m_vSetP = vSetP;
+	m_vTargetP = vTargetP;
 }
 
 void APcopter_posCtrl::setON(bool bON)
@@ -153,7 +153,7 @@ void APcopter_posCtrl::releaseCtrl(void)
 	m_spt.vx = 0;
 	m_spt.vy = 0;
 	m_spt.vz = 0;
-	m_spt.yaw = (float)m_vTargetPos.w * DEG_RAD;
+	m_spt.yaw = (float)m_vTargetP.w * DEG_RAD;
 	m_spt.yaw_rate = (float)m_vYaw * DEG_RAD;
 	m_spt.type_mask = 0b0000000111000000;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
@@ -176,15 +176,15 @@ bool APcopter_posCtrl::draw(void)
 	}
 	else
 	{
-		pWin->addMsg("Pos = (" + f2str(m_vMyPos.x) + ", "
-						 + f2str(m_vMyPos.y) + ", "
-						 + f2str(m_vMyPos.z) + ", "
-						 + f2str(m_vMyPos.w) + ")");
+		pWin->addMsg("Pos = (" + f2str(m_vSetP.x) + ", "
+						 + f2str(m_vSetP.y) + ", "
+						 + f2str(m_vSetP.z) + ", "
+						 + f2str(m_vSetP.w) + ")");
 
-		pWin->addMsg("Target = (" + f2str(m_vTargetPos.x) + ", "
-						    + f2str(m_vTargetPos.y) + ", "
-						    + f2str(m_vTargetPos.z) + ", "
-						    + f2str(m_vTargetPos.w) + ")");
+		pWin->addMsg("Target = (" + f2str(m_vTargetP.x) + ", "
+						    + f2str(m_vTargetP.y) + ", "
+						    + f2str(m_vTargetP.z) + ", "
+						    + f2str(m_vTargetP.w) + ")");
 
 		pWin->addMsg("set target: V = (" + f2str(m_spt.vx) + ", "
 						 + f2str(m_spt.vy) + ", "
@@ -219,15 +219,15 @@ bool APcopter_posCtrl::console(int& iY)
 	}
 	else
 	{
-		C_MSG("Pos = (" + f2str(m_vMyPos.x) + ", "
-						+ f2str(m_vMyPos.y) + ", "
-						+ f2str(m_vMyPos.z) + ", "
-						+ f2str(m_vMyPos.w) + ")");
+		C_MSG("Pos = (" + f2str(m_vSetP.x) + ", "
+						+ f2str(m_vSetP.y) + ", "
+						+ f2str(m_vSetP.z) + ", "
+						+ f2str(m_vSetP.w) + ")");
 
-		C_MSG("Target = (" + f2str(m_vTargetPos.x) + ", "
-						   + f2str(m_vTargetPos.y) + ", "
-						   + f2str(m_vTargetPos.z) + ", "
-						   + f2str(m_vTargetPos.w) + ")");
+		C_MSG("Target = (" + f2str(m_vTargetP.x) + ", "
+						   + f2str(m_vTargetP.y) + ", "
+						   + f2str(m_vTargetP.z) + ", "
+						   + f2str(m_vTargetP.w) + ")");
 
 		C_MSG("set target: V = (" + f2str(m_spt.vx) + ", "
 						 + f2str(m_spt.vy) + ", "

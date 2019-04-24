@@ -15,8 +15,9 @@ _Line::_Line()
 	m_pV = NULL;
 	m_rDim = 0;
 	m_wSlide = 10;
-	m_vThr = 10;
-	m_vTower = 150;
+	m_minPixLine = 0.005;
+	m_line = -1.0;
+	m_minPixTower = 0.25;
 	m_bTower = false;
 }
 
@@ -29,7 +30,8 @@ bool _Line::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,vTower);
+	KISSm(pK,minPixLine);
+	KISSm(pK,minPixTower);
 	KISSm(pK,rDim);
 	KISSm(pK,wSlide);
 	m_wSlide /= 2;
@@ -90,7 +92,8 @@ void _Line::detect(void)
 
 	m_pV->BGR()->m()->copyTo(m_mIn);
 
-	if((cv::sum(m_mIn)[0]/(m_mIn.rows*m_mIn.cols)) > m_vTower)
+	float nP = m_mIn.rows*m_mIn.cols;
+	if((float)cv::countNonZero(m_mIn)/nP > m_minPixTower)
 	{
 		m_bTower = true;
 	}
@@ -101,6 +104,7 @@ void _Line::detect(void)
 
 	Mat vSum;
 	cv::reduce(m_mIn, vSum, m_rDim, CV_REDUCE_SUM, CV_32SC1);
+	vSum *= (float)1.0/255.0;
 
 	//sliding window
 	int i,j;
@@ -116,7 +120,7 @@ void _Line::detect(void)
 		for(j=sFrom; j<sTo; j++)
 			v += vSum.at<int>(0,j);
 
-		if(v > m_vThr)
+		if((float)v/nP > m_minPixLine)
 		{
 			iFrom = i;
 			break;
@@ -133,7 +137,12 @@ void _Line::detect(void)
 //		}
 	}
 
-	IF_(iFrom < 0);
+	if(iFrom < 0)
+	{
+		m_line = -1.0;
+		return;
+	}
+
 	iTo = constrain(iTo, iFrom+1, vSum.cols);
 
 	vInt2 cs;
@@ -153,7 +162,8 @@ void _Line::detect(void)
 	o.setTopClass(0, 1.0);
 	add(&o);
 
-	LOG_I("Line pos: " + f2str(o.m_bb.midX()));
+	m_line = o.m_bb.midX();
+	LOG_I("Line pos: " + f2str(m_line));
 }
 
 bool _Line::draw(void)
@@ -162,10 +172,10 @@ bool _Line::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-//	if(!m_mIn.empty())
-//	{
-//		imshow(*this->getName(), m_mIn);
-//	}
+	pWin->tabNext();
+	pWin->addMsg("line = " + f2str(m_line));
+	pWin->addMsg("bTower = " + i2str(m_bTower));
+	pWin->tabPrev();
 
 	return true;
 }
@@ -175,6 +185,7 @@ bool _Line::console(int& iY)
 	IF_F(!this->_DetectorBase::console(iY));
 
 	string msg;
+	C_MSG("line = " + f2str(m_line));
 	C_MSG("bTower = " + i2str(m_bTower));
 
 	return true;

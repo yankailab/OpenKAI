@@ -80,7 +80,7 @@ void _Depth2Gray::update(void)
 
 		if(m_bOpen)
 		{
-			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+			if(m_fIn.tStamp() < m_pV->Depth()->tStamp())
 				filter();
 		}
 
@@ -90,14 +90,16 @@ void _Depth2Gray::update(void)
 
 void _Depth2Gray::filter(void)
 {
-	IF_(m_pV->BGR()->bEmpty());
+	IF_(m_pV->Depth()->bEmpty());
 
 	Mat mD = *m_pV->Depth()->m();
 	Mat mGray;
+	float scale = 255.0/(m_pV->m_vRange.y - m_pV->m_vRange.x);
 	mD.convertTo(mGray,
-				 255.0/(m_pV->m_vRange.y - m_pV->m_vRange.x),
-				 0);
-	m_fBGR.copy(mD);
+				 CV_8UC1,
+				 scale,
+				 -m_pV->m_vRange.x*scale);
+	m_fBGR.copy(mGray);
 }
 
 }

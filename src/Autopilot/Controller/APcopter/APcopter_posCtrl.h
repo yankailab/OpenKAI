@@ -21,7 +21,7 @@ public:
 	bool console(int& iY);
 	int check(void);
 
-	void setPos(vDouble4& vMyPos, vDouble4& vTargetPos);
+	void setPos(vDouble4& vSetP, vDouble4& vTargetP);
 	void clear(void);
 	void releaseCtrl(void);
 	void setON(bool bON);
@@ -29,8 +29,8 @@ public:
 public:
 	APcopter_base* m_pAP;
 	//roll, pitch, alt, yaw
-	vDouble4 m_vTargetPos;
-	vDouble4 m_vMyPos;
+	vDouble4 m_vTargetP;
+	vDouble4 m_vSetP;
 
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;

@@ -35,10 +35,9 @@ public:
 	bool			m_bFound;
 
 	//roll, pitch, alt, yaw
-	vDouble4 		m_vTargetPos;
-	vDouble4 		m_vMyPos;
+	vDouble4 		m_vTargetP;
+	vDouble4 		m_vSetP;
 	bool			m_bAltDir;
-	float			m_rollSpd;
 
 	Median m_fMed;
 
