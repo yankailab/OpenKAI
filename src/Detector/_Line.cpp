@@ -103,7 +103,7 @@ void _Line::detect(void)
 	}
 
 	Mat vSum;
-	cv::reduce(m_mIn, vSum, m_rDim, CV_REDUCE_SUM, CV_32SC1);
+	cv::reduce(m_mIn, vSum, m_rDim, cv::REDUCE_SUM, CV_32SC1);
 	vSum *= (float)1.0/255.0;
 
 	//sliding window

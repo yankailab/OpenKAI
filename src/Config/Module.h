@@ -68,6 +68,7 @@
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Depth2Gray.h"
 #include "../Vision/ImgFilter/_Erode.h"
+#include "../Vision/ImgFilter/_Grayscale.h"
 #include "../Vision/ImgFilter/_HistEqualize.h"
 #include "../Vision/ImgFilter/_Invert.h"
 #include "../Vision/ImgFilter/_InRange.h"
