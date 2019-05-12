@@ -102,7 +102,7 @@ if(USE_ORB_SLAM2)
 endif()
 
 if(USE_OCR)
-  add_definitions(-DUSE_TESSERACT)
+  add_definitions(-DUSE_OCR)
   set(OpenKAI_lib ${OpenKAI_lib} tesseract)
 endif()
 
