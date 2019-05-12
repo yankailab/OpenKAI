@@ -23,10 +23,18 @@ _ANR::_ANR()
 	m_tStampCN = 0;
 	m_timeOut = USEC_1SEC;
 	m_nCNdigit = 6;
+	m_offsetRdigit = 0.01;
+	m_wRdigit = 0.05;
 
 	m_lp = "";
 	m_lpBB.init();
 	m_tStampLP = 0;
+
+#ifdef USE_OCR
+	m_bOCR = false;
+	m_pOCR = NULL;
+#endif
+
 }
 
 _ANR::~_ANR()
@@ -41,6 +49,9 @@ bool _ANR::init(void* pKiss)
 	KISSm(pK,cnPrefix);
 	KISSm(pK,cnPosMargin);
 	KISSm(pK,nCNdigit);
+	KISSm(pK,offsetRdigit);
+	KISSm(pK,wRdigit);
+	KISSm(pK, bOCR);
 
 	if(pK->v("timeOut",&m_timeOut))
 		m_timeOut *= USEC_1SEC;
@@ -61,6 +72,14 @@ bool _ANR::init(void* pKiss)
 	F_ERROR_F(pK->v("_DetectorBaseLP", &iName));
 	m_pDlp = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDlp, iName + " not found");
+
+#ifdef USE_OCR
+	IF_T(!m_bOCR);
+	iName = "";
+	F_INFO(pK->v("OCR", &iName));
+	m_pOCR = (OCR*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pOCR, iName + " not found");
+#endif
 
 	return true;
 }
@@ -96,6 +115,37 @@ int _ANR::check(void)
 	NULL__(m_pDcn,-1);
 
 	return 0;
+}
+
+string _ANR::char2Number(const char* pStr)
+{
+	string asc = "";
+	if(!pStr)return asc;
+
+	int i=0;
+	while(pStr[i]!=0)
+	{
+		char c = pStr[i++];
+
+		if(c=='O' ||
+		   c=='o' ||
+		   c=='D' ||
+		   c=='Q' ||
+		   c=='C')
+			c='0';
+
+		if(c=='I' ||
+		   c=='L' ||
+		   c=='J')
+			c='1';
+
+		if(c=='Z')
+			c='2';
+
+		asc += c;
+	}
+
+	return asc;
 }
 
 void _ANR::cn(void)
@@ -144,6 +194,7 @@ void _ANR::cn(void)
 		IF_CONT(abs(bb.w - m_cnPrefixBB.w) > m_cnPosMargin);
 
 		string s = string(pO->m_pText);
+		s = char2Number(s.c_str());
 		s = deleteNonNumber(s.c_str());
 		IF_CONT(s.length() < m_nCNdigit);
 
@@ -165,27 +216,65 @@ void _ANR::lp(void)
 {
 	IF_(check()<0);
 
-	OBJECT* pO;
-	int i = 0;
-	while ((pO = m_pDcn->at(i++)) != NULL)
+	if(m_bOCR && m_pOCR)
 	{
-		string s = string(pO->m_pText);
-		s = deleteNonNumber(s.c_str());
-		IF_CONT(s.length() < 1);
-		IF_CONT(s.length() > 4);
+		vInt2 cs;
+		cs.x = m_pDlp->m_fBGR.m()->cols;
+		cs.y = m_pDlp->m_fBGR.m()->rows;
 
-		m_lp = s.substr(0,4);
-		m_lpBB = pO->m_bb;
-		m_tStampLP = getTimeUsec();
+		m_lpBB.x = m_cnPrefixBB.x - m_cnPrefixBB.width() * 1.0;
+		m_lpBB.y = m_cnPrefixBB.y + m_cnPrefixBB.height() * 18;
+		m_lpBB.z = m_lpBB.x + m_cnPrefixBB.width() * 2.0;
+		m_lpBB.w = m_lpBB.y + m_cnPrefixBB.height() * 3.5;
+
+		m_lpBB.constrain(0.0,1.0);
+
+		Rect r;
+		r.x = m_lpBB.x * cs.x;
+		r.width = (m_lpBB.z - m_lpBB.x) * cs.x;
+		r.y = m_lpBB.y * cs.y;
+		r.height = (m_lpBB.w - m_lpBB.y) * cs.y;
+
+		m_pOCR->setFrame(m_pDlp->m_fBGR);
+		m_lp = m_pOCR->scan(r);
 	}
+	else
+	{
+		OBJECT* pO;
+		int i = 0;
+		while ((pO = m_pDlp->at(i++)) != NULL)
+		{
+			string s = string(pO->m_pText);
+//			IF_CONT(s.length() < 1);
+//			IF_CONT(s.length() > 4);
+			s = char2Number(s.c_str());
+			s = deleteNonNumber(s.c_str());
+
+			m_lp = s.substr(0,4);
+			m_lpBB = pO->m_bb;
+
+			if(m_bOCR && m_pOCR)
+			{
+				vInt2 cs;
+				cs.x = m_pDlp->m_fBGR.m()->cols;
+				cs.y = m_pDlp->m_fBGR.m()->rows;
+				Rect r = pO->getRect(cs);
+
+				m_pOCR->setFrame(m_pDlp->m_fBGR);
+				m_lp = m_pOCR->scan(r);
+			}
+
+			m_tStampLP = getTimeUsec();
+		}
+	}
+
+	LOG_I("L Number: " + m_lp);
 
 	if(getTimeUsec() - m_tStampLP > m_timeOut)
 	{
 		m_lp = "";
 		return;
 	}
-
-//	LOG_I("L Number: " + m_lp);
 }
 
 bool _ANR::draw(void)
@@ -211,7 +300,7 @@ bool _ANR::draw(void)
 
 	putText(*pMat, string(m_lp),
 			Point(10, pMat->rows*0.9),
-			FONT_HERSHEY_SIMPLEX, 1.0, col, 1);
+			FONT_HERSHEY_SIMPLEX, 3.0, col, 5);
 
 	r.x = m_lpBB.x * pMat->cols;
 	r.y = m_lpBB.y * pMat->rows;

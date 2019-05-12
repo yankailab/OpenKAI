@@ -15,6 +15,7 @@ _OpenALPR::_OpenALPR()
 	m_config = "";
 	m_runtime = "";
 	m_nTop = 10;
+	m_locale = "C";
 }
 
 _OpenALPR::~_OpenALPR()
@@ -30,9 +31,10 @@ bool _OpenALPR::init(void* pKiss)
 	KISSm(pK, config);
 	KISSm(pK, runtime);
 	KISSm(pK, nTop);
+	KISSm(pK, locale);
 
 //	char *old_ctype = strdup(setlocale(LC_ALL, NULL));
-	setlocale(LC_ALL, "C");
+	setlocale(LC_ALL, m_locale.c_str());
 //	tesseract::TessBaseAPI api;
 //	api.InitForAnalysePage();
 //	setlocale(LC_ALL, old_ctype);

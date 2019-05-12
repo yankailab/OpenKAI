@@ -17,29 +17,16 @@ _DNNtext::_DNNtext()
 	m_vMean.y = 116.78;
 	m_vMean.z = 103.94;
 	m_scale = 1.0;
-
+	m_bOCR = false;
 	m_bDetect = true;
 
 #ifdef USE_OCR
-	m_pVocr = NULL;
-	m_bOCR = false;
 	m_pOCR = NULL;
-	m_ocrDataDir = "";
-	m_ocrLanguage = "eng";
-	m_ocrMode = tesseract::OEM_LSTM_ONLY;
-	m_ocrPageMode = tesseract::PSM_AUTO;
 #endif
 }
 
 _DNNtext::~_DNNtext()
 {
-#ifdef USE_OCR
-	if(m_pOCR)
-	{
-		m_pOCR->End();
-		delete m_pOCR;
-	}
-#endif
 }
 
 bool _DNNtext::init(void* pKiss)
@@ -56,6 +43,7 @@ bool _DNNtext::init(void* pKiss)
 	KISSm(pK, bSwapRB);
 	KISSm(pK, scale);
 	KISSm(pK, bDetect);
+	KISSm(pK, bOCR);
 	KISSm(pK, iClassDraw);
 	pK->v("meanB", &m_vMean.x);
 	pK->v("meanG", &m_vMean.y);
@@ -86,23 +74,13 @@ bool _DNNtext::init(void* pKiss)
 	m_vLayerName[0] = "feature_fusion/Conv_7/Sigmoid";
 	m_vLayerName[1] = "feature_fusion/concat_3";
 
-#ifdef USE_OCR
-	KISSm(pK, bOCR);
-	KISSm(pK, ocrDataDir);
-	KISSm(pK, ocrLanguage);
-	KISSm(pK, ocrMode);
-	KISSm(pK, ocrPageMode);
-
 	IF_T(!m_bOCR);
-	m_pOCR = new tesseract::TessBaseAPI();
-	m_pOCR->Init(m_ocrDataDir.c_str(), m_ocrLanguage.c_str(), (tesseract::OcrEngineMode)m_ocrMode);
-	m_pOCR->SetPageSegMode((tesseract::PageSegMode)m_ocrPageMode);
 
+#ifdef USE_OCR
 	string iName = "";
-	F_INFO(pK->v("_VisionOCR", &iName));
-	m_pVocr = (_VisionBase*) (pK->root()->getChildInst(iName));
-	if(!m_pVocr)
-		m_pVocr = m_pVision;
+	F_INFO(pK->v("OCR", &iName));
+	m_pOCR = (OCR*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pOCR, iName + " not found");
 #endif
 
 	return true;
@@ -143,11 +121,6 @@ void _DNNtext::update(void)
 				o.m_bb = m_vROI[i];
 				this->add(&o);
 			}
-
-#ifdef USE_OCR
-			if(m_bOCR)
-				ocr();
-#endif
 
 			m_obj.update();
 
@@ -233,9 +206,6 @@ bool _DNNtext::detect(void)
 		o.m_nV = 4;
 		o.updateBB(cs);
 
-		o.m_bb.z += 0.05;
-		o.m_bb.constrain(0.0,1.0);
-
 		this->add(&o);
 	}
 
@@ -297,23 +267,20 @@ void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
 void _DNNtext::ocr(void)
 {
 #ifdef USE_OCR
-	m_fOCR.copy(*m_pVocr->BGR());
-	if(m_fOCR.m()->channels()<3)
-		m_fOCR.copy(m_fOCR.cvtColor(8));
+	NULL_(m_pOCR);
 
-	Mat mIn = *m_fOCR.m();
-	m_pOCR->SetImage(mIn.data, mIn.cols, mIn.rows, 3, mIn.step);
+	m_pOCR->setFrame(*m_pVision->BGR());
+
 	vInt2 cs;
-	cs.x = mIn.cols;
-	cs.y = mIn.rows;
+	cs.x = m_pVision->BGR()->m()->cols;
+	cs.y = m_pVision->BGR()->m()->rows;
 
 	OBJECT* pO;
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
 		Rect r = pO->getRect(cs);
-		m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
-		string strO = string(m_pOCR->GetUTF8Text());
+		string strO = m_pOCR->scan(r);
 
 		int n = strO.length();
 		if(n+1 > OBJ_N_CHAR)
@@ -324,7 +291,6 @@ void _DNNtext::ocr(void)
 
 		LOG_I(strO);
 	}
-
 #endif
 }
 

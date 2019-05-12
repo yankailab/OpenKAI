@@ -96,6 +96,9 @@
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
 
+#ifdef USE_OCR
+#include "../Detector/OCR.h"
+#endif
 #ifdef USE_OPENALPR
 #include "../Detector/_OpenALPR.h"
 #endif

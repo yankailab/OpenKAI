@@ -9,6 +9,7 @@
 #define OpenKAI_src_DNN_Darknet__DNNtext_H_
 
 #include "_DNNdetect.h"
+#include "OCR.h"
 
 namespace kai
 {
@@ -23,12 +24,12 @@ public:
 	bool start(void);
 	bool draw(void);
 	int check(void);
+	void ocr(void);
 
-private:
+public:
 	void decode(const Mat& mScores, const Mat& mGeometry, float scoreThresh,
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
 	bool detect(void);
-	void ocr(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -40,16 +41,10 @@ public:
 	vDouble3 m_vMean;
 	bool	m_bDetect;
 	vector<vFloat4>	m_vROI;
+	bool	m_bOCR;
 
 #ifdef USE_OCR
-	bool	m_bOCR;
-	_VisionBase* m_pVocr;
-	Frame	m_fOCR;
-	tesseract::TessBaseAPI* m_pOCR;
-	string	m_ocrDataDir;
-	string	m_ocrLanguage;
-	int		m_ocrMode;
-	int		m_ocrPageMode;
+	OCR* m_pOCR;
 #endif
 
 };

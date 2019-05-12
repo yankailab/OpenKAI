@@ -15,6 +15,8 @@ OPTION(USE_PYLON "Use Basler camera with Pylon" OFF)
 OPTION(USE_TENSORRT "Use NVIDIA TensorRT" OFF)
 OPTION(USE_CAFFE "Use Caffe" OFF)
 OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
+OPTION(USE_OCR "Use Tesseract" OFF)
+OPTION(USE_OPENALPR "Use OpenALPR" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
 # find_package(OpenCV 4 REQUIRED)
@@ -98,6 +100,17 @@ if(USE_ORB_SLAM2)
   set(OpenKAI_libDir ${OpenKAI_libDir} "${ORB_SLAM2_root}/build/lib")
   set(OpenKAI_lib ${OpenKAI_lib} ${Pangolin_LIBRARIES} ORB_SLAM2)
 endif()
+
+if(USE_OCR)
+  add_definitions(-DUSE_TESSERACT)
+  set(OpenKAI_lib ${OpenKAI_lib} tesseract)
+endif()
+
+if(USE_OPENALPR)
+  add_definitions(-DUSE_OPENALPR)
+  set(OpenKAI_lib ${OpenKAI_lib} openalpr)
+endif()
+
 
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})

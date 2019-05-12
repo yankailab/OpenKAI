@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "_DetectorBase.h"
+#include "_DNNtext.h"
 
 #ifdef USE_OPENALPR
 #include <alpr.h>
@@ -40,10 +40,11 @@ private:
 
 public:
 	alpr::Alpr* m_pAlpr;
-	string m_region;
-	string m_config;
-	string m_runtime;
+	string	m_region;
+	string	m_config;
+	string	m_runtime;
 	int		m_nTop;
+	string	m_locale;
 
 };
 

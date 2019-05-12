@@ -88,6 +88,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 
+#ifdef USE_OCR
+	ADD_MODULE(OCR);
+#endif
 #ifdef USE_OPENALPR
 	ADD_MODULE(_OpenALPR);
 #endif

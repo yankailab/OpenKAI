@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Detector/_DetectorBase.h"
+#include "../Detector/OCR.h"
 
 namespace kai
 {
@@ -30,6 +31,7 @@ public:
 	int check(void);
 
 private:
+	string char2Number(const char* pStr);
 	void cn(void);
 	void lp(void);
 	void update(void);
@@ -50,6 +52,8 @@ private:
 	int		m_nCNdigit;
 	vFloat4 m_cnPrefixBB;
 	vFloat4 m_cnBB;
+	float	m_offsetRdigit;
+	float	m_wRdigit;
 	uint64_t m_tStampCNprefix;
 	uint64_t m_tStampCN;
 	uint64_t m_timeOut;
@@ -58,6 +62,10 @@ private:
 	vFloat4 m_lpBB;
 	uint64_t m_tStampLP;
 
+#ifdef USE_OCR
+	bool m_bOCR;
+	OCR* m_pOCR;
+#endif
 
 };
 

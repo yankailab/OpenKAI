@@ -20,11 +20,34 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
-	"deviceID":0,
+	"deviceID":3,
 	"w":1920,
 	"h":1080,
+}
+
+{
+	"name":"cam",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":0,
+	"Window":"OKview",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1920,
+	"h":1080,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"rFrom":0.1,
+	"rTo":15.0,
+	"bAlign":0,
 }
 
 {
@@ -37,7 +60,7 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"region":"us",
-	"config":"/home/kai/dev/openalpr/config/openalpr.conf",
-	"runtime":"/home/kai/dev/openalpr/runtime_data",
+	"region":"jp",
+	"config":"/home/kai/dev/eii/openalpr.conf",
+	"runtime":"/home/kai/dev/eii/runtime_data",
 }
