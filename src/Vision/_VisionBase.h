@@ -35,6 +35,7 @@ enum VISION_TYPE
 	vision_resize,
 	vision_inRange,
 	vision_grayscale,
+	vision_crop,
 };
 
 class _VisionBase: public _ThreadBase

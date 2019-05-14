@@ -7,10 +7,12 @@ Rover_move::Rover_move()
 {
 	m_pR = NULL;
 	m_pMavlink = NULL;
-	m_pDet = NULL;
+	m_pAruco = NULL;
+	m_pLine = NULL;
 	m_hdg = 0.0;
 	m_nSpeed = 0.0;
 
+	m_bLine = false;
 	m_iTag = -1;
 	m_tagRoi.init();
 	m_tagRoi.z = 1.0;
@@ -48,9 +50,14 @@ bool Rover_move::init(void* pKiss)
 	NULL_Fl(m_pMavlink, iName+": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pDet, iName+": not found");
+	F_ERROR_F(pK->v("_Aruco", &iName));
+	m_pAruco = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pAruco, iName+": not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_Line", &iName));
+	m_pLine = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pLine, iName+": not found");
 
 	return true;
 }
@@ -60,7 +67,8 @@ int Rover_move::check(void)
 	NULL__(m_pR, -1);
 	NULL__(m_pR->m_pCMD, -1);
 	NULL__(m_pMavlink, -1);
-	NULL__(m_pDet, -1);
+	NULL__(m_pAruco, -1);
+	NULL__(m_pLine, -1);
 
 	return 0;
 }
@@ -115,20 +123,21 @@ void Rover_move::update(void)
 		m_pR->setTargetHdg(m_hdg);
 
 	findTag();
+	findLine();
 }
 
 bool Rover_move::findTag(void)
 {
 	IF__(check()<0, false);
 
-	if(m_pDet->size()>0)
+	if(m_pAruco->size()>0)
 		m_pR->setLED(m_iPinLEDtag,1);
 	else
 		m_pR->setLED(m_iPinLEDtag,0);
 
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_pDet->at(i++)) != NULL)
+	while((pO = m_pAruco->at(i++)) != NULL)
 	{
 		IF_CONT(pO->m_c.x < m_tagRoi.x);
 		IF_CONT(pO->m_c.x > m_tagRoi.z);
@@ -146,6 +155,31 @@ bool Rover_move::findTag(void)
 		return true;
 	}
 
+	return false;
+}
+
+bool Rover_move::findLine(void)
+{
+	IF__(check()<0, false);
+
+	if(m_pLine->size()>0)
+		m_pR->setLED(m_iPinLEDtag,1);
+	else
+		m_pR->setLED(m_iPinLEDtag,0);
+
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_pLine->at(i++)) != NULL)
+	{
+		if(!m_bLine)
+		{
+			m_pMC->transit("TAG");
+		}
+		m_bLine = true;
+		return true;
+	}
+
+	m_bLine = false;
 	return false;
 }
 

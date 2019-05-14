@@ -38,13 +38,9 @@ private:
 
 public:
 	_VisionBase* m_pV;
-	int		m_rDim;
-	int		m_pSlide[1280];
-	int		m_wSlide;
+	float	m_wSlide;
 	float	m_minPixLine;
 	float	m_line;
-	float	m_minPixTower;
-	bool	m_bTower;
 	Mat		m_mIn;
 
 };

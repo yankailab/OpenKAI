@@ -126,7 +126,6 @@
 	"_VisionBase":"ir",
 	"wSlide":5,
 	"minPixLine":0.002,
-	"minPixTower":0.25,
 }
 
 {

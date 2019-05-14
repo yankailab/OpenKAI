@@ -51,7 +51,10 @@ bool _ANR::init(void* pKiss)
 	KISSm(pK,nCNdigit);
 	KISSm(pK,offsetRdigit);
 	KISSm(pK,wRdigit);
-	KISSm(pK, bOCR);
+
+#ifdef USE_OCR
+	KISSm(pK,bOCR);
+#endif
 
 	if(pK->v("timeOut",&m_timeOut))
 		m_timeOut *= USEC_1SEC;
@@ -216,6 +219,7 @@ void _ANR::lp(void)
 {
 	IF_(check()<0);
 
+#ifdef USE_OCR
 	if(m_bOCR && m_pOCR)
 	{
 		vInt2 cs;
@@ -267,6 +271,7 @@ void _ANR::lp(void)
 			m_tStampLP = getTimeUsec();
 		}
 	}
+#endif
 
 	LOG_I("L Number: " + m_lp);
 

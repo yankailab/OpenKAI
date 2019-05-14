@@ -21,15 +21,18 @@ public:
 	bool console(int& iY);
 
 	bool findTag(void);
+	bool findLine(void);
 
 public:
 	Rover_base* m_pR;
 	_Mavlink* m_pMavlink;
-	_DetectorBase*	m_pDet;
+	_DetectorBase*	m_pAruco;
+	_DetectorBase*	m_pLine;
 
 	float	m_hdg;
 	float	m_nSpeed;
 
+	bool	m_bLine;
 	vFloat4	m_tagRoi;
 	int		m_iTag;
 	float	m_tagAngle;

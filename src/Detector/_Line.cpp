@@ -13,12 +13,9 @@ namespace kai
 _Line::_Line()
 {
 	m_pV = NULL;
-	m_rDim = 0;
-	m_wSlide = 10;
+	m_wSlide = 0.01;
 	m_minPixLine = 0.005;
 	m_line = -1.0;
-	m_minPixTower = 0.25;
-	m_bTower = false;
 }
 
 _Line::~_Line()
@@ -31,10 +28,7 @@ bool _Line::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 
 	KISSm(pK,minPixLine);
-	KISSm(pK,minPixTower);
-	KISSm(pK,rDim);
 	KISSm(pK,wSlide);
-	m_wSlide /= 2;
 
 	m_nClass = 1;
 
@@ -91,34 +85,26 @@ void _Line::detect(void)
 	IF_(check()<0);
 
 	m_pV->BGR()->m()->copyTo(m_mIn);
-
 	float nP = m_mIn.rows*m_mIn.cols;
-	if((float)cv::countNonZero(m_mIn)/nP > m_minPixTower)
-	{
-		m_bTower = true;
-	}
-	else
-	{
-		m_bTower = false;
-	}
 
 	Mat vSum;
-	cv::reduce(m_mIn, vSum, m_rDim, cv::REDUCE_SUM, CV_32SC1);
+	cv::reduce(m_mIn, vSum, 1, cv::REDUCE_SUM, CV_32SC1);
 	vSum *= (float)1.0/255.0;
 
 	//sliding window
 	int i,j;
 	int iFrom = -1;
 	int iTo = -1;
-	
-	for(i=0; i<vSum.cols; i++)
+	int nSlide = m_wSlide * m_mIn.rows * 0.5;
+
+	for(i=0; i<vSum.rows; i++)
 	{
-		int sFrom = constrain(i-m_wSlide, 0, vSum.cols);
-		int sTo = constrain(i+m_wSlide, 0, vSum.cols);
+		int sFrom = constrain(i-nSlide, 0, vSum.rows);
+		int sTo = constrain(i+nSlide, 0, vSum.rows);
 
 		int v = 0;
 		for(j=sFrom; j<sTo; j++)
-			v += vSum.at<int>(0,j);
+			v += vSum.at<int>(j,0);
 
 		if((float)v/nP > m_minPixLine)
 		{
@@ -143,17 +129,17 @@ void _Line::detect(void)
 		return;
 	}
 
-	iTo = constrain(iTo, iFrom+1, vSum.cols);
+	iTo = constrain(iTo, iFrom+1, vSum.rows);
 
 	vInt2 cs;
 	cs.x = m_mIn.cols;
 	cs.y = m_mIn.rows;
 
 	Rect rBB;
-	rBB.x = iFrom;
-	rBB.y = 0;
-	rBB.width = iTo - iFrom;
-	rBB.height = m_mIn.rows;
+	rBB.x = 0;
+	rBB.y = iFrom;
+	rBB.width = m_mIn.cols;
+	rBB.height = iTo - iFrom;
 
 	OBJECT o;
 	o.init();
@@ -162,7 +148,7 @@ void _Line::detect(void)
 	o.setTopClass(0, 1.0);
 	add(&o);
 
-	m_line = o.m_bb.midX();
+	m_line = o.m_bb.midY();
 	LOG_I("Line pos: " + f2str(m_line));
 }
 
@@ -174,7 +160,6 @@ bool _Line::draw(void)
 
 	pWin->tabNext();
 	pWin->addMsg("line = " + f2str(m_line));
-	pWin->addMsg("bTower = " + i2str(m_bTower));
 	pWin->tabPrev();
 
 	return true;
@@ -186,7 +171,6 @@ bool _Line::console(int& iY)
 
 	string msg;
 	C_MSG("line = " + f2str(m_line));
-	C_MSG("bTower = " + i2str(m_bTower));
 
 	return true;
 }

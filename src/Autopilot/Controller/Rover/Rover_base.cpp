@@ -87,6 +87,9 @@ void Rover_base::updatePWM(void)
 	IF_(m_targetHdg < 0.0);
 
 	float dSpeed = m_pPIDhdg->update(0.0, dHdg(m_hdg, m_targetHdg), m_tStamp);
+	string mission = m_pMC->getCurrentMissionName();
+	if(mission == "TAG")
+		dSpeed = 0.0;
 
 	uint16_t pPWM[ROVER_N_MOTOR];
 	for(int i=0; i<m_vPWM.size(); i++)

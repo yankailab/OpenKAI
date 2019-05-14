@@ -66,6 +66,7 @@
 #include "../Vision/ImgFilter/_Morphology.h"
 #include "../Vision/ImgFilter/_Threshold.h"
 #include "../Vision/ImgFilter/_Contrast.h"
+#include "../Vision/ImgFilter/_Crop.h"
 #include "../Vision/ImgFilter/_Depth2Gray.h"
 #include "../Vision/ImgFilter/_Erode.h"
 #include "../Vision/ImgFilter/_Grayscale.h"
