@@ -29,7 +29,6 @@ _OrientalMotor::_OrientalMotor()
 
 	m_cState.init();
 	m_tState.init();
-
 }
 
 _OrientalMotor::~_OrientalMotor()
@@ -63,6 +62,10 @@ bool _OrientalMotor::init(void* pKiss)
 	pK->v("currentFrom", &m_vCurrentRange.x);
 	pK->v("currentTo", &m_vCurrentRange.y);
 
+	pK->v("targetStep", &m_tState.m_step);
+	pK->v("targetSpeed", &m_tState.m_speed);
+
+
 	return true;
 }
 
@@ -95,7 +98,7 @@ void _OrientalMotor::update(void)
 
 		this->autoFPSfrom();
 
-//		sendCMD();
+		sendCMD();
 		readStatus();
 
 		this->autoFPSto();
@@ -156,20 +159,48 @@ int _OrientalMotor::check(void)
 void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
-	IF_(m_tStampCmdSet <= m_tStampCmdSent);
+//	IF_(m_tStampCmdSet <= m_tStampCmdSent);
 
-	int32_t pB[9];
-	pB[0] = m_iData;
-	pB[1] = 1;
-	pB[2] = m_tState.m_step;
-	pB[3] = m_tState.m_speed;
-	pB[4] = m_tState.m_accel;
-	pB[5] = m_tState.m_brake;
-	pB[6] = m_tState.m_current;
-	pB[7] = 1;
-	pB[8] = 0;
+//	int32_t pB[9];
+//	pB[0] = m_iData;
+//	pB[1] = 1;
+//	pB[2] = m_tState.m_step;
+//	pB[3] = m_tState.m_speed;
+//	pB[4] = m_tState.m_accel;
+//	pB[5] = m_tState.m_brake;
+//	pB[6] = m_tState.m_current;
+//	pB[7] = 1;
+//	pB[8] = 0;
 
-	modbus_write_registers(m_pMb, 88, 18, (uint16_t*)pB);	//88 -> 0058h
+	uint16_t pB[18];
+	int result;
+
+	//88
+	pB[0] = 0;		//7 8
+	pB[1] = m_iData;//9 10
+	pB[2] = 0;		//11 12
+	pB[3] = 1;		//13 14
+
+	//92
+	pB[4] = (m_tState.m_step >> 16) & 0x0000ffff;	//15 16
+	pB[5] = m_tState.m_step & 0x0000ffff;			//17 18
+	pB[6] = (m_tState.m_speed >> 16) & 0x0000ffff;	//19 20
+	pB[7] = m_tState.m_speed & 0x0000ffff;			//21 22
+
+	//96
+	pB[8] = (m_tState.m_accel >> 16) & 0x0000ffff;
+	pB[9] = m_tState.m_accel & 0x0000ffff;
+	pB[10] = (m_tState.m_brake >> 16) & 0x0000ffff;
+	pB[11] = m_tState.m_brake & 0x0000ffff;
+	pB[12] = (m_tState.m_current >> 16) & 0x0000ffff;
+	pB[13] = m_tState.m_current & 0x0000ffff;
+	pB[14] = 0;
+	pB[15] = 1;
+	pB[16] = 0;
+	pB[17] = 0;
+
+	result = modbus_write_registers(m_pMb, 88, 18, pB);	//88 -> 0058h
+	LOG_I("write result: " + i2str(result));
 }
 
 void _OrientalMotor::readStatus(void)
@@ -179,10 +210,18 @@ void _OrientalMotor::readStatus(void)
 	uint16_t pB[18];
 	int nRead = modbus_read_registers(m_pMb, 204, 6, pB);	//88 -> 00CCh
 	IF_(nRead != 6);
-	LOG_I(i2str(nRead) + " registers read");
 
-	m_cState.m_step = unpack_int32(&pB[0], false);
-	m_cState.m_speed = unpack_int32(&pB[2], false);
+//	m_cState.m_step = unpack_int32(&pB[0], false);
+//	m_cState.m_speed = unpack_int32(&pB[2], false);
+
+	m_cState.m_step = 0;
+	m_cState.m_step |= pB[0];
+	m_cState.m_step <<= 16;
+	m_cState.m_step |= pB[1];
+
+	LOG_I("step: "+i2str(m_cState.m_step));
+//	LOG_I("speed: "+i2str(m_cState.m_speed));
+
 }
 
 bool _OrientalMotor::draw(void)

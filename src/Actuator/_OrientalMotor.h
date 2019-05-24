@@ -72,7 +72,6 @@ public:
 	OM_STATE m_cState;
 	OM_STATE m_tState;
 
-
 };
 
 }

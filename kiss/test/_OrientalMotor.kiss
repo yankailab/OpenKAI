@@ -27,6 +27,11 @@
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"slaveAddr":2,
+	
+	"/targetStep":128000,
+
+	"targetStep":128,
+	"targetSpeed":31000,
 }
 
 
