@@ -30,6 +30,13 @@ _ANR::_ANR()
 	m_lpBB.init();
 	m_tStampLP = 0;
 
+	m_tempFile = "anr.jpg";
+	m_shFile = "alpr.sh";
+	m_vAlprROI.init();
+	m_vAlprROI.z = 1.0;
+	m_vAlprROI.w = 1.0;
+	m_pWS = NULL;
+
 #ifdef USE_OCR
 	m_bOCR = false;
 	m_pOCR = NULL;
@@ -51,6 +58,21 @@ bool _ANR::init(void* pKiss)
 	KISSm(pK,nCNdigit);
 	KISSm(pK,offsetRdigit);
 	KISSm(pK,wRdigit);
+
+	Kiss* pA = pK->o("oalpr");
+	if(pA)
+	{
+		int jpgQuality = 80;
+		pA->v("jpgQuality",&jpgQuality);
+		m_vJPGquality.push_back(IMWRITE_JPEG_QUALITY);
+		m_vJPGquality.push_back(jpgQuality);
+		pA->v("x",&m_vAlprROI.x);
+		pA->v("y",&m_vAlprROI.y);
+		pA->v("z",&m_vAlprROI.z);
+		pA->v("w",&m_vAlprROI.w);
+		pA->v("tempFile",&m_tempFile);
+		pA->v("shFile",&m_shFile);
+	}
 
 #ifdef USE_OCR
 	KISSm(pK,bOCR);
@@ -75,6 +97,11 @@ bool _ANR::init(void* pKiss)
 	F_ERROR_F(pK->v("_DetectorBaseLP", &iName));
 	m_pDlp = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDlp, iName + " not found");
+
+	iName = "";
+	F_INFO(pK->v("_WebSocket", &iName));
+	m_pWS = (_WebSocket*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pWS, iName + " not found");
 
 #ifdef USE_OCR
 	IF_T(!m_bOCR);
@@ -106,8 +133,12 @@ void _ANR::update(void)
 	{
 		this->autoFPSfrom();
 
-		cn();
-		lp();
+		if(cn())
+		{
+			lpO();
+		}
+
+//		lp();
 
 		this->autoFPSto();
 	}
@@ -116,6 +147,8 @@ void _ANR::update(void)
 int _ANR::check(void)
 {
 	NULL__(m_pDcn,-1);
+	NULL__(m_pDlp,-1);
+	NULL__(m_pWS,-1);
 
 	return 0;
 }
@@ -151,9 +184,9 @@ string _ANR::char2Number(const char* pStr)
 	return asc;
 }
 
-void _ANR::cn(void)
+bool _ANR::cn(void)
 {
-	IF_(check()<0);
+	IF__(check()<0, false);
 
 	OBJECT* pO;
 	int i = 0;
@@ -184,9 +217,10 @@ void _ANR::cn(void)
 	if(getTimeUsec() - m_tStampCNprefix > m_timeOut)
 	{
 		m_cn = "";
-		return;
+		return false;
 	}
 
+	string cn;
 	i=0;
 	while ((pO = m_pDcn->at(i++)) != NULL)
 	{
@@ -201,7 +235,7 @@ void _ANR::cn(void)
 		s = deleteNonNumber(s.c_str());
 		IF_CONT(s.length() < m_nCNdigit);
 
-		m_cn = m_cnPrefix + s.substr(0,m_nCNdigit);
+		cn = m_cnPrefix + s.substr(0,m_nCNdigit);
 		m_cnBB = bb;
 		m_tStampCN = getTimeUsec();
 	}
@@ -209,10 +243,79 @@ void _ANR::cn(void)
 	if(getTimeUsec() - m_tStampCN > m_timeOut)
 	{
 		m_cn = "";
+		return false;
+	}
+
+	IF__(cn == m_cn, false);
+
+	m_cn = cn;
+	return true;
+}
+
+void _ANR::lpO(void)
+{
+	IF_(check() < 0);
+	IF_(m_cn.empty());
+
+	NULL_(m_pDlp->m_pVision);
+	IF_(m_pDlp->m_pVision->BGR()->bEmpty());
+	m_fBGR.copy(*m_pDlp->m_pVision->BGR());
+	cv::imwrite(m_tempFile, *m_fBGR.m(), m_vJPGquality);
+
+	FILE *fp;
+	char path[1035];
+
+	fp = popen(m_shFile.c_str(), "r");
+	NULL_l(fp,"Failed to run command:" + m_shFile);
+
+	while (fgets(path, sizeof(path) - 1, fp));
+	pclose(fp);
+
+	string strR = string(path);
+	std::string::size_type k;
+
+	k = strR.find("\\u");
+	while (k != std::string::npos)
+	{
+		strR.replace(k,6,"-");
+		k = strR.find("\\u");
+	}
+
+	k = strR.find("\"");
+	while (k != std::string::npos)
+	{
+		strR.erase(k,1);
+		k = strR.find("\"");
+	}
+
+	k = strR.find(":");
+	while (k != std::string::npos)
+	{
+		strR.erase(k,1);
+		k = strR.find(":");
+	}
+
+	k = strR.find(" plate");
+	if(k == std::string::npos)
+		return;
+
+	strR.erase(k,7);
+	std::string::size_type m;
+	m = strR.find(',', k);
+
+	string cStr = strR.substr(k, m-k);
+	cStr += " " + m_cn;
+
+	m_pWS->write((unsigned char*)cStr.c_str(),
+			cStr.length(),
+			WS_MODE_TXT);
+
+	if (getTimeUsec() - m_tStampLP > m_timeOut)
+	{
+		m_lp = "";
 		return;
 	}
 
-	LOG_I("C Number: " + m_cn);
 }
 
 void _ANR::lp(void)
@@ -240,7 +343,7 @@ void _ANR::lp(void)
 		r.height = (m_lpBB.w - m_lpBB.y) * cs.y;
 
 		m_pOCR->setFrame(m_pDlp->m_fBGR);
-		m_lp = m_pOCR->scan(r);
+		m_lp = m_pOCR->scan(&r);
 	}
 	else
 	{
@@ -265,7 +368,7 @@ void _ANR::lp(void)
 				Rect r = pO->getRect(cs);
 
 				m_pOCR->setFrame(m_pDlp->m_fBGR);
-				m_lp = m_pOCR->scan(r);
+				m_lp = m_pOCR->scan(&r);
 			}
 
 			m_tStampLP = getTimeUsec();

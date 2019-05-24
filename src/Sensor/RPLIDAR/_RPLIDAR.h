@@ -43,7 +43,7 @@ private:
 	}
 
 public:
-	string	m_portName;
+	string	m_port;
 	int		m_baud;
 	RPlidarDriver* m_pRPL;
 

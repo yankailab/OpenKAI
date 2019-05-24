@@ -43,7 +43,7 @@ private:
 
 public:
 	modbus_t *m_pMb;
-	string	m_portName;
+	string	m_port;
 	int		m_baud;
 	// Current slave address being used (because modbus_send_raw_request() doesn't use the address set
 	// by modbus_set_slave()):

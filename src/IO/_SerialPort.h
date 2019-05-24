@@ -49,7 +49,7 @@ private:
 
 private:
 	int m_fd;
-	string m_portName;
+	string m_port;
 	int m_baud;
 	int m_dataBits;
 	int m_stopBits;

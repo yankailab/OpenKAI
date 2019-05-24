@@ -45,6 +45,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_HistEqualize);
 	ADD_MODULE(_Invert);
 	ADD_MODULE(_InRange);
+	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
 	ADD_MODULE(_LidarSlam);
@@ -53,6 +54,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
+	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);

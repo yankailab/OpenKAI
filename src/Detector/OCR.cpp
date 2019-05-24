@@ -55,6 +55,18 @@ void OCR::update(void)
 {
 }
 
+void OCR::setMat(Mat m)
+{
+	IF_(m.empty());
+
+	m_fOCR.copy(m);
+	if(m_fOCR.m()->channels()<3)
+		m_fOCR.copy(m_fOCR.cvtColor(8));
+
+	Mat mIn = *m_fOCR.m();
+	m_pOCR->SetImage(mIn.data, mIn.cols, mIn.rows, 3, mIn.step);
+}
+
 void OCR::setFrame(Frame& f)
 {
 	IF_(f.bEmpty());
@@ -67,11 +79,12 @@ void OCR::setFrame(Frame& f)
 	m_pOCR->SetImage(mIn.data, mIn.cols, mIn.rows, 3, mIn.step);
 }
 
-string OCR::scan(Rect& r)
+string OCR::scan(Rect* pR)
 {
 	if(m_fOCR.bEmpty())return "";
+	if(pR)
+		m_pOCR->SetRectangle(pR->x, pR->y, pR->width, pR->height);
 
-	m_pOCR->SetRectangle(r.x, r.y, r.width, r.height);
 	string strO = string(m_pOCR->GetUTF8Text());
 
 	return strO;

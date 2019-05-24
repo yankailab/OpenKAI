@@ -57,7 +57,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_wakeUp":"mavAP",
-	"portName":"/dev/ttyTHS1",
+	"port":"/dev/ttyTHS1",
 	"baud":921600,
 }
 

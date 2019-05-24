@@ -13,6 +13,8 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
+#include "../Actuator/_OrientalMotor.h"
+
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
 
@@ -58,6 +60,7 @@
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"
+#include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
 #include "../Vision/FrameGroup.h"

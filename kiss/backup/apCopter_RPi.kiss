@@ -51,9 +51,9 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_portName":"/dev/ttyAMA0",
+	"_port":"/dev/ttyAMA0",
 	"_baud":921600,
-	"portName":"/dev/ttyACM0",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"mavAP",
 }

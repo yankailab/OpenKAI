@@ -62,7 +62,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyTHS1",
+	"port":"/dev/ttyTHS1",
 	"baud":921600,
 	"_wakeUp":"mavAP",
 }

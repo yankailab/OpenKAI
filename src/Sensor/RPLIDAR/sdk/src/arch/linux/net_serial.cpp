@@ -56,22 +56,22 @@ raw_serial::~raw_serial()
 
 bool raw_serial::open()
 {
-    return open(_portName, _baudrate, _flags);
+    return open(_port, _baudrate, _flags);
 }
 
-bool raw_serial::bind(const char * portname, uint32_t baudrate, uint32_t flags)
+bool raw_serial::bind(const char * port, uint32_t baudrate, uint32_t flags)
 {   
-    strncpy(_portName, portname, sizeof(_portName));
+    strncpy(_port, port, sizeof(_port));
     _baudrate = baudrate;
     _flags    = flags;
     return true;
 }
 
-bool raw_serial::open(const char * portname, uint32_t baudrate, uint32_t flags)
+bool raw_serial::open(const char * port, uint32_t baudrate, uint32_t flags)
 {
     if (isOpened()) close();
     
-    serial_fd = ::open(portname, O_RDWR | O_NOCTTY | O_NDELAY);
+    serial_fd = ::open(port, O_RDWR | O_NOCTTY | O_NDELAY);
 
     if (serial_fd == -1) return false;
 
@@ -289,7 +289,7 @@ void raw_serial::clearDTR()
 void raw_serial::_init()
 {
     serial_fd = 0;  
-    _portName[0] = 0;
+    _port[0] = 0;
     required_tx_cnt = required_rx_cnt = 0;
 }
 

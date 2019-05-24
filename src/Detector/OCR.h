@@ -29,7 +29,8 @@ public:
 	virtual bool console(int& iY);
 
 	virtual void setFrame(Frame& f);
-	virtual string scan(Rect& r);
+	virtual void setMat(Mat m);
+	virtual string scan(Rect* pR);
 
 public:
 	Frame	m_fOCR;

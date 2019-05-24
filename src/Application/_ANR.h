@@ -12,6 +12,8 @@
 #include "../Base/_ThreadBase.h"
 #include "../Detector/_DetectorBase.h"
 #include "../Detector/OCR.h"
+#include "../IO/_WebSocket.h"
+#include "../Script/JSON.h"
 
 namespace kai
 {
@@ -32,8 +34,9 @@ public:
 
 private:
 	string char2Number(const char* pStr);
-	void cn(void);
+	bool cn(void);
 	void lp(void);
+	void lpO(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -44,6 +47,9 @@ private:
 private:
 	_DetectorBase* m_pDcn;
 	_DetectorBase* m_pDlp;
+	_WebSocket* m_pWS;
+
+	Frame m_fBGR;
 
 	string m_cnPrefix;
 	vector<string> m_vPrefixCandidate;
@@ -61,6 +67,11 @@ private:
 	string m_lp;
 	vFloat4 m_lpBB;
 	uint64_t m_tStampLP;
+
+	vector<int> m_vJPGquality;
+	string m_tempFile;
+	string m_shFile;
+	vFloat4 m_vAlprROI;
 
 #ifdef USE_OCR
 	bool m_bOCR;

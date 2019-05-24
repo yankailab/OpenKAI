@@ -7,7 +7,7 @@ namespace kai
 _SerialPort::_SerialPort(void)
 {
 	m_fd = -1;
-	m_portName = "";
+	m_port = "";
 	m_ioType = io_serialPort;
 
 	m_baud = 115200;
@@ -27,7 +27,7 @@ bool _SerialPort::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,portName);
+	KISSm(pK,port);
 	KISSm(pK,baud);
 	KISSm(pK,dataBits);
 	KISSm(pK,stopBits);
@@ -39,10 +39,10 @@ bool _SerialPort::init(void* pKiss)
 
 bool _SerialPort::open(void)
 {
-	IF_Fl(m_portName.empty(), "portName is empty");
+	IF_Fl(m_port.empty(), "port is empty");
 
-	m_fd = ::open(m_portName.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
-	IF_Fl(m_fd == -1, "Cannot open: " + m_portName);
+	m_fd = ::open(m_port.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);	//O_SYNC | O_NONBLOCK);
+	IF_Fl(m_fd == -1, "Cannot open: " + m_port);
 	fcntl(m_fd, F_SETFL, 0);
 
 	m_ioStatus = io_opened;

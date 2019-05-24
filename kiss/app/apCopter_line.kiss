@@ -133,7 +133,7 @@
 	"fovH":20,
 	"fovV":0.3,
 	"nDiv":8,
-	"portName":"/dev/ttyACM0",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"bUse0x41":0,
 	"slaveAddr":1,
@@ -159,7 +159,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"_wakeUp":"mavAP",
 }

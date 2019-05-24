@@ -49,6 +49,17 @@
 }
 
 {
+	"name":"camCont",
+	"class":"_Contrast",
+	"FPS":30,
+	"bInst":1,
+	"Window":"filterView",
+	"_VisionBase":"cam",
+	"alpha":1.5,
+	"beta":0.0,
+}
+
+{
 	"name":"camInv",
 	"class":"_Invert",
 	"FPS":30,
@@ -65,11 +76,11 @@
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
-	"_VisionBase":"cam",
+	"_VisionBase":"camCont",
 	"mode":"thread",
 	"region":"eu",
-	"config":"/home/kai/dev/eii/runtime_data/openalprCN.conf",
-	"runtime":"/home/kai/dev/eii/runtime_data",	
+	"config":"/home/kai/dev/eii/oalpr/config/openalpr.conf",
+	"runtime":"/home/kai/dev/eii/oalpr/runtime_data",	
 }
 
 {
@@ -80,11 +91,11 @@
 	"bLog":0,
 	"FPS":30,
 	"Window":"OKview",
-	"_VisionBase":"camInv",
+	"_VisionBase":"camCont",
 	"mode":"thread",
 	"region":"us",
-	"config":"/home/kai/dev/eii/runtime_data/openalprLP.conf",
-	"runtime":"/home/kai/dev/eii/runtime_data",	
+	"config":"/home/kai/dev/eii/oalpr/config/openalpr.conf",
+	"runtime":"/home/kai/dev/eii/oalpr/runtime_data",	
 }
 
 {
@@ -99,6 +110,14 @@
 	"ocrLanguage":"jpn",
 	"ocrDataDir":"/home/kai/dev/eii/tesseract",
 	"locale":"C.UTF-8",
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"bInst":1,
+	"FPS":30,
+	"Window":"OKview",
 }
 
 {
@@ -119,5 +138,18 @@
 	"OCR":"ocr",
 	"bOCR":0,
 	"locale":"C.UTF-8",
+	
+	"_WebSocket":"ws",
+	
+	{
+		"name":"oalpr",
+		"jpgQuality":60,
+		"tempFile":"/home/kai/dev/test/test1.jpg",
+		"shFile":"/home/kai/alpr.sh",
+		"x":0.0,
+		"y":0.0,
+		"z":1.0,
+		"w":1.0,
+	}
 	
 }

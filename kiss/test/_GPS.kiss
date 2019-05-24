@@ -15,7 +15,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"portName":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"_wakeUp":"GPS",
 }

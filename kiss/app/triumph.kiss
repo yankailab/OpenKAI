@@ -173,7 +173,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyACM0",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"rvCMD",
 }
@@ -195,7 +195,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"portName":"/dev/ttyACM1",
+	"port":"/dev/ttyACM1",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
 }

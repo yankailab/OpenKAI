@@ -27,6 +27,7 @@ public:
 	void ocr(void);
 
 public:
+	Mat getTransform(Mat mImg, vFloat2* pBox);
 	void decode(const Mat& mScores, const Mat& mGeometry, float scoreThresh,
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
 	bool detect(void);
@@ -40,8 +41,8 @@ public:
 public:
 	vDouble3 m_vMean;
 	bool	m_bDetect;
-	vector<vFloat4>	m_vROI;
 	bool	m_bOCR;
+	bool	m_bWarp;
 
 #ifdef USE_OCR
 	OCR* m_pOCR;

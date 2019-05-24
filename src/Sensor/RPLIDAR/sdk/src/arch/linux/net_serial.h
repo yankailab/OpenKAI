@@ -48,7 +48,7 @@ public:
 
     raw_serial();
     virtual ~raw_serial();
-    virtual bool bind(const char * portname, uint32_t baudrate, uint32_t flags = 0);
+    virtual bool bind(const char * port, uint32_t baudrate, uint32_t flags = 0);
     virtual bool open();
     virtual void close();
     virtual void flush( _u32 flags);
@@ -68,10 +68,10 @@ public:
 
     _u32 getTermBaudBitmap(_u32 baud);
 protected:
-    bool open(const char * portname, uint32_t baudrate, uint32_t flags = 0);
+    bool open(const char * port, uint32_t baudrate, uint32_t flags = 0);
     void _init();
 
-    char _portName[200];
+    char _port[200];
     uint32_t _baudrate;
     uint32_t _flags;
 

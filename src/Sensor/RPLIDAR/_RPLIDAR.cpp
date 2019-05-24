@@ -10,7 +10,7 @@ namespace kai
 _RPLIDAR::_RPLIDAR()
 {
 	m_pRPL = NULL;
-	m_portName = "";
+	m_port = "";
 	m_baud = 115200;
 }
 
@@ -24,7 +24,7 @@ bool _RPLIDAR::init(void* pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,portName);
+	KISSm(pK,port);
 	KISSm(pK,baud);
 
 	return true;
@@ -70,7 +70,7 @@ bool _RPLIDAR::open(void)
 	m_pRPL = RPlidarDriver::CreateDriver(RPlidarDriver::DRIVER_TYPE_SERIALPORT);
 	NULL_F(m_pRPL);
 
-	if (IS_FAIL(m_pRPL->connect(m_portName.c_str(), m_baud)))
+	if (IS_FAIL(m_pRPL->connect(m_port.c_str(), m_baud)))
 	{
 		LOG_E("Cannot bind to the serial port");
 		RPlidarDriver::DisposeDriver(m_pRPL);

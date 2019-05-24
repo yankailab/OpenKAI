@@ -10,7 +10,7 @@ namespace kai
 _LeddarVu::_LeddarVu()
 {
 	m_pMb = NULL;
-	m_portName = "";
+	m_port = "";
 	m_baud = 115200;
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
@@ -49,7 +49,7 @@ bool _LeddarVu::init(void* pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, portName);
+	KISSm(pK, port);
 	KISSm(pK, baud);
 	KISSm(pK, slaveAddr);
 	KISSm(pK, bUse0x41);
@@ -119,7 +119,7 @@ void _LeddarVu::update(void)
 
 bool _LeddarVu::open(void)
 {
-	m_pMb = modbus_new_rtu(m_portName.c_str(), m_baud, 'N', 8, 1);
+	m_pMb = modbus_new_rtu(m_port.c_str(), m_baud, 'N', 8, 1);
 	if (m_pMb == nullptr)
 	{
 		m_pMb = NULL;

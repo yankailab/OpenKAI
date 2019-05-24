@@ -19,6 +19,7 @@ _DNNtext::_DNNtext()
 	m_scale = 1.0;
 	m_bOCR = false;
 	m_bDetect = true;
+	m_bWarp = false;
 
 #ifdef USE_OCR
 	m_pOCR = NULL;
@@ -44,25 +45,11 @@ bool _DNNtext::init(void* pKiss)
 	KISSm(pK, scale);
 	KISSm(pK, bDetect);
 	KISSm(pK, bOCR);
+	KISSm(pK, bWarp);
 	KISSm(pK, iClassDraw);
 	pK->v("meanB", &m_vMean.x);
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);
-
-	Kiss** ppR = pK->getChildItr();
-	int i=0;
-	while (ppR[i])
-	{
-		Kiss* pR = ppR[i++];
-		vFloat4 r;
-		r.init();
-		pR->v("x", &r.x);
-		pR->v("y", &r.y);
-		pR->v("z", &r.z);
-		pR->v("w", &r.w);
-		r.constrain(0.0, 1.0);
-		m_vROI.push_back(r);
-	}
 
 	m_net = readNet(m_modelFile);
 	IF_Fl(m_net.empty(), "read Net failed");
@@ -111,18 +98,9 @@ void _DNNtext::update(void)
 			if(m_bDetect)
 				detect();
 
-			for (int i = 0; i < m_vROI.size(); i++)
-			{
-				OBJECT o;
-				o.init();
-				o.m_tStamp = m_tStamp;
-				o.setTopClass(0, 1.0);
-				o.m_nV = 4;
-				o.m_bb = m_vROI[i];
-				this->add(&o);
-			}
-
 			m_obj.update();
+
+			ocr();
 
 			if (m_bGoSleep)
 			{
@@ -153,17 +131,7 @@ bool _DNNtext::detect(void)
 		m_fBGR.copy(m_fBGR.cvtColor(8));
 
 	Mat mIn = *m_fBGR.m();
-
-	vInt4 iRoi;
-	iRoi.x = mIn.cols * m_roi.x;
-	iRoi.y = mIn.rows * m_roi.y;
-	iRoi.z = mIn.cols * m_roi.z;
-	iRoi.w = mIn.rows * m_roi.w;
-	Rect rRoi;
-	vInt42rect(iRoi, rRoi);
-	Mat mROI = mIn(rRoi);
-
-	m_blob = blobFromImage(mROI, m_scale, Size(m_nW, m_nH),
+	m_blob = blobFromImage(mIn, m_scale, Size(m_nW, m_nH),
 			Scalar(m_vMean.x, m_vMean.y, m_vMean.z), m_bSwapRB, false);
 	m_net.setInput(m_blob);
 
@@ -185,8 +153,10 @@ bool _DNNtext::detect(void)
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-	float rX = (float) mROI.cols / (float) m_nW;
-	float rY = (float) mROI.rows / (float) m_nH;
+
+	vFloat2 fBase;
+	fBase.x = (float)cs.x/(float)m_nW;
+	fBase.y = (float)cs.y/(float)m_nH;
 
 	for (size_t i = 0; i < vIndices.size(); i++)
 	{
@@ -195,13 +165,13 @@ bool _DNNtext::detect(void)
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
 
-		Point2f pV[4];
+		Point2f pV[4];	//in pixel unit
 		RotatedRect& box = vBoxes[vIndices[i]];
 		box.points(pV);
 		for (int p = 0; p < 4; p++)
 		{
-			o.m_pV[p].x = (pV[p].x * rX + rRoi.x);
-			o.m_pV[p].y = (pV[p].y * rY + rRoi.y);
+			o.m_pV[p].x = pV[p].x * fBase.x;
+			o.m_pV[p].y = pV[p].y * fBase.y;
 		}
 		o.m_nV = 4;
 		o.updateBB(cs);
@@ -269,18 +239,41 @@ void _DNNtext::ocr(void)
 #ifdef USE_OCR
 	NULL_(m_pOCR);
 
-	m_pOCR->setFrame(*m_pVision->BGR());
-
+	Mat mIn = *m_pVision->BGR()->m();
 	vInt2 cs;
-	cs.x = m_pVision->BGR()->m()->cols;
-	cs.y = m_pVision->BGR()->m()->rows;
+	cs.x = mIn.cols;
+	cs.y = mIn.rows;
+
+	if(!m_bWarp)
+	{
+		m_pOCR->setMat(mIn);
+	}
 
 	OBJECT* pO;
 	int i = 0;
 	while ((pO = m_obj.at(i++)) != NULL)
 	{
 		Rect r = pO->getRect(cs);
-		string strO = m_pOCR->scan(r);
+		Mat mRoi = mIn(r);
+		Mat m;
+		string strO;
+
+		if(m_bWarp)
+		{
+			Mat mT = getTransform(mRoi, pO->m_pV);
+			cv::warpPerspective(mRoi,
+								m,
+								mT,
+								m.size(),
+								cv::INTER_LINEAR);
+			m_pOCR->setMat(m);
+			strO = m_pOCR->scan(0);
+		}
+		else
+		{
+			m = mRoi;
+			strO = m_pOCR->scan(&r);
+		}
 
 		int n = strO.length();
 		if(n+1 > OBJ_N_CHAR)
@@ -292,6 +285,40 @@ void _DNNtext::ocr(void)
 		LOG_I(strO);
 	}
 #endif
+}
+
+Mat _DNNtext::getTransform(Mat mImg, vFloat2* pBox)
+{
+	Mat mP;
+	if(!pBox)return mP;
+
+	vFloat2 p;
+	p = pBox[0];
+	Point2f LT = Point2f((float) (p.x * mImg.cols),
+						 (float) (p.y * mImg.rows));
+
+	p = pBox[1];
+	Point2f LB = Point2f((float) (p.x * mImg.cols),
+						 (float) (p.y * mImg.rows));
+
+	p = pBox[2];
+	Point2f RB = Point2f((float) (p.x * mImg.cols),
+						 (float) (p.y * mImg.rows));
+
+	p = pBox[3];
+	Point2f RT = Point2f((float) (p.x * mImg.cols),
+						 (float) (p.y * mImg.rows));
+
+	//LT, LB, RB, RT
+	Point2f ptsFrom[] = { LT, LB, RB, RT };
+	Point2f ptsTo[] =
+	{ cv::Point2f(0, 0),
+	  cv::Point2f(0, (float) mImg.rows),
+	  cv::Point2f((float) mImg.cols, (float) mImg.rows),
+	  cv::Point2f((float) mImg.cols, 0) };
+
+	mP = getPerspectiveTransform(ptsFrom, ptsTo);
+	return mP;
 }
 
 bool _DNNtext::draw(void)
