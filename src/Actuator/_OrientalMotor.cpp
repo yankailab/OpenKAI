@@ -11,8 +11,25 @@ _OrientalMotor::_OrientalMotor()
 {
 	m_pMb = NULL;
 	m_port = "";
+	m_parity = 'E';
 	m_baud = 115200;
 	m_slaveAddr = 1;
+	m_iData = 0;
+
+	m_vStepRange.x = -1e5;
+	m_vStepRange.y = 1e5;
+	m_vSpeedRange.x = -4e6;
+	m_vSpeedRange.y = 4e6;
+	m_vAccelRange.x = 1;
+	m_vAccelRange.y = 1e9;
+	m_vBrakeRange.x = 1;
+	m_vBrakeRange.y = 1e9;
+	m_vCurrentRange.x = 0;
+	m_vCurrentRange.y = 1000;
+
+	m_cState.init();
+	m_tState.init();
+
 }
 
 _OrientalMotor::~_OrientalMotor()
@@ -30,8 +47,21 @@ bool _OrientalMotor::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, port);
+	KISSm(pK, parity);
 	KISSm(pK, baud);
 	KISSm(pK, slaveAddr);
+	KISSm(pK, iData);
+
+	pK->v("stepFrom", &m_vStepRange.x);
+	pK->v("stepTo", &m_vStepRange.y);
+	pK->v("speedFrom", &m_vSpeedRange.x);
+	pK->v("speedTo", &m_vSpeedRange.y);
+	pK->v("accelFrom", &m_vAccelRange.x);
+	pK->v("accelTo", &m_vAccelRange.y);
+	pK->v("brakeFrom", &m_vBrakeRange.x);
+	pK->v("brakeTo", &m_vBrakeRange.y);
+	pK->v("currentFrom", &m_vCurrentRange.x);
+	pK->v("currentTo", &m_vCurrentRange.y);
 
 	return true;
 }
@@ -65,6 +95,8 @@ void _OrientalMotor::update(void)
 
 		this->autoFPSfrom();
 
+//		sendCMD();
+		readStatus();
 
 		this->autoFPSto();
 	}
@@ -72,7 +104,7 @@ void _OrientalMotor::update(void)
 
 bool _OrientalMotor::open(void)
 {
-	m_pMb = modbus_new_rtu(m_port.c_str(), m_baud, 'E', 8, 1);
+	m_pMb = modbus_new_rtu(m_port.c_str(), m_baud, *m_parity.c_str(), 8, 1);
 	if (m_pMb == nullptr)
 	{
 		m_pMb = NULL;
@@ -92,56 +124,66 @@ bool _OrientalMotor::open(void)
 
 	if (modbus_set_slave(m_pMb, m_slaveAddr) != 0)
 	{
-		LOG_E("Error setting slave id: "+i2str(m_slaveAddr) );
+		LOG_E("Error setting slave id");
 		m_slaveAddr = -1;
 		return false;
 	}
 
 	// send a 0x08 query for connection check
-	uint8_t buf[256];
-	buf[0] = m_slaveAddr;
-	buf[1] = 0x08;
-	buf[2] = 0;
-	buf[3] = 0;
-	buf[4] = 0x12;
-	buf[5] = 0x34;
-
-	if (modbus_send_raw_request(m_pMb, buf, 6) < 8)
+	uint8_t pB[256];
+	pB[0] = m_slaveAddr;
+	pB[1] = 0x08;
+	pB[2] = 0;
+	pB[3] = 0;
+	pB[4] = 0x12;
+	pB[5] = 0x34;
+	if (modbus_send_raw_request(m_pMb, pB, 6) < 8)
 	{
 		LOG_E("Query 0x08h error");
 		return false;
 	}
 
-	const uint32_t N_REG = 10;
-	uint16_t reg[N_REG];
-	int nRead = modbus_read_registers(m_pMb, 0, N_REG, reg);
-	IF_F(nRead != N_REG);
-	IF_F(reg[0] == 0);
-
-	LOG_I(i2str(nRead) + " registers read");
-
-//
-//	memset(buf, 0, sizeof buf);
-//	int nReceived = modbus_receive_confirmation(m_pMb, buf);
-//	IF_Fl(nReceived < 0, "Error receiving data from the sensor: " + i2str(errno));
-//	LOG_I("Received " + i2str(nReceived) + " bytes from the sensor");
-
 	return true;
 }
 
-//bool _OrientalMotor::updateLidar(void)
-//{
-//	NULL_F(m_pMb);
-//
-//	const uint32_t N_REGISTERS = 15 + m_nDiv*2;
-//	uint16_t reg[N_REGISTERS];
-//
-//	int nRead = modbus_read_input_registers(m_pMb, 1, N_REGISTERS, reg);
-//	IF_F(nRead != N_REGISTERS);
-//	IF_F(reg[0] == 0);
-//
-//	return true;
-//}
+int _OrientalMotor::check(void)
+{
+	NULL__(m_pMb,-1);
+
+	return 0;
+}
+
+void _OrientalMotor::sendCMD(void)
+{
+	IF_(check()<0);
+	IF_(m_tStampCmdSet <= m_tStampCmdSent);
+
+	int32_t pB[9];
+	pB[0] = m_iData;
+	pB[1] = 1;
+	pB[2] = m_tState.m_step;
+	pB[3] = m_tState.m_speed;
+	pB[4] = m_tState.m_accel;
+	pB[5] = m_tState.m_brake;
+	pB[6] = m_tState.m_current;
+	pB[7] = 1;
+	pB[8] = 0;
+
+	modbus_write_registers(m_pMb, 88, 18, (uint16_t*)pB);	//88 -> 0058h
+}
+
+void _OrientalMotor::readStatus(void)
+{
+	IF_(check()<0);
+
+	uint16_t pB[18];
+	int nRead = modbus_read_registers(m_pMb, 204, 6, pB);	//88 -> 00CCh
+	IF_(nRead != 6);
+	LOG_I(i2str(nRead) + " registers read");
+
+	m_cState.m_step = unpack_int32(&pB[0], false);
+	m_cState.m_speed = unpack_int32(&pB[2], false);
+}
 
 bool _OrientalMotor::draw(void)
 {
@@ -158,7 +200,13 @@ bool _OrientalMotor::console(int& iY)
 	IF_F(!this->_ActuatorBase::console(iY));
 	string msg;
 
-	C_MSG(msg);
+	C_MSG("-- Current state --");
+	C_MSG("step: " + i2str(m_cState.m_step));
+	C_MSG("speed: " + i2str(m_cState.m_speed));
+
+	C_MSG("-- Target state --");
+	C_MSG("step: " + i2str(m_tState.m_step));
+	C_MSG("speed: " + i2str(m_tState.m_speed));
 
 	return true;
 }

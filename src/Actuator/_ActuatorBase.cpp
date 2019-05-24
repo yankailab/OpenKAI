@@ -9,6 +9,11 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
+	m_nCurrentPos = -1.0;
+	m_nTargetPos = -1.0;
+	m_nSpeed = 0.0;
+	m_tStampCmdSet = 0;
+	m_tStampCmdSent = 0;
 }
 
 _ActuatorBase::~_ActuatorBase()
@@ -44,6 +49,29 @@ void _ActuatorBase::update(void)
 bool _ActuatorBase::open(void)
 {
 	return false;
+}
+
+void _ActuatorBase::move(float nSpeed)
+{
+	m_nSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_tStampCmdSet = getTimeUsec();
+}
+
+void _ActuatorBase::moveTo(float nPos, float nSpeed)
+{
+	m_nTargetPos = constrain(nPos, 0.0f, 1.0f);
+	m_nSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_tStampCmdSet = getTimeUsec();
+}
+
+void _ActuatorBase::moveToOrigin(void)
+{
+
+}
+
+float _ActuatorBase::pos(void)
+{
+	return -1.0;
 }
 
 bool _ActuatorBase::draw(void)

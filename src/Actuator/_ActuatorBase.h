@@ -24,6 +24,11 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
+	virtual void move(float nSpeed);
+	virtual void moveTo(float nPos, float nSpeed);
+	virtual void moveToOrigin(void);
+	virtual float pos(void);
+
 private:
 	virtual bool open(void);
 	virtual void update(void);
@@ -34,6 +39,12 @@ private:
 	}
 
 public:
+	float	m_nCurrentPos;
+	float	m_nTargetPos;
+	float	m_nSpeed;
+	uint64_t m_tStampCmdSet;
+	uint64_t m_tStampCmdSent;
+
 
 };
 
