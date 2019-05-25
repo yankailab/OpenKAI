@@ -9,11 +9,8 @@ namespace kai
 
 _OrientalMotor::_OrientalMotor()
 {
-	m_pMb = NULL;
-	m_port = "";
-	m_parity = 'E';
-	m_baud = 115200;
-	m_slaveAddr = 1;
+	m_pMB = NULL;
+	m_iSlave = 1;
 	m_iData = 0;
 
 	m_vStepRange.x = -1e5;
@@ -33,11 +30,6 @@ _OrientalMotor::_OrientalMotor()
 
 _OrientalMotor::~_OrientalMotor()
 {
-	if (m_pMb)
-	{
-		modbus_close(m_pMb);
-		modbus_free(m_pMb);
-	}
 }
 
 bool _OrientalMotor::init(void* pKiss)
@@ -45,10 +37,7 @@ bool _OrientalMotor::init(void* pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, port);
-	KISSm(pK, parity);
-	KISSm(pK, baud);
-	KISSm(pK, slaveAddr);
+	KISSm(pK, iSlave);
 	KISSm(pK, iData);
 
 	pK->v("stepFrom", &m_vStepRange.x);
@@ -64,6 +53,14 @@ bool _OrientalMotor::init(void* pKiss)
 
 	pK->v("targetStep", &m_tState.m_step);
 	pK->v("targetSpeed", &m_tState.m_speed);
+
+
+
+	string iName;
+	iName = "";
+	F_ERROR_F(pK->v("Modbus", &iName));
+	m_pMB = (_Modbus*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pMB, iName + " not found");
 
 
 	return true;
@@ -87,15 +84,6 @@ void _OrientalMotor::update(void)
 {
 	while (m_bThreadON)
 	{
-		if (!m_pMb)
-		{
-			if (!open())
-			{
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-
 		this->autoFPSfrom();
 
 		sendCMD();
@@ -105,53 +93,10 @@ void _OrientalMotor::update(void)
 	}
 }
 
-bool _OrientalMotor::open(void)
-{
-	m_pMb = modbus_new_rtu(m_port.c_str(), m_baud, *m_parity.c_str(), 8, 1);
-	if (m_pMb == nullptr)
-	{
-		m_pMb = NULL;
-		LOG_E("Cannot create the libmodbus context");
-		return false;
-	}
-
-	modbus_set_debug(m_pMb, false);
-
-	if (modbus_connect(m_pMb) != 0)
-	{
-		LOG_E("Modbus connection failed");
-		modbus_free(m_pMb);
-		m_pMb = NULL;
-		return false;
-	}
-
-	if (modbus_set_slave(m_pMb, m_slaveAddr) != 0)
-	{
-		LOG_E("Error setting slave id");
-		m_slaveAddr = -1;
-		return false;
-	}
-
-	// send a 0x08 query for connection check
-	uint8_t pB[256];
-	pB[0] = m_slaveAddr;
-	pB[1] = 0x08;
-	pB[2] = 0;
-	pB[3] = 0;
-	pB[4] = 0x12;
-	pB[5] = 0x34;
-	if (modbus_send_raw_request(m_pMb, pB, 6) < 8)
-	{
-		LOG_E("Query 0x08h error");
-		return false;
-	}
-
-	return true;
-}
-
 int _OrientalMotor::check(void)
 {
-	NULL__(m_pMb,-1);
+	NULL__(m_pMB,-1);
+	IF__(!m_pMB->bOpen(),-1);
 
 	return 0;
 }
@@ -199,7 +144,13 @@ void _OrientalMotor::sendCMD(void)
 	pB[16] = 0;
 	pB[17] = 0;
 
-	result = modbus_write_registers(m_pMb, 88, 18, pB);	//88 -> 0058h
+	modbus_t* pMB = m_pMB->getModbus(m_iSlave);
+	NULL_(pMB);
+
+	result = modbus_write_registers(pMB, 88, 18, pB);	//88 -> 0058h
+
+	m_pMB->releaseModbus();
+
 	LOG_I("write result: " + i2str(result));
 }
 
@@ -208,9 +159,15 @@ void _OrientalMotor::readStatus(void)
 	IF_(check()<0);
 
 	uint16_t pB[18];
-	int nRead = modbus_read_registers(m_pMb, 204, 6, pB);	//88 -> 00CCh
-	IF_(nRead != 6);
 
+	modbus_t* pMB = m_pMB->getModbus(m_iSlave);
+	NULL_(pMB);
+
+	int nRead = modbus_read_registers(pMB, 204, 6, pB);	//88 -> 00CCh
+
+	m_pMB->releaseModbus();
+
+	IF_(nRead != 6);
 //	m_cState.m_step = unpack_int32(&pB[0], false);
 //	m_cState.m_speed = unpack_int32(&pB[2], false);
 

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Actuator__OrientalMotor_H_
 #define OpenKAI_src_Actuator__OrientalMotor_H_
 
-#include "../Dependency/libmodbus/modbus.h"
+#include "../Protocol/_Modbus.h"
 #include "_ActuatorBase.h"
 
 namespace kai
@@ -45,7 +45,6 @@ public:
 	int check(void);
 
 private:
-	bool open(void);
 	void sendCMD(void);
 	void readStatus(void);
 	void update(void);
@@ -56,11 +55,8 @@ private:
 	}
 
 public:
-	modbus_t *m_pMb;
-	string	m_port;
-	string	m_parity;
-	int		m_baud;
-	int		m_slaveAddr;
+	_Modbus* m_pMB;
+	int		m_iSlave;
 	int		m_iData;
 
 	vInt2	m_vStepRange;
