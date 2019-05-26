@@ -45,6 +45,7 @@ public:
 	uint64_t m_tStampCmdSet;
 	uint64_t m_tStampCmdSent;
 
+	_ActuatorBase* m_pParent;
 
 };
 

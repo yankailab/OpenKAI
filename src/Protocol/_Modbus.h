@@ -38,6 +38,7 @@ public:
 	string	m_port;
 	string	m_parity;
 	int		m_baud;
+	bool	m_bOpen;
 
 	pthread_mutex_t m_mutex;
 

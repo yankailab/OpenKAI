@@ -11,6 +11,7 @@ _Modbus::_Modbus()
 	m_port = "";
 	m_parity = 'E';
 	m_baud = 115200;
+	m_bOpen = false;
 }
 
 _Modbus::~_Modbus()
@@ -56,14 +57,13 @@ bool _Modbus::open(void)
 		return false;
 	}
 
+	m_bOpen = true;
 	return true;
 }
 
 bool _Modbus::bOpen(void)
 {
-	NULL_F(m_pMb);
-
-	return true;
+	return m_bOpen;
 }
 
 bool _Modbus::start(void)

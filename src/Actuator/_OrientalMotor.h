@@ -45,6 +45,7 @@ public:
 	int check(void);
 
 private:
+	void checkAlarm(void);
 	void sendCMD(void);
 	void readStatus(void);
 	void update(void);

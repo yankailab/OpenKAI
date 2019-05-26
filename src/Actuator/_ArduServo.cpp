@@ -15,8 +15,21 @@ _ArduServo::~_ArduServo()
 
 bool _ArduServo::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	Kiss** pItr = pK->getChildItr();
+	ARDUSERVO_CHAN c;
+	unsigned int i = 0;
+	while (pItr[i])
+	{
+		Kiss* pC = pItr[i++];
+		c.init();
+		pC->v("pwmL",&c.m_pwmL);
+		pC->v("pwmH",&c.m_pwmL);
+		pC->v("bRev",&c.m_bRev);
+		m_vServo.push_back(c);
+	}
 
 	string iName;
 	iName = "";
@@ -58,6 +71,8 @@ void _ArduServo::update(void)
 		}
 
 		this->autoFPSfrom();
+
+		updatePWM();
 
 		while(readCMD())
 		{
@@ -111,14 +126,25 @@ void _ArduServo::updatePWM(void)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
-
-	m_nTargetPos = 0.6;//for test only
 	IF_(m_nTargetPos < 0.0);
 
-	int nChan = 2;
-	uint16_t pChan[2];
-	pChan[0] = m_nTargetPos * 1000 + 1000;
-	pChan[1] = m_nTargetPos * 1000 + 1000;
+	int nChan = m_vServo.size();
+	uint16_t pChan[8];
+	int i;
+	for(i=0; i<nChan; i++)
+	{
+		ARDUSERVO_CHAN* pC = &m_vServo[i];
+		uint16_t dPwm = pC->m_pwmH - pC->m_pwmL;
+
+		if(pC->m_bRev)
+		{
+			pChan[i] = m_nTargetPos * dPwm  + pC->m_pwmL;
+		}
+		else
+		{
+			pChan[i] = (1.0-m_nTargetPos) * dPwm + pC->m_pwmL;
+		}
+	}
 
 	m_pBuf[0] = ARDU_CMD_BEGIN;
 	m_pBuf[1] = ARDU_CMD_PWM;

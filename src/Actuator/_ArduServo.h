@@ -26,6 +26,20 @@ struct ARDUSERVO_CMD
 	}
 };
 
+struct ARDUSERVO_CHAN
+{
+	uint16_t m_pwmL;
+	uint16_t m_pwmH;
+	bool	 m_bRev;
+
+	void init(void)
+	{
+		m_pwmL = 1000;
+		m_pwmH = 2000;
+		m_bRev = false;
+	}
+};
+
 namespace kai
 {
 
@@ -57,6 +71,9 @@ public:
 	uint8_t		m_pBuf[ARDU_CMD_N_BUF];
 	ARDUSERVO_CMD m_recvMsg;
 	uint64_t	m_nCMDrecv;
+
+	vector<ARDUSERVO_CHAN> m_vServo;
+
 
 };
 

@@ -86,6 +86,7 @@ void _OrientalMotor::update(void)
 	{
 		this->autoFPSfrom();
 
+		checkAlarm();
 		sendCMD();
 		readStatus();
 
@@ -99,6 +100,17 @@ int _OrientalMotor::check(void)
 	IF__(!m_pMB->bOpen(),-1);
 
 	return 0;
+}
+
+void _OrientalMotor::checkAlarm(void)
+{
+	IF_(check()<0);
+
+	uint16_t pB[2];
+	pB[0] = 1<<7;
+	pB[1] = 0;
+
+	int r = m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
 }
 
 void _OrientalMotor::sendCMD(void)
@@ -134,6 +146,8 @@ void _OrientalMotor::sendCMD(void)
 
 	int nR = 18;
 	int r = m_pMB->writeRegisters(m_iSlave, 88, nR, pB);
+
+	LOG_I("writeRegisters: " + i2str(r));
 
 	if(r == nR)
 	{

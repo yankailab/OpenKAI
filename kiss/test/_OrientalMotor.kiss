@@ -20,7 +20,7 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -32,34 +32,60 @@
 {
 	"name":"omX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_Mosbus":"modbus",
+	"_Modbus":"modbus",
+	"iSlave":2,
 	"stepFrom":100,
 	"stepTo":128000,
 	"speedFrom":0,
 	"speedTo":31000,
 
-	"targetStep":128,
+	"targetStep":28000,
 	"targetSpeed":31000,
 }
 
 {
-	"name":"omX",
+	"name":"omY",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_Mosbus":"modbus",
+	"_Modbus":"modbus",
+	"iSlave":3,
 	"stepFrom":100,
 	"stepTo":59000,
 	"speedFrom":0,
 	"speedTo":50000,
 
-	"targetStep":100,
+	"targetStep":50000,
 	"targetSpeed":50000,
 }
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"bStream":1,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"arduServo",
+}
+
+{
+	"name":"arduServo",
+	"class":"_ArduServo",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+}
+
 
