@@ -55,6 +55,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Path);
+	ADD_MODULE(_PLC);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_RPLIDAR);

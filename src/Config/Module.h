@@ -18,6 +18,7 @@
 
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
+#include "../Application/_PLC.h"
 
 #include "../Autopilot/_AutoPilot.h"
 #include "../Control/PIDctrl.h"

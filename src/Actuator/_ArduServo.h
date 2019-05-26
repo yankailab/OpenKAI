@@ -30,13 +30,13 @@ struct ARDUSERVO_CHAN
 {
 	uint16_t m_pwmL;
 	uint16_t m_pwmH;
-	bool	 m_bRev;
+	float m_dir;
 
 	void init(void)
 	{
 		m_pwmL = 1000;
 		m_pwmH = 2000;
-		m_bRev = false;
+		m_dir = 1.0;
 	}
 };
 

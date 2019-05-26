@@ -11,9 +11,12 @@ _ActuatorBase::_ActuatorBase()
 {
 	m_nCurrentPos = -1.0;
 	m_nTargetPos = -1.0;
-	m_nSpeed = 0.0;
+	m_nCurrentSpeed = 0.0;
+	m_nTargetSpeed = 0.0;
 	m_tStampCmdSet = 0;
 	m_tStampCmdSent = 0;
+
+	m_pParent = NULL;
 }
 
 _ActuatorBase::~_ActuatorBase()
@@ -24,6 +27,12 @@ bool _ActuatorBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	string iName;
+
+	iName = "";
+	F_INFO(pK->v("_ActuatorBase", &iName));
+	m_pParent = (_ActuatorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -53,20 +62,19 @@ bool _ActuatorBase::open(void)
 
 void _ActuatorBase::move(float nSpeed)
 {
-	m_nSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_nTargetSpeed = constrain(nSpeed, 0.0f, 1.0f);
 	m_tStampCmdSet = getTimeUsec();
 }
 
 void _ActuatorBase::moveTo(float nPos, float nSpeed)
 {
 	m_nTargetPos = constrain(nPos, 0.0f, 1.0f);
-	m_nSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_nTargetSpeed = constrain(nSpeed, 0.0f, 1.0f);
 	m_tStampCmdSet = getTimeUsec();
 }
 
 void _ActuatorBase::moveToOrigin(void)
 {
-
 }
 
 float _ActuatorBase::pos(void)
@@ -89,7 +97,10 @@ bool _ActuatorBase::console(int& iY)
 	IF_F(!this->_ThreadBase::console(iY));
 	string msg;
 
-	C_MSG(msg);
+	C_MSG("-- Normalized state --");
+	C_MSG("Current pos: " + f2str(m_nCurrentPos));
+	C_MSG("Target pos: " + f2str(m_nTargetPos));
+	C_MSG("Speed: " + f2str(m_nTargetSpeed));
 
 	return true;
 }

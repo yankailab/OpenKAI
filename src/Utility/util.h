@@ -11,9 +11,11 @@ using namespace std;
 namespace kai
 {
 
-#define HIGH16(x) ((x >> 16) & 0x0000ffff);
-#define LOW16(x) (x & 0x0000ffff);
-#define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y);
+#define HIGH16(x) ((x >> 16) & 0x0000ffff)
+#define LOW16(x) (x & 0x0000ffff)
+#define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y)
+
+#define EAQ(x,y) ((abs(x-y)<1e-2)?true:false)
 
 inline string deleteNonASCII(const char* pStr)
 {

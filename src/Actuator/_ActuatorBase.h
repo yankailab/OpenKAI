@@ -41,7 +41,9 @@ private:
 public:
 	float	m_nCurrentPos;
 	float	m_nTargetPos;
-	float	m_nSpeed;
+	float	m_nCurrentSpeed;
+	float	m_nTargetSpeed;
+
 	uint64_t m_tStampCmdSet;
 	uint64_t m_tStampCmdSent;
 

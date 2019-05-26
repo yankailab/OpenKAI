@@ -51,17 +51,11 @@ bool _OrientalMotor::init(void* pKiss)
 	pK->v("currentFrom", &m_vCurrentRange.x);
 	pK->v("currentTo", &m_vCurrentRange.y);
 
-	pK->v("targetStep", &m_tState.m_step);
-	pK->v("targetSpeed", &m_tState.m_speed);
-
-
-
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_Modbus", &iName));
 	m_pMB = (_Modbus*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pMB, iName + " not found");
-
 
 	return true;
 }
@@ -109,23 +103,25 @@ void _OrientalMotor::checkAlarm(void)
 	uint16_t pB[2];
 	pB[0] = 1<<7;
 	pB[1] = 0;
-
-	int r = m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
+	m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
 }
 
 void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
-//	IF_(m_tStampCmdSet <= m_tStampCmdSent);
+	IF_(m_tStampCmdSet > m_tStampCmdSent);
 
+	//update normalized value to actual unit
+	m_tState.m_step = m_nTargetPos * m_vStepRange.len() + m_vStepRange.x;
+	m_tState.m_speed = m_nTargetSpeed * m_vSpeedRange.len() + m_vSpeedRange.x;
+
+	//create the command
 	uint16_t pB[18];
-
 	//88
 	pB[0] = 0;
 	pB[1] = m_iData;
 	pB[2] = 0;
 	pB[3] = 1;
-
 	//92
 	pB[4] = HIGH16(m_tState.m_step);
 	pB[5] = LOW16(m_tState.m_step);
@@ -144,12 +140,7 @@ void _OrientalMotor::sendCMD(void)
 	pB[16] = 0;
 	pB[17] = 0;
 
-	int nR = 18;
-	int r = m_pMB->writeRegisters(m_iSlave, 88, nR, pB);
-
-	LOG_I("writeRegisters: " + i2str(r));
-
-	if(r == nR)
+	if(m_pMB->writeRegisters(m_iSlave, 88, 18, pB) == 18)
 	{
 		m_tStampCmdSent = m_tStampCmdSet;
 	}
@@ -165,14 +156,14 @@ void _OrientalMotor::readStatus(void)
 	IF_(r != 6);
 
 	m_cState.m_step = MAKE32(pB[0], pB[1]);
-	LOG_I("step: "+i2str(m_cState.m_step));
+	m_cState.m_speed = MAKE32(pB[4], pB[5]);
 
-//	m_cState.m_step = 0;
-//	m_cState.m_step |= pB[0];
-//	m_cState.m_step <<= 16;
-//	m_cState.m_step |= pB[1];
+	//update actual unit to normalized value
+	m_nCurrentPos = (m_cState.m_step - m_vStepRange.x) / m_vStepRange.len();
+	m_nCurrentSpeed = (m_cState.m_speed - m_vSpeedRange.x) / m_vSpeedRange.len();
 
-//	LOG_I("speed: "+i2str(m_cState.m_speed));
+	LOG_I("step: "+i2str(m_cState.m_step) +
+			", speed: " + i2str(m_cState.m_speed));
 }
 
 bool _OrientalMotor::draw(void)

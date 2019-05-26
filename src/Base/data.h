@@ -579,6 +579,11 @@ struct vInt2
 		x = 0;
 		y = 0;
 	}
+
+	int len(void)
+	{
+		return y-x;
+	}
 };
 
 struct vInt3

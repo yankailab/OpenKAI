@@ -27,7 +27,7 @@ bool _ArduServo::init(void* pKiss)
 		c.init();
 		pC->v("pwmL",&c.m_pwmL);
 		pC->v("pwmH",&c.m_pwmL);
-		pC->v("bRev",&c.m_bRev);
+		pC->v("dir",&c.m_dir);
 		m_vServo.push_back(c);
 	}
 
@@ -136,14 +136,7 @@ void _ArduServo::updatePWM(void)
 		ARDUSERVO_CHAN* pC = &m_vServo[i];
 		uint16_t dPwm = pC->m_pwmH - pC->m_pwmL;
 
-		if(pC->m_bRev)
-		{
-			pChan[i] = m_nTargetPos * dPwm  + pC->m_pwmL;
-		}
-		else
-		{
-			pChan[i] = (1.0-m_nTargetPos) * dPwm + pC->m_pwmL;
-		}
+		pChan[i] = (m_nTargetPos*pC->m_dir + 0.5*(1 - pC->m_dir)) * dPwm + pC->m_pwmL;
 	}
 
 	m_pBuf[0] = ARDU_CMD_BEGIN;
@@ -157,11 +150,13 @@ void _ArduServo::updatePWM(void)
 	}
 
 	m_pIO->write(m_pBuf, ARDU_CMD_N_HEADER + nChan * 2);
+
+	m_nCurrentPos = m_nTargetPos;
 }
 
 bool _ArduServo::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ActuatorBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg;
@@ -184,7 +179,7 @@ bool _ArduServo::draw(void)
 
 bool _ArduServo::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::console(iY));
+	IF_F(!this->_ActuatorBase::console(iY));
 	IF_Fl(!m_pIO->isOpen(), "Not connected");
 	string msg;
 
