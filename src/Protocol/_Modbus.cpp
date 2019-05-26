@@ -57,21 +57,6 @@ bool _Modbus::open(void)
 	}
 
 	return true;
-
-
-	// send a 0x08 query for connection check
-//	uint8_t pB[256];
-//	pB[0] = m_slaveAddr;
-//	pB[1] = 0x08;
-//	pB[2] = 0;
-//	pB[3] = 0;
-//	pB[4] = 0x12;
-//	pB[5] = 0x34;
-//	if (modbus_send_raw_request(m_pMb, pB, 6) < 8)
-//	{
-//		LOG_E("Query 0x08h error");
-//		return false;
-//	}
 }
 
 bool _Modbus::bOpen(void)
@@ -114,28 +99,59 @@ void _Modbus::update(void)
 	}
 }
 
-modbus_t* _Modbus::getModbus(int iSlave)
+int _Modbus::rawRequest(uint8_t* pB, int nB)
 {
-	if(!m_pMb)return NULL;
+	IF__(!m_pMb,-1);
+	NULL__(pB,-1);
 
 	pthread_mutex_lock(&m_mutex);
 
-	if (modbus_set_slave(m_pMb, iSlave) != 0)
-	{
-		pthread_mutex_unlock(&m_mutex);
-		LOG_E("Error setting slave id:" + i2str(iSlave));
-		return NULL;
-	}
+	int r = modbus_send_raw_request(m_pMb, pB, nB);
+    modbus_flush(m_pMb);
 
-	return m_pMb;
+	pthread_mutex_unlock(&m_mutex);
+
+	return r;
 }
 
-void _Modbus::releaseModbus(void)
+int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 {
-	IF_(!m_pMb);
+	IF__(!m_pMb,-1);
+	NULL__(pB,-1);
+
+	int r = -1;
+
+	pthread_mutex_lock(&m_mutex);
+
+	if (modbus_set_slave(m_pMb, iSlave) == 0)
+	{
+		r = modbus_write_registers(m_pMb, addr, nRegister, pB);
+	}
 
     modbus_flush(m_pMb);
 	pthread_mutex_unlock(&m_mutex);
+
+	return r;
+}
+
+int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
+{
+	IF__(!m_pMb,-1);
+	NULL__(pB,-1);
+
+	int r = -1;
+
+	pthread_mutex_lock(&m_mutex);
+
+	if (modbus_set_slave(m_pMb, iSlave) == 0)
+	{
+		r = modbus_read_registers(m_pMb, addr, nRegister, pB);
+	}
+
+    modbus_flush(m_pMb);
+	pthread_mutex_unlock(&m_mutex);
+
+	return r;
 }
 
 bool _Modbus::draw(void)

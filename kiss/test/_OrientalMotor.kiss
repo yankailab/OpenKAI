@@ -18,20 +18,48 @@
 }
 
 {
-	"name":"om",
-	"class":"_OrientalMotor",
+	"name":"modbus",
+	"class":"_Modbus",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"slaveAddr":2,
-	
-	"/targetStep":128000,
+	"parity":"E",	
+}
+
+{
+	"name":"omX",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Mosbus":"modbus",
+	"stepFrom":100,
+	"stepTo":128000,
+	"speedFrom":0,
+	"speedTo":31000,
 
 	"targetStep":128,
 	"targetSpeed":31000,
 }
 
+{
+	"name":"omX",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Mosbus":"modbus",
+	"stepFrom":100,
+	"stepTo":59000,
+	"speedFrom":0,
+	"speedTo":50000,
+
+	"targetStep":100,
+	"targetSpeed":50000,
+}
 

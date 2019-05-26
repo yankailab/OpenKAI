@@ -14,6 +14,7 @@
 #include "switch.h"
 
 #include "../Actuator/_OrientalMotor.h"
+#include "../Actuator/_ArduServo.h"
 
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"

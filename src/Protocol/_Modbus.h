@@ -21,10 +21,9 @@ public:
 	bool open(void);
 	bool bOpen(void);
 
+	int rawRequest(uint8_t* pB, int nB);
 	int writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB);
-
-	modbus_t* getModbus(int iSlave);
-	void releaseModbus(void);
+	int readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB);
 
 private:
 	void update(void);

@@ -58,7 +58,7 @@ bool _OrientalMotor::init(void* pKiss)
 
 	string iName;
 	iName = "";
-	F_ERROR_F(pK->v("Modbus", &iName));
+	F_ERROR_F(pK->v("_Modbus", &iName));
 	m_pMB = (_Modbus*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pMB, iName + " not found");
 
@@ -106,52 +106,39 @@ void _OrientalMotor::sendCMD(void)
 	IF_(check()<0);
 //	IF_(m_tStampCmdSet <= m_tStampCmdSent);
 
-//	int32_t pB[9];
-//	pB[0] = m_iData;
-//	pB[1] = 1;
-//	pB[2] = m_tState.m_step;
-//	pB[3] = m_tState.m_speed;
-//	pB[4] = m_tState.m_accel;
-//	pB[5] = m_tState.m_brake;
-//	pB[6] = m_tState.m_current;
-//	pB[7] = 1;
-//	pB[8] = 0;
-
 	uint16_t pB[18];
-	int result;
 
 	//88
-	pB[0] = 0;		//7 8
-	pB[1] = m_iData;//9 10
-	pB[2] = 0;		//11 12
-	pB[3] = 1;		//13 14
+	pB[0] = 0;
+	pB[1] = m_iData;
+	pB[2] = 0;
+	pB[3] = 1;
 
 	//92
-	pB[4] = (m_tState.m_step >> 16) & 0x0000ffff;	//15 16
-	pB[5] = m_tState.m_step & 0x0000ffff;			//17 18
-	pB[6] = (m_tState.m_speed >> 16) & 0x0000ffff;	//19 20
-	pB[7] = m_tState.m_speed & 0x0000ffff;			//21 22
+	pB[4] = HIGH16(m_tState.m_step);
+	pB[5] = LOW16(m_tState.m_step);
+	pB[6] = HIGH16(m_tState.m_speed);
+	pB[7] = LOW16(m_tState.m_speed);
 
 	//96
-	pB[8] = (m_tState.m_accel >> 16) & 0x0000ffff;
-	pB[9] = m_tState.m_accel & 0x0000ffff;
-	pB[10] = (m_tState.m_brake >> 16) & 0x0000ffff;
-	pB[11] = m_tState.m_brake & 0x0000ffff;
-	pB[12] = (m_tState.m_current >> 16) & 0x0000ffff;
-	pB[13] = m_tState.m_current & 0x0000ffff;
+	pB[8] = HIGH16(m_tState.m_accel);
+	pB[9] = LOW16(m_tState.m_accel);
+	pB[10] = HIGH16(m_tState.m_brake);
+	pB[11] = LOW16(m_tState.m_brake);
+	pB[12] = HIGH16(m_tState.m_current);
+	pB[13] = LOW16(m_tState.m_current);
 	pB[14] = 0;
 	pB[15] = 1;
 	pB[16] = 0;
 	pB[17] = 0;
 
-	modbus_t* pMB = m_pMB->getModbus(m_iSlave);
-	NULL_(pMB);
+	int nR = 18;
+	int r = m_pMB->writeRegisters(m_iSlave, 88, nR, pB);
 
-	result = modbus_write_registers(pMB, 88, 18, pB);	//88 -> 0058h
-
-	m_pMB->releaseModbus();
-
-	LOG_I("write result: " + i2str(result));
+	if(r == nR)
+	{
+		m_tStampCmdSent = m_tStampCmdSet;
+	}
 }
 
 void _OrientalMotor::readStatus(void)
@@ -159,26 +146,19 @@ void _OrientalMotor::readStatus(void)
 	IF_(check()<0);
 
 	uint16_t pB[18];
+	int nR = 6;
+	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);
+	IF_(r != 6);
 
-	modbus_t* pMB = m_pMB->getModbus(m_iSlave);
-	NULL_(pMB);
-
-	int nRead = modbus_read_registers(pMB, 204, 6, pB);	//88 -> 00CCh
-
-	m_pMB->releaseModbus();
-
-	IF_(nRead != 6);
-//	m_cState.m_step = unpack_int32(&pB[0], false);
-//	m_cState.m_speed = unpack_int32(&pB[2], false);
-
-	m_cState.m_step = 0;
-	m_cState.m_step |= pB[0];
-	m_cState.m_step <<= 16;
-	m_cState.m_step |= pB[1];
-
+	m_cState.m_step = MAKE32(pB[0], pB[1]);
 	LOG_I("step: "+i2str(m_cState.m_step));
-//	LOG_I("speed: "+i2str(m_cState.m_speed));
 
+//	m_cState.m_step = 0;
+//	m_cState.m_step |= pB[0];
+//	m_cState.m_step <<= 16;
+//	m_cState.m_step |= pB[1];
+
+//	LOG_I("speed: "+i2str(m_cState.m_speed));
 }
 
 bool _OrientalMotor::draw(void)

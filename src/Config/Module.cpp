@@ -25,6 +25,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Arduino);
+	ADD_MODULE(_ArduServo);
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
