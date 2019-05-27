@@ -25,19 +25,17 @@ ARDUINO_CMD m_cmd;
 
 Servo g_servo1;
 Servo g_servo2;
+uint16_t g_pwm1;
+uint16_t g_pwm2;
 
 void command(void)
 {
   switch (m_cmd.m_pBuf[1])
   {
   case ARDU_CMD_PWM:
-  	uint16_t pwm;
-    pwm = *((uint16_t*)(&m_cmd.m_pBuf[3]));
-    g_servo1.writeMicroseconds(pwm);
-    pwm = *((uint16_t*)(&m_cmd.m_pBuf[5]));
-    g_servo2.writeMicroseconds(pwm);    
+    g_pwm1 = *((uint16_t*)(&m_cmd.m_pBuf[3]));
+    g_pwm2 = *((uint16_t*)(&m_cmd.m_pBuf[5]));
     break;
-
   default:
     break;
   }
@@ -68,7 +66,7 @@ void receive(void)
         m_cmd.m_cmd = 0;
 
         iMsg++;
-        if(iMsg >= 20)return;
+        if(iMsg >= 1)return;
       }
     }
     else if (inByte == ARDU_CMD_BEGIN)
@@ -84,14 +82,27 @@ void receive(void)
 void setup()
 {
   g_servo1.attach(5);
-  g_servo2.attach(6);  
-  g_servo1.writeMicroseconds(1500);
-  g_servo2.writeMicroseconds(1500);
+  g_servo2.attach(6);
+
+  g_pwm1 = 1500;
+  g_pwm2 = 1500;
 
   Serial.begin(115200);
 }
 
 void loop()
 {
+    g_servo1.writeMicroseconds(g_pwm1);
+    g_servo2.writeMicroseconds(g_pwm2);    
+
   receive();
+
+  Serial.write(ARDU_CMD_BEGIN);            //start mark
+  Serial.write((uint8_t)ARDU_CMD_STATUS);  //cmd
+  Serial.write(4);                         //payload len
+  Serial.write((uint8_t)(g_pwm1 & 0xFF));
+  Serial.write((uint8_t)((g_pwm1 >> 8) & 0xFF));
+  Serial.write((uint8_t)(g_pwm2 & 0xFF));
+  Serial.write((uint8_t)((g_pwm2 >> 8) & 0xFF));
+
 }

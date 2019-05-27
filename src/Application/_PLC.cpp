@@ -113,9 +113,9 @@ void _PLC::updateAction(void)
 	m_pAY->moveTo(pA->m_nPosY, 1.0);
 	m_pAZ->moveTo(pA->m_nPosZ, 1.0);
 
-	IF_(!EAQ(m_pAX->m_nCurrentPos, pA->m_nPosX));
-	IF_(!EAQ(m_pAY->m_nCurrentPos, pA->m_nPosY));
-//	IF_(!EAQ(m_pAZ->m_nCurrentPos, pA->m_nPosZ));
+//	IF_(!EAQ(m_pAX->m_nCurrentPos, pA->m_nPosX));
+//	IF_(!EAQ(m_pAY->m_nCurrentPos, pA->m_nPosY));
+	IF_(!EAQ(m_pAZ->m_nCurrentPos, pA->m_nPosZ));
 
 	if(pA->m_dT > 0)
 		usleep(pA->m_dT);

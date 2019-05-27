@@ -1,0 +1,53 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"bStream":1,
+	"port":"/dev/ttyUSB2",
+	"baud":115200,
+	"_wakeUp":"arduServo",
+}
+
+{
+	"name":"arduServo",
+	"class":"_ArduServo",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	"test":0.8,
+	
+	{
+		"pwmL":1500,
+		"pwmH":2100,
+		"dir":-1,
+	}
+	{
+		"pwmL":900,
+		"pwmH":1500,
+		"dir":1,
+	}	
+}

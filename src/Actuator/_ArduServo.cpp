@@ -31,6 +31,10 @@ bool _ArduServo::init(void* pKiss)
 		m_vServo.push_back(c);
 	}
 
+	float t = 0.5;
+	pK->v("test",&t);
+	this->moveTo(t,1.0);
+
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -119,6 +123,21 @@ bool _ArduServo::readCMD(void)
 
 void _ArduServo::handleCMD(void)
 {
+	uint16_t pwm1;
+	uint16_t pwm2;
+
+	switch (m_recvMsg.m_pBuf[1])
+	{
+	case ARDU_CMD_STATUS:
+		pwm1 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[3], false);
+		pwm2 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false);
+
+		LOG_I("pwm1=" + i2str(pwm1) + ", pwm2=" + i2str(pwm2));
+		break;
+	default:
+		break;
+	}
+
 	m_recvMsg.init();
 }
 
