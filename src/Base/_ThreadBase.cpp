@@ -120,7 +120,7 @@ void _ThreadBase::wakeUpLinked(void)
 void _ThreadBase::updateTime(void)
 {
 	uint64_t newTime = getTimeUsec();
-	m_dTime = newTime - m_tStamp;
+	m_dTime = newTime - m_tStamp + 1;
 	m_tStamp = newTime;
 	m_FPS = USEC_1SEC / m_dTime;
 }

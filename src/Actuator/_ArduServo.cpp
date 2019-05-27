@@ -26,7 +26,7 @@ bool _ArduServo::init(void* pKiss)
 		Kiss* pC = pItr[i++];
 		c.init();
 		pC->v("pwmL",&c.m_pwmL);
-		pC->v("pwmH",&c.m_pwmL);
+		pC->v("pwmH",&c.m_pwmH);
 		pC->v("dir",&c.m_dir);
 		m_vServo.push_back(c);
 	}

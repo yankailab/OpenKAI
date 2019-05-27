@@ -109,7 +109,7 @@ void _OrientalMotor::checkAlarm(void)
 void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
-	IF_(m_tStampCmdSet > m_tStampCmdSent);
+//	IF_(m_tStampCmdSet > m_tStampCmdSent);
 
 	//update normalized value to actual unit
 	m_tState.m_step = m_nTargetPos * m_vStepRange.len() + m_vStepRange.x;
@@ -159,8 +159,8 @@ void _OrientalMotor::readStatus(void)
 	m_cState.m_speed = MAKE32(pB[4], pB[5]);
 
 	//update actual unit to normalized value
-	m_nCurrentPos = (m_cState.m_step - m_vStepRange.x) / m_vStepRange.len();
-	m_nCurrentSpeed = (m_cState.m_speed - m_vSpeedRange.x) / m_vSpeedRange.len();
+	m_nCurrentPos = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
+	m_nCurrentSpeed = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
 
 	LOG_I("step: "+i2str(m_cState.m_step) +
 			", speed: " + i2str(m_cState.m_speed));

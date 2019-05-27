@@ -38,7 +38,7 @@
 	"Window":"OKview",
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"stepFrom":100,
+	"stepFrom":1000,
 	"stepTo":128000,
 	"speedFrom":0,
 	"speedTo":31000,
@@ -53,7 +53,7 @@
 	"Window":"OKview",
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"stepFrom":100,
+	"stepFrom":1000,
 	"stepTo":59000,
 	"speedFrom":0,
 	"speedTo":50000,
@@ -82,14 +82,14 @@
 	"_IOBase":"apSerial",
 	
 	{
-		"pwmL":1400,
-		"pwmH":1600,
-		"dir":0,
+		"pwmL":1000,
+		"pwmH":2000,
+		"dir":-1,
 	}
 	{
-		"pwmL":1400,
-		"pwmH":1600,
-		"dir":0,
+		"pwmL":1000,
+		"pwmH":2000,
+		"dir":1,
 	}	
 }
 
@@ -107,33 +107,33 @@
 	
 	{
 		"nX":1.0,
-		"nY":0.0,
+		"nY":0.3,
 		"nZ":0.5,
 	}
 	{
 		"nX":1.0,
-		"nY":1.0,
+		"nY":0.65,
 		"nZ":0.5,
 	}
 	{
 		"nX":1.0,
-		"nY":1.0,
-		"nZ":1.0,
+		"nY":0.65,
+		"nZ":0.6,
 		"dT":500000,
 	}
 	{
 		"nX":1.0,
-		"nY":0.2,
-		"nZ":1.0,
+		"nY":0.3,
+		"nZ":0.6,
 	}
 	{
 		"nX":0.0,
-		"nY":0.2,
-		"nZ":1.0,
+		"nY":0.3,
+		"nZ":0.65,
 	}
 	{
 		"nX":0.0,
-		"nY":0.2,
+		"nY":0.3,
 		"nZ":0.5,
 		"dT":1000000,
 	}
