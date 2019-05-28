@@ -31,10 +31,6 @@ bool _ArduServo::init(void* pKiss)
 		m_vServo.push_back(c);
 	}
 
-	float t = 0.5;
-	pK->v("test",&t);
-	this->moveTo(t,1.0);
-
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));

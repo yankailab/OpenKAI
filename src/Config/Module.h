@@ -18,8 +18,8 @@
 
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
-#include "../Application/_PLC.h"
-
+#include "../Application/_Sequencer.h"
+#include "../Application/_ClassifierBot.h"
 #include "../Autopilot/_AutoPilot.h"
 #include "../Control/PIDctrl.h"
 #include "../Detector/_ArUco.h"

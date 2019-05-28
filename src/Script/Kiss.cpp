@@ -295,6 +295,11 @@ int Kiss::array(const string& name, double* pVal, int nArray)
 	return m_json.array(name, pVal, nArray);
 }
 
+int Kiss::array(const string& name, float* pVal, int nArray)
+{
+	return m_json.array(name, pVal, nArray);
+}
+
 int Kiss::array(const string& name, string* pVal, int nArray)
 {
 	return m_json.array(name, pVal, nArray);

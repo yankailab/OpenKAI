@@ -186,6 +186,24 @@ int JSON::array(const string& name, double* pVal, int nArray)
 	return i;
 }
 
+int JSON::array(const string& name, float* pVal, int nArray)
+{
+	value::array arr;
+	IF__(!array(name, &arr),-1);
+
+	value::array::iterator it;
+	int i = 0;
+	for (it = arr.begin(); it != arr.end(); it++)
+	{
+		if(i >= nArray)return i;
+		IF_CONT(!it->is<double>());
+		pVal[i] = (float)it->get<double>();
+		i++;
+	}
+
+	return i;
+}
+
 int JSON::checkErrorNum(void)
 {
 	int numError;

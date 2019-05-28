@@ -40,6 +40,7 @@ public:
 
 	int array(const string& name, int* pVal, int nArray);
 	int array(const string& name, double* pVal, int nArray);
+	int array(const string& name, float* pVal, int nArray);
 	int array(const string& name, string* pVal, int nArray);
 
 private:

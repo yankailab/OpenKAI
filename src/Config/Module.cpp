@@ -32,6 +32,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Contrast);
 	ADD_MODULE(_Crop);
 	ADD_MODULE(_ClusterNet);
+	ADD_MODULE(_ClassifierBot);
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
@@ -55,7 +56,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Path);
-	ADD_MODULE(_PLC);
+	ADD_MODULE(_Sequencer);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_RPLIDAR);
