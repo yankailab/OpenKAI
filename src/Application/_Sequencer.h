@@ -17,7 +17,7 @@
 namespace kai
 {
 
-struct SequencerAction
+struct SEQUENCER_ACTION
 {
 	float m_pNpos[SQ_N_ACTUATOR];
 	int m_nA;
@@ -59,7 +59,7 @@ private:
 public:
 	_ActuatorBase* m_ppA[SQ_N_ACTUATOR];
 	int	m_nActuator;
-	vector<SequencerAction> m_vAction;
+	vector<SEQUENCER_ACTION> m_vAction;
 	int m_iAction;
 };
 

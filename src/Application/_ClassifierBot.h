@@ -31,13 +31,14 @@ struct CBOT_TARGET
 	}
 };
 
-struct CBOT_ARM
+struct CBOT_ARMSET
 {
 	_Sequencer* m_pArm;
 	uint64_t m_classFlag;
 	float m_tGrip; //time taken from standby to grip in sec
 	int m_iActionGripStandby;
 	int m_iActionDrop;
+	int	m_iActuatorX;
 
 	void init(void)
 	{
@@ -46,6 +47,7 @@ struct CBOT_ARM
 		m_tGrip = 0.0;
 		m_iActionGripStandby = -1;
 		m_iActionDrop = -1;
+		m_iActuatorX = 0;
 	}
 };
 
@@ -62,7 +64,8 @@ public:
 	int check(void);
 
 private:
-	void updateAction(void);
+	void updateTarget(void);
+	void updateArmset(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -73,7 +76,7 @@ private:
 public:
 	_DetectorBase* m_pDet;
 	vector<CBOT_TARGET> m_vTarget;
-	vector<CBOT_ARM> m_vArm;
+	vector<CBOT_ARMSET> m_vArmSet;
 
 	int m_nClass;
 	float m_pDropPos[CB_N_CLASS];

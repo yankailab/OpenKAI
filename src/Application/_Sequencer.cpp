@@ -45,14 +45,13 @@ bool _Sequencer::init(void* pKiss)
 
 			m_nActuator++;
 		}
-
 	}
 
 	pA = pK->o("action");
 	if(pA)
 	{
 		pItr = pA->getChildItr();
-		SequencerAction a;
+		SEQUENCER_ACTION a;
 		int i=0;
 		while (pItr[i])
 		{
@@ -104,7 +103,7 @@ void _Sequencer::updateAction(void)
 
 	int i;
 
-	SequencerAction* pA = &m_vAction[m_iAction];
+	SEQUENCER_ACTION* pA = &m_vAction[m_iAction];
 	for(i=0; i<pA->m_nA; i++)
 	{
 		m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
