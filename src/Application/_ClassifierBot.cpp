@@ -15,6 +15,8 @@ _ClassifierBot::_ClassifierBot()
 	m_pDet = NULL;
 	m_speed = 0.0;
 	m_nClass = 0;
+	m_cLen = 2.0;
+	m_kD = 1.0;
 }
 
 _ClassifierBot::~_ClassifierBot()
@@ -28,6 +30,8 @@ bool _ClassifierBot::init(void* pKiss)
 
 	KISSm(pK, nClass);
 	KISSm(pK, speed);
+	KISSm(pK, cLen);
+	KISSm(pK, kD);
 	pK->array("dropPos", m_pDropPos, CB_N_CLASS);
 
 	Kiss* pA;
@@ -37,7 +41,7 @@ bool _ClassifierBot::init(void* pKiss)
 	int pClass[CB_N_CLASS];
 
 	pA = pK->o("armSet");
-	if(pA)
+	if (pA)
 	{
 		pItr = pA->getChildItr();
 		i = 0;
@@ -54,8 +58,8 @@ bool _ClassifierBot::init(void* pKiss)
 			pC->v("iActuatorX", &c.m_iActuatorX);
 
 			int nC = pC->array("class", pClass, CB_N_CLASS);
-			for(int j=0; j<nC; j++)
-				c.m_classFlag |= (1<<pClass[j]);
+			for (int j = 0; j < nC; j++)
+				c.m_classFlag |= (1 << pClass[j]);
 
 			iName = "";
 			F_ERROR_F(pC->v("_Sequencer", &iName));
@@ -105,19 +109,34 @@ void _ClassifierBot::updateTarget(void)
 	int i;
 
 	//update existing target positions
-	for(i=0; i<m_vTarget.size(); i++)
+	for (i = 0; i < m_vTarget.size(); i++)
 	{
+		CBOT_TARGET* pC = &m_vTarget[i];
+		pC->m_pos.y += m_speed;
+		pC->m_pos.w += m_speed;
+	}
 
+	while (m_vTarget.size() > 0)
+	{
+		CBOT_TARGET* pC = &m_vTarget[i];
+		if (pC->m_pos.midY() > m_cLen)
+			m_vTarget.erase(m_vTarget.begin());
 	}
 
 	//get new targets and compare to existing ones
+	OBJECT* pO;
+	i = 0;
+	while ((pO = m_pDet->at(i++)) != NULL)
+	{
+		vFloat4 bb = pO->m_bb;
 
+
+	}
 }
 
 void _ClassifierBot::updateArmset(void)
 {
-	//assign armset target and drop destination, then resume it
-
+	//assign armset target and drop destination, resume the armset, and delete the target from vector
 
 }
 

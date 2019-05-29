@@ -81,6 +81,8 @@ public:
 	int m_nClass;
 	float m_pDropPos[CB_N_CLASS];
 	float m_speed; //conveyer speed m/s
+	float m_cLen;
+	float m_kD;
 };
 
 }

@@ -37,6 +37,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
 	ADD_MODULE(_Depth2Gray);
+	ADD_MODULE(_DepthSegment);
 	ADD_MODULE(_Erode);
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);

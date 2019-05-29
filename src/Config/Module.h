@@ -30,6 +30,7 @@
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_Line.h"
 #include "../Detector/_Thermal.h"
+#include "../Detector/_DepthSegment.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
