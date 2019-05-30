@@ -116,12 +116,11 @@ void _Sequencer::updateAction(void)
 
 	if(pA->m_dT > 0)
 	{
-//		usleep(pA->m_dT);
 		this->sleepTime(pA->m_dT);
 	}
 	else if(pA->m_dT < 0)
 	{
-		this->sleepTime(0);
+		this->goSleep();
 	}
 
 	m_iAction++;
@@ -129,9 +128,10 @@ void _Sequencer::updateAction(void)
 		m_iAction = 0;
 }
 
-void _Sequencer::resume(void)
+SEQUENCER_ACTION* _Sequencer::getAction(int iAction)
 {
-	this->wakeUp();
+	IF_N(iAction >= m_vAction.size());
+	return &m_vAction[iAction];
 }
 
 bool _Sequencer::draw(void)

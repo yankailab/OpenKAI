@@ -1,7 +1,7 @@
 /*
  * _ClassifierBot.cpp
  *
- *  Created on: May 26, 2019
+ *  Created on: May 28, 2019
  *      Author: yankai
  */
 
@@ -53,7 +53,10 @@ bool _ClassifierBot::init(void* pKiss)
 			CBOT_ARMSET c;
 			c.init();
 
-			pC->v("tGrip", &c.m_tGrip);
+			pC->v("gripX1", &c.m_rGripX.x);
+			pC->v("gripX2", &c.m_rGripX.y);
+			pC->v("gripY1", &c.m_rGripY.x);
+			pC->v("gripY2", &c.m_rGripY.y);
 			pC->v("iActionGripStandby", &c.m_iActionGripStandby);
 			pC->v("iActionDrop", &c.m_iActionDrop);
 			pC->v("iActuatorX", &c.m_iActuatorX);
@@ -64,8 +67,8 @@ bool _ClassifierBot::init(void* pKiss)
 
 			iName = "";
 			F_ERROR_F(pC->v("_Sequencer", &iName));
-			c.m_pArm = (_Sequencer*) (pK->root()->getChildInst(iName));
-			IF_Fl(!c.m_pArm, iName + " not found");
+			c.m_pSeq = (_Sequencer*) (pK->root()->getChildInst(iName));
+			IF_Fl(!c.m_pSeq, iName + " not found");
 
 			m_vArmSet.push_back(c);
 		}
@@ -107,14 +110,14 @@ int _ClassifierBot::check(void)
 
 void _ClassifierBot::updateTarget(void)
 {
-	int i,j;
+	int i, j;
 
 	//update existing target positions
 	for (i = 0; i < m_vTarget.size(); i++)
 	{
 		CBOT_TARGET* pC = &m_vTarget[i];
 
-		float spd = m_speed;//
+		float spd = m_speed; //
 		pC->m_bb.y += spd;
 		pC->m_bb.w += spd;
 	}
@@ -136,7 +139,16 @@ void _ClassifierBot::updateTarget(void)
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
 			CBOT_TARGET* pC = &m_vTarget[j];
-			if(bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
+//			if (bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
+//				break;
+
+			Rect2f r1, r2;
+			vFloat42rect(pO->m_bb, r1);
+			vFloat42rect(pC->m_bb, r2);
+			Rect2f rOR = r1 | r2;
+			Rect2f rAND = r1 & r2;
+			float IoU = rAND.area() / rOR.area();
+			if (IoU > m_bbOverlap)
 				break;
 		}
 
@@ -154,10 +166,32 @@ void _ClassifierBot::updateTarget(void)
 void _ClassifierBot::updateArmset(void)
 {
 	//assign armset target and drop destination, resume the armset, and delete the target from vector
-	for (int i = 0; i < m_vTarget.size(); i++)
+	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
-		CBOT_TARGET* pC = &m_vTarget[i];
+		CBOT_ARMSET* pA = &m_vArmSet[i];
+		if(pA->m_pSeq->m_iAction == pA->m_iActionDrop)
+		{
+			pA->m_bTarget = false;
+			pA->m_pSeq->wakeUp();
+		}
+		IF_CONT(pA->m_bTarget);
+		IF_CONT(pA->m_pSeq->m_iAction != pA->m_iActionGripStandby);
 
+		for (int j = 0; j < m_vTarget.size(); j++)
+		{
+			CBOT_TARGET* pT = &m_vTarget[j];
+			IF_CONT(pA->m_classFlag & (1 << pT->m_iClass));
+			IF_CONT(pT->m_bb.midY() < pA->m_rGripY.x);
+			IF_CONT(pT->m_bb.midY() > pA->m_rGripY.y);
+			pT->m_bb.y = m_cLen;
+			pT->m_bb.w = m_cLen;
+
+			SEQUENCER_ACTION* pS = pA->m_pSeq->getAction(pA->m_iActionDrop);
+			IF_CONT(!pS);
+			pS->m_pNpos[pA->m_iActuatorX] = m_pDropPos[pT->m_iClass];
+			pA->m_bTarget = true;
+			pA->m_pSeq->wakeUp();
+		}
 	}
 }
 

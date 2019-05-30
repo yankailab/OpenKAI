@@ -231,6 +231,14 @@ inline void vInt42rect(vInt4 v, Rect& r)
 	r.height = v.w - v.y;
 }
 
+inline void vFloat42rect(vFloat4 v, Rect2f& r)
+{
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
+}
+
 template <typename T> inline T constrain(T v, T a, T b)
 {
 	T min, max;

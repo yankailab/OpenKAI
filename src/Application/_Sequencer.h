@@ -45,7 +45,7 @@ public:
 	bool console(int& iY);
 	int check(void);
 
-	void resume(void);
+	SEQUENCER_ACTION* getAction(int iAction);
 	void updateAction(void);
 
 private:

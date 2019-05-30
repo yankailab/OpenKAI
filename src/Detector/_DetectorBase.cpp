@@ -24,9 +24,6 @@ _DetectorBase::_DetectorBase()
 	m_maxH = -1.0;
 	m_nClass = 0;
 	m_obj.reset();
-	m_roi.init();
-	m_roi.z = 1.0;
-	m_roi.w = 1.0;
 	m_bMerge = false;
 	m_kMerge = -1.0;
 	m_scaleBB = -1.0;
@@ -117,12 +114,6 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, bDrawStatistics);
 	KISSm(pK, drawVscale);
 	KISSm(pK, bDrawObjClass);
-
-	//ROI
-	F_INFO(pK->v("rX", &m_roi.x));
-	F_INFO(pK->v("rY", &m_roi.y));
-	F_INFO(pK->v("rZ", &m_roi.z));
-	F_INFO(pK->v("rW", &m_roi.w));
 
 	//link
 	string iName = "";
@@ -257,15 +248,6 @@ bool _DetectorBase::draw(void)
 	{
 		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
 	}
-
-	vInt4 iRoi;
-	iRoi.x = pMat->cols * m_roi.x;
-	iRoi.y = pMat->rows * m_roi.y;
-	iRoi.z = pMat->cols * m_roi.z;
-	iRoi.w = pMat->rows * m_roi.w;
-	Rect rRoi;
-	vInt42rect(iRoi, rRoi);
-	rectangle(*pMat, rRoi, Scalar(0,0,255), 1);
 
 	vInt2 cs;
 	cs.x = pMat->cols;

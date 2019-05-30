@@ -98,16 +98,16 @@ bool _DNNclassifier::classify(void)
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
-	vInt4 iRoi;
-	iRoi.x = mIn.cols * m_roi.x;
-	iRoi.y = mIn.rows * m_roi.y;
-	iRoi.z = mIn.cols * m_roi.z;
-	iRoi.w = mIn.rows * m_roi.w;
-	Rect rRoi;
-	vInt42rect(iRoi, rRoi);
-	Mat mBGR = mIn(rRoi);
+//	vInt4 iRoi;
+//	iRoi.x = mIn.cols * m_roi.x;
+//	iRoi.y = mIn.rows * m_roi.y;
+//	iRoi.z = mIn.cols * m_roi.z;
+//	iRoi.w = mIn.rows * m_roi.w;
+//	Rect rRoi;
+//	vInt42rect(iRoi, rRoi);
+//	Mat mBGR = mIn(rRoi);
 
-	m_blob = blobFromImage(mBGR,
+	m_blob = blobFromImage(mIn,
 							m_scale,
 							Size(m_nW, m_nH),
 							Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
@@ -129,7 +129,7 @@ bool _DNNclassifier::classify(void)
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-	o.setBB(rRoi, cs);
+//	o.setBB(rRoi, cs);
 
 	this->add(&o);
 	LOG_I("Class: " + i2str(o.m_topClass));

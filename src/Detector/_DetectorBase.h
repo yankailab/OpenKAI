@@ -267,7 +267,6 @@ public:
 	double m_maxW;
 	double m_minH;
 	double m_maxH;
-	vDouble4 m_roi;
 	bool   m_bMerge;
 	float	m_kMerge;
 	float	m_scaleBB;

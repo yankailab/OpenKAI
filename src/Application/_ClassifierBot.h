@@ -1,7 +1,7 @@
 /*
  * _ClassifierBot.h
  *
- *  Created on: May 26, 2019
+ *  Created on: May 28, 2019
  *      Author: yankai
  */
 
@@ -33,21 +33,25 @@ struct CBOT_TARGET
 
 struct CBOT_ARMSET
 {
-	_Sequencer* m_pArm;
-	uint64_t m_classFlag;
-	float m_tGrip; //time taken from standby to grip in sec
-	int m_iActionGripStandby;
-	int m_iActionDrop;
-	int	m_iActuatorX;
+	_Sequencer*	m_pSeq;
+	uint64_t	m_classFlag;
+	vFloat2	m_rGripX;	//grippable region X, target bb midX will be remapped into this region
+	vFloat2	m_rGripY;	//grippable region Y
+	int		m_iActionGripStandby;
+	int		m_iActionDrop;
+	int		m_iActuatorX;
+	bool	m_bTarget;
 
 	void init(void)
 	{
-		m_pArm = NULL;
+		m_pSeq = NULL;
 		m_classFlag = 0;
-		m_tGrip = 0.0;
+		m_rGripX.init();
+		m_rGripY.init();
 		m_iActionGripStandby = -1;
 		m_iActionDrop = -1;
 		m_iActuatorX = 0;
+		m_bTarget = false;
 	}
 };
 

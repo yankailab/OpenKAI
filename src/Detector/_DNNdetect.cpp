@@ -112,16 +112,7 @@ bool _DNNdetect::detect(void)
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
-	vInt4 iRoi;
-	iRoi.x = mIn.cols * m_roi.x;
-	iRoi.y = mIn.rows * m_roi.y;
-	iRoi.z = mIn.cols * m_roi.z;
-	iRoi.w = mIn.rows * m_roi.w;
-	Rect rRoi;
-	vInt42rect(iRoi, rRoi);
-	Mat mBGR = mIn(rRoi);
-
-	m_blob = blobFromImage(mBGR,
+	m_blob = blobFromImage(mIn,
 							m_scale,
 							Size(m_nW, m_nH),
 							Scalar(m_vMean.x, m_vMean.y, m_vMean.z),
@@ -156,10 +147,10 @@ bool _DNNdetect::detect(void)
 			cv::minMaxLoc(mScore, 0, &conf, 0, &pClassID);
 			IF_CONT(conf < m_thr);
 
-			int cX = (int) (pData[0] * mBGR.cols);
-			int cY = (int) (pData[1] * mBGR.rows);
-			int w = (int) (pData[2] * mBGR.cols);
-			int h = (int) (pData[3] * mBGR.rows);
+			int cX = (int) (pData[0] * mIn.cols);
+			int cY = (int) (pData[1] * mIn.rows);
+			int w = (int) (pData[2] * mIn.cols);
+			int h = (int) (pData[3] * mIn.rows);
 			int l = cX - w / 2;
 			int t = cY - h / 2;
 
