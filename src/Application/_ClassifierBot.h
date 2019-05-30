@@ -20,13 +20,13 @@ namespace kai
 struct CBOT_TARGET
 {
 	int m_iClass;
-	vFloat4 m_pos;
+	vFloat4 m_bb;
 	uint64_t m_tStamp;
 
 	void init(void)
 	{
 		m_iClass = -1;
-		m_pos.init();
+		m_bb.init();
 		m_tStamp = 0;
 	}
 };
@@ -81,6 +81,7 @@ public:
 	int m_nClass;
 	float m_pDropPos[CB_N_CLASS];
 	float m_speed; //conveyer speed m/s
+	float m_bbOverlap;
 	float m_cLen;
 	float m_kD;
 };

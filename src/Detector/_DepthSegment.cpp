@@ -104,6 +104,8 @@ void _DepthSegment::detect(void)
 			o.setBB(rBB, cs);
 			o.setTopClass(0, o.area());
 
+			//TODO: classify
+
 			add(&o);
 		}
 	}

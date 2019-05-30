@@ -17,6 +17,7 @@ _ClassifierBot::_ClassifierBot()
 	m_nClass = 0;
 	m_cLen = 2.0;
 	m_kD = 1.0;
+	m_bbOverlap = 0.8;
 }
 
 _ClassifierBot::~_ClassifierBot()
@@ -106,38 +107,58 @@ int _ClassifierBot::check(void)
 
 void _ClassifierBot::updateTarget(void)
 {
-	int i;
+	int i,j;
 
 	//update existing target positions
 	for (i = 0; i < m_vTarget.size(); i++)
 	{
 		CBOT_TARGET* pC = &m_vTarget[i];
-		pC->m_pos.y += m_speed;
-		pC->m_pos.w += m_speed;
+
+		float spd = m_speed;//
+		pC->m_bb.y += spd;
+		pC->m_bb.w += spd;
 	}
 
+	//delete targets out of range
 	while (m_vTarget.size() > 0)
 	{
 		CBOT_TARGET* pC = &m_vTarget[i];
-		if (pC->m_pos.midY() > m_cLen)
+		if (pC->m_bb.midY() > m_cLen)
 			m_vTarget.erase(m_vTarget.begin());
 	}
 
 	//get new targets and compare to existing ones
 	OBJECT* pO;
 	i = 0;
+	uint64_t tStamp = getTimeUsec();
 	while ((pO = m_pDet->at(i++)) != NULL)
 	{
-		vFloat4 bb = pO->m_bb;
+		for (j = 0; j < m_vTarget.size(); j++)
+		{
+			CBOT_TARGET* pC = &m_vTarget[j];
+			if(bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
+				break;
+		}
 
+		IF_CONT(j < m_vTarget.size());
 
+		CBOT_TARGET c;
+		c.init();
+		c.m_bb = pO->m_bb;
+		c.m_iClass = pO->m_topClass;
+		c.m_tStamp = tStamp;
+		m_vTarget.push_back(c);
 	}
 }
 
 void _ClassifierBot::updateArmset(void)
 {
 	//assign armset target and drop destination, resume the armset, and delete the target from vector
+	for (int i = 0; i < m_vTarget.size(); i++)
+	{
+		CBOT_TARGET* pC = &m_vTarget[i];
 
+	}
 }
 
 bool _ClassifierBot::draw(void)

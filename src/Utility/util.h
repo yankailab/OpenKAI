@@ -203,6 +203,18 @@ template <typename T> inline bool bOverlapped(T& pA, T& pB)
 	return true;
 }
 
+inline float bbOverlap(vFloat4& bb1, vFloat4& bb2)
+{
+  if (bb1.x > bb2.z) { return 0.0; }
+  if (bb1.y > bb2.w) { return 0.0; }
+  if (bb1.z < bb2.x) { return 0.0; }
+  if (bb1.w < bb2.y) { return 0.0; }
+  float colInt =  min(bb1.z, bb2.z) - max(bb1.x, bb2.x);
+  float rowInt =  min(bb1.w, bb2.w) - max(bb1.y, bb2.y);
+  float intersection = colInt * rowInt;
+  return intersection / (bb1.area() + bb2.area() - intersection);
+}
+
 inline void rect2vInt4(Rect r, vInt4& v)
 {
 	v.x = r.x;
