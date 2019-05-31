@@ -121,43 +121,34 @@ void _SortingBot::updateTarget(void)
 {
 	IF_(check()<0);
 
-	int i, j;
-
 	//update existing target positions
-	for (i = 0; i < m_vTarget.size(); i++)
+	for (SB_TARGET t : m_vTarget)
 	{
-		SB_TARGET* pT = &m_vTarget[i];
-
 		float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
-		pT->m_bb.y += spd;
-		pT->m_bb.w += spd;
+		t.m_bb.y += spd;
+		t.m_bb.w += spd;
 	}
 
 	//delete targets out of range
-//	while (m_vTarget.size() > 0)
-//	{
-//		SB_TARGET* pC = &m_vTarget[i];
-
-//		if (m_tStamp - pC->m_tStamp > USEC_1SEC*3)
-//			m_vTarget.erase(m_vTarget.begin());
-
-////		if (pC->m_bb.midY() > m_cLen)
-////			m_vTarget.erase(m_vTarget.begin());
-//	}
+	while(m_vTarget.front().m_bb.midY() > m_cLen)
+	{
+		m_vTarget.pop_front();
+		if(m_vTarget.empty())break;
+	}
 
 	//get new targets and compare to existing ones
 	OBJECT* pO;
-	i = 0;
+	int i = 0;
 	uint64_t tStamp = getTimeUsec();
 	while ((pO = m_pDet->at(i++)) != NULL)
 	{
+		int j;
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
 			SB_TARGET* pT = &m_vTarget[j];
-			if (bbOverlap(pT->m_bb, pO->m_bb) > m_bbOverlap)
+			if (nIoU(pT->m_bb, pO->m_bb) > m_bbOverlap)
 				break;
 		}
-
 		IF_CONT(j < m_vTarget.size());
 
 		SB_TARGET t;
@@ -176,36 +167,30 @@ void _SortingBot::updateArmset(void)
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
 		SB_ARMSET* pA = &m_vArmSet[i];
-		if(pA->m_pSeq->m_iAction == pA->m_iActionDrop)
+		if(pA->bDrop())
 		{
 			pA->m_bTarget = false;
 			pA->m_pSeq->wakeUp();
 		}
 		IF_CONT(pA->m_bTarget);
-		IF_CONT(pA->m_pSeq->m_iAction != pA->m_iActionStandby);
-		IF_CONT(!pA->m_pSeq->m_vAction[pA->m_pSeq->m_iAction].m_bComplete);
+		IF_CONT(!pA->bStandby());
+		IF_CONT(!pA->bComplete());
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
 			SB_TARGET* pT = &m_vTarget[j];
-			IF_CONT(!pA->m_classFlag & (1 << pT->m_iClass));
+			IF_CONT(!pA->bClass(pT->m_iClass));
 			IF_CONT(pT->m_bb.midY() < pA->m_rGripY.x);
 			IF_CONT(pT->m_bb.midY() > pA->m_rGripY.y);
-
-			//temp
-			IF_CONT(m_tStamp - pT->m_tStamp > USEC_1SEC*2);
-
-			pT->m_bb.y += m_cLen;
-			pT->m_bb.w += m_cLen;
+			pT->moveY(m_cLen);
 
 			SEQUENCER_ACTION* pS;
-
-			pS = pA->m_pSeq->getAction(pA->m_iActionGrip);
+			pS = pA->getAction(pA->m_iActionGrip);
 			IF_CONT(!pS);
 			pS->m_pNpos[pA->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pA->m_rGripX.len() + pA->m_rGripX.x;
 			pS->m_pNpos[pA->m_iActuatorZ] = pT->m_d * pA->m_rGripZ.len() + pA->m_rGripZ.x;
 
-			pS = pA->m_pSeq->getAction(pA->m_iActionDrop);
+			pS = pA->getAction(pA->m_iActionDrop);
 			IF_CONT(!pS);
 			pS->m_pNpos[pA->m_iActuatorX] = m_pDropPos[pT->m_iClass];
 

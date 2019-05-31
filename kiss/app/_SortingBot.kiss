@@ -113,7 +113,7 @@
 	"rH":0.76,
 	"rD":0.02,
 	"bMerge":1,
-	"mergeOverlap":0.1,
+	"mergeOverlap":0.8,
 	"minH":0.1,
 	"maxH":0.8,
 	"minW":0.1,
@@ -224,12 +224,12 @@
 		"name":"action",
 		{
 			"name":"standby",
-			"nPos":[1.0, 0.1, 0.0],
+			"nPos":[0.825, 0.15, 0.0],
 			"dT":-1.0,
 		}
 		{
 			"name":"grip",
-			"nPos":[1.0, 1.0, 1.0],
+			"nPos":[-1.0, 1.0, 1.0],
 		}
 		{
 			"name":"catch",
@@ -238,16 +238,16 @@
 		}
 		{
 			"name":"ascend",
-			"nPos":[-1.0, 0.1, 0.0],
-		}
-		{
-			"name":"readyToDrop",
-			"nPos":[-1.0, 0.1, 0.0],
-			"dT":-1.0,
+			"nPos":[-1.0, 0.15, 0.0],
 		}
 		{
 			"name":"drop",
-			"nPos":[-1.0, 0.1, 1.0],
+			"nPos":[-1.0, 0.15, 0.0],
+			"dT":-1,
+		}
+		{
+			"name":"complete",
+			"nPos":[-1.0, 0.15, 1.0],
 			"dT":50000,
 		}
 	}
@@ -264,13 +264,14 @@
 	"nClass":1,
 	"cSpeed":0.0;
 	"cLen":2.0,
+	"bbOverlap":0.5,
 	"dropPos":[0.5,0.2],
 	
 	{
 		"name":"armSet",
 		{
 			"name":"armSet1",
-			"gripX1":0.7,
+			"gripX1":0.65,
 			"gripX2":1.0,
 			"gripY1":0.0,
 			"gripY2":10.0,

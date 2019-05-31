@@ -196,7 +196,7 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 		{
 			OBJECT* pO = &m_obj.m_pNext->m_pObj[i];
 			IF_CONT(pO->m_topClass != pNewO->m_topClass);
-			IF_CONT(bbOverlap(BB, pO->m_bb) < m_mergeOverlap);
+			IF_CONT(nIoU(BB, pO->m_bb) < m_mergeOverlap);
 
 			pO->m_bb.x = small(pNewO->m_bb.x, pO->m_bb.x);
 			pO->m_bb.y = small(pNewO->m_bb.y, pO->m_bb.y);

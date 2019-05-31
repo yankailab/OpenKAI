@@ -127,9 +127,7 @@ void _Sequencer::updateAction(void)
 	}
 	else if(pA->m_dT < 0)
 	{
-//		this->goSleep();
 		this->sleepTime(0);
-		//TODO: update iAction?
 	}
 
 	m_iAction++;

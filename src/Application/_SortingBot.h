@@ -31,6 +31,12 @@ struct SB_TARGET
 		m_d = 0.0;
 		m_tStamp = 0;
 	}
+
+	void moveY(float d)
+	{
+		m_bb.y += d;
+		m_bb.w += d;
+	}
 };
 
 struct SB_ARMSET
@@ -61,6 +67,36 @@ struct SB_ARMSET
 		m_iActuatorZ = 1;
 		m_bTarget = false;
 	}
+
+	bool bStandby(void)
+	{
+		return (m_pSeq->m_iAction == m_iActionStandby);
+	}
+
+	bool bGrip(void)
+	{
+		return (m_pSeq->m_iAction == m_iActionGrip);
+	}
+
+	bool bDrop(void)
+	{
+		return (m_pSeq->m_iAction == m_iActionDrop);
+	}
+
+	bool bComplete(void)
+	{
+		return m_pSeq->m_vAction[m_pSeq->m_iAction].m_bComplete;
+	}
+
+	bool bClass(int iClass)
+	{
+		return m_classFlag & (1 << iClass);
+	}
+
+	SEQUENCER_ACTION* getAction(int iAction)
+	{
+		return m_pSeq->getAction(iAction);
+	}
 };
 
 class _SortingBot: public _ThreadBase
@@ -87,13 +123,13 @@ private:
 
 public:
 	_DetectorBase* m_pDet;
-	vector<SB_TARGET> m_vTarget;
+	deque<SB_TARGET> m_vTarget;
 	vector<SB_ARMSET> m_vArmSet;
 
 	int m_nClass;
 	float m_pDropPos[SB_N_CLASS];
-	float m_cSpeed; //conveyer speed m/s
-	float m_cLen;
+	float m_cSpeed; //conveyer speed
+	float m_cLen;	//conveyer length
 	float m_bbOverlap;
 };
 
