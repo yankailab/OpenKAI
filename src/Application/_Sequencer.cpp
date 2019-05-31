@@ -110,10 +110,16 @@ void _Sequencer::updateAction(void)
 			m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
 	}
 
+	//temp
+	m_ppA[2]->m_nCurrentPos = pA->m_pNpos[2];
+
 	for(i=0; i<pA->m_nA; i++)
 	{
+		IF_CONT(pA->m_pNpos[i]<0.0);
 		IF_(!EAQ(m_ppA[i]->m_nCurrentPos, pA->m_pNpos[i]));
 	}
+
+	pA->m_bComplete = true;
 
 	if(pA->m_dT > 0)
 	{
@@ -121,12 +127,16 @@ void _Sequencer::updateAction(void)
 	}
 	else if(pA->m_dT < 0)
 	{
-		this->goSleep();
+//		this->goSleep();
+		this->sleepTime(0);
+		//TODO: update iAction?
 	}
 
 	m_iAction++;
 	if(m_iAction >= m_vAction.size())
 		m_iAction = 0;
+
+	m_vAction[m_iAction].m_bComplete = false;
 }
 
 SEQUENCER_ACTION* _Sequencer::getAction(int iAction)

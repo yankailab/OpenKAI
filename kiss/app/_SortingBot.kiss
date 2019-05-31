@@ -74,10 +74,10 @@
 	"bInst":1,
 	"Window":"rsCropView",
 	"_VisionBase":"rs1",
-	"x":0.1,
+	"x":0.215,
 	"y":0.1,
-	"z":0.9,
-	"w":0.9,
+	"z":0.73,
+	"w":1.0,
 }
 
 {
@@ -96,10 +96,10 @@
 	"bInst":1,
 	"Window":"rsDepthCropView",
 	"_VisionBase":"depth",
-	"x":0.1,
+	"x":0.215,
 	"y":0.1,
-	"z":0.9,
-	"w":0.9,
+	"z":0.73,
+	"w":1.0,
 }
 
 {
@@ -110,12 +110,14 @@
 	"Window":"rsCropView",
 	"_VisionBase":"cropD",
 	"rL":0.1,
-	"rH":1.0,
-	"rD":0.1,
+	"rH":0.76,
+	"rD":0.02,
 	"bMerge":1,
-	"mergeOverlap":0.0001,
+	"mergeOverlap":0.1,
 	"minH":0.1,
+	"maxH":0.8,
 	"minW":0.1,
+	"maxW":0.8,
 }
 
 {
@@ -127,7 +129,7 @@
 	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"parity":"E",
+	"parity":"E",	
 }
 
 {
@@ -142,7 +144,7 @@
 	"stepFrom":1000,
 	"stepTo":128000,
 	"speedFrom":0,
-	"speedTo":32000,
+	"speedTo":31000,
 }
 
 {
@@ -200,7 +202,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
+	"Window":"rsCropView",
 	
 	{
 		"name":"actuator",
@@ -222,7 +224,7 @@
 		"name":"action",
 		{
 			"name":"standby",
-			"nPos":[1.0, 0.2, 0.0],
+			"nPos":[1.0, 0.1, 0.0],
 			"dT":-1.0,
 		}
 		{
@@ -232,20 +234,21 @@
 		{
 			"name":"catch",
 			"nPos":[-1.0, -1.0, 0.0],
-			"dT":500000,
+			"dT":50000,
 		}
 		{
 			"name":"ascend",
-			"nPos":[-1.0, 0.2, 0.0],
+			"nPos":[-1.0, 0.1, 0.0],
 		}
 		{
 			"name":"readyToDrop",
-			"nPos":[0.0, 0.2, 0.0],
+			"nPos":[-1.0, 0.1, 0.0],
+			"dT":-1.0,
 		}
 		{
 			"name":"drop",
-			"nPos":[-1.0, 0.2, 1.0],
-			"dT":-1.0,
+			"nPos":[-1.0, 0.1, 1.0],
+			"dT":50000,
 		}
 	}
 }
@@ -253,10 +256,11 @@
 {
 	"name":"sortingBot",
 	"class":"_SortingBot",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
+	"Window":"rsCropView",
+	"_DetectorBase":"ds",
 	"nClass":1,
 	"cSpeed":0.0;
 	"cLen":2.0,
@@ -266,10 +270,10 @@
 		"name":"armSet",
 		{
 			"name":"armSet1",
-			"gripX1":0.8,
+			"gripX1":0.7,
 			"gripX2":1.0,
-			"gripY1":0.5,
-			"gripY2":1.0,
+			"gripY1":0.0,
+			"gripY2":10.0,
 			"gripZ1":0.0,
 			"gripZ2":1.0,
 			"iActionStandby":0,
@@ -282,3 +286,4 @@
 		}
 	}
 }
+

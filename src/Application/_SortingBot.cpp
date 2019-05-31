@@ -76,6 +76,11 @@ bool _SortingBot::init(void* pKiss)
 		}
 	}
 
+	iName = "";
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDet, iName + " not found");
+
 	return true;
 }
 
@@ -107,30 +112,38 @@ void _SortingBot::update(void)
 
 int _SortingBot::check(void)
 {
+	NULL__(m_pDet,-1);
+
 	return 0;
 }
 
 void _SortingBot::updateTarget(void)
 {
+	IF_(check()<0);
+
 	int i, j;
 
 	//update existing target positions
 	for (i = 0; i < m_vTarget.size(); i++)
 	{
-		SB_TARGET* pC = &m_vTarget[i];
+		SB_TARGET* pT = &m_vTarget[i];
 
 		float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
-		pC->m_bb.y += spd;
-		pC->m_bb.w += spd;
+		pT->m_bb.y += spd;
+		pT->m_bb.w += spd;
 	}
 
 	//delete targets out of range
-	while (m_vTarget.size() > 0)
-	{
-		SB_TARGET* pC = &m_vTarget[i];
-		if (pC->m_bb.midY() > m_cLen)
-			m_vTarget.erase(m_vTarget.begin());
-	}
+//	while (m_vTarget.size() > 0)
+//	{
+//		SB_TARGET* pC = &m_vTarget[i];
+
+//		if (m_tStamp - pC->m_tStamp > USEC_1SEC*3)
+//			m_vTarget.erase(m_vTarget.begin());
+
+////		if (pC->m_bb.midY() > m_cLen)
+////			m_vTarget.erase(m_vTarget.begin());
+//	}
 
 	//get new targets and compare to existing ones
 	OBJECT* pO;
@@ -140,19 +153,20 @@ void _SortingBot::updateTarget(void)
 	{
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
-			SB_TARGET* pC = &m_vTarget[j];
-			if (bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
+			SB_TARGET* pT = &m_vTarget[j];
+			if (bbOverlap(pT->m_bb, pO->m_bb) > m_bbOverlap)
 				break;
 		}
 
 		IF_CONT(j < m_vTarget.size());
 
-		SB_TARGET c;
-		c.init();
-		c.m_bb = pO->m_bb;
-		c.m_iClass = pO->m_topClass;
-		c.m_tStamp = tStamp;
-		m_vTarget.push_back(c);
+		SB_TARGET t;
+		t.init();
+		t.m_bb = pO->m_bb;
+		t.m_iClass = pO->m_topClass;
+		t.m_d = pO->m_dist;
+		t.m_tStamp = tStamp;
+		m_vTarget.push_back(t);
 	}
 }
 
@@ -169,13 +183,18 @@ void _SortingBot::updateArmset(void)
 		}
 		IF_CONT(pA->m_bTarget);
 		IF_CONT(pA->m_pSeq->m_iAction != pA->m_iActionStandby);
+		IF_CONT(!pA->m_pSeq->m_vAction[pA->m_pSeq->m_iAction].m_bComplete);
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
 			SB_TARGET* pT = &m_vTarget[j];
-			IF_CONT(pA->m_classFlag & (1 << pT->m_iClass));
+			IF_CONT(!pA->m_classFlag & (1 << pT->m_iClass));
 			IF_CONT(pT->m_bb.midY() < pA->m_rGripY.x);
 			IF_CONT(pT->m_bb.midY() > pA->m_rGripY.y);
+
+			//temp
+			IF_CONT(m_tStamp - pT->m_tStamp > USEC_1SEC*2);
+
 			pT->m_bb.y += m_cLen;
 			pT->m_bb.w += m_cLen;
 
@@ -192,6 +211,7 @@ void _SortingBot::updateArmset(void)
 
 			pA->m_bTarget = true;
 			pA->m_pSeq->wakeUp();
+			break;
 		}
 	}
 }

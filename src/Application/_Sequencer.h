@@ -19,14 +19,16 @@ namespace kai
 
 struct SEQUENCER_ACTION
 {
-	float m_pNpos[SQ_N_ACTUATOR];
-	int m_nA;
-	int m_dT;	// <0:pause, =0:no delay, >0:delay time
+	float	m_pNpos[SQ_N_ACTUATOR];
+	int		m_nA;
+	int		m_dT;	// <0:pause, =0:no delay, >0:delay time
+	bool	m_bComplete;
 
 	void init(void)
 	{
 		m_nA = 0;
 		m_dT = 0;
+		m_bComplete = false;
 
 		for(int i=0; i<SQ_N_ACTUATOR; i++)
 			m_pNpos[i] = 0.0;
