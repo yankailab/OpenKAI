@@ -1,45 +1,43 @@
 /*
- * _ClassifierBot.cpp
+ * _SortingBot.cpp
  *
  *  Created on: May 28, 2019
  *      Author: yankai
  */
 
-#include "_ClassifierBot.h"
+#include "_SortingBot.h"
 
 namespace kai
 {
 
-_ClassifierBot::_ClassifierBot()
+_SortingBot::_SortingBot()
 {
 	m_pDet = NULL;
-	m_speed = 0.0;
+	m_cSpeed = 0.0;
 	m_nClass = 0;
 	m_cLen = 2.0;
-	m_kD = 1.0;
 	m_bbOverlap = 0.8;
 }
 
-_ClassifierBot::~_ClassifierBot()
+_SortingBot::~_SortingBot()
 {
 }
 
-bool _ClassifierBot::init(void* pKiss)
+bool _SortingBot::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, nClass);
-	KISSm(pK, speed);
+	KISSm(pK, cSpeed);
 	KISSm(pK, cLen);
-	KISSm(pK, kD);
-	pK->array("dropPos", m_pDropPos, CB_N_CLASS);
+	pK->array("dropPos", m_pDropPos, SB_N_CLASS);
 
 	Kiss* pA;
 	Kiss** pItr;
 	string iName;
 	int i;
-	int pClass[CB_N_CLASS];
+	int pClass[SB_N_CLASS];
 
 	pA = pK->o("armSet");
 	if (pA)
@@ -50,18 +48,22 @@ bool _ClassifierBot::init(void* pKiss)
 
 		while ((pC = pItr[i++]))
 		{
-			CBOT_ARMSET c;
+			SB_ARMSET c;
 			c.init();
 
 			pC->v("gripX1", &c.m_rGripX.x);
 			pC->v("gripX2", &c.m_rGripX.y);
 			pC->v("gripY1", &c.m_rGripY.x);
 			pC->v("gripY2", &c.m_rGripY.y);
-			pC->v("iActionGripStandby", &c.m_iActionGripStandby);
+			pC->v("gripZ1", &c.m_rGripZ.x);
+			pC->v("gripZ2", &c.m_rGripZ.y);
+			pC->v("iActionStandby", &c.m_iActionStandby);
+			pC->v("iActionGrip", &c.m_iActionGrip);
 			pC->v("iActionDrop", &c.m_iActionDrop);
 			pC->v("iActuatorX", &c.m_iActuatorX);
+			pC->v("iActuatorZ", &c.m_iActuatorZ);
 
-			int nC = pC->array("class", pClass, CB_N_CLASS);
+			int nC = pC->array("class", pClass, SB_N_CLASS);
 			for (int j = 0; j < nC; j++)
 				c.m_classFlag |= (1 << pClass[j]);
 
@@ -77,7 +79,7 @@ bool _ClassifierBot::init(void* pKiss)
 	return true;
 }
 
-bool _ClassifierBot::start(void)
+bool _SortingBot::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -90,7 +92,7 @@ bool _ClassifierBot::start(void)
 	return true;
 }
 
-void _ClassifierBot::update(void)
+void _SortingBot::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -103,21 +105,21 @@ void _ClassifierBot::update(void)
 	}
 }
 
-int _ClassifierBot::check(void)
+int _SortingBot::check(void)
 {
 	return 0;
 }
 
-void _ClassifierBot::updateTarget(void)
+void _SortingBot::updateTarget(void)
 {
 	int i, j;
 
 	//update existing target positions
 	for (i = 0; i < m_vTarget.size(); i++)
 	{
-		CBOT_TARGET* pC = &m_vTarget[i];
+		SB_TARGET* pC = &m_vTarget[i];
 
-		float spd = m_speed; //
+		float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
 		pC->m_bb.y += spd;
 		pC->m_bb.w += spd;
 	}
@@ -125,7 +127,7 @@ void _ClassifierBot::updateTarget(void)
 	//delete targets out of range
 	while (m_vTarget.size() > 0)
 	{
-		CBOT_TARGET* pC = &m_vTarget[i];
+		SB_TARGET* pC = &m_vTarget[i];
 		if (pC->m_bb.midY() > m_cLen)
 			m_vTarget.erase(m_vTarget.begin());
 	}
@@ -138,23 +140,14 @@ void _ClassifierBot::updateTarget(void)
 	{
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
-			CBOT_TARGET* pC = &m_vTarget[j];
-//			if (bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
-//				break;
-
-			Rect2f r1, r2;
-			vFloat42rect(pO->m_bb, r1);
-			vFloat42rect(pC->m_bb, r2);
-			Rect2f rOR = r1 | r2;
-			Rect2f rAND = r1 & r2;
-			float IoU = rAND.area() / rOR.area();
-			if (IoU > m_bbOverlap)
+			SB_TARGET* pC = &m_vTarget[j];
+			if (bbOverlap(pC->m_bb, pO->m_bb) > m_bbOverlap)
 				break;
 		}
 
 		IF_CONT(j < m_vTarget.size());
 
-		CBOT_TARGET c;
+		SB_TARGET c;
 		c.init();
 		c.m_bb = pO->m_bb;
 		c.m_iClass = pO->m_topClass;
@@ -163,39 +156,47 @@ void _ClassifierBot::updateTarget(void)
 	}
 }
 
-void _ClassifierBot::updateArmset(void)
+void _SortingBot::updateArmset(void)
 {
-	//assign armset target and drop destination, resume the armset, and delete the target from vector
+	//assign armset target and drop destination, resume the armset
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
-		CBOT_ARMSET* pA = &m_vArmSet[i];
+		SB_ARMSET* pA = &m_vArmSet[i];
 		if(pA->m_pSeq->m_iAction == pA->m_iActionDrop)
 		{
 			pA->m_bTarget = false;
 			pA->m_pSeq->wakeUp();
 		}
 		IF_CONT(pA->m_bTarget);
-		IF_CONT(pA->m_pSeq->m_iAction != pA->m_iActionGripStandby);
+		IF_CONT(pA->m_pSeq->m_iAction != pA->m_iActionStandby);
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
-			CBOT_TARGET* pT = &m_vTarget[j];
+			SB_TARGET* pT = &m_vTarget[j];
 			IF_CONT(pA->m_classFlag & (1 << pT->m_iClass));
 			IF_CONT(pT->m_bb.midY() < pA->m_rGripY.x);
 			IF_CONT(pT->m_bb.midY() > pA->m_rGripY.y);
-			pT->m_bb.y = m_cLen;
-			pT->m_bb.w = m_cLen;
+			pT->m_bb.y += m_cLen;
+			pT->m_bb.w += m_cLen;
 
-			SEQUENCER_ACTION* pS = pA->m_pSeq->getAction(pA->m_iActionDrop);
+			SEQUENCER_ACTION* pS;
+
+			pS = pA->m_pSeq->getAction(pA->m_iActionGrip);
+			IF_CONT(!pS);
+			pS->m_pNpos[pA->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pA->m_rGripX.len() + pA->m_rGripX.x;
+			pS->m_pNpos[pA->m_iActuatorZ] = pT->m_d * pA->m_rGripZ.len() + pA->m_rGripZ.x;
+
+			pS = pA->m_pSeq->getAction(pA->m_iActionDrop);
 			IF_CONT(!pS);
 			pS->m_pNpos[pA->m_iActuatorX] = m_pDropPos[pT->m_iClass];
+
 			pA->m_bTarget = true;
 			pA->m_pSeq->wakeUp();
 		}
 	}
 }
 
-bool _ClassifierBot::draw(void)
+bool _SortingBot::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -204,7 +205,7 @@ bool _ClassifierBot::draw(void)
 	return true;
 }
 
-bool _ClassifierBot::console(int& iY)
+bool _SortingBot::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
 

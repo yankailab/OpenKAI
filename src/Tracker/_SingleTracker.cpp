@@ -105,13 +105,11 @@ void _SingleTracker::track(void)
 
 	m_pTracker->update(*pMat, m_rBB);
 
-	vInt4 iBB;
-	rect2vInt4(m_rBB,iBB);
-
-	m_bb.x = (double)iBB.x / (double)pMat->cols;
-	m_bb.y = (double)iBB.y / (double)pMat->rows;
-	m_bb.z = (double)iBB.z / (double)pMat->cols;
-	m_bb.w = (double)iBB.w / (double)pMat->rows;
+	vDouble4 dBB = convertBB(m_rBB);
+	m_bb.x = (double)dBB.x / (double)pMat->cols;
+	m_bb.y = (double)dBB.y / (double)pMat->rows;
+	m_bb.z = (double)dBB.z / (double)pMat->cols;
+	m_bb.w = (double)dBB.w / (double)pMat->rows;
 }
 
 }

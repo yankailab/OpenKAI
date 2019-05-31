@@ -108,17 +108,15 @@ bool Traffic_alert::draw(void)
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
 
-	vInt4 iBB;
 	Point pC;
-	Rect r;
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_obj.at(i++)) != NULL)
 	{
-//		iBB = pO->iBBox(cs);
-		pC = Point(iBB.midX(), iBB.midY());
-		vInt42rect(iBB, r);
-		rectangle(*pMat, r, col, 3);
+//		vInt4 iBB = pO->iBBox(cs);
+//		pC = Point(iBB.midX(), iBB.midY());
+//		Rect r = convertBB(iBB);
+//		rectangle(*pMat, r, col, 3);
 	}
 
 	if(m_fNalert.v() > (double)m_nAlert)

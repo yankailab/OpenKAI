@@ -25,8 +25,8 @@ _DetectorBase::_DetectorBase()
 	m_nClass = 0;
 	m_obj.reset();
 	m_bMerge = false;
-	m_kMerge = -1.0;
-	m_scaleBB = -1.0;
+	m_mergeOverlap = 0.8;
+	m_bbScale = -1.0;
 
 	m_drawVscale = 1.0;
 	m_bDrawSegment = false;
@@ -56,8 +56,8 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, maxW);
 	KISSm(pK, maxH);
 	KISSm(pK, bMerge);
-	KISSm(pK, kMerge);
-	KISSm(pK, scaleBB);
+	KISSm(pK, mergeOverlap);
+	KISSm(pK, bbScale);
 	m_obj.reset();
 
 	//model
@@ -182,26 +182,21 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	IF_N(m_minH >= 0 && pNewO->height() < m_minW);
 	IF_N(m_maxH >= 0 && pNewO->height() > m_maxH);
 
+	if(m_bbScale > 0.0)
+	{
+		pNewO->m_bb = bbScale(pNewO->m_bb, m_bbScale);
+		pNewO->m_bb.constrain(0.0, 1.0);
+	}
+
 	if(m_bMerge)
 	{
 		vFloat4 BB = pNewO->m_bb;
-		if(m_kMerge > 0)
-			BB = bbScale(BB, m_kMerge);
 
 		for(int i=0; i<m_obj.m_pNext->m_nObj; i++)
 		{
 			OBJECT* pO = &m_obj.m_pNext->m_pObj[i];
 			IF_CONT(pO->m_topClass != pNewO->m_topClass);
-
-			if(m_kMerge > 0)
-			{
-				vFloat4 zBB = bbScale(pO->m_bb, m_kMerge);
-				IF_CONT(!bOverlapped(BB, zBB));
-			}
-			else
-			{
-				IF_CONT(!bOverlapped(BB, pO->m_bb));
-			}
+			IF_CONT(bbOverlap(BB, pO->m_bb) < m_mergeOverlap);
 
 			pO->m_bb.x = small(pNewO->m_bb.x, pO->m_bb.x);
 			pO->m_bb.y = small(pNewO->m_bb.y, pO->m_bb.y);
@@ -212,12 +207,6 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 
 			return pO;
 		}
-	}
-
-	if(m_scaleBB > 0.0)
-	{
-		pNewO->m_bb = bbScale(pNewO->m_bb, m_scaleBB);
-		pNewO->m_bb.constrain(0.0, 1.0);
 	}
 
 	return m_obj.add(pNewO);

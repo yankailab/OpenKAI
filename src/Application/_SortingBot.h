@@ -1,45 +1,50 @@
 /*
- * _ClassifierBot.h
+ * _SortingBot.h
  *
  *  Created on: May 28, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application__ClassifierBot_H_
-#define OpenKAI_src_Application__ClassifierBot_H_
+#ifndef OpenKAI_src_Application__SortingBot_H_
+#define OpenKAI_src_Application__SortingBot_H_
 
 #include "../Base/common.h"
 #include "../Detector/_DetectorBase.h"
 #include "_Sequencer.h"
 
-#define CB_N_CLASS 16
+#define SB_N_CLASS 16
 
 namespace kai
 {
 
-struct CBOT_TARGET
+struct SB_TARGET
 {
 	int m_iClass;
 	vFloat4 m_bb;
+	float	m_d;	//distance from gripper standby pos
 	uint64_t m_tStamp;
 
 	void init(void)
 	{
 		m_iClass = -1;
 		m_bb.init();
+		m_d = 0.0;
 		m_tStamp = 0;
 	}
 };
 
-struct CBOT_ARMSET
+struct SB_ARMSET
 {
 	_Sequencer*	m_pSeq;
 	uint64_t	m_classFlag;
-	vFloat2	m_rGripX;	//grippable region X, target bb midX will be remapped into this region
-	vFloat2	m_rGripY;	//grippable region Y
-	int		m_iActionGripStandby;
+	vFloat2	m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
+	vFloat2	m_rGripY;	//grip region Y
+	vFloat2	m_rGripZ;	//vertical
+	int		m_iActionStandby;
+	int		m_iActionGrip;
 	int		m_iActionDrop;
 	int		m_iActuatorX;
+	int		m_iActuatorZ;
 	bool	m_bTarget;
 
 	void init(void)
@@ -48,18 +53,21 @@ struct CBOT_ARMSET
 		m_classFlag = 0;
 		m_rGripX.init();
 		m_rGripY.init();
-		m_iActionGripStandby = -1;
+		m_rGripZ.init();
+		m_iActionStandby = -1;
+		m_iActionGrip = -1;
 		m_iActionDrop = -1;
 		m_iActuatorX = 0;
+		m_iActuatorZ = 1;
 		m_bTarget = false;
 	}
 };
 
-class _ClassifierBot: public _ThreadBase
+class _SortingBot: public _ThreadBase
 {
 public:
-	_ClassifierBot(void);
-	virtual ~_ClassifierBot();
+	_SortingBot(void);
+	virtual ~_SortingBot();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -73,21 +81,20 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_ClassifierBot *) This)->update();
+		((_SortingBot *) This)->update();
 		return NULL;
 	}
 
 public:
 	_DetectorBase* m_pDet;
-	vector<CBOT_TARGET> m_vTarget;
-	vector<CBOT_ARMSET> m_vArmSet;
+	vector<SB_TARGET> m_vTarget;
+	vector<SB_ARMSET> m_vArmSet;
 
 	int m_nClass;
-	float m_pDropPos[CB_N_CLASS];
-	float m_speed; //conveyer speed m/s
-	float m_bbOverlap;
+	float m_pDropPos[SB_N_CLASS];
+	float m_cSpeed; //conveyer speed m/s
 	float m_cLen;
-	float m_kD;
+	float m_bbOverlap;
 };
 
 }

@@ -195,6 +195,49 @@ template <typename T> inline T bbScale(T& bb, float k)
 	return B;
 }
 
+inline vInt4 convertBB(Rect& r)
+{
+	vInt4 v;
+	v.x = r.x;
+	v.y = r.y;
+	v.z = r.x + r.width;
+	v.w = r.y + r.height;
+
+	return v;
+}
+
+inline vDouble4 convertBB(Rect2d& r)
+{
+	vDouble4 v;
+	v.x = r.x;
+	v.y = r.y;
+	v.z = r.x + r.width;
+	v.w = r.y + r.height;
+
+	return v;
+}
+
+inline Rect convertBB(vInt4& v)
+{
+	Rect r;
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
+
+	return r;
+}
+
+inline Rect2f convertBB(vFloat4& v)
+{
+	Rect2f r;
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
+	return r;
+}
+
 template <typename T> inline bool bOverlapped(T& pA, T& pB)
 {
 	IF_F(pA.z < pB.x || pA.x > pB.z);
@@ -203,40 +246,27 @@ template <typename T> inline bool bOverlapped(T& pA, T& pB)
 	return true;
 }
 
+inline float bbOverlap(Rect2f& r1, Rect2f& r2)
+{
+	Rect2f rOR = r1 | r2;
+	Rect2f rAND = r1 & r2;
+	return rAND.area() / rOR.area();
+}
+
 inline float bbOverlap(vFloat4& bb1, vFloat4& bb2)
 {
-  if (bb1.x > bb2.z) { return 0.0; }
-  if (bb1.y > bb2.w) { return 0.0; }
-  if (bb1.z < bb2.x) { return 0.0; }
-  if (bb1.w < bb2.y) { return 0.0; }
-  float colInt =  min(bb1.z, bb2.z) - max(bb1.x, bb2.x);
-  float rowInt =  min(bb1.w, bb2.w) - max(bb1.y, bb2.y);
-  float intersection = colInt * rowInt;
-  return intersection / (bb1.area() + bb2.area() - intersection);
-}
+//  if (bb1.x > bb2.z) { return 0.0; }
+//  if (bb1.y > bb2.w) { return 0.0; }
+//  if (bb1.z < bb2.x) { return 0.0; }
+//  if (bb1.w < bb2.y) { return 0.0; }
+//  float colInt =  min(bb1.z, bb2.z) - max(bb1.x, bb2.x);
+//  float rowInt =  min(bb1.w, bb2.w) - max(bb1.y, bb2.y);
+//  float intersection = colInt * rowInt;
+//  return intersection / (bb1.area() + bb2.area() - intersection);
 
-inline void rect2vInt4(Rect r, vInt4& v)
-{
-	v.x = r.x;
-	v.y = r.y;
-	v.z = r.x + r.width;
-	v.w = r.y + r.height;
-}
-
-inline void vInt42rect(vInt4 v, Rect& r)
-{
-	r.x = v.x;
-	r.y = v.y;
-	r.width = v.z - v.x;
-	r.height = v.w - v.y;
-}
-
-inline void vFloat42rect(vFloat4 v, Rect2f& r)
-{
-	r.x = v.x;
-	r.y = v.y;
-	r.width = v.z - v.x;
-	r.height = v.w - v.y;
+	Rect2f r1 = convertBB(bb1);
+	Rect2f r2 = convertBB(bb2);
+	return bbOverlap(r1,r2);
 }
 
 template <typename T> inline T constrain(T v, T a, T b)

@@ -24,6 +24,7 @@ struct OBJECT
 {
 	//BBox normalized to 0.0 to 1.0
 	vFloat4		m_bb;
+	float		m_dist;
 
 	//Vertices in pixel unit
 	vFloat2		m_pV[OBJ_N_VERTICES];
@@ -51,6 +52,7 @@ struct OBJECT
 	void init(void)
 	{
 		m_bb.init();
+		m_dist = 0.0;
 		m_nV = 0;
 
 		resetClass();
@@ -268,8 +270,8 @@ public:
 	double m_minH;
 	double m_maxH;
 	bool   m_bMerge;
-	float	m_kMerge;
-	float	m_scaleBB;
+	float	m_mergeOverlap;
+	float	m_bbScale;
 
 	//model
 	string m_modelFile;

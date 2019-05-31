@@ -107,6 +107,9 @@ void _Crop::filter(void)
 		   m_roi.width() * mIn.cols,
 		   m_roi.height() * mIn.rows);
 
+	m_w = r.width;
+	m_h = r.height;
+
 	m_fBGR.copy(mIn(r));
 }
 

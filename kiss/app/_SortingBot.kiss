@@ -1,0 +1,284 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"rsView",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"rsDepthView",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"depthGrayView",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"rsCropView",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"rsDepthCropView",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"rs1",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"rsView",
+	"depthWindow":"rsDepthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"rFrom":0.1,
+	"rTo":1.0,
+}
+
+{
+	"name":"cropRGB",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":1,
+	"Window":"rsCropView",
+	"_VisionBase":"rs1",
+	"x":0.1,
+	"y":0.1,
+	"z":0.9,
+	"w":0.9,
+}
+
+{
+	"name":"depth",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":1,
+	"Window":"depthGrayView",
+	"_DepthVisionBase":"rs1",
+}
+
+{
+	"name":"cropD",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":1,
+	"Window":"rsDepthCropView",
+	"_VisionBase":"depth",
+	"x":0.1,
+	"y":0.1,
+	"z":0.9,
+	"w":0.9,
+}
+
+{
+	"name":"ds",
+	"class":"_DepthSegment",
+	"FPS":30,
+	"bInst":1,
+	"Window":"rsCropView",
+	"_VisionBase":"cropD",
+	"rL":0.1,
+	"rH":1.0,
+	"rD":0.1,
+	"bMerge":1,
+	"mergeOverlap":0.0001,
+	"minH":0.1,
+	"minW":0.1,
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"parity":"E",
+}
+
+{
+	"name":"omX",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"stepFrom":1000,
+	"stepTo":128000,
+	"speedFrom":0,
+	"speedTo":32000,
+}
+
+{
+	"name":"omY",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":3,
+	"stepFrom":1000,
+	"stepTo":43000,
+	"speedFrom":0,
+	"speedTo":50000,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"bStream":1,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"arduServo",
+}
+
+{
+	"name":"arduServo",
+	"class":"_ArduServo",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	
+	{
+		"pwmL":1500,
+		"pwmH":2300,
+		"dir":-1,
+	}
+	{
+		"pwmL":700,
+		"pwmH":1500,
+		"dir":1,
+	}
+}
+
+{
+	"name":"sequencer1",
+	"class":"_Sequencer",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	
+	{
+		"name":"actuator",
+		{
+			"name":"X",
+			"_ActuatorBase":"omX",
+		}
+		{
+			"name":"Y",
+			"_ActuatorBase":"omY",
+		}
+		{
+			"name":"Gripper",
+			"_ActuatorBase":"arduServo",
+		}
+	}
+
+	{
+		"name":"action",
+		{
+			"name":"standby",
+			"nPos":[1.0, 0.2, 0.0],
+			"dT":-1.0,
+		}
+		{
+			"name":"grip",
+			"nPos":[1.0, 1.0, 1.0],
+		}
+		{
+			"name":"catch",
+			"nPos":[-1.0, -1.0, 0.0],
+			"dT":500000,
+		}
+		{
+			"name":"ascend",
+			"nPos":[-1.0, 0.2, 0.0],
+		}
+		{
+			"name":"readyToDrop",
+			"nPos":[0.0, 0.2, 0.0],
+		}
+		{
+			"name":"drop",
+			"nPos":[-1.0, 0.2, 1.0],
+			"dT":-1.0,
+		}
+	}
+}
+
+{
+	"name":"sortingBot",
+	"class":"_SortingBot",
+	"bInst":0,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"nClass":1,
+	"cSpeed":0.0;
+	"cLen":2.0,
+	"dropPos":[0.5,0.2],
+	
+	{
+		"name":"armSet",
+		{
+			"name":"armSet1",
+			"gripX1":0.8,
+			"gripX2":1.0,
+			"gripY1":0.5,
+			"gripY2":1.0,
+			"gripZ1":0.0,
+			"gripZ2":1.0,
+			"iActionStandby":0,
+			"iActionGrip":1,
+			"iActionDrop":4,
+			"iActuatorX":0,
+			"iActuatorZ":1,
+			"class":[0,1],
+			"_Sequencer":"sequencer1",
+		}
+	}
+}

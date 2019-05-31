@@ -19,8 +19,8 @@ _ThreadBase::_ThreadBase()
 	m_FPS = 0;
 	m_targetFPS = DEFAULT_FPS;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
-	m_timeFrom = 0;
-	m_timeTo = 0;
+	m_tFrom = 0;
+	m_tTo = 0;
 	m_bGoSleep = false;
 	m_bSleeping = false;
 	m_pWakeUp = NULL;
@@ -117,14 +117,6 @@ void _ThreadBase::wakeUpLinked(void)
 	m_pWakeUp->wakeUp();
 }
 
-void _ThreadBase::updateTime(void)
-{
-	uint64_t newTime = getTimeUsec();
-	m_dTime = newTime - m_tStamp + 1;
-	m_tStamp = newTime;
-	m_FPS = USEC_1SEC / m_dTime;
-}
-
 double _ThreadBase::getFrameRate(void)
 {
 	return m_FPS;
@@ -140,15 +132,17 @@ void _ThreadBase::setTargetFPS(int fps)
 
 void _ThreadBase::autoFPSfrom(void)
 {
-	m_timeFrom = getTimeUsec();
+	m_tFrom = getTimeUsec();
+	m_dTime = m_tFrom - m_tStamp + 1;
+	m_tStamp = m_tFrom;
+	m_FPS = USEC_1SEC / m_dTime;
 }
 
 void _ThreadBase::autoFPSto(void)
 {
-	m_timeTo = getTimeUsec();
-	this->updateTime();
+	m_tTo = getTimeUsec();
 
-	int uSleep = (int) (m_targetFrameTime - (m_timeTo - m_timeFrom));
+	int uSleep = (int) (m_targetFrameTime - (m_tTo - m_tFrom));
 	if (uSleep > 1000)
 	{
 		this->sleepTime(uSleep);
@@ -179,9 +173,8 @@ bool _ThreadBase::console(int& iY)
 {
 	IF_F(!this->BASE::console(iY));
 
-	string msg = "FPS: " + i2str(m_FPS);
-	COL_FPS;
-	mvaddstr(iY, CONSOLE_X_FPS, msg.c_str());
+	string msg;
+	C_FPS("FPS: " + i2str(m_FPS));
 
 	return true;
 }

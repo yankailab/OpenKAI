@@ -101,15 +101,15 @@ bool BASE::draw(void)
 
 bool BASE::console(int& iY)
 {
-	COL_NAME;
-    mvaddstr(iY, CONSOLE_X_NAME, this->getName()->c_str());
+    string msg;
+    C_NAME(*this->getName());
 
     if(m_consoleMsgLevel > 0)
     	COL_ERROR;
     else
     	COL_MSG;
 
-    mvaddstr(iY, CONSOLE_X_MSG, m_consoleMsg.c_str());
+    C_MSG(m_consoleMsg);
 
     return true;
 }

@@ -32,7 +32,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Contrast);
 	ADD_MODULE(_Crop);
 	ADD_MODULE(_ClusterNet);
-	ADD_MODULE(_ClassifierBot);
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
@@ -65,6 +64,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
+	ADD_MODULE(_SortingBot);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);
 	ADD_MODULE(_Thermal);

@@ -12,9 +12,9 @@ namespace kai
 
 _DepthSegment::_DepthSegment()
 {
-	m_rL = 200;
-	m_rH = 255;
-	m_rD = 0.05;
+	m_rL = 0.0;
+	m_rH = 1.0;
+	m_rD = 0.1;
 }
 
 _DepthSegment::~_DepthSegment()
@@ -78,17 +78,14 @@ void _DepthSegment::detect(void)
 	IF_(check()<0);
 
 	Mat mD;
-	float d = 255.0/(m_rH - m_rL);
-	m_pVision->BGR()->m()->convertTo(mD, CV_8UC1, d, -m_rL*d);
-
+	m_pVision->BGR()->m()->copyTo(mD);
 	vInt2 cs;
 	m_pVision->info(&cs, NULL, NULL);
 
 	vector< vector< Point > > vvC;
-	int dR = m_rD * 255.0;
-	for(int r=0; r<255; r+=dR)
+	for(float r=m_rL; r<m_rH; r+=m_rD)
 	{
-		cv::inRange(mD, 0, r, m_mR);
+		cv::inRange(mD, 1, (r-m_rL)*255.0+2, m_mR);
 		findContours(m_mR, vvC, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
 		OBJECT o;
@@ -103,6 +100,7 @@ void _DepthSegment::detect(void)
 			o.m_tStamp = m_tStamp;
 			o.setBB(rBB, cs);
 			o.setTopClass(0, o.area());
+			o.m_dist = r;
 
 			//TODO: classify
 

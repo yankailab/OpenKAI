@@ -106,7 +106,8 @@ void _Sequencer::updateAction(void)
 	SEQUENCER_ACTION* pA = &m_vAction[m_iAction];
 	for(i=0; i<pA->m_nA; i++)
 	{
-		m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
+		if(pA->m_pNpos[i]>=0.0)
+			m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
 	}
 
 	for(i=0; i<pA->m_nA; i++)

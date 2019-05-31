@@ -36,7 +36,6 @@ public:
 	virtual void wakeUp(void);
 	virtual void wakeUpLinked(void);
 
-	virtual void updateTime(void);
 	virtual double getFrameRate(void);
 	virtual void setTargetFPS(int fps);
 	virtual void autoFPSfrom(void);
@@ -57,8 +56,8 @@ public:
 	int64_t m_FPS;
 	int64_t m_targetFPS;
 	int64_t m_targetFrameTime;
-	int64_t m_timeFrom;
-	int64_t m_timeTo;
+	int64_t m_tFrom;
+	int64_t m_tTo;
 	bool	m_bGoSleep;
 	bool	m_bSleeping;
 

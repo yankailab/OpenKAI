@@ -81,9 +81,8 @@ double _DepthVisionBase::d(vInt4* pROI)
 	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
 	vector<int> vChannel = { 0 };
 
-	Rect roi;
-	vInt42rect(*pROI, roi);
-	Mat mRoi = (*m_fDepth.m())(roi);
+	Rect r = convertBB(*pROI);
+	Mat mRoi = (*m_fDepth.m())(r);
 	vector<Mat> vRoi = {mRoi};
 	Mat mHist;
 	cv::calcHist(vRoi, vChannel, Mat(),

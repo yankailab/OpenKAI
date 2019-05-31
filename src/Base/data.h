@@ -85,7 +85,7 @@ struct vFloat2
 
 	float len(void)
 	{
-		return sqrt(x*x + y*y);
+		return abs(y-x);
 	}
 };
 

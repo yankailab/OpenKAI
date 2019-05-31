@@ -163,9 +163,7 @@ void _CutOut::process(CutOutDir* pD)
 			iBB.z = fBB.z * mRGB.cols;
 			iBB.w = fBB.w * mRGB.rows;
 
-			Rect r;
-			vInt42rect(iBB,r);
-
+			Rect r = convertBB(iBB);
 			Mat mBB = Mat(mRGB, r);
 			IF_CONT(mBB.empty());
 			Mat mBBs;
@@ -195,9 +193,7 @@ void _CutOut::process(CutOutDir* pD)
 				iBB.z = fBB.z * mSeg.cols;
 				iBB.w = fBB.w * mSeg.rows;
 
-				Rect r;
-				vInt42rect(iBB,r);
-
+				Rect r = convertBB(iBB);
 				Mat mBB = Mat(mSeg, r);
 				IF_CONT(mBB.empty());
 
