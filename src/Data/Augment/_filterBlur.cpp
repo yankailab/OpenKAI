@@ -60,7 +60,7 @@ void _filterBlur::update(void)
 		for (int j = 0; j < m_nProduce; j++)
 		{
 			cv::blur(mIn, mOut,	Size(m_dRand * NormRand() + 1, m_dRand * NormRand() + 1));
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

@@ -65,7 +65,7 @@ void _filterSaturation::update(void)
 			Mat mOut;
 			mIn.convertTo(mOut, mIn.type(), m_dRand*NormRand(), m_dSaturation*NormRand());
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 			nTot++;
 		}
 

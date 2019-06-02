@@ -48,8 +48,8 @@ public:
 	string m_extOut;
 
 	vector<string> m_vFileIn;
-	vector<int> m_PNGcompress;
-	int m_PNGcompression;
+	vector<int> m_vCompress;
+	int m_compression;
 
 };
 }

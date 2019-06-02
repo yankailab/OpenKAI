@@ -15,28 +15,32 @@
 	"class":"_Augment",
 	"bInst":1,
 	"bLog":1,
-	"dirIn":"/home/kai/dev/DNNmodel/train/TRAIN/",
+	"dirIn":"/media/kai/ssd/img/wood",
 	"extIn":[".jpg",".jpeg",".png",".bmp"],
-	"extOut":".png",
+	"extOut":".jpg",
+	"compression":90,
 	"bConvertFormat":0,
-	"PNGcompression":9,
 	"nThread":8,
 	"/filter":["rotate","flip","saturation","crop","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"],
-	"filter":["saturation","shrink","lowResolution","contrast","brightness","histEqualize","blur","noise","gaussianBlur","medianBlur","bilateralBlur"],
+	"filter":["crop","contrast","brightness","tone","blur"],
 	
 	{
 		"name":"rotate",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
+		"extOut":".jpg",
+		"compression":90,
 	}
 	
 	{
 		"name":"flip",
-		"bInst":1,
+		"bInst":0,
 		"nProduce":1,
+		"extOut":".jpg",
+		"compression":90,
 	}
 	
 	{
@@ -45,37 +49,45 @@
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
-		"nProduce":1,
-		"dRand":0.25,
+		"nProduce":2,
+		"dRand":0.9,
+		"extOut":".jpg",
+		"compression":90,
 	}
 	
 	{
 		"name":"shrink",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":0.25,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"lowResolution",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":0.25,
 		"minScale":0.5,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"histEqualize",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
+		"extOut":".jpg",
+		"compression":90,
 	}
 	
 	{
@@ -86,6 +98,8 @@
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":0.5,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
@@ -96,6 +110,8 @@
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":100,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
@@ -105,55 +121,67 @@
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
-		"dRand":100,
+		"dRand":50,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"noise",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":128,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"gaussianBlur",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":100,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"medianBlur",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":100,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"bilateralBlur",
-		"bInst":1,
+		"bInst":0,
 		"noiseMean":128,
 		"noiseDev":128,
 		"noiseType":1,
 		"nProduce":1,
 		"dRand":100,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
 		"name":"saturation",
-		"bInst":1,
+		"bInst":0,
 		"nProduce":1,
 		"dRand":2.0,
 		"dSaturation":100,
+		"extOut":".jpg",
+		"compression":90,
 	}
 
 	{
@@ -161,6 +189,8 @@
 		"bInst":1,
 		"nProduce":1,
 		"dRand":1.0,
+		"extOut":".jpg",
+		"compression":90,
 	}
 }
 

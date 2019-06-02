@@ -90,7 +90,7 @@ void _Augment::update(void)
 				IF_CONT(mIn.empty());
 
 				string dirNameIn = getFileDir(fNameIn);
-				cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_PNGcompress);
+				cv::imwrite(dirNameIn + uuid() + m_extOut, mIn, m_vCompress);
 				remove(fNameIn.c_str());
 			}
 

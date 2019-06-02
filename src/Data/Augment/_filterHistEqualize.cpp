@@ -68,7 +68,7 @@ void _filterHistEqualize::update(void)
 		merge(vChannels,mIn); 							//merge 3 channels including the modified 1st channel into one image
         cv::cvtColor(mIn, mOut, COLOR_YCrCb2BGR); 			//change the color image from YCrCb to BGR format (to display image properly)
 
-		cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+		cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 
 		nTot++;
 		double prog = (double) i / (double) m_vFileIn.size();

@@ -63,7 +63,7 @@ void _filterMedianBlur::update(void)
 			if(rK%2==0)rK++;
 
 			cv::medianBlur(mIn, mOut, rK);
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

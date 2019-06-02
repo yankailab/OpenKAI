@@ -76,7 +76,7 @@ void _filterShrink::update(void)
 									sMat.cols,
 									sMat.rows)));
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

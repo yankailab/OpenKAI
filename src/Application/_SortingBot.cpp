@@ -122,12 +122,9 @@ void _SortingBot::updateTarget(void)
 	IF_(check()<0);
 
 	//update existing target positions
+	float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
 	for (SB_TARGET t : m_vTarget)
-	{
-		float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
-		t.m_bb.y += spd;
-		t.m_bb.w += spd;
-	}
+		t.moveY(spd);
 
 	//delete targets out of range
 	while(m_vTarget.front().m_bb.midY() > m_cLen)

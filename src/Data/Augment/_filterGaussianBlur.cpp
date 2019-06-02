@@ -66,7 +66,7 @@ void _filterGaussianBlur::update(void)
 			if(rY%2==0)rY++;
 
 			cv::GaussianBlur(mIn, mOut, Size(rX,rY), 0, 0);
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

@@ -29,6 +29,7 @@
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_Line.h"
+#include "../Detector/_LineScan.h"
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
 

@@ -14,12 +14,12 @@ _DataBase::_DataBase()
 {
 	m_dirIn = "";
 	m_extOut = ".png";
-	m_PNGcompression = 0;
+	m_compression = 0;
 }
 
 _DataBase::~_DataBase()
 {
-	m_PNGcompress.clear();
+	m_vCompress.clear();
 	m_vExtIn.clear();
 }
 
@@ -39,9 +39,13 @@ bool _DataBase::init(void* pKiss)
 		m_vExtIn.push_back(pExtIn[i]);
 	}
 
-	KISSm(pK, PNGcompression);
-	m_PNGcompress.push_back(IMWRITE_PNG_COMPRESSION);
-	m_PNGcompress.push_back(m_PNGcompression);
+	KISSm(pK, compression);
+	if(m_extOut == ".jpg" || m_extOut == ".jpeg" || m_extOut == ".JPG" || m_extOut == ".JPEG")
+		m_vCompress.push_back(IMWRITE_JPEG_QUALITY);
+	else
+		m_vCompress.push_back(IMWRITE_PNG_COMPRESSION);
+
+	m_vCompress.push_back(m_compression);
 
 	return true;
 }

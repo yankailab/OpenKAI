@@ -49,6 +49,8 @@ bool _DNNclassifier::init(void* pKiss)
 
 bool _DNNclassifier::start(void)
 {
+	IF_T(m_threadMode != T_THREAD);
+
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
@@ -98,15 +100,6 @@ bool _DNNclassifier::classify(void)
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
-//	vInt4 iRoi;
-//	iRoi.x = mIn.cols * m_roi.x;
-//	iRoi.y = mIn.rows * m_roi.y;
-//	iRoi.z = mIn.cols * m_roi.z;
-//	iRoi.w = mIn.rows * m_roi.w;
-//	Rect rRoi;
-//	vInt42rect(iRoi, rRoi);
-//	Mat mBGR = mIn(rRoi);
-
 	m_blob = blobFromImage(mIn,
 							m_scale,
 							Size(m_nW, m_nH),
@@ -133,6 +126,32 @@ bool _DNNclassifier::classify(void)
 
 	this->add(&o);
 	LOG_I("Class: " + i2str(o.m_topClass));
+
+	return true;
+}
+
+bool _DNNclassifier::classify(Mat m, OBJECT* pO)
+{
+	IF_F(check() < 0);
+	IF_F(m.empty());
+	NULL_F(pO);
+
+	m_blob = blobFromImage(m,
+							m_scale,
+							Size(m_nW, m_nH),
+							Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
+							m_bSwapRB,
+							false);
+	m_net.setInput(m_blob);
+
+	Mat mProb = m_net.forward();
+
+    Point pClassID;
+    double conf;
+    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+    IF_T(conf < m_minConfidence);
+
+	pO->setTopClass(pClassID.x, conf);
 
 	return true;
 }

@@ -25,6 +25,7 @@ public:
 	bool start(void);
 	bool draw(void);
 	int check(void);
+	bool classify(Mat m, OBJECT* pO);
 
 private:
 	bool classify(void);

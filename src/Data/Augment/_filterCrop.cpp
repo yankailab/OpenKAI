@@ -68,7 +68,7 @@ void _filterCrop::update(void)
 
 			Mat mOut = mIn(cv::Rect(dRandX, dRandY, dSizeW, dSizeH));
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

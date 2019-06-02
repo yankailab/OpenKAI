@@ -64,7 +64,7 @@ void _filterNoise::update(void)
 					cv::Scalar(m_noiseDev, m_noiseDev, m_noiseDev));
 
 			Mat mOut = mIn + mNoise - cv::Scalar(m_dRand);
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

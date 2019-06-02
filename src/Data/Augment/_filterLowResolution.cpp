@@ -67,7 +67,7 @@ void _filterLowResolution::update(void)
 			Frame fOut = fIn.resize(scale, scale);
 			Mat mOut = *fOut.m();
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

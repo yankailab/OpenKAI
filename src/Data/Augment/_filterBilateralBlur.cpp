@@ -63,7 +63,7 @@ void _filterBilateralBlur::update(void)
 			if(rK%2==0)rK++;
 
 			cv::bilateralFilter(mIn, mOut, rK, rK, rK);
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

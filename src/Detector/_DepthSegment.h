@@ -40,6 +40,7 @@ public:
 	float	m_rL;
 	float	m_rH;
 	float	m_rD;
+	float	m_rArea;
 
 };
 }

@@ -70,7 +70,7 @@ void _filterTone::update(void)
 			Mat mOut;
 		    mMul.convertTo(mOut, mIn.type(), 255.0);
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 			nTot++;
 		}
 

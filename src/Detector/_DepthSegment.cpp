@@ -15,6 +15,7 @@ _DepthSegment::_DepthSegment()
 	m_rL = 0.0;
 	m_rH = 1.0;
 	m_rD = 0.1;
+	m_rArea = 0.8;
 }
 
 _DepthSegment::~_DepthSegment()
@@ -90,6 +91,7 @@ void _DepthSegment::detect(void)
 
 		OBJECT o;
 		vector<Point> vPoly;
+		float rArea = 0.0;
 		for (unsigned int i=0; i<vvC.size(); i++)
 		{
 			vPoly.clear();
@@ -105,7 +107,10 @@ void _DepthSegment::detect(void)
 			//TODO: classify
 
 			add(&o);
+			rArea += o.area();
 		}
+
+		if(rArea > m_rArea)break;
 	}
 }
 

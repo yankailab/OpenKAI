@@ -78,7 +78,7 @@ void _filterRotate::update(void)
 			mOut.copyTo(mNoise, mMask);
 			mOut = mNoise;
 
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 			nTot++;
 		}
 

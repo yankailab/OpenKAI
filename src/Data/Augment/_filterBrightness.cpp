@@ -60,7 +60,7 @@ void _filterBrightness::update(void)
 		for (int j = 0; j < m_nProduce; j++)
 		{
 			mIn.convertTo(mOut, -1, 1, m_dRand * (NormRand() * 2.0 - 1.0));
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;

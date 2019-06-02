@@ -63,7 +63,7 @@ void _filterFlip::update(void)
 		for (int j = -1; j < 2; j++)
 		{
 			cv::flip(mIn, mOut, j);
-			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_PNGcompress);
+			cv::imwrite(dirNameIn + uuid() + m_extOut, mOut, m_vCompress);
 		}
 
 		nTot++;
