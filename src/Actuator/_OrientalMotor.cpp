@@ -113,7 +113,9 @@ void _OrientalMotor::sendCMD(void)
 
 	//update normalized value to actual unit
 	m_tState.m_step = m_nTargetPos * m_vStepRange.len() + m_vStepRange.x;
+	m_tState.m_step = constrain(m_tState.m_step, m_vStepRange.x, m_vStepRange.y);
 	m_tState.m_speed = m_nTargetSpeed * m_vSpeedRange.len() + m_vSpeedRange.x;
+	m_tState.m_speed = constrain(m_tState.m_speed, m_vSpeedRange.x, m_vSpeedRange.y);
 
 	//create the command
 	uint16_t pB[18];

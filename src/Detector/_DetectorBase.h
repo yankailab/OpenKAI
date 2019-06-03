@@ -277,7 +277,6 @@ public:
 	string m_modelFile;
 	string m_trainedFile;
 	string m_meanFile;
-	string m_labelFile;
 	string m_classFile;
 	int m_nClass;
 	vector<OBJECT_CLASS> m_vClass;

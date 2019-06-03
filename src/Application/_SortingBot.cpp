@@ -16,7 +16,7 @@ _SortingBot::_SortingBot()
 	m_cSpeed = 0.0;
 	m_nClass = 0;
 	m_cLen = 2.0;
-	m_bbOverlap = 0.8;
+	m_minOverlap = 0.8;
 }
 
 _SortingBot::~_SortingBot()
@@ -31,6 +31,7 @@ bool _SortingBot::init(void* pKiss)
 	KISSm(pK, nClass);
 	KISSm(pK, cSpeed);
 	KISSm(pK, cLen);
+	KISSm(pK, minOverlap);
 	pK->array("dropPos", m_pDropPos, SB_N_CLASS);
 
 	Kiss* pA;
@@ -139,11 +140,13 @@ void _SortingBot::updateTarget(void)
 	uint64_t tStamp = getTimeUsec();
 	while ((pO = m_pDet->at(i++)) != NULL)
 	{
+		IF_CONT(pO->m_topClass < 0);
+
 		int j;
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
 			SB_TARGET* pT = &m_vTarget[j];
-			if (nIoU(pT->m_bb, pO->m_bb) > m_bbOverlap)
+			if (nIoU(pT->m_bb, pO->m_bb) > m_minOverlap)
 				break;
 		}
 		IF_CONT(j < m_vTarget.size());

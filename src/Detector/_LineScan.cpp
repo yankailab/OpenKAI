@@ -35,10 +35,8 @@ bool _LineScan::init(void* pKiss)
 	KISSm(pK,dW);
 	KISSm(pK,minArea);
 
-	m_nClass = 1;
-
 	string iName = "";
-	F_ERROR_F(pK->v("_DNNclassifer", &iName));
+	F_ERROR_F(pK->v("_DNNclassifier", &iName));
 	m_pC = (_DNNclassifier*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pC, iName + " not found");
 
@@ -46,8 +44,7 @@ bool _LineScan::init(void* pKiss)
 	m_pD = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pD, iName + " not found");
 
-
-	m_nW = ((1.0 - m_w) / m_dW) + 1;
+	m_nW = ((1.0 - m_w) / m_dW) + 2;
 	if (m_nW <= 0)
 	{
 		LOG_E("nW <=0");
@@ -93,7 +90,7 @@ int _LineScan::check(void)
 	IF__(!m_pVision,-1);
 	IF__(m_pVision->BGR()->bEmpty(),-1);
 	IF__(!m_pD,-1);
-	IF__(m_pD->Depth()->bEmpty(),-1);
+	IF__(m_pD->BGR()->bEmpty(),-1);
 
 	return 0;
 }
@@ -102,10 +99,10 @@ void _LineScan::detect(void)
 {
 	IF_(check()<0);
 
-	Mat mBGR;
-	m_pVision->BGR()->m()->copyTo(mBGR);
-	Mat mD;
-	m_pD->Depth()->m()->copyTo(mD);
+	m_pVision->BGR()->m()->copyTo(m_mBGR);
+	m_pD->BGR()->m()->copyTo(m_mD);
+	cv::inRange(m_mD, 1, m_dThr*255.0, m_mDin);
+
 	vInt2 cs;
 	m_pD->info(&cs, NULL, NULL);
 
@@ -119,16 +116,15 @@ void _LineScan::detect(void)
 		o.m_bb.w = 1.0;
 
 		Rect rbb = o.getRect(cs);
-		Mat mDr = mD(rbb);
-		Mat mDin;
-		cv::inRange(mDr, 1, m_dThr*255.0, mDin);
-		int nP = cv::countNonZero(mDin);
+		Mat mDinR = m_mDin(rbb);
+		int nP = cv::countNonZero(mDinR);
 		IF_CONT((float)nP/(float)rbb.area() < m_minArea);
 
-		o.m_dist = (float)cv::mean(mDr, mDin).val[0] / 255.0;
-		m_pC->classify(mBGR(rbb),&o);
-
-		m_obj.add(&o);
+		o.m_dist = (float)cv::mean(m_mD(rbb), mDinR).val[0] / 255.0;
+		if(m_pC->classify(m_mBGR(rbb),&o))
+		{
+			m_obj.add(&o);
+		}
 	}
 }
 
@@ -138,9 +134,19 @@ bool _LineScan::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	if(!m_mR.empty())
+	if(!m_mBGR.empty())
 	{
-		imshow(*this->getName()+":Thr", m_mR);
+		imshow(*this->getName()+":BGR", m_mBGR);
+	}
+
+	if(!m_mD.empty())
+	{
+		imshow(*this->getName()+":Depth", m_mD);
+	}
+
+	if(!m_mDin.empty())
+	{
+		imshow(*this->getName()+":InRange", m_mDin);
 	}
 
 	return true;

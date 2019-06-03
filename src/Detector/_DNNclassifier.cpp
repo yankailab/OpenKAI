@@ -132,7 +132,6 @@ bool _DNNclassifier::classify(void)
 
 bool _DNNclassifier::classify(Mat m, OBJECT* pO)
 {
-	IF_F(check() < 0);
 	IF_F(m.empty());
 	NULL_F(pO);
 
@@ -149,7 +148,7 @@ bool _DNNclassifier::classify(Mat m, OBJECT* pO)
     Point pClassID;
     double conf;
     cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
-    IF_T(conf < m_minConfidence);
+    IF_F(conf < m_minConfidence);
 
 	pO->setTopClass(pClassID.x, conf);
 

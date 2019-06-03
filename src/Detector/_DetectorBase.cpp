@@ -13,7 +13,6 @@ _DetectorBase::_DetectorBase()
 	m_modelFile = "";
 	m_trainedFile = "";
 	m_meanFile = "";
-	m_labelFile = "";
 	m_classFile = "";
 	m_minConfidence = 0.0;
 	m_minArea = -1.0;
@@ -67,13 +66,11 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, modelFile);
 	KISSm(pK, trainedFile);
 	KISSm(pK, meanFile);
-	KISSm(pK, labelFile);
 	KISSm(pK, classFile);
 
 	m_modelFile = modelDir + m_modelFile;
 	m_trainedFile = modelDir + m_trainedFile;
 	m_meanFile = modelDir + m_meanFile;
-	m_labelFile = modelDir + m_labelFile;
 
 	//class
 	if(!m_classFile.empty())
@@ -260,6 +257,10 @@ bool _DetectorBase::draw(void)
 		Rect r = pO->getRect(cs);
 		rectangle(*pMat, r, oCol, 1);
 
+		putText(*pMat, f2str(pO->m_dist),
+				Point(r.x + 15, r.y + 25),
+				FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+
 		//class
 		if(m_bDrawObjClass)
 		{
@@ -267,8 +268,8 @@ bool _DetectorBase::draw(void)
 			if (oName.length()>0)
 			{
 				putText(*pMat, oName,
-						Point(r.x + 15, r.y + 25),
-						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 1);
+						Point(r.x + 15, r.y + 50),
+						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 			}
 		}
 	}

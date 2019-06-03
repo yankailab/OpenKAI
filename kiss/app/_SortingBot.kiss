@@ -11,37 +11,37 @@
 }
 
 {
-	"name":"rsView",
+	"name":"viewRS",
 	"class":"Window",
 	"bInst":0,
 	"bFullScreen":0,
 }
 
 {
-	"name":"rsDepthView",
+	"name":"viewRSdepth",
 	"class":"Window",
 	"bInst":0,
 	"bFullScreen":0,
 }
 
 {
-	"name":"depthGrayView",
+	"name":"viewDepthGray",
 	"class":"Window",
 	"bInst":0,
 	"bFullScreen":0,
 }
 
 {
-	"name":"rsCropView",
+	"name":"viewRGBcrop",
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
 }
 
 {
-	"name":"rsDepthCropView",
+	"name":"viewDepthCrop",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"bFullScreen":0,
 }
 
@@ -51,8 +51,8 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":1,
-	"Window":"rsView",
-	"depthWindow":"rsDepthView",
+	"Window":"viewRS",
+	"depthWindow":"viewRSdepth",
 	"vPreset":"High Density",
 	"rsRGB":1,
 	"w":1280,
@@ -72,12 +72,12 @@
 	"class":"_Crop",
 	"FPS":30,
 	"bInst":1,
-	"Window":"rsCropView",
+	"Window":"viewRGBcrop",
 	"_VisionBase":"rs1",
 	"x":0.215,
-	"y":0.1,
+	"y":0.4,
 	"z":0.73,
-	"w":1.0,
+	"w":0.6,
 }
 
 {
@@ -85,7 +85,7 @@
 	"class":"_Depth2Gray",
 	"FPS":30,
 	"bInst":1,
-	"Window":"depthGrayView",
+	"Window":"viewDepthGray",
 	"_DepthVisionBase":"rs1",
 }
 
@@ -94,30 +94,48 @@
 	"class":"_Crop",
 	"FPS":30,
 	"bInst":1,
-	"Window":"rsDepthCropView",
+	"Window":"viewDepthCrop",
 	"_VisionBase":"depth",
 	"x":0.215,
-	"y":0.1,
+	"y":0.4,
 	"z":0.73,
-	"w":1.0,
+	"w":0.6,
 }
 
 {
-	"name":"ds",
-	"class":"_DepthSegment",
+	"name":"classifier",
+	"class":"_DNNclassifier",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"viewRGBcrop",
+	"threadMode":1,
+	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
+	"modelFile":"deploy.prototxt",
+	"trainedFile":"snapshot_iter_70400.caffemodel",
+	"classFile":"labels.txt",
+	"bSwapRB":1,
+	"bDrawObjClass":1,
+	"minConfidence":0.1,
+}
+
+{
+	"name":"linescan",
+	"class":"_LineScan",
 	"FPS":30,
 	"bInst":1,
-	"Window":"rsCropView",
-	"_VisionBase":"cropD",
-	"rL":0.1,
-	"rH":0.76,
-	"rD":0.02,
-	"bMerge":1,
-	"mergeOverlap":0.8,
-	"minH":0.1,
-	"maxH":0.8,
-	"minW":0.1,
-	"maxW":0.8,
+	"Window":"viewRGBcrop",
+	"_VisionBase":"cropRGB",
+	"_DepthVisionBase":"cropD",
+	"_DNNclassifier":"classifier",
+	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
+	"classFile":"labels.txt",
+	"dThr":0.76,
+	"w":0.2,
+	"dW":0.05,
+	"minArea":0.3,
+	"bDrawObjClass":1,
 }
 
 {
@@ -202,7 +220,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"rsCropView",
+	"Window":"viewRGBcrop",
 	
 	{
 		"name":"actuator",
@@ -259,13 +277,13 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"rsCropView",
-	"_DetectorBase":"ds",
-	"nClass":1,
+	"Window":"viewRGBcrop",
+	"_DetectorBase":"linescan",
+	"nClass":5,
 	"cSpeed":0.0;
 	"cLen":2.0,
-	"bbOverlap":0.5,
-	"dropPos":[0.5,0.2],
+	"minOverlap":0.8,
+	"dropPos":[0.5, 0.4, 0.3, 0.4, 0.2],
 	
 	{
 		"name":"armSet",
@@ -276,13 +294,13 @@
 			"gripY1":0.0,
 			"gripY2":10.0,
 			"gripZ1":0.0,
-			"gripZ2":1.0,
+			"gripZ2":1.3,
 			"iActionStandby":0,
 			"iActionGrip":1,
 			"iActionDrop":4,
 			"iActuatorX":0,
 			"iActuatorZ":1,
-			"class":[0,1],
+			"class":[0,1,2,3,4],
 			"_Sequencer":"sequencer1",
 		}
 	}

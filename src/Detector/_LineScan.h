@@ -37,9 +37,11 @@ private:
 
 public:
 	_DNNclassifier* m_pC;
-	_DepthVisionBase* m_pD;
+	_VisionBase* m_pD;
 
-	Mat		m_mR;
+	Mat		m_mD;
+	Mat		m_mDin;
+	Mat		m_mBGR;
 	float	m_dThr;
 	float	m_w;
 	float	m_dW;

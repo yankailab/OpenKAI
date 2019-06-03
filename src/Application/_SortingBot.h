@@ -130,7 +130,7 @@ public:
 	float m_pDropPos[SB_N_CLASS];
 	float m_cSpeed; //conveyer speed
 	float m_cLen;	//conveyer length
-	float m_bbOverlap;
+	float m_minOverlap;
 };
 
 }
