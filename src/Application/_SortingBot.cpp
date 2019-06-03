@@ -122,21 +122,29 @@ void _SortingBot::updateTarget(void)
 {
 	IF_(check()<0);
 
+	int i;
+
 	//update existing target positions
 	float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
-	for (SB_TARGET t : m_vTarget)
-		t.moveY(spd);
+	for (i=0; i<m_vTarget.size(); i++)
+	{
+		SB_TARGET* pT = &m_vTarget[i];
+		pT->moveY(spd);
+	}
 
 	//delete targets out of range
-	while(m_vTarget.front().m_bb.midY() > m_cLen)
+	if(!m_vTarget.empty())
 	{
-		m_vTarget.pop_front();
-		if(m_vTarget.empty())break;
+		while(m_vTarget.front().m_bb.midY() > m_cLen)
+		{
+			m_vTarget.pop_front();
+			if(m_vTarget.empty())return;
+		}
 	}
 
 	//get new targets and compare to existing ones
 	OBJECT* pO;
-	int i = 0;
+	i = 0;
 	uint64_t tStamp = getTimeUsec();
 	while ((pO = m_pDet->at(i++)) != NULL)
 	{
@@ -167,7 +175,7 @@ void _SortingBot::updateArmset(void)
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
 		SB_ARMSET* pA = &m_vArmSet[i];
-		if(pA->bDrop())
+		if(pA->bDrop() && pA->bComplete())
 		{
 			pA->m_bTarget = false;
 			pA->m_pSeq->wakeUp();
@@ -188,7 +196,7 @@ void _SortingBot::updateArmset(void)
 			pS = pA->getAction(pA->m_iActionGrip);
 			IF_CONT(!pS);
 			pS->m_pNpos[pA->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pA->m_rGripX.len() + pA->m_rGripX.x;
-			pS->m_pNpos[pA->m_iActuatorZ] = pT->m_d * pA->m_rGripZ.len() + pA->m_rGripZ.x;
+			pS->m_pNpos[pA->m_iActuatorZ] = constrain(pT->m_d * pA->m_rGripZ.len() + pA->m_rGripZ.x, 0.0f, 1.0f);
 
 			pS = pA->getAction(pA->m_iActionDrop);
 			IF_CONT(!pS);

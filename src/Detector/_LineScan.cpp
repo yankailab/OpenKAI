@@ -134,15 +134,15 @@ bool _LineScan::draw(void)
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	if(!m_mBGR.empty())
-	{
-		imshow(*this->getName()+":BGR", m_mBGR);
-	}
-
-	if(!m_mD.empty())
-	{
-		imshow(*this->getName()+":Depth", m_mD);
-	}
+//	if(!m_mBGR.empty())
+//	{
+//		imshow(*this->getName()+":BGR", m_mBGR);
+//	}
+//
+//	if(!m_mD.empty())
+//	{
+//		imshow(*this->getName()+":Depth", m_mD);
+//	}
 
 	if(!m_mDin.empty())
 	{

@@ -110,13 +110,17 @@ void _Sequencer::updateAction(void)
 			m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
 	}
 
-	//temp
-	m_ppA[2]->m_nCurrentPos = pA->m_pNpos[2];
-
 	for(i=0; i<pA->m_nA; i++)
 	{
 		IF_CONT(pA->m_pNpos[i]<0.0);
-		IF_(!EAQ(m_ppA[i]->m_nCurrentPos, pA->m_pNpos[i]));
+//		IF_(!EAQ(m_ppA[i]->m_nCurrentPos, pA->m_pNpos[i]));
+		float a = m_ppA[i]->m_nCurrentPos;
+		float b = pA->m_pNpos[i];
+		bool bE = EAQ(a,b);
+		if(!bE)
+		{
+			return;
+		}
 	}
 
 	pA->m_bComplete = true;

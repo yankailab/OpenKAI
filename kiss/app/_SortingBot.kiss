@@ -131,10 +131,10 @@
 	"_DNNclassifier":"classifier",
 	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
 	"classFile":"labels.txt",
-	"dThr":0.76,
+	"dThr":0.68,
 	"w":0.2,
 	"dW":0.05,
-	"minArea":0.3,
+	"minArea":0.4,
 	"bDrawObjClass":1,
 }
 
@@ -175,7 +175,7 @@
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"stepFrom":1000,
-	"stepTo":43000,
+	"stepTo":42000,
 	"speedFrom":0,
 	"speedTo":50000,
 }
@@ -252,7 +252,7 @@
 		{
 			"name":"catch",
 			"nPos":[-1.0, -1.0, 0.0],
-			"dT":50000,
+			"dT":500000,
 		}
 		{
 			"name":"ascend",
@@ -266,7 +266,7 @@
 		{
 			"name":"complete",
 			"nPos":[-1.0, 0.15, 1.0],
-			"dT":50000,
+			"dT":500000,
 		}
 	}
 }
@@ -280,27 +280,27 @@
 	"Window":"viewRGBcrop",
 	"_DetectorBase":"linescan",
 	"nClass":5,
-	"cSpeed":0.0;
+	"cSpeed":0.1,
 	"cLen":2.0,
-	"minOverlap":0.8,
+	"minOverlap":0.3,
 	"dropPos":[0.5, 0.4, 0.3, 0.4, 0.2],
-	
+		
 	{
 		"name":"armSet",
 		{
 			"name":"armSet1",
 			"gripX1":0.65,
 			"gripX2":1.0,
-			"gripY1":0.0,
-			"gripY2":10.0,
+			"gripY1":0.96,
+			"gripY2":1.15,
 			"gripZ1":0.0,
-			"gripZ2":1.3,
+			"gripZ2":2.5,
 			"iActionStandby":0,
 			"iActionGrip":1,
 			"iActionDrop":4,
 			"iActuatorX":0,
 			"iActuatorZ":1,
-			"class":[0,1,2,3,4],
+			"class":[4],
 			"_Sequencer":"sequencer1",
 		}
 	}
