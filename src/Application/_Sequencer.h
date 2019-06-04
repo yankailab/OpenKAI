@@ -22,16 +22,14 @@ struct SEQUENCER_ACTION
 	float	m_pNpos[SQ_N_ACTUATOR];
 	int		m_nA;
 	int		m_dT;	// <0:pause, =0:no delay, >0:delay time
-	bool	m_bComplete;
 
 	void init(void)
 	{
 		m_nA = 0;
 		m_dT = 0;
-		m_bComplete = false;
 
 		for(int i=0; i<SQ_N_ACTUATOR; i++)
-			m_pNpos[i] = 0.0;
+			m_pNpos[i] = -1.0;
 	}
 };
 
@@ -59,7 +57,7 @@ private:
 	}
 
 public:
-	_ActuatorBase* m_ppA[SQ_N_ACTUATOR];
+	_ActuatorBase* m_ppActuator[SQ_N_ACTUATOR];
 	int	m_nActuator;
 	vector<SEQUENCER_ACTION> m_vAction;
 	int m_iAction;

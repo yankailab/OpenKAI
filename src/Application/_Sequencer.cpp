@@ -40,8 +40,8 @@ bool _Sequencer::init(void* pKiss)
 
 			iName = "";
 			F_ERROR_F(pC->v("_ActuatorBase", &iName));
-			m_ppA[m_nActuator] = (_ActuatorBase*) (pK->root()->getChildInst(iName));
-			IF_Fl(!m_ppA[m_nActuator], iName + " not found");
+			m_ppActuator[m_nActuator] = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+			IF_Fl(!m_ppActuator[m_nActuator], iName + " not found");
 
 			m_nActuator++;
 		}
@@ -102,34 +102,27 @@ void _Sequencer::updateAction(void)
 	IF_(m_vAction.size()<=0);
 
 	int i;
-
-	SEQUENCER_ACTION* pA = &m_vAction[m_iAction];
-	for(i=0; i<pA->m_nA; i++)
+	int nComplete = 0;
+	SEQUENCER_ACTION* pAction = &m_vAction[m_iAction];
+	for(i=0; i<pAction->m_nA; i++)
 	{
-		if(pA->m_pNpos[i]>=0.0)
-			m_ppA[i]->moveTo(pA->m_pNpos[i], 1.0);
-	}
-
-	for(i=0; i<pA->m_nA; i++)
-	{
-		IF_CONT(pA->m_pNpos[i]<0.0);
-//		IF_(!EAQ(m_ppA[i]->m_nCurrentPos, pA->m_pNpos[i]));
-		float a = m_ppA[i]->m_nCurrentPos;
-		float b = pA->m_pNpos[i];
-		bool bE = EAQ(a,b);
-		if(!bE)
+		if(pAction->m_pNpos[i]<0.0)
 		{
-			return;
+			nComplete++;
+			continue;
 		}
+
+		m_ppActuator[i]->moveTo(pAction->m_pNpos[i], 1.0);
+		if(m_ppActuator[i]->bComplete())
+			nComplete++;
 	}
+	IF_(nComplete < pAction->m_nA);
 
-	pA->m_bComplete = true;
-
-	if(pA->m_dT > 0)
+	if(pAction->m_dT > 0)
 	{
-		this->sleepTime(pA->m_dT);
+		this->sleepTime(pAction->m_dT);
 	}
-	else if(pA->m_dT < 0)
+	else if(pAction->m_dT < 0)
 	{
 		this->sleepTime(0);
 	}
@@ -137,8 +130,6 @@ void _Sequencer::updateAction(void)
 	m_iAction++;
 	if(m_iAction >= m_vAction.size())
 		m_iAction = 0;
-
-	m_vAction[m_iAction].m_bComplete = false;
 }
 
 SEQUENCER_ACTION* _Sequencer::getAction(int iAction)

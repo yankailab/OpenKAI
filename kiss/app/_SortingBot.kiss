@@ -261,7 +261,10 @@
 		{
 			"name":"drop",
 			"nPos":[-1.0, 0.15, 0.0],
-			"dT":-1,
+		}
+		{
+			"name":"dropComplete",
+			"dT":-1.0,
 		}
 		{
 			"name":"complete",

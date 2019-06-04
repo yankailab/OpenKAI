@@ -15,7 +15,7 @@ namespace kai
 #define LOW16(x) (x & 0x0000ffff)
 #define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y)
 
-#define EAQ(x,y) ((abs(x-y)<1e-1)?true:false)
+#define EAQ(x,y,z) ((abs(x-y)<z)?true:false)
 
 inline string deleteNonASCII(const char* pStr)
 {

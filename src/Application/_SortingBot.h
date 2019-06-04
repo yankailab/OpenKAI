@@ -83,11 +83,6 @@ struct SB_ARMSET
 		return (m_pSeq->m_iAction == m_iActionDrop);
 	}
 
-	bool bComplete(void)
-	{
-		return m_pSeq->m_vAction[m_pSeq->m_iAction].m_bComplete;
-	}
-
 	bool bClass(int iClass)
 	{
 		return m_classFlag & (1 << iClass);

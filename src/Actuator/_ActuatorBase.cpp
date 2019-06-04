@@ -77,9 +77,19 @@ void _ActuatorBase::moveToOrigin(void)
 {
 }
 
+bool _ActuatorBase::bComplete(void)
+{
+	return EAQ(m_nCurrentPos, m_nTargetPos, 1e-2);
+}
+
 float _ActuatorBase::pos(void)
 {
-	return -1.0;
+	return m_nCurrentPos;
+}
+
+float _ActuatorBase::speed(void)
+{
+	return m_nCurrentSpeed;
 }
 
 bool _ActuatorBase::draw(void)

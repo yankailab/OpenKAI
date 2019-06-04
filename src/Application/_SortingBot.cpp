@@ -175,14 +175,14 @@ void _SortingBot::updateArmset(void)
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
 		SB_ARMSET* pA = &m_vArmSet[i];
-		if(pA->bDrop() && pA->bComplete())
+		if(pA->bDrop())
 		{
 			pA->m_bTarget = false;
+			while(!pA->m_pSeq->bSleeping());
 			pA->m_pSeq->wakeUp();
 		}
 		IF_CONT(pA->m_bTarget);
 		IF_CONT(!pA->bStandby());
-		IF_CONT(!pA->bComplete());
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
@@ -203,6 +203,7 @@ void _SortingBot::updateArmset(void)
 			pS->m_pNpos[pA->m_iActuatorX] = m_pDropPos[pT->m_iClass];
 
 			pA->m_bTarget = true;
+			while(!pA->m_pSeq->bSleeping());
 			pA->m_pSeq->wakeUp();
 			break;
 		}
