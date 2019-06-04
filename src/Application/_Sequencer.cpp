@@ -57,8 +57,9 @@ bool _Sequencer::init(void* pKiss)
 		{
 			Kiss* pC = pItr[i++];
 			a.init();
-			a.m_nA = pC->array("nPos", a.m_pNpos, SQ_N_ACTUATOR);
+			pC->v("name",&a.m_name);
 			pC->v("dT", &a.m_dT);
+			a.m_nA = pC->array("nPos", a.m_pNpos, SQ_N_ACTUATOR);
 			m_vAction.push_back(a);
 		}
 	}
@@ -136,6 +137,28 @@ SEQUENCER_ACTION* _Sequencer::getAction(int iAction)
 {
 	IF_N(iAction >= m_vAction.size());
 	return &m_vAction[iAction];
+}
+
+SEQUENCER_ACTION* _Sequencer::getAction(const string& name)
+{
+	for(int i=0; i<m_vAction.size(); i++)
+	{
+		SEQUENCER_ACTION* pA = &m_vAction[i];
+		IF_CONT(pA->m_name != name);
+		return pA;
+	}
+
+	return NULL;
+}
+
+SEQUENCER_ACTION* _Sequencer::getCurrentAction(void)
+{
+	return &m_vAction[m_iAction];
+}
+
+string _Sequencer::getCurrentActionName(void)
+{
+	return m_vAction[m_iAction].m_name;
 }
 
 bool _Sequencer::draw(void)

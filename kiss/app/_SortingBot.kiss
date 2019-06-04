@@ -117,7 +117,7 @@
 	"classFile":"labels.txt",
 	"bSwapRB":1,
 	"bDrawObjClass":1,
-	"minConfidence":0.1,
+	"minConfidence":0.2,
 }
 
 {
@@ -134,7 +134,7 @@
 	"dThr":0.68,
 	"w":0.2,
 	"dW":0.05,
-	"minArea":0.4,
+	"minArea":0.5,
 	"bDrawObjClass":1,
 }
 
@@ -241,13 +241,17 @@
 	{
 		"name":"action",
 		{
+			"name":"recover",
+			"nPos":[0.825, 0.2, 0.0],
+		}
+		{
 			"name":"standby",
-			"nPos":[0.825, 0.15, 0.0],
+			"nPos":[-1.0, -1.0, 1.0],
 			"dT":-1.0,
 		}
 		{
-			"name":"grip",
-			"nPos":[-1.0, 1.0, 1.0],
+			"name":"descent",
+			"nPos":[-1.0, -1.0, 1.0],
 		}
 		{
 			"name":"catch",
@@ -256,18 +260,14 @@
 		}
 		{
 			"name":"ascend",
+			"nPos":[-1.0, 0.2, 0.0],
+		}
+		{
+			"name":"move",
 			"nPos":[-1.0, 0.15, 0.0],
 		}
 		{
 			"name":"drop",
-			"nPos":[-1.0, 0.15, 0.0],
-		}
-		{
-			"name":"dropComplete",
-			"dT":-1.0,
-		}
-		{
-			"name":"complete",
 			"nPos":[-1.0, 0.15, 1.0],
 			"dT":500000,
 		}
@@ -298,9 +298,6 @@
 			"gripY2":1.15,
 			"gripZ1":0.0,
 			"gripZ2":2.5,
-			"iActionStandby":0,
-			"iActionGrip":1,
-			"iActionDrop":4,
 			"iActuatorX":0,
 			"iActuatorZ":1,
 			"class":[4],

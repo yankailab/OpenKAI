@@ -58,9 +58,6 @@ bool _SortingBot::init(void* pKiss)
 			pC->v("gripY2", &c.m_rGripY.y);
 			pC->v("gripZ1", &c.m_rGripZ.x);
 			pC->v("gripZ2", &c.m_rGripZ.y);
-			pC->v("iActionStandby", &c.m_iActionStandby);
-			pC->v("iActionGrip", &c.m_iActionGrip);
-			pC->v("iActionDrop", &c.m_iActionDrop);
 			pC->v("iActuatorX", &c.m_iActuatorX);
 			pC->v("iActuatorZ", &c.m_iActuatorZ);
 
@@ -164,7 +161,6 @@ void _SortingBot::updateTarget(void)
 		t.m_bb = pO->m_bb;
 		t.m_iClass = pO->m_topClass;
 		t.m_d = pO->m_dist;
-		t.m_tStamp = tStamp;
 		m_vTarget.push_back(t);
 	}
 }
@@ -174,37 +170,28 @@ void _SortingBot::updateArmset(void)
 	//assign armset target and drop destination, resume the armset
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
-		SB_ARMSET* pA = &m_vArmSet[i];
-		if(pA->bDrop())
-		{
-			pA->m_bTarget = false;
-			while(!pA->m_pSeq->bSleeping());
-			pA->m_pSeq->wakeUp();
-		}
-		IF_CONT(pA->m_bTarget);
-		IF_CONT(!pA->bStandby());
+		SB_ARMSET* pArm = &m_vArmSet[i];
+		IF_CONT(pArm->getCurrentActionName() != "standby");
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
 			SB_TARGET* pT = &m_vTarget[j];
-			IF_CONT(!pA->bClass(pT->m_iClass));
-			IF_CONT(pT->m_bb.midY() < pA->m_rGripY.x);
-			IF_CONT(pT->m_bb.midY() > pA->m_rGripY.y);
+			IF_CONT(!pArm->bClass(pT->m_iClass));
+			IF_CONT(pT->m_bb.midY() < pArm->m_rGripY.x);
+			IF_CONT(pT->m_bb.midY() > pArm->m_rGripY.y);
 			pT->moveY(m_cLen);
 
-			SEQUENCER_ACTION* pS;
-			pS = pA->getAction(pA->m_iActionGrip);
-			IF_CONT(!pS);
-			pS->m_pNpos[pA->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pA->m_rGripX.len() + pA->m_rGripX.x;
-			pS->m_pNpos[pA->m_iActuatorZ] = constrain(pT->m_d * pA->m_rGripZ.len() + pA->m_rGripZ.x, 0.0f, 1.0f);
+			SEQUENCER_ACTION* pAction;
+			pAction = pArm->getAction("descent");
+			IF_CONT(!pAction);
+			pAction->m_pNpos[pArm->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
+			pAction->m_pNpos[pArm->m_iActuatorZ] = pT->m_d * pArm->m_rGripZ.len() + pArm->m_rGripZ.x;
 
-			pS = pA->getAction(pA->m_iActionDrop);
-			IF_CONT(!pS);
-			pS->m_pNpos[pA->m_iActuatorX] = m_pDropPos[pT->m_iClass];
+			pAction = pArm->getAction("move");
+			IF_CONT(!pAction);
+			pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_iClass];
 
-			pA->m_bTarget = true;
-			while(!pA->m_pSeq->bSleeping());
-			pA->m_pSeq->wakeUp();
+			pArm->m_pSeq->wakeUp();
 			break;
 		}
 	}

@@ -80,6 +80,7 @@ void _ThreadBase::sleepTime(int64_t usec)
 		timeout.tv_sec = now.tv_sec + nsec / NSEC_1SEC;
 		timeout.tv_nsec = nsec % NSEC_1SEC;
 
+		m_bSleeping = true;
 		pthread_mutex_lock(&m_wakeupMutex);
 		pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &timeout);
 		pthread_mutex_unlock(&m_wakeupMutex);
@@ -91,6 +92,8 @@ void _ThreadBase::sleepTime(int64_t usec)
 		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
 		pthread_mutex_unlock(&m_wakeupMutex);
 	}
+
+	m_bSleeping = false;
 }
 
 void _ThreadBase::goSleep(void)
@@ -106,7 +109,6 @@ bool _ThreadBase::bSleeping(void)
 void _ThreadBase::wakeUp(void)
 {
 	m_bGoSleep = false;
-	m_bSleeping = false;
 	pthread_cond_signal(&m_wakeupSignal);
 }
 

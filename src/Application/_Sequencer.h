@@ -19,12 +19,14 @@ namespace kai
 
 struct SEQUENCER_ACTION
 {
+	string	m_name;
 	float	m_pNpos[SQ_N_ACTUATOR];
 	int		m_nA;
 	int		m_dT;	// <0:pause, =0:no delay, >0:delay time
 
 	void init(void)
 	{
+		m_name = "";
 		m_nA = 0;
 		m_dT = 0;
 
@@ -45,7 +47,10 @@ public:
 	bool console(int& iY);
 	int check(void);
 
+	string getCurrentActionName(void);
+	SEQUENCER_ACTION* getCurrentAction(void);
 	SEQUENCER_ACTION* getAction(int iAction);
+	SEQUENCER_ACTION* getAction(const string& name);
 	void updateAction(void);
 
 private:

@@ -19,17 +19,15 @@ namespace kai
 
 struct SB_TARGET
 {
-	int m_iClass;
-	vFloat4 m_bb;
-	float	m_d;	//distance from gripper standby pos
-	uint64_t m_tStamp;
+	int			m_iClass;
+	vFloat4		m_bb;
+	float		m_d;	//distance from gripper standby pos
 
 	void init(void)
 	{
 		m_iClass = -1;
 		m_bb.init();
 		m_d = 0.0;
-		m_tStamp = 0;
 	}
 
 	void moveY(float d)
@@ -46,12 +44,8 @@ struct SB_ARMSET
 	vFloat2	m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
 	vFloat2	m_rGripY;	//grip region Y
 	vFloat2	m_rGripZ;	//vertical
-	int		m_iActionStandby;
-	int		m_iActionGrip;
-	int		m_iActionDrop;
 	int		m_iActuatorX;
 	int		m_iActuatorZ;
-	bool	m_bTarget;
 
 	void init(void)
 	{
@@ -60,32 +54,23 @@ struct SB_ARMSET
 		m_rGripX.init();
 		m_rGripY.init();
 		m_rGripZ.init();
-		m_iActionStandby = -1;
-		m_iActionGrip = -1;
-		m_iActionDrop = -1;
 		m_iActuatorX = 0;
 		m_iActuatorZ = 1;
-		m_bTarget = false;
-	}
-
-	bool bStandby(void)
-	{
-		return (m_pSeq->m_iAction == m_iActionStandby);
-	}
-
-	bool bGrip(void)
-	{
-		return (m_pSeq->m_iAction == m_iActionGrip);
-	}
-
-	bool bDrop(void)
-	{
-		return (m_pSeq->m_iAction == m_iActionDrop);
 	}
 
 	bool bClass(int iClass)
 	{
 		return m_classFlag & (1 << iClass);
+	}
+
+	string getCurrentActionName(void)
+	{
+		return m_pSeq->getCurrentActionName();
+	}
+
+	SEQUENCER_ACTION* getAction(const string& name)
+	{
+		return m_pSeq->getAction(name);
 	}
 
 	SEQUENCER_ACTION* getAction(int iAction)
