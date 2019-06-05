@@ -125,8 +125,9 @@ void _SortingBot::updateTarget(void)
 	float spd = m_cSpeed * ((float)m_dTime) * 1e-6;
 	for (i=0; i<m_vTarget.size(); i++)
 	{
-		SB_TARGET* pT = &m_vTarget[i];
-		pT->moveY(spd);
+		OBJECT* pO = &m_vTarget[i];
+		pO->m_bb.y += spd;
+		pO->m_bb.w += spd;
 	}
 
 	//delete targets out of range
@@ -150,18 +151,19 @@ void _SortingBot::updateTarget(void)
 		int j;
 		for (j = 0; j < m_vTarget.size(); j++)
 		{
-			SB_TARGET* pT = &m_vTarget[j];
-			if (nIoU(pT->m_bb, pO->m_bb) > m_minOverlap)
-				break;
+			OBJECT* pT = &m_vTarget[j];
+			IF_CONT(nIoU(pT->m_bb, pO->m_bb) < m_minOverlap);
+
+			if(pT->m_topProb > pO->m_topClass)
+			{
+				pT->m_topClass = pO->m_topClass;
+				pT->m_topProb = pO->m_topProb;
+			}
+			break;
 		}
 		IF_CONT(j < m_vTarget.size());
 
-		SB_TARGET t;
-		t.init();
-		t.m_bb = pO->m_bb;
-		t.m_iClass = pO->m_topClass;
-		t.m_d = pO->m_dist;
-		m_vTarget.push_back(t);
+		m_vTarget.push_back(*pO);
 	}
 }
 
@@ -175,21 +177,22 @@ void _SortingBot::updateArmset(void)
 
 		for (int j = 0; j < m_vTarget.size(); j++)
 		{
-			SB_TARGET* pT = &m_vTarget[j];
-			IF_CONT(!pArm->bClass(pT->m_iClass));
+			OBJECT* pT = &m_vTarget[j];
+			IF_CONT(!pArm->bClass(pT->m_topClass));
 			IF_CONT(pT->m_bb.midY() < pArm->m_rGripY.x);
 			IF_CONT(pT->m_bb.midY() > pArm->m_rGripY.y);
-			pT->moveY(m_cLen);
+			pT->m_bb.y += m_cLen;
+			pT->m_bb.w += m_cLen;
 
 			SEQUENCER_ACTION* pAction;
 			pAction = pArm->getAction("descent");
 			IF_CONT(!pAction);
 			pAction->m_pNpos[pArm->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
-			pAction->m_pNpos[pArm->m_iActuatorZ] = pT->m_d * pArm->m_rGripZ.len() + pArm->m_rGripZ.x;
+			pAction->m_pNpos[pArm->m_iActuatorZ] = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
 
 			pAction = pArm->getAction("move");
 			IF_CONT(!pAction);
-			pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_iClass];
+			pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_topClass];
 
 			pArm->m_pSeq->wakeUp();
 			break;

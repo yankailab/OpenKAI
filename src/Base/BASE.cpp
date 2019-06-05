@@ -18,6 +18,7 @@ BASE::BASE()
 	m_pWindow = NULL;
 	m_bLog = false;
 	m_bDraw = true;
+	m_bDebug = false;
 
 	m_consoleMsg = "";
 	m_consoleMsgLevel = -1;
@@ -45,6 +46,7 @@ bool BASE::init(void* pKiss)
 	}
 
 	pK->v("bDraw",&m_bDraw);
+	pK->v("bDebug",&m_bDebug);
 
 	name = "";
 	F_INFO(pK->v("Window",&name));

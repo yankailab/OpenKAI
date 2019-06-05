@@ -29,7 +29,6 @@
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
 #include "../Detector/_Line.h"
-#include "../Detector/_LineScan.h"
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
 
@@ -44,7 +43,6 @@
 #include "../IO/_UDP.h"
 #include "../IO/_WebSocket.h"
 #include "../DNN/TensorRT/_ImageNet.h"
-#include "../Detector/_ClusterNet.h"
 #include "../DNN/TensorRT/_DetectNet.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
@@ -104,6 +102,7 @@
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
+#include "../Detector/_SlideWindowDetector.h"
 
 #ifdef USE_OCR
 #include "../Detector/OCR.h"

@@ -1,12 +1,12 @@
 /*
- * _LineScan.h
+ * _SlideWindowDetector.h
  *
  *  Created on: June 2, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__LineScan_H_
-#define OpenKAI_src_Detector__LineScan_H_
+#ifndef OpenKAI_src_Detector__SlideWindowDetector_H_
+#define OpenKAI_src_Detector__SlideWindowDetector_H_
 
 #include "../Base/common.h"
 #include "_DNNclassifier.h"
@@ -15,11 +15,11 @@
 namespace kai
 {
 
-class _LineScan : public _DetectorBase
+class _SlideWindowDetector : public _DetectorBase
 {
 public:
-	_LineScan();
-	virtual ~_LineScan();
+	_SlideWindowDetector();
+	virtual ~_SlideWindowDetector();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -31,7 +31,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_LineScan*) This)->update();
+		((_SlideWindowDetector*) This)->update();
 		return NULL;
 	}
 
@@ -42,11 +42,12 @@ public:
 	Mat		m_mD;
 	Mat		m_mDin;
 	Mat		m_mBGR;
-	float	m_dThr;
 	float	m_w;
 	float	m_dW;
 	int		m_nW;
+	float	m_maxD;
 	float	m_minArea;
+	vFloat2	m_dRange;
 };
 }
 

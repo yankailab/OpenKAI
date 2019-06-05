@@ -38,6 +38,7 @@ public:
 	void*	m_pWindow;
 	bool	m_bLog;
 	bool	m_bDraw;
+	bool	m_bDebug;
 
 	string	m_consoleMsg;
 	int8_t m_consoleMsgLevel;

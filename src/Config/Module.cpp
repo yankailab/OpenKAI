@@ -31,7 +31,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_Contrast);
 	ADD_MODULE(_Crop);
-	ADD_MODULE(_ClusterNet);
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
@@ -50,7 +49,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
-	ADD_MODULE(_LineScan);
+	ADD_MODULE(_SlideWindowDetector);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Morphology);

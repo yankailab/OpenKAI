@@ -17,26 +17,6 @@
 namespace kai
 {
 
-struct SB_TARGET
-{
-	int			m_iClass;
-	vFloat4		m_bb;
-	float		m_d;	//distance from gripper standby pos
-
-	void init(void)
-	{
-		m_iClass = -1;
-		m_bb.init();
-		m_d = 0.0;
-	}
-
-	void moveY(float d)
-	{
-		m_bb.y += d;
-		m_bb.w += d;
-	}
-};
-
 struct SB_ARMSET
 {
 	_Sequencer*	m_pSeq;
@@ -103,7 +83,7 @@ private:
 
 public:
 	_DetectorBase* m_pDet;
-	deque<SB_TARGET> m_vTarget;
+	deque<OBJECT> m_vTarget;
 	vector<SB_ARMSET> m_vArmSet;
 
 	int m_nClass;

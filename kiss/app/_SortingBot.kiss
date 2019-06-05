@@ -121,8 +121,8 @@
 }
 
 {
-	"name":"linescan",
-	"class":"_LineScan",
+	"name":"swd",
+	"class":"_SlideWindowDetector",
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewRGBcrop",
@@ -131,11 +131,13 @@
 	"_DNNclassifier":"classifier",
 	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
 	"classFile":"labels.txt",
-	"dThr":0.68,
+	"bDrawObjClass":1,
 	"w":0.2,
 	"dW":0.05,
+	"maxD":0.68,
+	"dFrom":0.1,
+	"dTo":1.0,
 	"minArea":0.5,
-	"bDrawObjClass":1,
 }
 
 {
@@ -281,7 +283,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
-	"_DetectorBase":"linescan",
+	"_DetectorBase":"swd",
 	"nClass":5,
 	"cSpeed":0.1,
 	"cLen":2.0,
@@ -296,8 +298,8 @@
 			"gripX2":1.0,
 			"gripY1":0.96,
 			"gripY2":1.15,
-			"gripZ1":0.0,
-			"gripZ2":2.5,
+			"gripZ1":0.1,
+			"gripZ2":0.6,
 			"iActuatorX":0,
 			"iActuatorZ":1,
 			"class":[4],

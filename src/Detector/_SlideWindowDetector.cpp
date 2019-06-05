@@ -1,39 +1,42 @@
 /*
- * _LineScan.cpp
+ * _SlideWindowDetector.cpp
  *
  *  Created on: June 2, 2019
  *      Author: yankai
  */
 
-#include "_LineScan.h"
+#include "_SlideWindowDetector.h"
 
 namespace kai
 {
 
-_LineScan::_LineScan()
+_SlideWindowDetector::_SlideWindowDetector()
 {
 	m_pC = NULL;
 	m_pD = NULL;
-	m_dThr = 0.6;
 	m_w = 0.2;
 	m_dW = 0.1;
 	m_nW = 0;
+	m_maxD = 0.6;
 	m_minArea = 0.3;
+	m_dRange.init();
 }
 
-_LineScan::~_LineScan()
+_SlideWindowDetector::~_SlideWindowDetector()
 {
 }
 
-bool _LineScan::init(void* pKiss)
+bool _SlideWindowDetector::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,dThr);
 	KISSm(pK,w);
 	KISSm(pK,dW);
+	KISSm(pK,maxD);
 	KISSm(pK,minArea);
+	pK->v("dFrom",&m_dRange.x);
+	pK->v("dTo",&m_dRange.y);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_DNNclassifier", &iName));
@@ -54,7 +57,7 @@ bool _LineScan::init(void* pKiss)
 	return true;
 }
 
-bool _LineScan::start(void)
+bool _SlideWindowDetector::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -67,7 +70,7 @@ bool _LineScan::start(void)
 	return true;
 }
 
-void _LineScan::update(void)
+void _SlideWindowDetector::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -85,7 +88,7 @@ void _LineScan::update(void)
 	}
 }
 
-int _LineScan::check(void)
+int _SlideWindowDetector::check(void)
 {
 	IF__(!m_pVision,-1);
 	IF__(m_pVision->BGR()->bEmpty(),-1);
@@ -95,13 +98,13 @@ int _LineScan::check(void)
 	return 0;
 }
 
-void _LineScan::detect(void)
+void _SlideWindowDetector::detect(void)
 {
 	IF_(check()<0);
 
 	m_pVision->BGR()->m()->copyTo(m_mBGR);
 	m_pD->BGR()->m()->copyTo(m_mD);
-	cv::inRange(m_mD, 1, m_dThr*255.0, m_mDin);
+	cv::inRange(m_mD, 1, m_maxD*255.0, m_mDin);
 
 	vInt2 cs;
 	m_pD->info(&cs, NULL, NULL);
@@ -120,7 +123,8 @@ void _LineScan::detect(void)
 		int nP = cv::countNonZero(mDinR);
 		IF_CONT((float)nP/(float)rbb.area() < m_minArea);
 
-		o.m_dist = (float)cv::mean(m_mD(rbb), mDinR).val[0] / 255.0;
+		o.m_dist = (hist(m_mD(rbb), 0, 255, 10, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
+//		o.m_dist = (float)cv::mean(m_mD(rbb), mDinR).val[0] / 255.0;
 		if(m_pC->classify(m_mBGR(rbb),&o))
 		{
 			m_obj.add(&o);
@@ -128,26 +132,22 @@ void _LineScan::detect(void)
 	}
 }
 
-bool _LineScan::draw(void)
+bool _SlideWindowDetector::draw(void)
 {
 	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-//	if(!m_mBGR.empty())
-//	{
-//		imshow(*this->getName()+":BGR", m_mBGR);
-//	}
-//
-//	if(!m_mD.empty())
-//	{
-//		imshow(*this->getName()+":Depth", m_mD);
-//	}
+	IF_T(!m_bDebug);
+
+	if(!m_mBGR.empty())
+		imshow(*this->getName()+":BGR", m_mBGR);
+
+	if(!m_mD.empty())
+		imshow(*this->getName()+":Depth", m_mD);
 
 	if(!m_mDin.empty())
-	{
 		imshow(*this->getName()+":InRange", m_mDin);
-	}
 
 	return true;
 }

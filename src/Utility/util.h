@@ -17,6 +17,31 @@ namespace kai
 
 #define EAQ(x,y,z) ((abs(x-y)<z)?true:false)
 
+inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
+{
+	IF__(m.empty(), -1.0);
+
+    vector<int> vHistLev = { nLevel };
+	vector<float> vRange = { rFrom, rTo };
+	vector<int> vChannel = { 0 };
+
+	vector<Mat> vRoi = {m};
+	Mat mHist;
+	cv::calcHist(vRoi, vChannel, Mat(),
+	            mHist, vHistLev, vRange,
+	            true	//accumulate
+				);
+
+	int nMinHist = nMin * m.cols * m.rows;
+	int i;
+	for(i=0; i<nLevel; i++)
+	{
+		if(mHist.at<float>(i) >= (float)nMinHist)break;
+	}
+
+	return rFrom + (((float)i)/(float)nLevel) * (rTo - rFrom);
+}
+
 inline string deleteNonASCII(const char* pStr)
 {
 	string asc = "";

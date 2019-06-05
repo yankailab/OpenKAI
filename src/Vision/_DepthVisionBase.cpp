@@ -39,7 +39,6 @@ bool _DepthVisionBase::init(void* pKiss)
 	pK->v("rFrom", &m_vRange.x);
 	pK->v("rTo", &m_vRange.y);
 
-	//link
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
 	m_pDepthWin = (Window*) (pK->root()->getChildInst(iName));
