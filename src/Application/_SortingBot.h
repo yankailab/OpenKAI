@@ -21,11 +21,11 @@ struct SB_ARMSET
 {
 	_Sequencer*	m_pSeq;
 	uint64_t	m_classFlag;
-	vFloat2	m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
-	vFloat2	m_rGripY;	//grip region Y
-	vFloat2	m_rGripZ;	//vertical
-	int		m_iActuatorX;
-	int		m_iActuatorZ;
+	vFloat2		m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
+	vFloat2		m_rGripY;	//grip region Y
+	vFloat2		m_rGripZ;	//vertical
+	int			m_iActuatorX;
+	int			m_iActuatorZ;
 
 	void init(void)
 	{

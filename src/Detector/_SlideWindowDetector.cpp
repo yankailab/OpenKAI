@@ -19,6 +19,7 @@ _SlideWindowDetector::_SlideWindowDetector()
 	m_nW = 0;
 	m_maxD = 0.6;
 	m_minArea = 0.3;
+	m_nLevel = 10;
 	m_dRange.init();
 }
 
@@ -35,6 +36,7 @@ bool _SlideWindowDetector::init(void* pKiss)
 	KISSm(pK,dW);
 	KISSm(pK,maxD);
 	KISSm(pK,minArea);
+	KISSm(pK,nLevel);
 	pK->v("dFrom",&m_dRange.x);
 	pK->v("dTo",&m_dRange.y);
 
@@ -47,7 +49,8 @@ bool _SlideWindowDetector::init(void* pKiss)
 	m_pD = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pD, iName + " not found");
 
-	m_nW = ((1.0 - m_w) / m_dW) + 2;
+	m_nW = 0;
+	while(m_nW*m_dW + m_w < 1.0)m_nW++;
 	if (m_nW <= 0)
 	{
 		LOG_E("nW <=0");
@@ -123,8 +126,8 @@ void _SlideWindowDetector::detect(void)
 		int nP = cv::countNonZero(mDinR);
 		IF_CONT((float)nP/(float)rbb.area() < m_minArea);
 
-		o.m_dist = (hist(m_mD(rbb), 0, 255, 10, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
-//		o.m_dist = (float)cv::mean(m_mD(rbb), mDinR).val[0] / 255.0;
+//		o.m_dist = (hist(m_mD(rbb), 0, 255, m_nLevel, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
+		o.m_dist = ((float)cv::mean(m_mD(rbb), mDinR).val[0]/255.0) * m_dRange.len() + m_dRange.x;
 		if(m_pC->classify(m_mBGR(rbb),&o))
 		{
 			m_obj.add(&o);

@@ -47,6 +47,7 @@ public:
 	int		m_nW;
 	float	m_maxD;
 	float	m_minArea;
+	int		m_nLevel;
 	vFloat2	m_dRange;
 };
 }

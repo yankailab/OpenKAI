@@ -41,7 +41,7 @@
 {
 	"name":"viewDepthCrop",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"bFullScreen":0,
 }
 
@@ -117,7 +117,7 @@
 	"classFile":"labels.txt",
 	"bSwapRB":1,
 	"bDrawObjClass":1,
-	"minConfidence":0.2,
+	"minConfidence":0.0,
 }
 
 {
@@ -132,12 +132,14 @@
 	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
 	"classFile":"labels.txt",
 	"bDrawObjClass":1,
-	"w":0.2,
+	"w":0.15,
 	"dW":0.05,
 	"maxD":0.68,
 	"dFrom":0.1,
 	"dTo":1.0,
 	"minArea":0.5,
+	"nLevel":10,
+	"bDebug":1,
 }
 
 {
@@ -219,7 +221,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
@@ -279,7 +281,7 @@
 {
 	"name":"sortingBot",
 	"class":"_SortingBot",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
@@ -298,8 +300,8 @@
 			"gripX2":1.0,
 			"gripY1":0.96,
 			"gripY2":1.15,
-			"gripZ1":0.1,
-			"gripZ2":0.6,
+			"gripZ1":0.2,
+			"gripZ2":0.42,
 			"iActuatorX":0,
 			"iActuatorZ":1,
 			"class":[4],
