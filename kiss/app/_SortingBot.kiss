@@ -139,7 +139,7 @@
 	"dTo":1.0,
 	"minArea":0.5,
 	"nLevel":10,
-	"bDebug":1,
+	"bDebug":0,
 }
 
 {
@@ -221,7 +221,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
@@ -264,16 +264,16 @@
 		}
 		{
 			"name":"ascend",
-			"nPos":[-1.0, 0.2, 0.0],
+			"nPos":[-1.0, 0.0, 0.0],
 		}
 		{
 			"name":"move",
-			"nPos":[-1.0, 0.15, 0.0],
+			"nPos":[-1.0, 0.0, 0.0],
 		}
 		{
 			"name":"drop",
-			"nPos":[-1.0, 0.15, 1.0],
-			"dT":500000,
+			"nPos":[-1.0, 0.2, 1.0],
+			"dT":800000,
 		}
 	}
 }
@@ -281,7 +281,7 @@
 {
 	"name":"sortingBot",
 	"class":"_SortingBot",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
@@ -299,12 +299,12 @@
 			"gripX1":0.65,
 			"gripX2":1.0,
 			"gripY1":0.96,
-			"gripY2":1.15,
-			"gripZ1":0.2,
-			"gripZ2":0.42,
+			"gripY2":1.18,
+			"gripZ1":0.25,
+			"gripZ2":0.68,
 			"iActuatorX":0,
 			"iActuatorZ":1,
-			"class":[4],
+			"class":[1,3,4],
 			"_Sequencer":"sequencer1",
 		}
 	}

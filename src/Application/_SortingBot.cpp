@@ -154,7 +154,7 @@ void _SortingBot::updateTarget(void)
 			OBJECT* pT = &m_vTarget[j];
 			IF_CONT(nIoU(pT->m_bb, pO->m_bb) < m_minOverlap);
 
-			if(pT->m_topProb > pO->m_topClass)
+			if(pT->m_topProb < pO->m_topProb)
 			{
 				pT->m_topClass = pO->m_topClass;
 				pT->m_topProb = pO->m_topProb;
