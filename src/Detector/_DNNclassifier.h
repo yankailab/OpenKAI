@@ -38,6 +38,7 @@ private:
 
 public:
 	cv::dnn::Net m_net;
+	vector<vFloat4>	m_vROI;
 	int		m_nW;
 	int		m_nH;
 	bool	m_bSwapRB;

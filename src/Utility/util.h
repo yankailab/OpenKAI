@@ -220,7 +220,30 @@ template <typename T> inline T bbScale(T& bb, float k)
 	return B;
 }
 
-inline vInt4 convertBB(Rect& r)
+inline vInt4 convertBB(vFloat4 bb, vInt2& cs)
+{
+	vInt4 v;
+	v.x = bb.x * cs.x;
+	v.y = bb.y * cs.y;
+	v.z = bb.z * cs.x;
+	v.w = bb.w * cs.y;
+	return v;
+}
+
+inline vFloat4 convertBB(vInt4 bb, vInt2& cs)
+{
+	float bw = 1.0/cs.x;
+	float bh = 1.0/cs.y;
+
+	vFloat4 v;
+	v.x = bb.x * bw;
+	v.y = bb.y * bh;
+	v.z = bb.z * bw;
+	v.w = bb.w * bw;
+	return v;
+}
+
+inline vInt4 convertBB(Rect r)
 {
 	vInt4 v;
 	v.x = r.x;
@@ -231,7 +254,7 @@ inline vInt4 convertBB(Rect& r)
 	return v;
 }
 
-inline vDouble4 convertBB(Rect2d& r)
+inline vDouble4 convertBB(Rect2d r)
 {
 	vDouble4 v;
 	v.x = r.x;
@@ -242,7 +265,7 @@ inline vDouble4 convertBB(Rect2d& r)
 	return v;
 }
 
-inline Rect convertBB(vInt4& v)
+inline Rect convertBB(vInt4 v)
 {
 	Rect r;
 	r.x = v.x;
@@ -253,7 +276,7 @@ inline Rect convertBB(vInt4& v)
 	return r;
 }
 
-inline Rect2f convertBB(vFloat4& v)
+inline Rect2f convertBB(vFloat4 v)
 {
 	Rect2f r;
 	r.x = v.x;

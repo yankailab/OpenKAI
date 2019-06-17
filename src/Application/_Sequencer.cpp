@@ -14,6 +14,7 @@ _Sequencer::_Sequencer()
 {
 	m_nActuator = 0;
 	m_iAction = 0;
+	m_iGoAction = -1;
 }
 
 _Sequencer::~_Sequencer()
@@ -128,9 +129,17 @@ void _Sequencer::updateAction(void)
 		this->sleepTime(0);
 	}
 
-	m_iAction++;
-	if(m_iAction >= m_vAction.size())
-		m_iAction = 0;
+	if(m_iGoAction < 0)
+	{
+		m_iAction++;
+		if(m_iAction >= m_vAction.size())
+			m_iAction = 0;
+	}
+	else
+	{
+		m_iAction = m_iGoAction;
+		m_iGoAction = -1;
+	}
 }
 
 SEQUENCER_ACTION* _Sequencer::getAction(int iAction)
@@ -159,6 +168,23 @@ SEQUENCER_ACTION* _Sequencer::getCurrentAction(void)
 string _Sequencer::getCurrentActionName(void)
 {
 	return m_vAction[m_iAction].m_name;
+}
+
+int _Sequencer::getActionIdx(const string& name)
+{
+	for(int i=0; i<m_vAction.size(); i++)
+	{
+		SEQUENCER_ACTION* pA = &m_vAction[i];
+		IF_CONT(pA->m_name != name);
+		return i;
+	}
+
+	return -1;
+}
+
+void _Sequencer::gotoAction(const string& name)
+{
+	m_iGoAction = getActionIdx(name);
 }
 
 bool _Sequencer::draw(void)

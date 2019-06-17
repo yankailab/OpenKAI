@@ -12,7 +12,8 @@ namespace kai
 
 _SortingBot::_SortingBot()
 {
-	m_pDet = NULL;
+	m_pSW = NULL;
+	m_pC = NULL;
 	m_cSpeed = 0.0;
 	m_nClass = 0;
 	m_cLen = 2.0;
@@ -60,6 +61,7 @@ bool _SortingBot::init(void* pKiss)
 			pC->v("gripZ2", &c.m_rGripZ.y);
 			pC->v("iActuatorX", &c.m_iActuatorX);
 			pC->v("iActuatorZ", &c.m_iActuatorZ);
+			pC->v("iROI", &c.m_iROI);
 
 			int nC = pC->array("class", pClass, SB_N_CLASS);
 			for (int j = 0; j < nC; j++)
@@ -75,9 +77,14 @@ bool _SortingBot::init(void* pKiss)
 	}
 
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pDet, iName + " not found");
+	F_ERROR_F(pK->v("_SlideWindow", &iName));
+	m_pSW = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pSW, iName + " not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_DNNclassifier", &iName));
+	m_pC = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pC, iName + " not found");
 
 	return true;
 }
@@ -110,7 +117,8 @@ void _SortingBot::update(void)
 
 int _SortingBot::check(void)
 {
-	NULL__(m_pDet,-1);
+	NULL__(m_pSW,-1);
+	NULL__(m_pC,-1);
 
 	return 0;
 }
@@ -144,7 +152,7 @@ void _SortingBot::updateTarget(void)
 	OBJECT* pO;
 	i = 0;
 	uint64_t tStamp = getTimeUsec();
-	while ((pO = m_pDet->at(i++)) != NULL)
+	while ((pO = m_pSW->at(i++)) != NULL)
 	{
 		IF_CONT(pO->m_topClass < 0);
 
@@ -169,33 +177,41 @@ void _SortingBot::updateTarget(void)
 
 void _SortingBot::updateArmset(void)
 {
-	//assign armset target and drop destination, resume the armset
+	IF_(check()<0);
+
 	for (int i = 0; i < m_vArmSet.size(); i++)
 	{
 		SB_ARMSET* pArm = &m_vArmSet[i];
-		IF_CONT(pArm->getCurrentActionName() != "standby");
 
-		for (int j = 0; j < m_vTarget.size(); j++)
+		if(pArm->getCurrentActionName() == "standby")
 		{
-			OBJECT* pT = &m_vTarget[j];
-			IF_CONT(!pArm->bClass(pT->m_topClass));
-			IF_CONT(pT->m_bb.midY() < pArm->m_rGripY.x);
-			IF_CONT(pT->m_bb.midY() > pArm->m_rGripY.y);
-			pT->m_bb.y += m_cLen;
-			pT->m_bb.w += m_cLen;
+			for (int j = 0; j < m_vTarget.size(); j++)
+			{
+				OBJECT* pT = &m_vTarget[j];
+				IF_CONT(!pArm->bClass(pT->m_topClass));
+				IF_CONT(pT->m_bb.midY() < pArm->m_rGripY.x);
+				IF_CONT(pT->m_bb.midY() > pArm->m_rGripY.y);
+				pT->m_bb.y += m_cLen;
+				pT->m_bb.w += m_cLen;
 
-			SEQUENCER_ACTION* pAction;
-			pAction = pArm->getAction("descent");
-			IF_CONT(!pAction);
-			pAction->m_pNpos[pArm->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
-			pAction->m_pNpos[pArm->m_iActuatorZ] = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
+				SEQUENCER_ACTION* pAction;
+				pAction = pArm->getAction("descent");
+				IF_CONT(!pAction);
+				pAction->m_pNpos[pArm->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
+				pAction->m_pNpos[pArm->m_iActuatorZ] = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
 
-			pAction = pArm->getAction("move");
-			IF_CONT(!pAction);
-			pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_topClass];
+				pAction = pArm->getAction("move");
+				IF_CONT(!pAction);
+				pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_topClass];
 
-			pArm->m_pSeq->wakeUp();
-			break;
+				pArm->m_pSeq->wakeUp();
+				break;
+			}
+		}
+		else if(pArm->getCurrentActionName() == "verify")
+		{
+			OBJECT o = *m_pC->at(pArm->m_iROI);
+
 		}
 	}
 }

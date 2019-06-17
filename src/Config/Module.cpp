@@ -49,7 +49,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
-	ADD_MODULE(_SlideWindowDetector);
+	ADD_MODULE(_SlideWindow);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Morphology);

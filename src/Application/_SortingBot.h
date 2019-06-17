@@ -26,6 +26,7 @@ struct SB_ARMSET
 	vFloat2		m_rGripZ;	//vertical
 	int			m_iActuatorX;
 	int			m_iActuatorZ;
+	int			m_iROI;
 
 	void init(void)
 	{
@@ -36,6 +37,7 @@ struct SB_ARMSET
 		m_rGripZ.init();
 		m_iActuatorX = 0;
 		m_iActuatorZ = 1;
+		m_iROI = 0;
 	}
 
 	bool bClass(int iClass)
@@ -82,7 +84,9 @@ private:
 	}
 
 public:
-	_DetectorBase* m_pDet;
+	_DetectorBase* m_pSW;
+	_DetectorBase* m_pC;
+
 	deque<OBJECT> m_vTarget;
 	vector<SB_ARMSET> m_vArmSet;
 

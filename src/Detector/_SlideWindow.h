@@ -1,12 +1,12 @@
 /*
- * _SlideWindowDetector.h
+ * _SlideWindow.h
  *
  *  Created on: June 2, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Detector__SlideWindowDetector_H_
-#define OpenKAI_src_Detector__SlideWindowDetector_H_
+#ifndef OpenKAI_src_Detector__SlideWindow_H_
+#define OpenKAI_src_Detector__SlideWindow_H_
 
 #include "../Base/common.h"
 #include "_DNNclassifier.h"
@@ -15,11 +15,11 @@
 namespace kai
 {
 
-class _SlideWindowDetector : public _DetectorBase
+class _SlideWindow : public _DetectorBase
 {
 public:
-	_SlideWindowDetector();
-	virtual ~_SlideWindowDetector();
+	_SlideWindow();
+	virtual ~_SlideWindow();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -31,7 +31,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_SlideWindowDetector*) This)->update();
+		((_SlideWindow*) This)->update();
 		return NULL;
 	}
 

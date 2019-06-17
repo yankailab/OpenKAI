@@ -102,7 +102,7 @@
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
 #include "../Data/Inference/_MultiImageNet.h"
-#include "../Detector/_SlideWindowDetector.h"
+#include "../Detector/_SlideWindow.h"
 
 #ifdef USE_OCR
 #include "../Detector/OCR.h"

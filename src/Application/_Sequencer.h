@@ -51,6 +51,8 @@ public:
 	SEQUENCER_ACTION* getCurrentAction(void);
 	SEQUENCER_ACTION* getAction(int iAction);
 	SEQUENCER_ACTION* getAction(const string& name);
+	int getActionIdx(const string& name);
+	void gotoAction(const string& name);
 	void updateAction(void);
 
 private:
@@ -66,6 +68,7 @@ public:
 	int	m_nActuator;
 	vector<SEQUENCER_ACTION> m_vAction;
 	int m_iAction;
+	int m_iGoAction;
 };
 
 }

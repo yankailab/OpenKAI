@@ -1,16 +1,16 @@
 /*
- * _SlideWindowDetector.cpp
+ * _SlideWindow.cpp
  *
  *  Created on: June 2, 2019
  *      Author: yankai
  */
 
-#include "_SlideWindowDetector.h"
+#include "_SlideWindow.h"
 
 namespace kai
 {
 
-_SlideWindowDetector::_SlideWindowDetector()
+_SlideWindow::_SlideWindow()
 {
 	m_pC = NULL;
 	m_pD = NULL;
@@ -23,11 +23,11 @@ _SlideWindowDetector::_SlideWindowDetector()
 	m_dRange.init();
 }
 
-_SlideWindowDetector::~_SlideWindowDetector()
+_SlideWindow::~_SlideWindow()
 {
 }
 
-bool _SlideWindowDetector::init(void* pKiss)
+bool _SlideWindow::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -60,7 +60,7 @@ bool _SlideWindowDetector::init(void* pKiss)
 	return true;
 }
 
-bool _SlideWindowDetector::start(void)
+bool _SlideWindow::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -73,7 +73,7 @@ bool _SlideWindowDetector::start(void)
 	return true;
 }
 
-void _SlideWindowDetector::update(void)
+void _SlideWindow::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -91,7 +91,7 @@ void _SlideWindowDetector::update(void)
 	}
 }
 
-int _SlideWindowDetector::check(void)
+int _SlideWindow::check(void)
 {
 	IF__(!m_pVision,-1);
 	IF__(m_pVision->BGR()->bEmpty(),-1);
@@ -101,7 +101,7 @@ int _SlideWindowDetector::check(void)
 	return 0;
 }
 
-void _SlideWindowDetector::detect(void)
+void _SlideWindow::detect(void)
 {
 	IF_(check()<0);
 
@@ -135,7 +135,7 @@ void _SlideWindowDetector::detect(void)
 	}
 }
 
-bool _SlideWindowDetector::draw(void)
+bool _SlideWindow::draw(void)
 {
 	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;

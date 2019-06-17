@@ -38,6 +38,32 @@ bool _DNNclassifier::init(void* pKiss)
 	pK->v("meanG",&m_vMean.y);
 	pK->v("meanR",&m_vMean.z);
 
+	Kiss* pR = pK->o("ROI");
+	Kiss** pItr;
+	vFloat4 r;
+	if(pR)
+	{
+		pItr = pR->getChildItr();
+		int i = 0;
+		while ((pR = pItr[i++]))
+		{
+			r.init();
+			pR->v("x", &r.x);
+			pR->v("y", &r.y);
+			pR->v("z", &r.z);
+			pR->v("w", &r.w);
+			m_vROI.push_back(r);
+		}
+	}
+
+	if(m_vROI.empty())
+	{
+		r.init();
+		r.z = 1.0;
+		r.w = 1.0;
+		m_vROI.push_back(r);
+	}
+
 	m_net = readNet(m_trainedFile, m_modelFile);
 	IF_Fl(m_net.empty(), "read Net failed");
 
@@ -99,33 +125,38 @@ bool _DNNclassifier::classify(void)
 	Frame* pBGR = m_pVision->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
-
-	m_blob = blobFromImage(mIn,
-							m_scale,
-							Size(m_nW, m_nH),
-							Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
-							m_bSwapRB,
-							false);
-	m_net.setInput(m_blob);
-
-	Mat mProb = m_net.forward();
-
-    Point pClassID;
-    double conf;
-    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
-    IF_T(conf < m_minConfidence);
-
-	OBJECT o;
-	o.init();
-	o.m_tStamp = m_tStamp;
-	o.setTopClass(pClassID.x, conf);
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
-//	o.setBB(rRoi, cs);
 
-	this->add(&o);
-	LOG_I("Class: " + i2str(o.m_topClass));
+	for(int i=0; i<m_vROI.size(); i++)
+	{
+		vFloat4 fBB = m_vROI[i];
+		Rect r = convertBB(convertBB(fBB, cs));
+
+		m_blob = blobFromImage(mIn(r),
+								m_scale,
+								Size(m_nW, m_nH),
+								Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
+								m_bSwapRB,
+								false);
+		m_net.setInput(m_blob);
+
+		Mat mProb = m_net.forward();
+
+	    Point pClassID;
+	    double conf;
+	    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+
+		OBJECT o;
+		o.init();
+		o.m_tStamp = m_tStamp;
+		o.setTopClass(pClassID.x, conf);
+		o.m_bb = fBB;
+		this->add(&o);
+
+		LOG_I("Class: " + i2str(o.m_topClass));
+	}
 
 	return true;
 }
