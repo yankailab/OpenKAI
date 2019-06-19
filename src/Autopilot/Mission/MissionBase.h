@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Mission_MissionBase_H_
 #define OpenKAI_src_Mission_MissionBase_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
+#include "../../Base/common.h"
+#include "../../Base/_ThreadBase.h"
 
 namespace kai
 {

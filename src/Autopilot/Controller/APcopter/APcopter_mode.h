@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_APcopter_mode_H_
 
 #include "../../../Base/common.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 namespace kai

@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "_RoverCMD.h"
 
 #define ROVER_N_MOTOR 16

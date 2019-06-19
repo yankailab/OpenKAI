@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../DNN/TensorRT/_ImageNet.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 #define DNNAVOID_N_VISION 16

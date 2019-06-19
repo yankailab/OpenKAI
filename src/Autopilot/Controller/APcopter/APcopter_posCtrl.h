@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 namespace kai

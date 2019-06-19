@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Mission__MissionControl_H_
 #define OpenKAI_src_Mission__MissionControl_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
+#include "../../Base/common.h"
+#include "../../Base/_ThreadBase.h"
 #include "MissionBase.h"
 #include "Waypoint.h"
 #include "Land.h"
@@ -45,11 +45,11 @@ public:
 	bool draw(void);
 	bool console(int& iY);
 
-	int getMissionIdx(const string& missionName);
 	MissionBase* getCurrentMission(void);
-	int getCurrentMissionIdx(void);
 	string getCurrentMissionName(void);
+	int getCurrentMissionIdx(void);
 	int getLastMissionIdx(void);
+	int getMissionIdx(const string& missionName);
 	void transit(const string& nextMissionName);
 	void transit(int iNextMission);
 

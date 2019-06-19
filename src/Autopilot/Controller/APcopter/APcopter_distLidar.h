@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 #define N_LIDAR_SECTION 10

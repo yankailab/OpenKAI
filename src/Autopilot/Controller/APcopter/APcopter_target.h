@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Tracker/_TrackerBase.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 #include "APcopter_posCtrl.h"
 

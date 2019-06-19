@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_target.h"
 
 namespace kai

@@ -12,7 +12,6 @@ namespace kai
 
 _Sequencer::_Sequencer()
 {
-	m_nActuator = 0;
 	m_iAction = 0;
 	m_iGoAction = -1;
 }
@@ -26,43 +25,38 @@ bool _Sequencer::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	Kiss* pA;
-	Kiss** pItr;
-	string iName;
 
-	pA = pK->o("actuator");
-	if(pA)
+	Kiss* pAction = pK->o("action");
+	NULL_Fl(pAction, "action not found");
+
+	Kiss** ppAction = pAction->getChildItr();
+	int i=0;
+	while (ppAction[i])
 	{
-		pItr = pA->getChildItr();
-		m_nActuator = 0;
-		while (pItr[m_nActuator])
+		Kiss* pActionI = ppAction[i++];
+		SEQ_ACTION sa;
+		sa.init();
+		pActionI->v("name",&sa.m_name);
+		pActionI->v("dT", &sa.m_dT);
+
+		Kiss** ppActuator = pActionI->getChildItr();
+		int j=0;
+		while (ppActuator[j])
 		{
-			Kiss* pC = pItr[m_nActuator];
+			Kiss* pActuatorI = ppAction[j++];
+			SEQ_ACTUATOR aA;
+			pActuatorI->v("pos", &aA.m_pos);
+			pActuatorI->v("speed", &aA.m_speed);
 
-			iName = "";
-			F_ERROR_F(pC->v("_ActuatorBase", &iName));
-			m_ppActuator[m_nActuator] = (_ActuatorBase*) (pK->root()->getChildInst(iName));
-			IF_Fl(!m_ppActuator[m_nActuator], iName + " not found");
+			string iName = "";
+			F_ERROR_F(pActuatorI->v("_ActuatorBase", &iName));
+			aA.m_pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+			NULL_Fl(aA.m_pA, iName + " not found");
 
-			m_nActuator++;
+			sa.m_vActuator.push_back(aA);
 		}
-	}
 
-	pA = pK->o("action");
-	if(pA)
-	{
-		pItr = pA->getChildItr();
-		SEQUENCER_ACTION a;
-		int i=0;
-		while (pItr[i])
-		{
-			Kiss* pC = pItr[i++];
-			a.init();
-			pC->v("name",&a.m_name);
-			pC->v("dT", &a.m_dT);
-			a.m_nA = pC->array("nPos", a.m_pNpos, SQ_N_ACTUATOR);
-			m_vAction.push_back(a);
-		}
+		m_vAction.push_back(sa);
 	}
 
 	return true;
@@ -95,30 +89,25 @@ void _Sequencer::update(void)
 
 int _Sequencer::check(void)
 {
+	IF__(m_vAction.size()<=0, -1);
+
 	return 0;
 }
 
 void _Sequencer::updateAction(void)
 {
-	IF_(m_nActuator<=0);
-	IF_(m_vAction.size()<=0);
+	IF_(check()<0);
 
 	int i;
 	int nComplete = 0;
-	SEQUENCER_ACTION* pAction = &m_vAction[m_iAction];
-	for(i=0; i<pAction->m_nA; i++)
+	SEQ_ACTION* pAction = &m_vAction[m_iAction];
+	for(i=0; i<pAction->m_vActuator.size(); i++)
 	{
-		if(pAction->m_pNpos[i]<0.0)
-		{
-			nComplete++;
-			continue;
-		}
-
-		m_ppActuator[i]->moveTo(pAction->m_pNpos[i], 1.0);
-		if(m_ppActuator[i]->bComplete())
+		SEQ_ACTUATOR* pSA = &pAction->m_vActuator[i];
+		if(pSA->move())
 			nComplete++;
 	}
-	IF_(nComplete < pAction->m_nA);
+	IF_(nComplete < pAction->m_vActuator.size());
 
 	if(pAction->m_dT > 0)
 	{
@@ -142,17 +131,17 @@ void _Sequencer::updateAction(void)
 	}
 }
 
-SEQUENCER_ACTION* _Sequencer::getAction(int iAction)
+SEQ_ACTION* _Sequencer::getAction(int iAction)
 {
 	IF_N(iAction >= m_vAction.size());
 	return &m_vAction[iAction];
 }
 
-SEQUENCER_ACTION* _Sequencer::getAction(const string& name)
+SEQ_ACTION* _Sequencer::getAction(const string& name)
 {
 	for(int i=0; i<m_vAction.size(); i++)
 	{
-		SEQUENCER_ACTION* pA = &m_vAction[i];
+		SEQ_ACTION* pA = &m_vAction[i];
 		IF_CONT(pA->m_name != name);
 		return pA;
 	}
@@ -160,7 +149,7 @@ SEQUENCER_ACTION* _Sequencer::getAction(const string& name)
 	return NULL;
 }
 
-SEQUENCER_ACTION* _Sequencer::getCurrentAction(void)
+SEQ_ACTION* _Sequencer::getCurrentAction(void)
 {
 	return &m_vAction[m_iAction];
 }
@@ -174,7 +163,7 @@ int _Sequencer::getActionIdx(const string& name)
 {
 	for(int i=0; i<m_vAction.size(); i++)
 	{
-		SEQUENCER_ACTION* pA = &m_vAction[i];
+		SEQ_ACTION* pA = &m_vAction[i];
 		IF_CONT(pA->m_name != name);
 		return i;
 	}

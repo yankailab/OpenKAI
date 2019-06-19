@@ -27,8 +27,10 @@ public:
 	virtual void move(float nSpeed);
 	virtual void moveTo(float nPos, float nSpeed);
 	virtual void moveToOrigin(void);
-	virtual bool bComplete(void);
 
+	virtual void setGlobalTarget(vFloat4& t);
+
+	virtual bool bComplete(void);
 	virtual float pos(void);
 	virtual float speed(void);
 

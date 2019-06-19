@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Filter/Median.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "Traffic_base.h"
 
 namespace kai

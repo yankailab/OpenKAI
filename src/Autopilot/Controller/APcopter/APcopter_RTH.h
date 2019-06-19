@@ -3,8 +3,8 @@
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../../Mission/RTH.h"
-#include "../../ActionBase.h"
+#include "../../Mission/RTH.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 namespace kai

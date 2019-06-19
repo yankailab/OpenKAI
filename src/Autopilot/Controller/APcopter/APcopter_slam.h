@@ -5,7 +5,7 @@
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/Coordinate.h"
 #include "../../../IO/_IOBase.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 #define MG_BUF_N 32

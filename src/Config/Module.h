@@ -18,9 +18,10 @@
 
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
-#include "../Application/_Sequencer.h"
-#include "../Application/_SortingBot.h"
-#include "../Autopilot/_AutoPilot.h"
+#include "../Automation/_Sequencer.h"
+#include "../Automation/_SortingBot.h"
+#include "../Autopilot/Controller/_AutoPilot.h"
+#include "../Autopilot/Mission/_MissionControl.h"
 #include "../Control/PIDctrl.h"
 #include "../Detector/_ArUco.h"
 #include "../Detector/_Lane.h"
@@ -34,7 +35,6 @@
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
-#include "../Mission/_MissionControl.h"
 
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"

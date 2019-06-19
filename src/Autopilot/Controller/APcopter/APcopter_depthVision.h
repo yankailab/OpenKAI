@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 #include "APcopter_base.h"
 
 #define N_DEPTH_ROI 16

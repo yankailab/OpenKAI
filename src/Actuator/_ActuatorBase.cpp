@@ -77,6 +77,11 @@ void _ActuatorBase::moveToOrigin(void)
 {
 }
 
+void _ActuatorBase::setGlobalTarget(vFloat4& t)
+{
+
+}
+
 bool _ActuatorBase::bComplete(void)
 {
 	return EAQ(m_nCurrentPos, m_nTargetPos, 1e-2);

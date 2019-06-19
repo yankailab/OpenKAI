@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../ActionBase.h"
+#include "../ActionBase.h"
 
 namespace kai
 {

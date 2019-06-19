@@ -2,10 +2,10 @@
 #ifndef OpenKAI_src_Autopilot_ActionBase_H_
 #define OpenKAI_src_Autopilot_ActionBase_H_
 
-#include "../Base/common.h"
-#include "../Base/BASE.h"
+#include "../../Base/common.h"
+#include "../../Base/BASE.h"
 #include "../Mission/_MissionControl.h"
-#include "../UI/Window.h"
+#include "../../UI/Window.h"
 
 #define N_ACTIVEMISSION 128
 

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Application__SortingBot_H_
-#define OpenKAI_src_Application__SortingBot_H_
+#ifndef OpenKAI_src_Automation__SortingBot_H_
+#define OpenKAI_src_Automation__SortingBot_H_
 
 #include "../Base/common.h"
 #include "../Detector/_DetectorBase.h"
@@ -24,9 +24,9 @@ struct SB_ARMSET
 	vFloat2		m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
 	vFloat2		m_rGripY;	//grip region Y
 	vFloat2		m_rGripZ;	//vertical
-	int			m_iActuatorX;
-	int			m_iActuatorZ;
 	int			m_iROI;
+	string		m_actuatorX;
+	string		m_actuatorZ;
 
 	void init(void)
 	{
@@ -35,8 +35,8 @@ struct SB_ARMSET
 		m_rGripX.init();
 		m_rGripY.init();
 		m_rGripZ.init();
-		m_iActuatorX = 0;
-		m_iActuatorZ = 1;
+		m_actuatorX = "";
+		m_actuatorZ = "";
 		m_iROI = 0;
 	}
 
@@ -50,12 +50,12 @@ struct SB_ARMSET
 		return m_pSeq->getCurrentActionName();
 	}
 
-	SEQUENCER_ACTION* getAction(const string& name)
+	SEQ_ACTION* getAction(const string& name)
 	{
 		return m_pSeq->getAction(name);
 	}
 
-	SEQUENCER_ACTION* getAction(int iAction)
+	SEQ_ACTION* getAction(int iAction)
 	{
 		return m_pSeq->getAction(iAction);
 	}

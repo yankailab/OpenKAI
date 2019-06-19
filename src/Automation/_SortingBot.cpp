@@ -59,8 +59,8 @@ bool _SortingBot::init(void* pKiss)
 			pC->v("gripY2", &c.m_rGripY.y);
 			pC->v("gripZ1", &c.m_rGripZ.x);
 			pC->v("gripZ2", &c.m_rGripZ.y);
-			pC->v("iActuatorX", &c.m_iActuatorX);
-			pC->v("iActuatorZ", &c.m_iActuatorZ);
+			pC->v("actuatorX", &c.m_actuatorX);
+			pC->v("actuatorZ", &c.m_actuatorZ);
 			pC->v("iROI", &c.m_iROI);
 
 			int nC = pC->array("class", pClass, SB_N_CLASS);
@@ -194,15 +194,26 @@ void _SortingBot::updateArmset(void)
 				pT->m_bb.y += m_cLen;
 				pT->m_bb.w += m_cLen;
 
-				SEQUENCER_ACTION* pAction;
+				SEQ_ACTION* pAction;
+				SEQ_ACTUATOR* pSA;
+
 				pAction = pArm->getAction("descent");
 				IF_CONT(!pAction);
-				pAction->m_pNpos[pArm->m_iActuatorX] = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
-				pAction->m_pNpos[pArm->m_iActuatorZ] = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
+
+				pSA = pAction->getActuator(pArm->m_actuatorX);
+				IF_CONT(pSA);
+				pSA->m_pos = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len() + pArm->m_rGripX.x;
+
+				pSA = pAction->getActuator(pArm->m_actuatorZ);
+				IF_CONT(pSA);
+				pSA->m_pos = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
 
 				pAction = pArm->getAction("move");
 				IF_CONT(!pAction);
-				pAction->m_pNpos[pArm->m_iActuatorX] = m_pDropPos[pT->m_topClass];
+
+				pSA = pAction->getActuator(pArm->m_actuatorX);
+				IF_CONT(pSA);
+				pSA->m_pos = m_pDropPos[pT->m_topClass];
 
 				pArm->m_pSeq->wakeUp();
 				break;
