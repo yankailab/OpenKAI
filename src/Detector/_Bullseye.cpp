@@ -108,7 +108,7 @@ void _Bullseye::detect(void)
 	Mat mThr;
 	gThr.download(mThr);
 	vector< vector< Point > > vvContours;
-	findContours(mThr, vvContours, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
+	findContours(mThr, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
 	vInt2 cs;
 	m_pVision->info(&cs, NULL, NULL);
