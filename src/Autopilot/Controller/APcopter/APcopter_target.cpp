@@ -158,14 +158,20 @@ void APcopter_target::update(void)
 
 	m_pAP->setMount(m_apMount);
 
+	if(m_pAP->bApModeChanged())
+	{
+		m_vMyPos.w = m_pAP->m_apHdg;
+		m_vTargetPos.w = m_pAP->m_apHdg;
+	}
+
 	if(!find())
 	{
 		m_bFound = false;
 		m_vTargetPos = m_vMyPos;
 		m_pPC->setPos(m_vMyPos, m_vMyPos);
 
-//		if(m_pAP->getApMode() == GUIDED && m_apMode>=0)
-//			m_pAP->setApMode(m_apMode);
+		if(m_pAP->getApMode() == GUIDED && m_apMode>=0)
+			m_pAP->setApMode(m_apMode);
 
 		return;
 	}
@@ -173,8 +179,8 @@ void APcopter_target::update(void)
 	m_bFound = true;
 	m_pPC->setPos(m_vMyPos, m_vTargetPos);
 
-//	if(m_pAP->getApMode() == m_apMode)
-//		m_pAP->setApMode(GUIDED);
+	if(m_pAP->getApMode() == m_apMode)
+		m_pAP->setApMode(GUIDED);
 }
 
 bool APcopter_target::find(void)
@@ -238,8 +244,8 @@ bool APcopter_target::find(void)
 	m_vTargetPos.y = bb.midY();
 
 	//Temporal
-	m_vTargetPos.x = tO->m_c.x;
-	m_vTargetPos.y = tO->m_c.y;
+//	m_vTargetPos.x = tO->m_c.x;
+//	m_vTargetPos.y = tO->m_c.y;
 
 	m_pPC->setON(true);
 
