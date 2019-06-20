@@ -105,11 +105,11 @@ void _SingleTracker::track(void)
 
 	m_pTracker->update(*pMat, m_rBB);
 
-	vDouble4 dBB = convertBB(m_rBB);
-	m_bb.x = (double)dBB.x / (double)pMat->cols;
-	m_bb.y = (double)dBB.y / (double)pMat->rows;
-	m_bb.z = (double)dBB.z / (double)pMat->cols;
-	m_bb.w = (double)dBB.w / (double)pMat->rows;
+	vFloat4 dBB = convertBB<vFloat4>(m_rBB);
+	m_bb.x = dBB.x / (float)pMat->cols;
+	m_bb.y = dBB.y / (float)pMat->rows;
+	m_bb.z = dBB.z / (float)pMat->cols;
+	m_bb.w = dBB.w / (float)pMat->rows;
 }
 
 }

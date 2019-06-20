@@ -20,10 +20,6 @@
 #include "AProver/AProver_base.h"
 #include "Rover/Rover_base.h"
 #include "Rover/Rover_move.h"
-#include "Traffic/Traffic_alert.h"
-#include "Traffic/Traffic_base.h"
-#include "Traffic/Traffic_speed.h"
-#include "Traffic/Traffic_videoOut.h"
 
 #define ADD_ACTION(x) if(pAction->m_class==#x){A.m_pInst=new x();A.m_pKiss=pAction;}
 

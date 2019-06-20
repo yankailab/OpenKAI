@@ -39,13 +39,13 @@ public:
 	virtual bool startTrack(vDouble4& bb);
 	virtual void stopTrack(void);
 	TRACK_STATE trackState(void);
-	vDouble4* getBB(void);
+	vFloat4* getBB(void);
 
 public:
 	_VisionBase* m_pVision;
 	_DetectorBase* m_pDet;
 	Rect2d m_rBB;
-	vDouble4 m_bb;
+	vFloat4 m_bb;
 	double m_margin;
 
 	Rect2f	m_newBB;

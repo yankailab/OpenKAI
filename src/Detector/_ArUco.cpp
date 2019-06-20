@@ -63,11 +63,11 @@ void _ArUco::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -146,7 +146,7 @@ bool _ArUco::draw(void)
 
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	while((pO = at(i++)) != NULL)
 	{
 		Point pCenter = Point(pO->m_c.x * pMat->cols,
 							  pO->m_c.y * pMat->rows);
@@ -171,7 +171,7 @@ bool _ArUco::console(int& iY)
 	string msg = "| ";
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	while((pO = at(i++)) != NULL)
 	{
 		msg += i2str(pO->m_topClass) + " | ";
 	}

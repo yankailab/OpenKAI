@@ -55,11 +55,11 @@ void _DepthSegment::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -100,7 +100,8 @@ void _DepthSegment::detect(void)
 
 			o.init();
 			o.m_tStamp = m_tStamp;
-			o.setBB(rBB, cs);
+			o.setBB(convertBB<vFloat4>(rBB));
+			o.normalizeBB(cs);
 			o.setTopClass(0, o.area());
 			o.m_dist = r;
 

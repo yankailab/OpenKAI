@@ -19,7 +19,7 @@
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
 #include "../Automation/_Sequencer.h"
-#include "../Automation/_SortingBot.h"
+#include "../Automation/_SortingDetector.h"
 #include "../Autopilot/Controller/_AutoPilot.h"
 #include "../Autopilot/Mission/_MissionControl.h"
 #include "../Control/PIDctrl.h"

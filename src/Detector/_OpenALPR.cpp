@@ -78,11 +78,11 @@ void _OpenALPR::update(void)
 
 		IF_CONT(!detect());
 
-		m_obj.update();
+		updateObj();
 
 		if (m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -149,7 +149,8 @@ bool _OpenALPR::detect(void)
 			o.m_pV[p].y = plate.plate_points[p].y;
 		}
 		o.m_nV = 4;
-		o.updateBB(cs);
+		o.normalizeBB(cs);
+		//TODO
 
 		this->add(&o);
 	}
@@ -172,9 +173,10 @@ bool _OpenALPR::draw(void)
 
 	OBJECT* pO;
 	int i = 0;
-	while ((pO = m_obj.at(i++)) != NULL)
+	while ((pO = at(i++)) != NULL)
 	{
-		Rect r = pO->getRect(cs);
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+
 		rectangle(*pMat, r, col, 1);
 
 		putText(*pMat, string(pO->m_pText),

@@ -10,6 +10,8 @@ namespace kai
 _DetectorBase::_DetectorBase()
 {
 	m_pVision = NULL;
+	m_pDB = NULL;
+
 	m_modelFile = "";
 	m_trainedFile = "";
 	m_meanFile = "";
@@ -22,19 +24,17 @@ _DetectorBase::_DetectorBase()
 	m_minH = -1.0;
 	m_maxH = -1.0;
 	m_nClass = 0;
-	m_obj.reset();
 	m_bMerge = false;
 	m_mergeOverlap = 0.8;
 	m_bbScale = -1.0;
 
-	m_drawVscale = 1.0;
-	m_bDrawSegment = false;
-	m_segmentBlend = 0.125;
 	m_bDrawStatistics = false;
 	m_classLegendPos.x = 25;
 	m_classLegendPos.y = 100;
 	m_classLegendPos.z = 15;
 	m_bDrawObjClass = false;
+
+	resetObj();
 }
 
 _DetectorBase::~_DetectorBase()
@@ -57,7 +57,8 @@ bool _DetectorBase::init(void* pKiss)
 	KISSm(pK, bMerge);
 	KISSm(pK, mergeOverlap);
 	KISSm(pK, bbScale);
-	m_obj.reset();
+
+	resetObj();
 
 	//model
 	string modelDir = "";
@@ -106,16 +107,16 @@ bool _DetectorBase::init(void* pKiss)
 	}
 
 	//draw
-	KISSm(pK, bDrawSegment);
-	KISSm(pK, segmentBlend);
 	KISSm(pK, bDrawStatistics);
-	KISSm(pK, drawVscale);
 	KISSm(pK, bDrawObjClass);
 
-	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
 	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
+
+	iName = "";
+	pK->v("_DetectorBase", &iName);
+	m_pDB = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -157,14 +158,30 @@ string _DetectorBase::getClassName(int iClass)
 	return m_vClass[iClass].m_name;
 }
 
+void _DetectorBase::resetObj(void)
+{
+	m_iSwitch = 0;
+	updateObj();
+	m_pPrev->reset();
+	m_pNext->reset();
+}
+
+void _DetectorBase::updateObj(void)
+{
+	m_iSwitch = 1 - m_iSwitch;
+	m_pPrev = &m_pObj[m_iSwitch];
+	m_pNext = &m_pObj[1 - m_iSwitch];
+	m_pNext->reset();
+}
+
 int _DetectorBase::size(void)
 {
-	return m_obj.size();
+	return m_pPrev->size();
 }
 
 OBJECT* _DetectorBase::at(int i)
 {
-	return m_obj.at(i);
+	return m_pPrev->at(i);
 }
 
 OBJECT* _DetectorBase::add(OBJECT* pNewO)
@@ -189,9 +206,9 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	{
 		vFloat4 BB = pNewO->m_bb;
 
-		for(int i=0; i<m_obj.m_pNext->m_nObj; i++)
+		for(int i=0; i<m_pNext->m_nObj; i++)
 		{
-			OBJECT* pO = &m_obj.m_pNext->m_pObj[i];
+			OBJECT* pO = &m_pNext->m_pObj[i];
 			IF_CONT(pO->m_topClass != pNewO->m_topClass);
 			IF_CONT(nIoU(BB, pO->m_bb) < m_mergeOverlap);
 
@@ -206,18 +223,18 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 		}
 	}
 
-	return m_obj.add(pNewO);
+	return m_pNext->add(pNewO);
 }
 
-void _DetectorBase::merge(_DetectorBase* pO)
+void _DetectorBase::pipeIn(void)
 {
-	NULL_(pO);
+	NULL_(m_pDB);
 
-	OBJECT* pObj;
+	OBJECT* pO;
 	int i=0;
-	while((pObj = pO->at(i++)) != NULL)
+	while((pO = m_pDB->at(i++)))
 	{
-		add(pObj);
+		add(pO);
 	}
 }
 
@@ -229,12 +246,6 @@ bool _DetectorBase::draw(void)
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
 
-	Mat bg;
-	if (m_bDrawSegment)
-	{
-		bg = Mat::zeros(Size(pMat->cols, pMat->rows), CV_8UC3);
-	}
-
 	vInt2 cs;
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
@@ -244,7 +255,7 @@ bool _DetectorBase::draw(void)
 	int colStep = 255/m_nClass;
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	while((pO = at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
 		IF_CONT(iClass >= m_nClass);
@@ -254,7 +265,7 @@ bool _DetectorBase::draw(void)
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		//bb
-		Rect r = pO->getRect(cs);
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 		rectangle(*pMat, r, oCol, 1);
 
 		putText(*pMat, f2str(pO->m_dist),
@@ -272,11 +283,6 @@ bool _DetectorBase::draw(void)
 						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 			}
 		}
-	}
-
-	if (m_bDrawSegment)
-	{
-		cv::addWeighted(*pMat, 1.0, bg, m_segmentBlend, 0.0, *pMat);
 	}
 
 	IF_T(!m_bDrawStatistics);
@@ -301,7 +307,7 @@ bool _DetectorBase::console(int& iY)
 	IF_F(!this->_ThreadBase::console(iY));
 
 	string msg;
-	C_MSG("nObj=" + i2str(m_obj.size()));
+	C_MSG("nObj=" + i2str(size()));
 
 	return true;
 }

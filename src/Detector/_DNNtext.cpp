@@ -98,15 +98,13 @@ void _DNNtext::update(void)
 			if(m_bDetect)
 				detect();
 
-			m_obj.update();
-
+			updateObj();
 			ocr();
 
 			if (m_bGoSleep)
 			{
-				m_obj.m_pPrev->reset();
+				m_pPrev->reset();
 			}
-
 		}
 
 		this->autoFPSto();
@@ -174,7 +172,7 @@ bool _DNNtext::detect(void)
 			o.m_pV[p].y = pV[p].y * fBase.y;
 		}
 		o.m_nV = 4;
-		o.updateBB(cs);
+		o.normalizeBB(cs);
 
 		this->add(&o);
 	}
@@ -251,9 +249,9 @@ void _DNNtext::ocr(void)
 
 	OBJECT* pO;
 	int i = 0;
-	while ((pO = m_obj.at(i++)) != NULL)
+	while ((pO = at(i++)) != NULL)
 	{
-		Rect r = pO->getRect(cs);
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 		Mat mRoi = mIn(r);
 		Mat m;
 		string strO;
@@ -337,7 +335,7 @@ bool _DNNtext::draw(void)
 
 	OBJECT* pO;
 	int i = 0;
-	while ((pO = m_obj.at(i++)) != NULL)
+	while ((pO = at(i++)) != NULL)
 	{
 		line(*pMat, Point2f(pO->m_pV[0].x, pO->m_pV[0].y),
 					Point2f(pO->m_pV[1].x, pO->m_pV[1].y), col, t);
@@ -351,7 +349,7 @@ bool _DNNtext::draw(void)
 		line(*pMat, Point2f(pO->m_pV[3].x, pO->m_pV[3].y),
 					Point2f(pO->m_pV[0].x, pO->m_pV[0].y), col, t);
 
-		Rect r = pO->getRect(cs);
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 		rectangle(*pMat, r, col, t+1);
 
 #ifdef USE_OCR

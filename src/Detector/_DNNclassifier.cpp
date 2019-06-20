@@ -97,11 +97,11 @@ void _DNNclassifier::update(void)
 
 		IF_CONT(!classify());
 
-		m_obj.update();
+		updateObj();
 
 		if (m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -193,7 +193,7 @@ bool _DNNclassifier::draw(void)
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
-	OBJECT* pO = m_obj.at(0);
+	OBJECT* pO = at(0);
 	NULL_F(pO);
 
 	int iClass = pO->m_topClass;

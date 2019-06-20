@@ -52,11 +52,11 @@ void _Thermal::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -92,11 +92,12 @@ void _Thermal::detect(void)
 	{
 		vPoly.clear();
 		approxPolyDP( vvContours[i], vPoly, 3, true );
-		Rect rBB = boundingRect(vPoly);
+		Rect r = boundingRect(vPoly);
 
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setBB(rBB, cs);
+		o.setBB(convertBB<vFloat4>(r));
+		o.normalizeBB(cs);
 		o.setTopClass(0, o.area());
 
 		add(&o);

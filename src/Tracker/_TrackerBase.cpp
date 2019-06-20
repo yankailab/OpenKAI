@@ -66,7 +66,7 @@ TRACK_STATE _TrackerBase::trackState(void)
 	return m_trackState;
 }
 
-vDouble4* _TrackerBase::getBB(void)
+vFloat4* _TrackerBase::getBB(void)
 {
 	return &m_bb;
 }

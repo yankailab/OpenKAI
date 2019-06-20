@@ -81,7 +81,7 @@ void _MotionDetector::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_obj.update();
+		updateObj();
 		detect();
 
 		this->autoFPSto();
@@ -114,7 +114,8 @@ void _MotionDetector::detect(void)
 	    o.init();
 	    o.setTopClass(-1,0);
 	    o.m_tStamp = m_tStamp;
-		o.setBB(r,cs);
+		o.setBB(convertBB<vFloat4>(r));
+		o.normalizeBB(cs);
 
 	    add(&o);
 	}

@@ -82,11 +82,11 @@ void _DNNdetect::update(void)
 
 		IF_CONT(!detect());
 
-		m_obj.update();
+		updateObj();
 
 		if (m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -175,7 +175,8 @@ bool _DNNdetect::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(vClassID[idx], (double)vConfidence[idx]);
-		o.setBB(vRect[idx], cs);
+		o.setBB(convertBB<vFloat4>(vRect[idx]));
+		o.normalizeBB(cs);
 
 		this->add(&o);
 		LOG_I("Class: " + i2str(o.m_topClass));
@@ -199,14 +200,14 @@ bool _DNNdetect::draw(void)
 
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_obj.at(i++)) != NULL)
+	while((pO = at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
 		IF_CONT(m_iClassDraw >= 0 && iClass != m_iClassDraw);
 		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
-		Rect r = pO->getRect(cs);
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 		rectangle(*pMat, r, col, 1);
 
 		string oName = m_vClass[iClass].m_name;

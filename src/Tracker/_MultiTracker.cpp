@@ -66,7 +66,7 @@ void _MultiTracker::update(void)
 
 		addNewTarget();
 		updateTarget();
-		m_obj.update();
+		updateObj();
 
 		this->autoFPSto();
 	}
@@ -135,7 +135,7 @@ void _MultiTracker::updateTarget(void)
 	OBJECT* pO;
 	int i=0;
 	vInt2 cSize = m_pVision->getSize();
-	while((pO = m_obj.at(i++)) != NULL)
+	while((pO = at(i++)) != NULL)
 	{
 		/*
 		_SingleTracker* pT = (_SingleTracker*)pO->m_pTracker;

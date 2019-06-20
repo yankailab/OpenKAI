@@ -57,11 +57,6 @@ bool _AutoPilot::init(void* pKiss)
 
 		ADD_ACTION(AProver_base);
 
-		ADD_ACTION(Traffic_base);
-		ADD_ACTION(Traffic_speed);
-		ADD_ACTION(Traffic_alert);
-		ADD_ACTION(Traffic_videoOut);
-
 		ADD_ACTION(Rover_base);
 		ADD_ACTION(Rover_move);
 

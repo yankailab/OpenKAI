@@ -365,7 +365,7 @@ void _ANR::lp(void)
 				vInt2 cs;
 				cs.x = m_pDlp->m_fBGR.m()->cols;
 				cs.y = m_pDlp->m_fBGR.m()->rows;
-				Rect r = pO->getRect(cs);
+				Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 
 				m_pOCR->setFrame(m_pDlp->m_fBGR);
 				m_lp = m_pOCR->scan(&r);

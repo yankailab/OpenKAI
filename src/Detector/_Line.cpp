@@ -61,11 +61,11 @@ void _Line::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -144,7 +144,8 @@ void _Line::detect(void)
 	OBJECT o;
 	o.init();
 	o.m_tStamp = m_tStamp;
-	o.setBB(rBB,cs);
+	o.setBB(convertBB<vFloat4>(rBB));
+	o.normalizeBB(cs);
 	o.setTopClass(0, 1.0);
 	add(&o);
 

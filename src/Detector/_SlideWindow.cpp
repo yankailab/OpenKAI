@@ -80,11 +80,11 @@ void _SlideWindow::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -121,16 +121,16 @@ void _SlideWindow::detect(void)
 		o.m_bb.y = 0.0;
 		o.m_bb.w = 1.0;
 
-		Rect rbb = o.getRect(cs);
-		Mat mDinR = m_mDin(rbb);
+		Rect r = convertBB<vInt4>(convertBB(o.m_bb, cs));
+		Mat mDinR = m_mDin(r);
 		int nP = cv::countNonZero(mDinR);
-		IF_CONT((float)nP/(float)rbb.area() < m_minArea);
+		IF_CONT((float)nP/(float)r.area() < m_minArea);
 
 //		o.m_dist = (hist(m_mD(rbb), 0, 255, m_nLevel, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
-		o.m_dist = ((float)cv::mean(m_mD(rbb), mDinR).val[0]/255.0) * m_dRange.len() + m_dRange.x;
-		if(m_pC->classify(m_mBGR(rbb),&o))
+		o.m_dist = ((float)cv::mean(m_mD(r), mDinR).val[0]/255.0) * m_dRange.len() + m_dRange.x;
+		if(m_pC->classify(m_mBGR(r),&o))
 		{
-			m_obj.add(&o);
+			add(&o);
 		}
 	}
 }

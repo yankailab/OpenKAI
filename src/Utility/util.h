@@ -14,7 +14,6 @@ namespace kai
 #define HIGH16(x) ((x >> 16) & 0x0000ffff)
 #define LOW16(x) (x & 0x0000ffff)
 #define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y)
-
 #define EAQ(x,y,z) ((abs(x-y)<z)?true:false)
 
 inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
@@ -220,20 +219,20 @@ template <typename T> inline T bbScale(T& bb, float k)
 	return B;
 }
 
-inline vInt4 convertBB(vFloat4 bb, vInt2& cs)
+inline vInt4 convertBB(vFloat4 bb, vInt2& vB)
 {
 	vInt4 v;
-	v.x = bb.x * cs.x;
-	v.y = bb.y * cs.y;
-	v.z = bb.z * cs.x;
-	v.w = bb.w * cs.y;
+	v.x = bb.x * vB.x;
+	v.y = bb.y * vB.y;
+	v.z = bb.z * vB.x;
+	v.w = bb.w * vB.y;
 	return v;
 }
 
-inline vFloat4 convertBB(vInt4 bb, vInt2& cs)
+inline vFloat4 convertBB(vInt4 bb, vInt2& vB)
 {
-	float bw = 1.0/cs.x;
-	float bh = 1.0/cs.y;
+	float bw = 1.0/vB.x;
+	float bh = 1.0/vB.y;
 
 	vFloat4 v;
 	v.x = bb.x * bw;
@@ -243,9 +242,9 @@ inline vFloat4 convertBB(vInt4 bb, vInt2& cs)
 	return v;
 }
 
-inline vInt4 convertBB(Rect r)
+template <typename T> inline T convertBB(Rect r)
 {
-	vInt4 v;
+	T v;
 	v.x = r.x;
 	v.y = r.y;
 	v.z = r.x + r.width;
@@ -254,18 +253,7 @@ inline vInt4 convertBB(Rect r)
 	return v;
 }
 
-inline vDouble4 convertBB(Rect2d r)
-{
-	vDouble4 v;
-	v.x = r.x;
-	v.y = r.y;
-	v.z = r.x + r.width;
-	v.w = r.y + r.height;
-
-	return v;
-}
-
-inline Rect convertBB(vInt4 v)
+template <typename T> inline Rect convertBB(T v)
 {
 	Rect r;
 	r.x = v.x;
@@ -273,16 +261,6 @@ inline Rect convertBB(vInt4 v)
 	r.width = v.z - v.x;
 	r.height = v.w - v.y;
 
-	return r;
-}
-
-inline Rect2f convertBB(vFloat4 v)
-{
-	Rect2f r;
-	r.x = v.x;
-	r.y = v.y;
-	r.width = v.z - v.x;
-	r.height = v.w - v.y;
 	return r;
 }
 

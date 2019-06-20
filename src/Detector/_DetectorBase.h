@@ -94,46 +94,41 @@ struct OBJECT
 		m_mClass = 0;
 	}
 
-	void setBB(Rect& r, vInt2& cs)
+	void setBB(vFloat4 bb)
 	{
-		float b;
-		b = 1.0 / cs.x;
-		m_bb.x = r.x * b;
-		m_bb.z = (r.x + r.width) * b;
-		b = 1.0 / cs.y;
-		m_bb.y = r.y * b;
-		m_bb.w = (r.y + r.height) * b;
-
-		m_bb.constrain(0.0,1.0);
+		m_bb = bb;
 	}
 
-	Rect getBoundingRect(void)
+	void setVertices(vFloat2* pV, int nV)
 	{
+		NULL_(pV);
+		int i;
+
 		vector<Point> vP;
 		Point p;
-		for(int i=0; i<m_nV; i++)
+		m_nV = nV;
+		for(i=0; i<m_nV; i++)
 		{
+			m_pV[i] = pV[i];
 			p.x = m_pV[i].x;
 			p.y = m_pV[i].y;
 			vP.push_back(p);
 		}
-		return boundingRect(vP);
+
+		m_bb = convertBB<vFloat4>(boundingRect(vP));
 	}
 
-	void updateBB(vInt2& cs)
+	void normalizeBB(vInt2 vB)
 	{
-		Rect r = getBoundingRect();
-		setBB(r,cs);
-	}
+		float b;
+		b = 1.0 / vB.x;
+		m_bb.x *= b;
+		m_bb.z *= b;
+		b = 1.0 / vB.y;
+		m_bb.y *= b;
+		m_bb.w *= b;
 
-	Rect getRect(vInt2& cs)
-	{
-		Rect r;
-		r.x = m_bb.x * cs.x;
-		r.y = m_bb.y * cs.y;
-		r.width = m_bb.z * cs.x - r.x;
-		r.height = m_bb.w * cs.y - r.y;
-		return r;
+		m_bb.constrain(0.0, 1.0);
 	}
 
 	float area(void)
@@ -185,46 +180,6 @@ struct OBJECT_ARRAY
 	}
 };
 
-struct OBJECT_DARRAY
-{
-	OBJECT_ARRAY m_objArr[2];
-	OBJECT_ARRAY* m_pPrev;
-	OBJECT_ARRAY* m_pNext;
-	int m_iSwitch;
-
-	void reset(void)
-	{
-		m_iSwitch = 0;
-		update();
-		m_pPrev->reset();
-		m_pNext->reset();
-	}
-
-	void update(void)
-	{
-		m_iSwitch = 1 - m_iSwitch;
-		m_pPrev = &m_objArr[m_iSwitch];
-		m_pNext = &m_objArr[1 - m_iSwitch];
-
-		m_pNext->reset();
-	}
-
-	OBJECT* add(OBJECT* pO)
-	{
-		return m_pNext->add(pO);
-	}
-
-	OBJECT* at(int i)
-	{
-		return m_pPrev->at(i);
-	}
-
-	int size(void)
-	{
-		return m_pPrev->size();
-	}
-};
-
 struct OBJECT_CLASS
 {
 	string m_name;
@@ -249,26 +204,38 @@ public:
 	virtual int getClassIdx(string& className);
 	virtual string getClassName(int iClass);
 
-	OBJECT* add(OBJECT* pNewObj);
-	OBJECT* at(int i);
-	void merge(_DetectorBase* pO);
+	//io
+	virtual OBJECT* add(OBJECT* pNewObj);
+	virtual OBJECT* at(int i);
+	virtual void resetObj(void);
+	virtual void updateObj(void);
+
+	//pipeline
+	virtual void pipeIn(void);
+
 	void updateStatistics(void);
 	int size(void);
 
 public:
 	//input
 	_VisionBase* m_pVision;
+	_DetectorBase* m_pDB;
+
+	//data
 	Frame m_fBGR;
-	OBJECT_DARRAY m_obj;
+	int m_iSwitch;
+	OBJECT_ARRAY m_pObj[2];
+	OBJECT_ARRAY* m_pPrev;
+	OBJECT_ARRAY* m_pNext;
 
 	//config
-	double m_minConfidence;
-	double m_minArea;
-	double m_maxArea;
-	double m_minW;
-	double m_maxW;
-	double m_minH;
-	double m_maxH;
+	float m_minConfidence;
+	float m_minArea;
+	float m_maxArea;
+	float m_minW;
+	float m_maxW;
+	float m_minH;
+	float m_maxH;
 	bool   m_bMerge;
 	float	m_mergeOverlap;
 	float	m_bbScale;
@@ -282,12 +249,8 @@ public:
 	vector<OBJECT_CLASS> m_vClass;
 
 	//show
-	std::bitset<64> m_bitSet;
 	bool m_bDrawStatistics;
 	vInt3 m_classLegendPos;
-	bool m_bDrawSegment;
-	double m_segmentBlend;
-	double m_drawVscale;
 	bool m_bDrawObjClass;
 
 };

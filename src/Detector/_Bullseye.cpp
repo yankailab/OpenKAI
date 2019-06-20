@@ -61,11 +61,11 @@ void _Bullseye::update(void)
 		this->autoFPSfrom();
 
 		detect();
-		m_obj.update();
+		updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_obj.m_pPrev->reset();
+			m_pPrev->reset();
 		}
 
 		this->autoFPSto();
@@ -113,21 +113,22 @@ void _Bullseye::detect(void)
 	vInt2 cs;
 	m_pVision->info(&cs, NULL, NULL);
 
-	OBJECT obj;
+	OBJECT o;
 	vector<Point> vPoly;
 	for (unsigned int i=0; i<vvContours.size(); i++)
 	{
 		vPoly.clear();
 		approxPolyDP( vvContours[i], vPoly, 3, true );
-		Rect rBB = boundingRect(vPoly);
+		Rect r = boundingRect(vPoly);
 
-		obj.init();
-		obj.m_tStamp = m_tStamp;
-		obj.setBB(rBB, cs);
-		obj.setTopClass(0, obj.area());
+		o.init();
+		o.m_tStamp = m_tStamp;
+		o.setBB(convertBB<vFloat4>(r));
+		o.normalizeBB(cs);
+		o.setTopClass(0, o.area());
 
-		add(&obj);
-		LOG_I("ID: "+ i2str(obj.m_topClass));
+		add(&o);
+		LOG_I("ID: "+ i2str(o.m_topClass));
 	}
 }
 
