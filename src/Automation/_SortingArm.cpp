@@ -110,50 +110,54 @@ void _SortingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
+	OBJECT* pO;
 	string cAction = m_pSeq->getCurrentActionName();
 
-//	if (cAction == "standby")
-//	{
-//		for (int j = 0; j < m_vTarget.size(); j++)
-//		{
-//			OBJECT* pT = &m_vTarget[j];
-//			IF_CONT(!pArm->bClass(pT->m_topClass));
-//			IF_CONT(pT->m_bb.midY() < pArm->m_rGripY.x);
-//			IF_CONT(pT->m_bb.midY() > pArm->m_rGripY.y);
-//			pT->m_bb.y += m_cLen;
-//			pT->m_bb.w += m_cLen;
-//
-//			SEQ_ACTION* pAction;
-//			SEQ_ACTUATOR* pSA;
-//
-//			pAction = pArm->getAction("descent");
-//			IF_CONT(!pAction);
-//
-//			pSA = pAction->getActuator(pArm->m_actuatorX);
-//			IF_CONT(pSA);
-//			pSA->m_pos = (1.0 - pT->m_bb.midX()) * pArm->m_rGripX.len()
-//					+ pArm->m_rGripX.x;
-//
-//			pSA = pAction->getActuator(pArm->m_actuatorZ);
-//			IF_CONT(pSA);
-//			pSA->m_pos = (pT->m_dist - pArm->m_rGripZ.x) / pArm->m_rGripZ.len();
-//
-//			pAction = pArm->getAction("move");
-//			IF_CONT(!pAction);
-//
-//			pSA = pAction->getActuator(pArm->m_actuatorX);
-//			IF_CONT(pSA);
-//			pSA->m_pos = m_pDropPos[pT->m_topClass];
-//
-//			pArm->m_pSeq->wakeUp();
-//			break;
-//		}
-//	}
-//	else if (cAction == "verify")
-//	{
-//		OBJECT o = *m_pC->at(pArm->m_iROI);
-//
-//	}
+	if (cAction == "standby")
+	{
+		int i = 0;
+		while((pO=m_pSW->at(i++)))
+		{
+			IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
+			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
+			IF_CONT(pO->m_bb.midY() > m_rGripY.y);
+			pO->m_bb.y += FLT_MAX;
+			pO->m_bb.w += FLT_MAX;
+
+			SEQ_ACTION* pAction;
+			SEQ_ACTUATOR* pSA;
+
+			pAction = m_pSeq->getAction("descent");
+			IF_CONT(!pAction);
+
+			pSA = pAction->getActuator(m_actuatorX);
+			IF_CONT(pSA);
+			pSA->setTarget((1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x, 1.0);
+
+			pSA = pAction->getActuator(m_actuatorZ);
+			IF_CONT(pSA);
+			pSA->setTarget((pO->m_dist - m_rGripZ.x) / m_rGripZ.len(), 1.0);
+
+			pAction = m_pSeq->getAction("move");
+			IF_CONT(!pAction);
+
+			pSA = pAction->getActuator(m_actuatorX);
+			IF_CONT(pSA);
+			pSA->setTarget(m_pDropPos[pO->m_topClass], 1.0);
+
+			m_pSeq->wakeUp();
+			return;
+		}
+	}
+	else if (cAction == "verify")
+	{
+		OBJECT o = *m_pC->at(m_iROI);
+
+
+
+
+
+	}
 }
 
 bool _SortingArm::draw(void)

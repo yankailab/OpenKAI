@@ -9,8 +9,7 @@
 #define OpenKAI_src_Automation__SortingArm_H_
 
 #include "../Base/common.h"
-#include "../Detector/_DetectorBase.h"
-#include "_SortingDetector.h"
+#include "../Detector/_ConveyerDetector.h"
 #include "_Sequencer.h"
 
 #define SB_N_CLASS 16

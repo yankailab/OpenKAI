@@ -5,23 +5,23 @@
  *      Author: yankai
  */
 
-#include "_SortingDetector.h"
+#include "_ConveyerDetector.h"
 
 namespace kai
 {
 
-_SortingDetector::_SortingDetector()
+_ConveyerDetector::_ConveyerDetector()
 {
 	m_cSpeed = 0.0;
 	m_cLen = 2.0;
 	m_minOverlap = 0.8;
 }
 
-_SortingDetector::~_SortingDetector()
+_ConveyerDetector::~_ConveyerDetector()
 {
 }
 
-bool _SortingDetector::init(void* pKiss)
+bool _ConveyerDetector::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -33,7 +33,7 @@ bool _SortingDetector::init(void* pKiss)
 	return true;
 }
 
-bool _SortingDetector::start(void)
+bool _ConveyerDetector::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -46,7 +46,7 @@ bool _SortingDetector::start(void)
 	return true;
 }
 
-void _SortingDetector::update(void)
+void _ConveyerDetector::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -54,53 +54,50 @@ void _SortingDetector::update(void)
 
 		updateTarget();
 
+		updateObj();
+		if (m_bGoSleep)
+		{
+			m_pPrev->reset();
+		}
+
 		this->autoFPSto();
 	}
 }
 
-int _SortingDetector::check(void)
+int _ConveyerDetector::check(void)
 {
 	NULL__(m_pDB, -1);
 
 	return 0;
 }
 
-void _SortingDetector::updateTarget(void)
+void _ConveyerDetector::updateTarget(void)
 {
 	IF_(check() < 0);
 
-	unsigned int i,j;
-
 	//update existing target positions
 	float spd = m_cSpeed * ((float) m_dTime) * 1e-6;
-	for (i = 0; i < m_vTarget.size(); i++)
+	int i=0;
+	OBJECT* pO;
+	while ((pO = at(i++)))
 	{
-		OBJECT* pO = &m_vTarget[i];
 		pO->m_bb.y += spd;
 		pO->m_bb.w += spd;
-	}
+		IF_CONT(pO->m_bb.midY() > m_cLen);
 
-	//delete targets out of range
-	if (!m_vTarget.empty())
-	{
-		while (m_vTarget.front().m_bb.midY() > m_cLen)
-		{
-			m_vTarget.pop_front();
-			if (m_vTarget.empty())
-				return;
-		}
+		add(pO);
 	}
 
 	//get new targets and compare to existing ones
-	OBJECT* pO;
 	i = 0;
 	while ((pO = m_pDB->at(i++)))
 	{
 		IF_CONT(pO->m_topClass < 0);
 
-		for (j = 0; j < m_vTarget.size(); j++)
+		int j=0;
+		OBJECT* pT;
+		while ((pT = m_pNext->at(j++)))
 		{
-			OBJECT* pT = &m_vTarget[j];
 			IF_CONT(nIoU(pT->m_bb, pO->m_bb) < m_minOverlap);
 
 			if (pT->m_topProb < pO->m_topProb)
@@ -110,24 +107,24 @@ void _SortingDetector::updateTarget(void)
 			}
 			break;
 		}
-		IF_CONT(j < m_vTarget.size());
+		IF_CONT(pT);
 
-		m_vTarget.push_back(*pO);
+		add(pO);
 	}
 }
 
-bool _SortingDetector::draw(void)
+bool _ConveyerDetector::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
 	return true;
 }
 
-bool _SortingDetector::console(int& iY)
+bool _ConveyerDetector::console(int& iY)
 {
-	IF_F(!this->_ThreadBase::console(iY));
+	IF_F(!this->_DetectorBase::console(iY));
 
 	string msg;
 

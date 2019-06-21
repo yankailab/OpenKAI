@@ -19,7 +19,6 @@
 #include "../Application/_HiphenRGB.h"
 #include "../Application/_ANR.h"
 #include "../Automation/_Sequencer.h"
-#include "../Automation/_SortingDetector.h"
 #include "../Autopilot/Controller/_AutoPilot.h"
 #include "../Autopilot/Mission/_MissionControl.h"
 #include "../Control/PIDctrl.h"
@@ -32,6 +31,7 @@
 #include "../Detector/_Line.h"
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
+#include "../Detector/_ConveyerDetector.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
@@ -59,6 +59,9 @@
 #include "../Tracker/_EcoTracker.h"
 
 #include "../UI/Window.h"
+
+#include "../Universe/_Object.h"
+#include "../Universe/_Universe.h"
 
 #include "../Vision/Frame.h"
 #include "../Vision/_Camera.h"

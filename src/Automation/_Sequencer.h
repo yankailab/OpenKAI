@@ -35,6 +35,12 @@ struct SEQ_ACTUATOR
 
 		return m_pA->bComplete();
 	}
+
+	void setTarget(float p, float s)
+	{
+		m_pos = constrain(p, 0.0f, 1.0f);
+		m_speed = constrain(s, 0.0f, 1.0f);
+	}
 };
 
 struct SEQ_ACTION
@@ -51,7 +57,7 @@ struct SEQ_ACTION
 
 	SEQ_ACTUATOR* getActuator(const string& name)
 	{
-		for(int i=0; i<m_vActuator.size(); i++)
+		for(unsigned int i=0; i<m_vActuator.size(); i++)
 		{
 			IF_CONT(*m_vActuator[i].m_pA->getName() != name);
 			return &m_vActuator[i];
