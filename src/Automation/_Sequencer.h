@@ -31,6 +31,7 @@ struct SEQ_ACTUATOR
 	bool move(void)
 	{
 		NULL_F(m_pA);
+		IF_T(m_pos < 0.0);
 		m_pA->moveTo(m_pos, m_speed);
 
 		return m_pA->bComplete();

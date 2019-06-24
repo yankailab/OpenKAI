@@ -251,7 +251,7 @@ public:
 	//show
 	bool m_bDrawStatistics;
 	vInt3 m_classLegendPos;
-	bool m_bDrawObjClass;
+	bool m_bDrawClass;
 
 };
 

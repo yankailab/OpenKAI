@@ -32,7 +32,7 @@ _DetectorBase::_DetectorBase()
 	m_classLegendPos.x = 25;
 	m_classLegendPos.y = 100;
 	m_classLegendPos.z = 15;
-	m_bDrawObjClass = false;
+	m_bDrawClass = false;
 
 	resetObj();
 }
@@ -108,7 +108,7 @@ bool _DetectorBase::init(void* pKiss)
 
 	//draw
 	KISSm(pK, bDrawStatistics);
-	KISSm(pK, bDrawObjClass);
+	KISSm(pK, bDrawClass);
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
@@ -273,7 +273,7 @@ bool _DetectorBase::draw(void)
 				FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 
 		//class
-		if(m_bDrawObjClass)
+		if(m_bDrawClass)
 		{
 			string oName = m_vClass[iClass].m_name;
 			if (oName.length()>0)

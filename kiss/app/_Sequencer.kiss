@@ -102,45 +102,94 @@
 	"Window":"OKview",
 	
 	{
-		"name":"actuator",
-		{
-			"name":"X",
-			"_ActuatorBase":"omX",
-		}
-		{
-			"name":"Y",
-			"_ActuatorBase":"omY",
-		}
-		{
-			"name":"Gripper",
-			"_ActuatorBase":"arduServo",
-		}
-	}
-
-	{
 		"name":"action",
+
 		{
-			"nPos":[1.0,0.2,0.0],
+			"name":"recover",
+			{
+				"_ActuatorBase":"omX",
+				"pos":0.825,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.2,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":0.0,
+			}
 		}
+
 		{
-			"nPos":[1.0,0.2,1.0],
+			"name":"standby",
+			"dT":-1.0,
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
+
 		{
-			"nPos":[1.0,1.0,1.0],
+			"name":"descent",
+			{
+				"_ActuatorBase":"omX",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
+
 		{
-			"nPos":[1.0,1.0,0.0],
+			"name":"catch",
 			"dT":500000,
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":0.0,
+			}
 		}
+
 		{
-			"nPos":[1.0,0.2,0.0],
+			"name":"verify",
+			"dT":-1.0,
+			{
+				"_ActuatorBase":"omX",
+				"pos":0.7,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.0,
+			}
 		}
+		
 		{
-			"nPos":[0.0,0.2,0.0],
+			"name":"move",
+			{
+				"_ActuatorBase":"omX",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.0,
+			}
 		}
+		
 		{
-			"nPos":[0.0,0.2,1.0],
-			"dT":1000000,
+			"name":"drop",
+			"dT":800000,
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.2,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
 	}
 }

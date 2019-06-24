@@ -39,7 +39,7 @@ private:
 	}
 
 public:
-	_DetectorBase*	m_pSW;
+	_DetectorBase*	m_pCD;
 	_DetectorBase*	m_pC;
 	_Sequencer*		m_pSeq;
 

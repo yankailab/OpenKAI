@@ -121,8 +121,8 @@
 }
 
 {
-	"name":"swd",
-	"class":"_SlideWindowDetector",
+	"name":"convD",
+	"class":"_ConveyerDetector",
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewRGBcrop",
@@ -140,6 +140,10 @@
 	"minArea":0.5,
 	"nLevel":10,
 	"bDebug":0,
+	
+	"cSpeed":0.1,
+	"cLen":2.0,
+	"minOverlap":0.3,
 }
 
 {
@@ -224,56 +228,97 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"viewRGBcrop",
+	"Window":"OKview",
 	
 	{
-		"name":"actuator",
-		{
-			"name":"X",
-			"_ActuatorBase":"omX",
-		}
-		{
-			"name":"Y",
-			"_ActuatorBase":"omY",
-		}
-		{
-			"name":"Gripper",
-			"_ActuatorBase":"arduServo",
-		}
-	}
-
-	{
 		"name":"action",
+
 		{
 			"name":"recover",
-			"nPos":[0.825, 0.2, 0.0],
+			{
+				"_ActuatorBase":"omX",
+				"pos":0.825,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.2,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":0.0,
+			}
 		}
+
 		{
 			"name":"standby",
-			"nPos":[-1.0, -1.0, 1.0],
 			"dT":-1.0,
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
+
 		{
 			"name":"descent",
-			"nPos":[-1.0, -1.0, 1.0],
+			{
+				"_ActuatorBase":"omX",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
+
 		{
 			"name":"catch",
-			"nPos":[-1.0, -1.0, 0.0],
 			"dT":500000,
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":0.0,
+			}
 		}
+
 		{
-			"name":"ascend",
-			"nPos":[-1.0, 0.0, 0.0],
+			"name":"verify",
+			"dT":-1.0,
+			{
+				"_ActuatorBase":"omX",
+				"pos":0.7,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.0,
+			}
 		}
+		
 		{
 			"name":"move",
-			"nPos":[-1.0, 0.0, 0.0],
+			{
+				"_ActuatorBase":"omX",
+				"pos":-1.0,
+			}
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.0,
+			}
 		}
+		
 		{
 			"name":"drop",
-			"nPos":[-1.0, 0.2, 1.0],
 			"dT":800000,
+			{
+				"_ActuatorBase":"omY",
+				"pos":0.2,
+			}
+			{
+				"_ActuatorBase":"arduServo",
+				"pos":1.0,
+			}
 		}
 	}
 }
@@ -285,28 +330,18 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
-	"_DetectorBase":"swd",
-	"nClass":5,
-	"cSpeed":0.1,
-	"cLen":2.0,
-	"minOverlap":0.3,
+	"_ConveyerDetector":"convD",
+	"_Sequencer":"sequencer1",
+	"actuatorX":0,
+	"actuatorZ":1,
+	"iROI":0,
+	"gripX1":0.65,
+	"gripX2":1.0,
+	"gripY1":0.96,
+	"gripY2":1.18,
+	"gripZ1":0.25,
+	"gripZ2":0.68,
 	"dropPos":[0.5, 0.4, 0.3, 0.4, 0.2],
-		
-	{
-		"name":"armSet",
-		{
-			"name":"armSet1",
-			"gripX1":0.65,
-			"gripX2":1.0,
-			"gripY1":0.96,
-			"gripY2":1.18,
-			"gripZ1":0.25,
-			"gripZ2":0.68,
-			"iActuatorX":0,
-			"iActuatorZ":1,
-			"class":[1,3,4],
-			"_Sequencer":"sequencer1",
-		}
-	}
+	"class":[1,3,4],
 }
 
