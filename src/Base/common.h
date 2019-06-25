@@ -14,7 +14,7 @@
 #include "macro.h"
 #include "constant.h"
 #include <glog/logging.h>
-#include "data.h"
+#include "../Primitive/data.h"
 #include "../Utility/util.h"
 
 #endif

@@ -25,7 +25,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"bStream":1,
-	"port":"/dev/ttyUSB2",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"arduServo",
 }
@@ -39,14 +39,16 @@
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
+	"nTargetPos":1.0,
+	
 	{
 		"pwmL":1500,
-		"pwmH":2100,
+		"pwmH":2300,
 		"dir":-1,
 	}
 	{
-		"pwmL":900,
+		"pwmL":700,
 		"pwmH":1500,
 		"dir":1,
-	}	
+	}
 }

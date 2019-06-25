@@ -59,6 +59,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Sequencer);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_Object);
+	ADD_MODULE(_ObjectFactory);
 	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);

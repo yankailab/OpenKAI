@@ -1,5 +1,5 @@
 /*
- *  Created on: Sept 28, 2016
+ *  Created on: June 21, 2019
  *      Author: yankai
  */
 #include "_Object.h"
@@ -158,6 +158,13 @@ void _Object::resetClass(void)
 	m_topClass = -1;
 	m_topProb = 0.0;
 	m_mClass = 0;
+}
+
+float _Object::nIoU(_Object* pO)
+{
+	NULL__(pO,-1.0);
+
+	return 0.0;
 }
 
 bool _Object::draw(void)

@@ -51,7 +51,7 @@ public:
 	bool bClassMask(uint64_t mClass);
 
 	//interactions
-	virtual bool IoU(_Object* pO);
+	virtual float nIoU(_Object* pO);
 
 	//kinetics
 	virtual void updateKinetics(void);

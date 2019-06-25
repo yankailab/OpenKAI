@@ -28,6 +28,9 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	KISSm(pK, nTargetPos);
+	KISSm(pK, nTargetSpeed);
+
 	string iName;
 
 	iName = "";

@@ -29,10 +29,10 @@
 }
 
 {
-	"name":"gst1",
+	"name":"gst",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
@@ -52,6 +52,15 @@
 	"videoFile":"/home/kai/Videos/sz.ts",
 	"w":1280,
 	"h":720,
-	"fovW":60,
-	"fovH":60,
+}
+
+{
+	"name":"imgFile",
+	"class":"_ImgFile",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"file":"/home/kai/Downloads/eii-test.jpg",
+	"w":1280,
+	"h":720,
 }

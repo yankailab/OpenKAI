@@ -61,6 +61,7 @@
 #include "../UI/Window.h"
 
 #include "../Universe/_Object.h"
+#include "../Universe/_ObjectFactory.h"
 #include "../Universe/_Universe.h"
 
 #include "../Vision/Frame.h"
