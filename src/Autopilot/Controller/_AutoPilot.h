@@ -15,6 +15,7 @@
 #include "APcopter/APcopter_posCtrl.h"
 #include "APcopter/APcopter_slam.h"
 #include "APcopter/APcopter_target.h"
+#include "APcopter/APcopter_tracker.h"
 #include "APcopter/APcopter_WP.h"
 #include "APcopter/APcopter_RTH.h"
 #include "AProver/AProver_base.h"

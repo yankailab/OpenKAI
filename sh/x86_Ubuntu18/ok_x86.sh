@@ -16,11 +16,11 @@ sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev lib
 # IO
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
 
-# GUI
-sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
-
 # OpenGL
 sudo apt-get -y install libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev
+
+# GUI
+sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
 
 # (Optional) Exiftool
 sudo apt-get -y install libimage-exiftool-perl
@@ -82,7 +82,7 @@ cmake ../
 sudo make install
 
 # OpenCV
-git clone --branch 4.0.1-openvino https://github.com/opencv/opencv.git
+git clone --branch 4.0.1 https://github.com/opencv/opencv.git
 git clone --branch 4.0.1 https://github.com/opencv/opencv_contrib.git
 
 # OpenCV with CUDA

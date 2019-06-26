@@ -1,0 +1,270 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":0,
+	"bConsole":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"pipeline":"nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv flip-method=0 ! 'video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx' ! videoconvert ! appsink",
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}
+
+{
+	"name":"tracker",
+	"class":"_SingleTracker",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"trackerType":"KCF",
+	"margin":0.0,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":"/dev/ttyTHS1",
+	"baud":921600,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apSerial",
+	
+	{
+		"bInst":0,
+		"_Mavlink":"mavGCS",
+	}
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}	
+}
+
+{
+	"name":"PIDroll",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":-1.8,
+	"I":0.0,
+	"Imax":0.0,
+	"D":-0.8,
+	"dT":1.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
+}
+
+{
+	"name":"PIDpitch",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"P":1.9,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.8,
+	"dT":1.0,
+	"min":-20.0,
+	"max":20.0,
+	"K":16.0,
+}
+
+{
+	"name":"apMission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"MissionBase",
+			"nextMission":"FOLLOW",
+		}
+		{
+			"bInst":1,
+			"name":"FOLLOW",
+			"class":"Loiter",
+			"hdg":0,
+			"nextMission":"STANDBY",
+		}
+	}
+}
+
+{
+	"name":"apPilot",
+	"class":"_AutoPilot",
+	"bInst":1,
+	"FPS":20,
+	"bDraw":1,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+		
+		{
+			"name":"apBase",
+			"class":"APcopter_base",
+			"bInst":1,
+			"bDraw":1,
+			"_MissionControl":"apMission",
+			"Window":"OKview",
+			"_Mavlink":"mavAP",
+			"freqSendHeartbeat":1,
+			"freqRawSensors":0,
+			"freqExtStat":0,
+			"freqRC":0,
+			"freqPos":10,
+			"freqExtra1":10,
+		}
+		
+		{
+			"name":"apMode",
+			"class":"APcopter_mode",
+			"bInst":1,
+			"bLog":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"APcopter_base":"apBase",
+			
+			{
+				"bInst":1,
+				"fromApMode":"GUIDED",
+				"toMission":"FOLLOW",
+			}
+			{
+				"bInst":1,
+				"fromApMode":"LOITER",
+				"toMission":"STANDBY",
+			}
+			{
+				"bInst":1,
+				"fromApMode":"ALT_HOLD",
+				"toMission":"STANDBY",
+			}
+			{
+				"bInst":1,
+				"fromApMode":"STABILIZE",
+				"toMission":"STANDBY",
+			}
+		}
+		
+		{
+			"name":"apTarget",
+			"class":"APcopter_tracker",
+			"bInst":1,
+			"bLog":0,
+			"bDraw":1,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"APcopter_base":"apBase",
+			"activeMission":["FOLLOW"],
+			"_TrackerBase":"tracker",
+			"APcopter_posCtrl":"apPosCtrl",
+
+			{
+				"name":"mount",
+				"pitch":30,
+				"roll":0,
+				"yaw":0,
+				"stabPitch":1,
+				"stabRoll":1,
+				"stabYaw":0,
+				"mountMode":2,
+			}
+			
+			{
+				"name":"tBB",
+				"x":0.4,
+				"y":0.4,
+				"z":0.6,
+				"w":0.6,
+			}
+		}
+
+		{
+			"name":"apPosCtrl",
+			"class":"APcopter_posCtrl",
+			"bInst":1,
+			"bLog":0,
+			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"activeMission":["FOLLOW"],
+			"APcopter_base":"apBase",
+			"vYaw":180,
+			"bSetV":1,
+			"bSetP":0,
+			"PIDroll":"PIDroll",
+			"PIDpitch":"PIDpitch",
+		}		
+	}
+}

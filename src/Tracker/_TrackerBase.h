@@ -36,25 +36,27 @@ public:
 	virtual bool console(int& iY);
 
 	virtual void createTracker(void);
-	virtual bool startTrack(vDouble4& bb);
+	virtual bool startTrack(vFloat4& bb);
 	virtual void stopTrack(void);
 	TRACK_STATE trackState(void);
 	vFloat4* getBB(void);
 
 public:
-	_VisionBase* m_pVision;
-	_DetectorBase* m_pDet;
+	_VisionBase* m_pV;
 	Rect2d m_rBB;
 	vFloat4 m_bb;
 	double m_margin;
 
-	Rect2f	m_newBB;
+	Rect2d	m_newBB;
 	int		m_iSet;
 	int		m_iInit;
 
 	string m_trackerType;
 	uint64_t m_tStampBGR;
 	TRACK_STATE	m_trackState;
+
+	pthread_mutex_t m_mutex;
+
 };
 
 }

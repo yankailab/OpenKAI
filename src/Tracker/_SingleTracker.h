@@ -28,7 +28,7 @@ public:
 	bool start(void);
 
 	void createTracker(void);
-	bool startTrack(vDouble4& bb);
+	bool startTrack(vFloat4& bb);
 
 private:
 	void track(void);

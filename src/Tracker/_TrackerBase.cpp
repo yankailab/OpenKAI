@@ -12,8 +12,7 @@ namespace kai
 
 _TrackerBase::_TrackerBase()
 {
-	m_pVision = NULL;
-	m_pDet = NULL;
+	m_pV = NULL;
 	m_trackerType = "";
 	m_tStampBGR = 0;
 	m_trackState = track_stop;
@@ -22,10 +21,12 @@ _TrackerBase::_TrackerBase()
 	m_iInit = 0;
 	m_margin = 0.0;
 
+	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _TrackerBase::~_TrackerBase()
 {
+	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _TrackerBase::init(void* pKiss)
@@ -36,14 +37,9 @@ bool _TrackerBase::init(void* pKiss)
 	KISSm(pK,trackerType);
 	KISSm(pK,margin);
 
-	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
-
-	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -71,19 +67,19 @@ vFloat4* _TrackerBase::getBB(void)
 	return &m_bb;
 }
 
-bool _TrackerBase::startTrack(vDouble4& bb)
+bool _TrackerBase::startTrack(vFloat4& bb)
 {
-	NULL_F(m_pVision);
-	Mat* pMat = m_pVision->BGR()->m();
+	NULL_F(m_pV);
+	Mat* pMat = m_pV->BGR()->m();
 	IF_F(pMat->empty());
 
-	double mBig = 1.0 + m_margin;
-	double mSmall = 1.0 - m_margin;
+	float mBig = 1.0 + m_margin;
+	float mSmall = 1.0 - m_margin;
 
-	bb.x = constrain(bb.x * mSmall, 0.0, 1.0);
-	bb.y = constrain(bb.y * mSmall, 0.0, 1.0);
-	bb.z = constrain(bb.z * mBig, 0.0, 1.0);
-	bb.w = constrain(bb.w * mBig, 0.0, 1.0);
+	bb.x = constrain(bb.x * mSmall, 0.0f, 1.0f);
+	bb.y = constrain(bb.y * mSmall, 0.0f, 1.0f);
+	bb.z = constrain(bb.z * mBig, 0.0f, 1.0f);
+	bb.w = constrain(bb.w * mBig, 0.0f, 1.0f);
 
 	vInt4 iBB;
 	iBB.x = bb.x * pMat->cols;
@@ -145,16 +141,11 @@ bool _TrackerBase::console(int& iY)
 	{
 		msg = "Update";
 	}
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+	C_MSG(msg);
 
-	msg = "Tracking pos = ("
+	C_MSG("Tracking pos = ("
 			+ f2str(m_bb.midX()) + ", "
-			+ f2str(m_bb.midY()) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
+			+ f2str(m_bb.midY()) + ")");
 
 	return true;
 }
