@@ -11,6 +11,10 @@ sudo chmod a+x /etc/rc.local
 #sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\nmount /dev/mmcblk1p1 /mnt/sd\n/home/lab/ok.sh\nexit 0\n' >> /etc/rc.local"
 
 
+sudo apt-get -y purge whoopsie 
+sudo systemctl stop ModemManager
+sudo apt-get -y purge modemmanager
+
 # Jetson TX2
 cd opencv
 mkdir build

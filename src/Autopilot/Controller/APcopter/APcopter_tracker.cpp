@@ -136,7 +136,7 @@ void APcopter_tracker::update(void)
 
 	m_pAP->setMount(m_apMount);
 
-	if(m_pAP->bApModeChanged())
+	if(m_bMissionChanged)//m_pAP->bApModeChanged())
 	{
 		m_vMyPos.w = m_pAP->m_apHdg;
 		m_vTargetPos.w = m_pAP->m_apHdg;

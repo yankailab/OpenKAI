@@ -23,7 +23,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"pipeline":"nvarguscamerasrc ! 'video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1' ! nvvidconv flip-method=0 ! 'video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx' ! videoconvert ! appsink",
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
 }
 
 {
