@@ -201,7 +201,7 @@ def classify(caffemodel, deploy_file, image_files,
     else:
         raise ValueError('Invalid number for channels: %s' % channels)
     # Capture camera and set the resolutions
-    cap = cv2.VideoCapture(1)
+    cap = cv2.VideoCapture(0)
     cap.set(3,1920)
     cap.set(4,1088)
 
@@ -229,7 +229,7 @@ def classify(caffemodel, deploy_file, image_files,
                 pB = int(round(bottom))
                 print 'Detected object at [(%d, %d), (%d, %d)] with "confidence" %f' %(pL, pT, pR, pB, confidence,)
                 # Draw the rectangle on the screen
-                cv2.rectangle(frame, (pL, pT), (pR, pB), (0,0,255), 5)  
+                cv2.rectangle(frame, (pL, pT), (pR, pB), (0,0,255), 2)
             # Draw the number of detected object to the screen
             cv2.putText(frame,str(nObj), (100,100),cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 5)
         cv2.imshow('frame',frame)
