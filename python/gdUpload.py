@@ -46,8 +46,8 @@ def main():
     #    for item in items:
     #        print(u'{0} ({1})'.format(item['name'], item['id']))
 
-    file_metadata = {'name': 'test2.jpg'}
-    media = googleapiclient.http.MediaFileUpload('test2.jpg', mimetype='image/jpeg')
+    file_metadata = {'name': '#FILENAME#'}
+    media = googleapiclient.http.MediaFileUpload('#FILENAME#', mimetype='image/jpeg')
     file = service.files().create(body=file_metadata,
                                         media_body=media,
                                         fields='id').execute()

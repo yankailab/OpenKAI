@@ -40,6 +40,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_GStreamer);
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_Grayscale);
+	ADD_MODULE(_GDcam);
 	ADD_MODULE(_HiphenRGB);
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenServer);
