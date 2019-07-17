@@ -28,6 +28,10 @@ sudo apt-get -y install libimage-exiftool-perl
 # (Optional) Apache
 sudo apt-get -y install apache2
 
+# (Optional) Google Drive
+sudo apt-get -y install python-pip
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+
 # (Optional) CUDA
 sudo add-apt-repository ppa:graphics-drivers/ppa 
 sudo apt-get update 

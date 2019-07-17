@@ -29,7 +29,10 @@ public:
 	int check(void);
 
 private:
+	bool findTarget(void);
 	void updateShot(void);
+	void oAlpr(const string& fImg);
+	void gdUpload(const string& fImg);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -40,10 +43,15 @@ private:
 private:
 	_DetectorBase* m_pD;
 	Frame m_fBGR;
+	int	m_iClass;
+
+	bool m_bAlpr;
+	bool m_bGDupload;
 
 	vector<int> m_vJPGquality;
 	string m_imgFile;
 	string m_alprAPI;
+	string m_alprKey;
 	string m_gdUpload;
 	string m_gdFolderID;
 

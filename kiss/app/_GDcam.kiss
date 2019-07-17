@@ -1,0 +1,86 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
+}
+
+{
+	"name":"camCont",
+	"class":"_Contrast",
+	"FPS":30,
+	"bInst":0,
+	"Window":"filterView",
+	"_VisionBase":"cam",
+	"alpha":1.5,
+	"beta":0.0,
+}
+
+{
+	"name":"Yolo",
+	"class":"_DNNdetect",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
+	"classFile":"class.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"gdCam",
+	"class":"_GDcam",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"_DetectorBase":"Yolo",
+	"iClass":7,
+	"imgFile":"/home/kai/dev/test/test_",
+	"alprKey":"",
+	"gdUpload":"python /home/kai/dev/workspace/OpenKAI/OpenKAI/python/GoogleAPI/gdUpload.py",
+	"gdFolderID":"1OxVGW0_cQAO5VqiSXj9but-XMe2sGNCE",
+	"bAlpr":0,
+	"bGDupload":1,
+	"jpgQuality":60,
+}
