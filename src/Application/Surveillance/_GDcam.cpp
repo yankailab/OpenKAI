@@ -14,8 +14,10 @@ _GDcam::_GDcam()
 {
 	m_pD = NULL;
 
-	m_imgFile = "anr.jpg";
-	m_shAlpr = "alpr.sh";
+	m_imgFile = "GDcam_";
+	m_alprAPI = "https://api.openalpr.com/v2/recognize?recognize_vehicle=0&country=jp&secret_key=";
+	m_gdUpload = "python gdUpload.py";
+	m_gdFolderID = "";
 
 }
 
@@ -28,12 +30,20 @@ bool _GDcam::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-//	KISSm(pK,);
+	KISSm(pK,imgFile);
+	KISSm(pK,alprAPI);
+	KISSm(pK,gdUpload);
+	KISSm(pK,gdFolderID);
+
+	int jpgQuality = 80;
+	pK->v("jpgQuality", &jpgQuality);
+	m_vJPGquality.push_back(IMWRITE_JPEG_QUALITY);
+	m_vJPGquality.push_back(jpgQuality);
 
 	string iName;
 
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBaseCN", &iName));
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
 	m_pD = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pD, iName + " not found");
 
@@ -59,6 +69,8 @@ void _GDcam::update(void)
 	{
 		this->autoFPSfrom();
 
+		updateShot();
+
 		this->autoFPSto();
 	}
 }
@@ -66,8 +78,32 @@ void _GDcam::update(void)
 int _GDcam::check(void)
 {
 	NULL__(m_pD,-1);
+	NULL__(m_pD->m_pVision,-1);
+	IF__(m_pD->m_pVision->BGR()->bEmpty(), -1);
 
 	return 0;
+}
+
+void _GDcam::updateShot(void)
+{
+	IF_(check()<0);
+
+	m_fBGR.copy(*m_pD->m_pVision->BGR());
+	string fImg = m_imgFile + tFormat() + ".jpg";
+	cv::imwrite(fImg, *m_fBGR.m(), m_vJPGquality);
+
+	//ALPR
+	FILE *fp;
+	char path[1035];
+	string alpr = "curl -X POST -F image=@" + fImg + " '" + m_alprAPI + "'";
+
+	fp = popen(alpr.c_str(), "r");
+	if(!fp)
+		LOG_I("Failed to run command:" + alpr);
+
+	//Upload to Google Drive
+	string gdUp = m_gdUpload + " " + fImg + " " + m_gdFolderID;
+	system(gdUp.c_str());
 }
 
 bool _GDcam::draw(void)

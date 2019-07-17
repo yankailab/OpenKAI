@@ -29,6 +29,7 @@ public:
 	int check(void);
 
 private:
+	void updateShot(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -42,9 +43,9 @@ private:
 
 	vector<int> m_vJPGquality;
 	string m_imgFile;
-	string m_shAlpr;
+	string m_alprAPI;
 	string m_gdUpload;
-	string m_tagFile;
+	string m_gdFolderID;
 
 };
 
