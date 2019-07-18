@@ -18,11 +18,13 @@ _GDcam::_GDcam()
 	m_bAlpr = true;
 	m_bGDupload = true;
 
-	m_imgFile = "GDcam_";
+	m_tempDir = "GDcam_";
 	m_alprAPI = "https://api.openalpr.com/v2/recognize?recognize_vehicle=0&country=jp&secret_key=";
 	m_alprKey = "";
 	m_gdUpload = "python gdUpload.py";
-	m_gdFolderID = "";
+	m_gdImgFolderID = "";
+	m_gdDataFolderID = "";
+	m_gdCredentials = "credentials.json";
 
 }
 
@@ -36,11 +38,13 @@ bool _GDcam::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, iClass);
-	KISSm(pK, imgFile);
+	KISSm(pK, tempDir);
 	KISSm(pK, alprAPI);
 	KISSm(pK, alprKey);
 	KISSm(pK, gdUpload);
-	KISSm(pK, gdFolderID);
+	KISSm(pK, gdImgFolderID);
+	KISSm(pK, gdDataFolderID);
+	KISSm(pK, gdCredentials);
 
 	KISSm(pK, bAlpr);
 	KISSm(pK, bGDupload);
@@ -113,61 +117,49 @@ bool _GDcam::findTarget(void)
 	return false;
 }
 
-void _GDcam::oAlpr(const string& fImg)
+void _GDcam::oAlpr(const string& fName)
 {
 	FILE *fp;
 	char path[1035];
-	string alpr = "curl -X POST -F image=@" + fImg + " '" + m_alprAPI + "'" + m_alprKey;
-
+	string alpr = "curl -X POST -F image=@" + m_tempDir + fName + ".jpeg '" + m_alprAPI + m_alprKey + "'";
 	fp = popen(alpr.c_str(), "r");
-	if (!fp)
-		LOG_I("Failed to run command:" + alpr);
+	IF_l(!fp, "Failed to run command:" + alpr);
 
 	while (fgets(path, sizeof(path) - 1, fp));
 	pclose(fp);
-
 	string strR = string(path);
-	std::string::size_type k;
 
-	k = strR.find("\\u");
-	while (k != std::string::npos)
-	{
-		strR.replace(k, 6, "-");
-		k = strR.find("\\u");
-	}
+	string file = m_tempDir + fName + ".txt";
+	m_fAlpr.open(file.c_str(), ios::out);
+	IF_(!m_fAlpr.is_open());
+	m_fAlpr.seekg(0, ios_base::beg);
 
-	k = strR.find("\"");
-	while (k != std::string::npos)
-	{
-		strR.erase(k, 1);
-		k = strR.find("\"");
-	}
+	IF_(!m_fAlpr.write((char*)strR.c_str(), strR.length()));
 
-	k = strR.find(":");
-	while (k != std::string::npos)
-	{
-		strR.erase(k, 1);
-		k = strR.find(":");
-	}
-
-	k = strR.find(" plate");
-	if (k == std::string::npos)
-		return;
-
-	strR.erase(k, 7);
-	std::string::size_type m;
-	m = strR.find(',', k);
-
-	string cStr = strR.substr(k, m - k);
-
+	m_fAlpr.flush();
+	m_fAlpr.close();
 }
 
-void _GDcam::gdUpload(const string& fImg)
+void _GDcam::gdUpload(const string& fName)
 {
 	//Upload to Google Drive
-	string gdUp = m_gdUpload + " " + fImg + " " + m_gdFolderID;
-	system(gdUp.c_str());
+	string cmd = m_gdUpload + " " + m_tempDir + fName + ".jpeg "
+			+ fName + ".jpg image/jpeg "
+			+ m_gdImgFolderID
+			+ " " + m_gdCredentials;
+	system(cmd.c_str());
 
+	cmd = m_gdUpload + " " + m_tempDir + fName + ".txt "
+			+ fName + ".txt text/plain "
+			+ m_gdDataFolderID
+			+ " " + m_gdCredentials;
+	system(cmd.c_str());
+
+	cmd = "rm " + m_tempDir + fName + ".jpeg";
+	system(cmd.c_str());
+
+	cmd = "rm " + m_tempDir + fName + ".txt";
+	system(cmd.c_str());
 }
 
 void _GDcam::updateShot(void)
@@ -175,8 +167,8 @@ void _GDcam::updateShot(void)
 	IF_(check() < 0);
 
 	m_fBGR.copy(*m_pD->m_pVision->BGR());
-	string fImg = m_imgFile + tFormat() + ".jpg";
-	cv::imwrite(fImg, *m_fBGR.m(), m_vJPGquality);
+	string fImg = tFormat();
+	cv::imwrite(m_tempDir + fImg + ".jpeg", *m_fBGR.m(), m_vJPGquality);
 
 	if(m_bAlpr)
 		oAlpr(fImg);

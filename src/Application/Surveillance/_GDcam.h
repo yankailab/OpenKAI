@@ -31,8 +31,8 @@ public:
 private:
 	bool findTarget(void);
 	void updateShot(void);
-	void oAlpr(const string& fImg);
-	void gdUpload(const string& fImg);
+	void oAlpr(const string& fName);
+	void gdUpload(const string& fName);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -49,11 +49,14 @@ private:
 	bool m_bGDupload;
 
 	vector<int> m_vJPGquality;
-	string m_imgFile;
+	string m_tempDir;
 	string m_alprAPI;
 	string m_alprKey;
+	fstream m_fAlpr;
 	string m_gdUpload;
-	string m_gdFolderID;
+	string m_gdImgFolderID;
+	string m_gdDataFolderID;
+	string m_gdCredentials;
 
 };
 
