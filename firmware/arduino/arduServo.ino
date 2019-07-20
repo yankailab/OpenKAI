@@ -49,7 +49,7 @@ void receive(void)
   while (Serial.available() > 0)
   {
     inByte = Serial.read();
-s
+
     if (m_cmd.m_cmd != 0)
     {
       m_cmd.m_pBuf[m_cmd.m_iByte] = inByte;
