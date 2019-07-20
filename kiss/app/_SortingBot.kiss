@@ -161,7 +161,7 @@
 	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
-	"parity":"E",	
+	"parity":"E",
 }
 
 {
