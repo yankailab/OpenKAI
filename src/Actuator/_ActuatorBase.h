@@ -48,6 +48,7 @@ public:
 	float	m_nTargetPos;
 	float	m_nCurrentSpeed;
 	float	m_nTargetSpeed;
+	float	m_nPosError;
 
 	uint64_t m_tStampCmdSet;
 	uint64_t m_tStampCmdSent;

@@ -41,7 +41,7 @@
 {
 	"name":"viewDepthCrop",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"bFullScreen":0,
 }
 
@@ -160,7 +160,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
-	"baud":115200,
+	"baud":230400,
 	"parity":"E",
 }
 
@@ -180,7 +180,7 @@
 }
 
 {
-	"name":"omY",
+	"name":"omZ",
 	"class":"_OrientalMotor",
 	"bInst":1,
 	"FPS":30,
@@ -246,7 +246,7 @@
 				"pos":0.825,
 			}
 			{
-				"_ActuatorBase":"omY",
+				"_ActuatorBase":"omZ",
 				"pos":0.2,
 			}
 			{
@@ -257,7 +257,7 @@
 
 		{
 			"name":"standby",
-			"dT":-1.0,
+			"dT":-1,
 			{
 				"_ActuatorBase":"arduServo",
 				"pos":1.0,
@@ -271,7 +271,7 @@
 				"pos":-1.0,
 			}
 			{
-				"_ActuatorBase":"omY",
+				"_ActuatorBase":"omZ",
 				"pos":-1.0,
 			}
 			{
@@ -291,13 +291,13 @@
 
 		{
 			"name":"verify",
-			"dT":-1.0,
+			"dT":-1,
 			{
 				"_ActuatorBase":"omX",
 				"pos":0.7,
 			}
 			{
-				"_ActuatorBase":"omY",
+				"_ActuatorBase":"omZ",
 				"pos":0.0,
 			}
 		}
@@ -309,7 +309,7 @@
 				"pos":-1.0,
 			}
 			{
-				"_ActuatorBase":"omY",
+				"_ActuatorBase":"omZ",
 				"pos":0.0,
 			}
 		}
@@ -318,7 +318,7 @@
 			"name":"drop",
 			"dT":800000,
 			{
-				"_ActuatorBase":"omY",
+				"_ActuatorBase":"omZ",
 				"pos":0.2,
 			}
 			{
@@ -330,16 +330,16 @@
 }
 
 {
-	"name":"sortingBot",
-	"class":"_SortingBot",
+	"name":"sortingArm",
+	"class":"_SortingArm",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
 	"_ConveyerDetector":"convD",
 	"_Sequencer":"sequencer1",
-	"actuatorX":0,
-	"actuatorZ":1,
+	"actuatorX":"omX",
+	"actuatorZ":"omZ",
 	"iROI":0,
 	"gripX1":0.65,
 	"gripX2":1.0,

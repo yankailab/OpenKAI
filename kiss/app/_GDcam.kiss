@@ -62,7 +62,7 @@
 	"classFile":"class.names",
 	"bSwapRB":1,
 	"scale":0.00392,
-	"thr":0.01,
+	"thr":0.001,
 	"iClassDraw":-1,
 	"minW":0.4,
 	"minH":0.3,

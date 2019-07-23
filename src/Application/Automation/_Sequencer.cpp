@@ -25,7 +25,6 @@ bool _Sequencer::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-
 	Kiss* pAction = pK->o("action");
 	NULL_Fl(pAction, "action not found");
 
@@ -99,8 +98,8 @@ void _Sequencer::updateAction(void)
 {
 	IF_(check()<0);
 
-	int i;
-	int nComplete = 0;
+	unsigned int i;
+	unsigned int nComplete = 0;
 	SEQ_ACTION* pAction = &m_vAction[m_iAction];
 	for(i=0; i<pAction->m_vActuator.size(); i++)
 	{

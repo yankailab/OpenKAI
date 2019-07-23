@@ -100,6 +100,10 @@ void _OrientalMotor::checkAlarm(void)
 {
 	IF_(check()<0);
 
+	static uint64_t tLastAlarm = 0;
+	IF_(m_tStamp - tLastAlarm < USEC_1SEC);
+	tLastAlarm = m_tStamp;
+
 	uint16_t pB[2];
 	pB[0] = 1<<7;
 	pB[1] = 0;
@@ -109,7 +113,7 @@ void _OrientalMotor::checkAlarm(void)
 void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
-//	IF_(m_tStampCmdSet > m_tStampCmdSent);
+	IF_(m_tStampCmdSet <= m_tStampCmdSent);
 
 	//update normalized value to actual unit
 	m_tState.m_step = m_nTargetPos * m_vStepRange.len() + m_vStepRange.x;
@@ -151,6 +155,10 @@ void _OrientalMotor::sendCMD(void)
 void _OrientalMotor::readStatus(void)
 {
 	IF_(check()<0);
+
+	static uint64_t tLastStatus = 0;
+	IF_(m_tStamp - tLastStatus < 100000);
+	tLastStatus = m_tStamp;
 
 	uint16_t pB[18];
 	int nR = 6;

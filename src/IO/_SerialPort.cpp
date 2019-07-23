@@ -249,6 +249,14 @@ bool _SerialPort::setup(void)
 			return false;
 		}
 		break;
+	case 230400:
+		if (cfsetispeed(&config, B230400) < 0
+				|| cfsetospeed(&config, B230400) < 0)
+		{
+			LOG_E("Could not set baud: " + i2str(m_baud));
+			return false;
+		}
+		break;
 
 		// These two non-standard (by the 70'ties ) rates are fully supported on
 		// current Debian and Mac OS versions (tested since 2010).

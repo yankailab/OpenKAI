@@ -129,18 +129,18 @@ void _SortingArm::updateArm(void)
 			IF_CONT(!pAction);
 
 			pSA = pAction->getActuator(m_actuatorX);
-			IF_CONT(pSA);
+			IF_CONT(!pSA);
 			pSA->setTarget((1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x, 1.0);
 
 			pSA = pAction->getActuator(m_actuatorZ);
-			IF_CONT(pSA);
+			IF_CONT(!pSA);
 			pSA->setTarget((pO->m_dist - m_rGripZ.x) / m_rGripZ.len(), 1.0);
 
 			pAction = m_pSeq->getAction("move");
 			IF_CONT(!pAction);
 
 			pSA = pAction->getActuator(m_actuatorX);
-			IF_CONT(pSA);
+			IF_CONT(!pSA);
 			pSA->setTarget(m_pDropPos[pO->m_topClass], 1.0);
 
 			m_pSeq->wakeUp();

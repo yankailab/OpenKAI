@@ -13,6 +13,7 @@ _ActuatorBase::_ActuatorBase()
 	m_nTargetPos = -1.0;
 	m_nCurrentSpeed = 0.0;
 	m_nTargetSpeed = 0.0;
+	m_nPosError = 0.01;
 	m_tStampCmdSet = 0;
 	m_tStampCmdSent = 0;
 
@@ -30,6 +31,7 @@ bool _ActuatorBase::init(void* pKiss)
 
 	KISSm(pK, nTargetPos);
 	KISSm(pK, nTargetSpeed);
+	KISSm(pK, nPosError);
 
 	string iName;
 
@@ -87,7 +89,7 @@ void _ActuatorBase::setGlobalTarget(vFloat4& t)
 
 bool _ActuatorBase::bComplete(void)
 {
-	return EAQ(m_nCurrentPos, m_nTargetPos, 1e-2);
+	return EAQ(m_nCurrentPos, m_nTargetPos, m_nPosError);
 }
 
 float _ActuatorBase::pos(void)
