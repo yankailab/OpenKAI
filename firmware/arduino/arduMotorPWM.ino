@@ -39,6 +39,9 @@ union int16Bytes
 #define PIN_LED_MANUAL A1
 #define PIN_LED_AUTO A2
 #define PIN_LED_INDICATOR A3
+
+#define PIN_CAM_SHUTTER A4
+
 #define PWM_MID 1500
 #define PWM_MID_DZ 100
 #define PWM_LOW 500
@@ -189,6 +192,7 @@ void setup()
   pinMode(PIN_LED_MANUAL, OUTPUT);
   pinMode(PIN_LED_AUTO, OUTPUT);
   pinMode(PIN_LED_INDICATOR, OUTPUT);
+  pinMode(PIN_CAM_SHUTTER, OUTPUT);
 
   pinMode(PIN_PWM_L, INPUT);
   pinMode(PIN_PWM_R, INPUT);

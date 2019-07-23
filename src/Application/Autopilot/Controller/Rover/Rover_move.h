@@ -37,6 +37,7 @@ public:
 	int		m_iTag;
 	float	m_tagAngle;
 	uint8_t	m_iPinLEDtag;
+	uint8_t m_iPinCamShutter;
 };
 
 }

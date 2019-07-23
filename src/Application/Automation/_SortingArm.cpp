@@ -49,7 +49,7 @@ bool _SortingArm::init(void* pKiss)
 	pK->array("dropPos", m_pDropPos, SB_N_CLASS);
 
 	int pClass[SB_N_CLASS];
-	m_nClass = pK->array("class", pClass, SB_N_CLASS);
+	m_nClass = pK->array("classList", pClass, SB_N_CLASS);
 	for (int i = 0; i < m_nClass; i++)
 		m_classFlag |= (1 << pClass[i]);
 

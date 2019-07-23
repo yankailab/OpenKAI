@@ -62,7 +62,7 @@ public:
 	void setSpeed(float nSpeed);
 	void setHdg(float hdg);
 	void setTargetHdg(float hdg);
-	void setLED(uint8_t pin, uint8_t status);
+	void setPinout(uint8_t pin, uint8_t status);
 
 private:
 	void updatePWM(void);

@@ -13,8 +13,12 @@ namespace kai
 _GDcam::_GDcam()
 {
 	m_pD = NULL;
-	m_iClass = 0;
+	m_classFlag = 0;
+	m_vRoi.init();
+	m_vRoi.z = 1.0;
+	m_vRoi.w = 1.0;
 
+	m_bTarget = false;
 	m_bAlpr = true;
 	m_bGDupload = true;
 
@@ -37,7 +41,6 @@ bool _GDcam::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, iClass);
 	KISSm(pK, tempDir);
 	KISSm(pK, alprAPI);
 	KISSm(pK, alprKey);
@@ -48,6 +51,17 @@ bool _GDcam::init(void* pKiss)
 
 	KISSm(pK, bAlpr);
 	KISSm(pK, bGDupload);
+
+	m_classFlag = 0;
+	int pClass[GD_N_CLASS];
+	int nClass = pK->array("classList", pClass, GD_N_CLASS);
+	for (int i = 0; i < nClass; i++)
+		m_classFlag |= (1 << pClass[i]);
+
+	pK->v("x",&m_vRoi.x);
+	pK->v("y",&m_vRoi.y);
+	pK->v("z",&m_vRoi.z);
+	pK->v("w",&m_vRoi.w);
 
 	int jpgQuality = 80;
 	pK->v("jpgQuality", &jpgQuality);
@@ -85,7 +99,15 @@ void _GDcam::update(void)
 
 		if(findTarget())
 		{
-			updateShot();
+			if(!m_bTarget)
+			{
+				updateShot();
+				m_bTarget = true;
+			}
+		}
+		else
+		{
+			m_bTarget = false;
 		}
 
 		this->autoFPSto();
@@ -109,7 +131,11 @@ bool _GDcam::findTarget(void)
 	int i = 0;
 	while ((pO = m_pD->at(i++)) != NULL)
 	{
-		IF_CONT(pO->m_topClass != m_iClass);
+		IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
+		IF_CONT(pO->m_bb.x < m_vRoi.x);
+		IF_CONT(pO->m_bb.x > m_vRoi.z);
+		IF_CONT(pO->m_bb.y < m_vRoi.y);
+		IF_CONT(pO->m_bb.y > m_vRoi.w);
 
 		return true;
 	}
@@ -183,6 +209,14 @@ bool _GDcam::draw(void)
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Scalar col = Scalar(0,255,0);
+
+	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
+	rectangle(*pMat, r, col, 3);
 
 	return true;
 }

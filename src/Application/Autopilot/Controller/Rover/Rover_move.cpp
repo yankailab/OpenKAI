@@ -19,6 +19,7 @@ Rover_move::Rover_move()
 	m_tagRoi.w = 1.0;
 	m_tagAngle = 0;
 	m_iPinLEDtag = 21;
+	m_iPinCamShutter = 22;
 }
 
 Rover_move::~Rover_move()
@@ -32,6 +33,7 @@ bool Rover_move::init(void* pKiss)
 
 	KISSm(pK,nSpeed);
 	KISSm(pK,iPinLEDtag);
+	KISSm(pK,iPinCamShutter);
 
 	pK->v("tagX",&m_tagRoi.x);
 	pK->v("tagY",&m_tagRoi.y);
@@ -105,10 +107,12 @@ void Rover_move::update(void)
 	else if(mission == "MOVE")
 	{
 		m_pR->setSpeed(nSpeed);
+		m_pR->setPinout(m_iPinCamShutter,0);
 	}
 	else if(mission == "TAG")
 	{
 		m_pR->setSpeed(0.0);
+		m_pR->setPinout(m_iPinCamShutter,1);
 	}
 
 	if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
@@ -131,9 +135,9 @@ bool Rover_move::findTag(void)
 	IF__(check()<0, false);
 
 	if(m_pAruco->size()>0)
-		m_pR->setLED(m_iPinLEDtag,1);
+		m_pR->setPinout(m_iPinLEDtag,1);
 	else
-		m_pR->setLED(m_iPinLEDtag,0);
+		m_pR->setPinout(m_iPinLEDtag,0);
 
 	OBJECT* pO;
 	int i=0;
@@ -163,9 +167,9 @@ bool Rover_move::findLine(void)
 	IF__(check()<0, false);
 
 	if(m_pLine->size()>0)
-		m_pR->setLED(m_iPinLEDtag,1);
+		m_pR->setPinout(m_iPinLEDtag,1);
 	else
-		m_pR->setLED(m_iPinLEDtag,0);
+		m_pR->setPinout(m_iPinLEDtag,0);
 
 	OBJECT* pO;
 	int i=0;

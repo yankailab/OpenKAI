@@ -2,8 +2,8 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
+	"bWindow":1,
+	"bDraw":1,
 	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
@@ -20,7 +20,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":640,
@@ -31,7 +31,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@10.0.0.100:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -62,8 +62,10 @@
 	"classFile":"class.names",
 	"bSwapRB":1,
 	"scale":0.00392,
-	"thr":0.1,
+	"thr":0.01,
 	"iClassDraw":-1,
+	"minW":0.4,
+	"minH":0.3,
 }
 
 {
@@ -75,7 +77,6 @@
 	"bDraw":1,
 	"Window":"OKview",
 	"_DetectorBase":"Yolo",
-	"iClass":0,
 	"tempDir":"/home/kai/dev/test/",
 	"bAlpr":0,
 	"alprKey":"sk_ecad411eac2d082f3c65a03f",
@@ -85,4 +86,9 @@
 	"gdImgFolderID":"1Uz7Az_jhnpU8tUaIGOcek0qHA-T0gWBe",
 	"gdDataFolderID":"1ZSfccIS3oeerH1nVbmK1Gg3jADwe6Iyp",
 	"gdCredentials":"/home/kai/credentials.json",
+	"classList":[2,5,6,7],
+	"x":0.05,
+	"y":0.0,
+	"z":1.0,
+	"w":1.0,
 }

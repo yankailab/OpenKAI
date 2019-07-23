@@ -13,6 +13,8 @@
 #include "../../Detector/_DetectorBase.h"
 #include "../../Script/JSON.h"
 
+#define GD_N_CLASS 64
+
 namespace kai
 {
 
@@ -43,7 +45,9 @@ private:
 private:
 	_DetectorBase* m_pD;
 	Frame m_fBGR;
-	int	m_iClass;
+	uint64_t m_classFlag;
+	vFloat4 m_vRoi;
+	bool m_bTarget;
 
 	bool m_bAlpr;
 	bool m_bGDupload;

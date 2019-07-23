@@ -117,7 +117,7 @@ void Rover_base::setTargetHdg(float hdg)
 	m_targetHdg = hdg;
 }
 
-void Rover_base::setLED(uint8_t pin, uint8_t status)
+void Rover_base::setPinout(uint8_t pin, uint8_t status)
 {
 	NULL_(m_pCMD);
 	m_pCMD->pinOut(pin, status);
