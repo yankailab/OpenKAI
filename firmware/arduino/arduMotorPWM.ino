@@ -39,8 +39,7 @@ union int16Bytes
 #define PIN_LED_MANUAL A1
 #define PIN_LED_AUTO A2
 #define PIN_LED_INDICATOR A3
-
-#define PIN_CAM_SHUTTER A4
+#define PIN_CAM_SHUTTER 10
 
 #define PWM_MID 1500
 #define PWM_MID_DZ 100

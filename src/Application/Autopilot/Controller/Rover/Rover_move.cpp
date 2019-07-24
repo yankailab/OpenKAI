@@ -19,7 +19,7 @@ Rover_move::Rover_move()
 	m_tagRoi.w = 1.0;
 	m_tagAngle = 0;
 	m_iPinLEDtag = 21;
-	m_iPinCamShutter = 22;
+	m_iPinCamShutter = 10;
 }
 
 Rover_move::~Rover_move()
