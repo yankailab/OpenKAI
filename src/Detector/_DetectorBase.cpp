@@ -258,7 +258,7 @@ bool _DetectorBase::draw(void)
 	while((pO = at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
-		IF_CONT(iClass >= m_nClass);
+//		IF_CONT(iClass >= m_nClass);
 		IF_CONT(iClass < 0);
 
 		col = colStep * iClass;
@@ -273,7 +273,7 @@ bool _DetectorBase::draw(void)
 				FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 
 		//class
-		if(m_bDrawClass)
+		if(m_bDrawClass && iClass < m_nClass)
 		{
 			string oName = m_vClass[iClass].m_name;
 			if (oName.length()>0)

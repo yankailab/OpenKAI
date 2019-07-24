@@ -129,6 +129,7 @@
 	"bLog":0,
 	"FPS":30,
 	"Window":"viewRGBcrop",
+	"_VisionBase":"cropRGB",
 	"_DepthVisionBase":"cropD",
 	"_DNNclassifier":"classifier",
 	"w":0.15,
@@ -136,7 +137,7 @@
 	"maxD":0.68,
 	"dFrom":0.1,
 	"dTo":1.0,
-	"minArea":0.5,
+	"minArea":0.15,
 	"nLevel":10,
 }
 
@@ -146,7 +147,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewRGBcrop",
-	"_DepthVisionBase":"sw",
+	"_DetectorBase":"sw",
 	"cSpeed":0.1,
 	"cLen":2.0,
 	"minOverlap":0.3,
@@ -291,7 +292,7 @@
 
 		{
 			"name":"verify",
-			"dT":-1,
+			"/dT":-1,
 			{
 				"_ActuatorBase":"omX",
 				"pos":0.7,

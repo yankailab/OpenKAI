@@ -20,6 +20,7 @@
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"
 #include "../Application/Automation/_Sequencer.h"
+#include "../Application/Automation/_SortingArm.h"
 #include "../Application/Autopilot/Controller/_AutoPilot.h"
 #include "../Application/Autopilot/Mission/_MissionControl.h"
 #include "../Application/Autopilot/Controller/Rover/_RoverCMD.h"

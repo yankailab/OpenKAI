@@ -67,6 +67,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
+	ADD_MODULE(_SortingArm);
 	ADD_MODULE(_ConveyerDetector);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);

@@ -42,7 +42,7 @@ bool _Sequencer::init(void* pKiss)
 		int j=0;
 		while (ppActuator[j])
 		{
-			Kiss* pActuatorI = ppAction[j++];
+			Kiss* pActuatorI = ppActuator[j++];
 			SEQ_ACTUATOR aA;
 			aA.init();
 			pActuatorI->v("pos", &aA.m_pos);
