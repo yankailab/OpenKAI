@@ -21,7 +21,7 @@
 	"name":"filterView",
 	"class":"Window",
 	"bInst":1,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.19 port=5678 auto-multicast=false",
 }
 
 {
@@ -51,7 +51,7 @@
 	"bInst":1,
 	"Window":"/filterView",
 	"_VisionBase":"cam",
-	"alpha":1.25,
+	"alpha":1.5,
 	"beta":0.0,
 }
 
@@ -136,10 +136,10 @@
 	"bInst":1,
 	"Window":"filterView",
 	"_VisionBase":"inv",
-	"x":0.0,
+	"x":0.15,
 	"y":0.0,
-	"z":1.0,
-	"w":1.0,
+	"z":0.85,
+	"w":0.4,
 }
 
 {
@@ -150,8 +150,8 @@
 	"bDraw":1,
 	"Window":"OKview",
 	"_VisionBase":"crop",
-	"wSlide":0.05,
-	"minPixLine":0.025,
+	"wSlide":0.2,
+	"minPixLine":0.25,
 }
 
 {
@@ -258,7 +258,7 @@
 			"Window":"OKview",
 			"bDraw":1,
 			"class":"Loiter",
-			"tTimeout":5,
+			"tTimeout":2,
 			"nextMission":"MOVE",
 		}
 	}
