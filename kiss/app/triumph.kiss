@@ -135,7 +135,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"filterView",
-	"_VisionBase":"inv",
+	"_VisionBase":"morph",
 	"x":0.15,
 	"y":0.0,
 	"z":0.85,
@@ -151,7 +151,7 @@
 	"Window":"OKview",
 	"_VisionBase":"crop",
 	"wSlide":0.2,
-	"minPixLine":0.25,
+	"minPixLine":0.1,
 }
 
 {
