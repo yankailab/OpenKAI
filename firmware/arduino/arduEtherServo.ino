@@ -3,10 +3,12 @@
 #include <Servo.h>
 #include "arduOK.h"
 
+#define SERIAL_DEBUG 1
+
 // Enter a MAC address and IP address for your controller below.
 // The IP address will be dependent on your local network:
 byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-IPAddress g_myIP(192, 168, 1, 177);
+IPAddress g_myIP(192, 168, 1, 100);
 unsigned int g_myPort = 8888;
 EthernetUDP g_UDP;
 
@@ -102,4 +104,13 @@ void loop()
   g_UDP.write((uint8_t)(g_pwm2 & 0xFF));
   g_UDP.write((uint8_t)((g_pwm2 >> 8) & 0xFF));
   g_UDP.endPacket();
+  
+  if(SERIAL_DEBUG)
+  {
+    Serial.print("pwm1=");
+    Serial.print(g_pwm1); 
+    Serial.print(", pwm2=");
+    Serial.println(g_pwm2); 
+  }
+  
 }

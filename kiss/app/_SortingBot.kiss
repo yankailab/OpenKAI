@@ -196,15 +196,14 @@
 }
 
 {
-	"name":"apSerial",
-	"class":"_SerialPort",
+	"name":"apUDP",
+	"class":"_UDP",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"bStream":1,
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"addr":"192.168.1.100",
+	"port":8888,
 	"_wakeUp":"arduServo",
 }
 
@@ -215,7 +214,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apSerial",
+	"_IOBase":"apUDP",
 	
 	{
 		"pwmL":1500,

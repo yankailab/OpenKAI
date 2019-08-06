@@ -37,8 +37,8 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"192.168.1.177",
-	"port":19840,
+	"addr":"192.168.1.100",
+	"port":8888,
 	"_wakeUp":"arduServo",
 }
 

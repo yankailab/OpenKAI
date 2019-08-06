@@ -74,7 +74,6 @@ public:
 
 	vector<ARDUSERVO_CHAN> m_vServo;
 
-
 };
 
 }
