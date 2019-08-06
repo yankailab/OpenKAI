@@ -37,7 +37,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"192.168.1.100",
+	"addr":"10.0.0.101",
 	"port":8888,
 	"_wakeUp":"arduServo",
 }
@@ -51,7 +51,7 @@
 	"Window":"OKview",
 	"_IOBase":"arduIO",
 	
-	"nTargetPos":0.0,
+	"nTargetPos":1.0,
 	
 	{
 		"pwmL":1500,

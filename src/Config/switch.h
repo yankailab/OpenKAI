@@ -13,7 +13,7 @@
 //#define USE_CUDASTEREO
 //#define USE_OCR
 //#define USE_OPENALPR
-#define USE_DYNAMIXEL
+//#define USE_DYNAMIXEL
 
 #ifdef USE_TENSORRT
 #define USE_CUDA

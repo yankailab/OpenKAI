@@ -4,6 +4,8 @@
 #include "_ActuatorBase.h"
 #include "../Dependency/Rasheed/RasheedDeltaRobot.h"
 
+#ifdef USE_DYNAMIXEL
+
 namespace kai
 {
 
@@ -33,4 +35,6 @@ public:
 };
 
 }
+#endif
+
 #endif

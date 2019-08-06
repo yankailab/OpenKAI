@@ -60,9 +60,9 @@
 }
 
 {
-	"name":"apSerial",
+	"name":"arduIO",
 	"class":"_SerialPort",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -73,13 +73,25 @@
 }
 
 {
+	"name":"arduIO",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"addr":"10.0.0.100",
+	"port":8888,
+	"_wakeUp":"arduServo",
+}
+
+{
 	"name":"arduServo",
 	"class":"_ArduServo",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apSerial",
+	"_IOBase":"arduIO",
 	
 	{
 		"pwmL":1500,
@@ -122,7 +134,7 @@
 
 		{
 			"name":"standby",
-			"dT":-1.0,
+			"/dT":-1.0,
 			{
 				"_ActuatorBase":"arduServo",
 				"pos":1.0,
@@ -156,7 +168,7 @@
 
 		{
 			"name":"verify",
-			"dT":-1.0,
+			"/dT":-1.0,
 			{
 				"_ActuatorBase":"omX",
 				"pos":0.7,

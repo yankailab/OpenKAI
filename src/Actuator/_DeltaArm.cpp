@@ -1,5 +1,7 @@
 #include "_DeltaArm.h"
 
+#ifdef USE_DYNAMIXEL
+
 namespace kai
 {
 
@@ -205,3 +207,5 @@ bool _DeltaArm::console(int& iY)
 }
 
 }
+
+#endif
