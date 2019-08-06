@@ -12,8 +12,17 @@
 #include "../Vision/_VisionBase.h"
 #include "_DetectorBase.h"
 
+using namespace cv::dnn;
+
 namespace kai
 {
+
+enum DNN_type
+{
+	dnn_caffe,
+	dnn_yolo,
+	dnn_tf
+};
 
 class _DNNdetect: public _DetectorBase
 {
@@ -27,6 +36,7 @@ public:
 	int check(void);
 
 private:
+	bool detectYolo(void);
 	bool detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -36,6 +46,7 @@ private:
 	}
 
 public:
+	DNN_type m_dnnType;
 	cv::dnn::Net m_net;
 	double	m_thr;
 	double	m_nms;
