@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
 	"bConsole":0,
@@ -24,8 +24,8 @@
 	"bInst":1,
 	"Window":"OKview",
 	"deviceID":0,
-	"w":1280,
-	"h":720,
+	"w":640,
+	"h":480,
 }
 
 {
@@ -55,7 +55,32 @@
 }
 
 {
-	"name":"DNN",
+	"name":"DNNgender",
+	"class":"_DNNclassifier",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"mode":"thread",
+	"modelDir":"/home/kai/dev/model/face/",
+	"modelFile":"gender_deploy.prototxt",
+	"trainedFile":"gender_net.caffemodel",
+	"classList":["Male","Female"],
+	"bSwapRB":0,
+	"meanB":114,
+	"meanG":87,
+	"meanR":78,
+	"scale":1.0,
+	"nW":227,
+	"nH":227,
+	"bDrawObjClass":1,
+	"minConfidence":0.0,
+}
+
+{
+	"name":"DNNage",
 	"class":"_DNNclassifier",
 	"bInst":1,
 	"bDraw":1,
@@ -64,13 +89,19 @@
 	"Window":"OKview",
 	"_VisionBase":"cam",
 	"mode":"thread",
-	"modelDir":"/home/kai/dev/DNN/train/railway/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_40000.caffemodel",
-	"classFile":"labels.txt",
-	"bSwapRB":1,
-	"bDrawObjClass":0,
-	"minConfidence":1.0,
+	"modelDir":"/home/kai/dev/model/face/",
+	"modelFile":"age_deploy.prototxt",
+	"trainedFile":"age_net.caffemodel",
+	"classList":["(0-2)","(4-6)","(8-12)","(15-20)","(25-32)","(38-43)","(48-53)","(60-100)"],
+	"bSwapRB":0,
+	"meanB":114,
+	"meanG":87,
+	"meanR":78,
+	"scale":1.0,
+	"nW":227,
+	"nH":227,
+	"bDrawObjClass":1,
+	"minConfidence":0.0,
 }
 
 {

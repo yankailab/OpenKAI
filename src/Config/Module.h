@@ -19,6 +19,7 @@
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"
+#include "../Application/Surveillance/_ShopCam.h"
 #include "../Application/Automation/_Sequencer.h"
 #include "../Application/Automation/_SortingArm.h"
 #include "../Application/Autopilot/Controller/_AutoPilot.h"
