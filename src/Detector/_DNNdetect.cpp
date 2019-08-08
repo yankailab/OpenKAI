@@ -235,6 +235,7 @@ bool _DNNdetect::detect(void)
 		bb.y = dMat.at<float>(i, 4);
 		bb.z = dMat.at<float>(i, 5);
 		bb.w = dMat.at<float>(i, 6);
+		bb.constrain(0.0,1.0);
 
 		OBJECT o;
 		o.init();

@@ -37,6 +37,7 @@
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
 #include "../Detector/_ConveyerDetector.h"
+#include "../Detector/_OpenPose.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"

@@ -16,6 +16,7 @@
 #define OBJECT_N_CLASS 256
 #define OBJ_N_CHAR 32
 #define OBJ_N_VERTICES 32
+#define OBJ_N_TRAJ 16
 
 namespace kai
 {
@@ -49,11 +50,18 @@ struct OBJECT
 	//Properties
 	int64_t		m_tStamp;
 
+	//Trajectory
+	vFloat2		m_pTraj[OBJ_N_TRAJ];
+	int			m_iTraj;
+	int			m_nTraj;
+
 	void init(void)
 	{
 		m_bb.init();
 		m_dist = 0.0;
 		m_nV = 0;
+		m_iTraj = 0;
+		m_nTraj = 0;
 
 		resetClass();
 		m_pTracker = NULL;
@@ -144,6 +152,26 @@ struct OBJECT
 	float height(void)
 	{
 		return m_bb.height();
+	}
+
+	void addTrajectory(const vFloat2& p)
+	{
+		if(m_nTraj == 0)
+		{
+			m_pTraj[m_iTraj++] = p;
+			m_nTraj++;
+			return;
+		}
+
+		int iLast = m_iTraj-1;
+		if(iLast<0)iLast = m_nTraj-1;
+		vFloat2 lp = m_pTraj[iLast];
+		float d = abs(lp.x-p.x)+abs(lp.y-p.y);
+		IF_(d < 0.02);
+
+		m_pTraj[m_iTraj++] = p;
+		if(m_iTraj >= OBJ_N_TRAJ)m_iTraj=0;
+		if(m_nTraj < OBJ_N_TRAJ)m_nTraj++;
 	}
 };
 
@@ -252,6 +280,8 @@ public:
 	bool m_bDrawStatistics;
 	vInt3 m_classLegendPos;
 	bool m_bDrawClass;
+	bool m_bDrawText;
+	bool m_bDrawPos;
 
 };
 

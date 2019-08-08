@@ -33,6 +33,8 @@ _DetectorBase::_DetectorBase()
 	m_classLegendPos.y = 100;
 	m_classLegendPos.z = 15;
 	m_bDrawClass = false;
+	m_bDrawText = false;
+	m_bDrawPos = false;
 
 	resetObj();
 }
@@ -109,6 +111,8 @@ bool _DetectorBase::init(void* pKiss)
 	//draw
 	KISSm(pK, bDrawStatistics);
 	KISSm(pK, bDrawClass);
+	KISSm(pK, bDrawText);
+	KISSm(pK, bDrawPos);
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
@@ -258,8 +262,6 @@ bool _DetectorBase::draw(void)
 	while((pO = at(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
-//		IF_CONT(iClass >= m_nClass);
-		IF_CONT(iClass < 0);
 
 		col = colStep * iClass;
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
@@ -268,14 +270,30 @@ bool _DetectorBase::draw(void)
 		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
 		rectangle(*pMat, r, oCol, 1);
 
-		putText(*pMat, f2str(pO->m_dist),
-				Point(r.x + 15, r.y + 25),
-				FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+		//position
+		if(m_bDrawPos)
+		{
+			putText(*pMat, f2str(pO->m_dist),
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+		}
 
 		//class
-		if(m_bDrawClass && iClass < m_nClass)
+		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
 		{
 			string oName = m_vClass[iClass].m_name;
+			if (oName.length()>0)
+			{
+				putText(*pMat, oName,
+						Point(r.x + 15, r.y + 50),
+						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+			}
+		}
+
+		//text
+		if(m_bDrawText)
+		{
+			string oName = string(pO->m_pText);
 			if (oName.length()>0)
 			{
 				putText(*pMat, oName,

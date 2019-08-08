@@ -102,21 +102,48 @@ bool _ShopCam::updateDet(void)
 	while ((pO = m_pD->at(i++)) != NULL)
 	{
 		OBJECT o = *pO;
+		vFloat4 bb = o.m_bb;
 		Rect r;
-		r.x = o.m_bb.x * m.cols;
-		r.y = o.m_bb.y * m.rows;
-		r.width = o.m_bb.z * m.cols - r.x;
-		r.height = o.m_bb.w * m.rows - r.y;
+		r.x = bb.x * m.cols;
+		r.y = bb.y * m.rows;
+		r.width = bb.z * m.cols - r.x;
+		r.height = bb.w * m.rows - r.y;
 
 		string ag = "";
 
-		m_pG->classify(m(r),&o);
-		ag += m_pG->m_vClass[o.m_topClass].m_name;
-
 		m_pA->classify(m(r),&o);
-		ag += ", " + m_pA->m_vClass[o.m_topClass].m_name;
+		ag += m_pA->m_vClass[o.m_topClass].m_name;
+
+		m_pG->classify(m(r),&o);
+		ag = m_pG->m_vClass[o.m_topClass].m_name + ", " + ag;
 
 		strncpy(o.m_pText, ag.c_str(), ag.length());
+
+		OBJECT* pP;
+		OBJECT* pCorres = NULL;
+		float minD = 10.0;
+		int j = 0;
+		while ((pP = m_pPrev->at(j++)) != NULL)
+		{
+			float dX = pP->m_bb.center().x - o.m_bb.center().x;
+			float dY = pP->m_bb.center().y - o.m_bb.center().y;
+			float d = dX + dY;
+			IF_CONT(d > minD);
+
+			pCorres = pP;
+			minD = d;
+		}
+
+		if(pCorres)
+		{
+			for(int t=0; t<OBJ_N_TRAJ; t++)
+				o.m_pTraj[t] = pCorres->m_pTraj[t];
+
+			o.m_iTraj = pCorres->m_iTraj;
+			o.m_nTraj = pCorres->m_nTraj;
+
+			o.addTrajectory(o.m_bb.center());
+		}
 
 		this->add(&o);
 	}
@@ -126,19 +153,83 @@ bool _ShopCam::updateDet(void)
 
 bool _ShopCam::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+	IF_F(pMat->empty());
 
 	vInt2 cs;
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
-	Scalar col = Scalar(0,255,0);
 
-//	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
-//	rectangle(*pMat, r, col, 3);
+	Scalar oCol;
+	Scalar mCol = Scalar(200,100,100);
+	Scalar fCol = Scalar(100,100,200);
+
+	int nM = 0;
+	int nF = 0;
+
+	OBJECT* pO;
+	int i=0;
+	while((pO = at(i++)) != NULL)
+	{
+		int iClass = pO->m_topClass;
+
+		if(pO->m_topClass == 0)
+		{
+			oCol = mCol;
+			nM++;
+		}
+		else
+		{
+			oCol = fCol;
+			nF++;
+		}
+
+		//bb
+		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+		rectangle(*pMat, r, oCol, 1);
+
+		//text
+		if(m_bDrawText)
+		{
+			string oName = string(pO->m_pText);
+			if (oName.length()>0)
+			{
+				putText(*pMat, oName,
+						Point(r.x + 15, r.y + 50),
+						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+			}
+		}
+
+		//trajectory
+		if(pO->m_nTraj > 2)
+		{
+			for(int t=0; t<pO->m_nTraj; t++)
+			{
+				int iFrom = pO->m_iTraj - t - 1;
+				if(iFrom < 0)iFrom = OBJ_N_TRAJ - t - 1;
+
+				int iTo = iFrom - 1;
+				if(iTo < 0)iTo = OBJ_N_TRAJ - 1;
+
+				Point pF = Point(pO->m_pTraj[iFrom].x * pMat->cols,
+								 pO->m_pTraj[iFrom].y * pMat->rows);
+				Point pT = Point(pO->m_pTraj[iTo].x * pMat->cols,
+								 pO->m_pTraj[iTo].y * pMat->rows);
+
+				line(*pMat, pF, pT, Scalar(200, 200, 0), 1);
+			}
+		}
+	}
+
+	putText(*pMat, "Male: " + i2str(nM) + ", Female: " + i2str(nF),
+			Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
+			FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0,255,0), 1);
 
 	return true;
+
 }
 
 bool _ShopCam::console(int& iY)
