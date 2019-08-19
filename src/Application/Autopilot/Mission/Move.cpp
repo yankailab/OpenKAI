@@ -25,7 +25,7 @@ bool Move::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,hdg);
+	pK->v("hdg",&m_hdg);
 
 	return true;
 }

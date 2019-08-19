@@ -30,7 +30,7 @@ bool _IOBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,nFIFO);
+	pK->v("nFIFO",&m_nFIFO);
 
 	IF_F(!m_fifoW.init(m_nFIFO));
 	IF_F(!m_fifoR.init(m_nFIFO));

@@ -26,11 +26,11 @@ bool _BBoxCutOut::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, dirIn);
-	KISSm(pK, dirOut);
-	KISSm(pK, extImgIn);
-	KISSm(pK, extImgOut);
-	KISSm(pK, extTxt);
+	pK->v("dirIn",&m_dirIn);
+	pK->v("dirOut",&m_dirOut);
+	pK->v("extImgIn",&m_extImgIn);
+	pK->v("extImgOut",&m_extImgOut);
+	pK->v("extTxt",&m_extTxt);
 
 	return true;
 }

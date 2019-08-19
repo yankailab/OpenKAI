@@ -39,13 +39,13 @@ bool _RealSense::init(void* pKiss)
 	IF_F(!_DepthVisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,rsFPS);
-	KISSm(pK,rsDFPS);
-	KISSm(pK,vPreset);
-	KISSm(pK,rsRGB);
-	KISSm(pK,fDec);
-	KISSm(pK,fSpat);
-	KISSm(pK,bAlign);
+	pK->v("rsFPS", &m_rsFPS);
+	pK->v("rsDFPS", &m_rsDFPS);
+	pK->v("vPreset", &m_vPreset);
+	pK->v("rsRGB", &m_rsRGB);
+	pK->v("fDec", &m_fDec);
+	pK->v("fSpat", &m_fSpat);
+	pK->v("bAlign", &m_bAlign);
 
 	return true;
 }

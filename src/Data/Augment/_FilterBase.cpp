@@ -31,11 +31,11 @@ bool _FilterBase::init(void* pKiss)
 	IF_F(!this->_DataBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, dRand);
-	KISSm(pK, nProduce);
-	KISSm(pK, noiseMean);
-	KISSm(pK, noiseDev);
-	KISSm(pK, noiseType);
+	pK->v("dRand",&m_dRand);
+	pK->v("nProduce",&m_nProduce);
+	pK->v("noiseMean",&m_noiseMean);
+	pK->v("noiseDev",&m_noiseDev);
+	pK->v("noiseType",&m_noiseType);
 
 	return true;
 }

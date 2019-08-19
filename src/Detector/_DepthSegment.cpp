@@ -27,9 +27,11 @@ bool _DepthSegment::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,rL);
-	KISSm(pK,rH);
-	KISSm(pK,rD);
+	pK->v<float>("rL",&m_rL);
+	pK->v<float>("rH",&m_rH);
+	pK->v<float>("rD",&m_rD);
+	pK->v<float>("rArea",&m_rArea);
+
 	m_nClass = 1;
 
 	return true;

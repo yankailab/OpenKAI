@@ -28,9 +28,9 @@ bool _HiphenServer::init(void* pKiss)
 	IF_F(!_TCPserver::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,dir);
-	KISSm(pK,subDir);
-	KISSm(pK,nImgPerSet);
+	pK->v("dir",&m_dir);
+	pK->v("subDir",&m_subDir);
+	pK->v("nImgPerSet",&m_nImgPerSet);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";

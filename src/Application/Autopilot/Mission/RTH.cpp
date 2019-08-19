@@ -32,11 +32,11 @@ bool RTH::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,speedV);
-	KISSm(pK,speedH);
-	KISSm(pK,hdg);
-	KISSm(pK,r);
-	KISSm(pK,bAlt);
+	pK->v("speedV",&m_speedV);
+	pK->v("speedH",&m_speedH);
+	pK->v("hdg",&m_hdg);
+	pK->v("r",&m_r);
+	pK->v("bAlt",&m_bAlt);
 	pK->v("alt",&m_vHome.z);
 
 	return true;

@@ -25,8 +25,8 @@ bool _Thermal::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,rL);
-	KISSm(pK,rU);
+	pK->v<double>("rL",&m_rL);
+	pK->v<double>("rU",&m_rU);
 
 	m_nClass = 1;
 	return true;

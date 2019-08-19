@@ -31,9 +31,9 @@ bool Rover_move::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,nSpeed);
-	KISSm(pK,iPinLEDtag);
-	KISSm(pK,iPinCamShutter);
+	pK->v<float>("nSpeed",&m_nSpeed);
+	pK->v<uint8_t>("iPinLEDtag",&m_iPinLEDtag);
+	pK->v<uint8_t>("iPinCamShutter",&m_iPinCamShutter);
 
 	pK->v("tagX",&m_tagRoi.x);
 	pK->v("tagY",&m_tagRoi.y);

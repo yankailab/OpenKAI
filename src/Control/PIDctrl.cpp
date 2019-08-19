@@ -34,17 +34,17 @@ bool PIDctrl::init(void* pKiss)
 	IF_F(!this->ControlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, vMin);
-	KISSm(pK, vMax);
-	KISSm(pK, dT);
-	KISSm(pK, oMin);
-	KISSm(pK, oMax);
-	KISSm(pK, K);
+	pK->v("vMin",&m_vMin);
+	pK->v("vMax",&m_vMax);
+	pK->v("dT",&m_dT);
+	pK->v("oMin",&m_oMin);
+	pK->v("oMax",&m_oMax);
+	pK->v("K",&m_K);
 
-	KISSm(pK, P);
-	KISSm(pK, I);
-	KISSm(pK, Imax);
-	KISSm(pK, D);
+	pK->v("P",&m_P);
+	pK->v("I",&m_I);
+	pK->v("Imax",&m_Imax);
+	pK->v("D",&m_D);
 
 	return true;
 }

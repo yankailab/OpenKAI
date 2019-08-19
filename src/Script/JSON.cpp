@@ -121,6 +121,51 @@ bool JSON::v(const string& name, string* pVal)
 	return true;
 }
 
+bool JSON::v(const string& name, vFloat2* pV)
+{
+	value::array arr;
+	IF_F(!array(name, &arr));
+
+	value::array::iterator it;
+
+	it = arr.begin();
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->x = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->y = (float)it->get<double>();
+
+	return true;
+}
+
+bool JSON::v(const string& name, vFloat3* pV)
+{
+	value::array arr;
+	IF_F(!array(name, &arr));
+
+	value::array::iterator it;
+
+	it = arr.begin();
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->x = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->y = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->z = (float)it->get<double>();
+
+	return true;
+}
+
 bool JSON::array(const string& name, value::array* pVal)
 {
 	IF_F(!m_JSON.is<object>());
@@ -132,7 +177,7 @@ bool JSON::array(const string& name, value::array* pVal)
 	return true;
 }
 
-int JSON::array(const string& name, string* pVal, int nArray)
+int JSON::a(const string& name, string* pVal, int nElem)
 {
 	value::array arr;
 	IF__(!array(name, &arr),-1);
@@ -141,7 +186,7 @@ int JSON::array(const string& name, string* pVal, int nArray)
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		if(i >= nArray)return i;
+		if(i >= nElem)return i;
 		IF_CONT(!it->is<string>());
 		pVal[i] = it->get<string>();
 		i++;
@@ -150,7 +195,7 @@ int JSON::array(const string& name, string* pVal, int nArray)
 	return i;
 }
 
-int JSON::array(const string& name, int* pVal, int nArray)
+int JSON::a(const string& name, int* pVal, int nElem)
 {
 	value::array arr;
 	IF__(!array(name, &arr),-1);
@@ -159,7 +204,7 @@ int JSON::array(const string& name, int* pVal, int nArray)
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		if(i >= nArray)return i;
+		if(i >= nElem)return i;
 		IF_CONT(!it->is<int>());
 		pVal[i] = (int)it->get<double>();
 		i++;
@@ -168,7 +213,7 @@ int JSON::array(const string& name, int* pVal, int nArray)
 	return i;
 }
 
-int JSON::array(const string& name, double* pVal, int nArray)
+int JSON::a(const string& name, double* pVal, int nElem)
 {
 	value::array arr;
 	IF__(!array(name, &arr),-1);
@@ -177,7 +222,7 @@ int JSON::array(const string& name, double* pVal, int nArray)
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		if(i >= nArray)return i;
+		if(i >= nElem)return i;
 		IF_CONT(!it->is<double>());
 		pVal[i] = it->get<double>();
 		i++;
@@ -186,7 +231,7 @@ int JSON::array(const string& name, double* pVal, int nArray)
 	return i;
 }
 
-int JSON::array(const string& name, float* pVal, int nArray)
+int JSON::a(const string& name, float* pVal, int nElem)
 {
 	value::array arr;
 	IF__(!array(name, &arr),-1);
@@ -195,7 +240,7 @@ int JSON::array(const string& name, float* pVal, int nArray)
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		if(i >= nArray)return i;
+		if(i >= nElem)return i;
 		IF_CONT(!it->is<double>());
 		pVal[i] = (float)it->get<double>();
 		i++;

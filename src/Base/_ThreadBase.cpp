@@ -48,8 +48,8 @@ bool _ThreadBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, threadMode);
-	KISSm(pK, bRealTime);
+	pK->v("threadMode",&m_threadMode);
+	pK->v("bRealTime",&m_bRealTime);
 
 	int FPS = DEFAULT_FPS;
 	pK->v("FPS", &FPS);

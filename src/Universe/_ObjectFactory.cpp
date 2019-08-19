@@ -23,7 +23,7 @@ bool _ObjectFactory::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, nCap);
+	pK->v("nCap",&m_nCap);
 
 	return true;
 }

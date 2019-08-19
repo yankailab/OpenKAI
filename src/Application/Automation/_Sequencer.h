@@ -18,29 +18,28 @@ namespace kai
 struct SEQ_ACTUATOR
 {
 	_ActuatorBase* m_pA;
-	float m_pos;
-	float m_speed;
+	vFloat3 m_vPos;
+	vFloat3 m_vSpeed;
 
 	void init(void)
 	{
 		m_pA = NULL;
-		m_pos = 0.0;
-		m_speed = 1.0;
+		m_vPos.init(0.0);
+		m_vSpeed.init(1.0);
 	}
 
 	bool move(void)
 	{
 		NULL_F(m_pA);
-		IF_T(m_pos < 0.0);
-		m_pA->moveTo(m_pos, m_speed);
+		m_pA->moveTo(m_vPos, m_vSpeed);
 
 		return m_pA->bComplete();
 	}
 
-	void setTarget(float p, float s)
+	void setTarget(vFloat3& p, vFloat3& s)
 	{
-		m_pos = constrain(p, 0.0f, 1.0f);
-		m_speed = constrain(s, 0.0f, 1.0f);
+		m_vPos = p;
+		m_vSpeed = s;
 	}
 };
 

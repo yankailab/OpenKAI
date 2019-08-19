@@ -28,8 +28,8 @@ bool _InRange::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,rFrom);
-	KISSm(pK,rTo);
+	pK->v("rFrom",&m_rFrom);
+	pK->v("rTo",&m_rTo);
 
 	string iName;
 	iName = "";

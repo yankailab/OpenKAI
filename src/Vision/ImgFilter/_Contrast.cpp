@@ -29,8 +29,8 @@ bool _Contrast::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,alpha);
-	KISSm(pK,beta);
+	pK->v<double>("alpha",&m_alpha);
+	pK->v<double>("beta",&m_beta);
 
 	string iName;
 	iName = "";

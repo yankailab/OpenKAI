@@ -29,12 +29,12 @@ bool _OpenPose::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, nW);
-	KISSm(pK, nH);
-	KISSm(pK, iBackend);
-	KISSm(pK, iTarget);
-	KISSm(pK, bSwapRB);
-	KISSm(pK, scale);
+	pK->v("nW", &m_nW);
+	pK->v("nH", &m_nH);
+	pK->v("iBackend", &m_iBackend);
+	pK->v("iTarget", &m_iTarget);
+	pK->v("bSwapRB", &m_bSwapRB);
+	pK->v("scale", &m_scale);
 	pK->v("meanB", &m_vMean.x);
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);

@@ -37,9 +37,8 @@ bool _OrientalMotor::init(void* pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, iSlave);
-	KISSm(pK, iData);
-
+	pK->v("iSlave",&m_iSlave);
+	pK->v("iData",&m_iData);
 	pK->v("stepFrom", &m_vStepRange.x);
 	pK->v("stepTo", &m_vStepRange.y);
 	pK->v("speedFrom", &m_vSpeedRange.x);
@@ -116,9 +115,9 @@ void _OrientalMotor::sendCMD(void)
 	IF_(m_tStampCmdSet <= m_tStampCmdSent);
 
 	//update normalized value to actual unit
-	m_tState.m_step = m_nTargetPos * m_vStepRange.len() + m_vStepRange.x;
+	m_tState.m_step = m_vNormTargetPos.x * m_vStepRange.len() + m_vStepRange.x;
 	m_tState.m_step = constrain(m_tState.m_step, m_vStepRange.x, m_vStepRange.y);
-	m_tState.m_speed = m_nTargetSpeed * m_vSpeedRange.len() + m_vSpeedRange.x;
+	m_tState.m_speed = m_vNormTargetSpeed.x * m_vSpeedRange.len() + m_vSpeedRange.x;
 	m_tState.m_speed = constrain(m_tState.m_speed, m_vSpeedRange.x, m_vSpeedRange.y);
 
 	//create the command
@@ -169,8 +168,8 @@ void _OrientalMotor::readStatus(void)
 	m_cState.m_speed = MAKE32(pB[4], pB[5]);
 
 	//update actual unit to normalized value
-	m_nCurrentPos = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
-	m_nCurrentSpeed = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
+	m_vNormPos.x = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
+	m_vNormSpeed.x = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
 
 	LOG_I("step: "+i2str(m_cState.m_step) +
 			", speed: " + i2str(m_cState.m_speed));

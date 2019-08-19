@@ -40,21 +40,21 @@ bool _DistSensorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,fovH);
+	pK->v("fovH",&m_fovH);
 	IF_Fl(m_fovH <= 0, "angleTo > 0");
 	IF_Fl(m_fovH > 360, "angleTo <= 360");
-	KISSm(pK,fovV);
+	pK->v("fovV",&m_fovV);
 
-	KISSm(pK,nDiv);
+	pK->v("nDiv",&m_nDiv);
 	m_dDeg = m_fovH/m_nDiv;
 	m_dDegInv = 1.0/m_dDeg;
 
-	KISSm(pK,showScale);
-	KISSm(pK,showDegOffset);
-	KISSm(pK,rMin);
-	KISSm(pK,rMax);
-	KISSm(pK,calibScale);
-	KISSm(pK,calibOffset);
+	pK->v("showScale",&m_showScale);
+	pK->v("showDegOffset",&m_showDegOffset);
+	pK->v("rMin",&m_rMin);
+	pK->v("rMax",&m_rMax);
+	pK->v("calibScale",&m_calibScale);
+	pK->v("calibOffset",&m_calibOffset);
 
 	int nMed=0;
 	int nAvr=0;

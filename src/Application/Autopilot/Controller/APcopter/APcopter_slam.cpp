@@ -42,15 +42,15 @@ bool APcopter_slam::init(void* pKiss)
 	m_utmGPSorigin = m_GPS.LL2UTM(m_llGPSorigin);
 	m_vSlamPos.init();
 
-	KISSm(pK,gpsID);
-	KISSm(pK,iFixType);
-	KISSm(pK,nSat);
-	KISSm(pK,hdop);
-	KISSm(pK,vdop);
-	KISSm(pK,yawOffset);
-	KISSm(pK,bAxisXY);
-	KISSm(pK,kX);
-	KISSm(pK,kY);
+	pK->v("gpsID",&m_gpsID);
+	pK->v("iFixType",&m_iFixType);
+	pK->v("nSat",&m_nSat);
+	pK->v("hdop",&m_hdop);
+	pK->v("vdop",&m_vdop);
+	pK->v("yawOffset",&m_yawOffset);
+	pK->v("bAxisXY",&m_bAxisXY);
+	pK->v("kX",&m_kX);
+	pK->v("kY",&m_kY);
 
 	int n = 3;
 	pK->v("nMedian", &n);

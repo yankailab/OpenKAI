@@ -49,24 +49,24 @@ bool _LeddarVu::init(void* pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, port);
-	KISSm(pK, baud);
-	KISSm(pK, slaveAddr);
-	KISSm(pK, bUse0x41);
-	KISSm(pK, showOriginOffsetX);
-	KISSm(pK, showOriginOffsetY);
+	pK->v<string>("port",&m_port);
+	pK->v<int>("baud",&m_baud);
+	pK->v<int>("slaveAddr",&m_slaveAddr);
+	pK->v<bool>("bUse0x41",&m_bUse0x41);
+	pK->v<double>("showOriginOffsetX",&m_showOriginOffsetX);
+	pK->v<double>("showOriginOffsetY",&m_showOriginOffsetY);
 
-	KISSm(pK, nAccumulationsExpo);
-	KISSm(pK, nOversamplingsExpo);
-	KISSm(pK, nPoint);
-	KISSm(pK, lightSrcPwr);
-	KISSm(pK, bAutoLightSrcPwr);
-	KISSm(pK, bDemergeObj);
-	KISSm(pK, bStaticNoiseRemoval);
-	KISSm(pK, bPrecision);
-	KISSm(pK, bSaturationCompensation);
-	KISSm(pK, bOvershootManagement);
-	KISSm(pK, oprMode);
+	pK->v<uint16_t>("nAccumulationsExpo",&m_nAccumulationsExpo);
+	pK->v<uint16_t>("nOversamplingsExpo",&m_nOversamplingsExpo);
+	pK->v<uint16_t>("nPoint",&m_nPoint);
+	pK->v<uint16_t>("lightSrcPwr",&m_lightSrcPwr);
+	pK->v<bool>("bAutoLightSrcPwr",&m_bAutoLightSrcPwr);
+	pK->v<bool>("bDemergeObj",&m_bDemergeObj);
+	pK->v<bool>("bStaticNoiseRemoval",&m_bStaticNoiseRemoval);
+	pK->v<bool>("bPrecicion",&m_bPrecision);
+	pK->v<bool>("bSaturationCompensation",&m_bSaturationCompensation);
+	pK->v<bool>("bOvershootManagement",&m_bOvershootManagement);
+	pK->v<uint16_t>("oprMode",&m_oprMode);
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));

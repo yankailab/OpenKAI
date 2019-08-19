@@ -32,11 +32,12 @@ bool _SlideWindow::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,w);
-	KISSm(pK,dW);
-	KISSm(pK,maxD);
-	KISSm(pK,minArea);
-	KISSm(pK,nLevel);
+	pK->v<float>("w",&m_w);
+	pK->v<float>("dW",&m_dW);
+	pK->v<float>("maxD",&m_maxD);
+	pK->v<float>("minArea",&m_minArea);
+	pK->v<int>("nLevel",&m_nLevel);
+
 	pK->v("dFrom",&m_dRange.x);
 	pK->v("dTo",&m_dRange.y);
 

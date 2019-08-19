@@ -27,7 +27,7 @@ bool MissionBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,nextMission);
+	pK->v<string>("nextMission", &m_nextMission);
 
 	if(pK->v("tTimeout",&m_tTimeout))
 	{

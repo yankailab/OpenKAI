@@ -29,10 +29,10 @@ bool APcopter_posCtrl::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,vYaw);
-	KISSm(pK,bSetV);
-	KISSm(pK,bSetP);
-	KISSm(pK,bFixYaw);
+	pK->v("vYaw",&m_vYaw);
+	pK->v("bSetV",&m_bSetV);
+	pK->v("bSetP",&m_bSetP);
+	pK->v("bFixYaw",&m_bFixYaw);
 
 	string iName;
 

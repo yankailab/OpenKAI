@@ -34,20 +34,20 @@ bool _Universe::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
-	KISSm(pK, minConfidence);
-	KISSm(pK, minArea);
-	KISSm(pK, maxArea);
-	KISSm(pK, minW);
-	KISSm(pK, minH);
-	KISSm(pK, maxW);
-	KISSm(pK, maxH);
-	KISSm(pK, bbScale);
+	pK->v("minConfidence", &m_minConfidence);
+	pK->v("minArea", &m_minArea);
+	pK->v("maxArea", &m_maxArea);
+	pK->v("minW", &m_minW);
+	pK->v("minH", &m_minH);
+	pK->v("maxW", &m_maxW);
+	pK->v("maxH", &m_maxH);
+	pK->v("bbScale", &m_bbScale);
 
 	clearObj();
 
 	//draw
-	KISSm(pK, bDrawStatistics);
-	KISSm(pK, bDrawClass);
+	pK->v("bDrawStatistics", &m_bDrawStatistics);
+	pK->v("bDrawClass", &m_bDrawClass);
 
 	return true;
 }

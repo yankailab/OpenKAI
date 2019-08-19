@@ -41,20 +41,19 @@ bool _GDcam::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, tempDir);
-	KISSm(pK, alprAPI);
-	KISSm(pK, alprKey);
-	KISSm(pK, gdUpload);
-	KISSm(pK, gdImgFolderID);
-	KISSm(pK, gdDataFolderID);
-	KISSm(pK, gdCredentials);
-
-	KISSm(pK, bAlpr);
-	KISSm(pK, bGDupload);
+	pK->v("tempDir",&m_tempDir);
+	pK->v("alprAPI",&m_alprAPI);
+	pK->v("alprKey",&m_alprKey);
+	pK->v("gdUpload",&m_gdUpload);
+	pK->v("gdImgFolderID",&m_gdImgFolderID);
+	pK->v("gdDataFolderID",&m_gdDataFolderID);
+	pK->v("gdCredentials",&m_gdCredentials);
+	pK->v("bAlpr",&m_bAlpr);
+	pK->v("bGDupload",&m_bGDupload);
 
 	m_classFlag = 0;
 	int pClass[GD_N_CLASS];
-	int nClass = pK->array("classList", pClass, GD_N_CLASS);
+	int nClass = pK->a("classList", pClass, GD_N_CLASS);
 	for (int i = 0; i < nClass; i++)
 		m_classFlag |= (1 << pClass[i]);
 

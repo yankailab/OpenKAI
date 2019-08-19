@@ -45,8 +45,8 @@ bool _Sequencer::init(void* pKiss)
 			Kiss* pActuatorI = ppActuator[j++];
 			SEQ_ACTUATOR aA;
 			aA.init();
-			pActuatorI->v("pos", &aA.m_pos);
-			pActuatorI->v("speed", &aA.m_speed);
+			pActuatorI->v("pos", &aA.m_vPos);
+			pActuatorI->v("speed", &aA.m_vSpeed);
 
 			string iName = "";
 			F_ERROR_F(pActuatorI->v("_ActuatorBase", &iName));

@@ -49,16 +49,16 @@ bool _DetectorBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
-	KISSm(pK, minConfidence);
-	KISSm(pK, minArea);
-	KISSm(pK, maxArea);
-	KISSm(pK, minW);
-	KISSm(pK, minH);
-	KISSm(pK, maxW);
-	KISSm(pK, maxH);
-	KISSm(pK, bMerge);
-	KISSm(pK, mergeOverlap);
-	KISSm(pK, bbScale);
+	pK->v<float>("minConfidence", &m_minConfidence);
+	pK->v<float>("minArea", &m_minArea);
+	pK->v<float>("maxArea", &m_maxArea);
+	pK->v<float>("minW", &m_minW);
+	pK->v<float>("minH", &m_minH);
+	pK->v<float>("maxW", &m_maxW);
+	pK->v<float>("maxH", &m_maxH);
+	pK->v<bool>("bMerge", &m_bMerge);
+	pK->v<float>("mergeOverlap", &m_mergeOverlap);
+	pK->v<float>("bbScale", &m_bbScale);
 
 	resetObj();
 
@@ -66,10 +66,10 @@ bool _DetectorBase::init(void* pKiss)
 	string modelDir = "";
 	F_INFO(pK->v("modelDir", &modelDir));
 
-	KISSm(pK, modelFile);
-	KISSm(pK, trainedFile);
-	KISSm(pK, meanFile);
-	KISSm(pK, classFile);
+	pK->v<string>("modelFile", &m_modelFile);
+	pK->v<string>("trainedFile", &m_trainedFile);
+	pK->v<string>("meanFile", &m_meanFile);
+	pK->v<string>("classFile", &m_classFile);
 
 	m_modelFile = modelDir + m_modelFile;
 	m_trainedFile = modelDir + m_trainedFile;
@@ -97,7 +97,7 @@ bool _DetectorBase::init(void* pKiss)
 	else
 	{
 		string pClassList[OBJECT_N_CLASS];
-		m_nClass = pK->array("classList", pClassList, OBJECT_N_CLASS);
+		m_nClass = pK->a("classList", pClassList, OBJECT_N_CLASS);
 
 		for(int i=0; i<m_nClass; i++)
 		{
@@ -109,10 +109,10 @@ bool _DetectorBase::init(void* pKiss)
 	}
 
 	//draw
-	KISSm(pK, bDrawStatistics);
-	KISSm(pK, bDrawClass);
-	KISSm(pK, bDrawText);
-	KISSm(pK, bDrawPos);
+	pK->v<bool>("bDrawStatistics", &m_bDrawStatistics);
+	pK->v<bool>("bDrawClass", &m_bDrawClass);
+	pK->v<bool>("bDrawText", &m_bDrawText);
+	pK->v<bool>("bDrawPos", &m_bDrawPos);
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));

@@ -36,9 +36,9 @@ bool _SortingArm::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, actuatorX);
-	KISSm(pK, actuatorZ);
-	KISSm(pK, iROI);
+	pK->v<string>("actuatorX",&m_actuatorX);
+	pK->v<string>("actuatorZ",&m_actuatorZ);
+	pK->v<int>("iROI",&m_iROI);
 
 	pK->v("gripX1", &m_rGripX.x);
 	pK->v("gripX2", &m_rGripX.y);
@@ -46,10 +46,10 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("gripY2", &m_rGripY.y);
 	pK->v("gripZ1", &m_rGripZ.x);
 	pK->v("gripZ2", &m_rGripZ.y);
-	pK->array("dropPos", m_pDropPos, SB_N_CLASS);
+	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
 
 	int pClass[SB_N_CLASS];
-	m_nClass = pK->array("classList", pClass, SB_N_CLASS);
+	m_nClass = pK->a("classList", pClass, SB_N_CLASS);
 	for (int i = 0; i < m_nClass; i++)
 		m_classFlag |= (1 << pClass[i]);
 
@@ -108,6 +108,11 @@ void _SortingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
+	vFloat3 vP,vS;
+	vP.init(-1.0);
+	vS.init(-1.0);
+	vS.x = 1.0;
+
 	OBJECT* pO;
 	string cAction = m_pSeq->getCurrentActionName();
 
@@ -130,18 +135,21 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			pSA->setTarget((1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x, 1.0);
+			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
+			pSA->setTarget(vP, vS);
 
 			pSA = pAction->getActuator(m_actuatorZ);
 			IF_CONT(!pSA);
-			pSA->setTarget((pO->m_dist - m_rGripZ.x) / m_rGripZ.len(), 1.0);
+			vP.x = (pO->m_dist - m_rGripZ.x) / m_rGripZ.len();
+			pSA->setTarget(vP, vS);
 
 			pAction = m_pSeq->getAction("move");
 			IF_CONT(!pAction);
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			pSA->setTarget(m_pDropPos[pO->m_topClass], 1.0);
+			vP.x = m_pDropPos[pO->m_topClass];
+			pSA->setTarget(vP, vS);
 
 			m_pSeq->wakeUp();
 			return;

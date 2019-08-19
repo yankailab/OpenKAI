@@ -20,7 +20,7 @@ bool APcopter_RTH::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,kZsensor);
+	pK->v("kZsensor", &m_kZsensor);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())

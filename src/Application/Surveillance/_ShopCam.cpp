@@ -164,8 +164,8 @@ bool _ShopCam::draw(void)
 	cs.y = pMat->rows;
 
 	Scalar oCol;
-	Scalar mCol = Scalar(200,100,100);
-	Scalar fCol = Scalar(100,100,200);
+	Scalar mCol = Scalar(255,200,200);
+	Scalar fCol = Scalar(200,200,255);
 
 	int nM = 0;
 	int nF = 0;
@@ -189,7 +189,7 @@ bool _ShopCam::draw(void)
 
 		//bb
 		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
-		rectangle(*pMat, r, oCol, 1);
+		rectangle(*pMat, r, oCol, 2);
 
 		//text
 		if(m_bDrawText)
@@ -199,7 +199,7 @@ bool _ShopCam::draw(void)
 			{
 				putText(*pMat, oName,
 						Point(r.x + 15, r.y + 50),
-						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+						FONT_HERSHEY_SIMPLEX, 0.8, oCol, 2);
 			}
 		}
 
@@ -219,14 +219,14 @@ bool _ShopCam::draw(void)
 				Point pT = Point(pO->m_pTraj[iTo].x * pMat->cols,
 								 pO->m_pTraj[iTo].y * pMat->rows);
 
-				line(*pMat, pF, pT, Scalar(200, 200, 0), 1);
+				line(*pMat, pF, pT, Scalar(200, 200, 0), 2);
 			}
 		}
 	}
 
 	putText(*pMat, "Male: " + i2str(nM) + ", Female: " + i2str(nF),
 			Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
-			FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0,255,0), 1);
+			FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0,255,0), 2);
 
 	return true;
 

@@ -27,12 +27,12 @@ bool _SerialPort::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,port);
-	KISSm(pK,baud);
-	KISSm(pK,dataBits);
-	KISSm(pK,stopBits);
-	KISSm(pK,parity);
-	KISSm(pK,hardwareControl);
+	pK->v("port",&m_port);
+	pK->v("baud",&m_baud);
+	pK->v("dataBits",&m_dataBits);
+	pK->v("stopBits",&m_stopBits);
+	pK->v("parity",&m_parity);
+	pK->v("hardwareControl",&m_hardwareControl);
 
 	return true;
 }

@@ -35,14 +35,14 @@ bool APcopter_takePhoto::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,quality);
-	KISSm(pK,dir);
-	KISSm(pK,subDir);
-	KISSm(pK,bAuto);
-	KISSm(pK,tInterval);
-	KISSm(pK,bFlipRGB);
-	KISSm(pK,bFlipD);
-	KISSm(pK,bCont);
+	pK->v("quality", &m_quality);
+	pK->v("dir", &m_dir);
+	pK->v("subDir", &m_subDir);
+	pK->v("bAuto", &m_bAuto);
+	pK->v("tInterval", &m_tInterval);
+	pK->v("bFlipRGB", &m_bFlipRGB);
+	pK->v("bFlipD", &m_bFlipD);
+	pK->v("bCont", &m_bCont);
 
 	Kiss* pG = pK->o("GPSoffset");
 	if(pG)

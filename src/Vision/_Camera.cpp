@@ -28,9 +28,9 @@ bool _Camera::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, deviceID);
-	KISSm(pK, nInitRead);
-	KISSm(pK, bResetCam);
+	pK->v("deviceID",&m_deviceID);
+	pK->v("nInitRead",&m_nInitRead);
+	pK->v("bResetCam",&m_bResetCam);
 
 	return true;
 }

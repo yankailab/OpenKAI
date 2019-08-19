@@ -32,7 +32,7 @@ bool APcopter_tracker::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,apMode);
+	pK->v("apMode",&m_apMode);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())

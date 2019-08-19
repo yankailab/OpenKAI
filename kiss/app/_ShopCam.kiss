@@ -14,13 +14,14 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
+	"bFullScreen":0,
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":640,
@@ -31,7 +32,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -45,6 +46,27 @@
 	"_VisionBase":"cam",
 	"alpha":1.5,
 	"beta":0.0,
+}
+
+{
+	"name":"Yolo",
+	"class":"_DNNdetect",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":0,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"threadMode":0,
+	"dnnType":"yolo",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
+	"classFile":"class.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":0,
 }
 
 {
@@ -131,6 +153,21 @@
 	"_DNNclassifierA":"DNNage",
 	"_DNNclassifierG":"DNNgender",
 	"bDrawText":1,
+}
+
+{
+	"name":"OP",
+	"class":"_OpenPose",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"_VisionBase":"cam",
+	"modelDir":"/home/kai/dev/model/OpenPose/",
+	"modelFile":"coco/pose_deploy_linevec.prototxt",
+	"trainedFile":"coco/pose_iter_440000.caffemodel",
+	"bSwapRB":0,
 }
 
 

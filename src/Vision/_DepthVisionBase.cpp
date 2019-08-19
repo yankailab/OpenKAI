@@ -31,10 +31,10 @@ bool _DepthVisionBase::init(void* pKiss)
 	IF_F(!this->_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,wD);
-	KISSm(pK,hD);
-	KISSm(pK,nHistLev);
-	KISSm(pK,minHistD);
+	pK->v("wD",&m_wD);
+	pK->v("hD",&m_hD);
+	pK->v("nHistLev",&m_nHistLev);
+	pK->v("minHistD",&m_minHistD);
 
 	pK->v("rFrom", &m_vRange.x);
 	pK->v("rTo", &m_vRange.y);

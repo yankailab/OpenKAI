@@ -26,7 +26,7 @@ bool _VideoFile::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, videoFile);
+	pK->v("videoFile",&m_videoFile);
 
 	return true;
 }

@@ -1,5 +1,5 @@
-#ifndef OPENKAI_SRC_SCRIPT_KISS_H_
-#define OPENKAI_SRC_SCRIPT_KISS_H_
+#ifndef OpenKAI_src_Script_Kiss_H_
+#define OpenKAI_src_Script_Kiss_H_
 
 #include "../Base/common.h"
 #include "../Base/BASE.h"
@@ -28,20 +28,15 @@ public:
 	Kiss* parent(void);
 	bool empty(void);
 
-	bool v(const string& name, int* val);
-	bool v(const string& name, bool* val);
-	bool v(const string& name, uint8_t* pVal);
-	bool v(const string& name, uint16_t* pVal);
-	bool v(const string& name, uint32_t* pVal);
-	bool v(const string& name, uint64_t* val);
-	bool v(const string& name, double* val);
-	bool v(const string& name, float* val);
-	bool v(const string& name, string* val);
+	template <typename T> bool v(const string& name, T* pVal)
+	{
+		return m_json.v(name, pVal);
+	}
 
-	int array(const string& name, int* pVal, int nArray);
-	int array(const string& name, double* pVal, int nArray);
-	int array(const string& name, float* pVal, int nArray);
-	int array(const string& name, string* pVal, int nArray);
+	template <typename T> bool a(const string& name, T* pVal, int nElem)
+	{
+		return m_json.a(name, pVal, nElem);
+	}
 
 private:
 	void trim(string* pStr);

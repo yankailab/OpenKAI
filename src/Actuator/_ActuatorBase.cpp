@@ -9,11 +9,12 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_nCurrentPos = -1.0;
-	m_nTargetPos = -1.0;
-	m_nCurrentSpeed = 0.0;
-	m_nTargetSpeed = 0.0;
-	m_nPosError = 0.01;
+	m_vNormPos.init(-1.0);
+	m_vNormTargetPos.init(-1.0);
+	m_vNormSpeed.init(0.0);
+	m_vNormTargetSpeed.init(0.0);
+	m_vNormPosErr.init(0.01);
+
 	m_tStampCmdSet = 0;
 	m_tStampCmdSent = 0;
 
@@ -29,9 +30,10 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, nTargetPos);
-	KISSm(pK, nTargetSpeed);
-	KISSm(pK, nPosError);
+	pK->v("vNormPos", &m_vNormPos);
+	pK->v("vNormTargetPos", &m_vNormTargetPos);
+	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
+	pK->v("vNormPosErr", &m_vNormPosErr);
 
 	string iName;
 
@@ -65,16 +67,25 @@ bool _ActuatorBase::open(void)
 	return false;
 }
 
-void _ActuatorBase::move(float nSpeed)
+void _ActuatorBase::move(vFloat3& vSpeed)
 {
-	m_nTargetSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
+
 	m_tStampCmdSet = getTimeUsec();
 }
 
-void _ActuatorBase::moveTo(float nPos, float nSpeed)
+void _ActuatorBase::moveTo(vFloat3& vPos, vFloat3& vSpeed)
 {
-	m_nTargetPos = constrain(nPos, 0.0f, 1.0f);
-	m_nTargetSpeed = constrain(nSpeed, 0.0f, 1.0f);
+	m_vNormTargetPos.x = (vPos.x >= 0.0)?constrain(vPos.x, 0.0f, 1.0f):-1.0;
+	m_vNormTargetPos.y = (vPos.y >= 0.0)?constrain(vPos.y, 0.0f, 1.0f):-1.0;
+	m_vNormTargetPos.z = (vPos.z >= 0.0)?constrain(vPos.z, 0.0f, 1.0f):-1.0;
+
+	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
+
 	m_tStampCmdSet = getTimeUsec();
 }
 
@@ -89,17 +100,32 @@ void _ActuatorBase::setGlobalTarget(vFloat4& t)
 
 bool _ActuatorBase::bComplete(void)
 {
-	return EAQ(m_nCurrentPos, m_nTargetPos, m_nPosError);
+	if(m_vNormTargetPos.x >= 0.0)
+	{
+		IF_F(!EAQ(m_vNormPos.x, m_vNormTargetPos.x, m_vNormPosErr.x));
+	}
+
+	if(m_vNormTargetPos.y >= 0.0)
+	{
+		IF_F(!EAQ(m_vNormPos.y, m_vNormTargetPos.y, m_vNormPosErr.y));
+	}
+
+	if(m_vNormTargetPos.z >= 0.0)
+	{
+		IF_F(!EAQ(m_vNormPos.z, m_vNormTargetPos.z, m_vNormPosErr.z));
+	}
+
+	return true;
 }
 
 float _ActuatorBase::pos(void)
 {
-	return m_nCurrentPos;
+	return m_vNormPos.x;
 }
 
 float _ActuatorBase::speed(void)
 {
-	return m_nCurrentSpeed;
+	return m_vNormSpeed.x;
 }
 
 bool _ActuatorBase::draw(void)
@@ -118,9 +144,9 @@ bool _ActuatorBase::console(int& iY)
 	string msg;
 
 	C_MSG("-- Normalized state --");
-	C_MSG("Current pos: " + f2str(m_nCurrentPos));
-	C_MSG("Target pos: " + f2str(m_nTargetPos));
-	C_MSG("Speed: " + f2str(m_nTargetSpeed));
+	C_MSG("Current pos: (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ")");
+	C_MSG("Target pos: (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ")");
+	C_MSG("Speed: (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ")");
 
 	return true;
 }

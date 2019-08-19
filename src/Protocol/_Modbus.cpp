@@ -29,10 +29,9 @@ bool _Modbus::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK, port);
-	KISSm(pK, parity);
-	KISSm(pK, baud);
-
+	pK->v<string>("port",&m_port);
+	pK->v<string>("parity",&m_parity);
+	pK->v<int>("baud",&m_baud);
 
 	return true;
 }

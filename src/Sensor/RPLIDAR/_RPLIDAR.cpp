@@ -24,8 +24,8 @@ bool _RPLIDAR::init(void* pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,port);
-	KISSm(pK,baud);
+	pK->v("port",&m_port);
+	pK->v("baud",&m_baud);
 
 	return true;
 }

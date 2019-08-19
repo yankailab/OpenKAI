@@ -43,8 +43,8 @@ bool _Raspivid::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, cmd);
-	KISSm(pK, option);
+	pK->v("cmd",&m_cmd);
+	pK->v("option",&m_option);
 
 	//round up resolution for Raspividyuv output
 	//https://picamera.readthedocs.io/en/latest/recipes2.html#unencoded-image-capture-yuv-format

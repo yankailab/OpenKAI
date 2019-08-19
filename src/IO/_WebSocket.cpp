@@ -35,8 +35,8 @@ bool _WebSocket::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, fifoIn);
-	KISSm(pK, fifoOut);
+	pK->v<string>("fifoIn",&m_fifoIn);
+	pK->v<string>("fifoOut",&m_fifoOut);
 
 	m_vClient.clear();
 	return true;

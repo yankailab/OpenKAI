@@ -33,8 +33,8 @@ bool _HiphenRGB::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,bFlip);
-	KISSm(pK,quality);
+	pK->v("bFlip", &m_bFlip);
+	pK->v("quality", &m_quality);
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 

@@ -1,6 +1,6 @@
 
-#ifndef OPENKAI_SRC_SCRIPT_JSON_H_
-#define OPENKAI_SRC_SCRIPT_JSON_H_
+#ifndef OpenKAI_src_Script_JSON_H_
+#define OpenKAI_src_Script_JSON_H_
 
 #include "../Base/common.h"
 #include "picojson.h"
@@ -32,11 +32,13 @@ public:
 	bool v(const string& name, double* pVal);
 	bool v(const string& name, float* pVal);
 	bool v(const string& name, string* pVal);
+	bool v(const string& name, vFloat2* pV);
+	bool v(const string& name, vFloat3* pV);
 
-	int array(const string& name, int* pVal, int nArray);
-	int array(const string& name, double* pVal, int nArray);
-	int array(const string& name, float* pVal, int nArray);
-	int array(const string& name, string* pVal, int nArray);
+	int a(const string& name, int* pVal, int nElem);
+	int a(const string& name, double* pVal, int nElem);
+	int a(const string& name, float* pVal, int nElem);
+	int a(const string& name, string* pVal, int nElem);
 	bool array(const string& name, value::array* pVal);
 
 };

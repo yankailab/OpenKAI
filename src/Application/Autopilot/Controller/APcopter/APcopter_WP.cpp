@@ -21,8 +21,8 @@ bool APcopter_WP::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,dZdefault);
-	KISSm(pK,kZsensor);
+	pK->v("dZdefault",&m_dZdefault);
+	pK->v("kZsensor",&m_kZsensor);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())

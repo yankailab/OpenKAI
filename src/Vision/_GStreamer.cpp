@@ -28,8 +28,8 @@ bool _GStreamer::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, pipeline);
-	KISSm(pK, nInitRead);
+	pK->v("pipeline",&m_pipeline);
+	pK->v("nInitRead",&m_nInitRead);
 
 	return true;
 }

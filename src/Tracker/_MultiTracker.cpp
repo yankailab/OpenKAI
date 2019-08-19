@@ -30,8 +30,8 @@ bool _MultiTracker::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,trackerType);
-	KISSm(pK,oBoundary);
+	pK->v("trackerType",&m_trackerType);
+	pK->v("oBoundary",&m_oBoundary);
 
 	//link
 	string iName = "";

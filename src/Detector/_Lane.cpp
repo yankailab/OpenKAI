@@ -45,9 +45,9 @@ bool _Lane::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, bDrawOverhead);
-	KISSm(pK, bDrawFilter);
-	KISSm(pK, binMed);
+	pK->v("bDrawOverhead",&m_bDrawOverhead);
+	pK->v("bDrawFilter",&m_bDrawFilter);
+	pK->v("binMed",&m_binMed);
 
 	F_INFO(pK->v("roiLTx", &m_roiLT.x));
 	F_INFO(pK->v("roiLTy", &m_roiLT.y));

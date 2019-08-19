@@ -35,14 +35,14 @@ bool Waypoint::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,bHoffset);
-	KISSm(pK,bVoffset);
-	KISSm(pK,bHdgOffset);
-	KISSm(pK,speedV);
-	KISSm(pK,speedH);
-	KISSm(pK,hdg);
-	KISSm(pK,r);
-	KISSm(pK,bAlt);
+	pK->v<bool>("bHoffset",&m_bHoffset);
+	pK->v<bool>("bVoffset",&m_bVoffset);
+	pK->v<bool>("bHdgOffset",&m_bHdgOffset);
+	pK->v<double>("speedV",&m_speedV);
+	pK->v<double>("speedH",&m_speedH);
+	pK->v<double>("hdg",&m_hdg);
+	pK->v<double>("r",&m_r);
+	pK->v<bool>("bAlt",&m_bAlt);
 
 	pK->v("x", &m_vWP.x);	//lat/northing
 	pK->v("y", &m_vWP.y);	//lng/easting

@@ -26,10 +26,9 @@ bool _CutOut::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, extImgIn);
-	KISSm(pK, extImgOut);
-	KISSm(pK, extImgOut);
-	KISSm(pK, nMinPixel);
+	pK->v("extImgIn",&m_extImgIn);
+	pK->v("extImgOut",&m_extImgOut);
+	pK->v("nMinPixel",&m_nMinPixel);
 
 	Kiss* pDir = pK->o("dir");
 	IF_T(pDir->empty());

@@ -28,18 +28,18 @@ bool _DataBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, dirIn);
-	KISSm(pK, extOut);
+	pK->v("dirIn",&m_dirIn);
+	pK->v("extOut",&m_extOut);
 
 	m_vExtIn.clear();
 	string pExtIn[N_EXT];
-	int nExt = pK->array("extIn", pExtIn, N_EXT);
+	int nExt = pK->a("extIn", pExtIn, N_EXT);
 	for(int i=0; i<nExt; i++)
 	{
 		m_vExtIn.push_back(pExtIn[i]);
 	}
 
-	KISSm(pK, compression);
+	pK->v("compsression",&m_compression);
 	if(m_extOut == ".jpg" || m_extOut == ".jpeg" || m_extOut == ".JPG" || m_extOut == ".JPEG")
 		m_vCompress.push_back(IMWRITE_JPEG_QUALITY);
 	else

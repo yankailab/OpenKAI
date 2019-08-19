@@ -2,7 +2,7 @@
  * macro.h
  *
  *  Created on: Nov 21, 2016
- *      Author: root
+ *      Author: yankai
  */
 
 #ifndef OpenKAI_src_Base_macro_H_
@@ -21,9 +21,9 @@
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}
 #define F_INFO(x) if(x==false){LOG_I(#x);}
 
-#define KISSm(x,y) x->v(#y, &m_##y)
-#define KISSm_E(x,y) F_ERROR_F(x->v(#y, &m_##y))
-#define KISSm_F(x,y) F_FATAL_F(x->v(#y, &m_##y))
+//#define KISSm(x,y) x->v(#y, &m_##y)
+//#define KISSm_E(x,y) F_ERROR_F(x->v(#y, &m_##y))
+//#define KISSm_F(x,y) F_FATAL_F(x->v(#y, &m_##y))
 
 #define F_(x) if(x==false){return;}
 #define IF_T(x) if(x){return true;}

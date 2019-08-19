@@ -34,12 +34,12 @@ bool APcopter_base::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,freqSendHeartbeat);
-	KISSm(pK,freqRawSensors);
-	KISSm(pK,freqExtStat);
-	KISSm(pK,freqRC);
-	KISSm(pK,freqPos);
-	KISSm(pK,freqExtra1);
+	pK->v("freqSendHeartbeat",&m_freqSendHeartbeat);
+	pK->v("freqRawSensors",&m_freqRawSensors);
+	pK->v("freqExtStat",&m_freqExtStat);
+	pK->v("freqRC",&m_freqRC);
+	pK->v("freqPos",&m_freqPos);
+	pK->v("freqExtra1",&m_freqExtra1);
 
 	if(m_freqSendHeartbeat > 0)
 		m_freqSendHeartbeat = USEC_1SEC / m_freqSendHeartbeat;

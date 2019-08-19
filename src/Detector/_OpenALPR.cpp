@@ -27,11 +27,11 @@ bool _OpenALPR::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, region);
-	KISSm(pK, config);
-	KISSm(pK, runtime);
-	KISSm(pK, nTop);
-	KISSm(pK, locale);
+	pK->v("region", &m_region);
+	pK->v("config", &m_config);
+	pK->v("runtime", &m_runtime);
+	pK->v("nTop", &m_nTop);
+	pK->v("locale", &m_locale);
 
 //	char *old_ctype = strdup(setlocale(LC_ALL, NULL));
 	setlocale(LC_ALL, m_locale.c_str());

@@ -31,13 +31,13 @@ bool _VisionBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,w);
-	KISSm(pK,h);
+	pK->v("w",&m_w);
+	pK->v("h",&m_h);
 	m_cW = m_w / 2;
 	m_cH = m_h / 2;
 
-	KISSm(pK,fovW);
-	KISSm(pK,fovH);
+	pK->v("fovW",&m_fovW);
+	pK->v("fovH",&m_fovH);
 
 	m_bOpen = false;
 	return true;

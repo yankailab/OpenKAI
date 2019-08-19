@@ -25,14 +25,14 @@ bool _Augment::init(void* pKiss)
 	IF_F(!this->_DataBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, nThread);
-	KISSm(pK, bConvertFormat);
+	pK->v<int>("nThread", &m_nThread);
+	pK->v<bool>("bConvertFormat", &m_bConvertFormat);
 
 	if(m_nThread <= 0)m_nThread = 1;
 
 	m_vFilter.clear();
 	string pFilterIn[AUGMENT_N_FILTER];
-	int nCmd = pK->array("filter", pFilterIn, AUGMENT_N_FILTER);
+	int nCmd = pK->a("filter", pFilterIn, AUGMENT_N_FILTER);
 	for (int i = 0; i < nCmd; i++)
 	{
 		m_vFilter.push_back(pFilterIn[i]);

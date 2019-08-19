@@ -141,7 +141,7 @@ void _ArduServo::updatePWM(void)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
-	IF_(m_nTargetPos < 0.0);
+	IF_(m_vNormTargetPos.x < 0.0);
 
 	int nChan = m_vServo.size();
 	uint16_t pChan[8];
@@ -151,7 +151,7 @@ void _ArduServo::updatePWM(void)
 		ARDUSERVO_CHAN* pC = &m_vServo[i];
 		uint16_t dPwm = pC->m_pwmH - pC->m_pwmL;
 
-		pChan[i] = (m_nTargetPos*pC->m_dir + 0.5*(1 - pC->m_dir)) * dPwm + pC->m_pwmL;
+		pChan[i] = (m_vNormTargetPos.x*pC->m_dir + 0.5*(1 - pC->m_dir)) * dPwm + pC->m_pwmL;
 	}
 
 	m_pBuf[0] = ARDU_CMD_BEGIN;
@@ -166,7 +166,7 @@ void _ArduServo::updatePWM(void)
 
 	m_pIO->write(m_pBuf, ARDU_CMD_N_HEADER + nChan * 2);
 
-	m_nCurrentPos = m_nTargetPos;
+	m_vNormPos.x = m_vNormTargetPos.x;
 }
 
 bool _ArduServo::draw(void)

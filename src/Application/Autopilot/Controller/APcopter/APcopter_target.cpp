@@ -38,9 +38,9 @@ bool APcopter_target::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iClass);
-	KISSm(pK,bUseTracker);
-	KISSm(pK,apMode);
+	pK->v<int>("iClass",&m_iClass);
+	pK->v<bool>("bUseTracker",&m_bUseTracker);
+	pK->v<int>("apMode",&m_apMode);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())

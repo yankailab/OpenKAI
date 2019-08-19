@@ -47,7 +47,7 @@ bool Window::init(void* pKiss)
 		LOG_E("Window mode is disabled. Turn \"bWindow\":1 to enable");
 	}
 
-	KISSm(pK,bFullScreen);
+	pK->v("bFillScreen",&m_bFullScreen);
 	pK->v("w", &m_size.x);
 	pK->v("h", &m_size.y);
 
@@ -57,7 +57,7 @@ bool Window::init(void* pKiss)
 		return false;
 	}
 
-	KISSm(pK,fileRec);
+	pK->v("fileRec",&m_fileRec);
 	if (!m_fileRec.empty())
 	{
 		int recFPS = 30;
@@ -90,7 +90,7 @@ bool Window::init(void* pKiss)
 		}
 	}
 
-	KISSm(pK,gstOutput);
+	pK->v("gstOutput",&m_gstOutput);
 	if (!m_gstOutput.empty())
 	{
 		if (!m_gst.open(m_gstOutput,

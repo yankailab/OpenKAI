@@ -53,11 +53,11 @@ bool _ANR::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,cnPrefix);
-	KISSm(pK,cnPosMargin);
-	KISSm(pK,nCNdigit);
-	KISSm(pK,offsetRdigit);
-	KISSm(pK,wRdigit);
+	pK->v("cnPrefix",&m_cnPrefix);
+	pK->v("cnPosMargin",&m_cnPosMargin);
+	pK->v("nCNdigit",&m_nCNdigit);
+	pK->v("offsetRdigit",&m_offsetRdigit);
+	pK->v("wRdigit",&m_wRdigit);
 
 	Kiss* pA = pK->o("oalpr");
 	if(pA)
@@ -82,7 +82,7 @@ bool _ANR::init(void* pKiss)
 		m_timeOut *= USEC_1SEC;
 
 	string pPrefixList[N_PREFIX_CANDIDATE];
-	int nP = pK->array("prefixList", pPrefixList, N_PREFIX_CANDIDATE);
+	int nP = pK->a("prefixList", pPrefixList, N_PREFIX_CANDIDATE);
 	for(int i=0; i<nP; i++)
 		m_vPrefixCandidate.push_back(pPrefixList[i]);
 

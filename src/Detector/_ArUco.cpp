@@ -31,7 +31,7 @@ bool _ArUco::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK, dict);
+	pK->v<uint8_t>("dict", &m_dict);
 
 	m_pDict = aruco::getPredefinedDictionary(m_dict);
 

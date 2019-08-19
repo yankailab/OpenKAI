@@ -36,9 +36,9 @@ bool _TCPserver::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	F_INFO(pK->v("listenPort", (int* )&m_listenPort));
-	KISSm(pK,nListen);
-	KISSm(pK,nSocket);
+	pK->v<uint16_t>("listenPort", &m_listenPort);
+	pK->v<int>("nListen", &m_nListen);
+	pK->v<unsigned int>("nSocket", &m_nSocket);
 
 	return true;
 }

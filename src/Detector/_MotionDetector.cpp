@@ -29,8 +29,8 @@ bool _MotionDetector::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK, algorithm);
-	KISSm(pK, learningRate);
+	pK->v<string>("algorithm",&m_algorithm);
+	pK->v<double>("learningRate",&m_learningRate);
 
 //	if(m_algorithm == "cnt")
 //	{

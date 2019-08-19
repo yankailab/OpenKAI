@@ -18,7 +18,7 @@ bool APcopter_land::init(void* pKiss)
 	IF_F(!this->APcopter_target::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,altLanded);
+	pK->v("altLanded",&m_altLanded);
 
 	return true;
 }

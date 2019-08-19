@@ -24,7 +24,7 @@ bool Rover_base::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,maxSpeed);
+	pK->v<float>("maxSpeed", &m_maxSpeed);
 
 	Kiss** ppP = pK->getChildItr();
 	int i = 0;

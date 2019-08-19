@@ -30,13 +30,13 @@ bool _Mavlink::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,mySystemID);
-	KISSm(pK,myComponentID);
-	KISSm(pK,myType);
+	pK->v("mySystemID", &m_mySystemID);
+	pK->v("myComponentID", &m_myComponentID);
+	pK->v("myType", &m_myType);
 
-	KISSm(pK,devSystemID);
-	KISSm(pK,devComponentID);
-	KISSm(pK,devType);
+	pK->v("devSystemID", &m_devSystemID);
+	pK->v("devComponentID", &m_devComponentID);
+	pK->v("devType", &m_devType);
 
 	m_msg.sysid = 0;
 	m_msg.compid = 0;
@@ -74,7 +74,7 @@ bool _Mavlink::init(void* pKiss)
 
 	//cmd routing
 	int pNoRouteCmd[MAV_N_CMD];
-	int m_nCmd = pK->array("noRouteCmd", pNoRouteCmd, MAV_N_CMD);
+	int m_nCmd = pK->a("noRouteCmd", pNoRouteCmd, MAV_N_CMD);
 	IF_T(m_nCmd <= 0);
 	for(int i=0; i<m_nCmd; i++)
 	{

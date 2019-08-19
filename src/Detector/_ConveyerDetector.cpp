@@ -26,9 +26,9 @@ bool _ConveyerDetector::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, cSpeed);
-	KISSm(pK, cLen);
-	KISSm(pK, minOverlap);
+	pK->v<float>("cSpeed",&m_cSpeed);
+	pK->v<float>("cLen",&m_cLen);
+	pK->v<float>("minOverlap",&m_minOverlap);
 
 	return true;
 }

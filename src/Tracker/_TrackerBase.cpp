@@ -34,8 +34,8 @@ bool _TrackerBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,trackerType);
-	KISSm(pK,margin);
+	pK->v("trackerType",&m_trackerType);
+	pK->v("margin",&m_margin);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));

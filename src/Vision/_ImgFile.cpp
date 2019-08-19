@@ -25,7 +25,7 @@ bool _ImgFile::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, file);
+	pK->v("file",&m_file);
 
 	return true;
 }

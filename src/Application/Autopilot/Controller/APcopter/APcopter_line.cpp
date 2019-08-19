@@ -32,7 +32,7 @@ bool APcopter_line::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, bAltDir);
+	pK->v("bAltDir",&m_bAltDir);
 
 	int n;
 	pK->v("nMed",&n);

@@ -27,9 +27,9 @@ bool Land::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,tag);
-	KISSm(pK,hdg);
-	KISSm(pK,speed);
+	pK->v("tag",&m_tag);
+	pK->v("hdg",&m_hdg);
+	pK->v("speed",&m_speed);
 
 	return true;
 }

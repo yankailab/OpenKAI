@@ -22,7 +22,7 @@ bool ActionBase::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, iPriority);
+	pK->v("iPriority",&m_iPriority);
 
 	string iName="";
 	F_INFO(pK->v("_MissionControl", &iName));
@@ -30,7 +30,7 @@ bool ActionBase::init(void* pKiss)
 	NULL_T(m_pMC);
 
 	string pAS[N_ACTIVEMISSION];
-	int nAS = pK->array("activeMission", pAS, N_ACTIVEMISSION);
+	int nAS = pK->a("activeMission", pAS, N_ACTIVEMISSION);
 	for(int i=0; i<nAS; i++)
 	{
 		int iMission = m_pMC->getMissionIdx(pAS[i]);

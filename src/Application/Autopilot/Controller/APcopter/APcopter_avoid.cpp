@@ -38,9 +38,9 @@ bool APcopter_avoid::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,iClass);
-	KISSm(pK,bUseTracker);
-	KISSm(pK,apMode);
+	pK->v("iClass",&m_iClass);
+	pK->v("bUseTracker",&m_bUseTracker);
+	pK->v("apMode",&m_apMode);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())

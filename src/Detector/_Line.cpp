@@ -27,8 +27,8 @@ bool _Line::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,minPixLine);
-	KISSm(pK,wSlide);
+	pK->v<float>("minPixLine", &m_minPixLine);
+	pK->v<float>("wSlide", &m_wSlide);
 
 	m_nClass = 1;
 
