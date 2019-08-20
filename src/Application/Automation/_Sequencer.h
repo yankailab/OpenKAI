@@ -18,8 +18,8 @@ namespace kai
 struct SEQ_ACTUATOR
 {
 	_ActuatorBase* m_pA;
-	vFloat3 m_vPos;
-	vFloat3 m_vSpeed;
+	vFloat4 m_vPos;
+	vFloat4 m_vSpeed;
 
 	void init(void)
 	{
@@ -36,7 +36,7 @@ struct SEQ_ACTUATOR
 		return m_pA->bComplete();
 	}
 
-	void setTarget(vFloat3& p, vFloat3& s)
+	void setTarget(vFloat4& p, vFloat4& s)
 	{
 		m_vPos = p;
 		m_vSpeed = s;

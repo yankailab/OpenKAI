@@ -67,24 +67,27 @@ bool _ActuatorBase::open(void)
 	return false;
 }
 
-void _ActuatorBase::move(vFloat3& vSpeed)
+void _ActuatorBase::move(vFloat4& vSpeed)
 {
 	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
 
 	m_tStampCmdSet = getTimeUsec();
 }
 
-void _ActuatorBase::moveTo(vFloat3& vPos, vFloat3& vSpeed)
+void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
 {
 	m_vNormTargetPos.x = (vPos.x >= 0.0)?constrain(vPos.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.y = (vPos.y >= 0.0)?constrain(vPos.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.z = (vPos.z >= 0.0)?constrain(vPos.z, 0.0f, 1.0f):-1.0;
+	m_vNormTargetPos.w = (vPos.w >= 0.0)?constrain(vPos.w, 0.0f, 1.0f):-1.0;
 
 	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
+	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
 
 	m_tStampCmdSet = getTimeUsec();
 }
@@ -113,6 +116,11 @@ bool _ActuatorBase::bComplete(void)
 	if(m_vNormTargetPos.z >= 0.0)
 	{
 		IF_F(!EAQ(m_vNormPos.z, m_vNormTargetPos.z, m_vNormPosErr.z));
+	}
+
+	if(m_vNormTargetPos.w >= 0.0)
+	{
+		IF_F(!EAQ(m_vNormPos.w, m_vNormTargetPos.w, m_vNormPosErr.w));
 	}
 
 	return true;
@@ -144,9 +152,9 @@ bool _ActuatorBase::console(int& iY)
 	string msg;
 
 	C_MSG("-- Normalized state --");
-	C_MSG("Current pos: (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ")");
-	C_MSG("Target pos: (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ")");
-	C_MSG("Speed: (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ")");
+	C_MSG("Current pos: (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")");
+	C_MSG("Target pos: (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")");
+	C_MSG("Speed: (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")");
 
 	return true;
 }

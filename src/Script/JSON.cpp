@@ -166,6 +166,36 @@ bool JSON::v(const string& name, vFloat3* pV)
 	return true;
 }
 
+bool JSON::v(const string& name, vFloat4* pV)
+{
+	value::array arr;
+	IF_F(!array(name, &arr));
+
+	value::array::iterator it;
+
+	it = arr.begin();
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->x = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->y = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->z = (float)it->get<double>();
+
+	it++;
+	IF_F(it == arr.end());
+	IF_F(!it->is<double>());
+	pV->w = (float)it->get<double>();
+
+	return true;
+}
+
 bool JSON::array(const string& name, value::array* pVal)
 {
 	IF_F(!m_JSON.is<object>());

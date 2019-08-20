@@ -108,7 +108,7 @@ void _SortingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP,vS;
+	vFloat4 vP,vS;
 	vP.init(-1.0);
 	vS.init(-1.0);
 	vS.x = 1.0;

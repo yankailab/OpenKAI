@@ -24,8 +24,8 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
-	virtual void move(vFloat3& vSpeed);
-	virtual void moveTo(vFloat3& vPos, vFloat3& vSpeed);
+	virtual void move(vFloat4& vSpeed);
+	virtual void moveTo(vFloat4& vPos, vFloat4& vSpeed);
 	virtual void moveToOrigin(void);
 
 	virtual void setGlobalTarget(vFloat4& t);
@@ -44,11 +44,11 @@ private:
 	}
 
 public:
-	vFloat3 m_vNormPos;
-	vFloat3 m_vNormTargetPos;
-	vFloat3 m_vNormSpeed;
-	vFloat3 m_vNormTargetSpeed;
-	vFloat3 m_vNormPosErr;
+	vFloat4 m_vNormPos;
+	vFloat4 m_vNormTargetPos;
+	vFloat4 m_vNormSpeed;
+	vFloat4 m_vNormTargetSpeed;
+	vFloat4 m_vNormPosErr;
 
 	uint64_t m_tStampCmdSet;
 	uint64_t m_tStampCmdSent;
