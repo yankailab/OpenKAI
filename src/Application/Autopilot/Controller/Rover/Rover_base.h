@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_Controller_Rover_Rover_base_H_
 
 #include "../../../../Base/common.h"
+#include "../../../../Protocol/_Mavlink.h"
 #include "../../../../Control/PIDctrl.h"
 #include "../ActionBase.h"
 #include "_RoverCMD.h"
@@ -58,10 +59,9 @@ public:
 	bool draw(void);
 	bool console(int& iY);
 
-	void cmd(void);
 	void setSpeed(float nSpeed);
-	void setHdg(float hdg);
 	void setTargetHdg(float hdg);
+	void setTargetHdgDelta(float dHdg);
 	void setPinout(uint8_t pin, uint8_t status);
 
 private:
@@ -69,8 +69,8 @@ private:
 
 public:
 	_RoverCMD* m_pCMD;
+	_Mavlink* m_pMavlink;
 	PIDctrl* m_pPIDhdg;
-	uint8_t m_mode;
 
 	float m_hdg;
 	float m_targetHdg;

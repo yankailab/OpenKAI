@@ -15,7 +15,7 @@ _ActuatorBase::_ActuatorBase()
 	m_vNormTargetSpeed.init(0.0);
 	m_vNormPosErr.init(0.01);
 
-	m_tStampCmdSet = 0;
+	m_tStampCmdSet = 1;
 	m_tStampCmdSent = 0;
 
 	m_pParent = NULL;

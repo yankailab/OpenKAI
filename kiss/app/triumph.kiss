@@ -2,16 +2,23 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
-	"name":"OKview",
+	"name":"viewL",
+	"class":"Window",
+	"bInst":1,
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"viewR",
 	"class":"Window",
 	"bInst":1,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
@@ -21,89 +28,76 @@
 	"name":"filterView",
 	"class":"Window",
 	"bInst":1,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.19 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.19 port=5678 auto-multicast=false",
 }
 
 {
-	"name":"cam",
+	"name":"camL",
 	"class":"_Camera",
 	"FPS":30,
 	"bInst":1,
-	"Window":"OKview",
+	"Window":"viewL",
 	"deviceID":0,
-	"w":1920,
-	"h":1080,
+	"w":640,
+	"h":480,
 }
 
 {
-	"name":"cam",
+	"name":"camL",
 	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":0,
-	"Window":"OKview",
-	"pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1920,height=1080,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"Window":"viewL",
+	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
 {
-	"name":"contTag",
-	"class":"_Contrast",
+	"name":"camR",
+	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":1,
-	"Window":"/filterView",
-	"_VisionBase":"cam",
-	"alpha":1.5,
-	"beta":0.0,
+	"Window":"viewR",
+	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
 {
-	"name":"resize",
-	"class":"_Resize",
-	"FPS":30,
-	"bInst":1,
-	"Window":"/filterView",
-	"_VisionBase":"cam",
-	"w":640,
-	"h":360,
-}
-
-{
-	"name":"gs",
+	"name":"gsL",
 	"class":"_Grayscale",
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
-	"_VisionBase":"resize",
+	"_VisionBase":"camL",
 }
 
 {
-	"name":"cont",
+	"name":"contL",
 	"class":"_Contrast",
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
-	"_VisionBase":"gs",
+	"_VisionBase":"gsL",
 	"alpha":1.8,
 	"beta":-200.0,
 }
 
 {
-	"name":"ir",
+	"name":"irL",
 	"class":"_InRange",
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
-	"_VisionBase":"cont",
+	"_VisionBase":"contL",
 	"rFrom":0,
 	"rTo":50,
 }
 
 {
-	"name":"morph",
+	"name":"morphL",
 	"class":"_Morphology",
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
-	"_VisionBase":"ir",
+	"_VisionBase":"irL",
 	
 	{
 		"morphOp":2,
@@ -121,49 +115,66 @@
 }
 
 {
-	"name":"inv",
+	"name":"invL",
 	"class":"_Invert",
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
-	"_VisionBase":"morph",
+	"_VisionBase":"morphL",
 }
 
 {
-	"name":"crop",
+	"name":"cropL",
 	"class":"_Crop",
 	"FPS":30,
 	"bInst":1,
-	"Window":"filterView",
-	"_VisionBase":"morph",
-	"x":0.15,
-	"y":0.0,
-	"z":0.85,
-	"w":0.4,
+	"Window":"/filterView",
+	"_VisionBase":"invL",
+	"roi":[0.2, 0.0, 0.8, 0.5],
 }
 
 {
-	"name":"detLine",
+	"name":"rotL",
+	"class":"_Rotate",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/filterView",
+	"_VisionBase":"cropL",
+	"code":0,
+}
+
+{
+	"name":"detLineL",
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
-	"Window":"OKview",
-	"_VisionBase":"crop",
+	"Window":"viewL",
+	"_VisionBase":"rotL",
 	"wSlide":0.2,
 	"minPixLine":0.1,
 }
 
 {
-	"name":"arUco",
-	"class":"_ArUco",
+	"name":"cropM",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":1,
+	"Window":"filterView",
+	"_VisionBase":"morphL",
+	"roi":[0.5, 0.0, 1.0, 0.5],
+}
+
+{
+	"name":"detLineM",
+	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
-	"bLog":0,
-	"Window":"OKview",
-	"_VisionBase":"contTag",
-	"dict":17,
+	"Window":"viewL",
+	"_VisionBase":"cropM",
+	"wSlide":0.2,
+	"minPixLine":0.1,
 }
 
 {
@@ -258,7 +269,7 @@
 			"Window":"OKview",
 			"bDraw":1,
 			"class":"Loiter",
-			"tTimeout":2,
+			"tTimeout":1,
 			"nextMission":"MOVE",
 		}
 	}
@@ -269,6 +280,7 @@
 	"class":"_AutoPilot",
 	"bInst":1,
 	"FPS":20,
+	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
 	
@@ -279,9 +291,11 @@
 			"name":"rvBase",
 			"class":"Rover_base",
 			"bInst":1,
+			"bLog":1,
 			"bDraw":1,
-			"_MissionControl":"apMission",
 			"Window":"OKview",
+			"_MissionControl":"apMission",
+			"_Mavlink":"apMavlink",
 			"_RoverCMD":"rvCMD",
 			"PIDhdg":"rvPID",
 			
@@ -307,21 +321,21 @@
 			"name":"rvMove",
 			"class":"Rover_move",
 			"bInst":1,
-			"bLog":0,
+			"bLog":1,
 			"bDraw":1,
 			"Window":"OKview",
 			"_MissionControl":"apMission",
 			"activeMission":["IDLE","MOVE","TAG"],
 			"Rover_base":"rvBase",
-			"_Aruco":"arUco",
-			"_Line":"detLine",
-			"_Mavlink":"apMavlink",
+			"_RoverCMD":"rvCMD",
+			"PIDhdg":"rvPID",
+			"_LineM":"detLineM",
+			"_LineL":"detLineL",
 			"nSpeed":0.25,
 			"iPinLEDtag":21,
-			"tagX":0.1,
-			"tagY":0.2,
-			"tagZ":0.9,
-			"tagW":0.8,
+			"iPinCamShutter":10,
+			"tCamShutter":200000,
 		}
 	}
 }
+

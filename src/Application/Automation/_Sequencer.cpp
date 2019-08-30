@@ -45,13 +45,14 @@ bool _Sequencer::init(void* pKiss)
 			Kiss* pActuatorI = ppActuator[j++];
 			SEQ_ACTUATOR aA;
 			aA.init();
-			pActuatorI->v("pos", &aA.m_vPos);
-			pActuatorI->v("speed", &aA.m_vSpeed);
 
 			string iName = "";
 			F_ERROR_F(pActuatorI->v("_ActuatorBase", &iName));
 			aA.m_pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
-			NULL_Fl(aA.m_pA, iName + " not found");
+			IF_CONT(!aA.m_pA);
+
+			pActuatorI->v("pos", &aA.m_vPos);
+			pActuatorI->v("speed", &aA.m_vSpeed);
 
 			sa.m_vActuator.push_back(aA);
 		}

@@ -24,7 +24,7 @@ struct SEQ_ACTUATOR
 	void init(void)
 	{
 		m_pA = NULL;
-		m_vPos.init(0.0);
+		m_vPos.init(-1.0);
 		m_vSpeed.init(1.0);
 	}
 

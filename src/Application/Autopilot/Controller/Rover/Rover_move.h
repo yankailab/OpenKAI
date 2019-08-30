@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_Controller_Rover_Rover_move_H_
 
 #include "../../../../Detector/_DetectorBase.h"
-#include "../../../../Protocol/_Mavlink.h"
 #include "Rover_base.h"
 
 namespace kai
@@ -15,28 +14,29 @@ public:
 	~Rover_move();
 
 	bool init(void* pKiss);
-	int	 check(void);
+	int check(void);
 	void update(void);
 	bool draw(void);
 	bool console(int& iY);
 
-	bool findTag(void);
-	bool findLine(void);
+	void findLineM(void);
+	void findLineL(void);
 
 public:
 	Rover_base* m_pR;
-	_Mavlink* m_pMavlink;
-	_DetectorBase*	m_pAruco;
-	_DetectorBase*	m_pLine;
+	_RoverCMD* m_pCMD;
+	PIDctrl* m_pPIDhdg;
+	_DetectorBase* m_pLineM;
+	_DetectorBase* m_pLineL;
 
-	float	m_hdg;
-	float	m_nSpeed;
+	float m_dHdg;
+	float m_nSpeed;
+	bool m_bLineM;
 
-	bool	m_bLine;
-	vFloat4	m_tagRoi;
-	int		m_iTag;
-	float	m_tagAngle;
-	uint8_t	m_iPinLEDtag;
+	uint64_t m_tCamShutter;
+	uint64_t m_tCamShutterStart;
+
+	uint8_t m_iPinLEDtag;
 	uint8_t m_iPinCamShutter;
 };
 

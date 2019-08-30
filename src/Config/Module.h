@@ -15,6 +15,11 @@
 
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_ArduServo.h"
+#include "../Actuator/_ActuatorSync.h"
+
+#ifdef USE_DYNAMIXEL
+#include "../Actuator/_DeltaArm.h"
+#endif
 
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"
@@ -90,6 +95,7 @@
 #include "../Vision/ImgFilter/_Invert.h"
 #include "../Vision/ImgFilter/_InRange.h"
 #include "../Vision/ImgFilter/_Resize.h"
+#include "../Vision/ImgFilter/_Rotate.h"
 
 #include "../Data/Augment/_Augment.h"
 #include "../Data/Augment/_filterBilateralBlur.h"

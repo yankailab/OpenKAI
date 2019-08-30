@@ -1,0 +1,81 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"port":"/dev/ttyUSB0",
+	"baud":230400,
+	"parity":"E",	
+}
+
+{
+	"name":"omR",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"stepFrom":10,
+	"stepTo":85000,
+	"speedFrom":0,
+	"speedTo":15000,
+	"vNormTargetPos":[0.0],
+	"vNormTargetSpeed":[0.5],
+}
+
+{
+	"name":"omL",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":3,
+	"stepFrom":10,
+	"stepTo":85000,
+	"speedFrom":0,
+	"speedTo":15000,
+	"vNormTargetPos":[0.0],
+	"vNormTargetSpeed":[0.5],
+}
+
+{
+	"name":"omM",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":2,
+	"stepFrom":10,
+	"stepTo":85000,
+	"speedFrom":0,
+	"speedTo":15000,
+	"vNormTargetPos":[0.5],
+	"vNormTargetSpeed":[1.0],
+}

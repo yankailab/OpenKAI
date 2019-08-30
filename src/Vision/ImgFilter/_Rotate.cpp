@@ -1,36 +1,33 @@
 /*
- * _Crop.cpp
+ * _Rotate.cpp
  *
  *  Created on: April 23, 2019
  *      Author: yankai
  */
 
-#include "_Crop.h"
+#include "_Rotate.h"
 
 namespace kai
 {
 
-_Crop::_Crop()
+_Rotate::_Rotate()
 {
-	m_type = vision_crop;
+	m_type = vision_rotate;
 	m_pV = NULL;
-
-	m_roi.init();
-	m_roi.z = 1.0;
-	m_roi.w = 1.0;
+	m_code = 0;
 }
 
-_Crop::~_Crop()
+_Rotate::~_Rotate()
 {
 	close();
 }
 
-bool _Crop::init(void* pKiss)
+bool _Rotate::init(void* pKiss)
 {
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("roi",&m_roi);
+	pK->v("code",&m_code);
 
 	string iName;
 	iName = "";
@@ -41,7 +38,7 @@ bool _Crop::init(void* pKiss)
 	return true;
 }
 
-bool _Crop::open(void)
+bool _Rotate::open(void)
 {
 	NULL_F(m_pV);
 	m_bOpen = m_pV->isOpened();
@@ -49,7 +46,7 @@ bool _Crop::open(void)
 	return m_bOpen;
 }
 
-void _Crop::close(void)
+void _Rotate::close(void)
 {
 	if(m_threadMode==T_THREAD)
 	{
@@ -60,7 +57,7 @@ void _Crop::close(void)
 	this->_VisionBase::close();
 }
 
-bool _Crop::start(void)
+bool _Rotate::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -75,7 +72,7 @@ bool _Crop::start(void)
 	return true;
 }
 
-void _Crop::update(void)
+void _Rotate::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -86,7 +83,7 @@ void _Crop::update(void)
 
 		if(m_bOpen)
 		{
-			if(m_fIn.tStamp() < m_pV->BGR()->tStamp())
+			if(m_fBGR.tStamp() < m_pV->BGR()->tStamp())
 				filter();
 		}
 
@@ -94,20 +91,14 @@ void _Crop::update(void)
 	}
 }
 
-void _Crop::filter(void)
+void _Rotate::filter(void)
 {
 	IF_(m_pV->BGR()->bEmpty());
 
-	Mat mIn = *m_pV->BGR()->m();
-	Rect r(m_roi.x * mIn.cols,
-		   m_roi.y * mIn.rows,
-		   m_roi.width() * mIn.cols,
-		   m_roi.height() * mIn.rows);
+	Mat m;
+	cv::rotate(*m_pV->BGR()->m(), m, m_code);
+	m_fBGR.copy(m);
 
-	m_w = r.width;
-	m_h = r.height;
-
-	m_fBGR.copy(mIn(r));
 }
 
 }

@@ -6,9 +6,9 @@ namespace kai
 Rover_base::Rover_base()
 {
 	m_pCMD = NULL;
+	m_pMavlink = NULL;
 	m_pPIDhdg = NULL;
 
-	m_mode = rover_idle;
 	m_hdg = -1.0;
 	m_targetHdg = -1.0;
 	m_nSpeed = 0.0;
@@ -51,6 +51,11 @@ bool Rover_base::init(void* pKiss)
 	NULL_Fl(m_pCMD, iName+": not found");
 
 	iName = "";
+	F_ERROR_F(pK->v("_Mavlink", &iName));
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pMavlink, iName+": not found");
+
+	iName = "";
 	pK->v("PIDhdg", &iName);
 	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pPIDhdg, iName+": not found");
@@ -61,6 +66,7 @@ bool Rover_base::init(void* pKiss)
 int Rover_base::check(void)
 {
 	NULL__(m_pCMD, -1);
+	NULL__(m_pMavlink, -1);
 	NULL__(m_pPIDhdg, -1);
 
 	return 0;
@@ -71,11 +77,35 @@ void Rover_base::update(void)
 	this->ActionBase::update();
 	IF_(check()<0);
 
-	m_mode = m_pCMD->m_mode;
-	if(m_mode == rover_idle || m_mode == rover_manual)
+	//hard swich priority
+	if(m_pCMD->m_mode == rover_idle || m_pCMD->m_mode == rover_manual)
 	{
 		m_pMC->transit("IDLE");
 		setSpeed(0.0);
+	}
+
+	//mission
+	string mission = m_pMC->getCurrentMissionName();
+	if(mission == "IDLE")
+	{
+		m_targetHdg = -1.0;
+	}
+	else if(m_targetHdg < 0.0)
+	{
+		m_targetHdg = m_hdg;
+	}
+
+	//sensor
+	if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	{
+		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 5);
+		return;
+	}
+
+	uint16_t h = m_pMavlink->m_msg.global_position_int.hdg;
+	if(h < UINT16_MAX)
+	{
+		m_hdg = (float)h * 1e-2;
 	}
 
 	updatePWM();
@@ -98,23 +128,19 @@ void Rover_base::updatePWM(void)
 	m_pCMD->setPWM(m_vPWM.size(), pPWM);
 }
 
-void Rover_base::cmd(void)
-{
-}
-
 void Rover_base::setSpeed(float nSpeed)
 {
 	m_nSpeed = constrain<float>(nSpeed, -1.0, 1.0);
 }
 
-void Rover_base::setHdg(float hdg)
-{
-	m_hdg = hdg;
-}
-
 void Rover_base::setTargetHdg(float hdg)
 {
 	m_targetHdg = hdg;
+}
+
+void Rover_base::setTargetHdgDelta(float dHdg)
+{
+	m_targetHdg = m_hdg + dHdg;
 }
 
 void Rover_base::setPinout(uint8_t pin, uint8_t status)
@@ -132,7 +158,7 @@ bool Rover_base::draw(void)
 	IF_F(pMat->empty());
 
 	string msg = *this->getName()
-			+ ": mode=" + c_roverModeName[m_mode]
+			+ ": mode=" + c_roverModeName[m_pCMD->m_mode]
 			+ ", hdg=" + f2str(m_hdg)
 			+ ", targetHdg=" + f2str(m_targetHdg)
 			+ ", nSpeed=" + f2str(m_nSpeed);
@@ -163,7 +189,7 @@ bool Rover_base::console(int& iY)
 	IF_F(check()<0);
 
 	string msg;
-	C_MSG("mode=" + c_roverModeName[m_mode]
+	C_MSG("mode=" + c_roverModeName[m_pCMD->m_mode]
 			+ ", hdg=" + f2str(m_hdg)
 			+ ", targetHdg=" + f2str(m_targetHdg)
 			+ ", nSpeed=" + f2str(m_nSpeed));

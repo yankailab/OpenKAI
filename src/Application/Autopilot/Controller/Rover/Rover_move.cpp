@@ -6,18 +6,17 @@ namespace kai
 Rover_move::Rover_move()
 {
 	m_pR = NULL;
-	m_pMavlink = NULL;
-	m_pAruco = NULL;
-	m_pLine = NULL;
-	m_hdg = 0.0;
+	m_pCMD = NULL;
+	m_pPIDhdg = NULL;
+	m_pLineM = NULL;
+	m_pLineL = NULL;
+	m_dHdg = 0.0;
 	m_nSpeed = 0.0;
 
-	m_bLine = false;
-	m_iTag = -1;
-	m_tagRoi.init();
-	m_tagRoi.z = 1.0;
-	m_tagRoi.w = 1.0;
-	m_tagAngle = 0;
+	m_bLineM = false;
+	m_tCamShutter = 200000;
+	m_tCamShutterStart = 0;
+
 	m_iPinLEDtag = 21;
 	m_iPinCamShutter = 10;
 }
@@ -34,11 +33,7 @@ bool Rover_move::init(void* pKiss)
 	pK->v<float>("nSpeed",&m_nSpeed);
 	pK->v<uint8_t>("iPinLEDtag",&m_iPinLEDtag);
 	pK->v<uint8_t>("iPinCamShutter",&m_iPinCamShutter);
-
-	pK->v("tagX",&m_tagRoi.x);
-	pK->v("tagY",&m_tagRoi.y);
-	pK->v("tagZ",&m_tagRoi.z);
-	pK->v("tagW",&m_tagRoi.w);
+	pK->v("tCamShutter",&m_tCamShutter);
 
 	string iName;
 	iName = "";
@@ -47,19 +42,24 @@ bool Rover_move::init(void* pKiss)
 	NULL_Fl(m_pR, iName+": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pMavlink, iName+": not found");
+	F_ERROR_F(pK->v("_RoverCMD", &iName));
+	m_pCMD = (_RoverCMD*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pCMD, iName+": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_Aruco", &iName));
-	m_pAruco = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pAruco, iName+": not found");
+	pK->v("PIDhdg", &iName);
+	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pPIDhdg, iName+": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_Line", &iName));
-	m_pLine = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pLine, iName+": not found");
+	F_ERROR_F(pK->v("_LineM", &iName));
+	m_pLineM = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pLineM, iName+": not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_LineL", &iName));
+	m_pLineL = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pLineL, iName+": not found");
 
 	return true;
 }
@@ -67,10 +67,10 @@ bool Rover_move::init(void* pKiss)
 int Rover_move::check(void)
 {
 	NULL__(m_pR, -1);
-	NULL__(m_pR->m_pCMD, -1);
-	NULL__(m_pMavlink, -1);
-	NULL__(m_pAruco, -1);
-	NULL__(m_pLine, -1);
+	NULL__(m_pCMD, -1);
+	NULL__(m_pPIDhdg, -1);
+	NULL__(m_pLineM, -1);
+	NULL__(m_pLineL, -1);
 
 	return 0;
 }
@@ -79,13 +79,11 @@ void Rover_move::update(void)
 {
 	this->ActionBase::update();
 	IF_(check()<0);
-	if(!bActive())
-	{
-		return;
-	}
+	IF_(!bActive());
 
+	//speed
 	float nSpeed;
-	switch (m_pR->m_mode)
+	switch (m_pCMD->m_mode)
 	{
 	case rover_forward:
 		nSpeed = m_nSpeed;
@@ -98,93 +96,82 @@ void Rover_move::update(void)
 		break;
 	}
 
+	//mission
 	string mission = m_pMC->getCurrentMissionName();
 	if(mission == "IDLE")
 	{
-		if(m_pR->m_mode != rover_idle && m_pR->m_mode != rover_manual)
+		if(m_pCMD->m_mode != rover_idle && m_pCMD->m_mode != rover_manual)
 			m_pMC->transit("MOVE");
+
+		m_pCMD->pinOut(m_iPinCamShutter,0);
+		m_tCamShutterStart = 0;
 	}
 	else if(mission == "MOVE")
 	{
 		m_pR->setSpeed(nSpeed);
-		m_pR->setPinout(m_iPinCamShutter,0);
+
+		m_pCMD->pinOut(m_iPinCamShutter,0);
+		m_tCamShutterStart = 0;
 	}
 	else if(mission == "TAG")
 	{
 		m_pR->setSpeed(0.0);
-		m_pR->setPinout(m_iPinCamShutter,1);
+
+		if(m_tCamShutterStart <= 0)
+		{
+			m_pCMD->pinOut(m_iPinCamShutter,1);
+			m_tCamShutterStart = m_tStamp;
+		}
+		else if(m_tStamp - m_tCamShutterStart > m_tCamShutter)
+		{
+			m_pCMD->pinOut(m_iPinCamShutter,0);
+			m_tCamShutterStart = m_tStamp;
+		}
 	}
 
-	if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
-	{
-		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 5);
-		return;
-	}
+	findLineM();
 
-	m_hdg = ((float)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
-	m_pR->setHdg(m_hdg);
-	if(m_pR->m_targetHdg < 0.0)
-		m_pR->setTargetHdg(m_hdg);
+	findLineL();
 
-	findTag();
-	findLine();
 }
 
-bool Rover_move::findTag(void)
+void Rover_move::findLineM(void)
 {
-	IF__(check()<0, false);
-
-	if(m_pAruco->size()>0)
-		m_pR->setPinout(m_iPinLEDtag,1);
-	else
-		m_pR->setPinout(m_iPinLEDtag,0);
+	IF_(check()<0);
 
 	OBJECT* pO;
 	int i=0;
-	while((pO = m_pAruco->at(i++)) != NULL)
+	while((pO = m_pLineM->at(i++)) != NULL)
 	{
-		IF_CONT(pO->m_c.x < m_tagRoi.x);
-		IF_CONT(pO->m_c.x > m_tagRoi.z);
-		IF_CONT(pO->m_c.y < m_tagRoi.y);
-		IF_CONT(pO->m_c.y > m_tagRoi.w);
-
-		m_tagAngle = pO->m_angle;
-		m_pR->setTargetHdg(m_hdg + m_tagAngle);
-
-		IF_CONT(pO->m_topClass == m_iTag);
-
-		m_iTag = pO->m_topClass;
-		m_pMC->transit("TAG");
-
-		return true;
-	}
-
-	return false;
-}
-
-bool Rover_move::findLine(void)
-{
-	IF__(check()<0, false);
-
-	if(m_pLine->size()>0)
-		m_pR->setPinout(m_iPinLEDtag,1);
-	else
-		m_pR->setPinout(m_iPinLEDtag,0);
-
-	OBJECT* pO;
-	int i=0;
-	while((pO = m_pLine->at(i++)) != NULL)
-	{
-		if(!m_bLine)
+		if(!m_bLineM)
 		{
 			m_pMC->transit("TAG");
 		}
-		m_bLine = true;
-		return true;
+		m_bLineM = true;
+		return;
 	}
 
-	m_bLine = false;
-	return false;
+	m_bLineM = false;
+}
+
+void Rover_move::findLineL(void)
+{
+	IF_(check()<0);
+
+	if(m_pLineL->size()>0)
+		m_pCMD->pinOut(m_iPinLEDtag,1);
+	else
+		m_pCMD->pinOut(m_iPinLEDtag,0);
+
+	OBJECT* pO;
+	int i=0;
+	while((pO = m_pLineL->at(i++)) != NULL)
+	{
+		//TODO
+
+		m_pR->setTargetHdgDelta(m_dHdg);
+		return;
+	}
 }
 
 bool Rover_move::draw(void)
@@ -196,8 +183,7 @@ bool Rover_move::draw(void)
 	IF_F(pMat->empty());
 
 	string msg = *this->getName()
-			+ ": hdg=" + f2str(m_hdg)
-			+ ", nSpeed=" + f2str(m_nSpeed);
+			+ ": dHdg=" + f2str(m_dHdg);
 	pWin->addMsg(msg);
 
 	return true;
@@ -209,7 +195,7 @@ bool Rover_move::console(int& iY)
 	IF_F(check()<0);
 
 	string msg;
-	C_MSG("hdg=" + f2str(m_hdg) + ", nSpeed=" + f2str(m_nSpeed));
+	C_MSG("dHdg=" + f2str(m_dHdg));
 
 	return true;
 }

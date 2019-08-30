@@ -33,6 +33,7 @@ enum VISION_TYPE
 	vision_invert,
 	vision_depth2Gray,
 	vision_resize,
+	vision_rotate,
 	vision_inRange,
 	vision_grayscale,
 	vision_crop,

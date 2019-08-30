@@ -13,6 +13,8 @@
 #include <string.h>
 #include "livox_sdk.h"
 
+#ifdef USE_LIVOX
+
 namespace kai
 {
 
@@ -58,4 +60,5 @@ public:
 };
 
 }
+#endif
 #endif

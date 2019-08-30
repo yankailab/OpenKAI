@@ -26,6 +26,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Arduino);
 	ADD_MODULE(_ArduServo);
+	ADD_MODULE(_ActuatorSync);
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
@@ -34,6 +35,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
+	ADD_MODULE(_DeltaArm);
 	ADD_MODULE(_Depth2Gray);
 	ADD_MODULE(_DepthSegment);
 	ADD_MODULE(_Erode);
@@ -67,6 +69,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);
+	ADD_MODULE(_Rotate);
 	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_SortingArm);

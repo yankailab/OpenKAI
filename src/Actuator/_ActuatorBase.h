@@ -10,8 +10,6 @@
 
 #include "../Base/_ThreadBase.h"
 
-#ifdef USE_LIVOX
-
 namespace kai
 {
 
@@ -60,6 +58,5 @@ public:
 };
 
 }
-#endif
 #endif
 

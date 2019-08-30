@@ -4,13 +4,10 @@
 
 // Create a constructor and initialize portHandler, packetHandler, SyncRead/Write immediately before enter the function							
 RasheedDeltaRobot::RasheedDeltaRobot() :
-		portHandler(dynamixel::PortHandler::getPortHandler(DEVICENAME)), packetHandler(
-				dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION)), groupSyncWrite(
-				portHandler, packetHandler, ADDR_PRO_GOAL_POSITION,
-				LEN_PRO_GOAL_POSITION), groupSyncRead(portHandler,
-				packetHandler, ADDR_PRO_PRESENT_POSITION,
-				LEN_PRO_PRESENT_POSITION)
-
+		portHandler(dynamixel::PortHandler::getPortHandler(DEVICENAME)),
+		packetHandler(dynamixel::PacketHandler::getPacketHandler(PROTOCOL_VERSION)),
+		groupSyncWrite(portHandler, packetHandler, ADDR_PRO_GOAL_POSITION, LEN_PRO_GOAL_POSITION),
+		groupSyncRead(portHandler, packetHandler, ADDR_PRO_PRESENT_POSITION, LEN_PRO_PRESENT_POSITION)
 {
 
 	// Open port, ref. from DYNAMIXEL SDK Example

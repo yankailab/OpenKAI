@@ -96,6 +96,7 @@ struct Mavlink_Messages
 		attitude.rollspeed = 0;
 		global_position_int.alt = 0;
 		global_position_int.relative_alt = 0;
+		global_position_int.hdg = UINT16_MAX;
 		heartbeat.custom_mode = 0;
 		mission_current.seq = 0;
 

@@ -120,15 +120,15 @@
 			"name":"recover",
 			{
 				"_ActuatorBase":"omX",
-				"pos":0.825,
+				"pos":[0.825],
 			}
 			{
 				"_ActuatorBase":"omY",
-				"pos":0.2,
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 
@@ -137,7 +137,7 @@
 			"/dT":-1.0,
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 
@@ -145,15 +145,15 @@
 			"name":"descent",
 			{
 				"_ActuatorBase":"omX",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"omY",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 
@@ -162,7 +162,7 @@
 			"dT":500000,
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 
@@ -171,11 +171,11 @@
 			"/dT":-1.0,
 			{
 				"_ActuatorBase":"omX",
-				"pos":0.7,
+				"pos":[0.7],
 			}
 			{
 				"_ActuatorBase":"omY",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 		
@@ -183,11 +183,11 @@
 			"name":"move",
 			{
 				"_ActuatorBase":"omX",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"omY",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 		
@@ -196,11 +196,11 @@
 			"dT":800000,
 			{
 				"_ActuatorBase":"omY",
-				"pos":0.2,
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 	}

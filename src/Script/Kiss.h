@@ -33,7 +33,7 @@ public:
 		return m_json.v(name, pVal);
 	}
 
-	template <typename T> bool a(const string& name, T* pVal, int nElem)
+	template <typename T> int a(const string& name, T* pVal, int nElem)
 	{
 		return m_json.a(name, pVal, nElem);
 	}

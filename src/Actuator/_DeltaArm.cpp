@@ -36,10 +36,17 @@ bool _DeltaArm::init(void* pKiss)
 
 	//Initialize the robot and passing 3 as operation mode (Position control) as default
 	m_rdr.RobotInit(m_oprMode);
+
+	sleep(3);
+
 	m_rdr.RobotTorqueON();
-	m_rdr.GripperTorqueON();
 	m_rdr.GoHome();
-	m_rdr.GripperCheck();
+
+	if(m_bGripper)
+	{
+		m_rdr.GripperTorqueON();
+		m_rdr.GripperCheck();
+	}
 
 	return true;
 }
@@ -98,9 +105,9 @@ void _DeltaArm::updatePos(void)
 	IF_(m_tStampCmdSet <= m_tStampCmdSent);
 
 	vFloat3 vP;
-	vP.x = constrain<float>(m_vNormTargetPos.x, 0.0, 1.0) * m_vPosRangeX.len() + m_vPosRangeX.x;
-	vP.y = constrain<float>(m_vNormTargetPos.y, 0.0, 1.0) * m_vPosRangeY.len() + m_vPosRangeY.x;
-	vP.z = constrain<float>(m_vNormTargetPos.z, 0.0, 1.0) * m_vPosRangeZ.len() + m_vPosRangeZ.x;
+	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
+	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
+	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
 	m_rdr.GotoPoint(vP.x, vP.y, vP.z);
 
 	if(m_bGripper && m_vNormTargetPos.w >= 0.0)
@@ -110,6 +117,8 @@ void _DeltaArm::updatePos(void)
 		else
 			m_rdr.GripperClose();
 	}
+
+	m_tStampCmdSent = m_tStampCmdSet;
 }
 
 bool _DeltaArm::draw(void)

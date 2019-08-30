@@ -87,6 +87,11 @@ struct vFloat2
 	{
 		return abs(y-x);
 	}
+
+	float d(void)
+	{
+		return y-x;
+	}
 };
 
 struct vFloat3
