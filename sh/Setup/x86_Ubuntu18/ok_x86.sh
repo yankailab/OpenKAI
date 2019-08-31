@@ -135,7 +135,7 @@ sudo ldconfig
 
 # (Optional) Dynamixel
 git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
-cd DynamixelSDK/c++/build
+cd DynamixelSDK/c++/build/linux64
 make
 sudo make install
 

@@ -11,9 +11,9 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include <string.h>
-#include "livox_sdk.h"
 
 #ifdef USE_LIVOX
+#include "livox_sdk.h"
 
 namespace kai
 {
