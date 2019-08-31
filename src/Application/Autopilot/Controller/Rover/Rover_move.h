@@ -29,9 +29,15 @@ public:
 	_DetectorBase* m_pLineM;
 	_DetectorBase* m_pLineL;
 
+	vFloat2 m_vBorderLrange;
+	float m_borderL;
+	float m_borderLtarget;
+	float m_kBorderLhdg;
 	float m_dHdg;
-	float m_nSpeed;
+	vFloat2 m_vdHdgRange;
+
 	bool m_bLineM;
+	float m_nSpeed;
 
 	uint64_t m_tCamShutter;
 	uint64_t m_tCamShutterStart;

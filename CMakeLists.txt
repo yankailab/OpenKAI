@@ -17,6 +17,8 @@ OPTION(USE_CAFFE "Use Caffe" OFF)
 OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
 OPTION(USE_OCR "Use Tesseract" OFF)
 OPTION(USE_OPENALPR "Use OpenALPR" OFF)
+OPTION(USE_DYNAMIXEL "Use Dynamixel" OFF)
+OPTION(USE_LIVOX "Use Livox" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
 # find_package(OpenCV 4 REQUIRED)
@@ -109,6 +111,11 @@ endif()
 if(USE_OPENALPR)
   add_definitions(-DUSE_OPENALPR)
   set(OpenKAI_lib ${OpenKAI_lib} openalpr)
+endif()
+
+if(USE_DYNAMIXEL)
+  add_definitions(-DUSE_DYNAMIXEL)
+  set(OpenKAI_lib ${OpenKAI_lib} dxl_x64_cpp)
 endif()
 
 

@@ -13,6 +13,14 @@ Rover_move::Rover_move()
 	m_dHdg = 0.0;
 	m_nSpeed = 0.0;
 
+	m_borderL = 0.0;
+	m_vBorderLrange.x = 0.2;
+	m_vBorderLrange.y = 0.8;
+	m_borderLtarget = 0.5;
+	m_kBorderLhdg = 3.0;
+	m_vdHdgRange.x = -5.0;
+	m_vdHdgRange.y = 5.0;
+
 	m_bLineM = false;
 	m_tCamShutter = 200000;
 	m_tCamShutterStart = 0;
@@ -30,6 +38,10 @@ bool Rover_move::init(void* pKiss)
 	IF_F(!this->ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
+	pK->v("vBorderLrange", &m_vBorderLrange);
+	pK->v("borderLtarget", &m_borderLtarget);
+	pK->v("kBorderLhdg",&m_kBorderLhdg);
+	pK->v("vdHdgRange",&m_vdHdgRange);
 	pK->v<float>("nSpeed",&m_nSpeed);
 	pK->v<uint8_t>("iPinLEDtag",&m_iPinLEDtag);
 	pK->v<uint8_t>("iPinCamShutter",&m_iPinCamShutter);
@@ -167,11 +179,19 @@ void Rover_move::findLineL(void)
 	int i=0;
 	while((pO = m_pLineL->at(i++)) != NULL)
 	{
-		//TODO
+		float border = pO->m_bb.midY();
+		IF_CONT(border < m_vBorderLrange.x);
+		IF_CONT(border > m_vBorderLrange.y);
+
+		m_borderL = border;
+		m_dHdg = constrain((m_borderL-m_borderLtarget)*m_kBorderLhdg, m_vdHdgRange.x, m_vdHdgRange.y);
 
 		m_pR->setTargetHdgDelta(m_dHdg);
 		return;
 	}
+
+	m_pR->setTargetHdgDelta(0.0);
+
 }
 
 bool Rover_move::draw(void)
@@ -183,7 +203,9 @@ bool Rover_move::draw(void)
 	IF_F(pMat->empty());
 
 	string msg = *this->getName()
-			+ ": dHdg=" + f2str(m_dHdg);
+			+ ": dHdg=" + f2str(m_dHdg)
+			+ ", borderL=" + f2str(m_borderL)
+			;
 	pWin->addMsg(msg);
 
 	return true;
@@ -195,7 +217,9 @@ bool Rover_move::console(int& iY)
 	IF_F(check()<0);
 
 	string msg;
-	C_MSG("dHdg=" + f2str(m_dHdg));
+	C_MSG("dHdg=" + f2str(m_dHdg)
+			+ ", borderL=" + f2str(m_borderL)
+	);
 
 	return true;
 }

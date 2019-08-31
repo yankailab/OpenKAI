@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":1,
 	"bConsole":0,
@@ -35,7 +35,7 @@
 	"name":"camL",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewL",
 	"deviceID":0,
 	"w":640,
@@ -46,7 +46,7 @@
 	"name":"camL",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"viewL",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -149,7 +149,7 @@
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
-	"Window":"viewL",
+	"Window":"/viewL",
 	"_VisionBase":"rotL",
 	"wSlide":0.2,
 	"minPixLine":0.1,
@@ -160,9 +160,9 @@
 	"class":"_Crop",
 	"FPS":30,
 	"bInst":1,
-	"Window":"filterView",
+	"Window":"/filterView",
 	"_VisionBase":"morphL",
-	"roi":[0.5, 0.0, 1.0, 0.5],
+	"roi":[0.5, 0.2, 1.0, 0.6],
 }
 
 {
@@ -171,7 +171,7 @@
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
-	"Window":"viewL",
+	"Window":"/viewL",
 	"_VisionBase":"cropM",
 	"wSlide":0.2,
 	"minPixLine":0.1,
@@ -335,6 +335,10 @@
 			"iPinLEDtag":21,
 			"iPinCamShutter":10,
 			"tCamShutter":200000,
+			"vBorderLrange":[0.2,0.8],
+			"borderLtarget":0.5,
+			"kBorderLhdg":5.0,
+			"vdHdgRange":[-5.0,5.0],
 		}
 	}
 }

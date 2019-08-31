@@ -133,6 +133,12 @@ make all -j8
 sudo make install
 sudo ldconfig
 
+# (Optional) Dynamixel
+git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+cd DynamixelSDK/c++/build
+make
+sudo make install
+
 # OpenKAI
 git clone https://github.com/yankailab/OpenKAI.git
 cd OpenKAI

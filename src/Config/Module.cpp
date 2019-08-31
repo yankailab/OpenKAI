@@ -35,7 +35,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
-	ADD_MODULE(_DeltaArm);
 	ADD_MODULE(_Depth2Gray);
 	ADD_MODULE(_DepthSegment);
 	ADD_MODULE(_Erode);
@@ -52,7 +51,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
-	ADD_MODULE(_Livox);
 	ADD_MODULE(_SlideWindow);
 	ADD_MODULE(_LidarSlam);
 	ADD_MODULE(_LeddarVu);
@@ -107,6 +105,12 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 
+#ifdef USE_LIVOX
+	ADD_MODULE(_Livox);
+#endif
+#ifdef USE_DYNAMIXEL
+	ADD_MODULE(_DeltaArm);
+#endif
 #ifdef USE_OCR
 	ADD_MODULE(OCR);
 #endif
