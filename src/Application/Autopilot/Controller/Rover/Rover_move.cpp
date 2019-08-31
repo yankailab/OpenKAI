@@ -190,8 +190,6 @@ void Rover_move::findLineL(void)
 		return;
 	}
 
-	m_pR->setTargetHdgDelta(0.0);
-
 }
 
 bool Rover_move::draw(void)
