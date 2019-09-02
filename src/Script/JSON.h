@@ -36,6 +36,10 @@ public:
 	bool v(const string& name, vFloat3* pV);
 	bool v(const string& name, vFloat4* pV);
 
+	bool v(const string& name, vInt2* pV);
+	bool v(const string& name, vInt3* pV);
+	bool v(const string& name, vInt4* pV);
+
 	int a(const string& name, int* pVal, int nElem);
 	int a(const string& name, double* pVal, int nElem);
 	int a(const string& name, float* pVal, int nElem);

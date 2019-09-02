@@ -24,6 +24,7 @@ Window::Window()
 	m_textSize = 0.5;
 	m_textCol = Scalar(0, 255, 0);
 	m_bWindow = true;
+	m_bMouse = false;
 	m_gstOutput = "";
 	m_fileRec = "";
 }
@@ -105,8 +106,7 @@ bool Window::init(void* pKiss)
 		}
 	}
 
-	pK->v("textX", &m_textStart.x);
-	pK->v("textY", &m_textStart.y);
+	pK->v("textStart", &m_textStart);
 	pK->v("pixTab", &m_pixTab);
 	pK->v("lineH", &m_lineHeight);
 	pK->v("textSize", &m_textSize);
@@ -128,11 +128,12 @@ bool Window::init(void* pKiss)
 		namedWindow(*this->getName(), WINDOW_AUTOSIZE);
 	}
 
-	return true;
-}
+	pK->v("bMouse",&m_bMouse);
+	if(m_bMouse)
+	{
+		setMouseCallback(*this->getName(), OnMouse, this);
+	}
 
-bool Window::link(void)
-{
 	return true;
 }
 
