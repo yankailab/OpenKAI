@@ -22,9 +22,8 @@ BASE* Module::createInstance(Kiss* pK)
 {
 	IF_N(!pK);
 
-	ADD_MODULE(_AutoPilot);
 	ADD_MODULE(_ANR);
-	ADD_MODULE(_Arduino);
+	ADD_MODULE(_OKlink);
 	ADD_MODULE(_ArduServo);
 	ADD_MODULE(_ActuatorSync);
 	ADD_MODULE(_MissionControl);
@@ -35,6 +34,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
+	ADD_MODULE(_DetReceiver);
 	ADD_MODULE(_Depth2Gray);
 	ADD_MODULE(_DepthSegment);
 	ADD_MODULE(_Erode);
@@ -68,7 +68,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_Rotate);
-	ADD_MODULE(_RoverCMD);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_SortingArm);
 	ADD_MODULE(_ShopCam);
@@ -105,6 +104,26 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 
+	ADD_MODULE(_APcopter_base);
+	ADD_MODULE(_APcopter_depthVision);
+	ADD_MODULE(_APcopter_distLidar);
+	ADD_MODULE(_APcopter_DNNavoid);
+	ADD_MODULE(_APcopter_follow);
+	ADD_MODULE(_APcopter_land);
+	ADD_MODULE(_APcopter_line);
+	ADD_MODULE(_APcopter_mode);
+	ADD_MODULE(_APcopter_posCtrl);
+	ADD_MODULE(_APcopter_RTH);
+	ADD_MODULE(_APcopter_slam);
+	ADD_MODULE(_APcopter_sendPos);
+	ADD_MODULE(_APcopter_WP);
+	ADD_MODULE(_OKlinkAPcopter);
+
+	ADD_MODULE(_Rover_base);
+	ADD_MODULE(_Rover_move);
+	ADD_MODULE(_RoverCMD);
+
+
 #ifdef USE_LIVOX
 	ADD_MODULE(_Livox);
 #endif
@@ -140,6 +159,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSense);
+	ADD_MODULE(_APcopter_takePhoto);
 #endif
 #ifdef USE_PYLON
 	ADD_MODULE(_Pylon);

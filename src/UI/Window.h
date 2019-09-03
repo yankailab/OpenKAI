@@ -12,11 +12,14 @@
 #include "../Base/BASE.h"
 #include "../Vision/Frame.h"
 
-#define TAB_PIX 20
-#define LINE_HEIGHT 20
-
 namespace kai
 {
+
+#define TAB_PIX 20
+#define LINE_HEIGHT 20
+#define MOUSE_L 1
+#define MOUSE_M (1<<1)
+#define MOUSE_R (1<<2)
 
 class Window: public BASE
 {
@@ -38,6 +41,8 @@ public:
 	double textSize(void);
 	Scalar textColor(void);
 
+	bool bMouseButton(uint32_t fB);
+
 	static void OnMouse(int event, int x, int y, int flags, void* pW)
 	{
 		Window* pWin = (Window*) pW;
@@ -45,20 +50,32 @@ public:
 		NULL_(pF);
 		IF_(pF->bEmpty());
 
-		pWin->m_vMouse.x = (float)x/(float)pF->m()->cols;
-		pWin->m_vMouse.y = (float)y/(float)pF->m()->rows;
-
-		if (event == EVENT_LBUTTONDOWN)
+		switch (event)
 		{
-		}
-		else if (event == EVENT_RBUTTONDOWN)
-		{
-		}
-		else if (event == EVENT_MBUTTONDOWN)
-		{
-		}
-		else if (event == EVENT_MOUSEMOVE)
-		{
+		case EVENT_MOUSEMOVE:
+			pWin->m_vMouse.x = (float)x/(float)pF->m()->cols;
+			pWin->m_vMouse.y = (float)y/(float)pF->m()->rows;
+			break;
+		case EVENT_LBUTTONDOWN:
+			pWin->m_fMouse |= MOUSE_L;
+			break;
+		case EVENT_LBUTTONUP:
+			pWin->m_fMouse &= ~MOUSE_L;
+			break;
+		case EVENT_RBUTTONDOWN:
+			pWin->m_fMouse |= MOUSE_R;
+			break;
+		case EVENT_RBUTTONUP:
+			pWin->m_fMouse &= ~MOUSE_R;
+			break;
+		case EVENT_MBUTTONDOWN:
+			pWin->m_fMouse |= MOUSE_M;
+			break;
+		case EVENT_MBUTTONUP:
+			pWin->m_fMouse &= ~MOUSE_M;
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -87,6 +104,9 @@ public:
 	//mouse handler
 	bool	m_bMouse;
 	vFloat2 m_vMouse;
+	uint32_t m_fMouse;
+	bool	m_bShowMouse;
+
 
 };
 

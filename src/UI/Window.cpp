@@ -25,6 +25,8 @@ Window::Window()
 	m_textCol = Scalar(0, 255, 0);
 	m_bWindow = true;
 	m_bMouse = false;
+	m_fMouse = 0;
+	m_bShowMouse = false;
 	m_gstOutput = "";
 	m_fileRec = "";
 }
@@ -129,6 +131,7 @@ bool Window::init(void* pKiss)
 	}
 
 	pK->v("bMouse",&m_bMouse);
+	pK->v("bShowMouse",&m_bShowMouse);
 	if(m_bMouse)
 	{
 		setMouseCallback(*this->getName(), OnMouse, this);
@@ -140,6 +143,14 @@ bool Window::init(void* pKiss)
 bool Window::draw(void)
 {
 	IF_F(m_frame.bEmpty());
+
+	Mat m = *m_frame.m();
+
+	if(m_bShowMouse)
+	{
+		if(bMouseButton(MOUSE_L))
+			circle(m, Point(m_vMouse.x * m.cols, m_vMouse.y * m.rows), 15, m_textCol, 10);
+	}
 
 	if (m_bWindow)
 	{
@@ -232,6 +243,11 @@ void Window::addMsg(const string& pMsg)
 	putText(*m_frame.m(), pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);
 	lineNext();
+}
+
+bool Window::bMouseButton(uint32_t fB)
+{
+	return m_fMouse & fB;
 }
 
 }

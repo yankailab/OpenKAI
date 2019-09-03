@@ -533,43 +533,6 @@ void _Mavlink::setPositionTargetGlobalINT(mavlink_set_position_target_global_int
 			);
 }
 
-//void _Mavlink::visionPositionDelta(mavlink_vision_position_delta_t& D)
-//{
-//	/*
-//	 * float angle_delta[3];
-//	 * Rotation in radians in body frame from previous to current frame
-//	 * using right-hand coordinate system (0=roll, 1=pitch, 2=yaw)
-//	 * float position_delta[3];
-//	 * Change in position in meters from previous to current frame
-//	 * rotated into body frame (0=forward, 1=right, 2=down)
-//	 * float confidence; //< normalised confidence value from 0 to 100
-//	D.time_delta_usec = dTime;
-//	D.angle_delta[0] = (float) pDAngle->x;
-//	D.angle_delta[1] = (float) pDAngle->y;
-//	D.angle_delta[2] = (float) pDAngle->z;
-//	D.position_delta[0] = (float) pDPos->x;
-//	D.position_delta[1] = (float) pDPos->y;
-//	D.position_delta[2] = (float) pDPos->z;
-//	D.confidence = (float) confidence;
-//	 * */
-//
-//	mavlink_message_t msg;
-//	D.time_usec = getTimeUsec();
-//
-//	mavlink_msg_vision_position_delta_encode(m_mySystemID,
-//			m_myComponentID, &msg, &D);
-//
-//	writeMessage(msg);
-//	LOG_I("<- VISION_POSITION_DELTA dT=" + i2str(D.time_delta_usec)
-//			+ ", forward=" + f2str(D.position_delta[0])
-//			+ ", right=" + f2str(D.position_delta[2])
-//			+ ", down=" + f2str(D.position_delta[0])
-//			+ "; roll=" + f2str(D.angle_delta[0])
-//			+ ", pitch=" + f2str(D.angle_delta[1])
-//			+ ", yaw=" + f2str(D.angle_delta[2])
-//			+ ", confidence=" + f2str(D.confidence));
-//}
-
 void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t& D)
 {
 	/*

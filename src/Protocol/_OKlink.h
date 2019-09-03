@@ -1,17 +1,19 @@
-#ifndef OpenKAI_src_Actuator__ArduServo_H_
-#define OpenKAI_src_Actuator__ArduServo_H_
+#ifndef OpenKAI_src_Protocol__OKlink_H_
+#define OpenKAI_src_Protocol__OKlink_H_
 
-#include "_ActuatorBase.h"
+#include "../Base/common.h"
+#include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
 
 #define OKLINK_N_BUF 256
 #define OKLINK_BEGIN 0xFE
 #define OKLINK_N_HEADER 3
-#define ARDU_CMD_PWM 0
-#define ARDU_CMD_PIN_OUTPUT 1
-#define ARDU_CMD_STATUS 2
+#define OKLINK_PWM 0
+#define OKLINK_PIN_OUTPUT 1
+#define OKLINK_STATUS 2
+#define OKLINK_POS 3
 
-struct ARDUSERVO_CMD
+struct OKLINK_CMD
 {
 	int m_cmd;
 	int m_nPayload;
@@ -26,28 +28,14 @@ struct ARDUSERVO_CMD
 	}
 };
 
-struct ARDUSERVO_CHAN
-{
-	uint16_t m_pwmL;
-	uint16_t m_pwmH;
-	float m_dir;
-
-	void init(void)
-	{
-		m_pwmL = 1000;
-		m_pwmH = 2000;
-		m_dir = 1.0;
-	}
-};
-
 namespace kai
 {
 
-class _ArduServo: public _ActuatorBase
+class _OKlink: public _ThreadBase
 {
 public:
-	_ArduServo();
-	~_ArduServo();
+	_OKlink();
+	~_OKlink();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -57,22 +45,22 @@ public:
 	virtual bool readCMD(void);
 	virtual void handleCMD(void);
 
+	void setPWM(int nChan, uint16_t* pChan);
+	void pinOut(uint8_t iPin, uint8_t state);
+
 private:
-	void updatePWM(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_ArduServo *) This)->update();
+		((_OKlink *) This)->update();
 		return NULL;
 	}
 
 public:
 	_IOBase*	m_pIO;
 	uint8_t		m_pBuf[OKLINK_N_BUF];
-	ARDUSERVO_CMD m_recvMsg;
+	OKLINK_CMD	m_recvMsg;
 	uint64_t	m_nCMDrecv;
-
-	vector<ARDUSERVO_CHAN> m_vServo;
 
 };
 

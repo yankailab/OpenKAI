@@ -2,11 +2,11 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
-	"bDraw":1,
+	"bWindow":0,
+	"bDraw":0,
 	"bLog":0,
 	"bConsole":1,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -23,140 +23,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"/pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"/pipeline":"nvcamerasrc fpsRange='30.0 30.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! videoconvert ! video/x-raw, format=(string)BGR ! appsink",
-	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"/pipeline":"v4l2src device=/dev/video3 ! videoflip method=0 ! video/x-raw,width=1280,height=720 ! videoconvert ! appsink",
-	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-}
-
-{
-	"name":"cam",
-	"class":"_Camera",
-	"FPS":30,
-	"bInst":1,
-	"Window":"OKview",
-	"deviceID":0,
-	"w":640,
-	"h":480,
-}
-
-{
-	"name":"det",
-	"class":"_YOLO",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"modelDir":"/home/kai/dev/model/yolov3/",
-	"modelFile":"yolov3.cfg",
-	"trainedFile":"yolov3.weights",
-	"/modelDir":"/home/ubuntu/dev/model/YOLOv3/",
-	"/modelFile":"yolov3.cfg",
-	"/trainedFile":"yolov3.weights",
-	"labelFile":"class.names",
-	"meanFile":"",
-	"nClass":80,
-	"nPredAvr":3,
-	"nBatch":1,
-	"thresh":0.05,
-	"minArea":0.0,
-	"maxArea":0.5,
-	"bTrack":0,
-}
-
-{
-	"name":"det",
-	"class":"_DNNdetect",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"modelDir":"/home/kai/dev/model/yolov3/",
-	"modelFile":"yolov3.cfg",
-	"trainedFile":"yolov3.weights",
-	"_modelDir":"/home/kai/dev/DNNmodel/YOLOv3/",
-	"_modelFile":"yolov3.cfg",
-	"_trainedFile":"yolov3.weights",
-	"classFile":"class.names",
-	"bSwapRB":1,
-	"scale":0.00392,
-	"bDrawObjClass":1,
-	"thr":0.1,
-	"minArea":0.0,
-	"maxArea":1.0,
-}
-
-{
-	"name":"det",
-	"class":"_Thermal",
-	"bInst":0,
-	"bDraw":0,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"rL":185,
-	"rU":255,
-	"minArea":0.00001,
-	"maxArea":0.25,
-}
-
-{
-	"name":"tracker1",
-	"class":"_EcoTracker",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"_DetectorBase":"det",
-	"maxScoreThresh":0.1,
-	"margin":0.0,
-	"useCnFeature":0,
-	"cnFeatureTable":"/home/kai/opentracker/eco/look_tables/CNnorm.txt",
-	{
-		"name":"Hog",
-		"cellSize":6,
-	}
-}
-
-{
-	"name":"tracker2",
-	"class":"_EcoTracker",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"_DetectorBase":"det",
-	"maxScoreThresh":0.1,
-	"margin":0.0,
-	"useCnFeature":0,
-	"cnFeatureTable":"/home/kai/opentracker/eco/look_tables/CNnorm.txt",
-	{
-		"name":"Hog",
-		"cellSize":6,
-	}
-}
-
-{
-	"name":"arUco",
-	"class":"_ArUco",
-	"bInst":1,
-	"bDraw":1,
-	"bLog":1,
-	"FPS":30,
-	"Window":"OKview",
-	"_VisionBase":"cam",
-	"dict":17,
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.100 port=5678 auto-multicast=false",
 }
 
 {
@@ -166,10 +33,8 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"/port":"/dev/ttyTHS1",
-	"/baud":921600,
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"port":"/dev/ttyTHS1",
+	"baud":921600,
 	"_wakeUp":"mavAP",
 }
 
@@ -178,7 +43,7 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apSerial",
 	
@@ -204,7 +69,7 @@
 	"class":"_Mavlink",
 	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_IOBase":"apUDP",
 	
@@ -212,6 +77,37 @@
 		"bInst":1,
 		"_Mavlink":"mavAP",
 	}	
+}
+
+{
+	"name":"okUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19841,
+}
+
+{
+	"name":"apOKlink",
+	"class":"_OKlinkAPcopter",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"okUDP",	
+}
+
+{
+	"name":"detReceiver",
+	"class":"_DetReceiver",
+	"bInst":1,
+	"bDraw":0,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"_OKlinkAPcopter":"apOKlink",
 }
 
 {
@@ -245,252 +141,62 @@
 }
 
 {
-	"name":"PIDrollLand",
-	"class":"PIDctrl",
+	"name":"apBase",
+	"class":"_APcopter_base",
 	"bInst":1,
+	"bDraw":1,
+	"_MissionControl":"apMission",
 	"Window":"OKview",
-	"P":-0.8,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.05,
-	"dT":0.8,
-	"min":-0.3,
-	"max":0.3,
-	"K":1.5,
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"freqRawSensors":0,
+	"freqExtStat":0,
+	"freqRC":0,
+	"freqPos":10,
+	"freqExtra1":10,
 }
-
+		
 {
-	"name":"PIDpitchLand",
-	"class":"PIDctrl",
+	"name":"apFollow",
+	"class":"_APcopter_follow",
 	"bInst":1,
-	"Window":"OKview",
-	"P":0.9,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.05,
-	"dT":0.8,
-	"min":-0.3,
-	"max":0.3,
-	"K":1.5,
-}
-
-{
-	"name":"apMission",
-	"class":"_MissionControl",
-	"FPS":30,
-	"bInst":1,
-	"Window":"OKview",
-	"startMission":"STANDBY",
-
-	{
-		"name":"mission",
-
-		{
-			"bInst":1,
-			"name":"STANDBY",
-			"class":"MissionBase",
-			"nextMission":"FOLLOW",
-		}
-		{
-			"bInst":1,
-			"name":"FOLLOW",
-			"class":"Loiter",
-			"hdg":0,
-			"tTimeout":300,
-			"nextMission":"RTH",
-		}
-		{
-			"bInst":1,
-			"name":"RTH",
-			"class":"RTH",
-			"hdg":0,
-			"alt":30.0,
-			"r":3.0,
-			"nextMission":"LAND",
-		}
-		{
-			"bInst":1,
-			"name":"LAND",
-			"class":"Land",
-			"tag":0,
-			"hdg":0,
-			"speed":1.0,
-			"nextMission":"STANDBY",
-		}
-	}
-}
-
-{
-	"name":"apPilot",
-	"class":"_AutoPilot",
-	"bInst":1,
-	"FPS":20,
+	"bLog":0,
 	"bDraw":1,
 	"Window":"OKview",
-	
+	"_MissionControl":"apMission",
+	"activeMission":["FOLLOW"],
+	"_APcopter_base":"apBase",
+	"_DetectorBase":"detReceiver",
+	"_APcopter_posCtrl":"apPosCtrl",
+	"iClass":0,
+	"vTargetP":[0.5, 0.5, 0.0, 0.0],
+
 	{
-		"name":"action",
-		
-		{
-			"name":"apBase",
-			"class":"APcopter_base",
-			"bInst":1,
-			"bDraw":1,
-			"_MissionControl":"apMission",
-			"Window":"OKview",
-			"_Mavlink":"mavAP",
-			"freqSendHeartbeat":1,
-			"freqRawSensors":0,
-			"freqExtStat":0,
-			"freqRC":0,
-			"freqPos":10,
-			"freqExtra1":10,
-		}
-		
-		{
-			"name":"apMode",
-			"class":"APcopter_mode",
-			"bInst":1,
-			"bLog":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"APcopter_base":"apBase",
-			
-			{
-				"bInst":0,
-				"fromApMode":"AUTO",
-				"fromApMissionSeq":"4",
-				"toApMode":"GUIDED",
-			}
-			{
-				"bInst":1,
-				"fromApMode":"GUIDED",
-				"toMission":"FOLLOW",
-			}
-			{
-				"bInst":1,
-				"fromApMode":"LOITER",
-				"toMission":"STANDBY",
-			}
-			{
-				"bInst":1,
-				"fromApMode":"ALT_HOLD",
-				"toMission":"STANDBY",
-			}
-			{
-				"bInst":1,
-				"fromApMode":"STABILIZE",
-				"toMission":"STANDBY",
-			}
-		}
-		
-		{
-			"name":"apTarget",
-			"class":"APcopter_target",
-			"bInst":1,
-			"bLog":0,
-			"bDraw":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"APcopter_base":"apBase",
-			"activeMission":["FOLLOW"],
-			"_DetectorBase":"arUco",
-			"bUseTracker":0,
-			"_TrackerBase1":"tracker1",
-			"_TrackerBase2":"tracker2",
-			"iClass":0,
-			"APcopter_posCtrl":"apPosCtrl",
+		"name":"mount",
+		"pitch":0,
+		"roll":0,
+		"yaw":0,
+		"stabPitch":1,
+		"stabRoll":1,
+		"stabYaw":0,
+		"mountMode":2,
+	}			
+}
+
+{
+	"name":"apPosCtrl",
+	"class":"_APcopter_posCtrl",
+	"bInst":1,
+	"bLog":0,
+	"Window":"OKview",
+	"_MissionControl":"apMission",
+	"activeMission":["FOLLOW"],
+	"_APcopter_base":"apBase",
+	"vYaw":180,
+	"bSetV":1,
+	"bSetP":0,
+	"PIDroll":"PIDroll",
+	"PIDpitch":"PIDpitch",
+	"bFixeYaw":0,
 	
-			{
-				"name":"mount",
-				"pitch":30,
-				"roll":0,
-				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
-				"stabYaw":0,
-				"mountMode":2,
-			}
-		}
-
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrl",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["FOLLOW"],
-			"APcopter_base":"apBase",
-			"vYaw":180,
-			"bSetV":1,
-			"bSetP":0,
-			"PIDroll":"PIDroll",
-			"PIDpitch":"PIDpitch",
-		}
-		
-		{
-			"name":"apRTH",
-			"class":"APcopter_RTH",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["RTH"],
-			"APcopter_base":"apBase",
-			
-			{
-				"name":"mount",
-				"pitch":0,
-				"roll":0,
-				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
-				"stabYaw":0,
-				"mountMode":2,
-			}
-		}
-
-		{
-			"name":"apLand",
-			"class":"APcopter_land",
-			"bInst":1,
-			"Window":"OKview",
-			"APcopter_base":"apBase",
-			"_MissionControl":"apMission",
-			"activeMission":["LAND"],
-			"_DetectorBase":"arUco",
-			"bUseTracker":0,
-			"APcopter_posCtrl":"apPosCtrlLand",
-			"altLanded":5.0,
-			
-			{
-				"name":"mount",
-				"pitch":0,
-				"roll":0,
-				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
-				"stabYaw":0,
-				"mountMode":2,
-			}
-		}
-		
-		{
-			"name":"apPosCtrlLand",
-			"class":"APcopter_posCtrl",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["LAND"],
-			"APcopter_base":"apBase",
-			"vYaw":180,
-			"bSetV":1,
-			"bSetP":0,
-			"PIDroll":"PIDrollLand",
-			"PIDpitch":"PIDpitchLand",
-		}
-		
-	}
 }

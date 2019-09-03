@@ -31,8 +31,8 @@ bool _UDP::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v<string>("addr",&m_addr);
-	pK->v<uint16_t>("port", &m_port);
+	pK->v("addr",&m_addr);
+	pK->v("port", &m_port);
 
 	return true;
 }

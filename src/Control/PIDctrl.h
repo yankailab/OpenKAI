@@ -20,7 +20,7 @@ public:
 	virtual ~PIDctrl();
 
 	virtual bool init(void* pKiss);
-	virtual double update(double v, double vSet, uint64_t t);
+	virtual double update(double v, double vTarget, uint64_t t);
 	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool console(int& iY);

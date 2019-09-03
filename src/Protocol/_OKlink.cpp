@@ -1,35 +1,22 @@
-#include "_ArduServo.h"
+#include "_OKlink.h"
 
 namespace kai
 {
-_ArduServo::_ArduServo()
+_OKlink::_OKlink()
 {
 	m_pIO = NULL;
 	m_recvMsg.init();
 	m_nCMDrecv = 0;
 }
 
-_ArduServo::~_ArduServo()
+_OKlink::~_OKlink()
 {
 }
 
-bool _ArduServo::init(void* pKiss)
+bool _OKlink::init(void* pKiss)
 {
-	IF_F(!this->_ActuatorBase::init(pKiss));
+	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-
-	Kiss** pItr = pK->getChildItr();
-	ARDUSERVO_CHAN c;
-	unsigned int i = 0;
-	while (pItr[i])
-	{
-		Kiss* pC = pItr[i++];
-		c.init();
-		pC->v("pwmL",&c.m_pwmL);
-		pC->v("pwmH",&c.m_pwmH);
-		pC->v("dir",&c.m_dir);
-		m_vServo.push_back(c);
-	}
 
 	string iName;
 	iName = "";
@@ -40,7 +27,7 @@ bool _ArduServo::init(void* pKiss)
 	return true;
 }
 
-bool _ArduServo::start(void)
+bool _OKlink::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -54,7 +41,7 @@ bool _ArduServo::start(void)
 	return true;
 }
 
-void _ArduServo::update(void)
+void _OKlink::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -72,8 +59,6 @@ void _ArduServo::update(void)
 
 		this->autoFPSfrom();
 
-		updatePWM();
-
 		while(readCMD())
 		{
 			handleCMD();
@@ -84,7 +69,7 @@ void _ArduServo::update(void)
 	}
 }
 
-bool _ArduServo::readCMD(void)
+bool _OKlink::readCMD(void)
 {
 	uint8_t	inByte;
 	int		byteRead;
@@ -117,45 +102,19 @@ bool _ArduServo::readCMD(void)
 	return false;
 }
 
-void _ArduServo::handleCMD(void)
+void _OKlink::handleCMD(void)
 {
-	uint16_t pwm1;
-	uint16_t pwm2;
-
-	switch (m_recvMsg.m_pBuf[1])
-	{
-	case ARDU_CMD_STATUS:
-		pwm1 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[3], false);
-		pwm2 = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false);
-
-		LOG_I("pwm1=" + i2str(pwm1) + ", pwm2=" + i2str(pwm2));
-		break;
-	default:
-		break;
-	}
-
 	m_recvMsg.init();
 }
 
-void _ArduServo::updatePWM(void)
+void _OKlink::setPWM(int nChan, uint16_t* pChan)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
-	IF_(m_vNormTargetPos.x < 0.0);
-
-	int nChan = m_vServo.size();
-	uint16_t pChan[8];
-	int i;
-	for(i=0; i<nChan; i++)
-	{
-		ARDUSERVO_CHAN* pC = &m_vServo[i];
-		uint16_t dPwm = pC->m_pwmH - pC->m_pwmL;
-
-		pChan[i] = (m_vNormTargetPos.x*pC->m_dir + 0.5*(1 - pC->m_dir)) * dPwm + pC->m_pwmL;
-	}
+	IF_(nChan <= 0);
 
 	m_pBuf[0] = OKLINK_BEGIN;
-	m_pBuf[1] = ARDU_CMD_PWM;
+	m_pBuf[1] = OKLINK_PWM;
 	m_pBuf[2] = nChan * 2;
 
 	for (int i = 0; i < nChan; i++)
@@ -165,13 +124,25 @@ void _ArduServo::updatePWM(void)
 	}
 
 	m_pIO->write(m_pBuf, OKLINK_N_HEADER + nChan * 2);
-
-	m_vNormPos.x = m_vNormTargetPos.x;
 }
 
-bool _ArduServo::draw(void)
+void _OKlink::pinOut(uint8_t iPin, uint8_t state)
 {
-	IF_F(!this->_ActuatorBase::draw());
+	NULL_(m_pIO);
+	IF_(!m_pIO->isOpen());
+
+	m_pBuf[0] = OKLINK_BEGIN;
+	m_pBuf[1] = OKLINK_PIN_OUTPUT;
+	m_pBuf[2] = 2;
+	m_pBuf[3] = iPin;
+	m_pBuf[4] = state;
+
+	m_pIO->write(m_pBuf, 5);
+}
+
+bool _OKlink::draw(void)
+{
+	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg;
@@ -192,9 +163,9 @@ bool _ArduServo::draw(void)
 	return true;
 }
 
-bool _ArduServo::console(int& iY)
+bool _OKlink::console(int& iY)
 {
-	IF_F(!this->_ActuatorBase::console(iY));
+	IF_F(!this->_ThreadBase::console(iY));
 	IF_Fl(!m_pIO->isOpen(), "Not connected");
 	string msg;
 

@@ -30,7 +30,6 @@ bool _Canbus::init(void* pKiss)
 		m_nCanData++;
 	}
 
-	//link
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -42,7 +41,6 @@ bool _Canbus::init(void* pKiss)
 
 bool _Canbus::start(void)
 {
-	//Start thread
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)

@@ -51,7 +51,7 @@ bool Startup::start(Kiss* pKiss)
 	pApp->v<string>("appName", &m_appName);
 	pApp->v<bool>("bWindow", &m_bWindow);
 	pApp->v<bool>("bDraw", &m_bDraw);
-	pApp->v<bool>("bCOnsole", &m_bConsole);
+	pApp->v<bool>("bConsole", &m_bConsole);
 	pApp->v<bool>("bLog", &m_bLog);
 	pApp->v<bool>("bStdErr", &m_bStdErr);
 	pApp->v<int>("waitKey", &m_waitKey);
