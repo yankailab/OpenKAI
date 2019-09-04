@@ -10,7 +10,6 @@ _APcopter_follow::_APcopter_follow()
 	m_pDet = NULL;
 
 	m_iClass = -1;
-	m_bFound = false;
 	m_apMode = -1;
 	m_tO.init();
 
@@ -45,6 +44,8 @@ bool _APcopter_follow::init(void* pKiss)
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
 	{
+		pG->v("bEnable", &m_apMount.m_bEnable);
+
 		float p=0, r=0, y=0;
 		pG->v("pitch", &p);
 		pG->v("roll", &r);
@@ -151,8 +152,7 @@ void _APcopter_follow::updateTarget(void)
 	if(!bActive())
 	{
 		m_vP = m_vTargetP;
-		m_pPC->setON(false);
-		m_pPC->releaseCtrl();
+		m_pPC->ctrlEnable(false);
 		m_pDet->goSleep();
 		if(m_bUseTracker)
 		{
@@ -168,28 +168,20 @@ void _APcopter_follow::updateTarget(void)
 		m_pDet->wakeUp();
 	}
 
-	m_pAP->setMount(m_apMount);
-
+	if(m_apMount.m_bEnable)
+	{
+		m_pAP->setMount(m_apMount);
+	}
 
 	if(!find())
 	{
-		m_bFound = false;
 		m_vP = m_vTargetP;
-		m_pPC->setON(false);
-		m_pPC->releaseCtrl();
-
-//		if(m_pAP->getApMode() == GUIDED && m_apMode>=0)
-//			m_pAP->setApMode(m_apMode);
-
+		m_pPC->ctrlEnable(false);
 		return;
 	}
 
-	m_bFound = true;
 	m_pPC->setPos(m_vP);
-	m_pPC->setON(true);
-
-//	if(m_pAP->getApMode() == m_apMode)
-//		m_pAP->setApMode(GUIDED);
+	m_pPC->ctrlEnable(true);
 }
 
 bool _APcopter_follow::find(void)
@@ -240,11 +232,6 @@ bool _APcopter_follow::find(void)
 	m_vP.y = bb.midY();
 
 	return true;
-}
-
-bool _APcopter_follow::bFound(void)
-{
-	return m_bFound;
 }
 
 bool _APcopter_follow::draw(void)

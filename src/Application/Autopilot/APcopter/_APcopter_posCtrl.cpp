@@ -18,6 +18,14 @@ _APcopter_posCtrl::_APcopter_posCtrl()
 	m_bSetP = false;
 	m_bSetON = false;
 	m_bFixYaw = false;
+
+	m_spt.vx = 0.0;
+	m_spt.vy = 0.0;
+	m_spt.vz = 0.0;
+	m_spt.x = 0.0;
+	m_spt.y = 0.0;
+	m_spt.z = 0.0;
+
 }
 
 _APcopter_posCtrl::~_APcopter_posCtrl()
@@ -94,9 +102,10 @@ int _APcopter_posCtrl::check(void)
 void _APcopter_posCtrl::updateCtrl(void)
 {
 	IF_(check() < 0);
-	if (!bActive() || !m_bSetON)
+	IF_(!bActive() || !m_bSetON)
 	{
 		clear();
+		releaseCtrl();
 		return;
 	}
 
@@ -157,7 +166,7 @@ void _APcopter_posCtrl::setTargetPos(vFloat4& vTargetP)
 	m_vTargetP = vTargetP;
 }
 
-void _APcopter_posCtrl::setON(bool bON)
+void _APcopter_posCtrl::ctrlEnable(bool bON)
 {
 	m_bSetON = bON;
 }
@@ -185,7 +194,7 @@ void _APcopter_posCtrl::releaseCtrl(void)
 	m_spt.vz = 0;
 	m_spt.yaw = (float) m_vP.w * DEG_RAD;
 	m_spt.yaw_rate = (float) m_vYaw * DEG_RAD;
-	m_spt.type_mask = 0b0000000111000000;
+	m_spt.type_mask = 0b0000000111000111;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 

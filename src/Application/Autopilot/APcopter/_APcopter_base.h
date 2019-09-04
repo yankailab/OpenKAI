@@ -43,11 +43,13 @@ const string custom_mode_name[] =
 
 struct AP_MOUNT
 {
+	bool	m_bEnable;
 	mavlink_mount_control_t m_control;
 	mavlink_mount_configure_t m_config;
 
 	void init(void)
 	{
+		m_bEnable = false;
 		m_control.input_a = 0;	//pitch
 		m_control.input_b = 0;	//roll
 		m_control.input_c = 0;	//yaw

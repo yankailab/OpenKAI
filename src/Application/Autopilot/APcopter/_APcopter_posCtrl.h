@@ -24,11 +24,11 @@ public:
 
 	void setPos(vFloat4& vP);
 	void setTargetPos(vFloat4& vTargetP);
-	void clear(void);
-	void releaseCtrl(void);
-	void setON(bool bON);
+	void ctrlEnable(bool bON);
 
 private:
+	void clear(void);
+	void releaseCtrl(void);
 	void updateCtrl(void);
 	static void* getUpdateThread(void* This)
 	{

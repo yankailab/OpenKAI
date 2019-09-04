@@ -24,7 +24,6 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 	virtual bool find(void);
-	virtual bool bFound(void);
 
 private:
 	void updateTarget(void);
@@ -41,7 +40,6 @@ public:
 
 	OBJECT			m_tO;
 	int				m_iClass;
-	bool			m_bFound;
 	int				m_apMode;
 
 	vFloat4 		m_vP;		//roll, pitch, alt, yaw or the following object

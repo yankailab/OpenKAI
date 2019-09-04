@@ -37,7 +37,7 @@ void _APcopter_land::update(void)
 		m_pDet->goSleep();
 		m_vTargetP = m_vP;
 //		m_pPC->setPos(m_vP, m_vP);
-		m_pPC->setON(false);
+		m_pPC->ctrlEnable(false);
 		return;
 	}
 
@@ -90,7 +90,7 @@ void _APcopter_land::update(void)
 		m_vTargetP.z *= (1.0 - constrain(big(abs(m_vTargetP.x-0.5),abs(m_vTargetP.y-0.5))*2, 0.0, 1.0));
 	}
 
-	m_pPC->setON(true);
+	m_pPC->ctrlEnable(true);
 //	m_pPC->setPos(m_vP, m_vTargetP);
 }
 
