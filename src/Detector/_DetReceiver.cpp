@@ -13,6 +13,7 @@ namespace kai
 _DetReceiver::_DetReceiver()
 {
 	m_pOK = NULL;
+	m_timeOut = USEC_1SEC;
 }
 
 _DetReceiver::~_DetReceiver()
@@ -23,6 +24,8 @@ bool _DetReceiver::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	pK->v("timeOut",&m_timeOut);
 
 	m_nClass = 1;
 
@@ -77,7 +80,7 @@ void _DetReceiver::receive(void)
 {
 	IF_(check()<0);
 
-	IF_(m_tStamp - m_pOK->m_tPos > 100000);
+	IF_(m_tStamp - m_pOK->m_tPos > m_timeOut);
 	IF_(m_pOK->m_tPos < 0.0);
 
 	float d = 0.05;

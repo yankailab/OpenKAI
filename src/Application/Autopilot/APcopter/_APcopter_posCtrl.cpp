@@ -102,7 +102,7 @@ int _APcopter_posCtrl::check(void)
 void _APcopter_posCtrl::updateCtrl(void)
 {
 	IF_(check() < 0);
-	IF_(!bActive() || !m_bSetON)
+	if(!bActive() || !m_bSetON)
 	{
 		clear();
 		releaseCtrl();

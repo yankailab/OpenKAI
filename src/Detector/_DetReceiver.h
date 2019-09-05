@@ -38,6 +38,7 @@ private:
 
 public:
 	_OKlinkAPcopter* m_pOK;
+	uint64_t	m_timeOut;
 
 };
 }
