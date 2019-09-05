@@ -35,7 +35,6 @@ bool _ArUco::init(void* pKiss)
 
 	m_pDict = aruco::getPredefinedDictionary(m_dict);
 
-	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase",&iName));
 	m_pVision = (_VisionBase*)(pK->root()->getChildInst(iName));

@@ -134,7 +134,29 @@ bool Window::init(void* pKiss)
 	pK->v("bShowMouse",&m_bShowMouse);
 	if(m_bMouse)
 	{
-		setMouseCallback(*this->getName(), OnMouse, this);
+		setMouseCallback(*this->getName(), callBackMouse, this);
+	}
+
+	Kiss* pB = pK->o("Button");
+	if(pB)
+	{
+		Kiss** ppB = pB->getChildItr();
+
+		int i=0;
+		while((pB=ppB[i]))
+		{
+			WINDOW_BUTTON wb;
+			wb.init();
+			pB->v("bb",&wb.m_bb);
+
+			string fBtn;
+			pB->v("fBtnUp",&fBtn);
+			wb.m_mUp = cv::imread(fBtn);
+			pB->v("fBtnDown",&fBtn);
+			wb.m_mDown = cv::imread(fBtn);
+
+			m_vBtn.push_back(wb);
+		}
 	}
 
 	return true;
@@ -248,6 +270,40 @@ void Window::addMsg(const string& pMsg)
 bool Window::bMouseButton(uint32_t fB)
 {
 	return m_fMouse & fB;
+}
+
+void Window::OnMouse(int event, int x, int y)
+{
+	Frame* pF = this->getFrame();
+	NULL_(pF);
+
+	switch (event)
+	{
+	case EVENT_MOUSEMOVE:
+		m_vMouse.x = (float)x/(float)pF->m()->cols;
+		m_vMouse.y = (float)y/(float)pF->m()->rows;
+		break;
+	case EVENT_LBUTTONDOWN:
+		m_fMouse |= MOUSE_L;
+		break;
+	case EVENT_LBUTTONUP:
+		m_fMouse &= ~MOUSE_L;
+		break;
+	case EVENT_RBUTTONDOWN:
+		m_fMouse |= MOUSE_R;
+		break;
+	case EVENT_RBUTTONUP:
+		m_fMouse &= ~MOUSE_R;
+		break;
+	case EVENT_MBUTTONDOWN:
+		m_fMouse |= MOUSE_M;
+		break;
+	case EVENT_MBUTTONUP:
+		m_fMouse &= ~MOUSE_M;
+		break;
+	default:
+		break;
+	}
 }
 
 }
