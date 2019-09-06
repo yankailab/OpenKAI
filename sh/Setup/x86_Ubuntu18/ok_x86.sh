@@ -8,20 +8,31 @@ wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.11/linux-headers-5.2.11
 wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.11/linux-image-unsigned-5.2.11-050211-generic_5.2.11-050211.201908290731_amd64.deb
 wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.11/linux-modules-5.2.11-050211-generic_5.2.11-050211.201908290731_amd64.deb
 sudo dpkg -i *.deb
-
+sudo reboot now
 
 sudo apt-get update
+
 sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler
+
 sudo apt-get -y install libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev
+
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
+
 sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev
+
 sudo apt-get -y install libusb-1.0-0-dev libudev-dev
+
 sudo apt-get -y install libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev
+
 sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
 
+# All at once
+sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libudev-dev libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev libgtk-3-dev libglfw3-dev
+
 # Optional
-sudo apt-get -y install libimage-exiftool-perl
 sudo apt-get -y install apache2
+
+sudo apt-get -y install libimage-exiftool-perl
 
 sudo apt-get -y install python-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
@@ -58,6 +69,7 @@ cd cmake-3.15.3
 ./bootstrap
 make -j12
 sudo make install
+sudo reboot now
 
 # Eigen
 wget --no-check-certificate http://bitbucket.org/eigen/eigen/get/3.3.7.tar.gz

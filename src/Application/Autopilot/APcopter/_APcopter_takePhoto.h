@@ -29,7 +29,7 @@ private:
 	void take(void);
 	void cmd(void);
 
-	APcopter_base* m_pAP;
+	_APcopter_base* m_pAP;
 	_VisionBase* m_pV;
 	_RealSense* m_pDV;
 	_IOBase* m_pIO;

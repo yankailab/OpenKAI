@@ -67,12 +67,11 @@ bool _APcopter_takePhoto::init(void* pKiss)
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 
-	//link
 	string iName;
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (APcopter_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_APcopter_base*) (pK->parent()->getChildInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
