@@ -36,16 +36,13 @@ bool _SortingArm::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v<string>("actuatorX",&m_actuatorX);
-	pK->v<string>("actuatorZ",&m_actuatorZ);
-	pK->v<int>("iROI",&m_iROI);
+	pK->v("actuatorX",&m_actuatorX);
+	pK->v("actuatorZ",&m_actuatorZ);
+	pK->v("iROI",&m_iROI);
 
-	pK->v("gripX1", &m_rGripX.x);
-	pK->v("gripX2", &m_rGripX.y);
-	pK->v("gripY1", &m_rGripY.x);
-	pK->v("gripY2", &m_rGripY.y);
-	pK->v("gripZ1", &m_rGripZ.x);
-	pK->v("gripZ2", &m_rGripZ.y);
+	pK->v("gripX", &m_rGripX);
+	pK->v("gripY", &m_rGripY);
+	pK->v("gripZ", &m_rGripZ);
 	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
 
 	int pClass[SB_N_CLASS];

@@ -16,6 +16,14 @@ using namespace kai;
 namespace kai
 {
 
+typedef void (*CallbackKey)(void);
+
+struct KEY_CALLBACK
+{
+	int	m_key;
+	CallbackKey m_cbKey;
+};
+
 struct OK_INST
 {
 	BASE* m_pInst;
@@ -34,6 +42,7 @@ public:
 	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
 	void printEnvironment(void);
+	bool addKeyCallback(int key, CallbackKey cbKey);
 
 private:
 	string* getName(void);
@@ -55,6 +64,8 @@ public:
 
 	string	m_consoleMsg;
 	int8_t m_consoleMsgLevel;
+
+	vector<KEY_CALLBACK> m_vKeyCallback;
 };
 
 }

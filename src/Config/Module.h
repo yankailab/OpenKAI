@@ -45,8 +45,9 @@
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"
 #include "../Application/Surveillance/_ShopCam.h"
-#include "../Application/Automation/_Sequencer.h"
-#include "../Application/Automation/_SortingArm.h"
+#include "../Application/Automation/Sorting/_Sequencer.h"
+#include "../Application/Automation/Sorting/_SortingArm.h"
+#include "../Application/Automation/Sorting/_SortingImg.h"
 #include "../Application/Mission/_MissionControl.h"
 
 #include "../Control/PIDctrl.h"

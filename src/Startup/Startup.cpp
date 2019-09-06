@@ -47,15 +47,16 @@ bool Startup::start(Kiss* pKiss)
 	NULL_F(pKiss);
 	Kiss* pApp = pKiss->root()->o("APP");
 	IF_F(pApp->empty());
+	pApp->m_pInst = (BASE*)this;
 
-	pApp->v<string>("appName", &m_appName);
-	pApp->v<bool>("bWindow", &m_bWindow);
-	pApp->v<bool>("bDraw", &m_bDraw);
-	pApp->v<bool>("bConsole", &m_bConsole);
-	pApp->v<bool>("bLog", &m_bLog);
-	pApp->v<bool>("bStdErr", &m_bStdErr);
-	pApp->v<int>("waitKey", &m_waitKey);
-	pApp->v<string>("rc", &m_rc);
+	pApp->v("appName", &m_appName);
+	pApp->v("bWindow", &m_bWindow);
+	pApp->v("bDraw", &m_bDraw);
+	pApp->v("bConsole", &m_bConsole);
+	pApp->v("bLog", &m_bLog);
+	pApp->v("bStdErr", &m_bStdErr);
+	pApp->v("waitKey", &m_waitKey);
+	pApp->v("rc", &m_rc);
 
 	if(!m_rc.empty())
 	{
@@ -141,6 +142,30 @@ bool Startup::start(Kiss* pKiss)
 	return 0;
 }
 
+bool Startup::createAllInst(Kiss* pKiss)
+{
+	NULL_F(pKiss);
+	Kiss** pItr = pKiss->root()->getChildItr();
+
+	OK_INST o;
+	int i = 0;
+	while (pItr[i])
+	{
+		Kiss* pK = pItr[i++];
+		IF_CONT(pK->m_class == "Startup");
+
+		o.m_pInst = m_module.createInstance(pK);
+		IF_Fl(!o.m_pInst, "Create instance failed: " + pK->m_name);
+
+		o.m_pKiss = pK;
+		m_vInst.push_back(o);
+
+		pK->m_pInst = o.m_pInst;
+	}
+
+	return true;
+}
+
 void Startup::draw(void)
 {
 	for (unsigned int i = 0; i < m_vInst.size(); i++)
@@ -164,36 +189,29 @@ void Startup::console(void)
 
 void Startup::handleKey(int key)
 {
-	switch (key)
+	if(key==27)	//ESC
 	{
-	case 27:
-		m_bRun = false;	//ESC
-		break;
-	default:
-		break;
+		m_bRun = false;
+		return;
+	}
+
+	for(int i=0; i<m_vKeyCallback.size(); i++)
+	{
+		KEY_CALLBACK* pCB = &m_vKeyCallback[i];
+		IF_CONT(pCB->m_key!=key);
+
+		pCB->m_cbKey();
 	}
 }
 
-bool Startup::createAllInst(Kiss* pKiss)
+bool Startup::addKeyCallback(int key, CallbackKey cbKey)
 {
-	NULL_F(pKiss);
-	Kiss** pItr = pKiss->root()->getChildItr();
+	NULL_F(cbKey);
 
-	OK_INST o;
-	int i = 0;
-	while (pItr[i])
-	{
-		Kiss* pK = pItr[i++];
-		IF_CONT(pK->m_class == "Startup");
-
-		o.m_pInst = m_module.createInstance(pK);
-		IF_Fl(!o.m_pInst, "Create instance failed: " + pK->m_name);
-
-		o.m_pKiss = pK;
-		m_vInst.push_back(o);
-
-		pK->m_pInst = o.m_pInst;
-	}
+	KEY_CALLBACK cb;
+	cb.m_key = key;
+	cb.m_cbKey = cbKey;
+	m_vKeyCallback.push_back(cb);
 
 	return true;
 }

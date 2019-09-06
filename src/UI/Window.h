@@ -23,7 +23,7 @@ namespace kai
 #define BTN_DOWN 0
 #define BTN_UP 1
 
-typedef void (*BtnCallback)(int state);
+typedef void (*CallbackBtn)(int state);
 
 struct WINDOW_BUTTON
 {
@@ -35,7 +35,7 @@ struct WINDOW_BUTTON
 	vInt2 m_mSize;
 	bool m_bDown;
 
-	BtnCallback m_cbBtn;
+	CallbackBtn m_cbBtn;
 
 	void init(void)
 	{
@@ -83,7 +83,7 @@ struct WINDOW_BUTTON
 		return true;
 	}
 
-	void setBtnCallback(BtnCallback cb)
+	void setBtnCallback(CallbackBtn cb)
 	{
 		m_cbBtn = cb;
 	}
