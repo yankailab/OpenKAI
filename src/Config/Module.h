@@ -47,7 +47,7 @@
 #include "../Application/Surveillance/_ShopCam.h"
 #include "../Application/Automation/Sorting/_Sequencer.h"
 #include "../Application/Automation/Sorting/_SortingArm.h"
-#include "../Application/Automation/Sorting/_SortingImg.h"
+#include "../Application/Automation/Sorting/_SortingImgServer.h"
 #include "../Application/Mission/_MissionControl.h"
 
 #include "../Control/PIDctrl.h"
@@ -60,7 +60,6 @@
 #include "../Detector/_Line.h"
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
-#include "../Detector/_ConveyerDetector.h"
 #include "../Detector/_OpenPose.h"
 #include "../Detector/_DetReceiver.h"
 

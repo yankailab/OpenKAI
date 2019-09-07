@@ -5,8 +5,12 @@ namespace kai
 _OKlink::_OKlink()
 {
 	m_pIO = NULL;
-	m_recvMsg.init();
+	m_pBuf = NULL;
+	m_nBuf = 256;
 	m_nCMDrecv = 0;
+
+	m_pfCallback = NULL;
+	m_pfInst = NULL;
 }
 
 _OKlink::~_OKlink()
@@ -17,6 +21,10 @@ bool _OKlink::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	pK->v("nBuf", &m_nBuf);
+	m_pBuf = new uint8_t[m_nBuf];
+	m_recvMsg.init(m_nBuf);
 
 	string iName;
 	iName = "";
@@ -39,6 +47,15 @@ bool _OKlink::start(void)
 	}
 
 	return true;
+}
+
+int _OKlink::check(void)
+{
+	NULL__(m_pIO,-1);
+	IF__(!m_pIO->isOpen(),-1);
+	NULL_F(m_pBuf);
+
+	return 0;
 }
 
 void _OKlink::update(void)
@@ -83,7 +100,7 @@ bool _OKlink::readCMD(void)
 
 			if (m_recvMsg.m_iByte == 3)
 			{
-				m_recvMsg.m_nPayload = inByte;
+				m_recvMsg.m_nPayload = m_recvMsg.m_pBuf[2];
 			}
 			else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + OKLINK_N_HEADER)
 			{
@@ -104,13 +121,26 @@ bool _OKlink::readCMD(void)
 
 void _OKlink::handleCMD(void)
 {
-	m_recvMsg.init();
+	if(m_pfCallback)
+	{
+		m_pfCallback(m_recvMsg.m_pBuf, m_pfInst);
+	}
+
+	m_recvMsg.reset();
+}
+
+void _OKlink::setCallback(CallbackCMD cb, void* pInst)
+{
+	NULL_(cb);
+	NULL_(pInst);
+
+	m_pfCallback = cb;
+	m_pfInst = pInst;
 }
 
 void _OKlink::setPWM(int nChan, uint16_t* pChan)
 {
-	NULL_(m_pIO);
-	IF_(!m_pIO->isOpen());
+	IF_(check()<0);
 	IF_(nChan <= 0);
 
 	m_pBuf[0] = OKLINK_BEGIN;
@@ -128,8 +158,7 @@ void _OKlink::setPWM(int nChan, uint16_t* pChan)
 
 void _OKlink::pinOut(uint8_t iPin, uint8_t state)
 {
-	NULL_(m_pIO);
-	IF_(!m_pIO->isOpen());
+	IF_(check()<0);
 
 	m_pBuf[0] = OKLINK_BEGIN;
 	m_pBuf[1] = OKLINK_PIN_OUTPUT;
@@ -138,6 +167,23 @@ void _OKlink::pinOut(uint8_t iPin, uint8_t state)
 	m_pBuf[4] = state;
 
 	m_pIO->write(m_pBuf, 5);
+}
+
+void _OKlink::sendBB(uint32_t id, uint16_t iClass, vFloat4& bb)
+{
+	IF_(check()<0);
+
+	m_pBuf[0] = OKLINK_BEGIN;
+	m_pBuf[1] = OKLINK_BB;
+	m_pBuf[2] = 14;
+	pack_uint32(&m_pBuf[3], id, false);
+	pack_uint16(&m_pBuf[7], iClass, false);
+	pack_uint16(&m_pBuf[9], (uint16_t)(bb.x*1000.0), false);
+	pack_uint16(&m_pBuf[11], (uint16_t)(bb.y*1000.0), false);
+	pack_uint16(&m_pBuf[13], (uint16_t)(bb.z*1000.0), false);
+	pack_uint16(&m_pBuf[15], (uint16_t)(bb.w*1000.0), false);
+
+	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 14);
 }
 
 bool _OKlink::draw(void)

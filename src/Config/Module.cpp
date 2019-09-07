@@ -70,9 +70,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Rotate);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_SortingArm);
-	ADD_MODULE(_SortingImg);
+	ADD_MODULE(_SortingImgServer);
 	ADD_MODULE(_ShopCam);
-	ADD_MODULE(_ConveyerDetector);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);
 	ADD_MODULE(_Thermal);

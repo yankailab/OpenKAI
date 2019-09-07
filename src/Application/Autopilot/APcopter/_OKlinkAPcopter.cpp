@@ -68,8 +68,8 @@ void _OKlinkAPcopter::handleCMD(void)
 	switch (m_recvMsg.m_pBuf[1])
 	{
 	case OKLINK_POS:
-		x = *((uint16_t*)&m_recvMsg.m_pBuf[3]);
-		y = *((uint16_t*)&m_recvMsg.m_pBuf[5]);
+		x = unpack_uint16(&m_recvMsg.m_pBuf[6], false);
+		y = unpack_uint16(&m_recvMsg.m_pBuf[8], false);
 		m_vPos.x = ((float)x)*0.001;
 		m_vPos.y = ((float)y)*0.001;
 		m_tPos = m_tStamp;
@@ -79,7 +79,7 @@ void _OKlinkAPcopter::handleCMD(void)
 		break;
 	}
 
-	m_recvMsg.init();
+	m_recvMsg.reset();
 }
 
 void _OKlinkAPcopter::setPos(vFloat2 vP)
@@ -91,13 +91,8 @@ void _OKlinkAPcopter::setPos(vFloat2 vP)
 	m_pBuf[1] = OKLINK_POS;
 	m_pBuf[2] = 4;
 
-	uint16_t x = (uint16_t)(vP.x * 1000);
-	uint16_t y = (uint16_t)(vP.y * 1000);
-
-	m_pBuf[3] = (uint8_t)(x & 0xFF);
-	m_pBuf[4] = (uint8_t)((x >> 8) & 0xFF);
-	m_pBuf[5] = (uint8_t)(y & 0xFF);
-	m_pBuf[6] = (uint8_t)((y >> 8) & 0xFF);
+	pack_uint16(&m_pBuf[3], (uint16_t)(vP.x * 1000), false);
+	pack_uint16(&m_pBuf[5], (uint16_t)(vP.y * 1000), false);
 
 	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 4);
 }

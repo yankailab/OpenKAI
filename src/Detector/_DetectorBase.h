@@ -23,40 +23,48 @@ namespace kai
 
 struct OBJECT
 {
+	//general
+	int m_id;
+
 	//BBox normalized to 0.0 to 1.0
-	vFloat4		m_bb;
-	float		m_dist;
+	vFloat4 m_bb;
+	float m_dist;
 
 	//Vertices in pixel unit
-	vFloat2		m_pV[OBJ_N_VERTICES];
-	int			m_nV;
+	vFloat2 m_pV[OBJ_N_VERTICES];
+	int m_nV;
 
 	//Center position and radius/angle
-	vFloat2		m_c;
-	float		m_r;
-	float		m_angle;
+	vFloat2 m_c;
+	float m_r;
+	float m_angle;
 
 	//Text
-	char		m_pText[OBJ_N_CHAR];
+	char m_pText[OBJ_N_CHAR];
 
 	//Classification
-	int			m_topClass;		//most probable class
-	float		m_topProb;		//prob for the topClass
-	uint64_t	m_mClass;		//all candidate class mask
+	int m_topClass;		//most probable class
+	float m_topProb;		//prob for the topClass
+	uint64_t m_mClass;		//all candidate class mask
 
 	//Tracker
-	void*		m_pTracker;
+	void *m_pTracker;
 
 	//Properties
-	int64_t		m_tStamp;
+	int64_t m_tStamp;
 
 	//Trajectory
-	vFloat2		m_pTraj[OBJ_N_TRAJ];
-	int			m_iTraj;
-	int			m_nTraj;
+	vFloat2 m_pTraj[OBJ_N_TRAJ];
+	int m_iTraj;
+	int m_nTraj;
+
+	//Img
+	Mat m_mImg;
+	bool m_bVerified;
 
 	void init(void)
 	{
+		m_id = -1;
 		m_bb.init();
 		m_dist = 0.0;
 		m_nV = 0;
@@ -66,6 +74,8 @@ struct OBJECT
 		resetClass();
 		m_pTracker = NULL;
 		m_tStamp = -1;
+
+		m_bVerified = false;
 	}
 
 	void addClassIdx(int iClass)
@@ -78,7 +88,7 @@ struct OBJECT
 		m_mClass = mClass;
 	}
 
-	void setTopClass(int iClass, double prob)
+	void setTopClass(int iClass, float prob)
 	{
 		m_topClass = iClass;
 		m_topProb = prob;
@@ -107,7 +117,7 @@ struct OBJECT
 		m_bb = bb;
 	}
 
-	void setVertices(vFloat2* pV, int nV)
+	void setVertices(vFloat2 *pV, int nV)
 	{
 		NULL_(pV);
 		int i;
@@ -115,7 +125,7 @@ struct OBJECT
 		vector<Point> vP;
 		Point p;
 		m_nV = nV;
-		for(i=0; i<m_nV; i++)
+		for (i = 0; i < m_nV; i++)
 		{
 			m_pV[i] = pV[i];
 			p.x = m_pV[i].x;
@@ -154,24 +164,35 @@ struct OBJECT
 		return m_bb.height();
 	}
 
-	void addTrajectory(const vFloat2& p)
+	void addTrajectory(const vFloat2 &p)
 	{
-		if(m_nTraj == 0)
+		if (m_nTraj == 0)
 		{
 			m_pTraj[m_iTraj++] = p;
 			m_nTraj++;
 			return;
 		}
 
-		int iLast = m_iTraj-1;
-		if(iLast<0)iLast = m_nTraj-1;
+		int iLast = m_iTraj - 1;
+		if (iLast < 0)
+			iLast = m_nTraj - 1;
 		vFloat2 lp = m_pTraj[iLast];
-		float d = abs(lp.x-p.x)+abs(lp.y-p.y);
+		float d = abs(lp.x - p.x) + abs(lp.y - p.y);
 		IF_(d < 0.02);
 
 		m_pTraj[m_iTraj++] = p;
-		if(m_iTraj >= OBJ_N_TRAJ)m_iTraj=0;
-		if(m_nTraj < OBJ_N_TRAJ)m_nTraj++;
+		if (m_iTraj >= OBJ_N_TRAJ)
+			m_iTraj = 0;
+		if (m_nTraj < OBJ_N_TRAJ)
+			m_nTraj++;
+	}
+
+	bool setImg(Mat m)
+	{
+		IF_F(m.empty());
+		m.copyTo(m_mImg);
+
+		return true;
 	}
 };
 
@@ -185,7 +206,7 @@ struct OBJECT_ARRAY
 		m_nObj = 0;
 	}
 
-	OBJECT* add(OBJECT* pO)
+	OBJECT* add(OBJECT *pO)
 	{
 		NULL_N(pO);
 		IF_N(m_nObj >= OBJECT_N_OBJ);
@@ -226,14 +247,14 @@ public:
 	_DetectorBase();
 	virtual ~_DetectorBase();
 
-	virtual bool init(void* pKiss);
+	virtual bool init(void *pKiss);
 	virtual bool draw(void);
-	virtual bool console(int& iY);
-	virtual int getClassIdx(string& className);
+	virtual bool console(int &iY);
+	virtual int getClassIdx(string &className);
 	virtual string getClassName(int iClass);
 
 	//io
-	virtual OBJECT* add(OBJECT* pNewObj);
+	virtual OBJECT* add(OBJECT *pNewObj);
 	virtual OBJECT* at(int i);
 	virtual void resetObj(void);
 	virtual void updateObj(void);
@@ -246,15 +267,15 @@ public:
 
 public:
 	//input
-	_VisionBase* m_pVision;
-	_DetectorBase* m_pDB;
+	_VisionBase *m_pVision;
+	_DetectorBase *m_pDB;
 
 	//data
 	Frame m_fBGR;
 	int m_iSwitch;
 	OBJECT_ARRAY m_pObj[2];
-	OBJECT_ARRAY* m_pPrev;
-	OBJECT_ARRAY* m_pNext;
+	OBJECT_ARRAY *m_pPrev;
+	OBJECT_ARRAY *m_pNext;
 
 	//config
 	float m_minConfidence;
@@ -264,9 +285,9 @@ public:
 	float m_maxW;
 	float m_minH;
 	float m_maxH;
-	bool   m_bMerge;
-	float	m_mergeOverlap;
-	float	m_bbScale;
+	bool m_bMerge;
+	float m_mergeOverlap;
+	float m_bbScale;
 
 	//model
 	string m_modelFile;

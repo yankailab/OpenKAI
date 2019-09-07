@@ -90,7 +90,7 @@ void _RoverCMD::handleCMD(void)
 		break;
 	}
 
-	m_recvMsg.init();
+	m_recvMsg.reset();
 }
 
 bool _RoverCMD::draw(void)

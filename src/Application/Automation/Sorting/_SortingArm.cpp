@@ -121,8 +121,8 @@ void _SortingArm::updateArm(void)
 			IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
 			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
 			IF_CONT(pO->m_bb.midY() > m_rGripY.y);
-			pO->m_bb.y += FLT_MAX;
-			pO->m_bb.w += FLT_MAX;
+			pO->m_bb.y += m_rGripY.y;
+			pO->m_bb.w += m_rGripY.y;
 
 			SEQ_ACTION* pAction;
 			SEQ_ACTUATOR* pSA;

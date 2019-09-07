@@ -23,10 +23,11 @@ namespace kai
 #define BTN_DOWN 0
 #define BTN_UP 1
 
-typedef void (*CallbackBtn)(int state);
+typedef void (*CallbackBtn)(int iBtn, int state, void* pfInst);
 
 struct WINDOW_BUTTON
 {
+	int	m_iBtn;
 	vFloat4 m_bb;
 	Mat m_mUp;
 	Mat m_mDown;
@@ -35,14 +36,17 @@ struct WINDOW_BUTTON
 	vInt2 m_mSize;
 	bool m_bDown;
 
-	CallbackBtn m_cbBtn;
+	CallbackBtn m_pfBtn;
+	void*		m_pfInst;
 
 	void init(void)
 	{
+		m_iBtn = 0;
 		m_bb.init();
 		m_mSize.init();
 		m_bDown = false;
-		m_cbBtn = NULL;
+		m_pfBtn = NULL;
+		m_pfInst = NULL;
 	}
 
 	void onMouse(int event, vFloat2& p)
@@ -53,22 +57,22 @@ struct WINDOW_BUTTON
 			if(!bMouseOn(p))
 			{
 				m_bDown = false;
-				if(m_cbBtn)
-					m_cbBtn(BTN_UP);
+				if(m_pfBtn)
+					m_pfBtn(m_iBtn, BTN_UP, m_pfInst);
 			}
 			break;
 		case EVENT_LBUTTONDOWN:
 			if(bMouseOn(p))
 			{
 				m_bDown = true;
-				if(m_cbBtn)
-					m_cbBtn(BTN_DOWN);
+				if(m_pfBtn)
+					m_pfBtn(m_iBtn, BTN_DOWN, m_pfInst);
 			}
 			break;
 		case EVENT_LBUTTONUP:
 			m_bDown = false;
-			if(m_cbBtn)
-				m_cbBtn(BTN_UP);
+			if(m_pfBtn)
+				m_pfBtn(m_iBtn, BTN_UP, m_pfInst);
 			break;
 		}
 	}
@@ -83,9 +87,10 @@ struct WINDOW_BUTTON
 		return true;
 	}
 
-	void setBtnCallback(CallbackBtn cb)
+	void setBtnCallback(CallbackBtn cb, void* pfInst)
 	{
-		m_cbBtn = cb;
+		m_pfBtn = cb;
+		m_pfInst = pfInst;
 	}
 
 	void draw(Mat* pM)
