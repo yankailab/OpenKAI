@@ -14,6 +14,8 @@
 	"name":"viewOpr",
 	"class":"Window",
 	"bInst":1,
+	"w":1280,
+	"h":720,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 

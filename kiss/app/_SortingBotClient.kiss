@@ -14,6 +14,7 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
+	"bFullScreen":1,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	
 	"bMouse":1,
@@ -78,7 +79,7 @@
 	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":1,
-	"bDraw":0,
+	"bDraw":1,
 	"Window":"OKview",
 	"pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 }

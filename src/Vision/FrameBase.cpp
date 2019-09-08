@@ -32,7 +32,7 @@ void FrameBase::operator=(const Mat& m)
 
 void FrameBase::allocate(int w, int h)
 {
-	m_mat = Mat::zeros(Size(w,h), CV_8UC3);
+	m_mat = Mat(h, w, CV_8UC3, Scalar(0,0,0));
 	m_tStamp = getTimeUsec();
 }
 

@@ -175,7 +175,7 @@ bool Window::draw(void)
 	for(int i=0; i<m_vBtn.size(); i++)
 	{
 		WINDOW_BUTTON* pB = &m_vBtn[i];
-		pB->drawBtn(&m);
+		pB->drawBtn(m_frame.m());
 	}
 
 	if(m_bShowMouse)
@@ -186,7 +186,7 @@ bool Window::draw(void)
 
 	if (m_bWindow)
 	{
-		imshow(*this->getName(), *m_frame.m());
+		imshow(*this->getName(), m);
 	}
 
 	if(m_VW.isOpened() || m_gst.isOpened())
@@ -215,6 +215,8 @@ bool Window::draw(void)
 
 	tabReset();
 	lineReset();
+
+	*m_frame.m() = Scalar(0,0,0);
 
 	return true;
 }
