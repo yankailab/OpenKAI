@@ -4,6 +4,15 @@ namespace kai
 {
 _SortingImgClient::_SortingImgClient()
 {
+	m_bDrag = false;
+	m_vDragFrom.init();
+	m_vDragTo.init();
+
+	m_bbWin.init();
+	m_bbWin.z = 1.0;
+	m_bbWin.w = 1.0;
+
+	m_COO.init();
 }
 
 _SortingImgClient::~_SortingImgClient()
@@ -14,6 +23,20 @@ bool _SortingImgClient::init(void *pKiss)
 {
 	IF_F(!this->_OKlink::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
+
+	pK->v("bbWin",&m_bbWin);
+
+	Window *pWin = (Window*) this->m_pWindow;
+	pWin->addCallbackMouse(callbackMouse, this);
+
+	WINDOW_BUTTON* pBtn;
+	for(int i=0; i<pWin->m_vBtn.size(); i++)
+	{
+		pBtn = pWin->getBtn(i);
+		IF_CONT(!pBtn);
+
+		pBtn->setBtnCallback(callbackBtn, this);
+	}
 
 	return true;
 }
@@ -30,6 +53,11 @@ bool _SortingImgClient::start(void)
 	}
 
 	return true;
+}
+
+int _SortingImgClient::check(void)
+{
+	return 0;
 }
 
 void _SortingImgClient::update(void)
@@ -64,22 +92,63 @@ void _SortingImgClient::handleCMD(void)
 {
 	IF_(m_recvMsg.m_pBuf[1] != OKLINK_BB);
 
-	m_COO.m_id = unpack_uint32(&m_recvMsg.m_pBuf[3], false);
-	m_COO.m_topClass = unpack_uint16(&m_recvMsg.m_pBuf[7], false);
-	m_COO.m_bb.x = ((float) unpack_uint16(&m_recvMsg.m_pBuf[9], false)) * 0.001;
-	m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
-	m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
-	m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
+	int id = unpack_uint32(&m_recvMsg.m_pBuf[3], false);
+	if(id != m_COO.m_id)
+	{
+		m_COO.m_id = id;
+		m_COO.m_topClass = unpack_int16(&m_recvMsg.m_pBuf[7], false);
+		m_COO.m_bb.x = ((float) unpack_uint16(&m_recvMsg.m_pBuf[9], false)) * 0.001;
+		m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
+		m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
+		m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
+	}
 
 	m_recvMsg.reset();
 }
 
-void _SortingImgClient::handleBtn(int iBtn, int state)
+void _SortingImgClient::handleBtn(int id, int state)
 {
 	IF_(state != BTN_DOWN);
 
-	m_COO.m_topClass = iBtn;
-//TODO
+	m_COO.m_topClass = id;
+
+	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+}
+
+void _SortingImgClient::handleMouse(int event, float x, float y)
+{
+	IF_(x < m_bbWin.x);
+	IF_(y < m_bbWin.y);
+	IF_(x > m_bbWin.z);
+	IF_(y > m_bbWin.w);
+
+	m_vDragTo.x = x;
+	m_vDragTo.y = y;
+
+	if(event == EVENT_MOUSEMOVE)
+	{
+		IF_(!m_bDrag);
+	}
+	else if(event == EVENT_LBUTTONDOWN)
+	{
+		m_vDragFrom.x = x;
+		m_vDragFrom.y = y;
+		m_vDragTo = m_vDragFrom;
+		m_bDrag = true;
+	}
+	else if(event == EVENT_LBUTTONUP)
+	{
+		m_bDrag = false;
+
+		//call send
+	}
+
+	vFloat4 bb;
+	m_COO.m_bb.x = small(m_vDragFrom.x, m_vDragTo.x);
+	m_COO.m_bb.y = small(m_vDragFrom.y, m_vDragTo.y);
+	m_COO.m_bb.z = big(m_vDragFrom.x, m_vDragTo.x);
+	m_COO.m_bb.w = big(m_vDragFrom.y, m_vDragTo.y);
+
 	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
@@ -87,6 +156,17 @@ bool _SortingImgClient::draw(void)
 {
 	IF_F(!this->_OKlink::draw());
 	Window *pWin = (Window*) this->m_pWindow;
+	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+	IF_F(pMat->empty());
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Rect r = convertBB<vInt4>(convertBB(m_COO.m_bb, cs));
+	rectangle(*pMat, r, Scalar(0,255,0), 5);
+
+	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
 
 	string msg;
 	pWin->tabNext();

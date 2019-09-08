@@ -58,6 +58,8 @@ bool _SlideWindow::init(void* pKiss)
 		return false;
 	}
 
+	m_nClass = m_pC->m_nClass;
+
 	return true;
 }
 

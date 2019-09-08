@@ -20,6 +20,7 @@ _VisionBase::_VisionBase()
 	m_cH = 360;
 	m_fovW = 60;
 	m_fovH = 60;
+	m_bbDraw.x = -1.0;
 }
 
 _VisionBase::~_VisionBase()
@@ -38,6 +39,7 @@ bool _VisionBase::init(void* pKiss)
 
 	pK->v("fovW",&m_fovW);
 	pK->v("fovH",&m_fovH);
+	pK->v("bbDraw",&m_bbDraw);
 
 	m_bOpen = false;
 	return true;
@@ -104,7 +106,24 @@ bool _VisionBase::draw(void)
 
 	if(!m_fBGR.bEmpty())
 	{
-		pFrame->copy(m_fBGR);
+		if(m_bbDraw.x < 0.0)
+		{
+			pFrame->copy(m_fBGR);
+		}
+		else
+		{
+			Mat* pM = pFrame->m();
+
+			vInt2 cs;
+			cs.x = pM->cols;
+			cs.y = pM->rows;
+			Rect r = convertBB<vInt4>(convertBB(m_bbDraw, cs));
+
+			Mat m;
+			cv::resize(*m_fBGR.m(),m,Size(r.width,r.height));
+
+			m.copyTo((*pFrame->m())(r));
+		}
 	}
 
 	return this->_ThreadBase::draw();

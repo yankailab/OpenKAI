@@ -39,8 +39,8 @@ private:
 	}
 
 public:
-	_DetectorBase*	m_pCD;
-	_DetectorBase*	m_pC;
+	_DetectorBase*	m_pDet1;
+	_DetectorBase*	m_pDet2;
 	_Sequencer*		m_pSeq;
 
 	int			m_nClass;

@@ -29,6 +29,9 @@ Window::Window()
 	m_bShowMouse = false;
 	m_gstOutput = "";
 	m_fileRec = "";
+
+	m_pfMouse = NULL;
+	m_pfInst = NULL;
 }
 
 Window::~Window()
@@ -137,16 +140,17 @@ bool Window::init(void* pKiss)
 		setMouseCallback(*this->getName(), callBackMouse, this);
 	}
 
-	Kiss* pB = pK->o("Button");
+	Kiss* pB = pK->o("button");
 	if(pB)
 	{
 		Kiss** ppB = pB->getChildItr();
 
 		int i=0;
-		while((pB=ppB[i]))
+		while((pB=ppB[i++]))
 		{
 			WINDOW_BUTTON wb;
 			wb.init();
+			pB->v("id",&wb.m_id);
 			pB->v("bb",&wb.m_bb);
 
 			string fBtn;
@@ -167,6 +171,12 @@ bool Window::draw(void)
 	IF_F(m_frame.bEmpty());
 
 	Mat m = *m_frame.m();
+
+	for(int i=0; i<m_vBtn.size(); i++)
+	{
+		WINDOW_BUTTON* pB = &m_vBtn[i];
+		pB->drawBtn(&m);
+	}
 
 	if(m_bShowMouse)
 	{
@@ -267,6 +277,19 @@ void Window::addMsg(const string& pMsg)
 	lineNext();
 }
 
+WINDOW_BUTTON* Window::getBtn(int id)
+{
+	for(int i=0; i<m_vBtn.size(); i++)
+	{
+		WINDOW_BUTTON* pB = &m_vBtn[i];
+		IF_CONT(pB->m_id != id);
+
+		return pB;
+	}
+
+	return NULL;
+}
+
 bool Window::bMouseButton(uint32_t fB)
 {
 	return m_fMouse & fB;
@@ -277,11 +300,12 @@ void Window::OnMouse(int event, int x, int y)
 	Frame* pF = this->getFrame();
 	NULL_(pF);
 
+	m_vMouse.x = (float)x/(float)pF->m()->cols;
+	m_vMouse.y = (float)y/(float)pF->m()->rows;
+
 	switch (event)
 	{
 	case EVENT_MOUSEMOVE:
-		m_vMouse.x = (float)x/(float)pF->m()->cols;
-		m_vMouse.y = (float)y/(float)pF->m()->rows;
 		break;
 	case EVENT_LBUTTONDOWN:
 		m_fMouse |= MOUSE_L;
@@ -304,6 +328,22 @@ void Window::OnMouse(int event, int x, int y)
 	default:
 		break;
 	}
+
+	for(int i=0; i<m_vBtn.size(); i++)
+	{
+		WINDOW_BUTTON* pB = &m_vBtn[i];
+		pB->onMouse(event, m_vMouse);
+	}
+
+	if(m_pfMouse)
+		m_pfMouse(event, m_vMouse.x, m_vMouse.y, m_pfInst);
+
+}
+
+void Window::addCallbackMouse(CallbackMouse cb, void* pfInst)
+{
+	m_pfMouse = cb;
+	m_pfInst = pfInst;
 }
 
 }

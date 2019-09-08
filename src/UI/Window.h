@@ -17,6 +17,7 @@ namespace kai
 
 #define TAB_PIX 20
 #define LINE_HEIGHT 20
+#define MOUSE_MOVE 0
 #define MOUSE_L 1
 #define MOUSE_M (1<<1)
 #define MOUSE_R (1<<2)
@@ -24,10 +25,11 @@ namespace kai
 #define BTN_UP 1
 
 typedef void (*CallbackBtn)(int iBtn, int state, void* pfInst);
+typedef void (*CallbackMouse)(int event, float x, float y, void* pfInst);
 
 struct WINDOW_BUTTON
 {
-	int	m_iBtn;
+	int	m_id;
 	vFloat4 m_bb;
 	Mat m_mUp;
 	Mat m_mDown;
@@ -41,7 +43,7 @@ struct WINDOW_BUTTON
 
 	void init(void)
 	{
-		m_iBtn = 0;
+		m_id = -1;
 		m_bb.init();
 		m_mSize.init();
 		m_bDown = false;
@@ -58,7 +60,7 @@ struct WINDOW_BUTTON
 			{
 				m_bDown = false;
 				if(m_pfBtn)
-					m_pfBtn(m_iBtn, BTN_UP, m_pfInst);
+					m_pfBtn(m_id, BTN_UP, m_pfInst);
 			}
 			break;
 		case EVENT_LBUTTONDOWN:
@@ -66,13 +68,13 @@ struct WINDOW_BUTTON
 			{
 				m_bDown = true;
 				if(m_pfBtn)
-					m_pfBtn(m_iBtn, BTN_DOWN, m_pfInst);
+					m_pfBtn(m_id, BTN_DOWN, m_pfInst);
 			}
 			break;
 		case EVENT_LBUTTONUP:
 			m_bDown = false;
 			if(m_pfBtn)
-				m_pfBtn(m_iBtn, BTN_UP, m_pfInst);
+				m_pfBtn(m_id, BTN_UP, m_pfInst);
 			break;
 		}
 	}
@@ -87,13 +89,7 @@ struct WINDOW_BUTTON
 		return true;
 	}
 
-	void setBtnCallback(CallbackBtn cb, void* pfInst)
-	{
-		m_pfBtn = cb;
-		m_pfInst = pfInst;
-	}
-
-	void draw(Mat* pM)
+	void drawBtn(Mat* pM)
 	{
 		NULL_(pM);
 		IF_(pM->cols <= 0);
@@ -114,9 +110,15 @@ struct WINDOW_BUTTON
 		Rect r = Rect(m_bb.x*pM->cols, m_bb.y*pM->rows, m_mUpScale.cols, m_mUpScale.rows);
 
 		if(m_bDown)
-			m_mUpScale.copyTo((*pM)(r));
-		else
 			m_mDownScale.copyTo((*pM)(r));
+		else
+			m_mUpScale.copyTo((*pM)(r));
+	}
+
+	void setBtnCallback(CallbackBtn cb, void* pfInst)
+	{
+		m_pfBtn = cb;
+		m_pfInst = pfInst;
 	}
 
 };
@@ -141,12 +143,16 @@ public:
 	double textSize(void);
 	Scalar textColor(void);
 
+	WINDOW_BUTTON* getBtn(int id);
+
 	bool bMouseButton(uint32_t fB);
 	void OnMouse(int event, int x, int y);
+	void addCallbackMouse(CallbackMouse cb, void* pfInst);
 
 	static void callBackMouse(int event, int x, int y, int flags, void *pW)
 	{
-		((Window*) pW)->OnMouse(event, x, y);
+		Window* pWin = (Window*)pW;
+		pWin->OnMouse(event, x, y);
 	}
 
 public:
@@ -176,6 +182,9 @@ public:
 	vFloat2 m_vMouse;
 	uint32_t m_fMouse;
 	bool m_bShowMouse;
+
+	CallbackMouse m_pfMouse;
+	void*		m_pfInst;
 
 	vector<WINDOW_BUTTON> m_vBtn;
 

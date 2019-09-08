@@ -11,6 +11,13 @@
 }
 
 {
+	"name":"viewOpr",
+	"class":"Window",
+	"bInst":1,
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+}
+
+{
 	"name":"viewRS",
 	"class":"Window",
 	"bInst":0,
@@ -74,10 +81,7 @@
 	"bInst":1,
 	"Window":"viewRGBcrop",
 	"_VisionBase":"rs1",
-	"x":0.215,
-	"y":0.4,
-	"z":0.73,
-	"w":0.6,
+	"roi":[0.215, 0.4, 0.73, 0.6],
 }
 
 {
@@ -96,10 +100,7 @@
 	"bInst":1,
 	"Window":"viewDepthCrop",
 	"_VisionBase":"depth",
-	"x":0.215,
-	"y":0.4,
-	"z":0.73,
-	"w":0.6,
+	"roi":[0.215, 0.4, 0.73, 0.6],
 }
 
 {
@@ -107,7 +108,7 @@
 	"class":"_DNNclassifier",
 	"bInst":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"FPS":30,
 	"Window":"viewRGBcrop",
 	"threadMode":1,
@@ -118,7 +119,7 @@
 	"bSwapRB":1,
 	"bDrawClass":1,
 	"minConfidence":0.0,
-	"bDebug":0,
+	"bDebug":1,
 }
 
 {
@@ -142,21 +143,47 @@
 }
 
 {
-	"name":"convD",
-	"class":"_ConveyerDetector",
+	"name":"okUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"addr":"127.0.0.1",
+	"port":5690,
+	"_wakeUp":"okLink",
+}
+
+{
+	"name":"okLink",
+	"class":"_OKlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"okUDP",
+}
+
+{
+	"name":"imgServer",
+	"class":"_SortingImgServer",
 	"FPS":30,
 	"bInst":1,
-	"Window":"viewRGBcrop",
+	"Window":"viewOpr",
+	"_VisionBase":"cropRGB",
 	"_DetectorBase":"sw",
+	"_OKlink":"okLink",
 	"cSpeed":0.1,
-	"cLen":2.0,
+	"cLen":1.0,
 	"minOverlap":0.3,
+	"timeOutVerify":3000000,
+	"timeOutShow":1000000,
 }
 
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -168,7 +195,7 @@
 {
 	"name":"omX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -183,7 +210,7 @@
 {
 	"name":"omZ",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -198,11 +225,11 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"10.0.0.100",
+	"addr":"192.168.1.200",
 	"port":8888,
 	"_wakeUp":"arduServo",
 }
@@ -210,7 +237,7 @@
 {
 	"name":"arduServo",
 	"class":"_ArduServo",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -231,7 +258,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -243,15 +270,15 @@
 			"name":"recover",
 			{
 				"_ActuatorBase":"omX",
-				"pos":0.825,
+				"pos":[0.825],
 			}
 			{
 				"_ActuatorBase":"omZ",
-				"pos":0.2,
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 
@@ -260,7 +287,7 @@
 			"dT":-1,
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 
@@ -268,15 +295,15 @@
 			"name":"descent",
 			{
 				"_ActuatorBase":"omX",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"omZ",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 
@@ -285,7 +312,7 @@
 			"dT":500000,
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 
@@ -294,11 +321,11 @@
 			"/dT":-1,
 			{
 				"_ActuatorBase":"omX",
-				"pos":0.7,
+				"pos":[0.7],
 			}
 			{
 				"_ActuatorBase":"omZ",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 		
@@ -306,11 +333,11 @@
 			"name":"move",
 			{
 				"_ActuatorBase":"omX",
-				"pos":-1.0,
+				"pos":[-1.0],
 			}
 			{
 				"_ActuatorBase":"omZ",
-				"pos":0.0,
+				"pos":[0.0],
 			}
 		}
 		
@@ -319,11 +346,11 @@
 			"dT":800000,
 			{
 				"_ActuatorBase":"omZ",
-				"pos":0.2,
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo",
-				"pos":1.0,
+				"pos":[1.0],
 			}
 		}
 	}
@@ -332,21 +359,18 @@
 {
 	"name":"sortingArm",
 	"class":"_SortingArm",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
-	"_ConveyerDetector":"convD",
+	"_DetectorBase":"imgServer",
 	"_Sequencer":"sequencer1",
 	"actuatorX":"omX",
 	"actuatorZ":"omZ",
 	"iROI":0,
-	"gripX1":0.65,
-	"gripX2":1.0,
-	"gripY1":0.96,
-	"gripY2":1.18,
-	"gripZ1":0.25,
-	"gripZ2":0.68,
+	"gripX":[0.65,1.0],
+	"gripY":[0.96,1.18],
+	"gripZ":[0.25,0.68],
 	"dropPos":[0.5, 0.4, 0.3, 0.4, 0.2],
 	"classList":[1,3,4],
 }

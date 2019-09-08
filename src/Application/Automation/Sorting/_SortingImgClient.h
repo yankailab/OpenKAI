@@ -15,17 +15,26 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 	bool draw(void);
 	bool console(int& iY);
 
 	void handleCMD(void);
 
-	void handleBtn(int iBtn, int state);
-	static void callbackCMD(int iBtn, int state, void* pInst)
+	void handleBtn(int id, int state);
+	static void callbackBtn(int id, int state, void* pInst)
 	{
 		NULL_(pInst);
 		_SortingImgClient* pC = (_SortingImgClient*)pInst;
-		pC->handleBtn(iBtn, state);
+		pC->handleBtn(id, state);
+	}
+
+	void handleMouse(int event, float x, float y);
+	static void callbackMouse(int event, float x, float y, void* pInst)
+	{
+		NULL_(pInst);
+		_SortingImgClient* pC = (_SortingImgClient*)pInst;
+		pC->handleMouse(event, x, y);
 	}
 
 private:
@@ -38,7 +47,11 @@ private:
 
 public:
 	OBJECT	m_COO;
-	vFloat4 m_bbShow;
+	vFloat4 m_bbWin;
+
+	bool m_bDrag;
+	vFloat2 m_vDragFrom;
+	vFloat2 m_vDragTo;
 
 };
 

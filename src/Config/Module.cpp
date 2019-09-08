@@ -24,8 +24,6 @@ BASE* Module::createInstance(Kiss* pK)
 
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_OKlink);
-	ADD_MODULE(_ArduServo);
-	ADD_MODULE(_ActuatorSync);
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
@@ -58,7 +56,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mavlink);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Path);
-	ADD_MODULE(_Sequencer);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_Object);
 	ADD_MODULE(_ObjectFactory);
@@ -69,8 +66,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_Rotate);
 	ADD_MODULE(_SerialPort);
-	ADD_MODULE(_SortingArm);
-	ADD_MODULE(_SortingImgServer);
 	ADD_MODULE(_ShopCam);
 	ADD_MODULE(_TCPserver);
 	ADD_MODULE(_TCPclient);
@@ -81,6 +76,13 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_VideoFile);
 	ADD_MODULE(_WebSocket);
 	ADD_MODULE(Window);
+
+	ADD_MODULE(_ArduServo);
+	ADD_MODULE(_ActuatorSync);
+	ADD_MODULE(_Sequencer);
+	ADD_MODULE(_SortingArm);
+	ADD_MODULE(_SortingImgServer);
+	ADD_MODULE(_SortingImgClient);
 
 	ADD_MODULE(_Augment);
 	ADD_MODULE(_filterBilateralBlur);

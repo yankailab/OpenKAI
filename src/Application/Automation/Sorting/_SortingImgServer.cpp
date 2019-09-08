@@ -22,6 +22,7 @@ _SortingImgServer::_SortingImgServer()
 	m_tIntSend = 100000;
 	m_tLastSent = 0;
 	m_bCOO = false;
+	m_COO.init();
 }
 
 _SortingImgServer::~_SortingImgServer()
@@ -38,6 +39,8 @@ bool _SortingImgServer::init(void *pKiss)
 	pK->v("minOverlap", &m_minOverlap);
 	pK->v("timeOutVerify", &m_timeOutVerify);
 	pK->v("timeOutShow", &m_timeOutShow);
+
+	m_nClass = m_pDB->m_nClass;
 
 	string iName;
 
@@ -137,24 +140,32 @@ void _SortingImgServer::updateImg(void)
 
 		pO->m_id = m_ID++;
 		pO->m_tStamp = m_tStamp;
+		pO->m_bVerified = false;
 		pO->setImg(*m_pVision->BGR()->m());
 		add(pO);
 	}
 
-	//update the current operating object
-	IF_(m_bCOO && m_tStamp - m_COO.m_tStamp <= m_timeOutVerify && !m_COO.m_bVerified);
+	uint64_t dT = m_tStamp - m_COO.m_tStamp;
+	IF_(m_bCOO &&
+			dT < m_timeOutVerify &&
+			!m_COO.m_bVerified);
 
-	i = 0;
-	while ((pO = m_pNext->at(i++)))
+	//update the current operating object which is verified
+	if(m_bCOO && m_COO.m_bVerified)
 	{
-		IF_CONT(m_COO.m_id != pO->m_id);
+		i = 0;
+		while ((pO = m_pNext->at(i++)))
+		{
+			IF_CONT(m_COO.m_id != pO->m_id);
 
-		pO->m_topClass = m_COO.m_topClass;
-		pO->m_bb = m_COO.m_bb;
-		pO->m_bVerified = true;
-		break;
+			pO->m_topClass = m_COO.m_topClass;
+			pO->m_bb = m_COO.m_bb;
+			pO->m_bVerified = m_COO.m_bVerified;
+			break;
+		}
 	}
 
+	//update the next operating object to be verified
 	i = 0;
 	m_bCOO = false;
 	while ((pO = m_pNext->at(i++)))
@@ -166,7 +177,6 @@ void _SortingImgServer::updateImg(void)
 		m_bCOO = true;
 		break;
 	}
-
 }
 
 void _SortingImgServer::handleCMD(uint8_t* pCMD)
@@ -182,7 +192,7 @@ void _SortingImgServer::handleCMD(uint8_t* pCMD)
 	{
 		IF_CONT(pO->m_id != id);
 
-		pO->m_topClass = unpack_uint16(&pCMD[7], false);
+		pO->m_topClass = unpack_int16(&pCMD[7], false);
 		pO->m_bb.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
 		pO->m_bb.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
 		pO->m_bb.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
@@ -196,6 +206,16 @@ bool _SortingImgServer::draw(void)
 	IF_F(!this->_DetectorBase::draw());
 	Window *pWin = (Window*) this->m_pWindow;
 	Mat *pMat = pWin->getFrame()->m();
+	IF_F(pMat->empty());
+
+	if(m_bCOO)
+	{
+		m_COO.m_mImg.copyTo(*pMat);
+	}
+	else
+	{
+		*pMat = Scalar(0,0,0);
+	}
 
 	return true;
 }

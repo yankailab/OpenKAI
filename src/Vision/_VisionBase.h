@@ -69,6 +69,7 @@ public:
 	double m_fovH;
 
 	Frame	m_fBGR;
+	vFloat4	m_bbDraw;
 };
 
 }

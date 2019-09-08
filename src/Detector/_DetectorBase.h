@@ -51,7 +51,7 @@ struct OBJECT
 	void *m_pTracker;
 
 	//Properties
-	int64_t m_tStamp;
+	uint64_t m_tStamp;
 
 	//Trajectory
 	vFloat2 m_pTraj[OBJ_N_TRAJ];
@@ -73,7 +73,7 @@ struct OBJECT
 
 		resetClass();
 		m_pTracker = NULL;
-		m_tStamp = -1;
+		m_tStamp = 0;
 
 		m_bVerified = false;
 	}

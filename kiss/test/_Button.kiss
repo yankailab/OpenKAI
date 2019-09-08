@@ -1,0 +1,68 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":0,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	
+	"bMouse":1,
+	"bShouMouse":1,
+	
+	{
+		"name":"button",
+		
+		{
+			"name":"bBoard",
+			"bb":[0.0, 0.0, 0.1, 0.1],
+			"fBtnUp":"/home/kai/dev/eii/img/board.png",
+			"fBtnDown":"/home/kai/dev/eii/img/board_d.png",
+		}
+		{
+			"name":"bCan",
+			"bb":[0.0, 0.11, 0.1, 0.21],
+			"fBtnUp":"/home/kai/dev/eii/img/can.png",
+			"fBtnDown":"/home/kai/dev/eii/img/can_d.png",
+		}
+		{
+			"name":"bConcrete",
+			"bb":[0.0, 0.22, 0.1, 0.32],
+			"fBtnUp":"/home/kai/dev/eii/img/concrete.png",
+			"fBtnDown":"/home/kai/dev/eii/img/concrete_d.png",
+		}
+		{
+			"name":"bWood",
+			"bb":[0.0, 0.33, 0.1, 0.43],
+			"fBtnUp":"/home/kai/dev/eii/img/wood.png",
+			"fBtnDown":"/home/kai/dev/eii/img/wood_d.png",
+		}
+		{
+			"name":"bX",
+			"bb":[0.0, 0.44, 0.1, 0.54],
+			"fBtnUp":"/home/kai/dev/eii/img/x.png",
+			"fBtnDown":"/home/kai/dev/eii/img/x_d.png",
+		}
+	}
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":0,
+	"Window":"OKview",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}

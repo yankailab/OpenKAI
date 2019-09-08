@@ -12,8 +12,8 @@ namespace kai
 
 _SortingArm::_SortingArm()
 {
-	m_pCD = NULL;
-	m_pC = NULL;
+	m_pDet1 = NULL;
+	m_pDet2 = NULL;
 	m_nClass = 0;
 
 	m_pSeq = NULL;
@@ -58,13 +58,13 @@ bool _SortingArm::init(void* pKiss)
 	IF_Fl(!m_pSeq, iName + " not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_ConveyerDetector", &iName));
-	m_pCD = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pCD, iName + " not found");
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
+	m_pDet1 = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDet1, iName + " not found");
 
 	iName = "";
 	F_INFO(pK->v("_DNNclassifier", &iName));
-	m_pC = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDet2 = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -96,7 +96,7 @@ void _SortingArm::update(void)
 
 int _SortingArm::check(void)
 {
-	NULL__(m_pCD, -1);
+	NULL__(m_pDet1, -1);
 
 	return 0;
 }
@@ -116,7 +116,7 @@ void _SortingArm::updateArm(void)
 	if (cAction == "standby")
 	{
 		int i = 0;
-		while((pO=m_pCD->at(i++)))
+		while((pO=m_pDet1->at(i++)))
 		{
 			IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
 			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
@@ -154,8 +154,8 @@ void _SortingArm::updateArm(void)
 	}
 	else if (cAction == "verify")
 	{
-		NULL_(m_pC);
-		OBJECT o = *m_pC->at(m_iROI);
+		NULL_(m_pDet2);
+		OBJECT o = *m_pDet2->at(m_iROI);
 
 	}
 }

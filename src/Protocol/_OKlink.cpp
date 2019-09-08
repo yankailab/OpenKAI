@@ -177,7 +177,7 @@ void _OKlink::sendBB(uint32_t id, uint16_t iClass, vFloat4& bb)
 	m_pBuf[1] = OKLINK_BB;
 	m_pBuf[2] = 14;
 	pack_uint32(&m_pBuf[3], id, false);
-	pack_uint16(&m_pBuf[7], iClass, false);
+	pack_int16(&m_pBuf[7], iClass, false);
 	pack_uint16(&m_pBuf[9], (uint16_t)(bb.x*1000.0), false);
 	pack_uint16(&m_pBuf[11], (uint16_t)(bb.y*1000.0), false);
 	pack_uint16(&m_pBuf[13], (uint16_t)(bb.z*1000.0), false);
