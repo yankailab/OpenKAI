@@ -35,8 +35,8 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"10.0.0.105",
-	"/addr":"127.0.0.1",
+	"/addr":"10.0.0.105",
+	"addr":"127.0.0.1",
 	"port":19841,
 }
 
@@ -57,4 +57,7 @@
 	"bDraw":1,
 	"Window":"OKview",
 	"_OKlinkAPcopter":"apOKlink",
+	"dP":0.01,
+	"timeOut":300000,
+	"dAlt":0.5,
 }

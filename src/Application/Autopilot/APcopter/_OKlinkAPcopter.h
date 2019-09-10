@@ -19,7 +19,7 @@ public:
 
 	void handleCMD(void);
 
-	void setPos(vFloat2 vP);
+	void setPos(vFloat3 vP);
 
 private:
 	void update(void);
@@ -30,7 +30,7 @@ private:
 	}
 
 public:
-	vFloat2		m_vPos;
+	vFloat3		m_vPos;
 	uint64_t	m_tPos;
 };
 

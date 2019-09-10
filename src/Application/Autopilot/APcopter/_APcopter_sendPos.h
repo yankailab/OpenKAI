@@ -21,6 +21,14 @@ public:
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
+	void onBtn(int key);
+	static void callbackBtn(int key, void* pInst)
+	{
+		NULL_(pInst);
+		_APcopter_sendPos* pS = (_APcopter_sendPos*)pInst;
+		pS->onBtn(key);
+	}
+
 private:
 	void updatePos(void);
 	static void* getUpdateThread(void* This)
@@ -31,6 +39,12 @@ private:
 
 public:
 	_OKlinkAPcopter* m_pOK;
+	int		m_key;
+	float	m_dP;
+	vFloat3 m_vPrevP;
+	float	m_dAlt;
+	uint64_t m_tLastSent;
+	uint64_t m_timeOut;
 
 };
 

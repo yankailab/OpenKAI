@@ -230,6 +230,7 @@ bool _APcopter_follow::find(void)
 
 	m_vP.x = bb.midX();
 	m_vP.y = bb.midY();
+	m_vP.z = tO->m_dist;
 
 	return true;
 }

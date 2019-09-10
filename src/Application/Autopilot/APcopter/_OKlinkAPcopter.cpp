@@ -64,16 +64,18 @@ void _OKlinkAPcopter::update(void)
 
 void _OKlinkAPcopter::handleCMD(void)
 {
-	uint16_t x,y;
+	int16_t x,y,z;
 	switch (m_recvMsg.m_pBuf[1])
 	{
 	case OKLINK_POS:
-		x = unpack_uint16(&m_recvMsg.m_pBuf[6], false);
-		y = unpack_uint16(&m_recvMsg.m_pBuf[8], false);
+		x = unpack_int16(&m_recvMsg.m_pBuf[3], false);
+		y = unpack_int16(&m_recvMsg.m_pBuf[5], false);
+		z = unpack_int16(&m_recvMsg.m_pBuf[7], false);
 		m_vPos.x = ((float)x)*0.001;
 		m_vPos.y = ((float)y)*0.001;
+		m_vPos.z = ((float)z)*0.001;
 		m_tPos = m_tStamp;
-		LOG_I("Pos=("+f2str(m_vPos.x)+","+f2str(m_vPos.y)+")");
+		LOG_I("Pos=("+f2str(m_vPos.x)+","+f2str(m_vPos.y)+","+f2str(m_vPos.z)+")");
 		break;
 	default:
 		break;
@@ -82,19 +84,20 @@ void _OKlinkAPcopter::handleCMD(void)
 	m_recvMsg.reset();
 }
 
-void _OKlinkAPcopter::setPos(vFloat2 vP)
+void _OKlinkAPcopter::setPos(vFloat3 vP)
 {
 	NULL_(m_pIO);
 	IF_(!m_pIO->isOpen());
 
 	m_pBuf[0] = OKLINK_BEGIN;
 	m_pBuf[1] = OKLINK_POS;
-	m_pBuf[2] = 4;
+	m_pBuf[2] = 6;
 
-	pack_uint16(&m_pBuf[3], (uint16_t)(vP.x * 1000), false);
-	pack_uint16(&m_pBuf[5], (uint16_t)(vP.y * 1000), false);
+	pack_uint16(&m_pBuf[3], (int16_t)(vP.x * 1000), false);
+	pack_uint16(&m_pBuf[5], (int16_t)(vP.y * 1000), false);
+	pack_int16(&m_pBuf[7], (int16_t)(vP.z * 1000), false);
 
-	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 4);
+	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 6);
 }
 
 bool _OKlinkAPcopter::draw(void)

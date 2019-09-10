@@ -81,8 +81,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ActuatorSync);
 	ADD_MODULE(_Sequencer);
 	ADD_MODULE(_SortingArm);
-	ADD_MODULE(_SortingImgServer);
-	ADD_MODULE(_SortingImgClient);
+	ADD_MODULE(_SortingCtrlServer);
+	ADD_MODULE(_SortingCtrlClient);
 
 	ADD_MODULE(_Augment);
 	ADD_MODULE(_filterBilateralBlur);

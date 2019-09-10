@@ -19,6 +19,5 @@ Kiss* g_pKiss;
 _File g_file;
 
 void printEnvironment(void);
-void onMouse(int event, int x, int y, int flags, void* userdata);
 
 #endif

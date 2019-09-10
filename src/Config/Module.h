@@ -47,8 +47,8 @@
 #include "../Application/Surveillance/_ShopCam.h"
 #include "../Application/Automation/Sorting/_Sequencer.h"
 #include "../Application/Automation/Sorting/_SortingArm.h"
-#include "../Application/Automation/Sorting/_SortingImgServer.h"
-#include "../Application/Automation/Sorting/_SortingImgClient.h"
+#include "../Application/Automation/Sorting/_SortingCtrlServer.h"
+#include "../Application/Automation/Sorting/_SortingCtrlClient.h"
 #include "../Application/Mission/_MissionControl.h"
 
 #include "../Control/PIDctrl.h"

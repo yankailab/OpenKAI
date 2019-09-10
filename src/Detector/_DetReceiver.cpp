@@ -91,6 +91,7 @@ void _DetReceiver::receive(void)
 	o.m_bb.y = m_pOK->m_vPos.y - d;
 	o.m_bb.z = m_pOK->m_vPos.x + d;
 	o.m_bb.w = m_pOK->m_vPos.y + d;
+	o.m_dist = m_pOK->m_vPos.z; //dAlt
 	o.setTopClass(0, 1.0);
 
 	add(&o);

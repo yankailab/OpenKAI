@@ -21,14 +21,21 @@
 //13-14 bb.z
 //15-16 bb.w
 
+#define OKLINK_BB 4
+#define OKLINK_SETSTATE 5
+
+#define SORT_STATE_UNKNOWN 0
+#define SORT_STATE_STANDBY 1
+#define SORT_STATE_ON 2
+
 namespace kai
 {
 
-class _SortingImgServer: public _DetectorBase
+class _SortingCtrlServer: public _DetectorBase
 {
 public:
-	_SortingImgServer(void);
-	virtual ~_SortingImgServer();
+	_SortingCtrlServer(void);
+	virtual ~_SortingCtrlServer();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -40,7 +47,7 @@ public:
 	static void callbackCMD(uint8_t* pCMD, void* pInst)
 	{
 		NULL_(pInst);
-		_SortingImgServer* pS = (_SortingImgServer*)pInst;
+		_SortingCtrlServer* pS = (_SortingCtrlServer*)pInst;
 		pS->handleCMD(pCMD);
 	}
 
@@ -49,12 +56,14 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_SortingImgServer *) This)->update();
+		((_SortingCtrlServer *) This)->update();
 		return NULL;
 	}
 
 public:
 	_OKlink*		m_pOL;
+	uint8_t			m_iState;
+	uint8_t			m_iSetState;
 
 	int				m_ID;
 	OBJECT			m_COO;

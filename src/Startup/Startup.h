@@ -16,12 +16,12 @@ using namespace kai;
 namespace kai
 {
 
-typedef void (*CallbackKey)(void);
+typedef void (*CallbackKey)(int key, void* pfInst);
 
 struct KEY_CALLBACK
 {
-	int	m_key;
 	CallbackKey m_cbKey;
+	void* m_pInst;
 };
 
 struct OK_INST
@@ -42,7 +42,7 @@ public:
 	void handleKey(int key);
 	bool createAllInst(Kiss* pKiss);
 	void printEnvironment(void);
-	bool addKeyCallback(int key, CallbackKey cbKey);
+	bool addKeyCallback(CallbackKey cbKey, void* pInst);
 
 private:
 	string* getName(void);

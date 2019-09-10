@@ -1,8 +1,8 @@
-#include "_SortingImgClient.h"
+#include "_SortingCtrlClient.h"
 
 namespace kai
 {
-_SortingImgClient::_SortingImgClient()
+_SortingCtrlClient::_SortingCtrlClient()
 {
 	m_bDrag = false;
 	m_vDragFrom.init();
@@ -19,11 +19,11 @@ _SortingImgClient::_SortingImgClient()
 	m_tSendInt = 300000;
 }
 
-_SortingImgClient::~_SortingImgClient()
+_SortingCtrlClient::~_SortingCtrlClient()
 {
 }
 
-bool _SortingImgClient::init(void *pKiss)
+bool _SortingCtrlClient::init(void *pKiss)
 {
 	IF_F(!this->_OKlink::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -46,7 +46,7 @@ bool _SortingImgClient::init(void *pKiss)
 	return true;
 }
 
-bool _SortingImgClient::start(void)
+bool _SortingCtrlClient::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -60,12 +60,12 @@ bool _SortingImgClient::start(void)
 	return true;
 }
 
-int _SortingImgClient::check(void)
+int _SortingCtrlClient::check(void)
 {
 	return 0;
 }
 
-void _SortingImgClient::update(void)
+void _SortingCtrlClient::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -99,7 +99,7 @@ void _SortingImgClient::update(void)
 	}
 }
 
-void _SortingImgClient::handleCMD(void)
+void _SortingCtrlClient::handleCMD(void)
 {
 	IF_(m_recvMsg.m_pBuf[1] != OKLINK_BB);
 
@@ -119,7 +119,7 @@ void _SortingImgClient::handleCMD(void)
 	m_recvMsg.reset();
 }
 
-void _SortingImgClient::handleBtn(int id, int state)
+void _SortingCtrlClient::onBtn(int id, int state)
 {
 	IF_(state != BTN_DOWN);
 
@@ -129,7 +129,7 @@ void _SortingImgClient::handleBtn(int id, int state)
 	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
-void _SortingImgClient::updateWindow(void)
+void _SortingCtrlClient::updateWindow(void)
 {
 	Window *pWin = (Window*) this->m_pWindow;
 
@@ -164,7 +164,7 @@ void _SortingImgClient::updateWindow(void)
 	}
 }
 
-void _SortingImgClient::handleMouse(int event, float x, float y)
+void _SortingCtrlClient::onMouse(int event, float x, float y)
 {
 	IF_(x < m_bbWin.x);
 	IF_(y < m_bbWin.y);
@@ -201,7 +201,7 @@ void _SortingImgClient::handleMouse(int event, float x, float y)
 	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
-bool _SortingImgClient::draw(void)
+bool _SortingCtrlClient::draw(void)
 {
 	IF_F(!this->_OKlink::draw());
 	Window *pWin = (Window*) this->m_pWindow;
@@ -224,7 +224,7 @@ bool _SortingImgClient::draw(void)
 	return true;
 }
 
-bool _SortingImgClient::console(int &iY)
+bool _SortingCtrlClient::console(int &iY)
 {
 	IF_F(!this->_OKlink::console(iY));
 	string msg;

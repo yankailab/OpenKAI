@@ -198,19 +198,17 @@ void Startup::handleKey(int key)
 	for(int i=0; i<m_vKeyCallback.size(); i++)
 	{
 		KEY_CALLBACK* pCB = &m_vKeyCallback[i];
-		IF_CONT(pCB->m_key!=key);
-
-		pCB->m_cbKey();
+		pCB->m_cbKey(key, pCB->m_pInst);
 	}
 }
 
-bool Startup::addKeyCallback(int key, CallbackKey cbKey)
+bool Startup::addKeyCallback(CallbackKey cbKey, void* pInst)
 {
 	NULL_F(cbKey);
 
 	KEY_CALLBACK cb;
-	cb.m_key = key;
 	cb.m_cbKey = cbKey;
+	cb.m_pInst = pInst;
 	m_vKeyCallback.push_back(cb);
 
 	return true;

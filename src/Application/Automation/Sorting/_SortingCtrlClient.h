@@ -7,11 +7,11 @@
 namespace kai
 {
 
-class _SortingImgClient: public _OKlink
+class _SortingCtrlClient: public _OKlink
 {
 public:
-	_SortingImgClient();
-	~_SortingImgClient();
+	_SortingCtrlClient();
+	~_SortingCtrlClient();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -22,27 +22,27 @@ public:
 	void handleCMD(void);
 	void updateWindow(void);
 
-	void handleBtn(int id, int state);
+	void onBtn(int id, int state);
 	static void callbackBtn(int id, int state, void* pInst)
 	{
 		NULL_(pInst);
-		_SortingImgClient* pC = (_SortingImgClient*)pInst;
-		pC->handleBtn(id, state);
+		_SortingCtrlClient* pC = (_SortingCtrlClient*)pInst;
+		pC->onBtn(id, state);
 	}
 
-	void handleMouse(int event, float x, float y);
+	void onMouse(int event, float x, float y);
 	static void callbackMouse(int event, float x, float y, void* pInst)
 	{
 		NULL_(pInst);
-		_SortingImgClient* pC = (_SortingImgClient*)pInst;
-		pC->handleMouse(event, x, y);
+		_SortingCtrlClient* pC = (_SortingCtrlClient*)pInst;
+		pC->onMouse(event, x, y);
 	}
 
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_SortingImgClient *) This)->update();
+		((_SortingCtrlClient *) This)->update();
 		return NULL;
 	}
 
@@ -53,6 +53,9 @@ public:
 	bool m_bStop;
 	uint64_t m_tLastSent;
 	uint64_t m_tSendInt;
+
+	uint8_t	m_iState;
+	uint8_t	m_iSetState;
 
 	bool m_bDrag;
 	vFloat2 m_vDragFrom;

@@ -2,7 +2,6 @@
 
 int main(int argc, char* argv[])
 {
-	//Check arg
 	if(argc < 2)
 	{
 		printf("Usage: ./OpenKAI [kiss file]\n");

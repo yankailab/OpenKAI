@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "_SortingImgServer.h"
+#include "_SortingCtrlServer.h"
 
 namespace kai
 {
 
-_SortingImgServer::_SortingImgServer()
+_SortingCtrlServer::_SortingCtrlServer()
 {
 	m_pOL = NULL;
 	m_cSpeed = 0.0;
@@ -23,13 +23,15 @@ _SortingImgServer::_SortingImgServer()
 	m_tLastSent = 0;
 	m_bCOO = false;
 	m_COO.init();
+	m_iState = SORT_STATE_UNKNOWN;
+	m_iSetState = SORT_STATE_UNKNOWN;
 }
 
-_SortingImgServer::~_SortingImgServer()
+_SortingCtrlServer::~_SortingCtrlServer()
 {
 }
 
-bool _SortingImgServer::init(void *pKiss)
+bool _SortingCtrlServer::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -52,7 +54,7 @@ bool _SortingImgServer::init(void *pKiss)
 	return true;
 }
 
-bool _SortingImgServer::start(void)
+bool _SortingCtrlServer::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -65,7 +67,7 @@ bool _SortingImgServer::start(void)
 	return true;
 }
 
-int _SortingImgServer::check(void)
+int _SortingCtrlServer::check(void)
 {
 	NULL__(m_pOL, -1);
 	NULL__(m_pVision, -1);
@@ -73,7 +75,7 @@ int _SortingImgServer::check(void)
 	return 0;
 }
 
-void _SortingImgServer::update(void)
+void _SortingCtrlServer::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -100,7 +102,7 @@ void _SortingImgServer::update(void)
 	}
 }
 
-void _SortingImgServer::updateImg(void)
+void _SortingCtrlServer::updateImg(void)
 {
 	IF_(check() < 0);
 
@@ -179,29 +181,37 @@ void _SortingImgServer::updateImg(void)
 	}
 }
 
-void _SortingImgServer::handleCMD(uint8_t* pCMD)
+void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 {
 	NULL_(pCMD);
-	IF_(pCMD[1] != OKLINK_BB);
 
-	int id = unpack_uint32(&pCMD[3], false);
+	uint8_t cmd = pCMD[1];
 
-	int i = 0;
-	OBJECT *pO;
-	while ((pO = at(i++)))
+	if(cmd == OKLINK_BB)
 	{
-		IF_CONT(pO->m_id != id);
+		int id = unpack_uint32(&pCMD[3], false);
+		int i = 0;
+		OBJECT *pO;
+		while ((pO = at(i++)))
+		{
+			IF_CONT(pO->m_id != id);
 
-		pO->m_topClass = unpack_int16(&pCMD[7], false);
-		pO->m_bb.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
-		pO->m_bb.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
-		pO->m_bb.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
-		pO->m_bb.w = ((float)unpack_uint16(&pCMD[15], false))*0.001;
-		pO->m_bVerified = true;
+			pO->m_topClass = unpack_int16(&pCMD[7], false);
+			pO->m_bb.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
+			pO->m_bb.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
+			pO->m_bb.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
+			pO->m_bb.w = ((float)unpack_uint16(&pCMD[15], false))*0.001;
+			pO->m_bVerified = true;
+		}
 	}
+	else if(cmd == OKLINK_BB)
+	{
+		m_iSetState = pCMD[3];
+	}
+
 }
 
-bool _SortingImgServer::draw(void)
+bool _SortingCtrlServer::draw(void)
 {
 	IF_F(!this->_DetectorBase::draw());
 	Window *pWin = (Window*) this->m_pWindow;
@@ -220,7 +230,7 @@ bool _SortingImgServer::draw(void)
 	return true;
 }
 
-bool _SortingImgServer::console(int &iY)
+bool _SortingCtrlServer::console(int &iY)
 {
 	IF_F(!this->_DetectorBase::console(iY));
 
