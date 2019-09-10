@@ -13,6 +13,10 @@ _SortingImgClient::_SortingImgClient()
 	m_bbWin.w = 1.0;
 
 	m_COO.init();
+
+	m_bStop = false;
+	m_tLastSent = 0;
+	m_tSendInt = 300000;
 }
 
 _SortingImgClient::~_SortingImgClient()
@@ -24,6 +28,7 @@ bool _SortingImgClient::init(void *pKiss)
 	IF_F(!this->_OKlink::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
+	pK->v("tSendInt",&m_tSendInt);
 	pK->v("bbWin",&m_bbWin);
 
 	Window *pWin = (Window*) this->m_pWindow;
@@ -84,6 +89,12 @@ void _SortingImgClient::update(void)
 			m_nCMDrecv++;
 		}
 
+		if(m_COO.m_id >= 0)
+		{
+			if(m_tStamp - m_tLastSent > m_tSendInt)
+				this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+		}
+
 		this->autoFPSto();
 	}
 }
@@ -101,6 +112,8 @@ void _SortingImgClient::handleCMD(void)
 		m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
 		m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
 		m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
+
+		updateWindow();
 	}
 
 	m_recvMsg.reset();
@@ -112,7 +125,43 @@ void _SortingImgClient::handleBtn(int id, int state)
 
 	m_COO.m_topClass = id;
 
+	updateWindow();
 	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+}
+
+void _SortingImgClient::updateWindow(void)
+{
+	Window *pWin = (Window*) this->m_pWindow;
+
+	pWin->resetAllBtn();
+	WINDOW_BUTTON* pB;
+
+	pB = pWin->getBtn(m_COO.m_topClass);
+	if(pB)
+		pB->setShownDown(true);
+
+	if(m_bStop)
+	{
+		pB = pWin->getBtn(7);
+		if(pB)
+			pB->setEnable(true);
+
+		pB = pWin->getBtn(8);
+		if(pB)
+			pB->setEnable(false);
+
+	}
+	else
+	{
+		pB = pWin->getBtn(7);
+		if(pB)
+			pB->setEnable(true);
+
+		pB = pWin->getBtn(8);
+		if(pB)
+			pB->setEnable(false);
+
+	}
 }
 
 void _SortingImgClient::handleMouse(int event, float x, float y)

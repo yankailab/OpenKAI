@@ -20,6 +20,7 @@ public:
 	bool console(int& iY);
 
 	void handleCMD(void);
+	void updateWindow(void);
 
 	void handleBtn(int id, int state);
 	static void callbackBtn(int id, int state, void* pInst)
@@ -48,6 +49,10 @@ private:
 public:
 	OBJECT	m_COO;
 	vFloat4 m_bbWin;
+
+	bool m_bStop;
+	uint64_t m_tLastSent;
+	uint64_t m_tSendInt;
 
 	bool m_bDrag;
 	vFloat2 m_vDragFrom;

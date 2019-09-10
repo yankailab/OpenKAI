@@ -134,6 +134,7 @@
 #include "../Data/Augment/_filterShrink.h"
 #include "../Data/Augment/_filterTone.h"
 
+#include "../Data/Image/_GDimgUploader.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"

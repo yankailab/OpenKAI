@@ -29,6 +29,7 @@ typedef void (*CallbackMouse)(int event, float x, float y, void* pfInst);
 
 struct WINDOW_BUTTON
 {
+	bool m_bEnable;
 	int	m_id;
 	vFloat4 m_bb;
 	Mat m_mUp;
@@ -37,22 +38,37 @@ struct WINDOW_BUTTON
 	Mat m_mDownScale;
 	vInt2 m_mSize;
 	bool m_bDown;
+	bool m_bShowDown;
 
 	CallbackBtn m_pfBtn;
 	void*		m_pfInst;
 
 	void init(void)
 	{
+		m_bEnable = true;
 		m_id = -1;
 		m_bb.init();
 		m_mSize.init();
 		m_bDown = false;
 		m_pfBtn = NULL;
 		m_pfInst = NULL;
+		m_bShowDown = false;
+	}
+
+	void setEnable(bool bEnable)
+	{
+		m_bEnable = bEnable;
+	}
+
+	void setShownDown(bool bShowDown)
+	{
+		m_bShowDown = bShowDown;
 	}
 
 	void onMouse(int event, vFloat2& p)
 	{
+		IF_(!m_bEnable);
+
 		switch (event)
 		{
 		case EVENT_MOUSEMOVE:
@@ -91,6 +107,7 @@ struct WINDOW_BUTTON
 
 	void drawBtn(Mat* pM)
 	{
+		IF_(!m_bEnable);
 		NULL_(pM);
 		IF_(pM->cols <= 0);
 		IF_(pM->rows <= 0);
@@ -103,13 +120,15 @@ struct WINDOW_BUTTON
 			int w = m_bb.width() * pM->cols;
 			int h = m_bb.height() * pM->rows;
 
-			cv::resize(m_mUp,m_mUpScale,Size(w,h));
-			cv::resize(m_mDown,m_mDownScale,Size(w,h));
+			resize(m_mUp,m_mUpScale,Size(w,h));
+			resize(m_mDown,m_mDownScale,Size(w,h));
 		}
 
 		Rect r = Rect(m_bb.x*pM->cols, m_bb.y*pM->rows, m_mUpScale.cols, m_mUpScale.rows);
 
-		if(m_bDown)
+		if(m_bShowDown)
+			m_mDownScale.copyTo((*pM)(r));
+		else if(m_bDown)
 			m_mDownScale.copyTo((*pM)(r));
 		else
 			m_mUpScale.copyTo((*pM)(r));
@@ -144,6 +163,7 @@ public:
 	Scalar textColor(void);
 
 	WINDOW_BUTTON* getBtn(int id);
+	void resetAllBtn(void);
 
 	bool bMouseButton(uint32_t fB);
 	void OnMouse(int event, int x, int y);

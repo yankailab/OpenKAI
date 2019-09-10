@@ -101,6 +101,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_filterShrink);
 	ADD_MODULE(_filterTone);
 
+	ADD_MODULE(_GDimgUploader);
 	ADD_MODULE(_BBoxCutOut);
 	ADD_MODULE(_CutOut);
 	ADD_MODULE(_FrameCutOut);

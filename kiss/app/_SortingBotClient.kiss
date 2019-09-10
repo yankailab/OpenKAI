@@ -7,7 +7,7 @@
 	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
-	"waitKey":30,
+	"waitKey":15,
 }
 
 {
@@ -26,38 +26,46 @@
 		{
 			"name":"bBoard",
 			"id":0,
-			"bb":[0.0, 0.0, 0.1, 0.1],
+			"bb":[0.4, 0.8, 0.5, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/board.png",
 			"fBtnDown":"/home/kai/dev/eii/img/board_d.png",
 		}
 		{
 			"name":"bCan",
 			"id":1,
-			"bb":[0.0, 0.11, 0.1, 0.21],
+			"bb":[0.5, 0.8, 0.6, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/can.png",
 			"fBtnDown":"/home/kai/dev/eii/img/can_d.png",
 		}
 		{
 			"name":"bConcrete",
 			"id":2,
-			"bb":[0.0, 0.22, 0.1, 0.32],
+			"bb":[0.6, 0.8, 0.7, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/concrete.png",
 			"fBtnDown":"/home/kai/dev/eii/img/concrete_d.png",
 		}
 		{
 			"name":"bWood",
 			"id":3,
-			"bb":[0.0, 0.33, 0.1, 0.43],
+			"bb":[0.7, 0.8, 0.8, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/wood.png",
 			"fBtnDown":"/home/kai/dev/eii/img/wood_d.png",
 		}
 		{
 			"name":"bX",
 			"id":-1,
-			"bb":[0.0, 0.44, 0.1, 0.54],
+			"bb":[0.8, 0.8, 0.9, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/x.png",
 			"fBtnDown":"/home/kai/dev/eii/img/x_d.png",
 		}
+		{
+			"name":"ESTOP",
+			"id":-1,
+			"bb":[0.9, 0.8, 1.0, 1.0],
+			"fBtnUp":"/home/kai/dev/eii/img/stop.png",
+			"fBtnDown":"/home/kai/dev/eii/img/off.png",
+		}
+		
 	}
 }
 
@@ -107,7 +115,7 @@
 }
 
 {
-	"name":"gstMonitor",
+	"name":"gstMonitor1",
 	"class":"_GStreamer",
 	"FPS":30,
 	"bInst":1,
@@ -116,3 +124,15 @@
 	"bbDraw":[0.0,0.8,0.2,1.0],
 	"pipeline":"udpsrc port=5679 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 }
+
+{
+	"name":"gstMonitor2",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"bbDraw":[0.2,0.8,0.4,1.0],
+	"pipeline":"udpsrc port=5680 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+}
+

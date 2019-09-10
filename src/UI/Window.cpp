@@ -292,6 +292,15 @@ WINDOW_BUTTON* Window::getBtn(int id)
 	return NULL;
 }
 
+void Window::resetAllBtn(void)
+{
+	for(int i=0; i<m_vBtn.size(); i++)
+	{
+		WINDOW_BUTTON* pB = &m_vBtn[i];
+		pB->setShownDown(false);
+	}
+}
+
 bool Window::bMouseButton(uint32_t fB)
 {
 	return m_fMouse & fB;
