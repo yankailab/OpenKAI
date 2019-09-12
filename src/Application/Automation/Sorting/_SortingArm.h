@@ -11,6 +11,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "_Sequencer.h"
+#include "_SortingCtrlServer.h"
 
 #define SB_N_CLASS 16
 
@@ -30,6 +31,7 @@ public:
 	int check(void);
 
 private:
+	void updateState(void);
 	void updateArm(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -39,9 +41,11 @@ private:
 	}
 
 public:
-	_DetectorBase*	m_pDet1;
+	_SortingCtrlServer*	m_pDet1;
 	_DetectorBase*	m_pDet2;
 	_Sequencer*		m_pSeq;
+
+	int			m_iState;
 
 	int			m_nClass;
 	float		m_pDropPos[SB_N_CLASS];

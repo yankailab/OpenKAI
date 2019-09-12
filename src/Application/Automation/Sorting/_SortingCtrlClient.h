@@ -3,6 +3,7 @@
 
 #include "../../../Protocol/_OKlink.h"
 #include "../../../Detector/_DetectorBase.h"
+#include "_SortingCtrlServer.h"
 
 namespace kai
 {
@@ -50,12 +51,11 @@ public:
 	OBJECT	m_COO;
 	vFloat4 m_bbWin;
 
-	bool m_bStop;
 	uint64_t m_tLastSent;
 	uint64_t m_tSendInt;
 
-	uint8_t	m_iState;
-	uint8_t	m_iSetState;
+	int	m_iState;
+	int	m_iSetState;
 
 	bool m_bDrag;
 	vFloat2 m_vDragFrom;

@@ -138,6 +138,18 @@ void _OKlink::setCallback(CallbackCMD cb, void* pInst)
 	m_pfInst = pInst;
 }
 
+void _OKlink::sendState(int iState)
+{
+	IF_(check()<0);
+
+	m_pBuf[0] = OKLINK_BEGIN;
+	m_pBuf[1] = OKLINK_STATE;
+	m_pBuf[2] = 4;
+	pack_int32(&m_pBuf[3], iState, false);
+
+	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 4);
+}
+
 void _OKlink::setPWM(int nChan, uint16_t* pChan)
 {
 	IF_(check()<0);

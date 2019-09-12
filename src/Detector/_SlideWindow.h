@@ -42,11 +42,12 @@ public:
 	Mat		m_mD;
 	Mat		m_mDin;
 	Mat		m_mBGR;
+	vFloat4 m_vRoi;
 	float	m_w;
 	float	m_dW;
 	int		m_nW;
 	float	m_maxD;
-	float	m_minArea;
+	float	m_dMinArea;
 	int		m_nLevel;
 	vFloat2	m_dRange;
 };

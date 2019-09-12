@@ -94,9 +94,12 @@ void _GDimgUploader::updateUpload(void)
 	while ((pO = m_pD->at(i++)))
 	{
 		IF_CONT(!pO->m_bVerified);
-//		IF_CONT(!pO->m_bUploaded);
+		IF_CONT(!pO->m_bSaved);
 
-		gdUpload(pO);
+		OBJECT o = *pO;
+		pO->m_bSaved = true;
+
+		gdUpload(&o);
 	}
 }
 

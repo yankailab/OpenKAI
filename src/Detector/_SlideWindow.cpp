@@ -14,11 +14,14 @@ _SlideWindow::_SlideWindow()
 {
 	m_pC = NULL;
 	m_pD = NULL;
+	m_vRoi.init();
+	m_vRoi.z = 1.0;
+	m_vRoi.w = 1.0;
 	m_w = 0.2;
 	m_dW = 0.1;
 	m_nW = 0;
 	m_maxD = 0.6;
-	m_minArea = 0.3;
+	m_dMinArea = 0.3;
 	m_nLevel = 10;
 	m_dRange.init();
 }
@@ -32,14 +35,14 @@ bool _SlideWindow::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v<float>("w",&m_w);
-	pK->v<float>("dW",&m_dW);
-	pK->v<float>("maxD",&m_maxD);
-	pK->v<float>("minArea",&m_minArea);
-	pK->v<int>("nLevel",&m_nLevel);
-
-	pK->v("dFrom",&m_dRange.x);
-	pK->v("dTo",&m_dRange.y);
+	pK->v("vRoi",&m_vRoi);
+	pK->v("w",&m_w);
+	pK->v("dW",&m_dW);
+	pK->v("maxD",&m_maxD);
+	pK->v("minArea",&m_minArea);
+	pK->v("nLevel",&m_nLevel);
+	pK->v("dRange",&m_dRange);
+	pK->v("dMinArea",&m_dMinArea);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_DNNclassifier", &iName));
@@ -51,7 +54,7 @@ bool _SlideWindow::init(void* pKiss)
 	NULL_Fl(m_pD, iName + " not found");
 
 	m_nW = 0;
-	while(m_nW*m_dW + m_w < 1.0)m_nW++;
+	while(m_vRoi.x + m_nW*m_dW*m_vRoi.width() + m_w*m_vRoi.width() < m_vRoi.z)m_nW++;
 	if (m_nW <= 0)
 	{
 		LOG_E("nW <=0");
@@ -116,18 +119,19 @@ void _SlideWindow::detect(void)
 	m_pD->info(&cs, NULL, NULL);
 
 	OBJECT o;
+	float rW = m_vRoi.width();
 	for (int i = 0; i < m_nW; i++)
 	{
 		o.init();
-		o.m_bb.x = i * m_dW;
-		o.m_bb.z = o.m_bb.x + m_w;
-		o.m_bb.y = 0.0;
-		o.m_bb.w = 1.0;
+		o.m_bb.x = i * m_dW * rW + m_vRoi.x;
+		o.m_bb.z = o.m_bb.x + m_w * rW;
+		o.m_bb.y = m_vRoi.y;
+		o.m_bb.w = m_vRoi.w;
 
 		Rect r = convertBB<vInt4>(convertBB(o.m_bb, cs));
 		Mat mDinR = m_mDin(r);
 		int nP = cv::countNonZero(mDinR);
-		IF_CONT((float)nP/(float)r.area() < m_minArea);
+		IF_CONT((float)nP/(float)r.area() < m_dMinArea);
 
 //		o.m_dist = (hist(m_mD(rbb), 0, 255, m_nLevel, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
 		o.m_dist = ((float)cv::mean(m_mD(r), mDinR).val[0]/255.0) * m_dRange.len() + m_dRange.x;
@@ -143,6 +147,12 @@ bool _SlideWindow::draw(void)
 	IF_F(!this->_DetectorBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
+	rectangle(*pMat, r, Scalar(0,255,0), 1);
 
 	IF_T(!m_bDebug);
 

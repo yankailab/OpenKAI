@@ -24,7 +24,6 @@
 #define OKLINK_BB 4
 #define OKLINK_SETSTATE 5
 
-#define SORT_STATE_UNKNOWN 0
 #define SORT_STATE_STANDBY 1
 #define SORT_STATE_ON 2
 
@@ -62,8 +61,8 @@ private:
 
 public:
 	_OKlink*		m_pOL;
-	uint8_t			m_iState;
-	uint8_t			m_iSetState;
+	int				m_iState;
+	uint64_t		m_tLastSentState;
 
 	int				m_ID;
 	OBJECT			m_COO;
@@ -71,7 +70,7 @@ public:
 	uint64_t		m_timeOutVerify;
 	uint64_t		m_timeOutShow;
 	uint64_t		m_tIntSend;
-	uint64_t		m_tLastSent;
+	uint64_t		m_tLastSentCOO;
 
 	float m_cSpeed; //conveyer speed
 	float m_cLen;	//conveyer length

@@ -14,9 +14,11 @@ _SortingCtrlClient::_SortingCtrlClient()
 
 	m_COO.init();
 
-	m_bStop = false;
 	m_tLastSent = 0;
 	m_tSendInt = 300000;
+
+	m_iState = SORT_STATE_STANDBY;
+	m_iSetState = SORT_STATE_STANDBY;
 }
 
 _SortingCtrlClient::~_SortingCtrlClient()
@@ -89,6 +91,11 @@ void _SortingCtrlClient::update(void)
 			m_nCMDrecv++;
 		}
 
+		if(m_iSetState != m_iState)
+		{
+			this->sendState(m_iSetState);
+		}
+
 		if(m_COO.m_id >= 0)
 		{
 			if(m_tStamp - m_tLastSent > m_tSendInt)
@@ -101,19 +108,24 @@ void _SortingCtrlClient::update(void)
 
 void _SortingCtrlClient::handleCMD(void)
 {
-	IF_(m_recvMsg.m_pBuf[1] != OKLINK_BB);
-
-	int id = unpack_uint32(&m_recvMsg.m_pBuf[3], false);
-	if(id != m_COO.m_id)
+	if(m_recvMsg.m_pBuf[1] == OKLINK_BB)
 	{
-		m_COO.m_id = id;
-		m_COO.m_topClass = unpack_int16(&m_recvMsg.m_pBuf[7], false);
-		m_COO.m_bb.x = ((float) unpack_uint16(&m_recvMsg.m_pBuf[9], false)) * 0.001;
-		m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
-		m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
-		m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
+		int id = unpack_uint32(&m_recvMsg.m_pBuf[3], false);
+		if(id != m_COO.m_id)
+		{
+			m_COO.m_id = id;
+			m_COO.m_topClass = unpack_int16(&m_recvMsg.m_pBuf[7], false);
+			m_COO.m_bb.x = ((float) unpack_uint16(&m_recvMsg.m_pBuf[9], false)) * 0.001;
+			m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
+			m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
+			m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
 
-		updateWindow();
+			updateWindow();
+		}
+	}
+	else if(m_recvMsg.m_pBuf[1] == OKLINK_STATE)
+	{
+		m_iState = unpack_int32(&m_recvMsg.m_pBuf[3], false);
 	}
 
 	m_recvMsg.reset();
@@ -123,10 +135,22 @@ void _SortingCtrlClient::onBtn(int id, int state)
 {
 	IF_(state != BTN_DOWN);
 
-	m_COO.m_topClass = id;
+	if(id >= 0 && id <= 4)
+	{
+		m_COO.m_topClass = id;
+		this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+	}
+	else if(id == 5)
+	{
+		if(m_iState == SORT_STATE_STANDBY)
+			m_iSetState = SORT_STATE_ON;
+		else
+			m_iSetState = SORT_STATE_STANDBY;
+
+		this->sendState(m_iSetState);
+	}
 
 	updateWindow();
-	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
 void _SortingCtrlClient::updateWindow(void)
@@ -140,7 +164,7 @@ void _SortingCtrlClient::updateWindow(void)
 	if(pB)
 		pB->setShownDown(true);
 
-	if(m_bStop)
+	if(m_iState == SORT_STATE_STANDBY)
 	{
 		pB = pWin->getBtn(7);
 		if(pB)
@@ -215,8 +239,9 @@ bool _SortingCtrlClient::draw(void)
 	Rect r = convertBB<vInt4>(convertBB(m_COO.m_bb, cs));
 	rectangle(*pMat, r, Scalar(0,255,0), 5);
 
-	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
+	IF_T(!m_bDebug);
 
+	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
 	string msg;
 	pWin->tabNext();
 	pWin->tabPrev();

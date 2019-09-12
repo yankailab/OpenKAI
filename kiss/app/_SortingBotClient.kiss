@@ -4,8 +4,8 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
-	"bConsole":0,
+	"bLog":0,
+	"bConsole":1,
 	"bStdErr":1,
 	"waitKey":15,
 }
@@ -14,9 +14,8 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":1,
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	
+	"bFullScreen":0,	
+	"bDrawMsg":0,
 	"bMouse":1,
 	"bShouMouse":1,
 	
@@ -46,21 +45,21 @@
 		}
 		{
 			"name":"bWood",
-			"id":3,
+			"id":4,
 			"bb":[0.7, 0.8, 0.8, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/wood.png",
 			"fBtnDown":"/home/kai/dev/eii/img/wood_d.png",
 		}
 		{
 			"name":"bX",
-			"id":-1,
+			"id":3,
 			"bb":[0.8, 0.8, 0.9, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/x.png",
 			"fBtnDown":"/home/kai/dev/eii/img/x_d.png",
 		}
 		{
 			"name":"ESTOP",
-			"id":-1,
+			"id":5,
 			"bb":[0.9, 0.8, 1.0, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/stop.png",
 			"fBtnDown":"/home/kai/dev/eii/img/off.png",
@@ -93,25 +92,24 @@
 }
 
 {
-	"name":"imgClientIO",
+	"name":"ctrlClientIO",
 	"class":"_UDP",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"port":5690,
-	"_wakeUp":"sortingImgClient",
+	"_wakeUp":"sortingCtrlClient",
 }
 
 {
-	"name":"sortingImgClient",
-	"class":"_SortingImgClient",
+	"name":"ctrlClient",
+	"class":"_SortingCtrlClient",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"_IOBase":"imgClientIO",
-	"bbWin":[0.1,0.0,1.0,1.0],
+	"_IOBase":"ctrlClientIO",
 }
 
 {

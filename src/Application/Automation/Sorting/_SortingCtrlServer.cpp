@@ -20,11 +20,11 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_timeOutVerify = USEC_1SEC * 3;
 	m_timeOutShow = USEC_1SEC * 1;
 	m_tIntSend = 100000;
-	m_tLastSent = 0;
+	m_tLastSentCOO = 0;
 	m_bCOO = false;
 	m_COO.init();
-	m_iState = SORT_STATE_UNKNOWN;
-	m_iSetState = SORT_STATE_UNKNOWN;
+	m_iState = SORT_STATE_STANDBY;
+	m_tLastSentState = 0;
 }
 
 _SortingCtrlServer::~_SortingCtrlServer()
@@ -84,12 +84,18 @@ void _SortingCtrlServer::update(void)
 		updateImg();
 		updateObj();
 
+		if(m_tStamp - m_tLastSentState > m_tIntSend)
+		{
+			m_pOL->sendState(m_iState);
+			m_tLastSentState = m_tStamp;
+		}
+
 		if(m_bCOO)
 		{
-			if(m_tStamp - m_tLastSent > m_tIntSend)
+			if(m_tStamp - m_tLastSentCOO > m_tIntSend)
 			{
 				m_pOL->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
-				m_tLastSent = m_tStamp;
+				m_tLastSentCOO = m_tStamp;
 			}
 		}
 
@@ -204,11 +210,10 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 			pO->m_bVerified = true;
 		}
 	}
-	else if(cmd == OKLINK_BB)
+	else if(cmd == OKLINK_STATE)
 	{
-		m_iSetState = pCMD[3];
+		m_iState = unpack_int32(&pCMD[3], false);
 	}
-
 }
 
 bool _SortingCtrlServer::draw(void)

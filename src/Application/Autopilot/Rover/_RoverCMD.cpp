@@ -70,7 +70,7 @@ void _RoverCMD::handleCMD(void)
 {
 	switch (m_recvMsg.m_pBuf[1])
 	{
-	case OKLINK_STATUS:
+	case OKLINK_STATE:
 		m_mode = (uint8_t)m_recvMsg.m_pBuf[3];
 		m_pwmModeIn = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4], false);
 		m_pwmLin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[6], false);

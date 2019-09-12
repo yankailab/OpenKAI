@@ -11,7 +11,7 @@
 #define OKLINK_N_HEADER 3
 #define OKLINK_PWM 0
 #define OKLINK_PIN_OUTPUT 1
-#define OKLINK_STATUS 2
+#define OKLINK_STATE 2
 
 void runCMD(void);
 bool ioAvailable(void);

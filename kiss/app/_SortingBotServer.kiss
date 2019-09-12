@@ -4,10 +4,10 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"bConsole":0,
 	"bStdErr":1,
-	"waitKey":30,
+	"waitKey":15,
 }
 
 {
@@ -20,48 +20,28 @@
 }
 
 {
-	"name":"viewRS",
+	"name":"viewRGB",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"bFullScreen":0,
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
 }
 
 {
-	"name":"viewRSdepth",
-	"class":"Window",
-	"bInst":0,
-	"bFullScreen":0,
-}
-
-{
-	"name":"viewDepthGray",
-	"class":"Window",
-	"bInst":0,
-	"bFullScreen":0,
-}
-
-{
-	"name":"viewRGBcrop",
+	"name":"viewDepth",
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
 }
 
 {
-	"name":"viewDepthCrop",
-	"class":"Window",
-	"bInst":1,
-	"bFullScreen":0,
-}
-
-{
-	"name":"rs1",
+	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
 	"bInst":1,
 	"bLog":1,
-	"Window":"viewRS",
-	"depthWindow":"viewRSdepth",
+	"Window":"viewRGB",
+	"/depthWindow":"viewDepth",
 	"vPreset":"High Density",
 	"rsRGB":1,
 	"w":1280,
@@ -77,32 +57,12 @@
 }
 
 {
-	"name":"cropRGB",
-	"class":"_Crop",
-	"FPS":30,
-	"bInst":1,
-	"Window":"viewRGBcrop",
-	"_VisionBase":"rs1",
-	"roi":[0.215, 0.4, 0.73, 0.6],
-}
-
-{
 	"name":"depth",
 	"class":"_Depth2Gray",
 	"FPS":30,
 	"bInst":1,
-	"Window":"viewDepthGray",
-	"_DepthVisionBase":"rs1",
-}
-
-{
-	"name":"cropD",
-	"class":"_Crop",
-	"FPS":30,
-	"bInst":1,
-	"Window":"viewDepthCrop",
-	"_VisionBase":"depth",
-	"roi":[0.215, 0.4, 0.73, 0.6],
+	"Window":"viewDepth",
+	"_DepthVisionBase":"rs",
 }
 
 {
@@ -112,7 +72,7 @@
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,
-	"Window":"viewRGBcrop",
+	"Window":"viewRGB",
 	"threadMode":1,
 	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
 	"modelFile":"deploy.prototxt",
@@ -121,7 +81,7 @@
 	"bSwapRB":1,
 	"bDrawClass":1,
 	"minConfidence":0.0,
-	"bDebug":1,
+	"bDebug":0,
 }
 
 {
@@ -131,17 +91,18 @@
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
-	"Window":"viewRGBcrop",
-	"_VisionBase":"cropRGB",
-	"_DepthVisionBase":"cropD",
+	"/Window":"viewRGB",
+	"_VisionBase":"rs",
+	"_DepthVisionBase":"depth",
 	"_DNNclassifier":"classifier",
 	"w":0.15,
 	"dW":0.05,
 	"maxD":0.68,
-	"dFrom":0.1,
-	"dTo":1.0,
-	"minArea":0.15,
+	"dRange":[0.1,1.0],
+	"dMinArea":0.15,
 	"nLevel":10,
+	"vRoi":[0.15, 0.3, 0.85, 0.7],
+	"bDebug":0,
 }
 
 {
@@ -167,12 +128,12 @@
 }
 
 {
-	"name":"imgServer",
-	"class":"_SortingImgServer",
+	"name":"ctrlServer",
+	"class":"_SortingCtrlServer",
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewOpr",
-	"_VisionBase":"cropRGB",
+	"_VisionBase":"rs",
 	"_DetectorBase":"sw",
 	"_OKlink":"okLink",
 	"cSpeed":0.1,
@@ -202,7 +163,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_Modbus":"modbus",
-	"iSlave":4,
+	"iSlave":2,
 	"stepFrom":1000,
 	"stepTo":128000,
 	"speedFrom":0,
@@ -217,7 +178,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_Modbus":"modbus",
-	"iSlave":5,
+	"iSlave":3,
 	"stepFrom":8000,
 	"stepTo":42000,
 	"speedFrom":0,
@@ -233,11 +194,11 @@
 	"Window":"OKview",
 	"addr":"192.168.1.200",
 	"port":8888,
-	"_wakeUp":"arduServo",
+	"_wakeUp":"servo1",
 }
 
 {
-	"name":"arduServo",
+	"name":"servo1",
 	"class":"_ArduServo",
 	"bInst":0,
 	"FPS":30,
@@ -279,7 +240,7 @@
 				"pos":[0.2],
 			}
 			{
-				"_ActuatorBase":"arduServo",
+				"_ActuatorBase":"servo1",
 				"pos":[0.0],
 			}
 		}
@@ -288,7 +249,7 @@
 			"name":"standby",
 			"dT":-1,
 			{
-				"_ActuatorBase":"arduServo",
+				"_ActuatorBase":"servo1",
 				"pos":[1.0],
 			}
 		}
@@ -304,7 +265,7 @@
 				"pos":[-1.0],
 			}
 			{
-				"_ActuatorBase":"arduServo",
+				"_ActuatorBase":"servo1",
 				"pos":[1.0],
 			}
 		}
@@ -313,7 +274,7 @@
 			"name":"catch",
 			"dT":500000,
 			{
-				"_ActuatorBase":"arduServo",
+				"_ActuatorBase":"servo1",
 				"pos":[0.0],
 			}
 		}
@@ -351,7 +312,7 @@
 				"pos":[0.2],
 			}
 			{
-				"_ActuatorBase":"arduServo",
+				"_ActuatorBase":"servo1",
 				"pos":[1.0],
 			}
 		}
@@ -365,7 +326,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGBcrop",
-	"_DetectorBase":"imgServer",
+	"_DetectorBase":"ctrlServer",
 	"_Sequencer":"sequencer1",
 	"actuatorX":"omX",
 	"actuatorZ":"omZ",

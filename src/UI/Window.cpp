@@ -24,6 +24,7 @@ Window::Window()
 	m_textSize = 0.5;
 	m_textCol = Scalar(0, 255, 0);
 	m_bWindow = true;
+	m_bDrawMsg = true;
 	m_bMouse = false;
 	m_fMouse = 0;
 	m_bShowMouse = false;
@@ -54,6 +55,7 @@ bool Window::init(void* pKiss)
 	}
 
 	pK->v("bFullScreen",&m_bFullScreen);
+	pK->v("bDrawMsg", &m_bDrawMsg);
 	pK->v("w", &m_size.x);
 	pK->v("h", &m_size.y);
 
@@ -273,6 +275,7 @@ Scalar Window::textColor(void)
 void Window::addMsg(const string& pMsg)
 {
 	IF_(!m_bDraw);
+	IF_(!m_bDrawMsg);
 
 	putText(*m_frame.m(), pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);

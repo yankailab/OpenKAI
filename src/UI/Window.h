@@ -178,6 +178,7 @@ public:
 public:
 	bool m_bWindow;
 	bool m_bFullScreen;
+	bool m_bDrawMsg;
 	Frame m_frame;
 	vInt2 m_size;
 	vInt2 m_textPos;

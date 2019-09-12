@@ -14,7 +14,7 @@
 #define OKLINK_N_HEADER 3
 #define OKLINK_PWM 0
 #define OKLINK_PIN_OUTPUT 1
-#define OKLINK_STATUS 2
+#define OKLINK_STATE 2
 #define OKLINK_POS 3
 #define OKLINK_BB 4
 
@@ -63,6 +63,7 @@ public:
 	virtual void handleCMD(void);
 	void setCallback(CallbackCMD cb, void* pInst);
 
+	void sendState(int iState);
 	void setPWM(int nChan, uint16_t* pChan);
 	void pinOut(uint8_t iPin, uint8_t state);
 	void sendBB(uint32_t id, uint16_t iClass, vFloat4& bb);

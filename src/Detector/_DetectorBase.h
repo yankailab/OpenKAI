@@ -61,6 +61,7 @@ struct OBJECT
 	//Img
 	Mat m_mImg;
 	bool m_bVerified;
+	bool m_bSaved;
 
 	void init(void)
 	{
