@@ -23,7 +23,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=2 ! video/x-raw, width=(int)1920, height=(int)1080, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.100 port=5678 auto-multicast=false",
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
 }
 
 {
@@ -108,6 +108,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_OKlinkAPcopter":"apOKlink",
+	"timeOut":200000,
 }
 
 {
@@ -115,14 +116,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":-1.8,
+	"P":-18.0,
 	"I":0.0,
 	"Imax":0.0,
-	"D":-0.8,
+	"D":-28.0,
 	"dT":1.0,
 	"min":-20.0,
 	"max":20.0,
-	"K":16.0,
+	"K":30.0,
 }
 
 {
@@ -130,14 +131,14 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"P":1.9,
+	"P":19.0,
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.8,
+	"D":29.0,
 	"dT":1.0,
 	"min":-20.0,
 	"max":20.0,
-	"K":16.0,
+	"K":30.0,
 }
 
 {
