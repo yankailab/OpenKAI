@@ -9,6 +9,7 @@
 #define OpenKAI_src_Automation__SortingImgServer_H_
 
 #include "../../../Detector/_DetectorBase.h"
+#include "../../../Vision/_DepthVisionBase.h"
 #include "../../../Protocol/_OKlink.h"
 
 //0 OKLINK_BEGIN
@@ -24,8 +25,8 @@
 #define OKLINK_BB 4
 #define OKLINK_SETSTATE 5
 
-#define SORT_STATE_STANDBY 1
-#define SORT_STATE_ON 2
+#define SORT_STATE_OFF 0
+#define SORT_STATE_ON 1
 
 namespace kai
 {
@@ -60,6 +61,7 @@ private:
 	}
 
 public:
+	_DepthVisionBase* m_pDV;
 	_OKlink*		m_pOL;
 	int				m_iState;
 	uint64_t		m_tLastSentState;

@@ -12,12 +12,12 @@ namespace kai
 
 _GDimgUploader::_GDimgUploader()
 {
-	m_pD = NULL;
-
+	m_pV = NULL;
+	m_tInterval = USEC_1SEC;
+	m_tLastUpload = 0;
 	m_tempDir = "GDcam_";
 	m_gdUpload = "python gdUpload.py";
-	m_gdImgFolderID = "";
-	m_gdDataFolderID = "";
+	m_gdFolderID = "";
 	m_gdCredentials = "credentials.json";
 
 }
@@ -31,10 +31,10 @@ bool _GDimgUploader::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("tInterval",&m_tInterval);
 	pK->v("tempDir",&m_tempDir);
 	pK->v("gdUpload",&m_gdUpload);
-	pK->v("gdImgFolderID",&m_gdImgFolderID);
-	pK->v("gdDataFolderID",&m_gdDataFolderID);
+	pK->v("gdImgFolderID",&m_gdFolderID);
 	pK->v("gdCredentials",&m_gdCredentials);
 
 	int jpgQuality = 80;
@@ -45,9 +45,9 @@ bool _GDimgUploader::init(void* pKiss)
 	string iName;
 
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pD = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pD, iName + " not found");
+	F_ERROR_F(pK->v("_VisionBase", &iName));
+	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pV, iName + " not found");
 
 	return true;
 }
@@ -71,7 +71,11 @@ void _GDimgUploader::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateUpload();
+		if(m_tStamp - m_tLastUpload > m_tInterval)
+		{
+			updateUpload();
+			m_tLastUpload = m_tStamp;
+		}
 
 		this->autoFPSto();
 	}
@@ -79,7 +83,8 @@ void _GDimgUploader::update(void)
 
 int _GDimgUploader::check(void)
 {
-	NULL__(m_pD, -1);
+	NULL__(m_pV, -1);
+	IF__(m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
@@ -88,58 +93,21 @@ void _GDimgUploader::updateUpload(void)
 {
 	IF_(check() < 0);
 
-	//find new image
-	int i = 0;
-	OBJECT *pO;
-	while ((pO = m_pD->at(i++)))
-	{
-		IF_CONT(!pO->m_bVerified);
-		IF_CONT(!pO->m_bSaved);
-
-		OBJECT o = *pO;
-		pO->m_bSaved = true;
-
-		gdUpload(&o);
-	}
-}
-
-void _GDimgUploader::gdUpload(OBJECT* pO)
-{
-	NULL_(pO);
-	IF_(pO->m_mImg.empty());
+	Mat m;
+	m_pV->BGR()->m()->copyTo(m);
 
 	//save img
 	string fImg = tFormat();
-	cv::imwrite(m_tempDir + fImg + ".jpeg", pO->m_mImg, m_vJPGquality);
+	cv::imwrite(m_tempDir + fImg + ".jpeg", m, m_vJPGquality);
 
 	//upload img to Google Drive
 	string cmd = m_gdUpload + " " + m_tempDir + fImg + ".jpeg "
 			+ fImg + ".jpg image/jpeg "
-			+ m_gdImgFolderID
+			+ m_gdFolderID
 			+ " " + m_gdCredentials;
 	system(cmd.c_str());
 
 	cmd = "rm " + m_tempDir + fImg + ".jpeg";
-	system(cmd.c_str());
-
-	//save meta data
-	string fMeta = m_tempDir + fImg + ".txt";
-	m_fMeta.open(fMeta.c_str(), ios::out);
-	IF_(!m_fMeta.is_open());
-	m_fMeta.seekg(0, ios_base::beg);
-
-	string strMeta = "";
-	IF_(!m_fMeta.write((char*)strMeta.c_str(), strMeta.length()));
-	m_fMeta.flush();
-	m_fMeta.close();
-
-	cmd = m_gdUpload + " " + m_tempDir + fImg + ".txt "
-			+ fImg + ".txt text/plain "
-			+ m_gdDataFolderID
-			+ " " + m_gdCredentials;
-	system(cmd.c_str());
-
-	cmd = "rm " + fMeta;
 	system(cmd.c_str());
 }
 

@@ -44,8 +44,7 @@ public:
 	_SortingCtrlServer*	m_pDet1;
 	_DetectorBase*	m_pDet2;
 	_Sequencer*		m_pSeq;
-
-	int			m_iState;
+	vector<_ActuatorBase*> m_vAB;
 
 	int			m_nClass;
 	float		m_pDropPos[SB_N_CLASS];

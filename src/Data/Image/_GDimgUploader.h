@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application__GDimgUploader_H_
 
 #include "../../Base/common.h"
-#include "../../Detector/_DetectorBase.h"
+#include "../../Vision/_VisionBase.h"
 #include "../../Script/JSON.h"
 
 namespace kai
@@ -29,7 +29,6 @@ public:
 
 private:
 	void updateUpload(void);
-	void gdUpload(OBJECT* pO);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -38,14 +37,15 @@ private:
 	}
 
 private:
-	_DetectorBase* m_pD;
+	_VisionBase* m_pV;
 
+	uint64_t m_tInterval;
+	uint64_t m_tLastUpload;
 	vector<int> m_vJPGquality;
 	string m_tempDir;
 	fstream m_fMeta;
 	string m_gdUpload;
-	string m_gdImgFolderID;
-	string m_gdDataFolderID;
+	string m_gdFolderID;
 	string m_gdCredentials;
 
 };

@@ -1,0 +1,52 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"pipeline":"rtspsrc location=rtsp://admin:12345@10.0.0.100:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
+}
+
+{
+	"name":"gdUpload",
+	"class":"_GDimgUploader",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"tempDir":"/home/kai/dev/test/",
+	"jpgQuality":80,
+	"gdUpload":"python /home/kai/dev/workspace/OpenKAI/OpenKAI/python/GoogleAPI/gdUpload.py",
+	"gdFolderID":"1Uz7Az_jhnpU8tUaIGOcek0qHA-T0gWBe",
+	"gdCredentials":"/home/kai/credentials.json",
+}

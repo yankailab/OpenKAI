@@ -49,17 +49,15 @@ private:
 
 public:
 	OBJECT	m_COO;
-	vFloat4 m_bbWin;
-
 	uint64_t m_tLastSent;
 	uint64_t m_tSendInt;
 
 	int	m_iState;
 	int	m_iSetState;
 
-	bool m_bDrag;
-	vFloat2 m_vDragFrom;
-	vFloat2 m_vDragTo;
+	vFloat2 m_vBB;
+	bool	m_bMouse;
+	vFloat2 m_vMouse;
 
 };
 

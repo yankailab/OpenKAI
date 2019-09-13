@@ -60,8 +60,8 @@ struct OBJECT
 
 	//Img
 	Mat m_mImg;
+	Mat m_mImgDepth;
 	bool m_bVerified;
-	bool m_bSaved;
 
 	void init(void)
 	{
@@ -195,6 +195,15 @@ struct OBJECT
 
 		return true;
 	}
+
+	bool setDepthImg(Mat m)
+	{
+		IF_F(m.empty());
+		m.copyTo(m_mImgDepth);
+
+		return true;
+	}
+
 };
 
 struct OBJECT_ARRAY

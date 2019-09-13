@@ -2,23 +2,20 @@
 
 namespace kai
 {
+
 _SortingCtrlClient::_SortingCtrlClient()
 {
-	m_bDrag = false;
-	m_vDragFrom.init();
-	m_vDragTo.init();
-
-	m_bbWin.init();
-	m_bbWin.z = 1.0;
-	m_bbWin.w = 1.0;
-
+	m_bMouse = false;
+	m_vMouse.init();
+	m_vBB.x = 0.05;
+	m_vBB.y = 0.05;
 	m_COO.init();
 
 	m_tLastSent = 0;
 	m_tSendInt = 300000;
 
-	m_iState = SORT_STATE_STANDBY;
-	m_iSetState = SORT_STATE_STANDBY;
+	m_iState = SORT_STATE_OFF;
+	m_iSetState = SORT_STATE_OFF;
 }
 
 _SortingCtrlClient::~_SortingCtrlClient()
@@ -31,7 +28,6 @@ bool _SortingCtrlClient::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("tSendInt",&m_tSendInt);
-	pK->v("bbWin",&m_bbWin);
 
 	Window *pWin = (Window*) this->m_pWindow;
 	pWin->addCallbackMouse(callbackMouse, this);
@@ -142,10 +138,10 @@ void _SortingCtrlClient::onBtn(int id, int state)
 	}
 	else if(id == 5)
 	{
-		if(m_iState == SORT_STATE_STANDBY)
+		if(m_iState == SORT_STATE_OFF)
 			m_iSetState = SORT_STATE_ON;
 		else
-			m_iSetState = SORT_STATE_STANDBY;
+			m_iSetState = SORT_STATE_OFF;
 
 		this->sendState(m_iSetState);
 	}
@@ -164,7 +160,7 @@ void _SortingCtrlClient::updateWindow(void)
 	if(pB)
 		pB->setShownDown(true);
 
-	if(m_iState == SORT_STATE_STANDBY)
+	if(m_iState == SORT_STATE_OFF)
 	{
 		pB = pWin->getBtn(7);
 		if(pB)
@@ -190,37 +186,27 @@ void _SortingCtrlClient::updateWindow(void)
 
 void _SortingCtrlClient::onMouse(int event, float x, float y)
 {
-	IF_(x < m_bbWin.x);
-	IF_(y < m_bbWin.y);
-	IF_(x > m_bbWin.z);
-	IF_(y > m_bbWin.w);
-
-	m_vDragTo.x = x;
-	m_vDragTo.y = y;
+	m_vMouse.x = x;
+	m_vMouse.y = y;
 
 	if(event == EVENT_MOUSEMOVE)
 	{
-		IF_(!m_bDrag);
+		IF_(!m_bMouse);
 	}
 	else if(event == EVENT_LBUTTONDOWN)
 	{
-		m_vDragFrom.x = x;
-		m_vDragFrom.y = y;
-		m_vDragTo = m_vDragFrom;
-		m_bDrag = true;
+		m_bMouse = true;
 	}
 	else if(event == EVENT_LBUTTONUP)
 	{
-		m_bDrag = false;
-
-		//call send
+		m_bMouse = false;
 	}
 
 	vFloat4 bb;
-	m_COO.m_bb.x = small(m_vDragFrom.x, m_vDragTo.x);
-	m_COO.m_bb.y = small(m_vDragFrom.y, m_vDragTo.y);
-	m_COO.m_bb.z = big(m_vDragFrom.x, m_vDragTo.x);
-	m_COO.m_bb.w = big(m_vDragFrom.y, m_vDragTo.y);
+	m_COO.m_bb.x = m_vMouse.x - m_vBB.x;
+	m_COO.m_bb.y = m_vMouse.y - m_vBB.x;
+	m_COO.m_bb.z = m_vMouse.x + m_vBB.x;
+	m_COO.m_bb.w = m_vMouse.y + m_vBB.x;
 
 	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
@@ -237,7 +223,7 @@ bool _SortingCtrlClient::draw(void)
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
 	Rect r = convertBB<vInt4>(convertBB(m_COO.m_bb, cs));
-	rectangle(*pMat, r, Scalar(0,255,0), 5);
+//	rectangle(*pMat, r, Scalar(0,255,0), 5);
 
 	IF_T(!m_bDebug);
 

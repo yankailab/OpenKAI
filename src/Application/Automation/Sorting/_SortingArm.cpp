@@ -25,8 +25,6 @@ _SortingArm::_SortingArm()
 	m_actuatorZ = "";
 	m_iROI = 0;
 
-	m_iState = SORT_STATE_STANDBY;
-
 }
 
 _SortingArm::~_SortingArm()
@@ -47,12 +45,23 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("gripZ", &m_rGripZ);
 	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
 
+	string iName;
+	int i;
+
 	int pClass[SB_N_CLASS];
 	m_nClass = pK->a("classList", pClass, SB_N_CLASS);
-	for (int i = 0; i < m_nClass; i++)
+	for (i = 0; i < m_nClass; i++)
 		m_classFlag |= (1 << pClass[i]);
 
-	string iName;
+	int pActuator[16];
+	int nA = pK->a("actuatorList", pActuator, 16);
+	for (i = 0; i < nA; i++)
+	{
+		iName = "";
+		_ActuatorBase* pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+		IF_Fl(!pA, iName + " not found");
+		m_vAB.push_back(pA);
+	}
 
 	iName = "";
 	F_ERROR_F(pK->v("_Sequencer", &iName));
@@ -90,7 +99,6 @@ void _SortingArm::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateState();
 		updateArm();
 
 		this->autoFPSto();
@@ -104,23 +112,19 @@ int _SortingArm::check(void)
 	return 0;
 }
 
-void _SortingArm::updateState(void)
-{
-	IF_(check() < 0);
-	IF_(m_iState == m_pDet1->m_iState);
-
-	if(m_pDet1->m_iState == SORT_STATE_STANDBY)
-		m_pSeq->gotoAction("standby");
-	else
-		m_pSeq->gotoAction("stop");
-
-	m_iState = m_pDet1->m_iState;
-}
-
 void _SortingArm::updateArm(void)
 {
 	IF_(check() < 0);
-	IF_(m_iState == SORT_STATE_STANDBY);
+	if(m_pDet1->m_iState == SORT_STATE_OFF)
+	{
+		for(int i=0; i<m_vAB.size(); i++)
+		{
+			_ActuatorBase* pA = m_vAB[i];
+			pA->moveToOrigin();
+		}
+
+		return;
+	}
 
 	vFloat4 vP,vS;
 	vP.init(-1.0);

@@ -12,6 +12,7 @@ namespace kai
 
 _SortingCtrlServer::_SortingCtrlServer()
 {
+	m_pDV = NULL;
 	m_pOL = NULL;
 	m_cSpeed = 0.0;
 	m_cLen = 2.0;
@@ -23,7 +24,7 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_tLastSentCOO = 0;
 	m_bCOO = false;
 	m_COO.init();
-	m_iState = SORT_STATE_STANDBY;
+	m_iState = SORT_STATE_OFF;
 	m_tLastSentState = 0;
 }
 
@@ -51,6 +52,11 @@ bool _SortingCtrlServer::init(void *pKiss)
 	m_pOL = (_OKlink*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pOL, iName + " not found");
 
+	iName = "";
+	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDV, iName + " not found");
+
 	return true;
 }
 
@@ -70,7 +76,7 @@ bool _SortingCtrlServer::start(void)
 int _SortingCtrlServer::check(void)
 {
 	NULL__(m_pOL, -1);
-	NULL__(m_pVision, -1);
+	NULL__(m_pDV, -1);
 
 	return 0;
 }
@@ -149,7 +155,8 @@ void _SortingCtrlServer::updateImg(void)
 		pO->m_id = m_ID++;
 		pO->m_tStamp = m_tStamp;
 		pO->m_bVerified = false;
-		pO->setImg(*m_pVision->BGR()->m());
+		pO->setImg(*m_pDV->BGR()->m());
+		pO->setDepthImg(*m_pDV->Depth()->m());
 		add(pO);
 	}
 
@@ -168,6 +175,14 @@ void _SortingCtrlServer::updateImg(void)
 
 			pO->m_topClass = m_COO.m_topClass;
 			pO->m_bb = m_COO.m_bb;
+
+			vInt2 cs;
+			cs.x = pO->m_mImgDepth.cols;
+			cs.y = pO->m_mImgDepth.rows;
+			Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+			Mat mDr = pO->m_mImgDepth(r);
+			pO->m_dist = sum(mDr)[0] / countNonZero(mDr);
+
 			pO->m_bVerified = m_COO.m_bVerified;
 			break;
 		}

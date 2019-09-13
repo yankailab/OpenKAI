@@ -44,6 +44,7 @@ private:
 	}
 
 public:
+	vFloat4 m_vNormOrigin;
 	vFloat4 m_vNormPos;
 	vFloat4 m_vNormTargetPos;
 	vFloat4 m_vNormSpeed;

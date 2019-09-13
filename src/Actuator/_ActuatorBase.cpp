@@ -9,6 +9,7 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
+	m_vNormOrigin.init(0.0);
 	m_vNormPos.init(-1.0);
 	m_vNormTargetPos.init(-1.0);
 	m_vNormSpeed.init(0.0);
@@ -30,6 +31,7 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("vNormOrigin", &m_vNormOrigin);
 	pK->v("vNormPos", &m_vNormPos);
 	pK->v("vNormTargetPos", &m_vNormTargetPos);
 	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
@@ -94,6 +96,9 @@ void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
 
 void _ActuatorBase::moveToOrigin(void)
 {
+	vFloat4 vSpeed;
+	vSpeed.init(1.0);
+	moveTo(m_vNormOrigin, vSpeed);
 }
 
 void _ActuatorBase::setGlobalTarget(vFloat4& t)
