@@ -2,18 +2,18 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bConsole":0,
 	"bStdErr":1,
-	"waitKey":15,
+	"waitKey":30,
 }
 
 {
 	"name":"viewOpr",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"w":1280,
 	"h":720,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
@@ -24,13 +24,13 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5679 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.166 port=5679 auto-multicast=false",
 }
 
 {
 	"name":"viewDepth",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"bFullScreen":0,
 }
 
@@ -52,8 +52,8 @@
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"rFrom":0.1,
-	"rTo":1.0,
+	"rFrom":0.4,
+	"rTo":1.5,
 }
 
 {
@@ -66,42 +66,23 @@
 }
 
 {
-	"name":"classifier",
-	"class":"_DNNclassifier",
-	"bInst":1,
-	"bDraw":1,
-	"bLog":1,
-	"FPS":30,
-	"Window":"viewRGB",
-	"threadMode":1,
-	"modelDir":"/home/kai/dev/model/EII_alexnet2/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"snapshot_iter_70400.caffemodel",
-	"classFile":"labels.txt",
-	"bSwapRB":1,
-	"bDrawClass":1,
-	"minConfidence":0.0,
-	"bDebug":0,
-}
-
-{
 	"name":"sw",
 	"class":"_SlideWindow",
 	"bInst":1,
 	"bDraw":1,
 	"bLog":0,
 	"FPS":30,
-	"/Window":"viewRGB",
+	"Window":"viewRGB",
 	"_VisionBase":"rs",
 	"_DepthVisionBase":"depth",
 	"_DNNclassifier":"classifier",
-	"w":0.15,
-	"dW":0.05,
-	"maxD":0.68,
-	"dRange":[0.1,1.0],
+	"w":0.1,
+	"dW":0.1,
+	"maxD":0.7,
+	"dRange":[0.4,1.5],
 	"dMinArea":0.15,
 	"nLevel":10,
-	"vRoi":[0.15, 0.3, 0.85, 0.7],
+	"vRoi":[0.25, 0.3, 0.85, 0.7],
 	"bDebug":0,
 }
 
@@ -112,7 +93,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"127.0.0.1",
+	"addr":"192.168.8.166",
 	"port":5690,
 	"_wakeUp":"okLink",
 }
@@ -133,11 +114,12 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewOpr",
-	"_VisionBase":"rs",
+	"_DepthVisionBase":"rs",
 	"_DetectorBase":"sw",
 	"_OKlink":"okLink",
-	"cSpeed":0.1,
-	"cLen":1.0,
+	"dRange":[0.4,1.5],
+	"cSpeed":0.19,
+	"cLen":1.9,
 	"minOverlap":0.3,
 	"timeOutVerify":3000000,
 	"timeOutShow":1000000,
@@ -146,65 +128,134 @@
 {
 	"name":"modbus",
 	"class":"_Modbus",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
 	"baud":230400,
-	"parity":"E",
+	"parity":"E",	
 }
 
 {
-	"name":"omX",
+	"name":"omX1",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"stepFrom":1000,
+	"stepFrom":3000,
 	"stepTo":128000,
 	"speedFrom":0,
-	"speedTo":31000,
+	"speedTo":46000,
+	"vNormOrigin":[0.0],
 }
 
 {
-	"name":"omZ",
+	"name":"omY1",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"stepFrom":8000,
-	"stepTo":42000,
+	"stepFrom":7000,
+	"stepTo":48000,
+	"/stepTo":15000,
 	"speedFrom":0,
 	"speedTo":50000,
+	"vNormOrigin":[0.0],
 }
 
 {
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"addr":"192.168.1.200",
-	"port":8888,
-	"_wakeUp":"servo1",
-}
-
-{
-	"name":"servo1",
-	"class":"_ArduServo",
-	"bInst":0,
+	"name":"omX2",
+	"class":"_OrientalMotor",
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"apUDP",
+	"_Modbus":"modbus",
+	"iSlave":4,
+	"stepFrom":3000,
+	"stepTo":128000,
+	"speedFrom":0,
+	"speedTo":46000,
+	"vNormOrigin":[1.0],
+}
+
+{
+	"name":"omY2",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":5,
+	"stepFrom":7000,
+	"stepTo":48000,
+	"/stepTo":15000,
+	"speedFrom":0,
+	"speedTo":50000,
+	"vNormOrigin":[0.0],
+}
+
+{
+	"name":"arduIO1",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"addr":"192.168.8.100",
+	"port":8888,
+	"_wakeUp":"arduServo",
+}
+
+{
+	"name":"arduServo1",
+	"class":"_ArduServo",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"arduIO1",
+	
+	{
+		"pwmL":1500,
+		"pwmH":2300,
+		"dir":-1,
+	}
+	{
+		"pwmL":700,
+		"pwmH":1500,
+		"dir":1,
+	}
+}
+
+{
+	"name":"arduIO2",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"addr":"192.168.8.101",
+	"port":8888,
+	"_wakeUp":"arduServo",
+}
+
+{
+	"name":"arduServo2",
+	"class":"_ArduServo",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"arduIO2",
 	
 	{
 		"pwmL":1500,
@@ -221,7 +272,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -230,42 +281,35 @@
 		"name":"action",
 
 		{
-			"name":"recover",
+			"name":"standby",
+			"dT":500000,
 			{
-				"_ActuatorBase":"omX",
-				"pos":[0.825],
+				"_ActuatorBase":"omX1",
+				"pos":[0.9],
 			}
 			{
-				"_ActuatorBase":"omZ",
-				"pos":[0.2],
-			}
-			{
-				"_ActuatorBase":"servo1",
+				"_ActuatorBase":"omY1",
 				"pos":[0.0],
 			}
-		}
-
-		{
-			"name":"standby",
-			"dT":-1,
 			{
-				"_ActuatorBase":"servo1",
+				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
 			}
 		}
 
 		{
 			"name":"descent",
+			"dT":500000,
 			{
-				"_ActuatorBase":"omX",
+				"_ActuatorBase":"omX1",
 				"pos":[-1.0],
 			}
 			{
-				"_ActuatorBase":"omZ",
+				"_ActuatorBase":"omY1",
 				"pos":[-1.0],
 			}
 			{
-				"_ActuatorBase":"servo1",
+				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
 			}
 		}
@@ -274,20 +318,7 @@
 			"name":"catch",
 			"dT":500000,
 			{
-				"_ActuatorBase":"servo1",
-				"pos":[0.0],
-			}
-		}
-
-		{
-			"name":"verify",
-			"/dT":-1,
-			{
-				"_ActuatorBase":"omX",
-				"pos":[0.7],
-			}
-			{
-				"_ActuatorBase":"omZ",
+				"_ActuatorBase":"arduServo1",
 				"pos":[0.0],
 			}
 		}
@@ -295,24 +326,28 @@
 		{
 			"name":"move",
 			{
-				"_ActuatorBase":"omX",
-				"pos":[-1.0],
+				"_ActuatorBase":"omX1",
+				"pos":[0.1],
 			}
 			{
-				"_ActuatorBase":"omZ",
+				"_ActuatorBase":"omY1",
 				"pos":[0.0],
 			}
 		}
 		
 		{
 			"name":"drop",
-			"dT":800000,
+			"dT":500000,
 			{
-				"_ActuatorBase":"omZ",
+				"_ActuatorBase":"omX1",
+				"pos":[0.1],
+			}
+			{
+				"_ActuatorBase":"omY1",
 				"pos":[0.2],
 			}
 			{
-				"_ActuatorBase":"servo1",
+				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
 			}
 		}
@@ -320,21 +355,146 @@
 }
 
 {
-	"name":"sortingArm",
-	"class":"_SortingArm",
-	"bInst":0,
+	"name":"sequencer2",
+	"class":"_Sequencer",
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"viewRGBcrop",
-	"_DetectorBase":"ctrlServer",
-	"_Sequencer":"sequencer1",
-	"actuatorX":"omX",
-	"actuatorZ":"omZ",
-	"iROI":0,
-	"gripX":[0.65,1.0],
-	"gripY":[0.96,1.18],
-	"gripZ":[0.25,0.68],
-	"dropPos":[0.5, 0.4, 0.3, 0.4, 0.2],
-	"classList":[1,3,4],
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+
+		{
+			"name":"standby",
+			"dT":-1,
+			{
+				"_ActuatorBase":"omX2",
+				"pos":[0.2],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.0],
+			}
+			{
+				"_ActuatorBase":"arduServo2",
+				"pos":[1.0],
+			}
+		}
+
+		{
+			"name":"descent",
+			{
+				"_ActuatorBase":"omX2",
+				"pos":[-1.0],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[-1.0],
+			}
+			{
+				"_ActuatorBase":"arduServo2",
+				"pos":[1.0],
+			}
+		}
+
+		{
+			"name":"catch",
+			"dT":500000,
+			{
+				"_ActuatorBase":"arduServo2",
+				"pos":[0.0],
+			}
+		}
+		
+		{
+			"name":"move",
+			{
+				"_ActuatorBase":"omX2",
+				"pos":[1.0],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.0],
+			}
+		}
+		
+		{
+			"name":"drop",
+			"dT":500000,
+			{
+				"_ActuatorBase":"omX2",
+				"pos":[1.0],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.2],
+			}
+			{
+				"_ActuatorBase":"arduServo2",
+				"pos":[1.0],
+			}
+		}
+	}
 }
+
+{
+	"name":"sortingArm1",
+	"class":"_SortingArm",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"viewRGB",
+	"_SortingCtrlServer":"ctrlServer",
+	"_Sequencer":"sequencer1",
+	"actuatorList":["omX1","omY1"],
+	"actuatorX":"omX1",
+	"actuatorZ":"omY1",
+	"gripX":[0.4,1.6],
+	"gripY":[1.4,1.6],
+	"/gripZ":[0.25,0.68],
+	"gripZ":[0.3,1.25],
+	"dropPos":[0.1, 0.1, 0.1, 0.1, 0.1],
+	"classList":[0,1,2,3,4],
+	
+	"vRoi":[0.25, 0.3, 0.85, 0.7],
+}
+
+{
+	"name":"sortingArm2",
+	"class":"_SortingArm",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"viewRGB",
+	"_SortingCtrlServer":"ctrlServer",
+	"_Sequencer":"sequencer2",
+	"actuatorList":["omX2","omY2"],
+	"actuatorX":"omX2",
+	"actuatorZ":"omY2",
+	"gripX":[-1.5,1.0],
+	"gripY":[1.6,1.8],
+	"gripZ":[0.1,0.3],
+	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
+	"classList":[0,1,2,3,4],
+	
+	"vRoi":[0.25, 0.3, 0.85, 0.7],
+}
+
+{
+	"name":"gdUpload",
+	"class":"_GDimgUploader",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"tempDir":"/home/eii/dev/test/",
+	"jpgQuality":80,
+	"gdUpload":"python /home/eii/dev/OpenKAI/python/GoogleAPI/gdUpload.py",
+	"gdFolderID":"1EF2xq42pHqWpOrPad1krfdIVissNoPWz",
+	"gdCredentials":"/home/eii/credentials.json",
+	"_VisionBase":"rs",
+}
+
 

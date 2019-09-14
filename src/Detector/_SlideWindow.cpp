@@ -12,7 +12,7 @@ namespace kai
 
 _SlideWindow::_SlideWindow()
 {
-	m_pC = NULL;
+//	m_pC = NULL;
 	m_pD = NULL;
 	m_vRoi.init();
 	m_vRoi.z = 1.0;
@@ -22,7 +22,6 @@ _SlideWindow::_SlideWindow()
 	m_nW = 0;
 	m_maxD = 0.6;
 	m_dMinArea = 0.3;
-	m_nLevel = 10;
 	m_dRange.init();
 }
 
@@ -40,14 +39,13 @@ bool _SlideWindow::init(void* pKiss)
 	pK->v("dW",&m_dW);
 	pK->v("maxD",&m_maxD);
 	pK->v("minArea",&m_minArea);
-	pK->v("nLevel",&m_nLevel);
 	pK->v("dRange",&m_dRange);
 	pK->v("dMinArea",&m_dMinArea);
 
 	string iName = "";
-	F_ERROR_F(pK->v("_DNNclassifier", &iName));
-	m_pC = (_DNNclassifier*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pC, iName + " not found");
+//	F_ERROR_F(pK->v("_DNNclassifier", &iName));
+//	m_pC = (_DNNclassifier*) (pK->root()->getChildInst(iName));
+//	NULL_Fl(m_pC, iName + " not found");
 
 	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
 	m_pD = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
@@ -61,7 +59,7 @@ bool _SlideWindow::init(void* pKiss)
 		return false;
 	}
 
-	m_nClass = m_pC->m_nClass;
+	m_nClass = 4;//m_pC->m_nClass;
 
 	return true;
 }
@@ -135,10 +133,12 @@ void _SlideWindow::detect(void)
 
 //		o.m_dist = (hist(m_mD(rbb), 0, 255, m_nLevel, m_minArea)/255.0) * m_dRange.len() + m_dRange.x;
 		o.m_dist = ((float)cv::mean(m_mD(r), mDinR).val[0]/255.0) * m_dRange.len() + m_dRange.x;
-		if(m_pC->classify(m_mBGR(r),&o))
-		{
-			add(&o);
-		}
+
+		add(&o);
+//		if(m_pC->classify(m_mBGR(r),&o))
+//		{
+//			add(&o);
+//		}
 	}
 }
 

@@ -24,8 +24,11 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_tLastSentCOO = 0;
 	m_bCOO = false;
 	m_COO.init();
-	m_iState = SORT_STATE_OFF;
 	m_tLastSentState = 0;
+	m_dRange.init();
+
+	m_iState = SORT_STATE_ON;
+
 }
 
 _SortingCtrlServer::~_SortingCtrlServer()
@@ -39,23 +42,28 @@ bool _SortingCtrlServer::init(void *pKiss)
 
 	pK->v("cSpeed", &m_cSpeed);
 	pK->v("cLen", &m_cLen);
+	pK->v("dRange",&m_dRange);
 	pK->v("minOverlap", &m_minOverlap);
 	pK->v("timeOutVerify", &m_timeOutVerify);
 	pK->v("timeOutShow", &m_timeOutShow);
+
 
 	m_nClass = m_pDB->m_nClass;
 
 	string iName;
 
 	iName = "";
+	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pDV, iName + " not found");
+
+	iName = "";
 	F_ERROR_F(pK->v("_OKlink", &iName));
 	m_pOL = (_OKlink*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pOL, iName + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pDV, iName + " not found");
+	m_pOL->setCallback(callbackCMD,this);
+
 
 	return true;
 }
@@ -135,13 +143,15 @@ void _SortingCtrlServer::updateImg(void)
 	i = 0;
 	while ((pO = m_pDB->at(i++)))
 	{
-		IF_CONT(pO->m_topClass < 0);
+//		IF_CONT(pO->m_topClass < 0);
 
 		int j = 0;
 		OBJECT *pT;
 		while ((pT = m_pNext->at(j++)))
 		{
-			IF_CONT(nIoU(pT->m_bb, pO->m_bb) < m_minOverlap);
+//			float nI = nIoU(pT->m_bb, pO->m_bb);
+//			IF_CONT(nI < m_minOverlap);
+			IF_CONT(abs(pT->m_bb.y - pO->m_bb.y) < m_minOverlap);
 
 			if (pT->m_topProb < pO->m_topProb)
 			{
@@ -157,36 +167,14 @@ void _SortingCtrlServer::updateImg(void)
 		pO->m_bVerified = false;
 		pO->setImg(*m_pDV->BGR()->m());
 		pO->setDepthImg(*m_pDV->Depth()->m());
+
+		pO->m_bVerified = true;
+
 		add(pO);
 	}
 
 	uint64_t dT = m_tStamp - m_COO.m_tStamp;
-	IF_(m_bCOO &&
-			dT < m_timeOutVerify &&
-			!m_COO.m_bVerified);
-
-	//update the current operating object which is verified
-	if(m_bCOO && m_COO.m_bVerified)
-	{
-		i = 0;
-		while ((pO = m_pNext->at(i++)))
-		{
-			IF_CONT(m_COO.m_id != pO->m_id);
-
-			pO->m_topClass = m_COO.m_topClass;
-			pO->m_bb = m_COO.m_bb;
-
-			vInt2 cs;
-			cs.x = pO->m_mImgDepth.cols;
-			cs.y = pO->m_mImgDepth.rows;
-			Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
-			Mat mDr = pO->m_mImgDepth(r);
-			pO->m_dist = sum(mDr)[0] / countNonZero(mDr);
-
-			pO->m_bVerified = m_COO.m_bVerified;
-			break;
-		}
-	}
+	IF_(m_bCOO && dT < m_timeOutVerify);
 
 	//update the next operating object to be verified
 	i = 0;
@@ -210,6 +198,8 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 
 	if(cmd == OKLINK_BB)
 	{
+		return;
+
 		int id = unpack_uint32(&pCMD[3], false);
 		int i = 0;
 		OBJECT *pO;
@@ -218,10 +208,28 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 			IF_CONT(pO->m_id != id);
 
 			pO->m_topClass = unpack_int16(&pCMD[7], false);
-			pO->m_bb.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
-			pO->m_bb.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
-			pO->m_bb.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
-			pO->m_bb.w = ((float)unpack_uint16(&pCMD[15], false))*0.001;
+
+			vFloat4 newBB;
+			newBB.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
+			newBB.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
+			newBB.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
+			newBB.w = ((float)unpack_uint16(&pCMD[15], false))*0.001;
+
+			vInt2 cs;
+			cs.x = pO->m_mImgDepth.cols;
+			cs.y = pO->m_mImgDepth.rows;
+			Rect r = convertBB<vInt4>(convertBB(newBB, cs));
+			Mat mDr = pO->m_mImgDepth(r);
+//			float s = (float)sum(mDr)[0];
+//			float nz = (float)countNonZero(mDr);
+//			pO->m_dist = s/nz * m_dRange.len() + m_dRange.x;
+			pO->m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
+
+			pO->m_bb.x = newBB.x;
+			pO->m_bb.y += newBB.y - 0.5;
+			pO->m_bb.z = newBB.z;
+			pO->m_bb.w += newBB.w - 0.5;
+
 			pO->m_bVerified = true;
 		}
 	}

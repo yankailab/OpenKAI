@@ -23,7 +23,10 @@ _SortingArm::_SortingArm()
 	m_rGripZ.init();
 	m_actuatorX = "";
 	m_actuatorZ = "";
-	m_iROI = 0;
+
+	m_vROI.init();
+	m_vROI.z = 1.0;
+	m_vROI.w = 1.0;
 
 }
 
@@ -38,7 +41,7 @@ bool _SortingArm::init(void* pKiss)
 
 	pK->v("actuatorX",&m_actuatorX);
 	pK->v("actuatorZ",&m_actuatorZ);
-	pK->v("iROI",&m_iROI);
+	pK->v("vROI", &m_vROI);
 
 	pK->v("gripX", &m_rGripX);
 	pK->v("gripY", &m_rGripY);
@@ -53,11 +56,11 @@ bool _SortingArm::init(void* pKiss)
 	for (i = 0; i < m_nClass; i++)
 		m_classFlag |= (1 << pClass[i]);
 
-	int pActuator[16];
+	string pActuator[16];
 	int nA = pK->a("actuatorList", pActuator, 16);
 	for (i = 0; i < nA; i++)
 	{
-		iName = "";
+		iName = pActuator[i];
 		_ActuatorBase* pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pA, iName + " not found");
 		m_vAB.push_back(pA);
@@ -117,6 +120,8 @@ void _SortingArm::updateArm(void)
 	IF_(check() < 0);
 	if(m_pDet1->m_iState == SORT_STATE_OFF)
 	{
+		m_pSeq->m_bON = false;
+
 		for(int i=0; i<m_vAB.size(); i++)
 		{
 			_ActuatorBase* pA = m_vAB[i];
@@ -125,6 +130,8 @@ void _SortingArm::updateArm(void)
 
 		return;
 	}
+
+	m_pSeq->m_bON = true;
 
 	vFloat4 vP,vS;
 	vP.init(-1.0);
@@ -139,7 +146,7 @@ void _SortingArm::updateArm(void)
 		int i = 0;
 		while((pO=m_pDet1->at(i++)))
 		{
-			IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
+			IF_CONT(!pO->m_bVerified);
 			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
 			IF_CONT(pO->m_bb.midY() > m_rGripY.y);
 			pO->m_bb.y += m_rGripY.y;
@@ -153,7 +160,9 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
+//			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
+			vP.x = (m_vROI.z - pO->m_bb.midX())/m_vROI.width() * m_rGripX.len() + m_rGripX.x;
+			vP.x = constrain<float>(vP.x, 0.0, 1.0);
 			pSA->setTarget(vP, vS);
 
 			pSA = pAction->getActuator(m_actuatorZ);
@@ -166,18 +175,12 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			vP.x = m_pDropPos[pO->m_topClass];
+			vP.x = m_pDropPos[0];//pO->m_topClass];
 			pSA->setTarget(vP, vS);
 
 			m_pSeq->wakeUp();
 			return;
 		}
-	}
-	else if (cAction == "verify")
-	{
-		NULL_(m_pDet2);
-		OBJECT o = *m_pDet2->at(m_iROI);
-
 	}
 }
 

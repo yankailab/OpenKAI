@@ -74,6 +74,7 @@ public:
 	uint64_t		m_tIntSend;
 	uint64_t		m_tLastSentCOO;
 
+	vFloat2 m_dRange;
 	float m_cSpeed; //conveyer speed
 	float m_cLen;	//conveyer length
 	float m_minOverlap;

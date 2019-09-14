@@ -14,6 +14,7 @@ _Sequencer::_Sequencer()
 {
 	m_iAction = 0;
 	m_iGoAction = -1;
+	m_bON = true;
 }
 
 _Sequencer::~_Sequencer()
@@ -82,7 +83,10 @@ void _Sequencer::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateAction();
+		if(m_bON)
+		{
+			updateAction();
+		}
 
 		this->autoFPSto();
 	}

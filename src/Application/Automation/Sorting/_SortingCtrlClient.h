@@ -54,6 +54,7 @@ public:
 
 	int	m_iState;
 	int	m_iSetState;
+	vFloat4 m_vROI;
 
 	vFloat2 m_vBB;
 	bool	m_bMouse;

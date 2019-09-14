@@ -10,6 +10,9 @@ _SortingCtrlClient::_SortingCtrlClient()
 	m_vBB.x = 0.05;
 	m_vBB.y = 0.05;
 	m_COO.init();
+	m_vROI.init();
+	m_vROI.z = 1.0;
+	m_vROI.w = 1.0;
 
 	m_tLastSent = 0;
 	m_tSendInt = 300000;
@@ -28,6 +31,7 @@ bool _SortingCtrlClient::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("tSendInt",&m_tSendInt);
+	pK->v("vROI",&m_vROI);
 
 	Window *pWin = (Window*) this->m_pWindow;
 	pWin->addCallbackMouse(callbackMouse, this);
@@ -87,16 +91,11 @@ void _SortingCtrlClient::update(void)
 			m_nCMDrecv++;
 		}
 
-		if(m_iSetState != m_iState)
-		{
-			this->sendState(m_iSetState);
-		}
-
-		if(m_COO.m_id >= 0)
-		{
-			if(m_tStamp - m_tLastSent > m_tSendInt)
-				this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
-		}
+//		if(m_COO.m_id >= 0)
+//		{
+//			if(m_tStamp - m_tLastSent > m_tSendInt)
+//				this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//		}
 
 		this->autoFPSto();
 	}
@@ -159,29 +158,6 @@ void _SortingCtrlClient::updateWindow(void)
 	pB = pWin->getBtn(m_COO.m_topClass);
 	if(pB)
 		pB->setShownDown(true);
-
-	if(m_iState == SORT_STATE_OFF)
-	{
-		pB = pWin->getBtn(7);
-		if(pB)
-			pB->setEnable(true);
-
-		pB = pWin->getBtn(8);
-		if(pB)
-			pB->setEnable(false);
-
-	}
-	else
-	{
-		pB = pWin->getBtn(7);
-		if(pB)
-			pB->setEnable(true);
-
-		pB = pWin->getBtn(8);
-		if(pB)
-			pB->setEnable(false);
-
-	}
 }
 
 void _SortingCtrlClient::onMouse(int event, float x, float y)
@@ -202,13 +178,21 @@ void _SortingCtrlClient::onMouse(int event, float x, float y)
 		m_bMouse = false;
 	}
 
-	vFloat4 bb;
-	m_COO.m_bb.x = m_vMouse.x - m_vBB.x;
-	m_COO.m_bb.y = m_vMouse.y - m_vBB.x;
-	m_COO.m_bb.z = m_vMouse.x + m_vBB.x;
-	m_COO.m_bb.w = m_vMouse.y + m_vBB.x;
+	if(m_bMouse)
+	{
+		if(m_vMouse.x > m_vROI.x &&
+			m_vMouse.x < m_vROI.z &&
+			m_vMouse.y > m_vROI.y &&
+			m_vMouse.y < m_vROI.w)
+		{
+			m_COO.m_bb.x = m_vMouse.x - m_vBB.x;
+			m_COO.m_bb.y = m_vMouse.y - m_vBB.x;
+			m_COO.m_bb.z = m_vMouse.x + m_vBB.x;
+			m_COO.m_bb.w = m_vMouse.y + m_vBB.x;
+		}
+	}
 
-	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
 bool _SortingCtrlClient::draw(void)
@@ -219,18 +203,15 @@ bool _SortingCtrlClient::draw(void)
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_COO.m_bb, cs));
-//	rectangle(*pMat, r, Scalar(0,255,0), 5);
+	circle(*pMat, Point(m_COO.m_bb.center().x * pMat->cols,
+						m_COO.m_bb.center().y * pMat->rows), 15, Scalar(0,255,0), 5);
 
 	IF_T(!m_bDebug);
 
-	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
-	string msg;
-	pWin->tabNext();
-	pWin->tabPrev();
+//	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
+//	string msg;
+//	pWin->tabNext();
+//	pWin->tabPrev();
 
 	return true;
 }

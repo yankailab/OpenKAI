@@ -99,6 +99,7 @@ public:
 	vector<SEQ_ACTION> m_vAction;
 	int m_iAction;
 	int m_iGoAction;
+	bool m_bON;
 };
 
 }

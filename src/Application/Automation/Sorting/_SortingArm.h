@@ -53,9 +53,10 @@ public:
 	vFloat2		m_rGripY;	//grip region Y
 	vFloat2		m_rGripZ;	//vertical
 
-	int			m_iROI;
 	string		m_actuatorX;
 	string		m_actuatorZ;
+
+	vFloat4		m_vROI;
 };
 
 }

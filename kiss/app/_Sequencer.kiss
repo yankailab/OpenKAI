@@ -168,14 +168,14 @@
 
 		{
 			"name":"standby",
-			"dT":-1,
+			"dT":1000000,
 			{
 				"_ActuatorBase":"omX1",
-				"pos":[1.0],
+				"pos":[0.9],
 			}
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[-1.0],
+				"pos":[0.0],
 			}
 			{
 				"_ActuatorBase":"arduServo1",
@@ -192,7 +192,7 @@
 			}
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[0.5],
+				"pos":[0.3],
 			}
 			{
 				"_ActuatorBase":"arduServo1",
@@ -230,13 +230,13 @@
 			}
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[0.5],
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
 			}
-		}		
+		}
 	}
 }
 
@@ -252,32 +252,15 @@
 		"name":"action",
 
 		{
-			"name":"recover",
-			"dT":0,
-			{
-				"_ActuatorBase":"omX2",
-				"pos":[1.0],
-			}
-			{
-				"_ActuatorBase":"omY2",
-				"pos":[0.0],
-			}
-			{
-				"_ActuatorBase":"arduServo2",
-				"pos":[0.0],
-			}
-		}
-
-		{
 			"name":"standby",
-			"dT":100000,
+			"dT":1000000,
 			{
 				"_ActuatorBase":"omX2",
-				"pos":[1.0],
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[-1.0],
+				"pos":[0.0],
 			}
 			{
 				"_ActuatorBase":"arduServo2",
@@ -294,7 +277,7 @@
 			}
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[0.5],
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo2",
@@ -315,7 +298,7 @@
 			"name":"move",
 			{
 				"_ActuatorBase":"omX2",
-				"pos":[0.0],
+				"pos":[1.0],
 			}
 			{
 				"_ActuatorBase":"omY2",
@@ -332,7 +315,7 @@
 			}
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[0.5],
+				"pos":[0.2],
 			}
 			{
 				"_ActuatorBase":"arduServo2",

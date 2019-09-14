@@ -14,10 +14,10 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":0,	
+	"bFullScreen":1,	
 	"bDrawMsg":0,
 	"bMouse":1,
-	"bShouMouse":1,
+	"bShowMouse":0,
 	
 	{
 		"name":"button",
@@ -58,7 +58,7 @@
 			"fBtnDown":"/home/kai/dev/eii/img/x_d.png",
 		}
 		{
-			"name":"ESTOP",
+			"name":"STOP",
 			"id":5,
 			"bb":[0.9, 0.8, 1.0, 1.0],
 			"fBtnUp":"/home/kai/dev/eii/img/stop.png",
@@ -85,10 +85,34 @@
 	"name":"gstOpr",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"Window":"OKview",
 	"pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+}
+
+{
+	"name":"gstMonitor1",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"/bbDraw":[0.0,0.8,0.2,1.0],
+	"pipeline":"udpsrc port=5679 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+}
+
+{
+	"name":"gstMonitor2",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"//bbDraw":[0.2,0.8,0.4,1.0],
+	"bbDraw":[0.0,0.7,0.3,1.0],
+	"/pipeline":"udpsrc port=5680 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
 {
@@ -110,27 +134,6 @@
 	"bDraw":1,
 	"Window":"OKview",
 	"_IOBase":"ctrlClientIO",
-}
-
-{
-	"name":"gstMonitor1",
-	"class":"_GStreamer",
-	"FPS":30,
-	"bInst":1,
-	"bDraw":1,
-	"Window":"OKview",
-	"bbDraw":[0.0,0.8,0.2,1.0],
-	"pipeline":"udpsrc port=5679 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
-}
-
-{
-	"name":"gstMonitor2",
-	"class":"_GStreamer",
-	"FPS":30,
-	"bInst":1,
-	"bDraw":1,
-	"Window":"OKview",
-	"bbDraw":[0.2,0.8,0.4,1.0],
-	"pipeline":"udpsrc port=5680 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+	"vROI":[0.25, 0.0, 0.85, 0.8],
 }
 

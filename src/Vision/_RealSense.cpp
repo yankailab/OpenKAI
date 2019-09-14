@@ -126,23 +126,19 @@ bool _RealSense::open(void)
 		m_wD = m_rsDepth.as<rs2::video_frame>().get_width();
 		m_hD = m_rsDepth.as<rs2::video_frame>().get_height();
 
-	}
-	catch (const rs2::camera_disconnected_error& e)
+	} catch (const rs2::camera_disconnected_error& e)
 	{
 		LOG_E("Realsense disconnected");
 		return false;
-	}
-	catch (const rs2::recoverable_error& e)
+	} catch (const rs2::recoverable_error& e)
 	{
 		LOG_E("Realsense open failed");
 		return false;
-	}
-	catch (const rs2::error& e)
+	} catch (const rs2::error& e)
 	{
 		LOG_E("Realsense error");
 		return false;
-	}
-	catch (const std::exception& e)
+	} catch (const std::exception& e)
 	{
 		LOG_E("Realsense exception");
 		return false;
@@ -205,29 +201,45 @@ void _RealSense::update(void)
 
 		this->autoFPSfrom();
 
-		rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
-
-		if (m_rsRGB)
+		try
 		{
-			if (m_bAlign)
+			rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
+
+			if (m_rsRGB)
 			{
-				rs2::frameset rsFramesetAlign = m_rspAlign->process(rsFrameset);
-				m_rsColor = rsFramesetAlign.get_color_frame();
-				m_rsDepth = rsFramesetAlign.get_depth_frame();
+				if (m_bAlign)
+				{
+					rs2::frameset rsFramesetAlign = m_rspAlign->process(rsFrameset);
+					m_rsColor = rsFramesetAlign.get_color_frame();
+					m_rsDepth = rsFramesetAlign.get_depth_frame();
+				}
+				else
+				{
+					m_rsColor = rsFrameset.get_color_frame();
+					m_rsDepth = rsFrameset.get_depth_frame();
+				}
+
+				m_fBGR.copy(
+						Mat(Size(m_w, m_h), CV_8UC3, (void*) m_rsColor.get_data(),
+								Mat::AUTO_STEP));
 			}
 			else
 			{
-				m_rsColor = rsFrameset.get_color_frame();
 				m_rsDepth = rsFrameset.get_depth_frame();
 			}
 
-			m_fBGR.copy(
-					Mat(Size(m_w, m_h), CV_8UC3, (void*) m_rsColor.get_data(),
-							Mat::AUTO_STEP));
-		}
-		else
+		} catch (const rs2::camera_disconnected_error& e)
 		{
-			m_rsDepth = rsFrameset.get_depth_frame();
+			LOG_E("Realsense disconnected");
+		} catch (const rs2::recoverable_error& e)
+		{
+			LOG_E("Realsense open failed");
+		} catch (const rs2::error& e)
+		{
+			LOG_E("Realsense error");
+		} catch (const std::exception& e)
+		{
+			LOG_E("Realsense exception");
 		}
 
 		m_pTPP->wakeUp();

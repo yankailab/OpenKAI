@@ -34,7 +34,7 @@ bool _GDimgUploader::init(void* pKiss)
 	pK->v("tInterval",&m_tInterval);
 	pK->v("tempDir",&m_tempDir);
 	pK->v("gdUpload",&m_gdUpload);
-	pK->v("gdImgFolderID",&m_gdFolderID);
+	pK->v("gdFolderID",&m_gdFolderID);
 	pK->v("gdCredentials",&m_gdCredentials);
 
 	int jpgQuality = 80;

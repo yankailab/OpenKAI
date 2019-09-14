@@ -36,7 +36,7 @@ private:
 	}
 
 public:
-	_DNNclassifier* m_pC;
+//	_DNNclassifier* m_pC;
 	_VisionBase* m_pD;
 
 	Mat		m_mD;
@@ -48,7 +48,6 @@ public:
 	int		m_nW;
 	float	m_maxD;
 	float	m_dMinArea;
-	int		m_nLevel;
 	vFloat2	m_dRange;
 };
 }
