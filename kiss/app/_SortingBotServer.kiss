@@ -324,6 +324,18 @@
 		}
 		
 		{
+			"name":"up",
+			{
+				"_ActuatorBase":"omX1",
+				"pos":[-1.0],
+			}
+			{
+				"_ActuatorBase":"omY1",
+				"pos":[0.0],
+			}
+		}
+
+		{
 			"name":"move",
 			{
 				"_ActuatorBase":"omX1",
@@ -408,6 +420,18 @@
 		}
 		
 		{
+			"name":"up",
+			{
+				"_ActuatorBase":"omX2",
+				"pos":[-1.0],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.0],
+			}
+		}
+
+		{
 			"name":"move",
 			{
 				"_ActuatorBase":"omX2",
@@ -452,8 +476,7 @@
 	"actuatorZ":"omY1",
 	"gripX":[0.4,1.6],
 	"gripY":[1.35,1.6],
-	"/gripZ":[0.25,0.68],
-	"gripZ":[0.3,1.25],
+	"gripZ":[0.1,0.3],
 	"dropPos":[0.1, 0.1, 0.1, 0.1, 0.1],
 	"classList":[0,1,2,3,4],
 	
