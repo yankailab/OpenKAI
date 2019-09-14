@@ -175,7 +175,7 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			vP.x = m_pDropPos[0];//pO->m_topClass];
+			vP.x = m_pDropPos[pO->m_topClass];
 			pSA->setTarget(vP, vS);
 
 			m_pSeq->wakeUp();

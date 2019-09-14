@@ -47,7 +47,6 @@ bool _SortingCtrlServer::init(void *pKiss)
 	pK->v("timeOutVerify", &m_timeOutVerify);
 	pK->v("timeOutShow", &m_timeOutShow);
 
-
 	m_nClass = m_pDB->m_nClass;
 
 	string iName;
@@ -63,7 +62,6 @@ bool _SortingCtrlServer::init(void *pKiss)
 	IF_Fl(!m_pOL, iName + " not found");
 
 	m_pOL->setCallback(callbackCMD,this);
-
 
 	return true;
 }
@@ -168,8 +166,6 @@ void _SortingCtrlServer::updateImg(void)
 		pO->setImg(*m_pDV->BGR()->m());
 		pO->setDepthImg(*m_pDV->Depth()->m());
 
-		pO->m_bVerified = true;
-
 		add(pO);
 	}
 
@@ -198,8 +194,6 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 
 	if(cmd == OKLINK_BB)
 	{
-		return;
-
 		int id = unpack_uint32(&pCMD[3], false);
 		int i = 0;
 		OBJECT *pO;

@@ -137,10 +137,13 @@ void _SortingCtrlClient::onBtn(int id, int state)
 	}
 	else if(id == 5)
 	{
-		if(m_iState == SORT_STATE_OFF)
-			m_iSetState = SORT_STATE_ON;
-		else
-			m_iSetState = SORT_STATE_OFF;
+		m_iSetState = SORT_STATE_OFF;
+
+		this->sendState(m_iSetState);
+	}
+	else if(id == 6)
+	{
+		m_iSetState = SORT_STATE_ON;
 
 		this->sendState(m_iSetState);
 	}
