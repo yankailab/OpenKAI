@@ -152,7 +152,7 @@ void _APcopter_follow::updateTarget(void)
 	if(!bActive())
 	{
 		m_vP = m_vTargetP;
-		m_pPC->ctrlEnable(false);
+		m_pPC->setEnable(false);
 		m_pDet->goSleep();
 		if(m_bUseTracker)
 		{
@@ -176,12 +176,12 @@ void _APcopter_follow::updateTarget(void)
 	if(!find())
 	{
 		m_vP = m_vTargetP;
-		m_pPC->ctrlEnable(false);
+		m_pPC->setEnable(false);
 		return;
 	}
 
 	m_pPC->setPos(m_vP);
-	m_pPC->ctrlEnable(true);
+	m_pPC->setEnable(true);
 }
 
 bool _APcopter_follow::find(void)

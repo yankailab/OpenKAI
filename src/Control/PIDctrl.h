@@ -20,33 +20,32 @@ public:
 	virtual ~PIDctrl();
 
 	virtual bool init(void* pKiss);
-	virtual double update(double v, double vTarget, uint64_t t);
+	virtual float update(float v, float vTarget, uint64_t t);
 	virtual double o(void);
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 	virtual void reset(void);
 
 public:
-	double m_P;
-	double m_I;
-	double m_Imax;
-	double m_D;
+	float m_P;
+	float m_I;
+	float m_Imax;
+	float m_D;
 
-	double m_v;
-	double m_vPred;
-	double m_vTarget;
-	double m_vMin;
-	double m_vMax;
+	float m_v;
+	float m_vPred;
+	float m_vTarget;
+	float m_vMin;
+	float m_vMax;
 
-	double m_e;
-	double m_eOld;
-	double m_eInteg;
+	float m_e;
+	float m_eOld;
+	float m_eInteg;
 
-	double m_dT;
-	double m_K;
-	double m_oMin;
-	double m_oMax;
-	double m_output;
+	float m_dT;
+	float m_oMin;
+	float m_oMax;
+	float m_output;
 
 	uint64_t m_tLastUpdate;
 

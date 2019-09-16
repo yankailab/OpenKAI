@@ -6,18 +6,18 @@ namespace kai
 _APcopter_posCtrl::_APcopter_posCtrl()
 {
 	m_pAP = NULL;
+	m_bEnable = false;
+	m_bFixYaw = false;
+	m_mode = pc_setP;
+
 	m_vP.init();
 	m_vTargetP.init();
+	m_vSpeed.init(1.0);
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
 	m_pAlt = NULL;
 	m_vYaw = 180.0;
-
-	m_bSetV = true;
-	m_bSetP = false;
-	m_bSetON = false;
-	m_bFixYaw = false;
 
 	m_spt.vx = 0.0;
 	m_spt.vy = 0.0;
@@ -38,9 +38,13 @@ bool _APcopter_posCtrl::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vYaw", &m_vYaw);
-	pK->v("bSetV", &m_bSetV);
-	pK->v("bSetP", &m_bSetP);
+	pK->v("mode", (int*)&m_mode);
 	pK->v("bFixYaw", &m_bFixYaw);
+	pK->v("vSpeed", &m_vSpeed);
+
+	m_vSpeed.x = abs(m_vSpeed.x);
+	m_vSpeed.y = abs(m_vSpeed.y);
+	m_vSpeed.z = abs(m_vSpeed.z);
 
 	string iName;
 
@@ -102,7 +106,7 @@ int _APcopter_posCtrl::check(void)
 void _APcopter_posCtrl::updateCtrl(void)
 {
 	IF_(check() < 0);
-	if(!bActive() || !m_bSetON)
+	if(!bActive() || !m_bEnable)
 	{
 		clear();
 		releaseCtrl();
@@ -137,20 +141,30 @@ void _APcopter_posCtrl::updateCtrl(void)
 
 	m_spt.type_mask = 0b0000000111111111;
 
-	if (m_bSetV)
+	if (m_mode == pc_setV)
 	{
 		m_spt.vx = p;		//forward
 		m_spt.vy = r;		//right
 		m_spt.vz = a;		//down
 		m_spt.type_mask &= 0b1111111111000111;
 	}
-
-	if (m_bSetP)
+	else if(m_mode == pc_setP)
 	{
 		m_spt.x = p;		//forward
 		m_spt.y = r;		//right
 		m_spt.z = a;		//down
 		m_spt.type_mask &= 0b1111111111111000;
+	}
+	else if(m_mode == pc_setVP)
+	{
+		m_spt.vx = (p>0.0) ? m_vSpeed.x : -m_vSpeed.x;	//forward
+		m_spt.vy = (r>0.0) ? m_vSpeed.y : -m_vSpeed.y;	//right
+		m_spt.vz = (a>0.0) ? m_vSpeed.z : -m_vSpeed.z;	//down
+		m_spt.x = p;		//forward
+		m_spt.y = r;		//right
+		m_spt.z = a;		//down
+
+		m_spt.type_mask &= 0b1111111111000000;
 	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
@@ -166,9 +180,9 @@ void _APcopter_posCtrl::setTargetPos(vFloat4& vTargetP)
 	m_vTargetP = vTargetP;
 }
 
-void _APcopter_posCtrl::ctrlEnable(bool bON)
+void _APcopter_posCtrl::setEnable(bool bEnable)
 {
-	m_bSetON = bON;
+	m_bEnable = bEnable;
 }
 
 void _APcopter_posCtrl::clear(void)
@@ -209,7 +223,7 @@ bool _APcopter_posCtrl::draw(void)
 	pWin->addMsg(*this->getName());
 	pWin->tabNext();
 
-	if (!bActive() || !m_bSetON)
+	if (!bActive() || !m_bEnable)
 	{
 		pWin->addMsg("Inactive");
 	}
@@ -249,7 +263,7 @@ bool _APcopter_posCtrl::console(int& iY)
 
 	string msg;
 
-	if (!bActive() || !m_bSetON)
+	if (!bActive() || !m_bEnable)
 	{
 		C_MSG("Inactive");
 	}

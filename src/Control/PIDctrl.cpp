@@ -13,11 +13,10 @@ namespace kai
 PIDctrl::PIDctrl()
 {
 	m_dT = 0;
-	m_oMin = -DBL_MAX;
-	m_oMax = DBL_MAX;
-	m_vMin = -DBL_MAX;
-	m_vMax = DBL_MAX;
-	m_K = 1.0;
+	m_oMin = -FLT_MAX;
+	m_oMax = FLT_MAX;
+	m_vMin = -FLT_MAX;
+	m_vMax = FLT_MAX;
 	m_P = 0;
 	m_I = 0;
 	m_Imax = 0;
@@ -39,7 +38,6 @@ bool PIDctrl::init(void* pKiss)
 	pK->v("dT",&m_dT);
 	pK->v("oMin",&m_oMin);
 	pK->v("oMax",&m_oMax);
-	pK->v("K",&m_K);
 
 	pK->v("P",&m_P);
 	pK->v("I",&m_I);
@@ -49,7 +47,7 @@ bool PIDctrl::init(void* pKiss)
 	return true;
 }
 
-double PIDctrl::update(double v, double vTarget, uint64_t t)
+float PIDctrl::update(float v, float vTarget, uint64_t t)
 {
 	if(t <= m_tLastUpdate)
 		return m_output;
@@ -69,11 +67,11 @@ double PIDctrl::update(double v, double vTarget, uint64_t t)
 	m_eInteg += m_e;
 
 	//P,I,D should be of the same symbol
-	double o = m_P * m_e
-			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (double)(t - m_tLastUpdate)) // unit: sec
+	float o = m_P * m_e
+			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (float)(t - m_tLastUpdate)) // unit: sec
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
 
-	m_output = constrain(o*m_K, m_oMin, m_oMax);
+	m_output = constrain(o, m_oMin, m_oMax);
 
 	m_tLastUpdate = t;
 	return m_output;

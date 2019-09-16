@@ -120,7 +120,7 @@ void _APcopter_line::update(void)
 	if(!bActive())
 	{
 		m_vTargetP = m_vSetP;
-		m_pPC->ctrlEnable(false);
+		m_pPC->setEnable(false);
 		return;
 	}
 
@@ -140,13 +140,13 @@ void _APcopter_line::update(void)
 	{
 		m_bFound = false;
 		m_vTargetP = m_vSetP;
-		m_pPC->ctrlEnable(false);
+		m_pPC->setEnable(false);
 		return;
 	}
 
 	m_bFound = true;
 //	m_pPC->setPos(m_vSetP, m_vTargetP);
-	m_pPC->ctrlEnable(true);
+	m_pPC->setEnable(true);
 }
 
 bool _APcopter_line::find(void)

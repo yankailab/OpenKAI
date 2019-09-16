@@ -9,6 +9,13 @@
 namespace kai
 {
 
+enum POSCTRL_MODE
+{
+	pc_setV,
+	pc_setP,
+	pc_setVP,
+};
+
 class _APcopter_posCtrl: public _ActionBase
 {
 public:
@@ -24,7 +31,7 @@ public:
 
 	void setPos(vFloat4& vP);
 	void setTargetPos(vFloat4& vTargetP);
-	void ctrlEnable(bool bON);
+	void setEnable(bool bEnable);
 
 private:
 	void clear(void);
@@ -38,20 +45,21 @@ private:
 
 public:
 	_APcopter_base* m_pAP;
+
+	bool	m_bEnable;
+	bool	m_bFixYaw;
+	POSCTRL_MODE m_mode;
+	mavlink_set_position_target_local_ned_t m_spt;
+
 	//roll, pitch, alt, yaw
 	vFloat4 m_vP;
 	vFloat4 m_vTargetP;
+	vFloat3 m_vSpeed;	//constant speed in setVP mode
 
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;
 	PIDctrl* m_pAlt;
-	double	m_vYaw;
-
-	bool	m_bFixYaw;
-	bool	m_bSetV;
-	bool	m_bSetP;
-	bool	m_bSetON;
-	mavlink_set_position_target_local_ned_t m_spt;
+	float	m_vYaw;
 
 };
 
