@@ -54,6 +54,7 @@
 	"name":"apSendPos",
 	"class":"_APcopter_sendPos",
 	"bInst":1,
+	"FPS":10,
 	"bDraw":1,
 	"Window":"OKview",
 	"_OKlinkAPcopter":"apOKlink",
