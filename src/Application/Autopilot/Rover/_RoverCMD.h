@@ -1,10 +1,14 @@
 #ifndef OpenKAI_src_Autopilot_Rover__RoverCMD_H_
 #define OpenKAI_src_Autopilot_Rover__RoverCMD_H_
 
-#include "../../../Protocol/_OKlink.h"
+#include "../../../Protocol/_ProtocolBase.h"
 
 namespace kai
 {
+
+#define ROVERCMD_STATE 0
+#define ROVERCMD_PWM 1
+#define ROVERCMD_PINOUT 2
 
 enum ROVER_MODE
 {
@@ -24,7 +28,7 @@ const string c_roverModeName[] =
 	"BACKWARD",
 };
 
-class _RoverCMD: public _OKlink
+class _RoverCMD: public _ProtocolBase
 {
 public:
 	_RoverCMD();
@@ -36,6 +40,10 @@ public:
 	bool console(int& iY);
 
 	void handleCMD(void);
+
+	void sendState(int iState);
+	void setPWM(int nChan, uint16_t* pChan);
+	void pinOut(uint8_t iPin, uint8_t state);
 
 private:
 	void update(void);

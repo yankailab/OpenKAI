@@ -1,8 +1,8 @@
-#include "_OKlink.h"
+#include "_ProtocolBase.h"
 
 namespace kai
 {
-_OKlink::_OKlink()
+_ProtocolBase::_ProtocolBase()
 {
 	m_pIO = NULL;
 	m_pBuf = NULL;
@@ -13,11 +13,11 @@ _OKlink::_OKlink()
 	m_pfInst = NULL;
 }
 
-_OKlink::~_OKlink()
+_ProtocolBase::~_ProtocolBase()
 {
 }
 
-bool _OKlink::init(void* pKiss)
+bool _ProtocolBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -35,7 +35,7 @@ bool _OKlink::init(void* pKiss)
 	return true;
 }
 
-bool _OKlink::start(void)
+bool _ProtocolBase::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -49,7 +49,7 @@ bool _OKlink::start(void)
 	return true;
 }
 
-int _OKlink::check(void)
+int _ProtocolBase::check(void)
 {
 	NULL__(m_pIO,-1);
 	IF__(!m_pIO->isOpen(),-1);
@@ -58,7 +58,7 @@ int _OKlink::check(void)
 	return 0;
 }
 
-void _OKlink::update(void)
+void _ProtocolBase::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -86,7 +86,7 @@ void _OKlink::update(void)
 	}
 }
 
-bool _OKlink::readCMD(void)
+bool _ProtocolBase::readCMD(void)
 {
 	uint8_t	inByte;
 	int		byteRead;
@@ -102,12 +102,12 @@ bool _OKlink::readCMD(void)
 			{
 				m_recvMsg.m_nPayload = m_recvMsg.m_pBuf[2];
 			}
-			else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + OKLINK_N_HEADER)
+			else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + PROTOCOL_N_HEADER)
 			{
 				return true;
 			}
 		}
-		else if (inByte == OKLINK_BEGIN)
+		else if (inByte == PROTOCOL_BEGIN)
 		{
 			m_recvMsg.m_cmd = inByte;
 			m_recvMsg.m_pBuf[0] = inByte;
@@ -119,7 +119,7 @@ bool _OKlink::readCMD(void)
 	return false;
 }
 
-void _OKlink::handleCMD(void)
+void _ProtocolBase::handleCMD(void)
 {
 	if(m_pfCallback)
 	{
@@ -129,7 +129,7 @@ void _OKlink::handleCMD(void)
 	m_recvMsg.reset();
 }
 
-void _OKlink::setCallback(CallbackCMD cb, void* pInst)
+void _ProtocolBase::setCallback(CallbackProtocol cb, void* pInst)
 {
 	NULL_(cb);
 	NULL_(pInst);
@@ -138,67 +138,7 @@ void _OKlink::setCallback(CallbackCMD cb, void* pInst)
 	m_pfInst = pInst;
 }
 
-void _OKlink::sendState(int iState)
-{
-	IF_(check()<0);
-
-	m_pBuf[0] = OKLINK_BEGIN;
-	m_pBuf[1] = OKLINK_STATE;
-	m_pBuf[2] = 4;
-	pack_int32(&m_pBuf[3], iState, false);
-
-	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 4);
-}
-
-void _OKlink::setPWM(int nChan, uint16_t* pChan)
-{
-	IF_(check()<0);
-	IF_(nChan <= 0);
-
-	m_pBuf[0] = OKLINK_BEGIN;
-	m_pBuf[1] = OKLINK_PWM;
-	m_pBuf[2] = nChan * 2;
-
-	for (int i = 0; i < nChan; i++)
-	{
-		m_pBuf[OKLINK_N_HEADER + i * 2] = (uint8_t)(pChan[i] & 0xFF);
-		m_pBuf[OKLINK_N_HEADER + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
-	}
-
-	m_pIO->write(m_pBuf, OKLINK_N_HEADER + nChan * 2);
-}
-
-void _OKlink::pinOut(uint8_t iPin, uint8_t state)
-{
-	IF_(check()<0);
-
-	m_pBuf[0] = OKLINK_BEGIN;
-	m_pBuf[1] = OKLINK_PIN_OUTPUT;
-	m_pBuf[2] = 2;
-	m_pBuf[3] = iPin;
-	m_pBuf[4] = state;
-
-	m_pIO->write(m_pBuf, 5);
-}
-
-void _OKlink::sendBB(uint32_t id, uint16_t iClass, vFloat4& bb)
-{
-	IF_(check()<0);
-
-	m_pBuf[0] = OKLINK_BEGIN;
-	m_pBuf[1] = OKLINK_BB;
-	m_pBuf[2] = 14;
-	pack_uint32(&m_pBuf[3], id, false);
-	pack_int16(&m_pBuf[7], iClass, false);
-	pack_uint16(&m_pBuf[9], (uint16_t)(bb.x*1000.0), false);
-	pack_uint16(&m_pBuf[11], (uint16_t)(bb.y*1000.0), false);
-	pack_uint16(&m_pBuf[13], (uint16_t)(bb.z*1000.0), false);
-	pack_uint16(&m_pBuf[15], (uint16_t)(bb.w*1000.0), false);
-
-	m_pIO->write(m_pBuf, OKLINK_N_HEADER + 14);
-}
-
-bool _OKlink::draw(void)
+bool _ProtocolBase::draw(void)
 {
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -221,7 +161,7 @@ bool _OKlink::draw(void)
 	return true;
 }
 
-bool _OKlink::console(int& iY)
+bool _ProtocolBase::console(int& iY)
 {
 	IF_F(!this->_ThreadBase::console(iY));
 	IF_Fl(!m_pIO->isOpen(), "Not connected");

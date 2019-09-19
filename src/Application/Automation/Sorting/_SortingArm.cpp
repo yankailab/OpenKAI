@@ -146,7 +146,6 @@ void _SortingArm::updateArm(void)
 		int i = 0;
 		while((pO=m_pDet1->at(i++)))
 		{
-			IF_CONT(!pO->m_bVerified);
 			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
 			IF_CONT(pO->m_bb.midY() > m_rGripY.y);
 			pO->m_bb.y += m_rGripY.y;

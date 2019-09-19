@@ -32,7 +32,7 @@ bool _DetReceiver::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_OKlinkAPcopter", &iName));
-	m_pOK = (_OKlinkAPcopter*) (pK->root()->getChildInst(iName));
+	m_pOK = (_APcopter_link*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pOK, iName+": not found");
 
 	return true;

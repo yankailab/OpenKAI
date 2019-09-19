@@ -9,22 +9,18 @@
 #define OpenKAI_src_Automation__SortingImgServer_H_
 
 #include "../../../Detector/_DetectorBase.h"
+#include "../../../Protocol/_ProtocolBase.h"
 #include "../../../Vision/_DepthVisionBase.h"
-#include "../../../Protocol/_OKlink.h"
 
-//0 OKLINK_BEGIN
+//0 PROTOCOL_BEGIN
 //1 COMMAND
 //2 PAYLOAD LENGTH
-//3-6 ID
+//3-4 X
+//5-6 Y
 //7-8 iClass
-//9-10 bb.x
-//11-12 bb.y
-//13-14 bb.z
-//15-16 bb.w
 
-#define OKLINK_BB 4
-#define OKLINK_SETSTATE 5
-
+#define SORTINGCTRL_STATE 0
+#define SORTINGCTRL_OBJ 1
 #define SORT_STATE_OFF 0
 #define SORT_STATE_ON 1
 
@@ -62,22 +58,16 @@ private:
 
 public:
 	_DepthVisionBase* m_pDV;
-	_OKlink*		m_pOL;
+	_ProtocolBase*	m_pPB;
+	OBJECT			m_newO;
+	float			m_bbSize;
+	float			m_dT;
 	int				m_iState;
-	uint64_t		m_tLastSentState;
-
-	int				m_ID;
-	OBJECT			m_COO;
-	bool			m_bCOO;
-	uint64_t		m_timeOutVerify;
-	uint64_t		m_timeOutShow;
-	uint64_t		m_tIntSend;
-	uint64_t		m_tLastSentCOO;
+	INTERVAL_EVENT	m_ieState;
 
 	vFloat2 m_dRange;
 	float m_cSpeed; //conveyer speed
 	float m_cLen;	//conveyer length
-	float m_minOverlap;
 
 };
 

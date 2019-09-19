@@ -1,16 +1,18 @@
-#ifndef OpenKAI_src_Autopilot_APcopter__OKlinkAPcopter_H_
-#define OpenKAI_src_Autopilot_APcopter__OKlinkAPcopter_H_
+#ifndef OpenKAI_src_Autopilot_APcopter__APcopter_link_H_
+#define OpenKAI_src_Autopilot_APcopter__APcopter_link_H_
 
-#include "../../../Protocol/_OKlink.h"
+#include "../../../Protocol/_ProtocolBase.h"
 
 namespace kai
 {
 
-class _OKlinkAPcopter: public _OKlink
+#define APLINK_POS 3
+
+class _APcopter_link: public _ProtocolBase
 {
 public:
-	_OKlinkAPcopter();
-	~_OKlinkAPcopter();
+	_APcopter_link();
+	~_APcopter_link();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -25,7 +27,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_OKlinkAPcopter *) This)->update();
+		((_APcopter_link *) This)->update();
 		return NULL;
 	}
 

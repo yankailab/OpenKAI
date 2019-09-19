@@ -66,27 +66,6 @@
 }
 
 {
-	"name":"sw",
-	"class":"_SlideWindow",
-	"bInst":1,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":30,
-	"Window":"viewRGB",
-	"_VisionBase":"rs",
-	"_DepthVisionBase":"depth",
-	"_DNNclassifier":"classifier",
-	"w":0.1,
-	"dW":0.1,
-	"maxD":0.7,
-	"dRange":[0.4,1.5],
-	"dMinArea":0.1,
-	"nLevel":10,
-	"vRoi":[0.25, 0.3, 0.85, 0.7],
-	"bDebug":0,
-}
-
-{
 	"name":"okUDP",
 	"class":"_UDP",
 	"bInst":1,
@@ -120,9 +99,6 @@
 	"dRange":[0.4,1.5],
 	"cSpeed":0.19,
 	"cLen":1.9,
-	"minOverlap":0.8,
-	"timeOutVerify":3000000,
-	"timeOutShow":1000000,
 }
 
 {

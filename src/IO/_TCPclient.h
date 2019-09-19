@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 #include "_IOBase.h"
-#include "../Protocol/Peer.h"
 
 namespace kai
 {

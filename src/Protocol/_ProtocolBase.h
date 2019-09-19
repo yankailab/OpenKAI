@@ -1,24 +1,19 @@
-#ifndef OpenKAI_src_Protocol__OKlink_H_
-#define OpenKAI_src_Protocol__OKlink_H_
+#ifndef OpenKAI_src_Protocol__ProtocolBase_H_
+#define OpenKAI_src_Protocol__ProtocolBase_H_
 
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
 
-//0 OKLINK_BEGIN
+//0 PROTOCOL_BEGIN
 //1 COMMAND
 //2 PAYLOAD LENGTH
 //3 Payload...
 
-#define OKLINK_BEGIN 0xFE
-#define OKLINK_N_HEADER 3
-#define OKLINK_PWM 0
-#define OKLINK_PIN_OUTPUT 1
-#define OKLINK_STATE 2
-#define OKLINK_POS 3
-#define OKLINK_BB 4
+#define PROTOCOL_BEGIN 0xFE
+#define PROTOCOL_N_HEADER 3
 
-struct OKLINK_CMD
+struct PROTOCOL_CMD
 {
 	int m_cmd;
 	int m_nPayload;
@@ -42,16 +37,16 @@ struct OKLINK_CMD
 	}
 };
 
-typedef void (*CallbackCMD)(uint8_t* pCMD, void* pInst);
+typedef void (*CallbackProtocol)(uint8_t* pCMD, void* pInst);
 
 namespace kai
 {
 
-class _OKlink: public _ThreadBase
+class _ProtocolBase: public _ThreadBase
 {
 public:
-	_OKlink();
-	~_OKlink();
+	_ProtocolBase();
+	~_ProtocolBase();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -61,18 +56,13 @@ public:
 
 	virtual bool readCMD(void);
 	virtual void handleCMD(void);
-	void setCallback(CallbackCMD cb, void* pInst);
-
-	void sendState(int iState);
-	void setPWM(int nChan, uint16_t* pChan);
-	void pinOut(uint8_t iPin, uint8_t state);
-	void sendBB(uint32_t id, uint16_t iClass, vFloat4& bb);
+	void setCallback(CallbackProtocol cb, void* pInst);
 
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_OKlink *) This)->update();
+		((_ProtocolBase *) This)->update();
 		return NULL;
 	}
 
@@ -80,10 +70,10 @@ public:
 	_IOBase*	m_pIO;
 	uint8_t*	m_pBuf;
 	int			m_nBuf;
-	OKLINK_CMD	m_recvMsg;
+	PROTOCOL_CMD m_recvMsg;
 	uint64_t	m_nCMDrecv;
 
-	CallbackCMD m_pfCallback;
+	CallbackProtocol m_pfCallback;
 	void*		m_pfInst;
 };
 

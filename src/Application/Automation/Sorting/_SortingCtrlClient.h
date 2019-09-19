@@ -1,14 +1,14 @@
 #ifndef OpenKAI_src_Automation__SortingImgClient_H_
 #define OpenKAI_src_Automation__SortingImgClient_H_
 
-#include "../../../Protocol/_OKlink.h"
 #include "../../../Detector/_DetectorBase.h"
+#include "../../../Protocol/_ProtocolBase.h"
 #include "_SortingCtrlServer.h"
 
 namespace kai
 {
 
-class _SortingCtrlClient: public _OKlink
+class _SortingCtrlClient: public _ProtocolBase
 {
 public:
 	_SortingCtrlClient();

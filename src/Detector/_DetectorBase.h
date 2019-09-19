@@ -23,9 +23,6 @@ namespace kai
 
 struct OBJECT
 {
-	//general
-	int m_id;
-
 	//BBox normalized to 0.0 to 1.0
 	vFloat4 m_bb;
 	float m_dist;
@@ -58,14 +55,8 @@ struct OBJECT
 	int m_iTraj;
 	int m_nTraj;
 
-	//Img
-	Mat m_mImg;
-	Mat m_mImgDepth;
-	bool m_bVerified;
-
 	void init(void)
 	{
-		m_id = -1;
 		m_bb.init();
 		m_dist = 0.0;
 		m_nV = 0;
@@ -75,8 +66,6 @@ struct OBJECT
 		resetClass();
 		m_pTracker = NULL;
 		m_tStamp = 0;
-
-		m_bVerified = false;
 	}
 
 	void addClassIdx(int iClass)
@@ -186,22 +175,6 @@ struct OBJECT
 			m_iTraj = 0;
 		if (m_nTraj < OBJ_N_TRAJ)
 			m_nTraj++;
-	}
-
-	bool setImg(Mat m)
-	{
-		IF_F(m.empty());
-		m.copyTo(m_mImg);
-
-		return true;
-	}
-
-	bool setDepthImg(Mat m)
-	{
-		IF_F(m.empty());
-		m.copyTo(m_mImgDepth);
-
-		return true;
 	}
 
 };

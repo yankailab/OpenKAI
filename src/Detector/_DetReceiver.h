@@ -10,7 +10,7 @@
 
 #include "../Base/common.h"
 #include "_DetectorBase.h"
-#include "../Application/Autopilot/APcopter/_OKlinkAPcopter.h"
+#include "../Application/Autopilot/APcopter/_APcopter_link.h"
 
 namespace kai
 {
@@ -37,7 +37,7 @@ private:
 	}
 
 public:
-	_OKlinkAPcopter* m_pOK;
+	_APcopter_link* m_pOK;
 	uint64_t	m_timeOut;
 
 };

@@ -762,5 +762,25 @@ struct vInt4
 
 };
 
+struct INTERVAL_EVENT
+{
+	uint64_t m_tLastEvent;
+	uint64_t m_tInterval;
+
+	void init(uint64_t uInt)
+	{
+		m_tInterval = uInt;
+		m_tLastEvent = 0;
+	}
+
+	bool update(uint64_t tNow)
+	{
+		IF_F(tNow - m_tLastEvent < m_tInterval);
+
+		m_tLastEvent = tNow;
+		return true;
+	}
+};
+
 }
 #endif

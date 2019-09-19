@@ -18,7 +18,7 @@ _RoverCMD::~_RoverCMD()
 
 bool _RoverCMD::init(void* pKiss)
 {
-	IF_F(!this->_OKlink::init(pKiss));
+	IF_F(!this->_ProtocolBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	return true;
@@ -70,7 +70,7 @@ void _RoverCMD::handleCMD(void)
 {
 	switch (m_recvMsg.m_pBuf[1])
 	{
-	case OKLINK_STATE:
+	case ROVERCMD_STATE:
 		m_mode = (uint8_t)m_recvMsg.m_pBuf[3];
 		m_pwmModeIn = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4], false);
 		m_pwmLin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[6], false);
@@ -93,9 +93,52 @@ void _RoverCMD::handleCMD(void)
 	m_recvMsg.reset();
 }
 
+void _RoverCMD::sendState(int iState)
+{
+	IF_(check()<0);
+
+	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[1] = ROVERCMD_STATE;
+	m_pBuf[2] = 4;
+	pack_int32(&m_pBuf[3], iState, false);
+
+	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + 4);
+}
+
+void _RoverCMD::setPWM(int nChan, uint16_t* pChan)
+{
+	IF_(check()<0);
+	IF_(nChan <= 0);
+
+	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[1] = ROVERCMD_PWM;
+	m_pBuf[2] = nChan * 2;
+
+	for (int i = 0; i < nChan; i++)
+	{
+		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(pChan[i] & 0xFF);
+		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
+	}
+
+	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + nChan * 2);
+}
+
+void _RoverCMD::pinOut(uint8_t iPin, uint8_t state)
+{
+	IF_(check()<0);
+
+	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[1] = ROVERCMD_PINOUT;
+	m_pBuf[2] = 2;
+	m_pBuf[3] = iPin;
+	m_pBuf[4] = state;
+
+	m_pIO->write(m_pBuf, 5);
+}
+
 bool _RoverCMD::draw(void)
 {
-	IF_F(!this->_OKlink::draw());
+	IF_F(!this->_ProtocolBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg;
@@ -115,7 +158,7 @@ bool _RoverCMD::draw(void)
 
 bool _RoverCMD::console(int& iY)
 {
-	IF_F(!this->_OKlink::console(iY));
+	IF_F(!this->_ProtocolBase::console(iY));
 	string msg;
 
 	C_MSG("Mode: " + c_roverModeName[m_mode]);

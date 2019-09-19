@@ -23,7 +23,7 @@ BASE* Module::createInstance(Kiss* pK)
 	IF_N(!pK);
 
 	ADD_MODULE(_ANR);
-	ADD_MODULE(_OKlink);
+	ADD_MODULE(_ProtocolBase);
 	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Canbus);
@@ -120,7 +120,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_slam);
 	ADD_MODULE(_APcopter_sendPos);
 	ADD_MODULE(_APcopter_WP);
-	ADD_MODULE(_OKlinkAPcopter);
+	ADD_MODULE(_APcopter_link);
 
 	ADD_MODULE(_Rover_base);
 	ADD_MODULE(_Rover_move);

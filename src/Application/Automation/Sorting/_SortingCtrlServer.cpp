@@ -13,22 +13,16 @@ namespace kai
 _SortingCtrlServer::_SortingCtrlServer()
 {
 	m_pDV = NULL;
-	m_pOL = NULL;
+	m_pPB = NULL;
 	m_cSpeed = 0.0;
 	m_cLen = 2.0;
-	m_minOverlap = 0.8;
-	m_ID = 0;
-	m_timeOutVerify = USEC_1SEC * 3;
-	m_timeOutShow = USEC_1SEC * 1;
-	m_tIntSend = 100000;
-	m_tLastSentCOO = 0;
-	m_bCOO = false;
-	m_COO.init();
-	m_tLastSentState = 0;
 	m_dRange.init();
 
+	m_newO.init();
+	m_bbSize = 0.05;
+	m_dT = 0.0;
 	m_iState = SORT_STATE_ON;
-
+	m_ieState.init(USEC_1SEC);
 }
 
 _SortingCtrlServer::~_SortingCtrlServer()
@@ -43,9 +37,9 @@ bool _SortingCtrlServer::init(void *pKiss)
 	pK->v("cSpeed", &m_cSpeed);
 	pK->v("cLen", &m_cLen);
 	pK->v("dRange",&m_dRange);
-	pK->v("minOverlap", &m_minOverlap);
-	pK->v("timeOutVerify", &m_timeOutVerify);
-	pK->v("timeOutShow", &m_timeOutShow);
+	pK->v("bbSize", &m_bbSize);
+	pK->v("dT", &m_dT);
+	pK->v("tStateInterval", &m_ieState.m_tInterval);
 
 	m_nClass = m_pDB->m_nClass;
 
@@ -57,11 +51,11 @@ bool _SortingCtrlServer::init(void *pKiss)
 	IF_Fl(!m_pDV, iName + " not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_OKlink", &iName));
-	m_pOL = (_OKlink*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pOL, iName + " not found");
+	F_ERROR_F(pK->v("_ProtocolBase", &iName));
+	m_pPB = (_ProtocolBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pPB, iName + " not found");
 
-	m_pOL->setCallback(callbackCMD,this);
+	m_pPB->setCallback(callbackCMD,this);
 
 	return true;
 }
@@ -81,7 +75,7 @@ bool _SortingCtrlServer::start(void)
 
 int _SortingCtrlServer::check(void)
 {
-	NULL__(m_pOL, -1);
+	NULL__(m_pPB, -1);
 	NULL__(m_pDV, -1);
 
 	return 0;
@@ -96,20 +90,8 @@ void _SortingCtrlServer::update(void)
 		updateImg();
 		updateObj();
 
-		if(m_tStamp - m_tLastSentState > m_tIntSend)
-		{
-			m_pOL->sendState(m_iState);
-			m_tLastSentState = m_tStamp;
-		}
-
-		if(m_bCOO)
-		{
-			if(m_tStamp - m_tLastSentCOO > m_tIntSend)
-			{
-				m_pOL->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
-				m_tLastSentCOO = m_tStamp;
-			}
-		}
+//		if(m_ieState.update(m_tStamp))
+//			m_pPB->sendState(m_iState);
 
 		if (m_bGoSleep)
 		{
@@ -137,99 +119,42 @@ void _SortingCtrlServer::updateImg(void)
 		add(pO);
 	}
 
-	//get new targets and compare to existing ones
-	i = 0;
-	while ((pO = m_pDB->at(i++)))
+	if(m_newO.m_topClass >= 0)
 	{
-//		IF_CONT(pO->m_topClass < 0);
-
-		int j = 0;
-		OBJECT *pT;
-		while ((pT = m_pNext->at(j++)))
-		{
-//			float nI = nIoU(pT->m_bb, pO->m_bb);
-//			IF_CONT(nI < m_minOverlap);
-			IF_CONT(abs(pT->m_bb.y - pO->m_bb.y) < m_minOverlap);
-
-			if (pT->m_topProb < pO->m_topProb)
-			{
-				pT->m_topClass = pO->m_topClass;
-				pT->m_topProb = pO->m_topProb;
-			}
-			break;
-		}
-		IF_CONT(pT);
-
-		pO->m_id = m_ID++;
-		pO->m_tStamp = m_tStamp;
-		pO->m_bVerified = false;
-		pO->setImg(*m_pDV->BGR()->m());
-		pO->setDepthImg(*m_pDV->Depth()->m());
-
-		add(pO);
-	}
-
-	uint64_t dT = m_tStamp - m_COO.m_tStamp;
-	IF_(m_bCOO && dT < m_timeOutVerify);
-
-	//update the next operating object to be verified
-	i = 0;
-	m_bCOO = false;
-	while ((pO = m_pNext->at(i++)))
-	{
-		IF_CONT(pO->m_bVerified);
-		IF_CONT(m_tStamp - pO->m_tStamp > m_timeOutShow);
-
-		m_COO = *pO;
-		m_bCOO = true;
-		break;
+		add(&m_newO);
+		m_newO.init();
 	}
 }
 
 void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 {
 	NULL_(pCMD);
+	IF_(check() < 0);
 
 	uint8_t cmd = pCMD[1];
 
-	if(cmd == OKLINK_BB)
+	if(cmd == SORTINGCTRL_OBJ)
 	{
-		int id = unpack_uint32(&pCMD[3], false);
-		int i = 0;
-		OBJECT *pO;
-		while ((pO = at(i++)))
-		{
-			IF_CONT(pO->m_id != id);
+		float d = m_cSpeed * ((float) m_dT) * 1e-6;
+		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
+		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
+		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
+		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
 
-			pO->m_topClass = unpack_int16(&pCMD[7], false);
+		IF_(m_newO.m_bb.area() < m_minArea);
 
-			vFloat4 newBB;
-			newBB.x = ((float)unpack_uint16(&pCMD[9], false))*0.001;
-			newBB.y = ((float)unpack_uint16(&pCMD[11], false))*0.001;
-			newBB.z = ((float)unpack_uint16(&pCMD[13], false))*0.001;
-			newBB.w = ((float)unpack_uint16(&pCMD[15], false))*0.001;
+		Mat mD = *m_pDV->Depth()->m();
+		vInt2 cs;
+		cs.x = mD.cols;
+		cs.y = mD.rows;
 
-			vInt2 cs;
-			cs.x = pO->m_mImgDepth.cols;
-			cs.y = pO->m_mImgDepth.rows;
-			Rect r = convertBB<vInt4>(convertBB(newBB, cs));
-			Mat mDr = pO->m_mImgDepth(r);
-//			float s = (float)sum(mDr)[0];
-//			float nz = (float)countNonZero(mDr);
-//			pO->m_dist = s/nz * m_dRange.len() + m_dRange.x;
-			pO->m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
-
-			pO->m_bb.x = newBB.x;
-			pO->m_bb.y += newBB.y - 0.5;
-			pO->m_bb.z = newBB.z;
-			pO->m_bb.w += newBB.w - 0.5;
-
-			pO->m_bVerified = true;
-		}
-	}
-	else if(cmd == OKLINK_STATE)
-	{
-		m_iState = unpack_int32(&pCMD[3], false);
+		Rect r = convertBB<vInt4>(convertBB(m_newO.m_bb, cs));
+		Mat mDr = mD(r);
+		float s = (float)sum(mDr)[0];
+		float nz = (float)countNonZero(mDr);
+		m_newO.m_dist = (s/nz)/255.0 * m_dRange.len() + m_dRange.x;
+//		m_newO.m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
+		m_newO.m_topClass = unpack_int16(&pCMD[7], false);
 	}
 }
 
@@ -239,15 +164,6 @@ bool _SortingCtrlServer::draw(void)
 	Window *pWin = (Window*) this->m_pWindow;
 	Mat *pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
-
-	if(m_bCOO)
-	{
-		m_COO.m_mImg.copyTo(*pMat);
-	}
-	else
-	{
-		*pMat = Scalar(0,0,0);
-	}
 
 	return true;
 }

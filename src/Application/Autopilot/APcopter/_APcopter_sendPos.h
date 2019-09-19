@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../_ActionBase.h"
-#include "_OKlinkAPcopter.h"
+#include "_APcopter_link.h"
 
 namespace kai
 {
@@ -38,7 +38,7 @@ private:
 	}
 
 public:
-	_OKlinkAPcopter* m_pOK;
+	_APcopter_link* m_pOK;
 	int		m_key;
 	float	m_dP;
 	vFloat3 m_vPrevP;

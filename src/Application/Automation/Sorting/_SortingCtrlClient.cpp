@@ -27,7 +27,7 @@ _SortingCtrlClient::~_SortingCtrlClient()
 
 bool _SortingCtrlClient::init(void *pKiss)
 {
-	IF_F(!this->_OKlink::init(pKiss));
+	IF_F(!this->_ProtocolBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("tSendInt",&m_tSendInt);
@@ -103,25 +103,10 @@ void _SortingCtrlClient::update(void)
 
 void _SortingCtrlClient::handleCMD(void)
 {
-	if(m_recvMsg.m_pBuf[1] == OKLINK_BB)
-	{
-		int id = unpack_uint32(&m_recvMsg.m_pBuf[3], false);
-		if(id != m_COO.m_id)
-		{
-			m_COO.m_id = id;
-			m_COO.m_topClass = unpack_int16(&m_recvMsg.m_pBuf[7], false);
-			m_COO.m_bb.x = ((float) unpack_uint16(&m_recvMsg.m_pBuf[9], false)) * 0.001;
-			m_COO.m_bb.y = ((float) unpack_uint16(&m_recvMsg.m_pBuf[11], false)) * 0.001;
-			m_COO.m_bb.z = ((float) unpack_uint16(&m_recvMsg.m_pBuf[13], false)) * 0.001;
-			m_COO.m_bb.w = ((float) unpack_uint16(&m_recvMsg.m_pBuf[15], false)) * 0.001;
-
-			updateWindow();
-		}
-	}
-	else if(m_recvMsg.m_pBuf[1] == OKLINK_STATE)
-	{
-		m_iState = unpack_int32(&m_recvMsg.m_pBuf[3], false);
-	}
+//	if(m_recvMsg.m_pBuf[1] == PROTOCOL_STATE)
+//	{
+//		m_iState = unpack_int32(&m_recvMsg.m_pBuf[3], false);
+//	}
 
 	m_recvMsg.reset();
 }
@@ -133,19 +118,19 @@ void _SortingCtrlClient::onBtn(int id, int state)
 	if(id >= 0 && id <= 4)
 	{
 		m_COO.m_topClass = id;
-		this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//		this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 	}
 	else if(id == 5)
 	{
 		m_iSetState = SORT_STATE_OFF;
 
-		this->sendState(m_iSetState);
+//		this->sendState(m_iSetState);
 	}
 	else if(id == 6)
 	{
 		m_iSetState = SORT_STATE_ON;
 
-		this->sendState(m_iSetState);
+//		this->sendState(m_iSetState);
 	}
 
 	updateWindow();
@@ -200,7 +185,7 @@ void _SortingCtrlClient::onMouse(int event, float x, float y)
 
 bool _SortingCtrlClient::draw(void)
 {
-	IF_F(!this->_OKlink::draw());
+	IF_F(!this->_ProtocolBase::draw());
 	Window *pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
@@ -221,7 +206,7 @@ bool _SortingCtrlClient::draw(void)
 
 bool _SortingCtrlClient::console(int &iY)
 {
-	IF_F(!this->_OKlink::console(iY));
+	IF_F(!this->_ProtocolBase::console(iY));
 	string msg;
 
 	return true;

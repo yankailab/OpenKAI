@@ -35,7 +35,7 @@
 #include "../Application/Autopilot/APcopter/_APcopter_takePhoto.h"
 #include "../Application/Autopilot/APcopter/_APcopter_follow.h"
 #include "../Application/Autopilot/APcopter/_APcopter_WP.h"
-#include "../Application/Autopilot/APcopter/_OKlinkAPcopter.h"
+#include "../Application/Autopilot/APcopter/_APcopter_link.h"
 
 #include "../Application/Autopilot/Rover/_Rover_base.h"
 #include "../Application/Autopilot/Rover/_Rover_move.h"
@@ -77,7 +77,7 @@
 #include "../DNN/TensorRT/_DetectNet.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
-#include "../Protocol/_OKlink.h"
+#include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_Livox.h"
