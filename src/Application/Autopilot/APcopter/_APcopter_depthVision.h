@@ -14,9 +14,9 @@ namespace kai
 
 struct DEPTH_ROI
 {
-	uint8_t			m_orientation;
-	vDouble4		m_roi;
-	double 			m_minD;
+	uint8_t		m_orientation;
+	vFloat4		m_roi;
+	float		m_minD;
 
 	void init(void)
 	{

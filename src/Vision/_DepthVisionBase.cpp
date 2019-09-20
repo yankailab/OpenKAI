@@ -35,9 +35,7 @@ bool _DepthVisionBase::init(void* pKiss)
 	pK->v("hD",&m_hD);
 	pK->v("nHistLev",&m_nHistLev);
 	pK->v("minHistD",&m_minHistD);
-
-	pK->v("rFrom", &m_vRange.x);
-	pK->v("rTo", &m_vRange.y);
+	pK->v("vRange", &m_vRange);
 
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
@@ -46,10 +44,10 @@ bool _DepthVisionBase::init(void* pKiss)
 	return true;
 }
 
-double _DepthVisionBase::d(vDouble4* pROI)
+float _DepthVisionBase::d(vFloat4* pROI)
 {
 	IF__(!pROI, -1.0);
-	IF__(m_fDepth.bEmpty(),-1.0);
+	IF__(m_fDepth.bEmpty(), -1.0);
 
 	Size s = m_fDepth.size();
 
@@ -71,13 +69,13 @@ double _DepthVisionBase::d(vDouble4* pROI)
 	return d(&iR);
 }
 
-double _DepthVisionBase::d(vInt4* pROI)
+float _DepthVisionBase::d(vInt4* pROI)
 {
 	IF__(!pROI, -1.0);
-	IF__(m_fDepth.bEmpty(),-1.0);
+	IF__(m_fDepth.bEmpty(), -1.0);
 
     vector<int> vHistLev = { m_nHistLev };
-	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
+	vector<float> vRange = { m_vRange.x, m_vRange.y };
 	vector<int> vChannel = { 0 };
 
 	Rect r = convertBB(*pROI);
@@ -96,7 +94,7 @@ double _DepthVisionBase::d(vInt4* pROI)
 		if(mHist.at<float>(i) >= (float)nMinHist)break;
 	}
 
-	return m_vRange.x + (((double)i)/(double)m_nHistLev) * (m_vRange.y - m_vRange.x);
+	return m_vRange.x + (((float)i)/(float)m_nHistLev) * m_vRange.len();
 }
 
 Frame* _DepthVisionBase::Depth(void)
@@ -109,10 +107,32 @@ bool _DepthVisionBase::draw(void)
 	IF_F(!this->_VisionBase::draw());
 	Window* pWin = (Window*)this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
+	Mat* pMat = pFrame->m();
+
+	if(m_bDebug)
+	{
+		IF_F(pMat->empty());
+
+		vInt2 cs;
+		cs.x = pMat->cols;
+		cs.y = pMat->rows;
+
+		vFloat4 bb;
+		bb.x = 0.4;
+		bb.y = 0.4;
+		bb.z = 0.6;
+		bb.w = 0.6;
+		Rect r = convertBB<vInt4>(convertBB(bb, cs));
+
+		rectangle(*pMat, r, Scalar(0,255,0), 1);
+
+		putText(*pMat, f2str(d(&bb)),
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
+	}
 
 	IF_F(m_depthShow.bEmpty());
 	IF_F(!m_pDepthWin);
-
 	m_pDepthWin->getFrame()->copy(*m_depthShow.m());
 
 	return true;

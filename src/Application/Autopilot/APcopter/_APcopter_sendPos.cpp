@@ -81,16 +81,20 @@ void _APcopter_sendPos::updatePos(void)
 
 	Window* pWin = (Window*) this->m_pWindow;
 	NULL_(pWin);
-	IF_(!pWin->bMouseButton(MOUSE_L));
-
-	float dA = 0.0;
-	if(m_key == 'a')dA = -m_dAlt;
-	else if(m_key == 'z')dA = m_dAlt;
 
 	vFloat3 vP;
-	vP.x = pWin->m_vMouse.x;
-	vP.y = pWin->m_vMouse.y;
-	vP.z = dA;
+	vP.x = 0.5;
+	vP.y = 0.5;
+	vP.z = 0.0;
+
+	if(m_key == 'a')vP.z = -m_dAlt;
+	else if(m_key == 'z')vP.z = m_dAlt;
+
+	if(pWin->bMouseButton(MOUSE_L))
+	{
+		vP.x = pWin->m_vMouse.x;
+		vP.y = pWin->m_vMouse.y;
+	}
 
 	uint64_t dT = m_tStamp - m_tLastSent;
 

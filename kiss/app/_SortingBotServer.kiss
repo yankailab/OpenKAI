@@ -2,21 +2,12 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
+	"bLog":1,
 	"bConsole":0,
 	"bStdErr":1,
 	"waitKey":30,
-}
-
-{
-	"name":"viewOpr",
-	"class":"Window",
-	"bInst":1,
-	"w":1280,
-	"h":720,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.112 port=5678 auto-multicast=false",
 }
 
 {
@@ -24,7 +15,8 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.112 port=5679 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.20 port=5678 auto-multicast=false",
+	"bDrawMsg":0,
 }
 
 {
@@ -41,7 +33,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"viewRGB",
-	"/depthWindow":"viewDepth",
+	"depthWindow":"viewDepth",
 	"vPreset":"High Density",
 	"rsRGB":1,
 	"w":1280,
@@ -52,39 +44,29 @@
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"rFrom":0.4,
-	"rTo":1.5,
+	"minHistD":0.05,
+	"bDebug":0,
 }
 
 {
-	"name":"depth",
-	"class":"_Depth2Gray",
-	"FPS":30,
-	"bInst":1,
-	"Window":"viewDepth",
-	"_DepthVisionBase":"rs",
-}
-
-{
-	"name":"okUDP",
+	"name":"ctrlUDP",
 	"class":"_UDP",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"192.168.8.112",
-	"port":5690,
-	"_wakeUp":"okLink",
+	"port":12000,
+	"_wakeUp":"ctrlLink",
 }
 
 {
-	"name":"okLink",
-	"class":"_OKlink",
+	"name":"ctrlLink",
+	"class":"_ProtocolBase",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"_IOBase":"okUDP",
+	"_IOBase":"ctrlUDP",
 }
 
 {
@@ -94,11 +76,13 @@
 	"bInst":1,
 	"Window":"viewOpr",
 	"_DepthVisionBase":"rs",
-	"_DetectorBase":"sw",
-	"_OKlink":"okLink",
-	"dRange":[0.4,1.5],
+	"_ProtocolBase":"ctrlLink",
 	"cSpeed":0.19,
 	"cLen":1.9,
+	"bbSize":0.05,
+	"dT":0.0,
+	"tStateInterval":1000000,
+	"bDrawPos":1,	
 }
 
 {
@@ -302,10 +286,6 @@
 		{
 			"name":"up",
 			{
-				"_ActuatorBase":"omX1",
-				"pos":[-1.0],
-			}
-			{
 				"_ActuatorBase":"omY1",
 				"pos":[0.0],
 			}
@@ -317,23 +297,11 @@
 				"_ActuatorBase":"omX1",
 				"pos":[0.1],
 			}
-			{
-				"_ActuatorBase":"omY1",
-				"pos":[0.0],
-			}
 		}
 		
 		{
 			"name":"drop",
 			"dT":500000,
-			{
-				"_ActuatorBase":"omX1",
-				"pos":[0.1],
-			}
-			{
-				"_ActuatorBase":"omY1",
-				"pos":[0.2],
-			}
 			{
 				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
@@ -398,10 +366,6 @@
 		{
 			"name":"up",
 			{
-				"_ActuatorBase":"omX2",
-				"pos":[-1.0],
-			}
-			{
 				"_ActuatorBase":"omY2",
 				"pos":[0.0],
 			}
@@ -413,23 +377,11 @@
 				"_ActuatorBase":"omX2",
 				"pos":[1.0],
 			}
-			{
-				"_ActuatorBase":"omY2",
-				"pos":[0.0],
-			}
 		}
 		
 		{
 			"name":"drop",
 			"dT":500000,
-			{
-				"_ActuatorBase":"omX2",
-				"pos":[1.0],
-			}
-			{
-				"_ActuatorBase":"omY2",
-				"pos":[0.2],
-			}
 			{
 				"_ActuatorBase":"arduServo2",
 				"pos":[1.0],
@@ -441,50 +393,46 @@
 {
 	"name":"sortingArm1",
 	"class":"_SortingArm",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGB",
 	"_SortingCtrlServer":"ctrlServer",
 	"_Sequencer":"sequencer1",
-	"actuatorList":["omX1","omY1"],
+	"actuatorList":["omY1","omX1"],
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
-	"gripX":[0.4,1.6],
+	"gripX":[0.6,1.0],
 	"gripY":[1.35,1.6],
-	"gripZ":[0.1,0.3],
+	"gripZ":[0.4,0.9],
 	"dropPos":[0.1, 0.1, 0.1, 0.1, 0.1],
 	"classList":[0,1,2,3,4],
-	
-	"vRoi":[0.25, 0.3, 0.85, 0.7],
 }
 
 {
 	"name":"sortingArm2",
 	"class":"_SortingArm",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGB",
 	"_SortingCtrlServer":"ctrlServer",
 	"_Sequencer":"sequencer2",
-	"actuatorList":["omX2","omY2"],
+	"actuatorList":["omY2","omX2"],
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
-	"gripX":[-1.5,1.0],
+	"gripX":[0.0,0.4],
 	"gripY":[1.6,1.8],
-	"gripZ":[0.1,0.3],
+	"gripZ":[0.4,0.9],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
 	"classList":[0,1,2,3,4],
-	
-	"vRoi":[0.25, 0.3, 0.85, 0.7],
 }
 
 {
 	"name":"gdUpload",
 	"class":"_GDimgUploader",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",

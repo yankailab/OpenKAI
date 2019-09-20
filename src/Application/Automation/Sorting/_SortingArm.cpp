@@ -23,11 +23,6 @@ _SortingArm::_SortingArm()
 	m_rGripZ.init();
 	m_actuatorX = "";
 	m_actuatorZ = "";
-
-	m_vROI.init();
-	m_vROI.z = 1.0;
-	m_vROI.w = 1.0;
-
 }
 
 _SortingArm::~_SortingArm()
@@ -41,7 +36,6 @@ bool _SortingArm::init(void* pKiss)
 
 	pK->v("actuatorX",&m_actuatorX);
 	pK->v("actuatorZ",&m_actuatorZ);
-	pK->v("vROI", &m_vROI);
 
 	pK->v("gripX", &m_rGripX);
 	pK->v("gripY", &m_rGripY);
@@ -126,6 +120,7 @@ void _SortingArm::updateArm(void)
 		{
 			_ActuatorBase* pA = m_vAB[i];
 			pA->moveToOrigin();
+			this->sleepTime(USEC_1SEC);
 		}
 
 		return;
@@ -159,9 +154,8 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-//			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
-			vP.x = (m_vROI.z - pO->m_bb.midX())/m_vROI.width() * m_rGripX.len() + m_rGripX.x;
-			vP.x = constrain<float>(vP.x, 0.0, 1.0);
+			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
+			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
 			pSA->setTarget(vP, vS);
 
 			pSA = pAction->getActuator(m_actuatorZ);

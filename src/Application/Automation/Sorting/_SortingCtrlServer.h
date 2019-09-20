@@ -15,12 +15,12 @@
 //0 PROTOCOL_BEGIN
 //1 COMMAND
 //2 PAYLOAD LENGTH
-//3-4 X
-//5-6 Y
-//7-8 iClass
+//3 X
+//4 Y
+//5 iClass
 
 #define SORTINGCTRL_STATE 0
-#define SORTINGCTRL_OBJ 1
+#define SORTINGCTRL_OBJ 5
 #define SORT_STATE_OFF 0
 #define SORT_STATE_ON 1
 
@@ -65,7 +65,6 @@ public:
 	int				m_iState;
 	INTERVAL_EVENT	m_ieState;
 
-	vFloat2 m_dRange;
 	float m_cSpeed; //conveyer speed
 	float m_cLen;	//conveyer length
 

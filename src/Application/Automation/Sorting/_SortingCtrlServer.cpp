@@ -16,7 +16,6 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_pPB = NULL;
 	m_cSpeed = 0.0;
 	m_cLen = 2.0;
-	m_dRange.init();
 
 	m_newO.init();
 	m_bbSize = 0.05;
@@ -36,12 +35,9 @@ bool _SortingCtrlServer::init(void *pKiss)
 
 	pK->v("cSpeed", &m_cSpeed);
 	pK->v("cLen", &m_cLen);
-	pK->v("dRange",&m_dRange);
 	pK->v("bbSize", &m_bbSize);
 	pK->v("dT", &m_dT);
 	pK->v("tStateInterval", &m_ieState.m_tInterval);
-
-	m_nClass = m_pDB->m_nClass;
 
 	string iName;
 
@@ -49,6 +45,8 @@ bool _SortingCtrlServer::init(void *pKiss)
 	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
 	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
+
+	m_nClass = 5;
 
 	iName = "";
 	F_ERROR_F(pK->v("_ProtocolBase", &iName));
@@ -136,25 +134,36 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 	if(cmd == SORTINGCTRL_OBJ)
 	{
 		float d = m_cSpeed * ((float) m_dT) * 1e-6;
-		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
-		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
+//		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
+//		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
+//		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
+//		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
+
+		m_newO.m_bb.x = (float)pCMD[3]/255.0 - m_bbSize;
+		m_newO.m_bb.y = (float)pCMD[5]/255.0 - m_bbSize + d;
 		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
 		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
-
 		IF_(m_newO.m_bb.area() < m_minArea);
 
-		Mat mD = *m_pDV->Depth()->m();
-		vInt2 cs;
-		cs.x = mD.cols;
-		cs.y = mD.rows;
-
-		Rect r = convertBB<vInt4>(convertBB(m_newO.m_bb, cs));
-		Mat mDr = mD(r);
-		float s = (float)sum(mDr)[0];
-		float nz = (float)countNonZero(mDr);
-		m_newO.m_dist = (s/nz)/255.0 * m_dRange.len() + m_dRange.x;
-//		m_newO.m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
+		m_newO.m_dist = m_pDV->d(&m_newO.m_bb);
 		m_newO.m_topClass = unpack_int16(&pCMD[7], false);
+
+
+//		Mat mD = *m_pDV->Depth()->m();
+//		vInt2 cs;
+//		cs.x = mD.cols;
+//		cs.y = mD.rows;
+//		Rect r = convertBB<vInt4>(convertBB(m_newO.m_bb, cs));
+//		Mat mDr = mD(r);
+//		float s = (float)sum(mDr)[0];
+//		float nz = (float)countNonZero(mDr) + 1;
+//		m_newO.m_dist = (s/nz)/255.0 * m_pDV->m_vRange.len() + m_pDV->m_vRange.x;
+////		m_newO.m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
+//		m_newO.m_topClass = unpack_int16(&pCMD[7], false);
+	}
+	else if(cmd == SORTINGCTRL_STATE)
+	{
+		m_iState = pCMD[3];
 	}
 }
 

@@ -62,14 +62,14 @@ void _APcopter_depthVision::update(void)
 	_Mavlink* pMavlink = m_pAP->m_pMavlink;
 	NULL_(m_pDV);
 
-	vDouble2 range = m_pDV->m_vRange;
+	vFloat2 range = m_pDV->m_vRange;
 	mavlink_distance_sensor_t D;
 
 	for(int i=0; i<m_nROI; i++)
 	{
 		DEPTH_ROI* pR = &m_pROI[i];
 
-		double d = m_pDV->d(&pR->m_roi);
+		float d = m_pDV->d(&pR->m_roi);
 		if(d <= range.x)d = range.y;
 		if(d > range.y)d = range.y;
 		pR->m_minD = d;
@@ -102,8 +102,8 @@ bool _APcopter_depthVision::draw(void)
 	for(int i=0; i<m_nROI; i++)
 	{
 		DEPTH_ROI* pR = &m_pROI[i];
-		vDouble4 roi = pR->m_roi;
-		double d = m_pDV->d(&roi);
+		vFloat4 roi = pR->m_roi;
+		float d = m_pDV->d(&roi);
 
 		Rect r;
 		r.x = roi.x * pMat->cols;

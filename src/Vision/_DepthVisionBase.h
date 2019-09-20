@@ -26,16 +26,16 @@ public:
 	virtual bool draw(void);
 
 	virtual Frame* Depth(void);
-	double d(vInt4* pROI);
-	double d(vDouble4* pROI);
+	float d(vInt4* pROI);
+	float d(vFloat4* pROI);
 
 public:
 	int m_wD;
 	int m_hD;
 	Frame	m_fDepth;
 	int m_nHistLev;
-	vDouble2 m_vRange;
-	double m_minHistD;
+	vFloat2 m_vRange;
+	float m_minHistD;
 
 	Frame	m_depthShow;
 	Window* m_pDepthWin;

@@ -55,8 +55,6 @@ public:
 
 	string		m_actuatorX;
 	string		m_actuatorZ;
-
-	vFloat4		m_vROI;
 };
 
 }
