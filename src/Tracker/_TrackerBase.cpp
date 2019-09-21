@@ -14,19 +14,16 @@ _TrackerBase::_TrackerBase()
 {
 	m_pV = NULL;
 	m_trackerType = "";
-	m_tStampBGR = 0;
 	m_trackState = track_stop;
 	m_bb.init();
 	m_iSet = 0;
 	m_iInit = 0;
 	m_margin = 0.0;
 
-	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _TrackerBase::~_TrackerBase()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _TrackerBase::init(void* pKiss)
@@ -46,6 +43,13 @@ bool _TrackerBase::init(void* pKiss)
 
 void _TrackerBase::createTracker(void)
 {
+}
+
+int _TrackerBase::check(void)
+{
+	NULL__(m_pV,-1);
+
+	return 0;
 }
 
 void _TrackerBase::update(void)

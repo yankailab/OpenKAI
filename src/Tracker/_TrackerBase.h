@@ -32,6 +32,8 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
+	int check(void);
+
 	virtual bool draw(void);
 	virtual bool console(int& iY);
 
@@ -45,17 +47,14 @@ public:
 	_VisionBase* m_pV;
 	Rect2d m_rBB;
 	vFloat4 m_bb;
-	double m_margin;
+	float m_margin;
 
 	Rect2d	m_newBB;
-	int		m_iSet;
-	int		m_iInit;
+	uint64_t	m_iSet;
+	uint64_t	m_iInit;
 
 	string m_trackerType;
-	uint64_t m_tStampBGR;
 	TRACK_STATE	m_trackState;
-
-	pthread_mutex_t m_mutex;
 
 };
 

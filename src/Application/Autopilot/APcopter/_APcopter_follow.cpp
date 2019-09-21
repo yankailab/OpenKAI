@@ -19,13 +19,8 @@ _APcopter_follow::_APcopter_follow()
 	m_vP.init();
 	m_apMount.init();
 
-	m_iTracker = 0;
-	m_bUseTracker = false;
-	m_pTracker[0] = NULL;
-	m_pTracker[1] = NULL;
-	m_pTnow = NULL;
-	m_pTnew = NULL;
-
+	m_bTracker = false;
+	m_pT = NULL;
 }
 
 _APcopter_follow::~_APcopter_follow()
@@ -38,7 +33,7 @@ bool _APcopter_follow::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("iClass",&m_iClass);
-	pK->v("bUseTracker",&m_bUseTracker);
+	pK->v("bTracker",&m_bTracker);
 	pK->v("apMode",&m_apMode);
 
 	Kiss* pG = pK->o("mount");
@@ -79,21 +74,10 @@ bool _APcopter_follow::init(void* pKiss)
 	m_pPC = (_APcopter_posCtrl*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pPC, iName + ": not found");
 
-	if(m_bUseTracker)
-	{
-		iName = "";
-		pK->v("_TrackerBase1", &iName);
-		m_pTracker[0] = (_TrackerBase*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pTracker[0], iName + ": not found");
-
-		iName = "";
-		pK->v("_TrackerBase2", &iName);
-		m_pTracker[1] = (_TrackerBase*) (pK->root()->getChildInst(iName));
-		IF_Fl(!m_pTracker[1], iName + ": not found");
-
-		m_pTnow = m_pTracker[m_iTracker];
-		m_pTnew = m_pTracker[1-m_iTracker];
-	}
+	iName = "";
+	pK->v("_TrackerBase", &iName);
+	m_pT = (_TrackerBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pT, iName + ": not found");
 
 	pK->v("vP",&m_vP);
 	pK->v("vTargetP",&m_vTargetP);
@@ -124,10 +108,9 @@ int _APcopter_follow::check(void)
 	NULL__(m_pPC,-1);
 	NULL__(m_pDet,-1);
 
-	if(m_bUseTracker)
+	if(m_bTracker)
 	{
-		NULL__(m_pTracker[0],-1);
-		NULL__(m_pTracker[1],-1);
+		NULL__(m_pT,-1);
 	}
 
 	return this->_ActionBase::check();
@@ -154,10 +137,9 @@ void _APcopter_follow::updateTarget(void)
 		m_vP = m_vTargetP;
 		m_pPC->setEnable(false);
 		m_pDet->goSleep();
-		if(m_bUseTracker)
+		if(m_bTracker)
 		{
-			m_pTracker[0]->stopTrack();
-			m_pTracker[1]->stopTrack();
+			m_pT->stopTrack();
 		}
 
 		return;
@@ -202,25 +184,18 @@ bool _APcopter_follow::find(void)
 	}
 
 	vFloat4 bb;
-	if(m_bUseTracker)
+	if(m_bTracker)
 	{
 		if(tO)
 		{
-//			if(m_pTnew->trackState() == track_stop)
-//				m_pTnew->startTrack(tO->m_bb);
+			m_pT->startTrack(tO->m_bb);
+			bb = tO->m_bb;
 		}
-
-		if(m_pTnew->trackState() == track_update)
+		else
 		{
-			m_iTracker = 1 - m_iTracker;
-			m_pTnow = m_pTracker[m_iTracker];
-			m_pTnew = m_pTracker[1-m_iTracker];
-			m_pTnew->stopTrack();
+			IF_F(m_pT->trackState() != track_update);
+			bb = *m_pT->getBB();
 		}
-
-		IF_F(m_pTnow->trackState() != track_update);
-
-//		bb = *m_pTnow->getBB();
 	}
 	else
 	{

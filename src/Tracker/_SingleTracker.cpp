@@ -75,47 +75,41 @@ void _SingleTracker::update(void)
 	}
 }
 
-bool _SingleTracker::startTrack(vFloat4& bb)
-{
-	IF_F(!this->_TrackerBase::startTrack(bb));
-
-	pthread_mutex_lock(&m_mutex);
-
-	if(!m_pTracker.empty())
-		m_pTracker.release();
-
-	createTracker();
-	Mat* pMat = m_pV->BGR()->m();
-	m_pTracker->init(*pMat, m_newBB);
-	m_trackState = track_update;
-
-	pthread_mutex_unlock(&m_mutex);
-
-	return true;
-}
-
 void _SingleTracker::track(void)
 {
-	NULL_(m_pV);
+	IF_(check()<0);
+
 	Frame* pFrame = m_pV->BGR();
-	IF_(pFrame->tStamp() <= m_tStampBGR);
-	m_tStampBGR = pFrame->tStamp();
+	IF_(pFrame->bEmpty());
+	Mat m = *pFrame->m();
 
-	Mat* pMat = pFrame->m();
-	IF_(pMat->empty());
+	if(m_iSet > m_iInit)
+	{
+		//init a new track target
+		if(!m_pTracker.empty())
+			m_pTracker.release();
 
-	IF_(m_trackState != track_update);
-	IF_(m_pTracker.empty());
+		createTracker();
+		m_pTracker->init(m, m_newBB);
+		m_trackState = track_update;
+		m_rBB = m_newBB;
+		m_iInit = m_iSet;
+	}
+	else
+	{
+		//track update
+		IF_(m_trackState != track_update);
+		IF_(m_pTracker.empty());
 
-	pthread_mutex_lock(&m_mutex);
-	m_pTracker->update(*pMat, m_rBB);
-	pthread_mutex_unlock(&m_mutex);
+		m_pTracker->update(m, m_rBB);
 
-	vFloat4 dBB = convertBB<vFloat4>(m_rBB);
-	m_bb.x = dBB.x / (float)pMat->cols;
-	m_bb.y = dBB.y / (float)pMat->rows;
-	m_bb.z = dBB.z / (float)pMat->cols;
-	m_bb.w = dBB.w / (float)pMat->rows;
+		vFloat4 dBB = convertBB<vFloat4>(m_rBB);
+		m_bb.x = dBB.x / (float)m.cols;
+		m_bb.y = dBB.y / (float)m.rows;
+		m_bb.z = dBB.z / (float)m.cols;
+		m_bb.w = dBB.w / (float)m.rows;
+	}
+
 }
 
 }

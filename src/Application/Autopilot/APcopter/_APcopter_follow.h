@@ -45,11 +45,8 @@ public:
 	vFloat4 		m_vP;		//variable screen coordinate of the object being followed in roll, pitch, alt, yaw order
 	vFloat4 		m_vTargetP;	//constant screen coordinate where the followed object should get to
 
-	bool			m_bUseTracker;
-	_TrackerBase*	m_pTracker[2];
-	_TrackerBase*	m_pTnow;
-	_TrackerBase*	m_pTnew;
-	int				m_iTracker;
+	bool			m_bTracker;
+	_TrackerBase*	m_pT;
 
 	AP_MOUNT		m_apMount;
 };
