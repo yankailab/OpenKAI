@@ -12,9 +12,9 @@ namespace kai
 
 _SortingArm::_SortingArm()
 {
-	m_pDet1 = NULL;
-	m_pDet2 = NULL;
+	m_pCS = NULL;
 	m_nClass = 0;
+	m_iLastState = -1;
 
 	m_pSeq = NULL;
 	m_classFlag = 0;
@@ -67,12 +67,8 @@ bool _SortingArm::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_SortingCtrlServer", &iName));
-	m_pDet1 = (_SortingCtrlServer*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pDet1, iName + " not found");
-
-	iName = "";
-	F_INFO(pK->v("_DNNclassifier", &iName));
-	m_pDet2 = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pCS = (_SortingCtrlServer*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pCS, iName + " not found");
 
 	return true;
 }
@@ -104,7 +100,7 @@ void _SortingArm::update(void)
 
 int _SortingArm::check(void)
 {
-	NULL__(m_pDet1, -1);
+	NULL__(m_pCS, -1);
 
 	return 0;
 }
@@ -112,9 +108,11 @@ int _SortingArm::check(void)
 void _SortingArm::updateArm(void)
 {
 	IF_(check() < 0);
-	if(m_pDet1->m_iState == SORT_STATE_OFF)
+
+	if(m_pCS->m_iState == SORT_STATE_OFF)
 	{
 		m_pSeq->m_bON = false;
+		m_iLastState = m_pCS->m_iState;
 
 		for(int i=0; i<m_vAB.size(); i++)
 		{
@@ -126,7 +124,14 @@ void _SortingArm::updateArm(void)
 		return;
 	}
 
-	m_pSeq->m_bON = true;
+	if(m_pCS->m_iState != m_iLastState)
+	{
+		m_pSeq->m_bON = true;
+		m_pSeq->gotoAction("standby");
+		while(!m_pSeq->bSleeping());
+		m_pSeq->wakeUp();
+		m_iLastState = m_pCS->m_iState;
+	}
 
 	vFloat4 vP,vS;
 	vP.init(-1.0);
@@ -139,7 +144,7 @@ void _SortingArm::updateArm(void)
 	if (cAction == "standby")
 	{
 		int i = 0;
-		while((pO=m_pDet1->at(i++)))
+		while((pO=m_pCS->at(i++)))
 		{
 			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
 			IF_CONT(pO->m_bb.midY() > m_rGripY.y);

@@ -139,27 +139,17 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 //		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
 //		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
 
-		m_newO.m_bb.x = (float)pCMD[3]/255.0 - m_bbSize;
-		m_newO.m_bb.y = (float)pCMD[5]/255.0 - m_bbSize + d;
+		uint8_t iX = pCMD[3];
+		uint8_t iY = pCMD[4];
+
+		m_newO.m_bb.x = (float)iX/255.0 - m_bbSize;
+		m_newO.m_bb.y = (float)iY/255.0 - m_bbSize + d;
 		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
 		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
 		IF_(m_newO.m_bb.area() < m_minArea);
 
 		m_newO.m_dist = m_pDV->d(&m_newO.m_bb);
-		m_newO.m_topClass = unpack_int16(&pCMD[7], false);
-
-
-//		Mat mD = *m_pDV->Depth()->m();
-//		vInt2 cs;
-//		cs.x = mD.cols;
-//		cs.y = mD.rows;
-//		Rect r = convertBB<vInt4>(convertBB(m_newO.m_bb, cs));
-//		Mat mDr = mD(r);
-//		float s = (float)sum(mDr)[0];
-//		float nz = (float)countNonZero(mDr) + 1;
-//		m_newO.m_dist = (s/nz)/255.0 * m_pDV->m_vRange.len() + m_pDV->m_vRange.x;
-////		m_newO.m_dist = ((float)cv::mean(mDr).val[0]/255.0) * m_dRange.len() + m_dRange.x;
-//		m_newO.m_topClass = unpack_int16(&pCMD[7], false);
+		m_newO.m_topClass = unpack_int16(&pCMD[5], false);
 	}
 	else if(cmd == SORTINGCTRL_STATE)
 	{

@@ -41,8 +41,7 @@ private:
 	}
 
 public:
-	_SortingCtrlServer*	m_pDet1;
-	_DetectorBase*	m_pDet2;
+	_SortingCtrlServer*	m_pCS;
 	_Sequencer*		m_pSeq;
 	vector<_ActuatorBase*> m_vAB;
 
@@ -52,6 +51,7 @@ public:
 	vFloat2		m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
 	vFloat2		m_rGripY;	//grip region Y
 	vFloat2		m_rGripZ;	//vertical
+	int			m_iLastState;
 
 	string		m_actuatorX;
 	string		m_actuatorZ;

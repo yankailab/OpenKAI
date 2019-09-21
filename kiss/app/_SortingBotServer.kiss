@@ -15,7 +15,7 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.20 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.178 port=5678 auto-multicast=false",
 	"bDrawMsg":0,
 }
 
@@ -45,7 +45,7 @@
 	"fDec":0,
 	"fSpat":0,
 	"minHistD":0.05,
-	"bDebug":0,
+	"bDebug":1,
 }
 
 {
@@ -74,15 +74,16 @@
 	"class":"_SortingCtrlServer",
 	"FPS":30,
 	"bInst":1,
-	"Window":"viewOpr",
+	"Window":"viewRGB",
 	"_DepthVisionBase":"rs",
 	"_ProtocolBase":"ctrlLink",
 	"cSpeed":0.19,
 	"cLen":1.9,
 	"bbSize":0.05,
-	"dT":0.0,
+	"dT":0,
 	"tStateInterval":1000000,
-	"bDrawPos":1,	
+	"bDrawPos":1,
+	"bDraw":1,
 }
 
 {
@@ -124,7 +125,7 @@
 	"iSlave":3,
 	"stepFrom":7000,
 	"/stepTo":46000,
-	"stepTo":15000,
+	"stepTo":20000,
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
@@ -156,8 +157,8 @@
 	"_Modbus":"modbus",
 	"iSlave":5,
 	"stepFrom":7000,
-	"/stepTo":46000,
-	"stepTo":15000,
+	"stepTo":46000,
+	"/stepTo":20000,
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
@@ -232,7 +233,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -259,14 +260,13 @@
 
 		{
 			"name":"descent",
-			"dT":500000,
 			{
 				"_ActuatorBase":"omX1",
-				"pos":[-1.0],
+				"pos":[0.7],
 			}
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[-1.0],
+				"pos":[0.5],
 			}
 			{
 				"_ActuatorBase":"arduServo1",
@@ -295,13 +295,13 @@
 			"name":"move",
 			{
 				"_ActuatorBase":"omX1",
-				"pos":[0.1],
+				"pos":[0.0],
 			}
 		}
 		
 		{
 			"name":"drop",
-			"dT":500000,
+			"dT":1000000,
 			{
 				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
@@ -323,10 +323,10 @@
 
 		{
 			"name":"standby",
-			"dT":-1,
+			"dT":500000,
 			{
 				"_ActuatorBase":"omX2",
-				"pos":[0.2],
+				"pos":[0.08],
 			}
 			{
 				"_ActuatorBase":"omY2",
@@ -342,11 +342,11 @@
 			"name":"descent",
 			{
 				"_ActuatorBase":"omX2",
-				"pos":[-1.0],
+				"pos":[0.28],
 			}
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[-1.0],
+				"pos":[1.0],
 			}
 			{
 				"_ActuatorBase":"arduServo2",
@@ -381,7 +381,7 @@
 		
 		{
 			"name":"drop",
-			"dT":500000,
+			"dT":1000000,
 			{
 				"_ActuatorBase":"arduServo2",
 				"pos":[1.0],
@@ -402,17 +402,17 @@
 	"actuatorList":["omY1","omX1"],
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
-	"gripX":[0.6,1.0],
+	"gripX":[0.7,1.0],
 	"gripY":[1.35,1.6],
-	"gripZ":[0.4,0.9],
-	"dropPos":[0.1, 0.1, 0.1, 0.1, 0.1],
+	"gripZ":[1.0,1.5],
+	"dropPos":[0.0, 0.0, 0.0, 0.0, 0.0],
 	"classList":[0,1,2,3,4],
 }
 
 {
 	"name":"sortingArm2",
 	"class":"_SortingArm",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGB",
@@ -421,9 +421,9 @@
 	"actuatorList":["omY2","omX2"],
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
-	"gripX":[0.0,0.4],
-	"gripY":[1.6,1.8],
-	"gripZ":[0.4,0.9],
+	"gripX":[0.0,0.28],
+	"gripY":[1.6,1.85],
+	"gripZ":[1.0,1.5],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
 	"classList":[0,1,2,3,4],
 }
