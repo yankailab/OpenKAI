@@ -20,7 +20,7 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_newO.init();
 	m_bbSize = 0.05;
 	m_dT = 0.0;
-	m_iState = SORT_STATE_ON;
+	m_iState = SORT_STATE_OFF;
 	m_ieState.init(USEC_1SEC);
 }
 

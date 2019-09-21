@@ -16,6 +16,11 @@ namespace kai
 #define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y)
 #define EAQ(x,y,z) ((abs(x-y)<z)?true:false)
 
+template <typename T> inline T map(T x, T inMin, T inMax, T outMin, T outMax)
+{
+  return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
 inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
 {
 	IF__(m.empty(), -1.0);

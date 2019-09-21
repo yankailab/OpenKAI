@@ -2,12 +2,12 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"bConsole":0,
 	"bStdErr":1,
-	"waitKey":30,
+	"waitKey":15,
 }
 
 {
@@ -15,7 +15,7 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
-	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.178 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.8.201 port=5678 auto-multicast=false",
 	"bDrawMsg":0,
 }
 
@@ -78,12 +78,13 @@
 	"_DepthVisionBase":"rs",
 	"_ProtocolBase":"ctrlLink",
 	"cSpeed":0.19,
-	"cLen":1.9,
+	"cLen":2.3,
 	"bbSize":0.05,
-	"dT":0,
+	"dT":100000,
 	"tStateInterval":1000000,
 	"bDrawPos":1,
 	"bDraw":1,
+
 }
 
 {
@@ -124,8 +125,8 @@
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"stepFrom":7000,
-	"/stepTo":46000,
-	"stepTo":20000,
+	"stepTo":46000,
+	"/stepTo":20000,
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
@@ -233,7 +234,7 @@
 {
 	"name":"sequencer1",
 	"class":"_Sequencer",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -276,7 +277,7 @@
 
 		{
 			"name":"catch",
-			"dT":500000,
+			"dT":400000,
 			{
 				"_ActuatorBase":"arduServo1",
 				"pos":[0.0],
@@ -287,7 +288,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[0.0],
+				"pos":[0.2],
 			}
 		}
 
@@ -295,6 +296,10 @@
 			"name":"move",
 			{
 				"_ActuatorBase":"omX1",
+				"pos":[0.0],
+			}
+			{
+				"_ActuatorBase":"omY1",
 				"pos":[0.0],
 			}
 		}
@@ -323,7 +328,7 @@
 
 		{
 			"name":"standby",
-			"dT":500000,
+			"dT":-1,
 			{
 				"_ActuatorBase":"omX2",
 				"pos":[0.08],
@@ -356,7 +361,7 @@
 
 		{
 			"name":"catch",
-			"dT":500000,
+			"dT":400000,
 			{
 				"_ActuatorBase":"arduServo2",
 				"pos":[0.0],
@@ -367,7 +372,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[0.0],
+				"pos":[0.2],
 			}
 		}
 
@@ -376,6 +381,10 @@
 			{
 				"_ActuatorBase":"omX2",
 				"pos":[1.0],
+			}
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.0],
 			}
 		}
 		
@@ -393,7 +402,7 @@
 {
 	"name":"sortingArm1",
 	"class":"_SortingArm",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewRGB",
@@ -403,8 +412,9 @@
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
 	"gripX":[0.7,1.0],
-	"gripY":[1.35,1.6],
-	"gripZ":[1.0,1.5],
+	"vRoiX":[0.2,0.8],
+	"gripY":[1.5,1.8],
+	"gripZ":[0.5,1.0],
 	"dropPos":[0.0, 0.0, 0.0, 0.0, 0.0],
 	"classList":[0,1,2,3,4],
 }
@@ -422,8 +432,8 @@
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
 	"gripX":[0.0,0.28],
-	"gripY":[1.6,1.85],
-	"gripZ":[1.0,1.5],
+	"gripY":[1.9,2.2],
+	"gripZ":[0.5,1.0],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
 	"classList":[0,1,2,3,4],
 }
@@ -432,7 +442,7 @@
 	"name":"gdUpload",
 	"class":"_GDimgUploader",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",

@@ -19,6 +19,8 @@ _SortingArm::_SortingArm()
 	m_pSeq = NULL;
 	m_classFlag = 0;
 	m_rGripX.init();
+	m_vRoiX.x = 0.0;
+	m_vRoiX.y = 1.0;
 	m_rGripY.init();
 	m_rGripZ.init();
 	m_actuatorX = "";
@@ -38,6 +40,7 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("actuatorZ",&m_actuatorZ);
 
 	pK->v("gripX", &m_rGripX);
+	pK->v("vRoiX", &m_vRoiX);
 	pK->v("gripY", &m_rGripY);
 	pK->v("gripZ", &m_rGripZ);
 	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
@@ -159,8 +162,20 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
-			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
+//			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
+
+			vP.x = constrain(pO->m_bb.midX(), m_vRoiX.x, m_vRoiX.y);
+			vP.x = map<float>(vP.x,
+					m_vRoiX.x,
+					m_vRoiX.y,
+					0.0,1.0);
+			vP.x = map<float>(1.0 - vP.x,
+					0.0,
+					1.0,
+					m_rGripX.x,
+					m_rGripX.y);
+
+//			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
 			pSA->setTarget(vP, vS);
 
 			pSA = pAction->getActuator(m_actuatorZ);
@@ -187,6 +202,18 @@ bool _SortingArm::draw(void)
 	IF_F(!this->_ThreadBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
+	IF_F(pMat->empty());
+
+	int iL = m_vRoiX.x * pMat->cols;
+	int iR = m_vRoiX.y * pMat->cols;
+
+	line(*pMat, Point(iL, 0),
+				Point(iL, pMat->rows),
+				Scalar(0,255,0));
+
+	line(*pMat, Point(iR, 0),
+				Point(iR, pMat->rows),
+				Scalar(0,255,0));
 
 	return true;
 }

@@ -49,6 +49,7 @@ public:
 	float		m_pDropPos[SB_N_CLASS];
 	uint64_t	m_classFlag;
 	vFloat2		m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
+	vFloat2		m_vRoiX;
 	vFloat2		m_rGripY;	//grip region Y
 	vFloat2		m_rGripZ;	//vertical
 	int			m_iLastState;
