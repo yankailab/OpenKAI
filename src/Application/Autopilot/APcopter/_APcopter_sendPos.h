@@ -38,7 +38,7 @@ private:
 	}
 
 public:
-	_APcopter_link* m_pOK;
+	_APcopter_link* m_pAL;
 	int		m_key;
 	float	m_dP;
 	vFloat3 m_vPrevP;

@@ -134,16 +134,10 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 	if(cmd == SORTINGCTRL_OBJ)
 	{
 		float d = m_cSpeed * ((float) m_dT) * 1e-6;
-//		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
-//		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
-//		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
-//		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
-
-		uint8_t iX = pCMD[3];
-		uint8_t iY = pCMD[4];
-
-		m_newO.m_bb.x = (float)iX/255.0 - m_bbSize;
-		m_newO.m_bb.y = (float)iY/255.0 - m_bbSize + d;
+		//		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
+		//		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
+		m_newO.m_bb.x = (float)pCMD[3]/255.0 - m_bbSize;
+		m_newO.m_bb.y = (float)pCMD[4]/255.0 - m_bbSize + d;
 		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
 		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
 		IF_(m_newO.m_bb.area() < m_minArea);

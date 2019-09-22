@@ -6,7 +6,7 @@ namespace kai
 
 _APcopter_sendPos::_APcopter_sendPos()
 {
-	m_pOK = NULL;
+	m_pAL = NULL;
 	m_dP = 0.01;
 	m_vPrevP.init();
 	m_tLastSent = 0;
@@ -35,8 +35,8 @@ bool _APcopter_sendPos::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_OKlinkAPcopter", &iName));
-	m_pOK = (_APcopter_link*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pOK, iName+": not found");
+	m_pAL = (_APcopter_link*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pAL, iName+": not found");
 
 	return true;
 }
@@ -57,7 +57,7 @@ bool _APcopter_sendPos::start(void)
 
 int _APcopter_sendPos::check(void)
 {
-	NULL__(m_pOK,-1);
+	NULL__(m_pAL,-1);
 
 	return this->_ActionBase::check();
 }
@@ -103,7 +103,7 @@ void _APcopter_sendPos::updatePos(void)
 			EAQ(vP.y, m_vPrevP.y, m_dP) &&
 			EAQ(vP.z, m_vPrevP.z, m_dP));
 
-	m_pOK->setPos(vP);
+//	m_pAL->setBB(vP);
 
 	m_vPrevP = vP;
 	m_tLastSent = m_tStamp;

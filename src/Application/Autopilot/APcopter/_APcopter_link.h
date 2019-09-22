@@ -6,7 +6,10 @@
 namespace kai
 {
 
-#define APLINK_POS 3
+#define APLINK_STATE 0
+#define APLINK_BB 1
+#define APLINK_ALT 2
+#define APLINK_HDG 3
 
 class _APcopter_link: public _ProtocolBase
 {
@@ -21,7 +24,10 @@ public:
 
 	void handleCMD(void);
 
-	void setPos(vFloat3 vP);
+	void state(uint8_t iState);
+	void setBB(vFloat4 vP);
+	void setAlt(float dA);
+	void setHdg(float dH);
 
 private:
 	void update(void);
@@ -32,8 +38,14 @@ private:
 	}
 
 public:
-	vFloat3		m_vPos;
-	uint64_t	m_tPos;
+	vFloat4		m_vBB;
+	uint64_t	m_tBB;
+	uint8_t		m_iState;
+	uint64_t	m_tState;
+	float		m_alt;
+	uint64_t	m_tAlt;
+	float		m_hdg;
+	uint64_t	m_tHdg;
 };
 
 }

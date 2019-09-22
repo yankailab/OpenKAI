@@ -288,7 +288,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[0.2],
+				"pos":[0.3],
 			}
 		}
 
@@ -372,7 +372,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[0.2],
+				"pos":[0.3],
 			}
 		}
 
@@ -412,7 +412,7 @@
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
 	"gripX":[0.7,1.0],
-	"vRoiX":[0.2,0.8],
+	"vRoiX":[0.2,0.6],
 	"gripY":[1.5,1.8],
 	"gripZ":[0.5,1.0],
 	"dropPos":[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -432,6 +432,7 @@
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
 	"gripX":[0.0,0.28],
+	"vRoiX":[0.4,0.8],
 	"gripY":[1.9,2.2],
 	"gripZ":[0.5,1.0],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
@@ -442,7 +443,7 @@
 	"name":"gdUpload",
 	"class":"_GDimgUploader",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",

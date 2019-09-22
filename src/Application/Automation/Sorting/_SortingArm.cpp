@@ -149,8 +149,13 @@ void _SortingArm::updateArm(void)
 		int i = 0;
 		while((pO=m_pCS->at(i++)))
 		{
-			IF_CONT(pO->m_bb.midY() < m_rGripY.x);
-			IF_CONT(pO->m_bb.midY() > m_rGripY.y);
+			vP.x = pO->m_bb.midX();
+			vP.y = pO->m_bb.midY();
+
+			IF_CONT(vP.x < m_vRoiX.x);
+			IF_CONT(vP.x > m_vRoiX.y);
+			IF_CONT(vP.y < m_rGripY.x);
+			IF_CONT(vP.y > m_rGripY.y);
 			pO->m_bb.y += m_rGripY.y;
 			pO->m_bb.w += m_rGripY.y;
 
@@ -162,9 +167,8 @@ void _SortingArm::updateArm(void)
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
-//			vP.x = (1.0 - pO->m_bb.midX()) * m_rGripX.len() + m_rGripX.x;
 
-			vP.x = constrain(pO->m_bb.midX(), m_vRoiX.x, m_vRoiX.y);
+			vP.x = constrain(vP.x, m_vRoiX.x, m_vRoiX.y);
 			vP.x = map<float>(vP.x,
 					m_vRoiX.x,
 					m_vRoiX.y,
@@ -174,8 +178,7 @@ void _SortingArm::updateArm(void)
 					1.0,
 					m_rGripX.x,
 					m_rGripX.y);
-
-//			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
+			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
 			pSA->setTarget(vP, vS);
 
 			pSA = pAction->getActuator(m_actuatorZ);

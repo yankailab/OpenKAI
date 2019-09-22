@@ -28,7 +28,6 @@ public:
 	bool start(void);
 
 	void createTracker(void);
-	bool startTrack(vFloat4& bb);
 
 private:
 	void track(void);

@@ -80,18 +80,18 @@ void _DetReceiver::receive(void)
 {
 	IF_(check()<0);
 
-	IF_(m_tStamp - m_pOK->m_tPos > m_timeOut);
-	IF_(m_pOK->m_tPos < 0.0);
+	IF_(m_tStamp - m_pOK->m_tBB > m_timeOut);
+	IF_(m_pOK->m_tBB < 0.0);
 
 	float d = 0.05;
 	OBJECT o;
 	o.init();
 	o.m_tStamp = m_tStamp;
-	o.m_bb.x = m_pOK->m_vPos.x - d;
-	o.m_bb.y = m_pOK->m_vPos.y - d;
-	o.m_bb.z = m_pOK->m_vPos.x + d;
-	o.m_bb.w = m_pOK->m_vPos.y + d;
-	o.m_dist = m_pOK->m_vPos.z; //dAlt
+	o.m_bb.x = m_pOK->m_vBB.x - d;
+	o.m_bb.y = m_pOK->m_vBB.y - d;
+	o.m_bb.z = m_pOK->m_vBB.x + d;
+	o.m_bb.w = m_pOK->m_vBB.y + d;
+	o.m_dist = m_pOK->m_vBB.z; //dAlt
 	o.setTopClass(0, 1.0);
 
 	add(&o);
