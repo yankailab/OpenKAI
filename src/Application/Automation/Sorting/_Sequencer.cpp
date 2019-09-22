@@ -14,7 +14,7 @@ _Sequencer::_Sequencer()
 {
 	m_iAction = 0;
 	m_iGoAction = -1;
-	m_bON = true;
+	m_bON = false;
 }
 
 _Sequencer::~_Sequencer()

@@ -51,9 +51,6 @@ public:
 	vFloat4 m_vNormTargetSpeed;
 	vFloat4 m_vNormPosErr;
 
-	uint64_t m_tStampCmdSet;
-	uint64_t m_tStampCmdSent;
-
 	_ActuatorBase* m_pParent;
 
 };

@@ -113,6 +113,9 @@
 	"speedFrom":0,
 	"speedTo":46000,
 	"vNormOrigin":[0.0],
+	"tIntCheckAlarm":100000,
+	"tIntSendCMD":50000,
+	"tIntReadStatus":50000,
 }
 
 {
@@ -130,6 +133,9 @@
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
+	"tIntCheckAlarm":100000,
+	"tIntSendCMD":50000,
+	"tIntReadStatus":50000,
 }
 
 {
@@ -146,6 +152,9 @@
 	"speedFrom":0,
 	"speedTo":46000,
 	"vNormOrigin":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntSendCMD":50000,
+	"tIntReadStatus":50000,
 }
 
 {
@@ -163,6 +172,9 @@
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
+	"tIntCheckAlarm":100000,
+	"tIntSendCMD":50000,
+	"tIntReadStatus":50000,
 }
 
 {
@@ -241,6 +253,14 @@
 	
 	{
 		"name":"action",
+
+		{
+			"name":"preStandby",
+			{
+				"_ActuatorBase":"omY1",
+				"pos":[0.0],
+			}
+		}
 
 		{
 			"name":"standby",
@@ -325,6 +345,14 @@
 	
 	{
 		"name":"action",
+
+		{
+			"name":"preStandby",
+			{
+				"_ActuatorBase":"omY2",
+				"pos":[0.0],
+			}
+		}
 
 		{
 			"name":"standby",
@@ -412,9 +440,9 @@
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
 	"gripX":[0.7,1.0],
-	"vRoiX":[0.2,0.6],
+	"vRoiX":[0.2,0.7],
 	"gripY":[1.5,1.8],
-	"gripZ":[0.5,1.0],
+	"gripZ":[0.7,1.1],
 	"dropPos":[0.0, 0.0, 0.0, 0.0, 0.0],
 	"classList":[0,1,2,3,4],
 }
@@ -432,9 +460,9 @@
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
 	"gripX":[0.0,0.28],
-	"vRoiX":[0.4,0.8],
+	"vRoiX":[0.4,0.9],
 	"gripY":[1.9,2.2],
-	"gripZ":[0.5,1.0],
+	"gripZ":[0.7,1.1],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],
 	"classList":[0,1,2,3,4],
 }

@@ -26,6 +26,10 @@ _OrientalMotor::_OrientalMotor()
 
 	m_cState.init();
 	m_tState.init();
+
+	m_ieCheckAlarm.init(100000);
+	m_ieSendCMD.init(50000);
+	m_ieReadStatus.init(50000);
 }
 
 _OrientalMotor::~_OrientalMotor()
@@ -49,6 +53,10 @@ bool _OrientalMotor::init(void* pKiss)
 	pK->v("brakeTo", &m_vBrakeRange.y);
 	pK->v("currentFrom", &m_vCurrentRange.x);
 	pK->v("currentTo", &m_vCurrentRange.y);
+
+	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
+	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
+	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 	string iName;
 	iName = "";
@@ -98,6 +106,7 @@ int _OrientalMotor::check(void)
 void _OrientalMotor::checkAlarm(void)
 {
 	IF_(check()<0);
+	IF_(!m_ieCheckAlarm.update(m_tStamp));
 
 	static uint64_t tLastAlarm = 0;
 	IF_(m_tStamp - tLastAlarm < 50000);
@@ -112,7 +121,7 @@ void _OrientalMotor::checkAlarm(void)
 void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
-	IF_(m_tStampCmdSet <= m_tStampCmdSent);
+	IF_(!m_ieSendCMD.update(m_tStamp));
 
 	//update normalized value to actual unit
 	m_tState.m_step = m_vNormTargetPos.x * m_vStepRange.len() + m_vStepRange.x;
@@ -145,15 +154,16 @@ void _OrientalMotor::sendCMD(void)
 	pB[16] = 0;
 	pB[17] = 0;
 
-	if(m_pMB->writeRegisters(m_iSlave, 88, 18, pB) == 18)
+	if(m_pMB->writeRegisters(m_iSlave, 88, 18, pB) != 18)
 	{
-		m_tStampCmdSent = m_tStampCmdSet;
+		m_ieSendCMD.reset();
 	}
 }
 
 void _OrientalMotor::readStatus(void)
 {
 	IF_(check()<0);
+	IF_(!m_ieReadStatus.update(m_tStamp));
 
 	static uint64_t tLastStatus = 0;
 	IF_(m_tStamp - tLastStatus < 50000);

@@ -770,7 +770,7 @@ struct INTERVAL_EVENT
 	void init(uint64_t uInt)
 	{
 		m_tInterval = uInt;
-		m_tLastEvent = 0;
+		reset();
 	}
 
 	bool update(uint64_t tNow)
@@ -779,6 +779,11 @@ struct INTERVAL_EVENT
 
 		m_tLastEvent = tNow;
 		return true;
+	}
+
+	void reset(void)
+	{
+		m_tLastEvent = 0;
 	}
 };
 

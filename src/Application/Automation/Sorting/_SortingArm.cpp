@@ -130,7 +130,7 @@ void _SortingArm::updateArm(void)
 	if(m_pCS->m_iState != m_iLastState)
 	{
 		m_pSeq->m_bON = true;
-		m_pSeq->gotoAction("standby");
+		m_pSeq->gotoAction("preStandby");
 		while(!m_pSeq->bSleeping());
 		m_pSeq->wakeUp();
 		m_iLastState = m_pCS->m_iState;

@@ -16,9 +16,6 @@ _ActuatorBase::_ActuatorBase()
 	m_vNormTargetSpeed.init(0.0);
 	m_vNormPosErr.init(0.01);
 
-	m_tStampCmdSet = 1;
-	m_tStampCmdSent = 0;
-
 	m_pParent = NULL;
 }
 
@@ -75,8 +72,6 @@ void _ActuatorBase::move(vFloat4& vSpeed)
 	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
-
-	m_tStampCmdSet = getTimeUsec();
 }
 
 void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
@@ -90,8 +85,6 @@ void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
 	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
-
-	m_tStampCmdSet = getTimeUsec();
 }
 
 void _ActuatorBase::moveToOrigin(void)

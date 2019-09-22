@@ -69,6 +69,10 @@ public:
 	OM_STATE m_cState;
 	OM_STATE m_tState;
 
+	INTERVAL_EVENT m_ieCheckAlarm;
+	INTERVAL_EVENT m_ieSendCMD;
+	INTERVAL_EVENT m_ieReadStatus;
+
 };
 
 }
