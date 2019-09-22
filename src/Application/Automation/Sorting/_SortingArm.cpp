@@ -22,9 +22,12 @@ _SortingArm::_SortingArm()
 	m_vRoiX.x = 0.0;
 	m_vRoiX.y = 1.0;
 	m_rGripY.init();
+	m_vRoiY.x = 0.0;
+	m_vRoiY.y = 1.0;
 	m_rGripZ.init();
 	m_actuatorX = "";
 	m_actuatorZ = "";
+	m_tO.init();
 }
 
 _SortingArm::~_SortingArm()
@@ -42,6 +45,7 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("gripX", &m_rGripX);
 	pK->v("vRoiX", &m_vRoiX);
 	pK->v("gripY", &m_rGripY);
+	pK->v("vRoiY", &m_vRoiY);
 	pK->v("gripZ", &m_rGripZ);
 	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
 
@@ -114,6 +118,7 @@ void _SortingArm::updateArm(void)
 
 	if(m_pCS->m_iState == SORT_STATE_OFF)
 	{
+		m_tO.init();
 		m_pSeq->off();
 		m_iLastState = m_pCS->m_iState;
 
@@ -129,6 +134,7 @@ void _SortingArm::updateArm(void)
 
 	if(m_pCS->m_iState != m_iLastState)
 	{
+		m_tO.init();
 		m_pSeq->on();
 		m_iLastState = m_pCS->m_iState;
 	}
@@ -138,31 +144,57 @@ void _SortingArm::updateArm(void)
 	vS.init(-1.0);
 	vS.x = 1.0;
 
+	float x,y;
+
 	OBJECT* pO;
 	string cAction = m_pSeq->getCurrentActionName();
+
+	if (cAction == "prepareX")
+	{
+		if(m_tO.m_topClass < 0)
+		{
+			m_tO.init();
+			m_pSeq->on();
+			return;
+		}
+
+		float spd = m_pCS->m_cSpeed * ((float) m_dTime) * 1e-6;
+		m_tO.m_bb.y += spd;
+		m_tO.m_bb.w += spd;
+		y = m_tO.m_bb.midY();
+
+		IF_(y < m_rGripY.x);
+		if(y < m_rGripY.y)
+			m_pSeq->m_tResume = 0;
+		else	//out of range, simply reset
+			m_pSeq->on();
+
+		m_tO.init();
+		return;
+	}
 
 	if (cAction == "standby")
 	{
 		int i = 0;
 		while((pO=m_pCS->at(i++)))
 		{
-			float x = pO->m_bb.midX();
-			float y = pO->m_bb.midY();
+			x = pO->m_bb.midX();
+			y = pO->m_bb.midY();
 
 			IF_CONT(x < m_vRoiX.x);
 			IF_CONT(x > m_vRoiX.y);
+			IF_CONT(y < m_vRoiY.x);
+			IF_CONT(y > m_vRoiY.y);
 
-			IF_CONT(y < m_rGripY.x);
-			IF_CONT(y > m_rGripY.y);
-
-			pO->m_bb.y += m_rGripY.y;
-			pO->m_bb.w += m_rGripY.y;
+			m_tO = *pO;
+			pO->m_bb.y += m_pCS->m_cLen;
+			pO->m_bb.w += m_pCS->m_cLen;
 
 			SEQ_ACTION* pAction;
 			SEQ_ACTUATOR* pSA;
 
-			//catch position
-			pAction = m_pSeq->getAction("descent");
+			//prepare X position
+			pAction = m_pSeq->getAction("prepareX");
 			IF_CONT(!pAction);
 
 			//X horizontal
@@ -182,6 +214,10 @@ void _SortingArm::updateArm(void)
 					m_rGripX.y);
 			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
 			pSA->setTarget(vP, vS);
+
+			//catch position
+			pAction = m_pSeq->getAction("descent");
+			IF_CONT(!pAction);
 
 			//Z vertical
 			pSA = pAction->getActuator(m_actuatorZ);
