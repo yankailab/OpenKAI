@@ -122,6 +122,7 @@ void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
+	IF_(m_vNormTargetPos.x < 0.0);
 
 	//update normalized value to actual unit
 	m_tState.m_step = m_vNormTargetPos.x * m_vStepRange.len() + m_vStepRange.x;

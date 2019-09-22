@@ -114,14 +114,14 @@ void _SortingArm::updateArm(void)
 
 	if(m_pCS->m_iState == SORT_STATE_OFF)
 	{
-		m_pSeq->m_bON = false;
+		m_pSeq->off();
 		m_iLastState = m_pCS->m_iState;
 
 		for(int i=0; i<m_vAB.size(); i++)
 		{
 			_ActuatorBase* pA = m_vAB[i];
 			pA->moveToOrigin();
-			this->sleepTime(USEC_1SEC);
+			sleep(1);
 		}
 
 		return;
@@ -129,10 +129,7 @@ void _SortingArm::updateArm(void)
 
 	if(m_pCS->m_iState != m_iLastState)
 	{
-		m_pSeq->m_bON = true;
-		m_pSeq->gotoAction("preStandby");
-		while(!m_pSeq->bSleeping());
-		m_pSeq->wakeUp();
+		m_pSeq->on();
 		m_iLastState = m_pCS->m_iState;
 	}
 
@@ -149,26 +146,31 @@ void _SortingArm::updateArm(void)
 		int i = 0;
 		while((pO=m_pCS->at(i++)))
 		{
-			vP.x = pO->m_bb.midX();
-			vP.y = pO->m_bb.midY();
+			float x = pO->m_bb.midX();
+			float y = pO->m_bb.midY();
 
-			IF_CONT(vP.x < m_vRoiX.x);
-			IF_CONT(vP.x > m_vRoiX.y);
-			IF_CONT(vP.y < m_rGripY.x);
-			IF_CONT(vP.y > m_rGripY.y);
+			IF_CONT(x < m_vRoiX.x);
+			IF_CONT(x > m_vRoiX.y);
+
+			IF_CONT(y < m_rGripY.x);
+			IF_CONT(y > m_rGripY.y);
+
 			pO->m_bb.y += m_rGripY.y;
 			pO->m_bb.w += m_rGripY.y;
 
 			SEQ_ACTION* pAction;
 			SEQ_ACTUATOR* pSA;
 
+			//catch position
 			pAction = m_pSeq->getAction("descent");
 			IF_CONT(!pAction);
 
+			//X horizontal
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
 
-			vP.x = constrain(vP.x, m_vRoiX.x, m_vRoiX.y);
+			vP.init(-1.0);
+			vP.x = constrain(x, m_vRoiX.x, m_vRoiX.y);
 			vP.x = map<float>(vP.x,
 					m_vRoiX.x,
 					m_vRoiX.y,
@@ -181,20 +183,26 @@ void _SortingArm::updateArm(void)
 			vP.x = constrain<float>(vP.x, m_rGripX.x, m_rGripX.y);
 			pSA->setTarget(vP, vS);
 
+			//Z vertical
 			pSA = pAction->getActuator(m_actuatorZ);
 			IF_CONT(!pSA);
+
+			vP.init(-1.0);
 			vP.x = (pO->m_dist - m_rGripZ.x) / m_rGripZ.len();
 			pSA->setTarget(vP, vS);
 
+			//dest
 			pAction = m_pSeq->getAction("move");
 			IF_CONT(!pAction);
 
 			pSA = pAction->getActuator(m_actuatorX);
 			IF_CONT(!pSA);
+
+			vP.init(-1.0);
 			vP.x = m_pDropPos[pO->m_topClass];
 			pSA->setTarget(vP, vS);
 
-			m_pSeq->wakeUp();
+			m_pSeq->m_tResume = 0;
 			return;
 		}
 	}

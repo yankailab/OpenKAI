@@ -128,8 +128,8 @@
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"stepFrom":7000,
-	"stepTo":46000,
-	"/stepTo":20000,
+	"/stepTo":46000,
+	"stepTo":20000,
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
@@ -167,8 +167,8 @@
 	"_Modbus":"modbus",
 	"iSlave":5,
 	"stepFrom":7000,
-	"stepTo":46000,
-	"/stepTo":20000,
+	"/stepTo":46000,
+	"stepTo":20000,
 	"speedFrom":0,
 	"speedTo":50000,
 	"vNormOrigin":[0.0],
@@ -186,7 +186,7 @@
 	"Window":"OKview",
 	"addr":"192.168.8.100",
 	"port":8888,
-	"_wakeUp":"arduServo",
+	"_wakeUp":"arduServo1",
 }
 
 {
@@ -197,14 +197,15 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"arduIO1",
+	"vNormOrigin":[1.0],
 	
 	{
 		"pwmL":1500,
-		"pwmH":2300,
+		"pwmH":2100,
 		"dir":-1,
 	}
 	{
-		"pwmL":700,
+		"pwmL":900,
 		"pwmH":1500,
 		"dir":1,
 	}
@@ -219,7 +220,7 @@
 	"Window":"OKview",
 	"addr":"192.168.8.101",
 	"port":8888,
-	"_wakeUp":"arduServo",
+	"_wakeUp":"arduServo2",
 }
 
 {
@@ -230,6 +231,7 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_IOBase":"arduIO2",
+	"vNormOrigin":[1.0],
 	
 	{
 		"pwmL":1500,
@@ -255,7 +257,7 @@
 		"name":"action",
 
 		{
-			"name":"preStandby",
+			"name":"recover",
 			{
 				"_ActuatorBase":"omY1",
 				"pos":[0.0],
@@ -308,7 +310,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY1",
-				"pos":[0.3],
+				"pos":[0.0],
 			}
 		}
 
@@ -326,7 +328,7 @@
 		
 		{
 			"name":"drop",
-			"dT":1000000,
+			"dT":600000,
 			{
 				"_ActuatorBase":"arduServo1",
 				"pos":[1.0],
@@ -347,7 +349,7 @@
 		"name":"action",
 
 		{
-			"name":"preStandby",
+			"name":"recover",
 			{
 				"_ActuatorBase":"omY2",
 				"pos":[0.0],
@@ -400,7 +402,7 @@
 			"name":"up",
 			{
 				"_ActuatorBase":"omY2",
-				"pos":[0.3],
+				"pos":[0.0],
 			}
 		}
 
@@ -418,7 +420,7 @@
 		
 		{
 			"name":"drop",
-			"dT":1000000,
+			"dT":600000,
 			{
 				"_ActuatorBase":"arduServo2",
 				"pos":[1.0],
@@ -436,11 +438,11 @@
 	"Window":"viewRGB",
 	"_SortingCtrlServer":"ctrlServer",
 	"_Sequencer":"sequencer1",
-	"actuatorList":["omY1","omX1"],
+	"actuatorList":["omY1","arduServo1","omX1"],
 	"actuatorX":"omX1",
 	"actuatorZ":"omY1",
-	"gripX":[0.7,1.0],
-	"vRoiX":[0.2,0.7],
+	"gripX":[0.65,1.0],
+	"vRoiX":[0.4,0.9],
 	"gripY":[1.5,1.8],
 	"gripZ":[0.7,1.1],
 	"dropPos":[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -456,11 +458,11 @@
 	"Window":"viewRGB",
 	"_SortingCtrlServer":"ctrlServer",
 	"_Sequencer":"sequencer2",
-	"actuatorList":["omY2","omX2"],
+	"actuatorList":["omY2","arduServo2","omX2"],
 	"actuatorX":"omX2",
 	"actuatorZ":"omY2",
 	"gripX":[0.0,0.28],
-	"vRoiX":[0.4,0.9],
+	"vRoiX":[0.2,0.7],
 	"gripY":[1.9,2.2],
 	"gripZ":[0.7,1.1],
 	"dropPos":[1.0, 1.0, 1.0, 1.0, 1.0],

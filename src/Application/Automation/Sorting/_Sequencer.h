@@ -79,6 +79,8 @@ public:
 	bool console(int& iY);
 	int check(void);
 
+	void on(void);
+	void off(void);
 	string getCurrentActionName(void);
 	SEQ_ACTION* getCurrentAction(void);
 	SEQ_ACTION* getAction(int iAction);
@@ -96,10 +98,13 @@ private:
 	}
 
 public:
+	bool m_bON;
 	vector<SEQ_ACTION> m_vAction;
 	int m_iAction;
+	uint64_t m_tResume;
+
+	bool m_bComplete;
 	int m_iGoAction;
-	bool m_bON;
 };
 
 }

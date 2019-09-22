@@ -12,9 +12,11 @@ namespace kai
 
 _Sequencer::_Sequencer()
 {
-	m_iAction = 0;
-	m_iGoAction = -1;
 	m_bON = false;
+	m_iAction = 0;
+	m_tResume = 0;
+	m_iGoAction = -1;
+	m_bComplete = false;
 }
 
 _Sequencer::~_Sequencer()
@@ -83,10 +85,7 @@ void _Sequencer::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(m_bON)
-		{
-			updateAction();
-		}
+		updateAction();
 
 		this->autoFPSto();
 	}
@@ -99,10 +98,47 @@ int _Sequencer::check(void)
 	return 0;
 }
 
+void _Sequencer::on(void)
+{
+	m_iAction = 0;
+	m_tResume = 0;
+	m_bON = true;
+	m_bComplete = false;
+}
+
+void _Sequencer::off(void)
+{
+	m_bON = false;
+}
+
 void _Sequencer::updateAction(void)
 {
 	IF_(check()<0);
+	IF_(!m_bON);
 
+	//wait if still in delay time
+	if(m_tResume > 0)
+	{
+		IF_(m_tStamp < m_tResume);
+		m_tResume = 0;
+	}
+
+	//decide next dest
+	if(m_iGoAction >= 0)
+	{
+		m_iAction = m_iGoAction;
+		m_iGoAction = -1;
+	}
+	else if(m_bComplete)
+	{
+		m_iAction++;
+		if(m_iAction >= m_vAction.size())
+			m_iAction = 0;
+	}
+
+	m_bComplete = false;
+
+	//move arms to dest
 	unsigned int i;
 	unsigned int nComplete = 0;
 	SEQ_ACTION* pAction = &m_vAction[m_iAction];
@@ -114,26 +150,14 @@ void _Sequencer::updateAction(void)
 	}
 	IF_(nComplete < pAction->m_vActuator.size());
 
-	if(pAction->m_dT > 0)
-	{
-		this->sleepTime(pAction->m_dT);
-	}
-	else if(pAction->m_dT < 0)
-	{
-		this->sleepTime(0);
-	}
+	m_bComplete = true;
 
-	if(m_iGoAction < 0)
-	{
-		m_iAction++;
-		if(m_iAction >= m_vAction.size())
-			m_iAction = 0;
-	}
-	else
-	{
-		m_iAction = m_iGoAction;
-		m_iGoAction = -1;
-	}
+	//delay time after motion complete
+	if(pAction->m_dT > 0)
+		m_tResume = m_tStamp + pAction->m_dT;
+	else if(pAction->m_dT < 0)
+		m_tResume = UINT64_MAX;
+
 }
 
 SEQ_ACTION* _Sequencer::getAction(int iAction)
