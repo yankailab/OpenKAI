@@ -7,13 +7,20 @@ namespace kai
 _APcopter_sendPos::_APcopter_sendPos()
 {
 	m_pAL = NULL;
-	m_dP = 0.01;
-	m_vPrevP.init();
-	m_tLastSent = 0;
-	m_timeOut = 300000;
-	m_dAlt = 0.0;
-	m_key = -1;
+	m_diff = 0.01;
 
+	m_bbSize = 0.05;
+	m_dBBsize = 0.025;
+	m_vBBsize.x = 0.05;
+	m_vBBsize.y = 0.25;
+	m_vBB.init(-1.0);
+
+	m_alt = 0.0;
+	m_dAlt = 1.0;
+	m_hdg = 0.0;
+	m_dHdg = 1.0;
+
+	m_ieSend.init(100000);
 }
 
 _APcopter_sendPos::~_APcopter_sendPos()
@@ -25,12 +32,12 @@ bool _APcopter_sendPos::init(void* pKiss)
 	IF_F(!this->_ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("dP", &m_dP);
-	pK->v("timeOut", &m_timeOut);
+	pK->v("dP", &m_diff);
 	pK->v("dAlt", &m_dAlt);
+	pK->v("tIntSend", &m_ieSend.m_tInterval);
 
 	Startup* pS = (Startup*)pK->root()->o("APP")->m_pInst;
-	pS->addKeyCallback(callbackBtn,this);
+	pS->addKeyCallback(callbackKey,this);
 
 	string iName;
 	iName = "";
@@ -69,50 +76,90 @@ void _APcopter_sendPos::update(void)
 		this->autoFPSfrom();
 
 		this->_ActionBase::update();
-		updatePos();
+
+		updateBB();
+		updateAlt();
+		updateHdg();
 
 		this->autoFPSto();
 	}
 }
 
-void _APcopter_sendPos::updatePos(void)
+void _APcopter_sendPos::updateBB(void)
 {
 	IF_(check()<0);
 
 	Window* pWin = (Window*) this->m_pWindow;
 	NULL_(pWin);
 
-	vFloat3 vP;
-	vP.x = 0.5;
-	vP.y = 0.5;
-	vP.z = 0.0;
-
-	if(m_key == 'a')vP.z = -m_dAlt;
-	else if(m_key == 'z')vP.z = m_dAlt;
-
-	if(pWin->bMouseButton(MOUSE_L))
+	if(!pWin->bMouseButton(MOUSE_L))
 	{
-		vP.x = pWin->m_vMouse.x;
-		vP.y = pWin->m_vMouse.y;
+		m_vBB.init(-1.0);
+		return;
 	}
 
-	uint64_t dT = m_tStamp - m_tLastSent;
+	vFloat4 vBB;
+	vBB.x = pWin->m_vMouse.x - m_bbSize;
+	vBB.y = pWin->m_vMouse.y - m_bbSize;
+	vBB.z = pWin->m_vMouse.x + m_bbSize;
+	vBB.w = pWin->m_vMouse.y + m_bbSize;
 
-	IF_(dT < m_timeOut &&
-			EAQ(vP.x, m_vPrevP.x, m_dP) &&
-			EAQ(vP.y, m_vPrevP.y, m_dP) &&
-			EAQ(vP.z, m_vPrevP.z, m_dP));
+	IF_(!m_ieSend.update(m_tStamp) &&
+			EAQ(vBB.x, m_vBB.x, m_diff) &&
+			EAQ(vBB.y, m_vBB.y, m_diff) &&
+			EAQ(vBB.z, m_vBB.z, m_diff) &&
+			EAQ(vBB.w, m_vBB.w, m_diff)
+			);
 
-//	m_pAL->setBB(vP);
-
-	m_vPrevP = vP;
-	m_tLastSent = m_tStamp;
-
+	m_pAL->setBB(vBB);
+	m_vBB = vBB;
 }
 
-void _APcopter_sendPos::onBtn(int key)
+void _APcopter_sendPos::updateAlt(void)
 {
-	m_key = key;
+	IF_(check()<0);
+
+	IF_(m_alt > -m_dAlt);
+	IF_(m_alt < m_dAlt);
+
+	m_pAL->setAlt(m_alt);
+	m_alt = 0.0;
+}
+
+void _APcopter_sendPos::updateHdg(void)
+{
+	IF_(check()<0);
+
+	IF_(m_hdg > -m_dHdg);
+	IF_(m_hdg < m_dHdg);
+
+	m_pAL->setHdg(m_hdg);
+	m_hdg = 0.0;
+}
+
+void _APcopter_sendPos::onKey(int key)
+{
+	switch (key)
+	{
+	case 'a':
+		m_alt = -m_dAlt;
+		break;
+	case 'z':
+		m_alt = m_dAlt;
+		break;
+	case 'q':
+		m_hdg = -m_dHdg;
+		break;
+	case 'w':
+		m_hdg = m_dHdg;
+		break;
+	case '1':
+		m_bbSize = constrain(m_bbSize-m_dBBsize, m_vBBsize.x, m_vBBsize.y);
+		break;
+	case '2':
+		m_bbSize = constrain(m_bbSize+m_dBBsize, m_vBBsize.x, m_vBBsize.y);
+		break;
+	}
 }
 
 bool _APcopter_sendPos::draw(void)
@@ -122,9 +169,12 @@ bool _APcopter_sendPos::draw(void)
 	Mat* pMat = pWin->getFrame()->m();
 	IF_F(pMat->empty());
 
-	pWin->addMsg("vP = (" + f2str(m_vPrevP.x) + ", "
-							   + f2str(m_vPrevP.y) + ", "
-					           + f2str(m_vPrevP.z) + ")");
+	int w = pMat->cols * m_bbSize;
+	int h = pMat->rows * m_bbSize;
+
+//	pWin->addMsg("vP = (" + f2str(m_vPrevP.x) + ", "
+//							   + f2str(m_vPrevP.y) + ", "
+//					           + f2str(m_vPrevP.z) + ")");
 
 	return true;
 }
@@ -134,9 +184,9 @@ bool _APcopter_sendPos::console(int& iY)
 	IF_F(!this->_ActionBase::console(iY));
 
 	string msg;
-	C_MSG("vP = (" + f2str(m_vPrevP.x) + ", "
-							   + f2str(m_vPrevP.y) + ", "
-					           + f2str(m_vPrevP.z) + ")");
+//	C_MSG("vP = (" + f2str(m_vPrevP.x) + ", "
+//							   + f2str(m_vPrevP.y) + ", "
+//					           + f2str(m_vPrevP.z) + ")");
 
 	return true;
 }

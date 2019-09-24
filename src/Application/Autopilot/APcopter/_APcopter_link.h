@@ -25,7 +25,7 @@ public:
 	void handleCMD(void);
 
 	void state(uint8_t iState);
-	void setBB(vFloat4 vP);
+	void setBB(vFloat4& vP);
 	void setAlt(float dA);
 	void setHdg(float dH);
 

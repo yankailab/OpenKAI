@@ -126,7 +126,7 @@ void _APcopter_link::state(uint8_t iState)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
 }
 
-void _APcopter_link::setBB(vFloat4 vP)
+void _APcopter_link::setBB(vFloat4& vP)
 {
 	IF_(m_pIO<0);
 
