@@ -246,13 +246,6 @@ bool _APcopter_posCtrl::draw(void)
 
 	pWin->tabPrev();
 
-//	circle(*pMat, Point(m_vMyPos.x*pMat->cols, m_vMyPos.y*pMat->rows),
-//			pMat->cols*pMat->rows*0.00005,
-//			Scalar(0, 255, 0), 2);
-//	circle(*pMat, Point(m_vTargetPos.x*pMat->cols, m_vTargetPos.y*pMat->rows),
-//			pMat->cols*pMat->rows*0.00005,
-//			Scalar(0, 0, 255), 2);
-
 	return true;
 }
 

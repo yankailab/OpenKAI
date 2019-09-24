@@ -15,6 +15,7 @@
 #include "constant.h"
 #include <glog/logging.h>
 #include "../Primitive/data.h"
+#include "../Primitive/vFloat4.h"
 #include "../Utility/util.h"
 
 #endif

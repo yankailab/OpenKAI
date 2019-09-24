@@ -32,7 +32,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DNNclassifier);
 	ADD_MODULE(_DNNdetect);
 	ADD_MODULE(_DNNtext);
-	ADD_MODULE(_DetReceiver);
 	ADD_MODULE(_Depth2Gray);
 	ADD_MODULE(_DepthSegment);
 	ADD_MODULE(_Erode);
@@ -118,7 +117,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_posCtrl);
 	ADD_MODULE(_APcopter_RTH);
 	ADD_MODULE(_APcopter_slam);
-	ADD_MODULE(_APcopter_sendPos);
+	ADD_MODULE(_APcopter_followClient);
 	ADD_MODULE(_APcopter_WP);
 	ADD_MODULE(_APcopter_link);
 

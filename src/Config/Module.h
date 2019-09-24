@@ -31,7 +31,7 @@
 #include "../Application/Autopilot/APcopter/_APcopter_posCtrl.h"
 #include "../Application/Autopilot/APcopter/_APcopter_RTH.h"
 #include "../Application/Autopilot/APcopter/_APcopter_slam.h"
-#include "../Application/Autopilot/APcopter/_APcopter_sendPos.h"
+#include "../Application/Autopilot/APcopter/_APcopter_followClient.h"
 #include "../Application/Autopilot/APcopter/_APcopter_takePhoto.h"
 #include "../Application/Autopilot/APcopter/_APcopter_follow.h"
 #include "../Application/Autopilot/APcopter/_APcopter_WP.h"
@@ -62,7 +62,6 @@
 #include "../Detector/_Thermal.h"
 #include "../Detector/_DepthSegment.h"
 #include "../Detector/_OpenPose.h"
-#include "../Detector/_DetReceiver.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"

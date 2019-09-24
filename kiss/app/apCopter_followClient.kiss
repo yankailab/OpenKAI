@@ -14,9 +14,9 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":1,
+	"bFullScreen":0,
 	"bMouse":1,
-	"bShowMouse":1,
+	"bShowMouse":0,
 }
 
 {
@@ -35,14 +35,14 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"addr":"192.168.1.254",
-	"/addr":"127.0.0.1",
+	"/addr":"192.168.1.254",
+	"addr":"127.0.0.1",
 	"port":19841,
 }
 
 {
-	"name":"apOKlink",
-	"class":"_OKlinkAPcopter",
+	"name":"apLink",
+	"class":"_APcopter_link",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
@@ -51,14 +51,16 @@
 }
 
 {
-	"name":"apSendPos",
-	"class":"_APcopter_sendPos",
+	"name":"apFollowClient",
+	"class":"_APcopter_followClient",
 	"bInst":1,
 	"FPS":10,
 	"bDraw":1,
 	"Window":"OKview",
-	"_OKlinkAPcopter":"apOKlink",
-	"dP":0.01,
-	"timeOut":50000,
+	"_APcopter_link":"apLink",
+	"diff":0.01,
 	"dAlt":1.0,
+	"dHdg":1.0,
+	"bbSize":0.05,
+	"tIntSend":50000,
 }

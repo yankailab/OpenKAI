@@ -1,10 +1,10 @@
-#include "_APcopter_sendPos.h"
 #include "../../../Startup/Startup.h"
+#include "_APcopter_followClient.h"
 
 namespace kai
 {
 
-_APcopter_sendPos::_APcopter_sendPos()
+_APcopter_followClient::_APcopter_followClient()
 {
 	m_pAL = NULL;
 	m_diff = 0.01;
@@ -23,17 +23,20 @@ _APcopter_sendPos::_APcopter_sendPos()
 	m_ieSend.init(100000);
 }
 
-_APcopter_sendPos::~_APcopter_sendPos()
+_APcopter_followClient::~_APcopter_followClient()
 {
 }
 
-bool _APcopter_sendPos::init(void* pKiss)
+bool _APcopter_followClient::init(void* pKiss)
 {
 	IF_F(!this->_ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("dP", &m_diff);
+	pK->v("diff", &m_diff);
 	pK->v("dAlt", &m_dAlt);
+	pK->v("dHdg", &m_dHdg);
+	pK->v("bbSize", &m_bbSize);
+
 	pK->v("tIntSend", &m_ieSend.m_tInterval);
 
 	Startup* pS = (Startup*)pK->root()->o("APP")->m_pInst;
@@ -41,14 +44,14 @@ bool _APcopter_sendPos::init(void* pKiss)
 
 	string iName;
 	iName = "";
-	F_ERROR_F(pK->v("_OKlinkAPcopter", &iName));
+	F_ERROR_F(pK->v("_APcopter_link", &iName));
 	m_pAL = (_APcopter_link*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pAL, iName+": not found");
 
 	return true;
 }
 
-bool _APcopter_sendPos::start(void)
+bool _APcopter_followClient::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -62,14 +65,14 @@ bool _APcopter_sendPos::start(void)
 	return true;
 }
 
-int _APcopter_sendPos::check(void)
+int _APcopter_followClient::check(void)
 {
 	NULL__(m_pAL,-1);
 
 	return this->_ActionBase::check();
 }
 
-void _APcopter_sendPos::update(void)
+void _APcopter_followClient::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -85,7 +88,7 @@ void _APcopter_sendPos::update(void)
 	}
 }
 
-void _APcopter_sendPos::updateBB(void)
+void _APcopter_followClient::updateBB(void)
 {
 	IF_(check()<0);
 
@@ -115,7 +118,7 @@ void _APcopter_sendPos::updateBB(void)
 	m_vBB = vBB;
 }
 
-void _APcopter_sendPos::updateAlt(void)
+void _APcopter_followClient::updateAlt(void)
 {
 	IF_(check()<0);
 
@@ -126,7 +129,7 @@ void _APcopter_sendPos::updateAlt(void)
 	m_alt = 0.0;
 }
 
-void _APcopter_sendPos::updateHdg(void)
+void _APcopter_followClient::updateHdg(void)
 {
 	IF_(check()<0);
 
@@ -137,7 +140,7 @@ void _APcopter_sendPos::updateHdg(void)
 	m_hdg = 0.0;
 }
 
-void _APcopter_sendPos::onKey(int key)
+void _APcopter_followClient::onKey(int key)
 {
 	switch (key)
 	{
@@ -162,7 +165,7 @@ void _APcopter_sendPos::onKey(int key)
 	}
 }
 
-bool _APcopter_sendPos::draw(void)
+bool _APcopter_followClient::draw(void)
 {
 	IF_F(!this->_ActionBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
@@ -172,21 +175,45 @@ bool _APcopter_sendPos::draw(void)
 	int w = pMat->cols * m_bbSize;
 	int h = pMat->rows * m_bbSize;
 
-//	pWin->addMsg("vP = (" + f2str(m_vPrevP.x) + ", "
-//							   + f2str(m_vPrevP.y) + ", "
-//					           + f2str(m_vPrevP.z) + ")");
+	//center bb indicator
+	cv::rectangle(*pMat,
+					Rect(pMat->cols/2-w,
+						 pMat->rows/2-h,
+						 w*2,
+						 h*2),
+					Scalar(0,255,255),
+					1,
+					LINE_4);
+
+	//pointing bb indicator
+	if(m_vBB.x >= 0.0)
+	{
+		cv::rectangle(*pMat,
+						Rect(m_vBB.midX()*pMat->cols-w,
+							 m_vBB.midY()*pMat->rows-h,
+							 w*2,
+							 h*2),
+						Scalar(0,255,0),
+						1,
+						LINE_8);
+	}
+
+
+	pWin->tabNext();
+	pWin->addMsg("bbPos = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	pWin->addMsg("alt = " + f2str(m_alt) + ", hdg = " + f2str(m_hdg));
+	pWin->tabPrev();
 
 	return true;
 }
 
-bool _APcopter_sendPos::console(int& iY)
+bool _APcopter_followClient::console(int& iY)
 {
 	IF_F(!this->_ActionBase::console(iY));
 
 	string msg;
-//	C_MSG("vP = (" + f2str(m_vPrevP.x) + ", "
-//							   + f2str(m_vPrevP.y) + ", "
-//					           + f2str(m_vPrevP.z) + ")");
+	C_MSG("bbPos = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	C_MSG("alt = " + f2str(m_alt) + ", hdg = " + f2str(m_hdg));
 
 	return true;
 }

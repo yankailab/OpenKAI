@@ -21,7 +21,9 @@ _APcopter_base::_APcopter_base()
 
 	m_bHomeSet = false;
 	m_vHomePos.init();
-	m_vPos.init();
+	m_vGlobalPos.init();
+	m_vLocalPos.init();
+	m_vSpeed.init();
 	m_apHdg = 0.0;
 }
 
@@ -122,10 +124,18 @@ void _APcopter_base::updateBase(void)
 	}
 
 	//get position
-	m_vPos.x = ((double)(m_pMavlink->m_msg.global_position_int.lat)) * 1e-7;
-	m_vPos.y = ((double)(m_pMavlink->m_msg.global_position_int.lon)) * 1e-7;
-	m_vPos.z = ((double)(m_pMavlink->m_msg.global_position_int.relative_alt)) * 1e-3;
+	m_vGlobalPos.x = ((double)(m_pMavlink->m_msg.global_position_int.lat)) * 1e-7;
+	m_vGlobalPos.y = ((double)(m_pMavlink->m_msg.global_position_int.lon)) * 1e-7;
+	m_vGlobalPos.z = ((double)(m_pMavlink->m_msg.global_position_int.relative_alt)) * 1e-3;
 	m_apHdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
+
+	m_vLocalPos.x = m_pMavlink->m_msg.local_position_ned.x;
+	m_vLocalPos.y = m_pMavlink->m_msg.local_position_ned.y;
+	m_vLocalPos.z = m_pMavlink->m_msg.local_position_ned.z;
+
+	m_vSpeed.x = m_pMavlink->m_msg.local_position_ned.vx;
+	m_vSpeed.y = m_pMavlink->m_msg.local_position_ned.vy;
+	m_vSpeed.z = m_pMavlink->m_msg.local_position_ned.vz;
 
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
@@ -210,9 +220,9 @@ bool _APcopter_base::getHomePos(vDouble3* pHome)
 	return true;
 }
 
-vDouble3 _APcopter_base::getPos(void)
+vDouble3 _APcopter_base::getGlobalPos(void)
 {
-	return m_vPos;
+	return m_vGlobalPos;
 }
 
 double _APcopter_base::getHdg(void)

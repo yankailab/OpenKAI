@@ -78,7 +78,7 @@ void _APcopter_RTH::update(void)
 	IF_(!m_pAP->getHomePos(&p));
 	pRTH->setHome(p);
 
-	p = m_pAP->getPos();
+	p = m_pAP->getGlobalPos();
 	pRTH->setPos(p);
 
 	vDouble3 pHome = pRTH->getHome();

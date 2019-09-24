@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_APcopter__APcopter_sendPos_H_
-#define OpenKAI_src_Autopilot_APcopter__APcopter_sendPos_H_
+#ifndef OpenKAI_src_Autopilot_APcopter__APcopter_followClient_H_
+#define OpenKAI_src_Autopilot_APcopter__APcopter_followClient_H_
 
 #include "../../../Base/common.h"
 #include "../../_ActionBase.h"
@@ -8,11 +8,11 @@
 namespace kai
 {
 
-class _APcopter_sendPos: public _ActionBase
+class _APcopter_followClient: public _ActionBase
 {
 public:
-	_APcopter_sendPos();
-	~_APcopter_sendPos();
+	_APcopter_followClient();
+	~_APcopter_followClient();
 
 	virtual	bool init(void* pKiss);
 	virtual int check(void);
@@ -25,7 +25,7 @@ public:
 	static void callbackKey(int key, void* pInst)
 	{
 		NULL_(pInst);
-		_APcopter_sendPos* pS = (_APcopter_sendPos*)pInst;
+		_APcopter_followClient* pS = (_APcopter_followClient*)pInst;
 		pS->onKey(key);
 	}
 
@@ -35,7 +35,7 @@ private:
 	void updateHdg(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_APcopter_sendPos *) This)->update();
+		((_APcopter_followClient *) This)->update();
 		return NULL;
 	}
 
