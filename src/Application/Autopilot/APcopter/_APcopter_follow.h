@@ -12,9 +12,8 @@
 namespace kai
 {
 
-#define APFOLLOW_STATE_OFF 0
-#define APFOLLOW_STATE_ON 0
-
+#define APFOLLOW_OFF 0
+#define APFOLLOW_ON 1
 
 class _APcopter_follow: public _ActionBase
 {
@@ -32,6 +31,7 @@ public:
 private:
 	void updateTargetPos(void);
 	void updatePos(void);
+	void sendClient(void);
 	bool updateBBclient(vFloat4* pBB);
 	bool updateBBdet(vFloat4* pBB);
 	static void* getUpdateThread(void* This)
@@ -51,11 +51,17 @@ public:
 	int				m_iClass;
 	uint64_t		m_timeOut;
 
+	vFloat4			m_vBB;
 	vFloat4 		m_vP;		//variable screen coordinate of the object being followed in roll, pitch, alt, yaw order
 	vFloat4 		m_vTargetP;	//constant screen coordinate where the followed object should get to
+	vFloat2			m_vKtarget;
+	vFloat4 		m_vTargetOrigin;	//constant screen coordinate where the followed object should get to
 
-	bool			m_bTracker;
+	bool			m_bBB;
+
 	_TrackerBase*	m_pT;
+	INTERVAL_EVENT m_ieSend;
+
 
 };
 

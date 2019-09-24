@@ -225,12 +225,7 @@ vDouble3 _APcopter_base::getGlobalPos(void)
 	return m_vGlobalPos;
 }
 
-double _APcopter_base::getHdg(void)
-{
-	return getApHdg();
-}
-
-double _APcopter_base::getApHdg(void)
+float _APcopter_base::getApHdg(void)
 {
 	return m_apHdg;
 }

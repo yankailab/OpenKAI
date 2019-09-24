@@ -85,8 +85,7 @@ public:
 	void setMount(AP_MOUNT& mount);
 	bool getHomePos(vDouble3* pHome);
 	vDouble3 getGlobalPos(void);
-	double getHdg(void);
-	double getApHdg(void);
+	float getApHdg(void);
 
 private:
 	void updateBase(void);
@@ -117,7 +116,7 @@ public:
 	vDouble3 m_vGlobalPos;	//lat, lon, alt in meters
 	vDouble3 m_vLocalPos;
 	vFloat3	m_vSpeed;
-	double m_apHdg;		//heading in degree
+	float m_apHdg;		//heading in degree
 };
 
 }

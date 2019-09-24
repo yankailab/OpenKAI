@@ -14,17 +14,22 @@ _APcopter_follow::_APcopter_follow()
 	m_iClass = -1;
 	m_timeOut = 100000;
 
-	m_vTargetP.init();
-	m_vTargetP.x = 0.5;
-	m_vTargetP.y = 0.5;
+	m_vBB.init(-1.0);
 	m_vP.init();
 	m_vP.x = 0.5;
 	m_vP.y = 0.5;
+	m_vTargetOrigin.init();
+	m_vTargetOrigin.x = 0.5;
+	m_vTargetOrigin.y = 0.5;
+	m_vTargetP = m_vTargetOrigin;
+	m_vKtarget.init();
 
 	m_apMount.init();
-
-	m_bTracker = false;
 	m_pT = NULL;
+
+	m_bBB = false;
+
+	m_ieSend.init(100000);
 }
 
 _APcopter_follow::~_APcopter_follow()
@@ -36,9 +41,11 @@ bool _APcopter_follow::init(void* pKiss)
 	IF_F(!this->_ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("vTargetOrigin",&m_vTargetOrigin);
 	pK->v("iClass",&m_iClass);
 	pK->v("timeOut",&m_timeOut);
-	pK->v("bTracker",&m_bTracker);
+	pK->v("tIntSend",&m_ieSend.m_tInterval);
+	pK->v("vKtarget",&m_vKtarget);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -81,18 +88,10 @@ bool _APcopter_follow::init(void* pKiss)
 	iName = "";
 	pK->v("_TrackerBase", &iName);
 	m_pT = (_TrackerBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pT, iName + ": not found");
 
 	iName = "";
 	pK->v("_DetectorBase", &iName);
 	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-
-
-	pK->v("vP",&m_vP);
-	pK->v("vTargetP",&m_vTargetP);
-
-	m_pPC->setPos(m_vP);
-	m_pPC->setTargetPos(m_vTargetP);
 
 	return true;
 }
@@ -117,11 +116,6 @@ int _APcopter_follow::check(void)
 	NULL__(m_pAL,-1);
 	NULL__(m_pPC,-1);
 
-	if(m_bTracker)
-	{
-		NULL__(m_pT,-1);
-	}
-
 	return this->_ActionBase::check();
 }
 
@@ -135,6 +129,7 @@ void _APcopter_follow::update(void)
 
 		updateTargetPos();
 		updatePos();
+		sendClient();
 
 		this->autoFPSto();
 	}
@@ -143,6 +138,10 @@ void _APcopter_follow::update(void)
 void _APcopter_follow::updateTargetPos(void)
 {
 	IF_(check()<0);
+
+	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * m_pPC->m_spt.vy, 0.0, 1.0);
+	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * m_pPC->m_spt.vx, 0.0, 1.0);
+	m_pPC->setTargetPos(m_vTargetP);
 
 }
 
@@ -153,7 +152,7 @@ void _APcopter_follow::updatePos(void)
 	{
 		m_vP = m_vTargetP;
 		m_pPC->setEnable(false);
-		if(m_bTracker)
+		if(m_pT)
 		{
 			m_pT->stopTrack();
 		}
@@ -167,30 +166,29 @@ void _APcopter_follow::updatePos(void)
 	}
 
 
-	vFloat4 bb;
-	bool bBB = updateBBclient(&bb);
+	m_bBB = updateBBclient(&m_vBB);
 
-	if(!bBB)
+	if(!m_bBB && m_pAL->m_iState==APFOLLOW_ON)
 	{
-		bBB = updateBBdet(&bb);
+		m_bBB = updateBBdet(&m_vBB);
 	}
 
-	if(m_bTracker)
+	if(m_pT && m_pAL->m_iState==APFOLLOW_ON)
 	{
-		if(bBB)
-			m_pT->startTrack(bb);
+		if(m_bBB)
+			m_pT->startTrack(m_vBB);
 
 		if(m_pT->trackState() == track_update)
 		{
-			bb = *m_pT->getBB();
-			bBB = true;
+			m_vBB = *m_pT->getBB();
+			m_bBB = true;
 		}
 	}
 
-	if(bBB)
+	if(m_bBB)
 	{
-		m_vP.x = bb.midX();
-		m_vP.y = bb.midY();
+		m_vP.x = m_vBB.midX();
+		m_vP.y = m_vBB.midY();
 	}
 	else
 	{
@@ -223,7 +221,7 @@ void _APcopter_follow::updatePos(void)
 	}
 
 
-	if(bBB || bAlt || bHdg)
+	if(m_bBB || bAlt || bHdg)
 	{
 		m_pPC->setPos(m_vP);
 		m_pPC->setEnable(true);
@@ -231,6 +229,7 @@ void _APcopter_follow::updatePos(void)
 	}
 
 	m_vP = m_vTargetP;
+	m_pPC->setPos(m_vP);
 	m_pPC->setEnable(false);
 }
 
@@ -267,6 +266,28 @@ bool _APcopter_follow::updateBBdet(vFloat4* pBB)
 
 	*pBB = tO->m_bb;
 	return true;
+}
+
+void _APcopter_follow::sendClient(void)
+{
+	IF_(check()<0);
+	IF_(!m_ieSend.update(m_tStamp));
+
+	m_pAL->state(m_pAL->m_iState);
+
+	if(m_bBB)
+		m_pAL->setBB(m_vBB);
+
+	float w = m_vBB.width()*0.5;
+	float h = m_vBB.height()*0.5;
+
+	vFloat4 tBB;
+	tBB.x = m_vTargetP.x - w;
+	tBB.y = m_vTargetP.y - h;
+	tBB.z = m_vTargetP.x + w;
+	tBB.w = m_vTargetP.y + h;
+	m_pAL->setTargetBB(tBB);
+
 }
 
 bool _APcopter_follow::draw(void)

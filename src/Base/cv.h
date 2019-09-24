@@ -51,3 +51,9 @@ using namespace dnn;
 #define RETR_EXTERNAL CV_RETR_EXTERNAL
 #define CHAIN_APPROX_NONE CV_CHAIN_APPROX_NONE
 #endif
+
+
+#define KEY_ARROW_UP 82
+#define KEY_ARROW_DOWN 84
+#define KEY_ARROW_LEFT 81
+#define KEY_ARROW_RIGHT 83

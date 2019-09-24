@@ -10,6 +10,7 @@ namespace kai
 #define APLINK_BB 1
 #define APLINK_ALT 2
 #define APLINK_HDG 3
+#define APLINK_TARGET 4
 
 class _APcopter_link: public _ProtocolBase
 {
@@ -19,6 +20,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 	bool draw(void);
 	bool console(int& iY);
 
@@ -26,6 +28,7 @@ public:
 
 	void state(uint8_t iState);
 	void setBB(vFloat4& vP);
+	void setTargetBB(vFloat4& vP);
 	void setAlt(float dA);
 	void setHdg(float dH);
 
@@ -38,10 +41,12 @@ private:
 	}
 
 public:
-	vFloat4		m_vBB;
-	uint64_t	m_tBB;
 	uint8_t		m_iState;
 	uint64_t	m_tState;
+	vFloat4		m_vBB;
+	uint64_t	m_tBB;
+	vFloat4		m_vTargetBB;
+	uint64_t	m_tTargetBB;
 	float		m_alt;
 	uint64_t	m_tAlt;
 	float		m_hdg;

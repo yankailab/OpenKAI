@@ -8,6 +8,9 @@
 namespace kai
 {
 
+#define APFOLLOW_OFF 0
+#define APFOLLOW_ON 1
+
 class _APcopter_followClient: public _ActionBase
 {
 public:
@@ -33,6 +36,7 @@ private:
 	void updateBB(void);
 	void updateAlt(void);
 	void updateHdg(void);
+	void updateState(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_APcopter_followClient *) This)->update();
@@ -42,6 +46,7 @@ private:
 public:
 	_APcopter_link* m_pAL;
 	float	m_diff;
+	uint8_t	m_iSetState;
 
 	float	m_bbSize;
 	float	m_dBBsize;

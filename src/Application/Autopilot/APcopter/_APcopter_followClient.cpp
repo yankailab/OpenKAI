@@ -7,10 +7,11 @@ namespace kai
 _APcopter_followClient::_APcopter_followClient()
 {
 	m_pAL = NULL;
+	m_iSetState = APFOLLOW_OFF;
 	m_diff = 0.01;
 
 	m_bbSize = 0.05;
-	m_dBBsize = 0.025;
+	m_dBBsize = 0.01;
 	m_vBBsize.x = 0.05;
 	m_vBBsize.y = 0.25;
 	m_vBB.init(-1.0);
@@ -36,7 +37,7 @@ bool _APcopter_followClient::init(void* pKiss)
 	pK->v("dAlt", &m_dAlt);
 	pK->v("dHdg", &m_dHdg);
 	pK->v("bbSize", &m_bbSize);
-
+	pK->v("dBBsize", &m_dBBsize);
 	pK->v("tIntSend", &m_ieSend.m_tInterval);
 
 	Startup* pS = (Startup*)pK->root()->o("APP")->m_pInst;
@@ -81,11 +82,20 @@ void _APcopter_followClient::update(void)
 		this->_ActionBase::update();
 
 		updateBB();
+		updateState();
 		updateAlt();
 		updateHdg();
 
 		this->autoFPSto();
 	}
+}
+
+void _APcopter_followClient::updateState(void)
+{
+	IF_(check()<0);
+	IF_(m_pAL->m_iState == m_iSetState);
+
+	m_pAL->state(m_iSetState);
 }
 
 void _APcopter_followClient::updateBB(void)
@@ -100,6 +110,8 @@ void _APcopter_followClient::updateBB(void)
 		m_vBB.init(-1.0);
 		return;
 	}
+
+	m_iSetState = APFOLLOW_ON;
 
 	vFloat4 vBB;
 	vBB.x = pWin->m_vMouse.x - m_bbSize;
@@ -121,9 +133,7 @@ void _APcopter_followClient::updateBB(void)
 void _APcopter_followClient::updateAlt(void)
 {
 	IF_(check()<0);
-
-	IF_(m_alt > -m_dAlt);
-	IF_(m_alt < m_dAlt);
+	IF_(EAQ(m_alt,0.0,0.01));
 
 	m_pAL->setAlt(m_alt);
 	m_alt = 0.0;
@@ -132,9 +142,7 @@ void _APcopter_followClient::updateAlt(void)
 void _APcopter_followClient::updateHdg(void)
 {
 	IF_(check()<0);
-
-	IF_(m_hdg > -m_dHdg);
-	IF_(m_hdg < m_dHdg);
+	IF_(EAQ(m_hdg,0.0,0.01));
 
 	m_pAL->setHdg(m_hdg);
 	m_hdg = 0.0;
@@ -144,22 +152,25 @@ void _APcopter_followClient::onKey(int key)
 {
 	switch (key)
 	{
-	case 'a':
+	case 13:
+		m_iSetState = APFOLLOW_OFF;
+		break;
+	case KEY_ARROW_UP:
 		m_alt = -m_dAlt;
 		break;
-	case 'z':
+	case KEY_ARROW_DOWN:
 		m_alt = m_dAlt;
 		break;
-	case 'q':
+	case KEY_ARROW_LEFT:
 		m_hdg = -m_dHdg;
 		break;
-	case 'w':
+	case KEY_ARROW_RIGHT:
 		m_hdg = m_dHdg;
 		break;
-	case '1':
+	case 44:	//<
 		m_bbSize = constrain(m_bbSize-m_dBBsize, m_vBBsize.x, m_vBBsize.y);
 		break;
-	case '2':
+	case 46:	//>
 		m_bbSize = constrain(m_bbSize+m_dBBsize, m_vBBsize.x, m_vBBsize.y);
 		break;
 	}
@@ -175,32 +186,71 @@ bool _APcopter_followClient::draw(void)
 	int w = pMat->cols * m_bbSize;
 	int h = pMat->rows * m_bbSize;
 
-	//center bb indicator
-	cv::rectangle(*pMat,
-					Rect(pMat->cols/2-w,
-						 pMat->rows/2-h,
+	//center bb
+	rectangle(*pMat,
+					Rect(pMat->cols*0.5-w,
+						 pMat->rows*0.5-h,
 						 w*2,
 						 h*2),
-					Scalar(0,255,255),
-					1,
-					LINE_4);
+					Scalar(255,255,255),
+					1);
 
-	//pointing bb indicator
+	//mouse bb
 	if(m_vBB.x >= 0.0)
 	{
-		cv::rectangle(*pMat,
+		rectangle(*pMat,
 						Rect(m_vBB.midX()*pMat->cols-w,
 							 m_vBB.midY()*pMat->rows-h,
 							 w*2,
 							 h*2),
 						Scalar(0,255,0),
-						1,
-						LINE_8);
+						1);
+	}
+
+	if(m_tStamp - m_pAL->m_tBB < USEC_1SEC)
+	{
+		//tracking bb
+		rectangle(*pMat,
+						Rect(m_pAL->m_vBB.x*pMat->cols,
+							 m_pAL->m_vBB.y*pMat->rows,
+							 m_pAL->m_vBB.width()*pMat->cols,
+							 m_pAL->m_vBB.height()*pMat->rows
+							 ),
+						Scalar(0,255,255),
+						1);
+
+		line(*pMat,	Point(m_pAL->m_vTargetBB.midX()*pMat->cols,
+						  m_pAL->m_vTargetBB.midY()*pMat->rows),
+					Point(m_pAL->m_vBB.midX()*pMat->cols,
+						  m_pAL->m_vBB.midY()*pMat->rows),
+					Scalar(0,0,255));
 	}
 
 
+	if(m_tStamp - m_pAL->m_tTargetBB < USEC_1SEC)
+	{
+		//target bb
+		rectangle(*pMat,
+					Rect(m_pAL->m_vTargetBB.x*pMat->cols,
+						 m_pAL->m_vTargetBB.y*pMat->rows,
+						 m_pAL->m_vTargetBB.width()*pMat->cols,
+						 m_pAL->m_vTargetBB.height()*pMat->rows
+						 ),
+					Scalar(0,0,255),
+					1);
+
+		line(*pMat,	Point(pMat->cols*0.5,
+						  pMat->rows*0.5),
+					Point(m_pAL->m_vTargetBB.midX()*pMat->cols,
+						  m_pAL->m_vTargetBB.midY()*pMat->rows),
+					Scalar(255,255,255));
+	}
+
 	pWin->tabNext();
-	pWin->addMsg("bbPos = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	pWin->addMsg("iState = " + i2str(m_pAL->m_iState));
+	pWin->addMsg("detector = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	pWin->addMsg("track = (" + f2str(m_pAL->m_vBB.midX()) + ", " + f2str(m_pAL->m_vBB.midY()) + ")");
+	pWin->addMsg("target = (" + f2str(m_pAL->m_vTargetBB.midX()) + ", " + f2str(m_pAL->m_vTargetBB.midY()) + ")");
 	pWin->addMsg("alt = " + f2str(m_alt) + ", hdg = " + f2str(m_hdg));
 	pWin->tabPrev();
 
@@ -212,7 +262,10 @@ bool _APcopter_followClient::console(int& iY)
 	IF_F(!this->_ActionBase::console(iY));
 
 	string msg;
-	C_MSG("bbPos = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	C_MSG("iState = " + i2str(m_pAL->m_iState));
+	C_MSG("detector = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY()) + ")");
+	C_MSG("track = (" + f2str(m_pAL->m_vBB.midX()) + ", " + f2str(m_pAL->m_vBB.midY()) + ")");
+	C_MSG("target = (" + f2str(m_pAL->m_vTargetBB.midX()) + ", " + f2str(m_pAL->m_vTargetBB.midY()) + ")");
 	C_MSG("alt = " + f2str(m_alt) + ", hdg = " + f2str(m_hdg));
 
 	return true;

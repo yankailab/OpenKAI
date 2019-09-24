@@ -220,7 +220,6 @@ bool _APcopter_posCtrl::draw(void)
 	IF_F(pMat->empty());
 	IF_F(check() < 0);
 
-	pWin->addMsg(*this->getName());
 	pWin->tabNext();
 
 	if (!bActive() || !m_bEnable)

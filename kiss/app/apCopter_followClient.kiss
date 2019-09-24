@@ -7,7 +7,7 @@
 	"bLog":0,
 	"bConsole":1,
 	"bStdErr":1,
-	"waitKey":30,
+	"waitKey":15,
 }
 
 {
@@ -15,6 +15,7 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
+	"bDrawMsg":0,
 	"bMouse":1,
 	"bShowMouse":0,
 }
@@ -34,6 +35,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
+	"bDraw":0,
 	"Window":"OKview",
 	"/addr":"192.168.1.254",
 	"addr":"127.0.0.1",
@@ -46,21 +48,24 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
+	"bDraw":0,
 	"Window":"OKview",
 	"_IOBase":"okUDP",	
 }
 
 {
-	"name":"apFollowClient",
+	"name":"apFollow",
 	"class":"_APcopter_followClient",
 	"bInst":1,
-	"FPS":10,
+	"FPS":15,
 	"bDraw":1,
+	"bLog":1,
 	"Window":"OKview",
 	"_APcopter_link":"apLink",
 	"diff":0.01,
+	"bBBsize":0.01,
 	"dAlt":1.0,
 	"dHdg":1.0,
-	"bbSize":0.05,
-	"tIntSend":50000,
+	"bbSize":0.025,
+	"tIntSend":100000,
 }
