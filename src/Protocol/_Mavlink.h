@@ -100,6 +100,13 @@ struct Mavlink_Messages
 		heartbeat.custom_mode = 0;
 		mission_current.seq = 0;
 
+		local_position_ned.vx = 0;
+		local_position_ned.vy = 0;
+		local_position_ned.vz = 0;
+		local_position_ned.x = 0;
+		local_position_ned.y = 0;
+		local_position_ned.z = 0;
+
 		time_stamps.init();
 	}
 };

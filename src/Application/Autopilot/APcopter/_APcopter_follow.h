@@ -54,6 +54,7 @@ public:
 	vFloat4			m_vBB;
 	vFloat4 		m_vP;		//variable screen coordinate of the object being followed in roll, pitch, alt, yaw order
 	vFloat4 		m_vTargetP;	//constant screen coordinate where the followed object should get to
+	vFloat2			m_vTargetPregion;
 	vFloat2			m_vKtarget;
 	vFloat4 		m_vTargetOrigin;	//constant screen coordinate where the followed object should get to
 

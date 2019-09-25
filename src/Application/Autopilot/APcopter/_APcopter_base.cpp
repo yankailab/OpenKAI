@@ -281,6 +281,14 @@ bool _APcopter_base::draw(void)
 				 + ", alt=" + f2str(m_vHomePos.z, 7)
 				 );
 
+	pWin->addMsg("x=" + f2str(m_pMavlink->m_msg.local_position_ned.x)+
+				 ", y=" + f2str(m_pMavlink->m_msg.local_position_ned.y)+
+				 ", z=" + f2str(m_pMavlink->m_msg.local_position_ned.z));
+
+	pWin->addMsg("vx=" + f2str(m_pMavlink->m_msg.local_position_ned.vx)+
+				 ", vy=" + f2str(m_pMavlink->m_msg.local_position_ned.vy)+
+				 ", vz=" + f2str(m_pMavlink->m_msg.local_position_ned.vz));
+
 	if(m_freqRawSensors > 0)
 	{
 		pWin->addMsg("xAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xacc)
@@ -326,6 +334,14 @@ bool _APcopter_base::console(int& iY)
 				 + ", lon=" + f2str(m_vHomePos.y, 7)
 				 + ", alt=" + f2str(m_vHomePos.z, 7)
 				 );
+
+	C_MSG("x=" + f2str(m_pMavlink->m_msg.local_position_ned.x)+
+				 ", y=" + f2str(m_pMavlink->m_msg.local_position_ned.y)+
+				 ", z=" + f2str(m_pMavlink->m_msg.local_position_ned.z));
+
+	C_MSG("vx=" + f2str(m_pMavlink->m_msg.local_position_ned.vx)+
+				 ", vy=" + f2str(m_pMavlink->m_msg.local_position_ned.vy)+
+				 ", vz=" + f2str(m_pMavlink->m_msg.local_position_ned.vz));
 
 	if(m_freqRawSensors > 0)
 	{

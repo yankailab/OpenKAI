@@ -23,6 +23,8 @@ _APcopter_follow::_APcopter_follow()
 	m_vTargetOrigin.y = 0.5;
 	m_vTargetP = m_vTargetOrigin;
 	m_vKtarget.init();
+	m_vTargetPregion.x = 0.2;
+	m_vTargetPregion.y = 0.8;
 
 	m_apMount.init();
 	m_pT = NULL;
@@ -41,11 +43,12 @@ bool _APcopter_follow::init(void* pKiss)
 	IF_F(!this->_ActionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("vTargetOrigin",&m_vTargetOrigin);
 	pK->v("iClass",&m_iClass);
 	pK->v("timeOut",&m_timeOut);
 	pK->v("tIntSend",&m_ieSend.m_tInterval);
+	pK->v("vTargetOrigin",&m_vTargetOrigin);
 	pK->v("vKtarget",&m_vKtarget);
+	pK->v("vTargetPregion",&m_vTargetPregion);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -139,8 +142,8 @@ void _APcopter_follow::updateTargetPos(void)
 {
 	IF_(check()<0);
 
-	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * m_pPC->m_spt.vy, 0.0, 1.0);
-	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * m_pPC->m_spt.vx, 0.0, 1.0);
+	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vLocalPos.y, m_vTargetPregion.x, m_vTargetPregion.y);
+	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vLocalPos.x, m_vTargetPregion.x, m_vTargetPregion.y);
 	m_pPC->setTargetPos(m_vTargetP);
 
 }
