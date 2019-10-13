@@ -305,20 +305,10 @@ WS_CLIENT* _WebSocket::findClientById(uint32_t id)
 	return &m_vClient[i];
 }
 
-bool _WebSocket::draw(void)
+void _WebSocket::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	pWin->tabNext();
-
-	string msg = "nClients: " + i2str(m_vClient.size());
-	pWin->addMsg(msg);
-
-	pWin->tabPrev();
-
-	return true;
+	this->_ThreadBase::draw();
+	addMsg("nClients: " + i2str(m_vClient.size()),1);
 }
 
 }

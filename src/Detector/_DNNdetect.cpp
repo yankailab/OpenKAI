@@ -252,13 +252,11 @@ bool _DNNdetect::detect(void)
 	return true;
 }
 
-bool _DNNdetect::draw(void)
+void _DNNdetect::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_ThreadBase::draw();
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	vInt2 cs;
 	cs.x = pMat->cols;
@@ -286,8 +284,6 @@ bool _DNNdetect::draw(void)
 			}
 		}
 	}
-
-	return true;
 }
 
 }

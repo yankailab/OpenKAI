@@ -32,36 +32,16 @@ void _SlamBase::detect(void)
 {
 }
 
-bool _SlamBase::draw(void)
+void _SlamBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ThreadBase::draw();
 
 	string msg;
 	msg = "pos=(" + f2str(m_pos.x) + ", "
 				  + f2str(m_pos.y) + ", "
 				  + f2str(m_pos.z) + ")";
 
-	pWin->tabNext();
-	pWin->addMsg(msg);
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _SlamBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-	msg = "pos=(" + f2str(m_pos.x) + ", "
-				  + f2str(m_pos.y) + ", "
-				  + f2str(m_pos.z) + ")";
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	return true;
+	addMsg(msg,1);
 }
 
 void _SlamBase::reset(void)

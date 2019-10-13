@@ -54,7 +54,6 @@ bool _MotionDetector::init(void* pKiss)
 //	}
 //
 
-	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase",&iName));
 	m_pVision = (_VisionBase*)(pK->root()->getChildInst(iName));
@@ -121,25 +120,17 @@ void _MotionDetector::detect(void)
 	}
 }
 
-bool _MotionDetector::draw(void)
+void _MotionDetector::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_DetectorBase::draw();
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	if(!m_mFG.empty())
 	{
 		imshow(*this->getName(), m_mFG);
 	}
 
-	return true;
-}
-
-bool _MotionDetector::console(int& iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-	return true;
 }
 
 }

@@ -151,23 +151,9 @@ void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
 	}
 }
 
-bool _SortingCtrlServer::draw(void)
+void _SortingCtrlServer::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window *pWin = (Window*) this->m_pWindow;
-	Mat *pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-
-	return true;
-}
-
-bool _SortingCtrlServer::console(int &iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-	string msg;
-
-	return true;
+	this->_DetectorBase::draw();
 }
 
 }

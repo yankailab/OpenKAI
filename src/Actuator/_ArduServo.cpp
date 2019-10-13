@@ -169,37 +169,18 @@ void _ArduServo::updatePWM(void)
 	m_vNormPos.x = m_vNormTargetPos.x;
 }
 
-bool _ArduServo::draw(void)
+void _ArduServo::draw(void)
 {
-	IF_F(!this->_ActuatorBase::draw());
+	this->_ActuatorBase::draw();
 	Window* pWin = (Window*) this->m_pWindow;
 
-	string msg;
 	if (!m_pIO->isOpen())
 	{
-		pWin->tabNext();
-		msg = "Not Connected";
-		pWin->addMsg(msg);
-		pWin->tabPrev();
-		return false;
+		addMsg("Not Connected",1);
+		return;
 	}
 
-	pWin->tabNext();
-	msg = "nCMD = " + i2str(m_nCMDrecv);
-	pWin->addMsg(msg);
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _ArduServo::console(int& iY)
-{
-	IF_F(!this->_ActuatorBase::console(iY));
-	IF_Fl(!m_pIO->isOpen(), "Not connected");
-	string msg;
-
-	C_MSG("nCMD = " + i2str(m_nCMDrecv));
-	return true;
+	addMsg("nCMD = " + i2str(m_nCMDrecv),1);
 }
 
 }

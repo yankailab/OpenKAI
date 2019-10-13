@@ -17,8 +17,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	int check(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void handleCMD(void);
 	void updateWindow(void);

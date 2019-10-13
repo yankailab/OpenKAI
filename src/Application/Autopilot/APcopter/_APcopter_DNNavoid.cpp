@@ -20,7 +20,7 @@ _APcopter_DNNavoid::~_APcopter_DNNavoid()
 
 bool _APcopter_DNNavoid::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -130,7 +130,7 @@ string _APcopter_DNNavoid::actionType2str(DNN_AVOID_ACTION_TYPE aType)
 
 void _APcopter_DNNavoid::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 
 #ifdef USE_TENSORRT
 	NULL_(m_pIN);
@@ -188,13 +188,9 @@ void _APcopter_DNNavoid::update(void)
 
 }
 
-bool _APcopter_DNNavoid::draw(void)
+void _APcopter_DNNavoid::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	return true;
+	this->_AutopilotBase::draw();
 }
 
 }

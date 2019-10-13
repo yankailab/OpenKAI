@@ -33,9 +33,9 @@ public:
 		return m_json.v(name, pVal);
 	}
 
-	template <typename T> int a(const string& name, T* pVal, int nElem)
+	template <typename T> int a(const string& name, vector<T>* pVal)
 	{
-		return m_json.a(name, pVal, nElem);
+		return m_json.a(name, pVal);
 	}
 
 private:

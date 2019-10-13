@@ -34,7 +34,7 @@ _APcopter_posCtrl::~_APcopter_posCtrl()
 
 bool _APcopter_posCtrl::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vYaw", &m_vYaw);
@@ -88,7 +88,7 @@ void _APcopter_posCtrl::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ActionBase::update();
+		this->_AutopilotBase::update();
 		updateCtrl();
 
 		this->autoFPSto();
@@ -100,7 +100,7 @@ int _APcopter_posCtrl::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMavlink, -1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_posCtrl::updateCtrl(void)
@@ -212,69 +212,29 @@ void _APcopter_posCtrl::releaseCtrl(void)
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
 
-bool _APcopter_posCtrl::draw(void)
+void _APcopter_posCtrl::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check() < 0);
-
-	pWin->tabNext();
-
+	this->_AutopilotBase::draw();
 	if (!bActive() || !m_bEnable)
 	{
-		pWin->addMsg("Inactive");
+		addMsg("Inactive",1);
 	}
 	else
 	{
-		pWin->addMsg(
+		addMsg(
 				"vTargetP = (" + f2str(m_vTargetP.x) + ", "
 						+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
-						+ ", " + f2str(m_vTargetP.w) + ")");
+						+ ", " + f2str(m_vTargetP.w) + ")",1);
 
-		pWin->addMsg(
+		addMsg(
 				"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
-						+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")");
+						+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
 
-		pWin->addMsg(
+		addMsg(
 				"set target: V = (" + f2str(m_spt.vx) + ", " + f2str(m_spt.vy)
 						+ ", " + f2str(m_spt.vz) + "), P = (" + f2str(m_spt.x)
-						+ ", " + f2str(m_spt.y) + ", " + f2str(m_spt.z) + ")");
+						+ ", " + f2str(m_spt.y) + ", " + f2str(m_spt.z) + ")",1);
 	}
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_posCtrl::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check() < 0);
-
-	string msg;
-
-	if (!bActive() || !m_bEnable)
-	{
-		C_MSG("Inactive");
-	}
-
-	C_MSG(
-			"vTargetP = (" + f2str(m_vTargetP.x) + ", " + f2str(m_vTargetP.y)
-					+ ", " + f2str(m_vTargetP.z) + ", " + f2str(m_vTargetP.w)
-					+ ")");
-
-	C_MSG(
-			"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
-					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")");
-
-	C_MSG(
-			"set target: V = (" + f2str(m_spt.vx) + ", " + f2str(m_spt.vy)
-					+ ", " + f2str(m_spt.vz) + "), P = (" + f2str(m_spt.x)
-					+ ", " + f2str(m_spt.y) + ", " + f2str(m_spt.z) + ")");
-
-	return true;
 }
 
 }

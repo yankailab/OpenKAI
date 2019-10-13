@@ -198,6 +198,20 @@ template <typename T> inline T dHdg(T hFrom, T hTo)
 	return d;
 }
 
+inline double dAngle(double lat1, double lon1, double lat2, double lon2)
+{
+    double dLon = lon2 - lon1;
+    double y = sin(dLon) * cos(lat2);
+    double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
+
+    double bearing = atan2(y, x);
+    bearing *= RAD_DEG;
+    bearing = Hdg(bearing);
+//    bearing = 360 - bearing; // count degrees counter-clockwise - remove to make clockwise
+
+    return bearing;
+}
+
 template <typename T> inline T bbScale(T& bb, float k)
 {
 	float s = abs(1.0 - k) * 0.5;

@@ -183,33 +183,17 @@ void _SortingCtrlClient::onMouse(int event, float x, float y)
 //	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 }
 
-bool _SortingCtrlClient::draw(void)
+void _SortingCtrlClient::draw(void)
 {
-	IF_F(!this->_ProtocolBase::draw());
-	Window *pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_ProtocolBase::draw();
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	circle(*pMat, Point(m_COO.m_bb.center().x * pMat->cols,
 						m_COO.m_bb.center().y * pMat->rows), 15, Scalar(0,255,0), 5);
 
-	IF_T(!m_bDebug);
-
-//	putText(*pMat, i2str(m_COO.m_topClass), Point(cs.x/2, 50), FONT_HERSHEY_SIMPLEX, 1.5, Scalar(0,255,0), 2);
-//	string msg;
-//	pWin->tabNext();
-//	pWin->tabPrev();
-
-	return true;
-}
-
-bool _SortingCtrlClient::console(int &iY)
-{
-	IF_F(!this->_ProtocolBase::console(iY));
-	string msg;
-
-	return true;
+	IF_(!m_bDebug);
 }
 
 }

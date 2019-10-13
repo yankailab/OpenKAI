@@ -1,8 +1,8 @@
-#include "_RoverCMD.h"
+#include "_Rover_CMD.h"
 
 namespace kai
 {
-_RoverCMD::_RoverCMD()
+_Rover_CMD::_Rover_CMD()
 {
 	m_mode = rover_idle;
 	m_pwmModeIn = 0;
@@ -12,11 +12,11 @@ _RoverCMD::_RoverCMD()
 	m_pwmRmot = 0;
 }
 
-_RoverCMD::~_RoverCMD()
+_Rover_CMD::~_Rover_CMD()
 {
 }
 
-bool _RoverCMD::init(void* pKiss)
+bool _Rover_CMD::init(void* pKiss)
 {
 	IF_F(!this->_ProtocolBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -24,7 +24,7 @@ bool _RoverCMD::init(void* pKiss)
 	return true;
 }
 
-bool _RoverCMD::start(void)
+bool _Rover_CMD::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -38,7 +38,7 @@ bool _RoverCMD::start(void)
 	return true;
 }
 
-void _RoverCMD::update(void)
+void _Rover_CMD::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -66,7 +66,7 @@ void _RoverCMD::update(void)
 	}
 }
 
-void _RoverCMD::handleCMD(void)
+void _Rover_CMD::handleCMD(void)
 {
 	switch (m_recvMsg.m_pBuf[1])
 	{
@@ -93,7 +93,7 @@ void _RoverCMD::handleCMD(void)
 	m_recvMsg.reset();
 }
 
-void _RoverCMD::sendState(int iState)
+void _Rover_CMD::sendState(int iState)
 {
 	IF_(check()<0);
 
@@ -105,7 +105,7 @@ void _RoverCMD::sendState(int iState)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + 4);
 }
 
-void _RoverCMD::setPWM(int nChan, uint16_t* pChan)
+void _Rover_CMD::setPWM(int nChan, uint16_t* pChan)
 {
 	IF_(check()<0);
 	IF_(nChan <= 0);
@@ -123,7 +123,7 @@ void _RoverCMD::setPWM(int nChan, uint16_t* pChan)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + nChan * 2);
 }
 
-void _RoverCMD::pinOut(uint8_t iPin, uint8_t state)
+void _Rover_CMD::pinOut(uint8_t iPin, uint8_t state)
 {
 	IF_(check()<0);
 
@@ -136,40 +136,18 @@ void _RoverCMD::pinOut(uint8_t iPin, uint8_t state)
 	m_pIO->write(m_pBuf, 5);
 }
 
-bool _RoverCMD::draw(void)
+void _Rover_CMD::draw(void)
 {
-	IF_F(!this->_ProtocolBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ProtocolBase::draw();
 
 	string msg;
-
-	pWin->tabNext();
 	msg = "Mode: " + c_roverModeName[m_mode] +
 			", pwmModein=" + i2str(m_pwmModeIn) +
 			", pwmLin=" + i2str(m_pwmLin) +
 			", pwmRin=" + i2str(m_pwmRin) +
 			", pwmLmot=" + i2str(m_pwmLmot) +
 			", pwmRmot=" + i2str(m_pwmRmot);
-	pWin->addMsg(msg);
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _RoverCMD::console(int& iY)
-{
-	IF_F(!this->_ProtocolBase::console(iY));
-	string msg;
-
-	C_MSG("Mode: " + c_roverModeName[m_mode]);
-	C_MSG("pwmModein=" + i2str(m_pwmModeIn) +
-			", pwmLin=" + i2str(m_pwmLin) +
-			", pwmRin=" + i2str(m_pwmRin) +
-			", pwmLmot=" + i2str(m_pwmLmot) +
-			", pwmRmot=" + i2str(m_pwmRmot)
-			);
-
-	return true;
+	addMsg(msg,1);
 }
 
 }

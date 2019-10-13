@@ -120,24 +120,10 @@ void _HiphenRGB::take(void)
 	LOG_I("RGB: " + fName);
 }
 
-bool _HiphenRGB::draw(void)
+void _HiphenRGB::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	this->_ThreadBase::draw();
 
-	return true;
+	addMsg("iImg: "+i2str(m_iImg));
 }
-
-bool _HiphenRGB::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	C_MSG("iImg: "+i2str(m_iImg));
-	return true;
-}
-
 }

@@ -1,9 +1,9 @@
-#include "_Rover_move.h"
+#include "_Rover_field.h"
 
 namespace kai
 {
 
-_Rover_move::_Rover_move()
+_Rover_field::_Rover_field()
 {
 	m_pR = NULL;
 	m_pCMD = NULL;
@@ -29,13 +29,13 @@ _Rover_move::_Rover_move()
 	m_iPinCamShutter = 10;
 }
 
-_Rover_move::~_Rover_move()
+_Rover_field::~_Rover_field()
 {
 }
 
-bool _Rover_move::init(void* pKiss)
+bool _Rover_field::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("vBorderLrange", &m_vBorderLrange);
@@ -55,7 +55,7 @@ bool _Rover_move::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_RoverCMD", &iName));
-	m_pCMD = (_RoverCMD*) (pK->root()->getChildInst(iName));
+	m_pCMD = (_Rover_CMD*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pCMD, iName+": not found");
 
 	iName = "";
@@ -76,7 +76,7 @@ bool _Rover_move::init(void* pKiss)
 	return true;
 }
 
-int _Rover_move::check(void)
+int _Rover_field::check(void)
 {
 	NULL__(m_pR, -1);
 	NULL__(m_pCMD, -1);
@@ -87,9 +87,9 @@ int _Rover_move::check(void)
 	return 0;
 }
 
-void _Rover_move::update(void)
+void _Rover_field::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
 
@@ -147,7 +147,7 @@ void _Rover_move::update(void)
 
 }
 
-void _Rover_move::findLineM(void)
+void _Rover_field::findLineM(void)
 {
 	IF_(check()<0);
 
@@ -166,7 +166,7 @@ void _Rover_move::findLineM(void)
 	m_bLineM = false;
 }
 
-void _Rover_move::findLineL(void)
+void _Rover_field::findLineL(void)
 {
 	IF_(check()<0);
 
@@ -186,40 +186,20 @@ void _Rover_move::findLineL(void)
 		m_borderL = border;
 		m_dHdg = constrain((m_borderL-m_borderLtarget)*m_kBorderLhdg, m_vdHdgRange.x, m_vdHdgRange.y);
 
-		m_pR->setTargetHdgDelta(m_dHdg);
+//		m_pR->setTargetHdgDelta(m_dHdg);
 		return;
 	}
 
 }
 
-bool _Rover_move::draw(void)
+void _Rover_field::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	NULL_F(pMat);
-	IF_F(pMat->empty());
-
+	this->_AutopilotBase::draw();
 	string msg = *this->getName()
 			+ ": dHdg=" + f2str(m_dHdg)
 			+ ", borderL=" + f2str(m_borderL)
 			;
-	pWin->addMsg(msg);
-
-	return true;
-}
-
-bool _Rover_move::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-	C_MSG("dHdg=" + f2str(m_dHdg)
-			+ ", borderL=" + f2str(m_borderL)
-	);
-
-	return true;
+	addMsg(msg);
 }
 
 }

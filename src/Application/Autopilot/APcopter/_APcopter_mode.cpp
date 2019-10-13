@@ -14,7 +14,7 @@ _APcopter_mode::~_APcopter_mode()
 
 bool _APcopter_mode::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	string iName;
@@ -57,16 +57,16 @@ int _APcopter_mode::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_mode::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 
 	int apMode = m_pAP->getApMode();
-	int apMissionSeq = m_pAP->m_pMavlink->m_msg.mission_current.seq;
+	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
 
 	for(int i=0; i<m_vMM.size(); i++)
 	{
@@ -93,31 +93,11 @@ void _APcopter_mode::update(void)
 	}
 }
 
-bool _APcopter_mode::draw(void)
+void _APcopter_mode::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(check()<0);
+	this->_AutopilotBase::draw();
+	addMsg("AP Mission Seq = " + i2str(m_pAP->m_pMavlink->m_mavMsg.mission_current.seq),1);
 
-	pWin->tabNext();
-
-	pWin->addMsg("AP Mission Seq = " + i2str(m_pAP->m_pMavlink->m_msg.mission_current.seq));
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_mode::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-	C_MSG("AP Mission Seq = " + i2str(m_pAP->m_pMavlink->m_msg.mission_current.seq));
-
-	return true;
 }
 
 }

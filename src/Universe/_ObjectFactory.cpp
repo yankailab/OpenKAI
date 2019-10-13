@@ -56,24 +56,9 @@ void _ObjectFactory::updateObjects(void)
 
 }
 
-bool _ObjectFactory::draw(void)
+void _ObjectFactory::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
-
-	return true;
-}
-
-bool _ObjectFactory::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
+	this->_ThreadBase::draw();
 }
 
 }

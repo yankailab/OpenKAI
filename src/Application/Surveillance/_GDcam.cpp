@@ -52,10 +52,10 @@ bool _GDcam::init(void* pKiss)
 	pK->v("bGDupload",&m_bGDupload);
 
 	m_classFlag = 0;
-	int pClass[GD_N_CLASS];
-	int nClass = pK->a("classList", pClass, GD_N_CLASS);
-	for (int i = 0; i < nClass; i++)
-		m_classFlag |= (1 << pClass[i]);
+	vector<int> vClass;
+	pK->a("vClass", &vClass);
+	for (int i = 0; i < vClass.size(); i++)
+		m_classFlag |= (1 << vClass[i]);
 
 	pK->v("x",&m_vRoi.x);
 	pK->v("y",&m_vRoi.y);
@@ -203,11 +203,12 @@ void _GDcam::updateShot(void)
 
 }
 
-bool _GDcam::draw(void)
+void _GDcam::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	vInt2 cs;
 	cs.x = pMat->cols;
@@ -216,17 +217,6 @@ bool _GDcam::draw(void)
 
 	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
 	rectangle(*pMat, r, col, 3);
-
-	return true;
-}
-
-bool _GDcam::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
 }
 
 }

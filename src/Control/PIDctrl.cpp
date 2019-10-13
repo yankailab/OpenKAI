@@ -95,22 +95,14 @@ void PIDctrl::reset(void)
 	m_tLastUpdate = 0;
 }
 
-bool PIDctrl::draw(void)
+void PIDctrl::draw(void)
 {
-	return this->ControlBase::draw();
-}
+	this->ControlBase::draw();
 
-bool PIDctrl::console(int& iY)
-{
-	IF_F(!this->ControlBase::console(iY));
-
-	string msg;
-	C_MSG("v=" + f2str(m_v)
+	addMsg("v=" + f2str(m_v)
 			+ " vPred=" + f2str(m_vPred)
-			+ " vTarget=" + f2str(m_vTarget);
+			+ " vTarget=" + f2str(m_vTarget)
 			+ " output=" + f2str(m_output));
-
-	return true;
 }
 
 }

@@ -20,12 +20,11 @@ Startup::Startup()
 	m_waitKey = 50;
 	m_bRun = true;
 	m_key = 0;
-	m_bConsole = true;
 	m_bLog = true;
 	m_bStdErr = true;
 	m_rc = "";
-	m_consoleMsg = "";
-	m_consoleMsgLevel = -1;
+	m_msg = "";
+	m_msgLev = -1;
 	m_vInst.clear();
 }
 
@@ -52,7 +51,6 @@ bool Startup::start(Kiss* pKiss)
 	pApp->v("appName", &m_appName);
 	pApp->v("bWindow", &m_bWindow);
 	pApp->v("bDraw", &m_bDraw);
-	pApp->v("bConsole", &m_bConsole);
 	pApp->v("bLog", &m_bLog);
 	pApp->v("bStdErr", &m_bStdErr);
 	pApp->v("waitKey", &m_waitKey);
@@ -85,37 +83,19 @@ bool Startup::start(Kiss* pKiss)
 		m_vInst[i].m_pInst->start();
 	}
 
-	if(m_bConsole)
-	{
-		initscr();
-		noecho();
-		cbreak();
-		start_color();
-		use_default_colors();
-		init_pair(CONSOLE_COL_TITLE, COLOR_WHITE, -1);
-		init_pair(CONSOLE_COL_NAME, COLOR_GREEN, -1);
-		init_pair(CONSOLE_COL_FPS, COLOR_YELLOW, -1);
-		init_pair(CONSOLE_COL_MSG, COLOR_WHITE, -1);
-		init_pair(CONSOLE_COL_ERROR, COLOR_RED, -1);
-	}
-
 	//UI thread
 	m_bRun = true;
 	unsigned int uWaitKey = m_waitKey * 1000;
 
 	while (m_bRun)
 	{
-		if(m_bConsole)
-		{
-			erase();
-			console();
-			move(0,0);
-		    refresh();
-		}
-
 		if(m_bDraw)
 		{
-			draw();
+			for (unsigned int i = 0; i < m_vInst.size(); i++)
+			{
+				m_vInst[i].m_pInst->draw();
+			}
+
 			m_key = waitKey(m_waitKey);
 		}
 		else
@@ -127,11 +107,6 @@ bool Startup::start(Kiss* pKiss)
 		{
 			handleKey(m_key);
 		}
-	}
-
-	if(m_bConsole)
-	{
-		endwin();
 	}
 
 	for (i = 0; i < m_vInst.size(); i++)
@@ -164,27 +139,6 @@ bool Startup::createAllInst(Kiss* pKiss)
 	}
 
 	return true;
-}
-
-void Startup::draw(void)
-{
-	for (unsigned int i = 0; i < m_vInst.size(); i++)
-	{
-		m_vInst[i].m_pInst->draw();
-	}
-}
-
-void Startup::console(void)
-{
-	COL_TITLE;
-    mvaddstr(0, 1, m_appName.c_str());
-	int iY = 1;
-
-	for (unsigned int i = 0; i < m_vInst.size(); i++)
-	{
-		m_vInst[i].m_pInst->console(iY);
-		iY++;
-	}
 }
 
 void Startup::handleKey(int key)

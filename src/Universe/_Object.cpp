@@ -167,24 +167,12 @@ float _Object::nIoU(_Object* pO)
 	return 0.0;
 }
 
-bool _Object::draw(void)
+void _Object::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_ThreadBase::draw();
 
-	return true;
-}
-
-bool _Object::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 }
 
 }

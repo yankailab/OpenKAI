@@ -50,8 +50,7 @@ public:
 	bool init(void* pKiss);
 	bool link(void);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void reset(void);
 

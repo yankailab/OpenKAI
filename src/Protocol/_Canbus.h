@@ -60,7 +60,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
+	void draw(void);
 
 	void send(unsigned long addr, unsigned char len, unsigned char* pData);
 	void pinOut(uint8_t pin, uint8_t output);

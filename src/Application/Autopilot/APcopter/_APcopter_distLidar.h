@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 #define N_LIDAR_SECTION 10
@@ -30,7 +30,7 @@ struct DIST_LIDAR_SECTION
 	}
 };
 
-class _APcopter_distLidar: public _ActionBase
+class _APcopter_distLidar: public _AutopilotBase
 {
 public:
 	_APcopter_distLidar();
@@ -38,7 +38,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	bool draw(void);
+	void draw(void);
 
 private:
 	void updateMavlink(void);

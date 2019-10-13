@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 
 #define AP_N_CUSTOM_MODE 24
 
@@ -61,7 +61,7 @@ struct AP_MOUNT
 	}
 };
 
-class _APcopter_base: public _ActionBase
+class _APcopter_base: public _AutopilotBase
 {
 public:
 	_APcopter_base();
@@ -71,8 +71,7 @@ public:
 	bool start(void);
 	int check(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void setApMode(uint32_t iMode);
 	uint32_t getApMode(void);

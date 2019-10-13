@@ -107,24 +107,9 @@ void _Universe::pipeIn(void)
 {
 }
 
-bool _Universe::draw(void)
+void _Universe::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
-
-	return true;
-}
-
-bool _Universe::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
+	this->_ThreadBase::draw();
 }
 
 }

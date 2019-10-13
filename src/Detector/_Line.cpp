@@ -153,27 +153,10 @@ void _Line::detect(void)
 	LOG_I("Line pos: " + f2str(m_line));
 }
 
-bool _Line::draw(void)
+void _Line::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	pWin->tabNext();
-	pWin->addMsg("line = " + f2str(m_line));
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _Line::console(int& iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-	string msg;
-	C_MSG("line = " + f2str(m_line));
-
-	return true;
+	this->_DetectorBase::draw();
+	addMsg("line = " + f2str(m_line),1);
 }
 
 }

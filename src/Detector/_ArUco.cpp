@@ -133,18 +133,27 @@ void _ArUco::detect(void)
 	}
 }
 
-bool _ArUco::draw(void)
+void _ArUco::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_DetectorBase::draw();
 
-	string msg = "nTag: " + i2str(this->size());
-	pWin->addMsg(msg);
-	IF_T(this->size() <= 0);
-
+	string msg = "| ";
 	OBJECT* pO;
 	int i=0;
+	while((pO = at(i++)) != NULL)
+	{
+		msg += i2str(pO->m_topClass) + " | ";
+	}
+	addMsg(msg);
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
+	msg = "nTag: " + i2str(this->size());
+	addMsg(msg);
+	IF_(this->size() <= 0);
+
+	i=0;
 	while((pO = at(i++)) != NULL)
 	{
 		Point pCenter = Point(pO->m_c.x * pMat->cols,
@@ -159,25 +168,6 @@ bool _ArUco::draw(void)
 		Point pD = Point(pO->m_r*sin(rad), pO->m_r*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
-
-	return true;
-}
-
-bool _ArUco::console(int& iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-	string msg = "| ";
-	OBJECT* pO;
-	int i=0;
-	while((pO = at(i++)) != NULL)
-	{
-		msg += i2str(pO->m_topClass) + " | ";
-	}
-
-	C_MSG(msg);
-
-	return true;
 }
 
 }

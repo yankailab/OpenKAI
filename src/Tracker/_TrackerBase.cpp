@@ -101,57 +101,37 @@ bool _TrackerBase::startTrack(vFloat4& bb)
 	return true;
 }
 
-bool _TrackerBase::draw(void)
+void _TrackerBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
+
+	string msg = "Stop";
+	if(m_trackState == track_init)
+		msg = "Init";
+	else if(m_trackState == track_update)
+		msg = "Update";
+
+	addMsg(msg,1);
+	addMsg("Tracking pos = ("
+			+ f2str(m_bb.midX()) + ", "
+			+ f2str(m_bb.midY()) + ")");
+
+	IF_(!checkWindow());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
 
 	Scalar col;
-	string msg = "Stop";
-
 	if(m_trackState == track_init)
 	{
 		col = Scalar(0,255,255);
 		rectangle(*pMat, m_newBB, col, 2);
-		msg = "Init";
 	}
 	else if(m_trackState == track_update)
 	{
 		col = Scalar(0,255,0);
 		rectangle(*pMat, m_rBB, col, 2);
-		msg = "Update";
 	}
-
-	pWin->tabNext();
-	pWin->addMsg(msg);
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _TrackerBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg = "Stop";
-	if(m_trackState == track_init)
-	{
-		msg = "Init";
-	}
-	else if(m_trackState == track_update)
-	{
-		msg = "Update";
-	}
-	C_MSG(msg);
-
-	C_MSG("Tracking pos = ("
-			+ f2str(m_bb.midX()) + ", "
-			+ f2str(m_bb.midY()) + ")");
-
-	return true;
 }
 
 }

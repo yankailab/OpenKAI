@@ -4,7 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Tracker/_TrackerBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 #include "_APcopter_link.h"
 #include "_APcopter_posCtrl.h"
@@ -15,7 +15,7 @@ namespace kai
 #define APFOLLOW_OFF 0
 #define APFOLLOW_ON 1
 
-class _APcopter_follow: public _ActionBase
+class _APcopter_follow: public _AutopilotBase
 {
 public:
 	_APcopter_follow();
@@ -25,8 +25,7 @@ public:
 	virtual int check(void);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 private:
 	void updateTargetPos(void);

@@ -32,7 +32,7 @@ _APcopter_takePhoto::~_APcopter_takePhoto()
 
 bool _APcopter_takePhoto::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("quality", &m_quality);
@@ -98,12 +98,12 @@ int _APcopter_takePhoto::check(void)
 	NULL__(m_pV,-1);
 	NULL__(m_pDV,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_takePhoto::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 
 	//receive cmd to take one shot
@@ -173,13 +173,13 @@ void _APcopter_takePhoto::take(void)
 		while(!m_pDV->m_pTPP->bSleeping());
 	}
 
-	vDouble3 vP = m_pAP->getPos();
+	vDouble3 vP;// = m_pAP->getPos();
 
 	LL_POS pLL;
 	pLL.init();
 	pLL.m_lat = vP.x;
 	pLL.m_lng = vP.y;
-	pLL.m_hdg = m_pAP->getHdg();
+	pLL.m_hdg = m_pAP->getApHdg();
 	pLL.m_altAbs = vP.z;
 	pLL.m_altRel = vP.z;
 
@@ -232,63 +232,22 @@ void _APcopter_takePhoto::take(void)
 	m_iTake++;
 }
 
-bool _APcopter_takePhoto::draw(void)
+void _APcopter_takePhoto::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check()<0);
-
-	string msg = *this->getName() + ": ";
+	this->_AutopilotBase::draw();
+	IF_(check()<0);
 
 	if(!bActive())
-	{
-		pWin->addMsg("Inactive");
-	}
+		addMsg("Inactive");
 
 	if(m_bAuto)
-	{
-		pWin->addMsg("AUTO INTERVAL");
-	}
+		addMsg("AUTO INTERVAL");
 	else
-	{
-		pWin->addMsg("MANUAL");
-	}
+		addMsg("MANUAL");
 
-	pWin->addMsg("Inteval = " + i2str(m_tInterval) + " Hz");
-	pWin->addMsg("iTake = " + i2str(m_iTake));
-	pWin->addMsg("Dir = " + m_subDir);
-
-	return true;
-}
-
-bool _APcopter_takePhoto::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-	}
-
-	if(m_bAuto)
-	{
-		C_MSG("AUTO INTERVAL");
-	}
-	else
-	{
-		C_MSG("MANUAL");
-	}
-
-	C_MSG("Inteval = " + i2str(m_tInterval) + " Hz");
-	C_MSG("iTake = " + i2str(m_iTake));
-	C_MSG("Dir = " + m_subDir);
-
-	return true;
+	addMsg("Inteval = " + i2str(m_tInterval) + " Hz");
+	addMsg("iTake = " + i2str(m_iTake));
+	addMsg("Dir = " + m_subDir);
 }
 
 }

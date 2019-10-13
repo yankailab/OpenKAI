@@ -111,22 +111,9 @@ void _GDimgUploader::updateUpload(void)
 	system(cmd.c_str());
 }
 
-bool _GDimgUploader::draw(void)
+void _GDimgUploader::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	return true;
-}
-
-bool _GDimgUploader::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
+	this->_ThreadBase::draw();
 }
 
 }

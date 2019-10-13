@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_follow.h"
 
 namespace kai
@@ -18,8 +18,7 @@ public:
 	bool init(void* pKiss);
 	int check(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 public:
 	double m_altLanded;

@@ -47,21 +47,21 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("gripY", &m_rGripY);
 	pK->v("vRoiY", &m_vRoiY);
 	pK->v("gripZ", &m_rGripZ);
-	pK->a("dropPos", m_pDropPos, SB_N_CLASS);
+	pK->a("vDropPos", &m_vDropPos);
 
 	string iName;
 	int i;
 
-	int pClass[SB_N_CLASS];
-	m_nClass = pK->a("classList", pClass, SB_N_CLASS);
+	vector<int> vClass;
+	m_nClass = pK->a("classList", &vClass);
 	for (i = 0; i < m_nClass; i++)
-		m_classFlag |= (1 << pClass[i]);
+		m_classFlag |= (1 << vClass[i]);
 
-	string pActuator[16];
-	int nA = pK->a("actuatorList", pActuator, 16);
-	for (i = 0; i < nA; i++)
+	vector<string> vActuator;
+	pK->a("vActuator", &vActuator);
+	for (i = 0; i < vActuator.size(); i++)
 	{
-		iName = pActuator[i];
+		iName = vActuator[i];
 		_ActuatorBase* pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
 		IF_Fl(!pA, iName + " not found");
 		m_vAB.push_back(pA);
@@ -235,7 +235,7 @@ void _SortingArm::updateArm(void)
 			IF_CONT(!pSA);
 
 			vP.init(-1.0);
-			vP.x = m_pDropPos[pO->m_topClass];
+			vP.x = m_vDropPos[pO->m_topClass];
 			pSA->setTarget(vP, vS);
 
 			m_pSeq->m_tResume = 0;
@@ -244,12 +244,13 @@ void _SortingArm::updateArm(void)
 	}
 }
 
-bool _SortingArm::draw(void)
+void _SortingArm::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
+
+	IF_(!checkWindow());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
 
 	int iL = m_vRoiX.x * pMat->cols;
 	int iR = m_vRoiX.y * pMat->cols;
@@ -262,16 +263,6 @@ bool _SortingArm::draw(void)
 				Point(iR, pMat->rows),
 				Scalar(0,255,0));
 
-	return true;
-}
-
-bool _SortingArm::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
 }
 
 }

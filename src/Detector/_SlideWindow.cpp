@@ -142,19 +142,23 @@ void _SlideWindow::detect(void)
 	}
 }
 
-bool _SlideWindow::draw(void)
+void _SlideWindow::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_DetectorBase::draw();
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
-	rectangle(*pMat, r, Scalar(0,255,0), 1);
+	if(checkWindow())
+	{
+		Window* pWin = (Window*)this->m_pWindow;
+		Mat* pMat = pWin->getFrame()->m();
 
-	IF_T(!m_bDebug);
+		vInt2 cs;
+		cs.x = pMat->cols;
+		cs.y = pMat->rows;
+		Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
+		rectangle(*pMat, r, Scalar(0,255,0), 1);
+	}
+
+	IF_(!m_bDebug);
 
 	if(!m_mBGR.empty())
 		imshow(*this->getName()+":BGR", m_mBGR);
@@ -164,8 +168,6 @@ bool _SlideWindow::draw(void)
 
 	if(!m_mDin.empty())
 		imshow(*this->getName()+":InRange", m_mDin);
-
-	return true;
 }
 
 }

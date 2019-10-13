@@ -15,8 +15,6 @@
 namespace kai
 {
 
-#define TAB_PIX 20
-#define LINE_HEIGHT 20
 #define MOUSE_MOVE 0
 #define MOUSE_L 1
 #define MOUSE_M (1<<1)
@@ -149,16 +147,10 @@ public:
 	virtual ~Window();
 
 	bool init(void *pKiss);
-	bool draw(void);
+	void draw(void);
 	Frame* getFrame(void);
-	Point* getTextPos(void);
 
-	void addMsg(const string &pMsg);
-	void tabNext(void);
-	void tabPrev(void);
-	void tabReset(void);
-	void lineNext(void);
-	void lineReset(void);
+	void addMsg(const string &pMsg, int iTab=0);
 	double textSize(void);
 	Scalar textColor(void);
 
@@ -181,8 +173,8 @@ public:
 	bool m_bDrawMsg;
 	Frame m_frame;
 	vInt2 m_size;
-	vInt2 m_textPos;
 	vInt2 m_textStart;
+	int m_textY;
 	int m_pixTab;
 	int m_lineHeight;
 	Point m_tPoint;

@@ -14,6 +14,73 @@
 namespace kai
 {
 
+struct MISSION_WAYPOINT
+{
+	vDouble4	m_vP;	//lat, lon, alt, hdg
+	vDouble4	m_vV;
+	vDouble4	m_vErr;
+
+	void init(void)
+	{
+		m_vP.init();
+		m_vV.init();
+		m_vErr.init(3.0);
+	}
+
+	bool update(vDouble4& vP, vDouble4* pE)
+	{
+		NULL_F(pE);
+		bool b = true;
+
+		if(vP.x >= 0.0)
+		{
+			pE->x = abs(vP.x - m_vP.x);
+			if(pE->x > m_vErr.x)
+				b = false;
+		}
+		else
+		{
+			pE->x = -1.0;
+		}
+
+		if(vP.y >= 0.0)
+		{
+			pE->y = abs(vP.y - m_vP.y);
+			if(pE->y > m_vErr.y)
+				b = false;
+		}
+		else
+		{
+			pE->y = -1.0;
+		}
+
+		if(vP.z >= 0.0)
+		{
+			pE->z = abs(vP.z - m_vP.z);
+			if(pE->z > m_vErr.z)
+				b = false;
+		}
+		else
+		{
+			pE->z = -1.0;
+		}
+
+		if(vP.w >= 0.0)
+		{
+			pE->w = abs(vP.w - m_vP.w);
+			if(pE->w > m_vErr.w)
+				b = false;
+		}
+		else
+		{
+			pE->w = -1.0;
+		}
+
+		return b;
+	}
+
+};
+
 class Waypoint: public MissionBase
 {
 public:
@@ -21,32 +88,22 @@ public:
 	virtual ~Waypoint();
 
 	bool init(void* pKiss);
+	int	 check(void);
 	bool update(void);
 	void reset(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
-	void setPos(vDouble3& p);
+	void setPos(vDouble4& vPos);
+	float getHdgDelta(void);
+	MISSION_WAYPOINT* getWaypoint(void);
 
 public:
-	bool m_bSetWP;
-	bool m_bSetPos;
+	vector<MISSION_WAYPOINT> m_vWP;
+	int		m_iWP;
+	int		m_dWP;
+	vDouble4 m_vPos;
+	vDouble4 m_vErr;
 
-	bool m_bHoffset;
-	bool m_bVoffset;
-	bool m_bHdgOffset;
-
-	vDouble3 m_vWPtarget;	//lat, lon, alt
-	vDouble3 m_vWP;
-	vDouble3 m_vPos;
-	double	 m_eH;
-	double	 m_eV;
-	bool	 m_bAlt;
-
-	double	 m_speedV;
-	double	 m_speedH;
-	double	 m_hdg;
-	double	 m_r;		//radius(m)
 };
 
 }

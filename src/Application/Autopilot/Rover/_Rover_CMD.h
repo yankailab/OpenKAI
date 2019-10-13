@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Rover__RoverCMD_H_
-#define OpenKAI_src_Autopilot_Rover__RoverCMD_H_
+#ifndef OpenKAI_src_Autopilot_Rover__Rover_CMD_H_
+#define OpenKAI_src_Autopilot_Rover__Rover_CMD_H_
 
 #include "../../../Protocol/_ProtocolBase.h"
 
@@ -28,16 +28,15 @@ const string c_roverModeName[] =
 	"BACKWARD",
 };
 
-class _RoverCMD: public _ProtocolBase
+class _Rover_CMD: public _ProtocolBase
 {
 public:
-	_RoverCMD();
-	~_RoverCMD();
+	_Rover_CMD();
+	~_Rover_CMD();
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void handleCMD(void);
 
@@ -49,7 +48,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_RoverCMD *) This)->update();
+		((_Rover_CMD *) This)->update();
 		return NULL;
 	}
 

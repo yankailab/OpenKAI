@@ -327,12 +327,19 @@ DIST_SENSOR_TYPE _LeddarVu::type(void)
 	return dsLeddarVu;
 }
 
-bool _LeddarVu::draw(void)
+void _LeddarVu::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
+
 	string msg;
+	msg += "nDiv=" + i2str(m_nDiv);
+	msg += " nDet=" + i2str(m_nDetection);
+	msg += " lightSrcPwr=" + i2str(m_lightSrcPwr);
+	msg += " tStamp=" + i2str(m_tStamp);
+	addMsg(msg);
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	double camFovV = 1.0;
 	double camFovH = 1.0;
@@ -364,24 +371,6 @@ bool _LeddarVu::draw(void)
 		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
 	}
 
-	return true;
-}
-
-bool _LeddarVu::console(int& iY)
-{
-	IF_F(!this->_DistSensorBase::console(iY));
-
-	string msg;
-	msg += "nDiv=" + i2str(m_nDiv);
-	msg += " nDet=" + i2str(m_nDetection);
-	msg += " lightSrcPwr=" + i2str(m_lightSrcPwr);
-	msg += " tStamp=" + i2str(m_tStamp);
-
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	return true;
 }
 
 }

@@ -25,8 +25,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	DIST_SENSOR_TYPE type(void);
 

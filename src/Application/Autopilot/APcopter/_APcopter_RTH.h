@@ -4,21 +4,20 @@
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
 #include "../../Mission/RTH.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 namespace kai
 {
 
-class _APcopter_RTH: public _ActionBase
+class _APcopter_RTH: public _AutopilotBase
 {
 public:
 	_APcopter_RTH();
 	~_APcopter_RTH();
 
 	virtual	bool init(void* pKiss);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 	virtual int check(void);
 	virtual void update(void);
 

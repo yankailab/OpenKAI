@@ -12,18 +12,11 @@ namespace kai
 
 Waypoint::Waypoint()
 {
-	m_vWP.init();
-	m_speedV = 1.0;
-	m_speedH = 1.0;
-	m_hdg = 0.0;
-	m_r = 3.0;
+	m_iWP = 0;
+	m_dWP = 1;
+	m_vPos.init(-1.0);
+	m_vErr.init(-1.0);
 
-	m_bHoffset = false;
-	m_bVoffset = false;
-	m_bHdgOffset = false;
-	m_bAlt = true;
-
-	reset();
 }
 
 Waypoint::~Waypoint()
@@ -35,125 +28,101 @@ bool Waypoint::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v<bool>("bHoffset",&m_bHoffset);
-	pK->v<bool>("bVoffset",&m_bVoffset);
-	pK->v<bool>("bHdgOffset",&m_bHdgOffset);
-	pK->v<double>("speedV",&m_speedV);
-	pK->v<double>("speedH",&m_speedH);
-	pK->v<double>("hdg",&m_hdg);
-	pK->v<double>("r",&m_r);
-	pK->v<bool>("bAlt",&m_bAlt);
+	Kiss** ppP = pK->getChildItr();
+	int i = 0;
+	while (ppP[i])
+	{
+		Kiss* pP = ppP[i++];
 
-	pK->v("x", &m_vWP.x);	//lat/northing
-	pK->v("y", &m_vWP.y);	//lng/easting
-	pK->v("alt",&m_vWP.z);
+		MISSION_WAYPOINT p;
+		p.init();
+		pP->v("vP",&p.m_vP);
+		pP->v("vV",&p.m_vV);
+		pP->v("vErr",&p.m_vErr);
+
+		m_vWP.push_back(p);
+	}
 
 	return true;
+}
+
+int Waypoint::check(void)
+{
+	IF__(m_iWP < 0, -1);
+	IF__(m_iWP > m_vWP.size(), -1);
+
+	return 0;
+}
+
+void Waypoint::setPos(vDouble4& vPos)
+{
+	m_vPos = vPos;
+}
+
+MISSION_WAYPOINT* Waypoint::getWaypoint(void)
+{
+	IF__(check()<0, NULL);
+
+	return &m_vWP[m_iWP];
+}
+
+float Waypoint::getHdgDelta(void)
+{
+	IF__(check()<0, 0.0);
+
+	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
+	double d = dAngle(pWP->m_vP.x,
+						 pWP->m_vP.y,
+						 m_vPos.x,
+						 m_vPos.y);
+
+	return dHdg(m_vPos.w, d);
 }
 
 bool Waypoint::update(void)
 {
-	if(!m_bSetWP)
-	{
-		m_vWPtarget = m_vWP;
+	IF_F(check()<0);
 
-		if(m_bHoffset)
-		{
-			IF_F(!m_bSetPos);
+	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
+	IF_F(!pWP->update(m_vPos, &m_vErr));
 
-			LL_POS pLL;
-			pLL.m_lat = m_vPos.x;
-			pLL.m_lng = m_vPos.y;
-			pLL.m_hdg = m_hdg;
+	LOG_I("WP: " + i2str(m_iWP) +" complete");
 
-			Coordinate gps;
-			UTM_POS pUTM = gps.LL2UTM(pLL);
-			pUTM = gps.offset(pUTM, m_vWP);
-			pLL = gps.UTM2LL(pUTM);
+	m_iWP += m_dWP;
+	IF_T(m_iWP < 0);
+	IF_T(m_iWP >= m_vWP.size());
 
-			m_vWPtarget.x = pLL.m_lat;
-			m_vWPtarget.y = pLL.m_lng;
-		}
-
-		if(m_bVoffset)
-		{
-			IF_F(!m_bSetPos);
-			m_vWPtarget.z += m_vPos.z;
-		}
-
-		m_bSetWP = true;
-	}
-
-	m_eH = dEarth(m_vWP.x, m_vWP.y, m_vPos.x, m_vPos.y);
-	m_eV = abs(m_vWP.z - m_vPos.z);
-
-	IF_F(m_eH > m_r);
-	IF_T(!m_bAlt);
-	IF_F(m_eV > m_r);
-
-	LOG_I("WP complete");
-	return true;
+	return false;
 }
 
 void Waypoint::reset(void)
 {
-	m_bSetWP = false;
-	m_bSetPos = false;
-	m_eH = 0.0;
-	m_eV = 0.0;
-	m_vPos.init();
-	m_vWPtarget.init();
 	this->MissionBase::reset();
 }
 
-void Waypoint::setPos(vDouble3& p)
+void Waypoint::draw(void)
 {
-	m_vPos = p;
-	m_bSetPos = true;
-}
+	this->MissionBase::draw();
+	IF_(check()<0);
 
-bool Waypoint::draw(void)
-{
-	IF_F(!this->MissionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
 	string msg;
+	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
 
-	pWin->tabNext();
+	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
+				   + f2str(pWP->m_vP.y,7) + ", "
+				   + f2str(pWP->m_vP.x,7) + ", "
+		           + f2str(pWP->m_vP.w,7) + ")",1);
 
-	pWin->addMsg("WP = (" + f2str(m_vWP.x,7) + ", "
-				   + f2str(m_vWP.y,7) + ", "
-		           + f2str(m_vWP.z,7) + ")");
-
-	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
-		           + f2str(m_vPos.z,7) + ")");
+				   + f2str(m_vPos.z,7) + ", "
+		           + f2str(m_vPos.w,7) + ")",1);
 
-	pWin->addMsg("eH = " + f2str(m_eH,7) +
-				 ", eV = " + f2str(m_eV,7));
+	addMsg("Err = (" + f2str(m_vErr.x,7) + ", "
+				   + f2str(m_vErr.y,7) + ", "
+				   + f2str(m_vErr.z,7) + ", "
+		           + f2str(m_vErr.w,7) + ")",1);
 
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool Waypoint::console(int& iY)
-{
-	IF_F(!this->MissionBase::console(iY));
-
-	string msg;
-
-	C_MSG("WP = (" + f2str(m_vWP.x,7) + ", "
-				   + f2str(m_vWP.y,7) + ", "
-		           + f2str(m_vWP.z,7) + ")");
-
-	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
-				    + f2str(m_vPos.y,7) + ", "
-		            + f2str(m_vPos.z,7) + ")");
-
-	C_MSG("eH = " + f2str(m_eH,7) +
-		  ", eV = " + f2str(m_eV,7));
-
-	return true;
 }
 
 }

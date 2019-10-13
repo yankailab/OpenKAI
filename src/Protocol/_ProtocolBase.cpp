@@ -138,37 +138,17 @@ void _ProtocolBase::setCallback(CallbackProtocol cb, void* pInst)
 	m_pfInst = pInst;
 }
 
-bool _ProtocolBase::draw(void)
+void _ProtocolBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ThreadBase::draw();
 
-	string msg;
 	if (!m_pIO->isOpen())
 	{
-		pWin->tabNext();
-		msg = "Not Connected";
-		pWin->addMsg(msg);
-		pWin->tabPrev();
-		return false;
+		addMsg("Not Connected",1);
+		return;
 	}
 
-	pWin->tabNext();
-	msg = "nCMD = " + i2str(m_nCMDrecv);
-	pWin->addMsg(msg);
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _ProtocolBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-	IF_Fl(!m_pIO->isOpen(), "Not connected");
-	string msg;
-
-	C_MSG("nCMD = " + i2str(m_nCMDrecv));
-	return true;
+	addMsg("nCMD = " + i2str(m_nCMDrecv),1);
 }
 
 }

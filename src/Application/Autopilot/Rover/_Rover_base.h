@@ -4,50 +4,77 @@
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../_ActionBase.h"
-#include "_RoverCMD.h"
-
-#define ROVER_N_MOTOR 16
+#include "../../_AutopilotBase.h"
+#include "_Rover_CMD.h"
 
 namespace kai
 {
 
-struct ROVER_PWM_CHANNEL
+struct ROVER_DRIVE
 {
-	uint8_t	 m_iChan;
+	//output
+	float m_nSpeed;
+	float m_kDir;	//+/-1.0
+	float m_sDir;	//+/-1.0
+	uint8_t	 m_iPWM;
 	uint16_t m_pwm;
-	uint16_t m_H;
-	uint16_t m_M;
-	uint16_t m_L;
-	float	 m_kDirection;	//+/-1.0
-	float	 m_sDirection;	//+/-1.0
+	uint16_t m_pwmH;
+	uint16_t m_pwmM;
+	uint16_t m_pwmL;
+
+	//feedback
+	float m_nCurrent;
+	float m_nRot;
 
 	void init(void)
 	{
-		m_iChan = 0;
-		m_M = 1500;
-		m_H = 2000;
-		m_L = 1000;
-		m_pwm = m_M;
-		m_kDirection = 1.0;
-		m_sDirection = 1.0;
+		m_nSpeed = 0.0;
+		m_kDir = 1.0;
+		m_sDir = 1.0;
+		m_iPWM = 0;
+		m_pwmM = 1500;
+		m_pwmH = 2000;
+		m_pwmL = 1000;
+		m_pwm = m_pwmM;
+
+		m_nCurrent = -1.0;
+		m_nRot = 0.0;
 	}
 
 	uint16_t updatePWM(float nSpeed, float dSpeed)
 	{
-		float k = nSpeed * m_kDirection + dSpeed * m_sDirection;
+		float k = nSpeed * m_kDir + dSpeed * m_sDir;
 		k = constrain<float>(k, -1.0, 1.0);
 
 		if(k >= 0.0)
-			m_pwm = m_M + ((float)(m_H - m_M)) * abs(k);
+			m_pwm = m_pwmM + ((float)(m_pwmH - m_pwmM)) * abs(k);
 		else
-			m_pwm = m_M - ((float)(m_M - m_L)) * abs(k);
+			m_pwm = m_pwmM - ((float)(m_pwmM - m_pwmL)) * abs(k);
 
 		return m_pwm;
 	}
+
 };
 
-class _Rover_base: public _ActionBase
+struct ROVER_CTRL
+{
+	float m_hdg;
+	float m_targetHdg;
+	float m_nSpeed;		//-1.0 to 1.0
+	float m_nTargetSpeed;
+
+	vector<ROVER_DRIVE> m_vDrive;
+
+	void init(void)
+	{
+		m_hdg = -1.0;
+		m_targetHdg = -1.0;
+		m_nSpeed = 0.0;
+		m_nTargetSpeed = 0.0;
+	}
+};
+
+class _Rover_base: public _AutopilotBase
 {
 public:
 	_Rover_base();
@@ -56,27 +83,18 @@ public:
 	bool init(void* pKiss);
 	int	 check(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void setSpeed(float nSpeed);
-	void setTargetHdg(float hdg);
-	void setTargetHdgDelta(float dHdg);
 	void setPinout(uint8_t pin, uint8_t status);
 
-private:
-	void updatePWM(void);
-
 public:
-	_RoverCMD* m_pCMD;
+	_Rover_CMD* m_pCMD;
 	_Mavlink* m_pMavlink;
 	PIDctrl* m_pPIDhdg;
 
-	float m_hdg;
-	float m_targetHdg;
-	float m_nSpeed;		//-1.0 to 1.0
-	float m_maxSpeed;	//in m/s
-	vector<ROVER_PWM_CHANNEL> m_vPWM;
+	ROVER_CTRL m_ctrl;
+
 };
 
 }

@@ -34,7 +34,7 @@ _APcopter_slam::~_APcopter_slam()
 
 bool _APcopter_slam::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("lat", &m_llGPSorigin.m_lat);
@@ -91,7 +91,7 @@ int _APcopter_slam::check(void)
 
 void _APcopter_slam::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 
 	updatePos();
@@ -110,7 +110,7 @@ void _APcopter_slam::update(void)
 	m_utmGPSorigin.m_hdg = m_yawOffset;
 	//	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	//	m_GPS.m_UTM.m_hdg += m_yawOffset;
-	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 0.01;
+	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMavlink->m_mavMsg.global_position_int.relative_alt) * 0.01;
 
 	UTM_POS pUTM = m_GPS.offset(m_utmGPSorigin, m_vSlamPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
@@ -187,75 +187,50 @@ void _APcopter_slam::sendState(void)
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = 0;
 	pBufW[2] = MG_CMD_ATTITUDE;
-	pack_int16(&pBufW[3], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.roll*1000));
-	pack_int16(&pBufW[5], (int16_t)(m_pAP->m_pMavlink->m_msg.attitude.pitch*1000));
-	pack_int16(&pBufW[7], (int16_t)((m_pAP->m_pMavlink->m_msg.attitude.yaw + CV_PI)*1000));
+	pack_int16(&pBufW[3], (int16_t)(m_pAP->m_pMavlink->m_mavMsg.attitude.roll*1000));
+	pack_int16(&pBufW[5], (int16_t)(m_pAP->m_pMavlink->m_mavMsg.attitude.pitch*1000));
+	pack_int16(&pBufW[7], (int16_t)((m_pAP->m_pMavlink->m_mavMsg.attitude.yaw + CV_PI)*1000));
 	m_pIOw->write(pBufW, 9);
 
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = 0;
 	pBufW[2] = MG_CMD_RAW_IMU;
-	pack_int16(&pBufW[3], m_pAP->m_pMavlink->m_msg.raw_imu.xacc);
-	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_msg.raw_imu.yacc);
-	pack_int16(&pBufW[7], m_pAP->m_pMavlink->m_msg.raw_imu.zacc);
-	pack_int16(&pBufW[9], m_pAP->m_pMavlink->m_msg.raw_imu.xgyro);
-	pack_int16(&pBufW[11], m_pAP->m_pMavlink->m_msg.raw_imu.ygyro);
-	pack_int16(&pBufW[13], m_pAP->m_pMavlink->m_msg.raw_imu.zgyro);
-	pack_int16(&pBufW[15], m_pAP->m_pMavlink->m_msg.raw_imu.xmag);
-	pack_int16(&pBufW[17], m_pAP->m_pMavlink->m_msg.raw_imu.ymag);
-	pack_int16(&pBufW[19], m_pAP->m_pMavlink->m_msg.raw_imu.zmag);
+	pack_int16(&pBufW[3], m_pAP->m_pMavlink->m_mavMsg.raw_imu.xacc);
+	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_mavMsg.raw_imu.yacc);
+	pack_int16(&pBufW[7], m_pAP->m_pMavlink->m_mavMsg.raw_imu.zacc);
+	pack_int16(&pBufW[9], m_pAP->m_pMavlink->m_mavMsg.raw_imu.xgyro);
+	pack_int16(&pBufW[11], m_pAP->m_pMavlink->m_mavMsg.raw_imu.ygyro);
+	pack_int16(&pBufW[13], m_pAP->m_pMavlink->m_mavMsg.raw_imu.zgyro);
+	pack_int16(&pBufW[15], m_pAP->m_pMavlink->m_mavMsg.raw_imu.xmag);
+	pack_int16(&pBufW[17], m_pAP->m_pMavlink->m_mavMsg.raw_imu.ymag);
+	pack_int16(&pBufW[19], m_pAP->m_pMavlink->m_mavMsg.raw_imu.zmag);
 	m_pIOw->write(pBufW, 21);
 }
 
-bool _APcopter_slam::draw(void)
+void _APcopter_slam::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check()<0);
+	this->_AutopilotBase::draw();
+
+	addMsg("pos = (" +
+			f2str(m_vSlamPos.x) + ", " +
+			f2str(m_vSlamPos.y) + ", " +
+			f2str(m_vSlamPos.z) + ")");
+
+	addMsg("yawOffset = " + f2str(m_yawOffset));
+
+	addMsg("velocity = (" +
+			f2str(m_vVelo.x) + ", " +
+			f2str(m_vVelo.y) + ", " +
+			f2str(m_vVelo.z) + ")");
+
+	IF_(check()<0);
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	circle(*pMat, Point(m_vSlamPos.x * pMat->cols,
 						0.5 * pMat->rows),
 						pMat->cols * pMat->rows * 0.00002, Scalar(0, 0, 255), 2);
 
-	pWin->addMsg(*this->getName());
-
-	pWin->addMsg("pos = (" +
-			f2str(m_vSlamPos.x) + ", " +
-			f2str(m_vSlamPos.y) + ", " +
-			f2str(m_vSlamPos.z) + ")");
-
-	pWin->addMsg("yawOffset = " + f2str(m_yawOffset));
-
-	pWin->addMsg("velocity = (" +
-			f2str(m_vVelo.x) + ", " +
-			f2str(m_vVelo.y) + ", " +
-			f2str(m_vVelo.z) + ")");
-
-	return true;
-}
-
-bool _APcopter_slam::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	C_MSG("pos = (" +
-			f2str(m_vSlamPos.x) + ", " +
-			f2str(m_vSlamPos.y) + ", " +
-			f2str(m_vSlamPos.z) + ")");
-
-	C_MSG("yawOffset = " + f2str(m_yawOffset));
-
-	C_MSG("velocity = (" +
-			f2str(m_vVelo.x) + ", " +
-			f2str(m_vVelo.y) + ", " +
-			f2str(m_vVelo.z) + ")");
-
-	return true;
 }
 
 }

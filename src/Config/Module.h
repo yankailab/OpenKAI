@@ -38,8 +38,10 @@
 #include "../Application/Autopilot/APcopter/_APcopter_link.h"
 
 #include "../Application/Autopilot/Rover/_Rover_base.h"
-#include "../Application/Autopilot/Rover/_Rover_move.h"
-#include "../Application/Autopilot/Rover/_RoverCMD.h"
+#include "../Application/Autopilot/Rover/_Rover_field.h"
+#include "../Application/Autopilot/Rover/_Rover_WP.h"
+#include "../Application/Autopilot/Rover/_Rover_drive.h"
+#include "../Application/Autopilot/Rover/_Rover_CMD.h"
 
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"

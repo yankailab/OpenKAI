@@ -157,20 +157,19 @@ bool _OpenPose::detect(void)
 	return true;
 }
 
-bool _OpenPose::draw(void)
+void _OpenPose::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
+	IF_(!checkWindow());
+
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
 
 	if (!m_mDebug.empty())
 	{
 		imshow("Pose", m_mDebug);
 	}
-
-	return true;
 }
 
 }

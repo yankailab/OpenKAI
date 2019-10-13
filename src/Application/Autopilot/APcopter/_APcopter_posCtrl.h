@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 namespace kai
@@ -16,7 +16,7 @@ enum POSCTRL_MODE
 	pc_setVP,
 };
 
-class _APcopter_posCtrl: public _ActionBase
+class _APcopter_posCtrl: public _AutopilotBase
 {
 public:
 	_APcopter_posCtrl();
@@ -25,8 +25,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 	int check(void);
 
 	void setPos(vFloat4& vP);

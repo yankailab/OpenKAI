@@ -262,25 +262,19 @@ UTM_POS _GPS::getUTMpos(void)
 	return m_UTM;
 }
 
-bool _GPS::draw(void)
+void _GPS::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	this->_ThreadBase::draw();
 
-	return true;
-}
-
-bool _GPS::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-	IF_Fl(!m_pIO->isOpen(), "Not connected");
-	string msg;
+	if(!m_pIO->isOpen())
+	{
+		addMsg("Not connected");
+		return;
+	}
 
 	//RMC
-	C_MSG("RMC");
-	C_MSG("Raw: lat="
+	addMsg("RMC");
+	addMsg("Raw: lat="
 			+ i2str(m_rmc.latitude.value)
 			+ "/"  + i2str(m_rmc.latitude.scale)
 			+ ", lon=" + i2str(m_rmc.longitude.value)
@@ -288,23 +282,23 @@ bool _GPS::console(int& iY)
 			+ ", spd=" + i2str(m_rmc.speed.value)
 			+ "/" + i2str(m_rmc.speed.scale));
 
-	C_MSG("Fixed-point: lat="
+	addMsg("Fixed-point: lat="
 			+ i2str(minmea_rescale(&m_rmc.latitude, 1000))
 			+ ", lon=" + i2str(minmea_rescale(&m_rmc.longitude, 1000))
 			+ ", spd=" + i2str(minmea_rescale(&m_rmc.speed, 1000)));
 
-	C_MSG("Floating-point: lat="
+	addMsg("Floating-point: lat="
 			+ f2str(minmea_tocoord(&m_rmc.latitude))
 			+ ", lon=" + f2str(minmea_tocoord(&m_rmc.longitude))
 			+ ", spd=" + f2str(minmea_tofloat(&m_rmc.speed)));
 
 	//GGA
-	C_MSG("GGA");
-	C_MSG("Fix quality: " + i2str(m_gga.fix_quality));
+	addMsg("GGA");
+	addMsg("Fix quality: " + i2str(m_gga.fix_quality));
 
 	//GST
-	C_MSG("GST");
-	C_MSG("Raw latErr="
+	addMsg("GST");
+	addMsg("Raw latErr="
 			+ i2str(m_gst.latitude_error_deviation.value) + "/"
 			+ i2str(m_gst.latitude_error_deviation.scale) + ", lonErr="
 			+ i2str(m_gst.longitude_error_deviation.value) + "/"
@@ -312,31 +306,31 @@ bool _GPS::console(int& iY)
 			+ i2str(m_gst.altitude_error_deviation.value) + "/"
 			+ i2str(m_gst.altitude_error_deviation.scale));
 
-	C_MSG("Fixed-point: latErr="
+	addMsg("Fixed-point: latErr="
 			+ i2str(minmea_rescale(&m_gst.latitude_error_deviation, 10)) + ", lonErr="
 			+ i2str(minmea_rescale(&m_gst.longitude_error_deviation, 10)) + ", altErr="
 			+ i2str(minmea_rescale(&m_gst.altitude_error_deviation, 10)));
 
-	C_MSG("Floating-point: latErr="
+	addMsg("Floating-point: latErr="
 			+ f2str(minmea_tofloat(&m_gst.latitude_error_deviation)) + ", lonErr="
 			+ f2str(minmea_tofloat(&m_gst.longitude_error_deviation)) + ", altErr="
 			+ f2str(minmea_tofloat(&m_gst.altitude_error_deviation)));
 
 	//GSV
-	C_MSG("GSV");
-	C_MSG("nMessage: " + i2str(m_gsv.msg_nr) + "/" + i2str(m_gsv.total_msgs));
-	C_MSG("nSattelites: " + i2str(m_gsv.total_sats));
+	addMsg("GSV");
+	addMsg("nMessage: " + i2str(m_gsv.msg_nr) + "/" + i2str(m_gsv.total_msgs));
+	addMsg("nSattelites: " + i2str(m_gsv.total_sats));
 
 	//VTG
-	C_MSG("VTG");
-	C_MSG("True track degrees: " + f2str(minmea_tofloat(&m_vtg.true_track_degrees)));
-	C_MSG("Magnetic track degrees: " + f2str(minmea_tofloat(&m_vtg.magnetic_track_degrees)));
-	C_MSG("Speed knots: " + f2str(minmea_tofloat(&m_vtg.speed_knots)));
-	C_MSG("speed kph: " + f2str(minmea_tofloat(&m_vtg.speed_kph)));
+	addMsg("VTG");
+	addMsg("True track degrees: " + f2str(minmea_tofloat(&m_vtg.true_track_degrees)));
+	addMsg("Magnetic track degrees: " + f2str(minmea_tofloat(&m_vtg.magnetic_track_degrees)));
+	addMsg("Speed knots: " + f2str(minmea_tofloat(&m_vtg.speed_knots)));
+	addMsg("speed kph: " + f2str(minmea_tofloat(&m_vtg.speed_kph)));
 
 	//ZDA
-	C_MSG("ZDA");
-	C_MSG(""+i2str(m_zda.time.hours)
+	addMsg("ZDA");
+	addMsg(""+i2str(m_zda.time.hours)
 			+":"+i2str(m_zda.time.minutes)
 			+":"+i2str(m_zda.time.seconds)
 			+" "+i2str(m_zda.date.day)
@@ -345,7 +339,6 @@ bool _GPS::console(int& iY)
 			+" UTC%+"+i2str(m_zda.hour_offset)+":"
 			+i2str(m_zda.minute_offset));
 
-	return true;
 }
 
 }

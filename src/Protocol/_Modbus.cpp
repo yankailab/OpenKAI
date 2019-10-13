@@ -153,12 +153,9 @@ int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 	return r;
 }
 
-bool _Modbus::draw(void)
+void _Modbus::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-
-	return true;
+	this->_ThreadBase::draw();
 }
 
 }

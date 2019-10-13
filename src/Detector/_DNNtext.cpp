@@ -319,13 +319,14 @@ Mat _DNNtext::getTransform(Mat mImg, vFloat2* pBox)
 	return mP;
 }
 
-bool _DNNtext::draw(void)
+void _DNNtext::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	this->_DetectorBase::draw();
+	IF_(!checkWindow());
+
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
 
 	vInt2 cs;
 	cs.x = pMat->cols;
@@ -360,8 +361,6 @@ bool _DNNtext::draw(void)
 				FONT_HERSHEY_SIMPLEX, 1.5, col, 2);
 #endif
 	}
-
-	return true;
 }
 
 }

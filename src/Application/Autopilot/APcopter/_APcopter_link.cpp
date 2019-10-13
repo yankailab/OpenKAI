@@ -203,24 +203,9 @@ void _APcopter_link::setHdg(float dH)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
 }
 
-bool _APcopter_link::draw(void)
+void _APcopter_link::draw(void)
 {
-	IF_F(!this->_ProtocolBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-
-	string msg;
-	pWin->tabNext();
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_link::console(int& iY)
-{
-	IF_F(!this->_ProtocolBase::console(iY));
-	string msg;
-
-	return true;
+	this->_ProtocolBase::draw();
 }
 
 }

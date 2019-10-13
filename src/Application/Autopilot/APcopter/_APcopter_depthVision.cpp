@@ -16,7 +16,7 @@ _APcopter_depthVision::~_APcopter_depthVision()
 
 bool _APcopter_depthVision::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -55,7 +55,7 @@ bool _APcopter_depthVision::init(void* pKiss)
 
 void _APcopter_depthVision::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMavlink);
@@ -86,18 +86,15 @@ void _APcopter_depthVision::update(void)
 	}
 }
 
-bool _APcopter_depthVision::draw(void)
+void _APcopter_depthVision::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
+	this->_AutopilotBase::draw();
+	addMsg("nROI=" + i2str(m_nROI));
 
-	string msg;
-	msg = *this->getName() + " nROI=" + i2str(m_nROI);
-	pWin->addMsg(msg);
+	IF_(!checkWindow());
+	NULL_(m_pDV);
 
-	NULL_F(m_pDV);
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	for(int i=0; i<m_nROI; i++)
 	{
@@ -116,8 +113,6 @@ bool _APcopter_depthVision::draw(void)
 				Point(r.x + 15, r.y + 25),
 				FONT_HERSHEY_SIMPLEX, 0.8, Scalar(0, 255, 255), 1);
 	}
-
-	return true;
 }
 
 }

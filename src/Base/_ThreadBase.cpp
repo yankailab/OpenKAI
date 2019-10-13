@@ -157,28 +157,23 @@ void _ThreadBase::autoFPSto(void)
 	}
 }
 
-bool _ThreadBase::draw(void)
+void _ThreadBase::draw(void)
 {
-	IF_F(!this->BASE::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	pWin->tabReset();
+	this->BASE::draw();
 
-	string msg = *this->getName();
-	msg += " FPS: " + i2str(m_FPS);
+	string msg = *this->getName() + " FPS: "+i2str(m_FPS);
 
-	pWin->addMsg(msg);
+	if(m_pConsole)
+	{
+		Console* pC = (Console*)m_pConsole;
+		pC->addMsg(msg, COLOR_PAIR(CONSOLE_COL_FPS)|A_BOLD, CONSOLE_X_FPS);
+	}
 
-	return true;
-}
-
-bool _ThreadBase::console(int& iY)
-{
-	IF_F(!this->BASE::console(iY));
-
-	string msg;
-	C_FPS("FPS: " + i2str(m_FPS));
-
-	return true;
+	if(checkWindow())
+	{
+		Window* pWin = (Window*)this->m_pWindow;
+		pWin->addMsg(msg);
+	}
 }
 
 }

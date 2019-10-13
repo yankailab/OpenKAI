@@ -29,7 +29,7 @@ _APcopter_line::~_APcopter_line()
 
 bool _APcopter_line::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("bAltDir",&m_bAltDir);
@@ -110,12 +110,12 @@ int _APcopter_line::check(void)
 	_VisionBase* pV = m_pDet->m_pVision;
 	NULL__(pV,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_line::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 	if(!bActive())
 	{
@@ -189,58 +189,22 @@ bool _APcopter_line::bFound(void)
 	return m_bFound;
 }
 
-bool _APcopter_line::draw(void)
+void _APcopter_line::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check()<0);
-
-	pWin->addMsg(*this->getName());
-	pWin->tabNext();
+	this->_AutopilotBase::draw();
 
 	if(!bActive())
-		pWin->addMsg("Inactive");
+		addMsg("Inactive",1);
 
-	pWin->addMsg("Target = (" + f2str(m_vTargetP.x) + ", "
+	addMsg("Target = (" + f2str(m_vTargetP.x) + ", "
 							   + f2str(m_vTargetP.y) + ", "
 					           + f2str(m_vTargetP.z) + ", "
-				           	   + f2str(m_vTargetP.w) + ")");
+				           	   + f2str(m_vTargetP.w) + ")",1);
 
-	pWin->addMsg("MyPos = (" + f2str(m_vSetP.x) + ", "
+	addMsg("MyPos = (" + f2str(m_vSetP.x) + ", "
 							   + f2str(m_vSetP.y) + ", "
 					           + f2str(m_vSetP.z) + ", "
-				           	   + f2str(m_vSetP.w) + ")");
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_line::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-	}
-
-	C_MSG("Target = (" + f2str(m_vTargetP.x) + ", "
-				     	 + f2str(m_vTargetP.y) + ", "
-						 + f2str(m_vTargetP.z) + ", "
-						 + f2str(m_vTargetP.w) + ")");
-
-	C_MSG("MyPos = (" + f2str(m_vSetP.x) + ", "
-				     	 + f2str(m_vSetP.y) + ", "
-						 + f2str(m_vSetP.z) + ", "
-						 + f2str(m_vSetP.w) + ")");
-
-	return true;
+				           	   + f2str(m_vSetP.w) + ")",1);
 }
 
 }

@@ -272,11 +272,11 @@ void _RealSense::updateTPP(void)
 	}
 }
 
-bool _RealSense::draw(void)
+void _RealSense::draw(void)
 {
 	if (m_pDepthWin)
 	{
-		IF_F(m_fDepth.bEmpty());
+		IF_(m_fDepth.bEmpty());
 		rs2::colorizer rsColorMap;
 		rs2::frame dColor = rsColorMap.process(m_rsDepthShow);
 		Mat mDColor(Size(m_wD, m_hD), CV_8UC3, (void*) dColor.get_data(),
@@ -284,7 +284,7 @@ bool _RealSense::draw(void)
 		m_depthShow = mDColor;
 	}
 
-	return this->_DepthVisionBase::draw();
+	this->_DepthVisionBase::draw();
 }
 
 }

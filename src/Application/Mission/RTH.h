@@ -21,8 +21,7 @@ public:
 
 	bool init(void* pKiss);
 	bool update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void reset(void);
 	void setHome(vDouble3& p);

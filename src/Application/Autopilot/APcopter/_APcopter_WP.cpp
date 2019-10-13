@@ -18,7 +18,7 @@ _APcopter_WP::~_APcopter_WP()
 
 bool _APcopter_WP::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("dZdefault",&m_dZdefault);
@@ -62,19 +62,19 @@ int _APcopter_WP::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_WP::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
 	Waypoint* pWP = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pWP);
 
 	m_pAP->setMount(m_apMount);
-
+/*
 	double alt = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
 	if(m_pDS)
 	{
@@ -111,45 +111,17 @@ void _APcopter_WP::update(void)
 	spt.type_mask = 0b0000000111111000;
 
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);
+	*/
 }
 
-bool _APcopter_WP::draw(void)
+void _APcopter_WP::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check()<0);
-
-	pWin->tabNext();
+	this->_AutopilotBase::draw();
 
 	if(!bActive())
-		pWin->addMsg("Inactive");
+		addMsg("Inactive",1);
 	else
-		pWin->addMsg("Waypoint");
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_WP::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-	}
-	else
-	{
-		C_MSG("Waypoint");
-	}
-
-	return true;
+		addMsg("Waypoint",1);
 }
 
 }

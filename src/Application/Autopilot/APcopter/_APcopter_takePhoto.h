@@ -13,7 +13,7 @@
 namespace kai
 {
 
-class _APcopter_takePhoto: public _ActionBase
+class _APcopter_takePhoto: public _AutopilotBase
 {
 public:
 	_APcopter_takePhoto();
@@ -22,8 +22,7 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	int check(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 private:
 	void take(void);

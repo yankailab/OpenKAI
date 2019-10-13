@@ -81,10 +81,10 @@ bool _ANR::init(void* pKiss)
 	if(pK->v("timeOut",&m_timeOut))
 		m_timeOut *= USEC_1SEC;
 
-	string pPrefixList[N_PREFIX_CANDIDATE];
-	int nP = pK->a("prefixList", pPrefixList, N_PREFIX_CANDIDATE);
-	for(int i=0; i<nP; i++)
-		m_vPrefixCandidate.push_back(pPrefixList[i]);
+	vector<string> vPrefix;
+	pK->a("vPrefix", &vPrefix);
+	for(int i=0; i<vPrefix.size(); i++)
+		m_vPrefixCandidate.push_back(vPrefix[i]);
 
 	string iName;
 
@@ -385,13 +385,20 @@ void _ANR::lp(void)
 	}
 }
 
-bool _ANR::draw(void)
+void _ANR::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
+
+	if(getTimeUsec() - m_tStampCN > m_timeOut)
+		addMsg("CN unrecognized");
+	else
+		addMsg("CN: " + m_cn);
+
+	IF_(!checkWindow());
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	IF_T(getTimeUsec() - m_tStampCN > m_timeOut);
+	IF_(getTimeUsec() - m_tStampCN > m_timeOut);
 
 	Scalar col = Scalar(0,0,255);
 
@@ -416,25 +423,6 @@ bool _ANR::draw(void)
 	r.height = m_lpBB.w * pMat->rows - r.y;
 	rectangle(*pMat, r, col, 2);
 
-	return true;
-}
-
-bool _ANR::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	if(getTimeUsec() - m_tStampCN > m_timeOut)
-	{
-		C_MSG("CN unrecognized");
-	}
-	else
-	{
-		C_MSG("CN: " + m_cn);
-	}
-
-	return true;
 }
 
 }

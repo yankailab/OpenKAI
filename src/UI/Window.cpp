@@ -13,14 +13,14 @@ namespace kai
 
 Window::Window()
 {
-	m_textPos.init();
+	m_textY = 0;
 	m_textStart.x = 20;
 	m_textStart.y = 20;
 	m_size.x = 1280;
 	m_size.y = 720;
 	m_bFullScreen = false;
-	m_pixTab = TAB_PIX;
-	m_lineHeight = LINE_HEIGHT;
+	m_pixTab = 20;
+	m_lineHeight = 20;
 	m_textSize = 0.5;
 	m_textCol = Scalar(0, 255, 0);
 	m_bWindow = true;
@@ -117,9 +117,7 @@ bool Window::init(void* pKiss)
 	pK->v("pixTab", &m_pixTab);
 	pK->v("lineH", &m_lineHeight);
 	pK->v("textSize", &m_textSize);
-	pK->v("textB", &m_textCol[0]);
-	pK->v("textG", &m_textCol[1]);
-	pK->v("textR", &m_textCol[2]);
+	pK->v("textCol", &m_textCol);
 
 	m_frame.allocate(m_size.x, m_size.y);
 
@@ -168,9 +166,9 @@ bool Window::init(void* pKiss)
 	return true;
 }
 
-bool Window::draw(void)
+void Window::draw(void)
 {
-	IF_F(m_frame.bEmpty());
+	IF_(m_frame.bEmpty());
 
 	Mat m = *m_frame.m();
 
@@ -215,51 +213,13 @@ bool Window::draw(void)
 			m_gst << *m_F.m();
 	}
 
-	tabReset();
-	lineReset();
-
+	m_textY = m_textStart.y;
 	*m_frame.m() = Scalar(0,0,0);
-
-	return true;
 }
 
 Frame* Window::getFrame(void)
 {
 	return &m_frame;
-}
-
-Point* Window::getTextPos(void)
-{
-	m_tPoint.x = m_textPos.x;
-	m_tPoint.y = m_textPos.y;
-	return &m_tPoint;
-}
-
-void Window::tabNext(void)
-{
-	m_textPos.x += m_pixTab;
-}
-
-void Window::tabPrev(void)
-{
-	m_textPos.x -= m_pixTab;
-	if (m_textPos.x < m_textStart.x)
-		m_textPos.x = m_textStart.x;
-}
-
-void Window::tabReset(void)
-{
-	m_textPos.x = m_textStart.x;
-}
-
-void Window::lineNext(void)
-{
-	m_textPos.y += m_lineHeight;
-}
-
-void Window::lineReset(void)
-{
-	m_textPos.y = m_textStart.y;
 }
 
 double Window::textSize(void)
@@ -272,14 +232,17 @@ Scalar Window::textColor(void)
 	return m_textCol;
 }
 
-void Window::addMsg(const string& pMsg)
+void Window::addMsg(const string& pMsg, int iTab)
 {
-	IF_(!m_bDraw);
 	IF_(!m_bDrawMsg);
 
-	putText(*m_frame.m(), pMsg, *getTextPos(), FONT_HERSHEY_SIMPLEX,
+	Point p;
+	p.x = m_textStart.x + iTab * m_pixTab;
+	p.y = m_textY;
+
+	putText(*m_frame.m(), pMsg, p, FONT_HERSHEY_SIMPLEX,
 			m_textSize, m_textCol, 1);
-	lineNext();
+	m_textY += m_lineHeight;
 }
 
 WINDOW_BUTTON* Window::getBtn(int id)

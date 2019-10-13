@@ -53,27 +53,9 @@ void Land::setLanded(bool bLanded)
 	m_bLanded = bLanded;
 }
 
-bool Land::draw(void)
+void Land::draw(void)
 {
-	IF_F(!this->MissionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	string msg;
-
-	pWin->tabNext();
-//	pWin->addMsg("");
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool Land::console(int& iY)
-{
-	IF_F(!this->MissionBase::console(iY));
-
-	string msg;
-//	C_MSG("");
-
-	return true;
+	this->MissionBase::draw();
 }
 
 }

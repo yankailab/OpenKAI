@@ -186,30 +186,17 @@ void _OrientalMotor::readStatus(void)
 			", speed: " + i2str(m_cState.m_speed));
 }
 
-bool _OrientalMotor::draw(void)
+void _OrientalMotor::draw(void)
 {
-	IF_F(!this->_ActuatorBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	this->_ActuatorBase::draw();
 
-	return true;
-}
+	addMsg("-- Current state --");
+	addMsg("step: " + i2str(m_cState.m_step));
+	addMsg("speed: " + i2str(m_cState.m_speed));
 
-bool _OrientalMotor::console(int& iY)
-{
-	IF_F(!this->_ActuatorBase::console(iY));
-	string msg;
-
-	C_MSG("-- Current state --");
-	C_MSG("step: " + i2str(m_cState.m_step));
-	C_MSG("speed: " + i2str(m_cState.m_speed));
-
-	C_MSG("-- Target state --");
-	C_MSG("step: " + i2str(m_tState.m_step));
-	C_MSG("speed: " + i2str(m_tState.m_speed));
-
-	return true;
+	addMsg("-- Target state --");
+	addMsg("step: " + i2str(m_tState.m_step));
+	addMsg("speed: " + i2str(m_tState.m_speed));
 }
 
 }

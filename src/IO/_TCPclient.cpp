@@ -169,16 +169,12 @@ bool _TCPclient::bComplete(void)
 	return m_bComplete;
 }
 
-bool _TCPclient::draw(void)
+void _TCPclient::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
 
 	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
-	pWin->addMsg(msg);
-
-	return true;
+	addMsg(msg);
 }
 
 }

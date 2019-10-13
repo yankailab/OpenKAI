@@ -220,30 +220,25 @@ void _Lane::updateVisionSize(void)
 	m_mPerspectiveInv = getPerspectiveTransform(ptsTo, ptsFrom);
 }
 
-bool _Lane::draw(void)
+void _Lane::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_ThreadBase::draw();
 
 	int i,j;
 	LANE* pL;
 	string msg;
 
-	pWin->tabNext();
 	for(i=0; i<m_nLane; i++)
 	{
 		pL = &m_pLane[i];
 		IF_CONT(!pL->m_pPoly);
 		msg = "Lane "+ i2str(i) +": " + f2str(pL->m_pPoly[0]) + " " + f2str(pL->m_pPoly[1]) + " " + f2str(pL->m_pPoly[2]);
-		pWin->addMsg(msg);
+		addMsg(msg,1);
 	}
-	pWin->tabPrev();
 
-	IF_F(m_mPerspectiveInv.empty());
+	IF_(!checkWindow());
+	IF_(m_mPerspectiveInv.empty());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	//visualization of the lane
 	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC1);
@@ -293,8 +288,6 @@ bool _Lane::draw(void)
 	{
 		imshow(*this->getName()+":Bin", m_mBin);
 	}
-
-	return true;
 }
 
 }

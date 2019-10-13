@@ -31,11 +31,11 @@ bool _Augment::init(void* pKiss)
 	if(m_nThread <= 0)m_nThread = 1;
 
 	m_vFilter.clear();
-	string pFilterIn[AUGMENT_N_FILTER];
-	int nCmd = pK->a("filter", pFilterIn, AUGMENT_N_FILTER);
-	for (int i = 0; i < nCmd; i++)
+	vector<string> vFilterIn;
+	pK->a("filter", &vFilterIn);
+	for (int i = 0; i < vFilterIn.size(); i++)
 	{
-		m_vFilter.push_back(pFilterIn[i]);
+		m_vFilter.push_back(vFilterIn[i]);
 	}
 
 	return true;

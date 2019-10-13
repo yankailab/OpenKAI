@@ -12,7 +12,6 @@
 #include "../Base/_ThreadBase.h"
 #include "../Utility/util.h"
 
-#define N_EXT 16
 #define D_TYPE_FILE 0x8
 #define D_TYPE_FOLDER 0x4
 

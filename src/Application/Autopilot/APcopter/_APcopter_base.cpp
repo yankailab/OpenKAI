@@ -33,7 +33,7 @@ _APcopter_base::~_APcopter_base()
 
 bool _APcopter_base::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("freqSendHeartbeat",&m_freqSendHeartbeat);
@@ -78,7 +78,7 @@ int _APcopter_base::check(void)
 {
 	NULL__(m_pMavlink,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_base::update(void)
@@ -87,7 +87,7 @@ void _APcopter_base::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_ActionBase::update();
+		this->_AutopilotBase::update();
 		updateBase();
 
 		this->autoFPSto();
@@ -99,7 +99,7 @@ void _APcopter_base::updateBase(void)
 	IF_(check()<0);
 
 	//update Ardupilot
-	m_apMode = m_pMavlink->m_msg.heartbeat.custom_mode;
+	m_apMode = m_pMavlink->m_mavMsg.heartbeat.custom_mode;
 	if(m_apMode != m_lastApMode)
 	{
 		m_bApModeChanged = true;
@@ -111,31 +111,31 @@ void _APcopter_base::updateBase(void)
 	}
 
 	//get home position
-	if(m_tStamp - m_pMavlink->m_msg.time_stamps.home_position > USEC_1SEC)
+	if(m_tStamp - m_pMavlink->m_mavMsg.time_stamps.home_position > USEC_1SEC)
 	{
 		m_pMavlink->clGetHomePosition();
 	}
 	else
 	{
-		m_vHomePos.x = ((double)(m_pMavlink->m_msg.home_position.latitude)) * 1e-7;
-		m_vHomePos.y = ((double)(m_pMavlink->m_msg.home_position.longitude)) * 1e-7;
-		m_vHomePos.z = ((double)(m_pMavlink->m_msg.home_position.altitude)) * 1e-3;
+		m_vHomePos.x = ((double)(m_pMavlink->m_mavMsg.home_position.latitude)) * 1e-7;
+		m_vHomePos.y = ((double)(m_pMavlink->m_mavMsg.home_position.longitude)) * 1e-7;
+		m_vHomePos.z = ((double)(m_pMavlink->m_mavMsg.home_position.altitude)) * 1e-3;
 		m_bHomeSet = true;
 	}
 
 	//get position
-	m_vGlobalPos.x = ((double)(m_pMavlink->m_msg.global_position_int.lat)) * 1e-7;
-	m_vGlobalPos.y = ((double)(m_pMavlink->m_msg.global_position_int.lon)) * 1e-7;
-	m_vGlobalPos.z = ((double)(m_pMavlink->m_msg.global_position_int.relative_alt)) * 1e-3;
-	m_apHdg = ((double)(m_pMavlink->m_msg.global_position_int.hdg)) * 1e-2;
+	m_vGlobalPos.x = ((double)(m_pMavlink->m_mavMsg.global_position_int.lat)) * 1e-7;
+	m_vGlobalPos.y = ((double)(m_pMavlink->m_mavMsg.global_position_int.lon)) * 1e-7;
+	m_vGlobalPos.z = ((double)(m_pMavlink->m_mavMsg.global_position_int.relative_alt)) * 1e-3;
+	m_apHdg = ((double)(m_pMavlink->m_mavMsg.global_position_int.hdg)) * 1e-2;
 
-	m_vLocalPos.x = m_pMavlink->m_msg.local_position_ned.x;
-	m_vLocalPos.y = m_pMavlink->m_msg.local_position_ned.y;
-	m_vLocalPos.z = m_pMavlink->m_msg.local_position_ned.z;
+	m_vLocalPos.x = m_pMavlink->m_mavMsg.local_position_ned.x;
+	m_vLocalPos.y = m_pMavlink->m_mavMsg.local_position_ned.y;
+	m_vLocalPos.z = m_pMavlink->m_mavMsg.local_position_ned.z;
 
-	m_vSpeed.x = m_pMavlink->m_msg.local_position_ned.vx;
-	m_vSpeed.y = m_pMavlink->m_msg.local_position_ned.vy;
-	m_vSpeed.z = m_pMavlink->m_msg.local_position_ned.vz;
+	m_vSpeed.x = m_pMavlink->m_mavMsg.local_position_ned.vx;
+	m_vSpeed.y = m_pMavlink->m_mavMsg.local_position_ned.vy;
+	m_vSpeed.z = m_pMavlink->m_mavMsg.local_position_ned.vz;
 
 	//Send Heartbeat
 	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
@@ -145,19 +145,19 @@ void _APcopter_base::updateBase(void)
 	}
 
 	//request updates from Mavlink
-	if(m_freqRawSensors > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.raw_imu > USEC_1SEC)
+	if(m_freqRawSensors > 0 && m_tStamp - m_pMavlink->m_mavMsg.time_stamps.raw_imu > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RAW_SENSORS, m_freqRawSensors);
 
-	if(m_freqExtStat > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.mission_current > USEC_1SEC)
+	if(m_freqExtStat > 0 && m_tStamp - m_pMavlink->m_mavMsg.time_stamps.mission_current > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTENDED_STATUS, m_freqExtStat);
 
-	if(m_freqRC > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.rc_channels_raw > USEC_1SEC)
+	if(m_freqRC > 0 && m_tStamp - m_pMavlink->m_mavMsg.time_stamps.rc_channels_raw > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_RC_CHANNELS, m_freqRC);
 
-	if(m_freqPos > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	if(m_freqPos > 0 && m_tStamp - m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, m_freqPos);
 
-	if(m_freqExtra1 > 0 && m_tStamp - m_pMavlink->m_msg.time_stamps.attitude > USEC_1SEC)
+	if(m_freqExtra1 > 0 && m_tStamp - m_pMavlink->m_mavMsg.time_stamps.attitude > USEC_1SEC)
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_EXTRA1, m_freqExtra1);
 
 }
@@ -252,113 +252,52 @@ void _APcopter_base::setMount(AP_MOUNT& m)
 	m_pMavlink->param_set(D);
 }
 
-bool _APcopter_base::draw(void)
+void _APcopter_base::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_AutopilotBase::draw();
 
-	pWin->addMsg(*this->getName());
+	addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName(),1);
 
-	pWin->tabNext();
+	addMsg("y=" + f2str(m_pMavlink->m_mavMsg.attitude.yaw) +
+			", p=" + f2str(m_pMavlink->m_mavMsg.attitude.pitch) +
+			", r=" + f2str(m_pMavlink->m_mavMsg.attitude.roll),1);
 
-	pWin->addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName());
+	addMsg("hdg=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.hdg)*1e-2),1);
 
-	pWin->addMsg("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
-			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str(m_pMavlink->m_msg.attitude.roll));
+	addMsg("alt=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.alt)*1e-3)
+		  + ", relAlt=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.relative_alt)*1e-3),1);
 
-	pWin->addMsg("hdg=" + f2str(((float)m_pMavlink->m_msg.global_position_int.hdg)*1e-2));
+	addMsg("lat=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.lat)*1e-7, 7)
+		  + ", lon=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.lon)*1e-7, 7),1);
 
-	pWin->addMsg("alt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.alt)*1e-3)
-		  + ", relAlt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.relative_alt)*1e-3));
-
-	pWin->addMsg("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
-		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
-
-	pWin->addMsg("Home: lat=" + f2str(m_vHomePos.x, 7)
+	addMsg("Home: lat=" + f2str(m_vHomePos.x, 7)
 				 + ", lon=" + f2str(m_vHomePos.y, 7)
 				 + ", alt=" + f2str(m_vHomePos.z, 7)
-				 );
+				 ,1);
 
-	pWin->addMsg("x=" + f2str(m_pMavlink->m_msg.local_position_ned.x)+
-				 ", y=" + f2str(m_pMavlink->m_msg.local_position_ned.y)+
-				 ", z=" + f2str(m_pMavlink->m_msg.local_position_ned.z));
+	addMsg("x=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.x)+
+				 ", y=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.y)+
+				 ", z=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.z),1);
 
-	pWin->addMsg("vx=" + f2str(m_pMavlink->m_msg.local_position_ned.vx)+
-				 ", vy=" + f2str(m_pMavlink->m_msg.local_position_ned.vy)+
-				 ", vz=" + f2str(m_pMavlink->m_msg.local_position_ned.vz));
+	addMsg("vx=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.vx)+
+				 ", vy=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.vy)+
+				 ", vz=" + f2str(m_pMavlink->m_mavMsg.local_position_ned.vz),1);
 
 	if(m_freqRawSensors > 0)
 	{
-		pWin->addMsg("xAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xacc)
-					 + ", yAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.yacc)
-					 + ", zAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zacc));
+		addMsg("xAcc=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.xacc)
+					 + ", yAcc=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.yacc)
+					 + ", zAcc=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.zacc),1);
 
-		pWin->addMsg("xGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xgyro)
-					 + ", yGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ygyro)
-					 + ", zGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zgyro));
+		addMsg("xGyro=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.xgyro)
+					 + ", yGyro=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.ygyro)
+					 + ", zGyro=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.zgyro),1);
 
-		pWin->addMsg("xMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
-					 + ", yMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
-					 + ", zMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
+		addMsg("xMag=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.xmag)
+					 + ", yMag=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.ymag)
+					 + ", zMag=" + i2str((int32_t)m_pMavlink->m_mavMsg.raw_imu.zmag),1);
 	}
 
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_base::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	C_MSG("apMode = " + i2str(m_apMode) + ": " + getApModeName());
-
-	C_MSG("y=" + f2str(m_pMavlink->m_msg.attitude.yaw) +
-			", p=" + f2str(m_pMavlink->m_msg.attitude.pitch) +
-			", r=" + f2str(m_pMavlink->m_msg.attitude.roll));
-
-	C_MSG("hdg=" + f2str(((float)m_pMavlink->m_msg.global_position_int.hdg)*1e-2));
-
-	C_MSG("alt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.alt)*1e-3)
-		  + ", relAlt=" + f2str(((float)m_pMavlink->m_msg.global_position_int.relative_alt)*1e-3));
-
-	C_MSG("lat=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lat)*1e-7, 7)
-		  + ", lon=" + f2str(((float)m_pMavlink->m_msg.global_position_int.lon)*1e-7, 7));
-
-	C_MSG("Home: lat=" + f2str(m_vHomePos.x, 7)
-				 + ", lon=" + f2str(m_vHomePos.y, 7)
-				 + ", alt=" + f2str(m_vHomePos.z, 7)
-				 );
-
-	C_MSG("x=" + f2str(m_pMavlink->m_msg.local_position_ned.x)+
-				 ", y=" + f2str(m_pMavlink->m_msg.local_position_ned.y)+
-				 ", z=" + f2str(m_pMavlink->m_msg.local_position_ned.z));
-
-	C_MSG("vx=" + f2str(m_pMavlink->m_msg.local_position_ned.vx)+
-				 ", vy=" + f2str(m_pMavlink->m_msg.local_position_ned.vy)+
-				 ", vz=" + f2str(m_pMavlink->m_msg.local_position_ned.vz));
-
-	if(m_freqRawSensors > 0)
-	{
-		C_MSG("xAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xacc)
-					 + ", yAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.yacc)
-					 + ", zAcc=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zacc));
-
-		C_MSG("xGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xgyro)
-					 + ", yGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ygyro)
-					 + ", zGyro=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zgyro));
-
-		C_MSG("xMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.xmag)
-					 + ", yMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.ymag)
-					 + ", zMag=" + i2str((int32_t)m_pMavlink->m_msg.raw_imu.zmag));
-	}
-
-	return true;
 }
 
 }

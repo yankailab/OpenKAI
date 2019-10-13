@@ -18,8 +18,6 @@
 namespace kai
 {
 
-#define N_PREFIX_CANDIDATE 128
-
 class _ANR: public _ThreadBase
 {
 public:
@@ -28,8 +26,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 	int check(void);
 
 private:

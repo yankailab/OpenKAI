@@ -152,48 +152,20 @@ string _MissionControl::getCurrentMissionName(void)
 	return mName;
 }
 
-bool _MissionControl::draw(void)
+void _MissionControl::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
 
-	pWin->addMsg(*this->getName());
+	addMsg("nMission: "+i2str(m_vMission.size()),1);
+	IF_(m_vMission.size() <= 0);
 
-	pWin->addMsg("nMission: "+i2str(m_vMission.size()));
-	IF_T(m_vMission.size() <= 0);
-
-	pWin->addMsg("iMission: "+i2str(m_iMission));
-	IF_T(m_iMission < 0);
+	addMsg("iMission: "+i2str(m_iMission),1);
+	IF_(m_iMission < 0);
 
 	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
-	pWin->addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name);
+	addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
 
-	pWin->tabNext();
 	pMB->draw();
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _MissionControl::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-	string msg;
-
-	C_MSG("nMission: "+i2str(m_vMission.size()));
-	IF_T(m_vMission.size() <= 0);
-
-	C_MSG("iMission: "+i2str(m_iMission));
-	IF_T(m_iMission < 0);
-
-	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
-	C_MSG("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name);
-
-	iY++;
-	pMB->console(iY);
-
-	return true;
 }
 
 }

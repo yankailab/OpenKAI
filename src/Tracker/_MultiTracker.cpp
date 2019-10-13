@@ -150,34 +150,9 @@ void _MultiTracker::updateTarget(void)
 	}
 }
 
-bool _MultiTracker::draw(void)
+void _MultiTracker::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	m_nClass = m_pOB->m_nClass;
-
-	return true;
-}
-
-bool _MultiTracker::console(int& iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-//	string msg = "| ";
-//	OBJECT* pO;
-//	int i=0;
-//	while((pO = m_obj.at(i++)) != NULL)
-//	{
-//		msg += i2str(pO->m_iClass) + " | ";
-//	}
-//
-//	COL_MSG;
-//	iY++;
-//	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	return true;
+	this->_DetectorBase::draw();
 }
 
 }

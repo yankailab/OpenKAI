@@ -292,15 +292,21 @@ double _DistSensorBase::dAvr(double degFrom, double degTo)
 	return dist/n;
 }
 
-bool _DistSensorBase::draw(void)
+void _DistSensorBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	this->_ThreadBase::draw();
 
-	IF_F(!m_bReady);
-	IF_T(m_nDiv <= 0);
+	string msg = "| ";
+	for (int i = 0; i < m_nDiv; i++)
+	{
+		msg += f2str(m_pDiv[i].dAvr()) + " | ";
+	}
+	addMsg(msg);
+
+	IF_(!checkWindow());
+	IF_(!m_bReady);
+	IF_(m_nDiv <= 0);
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);
@@ -325,24 +331,6 @@ bool _DistSensorBase::draw(void)
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
 
-	return true;
-}
-
-bool _DistSensorBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg = "| ";
-	for (int i = 0; i < m_nDiv; i++)
-	{
-		msg += f2str(m_pDiv[i].dAvr()) + " | ";
-	}
-
-	COL_MSG;
-	iY++;
-	mvaddstr(iY, CONSOLE_X_MSG, msg.c_str());
-
-	return true;
 }
 
 }

@@ -22,8 +22,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool update(void);
 	virtual void reset(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 public:
 	string m_nextMission;

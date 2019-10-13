@@ -52,42 +52,17 @@ void Loiter::setPos(vDouble3& p)
 	m_vPos = p;
 }
 
-bool Loiter::draw(void)
+void Loiter::draw(void)
 {
-	IF_F(!this->MissionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	string msg;
+	this->MissionBase::draw();
 
-	pWin->tabNext();
-
-	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
-		           + f2str(m_vPos.z,7) + ")");
+		           + f2str(m_vPos.z,7) + ")",1);
 
 	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*OV_USEC_1SEC);
 	tOut = constrain(tOut, 0, INT_MAX);
-	pWin->addMsg("Timeout = " + i2str(tOut));
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool Loiter::console(int& iY)
-{
-	IF_F(!this->MissionBase::console(iY));
-
-	string msg;
-
-	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
-				    + f2str(m_vPos.y,7) + ", "
-		            + f2str(m_vPos.z,7) + ")");
-
-	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*OV_USEC_1SEC);
-	tOut = constrain(tOut, 0, INT_MAX);
-	C_MSG("Timeout = " + i2str(tOut));
-
-	return true;
+	addMsg("Timeout = " + i2str(tOut),1);
 }
 
 }

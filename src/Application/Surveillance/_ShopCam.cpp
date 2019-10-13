@@ -151,13 +151,15 @@ bool _ShopCam::updateDet(void)
 	return true;
 }
 
-bool _ShopCam::draw(void)
+void _ShopCam::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
+
+	IF_(!checkWindow());
+
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
 
 	vInt2 cs;
 	cs.x = pMat->cols;
@@ -228,17 +230,6 @@ bool _ShopCam::draw(void)
 			Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
 			FONT_HERSHEY_SIMPLEX, 1.0, Scalar(0,255,0), 2);
 
-	return true;
-
-}
-
-bool _ShopCam::console(int& iY)
-{
-	IF_F(!this->_DetectorBase::console(iY));
-
-	string msg;
-
-	return true;
 }
 
 }

@@ -23,7 +23,7 @@ public:
 	virtual ~_DepthVisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool draw(void);
+	virtual void draw(void);
 
 	virtual Frame* Depth(void);
 	float d(vInt4* pROI);

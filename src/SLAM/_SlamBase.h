@@ -22,8 +22,7 @@ public:
 
 	bool init(void* pKiss);
 	void detect(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void reset(void);
 

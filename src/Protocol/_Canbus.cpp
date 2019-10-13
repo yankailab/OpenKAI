@@ -214,10 +214,9 @@ void _Canbus::pinOut(uint8_t pin, uint8_t output)
 	m_pIO->write(pBuf, 5);
 }
 
-bool _Canbus::draw(void)
+void _Canbus::draw(void)
 {
-	IF_F(!this->BASE::draw());
-	Window* pWin = (Window*)this->m_pWindow;
+	this->_ThreadBase::draw();
 
 	string msg = *this->getName();
 	if (m_pIO->isOpen())
@@ -225,9 +224,8 @@ bool _Canbus::draw(void)
 	else
 		msg += ": Not connected";
 
-	pWin->addMsg(msg);
+	addMsg(msg);
 
-	return true;
 }
 
 }

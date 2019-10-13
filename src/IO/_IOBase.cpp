@@ -86,22 +86,10 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 	return m_fifoR.output(pBuf,nB);
 }
 
-bool _IOBase::draw(void)
+void _IOBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-
-	return true;
-}
-
-bool _IOBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-	C_MSG("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData));
-
-	return true;
+	this->_ThreadBase::draw();
+	addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData));
 }
 
 }

@@ -117,18 +117,14 @@ void _DepthSegment::detect(void)
 	}
 }
 
-bool _DepthSegment::draw(void)
+void _DepthSegment::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_DetectorBase::draw();
 
 	if(!m_mR.empty())
 	{
 		imshow(*this->getName()+":Thr", m_mR);
 	}
-
-	return true;
 }
 
 }

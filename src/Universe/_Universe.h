@@ -59,8 +59,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 	//io
 	virtual int add(_Object* pO);

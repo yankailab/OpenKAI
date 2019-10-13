@@ -5,7 +5,7 @@
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/Coordinate.h"
 #include "../../../IO/_IOBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 #define MG_BUF_N 32
@@ -17,7 +17,7 @@
 namespace kai
 {
 
-class _APcopter_slam: public _ActionBase
+class _APcopter_slam: public _AutopilotBase
 {
 public:
 	_APcopter_slam();
@@ -25,8 +25,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 	int check(void);
 
 	void updatePos(void);

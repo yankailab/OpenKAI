@@ -21,13 +21,12 @@ bool _ActuatorSync::init(void* pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string pName[AS_N_ACTUATOR];
-	int nA = 0;
-	nA = pK->a("_ActuatorList", pName, AS_N_ACTUATOR);
+	vector<string> vName;
+	pK->a("_ActuatorList", &vName);
 
-	for(int i=0; i<nA; i++)
+	for(int i=0; i<vName.size(); i++)
 	{
-		void* p = pK->root()->getChildInst(pName[i]);
+		void* p = pK->root()->getChildInst(vName[i]);
 		IF_CONT(!p);
 
 		m_pAB[m_nAB] = (_ActuatorSync*)p;

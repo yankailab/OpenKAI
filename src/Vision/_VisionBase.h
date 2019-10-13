@@ -46,7 +46,7 @@ public:
 	virtual ~_VisionBase();
 
 	virtual bool init(void* pKiss);
-	virtual bool draw(void);
+	virtual void draw(void);
 
 	virtual bool open(void);
 	virtual bool isOpened(void);

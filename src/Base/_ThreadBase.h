@@ -12,6 +12,7 @@
 #include "BASE.h"
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
+#include "../UI/Console.h"
 
 #define T_THREAD 0
 #define T_NOTHREAD 1
@@ -27,8 +28,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 	virtual void goSleep(void);
 	virtual void sleepTime(int64_t usec);

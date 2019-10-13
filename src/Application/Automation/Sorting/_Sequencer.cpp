@@ -205,22 +205,9 @@ void _Sequencer::gotoAction(const string& name)
 	m_iGoAction = getActionIdx(name);
 }
 
-bool _Sequencer::draw(void)
+void _Sequencer::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	return true;
-}
-
-bool _Sequencer::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
+	this->_ThreadBase::draw();
 }
 
 }

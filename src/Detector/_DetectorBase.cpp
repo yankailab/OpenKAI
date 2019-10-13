@@ -96,14 +96,14 @@ bool _DetectorBase::init(void* pKiss)
 	}
 	else
 	{
-		string pClassList[OBJECT_N_CLASS];
-		m_nClass = pK->a("classList", pClassList, OBJECT_N_CLASS);
+		vector<string> vClassList;
+		m_nClass = pK->a("classList", &vClassList);
 
 		for(int i=0; i<m_nClass; i++)
 		{
 			OBJECT_CLASS oc;
 			oc.init();
-			oc.m_name = pClassList[i];
+			oc.m_name = vClassList[i];
 			m_vClass.push_back(oc);
 		}
 	}
@@ -242,13 +242,14 @@ void _DetectorBase::pipeIn(void)
 	}
 }
 
-bool _DetectorBase::draw(void)
+void _DetectorBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_ThreadBase::draw();
+
+	addMsg("nObj=" + i2str(size()));
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	vInt2 cs;
 	cs.x = pMat->cols;
@@ -303,7 +304,7 @@ bool _DetectorBase::draw(void)
 		}
 	}
 
-	IF_T(!m_bDrawStatistics);
+	IF_(!m_bDrawStatistics);
 	updateStatistics();
 
 	for(i=0; i<m_nClass; i++)
@@ -317,17 +318,6 @@ bool _DetectorBase::draw(void)
 				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
 	}
 
-	return true;
-}
-
-bool _DetectorBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-	C_MSG("nObj=" + i2str(size()));
-
-	return true;
 }
 
 }

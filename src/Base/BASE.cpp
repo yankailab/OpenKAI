@@ -8,6 +8,7 @@
 #include "BASE.h"
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
+#include "../UI/Console.h"
 
 namespace kai
 {
@@ -16,12 +17,12 @@ BASE::BASE()
 {
 	m_pKiss = NULL;
 	m_pWindow = NULL;
+	m_pConsole = NULL;
 	m_bLog = false;
-	m_bDraw = true;
 	m_bDebug = false;
 
-	m_consoleMsg = "";
-	m_consoleMsgLevel = -1;
+	m_msg = "";
+	m_msgLev = -1;
 }
 
 BASE::~BASE()
@@ -44,13 +45,15 @@ bool BASE::init(void* pKiss)
 	{
 		pK->v("bLog",&m_bLog);
 	}
-
-	pK->v("bDraw",&m_bDraw);
 	pK->v("bDebug",&m_bDebug);
 
 	name = "";
 	F_INFO(pK->v("Window",&name));
 	m_pWindow = (Window*)(pK->root()->getChildInst(name));
+
+	name = "";
+	F_INFO(pK->v("Console",&name));
+	m_pConsole = (Console*)(pK->root()->getChildInst(name));
 
 	return true;
 }
@@ -87,9 +90,8 @@ int BASE::deSerialize(uint8_t* pB, int nB)
 	return 0;
 }
 
-bool BASE::draw(void)
+bool BASE::checkWindow(void)
 {
-	IF_F(!m_bDraw);
 	NULL_F(m_pWindow);
 
 	Window* pWin = (Window*)m_pWindow;
@@ -101,19 +103,30 @@ bool BASE::draw(void)
 	return true;
 }
 
-bool BASE::console(int& iY)
+void BASE::draw(void)
 {
-    string msg;
-    C_NAME(*this->getName());
+	if(m_pConsole)
+	{
+		Console* pC = (Console*)m_pConsole;
+		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME);
 
-    if(m_consoleMsgLevel > 0)
-    	COL_ERROR;
-    else
-    	COL_MSG;
+	    if(m_msgLev > 0)
+			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD, CONSOLE_X_MSG);
+	    else
+			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
+	}
+}
 
-    C_MSG(m_consoleMsg);
+void BASE::addMsg(const string& msg, int iTab)
+{
+	if(m_pConsole)
+		((Console*)m_pConsole)->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
 
-    return true;
+	if(checkWindow())
+	{
+		Window* pWin = ((Window*)m_pWindow);
+		pWin->addMsg(msg, iTab);
+	}
 }
 
 }

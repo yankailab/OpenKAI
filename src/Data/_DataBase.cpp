@@ -32,11 +32,11 @@ bool _DataBase::init(void* pKiss)
 	pK->v("extOut",&m_extOut);
 
 	m_vExtIn.clear();
-	string pExtIn[N_EXT];
-	int nExt = pK->a("extIn", pExtIn, N_EXT);
-	for(int i=0; i<nExt; i++)
+	vector<string> vExtIn;
+	pK->a("extIn", &vExtIn);
+	for(int i=0; i<vExtIn.size(); i++)
 	{
-		m_vExtIn.push_back(pExtIn[i]);
+		m_vExtIn.push_back(vExtIn[i]);
 	}
 
 	pK->v("compsression",&m_compression);

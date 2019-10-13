@@ -186,19 +186,19 @@ bool _DNNclassifier::classify(Mat m, OBJECT* pO)
 	return true;
 }
 
-bool _DNNclassifier::draw(void)
+void _DNNclassifier::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
-	IF_F(pMat->empty());
+	this->_DetectorBase::draw();
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
 	OBJECT* pO = at(0);
-	NULL_F(pO);
+	NULL_(pO);
 
 	int iClass = pO->m_topClass;
-	IF_F(iClass >= m_nClass);
-	IF_F(iClass < 0);
+	IF_(iClass >= m_nClass);
+	IF_(iClass < 0);
 
 	string oName = m_vClass[iClass].m_name;
 	if (oName.length()>0)
@@ -207,8 +207,6 @@ bool _DNNclassifier::draw(void)
 				Point(25, 100),
 				FONT_HERSHEY_SIMPLEX, 2.0, Scalar(0,0,255), 5);
 	}
-
-	return true;
 }
 
 }

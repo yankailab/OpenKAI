@@ -93,8 +93,7 @@ public:
 	virtual ~_DistSensorBase();
 
 	bool init(void* pKiss);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 	void update(void);
 
 	double rMin(void);

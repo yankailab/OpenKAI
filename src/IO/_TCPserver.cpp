@@ -158,22 +158,17 @@ _TCPclient* _TCPserver::getFirstSocket(void)
 	return m_lSocket.front();
 }
 
-bool _TCPserver::draw(void)
+void _TCPserver::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ThreadBase::draw();
 
 	string msg = "Server port: " + i2str(m_listenPort);
-	pWin->addMsg(msg);
+	addMsg(msg);
 
-	pWin->tabNext();
 	for (auto itr = m_lSocket.begin(); itr != m_lSocket.end(); ++itr)
 	{
 		((_TCPclient*) *itr)->draw();
 	}
-	pWin->tabPrev();
-
-	return true;
 }
 
 }

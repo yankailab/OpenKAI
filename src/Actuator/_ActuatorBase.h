@@ -21,8 +21,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 	virtual void move(vFloat4& vSpeed);
 	virtual void moveTo(vFloat4& vPos, vFloat4& vSpeed);

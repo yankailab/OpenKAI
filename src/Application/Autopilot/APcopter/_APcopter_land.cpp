@@ -30,7 +30,7 @@ int _APcopter_land::check(void)
 
 void _APcopter_land::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 	if(!bActive())
 	{
@@ -49,7 +49,7 @@ void _APcopter_land::update(void)
 	Land* pLD = (Land*)m_pMC->getCurrentMission();
 	NULL_(pLD);
 
-	m_apAlt = (double)(m_pAP->m_pMavlink->m_msg.global_position_int.relative_alt) * 1e-3;
+	m_apAlt = (double)(m_pAP->m_pMavlink->m_mavMsg.global_position_int.relative_alt) * 1e-3;
 	if(m_apAlt < m_altLanded)
 	{
 		if(m_pAP->getApMode()!=LAND)
@@ -94,66 +94,33 @@ void _APcopter_land::update(void)
 //	m_pPC->setPos(m_vP, m_vTargetP);
 }
 
-bool _APcopter_land::draw(void)
+void _APcopter_land::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	IF_F(check()<0);
-
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-
-	string msg = *this->getName();
-	pWin->addMsg(msg);
+	this->_AutopilotBase::draw();
+	IF_(check()<0);
 
 	if(!bActive())
 	{
-		pWin->addMsg("Inactive");
-		return true;
+		addMsg("Inactive");
+		return;
 	}
+
+	if (m_tO.m_topClass >= 0)
+		addMsg("Target tag = " + i2str(m_tO.m_topClass));
+	else
+		addMsg("Target tag not found");
+
+	addMsg("apAlt/altLanded = " + f2str(m_apAlt) + "/" + f2str(m_altLanded));
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	if (m_tO.m_topClass >= 0)
 	{
 		circle(*pMat, Point(m_tO.m_c.x * pMat->cols,
 							m_tO.m_c.y * pMat->rows),
 				pMat->cols * pMat->rows * 0.0001, Scalar(0, 0, 255), 2);
-
-		pWin->addMsg("Target tag = " + i2str(m_tO.m_topClass));
 	}
-	else
-	{
-		pWin->addMsg("Target tag not found");
-	}
-
-	pWin->addMsg("apAlt/altLanded = " + f2str(m_apAlt) + "/" + f2str(m_altLanded));
-
-	return true;
-}
-
-bool _APcopter_land::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-		return true;
-	}
-
-	if (m_tO.m_topClass >= 0)
-	{
-		C_MSG("Target tag = " + i2str(m_tO.m_topClass));
-	}
-	else
-	{
-		C_MSG("Target tag not found");
-	}
-
-	C_MSG("apAlt/altLanded = " + f2str(m_apAlt) + "/" + f2str(m_altLanded));
-
-	return true;
 }
 
 }

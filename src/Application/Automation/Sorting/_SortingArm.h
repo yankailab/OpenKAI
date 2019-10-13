@@ -13,8 +13,6 @@
 #include "_Sequencer.h"
 #include "_SortingCtrlServer.h"
 
-#define SB_N_CLASS 16
-
 namespace kai
 {
 
@@ -26,8 +24,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 	int check(void);
 
 private:
@@ -47,7 +44,7 @@ public:
 	OBJECT		m_tO;
 
 	int			m_nClass;
-	float		m_pDropPos[SB_N_CLASS];
+	vector<float> m_vDropPos;
 	uint64_t	m_classFlag;
 	vFloat2		m_rGripX;	//grip region X, target bb midX will be re-mapped into this region
 	vFloat2		m_vRoiX;

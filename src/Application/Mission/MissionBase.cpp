@@ -51,19 +51,9 @@ void MissionBase::reset(void)
 	m_tStart = 0;
 }
 
-bool MissionBase::draw(void)
+void MissionBase::draw(void)
 {
-	IF_F(!this->BASE::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-
-	return true;
-}
-
-bool MissionBase::console(int& iY)
-{
-	IF_F(!this->BASE::console(iY));
-
-	return true;
+	this->BASE::draw();
 }
 
 }

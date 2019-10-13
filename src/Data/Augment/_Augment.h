@@ -29,7 +29,6 @@
 #include "_filterShrink.h"
 #include "_filterTone.h"
 
-#define AUGMENT_N_FILTER 128
 #define AUGMENT_N_THREAD 128
 
 namespace kai

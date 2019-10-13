@@ -92,48 +92,20 @@ double RTH::getHdg(void)
 	return m_hdg;
 }
 
-bool RTH::draw(void)
+void RTH::draw(void)
 {
-	IF_F(!this->MissionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	string msg;
+	this->MissionBase::draw();
 
-	pWin->tabNext();
-
-	pWin->addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
+	addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
 				   + f2str(m_vHome.y,7) + ", "
-		           + f2str(m_vHome.z,7) + ")");
+		           + f2str(m_vHome.z,7) + ")",1);
 
-	pWin->addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
+	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "
-		           + f2str(m_vPos.z,7) + ")");
+		           + f2str(m_vPos.z,7) + ")",1);
 
-	pWin->addMsg("eH = " + f2str(m_eH,7) +
-				 ", eV = " + f2str(m_eV,7));
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool RTH::console(int& iY)
-{
-	IF_F(!this->MissionBase::console(iY));
-
-	string msg;
-
-	C_MSG("Home = (" + f2str(m_vHome.x,7) + ", "
-				   + f2str(m_vHome.y,7) + ", "
-		           + f2str(m_vHome.z,7) + ")");
-
-	C_MSG("Pos = (" + f2str(m_vPos.x,7) + ", "
-				    + f2str(m_vPos.y,7) + ", "
-		            + f2str(m_vPos.z,7) + ")");
-
-	C_MSG("eH = " + f2str(m_eH,7) +
-		  ", eV = " + f2str(m_eV,7));
-
-	return true;
+	addMsg("eH = " + f2str(m_eH,7) +
+				 ", eV = " + f2str(m_eV,7),1);
 }
 
 }

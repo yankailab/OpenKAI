@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_APcopter__APcopter_mode_H_
 
 #include "../../../Base/common.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 namespace kai
@@ -26,7 +26,7 @@ struct AP_MODE_MISSION
 	}
 };
 
-class _APcopter_mode: public _ActionBase
+class _APcopter_mode: public _AutopilotBase
 {
 public:
 	_APcopter_mode();
@@ -35,8 +35,7 @@ public:
 	bool init(void* pKiss);
 	int check(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 public:
 	_APcopter_base* m_pAP;

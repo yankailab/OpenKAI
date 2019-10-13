@@ -4,14 +4,14 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_Line.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 #include "_APcopter_posCtrl.h"
 
 namespace kai
 {
 
-class _APcopter_line: public _ActionBase
+class _APcopter_line: public _AutopilotBase
 {
 public:
 	_APcopter_line();
@@ -20,8 +20,7 @@ public:
 	virtual	bool init(void* pKiss);
 	virtual int check(void);
 	virtual void update(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 	virtual bool find(void);
 	virtual bool bFound(void);
 

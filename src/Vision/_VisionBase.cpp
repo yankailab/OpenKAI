@@ -99,9 +99,9 @@ void _VisionBase::close(void)
 	m_bOpen = false;
 }
 
-bool _VisionBase::draw(void)
+void _VisionBase::draw(void)
 {
-	NULL_F(m_pWindow);
+	NULL_(m_pWindow);
 	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
 
 	if(!m_fBGR.bEmpty())
@@ -126,7 +126,7 @@ bool _VisionBase::draw(void)
 		}
 	}
 
-	return this->_ThreadBase::draw();
+	this->_ThreadBase::draw();
 }
 
 }

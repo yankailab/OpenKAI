@@ -1,39 +1,37 @@
-#include "_ActionBase.h"
+#include "_AutopilotBase.h"
 
 namespace kai
 {
 
-_ActionBase::_ActionBase()
+_AutopilotBase::_AutopilotBase()
 {
 	m_pMC = NULL;
-	m_tStamp = 0;
-	m_dTime = 0;
 	m_iLastMission = 0;
 	m_bMissionChanged = false;
-	m_iPriority = 0;
+	m_tStamp = 0;
+	m_dTime = 0;
+	m_pCtrl = NULL;
 }
 
-_ActionBase::~_ActionBase()
+_AutopilotBase::~_AutopilotBase()
 {
 }
 
-bool _ActionBase::init(void* pKiss)
+bool _AutopilotBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	pK->v("iPriority",&m_iPriority);
 
 	string iName="";
 	F_INFO(pK->v("_MissionControl", &iName));
 	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
 	NULL_T(m_pMC);
 
-	string pAS[N_ACTIVEMISSION];
-	int nAS = pK->a("activeMission", pAS, N_ACTIVEMISSION);
-	for(int i=0; i<nAS; i++)
+	vector<string> vAS;
+	pK->a("activeMission", &vAS);
+	for(int i=0; i<vAS.size(); i++)
 	{
-		int iMission = m_pMC->getMissionIdx(pAS[i]);
+		int iMission = m_pMC->getMissionIdx(vAS[i]);
 		if(iMission<0)continue;
 
 		m_vActiveMission.push_back(iMission);
@@ -44,12 +42,12 @@ bool _ActionBase::init(void* pKiss)
 	return true;
 }
 
-int _ActionBase::check(void)
+int _AutopilotBase::check(void)
 {
 	return 0;
 }
 
-void _ActionBase::update(void)
+void _AutopilotBase::update(void)
 {
 	uint64_t newTime = getTimeUsec();
 	m_dTime = newTime - m_tStamp;
@@ -68,7 +66,7 @@ void _ActionBase::update(void)
 	}
 }
 
-bool _ActionBase::bActive(void)
+bool _AutopilotBase::bActive(void)
 {
 	NULL_T(m_pMC);
 
@@ -81,14 +79,14 @@ bool _ActionBase::bActive(void)
 	return false;
 }
 
-bool _ActionBase::bMissionChanged(void)
+bool _AutopilotBase::bMissionChanged(void)
 {
 	return m_bMissionChanged;
 }
 
-bool _ActionBase::draw(void)
+void _AutopilotBase::draw(void)
 {
-	return this->_ThreadBase::draw();
+	this->_ThreadBase::draw();
 }
 
 }

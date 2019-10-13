@@ -33,14 +33,9 @@ void ControlBase::update(void)
 
 }
 
-bool ControlBase::draw(void)
+void ControlBase::draw(void)
 {
-	return this->BASE::draw();
-}
-
-bool ControlBase::console(int& iY)
-{
-	return this->BASE::console(iY);
+	this->BASE::draw();
 }
 
 void ControlBase::reset(void)

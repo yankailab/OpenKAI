@@ -161,19 +161,10 @@ void _UDP::updateR(void)
 	}
 }
 
-bool _UDP::draw(void)
+void _UDP::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-
-	pWin->tabNext();
-
-	string msg = "Port:" + i2str(m_port);
-	pWin->addMsg(msg);
-
-	pWin->tabPrev();
-
-	return true;
+	this->_ThreadBase::draw();
+	addMsg("Port:" + i2str(m_port),1);
 }
 
 }

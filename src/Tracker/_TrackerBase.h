@@ -33,9 +33,7 @@ public:
 	bool init(void* pKiss);
 	void update(void);
 	int check(void);
-
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 	virtual void createTracker(void);
 	virtual bool startTrack(vFloat4& bb);

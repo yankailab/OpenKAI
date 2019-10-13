@@ -16,7 +16,7 @@ _APcopter_distLidar::~_APcopter_distLidar()
 
 bool _APcopter_distLidar::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -59,7 +59,7 @@ bool _APcopter_distLidar::init(void* pKiss)
 
 void _APcopter_distLidar::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 
 	updateMavlink();
 }
@@ -99,9 +99,11 @@ void _APcopter_distLidar::updateMavlink(void)
 	}
 }
 
-bool _APcopter_distLidar::draw(void)
+void _APcopter_distLidar::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
+	this->_AutopilotBase::draw();
+	IF_(!checkWindow());
+
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
@@ -127,8 +129,6 @@ bool _APcopter_distLidar::draw(void)
 		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
 		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
 	}
-
-	return true;
 }
 
 }

@@ -24,7 +24,7 @@ public:
 	bool start(void);
 	bool open(void);
 	void close(void);
-	bool draw(void);
+	void draw(void);
 	bool bComplete(void);
 
 public:

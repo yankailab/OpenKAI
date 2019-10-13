@@ -17,7 +17,7 @@ _APcopter_RTH::~_APcopter_RTH()
 
 bool _APcopter_RTH::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("kZsensor", &m_kZsensor);
@@ -60,12 +60,12 @@ int _APcopter_RTH::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
 
-	return this->_ActionBase::check();
+	return this->_AutopilotBase::check();
 }
 
 void _APcopter_RTH::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
 	RTH* pRTH = (RTH*)m_pMC->getCurrentMission();
@@ -109,7 +109,7 @@ void _APcopter_RTH::update(void)
 
 	//heading
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
-	spt.yaw = m_pAP->m_pMavlink->m_msg.attitude.yaw;
+	spt.yaw = m_pAP->m_pMavlink->m_mavMsg.attitude.yaw;
 	double hdg = pRTH->getHdg();
 	if(hdg >= 0)
 		spt.yaw = (float)hdg * DEG_RAD;
@@ -118,43 +118,13 @@ void _APcopter_RTH::update(void)
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);
 }
 
-bool _APcopter_RTH::draw(void)
+void _APcopter_RTH::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	IF_F(pMat->empty());
-	IF_F(check()<0);
-
-	pWin->tabNext();
-
+	this->_AutopilotBase::draw();
 	if(!bActive())
-		pWin->addMsg("Inactive");
+		addMsg("Inactive",1);
 	else
-		pWin->addMsg("RTH");
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _APcopter_RTH::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-
-	if(!bActive())
-	{
-		C_MSG("Inactive");
-	}
-	else
-	{
-		C_MSG("RTH");
-	}
-
-	return true;
+		addMsg("RTH",1);
 }
 
 }

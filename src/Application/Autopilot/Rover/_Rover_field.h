@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Rover__Rover_move_H_
-#define OpenKAI_src_Autopilot_Rover__Rover_move_H_
+#ifndef OpenKAI_src_Autopilot_Rover__Rover_field_H_
+#define OpenKAI_src_Autopilot_Rover__Rover_field_H_
 
 #include "../../../Detector/_DetectorBase.h"
 #include "_Rover_base.h"
@@ -7,24 +7,23 @@
 namespace kai
 {
 
-class _Rover_move: public _ActionBase
+class _Rover_field: public _AutopilotBase
 {
 public:
-	_Rover_move();
-	~_Rover_move();
+	_Rover_field();
+	~_Rover_field();
 
 	bool init(void* pKiss);
 	int check(void);
 	void update(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	void findLineM(void);
 	void findLineL(void);
 
 public:
 	_Rover_base* m_pR;
-	_RoverCMD* m_pCMD;
+	_Rover_CMD* m_pCMD;
 	PIDctrl* m_pPIDhdg;
 	_DetectorBase* m_pLineM;
 	_DetectorBase* m_pLineL;

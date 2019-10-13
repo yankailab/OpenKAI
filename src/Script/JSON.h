@@ -32,19 +32,24 @@ public:
 	bool v(const string& name, double* pVal);
 	bool v(const string& name, float* pVal);
 	bool v(const string& name, string* pVal);
-	bool v(const string& name, vFloat2* pV);
-	bool v(const string& name, vFloat3* pV);
-	bool v(const string& name, vFloat4* pV);
 
+	bool v(const string& name, Scalar* pV);
 	bool v(const string& name, vInt2* pV);
 	bool v(const string& name, vInt3* pV);
 	bool v(const string& name, vInt4* pV);
+	bool v(const string& name, vFloat2* pV);
+	bool v(const string& name, vFloat3* pV);
+	bool v(const string& name, vFloat4* pV);
+	bool v(const string& name, vDouble2* pV);
+	bool v(const string& name, vDouble3* pV);
+	bool v(const string& name, vDouble4* pV);
 
-	int a(const string& name, int* pVal, int nElem);
-	int a(const string& name, double* pVal, int nElem);
-	int a(const string& name, float* pVal, int nElem);
-	int a(const string& name, string* pVal, int nElem);
 	bool array(const string& name, value::array* pVal);
+	int a(const string& name, vector<int>* pVal);
+	int a(const string& name, vector<double>* pVal);
+	int a(const string& name, vector<float>* pVal);
+	int a(const string& name, vector<string>* pVal);
+
 
 };
 

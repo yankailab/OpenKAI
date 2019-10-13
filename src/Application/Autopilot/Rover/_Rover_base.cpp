@@ -9,10 +9,8 @@ _Rover_base::_Rover_base()
 	m_pMavlink = NULL;
 	m_pPIDhdg = NULL;
 
-	m_hdg = -1.0;
-	m_targetHdg = -1.0;
-	m_nSpeed = 0.0;
-	m_maxSpeed = 5.0;
+	m_ctrl.init();
+	m_pCtrl = (void*)&m_ctrl;
 }
 
 _Rover_base::~_Rover_base()
@@ -21,33 +19,31 @@ _Rover_base::~_Rover_base()
 
 bool _Rover_base::init(void* pKiss)
 {
-	IF_F(!this->_ActionBase::init(pKiss));
+	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v<float>("maxSpeed", &m_maxSpeed);
-
-	Kiss** ppP = pK->getChildItr();
+	Kiss** ppD = pK->getChildItr();
 	int i = 0;
-	while (ppP[i])
+	while (ppD[i])
 	{
-		Kiss* pP = ppP[i++];
+		Kiss* pD = ppD[i++];
 
-		ROVER_PWM_CHANNEL p;
-		p.init();
-		pP->v("iChan",&p.m_iChan);
-		pP->v("H",&p.m_H);
-		pP->v("M",&p.m_M);
-		pP->v("L",&p.m_L);
-		pP->v("kDirection",&p.m_kDirection);
-		pP->v("sDirection",&p.m_sDirection);
+		ROVER_DRIVE d;
+		d.init();
+		pD->v("kDir",&d.m_kDir);
+		pD->v("sDir",&d.m_sDir);
+		pD->v("iPWM",&d.m_iPWM);
+		pD->v("pwmH",&d.m_pwmH);
+		pD->v("pwmM",&d.m_pwmM);
+		pD->v("pwmL",&d.m_pwmL);
 
-		m_vPWM.push_back(p);
+		m_ctrl.m_vDrive.push_back(d);
 	}
 
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_RoverCMD", &iName));
-	m_pCMD = (_RoverCMD*) (pK->root()->getChildInst(iName));
+	m_pCMD = (_Rover_CMD*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pCMD, iName+": not found");
 
 	iName = "";
@@ -74,73 +70,34 @@ int _Rover_base::check(void)
 
 void _Rover_base::update(void)
 {
-	this->_ActionBase::update();
+	this->_AutopilotBase::update();
 	IF_(check()<0);
 
-	//hard swich priority
+	//hard switch priority
 	if(m_pCMD->m_mode == rover_idle || m_pCMD->m_mode == rover_manual)
 	{
 		m_pMC->transit("IDLE");
 		setSpeed(0.0);
 	}
 
-	//mission
-	string mission = m_pMC->getCurrentMissionName();
-	if(mission == "IDLE")
-	{
-		m_targetHdg = -1.0;
-	}
-	else if(m_targetHdg < 0.0)
-	{
-		m_targetHdg = m_hdg;
-	}
-
 	//sensor
-	if(m_tStamp - m_pMavlink->m_msg.time_stamps.global_position_int > USEC_1SEC)
+	if(m_tStamp - m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 5);
 		return;
 	}
 
-	uint16_t h = m_pMavlink->m_msg.global_position_int.hdg;
+	uint16_t h = m_pMavlink->m_mavMsg.global_position_int.hdg;
 	if(h < UINT16_MAX)
 	{
-		m_hdg = (float)h * 1e-2;
+		m_ctrl.m_hdg = (float)h * 1e-2;
 	}
 
-	updatePWM();
-}
-
-void _Rover_base::updatePWM(void)
-{
-	IF_(m_hdg < 0.0);
-	IF_(m_targetHdg < 0.0);
-
-	float dSpeed = m_pPIDhdg->update(0.0, dHdg(m_hdg, m_targetHdg), m_tStamp);
-	string mission = m_pMC->getCurrentMissionName();
-	if(mission == "TAG")
-		dSpeed = 0.0;
-
-	uint16_t pPWM[ROVER_N_MOTOR];
-	for(int i=0; i<m_vPWM.size(); i++)
-		pPWM[m_vPWM[i].m_iChan] = m_vPWM[i].updatePWM(m_nSpeed, dSpeed);
-
-	m_pCMD->setPWM(m_vPWM.size(), pPWM);
 }
 
 void _Rover_base::setSpeed(float nSpeed)
 {
-	m_nSpeed = constrain<float>(nSpeed, -1.0, 1.0);
-}
-
-void _Rover_base::setTargetHdg(float hdg)
-{
-	m_targetHdg = hdg;
-}
-
-void _Rover_base::setTargetHdgDelta(float dHdg)
-{
-	m_targetHdg = m_hdg + dHdg;
+	m_ctrl.m_nSpeed = constrain<float>(nSpeed, -1.0, 1.0);
 }
 
 void _Rover_base::setPinout(uint8_t pin, uint8_t status)
@@ -149,62 +106,28 @@ void _Rover_base::setPinout(uint8_t pin, uint8_t status)
 	m_pCMD->pinOut(pin, status);
 }
 
-bool _Rover_base::draw(void)
+void _Rover_base::draw(void)
 {
-	IF_F(!this->_ActionBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	NULL_F(pMat);
-	IF_F(pMat->empty());
+	this->_AutopilotBase::draw();
 
-	string msg = *this->getName()
-			+ ": mode=" + c_roverModeName[m_pCMD->m_mode]
-			+ ", hdg=" + f2str(m_hdg)
-			+ ", targetHdg=" + f2str(m_targetHdg)
-			+ ", nSpeed=" + f2str(m_nSpeed);
-	pWin->addMsg(msg);
-
-	pWin->tabNext();
-
-	for(int i=0;i<m_vPWM.size();i++)
-	{
-		ROVER_PWM_CHANNEL* pM = &m_vPWM[i];
-		msg = "PWM" + i2str(i)
-				+ ": H=" + i2str(pM->m_H)
-				+ ", M=" + i2str(pM->m_M)
-				+ ", L=" + i2str(pM->m_L)
-				+ ", pwm=" + i2str(pM->m_pwm)
-				;
-		pWin->addMsg(msg);
-	}
-
-	pWin->tabPrev();
-
-	return true;
-}
-
-bool _Rover_base::console(int& iY)
-{
-	IF_F(!this->_ActionBase::console(iY));
-	IF_F(check()<0);
-
-	string msg;
-	C_MSG("mode=" + c_roverModeName[m_pCMD->m_mode]
-			+ ", hdg=" + f2str(m_hdg)
-			+ ", targetHdg=" + f2str(m_targetHdg)
-			+ ", nSpeed=" + f2str(m_nSpeed));
-
-	for(int i=0;i<m_vPWM.size();i++)
-	{
-		ROVER_PWM_CHANNEL* pM = &m_vPWM[i];
-		C_MSG("PWM" + i2str(i)
-				+ ": H=" + i2str(pM->m_H)
-				+ ", M=" + i2str(pM->m_M)
-				+ ", L=" + i2str(pM->m_L)
-				+ ", pwm=" + i2str(pM->m_pwm));
-	}
-
-	return true;
+//	string msg = *this->getName()
+//			+ ": mode=" + c_roverModeName[m_pCMD->m_mode]
+//			+ ", hdg=" + f2str(m_hdg)
+//			+ ", targetHdg=" + f2str(m_targetHdg)
+//			+ ", nSpeed=" + f2str(m_nSpeed);
+//	addMsg(msg);
+//
+//	for(int i=0;i<m_vPWM.size();i++)
+//	{
+//		ROVER_PWM_CHANNEL* pM = &m_vPWM[i];
+//		msg = "PWM" + i2str(i)
+//				+ ": H=" + i2str(pM->m_H)
+//				+ ", M=" + i2str(pM->m_M)
+//				+ ", L=" + i2str(pM->m_L)
+//				+ ", pwm=" + i2str(pM->m_pwm)
+//				;
+//		addMsg(msg,1);
+//	}
 }
 
 }

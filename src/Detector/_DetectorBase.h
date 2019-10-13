@@ -13,7 +13,6 @@
 #include "../Vision/_VisionBase.h"
 
 #define OBJECT_N_OBJ 256
-#define OBJECT_N_CLASS 256
 #define OBJ_N_CHAR 32
 #define OBJ_N_VERTICES 32
 #define OBJ_N_TRAJ 16
@@ -231,8 +230,7 @@ public:
 	virtual ~_DetectorBase();
 
 	virtual bool init(void *pKiss);
-	virtual bool draw(void);
-	virtual bool console(int &iY);
+	virtual void draw(void);
 	virtual int getClassIdx(string &className);
 	virtual string getClassName(int iClass);
 

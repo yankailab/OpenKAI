@@ -22,8 +22,7 @@ public:
 	virtual bool init(void* pKiss);
 	virtual float update(float v, float vTarget, uint64_t t);
 	virtual double o(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 	virtual void reset(void);
 
 public:

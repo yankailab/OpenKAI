@@ -134,27 +134,14 @@ float _ActuatorBase::speed(void)
 	return m_vNormSpeed.x;
 }
 
-bool _ActuatorBase::draw(void)
+void _ActuatorBase::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
-	string msg;
+	this->_ThreadBase::draw();
 
-	return true;
-}
-
-bool _ActuatorBase::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-	string msg;
-
-	C_MSG("-- Normalized state --");
-	C_MSG("Current pos: (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")");
-	C_MSG("Target pos: (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")");
-	C_MSG("Speed: (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")");
-
-	return true;
+	addMsg("-- Normalized state --",1);
+	addMsg("Current pos: (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")",1);
+	addMsg("Target pos: (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")",1);
+	addMsg("Speed: (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")",1);
 }
 
 }

@@ -24,8 +24,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 	virtual int check(void);
 	virtual int serialize(uint8_t* pB, int nB);
 	virtual int deSerialize(uint8_t* pB, int nB);
@@ -33,15 +32,18 @@ public:
 	string* getName(void);
 	string* getClass(void);
 
+	bool checkWindow(void);
+	void addMsg(const string& msg, int iTab = 0);
+
 public:
 	void*	m_pKiss;
 	void*	m_pWindow;
+	void*	m_pConsole;
 	bool	m_bLog;
-	bool	m_bDraw;
 	bool	m_bDebug;
 
-	string	m_consoleMsg;
-	int8_t m_consoleMsgLevel;
+	string	m_msg;
+	int8_t m_msgLev;
 };
 
 }

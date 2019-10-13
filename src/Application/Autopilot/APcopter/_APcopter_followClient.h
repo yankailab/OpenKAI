@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_APcopter__APcopter_followClient_H_
 
 #include "../../../Base/common.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_link.h"
 
 namespace kai
@@ -11,7 +11,7 @@ namespace kai
 #define APFOLLOW_OFF 0
 #define APFOLLOW_ON 1
 
-class _APcopter_followClient: public _ActionBase
+class _APcopter_followClient: public _AutopilotBase
 {
 public:
 	_APcopter_followClient();
@@ -21,8 +21,7 @@ public:
 	virtual int check(void);
 	virtual bool start(void);
 	virtual void update(void);
-	virtual bool draw(void);
-	virtual bool console(int& iY);
+	virtual void draw(void);
 
 	void onKey(int key);
 	static void callbackKey(int key, void* pInst)

@@ -155,8 +155,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 	//Receive
 	void handleMessages();
@@ -206,7 +205,7 @@ private:
 	}
 
 public:
-	Mavlink_Messages m_msg;
+	Mavlink_Messages m_mavMsg;
 	mavlink_status_t m_status;
 	vector<MAVLINK_PEER> m_vPeer;
 

@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../DNN/TensorRT/_ImageNet.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 #define DNNAVOID_N_VISION 16
@@ -31,7 +31,6 @@ struct DNN_AVOID_ACTION
 
 	void addClass(int iClass)
 	{
-		IF_(iClass >= OBJECT_N_CLASS);
 		IF_(iClass < 0);
 
 		m_mClass |= (1 << iClass);
@@ -59,7 +58,7 @@ struct DNN_AVOID_VISION
 	}
 };
 
-class _APcopter_DNNavoid: public _ActionBase
+class _APcopter_DNNavoid: public _AutopilotBase
 {
 public:
 	_APcopter_DNNavoid();
@@ -67,7 +66,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	bool draw(void);
+	void draw(void);
 
 	DNN_AVOID_ACTION_TYPE str2actionType(string& strAction);
 	string actionType2str(DNN_AVOID_ACTION_TYPE aType);

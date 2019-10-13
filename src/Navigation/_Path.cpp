@@ -115,47 +115,50 @@ UTM_POS* _Path::getWayPoint(int iWP)
 	return &m_vWP[iWP];
 }
 
-bool _Path::draw(void)
+void _Path::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
+
 	string msg;
 
-	//Plot center as vehicle position
-	Point pCenter(pMat->cols / 2, pMat->rows / 2);
-	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
-
-	IF_T(m_vWP.size() < 3);
-
-	//Plot trajectory
-	Scalar col = Scalar(0, 255, 0);
-	int bold = 2;
-
-	UTM_POS* pWP1 = &m_vWP[1];
-	UTM_POS* pWP2;
-	UTM_POS initWP;// = *m_pGPS->getInitUTM();
-	vDouble2 pI;
-	pI.x = initWP.m_easting;
-	pI.y = initWP.m_northing;
-
-	for (unsigned int i = 2; i < m_vWP.size(); i++)
+	if(checkWindow())
 	{
-		pWP2 = &m_vWP[i];
-		vDouble2 p1,p2;
-		p1.x = pWP1->m_easting;
-		p1.y = pWP1->m_northing;
-		p2.x = pWP2->m_easting;
-		p2.y = pWP2->m_northing;
-		p1 -= pI;
-		p2 -= pI;
-		pWP1 = pWP2;
+		Window* pWin = (Window*) this->m_pWindow;
+		Mat* pMat = pWin->getFrame()->m();
 
-		line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y), col, bold);
+		//Plot center as vehicle position
+		Point pCenter(pMat->cols / 2, pMat->rows / 2);
+		circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
+
+		IF_(m_vWP.size() < 3);
+
+		//Plot trajectory
+		Scalar col = Scalar(0, 255, 0);
+		int bold = 2;
+
+		UTM_POS* pWP1 = &m_vWP[1];
+		UTM_POS* pWP2;
+		UTM_POS initWP;// = *m_pGPS->getInitUTM();
+		vDouble2 pI;
+		pI.x = initWP.m_easting;
+		pI.y = initWP.m_northing;
+
+		for (unsigned int i = 2; i < m_vWP.size(); i++)
+		{
+			pWP2 = &m_vWP[i];
+			vDouble2 p1,p2;
+			p1.x = pWP1->m_easting;
+			p1.y = pWP1->m_northing;
+			p2.x = pWP2->m_easting;
+			p2.y = pWP2->m_northing;
+			p1 -= pI;
+			p2 -= pI;
+			pWP1 = pWP2;
+
+			line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y), col, bold);
+		}
 	}
 
-	return true;
 }
-
 
 }

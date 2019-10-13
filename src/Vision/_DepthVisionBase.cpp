@@ -102,40 +102,40 @@ Frame* _DepthVisionBase::Depth(void)
 	return &m_fDepth;
 }
 
-bool _DepthVisionBase::draw(void)
+void _DepthVisionBase::draw(void)
 {
-	IF_F(!this->_VisionBase::draw());
-	Window* pWin = (Window*)this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
+	this->_VisionBase::draw();
 
-	if(m_bDebug)
+	if(checkWindow())
 	{
-		IF_F(pMat->empty());
+		Window* pWin = (Window*)this->m_pWindow;
+		Frame* pFrame = pWin->getFrame();
+		Mat* pMat = pFrame->m();
 
-		vInt2 cs;
-		cs.x = pMat->cols;
-		cs.y = pMat->rows;
+		if(m_bDebug)
+		{
+			vInt2 cs;
+			cs.x = pMat->cols;
+			cs.y = pMat->rows;
 
-		vFloat4 bb;
-		bb.x = 0.4;
-		bb.y = 0.4;
-		bb.z = 0.6;
-		bb.w = 0.6;
-		Rect r = convertBB<vInt4>(convertBB(bb, cs));
+			vFloat4 bb;
+			bb.x = 0.4;
+			bb.y = 0.4;
+			bb.z = 0.6;
+			bb.w = 0.6;
+			Rect r = convertBB<vInt4>(convertBB(bb, cs));
 
-		rectangle(*pMat, r, Scalar(0,255,0), 1);
+			rectangle(*pMat, r, Scalar(0,255,0), 1);
 
-		putText(*pMat, f2str(d(&bb)),
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
+			putText(*pMat, f2str(d(&bb)),
+						Point(r.x + 15, r.y + 25),
+						FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
+		}
 	}
 
-	IF_F(m_depthShow.bEmpty());
-	IF_F(!m_pDepthWin);
+	IF_(m_depthShow.bEmpty());
+	IF_(!m_pDepthWin);
 	m_pDepthWin->getFrame()->copy(*m_depthShow.m());
-
-	return true;
 }
 
 }

@@ -4,7 +4,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
-#include "../../_ActionBase.h"
+#include "../../_AutopilotBase.h"
 #include "_APcopter_base.h"
 
 #define N_DEPTH_ROI 16
@@ -26,7 +26,7 @@ struct DEPTH_ROI
 	}
 };
 
-class _APcopter_depthVision: public _ActionBase
+class _APcopter_depthVision: public _AutopilotBase
 {
 public:
 	_APcopter_depthVision();
@@ -34,7 +34,7 @@ public:
 
 	bool init(void* pKiss);
 	void update(void);
-	bool draw(void);
+	void draw(void);
 
 private:
 	_APcopter_base* m_pAP;

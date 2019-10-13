@@ -122,9 +122,10 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_link);
 
 	ADD_MODULE(_Rover_base);
-	ADD_MODULE(_Rover_move);
-	ADD_MODULE(_RoverCMD);
-
+	ADD_MODULE(_Rover_field);
+	ADD_MODULE(_Rover_WP);
+	ADD_MODULE(_Rover_CMD);
+	ADD_MODULE(_Rover_drive);
 
 #ifdef USE_LIVOX
 	ADD_MODULE(_Livox);
