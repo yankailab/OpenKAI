@@ -12,28 +12,22 @@ namespace kai
 
 _Path::_Path()
 {
-	m_vWP.clear();
 	m_dInterval = 0;
-	m_lastWP.init();
 	m_bRecord = false;
 	m_showScale = 1.0;	//1m = 1pixel;
-	m_distCompress = 0.0;
 }
 
 _Path::~_Path()
 {
 }
 
-bool _Path::init(void* pKiss)
+bool _Path::init(void *pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	F_INFO(pK->v("dInterval", &m_dInterval));
-	F_INFO(pK->v("showScale", &m_showScale));
-	F_INFO(pK->v("distCompress", &m_distCompress));
-
-	reset();
+	pK->v("dInterval", &m_dInterval);
+	pK->v("showScale", &m_showScale);
 
 	return true;
 }
@@ -67,52 +61,37 @@ void _Path::updateGPS(void)
 {
 	IF_(!m_bRecord);
 
-//	UTM_POS newP = *m_pGPS->getUTM();
-//	IF_(newP.dist(&m_lastWP) < m_dInterval);
+	UTM_POS utm = m_coord.LL2UTM(m_pos);
 
-//	m_vWP.push_back(newP);
-//	m_lastWP = newP;
+	if(m_vWP.size()>0)
+	{
+		UTM_POS lastUTM = m_coord.LL2UTM(m_lastPos);
+		IF_(utm.dist(&lastUTM) < m_dInterval);
+	}
+
+	m_vWP.push_back(m_pos);
+	m_lastPos = m_pos;
 }
 
-UTM_POS* _Path::getCurrentPos(void)
+void _Path::startRec(void)
 {
-//	return m_pGPS->getUTM();
-	return NULL;
-}
-
-void _Path::startRecord(void)
-{
+	m_vWP.clear();
 	m_bRecord = true;
 }
 
-void _Path::stopRecord(void)
+void _Path::pauseRec(void)
 {
 	m_bRecord = false;
 }
 
-void _Path::reset(void)
+void _Path::resumeRec(void)
 {
-	m_lastWP.init();
-	m_vWP.clear();
-	m_vWP.push_back(m_lastWP);
+	m_bRecord = true;
 }
 
-void _Path::compress(void)
+void _Path::stopRec(void)
 {
-
-}
-
-UTM_POS* _Path::getLastWayPoint(void)
-{
-	return &m_lastWP;
-}
-
-UTM_POS* _Path::getWayPoint(int iWP)
-{
-	IF_N(iWP < 0);
-	IF_N(iWP >= m_vWP.size());
-
-	return &m_vWP[iWP];
+	m_bRecord = false;
 }
 
 void _Path::draw(void)
@@ -121,44 +100,41 @@ void _Path::draw(void)
 
 	string msg;
 
-	if(checkWindow())
-	{
-		Window* pWin = (Window*) this->m_pWindow;
-		Mat* pMat = pWin->getFrame()->m();
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-		//Plot center as vehicle position
-		Point pCenter(pMat->cols / 2, pMat->rows / 2);
-		circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
+	//Plot center as vehicle position
+	Point pCenter(pMat->cols / 2, pMat->rows / 2);
+	circle(*pMat, pCenter, 10, Scalar(0, 0, 255), 2);
 
-		IF_(m_vWP.size() < 3);
+	IF_(m_vWP.size() < 3);
 
-		//Plot trajectory
-		Scalar col = Scalar(0, 255, 0);
-		int bold = 2;
+	//Plot trajectory
+	Scalar col = Scalar(0, 255, 0);
+	int bold = 2;
 
-		UTM_POS* pWP1 = &m_vWP[1];
-		UTM_POS* pWP2;
-		UTM_POS initWP;// = *m_pGPS->getInitUTM();
-		vDouble2 pI;
-		pI.x = initWP.m_easting;
-		pI.y = initWP.m_northing;
-
-		for (unsigned int i = 2; i < m_vWP.size(); i++)
-		{
-			pWP2 = &m_vWP[i];
-			vDouble2 p1,p2;
-			p1.x = pWP1->m_easting;
-			p1.y = pWP1->m_northing;
-			p2.x = pWP2->m_easting;
-			p2.y = pWP2->m_northing;
-			p1 -= pI;
-			p2 -= pI;
-			pWP1 = pWP2;
-
-			line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y), col, bold);
-		}
-	}
-
+//	UTM_POS *pWP1 = &m_vWP[1];
+//	UTM_POS *pWP2;
+//	UTM_POS initWP;	// = *m_pGPS->getInitUTM();
+//	vDouble2 pI;
+//	pI.x = initWP.m_easting;
+//	pI.y = initWP.m_northing;
+//
+//	for (unsigned int i = 2; i < m_vWP.size(); i++)
+//	{
+//		pWP2 = &m_vWP[i];
+//		vDouble2 p1, p2;
+//		p1.x = pWP1->m_easting;
+//		p1.y = pWP1->m_northing;
+//		p2.x = pWP2->m_easting;
+//		p2.y = pWP2->m_northing;
+//		p1 -= pI;
+//		p2 -= pI;
+//		pWP1 = pWP2;
+//
+//		line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y),
+//				col, bold);
+//	}
 }
 
 }

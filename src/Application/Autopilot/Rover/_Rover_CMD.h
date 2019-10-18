@@ -12,6 +12,7 @@ namespace kai
 
 enum ROVER_MODE
 {
+	rover_unknown = -1,
 	rover_idle = 0,
 	rover_manual = 1,
 	rover_auto = 2,
@@ -41,7 +42,7 @@ public:
 	void handleCMD(void);
 
 	void sendState(int iState);
-	void setPWM(int nChan, uint16_t* pChan);
+	void setPWM(vector<uint16_t> vPWM);
 	void pinOut(uint8_t iPin, uint8_t state);
 
 private:
@@ -53,13 +54,10 @@ private:
 	}
 
 public:
-	uint8_t m_mode;
-	uint16_t m_pwmModeIn;
-	uint16_t m_pwmLin;
-	uint16_t m_pwmRin;
+	ROVER_MODE m_mode;
+	uint8_t	m_nPwmIn;
+	uint16_t* m_pPwmIn;
 
-	uint16_t m_pwmLmot;
-	uint16_t m_pwmRmot;
 };
 
 }

@@ -34,8 +34,8 @@ bool _DenseFlow::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,w);
-	KISSm(pK,h);
+	pK->v("w",&m_w);
+	pK->v("h",&m_h);
 	m_gFlow = GpuMat(m_h, m_w, CV_32FC2);
 
 	m_pGrayFrames = new FrameGroup();
@@ -181,20 +181,18 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 	return vF;
 }
 
-bool _DenseFlow::draw(void)
+void _DenseFlow::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	this->_ThreadBase::draw();
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
-	IF_F(m_pFlow[0].empty());
-	IF_F(m_pFlow[1].empty());
+	IF_(m_pFlow[0].empty());
+	IF_(m_pFlow[1].empty());
 
     Mat mF;
     drawOpticalFlow(m_pFlow[0], m_pFlow[1], mF, 10);
     imshow(*this->getName(), mF);
-
-	return true;
 }
 
 bool _DenseFlow::isFlowCorrect(Point2f u)

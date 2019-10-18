@@ -19,7 +19,6 @@ public:
 	void draw(void);
 
 public:
-	_AutopilotBase* m_pAB;
 	_Mavlink* m_pMavlink;
 	_Rover_CMD* m_pCMD;
 	PIDctrl* m_pPIDhdg;

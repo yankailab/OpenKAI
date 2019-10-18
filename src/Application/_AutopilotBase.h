@@ -31,6 +31,7 @@ public:
 	int64_t m_tStamp;
 	int64_t m_dTime;
 
+	_AutopilotBase* m_pAB;
 	void* m_pCtrl;
 };
 

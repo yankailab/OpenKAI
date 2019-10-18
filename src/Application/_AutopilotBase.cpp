@@ -10,6 +10,7 @@ _AutopilotBase::_AutopilotBase()
 	m_bMissionChanged = false;
 	m_tStamp = 0;
 	m_dTime = 0;
+	m_pAB = NULL;
 	m_pCtrl = NULL;
 }
 
@@ -26,6 +27,12 @@ bool _AutopilotBase::init(void* pKiss)
 	F_INFO(pK->v("_MissionControl", &iName));
 	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
 	NULL_T(m_pMC);
+
+	iName = "";
+	F_ERROR_F(pK->v("_AutopilotBase", &iName));
+	m_pAB = (_AutopilotBase*) (pK->parent()->getChildInst(iName));
+	NULL_Fl(m_pAB, iName+": not found");
+
 
 	vector<string> vAS;
 	pK->a("activeMission", &vAS);

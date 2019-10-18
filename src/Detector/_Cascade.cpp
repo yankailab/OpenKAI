@@ -31,12 +31,9 @@ bool _Cascade::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK,className);
-	KISSm(pK,minSize);
-	KISSm(pK,maxSize);
-	KISSm(pK,scaleFactor);
-	KISSm(pK,minNeighbors);
-	KISSm(pK,bGPU);
+	pK->v("scaleFactor", &m_scaleFactor);
+	pK->v("minNeighbors", &m_minNeighbors);
+	pK->v("bGPU", &m_bGPU);
 
 	F_INFO(pK->v("left", &m_area.x));
 	F_INFO(pK->v("top", &m_area.y));
@@ -176,11 +173,10 @@ void _Cascade::detectCPU(void)
 	}
 }
 
-bool _Cascade::draw(void)
+void _Cascade::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	this->_DetectorBase::draw();
 
-	return true;
 }
 
 }

@@ -4,22 +4,25 @@ namespace kai
 {
 _Rover_CMD::_Rover_CMD()
 {
-	m_mode = rover_idle;
-	m_pwmModeIn = 0;
-	m_pwmLin = 0;
-	m_pwmRin = 0;
-	m_pwmLmot = 0;
-	m_pwmRmot = 0;
+	m_mode = rover_unknown;
+	m_nPwmIn = 8;
+	m_pPwmIn = NULL;
 }
 
 _Rover_CMD::~_Rover_CMD()
 {
+	DEL(m_pPwmIn);
 }
 
 bool _Rover_CMD::init(void* pKiss)
 {
 	IF_F(!this->_ProtocolBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	pK->v("nPwmIn", &m_nPwmIn);
+	m_pPwmIn = new uint16_t[m_nPwmIn];
+	for(int i=0; i<m_nPwmIn; i++)
+		m_pPwmIn[i]=0;
 
 	return true;
 }
@@ -71,20 +74,12 @@ void _Rover_CMD::handleCMD(void)
 	switch (m_recvMsg.m_pBuf[1])
 	{
 	case ROVERCMD_STATE:
-		m_mode = (uint8_t)m_recvMsg.m_pBuf[3];
-		m_pwmModeIn = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4], false);
-		m_pwmLin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[6], false);
-		m_pwmRin = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[8], false);
-		m_pwmLmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[10], false);
-		m_pwmRmot = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[12], false);
-
-		LOG_I("Mode: " + c_roverModeName[m_mode] +
-				", pwmModein=" + i2str(m_pwmModeIn) +
-				", pwmLin=" + i2str(m_pwmLin) +
-				", pwmRin=" + i2str(m_pwmRin) +
-				", pwmLmot=" + i2str(m_pwmLmot) +
-				", pwmRmot=" + i2str(m_pwmRmot)
-				);
+		m_mode = (ROVER_MODE)m_recvMsg.m_pBuf[3];
+		for(int i=0; i<m_nPwmIn; i++)
+		{
+			if(i>=m_nPwmIn)break;
+			m_pPwmIn[i] = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4+i*2], false);
+		}
 		break;
 	default:
 		break;
@@ -105,22 +100,22 @@ void _Rover_CMD::sendState(int iState)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + 4);
 }
 
-void _Rover_CMD::setPWM(int nChan, uint16_t* pChan)
+void _Rover_CMD::setPWM(vector<uint16_t> vPWM)
 {
 	IF_(check()<0);
-	IF_(nChan <= 0);
+	IF_(vPWM.empty());
 
 	m_pBuf[0] = PROTOCOL_BEGIN;
 	m_pBuf[1] = ROVERCMD_PWM;
-	m_pBuf[2] = nChan * 2;
+	m_pBuf[2] = vPWM.size() * 2;
 
-	for (int i = 0; i < nChan; i++)
+	for (int i = 0; i < vPWM.size(); i++)
 	{
-		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(pChan[i] & 0xFF);
-		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((pChan[i] >> 8) & 0xFF);
+		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(vPWM[i] & 0xFF);
+		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((vPWM[i] >> 8) & 0xFF);
 	}
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + nChan * 2);
+	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + m_pBuf[2]);
 }
 
 void _Rover_CMD::pinOut(uint8_t iPin, uint8_t state)
@@ -141,13 +136,14 @@ void _Rover_CMD::draw(void)
 	this->_ProtocolBase::draw();
 
 	string msg;
-	msg = "Mode: " + c_roverModeName[m_mode] +
-			", pwmModein=" + i2str(m_pwmModeIn) +
-			", pwmLin=" + i2str(m_pwmLin) +
-			", pwmRin=" + i2str(m_pwmRin) +
-			", pwmLmot=" + i2str(m_pwmLmot) +
-			", pwmRmot=" + i2str(m_pwmRmot);
+	msg = "Mode: " + c_roverModeName[m_mode];
 	addMsg(msg,1);
+
+	msg = "PwmIn: ";
+	for(int i=0; i<m_nPwmIn; i++)
+		msg += ", ch" + i2str(i) + "=" + i2str(m_pPwmIn[i]);
+	addMsg(msg,1);
+
 }
 
 }

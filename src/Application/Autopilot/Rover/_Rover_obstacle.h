@@ -19,9 +19,8 @@ public:
 	void draw(void);
 
 public:
-	_AutopilotBase* m_pAB;
 	_DetectorBase* m_pDet;
-
+	PIDctrl* m_pPID;
 	ROVER_CTRL m_ctrl;
 
 };

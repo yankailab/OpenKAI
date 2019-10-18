@@ -22,24 +22,6 @@ bool _Rover_base::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	Kiss** ppD = pK->getChildItr();
-	int i = 0;
-	while (ppD[i])
-	{
-		Kiss* pD = ppD[i++];
-
-		ROVER_DRIVE d;
-		d.init();
-		pD->v("kDir",&d.m_kDir);
-		pD->v("sDir",&d.m_sDir);
-		pD->v("iPWM",&d.m_iPWM);
-		pD->v("pwmH",&d.m_pwmH);
-		pD->v("pwmM",&d.m_pwmM);
-		pD->v("pwmL",&d.m_pwmL);
-
-		m_ctrl.m_vDrive.push_back(d);
-	}
-
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_RoverCMD", &iName));
@@ -110,24 +92,12 @@ void _Rover_base::draw(void)
 {
 	this->_AutopilotBase::draw();
 
-//	string msg = *this->getName()
-//			+ ": mode=" + c_roverModeName[m_pCMD->m_mode]
-//			+ ", hdg=" + f2str(m_hdg)
-//			+ ", targetHdg=" + f2str(m_targetHdg)
-//			+ ", nSpeed=" + f2str(m_nSpeed);
-//	addMsg(msg);
-//
-//	for(int i=0;i<m_vPWM.size();i++)
-//	{
-//		ROVER_PWM_CHANNEL* pM = &m_vPWM[i];
-//		msg = "PWM" + i2str(i)
-//				+ ": H=" + i2str(pM->m_H)
-//				+ ", M=" + i2str(pM->m_M)
-//				+ ", L=" + i2str(pM->m_L)
-//				+ ", pwm=" + i2str(pM->m_pwm)
-//				;
-//		addMsg(msg,1);
-//	}
+	string msg = "mode=" + c_roverModeName[m_pCMD->m_mode]
+			+ ", hdg=" + f2str(m_ctrl.m_hdg)
+			+ ", targetHdg=" + f2str(m_ctrl.m_targetHdg)
+			+ ", nSpeed=" + f2str(m_ctrl.m_nSpeed)
+			+ ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
+	addMsg(msg);
 }
 
 }

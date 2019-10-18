@@ -30,11 +30,11 @@ bool _Bullseye::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	KISSm(pK,abs);
-	KISSm(pK,scale1);
-	KISSm(pK,scale2);
-	KISSm(pK,thr1);
-	KISSm(pK,thr2);
+	pK->v("abs", &m_abs);
+	pK->v("scale1", &m_scale1);
+	pK->v("scale2", &m_scale2);
+	pK->v("thr1", &m_thr1);
+	pK->v("thr2", &m_thr2);
 
 	m_nClass = 1;
 

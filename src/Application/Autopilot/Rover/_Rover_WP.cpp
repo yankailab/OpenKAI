@@ -5,7 +5,6 @@ namespace kai
 
 _Rover_WP::_Rover_WP()
 {
-	m_pAB = NULL;
 	m_pMavlink = NULL;
 	m_pCMD = NULL;
 	m_pPIDhdg = NULL;
@@ -24,11 +23,6 @@ bool _Rover_WP::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 
 	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_AutopilotBase", &iName));
-	m_pAB = (_AutopilotBase*) (pK->parent()->getChildInst(iName));
-	NULL_Fl(m_pAB, iName+": not found");
-
 	iName = "";
 	F_ERROR_F(pK->v("_Mavlink", &iName));
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
@@ -63,8 +57,7 @@ void _Rover_WP::update(void)
 	IF_(check()<0);
 	IF_(!bActive());
 
-	ROVER_CTRL* pCtrl = (ROVER_CTRL*)m_pAB->m_pCtrl;
-	m_ctrl.m_vDrive = pCtrl->m_vDrive;
+	m_ctrl = *((ROVER_CTRL*)m_pAB->m_pCtrl);
 
 	Waypoint* pW = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pW);
@@ -88,11 +81,12 @@ void _Rover_WP::draw(void)
 {
 	this->_AutopilotBase::draw();
 
-//	string msg = *this->getName()
-//			+ ": dHdg=" + f2str(m_dHdg)
-//			+ ", borderL=" + f2str(m_borderL)
-//			;
-//	pWin->addMsg(msg);
+	string msg = "mode=" + c_roverModeName[m_pCMD->m_mode]
+			+ ", hdg=" + f2str(m_ctrl.m_hdg)
+			+ ", targetHdg=" + f2str(m_ctrl.m_targetHdg)
+			+ ", nSpeed=" + f2str(m_ctrl.m_nSpeed)
+			+ ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
+	addMsg(msg);
 }
 
 }

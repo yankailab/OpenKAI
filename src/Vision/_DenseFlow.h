@@ -25,7 +25,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
+	void draw(void);
 
 	vDouble2 vFlow(vInt4* pROI);
 	vDouble2 vFlow(vDouble4* pROI);

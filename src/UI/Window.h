@@ -118,8 +118,8 @@ struct WINDOW_BUTTON
 			int w = m_bb.width() * pM->cols;
 			int h = m_bb.height() * pM->rows;
 
-			resize(m_mUp,m_mUpScale,Size(w,h));
-			resize(m_mDown,m_mDownScale,Size(w,h));
+			cv::resize(m_mUp,m_mUpScale,Size(w,h));
+			cv::resize(m_mDown,m_mDownScale,Size(w,h));
 		}
 
 		Rect r = Rect(m_bb.x*pM->cols, m_bb.y*pM->rows, m_mUpScale.cols, m_mUpScale.rows);

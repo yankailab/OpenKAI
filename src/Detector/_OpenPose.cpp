@@ -121,7 +121,7 @@ bool _OpenPose::detect(void)
 		Point2f p(-1, -1);
 		Point maxLoc;
 		double prob;
-		minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
+		cv::minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
 		if (prob > m_thr)
 		{
 			p = maxLoc;

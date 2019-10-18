@@ -25,13 +25,11 @@ public:
 	bool start(void);
 	void draw(void);
 
-	void startRecord(void);
-	void stopRecord(void);
-	void compress(void);
-	void reset(void);
-	UTM_POS* getCurrentPos(void);
-	UTM_POS* getLastWayPoint(void);
-	UTM_POS* getWayPoint(int iWP);
+	void startRec(void);
+	void pauseRec(void);
+	void resumeRec(void);
+	void stopRec(void);
+
 
 private:
 	void updateGPS(void);
@@ -43,16 +41,15 @@ private:
 	}
 
 public:
-	Coordinate	m_GPS;
-
+	Coordinate m_coord;
 	bool	m_bRecord;
 	double	m_dInterval;
-	double	m_distCompress;
-	vector<UTM_POS> m_vWP;
-	UTM_POS m_lastWP;
-	UTM_POS m_baseWP;
 
-	double	m_showScale;
+	LL_POS m_pos;
+	LL_POS m_lastPos;
+	vector<LL_POS> m_vWP;
+
+	float	m_showScale;
 
 };
 
