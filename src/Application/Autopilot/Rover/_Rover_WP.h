@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_Rover__Rover_WP_H_
 
 #include "../../../Detector/_DetectorBase.h"
+#include "../../../Control/PIDctrl.h"
 #include "_Rover_base.h"
 
 namespace kai

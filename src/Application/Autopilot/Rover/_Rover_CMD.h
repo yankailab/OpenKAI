@@ -13,7 +13,7 @@ namespace kai
 enum ROVER_MODE
 {
 	rover_unknown = -1,
-	rover_idle = 0,
+	rover_stop = 0,
 	rover_manual = 1,
 	rover_auto = 2,
 	rover_forward = 3,
@@ -22,7 +22,7 @@ enum ROVER_MODE
 
 const string c_roverModeName[] =
 {
-	"IDLE",
+	"STOP",
 	"MANUAL",
 	"AUTO",
 	"FORWARD",

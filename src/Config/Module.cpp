@@ -109,7 +109,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_base);
 	ADD_MODULE(_APcopter_depthVision);
 	ADD_MODULE(_APcopter_distLidar);
-	ADD_MODULE(_APcopter_DNNavoid);
+	ADD_MODULE(_APcopter_avoid);
 	ADD_MODULE(_APcopter_follow);
 	ADD_MODULE(_APcopter_land);
 	ADD_MODULE(_APcopter_line);

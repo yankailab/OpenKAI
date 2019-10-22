@@ -22,12 +22,6 @@ bool _Rover_WP::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	double d = dAngle(
-						35.854685,
-						139.517741,
-						35.854873, 139.517581
-						);
-
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_Mavlink", &iName));
@@ -65,7 +59,9 @@ void _Rover_WP::update(void)
 
 	ROVER_CTRL* pCtrl = (ROVER_CTRL*)m_pAB->m_pCtrl;
 	m_ctrl.m_hdg = pCtrl->m_hdg;
-	m_ctrl.m_nSpeed = pCtrl->m_nTargetSpeed;
+	m_ctrl.m_nSpeed = pCtrl->m_nSpeed;
+	m_ctrl.m_targetHdg = pCtrl->m_targetHdg;
+	m_ctrl.m_nTargetSpeed = pCtrl->m_nTargetSpeed;
 
 	Waypoint* pW = (Waypoint*)m_pMC->getCurrentMission();
 	NULL_(pW);

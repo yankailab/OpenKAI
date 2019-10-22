@@ -112,7 +112,7 @@ void _Rover_field::update(void)
 	string mission = m_pMC->getCurrentMissionName();
 	if(mission == "IDLE")
 	{
-		if(m_pCMD->m_mode != rover_idle && m_pCMD->m_mode != rover_manual)
+		if(m_pCMD->m_mode != rover_stop && m_pCMD->m_mode != rover_manual)
 			m_pMC->transit("MOVE");
 
 		m_pCMD->pinOut(m_iPinCamShutter,0);

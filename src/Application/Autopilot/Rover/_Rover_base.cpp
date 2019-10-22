@@ -49,9 +49,9 @@ void _Rover_base::update(void)
 	IF_(check()<0);
 
 	//hard switch priority
-	if(m_pCMD->m_mode == rover_idle || m_pCMD->m_mode == rover_manual)
+	if(m_pCMD->m_mode == rover_stop || m_pCMD->m_mode == rover_manual)
 	{
-		m_pMC->transit("IDLE");
+		m_pMC->transit("MANUAL");
 		m_ctrl.m_nSpeed = 0.0;
 	}
 

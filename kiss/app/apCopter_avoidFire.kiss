@@ -11,6 +11,14 @@
 }
 
 {
+	"name":"Console",
+	"class":"Console",
+	"bInst":0,
+	"bConsole":0,
+	"bStdErr":1,
+}
+
+{
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
@@ -109,127 +117,52 @@
 }
 
 {
-	"name":"PIDroll",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":-1.8,
-	"I":0.0,
-	"Imax":0.0,
-	"D":-0.8,
-	"dT":1.0,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
-}
-
-{
-	"name":"PIDpitch",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"P":1.9,
-	"I":0.0,
-	"Imax":0.0,
-	"D":0.8,
-	"dT":1.0,
-	"min":-20.0,
-	"max":20.0,
-	"K":16.0,
-}
-
-{
-	"name":"apMission",
+	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
+	"bDraw":1,
 	"Window":"OKview",
-	"startMission":"STANDBY",
+	"startMission":"AVOID",
 
 	{
 		"name":"mission",
 
 		{
 			"bInst":1,
-			"name":"STANDBY",
+			"name":"AVOID",
+			"Window":"OKview",
+			"bDraw":1,
 			"class":"MissionBase",
-			"nextMission":"STANDBY",
 		}
 	}
 }
 
 {
-	"name":"apPilot",
-	"class":"_AutoPilot",
+	"name":"apBase",
+	"class":"_APcopter_base",
 	"bInst":1,
-	"FPS":20,
+	"bDraw":1,
+	"_MissionControl":"mission",
+	"Window":"OKview",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"freqRawSensors":0,
+	"freqExtStat":5,
+	"freqRC":0,
+	"freqPos":5,
+	"freqExtra1":5,
+}
+		
+{
+	"name":"apAvoid",
+	"class":"_APcopter_avoid",
+	"bInst":1,
+	"bLog":0,
 	"bDraw":1,
 	"Window":"OKview",
-	
-	{
-		"name":"action",
-		
-		{
-			"name":"apBase",
-			"class":"APcopter_base",
-			"bInst":1,
-			"bDraw":1,
-			"_MissionControl":"apMission",
-			"Window":"OKview",
-			"_Mavlink":"mavAP",
-			"freqSendHeartbeat":1,
-			"freqRawSensors":0,
-			"freqExtStat":5,
-			"freqRC":0,
-			"freqPos":5,
-			"freqExtra1":5,
-		}
-		
-		{
-			"name":"apAvoid",
-			"class":"APcopter_avoid",
-			"bInst":1,
-			"bLog":0,
-			"bDraw":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"APcopter_base":"apBase",
-			"activeMission":["STANDBY"],
-			"_DetectorBase":"det",
-			"bUseTracker":0,
-			"iClass":0,
-			"apMode":5,
-			
-			"APcopter_posCtrl":"apPosCtrl",
-	
-			{
-				"name":"mount",
-				"pitch":-60,
-				"roll":0,
-				"yaw":0,
-				"stabPitch":1,
-				"stabRoll":1,
-				"stabYaw":0,
-				"mountMode":2,
-			}
-		}
-
-		{
-			"name":"apPosCtrl",
-			"class":"APcopter_posCtrl",
-			"bInst":1,
-			"bLog":0,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["STANDBY"],
-			"APcopter_base":"apBase",
-			"vYaw":180,
-			"bSetV":1,
-			"bSetP":0,
-			"bFixYaw":1,
-			"PIDroll":"PIDroll",
-			"PIDpitch":"PIDpitch",
-		}
-
-	}
+	"_MissionControl":"mission",
+	"APcopter_base":"apBase",
+	"activeMission":["AVOID"],
+	"_DetectorBase":"det",
 }

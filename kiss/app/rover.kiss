@@ -115,23 +115,54 @@
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
-	"_wakeUp":"apMavlink",
+	"_wakeUp":"mavAP",
 }
 
 {
-	"name":"apMavlink",
+	"name":"mavAP",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"_IOBase":"apSerial",	
+	"_IOBase":"apSerial",
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavAP",
+	}	
 }
 
 {

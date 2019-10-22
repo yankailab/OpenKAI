@@ -1,9 +1,9 @@
-#include "_Rover_obstacle.h"
+#include "_Rover_avoid.h"
 
 namespace kai
 {
 
-_Rover_obstacle::_Rover_obstacle()
+_Rover_avoid::_Rover_avoid()
 {
 	m_pDet = NULL;
 	m_pPID = NULL;
@@ -13,11 +13,11 @@ _Rover_obstacle::_Rover_obstacle()
 	m_dStop = 1.0;
 }
 
-_Rover_obstacle::~_Rover_obstacle()
+_Rover_avoid::~_Rover_avoid()
 {
 }
 
-bool _Rover_obstacle::init(void* pKiss)
+bool _Rover_avoid::init(void* pKiss)
 {
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -38,7 +38,7 @@ bool _Rover_obstacle::init(void* pKiss)
 	return true;
 }
 
-int _Rover_obstacle::check(void)
+int _Rover_avoid::check(void)
 {
 	NULL__(m_pDet, -1);
 	NULL__(m_pPID, -1);
@@ -46,7 +46,7 @@ int _Rover_obstacle::check(void)
 	return 0;
 }
 
-void _Rover_obstacle::update(void)
+void _Rover_avoid::update(void)
 {
 	this->_AutopilotBase::update();
 	IF_(check()<0);
@@ -89,7 +89,7 @@ void _Rover_obstacle::update(void)
 
 }
 
-void _Rover_obstacle::draw(void)
+void _Rover_avoid::draw(void)
 {
 	this->_AutopilotBase::draw();
 	IF_(check()<0);

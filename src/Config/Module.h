@@ -24,7 +24,7 @@
 #include "../Application/Autopilot/APcopter/_APcopter_base.h"
 #include "../Application/Autopilot/APcopter/_APcopter_depthVision.h"
 #include "../Application/Autopilot/APcopter/_APcopter_distLidar.h"
-#include "../Application/Autopilot/APcopter/_APcopter_DNNavoid.h"
+#include "../Application/Autopilot/APcopter/_APcopter_avoid.h"
 #include "../Application/Autopilot/APcopter/_APcopter_land.h"
 #include "../Application/Autopilot/APcopter/_APcopter_line.h"
 #include "../Application/Autopilot/APcopter/_APcopter_mode.h"
