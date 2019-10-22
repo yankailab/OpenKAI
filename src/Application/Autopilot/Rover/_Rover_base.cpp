@@ -7,7 +7,6 @@ _Rover_base::_Rover_base()
 {
 	m_pCMD = NULL;
 	m_pMavlink = NULL;
-	m_pPIDhdg = NULL;
 
 	m_ctrl.init();
 	m_pCtrl = (void*)&m_ctrl;
@@ -33,11 +32,6 @@ bool _Rover_base::init(void* pKiss)
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pMavlink, iName+": not found");
 
-	iName = "";
-	pK->v("PIDhdg", &iName);
-	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pPIDhdg, iName+": not found");
-
 	return true;
 }
 
@@ -45,7 +39,6 @@ int _Rover_base::check(void)
 {
 	NULL__(m_pCMD, -1);
 	NULL__(m_pMavlink, -1);
-	NULL__(m_pPIDhdg, -1);
 
 	return 0;
 }
@@ -59,7 +52,7 @@ void _Rover_base::update(void)
 	if(m_pCMD->m_mode == rover_idle || m_pCMD->m_mode == rover_manual)
 	{
 		m_pMC->transit("IDLE");
-		setSpeed(0.0);
+		m_ctrl.m_nSpeed = 0.0;
 	}
 
 	//sensor
@@ -75,17 +68,6 @@ void _Rover_base::update(void)
 		m_ctrl.m_hdg = (float)h * 1e-2;
 	}
 
-}
-
-void _Rover_base::setSpeed(float nSpeed)
-{
-	m_ctrl.m_nSpeed = constrain<float>(nSpeed, -1.0, 1.0);
-}
-
-void _Rover_base::setPinout(uint8_t pin, uint8_t status)
-{
-	NULL_(m_pCMD);
-	m_pCMD->pinOut(pin, status);
 }
 
 void _Rover_base::draw(void)

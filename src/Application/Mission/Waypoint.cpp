@@ -14,6 +14,7 @@ Waypoint::Waypoint()
 {
 	m_iWP = 0;
 	m_dWP = 1;
+	m_loop = wp_loop_none,
 	m_vPos.init(-1.0);
 	m_vErr.init(-1.0);
 
@@ -27,6 +28,8 @@ bool Waypoint::init(void* pKiss)
 {
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("loop",&m_loop);
 
 	Kiss** ppP = pK->getChildItr();
 	int i = 0;
@@ -66,17 +69,24 @@ MISSION_WAYPOINT* Waypoint::getWaypoint(void)
 	return &m_vWP[m_iWP];
 }
 
-float Waypoint::getHdgDelta(void)
+MISSION_WAYPOINT* Waypoint::getClosestWaypoint(void)
 {
-	IF__(check()<0, 0.0);
+	IF__(check()<0, NULL);
 
-	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
-	double d = dAngle(pWP->m_vP.x,
-						 pWP->m_vP.y,
-						 m_vPos.x,
-						 m_vPos.y);
+	double minD = DBL_MAX;
+	MISSION_WAYPOINT* pMin = NULL;
 
-	return dHdg(m_vPos.w, d);
+	for(int i=0;i<m_vWP.size();i++)
+	{
+		MISSION_WAYPOINT* pWP = &m_vWP[i];
+		double d = abs(pWP->m_vP.x - m_vPos.x) + abs(pWP->m_vP.y - m_vPos.y);
+		IF_CONT(d > minD);
+
+		minD = d;
+		pMin = pWP;
+	}
+
+	return pMin;
 }
 
 bool Waypoint::update(void)
@@ -89,8 +99,35 @@ bool Waypoint::update(void)
 	LOG_I("WP: " + i2str(m_iWP) +" complete");
 
 	m_iWP += m_dWP;
-	IF_T(m_iWP < 0);
-	IF_T(m_iWP >= m_vWP.size());
+
+	if(m_iWP < 0)
+	{
+		IF_T(m_loop == wp_loop_none);
+
+		if(m_loop == wp_loop_repeat)
+		{
+			m_iWP = m_vWP.size()-1;
+		}
+		else if(m_loop == wp_loop_shuttle)
+		{
+			m_iWP = 0;
+			m_dWP *= -1;
+		}
+	}
+	else if(m_iWP >= m_vWP.size())
+	{
+		IF_T(m_loop == wp_loop_none);
+
+		if(m_loop == wp_loop_repeat)
+		{
+			m_iWP = 0;
+		}
+		else if(m_loop == wp_loop_shuttle)
+		{
+			m_iWP = m_vWP.size()-1;
+			m_dWP *= -1;
+		}
+	}
 
 	return false;
 }
@@ -107,6 +144,8 @@ void Waypoint::draw(void)
 
 	string msg;
 	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
+
+	addMsg("iWP = " + i2str(m_iWP),1);
 
 	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
 				   + f2str(pWP->m_vP.y,7) + ", "

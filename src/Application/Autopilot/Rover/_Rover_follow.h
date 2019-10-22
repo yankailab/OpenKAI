@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_Rover__Rover_obstacle_H_
-#define OpenKAI_src_Autopilot_Rover__Rover_obstacle_H_
+#ifndef OpenKAI_src_Autopilot_Rover__Rover_follow_H_
+#define OpenKAI_src_Autopilot_Rover__Rover_follow_H_
 
 #include "../../../Detector/_DetectorBase.h"
 #include "_Rover_base.h"
@@ -7,11 +7,11 @@
 namespace kai
 {
 
-class _Rover_obstacle: public _AutopilotBase
+class _Rover_follow: public _AutopilotBase
 {
 public:
-	_Rover_obstacle();
-	~_Rover_obstacle();
+	_Rover_follow();
+	~_Rover_follow();
 
 	bool init(void* pKiss);
 	int check(void);

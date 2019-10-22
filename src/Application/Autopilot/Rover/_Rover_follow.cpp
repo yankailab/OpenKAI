@@ -1,9 +1,9 @@
-#include "_Rover_obstacle.h"
+#include "_Rover_follow.h"
 
 namespace kai
 {
 
-_Rover_obstacle::_Rover_obstacle()
+_Rover_follow::_Rover_follow()
 {
 	m_pDet = NULL;
 	m_pPID = NULL;
@@ -13,11 +13,11 @@ _Rover_obstacle::_Rover_obstacle()
 	m_dStop = 1.0;
 }
 
-_Rover_obstacle::~_Rover_obstacle()
+_Rover_follow::~_Rover_follow()
 {
 }
 
-bool _Rover_obstacle::init(void* pKiss)
+bool _Rover_follow::init(void* pKiss)
 {
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -38,7 +38,7 @@ bool _Rover_obstacle::init(void* pKiss)
 	return true;
 }
 
-int _Rover_obstacle::check(void)
+int _Rover_follow::check(void)
 {
 	NULL__(m_pDet, -1);
 	NULL__(m_pPID, -1);
@@ -46,7 +46,7 @@ int _Rover_obstacle::check(void)
 	return 0;
 }
 
-void _Rover_obstacle::update(void)
+void _Rover_follow::update(void)
 {
 	this->_AutopilotBase::update();
 	IF_(check()<0);
@@ -55,6 +55,7 @@ void _Rover_obstacle::update(void)
 	ROVER_CTRL* pCtrl = (ROVER_CTRL*)m_pAB->m_pCtrl;
 	m_ctrl.m_hdg = pCtrl->m_hdg;
 	m_ctrl.m_nSpeed = pCtrl->m_nTargetSpeed;
+
 	m_ctrl.m_targetHdg = pCtrl->m_targetHdg;
 
 	OBJECT o;
@@ -89,7 +90,7 @@ void _Rover_obstacle::update(void)
 
 }
 
-void _Rover_obstacle::draw(void)
+void _Rover_follow::draw(void)
 {
 	this->_AutopilotBase::draw();
 	IF_(check()<0);

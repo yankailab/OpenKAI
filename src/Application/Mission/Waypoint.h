@@ -81,6 +81,13 @@ struct MISSION_WAYPOINT
 
 };
 
+enum WP_LOOP
+{
+	wp_loop_none,
+	wp_loop_repeat,
+	wp_loop_shuttle,
+};
+
 class Waypoint: public MissionBase
 {
 public:
@@ -94,13 +101,14 @@ public:
 	void draw(void);
 
 	void setPos(vDouble4& vPos);
-	float getHdgDelta(void);
 	MISSION_WAYPOINT* getWaypoint(void);
+	MISSION_WAYPOINT* getClosestWaypoint(void);
 
 public:
 	vector<MISSION_WAYPOINT> m_vWP;
 	int		m_iWP;
 	int		m_dWP;
+	WP_LOOP m_loop;
 	vDouble4 m_vPos;
 	vDouble4 m_vErr;
 

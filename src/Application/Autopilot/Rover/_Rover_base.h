@@ -37,13 +37,9 @@ public:
 	void update(void);
 	void draw(void);
 
-	void setSpeed(float nSpeed);
-	void setPinout(uint8_t pin, uint8_t status);
-
 public:
 	_Rover_CMD* m_pCMD;
 	_Mavlink* m_pMavlink;
-	PIDctrl* m_pPIDhdg;
 
 	ROVER_CTRL m_ctrl;
 

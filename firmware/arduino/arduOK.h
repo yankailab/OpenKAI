@@ -1,17 +1,14 @@
 #include <Arduino.h>
 
-//0 OKLINK_BEGIN
+//0 PROTOCOL_BEGIN
 //1 COMMAND
 //2 PAYLOAD LENGTH
 //3 Payload...
 
 //Protocol
-#define OKLINK_N_BUF 256
-#define OKLINK_BEGIN 0xFE
-#define OKLINK_N_HEADER 3
-#define OKLINK_PWM 0
-#define OKLINK_PIN_OUTPUT 1
-#define OKLINK_STATE 2
+#define PROTOCOL_BEGIN 0xFE
+#define PROTOCOL_N_HEADER 3
+#define PROTOCOL_N_BUF 256
 
 void runCMD(void);
 bool ioAvailable(void);
@@ -23,7 +20,7 @@ struct OKLINK_CMD
   uint8_t m_cmd;
   uint8_t m_nPayload;
   uint16_t m_iByte;
-  uint8_t m_pBuf[OKLINK_N_BUF];
+  uint8_t m_pBuf[PROTOCOL_N_BUF];
 };
 OKLINK_CMD g_cmd;
 
@@ -45,7 +42,7 @@ void decodeCMD(void)
       {
         g_cmd.m_nPayload = inByte;
       }
-      else if (g_cmd.m_iByte == g_cmd.m_nPayload + OKLINK_N_HEADER)
+      else if (g_cmd.m_iByte == g_cmd.m_nPayload + PROTOCOL_N_HEADER)
       {
         runCMD();
         g_cmd.m_cmd = 0;
@@ -53,7 +50,7 @@ void decodeCMD(void)
         if (++iMsg > g_nMsg)return;
       }
     }
-    else if (inByte == OKLINK_BEGIN)
+    else if (inByte == PROTOCOL_BEGIN)
     {
       g_cmd.m_cmd = inByte;
       g_cmd.m_pBuf[0] = inByte;

@@ -5,11 +5,13 @@ namespace kai
 
 _Rover_drive::_Rover_drive()
 {
-	m_pAB = NULL;
 	m_pCMD = NULL;
 	m_pPID = NULL;
+	m_pPwmOut = NULL;
 
 	m_ctrl.init();
+	m_pCtrl = (void*)&m_ctrl;
+
 }
 
 _Rover_drive::~_Rover_drive()
@@ -37,6 +39,10 @@ bool _Rover_drive::init(void* pKiss)
 
 		m_vDrive.push_back(d);
 	}
+
+	IF_Fl(m_vDrive.empty(), "drive setting empty");
+
+	m_pPwmOut = new uint16_t[m_vDrive.size()];
 
 	string iName;
 	iName = "";
@@ -78,16 +84,21 @@ void _Rover_drive::updatePWM(void)
 
 	float dSpeed = m_pPID->update(0.0, dHdg(m_ctrl.m_hdg, m_ctrl.m_targetHdg), m_tStamp);
 
-	vector<uint16_t> vPWM;
 	for(int i=0; i<m_vDrive.size(); i++)
-		vPWM.push_back(m_vDrive[i].updatePWM(m_ctrl.m_nSpeed, dSpeed));
+		m_pPwmOut[i] = m_vDrive[i].updatePWM(m_ctrl.m_nSpeed, dSpeed);
 
-	m_pCMD->setPWM(vPWM);
+	m_pCMD->setPWM(m_pPwmOut, m_vDrive.size());
 }
 
 void _Rover_drive::draw(void)
 {
 	this->_AutopilotBase::draw();
+
+	string msg;
+	msg = "PWM: ";
+	for(int i=0; i<m_vDrive.size(); i++)
+		msg += ", ch" + i2str(i) + "=" + i2str(m_pPwmOut[i]);
+	addMsg(msg,1);
 
 }
 

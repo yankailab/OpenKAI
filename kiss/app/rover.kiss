@@ -1,0 +1,255 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bConsole":0,
+	"bStdErr":1,
+	"waitKey":15,
+}
+
+{
+	"name":"Console",
+	"class":"Console",
+	"bInst":0,
+	"bConsole":0,
+	"bStdErr":1,
+}
+
+{
+	"name":"viewRGB",
+	"class":"Window",
+	"bInst":0,
+	"bDrawMsg":1,
+}
+
+{
+	"name":"viewDepth",
+	"class":"Window",
+	"bInst":0,
+}
+
+{
+	"name":"viewDepth",
+	"class":"Window",
+	"bInst":0,
+}
+
+{
+	"name":"rs",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Window":"viewRGB",
+	"depthWindow":"viewDepth",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"minHistD":0.05,
+	"bDebug":1,
+}
+
+{
+	"name":"depthGray",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":0,
+	"Window":"viewFilter",
+	"_DepthVisionBase":"rs",
+}
+
+{
+	"name":"depthCrop",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":0,
+	"Window":"viewFilter",
+	"_VisionBase":"depthGray",
+	"roi":[0.0, 0.0, 1.0, 1.0],
+}
+
+{
+	"name":"depthDet",
+	"class":"_DepthSegment",
+	"FPS":30,
+	"bInst":0,
+	"Window":"viewFilter",
+	"_VisionBase":"depthCrop",
+	"rL":0.0,
+	"rH":1.0,
+	"rD":0.1,
+	"rArea":0.5,
+}
+
+{
+	"name":"rvUDP",
+	"class":"_UDP",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"port":12000,
+	"_wakeUp":"rvCMD",
+}
+
+{
+	"name":"rvCMD",
+	"class":"_Rover_CMD",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"_IOBase":"rvUDP",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"apMavlink",
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apSerial",	
+}
+
+{
+	"name":"PIDhdg",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"P":0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":-0.25,
+	"oMax":0.25,
+	"K":1.0,
+}
+
+{
+	"name":"PIDbrake",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"P":0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":-0.25,
+	"oMax":0.25,
+	"K":1.0,
+}
+
+{
+	"name":"PIDdrive",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"P":0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":-0.25,
+	"oMax":0.25,
+	"K":1.0,
+}
+
+{
+	"name":"mission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":0,
+	"bDraw":1,
+	"Window":"OKview",
+	"startMission":"IDLE",
+
+	{
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"IDLE",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"MissionBase",
+			"nextMission":"MOVE",
+		}
+		{
+			"bInst":1,
+			"name":"WP",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"Move",
+		}
+	}
+}
+
+{
+	"name":"rvBase",
+	"class":"_Rover_base",
+	"bInst":0,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"_MissionControl":"apMission",
+	"_Mavlink":"apMavlink",
+	"_RoverCMD":"rvCMD",
+	"PIDhdg":"rvPID",
+			
+	{
+		"iChan":0,
+		"H":2000,
+		"M":1500,
+		"L":1000,
+		"kDirection":1.0,
+		"sDirection":1.0,
+	}
+	{
+		"iChan":1,
+		"H":2000,
+		"M":1500,
+		"L":1000,
+		"kDirection":1.0,
+		"sDirection":-1.0,
+	}
+}
+		
+{
+	"name":"rvWP",
+	"class":"_Rover_WP",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"_MissionControl":"mission",
+	"activeMission":["IDLE","WP"],
+	"_Rover_base":"rvBase",
+	"_Rover_CMD":"rvCMD",
+	"PIDhdg":"PIDwp",
+	"nSpeed":0.25,
+}

@@ -100,19 +100,20 @@ void _Rover_CMD::sendState(int iState)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + 4);
 }
 
-void _Rover_CMD::setPWM(vector<uint16_t> vPWM)
+void _Rover_CMD::setPWM(uint16_t* pPWM, int nCh)
 {
 	IF_(check()<0);
-	IF_(vPWM.empty());
+	NULL_(pPWM);
+	IF_(nCh <= 0);
 
 	m_pBuf[0] = PROTOCOL_BEGIN;
 	m_pBuf[1] = ROVERCMD_PWM;
-	m_pBuf[2] = vPWM.size() * 2;
+	m_pBuf[2] = nCh * 2;
 
-	for (int i = 0; i < vPWM.size(); i++)
+	for (int i = 0; i < nCh; i++)
 	{
-		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(vPWM[i] & 0xFF);
-		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((vPWM[i] >> 8) & 0xFF);
+		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(pPWM[i] & 0xFF);
+		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((pPWM[i] >> 8) & 0xFF);
 	}
 
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + m_pBuf[2]);

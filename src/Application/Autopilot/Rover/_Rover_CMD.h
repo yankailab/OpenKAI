@@ -42,7 +42,7 @@ public:
 	void handleCMD(void);
 
 	void sendState(int iState);
-	void setPWM(vector<uint16_t> vPWM);
+	void setPWM(uint16_t* pPWM, int nCh);
 	void pinOut(uint8_t iPin, uint8_t state);
 
 private:

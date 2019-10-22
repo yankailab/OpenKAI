@@ -120,14 +120,14 @@ void _Rover_field::update(void)
 	}
 	else if(mission == "MOVE")
 	{
-		m_pR->setSpeed(nSpeed);
+//		m_pR->setSpeed(nSpeed);
 
 		m_pCMD->pinOut(m_iPinCamShutter,0);
 		m_tCamShutterStart = 0;
 	}
 	else if(mission == "TAG")
 	{
-		m_pR->setSpeed(0.0);
+//		m_pR->setSpeed(0.0);
 
 		if(m_tCamShutterStart <= 0)
 		{

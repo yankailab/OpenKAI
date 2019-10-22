@@ -66,12 +66,12 @@ private:
 	void updatePWM(void);
 
 public:
-	_AutopilotBase* m_pAB;
 	_Rover_CMD* m_pCMD;
 	PIDctrl* m_pPID;
 
 	ROVER_CTRL m_ctrl;
 	vector<ROVER_DRIVE> m_vDrive;
+	uint16_t* m_pPwmOut;
 
 };
 
