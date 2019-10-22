@@ -29,7 +29,7 @@ bool Waypoint::init(void* pKiss)
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("loop",&m_loop);
+	pK->v("loop",(int*)&m_loop);
 
 	Kiss** ppP = pK->getChildItr();
 	int i = 0;
