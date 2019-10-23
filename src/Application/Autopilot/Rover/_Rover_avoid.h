@@ -3,6 +3,7 @@
 
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
+#include "../../../Vision/_DepthVisionBase.h"
 #include "_Rover_base.h"
 
 namespace kai
@@ -15,18 +16,26 @@ public:
 	~_Rover_avoid();
 
 	bool init(void* pKiss);
+	bool start(void);
 	int check(void);
 	void update(void);
 	void draw(void);
 
+private:
+	void updateAvoid(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_Rover_avoid*) This)->update();
+		return NULL;
+	}
+
 public:
-	_DetectorBase* m_pDet;
-	PIDctrl* m_pPID;
+	_DepthVisionBase* m_pDV;
+
 	ROVER_CTRL m_ctrl;
-
-	OBJECT m_obs;
-	float m_dStop;
-
+	float m_d;
+	float m_minD;
+	vFloat4 m_vRoi;
 };
 
 }

@@ -83,9 +83,9 @@ struct MISSION_WAYPOINT
 
 enum WP_LOOP
 {
-	wp_loop_none,
-	wp_loop_repeat,
-	wp_loop_shuttle,
+	wp_loop_none = 0,
+	wp_loop_repeat = 1,
+	wp_loop_shuttle = 2,
 };
 
 class Waypoint: public MissionBase

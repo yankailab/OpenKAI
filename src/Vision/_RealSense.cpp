@@ -261,13 +261,11 @@ void _RealSense::updateTPP(void)
 		if (m_pDepthWin)
 			m_rsDepthShow = m_rsDepth;
 
-		Mat mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*) m_rsDepth.get_data(),
-				Mat::AUTO_STEP);
+		Mat mZ = Mat(Size(m_wD, m_hD), CV_16UC1, (void*) m_rsDepth.get_data(), Mat::AUTO_STEP);
 		Mat mD;
 		mZ.convertTo(mD, CV_32FC1);
 
-		auto depth_scale = m_rsPipe.get_active_profile().get_device().first<
-				rs2::depth_sensor>().get_depth_scale();
+		auto depth_scale = m_rsPipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale();
 		m_fDepth = mD * depth_scale;
 	}
 }

@@ -35,6 +35,20 @@ bool _Rover_base::init(void* pKiss)
 	return true;
 }
 
+bool _Rover_base::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
 int _Rover_base::check(void)
 {
 	NULL__(m_pCMD, -1);
@@ -45,15 +59,49 @@ int _Rover_base::check(void)
 
 void _Rover_base::update(void)
 {
-	this->_AutopilotBase::update();
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		this->_AutopilotBase::update();
+		updateRover();
+
+		this->autoFPSto();
+	}
+}
+
+void _Rover_base::updateRover(void)
+{
 	IF_(check()<0);
 
 	//hard switch priority
-	if(m_pCMD->m_mode == rover_stop || m_pCMD->m_mode == rover_manual)
+	if(m_pCMD->m_mode == rover_stop)
 	{
-		m_pMC->transit("MANUAL");
-		m_ctrl.m_nSpeed = 0.0;
+		m_pMC->transit("STOP");
 	}
+	else if(m_pCMD->m_mode == rover_manual)
+	{
+		if(m_pCMD->m_action == rover_action3)
+			m_pMC->transit("RECORD");
+		else
+			m_pMC->transit("MANUAL");
+
+	}
+	else if(m_pCMD->m_mode == rover_auto1)
+	{
+		if(m_pCMD->m_action == rover_action1)
+			m_pMC->transit("WP");
+		else if(m_pCMD->m_action == rover_action2)
+			m_pMC->transit("STOP");
+		else
+			m_pMC->transit("STOP");
+
+	}
+	else if(m_pCMD->m_mode == rover_auto2)
+	{
+		m_pMC->transit("FOLLOW");
+	}
+
 
 	//sensor
 	if(m_tStamp - m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC)
@@ -68,15 +116,17 @@ void _Rover_base::update(void)
 		m_ctrl.m_hdg = (float)h * 1e-2;
 	}
 
+	m_ctrl.m_nSpeed = m_pCMD->m_nSpeed;
+	m_ctrl.m_nTargetSpeed = 0.0;
+	m_ctrl.m_targetHdgOffset = 0.0;
 }
 
 void _Rover_base::draw(void)
 {
 	this->_AutopilotBase::draw();
 
-	string msg = "mode=" + c_roverModeName[m_pCMD->m_mode]
-			+ ", hdg=" + f2str(m_ctrl.m_hdg)
-			+ ", targetHdg=" + f2str(m_ctrl.m_targetHdg)
+	string msg = "hdg=" + f2str(m_ctrl.m_hdg)
+			+ ", targetHdgOffset=" + f2str(m_ctrl.m_targetHdgOffset)
 			+ ", nSpeed=" + f2str(m_ctrl.m_nSpeed)
 			+ ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
 	addMsg(msg);

@@ -95,18 +95,18 @@ void _Rover_field::update(void)
 
 	//speed
 	float nSpeed;
-	switch (m_pCMD->m_mode)
-	{
-	case rover_forward:
-		nSpeed = m_nSpeed;
-		break;
-	case rover_backward:
-		nSpeed = -m_nSpeed;
-		break;
-	default:
-		nSpeed = 0.0;
-		break;
-	}
+//	switch (m_pCMD->m_mode)
+//	{
+//	case rover_forward:
+//		nSpeed = m_nSpeed;
+//		break;
+//	case rover_backward:
+//		nSpeed = -m_nSpeed;
+//		break;
+//	default:
+//		nSpeed = 0.0;
+//		break;
+//	}
 
 	//mission
 	string mission = m_pMC->getCurrentMissionName();

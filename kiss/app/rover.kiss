@@ -1,378 +1,274 @@
-#include <Ethernet.h>
-#include <EthernetUdp.h>
-#include <Servo.h>
-#include "arduOK.h"
-
-//#define SERIAL_DEBUG
-
-//----------------------------------------------------------------------
-// IO override for Ethernet
-// Enter a MAC address and IP address for your controller below.
-// The IP address will be dependent on your local network:
-byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
-IPAddress g_myIP(192, 168, 8, 250);
-unsigned int g_myPort = 8888;
-EthernetUDP g_UDP;
-
-bool ioAvailable(void)
 {
-  return g_UDP.available();
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":0,
+	"waitKey":30,
 }
 
-byte ioRead(void)
 {
-  return g_UDP.read();
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
 }
 
-//----------------------------------------------------------------------
-// Pin assign
-#define PIN_LED_STOP A2
-#define PIN_LED_MANUAL A0
-#define PIN_LED_AUTO A1
-#define PIN_LED_INDICATOR A3
-
-#define PIN_IN_STEER 4
-#define PIN_IN_SPEED 7
-#define PIN_IN_MODE 8
-#define PIN_IN_ACTION 2
-
-//----------------------------------------------------------------------
-// Motor
-#define PWM_MID 1500
-#define PWM_D 500
-#define PWM_MID_DZ 80
-#define PWM_LOWLIM 600
-
-struct MOTOR
 {
-  Servo m_servo;
-  int16_t m_pwm;
-  int16_t m_pwmL;
-  int16_t m_pwmM;
-  int16_t m_pwmH;
-  int8_t m_pin;
-  int8_t m_dir;
-
-  void init(int16_t pwmM, int16_t pwmL, int16_t pwmH, int8_t pin, int8_t dir)
-  {
-    m_pwmL = pwmL;
-    m_pwmM = pwmM;
-    m_pwmH = pwmH;
-    m_pwm = m_pwmM;
-    m_pin = pin;
-    m_dir = dir;
-
-    pinMode(m_pin, OUTPUT);
-    m_servo.attach(m_pin);
-    m_servo.writeMicroseconds(m_pwm);
-  }
-
-  void speed(float s)
-  {
-    float d = constrain(s, -1.0, 1.0);
-
-    if (d >= 0.0)
-      m_pwm = PWM_MID + d * ((float)(m_pwmH - m_pwmM) * m_dir);
-    else
-      m_pwm = PWM_MID + d * ((float)(m_pwmM - m_pwmL) * m_dir);
-
-    m_servo.writeMicroseconds(m_pwm);
-  }
-};
-
-#define N_MOT 4
-MOTOR g_pMot[N_MOT];
-float g_pMotAP[N_MOT];
-
-//----------------------------------------------------------------------
-// PWM input from transmitter
-int16_t g_pwmSteer;
-int16_t g_pwmSpeed;
-int16_t g_pwmMode;
-int16_t g_pwmAction;
-
-float g_dirSpeed;
-float g_dirSteer;
-float g_nSpeed;
-float g_dSpeed;
-
-//----------------------------------------------------------------------
-// Mode
-#define MODE_STOP 0
-#define MODE_MANUAL 1
-#define MODE_AUTO_1 2
-#define MODE_AUTO_2 3
-uint8_t g_Mode;
-
-#define ACTION_1 0
-#define ACTION_2 1
-#define ACTION_3 2
-uint8_t g_Action;
-
-#define AP_TIMEOUT 1000
-#define PWM_TIMEOUT 100000
-long g_tAP;
-long g_tNow;
-
-//----------------------------------------------------------------------
-// CMD Protocol
-#define ROVERCMD_STATE 0
-#define ROVERCMD_SPEED 1
-#define ROVERCMD_PINOUT 2
-#define ROVERCMD_DEBUG 3
-
-#define FLT_SCALE 1000
-#define FLT_SCALE_INV 0.001
-
-void runCMD(void)
-{
-  switch (g_cmd.m_pBuf[1])
-  {
-    case ROVERCMD_SPEED:
-      g_nSpeed = ((float)(*((int16_t*)(&g_cmd.m_pBuf[3])))) * FLT_SCALE_INV;
-      g_dSpeed = ((float)(*((int16_t*)(&g_cmd.m_pBuf[5])))) * FLT_SCALE_INV;
-      g_tAP = millis();
-      break;
-
-    case ROVERCMD_PINOUT:
-      digitalWrite(g_cmd.m_pBuf[3], g_cmd.m_pBuf[4]);
-      g_tAP = millis();
-      break;
-
-    default:
-      break;
-  }
+	"name":"viewRGB",
+	"class":"Window",
+	"bInst":1,
 }
 
-//----------------------------------------------------------------------
-// Update
-void updateMotor(void)
 {
-  int i;
-
-  if (g_Mode == MODE_STOP)
-  {
-    for (i = 0; i < N_MOT; i++)
-      g_pMot[i].speed(0.0);
-
-    return;
-  }
-
-  if (g_Mode == MODE_MANUAL)
-  {
-    float pwm = (float)(g_pwmSpeed - PWM_MID);
-    if (abs(pwm) > (float)PWM_MID_DZ)
-      g_nSpeed = (pwm / (float)PWM_D) * (float)g_dirSpeed;
-    else
-      g_nSpeed = 0.0;
-
-    pwm = (float)(g_pwmSteer - PWM_MID);
-    if (abs(pwm) > (float)PWM_MID_DZ)
-      g_dSpeed = (pwm / (float)PWM_D) * (float)g_dirSteer;
-    else
-      g_dSpeed = 0.0;
-  }
-  
-  if(g_nSpeed < 0.0)
-  	g_dSpeed *= -1.0;
-
-  g_pMot[0].speed(g_nSpeed + g_dSpeed);  //LF
-  g_pMot[1].speed(g_nSpeed - g_dSpeed);  //RB
-  g_pMot[2].speed(g_nSpeed - g_dSpeed);  //RF
-  g_pMot[3].speed(g_nSpeed + g_dSpeed);  //LB
+	"name":"viewDepth",
+	"class":"Window",
+	"bInst":1,
 }
 
-void updateMode()
 {
-  if (g_pwmMode <= PWM_LOWLIM
-      || g_pwmAction <= PWM_LOWLIM
-      || g_pwmSteer <= PWM_LOWLIM
-      || g_pwmSpeed <= PWM_LOWLIM)
-  {
-    g_Mode = MODE_STOP;
-    return;
-  }
-
-  if (abs(g_pwmAction - PWM_MID) < PWM_MID_DZ)
-    g_Action = ACTION_2;
-  else if (g_pwmAction > PWM_MID)
-    g_Action = ACTION_3;
-  else
-    g_Action = ACTION_1;
-
-
-  if (abs(g_pwmMode - PWM_MID) < PWM_MID_DZ)
-  {
-    g_Mode = MODE_MANUAL;
-    return;
-  }
-
-  if (g_tNow - g_tAP > AP_TIMEOUT)
-  {
-    g_Mode = MODE_STOP;
-    return;
-  }
-
-  if (g_pwmMode > PWM_MID)
-    g_Mode = MODE_AUTO_1;
-  else
-    g_Mode = MODE_AUTO_2;
-
+	"name":"viewFilter",
+	"class":"Window",
+	"bInst":0,
 }
 
-void updateLED(void)
 {
-  digitalWrite(PIN_LED_STOP, LOW);
-  digitalWrite(PIN_LED_MANUAL, LOW);
-  digitalWrite(PIN_LED_AUTO, LOW);
-
-  if (g_Mode == MODE_STOP)
-  {
-    digitalWrite(PIN_LED_STOP, HIGH);
-  }
-  else if (g_Mode == MODE_MANUAL)
-  {
-    digitalWrite(PIN_LED_MANUAL, HIGH);
-  }
-  else
-  {
-    digitalWrite(PIN_LED_AUTO, HIGH);
-  }
+	"name":"rs",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"depthWindow":"viewDepth",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"minHistD":0.01,
+	"bDebug":0,
 }
 
-
-//----------------------------------------------------------------------
-// Setup
-
-void setup()
 {
-  g_pMot[0].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 3, -1); //LF
-  g_pMot[1].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 5, 1); //RB
-  g_pMot[2].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 6, -1); //RF
-  g_pMot[3].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 9, 1); //LB
-
-  g_pMotAP[0] = 0.0;
-  g_pMotAP[1] = 0.0;
-  g_pMotAP[2] = 0.0;
-  g_pMotAP[3] = 0.0;
-
-  g_nSpeed = 0.0;
-  g_dSpeed = 0.0;
-  g_dirSpeed = -1.0;
-  g_dirSteer = -1.0;
-
-  g_tAP = 0;
-  g_Mode = MODE_STOP;
-  g_Action = ACTION_1;
-
-  pinMode(PIN_LED_STOP, OUTPUT);
-  pinMode(PIN_LED_MANUAL, OUTPUT);
-  pinMode(PIN_LED_AUTO, OUTPUT);
-  pinMode(PIN_LED_INDICATOR, OUTPUT);
-
-  pinMode(PIN_IN_MODE, INPUT);
-  pinMode(PIN_IN_ACTION, INPUT);
-  pinMode(PIN_IN_STEER, INPUT);
-  pinMode(PIN_IN_SPEED, INPUT);
-
-  Serial.begin(115200);
-
-  // configure the CS pin
-  //Ethernet.init(10);  // Most Arduino shields
-
-  while (1)
-  {
-    Ethernet.begin(mac, g_myIP);
-
-    if (Ethernet.hardwareStatus() == EthernetNoHardware)
-    {
-      Serial.println("Ethernet device not found");
-      continue;
-    }
-
-    if (Ethernet.hardwareStatus() == EthernetW5100)
-      Serial.println("W5100");
-    else if (Ethernet.hardwareStatus() == EthernetW5200)
-      Serial.println("W5200");
-    else if (Ethernet.hardwareStatus() == EthernetW5500)
-      Serial.println("W5500");
-    else
-      Serial.println("Unknown Ethernet");
-
-    if (Ethernet.linkStatus() == LinkOFF)
-    {
-      Serial.println("Ethernet cable is not connected.");
-      continue;
-    }
-
-    break;
-  }
-
-  g_UDP.begin(g_myPort);
-  g_nMsg = 2;
+	"name":"Yolo",
+	"class":"_DNNdetect",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_VisionBase":"rs",
+	"dnnType":"yolo",
+	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelFile":"yolov3.cfg",
+	"trainedFile":"yolov3.weights",
+	"classFile":"class.names",
+	"bSwapRB":1,
+	"scale":0.00392,
+	"thr":0.1,
+	"iClassDraw":-1,
 }
 
-//----------------------------------------------------------------------
-// Loop
-void loop()
 {
-  g_pwmSteer = pulseIn(PIN_IN_STEER, HIGH, PWM_TIMEOUT);
-  g_pwmSpeed = pulseIn(PIN_IN_SPEED, HIGH, PWM_TIMEOUT);
-  g_pwmMode = pulseIn(PIN_IN_MODE, HIGH, PWM_TIMEOUT);
-  g_pwmAction = pulseIn(PIN_IN_ACTION, HIGH, PWM_TIMEOUT);
-
-  g_tNow = millis();
-
-  updateMode();
-  updateMotor();
-  updateLED();
-
-  g_UDP.parsePacket();
-  decodeCMD();
-
-  g_UDP.beginPacket(g_UDP.remoteIP(), g_UDP.remotePort());
-  g_UDP.write(PROTOCOL_BEGIN);            //start mark
-  g_UDP.write(ROVERCMD_DEBUG);   //cmd
-  g_UDP.write(6);                         //payload len
-  g_UDP.write(g_Mode);
-  g_UDP.write(g_Action);
-  int16_t v;
-  v = g_nSpeed * FLT_SCALE;
-  g_UDP.write((uint8_t)(v & 0xFF));
-  g_UDP.write((uint8_t)((v >> 8) & 0xFF));
-  v = g_dSpeed * FLT_SCALE;
-  g_UDP.write((uint8_t)(v & 0xFF));
-  g_UDP.write((uint8_t)((v >> 8) & 0xFF));
-  g_UDP.endPacket();
-
-#ifdef SERIAL_DEBUG
-  Serial.print("steer=");
-  Serial.print(g_pwmSteer);
-  Serial.print(", speed=");
-  Serial.print(g_pwmSpeed);
-  Serial.print(", mode=");
-  Serial.print(g_pwmMode);
-  Serial.print(", action=");
-  Serial.print(g_pwmAction);
-
-  Serial.print(";  mode=");
-  Serial.print(g_Mode);
-  Serial.print(",  action=");
-  Serial.print(g_Action);
-
-  Serial.print(";  nSpeed=");
-  Serial.print(g_nSpeed);
-  Serial.print(", dSpeed=");
-  Serial.print(g_dSpeed);
-
-  Serial.print(";  m1=");
-  Serial.print(g_pMot[0].m_pwm);
-  Serial.print(", m2=");
-  Serial.print(g_pMot[1].m_pwm);
-  Serial.print(", m3=");
-  Serial.print(g_pMot[2].m_pwm);
-  Serial.print(", m4=");
-  Serial.println(g_pMot[3].m_pwm);
-#endif
-
+	"name":"rvUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"addr":"192.168.8.250",
+	"port":8888,
+	"_wakeUp":"rvCMD",
 }
+
+{
+	"name":"rvCMD",
+	"class":"_Rover_CMD",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_IOBase":"rvUDP",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"_wakeUp":"apMavlink",
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_IOBase":"apSerial",	
+}
+
+{
+	"name":"PIDdrive",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"P":0.01,
+	"oMin":-0.25,
+	"oMax":0.25,
+}
+
+{
+	"name":"PIDfollow",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"P":-50.0,
+	"oMin":-30.0,
+	"oMax":30.0,
+}
+
+{
+	"name":"mission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"startMission":"FOLLOW",
+
+	{
+		"name":"mission",
+
+		{
+			"bInst":1,
+			"name":"STOP",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"MissionBase",
+		}
+		{
+			"bInst":1,
+			"name":"MANUAL",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"MissionBase",
+		}
+		{
+			"bInst":1,
+			"name":"FOLLOW",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"MissionBase",
+		}
+		{
+			"bInst":1,
+			"name":"WP",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"Waypoint",
+		}
+		{
+			"bInst":1,
+			"name":"RECORD",
+			"Window":"OKview",
+			"bDraw":1,
+			"class":"MissionBase",
+		}
+	}
+}
+
+{
+	"name":"rvBase",
+	"class":"_Rover_base",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_MissionControl":"mission",
+	"_Mavlink":"apMavlink",
+	"_RoverCMD":"rvCMD",
+}
+
+{
+	"name":"rvFollow",
+	"class":"_Rover_follow",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_MissionControl":"mission",
+	"activeMission":["FOLLOW"],
+	"_AutopilotBase":"rvBase",
+	"_DetectorBase":"Yolo",
+	"PID":"PIDfollow",
+	"iClass":0,
+	"nSpeed":0.2,
+}
+
+{
+	"name":"rvWP",
+	"class":"_Rover_WP",
+	"bInst":0,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_MissionControl":"mission",
+	"activeMission":["WP"],
+	"_AutopilotBase":"rvBase",
+	"_Rover_CMD":"rvCMD",
+	"PIDhdg":"PIDhdg",
+}
+
+{
+	"name":"rvAvoid",
+	"class":"_Rover_avoid",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_AutopilotBase":"rvFollow",
+	"_MissionControl":"mission",
+	"_DepthVisionBase":"rs",
+	"vRoi":[0.1,0.1,0.9,0.7],
+	"minD":2.0,
+}
+
+{
+	"name":"rvDrive",
+	"class":"_Rover_drive",
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"viewRGB",
+	"Console":"OpenKAI",
+	"_MissionControl":"mission",
+	"_AutopilotBase":"rvAvoid",
+	"_Rover_CMD":"rvCMD",
+	"PID":"PIDdrive",
+}
+

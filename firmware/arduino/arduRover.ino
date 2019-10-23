@@ -98,15 +98,15 @@ float g_dSpeed;
 
 //----------------------------------------------------------------------
 // Mode
-#define MODE_STOP 0
-#define MODE_MANUAL 1
-#define MODE_AUTO_1 2
-#define MODE_AUTO_2 3
+#define MODE_STOP 1
+#define MODE_MANUAL 2
+#define MODE_AUTO_1 3
+#define MODE_AUTO_2 4
 uint8_t g_Mode;
 
-#define ACTION_1 0
-#define ACTION_2 1
-#define ACTION_3 2
+#define ACTION_1 1
+#define ACTION_2 2
+#define ACTION_3 3
 uint8_t g_Action;
 
 #define AP_TIMEOUT 1000
@@ -332,7 +332,7 @@ void loop()
 
   g_UDP.beginPacket(g_UDP.remoteIP(), g_UDP.remotePort());
   g_UDP.write(PROTOCOL_BEGIN);            //start mark
-  g_UDP.write(ROVERCMD_DEBUG);   //cmd
+  g_UDP.write((uint8_t)ROVERCMD_STATE);   //cmd
   g_UDP.write(6);                         //payload len
   g_UDP.write(g_Mode);
   g_UDP.write(g_Action);

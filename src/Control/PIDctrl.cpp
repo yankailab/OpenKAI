@@ -102,7 +102,7 @@ void PIDctrl::draw(void)
 	addMsg("v=" + f2str(m_v)
 			+ " vPred=" + f2str(m_vPred)
 			+ " vTarget=" + f2str(m_vTarget)
-			+ " output=" + f2str(m_output));
+			+ " vOutput=" + f2str(m_output));
 }
 
 }

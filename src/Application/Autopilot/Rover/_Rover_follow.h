@@ -15,17 +15,27 @@ public:
 	~_Rover_follow();
 
 	bool init(void* pKiss);
+	bool start(void);
 	int check(void);
 	void update(void);
 	void draw(void);
+
+private:
+	void updateFollow(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_Rover_follow*) This)->update();
+		return NULL;
+	}
 
 public:
 	_DetectorBase* m_pDet;
 	PIDctrl* m_pPID;
 	ROVER_CTRL m_ctrl;
 
-	OBJECT m_obs;
-	float m_dStop;
+	OBJECT m_target;
+	int m_iClass;
+	float m_nSpeed;
 
 };
 

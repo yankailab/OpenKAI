@@ -5,12 +5,15 @@ namespace kai
 
 _Rover_avoid::_Rover_avoid()
 {
-	m_pDet = NULL;
-	m_pPID = NULL;
-	m_ctrl.init();
+	m_pDV = NULL;
+	m_d = -1.0;
+	m_minD = 3.0;
+	m_vRoi.init();
+	m_vRoi.z = 1.0;
+	m_vRoi.w = 1.0;
 
-	m_obs.init();
-	m_dStop = 1.0;
+	m_ctrl.init();
+	m_pCtrl = (void*)&m_ctrl;
 }
 
 _Rover_avoid::~_Rover_avoid()
@@ -22,70 +25,72 @@ bool _Rover_avoid::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v("dStop", &m_dStop);
+	pK->v("minD", &m_minD);
+	pK->v("vRoi", &m_vRoi);
 
 	string iName;
 	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pDet, iName+": not found");
+	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
+	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDV, iName+": not found");
 
-	iName = "";
-	pK->v("PID", &iName);
-	m_pPID = (PIDctrl*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pPID, iName+": not found");
+	return true;
+}
+
+bool _Rover_avoid::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
 
 	return true;
 }
 
 int _Rover_avoid::check(void)
 {
-	NULL__(m_pDet, -1);
-	NULL__(m_pPID, -1);
+	NULL__(m_pAB, -1);
+	NULL__(m_pAB->m_pCtrl, -1);
+	NULL__(m_pDV, -1);
 
-	return 0;
+	return this->_AutopilotBase::check();
 }
 
 void _Rover_avoid::update(void)
 {
-	this->_AutopilotBase::update();
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		this->_AutopilotBase::update();
+		updateAvoid();
+
+		this->autoFPSto();
+	}
+}
+
+void _Rover_avoid::updateAvoid(void)
+{
 	IF_(check()<0);
-	IF_(!bActive());
 
 	ROVER_CTRL* pCtrl = (ROVER_CTRL*)m_pAB->m_pCtrl;
 	m_ctrl.m_hdg = pCtrl->m_hdg;
-	m_ctrl.m_nSpeed = pCtrl->m_nTargetSpeed;
-	m_ctrl.m_targetHdg = pCtrl->m_targetHdg;
+	m_ctrl.m_nSpeed = pCtrl->m_nSpeed;
+	m_ctrl.m_targetHdgOffset = pCtrl->m_targetHdgOffset;
 
-	OBJECT o;
-	o.init();
-	OBJECT* pO;
-	int i=0;
-	while((pO = m_pDet->at(i++)) != NULL)
-	{
-		if(o.m_topClass>=0)
-		{
-			IF_CONT(pO->m_dist > o.m_dist);
-		}
-		o = *pO;
-		o.m_topClass = 0;
-	}
+	m_d = m_pDV->d(&m_vRoi);
 
-	if(o.m_topClass<0)
+	if(m_d > m_minD || m_d < 0.0)
 	{
-		m_obs.init();
 		m_ctrl.m_nTargetSpeed = pCtrl->m_nTargetSpeed;
 		return;
 	}
 
-	m_obs = o;
-	float dBrake = o.m_dist - m_dStop;
-	if(dBrake < 0)dBrake = 0.0;
-
-	m_ctrl.m_nTargetSpeed = constrain(
-			m_pPID->update(dBrake, 0.0, m_tStamp),
-			0.0f,
-			pCtrl->m_nTargetSpeed);
+	m_ctrl.m_nTargetSpeed = 0.0;
 
 }
 
@@ -94,7 +99,8 @@ void _Rover_avoid::draw(void)
 	this->_AutopilotBase::draw();
 	IF_(check()<0);
 
-	string msg = "nObs=" + i2str(m_pDet->size())
+	string msg = "d=" + f2str(m_d)
+			+ ", minD=" + f2str(m_minD)
 			+ ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
 	addMsg(msg);
 
@@ -104,8 +110,8 @@ void _Rover_avoid::draw(void)
 	vInt2 cs;
 	cs.x = pMat->cols;
 	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_obs.m_bb, cs));
-	rectangle(*pMat, r, Scalar(0,0,255), 3);
+	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
+	rectangle(*pMat, r, Scalar(255,255,0), 2);
 
 }
 

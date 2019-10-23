@@ -7,7 +7,8 @@ _Rover_drive::_Rover_drive()
 {
 	m_pCMD = NULL;
 	m_pPID = NULL;
-	m_pPwmOut = NULL;
+	m_nSpeed = 0.0;
+	m_dSpeed = 0.0;
 
 	m_ctrl.init();
 	m_pCtrl = (void*)&m_ctrl;
@@ -23,30 +24,9 @@ bool _Rover_drive::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	Kiss** ppD = pK->getChildItr();
-	int i = 0;
-	while (ppD[i])
-	{
-		Kiss* pD = ppD[i++];
-
-		ROVER_DRIVE d;
-		d.init();
-		pD->v("kDir",&d.m_kDir);
-		pD->v("sDir",&d.m_sDir);
-		pD->v("pwmH",&d.m_pwmH);
-		pD->v("pwmM",&d.m_pwmM);
-		pD->v("pwmL",&d.m_pwmL);
-
-		m_vDrive.push_back(d);
-	}
-
-	IF_Fl(m_vDrive.empty(), "drive setting empty");
-
-	m_pPwmOut = new uint16_t[m_vDrive.size()];
-
 	string iName;
 	iName = "";
-	F_ERROR_F(pK->v("_RoverCMD", &iName));
+	F_ERROR_F(pK->v("_Rover_CMD", &iName));
 	m_pCMD = (_Rover_CMD*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pCMD, iName+": not found");
 
@@ -58,9 +38,24 @@ bool _Rover_drive::init(void* pKiss)
 	return true;
 }
 
+bool _Rover_drive::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
 int _Rover_drive::check(void)
 {
 	NULL__(m_pAB, -1);
+	NULL__(m_pAB->m_pCtrl, -1);
 	NULL__(m_pCMD, -1);
 	NULL__(m_pPID, -1);
 
@@ -69,25 +64,34 @@ int _Rover_drive::check(void)
 
 void _Rover_drive::update(void)
 {
-	this->_AutopilotBase::update();
-	IF_(check()<0);
-	IF_(!bActive());
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
 
-	m_ctrl = *((ROVER_CTRL*)m_pAB->m_pCtrl);
+		this->_AutopilotBase::update();
+		updateDrive();
 
+		this->autoFPSto();
+	}
 }
 
-void _Rover_drive::updatePWM(void)
+void _Rover_drive::updateDrive(void)
 {
-	IF_(m_ctrl.m_hdg < 0.0);
-	IF_(m_ctrl.m_targetHdg < 0.0);
+	IF_(check()<0);
 
-	float dSpeed = m_pPID->update(0.0, dHdg(m_ctrl.m_hdg, m_ctrl.m_targetHdg), m_tStamp);
+	m_ctrl = *((ROVER_CTRL*)m_pAB->m_pCtrl);
+	if(m_ctrl.m_hdg < 0.0)
+	{
+		m_nSpeed = 0.0;
+		m_dSpeed = 0.0;
+	}
+	else
+	{
+		m_nSpeed = m_ctrl.m_nTargetSpeed;
+		m_dSpeed = m_pPID->update(0.0, dHdg(m_ctrl.m_hdg, m_ctrl.m_hdg + m_ctrl.m_targetHdgOffset), m_tStamp);
+	}
 
-	for(int i=0; i<m_vDrive.size(); i++)
-		m_pPwmOut[i] = m_vDrive[i].updatePWM(m_ctrl.m_nSpeed, dSpeed);
-
-//	m_pCMD->setPWM(m_pPwmOut, m_vDrive.size());
+	m_pCMD->setSpeed(m_nSpeed, m_dSpeed);
 }
 
 void _Rover_drive::draw(void)
@@ -95,9 +99,7 @@ void _Rover_drive::draw(void)
 	this->_AutopilotBase::draw();
 
 	string msg;
-	msg = "PWM: ";
-	for(int i=0; i<m_vDrive.size(); i++)
-		msg += ", ch" + i2str(i) + "=" + i2str(m_pPwmOut[i]);
+	msg = "nSpeed=" + f2str(m_nSpeed) + ", dSpeed=" + f2str(m_dSpeed);
 	addMsg(msg,1);
 
 }

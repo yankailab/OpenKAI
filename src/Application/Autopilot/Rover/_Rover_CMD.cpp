@@ -6,24 +6,18 @@ _Rover_CMD::_Rover_CMD()
 {
 	m_mode = rover_mode_unknown;
 	m_action = rover_action_unknown;
-	m_nPwmIn = 8;
-	m_pPwmIn = NULL;
+	m_nSpeed = -1.0;
+	m_dSpeed = -1.0;
 }
 
 _Rover_CMD::~_Rover_CMD()
 {
-	DEL(m_pPwmIn);
 }
 
 bool _Rover_CMD::init(void* pKiss)
 {
 	IF_F(!this->_ProtocolBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
-
-	pK->v("nPwmIn", &m_nPwmIn);
-	m_pPwmIn = new uint16_t[m_nPwmIn];
-	for(int i=0; i<m_nPwmIn; i++)
-		m_pPwmIn[i]=0;
 
 	return true;
 }
@@ -74,25 +68,13 @@ void _Rover_CMD::update(void)
 
 void _Rover_CMD::handleCMD(void)
 {
-	float nSpeed;
-	float dSpeed;
-
 	switch (m_recvMsg.m_pBuf[1])
 	{
 	case ROVERCMD_STATE:
 		m_mode = (ROVER_MODE)m_recvMsg.m_pBuf[3];
-		for(int i=0; i<m_nPwmIn; i++)
-		{
-			if(i>=m_nPwmIn)break;
-			m_pPwmIn[i] = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4+i*2], false);
-		}
-		break;
-	case ROVERCMD_DEBUG:
-		m_mode = (ROVER_MODE)m_recvMsg.m_pBuf[3];
 		m_action = (ROVER_ACTION)m_recvMsg.m_pBuf[4];
-		nSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false));
-		dSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[7], false));
-		LOG_I("mode="+i2str(m_mode)+", action="+i2str(m_action)+", nSpeed="+f2str(nSpeed)+", dSpeed="+f2str(dSpeed));
+		m_nSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false));
+		m_dSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[7], false));
 		break;
 	default:
 		break;
@@ -149,14 +131,11 @@ void _Rover_CMD::draw(void)
 	this->_ProtocolBase::draw();
 
 	string msg;
-	msg = "Mode: " + c_roverModeName[m_mode];
+	msg = "mode=" + c_roverModeName[m_mode]
+			+ ", action=" + c_roverActionName[m_action]
+		    + ", nSpeed=" + f2str(m_nSpeed)
+			+ ", dSpeed="+f2str(m_dSpeed);
 	addMsg(msg,1);
-
-	msg = "PwmIn: ";
-	for(int i=0; i<m_nPwmIn; i++)
-		msg += ", ch" + i2str(i) + "=" + i2str(m_pPwmIn[i]);
-	addMsg(msg,1);
-
 }
 
 }

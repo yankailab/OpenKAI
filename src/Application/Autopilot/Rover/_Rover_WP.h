@@ -15,9 +15,18 @@ public:
 	~_Rover_WP();
 
 	bool init(void* pKiss);
+	bool start(void);
 	int check(void);
 	void update(void);
 	void draw(void);
+
+private:
+	void updateWP(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_Rover_WP*) This)->update();
+		return NULL;
+	}
 
 public:
 	_Mavlink* m_pMavlink;

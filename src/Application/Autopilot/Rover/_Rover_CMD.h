@@ -17,29 +17,37 @@ namespace kai
 
 enum ROVER_MODE
 {
-	rover_mode_unknown = -1,
-	rover_stop = 0,
-	rover_manual = 1,
-	rover_auto = 2,
-	rover_forward = 3,
-	rover_backward = 4,
+	rover_mode_unknown = 0,
+	rover_stop = 1,
+	rover_manual = 2,
+	rover_auto1 = 3,
+	rover_auto2 = 4,
 };
 
 enum ROVER_ACTION
 {
-	rover_action_unknown = -1,
-	rover_action1 = 0,
-	rover_action2 = 1,
-	rover_action3 = 2,
+	rover_action_unknown = 0,
+	rover_action1 = 1,
+	rover_action2 = 2,
+	rover_action3 = 3,
 };
 
 const string c_roverModeName[] =
 {
+	"UNKNOWN",
 	"STOP",
 	"MANUAL",
 	"AUTO",
 	"FORWARD",
 	"BACKWARD",
+};
+
+const string c_roverActionName[] =
+{
+	"UNKNOWN",
+	"ACTION1",
+	"ACTION2",
+	"ACTION3",
 };
 
 class _Rover_CMD: public _ProtocolBase
@@ -69,9 +77,8 @@ private:
 public:
 	ROVER_MODE m_mode;
 	ROVER_ACTION m_action;
-	uint8_t	m_nPwmIn;
-	uint16_t* m_pPwmIn;
-
+	float m_nSpeed;
+	float m_dSpeed;
 };
 
 }
