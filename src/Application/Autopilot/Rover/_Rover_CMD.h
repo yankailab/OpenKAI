@@ -37,9 +37,8 @@ const string c_roverModeName[] =
 	"UNKNOWN",
 	"STOP",
 	"MANUAL",
-	"AUTO",
-	"FORWARD",
-	"BACKWARD",
+	"AUTO1",
+	"AUTO2",
 };
 
 const string c_roverActionName[] =

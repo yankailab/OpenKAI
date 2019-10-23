@@ -60,8 +60,6 @@ void _Rover_CMD::update(void)
 			m_nCMDrecv++;
 		}
 
-		setSpeed(0.8, -0.6);
-
 		this->autoFPSto();
 	}
 }

@@ -201,19 +201,15 @@ void updateMode()
     g_Action = ACTION_1;
 
 
-  if (abs(g_pwmMode - PWM_MID) < PWM_MID_DZ)
-  {
-    g_Mode = MODE_MANUAL;
-    return;
-  }
-
   if (g_tNow - g_tAP > AP_TIMEOUT)
   {
     g_Mode = MODE_STOP;
     return;
   }
 
-  if (g_pwmMode > PWM_MID)
+  if (abs(g_pwmMode - PWM_MID) < PWM_MID_DZ)
+    g_Mode = MODE_MANUAL;
+  else if (g_pwmMode > PWM_MID)
     g_Mode = MODE_AUTO_1;
   else
     g_Mode = MODE_AUTO_2;
