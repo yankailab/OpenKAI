@@ -13,6 +13,16 @@
 namespace kai
 {
 
+enum MISSION_TYPE
+{
+	mission_base,
+	mission_land,
+	mission_loiter,
+	mission_move,
+	mission_rth,
+	mission_wp,
+};
+
 class MissionBase: public BASE
 {
 public:
@@ -23,6 +33,7 @@ public:
 	virtual bool update(void);
 	virtual void reset(void);
 	virtual void draw(void);
+	virtual MISSION_TYPE type(void);
 
 public:
 	string m_nextMission;
@@ -30,6 +41,8 @@ public:
 	uint64_t m_tStart;
 	uint64_t m_tStamp;
 	uint64_t m_tTimeout;
+
+	MISSION_TYPE m_type;
 };
 
 }

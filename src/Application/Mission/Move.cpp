@@ -14,6 +14,8 @@ Move::Move()
 {
 	m_hdg = 0;
 	reset();
+
+	m_type = mission_move;
 }
 
 Move::~Move()

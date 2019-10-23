@@ -14,6 +14,8 @@ Loiter::Loiter()
 {
 	m_hdg = 0;
 	reset();
+
+	m_type = mission_loiter;
 }
 
 Loiter::~Loiter()

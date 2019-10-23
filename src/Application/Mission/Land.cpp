@@ -16,6 +16,8 @@ Land::Land()
 	m_hdg = 0.0;
 	m_speed = 1.0;
 	reset();
+
+	m_type = mission_land;
 }
 
 Land::~Land()

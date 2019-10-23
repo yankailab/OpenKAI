@@ -18,13 +18,13 @@
 {
 	"name":"viewRGB",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
 	"name":"viewDepth",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -67,7 +67,7 @@
 	"Console":"OpenKAI",
 	"_VisionBase":"rs",
 	"dnnType":"yolo",
-	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelDir":"/home/eii/dev/model/yolov3/",
 	"modelFile":"yolov3.cfg",
 	"trainedFile":"yolov3.weights",
 	"classFile":"class.names",
@@ -155,7 +155,7 @@
 	"bDraw":1,
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
-	"startMission":"FOLLOW",
+	"startMission":"STOP",
 
 	{
 		"name":"mission",
@@ -163,35 +163,41 @@
 		{
 			"bInst":1,
 			"name":"STOP",
-			"Window":"OKview",
+			"Window":"viewRGB",
+			"Console":"OpenKAI",
 			"bDraw":1,
 			"class":"MissionBase",
 		}
 		{
 			"bInst":1,
 			"name":"MANUAL",
-			"Window":"OKview",
+			"Window":"viewRGB",
+			"Console":"OpenKAI",
 			"bDraw":1,
 			"class":"MissionBase",
 		}
 		{
 			"bInst":1,
 			"name":"FOLLOW",
-			"Window":"OKview",
+			"Window":"viewRGB",
+			"Console":"OpenKAI",
 			"bDraw":1,
 			"class":"MissionBase",
 		}
 		{
 			"bInst":1,
 			"name":"WP",
-			"Window":"OKview",
+			"Window":"viewRGB",
+			"Console":"OpenKAI",
 			"bDraw":1,
 			"class":"Waypoint",
+			"loop":2,
 		}
 		{
 			"bInst":1,
 			"name":"RECORD",
-			"Window":"OKview",
+			"Window":"viewRGB",
+			"Console":"OpenKAI",
 			"bDraw":1,
 			"class":"MissionBase",
 		}
@@ -233,17 +239,19 @@
 {
 	"name":"rvWP",
 	"class":"_Rover_WP",
-	"bInst":0,
+	"bInst":1,
 	"FPS":10,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
 	"_MissionControl":"mission",
-	"activeMission":["WP"],
-	"_AutopilotBase":"rvBase",
-	"_Rover_CMD":"rvCMD",
-	"PIDhdg":"PIDhdg",
+	"activeMission":["WP","RECORD"],
+	"_AutopilotBase":"rvFollow",
+	"_Mavlink":"apMavlink",
+	"nSpeed":0.2,
+	"dRecP":0.00006,
+	"err":0.00003,
 }
 
 {
@@ -255,7 +263,7 @@
 	"bDraw":1,
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
-	"_AutopilotBase":"rvFollow",
+	"_AutopilotBase":"rvWP",
 	"_MissionControl":"mission",
 	"_DepthVisionBase":"rs",
 	"vRoi":[0.1,0.1,0.9,0.99],

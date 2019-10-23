@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_Rover__Rover_WP_H_
 
 #include "../../../Detector/_DetectorBase.h"
-#include "../../../Control/PIDctrl.h"
 #include "_Rover_base.h"
 
 namespace kai
@@ -22,6 +21,7 @@ public:
 
 private:
 	void updateWP(void);
+	void updateRecord(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_Rover_WP*) This)->update();
@@ -30,10 +30,14 @@ private:
 
 public:
 	_Mavlink* m_pMavlink;
-	_Rover_CMD* m_pCMD;
-	PIDctrl* m_pPIDhdg;
-
 	ROVER_CTRL m_ctrl;
+
+	float m_nSpeed;
+	vDouble4 m_vPos;
+
+	vector<MISSION_WAYPOINT> m_vWP;
+	double m_dRecP;
+	double m_err;
 
 };
 

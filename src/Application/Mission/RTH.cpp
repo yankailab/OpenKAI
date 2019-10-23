@@ -21,6 +21,8 @@ RTH::RTH()
 	m_bAlt = true;
 
 	reset();
+
+	m_type = mission_rth;
 }
 
 RTH::~RTH()

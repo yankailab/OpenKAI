@@ -22,9 +22,9 @@ struct MISSION_WAYPOINT
 
 	void init(void)
 	{
-		m_vP.init();
-		m_vV.init();
-		m_vErr.init(3.0);
+		m_vP.init(0.0);
+		m_vV.init(0.0);
+		m_vErr.init(1e-5); //deg, roughtly ~1m
 	}
 
 	bool update(vDouble4& vP, vDouble4* pE)

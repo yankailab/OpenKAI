@@ -18,6 +18,7 @@ Waypoint::Waypoint()
 	m_vPos.init(-1.0);
 	m_vErr.init(-1.0);
 
+	m_type = mission_wp;
 }
 
 Waypoint::~Waypoint()
@@ -52,7 +53,8 @@ bool Waypoint::init(void* pKiss)
 int Waypoint::check(void)
 {
 	IF__(m_iWP < 0, -1);
-	IF__(m_iWP > m_vWP.size(), -1);
+	IF__(m_iWP >= m_vWP.size(), -1);
+	IF__(m_vWP.empty(), -1);
 
 	return 0;
 }
@@ -135,6 +137,8 @@ bool Waypoint::update(void)
 void Waypoint::reset(void)
 {
 	this->MissionBase::reset();
+
+	m_iWP = 0;
 }
 
 void Waypoint::draw(void)
@@ -145,7 +149,7 @@ void Waypoint::draw(void)
 	string msg;
 	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
 
-	addMsg("iWP = " + i2str(m_iWP),1);
+	addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);
 
 	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
 				   + f2str(pWP->m_vP.y,7) + ", "

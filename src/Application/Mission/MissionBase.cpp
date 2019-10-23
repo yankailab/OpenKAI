@@ -16,6 +16,7 @@ MissionBase::MissionBase()
 	m_tStart = 0;
 	m_tStamp = 0;
 	m_tTimeout = 0;
+	m_type = mission_base;
 }
 
 MissionBase::~MissionBase()
@@ -49,6 +50,11 @@ bool MissionBase::update(void)
 void MissionBase::reset(void)
 {
 	m_tStart = 0;
+}
+
+MISSION_TYPE MissionBase::type(void)
+{
+	return m_type;
 }
 
 void MissionBase::draw(void)
