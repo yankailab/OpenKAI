@@ -18,6 +18,7 @@ Console::Console()
 
 Console::~Console()
 {
+	endwin();
 }
 
 bool Console::init(void* pKiss)
@@ -39,19 +40,19 @@ bool Console::init(void* pKiss)
 	return true;
 }
 
-void Console::addMsg(const string &msg, int iCol, int iX)
+void Console::addMsg(const string &msg, int iCol, int iX, int iLine)
 {
-	attrset(COLOR_PAIR(iCol));
-	mvaddstr(++m_iY, iX, msg.c_str());
+	attrset(iCol);
+	m_iY += iLine;
+	mvaddstr(m_iY, iX, msg.c_str());
 }
 
 void Console::draw(void)
 {
-	endwin();
-
-	erase();
 	move(0,0);
     refresh();
+
+    erase();
 
 	attrset(COLOR_PAIR(CONSOLE_COL_TITLE)|A_BOLD);
 	mvaddstr(0, 1, this->getName()->c_str());

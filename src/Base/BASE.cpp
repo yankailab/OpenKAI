@@ -108,7 +108,7 @@ void BASE::draw(void)
 	if(m_pConsole)
 	{
 		Console* pC = (Console*)m_pConsole;
-		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME);
+		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 
 	    if(m_msgLev > 0)
 			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD, CONSOLE_X_MSG);
@@ -120,7 +120,7 @@ void BASE::draw(void)
 void BASE::addMsg(const string& msg, int iTab)
 {
 	if(m_pConsole)
-		((Console*)m_pConsole)->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
+		((Console*)m_pConsole)->addMsg(msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG, 1);
 
 	if(checkWindow())
 	{

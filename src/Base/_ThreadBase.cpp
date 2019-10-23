@@ -161,7 +161,7 @@ void _ThreadBase::draw(void)
 {
 	this->BASE::draw();
 
-	string msg = *this->getName() + " FPS: "+i2str(m_FPS);
+	string msg = "FPS: "+i2str(m_FPS);
 
 	if(m_pConsole)
 	{
@@ -172,7 +172,7 @@ void _ThreadBase::draw(void)
 	if(checkWindow())
 	{
 		Window* pWin = (Window*)this->m_pWindow;
-		pWin->addMsg(msg);
+		pWin->addMsg(*this->getName( ) + " " + msg);
 	}
 }
 

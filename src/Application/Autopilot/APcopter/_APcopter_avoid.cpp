@@ -20,7 +20,6 @@ bool _APcopter_avoid::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName;
-
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
 	m_pAP = (_APcopter_base*) (pK->parent()->getChildInst(iName));
@@ -29,6 +28,25 @@ bool _APcopter_avoid::init(void* pKiss)
 	F_ERROR_F(pK->v("_Mavlink", &iName));
 	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pMavlink, iName+": not found");
+
+	iName = "";
+	F_ERROR_F(pK->v("_DetectorBase", &iName));
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDet, iName+": not found");
+
+	return true;
+}
+
+bool _APcopter_avoid::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: "<< retCode;
+		m_bThreadON = false;
+		return false;
+	}
 
 	return true;
 }
@@ -44,7 +62,19 @@ int _APcopter_avoid::check(void)
 
 void _APcopter_avoid::update(void)
 {
-	this->_AutopilotBase::update();
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		this->_AutopilotBase::update();
+		updateTarget();
+
+		this->autoFPSto();
+	}
+}
+
+void _APcopter_avoid::updateTarget(void)
+{
 	IF_(check()<0);
 
 	OBJECT o;
@@ -57,22 +87,37 @@ void _APcopter_avoid::update(void)
 		o.m_topClass = 0;
 	}
 
-	IF_(o.m_topClass<0);
+	if(o.m_topClass<0)
+	{
+		m_obs.init();
+		LOG_I("Target not found");
+		return;
+	}
+
 	m_obs = o;
 
-	IF_(m_pAP->m_apMode == LOITER);
+	if(m_pAP->m_apMode == LOITER)
+	{
+		LOG_I("Already Loiter");
+		return;
+	}
+
 	m_pAP->setApMode(LOITER);
+	LOG_I("Set Loiter");
 }
 
 void _APcopter_avoid::draw(void)
 {
 	this->_AutopilotBase::draw();
+	IF_(check()<0);
 
 	string msg = "nTarget=" + i2str(m_pDet->size());
 	addMsg(msg);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
+	IF_(m_obs.m_topClass<0);
 
 	vInt2 cs;
 	cs.x = pMat->cols;

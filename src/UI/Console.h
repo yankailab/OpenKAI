@@ -22,7 +22,7 @@ public:
 
 	bool init(void *pKiss);
 	void draw(void);
-	void addMsg(const string &msg, int iCol, int iX);
+	void addMsg(const string &msg, int iCol, int iX, int iLine = 0);
 
 public:
 	int m_iY;

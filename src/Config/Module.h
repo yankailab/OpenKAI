@@ -91,6 +91,7 @@
 #include "../Tracker/_EcoTracker.h"
 
 #include "../UI/Window.h"
+#include "../UI/Console.h"
 
 #include "../Universe/_Object.h"
 #include "../Universe/_ObjectFactory.h"

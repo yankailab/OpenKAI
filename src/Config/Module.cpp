@@ -75,6 +75,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_VideoFile);
 	ADD_MODULE(_WebSocket);
 	ADD_MODULE(Window);
+	ADD_MODULE(Console);
 
 	ADD_MODULE(_ArduServo);
 	ADD_MODULE(_ActuatorSync);

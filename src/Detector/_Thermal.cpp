@@ -108,6 +108,9 @@ void _Thermal::detect(void)
 void _Thermal::draw(void)
 {
 	this->_DetectorBase::draw();
+
+	IF_(!m_bDebug);
+
 	if(!m_mR.empty())
 	{
 		imshow(*this->getName()+":Thr", m_mR);

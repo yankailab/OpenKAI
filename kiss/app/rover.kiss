@@ -172,6 +172,9 @@ void updateMotor(void)
     else
       g_dSpeed = 0.0;
   }
+  
+  if(g_nSpeed < 0.0)
+  	g_dSpeed *= -1.0;
 
   g_pMot[0].speed(g_nSpeed + g_dSpeed);  //LF
   g_pMot[1].speed(g_nSpeed - g_dSpeed);  //RB

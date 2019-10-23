@@ -3,7 +3,7 @@
 #include <Servo.h>
 #include "arduOK.h"
 
-#define SERIAL_DEBUG
+//#define SERIAL_DEBUG
 
 //----------------------------------------------------------------------
 // IO override for Ethernet
@@ -26,9 +26,9 @@ byte ioRead(void)
 
 //----------------------------------------------------------------------
 // Pin assign
-#define PIN_LED_STOP A0
-#define PIN_LED_MANUAL A1
-#define PIN_LED_AUTO A2
+#define PIN_LED_STOP A2
+#define PIN_LED_MANUAL A0
+#define PIN_LED_AUTO A1
 #define PIN_LED_INDICATOR A3
 
 #define PIN_IN_STEER 4
@@ -113,13 +113,13 @@ uint8_t g_Action;
 #define PWM_TIMEOUT 100000
 long g_tAP;
 long g_tNow;
-int g_counter;
 
 //----------------------------------------------------------------------
 // CMD Protocol
 #define ROVERCMD_STATE 0
-#define ROVERCMD_PWM 1
+#define ROVERCMD_SPEED 1
 #define ROVERCMD_PINOUT 2
+#define ROVERCMD_DEBUG 3
 
 #define FLT_SCALE 1000
 #define FLT_SCALE_INV 0.001
@@ -128,11 +128,9 @@ void runCMD(void)
 {
   switch (g_cmd.m_pBuf[1])
   {
-    case ROVERCMD_PWM:
-      g_pMotAP[0] = ((float)(*((int16_t*)(&g_cmd.m_pBuf[3])))) * FLT_SCALE_INV;
-      g_pMotAP[1] = ((float)(*((int16_t*)(&g_cmd.m_pBuf[5])))) * FLT_SCALE_INV;
-      g_pMotAP[2] = ((float)(*((int16_t*)(&g_cmd.m_pBuf[6])))) * FLT_SCALE_INV;
-      g_pMotAP[3] = ((float)(*((int16_t*)(&g_cmd.m_pBuf[7])))) * FLT_SCALE_INV;
+    case ROVERCMD_SPEED:
+      g_nSpeed = ((float)(*((int16_t*)(&g_cmd.m_pBuf[3])))) * FLT_SCALE_INV;
+      g_dSpeed = ((float)(*((int16_t*)(&g_cmd.m_pBuf[5])))) * FLT_SCALE_INV;
       g_tAP = millis();
       break;
 
@@ -156,8 +154,11 @@ void updateMotor(void)
   {
     for (i = 0; i < N_MOT; i++)
       g_pMot[i].speed(0.0);
+
+    return;
   }
-  else if (g_Mode == MODE_MANUAL)
+
+  if (g_Mode == MODE_MANUAL)
   {
     float pwm = (float)(g_pwmSpeed - PWM_MID);
     if (abs(pwm) > (float)PWM_MID_DZ)
@@ -170,18 +171,15 @@ void updateMotor(void)
       g_dSpeed = (pwm / (float)PWM_D) * (float)g_dirSteer;
     else
       g_dSpeed = 0.0;
-
-    g_pMot[0].speed(g_nSpeed + g_dSpeed);  //LF
-    g_pMot[1].speed(g_nSpeed - g_dSpeed);  //RB
-    g_pMot[2].speed(g_nSpeed - g_dSpeed);  //RF
-    g_pMot[3].speed(g_nSpeed + g_dSpeed);  //LB
-
   }
-  else //AUTO
-  {
-    for (i = 0; i < N_MOT; i++)
-      g_pMot[i].speed(g_pMotAP[i]);
-  }
+
+  if(g_nSpeed < 0.0)
+    g_dSpeed *= -1.0;
+
+  g_pMot[0].speed(g_nSpeed + g_dSpeed);  //LF
+  g_pMot[1].speed(g_nSpeed - g_dSpeed);  //RB
+  g_pMot[2].speed(g_nSpeed - g_dSpeed);  //RF
+  g_pMot[3].speed(g_nSpeed + g_dSpeed);  //LB
 }
 
 void updateMode()
@@ -248,8 +246,8 @@ void updateLED(void)
 
 void setup()
 {
-  g_pMot[0].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 3, 1); //LF
-  g_pMot[1].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 5, -1); //RB
+  g_pMot[0].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 3, -1); //LF
+  g_pMot[1].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 5, 1); //RB
   g_pMot[2].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 6, -1); //RF
   g_pMot[3].init(PWM_MID, PWM_MID - PWM_D, PWM_MID + PWM_D, 9, 1); //LB
 
@@ -264,7 +262,6 @@ void setup()
   g_dirSteer = -1.0;
 
   g_tAP = 0;
-  g_counter = 0;
   g_Mode = MODE_STOP;
   g_Action = ACTION_1;
 
@@ -305,14 +302,14 @@ void setup()
     if (Ethernet.linkStatus() == LinkOFF)
     {
       Serial.println("Ethernet cable is not connected.");
-      //      continue;
+      continue;
     }
 
     break;
   }
 
   g_UDP.begin(g_myPort);
-  g_nMsg = 1;
+  g_nMsg = 2;
 }
 
 //----------------------------------------------------------------------
@@ -333,22 +330,20 @@ void loop()
   g_UDP.parsePacket();
   decodeCMD();
 
-  if (g_counter == 0)
-  {
-    /*    g_UDP.beginPacket(g_UDP.remoteIP(), g_UDP.remotePort());
-        g_UDP.write(PROTOCOL_BEGIN);            //start mark
-        g_UDP.write((uint8_t)ROVERCMD_STATE);   //cmd
-        g_UDP.write(2);                         //payload len
-        g_UDP.write(g_Mode);
-        g_UDP.write(g_Action);
-        //  g_UDP.write((uint8_t)(g_pwm2 & 0xFF));
-        //  g_UDP.write((uint8_t)((g_pwm2 >> 8) & 0xFF));
-        g_UDP.endPacket();
-    */
-  }
-
-  if (++g_counter >= 5)
-    g_counter = 0;
+  g_UDP.beginPacket(g_UDP.remoteIP(), g_UDP.remotePort());
+  g_UDP.write(PROTOCOL_BEGIN);            //start mark
+  g_UDP.write(ROVERCMD_DEBUG);   //cmd
+  g_UDP.write(6);                         //payload len
+  g_UDP.write(g_Mode);
+  g_UDP.write(g_Action);
+  int16_t v;
+  v = g_nSpeed * FLT_SCALE;
+  g_UDP.write((uint8_t)(v & 0xFF));
+  g_UDP.write((uint8_t)((v >> 8) & 0xFF));
+  v = g_dSpeed * FLT_SCALE;
+  g_UDP.write((uint8_t)(v & 0xFF));
+  g_UDP.write((uint8_t)((v >> 8) & 0xFF));
+  g_UDP.endPacket();
 
 #ifdef SERIAL_DEBUG
   Serial.print("steer=");
@@ -378,9 +373,6 @@ void loop()
   Serial.print(g_pMot[2].m_pwm);
   Serial.print(", m4=");
   Serial.println(g_pMot[3].m_pwm);
-
-  
-
 #endif
 
 }

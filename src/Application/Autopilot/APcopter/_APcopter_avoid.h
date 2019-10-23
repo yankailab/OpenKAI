@@ -15,9 +15,18 @@ public:
 	~_APcopter_avoid();
 
 	bool init(void* pKiss);
+	bool start(void);
 	int	 check(void);
 	void update(void);
 	void draw(void);
+
+private:
+	void updateTarget(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_APcopter_avoid*) This)->update();
+		return NULL;
+	}
 
 private:
 	_APcopter_base* m_pAP;

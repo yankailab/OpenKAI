@@ -24,15 +24,13 @@ bool _AutopilotBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName="";
-	F_INFO(pK->v("_MissionControl", &iName));
-	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
-	NULL_T(m_pMC);
+	pK->v("_AutopilotBase", &iName);
+	m_pAB = (_AutopilotBase*) (pK->parent()->getChildInst(iName));
 
 	iName = "";
-	F_ERROR_F(pK->v("_AutopilotBase", &iName));
-	m_pAB = (_AutopilotBase*) (pK->parent()->getChildInst(iName));
-	NULL_Fl(m_pAB, iName+": not found");
-
+	pK->v("_MissionControl", &iName);
+	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
+	NULL_T(m_pMC);
 
 	vector<string> vAS;
 	pK->a("activeMission", &vAS);
