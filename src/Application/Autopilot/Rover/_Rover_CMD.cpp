@@ -4,7 +4,8 @@ namespace kai
 {
 _Rover_CMD::_Rover_CMD()
 {
-	m_mode = rover_unknown;
+	m_mode = rover_mode_unknown;
+	m_action = rover_action_unknown;
 	m_nPwmIn = 8;
 	m_pPwmIn = NULL;
 }
@@ -65,12 +66,17 @@ void _Rover_CMD::update(void)
 			m_nCMDrecv++;
 		}
 
+		setSpeed(0.8, -0.6);
+
 		this->autoFPSto();
 	}
 }
 
 void _Rover_CMD::handleCMD(void)
 {
+	float nSpeed;
+	float dSpeed;
+
 	switch (m_recvMsg.m_pBuf[1])
 	{
 	case ROVERCMD_STATE:
@@ -80,6 +86,13 @@ void _Rover_CMD::handleCMD(void)
 			if(i>=m_nPwmIn)break;
 			m_pPwmIn[i] = (uint16_t)unpack_int16(&m_recvMsg.m_pBuf[4+i*2], false);
 		}
+		break;
+	case ROVERCMD_DEBUG:
+		m_mode = (ROVER_MODE)m_recvMsg.m_pBuf[3];
+		m_action = (ROVER_ACTION)m_recvMsg.m_pBuf[4];
+		nSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[5], false));
+		dSpeed = FLT_SCALE_INV * (float)((int16_t)unpack_int16(&m_recvMsg.m_pBuf[7], false));
+		LOG_I("mode="+i2str(m_mode)+", action="+i2str(m_action)+", nSpeed="+f2str(nSpeed)+", dSpeed="+f2str(dSpeed));
 		break;
 	default:
 		break;
@@ -100,21 +113,20 @@ void _Rover_CMD::sendState(int iState)
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + 4);
 }
 
-void _Rover_CMD::setPWM(uint16_t* pPWM, int nCh)
+void _Rover_CMD::setSpeed(float nSpeed, float dSpeed)
 {
 	IF_(check()<0);
-	NULL_(pPWM);
-	IF_(nCh <= 0);
 
 	m_pBuf[0] = PROTOCOL_BEGIN;
-	m_pBuf[1] = ROVERCMD_PWM;
-	m_pBuf[2] = nCh * 2;
+	m_pBuf[1] = ROVERCMD_SPEED;
+	m_pBuf[2] = 4;
 
-	for (int i = 0; i < nCh; i++)
-	{
-		m_pBuf[PROTOCOL_N_HEADER + i * 2] = (uint8_t)(pPWM[i] & 0xFF);
-		m_pBuf[PROTOCOL_N_HEADER + i * 2 + 1] = (uint8_t)((pPWM[i] >> 8) & 0xFF);
-	}
+	int16_t v = (int16_t)(nSpeed * FLT_SCALE);
+	m_pBuf[3] = (uint8_t)(v & 0xFF);
+	m_pBuf[4] = (uint8_t)((v >> 8) & 0xFF);
+	v = (int16_t)(dSpeed * FLT_SCALE);
+	m_pBuf[5] = (uint8_t)(v & 0xFF);
+	m_pBuf[6] = (uint8_t)((v >> 8) & 0xFF);
 
 	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + m_pBuf[2]);
 }

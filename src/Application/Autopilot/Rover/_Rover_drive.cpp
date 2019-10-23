@@ -87,7 +87,7 @@ void _Rover_drive::updatePWM(void)
 	for(int i=0; i<m_vDrive.size(); i++)
 		m_pPwmOut[i] = m_vDrive[i].updatePWM(m_ctrl.m_nSpeed, dSpeed);
 
-	m_pCMD->setPWM(m_pPwmOut, m_vDrive.size());
+//	m_pCMD->setPWM(m_pPwmOut, m_vDrive.size());
 }
 
 void _Rover_drive::draw(void)
