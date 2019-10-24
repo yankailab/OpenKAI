@@ -144,12 +144,13 @@ void Waypoint::reset(void)
 void Waypoint::draw(void)
 {
 	this->MissionBase::draw();
-	IF_(check()<0);
 
 	string msg;
-	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
-
 	addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);
+
+	IF_(check()<0);
+
+	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
 
 	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
 				   + f2str(pWP->m_vP.y,7) + ", "

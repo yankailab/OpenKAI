@@ -68,6 +68,7 @@ void _Rover_WP::update(void)
 
 		this->_AutopilotBase::update();
 		updateWP();
+		updateRecord();
 
 		this->autoFPSto();
 	}
@@ -154,7 +155,8 @@ void _Rover_WP::updateRecord(void)
 	}
 
 	MISSION_WAYPOINT* pLast = &m_vWP[m_vWP.size()-1];
-	IF_(abs(pLast->m_vV.x - wp.m_vV.x) + abs(pLast->m_vV.y - wp.m_vV.y) < m_dRecP);
+	double dL = abs(pLast->m_vP.x - wp.m_vP.x) + abs(pLast->m_vP.y - wp.m_vP.y);
+	IF_(dL < m_dRecP);
 
 	m_vWP.push_back(wp);
 }
@@ -172,8 +174,8 @@ void _Rover_WP::draw(void)
 		return;
 	}
 
-	msg = "lat=" + f2str(m_vPos.x,7)
-		  + ", lon=" + f2str(m_vPos.y,7)
+	msg = "lat=" + lf2str(m_pMavlink->m_mavMsg.global_position_int.lat * 1e-7,7)
+		  + ", lon=" + lf2str(m_pMavlink->m_mavMsg.global_position_int.lon * 1e-7,7)
 		  + ", targetHdgOffset=" + f2str(m_ctrl.m_targetHdgOffset)
 		  + ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
 	addMsg(msg);

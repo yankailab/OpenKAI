@@ -67,7 +67,7 @@
 	"Console":"OpenKAI",
 	"_VisionBase":"rs",
 	"dnnType":"yolo",
-	"modelDir":"/home/eii/dev/model/yolov3/",
+	"modelDir":"/home/kai/dev/model/yolov3/",
 	"modelFile":"yolov3.cfg",
 	"trainedFile":"yolov3.weights",
 	"classFile":"class.names",
@@ -132,8 +132,8 @@
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
 	"P":0.01,
-	"oMin":-0.25,
-	"oMax":0.25,
+	"oMin":-0.3,
+	"oMax":0.3,
 }
 
 {

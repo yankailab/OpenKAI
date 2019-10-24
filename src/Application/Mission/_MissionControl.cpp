@@ -165,7 +165,11 @@ void _MissionControl::draw(void)
 	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
 	addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
 
-	pMB->draw();
+	if(pMB->type() == mission_wp)
+		((Waypoint*)pMB)->draw();
+	else
+		pMB->draw();
+
 }
 
 }
