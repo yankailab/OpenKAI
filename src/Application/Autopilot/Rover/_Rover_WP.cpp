@@ -95,7 +95,7 @@ void _Rover_WP::updateWP(void)
 	if(bMissionChanged())
 	{
 		pW->m_vWP = m_vWP;
-		pW->m_iWP = 0;
+		pW->m_iWP = pW->getClosestWPidx();
 		pW->m_dWP = 1;
 	}
 
@@ -106,20 +106,19 @@ void _Rover_WP::updateWP(void)
 
 	IF_(m_vPos.x < 0.0 || m_vPos.x > 90.0);	//lat
 	IF_(m_vPos.y < 0.0 || m_vPos.x > 180.0);//lon
-
 	pW->setPos(m_vPos);
 
 	MISSION_WAYPOINT* pWP = pW->getWaypoint();
 	NULL_(pWP);
 
-	m_ctrl.m_targetHdgOffset = dAngle(
-						 m_vPos.x,
-						 m_vPos.y,
-						 pWP->m_vP.x,
-						 pWP->m_vP.y
-						 ) - m_ctrl.m_hdg;
+	float hB = bearing(
+					m_vPos.x,
+					m_vPos.y,
+					pWP->m_vP.x,
+					pWP->m_vP.y);
 
-	m_ctrl.m_nTargetSpeed = m_nSpeed;//pWP->m_vV.x;
+	m_ctrl.m_targetHdgOffset = dHdg(hB, m_ctrl.m_hdg);
+	m_ctrl.m_nTargetSpeed = m_nSpeed;
 }
 
 void _Rover_WP::updateRecord(void)

@@ -198,7 +198,7 @@ template <typename T> inline T dHdg(T hFrom, T hTo)
 	return d;
 }
 
-inline double dAngle(double lat1, double lon1, double lat2, double lon2)
+inline double bearing(double lat1, double lon1, double lat2, double lon2)
 {
 	lat1 *= DEG_RAD;
 	lon1 *= DEG_RAD;

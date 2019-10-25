@@ -40,7 +40,8 @@ byte ioRead(void)
 // Motor
 #define PWM_MID 1500
 #define PWM_D 500
-#define PWM_MID_DZ 80
+#define PWM_MID_DZ 25
+#define PWM_MID_DZ_BTN 100
 #define PWM_LOWLIM 600
 
 struct MOTOR
@@ -193,7 +194,7 @@ void updateMode()
     return;
   }
 
-  if (abs(g_pwmAction - PWM_MID) < PWM_MID_DZ)
+  if (abs(g_pwmAction - PWM_MID) < PWM_MID_DZ_BTN)
     g_Action = ACTION_2;
   else if (g_pwmAction > PWM_MID)
     g_Action = ACTION_3;
@@ -207,7 +208,7 @@ void updateMode()
     return;
   }
 
-  if (abs(g_pwmMode - PWM_MID) < PWM_MID_DZ)
+  if (abs(g_pwmMode - PWM_MID) < PWM_MID_DZ_BTN)
     g_Mode = MODE_MANUAL;
   else if (g_pwmMode > PWM_MID)
     g_Mode = MODE_AUTO_1;

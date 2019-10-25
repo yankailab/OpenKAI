@@ -102,7 +102,7 @@ public:
 
 	void setPos(vDouble4& vPos);
 	MISSION_WAYPOINT* getWaypoint(void);
-	MISSION_WAYPOINT* getClosestWaypoint(void);
+	int getClosestWPidx(void);
 
 public:
 	vector<MISSION_WAYPOINT> m_vWP;

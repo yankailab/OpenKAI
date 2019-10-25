@@ -132,8 +132,8 @@
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
 	"P":0.01,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -233,7 +233,7 @@
 	"_DetectorBase":"Yolo",
 	"PID":"PIDfollow",
 	"iClass":0,
-	"nSpeed":0.2,
+	"nSpeed":0.15,
 }
 
 {

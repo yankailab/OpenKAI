@@ -71,12 +71,10 @@ MISSION_WAYPOINT* Waypoint::getWaypoint(void)
 	return &m_vWP[m_iWP];
 }
 
-MISSION_WAYPOINT* Waypoint::getClosestWaypoint(void)
+int Waypoint::getClosestWPidx(void)
 {
-	IF__(check()<0, NULL);
-
 	double minD = DBL_MAX;
-	MISSION_WAYPOINT* pMin = NULL;
+	int idx = -1;
 
 	for(int i=0;i<m_vWP.size();i++)
 	{
@@ -85,10 +83,10 @@ MISSION_WAYPOINT* Waypoint::getClosestWaypoint(void)
 		IF_CONT(d > minD);
 
 		minD = d;
-		pMin = pWP;
+		idx = i;
 	}
 
-	return pMin;
+	return idx;
 }
 
 bool Waypoint::update(void)
@@ -97,7 +95,6 @@ bool Waypoint::update(void)
 
 	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
 	IF_F(!pWP->update(m_vPos, &m_vErr));
-
 	LOG_I("WP: " + i2str(m_iWP) +" complete");
 
 	m_iWP += m_dWP;
@@ -113,7 +110,7 @@ bool Waypoint::update(void)
 		else if(m_loop == wp_loop_shuttle)
 		{
 			m_iWP = 0;
-			m_dWP *= -1;
+			m_dWP = 1;
 		}
 	}
 	else if(m_iWP >= m_vWP.size())
@@ -127,7 +124,7 @@ bool Waypoint::update(void)
 		else if(m_loop == wp_loop_shuttle)
 		{
 			m_iWP = m_vWP.size()-1;
-			m_dWP *= -1;
+			m_dWP = -1;
 		}
 	}
 
