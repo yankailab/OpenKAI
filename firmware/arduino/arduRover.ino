@@ -77,6 +77,8 @@ struct MOTOR
     else
       m_pwm = PWM_MID + d * ((float)(m_pwmM - m_pwmL) * m_dir);
 
+    m_pwm = constrain(m_pwm, 1400, 1600);
+
     m_servo.writeMicroseconds(m_pwm);
   }
 };
