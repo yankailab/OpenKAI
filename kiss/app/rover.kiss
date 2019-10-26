@@ -2,17 +2,17 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
 	"name":"OpenKAI",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -67,7 +67,7 @@
 	"Console":"OpenKAI",
 	"_VisionBase":"rs",
 	"dnnType":"yolo",
-	"modelDir":"/home/kai/dev/model/yolov3/",
+	"modelDir":"/home/eii/dev/model/yolov3/",
 	"modelFile":"yolov3.cfg",
 	"trainedFile":"yolov3.weights",
 	"classFile":"class.names",
@@ -123,6 +123,37 @@
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
 	"_IOBase":"apSerial",	
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
+	}
 }
 
 {
@@ -131,9 +162,9 @@
 	"bInst":1,
 	"Window":"viewRGB",
 	"Console":"OpenKAI",
-	"P":0.01,
-	"oMin":-0.5,
-	"oMax":0.5,
+	"P":0.003,
+	"oMin":-0.15,
+	"oMax":0.15,
 }
 
 {
@@ -249,7 +280,7 @@
 	"activeMission":["WP","RECORD"],
 	"_AutopilotBase":"rvFollow",
 	"_Mavlink":"apMavlink",
-	"nSpeed":0.2,
+	"nSpeed":0.3,
 	"dRecP":0.00006,
 	"err":0.00003,
 }
@@ -266,7 +297,7 @@
 	"_AutopilotBase":"rvWP",
 	"_MissionControl":"mission",
 	"_DepthVisionBase":"rs",
-	"vRoi":[0.1,0.1,0.9,0.99],
+	"vRoi":[0.1,0.05,0.9,0.75],
 	"minD":3.0,
 }
 

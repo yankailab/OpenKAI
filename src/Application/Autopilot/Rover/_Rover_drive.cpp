@@ -88,7 +88,7 @@ void _Rover_drive::updateDrive(void)
 	else
 	{
 		m_nSpeed = m_ctrl.m_nTargetSpeed;
-		m_dSpeed = m_pPID->update(0.0, Hdg(m_ctrl.m_targetHdgOffset), m_tStamp);
+		m_dSpeed = m_pPID->update(0.0, m_ctrl.m_targetHdgOffset, m_tStamp);
 	}
 
 	m_pCMD->setSpeed(m_nSpeed, m_dSpeed);

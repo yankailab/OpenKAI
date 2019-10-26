@@ -95,7 +95,7 @@ void _Rover_WP::updateWP(void)
 	if(bMissionChanged())
 	{
 		pW->m_vWP = m_vWP;
-		pW->m_iWP = pW->getClosestWPidx();
+		pW->m_iWP = 0;//pW->getClosestWPidx();
 		pW->m_dWP = 1;
 	}
 
@@ -117,7 +117,7 @@ void _Rover_WP::updateWP(void)
 					pWP->m_vP.x,
 					pWP->m_vP.y);
 
-	m_ctrl.m_targetHdgOffset = dHdg(hB, m_ctrl.m_hdg);
+	m_ctrl.m_targetHdgOffset = dHdg(m_ctrl.m_hdg, hB);
 	m_ctrl.m_nTargetSpeed = m_nSpeed;
 }
 
