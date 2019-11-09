@@ -14,16 +14,17 @@ namespace kai
 
 _RStracking::_RStracking()
 {
-	m_bOpen = false;
+	m_bReady = false;
 }
 
 _RStracking::~_RStracking()
 {
+	close();
 }
 
 bool _RStracking::init(void* pKiss)
 {
-	IF_F(!_SlamBase::init(pKiss));
+	IF_F(!this->_SlamBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	return true;
@@ -31,14 +32,14 @@ bool _RStracking::init(void* pKiss)
 
 bool _RStracking::open(void)
 {
-	IF_T(m_bOpen);
+	IF_T(m_bReady);
 
 	try
 	{
 		rs2::config cfg;
 	    cfg.enable_stream(RS2_STREAM_POSE, RS2_FORMAT_6DOF);
 
-		auto profile = m_rsPipe.start(cfg);
+		m_rsPipe.start(cfg);
 
 		rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
@@ -60,7 +61,7 @@ bool _RStracking::open(void)
 		return false;
 	}
 
-	m_bOpen = true;
+	m_bReady = true;
 	return true;
 }
 
@@ -73,7 +74,6 @@ void _RStracking::close(void)
 	}
 
 	m_rsPipe.stop();
-	this->_SlamBase::close();
 }
 
 bool _RStracking::start(void)
@@ -95,11 +95,11 @@ void _RStracking::update(void)
 {
 	while (m_bThreadON)
 	{
-		if (!m_bOpen)
+		if (!m_bReady)
 		{
 			if (!open())
 			{
-				LOG_E("Cannot open RealSense");
+				LOG_E("Cannot open RealSense tracking");
 				this->sleepTime(USEC_1SEC);
 				continue;
 			}
@@ -111,22 +111,12 @@ void _RStracking::update(void)
 		{
 	        auto frames = m_rsPipe.wait_for_frames();
 	        auto f = frames.first_or_default(RS2_STREAM_POSE);
+	        auto pose = f.as<rs2::pose_frame>().get_pose_data();
 
-	        // Cast the frame to pose_frame and get its data
-	        auto pose_data = f.as<rs2::pose_frame>().get_pose_data();
-	        float r[16];
-
-	        // Calculate current transformation matrix
-	        calc_transform(pose_data, r);
-
-	        // From the matrix we found, get the new location point
-	        rs2_vector tr{ r[12], r[13], r[14] };
-
-	        // Create a new point to be added to the trajectory
-	        tracked_point p{ tr , pose_data.tracker_confidence };
-
-	        // Register the new point
-	        tracker.add_to_trajectory(p);
+	        m_vPos.x = pose.translation.x;
+	        m_vPos.y = pose.translation.y;
+	        m_vPos.z = pose.translation.z;
+	        m_confidence = pose.tracker_confidence;
 
 		} catch (const rs2::camera_disconnected_error& e)
 		{

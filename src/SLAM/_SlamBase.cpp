@@ -28,8 +28,11 @@ bool _SlamBase::init(void* pKiss)
 	return true;
 }
 
-void _SlamBase::detect(void)
+void _SlamBase::reset(void)
 {
+	m_vPos.init();
+	m_vAtti.init();
+	m_confidence = 0.0;
 }
 
 void _SlamBase::draw(void)
@@ -37,16 +40,18 @@ void _SlamBase::draw(void)
 	this->_ThreadBase::draw();
 
 	string msg;
-	msg = "pos=(" + f2str(m_pos.x) + ", "
-				  + f2str(m_pos.y) + ", "
-				  + f2str(m_pos.z) + ")";
-
+	msg = "pos=(" + f2str(m_vPos.x,3) + ", "
+				  + f2str(m_vPos.y,3) + ", "
+				  + f2str(m_vPos.z,3) + ")";
 	addMsg(msg,1);
-}
 
-void _SlamBase::reset(void)
-{
-	m_pos.init();
+	msg = "attitude=(" + f2str(m_vAtti.x,3) + ", "
+				  + f2str(m_vAtti.y,3) + ", "
+				  + f2str(m_vAtti.z,3) + ")";
+	addMsg(msg,1);
+
+	msg = "confidence=" + f2str(m_confidence);
+	addMsg(msg,1);
 }
 
 }

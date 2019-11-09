@@ -91,9 +91,9 @@ void _LidarSlam::detect(void)
 		pD->update();
 	}
 
-	m_pos.x = m_pDS[0].m_d;
-	m_pos.y = m_pDS[1].m_d;
-	m_pos.z = m_pDS[2].m_d;
+	m_vPos.x = m_pDS[0].m_d;
+	m_vPos.y = m_pDS[1].m_d;
+	m_vPos.z = m_pDS[2].m_d;
 }
 
 void _LidarSlam::draw(void)
@@ -101,9 +101,9 @@ void _LidarSlam::draw(void)
 	this->_SlamBase::draw();
 	Window* pWin = (Window*) this->m_pWindow;
 
-	string msg = "x=" + f2str(m_pos.x) +
-				 ", y=" + f2str(m_pos.y) +
-				 ", z=" + f2str(m_pos.z);
+	string msg = "x=" + f2str(m_vPos.x) +
+				 ", y=" + f2str(m_vPos.y) +
+				 ", z=" + f2str(m_vPos.z);
 
 	addMsg(msg,1);
 }

@@ -57,12 +57,10 @@ bool _RealSense::open(void)
 	try
 	{
 		rs2::config cfg;
-		cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16,
-				m_rsDFPS);
+		cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
 		if (m_rsRGB)
 		{
-			cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8,
-					m_rsFPS);
+			cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
 		}
 
 		auto profile = m_rsPipe.start(cfg);

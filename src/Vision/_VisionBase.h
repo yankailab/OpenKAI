@@ -25,6 +25,7 @@ enum VISION_TYPE
 	vision_raspivid,
 	vision_file,
 	vision_hiphen,
+	vision_mynteye,
 	vision_morphology,
 	vision_threshold,
 	vision_erode,

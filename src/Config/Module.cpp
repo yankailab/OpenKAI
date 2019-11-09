@@ -165,6 +165,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSense);
+	ADD_MODULE(_RStracking);
 	ADD_MODULE(_APcopter_takePhoto);
 #endif
 #ifdef USE_PYLON

@@ -21,14 +21,15 @@ public:
 	virtual ~_SlamBase();
 
 	bool init(void* pKiss);
-	void detect(void);
 	void draw(void);
 
 	void reset(void);
 
 public:
-	bool	 m_bReady;
-	vDouble3 m_pos;
+	bool	m_bReady;
+	vFloat3	m_vPos;
+	vFloat3	m_vAtti;
+	float	m_confidence;
 
 };
 

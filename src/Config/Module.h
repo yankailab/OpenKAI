@@ -168,6 +168,7 @@
 #endif
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
+#include "../SLAM/_RStracking.h"
 #endif
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"

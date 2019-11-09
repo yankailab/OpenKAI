@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#update kernel
+# Update kernel
 uname -r
 
 wget https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.11/linux-headers-5.2.11-050211_5.2.11-050211.201908290731_all.deb
@@ -12,22 +12,8 @@ sudo reboot now
 
 sudo apt-get update
 
-sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler
-
-sudo apt-get -y install libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev
-
-sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio
-
-sudo apt-get -y install libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev
-
-sudo apt-get -y install libusb-1.0-0-dev libudev-dev
-
-sudo apt-get -y install libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev
-
-sudo apt-get -y install libglew-dev libgtk-3-dev libglfw3-dev
-
-# All at once
-sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libudev-dev libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev libgtk-3-dev libglfw3-dev
+# Dependencies
+sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libusb-dev libudev-dev libglu1-mesa-dev libgl1-mesa-dev mesa-common-dev freeglut3-dev libglew-dev libgtk-3-dev libglfw3-dev libflann-dev libvtk6-dev libproj-dev
 
 # Optional
 sudo apt-get -y install apache2
@@ -47,19 +33,8 @@ wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu
 sudo dpkg -i libcudnn7_7.6.3.30-1+cuda10.1_amd64.deb
 sudo dpkg -i libcudnn7-dev_7.6.3.30-1+cuda10.1_amd64.deb
 
-
 sudo apt autoremove
 sudo apt clean
-
-# (Optional) RealSense
-git clone https://github.com/IntelRealSense/librealsense.git
-cd librealsense
-./scripts/setup_udev_rules.sh
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make -j8
-sudo make install
 
 # CMake
 wget https://github.com/Kitware/CMake/releases/download/v3.15.3/cmake-3.15.3.tar.gz
@@ -79,6 +54,35 @@ cd eigen-eigen-323c052e1731
 mkdir build
 cd build
 cmake ../
+sudo make install
+
+# (Optional) PCL
+git clone https://github.com/PointCloudLibrary/pcl.git
+cd pcl
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j12
+sudo make install
+
+# (Optional) MYNT EYE
+git clone https://github.com/slightech/MYNT-EYE-D-SDK.git
+cd MYNT-EYE-D-SDK
+make init
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j12
+sudo make install
+
+# (Optional) RealSense
+git clone https://github.com/IntelRealSense/librealsense.git
+cd librealsense
+./scripts/setup_udev_rules.sh
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make -j8
 sudo make install
 
 # OpenCV
