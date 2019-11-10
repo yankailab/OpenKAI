@@ -94,6 +94,10 @@ float _DepthVisionBase::d(vInt4* pROI)
 		if(mHist.at<float>(i) >= (float)nMinHist)break;
 	}
 
+	//test
+	int tot = cv::sum(mRoi)[0];
+	int avr = tot / (mRoi.cols * mRoi.rows);
+
 	return m_vRange.x + (((float)i)/(float)m_nHistLev) * m_vRange.len();
 }
 
