@@ -39,7 +39,7 @@
 	"depthWindow":"depthView",
 	"meFPS":30,
 	"depthMode":0,
-	"streamMode":0,
+	"streamMode":2,
 	"IRintensity":0,
 	"bIRdepthOnly":0,
 	"vRange":[0.0, 5000.0],
