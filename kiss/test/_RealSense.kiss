@@ -49,8 +49,7 @@
 	"fSpat":0,
 	"fovW":69.4,
 	"fovH":42.5,
-	"rFrom":0.1,
-	"rTo":15.0,
+	"vRange":[0.1,15.0],
 	"bAlign":0,
 }
 

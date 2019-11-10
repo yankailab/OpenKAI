@@ -17,10 +17,6 @@
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
 
-#ifdef USE_DYNAMIXEL
-#include "../Actuator/_DeltaArm.h"
-#endif
-
 #include "../Application/Autopilot/APcopter/_APcopter_base.h"
 #include "../Application/Autopilot/APcopter/_APcopter_depthVision.h"
 #include "../Application/Autopilot/APcopter/_APcopter_distLidar.h"
@@ -145,6 +141,12 @@
 #include "../Data/Inference/_MultiImageNet.h"
 #include "../Detector/_SlideWindow.h"
 
+#ifdef USE_MYNTEYE
+#include "../Vision/_Mynteye.h"
+#endif
+#ifdef USE_DYNAMIXEL
+#include "../Actuator/_DeltaArm.h"
+#endif
 #ifdef USE_OCR
 #include "../Detector/OCR.h"
 #endif

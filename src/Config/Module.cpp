@@ -130,6 +130,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Rover_follow);
 	ADD_MODULE(_Rover_WP);
 
+#ifdef USE_MYNTEYE
+	ADD_MODULE(_Mynteye);
+#endif
 #ifdef USE_LIVOX
 	ADD_MODULE(_Livox);
 #endif
