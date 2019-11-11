@@ -40,10 +40,10 @@
 	"meFPS":30,
 	"depthMode":0,
 	"streamMode":2,
-	"IRintensity":0,
+	"IRintensity":10,
 	"bIRdepthOnly":0,
 	"vRange":[0.0, 5000.0],
 	"bDebug":1,
-	"nHistLev":32,
-	"minHistD":0.1,
+	"nHistLev":256,
+	"minHistD":0.25,
 }

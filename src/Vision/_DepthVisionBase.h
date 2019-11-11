@@ -30,12 +30,14 @@ public:
 	float d(vFloat4* pROI);
 
 public:
-	int m_wD;
-	int m_hD;
+	int		m_wD;
+	int		m_hD;
 	Frame	m_fDepth;
-	int m_nHistLev;
-	vFloat2 m_vRange;
-	float m_minHistD;
+	int		m_nHistLev;
+	int		m_iHistFrom;
+	float	m_dScale;
+	vFloat2	m_vRange;
+	float	m_minHistD;
 
 	Frame	m_depthShow;
 	Window* m_pDepthWin;

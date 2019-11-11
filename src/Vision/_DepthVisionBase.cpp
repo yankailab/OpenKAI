@@ -17,6 +17,8 @@ _DepthVisionBase::_DepthVisionBase()
 	m_hD = 720;
 
 	m_nHistLev = 128;
+	m_iHistFrom = 0;
+	m_dScale = 1.0;
 	m_vRange.x = 0.8;
 	m_vRange.y = 16.0;
 	m_minHistD = 0.25;
@@ -84,21 +86,19 @@ float _DepthVisionBase::d(vInt4* pROI)
 	Mat mHist;
 	cv::calcHist(vRoi, vChannel, Mat(),
 	            mHist, vHistLev, vRange,
-	            true	//accumulate
+	            false	//accumulate
 				);
 
 	int nMinHist = m_minHistD * mRoi.cols * mRoi.rows;
+	int nPix = 0;
 	int i;
-	for(i=0; i<m_nHistLev; i++)
+	for(i=m_iHistFrom; i<m_nHistLev; i++)
 	{
-		if(mHist.at<float>(i) >= (float)nMinHist)break;
+		nPix += (int)mHist.at<float>(i);
+		if(nPix >= nMinHist)break;
 	}
 
-	//test
-	int tot = cv::sum(mRoi)[0];
-	int avr = tot / (mRoi.cols * mRoi.rows);
-
-	return m_vRange.x + (((float)i)/(float)m_nHistLev) * m_vRange.len();
+	return m_dScale * (m_vRange.x + (((float)i)/(float)m_nHistLev) * m_vRange.len());
 }
 
 Frame* _DepthVisionBase::Depth(void)

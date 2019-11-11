@@ -42,19 +42,10 @@ private:
 		return NULL;
 	}
 
-	void updateTPP(void);
-	static void* getTPP(void* This)
-	{
-		((_Mynteye*) This)->updateTPP();
-		return NULL;
-	}
-
 public:
 	Camera m_me;
 	DeviceInfo m_devInfo;
 	OpenParams m_op;
-
-	_ThreadBase* m_pTPP;
 
 };
 

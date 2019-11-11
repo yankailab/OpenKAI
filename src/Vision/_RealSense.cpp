@@ -15,7 +15,8 @@ namespace kai
 _RealSense::_RealSense()
 {
 	m_type = vision_realsense;
-	m_pDepthWin = NULL;
+	m_pTPP = new _ThreadBase();
+
 	m_vPreset = "High Density";
 	m_rsRGB = true;
 	m_rsFPS = 30;
@@ -25,7 +26,8 @@ _RealSense::_RealSense()
 	m_bAlign = false;
 	m_rspAlign = NULL;
 
-	m_pTPP = new _ThreadBase();
+	m_iHistFrom = 0;
+	m_dScale = 1.0;
 }
 
 _RealSense::~_RealSense()

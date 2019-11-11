@@ -15,7 +15,6 @@ namespace kai
 _Mynteye::_Mynteye()
 {
 	m_type = vision_mynteye;
-	m_pTPP = new _ThreadBase();
 
 	m_op.framerate = 30;
 	m_op.dev_index = 0;
@@ -28,11 +27,14 @@ _Mynteye::_Mynteye()
 	m_op.ir_depth_only = false;
 	m_op.ir_intensity = 0;
 	m_op.colour_depth_value = 5000;	//[0, 16384]
+
+	m_iHistFrom = 1;
+	m_dScale = 0.001;
+
 }
 
 _Mynteye::~_Mynteye()
 {
-	DEL(m_pTPP);
 }
 
 bool _Mynteye::init(void* pKiss)
@@ -83,7 +85,6 @@ void _Mynteye::close(void)
 	{
 		goSleep();
 		while (!bSleeping());
-		while (!m_pTPP->bSleeping());
 	}
 
 	m_me.Close();
@@ -96,13 +97,6 @@ bool _Mynteye::start(void)
 
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	retCode = pthread_create(&m_pTPP->m_threadID, 0, getTPP, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -143,18 +137,7 @@ void _Mynteye::update(void)
 				m_fDepth.copy(imgDepth.img->ToMat());
 		}
 
-		m_pTPP->wakeUp();
-
 		this->autoFPSto();
-	}
-}
-
-void _Mynteye::updateTPP(void)
-{
-	while (m_bThreadON)
-	{
-		m_pTPP->sleepTime(0);
-
 	}
 }
 
