@@ -10,9 +10,11 @@
 #define PROTOCOL_N_HEADER 3
 #define PROTOCOL_N_BUF 256
 
+//Functions to be implemented
 void runCMD(void);
 bool ioAvailable(void);
 byte ioRead(void);
+
 int g_nMsg = 1;
 
 struct OKLINK_CMD
