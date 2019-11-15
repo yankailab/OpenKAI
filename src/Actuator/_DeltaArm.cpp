@@ -102,8 +102,6 @@ void _DeltaArm::readStatus(void)
 
 void _DeltaArm::updatePos(void)
 {
-	IF_(m_tStampCmdSet <= m_tStampCmdSent);
-
 	vFloat3 vP;
 	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
 	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
@@ -118,25 +116,12 @@ void _DeltaArm::updatePos(void)
 			m_rdr.GripperClose();
 	}
 
-	m_tStampCmdSent = m_tStampCmdSet;
 }
 
-bool _DeltaArm::draw(void)
+void _DeltaArm::draw(void)
 {
-	IF_F(!this->_ActuatorBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ActuatorBase::draw();
 
-	string msg;
-
-	return true;
-}
-
-bool _DeltaArm::console(int& iY)
-{
-	IF_F(!this->_ActuatorBase::console(iY));
-	string msg;
-
-	return true;
 }
 
 }

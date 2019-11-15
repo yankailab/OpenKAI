@@ -27,8 +27,8 @@ sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/us
 sudo apt-get -y purge whoopsie 
 sudo systemctl stop ModemManager
 sudo apt-get -y purge modemmanager
-#----------------------------------------------------
 
+#----------------------------------------------------
 sudo apt-get update
 
 # Dependencies
@@ -229,6 +229,9 @@ git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
 cd DynamixelSDK/c++/build/linux64
 make
 sudo make install
+
+# For Jetson Nano
+# remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
 
 #----------------------------------------------------
 # OpenKAI

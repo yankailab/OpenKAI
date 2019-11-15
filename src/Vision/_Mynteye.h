@@ -44,7 +44,7 @@ private:
 
 public:
 	Camera m_me;
-	DeviceInfo m_devInfo;
+	::mynteyed::DeviceInfo m_devInfo;
 	OpenParams m_op;
 
 };
