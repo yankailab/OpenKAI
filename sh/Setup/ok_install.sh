@@ -47,14 +47,17 @@ sudo apt clean
 
 #----------------------------------------------------
 # (Optional) CUDA
-wget http://developer.download.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda_10.1.243_418.87.00_linux.run
-sudo sh cuda_10.1.243_418.87.00_linux.run
-sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu1804/x86_64/cuda-ubuntu1804.pin
+sudo mv cuda-ubuntu1804.pin /etc/apt/preferences.d/cuda-repository-pin-600
+wget http://developer.download.nvidia.com/compute/cuda/10.1/Prod/local_installers/cuda-repo-ubuntu1804-10-1-local-10.1.243-418.87.00_1.0-1_amd64.deb
+sudo dpkg -i cuda-repo-ubuntu1804-10-1-local-10.1.243-418.87.00_1.0-1_amd64.deb
+sudo apt-key add /var/cuda-repo-10-1-local-10.1.243-418.87.00/7fa2af80.pub
+sudo apt-get update
+sudo apt-get -y install cuda
 
-wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/libcudnn7_7.6.3.30-1+cuda10.1_amd64.deb
-wget https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1804/x86_64/libcudnn7-dev_7.6.3.30-1+cuda10.1_amd64.deb
-sudo dpkg -i libcudnn7_7.6.3.30-1+cuda10.1_amd64.deb
-sudo dpkg -i libcudnn7-dev_7.6.3.30-1+cuda10.1_amd64.deb
+# CuDNN, download the latest .deb from NVIDIA site
+sudo dpkg -i libcudnn7_7.6.5.32-1+cuda10.1_amd64.deb
+sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.1_amd64.deb
 
 #----------------------------------------------------
 # CMake
@@ -166,8 +169,10 @@ sudo make install -j4
 
 #----------------------------------------------------
 # (Optional) TensorRT
-wget https://developer.nvidia.com/compute/machine-learning/tensorrt/secure/6.0/GA_6.0.1.5/local_repos/nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb
-sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb.deb
+# TensorRT, download the latest .deb from NVIDIA site
+sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb
+sudo apt update
+sudo apt install tensorrt
 
 # (Optional) Jetson inference
 # Jetson Nano
@@ -181,13 +186,14 @@ make
 sudo make install
 sudo ldconfig
 
-# amd64
+# PC
 sudo apt-get -y install libpython3-dev python3-numpy
+sudo cp /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h /usr/include/glib-2.0/glibconfig.h
 git clone --recursive https://github.com/dusty-nv/jetson-inference.git
 cd jetson-inference
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=/usr/bin/g++-6 -DCMAKE_C_COMPILER=/usr/bin/gcc-6 ../
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make
 sudo make install
 sudo ldconfig
