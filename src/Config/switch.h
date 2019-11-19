@@ -1,6 +1,6 @@
 
 //#define USE_CUDA
-//#define USE_OPENCV_CONTRIB
+#define USE_OPENCV_CONTRIB
 //#define USE_DARKNET
 //#define USE_MYNTEYE
 //#define USE_REALSENSE

@@ -59,9 +59,9 @@
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"_VisionBase":"cam",
-	"rL":230,
+	"rL":235,
 	"rU":255,
-	"minArea":0.00001,
+	"minArea":0.001,
 	"maxArea":0.5,
 }
 

@@ -142,8 +142,8 @@ void _APcopter_follow::updateTargetPos(void)
 {
 	IF_(check()<0);
 
-	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vLocalPos.y, m_vTargetPregion.x, m_vTargetPregion.y);
-	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vLocalPos.x, m_vTargetPregion.x, m_vTargetPregion.y);
+	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vSpeed.y, m_vTargetPregion.x, m_vTargetPregion.y);
+	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vSpeed.x, m_vTargetPregion.x, m_vTargetPregion.y);
 	m_pPC->setTargetPos(m_vTargetP);
 
 }
