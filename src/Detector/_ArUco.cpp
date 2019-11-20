@@ -146,12 +146,12 @@ void _ArUco::draw(void)
 	}
 	addMsg(msg);
 
-	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
-
 	msg = "nTag: " + i2str(this->size());
 	addMsg(msg);
 	IF_(this->size() <= 0);
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	i=0;
 	while((pO = at(i++)) != NULL)

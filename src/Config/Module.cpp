@@ -44,6 +44,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_HiphenServer);
 	ADD_MODULE(_HistEqualize);
 	ADD_MODULE(_Invert);
+	ADD_MODULE(_IRLock);
 	ADD_MODULE(_InRange);
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
