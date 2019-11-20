@@ -17,6 +17,9 @@ _IRLock::_IRLock()
 	m_pIO = NULL;
 	m_iBuf = 0;
 
+	m_vOvCamSize.x = 1.0/319.0;
+	m_vOvCamSize.y = 1.0/199.0;
+
 }
 
 _IRLock::~_IRLock()
@@ -27,6 +30,13 @@ bool _IRLock::init(void* pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	vFloat2 vCamSize;
+	if(pK->v("vCamSize",&vCamSize))
+	{
+		m_vOvCamSize.x = 1.0/vCamSize.x;
+		m_vOvCamSize.y = 1.0/vCamSize.y;
+	}
 
 	string iName;
 	iName = "";
@@ -68,6 +78,32 @@ void _IRLock::update(void)
 	}
 }
 
+void _IRLock::detect(void)
+{
+	IF_(!readPacket());
+
+	OBJECT o;
+	o.init();
+	o.m_tStamp = m_tStamp;
+
+	uint16_t x = unpack_uint16(&m_pBuf[8],false);
+	uint16_t y = unpack_uint16(&m_pBuf[10],false);
+	uint16_t w = unpack_uint16(&m_pBuf[12],false);
+	uint16_t h = unpack_uint16(&m_pBuf[14],false);
+
+	float fW = w*0.5;
+	float fH = h*0.5;
+
+	o.m_bb.x = ((float)x - fW)*m_vOvCamSize.x;
+	o.m_bb.y = ((float)y - fH)*m_vOvCamSize.y;
+	o.m_bb.z = ((float)x + fW)*m_vOvCamSize.x;
+	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
+
+	add(&o);
+
+	m_iBuf = 0;
+}
+
 bool _IRLock::readPacket(void)
 {
 	uint8_t	inByte;
@@ -80,7 +116,7 @@ bool _IRLock::readPacket(void)
 			m_pBuf[m_iBuf] = inByte;
 			m_iBuf++;
 
-			if (m_iBuf >= IRLOCK_N_PACKET)
+			if (m_iBuf >= IRLOCK_N_BLOCK)
 				return true;
 		}
 		else if (m_iBuf == 0 && inByte == IRLOCK_SYNC_L)
@@ -103,24 +139,6 @@ bool _IRLock::readPacket(void)
 	}
 
 	return false;
-}
-
-void _IRLock::detect(void)
-{
-	IF_(!readPacket());
-
-	OBJECT o;
-	o.init();
-	o.m_tStamp = m_tStamp;
-
-	uint16_t x = *((uint16_t*)&m_pBuf[6]);
-	uint16_t y = *((uint16_t*)&m_pBuf[8]);
-	uint16_t w = *((uint16_t*)&m_pBuf[10]);
-	uint16_t h = *((uint16_t*)&m_pBuf[12]);
-
-	add(&o);
-
-	m_iBuf = 0;
 }
 
 void _IRLock::draw(void)

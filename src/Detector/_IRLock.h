@@ -28,7 +28,7 @@ namespace kai
 */
 
 #define IRLOCK_N_BUF 16
-#define IRLOCK_N_PACKET 14
+#define IRLOCK_N_BLOCK 16
 #define IRLOCK_SYNC_L 0x55
 #define IRLOCK_SYNC_H 0xaa
 
@@ -54,9 +54,9 @@ private:
 
 public:
 	_IOBase*	m_pIO;
-
 	uint8_t		m_pBuf[IRLOCK_N_BUF];
 	int			m_iBuf;
+	vFloat2		m_vOvCamSize;
 
 };
 

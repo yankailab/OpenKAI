@@ -5,40 +5,45 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"bConsole":0,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
+}
+
+{
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"bFullScreen":0,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.2 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.2 port=5678 auto-multicast=false",
 }
 
 {
-	"name":"TF",
-	"class":"_DNNdetect",
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"_wakeUp":"IRLock",
+}
+
+{
+	"name":"IRLock",
+	"class":"_IRLock",
 	"bInst":1,
 	"bDraw":1,
 	"bLog":1,
-	"FPS":30,
+	"FPS":100,
 	"Window":"OKview",
-	"_VisionBase":"cam",
-	"threadMode":0,
-	"dnnType":"tf",
-	"modelDir":"/home/kai/dev/model/face/",
-	"modelFile":"opencv_face_detector.pbtxt",
-	"trainedFile":"opencv_face_detector_uint8.pb",
-	"bSwapRB":1,
-	"meanB":104,
-	"meanG":177,
-	"meanR":123,
-	"scale":1.0,
-	"nW":300,
-	"nH":300,
-	"thr":0.5,
-	"iClassDraw":-1,
+	"_IOBase":"serial",
 }
 
