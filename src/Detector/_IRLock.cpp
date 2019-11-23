@@ -100,8 +100,6 @@ void _IRLock::detect(void)
 	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
 
 	add(&o);
-
-	m_iBuf = 0;
 }
 
 bool _IRLock::readPacket(void)
@@ -117,7 +115,10 @@ bool _IRLock::readPacket(void)
 			m_iBuf++;
 
 			if (m_iBuf >= IRLOCK_N_BLOCK)
+			{
+				m_iBuf = 0;
 				return true;
+			}
 		}
 		else if (m_iBuf == 0 && inByte == IRLOCK_SYNC_L)
 		{
@@ -146,7 +147,7 @@ void _IRLock::draw(void)
 	this->_DetectorBase::draw();
 
 	string msg;
-	msg = "nMarker: " + i2str(this->size());
+	msg = "nSignature: " + i2str(this->size());
 	addMsg(msg);
 	IF_(this->size() <= 0);
 }

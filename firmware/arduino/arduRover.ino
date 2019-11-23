@@ -1,7 +1,8 @@
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-#include <Servo.h>
-#include "arduOK.h"
+#include "include/arduOK.h"
+#include "include/arduPPMreader.h"
+#include "include/arduMotorPWM.h"
 
 //#define SERIAL_DEBUG
 
@@ -31,61 +32,22 @@ byte ioRead(void)
 #define PIN_LED_AUTO A1
 #define PIN_LED_INDICATOR A3
 
-#define PIN_IN_STEER 4
-#define PIN_IN_SPEED 7
-#define PIN_IN_MODE 8
-#define PIN_IN_ACTION 2
+//#define PIN_IN_STEER 4
+//#define PIN_IN_SPEED 7
+//#define PIN_IN_MODE 8
+//#define PIN_IN_ACTION 2
+
+#define PIN_IN_PPM 3
+#define CHAN_STEER 0
+#define CHAN_SPEED 1
+#define CHAN_MODE 2
+#define CHAN_ACTION 3
+PPMreader g_PPM;
 
 //----------------------------------------------------------------------
 // Motor
-#define PWM_MID 1500
-#define PWM_D 500
-#define PWM_MID_DZ 25
-#define PWM_MID_DZ_BTN 100
-#define PWM_LOWLIM 600
-
-struct MOTOR
-{
-  Servo m_servo;
-  int16_t m_pwm;
-  int16_t m_pwmL;
-  int16_t m_pwmM;
-  int16_t m_pwmH;
-  int8_t m_pin;
-  int8_t m_dir;
-
-  void init(int16_t pwmM, int16_t pwmL, int16_t pwmH, int8_t pin, int8_t dir)
-  {
-    m_pwmL = pwmL;
-    m_pwmM = pwmM;
-    m_pwmH = pwmH;
-    m_pwm = m_pwmM;
-    m_pin = pin;
-    m_dir = dir;
-
-    pinMode(m_pin, OUTPUT);
-    m_servo.attach(m_pin);
-    m_servo.writeMicroseconds(m_pwm);
-  }
-
-  void speed(float s)
-  {
-    float d = constrain(s, -1.0, 1.0);
-
-    if (d >= 0.0)
-      m_pwm = PWM_MID + d * ((float)(m_pwmH - m_pwmM) * m_dir);
-    else
-      m_pwm = PWM_MID + d * ((float)(m_pwmM - m_pwmL) * m_dir);
-
-    m_pwm = constrain(m_pwm, 1400, 1600);
-
-    m_servo.writeMicroseconds(m_pwm);
-  }
-};
-
 #define N_MOT 4
 MOTOR g_pMot[N_MOT];
-float g_pMotAP[N_MOT];
 
 //----------------------------------------------------------------------
 // PWM input from transmitter
@@ -232,7 +194,8 @@ void updateLED(void)
   else if (g_Mode == MODE_MANUAL)
   {
     digitalWrite(PIN_LED_MANUAL, HIGH);
-  }
+  }float g_pMotAP[N_MOT];
+  
   else
   {
     digitalWrite(PIN_LED_AUTO, HIGH);
@@ -269,10 +232,13 @@ void setup()
   pinMode(PIN_LED_AUTO, OUTPUT);
   pinMode(PIN_LED_INDICATOR, OUTPUT);
 
-  pinMode(PIN_IN_MODE, INPUT);
-  pinMode(PIN_IN_ACTION, INPUT);
-  pinMode(PIN_IN_STEER, INPUT);
-  pinMode(PIN_IN_SPEED, INPUT);
+//  pinMode(PIN_IN_MODE, INPUT);
+//  pinMode(PIN_IN_ACTION, INPUT);
+//  pinMode(PIN_IN_STEER, INPUT);
+//  pinMode(PIN_IN_SPEED, INPUT);
+
+  pinMode(PIN_IN_PPM, INPUT);
+  g_PPM.init();
 
   Serial.begin(115200);
 
@@ -315,10 +281,15 @@ void setup()
 // Loop
 void loop()
 {
-  g_pwmSteer = pulseIn(PIN_IN_STEER, HIGH, PWM_TIMEOUT);
-  g_pwmSpeed = pulseIn(PIN_IN_SPEED, HIGH, PWM_TIMEOUT);
-  g_pwmMode = pulseIn(PIN_IN_MODE, HIGH, PWM_TIMEOUT);
-  g_pwmAction = pulseIn(PIN_IN_ACTION, HIGH, PWM_TIMEOUT);
+//  g_pwmSteer = pulseIn(PIN_IN_STEER, HIGH, PWM_TIMEOUT);
+//  g_pwmSpeed = pulseIn(PIN_IN_SPEED, HIGH, PWM_TIMEOUT);
+//  g_pwmMode = pulseIn(PIN_IN_MODE, HIGH, PWM_TIMEOUT);
+//  g_pwmAction = pulseIn(PIN_IN_ACTION, HIGH, PWM_TIMEOUT);
+
+	g_pwmSteer = g_PPM.get(CHAN_STEER);
+	g_pwmSpeed = g_PPM.get(CHAN_SPEED);
+	g_pwmMode = g_PPM.get(CHAN_MODE);
+	g_pwmAction = g_PPM.get(CHAN_ACTION);
 
   g_tNow = millis();
 

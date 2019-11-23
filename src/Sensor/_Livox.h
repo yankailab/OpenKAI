@@ -41,8 +41,7 @@ public:
 	bool init(void* pKiss);
 	void close(void);
 	bool start(void);
-	bool draw(void);
-	bool console(int& iY);
+	void draw(void);
 
 private:
 	bool open(void);

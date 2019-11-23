@@ -16,8 +16,8 @@ class PPMReader
 {
 public:
 	volatile static int s_ppm[PPM_INPUT_N_CHANNEL];
-  volatile static bool s_bPPMbUseTimer;
-  volatile static uint32_t s_tPPMlastPacket;
+	volatile static bool s_bPPMbUseTimer;
+	volatile static uint32_t s_tPPMlastPacket;
 
 	static void handler()
 	{
@@ -60,12 +60,12 @@ public:
 		}
 	}
 
-	PPMReader(int pin, int interrupt, bool bUseTimer = false)
+	void init(int pin, int interrupt, bool bUseTimer = true)
 	{
 		_pin = pin;
 		_interrupt = interrupt;
 		s_bPPMbUseTimer = bUseTimer;
-    s_tPPMlastPacket = 0;
+		s_tPPMlastPacket = 0;
 
 		pinMode(_pin, INPUT);
 		attachInterrupt(_interrupt, PPMReader::handler, CHANGE);

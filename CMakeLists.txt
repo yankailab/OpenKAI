@@ -124,6 +124,11 @@ if(USE_DYNAMIXEL)
   set(OpenKAI_lib ${OpenKAI_lib} dxl_x64_cpp)
 endif()
 
+if(USE_LIVOX)
+  add_definitions(-DUSE_LIVOX)
+  set(OpenKAI_lib ${OpenKAI_lib} livox_sdk_static apr-1)
+endif()
+
 
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})

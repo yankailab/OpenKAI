@@ -80,7 +80,6 @@
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Sensor/_LeddarVu.h"
-#include "../Sensor/_Livox.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
 #include "../SLAM/_LidarSlam.h"
@@ -175,6 +174,9 @@
 #endif
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
+#endif
+#ifdef USE_LIVOX
+#include "../Sensor/_Livox.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

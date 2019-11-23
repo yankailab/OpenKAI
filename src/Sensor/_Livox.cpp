@@ -265,23 +265,11 @@ void OnLivoxDeviceBroadcast(const BroadcastDeviceInfo *info)
 	}
 }
 
-bool _Livox::draw(void)
+void _Livox::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
-	Mat* pMat = pWin->getFrame()->m();
+	this->_ThreadBase::draw();
 	string msg;
 
-	return true;
-}
-
-bool _Livox::console(int& iY)
-{
-	IF_F(!this->_ThreadBase::console(iY));
-
-	string msg;
-
-	return true;
 }
 
 }

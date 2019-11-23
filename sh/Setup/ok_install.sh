@@ -207,6 +207,15 @@ autoreconf -fiv
 make -j8
 
 #----------------------------------------------------
+# (Optional) Livox
+sudo apt-get install -y pkg-config libapr1-dev libboost-atomic-dev libboost-system-dev
+git clone https://github.com/Livox-SDK/Livox-SDK.git
+cd Livox-SDK/build
+cmake ..
+make -j8
+sudo make install
+
+#----------------------------------------------------
 # (Optional) Tesseract
 sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev
 git clone https://github.com/tesseract-ocr/tesseract.git
