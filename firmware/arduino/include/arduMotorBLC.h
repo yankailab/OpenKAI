@@ -1,7 +1,7 @@
 #ifndef MOT_BLC_h
 #define MOT_BLC_h
 #include <Servo.h>
-#include "BrushlessWheels.h"
+#include "BLC.h"
 
 #define PWM_MID 1500
 #define PWM_D 500
