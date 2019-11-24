@@ -12,13 +12,13 @@
 #define PPM_INPUT_MIN 810
 #define PPM_INPUT_MAX 2210
 
+volatile static int s_ppm[PPM_INPUT_N_CHANNEL];
+volatile static bool s_bPPMbUseTimer;
+volatile static uint32_t s_tPPMlastPacket;
+
 class PPMReader
 {
 public:
-	volatile static int s_ppm[PPM_INPUT_N_CHANNEL];
-	volatile static bool s_bPPMbUseTimer;
-	volatile static uint32_t s_tPPMlastPacket;
-
 	static void handler()
 	{
 		static unsigned int pulse;
