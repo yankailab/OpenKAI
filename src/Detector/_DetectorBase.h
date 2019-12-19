@@ -11,6 +11,8 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
+#include "../Protocol/_Mavlink.h"
+
 
 #define OBJECT_N_OBJ 256
 #define OBJ_N_CHAR 32
@@ -246,10 +248,18 @@ public:
 	void updateStatistics(void);
 	int size(void);
 
+	//attitude
+	bool attitudeX(float in, float* pOut);
+	bool attitudeY(float in, float* pOut);
+
 public:
 	//input
 	_VisionBase *m_pVision;
 	_DetectorBase *m_pDB;
+
+	//attitude correction
+	_Mavlink*	m_pMavlink;
+	vFloat2		m_vFOV;
 
 	//data
 	Frame m_fBGR;

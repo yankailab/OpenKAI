@@ -63,6 +63,8 @@ bool _Sequencer::init(void* pKiss)
 		m_vAction.push_back(sa);
 	}
 
+	on();
+
 	return true;
 }
 

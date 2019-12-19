@@ -19,7 +19,6 @@ _IRLock::_IRLock()
 
 	m_vOvCamSize.x = 1.0/319.0;
 	m_vOvCamSize.y = 1.0/199.0;
-
 }
 
 _IRLock::~_IRLock()
@@ -85,6 +84,7 @@ void _IRLock::detect(void)
 	OBJECT o;
 	o.init();
 	o.m_tStamp = m_tStamp;
+	o.setTopClass(INT_MAX,1.0);
 
 	uint16_t x = unpack_uint16(&m_pBuf[8],false);
 	uint16_t y = unpack_uint16(&m_pBuf[10],false);
@@ -99,6 +99,13 @@ void _IRLock::detect(void)
 	o.m_bb.z = ((float)x + fW)*m_vOvCamSize.x;
 	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
 
+	vFloat4 bbA;
+	IF_(!attitudeX(o.m_bb.x, &bbA.x));
+	IF_(!attitudeY(o.m_bb.y, &bbA.y));
+	IF_(!attitudeX(o.m_bb.z, &bbA.z));
+	IF_(!attitudeY(o.m_bb.w, &bbA.w));
+
+	o.m_bb = bbA;
 	add(&o);
 }
 

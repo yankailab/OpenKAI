@@ -15,7 +15,7 @@ namespace kai
 _ArUco::_ArUco()
 {
 	m_pVision = NULL;
-	m_dict = aruco::DICT_4X4_50;//DICT_APRILTAG_16h5;
+	m_dict = aruco::DICT_4X4_50;//aruco::DICT_APRILTAG_16h5;
 	m_minArea = -DBL_MAX;
 	m_maxArea = DBL_MAX;
 	m_maxW = DBL_MAX;
@@ -127,6 +127,12 @@ void _ArUco::detect(void)
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
 		o.m_angle = -atan2(dx,dy) * RAD_DEG + 180.0;
+
+		//attitude correction
+		vFloat2 cA;
+		IF_CONT(!attitudeX(o.m_c.x, &cA.x));
+		IF_CONT(!attitudeY(o.m_c.y, &cA.y));
+		o.m_c = cA;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));

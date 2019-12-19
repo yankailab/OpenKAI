@@ -16,6 +16,12 @@ struct vFloat2
 		y = 0.0;
 	}
 
+	void init(float v)
+	{
+		x = v;
+		y = v;
+	}
+
 	inline vFloat2 operator+(vFloat2& r)
     {
 		vFloat2 v;

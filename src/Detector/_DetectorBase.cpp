@@ -12,6 +12,9 @@ _DetectorBase::_DetectorBase()
 	m_pVision = NULL;
 	m_pDB = NULL;
 
+	m_pMavlink = NULL;
+	m_vFOV.init(60.0 * DEG_RAD);
+
 	m_modelFile = "";
 	m_trainedFile = "";
 	m_meanFile = "";
@@ -49,16 +52,22 @@ bool _DetectorBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
-	pK->v<float>("minConfidence", &m_minConfidence);
-	pK->v<float>("minArea", &m_minArea);
-	pK->v<float>("maxArea", &m_maxArea);
-	pK->v<float>("minW", &m_minW);
-	pK->v<float>("minH", &m_minH);
-	pK->v<float>("maxW", &m_maxW);
-	pK->v<float>("maxH", &m_maxH);
-	pK->v<bool>("bMerge", &m_bMerge);
-	pK->v<float>("mergeOverlap", &m_mergeOverlap);
-	pK->v<float>("bbScale", &m_bbScale);
+	pK->v("minConfidence", &m_minConfidence);
+	pK->v("minArea", &m_minArea);
+	pK->v("maxArea", &m_maxArea);
+	pK->v("minW", &m_minW);
+	pK->v("minH", &m_minH);
+	pK->v("maxW", &m_maxW);
+	pK->v("maxH", &m_maxH);
+	pK->v("bMerge", &m_bMerge);
+	pK->v("mergeOverlap", &m_mergeOverlap);
+	pK->v("bbScale", &m_bbScale);
+
+	if(pK->v("vFOV", &m_vFOV))
+	{
+		m_vFOV.x *= DEG_RAD;
+		m_vFOV.y *= DEG_RAD;
+	}
 
 	resetObj();
 
@@ -121,6 +130,10 @@ bool _DetectorBase::init(void* pKiss)
 	iName = "";
 	pK->v("_DetectorBase", &iName);
 	m_pDB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+
+	iName = "";
+	pK->v("_Mavlink", &iName);
+	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -228,6 +241,30 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	}
 
 	return m_pNext->add(pNewO);
+}
+
+bool _DetectorBase::attitudeX(float in, float* pOut)
+{
+	NULL_F(m_pMavlink);
+	NULL_F(pOut);
+
+	float r = m_pMavlink->m_mavMsg.attitude.roll;
+	IF_F(abs(r) > m_vFOV.x*0.5);
+
+	*pOut = (in - 0.5) * m_vFOV.x - r;
+	return true;
+}
+
+bool _DetectorBase::attitudeY(float in, float* pOut)
+{
+	NULL_F(m_pMavlink);
+	NULL_F(pOut);
+
+	float p = m_pMavlink->m_mavMsg.attitude.pitch;
+	IF_F(abs(p) > m_vFOV.y*0.5);
+
+	*pOut = (in - 0.5) * m_vFOV.y - p;
+	return true;
 }
 
 void _DetectorBase::pipeIn(void)

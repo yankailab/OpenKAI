@@ -46,6 +46,7 @@ bool _DeltaArm::init(void* pKiss)
 	{
 		m_rdr.GripperTorqueON();
 		m_rdr.GripperCheck();
+		m_rdr.GripperClose();
 	}
 
 	return true;
@@ -97,7 +98,7 @@ void _DeltaArm::readStatus(void)
 
 	m_vNormPos.x = (float)(m_vPos.x - m_vPosRangeX.x) / (float)m_vPosRangeX.len();
 	m_vNormPos.y = (float)(m_vPos.y - m_vPosRangeY.x) / (float)m_vPosRangeY.len();
-	m_vNormPos.z = (float)(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
+	m_vNormPos.z = (float)abs(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
 }
 
 void _DeltaArm::updatePos(void)

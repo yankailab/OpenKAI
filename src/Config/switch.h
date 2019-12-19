@@ -15,7 +15,7 @@
 //#define USE_OCR
 //#define USE_OPENALPR
 //#define USE_DYNAMIXEL
-#define USE_LIVOX
+//#define USE_LIVOX
 
 #ifdef USE_TENSORRT
 #define USE_CUDA
