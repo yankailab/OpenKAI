@@ -99,13 +99,13 @@ void _IRLock::detect(void)
 	o.m_bb.z = ((float)x + fW)*m_vOvCamSize.x;
 	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
 
-	vFloat4 bbA;
-	IF_(!attitudeX(o.m_bb.x, &bbA.x));
-	IF_(!attitudeY(o.m_bb.y, &bbA.y));
-	IF_(!attitudeX(o.m_bb.z, &bbA.z));
-	IF_(!attitudeY(o.m_bb.w, &bbA.w));
+//	vFloat4 bbA;
+//	IF_(!attitudeX(o.m_bb.x, &bbA.x));
+//	IF_(!attitudeY(o.m_bb.y, &bbA.y));
+//	IF_(!attitudeX(o.m_bb.z, &bbA.z));
+//	IF_(!attitudeY(o.m_bb.w, &bbA.w));
+//	o.m_bb = bbA;
 
-	o.m_bb = bbA;
 	add(&o);
 }
 

@@ -10,7 +10,8 @@ _APcopter_dynamicLanding::_APcopter_dynamicLanding()
 	m_pAruco = NULL;
 
 	m_vSpeed.init(0.3);
-	m_degLand = 5.0;
+	m_vDzone.init(0.0);
+	m_dVstop = 0.5;
 }
 
 _APcopter_dynamicLanding::~_APcopter_dynamicLanding()
@@ -23,7 +24,8 @@ bool _APcopter_dynamicLanding::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vSpeed",&m_vSpeed);
-	pK->v("degLand",&m_degLand);
+	pK->v("vDzone",&m_vDzone);
+	pK->v("dVstop",&m_dVstop);
 
 	string iName;
 	iName = "";
@@ -81,17 +83,17 @@ void _APcopter_dynamicLanding::updateTarget(void)
 {
 	this->_AutopilotBase::update();
 	IF_(check()<0);
-	if(m_pAP->getApMode() != GUIDED)
-	{
+//	if(m_pAP->getApMode() != GUIDED)
+//	{
 //		releaseCtrl();
 //		m_tO.init();
 //		return;
-	}
+//	}
 
 	OBJECT* pO = NULL;
 	if(m_pIRlock)
 		pO = m_pIRlock->at(0);
-	else if(m_pAruco)
+	if(!pO && m_pAruco)
 		pO = m_pAruco->at(0);
 
 	if(!pO)
@@ -102,10 +104,29 @@ void _APcopter_dynamicLanding::updateTarget(void)
 	}
 
 	m_tO = *pO;
-	vFloat2 vAngle = (m_tO.m_bb.center());
-	float x = (vAngle.x > 0.0)?m_vSpeed.x:-m_vSpeed.x;
-	float y = (vAngle.y > 0.)?m_vSpeed.y:-m_vSpeed.y;
-	float a = (vAngle.x + vAngle.y < m_degLand*DEG_RAD)?m_vSpeed.z:0.0;
+	vFloat2 vTarget;
+
+	if(m_tO.m_topClass == INT_MAX)
+	{
+		//IR
+		vTarget = m_tO.m_bb.center();
+	}
+	else
+	{
+		//Tag
+		vTarget = m_tO.m_c;
+	}
+
+	float dX = abs(vTarget.x - 0.5);
+	float dY = abs(vTarget.y - 0.5);
+
+	float x = (vTarget.x > 0.5)?m_vSpeed.x:-m_vSpeed.x;
+	if(dX < m_vDzone.x)x = 0.0;
+
+	float y = (vTarget.y > 0.5)?m_vSpeed.y:-m_vSpeed.y;
+	if(dY < m_vDzone.y)y = 0.0;
+
+	float a = (dX + dY < m_dVstop)?m_vSpeed.z:0.0;
 
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_spt.type_mask = 0b0000000111000111;
@@ -143,9 +164,9 @@ void _APcopter_dynamicLanding::draw(void)
 	IF_(check()<0);
 
 	addMsg(
-			"Set target: V = (" + f2str(m_spt.vx) + ", " + f2str(m_spt.vy)
-					+ ", " + f2str(m_spt.vz) + "), P = (" + f2str(m_spt.x)
-					+ ", " + f2str(m_spt.y) + ", " + f2str(m_spt.z) + ")",1);
+			"Set target: V = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
+					+ ", " + f2str(m_spt.vz,7) + "), P = (" + f2str(m_spt.x,7)
+					+ ", " + f2str(m_spt.y,7) + ", " + f2str(m_spt.z,7) + ")",1);
 
 	if (m_tO.m_topClass < 0)
 	{

@@ -129,10 +129,10 @@ void _ArUco::detect(void)
 		o.m_angle = -atan2(dx,dy) * RAD_DEG + 180.0;
 
 		//attitude correction
-		vFloat2 cA;
-		IF_CONT(!attitudeX(o.m_c.x, &cA.x));
-		IF_CONT(!attitudeY(o.m_c.y, &cA.y));
-		o.m_c = cA;
+//		vFloat2 cA;
+//		IF_CONT(!attitudeX(o.m_c.x, &cA.x));
+//		IF_CONT(!attitudeY(o.m_c.y, &cA.y));
+//		o.m_c = cA;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));

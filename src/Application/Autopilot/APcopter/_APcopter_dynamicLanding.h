@@ -37,7 +37,8 @@ public:
 
 	vFloat3 m_vSpeed;	//NED, +,-,-
 	OBJECT m_tO;
-	float m_degLand;
+	float m_dVstop;
+	vFloat2 m_vDzone;
 
 	mavlink_set_position_target_local_ned_t m_spt;
 
