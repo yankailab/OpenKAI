@@ -12,10 +12,7 @@
 namespace kai
 {
 
-#define APFOLLOW_OFF 0
-#define APFOLLOW_ON 1
-
-class _APcopter_follow: public _AutopilotBase
+class _APcopter_follow: public _APcopter_posCtrl
 {
 public:
 	_APcopter_follow();
@@ -42,7 +39,6 @@ private:
 public:
 	_APcopter_base*	m_pAP;
 	_APcopter_link* m_pAL;
-	_APcopter_posCtrl* m_pPC;
 	_DetectorBase*	m_pDet;
 	AP_MOUNT		m_apMount;
 
@@ -61,7 +57,6 @@ public:
 
 	_TrackerBase*	m_pT;
 	INTERVAL_EVENT m_ieSend;
-
 
 };
 

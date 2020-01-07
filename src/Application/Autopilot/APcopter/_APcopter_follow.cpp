@@ -7,7 +7,6 @@ _APcopter_follow::_APcopter_follow()
 {
 	m_pAP = NULL;
 	m_pAL = NULL;
-	m_pPC = NULL;
 	m_pDet = NULL;
 
 	m_tO.init();
@@ -40,7 +39,7 @@ _APcopter_follow::~_APcopter_follow()
 
 bool _APcopter_follow::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_APcopter_posCtrl::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("iClass",&m_iClass);
@@ -84,11 +83,6 @@ bool _APcopter_follow::init(void* pKiss)
 	NULL_Fl(m_pAL, iName+": not found");
 
 	iName = "";
-	pK->v("_APcopter_posCtrl", &iName);
-	m_pPC = (_APcopter_posCtrl*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pPC, iName + ": not found");
-
-	iName = "";
 	pK->v("_TrackerBase", &iName);
 	m_pT = (_TrackerBase*) (pK->root()->getChildInst(iName));
 
@@ -117,7 +111,6 @@ int _APcopter_follow::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAL,-1);
-	NULL__(m_pPC,-1);
 
 	return this->_AutopilotBase::check();
 }
@@ -144,7 +137,7 @@ void _APcopter_follow::updateTargetPos(void)
 
 	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vSpeed.y, m_vTargetPregion.x, m_vTargetPregion.y);
 	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vSpeed.x, m_vTargetPregion.x, m_vTargetPregion.y);
-	m_pPC->setTargetPos(m_vTargetP);
+	setTargetPos(m_vTargetP);
 
 }
 
