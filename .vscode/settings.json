@@ -1,0 +1,6 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "explorer.confirmDelete": false,
+    "editor.fontSize": 15,
+    "editor.fontFamily": "'Courier New', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'"
+}
