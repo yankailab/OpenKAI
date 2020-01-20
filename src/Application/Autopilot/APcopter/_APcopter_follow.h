@@ -25,11 +25,8 @@ public:
 	virtual void draw(void);
 
 private:
-	void updateTargetPos(void);
-	void updatePos(void);
-	void sendClient(void);
-	bool updateBBclient(vFloat4* pBB);
-	bool updateBBdet(vFloat4* pBB);
+	bool updateFollow(void);
+	bool updateTarget(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_APcopter_follow *) This)->update();
@@ -37,27 +34,15 @@ private:
 	}
 
 public:
-	_APcopter_base*	m_pAP;
-	_APcopter_link* m_pAL;
 	_DetectorBase*	m_pDet;
+	_TrackerBase*	m_pT;
+	int				m_iClass;
+	bool			m_bTarget;
+	vFloat4			m_vTargetBB;
+
 	AP_MOUNT		m_apMount;
 
-	OBJECT			m_tO;
-	int				m_iClass;
-	uint64_t		m_timeOut;
-
-	vFloat4			m_vBB;
-	vFloat4 		m_vP;		//variable screen coordinate of the object being followed in roll, pitch, alt, yaw order
-	vFloat4 		m_vTargetP;	//constant screen coordinate where the followed object should get to
-	vFloat2			m_vTargetPregion;
-	vFloat2			m_vKtarget;
-	vFloat4 		m_vTargetOrigin;	//constant screen coordinate where the followed object should get to
-
-	bool			m_bBB;
-
-	_TrackerBase*	m_pT;
-	INTERVAL_EVENT m_ieSend;
-
+//	INTERVAL_EVENT m_ieSend;
 };
 
 }

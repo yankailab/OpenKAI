@@ -5,32 +5,21 @@ namespace kai
 
 _APcopter_follow::_APcopter_follow()
 {
-	m_pAP = NULL;
-	m_pAL = NULL;
 	m_pDet = NULL;
-
-	m_tO.init();
+	m_pT = NULL;
 	m_iClass = -1;
-	m_timeOut = 100000;
 
-	m_vBB.init(-1.0);
+	m_bTarget = false;
+	m_vTargetBB.init();
 	m_vP.init();
 	m_vP.x = 0.5;
 	m_vP.y = 0.5;
-	m_vTargetOrigin.init();
-	m_vTargetOrigin.x = 0.5;
-	m_vTargetOrigin.y = 0.5;
-	m_vTargetP = m_vTargetOrigin;
-	m_vKtarget.init();
-	m_vTargetPregion.x = 0.2;
-	m_vTargetPregion.y = 0.8;
+	m_vTargetP.init();
+	m_vTargetP.x = 0.5;
+	m_vTargetP.y = 0.5;
 
+//	m_ieSend.init(100000);
 	m_apMount.init();
-	m_pT = NULL;
-
-	m_bBB = false;
-
-	m_ieSend.init(100000);
 }
 
 _APcopter_follow::~_APcopter_follow()
@@ -43,11 +32,7 @@ bool _APcopter_follow::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("iClass",&m_iClass);
-	pK->v("timeOut",&m_timeOut);
-	pK->v("tIntSend",&m_ieSend.m_tInterval);
-	pK->v("vTargetOrigin",&m_vTargetOrigin);
-	pK->v("vKtarget",&m_vKtarget);
-	pK->v("vTargetPregion",&m_vTargetPregion);
+//	pK->v("tIntSend",&m_ieSend.m_tInterval);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -73,16 +58,6 @@ bool _APcopter_follow::init(void* pKiss)
 	string iName;
 
 	iName = "";
-	pK->v("_APcopter_base", &iName);
-	m_pAP = (_APcopter_base*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
-
-	iName = "";
-	pK->v("_APcopter_link", &iName);
-	m_pAL = (_APcopter_link*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pAL, iName+": not found");
-
-	iName = "";
 	pK->v("_TrackerBase", &iName);
 	m_pT = (_TrackerBase*) (pK->root()->getChildInst(iName));
 
@@ -99,7 +74,7 @@ bool _APcopter_follow::start(void)
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
 	if (retCode != 0)
 	{
-		LOG(ERROR) << "Return code: "<< retCode;
+		LOG(ERROR) << "Return code: " << retCode;
 		m_bThreadON = false;
 		return false;
 	}
@@ -109,10 +84,9 @@ bool _APcopter_follow::start(void)
 
 int _APcopter_follow::check(void)
 {
-	NULL__(m_pAP,-1);
-	NULL__(m_pAL,-1);
+	NULL__(m_pDet,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_APcopter_posCtrl::check();
 }
 
 void _APcopter_follow::update(void)
@@ -121,129 +95,65 @@ void _APcopter_follow::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
-
-		updateTargetPos();
-		updatePos();
-		sendClient();
+		this->_APcopter_posCtrl::update();
+		if(updateFollow())
+			updateCtrl();
 
 		this->autoFPSto();
 	}
 }
 
-void _APcopter_follow::updateTargetPos(void)
+// void _APcopter_follow::updateTargetPos(void)
+// {
+// 	IF_(check()<0);
+
+// 	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vSpeed.y, m_vTargetPregion.x, m_vTargetPregion.y);
+// 	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vSpeed.x, m_vTargetPregion.x, m_vTargetPregion.y);
+// 	setTargetPos(m_vTargetP);
+
+// }
+
+bool _APcopter_follow::updateFollow(void)
 {
-	IF_(check()<0);
-
-	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vSpeed.y, m_vTargetPregion.x, m_vTargetPregion.y);
-	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vSpeed.x, m_vTargetPregion.x, m_vTargetPregion.y);
-	setTargetPos(m_vTargetP);
-
-}
-
-void _APcopter_follow::updatePos(void)
-{
-	IF_(check()<0);
+	IF_F(check()<0);
 	if(!bActive())
 	{
-		m_vP = m_vTargetP;
-		m_pPC->setEnable(false);
+		m_bTarget = false;
 		if(m_pT)
-		{
 			m_pT->stopTrack();
-		}
 
-		return;
+		return false;
 	}
 
 	if(m_apMount.m_bEnable)
-	{
 		m_pAP->setMount(m_apMount);
-	}
 
-
-	m_bBB = updateBBclient(&m_vBB);
-
-	if(!m_bBB && m_pAL->m_iState==APFOLLOW_ON)
+	m_bTarget = updateTarget();
+	if(m_pT)
 	{
-		m_bBB = updateBBdet(&m_vBB);
-	}
-
-	if(m_pT && m_pAL->m_iState==APFOLLOW_ON)
-	{
-		if(m_bBB)
-			m_pT->startTrack(m_vBB);
+		if(m_bTarget)
+			m_pT->startTrack(m_vTargetBB);
 
 		if(m_pT->trackState() == track_update)
 		{
-			m_vBB = *m_pT->getBB();
-			m_bBB = true;
+			m_vTargetBB = *m_pT->getBB();
+			m_bTarget = true;
 		}
 	}
 
-	if(m_bBB)
-	{
-		m_vP.x = m_vBB.midX();
-		m_vP.y = m_vBB.midY();
-	}
-	else
-	{
-		m_vP.x = m_vTargetP.x;
-		m_vP.y = m_vTargetP.y;
-	}
+	IF_F(!m_bTarget);
 
+	m_vP.x = m_vTargetBB.midX();
+	m_vP.y = m_vTargetBB.midY();
+	m_vP.z = m_vTargetP.z;
+	m_vP.w = m_vTargetP.w;
 
-	bool bAlt = false;
-	if(m_tStamp - m_pAL->m_tAlt < m_timeOut)
-	{
-		m_vP.z = m_pAL->m_alt;
-		bAlt = true;
-	}
-	else
-	{
-		m_vP.z = m_vTargetP.z;
-	}
-
-
-	bool bHdg = false;
-	if(m_tStamp - m_pAL->m_tHdg < m_timeOut)
-	{
-		m_vP.w = m_pAL->m_hdg;
-		bHdg = true;
-	}
-	else
-	{
-		m_vP.w = m_vTargetP.w;
-	}
-
-
-	if(m_bBB || bAlt || bHdg)
-	{
-		m_pPC->setPos(m_vP);
-		m_pPC->setEnable(true);
-		return;
-	}
-
-	m_vP = m_vTargetP;
-	m_pPC->setPos(m_vP);
-	m_pPC->setEnable(false);
-}
-
-bool _APcopter_follow::updateBBclient(vFloat4* pBB)
-{
-	IF__(check()<0, false);
-	NULL_F(pBB);
-	IF__(m_tStamp - m_pAL->m_tBB > m_timeOut, false);
-
-	*pBB = m_pAL->m_vBB;
 	return true;
 }
 
-bool _APcopter_follow::updateBBdet(vFloat4* pBB)
+bool _APcopter_follow::updateTarget(void)
 {
 	IF_F(check()<0);
-	NULL_F(m_pDet);
-	NULL_F(pBB);
 
 	OBJECT* pO;
 	OBJECT* tO = NULL;
@@ -259,36 +169,36 @@ bool _APcopter_follow::updateBBdet(vFloat4* pBB)
 	}
 
 	NULL_F(tO);
+	m_vTargetBB = tO->m_bb;
 
-	*pBB = tO->m_bb;
 	return true;
 }
 
-void _APcopter_follow::sendClient(void)
-{
-	IF_(check()<0);
-	IF_(!m_ieSend.update(m_tStamp));
+// void _APcopter_follow::sendClient(void)
+// {
+// 	IF_(check()<0);
+// 	IF_(!m_ieSend.update(m_tStamp));
 
-	m_pAL->state(m_pAL->m_iState);
+// 	m_pAL->state(m_pAL->m_iState);
 
-	if(m_bBB)
-		m_pAL->setBB(m_vBB);
+// 	if(m_bBB)
+// 		m_pAL->setBB(m_vBB);
 
-	float w = m_vBB.width()*0.5;
-	float h = m_vBB.height()*0.5;
+// 	float w = m_vBB.width()*0.5;
+// 	float h = m_vBB.height()*0.5;
 
-	vFloat4 tBB;
-	tBB.x = m_vTargetP.x - w;
-	tBB.y = m_vTargetP.y - h;
-	tBB.z = m_vTargetP.x + w;
-	tBB.w = m_vTargetP.y + h;
-	m_pAL->setTargetBB(tBB);
+// 	vFloat4 tBB;
+// 	tBB.x = m_vTargetP.x - w;
+// 	tBB.y = m_vTargetP.y - h;
+// 	tBB.z = m_vTargetP.x + w;
+// 	tBB.w = m_vTargetP.y + h;
+// 	m_pAL->setTargetBB(tBB);
 
-}
+// }
 
 void _APcopter_follow::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_APcopter_posCtrl::draw();
 
 	if(!bActive())
 		addMsg("Inactive",1);

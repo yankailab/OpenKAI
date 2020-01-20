@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/ArduPilot/ardupilot
+git clone https://github.com/yankailab/ardupilot
 cd ardupilot
 git submodule update --init --recursive
 

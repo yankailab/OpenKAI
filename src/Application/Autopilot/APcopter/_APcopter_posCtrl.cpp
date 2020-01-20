@@ -6,7 +6,6 @@ namespace kai
 _APcopter_posCtrl::_APcopter_posCtrl()
 {
 	m_pAP = NULL;
-	m_bEnable = false;
 	m_bFixYaw = false;
 	m_mode = pc_setP;
 
@@ -37,6 +36,7 @@ bool _APcopter_posCtrl::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("vTargetP",&m_vTargetP);
 	pK->v("vYaw", &m_vYaw);
 	pK->v("mode", (int*)&m_mode);
 	pK->v("bFixYaw", &m_bFixYaw);
@@ -68,33 +68,6 @@ bool _APcopter_posCtrl::init(void* pKiss)
 	return true;
 }
 
-bool _APcopter_posCtrl::start(void)
-{
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR)<< "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
-}
-
-void _APcopter_posCtrl::update(void)
-{
-	while (m_bThreadON)
-	{
-		this->autoFPSfrom();
-
-		this->_AutopilotBase::update();
-		updateCtrl();
-
-		this->autoFPSto();
-	}
-}
-
 int _APcopter_posCtrl::check(void)
 {
 	NULL__(m_pAP, -1);
@@ -105,14 +78,6 @@ int _APcopter_posCtrl::check(void)
 
 void _APcopter_posCtrl::updateCtrl(void)
 {
-	IF_(check() < 0);
-	if(!bActive() || !m_bEnable)
-	{
-		clear();
-		releaseCtrl();
-		return;
-	}
-
 	if (m_bFixYaw)
 	{
 		mavlink_param_set_t D;
@@ -122,6 +87,7 @@ void _APcopter_posCtrl::updateCtrl(void)
 		strcpy(D.param_id, id.c_str());
 		m_pAP->m_pMavlink->param_set(D);
 	}
+
 
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
@@ -135,10 +101,10 @@ void _APcopter_posCtrl::updateCtrl(void)
 	else
 		a = m_vP.z;
 
+
 	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_spt.yaw_rate = (float) m_vYaw * DEG_RAD;
 	m_spt.yaw = (float) m_vP.w * DEG_RAD;
-
 	m_spt.type_mask = 0b0000000111111111;
 
 	if (m_mode == pc_setV)
@@ -168,21 +134,6 @@ void _APcopter_posCtrl::updateCtrl(void)
 	}
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
-}
-
-void _APcopter_posCtrl::setPos(vFloat4& vP)
-{
-	m_vP = vP;
-}
-
-void _APcopter_posCtrl::setTargetPos(vFloat4& vTargetP)
-{
-	m_vTargetP = vTargetP;
-}
-
-void _APcopter_posCtrl::setEnable(bool bEnable)
-{
-	m_bEnable = bEnable;
 }
 
 void _APcopter_posCtrl::clear(void)
@@ -215,7 +166,7 @@ void _APcopter_posCtrl::releaseCtrl(void)
 void _APcopter_posCtrl::draw(void)
 {
 	this->_AutopilotBase::draw();
-	if (!bActive() || !m_bEnable)
+	if (!bActive())
 	{
 		addMsg("Inactive",1);
 	}

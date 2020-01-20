@@ -22,37 +22,24 @@ public:
 	_APcopter_posCtrl();
 	~_APcopter_posCtrl();
 
-	bool init(void* pKiss);
-	bool start(void);
-	void update(void);
-	void draw(void);
-	int check(void);
+	virtual bool init(void* pKiss);
+	virtual void draw(void);
+	virtual int check(void);
 
-	void setPos(vFloat4& vP);
-	void setTargetPos(vFloat4& vTargetP);
-	void setEnable(bool bEnable);
-
-private:
 	void clear(void);
 	void releaseCtrl(void);
 	void updateCtrl(void);
-	static void* getUpdateThread(void* This)
-	{
-		((_APcopter_posCtrl *) This)->update();
-		return NULL;
-	}
 
 public:
 	_APcopter_base* m_pAP;
 
-	bool	m_bEnable;
 	bool	m_bFixYaw;
 	POSCTRL_MODE m_mode;
 	mavlink_set_position_target_local_ned_t m_spt;
 
 	//roll, pitch, alt, yaw
-	vFloat4 m_vP;
-	vFloat4 m_vTargetP;
+	vFloat4 m_vP;		//variable screen coordinate of the object being followed in roll, pitch, alt, yaw order
+	vFloat4 m_vTargetP;	//constant screen coordinate where the followed object should get to
 	vFloat3 m_vSpeed;	//constant speed in setVP mode
 
 	PIDctrl* m_pRoll;

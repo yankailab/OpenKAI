@@ -4,25 +4,44 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../_AutopilotBase.h"
-#include "_APcopter_follow.h"
+#include "_APcopter_base.h"
 
 namespace kai
 {
 
-class _APcopter_land: public _APcopter_follow
+class _APcopter_land: public _AutopilotBase
 {
 public:
 	_APcopter_land();
 	~_APcopter_land();
 
 	bool init(void* pKiss);
+	bool start(void);
 	int check(void);
 	void update(void);
 	void draw(void);
+	void releaseCtrl(void);
+
+private:
+	void updateTarget(void);
+	static void* getUpdateThread(void* This)
+	{
+		((_APcopter_land *) This)->update();
+		return NULL;
+	}
 
 public:
-	double m_altLanded;
-	double m_apAlt;
+	_APcopter_base*	m_pAP;
+	_DetectorBase*	m_pIRlock;
+	_DetectorBase*	m_pAruco;
+
+	vFloat3 m_vSpeed;	//NED, +,-,-
+	OBJECT m_tO;
+	float m_dVstop;
+	vFloat2 m_vDzone;
+
+	mavlink_set_position_target_local_ned_t m_spt;
+
 };
 }
 #endif
