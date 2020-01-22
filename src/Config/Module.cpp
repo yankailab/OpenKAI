@@ -54,6 +54,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Morphology);
 	ADD_MODULE(_Mavlink);
+	ADD_MODULE(_MOAB);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);

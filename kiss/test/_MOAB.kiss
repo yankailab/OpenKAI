@@ -1,0 +1,47 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"MOABudp",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"addr":"192.168.8.250",
+	"port":8888,
+	"_wakeUp":"MOABcmd",
+}
+
+{
+	"name":"MOABcmd",
+	"class":"_MOAB",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"MOABudp",
+}

@@ -76,6 +76,7 @@
 #include "../DNN/TensorRT/_DetectNet.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_Mavlink.h"
+#include "../Protocol/_MOAB.h"
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Sensor/_LeddarVu.h"
