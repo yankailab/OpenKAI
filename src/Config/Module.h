@@ -22,7 +22,6 @@
 #include "../Application/Autopilot/APcopter/_APcopter_distLidar.h"
 #include "../Application/Autopilot/APcopter/_APcopter_avoid.h"
 #include "../Application/Autopilot/APcopter/_APcopter_land.h"
-#include "../Application/Autopilot/APcopter/_APcopter_mode.h"
 #include "../Application/Autopilot/APcopter/_APcopter_posCtrl.h"
 #include "../Application/Autopilot/APcopter/_APcopter_RTH.h"
 #include "../Application/Autopilot/APcopter/_APcopter_slam.h"

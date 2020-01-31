@@ -6,7 +6,6 @@ namespace kai
 _APcopter_posCtrl::_APcopter_posCtrl()
 {
 	m_pAP = NULL;
-	m_bFixYaw = false;
 	m_mode = pc_setP;
 
 	m_vP.init();
@@ -39,7 +38,6 @@ bool _APcopter_posCtrl::init(void* pKiss)
 	pK->v("vTargetP",&m_vTargetP);
 	pK->v("vYaw", &m_vYaw);
 	pK->v("mode", (int*)&m_mode);
-	pK->v("bFixYaw", &m_bFixYaw);
 	pK->v("vSpeed", &m_vSpeed);
 
 	m_vSpeed.x = abs(m_vSpeed.x);
@@ -78,17 +76,6 @@ int _APcopter_posCtrl::check(void)
 
 void _APcopter_posCtrl::updateCtrl(void)
 {
-	if (m_bFixYaw)
-	{
-		mavlink_param_set_t D;
-		D.param_type = MAV_PARAM_TYPE_INT8;
-		D.param_value = 0;
-		string id = "WP_YAW_BEHAVIOR";
-		strcpy(D.param_id, id.c_str());
-		m_pAP->m_pMavlink->param_set(D);
-	}
-
-
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
 		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_tStamp);

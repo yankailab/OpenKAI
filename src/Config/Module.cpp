@@ -115,7 +115,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_avoid);
 	ADD_MODULE(_APcopter_follow);
 	ADD_MODULE(_APcopter_land);
-	ADD_MODULE(_APcopter_mode);
 	ADD_MODULE(_APcopter_posCtrl);
 	ADD_MODULE(_APcopter_RTH);
 	ADD_MODULE(_APcopter_slam);

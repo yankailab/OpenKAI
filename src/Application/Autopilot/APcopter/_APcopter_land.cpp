@@ -7,11 +7,6 @@ _APcopter_land::_APcopter_land()
 {
 	m_pAP = NULL;
 	m_pIRlock = NULL;
-	m_pAruco = NULL;
-
-	m_vSpeed.init(0.3);
-	m_vDzone.init(0.0);
-	m_dVstop = 0.5;
 }
 
 _APcopter_land::~_APcopter_land()
@@ -20,12 +15,8 @@ _APcopter_land::~_APcopter_land()
 
 bool _APcopter_land::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_APcopter_follow::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	pK->v("vSpeed",&m_vSpeed);
-	pK->v("vDzone",&m_vDzone);
-	pK->v("dVstop",&m_dVstop);
 
 	string iName;
 	iName = "";
@@ -36,10 +27,6 @@ bool _APcopter_land::init(void* pKiss)
 	iName = "";
 	pK->v("_IRLock", &iName);
 	m_pIRlock = (_DetectorBase*) (pK->root()->getChildInst(iName));
-
-	iName = "";
-	pK->v("_Aruco", &iName);
-	m_pAruco = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -62,7 +49,7 @@ int _APcopter_land::check(void)
 {
 	NULL__(m_pAP,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_APcopter_follow::check();
 }
 
 void _APcopter_land::update(void)
@@ -71,37 +58,102 @@ void _APcopter_land::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
-
-		updateTarget();
-
+		this->_APcopter_posCtrl::update();
+		if(updateLand())
+		{
+			updateCtrl();
+		}
+		else
+		{
+			releaseCtrl();
+		}
+			
 		this->autoFPSto();
 	}
 }
 
-void _APcopter_land::updateTarget(void)
+bool _APcopter_land::updateLand(void)
 {
-	this->_AutopilotBase::update();
-	IF_(check()<0);
-//	if(m_pAP->getApMode() != GUIDED)
-//	{
-//		releaseCtrl();
-//		m_tO.init();
-//		return;
-//	}
+	IF_F(check()<0);
+	if(!bActive())
+	{
+		m_bTarget = false;
+		if(m_pT)
+			m_pT->stopTrack();
 
-	OBJECT* pO = NULL;
-	if(m_pIRlock)
-		pO = m_pIRlock->at(0);
-	if(!pO && m_pAruco)
-		pO = m_pAruco->at(0);
+		return false;
+	}
 
-	if(!pO)
+	int apMode = m_pAP->getApMode();
+//	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
+
+	if(m_pAP->getApMode() == LAND)
+	{
+		m_pAP->setApMode(GUIDED);
+		return;
+	}
+
+	if(m_pAP->getApMode() != GUIDED)
 	{
 		releaseCtrl();
 		m_tO.init();
 		return;
 	}
+
+	if(m_apMount.m_bEnable)
+		m_pAP->setMount(m_apMount);
+
+	m_bTarget = updateTarget();
+	if(m_pT)
+	{
+		if(m_bTarget)
+			m_pT->startTrack(m_vTargetBB);
+
+		if(m_pT->trackState() == track_update)
+		{
+			m_vTargetBB = *m_pT->getBB();
+			m_bTarget = true;
+		}
+	}
+
+	IF_F(!m_bTarget);
+
+	m_vP.x = m_vTargetBB.midX();
+	m_vP.y = m_vTargetBB.midY();
+	m_vP.z = m_vTargetP.z;
+	m_vP.w = m_vTargetP.w;
+
+	return true;
+}
+
+bool _APcopter_land::updateTarget(void)
+{
+	IF_F(check()<0);
+
+	OBJECT* pO;
+	OBJECT* tO = NULL;
+	float topProb = 0.0;
+	int i=0;
+	while((pO = m_pDet->at(i++)) != NULL)
+	{
+		IF_CONT(pO->m_topClass != m_iClass);
+		IF_CONT(pO->m_topProb < topProb);
+
+		tO = pO;
+		topProb = pO->m_topProb;
+	}
+
+	if(tO)
+	{
+		m_vTargetBB = tO->m_bb;
+		return true;
+	}
+
+	NULL_F(m_pIRlock);
+
+	tO = m_pIRlock->at(0);
+	NULL_F(tO);
+
 
 	m_tO = *pO;
 	vFloat2 vTarget;
@@ -117,50 +169,16 @@ void _APcopter_land::updateTarget(void)
 		vTarget = m_tO.m_c;
 	}
 
-	float dX = abs(vTarget.x - 0.5);
-	float dY = abs(vTarget.y - 0.5);
 
-	float x = (vTarget.x > 0.5)?m_vSpeed.x:-m_vSpeed.x;
-	if(dX < m_vDzone.x)x = 0.0;
 
-	float y = (vTarget.y > 0.5)?m_vSpeed.y:-m_vSpeed.y;
-	if(dY < m_vDzone.y)y = 0.0;
 
-	float a = (dX + dY < m_dVstop)?m_vSpeed.z:0.0;
 
-	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.type_mask = 0b0000000111000111;
-
-	m_spt.vx = y;		//forward
-	m_spt.vy = x;		//right
-	m_spt.vz = a;		//down
-	m_spt.type_mask &= 0b1111111111000111;
-	m_spt.yaw_rate = (float) 0.0 * DEG_RAD;
-	m_spt.yaw = (float) 0.0 * DEG_RAD;
-
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
-}
-
-void _APcopter_land::releaseCtrl(void)
-{
-	IF_(check() < 0);
-
-	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.x = 0.0;
-	m_spt.y = 0.0;
-	m_spt.z = 0.0;
-	m_spt.vx = 0;
-	m_spt.vy = 0;
-	m_spt.vz = 0;
-	m_spt.yaw = 0.0;
-	m_spt.yaw_rate = 0.0;
-	m_spt.type_mask = 0b0000000111000111;
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
+	return true;
 }
 
 void _APcopter_land::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_APcopter_follow::draw();
 	IF_(check()<0);
 
 	addMsg(

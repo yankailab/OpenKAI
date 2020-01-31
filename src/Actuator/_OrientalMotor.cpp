@@ -190,13 +190,13 @@ void _OrientalMotor::draw(void)
 {
 	this->_ActuatorBase::draw();
 
-	addMsg("-- Current state --");
-	addMsg("step: " + i2str(m_cState.m_step));
-	addMsg("speed: " + i2str(m_cState.m_speed));
+	addMsg("-- Current state --",1);
+	addMsg("step: " + i2str(m_cState.m_step),1);
+	addMsg("speed: " + i2str(m_cState.m_speed),1);
 
-	addMsg("-- Target state --");
-	addMsg("step: " + i2str(m_tState.m_step));
-	addMsg("speed: " + i2str(m_tState.m_speed));
+	addMsg("-- Target state --",1);
+	addMsg("step: " + i2str(m_tState.m_step),1);
+	addMsg("speed: " + i2str(m_tState.m_speed),1);
 }
 
 }

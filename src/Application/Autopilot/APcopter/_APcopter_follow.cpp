@@ -97,21 +97,17 @@ void _APcopter_follow::update(void)
 
 		this->_APcopter_posCtrl::update();
 		if(updateFollow())
+		{
 			updateCtrl();
+		}
+		else
+		{
+			releaseCtrl();
+		}
 
 		this->autoFPSto();
 	}
 }
-
-// void _APcopter_follow::updateTargetPos(void)
-// {
-// 	IF_(check()<0);
-
-// 	m_vTargetP.x = constrain<float>(m_vTargetOrigin.x + m_vKtarget.x * (float)m_pAP->m_vSpeed.y, m_vTargetPregion.x, m_vTargetPregion.y);
-// 	m_vTargetP.y = constrain<float>(m_vTargetOrigin.y + m_vKtarget.y * (float)m_pAP->m_vSpeed.x, m_vTargetPregion.x, m_vTargetPregion.y);
-// 	setTargetPos(m_vTargetP);
-
-// }
 
 bool _APcopter_follow::updateFollow(void)
 {
@@ -173,28 +169,6 @@ bool _APcopter_follow::updateTarget(void)
 
 	return true;
 }
-
-// void _APcopter_follow::sendClient(void)
-// {
-// 	IF_(check()<0);
-// 	IF_(!m_ieSend.update(m_tStamp));
-
-// 	m_pAL->state(m_pAL->m_iState);
-
-// 	if(m_bBB)
-// 		m_pAL->setBB(m_vBB);
-
-// 	float w = m_vBB.width()*0.5;
-// 	float h = m_vBB.height()*0.5;
-
-// 	vFloat4 tBB;
-// 	tBB.x = m_vTargetP.x - w;
-// 	tBB.y = m_vTargetP.y - h;
-// 	tBB.z = m_vTargetP.x + w;
-// 	tBB.w = m_vTargetP.y + h;
-// 	m_pAL->setTargetBB(tBB);
-
-// }
 
 void _APcopter_follow::draw(void)
 {

@@ -7,8 +7,6 @@
 
 #include "_IRLock.h"
 
-#ifdef USE_OPENCV_CONTRIB
-
 namespace kai
 {
 
@@ -160,4 +158,3 @@ void _IRLock::draw(void)
 }
 
 }
-#endif

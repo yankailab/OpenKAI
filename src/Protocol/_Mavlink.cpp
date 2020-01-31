@@ -332,6 +332,13 @@ void _Mavlink::mountStatus(mavlink_mount_status_t& D)
 
 void _Mavlink::param_set(mavlink_param_set_t& D)
 {
+		// mavlink_param_set_t D;
+		// D.param_type = MAV_PARAM_TYPE_INT8;
+		// D.param_value = 0;
+		// string id = "WP_YAW_BEHAVIOR";
+		// strcpy(D.param_id, id.c_str());
+		// m_pAP->m_pMavlink->param_set(D);
+
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
