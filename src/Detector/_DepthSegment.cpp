@@ -70,8 +70,8 @@ void _DepthSegment::update(void)
 
 int _DepthSegment::check(void)
 {
-	IF__(!m_pVision,-1);
-	IF__(m_pVision->BGR()->bEmpty(),-1);
+	IF__(!m_pV,-1);
+	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;
 }
@@ -81,9 +81,9 @@ void _DepthSegment::detect(void)
 	IF_(check()<0);
 
 	Mat mD;
-	m_pVision->BGR()->m()->copyTo(mD);
+	m_pV->BGR()->m()->copyTo(mD);
 	vInt2 cs;
-	m_pVision->info(&cs, NULL, NULL);
+	m_pV->info(&cs, NULL, NULL);
 
 	vector< vector< Point > > vvC;
 	for(float r=m_rL; r<m_rH; r+=m_rD)

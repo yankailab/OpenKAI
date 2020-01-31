@@ -125,8 +125,8 @@ void _DNNdetect::update(void)
 
 int _DNNdetect::check(void)
 {
-	NULL__(m_pVision, -1);
-	Frame* pBGR = m_pVision->BGR();
+	NULL__(m_pV, -1);
+	Frame* pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -138,7 +138,7 @@ bool _DNNdetect::detectYolo(void)
 {
 	IF_F(check() < 0);
 
-	Frame* pBGR = m_pVision->BGR();
+	Frame* pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
@@ -215,7 +215,7 @@ bool _DNNdetect::detect(void)
 {
 	IF_F(check() < 0);
 
-	Frame* pBGR = m_pVision->BGR();
+	Frame* pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 

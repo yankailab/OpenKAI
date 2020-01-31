@@ -24,8 +24,8 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
-	bool updateFollow(void);
-	virtual bool updateTarget(void);
+	bool updateTarget(void);
+	virtual bool findTarget(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_APcopter_follow *) This)->update();

@@ -83,8 +83,8 @@ void _OpenPose::update(void)
 
 int _OpenPose::check(void)
 {
-	NULL__(m_pVision, -1);
-	Frame* pBGR = m_pVision->BGR();
+	NULL__(m_pV, -1);
+	Frame* pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -96,7 +96,7 @@ bool _OpenPose::detect(void)
 {
 	IF_F(check() < 0);
 
-	Frame* pBGR = m_pVision->BGR();
+	Frame* pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 

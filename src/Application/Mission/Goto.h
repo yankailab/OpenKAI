@@ -1,23 +1,23 @@
 /*
- * Move.h
+ * Goto.h
  *
  *  Created on: March 16, 2019
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Move_H_
-#define OpenKAI_src_Mission_Move_H_
+#ifndef OpenKAI_src_Mission_Goto_H_
+#define OpenKAI_src_Mission_Goto_H_
 
 #include "MissionBase.h"
 
 namespace kai
 {
 
-class Move: public MissionBase
+class Goto: public MissionBase
 {
 public:
-	Move();
-	virtual ~Move();
+	Goto();
+	virtual ~Goto();
 
 	bool init(void* pKiss);
 	bool update(void);

@@ -14,7 +14,6 @@ namespace kai
 
 _ArUco::_ArUco()
 {
-	m_pVision = NULL;
 	m_dict = aruco::DICT_4X4_50;//aruco::DICT_APRILTAG_16h5;
 	m_minArea = -DBL_MAX;
 	m_maxArea = DBL_MAX;
@@ -32,12 +31,7 @@ bool _ArUco::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v<uint8_t>("dict", &m_dict);
-
 	m_pDict = aruco::getPredefinedDictionary(m_dict);
-
-	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase",&iName));
-	m_pVision = (_VisionBase*)(pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -75,15 +69,15 @@ void _ArUco::update(void)
 
 void _ArUco::detect(void)
 {
-	NULL_(m_pVision);
-	Mat m = *m_pVision->BGR()->m();
+	NULL_(m_pV);
+	Mat m = *m_pV->BGR()->m();
 	IF_(m.empty());
 
 	vInt2 cs;
 	cs.x = m.cols;
 	cs.y = m.rows;
-	double bW = 1.0/(double)m.cols;
-	double bH = 1.0/(double)m.rows;
+	float bW = 1.0/(float)m.cols;
+	float bH = 1.0/(float)m.rows;
 
     std::vector<int> vID;
     std::vector<std::vector<cv::Point2f> > vvCorner;
@@ -104,17 +98,22 @@ void _ArUco::detect(void)
 		Point2f pLB = vvCorner[i][3];
 
 		// bbox
-//		for (int p = 0; p < 4; p++)
-//		{
-//			o.m_pV[p].x = vvCorner[i][p].x * bW;
-//			o.m_pV[p].y = vvCorner[i][p].y * bH;
-//		}
-//		o.m_nV = 4;
-//		o.updateBB(cs);
+		vFloat2 pV[4];
+		for (int j = 0; j < 4; j++)
+		{
+			pV[j].x = vvCorner[i][j].x;
+			pV[j].y = vvCorner[i][j].y;
+		}
+		o.setVertices(pV,4);
+		o.normalizeBB(cs);
+
+		// distance
+		if(m_pDV)
+			o.m_dist = m_pDV->d(&o.m_bb);
 
 		// center position
-		dx = (double)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
-		dy = (double)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
+		dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
+		dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
 		o.m_c.x = dx * bW;
 		o.m_c.y = dy * bH;
 
@@ -127,12 +126,6 @@ void _ArUco::detect(void)
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
 		o.m_angle = -atan2(dx,dy) * RAD_DEG + 180.0;
-
-		//attitude correction
-//		vFloat2 cA;
-//		IF_CONT(!attitudeX(o.m_c.x, &cA.x));
-//		IF_CONT(!attitudeY(o.m_c.y, &cA.y));
-//		o.m_c = cA;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));
@@ -148,12 +141,10 @@ void _ArUco::draw(void)
 	int i=0;
 	while((pO = at(i++)) != NULL)
 	{
-		msg += i2str(pO->m_topClass) + " | ";
+		msg += i2str(pO->m_topClass) + "("+ f2str(pO->m_dist) +") | ";
 	}
-	addMsg(msg);
+	addMsg(msg, 1);
 
-	msg = "nTag: " + i2str(this->size());
-	addMsg(msg);
 	IF_(this->size() <= 0);
 
 	IF_(!checkWindow());

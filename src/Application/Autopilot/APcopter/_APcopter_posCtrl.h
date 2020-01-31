@@ -9,13 +9,6 @@
 namespace kai
 {
 
-enum POSCTRL_MODE
-{
-	pc_setV,
-	pc_setP,
-	pc_setVP,
-};
-
 class _APcopter_posCtrl: public _AutopilotBase
 {
 public:
@@ -33,13 +26,11 @@ public:
 public:
 	_APcopter_base* m_pAP;
 
-	POSCTRL_MODE m_mode;
 	mavlink_set_position_target_local_ned_t m_spt;
 
 	//roll, pitch, alt, yaw
 	vFloat4 m_vP;		//variable, screen coordinate of the object being followed in roll, pitch, alt, yaw order
 	vFloat4 m_vTargetP;	//constant, screen coordinate where the followed object should get to
-	vFloat3 m_vSpeed;	//constant, speed in setVP mode
 
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;

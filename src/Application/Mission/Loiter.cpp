@@ -12,10 +12,9 @@ namespace kai
 
 Loiter::Loiter()
 {
+	m_type = mission_loiter;
 	m_hdg = 0;
 	reset();
-
-	m_type = mission_loiter;
 }
 
 Loiter::~Loiter()
@@ -34,13 +33,7 @@ bool Loiter::init(void* pKiss)
 
 bool Loiter::update(void)
 {
-	this->MissionBase::update();
-
-	IF_F(m_tTimeout <= 0);
-	IF_F(m_tStamp < m_tStart + m_tTimeout);
-
-	LOG_I("Timeout");
-	return true;
+	return this->MissionBase::update();
 }
 
 void Loiter::reset(void)

@@ -96,7 +96,7 @@ void _APcopter_follow::update(void)
 		this->autoFPSfrom();
 
 		this->_APcopter_posCtrl::update();
-		if(updateFollow())
+		if(updateTarget())
 		{
 			updateCtrl();
 		}
@@ -109,7 +109,7 @@ void _APcopter_follow::update(void)
 	}
 }
 
-bool _APcopter_follow::updateFollow(void)
+bool _APcopter_follow::updateTarget(void)
 {
 	IF_F(check()<0);
 	if(!bActive())
@@ -124,7 +124,7 @@ bool _APcopter_follow::updateFollow(void)
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
-	m_bTarget = updateTarget();
+	m_bTarget = findTarget();
 	if(m_pT)
 	{
 		if(m_bTarget)
@@ -147,7 +147,7 @@ bool _APcopter_follow::updateFollow(void)
 	return true;
 }
 
-bool _APcopter_follow::updateTarget(void)
+bool _APcopter_follow::findTarget(void)
 {
 	IF_F(check()<0);
 
@@ -173,19 +173,6 @@ bool _APcopter_follow::updateTarget(void)
 void _APcopter_follow::draw(void)
 {
 	this->_APcopter_posCtrl::draw();
-
-	if(!bActive())
-		addMsg("Inactive",1);
-
-	addMsg("vTargetP = (" + f2str(m_vTargetP.x) + ", "
-							   + f2str(m_vTargetP.y) + ", "
-					           + f2str(m_vTargetP.z) + ", "
-				           	   + f2str(m_vTargetP.w) + ")",1);
-
-	addMsg("vP = (" + f2str(m_vP.x) + ", "
-							   + f2str(m_vP.y) + ", "
-					           + f2str(m_vP.z) + ", "
-				           	   + f2str(m_vP.w) + ")",1);
 }
 
 }

@@ -1,28 +1,27 @@
 /*
- * Move.cpp
+ * Goto.cpp
  *
  *  Created on: March 16, 2019
  *      Author: yankai
  */
 
-#include "Move.h"
+#include "Goto.h"
 
 namespace kai
 {
 
-Move::Move()
+Goto::Goto()
 {
+	m_type = mission_goto;
 	m_hdg = 0;
 	reset();
-
-	m_type = mission_move;
 }
 
-Move::~Move()
+Goto::~Goto()
 {
 }
 
-bool Move::init(void* pKiss)
+bool Goto::init(void* pKiss)
 {
 	IF_F(!this->MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -32,7 +31,7 @@ bool Move::init(void* pKiss)
 	return true;
 }
 
-bool Move::update(void)
+bool Goto::update(void)
 {
 	this->MissionBase::update();
 
@@ -43,18 +42,18 @@ bool Move::update(void)
 	return true;
 }
 
-void Move::reset(void)
+void Goto::reset(void)
 {
 	m_vPos.init();
 	this->MissionBase::reset();
 }
 
-void Move::setPos(vDouble3& p)
+void Goto::setPos(vDouble3& p)
 {
 	m_vPos = p;
 }
 
-void Move::draw(void)
+void Goto::draw(void)
 {
 	this->MissionBase::draw();
 

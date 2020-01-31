@@ -11,6 +11,7 @@
 #include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Vision/_VisionBase.h"
+#include "../Vision/_DepthVisionBase.h"
 #include "../Protocol/_Mavlink.h"
 
 
@@ -59,7 +60,7 @@ struct OBJECT
 	void init(void)
 	{
 		m_bb.init();
-		m_dist = 0.0;
+		m_dist = -1.0;
 		m_nV = 0;
 		m_iTraj = 0;
 		m_nTraj = 0;
@@ -248,18 +249,11 @@ public:
 	void updateStatistics(void);
 	int size(void);
 
-	//attitude
-	bool attitudeX(float in, float* pOut);
-	bool attitudeY(float in, float* pOut);
-
 public:
 	//input
-	_VisionBase *m_pVision;
+	_VisionBase *m_pV;
+	_DepthVisionBase* m_pDV;
 	_DetectorBase *m_pDB;
-
-	//attitude correction
-	_Mavlink*	m_pMavlink;
-	vFloat2		m_vFOV;
 
 	//data
 	Frame m_fBGR;

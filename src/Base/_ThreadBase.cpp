@@ -172,7 +172,7 @@ void _ThreadBase::draw(void)
 	if(checkWindow())
 	{
 		Window* pWin = (Window*)this->m_pWindow;
-		pWin->addMsg(*this->getName( ) + " " + msg);
+		pWin->addMsg(msg, 1);
 	}
 }
 

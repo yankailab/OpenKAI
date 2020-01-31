@@ -7,6 +7,10 @@ _APcopter_land::_APcopter_land()
 {
 	m_pAP = NULL;
 	m_pIRlock = NULL;
+
+	m_altLandMode = 3.0;
+	m_dTarget = -1.0;
+	m_targetType = landTarget_unknown;
 }
 
 _APcopter_land::~_APcopter_land()
@@ -18,12 +22,9 @@ bool _APcopter_land::init(void* pKiss)
 	IF_F(!this->_APcopter_follow::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName;
-	iName = "";
-	pK->v("APcopter_base", &iName);
-	m_pAP = (_APcopter_base*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+	pK->v("altLandMode",&m_altLandMode);
 
+	string iName;
 	iName = "";
 	pK->v("_IRLock", &iName);
 	m_pIRlock = (_DetectorBase*) (pK->root()->getChildInst(iName));
@@ -47,9 +48,7 @@ bool _APcopter_land::start(void)
 
 int _APcopter_land::check(void)
 {
-	NULL__(m_pAP,-1);
-
-	return this->_APcopter_follow::check();
+	return this->_APcopter_posCtrl::check();
 }
 
 void _APcopter_land::update(void)
@@ -59,12 +58,13 @@ void _APcopter_land::update(void)
 		this->autoFPSfrom();
 
 		this->_APcopter_posCtrl::update();
-		if(updateLand())
+		if(updateTarget())
 		{
 			updateCtrl();
 		}
 		else
 		{
+			m_bTarget = false;
 			releaseCtrl();
 		}
 			
@@ -72,51 +72,51 @@ void _APcopter_land::update(void)
 	}
 }
 
-bool _APcopter_land::updateLand(void)
+bool _APcopter_land::updateTarget(void)
 {
 	IF_F(check()<0);
-	if(!bActive())
-	{
-		m_bTarget = false;
-		if(m_pT)
-			m_pT->stopTrack();
-
-		return false;
-	}
-
-	int apMode = m_pAP->getApMode();
-//	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
-
-	if(m_pAP->getApMode() == LAND)
-	{
-		m_pAP->setApMode(GUIDED);
-		return;
-	}
-
-	if(m_pAP->getApMode() != GUIDED)
-	{
-		releaseCtrl();
-		m_tO.init();
-		return;
-	}
+	IF_F(!bActive());
 
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
-	m_bTarget = updateTarget();
-	if(m_pT)
-	{
-		if(m_bTarget)
-			m_pT->startTrack(m_vTargetBB);
 
-		if(m_pT->trackState() == track_update)
-		{
-			m_vTargetBB = *m_pT->getBB();
-			m_bTarget = true;
-		}
+	int apMode = m_pAP->getApMode();
+//	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
+
+	if(apMode == ALT_HOLD)
+	{
+		m_pMC->transit("STANDBY");
+		return false;
+	}
+	else if(apMode == LAND)
+	{
+		m_pAP->setApMode(GUIDED);
+		m_pMC->transit("DESCENT");
+		return false;
 	}
 
+	if(m_pMC->getCurrentMissionName() == "RTH")
+	{
+		m_pAP->setApMode(RTL);
+		return false;
+	}
+
+//	IF_F(m_pMC->getCurrentMissionName() != "DESCENT");
+
+	m_bTarget = findTarget();
 	IF_F(!m_bTarget);
+
+	if(
+		(m_dTarget > 0.0 && m_dTarget < m_altLandMode)
+//		||
+//		(m_pAP->getGlobalPos().z < m_altLandMode)
+		)
+	{
+		m_pMC->transit("RELEASE");
+		return false;
+	}
+
 
 	m_vP.x = m_vTargetBB.midX();
 	m_vP.y = m_vTargetBB.midY();
@@ -126,27 +126,33 @@ bool _APcopter_land::updateLand(void)
 	return true;
 }
 
-bool _APcopter_land::updateTarget(void)
+bool _APcopter_land::findTarget(void)
 {
 	IF_F(check()<0);
 
-	OBJECT* pO;
 	OBJECT* tO = NULL;
-	float topProb = 0.0;
-	int i=0;
-	while((pO = m_pDet->at(i++)) != NULL)
-	{
-		IF_CONT(pO->m_topClass != m_iClass);
-		IF_CONT(pO->m_topProb < topProb);
 
-		tO = pO;
-		topProb = pO->m_topProb;
-	}
-
-	if(tO)
+	if(m_pDet)
 	{
-		m_vTargetBB = tO->m_bb;
-		return true;
+		OBJECT* pO;
+		float topProb = 0.0;
+		int i=0;
+		while((pO = m_pDet->at(i++)) != NULL)
+		{
+			IF_CONT(pO->m_topClass != m_iClass);
+			IF_CONT(pO->m_topProb < topProb);
+
+			tO = pO;
+			topProb = pO->m_topProb;
+		}
+
+		if(tO)
+		{
+			m_vTargetBB = tO->m_bb;
+			m_dTarget = tO->m_dist;
+			m_targetType = landTarget_det;
+			return true;
+		}
 	}
 
 	NULL_F(m_pIRlock);
@@ -154,24 +160,9 @@ bool _APcopter_land::updateTarget(void)
 	tO = m_pIRlock->at(0);
 	NULL_F(tO);
 
-
-	m_tO = *pO;
-	vFloat2 vTarget;
-
-	if(m_tO.m_topClass == INT_MAX)
-	{
-		//IR
-		vTarget = m_tO.m_bb.center();
-	}
-	else
-	{
-		//Tag
-		vTarget = m_tO.m_c;
-	}
-
-
-
-
+	m_vTargetBB = tO->m_bb;
+	m_dTarget = tO->m_dist;
+	m_targetType = landTarget_IR;
 
 	return true;
 }
@@ -181,26 +172,19 @@ void _APcopter_land::draw(void)
 	this->_APcopter_follow::draw();
 	IF_(check()<0);
 
-	addMsg(
-			"Set target: V = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
-					+ ", " + f2str(m_spt.vz,7) + "), P = (" + f2str(m_spt.x,7)
-					+ ", " + f2str(m_spt.y,7) + ", " + f2str(m_spt.z,7) + ")",1);
+	if (!m_bTarget)
+	{
+		addMsg("Target not found", 1);
+		return;
+	}
 
-	if (m_tO.m_topClass < 0)
-	{
-		addMsg("Target not found");
-	}
-	else if(m_tO.m_topClass == INT_MAX)
-	{
-		addMsg("IR locked");
-		vFloat2 c = m_tO.m_bb.center();
-		addMsg("("+f2str(c.x) + ", " +f2str(c.y)+")");
-	}
+	if(m_targetType == landTarget_IR)
+		addMsg("IR locked", 1);
 	else
-	{
-		addMsg("Tag locked = " + i2str(m_tO.m_topClass));
-		addMsg("("+f2str(m_tO.m_c.x) + ", " +f2str(m_tO.m_c.y)+")");
-	}
+		addMsg("Tag locked", 1);
+
+	vFloat2 c = m_vTargetBB.center();
+	addMsg("("+f2str(c.x) + ", " +f2str(c.y)+ ", " + f2str(m_dTarget) +")", 1);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();

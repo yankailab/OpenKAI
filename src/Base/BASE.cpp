@@ -115,6 +115,12 @@ void BASE::draw(void)
 	    else
 			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
 	}
+
+	if(checkWindow())
+	{
+		Window* pWin = (Window*)this->m_pWindow;
+		pWin->addMsg(*this->getName());
+	}
 }
 
 void BASE::addMsg(const string& msg, int iTab)

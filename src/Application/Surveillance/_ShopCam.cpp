@@ -82,8 +82,8 @@ void _ShopCam::update(void)
 int _ShopCam::check(void)
 {
 	NULL__(m_pD, -1);
-	NULL__(m_pD->m_pVision, -1);
-	IF__(m_pD->m_pVision->BGR()->bEmpty(), -1);
+	NULL__(m_pD->m_pV, -1);
+	IF__(m_pD->m_pV->BGR()->bEmpty(), -1);
 
 	NULL__(m_pG, -1);
 	NULL__(m_pA, -1);
@@ -94,7 +94,7 @@ int _ShopCam::check(void)
 bool _ShopCam::updateDet(void)
 {
 	IF_F(check() < 0);
-	m_fBGR.copy(*m_pD->m_pVision->BGR());
+	m_fBGR.copy(*m_pD->m_pV->BGR());
 	Mat m = *m_fBGR.m();
 
 	OBJECT* pO;

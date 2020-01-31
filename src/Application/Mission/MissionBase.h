@@ -18,7 +18,7 @@ enum MISSION_TYPE
 	mission_base,
 	mission_land,
 	mission_loiter,
-	mission_move,
+	mission_goto,
 	mission_rth,
 	mission_wp,
 };
@@ -35,14 +35,17 @@ public:
 	virtual void draw(void);
 	virtual MISSION_TYPE type(void);
 
+	virtual void complete(void);
+
 public:
+	MISSION_TYPE m_type;
 	string m_nextMission;
 
 	uint64_t m_tStart;
 	uint64_t m_tStamp;
 	uint64_t m_tTimeout;
+	bool m_bComplete;
 
-	MISSION_TYPE m_type;
 };
 
 }

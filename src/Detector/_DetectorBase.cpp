@@ -9,11 +9,9 @@ namespace kai
 
 _DetectorBase::_DetectorBase()
 {
-	m_pVision = NULL;
+	m_pV = NULL;
+	m_pDV = NULL;
 	m_pDB = NULL;
-
-	m_pMavlink = NULL;
-	m_vFOV.init(60.0 * DEG_RAD);
 
 	m_modelFile = "";
 	m_trainedFile = "";
@@ -62,12 +60,6 @@ bool _DetectorBase::init(void* pKiss)
 	pK->v("bMerge", &m_bMerge);
 	pK->v("mergeOverlap", &m_mergeOverlap);
 	pK->v("bbScale", &m_bbScale);
-
-	if(pK->v("vFOV", &m_vFOV))
-	{
-		m_vFOV.x *= DEG_RAD;
-		m_vFOV.y *= DEG_RAD;
-	}
 
 	resetObj();
 
@@ -125,15 +117,15 @@ bool _DetectorBase::init(void* pKiss)
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+
+	iName = "";
+	pK->v("_DepthVisionBase",&iName);
+	m_pDV = (_DepthVisionBase*)(pK->root()->getChildInst(iName));
 
 	iName = "";
 	pK->v("_DetectorBase", &iName);
 	m_pDB = (_DetectorBase*) (pK->root()->getChildInst(iName));
-
-	iName = "";
-	pK->v("_Mavlink", &iName);
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -243,30 +235,6 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	return m_pNext->add(pNewO);
 }
 
-bool _DetectorBase::attitudeX(float in, float* pOut)
-{
-	NULL_F(m_pMavlink);
-	NULL_F(pOut);
-
-	float r = m_pMavlink->m_mavMsg.attitude.roll;
-	IF_F(abs(r) > m_vFOV.x*0.5);
-
-	*pOut = (in - 0.5) * m_vFOV.x - r;
-	return true;
-}
-
-bool _DetectorBase::attitudeY(float in, float* pOut)
-{
-	NULL_F(m_pMavlink);
-	NULL_F(pOut);
-
-	float p = m_pMavlink->m_mavMsg.attitude.pitch;
-	IF_F(abs(p) > m_vFOV.y*0.5);
-
-	*pOut = (in - 0.5) * m_vFOV.y - p;
-	return true;
-}
-
 void _DetectorBase::pipeIn(void)
 {
 	NULL_(m_pDB);
@@ -283,7 +251,7 @@ void _DetectorBase::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	addMsg("nObj=" + i2str(size()));
+	addMsg("nObj=" + i2str(size()), 1);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();

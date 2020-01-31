@@ -113,8 +113,8 @@ void _DNNtext::update(void)
 
 int _DNNtext::check(void)
 {
-	NULL__(m_pVision, -1);
-	Frame* pBGR = m_pVision->BGR();
+	NULL__(m_pV, -1);
+	Frame* pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -124,7 +124,7 @@ int _DNNtext::check(void)
 
 bool _DNNtext::detect(void)
 {
-	m_fBGR.copy(*m_pVision->BGR());
+	m_fBGR.copy(*m_pV->BGR());
 	if(m_fBGR.m()->channels()<3)
 		m_fBGR.copy(m_fBGR.cvtColor(8));
 
@@ -237,7 +237,7 @@ void _DNNtext::ocr(void)
 #ifdef USE_OCR
 	NULL_(m_pOCR);
 
-	Mat mIn = *m_pVision->BGR()->m();
+	Mat mIn = *m_pV->BGR()->m();
 	vInt2 cs;
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;

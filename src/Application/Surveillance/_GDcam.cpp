@@ -116,8 +116,8 @@ void _GDcam::update(void)
 int _GDcam::check(void)
 {
 	NULL__(m_pD, -1);
-	NULL__(m_pD->m_pVision, -1);
-	IF__(m_pD->m_pVision->BGR()->bEmpty(), -1);
+	NULL__(m_pD->m_pV, -1);
+	IF__(m_pD->m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
@@ -191,7 +191,7 @@ void _GDcam::updateShot(void)
 {
 	IF_(check() < 0);
 
-	m_fBGR.copy(*m_pD->m_pVision->BGR());
+	m_fBGR.copy(*m_pD->m_pV->BGR());
 	string fImg = tFormat();
 	cv::imwrite(m_tempDir + fImg + ".jpeg", *m_fBGR.m(), m_vJPGquality);
 

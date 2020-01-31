@@ -6,11 +6,11 @@ namespace kai
 _APcopter_posCtrl::_APcopter_posCtrl()
 {
 	m_pAP = NULL;
-	m_mode = pc_setP;
 
 	m_vP.init();
 	m_vTargetP.init();
-	m_vSpeed.init(1.0);
+	m_vTargetP.x = 0.5;
+	m_vTargetP.y = 0.5;
 
 	m_pRoll = NULL;
 	m_pPitch = NULL;
@@ -37,12 +37,6 @@ bool _APcopter_posCtrl::init(void* pKiss)
 
 	pK->v("vTargetP",&m_vTargetP);
 	pK->v("vYaw", &m_vYaw);
-	pK->v("mode", (int*)&m_mode);
-	pK->v("vSpeed", &m_vSpeed);
-
-	m_vSpeed.x = abs(m_vSpeed.x);
-	m_vSpeed.y = abs(m_vSpeed.y);
-	m_vSpeed.z = abs(m_vSpeed.z);
 
 	string iName;
 
@@ -94,31 +88,10 @@ void _APcopter_posCtrl::updateCtrl(void)
 	m_spt.yaw = (float) m_vP.w * DEG_RAD;
 	m_spt.type_mask = 0b0000000111111111;
 
-	if (m_mode == pc_setV)
-	{
-		m_spt.vx = p;		//forward
-		m_spt.vy = r;		//right
-		m_spt.vz = a;		//down
-		m_spt.type_mask &= 0b1111111111000111;
-	}
-	else if(m_mode == pc_setP)
-	{
-		m_spt.x = p;		//forward
-		m_spt.y = r;		//right
-		m_spt.z = a;		//down
-		m_spt.type_mask &= 0b1111111111111000;
-	}
-	else if(m_mode == pc_setVP)
-	{
-		m_spt.vx = (p>0.0) ? m_vSpeed.x : -m_vSpeed.x;	//forward
-		m_spt.vy = (r>0.0) ? m_vSpeed.y : -m_vSpeed.y;	//right
-		m_spt.vz = (a>0.0) ? m_vSpeed.z : -m_vSpeed.z;	//down
-		m_spt.x = p;		//forward
-		m_spt.y = r;		//right
-		m_spt.z = a;		//down
-
-		m_spt.type_mask &= 0b1111111111000000;
-	}
+	m_spt.vx = p;		//forward
+	m_spt.vy = r;		//right
+	m_spt.vz = a;		//down
+	m_spt.type_mask &= 0b1111111111000111;
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
@@ -154,25 +127,22 @@ void _APcopter_posCtrl::draw(void)
 {
 	this->_AutopilotBase::draw();
 	if (!bActive())
-	{
 		addMsg("Inactive",1);
-	}
-	else
-	{
-		addMsg(
-				"vTargetP = (" + f2str(m_vTargetP.x) + ", "
-						+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
-						+ ", " + f2str(m_vTargetP.w) + ")",1);
 
-		addMsg(
-				"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
-						+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
 
-		addMsg(
-				"set target: V = (" + f2str(m_spt.vx) + ", " + f2str(m_spt.vy)
-						+ ", " + f2str(m_spt.vz) + "), P = (" + f2str(m_spt.x)
-						+ ", " + f2str(m_spt.y) + ", " + f2str(m_spt.z) + ")",1);
-	}
+	addMsg(
+			"vTargetP = (" + f2str(m_vTargetP.x) + ", "
+					+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
+					+ ", " + f2str(m_vTargetP.w) + ")",1);
+
+	addMsg(
+			"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
+					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
+
+	addMsg(	"Set target: V = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
+					+ ", " + f2str(m_spt.vz,7) + "), P = (" + f2str(m_spt.x,7)
+					+ ", " + f2str(m_spt.y,7) + ", " + f2str(m_spt.z,7) + ")",1);
+
 }
 
 }

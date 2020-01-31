@@ -97,12 +97,9 @@ void _IRLock::detect(void)
 	o.m_bb.z = ((float)x + fW)*m_vOvCamSize.x;
 	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
 
-//	vFloat4 bbA;
-//	IF_(!attitudeX(o.m_bb.x, &bbA.x));
-//	IF_(!attitudeY(o.m_bb.y, &bbA.y));
-//	IF_(!attitudeX(o.m_bb.z, &bbA.z));
-//	IF_(!attitudeY(o.m_bb.w, &bbA.w));
-//	o.m_bb = bbA;
+	// distance
+	if(m_pDV)
+		o.m_dist = m_pDV->d(&o.m_bb);
 
 	add(&o);
 }
@@ -151,9 +148,15 @@ void _IRLock::draw(void)
 {
 	this->_DetectorBase::draw();
 
-	string msg;
-	msg = "nSignature: " + i2str(this->size());
-	addMsg(msg);
+	string msg = "| ";
+	OBJECT* pO;
+	int i=0;
+	while((pO = at(i++)) != NULL)
+	{
+		msg += f2str(pO->m_dist) +" | ";
+	}
+	addMsg(msg, 1);
+
 	IF_(this->size() <= 0);
 }
 

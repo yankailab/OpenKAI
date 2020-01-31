@@ -65,8 +65,8 @@ void _Thermal::update(void)
 
 int _Thermal::check(void)
 {
-	IF__(!m_pVision,-1);
-	IF__(m_pVision->BGR()->bEmpty(),-1);
+	IF__(!m_pV,-1);
+	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;
 }
@@ -75,7 +75,7 @@ void _Thermal::detect(void)
 {
 	IF_(check()<0);
 
-	Mat mBGR = *(m_pVision->BGR()->m());
+	Mat mBGR = *(m_pV->BGR()->m());
 	Mat mGray;
 	cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
 	cv::inRange(mGray, m_rL, m_rU, m_mR);
@@ -84,7 +84,7 @@ void _Thermal::detect(void)
 	findContours(m_mR, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
 	vInt2 cs;
-	m_pVision->info(&cs, NULL, NULL);
+	m_pV->info(&cs, NULL, NULL);
 
 	OBJECT o;
 	vector<Point> vPoly;

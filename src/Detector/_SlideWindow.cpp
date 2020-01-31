@@ -97,8 +97,8 @@ void _SlideWindow::update(void)
 
 int _SlideWindow::check(void)
 {
-	IF__(!m_pVision,-1);
-	IF__(m_pVision->BGR()->bEmpty(),-1);
+	IF__(!m_pV,-1);
+	IF__(m_pV->BGR()->bEmpty(),-1);
 	IF__(!m_pD,-1);
 	IF__(m_pD->BGR()->bEmpty(),-1);
 
@@ -109,7 +109,7 @@ void _SlideWindow::detect(void)
 {
 	IF_(check()<0);
 
-	m_pVision->BGR()->m()->copyTo(m_mBGR);
+	m_pV->BGR()->m()->copyTo(m_mBGR);
 	m_pD->BGR()->m()->copyTo(m_mD);
 	cv::inRange(m_mD, 1, m_maxD*255.0, m_mDin);
 

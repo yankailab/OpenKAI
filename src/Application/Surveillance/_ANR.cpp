@@ -257,9 +257,9 @@ void _ANR::lpO(void)
 	IF_(check() < 0);
 	IF_(m_cn.empty());
 
-	NULL_(m_pDlp->m_pVision);
-	IF_(m_pDlp->m_pVision->BGR()->bEmpty());
-	m_fBGR.copy(*m_pDlp->m_pVision->BGR());
+	NULL_(m_pDlp->m_pV);
+	IF_(m_pDlp->m_pV->BGR()->bEmpty());
+	m_fBGR.copy(*m_pDlp->m_pV->BGR());
 	cv::imwrite(m_tempFile, *m_fBGR.m(), m_vJPGquality);
 
 	FILE *fp;

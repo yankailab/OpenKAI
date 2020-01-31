@@ -12,6 +12,7 @@ namespace kai
 
 RTH::RTH()
 {
+	m_type = mission_rth;
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
@@ -21,8 +22,6 @@ RTH::RTH()
 	m_bAlt = true;
 
 	reset();
-
-	m_type = mission_rth;
 }
 
 RTH::~RTH()
@@ -47,6 +46,7 @@ bool RTH::init(void* pKiss)
 bool RTH::update(void)
 {
 	IF_F(!m_bSetHome);
+	this->MissionBase::update();
 
 	vDouble2 dH;
 	dH.x = m_vPos.x - m_vHome.x;

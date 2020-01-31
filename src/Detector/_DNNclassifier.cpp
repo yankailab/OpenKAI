@@ -110,8 +110,8 @@ void _DNNclassifier::update(void)
 
 int _DNNclassifier::check(void)
 {
-	NULL__(m_pVision, -1);
-	Frame* pBGR = m_pVision->BGR();
+	NULL__(m_pV, -1);
+	Frame* pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -122,7 +122,7 @@ int _DNNclassifier::check(void)
 bool _DNNclassifier::classify(void)
 {
 	IF_F(check() < 0);
-	Frame* pBGR = m_pVision->BGR();
+	Frame* pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 	vInt2 cs;

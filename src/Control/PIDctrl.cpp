@@ -92,6 +92,7 @@ void PIDctrl::reset(void)
 	m_eOld = 0.0;
 	m_eInteg = 0.0;
 
+	m_output = 0.0;
 	m_tLastUpdate = 0;
 }
 
@@ -102,7 +103,7 @@ void PIDctrl::draw(void)
 	addMsg("v=" + f2str(m_v)
 			+ " vPred=" + f2str(m_vPred)
 			+ " vTarget=" + f2str(m_vTarget)
-			+ " vOutput=" + f2str(m_output));
+			+ " vOutput=" + f2str(m_output), 1);
 }
 
 }

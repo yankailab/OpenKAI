@@ -24,6 +24,7 @@
 #include "../Application/Autopilot/APcopter/_APcopter_land.h"
 #include "../Application/Autopilot/APcopter/_APcopter_posCtrl.h"
 #include "../Application/Autopilot/APcopter/_APcopter_RTH.h"
+#include "../Application/Autopilot/APcopter/_APcopter_servo.h"
 #include "../Application/Autopilot/APcopter/_APcopter_slam.h"
 #include "../Application/Autopilot/APcopter/_APcopter_followClient.h"
 #include "../Application/Autopilot/APcopter/_APcopter_takePhoto.h"

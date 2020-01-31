@@ -9,11 +9,11 @@
 #define OpenKAI_src_Mission__MissionControl_H_
 
 #include "../../Base/_ThreadBase.h"
+#include "Goto.h"
 #include "MissionBase.h"
 #include "Waypoint.h"
 #include "Land.h"
 #include "Loiter.h"
-#include "Move.h"
 #include "RTH.h"
 
 #define ADD_MISSION(x) if(pKM->m_class==#x){M.m_pInst=new x();M.m_pKiss=pKM;}

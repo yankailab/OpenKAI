@@ -160,7 +160,7 @@
 	"trackerType":"KCF",
 	"margin":0.0,
 }
-		
+
 {
 	"name":"apFollow",
 	"class":"_APcopter_follow",
