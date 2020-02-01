@@ -20,9 +20,6 @@ BASE::BASE()
 	m_pConsole = NULL;
 	m_bLog = false;
 	m_bDebug = false;
-
-	m_msg = "";
-	m_msgLev = -1;
 }
 
 BASE::~BASE()
@@ -110,10 +107,10 @@ void BASE::draw(void)
 		Console* pC = (Console*)m_pConsole;
 		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 
-	    if(m_msgLev > 0)
-			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD, CONSOLE_X_MSG);
-	    else
-			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
+//	    if(m_msgLev > 0)
+//			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD, CONSOLE_X_MSG);
+//	    else
+//			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
 	}
 
 	if(checkWindow())

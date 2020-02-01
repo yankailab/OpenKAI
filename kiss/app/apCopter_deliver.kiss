@@ -4,13 +4,13 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
+	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
-	"name":"OpenKAI",
+	"name":"OKconsole",
 	"class":"Console",
 	"bInst":1,
 }
@@ -19,8 +19,10 @@
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
+	"bDrawMsg":1,
 	"bFullScreen":0,
-	"Console":"OpenKAI",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
 {
@@ -36,8 +38,10 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
+	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 }
 
 {
@@ -46,7 +50,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"deviceID":0,
 	"w":640,
 	"h":480,
@@ -59,7 +63,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,
@@ -75,17 +79,6 @@
 	"bAlign":0,
 }
 
-{
-	"name":"gst1",
-	"class":"_GStreamer",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"pipeline":"v4l2src device=/dev/video3 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-}
-
-
 
 {
 	"name":"irSerial",
@@ -94,7 +87,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"_wakeUp":"IRLock",
@@ -108,7 +101,7 @@
 	"bLog":0,
 	"FPS":60,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_IOBase":"irSerial",
 	"_DepthVisionBase":"cam",
 }
@@ -120,7 +113,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_VisionBase":"cam",
 	"_DepthVisionBase":"cam",
 	"dict":17,
@@ -134,7 +127,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"/port":"/dev/ttyTHS1",
 	"/baud":921600,
 	"port":"/dev/ttyACM0",
@@ -147,9 +140,9 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_IOBase":"apSerial",
 
 	{
@@ -165,7 +158,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"port":19840,
 	"_wakeUp":"mavGCS",
 }
@@ -176,7 +169,7 @@
 	"bInst":0,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
+	"Console":"OKconsole",
 	"Console":"OpenKAI",
 	"_IOBase":"apUDP",
 	
@@ -193,7 +186,7 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"P":-10.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -208,7 +201,7 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"P":10.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -227,7 +220,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"startMission":"STANDBY",
 
 	{
@@ -237,16 +230,16 @@
 			"name":"STANDBY",
 			"Window":"OKview",
 			"bDraw":1,
-			"Console":"OpenKAI",
+			"Console":"OKconsole",
 			"class":"MissionBase",
-			"nextMission":"DESCENT",
+			"nextMission":"LAND",
 		}
 		{
 			"bInst":1,
-			"name":"DESCENT",
+			"name":"LAND",
 			"Window":"OKview",
 			"bDraw":1,
-			"Console":"OpenKAI",
+			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"RELEASE",
 		}
@@ -255,7 +248,7 @@
 			"name":"RELEASE",
 			"Window":"OKview",
 			"bDraw":1,
-			"Console":"OpenKAI",
+			"Console":"OKconsole",
 			"class":"MissionBase",
 			"tTimeout":3,
 			"nextMission":"RTH",
@@ -265,7 +258,7 @@
 			"name":"RTH",
 			"Window":"OKview",
 			"bDraw":1,
-			"Console":"OpenKAI",
+			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"STANDBY",
 		}
@@ -280,7 +273,7 @@
 	"bDraw":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"freqRawSensors":0,
@@ -291,6 +284,18 @@
 }
 
 {
+	"name":"apMission",
+	"class":"_APcopter_mission",
+	"FPS":5,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_APcopter_base":"apBase",
+	"iWP":5,
+}
+
+{
 	"name":"apLand",
 	"class":"_APcopter_land",
 	"FPS":10,
@@ -298,10 +303,10 @@
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	
 	"_MissionControl":"mission",
-	"activeMission":["STANDBY", "DESCENT", "RTH"],
+	"activeMission":["LAND"],
 	"_APcopter_base":"apBase",
 
 	"_IRLock":"IRLock",
@@ -331,12 +336,10 @@
 {
 	"name":"apServoStandby",
 	"class":"_APcopter_servo",
-	"FPS":10,
+	"FPS":2,
 	"bInst":1,
-	"bLog":1,
-	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY"],
 	"_APcopter_base":"apBase",
@@ -351,12 +354,10 @@
 {
 	"name":"apServoRelease",
 	"class":"_APcopter_servo",
-	"FPS":10,
+	"FPS":2,
 	"bInst":1,
-	"bLog":1,
-	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["RELEASE"],
 	"_APcopter_base":"apBase",

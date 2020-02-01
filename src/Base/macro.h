@@ -8,10 +8,9 @@
 #ifndef OpenKAI_src_Base_macro_H_
 #define OpenKAI_src_Base_macro_H_
 
-#define CONSOLE_MSG(x,y) {m_msgLev=y;m_msg=x;}
-#define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,0);}
-#define LOG_E(x) {LOG(ERROR)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,1);}
-#define LOG_F(x) {LOG(FATAL)<<*this->getName()<<": "<<x;CONSOLE_MSG(x,2);}
+#define LOG_I(x) if(m_bLog){LOG(INFO)<<*this->getName()<<": "<<x;}
+#define LOG_E(x) {LOG(ERROR)<<*this->getName()<<": "<<x;}
+#define LOG_F(x) {LOG(FATAL)<<*this->getName()<<": "<<x;}
 
 #define F_FATAL_F(x) if(x==false){LOG_F(#x);return false;}
 #define F_ERROR_F(x) if(x==false){LOG_E(#x);return false;}

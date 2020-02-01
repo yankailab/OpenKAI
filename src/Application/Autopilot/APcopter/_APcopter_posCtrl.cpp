@@ -130,18 +130,19 @@ void _APcopter_posCtrl::draw(void)
 		addMsg("Inactive",1);
 
 
-	addMsg(
-			"vTargetP = (" + f2str(m_vTargetP.x) + ", "
+	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "
 					+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
 					+ ", " + f2str(m_vTargetP.w) + ")",1);
 
-	addMsg(
-			"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
+	addMsg(	"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
 					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
 
-	addMsg(	"Set target: V = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
-					+ ", " + f2str(m_spt.vz,7) + "), P = (" + f2str(m_spt.x,7)
-					+ ", " + f2str(m_spt.y,7) + ", " + f2str(m_spt.z,7) + ")",1);
+	addMsg(	"targetV = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
+					+ ", " + f2str(m_spt.vz,7) + ")",1);
+
+	addMsg(	"targetP = (" + f2str(m_spt.x,7) + ", " + f2str(m_spt.y,7)
+					+ ", " + f2str(m_spt.z,7) + ")",1);
+
 
 }
 

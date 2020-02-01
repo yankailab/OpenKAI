@@ -41,9 +41,6 @@ public:
 	void*	m_pConsole;
 	bool	m_bLog;
 	bool	m_bDebug;
-
-	string	m_msg;
-	int8_t m_msgLev;
 };
 
 }

@@ -23,8 +23,6 @@ Startup::Startup()
 	m_bLog = true;
 	m_bStdErr = true;
 	m_rc = "";
-	m_msg = "";
-	m_msgLev = -1;
 	m_vInst.clear();
 }
 

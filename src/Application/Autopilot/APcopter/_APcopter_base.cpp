@@ -260,9 +260,8 @@ void _APcopter_base::draw(void)
 
 	addMsg("y=" + f2str(m_pMavlink->m_mavMsg.attitude.yaw) +
 			", p=" + f2str(m_pMavlink->m_mavMsg.attitude.pitch) +
-			", r=" + f2str(m_pMavlink->m_mavMsg.attitude.roll),1);
-
-	addMsg("hdg=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.hdg)*1e-2),1);
+			", r=" + f2str(m_pMavlink->m_mavMsg.attitude.roll) +
+			", hdg=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.hdg)*1e-2),1);
 
 	addMsg("alt=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.alt)*1e-3)
 		  + ", relAlt=" + f2str(((float)m_pMavlink->m_mavMsg.global_position_int.relative_alt)*1e-3),1);

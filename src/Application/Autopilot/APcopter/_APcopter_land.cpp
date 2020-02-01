@@ -81,38 +81,17 @@ bool _APcopter_land::updateTarget(void)
 		m_pAP->setMount(m_apMount);
 
 
-	int apMode = m_pAP->getApMode();
-//	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
-
-	if(apMode == ALT_HOLD)
-	{
-		m_pMC->transit("STANDBY");
-		return false;
-	}
-	else if(apMode == LAND)
-	{
-		m_pAP->setApMode(GUIDED);
-		m_pMC->transit("DESCENT");
-		return false;
-	}
-
-	if(m_pMC->getCurrentMissionName() == "RTH")
-	{
-		m_pAP->setApMode(RTL);
-		return false;
-	}
-
-//	IF_F(m_pMC->getCurrentMissionName() != "DESCENT");
-
 	m_bTarget = findTarget();
 	IF_F(!m_bTarget);
 
-	if(
-		(m_dTarget > 0.0 && m_dTarget < m_altLandMode)
-//		||
-//		(m_pAP->getGlobalPos().z < m_altLandMode)
-		)
+	if(m_dTarget > 0.0 && m_dTarget < m_altLandMode)
 	{
+//		m_pAP->setApMode(LAND);
+//		if(LANDED)
+//		{
+//			m_pMC->transit("RELEASE");
+//		}
+
 		m_pMC->transit("RELEASE");
 		return false;
 	}

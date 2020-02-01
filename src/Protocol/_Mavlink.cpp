@@ -139,7 +139,7 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 		pWS->write(pB, nB, WS_MODE_BIN);
 	}
 
-	LOG_I("<- MSG_ID = " + i2str(msg.msgid) + ", seq = " + i2str((uint32_t)msg.seq));
+	LOG_I("<- MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
 }
 
 void _Mavlink::cmdInt(mavlink_command_int_t& D)
@@ -629,8 +629,7 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetServo: servo="+i2str(iServo)
-			+ " pwm=" + i2str(PWM));
+	LOG_I("<- cmdLongDoSetServo: servo="+i2str((int)iServo) + " pwm=" + i2str(PWM));
 }
 
 void _Mavlink::clGetHomePosition(void)

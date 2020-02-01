@@ -14,7 +14,7 @@ struct AP_SERVO
 
 	void init(void)
 	{
-		m_iChan = 8;
+		m_iChan = 9;
 		m_pwm = 1500;
 	}
 };

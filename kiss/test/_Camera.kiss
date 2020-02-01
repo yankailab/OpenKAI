@@ -4,18 +4,25 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
-	"bConsole":0,
+	"bLog":1,
 	"bStdErr":1,
 	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-
+	"bDrawMsg":1,
+	"bFullScreen":0,
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 }
 
 {
@@ -24,6 +31,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"deviceID":0,
 	"w":640,
 	"h":480,
@@ -36,12 +44,15 @@
 	"bInst":0,
 	"Window":"OKview",
 	"/pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
-	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
+	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1920, height=1080, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
+	"/pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=640, height=480, format=(string)NV12, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)480, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
 	"/pipeline":"rpicamsrc bitrate=1000000 preview=0 rotation=180 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! omxh264enc ! queue ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=360 ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video0 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
 	"/pipeline":"v4l2src device=/dev/video2 ! videoflip method=0 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoscale ! video/x-raw,width=640,height=480 ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=true",
+	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 	"/pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
+	"/pipeline":"udpsrc port=5678 ! application/x-rtp, media=video, encoding-name=h264, payload=96, clock-rate=90000 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 	"pipeline":"udpsrc port=5678 ! application/x-rtp, payload=96 ! rtph264depay ! avdec_h264 ! videoconvert ! appsink",
 }
 

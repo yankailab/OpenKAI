@@ -59,9 +59,6 @@ public:
 	bool	m_bStdErr;
 	string	m_rc;
 
-	string	m_msg;
-	int8_t m_msgLev;
-
 	vector<KEY_CALLBACK> m_vKeyCallback;
 };
 

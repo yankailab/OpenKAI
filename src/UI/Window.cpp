@@ -48,11 +48,9 @@ bool Window::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	F_ERROR_F(pK->root()->o("APP")->v("bWindow", &m_bWindow));
+	pK->root()->o("APP")->v("bWindow", &m_bWindow);
 	if (!m_bWindow)
-	{
-		LOG_E("Window mode is disabled. Turn \"bWindow\":1 to enable");
-	}
+		LOG_I("Window mode is disabled. Turn \"bWindow\":1 to enable");
 
 	pK->v("bFullScreen",&m_bFullScreen);
 	pK->v("bDrawMsg", &m_bDrawMsg);

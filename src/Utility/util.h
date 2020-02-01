@@ -423,47 +423,47 @@ inline uint32_t unpack_uint32(const void* pB, bool bOrder = true)
 
 #define UTIL_BUF 32
 
-inline string i2str(int32_t val)
+inline string i2str(int v)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%d", (int32_t)val);
+	snprintf(buf, UTIL_BUF, "%d", v);
 	return string(buf);
 }
 
-inline string li2str(long val)
+inline string li2str(long v)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%ld", (long)val);
+	snprintf(buf, UTIL_BUF, "%ld", v);
 	return string(buf);
 }
 
-inline string f2str(float val)
+inline string f2str(float v)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", (float)val);
+	snprintf(buf, UTIL_BUF, "%.3f", v);
 	return string(buf);
 }
 
-inline string f2str(float val, int nDigit)
+inline string f2str(float v, int nDigit)
 {
 	char buf[UTIL_BUF];
 	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), (float)val);
+	snprintf(buf, UTIL_BUF, format.c_str(), (float)v);
 	return string(buf);
 }
 
-inline string lf2str(double val)
+inline string lf2str(double v)
 {
 	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", (double)val);
+	snprintf(buf, UTIL_BUF, "%.3f", (double)v);
 	return string(buf);
 }
 
-inline string lf2str(double val, int nDigit)
+inline string lf2str(double v, int nDigit)
 {
 	char buf[UTIL_BUF];
 	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), (double)val);
+	snprintf(buf, UTIL_BUF, format.c_str(), (double)v);
 	return string(buf);
 }
 
