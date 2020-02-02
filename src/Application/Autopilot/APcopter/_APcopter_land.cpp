@@ -10,6 +10,8 @@ _APcopter_land::_APcopter_land()
 
 	m_altLandMode = 3.0;
 	m_dTarget = -1.0;
+	m_dHdg = 0.0;
+	m_dzHdg = 360;
 	m_targetType = landTarget_unknown;
 }
 
@@ -22,7 +24,12 @@ bool _APcopter_land::init(void* pKiss)
 	IF_F(!this->_APcopter_follow::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("altLandMode",&m_altLandMode);
+	pK->v("altLandMode", &m_altLandMode);
+	pK->v("dzHdg", &m_dzHdg);
+
+	int wLen = 3;
+	pK->v("wLen",&wLen);
+	m_filter.init(wLen,2);
 
 	string iName;
 	iName = "";
@@ -59,14 +66,9 @@ void _APcopter_land::update(void)
 
 		this->_APcopter_posCtrl::update();
 		if(updateTarget())
-		{
 			updateCtrl();
-		}
 		else
-		{
-			m_bTarget = false;
 			releaseCtrl();
-		}
 			
 		this->autoFPSto();
 	}
@@ -92,7 +94,7 @@ bool _APcopter_land::updateTarget(void)
 //			m_pMC->transit("RELEASE");
 //		}
 
-		m_pMC->transit("RELEASE");
+		m_pMC->getCurrentMission()->complete();
 		return false;
 	}
 
@@ -100,7 +102,18 @@ bool _APcopter_land::updateTarget(void)
 	m_vP.x = m_vTargetBB.midX();
 	m_vP.y = m_vTargetBB.midY();
 	m_vP.z = m_vTargetP.z;
-	m_vP.w = m_vTargetP.w;
+
+	if(abs(m_dHdg) > m_dzHdg)
+	{
+		if(m_dHdg > 0.0)
+			m_vP.w = 1.0;
+		else
+			m_vP.w = -1.0;
+	}
+	else
+	{
+		m_vP.w = m_vTargetP.w;
+	}
 
 	return true;
 }
@@ -128,7 +141,9 @@ bool _APcopter_land::findTarget(void)
 		if(tO)
 		{
 			m_vTargetBB = tO->m_bb;
-			m_dTarget = tO->m_dist;
+			m_filter.input(tO->m_dist);
+			m_dTarget = m_filter.v();
+			m_dHdg = dHdg<float>(0.0, tO->m_angle);
 			m_targetType = landTarget_det;
 			return true;
 		}
@@ -140,7 +155,9 @@ bool _APcopter_land::findTarget(void)
 	NULL_F(tO);
 
 	m_vTargetBB = tO->m_bb;
-	m_dTarget = tO->m_dist;
+	m_filter.input(tO->m_dist);
+	m_dTarget = m_filter.v();
+	m_dHdg = 0.0;
 	m_targetType = landTarget_IR;
 
 	return true;
@@ -163,7 +180,7 @@ void _APcopter_land::draw(void)
 		addMsg("Tag locked", 1);
 
 	vFloat2 c = m_vTargetBB.center();
-	addMsg("("+f2str(c.x) + ", " +f2str(c.y)+ ", " + f2str(m_dTarget) +")", 1);
+	addMsg("Pos=("+f2str(c.x) + ", " +f2str(c.y)+ "), d=" + f2str(m_dTarget) + ", dHdg=" +f2str(m_dHdg), 1);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();

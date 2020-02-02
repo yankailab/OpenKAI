@@ -35,7 +35,6 @@ void FilterBase::input(double v)
 		m_traj.pop_front();
 	}
 	m_traj.push_back(m_v);
-	IF_(m_traj.size() < m_nTraj);
 }
 
 double FilterBase::v(void)

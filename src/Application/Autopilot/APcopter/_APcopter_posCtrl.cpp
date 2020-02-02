@@ -117,8 +117,8 @@ void _APcopter_posCtrl::releaseCtrl(void)
 	m_spt.vx = 0;
 	m_spt.vy = 0;
 	m_spt.vz = 0;
-	m_spt.yaw = (float) m_vP.w * DEG_RAD;
-	m_spt.yaw_rate = (float) m_vYaw * DEG_RAD;
+	m_spt.yaw = (float) m_vTargetP.w * DEG_RAD;
+	m_spt.yaw_rate = 0.0;
 	m_spt.type_mask = 0b0000000111000111;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
 }
@@ -137,12 +137,13 @@ void _APcopter_posCtrl::draw(void)
 	addMsg(	"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
 					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
 
-	addMsg(	"targetV = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
+	addMsg(	"setV = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
 					+ ", " + f2str(m_spt.vz,7) + ")",1);
 
-	addMsg(	"targetP = (" + f2str(m_spt.x,7) + ", " + f2str(m_spt.y,7)
+	addMsg(	"setP = (" + f2str(m_spt.x,7) + ", " + f2str(m_spt.y,7)
 					+ ", " + f2str(m_spt.z,7) + ")",1);
 
+	addMsg(	"yawRate=" + f2str(m_spt.yaw_rate) + ", yaw=" + f2str(m_spt.yaw),1);
 
 }
 

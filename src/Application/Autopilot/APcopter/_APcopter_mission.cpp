@@ -85,9 +85,16 @@ void _APcopter_mission::updateMission(void)
 
 	string mission = m_pMC->getCurrentMissionName();
 
+	if(mission == "RTH")
+	{
+		m_pAP->setApMode(RTL);
+		return;
+	}
+
 	if(apMode == GUIDED)
 	{
 		IF_(mission == "RELEASE");
+		IF_(mission == "RTH");
 
 		if(mission != "LAND")
 		{
@@ -96,11 +103,6 @@ void _APcopter_mission::updateMission(void)
 		}
 	}
 
-	if(mission == "RTH")
-	{
-		m_pAP->setApMode(RTL);
-		return;
-	}
 }
 
 void _APcopter_mission::draw(void)

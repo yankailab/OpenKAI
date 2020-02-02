@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
+#include "../../../Filter/FilterBase.h"
 #include "../../_AutopilotBase.h"
 #include "_APcopter_follow.h"
 
@@ -38,9 +39,12 @@ public:
 
 public:
 	_DetectorBase*	m_pIRlock;
+	Median m_filter;
 
 	float m_altLandMode;
 	float m_dTarget;
+	float m_dHdg;
+	float m_dzHdg;
 	LAND_TARGET_TYPE m_targetType;
 
 };

@@ -104,6 +104,7 @@
 	"Console":"OKconsole",
 	"_IOBase":"irSerial",
 	"_DepthVisionBase":"cam",
+	"bbScale":1.5,
 }
 
 {
@@ -118,6 +119,7 @@
 	"_DepthVisionBase":"cam",
 	"dict":17,
 	"bDrawPos":1,
+	"bbScale":1.5,
 }
 
 {
@@ -129,7 +131,6 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"/port":"/dev/ttyTHS1",
-	"/baud":921600,
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
@@ -222,6 +223,7 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"startMission":"STANDBY",
+	"startMission":"LAND",
 
 	{
 		"name":"mission",
@@ -317,7 +319,9 @@
 	"PIDpitch":"PIDpitch",
 	"vTargetP":[0.5, 0.5, 0.5, 0.0],
 	"vYaw":90,
-	"altLandMode":1.5,
+	"dzHdg":2.0,
+	"altLandMode":1.0,
+	"wLen":5,
 	
 	{
 		"name":"mount",
