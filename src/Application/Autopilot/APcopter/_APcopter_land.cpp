@@ -66,9 +66,16 @@ void _APcopter_land::update(void)
 
 		this->_APcopter_posCtrl::update();
 		if(updateTarget())
+		{
 			updateCtrl();
+		}
 		else
+		{
+			m_filter.reset();
+			m_dTarget = -1.0;
+			m_bTarget = false;
 			releaseCtrl();
+		}
 			
 		this->autoFPSto();
 	}

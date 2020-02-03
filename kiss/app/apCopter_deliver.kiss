@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -21,7 +21,7 @@
 	"bInst":1,
 	"bDrawMsg":1,
 	"bFullScreen":0,
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
@@ -30,6 +30,7 @@
 	"class":"Window",
 	"bInst":1,
 	"bFullScreen":0,
+	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5679 auto-multicast=false",
 }
 
 {
@@ -119,7 +120,7 @@
 	"_DepthVisionBase":"cam",
 	"dict":17,
 	"bDrawPos":1,
-	"bbScale":1.5,
+	"/bbScale":1.25,
 }
 
 {
@@ -223,7 +224,6 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"startMission":"STANDBY",
-	"startMission":"LAND",
 
 	{
 		"name":"mission",
@@ -319,7 +319,7 @@
 	"PIDpitch":"PIDpitch",
 	"vTargetP":[0.5, 0.5, 0.5, 0.0],
 	"vYaw":90,
-	"dzHdg":2.0,
+	"dzHdg":360.0,
 	"altLandMode":1.0,
 	"wLen":5,
 	

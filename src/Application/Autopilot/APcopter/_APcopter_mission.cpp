@@ -87,6 +87,11 @@ void _APcopter_mission::updateMission(void)
 
 	if(mission == "RTH")
 	{
+		IF_(apMode == ALT_HOLD);
+		IF_(apMode == LOITER);
+		IF_(apMode == STABILIZE);
+		IF_(apMode == RTL);
+
 		m_pAP->setApMode(RTL);
 		return;
 	}
