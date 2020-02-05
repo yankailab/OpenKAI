@@ -18,7 +18,7 @@ public:
 	bool start(void);
 	void draw(void);
 
-	void setSpeed(float speedL, float speedR);
+	void setSpeed(float speed, float steer);
 
 private:
 	void update(void);
@@ -32,11 +32,12 @@ private:
 public:
 	_IOBase* m_pIO;
 
-	float m_speedL;
-	float m_speedR;
+	vFloat2 m_vK;
+	vFloat2 m_vSpeed;
 
 };
 
 }
 
 #endif
+

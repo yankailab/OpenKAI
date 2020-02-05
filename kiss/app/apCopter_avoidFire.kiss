@@ -145,7 +145,7 @@
 
 {
 	"name":"apBase",
-	"class":"_APcopter_base",
+	"class":"_AP_base",
 	"bInst":1,
 	"bDraw":1,
 	"_MissionControl":"mission",
@@ -162,7 +162,7 @@
 		
 {
 	"name":"apAvoid",
-	"class":"_APcopter_avoid",
+	"class":"_AP_avoid",
 	"bInst":1,
 	"bLog":1,
 	"bDraw":1,

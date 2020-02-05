@@ -170,7 +170,7 @@
 
 {
 	"name":"apBase",
-	"class":"_APcopter_base",
+	"class":"_AP_base",
 	"FPS":10,
 	"bInst":1,
 	"bDraw":1,
@@ -188,7 +188,7 @@
 		
 {
 	"name":"apDL",
-	"class":"_APcopter_dynamicLanding",
+	"class":"_AP_dynamicLanding",
 	"FPS":10,
 	"bInst":1,
 	"bLog":1,

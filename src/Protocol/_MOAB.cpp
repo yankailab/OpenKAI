@@ -5,8 +5,9 @@ namespace kai
 _MOAB::_MOAB()
 {
 	m_pIO = NULL;
-	m_speedL = 0.0;
-	m_speedR = 0.0;
+	m_vK.init(1.0);
+	m_vSpeed.init();
+
 }
 
 _MOAB::~_MOAB()
@@ -17,6 +18,8 @@ bool _MOAB::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
+
+	pK->v("vK", &m_vK);
 
 	string iName;
 	iName = "";
@@ -84,25 +87,25 @@ void _MOAB::send(void)
 	m_pIO->write(pB, 4);
 }
 
-void _MOAB::setSpeed(float speedL, float speedR)
+void _MOAB::setSpeed(float speed, float steer)
 {
-	m_speedL = constrain(speedL, -1.0f, 1.0f);
-	m_speedR = constrain(speedR, -1.0f, 1.0f);
+	speed = constrain(speed, -1.0f, 1.0f);
+	steer = constrain(steer, -1.0f, 1.0f);
+
+
+
 }
 
 void _MOAB::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	string msg = *this->getName();
 	if (!m_pIO->isOpen())
-	{
-		msg += ": Not connected";
-		return;
-	}
+		addMsg("Not connected");
+	else
+		addMsg("Connected");
 
-	addMsg(msg + ": CONNECTED");
-	addMsg("speedL=" + f2str(m_speedL) + ", speedR" + f2str(m_speedR));
+	addMsg("vSpeed=(" + f2str(m_vSpeed.x) + ", " + f2str(m_vSpeed.y) + ")");
 }
 
 }

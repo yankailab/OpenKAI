@@ -44,7 +44,7 @@
 
 {
 	"name":"apLink",
-	"class":"_APcopter_link",
+	"class":"_AP_link",
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
@@ -55,13 +55,13 @@
 
 {
 	"name":"apFollow",
-	"class":"_APcopter_followClient",
+	"class":"_AP_followClient",
 	"bInst":1,
 	"FPS":15,
 	"bDraw":1,
 	"bLog":1,
 	"Window":"OKview",
-	"_APcopter_link":"apLink",
+	"_AP_link":"apLink",
 	"diff":0.01,
 	"bBBsize":0.01,
 	"dAlt":1.0,

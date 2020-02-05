@@ -109,21 +109,21 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_FrameCutOut);
 	ADD_MODULE(_MultiImageNet);
 
-	ADD_MODULE(_APcopter_base);
-	ADD_MODULE(_APcopter_depthVision);
-	ADD_MODULE(_APcopter_distLidar);
-	ADD_MODULE(_APcopter_avoid);
-	ADD_MODULE(_APcopter_follow);
-	ADD_MODULE(_APcopter_land);
-	ADD_MODULE(_APcopter_mission);
-	ADD_MODULE(_APcopter_posCtrl);
-	ADD_MODULE(_APcopter_RTH);
-	ADD_MODULE(_APcopter_servo);
-	ADD_MODULE(_APcopter_slam);
-	ADD_MODULE(_APcopter_takeoff);
-	ADD_MODULE(_APcopter_followClient);
-	ADD_MODULE(_APcopter_WP);
-	ADD_MODULE(_APcopter_link);
+	ADD_MODULE(_AP_base);
+	ADD_MODULE(_AP_depthVision);
+	ADD_MODULE(_AP_distLidar);
+	ADD_MODULE(_AP_avoid);
+	ADD_MODULE(_AP_follow);
+	ADD_MODULE(_AP_land);
+	ADD_MODULE(_AP_mission);
+	ADD_MODULE(_AP_posCtrl);
+	ADD_MODULE(_AP_RTH);
+	ADD_MODULE(_AP_servo);
+	ADD_MODULE(_AP_slam);
+	ADD_MODULE(_AP_takeoff);
+	ADD_MODULE(_AP_followClient);
+	ADD_MODULE(_AP_WP);
+	ADD_MODULE(_AP_link);
 
 	ADD_MODULE(_Rover_avoid);
 	ADD_MODULE(_Rover_base);
@@ -172,7 +172,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSense);
 	ADD_MODULE(_RStracking);
-	ADD_MODULE(_APcopter_takePhoto);
+	ADD_MODULE(_AP_takePhoto);
 #endif
 #ifdef USE_PYLON
 	ADD_MODULE(_Pylon);

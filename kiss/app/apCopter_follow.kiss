@@ -93,7 +93,7 @@
 
 {
 	"name":"apLink",
-	"class":"_APcopter_link",
+	"class":"_AP_link",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
@@ -131,7 +131,7 @@
 
 {
 	"name":"apBase",
-	"class":"_APcopter_base",
+	"class":"_AP_base",
 	"bInst":1,
 	"FPS":30,
 	"bDraw":1,
@@ -161,7 +161,7 @@
 
 {
 	"name":"apFollow",
-	"class":"_APcopter_follow",
+	"class":"_AP_follow",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
@@ -169,9 +169,9 @@
 	"Window":"OKview",
 	"_MissionControl":"apMission",
 	"activeMission":["FOLLOW"],
-	"_APcopter_base":"apBase",
-	"_APcopter_link":"apLink",
-	"_APcopter_posCtrl":"apPosCtrl",
+	"_AP_base":"apBase",
+	"_AP_link":"apLink",
+	"_AP_posCtrl":"apPosCtrl",
 	"_TrackerBase":"tracker",
 	"/_DetectorBase":"apDet",
 	"vTargetOrigin":[0.5, 0.5, 0.0, 0.0],
@@ -195,14 +195,14 @@
 
 {
 	"name":"apPosCtrl",
-	"class":"_APcopter_posCtrl",
+	"class":"_AP_posCtrl",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"_MissionControl":"apMission",
 	"activeMission":["FOLLOW"],
-	"_APcopter_base":"apBase",
+	"_AP_base":"apBase",
 	"vYaw":180,
 	"mode":0,
 	"bFixeYaw":0,

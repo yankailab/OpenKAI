@@ -271,7 +271,7 @@
 
 {
 	"name":"apBase",
-	"class":"_APcopter_base",
+	"class":"_AP_base",
 	"FPS":10,
 	"bInst":1,
 	"bDraw":1,
@@ -289,19 +289,19 @@
 
 {
 	"name":"apMission",
-	"class":"_APcopter_mission",
+	"class":"_AP_mission",
 	"FPS":5,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
-	"_APcopter_base":"apBase",
+	"_AP_base":"apBase",
 	"iWP":5,
 }
 
 {
 	"name":"apLand",
-	"class":"_APcopter_land",
+	"class":"_AP_land",
 	"FPS":10,
 	"bInst":1,
 	"bLog":1,
@@ -311,7 +311,7 @@
 	
 	"_MissionControl":"mission",
 	"activeMission":["LAND"],
-	"_APcopter_base":"apBase",
+	"_AP_base":"apBase",
 
 	"_IRLock":"IRLock",
 	"_DetectorBase":"arUco",
@@ -341,14 +341,14 @@
 
 {
 	"name":"apServoStandby",
-	"class":"_APcopter_servo",
+	"class":"_AP_servo",
 	"FPS":2,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY"],
-	"_APcopter_base":"apBase",
+	"_AP_base":"apBase",
 
 	{
 		"name":"servo",
@@ -359,14 +359,14 @@
 
 {
 	"name":"apServoRelease",
-	"class":"_APcopter_servo",
+	"class":"_AP_servo",
 	"FPS":2,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["RELEASE"],
-	"_APcopter_base":"apBase",
+	"_AP_base":"apBase",
 
 	{
 		"name":"servo",
