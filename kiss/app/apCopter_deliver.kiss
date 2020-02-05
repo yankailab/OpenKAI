@@ -89,8 +89,8 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
-	"baud":115200,
+	"/port":"/dev/ttyUSB0",
+	"/baud":115200,
 	"_wakeUp":"IRLock",
 }
 
@@ -132,8 +132,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"/port":"/dev/ttyTHS1",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"/port":"/dev/ttyACM0",
+	"/baud":115200,
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
