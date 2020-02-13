@@ -97,10 +97,13 @@ bool _AP_land::updateTarget(void)
 	m_bTarget = findTargetLocal();
 	if(m_bTarget)
 	{
+		float w = m_vTargetBB.width();
+		float h = m_vTargetBB.height();
+
 		if(m_dTarget > 0.0 &&
 			m_dTarget < m_altLandMode &&
-			m_vTargetBB.width() > m_detSizeLandMode &&
-			m_vTargetBB.height() > m_detSizeLandMode
+			w > m_detSizeLandMode &&
+			h > m_detSizeLandMode
 			)
 		{
 			m_pMC->getCurrentMission()->complete();
@@ -211,11 +214,11 @@ void _AP_land::draw(void)
 	}
 
 	if(m_targetType == landTarget_IR)
-		addMsg("IR locked", 1);
+		addMsg("Target Type: IR locked", 1);
 	else if(m_targetType == landTarget_det)
-		addMsg("Tag locked", 1);
+		addMsg("Target Type: Tag locked", 1);
 	else if(m_targetType == landTarget_global)
-		addMsg("Global pos", 1);
+		addMsg("Target Type: Global pos", 1);
 	else
 		addMsg("Target Type Unknown");
 

@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -133,8 +133,9 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"port":"/dev/ttyTHS1",
-	"/port":"/dev/ttyUSB1",
 	"baud":115200,
+	"/port":"/dev/ttyUSB0",
+	"/baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -347,12 +348,12 @@
 	"vTargetP":[0.5, 0.5, 0.5, 0.0],
 	"vYaw":0.0,
 	
-	"vTargetGlobal":[0.0, 0.0, 20.0, 0.0],
+	"vTargetGlobal":[0.0, 0.0, 10.0, 0.0],
 
 	"dzHdg":360.0,
 	"wLen":5,
 	"altLandMode":0.6,
-	"detSizeLandMode":0.5,
+	"detSizeLandMode":0.15,
 	
 	{
 		"name":"mount",
