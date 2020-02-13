@@ -71,7 +71,10 @@ void _AP_mission::updateMission(void)
 	int apMode = m_pAP->getApMode();
 	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
 
-	if(apMode == ALT_HOLD)
+	if(apMode == ALT_HOLD ||
+		apMode == LOITER ||
+		apMode == STABILIZE
+	)
 	{
 		m_pMC->transit("STANDBY");
 		return;

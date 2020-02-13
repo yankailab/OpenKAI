@@ -15,7 +15,7 @@ _AP_posCtrl::_AP_posCtrl()
 	m_pRoll = NULL;
 	m_pPitch = NULL;
 	m_pAlt = NULL;
-	m_vYaw = 180.0;
+	m_vYaw = 90.0;
 
 	m_spt.vx = 0.0;
 	m_spt.vy = 0.0;

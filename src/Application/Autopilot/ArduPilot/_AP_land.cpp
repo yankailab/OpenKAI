@@ -5,7 +5,7 @@ namespace kai
 
 _AP_land::_AP_land()
 {
-	m_pAP = NULL;
+	m_pAPtarget = NULL;
 	m_pIRlock = NULL;
 
 	m_altLandMode = 3.0;
@@ -35,6 +35,10 @@ bool _AP_land::init(void* pKiss)
 	iName = "";
 	pK->v("_IRLock", &iName);
 	m_pIRlock = (_DetectorBase*) (pK->root()->getChildInst(iName));
+
+	iName = "";
+	pK->v("_AP_base", &iName);
+	m_pAPtarget = (_AP_base*) (pK->parent()->getChildInst(iName));
 
 	return true;
 }
@@ -113,13 +117,13 @@ bool _AP_land::updateTarget(void)
 	if(abs(m_dHdg) > m_dzHdg)
 	{
 		if(m_dHdg > 0.0)
-			m_vP.w = 1.0;
+			m_vP.w = m_vTargetP.w;
 		else
-			m_vP.w = -1.0;
+			m_vP.w = -m_vTargetP.w;
 	}
 	else
 	{
-		m_vP.w = m_vTargetP.w;
+		m_vP.w = 0.0;
 	}
 
 	return true;
@@ -138,7 +142,7 @@ bool _AP_land::findTarget(void)
 		int i=0;
 		while((pO = m_pDet->at(i++)) != NULL)
 		{
-			IF_CONT(pO->m_topClass != m_iClass);
+//			IF_CONT(pO->m_topClass != m_iClass);
 			IF_CONT(pO->m_topProb < topProb);
 
 			tO = pO;

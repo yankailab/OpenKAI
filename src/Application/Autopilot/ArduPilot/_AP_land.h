@@ -38,6 +38,7 @@ public:
 	}
 
 public:
+	_AP_base* m_pAPtarget;
 	_DetectorBase*	m_pIRlock;
 	Median m_filter;
 
