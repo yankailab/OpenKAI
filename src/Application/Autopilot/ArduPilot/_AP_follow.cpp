@@ -98,7 +98,7 @@ void _AP_follow::update(void)
 		this->_AP_posCtrl::update();
 		if(updateTarget())
 		{
-			updateCtrl();
+			setPosLocal();
 		}
 		else
 		{
@@ -124,7 +124,7 @@ bool _AP_follow::updateTarget(void)
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
-	m_bTarget = findTarget();
+	m_bTarget = findTargetLocal();
 	if(m_pT)
 	{
 		if(m_bTarget)
@@ -147,7 +147,7 @@ bool _AP_follow::updateTarget(void)
 	return true;
 }
 
-bool _AP_follow::findTarget(void)
+bool _AP_follow::findTargetLocal(void)
 {
 	IF_F(check()<0);
 

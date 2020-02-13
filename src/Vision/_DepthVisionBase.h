@@ -36,6 +36,9 @@ public:
 	int		m_nHistLev;
 	int		m_iHistFrom;
 	float	m_dScale;
+	vFloat4 m_vKpos;
+	vInt4	m_vDRoi;
+
 	vFloat2	m_vRange;
 	float	m_minHistD;
 

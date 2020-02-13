@@ -15,6 +15,7 @@ enum LAND_TARGET_TYPE
 	landTarget_unknown,
 	landTarget_det,
 	landTarget_IR,
+	landTarget_global,
 };
 
 class _AP_land: public _AP_follow
@@ -30,7 +31,8 @@ public:
 	void draw(void);
 
 	bool updateTarget(void);
-	virtual bool findTarget(void);
+	virtual bool findTargetLocal(void);
+	virtual bool findTargetGlobal(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_AP_land *) This)->update();
@@ -43,6 +45,7 @@ public:
 	Median m_filter;
 
 	float m_altLandMode;
+	float m_detSizeLandMode;
 	float m_dTarget;
 	float m_dHdg;
 	float m_dzHdg;

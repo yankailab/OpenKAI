@@ -17,12 +17,19 @@ _AP_posCtrl::_AP_posCtrl()
 	m_pAlt = NULL;
 	m_vYaw = 90.0;
 
-	m_spt.vx = 0.0;
-	m_spt.vy = 0.0;
-	m_spt.vz = 0.0;
-	m_spt.x = 0.0;
-	m_spt.y = 0.0;
-	m_spt.z = 0.0;
+	m_sptLocal.vx = 0.0;
+	m_sptLocal.vy = 0.0;
+	m_sptLocal.vz = 0.0;
+	m_sptLocal.x = 0.0;
+	m_sptLocal.y = 0.0;
+	m_sptLocal.z = 0.0;
+
+	m_sptGlobal.vx = 0.0;
+	m_sptGlobal.vy = 0.0;
+	m_sptGlobal.vz = 0.0;
+	m_sptGlobal.lat_int = 0.0;
+	m_sptGlobal.lon_int = 0.0;
+	m_sptGlobal.alt = 0.0;
 
 }
 
@@ -36,6 +43,7 @@ bool _AP_posCtrl::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vTargetP",&m_vTargetP);
+	pK->v("vTargetGlobal",&m_vTargetGlobal);
 	pK->v("vYaw", &m_vYaw);
 
 	string iName;
@@ -68,7 +76,7 @@ int _AP_posCtrl::check(void)
 	return this->_AutopilotBase::check();
 }
 
-void _AP_posCtrl::updateCtrl(void)
+void _AP_posCtrl::setPosLocal(void)
 {
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
@@ -83,17 +91,31 @@ void _AP_posCtrl::updateCtrl(void)
 		a = m_vP.z;
 
 
-	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.yaw_rate = (float) m_vYaw * DEG_RAD;
-	m_spt.yaw = (float) m_vP.w * DEG_RAD;
-	m_spt.type_mask = 0b0000000111111111;
+	m_sptLocal.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
+	m_sptLocal.vx = p;		//forward
+	m_sptLocal.vy = r;		//right
+	m_sptLocal.vz = a;		//down
+	m_sptLocal.yaw = (float) m_vP.w * DEG_RAD;
+	m_sptLocal.yaw_rate = (float) m_vYaw * DEG_RAD;
+	m_sptLocal.type_mask  = 0b0000110111000111;	//set velocity
 
-	m_spt.vx = p;		//forward
-	m_spt.vy = r;		//right
-	m_spt.vz = a;		//down
-	m_spt.type_mask &= 0b1111111111000111;
+	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
+}
 
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
+void _AP_posCtrl::setPosGlobal(void)
+{
+	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
+	m_sptGlobal.lat_int = m_vTargetGlobal.x * 1e7;
+	m_sptGlobal.lon_int = m_vTargetGlobal.y * 1e7;
+	m_sptGlobal.alt = m_vTargetGlobal.z;
+	m_sptGlobal.vx = 0.0;
+	m_sptGlobal.vy = 0.0;
+	m_sptGlobal.vz = 0.0;
+	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG_RAD;
+	m_sptGlobal.yaw_rate = m_vYaw * DEG_RAD;
+	m_sptGlobal.type_mask = 0b0000110111111000; //set position
+
+	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
 }
 
 void _AP_posCtrl::clear(void)
@@ -110,17 +132,30 @@ void _AP_posCtrl::releaseCtrl(void)
 {
 	IF_(check() < 0);
 
-	m_spt.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
-	m_spt.x = 0.0;
-	m_spt.y = 0.0;
-	m_spt.z = 0.0;
-	m_spt.vx = 0;
-	m_spt.vy = 0;
-	m_spt.vz = 0;
-	m_spt.yaw = (float) m_vTargetP.w * DEG_RAD;
-	m_spt.yaw_rate = 0.0;
-	m_spt.type_mask = 0b0000000111000111;
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_spt);
+	m_sptLocal.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
+	m_sptLocal.x = 0.0;
+	m_sptLocal.y = 0.0;
+	m_sptLocal.z = 0.0;
+	m_sptLocal.vx = 0;
+	m_sptLocal.vy = 0;
+	m_sptLocal.vz = 0;
+	m_sptLocal.yaw = (float) m_vTargetP.w * DEG_RAD;
+	m_sptLocal.yaw_rate = 0.0;
+	m_sptLocal.type_mask = 0b0000000111000111;
+	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
+
+
+	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
+	m_sptGlobal.lat_int = 0.0;
+	m_sptGlobal.lon_int = 0.0;
+	m_sptGlobal.alt = 0.0;
+	m_sptGlobal.vx = 0.0;
+	m_sptGlobal.vy = 0.0;
+	m_sptGlobal.vz = 0.0;
+	m_sptGlobal.yaw = (float) m_vTargetP.w * DEG_RAD;
+	m_sptGlobal.yaw_rate = 0.0;
+	m_sptGlobal.type_mask = 0b0000000111000111;
+	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
 }
 
 void _AP_posCtrl::draw(void)
@@ -130,20 +165,22 @@ void _AP_posCtrl::draw(void)
 		addMsg("Inactive",1);
 
 
+	addMsg( "Local NED:");
 	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "
 					+ f2str(m_vTargetP.y) + ", " + f2str(m_vTargetP.z)
 					+ ", " + f2str(m_vTargetP.w) + ")",1);
-
 	addMsg(	"vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", "
 					+ f2str(m_vP.z) + ", " + f2str(m_vP.w) + ")",1);
+	addMsg(	"setV = (" + f2str(m_sptLocal.vx,7) + ", " + f2str(m_sptLocal.vy,7)
+					+ ", " + f2str(m_sptLocal.vz,7) + ")",1);
+	addMsg(	"setP = (" + f2str(m_sptLocal.x,7) + ", " + f2str(m_sptLocal.y,7)
+					+ ", " + f2str(m_sptLocal.z,7) + ")",1);
+	addMsg(	"yawRate=" + f2str(m_sptLocal.yaw_rate) + ", yaw=" + f2str(m_sptLocal.yaw),1);
 
-	addMsg(	"setV = (" + f2str(m_spt.vx,7) + ", " + f2str(m_spt.vy,7)
-					+ ", " + f2str(m_spt.vz,7) + ")",1);
-
-	addMsg(	"setP = (" + f2str(m_spt.x,7) + ", " + f2str(m_spt.y,7)
-					+ ", " + f2str(m_spt.z,7) + ")",1);
-
-	addMsg(	"yawRate=" + f2str(m_spt.yaw_rate) + ", yaw=" + f2str(m_spt.yaw),1);
+	addMsg( "Global INT:");
+	addMsg(	"vTargetGlobal = (" + f2str(m_vTargetGlobal.x) + ", "
+					+ f2str(m_vTargetGlobal.y) + ", " + f2str(m_vTargetGlobal.z)
+					+ ", " + f2str(m_vTargetGlobal.w) + ")",1);
 
 }
 

@@ -22,6 +22,11 @@ _DepthVisionBase::_DepthVisionBase()
 	m_vRange.x = 0.8;
 	m_vRange.y = 16.0;
 	m_minHistD = 0.25;
+	m_vKpos.x = 0.0;
+	m_vKpos.y = 0.0;
+	m_vKpos.z = 1.0;
+	m_vKpos.w = 1.0;
+	m_vDRoi.init();
 }
 
 _DepthVisionBase::~_DepthVisionBase()
@@ -38,6 +43,7 @@ bool _DepthVisionBase::init(void* pKiss)
 	pK->v("nHistLev",&m_nHistLev);
 	pK->v("minHistD",&m_minHistD);
 	pK->v("vRange", &m_vRange);
+	pK->v("vKpos", &m_vKpos);
 
 	string iName = "";
 	F_INFO(pK->v("depthWindow", &iName));
@@ -53,22 +59,21 @@ float _DepthVisionBase::d(vFloat4* pROI)
 
 	Size s = m_fDepth.size();
 
-	vInt4 iR;
-	iR.x = pROI->x * s.width;
-	iR.y = pROI->y * s.height;
-	iR.z = pROI->z * s.width;
-	iR.w = pROI->w * s.height;
+	m_vDRoi.x = (m_vKpos.x + (pROI->x * m_vKpos.z)) * s.width;
+	m_vDRoi.y = (m_vKpos.y + (pROI->y * m_vKpos.w)) * s.height;
+	m_vDRoi.z = (m_vKpos.x + (pROI->z * m_vKpos.z)) * s.width;
+	m_vDRoi.w = (m_vKpos.y + (pROI->w * m_vKpos.w)) * s.height;
 
-	if (iR.x < 0)
-		iR.x = 0;
-	if (iR.y < 0)
-		iR.y = 0;
-	if (iR.z > s.width)
-		iR.z = s.width;
-	if (iR.w > s.height)
-		iR.w = s.height;
+	if (m_vDRoi.x < 0)
+		m_vDRoi.x = 0;
+	if (m_vDRoi.y < 0)
+		m_vDRoi.y = 0;
+	if (m_vDRoi.z > s.width)
+		m_vDRoi.z = s.width;
+	if (m_vDRoi.w > s.height)
+		m_vDRoi.w = s.height;
 
-	return d(&iR);
+	return d(&m_vDRoi);
 }
 
 float _DepthVisionBase::d(vInt4* pROI)
@@ -131,9 +136,12 @@ void _DepthVisionBase::draw(void)
 
 			rectangle(*pMat, r, Scalar(0,255,0), 1);
 
-			putText(*pMat, f2str(d(&bb)),
-						Point(r.x + 15, r.y + 25),
-						FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
+//			putText(*pMat, f2str(d(&bb)),
+//						Point(r.x + 15, r.y + 25),
+//						FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
+
+			r = convertBB<vInt4>(m_vDRoi);
+			rectangle(*pMat, r, Scalar(0,255,255), 2);
 		}
 	}
 

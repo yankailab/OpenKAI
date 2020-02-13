@@ -9,6 +9,7 @@ _AP_land::_AP_land()
 	m_pIRlock = NULL;
 
 	m_altLandMode = 3.0;
+	m_detSizeLandMode = 0.25;
 	m_dTarget = -1.0;
 	m_dHdg = 0.0;
 	m_dzHdg = 360;
@@ -25,6 +26,7 @@ bool _AP_land::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("altLandMode", &m_altLandMode);
+	pK->v("detSizeLandMode", &m_detSizeLandMode);
 	pK->v("dzHdg", &m_dzHdg);
 
 	int wLen = 3;
@@ -37,7 +39,7 @@ bool _AP_land::init(void* pKiss)
 	m_pIRlock = (_DetectorBase*) (pK->root()->getChildInst(iName));
 
 	iName = "";
-	pK->v("_AP_base", &iName);
+	pK->v("_AP_target_base", &iName);
 	m_pAPtarget = (_AP_base*) (pK->parent()->getChildInst(iName));
 
 	return true;
@@ -69,15 +71,13 @@ void _AP_land::update(void)
 		this->autoFPSfrom();
 
 		this->_AP_posCtrl::update();
-		if(updateTarget())
-		{
-			updateCtrl();
-		}
-		else
+
+		if(!updateTarget())
 		{
 			m_filter.reset();
 			m_dTarget = -1.0;
 			m_bTarget = false;
+			m_targetType = landTarget_unknown;
 			releaseCtrl();
 		}
 			
@@ -94,42 +94,50 @@ bool _AP_land::updateTarget(void)
 		m_pAP->setMount(m_apMount);
 
 
-	m_bTarget = findTarget();
-	IF_F(!m_bTarget);
-
-	if(m_dTarget > 0.0 && m_dTarget < m_altLandMode)
+	m_bTarget = findTargetLocal();
+	if(m_bTarget)
 	{
-//		m_pAP->setApMode(LAND);
-//		if(LANDED)
-//		{
-//			m_pMC->transit("RELEASE");
-//		}
+		if(m_dTarget > 0.0 &&
+			m_dTarget < m_altLandMode &&
+			m_vTargetBB.width() > m_detSizeLandMode &&
+			m_vTargetBB.height() > m_detSizeLandMode
+			)
+		{
+			m_pMC->getCurrentMission()->complete();
+			return false;
+		}
 
-		m_pMC->getCurrentMission()->complete();
-		return false;
-	}
+		m_vP.x = m_vTargetBB.midX();
+		m_vP.y = m_vTargetBB.midY();
+		m_vP.z = m_vTargetP.z;
 
-
-	m_vP.x = m_vTargetBB.midX();
-	m_vP.y = m_vTargetBB.midY();
-	m_vP.z = m_vTargetP.z;
-
-	if(abs(m_dHdg) > m_dzHdg)
-	{
-		if(m_dHdg > 0.0)
-			m_vP.w = m_vTargetP.w;
+		if(abs(m_dHdg) > m_dzHdg)
+		{
+			if(m_dHdg > 0.0)
+				m_vP.w = m_vTargetP.w;
+			else
+				m_vP.w = -m_vTargetP.w;
+		}
 		else
-			m_vP.w = -m_vTargetP.w;
-	}
-	else
-	{
-		m_vP.w = 0.0;
+		{
+			m_vP.w = 0.0;
+		}
+
+		setPosLocal();
+		return true;
 	}
 
-	return true;
+	m_bTarget = findTargetGlobal();
+	if(m_bTarget)
+	{
+		setPosGlobal();
+		return true;
+	}
+
+	return false;
 }
 
-bool _AP_land::findTarget(void)
+bool _AP_land::findTargetLocal(void)
 {
 	IF_F(check()<0);
 
@@ -138,15 +146,17 @@ bool _AP_land::findTarget(void)
 	if(m_pDet)
 	{
 		OBJECT* pO;
+		float minR = FLT_MAX;
 		float topProb = 0.0;
 		int i=0;
 		while((pO = m_pDet->at(i++)) != NULL)
 		{
 //			IF_CONT(pO->m_topClass != m_iClass);
-			IF_CONT(pO->m_topProb < topProb);
+//			IF_CONT(pO->m_topProb < topProb);
+			IF_CONT(pO->m_r > minR);
 
 			tO = pO;
-			topProb = pO->m_topProb;
+			minR = pO->m_r;
 		}
 
 		if(tO)
@@ -166,10 +176,25 @@ bool _AP_land::findTarget(void)
 	NULL_F(tO);
 
 	m_vTargetBB = tO->m_bb;
-	m_filter.input(tO->m_dist);
-	m_dTarget = m_filter.v();
+	m_filter.reset();
+	m_dTarget = -1.0;
 	m_dHdg = 0.0;
 	m_targetType = landTarget_IR;
+	return true;
+}
+
+bool _AP_land::findTargetGlobal(void)
+{
+	IF_F(check()<0);
+	IF_F(!m_pAPtarget);
+	IF_F(!m_pAPtarget->m_pMavlink);
+
+	IF_F(m_tStamp - m_pAPtarget->m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC * 100);
+
+	vDouble3 apPos = m_pAPtarget->getGlobalPos();
+	m_vTargetGlobal.x = apPos.x;
+	m_vTargetGlobal.y = apPos.y;
+	m_targetType = landTarget_global;
 
 	return true;
 }
@@ -187,11 +212,17 @@ void _AP_land::draw(void)
 
 	if(m_targetType == landTarget_IR)
 		addMsg("IR locked", 1);
-	else
+	else if(m_targetType == landTarget_det)
 		addMsg("Tag locked", 1);
+	else if(m_targetType == landTarget_global)
+		addMsg("Global pos", 1);
+	else
+		addMsg("Target Type Unknown");
 
+	addMsg("Local Target");
 	vFloat2 c = m_vTargetBB.center();
-	addMsg("Pos=("+f2str(c.x) + ", " +f2str(c.y)+ "), d=" + f2str(m_dTarget) + ", dHdg=" +f2str(m_dHdg), 1);
+	addMsg("Pos=("+f2str(c.x) + ", " +f2str(c.y)+ "), d=" + f2str(m_dTarget) + ", dHdg=" + f2str(m_dHdg), 1);
+	addMsg("Size=(" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ")", 1);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
