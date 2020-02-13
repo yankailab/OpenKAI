@@ -10,9 +10,11 @@ _AP_land::_AP_land()
 
 	m_altLandMode = 3.0;
 	m_detSizeLandMode = 0.25;
+	m_vRoiDetDescent.init(0.0, 0.0, 1.0, 1.0);
 	m_dTarget = -1.0;
 	m_dHdg = 0.0;
 	m_dzHdg = 360;
+	m_detRdz = 1.0;
 	m_targetType = landTarget_unknown;
 }
 
@@ -28,6 +30,8 @@ bool _AP_land::init(void* pKiss)
 	pK->v("altLandMode", &m_altLandMode);
 	pK->v("detSizeLandMode", &m_detSizeLandMode);
 	pK->v("dzHdg", &m_dzHdg);
+	pK->v("vRoiDetDescent", &m_vRoiDetDescent);
+	pK->v("detRdz", &m_detRdz);
 
 	int wLen = 3;
 	pK->v("wLen",&wLen);
@@ -112,7 +116,19 @@ bool _AP_land::updateTarget(void)
 
 		m_vP.x = m_vTargetBB.midX();
 		m_vP.y = m_vTargetBB.midY();
-		m_vP.z = m_vTargetP.z;
+
+		if(m_vP.x > m_vRoiDetDescent.x &&
+			m_vP.x < m_vRoiDetDescent.z &&
+			m_vP.y > m_vRoiDetDescent.y &&
+			m_vP.y < m_vRoiDetDescent.w
+			)
+		{
+			m_vP.z = m_vTargetP.z;
+		}
+		else
+		{
+			m_vP.z = 0.0;
+		}
 
 		if(abs(m_dHdg) > m_dzHdg)
 		{
@@ -159,7 +175,7 @@ bool _AP_land::findTargetLocal(void)
 			IF_CONT(pO->m_r > minR);
 
 			tO = pO;
-			minR = pO->m_r;
+			minR = pO->m_r * m_detRdz;
 		}
 
 		if(tO)

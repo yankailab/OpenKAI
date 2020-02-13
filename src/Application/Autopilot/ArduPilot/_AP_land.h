@@ -46,9 +46,11 @@ public:
 
 	float m_altLandMode;
 	float m_detSizeLandMode;
+	vFloat4 m_vRoiDetDescent;
 	float m_dTarget;
 	float m_dHdg;
 	float m_dzHdg;
+	float m_detRdz;
 	LAND_TARGET_TYPE m_targetType;
 
 };
