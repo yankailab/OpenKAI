@@ -145,17 +145,17 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
 
 
-	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
-	m_sptGlobal.lat_int = 0.0;
-	m_sptGlobal.lon_int = 0.0;
-	m_sptGlobal.alt = 0.0;
-	m_sptGlobal.vx = 0.0;
-	m_sptGlobal.vy = 0.0;
-	m_sptGlobal.vz = 0.0;
-	m_sptGlobal.yaw = (float) m_vTargetP.w * DEG_RAD;
-	m_sptGlobal.yaw_rate = 0.0;
-	m_sptGlobal.type_mask = 0b0000110111000111;
-	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
+//	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
+//	m_sptGlobal.lat_int = 0.0;
+//	m_sptGlobal.lon_int = 0.0;
+//	m_sptGlobal.alt = 0.0;
+//	m_sptGlobal.vx = 0.0;
+//	m_sptGlobal.vy = 0.0;
+//	m_sptGlobal.vz = 0.0;
+//	m_sptGlobal.yaw = (float) m_vTargetP.w * DEG_RAD;
+//	m_sptGlobal.yaw_rate = 0.0;
+//	m_sptGlobal.type_mask = 0b0000110111000111;
+//	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
 }
 
 void _AP_posCtrl::draw(void)

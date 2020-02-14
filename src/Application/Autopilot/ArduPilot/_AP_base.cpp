@@ -124,10 +124,13 @@ void _AP_base::updateBase(void)
 	}
 
 	//get position
-	m_vGlobalPos.x = ((double)(m_pMavlink->m_mavMsg.global_position_int.lat)) * 1e-7;
-	m_vGlobalPos.y = ((double)(m_pMavlink->m_mavMsg.global_position_int.lon)) * 1e-7;
-	m_vGlobalPos.z = ((double)(m_pMavlink->m_mavMsg.global_position_int.relative_alt)) * 1e-3;
-	m_apHdg = ((double)(m_pMavlink->m_mavMsg.global_position_int.hdg)) * 1e-2;
+	if(m_pMavlink->m_mavMsg.time_stamps.global_position_int > 0)
+	{
+		m_vGlobalPos.x = ((double)(m_pMavlink->m_mavMsg.global_position_int.lat)) * 1e-7;
+		m_vGlobalPos.y = ((double)(m_pMavlink->m_mavMsg.global_position_int.lon)) * 1e-7;
+		m_vGlobalPos.z = ((double)(m_pMavlink->m_mavMsg.global_position_int.relative_alt)) * 1e-3;
+		m_apHdg = ((double)(m_pMavlink->m_mavMsg.global_position_int.hdg)) * 1e-2;
+	}
 
 	m_vLocalPos.x = m_pMavlink->m_mavMsg.local_position_ned.x;
 	m_vLocalPos.y = m_pMavlink->m_mavMsg.local_position_ned.y;

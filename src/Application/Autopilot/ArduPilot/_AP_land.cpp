@@ -205,12 +205,14 @@ bool _AP_land::findTargetLocal(void)
 bool _AP_land::findTargetGlobal(void)
 {
 	IF_F(check()<0);
-	IF_F(!m_pAPtarget);
-	IF_F(!m_pAPtarget->m_pMavlink);
-
-	IF_F(m_tStamp - m_pAPtarget->m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC * 100);
+	NULL_F(m_pAPtarget);
+	NULL_F(m_pAPtarget->m_pMavlink);
+	IF_F(m_pAPtarget->m_pMavlink->m_mavMsg.time_stamps.global_position_int <= 0);
 
 	vDouble3 apPos = m_pAPtarget->getGlobalPos();
+	IF_F(EAQ(apPos.x, 0.0, 1e-7));
+	IF_F(EAQ(apPos.y, 0.0, 1e-7));
+
 	m_vTargetGlobal.x = apPos.x;
 	m_vTargetGlobal.y = apPos.y;
 	m_targetType = landTarget_global;
