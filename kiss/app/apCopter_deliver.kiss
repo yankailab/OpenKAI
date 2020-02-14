@@ -216,13 +216,13 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":-1.0,
+	"P":-5.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-3.0,
+	"oMax":3.0,
 }
 
 {
@@ -231,13 +231,13 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":1.0,
+	"P":5.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-3.0,
+	"oMax":3.0,
 }
 
 
@@ -348,13 +348,13 @@
 	"vTargetP":[0.5, 0.5, 0.3, 0.0],
 	"vYaw":0.0,
 	
-	"vTargetGlobal":[0.0, 0.0, 15.0, 0.0],
+	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
 	
-	"vRoiDetDescent":[0.25, 0.25, 0.75, 0.75],
+	"vRoiDetDescent":[0.1, 0.1, 0.9, 0.9],
 	"detRdz":0.9,
 	"dzHdg":360.0,
 	"wLen":5,
-	"altLandMode":0.6,
+	"altLandMode":0.65,
 	"detSizeLandMode":0.15,
 	
 	{
@@ -424,4 +424,3 @@
 		"pwm":2000,
 	}	
 }
-
