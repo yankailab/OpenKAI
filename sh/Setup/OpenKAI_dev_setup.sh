@@ -28,6 +28,11 @@ sudo apt-get -y purge whoopsie
 sudo systemctl stop ModemManager
 sudo apt-get -y purge modemmanager
 
+systemctl stop nvgetty 
+systemctl disable nvgetty 
+udevadm trigger
+sudo reboot now
+
 #----------------------------------------------------
 sudo apt-get update
 

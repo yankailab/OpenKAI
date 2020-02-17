@@ -1,0 +1,42 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":0,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"TCP",
+	"class":"_TCPclient",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"addr":"39.96.35.206",
+	"port":19508,
+	"_wakeUp":"CETCUS",
+}
+
+{
+	"name":"CETCUS",
+	"class":"_CETCUS",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"_IOBase":"TCP",
+	"Console":"OKconsole",
+	"uavNo":"UAS057128001",
+}
+
