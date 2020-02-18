@@ -20,8 +20,10 @@ public:
 	JSON(void);
 	~JSON(void);
 
-	bool parse(string json);
+	bool parse(string& json);
 	int checkErrorNum(void);
+
+	bool v(const string& name, picojson::value* pVal);
 
 	bool v(const string& name, int* pVal);
 	bool v(const string& name, bool* pVal);

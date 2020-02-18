@@ -84,7 +84,8 @@ bool Kiss::parse(string* pStr)
 
 	} while (1);
 
-	if (!m_json.parse("{" + (*pStr) + "}"))
+	string jstr = "{" + (*pStr) + "}";
+	if (!m_json.parse(jstr))
 		return false;
 
 	m_json.v("name", &m_name);

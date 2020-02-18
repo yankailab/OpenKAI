@@ -11,7 +11,7 @@ JSON::~JSON(void)
 {
 }
 
-bool JSON::parse(string json)
+bool JSON::parse(string& json)
 {
 	string error;
 	const char* jsonstr = json.c_str();
@@ -19,6 +19,17 @@ bool JSON::parse(string json)
 
 	IF_F(!m_JSON.is<object>());
 
+	return true;
+}
+
+bool JSON::v(const string& name, picojson::value* pVal)
+{
+	IF_F(!m_JSON.is<object>());
+
+	value var = m_JSON.get(name);
+	IF_F(!var.is<object>());
+
+	*pVal = var;
 	return true;
 }
 

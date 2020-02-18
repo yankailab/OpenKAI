@@ -20,7 +20,7 @@
 	"class":"_TCPclient",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"addr":"39.96.35.206",
@@ -31,7 +31,7 @@
 {
 	"name":"CETCUS",
 	"class":"_CETCUS",
-	"FPS":30,
+	"FPS":1,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
