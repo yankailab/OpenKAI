@@ -29,7 +29,7 @@ sudo systemctl stop ModemManager
 sudo apt-get -y purge modemmanager
 
 systemctl stop nvgetty 
-systemctl disable nvgetty 
+systemctl disable nvgetty
 udevadm trigger
 sudo reboot now
 
@@ -142,6 +142,8 @@ sudo modprobe v4l2loopback
 
 # Test
 gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+
+gphoto2 --capture-image-and-download --filename /tmp/hoge.jpg
 
 #----------------------------------------------------
 # OpenCV

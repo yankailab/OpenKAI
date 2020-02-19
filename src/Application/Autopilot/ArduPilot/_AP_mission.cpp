@@ -71,18 +71,18 @@ void _AP_mission::updateMission(void)
 	int apMode = m_pAP->getApMode();
 	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.m_mission_current.seq;
 
-	if(apMode == ALT_HOLD ||
-		apMode == LOITER ||
-		apMode == STABILIZE
+	if(apMode == AP_COPTER_ALT_HOLD ||
+		apMode == AP_COPTER_LOITER ||
+		apMode == AP_COPTER_STABILIZE
 	)
 	{
 		m_pMC->transit("STANDBY");
 		return;
 	}
 
-	if(apMode == AUTO && apMissionSeq == m_iWP)
+	if(apMode == AP_COPTER_AUTO && apMissionSeq == m_iWP)
 	{
-		m_pAP->setApMode(GUIDED);
+		m_pAP->setApMode(AP_COPTER_GUIDED);
 		return;
 	}
 
@@ -90,16 +90,16 @@ void _AP_mission::updateMission(void)
 
 	if(mission == "RTH")
 	{
-		IF_(apMode == ALT_HOLD);
-		IF_(apMode == LOITER);
-		IF_(apMode == STABILIZE);
-		IF_(apMode == RTL);
+		IF_(apMode == AP_COPTER_ALT_HOLD);
+		IF_(apMode == AP_COPTER_LOITER);
+		IF_(apMode == AP_COPTER_STABILIZE);
+		IF_(apMode == AP_COPTER_RTL);
 
-		m_pAP->setApMode(RTL);
+		m_pAP->setApMode(AP_COPTER_RTL);
 		return;
 	}
 
-	if(apMode == GUIDED)
+	if(apMode == AP_COPTER_GUIDED)
 	{
 		IF_(mission == "RELEASE");
 		IF_(mission == "RTH");

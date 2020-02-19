@@ -8,6 +8,8 @@ _AP_base::_AP_base()
 	m_pMavlink = NULL;
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
+
+	m_apType = ardupilot_copter;
 	m_apMode = 0;
 	m_lastApMode = 0xffffffff;
 	m_bApModeChanged = false;
@@ -36,6 +38,7 @@ bool _AP_base::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
+	pK->v("apType",(int*)&m_apType);
 	pK->v("freqSendHeartbeat",&m_freqSendHeartbeat);
 	pK->v("freqRawSensors",&m_freqRawSensors);
 	pK->v("freqExtStat",&m_freqExtStat);
@@ -190,9 +193,9 @@ uint32_t _AP_base::getApMode(void)
 
 string _AP_base::getApModeName(void)
 {
-	if(m_apMode >= AP_N_CUSTOM_MODE)return "UNDEFINED";
+	if(m_apMode >= AP_N_CUSTOM_MODE)return "?";
 
-	return custom_mode_name[m_apMode];
+	return AP_CUSTOM_MODE_NAME[m_apType][m_apMode];
 }
 
 bool _AP_base::bApModeChanged(void)

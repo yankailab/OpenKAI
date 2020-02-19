@@ -96,13 +96,13 @@ void _AP_avoid::updateTarget(void)
 
 	m_obs = o;
 
-	if(m_pAP->m_apMode == LOITER)
+	if(m_pAP->m_apMode == AP_COPTER_LOITER)
 	{
 		LOG_I("Already Loiter");
 		return;
 	}
 
-	m_pAP->setApMode(LOITER);
+	m_pAP->setApMode(AP_COPTER_LOITER);
 	LOG_I("Set Loiter");
 }
 

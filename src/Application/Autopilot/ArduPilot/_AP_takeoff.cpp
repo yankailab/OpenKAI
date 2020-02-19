@@ -71,21 +71,21 @@ void _AP_takeoff::updateMission(void)
 	int apMode = m_pAP->getApMode();
 	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.m_mission_current.seq;
 
-	if(apMode == ALT_HOLD)
+	if(apMode == AP_COPTER_ALT_HOLD)
 	{
 		m_pMC->transit("STANDBY");
 		return;
 	}
 
-	if(apMode == AUTO && apMissionSeq == m_iWP)
+	if(apMode == AP_COPTER_AUTO && apMissionSeq == m_iWP)
 	{
-		m_pAP->setApMode(GUIDED);
+		m_pAP->setApMode(AP_COPTER_GUIDED);
 		return;
 	}
 
 	string mission = m_pMC->getCurrentMissionName();
 
-	if(apMode == GUIDED)
+	if(apMode == AP_COPTER_GUIDED)
 	{
 		IF_(mission == "RELEASE");
 
@@ -98,7 +98,7 @@ void _AP_takeoff::updateMission(void)
 
 	if(mission == "RTH")
 	{
-		m_pAP->setApMode(RTL);
+		m_pAP->setApMode(AP_COPTER_RTL);
 		return;
 	}
 }

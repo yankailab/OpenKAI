@@ -86,7 +86,7 @@ VISION_TYPE _VisionBase::getType(void)
 
 bool _VisionBase::open(void)
 {
-	return false;
+	return true;
 }
 
 bool _VisionBase::isOpened(void)

@@ -126,6 +126,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_WP);
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
+	ADD_MODULE(_AP_shutter);
 
 	ADD_MODULE(_Rover_avoid);
 	ADD_MODULE(_Rover_base);
@@ -174,7 +175,6 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSense);
 	ADD_MODULE(_RStracking);
-	ADD_MODULE(_AP_takePhoto);
 #endif
 #ifdef USE_PYLON
 	ADD_MODULE(_Pylon);

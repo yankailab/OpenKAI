@@ -29,11 +29,11 @@
 #include "../Application/Autopilot/ArduPilot/_AP_slam.h"
 #include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
-#include "../Application/Autopilot/ArduPilot/_AP_takePhoto.h"
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AP_WP.h"
 #include "../Application/Autopilot/ArduPilot/_AP_link.h"
 #include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
+#include "../Application/Autopilot/ArduPilot/_AP_shutter.h"
 
 #include "../Application/Autopilot/Rover/_Rover_avoid.h"
 #include "../Application/Autopilot/Rover/_Rover_base.h"

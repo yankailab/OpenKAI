@@ -14,11 +14,11 @@ public:
 	_AP_CETCUS();
 	~_AP_CETCUS();
 
-	virtual	bool init(void* pKiss);
-	virtual int check(void);
-	virtual bool start(void);
-	virtual void update(void);
-	virtual void draw(void);
+	bool init(void* pKiss);
+	int check(void);
+	bool start(void);
+	void update(void);
+	void draw(void);
 
 private:
 	bool updateCETCUS(void);
@@ -32,7 +32,6 @@ private:
 	_AP_base* m_pAP;
 	_CETCUS* m_pC;
 
-//	INTERVAL_EVENT m_ieSend;
 };
 
 }

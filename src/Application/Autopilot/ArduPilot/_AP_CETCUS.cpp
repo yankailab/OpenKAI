@@ -7,8 +7,6 @@ _AP_CETCUS::_AP_CETCUS()
 {
 	m_pAP = NULL;
 	m_pC = NULL;
-
-//	m_ieSend.init(100000);
 }
 
 _AP_CETCUS::~_AP_CETCUS()
