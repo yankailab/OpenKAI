@@ -74,17 +74,18 @@ public:
 	void draw(void);
 
 	void setApMode(uint32_t iMode);
+	void setApArm(bool bArm);
+	void setMount(AP_MOUNT& mount);
+
 	uint32_t getApMode(void);
 	string getApModeName(void);
-	int getApModeByName(const string& name);
 	bool bApModeChanged(void);
-
-	void setApArm(bool bArm);
 	bool getApArm(void);
-	void setMount(AP_MOUNT& mount);
 	bool getHomePos(vDouble3* pHome);
-	vDouble3 getGlobalPos(void);
+	vDouble4 getGlobalPos(void);
 	float getApHdg(void);
+	vFloat3 getApSpeed(void);
+	vFloat3 getApAttitude(void);
 
 private:
 	void updateBase(void);
@@ -112,9 +113,10 @@ public:
 
 	bool m_bHomeSet;
 	vDouble3 m_vHomePos;
-	vDouble3 m_vGlobalPos;	//lat, lon, alt in meters
+	vDouble4 m_vGlobalPos;	//lat, lon, alt, relative_alt in meters
 	vDouble3 m_vLocalPos;
 	vFloat3	m_vSpeed;
+	vFloat3 m_vAtti;	//yar, pitch, roll
 	float m_apHdg;		//heading in degree
 };
 

@@ -16,100 +16,100 @@ namespace kai
 
 struct Time_Stamps
 {
-	uint64_t attitude;
-	uint64_t battery_status;
-	uint64_t global_position_int;
-	uint64_t heartbeat;
-	uint64_t highres_imu;
-	uint64_t home_position;
-	uint64_t local_position_ned;
-	uint64_t mission_current;
-	uint64_t mount_status;
-	uint64_t param_set;
-	uint64_t position_target_local_ned;
-	uint64_t position_target_global_int;
-	uint64_t radio_status;
-	uint64_t raw_imu;
-	uint64_t rc_channels_override;
-	uint64_t rc_channels_raw;
-	uint64_t sys_status;
-	uint64_t scaled_imu;
+	uint64_t m_attitude;
+	uint64_t m_battery_status;
+	uint64_t m_global_position_int;
+	uint64_t m_heartbeat;
+	uint64_t m_highres_imu;
+	uint64_t m_home_position;
+	uint64_t m_local_position_ned;
+	uint64_t m_mission_current;
+	uint64_t m_mount_status;
+	uint64_t m_param_set;
+	uint64_t m_position_target_local_ned;
+	uint64_t m_position_target_global_int;
+	uint64_t m_radio_status;
+	uint64_t m_raw_imu;
+	uint64_t m_rc_channels_override;
+	uint64_t m_rc_channels_raw;
+	uint64_t m_sys_status;
+	uint64_t m_scaled_imu;
 
 	void init()
 	{
-		heartbeat = 0;
-		sys_status = 0;
-		battery_status = 0;
-		radio_status = 0;
-		local_position_ned = 0;
-		home_position = 0;
-		global_position_int = 0;
-		position_target_local_ned = 0;
-		position_target_global_int = 0;
-		highres_imu = 0;
-		attitude = 0;
-		raw_imu = 0;
-		rc_channels_override = 0;
-		rc_channels_raw = 0;
-		mission_current = 0;
-		mount_status = 0;
-		param_set = 0;
-		scaled_imu = 0;
+		m_attitude = 0;
+		m_battery_status = 0;
+		m_global_position_int = 0;
+		m_heartbeat = 0;
+		m_highres_imu = 0;
+		m_home_position = 0;
+		m_local_position_ned = 0;
+		m_mission_current = 0;
+		m_mount_status = 0;
+		m_param_set = 0;
+		m_position_target_local_ned = 0;
+		m_position_target_global_int = 0;
+		m_radio_status = 0;
+		m_raw_imu = 0;
+		m_rc_channels_override = 0;
+		m_rc_channels_raw = 0;
+		m_sys_status = 0;
+		m_scaled_imu = 0;
 	}
 };
 
 // Struct containing information on the MAV we are currently connected to
 struct Mavlink_Messages
 {
-	int sysid;
-	int compid;
+	int m_sysid;
+	int m_compid;
 
-	mavlink_attitude_t						attitude;
-	mavlink_battery_status_t				battery_status;
-	mavlink_command_ack_t					command_ack;
-	mavlink_global_position_int_t			global_position_int;
-	mavlink_heartbeat_t						heartbeat;
-	mavlink_highres_imu_t					highres_imu;
-	mavlink_home_position_t					home_position;
-	mavlink_local_position_ned_t			local_position_ned;
-	mavlink_mission_current_t				mission_current;
-	mavlink_mount_status_t					mount_status;
-	mavlink_param_set_t						param_set;
-	mavlink_position_target_local_ned_t		position_target_local_ned;
-	mavlink_position_target_global_int_t	position_target_global_int;
-	mavlink_radio_status_t					radio_status;
-	mavlink_raw_imu_t						raw_imu;
-	mavlink_rc_channels_override_t			rc_channels_override;
-	mavlink_rc_channels_raw_t				rc_channels_raw;
-	mavlink_sys_status_t					sys_status;
-	mavlink_scaled_imu_t					scaled_imu;
+	mavlink_attitude_t						m_attitude;
+	mavlink_battery_status_t				m_battery_status;
+	mavlink_command_ack_t					m_command_ack;
+	mavlink_global_position_int_t			m_global_position_int;
+	mavlink_heartbeat_t						m_heartbeat;
+	mavlink_highres_imu_t					m_highres_imu;
+	mavlink_home_position_t					m_home_position;
+	mavlink_local_position_ned_t			m_local_position_ned;
+	mavlink_mission_current_t				m_mission_current;
+	mavlink_mount_status_t					m_mount_status;
+	mavlink_param_set_t						m_param_set;
+	mavlink_position_target_local_ned_t		m_position_target_local_ned;
+	mavlink_position_target_global_int_t	m_position_target_global_int;
+	mavlink_radio_status_t					m_radio_status;
+	mavlink_raw_imu_t						m_raw_imu;
+	mavlink_rc_channels_override_t			m_rc_channels_override;
+	mavlink_rc_channels_raw_t				m_rc_channels_raw;
+	mavlink_sys_status_t					m_sys_status;
+	mavlink_scaled_imu_t					m_scaled_imu;
 
-	Time_Stamps time_stamps;
+	Time_Stamps m_tStamps;
 
 	void init(void)
 	{
-		attitude.yaw = 0;
-		attitude.yawspeed = 0;
-		attitude.pitch = 0;
-		attitude.pitchspeed = 0;
-		attitude.roll = 0;
-		attitude.rollspeed = 0;
-		global_position_int.alt = 0;
-		global_position_int.lat = 0.0;
-		global_position_int.lon = 0.0;
-		global_position_int.relative_alt = 0;
-		global_position_int.hdg = UINT16_MAX;
-		heartbeat.custom_mode = 0;
-		mission_current.seq = 0;
+		m_attitude.yaw = 0;
+		m_attitude.yawspeed = 0;
+		m_attitude.pitch = 0;
+		m_attitude.pitchspeed = 0;
+		m_attitude.roll = 0;
+		m_attitude.rollspeed = 0;
+		m_global_position_int.alt = 0;
+		m_global_position_int.lat = 0.0;
+		m_global_position_int.lon = 0.0;
+		m_global_position_int.relative_alt = 0;
+		m_global_position_int.hdg = UINT16_MAX;
+		m_heartbeat.custom_mode = 0;
+		m_mission_current.seq = 0;
 
-		local_position_ned.vx = 0;
-		local_position_ned.vy = 0;
-		local_position_ned.vz = 0;
-		local_position_ned.x = 0;
-		local_position_ned.y = 0;
-		local_position_ned.z = 0;
+		m_local_position_ned.vx = 0;
+		m_local_position_ned.vy = 0;
+		m_local_position_ned.vz = 0;
+		m_local_position_ned.x = 0;
+		m_local_position_ned.y = 0;
+		m_local_position_ned.z = 0;
 
-		time_stamps.init();
+		m_tStamps.init();
 	}
 };
 

@@ -356,8 +356,8 @@ void _LeddarVu::draw(void)
 
 	for(int i=0; i<m_nDiv; i++)
 	{
-		double radFrom = (i*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
-		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * camFovH * DEG_RAD;
+		double radFrom = (i*m_dDeg + m_showDegOffset) * camFovH * DEG2RAD;
+		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * camFovH * DEG2RAD;
 		double d = m_pDiv[i].d() * m_showScale;
 
 		vDouble2 pFrom,pTo;

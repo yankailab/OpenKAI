@@ -69,7 +69,7 @@ void _AP_takeoff::updateMission(void)
 	IF_(check()<0);
 
 	int apMode = m_pAP->getApMode();
-	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.mission_current.seq;
+	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.m_mission_current.seq;
 
 	if(apMode == ALT_HOLD)
 	{

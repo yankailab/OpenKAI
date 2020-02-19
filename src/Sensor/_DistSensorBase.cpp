@@ -139,7 +139,7 @@ double _DistSensorBase::dMin(void)
 		double d = m_pDiv[i].dAvr();
 		IF_CONT(d < 0.0);
 
-		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		d *= cos((i*m_dDeg - degMid)*DEG2RAD);
 		IF_CONT(d >= dist);
 
 		dist = d;
@@ -163,7 +163,7 @@ double _DistSensorBase::dMax(void)
 		double d = m_pDiv[i].dAvr();
 		IF_CONT(d < 0.0);
 
-		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		d *= cos((i*m_dDeg - degMid)*DEG2RAD);
 		IF_CONT(d <= dist);
 
 		dist = d;
@@ -187,7 +187,7 @@ double _DistSensorBase::dAvr(void)
 		double d = m_pDiv[i].dAvr();
 		IF_CONT(d < 0.0);
 
-		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		d *= cos((i*m_dDeg - degMid)*DEG2RAD);
 		dist += d;
 		n++;
 	}
@@ -218,7 +218,7 @@ double _DistSensorBase::dMin(double degFrom, double degTo)
 		double d = m_pDiv[iDiv].dAvr();
 		IF_CONT(d < 0.0);
 
-		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		d *= cos((i*m_dDeg - degMid)*DEG2RAD);
 		IF_CONT(d >= dist);
 
 		dist = d;
@@ -251,7 +251,7 @@ double _DistSensorBase::dMax(double degFrom, double degTo)
 		double d = m_pDiv[iDiv].dAvr();
 		IF_CONT(d < 0.0);
 
-		d *= cos((i*m_dDeg - degMid)*DEG_RAD);
+		d *= cos((i*m_dDeg - degMid)*DEG2RAD);
 		IF_CONT(d <= dist);
 
 		dist = d;
@@ -314,7 +314,7 @@ void _DistSensorBase::draw(void)
 
 	//Plot lidar result
 	double rad = 0.0;
-	double dRad = m_dDeg * DEG_RAD;
+	double dRad = m_dDeg * DEG2RAD;
 
 	for (int i = 0; i < m_nDiv; i++)
 	{

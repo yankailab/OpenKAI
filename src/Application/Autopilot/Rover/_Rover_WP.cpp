@@ -99,8 +99,8 @@ void _Rover_WP::updateWP(void)
 		pW->m_dWP = 1;
 	}
 
-	m_vPos.x = m_pMavlink->m_mavMsg.global_position_int.lat * 1e-7;
-	m_vPos.y = m_pMavlink->m_mavMsg.global_position_int.lon * 1e-7;
+	m_vPos.x = m_pMavlink->m_mavMsg.m_global_position_int.lat * 1e-7;
+	m_vPos.y = m_pMavlink->m_mavMsg.m_global_position_int.lon * 1e-7;
 	m_vPos.z = -1.0;
 	m_vPos.w = -1.0;
 
@@ -134,8 +134,8 @@ void _Rover_WP::updateRecord(void)
 		m_vWP.clear();
 
 	vDouble4 vP;
-	vP.x = m_pMavlink->m_mavMsg.global_position_int.lat * 1e-7;
-	vP.y = m_pMavlink->m_mavMsg.global_position_int.lon * 1e-7;
+	vP.x = m_pMavlink->m_mavMsg.m_global_position_int.lat * 1e-7;
+	vP.y = m_pMavlink->m_mavMsg.m_global_position_int.lon * 1e-7;
 	vP.z = -1.0;
 	vP.w = -1.0;
 
@@ -173,8 +173,8 @@ void _Rover_WP::draw(void)
 		return;
 	}
 
-	msg = "lat=" + lf2str(m_pMavlink->m_mavMsg.global_position_int.lat * 1e-7,7)
-		  + ", lon=" + lf2str(m_pMavlink->m_mavMsg.global_position_int.lon * 1e-7,7)
+	msg = "lat=" + lf2str(m_pMavlink->m_mavMsg.m_global_position_int.lat * 1e-7,7)
+		  + ", lon=" + lf2str(m_pMavlink->m_mavMsg.m_global_position_int.lon * 1e-7,7)
 		  + ", targetHdgOffset=" + f2str(m_ctrl.m_targetHdgOffset)
 		  + ", nTargetSpeed=" + f2str(m_ctrl.m_nTargetSpeed);
 	addMsg(msg);

@@ -71,7 +71,7 @@ void _AP_RTH::update(void)
 	RTH* pRTH = (RTH*)m_pMC->getCurrentMission();
 	NULL_(pRTH);
 
-	m_pAP->setMount(m_apMount);
+/*	m_pAP->setMount(m_apMount);
 
 	vDouble3 p;
 
@@ -116,6 +116,7 @@ void _AP_RTH::update(void)
 
 	spt.type_mask = 0b0000000111111000;
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(spt);
+*/
 }
 
 void _AP_RTH::draw(void)

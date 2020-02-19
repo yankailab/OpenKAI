@@ -20,6 +20,7 @@ _CETCUS::_CETCUS()
 	m_flyStatus = cetcus_standby;
 	m_vPos.init();
 	m_vAtti.init();
+	m_course = 0.0;
 	m_vSpeed.init();
 	m_remainOil = 0.0;
 	m_remainDist = 0.0;
@@ -232,12 +233,12 @@ void _CETCUS::flightSend(picojson::object& jo)
 	m_airlineName = d["airline_name"].get<string>();
 	m_uavNo = d["uav_no"].get<string>();
 	m_wpStart.m_name = d["startpoint_name"].get<string>();
-	m_wpStart.m_vPos.x = d["start_point_lon"].get<double>();
-	m_wpStart.m_vPos.y = d["start_point_lat"].get<double>();
+	m_wpStart.m_vPos.y = d["start_point_lon"].get<double>();
+	m_wpStart.m_vPos.x = d["start_point_lat"].get<double>();
 	m_wpStart.m_vPos.z = d["start_point_alt"].get<double>();
 	m_wpEnd.m_name = d["endpoint_name"].get<string>();
-	m_wpEnd.m_vPos.x = d["end_point_lon"].get<double>();
-	m_wpEnd.m_vPos.y = d["end_point_lat"].get<double>();
+	m_wpEnd.m_vPos.y = d["end_point_lon"].get<double>();
+	m_wpEnd.m_vPos.x = d["end_point_lat"].get<double>();
 	m_wpEnd.m_vPos.z = d["end_point_alt"].get<double>();
 	m_startTime = d["start_time"].get<string>();
 	m_endTime = d["end_name"].get<string>();
@@ -251,8 +252,8 @@ void _CETCUS::flightSend(picojson::object& jo)
 
 		CETCUS_WAYPOINT cw;
 		cw.m_id = wo["id"].get<int>();
-		cw.m_vPos.x = wo["lon"].get<double>();
-		cw.m_vPos.y = wo["lat"].get<double>();
+		cw.m_vPos.y = wo["lon"].get<double>();
+		cw.m_vPos.x = wo["lat"].get<double>();
 		cw.m_vPos.z = wo["alt"].get<double>();
 		cw.m_vPos.w = wo["ground_alt"].get<double>();
 
@@ -289,6 +290,8 @@ void _CETCUS::command(picojson::object& jo)
 	string msgID = d["message_id"].get<string>();
 	CETCUS_CMD cmd = (CETCUS_CMD)d["cmd_name"].get<double>();
 
+	//TODO:
+
 	LOG_I("Received command");
 }
 
@@ -323,8 +326,8 @@ void _CETCUS::startFly(void)
 	o.insert(make_pair("time", value(tFormat())));
 	o.insert(make_pair("airline_no", value(m_airlineNo)));
 	o.insert(make_pair("start_point_name", value(m_wpStart.m_name)));
-	o.insert(make_pair("start_point_lon", value(lf2str(m_wpStart.m_vPos.x,8))));
-	o.insert(make_pair("start_point_lat", value(lf2str(m_wpStart.m_vPos.y,8))));
+	o.insert(make_pair("start_point_lon", value(lf2str(m_wpStart.m_vPos.y,8))));
+	o.insert(make_pair("start_point_lat", value(lf2str(m_wpStart.m_vPos.x,8))));
 	o.insert(make_pair("start_point_alt", value(lf2str(m_wpStart.m_vPos.z,8))));
 
 	picojson::array wpA;
@@ -333,8 +336,8 @@ void _CETCUS::startFly(void)
 		CETCUS_WAYPOINT* pWP = &m_vWP[i];
 		object wp;
 		wp.insert(make_pair("id", value(i2str(pWP->m_id))));
-		wp.insert(make_pair("lon", value(lf2str(pWP->m_vPos.x,8))));
-		wp.insert(make_pair("lat", value(lf2str(pWP->m_vPos.y,8))));
+		wp.insert(make_pair("lon", value(lf2str(pWP->m_vPos.y,8))));
+		wp.insert(make_pair("lat", value(lf2str(pWP->m_vPos.x,8))));
 		wp.insert(make_pair("alt", value(lf2str(pWP->m_vPos.z,8))));
 		wp.insert(make_pair("ground_alt", value(lf2str(pWP->m_vPos.w,8))));
 
@@ -343,8 +346,8 @@ void _CETCUS::startFly(void)
 	o.insert(make_pair("waypoints", value(wpA)));
 
 	o.insert(make_pair("end_point_name", value(m_wpEnd.m_name)));
-	o.insert(make_pair("end_point_lon", value(lf2str(m_wpEnd.m_vPos.x,8))));
-	o.insert(make_pair("end_point_lat", value(lf2str(m_wpEnd.m_vPos.y,8))));
+	o.insert(make_pair("end_point_lon", value(lf2str(m_wpEnd.m_vPos.y,8))));
+	o.insert(make_pair("end_point_lat", value(lf2str(m_wpEnd.m_vPos.x,8))));
 	o.insert(make_pair("end_point_alt", value(lf2str(m_wpEnd.m_vPos.z,8))));
 
 	string msg = picojson::value(o).serialize() + m_msgFinishSend;
@@ -356,17 +359,6 @@ void _CETCUS::detailUpload(void)
 {
 	IF_(check()<0);
 
-
-
-	m_flyStatus = cetcus_cruise;
-	m_vPos.x = 139.517660;
-	m_vPos.y = 35.854645;
-	m_vPos.z = 1.0;
-	m_remainOil = 0.5;
-
-
-
-
 	picojson::object o;
 	o.insert(make_pair("action", value(string("detail_upload"))));
 
@@ -376,11 +368,11 @@ void _CETCUS::detailUpload(void)
 	d.insert(make_pair("uav_no", value(m_uavNo)));
 	d.insert(make_pair("fly_status", value((double)m_flyStatus)));
 	d.insert(make_pair("time", value(tFormat())));
-	d.insert(make_pair("lon", value(m_vPos.x)));
-	d.insert(make_pair("lat", value(m_vPos.y)));
+	d.insert(make_pair("lon", value(m_vPos.y)));
+	d.insert(make_pair("lat", value(m_vPos.x)));
 	d.insert(make_pair("alt", value(m_vPos.z)));
 	d.insert(make_pair("ground_alt", value(m_vPos.w)));
-	d.insert(make_pair("course", value(m_vAtti.w)));
+	d.insert(make_pair("course", value(m_course)));
 	d.insert(make_pair("velocity_c", value(m_vSpeed.x)));
 	d.insert(make_pair("pitch", value(m_vAtti.y)));
 	d.insert(make_pair("roll", value(m_vAtti.z)));

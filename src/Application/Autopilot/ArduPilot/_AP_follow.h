@@ -4,9 +4,7 @@
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Tracker/_TrackerBase.h"
-#include "../../_AutopilotBase.h"
 #include "../ArduPilot/_AP_base.h"
-#include "../ArduPilot/_AP_link.h"
 #include "../ArduPilot/_AP_posCtrl.h"
 
 namespace kai

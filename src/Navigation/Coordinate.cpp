@@ -20,7 +20,7 @@ Coordinate::~Coordinate()
 
 UTM_POS Coordinate::offset(UTM_POS& UTM, vDouble3& dNEA)
 {
-	double hdgRad = UTM.m_hdg * DEG_RAD;
+	double hdgRad = UTM.m_hdg * DEG2RAD;
 	double sinH = sin(hdgRad);
 	double cosH = cos(hdgRad);
 
@@ -39,7 +39,7 @@ LL_POS Coordinate::offset(LL_POS& LL, vDouble3& dNEA)
 
 	LL_POS oLL = LL;
 	double d = sqrt(dNEA.x*dNEA.x + dNEA.y*dNEA.y) * OV_R_EARTH;
-	double tc = oLL.m_hdg*DEG_RAD + atan2(dNEA.y, dNEA.x);	//true course
+	double tc = oLL.m_hdg*DEG2RAD + atan2(dNEA.y, dNEA.x);	//true course
 
 	double sinLat = sin(LL.m_lat);
 	double cosLat = cos(LL.m_lat);

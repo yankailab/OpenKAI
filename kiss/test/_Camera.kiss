@@ -32,7 +32,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"deviceID":0,
+	"deviceID":1,
 	"w":640,
 	"h":480,
 }

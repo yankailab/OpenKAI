@@ -125,6 +125,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_followClient);
 	ADD_MODULE(_AP_WP);
 	ADD_MODULE(_AP_link);
+	ADD_MODULE(_AP_CETCUS);
 
 	ADD_MODULE(_Rover_avoid);
 	ADD_MODULE(_Rover_base);

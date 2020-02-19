@@ -104,13 +104,13 @@ void _Rover_base::updateRover(void)
 
 
 	//sensor
-	if(m_tStamp - m_pMavlink->m_mavMsg.time_stamps.global_position_int > USEC_1SEC)
+	if(m_tStamp - m_pMavlink->m_mavMsg.m_tStamps.m_global_position_int > USEC_1SEC)
 	{
 		m_pMavlink->requestDataStream(MAV_DATA_STREAM_POSITION, 5);
 		return;
 	}
 
-	uint16_t h = m_pMavlink->m_mavMsg.global_position_int.hdg;
+	uint16_t h = m_pMavlink->m_mavMsg.m_global_position_int.hdg;
 	if(h < UINT16_MAX)
 	{
 		m_ctrl.m_hdg = (float)h * 1e-2;

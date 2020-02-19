@@ -51,7 +51,7 @@ struct CETCUS_WAYPOINT
 {
 	string m_name;
 	int m_id;
-	vDouble4 m_vPos; //lon, lat, alt, ground_alt
+	vDouble4 m_vPos; //lat, lon, alt, ground_alt
 
 	void init(void)
 	{
@@ -105,7 +105,7 @@ private:
 		return NULL;
 	}
 
-private:
+public:
 	_IOBase* m_pIO;
 
 	string m_msgFinishSend;
@@ -119,8 +119,9 @@ private:
 	string m_endTime;
 	string m_flyID;
 	CETCUS_FLY_STATUS m_flyStatus;
-	vDouble4 m_vPos;	//lon, lat, alt, ground_alt
-	vDouble4 m_vAtti;	//yaw, pitch, roll, heading
+	vDouble4 m_vPos;	//lat, lon, alt, ground_alt
+	vFloat3 m_vAtti;	//yaw, pitch, roll
+	float	m_course;
 	vDouble4 m_vSpeed;	//velocity_c, true_airspeed, ground_speed
 	float m_remainOil;
 	float m_remainDist;

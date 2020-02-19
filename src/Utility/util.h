@@ -200,17 +200,17 @@ template <typename T> inline T dHdg(T hFrom, T hTo)
 
 inline double bearing(double lat1, double lon1, double lat2, double lon2)
 {
-	lat1 *= DEG_RAD;
-	lon1 *= DEG_RAD;
-	lat2 *= DEG_RAD;
-	lon2 *= DEG_RAD;
+	lat1 *= DEG2RAD;
+	lon1 *= DEG2RAD;
+	lat2 *= DEG2RAD;
+	lon2 *= DEG2RAD;
 
     double dLon = lon2 - lon1;
     double y = sin(dLon) * cos(lat2);
     double x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
 
     double bearing = atan2(y, x);
-    bearing *= RAD_DEG;
+    bearing *= RAD2DEG;
     bearing = Hdg(bearing);
 //    bearing = 360 - bearing; // count degrees counter-clockwise - remove to make clockwise
 

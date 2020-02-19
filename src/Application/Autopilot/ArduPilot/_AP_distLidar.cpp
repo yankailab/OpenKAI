@@ -115,8 +115,8 @@ void _AP_distLidar::draw(void)
 	{
 		DIST_LIDAR_SECTION* pS = &m_pSection[i];
 
-		double radFrom = pS->m_degFrom * DEG_RAD;
-		double radTo = pS->m_degTo * DEG_RAD;
+		double radFrom = pS->m_degFrom * DEG2RAD;
+		double radTo = pS->m_degTo * DEG2RAD;
 		double d = pS->m_minD * m_pDS->m_showScale / cos(0.5 * (radFrom + radTo) - radFrom);
 
 		vDouble2 pFrom,pTo;

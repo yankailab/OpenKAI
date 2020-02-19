@@ -16,6 +16,30 @@
 }
 
 {
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"apSerial",
+}
+
+{
 	"name":"TCP",
 	"class":"_TCPclient",
 	"bInst":1,
@@ -40,3 +64,31 @@
 	"uavNo":"UAS057128001",
 }
 
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"FPS":10,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_Mavlink":"mavAP",
+	"freqSendHeartbeat":1,
+	"freqRawSensors":0,
+	"freqExtStat":5,
+	"freqRC":0,
+	"freqPos":5,
+	"freqExtra1":5,
+}
+
+{
+	"name":"apCETCUS",
+	"class":"_AP_CETCUS",
+	"FPS":2,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_AP_base":"apBase",
+	"_CETCUS":"CETCUS",
+}

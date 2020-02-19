@@ -62,7 +62,7 @@ bool _AP_posCtrl::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
@@ -95,8 +95,8 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vx = p;		//forward
 	m_sptLocal.vy = r;		//right
 	m_sptLocal.vz = a;		//down
-	m_sptLocal.yaw = (float) m_vP.w * DEG_RAD;
-	m_sptLocal.yaw_rate = (float) m_vYaw * DEG_RAD;
+	m_sptLocal.yaw = (float) m_vP.w * DEG2RAD;
+	m_sptLocal.yaw_rate = (float) m_vYaw * DEG2RAD;
 	m_sptLocal.type_mask  = 0b0000110111000111;	//set velocity
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
@@ -111,8 +111,8 @@ void _AP_posCtrl::setPosGlobal(void)
 	m_sptGlobal.vx = 0.0;
 	m_sptGlobal.vy = 0.0;
 	m_sptGlobal.vz = 0.0;
-	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG_RAD;
-	m_sptGlobal.yaw_rate = m_vYaw * DEG_RAD;
+	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG2RAD;
+	m_sptGlobal.yaw_rate = m_vYaw * DEG2RAD;
 	m_sptGlobal.type_mask = 0b0000110111111000; //set position
 
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
@@ -139,7 +139,7 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_sptLocal.vx = 0;
 	m_sptLocal.vy = 0;
 	m_sptLocal.vz = 0;
-	m_sptLocal.yaw = (float) m_vTargetP.w * DEG_RAD;
+	m_sptLocal.yaw = (float) m_vTargetP.w * DEG2RAD;
 	m_sptLocal.yaw_rate = 0.0;
 	m_sptLocal.type_mask = 0b0000110111000111;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
