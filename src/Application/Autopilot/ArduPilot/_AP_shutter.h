@@ -39,13 +39,15 @@ private:
 
 	string m_dir;
 	string m_subDir;
-	int m_iTake;
-	INTERVAL_EVENT m_ieShutter;
-
 	bool m_bFlipRGB;
 	bool m_bFlipD;
 	vector<int> m_compress;
 	int m_quality;
+
+	int m_iTake;
+	INTERVAL_EVENT m_ieShutter;
+	uint64_t m_tHold;
+	uint32_t m_apModeShutter;
 
 	_DetectorBase* m_pDet;
 	int m_iTag;

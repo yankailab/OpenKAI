@@ -115,8 +115,8 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"/port":"/dev/ttyTHS1",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -215,14 +215,18 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
+	"activeMission":["STANDBY"],
+	"_VisionBase":"cam",
 	"_DepthVisionBase":"cam",
-	"_GPhoto":"gphoto",
+	"/_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
 	"_AP_base":"apBase",
-	"dir":"/home/",
+	"dir":"/home/kai/dev/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
+	"tHold":1000000,
+	"apModeShutter":4,
 }
 
 {

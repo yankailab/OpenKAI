@@ -20,6 +20,8 @@ _AP_shutter::_AP_shutter()
 	m_bFlipD = false;
 
 	m_iTag = -1;
+	m_tHold = USEC_1SEC;
+	m_apModeShutter = AP_ROVER_HOLD;
 
 	//	m_ieSend.init(100000);
 }
@@ -38,6 +40,8 @@ bool _AP_shutter::init(void* pKiss)
 	pK->v("subDir", &m_subDir);
 	pK->v("bFlipRGB", &m_bFlipRGB);
 	pK->v("bFlipD", &m_bFlipD);
+	pK->v("tHold", &m_tHold);
+	pK->v("apModeShutter", &m_apModeShutter);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -53,8 +57,9 @@ bool _AP_shutter::init(void* pKiss)
 	string iName;
 
 	iName = "";
-	pK->v("APcopter_base", &iName);
+	pK->v("_AP_base", &iName);
 	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pAP, "_AP_base:" + iName + " not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
@@ -119,8 +124,8 @@ void _AP_shutter::shutter(void)
 	NULL_(pO);
 	IF_(pO->m_topClass == m_iTag);
 	m_iTag = pO->m_topClass;
-	int apMode = m_pAP->getApMode();
-	m_pAP->setApMode(AP_ROVER_HOLD);
+	uint32_t apMode = m_pAP->getApMode();
+	m_pAP->setApMode(m_apModeShutter);
 
 	string fName;
 	string cmd;
@@ -190,6 +195,8 @@ void _AP_shutter::shutter(void)
 
 	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
+
+	this->sleepTime(m_tHold);
 
 	m_pAP->setApMode(apMode);
 }
