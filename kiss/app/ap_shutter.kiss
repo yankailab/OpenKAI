@@ -225,7 +225,7 @@
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
-	"tHold":1000000,
+	"tDelay":1000000,
 	"apModeShutter":4,
 }
 

@@ -11,6 +11,13 @@
 namespace kai
 {
 
+enum AP_SHUTTER_MODE
+{
+	apShutter_det = 0,
+	apShutter_cont = 1,
+	apShutter_manual = 2,
+};
+
 class _AP_shutter: public _AutopilotBase
 {
 public:
@@ -45,12 +52,14 @@ private:
 	int m_quality;
 
 	int m_iTake;
+	AP_SHUTTER_MODE m_shutterMode;
 	INTERVAL_EVENT m_ieShutter;
-	uint64_t m_tHold;
+	int m_iTag;
+	bool	 m_bModeChange;
+	uint64_t m_tDelay;
 	uint32_t m_apModeShutter;
 
 	_DetectorBase* m_pDet;
-	int m_iTag;
 
 };
 

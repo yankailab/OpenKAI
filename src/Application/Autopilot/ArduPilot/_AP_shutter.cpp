@@ -19,11 +19,13 @@ _AP_shutter::_AP_shutter()
 	m_bFlipRGB = false;
 	m_bFlipD = false;
 
+	m_shutterMode = apShutter_det;
+	m_ieShutter.init(USEC_1SEC);
 	m_iTag = -1;
-	m_tHold = USEC_1SEC;
+	m_bModeChange = true;
+	m_tDelay = USEC_1SEC;
 	m_apModeShutter = AP_ROVER_HOLD;
 
-	//	m_ieSend.init(100000);
 }
 
 _AP_shutter::~_AP_shutter()
@@ -40,8 +42,10 @@ bool _AP_shutter::init(void* pKiss)
 	pK->v("subDir", &m_subDir);
 	pK->v("bFlipRGB", &m_bFlipRGB);
 	pK->v("bFlipD", &m_bFlipD);
-	pK->v("tHold", &m_tHold);
+	pK->v("bModeChange", &m_bModeChange);
+	pK->v("tDelay", &m_tDelay);
 	pK->v("apModeShutter", &m_apModeShutter);
+	pK->v("tInterval", &m_ieShutter.m_tInterval);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -120,15 +124,36 @@ void _AP_shutter::shutter(void)
 	IF_(check()<0);
 	IF_(!bActive());
 
-	OBJECT* pO = m_pDet->at(0);
-	NULL_(pO);
-	IF_(pO->m_topClass == m_iTag);
-	m_iTag = pO->m_topClass;
-	uint32_t apMode = m_pAP->getApMode();
-	m_pAP->setApMode(m_apModeShutter);
+	if(m_shutterMode == apShutter_det)
+	{
+		OBJECT* pO = m_pDet->at(0);
+		NULL_(pO);
+		IF_(pO->m_topClass == m_iTag);
+		m_iTag = pO->m_topClass;
 
-	string fName;
-	string cmd;
+	}
+	else if(m_shutterMode == apShutter_cont)
+	{
+		IF_(m_ieShutter.update(m_tStamp));
+	}
+	else if(m_shutterMode == apShutter_manual)
+	{
+		NULL_(m_pAP);
+		//TODO: read rc in from AP
+	}
+
+
+	uint32_t apModeResume = m_pAP->getApMode();
+	if(m_bModeChange)
+	{
+		while(m_pAP->getApMode()!=m_apModeShutter)
+		{
+			this->sleepTime(USEC_1SEC);
+			m_pAP->setApMode(m_apModeShutter);
+		}
+		this->sleepTime(m_tDelay);
+	}
+
 
 	vDouble4 vP;
 	vP.init();
@@ -143,6 +168,9 @@ void _AP_shutter::shutter(void)
 		lon = lf2str(vP.y, 7);
 		alt = lf2str(vP.z, 3);
 	}
+
+	string fName;
+	string cmd;
 
 	if(m_pV)
 	{
@@ -196,9 +224,11 @@ void _AP_shutter::shutter(void)
 	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
 
-	this->sleepTime(m_tHold);
 
-	m_pAP->setApMode(apMode);
+	if(m_bModeChange)
+	{
+		m_pAP->setApMode(apModeResume);
+	}
 }
 
 void _AP_shutter::draw(void)
