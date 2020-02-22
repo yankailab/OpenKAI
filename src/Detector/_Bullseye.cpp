@@ -74,8 +74,8 @@ void _Bullseye::update(void)
 
 int _Bullseye::check(void)
 {
-	IF__(!m_pVision,-1);
-	IF__(m_pVision->BGR()->bEmpty(),-1);
+	IF__(!m_pV,-1);
+	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;
 }
@@ -84,7 +84,7 @@ void _Bullseye::detect(void)
 {
 	IF_(check()<0);
 
-	GpuMat mBGR = *(m_pVision->BGR()->gm());
+	GpuMat mBGR = *(m_pV->BGR()->gm());
 	GpuMat mHSV;
 	cuda::cvtColor(mBGR, mHSV, COLOR_BGR2HSV);
 
@@ -111,7 +111,7 @@ void _Bullseye::detect(void)
 	findContours(mThr, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
 	vInt2 cs;
-	m_pVision->info(&cs, NULL, NULL);
+	m_pV->info(&cs, NULL, NULL);
 
 	OBJECT o;
 	vector<Point> vPoly;
