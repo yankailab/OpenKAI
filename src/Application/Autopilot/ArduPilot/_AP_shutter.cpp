@@ -63,7 +63,6 @@ bool _AP_shutter::init(void* pKiss)
 	iName = "";
 	pK->v("_AP_base", &iName);
 	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pAP, "_AP_base:" + iName + " not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
@@ -100,7 +99,6 @@ bool _AP_shutter::start(void)
 
 int _AP_shutter::check(void)
 {
-	NULL__(m_pAP, -1);
 	NULL__(m_pDet, -1);
 
 	return this->_AutopilotBase::check();
@@ -143,31 +141,32 @@ void _AP_shutter::shutter(void)
 	}
 
 
-	uint32_t apModeResume = m_pAP->getApMode();
-	if(m_bModeChange)
-	{
-		while(m_pAP->getApMode()!=m_apModeShutter)
-		{
-			this->sleepTime(USEC_1SEC);
-			m_pAP->setApMode(m_apModeShutter);
-		}
-		this->sleepTime(m_tDelay);
-	}
-
-
 	vDouble4 vP;
 	vP.init();
 	string lat = "";
 	string lon = "";
 	string alt = "";
+	uint32_t apModeResume;
 
 	if(m_pAP)
 	{
+		apModeResume = m_pAP->getApMode();
+		if(m_bModeChange)
+		{
+			while(m_pAP->getApMode()!=m_apModeShutter)
+			{
+				this->sleepTime(USEC_1SEC);
+				m_pAP->setApMode(m_apModeShutter);
+			}
+			this->sleepTime(m_tDelay);
+		}
+
 		vP = m_pAP->getGlobalPos();
 		lat = lf2str(vP.x, 7);
 		lon = lf2str(vP.y, 7);
 		alt = lf2str(vP.z, 3);
 	}
+
 
 	string fName;
 	string cmd;
@@ -181,7 +180,7 @@ void _AP_shutter::shutter(void)
 		fBGR.m()->copyTo(mBGR);
 		IF_(mBGR.empty());
 
-		fName = m_subDir + i2str(m_iTake) + "_rgb.jpg";
+		fName = m_subDir + i2str(m_iTake) + "_tag" + i2str(m_iTag) + "_rgb.jpg";
 		cv::imwrite(fName, mBGR, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -201,7 +200,7 @@ void _AP_shutter::shutter(void)
 		Mat mDscale;
 		mD.convertTo(mDscale, CV_8UC1, 100);
 
-		fName = m_subDir + i2str(m_iTake) + "_d.jpg";
+		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTag) +  "_d.jpg";
 		cv::imwrite(fName, mDscale, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -212,7 +211,9 @@ void _AP_shutter::shutter(void)
 	if(m_pG)
 	{
 		//gphoto
-		fName = m_subDir + i2str(m_iTake) + ".jpg";
+		m_pG->open();
+
+		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTag) +  ".jpg";
 		cmd = "gphoto2 --capture-image-and-download --filename " + fName;
 		system(cmd.c_str());
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
@@ -221,13 +222,14 @@ void _AP_shutter::shutter(void)
 		LOG_I("GPhoto: " + fName);
 	}
 
-	LOG_I("Take: " + i2str(m_iTake));
+	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTag));
 	m_iTake++;
 
 
-	if(m_bModeChange)
+	if(m_pAP)
 	{
-		m_pAP->setApMode(apModeResume);
+		if(m_bModeChange)
+			m_pAP->setApMode(apModeResume);
 	}
 }
 

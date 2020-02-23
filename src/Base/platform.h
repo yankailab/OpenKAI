@@ -45,6 +45,7 @@
 #include <unistd.h>
 #include <vector>
 #include <uuid/uuid.h>
+#include <sys/mount.h>
 
 using namespace std;
 using std::string;

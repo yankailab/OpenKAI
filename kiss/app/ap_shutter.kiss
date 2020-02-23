@@ -7,6 +7,7 @@
 	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
+	"rc":"mount /dev/sda /media/lab"
 }
 
 {
@@ -89,6 +90,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
+	"cmdUnmount":"gio mount -s gphoto2",
 }
 
 {
@@ -219,8 +221,8 @@
 	"_DepthVisionBase":"cam",
 	"_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
-	"_AP_base":"apBase",
-	"dir":"/media/kai/950pro/",
+	"/_AP_base":"apBase",
+	"dir":"/media/lab/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
