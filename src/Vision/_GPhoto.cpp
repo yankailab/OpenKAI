@@ -15,7 +15,7 @@ _GPhoto::_GPhoto()
 	m_type = vision_gphoto;
 	m_threadMode = T_NOTHREAD;
 
-	m_mount = "";
+	m_cmdUnmount = "sudo -H -u kai bash -c 'gio mount -s gphoto2'";
 }
 
 _GPhoto::~_GPhoto()
@@ -28,12 +28,9 @@ bool _GPhoto::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("mount", &m_mount);
-	if(!m_mount.empty())
-	{
-		string cmd = "gio mount -u " + m_mount;
-		system(cmd.c_str());
-	}
+	pK->v("mount", &m_cmdUnmount);
+	if(!m_cmdUnmount.empty())
+		system(m_cmdUnmount.c_str());
 
 	return true;
 }

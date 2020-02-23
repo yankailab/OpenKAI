@@ -105,6 +105,7 @@
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
+#include "../Vision/_GPhoto.h"
 #include "../Vision/FrameGroup.h"
 #include "../Vision/Hiphen/_HiphenServer.h"
 #include "../Vision/Hiphen/_HiphenCMD.h"

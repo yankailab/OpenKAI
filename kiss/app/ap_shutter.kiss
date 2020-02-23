@@ -12,7 +12,7 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -86,10 +86,9 @@
 	"name":"gphoto",
 	"class":"_GPhoto",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"mount":"",
 }
 
 {
@@ -216,12 +215,12 @@
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY"],
-	"_VisionBase":"cam",
+	"/_VisionBase":"cam",
 	"_DepthVisionBase":"cam",
-	"/_GPhoto":"gphoto",
+	"_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
 	"_AP_base":"apBase",
-	"dir":"/home/kai/dev/",
+	"dir":"/media/kai/950pro/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,

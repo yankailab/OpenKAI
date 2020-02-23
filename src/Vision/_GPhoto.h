@@ -36,7 +36,7 @@ private:
 	}
 
 public:
-	string m_mount;
+	string m_cmdUnmount;
 
 };
 
