@@ -7,7 +7,7 @@
 	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
-	"rc":"mount /dev/sda /media/lab"
+	"rc":"mkdir /media/usb && mount /dev/sda1 /media/usb"
 }
 
 {
@@ -222,7 +222,7 @@
 	"_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
 	"/_AP_base":"apBase",
-	"dir":"/media/lab/",
+	"dir":"/media/usb/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
