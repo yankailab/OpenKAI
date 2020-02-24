@@ -52,9 +52,6 @@ bool _AP_shutter::init(void* pKiss)
 	else
 		m_subDir = m_dir + m_subDir;
 
-	string cmd = "mkdir " + m_subDir;
-	system(cmd.c_str());
-
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 
@@ -141,6 +138,18 @@ void _AP_shutter::shutter(void)
 	}
 
 
+	string cmd;
+
+	cmd = "mkdir /media/usb";
+	system(cmd.c_str());
+
+	cmd = "mount /dev/sda1 /media/usb";
+	system(cmd.c_str());
+
+	cmd = "mkdir " + m_subDir;
+	system(cmd.c_str());
+
+
 	vDouble4 vP;
 	vP.init();
 	string lat = "";
@@ -169,7 +178,6 @@ void _AP_shutter::shutter(void)
 
 
 	string fName;
-	string cmd;
 
 	if(m_pV)
 	{
