@@ -131,7 +131,7 @@
 	"_IOBase":"apSerial",
 
 	{
-		"bInst":0,
+		"bInst":1,
 		"_Mavlink":"mavGCS",
 	}	
 }
@@ -139,7 +139,7 @@
 {
 	"name":"apUDP",
 	"class":"_UDP",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -151,15 +151,15 @@
 {
 	"name":"mavGCS",
 	"class":"_Mavlink",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
+	"Window":"OKview",
 	"Console":"OKconsole",
-	"Console":"OpenKAI",
 	"_IOBase":"apUDP",
 	
 	{
-		"bInst":0,
+		"bInst":1,
 		"_Mavlink":"apMavlink",
 	}	
 }
@@ -201,10 +201,10 @@
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"freqRawSensors":0,
-	"freqExtStat":5,
+	"freqExtStat":2,
 	"freqRC":0,
 	"freqPos":5,
-	"freqExtra1":5,
+	"freqExtra1":2,
 }
 
 {
@@ -221,13 +221,14 @@
 	"_DepthVisionBase":"cam",
 	"_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
-	"/_AP_base":"apBase",
+	"_AP_base":"apBase",
 	"dir":"/media/usb/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
 	"tDelay":2000000,
 	"apModeShutter":4,
+	"bModeChange":1,
 }
 
 {

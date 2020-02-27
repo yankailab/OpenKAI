@@ -164,8 +164,8 @@ void _AP_shutter::shutter(void)
 		{
 			while(m_pAP->getApMode()!=m_apModeShutter)
 			{
-				this->sleepTime(USEC_1SEC);
 				m_pAP->setApMode(m_apModeShutter);
+				this->sleepTime(200000);
 			}
 			this->sleepTime(m_tDelay);
 		}
