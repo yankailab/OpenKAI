@@ -60,6 +60,7 @@ bool _DetectorBase::init(void* pKiss)
 	pK->v("bMerge", &m_bMerge);
 	pK->v("mergeOverlap", &m_mergeOverlap);
 	pK->v("bbScale", &m_bbScale);
+	pK->v("vRoi", &m_vRoi);
 
 	resetObj();
 

@@ -274,6 +274,8 @@ public:
 	float m_mergeOverlap;
 	float m_bbScale;
 
+	vFloat4 m_vRoi;
+
 	//model
 	string m_modelFile;
 	string m_trainedFile;
