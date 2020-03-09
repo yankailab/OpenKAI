@@ -86,7 +86,7 @@ void _AP_mission::updateMission(void)
 		return;
 	}
 
-	string mission = m_pMC->getCurrentMissionName();
+	string mission = m_pMC->getMissionName();
 
 	if(mission == "RTH")
 	{

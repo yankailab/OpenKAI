@@ -15,7 +15,15 @@
 #include "constant.h"
 #include <glog/logging.h>
 #include "../Primitive/data.h"
+#include "../Primitive/vInt2.h"
+#include "../Primitive/vInt3.h"
+#include "../Primitive/vInt4.h"
+#include "../Primitive/vFloat2.h"
+#include "../Primitive/vFloat3.h"
 #include "../Primitive/vFloat4.h"
+#include "../Primitive/vDouble2.h"
+#include "../Primitive/vDouble3.h"
+#include "../Primitive/vDouble4.h"
 #include "../Utility/util.h"
 
 #endif

@@ -29,8 +29,7 @@ private:
 
 public:
 	_AP_base* m_pAP;
-
-	int m_iWP;
+	int m_apMode;
 };
 
 }

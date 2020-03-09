@@ -5,9 +5,6 @@ namespace kai
 
 _AP_land::_AP_land()
 {
-	m_pAPtarget = NULL;
-	m_pIRlock = NULL;
-
 	m_altLandMode = 3.0;
 	m_detSizeLandMode = 0.25;
 	m_vRoiDetDescent.init(0.0, 0.0, 1.0, 1.0);
@@ -15,7 +12,6 @@ _AP_land::_AP_land()
 	m_dHdg = 0.0;
 	m_dzHdg = 360;
 	m_detRdz = 1.0;
-	m_targetType = landTarget_unknown;
 }
 
 _AP_land::~_AP_land()
@@ -37,15 +33,6 @@ bool _AP_land::init(void* pKiss)
 	pK->v("wLen",&wLen);
 	m_filter.init(wLen,2);
 
-	string iName;
-	iName = "";
-	pK->v("_IRLock", &iName);
-	m_pIRlock = (_DetectorBase*) (pK->root()->getChildInst(iName));
-
-	iName = "";
-	pK->v("_AP_target_base", &iName);
-	m_pAPtarget = (_AP_base*) (pK->parent()->getChildInst(iName));
-
 	return true;
 }
 
@@ -65,7 +52,7 @@ bool _AP_land::start(void)
 
 int _AP_land::check(void)
 {
-	return this->_AP_posCtrl::check();
+	return this->_AP_follow::check();
 }
 
 void _AP_land::update(void)
@@ -81,7 +68,6 @@ void _AP_land::update(void)
 			m_filter.reset();
 			m_dTarget = -1.0;
 			m_bTarget = false;
-			m_targetType = landTarget_unknown;
 			releaseCtrl();
 		}
 			
@@ -98,7 +84,7 @@ bool _AP_land::updateTarget(void)
 		m_pAP->setMount(m_apMount);
 
 
-	m_bTarget = findTargetLocal();
+	m_bTarget = findTarget();
 	if(m_bTarget)
 	{
 		float w = m_vTargetBB.width();
@@ -110,7 +96,7 @@ bool _AP_land::updateTarget(void)
 			h > m_detSizeLandMode
 			)
 		{
-			m_pMC->getCurrentMission()->complete();
+			m_pMC->getMission()->complete();
 			return false;
 		}
 
@@ -146,77 +132,33 @@ bool _AP_land::updateTarget(void)
 		return true;
 	}
 
-	m_bTarget = findTargetGlobal();
-	if(m_bTarget)
-	{
-		setPosGlobal();
-		return true;
-	}
-
 	return false;
 }
 
-bool _AP_land::findTargetLocal(void)
+bool _AP_land::findTarget(void)
 {
 	IF_F(check()<0);
 
 	OBJECT* tO = NULL;
-
-	if(m_pDet)
+	OBJECT* pO;
+	float minR = FLT_MAX;
+	float topProb = 0.0;
+	int i=0;
+	while((pO = m_pDet->at(i++)) != NULL)
 	{
-		OBJECT* pO;
-		float minR = FLT_MAX;
-		float topProb = 0.0;
-		int i=0;
-		while((pO = m_pDet->at(i++)) != NULL)
-		{
-//			IF_CONT(pO->m_topClass != m_iClass);
-//			IF_CONT(pO->m_topProb < topProb);
-			IF_CONT(pO->m_r > minR);
+//		IF_CONT(pO->m_topClass != m_iClass);
+//		IF_CONT(pO->m_topProb < topProb);
+		IF_CONT(pO->m_r > minR);
 
-			tO = pO;
-			minR = pO->m_r * m_detRdz;
-		}
-
-		if(tO)
-		{
-			m_vTargetBB = tO->m_bb;
-			m_filter.input(tO->m_dist);
-			m_dTarget = m_filter.v();
-			m_dHdg = dHdg<float>(0.0, tO->m_angle);
-			m_targetType = landTarget_det;
-			return true;
-		}
+		tO = pO;
+		minR = pO->m_r * m_detRdz;
 	}
 
-	NULL_F(m_pIRlock);
-
-	tO = m_pIRlock->at(0);
 	NULL_F(tO);
-
 	m_vTargetBB = tO->m_bb;
-	m_filter.reset();
-	m_dTarget = -1.0;
-	m_dHdg = 0.0;
-	m_targetType = landTarget_IR;
-	return true;
-}
-
-bool _AP_land::findTargetGlobal(void)
-{
-	IF_F(check()<0);
-	NULL_F(m_pAPtarget);
-	NULL_F(m_pAPtarget->m_pMavlink);
-	IF_F(m_pAPtarget->m_pMavlink->m_mavMsg.m_tStamps.m_global_position_int <= 0);
-
-	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
-	IF_F(EAQ(vAPpos.x, 0.0, 1e-7));
-	IF_F(EAQ(vAPpos.y, 0.0, 1e-7));
-
-	m_vTargetGlobal.x = vAPpos.x;
-	m_vTargetGlobal.y = vAPpos.y;
-	m_targetType = landTarget_global;
-
+	m_filter.input(tO->m_dist);
+	m_dTarget = m_filter.v();
+	m_dHdg = dHdg<float>(0.0, tO->m_angle);
 	return true;
 }
 
@@ -231,16 +173,7 @@ void _AP_land::draw(void)
 		return;
 	}
 
-	if(m_targetType == landTarget_IR)
-		addMsg("Target Type: IR locked", 1);
-	else if(m_targetType == landTarget_det)
-		addMsg("Target Type: Tag locked", 1);
-	else if(m_targetType == landTarget_global)
-		addMsg("Target Type: Global pos", 1);
-	else
-		addMsg("Target Type Unknown");
-
-	addMsg("Local Target");
+	addMsg("Target");
 	vFloat2 c = m_vTargetBB.center();
 	addMsg("Pos=("+f2str(c.x) + ", " +f2str(c.y)+ "), d=" + f2str(m_dTarget) + ", dHdg=" + f2str(m_dHdg), 1);
 	addMsg("Size=(" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ")", 1);

@@ -6,7 +6,7 @@ namespace kai
 _AP_takeoff::_AP_takeoff()
 {
 	m_pAP = NULL;
-	m_iWP = -1;
+	m_apMode = AP_COPTER_GUIDED;
 }
 
 _AP_takeoff::~_AP_takeoff()
@@ -18,7 +18,7 @@ bool _AP_takeoff::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v("iWP",&m_iWP);
+	pK->v("apMode", &m_apMode);
 
 	string iName;
 	iName = "";
@@ -67,40 +67,25 @@ void _AP_takeoff::update(void)
 void _AP_takeoff::updateMission(void)
 {
 	IF_(check()<0);
-
-	int apMode = m_pAP->getApMode();
-	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.m_mission_current.seq;
-
-	if(apMode == AP_COPTER_ALT_HOLD)
+	IF_(!bActive());
+	IF_(m_pMC->getMissionType() != mission_takeoff);
+	IF_(!m_pAP->bApArmed());
+	if(m_apMode >= 0)
 	{
-		m_pMC->transit("STANDBY");
+		IF_(m_pAP->getApMode() != m_apMode);
+	}
+
+	Takeoff* pTO = (Takeoff*)m_pMC->getMission();
+	NULL_(pTO);
+
+	if(m_pAP->m_vGlobalPos.w >= pTO->m_alt &&
+	   m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
+	{
+		pTO->complete();
 		return;
 	}
 
-	if(apMode == AP_COPTER_AUTO && apMissionSeq == m_iWP)
-	{
-		m_pAP->setApMode(AP_COPTER_GUIDED);
-		return;
-	}
-
-	string mission = m_pMC->getCurrentMissionName();
-
-	if(apMode == AP_COPTER_GUIDED)
-	{
-		IF_(mission == "RELEASE");
-
-		if(mission != "LAND")
-		{
-			m_pMC->transit("LAND");
-			return;
-		}
-	}
-
-	if(mission == "RTH")
-	{
-		m_pAP->setApMode(AP_COPTER_RTL);
-		return;
-	}
+	m_pAP->m_pMavlink->clNavTakeoff(pTO->m_alt);
 }
 
 void _AP_takeoff::draw(void)

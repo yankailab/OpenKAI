@@ -15,6 +15,7 @@
 #include "Land.h"
 #include "Loiter.h"
 #include "RTH.h"
+#include "Takeoff.h"
 
 #define ADD_MISSION(x) if(pKM->m_class==#x){M.m_pInst=new x();M.m_pKiss=pKM;}
 
@@ -44,10 +45,10 @@ public:
 	void draw(void);
 	bool console(int& iY);
 
-	MissionBase* getCurrentMission(void);
-	string getCurrentMissionName(void);
-	int getCurrentMissionIdx(void);
-	int getLastMissionIdx(void);
+	MissionBase* getMission(void);
+	string getMissionName(void);
+	int getMissionIdx(void);
+	MISSION_TYPE getMissionType(void);
 	int getMissionIdx(const string& missionName);
 	void transit(const string& nextMissionName);
 	void transit(int iNextMission);
@@ -61,7 +62,7 @@ private:
 	}
 
 	vector<MISSION_INST> m_vMission;
-	int		m_iMission;
+	unsigned int m_iMission;
 
 };
 

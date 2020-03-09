@@ -15,12 +15,14 @@ namespace kai
 
 enum MISSION_TYPE
 {
+	mission_unknown,
 	mission_base,
 	mission_land,
 	mission_loiter,
 	mission_goto,
 	mission_rth,
 	mission_wp,
+	mission_takeoff,
 };
 
 class MissionBase: public BASE

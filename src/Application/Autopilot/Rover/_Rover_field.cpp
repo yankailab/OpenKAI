@@ -109,7 +109,7 @@ void _Rover_field::update(void)
 //	}
 
 	//mission
-	string mission = m_pMC->getCurrentMissionName();
+	string mission = m_pMC->getMissionName();
 	if(mission == "IDLE")
 	{
 		if(m_pCMD->m_mode != rover_stop && m_pCMD->m_mode != rover_manual)

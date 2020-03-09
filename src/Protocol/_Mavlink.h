@@ -99,7 +99,10 @@ struct Mavlink_Messages
 		m_global_position_int.lon = 0.0;
 		m_global_position_int.relative_alt = 0;
 		m_global_position_int.hdg = UINT16_MAX;
+
 		m_heartbeat.custom_mode = 0;
+		m_heartbeat.base_mode = 0;
+
 		m_mission_current.seq = 0;
 
 		m_local_position_ned.vx = 0;
@@ -194,6 +197,7 @@ public:
 	void clNavSetYawSpeed(float yaw, float speed);
 	void clDoSetServo(int iServo, int PWM);
 	void clGetHomePosition(void);
+	void clNavTakeoff(float alt);
 
 	//Msg routing
 	void setCmdRoute(uint32_t iCmd, bool bON);

@@ -44,11 +44,12 @@ bool _MissionControl::init(void* pKiss)
 		//Add action modules below
 
 		ADD_MISSION(MissionBase);
-		ADD_MISSION(Waypoint);
-		ADD_MISSION(Land);
+		ADD_MISSION(Takeoff);
 		ADD_MISSION(Loiter);
+		ADD_MISSION(Waypoint);
 		ADD_MISSION(Goto);
 		ADD_MISSION(RTH);
+		ADD_MISSION(Land);
 
 		//Add action modules above
 
@@ -123,7 +124,7 @@ void _MissionControl::transit(int iNextMission)
 
 int _MissionControl::getMissionIdx(const string& missionName)
 {
-	for(int i=0;i<m_vMission.size();i++)
+	for(unsigned int i=0; i<m_vMission.size(); i++)
 	{
 		if(((Kiss*)m_vMission[i].m_pInst->m_pKiss)->m_name == missionName)
 			return i;
@@ -132,24 +133,34 @@ int _MissionControl::getMissionIdx(const string& missionName)
 	return -1;
 }
 
-MissionBase* _MissionControl::getCurrentMission(void)
+MissionBase* _MissionControl::getMission(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
 	IF_N(m_iMission < 0);
 	return m_vMission[m_iMission].m_pInst;
 }
 
-int _MissionControl::getCurrentMissionIdx(void)
+int _MissionControl::getMissionIdx(void)
 {
 	return m_iMission;
 }
 
-string _MissionControl::getCurrentMissionName(void)
+string _MissionControl::getMissionName(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
 	IF_N(m_iMission < 0);
 	string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
 	return mName;
+}
+
+MISSION_TYPE _MissionControl::getMissionType(void)
+{
+	MissionBase* pMB = getMission();
+
+	if(!pMB)
+		return mission_unknown;
+
+	return pMB->m_type;
 }
 
 void _MissionControl::draw(void)

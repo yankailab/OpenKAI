@@ -124,7 +124,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_slam);
 	ADD_MODULE(_AP_takeoff);
 	ADD_MODULE(_AP_followClient);
-	ADD_MODULE(_AP_WP);
+	ADD_MODULE(_AP_goto);
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AP_shutter);

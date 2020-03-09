@@ -99,8 +99,8 @@ void _AP_slam::update(void)
 
 	if(m_bUseApOrigin)
 	{
-		vDouble3 vHome;
-		IF_(!m_pAP->getHomePos(&vHome));
+		vDouble3 vHome = m_pAP->getHomePos();
+		IF_(vHome.x < 0.0);
 
 		m_llGPSorigin.m_lat = vHome.x;
 		m_llGPSorigin.m_lng = vHome.y;

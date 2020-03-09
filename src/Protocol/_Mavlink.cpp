@@ -646,6 +646,21 @@ void _Mavlink::clGetHomePosition(void)
 	LOG_I("<- cmdLongGetHomePosition");
 }
 
+void _Mavlink::clNavTakeoff(float alt)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_NAV_TAKEOFF;
+	D.param7 = alt;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdNavTakeoff");
+}
+
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
 	if(m_nRead == 0)

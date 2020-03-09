@@ -88,7 +88,7 @@ void _Rover_WP::updateWP(void)
 	m_ctrl.m_hdg = pCtrl->m_hdg;
 	m_ctrl.m_nSpeed = pCtrl->m_nSpeed;
 
-	Waypoint* pW = (Waypoint*)m_pMC->getCurrentMission();
+	Waypoint* pW = (Waypoint*)m_pMC->getMission();
 	NULL_(pW);
 	IF_(pW->type() != mission_wp);
 
@@ -126,7 +126,7 @@ void _Rover_WP::updateRecord(void)
 	IF_(check()<0);
 	IF_(!bActive())
 
-	MissionBase* pRec = (MissionBase*)m_pMC->getCurrentMission();
+	MissionBase* pRec = (MissionBase*)m_pMC->getMission();
 	NULL_(pRec);
 	IF_(pRec->type() != mission_base);
 

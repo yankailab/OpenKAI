@@ -110,11 +110,11 @@ public:
 	void setApArm(bool bArm);
 	void setMount(AP_MOUNT &mount);
 
+	bool bApArmed(void);
+
 	uint32_t getApMode(void);
 	string getApModeName(void);
-	bool bApModeChanged(void);
-	bool getApArm(void);
-	bool getHomePos(vDouble3 *pHome);
+	vDouble3 getHomePos(void);
 	vDouble4 getGlobalPos(void);
 	float getApHdg(void);
 	vFloat3 getApSpeed(void);
@@ -135,8 +135,7 @@ public:
 
 	AP_TYPE m_apType;
 	uint32_t m_apMode;
-	uint32_t m_lastApMode;
-	bool m_bApModeChanged;
+	bool m_bApArmed;
 
 	int m_freqRawSensors;
 	int m_freqExtStat;

@@ -42,7 +42,7 @@ bool _AutopilotBase::init(void* pKiss)
 		m_vActiveMission.push_back(iMission);
 	}
 
-	m_iLastMission = m_pMC->getCurrentMissionIdx();
+	m_iLastMission = m_pMC->getMissionIdx();
 
 	return true;
 }
@@ -59,7 +59,7 @@ void _AutopilotBase::update(void)
 	m_tStamp = newTime;
 
 	NULL_(m_pMC);
-	int currentMission = m_pMC->getCurrentMissionIdx();
+	int currentMission = m_pMC->getMissionIdx();
 	if(m_iLastMission != currentMission)
 	{
 		m_bMissionChanged = true;
@@ -75,7 +75,7 @@ bool _AutopilotBase::bActive(void)
 {
 	NULL_T(m_pMC);
 
-	int iMission = m_pMC->getCurrentMissionIdx();
+	int iMission = m_pMC->getMissionIdx();
 	for (int i : m_vActiveMission)
 	{
 		if(iMission == i)return true;

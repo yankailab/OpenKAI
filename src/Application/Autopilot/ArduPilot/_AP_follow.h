@@ -23,7 +23,7 @@ public:
 	virtual void draw(void);
 
 	bool updateTarget(void);
-	virtual bool findTargetLocal(void);
+	virtual bool findTarget(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_AP_follow *) This)->update();

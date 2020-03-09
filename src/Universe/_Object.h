@@ -68,18 +68,30 @@ protected:
 	vFloat3		m_a;		//attitude
 	vFloat4		m_q;		//quaternion
 
+	//size
+	vFloat4		m_bb;	//bbox:x(length),y(width),z(height),w(bball radius)
+	vector<vFloat3> m_vVertex; 	//Vertices in pixel unit
+
 	//kinetics
 	vFloat3		m_speed;
 	vFloat3		m_accel;
-
-	//size
-	vFloat4		m_bb;	//bbox:x(length),y(width),z(height), bball radius:r
 
 	//classification
 	string		m_txt;
 	int			m_topClass;		//most probable class
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
+
+	//Trajectory
+	vector<vFloat3> m_vTraj;
+
+	//bitflag
+	uint64_t	m_flag;
+
+	//Tracker
+	void *m_pTracker;
+
+
 
 };
 

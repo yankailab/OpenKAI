@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Primitive_vFloat4_H_
 #define OpenKAI_src_Primitive_vFloat4_H_
 
-#include "data.h"
-#include "../Base/platform.h"
+#include "vFloat2.h"
+#include "vFloat3.h"
 
 namespace kai
 {

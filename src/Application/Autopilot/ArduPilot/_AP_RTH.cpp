@@ -68,7 +68,7 @@ void _AP_RTH::update(void)
 	this->_AutopilotBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
-	RTH* pRTH = (RTH*)m_pMC->getCurrentMission();
+	RTH* pRTH = (RTH*)m_pMC->getMission();
 	NULL_(pRTH);
 
 /*	m_pAP->setMount(m_apMount);

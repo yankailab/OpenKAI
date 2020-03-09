@@ -11,8 +11,7 @@ _AP_base::_AP_base()
 
 	m_apType = ardupilot_copter;
 	m_apMode = 0;
-	m_lastApMode = 0xffffffff;
-	m_bApModeChanged = false;
+	m_bApArmed = false;
 
 	m_freqSendHeartbeat = 1;
 	m_freqRawSensors = 0;
@@ -103,15 +102,7 @@ void _AP_base::updateBase(void)
 
 	//update Ardupilot
 	m_apMode = m_pMavlink->m_mavMsg.m_heartbeat.custom_mode;
-	if(m_apMode != m_lastApMode)
-	{
-		m_bApModeChanged = true;
-		m_lastApMode = m_apMode;
-	}
-	else
-	{
-		m_bApModeChanged = false;
-	}
+	m_bApArmed = m_pMavlink->m_mavMsg.m_heartbeat.base_mode & 0b10000000;
 
 	//get home position
 	if(m_tStamp - m_pMavlink->m_mavMsg.m_tStamps.m_home_position > USEC_1SEC)
@@ -198,11 +189,6 @@ string _AP_base::getApModeName(void)
 	return AP_CUSTOM_MODE_NAME[m_apType][m_apMode];
 }
 
-bool _AP_base::bApModeChanged(void)
-{
-	return m_bApModeChanged;
-}
-
 void _AP_base::setApArm(bool bArm)
 {
 	IF_(check()<0);
@@ -210,18 +196,21 @@ void _AP_base::setApArm(bool bArm)
 	m_pMavlink->clComponentArmDisarm(bArm);
 }
 
-bool _AP_base::getApArm(void)
+bool _AP_base::bApArmed(void)
 {
-	return false; //TODO
+	return m_bApArmed;
 }
 
-bool _AP_base::getHomePos(vDouble3* pHome)
+vDouble3 _AP_base::getHomePos(void)
 {
-	NULL_F(pHome);
-	IF_F(!m_bHomeSet);
+	if(!m_bHomeSet)
+	{
+		vDouble3 vH;
+		vH.init(-1.0);
+		return vH;
+	}
 
-	*pHome = m_vHomePos;
-	return true;
+	return m_vHomePos;
 }
 
 vDouble4 _AP_base::getGlobalPos(void)
@@ -269,6 +258,12 @@ vFloat3 _AP_base::getApAttitude(void)
 void _AP_base::draw(void)
 {
 	this->_AutopilotBase::draw();
+
+	addMsg("State-----------------------------",1);
+	if(m_bApArmed)
+		addMsg("ARMED",1);
+	else
+		addMsg("DISARMED",1);
 
 	addMsg("Mode------------------------------",1);
 	addMsg("apMode = " + i2str(m_apMode) + ": " + getApModeName(),1);
