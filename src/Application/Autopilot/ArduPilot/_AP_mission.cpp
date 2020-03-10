@@ -6,7 +6,7 @@ namespace kai
 _AP_mission::_AP_mission()
 {
 	m_pAP = NULL;
-	m_iWP = -1;
+	m_pAP_descent = NULL;
 }
 
 _AP_mission::~_AP_mission()
@@ -18,13 +18,16 @@ bool _AP_mission::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v("iWP",&m_iWP);
-
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
 	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
+
+	iName = "";
+	pK->v("_AP_descent", &iName);
+	m_pAP_descent = (_AP_descent*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pAP_descent, iName + ": not found");
 
 	return true;
 }
@@ -47,6 +50,7 @@ int _AP_mission::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP_descent, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -69,46 +73,40 @@ void _AP_mission::updateMission(void)
 	IF_(check()<0);
 
 	int apMode = m_pAP->getApMode();
-	int apMissionSeq = m_pAP->m_pMavlink->m_mavMsg.m_mission_current.seq;
+	string mission = m_pMC->getMissionName();
 
-	if(apMode == AP_COPTER_ALT_HOLD ||
-		apMode == AP_COPTER_LOITER ||
-		apMode == AP_COPTER_STABILIZE
-	)
+	if(apMode != AP_COPTER_GUIDED)
 	{
 		m_pMC->transit("STANDBY");
 		return;
 	}
 
-	if(apMode == AP_COPTER_AUTO && apMissionSeq == m_iWP)
+	if(mission == "STANDBY")
 	{
-		m_pAP->setApMode(AP_COPTER_GUIDED);
+		m_pMC->transit("TAKEOFF");
 		return;
 	}
 
-	string mission = m_pMC->getMissionName();
+	if(mission == "FOLLOW")
+	{
+		if(m_pAP_descent->m_bTarget)
+			m_pMC->transit("DESCENT");
+		return;
+	}
+
+	if(mission == "DESCENT")
+	{
+		if(!m_pAP_descent->m_bTarget)
+			m_pMC->transit("FOLLOW");
+		return;
+	}
 
 	if(mission == "RTH")
 	{
-		IF_(apMode == AP_COPTER_ALT_HOLD);
-		IF_(apMode == AP_COPTER_LOITER);
-		IF_(apMode == AP_COPTER_STABILIZE);
-		IF_(apMode == AP_COPTER_RTL);
+		IF_(apMode != AP_COPTER_GUIDED);
 
 		m_pAP->setApMode(AP_COPTER_RTL);
 		return;
-	}
-
-	if(apMode == AP_COPTER_GUIDED)
-	{
-		IF_(mission == "RELEASE");
-		IF_(mission == "RTH");
-
-		if(mission != "LAND")
-		{
-			m_pMC->transit("LAND");
-			return;
-		}
 	}
 
 }

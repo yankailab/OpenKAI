@@ -265,12 +265,30 @@
 		}
 		{
 			"bInst":1,
-			"name":"LAND",
+			"name":"FOLLOW",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"DESCENT",
+		}
+		{
+			"bInst":1,
+			"name":"DESCENT",
 			"Window":"OKview",
 			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"RELEASE",
+			
+			{
+				"name":"tag",
+				{
+					"name":"tag",
+				
+				
+				}
+			}
 		}
 		{
 			"bInst":1,
@@ -321,25 +339,21 @@
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
-	"iWP":3,
+	"_AP_descent":"apDescent",
 }
 
 {
-	"name":"apLand",
-	"class":"_AP_land",
+	"name":"apDescent",
+	"class":"_AP_descent",
 	"FPS":10,
 	"bInst":1,
 	"bLog":1,
 	"bDraw":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	
 	"_MissionControl":"mission",
-	"activeMission":["LAND"],
+	"activeMission":["FOLLOW","DESCENT"],
 	"_AP_base":"apBase",
-
-	"_AP_target_base":"apTargetBase",
-	"_IRLock":"IRLock",
 	"_DetectorBase":"arUco",
 	"iClass":0,
 
@@ -348,14 +362,12 @@
 	"vTargetP":[0.5, 0.5, 0.3, 0.0],
 	"vYaw":0.0,
 	
-	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
-	
-	"vRoiDetDescent":[0.1, 0.1, 0.9, 0.9],
-	"detRdz":0.9,
+	"alt":0.65,
+	"detSize":0.15,
 	"dzHdg":360.0,
+	"detRdz":0.9,
+	"vRDD":[0.1, 0.1, 0.9, 0.9],
 	"wLen":5,
-	"altLandMode":0.65,
-	"detSizeLandMode":0.15,
 	
 	{
 		"name":"mount",
@@ -367,9 +379,39 @@
 		"stabRoll":1,
 		"stabYaw":0,
 		"mountMode":2,
-	}			
-	
+	}
 }
+
+{
+	"name":"apGoto",
+	"class":"_AP_goto",
+	"FPS":10,
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["FOLLOW"],
+	"_AP_base":"apBase",
+	"_AP_target_base":"apTargetBase",
+
+	"vYaw":0.0,	
+	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
+		
+	{
+		"name":"mount",
+		"bEnable":0,
+		"pitch":0,
+		"roll":0,
+		"yaw":0,
+		"stabPitch":1,
+		"stabRoll":1,
+		"stabYaw":0,
+		"mountMode":2,
+	}
+}
+
 
 {
 	"name":"apTargetBase",

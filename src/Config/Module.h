@@ -25,7 +25,6 @@
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"
-#include "../Application/Autopilot/ArduPilot/_AP_land.h"
 #include "../Application/Autopilot/ArduPilot/_AP_link.h"
 #include "../Application/Autopilot/ArduPilot/_AP_mission.h"
 #include "../Application/Autopilot/ArduPilot/_AP_posCtrl.h"
@@ -51,6 +50,7 @@
 #include "../Application/Automation/Sorting/_SortingArm.h"
 #include "../Application/Automation/Sorting/_SortingCtrlServer.h"
 #include "../Application/Automation/Sorting/_SortingCtrlClient.h"
+#include "../Application/Autopilot/ArduPilot/_AP_descent.h"
 #include "../Application/Mission/_MissionControl.h"
 
 #include "../Control/PIDctrl.h"

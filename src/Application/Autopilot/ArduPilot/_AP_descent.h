@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_AP__AP_land_H_
-#define OpenKAI_src_Autopilot_AP__AP_land_H_
+#ifndef OpenKAI_src_Autopilot_AP__AP_descent_H_
+#define OpenKAI_src_Autopilot_AP__AP_descent_H_
 
 #include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
@@ -10,11 +10,11 @@
 namespace kai
 {
 
-class _AP_land: public _AP_follow
+class _AP_descent: public _AP_follow
 {
 public:
-	_AP_land();
-	~_AP_land();
+	_AP_descent();
+	~_AP_descent();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -22,24 +22,22 @@ public:
 	void update(void);
 	void draw(void);
 
+protected:
 	bool updateTarget(void);
 	virtual bool findTarget(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_AP_land *) This)->update();
+		((_AP_descent *) This)->update();
 		return NULL;
 	}
 
 public:
 	Median m_filter;
 
-	float m_altLandMode;
-	float m_detSizeLandMode;
-	vFloat4 m_vRoiDetDescent;
-	float m_dTarget;
-	float m_dHdg;
-	float m_dzHdg;
-	float m_detRdz;
+	float m_alt;
+	float m_detSize;
+	vFloat4 m_vRDD;		//descents when detection inside the ROI
+	float m_dTarget;	//dist to target
 
 };
 }

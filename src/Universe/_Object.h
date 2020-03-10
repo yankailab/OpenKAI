@@ -27,17 +27,16 @@ public:
 	virtual void draw(void);
 
 	//size
-	void setSize(vFloat3 s);
-	void setLength(float l);
-	void setWidth(float w);
-	void setHeight(float h);
-	void setRadius(float r);
+	void setDim(vFloat3 s);
+	void setW(float w);
+	void setH(float h);
+	void setD(float d);
 
-	vFloat3 getSize(void);
-	float getLength(void);
-	float getWidth(void);
-	float getHeight(void);
-	float getRadius(void);
+	vFloat3 getDim(void);
+	float getW(void);
+	float getH(void);
+	float getD(void);
+
 	float area(void);
 	float volume(void);
 
@@ -63,18 +62,14 @@ private:
 	}
 
 protected:
-	//pos and attitude
-	vFloat3		m_p;		//position
-	vFloat3		m_a;		//attitude
-	vFloat4		m_q;		//quaternion
-
-	//size
-	vFloat4		m_bb;	//bbox:x(length),y(width),z(height),w(bball radius)
-	vector<vFloat3> m_vVertex; 	//Vertices in pixel unit
+	//general
+	vFloat3		m_vPos;		//position, x,y,z
+	vFloat3		m_vAtti;	//attitude
+	vFloat3		m_vDim;		//width, height, depth
 
 	//kinetics
-	vFloat3		m_speed;
-	vFloat3		m_accel;
+	vFloat3		m_vSpeed;
+	vFloat3		m_vAccel;
 
 	//classification
 	string		m_txt;
@@ -86,12 +81,10 @@ protected:
 	vector<vFloat3> m_vTraj;
 
 	//bitflag
-	uint64_t	m_flag;
+	uint64_t	m_mFlag;
 
 	//Tracker
 	void *m_pTracker;
-
-
 
 };
 

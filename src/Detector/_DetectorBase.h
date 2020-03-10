@@ -273,7 +273,6 @@ public:
 	bool m_bMerge;
 	float m_mergeOverlap;
 	float m_bbScale;
-
 	vFloat4 m_vRoi;
 
 	//model

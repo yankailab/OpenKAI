@@ -83,10 +83,7 @@ void _AP_goto::update(void)
 		this->autoFPSfrom();
 
 		this->_AP_posCtrl::update();
-		if(updateGoto())
-			setPosLocal();
-		else
-			releaseCtrl();
+		updateGoto();
 
 		this->autoFPSto();
 	}
@@ -94,14 +91,19 @@ void _AP_goto::update(void)
 
 bool _AP_goto::updateGoto(void)
 {
-	IF_F(check()<0);
+	IF_F(check() < 0);
+
+	m_bTarget = findTarget();
+
 	IF_F(!bActive());
+	if(!m_bTarget)
+	{
+		releaseCtrl();
+		return false;
+	}
 
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
-
-	m_bTarget = findTarget();
-	IF_F(!m_bTarget);
 
 	setPosGlobal();
 	return true;
@@ -115,8 +117,8 @@ bool _AP_goto::findTarget(void)
 	IF_F(m_pAPtarget->m_pMavlink->m_mavMsg.m_tStamps.m_global_position_int <= 0);
 
 	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
-	IF_F(EAQ(vAPpos.x, 0.0, 1e-7));
-	IF_F(EAQ(vAPpos.y, 0.0, 1e-7));
+	IF_F(vAPpos.x <= 0.0);
+	IF_F(vAPpos.y <= 0.0);
 
 	m_vTargetGlobal.x = vAPpos.x;
 	m_vTargetGlobal.y = vAPpos.y;
@@ -126,7 +128,7 @@ bool _AP_goto::findTarget(void)
 
 void _AP_goto::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_AP_posCtrl::draw();
 
 	if(!bActive())
 		addMsg("Inactive",1);

@@ -13,6 +13,18 @@
 namespace kai
 {
 
+struct LAND_TAG
+{
+	int m_iTag;
+	float m_angle;
+
+	void init(void)
+	{
+		m_iTag = 0;
+		m_angle = 0.0;
+	}
+};
+
 class Land: public MissionBase
 {
 public:
@@ -23,12 +35,12 @@ public:
 	bool update(void);
 	void draw(void);
 
-	void setLanded(bool bLanded);
-
 public:
 	int m_tag;
-	double m_hdg;
-	double m_speed;
+	float m_hdg;
+	float m_speed;
+
+	vector<LAND_TAG> m_vTag;
 
 };
 

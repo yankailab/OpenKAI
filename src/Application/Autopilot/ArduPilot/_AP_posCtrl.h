@@ -37,6 +37,8 @@ public:
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;
 	PIDctrl* m_pAlt;
+
+	bool	m_bYaw;
 	float	m_vYaw;
 
 };

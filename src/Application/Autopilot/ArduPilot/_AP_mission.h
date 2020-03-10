@@ -3,6 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../ArduPilot/_AP_base.h"
+#include "../ArduPilot/_AP_descent.h"
 
 namespace kai
 {
@@ -29,8 +30,8 @@ private:
 
 public:
 	_AP_base* m_pAP;
+	_AP_descent* m_pAP_descent;
 
-	int m_iWP;
 };
 
 }

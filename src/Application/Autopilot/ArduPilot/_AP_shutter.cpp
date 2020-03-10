@@ -121,10 +121,21 @@ void _AP_shutter::shutter(void)
 
 	if(m_shutterMode == apShutter_det)
 	{
-		OBJECT* pO = m_pDet->at(0);
-		NULL_(pO);
-		IF_(pO->m_topClass == m_iTag);
-		m_iTag = pO->m_topClass;
+		OBJECT* tO = NULL;
+		OBJECT* pO;
+		float yO = 1.0;
+		int i = 0;
+		while ((pO = m_pDet->at(i++)) != NULL)
+		{
+			IF_CONT(pO->m_bb.midY() > yO);
+
+			tO = pO;
+			yO = pO->m_topClass;
+		}
+
+		NULL_(tO);
+		IF_(tO->m_topClass == m_iTag);
+		m_iTag = tO->m_topClass;
 
 	}
 	else if(m_shutterMode == apShutter_cont)

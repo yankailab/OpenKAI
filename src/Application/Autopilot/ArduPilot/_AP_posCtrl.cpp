@@ -18,6 +18,7 @@ _AP_posCtrl::_AP_posCtrl()
 	m_pPitch = NULL;
 	m_pAlt = NULL;
 	m_vYaw = 90.0;
+	m_bYaw = false;
 
 	m_sptLocal.vx = 0.0;
 	m_sptLocal.vy = 0.0;
@@ -47,6 +48,7 @@ bool _AP_posCtrl::init(void* pKiss)
 	pK->v("vTargetP", &m_vTargetP);
 	pK->v("vTargetGlobal", &m_vTargetGlobal);
 	pK->v("vYaw", &m_vYaw);
+	pK->v("bYaw", &m_bYaw);
 
 	string iName;
 
@@ -99,7 +101,10 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vz = a;		//down
 	m_sptLocal.yaw = (float) m_vP.w * DEG2RAD;
 	m_sptLocal.yaw_rate = (float) m_vYaw * DEG2RAD;
-	m_sptLocal.type_mask  = 0b0000110111000111;	//set velocity
+	m_sptLocal.type_mask = 0b0000000111000111;	//set velocity
+
+	if(!m_bYaw)
+		m_sptLocal.type_mask |= 0b0000110000000000;
 
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
 }
@@ -145,19 +150,6 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_sptLocal.yaw_rate = 0.0;
 	m_sptLocal.type_mask = 0b0000110111000111;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
-
-
-//	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
-//	m_sptGlobal.lat_int = 0.0;
-//	m_sptGlobal.lon_int = 0.0;
-//	m_sptGlobal.alt = 0.0;
-//	m_sptGlobal.vx = 0.0;
-//	m_sptGlobal.vy = 0.0;
-//	m_sptGlobal.vz = 0.0;
-//	m_sptGlobal.yaw = (float) m_vTargetP.w * DEG_RAD;
-//	m_sptGlobal.yaw_rate = 0.0;
-//	m_sptGlobal.type_mask = 0b0000110111000111;
-//	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
 }
 
 void _AP_posCtrl::draw(void)

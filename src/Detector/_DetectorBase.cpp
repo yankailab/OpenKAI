@@ -28,6 +28,7 @@ _DetectorBase::_DetectorBase()
 	m_bMerge = false;
 	m_mergeOverlap = 0.8;
 	m_bbScale = -1.0;
+	m_vRoi.init(0.0, 0.0, 1.0, 1.0);
 
 	m_bDrawStatistics = false;
 	m_classLegendPos.x = 25;
@@ -205,6 +206,11 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	IF_N(m_maxW >= 0 && pNewO->width() > m_maxW);
 	IF_N(m_minH >= 0 && pNewO->height() < m_minW);
 	IF_N(m_maxH >= 0 && pNewO->height() > m_maxH);
+
+	IF_N(pNewO->m_bb.x < m_vRoi.x);
+	IF_N(pNewO->m_bb.x > m_vRoi.z);
+	IF_N(pNewO->m_bb.y < m_vRoi.y);
+	IF_N(pNewO->m_bb.y > m_vRoi.w);
 
 	if(m_bbScale > 0.0)
 	{

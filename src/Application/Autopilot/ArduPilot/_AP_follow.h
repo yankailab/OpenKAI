@@ -22,6 +22,7 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
+protected:
 	bool updateTarget(void);
 	virtual bool findTarget(void);
 	static void* getUpdateThread(void* This)

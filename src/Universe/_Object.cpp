@@ -9,10 +9,14 @@ namespace kai
 
 _Object::_Object()
 {
-	m_p.init();
-	m_a.init();
-	m_q.init();
-	m_bb.init();
+	m_vPos.init();
+	m_vAtti.init();
+	m_vDim.init();
+	m_vSpeed.init();
+	m_vAccel.init();
+	m_vTraj.clear();
+	m_mFlag = 0;
+	m_pTracker = NULL;
 
 	resetClass();
 }
@@ -27,6 +31,14 @@ bool _Object::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	return true;
+}
+
+void _Object::resetClass(void)
+{
+	m_txt = "";
+	m_topClass = -1;
+	m_topProb = 0.0;
+	m_mClass = 0;
 }
 
 bool _Object::start(void)
@@ -54,75 +66,58 @@ void _Object::update(void)
 
 void _Object::updateKinetics(void)
 {
-	m_speed += m_accel * (float)m_dTime * OV_USEC_1SEC;
-	m_p += m_speed;
+	m_vSpeed += m_vAccel * (float)m_dTime * OV_USEC_1SEC;
+	m_vPos += m_vSpeed;
 }
 
-void _Object::setSize(vFloat3 s)
+void _Object::setDim(vFloat3 s)
 {
-	m_bb.x = s.x;
-	m_bb.y = s.y;
-	m_bb.z = s.z;
+	m_vPos = s;
 }
 
-void _Object::setLength(float l)
+void _Object::setW(float w)
 {
-	m_bb.x = l;
+	m_vDim.x = w;
 }
 
-void _Object::setWidth(float w)
+void _Object::setH(float h)
 {
-	m_bb.y = w;
+	m_vDim.y = h;
 }
 
-void _Object::setHeight(float h)
+void _Object::setD(float d)
 {
-	m_bb.z = h;
+	m_vDim.z = d;
 }
 
-void _Object::setRadius(float r)
+vFloat3 _Object::getDim(void)
 {
-	m_bb.w = r;
+	return m_vDim;
 }
 
-vFloat3 _Object::getSize(void)
+float _Object::getW(void)
 {
-	vFloat3 v;
-	v.x = m_bb.x;
-	v.y = m_bb.y;
-	v.z = m_bb.z;
-
-	return v;
+	return m_vDim.x;
 }
 
-float _Object::getLength(void)
+float _Object::getH(void)
 {
-	return m_bb.x;
+	return m_vDim.y;
 }
 
-float _Object::getWidth(void)
+float _Object::getD(void)
 {
-	return m_bb.y;
-}
-
-float _Object::getHeight(void)
-{
-	return m_bb.z;
-}
-
-float _Object::getRadius(void)
-{
-	return m_bb.w;
+	return m_vDim.z;
 }
 
 float _Object::area(void)
 {
-	return m_bb.x * m_bb.y;
+	return m_vDim.x * m_vDim.y;
 }
 
 float _Object::volume(void)
 {
-	return m_bb.x * m_bb.y * m_bb.z;
+	return m_vDim.x * m_vDim.y * m_vDim.z;
 }
 
 void _Object::addClassIdx(int iClass)
@@ -150,14 +145,6 @@ bool _Object::bClass(int iClass)
 bool _Object::bClassMask(uint64_t mClass)
 {
 	return m_mClass & mClass;
-}
-
-void _Object::resetClass(void)
-{
-	m_txt = "";
-	m_topClass = -1;
-	m_topProb = 0.0;
-	m_mClass = 0;
 }
 
 float _Object::nIoU(_Object* pO)

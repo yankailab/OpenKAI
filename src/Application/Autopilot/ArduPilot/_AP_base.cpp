@@ -21,8 +21,8 @@ _AP_base::_AP_base()
 	m_freqExtra1 = 1;
 
 	m_bHomeSet = false;
-	m_vHomePos.init();
-	m_vGlobalPos.init();
+	m_vHomePos.init(-1.0);
+	m_vGlobalPos.init(-1.0);
 	m_vLocalPos.init();
 	m_vSpeed.init();
 	m_apHdg = 0.0;
