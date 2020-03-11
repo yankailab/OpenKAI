@@ -17,7 +17,6 @@ _AP_posCtrl::_AP_posCtrl()
 	m_pRoll = NULL;
 	m_pPitch = NULL;
 	m_pAlt = NULL;
-	m_vYaw = 90.0;
 	m_bYaw = false;
 
 	m_sptLocal.vx = 0.0;
@@ -26,6 +25,8 @@ _AP_posCtrl::_AP_posCtrl()
 	m_sptLocal.x = 0.0;
 	m_sptLocal.y = 0.0;
 	m_sptLocal.z = 0.0;
+	m_sptLocal.yaw = 0.0;
+	m_sptLocal.yaw_rate = 90.0 * DEG2RAD;
 
 	m_sptGlobal.vx = 0.0;
 	m_sptGlobal.vy = 0.0;
@@ -33,6 +34,8 @@ _AP_posCtrl::_AP_posCtrl()
 	m_sptGlobal.lat_int = 0.0;
 	m_sptGlobal.lon_int = 0.0;
 	m_sptGlobal.alt = 0.0;
+	m_sptGlobal.yaw = 0.0;
+	m_sptGlobal.yaw_rate = 90.0 * DEG2RAD;
 
 }
 
@@ -47,8 +50,13 @@ bool _AP_posCtrl::init(void* pKiss)
 
 	pK->v("vTargetP", &m_vTargetP);
 	pK->v("vTargetGlobal", &m_vTargetGlobal);
-	pK->v("vYaw", &m_vYaw);
 	pK->v("bYaw", &m_bYaw);
+	float yawRate;
+	if(pK->v("yawRate", &yawRate))
+	{
+		m_sptLocal.yaw_rate = yawRate * DEG2RAD;
+		m_sptGlobal.yaw_rate = yawRate * DEG2RAD;
+	}
 
 	string iName;
 
@@ -100,7 +108,6 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vy = r;		//right
 	m_sptLocal.vz = a;		//down
 	m_sptLocal.yaw = (float) m_vP.w * DEG2RAD;
-	m_sptLocal.yaw_rate = (float) m_vYaw * DEG2RAD;
 	m_sptLocal.type_mask = 0b0000000111000111;	//set velocity
 
 	if(!m_bYaw)
@@ -119,7 +126,6 @@ void _AP_posCtrl::setPosGlobal(void)
 	m_sptGlobal.vy = 0.0;
 	m_sptGlobal.vz = 0.0;
 	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG2RAD;
-	m_sptGlobal.yaw_rate = m_vYaw * DEG2RAD;
 	m_sptGlobal.type_mask = 0b0000110111111000; //set position
 
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
@@ -146,8 +152,6 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_sptLocal.vx = 0;
 	m_sptLocal.vy = 0;
 	m_sptLocal.vz = 0;
-	m_sptLocal.yaw = (float) m_vTargetP.w * DEG2RAD;
-	m_sptLocal.yaw_rate = 0.0;
 	m_sptLocal.type_mask = 0b0000110111000111;
 	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
 }
@@ -155,9 +159,11 @@ void _AP_posCtrl::releaseCtrl(void)
 void _AP_posCtrl::draw(void)
 {
 	this->_AutopilotBase::draw();
-	if (!bActive())
-		addMsg("Inactive",1);
 
+	if(!bActive())
+		addMsg("[Inactive]",1);
+	else
+		addMsg("[Active]",1);
 
 	addMsg( "Local NED:");
 	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "

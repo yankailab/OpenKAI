@@ -258,7 +258,10 @@ void _AP_shutter::draw(void)
 	IF_(check()<0);
 
 	if(!bActive())
-		addMsg("Inactive");
+		addMsg("[Inactive]",1);
+	else
+		addMsg("[Active]",1);
+
 
 	addMsg("iTake = " + i2str(m_iTake));
 	addMsg("Dir = " + m_subDir);

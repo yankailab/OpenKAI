@@ -43,7 +43,7 @@ bool _AP_goto::init(void* pKiss)
 	string iName;
 
 	iName = "";
-	pK->v("APcopter_base", &iName);
+	pK->v("_AP_base", &iName);
 	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
@@ -102,6 +102,7 @@ bool _AP_goto::updateGoto(void)
 		return false;
 	}
 
+
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
@@ -129,11 +130,6 @@ bool _AP_goto::findTarget(void)
 void _AP_goto::draw(void)
 {
 	this->_AP_posCtrl::draw();
-
-	if(!bActive())
-		addMsg("Inactive",1);
-	else
-		addMsg("Waypoint",1);
 }
 
 }

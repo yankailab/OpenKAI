@@ -39,7 +39,6 @@ public:
 	PIDctrl* m_pAlt;
 
 	bool	m_bYaw;
-	float	m_vYaw;
 
 };
 

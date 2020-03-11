@@ -13,7 +13,7 @@ _Mavlink::_Mavlink()
 	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
 	m_myType = MAV_TYPE_GCS;
 
-	m_devSystemID = -1;
+	m_devSystemID = 1;
 	m_devComponentID = 0;
 	m_devType = 0;
 
@@ -38,8 +38,6 @@ bool _Mavlink::init(void* pKiss)
 	pK->v("devComponentID", &m_devComponentID);
 	pK->v("devType", &m_devType);
 
-	m_mavMsg.m_sysid = 0;
-	m_mavMsg.m_compid = 0;
 	m_status.packet_rx_drop_count = 0;
 
 	string iName;
@@ -700,13 +698,9 @@ void _Mavlink::handleMessages()
 	while (readMessage(msg))
 	{
 		uint64_t tNow = getTimeUsec();
-		m_mavMsg.m_sysid = msg.sysid;
-		m_mavMsg.m_compid = msg.compid;
 
-		if(m_devSystemID > 0)
-		{
-			IF_CONT(m_mavMsg.m_sysid != m_devSystemID);
-		}
+		IF_CONT(m_devSystemID > 0 && msg.sysid != m_devSystemID);
+		IF_CONT(m_devComponentID >= 0 && msg.compid != m_devComponentID);
 
 		switch (msg.msgid)
 		{
@@ -748,8 +742,6 @@ void _Mavlink::handleMessages()
 			mavlink_msg_heartbeat_decode(&msg, &m_mavMsg.m_heartbeat);
 			m_mavMsg.m_tStamps.m_heartbeat = tNow;
 
-			m_devSystemID = m_mavMsg.m_sysid;
-			m_devComponentID = m_mavMsg.m_compid;
 			m_devType = m_mavMsg.m_heartbeat.type;
 
 			LOG_I(" -> HEARTBEAT: sysid=" + i2str(msg.sysid) +

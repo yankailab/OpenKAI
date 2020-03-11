@@ -90,7 +90,18 @@ void _AP_takeoff::updateMission(void)
 
 void _AP_takeoff::draw(void)
 {
+	IF_(check()<0);
 	this->_AutopilotBase::draw();
+
+	if(!bActive())
+		addMsg("[Inactive]",1);
+	else
+		addMsg("[Active]",1);
+
+	if(m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
+	{
+		addMsg("Taken off", 1);
+	}
 
 }
 

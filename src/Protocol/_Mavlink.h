@@ -61,8 +61,6 @@ struct Time_Stamps
 // Struct containing information on the MAV we are currently connected to
 struct Mavlink_Messages
 {
-	int m_sysid;
-	int m_compid;
 
 	mavlink_attitude_t						m_attitude;
 	mavlink_battery_status_t				m_battery_status;

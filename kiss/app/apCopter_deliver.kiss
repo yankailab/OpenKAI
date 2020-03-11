@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -83,33 +83,6 @@
 }
 
 {
-	"name":"irSerial",
-	"class":"_SerialPort",
-	"bInst":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
-	"baud":115200,
-	"_wakeUp":"IRLock",
-}
-
-{
-	"name":"IRLock",
-	"class":"_IRLock",
-	"bInst":0,
-	"bDraw":1,
-	"bLog":0,
-	"FPS":60,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_IOBase":"irSerial",
-	"_DepthVisionBase":"cam",
-	"/bbScale":1.5,
-}
-
-{
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
@@ -132,10 +105,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyTHS1",
-	"baud":115200,
-	"/port":"/dev/ttyUSB0",
-	"/baud":57600,
+	"/port":"/dev/ttyTHS1",
+	"/baud":115200,
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -148,6 +121,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
+	"mySystemID":1,
+	"myComponentID":190,
+	"devSystemID":1,
+	"devComponentID":1,
 
 	{
 		"bInst":0,
@@ -163,9 +140,9 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":57600,
-	"_wakeUp":"apMavlink",
+	"_wakeUp":"remoteMavlink",
 }
 
 {
@@ -250,7 +227,8 @@
 	"bDraw":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"startMission":"STANDBY",
+	"/startMission":"STANDBY",
+	"startMission":"DESCENT",
 
 	{
 		"name":"mission",
@@ -261,7 +239,17 @@
 			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
-			"nextMission":"LAND",
+			"nextMission":"TAKEOFF",
+		}
+		{
+			"bInst":1,
+			"name":"TAKEOFF",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"Takeoff",
+			"alt":5.0,
+			"nextMission":"FOLLOW",
 		}
 		{
 			"bInst":1,
@@ -278,17 +266,8 @@
 			"Window":"OKview",
 			"bDraw":1,
 			"Console":"OKconsole",
-			"class":"MissionBase",
-			"nextMission":"RELEASE",
-			
-			{
-				"name":"tag",
-				{
-					"name":"tag",
-				
-				
-				}
-			}
+			"class":"Land",
+			"nextMission":"RELEASE",			
 		}
 		{
 			"bInst":1,
@@ -334,7 +313,7 @@
 	"name":"apMission",
 	"class":"_AP_mission",
 	"FPS":5,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -343,8 +322,8 @@
 }
 
 {
-	"name":"apDescent",
-	"class":"_AP_descent",
+	"name":"apTakeoff",
+	"class":"_AP_takeoff",
 	"FPS":10,
 	"bInst":1,
 	"bLog":1,
@@ -352,34 +331,8 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
-	"activeMission":["FOLLOW","DESCENT"],
+	"activeMission":["TAKEOFF"],
 	"_AP_base":"apBase",
-	"_DetectorBase":"arUco",
-	"iClass":0,
-
-	"PIDroll":"PIDroll",
-	"PIDpitch":"PIDpitch",
-	"vTargetP":[0.5, 0.5, 0.3, 0.0],
-	"vYaw":0.0,
-	
-	"alt":0.65,
-	"detSize":0.15,
-	"dzHdg":360.0,
-	"detRdz":0.9,
-	"vRDD":[0.1, 0.1, 0.9, 0.9],
-	"wLen":5,
-	
-	{
-		"name":"mount",
-		"bEnable":0,
-		"pitch":0,
-		"roll":0,
-		"yaw":0,
-		"stabPitch":1,
-		"stabRoll":1,
-		"stabYaw":0,
-		"mountMode":2,
-	}
 }
 
 {
@@ -395,10 +348,44 @@
 	"activeMission":["FOLLOW"],
 	"_AP_base":"apBase",
 	"_AP_target_base":"apTargetBase",
-
 	"vYaw":0.0,	
 	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
 		
+	{
+		"name":"mount",
+		"bEnable":0,
+		"pitch":0,
+		"roll":0,
+		"yaw":0,
+		"stabPitch":1,
+		"stabRoll":1,
+		"stabYaw":0,
+		"mountMode":2,
+	}
+}
+
+{
+	"name":"apDescent",
+	"class":"_AP_descent",
+	"FPS":10,
+	"bInst":1,
+	"bLog":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["DESCENT"],
+	"_AP_base":"apBase",
+	"_DetectorBase":"arUco",
+	"PIDroll":"PIDroll",
+	"PIDpitch":"PIDpitch",
+	"vTargetP":[0.5, 0.5, 0.3, 0.0],
+	"vYaw":0.0,
+	"alt":0.65,
+	"detSize":0.15,
+	"vRDD":[0.1, 0.1, 0.9, 0.9],
+	"wLen":5,
+	
 	{
 		"name":"mount",
 		"bEnable":0,
@@ -419,7 +406,6 @@
 	"FPS":10,
 	"bInst":1,
 	"bDraw":1,
-	"_MissionControl":"mission",
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Mavlink":"remoteMavlink",
