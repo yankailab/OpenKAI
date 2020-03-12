@@ -25,6 +25,7 @@ _AP_shutter::_AP_shutter()
 	m_bModeChange = true;
 	m_tDelay = USEC_1SEC;
 	m_apModeShutter = AP_ROVER_HOLD;
+	m_vTargetBB.init();
 
 }
 
@@ -130,13 +131,23 @@ void _AP_shutter::shutter(void)
 			IF_CONT(pO->m_bb.midY() > yO);
 
 			tO = pO;
-			yO = pO->m_topClass;
+			yO = pO->m_bb.midY();
 		}
 
-		NULL_(tO);
-		IF_(tO->m_topClass == m_iTag);
-		m_iTag = tO->m_topClass;
+		if(!tO)
+		{
+			m_vTargetBB.init();
+			return;
+		}
 
+		if(tO->m_topClass == m_iTag)
+		{
+			m_vTargetBB.init();
+			return;
+		}
+
+		m_vTargetBB = tO->m_bb;
+		m_iTag = tO->m_topClass;
 	}
 	else if(m_shutterMode == apShutter_cont)
 	{
@@ -254,17 +265,22 @@ void _AP_shutter::shutter(void)
 
 void _AP_shutter::draw(void)
 {
-	this->_AutopilotBase::draw();
 	IF_(check()<0);
-
-	if(!bActive())
-		addMsg("[Inactive]",1);
-	else
-		addMsg("[Active]",1);
-
+	this->_AutopilotBase::draw();
+	drawActive();
 
 	addMsg("iTake = " + i2str(m_iTake));
 	addMsg("Dir = " + m_subDir);
+
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Rect r = convertBB<vInt4>(convertBB(m_vTargetBB, cs));
+	rectangle(*pMat, r, Scalar(0,0,255), 2);
+
 }
 
 }

@@ -109,7 +109,6 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vz = a;		//down
 	m_sptLocal.yaw = (float) m_vP.w * DEG2RAD;
 	m_sptLocal.type_mask = 0b0000000111000111;	//set velocity
-
 	if(!m_bYaw)
 		m_sptLocal.type_mask |= 0b0000110000000000;
 
@@ -126,7 +125,9 @@ void _AP_posCtrl::setPosGlobal(void)
 	m_sptGlobal.vy = 0.0;
 	m_sptGlobal.vz = 0.0;
 	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG2RAD;
-	m_sptGlobal.type_mask = 0b0000110111111000; //set position
+	m_sptGlobal.type_mask = 0b0000000111111000; //set position
+	if(!m_bYaw)
+		m_sptLocal.type_mask |= 0b0000110000000000;
 
 	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
 }

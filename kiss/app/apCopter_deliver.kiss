@@ -342,7 +342,8 @@
 	"activeMission":["FOLLOW"],
 	"_AP_base":"apBase",
 	"_AP_target_base":"apTargetBase",
-	"vYaw":0.0,	
+	"bYaw":0,
+	"yawRate":90.0,	
 	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
 		
 	{
@@ -373,7 +374,8 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"vTargetP":[0.5, 0.5, 0.3, 0.0],
-	"vYaw":0.0,
+	"bYaw":0,
+	"yawRate":90.0,	
 	"alt":0.65,
 	"detSize":0.08,
 	"vRDD":[0.1, 0.1, 0.9, 0.9],

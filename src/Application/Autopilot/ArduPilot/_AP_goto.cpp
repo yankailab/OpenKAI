@@ -96,14 +96,15 @@ bool _AP_goto::updateGoto(void)
 	m_bTarget = findTarget();
 
 	IF_F(!bActive());
+
+	if(m_apMount.m_bEnable)
+		m_pAP->setMount(m_apMount);
+
 	if(!m_bTarget)
 	{
 		releaseCtrl();
 		return false;
 	}
-
-	if(m_apMount.m_bEnable)
-		m_pAP->setMount(m_apMount);
 
 	setPosGlobal();
 	return true;

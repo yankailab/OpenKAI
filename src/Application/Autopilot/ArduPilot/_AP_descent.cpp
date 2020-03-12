@@ -75,35 +75,22 @@ bool _AP_descent::updateTarget(void)
 	m_bTarget = findTarget();
 
 	IF_F(!bActive());
+
+	if (m_apMount.m_bEnable)
+		m_pAP->setMount(m_apMount);
+
 	if(!m_bTarget)
 	{
 		releaseCtrl();
 		return false;
 	}
 
-	if (m_apMount.m_bEnable)
-		m_pAP->setMount(m_apMount);
-
 	float w = m_vTargetBB.width();
 	float h = m_vTargetBB.height();
-
 	if (m_dTarget > 0.0 && m_dTarget < m_alt && w > m_detSize && h > m_detSize)
 	{
 		m_pMC->getMission()->complete();
 		return false;
-	}
-
-	m_vP.x = m_vTargetBB.midX();
-	m_vP.y = m_vTargetBB.midY();
-
-	if (m_vP.x > m_vRDD.x && m_vP.x < m_vRDD.z
-			&& m_vP.y > m_vRDD.y && m_vP.y < m_vRDD.w)
-	{
-		m_vP.z = m_vTargetP.z;
-	}
-	else
-	{
-		m_vP.z = 0.0;
 	}
 
 	setPosLocal();
@@ -114,6 +101,7 @@ bool _AP_descent::findTarget(void)
 {
 	IF_F(check() < 0);
 
+	//target
 	OBJECT* tO = NULL;
 	OBJECT* pO;
 	int iTag = -1;
@@ -127,11 +115,24 @@ bool _AP_descent::findTarget(void)
 	}
 
 	NULL_F(tO);
-	m_vTargetBB = tO->m_bb;
-	m_filter.input(tO->m_dist);
-	m_dTarget = m_filter.v();
-	m_vP.w = Hdg(m_pAP->getApHdg() + tO->m_angle);
 
+	//position
+	m_vTargetBB = tO->m_bb;
+	m_vP.x = m_vTargetBB.midX();
+	m_vP.y = m_vTargetBB.midY();
+
+	if (m_vP.x > m_vRDD.x && m_vP.x < m_vRDD.z
+			&& m_vP.y > m_vRDD.y && m_vP.y < m_vRDD.w)
+	{
+		m_vP.z = m_vTargetP.z;
+	}
+	else
+	{
+		m_vP.z = 0.0;
+	}
+
+	//heading
+	m_vP.w = Hdg(m_pAP->getApHdg() + tO->m_angle);
 	Land* pLand = (Land*)m_pMC->getMission();
 	if(pLand->m_type == mission_land)
 	{
@@ -144,6 +145,10 @@ bool _AP_descent::findTarget(void)
 			break;
 		}
 	}
+
+	//distance
+	m_filter.input(tO->m_dist);
+	m_dTarget = m_filter.v();
 
 	return true;
 }

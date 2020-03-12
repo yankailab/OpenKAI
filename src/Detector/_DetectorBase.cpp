@@ -207,10 +207,12 @@ OBJECT* _DetectorBase::add(OBJECT* pNewO)
 	IF_N(m_minH >= 0 && pNewO->height() < m_minW);
 	IF_N(m_maxH >= 0 && pNewO->height() > m_maxH);
 
-	IF_N(pNewO->m_bb.x < m_vRoi.x);
-	IF_N(pNewO->m_bb.x > m_vRoi.z);
-	IF_N(pNewO->m_bb.y < m_vRoi.y);
-	IF_N(pNewO->m_bb.y > m_vRoi.w);
+	float cx = pNewO->m_bb.midX();
+	float cy = pNewO->m_bb.midY();
+	IF_N(cx < m_vRoi.x);
+	IF_N(cx > m_vRoi.z);
+	IF_N(cy < m_vRoi.y);
+	IF_N(cy > m_vRoi.w);
 
 	if(m_bbScale > 0.0)
 	{
@@ -315,6 +317,10 @@ void _DetectorBase::draw(void)
 			}
 		}
 	}
+
+	//roi
+	Rect roi = convertBB<vInt4>(convertBB(m_vRoi, cs));
+	rectangle(*pMat, roi, Scalar(0,255,255), 1);
 
 	IF_(!m_bDrawStatistics);
 	updateStatistics();

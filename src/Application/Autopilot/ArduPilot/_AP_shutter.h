@@ -60,6 +60,7 @@ private:
 	uint32_t m_apModeShutter;
 
 	_DetectorBase* m_pDet;
+	vFloat4	m_vTargetBB;
 
 };
 
