@@ -87,8 +87,9 @@ void _AP_servo::updateServo(void)
 
 void _AP_servo::draw(void)
 {
-	this->_AutopilotBase::draw();
 	IF_(check()<0);
+	this->_AutopilotBase::draw();
+	drawActive();
 
 	for(AP_SERVO s : m_vServo)
 	{

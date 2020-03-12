@@ -22,6 +22,8 @@ public:
 	virtual bool bMissionChanged(void);
 	virtual int check(void);
 
+	virtual void drawActive(void);
+
 public:
 	_MissionControl* m_pMC;
 	std::vector<int> m_vActiveMission;

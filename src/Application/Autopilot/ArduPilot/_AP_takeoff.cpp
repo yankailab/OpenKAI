@@ -78,7 +78,7 @@ void _AP_takeoff::updateMission(void)
 	Takeoff* pTO = (Takeoff*)m_pMC->getMission();
 	NULL_(pTO);
 
-	if(m_pAP->m_vGlobalPos.w >= pTO->m_alt &&
+	if(EAQ(m_pAP->m_vGlobalPos.w, pTO->m_alt, 0.5) &&
 	   m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
 	{
 		pTO->complete();
@@ -92,12 +92,9 @@ void _AP_takeoff::draw(void)
 {
 	IF_(check()<0);
 	this->_AutopilotBase::draw();
+	drawActive();
 
-	if(!bActive())
-		addMsg("[Inactive]",1);
-	else
-		addMsg("[Active]",1);
-
+	addMsg("system status="+i2str(m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status));
 	if(m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
 	{
 		addMsg("Taken off", 1);

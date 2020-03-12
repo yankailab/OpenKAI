@@ -89,6 +89,14 @@ bool _AutopilotBase::bMissionChanged(void)
 	return m_bMissionChanged;
 }
 
+void _AutopilotBase::drawActive(void)
+{
+	if(!bActive())
+		addMsg("[Inactive]",1);
+	else
+		addMsg("[Active]",1);
+}
+
 void _AutopilotBase::draw(void)
 {
 	this->_ThreadBase::draw();

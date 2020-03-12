@@ -81,7 +81,6 @@ bool _AP_descent::updateTarget(void)
 		return false;
 	}
 
-
 	if (m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
@@ -163,10 +162,16 @@ void _AP_descent::draw(void)
 	addMsg("Target");
 	vFloat2 c = m_vTargetBB.center();
 	addMsg("Pos=(" + f2str(c.x) + ", " + f2str(c.y) + "), d=" + f2str(m_dTarget), 1);
-	addMsg("Size=(" + f2str(m_vTargetBB.x) + ", " + f2str(m_vTargetBB.y) + ")",	1);
+	addMsg("Size=(" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")",	1);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
+	vInt2 cs;
+	cs.x = pMat->cols;
+	cs.y = pMat->rows;
+	Rect r = convertBB<vInt4>(convertBB(m_vTargetBB, cs));
+	rectangle(*pMat, r, Scalar(0,0,255), 2);
 }
 
 }

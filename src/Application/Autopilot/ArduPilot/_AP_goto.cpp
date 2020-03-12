@@ -102,7 +102,6 @@ bool _AP_goto::updateGoto(void)
 		return false;
 	}
 
-
 	if(m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 

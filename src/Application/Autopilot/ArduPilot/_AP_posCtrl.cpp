@@ -159,11 +159,7 @@ void _AP_posCtrl::releaseCtrl(void)
 void _AP_posCtrl::draw(void)
 {
 	this->_AutopilotBase::draw();
-
-	if(!bActive())
-		addMsg("[Inactive]",1);
-	else
-		addMsg("[Active]",1);
+	drawActive();
 
 	addMsg( "Local NED:");
 	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "
