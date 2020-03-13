@@ -69,8 +69,8 @@
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":640,
-	"h":360,
+	"w":1280,
+	"h":720,
 	"rsFPS":30,
 	"wD":640,
 	"hD":360,
@@ -104,7 +104,7 @@
 	"_DepthVisionBase":"cam",
 	"dict":17,
 	"bDrawPos":1,
-	"vRoi":[0.0, 0.1, 1.0, 1.0],
+	"vRoi":[0.0, 0.2, 1.0, 1.0],
 }
 
 {
