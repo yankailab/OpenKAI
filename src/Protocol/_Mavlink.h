@@ -192,7 +192,7 @@ public:
 	//Cmd long
 	void clComponentArmDisarm(bool bArm);
 	void clDoSetMode(int mode);
-	void clNavSetYawSpeed(float yaw, float speed);
+	void clNavSetYawSpeed(float yaw, float speed, float yawMode);
 	void clDoSetServo(int iServo, int PWM);
 	void clGetHomePosition(void);
 	void clNavTakeoff(float alt);

@@ -597,7 +597,7 @@ void _Mavlink::clDoSetMode(int mode)
 	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
 }
 
-void _Mavlink::clNavSetYawSpeed(float yaw, float speed)
+void _Mavlink::clNavSetYawSpeed(float yaw, float speed, float yawMode)
 {
 	mavlink_command_long_t D;
 	D.target_system = m_devSystemID;
@@ -606,6 +606,7 @@ void _Mavlink::clNavSetYawSpeed(float yaw, float speed)
 	D.confirmation = 0;
 	D.param1 = yaw;
 	D.param2 = speed;
+	D.param3 = yawMode;
 
 	mavlink_message_t msg;
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);

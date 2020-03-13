@@ -22,6 +22,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
 #include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
+#include "../Application/Autopilot/ArduPilot/_AP_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"

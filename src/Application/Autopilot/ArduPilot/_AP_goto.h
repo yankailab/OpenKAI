@@ -1,8 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_goto_H_
 #define OpenKAI_src_Autopilot_AP__AP_goto_H_
 
-#include "../../../Base/common.h"
-#include "../../Mission/Waypoint.h"
 #include "../ArduPilot/_AP_posCtrl.h"
 
 namespace kai

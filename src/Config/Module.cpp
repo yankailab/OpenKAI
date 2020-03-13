@@ -115,8 +115,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_depthVision);
 	ADD_MODULE(_AP_distLidar);
 	ADD_MODULE(_AP_avoid);
-	ADD_MODULE(_AP_follow);
 	ADD_MODULE(_AP_descent);
+	ADD_MODULE(_AP_drive);
+	ADD_MODULE(_AP_follow);
 	ADD_MODULE(_AP_mission);
 	ADD_MODULE(_AP_posCtrl);
 	ADD_MODULE(_AP_RTH);
