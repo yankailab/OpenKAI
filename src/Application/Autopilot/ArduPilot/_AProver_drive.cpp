@@ -1,28 +1,34 @@
-#include "_AP_drive.h"
+#include "_AProver_drive.h"
 
 namespace kai
 {
 
-_AP_drive::_AP_drive()
+_AProver_drive::_AProver_drive()
 {
 	m_pAP = NULL;
 
-	m_speed = 0.0;
-	m_yaw = 0.0;
+	m_nSpeed = 0.0;
+	m_kSpeed = 1.0;
+	m_nYaw = 0.0;
+
+	m_speed = 1.0;	//1.0m/s
 	m_yawMode = 1.0;
 }
 
-_AP_drive::~_AP_drive()
+_AProver_drive::~_AProver_drive()
 {
 }
 
-bool _AP_drive::init(void* pKiss)
+bool _AProver_drive::init(void* pKiss)
 {
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("nSpeed",&m_nSpeed);
+	pK->v("kSpeed",&m_kSpeed);
+	pK->v("nYaw",&m_nYaw);
+
 	pK->v("speed",&m_speed);
-	pK->v("yaw",&m_yaw);
 	pK->v("yawMode",&m_yawMode);
 
 	string iName;
@@ -34,7 +40,7 @@ bool _AP_drive::init(void* pKiss)
 	return true;
 }
 
-bool _AP_drive::start(void)
+bool _AProver_drive::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -48,7 +54,7 @@ bool _AP_drive::start(void)
 	return true;
 }
 
-int _AP_drive::check(void)
+int _AProver_drive::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMavlink,-1);
@@ -56,7 +62,7 @@ int _AP_drive::check(void)
 	return this->_AutopilotBase::check();
 }
 
-void _AP_drive::update(void)
+void _AProver_drive::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -68,26 +74,39 @@ void _AP_drive::update(void)
 	}
 }
 
-bool _AP_drive::updateDrive(void)
+bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
+	IF_F(!bActive());
 
-	m_pAP->m_pMavlink->clNavSetYawSpeed(m_yaw, m_speed, m_yawMode);
+	string mission = m_pMC->getMissionName();
+
+	float nSpeed;
+	if(mission == "FORWARD")
+		nSpeed = m_nSpeed;
+	else if(mission == "BACKWARD")
+		nSpeed = -m_nSpeed;
+	else
+		nSpeed = 0.0;
+
+	m_pAP->m_pMavlink->clNavSetYawSpeed(m_nYaw*360.0,
+										nSpeed * m_kSpeed * m_speed,
+										m_yawMode);
 
 	return true;
 }
 
-void _AP_drive::setSpeed(float v)
+void _AProver_drive::setSpeed(float nSpeed)
 {
-	m_speed = v;
+	m_nSpeed = nSpeed;
 }
 
-void _AP_drive::setYaw(float v)
+void _AProver_drive::setYaw(float nYaw)
 {
-	m_yaw = v;
+	m_nYaw = nYaw;
 }
 
-void _AP_drive::setYawMode(bool bRelative)
+void _AProver_drive::setYawMode(bool bRelative)
 {
 	if(bRelative)
 		m_yawMode = 1.0;
@@ -95,7 +114,7 @@ void _AP_drive::setYawMode(bool bRelative)
 		m_yawMode = 0.0;
 }
 
-void _AP_drive::draw(void)
+void _AProver_drive::draw(void)
 {
 	this->_AutopilotBase::draw();
 }

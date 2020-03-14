@@ -631,6 +631,22 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 	LOG_I("<- cmdLongDoSetServo: servo="+i2str((int)iServo) + " pwm=" + i2str(PWM));
 }
 
+void _Mavlink::clDoSetRelay(int iRelay, bool bRelay)
+{
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_DO_SET_RELAY;
+	D.param1 = iRelay;
+	D.param2 = (bRelay)?1.0:0.0;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdLongDoSetRelay: relay="+i2str((int)iRelay) + " relay=" + i2str((int)bRelay));
+}
+
 void _Mavlink::clGetHomePosition(void)
 {
 	mavlink_command_long_t D;
@@ -839,6 +855,23 @@ void _Mavlink::handleMessages()
 					+ ", chan6=" + i2str(m_mavMsg.m_rc_channels_override.chan6_raw)
 					+ ", chan7=" + i2str(m_mavMsg.m_rc_channels_override.chan7_raw)
 					+ ", chan8=" + i2str(m_mavMsg.m_rc_channels_override.chan8_raw)
+					);
+			break;
+		}
+
+		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
+		{
+			mavlink_msg_rc_channels_scaled_decode(&msg, &(m_mavMsg.m_rc_channels_scaled));
+			m_mavMsg.m_tStamps.m_rc_channels_scaled = tNow;
+
+			LOG_I(" -> RC_SCALED: chan1=" + i2str(m_mavMsg.m_rc_channels_scaled.chan1_scaled)
+					+ ", chan2=" + i2str(m_mavMsg.m_rc_channels_scaled.chan2_scaled)
+					+ ", chan3=" + i2str(m_mavMsg.m_rc_channels_scaled.chan3_scaled)
+					+ ", chan4=" + i2str(m_mavMsg.m_rc_channels_scaled.chan4_scaled)
+					+ ", chan5=" + i2str(m_mavMsg.m_rc_channels_scaled.chan5_scaled)
+					+ ", chan6=" + i2str(m_mavMsg.m_rc_channels_scaled.chan6_scaled)
+					+ ", chan7=" + i2str(m_mavMsg.m_rc_channels_scaled.chan7_scaled)
+					+ ", chan8=" + i2str(m_mavMsg.m_rc_channels_scaled.chan8_scaled)
 					);
 			break;
 		}

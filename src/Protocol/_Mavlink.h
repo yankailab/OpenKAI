@@ -32,6 +32,7 @@ struct Time_Stamps
 	uint64_t m_raw_imu;
 	uint64_t m_rc_channels_override;
 	uint64_t m_rc_channels_raw;
+	uint64_t m_rc_channels_scaled;
 	uint64_t m_sys_status;
 	uint64_t m_scaled_imu;
 
@@ -53,6 +54,7 @@ struct Time_Stamps
 		m_raw_imu = 0;
 		m_rc_channels_override = 0;
 		m_rc_channels_raw = 0;
+		m_rc_channels_scaled = 0;
 		m_sys_status = 0;
 		m_scaled_imu = 0;
 	}
@@ -79,6 +81,7 @@ struct Mavlink_Messages
 	mavlink_raw_imu_t						m_raw_imu;
 	mavlink_rc_channels_override_t			m_rc_channels_override;
 	mavlink_rc_channels_raw_t				m_rc_channels_raw;
+	mavlink_rc_channels_scaled_t			m_rc_channels_scaled;
 	mavlink_sys_status_t					m_sys_status;
 	mavlink_scaled_imu_t					m_scaled_imu;
 
@@ -109,6 +112,24 @@ struct Mavlink_Messages
 		m_local_position_ned.x = 0;
 		m_local_position_ned.y = 0;
 		m_local_position_ned.z = 0;
+
+		m_rc_channels_scaled.chan1_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan2_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan3_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan4_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan5_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan6_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan7_scaled = UINT16_MAX;
+		m_rc_channels_scaled.chan8_scaled = UINT16_MAX;
+
+		m_rc_channels_raw.chan1_raw = UINT16_MAX;
+		m_rc_channels_raw.chan2_raw = UINT16_MAX;
+		m_rc_channels_raw.chan3_raw = UINT16_MAX;
+		m_rc_channels_raw.chan4_raw = UINT16_MAX;
+		m_rc_channels_raw.chan5_raw = UINT16_MAX;
+		m_rc_channels_raw.chan6_raw = UINT16_MAX;
+		m_rc_channels_raw.chan7_raw = UINT16_MAX;
+		m_rc_channels_raw.chan8_raw = UINT16_MAX;
 
 		m_tStamps.init();
 	}
@@ -194,6 +215,7 @@ public:
 	void clDoSetMode(int mode);
 	void clNavSetYawSpeed(float yaw, float speed, float yawMode);
 	void clDoSetServo(int iServo, int PWM);
+	void clDoSetRelay(int iRelay, bool bRelay);
 	void clGetHomePosition(void);
 	void clNavTakeoff(float alt);
 
