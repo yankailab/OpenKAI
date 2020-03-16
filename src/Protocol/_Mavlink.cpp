@@ -45,10 +45,10 @@ bool _Mavlink::init(void* pKiss)
 	iName = "";
 	pK->v("_IOBase", &iName);
 	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pIO,"_IOBase not found");
+	IF_Fl(!m_pIO, "_IOBase not found");
 
 	Kiss** pItr = pK->getChildItr();
-	int i=0;
+	int i = 0;
 	while (pItr[i])
 	{
 		Kiss* pP = pItr[i];
@@ -61,7 +61,7 @@ bool _Mavlink::init(void* pKiss)
 		iName = "";
 		F_ERROR_F(pP->v("_Mavlink", &iName));
 		mP.m_pPeer = pK->root()->getChildInst(iName);
-		if(!mP.m_pPeer)
+		if (!mP.m_pPeer)
 		{
 			LOG_I("_Mavlink not found: " + iName);
 			continue;
@@ -73,9 +73,9 @@ bool _Mavlink::init(void* pKiss)
 	//cmd routing
 	vector<int> vNoRouteCmd;
 	pK->a("noRouteCmd", &vNoRouteCmd);
-	for(int i=0; i<vNoRouteCmd.size(); i++)
+	for (int i = 0; i < vNoRouteCmd.size(); i++)
 	{
-		setCmdRoute(vNoRouteCmd[i],false);
+		setCmdRoute(vNoRouteCmd[i], false);
 	}
 
 	return true;
@@ -100,13 +100,13 @@ void _Mavlink::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pIO)
+		if (!m_pIO)
 		{
 			this->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		if(!m_pIO->isOpen())
+		if (!m_pIO->isOpen())
 		{
 			this->sleepTime(USEC_1SEC);
 			continue;
@@ -127,17 +127,19 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 	uint8_t pB[N_IO_BUF];
 	int nB = mavlink_msg_to_send_buffer(pB, &msg);
 
-	if(m_pIO->ioType()!=io_webSocket)
+	if (m_pIO->ioType() != io_webSocket)
 	{
 		m_pIO->write(pB, nB);
 	}
 	else
 	{
-		_WebSocket* pWS = (_WebSocket*)m_pIO;
+		_WebSocket* pWS = (_WebSocket*) m_pIO;
 		pWS->write(pB, nB, WS_MODE_BIN);
 	}
 
-	LOG_I("<- MSG_ID = " + i2str((int)msg.msgid) + ", seq = " + i2str((int)msg.seq));
+	LOG_I(
+			"<- MSG_ID = " + i2str((int )msg.msgid) + ", seq = "
+					+ i2str((int )msg.seq));
 }
 
 void _Mavlink::cmdInt(mavlink_command_int_t& D)
@@ -146,10 +148,7 @@ void _Mavlink::cmdInt(mavlink_command_int_t& D)
 	D.target_component = m_devComponentID;
 
 	mavlink_message_t msg;
-	mavlink_msg_command_int_encode(
-			m_mySystemID,
-			m_myComponentID,
-			&msg, &D);
+	mavlink_msg_command_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
 
@@ -176,22 +175,24 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 	mavlink_msg_distance_sensor_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- DIST_SENSOR orient = " + i2str((int)D.orientation) +
-			", d = " + i2str((int)D.current_distance) +
-			", min = " + i2str((int)D.min_distance) +
-			", max = " + i2str((int)D.max_distance));
+	LOG_I(
+			"<- DIST_SENSOR orient = " + i2str((int )D.orientation) + ", d = "
+					+ i2str((int )D.current_distance) + ", min = "
+					+ i2str((int )D.min_distance) + ", max = "
+					+ i2str((int )D.max_distance));
 }
 
-void _Mavlink::globalVisionPositionEstimate(mavlink_global_vision_position_estimate_t& D)
+void _Mavlink::globalVisionPositionEstimate(
+		mavlink_global_vision_position_estimate_t& D)
 {
 	/*
 	 *  uint64_t usec; // Timestamp (microseconds, synced to UNIX time or since system boot)
- float x; // Global X position
- float y; // Global Y position
- float z; // Global Z position
- float roll; // Roll angle in rad
- float pitch; // Pitch angle in rad
- float yaw; // Yaw angle in rad
+	 float x; // Global X position
+	 float y; // Global Y position
+	 float z; // Global Z position
+	 float roll; // Roll angle in rad
+	 float pitch; // Pitch angle in rad
+	 float yaw; // Yaw angle in rad
 	 */
 
 	mavlink_message_t msg;
@@ -201,43 +202,41 @@ void _Mavlink::globalVisionPositionEstimate(mavlink_global_vision_position_estim
 			m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- GLOBAL_VISION_POSITION_ESTIMATE T=" + i2str(D.usec)
-			+ ", x=" + f2str(D.x)
-			+ ", y=" + f2str(D.y)
-			+ ", z=" + f2str(D.z)
-			+ "; roll=" + f2str(D.roll)
-			+ ", pitch=" + f2str(D.pitch)
-			+ ", yaw=" + f2str(D.yaw));
+	LOG_I(
+			"<- GLOBAL_VISION_POSITION_ESTIMATE T=" + i2str(D.usec) + ", x="
+					+ f2str(D.x) + ", y=" + f2str(D.y) + ", z=" + f2str(D.z)
+					+ "; roll=" + f2str(D.roll) + ", pitch=" + f2str(D.pitch)
+					+ ", yaw=" + f2str(D.yaw));
 }
 
 void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 {
 	/*
-	time_week
-	time_week_ms
-	lat
-	lon
-	alt (optional)
-	hdop (optinal)
-	vdop (optinal)
-	vn, ve, vd (optional)
-	speed_accuracy (optional)
-	horizontal_accuracy (optional)
-	satellites_visible <-- required
-	fix_type <-- required
+	 time_week
+	 time_week_ms
+	 lat
+	 lon
+	 alt (optional)
+	 hdop (optinal)
+	 vdop (optinal)
+	 vn, ve, vd (optional)
+	 speed_accuracy (optional)
+	 horizontal_accuracy (optional)
+	 satellites_visible <-- required
+	 fix_type <-- required
 
-typedef enum GPS_INPUT_IGNORE_FLAGS
-{
-	   GPS_INPUT_IGNORE_FLAG_ALT=1,
-	   GPS_INPUT_IGNORE_FLAG_HDOP=2,
-	   GPS_INPUT_IGNORE_FLAG_VDOP=4,
-	   GPS_INPUT_IGNORE_FLAG_VEL_HORIZ=8,
-	   GPS_INPUT_IGNORE_FLAG_VEL_VERT=16,
-	   GPS_INPUT_IGNORE_FLAG_SPEED_ACCURACY=32,
-	   GPS_INPUT_IGNORE_FLAG_HORIZONTAL_ACCURACY=64,
-	   GPS_INPUT_IGNORE_FLAG_VERTICAL_ACCURACY=128,
-	   GPS_INPUT_IGNORE_FLAGS_ENUM_END=129,
-} GPS_INPUT_IGNORE_FLAGS;
+	 typedef enum GPS_INPUT_IGNORE_FLAGS
+	 {
+	 GPS_INPUT_IGNORE_FLAG_ALT=1,
+	 GPS_INPUT_IGNORE_FLAG_HDOP=2,
+	 GPS_INPUT_IGNORE_FLAG_VDOP=4,
+	 GPS_INPUT_IGNORE_FLAG_VEL_HORIZ=8,
+	 GPS_INPUT_IGNORE_FLAG_VEL_VERT=16,
+	 GPS_INPUT_IGNORE_FLAG_SPEED_ACCURACY=32,
+	 GPS_INPUT_IGNORE_FLAG_HORIZONTAL_ACCURACY=64,
+	 GPS_INPUT_IGNORE_FLAG_VERTICAL_ACCURACY=128,
+	 GPS_INPUT_IGNORE_FLAGS_ENUM_END=129,
+	 } GPS_INPUT_IGNORE_FLAGS;
 	 */
 
 	D.time_week = 1;
@@ -247,9 +246,9 @@ typedef enum GPS_INPUT_IGNORE_FLAGS
 	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- GPS_INPUT lat=" + i2str(D.lat)
-			+ ", lon=" + i2str(D.lon)
-			+ ", alt=" + f2str(D.alt));
+	LOG_I(
+			"<- GPS_INPUT lat=" + i2str(D.lat) + ", lon=" + i2str(D.lon)
+					+ ", alt=" + f2str(D.alt));
 }
 
 void _Mavlink::globalPositionInt(mavlink_global_position_int_t& D)
@@ -257,18 +256,16 @@ void _Mavlink::globalPositionInt(mavlink_global_position_int_t& D)
 	D.time_boot_ms = getTimeBootMs();
 
 	mavlink_message_t msg;
-	mavlink_msg_global_position_int_encode(m_mySystemID, m_myComponentID, &msg, &D);
+	mavlink_msg_global_position_int_encode(m_mySystemID, m_myComponentID, &msg,
+			&D);
 
 	writeMessage(msg);
-	LOG_I("<- GLOBAL_POS_INT lat=" + i2str(D.lat)
-			+ ", lon=" + i2str(D.lon)
-			+ ", alt=" + i2str(D.alt)
-			+ ", relative_alt=" + i2str(D.relative_alt)
-			+ ", vx=" + i2str(D.vx)
-			+ ", vy=" + i2str(D.vy)
-			+ ", vz=" + i2str(D.vz)
-			+ ", hdg=" + i2str(D.hdg)
-			);
+	LOG_I(
+			"<- GLOBAL_POS_INT lat=" + i2str(D.lat) + ", lon=" + i2str(D.lon)
+					+ ", alt=" + i2str(D.alt) + ", relative_alt="
+					+ i2str(D.relative_alt) + ", vx=" + i2str(D.vx) + ", vy="
+					+ i2str(D.vy) + ", vz=" + i2str(D.vz) + ", hdg="
+					+ i2str(D.hdg));
 }
 
 void _Mavlink::landingTarget(mavlink_landing_target_t& D)
@@ -279,9 +276,9 @@ void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- landingTarget: angleX=" + f2str(D.angle_x)
-						 + ", angleY=" + f2str(D.angle_y)
-						 + ", distance=" + f2str(D.distance));
+	LOG_I(
+			"<- landingTarget: angleX=" + f2str(D.angle_x) + ", angleY="
+					+ f2str(D.angle_y) + ", distance=" + f2str(D.distance));
 }
 
 void _Mavlink::mountConfigure(mavlink_mount_configure_t& D)
@@ -293,10 +290,10 @@ void _Mavlink::mountConfigure(mavlink_mount_configure_t& D)
 	mavlink_msg_mount_configure_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- mountConfigure: roll=" + i2str(D.stab_roll)
-						 + ", pitch=" + i2str(D.stab_pitch)
-						 + ", yaw=" + i2str(D.stab_yaw)
-						 + ", mode=" + i2str(D.mount_mode));
+	LOG_I(
+			"<- mountConfigure: roll=" + i2str(D.stab_roll) + ", pitch="
+					+ i2str(D.stab_pitch) + ", yaw=" + i2str(D.stab_yaw)
+					+ ", mode=" + i2str(D.mount_mode));
 }
 
 void _Mavlink::mountControl(mavlink_mount_control_t& D)
@@ -308,10 +305,10 @@ void _Mavlink::mountControl(mavlink_mount_control_t& D)
 	mavlink_msg_mount_control_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- mountControl: pitch=" + i2str(D.input_a)
-						 + ", roll=" + i2str(D.input_b)
-						 + ", yaw=" + i2str(D.input_c)
-						 + ", savePos=" + i2str(D.save_position));
+	LOG_I(
+			"<- mountControl: pitch=" + i2str(D.input_a) + ", roll="
+					+ i2str(D.input_b) + ", yaw=" + i2str(D.input_c)
+					+ ", savePos=" + i2str(D.save_position));
 }
 
 void _Mavlink::mountStatus(mavlink_mount_status_t& D)
@@ -323,19 +320,19 @@ void _Mavlink::mountStatus(mavlink_mount_status_t& D)
 	mavlink_msg_mount_status_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- mountControl: a=" + i2str(D.pointing_a)
-						 + ", b=" + i2str(D.pointing_b)
-						 + ", c=" + i2str(D.pointing_c));
+	LOG_I(
+			"<- mountControl: a=" + i2str(D.pointing_a) + ", b="
+					+ i2str(D.pointing_b) + ", c=" + i2str(D.pointing_c));
 }
 
 void _Mavlink::param_set(mavlink_param_set_t& D)
 {
-		// mavlink_param_set_t D;
-		// D.param_type = MAV_PARAM_TYPE_INT8;
-		// D.param_value = 0;
-		// string id = "WP_YAW_BEHAVIOR";
-		// strcpy(D.param_id, id.c_str());
-		// m_pAP->m_pMavlink->param_set(D);
+	// mavlink_param_set_t D;
+	// D.param_type = MAV_PARAM_TYPE_INT8;
+	// D.param_value = 0;
+	// string id = "WP_YAW_BEHAVIOR";
+	// strcpy(D.param_id, id.c_str());
+	// m_pAP->m_pMavlink->param_set(D);
 
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
@@ -345,15 +342,15 @@ void _Mavlink::param_set(mavlink_param_set_t& D)
 
 	writeMessage(msg);
 
-	if(m_bLog)
+	if (m_bLog)
 	{
 		char id[17];
-		memcpy(id,D.param_id,16);
-		id[16]=0;
+		memcpy(id, D.param_id, 16);
+		id[16] = 0;
 
-		LOG_I("<- paramSet: type=" + i2str(D.param_type)
-							 + ", value=" + f2str(D.param_value)
-							 + ", id=" + string(id));
+		LOG_I(
+				"<- paramSet: type=" + i2str(D.param_type) + ", value="
+						+ f2str(D.param_value) + ", id=" + string(id));
 	}
 }
 
@@ -362,45 +359,33 @@ void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
 	D.time_boot_ms = getTimeBootMs();
 
 	mavlink_message_t msg;
-	mavlink_msg_position_target_local_ned_encode(
-			m_mySystemID,
-			m_myComponentID, &msg, &D);
+	mavlink_msg_position_target_local_ned_encode(m_mySystemID, m_myComponentID,
+			&msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- POS_TARGET_LOCAL_NED x=" + f2str(D.x)
-			+ ", y=" + f2str(D.y)
-			+ ", z=" + f2str(D.z)
-			+ ", vx=" + f2str(D.vx)
-			+ ", vy=" + f2str(D.vy)
-			+ ", vz=" + f2str(D.vz)
-			+ ", afx=" + f2str(D.afx)
-			+ ", afy=" + f2str(D.afy)
-			+ ", afz=" + f2str(D.afz)
-			+ ", yaw=" + f2str(D.yaw)
-			+ ", yawRate=" + f2str(D.yaw_rate)
-			);
+	LOG_I(
+			"<- POS_TARGET_LOCAL_NED x=" + f2str(D.x) + ", y=" + f2str(D.y)
+					+ ", z=" + f2str(D.z) + ", vx=" + f2str(D.vx) + ", vy="
+					+ f2str(D.vy) + ", vz=" + f2str(D.vz) + ", afx="
+					+ f2str(D.afx) + ", afy=" + f2str(D.afy) + ", afz="
+					+ f2str(D.afz) + ", yaw=" + f2str(D.yaw) + ", yawRate="
+					+ f2str(D.yaw_rate));
 }
 
 void _Mavlink::positionTargetGlobalInt(mavlink_position_target_global_int_t& D)
 {
 	mavlink_message_t msg;
-	mavlink_msg_position_target_global_int_encode(
-			m_mySystemID,
-			m_myComponentID, &msg, &D);
+	mavlink_msg_position_target_global_int_encode(m_mySystemID, m_myComponentID,
+			&msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- POS_TARGET_GLOBAL_INT lat=" + i2str(D.lat_int)
-			+ ", lng=" + i2str(D.lon_int)
-			+ ", alt=" + f2str(D.alt)
-			+ ", vx=" + f2str(D.vx)
-			+ ", vy=" + f2str(D.vy)
-			+ ", vz=" + f2str(D.vz)
-			+ ", afx=" + f2str(D.afx)
-			+ ", afy=" + f2str(D.afy)
-			+ ", afz=" + f2str(D.afz)
-			+ ", yaw=" + f2str(D.yaw)
-			+ ", yawRate=" + f2str(D.yaw_rate)
-			);
+	LOG_I(
+			"<- POS_TARGET_GLOBAL_INT lat=" + i2str(D.lat_int) + ", lng="
+					+ i2str(D.lon_int) + ", alt=" + f2str(D.alt) + ", vx="
+					+ f2str(D.vx) + ", vy=" + f2str(D.vy) + ", vz="
+					+ f2str(D.vz) + ", afx=" + f2str(D.afx) + ", afy="
+					+ f2str(D.afy) + ", afz=" + f2str(D.afz) + ", yaw="
+					+ f2str(D.yaw) + ", yawRate=" + f2str(D.yaw_rate));
 }
 
 void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t& D)
@@ -409,21 +394,17 @@ void _Mavlink::rcChannelsOverride(mavlink_rc_channels_override_t& D)
 	D.target_component = m_devComponentID;
 
 	mavlink_message_t msg;
-	mavlink_msg_rc_channels_override_encode(
-			m_mySystemID,
-			m_myComponentID,
-			&msg, &D);
+	mavlink_msg_rc_channels_override_encode(m_mySystemID, m_myComponentID, &msg,
+			&D);
 
 	writeMessage(msg);
-	LOG_I("<- rcChannelsOverride, c1=" + i2str(D.chan1_raw)
-			+ ", c2=" + i2str(D.chan2_raw)
-			+ ", c3=" + i2str(D.chan3_raw)
-			+ ", c4=" + i2str(D.chan4_raw)
-			+ ", c5=" + i2str(D.chan5_raw)
-			+ ", c6=" + i2str(D.chan6_raw)
-			+ ", c7=" + i2str(D.chan7_raw)
-			+ ", c8=" + i2str(D.chan8_raw)
-			);
+	LOG_I(
+			"<- rcChannelsOverride, c1=" + i2str(D.chan1_raw) + ", c2="
+					+ i2str(D.chan2_raw) + ", c3=" + i2str(D.chan3_raw)
+					+ ", c4=" + i2str(D.chan4_raw) + ", c5="
+					+ i2str(D.chan5_raw) + ", c6=" + i2str(D.chan6_raw)
+					+ ", c7=" + i2str(D.chan7_raw) + ", c8="
+					+ i2str(D.chan8_raw));
 }
 
 void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
@@ -436,7 +417,8 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 	D.start_stop = 1;
 
 	mavlink_message_t msg;
-	mavlink_msg_request_data_stream_encode(m_mySystemID, m_myComponentID, &msg, &D);
+	mavlink_msg_request_data_stream_encode(m_mySystemID, m_myComponentID, &msg,
+			&D);
 
 	writeMessage(msg);
 	LOG_I("<- requestDataStream");
@@ -445,12 +427,8 @@ void _Mavlink::requestDataStream(uint8_t stream_id, int rate)
 void _Mavlink::heartbeat(void)
 {
 	mavlink_message_t msg;
-	mavlink_msg_heartbeat_pack(
-			m_mySystemID,
-			m_myComponentID,
-			&msg,
-			m_myType,
-			0, 0, 0, MAV_STATE_ACTIVE);
+	mavlink_msg_heartbeat_pack(m_mySystemID, m_myComponentID, &msg, m_myType, 0,
+			0, 0, MAV_STATE_ACTIVE);
 
 	writeMessage(msg);
 	LOG_I("<- heartBeat");
@@ -471,7 +449,8 @@ void _Mavlink::setAttitudeTarget(mavlink_set_attitude_target_t& D)
 	D.target_component = m_devComponentID;
 
 	mavlink_message_t msg;
-	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
+	mavlink_msg_set_attitude_target_encode(m_mySystemID, m_myComponentID, &msg,
+			&D);
 
 	writeMessage(msg);
 	LOG_I("<- setTargetAttitude");
@@ -483,86 +462,75 @@ void _Mavlink::setMode(mavlink_set_mode_t& D)
 	D.target_system = m_devSystemID;
 
 	mavlink_message_t msg;
-	mavlink_msg_set_mode_encode(
-			m_mySystemID,
-			m_myComponentID,
-			&msg, &D);
+	mavlink_msg_set_mode_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- setMode, base_mode=" + i2str((int32_t)D.base_mode)
-			+ ", custom_mode=" + i2str(D.custom_mode));
+	LOG_I(
+			"<- setMode, base_mode=" + i2str((int32_t )D.base_mode)
+					+ ", custom_mode=" + i2str(D.custom_mode));
 }
 
-void _Mavlink::setPositionTargetLocalNED(mavlink_set_position_target_local_ned_t& D)
+void _Mavlink::setPositionTargetLocalNED(
+		mavlink_set_position_target_local_ned_t& D)
 {
 	D.time_boot_ms = getTimeBootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
 	mavlink_message_t msg;
-	mavlink_msg_set_position_target_local_ned_encode(
-			m_mySystemID,
-			m_myComponentID,
-			&msg, &D);
+	mavlink_msg_set_position_target_local_ned_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- setPositionTargetLocalNED, x=" + f2str(D.x)
-			+ ", y=" + f2str(D.y)
-			+ ", z=" + f2str(D.z)
-			+ ", vx=" + f2str(D.vx)
-			+ ", vy=" + f2str(D.vy)
-			+ ", vz=" + f2str(D.vz)
-			);
+	LOG_I(
+			"<- setPositionTargetLocalNED, x=" + f2str(D.x) + ", y="
+					+ f2str(D.y) + ", z=" + f2str(D.z) + ", vx=" + f2str(D.vx)
+					+ ", vy=" + f2str(D.vy) + ", vz=" + f2str(D.vz));
 }
 
-void _Mavlink::setPositionTargetGlobalINT(mavlink_set_position_target_global_int_t& D)
+void _Mavlink::setPositionTargetGlobalINT(
+		mavlink_set_position_target_global_int_t& D)
 {
 	D.time_boot_ms = getTimeBootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
 	mavlink_message_t msg;
-	mavlink_msg_set_position_target_global_int_encode(
-			m_mySystemID,
-			m_myComponentID,
-			&msg, &D);
+	mavlink_msg_set_position_target_global_int_encode(m_mySystemID,
+			m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- setPositionTargetGlobalINT, lat=" + i2str(D.lat_int)
-			+ ", lon=" + i2str(D.lon_int)
-			+ ", alt=" + f2str(D.alt)
-			+ ", vx=" + f2str(D.vx)
-			+ ", vy=" + f2str(D.vy)
-			+ ", vz=" + f2str(D.vz)
-			);
+	LOG_I(
+			"<- setPositionTargetGlobalINT, lat=" + i2str(D.lat_int) + ", lon="
+					+ i2str(D.lon_int) + ", alt=" + f2str(D.alt) + ", vx="
+					+ f2str(D.vx) + ", vy=" + f2str(D.vy) + ", vz="
+					+ f2str(D.vz));
 }
 
 void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t& D)
 {
 	/*
- uint64_t usec; // Timestamp (microseconds, synced to UNIX time or since system boot)
- float x; // Global X position
- float y; // Global Y position
- float z; // Global Z position
- float roll; // Roll angle in rad
- float pitch; // Pitch angle in rad
- float yaw; // Yaw angle in rad
+	 uint64_t usec; // Timestamp (microseconds, synced to UNIX time or since system boot)
+	 float x; // Global X position
+	 float y; // Global Y position
+	 float z; // Global Z position
+	 float roll; // Roll angle in rad
+	 float pitch; // Pitch angle in rad
+	 float yaw; // Yaw angle in rad
 	 */
 
 	mavlink_message_t msg;
 	D.usec = getTimeBootMs();
 
-	mavlink_msg_vision_position_estimate_encode(m_mySystemID,
-			m_myComponentID, &msg, &D);
+	mavlink_msg_vision_position_estimate_encode(m_mySystemID, m_myComponentID,
+			&msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- VISION_POSITION_ESTIMATE T=" + i2str(D.usec)
-			+ ", x=" + f2str(D.x)
-			+ ", y=" + f2str(D.y)
-			+ ", z=" + f2str(D.z)
-			+ "; roll=" + f2str(D.roll)
-			+ ", pitch=" + f2str(D.pitch)
-			+ ", yaw=" + f2str(D.yaw));
+	LOG_I(
+			"<- VISION_POSITION_ESTIMATE T=" + i2str(D.usec) + ", x="
+					+ f2str(D.x) + ", y=" + f2str(D.y) + ", z=" + f2str(D.z)
+					+ "; roll=" + f2str(D.roll) + ", pitch=" + f2str(D.pitch)
+					+ ", yaw=" + f2str(D.yaw));
 }
 
 //CMD_LONG
@@ -573,13 +541,13 @@ void _Mavlink::clComponentArmDisarm(bool bArm)
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 	D.command = MAV_CMD_COMPONENT_ARM_DISARM;
-	D.param1 = (bArm)?1:0;
+	D.param1 = (bArm) ? 1 : 0;
 
 	mavlink_message_t msg;
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongComponentArmDisarm: "+i2str(bArm));
+	LOG_I("<- cmdLongComponentArmDisarm: " + i2str(bArm));
 }
 
 void _Mavlink::clDoSetMode(int mode)
@@ -594,7 +562,7 @@ void _Mavlink::clDoSetMode(int mode)
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetMode: "+i2str(mode));
+	LOG_I("<- cmdLongDoSetMode: " + i2str(mode));
 }
 
 void _Mavlink::clNavSetYawSpeed(float yaw, float speed, float yawMode)
@@ -622,13 +590,15 @@ void _Mavlink::clDoSetServo(int iServo, int PWM)
 	D.target_component = m_devComponentID;
 	D.command = MAV_CMD_DO_SET_SERVO;
 	D.param1 = iServo;
-	D.param2 = (float)PWM;
+	D.param2 = (float) PWM;
 
 	mavlink_message_t msg;
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetServo: servo="+i2str((int)iServo) + " pwm=" + i2str(PWM));
+	LOG_I(
+			"<- cmdLongDoSetServo: servo=" + i2str((int )iServo) + " pwm="
+					+ i2str(PWM));
 }
 
 void _Mavlink::clDoSetRelay(int iRelay, bool bRelay)
@@ -638,13 +608,15 @@ void _Mavlink::clDoSetRelay(int iRelay, bool bRelay)
 	D.target_component = m_devComponentID;
 	D.command = MAV_CMD_DO_SET_RELAY;
 	D.param1 = iRelay;
-	D.param2 = (bRelay)?1.0:0.0;
+	D.param2 = (bRelay) ? 1.0 : 0.0;
 
 	mavlink_message_t msg;
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetRelay: relay="+i2str((int)iRelay) + " relay=" + i2str((int)bRelay));
+	LOG_I(
+			"<- cmdLongDoSetRelay: relay=" + i2str((int )iRelay) + " relay="
+					+ i2str((int )bRelay));
 }
 
 void _Mavlink::clGetHomePosition(void)
@@ -676,19 +648,36 @@ void _Mavlink::clNavTakeoff(float alt)
 	LOG_I("<- cmdNavTakeoff");
 }
 
+int16_t* _Mavlink::getRCinScaled(int iChan)
+{
+	switch (iChan)
+	{
+	case 1: return &m_mavMsg.m_rc_channels_scaled.chan1_scaled;
+	case 2: return &m_mavMsg.m_rc_channels_scaled.chan2_scaled;
+	case 3: return &m_mavMsg.m_rc_channels_scaled.chan3_scaled;
+	case 4: return &m_mavMsg.m_rc_channels_scaled.chan4_scaled;
+	case 5: return &m_mavMsg.m_rc_channels_scaled.chan5_scaled;
+	case 6: return &m_mavMsg.m_rc_channels_scaled.chan6_scaled;
+	case 7: return &m_mavMsg.m_rc_channels_scaled.chan7_scaled;
+	case 8: return &m_mavMsg.m_rc_channels_scaled.chan8_scaled;
+	default: return NULL;
+	}
+}
+
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
-	if(m_nRead == 0)
+	if (m_nRead == 0)
 	{
 		m_nRead = m_pIO->read(m_rBuf, N_IO_BUF);
 		IF_F(m_nRead <= 0);
 		m_iRead = 0;
 	}
 
-	while(m_iRead < m_nRead)
+	while (m_iRead < m_nRead)
 	{
 		mavlink_status_t status;
-		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead], &msg, &status);
+		uint8_t result = mavlink_frame_char(MAVLINK_COMM_0, m_rBuf[m_iRead],
+				&msg, &status);
 		m_iRead++;
 
 		if (result == 1)
@@ -748,7 +737,8 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
 		{
-			mavlink_msg_global_position_int_decode(&msg, &m_mavMsg.m_global_position_int);
+			mavlink_msg_global_position_int_decode(&msg,
+					&m_mavMsg.m_global_position_int);
 			m_mavMsg.m_tStamps.m_global_position_int = tNow;
 			LOG_I(" -> GLOBAL_POSITION_INT");
 			break;
@@ -761,9 +751,10 @@ void _Mavlink::handleMessages()
 
 			m_devType = m_mavMsg.m_heartbeat.type;
 
-			LOG_I(" -> HEARTBEAT: sysid=" + i2str(msg.sysid) +
-					", compid=" + i2str((uint32_t)msg.compid) +
-					", seq=" + i2str((uint32_t)msg.seq));
+			LOG_I(
+					" -> HEARTBEAT: sysid=" + i2str(msg.sysid) + ", compid="
+							+ i2str((uint32_t )msg.compid) + ", seq="
+							+ i2str((uint32_t )msg.seq));
 			break;
 		}
 
@@ -785,7 +776,8 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
 		{
-			mavlink_msg_local_position_ned_decode(&msg, &m_mavMsg.m_local_position_ned);
+			mavlink_msg_local_position_ned_decode(&msg,
+					&m_mavMsg.m_local_position_ned);
 			m_mavMsg.m_tStamps.m_local_position_ned = tNow;
 			LOG_I(" -> LOCAL_POSITION_NED");
 			break;
@@ -793,7 +785,8 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_MISSION_CURRENT:
 		{
-			mavlink_msg_mission_current_decode(&msg, &m_mavMsg.m_mission_current);
+			mavlink_msg_mission_current_decode(&msg,
+					&m_mavMsg.m_mission_current);
 			m_mavMsg.m_tStamps.m_mission_current = tNow;
 			LOG_I(" -> MISSION_CURRENT");
 			break;
@@ -812,15 +805,18 @@ void _Mavlink::handleMessages()
 			mavlink_msg_param_set_decode(&msg, &m_mavMsg.m_param_set);
 			m_mavMsg.m_tStamps.m_param_set = tNow;
 
-			if(m_bLog)
+			if (m_bLog)
 			{
 				char id[17];
-				memcpy(id,m_mavMsg.m_param_set.param_id,16);
-				id[16]=0;
+				memcpy(id, m_mavMsg.m_param_set.param_id, 16);
+				id[16] = 0;
 
-				LOG_I(" -> PARAM_SET: type=" + i2str(m_mavMsg.m_param_set.param_type)
-									 + ", value=" + f2str(m_mavMsg.m_param_set.param_value)
-									 + ", id=" + string(id));
+				LOG_I(
+						" -> PARAM_SET: type="
+								+ i2str(m_mavMsg.m_param_set.param_type)
+								+ ", value="
+								+ f2str(m_mavMsg.m_param_set.param_value)
+								+ ", id=" + string(id));
 			}
 
 			break;
@@ -828,7 +824,8 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
 		{
-			mavlink_msg_position_target_local_ned_decode(&msg, &m_mavMsg.m_position_target_local_ned);
+			mavlink_msg_position_target_local_ned_decode(&msg,
+					&m_mavMsg.m_position_target_local_ned);
 			m_mavMsg.m_tStamps.m_position_target_local_ned = tNow;
 			LOG_I(" -> POSITION_TARGET_LOCAL_NED");
 			break;
@@ -836,7 +833,8 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
 		{
-			mavlink_msg_position_target_global_int_decode(&msg, &m_mavMsg.m_position_target_global_int);
+			mavlink_msg_position_target_global_int_decode(&msg,
+					&m_mavMsg.m_position_target_global_int);
 			m_mavMsg.m_tStamps.m_position_target_global_int = tNow;
 			LOG_I(" -> POSITION_TARGET_GLOBAL_INT");
 			break;
@@ -844,52 +842,79 @@ void _Mavlink::handleMessages()
 
 		case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
 		{
-			mavlink_msg_rc_channels_override_decode(&msg, &(m_mavMsg.m_rc_channels_override));
+			mavlink_msg_rc_channels_override_decode(&msg,
+					&(m_mavMsg.m_rc_channels_override));
 			m_mavMsg.m_tStamps.m_rc_channels_override = tNow;
 
-			LOG_I(" -> RC_OVERRIDE: chan1=" + i2str(m_mavMsg.m_rc_channels_override.chan1_raw)
-					+ ", chan2=" + i2str(m_mavMsg.m_rc_channels_override.chan2_raw)
-					+ ", chan3=" + i2str(m_mavMsg.m_rc_channels_override.chan3_raw)
-					+ ", chan4=" + i2str(m_mavMsg.m_rc_channels_override.chan4_raw)
-					+ ", chan5=" + i2str(m_mavMsg.m_rc_channels_override.chan5_raw)
-					+ ", chan6=" + i2str(m_mavMsg.m_rc_channels_override.chan6_raw)
-					+ ", chan7=" + i2str(m_mavMsg.m_rc_channels_override.chan7_raw)
-					+ ", chan8=" + i2str(m_mavMsg.m_rc_channels_override.chan8_raw)
-					);
+			LOG_I(
+					" -> RC_OVERRIDE: chan1="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan1_raw)
+							+ ", chan2="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan2_raw)
+							+ ", chan3="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan3_raw)
+							+ ", chan4="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan4_raw)
+							+ ", chan5="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan5_raw)
+							+ ", chan6="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan6_raw)
+							+ ", chan7="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan7_raw)
+							+ ", chan8="
+							+ i2str(m_mavMsg.m_rc_channels_override.chan8_raw));
 			break;
 		}
 
 		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
 		{
-			mavlink_msg_rc_channels_scaled_decode(&msg, &(m_mavMsg.m_rc_channels_scaled));
+			mavlink_msg_rc_channels_scaled_decode(&msg,
+					&(m_mavMsg.m_rc_channels_scaled));
 			m_mavMsg.m_tStamps.m_rc_channels_scaled = tNow;
 
-			LOG_I(" -> RC_SCALED: chan1=" + i2str(m_mavMsg.m_rc_channels_scaled.chan1_scaled)
-					+ ", chan2=" + i2str(m_mavMsg.m_rc_channels_scaled.chan2_scaled)
-					+ ", chan3=" + i2str(m_mavMsg.m_rc_channels_scaled.chan3_scaled)
-					+ ", chan4=" + i2str(m_mavMsg.m_rc_channels_scaled.chan4_scaled)
-					+ ", chan5=" + i2str(m_mavMsg.m_rc_channels_scaled.chan5_scaled)
-					+ ", chan6=" + i2str(m_mavMsg.m_rc_channels_scaled.chan6_scaled)
-					+ ", chan7=" + i2str(m_mavMsg.m_rc_channels_scaled.chan7_scaled)
-					+ ", chan8=" + i2str(m_mavMsg.m_rc_channels_scaled.chan8_scaled)
-					);
+			LOG_I(
+					" -> RC_SCALED: chan1="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan1_scaled)
+							+ ", chan2="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan2_scaled)
+							+ ", chan3="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan3_scaled)
+							+ ", chan4="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan4_scaled)
+							+ ", chan5="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan5_scaled)
+							+ ", chan6="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan6_scaled)
+							+ ", chan7="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan7_scaled)
+							+ ", chan8="
+							+ i2str(m_mavMsg.m_rc_channels_scaled.chan8_scaled));
 			break;
 		}
 
 		case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
 		{
-			mavlink_msg_rc_channels_raw_decode(&msg, &(m_mavMsg.m_rc_channels_raw));
+			mavlink_msg_rc_channels_raw_decode(&msg,
+					&(m_mavMsg.m_rc_channels_raw));
 			m_mavMsg.m_tStamps.m_rc_channels_raw = tNow;
 
-			LOG_I(" -> RC_RAW: chan1=" + i2str(m_mavMsg.m_rc_channels_raw.chan1_raw)
-					+ ", chan2=" + i2str(m_mavMsg.m_rc_channels_raw.chan2_raw)
-					+ ", chan3=" + i2str(m_mavMsg.m_rc_channels_raw.chan3_raw)
-					+ ", chan4=" + i2str(m_mavMsg.m_rc_channels_raw.chan4_raw)
-					+ ", chan5=" + i2str(m_mavMsg.m_rc_channels_raw.chan5_raw)
-					+ ", chan6=" + i2str(m_mavMsg.m_rc_channels_raw.chan6_raw)
-					+ ", chan7=" + i2str(m_mavMsg.m_rc_channels_raw.chan7_raw)
-					+ ", chan8=" + i2str(m_mavMsg.m_rc_channels_raw.chan8_raw)
-					);
+			LOG_I(
+					" -> RC_RAW: chan1="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan1_raw)
+							+ ", chan2="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan2_raw)
+							+ ", chan3="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan3_raw)
+							+ ", chan4="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan4_raw)
+							+ ", chan5="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan5_raw)
+							+ ", chan6="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan6_raw)
+							+ ", chan7="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan7_raw)
+							+ ", chan8="
+							+ i2str(m_mavMsg.m_rc_channels_raw.chan8_raw));
 			break;
 		}
 
@@ -934,12 +959,12 @@ void _Mavlink::handleMessages()
 		}
 
 		//Message routing
-		for(int i=0; i<m_vPeer.size(); i++)
+		for (int i = 0; i < m_vPeer.size(); i++)
 		{
 			MAVLINK_PEER* pMP = &m_vPeer[i];
 			IF_CONT(!pMP->bCmdRoute(msg.msgid));
 
-			_Mavlink* pM = (_Mavlink*)pMP->m_pPeer;
+			_Mavlink* pM = (_Mavlink*) pMP->m_pPeer;
 			IF_CONT(!pM);
 			pM->writeMessage(msg);
 		}
@@ -948,7 +973,7 @@ void _Mavlink::handleMessages()
 
 void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
 {
-	for(int i=0; i<m_vPeer.size(); i++)
+	for (int i = 0; i < m_vPeer.size(); i++)
 	{
 		m_vPeer[i].setCmdRoute(iCmd, bON);
 	}
@@ -963,20 +988,18 @@ void _Mavlink::draw(void)
 	if (!m_pIO->isOpen())
 	{
 		msg = "Not Connected";
-		addMsg(msg,1);
+		addMsg(msg, 1);
 		return;
 	}
 
-	msg = "mySysID=" + i2str(m_mySystemID)
-			+ " myComID=" + i2str(m_myComponentID)
-			+ " myType=" + i2str(m_myType);
-	addMsg(msg,1);
+	msg = "mySysID=" + i2str(m_mySystemID) + " myComID="
+			+ i2str(m_myComponentID) + " myType=" + i2str(m_myType);
+	addMsg(msg, 1);
 
-	msg = "devSysID=" + i2str(m_devSystemID)
-			+ " devComID=" + i2str(m_devComponentID)
-			+ " devType=" + i2str(m_devType)
-	 	 	+ " custom_mode=" + i2str((int)m_mavMsg.m_heartbeat.custom_mode);
-	addMsg(msg,1);
+	msg = "devSysID=" + i2str(m_devSystemID) + " devComID="
+			+ i2str(m_devComponentID) + " devType=" + i2str(m_devType)
+			+ " custom_mode=" + i2str((int) m_mavMsg.m_heartbeat.custom_mode);
+	addMsg(msg, 1);
 }
 
 }

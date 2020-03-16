@@ -18,6 +18,7 @@
 #include "../Actuator/_ActuatorSync.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
+#include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
 #include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
@@ -29,6 +30,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_mission.h"
 #include "../Application/Autopilot/ArduPilot/_AP_posCtrl.h"
 #include "../Application/Autopilot/ArduPilot/_AP_RTH.h"
+#include "../Application/Autopilot/ArduPilot/_AP_relay.h"
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_slam.h"
 #include "../Application/Autopilot/ArduPilot/_AP_shutter.h"

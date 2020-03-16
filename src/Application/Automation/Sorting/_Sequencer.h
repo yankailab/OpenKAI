@@ -9,7 +9,6 @@
 #define OpenKAI_src_Automation__Sequencer_H_
 
 #include "../../../Base/common.h"
-#include "../../../Base/_ThreadBase.h"
 #include "../../../Actuator/_ActuatorBase.h"
 
 namespace kai

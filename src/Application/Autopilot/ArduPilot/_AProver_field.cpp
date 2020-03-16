@@ -144,19 +144,6 @@ void _AProver_field::updateDrive(void)
 	//field detection
 	findBlockBoarder();
 	findSideBoarder();
-
-	IF_(mission != "BB");
-
-	//trigger camera shutter
-	m_pDrive->setSpeed(0.0);
-	m_pAP->m_pMavlink->clDoSetRelay(m_iPinLED, 1);
-
-	m_pAP->m_pMavlink->clDoSetRelay(m_iPinShutter, 1);
-	this->sleepTime(USEC_1SEC);
-	m_pAP->m_pMavlink->clDoSetRelay(m_iPinShutter, 0);
-
-	m_pAP->m_pMavlink->clDoSetRelay(m_iPinLED, 0);
-	m_pMC->transit("STANDBY");
 }
 
 void _AProver_field::findBlockBoarder(void)

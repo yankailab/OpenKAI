@@ -19,7 +19,7 @@ public:
 	virtual void draw(void);
 
 	virtual void setSpeed(float nSpeed);
-	virtual void setYaw(float nYaw);
+	virtual void setYaw(float yaw);
 	virtual void setYawMode(bool bRelative);
 
 protected:
@@ -35,7 +35,7 @@ public:
 
 	float	m_nSpeed;
 	float	m_kSpeed;	// +/-1.0 forward/backward
-	float	m_nYaw;
+	float	m_yaw;
 
 	float	m_speed;
 	float	m_yawMode;

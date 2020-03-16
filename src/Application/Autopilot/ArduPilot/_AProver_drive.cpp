@@ -9,7 +9,7 @@ _AProver_drive::_AProver_drive()
 
 	m_nSpeed = 0.0;
 	m_kSpeed = 1.0;
-	m_nYaw = 0.0;
+	m_yaw = 0.0;
 
 	m_speed = 1.0;	//1.0m/s
 	m_yawMode = 1.0;
@@ -26,7 +26,7 @@ bool _AProver_drive::init(void* pKiss)
 
 	pK->v("nSpeed",&m_nSpeed);
 	pK->v("kSpeed",&m_kSpeed);
-	pK->v("nYaw",&m_nYaw);
+	pK->v("yaw",&m_yaw);
 
 	pK->v("speed",&m_speed);
 	pK->v("yawMode",&m_yawMode);
@@ -78,7 +78,7 @@ bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
 
-	m_pAP->m_pMavlink->clNavSetYawSpeed(m_nYaw*360.0,
+	m_pAP->m_pMavlink->clNavSetYawSpeed(m_yaw,
 										m_nSpeed * m_kSpeed * m_speed,
 										m_yawMode);
 
@@ -90,9 +90,9 @@ void _AProver_drive::setSpeed(float nSpeed)
 	m_nSpeed = nSpeed;
 }
 
-void _AProver_drive::setYaw(float nYaw)
+void _AProver_drive::setYaw(float yaw)
 {
-	m_nYaw = nYaw;
+	m_yaw = yaw;
 }
 
 void _AProver_drive::setYawMode(bool bRelative)

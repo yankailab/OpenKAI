@@ -222,6 +222,9 @@ public:
 	//Msg routing
 	void setCmdRoute(uint32_t iCmd, bool bON);
 
+	//Utility
+	int16_t* getRCinScaled(int iChan);
+
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)

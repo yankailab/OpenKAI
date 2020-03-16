@@ -152,7 +152,6 @@
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
-	"bDraw":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_VisionBase":"rotL",
@@ -175,7 +174,6 @@
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
-	"bDraw":1,
 	"Window":"/viewL",
 	"Console":"OKconsole",
 	"_VisionBase":"cropM",
@@ -237,7 +235,6 @@
 			"bInst":1,
 			"name":"STANDBY",
 			"Window":"OKview",
-			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"STANDBY",
@@ -246,7 +243,6 @@
 			"bInst":1,
 			"name":"FORWARD",
 			"Window":"OKview",
-			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"FORWARD",
@@ -255,7 +251,6 @@
 			"bInst":1,
 			"name":"BACKWARD",
 			"Window":"OKview",
-			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"BACKWARD",
@@ -264,10 +259,10 @@
 			"bInst":1,
 			"name":"BB",
 			"Window":"OKview",
-			"bDraw":1,
 			"Console":"OKconsole",
 			"class":"MissionBase",
-			"nextMission":"BB",
+			"tTimeout":2,
+			"nextMission":"STANDBY",
 		}
 	}
 }
@@ -292,7 +287,7 @@
 
 {
 	"name":"apField",
-	"class":"_AProvere_field",
+	"class":"_AProver_field",
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewL",
@@ -310,7 +305,80 @@
 	"iPinShutter":10,
 }
 
+{
+	"name":"apActuator",
+	"class":"_AP_actuator",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["STANDBY","FORWARD","BACKWARD","BB"],
+	"_Mavlink":"apMavlink",
+	"iRCmode":3,
 
+	{
+		"name":"OMh",
+		"_ActuatorBase":"",
+		"iRCinScaled":0,
+		"vSpeed":[1.0, 0.0, 0.0, 0.0],
+		"iMode":0,
+	}
+	{
+		"name":"OMv",
+		"_ActuatorBase":"",
+		"iRCinScaled":0,
+		"vSpeed":[1.0, 0.0, 0.0, 0.0],
+		"iMode":0,
+	}		
+}
+
+
+{
+	"name":"apRelayStandby",
+	"class":"_AP_relay",
+	"FPS":5,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["STANDBY","FORWARD","BACKWARD"],
+	"_AP_base":"apBase",
+
+	{
+		"name":"LED",
+		"iChan":9,
+		"bRelay":0,
+	}
+	{
+		"name":"shutter",
+		"iChan":10,
+		"bRelay":0,
+	}		
+}
+
+{
+	"name":"apRelayBB",
+	"class":"_AP_relay",
+	"FPS":5,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["BB"],
+	"_AP_base":"apBase",
+
+	{
+		"name":"LED",
+		"iChan":9,
+		"bRelay":1,
+	}
+	{
+		"name":"shutter",
+		"iChan":10,
+		"bRelay":1,
+	}		
+}
 
 
 
