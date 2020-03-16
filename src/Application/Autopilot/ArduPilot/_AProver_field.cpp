@@ -6,31 +6,22 @@ namespace kai
 _AProver_field::_AProver_field()
 {
 	m_pAP = NULL;
-
-	m_speed = 0.0;
-	m_yaw = 0.0;
-	m_yawMode = 1.0;
+	m_pDrive = NULL;
 
 	m_pPIDhdg = NULL;
-	m_pLineM = NULL;
-	m_pLineL = NULL;
+	m_pDetBB = NULL;
+	m_pDetSB = NULL;
 
-	m_dHdg = 0.0;
 	m_nSpeed = 0.0;
-	m_borderL = 0.0;
-	m_vBorderLrange.x = 0.2;
-	m_vBorderLrange.y = 0.8;
-	m_borderLtarget = 0.5;
-	m_kBorderLhdg = 3.0;
-	m_vdHdgRange.x = -5.0;
-	m_vdHdgRange.y = 5.0;
+	m_bBlockBorder = false;
+	m_dHdg = 0.0;
+	m_sideBorder = 0.0;
+	m_sideBorderTarget = 0.5;
+	m_vSideBorderRange.x = 0.2;
+	m_vSideBorderRange.y = 0.8;
 
-	m_bLineM = false;
-	m_tCamShutter = 200000;
-	m_tCamShutterStart = 0;
-
-	m_iPinLEDtag = 21;
-	m_iPinCamShutter = 10;
+	m_iPinLED = 21;
+	m_iPinShutter = 10;
 }
 
 _AProver_field::~_AProver_field()
@@ -42,18 +33,11 @@ bool _AProver_field::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("speed", &m_speed);
-	pK->v("yaw", &m_yaw);
-	pK->v("yawMode", &m_yawMode);
-
-	pK->v("vBorderLrange", &m_vBorderLrange);
-	pK->v("borderLtarget", &m_borderLtarget);
-	pK->v("kBorderLhdg", &m_kBorderLhdg);
-	pK->v("vdHdgRange", &m_vdHdgRange);
-	pK->v<float>("nSpeed", &m_nSpeed);
-	pK->v<uint8_t>("iPinLEDtag", &m_iPinLEDtag);
-	pK->v<uint8_t>("iPinCamShutter", &m_iPinCamShutter);
-	pK->v("tCamShutter", &m_tCamShutter);
+	pK->v("nSpeed", &m_nSpeed);
+	pK->v("sideBorderTarget", &m_sideBorderTarget);
+	pK->v("vSideBorderRange", &m_vSideBorderRange);
+	pK->v<uint8_t>("iPinLED", &m_iPinLED);
+	pK->v<uint8_t>("iPinShutter", &m_iPinShutter);
 
 	string iName;
 	iName = "";
@@ -62,19 +46,24 @@ bool _AProver_field::init(void* pKiss)
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
+	pK->v("_AProver_drive", &iName);
+	m_pDrive = (_AProver_drive*) (pK->parent()->getChildInst(iName));
+	IF_Fl(!m_pDrive, iName + ": not found");
+
+	iName = "";
 	pK->v("PIDhdg", &iName);
 	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pPIDhdg, iName + ": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_LineM", &iName));
-	m_pLineM = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pLineM, iName + ": not found");
+	pK->v("_DetBB", &iName);
+	m_pDetBB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDetBB, iName + ": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_LineL", &iName));
-	m_pLineL = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pLineL, iName + ": not found");
+	pK->v("_DetSB", &iName);
+	m_pDetSB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDetSB, iName + ": not found");
 
 	return true;
 }
@@ -97,9 +86,10 @@ int _AProver_field::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pDrive, -1);
+	NULL__(m_pDetBB, -1);
+	NULL__(m_pDetSB, -1);
 	NULL__(m_pPIDhdg, -1);
-	NULL__(m_pLineM, -1);
-	NULL__(m_pLineL, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -111,108 +101,103 @@ void _AProver_field::update(void)
 		this->autoFPSfrom();
 
 		this->_AutopilotBase::update();
+
 		updateDrive();
 
 		this->autoFPSto();
 	}
 }
 
-bool _AProver_field::updateDrive(void)
+void _AProver_field::updateDrive(void)
 {
-	IF_F(check() < 0);
-	IF_F(!bActive());
+	IF_(check() < 0);
 
-	uint32_t apMode = m_pAP->getApMode();
+	int16_t rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_scaled.chan6_scaled;
+	if(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX)
+	{
+		m_pDrive->setSpeed(0.0);
+		m_pMC->transit("STANDBY");
+	}
+
 	string mission = m_pMC->getMissionName();
 
-//	if (mission == "IDLE")
-//	{
-//		if (m_pCMD->m_mode != rover_stop && m_pCMD->m_mode != rover_manual)
-//			m_pMC->transit("MOVE");
-//
-//		m_pCMD->pinOut(m_iPinCamShutter, 0);
-//		m_tCamShutterStart = 0;
-//	}
-//	else if (mission == "MOVE")
-//	{
-//		//		m_pR->setSpeed(nSpeed);
-//
-//		m_pCMD->pinOut(m_iPinCamShutter, 0);
-//		m_tCamShutterStart = 0;
-//	}
-//	else if (mission == "TAG")
-//	{
-//		//		m_pR->setSpeed(0.0);
-//
-//		if (m_tCamShutterStart <= 0)
-//		{
-//			m_pCMD->pinOut(m_iPinCamShutter, 1);
-//			m_tCamShutterStart = m_tStamp;
-//		}
-//		else if (m_tStamp - m_tCamShutterStart > m_tCamShutter)
-//		{
-//			m_pCMD->pinOut(m_iPinCamShutter, 0);
-//			m_tCamShutterStart = m_tStamp;
-//		}
-//	}
+	//mode
+	if(mission == "STANDBY")
+	{
+		if(rcMode > 0)
+			m_pMC->transit("FORWARD");
+		else if(rcMode < 0)
+			m_pMC->transit("BACKWARD");
+	}
 
-	findLineM();
-	findLineL();
+	//speed
+	float nSpeed;
+	if(mission == "FORWARD")
+		nSpeed = m_nSpeed;
+	else if(mission == "BACKWARD")
+		nSpeed = -m_nSpeed;
+	else
+		nSpeed = 0.0;
 
-	return true;
+	m_pDrive->setSpeed(nSpeed);
+
+	//field detection
+	findBlockBoarder();
+	findSideBoarder();
+
+	IF_(mission != "BB");
+
+	//trigger camera shutter
+	m_pDrive->setSpeed(0.0);
+	m_pAP->m_pMavlink->clDoSetRelay(m_iPinLED, 1);
+
+	m_pAP->m_pMavlink->clDoSetRelay(m_iPinShutter, 1);
+	this->sleepTime(USEC_1SEC);
+	m_pAP->m_pMavlink->clDoSetRelay(m_iPinShutter, 0);
+
+	m_pAP->m_pMavlink->clDoSetRelay(m_iPinLED, 0);
+	m_pMC->transit("STANDBY");
 }
 
-void _AProver_field::findLineM(void)
+void _AProver_field::findBlockBoarder(void)
 {
-	IF_(check() < 0);
-
-	OBJECT* pO;
-	int i = 0;
-	while ((pO = m_pLineM->at(i++)) != NULL)
+	if(m_pDetBB->size() > 0)
 	{
-		if (!m_bLineM)
+		if (!m_bBlockBorder)
 		{
-			m_pMC->transit("TAG");
+			m_pMC->transit("BB");
 		}
-		m_bLineM = true;
+		m_bBlockBorder = true;
 		return;
 	}
 
-	m_bLineM = false;
+	m_bBlockBorder = false;
 }
 
-void _AProver_field::findLineL(void)
+void _AProver_field::findSideBoarder(void)
 {
 	IF_(check() < 0);
 
-//	if (m_pLineL->size() > 0)
-//		m_pCMD->pinOut(m_iPinLEDtag, 1);
-//	else
-//		m_pCMD->pinOut(m_iPinLEDtag, 0);
-
 	OBJECT* pO;
-	int i = 0;
-	while ((pO = m_pLineL->at(i++)) != NULL)
+	int i=0;
+	while((pO = m_pDetSB->at(i++)) != NULL)
 	{
 		float border = pO->m_bb.midY();
-		IF_CONT(border < m_vBorderLrange.x);
-		IF_CONT(border > m_vBorderLrange.y);
+		IF_CONT(border < m_vSideBorderRange.x);
+		IF_CONT(border > m_vSideBorderRange.y);
 
-		m_borderL = border;
-		m_dHdg = constrain((m_borderL - m_borderLtarget) * m_kBorderLhdg,
-				m_vdHdgRange.x, m_vdHdgRange.y);
+		m_sideBorder = border;
+		m_dHdg = m_pPIDhdg->update(m_sideBorder, m_sideBorderTarget, m_tStamp);
 
-//		m_pR->setTargetHdgDelta(m_dHdg);
+		m_pDrive->setYaw(m_dHdg);
 		return;
 	}
-
 }
 
 void _AProver_field::draw(void)
 {
 	this->_AutopilotBase::draw();
-	string msg = *this->getName() + ": dHdg=" + f2str(m_dHdg) + ", borderL="
-			+ f2str(m_borderL);
+	string msg = *this->getName() + ": dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder);
 	addMsg(msg);
 }
 

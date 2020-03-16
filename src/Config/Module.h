@@ -38,14 +38,6 @@
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_field.h"
 
-#include "../Application/Autopilot/Rover/_Rover_avoid.h"
-#include "../Application/Autopilot/Rover/_Rover_base.h"
-#include "../Application/Autopilot/Rover/_Rover_CMD.h"
-#include "../Application/Autopilot/Rover/_Rover_drive.h"
-#include "../Application/Autopilot/Rover/_Rover_field.h"
-#include "../Application/Autopilot/Rover/_Rover_follow.h"
-#include "../Application/Autopilot/Rover/_Rover_WP.h"
-
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"
 #include "../Application/Surveillance/_GDcam.h"

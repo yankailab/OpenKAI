@@ -77,20 +77,9 @@ void _AProver_drive::update(void)
 bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
-	IF_F(!bActive());
-
-	string mission = m_pMC->getMissionName();
-
-	float nSpeed;
-	if(mission == "FORWARD")
-		nSpeed = m_nSpeed;
-	else if(mission == "BACKWARD")
-		nSpeed = -m_nSpeed;
-	else
-		nSpeed = 0.0;
 
 	m_pAP->m_pMavlink->clNavSetYawSpeed(m_nYaw*360.0,
-										nSpeed * m_kSpeed * m_speed,
+										m_nSpeed * m_kSpeed * m_speed,
 										m_yawMode);
 
 	return true;

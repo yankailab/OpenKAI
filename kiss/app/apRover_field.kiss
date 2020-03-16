@@ -4,12 +4,16 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
-	"bConsole":0,
+	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
 
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
 {
 	"name":"viewL",
 	"class":"Window",
@@ -144,12 +148,13 @@
 }
 
 {
-	"name":"detLineL",
+	"name":"detSB",
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
 	"Window":"viewL",
+	"Console":"OKconsole",
 	"_VisionBase":"rotL",
 	"wSlide":0.2,
 	"minPixLine":0.1,
@@ -166,37 +171,16 @@
 }
 
 {
-	"name":"detLineM",
+	"name":"detBB",
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"bDraw":1,
 	"Window":"/viewL",
+	"Console":"OKconsole",
 	"_VisionBase":"cropM",
 	"wSlide":0.2,
 	"minPixLine":0.1,
-}
-
-{
-	"name":"rvSerial",
-	"class":"_SerialPort",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
-	"_wakeUp":"rvCMD",
-}
-
-{
-	"name":"rvCMD",
-	"class":"_RoverCMD",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"_IOBase":"rvSerial",	
 }
 
 {
@@ -205,8 +189,9 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
-	"port":"/dev/ttyACM1",
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
@@ -217,132 +202,113 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"_IOBase":"apSerial",	
 }
 
 {
-	"name":"rvPID",
+	"name":"PIDhdg",
 	"class":"PIDctrl",
 	"bInst":1,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"P":0.01,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.25,
-	"oMax":0.25,
-	"K":1.0,
+	"oMin":-10.0,
+	"oMax":10.0,
 }
 
 {
-	"name":"apMission",
+	"name":"mission",
 	"class":"_MissionControl",
-	"FPS":30,
+	"FPS":10,
 	"bInst":1,
-	"bDraw":1,
-	"Window":"OKview",
-	"startMission":"IDLE",
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"startMission":"STANDBY",
 
 	{
 		"name":"mission",
-
 		{
 			"bInst":1,
-			"name":"IDLE",
+			"name":"STANDBY",
 			"Window":"OKview",
 			"bDraw":1,
+			"Console":"OKconsole",
 			"class":"MissionBase",
-			"nextMission":"MOVE",
+			"nextMission":"STANDBY",
 		}
 		{
 			"bInst":1,
-			"name":"MOVE",
+			"name":"FORWARD",
 			"Window":"OKview",
 			"bDraw":1,
-			"class":"Move",
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"FORWARD",
 		}
 		{
 			"bInst":1,
-			"name":"TAG",
+			"name":"BACKWARD",
 			"Window":"OKview",
 			"bDraw":1,
-			"class":"Loiter",
-			"tTimeout":1,
-			"nextMission":"MOVE",
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"BACKWARD",
+		}
+		{
+			"bInst":1,
+			"name":"BB",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"BB",
 		}
 	}
+}
+
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_Mavlink":"apMavlink",
+	"freqSendHeartbeat":1,
+	"freqRawSensors":0,
+	"freqExtStat":5,
+	"freqRC":0,
+	"freqPos":5,
+	"freqExtra1":5,
 }
 
 {
-	"name":"RoverPilot",
-	"class":"_AutoPilot",
+	"name":"apField",
+	"class":"_AProvere_field",
+	"FPS":10,
 	"bInst":1,
-	"FPS":20,
-	"bLog":1,
-	"bDraw":1,
-	"Window":"OKview",
-	
-	{
-		"name":"action",
-		
-		{
-			"name":"rvBase",
-			"class":"Rover_base",
-			"bInst":1,
-			"bLog":1,
-			"bDraw":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"_Mavlink":"apMavlink",
-			"_RoverCMD":"rvCMD",
-			"PIDhdg":"rvPID",
-			
-			{
-				"iChan":0,
-				"H":2000,
-				"M":1500,
-				"L":1000,
-				"kDirection":1.0,
-				"sDirection":1.0,
-			}
-			{
-				"iChan":1,
-				"H":2000,
-				"M":1500,
-				"L":1000,
-				"kDirection":1.0,
-				"sDirection":-1.0,
-			}
-		}
-		
-		{
-			"name":"rvMove",
-			"class":"Rover_move",
-			"bInst":1,
-			"bLog":1,
-			"bDraw":1,
-			"Window":"OKview",
-			"_MissionControl":"apMission",
-			"activeMission":["IDLE","MOVE","TAG"],
-			"Rover_base":"rvBase",
-			"_RoverCMD":"rvCMD",
-			"PIDhdg":"rvPID",
-			"_LineM":"detLineM",
-			"_LineL":"detLineL",
-			"nSpeed":0.25,
-			"iPinLEDtag":21,
-			"iPinCamShutter":10,
-			"tCamShutter":200000,
-			"vBorderLrange":[0.2,0.8],
-			"borderLtarget":0.4,
-			"kBorderLhdg":30.0,
-			"vdHdgRange":[-10.0,10.0],
-		}
-	}
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+	"_AProver_drive":"apDrive",
+	"PIDhdg":"PIDhdg",
+	"_DetBB":"detBB",
+	"_DetSB":"detSB",
+	"nSpeed":0.25,
+	"vSideBorderRange":[0.2,0.8],
+	"sideBorderTarget":0.4,
+	"iPinLED":21,
+	"iPinShutter":10,
 }
-
 
 
 

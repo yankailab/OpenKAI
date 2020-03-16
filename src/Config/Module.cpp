@@ -131,14 +131,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_drive);
 	ADD_MODULE(_AProver_field);
 
-	ADD_MODULE(_Rover_avoid);
-	ADD_MODULE(_Rover_base);
-	ADD_MODULE(_Rover_CMD);
-	ADD_MODULE(_Rover_drive);
-	ADD_MODULE(_Rover_field);
-	ADD_MODULE(_Rover_follow);
-	ADD_MODULE(_Rover_WP);
-
 #ifdef USE_MYNTEYE
 	ADD_MODULE(_Mynteye);
 #endif

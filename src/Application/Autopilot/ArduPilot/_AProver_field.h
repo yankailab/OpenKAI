@@ -4,6 +4,7 @@
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
 #include "_AP_base.h"
+#include "_AProver_drive.h"
 
 namespace kai
 {
@@ -20,14 +21,10 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
-	virtual void setSpeed(float v);
-	virtual void setYaw(float v);
-	virtual void setYawMode(bool bRelative);
-
 protected:
-	void findLineM(void);
-	void findLineL(void);
-	bool updateDrive(void);
+	void findBlockBoarder(void);
+	void findSideBoarder(void);
+	void updateDrive(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_AProver_field *) This)->update();
@@ -36,32 +33,21 @@ protected:
 
 public:
 	_AP_base* 	m_pAP;
-
-	float	m_speed;
-	float	m_yaw;
-	float	m_yawMode;
-
-
+	_AProver_drive* m_pDrive;
+	_DetectorBase* m_pDetBB;
+	_DetectorBase* m_pDetSB;
 	PIDctrl* m_pPIDhdg;
-	_DetectorBase* m_pLineM;
-	_DetectorBase* m_pLineL;
 
-	vFloat2 m_vBorderLrange;
-	float m_borderL;
-	float m_borderLtarget;
-	float m_kBorderLhdg;
+	float	m_nSpeed;
+
+	bool m_bBlockBorder;
+	float m_sideBorder;
+	float m_sideBorderTarget;
+	vFloat2 m_vSideBorderRange;
 	float m_dHdg;
-	vFloat2 m_vdHdgRange;
 
-	bool m_bLineM;
-	float m_nSpeed;
-
-	uint64_t m_tCamShutter;
-	uint64_t m_tCamShutterStart;
-
-	uint8_t m_iPinLEDtag;
-	uint8_t m_iPinCamShutter;
-
+	uint8_t m_iPinLED;
+	uint8_t m_iPinShutter;
 
 };
 
