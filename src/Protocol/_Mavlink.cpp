@@ -14,7 +14,7 @@ _Mavlink::_Mavlink()
 	m_myType = MAV_TYPE_GCS;
 
 	m_devSystemID = 1;
-	m_devComponentID = 0;
+	m_devComponentID = 1;
 	m_devType = 0;
 
 	m_nRead = 0;

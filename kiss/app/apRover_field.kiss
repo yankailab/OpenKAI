@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -189,8 +189,8 @@
 	"bLog":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -199,10 +199,14 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
+	"bLog":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"_IOBase":"apSerial",	
+	"_IOBase":"apSerial",
+	"mySystemID":1,
+	"myComponentID":190,
+	"devSystemID":1,
+	"devComponentID":1,
 }
 
 {
@@ -277,19 +281,20 @@
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"_Mavlink":"apMavlink",
+	"apType":1,
 	"freqSendHeartbeat":1,
 	"freqRawSensors":0,
-	"freqExtStat":5,
-	"freqRC":0,
-	"freqPos":5,
-	"freqExtra1":5,
+	"freqExtStat":2,
+	"freqRC":5,
+	"freqPos":2,
+	"freqExtra1":2,
 }
 
 {
 	"name":"apField",
 	"class":"_AProver_field",
 	"FPS":10,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -319,6 +324,7 @@
 
 	{
 		"name":"OMh",
+		"bInst":0,
 		"_ActuatorBase":"",
 		"vRCin":[1,2,-1,-1],
 		"vSpeed":[1.0, 0.0, 0.0, 0.0],
@@ -326,6 +332,7 @@
 	}
 	{
 		"name":"OMv",
+		"bInst":0,
 		"_ActuatorBase":"",
 		"vRCin":[1,2,-1,-1],
 		"vSpeed":[1.0, 0.0, 0.0, 0.0],
@@ -338,7 +345,7 @@
 	"name":"apRelayStandby",
 	"class":"_AP_relay",
 	"FPS":5,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -361,7 +368,7 @@
 	"name":"apRelayBB",
 	"class":"_AP_relay",
 	"FPS":5,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -390,7 +397,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewL",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":230400,
 	"parity":"E",	
 }
@@ -514,7 +521,7 @@
 {
 	"name":"deltaArm",
 	"class":"_DeltaArm",
-	"bInst":1,
+	"bInst":0,
 	"FPS":2,
 	"bLog":1,
 	"Window":"viewL",
