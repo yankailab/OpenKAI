@@ -189,7 +189,7 @@
 	"bLog":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
@@ -234,7 +234,7 @@
 		{
 			"bInst":1,
 			"name":"STANDBY",
-			"Window":"OKview",
+			"Window":"viewL",
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"STANDBY",
@@ -242,7 +242,7 @@
 		{
 			"bInst":1,
 			"name":"FORWARD",
-			"Window":"OKview",
+			"Window":"viewL",
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"FORWARD",
@@ -250,7 +250,7 @@
 		{
 			"bInst":1,
 			"name":"BACKWARD",
-			"Window":"OKview",
+			"Window":"viewL",
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"nextMission":"BACKWARD",
@@ -258,7 +258,7 @@
 		{
 			"bInst":1,
 			"name":"BB",
-			"Window":"OKview",
+			"Window":"viewL",
 			"Console":"OKconsole",
 			"class":"MissionBase",
 			"tTimeout":2,
@@ -320,14 +320,14 @@
 	{
 		"name":"OMh",
 		"_ActuatorBase":"",
-		"iRCinScaled":0,
+		"vRCin":[1,2,-1,-1],
 		"vSpeed":[1.0, 0.0, 0.0, 0.0],
 		"iMode":0,
 	}
 	{
 		"name":"OMv",
 		"_ActuatorBase":"",
-		"iRCinScaled":0,
+		"vRCin":[1,2,-1,-1],
 		"vSpeed":[1.0, 0.0, 0.0, 0.0],
 		"iMode":0,
 	}		
@@ -339,7 +339,7 @@
 	"class":"_AP_relay",
 	"FPS":5,
 	"bInst":1,
-	"Window":"OKview",
+	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY","FORWARD","BACKWARD"],
@@ -362,7 +362,7 @@
 	"class":"_AP_relay",
 	"FPS":5,
 	"bInst":1,
-	"Window":"OKview",
+	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["BB"],
@@ -382,7 +382,6 @@
 
 
 
-/*
 
 {
 	"name":"modbus",
@@ -390,10 +389,61 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
-	"port":"/dev/ttyUSB1",
+	"Window":"viewL",
+	"port":"/dev/ttyUSB0",
 	"baud":230400,
 	"parity":"E",	
+}
+
+{
+	"name":"omWRot",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":5,
+	"stepFrom":0,
+	"stepTo":-8000,
+	"speedFrom":0,
+	"speedTo":1000,
+	"vNormTargetPos":[0.0],
+	"vNormTargetSpeed":[1.0],
+}
+
+{
+	"name":"omWX",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":6,
+	"stepFrom":20000,
+	"stepTo":35000,
+	"speedFrom":0,
+	"speedTo":8000,
+	"vNormTargetPos":[0.0],
+	"vNormTargetSpeed":[1.0],
+}
+
+{
+	"name":"omWY",
+	"class":"_OrientalMotor",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"_Modbus":"modbus",
+	"iSlave":7,
+	"stepFrom":0,
+	"stepTo":30000,
+	"speedFrom":0,
+	"speedTo":8000,
+	"vNormTargetPos":[0.0],
+	"vNormTargetSpeed":[1.0],
 }
 
 {
@@ -402,7 +452,8 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"stepFrom":10,
@@ -419,7 +470,8 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"stepFrom":10,
@@ -436,7 +488,8 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"_ActuatorList":["omL","omR"],
 }
 
@@ -446,7 +499,8 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"_Modbus":"modbus",
 	"iSlave":2,
 	"stepFrom":10,
@@ -463,7 +517,8 @@
 	"bInst":1,
 	"FPS":2,
 	"bLog":1,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"oprMode":3,
 	"bGripper":0,
 	"vPosRangeX":[-300, 300],
@@ -480,7 +535,8 @@
 	"bInst":0,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
+	"Window":"viewL",
+	"Console":"OKconsole",
 	"addr":"192.168.1.100",
 	"port":8888,
 	"_wakeUp":"arduServo",
@@ -492,7 +548,7 @@
 	"bInst":0,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
+	"Window":"viewL",
 	"_IOBase":"arduIO",
 	
 	{
@@ -506,218 +562,4 @@
 		"dir":1,
 	}
 }
-
-{
-	"name":"sequencer",
-	"class":"_Sequencer",
-	"bInst":1,
-	"FPS":30,
-	"bLog":1,
-	"Window":"OKview",
-	
-	{
-		"name":"action",
-
-		{
-			"name":"wp0",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.39],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.5],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.5,0.5,0.2],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp1",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[1.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[1.0,0.5,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp2",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[1.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[1.0,0.0,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp3",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.39],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.5],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.5,0.0,0.4],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp4",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.0,0.0,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp5",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.0,0.5,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp6",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.0,1.0,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp7",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.39],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[0.5],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[0.5,1.0,0.4],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-		
-		{
-			"name":"wp8",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"omV",
-				"pos":[0.3],
-				"speed":[0.2],
-			}
-			{
-				"_ActuatorBase":"omH",
-				"pos":[1.0],
-			}
-			{
-				"_ActuatorBase":"deltaArm",
-				"pos":[1.0,1.0,0.3],
-			}
-			{
-				"_ActuatorBase":"arduServo",
-				"pos":[1.0],
-			}
-		}
-				
-	}
-}
-
-*/
 

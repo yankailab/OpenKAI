@@ -11,7 +11,7 @@ namespace kai
 struct AP_actuator
 {
 	_ActuatorBase* m_pA;
-	int16_t* m_pRCinScaled;
+	int16_t* m_ppRCin[4];
 	float	m_k;
 	vFloat4 m_vPos;
 	vFloat4 m_vSpeed;
@@ -20,21 +20,58 @@ struct AP_actuator
 	void init(void)
 	{
 		m_pA = NULL;
-		m_pRCinScaled = NULL;
+		m_ppRCin[0] = NULL;
+		m_ppRCin[1] = NULL;
+		m_ppRCin[2] = NULL;
+		m_ppRCin[3] = NULL;
 		m_k = 1.0;
 		m_vPos.init(-1.0);
 		m_vSpeed.init(1.0);
-		m_iMode = 0;
+		m_iMode = -1;
 	}
 
 	void update(void)
 	{
 		NULL_(m_pA);
-		NULL_(m_pRCinScaled);
-		IF_(*m_pRCinScaled > MAV_RC_SCALE);
-		IF_(*m_pRCinScaled < -MAV_RC_SCALE);
 
-		m_vPos.x = ((float)(*m_pRCinScaled))*OV_MAV_RC_SCALE;
+		int16_t v;
+
+		if(m_ppRCin[0])
+		{
+			v = *(m_ppRCin[0]);
+			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
+				m_vPos.x = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
+			else
+				m_vPos.x = -1.0;
+		}
+
+		if(m_ppRCin[1])
+		{
+			v = *(m_ppRCin[1]);
+			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
+				m_vPos.y = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
+			else
+				m_vPos.y = -1.0;
+		}
+
+		if(m_ppRCin[2])
+		{
+			v = *(m_ppRCin[2]);
+			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
+				m_vPos.z = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
+			else
+				m_vPos.z = -1.0;
+		}
+
+		if(m_ppRCin[3])
+		{
+			v = *(m_ppRCin[3]);
+			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
+				m_vPos.w = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
+			else
+				m_vPos.w = -1.0;
+		}
+
 		m_pA->moveTo(m_vPos, m_vSpeed);
 	}
 };

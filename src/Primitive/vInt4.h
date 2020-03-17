@@ -30,6 +30,14 @@ struct vInt4
 		w = 0;
 	}
 
+	void init(int v)
+	{
+		x = v;
+		y = v;
+		z = v;
+		w = v;
+	}
+
 	int midX(void)
 	{
 		return (x + z) / 2;

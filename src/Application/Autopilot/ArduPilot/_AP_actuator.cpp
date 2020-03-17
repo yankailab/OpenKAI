@@ -44,10 +44,13 @@ bool _AP_actuator::init(void* pKiss)
 		a.m_pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
 		NULL_Fl(a.m_pA, "_ActuatorBase: " + iName + " not found");
 
-		iRC = -1;
-		pA->v("iRCinScaled", &iRC);
-		a.m_pRCinScaled = m_pMav->getRCinScaled(iRC);
-		NULL_Fl(a.m_pRCinScaled, "iRCinScaled not correct");
+		vInt4 vRCin;
+		vRCin.init(-1);
+		pA->v("vRCin", &vRCin);
+		a.m_ppRCin[0] = m_pMav->getRCinScaled(vRCin.x);
+		a.m_ppRCin[1] = m_pMav->getRCinScaled(vRCin.y);
+		a.m_ppRCin[2] = m_pMav->getRCinScaled(vRCin.z);
+		a.m_ppRCin[3] = m_pMav->getRCinScaled(vRCin.w);
 
 		pA->v("vSpeed", &a.m_vSpeed);
 		pA->v("iMode", &a.m_iMode);
@@ -123,6 +126,10 @@ void _AP_actuator::draw(void)
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_iMode), 1);
+	for (AP_actuator a : m_vActuator)
+	{
+		addMsg("("+f2str(a.m_vPos.x)+", "+f2str(a.m_vPos.y)+", "+f2str(a.m_vPos.z)+", "+f2str(a.m_vPos.w)+")", 1);
+	}
 }
 
 }
