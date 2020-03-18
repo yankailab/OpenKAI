@@ -1,15 +1,22 @@
-#include "_AP_shutter.h"
+#include "_AProver_photo.h"
 
 namespace kai
 {
 
-_AP_shutter::_AP_shutter()
+_AProver_photo::_AProver_photo()
 {
 	m_pAP = NULL;
 	m_pV = NULL;
 	m_pDV = NULL;
 	m_pG = NULL;
 	m_pDet = NULL;
+
+	m_pDrive = NULL;
+	m_pPIDhdg = NULL;
+
+	m_nSpeed = 1.0;
+	m_dHdg = 0.0;
+	m_xTarget = 0.5;
 
 	m_dir = "/home/";
 	m_subDir = "";
@@ -22,18 +29,18 @@ _AP_shutter::_AP_shutter()
 	m_shutterMode = apShutter_det;
 	m_ieShutter.init(USEC_1SEC);
 	m_iTag = -1;
-	m_bModeChange = true;
 	m_tDelay = USEC_1SEC;
-	m_apModeShutter = AP_ROVER_HOLD;
 	m_vTargetBB.init();
+//	m_bModeChange = false;
+//	m_apModeShutter = AP_ROVER_HOLD;
 
 }
 
-_AP_shutter::~_AP_shutter()
+_AProver_photo::~_AProver_photo()
 {
 }
 
-bool _AP_shutter::init(void* pKiss)
+bool _AProver_photo::init(void* pKiss)
 {
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -43,10 +50,12 @@ bool _AP_shutter::init(void* pKiss)
 	pK->v("subDir", &m_subDir);
 	pK->v("bFlipRGB", &m_bFlipRGB);
 	pK->v("bFlipD", &m_bFlipD);
-	pK->v("bModeChange", &m_bModeChange);
 	pK->v("tDelay", &m_tDelay);
-	pK->v("apModeShutter", &m_apModeShutter);
 	pK->v("tInterval", &m_ieShutter.m_tInterval);
+	pK->v("nSpeed", &m_nSpeed);
+	pK->v("xTarget", &m_xTarget);
+//	pK->v("bModeChange", &m_bModeChange);
+//	pK->v("apModeShutter", &m_apModeShutter);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -60,7 +69,23 @@ bool _AP_shutter::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pAP, iName + ": not found");
+
+	iName = "";
+	pK->v("_AProver_drive", &iName);
+	m_pDrive = (_AProver_drive*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDrive, iName + ": not found");
+
+	iName = "";
+	pK->v("PIDctrl", &iName);
+	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pPIDhdg, iName + ": not found");
+
+	iName = "";
+	pK->v("_DetectorBase", &iName);
+	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDet, iName + ": not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
@@ -74,14 +99,10 @@ bool _AP_shutter::init(void* pKiss)
 	pK->v("_GPhoto", &iName);
 	m_pG = (_GPhoto*) (pK->root()->getChildInst(iName));
 
-	iName = "";
-	pK->v("_DetectorBase", &iName);
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-
 	return true;
 }
 
-bool _AP_shutter::start(void)
+bool _AProver_photo::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -95,14 +116,17 @@ bool _AP_shutter::start(void)
 	return true;
 }
 
-int _AP_shutter::check(void)
+int _AProver_photo::check(void)
 {
+	NULL__(m_pAP, -1);
+	NULL__(m_pPIDhdg, -1);
+	NULL__(m_pDrive, -1);
 	NULL__(m_pDet, -1);
 
 	return this->_AutopilotBase::check();
 }
 
-void _AP_shutter::update(void)
+void _AProver_photo::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -115,10 +139,12 @@ void _AP_shutter::update(void)
 	}
 }
 
-void _AP_shutter::shutter(void)
+void _AProver_photo::shutter(void)
 {
 	IF_(check()<0);
 	IF_(!bActive());
+
+	IF_(m_pAP->getApMode() != AP_ROVER_GUIDED);
 
 	if(m_shutterMode == apShutter_det)
 	{
@@ -160,44 +186,35 @@ void _AP_shutter::shutter(void)
 	}
 
 
-	string cmd;
+	m_pDrive->setSpeed(0.0);
+	this->sleepTime(m_tDelay);
 
+	string cmd;
 	cmd = "mkdir /media/usb";
 	system(cmd.c_str());
-
 	cmd = "mount /dev/sda1 /media/usb";
 	system(cmd.c_str());
-
 	cmd = "mkdir " + m_subDir;
 	system(cmd.c_str());
 
 
+//	uint32_t apModeResume = m_pAP->getApMode();
+//	if(m_bModeChange)
+//	{
+//		while(m_pAP->getApMode()!=m_apModeShutter)
+//		{
+//			m_pAP->setApMode(m_apModeShutter);
+//			this->sleepTime(200000);
+//		}
+//		this->sleepTime(m_tDelay);
+//	}
+
 	vDouble4 vP;
 	vP.init();
-	string lat = "";
-	string lon = "";
-	string alt = "";
-	uint32_t apModeResume;
-
-	if(m_pAP)
-	{
-		apModeResume = m_pAP->getApMode();
-		if(m_bModeChange)
-		{
-			while(m_pAP->getApMode()!=m_apModeShutter)
-			{
-				m_pAP->setApMode(m_apModeShutter);
-				this->sleepTime(200000);
-			}
-			this->sleepTime(m_tDelay);
-		}
-
-		vP = m_pAP->getGlobalPos();
-		lat = lf2str(vP.x, 7);
-		lon = lf2str(vP.y, 7);
-		alt = lf2str(vP.z, 3);
-	}
-
+	vP = m_pAP->getGlobalPos();
+	string lat = lf2str(vP.x, 7);
+	string lon = lf2str(vP.y, 7);
+	string alt = lf2str(vP.z, 3);
 
 	string fName;
 
@@ -256,14 +273,16 @@ void _AP_shutter::shutter(void)
 	m_iTake++;
 
 
-	if(m_pAP)
-	{
-		if(m_bModeChange)
-			m_pAP->setApMode(apModeResume);
-	}
+	float xTag = m_vTargetBB.midX();
+	m_dHdg = m_pPIDhdg->update(xTag, m_xTarget, m_tStamp);
+	m_pDrive->setYaw(m_dHdg);
+	m_pDrive->setSpeed(m_nSpeed);
+
+//	if(m_bModeChange)
+//		m_pAP->setApMode(apModeResume);
 }
 
-void _AP_shutter::draw(void)
+void _AProver_photo::draw(void)
 {
 	IF_(check()<0);
 	this->_AutopilotBase::draw();

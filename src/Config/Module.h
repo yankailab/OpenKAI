@@ -33,12 +33,11 @@
 #include "../Application/Autopilot/ArduPilot/_AP_relay.h"
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_slam.h"
-#include "../Application/Autopilot/ArduPilot/_AP_shutter.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AP_descent.h"
-
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_field.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_photo.h"
 
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"

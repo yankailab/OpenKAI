@@ -7,7 +7,6 @@ _AProver_field::_AProver_field()
 {
 	m_pAP = NULL;
 	m_pDrive = NULL;
-
 	m_pPIDhdg = NULL;
 	m_pDetBB = NULL;
 	m_pDetSB = NULL;
@@ -42,16 +41,16 @@ bool _AProver_field::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AProver_drive", &iName);
-	m_pDrive = (_AProver_drive*) (pK->parent()->getChildInst(iName));
+	m_pDrive = (_AProver_drive*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDrive, iName + ": not found");
 
 	iName = "";
-	pK->v("PIDhdg", &iName);
+	pK->v("PIDctrl", &iName);
 	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pPIDhdg, iName + ": not found");
 
@@ -116,7 +115,9 @@ void _AProver_field::updateDrive(void)
 	if(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX)
 	{
 		m_pDrive->setSpeed(0.0);
+		m_pDrive->setYaw(0.0);
 		m_pMC->transit("STANDBY");
+		return;
 	}
 
 	string mission = m_pMC->getMissionName();

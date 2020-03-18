@@ -14,7 +14,7 @@
 //#define USE_CUDASTEREO
 //#define USE_OCR
 //#define USE_OPENALPR
-#define USE_DYNAMIXEL
+//#define USE_DYNAMIXEL
 //#define USE_LIVOX
 
 #ifdef USE_TENSORRT

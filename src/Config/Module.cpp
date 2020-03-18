@@ -129,7 +129,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_goto);
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
-	ADD_MODULE(_AP_shutter);
+	ADD_MODULE(_AProver_photo);
 	ADD_MODULE(_AProver_drive);
 	ADD_MODULE(_AProver_field);
 

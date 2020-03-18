@@ -106,6 +106,9 @@ void _AProver_drive::setYawMode(bool bRelative)
 void _AProver_drive::draw(void)
 {
 	this->_AutopilotBase::draw();
+
+	addMsg("speed=" + f2str(m_speed) + ", kSpeed=" + f2str(m_kSpeed) + ", nSpeed=" + f2str(m_nSpeed));
+	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + f2str(m_yaw));
 }
 
 }

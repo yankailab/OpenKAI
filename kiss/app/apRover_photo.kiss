@@ -4,15 +4,15 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
-	"bStdErr":1,
+	"bLog":0,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -211,33 +211,66 @@
 	"freqSendHeartbeat":1,
 	"freqRawSensors":0,
 	"freqExtStat":2,
-	"freqRC":0,
+	"freqRC":2,
 	"freqPos":5,
 	"freqExtra1":2,
 }
 
 {
-	"name":"apShutter",
-	"class":"_AP_shutter",
-	"FPS":5,
+	"name":"apDrive",
+	"class":"_AProver_drive",
+	"FPS":10,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+	"kSpeed":1.0,
+	"speed":0.2,
+	"nSpeed":0.0,
+	"yawMode":1.0,
+	"yaw":0.0,
+}
+
+{
+	"name":"PIDhdg",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":-3.0,
+	"oMax":3.0,
+}
+
+{
+	"name":"apPhoto",
+	"class":"_AProver_photo",
+	"FPS":10,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY"],
+	"_AP_base":"apBase",
+	"_AProver_drive":"apDrive",
+	"PIDctrl":"PIDhdg",
 	"/_VisionBase":"cam",
 	"_DepthVisionBase":"cam",
 	"_GPhoto":"gphoto",
 	"_DetectorBase":"arUco",
-	"/_AP_base":"apBase",
 	"dir":"/media/usb/",
 	"quality":100,
 	"bFlipRGB":0,
 	"bFlipD":0,
 	"tDelay":2000000,
-	"apModeShutter":4,
-	"bModeChange":1,
+	"/apModeShutter":4,
+	"/bModeChange":1,
 }
 
 {
