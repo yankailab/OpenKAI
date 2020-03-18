@@ -224,6 +224,7 @@ public:
 
 	//Utility
 	int16_t* getRCinScaled(int iChan);
+	uint16_t* getRCinRaw(int iChan);
 
 private:
 	void update(void);

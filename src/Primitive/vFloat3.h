@@ -24,6 +24,13 @@ struct vFloat3
 		z = v;
 	}
 
+	void init(float a, float b, float c)
+	{
+		x = a;
+		y = b;
+		z = c;
+	}
+
 	inline vFloat3 operator+(vFloat3 r)
     {
 		vFloat3 v;

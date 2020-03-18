@@ -19,8 +19,6 @@
 #define NSEC_1SEC 1000000000
 #define DEG_AROUND 360.0
 #define RAD_AROUND 6.283188
-#define MAV_RC_SCALE 10000
-#define OV_MAV_RC_SCALE 0.0001
 
 #define CR '\x0d'
 #define LF '\x0a'

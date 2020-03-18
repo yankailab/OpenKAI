@@ -10,6 +10,7 @@ namespace kai
 _ActuatorSync::_ActuatorSync()
 {
 	m_nAB = 0;
+	m_iABget = 0;
 }
 
 _ActuatorSync::~_ActuatorSync()
@@ -33,6 +34,10 @@ bool _ActuatorSync::init(void* pKiss)
 		m_nAB++;
 	}
 
+	pK->v("iABget",&m_iABget);
+	if(m_iABget >= m_nAB)
+		m_iABget = 0;
+
 	return true;
 }
 
@@ -50,26 +55,54 @@ bool _ActuatorSync::start(void)
 	return true;
 }
 
+int _ActuatorSync::check(void)
+{
+	return this->_ActuatorBase::check();
+}
+
 void _ActuatorSync::update(void)
 {
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+
+		updateSync();
+
+		this->autoFPSto();
+	}
+}
+
+void _ActuatorSync::updateSync(void)
+{
+	_ActuatorBase* pA = m_pAB[m_iABget];
+	NULL_(pA);
+	m_vNormPos = pA->getPos();
+	m_vNormSpeed = pA->getSpeed();
+
 }
 
 void _ActuatorSync::move(vFloat4& vSpeed)
 {
 	for(int i=0; i<m_nAB; i++)
 		m_pAB[i]->move(vSpeed);
+
+	this->_ActuatorBase::move(vSpeed);
 }
 
 void _ActuatorSync::moveTo(vFloat4& vPos, vFloat4& vSpeed)
 {
 	for(int i=0; i<m_nAB; i++)
 		m_pAB[i]->moveTo(vPos, vSpeed);
+
+	this->_ActuatorBase::moveTo(vPos, vSpeed);
 }
 
 void _ActuatorSync::moveToOrigin(void)
 {
 	for(int i=0; i<m_nAB; i++)
 		m_pAB[i]->moveToOrigin();
+
+	this->_ActuatorBase::moveToOrigin();
 }
 
 bool _ActuatorSync::bComplete(void)

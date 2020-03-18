@@ -14,39 +14,6 @@ struct vFloat4
 	float z;
 	float w;
 
-	float midX(void)
-	{
-		return (x + z) * 0.5;
-	}
-
-	float midY(void)
-	{
-		return (y + w) * 0.5;
-	}
-
-	vFloat2 center(void)
-	{
-		vFloat2 vC;
-		vC.x = midX();
-		vC.y = midY();
-		return vC;
-	}
-
-	float width(void)
-	{
-		return z - x;
-	}
-
-	float height(void)
-	{
-		return w - y;
-	}
-
-	float area(void)
-	{
-		return abs((z - x) * (w - y));
-	}
-
 	void init(void)
 	{
 		x = 0.0;
@@ -119,6 +86,14 @@ struct vFloat4
 		w = r;
 	}
 
+	inline void operator=(float* pR)
+    {
+		x = pR[0];
+		y = pR[1];
+		z = pR[2];
+		w = pR[3];
+	}
+
 	inline void operator+=(vFloat4& r)
     {
 		x += r.x;
@@ -149,6 +124,39 @@ struct vFloat4
 		y /= r;
 		z /= r;
 		w /= r;
+	}
+
+	float midX(void)
+	{
+		return (x + z) * 0.5;
+	}
+
+	float midY(void)
+	{
+		return (y + w) * 0.5;
+	}
+
+	vFloat2 center(void)
+	{
+		vFloat2 vC;
+		vC.x = midX();
+		vC.y = midY();
+		return vC;
+	}
+
+	float width(void)
+	{
+		return z - x;
+	}
+
+	float height(void)
+	{
+		return w - y;
+	}
+
+	float area(void)
+	{
+		return abs((z - x) * (w - y));
 	}
 
 	float len(void)

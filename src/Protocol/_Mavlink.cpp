@@ -13,8 +13,8 @@ _Mavlink::_Mavlink()
 	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
 	m_myType = MAV_TYPE_GCS;
 
-	m_devSystemID = 1;
-	m_devComponentID = 1;
+	m_devSystemID = -1;
+	m_devComponentID = -1;
 	m_devType = 0;
 
 	m_nRead = 0;
@@ -664,6 +664,22 @@ int16_t* _Mavlink::getRCinScaled(int iChan)
 	}
 }
 
+uint16_t* _Mavlink::getRCinRaw(int iChan)
+{
+	switch (iChan)
+	{
+	case 1: return &m_mavMsg.m_rc_channels_raw.chan1_raw;
+	case 2: return &m_mavMsg.m_rc_channels_raw.chan2_raw;
+	case 3: return &m_mavMsg.m_rc_channels_raw.chan3_raw;
+	case 4: return &m_mavMsg.m_rc_channels_raw.chan4_raw;
+	case 5: return &m_mavMsg.m_rc_channels_raw.chan5_raw;
+	case 6: return &m_mavMsg.m_rc_channels_raw.chan6_raw;
+	case 7: return &m_mavMsg.m_rc_channels_raw.chan7_raw;
+	case 8: return &m_mavMsg.m_rc_channels_raw.chan8_raw;
+	default: return NULL;
+	}
+}
+
 bool _Mavlink::readMessage(mavlink_message_t &msg)
 {
 	if (m_nRead == 0)
@@ -705,8 +721,14 @@ void _Mavlink::handleMessages()
 	{
 		uint64_t tNow = getTimeUsec();
 
-		IF_CONT(m_devSystemID > 0 && msg.sysid != m_devSystemID);
-		IF_CONT(m_devComponentID >= 0 && msg.compid != m_devComponentID);
+		if(m_devSystemID < 0)
+			m_devSystemID = msg.sysid;
+
+		if(m_devComponentID < 0)
+			m_devComponentID = msg.compid;
+
+		IF_CONT(msg.sysid != m_devSystemID);
+		IF_CONT(msg.compid != m_devComponentID);
 
 		switch (msg.msgid)
 		{

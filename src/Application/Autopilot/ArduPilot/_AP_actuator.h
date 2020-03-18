@@ -11,68 +11,52 @@ namespace kai
 struct AP_actuator
 {
 	_ActuatorBase* m_pA;
-	int16_t* m_ppRCin[4];
-	float	m_k;
-	vFloat4 m_vPos;
+	uint16_t* m_ppRCin[4];
+	float	m_pInc[4];
+	vFloat4	m_vPWMrange;
 	vFloat4 m_vSpeed;
 	int		m_iMode;
 
 	void init(void)
 	{
 		m_pA = NULL;
-		m_ppRCin[0] = NULL;
-		m_ppRCin[1] = NULL;
-		m_ppRCin[2] = NULL;
-		m_ppRCin[3] = NULL;
-		m_k = 1.0;
-		m_vPos.init(-1.0);
+		m_vPWMrange.init(1100, 1250, 1750, 1900);
 		m_vSpeed.init(1.0);
 		m_iMode = -1;
+
+		for(int i=0;i<4;i++)
+		{
+			m_ppRCin[i] = NULL;
+			m_pInc[i] = 0.01;
+		}
 	}
 
 	void update(void)
 	{
 		NULL_(m_pA);
 
-		int16_t v;
+		vFloat4 vP = m_pA->getPos();
+		float pP[4];
+		pP[0] = vP.x;
+		pP[1] = vP.y;
+		pP[2] = vP.z;
+		pP[3] = vP.w;
 
-		if(m_ppRCin[0])
+		for(int i=0; i<4; i++)
 		{
-			v = *(m_ppRCin[0]);
-			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
-				m_vPos.x = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
-			else
-				m_vPos.x = -1.0;
+			IF_CONT(!m_ppRCin[i]);
+
+			uint16_t v = *(m_ppRCin[i]);
+			IF_CONT(v < m_vPWMrange.x && v > m_vPWMrange.w);
+
+			if(v > m_vPWMrange.z)
+				pP[i] += m_pInc[i];
+			else if(v < m_vPWMrange.y)
+				pP[i] -= m_pInc[i];
 		}
 
-		if(m_ppRCin[1])
-		{
-			v = *(m_ppRCin[1]);
-			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
-				m_vPos.y = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
-			else
-				m_vPos.y = -1.0;
-		}
-
-		if(m_ppRCin[2])
-		{
-			v = *(m_ppRCin[2]);
-			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
-				m_vPos.z = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
-			else
-				m_vPos.z = -1.0;
-		}
-
-		if(m_ppRCin[3])
-		{
-			v = *(m_ppRCin[3]);
-			if(v >= -MAV_RC_SCALE && v <= MAV_RC_SCALE)
-				m_vPos.w = ((float)(MAV_RC_SCALE+v))*OV_MAV_RC_SCALE*0.5;
-			else
-				m_vPos.w = -1.0;
-		}
-
-		m_pA->moveTo(m_vPos, m_vSpeed);
+		vP = pP;
+		m_pA->moveTo(vP, m_vSpeed);
 	}
 };
 
@@ -99,8 +83,9 @@ private:
 private:
 	_Mavlink* m_pMav;
 	vector<AP_actuator> m_vActuator;
-	int16_t* m_pRCmode;
+	uint16_t* m_pRCmode;
 	int m_iMode;
+	vFloat4	m_vPWMrange;
 
 };
 

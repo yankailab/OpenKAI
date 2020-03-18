@@ -23,6 +23,7 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
+	virtual int check(void);
 
 	virtual void move(vFloat4& vSpeed);
 	virtual void moveTo(vFloat4& vPos, vFloat4& vSpeed);
@@ -31,6 +32,7 @@ public:
 	virtual bool bComplete(void);
 
 private:
+	virtual void updateSync(void);
 	virtual void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -41,6 +43,7 @@ private:
 public:
 	_ActuatorBase* m_pAB[AS_N_ACTUATOR];
 	int m_nAB;
+	int m_iABget;
 
 };
 

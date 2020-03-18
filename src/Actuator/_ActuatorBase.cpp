@@ -124,14 +124,14 @@ bool _ActuatorBase::bComplete(void)
 	return true;
 }
 
-float _ActuatorBase::pos(void)
+vFloat4 _ActuatorBase::getPos(void)
 {
-	return m_vNormPos.x;
+	return m_vNormPos;
 }
 
-float _ActuatorBase::speed(void)
+vFloat4 _ActuatorBase::getSpeed(void)
 {
-	return m_vNormSpeed.x;
+	return m_vNormSpeed;
 }
 
 void _ActuatorBase::draw(void)

@@ -130,6 +130,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
 
 	{
 		"bInst":1,
@@ -158,6 +162,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"apUDP",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
 	
 	{
 		"bInst":1,

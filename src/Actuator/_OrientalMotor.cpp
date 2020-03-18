@@ -88,8 +88,8 @@ void _OrientalMotor::update(void)
 		this->autoFPSfrom();
 
 		checkAlarm();
-		sendCMD();
 		readStatus();
+		sendCMD();
 
 		this->autoFPSto();
 	}

@@ -15,7 +15,6 @@ _DeltaArm::_DeltaArm()
 	m_vPosRangeY.y = 100.0;
 	m_vPosRangeZ.x = 0;
 	m_vPosRangeZ.y = 100.0;
-
 }
 
 _DeltaArm::~_DeltaArm()

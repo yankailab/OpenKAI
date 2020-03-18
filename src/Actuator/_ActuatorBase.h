@@ -30,8 +30,8 @@ public:
 	virtual void setGlobalTarget(vFloat4& t);
 
 	virtual bool bComplete(void);
-	virtual float pos(void);
-	virtual float speed(void);
+	virtual vFloat4 getPos(void);
+	virtual vFloat4 getSpeed(void);
 
 private:
 	virtual bool open(void);

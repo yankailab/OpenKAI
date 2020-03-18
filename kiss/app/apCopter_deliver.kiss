@@ -120,7 +120,7 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
-	"mySystemID":1,
+	"mySystemID":255,
 	"myComponentID":190,
 	"devSystemID":1,
 	"devComponentID":1,
@@ -153,6 +153,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"remoteSerial",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
 }
 
 
@@ -175,7 +179,6 @@
 	"FPS":30,
 	"bLog":1,
 	"Console":"OKconsole",
-	"Console":"OpenKAI",
 	"_IOBase":"apUDP",
 	
 	{

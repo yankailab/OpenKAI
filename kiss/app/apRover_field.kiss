@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":0,
@@ -14,6 +14,7 @@
 	"class":"Console",
 	"bInst":1,
 }
+
 {
 	"name":"viewL",
 	"class":"Window",
@@ -41,6 +42,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"viewL",
+	"Console":"OKconsole",
 	"deviceID":0,
 	"w":640,
 	"h":480,
@@ -52,6 +54,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewL",
+	"Console":"OKconsole",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
@@ -61,6 +64,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewR",
+	"Console":"OKconsole",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
 
@@ -70,6 +74,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"camL",
 }
 
@@ -80,6 +85,7 @@
 	"bInst":1,
 	"Window":"/filterView",
 	"_VisionBase":"gsL",
+	"Console":"OKconsole",
 	"alpha":1.8,
 	"beta":-200.0,
 }
@@ -90,6 +96,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"contL",
 	"rFrom":0,
 	"rTo":50,
@@ -101,6 +108,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"irL",
 	
 	{
@@ -124,6 +132,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"morphL",
 }
 
@@ -134,6 +143,7 @@
 	"bInst":1,
 	"Window":"/filterView",
 	"_VisionBase":"invL",
+	"Console":"OKconsole",
 	"roi":[0.2, 0.0, 0.8, 0.5],
 }
 
@@ -143,6 +153,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"cropL",
 	"code":0,
 }
@@ -153,6 +164,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewL",
+	"Console":"OKconsole",
 	"Console":"OKconsole",
 	"_VisionBase":"rotL",
 	"wSlide":0.2,
@@ -165,6 +177,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/filterView",
+	"Console":"OKconsole",
 	"_VisionBase":"morphL",
 	"roi":[0.5, 0.2, 1.0, 0.6],
 }
@@ -189,6 +202,8 @@
 	"bLog":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
+	"/port":"/dev/ttyACM0",
+	"/baud":115200,
 	"port":"/dev/ttyUSB0",
 	"baud":57600,
 	"_wakeUp":"apMavlink",
@@ -199,14 +214,50 @@
 	"class":"_Mavlink",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
-	"mySystemID":1,
+	"mySystemID":255,
 	"myComponentID":190,
-	"devSystemID":1,
-	"devComponentID":1,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"_IOBase":"apUDP",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
+	}	
 }
 
 {
@@ -291,10 +342,25 @@
 }
 
 {
+	"name":"apDrive",
+	"class":"_AProver_drive",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+	"kSpeed":1.0,
+	"speed":0.5,
+	"nSpeed":0.0,
+	"yaw":0.0,
+}
+
+{
 	"name":"apField",
 	"class":"_AProver_field",
 	"FPS":10,
-	"bInst":0,
+	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -320,24 +386,71 @@
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY","FORWARD","BACKWARD","BB"],
 	"_Mavlink":"apMavlink",
-	"iRCmode":3,
+	"iRCmode":5,
+	"vPWMrange":[900, 1250, 1750, 2100],
 
 	{
 		"name":"OMh",
-		"bInst":0,
-		"_ActuatorBase":"",
-		"vRCin":[1,2,-1,-1],
-		"vSpeed":[1.0, 0.0, 0.0, 0.0],
+		"bInst":1,
+		"_ActuatorBase":"omH",
+		"vRCin":[4, -1, -1, -1],
+		"vInc":[0.01, 0, 0, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 0, 0, 0],
 		"iMode":0,
 	}
 	{
 		"name":"OMv",
 		"bInst":0,
-		"_ActuatorBase":"",
-		"vRCin":[1,2,-1,-1],
-		"vSpeed":[1.0, 0.0, 0.0, 0.0],
+		"_ActuatorBase":"omV",
+		"vRCin":[2, -1, -1, -1],
+		"vInc":[0.01, 0, 0, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 0, 0, 0],
 		"iMode":0,
-	}		
+	}
+	
+	{
+		"name":"DA",
+		"bInst":0,
+		"_ActuatorBase":"deltaArm",
+		"vRCin":[2, 4, 6, -1],
+		"vInc":[0.1, 0.1, 0.1, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 1.0, 1.0, 0],
+		"iMode":1,
+	}
+
+	{
+		"name":"OMwRot",
+		"bInst":0,
+		"_ActuatorBase":"omWRot",
+		"vRCin":[4, -1, -1, -1],
+		"vInc":[0.01, 0, 0, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 0, 0, 0],
+		"iMode":2,
+	}
+	{
+		"name":"OMwx",
+		"bInst":0,
+		"_ActuatorBase":"omWX",
+		"vRCin":[2, -1, -1, -1],
+		"vInc":[0.01, 0, 0, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 0, 0, 0],
+		"iMode":2,
+	}
+	{
+		"name":"OMwy",
+		"bInst":0,
+		"_ActuatorBase":"omWY",
+		"vRCin":[6, -1, -1, -1],
+		"vInc":[0.01, 0, 0, 0],
+		"vPWMrange":[900, 1250, 1750, 2100],
+		"vSpeed":[1.0, 0, 0, 0],
+		"iMode":2,
+	}
 }
 
 
@@ -405,7 +518,7 @@
 {
 	"name":"omWRot",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -422,7 +535,7 @@
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -439,7 +552,7 @@
 {
 	"name":"omWY",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
@@ -456,7 +569,7 @@
 {
 	"name":"omR",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewL",
@@ -474,7 +587,7 @@
 {
 	"name":"omL",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewL",
@@ -492,7 +605,7 @@
 {
 	"name":"omV",
 	"class":"_ActuatorSync",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewL",
@@ -516,6 +629,8 @@
 	"speedTo":15000,
 	"vNormTargetPos":[0.5],
 	"vNormTargetSpeed":[1.0],
+	
+	"vNormPos":[0.5],
 }
 
 {

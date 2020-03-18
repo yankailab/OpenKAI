@@ -112,7 +112,7 @@ void _AProver_field::updateDrive(void)
 {
 	IF_(check() < 0);
 
-	int16_t rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_scaled.chan6_scaled;
+	uint16_t rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_raw.chan8_raw;
 	if(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX)
 	{
 		m_pDrive->setSpeed(0.0);
@@ -124,9 +124,9 @@ void _AProver_field::updateDrive(void)
 	//mode
 	if(mission == "STANDBY")
 	{
-		if(rcMode > 0)
+		if(rcMode < 1250)
 			m_pMC->transit("FORWARD");
-		else if(rcMode < 0)
+		else if(rcMode > 1750)
 			m_pMC->transit("BACKWARD");
 	}
 
@@ -184,8 +184,8 @@ void _AProver_field::findSideBoarder(void)
 void _AProver_field::draw(void)
 {
 	this->_AutopilotBase::draw();
-	string msg = *this->getName() + ": dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder);
-	addMsg(msg);
+
+	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));
 }
 
 }

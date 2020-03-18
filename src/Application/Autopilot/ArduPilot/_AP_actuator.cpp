@@ -8,6 +8,8 @@ _AP_actuator::_AP_actuator()
 	m_pMav = NULL;
 	m_pRCmode = NULL;
 	m_iMode = -1;
+	m_vPWMrange.init(900, 1250, 1750, 2100);
+
 }
 
 _AP_actuator::~_AP_actuator()
@@ -25,11 +27,13 @@ bool _AP_actuator::init(void* pKiss)
 	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pMav, "_Mavlink: " + iName + " not found");
 
-	pK->v("iMode", &m_iMode);
 	int iRC = -1;
 	pK->v("iRCmode", &iRC);
-	m_pRCmode = m_pMav->getRCinScaled(iRC);
+	m_pRCmode = m_pMav->getRCinRaw(iRC);
 	NULL_Fl(m_pRCmode, "iRCmode not correct");
+
+	pK->v("vPWMrange", &m_vPWMrange);
+
 
 	Kiss** pItr = pK->getChildItr();
 	int i = 0;
@@ -47,11 +51,20 @@ bool _AP_actuator::init(void* pKiss)
 		vInt4 vRCin;
 		vRCin.init(-1);
 		pA->v("vRCin", &vRCin);
-		a.m_ppRCin[0] = m_pMav->getRCinScaled(vRCin.x);
-		a.m_ppRCin[1] = m_pMav->getRCinScaled(vRCin.y);
-		a.m_ppRCin[2] = m_pMav->getRCinScaled(vRCin.z);
-		a.m_ppRCin[3] = m_pMav->getRCinScaled(vRCin.w);
+		a.m_ppRCin[0] = m_pMav->getRCinRaw(vRCin.x);
+		a.m_ppRCin[1] = m_pMav->getRCinRaw(vRCin.y);
+		a.m_ppRCin[2] = m_pMav->getRCinRaw(vRCin.z);
+		a.m_ppRCin[3] = m_pMav->getRCinRaw(vRCin.w);
 
+		vFloat4 vF;
+		if(pA->v("vInc", &vF))
+		{
+			a.m_pInc[0] = vF.x;
+			a.m_pInc[1] = vF.y;
+			a.m_pInc[2] = vF.z;
+			a.m_pInc[3] = vF.w;
+		}
+		pA->v("vPWMrange", &a.m_vPWMrange);
 		pA->v("vSpeed", &a.m_vSpeed);
 		pA->v("iMode", &a.m_iMode);
 
@@ -99,22 +112,23 @@ void _AP_actuator::updateActuator(void)
 {
 	IF_(check() < 0);
 	IF_(!bActive());
-
-	if(*m_pRCmode > MAV_RC_SCALE || *m_pRCmode < -MAV_RC_SCALE)
+	NULL_(m_pRCmode);
+	if(*m_pRCmode < m_vPWMrange.x || *m_pRCmode > m_vPWMrange.w)
 	{
 		m_iMode = -1;
 		return;
 	}
 
-	if(*m_pRCmode < 0)
+	if(*m_pRCmode < m_vPWMrange.y)
 		m_iMode = 0;
-	else if(*m_pRCmode > 0)
+	else if(*m_pRCmode < m_vPWMrange.z)
 		m_iMode = 1;
+	else
+		m_iMode = 2;
 
 	for (AP_actuator a : m_vActuator)
 	{
 		IF_CONT(a.m_iMode != m_iMode);
-
 		a.update();
 	}
 }
@@ -126,10 +140,6 @@ void _AP_actuator::draw(void)
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_iMode), 1);
-	for (AP_actuator a : m_vActuator)
-	{
-		addMsg("("+f2str(a.m_vPos.x)+", "+f2str(a.m_vPos.y)+", "+f2str(a.m_vPos.z)+", "+f2str(a.m_vPos.w)+")", 1);
-	}
 }
 
 }
