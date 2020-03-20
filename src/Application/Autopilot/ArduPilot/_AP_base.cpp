@@ -124,7 +124,7 @@ void _AP_base::updateBase(void)
 		m_vGlobalPos.y = ((double)(m_pMavlink->m_mavMsg.m_global_position_int.lon)) * 1e-7;
 		m_vGlobalPos.z = ((double)(m_pMavlink->m_mavMsg.m_global_position_int.alt)) * 1e-3;
 		m_vGlobalPos.w = ((double)(m_pMavlink->m_mavMsg.m_global_position_int.relative_alt)) * 1e-3;
-		m_apHdg = ((double)(m_pMavlink->m_mavMsg.m_global_position_int.hdg)) * 1e-2;
+		m_apHdg = ((float)(m_pMavlink->m_mavMsg.m_global_position_int.hdg)) * 1e-2;
 	}
 
 	m_vLocalPos.x = m_pMavlink->m_mavMsg.m_local_position_ned.x;

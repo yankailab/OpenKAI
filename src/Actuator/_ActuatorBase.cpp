@@ -16,6 +16,7 @@ _ActuatorBase::_ActuatorBase()
 	m_vNormTargetSpeed.init(0.0);
 	m_vNormPosErr.init(0.01);
 
+	m_bFeedback = false;
 	m_pParent = NULL;
 }
 
@@ -33,6 +34,7 @@ bool _ActuatorBase::init(void* pKiss)
 	pK->v("vNormTargetPos", &m_vNormTargetPos);
 	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
 	pK->v("vNormPosErr", &m_vNormPosErr);
+	pK->v("bFeedback",&m_bFeedback);
 
 	string iName;
 

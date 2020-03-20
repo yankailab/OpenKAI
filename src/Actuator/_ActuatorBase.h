@@ -50,6 +50,8 @@ public:
 	vFloat4 m_vNormTargetSpeed;
 	vFloat4 m_vNormPosErr;
 
+	bool	m_bFeedback;
+
 	_ActuatorBase* m_pParent;
 
 };

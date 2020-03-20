@@ -6,33 +6,26 @@ namespace kai
 _AProver_photo::_AProver_photo()
 {
 	m_pAP = NULL;
+	m_pDrive = NULL;
+
 	m_pV = NULL;
 	m_pDV = NULL;
 	m_pG = NULL;
-	m_pDet = NULL;
-
-	m_pDrive = NULL;
-	m_pPIDhdg = NULL;
 
 	m_nSpeed = 1.0;
-	m_dHdg = 0.0;
-	m_xTarget = 0.5;
+	m_yaw = 0.0;
+	m_lastAPmode = -1;
 
 	m_dir = "/home/";
 	m_subDir = "";
 
-	m_quality = 100;
 	m_iTake = 0;
+	m_tDelay = USEC_1SEC;
+	m_tInterval = USEC_1SEC;
+
+	m_quality = 100;
 	m_bFlipRGB = false;
 	m_bFlipD = false;
-
-	m_shutterMode = apShutter_det;
-	m_ieShutter.init(USEC_1SEC);
-	m_iTag = -1;
-	m_tDelay = USEC_1SEC;
-	m_vTargetBB.init();
-//	m_bModeChange = false;
-//	m_apModeShutter = AP_ROVER_HOLD;
 
 }
 
@@ -51,11 +44,8 @@ bool _AProver_photo::init(void* pKiss)
 	pK->v("bFlipRGB", &m_bFlipRGB);
 	pK->v("bFlipD", &m_bFlipD);
 	pK->v("tDelay", &m_tDelay);
-	pK->v("tInterval", &m_ieShutter.m_tInterval);
 	pK->v("nSpeed", &m_nSpeed);
-	pK->v("xTarget", &m_xTarget);
-//	pK->v("bModeChange", &m_bModeChange);
-//	pK->v("apModeShutter", &m_apModeShutter);
+	pK->v("tInterval", &m_tInterval);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -76,16 +66,6 @@ bool _AProver_photo::init(void* pKiss)
 	pK->v("_AProver_drive", &iName);
 	m_pDrive = (_AProver_drive*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pDrive, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDctrl", &iName);
-	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pPIDhdg, iName + ": not found");
-
-	iName = "";
-	pK->v("_DetectorBase", &iName);
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pDet, iName + ": not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
@@ -119,9 +99,7 @@ bool _AProver_photo::start(void)
 int _AProver_photo::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pPIDhdg, -1);
 	NULL__(m_pDrive, -1);
-	NULL__(m_pDet, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -144,48 +122,17 @@ void _AProver_photo::shutter(void)
 	IF_(check()<0);
 	IF_(!bActive());
 
-	IF_(m_pAP->getApMode() != AP_ROVER_GUIDED);
-
-	if(m_shutterMode == apShutter_det)
+	int apMode = m_pAP->getApMode();
+	IF_(apMode != AP_ROVER_GUIDED);
+	if(apMode != m_lastAPmode)
 	{
-		OBJECT* tO = NULL;
-		OBJECT* pO;
-		float yO = 1.0;
-		int i = 0;
-		while ((pO = m_pDet->at(i++)) != NULL)
-		{
-			IF_CONT(pO->m_bb.midY() > yO);
-
-			tO = pO;
-			yO = pO->m_bb.midY();
-		}
-
-		if(!tO)
-		{
-			m_vTargetBB.init();
-			return;
-		}
-
-		if(tO->m_topClass == m_iTag)
-		{
-			m_vTargetBB.init();
-			return;
-		}
-
-		m_vTargetBB = tO->m_bb;
-		m_iTag = tO->m_topClass;
-	}
-	else if(m_shutterMode == apShutter_cont)
-	{
-		IF_(m_ieShutter.update(m_tStamp));
-	}
-	else if(m_shutterMode == apShutter_manual)
-	{
-		NULL_(m_pAP);
-		//TODO: read rc in from AP
+		m_lastAPmode = apMode;
+		m_yaw = m_pAP->getApHdg();
 	}
 
+	this->sleepTime(m_tInterval);
 
+	m_pMC->transit("STANDBY");
 	m_pDrive->setSpeed(0.0);
 	this->sleepTime(m_tDelay);
 
@@ -196,18 +143,6 @@ void _AProver_photo::shutter(void)
 	system(cmd.c_str());
 	cmd = "mkdir " + m_subDir;
 	system(cmd.c_str());
-
-
-//	uint32_t apModeResume = m_pAP->getApMode();
-//	if(m_bModeChange)
-//	{
-//		while(m_pAP->getApMode()!=m_apModeShutter)
-//		{
-//			m_pAP->setApMode(m_apModeShutter);
-//			this->sleepTime(200000);
-//		}
-//		this->sleepTime(m_tDelay);
-//	}
 
 	vDouble4 vP;
 	vP.init();
@@ -227,7 +162,7 @@ void _AProver_photo::shutter(void)
 		fBGR.m()->copyTo(mBGR);
 		IF_(mBGR.empty());
 
-		fName = m_subDir + i2str(m_iTake) + "_tag" + i2str(m_iTag) + "_rgb.jpg";
+		fName = m_subDir + i2str(m_iTake) + "_tag" + i2str(m_iTake) + "_rgb.jpg";
 		cv::imwrite(fName, mBGR, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -247,7 +182,7 @@ void _AProver_photo::shutter(void)
 		Mat mDscale;
 		mD.convertTo(mDscale, CV_8UC1, 100);
 
-		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTag) +  "_d.jpg";
+		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTake) +  "_d.jpg";
 		cv::imwrite(fName, mDscale, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -260,7 +195,7 @@ void _AProver_photo::shutter(void)
 		//gphoto
 		m_pG->open();
 
-		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTag) +  ".jpg";
+		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTake) +  ".jpg";
 		cmd = "gphoto2 --capture-image-and-download --filename " + fName;
 		system(cmd.c_str());
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
@@ -269,17 +204,13 @@ void _AProver_photo::shutter(void)
 		LOG_I("GPhoto: " + fName);
 	}
 
-	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTag));
+	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTake));
 	m_iTake++;
 
-
-	float xTag = m_vTargetBB.midX();
-	m_dHdg = m_pPIDhdg->update(xTag, m_xTarget, m_tStamp);
-	m_pDrive->setYaw(m_dHdg);
+//	m_pDrive->setYaw(m_yaw);
 	m_pDrive->setSpeed(m_nSpeed);
 
-//	if(m_bModeChange)
-//		m_pAP->setApMode(apModeResume);
+	m_pMC->transit("RUN");
 }
 
 void _AProver_photo::draw(void)
@@ -290,16 +221,6 @@ void _AProver_photo::draw(void)
 
 	addMsg("iTake = " + i2str(m_iTake));
 	addMsg("Dir = " + m_subDir);
-
-	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
-
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_vTargetBB, cs));
-	rectangle(*pMat, r, Scalar(0,0,255), 2);
-
 }
 
 }

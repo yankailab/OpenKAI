@@ -65,6 +65,7 @@ bool _AP_actuator::init(void* pKiss)
 			a.m_pInc[3] = vF.w;
 		}
 		pA->v("vPWMrange", &a.m_vPWMrange);
+		pA->v("vK", &a.m_vK);
 		pA->v("vSpeed", &a.m_vSpeed);
 		pA->v("iMode", &a.m_iMode);
 
@@ -126,10 +127,11 @@ void _AP_actuator::updateActuator(void)
 	else
 		m_iMode = 2;
 
-	for (AP_actuator a : m_vActuator)
+	for (int i=0; i<m_vActuator.size(); i++)
 	{
-		IF_CONT(a.m_iMode != m_iMode);
-		a.update();
+		AP_actuator* pA = &m_vActuator[i];
+		IF_CONT(pA->m_iMode != m_iMode);
+		pA->update();
 	}
 }
 

@@ -14,13 +14,15 @@ struct AP_actuator
 	uint16_t* m_ppRCin[4];
 	float	m_pInc[4];
 	vFloat4	m_vPWMrange;
+	vFloat4 m_vK;
 	vFloat4 m_vSpeed;
 	int		m_iMode;
 
 	void init(void)
 	{
 		m_pA = NULL;
-		m_vPWMrange.init(1100, 1250, 1750, 1900);
+		m_vPWMrange.init(1000, 1250, 1750, 2000);
+		m_vK.init(1.0);
 		m_vSpeed.init(1.0);
 		m_iMode = -1;
 
@@ -35,26 +37,31 @@ struct AP_actuator
 	{
 		NULL_(m_pA);
 
-		vFloat4 vP = m_pA->getPos();
 		float pP[4];
-		pP[0] = vP.x;
-		pP[1] = vP.y;
-		pP[2] = vP.z;
-		pP[3] = vP.w;
+		pP[0] = 0.0;
+		pP[1] = 0.0;
+		pP[2] = 0.0;
+		pP[3] = 0.0;
+
+		float pK[4];
+		pK[0] = m_vK.x;
+		pK[1] = m_vK.y;
+		pK[2] = m_vK.z;
+		pK[3] = m_vK.w;
 
 		for(int i=0; i<4; i++)
 		{
 			IF_CONT(!m_ppRCin[i]);
 
 			uint16_t v = *(m_ppRCin[i]);
-			IF_CONT(v < m_vPWMrange.x && v > m_vPWMrange.w);
+			IF_(v < m_vPWMrange.x && v > m_vPWMrange.w);
 
-			if(v > m_vPWMrange.z)
-				pP[i] += m_pInc[i];
-			else if(v < m_vPWMrange.y)
-				pP[i] -= m_pInc[i];
+			pP[i] = (v - m_vPWMrange.x)/(m_vPWMrange.w-m_vPWMrange.x);
+			if(pK[i]<0.0)
+				pP[i] = 1.0 - pP[i];
 		}
 
+		vFloat4 vP;
 		vP = pP;
 		m_pA->moveTo(vP, m_vSpeed);
 	}

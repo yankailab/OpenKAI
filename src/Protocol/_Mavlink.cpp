@@ -580,7 +580,7 @@ void _Mavlink::clNavSetYawSpeed(float yaw, float speed, float yawMode)
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdLongDoSetPositionYawTrust");
+	LOG_I("<- cmdLongDoSetPositionYawTrust: yaw=" + f2str(yaw) + ", speed=" + f2str(speed) + ", yawMode=" + f2str(yawMode));
 }
 
 void _Mavlink::clDoSetServo(int iServo, int PWM)
@@ -989,6 +989,19 @@ void _Mavlink::handleMessages()
 			_Mavlink* pM = (_Mavlink*) pMP->m_pPeer;
 			IF_CONT(!pM);
 			pM->writeMessage(msg);
+		}
+
+		//Time out failsafe for timing sensitive commands
+		if(abs(tNow - m_mavMsg.m_tStamps.m_rc_channels_raw) > USEC_1SEC)
+		{
+			m_mavMsg.m_rc_channels_raw.chan1_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan2_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan3_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan4_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan5_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan6_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan7_raw = UINT16_MAX;
+			m_mavMsg.m_rc_channels_raw.chan8_raw = UINT16_MAX;
 		}
 	}
 }
