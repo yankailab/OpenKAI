@@ -110,6 +110,7 @@ void _AProver_field::update(void)
 void _AProver_field::updateDrive(void)
 {
 	IF_(check() < 0);
+	IF_(!bActive());
 
 	uint16_t rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_raw.chan8_raw;
 	if(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX)

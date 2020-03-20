@@ -186,7 +186,7 @@
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
-	"Window":"/viewL",
+	"Window":"viewL",
 	"Console":"OKconsole",
 	"_VisionBase":"cropM",
 	"wSlide":0.2,
@@ -300,7 +300,7 @@
 			"Window":"viewL",
 			"Console":"OKconsole",
 			"class":"MissionBase",
-			"tTimeout":2,
+			"tTimeout":3,
 			"nextMission":"STANDBY",
 		}
 	}
@@ -364,6 +364,7 @@
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
+	"activeMission":["STANDBY","FORWARD","BACKWARD"],
 	"_AP_base":"apBase",
 	"_AProver_drive":"apDrive",
 	"PIDctrl":"PIDhdg",
