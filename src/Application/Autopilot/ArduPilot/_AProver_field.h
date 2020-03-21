@@ -37,8 +37,9 @@ public:
 	_DetectorBase* m_pDetBB;
 	_DetectorBase* m_pDetSB;
 	PIDctrl* m_pPIDhdg;
+	_Mavlink* m_pMav;
 
-	uint16_t m_rcMode;
+	uint16_t* m_pRCmode;
 	float	m_nSpeed;
 
 	bool m_bBlockBorder;

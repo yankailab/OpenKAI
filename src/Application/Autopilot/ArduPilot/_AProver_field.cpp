@@ -10,9 +10,10 @@ _AProver_field::_AProver_field()
 	m_pPIDhdg = NULL;
 	m_pDetBB = NULL;
 	m_pDetSB = NULL;
+	m_pMav = NULL;
 
 	m_nSpeed = 0.0;
-	m_rcMode = UINT16_MAX;
+	m_pRCmode = NULL;
 	m_bBlockBorder = false;
 	m_dHdg = 0.0;
 	m_sideBorder = 0.0;
@@ -65,6 +66,16 @@ bool _AProver_field::init(void* pKiss)
 	m_pDetSB = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pDetSB, iName + ": not found");
 
+	iName = "";
+	pK->v("_Mavlink", &iName);
+	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pMav, iName + ": not found");
+
+	int iRCmode = -1;
+	pK->v("iRCmode", &iRCmode);
+	m_pRCmode = m_pMav->getRCinRaw(iRCmode);
+	NULL_Fl(m_pRCmode, "iRCmode not correct");
+
 	return true;
 }
 
@@ -90,6 +101,7 @@ int _AProver_field::check(void)
 	NULL__(m_pDetBB, -1);
 	NULL__(m_pDetSB, -1);
 	NULL__(m_pPIDhdg, -1);
+	NULL__(m_pRCmode, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -116,19 +128,19 @@ void _AProver_field::update(void)
 bool _AProver_field::updateDrive(void)
 {
 	IF_F(check() < 0);
-
-	m_rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_raw.chan8_raw;
 	IF_F(!bActive());
-	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || m_rcMode == UINT16_MAX);
+
+	uint16_t rcMode = *m_pRCmode;
+	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX);
 
 	string mission = m_pMC->getMissionName();
 
 	//mode
 	if(mission == "STANDBY")
 	{
-		if(m_rcMode < 1250)
+		if(rcMode < 1250)
 			m_pMC->transit("FORWARD");
-		else if(m_rcMode > 1750)
+		else if(rcMode > 1750)
 			m_pMC->transit("BACKWARD");
 	}
 
@@ -188,8 +200,9 @@ void _AProver_field::findSideBoarder(void)
 void _AProver_field::draw(void)
 {
 	this->_AutopilotBase::draw();
+	IF_(check()<0);
 
-	addMsg("rcMode=" + i2str(m_rcMode));
+	addMsg("rcMode=" + i2str((int)*m_pRCmode));
 	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));
 }
 

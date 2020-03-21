@@ -376,6 +376,8 @@
 	"PIDctrl":"PIDhdg",
 	"_DetBB":"detBB",
 	"_DetSB":"detSB",
+	"_Mavlink":"apMavlink",
+	"iRCmode":8,
 	"nSpeed":1.0,
 	"vSideBorderRange":[0.2,0.8],
 	"sideBorderTarget":0.4,
