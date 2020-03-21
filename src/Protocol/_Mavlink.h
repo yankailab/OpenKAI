@@ -30,6 +30,7 @@ struct Time_Stamps
 	uint64_t m_position_target_global_int;
 	uint64_t m_radio_status;
 	uint64_t m_raw_imu;
+	uint64_t m_rc_channels;
 	uint64_t m_rc_channels_override;
 	uint64_t m_rc_channels_raw;
 	uint64_t m_rc_channels_scaled;
@@ -52,6 +53,7 @@ struct Time_Stamps
 		m_position_target_global_int = 0;
 		m_radio_status = 0;
 		m_raw_imu = 0;
+		m_rc_channels = 0;
 		m_rc_channels_override = 0;
 		m_rc_channels_raw = 0;
 		m_rc_channels_scaled = 0;
@@ -79,6 +81,7 @@ struct Mavlink_Messages
 	mavlink_position_target_global_int_t	m_position_target_global_int;
 	mavlink_radio_status_t					m_radio_status;
 	mavlink_raw_imu_t						m_raw_imu;
+	mavlink_rc_channels_t					m_rc_channels;
 	mavlink_rc_channels_override_t			m_rc_channels_override;
 	mavlink_rc_channels_raw_t				m_rc_channels_raw;
 	mavlink_rc_channels_scaled_t			m_rc_channels_scaled;
@@ -130,6 +133,27 @@ struct Mavlink_Messages
 		m_rc_channels_raw.chan6_raw = UINT16_MAX;
 		m_rc_channels_raw.chan7_raw = UINT16_MAX;
 		m_rc_channels_raw.chan8_raw = UINT16_MAX;
+
+		m_rc_channels.chancount = 0;
+		m_rc_channels.chan1_raw = UINT16_MAX;
+		m_rc_channels.chan2_raw = UINT16_MAX;
+		m_rc_channels.chan3_raw = UINT16_MAX;
+		m_rc_channels.chan4_raw = UINT16_MAX;
+		m_rc_channels.chan5_raw = UINT16_MAX;
+		m_rc_channels.chan6_raw = UINT16_MAX;
+		m_rc_channels.chan7_raw = UINT16_MAX;
+		m_rc_channels.chan8_raw = UINT16_MAX;
+		m_rc_channels.chan9_raw = UINT16_MAX;
+		m_rc_channels.chan10_raw = UINT16_MAX;
+		m_rc_channels.chan11_raw = UINT16_MAX;
+		m_rc_channels.chan12_raw = UINT16_MAX;
+		m_rc_channels.chan13_raw = UINT16_MAX;
+		m_rc_channels.chan14_raw = UINT16_MAX;
+		m_rc_channels.chan15_raw = UINT16_MAX;
+		m_rc_channels.chan16_raw = UINT16_MAX;
+		m_rc_channels.chan17_raw = UINT16_MAX;
+		m_rc_channels.chan18_raw = UINT16_MAX;
+		m_rc_channels.rssi = 255;
 
 		m_tStamps.init();
 	}

@@ -668,14 +668,23 @@ uint16_t* _Mavlink::getRCinRaw(int iChan)
 {
 	switch (iChan)
 	{
-	case 1: return &m_mavMsg.m_rc_channels_raw.chan1_raw;
-	case 2: return &m_mavMsg.m_rc_channels_raw.chan2_raw;
-	case 3: return &m_mavMsg.m_rc_channels_raw.chan3_raw;
-	case 4: return &m_mavMsg.m_rc_channels_raw.chan4_raw;
-	case 5: return &m_mavMsg.m_rc_channels_raw.chan5_raw;
-	case 6: return &m_mavMsg.m_rc_channels_raw.chan6_raw;
-	case 7: return &m_mavMsg.m_rc_channels_raw.chan7_raw;
-	case 8: return &m_mavMsg.m_rc_channels_raw.chan8_raw;
+	case 1: return &m_mavMsg.m_rc_channels.chan1_raw;
+	case 2: return &m_mavMsg.m_rc_channels.chan2_raw;
+	case 3: return &m_mavMsg.m_rc_channels.chan3_raw;
+	case 4: return &m_mavMsg.m_rc_channels.chan4_raw;
+	case 5: return &m_mavMsg.m_rc_channels.chan5_raw;
+	case 6: return &m_mavMsg.m_rc_channels.chan6_raw;
+	case 7: return &m_mavMsg.m_rc_channels.chan7_raw;
+	case 8: return &m_mavMsg.m_rc_channels.chan8_raw;
+	case 9: return &m_mavMsg.m_rc_channels.chan9_raw;
+	case 10: return &m_mavMsg.m_rc_channels.chan10_raw;
+	case 12: return &m_mavMsg.m_rc_channels.chan12_raw;
+	case 13: return &m_mavMsg.m_rc_channels.chan13_raw;
+	case 14: return &m_mavMsg.m_rc_channels.chan14_raw;
+	case 15: return &m_mavMsg.m_rc_channels.chan15_raw;
+	case 16: return &m_mavMsg.m_rc_channels.chan16_raw;
+	case 17: return &m_mavMsg.m_rc_channels.chan17_raw;
+	case 18: return &m_mavMsg.m_rc_channels.chan18_raw;
 	default: return NULL;
 	}
 }
@@ -859,6 +868,50 @@ void _Mavlink::handleMessages()
 					&m_mavMsg.m_position_target_global_int);
 			m_mavMsg.m_tStamps.m_position_target_global_int = tNow;
 			LOG_I(" -> POSITION_TARGET_GLOBAL_INT");
+			break;
+		}
+
+		case MAVLINK_MSG_ID_RC_CHANNELS:
+		{
+			mavlink_msg_rc_channels_decode(&msg, &(m_mavMsg.m_rc_channels));
+			m_mavMsg.m_tStamps.m_rc_channels = tNow;
+
+			LOG_I("-> RC_CHANNELS: chan1="
+							+ i2str(m_mavMsg.m_rc_channels.chan1_raw)
+							+ ", chan2="
+							+ i2str(m_mavMsg.m_rc_channels.chan2_raw)
+							+ ", chan3="
+							+ i2str(m_mavMsg.m_rc_channels.chan3_raw)
+							+ ", chan4="
+							+ i2str(m_mavMsg.m_rc_channels.chan4_raw)
+							+ ", chan5="
+							+ i2str(m_mavMsg.m_rc_channels.chan5_raw)
+							+ ", chan6="
+							+ i2str(m_mavMsg.m_rc_channels.chan6_raw)
+							+ ", chan7="
+							+ i2str(m_mavMsg.m_rc_channels.chan7_raw)
+							+ ", chan8="
+							+ i2str(m_mavMsg.m_rc_channels.chan8_raw)
+							+ ", chan9="
+							+ i2str(m_mavMsg.m_rc_channels.chan9_raw)
+							+ ", chan10="
+							+ i2str(m_mavMsg.m_rc_channels.chan10_raw)
+							+ ", chan11="
+							+ i2str(m_mavMsg.m_rc_channels.chan11_raw)
+							+ ", chan12="
+							+ i2str(m_mavMsg.m_rc_channels.chan12_raw)
+							+ ", chan13="
+							+ i2str(m_mavMsg.m_rc_channels.chan13_raw)
+							+ ", chan14="
+							+ i2str(m_mavMsg.m_rc_channels.chan14_raw)
+							+ ", chan15="
+							+ i2str(m_mavMsg.m_rc_channels.chan15_raw)
+							+ ", chan16="
+							+ i2str(m_mavMsg.m_rc_channels.chan16_raw)
+							+ ", chan17="
+							+ i2str(m_mavMsg.m_rc_channels.chan17_raw)
+							+ ", chan18="
+							+ i2str(m_mavMsg.m_rc_channels.chan18_raw));
 			break;
 		}
 
