@@ -16,6 +16,12 @@
 }
 
 {
+	"name":"consoleActuator",
+	"class":"Console",
+	"bInst":0,
+}
+
+{
 	"name":"viewL",
 	"class":"Window",
 	"bInst":1,
@@ -359,7 +365,7 @@
 {
 	"name":"apField",
 	"class":"_AProver_field",
-	"FPS":5,
+	"FPS":10,
 	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
@@ -398,7 +404,7 @@
 		"vPWMrange":[900, 1250, 1750, 2100],
 		"vSpeed":[1.0, 0, 0, 0],
 		"vK":[-1.0, 0, 0, 0],
-		"iMode":0,
+		"iMode":2,
 	}
 	{
 		"name":"OMv",
@@ -408,7 +414,7 @@
 		"vPWMrange":[1100, 1250, 1750, 1900],
 		"vSpeed":[1.0, 0, 0, 0],
 		"vK":[1.0, 0, 0, 0],
-		"iMode":0,
+		"iMode":2,
 	}
 	
 	{
@@ -430,7 +436,7 @@
 		"vPWMrange":[900, 1250, 1750, 2100],
 		"vSpeed":[0.5, 0, 0, 0],
 		"vK":[1.0, 0, 0, 0],
-		"iMode":2,
+		"iMode":1,
 	}
 	{
 		"name":"OMwx",
@@ -440,7 +446,7 @@
 		"vPWMrange":[900, 1250, 1750, 2100],
 		"vSpeed":[1.0, 0, 0, 0],
 		"vK":[1.0, 0, 0, 0],
-		"iMode":2,
+		"iMode":1,
 	}
 	{
 		"name":"OMwy",
@@ -450,7 +456,7 @@
 		"vPWMrange":[900, 1250, 1750, 2100],
 		"vSpeed":[0.5, 0, 0, 0],
 		"vK":[1.0, 0, 0, 0],
-		"iMode":2,
+		"iMode":1,
 	}
 }
 

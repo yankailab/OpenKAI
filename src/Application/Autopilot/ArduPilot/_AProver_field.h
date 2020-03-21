@@ -24,7 +24,7 @@ public:
 protected:
 	void findBlockBoarder(void);
 	void findSideBoarder(void);
-	void updateDrive(void);
+	bool updateDrive(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_AProver_field *) This)->update();
@@ -38,6 +38,7 @@ public:
 	_DetectorBase* m_pDetSB;
 	PIDctrl* m_pPIDhdg;
 
+	uint16_t m_rcMode;
 	float	m_nSpeed;
 
 	bool m_bBlockBorder;

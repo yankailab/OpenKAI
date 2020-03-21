@@ -990,19 +990,6 @@ void _Mavlink::handleMessages()
 			IF_CONT(!pM);
 			pM->writeMessage(msg);
 		}
-
-		//Time out failsafe for timing sensitive commands
-		if(abs(tNow - m_mavMsg.m_tStamps.m_rc_channels_raw) > 3*USEC_1SEC)
-		{
-			m_mavMsg.m_rc_channels_raw.chan1_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan2_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan3_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan4_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan5_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan6_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan7_raw = UINT16_MAX;
-			m_mavMsg.m_rc_channels_raw.chan8_raw = UINT16_MAX;
-		}
 	}
 }
 

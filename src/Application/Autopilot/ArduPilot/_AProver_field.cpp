@@ -12,6 +12,7 @@ _AProver_field::_AProver_field()
 	m_pDetSB = NULL;
 
 	m_nSpeed = 0.0;
+	m_rcMode = UINT16_MAX;
 	m_bBlockBorder = false;
 	m_dHdg = 0.0;
 	m_sideBorder = 0.0;
@@ -101,34 +102,33 @@ void _AProver_field::update(void)
 
 		this->_AutopilotBase::update();
 
-		updateDrive();
+		if(!updateDrive())
+		{
+			m_pDrive->setSpeed(0.0);
+			m_pDrive->setYaw(0.0);
+			m_pMC->transit("STANDBY");
+		}
 
 		this->autoFPSto();
 	}
 }
 
-void _AProver_field::updateDrive(void)
+bool _AProver_field::updateDrive(void)
 {
-	IF_(check() < 0);
-	IF_(!bActive());
+	IF_F(check() < 0);
 
-	uint16_t rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_raw.chan8_raw;
-	if(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX)
-	{
-		m_pDrive->setSpeed(0.0);
-		m_pDrive->setYaw(0.0);
-		m_pMC->transit("STANDBY");
-		return;
-	}
+	m_rcMode = m_pAP->m_pMavlink->m_mavMsg.m_rc_channels_raw.chan8_raw;
+	IF_F(!bActive());
+	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || m_rcMode == UINT16_MAX);
 
 	string mission = m_pMC->getMissionName();
 
 	//mode
 	if(mission == "STANDBY")
 	{
-		if(rcMode < 1250)
+		if(m_rcMode < 1250)
 			m_pMC->transit("FORWARD");
-		else if(rcMode > 1750)
+		else if(m_rcMode > 1750)
 			m_pMC->transit("BACKWARD");
 	}
 
@@ -146,6 +146,8 @@ void _AProver_field::updateDrive(void)
 	//field detection
 	findBlockBoarder();
 	findSideBoarder();
+
+	return true;
 }
 
 void _AProver_field::findBlockBoarder(void)
@@ -165,8 +167,6 @@ void _AProver_field::findBlockBoarder(void)
 
 void _AProver_field::findSideBoarder(void)
 {
-	IF_(check() < 0);
-
 	OBJECT* pO;
 	int i=0;
 	while((pO = m_pDetSB->at(i++)) != NULL)
@@ -181,12 +181,15 @@ void _AProver_field::findSideBoarder(void)
 		m_pDrive->setYaw(m_dHdg);
 		return;
 	}
+
+	m_pDrive->setYaw(0.0);
 }
 
 void _AProver_field::draw(void)
 {
 	this->_AutopilotBase::draw();
 
+	addMsg("rcMode=" + i2str(m_rcMode));
 	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));
 }
 
