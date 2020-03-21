@@ -49,7 +49,7 @@ bool _AP_mission::start(void)
 int _AP_mission::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 	NULL__(m_pAP_descent, -1);
 
 	return this->_AutopilotBase::check();

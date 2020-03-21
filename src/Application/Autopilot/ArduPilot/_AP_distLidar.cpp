@@ -67,8 +67,8 @@ void _AP_distLidar::update(void)
 void _AP_distLidar::updateMavlink(void)
 {
 	NULL_(m_pAP);
-	NULL_(m_pAP->m_pMavlink);
-	_Mavlink* pMavlink = m_pAP->m_pMavlink;
+	NULL_(m_pAP->m_pMav);
+	_Mavlink* pMavlink = m_pAP->m_pMav;
 
 	NULL_(m_pDS);
 	IF_(!m_pDS->bReady());

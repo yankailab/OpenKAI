@@ -7,7 +7,6 @@ namespace kai
 _Mavlink::_Mavlink()
 {
 	m_pIO = NULL;
-	m_mavMsg.init();
 
 	m_mySystemID = 255;
 	m_myComponentID = MAV_COMP_ID_MISSIONPLANNER;
@@ -19,6 +18,28 @@ _Mavlink::_Mavlink()
 
 	m_nRead = 0;
 	m_iRead = 0;
+
+	//msg register
+	m_vpMsg.push_back(&m_attitude);
+	m_vpMsg.push_back(&m_batteryStatus);
+	m_vpMsg.push_back(&m_commandAck);
+	m_vpMsg.push_back(&m_globalPositionINT);
+	m_vpMsg.push_back(&m_heartbeat);
+	m_vpMsg.push_back(&m_highresIMU);
+	m_vpMsg.push_back(&m_homePosition);
+	m_vpMsg.push_back(&m_localPositionNED);
+	m_vpMsg.push_back(&m_missionCurrent);
+	m_vpMsg.push_back(&m_mountStatus);
+	m_vpMsg.push_back(&m_paramSet);
+	m_vpMsg.push_back(&m_positionTargetLocalNED);
+	m_vpMsg.push_back(&m_positionTargetGlobalINT);
+	m_vpMsg.push_back(&m_radioStatus);
+	m_vpMsg.push_back(&m_rawIMU);
+	m_vpMsg.push_back(&m_rcChannels);
+	m_vpMsg.push_back(&m_rcChannelsOverride);
+	m_vpMsg.push_back(&m_sysStatus);
+	m_vpMsg.push_back(&m_scaledIMU);
+
 }
 
 _Mavlink::~_Mavlink()
@@ -137,8 +158,7 @@ void _Mavlink::writeMessage(mavlink_message_t msg)
 		pWS->write(pB, nB, WS_MODE_BIN);
 	}
 
-	LOG_I(
-			"<- MSG_ID = " + i2str((int )msg.msgid) + ", seq = "
+	LOG_I( "<- MSG_ID = " + i2str((int )msg.msgid) + ", seq = "
 					+ i2str((int )msg.seq));
 }
 
@@ -648,45 +668,68 @@ void _Mavlink::clNavTakeoff(float alt)
 	LOG_I("<- cmdNavTakeoff");
 }
 
-int16_t* _Mavlink::getRCinScaled(int iChan)
+void _Mavlink::clSetMessageInterval(float id, float interval, float responseTarget)
 {
-	switch (iChan)
-	{
-	case 1: return &m_mavMsg.m_rc_channels_scaled.chan1_scaled;
-	case 2: return &m_mavMsg.m_rc_channels_scaled.chan2_scaled;
-	case 3: return &m_mavMsg.m_rc_channels_scaled.chan3_scaled;
-	case 4: return &m_mavMsg.m_rc_channels_scaled.chan4_scaled;
-	case 5: return &m_mavMsg.m_rc_channels_scaled.chan5_scaled;
-	case 6: return &m_mavMsg.m_rc_channels_scaled.chan6_scaled;
-	case 7: return &m_mavMsg.m_rc_channels_scaled.chan7_scaled;
-	case 8: return &m_mavMsg.m_rc_channels_scaled.chan8_scaled;
-	default: return NULL;
-	}
+	mavlink_command_long_t D;
+	D.target_system = m_devSystemID;
+	D.target_component = m_devComponentID;
+	D.command = MAV_CMD_SET_MESSAGE_INTERVAL;
+	D.param1 = id;
+	D.param2 = interval;
+	D.param7 = responseTarget;
+
+	mavlink_message_t msg;
+	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
+
+	writeMessage(msg);
+	LOG_I("<- cmdSetMessageTarget");
 }
 
 uint16_t* _Mavlink::getRCinRaw(int iChan)
 {
 	switch (iChan)
 	{
-	case 1: return &m_mavMsg.m_rc_channels.chan1_raw;
-	case 2: return &m_mavMsg.m_rc_channels.chan2_raw;
-	case 3: return &m_mavMsg.m_rc_channels.chan3_raw;
-	case 4: return &m_mavMsg.m_rc_channels.chan4_raw;
-	case 5: return &m_mavMsg.m_rc_channels.chan5_raw;
-	case 6: return &m_mavMsg.m_rc_channels.chan6_raw;
-	case 7: return &m_mavMsg.m_rc_channels.chan7_raw;
-	case 8: return &m_mavMsg.m_rc_channels.chan8_raw;
-	case 9: return &m_mavMsg.m_rc_channels.chan9_raw;
-	case 10: return &m_mavMsg.m_rc_channels.chan10_raw;
-	case 12: return &m_mavMsg.m_rc_channels.chan12_raw;
-	case 13: return &m_mavMsg.m_rc_channels.chan13_raw;
-	case 14: return &m_mavMsg.m_rc_channels.chan14_raw;
-	case 15: return &m_mavMsg.m_rc_channels.chan15_raw;
-	case 16: return &m_mavMsg.m_rc_channels.chan16_raw;
-	case 17: return &m_mavMsg.m_rc_channels.chan17_raw;
-	case 18: return &m_mavMsg.m_rc_channels.chan18_raw;
+	case 1: return &m_rcChannels.m_msg.chan1_raw;
+	case 2: return &m_rcChannels.m_msg.chan2_raw;
+	case 3: return &m_rcChannels.m_msg.chan3_raw;
+	case 4: return &m_rcChannels.m_msg.chan4_raw;
+	case 5: return &m_rcChannels.m_msg.chan5_raw;
+	case 6: return &m_rcChannels.m_msg.chan6_raw;
+	case 7: return &m_rcChannels.m_msg.chan7_raw;
+	case 8: return &m_rcChannels.m_msg.chan8_raw;
+	case 9: return &m_rcChannels.m_msg.chan9_raw;
+	case 10: return &m_rcChannels.m_msg.chan10_raw;
+	case 12: return &m_rcChannels.m_msg.chan12_raw;
+	case 13: return &m_rcChannels.m_msg.chan13_raw;
+	case 14: return &m_rcChannels.m_msg.chan14_raw;
+	case 15: return &m_rcChannels.m_msg.chan15_raw;
+	case 16: return &m_rcChannels.m_msg.chan16_raw;
+	case 17: return &m_rcChannels.m_msg.chan17_raw;
+	case 18: return &m_rcChannels.m_msg.chan18_raw;
 	default: return NULL;
 	}
+}
+
+void _Mavlink::sendSetMsgInterval(void)
+{
+	for(MavMsgBase* pM : m_vpMsg)
+	{
+		IF_CONT(pM->bReceiving());
+		clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
+	}
+}
+
+bool _Mavlink::setMsgInterval(int id, int tInt)
+{
+	for(MavMsgBase* pM : m_vpMsg)
+	{
+		IF_CONT(pM->m_id != id);
+
+		pM->m_tInterval = tInt;
+		return true;
+	}
+
+	return false;
 }
 
 bool _Mavlink::readMessage(mavlink_message_t &msg)
@@ -728,8 +771,6 @@ void _Mavlink::handleMessages()
 
 	while (readMessage(msg))
 	{
-		uint64_t tNow = getTimeUsec();
-
 		if(m_devSystemID < 0)
 			m_devSystemID = msg.sysid;
 
@@ -739,307 +780,28 @@ void _Mavlink::handleMessages()
 		IF_CONT(msg.sysid != m_devSystemID);
 		IF_CONT(msg.compid != m_devComponentID);
 
-		switch (msg.msgid)
+		//Decode
+		bool bDecoded = false;
+		for(MavMsgBase* pM : m_vpMsg)
 		{
+			IF_CONT(!pM);
+			IF_CONT(pM->m_id != msg.msgid);
 
-		case MAVLINK_MSG_ID_ATTITUDE:
-		{
-			mavlink_msg_attitude_decode(&msg, &m_mavMsg.m_attitude);
-			m_mavMsg.m_tStamps.m_attitude = tNow;
-			LOG_I(" -> ATTITUDE");
+			pM->decode(&msg);
+			LOG_I(" -> Decoded MSG_ID:" + i2str(msg.msgid));
+			bDecoded = true;
 			break;
 		}
 
-		case MAVLINK_MSG_ID_BATTERY_STATUS:
+		if(!bDecoded)
+			LOG_I(" -> Unknown MSG_ID:" + i2str(msg.msgid));
+
+		//Routing
+		for (MAVLINK_PEER& p : m_vPeer)
 		{
-			mavlink_msg_battery_status_decode(&msg, &m_mavMsg.m_battery_status);
-			m_mavMsg.m_tStamps.m_battery_status = tNow;
-			LOG_I(" -> BATTERY_STATUS");
-			break;
-		}
+			IF_CONT(!p.bCmdRoute(msg.msgid));
 
-		case MAVLINK_MSG_ID_COMMAND_ACK:
-		{
-			mavlink_msg_command_ack_decode(&msg, &m_mavMsg.m_command_ack);
-			m_mavMsg.m_tStamps.m_attitude = tNow;
-			LOG_I(" -> COMMAND_ACK: " + i2str(m_mavMsg.m_command_ack.result));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_GLOBAL_POSITION_INT:
-		{
-			mavlink_msg_global_position_int_decode(&msg,
-					&m_mavMsg.m_global_position_int);
-			m_mavMsg.m_tStamps.m_global_position_int = tNow;
-			LOG_I(" -> GLOBAL_POSITION_INT");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_HEARTBEAT:
-		{
-			mavlink_msg_heartbeat_decode(&msg, &m_mavMsg.m_heartbeat);
-			m_mavMsg.m_tStamps.m_heartbeat = tNow;
-
-			m_devType = m_mavMsg.m_heartbeat.type;
-
-			LOG_I(
-					" -> HEARTBEAT: sysid=" + i2str(msg.sysid) + ", compid="
-							+ i2str((uint32_t )msg.compid) + ", seq="
-							+ i2str((uint32_t )msg.seq));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_HIGHRES_IMU:
-		{
-			mavlink_msg_highres_imu_decode(&msg, &m_mavMsg.m_highres_imu);
-			m_mavMsg.m_tStamps.m_highres_imu = tNow;
-			LOG_I(" -> HIGHRES_IMU");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_HOME_POSITION:
-		{
-			mavlink_msg_home_position_decode(&msg, &m_mavMsg.m_home_position);
-			m_mavMsg.m_tStamps.m_home_position = tNow;
-			LOG_I(" -> HOME_POSITION");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_LOCAL_POSITION_NED:
-		{
-			mavlink_msg_local_position_ned_decode(&msg,
-					&m_mavMsg.m_local_position_ned);
-			m_mavMsg.m_tStamps.m_local_position_ned = tNow;
-			LOG_I(" -> LOCAL_POSITION_NED");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_MISSION_CURRENT:
-		{
-			mavlink_msg_mission_current_decode(&msg,
-					&m_mavMsg.m_mission_current);
-			m_mavMsg.m_tStamps.m_mission_current = tNow;
-			LOG_I(" -> MISSION_CURRENT");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_MOUNT_STATUS:
-		{
-			mavlink_msg_mount_status_decode(&msg, &m_mavMsg.m_mount_status);
-			m_mavMsg.m_tStamps.m_mount_status = tNow;
-			LOG_I(" -> MOUNT_STATUS");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_PARAM_SET:
-		{
-			mavlink_msg_param_set_decode(&msg, &m_mavMsg.m_param_set);
-			m_mavMsg.m_tStamps.m_param_set = tNow;
-
-			if (m_bLog)
-			{
-				char id[17];
-				memcpy(id, m_mavMsg.m_param_set.param_id, 16);
-				id[16] = 0;
-
-				LOG_I(
-						" -> PARAM_SET: type="
-								+ i2str(m_mavMsg.m_param_set.param_type)
-								+ ", value="
-								+ f2str(m_mavMsg.m_param_set.param_value)
-								+ ", id=" + string(id));
-			}
-
-			break;
-		}
-
-		case MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED:
-		{
-			mavlink_msg_position_target_local_ned_decode(&msg,
-					&m_mavMsg.m_position_target_local_ned);
-			m_mavMsg.m_tStamps.m_position_target_local_ned = tNow;
-			LOG_I(" -> POSITION_TARGET_LOCAL_NED");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT:
-		{
-			mavlink_msg_position_target_global_int_decode(&msg,
-					&m_mavMsg.m_position_target_global_int);
-			m_mavMsg.m_tStamps.m_position_target_global_int = tNow;
-			LOG_I(" -> POSITION_TARGET_GLOBAL_INT");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RC_CHANNELS:
-		{
-			mavlink_msg_rc_channels_decode(&msg, &(m_mavMsg.m_rc_channels));
-			m_mavMsg.m_tStamps.m_rc_channels = tNow;
-
-			LOG_I("-> RC_CHANNELS: chan1="
-							+ i2str(m_mavMsg.m_rc_channels.chan1_raw)
-							+ ", chan2="
-							+ i2str(m_mavMsg.m_rc_channels.chan2_raw)
-							+ ", chan3="
-							+ i2str(m_mavMsg.m_rc_channels.chan3_raw)
-							+ ", chan4="
-							+ i2str(m_mavMsg.m_rc_channels.chan4_raw)
-							+ ", chan5="
-							+ i2str(m_mavMsg.m_rc_channels.chan5_raw)
-							+ ", chan6="
-							+ i2str(m_mavMsg.m_rc_channels.chan6_raw)
-							+ ", chan7="
-							+ i2str(m_mavMsg.m_rc_channels.chan7_raw)
-							+ ", chan8="
-							+ i2str(m_mavMsg.m_rc_channels.chan8_raw)
-							+ ", chan9="
-							+ i2str(m_mavMsg.m_rc_channels.chan9_raw)
-							+ ", chan10="
-							+ i2str(m_mavMsg.m_rc_channels.chan10_raw)
-							+ ", chan11="
-							+ i2str(m_mavMsg.m_rc_channels.chan11_raw)
-							+ ", chan12="
-							+ i2str(m_mavMsg.m_rc_channels.chan12_raw)
-							+ ", chan13="
-							+ i2str(m_mavMsg.m_rc_channels.chan13_raw)
-							+ ", chan14="
-							+ i2str(m_mavMsg.m_rc_channels.chan14_raw)
-							+ ", chan15="
-							+ i2str(m_mavMsg.m_rc_channels.chan15_raw)
-							+ ", chan16="
-							+ i2str(m_mavMsg.m_rc_channels.chan16_raw)
-							+ ", chan17="
-							+ i2str(m_mavMsg.m_rc_channels.chan17_raw)
-							+ ", chan18="
-							+ i2str(m_mavMsg.m_rc_channels.chan18_raw));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
-		{
-			mavlink_msg_rc_channels_override_decode(&msg,
-					&(m_mavMsg.m_rc_channels_override));
-			m_mavMsg.m_tStamps.m_rc_channels_override = tNow;
-
-			LOG_I(
-					" -> RC_OVERRIDE: chan1="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan1_raw)
-							+ ", chan2="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan2_raw)
-							+ ", chan3="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan3_raw)
-							+ ", chan4="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan4_raw)
-							+ ", chan5="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan5_raw)
-							+ ", chan6="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan6_raw)
-							+ ", chan7="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan7_raw)
-							+ ", chan8="
-							+ i2str(m_mavMsg.m_rc_channels_override.chan8_raw));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RC_CHANNELS_SCALED:
-		{
-			mavlink_msg_rc_channels_scaled_decode(&msg,
-					&(m_mavMsg.m_rc_channels_scaled));
-			m_mavMsg.m_tStamps.m_rc_channels_scaled = tNow;
-
-			LOG_I(
-					" -> RC_SCALED: chan1="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan1_scaled)
-							+ ", chan2="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan2_scaled)
-							+ ", chan3="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan3_scaled)
-							+ ", chan4="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan4_scaled)
-							+ ", chan5="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan5_scaled)
-							+ ", chan6="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan6_scaled)
-							+ ", chan7="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan7_scaled)
-							+ ", chan8="
-							+ i2str(m_mavMsg.m_rc_channels_scaled.chan8_scaled));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RC_CHANNELS_RAW:
-		{
-			mavlink_msg_rc_channels_raw_decode(&msg,
-					&(m_mavMsg.m_rc_channels_raw));
-			m_mavMsg.m_tStamps.m_rc_channels_raw = tNow;
-
-			LOG_I(
-					" -> RC_RAW: chan1="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan1_raw)
-							+ ", chan2="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan2_raw)
-							+ ", chan3="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan3_raw)
-							+ ", chan4="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan4_raw)
-							+ ", chan5="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan5_raw)
-							+ ", chan6="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan6_raw)
-							+ ", chan7="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan7_raw)
-							+ ", chan8="
-							+ i2str(m_mavMsg.m_rc_channels_raw.chan8_raw));
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RADIO_STATUS:
-		{
-			mavlink_msg_radio_status_decode(&msg, &m_mavMsg.m_radio_status);
-			m_mavMsg.m_tStamps.m_radio_status = tNow;
-			LOG_I(" -> RADIO_STATUS");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_RAW_IMU:
-		{
-			mavlink_msg_raw_imu_decode(&msg, &m_mavMsg.m_raw_imu);
-			m_mavMsg.m_tStamps.m_raw_imu = tNow;
-			LOG_I(" -> RAW_IMU");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_SCALED_IMU:
-		{
-			mavlink_msg_scaled_imu_decode(&msg, &m_mavMsg.m_scaled_imu);
-			m_mavMsg.m_tStamps.m_scaled_imu = tNow;
-			LOG_I(" -> SCALED_IMU");
-			break;
-		}
-
-		case MAVLINK_MSG_ID_SYS_STATUS:
-		{
-			mavlink_msg_sys_status_decode(&msg, &m_mavMsg.m_sys_status);
-			m_mavMsg.m_tStamps.m_sys_status = tNow;
-			LOG_I(" -> SYS_STATUS");
-			break;
-		}
-
-		default:
-		{
-			LOG_I(" -> UNKNOWN MSG_ID:" + i2str(msg.msgid));
-			break;
-		}
-
-		}
-
-		//Message routing
-		for (int i = 0; i < m_vPeer.size(); i++)
-		{
-			MAVLINK_PEER* pMP = &m_vPeer[i];
-			IF_CONT(!pMP->bCmdRoute(msg.msgid));
-
-			_Mavlink* pM = (_Mavlink*) pMP->m_pPeer;
+			_Mavlink* pM = (_Mavlink*) p.m_pPeer;
 			IF_CONT(!pM);
 			pM->writeMessage(msg);
 		}
@@ -1048,7 +810,7 @@ void _Mavlink::handleMessages()
 
 void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
 {
-	for (int i = 0; i < m_vPeer.size(); i++)
+	for (unsigned int i = 0; i < m_vPeer.size(); i++)
 	{
 		m_vPeer[i].setCmdRoute(iCmd, bON);
 	}
@@ -1058,23 +820,14 @@ void _Mavlink::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	string msg;
-
 	if (!m_pIO->isOpen())
 	{
-		msg = "Not Connected";
-		addMsg(msg, 1);
+		addMsg("Not Connected", 1);
 		return;
 	}
 
-	msg = "mySysID=" + i2str(m_mySystemID) + " myComID="
-			+ i2str(m_myComponentID) + " myType=" + i2str(m_myType);
-	addMsg(msg, 1);
-
-	msg = "devSysID=" + i2str(m_devSystemID) + " devComID="
-			+ i2str(m_devComponentID) + " devType=" + i2str(m_devType)
-			+ " custom_mode=" + i2str((int) m_mavMsg.m_heartbeat.custom_mode);
-	addMsg(msg, 1);
+	addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType), 1);
+	addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType), 1);
 }
 
 }

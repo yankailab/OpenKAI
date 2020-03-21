@@ -71,7 +71,7 @@ bool _AP_goto::start(void)
 int _AP_goto::check(void)
 {
 	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pAP->m_pMav,-1);
 
 	return this->_AP_posCtrl::check();
 }
@@ -114,8 +114,8 @@ bool _AP_goto::findTarget(void)
 {
 	IF_F(check()<0);
 	NULL_F(m_pAPtarget);
-	NULL_F(m_pAPtarget->m_pMavlink);
-	IF_F(m_pAPtarget->m_pMavlink->m_mavMsg.m_tStamps.m_global_position_int <= 0);
+	NULL_F(m_pAPtarget->m_pMav);
+	IF_F(m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving());
 
 	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
 	IF_F(vAPpos.x <= 0.0);

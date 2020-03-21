@@ -96,7 +96,7 @@ bool _AProver_field::start(void)
 int _AProver_field::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 	NULL__(m_pDrive, -1);
 	NULL__(m_pDetBB, -1);
 	NULL__(m_pDetSB, -1);

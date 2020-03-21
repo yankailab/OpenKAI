@@ -82,7 +82,7 @@ bool _AP_slam::init(void* pKiss)
 int _AP_slam::check(void)
 {
 	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pAP->m_pMav,-1);
 	NULL__(m_pIOr,-1);
 	NULL__(m_pIOw,-1);
 
@@ -110,7 +110,7 @@ void _AP_slam::update(void)
 	m_utmGPSorigin.m_hdg = m_yawOffset;
 	//	m_GPS.m_UTM.m_hdg = ((double)m_pAP->m_pMavlink->m_msg.global_position_int.hdg) * 0.01;
 	//	m_GPS.m_UTM.m_hdg += m_yawOffset;
-	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMavlink->m_mavMsg.m_global_position_int.relative_alt) * 0.01;
+	m_utmGPSorigin.m_altRel = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.relative_alt) * 0.01;
 
 	UTM_POS pUTM = m_GPS.offset(m_utmGPSorigin, m_vSlamPos);
 	LL_POS pLL = m_GPS.UTM2LL(pUTM);
@@ -134,7 +134,7 @@ void _AP_slam::update(void)
 	D.hdop = (float)m_hdop;
 	D.vdop = (float)m_vdop;
 	D.ignore_flags = 0b11110111;
-	m_pAP->m_pMavlink->gpsInput(D);
+	m_pAP->m_pMav->gpsInput(D);
 
 }
 
@@ -187,23 +187,23 @@ void _AP_slam::sendState(void)
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = 0;
 	pBufW[2] = MG_CMD_ATTITUDE;
-	pack_int16(&pBufW[3], (int16_t)(m_pAP->m_pMavlink->m_mavMsg.m_attitude.roll*1000));
-	pack_int16(&pBufW[5], (int16_t)(m_pAP->m_pMavlink->m_mavMsg.m_attitude.pitch*1000));
-	pack_int16(&pBufW[7], (int16_t)((m_pAP->m_pMavlink->m_mavMsg.m_attitude.yaw + CV_PI)*1000));
+	pack_int16(&pBufW[3], (int16_t)(m_pAP->m_pMav->m_attitude.m_msg.roll*1000));
+	pack_int16(&pBufW[5], (int16_t)(m_pAP->m_pMav->m_attitude.m_msg.pitch*1000));
+	pack_int16(&pBufW[7], (int16_t)((m_pAP->m_pMav->m_attitude.m_msg.yaw + CV_PI)*1000));
 	m_pIOw->write(pBufW, 9);
 
 	pBufW[0] = MG_CMD_START;
 	pBufW[1] = 0;
 	pBufW[2] = MG_CMD_RAW_IMU;
-	pack_int16(&pBufW[3], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.xacc);
-	pack_int16(&pBufW[5], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.yacc);
-	pack_int16(&pBufW[7], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.zacc);
-	pack_int16(&pBufW[9], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.xgyro);
-	pack_int16(&pBufW[11], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.ygyro);
-	pack_int16(&pBufW[13], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.zgyro);
-	pack_int16(&pBufW[15], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.xmag);
-	pack_int16(&pBufW[17], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.ymag);
-	pack_int16(&pBufW[19], m_pAP->m_pMavlink->m_mavMsg.m_raw_imu.zmag);
+	pack_int16(&pBufW[3], m_pAP->m_pMav->m_rawIMU.m_msg.xacc);
+	pack_int16(&pBufW[5], m_pAP->m_pMav->m_rawIMU.m_msg.yacc);
+	pack_int16(&pBufW[7], m_pAP->m_pMav->m_rawIMU.m_msg.zacc);
+	pack_int16(&pBufW[9], m_pAP->m_pMav->m_rawIMU.m_msg.xgyro);
+	pack_int16(&pBufW[11], m_pAP->m_pMav->m_rawIMU.m_msg.ygyro);
+	pack_int16(&pBufW[13], m_pAP->m_pMav->m_rawIMU.m_msg.zgyro);
+	pack_int16(&pBufW[15], m_pAP->m_pMav->m_rawIMU.m_msg.xmag);
+	pack_int16(&pBufW[17], m_pAP->m_pMav->m_rawIMU.m_msg.ymag);
+	pack_int16(&pBufW[19], m_pAP->m_pMav->m_rawIMU.m_msg.zmag);
 	m_pIOw->write(pBufW, 21);
 }
 

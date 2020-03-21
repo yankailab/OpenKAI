@@ -58,8 +58,8 @@ void _AP_depthVision::update(void)
 	this->_AutopilotBase::update();
 
 	NULL_(m_pAP);
-	NULL_(m_pAP->m_pMavlink);
-	_Mavlink* pMavlink = m_pAP->m_pMavlink;
+	NULL_(m_pAP->m_pMav);
+	_Mavlink* pMavlink = m_pAP->m_pMav;
 	NULL_(m_pDV);
 
 	vFloat2 range = m_pDV->m_vRange;

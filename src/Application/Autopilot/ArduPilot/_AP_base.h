@@ -129,20 +129,14 @@ private:
 	}
 
 public:
-	_Mavlink *m_pMavlink;
+	_Mavlink *m_pMav;
 	uint64_t m_lastHeartbeat;
 	uint64_t m_iHeartbeat;
+	int m_freqSendHeartbeat;
 
 	AP_TYPE m_apType;
 	uint32_t m_apMode;
 	bool m_bApArmed;
-
-	int m_freqRawSensors;
-	int m_freqExtStat;
-	int m_freqRC;
-	int m_freqPos;
-	int m_freqExtra1;
-	int m_freqSendHeartbeat;
 
 	bool m_bHomeSet;
 	vDouble3 m_vHomePos;

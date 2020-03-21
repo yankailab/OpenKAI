@@ -58,7 +58,7 @@ bool _AP_RTH::init(void* pKiss)
 int _AP_RTH::check(void)
 {
 	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pAP->m_pMav,-1);
 
 	return this->_AutopilotBase::check();
 }
@@ -109,7 +109,7 @@ void _AP_RTH::update(void)
 
 	//heading
 	spt.yaw_rate = (float)180.0 * DEG_RAD;
-	spt.yaw = m_pAP->m_pMavlink->m_mavMsg.attitude.yaw;
+	spt.yaw = m_pAP->m_pMavlink->attitude.yaw;
 	double hdg = pRTH->getHdg();
 	if(hdg >= 0)
 		spt.yaw = (float)hdg * DEG_RAD;

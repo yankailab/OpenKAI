@@ -54,7 +54,7 @@ bool _AP_relay::start(void)
 int _AP_relay::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -77,7 +77,7 @@ void _AP_relay::updateRelay(void)
 	IF_(check()<0);
 	IF_(!bActive());
 
-	_Mavlink* pMav = m_pAP->m_pMavlink;
+	_Mavlink* pMav = m_pAP->m_pMav;
 
 	for(AP_relay s : m_vRelay)
 	{

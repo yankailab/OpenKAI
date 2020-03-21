@@ -50,7 +50,7 @@ bool _AP_CETCUS::start(void)
 int _AP_CETCUS::check(void)
 {
 	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pAP->m_pMav,-1);
 	NULL__(m_pC,-1);
 
 	return this->_AutopilotBase::check();
@@ -75,7 +75,7 @@ bool _AP_CETCUS::updateCETCUS(void)
 	IF_F(check()<0);
 	IF_F(!bActive());
 
-	_Mavlink* pMav = m_pAP->m_pMavlink;
+	_Mavlink* pMav = m_pAP->m_pMav;
 
 	m_pC->m_vPos = m_pAP->getGlobalPos();
 	m_pC->m_vAtti = m_pAP->getApAttitude() * RAD2DEG;

@@ -46,7 +46,7 @@ bool _AP_takeoff::start(void)
 int _AP_takeoff::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -79,13 +79,13 @@ void _AP_takeoff::updateMission(void)
 	NULL_(pTO);
 
 	if(EAQ(m_pAP->m_vGlobalPos.w, pTO->m_alt, 0.5) &&
-	   m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
+	   m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
 	{
 		pTO->complete();
 		return;
 	}
 
-	m_pAP->m_pMavlink->clNavTakeoff(pTO->m_alt);
+	m_pAP->m_pMav->clNavTakeoff(pTO->m_alt);
 }
 
 void _AP_takeoff::draw(void)
@@ -94,12 +94,11 @@ void _AP_takeoff::draw(void)
 	this->_AutopilotBase::draw();
 	drawActive();
 
-	addMsg("system status="+i2str(m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status));
-	if(m_pAP->m_pMavlink->m_mavMsg.m_heartbeat.system_status == MAV_STATE_ACTIVE)
+	addMsg("system status="+i2str(m_pAP->m_pMav->m_heartbeat.m_msg.system_status));
+	if(m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
 	{
 		addMsg("Taken off", 1);
 	}
-
 }
 
 }

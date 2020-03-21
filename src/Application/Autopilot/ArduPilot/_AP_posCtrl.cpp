@@ -83,7 +83,7 @@ bool _AP_posCtrl::init(void* pKiss)
 int _AP_posCtrl::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -112,7 +112,7 @@ void _AP_posCtrl::setPosLocal(void)
 	if(!m_bYaw)
 		m_sptLocal.type_mask |= 0b0000110000000000;
 
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
+	m_pAP->m_pMav->setPositionTargetLocalNED(m_sptLocal);
 }
 
 void _AP_posCtrl::setPosGlobal(void)
@@ -129,7 +129,7 @@ void _AP_posCtrl::setPosGlobal(void)
 	if(!m_bYaw)
 		m_sptLocal.type_mask |= 0b0000110000000000;
 
-	m_pAP->m_pMavlink->setPositionTargetGlobalINT(m_sptGlobal);
+	m_pAP->m_pMav->setPositionTargetGlobalINT(m_sptGlobal);
 }
 
 void _AP_posCtrl::clear(void)
@@ -154,7 +154,7 @@ void _AP_posCtrl::releaseCtrl(void)
 	m_sptLocal.vy = 0;
 	m_sptLocal.vz = 0;
 	m_sptLocal.type_mask = 0b0000110111000111;
-	m_pAP->m_pMavlink->setPositionTargetLocalNED(m_sptLocal);
+	m_pAP->m_pMav->setPositionTargetLocalNED(m_sptLocal);
 }
 
 void _AP_posCtrl::draw(void)

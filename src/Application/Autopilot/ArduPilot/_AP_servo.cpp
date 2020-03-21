@@ -54,7 +54,7 @@ bool _AP_servo::start(void)
 int _AP_servo::check(void)
 {
 	NULL__(m_pAP, -1);
-	NULL__(m_pAP->m_pMavlink, -1);
+	NULL__(m_pAP->m_pMav, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -77,7 +77,7 @@ void _AP_servo::updateServo(void)
 	IF_(check()<0);
 	IF_(!bActive());
 
-	_Mavlink* pMav = m_pAP->m_pMavlink;
+	_Mavlink* pMav = m_pAP->m_pMav;
 
 	for(AP_SERVO s : m_vServo)
 	{

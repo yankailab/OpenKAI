@@ -57,7 +57,7 @@ bool _AProver_drive::start(void)
 int _AProver_drive::check(void)
 {
 	NULL__(m_pAP,-1);
-	NULL__(m_pAP->m_pMavlink,-1);
+	NULL__(m_pAP->m_pMav,-1);
 
 	return this->_AutopilotBase::check();
 }
@@ -78,7 +78,7 @@ bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
 
-	m_pAP->m_pMavlink->clNavSetYawSpeed(m_yaw,
+	m_pAP->m_pMav->clNavSetYawSpeed(m_yaw,
 										m_nSpeed * m_kSpeed * m_speed,
 										m_yawMode);
 
