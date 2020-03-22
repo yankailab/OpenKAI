@@ -10,10 +10,9 @@ _AProver_field::_AProver_field()
 	m_pPIDhdg = NULL;
 	m_pDetBB = NULL;
 	m_pDetSB = NULL;
-	m_pMav = NULL;
 
 	m_nSpeed = 0.0;
-	m_pRCmode = NULL;
+	m_iRCmode = 0;
 	m_bBlockBorder = false;
 	m_dHdg = 0.0;
 	m_sideBorder = 0.0;
@@ -66,16 +65,6 @@ bool _AProver_field::init(void* pKiss)
 	m_pDetSB = (_DetectorBase*) (pK->root()->getChildInst(iName));
 	NULL_Fl(m_pDetSB, iName + ": not found");
 
-	iName = "";
-	pK->v("_Mavlink", &iName);
-	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pMav, iName + ": not found");
-
-	int iRCmode = -1;
-	pK->v("iRCmode", &iRCmode);
-	m_pRCmode = m_pMav->getRCinRaw(iRCmode);
-	NULL_Fl(m_pRCmode, "iRCmode not correct");
-
 	return true;
 }
 
@@ -101,7 +90,6 @@ int _AProver_field::check(void)
 	NULL__(m_pDetBB, -1);
 	NULL__(m_pDetSB, -1);
 	NULL__(m_pPIDhdg, -1);
-	NULL__(m_pRCmode, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -130,7 +118,7 @@ bool _AProver_field::updateDrive(void)
 	IF_F(check() < 0);
 	IF_F(!bActive());
 
-	uint16_t rcMode = *m_pRCmode;
+	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
 	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX);
 
 	string mission = m_pMC->getMissionName();
@@ -202,7 +190,6 @@ void _AProver_field::draw(void)
 	this->_AutopilotBase::draw();
 	IF_(check()<0);
 
-	addMsg("rcMode=" + i2str((int)*m_pRCmode));
 	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));
 }
 

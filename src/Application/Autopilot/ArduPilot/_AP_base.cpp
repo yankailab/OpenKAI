@@ -19,6 +19,7 @@ _AP_base::_AP_base()
 	m_vGlobalPos.init(-1.0);
 	m_vLocalPos.init();
 	m_vSpeed.init();
+	m_vAtti.init();
 	m_apHdg = 0.0;
 }
 
@@ -56,13 +57,14 @@ bool _AP_base::init(void* pKiss)
 	{
 		Kiss* pMI = pItr[i++];
 		int id;
-		int tInt;
+		float tInt;
 		pMI->v("id", &id);
 		pMI->v("tInt", &tInt);
+		tInt *= USEC_1SEC;
 
 		if(!m_pMav->setMsgInterval(id,tInt))
 		{
-			LOG_E("Inteval msg id=" + i2str(id) + " not found");
+			LOG_E("Inteval msg id = " + i2str(id) + " not found");
 		}
 	}
 
@@ -111,8 +113,16 @@ void _AP_base::updateBase(void)
 	m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
 	m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
 
+	//Attitude
+	if(m_pMav->m_attitude.bReceiving(m_tStamp))
+	{
+		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
+		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
+		m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
+	}
+
 	//get home position
-	if(!m_pMav->m_homePosition.bReceiving())
+	if(!m_pMav->m_homePosition.bReceiving(m_tStamp))
 	{
 		m_pMav->clGetHomePosition();
 	}
@@ -125,7 +135,7 @@ void _AP_base::updateBase(void)
 	}
 
 	//get position
-	if(m_pMav->m_globalPositionINT.bReceiving())
+	if(m_pMav->m_globalPositionINT.bReceiving(m_tStamp))
 	{
 		m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
 		m_vGlobalPos.y = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
@@ -134,20 +144,14 @@ void _AP_base::updateBase(void)
 		m_apHdg = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
 	}
 
-	m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
-	m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
-	m_vLocalPos.z = m_pMav->m_localPositionNED.m_msg.z;
-
-	m_vSpeed.x = m_pMav->m_localPositionNED.m_msg.vx;
-	m_vSpeed.y = m_pMav->m_localPositionNED.m_msg.vy;
-	m_vSpeed.z = m_pMav->m_localPositionNED.m_msg.vz;
-
-	//Attitude
-	if(m_pMav->m_attitude.bReceiving())
+	if(m_pMav->m_localPositionNED.bReceiving(m_tStamp))
 	{
-		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
-		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
-		m_vAtti.z = m_pMav->m_attitude.m_msg.roll;
+		m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
+		m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
+		m_vLocalPos.z = m_pMav->m_localPositionNED.m_msg.z;
+		m_vSpeed.x = m_pMav->m_localPositionNED.m_msg.vx;
+		m_vSpeed.y = m_pMav->m_localPositionNED.m_msg.vy;
+		m_vSpeed.z = m_pMav->m_localPositionNED.m_msg.vz;
 	}
 
 	//Send Heartbeat
@@ -284,6 +288,9 @@ void _AP_base::draw(void)
 	addMsg("vx=" + f2str(m_pMav->m_localPositionNED.m_msg.vx)+
 				 ", vy=" + f2str(m_pMav->m_localPositionNED.m_msg.vy)+
 				 ", vz=" + f2str(m_pMav->m_localPositionNED.m_msg.vz),1);
+
+	addMsg("System-----------------------------",1);
+	addMsg("status="+i2str(m_pMav->m_heartbeat.m_msg.system_status));
 
 	if(m_bDebug)
 	{

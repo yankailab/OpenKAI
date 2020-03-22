@@ -68,7 +68,6 @@ void _AP_takeoff::updateMission(void)
 {
 	IF_(check()<0);
 	IF_(!bActive());
-	IF_(m_pMC->getMissionType() != mission_takeoff);
 	IF_(!m_pAP->bApArmed());
 	if(m_apMode >= 0)
 	{
@@ -77,9 +76,9 @@ void _AP_takeoff::updateMission(void)
 
 	Takeoff* pTO = (Takeoff*)m_pMC->getMission();
 	NULL_(pTO);
+	IF_(pTO->type() != mission_takeoff);
 
-	if(EAQ(m_pAP->m_vGlobalPos.w, pTO->m_alt, 0.5) &&
-	   m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
+	if(EAQ(m_pAP->m_vGlobalPos.w, pTO->m_alt, 0.5)) // && m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
 	{
 		pTO->complete();
 		return;
@@ -94,11 +93,10 @@ void _AP_takeoff::draw(void)
 	this->_AutopilotBase::draw();
 	drawActive();
 
-	addMsg("system status="+i2str(m_pAP->m_pMav->m_heartbeat.m_msg.system_status));
-	if(m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
-	{
-		addMsg("Taken off", 1);
-	}
+//	if(m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
+//		addMsg("Airborne", 1);
+//	else
+//		addMsg("Not airborne", 1);
 }
 
 }

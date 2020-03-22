@@ -29,7 +29,7 @@ private:
 
 public:
 	_AP_base* m_pAP;
-	int m_apMode;
+	uint32_t m_apMode;
 };
 
 }

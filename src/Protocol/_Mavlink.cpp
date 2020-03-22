@@ -59,6 +59,13 @@ bool _Mavlink::init(void* pKiss)
 	pK->v("devComponentID", &m_devComponentID);
 	pK->v("devType", &m_devType);
 
+	uint64_t tTimeout = USEC_1SEC * 10;
+	pK->v("tTimeout", &tTimeout);
+	for(MavMsgBase* pM : m_vpMsg)
+	{
+		pM->m_tTimeout = tTimeout;
+	}
+
 	m_status.packet_rx_drop_count = 0;
 
 	string iName;
@@ -682,39 +689,15 @@ void _Mavlink::clSetMessageInterval(float id, float interval, float responseTarg
 	mavlink_msg_command_long_encode(m_mySystemID, m_myComponentID, &msg, &D);
 
 	writeMessage(msg);
-	LOG_I("<- cmdSetMessageTarget");
-}
-
-uint16_t* _Mavlink::getRCinRaw(int iChan)
-{
-	switch (iChan)
-	{
-	case 1: return &m_rcChannels.m_msg.chan1_raw;
-	case 2: return &m_rcChannels.m_msg.chan2_raw;
-	case 3: return &m_rcChannels.m_msg.chan3_raw;
-	case 4: return &m_rcChannels.m_msg.chan4_raw;
-	case 5: return &m_rcChannels.m_msg.chan5_raw;
-	case 6: return &m_rcChannels.m_msg.chan6_raw;
-	case 7: return &m_rcChannels.m_msg.chan7_raw;
-	case 8: return &m_rcChannels.m_msg.chan8_raw;
-	case 9: return &m_rcChannels.m_msg.chan9_raw;
-	case 10: return &m_rcChannels.m_msg.chan10_raw;
-	case 12: return &m_rcChannels.m_msg.chan12_raw;
-	case 13: return &m_rcChannels.m_msg.chan13_raw;
-	case 14: return &m_rcChannels.m_msg.chan14_raw;
-	case 15: return &m_rcChannels.m_msg.chan15_raw;
-	case 16: return &m_rcChannels.m_msg.chan16_raw;
-	case 17: return &m_rcChannels.m_msg.chan17_raw;
-	case 18: return &m_rcChannels.m_msg.chan18_raw;
-	default: return NULL;
-	}
+	LOG_I("<- cmdSetMessageTarget id = " + i2str((int)id) + ", interval = " + i2str((int)interval) + ", responseTarget = " + i2str((int)responseTarget));
 }
 
 void _Mavlink::sendSetMsgInterval(void)
 {
 	for(MavMsgBase* pM : m_vpMsg)
 	{
-		IF_CONT(pM->bReceiving());
+		IF_CONT(pM->m_tInterval < 0);
+		IF_CONT(pM->bReceiving(m_tStamp));
 		clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
 	}
 }
@@ -784,7 +767,6 @@ void _Mavlink::handleMessages()
 		bool bDecoded = false;
 		for(MavMsgBase* pM : m_vpMsg)
 		{
-			IF_CONT(!pM);
 			IF_CONT(pM->m_id != msg.msgid);
 
 			pM->decode(&msg);

@@ -106,7 +106,7 @@
 	"Console":"OKconsole",
 	"/port":"/dev/ttyTHS1",
 	"/baud":115200,
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
@@ -124,10 +124,38 @@
 	"myComponentID":190,
 	"devSystemID":1,
 	"devComponentID":1,
+	"tTimeout":10000000,
 
 	{
-		"bInst":0,
+		"bInst":1,
 		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
 	}	
 }
 
@@ -139,7 +167,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":57600,
 	"_wakeUp":"remoteMavlink",
 }
@@ -157,36 +185,8 @@
 	"myComponentID":190,
 	"devSystemID":-1,
 	"devComponentID":-1,
+	"tTimeout":10000000,
 }
-
-
-{
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"port":19840,
-	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bInst":0,
-	"FPS":30,
-	"bLog":1,
-	"Console":"OKconsole",
-	"_IOBase":"apUDP",
-	
-	{
-		"bInst":0,
-		"_Mavlink":"apMavlink",
-	}	
-}
-
 
 
 {
@@ -218,7 +218,6 @@
 	"oMin":-3.0,
 	"oMax":3.0,
 }
-
 
 
 {
@@ -294,18 +293,54 @@
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
-	"freqRawSensors":0,
-	"freqExtStat":5,
-	"freqRC":0,
-	"freqPos":5,
-	"freqExtra1":5,
+	
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1,
+		}
+		{
+			"name":"localPosition",
+			"id"32,
+			"tInt":0.5,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.2,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":2,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		
+	}
 }
 
 {
@@ -323,7 +358,7 @@
 {
 	"name":"apTakeoff",
 	"class":"_AP_takeoff",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
@@ -336,7 +371,7 @@
 {
 	"name":"apGoto",
 	"class":"_AP_goto",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
@@ -345,10 +380,11 @@
 	"activeMission":["FOLLOW"],
 	"_AP_base":"apBase",
 	"_AP_target_base":"apTargetBase",
+	"iLEDpin":0,
 	"bYaw":0,
 	"yawRate":90.0,	
 	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
-		
+
 	{
 		"name":"mount",
 		"bEnable":0,
@@ -365,7 +401,7 @@
 {
 	"name":"apDescent",
 	"class":"_AP_descent",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
@@ -401,17 +437,27 @@
 {
 	"name":"apTargetBase",
 	"class":"_AP_base",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Mavlink":"remoteMavlink",
 	"freqSendHeartbeat":1,
-	"freqRawSensors":0,
-	"freqExtStat":1,
-	"freqRC":0,
-	"freqPos":1,
-	"freqExtra1":1,
+
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.2,
+		}
+	}
 }
 
 {
@@ -447,5 +493,23 @@
 		"name":"servo",
 		"iChan":9,
 		"pwm":2000,
+	}	
+}
+
+{
+	"name":"apLEDstandby",
+	"class":"_AP_relay",
+	"FPS":1,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["STANDBY"],
+	"_AP_base":"apBase",
+
+	{
+		"name":"relay",
+		"iChan":1,
+		"bRelay":1,
 	}	
 }

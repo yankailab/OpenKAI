@@ -136,12 +136,11 @@ bool _AP_descent::findTarget(void)
 	Land* pLand = (Land*)m_pMC->getMission();
 	if(pLand->m_type == mission_land)
 	{
-		for(int i=0; i<pLand->m_vTag.size(); i++)
+		for(LAND_TAG& tag : pLand->m_vTag)
 		{
-			LAND_TAG* pTag = &pLand->m_vTag[i];
-			IF_CONT(pTag->m_iTag != tO->m_topClass);
+			IF_CONT(tag.m_iTag != tO->m_topClass);
 
-			m_vP.w = Hdg(m_vP.w + pTag->m_angle);
+			m_vP.w = Hdg(m_vP.w + tag.m_angle);
 			break;
 		}
 	}

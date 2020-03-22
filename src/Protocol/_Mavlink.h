@@ -22,6 +22,7 @@ public:
 		m_id = 0x7fffffff;
 		m_tStamp = 0;
 		m_tInterval = -1;
+		m_tTimeout = USEC_1SEC * 10;
 	};
 
 	virtual ~MavMsgBase(void){};
@@ -31,10 +32,13 @@ public:
 		m_tInterval = tInterval;
 	}
 
-	bool bReceiving(void)
+	bool bReceiving(uint64_t tNow)
 	{
-		IF_T(m_tInterval < 0);
+		if(tNow - m_tStamp > m_tTimeout)
+			m_tStamp = 0;
+
 		IF_T(m_tStamp > 0);
+
 		return false;
 	}
 
@@ -45,6 +49,7 @@ public:
 	uint32_t	m_id;
 	uint64_t	m_tStamp;
 	int64_t		m_tInterval;
+	uint64_t	m_tTimeout;
 };
 
 class MavAttitude : public MavMsgBase
@@ -52,7 +57,7 @@ class MavAttitude : public MavMsgBase
 public:
 	mavlink_attitude_t m_msg;
 
-	void init(void)
+	MavAttitude()
 	{
 		m_id = MAVLINK_MSG_ID_ATTITUDE;
 
@@ -76,7 +81,7 @@ class MavBatteryStatus : public MavMsgBase
 public:
 	mavlink_battery_status_t m_msg;
 
-	void init(void)
+	MavBatteryStatus()
 	{
 		m_id = MAVLINK_MSG_ID_BATTERY_STATUS;
 	}
@@ -93,7 +98,7 @@ class MavCommandAck : public MavMsgBase
 public:
 	mavlink_command_ack_t m_msg;
 
-	void init(void)
+	MavCommandAck()
 	{
 		m_id = MAVLINK_MSG_ID_COMMAND_ACK;
 	}
@@ -110,7 +115,7 @@ class MavGlobalPositionINT : public MavMsgBase
 public:
 	mavlink_global_position_int_t m_msg;
 
-	void init(void)
+	MavGlobalPositionINT()
 	{
 		m_id = MAVLINK_MSG_ID_GLOBAL_POSITION_INT;
 
@@ -133,7 +138,7 @@ class MavHeartbeat : public MavMsgBase
 public:
 	mavlink_heartbeat_t m_msg;
 
-	void init(void)
+	MavHeartbeat()
 	{
 		m_id = MAVLINK_MSG_ID_HEARTBEAT;
 
@@ -153,7 +158,7 @@ class MavHighresIMU : public MavMsgBase
 public:
 	mavlink_highres_imu_t m_msg;
 
-	void init(void)
+	MavHighresIMU()
 	{
 		m_id = MAVLINK_MSG_ID_HIGHRES_IMU;
 	}
@@ -170,7 +175,7 @@ class MavHomePosition : public MavMsgBase
 public:
 	mavlink_home_position_t m_msg;
 
-	void init(void)
+	MavHomePosition()
 	{
 		m_id = MAVLINK_MSG_ID_HOME_POSITION;
 	}
@@ -187,7 +192,7 @@ class MavLocalPositionNED : public MavMsgBase
 public:
 	mavlink_local_position_ned_t m_msg;
 
-	void init(void)
+	MavLocalPositionNED()
 	{
 		m_id = MAVLINK_MSG_ID_LOCAL_POSITION_NED;
 
@@ -211,7 +216,7 @@ class MavMissionCurrent : public MavMsgBase
 public:
 	mavlink_mission_current_t m_msg;
 
-	void init(void)
+	MavMissionCurrent()
 	{
 		m_id = MAVLINK_MSG_ID_MISSION_CURRENT;
 
@@ -230,7 +235,7 @@ class MavMountStatus : public MavMsgBase
 public:
 	mavlink_mount_status_t m_msg;
 
-	void init(void)
+	MavMountStatus()
 	{
 		m_id = MAVLINK_MSG_ID_MOUNT_STATUS;
 	}
@@ -247,7 +252,7 @@ class MavParamSet : public MavMsgBase
 public:
 	mavlink_param_set_t m_msg;
 
-	void init(void)
+	MavParamSet()
 	{
 		m_id = MAVLINK_MSG_ID_PARAM_SET;
 	}
@@ -264,7 +269,7 @@ class MavPositionTargetLocalNED : public MavMsgBase
 public:
 	mavlink_position_target_local_ned_t m_msg;
 
-	void init(void)
+	MavPositionTargetLocalNED()
 	{
 		m_id = MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED;
 	}
@@ -281,7 +286,7 @@ class MavPositionTargetGlobalINT : public MavMsgBase
 public:
 	mavlink_position_target_global_int_t m_msg;
 
-	void init(void)
+	MavPositionTargetGlobalINT()
 	{
 		m_id = MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT;
 	}
@@ -298,7 +303,7 @@ class MavRadioStatus : public MavMsgBase
 public:
 	mavlink_radio_status_t m_msg;
 
-	void init(void)
+	MavRadioStatus()
 	{
 		m_id = MAVLINK_MSG_ID_RADIO_STATUS;
 	}
@@ -315,7 +320,7 @@ class MavRawIMU : public MavMsgBase
 public:
 	mavlink_raw_imu_t m_msg;
 
-	void init(void)
+	MavRawIMU()
 	{
 		m_id = MAVLINK_MSG_ID_RAW_IMU;
 	}
@@ -331,8 +336,9 @@ class MavRcChannels : public MavMsgBase
 {
 public:
 	mavlink_rc_channels_t m_msg;
+	uint16_t* m_pChan[19];
 
-	void init(void)
+	MavRcChannels()
 	{
 		m_id = MAVLINK_MSG_ID_RC_CHANNELS;
 
@@ -356,12 +362,40 @@ public:
 		m_msg.chan17_raw = UINT16_MAX;
 		m_msg.chan18_raw = UINT16_MAX;
 		m_msg.rssi = 255;
+
+		m_pChan[0] = NULL;
+		m_pChan[1] = &m_msg.chan1_raw;
+		m_pChan[2] = &m_msg.chan2_raw;
+		m_pChan[3] = &m_msg.chan3_raw;
+		m_pChan[4] = &m_msg.chan4_raw;
+		m_pChan[5] = &m_msg.chan5_raw;
+		m_pChan[6] = &m_msg.chan6_raw;
+		m_pChan[7] = &m_msg.chan7_raw;
+		m_pChan[8] = &m_msg.chan8_raw;
+		m_pChan[9] = &m_msg.chan9_raw;
+		m_pChan[10] = &m_msg.chan10_raw;
+		m_pChan[11] = &m_msg.chan11_raw;
+		m_pChan[12] = &m_msg.chan12_raw;
+		m_pChan[13] = &m_msg.chan13_raw;
+		m_pChan[14] = &m_msg.chan14_raw;
+		m_pChan[15] = &m_msg.chan15_raw;
+		m_pChan[16] = &m_msg.chan16_raw;
+		m_pChan[17] = &m_msg.chan17_raw;
+		m_pChan[18] = &m_msg.chan18_raw;
 	}
 
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_rc_channels_decode(pM, &m_msg);
 		m_tStamp = getTimeUsec();
+	}
+
+	uint16_t getRC(int iChan)
+	{
+		if(iChan <= 0 || iChan > 18)
+			return UINT16_MAX;
+
+		return *m_pChan[iChan];
 	}
 };
 
@@ -370,7 +404,7 @@ class MavRcChannelsOverride : public MavMsgBase
 public:
 	mavlink_rc_channels_override_t m_msg;
 
-	void init(void)
+	MavRcChannelsOverride()
 	{
 		m_id = MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE;
 	}
@@ -387,7 +421,7 @@ class MavSysStatus : public MavMsgBase
 public:
 	mavlink_sys_status_t m_msg;
 
-	void init(void)
+	MavSysStatus()
 	{
 		m_id = MAVLINK_MSG_ID_SYS_STATUS;
 	}
@@ -404,7 +438,7 @@ class MavScaledIMU : public MavMsgBase
 public:
 	mavlink_scaled_imu_t m_msg;
 
-	void init(void)
+	MavScaledIMU()
 	{
 		m_id = MAVLINK_MSG_ID_SCALED_IMU;
 	}
@@ -506,7 +540,6 @@ public:
 	void setCmdRoute(uint32_t iCmd, bool bON);
 
 	//Utility
-	uint16_t* getRCinRaw(int iChan);
 	void sendSetMsgInterval(void);
 	bool setMsgInterval(int id, int tInt);
 

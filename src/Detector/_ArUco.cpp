@@ -155,11 +155,11 @@ void _ArUco::draw(void)
 	{
 		Point pCenter = Point(pO->m_c.x * pMat->cols,
 							  pO->m_c.y * pMat->rows);
-		circle(*pMat, pCenter, pO->m_r, Scalar(0, 255, 0), 2);
+		circle(*pMat, pCenter, pO->m_r, Scalar(255, 255, 0), 2);
 
-		putText(*pMat, i2str(pO->m_topClass) + " / " + i2str(pO->m_angle),
+		putText(*pMat, "iTag=" + i2str(pO->m_topClass) + ", angle=" + i2str(pO->m_angle),
 				pCenter,
-				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(255, 0, 0), 2);
+				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
 		double rad = -pO->m_angle * DEG2RAD;
 		Point pD = Point(pO->m_r*sin(rad), pO->m_r*cos(rad));

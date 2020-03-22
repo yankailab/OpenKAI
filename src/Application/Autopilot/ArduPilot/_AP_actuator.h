@@ -1,9 +1,8 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_actuator_H_
 #define OpenKAI_src_Autopilot_AP__AP_actuator_H_
 
-#include "../../_AutopilotBase.h"
 #include "../../../Actuator/_ActuatorBase.h"
-#include "../../../Protocol/_Mavlink.h"
+#include "_AP_base.h"
 
 namespace kai
 {
@@ -11,7 +10,7 @@ namespace kai
 struct AP_actuator
 {
 	_ActuatorBase* m_pA;
-	uint16_t* m_ppRCin[4];
+	uint8_t m_pRCin[4];
 	float	m_pInc[4];
 	vFloat4	m_vPWMrange;
 	vFloat4 m_vK;
@@ -28,14 +27,15 @@ struct AP_actuator
 
 		for(int i=0;i<4;i++)
 		{
-			m_ppRCin[i] = NULL;
+			m_pRCin[i] = 0;
 			m_pInc[i] = 0.01;
 		}
 	}
 
-	void update(void)
+	void update(_Mavlink* pMav)
 	{
 		NULL_(m_pA);
+		NULL_(pMav);
 
 		float pP[4];
 		pP[0] = 0.0;
@@ -51,10 +51,8 @@ struct AP_actuator
 
 		for(int i=0; i<4; i++)
 		{
-			IF_CONT(!m_ppRCin[i]);
-
-			uint16_t v = *(m_ppRCin[i]);
-			IF_(v < m_vPWMrange.x && v > m_vPWMrange.w);
+			uint16_t v = pMav->m_rcChannels.getRC(m_pRCin[i]);
+			IF_CONT(v < m_vPWMrange.x && v > m_vPWMrange.w);
 
 			pP[i] = (v - m_vPWMrange.x)/(m_vPWMrange.w-m_vPWMrange.x);
 			if(pK[i]<0.0)
@@ -88,9 +86,9 @@ private:
 	}
 
 private:
-	_Mavlink* m_pMav;
+	_AP_base* m_pAP;
 	vector<AP_actuator> m_vActuator;
-	uint16_t* m_pRCmode;
+	uint8_t m_iRCmode;
 	int m_iMode;
 	vFloat4	m_vPWMrange;
 

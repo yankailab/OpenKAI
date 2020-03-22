@@ -5,8 +5,8 @@ namespace kai
 
 _AP_actuator::_AP_actuator()
 {
-	m_pMav = NULL;
-	m_pRCmode = NULL;
+	m_pAP = NULL;
+	m_iRCmode = 0;
 	m_iMode = -1;
 	m_vPWMrange.init(900, 1250, 1750, 2100);
 
@@ -21,19 +21,10 @@ bool _AP_actuator::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName;
-	iName = "";
-	pK->v("_Mavlink", &iName);
-	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pMav, "_Mavlink: " + iName + " not found");
-
-	int iRC = -1;
-	pK->v("iRCmode", &iRC);
-	m_pRCmode = m_pMav->getRCinRaw(iRC);
-	NULL_Fl(m_pRCmode, "iRCmode not correct");
-
 	pK->v("vPWMrange", &m_vPWMrange);
+	pK->v("iRCmode", &m_iRCmode);
 
+	string iName;
 
 	Kiss** pItr = pK->getChildItr();
 	int i = 0;
@@ -51,10 +42,10 @@ bool _AP_actuator::init(void* pKiss)
 		vInt4 vRCin;
 		vRCin.init(-1);
 		pA->v("vRCin", &vRCin);
-		a.m_ppRCin[0] = m_pMav->getRCinRaw(vRCin.x);
-		a.m_ppRCin[1] = m_pMav->getRCinRaw(vRCin.y);
-		a.m_ppRCin[2] = m_pMav->getRCinRaw(vRCin.z);
-		a.m_ppRCin[3] = m_pMav->getRCinRaw(vRCin.w);
+		a.m_pRCin[0] = vRCin.x;
+		a.m_pRCin[1] = vRCin.y;
+		a.m_pRCin[2] = vRCin.z;
+		a.m_pRCin[3] = vRCin.w;
 
 		vFloat4 vF;
 		if(pA->v("vInc", &vF))
@@ -71,6 +62,11 @@ bool _AP_actuator::init(void* pKiss)
 
 		m_vActuator.push_back(a);
 	}
+
+	iName = "";
+	pK->v("_AP_base", &iName);
+	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
 }
@@ -91,7 +87,8 @@ bool _AP_actuator::start(void)
 
 int _AP_actuator::check(void)
 {
-	NULL__(m_pMav, -1);
+	NULL__(m_pAP, -1);
+	NULL__(m_pAP->m_pMav, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -113,16 +110,17 @@ void _AP_actuator::updateActuator(void)
 {
 	IF_(check() < 0);
 	IF_(!bActive());
-	NULL_(m_pRCmode);
-	if(*m_pRCmode < m_vPWMrange.x || *m_pRCmode > m_vPWMrange.w)
+
+	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
+	if(rcMode < m_vPWMrange.x || rcMode > m_vPWMrange.w)
 	{
 		m_iMode = -1;
 		return;
 	}
 
-	if(*m_pRCmode < m_vPWMrange.y)
+	if(rcMode < m_vPWMrange.y)
 		m_iMode = 0;
-	else if(*m_pRCmode < m_vPWMrange.z)
+	else if(rcMode < m_vPWMrange.z)
 		m_iMode = 1;
 	else
 		m_iMode = 2;
@@ -131,7 +129,7 @@ void _AP_actuator::updateActuator(void)
 	{
 		AP_actuator* pA = &m_vActuator[i];
 		IF_CONT(pA->m_iMode != m_iMode);
-		pA->update();
+		pA->update(m_pAP->m_pMav);
 	}
 }
 

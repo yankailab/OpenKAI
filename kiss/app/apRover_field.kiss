@@ -394,7 +394,7 @@
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["STANDBY","FORWARD","BACKWARD","BB"],
-	"_Mavlink":"apMavlink",
+	"_AP_base":"apBase",
 	"iRCmode":5,
 	"vPWMrange":[900, 1250, 1750, 2100],
 

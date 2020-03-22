@@ -8,6 +8,7 @@ _AP_goto::_AP_goto()
 	m_pAP = NULL;
 	m_pAPtarget = NULL;
 	m_bTarget = false;
+	m_iLEDpin = 12;
 
 	m_apMount.init();
 }
@@ -20,6 +21,8 @@ bool _AP_goto::init(void* pKiss)
 {
 	IF_F(!this->_AP_posCtrl::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("iLEDpin",&m_iLEDpin);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -44,12 +47,12 @@ bool _AP_goto::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AP_target_base", &iName);
-	m_pAPtarget = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAPtarget = (_AP_base*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -94,6 +97,7 @@ bool _AP_goto::updateGoto(void)
 	IF_F(check() < 0);
 
 	m_bTarget = findTarget();
+	m_pAP->m_pMav->clDoSetRelay(m_iLEDpin, m_bTarget);
 
 	IF_F(!bActive());
 
@@ -115,7 +119,7 @@ bool _AP_goto::findTarget(void)
 	IF_F(check()<0);
 	NULL_F(m_pAPtarget);
 	NULL_F(m_pAPtarget->m_pMav);
-	IF_F(m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving());
+	IF_F(!m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving(m_tStamp));
 
 	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
 	IF_F(vAPpos.x <= 0.0);

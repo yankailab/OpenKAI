@@ -2,21 +2,18 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
+	"bWindow":1,
+	"bDraw":1,
 	"bLog":0,
-	"bConsole":1,
 	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
-	"name":"OKview",
-	"class":"Window",
-	"bInst":0,
-	"bFullScreen":0,
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
 }
-
 {
 	"name":"apSerial",
 	"class":"_SerialPort",
@@ -24,7 +21,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"bStream":1,
+	"Console":"OKconsole",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"/port":"/dev/ttyTHS1",
@@ -40,12 +37,13 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"_IOBase":"apSerial",
 	
 	{
 		"bInst":1,
 		"_Mavlink":"mavGCS",
-	}	
+	}
 	{
 		"bInst":0,
 		"_Mavlink":"mavWS",
@@ -59,6 +57,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"port":19840,
 	"_wakeUp":"mavGCS",
 }
@@ -70,6 +69,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"_IOBase":"apUDP",
 	
 	{
@@ -89,6 +89,7 @@
 	"bInst":0,
 	"FPS":30,
 	"Window":"OKview",
+	"Console":"OKconsole",
 }
 
 {
@@ -98,6 +99,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"_IOBase":"apWS",
 	
 	{
