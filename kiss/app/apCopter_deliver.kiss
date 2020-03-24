@@ -195,13 +195,13 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":-5.0,
+	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-3.0,
-	"oMax":3.0,
+	"oMin":-1.0,
+	"oMax":1.0,
 }
 
 {
@@ -210,13 +210,13 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":5.0,
+	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-3.0,
-	"oMax":3.0,
+	"oMin":-1.0,
+	"oMax":1.0,
 }
 
 
@@ -380,7 +380,7 @@
 	"activeMission":["FOLLOW"],
 	"_AP_base":"apBase",
 	"_AP_target_base":"apTargetBase",
-	"iLEDpin":0,
+	"iRelayLED":0,
 	"bYaw":0,
 	"yawRate":90.0,	
 	"vTargetGlobal":[0.0, 0.0, 5.0, 0.0],
@@ -401,7 +401,7 @@
 {
 	"name":"apDescent",
 	"class":"_AP_descent",
-	"FPS":5,
+	"FPS":10,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
@@ -410,6 +410,7 @@
 	"activeMission":["DESCENT"],
 	"_AP_base":"apBase",
 	"_DetectorBase":"arUco",
+	"iRelayLED":1,
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"vTargetP":[0.5, 0.5, 0.3, 0.0],
@@ -493,23 +494,5 @@
 		"name":"servo",
 		"iChan":9,
 		"pwm":2000,
-	}	
-}
-
-{
-	"name":"apLEDstandby",
-	"class":"_AP_relay",
-	"FPS":1,
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_MissionControl":"mission",
-	"activeMission":["STANDBY"],
-	"_AP_base":"apBase",
-
-	{
-		"name":"relay",
-		"iChan":1,
-		"bRelay":1,
 	}	
 }

@@ -33,6 +33,7 @@ protected:
 
 public:
 	Median m_filter;
+	int	m_iRelayLED;
 
 	float m_alt;
 	float m_detSize;

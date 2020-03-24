@@ -9,6 +9,7 @@ _AP_descent::_AP_descent()
 	m_detSize = 0.25;
 	m_vRDD.init(0.0, 0.0, 1.0, 1.0);
 	m_dTarget = -1.0;
+	m_iRelayLED = 0;
 }
 
 _AP_descent::~_AP_descent()
@@ -23,6 +24,7 @@ bool _AP_descent::init(void* pKiss)
 	pK->v("alt", &m_alt);
 	pK->v("detSize", &m_detSize);
 	pK->v("vRDD", &m_vRDD);
+	pK->v("iRelayLED",&m_iRelayLED);
 
 	int wLen = 3;
 	pK->v("wLen", &wLen);
@@ -73,6 +75,7 @@ bool _AP_descent::updateTarget(void)
 	IF_F(check() < 0);
 
 	m_bTarget = findTarget();
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, m_bTarget);
 
 	IF_F(!bActive());
 

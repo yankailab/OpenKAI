@@ -31,7 +31,7 @@ public:
 	_AP_base* 	m_pAP;
 	_AP_base*	m_pAPtarget;
 	bool		m_bTarget;
-	int			m_iLEDpin;
+	int			m_iRelayLED;
 
 	AP_MOUNT m_apMount;
 

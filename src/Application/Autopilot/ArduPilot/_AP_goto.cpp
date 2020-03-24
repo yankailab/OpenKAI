@@ -8,7 +8,7 @@ _AP_goto::_AP_goto()
 	m_pAP = NULL;
 	m_pAPtarget = NULL;
 	m_bTarget = false;
-	m_iLEDpin = 12;
+	m_iRelayLED = 0;
 
 	m_apMount.init();
 }
@@ -22,7 +22,7 @@ bool _AP_goto::init(void* pKiss)
 	IF_F(!this->_AP_posCtrl::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("iLEDpin",&m_iLEDpin);
+	pK->v("iRelayLED",&m_iRelayLED);
 
 	Kiss* pG = pK->o("mount");
 	if(!pG->empty())
@@ -97,7 +97,7 @@ bool _AP_goto::updateGoto(void)
 	IF_F(check() < 0);
 
 	m_bTarget = findTarget();
-	m_pAP->m_pMav->clDoSetRelay(m_iLEDpin, m_bTarget);
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, m_bTarget);
 
 	IF_F(!bActive());
 
