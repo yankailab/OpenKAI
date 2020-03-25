@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AP_followClient_H_
 
 #include "../../../Base/common.h"
-#include "../../_AutopilotBase.h"
+#include "../_AutopilotBase.h"
 #include "../ArduPilot/_AP_link.h"
 
 namespace kai

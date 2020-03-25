@@ -41,6 +41,8 @@ bool Takeoff::update(void)
 void Takeoff::draw(void)
 {
 	this->MissionBase::draw();
+	addMsg("alt = "+f2str(m_alt));
+
 }
 
 }

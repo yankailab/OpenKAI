@@ -34,16 +34,14 @@ public:
 
 	bool bReceiving(uint64_t tNow)
 	{
-		if(tNow - m_tStamp > m_tTimeout)
-			m_tStamp = 0;
+		IF_F(tNow - m_tStamp > m_tTimeout);
 
-		IF_T(m_tStamp > 0);
-
-		return false;
+		return true;
 	}
 
 	virtual void decode(mavlink_message_t* pM)
 	{
+		m_tStamp = getTimeUsec();
 	}
 
 	uint32_t	m_id;
@@ -72,7 +70,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_attitude_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -89,7 +87,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_battery_status_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -106,7 +104,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_command_ack_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -129,7 +127,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_global_position_int_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -149,7 +147,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_heartbeat_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -166,7 +164,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_highres_imu_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -183,7 +181,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_home_position_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -207,7 +205,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_local_position_ned_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -226,7 +224,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_mission_current_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -243,7 +241,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_mount_status_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -260,7 +258,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_param_set_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -277,7 +275,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_position_target_local_ned_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -294,7 +292,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_position_target_global_int_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -311,7 +309,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_radio_status_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -328,7 +326,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_raw_imu_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -387,7 +385,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_rc_channels_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 
 	uint16_t getRC(int iChan)
@@ -412,7 +410,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_rc_channels_override_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -429,7 +427,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_sys_status_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 
@@ -446,7 +444,7 @@ public:
 	void decode(mavlink_message_t* pM)
 	{
 		mavlink_msg_scaled_imu_decode(pM, &m_msg);
-		m_tStamp = getTimeUsec();
+		this->MavMsgBase::decode(pM);
 	}
 };
 

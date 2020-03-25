@@ -4,7 +4,6 @@
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
 #include "../../Mission/RTH.h"
-#include "../../_AutopilotBase.h"
 #include "../ArduPilot/_AP_base.h"
 
 namespace kai

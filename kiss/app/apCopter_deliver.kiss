@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -104,10 +104,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/port":"/dev/ttyTHS1",
-	"/baud":115200,
-	"port":"/dev/ttyUSB1",
-	"baud":57600,
+	"port":"/dev/ttyTHS1",
+	"/port":"/dev/ttyACM0",
+	"baud":115200,
+	"/baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -122,8 +122,8 @@
 	"_IOBase":"apSerial",
 	"mySystemID":255,
 	"myComponentID":190,
-	"devSystemID":1,
-	"devComponentID":1,
+	"devSystemID":-1,
+	"devComponentID":-1,
 	"tTimeout":10000000,
 
 	{
@@ -366,6 +366,7 @@
 	"_MissionControl":"mission",
 	"activeMission":["TAKEOFF"],
 	"_AP_base":"apBase",
+	"apMode":4,
 }
 
 {
@@ -416,8 +417,8 @@
 	"vTargetP":[0.5, 0.5, 0.3, 0.0],
 	"bYaw":0,
 	"yawRate":90.0,	
-	"alt":0.65,
-	"detSize":0.08,
+	"alt":0.8,
+	"detSize":0.05,
 	"vRDD":[0.1, 0.1, 0.9, 0.9],
 	"wLen":5,
 	
@@ -456,7 +457,7 @@
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.2,
+			"tInt":0.3,
 		}
 	}
 }

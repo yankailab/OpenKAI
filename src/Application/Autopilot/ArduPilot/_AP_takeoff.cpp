@@ -7,6 +7,7 @@ _AP_takeoff::_AP_takeoff()
 {
 	m_pAP = NULL;
 	m_apMode = AP_COPTER_GUIDED;
+	m_dAlt = INT16_MAX;
 }
 
 _AP_takeoff::~_AP_takeoff()
@@ -68,17 +69,18 @@ void _AP_takeoff::updateMission(void)
 {
 	IF_(check()<0);
 	IF_(!bActive());
-	IF_(!m_pAP->bApArmed());
 	if(m_apMode >= 0)
 	{
 		IF_(m_pAP->getApMode() != m_apMode);
 	}
 
-	Takeoff* pTO = (Takeoff*)m_pMC->getMission();
-	NULL_(pTO);
-	IF_(pTO->type() != mission_takeoff);
+	MissionBase* pM = m_pMC->getMission();
+	NULL_(pM);
+	IF_(pM->type() != mission_takeoff);
 
-	if(EAQ(m_pAP->m_vGlobalPos.w, pTO->m_alt, 0.5)) // && m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
+	Takeoff* pTO = (Takeoff*)pM;
+	m_dAlt = (float)m_pAP->m_vGlobalPos.w - pTO->m_alt;
+	if(abs(m_dAlt)<0.5) // && m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
 	{
 		pTO->complete();
 		return;
@@ -93,10 +95,7 @@ void _AP_takeoff::draw(void)
 	this->_AutopilotBase::draw();
 	drawActive();
 
-//	if(m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
-//		addMsg("Airborne", 1);
-//	else
-//		addMsg("Not airborne", 1);
+	addMsg("alt = "+f2str(m_pAP->m_vGlobalPos.w) + ", dAlt = " + f2str(m_dAlt));
 }
 
 }

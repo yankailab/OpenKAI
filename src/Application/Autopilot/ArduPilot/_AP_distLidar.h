@@ -4,7 +4,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../_AutopilotBase.h"
 #include "../ArduPilot/_AP_base.h"
 
 #define N_LIDAR_SECTION 10

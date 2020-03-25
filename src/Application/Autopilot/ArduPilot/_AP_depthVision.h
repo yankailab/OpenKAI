@@ -4,7 +4,6 @@
 
 #include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
-#include "../../_AutopilotBase.h"
 #include "../ArduPilot/_AP_base.h"
 
 #define N_DEPTH_ROI 16

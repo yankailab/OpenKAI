@@ -127,7 +127,7 @@ void _AP_posCtrl::setPosGlobal(void)
 	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG2RAD;
 	m_sptGlobal.type_mask = 0b0000000111111000; //set position
 	if(!m_bYaw)
-		m_sptLocal.type_mask |= 0b0000110000000000;
+		m_sptGlobal.type_mask |= 0b0000110000000000;
 
 	m_pAP->m_pMav->setPositionTargetGlobalINT(m_sptGlobal);
 }

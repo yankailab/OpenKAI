@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../_AutopilotBase.h"
+#include "../_AutopilotBase.h"
 
 #define AP_N_CUSTOM_MODE 28
 

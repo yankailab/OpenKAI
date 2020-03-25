@@ -2,9 +2,8 @@
 #ifndef OpenKAI_src_Autopilot_AutopilotBase_H_
 #define OpenKAI_src_Autopilot_AutopilotBase_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
-#include "Mission/_MissionControl.h"
+#include "../../Base/_ThreadBase.h"
+#include "../Mission/_MissionControl.h"
 
 namespace kai
 {

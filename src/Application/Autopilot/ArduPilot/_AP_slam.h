@@ -5,7 +5,6 @@
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/Coordinate.h"
 #include "../../../IO/_IOBase.h"
-#include "../../_AutopilotBase.h"
 #include "../ArduPilot/_AP_base.h"
 
 #define MG_BUF_N 32

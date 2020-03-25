@@ -30,6 +30,7 @@ private:
 public:
 	_AP_base* m_pAP;
 	uint32_t m_apMode;
+	float m_dAlt;
 };
 
 }
