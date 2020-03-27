@@ -34,9 +34,10 @@ public:
 
 	bool bReceiving(uint64_t tNow)
 	{
-		IF_F(tNow - m_tStamp > m_tTimeout);
+		IF_T(m_tStamp >= tNow);
+		IF_T(tNow - m_tStamp < m_tTimeout);
 
-		return true;
+		return false;
 	}
 
 	virtual void decode(mavlink_message_t* pM)

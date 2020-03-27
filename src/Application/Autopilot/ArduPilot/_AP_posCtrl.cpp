@@ -175,9 +175,9 @@ void _AP_posCtrl::draw(void)
 	addMsg(	"yawRate=" + f2str(m_sptLocal.yaw_rate) + ", yaw=" + f2str(m_sptLocal.yaw),1);
 
 	addMsg( "Global INT:");
-	addMsg(	"vTargetGlobal = (" + f2str(m_vTargetGlobal.x,7) + ", "
-					+ f2str(m_vTargetGlobal.y,7) + ", " + f2str(m_vTargetGlobal.z,7)
-					+ ", " + f2str(m_vTargetGlobal.w) + ")",1);
+	addMsg(	"vTargetGlobal = (" + lf2str(m_vTargetGlobal.x,7) + ", "
+					+ lf2str(m_vTargetGlobal.y,7) + ", " + lf2str(m_vTargetGlobal.z,2)
+					+ ", " + lf2str(m_vTargetGlobal.w,2) + ")",1);
 
 }
 

@@ -80,7 +80,7 @@ void _AP_takeoff::updateMission(void)
 
 	Takeoff* pTO = (Takeoff*)pM;
 	m_dAlt = (float)m_pAP->m_vGlobalPos.w - pTO->m_alt;
-	if(abs(m_dAlt)<0.5) // && m_pAP->m_pMav->m_heartbeat.m_msg.system_status == MAV_STATE_ACTIVE)
+	if(m_dAlt > -0.5)
 	{
 		pTO->complete();
 		return;

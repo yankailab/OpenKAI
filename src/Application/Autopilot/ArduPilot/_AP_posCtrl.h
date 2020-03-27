@@ -32,7 +32,7 @@ public:
 	//roll, pitch, alt, yaw
 	vFloat4 m_vP;		//variable, screen coordinate of the object being followed in roll, pitch, alt, yaw order
 	vFloat4 m_vTargetP;	//constant, screen coordinate where the followed object should get to
-	vFloat4 m_vTargetGlobal;	//lat, lon, alt, hdg
+	vDouble4 m_vTargetGlobal;	//lat, lon, alt, hdg
 
 	PIDctrl* m_pRoll;
 	PIDctrl* m_pPitch;

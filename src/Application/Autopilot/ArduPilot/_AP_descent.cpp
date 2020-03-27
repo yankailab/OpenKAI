@@ -93,6 +93,11 @@ bool _AP_descent::updateTarget(void)
 	if (m_dTarget > 0.0 && m_dTarget < m_alt && w > m_detSize && h > m_detSize)
 	{
 		m_pMC->getMission()->complete();
+		for(int i=0; i<10; i++)
+		{
+			releaseCtrl();
+		}
+
 		return false;
 	}
 

@@ -8,8 +8,6 @@ _AutopilotBase::_AutopilotBase()
 	m_pMC = NULL;
 	m_iLastMission = 0;
 	m_bMissionChanged = false;
-	m_tStamp = 0;
-	m_dTime = 0;
 	m_pAB = NULL;
 	m_pCtrl = NULL;
 }
@@ -54,10 +52,6 @@ int _AutopilotBase::check(void)
 
 void _AutopilotBase::update(void)
 {
-	uint64_t newTime = getTimeUsec();
-	m_dTime = newTime - m_tStamp;
-	m_tStamp = newTime;
-
 	NULL_(m_pMC);
 	int currentMission = m_pMC->getMissionIdx();
 	if(m_iLastMission != currentMission)
