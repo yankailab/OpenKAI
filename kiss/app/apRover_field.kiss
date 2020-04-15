@@ -554,9 +554,9 @@
 	"_Modbus":"modbus",
 	"iSlave":6,
 	"stepFrom":20000,
-	"stepTo":48000,
+	"stepTo":35000,
 	"speedFrom":0,
-	"speedTo":8000,
+	"speedTo":9000,
 	"vNormTargetPos":[0.0],
 	"vNormTargetSpeed":[1.0],
 }

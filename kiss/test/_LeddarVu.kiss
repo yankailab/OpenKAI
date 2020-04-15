@@ -2,22 +2,27 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
-	"bDraw":0,
+	"bWindow":1,
+	"bDraw":1,
 	"bLog":0,
+	"bStdErr":1,
 	"waitKey":30,
-	"presetDir":"/home/ubuntu/src/OpenKAI/data/",
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
-	"bFullScreen":1,
-	"bRec":0,
-	"recFile":"/media/ubuntu/data/OpenKAI_",
-	"recFPS":15,
-	"recCodec":"MJPG",	
+	"bDrawMsg":1,
+	"bFullScreen":0,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
 {
@@ -26,11 +31,10 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"deviceID":1,
-	"width":1920,
-	"height":1080,
-	"fovV":60,
-	"fovH":90,
+	"Console":"OKconsole",
+	"deviceID":0,
+	"width":640,
+	"height":480,
 }
 
 {
@@ -40,6 +44,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
+	"Console":"OKconsole",
 	"rMin":0.1,
 	"rMax":100.0,
 	"fovH":48,
@@ -73,7 +78,7 @@
 	"name":"leddarVu1",
 	"class":"_LeddarVu",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"rMin":0.1,
@@ -109,7 +114,7 @@
 	"name":"leddarVu2",
 	"class":"_LeddarVu",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"rMin":0.1,
