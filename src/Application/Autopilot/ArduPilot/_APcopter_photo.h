@@ -3,6 +3,7 @@
 
 #include "../../../Vision/_DepthVisionBase.h"
 #include "../../../Vision/_GPhoto.h"
+#include "../../../Sensor/_DistSensorBase.h"
 #include "_AP_base.h"
 #include "_AP_posCtrl.h"
 
@@ -22,7 +23,7 @@ public:
 	void draw(void);
 
 private:
-	void shutter(void);
+	bool shutter(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_APcopter_photo *) This)->update();
@@ -32,13 +33,14 @@ private:
 private:
 	_AP_base* m_pAP;
 	_AP_posCtrl* m_pPC;
+	_DistSensorBase* m_pDS;
 
 	_VisionBase* m_pV;
 	_DepthVisionBase* m_pDV;
 	_GPhoto* m_pG;
 
 	float	m_dAlt;
-	float	m_yaw;
+	float	m_lastAlt;
 
 	int m_iTake;
 	uint64_t m_tDelay;

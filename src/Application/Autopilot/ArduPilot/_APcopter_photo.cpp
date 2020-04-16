@@ -7,12 +7,13 @@ _APcopter_photo::_APcopter_photo()
 {
 	m_pAP = NULL;
 	m_pPC = NULL;
+	m_pDS = NULL;
 	m_pV = NULL;
 	m_pDV = NULL;
 	m_pG = NULL;
 
 	m_dAlt = 1.0;
-	m_yaw = 0.0;
+	m_lastAlt = 0.0;
 
 	m_dir = "/home/";
 	m_subDir = "";
@@ -66,6 +67,11 @@ bool _APcopter_photo::init(void* pKiss)
 	NULL_Fl(m_pPC, iName + ": not found");
 
 	iName = "";
+	pK->v("_DistSensorBase", &iName);
+	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pDS, iName + ": not found");
+
+	iName = "";
 	pK->v("_VisionBase", &iName);
 	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
 
@@ -97,6 +103,8 @@ bool _APcopter_photo::start(void)
 int _APcopter_photo::check(void)
 {
 	NULL__(m_pAP, -1);
+	NULL__(m_pPC, -1);
+	NULL__(m_pDS, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -108,21 +116,25 @@ void _APcopter_photo::update(void)
 		this->autoFPSfrom();
 		this->_AutopilotBase::update();
 
-		shutter();
+		if(!shutter())
+		{
+			m_lastAlt = 0.0;
+			//TODO: median filter reset
+		}
 
 		this->autoFPSto();
 	}
 }
 
-void _APcopter_photo::shutter(void)
+bool _APcopter_photo::shutter(void)
 {
-	IF_(check()<0);
-	IF_(!bActive());
+	IF_F(check()<0);
+	IF_F(!bActive());
+	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED);
 
-	int apMode = m_pAP->getApMode();
-	IF_(apMode != AP_ROVER_GUIDED);
+	float tAlt = m_pDS->d(0.0);	//TODO: add median filter
+	if(tAlt - m_lastAlt > m_dAlt)
 
-	m_yaw = m_pAP->getApHdg();
 
 	this->sleepTime(m_tInterval);
 
@@ -153,7 +165,7 @@ void _APcopter_photo::shutter(void)
 		if(m_bFlipRGB)fBGR = fBGR.flip(-1);
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);
-		IF_(mBGR.empty());
+		IF_F(mBGR.empty());
 
 		fName = m_subDir + i2str(m_iTake) + "_tag" + i2str(m_iTake) + "_rgb.jpg";
 		cv::imwrite(fName, mBGR, m_compress);
@@ -170,7 +182,7 @@ void _APcopter_photo::shutter(void)
 		if(m_bFlipD)fD = fD.flip(-1);
 		Mat mD;
 		fD.m()->copyTo(mD);
-		IF_(mD.empty());
+		IF_F(mD.empty());
 
 		Mat mDscale;
 		mD.convertTo(mDscale, CV_8UC1, 100);
@@ -204,6 +216,8 @@ void _APcopter_photo::shutter(void)
 //	m_pDrive->setSpeed(m_nSpeed);
 
 	m_pMC->transit("RUN");
+
+	return true;
 }
 
 void _APcopter_photo::draw(void)
