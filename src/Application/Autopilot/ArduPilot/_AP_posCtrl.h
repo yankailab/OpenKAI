@@ -15,6 +15,8 @@ public:
 	~_AP_posCtrl();
 
 	virtual bool init(void* pKiss);
+	virtual bool start(void);
+	virtual void update(void);
 	virtual void draw(void);
 	virtual int check(void);
 
@@ -22,6 +24,13 @@ public:
 	void releaseCtrl(void);
 	void setPosLocal(void);
 	void setPosGlobal(void);
+
+private:
+	static void* getUpdateThread(void* This)
+	{
+		((_AP_posCtrl *) This)->update();
+		return NULL;
+	}
 
 public:
 	_AP_base* m_pAP;

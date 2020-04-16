@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_descent_H_
 #define OpenKAI_src_Autopilot_AP__AP_descent_H_
 
-#include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Filter/FilterBase.h"
 #include "../ArduPilot/_AP_follow.h"

@@ -80,6 +80,20 @@ bool _AP_posCtrl::init(void* pKiss)
 	return true;
 }
 
+bool _AP_posCtrl::start(void)
+{
+	m_bThreadON = true;
+	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	if (retCode != 0)
+	{
+		LOG(ERROR) << "Return code: " << retCode;
+		m_bThreadON = false;
+		return false;
+	}
+
+	return true;
+}
+
 int _AP_posCtrl::check(void)
 {
 	NULL__(m_pAP, -1);
@@ -88,8 +102,23 @@ int _AP_posCtrl::check(void)
 	return this->_AutopilotBase::check();
 }
 
+void _AP_posCtrl::update(void)
+{
+	while (m_bThreadON)
+	{
+		this->autoFPSfrom();
+		this->_AutopilotBase::update();
+
+		setPosLocal();
+
+		this->autoFPSto();
+	}
+}
+
 void _AP_posCtrl::setPosLocal(void)
 {
+	IF_(check()<0);
+
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
 		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_tStamp);
@@ -117,6 +146,8 @@ void _AP_posCtrl::setPosLocal(void)
 
 void _AP_posCtrl::setPosGlobal(void)
 {
+	IF_(check()<0);
+
 	m_sptGlobal.coordinate_frame = MAV_FRAME_GLOBAL_RELATIVE_ALT_INT;
 	m_sptGlobal.lat_int = m_vTargetGlobal.x * 1e7;
 	m_sptGlobal.lon_int = m_vTargetGlobal.y * 1e7;
