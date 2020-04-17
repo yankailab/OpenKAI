@@ -1,0 +1,228 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bDrawMsg":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"gphoto",
+	"class":"_GPhoto",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"cmdUnmount":"gio mount -s gphoto2",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":"/dev/ttyTHS0",
+	"baud":115200,
+	"/port":"/dev/ttyUSB0",
+	"/baud":57600,
+	"_wakeUp":"apMavlink",
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"apSerial",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"apUDP",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
+	}	
+}
+
+{
+	"name":"leddarVu",
+	"class":"_LeddarVu",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"rMin":0.1,
+	"rMax":100.0,
+	"fovH":48,
+	"fovV":0.3,
+	"nDiv":8,
+	"showScale":30.0,
+	"showDegOffset":-24.0,
+	"showOriginOffsetX":0.5,
+	"showOriginOffsetY":1.0,
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"bUse0x41":0,
+	"slaveAddr":1,
+	"nAccumulationsExpo":5,
+	"nOversamplingsExpo":1,
+	"nPoint":20,
+	"lightSrcPwr":100,
+	"bAutoLightSrcPwr":0,
+	"bDemergeObj":1,
+	"bStaticNoiseRemoval":1,
+	"bPrecision":1,
+	"bSaturationCompensation":1,
+	"bOvershootManagement":1,
+	"oprMode":1,
+	"nAvr":3,
+	"nMed":3,
+}
+
+{
+	"name":"mission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"Window":"OKview",
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"FPS":5,
+	"bInst":1,
+	"bDraw":1,
+	"_MissionControl":"mission",
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"apType":0,
+	"_Mavlink":"apMavlink",
+	
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1,
+		}		
+	}
+}
+
+{
+	"name":"apPosCtrl",
+	"class":"_APcopter_posCtrl",
+	"FPS":5,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+}
+
+{
+	"name":"apPhoto",
+	"class":"_APcopter_photo",
+	"FPS":5,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+	"_AP_posCtrl":"apDrive",
+	"_DistSensorBase":"leddarVu",
+	"_GPhoto":"gphoto",
+	"dir":"/media/usb/",
+	"tDelay":100000,
+	"speed":0.3,
+	"iDiv":3,
+}

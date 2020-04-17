@@ -21,17 +21,15 @@ namespace kai
 
 enum DIST_SENSOR_TYPE
 {
-	dsUnknown,
-	dsZED,
-	dsSF40,
-	dsLeddarVu,
-	dsRPLIDAR
+	ds_Unknown,
+	ds_RPLIDAR,
+	ds_LeddarVu
 };
 
 struct DIST_SENSOR_DIV
 {
-	double m_d;	//raw input
-	double m_a; //amplitude
+	float m_d;	//raw input
+	float m_a; //amplitude
 	Median m_fMed;
 	Average m_fAvr;
 
@@ -43,7 +41,7 @@ struct DIST_SENSOR_DIV
 		m_a = -1.0;
 	}
 
-	void input(double d, double a)
+	void input(float d, float a)
 	{
 		m_a = a;
 		m_d = d;
@@ -57,23 +55,23 @@ struct DIST_SENSOR_DIV
 		reset();
 	}
 
-	double d(void)
+	float d(void)
 	{
 		return m_d;
 	}
 
-	double a(void)
+	float a(void)
 	{
 		return m_a;
 	}
 
-	double dAvr(void)
+	float dAvr(void)
 	{
 		if(m_d < 0.0)return -1.0;
 		return m_fAvr.v();
 	}
 
-	double dMed(void)
+	float dMed(void)
 	{
 		if(m_d < 0.0)return -1.0;
 		return m_fMed.v();
@@ -96,35 +94,36 @@ public:
 	void draw(void);
 	void update(void);
 
-	double rMin(void);
-	double rMax(void);
-	void input(double deg, double d);
-	void input(double deg, double d, double a);
+	float rMin(void);
+	float rMax(void);
+	void input(float deg, float d);
+	void input(float deg, float d, float a);
 	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);
-	virtual double d(double deg);
-	virtual double dMin(void);
-	virtual double dMax(void);
-	virtual double dAvr(void);
-	virtual double dMin(double degFrom, double degTo);
-	virtual double dMax(double degFrom, double degTo);
-	virtual double dAvr(double degFrom, double degTo);
+	virtual float d(int iDiv);
+	virtual float d(float deg);
+	virtual float dMin(void);
+	virtual float dMax(void);
+	virtual float dAvr(void);
+	virtual float dMin(float degFrom, float degTo);
+	virtual float dMax(float degFrom, float degTo);
+	virtual float dAvr(float degFrom, float degTo);
 
 public:
 	DIST_SENSOR_DIV* m_pDiv;
 	int		m_nDiv;
-	double	m_fovH;
-	double	m_fovV;
-	double	m_dDeg;
-	double	m_dDegInv;
-	double	m_rMin;
-	double	m_rMax;
-	double	m_hdg;	//given by external sensor e.g. compass
-	double  m_calibScale;
-	double  m_calibOffset;
-	double  m_showScale;
-	double  m_showDegOffset;
+	float	m_fovH;
+	float	m_fovV;
+	float	m_dDeg;
+	float	m_dDegInv;
+	float	m_rMin;
+	float	m_rMax;
+	float	m_hdg;	//given by external sensor e.g. compass
+	float  m_calibScale;
+	float  m_calibOffset;
+	float  m_showScale;
+	float  m_showDegOffset;
 	uint16_t m_bReady;
 };
 

@@ -14,7 +14,6 @@ _LeddarVu::_LeddarVu()
 	m_baud = 115200;
 	m_slaveAddr = 1;
 	m_bUse0x41 = false;
-	m_pVB = NULL;
 	m_showOriginOffsetX = 0.5;
 	m_showOriginOffsetY = 0.5;
 
@@ -49,28 +48,24 @@ bool _LeddarVu::init(void* pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v<string>("port",&m_port);
-	pK->v<int>("baud",&m_baud);
-	pK->v<int>("slaveAddr",&m_slaveAddr);
-	pK->v<bool>("bUse0x41",&m_bUse0x41);
-	pK->v<double>("showOriginOffsetX",&m_showOriginOffsetX);
-	pK->v<double>("showOriginOffsetY",&m_showOriginOffsetY);
+	pK->v("port",&m_port);
+	pK->v("baud",&m_baud);
+	pK->v("slaveAddr",&m_slaveAddr);
+	pK->v("bUse0x41",&m_bUse0x41);
+	pK->v("showOriginOffsetX",&m_showOriginOffsetX);
+	pK->v("showOriginOffsetY",&m_showOriginOffsetY);
 
-	pK->v<uint16_t>("nAccumulationsExpo",&m_nAccumulationsExpo);
-	pK->v<uint16_t>("nOversamplingsExpo",&m_nOversamplingsExpo);
-	pK->v<uint16_t>("nPoint",&m_nPoint);
-	pK->v<uint16_t>("lightSrcPwr",&m_lightSrcPwr);
-	pK->v<bool>("bAutoLightSrcPwr",&m_bAutoLightSrcPwr);
-	pK->v<bool>("bDemergeObj",&m_bDemergeObj);
-	pK->v<bool>("bStaticNoiseRemoval",&m_bStaticNoiseRemoval);
-	pK->v<bool>("bPrecicion",&m_bPrecision);
-	pK->v<bool>("bSaturationCompensation",&m_bSaturationCompensation);
-	pK->v<bool>("bOvershootManagement",&m_bOvershootManagement);
-	pK->v<uint16_t>("oprMode",&m_oprMode);
-
-	string iName = "";
-	F_INFO(pK->v("_VisionBase", &iName));
-	m_pVB = (_VisionBase*) (pK->parent()->getChildInst(iName));
+	pK->v("nAccumulationsExpo",&m_nAccumulationsExpo);
+	pK->v("nOversamplingsExpo",&m_nOversamplingsExpo);
+	pK->v("nPoint",&m_nPoint);
+	pK->v("lightSrcPwr",&m_lightSrcPwr);
+	pK->v("bAutoLightSrcPwr",&m_bAutoLightSrcPwr);
+	pK->v("bDemergeObj",&m_bDemergeObj);
+	pK->v("bStaticNoiseRemoval",&m_bStaticNoiseRemoval);
+	pK->v("bPrecicion",&m_bPrecision);
+	pK->v("bSaturationCompensation",&m_bSaturationCompensation);
+	pK->v("bOvershootManagement",&m_bOvershootManagement);
+	pK->v("oprMode",&m_oprMode);
 
 	return true;
 }
@@ -226,17 +221,17 @@ bool _LeddarVu::updateLidar(void)
 	m_lightSrcPwr = reg[11];
 	m_tStamp = reg[13] + (reg[14] << 16);
 
-	const static double BASE_D = 1.0 / 100.0;
-	const static double BASE_A = 1.0 / 64.0;
+	const static float BASE_D = 1.0 / 100.0;
+	const static float BASE_A = 1.0 / 64.0;
 
 	int i;
 	for (i = 0; i < m_nDiv; i++)
 	{
 		this->input(i*m_dDeg,
-					(double) reg[15 + i] * BASE_D,
-					(double) reg[15 + m_nDiv + i] * BASE_A);
-//		m_pSegment[i].dDistance = (double) reg[15 + i] * BASE_D;
-//		m_pSegment[i].dAmplitude = (double) reg[15 + N_SEGMENT + i] * BASE_A;
+					(float) reg[15 + i] * BASE_D,
+					(float) reg[15 + m_nDiv + i] * BASE_A);
+//		m_pSegment[i].dDistance = (float) reg[15 + i] * BASE_D;
+//		m_pSegment[i].dAmplitude = (float) reg[15 + N_SEGMENT + i] * BASE_A;
 //		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
 	}
 
@@ -281,8 +276,8 @@ bool _LeddarVu::updateLidarFast(void)
 		return false;
 	}
 
-	const static double BASE_D = 1.0 / 100.0;
-	const static double BASE_A = 1.0 / 64.0;
+	const static float BASE_D = 1.0 / 100.0;
+	const static float BASE_A = 1.0 / 64.0;
 	m_nDetection = rsp[2];
 
 	if (iResponseLength >= 3 + (signed) m_nDetection * 5)
@@ -324,7 +319,7 @@ bool _LeddarVu::updateLidarFast(void)
 
 DIST_SENSOR_TYPE _LeddarVu::type(void)
 {
-	return dsLeddarVu;
+	return ds_LeddarVu;
 }
 
 void _LeddarVu::draw(void)
@@ -341,24 +336,16 @@ void _LeddarVu::draw(void)
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	double camFovV = 1.0;
-	double camFovH = 1.0;
-	if(m_pVB)
-	{
-		camFovH = m_fovH / (double)m_pVB->m_fovW;
-		camFovV = m_fovV / (double)m_pVB->m_fovH;
-	}
-
 	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);
 	Scalar col = Scalar(0, 255, 0);
 	Scalar colD = Scalar(0, 0, 255);
-	double rMax = m_rMax * m_showScale;
+	float rMax = m_rMax * m_showScale;
 
 	for(int i=0; i<m_nDiv; i++)
 	{
-		double radFrom = (i*m_dDeg + m_showDegOffset) * camFovH * DEG2RAD;
-		double radTo = ((i+1)*m_dDeg + m_showDegOffset) * camFovH * DEG2RAD;
-		double d = m_pDiv[i].d() * m_showScale;
+		float radFrom = (i*m_dDeg + m_showDegOffset) * DEG2RAD;
+		float radTo = ((i+1)*m_dDeg + m_showDegOffset) * DEG2RAD;
+		float d = m_pDiv[i].d() * m_showScale;
 
 		vDouble2 pFrom,pTo;
 		pFrom.x = sin(radFrom);

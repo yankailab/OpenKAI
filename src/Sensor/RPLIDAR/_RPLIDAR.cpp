@@ -183,7 +183,7 @@ void _RPLIDAR::updateLidar(void)
 
 DIST_SENSOR_TYPE _RPLIDAR::type(void)
 {
-	return dsRPLIDAR;
+	return ds_RPLIDAR;
 }
 
 

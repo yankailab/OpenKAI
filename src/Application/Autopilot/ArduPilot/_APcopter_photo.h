@@ -34,6 +34,8 @@ private:
 	_AP_base* m_pAP;
 	_AP_posCtrl* m_pPC;
 	_DistSensorBase* m_pDS;
+	int m_iDiv;
+	float m_speed;
 
 	_VisionBase* m_pV;
 	_DepthVisionBase* m_pDV;
@@ -44,7 +46,6 @@ private:
 
 	int m_iTake;
 	uint64_t m_tDelay;
-	uint64_t m_tInterval;
 
 	string m_dir;
 	string m_subDir;

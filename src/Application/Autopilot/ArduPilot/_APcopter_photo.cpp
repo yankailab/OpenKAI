@@ -12,6 +12,8 @@ _APcopter_photo::_APcopter_photo()
 	m_pDV = NULL;
 	m_pG = NULL;
 
+	m_iDiv = 0;
+	m_speed = 0.3;
 	m_dAlt = 1.0;
 	m_lastAlt = 0.0;
 
@@ -20,7 +22,6 @@ _APcopter_photo::_APcopter_photo()
 
 	m_iTake = 0;
 	m_tDelay = USEC_1SEC/2;
-	m_tInterval = USEC_1SEC/2;
 
 	m_quality = 100;
 	m_bFlipRGB = false;
@@ -44,7 +45,8 @@ bool _APcopter_photo::init(void* pKiss)
 	pK->v("bFlipD", &m_bFlipD);
 	pK->v("tDelay", &m_tDelay);
 	pK->v("nSpeed", &m_dAlt);
-	pK->v("tInterval", &m_tInterval);
+	pK->v("iDiv", &m_iDiv);
+	pK->v("speed", &m_speed);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -119,7 +121,6 @@ void _APcopter_photo::update(void)
 		if(!shutter())
 		{
 			m_lastAlt = 0.0;
-			//TODO: median filter reset
 		}
 
 		this->autoFPSto();
@@ -132,14 +133,17 @@ bool _APcopter_photo::shutter(void)
 	IF_F(!bActive());
 	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED);
 
-	float tAlt = m_pDS->d(0.0);	//TODO: add median filter
-	if(tAlt - m_lastAlt > m_dAlt)
+	float cAlt = m_pDS->d(m_iDiv);
+	if(cAlt - m_lastAlt < m_dAlt)
+	{
+		m_pPC->m_vP.z = m_speed;
+		return true;
+	}
+	m_lastAlt = cAlt;
 
-
-	this->sleepTime(m_tInterval);
-
-	m_pMC->transit("STANDBY");
-	this->sleepTime(m_tDelay);
+	m_pPC->m_vP.z = 0.0;
+	if(m_tDelay > 0)
+		this->sleepTime(m_tDelay);
 
 	string cmd;
 	cmd = "mkdir /media/usb";
@@ -211,11 +215,6 @@ bool _APcopter_photo::shutter(void)
 
 	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTake));
 	m_iTake++;
-
-//	m_pDrive->setYaw(m_yaw);
-//	m_pDrive->setSpeed(m_nSpeed);
-
-	m_pMC->transit("RUN");
 
 	return true;
 }
