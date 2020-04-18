@@ -235,17 +235,6 @@ bool _LeddarVu::updateLidar(void)
 //		m_pSegment[i].flags = reg[15 + 2 * N_SEGMENT + i];
 	}
 
-	IF_T(!m_bLog);
-
-	string log = " nDiv:" + i2str(m_nDiv) + " nDet:" + i2str(m_nDetection);
-	for (i = 0; i < m_nDiv; i++)
-	{
-		DIST_SENSOR_DIV* pD = &m_pDiv[i];
-		log += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
-	}
-	log += " |";
-	LOG_I(log);
-
 	return true;
 }
 
@@ -304,16 +293,6 @@ bool _LeddarVu::updateLidarFast(void)
 		return false;
 	}
 
-	IF_T(!m_bLog);
-
-	string log = "nSeg:" + i2str(m_nDiv) + " nDet:" + i2str(m_nDetection);
-	for (int i = 0; i < m_nDiv; i++)
-	{
-		log += " | " + f2str(m_pDiv[i].dAvr());
-	}
-	log += " |";
-	LOG_I(log);
-
 	return true;
 }
 
@@ -328,9 +307,22 @@ void _LeddarVu::draw(void)
 
 	string msg;
 	msg += "nDiv=" + i2str(m_nDiv);
-	msg += " nDet=" + i2str(m_nDetection);
-	msg += " lightSrcPwr=" + i2str(m_lightSrcPwr);
-	msg += " tStamp=" + i2str(m_tStamp);
+	msg += ", nDet=" + i2str(m_nDetection);
+	msg += ", lightSrcPwr=" + i2str(m_lightSrcPwr);
+	msg += ", tStamp=" + i2str(m_tStamp);
+	addMsg(msg);
+
+	msg = "nDiv:" + i2str(m_nDiv) + ", nDet:" + i2str(m_nDetection);
+	addMsg(msg);
+
+	int i;
+	msg = "";
+	for (i=0; i<m_nDiv; i++)
+	{
+		DIST_SENSOR_DIV* pD = &m_pDiv[i];
+		msg += " | " + f2str(pD->d()) + " (" + f2str(pD->a()) + ")";
+	}
+	msg += " |";
 	addMsg(msg);
 
 	IF_(!checkWindow());
@@ -341,7 +333,7 @@ void _LeddarVu::draw(void)
 	Scalar colD = Scalar(0, 0, 255);
 	float rMax = m_rMax * m_showScale;
 
-	for(int i=0; i<m_nDiv; i++)
+	for(i=0; i<m_nDiv; i++)
 	{
 		float radFrom = (i*m_dDeg + m_showDegOffset) * DEG2RAD;
 		float radTo = ((i+1)*m_dDeg + m_showDegOffset) * DEG2RAD;

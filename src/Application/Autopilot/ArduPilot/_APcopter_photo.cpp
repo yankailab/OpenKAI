@@ -15,6 +15,7 @@ _APcopter_photo::_APcopter_photo()
 	m_iDiv = 0;
 	m_speed = 0.3;
 	m_dAlt = 1.0;
+	m_alt = 0.0;
 	m_lastAlt = 0.0;
 
 	m_dir = "/home/";
@@ -44,8 +45,8 @@ bool _APcopter_photo::init(void* pKiss)
 	pK->v("bFlipRGB", &m_bFlipRGB);
 	pK->v("bFlipD", &m_bFlipD);
 	pK->v("tDelay", &m_tDelay);
-	pK->v("nSpeed", &m_dAlt);
 	pK->v("iDiv", &m_iDiv);
+	pK->v("dAlt", &m_dAlt);
 	pK->v("speed", &m_speed);
 
 	if(m_subDir.empty())
@@ -130,18 +131,20 @@ void _APcopter_photo::update(void)
 bool _APcopter_photo::shutter(void)
 {
 	IF_F(check()<0);
-	IF_F(!bActive());
 	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED);
 
-	float cAlt = m_pDS->d(m_iDiv);
-	if(cAlt - m_lastAlt < m_dAlt)
+	m_alt = m_pDS->d(m_iDiv);
+	IF_T(m_alt < 0.0);
+
+	if(m_alt - m_lastAlt < m_dAlt)
 	{
 		m_pPC->m_vP.z = m_speed;
 		return true;
 	}
-	m_lastAlt = cAlt;
 
+	m_lastAlt = m_alt;
 	m_pPC->m_vP.z = 0.0;
+
 	if(m_tDelay > 0)
 		this->sleepTime(m_tDelay);
 
@@ -171,7 +174,7 @@ bool _APcopter_photo::shutter(void)
 		fBGR.m()->copyTo(mBGR);
 		IF_F(mBGR.empty());
 
-		fName = m_subDir + i2str(m_iTake) + "_tag" + i2str(m_iTake) + "_rgb.jpg";
+		fName = m_subDir + i2str(m_iTake) + "_rgb.jpg";
 		cv::imwrite(fName, mBGR, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -191,7 +194,7 @@ bool _APcopter_photo::shutter(void)
 		Mat mDscale;
 		mD.convertTo(mDscale, CV_8UC1, 100);
 
-		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTake) +  "_d.jpg";
+		fName = m_subDir + i2str(m_iTake) + "_d.jpg";
 		cv::imwrite(fName, mDscale, m_compress);
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
 		system(cmd.c_str());
@@ -204,7 +207,7 @@ bool _APcopter_photo::shutter(void)
 		//gphoto
 		m_pG->open();
 
-		fName = m_subDir + i2str(m_iTake)  + "_tag" + i2str(m_iTake) +  ".jpg";
+		fName = m_subDir + i2str(m_iTake) + ".jpg";
 		cmd = "gphoto2 --capture-image-and-download --filename " + fName;
 		system(cmd.c_str());
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
@@ -213,7 +216,7 @@ bool _APcopter_photo::shutter(void)
 		LOG_I("GPhoto: " + fName);
 	}
 
-	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTake));
+	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
 
 	return true;
@@ -225,6 +228,7 @@ void _APcopter_photo::draw(void)
 	this->_AutopilotBase::draw();
 	drawActive();
 
+	addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));
 	addMsg("iTake = " + i2str(m_iTake));
 	addMsg("Dir = " + m_subDir);
 }

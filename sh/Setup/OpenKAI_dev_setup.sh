@@ -12,6 +12,11 @@ sudo dpkg -i *.deb
 sudo reboot now
 
 #----------------------------------------------------
+# (Optional) sshd
+sudo apt-get install ssh
+systemctl start sshd
+
+#----------------------------------------------------
 # For Jetson
 # Change performace setting and make it auto start
 sudo rm /etc/rc.local

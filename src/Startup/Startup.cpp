@@ -128,7 +128,11 @@ bool Startup::createAllInst(Kiss* pKiss)
 		IF_CONT(pK->m_class == "Startup");
 
 		o.m_pInst = m_module.createInstance(pK);
-		IF_Fl(!o.m_pInst, "Create instance failed: " + pK->m_name);
+		if(!o.m_pInst)
+		{
+			LOG_E("Failed to create instance: " + pK->m_name);
+			return false;
+		}
 
 		o.m_pKiss = pK;
 		m_vInst.push_back(o);

@@ -41,6 +41,7 @@ private:
 	_DepthVisionBase* m_pDV;
 	_GPhoto* m_pG;
 
+	float	m_alt;
 	float	m_dAlt;
 	float	m_lastAlt;
 

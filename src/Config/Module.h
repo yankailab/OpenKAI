@@ -35,6 +35,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_slam.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AP_descent.h"
+#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_field.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_photo.h"
