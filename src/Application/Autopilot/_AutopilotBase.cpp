@@ -68,6 +68,7 @@ void _AutopilotBase::update(void)
 bool _AutopilotBase::bActive(void)
 {
 	NULL_T(m_pMC);
+	IF_T(m_vActiveMission.empty());
 
 	int iMission = m_pMC->getMissionIdx();
 	for (int i : m_vActiveMission)
