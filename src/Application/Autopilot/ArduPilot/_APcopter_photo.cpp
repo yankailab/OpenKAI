@@ -17,12 +17,14 @@ _APcopter_photo::_APcopter_photo()
 	m_dAlt = 1.0;
 	m_alt = 0.0;
 	m_lastAlt = 0.0;
+	m_iRelayLED = 0;
+	m_iRCmode = 7;
 
 	m_dir = "/home/";
 	m_subDir = "";
 
 	m_iTake = 0;
-	m_tDelay = USEC_1SEC/2;
+	m_tDelay = 0;
 
 	m_quality = 100;
 	m_bFlipRGB = false;
@@ -48,6 +50,8 @@ bool _APcopter_photo::init(void* pKiss)
 	pK->v("iDiv", &m_iDiv);
 	pK->v("dAlt", &m_dAlt);
 	pK->v("speed", &m_speed);
+	pK->v("iRelayLED",&m_iRelayLED);
+	pK->v("iRCmode",&m_iRCmode);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -131,18 +135,28 @@ void _APcopter_photo::update(void)
 bool _APcopter_photo::shutter(void)
 {
 	IF_F(check()<0);
-	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED);
+
+//	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
+//	IF_F(rcMode == UINT16_MAX);
+//	//mode
+//	if(rcMode < 1250)
+//	else if(rcMode > 1750)
+
+	IF_F(m_pAP->getApMode() != AP_COPTER_GUIDED);
 
 	m_alt = m_pDS->d(m_iDiv);
 	IF_T(m_alt < 0.0);
 
-	if(m_alt - m_lastAlt < m_dAlt)
+	if(m_alt - m_lastAlt <= m_dAlt)
 	{
 		m_pPC->m_vP.z = m_speed;
 		return true;
 	}
 
-	m_lastAlt = m_alt;
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, 1);
+
+	m_lastAlt = floorf(m_alt);
+	if(m_lastAlt<0.0)m_lastAlt=0.0;
 	m_pPC->m_vP.z = 0.0;
 
 	if(m_tDelay > 0)
@@ -207,7 +221,7 @@ bool _APcopter_photo::shutter(void)
 		//gphoto
 		m_pG->open();
 
-		fName = m_subDir + i2str(m_iTake) + ".jpg";
+		fName = m_subDir + i2str(m_iTake) + "_" + tFormat() + "_" + f2str(m_alt) + ".jpg";
 		cmd = "gphoto2 --capture-image-and-download --filename " + fName;
 		system(cmd.c_str());
 		cmd = "exiftool -overwrite_original -GPSLongitude=\"" + lon + "\" -GPSLatitude=\"" + lat + "\" " + fName;
@@ -218,6 +232,8 @@ bool _APcopter_photo::shutter(void)
 
 	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
+
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, 0);
 
 	return true;
 }

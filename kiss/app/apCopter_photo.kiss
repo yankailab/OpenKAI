@@ -5,14 +5,14 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -187,13 +187,23 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"rcChannels",
 			"id":65,
 			"tInt":1,
-		}		
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.2,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1,
+		}
 	}
 }
 
@@ -222,8 +232,10 @@
 	"_DistSensorBase":"leddarVu",
 	"_GPhoto":"gphoto",
 	"dir":"/media/usb/",
-	"tDelay":100000,
+	"tDelay":0,
 	"iDiv":3,
-	"dAlt":0.5,
+	"dAlt":1.0,
 	"speed":-0.3,
+	"iRelayLED":0,
+	"iRCmode":7,
 }

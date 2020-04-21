@@ -41,9 +41,11 @@ private:
 	_DepthVisionBase* m_pDV;
 	_GPhoto* m_pG;
 
+	int		m_iRCmode;
 	float	m_alt;
 	float	m_dAlt;
 	float	m_lastAlt;
+	int		m_iRelayLED;
 
 	int m_iTake;
 	uint64_t m_tDelay;
