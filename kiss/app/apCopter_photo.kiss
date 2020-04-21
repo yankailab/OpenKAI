@@ -12,7 +12,7 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -34,6 +34,16 @@
 }
 
 {
+	"name":"T265",
+	"class":"_RStracking",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+}
+
+{
 	"name":"gphoto",
 	"class":"_GPhoto",
 	"FPS":30,
@@ -51,7 +61,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyTHS0",
+	"port":"/dev/ttyTHS1",
 	"baud":115200,
 	"/port":"/dev/ttyUSB0",
 	"/baud":57600,
@@ -187,22 +197,17 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.5,
-		}
-		{
-			"name":"rcChannels",
-			"id":65,
 			"tInt":1,
 		}
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.2,
+			"tInt":0.3,
 		}
 		{
 			"name":"rcChannels",
 			"id":65,
-			"tInt":1,
+			"tInt":0.3,
 		}
 	}
 }

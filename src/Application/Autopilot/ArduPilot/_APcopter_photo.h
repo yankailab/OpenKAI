@@ -23,7 +23,9 @@ public:
 	void draw(void);
 
 private:
-	bool shutter(void);
+	void autoMode(void);
+	void manualMode(void);
+	void shutter(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_APcopter_photo *) This)->update();
@@ -42,6 +44,8 @@ private:
 	_GPhoto* m_pG;
 
 	int		m_iRCmode;
+	bool	m_bManShutter;
+
 	float	m_alt;
 	float	m_dAlt;
 	float	m_lastAlt;

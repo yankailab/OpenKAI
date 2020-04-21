@@ -19,6 +19,7 @@ _APcopter_photo::_APcopter_photo()
 	m_lastAlt = 0.0;
 	m_iRelayLED = 0;
 	m_iRCmode = 7;
+	m_bManShutter = false;
 
 	m_dir = "/home/";
 	m_subDir = "";
@@ -123,41 +124,65 @@ void _APcopter_photo::update(void)
 		this->autoFPSfrom();
 		this->_AutopilotBase::update();
 
-		if(!shutter())
+		if(check()>=0)
 		{
-			m_lastAlt = 0.0;
+			int apMode = m_pAP->getApMode();
+			if(apMode == AP_COPTER_GUIDED)
+			{
+				autoMode();
+			}
+			else
+			{
+				m_lastAlt = 0.0;
+				manualMode();
+			}
 		}
 
 		this->autoFPSto();
 	}
 }
 
-bool _APcopter_photo::shutter(void)
+void _APcopter_photo::autoMode(void)
 {
-	IF_F(check()<0);
-
-//	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
-//	IF_F(rcMode == UINT16_MAX);
-//	//mode
-//	if(rcMode < 1250)
-//	else if(rcMode > 1750)
-
-	IF_F(m_pAP->getApMode() != AP_COPTER_GUIDED);
+	IF_(check()<0);
 
 	m_alt = m_pDS->d(m_iDiv);
-	IF_T(m_alt < 0.0);
+	IF_(m_alt < 0.0);
 
 	if(m_alt - m_lastAlt <= m_dAlt)
 	{
 		m_pPC->m_vP.z = m_speed;
-		return true;
+		return;
 	}
 
-	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, 1);
-
 	m_lastAlt = floorf(m_alt);
-	if(m_lastAlt<0.0)m_lastAlt=0.0;
+	if(m_lastAlt < 0.0)m_lastAlt = 0.0;
 	m_pPC->m_vP.z = 0.0;
+
+	shutter();
+}
+
+void _APcopter_photo::manualMode(void)
+{
+	IF_(check()<0);
+
+	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
+	IF_(rcMode == UINT16_MAX);
+
+	bool bManShutter = (rcMode > 1750)?true:false;
+	if(bManShutter && !m_bManShutter)
+	{
+		shutter();
+	}
+
+	m_bManShutter = bManShutter;
+}
+
+void _APcopter_photo::shutter(void)
+{
+	IF_(check()<0);
+
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
 
 	if(m_tDelay > 0)
 		this->sleepTime(m_tDelay);
@@ -186,7 +211,7 @@ bool _APcopter_photo::shutter(void)
 		if(m_bFlipRGB)fBGR = fBGR.flip(-1);
 		Mat mBGR;
 		fBGR.m()->copyTo(mBGR);
-		IF_F(mBGR.empty());
+		IF_(mBGR.empty());
 
 		fName = m_subDir + i2str(m_iTake) + "_rgb.jpg";
 		cv::imwrite(fName, mBGR, m_compress);
@@ -203,7 +228,7 @@ bool _APcopter_photo::shutter(void)
 		if(m_bFlipD)fD = fD.flip(-1);
 		Mat mD;
 		fD.m()->copyTo(mD);
-		IF_F(mD.empty());
+		IF_(mD.empty());
 
 		Mat mDscale;
 		mD.convertTo(mDscale, CV_8UC1, 100);
@@ -233,9 +258,7 @@ bool _APcopter_photo::shutter(void)
 	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
 
-	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, 0);
-
-	return true;
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, false);
 }
 
 void _APcopter_photo::draw(void)
