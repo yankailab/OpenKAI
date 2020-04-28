@@ -24,11 +24,15 @@ public:
 	void draw(void);
 
 	void reset(void);
+	vFloat3 t(void);
+	vFloat3 v(void);
+	vFloat4 q(void);
 
 public:
 	bool	m_bReady;
-	vFloat3	m_vPos;
-	vFloat3	m_vAtti;
+	vFloat3	m_vT;	//translation
+	vFloat3	m_vV;	//velocity
+	vFloat4 m_vQ;	//quaternion
 	float	m_confidence;
 
 };

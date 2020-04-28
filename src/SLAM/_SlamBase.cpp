@@ -30,9 +30,25 @@ bool _SlamBase::init(void* pKiss)
 
 void _SlamBase::reset(void)
 {
-	m_vPos.init();
-	m_vAtti.init();
+	m_vT.init();
+	m_vV.init();
+	m_vQ.init();
 	m_confidence = 0.0;
+}
+
+vFloat3 _SlamBase::t(void)
+{
+	return m_vT;
+}
+
+vFloat3 _SlamBase::v(void)
+{
+	return m_vV;
+}
+
+vFloat4 _SlamBase::q(void)
+{
+	return m_vQ;
 }
 
 void _SlamBase::draw(void)
@@ -40,14 +56,20 @@ void _SlamBase::draw(void)
 	this->_ThreadBase::draw();
 
 	string msg;
-	msg = "pos=(" + f2str(m_vPos.x,3) + ", "
-				  + f2str(m_vPos.y,3) + ", "
-				  + f2str(m_vPos.z,3) + ")";
+	msg = "vT = (" + f2str(m_vT.x,3) + ", "
+				  + f2str(m_vT.y,3) + ", "
+				  + f2str(m_vT.z,3) + ")";
 	addMsg(msg,1);
 
-	msg = "attitude=(" + f2str(m_vAtti.x,3) + ", "
-				  + f2str(m_vAtti.y,3) + ", "
-				  + f2str(m_vAtti.z,3) + ")";
+	msg = "vV = (" + f2str(m_vV.x,3) + ", "
+				  + f2str(m_vV.y,3) + ", "
+				  + f2str(m_vV.z,3) + ")";
+	addMsg(msg,1);
+
+	msg = "vQ = (" + f2str(m_vQ.x,3) + ", "
+				  + f2str(m_vQ.y,3) + ", "
+				  + f2str(m_vQ.z,3) + ", "
+				  + f2str(m_vQ.w,3) + ")";
 	addMsg(msg,1);
 
 	msg = "confidence=" + f2str(m_confidence);

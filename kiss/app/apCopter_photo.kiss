@@ -213,6 +213,27 @@
 }
 
 {
+	"name":"apGPS",
+	"class":"_AP_GPS",
+	"FPS":10,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"_AP_base":"apBase",
+	"_RStracking":"T265",
+	"gpsID":0,
+	"iFixType":3,
+	"nSat":10,
+	"hdop":0,
+	"vdop":0,
+
+	/*Saitama*/
+	"lat":35.854697,
+	"lng":139.517741,
+}
+
+{
 	"name":"apPosCtrl",
 	"class":"_AP_posCtrl",
 	"FPS":5,

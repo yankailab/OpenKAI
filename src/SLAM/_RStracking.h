@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Vision_RStracking_H_
 #define OpenKAI_src_Vision_RStracking_H_
 
-#include "../Base/common.h"
 #include "_SlamBase.h"
 
 #ifdef USE_REALSENSE
@@ -28,6 +27,7 @@ public:
 	void draw(void);
 	bool open(void);
 	void close(void);
+	void reset(void);
 
 private:
     void update(void);

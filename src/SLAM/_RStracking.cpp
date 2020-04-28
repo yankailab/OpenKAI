@@ -19,6 +19,12 @@ _RStracking::_RStracking()
 
 _RStracking::~_RStracking()
 {
+	if (m_threadMode == T_THREAD)
+	{
+		goSleep();
+		while (!bSleeping());
+	}
+
 	close();
 }
 
@@ -67,13 +73,14 @@ bool _RStracking::open(void)
 
 void _RStracking::close(void)
 {
-	if (m_threadMode == T_THREAD)
-	{
-		goSleep();
-		while (!bSleeping());
-	}
-
 	m_rsPipe.stop();
+	m_bReady = false;
+}
+
+void _RStracking::reset(void)
+{
+	close();
+	this->_SlamBase::reset();
 }
 
 bool _RStracking::start(void)
@@ -113,9 +120,15 @@ void _RStracking::update(void)
 	        auto f = frames.first_or_default(RS2_STREAM_POSE);
 	        auto pose = f.as<rs2::pose_frame>().get_pose_data();
 
-	        m_vPos.x = pose.translation.x;
-	        m_vPos.y = pose.translation.y;
-	        m_vPos.z = pose.translation.z;
+	        m_vT.x = pose.translation.x;
+	        m_vT.y = pose.translation.y;
+	        m_vT.z = pose.translation.z;
+
+	        m_vQ.x = pose.rotation.x;
+	        m_vQ.y = pose.rotation.y;
+	        m_vQ.z = pose.rotation.z;
+	        m_vQ.w = pose.rotation.w;
+
 	        m_confidence = pose.tracker_confidence;
 
 		} catch (const rs2::camera_disconnected_error& e)

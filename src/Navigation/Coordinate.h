@@ -115,8 +115,8 @@ public:
 	UTM_POS LL2UTM(LL_POS& pLL);
 	LL_POS UTM2LL(UTM_POS& pUTM);
 
-	UTM_POS offset(UTM_POS& UTM, vDouble3& dNEA);
-	LL_POS offset(LL_POS& LL, vDouble3& dNEA);
+	UTM_POS offset(UTM_POS& UTM, vFloat3& dNEA);
+	LL_POS offset(LL_POS& LL, vFloat3& dNEA);
 
 };
 

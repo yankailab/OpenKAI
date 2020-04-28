@@ -18,7 +18,7 @@ Coordinate::~Coordinate()
 {
 }
 
-UTM_POS Coordinate::offset(UTM_POS& UTM, vDouble3& dNEA)
+UTM_POS Coordinate::offset(UTM_POS& UTM, vFloat3& dNEA)
 {
 	double hdgRad = UTM.m_hdg * DEG2RAD;
 	double sinH = sin(hdgRad);
@@ -33,7 +33,7 @@ UTM_POS Coordinate::offset(UTM_POS& UTM, vDouble3& dNEA)
 	return pUTM;
 }
 
-LL_POS Coordinate::offset(LL_POS& LL, vDouble3& dNEA)
+LL_POS Coordinate::offset(LL_POS& LL, vFloat3& dNEA)
 {
 	//http://www.edwilliams.org/avform.htm#LL
 

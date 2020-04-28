@@ -123,7 +123,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_RTH);
 	ADD_MODULE(_AP_relay);
 	ADD_MODULE(_AP_servo);
-	ADD_MODULE(_AP_slam);
+	ADD_MODULE(_AP_GPS);
 	ADD_MODULE(_AP_takeoff);
 	ADD_MODULE(_AP_followClient);
 	ADD_MODULE(_AP_goto);
