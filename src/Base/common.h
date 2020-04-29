@@ -9,6 +9,7 @@
 #endif
 
 #include "cv.h"
+#include "pcl.h"
 #include "tensorRT.h"
 #include "platform.h"
 #include "macro.h"

@@ -27,7 +27,6 @@ public:
 	void draw(void);
 	bool open(void);
 	void close(void);
-	void reset(void);
 
 private:
     void update(void);

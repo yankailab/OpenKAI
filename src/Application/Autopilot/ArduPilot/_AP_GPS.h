@@ -3,10 +3,8 @@
 
 #include "../../../Filter/Median.h"
 #include "../../../Navigation/Coordinate.h"
-#include "../../../SLAM/_RStracking.h"
+#include "../../../SLAM/_SlamBase.h"
 #include "../ArduPilot/_AP_base.h"
-
-#ifdef USE_REALSENSE
 
 namespace kai
 {
@@ -35,11 +33,14 @@ protected:
 
 public:
 	_AP_base* m_pAP;
-	_RStracking* m_pRS;
+	_SlamBase* m_pSB;
 	Coordinate m_GPS;
 
 	double	m_yaw;
 	double	m_dYaw;
+
+	vInt3 m_vAxisIdx;
+	vFloat3 m_vAxisK;
 
 	LL_POS m_llPos;
 	UTM_POS m_utmPos;
@@ -52,5 +53,4 @@ public:
 };
 
 }
-#endif
 #endif

@@ -13,7 +13,8 @@ namespace kai
 _SlamBase::_SlamBase()
 {
 	m_bReady = false;
-	reset();
+	m_bReset = false;
+	resetAll();
 }
 
 _SlamBase::~_SlamBase()
@@ -28,12 +29,23 @@ bool _SlamBase::init(void* pKiss)
 	return true;
 }
 
+bool _SlamBase::bReady(void)
+{
+	return m_bReady;
+}
+
 void _SlamBase::reset(void)
+{
+	m_bReset = true;
+}
+
+void _SlamBase::resetAll(void)
 {
 	m_vT.init();
 	m_vV.init();
 	m_vQ.init();
 	m_confidence = 0.0;
+	m_bReset = false;
 }
 
 vFloat3 _SlamBase::t(void)

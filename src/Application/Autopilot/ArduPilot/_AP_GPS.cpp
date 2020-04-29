@@ -8,10 +8,12 @@ namespace kai
 _AP_GPS::_AP_GPS()
 {
 	m_pAP = NULL;
-	m_pRS = NULL;
+	m_pSB = NULL;
 
 	m_yaw = 0.0;
 	m_dYaw = 0.0;
+	m_vAxisIdx.init(0,1,2);
+	m_vAxisK.init(1,1,1);
 	m_utmPos.init();
 
 	m_bUseApOrigin = false;
@@ -27,6 +29,8 @@ bool _AP_GPS::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("vAxisIdx",&m_vAxisIdx);
+	pK->v("vAxisK",&m_vAxisK);
 	pK->v("lat", &m_llOrigin.m_lat);
 	pK->v("lng", &m_llOrigin.m_lng);
 	m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
@@ -45,9 +49,9 @@ bool _AP_GPS::init(void* pKiss)
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
-	F_ERROR_F(pK->v("_RStracking", &iName));
-	m_pRS = (_RStracking*) (pK->root()->getChildInst(iName));
-	IF_Fl(!m_pRS, iName + ": not found");
+	F_ERROR_F(pK->v("_SlamBase", &iName));
+	m_pSB = (_SlamBase*) (pK->root()->getChildInst(iName));
+	IF_Fl(!m_pSB, iName + ": not found");
 
 	return true;
 }
@@ -70,7 +74,7 @@ int _AP_GPS::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
-	NULL__(m_pRS,-1);
+	NULL__(m_pSB,-1);
 
 	return 0;
 }
@@ -106,11 +110,11 @@ void _AP_GPS::updateGPS(void)
 	m_utmOrigin.m_hdg = m_yaw + m_dYaw;
 	m_utmOrigin.m_altRel = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.relative_alt) * 0.01;
 
-	vFloat3 vRSt = m_pRS->t();
+	vFloat3 vRSt = m_pSB->t();
 	vFloat3 vT;
-	vT.x = vRSt.x;
-	vT.y = vRSt.y;
-	vT.z = vRSt.z;
+	vT.x = vRSt.v(m_vAxisIdx.x) * m_vAxisK.x;
+	vT.y = vRSt.v(m_vAxisIdx.y) * m_vAxisK.y;
+	vT.z = vRSt.v(m_vAxisIdx.z) * m_vAxisK.z;
 	UTM_POS pUTM = m_GPS.offset(m_utmOrigin, vT);
 	m_llPos = m_GPS.UTM2LL(pUTM);
 
@@ -136,7 +140,7 @@ void _AP_GPS::reset(void)
 {
 	IF_(check()<0);
 
-	m_pRS->reset();
+	m_pSB->reset();
 	m_yaw = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.hdg) * 0.01;
 	m_dYaw = 0.0;
 }

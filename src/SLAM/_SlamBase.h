@@ -23,13 +23,18 @@ public:
 	bool init(void* pKiss);
 	void draw(void);
 
+	bool bReady(void);
 	void reset(void);
 	vFloat3 t(void);
 	vFloat3 v(void);
 	vFloat4 q(void);
 
+protected:
+	void resetAll(void);
+
 public:
 	bool	m_bReady;
+	bool	m_bReset;
 	vFloat3	m_vT;	//translation
 	vFloat3	m_vV;	//velocity
 	vFloat4 m_vQ;	//quaternion

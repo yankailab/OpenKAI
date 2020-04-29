@@ -1,3 +1,6 @@
+
+#ifdef USE_OPENCV
+
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
@@ -57,3 +60,5 @@ using namespace dnn;
 #define KEY_ARROW_DOWN 84
 #define KEY_ARROW_LEFT 81
 #define KEY_ARROW_RIGHT 83
+
+#endif

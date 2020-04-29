@@ -18,6 +18,13 @@ struct vInt3
 		y = 0;
 		z = 0;
 	}
+
+	void init(int a, int b, int c)
+	{
+		x = a;
+		y = b;
+		z = c;
+	}
 };
 
 }

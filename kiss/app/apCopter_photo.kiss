@@ -5,7 +5,7 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -221,12 +221,14 @@
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
-	"_RStracking":"T265",
+	"_SlamBase":"T265",
 	"gpsID":0,
 	"iFixType":3,
 	"nSat":10,
 	"hdop":0,
 	"vdop":0,
+	"vAxisIdx":[2,0,1],
+	"vAxisK":[-1,1,-1],
 
 	/*Saitama*/
 	"lat":35.854697,

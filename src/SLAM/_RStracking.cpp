@@ -14,7 +14,6 @@ namespace kai
 
 _RStracking::_RStracking()
 {
-	m_bReady = false;
 }
 
 _RStracking::~_RStracking()
@@ -73,14 +72,9 @@ bool _RStracking::open(void)
 
 void _RStracking::close(void)
 {
+	IF_(m_bReady);
 	m_rsPipe.stop();
 	m_bReady = false;
-}
-
-void _RStracking::reset(void)
-{
-	close();
-	this->_SlamBase::reset();
 }
 
 bool _RStracking::start(void)
@@ -110,6 +104,13 @@ void _RStracking::update(void)
 				this->sleepTime(USEC_1SEC);
 				continue;
 			}
+		}
+
+		if(m_bReset)
+		{
+			close();
+			this->_SlamBase::resetAll();
+			continue;
 		}
 
 		this->autoFPSfrom();
