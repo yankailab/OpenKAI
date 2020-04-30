@@ -61,7 +61,8 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyTHS1",
+	"/port":"/dev/ttyTHS1",
+	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"/port":"/dev/ttyUSB0",
 	"/baud":57600,
@@ -229,6 +230,8 @@
 	"vdop":0,
 	"vAxisIdx":[2,0,1],
 	"vAxisK":[-1,1,-1],
+	"yaw":0.0,
+	"bYaw":0,
 
 	/*Saitama*/
 	"lat":35.854697,

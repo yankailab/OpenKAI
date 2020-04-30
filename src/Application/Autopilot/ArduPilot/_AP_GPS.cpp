@@ -11,13 +11,20 @@ _AP_GPS::_AP_GPS()
 	m_pSB = NULL;
 
 	m_yaw = 0.0;
-	m_dYaw = 0.0;
+	m_bYaw = false;
+
 	m_vAxisIdx.init(0,1,2);
 	m_vAxisK.init(1,1,1);
 	m_utmPos.init();
 
 	m_bUseApOrigin = false;
 	m_llOrigin.init();
+
+	m_D.gps_id = 0;
+	m_D.fix_type = 3;
+	m_D.satellites_visible = 10;
+	m_D.hdop = 0;
+	m_D.vdop = 0;
 }
 
 _AP_GPS::~_AP_GPS()
@@ -29,6 +36,8 @@ bool _AP_GPS::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("yaw", &m_yaw);
+	pK->v("bYaw", &m_bYaw);
 	pK->v("vAxisIdx",&m_vAxisIdx);
 	pK->v("vAxisK",&m_vAxisK);
 	pK->v("lat", &m_llOrigin.m_lat);
@@ -96,6 +105,12 @@ void _AP_GPS::updateGPS(void)
 {
 	IF_(check()<0);
 
+	if(!m_bYaw)
+	{
+		m_bYaw = reset();
+		return;
+	}
+
 	if(m_bUseApOrigin)
 	{
 		vDouble3 vHome = m_pAP->getHomePos();
@@ -106,8 +121,7 @@ void _AP_GPS::updateGPS(void)
 		m_utmOrigin = m_GPS.LL2UTM(m_llOrigin);
 	}
 
-//	m_dYaw = m_pSB->q();
-	m_utmOrigin.m_hdg = m_yaw + m_dYaw;
+	m_utmOrigin.m_hdg = m_yaw;
 	m_utmOrigin.m_altRel = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.relative_alt) * 0.01;
 
 	vFloat3 vRSt = m_pSB->t();
@@ -136,25 +150,26 @@ void _AP_GPS::updateGPS(void)
 
 }
 
-void _AP_GPS::reset(void)
+bool _AP_GPS::reset(void)
 {
-	IF_(check()<0);
+	IF_F(check()<0);
 
+	uint16_t hdg = m_pAP->m_pMav->m_globalPositionINT.m_msg.hdg;
+	IF_F(hdg == UINT16_MAX);
+
+	m_yaw = ((double)hdg) * 0.01;
 	m_pSB->reset();
-	m_yaw = ((double)m_pAP->m_pMav->m_globalPositionINT.m_msg.hdg) * 0.01;
-	m_dYaw = 0.0;
+
+	return true;
 }
 
 void _AP_GPS::draw(void)
 {
 	this->_AutopilotBase::draw();
 
-	addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7));
-	addMsg("yaw=" + f2str(m_yaw) + ", dYaw = " + f2str(m_dYaw));
-
+	addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7) + ", yaw=" + f2str(m_yaw));
 }
 
 }
 
 #endif
-

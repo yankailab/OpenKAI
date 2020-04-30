@@ -21,7 +21,7 @@ public:
 	void update(void);
 	void draw(void);
 
-	void reset(void);
+	bool reset(void);
 
 protected:
 	void updateGPS(void);
@@ -37,7 +37,7 @@ public:
 	Coordinate m_GPS;
 
 	double	m_yaw;
-	double	m_dYaw;
+	bool	m_bYaw;
 
 	vInt3 m_vAxisIdx;
 	vFloat3 m_vAxisK;
