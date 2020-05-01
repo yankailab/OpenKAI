@@ -15,7 +15,7 @@
 #include "macro.h"
 #include "constant.h"
 #include <glog/logging.h>
-#include "../Primitive/data.h"
+#include "../Primitive/helper.h"
 #include "../Primitive/vInt2.h"
 #include "../Primitive/vInt3.h"
 #include "../Primitive/vInt4.h"

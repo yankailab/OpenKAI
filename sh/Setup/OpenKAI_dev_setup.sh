@@ -97,7 +97,17 @@ git clone https://github.com/PointCloudLibrary/pcl.git
 cd pcl
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DCUDA_ARCH_BIN=5.3 ../
+cmake -DCMAKE_BUILD_TYPE=Release -DCUDA_ARCH_BIN=5.3 -DBUILD_visualization=ON ../
+make all -j12
+sudo make install
+
+#----------------------------------------------------
+# (Optional) VTK
+git clone https://gitlab.kitware.com/vtk/vtk.git
+cd vtk
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make all -j12
 sudo make install
 
