@@ -36,7 +36,7 @@ public:
 	_SlamBase* m_pSB;
 	Coordinate m_GPS;
 
-	STATE_CHANGE m_scApMode;
+	STATE_CHANGE m_scApArm;
 	double	m_yaw;
 	bool	m_bYaw;
 

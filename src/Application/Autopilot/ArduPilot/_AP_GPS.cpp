@@ -10,7 +10,7 @@ _AP_GPS::_AP_GPS()
 	m_pAP = NULL;
 	m_pSB = NULL;
 
-	m_scApMode.init(-1);
+	m_scApArm.init(false);
 	m_yaw = 0.0;
 	m_bYaw = false;
 
@@ -106,8 +106,8 @@ void _AP_GPS::updateGPS(void)
 {
 	IF_(check()<0);
 
-	m_scApMode.update(m_pAP->bApArmed());
-	if(m_scApMode.bActive(true))
+	m_scApArm.update(m_pAP->bApArmed());
+	if(m_scApArm.bActive(true))
 		m_bYaw = false;
 
 	if(!m_bYaw)
