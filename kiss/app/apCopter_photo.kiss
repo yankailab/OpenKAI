@@ -5,7 +5,7 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -61,10 +61,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/port":"/dev/ttyTHS1",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
+	"port":"/dev/ttyTHS1",
+	"/port":"/dev/ttyACM0",
 	"/port":"/dev/ttyUSB0",
+	"baud":115200,
 	"/baud":57600,
 	"_wakeUp":"apMavlink",
 }
@@ -268,5 +268,6 @@
 	"dAlt":1.0,
 	"speed":-0.3,
 	"iRelayLED":0,
-	"iRCmode":7,
+	"iRelayShutter":1,
+	"iRCshutter":7,
 }

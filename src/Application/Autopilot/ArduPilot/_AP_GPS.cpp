@@ -10,7 +10,6 @@ _AP_GPS::_AP_GPS()
 	m_pAP = NULL;
 	m_pSB = NULL;
 
-	m_scApArm.init(false);
 	m_yaw = 0.0;
 	m_bYaw = false;
 
@@ -106,9 +105,9 @@ void _AP_GPS::updateGPS(void)
 {
 	IF_(check()<0);
 
-	m_scApArm.update(m_pAP->bApArmed());
-	if(m_scApArm.bActive(true))
-		m_bYaw = false;
+//	m_scApArm.update(m_pAP->bApArmed());
+//	if(m_scApArm.bActive(true))
+//		m_bYaw = false;
 
 	if(!m_bYaw)
 	{
@@ -163,7 +162,7 @@ bool _AP_GPS::reset(void)
 	IF_F(hdg == UINT16_MAX);
 
 	m_yaw = ((double)hdg) * 0.01;
-	m_pSB->reset();
+//	m_pSB->reset();
 
 	return true;
 }

@@ -43,13 +43,14 @@ private:
 	_DepthVisionBase* m_pDV;
 	_GPhoto* m_pG;
 
-	int		m_iRCmode;
-	bool	m_bManShutter;
+	int		m_iRCshutter;
+	STATE_CHANGE m_scShutter;
 
 	float	m_alt;
 	float	m_dAlt;
 	float	m_lastAlt;
 	int		m_iRelayLED;
+	int		m_iRelayShutter;
 
 	int m_iTake;
 	uint64_t m_tDelay;

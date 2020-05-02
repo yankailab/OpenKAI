@@ -72,7 +72,7 @@ bool _RStracking::open(void)
 
 void _RStracking::close(void)
 {
-	IF_(m_bReady);
+	IF_(!m_bReady);
 	m_rsPipe.stop();
 	m_bReady = false;
 }

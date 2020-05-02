@@ -18,8 +18,9 @@ _APcopter_photo::_APcopter_photo()
 	m_alt = 0.0;
 	m_lastAlt = 0.0;
 	m_iRelayLED = 0;
-	m_iRCmode = 7;
-	m_bManShutter = false;
+	m_iRelayShutter = 1;
+	m_iRCshutter = 7;
+	m_scShutter.init(0);
 
 	m_dir = "/home/";
 	m_subDir = "";
@@ -52,7 +53,8 @@ bool _APcopter_photo::init(void* pKiss)
 	pK->v("dAlt", &m_dAlt);
 	pK->v("speed", &m_speed);
 	pK->v("iRelayLED",&m_iRelayLED);
-	pK->v("iRCmode",&m_iRCmode);
+	pK->v("iRelayShutter",&m_iRelayShutter);
+	pK->v("iRCshutter",&m_iRCshutter);
 
 	if(m_subDir.empty())
 		m_subDir = m_dir + tFormat() + "/";
@@ -126,6 +128,9 @@ void _APcopter_photo::update(void)
 
 		if(check()>=0)
 		{
+			m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
+			m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, false);
+
 			int apMode = m_pAP->getApMode();
 			if(apMode == AP_COPTER_GUIDED)
 			{
@@ -166,23 +171,19 @@ void _APcopter_photo::manualMode(void)
 {
 	IF_(check()<0);
 
-	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
-	IF_(rcMode == UINT16_MAX);
+	uint16_t rcShutter = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCshutter);
+	IF_(rcShutter == UINT16_MAX);
 
-	bool bManShutter = (rcMode > 1750)?true:false;
-	if(bManShutter && !m_bManShutter)
-	{
+	m_scShutter.update((rcShutter > 1750)?1:0);
+	if(m_scShutter.bActive(1))
 		shutter();
-	}
-
-	m_bManShutter = bManShutter;
 }
 
 void _APcopter_photo::shutter(void)
 {
 	IF_(check()<0);
 
-	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, true);
 
 	if(m_tDelay > 0)
 		this->sleepTime(m_tDelay);
@@ -258,7 +259,7 @@ void _APcopter_photo::shutter(void)
 	LOG_I("Take: " + i2str(m_iTake));
 	m_iTake++;
 
-	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, false);
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, false);
 }
 
 void _APcopter_photo::draw(void)
