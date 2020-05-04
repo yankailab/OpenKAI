@@ -49,7 +49,6 @@ private:
 	float	m_alt;
 	float	m_dAlt;
 	float	m_lastAlt;
-	int		m_iRelayLED;
 	int		m_iRelayShutter;
 
 	int m_iTake;

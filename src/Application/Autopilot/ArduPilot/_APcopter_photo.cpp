@@ -17,7 +17,6 @@ _APcopter_photo::_APcopter_photo()
 	m_dAlt = 1.0;
 	m_alt = 0.0;
 	m_lastAlt = 0.0;
-	m_iRelayLED = 0;
 	m_iRelayShutter = 1;
 	m_iRCshutter = 7;
 	m_scShutter.init(0);
@@ -52,7 +51,6 @@ bool _APcopter_photo::init(void* pKiss)
 	pK->v("iDiv", &m_iDiv);
 	pK->v("dAlt", &m_dAlt);
 	pK->v("speed", &m_speed);
-	pK->v("iRelayLED",&m_iRelayLED);
 	pK->v("iRelayShutter",&m_iRelayShutter);
 	pK->v("iRCshutter",&m_iRCshutter);
 
@@ -128,7 +126,6 @@ void _APcopter_photo::update(void)
 
 		if(check()>=0)
 		{
-			m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
 			m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, false);
 
 			int apMode = m_pAP->getApMode();

@@ -38,6 +38,7 @@ public:
 
 	double	m_yaw;
 	bool	m_bYaw;
+	int		m_iRelayLED;
 
 	vInt3 m_vAxisIdx;
 	vFloat3 m_vAxisK;

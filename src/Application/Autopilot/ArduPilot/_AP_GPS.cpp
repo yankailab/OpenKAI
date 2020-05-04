@@ -12,6 +12,7 @@ _AP_GPS::_AP_GPS()
 
 	m_yaw = 0.0;
 	m_bYaw = false;
+	m_iRelayLED = 0;
 
 	m_vAxisIdx.init(0,1,2);
 	m_vAxisK.init(1,1,1);
@@ -38,6 +39,8 @@ bool _AP_GPS::init(void* pKiss)
 
 	pK->v("yaw", &m_yaw);
 	pK->v("bYaw", &m_bYaw);
+	pK->v("iRelayLED",&m_iRelayLED);
+
 	pK->v("vAxisIdx",&m_vAxisIdx);
 	pK->v("vAxisK",&m_vAxisK);
 	pK->v("lat", &m_llOrigin.m_lat);
@@ -114,6 +117,8 @@ void _AP_GPS::updateGPS(void)
 		m_bYaw = reset();
 		return;
 	}
+
+	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, true);
 
 	if(m_bUseApOrigin)
 	{

@@ -232,10 +232,15 @@
 	"vAxisK":[-1,1,-1],
 	"yaw":0.0,
 	"bYaw":0,
+	"iRelayLED":0,
 
 	/*Saitama*/
-	"lat":35.854697,
-	"lng":139.517741,
+	"/lat":35.854697,
+	"/lng":139.517741,
+	
+	/*Gunma*/
+	"lat":36.774886,
+	"lng":138.953182,
 }
 
 {
@@ -267,7 +272,6 @@
 	"iDiv":3,
 	"dAlt":1.0,
 	"speed":-0.3,
-	"iRelayLED":0,
 	"iRelayShutter":1,
 	"iRCshutter":7,
 }
