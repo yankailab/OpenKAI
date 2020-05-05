@@ -226,13 +226,14 @@
 	"gpsID":0,
 	"iFixType":3,
 	"nSat":10,
-	"hdop":0,
+	"hdop":3.0,
 	"vdop":0,
 	"vAxisIdx":[2,0,1],
 	"vAxisK":[-1,1,-1],
+	"fIgnore":245,
 	"yaw":0.0,
 	"bYaw":0,
-	"iRelayLED":0,
+	"iRelayLED":1,
 
 	/*Saitama*/
 	"/lat":35.854697,
@@ -272,6 +273,6 @@
 	"iDiv":3,
 	"dAlt":1.0,
 	"speed":-0.3,
-	"iRelayShutter":1,
-	"iRCshutter":7,
+	"iRelayShutter":0,
+	"iRCshutter":9,
 }

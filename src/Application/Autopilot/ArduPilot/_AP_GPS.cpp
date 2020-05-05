@@ -26,6 +26,8 @@ _AP_GPS::_AP_GPS()
 	m_D.satellites_visible = 10;
 	m_D.hdop = 0;
 	m_D.vdop = 0;
+	m_D.ignore_flags = 0b11110101;
+
 }
 
 _AP_GPS::~_AP_GPS()
@@ -52,6 +54,7 @@ bool _AP_GPS::init(void* pKiss)
 	pK->v("nSat",&m_D.satellites_visible);
 	pK->v("hdop",&m_D.hdop);
 	pK->v("vdop",&m_D.vdop);
+	pK->v("fIgnore",&m_D.ignore_flags);
 
 	string iName;
 
@@ -151,12 +154,10 @@ void _AP_GPS::updateGPS(void)
 	m_D.lat = m_llPos.m_lat * 1e7;
 	m_D.lon = m_llPos.m_lng * 1e7;
 	m_D.alt = (float)m_llPos.m_altRel;
-	m_D.vn = (float)vV.x;
-	m_D.ve = (float)vV.y;
-	m_D.vd = (float)vV.z;
-	m_D.ignore_flags = 0b11110111;
+	m_D.vn = vV.x;
+	m_D.ve = vV.y;
+	m_D.vd = vV.z;
 	m_pAP->m_pMav->gpsInput(m_D);
-
 }
 
 bool _AP_GPS::reset(void)
