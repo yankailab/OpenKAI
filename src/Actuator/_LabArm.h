@@ -1,19 +1,19 @@
-#ifndef OpenKAI_src_Actuator__DeltaArm_H_
-#define OpenKAI_src_Actuator__DeltaArm_H_
+#ifndef OpenKAI_src_Actuator__LabArm_H_
+#define OpenKAI_src_Actuator__LabArm_H_
 
-#include "../Dependency/Rasheed/DeltaRobot.h"
 #include "_ActuatorBase.h"
+#include "../Dependency/Rasheed/LabArm.h"
 
 #ifdef USE_DYNAMIXEL
 
 namespace kai
 {
 
-class _DeltaArm: public _ActuatorBase
+class _LabArm: public _ActuatorBase
 {
 public:
-	_DeltaArm();
-	~_DeltaArm();
+	_LabArm();
+	~_LabArm();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -25,16 +25,15 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_DeltaArm *) This)->update();
+		((_LabArm *) This)->update();
 		return NULL;
 	}
 
 public:
-	DeltaRobot m_dr;
+	LabArm m_la;
 	int m_oprMode;
 	bool m_bGripper;
 
-	vFloat3 m_vAngle;
 	vFloat3 m_vPos;
 	vFloat2	m_vPosRangeX;
 	vFloat2	m_vPosRangeY;
@@ -44,5 +43,4 @@ public:
 
 }
 #endif
-
 #endif

@@ -1,16 +1,12 @@
-#ifndef DELTAROBOTCLASS_H
-#define DELTAROBOTCLASS_H
+#ifndef RASHEED_DELTAROBOT_H
+#define RASHEED_DELTAROBOT_H
 
 #include "../../Config/switch.h"
 #ifdef USE_DYNAMIXEL
 
-#if defined(__linux__) || defined(__APPLE__)
 #include <fcntl.h>
 #include <termios.h>
 #define STDIN_FILENO 0
-#elif defined(_WIN32) || defined(_WIN64)
-#include <conio.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -113,8 +109,8 @@ using namespace std::chrono;
 #define homeHeight						-551.5149	// with this height and x=0,y=0, all of the proximal arm will strecth out parallel to the ground (or 180deg for all servo) [mm]
 
 //Math Constant
-#define DEG2RAD							0.01745
-#define RAD2DEG							57.2957
+#define DEG_2_RAD							0.01745
+#define RAD_2_DEG							57.2957
 #define AXISMAXVALUE					32767.0
 #define ROOT3							1.7320508
 #define PI 								3.141592654
@@ -123,7 +119,7 @@ using namespace std::chrono;
 #define OFFSET_ANGLE					3.8427      // This offset is for DELTA ROBOT MK2 only due to the joint offset between
 // proximal and distal link, it will be used in FWD and INV
 
-class RasheedDeltaRobot
+class DeltaRobot
 {
 
 private:
@@ -131,8 +127,8 @@ private:
 	//Servos Communication instance and variables
 	dynamixel::PacketHandler *packetHandler;
 	dynamixel::PortHandler *portHandler;
-	dynamixel::GroupSyncWrite groupSyncWrite;
-	dynamixel::GroupSyncRead groupSyncRead;
+	dynamixel::GroupSyncWrite* groupSyncWrite;
+	dynamixel::GroupSyncRead* groupSyncRead;
 	int dxl_comm_result;
 	uint8_t dxl_error;
 	bool dxl_addparam_result = false;                 // addParam result
@@ -180,7 +176,7 @@ private:
 	uint32_t M3_model_number;
 
 public:
-	RasheedDeltaRobot();
+	DeltaRobot();
 
 	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	////////////////////////////////////////////// Math and Kinematics function ///////////////////////////////////////////////
@@ -323,7 +319,7 @@ public:
 	//RobotInit: set all the parameteres of the 4 motors depending on the wanted mode. The profile are all set to 0 (step motion).
 	//Input: wanted mode (Availiable mode: 3 (Position), 5 (current-based position). 
 	//(othermode are not supported 0 (Current), 1 (Velocity),  4 (Extended position), 16 (PWM))
-	void RobotInit(int mode);
+	bool RobotInit(int mode, const char* portName, int baudrate);
 
 	//RobotTorqueON - RobotTorqueOFF: (dis-)activate the torque of three sevos for the arm
 	void RobotTorqueON();

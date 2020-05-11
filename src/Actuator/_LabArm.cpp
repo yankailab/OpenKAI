@@ -1,11 +1,11 @@
-#include "_DeltaArm.h"
+#include "_LabArm.h"
 
 #ifdef USE_DYNAMIXEL
 
 namespace kai
 {
 
-_DeltaArm::_DeltaArm()
+_LabArm::_LabArm()
 {
 	m_oprMode = 3;
 	m_bGripper = false;
@@ -17,12 +17,12 @@ _DeltaArm::_DeltaArm()
 	m_vPosRangeZ.y = 100.0;
 }
 
-_DeltaArm::~_DeltaArm()
+_LabArm::~_LabArm()
 {
-	//m_rdr.RobotTorqueOFF();
+	//m_la.RobotTorqueOFF();
 }
 
-bool _DeltaArm::init(void* pKiss)
+bool _LabArm::init(void* pKiss)
 {
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
@@ -38,24 +38,59 @@ bool _DeltaArm::init(void* pKiss)
 	int baudRate = 57600;
 	pK->v("port",&port);
 	pK->v("baudRate",&baudRate);
-	m_dr.RobotInit(m_oprMode, port.c_str(), baudRate);
+	IF_Fl(!m_la.init(port.c_str(), baudRate), "LabArm init failed");
+
+	m_la.MotorsInit(m_oprMode);
 
 	sleep(3);
 
-	m_dr.RobotTorqueON();
-	m_dr.GoHome();
+	m_la.TorqueON();
+	m_la.GoHome();
 
 	if(m_bGripper)
 	{
-		m_dr.GripperTorqueON();
-		m_dr.GripperCheck();
-		m_dr.GripperClose();
+		m_la.GripperON();
+		m_la.GripperClose();
 	}
+
+	//Moving the robot with the Awake-Standby-Home functions:
+	printf("\nArm awaking: \n");
+	m_la.Awake();
+	usleep(1000000);
+
+	printf("\nArm go to Standby position: \n");
+	m_la.StandBy();
+	usleep(1000000);
+
+	printf("\nArm go to Home position\n");
+	m_la.GoHome();
+	usleep(1000000);
+
+	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
+	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
+	m_la.GotoXYZ(wantedposition);
+	usleep(2000000);
+
+	//Closing the gripper.
+	m_la.GripperClose();
+	usleep(2000000);
+
+	//Going back home and disactivate the torque
+	m_la.GoHome();
+	m_la.TorqueOFF();
+	m_la.GripperOFF();
+
+	//As we are using the motorMX430.h, we can also access motors function as follow:
+	m_la.motor1.PrintOperatingMode();
+	m_la.gripper.PrintOperatingMode();
+
+	//Joystick control Mode:
+	m_la.JoystickControl();
 
 	return true;
 }
 
-bool _DeltaArm::start(void)
+bool _LabArm::start(void)
 {
 	m_bThreadON = true;
 	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
@@ -69,7 +104,7 @@ bool _DeltaArm::start(void)
 	return true;
 }
 
-void _DeltaArm::update(void)
+void _LabArm::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -82,19 +117,14 @@ void _DeltaArm::update(void)
 	}
 }
 
-void _DeltaArm::readStatus(void)
+void _LabArm::readStatus(void)
 {
 	static uint64_t tLastStatus = 0;
 	IF_(m_tStamp - tLastStatus < 100000);
 	tLastStatus = m_tStamp;
 
 	float v[3];
-	m_dr.GetRobotAngle(v);
-	m_vAngle.x = v[0];
-	m_vAngle.y = v[1];
-	m_vAngle.z = v[2];
-
-	m_dr.GetXYZ(v);
+	m_la.GetXYZ(v);
 	m_vPos.x = v[0];
 	m_vPos.y = v[1];
 	m_vPos.z = v[2];
@@ -104,30 +134,27 @@ void _DeltaArm::readStatus(void)
 	m_vNormPos.z = (float)abs(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
 }
 
-void _DeltaArm::updatePos(void)
+void _LabArm::updatePos(void)
 {
 	vFloat3 vP;
 	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
 	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
 	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
-	m_dr.GotoPoint(vP.x, vP.y, vP.z);
+//	m_la.GotoXYZ(vP.x, vP.y, vP.z);
 
 	if(m_bGripper && m_vNormTargetPos.w >= 0.0)
 	{
 		if(m_vNormTargetPos.w > 0.5)
-			m_dr.GripperOpen();
+			m_la.GripperOpen();
 		else
-			m_dr.GripperClose();
+			m_la.GripperClose();
 	}
-
 }
 
-void _DeltaArm::draw(void)
+void _LabArm::draw(void)
 {
 	this->_ActuatorBase::draw();
-
 }
 
 }
-
 #endif

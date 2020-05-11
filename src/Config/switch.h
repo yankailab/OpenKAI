@@ -1,7 +1,7 @@
 
 //#define USE_CUDA
 #define USE_OPENCV
-//#define USE_OPENCV_CONTRIB
+#define USE_OPENCV_CONTRIB
 //#define USE_PCL
 //#define USE_DARKNET
 //#define USE_MYNTEYE
@@ -15,7 +15,7 @@
 //#define USE_CASCADE
 //#define USE_OCR
 //#define USE_OPENALPR
-//#define USE_DYNAMIXEL
+#define USE_DYNAMIXEL
 //#define USE_LIVOX
 
 #ifdef USE_TENSORRT
