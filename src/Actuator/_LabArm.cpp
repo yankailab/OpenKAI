@@ -34,7 +34,7 @@ bool _LabArm::init(void* pKiss)
 	pK->v("vPosRangeZ",&m_vPosRangeZ);
 
 	//Initialize the robot and passing 3 as operation mode (Position control) as default
-	string port;
+	string port = "/dev/ttyUSB0";
 	int baudRate = 57600;
 	pK->v("port",&port);
 	pK->v("baudRate",&baudRate);
@@ -50,7 +50,7 @@ bool _LabArm::init(void* pKiss)
 	if(m_bGripper)
 	{
 		m_la.GripperON();
-		m_la.GripperClose();
+		m_la.GripperOpen();
 	}
 
 	//Moving the robot with the Awake-Standby-Home functions:
@@ -76,6 +76,7 @@ bool _LabArm::init(void* pKiss)
 	usleep(2000000);
 
 	//Going back home and disactivate the torque
+	m_la.GripperOpen();
 	m_la.GoHome();
 	m_la.TorqueOFF();
 	m_la.GripperOFF();

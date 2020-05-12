@@ -142,6 +142,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 #ifdef USE_DYNAMIXEL
 	ADD_MODULE(_DeltaArm);
+	ADD_MODULE(_LabArm);
 #endif
 #ifdef USE_OCR
 	ADD_MODULE(OCR);

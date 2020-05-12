@@ -148,6 +148,7 @@
 #endif
 #ifdef USE_DYNAMIXEL
 #include "../Actuator/_DeltaArm.h"
+#include "../Actuator/_LabArm.h"
 #endif
 #ifdef USE_OCR
 #include "../Detector/OCR.h"

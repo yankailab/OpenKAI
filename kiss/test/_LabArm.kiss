@@ -1,0 +1,140 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"labArm",
+	"class":"_LabArm",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"port":"/dev/ttyUSB0",
+	"baudRate":57600,
+	"oprMode":3,
+	"bGripper":1,
+	"vPosRangeX":[-100, 100],
+	"vPosRangeY":[-100, 100],
+	"vPosRangeZ":[-100, -100],
+	"vNormTargetPos":[0.5, 0.5, 0.0, 0.0],
+	"vNormTargetSpeed":[0.0, 0.0, 0.0, 0.0],
+	"vNormPosErr":[0.1,0.1,0.1],
+}
+
+{
+	"name":"sequencer",
+	"class":"_Sequencer",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	
+	{
+		"name":"action",
+
+		{
+			"name":"wp0",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.5,0.5,0.2],
+			}
+		}
+		
+		{
+			"name":"wp1",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[1.0,0.5,0.3],
+			}
+		}
+		
+		{
+			"name":"wp2",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[1.0,0.0,0.3],
+			}
+		}
+		
+		{
+			"name":"wp3",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.5,0.0,0.4],
+			}
+		}
+		
+		{
+			"name":"wp4",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.0,0.0,0.3],
+			}
+		}
+		
+		{
+			"name":"wp5",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.0,0.5,0.3],
+			}
+		}
+		
+		{
+			"name":"wp6",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.0,1.0,0.3],
+			}
+		}
+		
+		{
+			"name":"wp7",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[0.5,1.0,0.4],
+			}
+		}
+		
+		{
+			"name":"wp8",
+			"dT":1000000,
+			{
+				"_ActuatorBase":"labArm",
+				"pos":[1.0,1.0,0.3],
+			}
+		}
+				
+	}
+}
+
+

@@ -173,10 +173,8 @@ public:
 
 	//multiplyMatrix*: multiply 2 matrix. Used for INV-Foward kinetics function.
 	//Input: m1, m2 the 2 matrix to multiply. m12 the matrix result (passed by reference) (can be optimized into one function) 
-	void multiplyMatrix(double m1[][4], double m2[][4], double m12[][4],
-			int size);
-	void multiplyMatrix3(double m1[][3], double m2[][3], double m12[][3],
-			int size);
+	void multiplyMatrix(double m1[][4], double m2[][4], double m12[][4], int size);
+	void multiplyMatrix3(double m1[][3], double m2[][3], double m12[][3], int size);
 
 	//Solve: solve a Ax = b linear system. Used for INV-Forward kinetics function. (direct resultion by Gaussian Elimination)
 	//Input: the A matrix system [2][2], b [2] array and X [2] array result (passed by reference)
