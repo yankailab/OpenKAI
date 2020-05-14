@@ -136,11 +136,11 @@ sudo apt-get install librealsense2-utils librealsense2-dev -y
 
 #----------------------------------------------------
 # (Optional) VTK
-git clone --branch v9.0.0 --depth 1 https://gitlab.kitware.com/vtk/vtk.git
+git clone --branch v8.2.0 --depth 1 https://gitlab.kitware.com/vtk/vtk.git
 cd vtk
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF ../
 make all -j12
 sudo make install
 
@@ -151,7 +151,7 @@ cd pcl
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DCUDA_ARCH_BIN=5.3 -DBUILD_visualization=ON ../
-make all -j12
+make all -j4
 sudo make install
 
 #----------------------------------------------------
@@ -209,23 +209,6 @@ make all -j8
 sudo make install -j8
 
 #----------------------------------------------------
-# (Optional) TensorRT
-# TensorRT, download the latest .deb from NVIDIA site
-sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb
-sudo apt update
-sudo apt install tensorrt
-# PC
-sudo apt-get -y install libpython3-dev python3-numpy
-sudo cp /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h /usr/include/glib-2.0/glibconfig.h
-git clone --recursive https://github.com/dusty-nv/jetson-inference.git
-cd jetson-inference
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make
-sudo make install
-sudo ldconfig
-
 # (Optional) Jetson inference
 # Jetson Nano
 sudo apt-get -y install libpython3-dev python3-numpy
@@ -337,3 +320,21 @@ git clone https://github.com/yankailab/orb_slam2_gpu.git
 cd orb_slam2_gpu
 chmod +x build.sh
 ./build.sh
+
+# (Optional) TensorRT
+# TensorRT, download the latest .deb from NVIDIA site
+sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb
+sudo apt update
+sudo apt install tensorrt
+# PC
+sudo apt-get -y install libpython3-dev python3-numpy
+sudo cp /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h /usr/include/glib-2.0/glibconfig.h
+git clone --recursive https://github.com/dusty-nv/jetson-inference.git
+cd jetson-inference
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make
+sudo make install
+sudo ldconfig
+
