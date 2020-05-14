@@ -182,7 +182,12 @@ string _AP_base::getApModeName(void)
 {
 	if(m_apMode >= AP_N_CUSTOM_MODE)return "?";
 
-	return AP_CUSTOM_MODE_NAME[m_apType][m_apMode];
+	if(m_apType == ardupilot_copter)
+		return AP_COPTER_CUSTOM_MODE_NAME[m_apMode];
+	else if(m_apType == ardupilot_rover)
+		return AP_ROVER_CUSTOM_MODE_NAME[m_apMode];
+
+	return "?";
 }
 
 void _AP_base::setApArm(bool bArm)

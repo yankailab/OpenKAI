@@ -13,7 +13,7 @@ namespace kai
 enum AP_TYPE
 {
 	ardupilot_copter = 0,
-	ardupilot_rover = 1,
+	ardupilot_rover = 1
 };
 
 enum AP_COPTER_CUSTOM_MODE
@@ -41,7 +41,7 @@ enum AP_COPTER_CUSTOM_MODE
 	AP_COPTER_FOLLOW = 23, // follow attempts to follow another vehicle or ground station
 	AP_COPTER_ZIGZAG = 24, // ZIGZAG mode is able to fly in a zigzag manner with predefined point A and point B
 	AP_COPTER_SYSTEMID = 25, // System ID mode produces automated system identification signals in the controllers
-	AP_COPTER_AUTOROTATE = 26,  // Autonomous autorotation
+	AP_COPTER_AUTOROTATE = 26  // Autonomous autorotation
 };
 
 const string AP_COPTER_CUSTOM_MODE_NAME[28] =
@@ -70,9 +70,6 @@ const string AP_ROVER_CUSTOM_MODE_NAME[28] =
 { "MANUAL", "ACRO", "?", "STEERING", "HOLD", "LOITER", "FOLLOW", "SIMPLE", "?",
 		"?", "AUTO", "RTL", "SMART_RTL", "?", "?", "GUIDED", "INITIALISING",
 		"?", "?", "?", "?", "?", "?", "?", "?", "?", "?", "?" };
-
-const string AP_CUSTOM_MODE_NAME[][AP_N_CUSTOM_MODE] =
-{ AP_COPTER_CUSTOM_MODE_NAME, AP_ROVER_CUSTOM_MODE_NAME, };
 
 struct AP_MOUNT
 {
