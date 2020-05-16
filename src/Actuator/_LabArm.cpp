@@ -42,8 +42,6 @@ bool _LabArm::init(void* pKiss)
 
 	m_la.MotorsInit(m_oprMode);
 
-	sleep(3);
-
 	m_la.TorqueON();
 	m_la.GoHome();
 
@@ -54,39 +52,39 @@ bool _LabArm::init(void* pKiss)
 	}
 
 	//Moving the robot with the Awake-Standby-Home functions:
-	printf("\nArm awaking: \n");
-	m_la.Awake();
-	usleep(1000000);
-
-	printf("\nArm go to Standby position: \n");
-	m_la.StandBy();
-	usleep(1000000);
-
-	printf("\nArm go to Home position\n");
-	m_la.GoHome();
-	usleep(1000000);
-
-	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
-	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
-	m_la.GotoXYZ(wantedposition);
-	usleep(2000000);
-
-	//Closing the gripper.
-	m_la.GripperClose();
-	usleep(2000000);
-
-	//Going back home and disactivate the torque
-	m_la.GripperOpen();
-	m_la.GoHome();
-	m_la.TorqueOFF();
-	m_la.GripperOFF();
-
-	//As we are using the motorMX430.h, we can also access motors function as follow:
-	m_la.motor1.PrintOperatingMode();
-	m_la.gripper.PrintOperatingMode();
-
-	//Joystick control Mode:
-	m_la.JoystickControl();
+//	printf("\nArm awaking: \n");
+//	m_la.Awake();
+//	usleep(1000000);
+//
+//	printf("\nArm go to Standby position: \n");
+//	m_la.StandBy();
+//	usleep(1000000);
+//
+//	printf("\nArm go to Home position\n");
+//	m_la.GoHome();
+//	usleep(1000000);
+//
+//	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
+//	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
+//	m_la.GotoXYZ(wantedposition);
+//	usleep(2000000);
+//
+//	//Closing the gripper.
+//	m_la.GripperClose();
+//	usleep(2000000);
+//
+//	//Going back home and disactivate the torque
+//	m_la.GripperOpen();
+//	m_la.GoHome();
+//	m_la.TorqueOFF();
+//	m_la.GripperOFF();
+//
+//	//As we are using the motorMX430.h, we can also access motors function as follow:
+//	m_la.motor1.PrintOperatingMode();
+//	m_la.gripper.PrintOperatingMode();
+//
+//	//Joystick control Mode:
+//	m_la.JoystickControl();
 
 	return true;
 }
@@ -124,15 +122,15 @@ void _LabArm::readStatus(void)
 	IF_(m_tStamp - tLastStatus < 100000);
 	tLastStatus = m_tStamp;
 
-	float v[3];
-	m_la.GetXYZ(v);
-	m_vPos.x = v[0];
-	m_vPos.y = v[1];
-	m_vPos.z = v[2];
+	float pP[6];
+	m_la.GetXYZ(pP);
+	m_vPos.x = pP[0];
+	m_vPos.y = pP[1];
+	m_vPos.z = pP[2];
 
 	m_vNormPos.x = (float)(m_vPos.x - m_vPosRangeX.x) / (float)m_vPosRangeX.len();
 	m_vNormPos.y = (float)(m_vPos.y - m_vPosRangeY.x) / (float)m_vPosRangeY.len();
-	m_vNormPos.z = (float)abs(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
+	m_vNormPos.z = (float)(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
 }
 
 void _LabArm::updatePos(void)
@@ -141,7 +139,11 @@ void _LabArm::updatePos(void)
 	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
 	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
 	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
-//	m_la.GotoXYZ(vP.x, vP.y, vP.z);
+
+	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
+//	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
+	float pTargetP[6] = {vP.x, vP.y, vP.z, 0, 0, 0};
+	m_la.GotoXYZ(pTargetP);
 
 	if(m_bGripper && m_vNormTargetPos.w >= 0.0)
 	{

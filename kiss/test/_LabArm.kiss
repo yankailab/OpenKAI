@@ -35,11 +35,11 @@
 	"oprMode":3,
 	"bGripper":1,
 	"vPosRangeX":[-100, 100],
-	"vPosRangeY":[-100, 100],
-	"vPosRangeZ":[-100, -100],
-	"vNormTargetPos":[0.5, 0.5, 0.0, 0.0],
+	"vPosRangeY":[200, 400],
+	"vPosRangeZ":[100, 350],
+	"vNormTargetPos":[0.5, 1.0, 1.0, 1.0],
 	"vNormTargetSpeed":[0.0, 0.0, 0.0, 0.0],
-	"vNormPosErr":[0.1,0.1,0.1],
+	"vNormPosErr":[1.0, 1.0, 1.0],
 }
 
 {
@@ -49,91 +49,28 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
+	"Console":"OpenKAI",
 	
 	{
 		"name":"action",
 
 		{
 			"name":"wp0",
-			"dT":1000000,
+			"dT":3000000,
 			{
 				"_ActuatorBase":"labArm",
-				"pos":[0.5,0.5,0.2],
+				"pos":[0.0, 0.5, 0.5],
 			}
 		}
 		
 		{
 			"name":"wp1",
-			"dT":1000000,
+			"dT":3000000,
 			{
 				"_ActuatorBase":"labArm",
-				"pos":[1.0,0.5,0.3],
+				"pos":[1.0, 0.5, 1.5],
 			}
-		}
-		
-		{
-			"name":"wp2",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[1.0,0.0,0.3],
-			}
-		}
-		
-		{
-			"name":"wp3",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[0.5,0.0,0.4],
-			}
-		}
-		
-		{
-			"name":"wp4",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[0.0,0.0,0.3],
-			}
-		}
-		
-		{
-			"name":"wp5",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[0.0,0.5,0.3],
-			}
-		}
-		
-		{
-			"name":"wp6",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[0.0,1.0,0.3],
-			}
-		}
-		
-		{
-			"name":"wp7",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[0.5,1.0,0.4],
-			}
-		}
-		
-		{
-			"name":"wp8",
-			"dT":1000000,
-			{
-				"_ActuatorBase":"labArm",
-				"pos":[1.0,1.0,0.3],
-			}
-		}
-				
+		}				
 	}
 }
 

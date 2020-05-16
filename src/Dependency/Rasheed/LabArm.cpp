@@ -144,6 +144,7 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	double q4 = (motorAngle[3] - 180) * DEG2RAD;
 	double q5 = (motorAngle[4] - 180) * DEG2RAD;
 	double q6 = (motorAngle[5] - 180) * DEG2RAD;
+
 	//Matrix creation:
 	double T01[4][4] =
 	{
@@ -151,30 +152,35 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	{ sin(q1), 0, -cos(q1), a1 * cos(q1) },
 	{ 0, 1, 0, 0 },
 	{ 0, 0, 0, 1 } };
+
 	double T12[4][4] =
 	{
 	{ cos(q2), -sin(q2), 0, a2 * cos(q2) },
 	{ sin(q2), cos(q2), 0, a2 * sin(q2) },
 	{ 0, 0, 1, 0 },
 	{ 0, 0, 0, 1 } };
+
 	double T23[4][4] =
 	{
 	{ cos(q3), 0, sin(q3), a3 * cos(q3) },
 	{ sin(q3), 0, -cos(q3), a3 * sin(q3) },
 	{ 0, 1, 0, 0 },
 	{ 0, 0, 0, 1 } };
+
 	double T34[4][4] =
 	{
 	{ cos(q4), 0, -sin(q4), 0 },
 	{ sin(q4), 0, cos(q4), 0 },
 	{ 0, -1, 0, d4 },
 	{ 0, 0, 0, 1 } };
+
 	double T45[4][4] =
 	{
 	{ cos(q5), 0, sin(q5), 0 },
 	{ sin(q5), 0, -cos(q5), 0 },
 	{ 0, 1, 0, 0 },
 	{ 0, 0, 0, 1 } };
+
 	double T56[4][4] =
 	{
 	{ cos(q6), -sin(q6), 0, 0 },
@@ -197,6 +203,7 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	double qX = T06[0][3];
 	double qY = T06[1][3];
 	double qZ = T06[2][3];
+
 	//Extract rotation:
 	double R06[3][3] =
 	{
@@ -204,6 +211,7 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	{ T06[1][0], T06[1][1], T06[1][2] },
 	{ T06[2][0], T06[2][1], T06[2][2] } };
 	//printMatrix3(R06,3);
+
 	// Calculate the inverse of RPY constant
 	double INV_RPY_const[3][3] =
 	{
@@ -218,6 +226,7 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	double y6_rot = atan2(-TCP[2][0],
 			((cos(z6_rot * DEG2RAD) * TCP[0][0])
 					+ (sin(z6_rot * DEG2RAD) * TCP[1][0]))) * RAD2DEG;
+
 	//Output:
 	positionGripper[0] = qX;
 	positionGripper[1] = qY;
@@ -225,7 +234,6 @@ void LabArm::RobotArmFWD(float motorAngle[], float positionGripper[]) //motorang
 	positionGripper[3] = x6_rot;
 	positionGripper[4] = y6_rot;
 	positionGripper[5] = z6_rot;
-
 }
 
 void LabArm::armINV(float wantedXYZ[], float outputMotorAngle[]) //Output in degree?
@@ -740,12 +748,12 @@ void LabArm::GetXYZ(float gripperPosition[])
 	RobotArmFWD(motorAngle, gripperPosition);
 
 	//printout:
-	printf("position Gripper X: %f\n", gripperPosition[0]);
-	printf("position Gripper Y: %f\n", gripperPosition[1]);
-	printf("position Gripper Z: %f\n", gripperPosition[2]);
-	printf("position Gripper rot X: %f\n", gripperPosition[3]);
-	printf("position Gripper rot Y: %f\n", gripperPosition[4]);
-	printf("position Gripper rot Z: %f\n", gripperPosition[5]);
+//	printf("position Gripper X: %f\n", gripperPosition[0]);
+//	printf("position Gripper Y: %f\n", gripperPosition[1]);
+//	printf("position Gripper Z: %f\n", gripperPosition[2]);
+//	printf("position Gripper rot X: %f\n", gripperPosition[3]);
+//	printf("position Gripper rot Y: %f\n", gripperPosition[4]);
+//	printf("position Gripper rot Z: %f\n", gripperPosition[5]);
 }
 
 void LabArm::GotoXYZ(float wantedXYZ[])
@@ -971,6 +979,7 @@ int LabArm::JoystickControl()
 	{
 		printf("\n Press start to start the arm control\n");
 	}
+
 	while (!finish)
 	{
 		usleep(1000);
@@ -1052,6 +1061,7 @@ int LabArm::JoystickControl()
 				axistate[0] = 0;
 				break;
 			}
+
 			//Get axis event
 			JoystickEvent event;
 			if ((joystick.sample(&event)) && !event.isInitialState())
@@ -1067,6 +1077,7 @@ int LabArm::JoystickControl()
 					//printf("Axis %d is %f\n",event.number, axistate[event.number]);
 				}
 			}
+
 			//Rechek the button status based on the new event
 			buttonstate[6] == 1 ? finish = true : finish = false;
 			if (buttonstate[selectedmotor] == 0)
@@ -1075,11 +1086,12 @@ int LabArm::JoystickControl()
 				axistate[0] = 0;
 				break;
 			}
+
 			//update the angle
 			ReadAngle(motorAngles);
-			motorAngles[selectedmotor] = motorAngles[selectedmotor]
-					+ angleIncrement * axistate[0];
+			motorAngles[selectedmotor] = motorAngles[selectedmotor] + angleIncrement * axistate[0];
 			//printf("Motor %d, new angle: %f\n",selectedmotor, motorAngles[selectedmotor]);
+
 			//Run only one motor...
 			switch (selectedmotor)
 			{
@@ -1106,6 +1118,7 @@ int LabArm::JoystickControl()
 			break;
 		}
 	}
+
 	printf("The arm is going Home.\n");
 	GoHome();
 	TorqueOFF();
