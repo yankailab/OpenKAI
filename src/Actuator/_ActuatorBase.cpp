@@ -9,12 +9,18 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_vNormOrigin.init(0.0);
+	m_vNormOriginPos.init(0.0);
 	m_vNormPos.init(-1.0);
 	m_vNormTargetPos.init(-1.0);
+	m_vNormPosErr.init(0.01);
+
 	m_vNormSpeed.init(0.0);
 	m_vNormTargetSpeed.init(0.0);
-	m_vNormPosErr.init(0.01);
+
+	m_vNormOriginRot.init(0.0);
+	m_vNormRot.init(-1.0);
+	m_vNormTargetRot.init(-1.0);
+	m_vNormRotErr.init(0.01);
 
 	m_bFeedback = false;
 	m_pParent = NULL;
@@ -29,11 +35,18 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("vNormOrigin", &m_vNormOrigin);
+	pK->v("vNormOriginPos", &m_vNormOriginPos);
 	pK->v("vNormPos", &m_vNormPos);
 	pK->v("vNormTargetPos", &m_vNormTargetPos);
-	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
 	pK->v("vNormPosErr", &m_vNormPosErr);
+
+	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
+
+	pK->v("vNormOriginRot", &m_vNormOriginRot);
+	pK->v("vNormRot", &m_vNormRot);
+	pK->v("vNormTargetRot", &m_vNormTargetRot);
+	pK->v("vNormRotErr", &m_vNormRotErr);
+
 	pK->v("bFeedback",&m_bFeedback);
 
 	string iName;
@@ -76,7 +89,14 @@ void _ActuatorBase::move(vFloat4& vSpeed)
 	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
 }
 
-void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
+void _ActuatorBase::moveToOrigin(void)
+{
+	vFloat4 vSpeed;
+	vSpeed.init(1.0);
+	pos(m_vNormOriginPos, vSpeed);
+}
+
+void _ActuatorBase::pos(vFloat4& vPos, vFloat4& vSpeed)
 {
 	m_vNormTargetPos.x = (vPos.x >= 0.0)?constrain(vPos.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.y = (vPos.y >= 0.0)?constrain(vPos.y, 0.0f, 1.0f):-1.0;
@@ -89,11 +109,12 @@ void _ActuatorBase::moveTo(vFloat4& vPos, vFloat4& vSpeed)
 	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
 }
 
-void _ActuatorBase::moveToOrigin(void)
+void _ActuatorBase::rot(vFloat4& vRot)
 {
-	vFloat4 vSpeed;
-	vSpeed.init(1.0);
-	moveTo(m_vNormOrigin, vSpeed);
+	m_vNormTargetRot.x = (vRot.x >= 0.0)?constrain(vRot.x, 0.0f, 1.0f):-1.0;
+	m_vNormTargetRot.y = (vRot.y >= 0.0)?constrain(vRot.y, 0.0f, 1.0f):-1.0;
+	m_vNormTargetRot.z = (vRot.z >= 0.0)?constrain(vRot.z, 0.0f, 1.0f):-1.0;
+	m_vNormTargetRot.w = (vRot.w >= 0.0)?constrain(vRot.w, 0.0f, 1.0f):-1.0;
 }
 
 void _ActuatorBase::setGlobalTarget(vFloat4& t)

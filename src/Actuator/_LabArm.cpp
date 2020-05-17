@@ -9,12 +9,14 @@ _LabArm::_LabArm()
 {
 	m_oprMode = 3;
 	m_bGripper = false;
-	m_vPosRangeX.x = 0;
-	m_vPosRangeX.y = 100.0;
-	m_vPosRangeY.x = 0;
-	m_vPosRangeY.y = 100.0;
-	m_vPosRangeZ.x = 0;
-	m_vPosRangeZ.y = 100.0;
+
+	m_vPosRangeX.init(0.0, 100.0);
+	m_vPosRangeY.init(0.0, 100.0);
+	m_vPosRangeZ.init(0.0, 100.0);
+
+	m_vRotRangeX.init(0.0, 180.0);
+	m_vRotRangeY.init(0.0, 180.0);
+	m_vRotRangeZ.init(0.0, 180.0);
 }
 
 _LabArm::~_LabArm()
@@ -29,9 +31,14 @@ bool _LabArm::init(void* pKiss)
 
 	pK->v("oprMode",&m_oprMode);
 	pK->v("bGripper",&m_bGripper);
+
 	pK->v("vPosRangeX",&m_vPosRangeX);
 	pK->v("vPosRangeY",&m_vPosRangeY);
 	pK->v("vPosRangeZ",&m_vPosRangeZ);
+
+	pK->v("vRotRangeX",&m_vRotRangeX);
+	pK->v("vRotRangeY",&m_vRotRangeY);
+	pK->v("vRotRangeZ",&m_vRotRangeZ);
 
 	//Initialize the robot and passing 3 as operation mode (Position control) as default
 	string port = "/dev/ttyUSB0";
@@ -41,9 +48,7 @@ bool _LabArm::init(void* pKiss)
 	IF_Fl(!m_la.init(port.c_str(), baudRate), "LabArm init failed");
 
 	m_la.MotorsInit(m_oprMode);
-
 	m_la.TorqueON();
-	m_la.GoHome();
 
 	if(m_bGripper)
 	{
@@ -51,40 +56,7 @@ bool _LabArm::init(void* pKiss)
 		m_la.GripperOpen();
 	}
 
-	//Moving the robot with the Awake-Standby-Home functions:
-//	printf("\nArm awaking: \n");
-//	m_la.Awake();
-//	usleep(1000000);
-//
-//	printf("\nArm go to Standby position: \n");
-//	m_la.StandBy();
-//	usleep(1000000);
-//
-//	printf("\nArm go to Home position\n");
-//	m_la.GoHome();
-//	usleep(1000000);
-//
-//	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
-//	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
-//	m_la.GotoXYZ(wantedposition);
-//	usleep(2000000);
-//
-//	//Closing the gripper.
-//	m_la.GripperClose();
-//	usleep(2000000);
-//
-//	//Going back home and disactivate the torque
-//	m_la.GripperOpen();
-//	m_la.GoHome();
-//	m_la.TorqueOFF();
-//	m_la.GripperOFF();
-//
-//	//As we are using the motorMX430.h, we can also access motors function as follow:
-//	m_la.motor1.PrintOperatingMode();
-//	m_la.gripper.PrintOperatingMode();
-//
-//	//Joystick control Mode:
-//	m_la.JoystickControl();
+	m_la.GoHome();
 
 	return true;
 }
@@ -124,13 +96,21 @@ void _LabArm::readStatus(void)
 
 	float pP[6];
 	m_la.GetXYZ(pP);
+
 	m_vPos.x = pP[0];
 	m_vPos.y = pP[1];
 	m_vPos.z = pP[2];
-
 	m_vNormPos.x = (float)(m_vPos.x - m_vPosRangeX.x) / (float)m_vPosRangeX.len();
 	m_vNormPos.y = (float)(m_vPos.y - m_vPosRangeY.x) / (float)m_vPosRangeY.len();
 	m_vNormPos.z = (float)(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
+
+	m_vRot.x = pP[3];
+	m_vRot.y = pP[4];
+	m_vRot.z = pP[5];
+	m_vNormRot.x = (float)(m_vRot.x - m_vRotRangeX.x) / (float)m_vRotRangeX.len();
+	m_vNormRot.y = (float)(m_vRot.y - m_vRotRangeY.x) / (float)m_vRotRangeY.len();
+	m_vNormRot.z = (float)(m_vRot.z - m_vRotRangeZ.x) / (float)m_vRotRangeZ.len();
+
 }
 
 void _LabArm::updatePos(void)
@@ -140,10 +120,21 @@ void _LabArm::updatePos(void)
 	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
 	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
 
-	//Moving the robot with XYZ coordonate: create a gripper postion table {X, Y, Z, rot_X, rot_Y, rot_Z} and run GotoXYZ.
-//	float wantedposition[6] = {0, 340, 282, 10, 30, 0};
-	float pTargetP[6] = {vP.x, vP.y, vP.z, 0, 0, 0};
+	vFloat3 vR;
+	vR.x = m_vNormTargetRot.x * m_vRotRangeX.d() + m_vRotRangeX.x;
+	vR.y = m_vNormTargetRot.y * m_vRotRangeY.d() + m_vRotRangeY.x;
+	vR.z = m_vNormTargetRot.z * m_vRotRangeZ.d() + m_vRotRangeZ.x;
+
+	float pTargetP[6] = {vP.x, vP.y, vP.z, 0,0,0};//vR.x, vR.y, vR.z};
 	m_la.GotoXYZ(pTargetP);
+
+//	this->sleepTime(USEC_1SEC*3);
+//
+//	m_la.motor3.Goto(vR.x);
+//	m_la.motor5.Goto(vR.y);
+//	m_la.motor6.Goto(vR.z);
+//
+//	this->sleepTime(USEC_1SEC*3);
 
 	if(m_bGripper && m_vNormTargetPos.w >= 0.0)
 	{

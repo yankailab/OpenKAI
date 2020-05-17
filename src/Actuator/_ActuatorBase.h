@@ -24,8 +24,10 @@ public:
 	virtual void draw(void);
 
 	virtual void move(vFloat4& vSpeed);
-	virtual void moveTo(vFloat4& vPos, vFloat4& vSpeed);
 	virtual void moveToOrigin(void);
+
+	virtual void pos(vFloat4& vPos, vFloat4& vSpeed);
+	virtual void rot(vFloat4& vRot);
 
 	virtual void setGlobalTarget(vFloat4& t);
 
@@ -43,12 +45,18 @@ private:
 	}
 
 public:
-	vFloat4 m_vNormOrigin;
+	vFloat4 m_vNormOriginPos;
 	vFloat4 m_vNormPos;
 	vFloat4 m_vNormTargetPos;
+	vFloat4 m_vNormPosErr;
+
 	vFloat4 m_vNormSpeed;
 	vFloat4 m_vNormTargetSpeed;
-	vFloat4 m_vNormPosErr;
+
+	vFloat4 m_vNormOriginRot;
+	vFloat4 m_vNormRot;
+	vFloat4 m_vNormTargetRot;
+	vFloat4 m_vNormRotErr;
 
 	bool	m_bFeedback;
 

@@ -39,6 +39,12 @@ public:
 	vFloat2	m_vPosRangeY;
 	vFloat2	m_vPosRangeZ;
 
+	vFloat3 m_vRot;
+	vFloat2	m_vRotRangeX;
+	vFloat2	m_vRotRangeY;
+	vFloat2	m_vRotRangeZ;
+
+
 };
 
 }

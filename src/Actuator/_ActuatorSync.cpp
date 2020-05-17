@@ -89,12 +89,12 @@ void _ActuatorSync::move(vFloat4& vSpeed)
 	this->_ActuatorBase::move(vSpeed);
 }
 
-void _ActuatorSync::moveTo(vFloat4& vPos, vFloat4& vSpeed)
+void _ActuatorSync::pos(vFloat4& vPos, vFloat4& vSpeed)
 {
 	for(int i=0; i<m_nAB; i++)
-		m_pAB[i]->moveTo(vPos, vSpeed);
+		m_pAB[i]->pos(vPos, vSpeed);
 
-	this->_ActuatorBase::moveTo(vPos, vSpeed);
+	this->_ActuatorBase::pos(vPos, vSpeed);
 }
 
 void _ActuatorSync::moveToOrigin(void)

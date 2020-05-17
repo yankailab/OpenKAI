@@ -30,7 +30,7 @@ LabArm::LabArm()
 
 	//Set other arm parameters:
 	a_state = -1;
-	a_gripper = 1;
+	a_gripper = 2;
 	a_torque = 0;
 
 	//Home:								//There is probably a betterway to do this...

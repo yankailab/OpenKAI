@@ -34,10 +34,16 @@
 	"baudRate":57600,
 	"oprMode":3,
 	"bGripper":1,
+	
+	"vRotRangeX":[0, 180],
+	"vRotRangeY":[0, 180],
+	"vRotRangeZ":[0, 0],
+	"vNormTargetRot":[0.0, 0.0, 0.0, 0.0],
+	
 	"vPosRangeX":[-100, 100],
 	"vPosRangeY":[200, 400],
 	"vPosRangeZ":[100, 350],
-	"vNormTargetPos":[0.5, 1.0, 1.0, 1.0],
+	"vNormTargetPos":[0.5, 0.0, 1.0, 0.0],
 	"vNormTargetSpeed":[0.0, 0.0, 0.0, 0.0],
 	"vNormPosErr":[1.0, 1.0, 1.0],
 }
@@ -59,7 +65,7 @@
 			"dT":3000000,
 			{
 				"_ActuatorBase":"labArm",
-				"pos":[0.0, 0.5, 0.5],
+				"pos":[0.5, 0.0, 0.5],
 			}
 		}
 		
@@ -68,7 +74,7 @@
 			"dT":3000000,
 			{
 				"_ActuatorBase":"labArm",
-				"pos":[1.0, 0.5, 1.5],
+				"pos":[0.5, 1.0, 0.5],
 			}
 		}				
 	}
