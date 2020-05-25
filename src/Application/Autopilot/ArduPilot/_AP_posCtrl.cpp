@@ -26,7 +26,7 @@ _AP_posCtrl::_AP_posCtrl()
 	m_sptLocal.y = 0.0;
 	m_sptLocal.z = 0.0;
 	m_sptLocal.yaw = 0.0;
-	m_sptLocal.yaw_rate = 90.0 * DEG2RAD;
+	m_sptLocal.yaw_rate = 90.0 * DEG_2_RAD;
 
 	m_sptGlobal.vx = 0.0;
 	m_sptGlobal.vy = 0.0;
@@ -35,7 +35,7 @@ _AP_posCtrl::_AP_posCtrl()
 	m_sptGlobal.lon_int = 0.0;
 	m_sptGlobal.alt = 0.0;
 	m_sptGlobal.yaw = 0.0;
-	m_sptGlobal.yaw_rate = 90.0 * DEG2RAD;
+	m_sptGlobal.yaw_rate = 90.0 * DEG_2_RAD;
 
 }
 
@@ -54,8 +54,8 @@ bool _AP_posCtrl::init(void* pKiss)
 	float yawRate;
 	if(pK->v("yawRate", &yawRate))
 	{
-		m_sptLocal.yaw_rate = yawRate * DEG2RAD;
-		m_sptGlobal.yaw_rate = yawRate * DEG2RAD;
+		m_sptLocal.yaw_rate = yawRate * DEG_2_RAD;
+		m_sptGlobal.yaw_rate = yawRate * DEG_2_RAD;
 	}
 
 	string iName;
@@ -136,7 +136,7 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vx = p;		//forward
 	m_sptLocal.vy = r;		//right
 	m_sptLocal.vz = a;		//down
-	m_sptLocal.yaw = (float) m_vP.w * DEG2RAD;
+	m_sptLocal.yaw = (float) m_vP.w * DEG_2_RAD;
 	m_sptLocal.type_mask = 0b0000000111000111;	//set velocity
 	if(!m_bYaw)
 		m_sptLocal.type_mask |= 0b0000110000000000;
@@ -155,7 +155,7 @@ void _AP_posCtrl::setPosGlobal(void)
 	m_sptGlobal.vx = 0.0;
 	m_sptGlobal.vy = 0.0;
 	m_sptGlobal.vz = 0.0;
-	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG2RAD;
+	m_sptGlobal.yaw = (float) m_vTargetGlobal.w * DEG_2_RAD;
 	m_sptGlobal.type_mask = 0b0000000111111000; //set position
 	if(!m_bYaw)
 		m_sptGlobal.type_mask |= 0b0000110000000000;

@@ -78,7 +78,7 @@ bool _AP_CETCUS::updateCETCUS(void)
 	_Mavlink* pMav = m_pAP->m_pMav;
 
 	m_pC->m_vPos = m_pAP->getGlobalPos();
-	m_pC->m_vAtti = m_pAP->getApAttitude() * RAD2DEG;
+	m_pC->m_vAtti = m_pAP->getApAttitude() * RAD_2_DEG;
 	m_pC->m_course = m_pAP->getApHdg();
 	m_pC->m_vSpeed.x = m_pAP->getApSpeed().len();
 

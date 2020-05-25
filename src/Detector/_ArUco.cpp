@@ -125,7 +125,7 @@ void _ArUco::detect(void)
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		o.m_angle = -atan2(dx,dy) * RAD2DEG + 180.0;
+		o.m_angle = -atan2(dx,dy) * RAD_2_DEG + 180.0;
 
 		add(&o);
 		LOG_I("ID: "+ i2str(o.m_topClass));
@@ -161,7 +161,7 @@ void _ArUco::draw(void)
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
-		double rad = -pO->m_angle * DEG2RAD;
+		double rad = -pO->m_angle * DEG_2_RAD;
 		Point pD = Point(pO->m_r*sin(rad), pO->m_r*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}

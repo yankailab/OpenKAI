@@ -56,10 +56,12 @@ public:
     float m_fDec;
     float m_fSpat;
     bool m_bAlign;
+    float m_fEmitter;
+    float m_fLaserPower;
 
 	int	m_rsFPS;
 	int m_rsDFPS;
-	bool m_rsRGB;
+	bool m_bRsRGB;
 	string m_vPreset;
 
 	//depth filter processing thread

@@ -18,13 +18,15 @@ _RealSense::_RealSense()
 	m_pTPP = new _ThreadBase();
 
 	m_vPreset = "High Density";
-	m_rsRGB = true;
+	m_bRsRGB = true;
 	m_rsFPS = 30;
 	m_rsDFPS = 30;
 	m_fDec = 0.0;
 	m_fSpat = 0.0;
 	m_bAlign = false;
 	m_rspAlign = NULL;
+	m_fEmitter = 1.0;
+	m_fLaserPower = 1.0;
 
 	m_iHistFrom = 0;
 	m_dScale = 1.0;
@@ -44,10 +46,12 @@ bool _RealSense::init(void* pKiss)
 	pK->v("rsFPS", &m_rsFPS);
 	pK->v("rsDFPS", &m_rsDFPS);
 	pK->v("vPreset", &m_vPreset);
-	pK->v("rsRGB", &m_rsRGB);
+	pK->v("bRsRGB", &m_bRsRGB);
 	pK->v("fDec", &m_fDec);
 	pK->v("fSpat", &m_fSpat);
 	pK->v("bAlign", &m_bAlign);
+	pK->v("fEmitter", &m_fEmitter);
+	pK->v("fLaserPower", &m_fLaserPower);
 
 	return true;
 }
@@ -60,13 +64,12 @@ bool _RealSense::open(void)
 	{
 		rs2::config cfg;
 		cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
-		if (m_rsRGB)
+		if (m_bRsRGB)
 		{
 			cfg.enable_stream(RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS);
 		}
 
 		auto profile = m_rsPipe.start(cfg);
-
 		auto sensor = profile.get_device().first<rs2::depth_sensor>();
 
 		// TODO: At the moment the SDK does not offer a closed enum for D400 visual presets
@@ -77,11 +80,7 @@ bool _RealSense::open(void)
 		auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
 		for (auto i = range.min; i < range.max; i += range.step)
 		{
-			IF_CONT(
-					std::string(
-							sensor.get_option_value_description(
-									RS2_OPTION_VISUAL_PRESET, i)) != m_vPreset);
-
+			IF_CONT(std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i)) != m_vPreset);
 			sensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
 			break;
 		}
@@ -91,9 +90,18 @@ bool _RealSense::open(void)
 		if (m_fSpat > 0.0)
 			m_rsfSpat.set_option(RS2_OPTION_HOLES_FILL, m_fSpat);
 
+	    if (sensor.supports(RS2_OPTION_EMITTER_ENABLED))
+	        sensor.set_option(RS2_OPTION_EMITTER_ENABLED, m_fEmitter);
+
+	    if (sensor.supports(RS2_OPTION_LASER_POWER))
+	    {
+	        auto range = sensor.get_option_range(RS2_OPTION_LASER_POWER);
+	        sensor.set_option(RS2_OPTION_LASER_POWER, range.max * m_fLaserPower);
+	    }
+
 		rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
-		if (m_rsRGB)
+		if (m_bRsRGB)
 		{
 			if (m_bAlign)
 			{
@@ -153,10 +161,8 @@ void _RealSense::close(void)
 	if (m_threadMode == T_THREAD)
 	{
 		goSleep();
-		while (!bSleeping())
-			;
-		while (!m_pTPP->bSleeping())
-			;
+		while (!bSleeping());
+		while (!m_pTPP->bSleeping());
 	}
 
 	m_rsPipe.stop();
@@ -205,7 +211,7 @@ void _RealSense::update(void)
 		{
 			rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
 
-			if (m_rsRGB)
+			if (m_bRsRGB)
 			{
 				if (m_bAlign)
 				{

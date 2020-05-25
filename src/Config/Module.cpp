@@ -188,6 +188,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_DetectNet);
 #endif
+#ifdef USE_PCL
+	ADD_MODULE(_RealSensePC);
+#endif
 
     return NULL;
 }

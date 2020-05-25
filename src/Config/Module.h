@@ -181,6 +181,9 @@
 #ifdef USE_LIVOX
 #include "../Sensor/_Livox.h"
 #endif
+#ifdef USE_PCL
+#include "../PointCloud/_RealSensePC.h"
+#endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

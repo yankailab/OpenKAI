@@ -8,7 +8,6 @@
 #include <leptonica/allheaders.h>
 #endif
 
-#include "pcl.h"
 #include "cv.h"
 #include "tensorRT.h"
 #include "platform.h"
