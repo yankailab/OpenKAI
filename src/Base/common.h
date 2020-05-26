@@ -8,8 +8,18 @@
 #include <leptonica/allheaders.h>
 #endif
 
+#ifdef USE_OPEN3D
+#include <Open3D/Open3D.h>
+#endif
+
+#ifdef USE_OPENCV
 #include "cv.h"
+#endif
+
+#ifdef USE_TENSORRT
 #include "tensorRT.h"
+#endif
+
 #include "platform.h"
 #include "macro.h"
 #include "constant.h"

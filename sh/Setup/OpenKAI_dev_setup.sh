@@ -202,22 +202,13 @@ sudo ldconfig
 
 #----------------------------------------------------
 # Open3D
-sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev
-git clone --recursive https://github.com/intel-isl/Open3D
+sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev
+git clone --branch v0.9.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_PYBIND11=OFF -DBUILD_PYTHON_MODULE=OFF -DENABLE_JUPYTER=OFF -DENABLE_GUI=OFF ../
 make -j12
-sudo make install
-
-# Pangolin
-git clone https://github.com/stevenlovegrove/Pangolin.git
-cd Pangolin
-mkdir build
-cd build
-cmake ../
-cmake --build .
 sudo make install
 
 #----------------------------------------------------

@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 
 namespace kai

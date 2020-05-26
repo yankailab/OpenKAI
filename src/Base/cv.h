@@ -1,6 +1,4 @@
 
-#ifdef USE_OPENCV
-
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
 #include <opencv2/core/utility.hpp>
@@ -55,10 +53,7 @@ using namespace dnn;
 #define CHAIN_APPROX_NONE CV_CHAIN_APPROX_NONE
 #endif
 
-
 #define KEY_ARROW_UP 82
 #define KEY_ARROW_DOWN 84
 #define KEY_ARROW_LEFT 81
 #define KEY_ARROW_RIGHT 83
-
-#endif

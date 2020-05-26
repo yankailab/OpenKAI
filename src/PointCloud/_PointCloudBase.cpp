@@ -30,6 +30,7 @@ bool _PointCloudBase::init(void* pKiss)
 
 //	pK->v("w",&m_w);
 
+
 	m_bOpen = false;
 	return true;
 }

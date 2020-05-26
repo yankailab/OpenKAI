@@ -22,6 +22,12 @@ struct vInt2
 		y = 0;
 	}
 
+	void init(int a, int b)
+	{
+		x = a;
+		y = b;
+	}
+
 	int len(void)
 	{
 		return y-x;

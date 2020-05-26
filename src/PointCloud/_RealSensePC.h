@@ -9,11 +9,10 @@
 #define OpenKAI_src_Vision_RealSensePC_H_
 
 #include "../Base/common.h"
-#include "../Base/open3d.h"
-#include "../Vision/_RealSense.h"
 
-#ifdef USE_REALSENSE
 #ifdef USE_OPEN3D
+#ifdef USE_REALSENSE
+#include "../Vision/_RealSense.h"
 #include "_PointCloudBase.h"
 
 namespace kai
@@ -42,6 +41,7 @@ private:
 public:
 	_RealSense* m_pRS;
     rs2::pointcloud m_rsPC;
+    rs2::points m_rsPoints;
 
 };
 

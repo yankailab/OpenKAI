@@ -134,62 +134,83 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_drive);
 	ADD_MODULE(_AProver_field);
 
-#ifdef USE_MYNTEYE
-	ADD_MODULE(_Mynteye);
+#ifdef USE_OPENCV
+
 #endif
-#ifdef USE_LIVOX
-	ADD_MODULE(_Livox);
-#endif
-#ifdef USE_DYNAMIXEL
-	ADD_MODULE(_DeltaArm);
-	ADD_MODULE(_LabArm);
-#endif
-#ifdef USE_OCR
-	ADD_MODULE(OCR);
-#endif
-#ifdef USE_OPENALPR
-	ADD_MODULE(_OpenALPR);
-#endif
+
 #ifdef USE_CUDA
 	ADD_MODULE(_DenseFlow);
 	ADD_MODULE(_Bullseye);
 #endif
+
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);
 	ADD_MODULE(_SingleTracker);
 	ADD_MODULE(_MultiTracker);
 	ADD_MODULE(_MotionDetector);
 #endif
+
+#ifdef USE_REALSENSE
+	ADD_MODULE(_RealSense);
+	ADD_MODULE(_RStracking);
+#endif
+
+#ifdef USE_OPEN3D
+#ifdef USE_REALSENSE
+	ADD_MODULE(_RealSensePC);
+#endif
+#endif
+
+#ifdef USE_MYNTEYE
+	ADD_MODULE(_Mynteye);
+#endif
+
+#ifdef USE_LIVOX
+	ADD_MODULE(_Livox);
+#endif
+
+#ifdef USE_DYNAMIXEL
+	ADD_MODULE(_DeltaArm);
+	ADD_MODULE(_LabArm);
+#endif
+
+#ifdef USE_OCR
+	ADD_MODULE(OCR);
+#endif
+
+#ifdef USE_OPENALPR
+	ADD_MODULE(_OpenALPR);
+#endif
+
 #ifdef USE_OPENTRACKER
 	ADD_MODULE(_EcoTracker);
 #endif
+
 #ifdef USE_CAFFE
 	ADD_MODULE(_Caffe);
 	ADD_MODULE(_CaffeRegressionTrain);
 	ADD_MODULE(_CaffeRegressionInf);
 #endif
+
 #ifdef USE_DARKNET
 	ADD_MODULE(_YOLO);
 #endif
-#ifdef USE_REALSENSE
-	ADD_MODULE(_RealSense);
-	ADD_MODULE(_RStracking);
-#endif
+
 #ifdef USE_PYLON
 	ADD_MODULE(_Pylon);
 #endif
+
 #ifdef USE_CASCADE
 	ADD_MODULE(_Cascade);
 #endif
+
 #ifdef USE_ORB_SLAM2
 	ADD_MODULE(_ORB_SLAM2);
 #endif
+
 #ifdef USE_TENSORRT
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_DetectNet);
-#endif
-#ifdef USE_PCL
-	ADD_MODULE(_RealSensePC);
 #endif
 
     return NULL;

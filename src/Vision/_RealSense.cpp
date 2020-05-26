@@ -225,9 +225,7 @@ void _RealSense::update(void)
 					m_rsDepth = rsFrameset.get_depth_frame();
 				}
 
-				m_fBGR.copy(
-						Mat(Size(m_w, m_h), CV_8UC3, (void*) m_rsColor.get_data(),
-								Mat::AUTO_STEP));
+				m_fBGR.copy(Mat(Size(m_w, m_h), CV_8UC3, (void*) m_rsColor.get_data(), Mat::AUTO_STEP));
 			}
 			else
 			{

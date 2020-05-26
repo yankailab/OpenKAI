@@ -7,8 +7,8 @@
 
 #include "_RealSensePC.h"
 
-#ifdef USE_REALSENSE
 #ifdef USE_OPEN3D
+#ifdef USE_REALSENSE
 
 namespace kai
 {
@@ -17,7 +17,6 @@ _RealSensePC::_RealSensePC()
 {
 	m_type = pointCloud_realsense;
 	m_pRS = NULL;
-
 }
 
 _RealSensePC::~_RealSensePC()
@@ -29,7 +28,9 @@ bool _RealSensePC::init(void* pKiss)
 	IF_F(!_PointCloudBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName = "";
+	string iName;
+
+	iName = "";
 	pK->v("_RealSense", &iName);
 	m_pRS = (_RealSense*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pRS, iName + ": not found");
@@ -89,8 +90,7 @@ void _RealSensePC::update(void)
 		this->autoFPSfrom();
 
         m_rsPC.map_to(m_pRS->m_rsColor);
-        auto points = m_rsPC.calculate(m_pRS->m_rsDepth);
-
+        m_rsPoints = m_rsPC.calculate(m_pRS->m_rsDepth);
 
 		this->autoFPSto();
 	}

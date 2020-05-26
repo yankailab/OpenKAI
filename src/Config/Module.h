@@ -143,46 +143,71 @@
 #include "../Data/Inference/_MultiImageNet.h"
 #include "../Detector/_SlideWindow.h"
 
-#ifdef USE_MYNTEYE
-#include "../Vision/_Mynteye.h"
-#endif
-#ifdef USE_DYNAMIXEL
-#include "../Actuator/_DeltaArm.h"
-#include "../Actuator/_LabArm.h"
-#endif
-#ifdef USE_OCR
-#include "../Detector/OCR.h"
-#endif
-#ifdef USE_OPENALPR
-#include "../Detector/_OpenALPR.h"
-#endif
 #ifdef USE_CUDA
 #include "../Vision/_DenseFlow.h"
 #include "../Detector/_Bullseye.h"
 #endif
+
+#ifdef USE_OPENCV
+
+#endif
+
+#ifdef USE_OPENCV_CONTRIB
+
+#endif
+
+#ifdef USE_REALSENSE
+#include "../Vision/_RealSense.h"
+#include "../SLAM/_RStracking.h"
+#endif
+
+#ifdef USE_OPEN3D
+#ifdef USE_REALSENSE
+#include "../PointCloud/_RealSensePC.h"
+#endif
+#endif
+
+#ifdef USE_DYNAMIXEL
+#include "../Actuator/_DeltaArm.h"
+#include "../Actuator/_LabArm.h"
+#endif
+
+#ifdef USE_LIVOX
+#include "../Sensor/_Livox.h"
+#endif
+
+#ifdef USE_PANGOLIN
+#include "../UI/_Pangolin.h"
+#endif
+
+#ifdef USE_MYNTEYE
+#include "../Vision/_Mynteye.h"
+#endif
+
+#ifdef USE_OCR
+#include "../Detector/OCR.h"
+#endif
+
+#ifdef USE_OPENALPR
+#include "../Detector/_OpenALPR.h"
+#endif
+
 #ifdef USE_CASCADE
 #include "../Detector/_Cascade.h"
 #endif
+
 #ifdef USE_CAFFE
 #include "../DNN/Caffe/_Caffe.h"
 #include "../Regression/_CaffeRegressionTrain.h"
 #include "../Regression/_CaffeRegressionInf.h"
 #endif
+
 #ifdef USE_DARKNET
 #include "../DNN/Darknet/_YOLO.h"
 #endif
-#ifdef USE_REALSENSE
-#include "../Vision/_RealSense.h"
-#include "../SLAM/_RStracking.h"
-#endif
+
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
-#endif
-#ifdef USE_LIVOX
-#include "../Sensor/_Livox.h"
-#endif
-#ifdef USE_PCL
-#include "../PointCloud/_RealSensePC.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

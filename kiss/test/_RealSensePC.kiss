@@ -1,0 +1,43 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"rs",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"fovW":69.4,
+	"fovH":42.5,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+}
+
+{
+	"name":"rsPC",
+	"class":"_RealSensePC",
+	"bInst":1,
+	"_RealSense":"rs",
+	"_GLwindow":"GLwindow",
+}

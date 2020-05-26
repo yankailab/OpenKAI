@@ -38,7 +38,7 @@ bool JSON::v(const string& name, int* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (int) var.get<double>();
 	return true;
@@ -49,7 +49,7 @@ bool JSON::v(const string& name, bool* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (((int) var.get<double>()) != 0 ? true : false);
 	return true;
@@ -60,7 +60,7 @@ bool JSON::v(const string& name, uint8_t* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (uint8_t) var.get<double>();
 	return true;
@@ -71,7 +71,7 @@ bool JSON::v(const string& name, uint16_t* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (uint16_t) var.get<double>();
 	return true;
@@ -82,7 +82,7 @@ bool JSON::v(const string& name, uint32_t* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (uint32_t) var.get<double>();
 	return true;
@@ -93,7 +93,7 @@ bool JSON::v(const string& name, uint64_t* pVal)
 	IF_F(!m_JSON.is<object>());
 
 	value var = m_JSON.get(name);
-	IF_F(!var.is<int>());
+	IF_F(!var.is<double>());
 
 	*pVal = (uint64_t) var.get<double>();
 	return true;
@@ -439,7 +439,7 @@ int JSON::a(const string& name, vector<int>* pVal)
 	int i = 0;
 	for (it = arr.begin(); it != arr.end(); it++)
 	{
-		IF_CONT(!it->is<int>());
+		IF_CONT(!it->is<double>());
 		pVal->push_back((int)it->get<double>());
 		i++;
 	}
