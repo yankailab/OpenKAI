@@ -7,6 +7,8 @@
 
 #include "_DepthVisionBase.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -151,3 +153,4 @@ void _DepthVisionBase::draw(void)
 }
 
 }
+#endif

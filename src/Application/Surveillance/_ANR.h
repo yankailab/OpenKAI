@@ -8,12 +8,13 @@
 #ifndef OpenKAI_src_Application__ANR_H_
 #define OpenKAI_src_Application__ANR_H_
 
-#include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Detector/OCR.h"
 #include "../../IO/_WebSocket.h"
 #include "../../Script/JSON.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -78,4 +79,5 @@ private:
 };
 
 }
+#endif
 #endif

@@ -7,6 +7,8 @@
 
 #include "_Thermal.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -118,3 +120,4 @@ void _Thermal::draw(void)
 }
 
 }
+#endif

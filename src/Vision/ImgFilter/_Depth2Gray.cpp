@@ -7,6 +7,8 @@
 
 #include "_Depth2Gray.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -103,3 +105,4 @@ void _Depth2Gray::filter(void)
 }
 
 }
+#endif

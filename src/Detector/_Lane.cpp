@@ -7,6 +7,8 @@
 
 #include "_Lane.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -291,3 +293,4 @@ void _Lane::draw(void)
 }
 
 }
+#endif

@@ -100,6 +100,7 @@ void _Path::draw(void)
 
 	string msg;
 
+#ifdef USE_OPENCV
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
@@ -135,6 +136,7 @@ void _Path::draw(void)
 //		line(*pMat, pCenter + Point(p1.x, p1.y), pCenter + Point(p2.x, p2.y),
 //				col, bold);
 //	}
+#endif
 }
 
 }

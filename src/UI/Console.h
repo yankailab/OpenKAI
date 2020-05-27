@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_UI_Console_H_
 #define OpenKAI_src_UI_Console_H_
 
-#include "../Base/common.h"
 #include "../Base/BASE.h"
 
 namespace kai

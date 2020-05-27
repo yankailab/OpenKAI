@@ -9,10 +9,11 @@
 #define OpenKAI_src_DNN_Darknet__YOLO_H_
 
 #include "../../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_DARKNET
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"
-
-#ifdef USE_DARKNET
 
 extern "C" {
 #include "api.h"
@@ -51,6 +52,6 @@ public:
 };
 
 }
-
+#endif
 #endif
 #endif

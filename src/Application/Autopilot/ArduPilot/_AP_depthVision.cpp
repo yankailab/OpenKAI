@@ -1,5 +1,7 @@
 #include "../ArduPilot/_AP_depthVision.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -116,3 +118,4 @@ void _AP_depthVision::draw(void)
 }
 
 }
+#endif

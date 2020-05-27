@@ -7,6 +7,8 @@
 
 #include "_Grayscale.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -98,3 +100,4 @@ void _Grayscale::filter(void)
 }
 
 }
+#endif

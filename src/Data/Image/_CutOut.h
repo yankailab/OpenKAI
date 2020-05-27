@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Data_Image__CutOut_H_
 #define OpenKAI_src_Data_Image__CutOut_H_
 
-#include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
-#include "../../Utility/util.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -96,6 +96,7 @@ public:
 	double m_nMinPixel;
 
 };
-}
 
+}
+#endif
 #endif

@@ -4,6 +4,7 @@
  */
 #include "_Cascade.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CASCADE
 #ifdef USE_CUDA
 
@@ -180,6 +181,7 @@ void _Cascade::draw(void)
 }
 
 }
+#endif
 #endif
 #endif
 

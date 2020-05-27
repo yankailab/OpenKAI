@@ -7,6 +7,8 @@
 
 #include "_Rotate.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -102,3 +104,4 @@ void _Rotate::filter(void)
 }
 
 }
+#endif

@@ -5,6 +5,8 @@
 #include "../../../Filter/FilterBase.h"
 #include "../ArduPilot/_AP_follow.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -40,4 +42,5 @@ public:
 
 };
 }
+#endif
 #endif

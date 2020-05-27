@@ -9,6 +9,8 @@
 #define OpenKAI_src_Vision__Raspivid_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
 #include "_VisionBase.h"
 
 namespace kai
@@ -51,4 +53,5 @@ public:
 };
 
 }
+#endif
 #endif

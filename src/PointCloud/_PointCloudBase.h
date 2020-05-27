@@ -8,9 +8,7 @@
 #ifndef OpenKAI_src_PointCloud__PointCloudBase_H_
 #define OpenKAI_src_PointCloud__PointCloudBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Base/open3d.h"
 
 #ifdef USE_OPEN3D
 

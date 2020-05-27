@@ -207,6 +207,7 @@ bool JSON::v(const string& name, vFloat4* pV)
 	return true;
 }
 
+#ifdef USE_OPENCV
 bool JSON::v(const string& name, Scalar* pV)
 {
 	value::array arr;
@@ -236,6 +237,7 @@ bool JSON::v(const string& name, Scalar* pV)
 
 	return true;
 }
+#endif
 
 bool JSON::v(const string& name, vInt2* pV)
 {

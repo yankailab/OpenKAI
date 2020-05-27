@@ -11,6 +11,8 @@
 #include "FrameBase.h"
 #include "FrameGPU.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 #ifdef USE_CUDA
@@ -19,5 +21,5 @@ typedef FrameGPU Frame;
 typedef FrameBase Frame;
 #endif
 }
-
+#endif
 #endif

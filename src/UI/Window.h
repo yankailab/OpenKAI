@@ -9,6 +9,8 @@
 #define OpenKAI_src_UI_Windows_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
 #include "../Base/BASE.h"
 #include "../Vision/Frame.h"
 
@@ -205,5 +207,5 @@ public:
 };
 
 }
-
+#endif
 #endif

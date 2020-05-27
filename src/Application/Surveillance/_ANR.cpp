@@ -7,6 +7,8 @@
 
 #include "_ANR.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -426,3 +428,4 @@ void _ANR::draw(void)
 }
 
 }
+#endif

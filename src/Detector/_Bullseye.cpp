@@ -7,6 +7,7 @@
 
 #include "_Bullseye.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CUDA
 
 namespace kai
@@ -133,4 +134,5 @@ void _Bullseye::detect(void)
 }
 
 }
+#endif
 #endif

@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Protocol__CETCUS_H_
 #define OpenKAI_src_Protocol__CETCUS_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/_TCPclient.h"
 
@@ -142,5 +141,4 @@ public:
 };
 
 }
-
 #endif

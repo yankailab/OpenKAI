@@ -2,8 +2,9 @@
 #ifndef OpenKAI_src_Autopilot_AP__AProver_photo_H_
 #define OpenKAI_src_Autopilot_AP__AProver_photo_H_
 
-#include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
+
+#ifdef USE_OPENCV
 #include "../../../Vision/_GPhoto.h"
 #include "_AP_base.h"
 #include "_AProver_drive.h"
@@ -57,5 +58,5 @@ private:
 };
 
 }
-
+#endif
 #endif

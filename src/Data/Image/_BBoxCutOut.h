@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Data_Image__BBoxCutOut_H_
 #define OpenKAI_src_Data_Image__BBoxCutOut_H_
 
-#include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
-#include "../../Utility/util.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -40,8 +40,8 @@ public:
 	string m_extImgIn;
 	string m_extImgOut;
 
-
 };
-}
 
+}
+#endif
 #endif

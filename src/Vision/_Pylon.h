@@ -9,9 +9,10 @@
 #define OpenKAI_src_Vision__Pylon_H_
 
 #include "../Base/common.h"
-#include "_VisionBase.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_PYLON
+#include "_VisionBase.h"
 #include <pylon/PylonIncludes.h>
 
 using namespace Pylon;
@@ -50,5 +51,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

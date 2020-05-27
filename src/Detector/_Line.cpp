@@ -7,6 +7,8 @@
 
 #include "_Line.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -160,3 +162,4 @@ void _Line::draw(void)
 }
 
 }
+#endif

@@ -7,6 +7,8 @@
 
 #include "_Crop.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -111,3 +113,4 @@ void _Crop::filter(void)
 }
 
 }
+#endif

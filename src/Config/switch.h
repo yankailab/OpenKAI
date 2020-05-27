@@ -1,11 +1,9 @@
 
-#define USE_CUDA
 #define USE_OPENCV
 #define USE_OPENCV_CONTRIB
+//#define USE_CUDA
 #define USE_OPEN3D
 #define USE_REALSENSE
-#define USE_OPENGL
-//#define USE_PANGOLIN
 //#define USE_TENSORRT
 //#define USE_DYNAMIXEL
 //#define USE_LIVOX

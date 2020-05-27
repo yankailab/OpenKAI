@@ -7,6 +7,8 @@
 
 #include "FrameBase.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -146,3 +148,4 @@ FrameBase FrameBase::flip(int iOpt)
 }
 
 }
+#endif

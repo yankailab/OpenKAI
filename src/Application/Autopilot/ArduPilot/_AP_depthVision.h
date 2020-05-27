@@ -2,8 +2,9 @@
 #ifndef OpenKAI_src_Autopilot__AP_depthVision_H_
 #define OpenKAI_src_Autopilot__AP_depthVision_H_
 
-#include "../../../Base/common.h"
 #include "../../../Vision/_DepthVisionBase.h"
+
+#ifdef USE_OPENCV
 #include "../ArduPilot/_AP_base.h"
 
 #define N_DEPTH_ROI 16
@@ -45,5 +46,5 @@ private:
 };
 
 }
-
+#endif
 #endif

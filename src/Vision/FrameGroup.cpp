@@ -7,6 +7,8 @@
 
 #include "../Vision/FrameGroup.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -54,4 +56,4 @@ Frame* FrameGroup::getLastFrame(void)
 }
 
 }
-
+#endif

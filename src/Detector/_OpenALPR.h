@@ -8,11 +8,11 @@
 #ifndef OpenKAI_src_DNN_Detector__OpenALPR_H_
 #define OpenKAI_src_DNN_Detector__OpenALPR_H_
 
-#include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
-#include "_DNNtext.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENALPR
+#include "_DNNtext.h"
 #include <alpr.h>
 
 namespace kai
@@ -49,5 +49,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

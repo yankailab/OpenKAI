@@ -7,6 +7,7 @@
 
 #include "_ArUco.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
@@ -168,4 +169,5 @@ void _ArUco::draw(void)
 }
 
 }
+#endif
 #endif

@@ -8,9 +8,10 @@
 #ifndef OpenKAI_src_Application__ShopCam_H_
 #define OpenKAI_src_Application__ShopCam_H_
 
-#include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Detector/_DNNclassifier.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -45,4 +46,5 @@ private:
 };
 
 }
+#endif
 #endif

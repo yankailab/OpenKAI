@@ -7,6 +7,8 @@
 
 #include "_GDimgUploader.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -117,3 +119,4 @@ void _GDimgUploader::draw(void)
 }
 
 }
+#endif

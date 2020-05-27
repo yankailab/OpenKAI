@@ -6,7 +6,7 @@ namespace kai
 _AP_mission::_AP_mission()
 {
 	m_pAP = NULL;
-	m_pAPdescent = NULL;
+//	m_pAPdescent = NULL;
 }
 
 _AP_mission::~_AP_mission()
@@ -24,10 +24,10 @@ bool _AP_mission::init(void* pKiss)
 	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
-	iName = "";
-	pK->v("_AP_descent", &iName);
-	m_pAPdescent = (_AP_descent*) (pK->parent()->getChildInst(iName));
-	IF_Fl(!m_pAPdescent, iName + ": not found");
+//	iName = "";
+//	pK->v("_AP_descent", &iName);
+//	m_pAPdescent = (_AP_descent*) (pK->parent()->getChildInst(iName));
+//	IF_Fl(!m_pAPdescent, iName + ": not found");
 
 	return true;
 }
@@ -50,7 +50,7 @@ int _AP_mission::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
-	NULL__(m_pAPdescent, -1);
+//	NULL__(m_pAPdescent, -1);
 
 	return this->_AutopilotBase::check();
 }
@@ -87,19 +87,19 @@ void _AP_mission::updateMission(void)
 		return;
 	}
 
-	if(mission == "FOLLOW")
-	{
-		if(m_pAPdescent->m_bTarget)
-			m_pMC->transit("DESCENT");
-		return;
-	}
-
-	if(mission == "DESCENT")
-	{
-		if(!m_pAPdescent->m_bTarget)
-			m_pMC->transit("FOLLOW");
-		return;
-	}
+//	if(mission == "FOLLOW")
+//	{
+//		if(m_pAPdescent->m_bTarget)
+//			m_pMC->transit("DESCENT");
+//		return;
+//	}
+//
+//	if(mission == "DESCENT")
+//	{
+//		if(!m_pAPdescent->m_bTarget)
+//			m_pMC->transit("FOLLOW");
+//		return;
+//	}
 
 	if(mission == "RTH")
 	{

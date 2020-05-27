@@ -1,5 +1,7 @@
 #include "_AProver_photo.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -224,3 +226,4 @@ void _AProver_photo::draw(void)
 }
 
 }
+#endif

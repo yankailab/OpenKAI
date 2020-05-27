@@ -7,6 +7,8 @@
 
 #include "_Resize.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -96,3 +98,4 @@ void _Resize::filter(void)
 }
 
 }
+#endif

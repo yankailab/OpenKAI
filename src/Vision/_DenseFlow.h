@@ -9,10 +9,11 @@
 #define OpenKAI_src_Vision__Flow_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_CUDA
 #include "FrameGroup.h"
 #include "_VisionBase.h"
-
-#ifdef USE_CUDA
 
 namespace kai
 {
@@ -58,5 +59,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

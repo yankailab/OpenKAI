@@ -4,6 +4,7 @@
  */
 #include "_ImageNet.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_TENSORRT
 
 namespace kai
@@ -220,6 +221,6 @@ bool _ImageNet::draw(void)
 }
 
 }
-
+#endif
 #endif
 

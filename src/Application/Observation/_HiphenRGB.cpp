@@ -7,6 +7,8 @@
 
 #include "_HiphenRGB.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -126,4 +128,6 @@ void _HiphenRGB::draw(void)
 
 	addMsg("iImg: "+i2str(m_iImg));
 }
+
 }
+#endif

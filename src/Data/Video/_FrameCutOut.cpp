@@ -7,6 +7,8 @@
 
 #include "_FrameCutOut.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -47,4 +49,4 @@ void _FrameCutOut::update(void)
 }
 
 }
-
+#endif

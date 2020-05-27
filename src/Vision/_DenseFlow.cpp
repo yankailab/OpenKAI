@@ -7,6 +7,7 @@
 
 #include "_DenseFlow.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CUDA
 
 namespace kai
@@ -308,4 +309,5 @@ void _DenseFlow::drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& fl
 }
 
 }
+#endif
 #endif

@@ -9,6 +9,8 @@
 #define OpenKAI_src_DNN_Darknet__DNNtext_H_
 
 #include "_DNNdetect.h"
+
+#ifdef USE_OPENCV
 #include "OCR.h"
 
 namespace kai
@@ -51,4 +53,5 @@ public:
 };
 
 }
+#endif
 #endif

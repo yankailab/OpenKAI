@@ -2,6 +2,7 @@
 
 namespace kai
 {
+
 _Canbus::_Canbus()
 {
 	m_pIO = NULL;

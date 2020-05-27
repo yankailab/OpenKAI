@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Protocol__ProtocolBase_H_
 #define OpenKAI_src_Protocol__ProtocolBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
 

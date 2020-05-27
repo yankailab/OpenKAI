@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_IO__File_H_
 #define OpenKAI_src_IO__File_H_
 
-#include "../Base/common.h"
 #include "_IOBase.h"
 
 using namespace std;

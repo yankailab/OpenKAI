@@ -1,11 +1,12 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_follow_H_
 #define OpenKAI_src_Autopilot_AP__AP_follow_H_
 
-#include "../../../Base/common.h"
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../ArduPilot/_AP_base.h"
 #include "../ArduPilot/_AP_posCtrl.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -44,4 +45,5 @@ public:
 };
 
 }
+#endif
 #endif

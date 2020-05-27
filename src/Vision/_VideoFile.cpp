@@ -7,6 +7,8 @@
 
 #include "_VideoFile.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -94,3 +96,4 @@ void _VideoFile::update(void)
 }
 
 }
+#endif

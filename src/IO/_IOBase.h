@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_IO_IOBase_H_
 #define OpenKAI_src_IO_IOBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 
 #define N_IO_BUF 512

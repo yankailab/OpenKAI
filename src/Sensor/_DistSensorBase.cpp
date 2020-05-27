@@ -312,6 +312,7 @@ void _DistSensorBase::draw(void)
 	}
 	addMsg(msg);
 
+#ifdef USE_OPENCV
 	IF_(!checkWindow());
 	IF_(!m_bReady);
 	IF_(m_nDiv <= 0);
@@ -339,6 +340,7 @@ void _DistSensorBase::draw(void)
 		Scalar col = Scalar(0, 255, 0);
 		circle(*pMat, pCenter + Point(pX, pY), 1, col, 2);
 	}
+#endif
 
 }
 

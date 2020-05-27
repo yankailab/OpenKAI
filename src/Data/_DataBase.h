@@ -8,9 +8,10 @@
 #ifndef OpenKAI_src_Data__DataBase_H_
 #define OpenKAI_src_Data__DataBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include "../Utility/util.h"
+
+#ifdef USE_OPENCV
+#include "../Base/cv.h"
 
 #define D_TYPE_FILE 0x8
 #define D_TYPE_FOLDER 0x4
@@ -52,5 +53,5 @@ public:
 
 };
 }
-
+#endif
 #endif

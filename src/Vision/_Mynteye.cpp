@@ -7,6 +7,7 @@
 
 #include "_Mynteye.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_MYNTEYE
 
 namespace kai
@@ -149,4 +150,5 @@ void _Mynteye::draw(void)
 }
 
 }
+#endif
 #endif

@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Tracker__SingleTracker_H_
 #define OpenKAI_src_Tracker__SingleTracker_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_OPENCV_CONTRIB
 #include "../Vision/_VisionBase.h"
 #include "_TrackerBase.h"
-
-#ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
@@ -43,5 +43,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

@@ -8,8 +8,9 @@
 #ifndef OpenKAI_src_Application__HiphenRGB_H_
 #define OpenKAI_src_Application__HiphenRGB_H_
 
-#include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
+
+#ifdef USE_OPENCV
 #include "../../Navigation/_GPS.h"
 #include "../../Vision/_Camera.h"
 #include "../../Vision/Hiphen/_HiphenServer.h"
@@ -53,4 +54,5 @@ private:
 };
 
 }
+#endif
 #endif

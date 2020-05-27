@@ -7,6 +7,8 @@
 
 #include "_VisionBase.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -130,3 +132,4 @@ void _VisionBase::draw(void)
 }
 
 }
+#endif

@@ -1,5 +1,7 @@
 #include "../ArduPilot/_AP_avoid.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -128,3 +130,4 @@ void _AP_avoid::draw(void)
 }
 
 }
+#endif

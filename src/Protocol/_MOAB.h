@@ -1,8 +1,6 @@
 #ifndef OpenKAI_src_Protocol__MOAB_H_
 #define OpenKAI_src_Protocol__MOAB_H_
 
-#include "../Base/common.h"
-#include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
 
 namespace kai
@@ -38,6 +36,4 @@ public:
 };
 
 }
-
 #endif
-

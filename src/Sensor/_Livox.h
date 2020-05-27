@@ -8,9 +8,7 @@
 #ifndef OpenKAI_src_Sensor__Livox_H_
 #define OpenKAI_src_Sensor__Livox_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
-#include <string.h>
 
 #ifdef USE_LIVOX
 #include "livox_sdk.h"

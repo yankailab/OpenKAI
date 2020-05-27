@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Sensor__DistSensorBase_H_
 #define OpenKAI_src_Sensor__DistSensorBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"

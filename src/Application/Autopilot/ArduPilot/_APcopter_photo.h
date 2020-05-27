@@ -7,6 +7,8 @@
 #include "_AP_base.h"
 #include "_AP_posCtrl.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -64,5 +66,5 @@ private:
 };
 
 }
-
+#endif
 #endif

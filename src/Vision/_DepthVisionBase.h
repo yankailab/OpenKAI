@@ -9,6 +9,8 @@
 #define OpenKAI_src_Vision__DepthVisionBase_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
 #include "../Base/_ThreadBase.h"
 #include "_VisionBase.h"
 #include "../Filter/Median.h"
@@ -48,4 +50,5 @@ public:
 };
 
 }
+#endif
 #endif

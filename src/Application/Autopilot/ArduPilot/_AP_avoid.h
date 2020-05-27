@@ -5,6 +5,8 @@
 #include "../../../Detector/_DetectorBase.h"
 #include "../ArduPilot/_AP_base.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -37,6 +39,6 @@ private:
 };
 
 }
-
+#endif
 #endif
 

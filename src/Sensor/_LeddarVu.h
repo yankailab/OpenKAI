@@ -9,7 +9,6 @@
 #define OpenKAI_src_Sensor__LeddarVu_H_
 
 #include "../Dependency/libmodbus/modbus.h"
-#include "../Vision/_VisionBase.h"
 #include "_DistSensorBase.h"
 
 #define LEDDAR_MAX_DETECTIONS 16

@@ -1,5 +1,7 @@
 #include "_AProver_field.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -194,3 +196,4 @@ void _AProver_field::draw(void)
 }
 
 }
+#endif

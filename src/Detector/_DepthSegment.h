@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Detector__DepthSegment_H_
 #define OpenKAI_src_Detector__DepthSegment_H_
 
-#include "../Base/common.h"
 #include "_DetectorBase.h"
-#include "../Vision/_DepthVisionBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -43,6 +43,7 @@ public:
 	float	m_rArea;
 
 };
-}
 
+}
+#endif
 #endif

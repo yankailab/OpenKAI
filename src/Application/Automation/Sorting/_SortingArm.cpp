@@ -7,6 +7,8 @@
 
 #include "_SortingArm.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -266,3 +268,4 @@ void _SortingArm::draw(void)
 }
 
 }
+#endif

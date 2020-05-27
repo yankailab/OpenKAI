@@ -1,5 +1,7 @@
 #include "_SortingCtrlClient.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -197,3 +199,4 @@ void _SortingCtrlClient::draw(void)
 }
 
 }
+#endif

@@ -7,6 +7,8 @@
 
 #include "_ShopCam.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -233,3 +235,4 @@ void _ShopCam::draw(void)
 }
 
 }
+#endif

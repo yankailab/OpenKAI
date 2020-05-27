@@ -1,11 +1,8 @@
 #ifndef OpenKAI_src_Protocol__Canbus_H_
 #define OpenKAI_src_Protocol__Canbus_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../IO/_SerialPort.h"
-#include "../Vision/Frame.h"
-
 
 //0 START MARK
 //1 PAYLOAD LENGTH
@@ -85,5 +82,4 @@ public:
 };
 
 }
-
 #endif

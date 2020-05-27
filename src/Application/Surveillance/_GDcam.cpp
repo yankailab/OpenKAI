@@ -7,6 +7,8 @@
 
 #include "_GDcam.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -220,3 +222,4 @@ void _GDcam::draw(void)
 }
 
 }
+#endif

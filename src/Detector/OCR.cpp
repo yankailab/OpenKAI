@@ -7,6 +7,7 @@
 
 #include "OCR.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OCR
 
 namespace kai
@@ -101,4 +102,5 @@ bool OCR::console(int& iY)
 }
 
 }
+#endif
 #endif

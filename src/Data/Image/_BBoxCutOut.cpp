@@ -7,6 +7,8 @@
 
 #include "../Image/_BBoxCutOut.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -168,4 +170,4 @@ void _BBoxCutOut::process()
 }
 
 }
-
+#endif

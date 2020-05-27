@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Base__DetectorBase_H_
 #define OpenKAI_src_Base__DetectorBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+
+#ifdef USE_OPENCV
 #include "../Vision/_VisionBase.h"
 #include "../Vision/_DepthVisionBase.h"
 #include "../Protocol/_Mavlink.h"
-
 
 #define OBJECT_N_OBJ 256
 #define OBJ_N_CHAR 32
@@ -293,4 +293,5 @@ public:
 };
 
 }
+#endif
 #endif

@@ -45,12 +45,14 @@ bool BASE::init(void* pKiss)
 	pK->v("bDebug",&m_bDebug);
 
 	name = "";
-	F_INFO(pK->v("Window",&name));
-	m_pWindow = (Window*)(pK->root()->getChildInst(name));
-
-	name = "";
 	F_INFO(pK->v("Console",&name));
 	m_pConsole = (Console*)(pK->root()->getChildInst(name));
+
+#ifdef USE_OPENCV
+	name = "";
+	F_INFO(pK->v("Window",&name));
+	m_pWindow = (Window*)(pK->root()->getChildInst(name));
+#endif
 
 	return true;
 }
@@ -91,6 +93,7 @@ bool BASE::checkWindow(void)
 {
 	NULL_F(m_pWindow);
 
+#ifdef USE_OPENCV
 	Window* pWin = (Window*)m_pWindow;
 	NULL_F(pWin->getFrame());
 
@@ -98,6 +101,10 @@ bool BASE::checkWindow(void)
 	IF_F(pMat->empty());
 
 	return true;
+#else
+	return false;
+#endif
+
 }
 
 void BASE::draw(void)
@@ -113,11 +120,13 @@ void BASE::draw(void)
 //			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
 	}
 
+#ifdef USE_OPENCV
 	if(checkWindow())
 	{
 		Window* pWin = (Window*)this->m_pWindow;
 		pWin->addMsg(*this->getName());
 	}
+#endif
 }
 
 void BASE::addMsg(const string& msg, int iTab)
@@ -125,11 +134,13 @@ void BASE::addMsg(const string& msg, int iTab)
 	if(m_pConsole)
 		((Console*)m_pConsole)->addMsg(msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG, 1);
 
+#ifdef USE_OPENCV
 	if(checkWindow())
 	{
 		Window* pWin = ((Window*)m_pWindow);
 		pWin->addMsg(msg, iTab);
 	}
+#endif
 }
 
 }

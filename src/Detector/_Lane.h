@@ -8,8 +8,9 @@
 #ifndef OpenKAI_src_Detector__Lane_H_
 #define OpenKAI_src_Detector__Lane_H_
 
-#include "../Base/common.h"
 #include "../Vision/_VisionBase.h"
+
+#ifdef USE_OPENCV
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 #include <gsl/gsl_multifit.h>
@@ -245,4 +246,5 @@ private:
 };
 
 }
+#endif
 #endif

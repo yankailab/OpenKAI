@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_SLAM__SlamBase_H_
 #define OpenKAI_src_SLAM__SlamBase_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 
 namespace kai

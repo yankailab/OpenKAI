@@ -7,6 +7,8 @@
 
 #include "_ImgFile.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -82,3 +84,4 @@ void _ImgFile::update(void)
 }
 
 }
+#endif

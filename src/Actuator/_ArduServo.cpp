@@ -172,7 +172,6 @@ void _ArduServo::updatePWM(void)
 void _ArduServo::draw(void)
 {
 	this->_ActuatorBase::draw();
-	Window* pWin = (Window*) this->m_pWindow;
 
 	if (!m_pIO->isOpen())
 	{

@@ -10,8 +10,8 @@
 
 #include "../Base/common.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_ORB_SLAM2
-
 #include "../Vision/_VisionBase.h"
 #include <System.h>
 #include <KeyFrame.h>
@@ -62,6 +62,6 @@ public:
 };
 
 }
-
+#endif
 #endif
 #endif

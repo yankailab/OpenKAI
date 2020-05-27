@@ -5,6 +5,8 @@
 #include "../../../Protocol/_ProtocolBase.h"
 #include "_SortingCtrlServer.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -62,4 +64,5 @@ public:
 };
 
 }
+#endif
 #endif

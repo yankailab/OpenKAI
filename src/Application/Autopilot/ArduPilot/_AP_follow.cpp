@@ -1,5 +1,7 @@
 #include "../ArduPilot/_AP_follow.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -176,3 +178,4 @@ void _AP_follow::draw(void)
 }
 
 }
+#endif

@@ -9,10 +9,11 @@
 #define OpenKAI_src_Application__MultiTracker_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_DetectorBase.h"
 #include "../Tracker/_SingleTracker.h"
-
-#ifdef USE_OPENCV_CONTRIB
 
 namespace kai
 {
@@ -47,5 +48,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

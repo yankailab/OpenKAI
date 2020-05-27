@@ -7,6 +7,7 @@
 
 #include "_Pylon.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_PYLON
 
 namespace kai
@@ -128,4 +129,5 @@ void _Pylon::update(void)
 }
 
 }
+#endif
 #endif

@@ -7,6 +7,7 @@
 
 #include "_RealSense.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_REALSENSE
 
 namespace kai
@@ -290,4 +291,5 @@ void _RealSense::draw(void)
 }
 
 }
+#endif
 #endif

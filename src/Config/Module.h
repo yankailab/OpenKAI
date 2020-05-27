@@ -83,7 +83,6 @@
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
-#include "../SLAM/_LidarSlam.h"
 
 #include "../Tracker/_SingleTracker.h"
 #include "../Tracker/_MultiTracker.h"
@@ -119,34 +118,11 @@
 #include "../Vision/ImgFilter/_Resize.h"
 #include "../Vision/ImgFilter/_Rotate.h"
 
-#include "../Data/Augment/_Augment.h"
-#include "../Data/Augment/_filterBilateralBlur.h"
-#include "../Data/Augment/_filterBlur.h"
-#include "../Data/Augment/_filterBrightness.h"
-#include "../Data/Augment/_filterContrast.h"
-#include "../Data/Augment/_filterCrop.h"
-#include "../Data/Augment/_filterFlip.h"
-#include "../Data/Augment/_filterGaussianBlur.h"
-#include "../Data/Augment/_filterHistEqualize.h"
-#include "../Data/Augment/_filterLowResolution.h"
-#include "../Data/Augment/_filterMedianBlur.h"
-#include "../Data/Augment/_filterNoise.h"
-#include "../Data/Augment/_filterRotate.h"
-#include "../Data/Augment/_filterSaturation.h"
-#include "../Data/Augment/_filterShrink.h"
-#include "../Data/Augment/_filterTone.h"
-
 #include "../Data/Image/_GDimgUploader.h"
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
-#include "../Data/Inference/_MultiImageNet.h"
 #include "../Detector/_SlideWindow.h"
-
-#ifdef USE_CUDA
-#include "../Vision/_DenseFlow.h"
-#include "../Detector/_Bullseye.h"
-#endif
 
 #ifdef USE_OPENCV
 
@@ -154,6 +130,11 @@
 
 #ifdef USE_OPENCV_CONTRIB
 
+#endif
+
+#ifdef USE_CUDA
+#include "../Vision/_DenseFlow.h"
+#include "../Detector/_Bullseye.h"
 #endif
 
 #ifdef USE_REALSENSE

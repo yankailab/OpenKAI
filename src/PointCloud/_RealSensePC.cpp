@@ -7,6 +7,7 @@
 
 #include "_RealSensePC.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 
@@ -103,5 +104,6 @@ void _RealSensePC::draw(void)
 }
 
 }
+#endif
 #endif
 #endif

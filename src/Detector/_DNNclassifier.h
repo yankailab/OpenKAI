@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_DNN_Darknet__DNNclassifier_H_
 #define OpenKAI_src_DNN_Darknet__DNNclassifier_H_
 
-#include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
 #include "../Detector/_DetectorBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -52,4 +52,5 @@ public:
 };
 
 }
+#endif
 #endif

@@ -8,9 +8,10 @@
 #ifndef OpenKAI_src_Detector__IRLock_H_
 #define OpenKAI_src_Detector__IRLock_H_
 
-#include "../Base/common.h"
 #include "../Detector/_DetectorBase.h"
 #include "../IO/_IOBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -62,4 +63,5 @@ public:
 };
 
 }
+#endif
 #endif

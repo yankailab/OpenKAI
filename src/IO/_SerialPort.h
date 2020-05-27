@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_IO__SerialPort_H_
 #define OpenKAI_src_IO__SerialPort_H_
 
-#include "../Base/common.h"
 #include "_IOBase.h"
 
 // The following two non-standard baudrates should have been defined by the system

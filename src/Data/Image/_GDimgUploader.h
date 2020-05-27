@@ -8,8 +8,9 @@
 #ifndef OpenKAI_src_Application__GDimgUploader_H_
 #define OpenKAI_src_Application__GDimgUploader_H_
 
-#include "../../Base/common.h"
 #include "../../Vision/_VisionBase.h"
+
+#ifdef USE_OPENCV
 #include "../../Script/JSON.h"
 
 namespace kai
@@ -50,4 +51,5 @@ private:
 };
 
 }
+#endif
 #endif

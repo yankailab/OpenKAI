@@ -7,6 +7,7 @@
 
 #include "_ORB_SLAM2.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_ORB_SLAM2
 
 namespace kai
@@ -185,5 +186,5 @@ bool _ORB_SLAM2::draw(void)
 }
 
 }
-
+#endif
 #endif

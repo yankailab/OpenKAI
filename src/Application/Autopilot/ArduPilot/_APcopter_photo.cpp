@@ -1,5 +1,7 @@
 #include "_APcopter_photo.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -271,3 +273,4 @@ void _APcopter_photo::draw(void)
 }
 
 }
+#endif

@@ -94,7 +94,9 @@ bool Startup::start(Kiss* pKiss)
 				m_vInst[i].m_pInst->draw();
 			}
 
+#ifdef USE_OPENCV
 			m_key = waitKey(m_waitKey);
+#endif
 		}
 		else
 		{
@@ -172,6 +174,7 @@ bool Startup::addKeyCallback(CallbackKey cbKey, void* pInst)
 
 void Startup::printEnvironment(void)
 {
+#ifdef USE_OPENCV
 	LOG_I("OpenCV optimized code:" + i2str(useOptimized()));
 
 #ifdef USE_CUDA
@@ -192,6 +195,7 @@ void Startup::printEnvironment(void)
 	{
 		LOG_I("OpenCL not found");
 	}
+#endif
 }
 
 }

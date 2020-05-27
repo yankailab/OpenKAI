@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_IO__WebSocket_H_
 #define OpenKAI_src_IO__WebSocket_H_
 
-#include "../Base/common.h"
 #include "_IOBase.h"
 
 #define WS_N_HEADER 12
@@ -99,5 +98,4 @@ public:
 };
 
 }
-
 #endif

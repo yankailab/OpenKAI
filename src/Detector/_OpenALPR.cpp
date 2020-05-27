@@ -4,6 +4,7 @@
  */
 #include "_OpenALPR.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENALPR
 namespace kai
 {
@@ -189,4 +190,5 @@ bool _OpenALPR::draw(void)
 }
 
 }
+#endif
 #endif

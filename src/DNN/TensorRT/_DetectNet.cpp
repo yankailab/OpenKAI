@@ -4,6 +4,7 @@
  */
 #include "_DetectNet.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_TENSORRT
 
 namespace kai
@@ -180,6 +181,6 @@ bool _DetectNet::draw(void)
 }
 
 }
-
+#endif
 #endif
 

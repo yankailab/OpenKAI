@@ -8,12 +8,13 @@
 #ifndef OpenKAI_src_Tracker__EcoTracker_H_
 #define OpenKAI_src_Tracker__EcoTracker_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_OPENTRACKER
 #include "../Vision/_VisionBase.h"
 #include "_TrackerBase.h"
 
-#ifdef USE_OPENTRACKER
 
 #include "eco.hpp"
 using namespace eco;
@@ -47,5 +48,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

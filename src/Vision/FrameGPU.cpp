@@ -7,6 +7,7 @@
 
 #include "FrameGPU.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CUDA
 
 namespace kai
@@ -230,4 +231,5 @@ void FrameGPU::sync(void)
 }
 
 }
+#endif
 #endif

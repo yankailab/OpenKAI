@@ -7,6 +7,7 @@
 
 #include "_Caffe.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CAFFE
 #ifdef USE_CUDA
 
@@ -484,6 +485,6 @@ bool _Caffe::draw(void)
 }
 
 }
-
+#endif
 #endif
 #endif

@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_IO__UDP_H_
 #define OpenKAI_src_IO__UDP_H_
 
-#include "../Base/common.h"
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"
 #include "_IOBase.h"
@@ -55,5 +54,4 @@ public:
 };
 
 }
-
 #endif

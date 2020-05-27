@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Detector__ArUco_H_
 #define OpenKAI_src_Detector__ArUco_H_
 
-#include "../Base/common.h"
 #include "../Detector/_DetectorBase.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
@@ -43,5 +43,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

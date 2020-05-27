@@ -7,6 +7,8 @@
 
 #include "../Image/_CutOut.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -245,3 +247,4 @@ string _CutOut::getFileWithOutIdx(string& file)
 }
 
 }
+#endif

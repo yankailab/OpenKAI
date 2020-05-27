@@ -102,6 +102,8 @@ void _AP_distLidar::updateMavlink(void)
 void _AP_distLidar::draw(void)
 {
 	this->_AutopilotBase::draw();
+
+#ifdef USE_OPENCV
 	IF_(!checkWindow());
 
 	Window* pWin = (Window*) this->m_pWindow;
@@ -129,6 +131,7 @@ void _AP_distLidar::draw(void)
 		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
 		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
 	}
+#endif
 }
 
 }

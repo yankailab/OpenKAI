@@ -8,8 +8,9 @@
 #ifndef OpenKAI_src_Detector__Thermal_H_
 #define OpenKAI_src_Detector__Thermal_H_
 
-#include "../Base/common.h"
 #include "_DetectorBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -40,6 +41,7 @@ public:
 	double	m_rU;
 
 };
-}
 
+}
+#endif
 #endif

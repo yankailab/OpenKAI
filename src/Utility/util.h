@@ -1,12 +1,11 @@
 #ifndef OpenKAI_src_Utility_util_H_
 #define OpenKAI_src_Utility_util_H_
 
-#include "../Base/platform.h"
+#ifdef USE_OPENCV
 #include "../Base/cv.h"
-#include <time.h>
-#include <sys/time.h>
+#endif
 
-using namespace std;
+#include "../Base/platform.h"
 
 namespace kai
 {
@@ -19,31 +18,6 @@ namespace kai
 template <typename T> inline T map(T x, T inMin, T inMax, T outMin, T outMax)
 {
   return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
-}
-
-inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
-{
-	IF__(m.empty(), -1.0);
-
-    vector<int> vHistLev = { nLevel };
-	vector<float> vRange = { rFrom, rTo };
-	vector<int> vChannel = { 0 };
-
-	vector<Mat> vRoi = {m};
-	Mat mHist;
-	cv::calcHist(vRoi, vChannel, Mat(),
-	            mHist, vHistLev, vRange,
-	            true	//accumulate
-				);
-
-	int nMinHist = nMin * m.cols * m.rows;
-	int i;
-	for(i=0; i<nLevel; i++)
-	{
-		if(mHist.at<float>(i) >= (float)nMinHist)break;
-	}
-
-	return rFrom + (((float)i)/(float)nLevel) * (rTo - rFrom);
 }
 
 inline string deleteNonASCII(const char* pStr)
@@ -266,61 +240,12 @@ inline vFloat4 convertBB(vInt4 bb, vInt2& vB)
 	return v;
 }
 
-template <typename T> inline T convertBB(Rect r)
-{
-	T v;
-	v.x = r.x;
-	v.y = r.y;
-	v.z = r.x + r.width;
-	v.w = r.y + r.height;
-
-	return v;
-}
-
-template <typename T> inline Rect convertBB(T v)
-{
-	Rect r;
-	r.x = v.x;
-	r.y = v.y;
-	r.width = v.z - v.x;
-	r.height = v.w - v.y;
-
-	return r;
-}
-
 template <typename T> inline bool bOverlap(T& pA, T& pB)
 {
 	IF_F(pA.z < pB.x || pA.x > pB.z);
 	IF_F(pA.w < pB.y || pA.y > pB.w);
 
 	return true;
-}
-
-inline float IoU(Rect2f& r1, Rect2f& r2)
-{
-	Rect2f rOR = r1 | r2;
-	Rect2f rAND = r1 & r2;
-	return rAND.area() / rOR.area();
-}
-
-inline float IoU(vFloat4& bb1, vFloat4& bb2)
-{
-	Rect2f r1 = convertBB(bb1);
-	Rect2f r2 = convertBB(bb2);
-	return IoU(r1,r2);
-}
-
-inline float nIoU(Rect2f& r1, Rect2f& r2)
-{
-	Rect2f rAND = r1 & r2;
-	return rAND.area() / small(r1.area(), r2.area());
-}
-
-inline float nIoU(vFloat4& bb1, vFloat4& bb2)
-{
-	Rect2f r1 = convertBB(bb1);
-	Rect2f r2 = convertBB(bb2);
-	return nIoU(r1,r2);
 }
 
 template <typename T> inline T constrain(T v, T a, T b)
@@ -496,6 +421,83 @@ inline vector<string> splitBy(string str, char c)
 
 	return v;
 }
+
+#ifdef USE_OPENCV
+inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
+{
+	IF__(m.empty(), -1.0);
+
+    vector<int> vHistLev = { nLevel };
+	vector<float> vRange = { rFrom, rTo };
+	vector<int> vChannel = { 0 };
+
+	vector<Mat> vRoi = {m};
+	Mat mHist;
+	cv::calcHist(vRoi, vChannel, Mat(),
+	            mHist, vHistLev, vRange,
+	            true	//accumulate
+				);
+
+	int nMinHist = nMin * m.cols * m.rows;
+	int i;
+	for(i=0; i<nLevel; i++)
+	{
+		if(mHist.at<float>(i) >= (float)nMinHist)break;
+	}
+
+	return rFrom + (((float)i)/(float)nLevel) * (rTo - rFrom);
+}
+
+template <typename T> inline T convertBB(Rect r)
+{
+	T v;
+	v.x = r.x;
+	v.y = r.y;
+	v.z = r.x + r.width;
+	v.w = r.y + r.height;
+
+	return v;
+}
+
+template <typename T> inline Rect convertBB(T v)
+{
+	Rect r;
+	r.x = v.x;
+	r.y = v.y;
+	r.width = v.z - v.x;
+	r.height = v.w - v.y;
+
+	return r;
+}
+
+inline float IoU(Rect2f& r1, Rect2f& r2)
+{
+	Rect2f rOR = r1 | r2;
+	Rect2f rAND = r1 & r2;
+	return rAND.area() / rOR.area();
+}
+
+inline float IoU(vFloat4& bb1, vFloat4& bb2)
+{
+	Rect2f r1 = convertBB(bb1);
+	Rect2f r2 = convertBB(bb2);
+	return IoU(r1,r2);
+}
+
+inline float nIoU(Rect2f& r1, Rect2f& r2)
+{
+	Rect2f rAND = r1 & r2;
+	return rAND.area() / small(r1.area(), r2.area());
+}
+
+inline float nIoU(vFloat4& bb1, vFloat4& bb2)
+{
+	Rect2f r1 = convertBB(bb1);
+	Rect2f r2 = convertBB(bb2);
+	return nIoU(r1,r2);
+}
+
+#endif
 
 }
 #endif

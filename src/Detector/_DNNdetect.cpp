@@ -4,6 +4,8 @@
  */
 #include "_DNNdetect.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -287,3 +289,4 @@ void _DNNdetect::draw(void)
 }
 
 }
+#endif

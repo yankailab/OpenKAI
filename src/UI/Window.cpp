@@ -6,6 +6,8 @@
  */
 
 #include "Window.h"
+
+#ifdef USE_OPENCV
 #include "../Script/Kiss.h"
 
 namespace kai
@@ -322,3 +324,4 @@ void Window::addCallbackMouse(CallbackMouse cb, void* pfInst)
 }
 
 }
+#endif

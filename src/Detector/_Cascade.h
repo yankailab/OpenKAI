@@ -8,10 +8,9 @@
 #ifndef OpenKAI_src_Detector__Cascade_H_
 #define OpenKAI_src_Detector__Cascade_H_
 
-#include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
 #include "../Detector/_DetectorBase.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CASCADE
 #ifdef USE_CUDA
 
@@ -54,7 +53,7 @@ public:
 };
 
 }
-
+#endif
 #endif
 #endif
 #endif

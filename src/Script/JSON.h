@@ -35,7 +35,9 @@ public:
 	bool v(const string& name, float* pVal);
 	bool v(const string& name, string* pVal);
 
+#ifdef USE_OPENCV
 	bool v(const string& name, Scalar* pV);
+#endif
 	bool v(const string& name, vInt2* pV);
 	bool v(const string& name, vInt3* pV);
 	bool v(const string& name, vInt4* pV);
@@ -51,7 +53,6 @@ public:
 	int a(const string& name, vector<double>* pVal);
 	int a(const string& name, vector<float>* pVal);
 	int a(const string& name, vector<string>* pVal);
-
 
 };
 

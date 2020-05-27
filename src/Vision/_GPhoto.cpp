@@ -7,6 +7,8 @@
 
 #include "_GPhoto.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -92,3 +94,4 @@ bool _GPhoto::shutter(string& fName)
 }
 
 }
+#endif

@@ -9,6 +9,8 @@
 #define OpenKAI_src_Vision_FrameGroup_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
 #include "Frame.h"
 
 #define FRAMGROUP_N_FRAME 2
@@ -35,5 +37,5 @@ private:
 };
 
 }
-
+#endif
 #endif

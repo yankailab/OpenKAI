@@ -169,11 +169,13 @@ void _ThreadBase::draw(void)
 		pC->addMsg(msg, COLOR_PAIR(CONSOLE_COL_FPS)|A_BOLD, CONSOLE_X_FPS);
 	}
 
+#ifdef USE_OPENCV
 	if(checkWindow())
 	{
 		Window* pWin = (Window*)this->m_pWindow;
 		pWin->addMsg(msg, 1);
 	}
+#endif
 }
 
 }

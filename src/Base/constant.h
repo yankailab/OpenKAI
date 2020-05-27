@@ -9,7 +9,7 @@
 #define OpenKAI_src_Base_constant_H_
 
 #define DEFAULT_FPS 30
-
+#define OK_PI 3.1415926535897932384626433832795
 #define OneOvPI 0.31830988618
 #define DEG_2_RAD 0.0174533
 #define RAD_2_DEG 57.29578

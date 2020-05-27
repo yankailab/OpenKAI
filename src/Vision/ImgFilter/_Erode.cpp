@@ -7,6 +7,8 @@
 
 #include "_Erode.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -135,3 +137,4 @@ void _Erode::filter(void)
 }
 
 }
+#endif

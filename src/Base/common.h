@@ -3,21 +3,12 @@
 
 #include "../Config/switch.h"
 
-#ifdef USE_OCR
-#include <tesseract/baseapi.h>
-#include <leptonica/allheaders.h>
-#endif
-
 #ifdef USE_OPEN3D
-#include <Open3D/Open3D.h>
+#include "open3d.h"
 #endif
 
 #ifdef USE_OPENCV
 #include "cv.h"
-#endif
-
-#ifdef USE_TENSORRT
-#include "tensorRT.h"
 #endif
 
 #include "platform.h"

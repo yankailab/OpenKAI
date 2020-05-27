@@ -7,6 +7,8 @@
 
 #include "_HistEqualize.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -106,3 +108,4 @@ void _HistEqualize::filter(void)
 }
 
 }
+#endif

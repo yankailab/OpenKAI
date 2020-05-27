@@ -8,10 +8,11 @@
 #ifndef OpenKAI_src_DNN_TensorRT__ImageNet_H_
 #define OpenKAI_src_DNN_TensorRT__ImageNet_H_
 
-#include "../../Base/common.h"
 #include "../../Detector/_DetectorBase.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_TENSORRT
+#include "../../Base/tensorRT.h"
 
 namespace kai
 {
@@ -54,6 +55,6 @@ public:
 };
 
 }
-
+#endif
 #endif
 #endif

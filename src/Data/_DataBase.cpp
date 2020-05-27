@@ -7,6 +7,8 @@
 
 #include "_DataBase.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -144,4 +146,4 @@ bool _DataBase::verifyExtension(string& fName)
 }
 
 }
-
+#endif

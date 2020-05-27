@@ -7,6 +7,8 @@
 
 #include "_Camera.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -124,3 +126,4 @@ void _Camera::update(void)
 }
 
 }
+#endif

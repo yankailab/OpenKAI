@@ -158,8 +158,8 @@ void _Object::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+//	IF_(!checkWindow());
+//	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 }
 
 }

@@ -1,5 +1,4 @@
 #include "_Mavlink.h"
-#include "../Utility/util.h"
 
 namespace kai
 {

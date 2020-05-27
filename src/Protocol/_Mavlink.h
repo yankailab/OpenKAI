@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Protocol__Mavlink_H_
 #define OpenKAI_src_Protocol__Mavlink_H_
 
-#include "../Base/common.h"
 #include "../Dependency/mavlink/ardupilotmega/mavlink.h"
 #include "../Dependency/mavlink/mavlink_conversions.h"
 #include "../IO/_IOBase.h"
@@ -591,5 +590,4 @@ private:
 };
 
 }
-
 #endif

@@ -8,10 +8,11 @@
 #ifndef OpenKAI_src_Application__GDcam_H_
 #define OpenKAI_src_Application__GDcam_H_
 
-#include "../../Base/common.h"
 #include "../../Base/_ThreadBase.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Script/JSON.h"
+
+#ifdef USE_OPENCV
 
 #define GD_N_CLASS 64
 
@@ -64,4 +65,5 @@ private:
 };
 
 }
+#endif
 #endif

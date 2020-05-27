@@ -7,6 +7,7 @@
 
 #include "_CaffeRegressionInf.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CAFFE
 #ifdef USE_CUDA
 
@@ -183,6 +184,6 @@ double* _CaffeRegressionInf::getOutput(void)
 
 
 }
-
+#endif
 #endif
 #endif

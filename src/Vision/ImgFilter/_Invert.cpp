@@ -7,6 +7,8 @@
 
 #include "_Invert.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -98,3 +100,4 @@ void _Invert::filter(void)
 }
 
 }
+#endif

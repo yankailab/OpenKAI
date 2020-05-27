@@ -7,6 +7,8 @@
 
 #include "_TrackerBase.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -135,3 +137,4 @@ void _TrackerBase::draw(void)
 }
 
 }
+#endif

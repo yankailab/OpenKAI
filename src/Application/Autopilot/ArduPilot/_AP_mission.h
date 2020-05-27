@@ -30,7 +30,7 @@ private:
 
 public:
 	_AP_base* m_pAP;
-	_AP_descent* m_pAPdescent;
+//	_AP_descent* m_pAPdescent;
 
 };
 

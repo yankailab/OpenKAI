@@ -9,10 +9,13 @@
 #define OpenKAI_src_Vision__Mynteye_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_MYNTEYE
+
 #include "_DepthVisionBase.h"
 #include "../Utility/util.h"
 
-#ifdef USE_MYNTEYE
 #define WITH_OPENCV
 #include <mynteyed/camera.h>
 #include <mynteyed/utils.h>
@@ -50,5 +53,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

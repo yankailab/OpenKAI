@@ -7,6 +7,7 @@
 
 #include "_MotionDetector.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
@@ -134,4 +135,5 @@ void _MotionDetector::draw(void)
 }
 
 }
+#endif
 #endif

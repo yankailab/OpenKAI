@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Base__ThreadBase_H_
 #define OpenKAI_src_Base__ThreadBase_H_
 
-#include "common.h"
 #include "BASE.h"
 #include "../Script/Kiss.h"
 #include "../UI/Window.h"

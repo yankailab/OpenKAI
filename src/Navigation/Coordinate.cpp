@@ -46,7 +46,7 @@ LL_POS Coordinate::offset(LL_POS& LL, vFloat3& dNEA)
 
 	oLL.m_lat = asin(sinLat * cos(d) + cosLat * sin(d) * cos(tc));
 	double dLon = atan2(sin(tc) * sin(d) * cosLat, cos(d) - sinLat * sin(oLL.m_lat));
-	oLL.m_lng = fmod(LL.m_lng + dLon + CV_PI, 2*CV_PI) - CV_PI;
+	oLL.m_lng = fmod(LL.m_lng + dLon + OK_PI, 2*OK_PI) - OK_PI;
 
 	return oLL;
 }

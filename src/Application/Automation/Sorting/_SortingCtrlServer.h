@@ -12,6 +12,8 @@
 #include "../../../Protocol/_ProtocolBase.h"
 #include "../../../Vision/_DepthVisionBase.h"
 
+#ifdef USE_OPENCV
+
 //0 PROTOCOL_BEGIN
 //1 COMMAND
 //2 PAYLOAD LENGTH
@@ -70,4 +72,5 @@ public:
 };
 
 }
+#endif
 #endif

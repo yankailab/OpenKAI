@@ -8,9 +8,10 @@
 #ifndef OpenKAI_src_Detector__SlideWindow_H_
 #define OpenKAI_src_Detector__SlideWindow_H_
 
-#include "../Base/common.h"
-#include "_DNNclassifier.h"
 #include "../Vision/_DepthVisionBase.h"
+
+#ifdef USE_OPENCV
+#include "_DNNclassifier.h"
 
 namespace kai
 {
@@ -50,6 +51,7 @@ public:
 	float	m_dMinArea;
 	vFloat2	m_dRange;
 };
-}
 
+}
+#endif
 #endif

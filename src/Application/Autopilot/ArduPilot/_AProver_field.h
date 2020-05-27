@@ -6,6 +6,8 @@
 #include "_AP_base.h"
 #include "_AProver_drive.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -53,4 +55,5 @@ public:
 };
 
 }
+#endif
 #endif

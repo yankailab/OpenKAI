@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CAFFE
 #ifdef USE_CUDA
 
@@ -68,7 +69,7 @@ private:
 
 };
 }
-
+#endif
 #endif
 #endif
 #endif

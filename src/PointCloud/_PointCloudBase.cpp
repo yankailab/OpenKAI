@@ -62,9 +62,6 @@ void _PointCloudBase::close(void)
 
 void _PointCloudBase::draw(void)
 {
-	NULL_(m_pWindow);
-	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
-
 	this->_ThreadBase::draw();
 }
 

@@ -9,10 +9,12 @@
 #define OpenKAI_src_Vision_RealSense_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_REALSENSE
+
 #include "_DepthVisionBase.h"
 #include "../Utility/util.h"
-
-#ifdef USE_REALSENSE
 #include <librealsense2/rs.hpp>
 
 namespace kai
@@ -70,5 +72,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

@@ -4,6 +4,8 @@
  */
 #include "_DNNtext.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -364,3 +366,4 @@ void _DNNtext::draw(void)
 }
 
 }
+#endif

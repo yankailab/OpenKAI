@@ -7,6 +7,7 @@
 
 #include "_MultiTracker.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
 
 namespace kai
@@ -156,4 +157,5 @@ void _MultiTracker::draw(void)
 }
 
 }
+#endif
 #endif

@@ -4,6 +4,7 @@
  */
 #include "_YOLO.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_DARKNET
 
 namespace kai
@@ -149,4 +150,5 @@ bool _YOLO::draw(void)
 }
 
 }
+#endif
 #endif

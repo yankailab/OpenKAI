@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Detector__Line_H_
 #define OpenKAI_src_Detector__Line_H_
 
-#include "../Base/common.h"
 #include "_DetectorBase.h"
-#include "../Vision/_VisionBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -43,6 +43,7 @@ public:
 	Mat		m_mIn;
 
 };
-}
 
+}
+#endif
 #endif

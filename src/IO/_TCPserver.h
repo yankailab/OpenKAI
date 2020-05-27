@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_IO__TCPserver_H_
 #define OpenKAI_src_IO__TCPserver_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "../Script/Kiss.h"
 #include "../IO/_IOBase.h"

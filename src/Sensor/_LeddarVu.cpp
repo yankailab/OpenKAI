@@ -325,6 +325,7 @@ void _LeddarVu::draw(void)
 	msg += " |";
 	addMsg(msg);
 
+#ifdef USE_OPENCV
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
@@ -349,6 +350,7 @@ void _LeddarVu::draw(void)
 		line(*pMat, pCenter + Point(pFrom.x*rMax,pFrom.y*rMax), pCenter, col, 1);
 		line(*pMat, pCenter, pCenter + Point(pTo.x*rMax,pTo.y*rMax), col, 1);
 	}
+#endif
 
 }
 

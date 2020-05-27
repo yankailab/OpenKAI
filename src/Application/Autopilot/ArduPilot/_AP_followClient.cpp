@@ -1,6 +1,7 @@
 #include "../ArduPilot/_AP_followClient.h"
-
 #include "../../../Startup/Startup.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -242,3 +243,4 @@ void _AP_followClient::draw(void)
 }
 
 }
+#endif

@@ -8,10 +8,9 @@
 #ifndef OpenKAI_src_Data_Video__FrameCutOut_H_
 #define OpenKAI_src_Data_Video__FrameCutOut_H_
 
-#include "../../Base/common.h"
-#include "../../Base/_ThreadBase.h"
-#include "../../Utility/util.h"
 #include "../_DataBase.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -39,6 +38,7 @@ public:
 	Frame m_frameIn;
 	Frame m_frameOut;
 };
-}
 
+}
+#endif
 #endif

@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
@@ -46,6 +47,7 @@ public:
 };
 
 }
+#endif
 #endif
 #endif
 #endif

@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Filter_Average_H_
 #define OpenKAI_src_Filter_Average_H_
 
-#include "../Base/common.h"
 #include "FilterBase.h"
 
 namespace kai

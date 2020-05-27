@@ -10,6 +10,9 @@
 
 #include "../Base/_ThreadBase.h"
 
+#ifdef USE_OPENCV
+#include "../Base/cv.h"
+
 namespace kai
 {
 
@@ -74,4 +77,5 @@ public:
 };
 
 }
+#endif
 #endif

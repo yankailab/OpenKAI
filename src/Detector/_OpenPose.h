@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_DNN_Darknet__OpenPose_H_
 #define OpenKAI_src_DNN_Darknet__OpenPose_H_
 
-#include "../Base/common.h"
-#include "../Vision/_VisionBase.h"
 #include "_DetectorBase.h"
+
+#ifdef USE_OPENCV
 
 using namespace cv::dnn;
 
@@ -88,4 +88,5 @@ public:
 };
 
 }
+#endif
 #endif

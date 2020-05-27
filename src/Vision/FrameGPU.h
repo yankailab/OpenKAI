@@ -10,6 +10,7 @@
 
 #include "../Base/common.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CUDA
 
 namespace kai
@@ -67,5 +68,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif

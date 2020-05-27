@@ -8,7 +8,6 @@
 #ifndef OpenKAI_src_Navigation__Path_H_
 #define OpenKAI_src_Navigation__Path_H_
 
-#include "../Base/common.h"
 #include "../Base/_ThreadBase.h"
 #include "Coordinate.h"
 

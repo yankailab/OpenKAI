@@ -1,5 +1,7 @@
 #include "_AP_descent.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -187,3 +189,4 @@ void _AP_descent::draw(void)
 }
 
 }
+#endif

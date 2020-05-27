@@ -7,6 +7,8 @@
 
 #include "_SlideWindow.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -171,3 +173,4 @@ void _SlideWindow::draw(void)
 }
 
 }
+#endif

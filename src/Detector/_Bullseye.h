@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Detector__Bullseye_H_
 #define OpenKAI_src_Detector__Bullseye_H_
 
-#include "../Base/common.h"
 #include "../Detector/_DetectorBase.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CUDA
 
 namespace kai
@@ -43,7 +43,8 @@ public:
 	double	m_thr2;
 
 };
-}
 
+}
+#endif
 #endif
 #endif

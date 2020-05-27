@@ -7,6 +7,7 @@
 
 #include "_EcoTracker.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_OPENTRACKER
 
 namespace kai
@@ -205,4 +206,5 @@ void _EcoTracker::track(void)
 }
 
 }
+#endif
 #endif

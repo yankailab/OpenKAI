@@ -10,6 +10,7 @@
 
 #include "../../Base/common.h"
 
+#ifdef USE_OPENCV
 #ifdef USE_CAFFE
 #ifdef USE_CUDA
 
@@ -88,8 +89,9 @@ private:
 	vector<string> m_vExtIn;
 	vector<string> m_vFileIn;
 };
-}
 
+}
+#endif
 #endif
 #endif
 #endif

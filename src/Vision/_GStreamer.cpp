@@ -5,8 +5,9 @@
  *      Author: yankai
  */
 
-
 #include "_GStreamer.h"
+
+#ifdef USE_OPENCV
 
 namespace kai
 {
@@ -109,3 +110,4 @@ void _GStreamer::update(void)
 }
 
 }
+#endif

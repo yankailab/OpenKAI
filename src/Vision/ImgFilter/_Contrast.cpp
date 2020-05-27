@@ -7,6 +7,8 @@
 
 #include "_Contrast.h"
 
+#ifdef USE_OPENCV
+
 namespace kai
 {
 
@@ -103,3 +105,4 @@ void _Contrast::filter(void)
 }
 
 }
+#endif

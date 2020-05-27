@@ -9,10 +9,13 @@
 #define OpenKAI_src_Detector_OCR_H_
 
 #include "../Base/common.h"
+
+#ifdef USE_OPENCV
+#ifdef USE_OCR
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"
-
-#ifdef USE_OCR
+#include <tesseract/baseapi.h>
+#include <leptonica/allheaders.h>
 
 namespace kai
 {
@@ -44,5 +47,6 @@ public:
 };
 
 }
+#endif
 #endif
 #endif
