@@ -12,6 +12,8 @@
 
 #ifdef USE_OPEN3D
 
+using namespace open3d;
+
 namespace kai
 {
 
@@ -41,6 +43,9 @@ public:
 public:
 	bool m_bOpen;
 	POINTCLOUD_TYPE m_type;
+
+	geometry::PointCloud m_pc;
+	visualization::Visualizer m_visualizer;
 
 };
 

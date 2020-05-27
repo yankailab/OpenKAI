@@ -132,6 +132,8 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 
 #ifdef USE_OPEN3D
+	ADD_MODULE(_PointCloudBase);
+
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSensePC);
 #endif
