@@ -66,6 +66,9 @@ public:
 	bool m_bRsRGB;
 	string m_vPreset;
 
+	rs2_intrinsics m_cIntrinsics;
+	rs2_intrinsics m_dIntrinsics;
+
 	//depth filter processing thread
 	_ThreadBase* m_pTPP;
 

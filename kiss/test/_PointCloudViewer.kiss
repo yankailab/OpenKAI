@@ -17,10 +17,11 @@
 
 {
 	"name":"PointCloud",
-	"class":"_PointCloudBase",
+	"class":"_PointCloudViewer",
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
+	"vWinSize":[1920,1080],
 }

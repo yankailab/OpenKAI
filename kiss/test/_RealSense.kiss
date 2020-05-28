@@ -48,8 +48,6 @@
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"fovW":69.4,
-	"fovH":42.5,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 }

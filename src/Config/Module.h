@@ -19,12 +19,8 @@
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
-#include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
 #include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
-#include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
 #include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
-#include "../Application/Autopilot/ArduPilot/_AP_follow.h"
-#include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"
 #include "../Application/Autopilot/ArduPilot/_AP_GPS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_link.h"
@@ -34,34 +30,11 @@
 #include "../Application/Autopilot/ArduPilot/_AP_relay.h"
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
-#include "../Application/Autopilot/ArduPilot/_AP_descent.h"
-#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_field.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_photo.h"
-
-#include "../Application/Observation/_HiphenRGB.h"
-#include "../Application/Surveillance/_ANR.h"
-#include "../Application/Surveillance/_GDcam.h"
-#include "../Application/Surveillance/_ShopCam.h"
 #include "../Application/Automation/Sorting/_Sequencer.h"
-#include "../Application/Automation/Sorting/_SortingArm.h"
-#include "../Application/Automation/Sorting/_SortingCtrlServer.h"
-#include "../Application/Automation/Sorting/_SortingCtrlClient.h"
 #include "../Application/Mission/_MissionControl.h"
 
 #include "../Control/PIDctrl.h"
-#include "../Detector/_ArUco.h"
-#include "../Detector/_Lane.h"
-#include "../Detector/_MotionDetector.h"
-#include "../Detector/_DNNdetect.h"
-#include "../Detector/_DNNclassifier.h"
-#include "../Detector/_DNNtext.h"
-#include "../Detector/_Line.h"
-#include "../Detector/_Thermal.h"
-#include "../Detector/_DepthSegment.h"
-#include "../Detector/_OpenPose.h"
-#include "../Detector/_IRLock.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
@@ -72,8 +45,6 @@
 #include "../IO/_SerialPort.h"
 #include "../IO/_UDP.h"
 #include "../IO/_WebSocket.h"
-#include "../DNN/TensorRT/_ImageNet.h"
-#include "../DNN/TensorRT/_DetectNet.h"
 #include "../Protocol/_Canbus.h"
 #include "../Protocol/_CETCUS.h"
 #include "../Protocol/_Mavlink.h"
@@ -84,27 +55,24 @@
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
 
-#include "../Tracker/_SingleTracker.h"
-#include "../Tracker/_MultiTracker.h"
-#include "../Tracker/_EcoTracker.h"
-
-#include "../UI/Window.h"
 #include "../UI/Console.h"
 
 #include "../Universe/_Object.h"
 #include "../Universe/_ObjectFactory.h"
 #include "../Universe/_Universe.h"
 
-#include "../Vision/Frame.h"
+#include "../Vision/Hiphen/_HiphenServer.h"
+#include "../Vision/Hiphen/_HiphenCMD.h"
+
+#ifdef USE_OPENCV
+
+#include "../UI/Window.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
 #include "../Vision/_GStreamer.h"
 #include "../Vision/_Raspivid.h"
 #include "../Vision/_GPhoto.h"
-#include "../Vision/FrameGroup.h"
-#include "../Vision/Hiphen/_HiphenServer.h"
-#include "../Vision/Hiphen/_HiphenCMD.h"
 #include "../Vision/ImgFilter/_Morphology.h"
 #include "../Vision/ImgFilter/_Threshold.h"
 #include "../Vision/ImgFilter/_Contrast.h"
@@ -122,14 +90,41 @@
 #include "../Data/Image/_BBoxCutOut.h"
 #include "../Data/Image/_CutOut.h"
 #include "../Data/Video/_FrameCutOut.h"
+
+#include "../Detector/_Lane.h"
+#include "../Detector/_DNNdetect.h"
+#include "../Detector/_DNNclassifier.h"
+#include "../Detector/_DNNtext.h"
+#include "../Detector/_DepthSegment.h"
+#include "../Detector/_IRLock.h"
+#include "../Detector/_Line.h"
+#include "../Detector/_OpenPose.h"
 #include "../Detector/_SlideWindow.h"
+#include "../Detector/_Thermal.h"
 
-#ifdef USE_OPENCV
+#include "../Application/Autopilot/ArduPilot/_AP_avoid.h"
+#include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
+#include "../Application/Autopilot/ArduPilot/_AP_descent.h"
+#include "../Application/Autopilot/ArduPilot/_AP_follow.h"
+#include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
+#include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_photo.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_field.h"
 
-#endif
+#include "../Application/Observation/_HiphenRGB.h"
+#include "../Application/Surveillance/_ANR.h"
+#include "../Application/Surveillance/_GDcam.h"
+#include "../Application/Surveillance/_ShopCam.h"
+
+#include "../Application/Automation/Sorting/_SortingArm.h"
+#include "../Application/Automation/Sorting/_SortingCtrlServer.h"
+#include "../Application/Automation/Sorting/_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV_CONTRIB
-
+#include "../Detector/_ArUco.h"
+#include "../Tracker/_MultiTracker.h"
+#include "../Detector/_MotionDetector.h"
+#include "../Tracker/_SingleTracker.h"
 #endif
 
 #ifdef USE_CUDA
@@ -139,30 +134,21 @@
 
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
-#include "../SLAM/_RStracking.h"
 #endif
 
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "../PointCloud/_RealSensePC.h"
 #endif
-#endif
-
-#ifdef USE_DYNAMIXEL
-#include "../Actuator/_DeltaArm.h"
-#include "../Actuator/_LabArm.h"
-#endif
-
-#ifdef USE_LIVOX
-#include "../Sensor/_Livox.h"
-#endif
-
-#ifdef USE_PANGOLIN
-#include "../UI/_Pangolin.h"
-#endif
+#endif	//USE_OPEN3D
 
 #ifdef USE_MYNTEYE
 #include "../Vision/_Mynteye.h"
+#endif
+
+#ifdef USE_TENSORRT
+#include "../DNN/TensorRT/_ImageNet.h"
+#include "../DNN/TensorRT/_DetectNet.h"
 #endif
 
 #ifdef USE_OCR
@@ -190,6 +176,27 @@
 #ifdef USE_PYLON
 #include "../Vision/_Pylon.h"
 #endif
+
+#endif	//USE_OPENCV
+
+
+#ifdef USE_OPEN3D
+#include "../PointCloud/_PointCloudViewer.h"
+#endif
+
+#ifdef USE_REALSENSE
+#include "../SLAM/_RStracking.h"
+#endif
+
+#ifdef USE_DYNAMIXEL
+#include "../Actuator/_DeltaArm.h"
+#include "../Actuator/_LabArm.h"
+#endif
+
+#ifdef USE_LIVOX
+#include "../Sensor/_Livox.h"
+#endif
+
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

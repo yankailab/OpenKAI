@@ -10,7 +10,6 @@
 //#define USE_ORB_SLAM2
 //#define USE_DARKNET
 //#define USE_MYNTEYE
-//#define USE_OPENTRACKER
 //#define USE_TENSORFLOW
 //#define USE_PYLON
 //#define USE_CAFFE

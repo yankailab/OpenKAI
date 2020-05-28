@@ -22,8 +22,7 @@ BASE* Module::createInstance(Kiss* pK)
 {
 	IF_N(!pK);
 
-	ADD_MODULE(_ProtocolBase);
-	ADD_MODULE(_MissionControl);
+	ADD_MODULE(Console);
 	ADD_MODULE(_Canbus);
 	ADD_MODULE(_CETCUS);
 	ADD_MODULE(_GPS);
@@ -31,13 +30,15 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_HiphenServer);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_Mavlink);
+	ADD_MODULE(_MissionControl);
 	ADD_MODULE(_MOAB);
 	ADD_MODULE(_Modbus);
-	ADD_MODULE(_Path);
-	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_Object);
 	ADD_MODULE(_ObjectFactory);
 	ADD_MODULE(_OrientalMotor);
+	ADD_MODULE(_Path);
+	ADD_MODULE(PIDctrl);
+	ADD_MODULE(_ProtocolBase);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_SerialPort);
 	ADD_MODULE(_TCPserver);
@@ -45,7 +46,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_UDP);
 	ADD_MODULE(_Universe);
 	ADD_MODULE(_WebSocket);
-	ADD_MODULE(Console);
 
 	ADD_MODULE(_ArduServo);
 	ADD_MODULE(_ActuatorSync);
@@ -65,7 +65,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);
-
 
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
@@ -90,12 +89,12 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
-	ADD_MODULE(_SlideWindow);
 	ADD_MODULE(_Morphology);
 	ADD_MODULE(_OpenPose);
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_Rotate);
+	ADD_MODULE(_SlideWindow);
 	ADD_MODULE(_ShopCam);
 	ADD_MODULE(_Thermal);
 	ADD_MODULE(_Threshold);
@@ -122,21 +121,9 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);
-	ADD_MODULE(_SingleTracker);
 	ADD_MODULE(_MultiTracker);
 	ADD_MODULE(_MotionDetector);
-#endif
-
-#ifdef USE_REALSENSE
-	ADD_MODULE(_RealSense);
-#endif
-
-#ifdef USE_OPEN3D
-	ADD_MODULE(_PointCloudBase);
-
-#ifdef USE_REALSENSE
-	ADD_MODULE(_RealSensePC);
-#endif
+	ADD_MODULE(_SingleTracker);
 #endif
 
 #ifdef USE_CUDA
@@ -144,24 +131,23 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Bullseye);
 #endif
 
+#ifdef USE_REALSENSE
+	ADD_MODULE(_RealSense);
+#endif
+
+#ifdef USE_OPEN3D
+#ifdef USE_REALSENSE
+	ADD_MODULE(_RealSensePC);
+#endif
+#endif //USE_OPEN3D
+
 #ifdef USE_MYNTEYE
 	ADD_MODULE(_Mynteye);
 #endif
 
-#endif
-
-
-#ifdef USE_REALSENSE
-	ADD_MODULE(_RStracking);
-#endif
-
-#ifdef USE_LIVOX
-	ADD_MODULE(_Livox);
-#endif
-
-#ifdef USE_DYNAMIXEL
-	ADD_MODULE(_DeltaArm);
-	ADD_MODULE(_LabArm);
+#ifdef USE_TENSORRT
+	ADD_MODULE(_ImageNet);
+	ADD_MODULE(_DetectNet);
 #endif
 
 #ifdef USE_OCR
@@ -170,10 +156,6 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_OPENALPR
 	ADD_MODULE(_OpenALPR);
-#endif
-
-#ifdef USE_OPENTRACKER
-	ADD_MODULE(_EcoTracker);
 #endif
 
 #ifdef USE_CAFFE
@@ -198,9 +180,23 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ORB_SLAM2);
 #endif
 
-#ifdef USE_TENSORRT
-	ADD_MODULE(_ImageNet);
-	ADD_MODULE(_DetectNet);
+#endif	//USE_OPENCV
+
+#ifdef USE_OPEN3D
+	ADD_MODULE(_PointCloudViewer);
+#endif
+
+#ifdef USE_REALSENSE
+	ADD_MODULE(_RStracking);
+#endif
+
+#ifdef USE_LIVOX
+	ADD_MODULE(_Livox);
+#endif
+
+#ifdef USE_DYNAMIXEL
+	ADD_MODULE(_DeltaArm);
+	ADD_MODULE(_LabArm);
 #endif
 
     return NULL;

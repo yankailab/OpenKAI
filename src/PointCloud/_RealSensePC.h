@@ -14,7 +14,7 @@
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
-#include "_PointCloudBase.h"
+#include "_PointCloudViewer.h"
 
 namespace kai
 {
@@ -40,6 +40,7 @@ private:
 	}
 
 public:
+	_PointCloudViewer* m_pViewer;
 	_RealSense* m_pRS;
     rs2::pointcloud m_rsPC;
     rs2::points m_rsPoints;

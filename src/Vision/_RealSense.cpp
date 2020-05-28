@@ -71,6 +71,12 @@ bool _RealSense::open(void)
 		}
 
 		auto profile = m_rsPipe.start(cfg);
+
+		auto cStream = profile.get_stream(RS2_STREAM_COLOR).as<rs2::video_stream_profile>();
+		m_cIntrinsics = cStream.get_intrinsics();
+		auto dStream = profile.get_stream(RS2_STREAM_DEPTH).as<rs2::video_stream_profile>();
+		m_dIntrinsics = dStream.get_intrinsics();
+
 		auto sensor = profile.get_device().first<rs2::depth_sensor>();
 
 		// TODO: At the moment the SDK does not offer a closed enum for D400 visual presets

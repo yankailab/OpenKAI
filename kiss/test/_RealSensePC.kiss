@@ -10,6 +10,17 @@
 }
 
 {
+	"name":"pcv",
+	"class":"_PointCloudViewer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
+	"vWinSize":[1920,1080],
+}
+
+{
 	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
@@ -28,8 +39,6 @@
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"fovW":69.4,
-	"fovH":42.5,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 }
@@ -39,5 +48,5 @@
 	"class":"_RealSensePC",
 	"bInst":1,
 	"_RealSense":"rs",
-	"_GLwindow":"GLwindow",
+	"_PointCloudViewer":"pcv",
 }
