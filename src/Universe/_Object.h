@@ -26,19 +26,37 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
-	//size
-	void setDim(vFloat3 s);
+	//pos
+	void setPos(vFloat3& p);
+	vFloat3 getPos(void);
+
+	//attitude
+	void setAttitude(vFloat3& a);
+	vFloat3 getAttitude(void);
+
+	//dimension
+	void setDim(vFloat4& d);
 	void setW(float w);
 	void setH(float h);
 	void setD(float d);
+	void setR(float r);
 
-	vFloat3 getDim(void);
+	vFloat4 getDim(void);
 	float getW(void);
 	float getH(void);
 	float getD(void);
+	float getR(void);
 
 	float area(void);
 	float volume(void);
+
+	//convenient
+	void setBB2D(vFloat4& bb);
+	vFloat4 getBB2D(void);
+	vFloat4 getBB2Dnorm(float nx, float ny);
+
+	//vertex
+	void setVertices2D(vFloat2 *pV, int nV);
 
 	//classification
 	void resetClass(void);
@@ -49,7 +67,7 @@ public:
 	bool bClassMask(uint64_t mClass);
 
 	//interactions
-	virtual float nIoU(_Object* pO);
+	virtual float nIoU(_Object& obj);
 
 	//kinetics
 	virtual void updateKinetics(void);
@@ -63,22 +81,26 @@ private:
 
 protected:
 	//general
-	vFloat3		m_vPos;		//position, x,y,z
+	vFloat3		m_vPos;		//center pos x,y,z
 	vFloat3		m_vAtti;	//attitude
-	vFloat3		m_vDim;		//width, height, depth
+	vFloat4		m_vDim;		//width, height, depth, radius
 
 	//kinetics
 	vFloat3		m_vSpeed;
 	vFloat3		m_vAccel;
 
 	//classification
-	string		m_txt;
 	int			m_topClass;		//most probable class
 	float		m_topProb;		//prob for the topClass
 	uint64_t	m_mClass;		//all candidate class mask
+	string		m_txt;
 
-	//Trajectory
+	//trajectory
 	vector<vFloat3> m_vTraj;
+
+	//vertex
+	vector<vFloat2> m_vVertex;
+
 
 	//bitflag
 	uint64_t	m_mFlag;

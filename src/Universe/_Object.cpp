@@ -33,14 +33,6 @@ bool _Object::init(void* pKiss)
 	return true;
 }
 
-void _Object::resetClass(void)
-{
-	m_txt = "";
-	m_topClass = -1;
-	m_topProb = 0.0;
-	m_mClass = 0;
-}
-
 bool _Object::start(void)
 {
 	m_bThreadON = true;
@@ -70,9 +62,29 @@ void _Object::updateKinetics(void)
 	m_vPos += m_vSpeed;
 }
 
-void _Object::setDim(vFloat3 s)
+void _Object::setPos(vFloat3& p)
 {
-	m_vPos = s;
+	m_vPos = p;
+}
+
+vFloat3 _Object::getPos(void)
+{
+	return m_vPos;
+}
+
+void _Object::setAttitude(vFloat3& a)
+{
+	m_vAtti = a;
+}
+
+vFloat3 _Object::getAttitude(void)
+{
+	return m_vAtti;
+}
+
+void _Object::setDim(vFloat4& d)
+{
+	m_vDim = d;
 }
 
 void _Object::setW(float w)
@@ -90,7 +102,12 @@ void _Object::setD(float d)
 	m_vDim.z = d;
 }
 
-vFloat3 _Object::getDim(void)
+void _Object::setR(float r)
+{
+	m_vDim.w = r;
+}
+
+vFloat4 _Object::getDim(void)
 {
 	return m_vDim;
 }
@@ -110,6 +127,11 @@ float _Object::getD(void)
 	return m_vDim.z;
 }
 
+float _Object::getR(void)
+{
+	return m_vDim.w;
+}
+
 float _Object::area(void)
 {
 	return m_vDim.x * m_vDim.y;
@@ -118,6 +140,63 @@ float _Object::area(void)
 float _Object::volume(void)
 {
 	return m_vDim.x * m_vDim.y * m_vDim.z;
+}
+
+void _Object::setBB2D(vFloat4& bb)
+{
+	m_vPos.x = (bb.x + bb.z) * 0.5;
+	m_vPos.y = (bb.y + bb.w) * 0.5;
+
+	m_vDim.x = bb.width();
+	m_vDim.y = bb.height();
+}
+
+vFloat4 _Object::getBB2D(void)
+{
+	float hw = m_vDim.x * 0.5;
+	float hh = m_vDim.y * 0.5;
+
+	vFloat4 bb;
+	bb.x = m_vPos.x - hw;
+	bb.y = m_vPos.y - hh;
+	bb.z = m_vPos.x + hw;
+	bb.w = m_vPos.y + hh;
+
+	return bb;
+}
+
+vFloat4 _Object::getBB2Dnorm(float nx, float ny)
+{
+	float hw = m_vDim.x * 0.5;
+	float hh = m_vDim.y * 0.5;
+
+	vFloat4 bb;
+	bb.x = (m_vPos.x - hw) * nx;
+	bb.y = (m_vPos.y - hh) * ny;
+	bb.z = (m_vPos.x + hw) * nx;
+	bb.w = (m_vPos.y + hh) * ny;
+
+	return bb;
+}
+
+void _Object::setVertices2D(vFloat2 *pV, int nV)
+{
+	NULL_(pV);
+
+	m_vVertex.clear();
+	vector<Point> vP;
+	Point p;
+	for (int i = 0; i < nV; i++)
+	{
+		vFloat2* v = &pV[i];
+		p.x = v->x;
+		p.y = v->y;
+		vP.push_back(p);
+		m_vVertex.push_back(*v);
+	}
+
+	vFloat4 bb = convertBB<vFloat4>(boundingRect(vP));
+	setBB2D(bb);
 }
 
 void _Object::addClassIdx(int iClass)
@@ -147,9 +226,16 @@ bool _Object::bClassMask(uint64_t mClass)
 	return m_mClass & mClass;
 }
 
-float _Object::nIoU(_Object* pO)
+void _Object::resetClass(void)
 {
-	NULL__(pO,-1.0);
+	m_txt = "";
+	m_topClass = -1;
+	m_topProb = 0.0;
+	m_mClass = 0;
+}
+
+float _Object::nIoU(_Object& obj)
+{
 
 	return 0.0;
 }

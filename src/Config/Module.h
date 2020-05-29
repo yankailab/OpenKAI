@@ -58,7 +58,6 @@
 #include "../UI/Console.h"
 
 #include "../Universe/_Object.h"
-#include "../Universe/_ObjectFactory.h"
 #include "../Universe/_Universe.h"
 
 #include "../Vision/Hiphen/_HiphenServer.h"

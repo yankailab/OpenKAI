@@ -34,7 +34,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_MOAB);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Object);
-	ADD_MODULE(_ObjectFactory);
 	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
