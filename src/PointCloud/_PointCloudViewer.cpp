@@ -15,11 +15,14 @@ namespace kai
 _PointCloudViewer::_PointCloudViewer()
 {
 	m_type = pointCloud_viewer;
-	m_vWinSize.init(1280,720);
+	m_vWinSize.init(1280, 720);
+
+	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _PointCloudViewer::~_PointCloudViewer()
 {
+	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PointCloudViewer::init(void *pKiss)
@@ -30,7 +33,7 @@ bool _PointCloudViewer::init(void *pKiss)
 	pK->v("vWinSize", &m_vWinSize);
 
 	pK->v("fName", &m_fName);
-	if(!m_fName.empty())
+	if (!m_fName.empty())
 	{
 		m_pPC = new geometry::PointCloud();
 		IF_F(!io::ReadPointCloud(m_fName.c_str(), *m_pPC));
@@ -58,21 +61,20 @@ bool _PointCloudViewer::start(void)
 
 void _PointCloudViewer::update(void)
 {
-	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x, m_vWinSize.y);
+	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x,
+			m_vWinSize.y);
+	m_bOpen = true;
 
-	if(m_pPC)
+	if (m_pPC)
 		*m_spPC = *m_pPC;
 
 	m_vis.AddGeometry(m_spPC);
-	m_bOpen = true;
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		m_vis.UpdateGeometry(m_spPC);
-		m_vis.PollEvents();
-		m_vis.UpdateRender();
+		render();
 
 		this->autoFPSto();
 	}
@@ -82,8 +84,27 @@ void _PointCloudViewer::update(void)
 
 int _PointCloudViewer::check(void)
 {
-	NULL__(m_pPC,-1);
 	return 0;
+}
+
+void _PointCloudViewer::render(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	m_vis.UpdateGeometry(m_spPC);
+	pthread_mutex_unlock(&m_mutex);
+
+	if (m_vis.HasGeometry())
+	{
+		m_vis.PollEvents();
+		m_vis.UpdateRender();
+	}
+}
+
+void _PointCloudViewer::render(shared_ptr<PointCloud> spPC)
+{
+	pthread_mutex_lock(&m_mutex);
+	*m_spPC = *spPC;
+	pthread_mutex_unlock(&m_mutex);
 }
 
 POINTCLOUD_TYPE _PointCloudViewer::getType(void)

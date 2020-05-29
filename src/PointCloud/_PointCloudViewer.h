@@ -30,7 +30,10 @@ public:
 	virtual void draw(void);
 	virtual POINTCLOUD_TYPE getType(void);
 
+	void render(shared_ptr<PointCloud> spPC);
+
 private:
+	void render(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -43,6 +46,7 @@ public:
 	vInt2 m_vWinSize;
 	string m_fName;
 
+	pthread_mutex_t m_mutex;
 };
 
 }

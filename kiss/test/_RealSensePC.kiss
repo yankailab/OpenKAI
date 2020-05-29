@@ -10,6 +10,20 @@
 }
 
 {
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
+	"name":"depthView",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+}
+
+{
 	"name":"pcv",
 	"class":"_PointCloudViewer",
 	"FPS":30,
@@ -40,7 +54,7 @@
 	"fDec":0,
 	"fSpat":0,
 	"vRange":[0.1,15.0],
-	"bAlign":0,
+	"bAlign":1,
 }
 
 {

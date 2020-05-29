@@ -297,12 +297,6 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCUDA_ARCH_BIN=5.3 -DBUILD_visualization=ON ..
 make all -j4
 sudo make install
 
-# OpenTracker
-git clone https://github.com/rockkingjy/OpenTracker
-cd OpenTracker/eco
-#edit makefile -> USE_SIMD=2
-make -j8
-
 # Darknet
 cd $FULLDEVDIR
 git clone https://github.com/yankailab/darknet.git

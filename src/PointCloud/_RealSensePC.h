@@ -45,6 +45,9 @@ public:
     rs2::pointcloud m_rsPC;
     rs2::points m_rsPoints;
 
+    Image m_imgD;
+    Image m_imgRGB;
+
 };
 
 }

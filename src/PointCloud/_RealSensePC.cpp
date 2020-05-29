@@ -80,53 +80,36 @@ bool _RealSensePC::start(void)
 
 void _RealSensePC::update(void)
 {
-	if(m_pViewer)
+	while (!open())
 	{
-		while(!m_pViewer->isOpened())
-			this->sleepTime(USEC_1SEC);
+		LOG_I("Waiting for RealSense");
+		this->sleepTime(USEC_1SEC);
 	}
+
+    auto cIntr = m_pRS->m_cIntrinsics;
+    auto dIntr = m_pRS->m_dIntrinsics;
+
+	m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
+	m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
 
 	while (m_bThreadON)
 	{
-		if (!m_bOpen)
-		{
-			if (!open())
-			{
-				LOG_E("Cannot open RealSensePC");
-				this->sleepTime(USEC_1SEC);
-				continue;
-			}
-		}
-
 		this->autoFPSfrom();
 
-        m_rsPC.map_to(m_pRS->m_rsColor);
-        m_rsPoints = m_rsPC.calculate(m_pRS->m_rsDepth);
+//        m_rsPC.map_to(m_pRS->m_rsColor);
+//        m_rsPoints = m_rsPC.calculate(m_pRS->m_rsDepth);
 
+		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
+		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
 
-        auto cIntr = m_pRS->m_cIntrinsics;
-        auto dIntr = m_pRS->m_dIntrinsics;
-
-		auto spImgD = make_shared<Image>();
-		spImgD->Prepare(dIntr.width, dIntr.height, 1, 2);
-		memcpy(spImgD->data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
-
-		auto spImgRGB = make_shared<Image>();
-		spImgRGB->Prepare(cIntr.width, cIntr.height, 3, 1);
-		memcpy(spImgRGB->data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
-
-		shared_ptr<RGBDImage> imgRGBD;// = shared_ptr<RGBDImage>(new RGBDImage);
-		imgRGBD = RGBDImage::CreateFromColorAndDepth(*spImgRGB, *spImgD);
-
+		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
         camera::PinholeCameraIntrinsic camInt(dIntr.width,
         										dIntr.height,
 												dIntr.fx,
 												dIntr.fy,
 												dIntr.ppx,
 												dIntr.ppy);
-
         m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
-        *m_pViewer->m_spPC = *m_spPC;
 
 		this->autoFPSto();
 	}
@@ -135,6 +118,9 @@ void _RealSensePC::update(void)
 void _RealSensePC::draw(void)
 {
 	this->_PointCloudBase::draw();
+
+	IF_(!m_pViewer);
+	m_pViewer->render(m_spPC);
 
 }
 

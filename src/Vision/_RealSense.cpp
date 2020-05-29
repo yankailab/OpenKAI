@@ -28,9 +28,7 @@ _RealSense::_RealSense()
 	m_rspAlign = NULL;
 	m_fEmitter = 1.0;
 	m_fLaserPower = 1.0;
-
 	m_iHistFrom = 0;
-	m_dScale = 1.0;
 }
 
 _RealSense::~_RealSense()
@@ -78,6 +76,7 @@ bool _RealSense::open(void)
 		m_dIntrinsics = dStream.get_intrinsics();
 
 		auto sensor = profile.get_device().first<rs2::depth_sensor>();
+		m_dScale = sensor.get_depth_scale();
 
 		// TODO: At the moment the SDK does not offer a closed enum for D400 visual presets
 		// (because they keep changing)
@@ -276,8 +275,9 @@ void _RealSense::updateTPP(void)
 		Mat mD;
 		mZ.convertTo(mD, CV_32FC1);
 
-		auto depth_scale = m_rsPipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale();
-		m_fDepth = mD * depth_scale;
+//		auto depth_scale = m_rsPipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale();
+//		m_fDepth = mD * depth_scale;
+		m_fDepth = mD * m_dScale;
 	}
 }
 
