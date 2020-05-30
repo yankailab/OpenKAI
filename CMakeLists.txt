@@ -45,7 +45,7 @@ if(USE_CUDA)
   add_definitions(-DUSE_CUDA)
   set(CUDA_include "/usr/local/cuda/include" CACHE STRING "")
   set(OpenKAI_include ${OpenKAI_include} ${CUDA_include})
-  set(CUDA_ARCH "62" CACHE STRING "")
+  set(CUDA_ARCH "72" CACHE STRING "")
   set(OpenKAI_lib ${OpenKAI_lib} opencv_cudawarping opencv_cudaobjdetect opencv_cudaarithm opencv_cudabgsegm opencv_cudaimgproc opencv_cudaoptflow opencv_cudastereo)
 endif()
 
