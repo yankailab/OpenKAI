@@ -13,6 +13,18 @@
 namespace kai
 {
 
+struct OBJ_CLASS
+{
+	string m_name;
+	int m_n;
+
+	void init(void)
+	{
+		m_n = 0;
+		m_name = "";
+	}
+};
+
 class _Universe: public _ThreadBase
 {
 public:
@@ -27,6 +39,9 @@ public:
 	//io
 	virtual _Object* add(_Object& pO);
 	virtual _Object* get(int i);
+	virtual int size(void);
+
+	virtual void updateStatistics(void);
 
 protected:
 	virtual void clearObj(void);
@@ -51,20 +66,20 @@ public:
 
 	//config
 	float m_minConfidence;
-	float m_minArea;
-	float m_maxArea;
-	float m_minW;
-	float m_maxW;
-	float m_minH;
-	float m_maxH;
+	vFloat2 m_rArea;
+	vFloat2 m_rW;
+	vFloat2 m_rH;
 	float m_bbScale;
 	bool m_bMerge;
 	float m_mergeOverlap;
 	vFloat4 m_vRoi;
 
-	//draw
+	//show
 	bool m_bDrawStatistics;
+	vInt3 m_classLegendPos;
 	bool m_bDrawClass;
+	bool m_bDrawText;
+	bool m_bDrawPos;
 
 };
 

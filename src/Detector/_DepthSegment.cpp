@@ -72,7 +72,8 @@ void _DepthSegment::update(void)
 
 int _DepthSegment::check(void)
 {
-	IF__(!m_pV,-1);
+	NULL__(m_pV,-1);
+	NULL__(m_pU,-1);
 	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;

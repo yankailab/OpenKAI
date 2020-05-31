@@ -61,12 +61,14 @@ void _Bullseye::update(void)
 	{
 		this->autoFPSfrom();
 
+		IF_CONT(check()<0);
+
 		detect();
-		updateObj();
+		m_pU->updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_pPrev->reset();
+			m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -75,7 +77,8 @@ void _Bullseye::update(void)
 
 int _Bullseye::check(void)
 {
-	IF__(!m_pV,-1);
+	NULL__(m_pU,-1);
+	NULL__(m_pV,-1);
 	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;
@@ -83,8 +86,6 @@ int _Bullseye::check(void)
 
 void _Bullseye::detect(void)
 {
-	IF_(check()<0);
-
 	GpuMat mBGR = *(m_pV->BGR()->gm());
 	GpuMat mHSV;
 	cuda::cvtColor(mBGR, mHSV, COLOR_BGR2HSV);
@@ -111,10 +112,10 @@ void _Bullseye::detect(void)
 	vector< vector< Point > > vvContours;
 	findContours(mThr, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-	vInt2 cs;
-	m_pV->info(&cs, NULL, NULL);
+	float bW = 1.0/mBGR.cols;
+	float bH = 1.0/mBGR.rows;
 
-	OBJECT o;
+	_Object o;
 	vector<Point> vPoly;
 	for (unsigned int i=0; i<vvContours.size(); i++)
 	{
@@ -124,11 +125,11 @@ void _Bullseye::detect(void)
 
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setBB(convertBB<vFloat4>(r));
-		o.normalizeBB(cs);
+		o.setBB2D(rect2BB<vFloat4>(r));
+		o.normalize(bW,bH);
 		o.setTopClass(0, o.area());
 
-		add(&o);
+		m_pU->add(o);
 		LOG_I("ID: "+ i2str(o.m_topClass));
 	}
 }

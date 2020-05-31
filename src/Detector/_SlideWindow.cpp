@@ -99,9 +99,10 @@ void _SlideWindow::update(void)
 
 int _SlideWindow::check(void)
 {
-	IF__(!m_pV,-1);
+	NULL__(m_pU,-1);
+	NULL__(m_pV,-1);
 	IF__(m_pV->BGR()->bEmpty(),-1);
-	IF__(!m_pD,-1);
+	NULL__(m_pD,-1);
 	IF__(m_pD->BGR()->bEmpty(),-1);
 
 	return 0;

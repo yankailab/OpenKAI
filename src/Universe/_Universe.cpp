@@ -10,19 +10,20 @@ namespace kai
 _Universe::_Universe()
 {
 	m_minConfidence = 0.0;
-	m_minArea = -1.0;
-	m_maxArea = -1.0;
-	m_minW = -1.0;
-	m_maxW = -1.0;
-	m_minH = -1.0;
-	m_maxH = -1.0;
+	m_rArea.init(-FLT_MAX, FLT_MAX);
+	m_rW.init(-FLT_MAX, FLT_MAX);
+	m_rH.init(-FLT_MAX, FLT_MAX);
+
 	m_bbScale = -1.0;
 	m_bMerge = false;
 	m_mergeOverlap = 0.8;
 	m_vRoi.init(0.0, 0.0, 1.0, 1.0);
 
 	m_bDrawStatistics = false;
+	m_classLegendPos.init(25,100,15);
 	m_bDrawClass = false;
+	m_bDrawText = false;
+	m_bDrawPos = false;
 
 	clearObj();
 }
@@ -38,17 +39,19 @@ bool _Universe::init(void* pKiss)
 
 	//general
 	pK->v("minConfidence", &m_minConfidence);
-	pK->v("minArea", &m_minArea);
-	pK->v("maxArea", &m_maxArea);
-	pK->v("minW", &m_minW);
-	pK->v("minH", &m_minH);
-	pK->v("maxW", &m_maxW);
-	pK->v("maxH", &m_maxH);
+	pK->v("rArea", &m_rArea);
+	pK->v("rW", &m_rW);
+	pK->v("rH", &m_rH);
 	pK->v("bbScale", &m_bbScale);
+	pK->v("bMerge", &m_bMerge);
+	pK->v("mergeOverlap", &m_mergeOverlap);
+	pK->v("vRoi", &m_vRoi);
 
 	//draw
 	pK->v("bDrawStatistics", &m_bDrawStatistics);
 	pK->v("bDrawClass", &m_bDrawClass);
+	pK->v("bDrawText", &m_bDrawText);
+	pK->v("bDrawPos", &m_bDrawPos);
 
 	m_pO[0].init(pKiss);
 	m_pO[1].init(pKiss);
@@ -98,13 +101,9 @@ void _Universe::update(void)
 
 _Object* _Universe::add(_Object& o)
 {
-	float area = o.area();
-	IF_N(m_minArea >= 0 && area < m_minArea);
-	IF_N(m_maxArea >= 0 && area > m_maxArea);
-	IF_N(m_minW >= 0 && o.getW() < m_minW);
-	IF_N(m_maxW >= 0 && o.getW() > m_maxW);
-	IF_N(m_minH >= 0 && o.getH() < m_minW);
-	IF_N(m_maxH >= 0 && o.getH() > m_maxH);
+	IF_N(o.area() < m_rArea.x || o.area() > m_rArea.y);
+	IF_N(o.getWidth() < m_rW.x || o.getWidth() > m_rW.y);
+	IF_N(o.getHeight() < m_rH.x || o.getHeight() > m_rH.y);
 
 	vFloat3 p = o.getPos();
 	IF_N(p.x < m_vRoi.x);
@@ -147,9 +146,109 @@ _Object* _Universe::get(int i)
 	return m_pPrev->get(i);
 }
 
+int _Universe::size(void)
+{
+	return m_pPrev->size();
+}
+
+//void _Universe::updateStatistics(void)
+//{
+//	int i;
+//	for(i=0; i<m_nClass; i++)
+//		m_vClass[i].m_n = 0;
+//
+//	for(i=0; i<size(); i++)
+//	{
+//		_Object* pO = get(i);
+//
+//		if(!pO)break;
+//		int iClass = pO->getTopClass();
+//		IF_CONT(iClass >= m_nClass);
+//		IF_CONT(iClass < 0);
+//
+//		m_vClass[iClass].m_n++;
+//	}
+//}
+
 void _Universe::draw(void)
 {
 	this->_ThreadBase::draw();
+
+	addMsg("nObj=" + i2str(m_pPrev->size()), 1);
+
+#ifdef USE_OPENCV
+	IF_(!checkWindow());
+	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+
+	Scalar oCol;
+	Scalar bCol = Scalar(100,100,100);
+	int col;
+	int colStep = 255/m_nClass;
+	_Object* pO;
+	int i=0;
+	while((pO = get(i++)) != NULL)
+	{
+		int iClass = pO->getTopClass();
+
+		col = colStep * iClass;
+		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
+
+		//bb
+		Rect r = bb2Rect<vFloat4>(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
+		rectangle(*pMat, r, oCol, 1);
+
+		//position
+		if(m_bDrawPos)
+		{
+			putText(*pMat, f2str(pO->getPos().z),
+					Point(r.x + 15, r.y + 25),
+					FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+		}
+
+		//class
+		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
+		{
+			string oName = m_vClass[iClass].m_name;
+			if (oName.length()>0)
+			{
+				putText(*pMat, oName,
+						Point(r.x + 15, r.y + 50),
+						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+			}
+		}
+
+		//text
+		if(m_bDrawText)
+		{
+			string oName = string(pO->getText());
+			if (oName.length()>0)
+			{
+				putText(*pMat, oName,
+						Point(r.x + 15, r.y + 50),
+						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+			}
+		}
+	}
+
+	//roi
+	Rect roi = bb2Rect(normalizeBB(m_vRoi, pMat->cols, pMat->rows));
+	rectangle(*pMat, roi, Scalar(0,255,255), 1);
+
+	IF_(!m_bDrawStatistics);
+	updateStatistics();
+
+	for(i=0; i<m_nClass; i++)
+	{
+		OBJ_CLASS* pC = &m_vClass[i];
+		col = colStep * i;
+		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
+
+		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
+				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
+				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
+	}
+#endif
+
 }
 
 }

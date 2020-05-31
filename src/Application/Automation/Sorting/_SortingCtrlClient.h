@@ -49,7 +49,7 @@ private:
 	}
 
 public:
-	OBJECT	m_COO;
+	_Object	m_COO;
 	uint64_t m_tLastSent;
 	uint64_t m_tSendInt;
 

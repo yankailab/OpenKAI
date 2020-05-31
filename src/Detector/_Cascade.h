@@ -26,6 +26,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	void draw(void);
+	int check(void);
 
 private:
 	void detectCPU(void);

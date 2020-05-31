@@ -157,6 +157,13 @@ void _Lane::update(void)
 	}
 }
 
+int _Lane::check(void)
+{
+	NULL__(m_pU,-1);
+
+	return 0;
+}
+
 void _Lane::detect(void)
 {
 	NULL_(m_pVision);

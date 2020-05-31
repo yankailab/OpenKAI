@@ -42,7 +42,7 @@ public:
 	_SortingCtrlServer*	m_pCS;
 	_Sequencer*		m_pSeq;
 	vector<_ActuatorBase*> m_vAB;
-	OBJECT		m_tO;
+	_Object		m_tO;
 
 	int			m_nClass;
 	vector<float> m_vDropPos;

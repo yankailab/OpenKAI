@@ -26,6 +26,7 @@ sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\n/home/lab/ok.sh &\nex
 set -H
 sudo chmod a+x /etc/rc.local
 #sudo nvpmodel -q --verbose
+#set nvpmodel -m 2 for Jetson Xavier NX
 
 # (Optional) auto mount sd card on boot
 #sudo sh -c "echo '#!/bin/sh\njetson_clocks\nnvpmodel -m 0\nmount /dev/mmcblk1p1 /mnt/sd\n/home/lab/ok.sh &\nexit 0\n' >> /etc/rc.local"

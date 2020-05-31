@@ -16,10 +16,6 @@ namespace kai
 _ArUco::_ArUco()
 {
 	m_dict = aruco::DICT_4X4_50;//aruco::DICT_APRILTAG_16h5;
-	m_minArea = -DBL_MAX;
-	m_maxArea = DBL_MAX;
-	m_maxW = DBL_MAX;
-	m_maxH = DBL_MAX;
 }
 
 _ArUco::~_ArUco()
@@ -50,18 +46,28 @@ bool _ArUco::start(void)
 	return true;
 }
 
+int _ArUco::check(void)
+{
+	NULL__(m_pV,-1);
+	NULL__(m_pU,-1);
+
+	return 0;
+}
+
 void _ArUco::update(void)
 {
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
+		IF_CONT(check()<0);
+
 		detect();
-		updateObj();
+		m_pU->updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_pPrev->reset();
+			m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -70,13 +76,9 @@ void _ArUco::update(void)
 
 void _ArUco::detect(void)
 {
-	NULL_(m_pV);
 	Mat m = *m_pV->BGR()->m();
 	IF_(m.empty());
 
-	vInt2 cs;
-	cs.x = m.cols;
-	cs.y = m.rows;
 	float bW = 1.0/(float)m.cols;
 	float bH = 1.0/(float)m.rows;
 
@@ -84,7 +86,7 @@ void _ArUco::detect(void)
     std::vector<std::vector<cv::Point2f> > vvCorner;
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
-	OBJECT o;
+	_Object o;
 	float dx,dy;
 
 	for (unsigned int i = 0; i < vID.size(); i++)
@@ -105,65 +107,69 @@ void _ArUco::detect(void)
 			pV[j].x = vvCorner[i][j].x;
 			pV[j].y = vvCorner[i][j].y;
 		}
-		o.setVertices(pV,4);
-		o.normalizeBB(cs);
+		o.setVertices2D(pV,4);
+		o.normalize(bW, bH);
 
 		// distance
 		if(m_pDV)
-			o.m_dist = m_pDV->d(&o.m_bb);
+		{
+			vFloat4 bb = o.getBB2D();
+			o.setZ(m_pDV->d(&bb));
+		}
 
 		// center position
 		dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
 		dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
-		o.m_c.x = dx * bW;
-		o.m_c.y = dy * bH;
+		o.setX(dx * bW);
+		o.setY(dy * bH);
 
 		// radius
 		dx -= pLT.x;
 		dy -= pLT.y;
-		o.m_r = sqrt(dx*dx + dy*dy);
+		o.setRadius(sqrt(dx*dx + dy*dy));
 
 		// angle in deg
 		dx = pLB.x - pLT.x;
 		dy = pLB.y - pLT.y;
-		o.m_angle = -atan2(dx,dy) * RAD_2_DEG + 180.0;
+		o.setRoll(-atan2(dx,dy) * RAD_2_DEG + 180.0);
 
-		add(&o);
-		LOG_I("ID: "+ i2str(o.m_topClass));
+		m_pU->add(o);
+		LOG_I("ID: "+ i2str(o.getTopClass()));
 	}
 }
 
 void _ArUco::draw(void)
 {
+	IF_(check()<0);
 	this->_DetectorBase::draw();
 
 	string msg = "| ";
-	OBJECT* pO;
+	_Object* pO;
 	int i=0;
-	while((pO = at(i++)) != NULL)
+	while((pO = m_pU->get(i++)) != NULL)
 	{
-		msg += i2str(pO->m_topClass) + "("+ f2str(pO->m_dist) +") | ";
+		msg += i2str(pO->getTopClass()) + "("+ f2str(pO->getZ()) +") | ";
 	}
 	addMsg(msg, 1);
 
-	IF_(this->size() <= 0);
+	IF_(m_pU->size() <= 0);
 
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	i=0;
-	while((pO = at(i++)) != NULL)
+	while((pO = m_pU->get(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->m_c.x * pMat->cols,
-							  pO->m_c.y * pMat->rows);
-		circle(*pMat, pCenter, pO->m_r, Scalar(255, 255, 0), 2);
+		Point pCenter = Point(pO->getX() * pMat->cols,
+							  pO->getY() * pMat->rows);
+		circle(*pMat, pCenter, pO->getRadius(), Scalar(255, 255, 0), 2);
 
-		putText(*pMat, "iTag=" + i2str(pO->m_topClass) + ", angle=" + i2str(pO->m_angle),
+		putText(*pMat, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
-		double rad = -pO->m_angle * DEG_2_RAD;
-		Point pD = Point(pO->m_r*sin(rad), pO->m_r*cos(rad));
+		double rad = -pO->getRoll() * DEG_2_RAD;
+		Point pD = Point(pO->getRadius()*sin(rad), pO->getRadius()*cos(rad));
 		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 }

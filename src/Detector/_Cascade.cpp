@@ -54,6 +54,14 @@ bool _Cascade::init(void* pKiss)
 	return true;
 }
 
+int _Cascade::check(void)
+{
+	NULL__(m_pV,-1);
+	NULL__(m_pU,-1);
+
+	return 0;
+}
+
 bool _Cascade::start(void)
 {
 	m_bThreadON = true;

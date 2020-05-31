@@ -61,6 +61,7 @@ endif()
 
 if(USE_OPEN3D)
   add_definitions(-DUSE_OPEN3D)
+  set(OpenKAI_include ${OpenKAI_include} "/usr/local/include/Open3D/3rdparty/fmt/include")
   set(OpenKAI_lib ${OpenKAI_lib} Open3D GL GLU glut GLEW glfw jpeg png gomp qhullcpp qhullstatic_r tinyfiledialogs jsoncpp)
 endif()
 

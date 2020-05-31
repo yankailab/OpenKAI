@@ -60,7 +60,7 @@ private:
 public:
 	_DepthVisionBase* m_pDV;
 	_ProtocolBase*	m_pPB;
-	OBJECT			m_newO;
+	_Object			m_newO;
 	float			m_bbSize;
 	float			m_dT;
 	int				m_iState;

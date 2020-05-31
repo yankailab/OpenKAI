@@ -92,6 +92,7 @@ void _OpenALPR::update(void)
 
 int _OpenALPR::check(void)
 {
+	NULL__(m_pU,-1);
 	NULL__(m_pVision, -1);
 	Frame* pBGR = m_pVision->BGR();
 	NULL__(pBGR, -1);

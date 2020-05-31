@@ -88,11 +88,20 @@ void _MotionDetector::update(void)
 	}
 }
 
+int _MotionDetector::check(void)
+{
+	NULL__(m_pU,-1);
+	NULL__(m_pV,-1);
+	IF__(m_pV->BGR()->bEmpty(),-1);
+
+	return 0;
+}
+
 void _MotionDetector::detect(void)
 {
-	NULL_(m_pVision);
+	IF_(check()<0);
+
 	Mat m = *m_pVision->BGR()->m();
-	IF_(m.empty());
 
     m_pBS->apply(m, m_mFG, m_learningRate);
 

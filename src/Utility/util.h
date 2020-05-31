@@ -217,26 +217,13 @@ template <typename T> inline T bbScale(T& bb, float k)
 	return B;
 }
 
-inline vInt4 convertBB(vFloat4 bb, vInt2& vB)
+template <typename T> inline T normalizeBB(T bb, float kx, float ky)
 {
-	vInt4 v;
-	v.x = bb.x * vB.x;
-	v.y = bb.y * vB.y;
-	v.z = bb.z * vB.x;
-	v.w = bb.w * vB.y;
-	return v;
-}
-
-inline vFloat4 convertBB(vInt4 bb, vInt2& vB)
-{
-	float bw = 1.0/vB.x;
-	float bh = 1.0/vB.y;
-
-	vFloat4 v;
-	v.x = bb.x * bw;
-	v.y = bb.y * bh;
-	v.z = bb.z * bw;
-	v.w = bb.w * bw;
+	T v;
+	v.x = bb.x * kx;
+	v.y = bb.y * ky;
+	v.z = bb.z * kx;
+	v.w = bb.w * ky;
 	return v;
 }
 
@@ -448,7 +435,7 @@ inline float hist(Mat m, float rFrom, float rTo, int nLevel, float nMin)
 	return rFrom + (((float)i)/(float)nLevel) * (rTo - rFrom);
 }
 
-template <typename T> inline T convertBB(Rect r)
+template <typename T> inline T rect2BB(Rect r)
 {
 	T v;
 	v.x = r.x;
@@ -459,7 +446,7 @@ template <typename T> inline T convertBB(Rect r)
 	return v;
 }
 
-template <typename T> inline Rect convertBB(T v)
+template <typename T> inline Rect bb2Rect(T v)
 {
 	Rect r;
 	r.x = v.x;
@@ -479,8 +466,8 @@ inline float IoU(Rect2f& r1, Rect2f& r2)
 
 inline float IoU(vFloat4& bb1, vFloat4& bb2)
 {
-	Rect2f r1 = convertBB(bb1);
-	Rect2f r2 = convertBB(bb2);
+	Rect2f r1 = bb2Rect(bb1);
+	Rect2f r2 = bb2Rect(bb2);
 	return IoU(r1,r2);
 }
 
@@ -492,8 +479,8 @@ inline float nIoU(Rect2f& r1, Rect2f& r2)
 
 inline float nIoU(vFloat4& bb1, vFloat4& bb2)
 {
-	Rect2f r1 = convertBB(bb1);
-	Rect2f r2 = convertBB(bb2);
+	Rect2f r1 = bb2Rect(bb1);
+	Rect2f r2 = bb2Rect(bb2);
 	return nIoU(r1,r2);
 }
 

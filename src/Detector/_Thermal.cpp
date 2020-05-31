@@ -67,7 +67,8 @@ void _Thermal::update(void)
 
 int _Thermal::check(void)
 {
-	IF__(!m_pV,-1);
+	NULL__(m_pU,-1);
+	NULL__(m_pV,-1);
 	IF__(m_pV->BGR()->bEmpty(),-1);
 
 	return 0;

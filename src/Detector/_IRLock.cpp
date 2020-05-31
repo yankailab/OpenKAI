@@ -46,6 +46,13 @@ bool _IRLock::init(void* pKiss)
 	return true;
 }
 
+int _IRLock::check(void)
+{
+	NULL__(m_pU,-1);
+
+	return 0;
+}
+
 bool _IRLock::start(void)
 {
 	m_bThreadON = true;
@@ -65,12 +72,13 @@ void _IRLock::update(void)
 	{
 		this->autoFPSfrom();
 
+		IF_CONT(check()<0);
 		detect();
-		updateObj();
+		m_pU->updateObj();
 
 		if(m_bGoSleep)
 		{
-			m_pPrev->reset();
+			m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -81,8 +89,7 @@ void _IRLock::detect(void)
 {
 	IF_(!readPacket());
 
-	OBJECT o;
-	o.init();
+	_Object o;
 	o.m_tStamp = m_tStamp;
 	o.setTopClass(INT_MAX,1.0);
 
@@ -90,20 +97,11 @@ void _IRLock::detect(void)
 	uint16_t y = unpack_uint16(&m_pBuf[10],false);
 	uint16_t w = unpack_uint16(&m_pBuf[12],false);
 	uint16_t h = unpack_uint16(&m_pBuf[14],false);
+	o.setBB2D(x,y,w,h);
 
-	float fW = w*0.5;
-	float fH = h*0.5;
+	//TODO:distance
 
-	o.m_bb.x = ((float)x - fW)*m_vOvCamSize.x;
-	o.m_bb.y = ((float)y - fH)*m_vOvCamSize.y;
-	o.m_bb.z = ((float)x + fW)*m_vOvCamSize.x;
-	o.m_bb.w = ((float)y + fH)*m_vOvCamSize.y;
-
-	// distance
-	if(m_pDV)
-		o.m_dist = m_pDV->d(&o.m_bb);
-
-	add(&o);
+	m_pU->add(o);
 }
 
 bool _IRLock::readPacket(void)
@@ -148,18 +146,18 @@ bool _IRLock::readPacket(void)
 
 void _IRLock::draw(void)
 {
+	IF_(check()<0);
+
 	this->_DetectorBase::draw();
 
 	string msg = "| ";
-	OBJECT* pO;
+	_Object* pO;
 	int i=0;
-	while((pO = at(i++)) != NULL)
+	while((pO = m_pU->get(i++)) != NULL)
 	{
-		msg += f2str(pO->m_dist) +" | ";
+		msg += f2str(pO->getPos().z) +" | ";
 	}
 	addMsg(msg, 1);
-
-	IF_(this->size() <= 0);
 }
 
 }

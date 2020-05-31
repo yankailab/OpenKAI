@@ -127,6 +127,7 @@ void _DNNdetect::update(void)
 
 int _DNNdetect::check(void)
 {
+	NULL__(m_pU,-1);
 	NULL__(m_pV, -1);
 	Frame* pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);

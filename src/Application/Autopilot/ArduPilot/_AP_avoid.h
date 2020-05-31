@@ -35,7 +35,7 @@ private:
 	_DetectorBase* m_pDet;
 	_Mavlink* m_pMavlink;
 
-	OBJECT m_obs;
+	_Object m_obs;
 };
 
 }
