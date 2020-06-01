@@ -61,14 +61,12 @@ void _Bullseye::update(void)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(check()<0);
-
-		detect();
-		m_pU->updateObj();
-
-		if(m_bGoSleep)
+		if(check() >= 0)
 		{
-			m_pU->m_pPrev->clear();
+			detect();
+
+			if(m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -112,8 +110,8 @@ void _Bullseye::detect(void)
 	vector< vector< Point > > vvContours;
 	findContours(mThr, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-	float bW = 1.0/mBGR.cols;
-	float bH = 1.0/mBGR.rows;
+	float kx = 1.0/mBGR.cols;
+	float ky = 1.0/mBGR.rows;
 
 	_Object o;
 	vector<Point> vPoly;
@@ -126,12 +124,14 @@ void _Bullseye::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setBB2D(rect2BB<vFloat4>(r));
-		o.normalize(bW,bH);
+		o.normalize(kx,ky);
 		o.setTopClass(0, o.area());
 
 		m_pU->add(o);
-		LOG_I("ID: "+ i2str(o.m_topClass));
+		LOG_I("ID: "+ i2str(o.getTopClass()));
 	}
+
+	m_pU->updateObj();
 }
 
 }

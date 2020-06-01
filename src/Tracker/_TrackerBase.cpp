@@ -76,8 +76,8 @@ vFloat4* _TrackerBase::getBB(void)
 bool _TrackerBase::startTrack(vFloat4& bb)
 {
 	NULL_F(m_pV);
-	Mat* pMat = m_pV->BGR()->m();
-	IF_F(pMat->empty());
+	Mat* pM = m_pV->BGR()->m();
+	IF_F(pM->empty());
 
 	float mBig = 1.0 + m_margin;
 	float mSmall = 1.0 - m_margin;
@@ -87,13 +87,7 @@ bool _TrackerBase::startTrack(vFloat4& bb)
 	bb.z = constrain(bb.z * mBig, 0.0f, 1.0f);
 	bb.w = constrain(bb.w * mBig, 0.0f, 1.0f);
 
-	vInt4 iBB;
-	iBB.x = bb.x * pMat->cols;
-	iBB.y = bb.y * pMat->rows;
-	iBB.z = bb.z * pMat->cols;
-	iBB.w = bb.w * pMat->rows;
-
-	Rect rBB = convertBB(iBB);
+	Rect rBB = bb2Rect(normalizeBB(bb, pM->cols, pM->rows));
 	IF_F(rBB.width == 0 || rBB.height == 0);
 
 	m_newBB = rBB;

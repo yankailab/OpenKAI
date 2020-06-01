@@ -219,7 +219,7 @@ private:
 		return NULL;
 	}
 
-	_VisionBase* m_pVision;
+	_VisionBase* m_pV;
 	vInt2 m_vSize;
 
 	vDouble2 m_roiLT;

@@ -112,11 +112,11 @@ bool _AP_descent::findTarget(void)
 	IF_F(check() < 0);
 
 	//target
-	OBJECT* tO = NULL;
-	OBJECT* pO;
+	_Object* tO = NULL;
+	_Object* pO;
 	int iTag = -1;
 	int i = 0;
-	while ((pO = m_pDet->at(i++)) != NULL)
+	while ((pO = m_pDet->m_pU->get(i++)) != NULL)
 	{
 		IF_CONT(pO->m_topClass <= iTag);
 
@@ -127,9 +127,8 @@ bool _AP_descent::findTarget(void)
 	NULL_F(tO);
 
 	//position
-	m_vTargetBB = tO->m_bb;
-	m_vP.x = m_vTargetBB.midX();
-	m_vP.y = m_vTargetBB.midY();
+	m_vP.x = tO->getX();
+	m_vP.y = tO->getY();
 
 	if (m_vP.x > m_vRDD.x && m_vP.x < m_vRDD.z
 			&& m_vP.y > m_vRDD.y && m_vP.y < m_vRDD.w)
@@ -142,7 +141,7 @@ bool _AP_descent::findTarget(void)
 	}
 
 	//heading
-	m_vP.w = Hdg(m_pAP->getApHdg() + tO->m_angle);
+	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());
 	Land* pLand = (Land*)m_pMC->getMission();
 	if(pLand->m_type == mission_land)
 	{
@@ -156,7 +155,7 @@ bool _AP_descent::findTarget(void)
 	}
 
 	//distance
-	m_filter.input(tO->m_dist);
+	m_filter.input(tO->getZ());
 	m_dTarget = m_filter.v();
 
 	return true;
@@ -181,10 +180,7 @@ void _AP_descent::draw(void)
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_vTargetBB, cs));
+	Rect r = bb2Rect(normalizeBB(m_vTargetBB, pMat->cols, pMat->rows));
 	rectangle(*pMat, r, Scalar(0,0,255), 2);
 }
 

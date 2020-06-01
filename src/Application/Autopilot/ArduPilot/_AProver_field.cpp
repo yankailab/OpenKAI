@@ -91,6 +91,7 @@ int _AProver_field::check(void)
 	NULL__(m_pDrive, -1);
 	NULL__(m_pDetBB, -1);
 	NULL__(m_pDetSB, -1);
+	NULL__(m_pDetSB->m_pU, -1);
 	NULL__(m_pPIDhdg, -1);
 
 	return this->_AutopilotBase::check();
@@ -154,7 +155,7 @@ bool _AProver_field::updateDrive(void)
 
 void _AProver_field::findBlockBoarder(void)
 {
-	if(m_pDetBB->size() > 0)
+	if(m_pDetBB->m_pU->size() > 0)
 	{
 		if (!m_bBlockBorder)
 		{
@@ -169,11 +170,11 @@ void _AProver_field::findBlockBoarder(void)
 
 void _AProver_field::findSideBoarder(void)
 {
-	OBJECT* pO;
+	_Object* pO;
 	int i=0;
-	while((pO = m_pDetSB->at(i++)) != NULL)
+	while((pO = m_pDetSB->m_pU->get(i++)) != NULL)
 	{
-		float border = pO->m_bb.midY();
+		float border = pO->getY();
 		IF_CONT(border < m_vSideBorderRange.x);
 		IF_CONT(border > m_vSideBorderRange.y);
 

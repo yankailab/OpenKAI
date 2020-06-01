@@ -104,11 +104,7 @@ void _SingleTracker::track(void)
 
 		m_pTracker->update(m, m_rBB);
 
-		vFloat4 dBB = convertBB<vFloat4>(m_rBB);
-		m_bb.x = dBB.x / (float)m.cols;
-		m_bb.y = dBB.y / (float)m.rows;
-		m_bb.z = dBB.z / (float)m.cols;
-		m_bb.w = dBB.w / (float)m.rows;
+		m_bb = normalizeBB(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
 	}
 
 }

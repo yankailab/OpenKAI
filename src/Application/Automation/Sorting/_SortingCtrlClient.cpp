@@ -119,7 +119,7 @@ void _SortingCtrlClient::onBtn(int id, int state)
 
 	if(id >= 0 && id <= 4)
 	{
-		m_COO.m_topClass = id;
+		m_COO.setTopClass(id, 1.0);
 //		this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
 	}
 	else if(id == 5)
@@ -145,7 +145,7 @@ void _SortingCtrlClient::updateWindow(void)
 	pWin->resetAllBtn();
 	WINDOW_BUTTON* pB;
 
-	pB = pWin->getBtn(m_COO.m_topClass);
+	pB = pWin->getBtn(m_COO.getTopClass());
 	if(pB)
 		pB->setShownDown(true);
 }
@@ -175,10 +175,10 @@ void _SortingCtrlClient::onMouse(int event, float x, float y)
 			m_vMouse.y > m_vROI.y &&
 			m_vMouse.y < m_vROI.w)
 		{
-			m_COO.m_bb.x = m_vMouse.x - m_vBB.x;
-			m_COO.m_bb.y = m_vMouse.y - m_vBB.x;
-			m_COO.m_bb.z = m_vMouse.x + m_vBB.x;
-			m_COO.m_bb.w = m_vMouse.y + m_vBB.x;
+			m_COO.setX(m_vMouse.x);
+			m_COO.setY(m_vMouse.y);
+			m_COO.setWidth(m_vBB.x * 2);
+			m_COO.setHeight(m_vBB.y * 2);
 		}
 	}
 
@@ -190,10 +190,9 @@ void _SortingCtrlClient::draw(void)
 	this->_ProtocolBase::draw();
 
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	circle(*pMat, Point(m_COO.m_bb.center().x * pMat->cols,
-						m_COO.m_bb.center().y * pMat->rows), 15, Scalar(0,255,0), 5);
+	circle(*pM, Point(m_COO.getX() * pM->cols, m_COO.getY() * pM->rows), 15, Scalar(0,255,0), 5);
 
 	IF_(!m_bDebug);
 }

@@ -87,7 +87,7 @@ float _DepthVisionBase::d(vInt4* pROI)
 	vector<float> vRange = { m_vRange.x, m_vRange.y };
 	vector<int> vChannel = { 0 };
 
-	Rect r = convertBB(*pROI);
+	Rect r = bb2Rect(*pROI);
 	Mat mRoi = (*m_fDepth.m())(r);
 	vector<Mat> vRoi = {mRoi};
 	Mat mHist;
@@ -121,29 +121,29 @@ void _DepthVisionBase::draw(void)
 	{
 		Window* pWin = (Window*)this->m_pWindow;
 		Frame* pFrame = pWin->getFrame();
-		Mat* pMat = pFrame->m();
+		Mat* pM = pFrame->m();
 
 		if(m_bDebug)
 		{
 			vInt2 cs;
-			cs.x = pMat->cols;
-			cs.y = pMat->rows;
+			cs.x = pM->cols;
+			cs.y = pM->rows;
 
 			vFloat4 bb;
-			bb.x = 0.4;
-			bb.y = 0.4;
-			bb.z = 0.6;
-			bb.w = 0.6;
-			Rect r = convertBB<vInt4>(convertBB(bb, cs));
+			bb.x = 0.4 * pM->cols;
+			bb.y = 0.4 * pM->rows;
+			bb.z = 0.6 * pM->cols;
+			bb.w = 0.6 * pM->rows;
+			Rect r = bb2Rect(bb);
 
-			rectangle(*pMat, r, Scalar(0,255,0), 1);
+			rectangle(*pM, r, Scalar(0,255,0), 1);
 
 //			putText(*pMat, f2str(d(&bb)),
 //						Point(r.x + 15, r.y + 25),
 //						FONT_HERSHEY_SIMPLEX, 0.6, Scalar(0,255,0), 1);
 
-			r = convertBB<vInt4>(m_vDRoi);
-			rectangle(*pMat, r, Scalar(0,255,255), 2);
+			r = bb2Rect(m_vDRoi);
+			rectangle(*pM, r, Scalar(0,255,255), 2);
 		}
 	}
 

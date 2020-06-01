@@ -11,7 +11,6 @@
 #include "../Detector/_DetectorBase.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_CASCADE
 #ifdef USE_CUDA
 
 namespace kai
@@ -43,18 +42,13 @@ public:
 	Ptr<cuda::CascadeClassifier> m_pGCC;
 
 	bool m_bGPU;
-	double m_minSize;
-	double m_maxSize;
 	double m_scaleFactor;
 	int m_minNeighbors;
-	vDouble4 m_area;
-
 	string m_className;
 
 };
 
 }
-#endif
 #endif
 #endif
 #endif

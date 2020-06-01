@@ -25,25 +25,25 @@ _DNNclassifier::~_DNNclassifier()
 {
 }
 
-bool _DNNclassifier::init(void* pKiss)
+bool _DNNclassifier::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v("nW",&m_nW);
-	pK->v("nH",&m_nH);
-	pK->v("bSwapRB",&m_bSwapRB);
-	pK->v("scale",&m_scale);
-	pK->v("iBackend",&m_iBackend);
-	pK->v("iTarget",&m_iTarget);
-	pK->v("meanB",&m_vMean.x);
-	pK->v("meanG",&m_vMean.y);
-	pK->v("meanR",&m_vMean.z);
+	pK->v("nW", &m_nW);
+	pK->v("nH", &m_nH);
+	pK->v("bSwapRB", &m_bSwapRB);
+	pK->v("scale", &m_scale);
+	pK->v("iBackend", &m_iBackend);
+	pK->v("iTarget", &m_iTarget);
+	pK->v("meanB", &m_vMean.x);
+	pK->v("meanG", &m_vMean.y);
+	pK->v("meanR", &m_vMean.z);
 
-	Kiss* pR = pK->o("ROI");
-	Kiss** pItr;
+	Kiss *pR = pK->o("ROI");
+	Kiss **pItr;
 	vFloat4 r;
-	if(pR)
+	if (pR)
 	{
 		pItr = pR->getChildItr();
 		int i = 0;
@@ -58,7 +58,7 @@ bool _DNNclassifier::init(void* pKiss)
 		}
 	}
 
-	if(m_vROI.empty())
+	if (m_vROI.empty())
 	{
 		r.init();
 		r.z = 1.0;
@@ -97,13 +97,13 @@ void _DNNclassifier::update(void)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(!classify());
-
-		updateObj();
-
-		if (m_bGoSleep)
+		if (check() >= 0)
 		{
-			m_pPrev->reset();
+
+			classify();
+
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -112,9 +112,9 @@ void _DNNclassifier::update(void)
 
 int _DNNclassifier::check(void)
 {
-	NULL__(m_pU,-1);
+	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -122,93 +122,85 @@ int _DNNclassifier::check(void)
 	return 0;
 }
 
-bool _DNNclassifier::classify(void)
+void _DNNclassifier::classify(void)
 {
-	IF_F(check() < 0);
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
-	Mat mIn = *m_fBGR.m();
-	vInt2 cs;
-	cs.x = mIn.cols;
-	cs.y = mIn.rows;
+	Mat m = *m_fBGR.m();
 
-	for(int i=0; i<m_vROI.size(); i++)
+	for (int i = 0; i < m_vROI.size(); i++)
 	{
-		vFloat4 fBB = m_vROI[i];
-		Rect r = convertBB(convertBB(fBB, cs));
+		vFloat4 nBB = m_vROI[i];
+		vFloat4 fBB = nBB;
+		fBB.x *= m.cols;
+		fBB.y *= m.rows;
+		fBB.z *= m.cols;
+		fBB.w *= m.rows;
+		Rect r = bb2Rect(fBB);
 
-		m_blob = blobFromImage(mIn(r),
-								m_scale,
-								Size(m_nW, m_nH),
-								Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
-								m_bSwapRB,
-								false);
+		m_blob = blobFromImage(m(r), m_scale, Size(m_nW, m_nH),
+				Scalar(m_vMean.z, m_vMean.y, m_vMean.x), m_bSwapRB, false);
 		m_net.setInput(m_blob);
 
 		Mat mProb = m_net.forward();
 
-	    Point pClassID;
-	    double conf;
-	    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+		Point pClassID;
+		double conf;
+		cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
 
-		OBJECT o;
+		_Object o;
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(pClassID.x, conf);
-		o.m_bb = fBB;
-		this->add(&o);
+		o.setBB2D(nBB);
+		m_pU->add(o);
 
-		LOG_I("Class: " + i2str(o.m_topClass));
+		LOG_I("Class: " + i2str(o.getTopClass()));
 	}
 
-	return true;
+	m_pU->updateObj();
 }
 
-bool _DNNclassifier::classify(Mat m, OBJECT* pO)
+bool _DNNclassifier::classify(Mat m, _Object *pO, float minConfidence)
 {
 	IF_F(m.empty());
 	NULL_F(pO);
 
-	m_blob = blobFromImage(m,
-							m_scale,
-							Size(m_nW, m_nH),
-							Scalar(m_vMean.z, m_vMean.y, m_vMean.x),
-							m_bSwapRB,
-							false);
+	m_blob = blobFromImage(m, m_scale, Size(m_nW, m_nH),
+			Scalar(m_vMean.z, m_vMean.y, m_vMean.x), m_bSwapRB, false);
 	m_net.setInput(m_blob);
 
 	Mat mProb = m_net.forward();
 
-    Point pClassID;
-    double conf;
-    cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
-    IF_F(conf < m_minConfidence);
+	Point pClassID;
+	double conf;
+	cv::minMaxLoc(mProb.reshape(1, 1), 0, &conf, 0, &pClassID);
+	IF_F(conf < minConfidence);
 
 	pO->setTopClass(pClassID.x, conf);
-
 	return true;
 }
 
 void _DNNclassifier::draw(void)
 {
+	IF_(check() < 0);
 	this->_DetectorBase::draw();
 
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat *pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	OBJECT* pO = at(0);
+	_Object *pO = m_pU->get(0);
 	NULL_(pO);
 
-	int iClass = pO->m_topClass;
+	int iClass = pO->getTopClass();
 	IF_(iClass >= m_nClass);
 	IF_(iClass < 0);
 
 	string oName = m_vClass[iClass].m_name;
-	if (oName.length()>0)
+	if (oName.length() > 0)
 	{
-		putText(*pMat, oName,
-				Point(25, 100),
-				FONT_HERSHEY_SIMPLEX, 2.0, Scalar(0,0,255), 5);
+		putText(*pMat, oName, Point(25, 100), FONT_HERSHEY_SIMPLEX, 2.0,
+				Scalar(0, 0, 255), 5);
 	}
 }
 

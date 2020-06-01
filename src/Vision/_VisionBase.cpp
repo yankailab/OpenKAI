@@ -115,11 +115,7 @@ void _VisionBase::draw(void)
 		else
 		{
 			Mat* pM = pFrame->m();
-
-			vInt2 cs;
-			cs.x = pM->cols;
-			cs.y = pM->rows;
-			Rect r = convertBB<vInt4>(convertBB(m_bbDraw, cs));
+			Rect r = bb2Rect(normalizeBB(m_bbDraw, pM->cols, pM->rows));
 
 			Mat m;
 			cv::resize(*m_fBGR.m(),m,Size(r.width,r.height));

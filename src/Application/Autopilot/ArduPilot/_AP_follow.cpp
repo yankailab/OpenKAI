@@ -153,21 +153,21 @@ bool _AP_follow::findTarget(void)
 {
 	IF_F(check()<0);
 
-	OBJECT* pO;
-	OBJECT* tO = NULL;
+	_Object* pO;
+	_Object* tO = NULL;
 	float topProb = 0.0;
 	int i=0;
-	while((pO = m_pDet->at(i++)) != NULL)
+	while((pO = m_pDet->m_pU->get(i++)) != NULL)
 	{
-		IF_CONT(pO->m_topClass != m_iClass);
-		IF_CONT(pO->m_topProb < topProb);
+		IF_CONT(pO->getTopClass() != m_iClass);
+		IF_CONT(pO->getTopClassProb() < topProb);
 
 		tO = pO;
-		topProb = pO->m_topProb;
+		topProb = pO->getTopClassProb();
 	}
 
 	NULL_F(tO);
-	m_vTargetBB = tO->m_bb;
+	m_vTargetBB = tO->getBB2D();
 
 	return true;
 }

@@ -95,18 +95,15 @@ void _DNNtext::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(check()>=0)
+		if(check() >= 0)
 		{
 			if(m_bDetect)
 				detect();
 
-			updateObj();
 			ocr();
 
 			if (m_bGoSleep)
-			{
-				m_pPrev->reset();
-			}
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -125,7 +122,7 @@ int _DNNtext::check(void)
 	return 0;
 }
 
-bool _DNNtext::detect(void)
+void _DNNtext::detect(void)
 {
 	m_fBGR.copy(*m_pV->BGR());
 	if(m_fBGR.m()->channels()<3)
@@ -137,9 +134,7 @@ bool _DNNtext::detect(void)
 	m_net.setInput(m_blob);
 
 	vector<Mat> vO;
-#if CV_VERSION_MAJOR > 3
 	m_net.forward(vO, m_vLayerName);
-#endif
 
 	Mat vScores = vO[0];
 	Mat vGeometry = vO[1];
@@ -155,32 +150,33 @@ bool _DNNtext::detect(void)
 	cs.x = mIn.cols;
 	cs.y = mIn.rows;
 
-	vFloat2 fBase;
-	fBase.x = (float)cs.x/(float)m_nW;
-	fBase.y = (float)cs.y/(float)m_nH;
+	float kx = (float)mIn.cols/(float)m_nW;
+	float ky = (float)mIn.rows/(float)m_nH;
 
 	for (size_t i = 0; i < vIndices.size(); i++)
 	{
-		OBJECT o;
+		_Object o;
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(0, 1.0);
 
-		Point2f pV[4];	//in pixel unit
+		Point2f pP[4];	//in pixel unit
 		RotatedRect& box = vBoxes[vIndices[i]];
-		box.points(pV);
+		box.points(pP);
+
+		vFloat2 pV[4];
 		for (int p = 0; p < 4; p++)
 		{
-			o.m_pV[p].x = pV[p].x * fBase.x;
-			o.m_pV[p].y = pV[p].y * fBase.y;
+			pV[p].x = pP[p].x * kx;
+			pV[p].y = pP[p].y * ky;
 		}
-		o.m_nV = 4;
-		o.normalizeBB(cs);
+		o.setVertices2D(pV,4);
+		o.normalize(mIn.cols, mIn.rows);
 
-		this->add(&o);
+		m_pU->add(o);
 	}
 
-	return true;
+	m_pU->updateObj();
 }
 
 void _DNNtext::decode(const Mat& mScores, const Mat& mGeometry,
@@ -241,20 +237,17 @@ void _DNNtext::ocr(void)
 	NULL_(m_pOCR);
 
 	Mat mIn = *m_pV->BGR()->m();
-	vInt2 cs;
-	cs.x = mIn.cols;
-	cs.y = mIn.rows;
 
 	if(!m_bWarp)
 	{
 		m_pOCR->setMat(mIn);
 	}
 
-	OBJECT* pO;
+	_Object* pO;
 	int i = 0;
-	while ((pO = at(i++)) != NULL)
+	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+		Rect r = bb2Rect(pO->getBB2DNormalizedBy(mIn.cols, mIn.rows));
 		Mat mRoi = mIn(r);
 		Mat m;
 		string strO;
@@ -281,7 +274,7 @@ void _DNNtext::ocr(void)
 			n = OBJ_N_CHAR-1;
 		if(n>0)
 			strncpy(pO->m_pText, strO.c_str(), n);
-		pO->m_pText[n] = 0;
+		pO->setText("");
 
 		LOG_I(strO);
 	}
@@ -337,30 +330,35 @@ void _DNNtext::draw(void)
 	Scalar col = Scalar(0, 255, 0);
 	int t = 1;
 
-	OBJECT* pO;
+	_Object* pO;
 	int i = 0;
-	while ((pO = at(i++)) != NULL)
+	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		line(*pMat, Point2f(pO->m_pV[0].x, pO->m_pV[0].y),
-					Point2f(pO->m_pV[1].x, pO->m_pV[1].y), col, t);
+		vFloat2* pV0 = pO->getVertex(0);
+		vFloat2* pV1 = pO->getVertex(1);
+		vFloat2* pV2 = pO->getVertex(2);
+		vFloat2* pV3 = pO->getVertex(3);
 
-		line(*pMat, Point2f(pO->m_pV[1].x, pO->m_pV[1].y),
-					Point2f(pO->m_pV[2].x, pO->m_pV[2].y), col, t);
+		line(*pMat, Point2f(pV0->x, pV0->y),
+					Point2f(pV1->x, pV1->y), col, t);
 
-		line(*pMat, Point2f(pO->m_pV[2].x, pO->m_pV[2].y),
-					Point2f(pO->m_pV[3].x, pO->m_pV[3].y), col, t);
+		line(*pMat, Point2f(pV1->x, pV1->y),
+					Point2f(pV2->x, pV2->y), col, t);
 
-		line(*pMat, Point2f(pO->m_pV[3].x, pO->m_pV[3].y),
-					Point2f(pO->m_pV[0].x, pO->m_pV[0].y), col, t);
+		line(*pMat, Point2f(pV2->x, pV2->y),
+					Point2f(pV3->x, pV3->y), col, t);
 
-		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+		line(*pMat, Point2f(pV3->x, pV3->y),
+					Point2f(pV0->x, pV0->y), col, t);
+
+		Rect r = bb2Rect(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
 		rectangle(*pMat, r, col, t+1);
 
 #ifdef USE_OCR
 		IF_CONT(!m_bOCR);
-		putText(*pMat, string(pO->m_pText),
-				Point(pO->m_bb.x * pMat->cols,
-					  pO->m_bb.w * pMat->rows),
+		putText(*pMat, string(pO->getText()),
+				Point(pO->getX() * pMat->cols,
+					  pO->getY() * pMat->rows),
 				FONT_HERSHEY_SIMPLEX, 1.5, col, 2);
 #endif
 	}

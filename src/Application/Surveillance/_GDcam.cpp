@@ -128,15 +128,17 @@ bool _GDcam::findTarget(void)
 {
 	IF_F(check() < 0);
 
-	OBJECT* pO;
+	_Object* pO;
 	int i = 0;
-	while ((pO = m_pD->at(i++)) != NULL)
+	while ((pO = m_pD->m_pU->get(i++)) != NULL)
 	{
-		IF_CONT(!(m_classFlag & (1 << pO->m_topClass)));
-		IF_CONT(pO->m_bb.x < m_vRoi.x);
-		IF_CONT(pO->m_bb.x > m_vRoi.z);
-		IF_CONT(pO->m_bb.y < m_vRoi.y);
-		IF_CONT(pO->m_bb.y > m_vRoi.w);
+		IF_CONT(!(m_classFlag & (1 << pO->getTopClass())));
+
+		vFloat4 bb = pO->getBB2D();
+		IF_CONT(bb.x < m_vRoi.x);
+		IF_CONT(bb.x > m_vRoi.z);
+		IF_CONT(bb.y < m_vRoi.y);
+		IF_CONT(bb.y > m_vRoi.w);
 
 		return true;
 	}
@@ -212,12 +214,15 @@ void _GDcam::draw(void)
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
 	Scalar col = Scalar(0,255,0);
 
-	Rect r = convertBB<vInt4>(convertBB(m_vRoi, cs));
+	vFloat4 roi;
+	roi.x = m_vRoi.x * pMat->cols;
+	roi.y = m_vRoi.y * pMat->rows;
+	roi.z = m_vRoi.z * pMat->cols;
+	roi.w = m_vRoi.w * pMat->rows;
+
+	Rect r = bb2Rect(roi);
 	rectangle(*pMat, r, col, 3);
 }
 

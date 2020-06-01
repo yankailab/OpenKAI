@@ -24,10 +24,10 @@ _Line::~_Line()
 {
 }
 
-bool _Line::init(void* pKiss)
+bool _Line::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v<float>("minPixLine", &m_minPixLine);
 	pK->v<float>("wSlide", &m_wSlide);
@@ -62,12 +62,12 @@ void _Line::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
-		updateObj();
-
-		if(m_bGoSleep)
+		if (check() >= 0)
 		{
-			m_pPrev->reset();
+			detect();
+
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -76,40 +76,38 @@ void _Line::update(void)
 
 int _Line::check(void)
 {
-	NULL__(m_pU,-1);
-	NULL__(m_pV,-1);
-	IF__(m_pV->BGR()->bEmpty(),-1);
+	NULL__(m_pU, -1);
+	NULL__(m_pV, -1);
+	IF__(m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
 
 void _Line::detect(void)
 {
-	IF_(check()<0);
-
 	m_pV->BGR()->m()->copyTo(m_mIn);
-	float nP = m_mIn.rows*m_mIn.cols;
+	float nP = m_mIn.rows * m_mIn.cols;
 
 	Mat vSum;
 	cv::reduce(m_mIn, vSum, 1, cv::REDUCE_SUM, CV_32SC1);
-	vSum *= (float)1.0/255.0;
+	vSum *= (float) 1.0 / 255.0;
 
 	//sliding window
-	int i,j;
+	int i, j;
 	int iFrom = -1;
 	int iTo = -1;
 	int nSlide = m_wSlide * m_mIn.rows * 0.5;
 
-	for(i=0; i<vSum.rows; i++)
+	for (i = 0; i < vSum.rows; i++)
 	{
-		int sFrom = constrain(i-nSlide, 0, vSum.rows);
-		int sTo = constrain(i+nSlide, 0, vSum.rows);
+		int sFrom = constrain(i - nSlide, 0, vSum.rows);
+		int sTo = constrain(i + nSlide, 0, vSum.rows);
 
 		int v = 0;
-		for(j=sFrom; j<sTo; j++)
-			v += vSum.at<int>(j,0);
+		for (j = sFrom; j < sTo; j++)
+			v += vSum.at<int>(j, 0);
 
-		if((float)v/nP > m_minPixLine)
+		if ((float) v / nP > m_minPixLine)
 		{
 			iFrom = i;
 			break;
@@ -126,17 +124,16 @@ void _Line::detect(void)
 //		}
 	}
 
-	if(iFrom < 0)
+	if (iFrom < 0)
 	{
 		m_line = -1.0;
 		return;
 	}
 
-	iTo = constrain(iTo, iFrom+1, vSum.rows);
+	iTo = constrain(iTo, iFrom + 1, vSum.rows);
 
-	vInt2 cs;
-	cs.x = m_mIn.cols;
-	cs.y = m_mIn.rows;
+	float kx = 1.0/m_mIn.cols;
+	float ky = 1.0/m_mIn.rows;
 
 	Rect rBB;
 	rBB.x = 0;
@@ -144,22 +141,25 @@ void _Line::detect(void)
 	rBB.width = m_mIn.cols;
 	rBB.height = iTo - iFrom;
 
-	OBJECT o;
+	_Object o;
 	o.init();
 	o.m_tStamp = m_tStamp;
-	o.setBB(convertBB<vFloat4>(rBB));
-	o.normalizeBB(cs);
+	o.setBB2D(rect2BB <vFloat4> (rBB));
+	o.normalize(kx,ky);
 	o.setTopClass(0, 1.0);
-	add(&o);
+	m_pU->add(o);
 
-	m_line = o.m_bb.midY();
+	m_line = o.getY();
 	LOG_I("Line pos: " + f2str(m_line));
+
+	m_pU->updateObj();
+
 }
 
 void _Line::draw(void)
 {
 	this->_DetectorBase::draw();
-	addMsg("line = " + f2str(m_line),1);
+	addMsg("line = " + f2str(m_line), 1);
 }
 
 }

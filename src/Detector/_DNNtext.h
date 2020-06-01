@@ -32,7 +32,7 @@ public:
 	Mat getTransform(Mat mImg, vFloat2* pBox);
 	void decode(const Mat& mScores, const Mat& mGeometry, float scoreThresh,
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
-	bool detect(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

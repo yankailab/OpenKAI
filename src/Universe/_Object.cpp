@@ -253,7 +253,7 @@ vFloat4 _Object::getBB2DNormalizedBy(float kx, float ky)
 	return bb;
 }
 
-void _Object::normalize(float kx = 1.0, float ky = 1.0, float kz = 1.0)
+void _Object::normalize(float kx, float ky, float kz)
 {
 	m_vPos.x *= kx;
 	m_vPos.y *= ky;
@@ -285,6 +285,13 @@ void _Object::setVertices2D(vFloat2 *pV, int nV)
 	setBB2D(bb);
 }
 
+vFloat2* _Object::getVertex(int i)
+{
+	IF_N(i > m_vVertex.size());
+
+	return &m_vVertex[i];
+}
+
 void _Object::addClassIdx(int iClass)
 {
 	m_mClass |= 1 << iClass;
@@ -305,6 +312,11 @@ void _Object::setTopClass(int iClass, float prob)
 int _Object::getTopClass(void)
 {
 	return m_topClass;
+}
+
+float _Object::getTopClassProb(void)
+{
+	return m_topProb;
 }
 
 bool _Object::bClass(int iClass)

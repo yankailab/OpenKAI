@@ -62,7 +62,7 @@ public:
 	int check(void);
 
 private:
-	bool detect(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

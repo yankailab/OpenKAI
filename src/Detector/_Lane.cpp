@@ -14,7 +14,7 @@ namespace kai
 
 _Lane::_Lane()
 {
-	m_pVision = NULL;
+	m_pV = NULL;
 
 	m_roiLT.x = 0.2;
 	m_roiLT.y = 0.5;
@@ -126,8 +126,8 @@ bool _Lane::init(void* pKiss)
 	//link
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
-	NULL_Fl(m_pVision, "_VisionBase is NULL");
+	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	NULL_Fl(m_pV, "_VisionBase is NULL");
 
 	return true;
 }
@@ -159,26 +159,26 @@ void _Lane::update(void)
 
 int _Lane::check(void)
 {
-	NULL__(m_pU,-1);
+	NULL__(m_pV, -1);
+	IF__(m_pV->BGR()->m()->empty(),-1);
 
 	return 0;
 }
 
 void _Lane::detect(void)
 {
-	NULL_(m_pVision);
-	Mat* pInput = m_pVision->BGR()->m();
-	IF_(pInput->empty());
+	IF_(check() < 0);
+	Mat* pM = m_pV->BGR()->m();
 
 	//Warp transform to get overhead view
-	if (m_vSize.x != pInput->cols || m_vSize.y != pInput->rows)
+	if (m_vSize.x != pM->cols || m_vSize.y != pM->rows)
 	{
-		m_vSize.x = pInput->cols;
-		m_vSize.y = pInput->rows;
+		m_vSize.x = pM->cols;
+		m_vSize.y = pM->rows;
 		updateVisionSize();
 	}
 
-	cv::warpPerspective(*pInput, m_mOverhead, m_mPerspective,
+	cv::warpPerspective(*pM, m_mOverhead, m_mPerspective,
 			m_mOverhead.size(), cv::INTER_LINEAR);
 
 	//Filter image to get binary view

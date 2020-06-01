@@ -22,13 +22,13 @@ _Thermal::~_Thermal()
 {
 }
 
-bool _Thermal::init(void* pKiss)
+bool _Thermal::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v<double>("rL",&m_rL);
-	pK->v<double>("rU",&m_rU);
+	pK->v<double>("rL", &m_rL);
+	pK->v<double>("rU", &m_rU);
 
 	m_nClass = 1;
 	return true;
@@ -53,12 +53,12 @@ void _Thermal::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
-		updateObj();
-
-		if(m_bGoSleep)
+		if (check() >= 0)
 		{
-			m_pPrev->reset();
+			detect();
+
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -67,45 +67,42 @@ void _Thermal::update(void)
 
 int _Thermal::check(void)
 {
-	NULL__(m_pU,-1);
-	NULL__(m_pV,-1);
-	IF__(m_pV->BGR()->bEmpty(),-1);
+	NULL__(m_pU, -1);
+	NULL__(m_pV, -1);
+	IF__(m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
 
 void _Thermal::detect(void)
 {
-	IF_(check()<0);
-
 	Mat mBGR = *(m_pV->BGR()->m());
 	Mat mGray;
 	cv::cvtColor(mBGR, mGray, COLOR_BGR2GRAY);
 	cv::inRange(mGray, m_rL, m_rU, m_mR);
 
-	vector< vector< Point > > vvContours;
+	vector<vector<Point> > vvContours;
 	findContours(m_mR, vvContours, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-	vInt2 cs;
-	m_pV->info(&cs, NULL, NULL);
-
-	OBJECT o;
+	_Object o;
 	vector<Point> vPoly;
-	for (unsigned int i=0; i<vvContours.size(); i++)
+	for (unsigned int i = 0; i < vvContours.size(); i++)
 	{
 		vPoly.clear();
-		approxPolyDP( vvContours[i], vPoly, 3, true );
+		approxPolyDP(vvContours[i], vPoly, 3, true);
 		Rect r = boundingRect(vPoly);
 
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setBB(convertBB<vFloat4>(r));
-		o.normalizeBB(cs);
+		o.setBB2D(rect2BB < vFloat4 > (r));
+		o.normalize(m_mR.cols, m_mR.rows);
 		o.setTopClass(0, o.area());
 
-		add(&o);
-		LOG_I("ID: "+ i2str(o.m_topClass));
+		m_pU->add(o);
+		LOG_I("ID: " + i2str(o.getTopClass()));
 	}
+
+	m_pU->updateObj();
 }
 
 void _Thermal::draw(void)
@@ -114,9 +111,9 @@ void _Thermal::draw(void)
 
 	IF_(!m_bDebug);
 
-	if(!m_mR.empty())
+	if (!m_mR.empty())
 	{
-		imshow(*this->getName()+":Thr", m_mR);
+		imshow(*this->getName() + ":Thr", m_mR);
 	}
 }
 

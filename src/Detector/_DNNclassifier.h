@@ -25,10 +25,10 @@ public:
 	bool start(void);
 	void draw(void);
 	int check(void);
-	bool classify(Mat m, _Object* pO);
+	bool classify(Mat m, _Object* pO, float minConfidence);
 
 private:
-	bool classify(void);
+	void classify(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

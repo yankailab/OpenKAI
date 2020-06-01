@@ -35,8 +35,8 @@ public:
 	int check(void);
 
 private:
-	bool detectYolo(void);
-	bool detect(void);
+	void detectYolo(void);
+	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{

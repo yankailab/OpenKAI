@@ -26,10 +26,10 @@ _OpenPose::~_OpenPose()
 {
 }
 
-bool _OpenPose::init(void* pKiss)
+bool _OpenPose::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("nW", &m_nW);
 	pK->v("nH", &m_nH);
@@ -70,13 +70,12 @@ void _OpenPose::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
-
-		updateObj();
-
-		if (m_bGoSleep)
+		if (check() >= 0)
 		{
-			m_pPrev->reset();
+			detect();
+
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -87,7 +86,7 @@ int _OpenPose::check(void)
 {
 	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -95,11 +94,9 @@ int _OpenPose::check(void)
 	return 0;
 }
 
-bool _OpenPose::detect(void)
+void _OpenPose::detect(void)
 {
-	IF_F(check() < 0);
-
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
@@ -157,7 +154,7 @@ bool _OpenPose::detect(void)
 		circle(m_mDebug, partB, 8, Scalar(0, 0, 255), -1);
 	}
 
-	return true;
+	m_pU->updateObj();
 }
 
 void _OpenPose::draw(void)
@@ -165,9 +162,9 @@ void _OpenPose::draw(void)
 	this->_ThreadBase::draw();
 	IF_(!checkWindow());
 
-	Window* pWin = (Window*) this->m_pWindow;
-	Frame* pFrame = pWin->getFrame();
-	Mat* pMat = pFrame->m();
+	Window *pWin = (Window*) this->m_pWindow;
+	Frame *pFrame = pWin->getFrame();
+	Mat *pMat = pFrame->m();
 
 	if (!m_mDebug.empty())
 	{

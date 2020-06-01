@@ -68,6 +68,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Camera);
+	ADD_MODULE(_Cascade);
 	ADD_MODULE(_Contrast);
 	ADD_MODULE(_Crop);
 	ADD_MODULE(_DNNclassifier);
@@ -120,7 +121,6 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);
-	ADD_MODULE(_MultiTracker);
 	ADD_MODULE(_MotionDetector);
 	ADD_MODULE(_SingleTracker);
 #endif
@@ -169,10 +169,6 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_PYLON
 	ADD_MODULE(_Pylon);
-#endif
-
-#ifdef USE_CASCADE
-	ADD_MODULE(_Cascade);
 #endif
 
 #ifdef USE_ORB_SLAM2

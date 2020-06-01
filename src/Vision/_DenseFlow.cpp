@@ -149,7 +149,7 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 	vector<float> vRange = { (float)m_vRange.x, (float)m_vRange.y };
 	vector<int> vChannel = { 0 };
 
-	Rect roi = convertBB(*pROI);
+	Rect roi = bb2Rect(*pROI);
 	double nBase = (m_vRange.y - m_vRange.x)/(double)m_nHistLev;
 	float nMinHist = (float)(m_minHistD * pROI->area());
 	Mat mHist;

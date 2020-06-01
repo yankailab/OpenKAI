@@ -13,7 +13,6 @@
 //#define USE_TENSORFLOW
 //#define USE_PYLON
 //#define USE_CAFFE
-//#define USE_CASCADE
 //#define USE_OCR
 //#define USE_OPENALPR
 

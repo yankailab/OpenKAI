@@ -148,12 +148,12 @@ void _SortingArm::updateArm(void)
 
 	float x,y;
 
-	OBJECT* pO;
+	_Object* pO;
 	string cAction = m_pSeq->getCurrentActionName();
 
 	if (cAction == "prepareX")
 	{
-		if(m_tO.m_topClass < 0)
+		if(m_tO.getTopClass() < 0)
 		{
 			m_tO.init();
 			m_pSeq->on();
@@ -161,9 +161,8 @@ void _SortingArm::updateArm(void)
 		}
 
 		float spd = m_pCS->m_cSpeed * ((float) m_dTime) * 1e-6;
-		m_tO.m_bb.y += spd;
-		m_tO.m_bb.w += spd;
-		y = m_tO.m_bb.midY();
+		m_tO.setY(m_tO.getY() + spd);
+		y = m_tO.getY();
 
 		IF_(y < m_rGripY.x);
 		if(y < m_rGripY.y)
@@ -178,10 +177,10 @@ void _SortingArm::updateArm(void)
 	if (cAction == "standby")
 	{
 		int i = 0;
-		while((pO=m_pCS->at(i++)))
+		while((pO = m_pCS->m_pU->get(i++)))
 		{
-			x = pO->m_bb.midX();
-			y = pO->m_bb.midY();
+			x = pO->getX();
+			y = pO->getY();
 
 			IF_CONT(x < m_vRoiX.x);
 			IF_CONT(x > m_vRoiX.y);
@@ -189,8 +188,7 @@ void _SortingArm::updateArm(void)
 			IF_CONT(y > m_vRoiY.y);
 
 			m_tO = *pO;
-			pO->m_bb.y += m_pCS->m_cLen;
-			pO->m_bb.w += m_pCS->m_cLen;
+			pO->setY(pO->getY() + m_pCS->m_cLen);
 
 			SEQ_ACTION* pAction;
 			SEQ_ACTUATOR* pSA;
@@ -226,7 +224,7 @@ void _SortingArm::updateArm(void)
 			IF_CONT(!pSA);
 
 			vP.init(-1.0);
-			vP.x = (pO->m_dist - m_rGripZ.x) / m_rGripZ.len();
+			vP.x = (pO->getZ() - m_rGripZ.x) / m_rGripZ.len();
 			pSA->setTarget(vP, vS);
 
 			//dest
@@ -237,7 +235,7 @@ void _SortingArm::updateArm(void)
 			IF_CONT(!pSA);
 
 			vP.init(-1.0);
-			vP.x = m_vDropPos[pO->m_topClass];
+			vP.x = m_vDropPos[pO->getTopClass()];
 			pSA->setTarget(vP, vS);
 
 			m_pSeq->m_tResume = 0;

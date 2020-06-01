@@ -24,15 +24,15 @@ _DepthSegment::~_DepthSegment()
 {
 }
 
-bool _DepthSegment::init(void* pKiss)
+bool _DepthSegment::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v<float>("rL",&m_rL);
-	pK->v<float>("rH",&m_rH);
-	pK->v<float>("rD",&m_rD);
-	pK->v<float>("rArea",&m_rArea);
+	pK->v<float>("rL", &m_rL);
+	pK->v<float>("rH", &m_rH);
+	pK->v<float>("rD", &m_rD);
+	pK->v<float>("rArea", &m_rArea);
 
 	m_nClass = 1;
 
@@ -58,12 +58,12 @@ void _DepthSegment::update(void)
 	{
 		this->autoFPSfrom();
 
-		detect();
-		updateObj();
-
-		if(m_bGoSleep)
+		if (check() >= 0)
 		{
-			m_pPrev->reset();
+			detect();
+
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -72,61 +72,63 @@ void _DepthSegment::update(void)
 
 int _DepthSegment::check(void)
 {
-	NULL__(m_pV,-1);
-	NULL__(m_pU,-1);
-	IF__(m_pV->BGR()->bEmpty(),-1);
+	NULL__(m_pV, -1);
+	NULL__(m_pU, -1);
+	IF__(m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
 
 void _DepthSegment::detect(void)
 {
-	IF_(check()<0);
+	Mat m;
+	m_pV->BGR()->m()->copyTo(m);
 
-	Mat mD;
-	m_pV->BGR()->m()->copyTo(mD);
-	vInt2 cs;
-	m_pV->info(&cs, NULL, NULL);
+	float kx = 1.0 / m.cols;
+	float ky = 1.0 / m.rows;
 
-	vector< vector< Point > > vvC;
-	for(float r=m_rL; r<m_rH; r+=m_rD)
+	vector<vector<Point> > vvC;
+	for (float r = m_rL; r < m_rH; r += m_rD)
 	{
-		cv::inRange(mD, 1, (r-m_rL)*255.0+2, m_mR);
+		cv::inRange(m, 1, (r - m_rL) * 255.0 + 2, m_mR);
 		findContours(m_mR, vvC, RETR_EXTERNAL, CHAIN_APPROX_NONE);
 
-		OBJECT o;
+		_Object o;
 		vector<Point> vPoly;
 		float rArea = 0.0;
-		for (unsigned int i=0; i<vvC.size(); i++)
+		for (unsigned int i = 0; i < vvC.size(); i++)
 		{
 			vPoly.clear();
-			approxPolyDP( vvC[i], vPoly, 3, true );
-			Rect rBB = boundingRect(vPoly);
+			approxPolyDP(vvC[i], vPoly, 3, true);
+			Rect re = boundingRect(vPoly);
 
 			o.init();
 			o.m_tStamp = m_tStamp;
-			o.setBB(convertBB<vFloat4>(rBB));
-			o.normalizeBB(cs);
+			o.setBB2D(rect2BB<vFloat4>(re));
+			o.normalize(kx, ky);
+			o.setZ(r);
 			o.setTopClass(0, o.area());
-			o.m_dist = r;
 
 			//TODO: classify
 
-			add(&o);
+			m_pU->add(o);
 			rArea += o.area();
 		}
 
-		if(rArea > m_rArea)break;
+		if (rArea > m_rArea)
+			break;
 	}
+
+	m_pU->updateObj();
 }
 
 void _DepthSegment::draw(void)
 {
 	this->_DetectorBase::draw();
 
-	if(!m_mR.empty())
+	if (!m_mR.empty())
 	{
-		imshow(*this->getName()+":Thr", m_mR);
+		imshow(*this->getName() + ":Thr", m_mR);
 	}
 }
 

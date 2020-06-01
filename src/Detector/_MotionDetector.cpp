@@ -25,13 +25,13 @@ _MotionDetector::~_MotionDetector()
 
 }
 
-bool _MotionDetector::init(void* pKiss)
+bool _MotionDetector::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*)pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v<string>("algorithm",&m_algorithm);
-	pK->v<double>("learningRate",&m_learningRate);
+	pK->v<string>("algorithm", &m_algorithm);
+	pK->v<double>("learningRate", &m_learningRate);
 
 //	if(m_algorithm == "cnt")
 //	{
@@ -56,8 +56,8 @@ bool _MotionDetector::init(void* pKiss)
 //
 
 	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase",&iName));
-	m_pVision = (_VisionBase*)(pK->root()->getChildInst(iName));
+	F_ERROR_F(pK->v("_VisionBase", &iName));
+	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
 
 	return true;
 }
@@ -81,8 +81,11 @@ void _MotionDetector::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateObj();
-		detect();
+		if (check() >= 0)
+		{
+			m_pU->updateObj();
+			detect();
+		}
 
 		this->autoFPSto();
 	}
@@ -90,43 +93,41 @@ void _MotionDetector::update(void)
 
 int _MotionDetector::check(void)
 {
-	NULL__(m_pU,-1);
-	NULL__(m_pV,-1);
-	IF__(m_pV->BGR()->bEmpty(),-1);
+	NULL__(m_pU, -1);
+	NULL__(m_pV, -1);
+	IF__(m_pV->BGR()->bEmpty(), -1);
 
 	return 0;
 }
 
 void _MotionDetector::detect(void)
 {
-	IF_(check()<0);
-
 	Mat m = *m_pVision->BGR()->m();
 
-    m_pBS->apply(m, m_mFG, m_learningRate);
+	m_pBS->apply(m, m_mFG, m_learningRate);
 
-	vector< vector< Point > > vContours;
+	vector<vector<Point> > vContours;
 	vector<Vec4i> vHierarchy;
-	findContours(m_mFG, vContours, vHierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE, Point(0, 0));
+	findContours(m_mFG, vContours, vHierarchy, RETR_TREE, CHAIN_APPROX_SIMPLE,
+			Point(0, 0));
 
-	vInt2 cs;
-	cs.x = m.cols;
-	cs.y = m.rows;
-	OBJECT o;
-	for( int i = 0; i < vContours.size(); i++ )
+	float kx = 1.0/m.cols;
+	float ky = 1.0/m.rows;
+	_Object o;
+	for (int i = 0; i < vContours.size(); i++)
 	{
 		vector<Point> vContourPoly;
-		approxPolyDP( Mat(vContours[i]), vContourPoly, 3, true );
-	    Rect r = boundingRect( Mat(vContourPoly) );
-	    vContourPoly.clear();
+		approxPolyDP(Mat(vContours[i]), vContourPoly, 3, true);
+		Rect r = boundingRect(Mat(vContourPoly));
+		vContourPoly.clear();
 
-	    o.init();
-	    o.setTopClass(-1,0);
-	    o.m_tStamp = m_tStamp;
-		o.setBB(convertBB<vFloat4>(r));
-		o.normalizeBB(cs);
+		o.init();
+		o.setTopClass(-1, 0);
+		o.m_tStamp = m_tStamp;
+		o.setBB2D(rect2BB < vFloat4 > (r));
+		o.normalize(kx,ky);
 
-	    add(&o);
+		m_pU->add(o);
 	}
 }
 
@@ -134,9 +135,9 @@ void _MotionDetector::draw(void)
 {
 	this->_DetectorBase::draw();
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat *pM = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	if(!m_mFG.empty())
+	if (!m_mFG.empty())
 	{
 		imshow(*this->getName(), m_mFG);
 	}

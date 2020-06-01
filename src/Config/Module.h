@@ -91,6 +91,7 @@
 #include "../Data/Video/_FrameCutOut.h"
 
 #include "../Detector/_Lane.h"
+#include "../Detector/_Cascade.h"
 #include "../Detector/_DNNdetect.h"
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
@@ -121,7 +122,6 @@
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"
-#include "../Tracker/_MultiTracker.h"
 #include "../Detector/_MotionDetector.h"
 #include "../Tracker/_SingleTracker.h"
 #endif
@@ -156,10 +156,6 @@
 
 #ifdef USE_OPENALPR
 #include "../Detector/_OpenALPR.h"
-#endif
-
-#ifdef USE_CASCADE
-#include "../Detector/_Cascade.h"
 #endif
 
 #ifdef USE_CAFFE

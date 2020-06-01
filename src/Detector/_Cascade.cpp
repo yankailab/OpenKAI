@@ -5,20 +5,15 @@
 #include "_Cascade.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_CASCADE
 #ifdef USE_CUDA
 
 namespace kai
 {
+
 _Cascade::_Cascade()
 {
-	m_minSize = 0.0;
-	m_maxSize = 1.0;
 	m_scaleFactor = 1.1;
 	m_minNeighbors = 3;
-	m_area.init();
-	m_area.z = 1.0;
-	m_area.w = 1.0;
 	m_className = "";
 	m_bGPU = true;
 }
@@ -27,19 +22,14 @@ _Cascade::~_Cascade()
 {
 }
 
-bool _Cascade::init(void* pKiss)
+bool _Cascade::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("scaleFactor", &m_scaleFactor);
 	pK->v("minNeighbors", &m_minNeighbors);
 	pK->v("bGPU", &m_bGPU);
-
-	F_INFO(pK->v("left", &m_area.x));
-	F_INFO(pK->v("top", &m_area.y));
-	F_INFO(pK->v("right", &m_area.z));
-	F_INFO(pK->v("bottom", &m_area.w));
 
 	if (m_bGPU)
 	{
@@ -56,8 +46,8 @@ bool _Cascade::init(void* pKiss)
 
 int _Cascade::check(void)
 {
-	NULL__(m_pV,-1);
-	NULL__(m_pU,-1);
+	NULL__(m_pV, -1);
+	NULL__(m_pU, -1);
 
 	return 0;
 }
@@ -78,20 +68,16 @@ bool _Cascade::start(void)
 
 void _Cascade::update(void)
 {
-
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		this->_DetectorBase::update();
-
-		if(m_bGPU)
+		if (check() >= 0)
 		{
-			detectGPU();
-		}
-		else
-		{
-			detectCPU();
+			if (m_bGPU)
+				detectGPU();
+			else
+				detectCPU();
 		}
 
 		this->autoFPSto();
@@ -101,85 +87,78 @@ void _Cascade::update(void)
 
 void _Cascade::detectGPU(void)
 {
-	NULL_(m_pVision);
-
-	Frame* pGray = m_pVision->gray();
+	Frame *pGray = m_pV->BGR();
 	NULL_(pGray);
-	IF_(pGray->empty());
+	IF_(pGray->bEmpty());
 	GpuMat m;
-	pGray->getGMat()->copyTo(m);
+	pGray->gm()->copyTo(m);
 
-	int minSize = m.cols * m_minSize;
-	int maxSize = m.cols * m_maxSize;
+	int minSize = m.cols * m_pU->m_rArea.x;
+	int maxSize = m.cols * m_pU->m_rArea.y;
 
 	m_pGCC->setFindLargestObject(false);
 	m_pGCC->setScaleFactor(m_scaleFactor);
 	m_pGCC->setMinNeighbors(m_minNeighbors);
-	m_pGCC->setMinObjectSize(cv::Size(minSize,minSize));
-	m_pGCC->setMaxObjectSize(cv::Size(maxSize,maxSize));
+	m_pGCC->setMinObjectSize(cv::Size(minSize, minSize));
+	m_pGCC->setMaxObjectSize(cv::Size(maxSize, maxSize));
 
 	vector<Rect> vRect;
 	cv::cuda::GpuMat gFound;
 	m_pGCC->detectMultiScale(m, gFound);
 	m_pGCC->convert(gFound, vRect);
 
-	OBJECT obj;
-	uint64_t tNow = get_time_usec();
+	_Object o;
+	float kx = 1.0 / m.cols;
+	float ky = 1.0 / m.rows;
 
 	for (int i = 0; i < vRect.size(); i++)
 	{
-		rect2vInt4(&vRect[i], &obj.m_bbox);
-		obj.m_camSize.x = m.cols;
-		obj.m_camSize.y = m.rows;
-		obj.i2fBBox();
-		obj.m_iClass = 0;
-		obj.m_dist = 0.0;
-		obj.m_name = m_className;
-		obj.m_frameID = tNow;
+		o.setBB2D(rect2BB<vFloat4>(vRect[i]));
+		o.normalize(kx, ky);
+		o.setTopClass(0, 1.0);
+		o.setZ(0.0);
+		o.setText(m_className);
+		o.m_tStamp = m_tStamp;
 
-		add(&obj);
+		m_pU->add(o);
 	}
+
+	m_pU->updateObj();
 }
 
 void _Cascade::detectCPU(void)
 {
-	NULL_(m_pVision);
-
-	Frame* pGray = m_pVision->gray();
+	Frame *pGray = m_pV->BGR();
 	NULL_(pGray);
-	IF_(pGray->empty());
+	IF_(pGray->bEmpty());
 	Mat m;
-	pGray->getCMat()->copyTo(m);
+	pGray->m()->copyTo(m);
 
-	int minSize = m.cols * m_minSize;
-	int maxSize = m.cols * m_maxSize;
+	int minSize = m.cols * m_pU->m_rArea.x;
+	int maxSize = m.cols * m_pU->m_rArea.y;
 
 	vector<Rect> vRect;
-	OBJECT obj;
+	_Object o;
+	float kx = 1.0 / m.cols;
+	float ky = 1.0 / m.rows;
 
-	m_CC.detectMultiScale(m,
-						  vRect,
-						  m_scaleFactor,
-						  m_minNeighbors,
-						  0 | CASCADE_SCALE_IMAGE,
-						  Size(minSize, minSize),
-						  Size(maxSize, maxSize));
-
-	uint64_t tNow = get_time_usec();
+	m_CC.detectMultiScale(m, vRect, m_scaleFactor, m_minNeighbors,
+			0 | CASCADE_SCALE_IMAGE, Size(minSize, minSize),
+			Size(maxSize, maxSize));
 
 	for (int i = 0; i < vRect.size(); i++)
 	{
-		rect2vInt4(&vRect[i], &obj.m_bbox);
-		obj.m_camSize.x = m.cols;
-		obj.m_camSize.y = m.rows;
-		obj.i2fBBox();
-		obj.m_iClass = 0;
-		obj.m_dist = 0.0;
-		obj.m_name = m_className;
-		obj.m_frameID = tNow;
+		o.setBB2D(rect2BB<vFloat4>(vRect[i]));
+		o.normalize(kx, ky);
+		o.setTopClass(0, 1.0);
+		o.setZ(0.0);
+		o.setText(m_className);
+		o.m_tStamp = m_tStamp;
 
-		add(&obj);
+		m_pU->add(o);
 	}
+
+	m_pU->updateObj();
 }
 
 void _Cascade::draw(void)
@@ -189,7 +168,6 @@ void _Cascade::draw(void)
 }
 
 }
-#endif
 #endif
 #endif
 

@@ -60,14 +60,12 @@ void _ArUco::update(void)
 	{
 		this->autoFPSfrom();
 
-		IF_CONT(check()<0);
-
-		detect();
-		m_pU->updateObj();
-
-		if(m_bGoSleep)
+		if(check() >= 0)
 		{
-			m_pU->m_pPrev->clear();
+			detect();
+
+			if(m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -136,11 +134,14 @@ void _ArUco::detect(void)
 		m_pU->add(o);
 		LOG_I("ID: "+ i2str(o.getTopClass()));
 	}
+
+	m_pU->updateObj();
 }
 
 void _ArUco::draw(void)
 {
 	IF_(check()<0);
+
 	this->_DetectorBase::draw();
 
 	string msg = "| ";

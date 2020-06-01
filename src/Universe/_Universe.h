@@ -41,11 +41,10 @@ public:
 	virtual _Object* get(int i);
 	virtual int size(void);
 
-	virtual void updateStatistics(void);
-
-protected:
 	virtual void clearObj(void);
 	virtual void updateObj(void);
+
+	virtual void updateStatistics(void);
 
 private:
 	static void* getUpdateThread(void* This)

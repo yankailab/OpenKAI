@@ -74,6 +74,7 @@ public:
 
 	//vertex
 	void setVertices2D(vFloat2 *pV, int nV);
+	vFloat2* getVertex(int i);
 
 	//classification
 	void resetClass(void);
@@ -81,10 +82,11 @@ public:
 	void setClassMask(uint64_t mClass);
 	void setTopClass(int iClass, float prob);
 	int getTopClass(void);
+	float getTopClassProb(void);
 	bool bClass(int iClass);
 	bool bClassMask(uint64_t mClass);
 
-	void setText(string & txt);
+	void setText(string& txt);
 	string getText(void);
 
 	//interactions

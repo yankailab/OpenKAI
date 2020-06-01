@@ -29,20 +29,20 @@ _DNNdetect::~_DNNdetect()
 {
 }
 
-bool _DNNdetect::init(void* pKiss)
+bool _DNNdetect::init(void *pKiss)
 {
 	IF_F(!this->_DetectorBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
+	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v("thr",&m_thr);
-	pK->v("nms",&m_nms);
-	pK->v("nW",&m_nW);
-	pK->v("nH",&m_nH);
-	pK->v("iBackend",&m_iBackend);
-	pK->v("iTarget",&m_iTarget);
-	pK->v("bSwapRB",&m_bSwapRB);
-	pK->v("scale",&m_scale);
-	pK->v("iClassDraw",&m_iClassDraw);
+	pK->v("thr", &m_thr);
+	pK->v("nms", &m_nms);
+	pK->v("nW", &m_nW);
+	pK->v("nH", &m_nH);
+	pK->v("iBackend", &m_iBackend);
+	pK->v("iTarget", &m_iTarget);
+	pK->v("bSwapRB", &m_bSwapRB);
+	pK->v("scale", &m_scale);
+	pK->v("iClassDraw", &m_iClassDraw);
 
 	pK->v("meanB", &m_vMean.x);
 	pK->v("meanG", &m_vMean.y);
@@ -105,20 +105,16 @@ void _DNNdetect::update(void)
 	{
 		this->autoFPSfrom();
 
-		if (m_dnnType == dnn_yolo)
+		if (check() >= 0)
 		{
-			IF_CONT(!detectYolo());
-		}
-		else if (m_dnnType == dnn_tf || m_dnnType == dnn_caffe)
-		{
-			IF_CONT(!detect());
-		}
 
-		updateObj();
+			if (m_dnnType == dnn_yolo)
+				detectYolo();
+			else if (m_dnnType == dnn_tf || m_dnnType == dnn_caffe)
+				detect();
 
-		if (m_bGoSleep)
-		{
-			m_pPrev->reset();
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -127,9 +123,9 @@ void _DNNdetect::update(void)
 
 int _DNNdetect::check(void)
 {
-	NULL__(m_pU,-1);
+	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
@@ -137,11 +133,9 @@ int _DNNdetect::check(void)
 	return 0;
 }
 
-bool _DNNdetect::detectYolo(void)
+void _DNNdetect::detectYolo(void)
 {
-	IF_F(check() < 0);
-
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
@@ -165,7 +159,7 @@ bool _DNNdetect::detectYolo(void)
 		// Scan through all the bounding boxes output from the network and keep only the
 		// ones with high confidence scores. Assign the box's class label as the class
 		// with the highest score for the box.
-		float* pData = (float*) vO[i].data;
+		float *pData = (float*) vO[i].data;
 		for (int j = 0; j < vO[i].rows; ++j, pData += vO[i].cols)
 		{
 			Mat mScore = vO[i].row(j).colRange(5, vO[i].cols);
@@ -192,33 +186,30 @@ bool _DNNdetect::detectYolo(void)
 	// Perform non maximum suppression to eliminate redundant overlapping boxes with lower confidences
 	vector<int> vIndex;
 	NMSBoxes(vRect, vConfidence, m_thr, m_nms, vIndex);
-	vInt2 cs;
-	cs.x = mIn.cols;
-	cs.y = mIn.rows;
+	float kx = 1.0 / mIn.cols;
+	float ky = 1.0 / mIn.rows;
 
 	for (size_t i = 0; i < vIndex.size(); i++)
 	{
 		int idx = vIndex[i];
 
-		OBJECT o;
+		_Object o;
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setTopClass(vClassID[idx], (double) vConfidence[idx]);
-		o.setBB(convertBB<vFloat4>(vRect[idx]));
-		o.normalizeBB(cs);
+		o.setTopClass(vClassID[idx], (float) vConfidence[idx]);
+		o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
+		o.normalize(kx, ky);
 
-		this->add(&o);
+		m_pU->add(o);
 		LOG_I("Class: " + i2str(o.m_topClass));
 	}
 
-	return true;
+	m_pU->updateObj();
 }
 
-bool _DNNdetect::detect(void)
+void _DNNdetect::detect(void)
 {
-	IF_F(check() < 0);
-
-	Frame* pBGR = m_pV->BGR();
+	Frame *pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
 
@@ -239,45 +230,43 @@ bool _DNNdetect::detect(void)
 		bb.y = dMat.at<float>(i, 4);
 		bb.z = dMat.at<float>(i, 5);
 		bb.w = dMat.at<float>(i, 6);
-		bb.constrain(0.0,1.0);
+		bb.constrain(0.0, 1.0);
 
-		OBJECT o;
+		_Object o;
 		o.init();
 		o.m_tStamp = m_tStamp;
-		o.setTopClass(0, 1.0);
-		o.setBB(bb);
+		o.setTopClass(0.0, 1.0);
+		o.setBB2D(bb);
 
-		this->add(&o);
+		m_pU->add(o);
 		LOG_I("Class: " + i2str(o.m_topClass));
-
 	}
 
-	return true;
+	m_pU->updateObj();
 }
 
 void _DNNdetect::draw(void)
 {
+	IF_(check() < 0);
+
 	this->_ThreadBase::draw();
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat *pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
 	Scalar col = Scalar(0, 0, 255);
 
-	OBJECT* pO;
+	_Object *pO;
 	int i = 0;
-	while ((pO = at(i++)) != NULL)
+	while ((pO = m_pU->get(i++)) != NULL)
 	{
 		int iClass = pO->m_topClass;
 		IF_CONT(m_iClassDraw >= 0 && iClass != m_iClassDraw);
 		IF_CONT(iClass < 0);
 
-		Rect r = convertBB<vInt4>(convertBB(pO->m_bb, cs));
+		Rect r = bb2Rect(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
 		rectangle(*pMat, r, col, 1);
 
-		if(iClass < m_nClass)
+		if (iClass < m_nClass)
 		{
 			string oName = m_vClass[iClass].m_name;
 			if (oName.length() > 0)
