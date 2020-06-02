@@ -64,13 +64,13 @@ public:
 	float area(void);
 	float volume(void);
 
+	void scale(float kx = 1.0, float ky = 1.0, float kz = 1.0);
+
 	//convenient
 	void setBB2D(vFloat4 bb);
 	void setBB2D(float l, float t, float w, float h);
 	vFloat4 getBB2D(void);
-	vFloat4 getBB2DNormalizedBy(float kx, float ky);
-
-	void normalize(float kx = 1.0, float ky = 1.0, float kz = 1.0);
+	vFloat4 getBB2Dscaled(float kx, float ky);
 
 	//vertex
 	void setVertices2D(vFloat2 *pV, int nV);
@@ -80,7 +80,7 @@ public:
 	void resetClass(void);
 	void addClassIdx(int iClass);
 	void setClassMask(uint64_t mClass);
-	void setTopClass(int iClass, float prob);
+	void setTopClass(int iClass, float prob = 1.0);
 	int getTopClass(void);
 	float getTopClassProb(void);
 	bool bClass(int iClass);

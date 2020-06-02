@@ -55,7 +55,7 @@ bool _SortingCtrlServer::init(void *pKiss)
 	m_pPB = (_ProtocolBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pPB, iName + " not found");
 
-	m_pPB->setCallback(callbackCMD,this);
+	m_pPB->setCallback(callbackCMD, this);
 
 	return true;
 }
@@ -87,15 +87,16 @@ void _SortingCtrlServer::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateImg();
-		updateObj();
+		if (check() >= 0)
+		{
+			updateImg();
+			m_pU->updateObj();
 
 //		if(m_ieState.update(m_tStamp))
 //			m_pPB->sendState(m_iState);
 
-		if (m_bGoSleep)
-		{
-			m_pPrev->reset();
+			if (m_bGoSleep)
+				m_pU->m_pPrev->clear();
 		}
 
 		this->autoFPSto();
@@ -109,45 +110,44 @@ void _SortingCtrlServer::updateImg(void)
 	//update existing target positions
 	float spd = m_cSpeed * ((float) m_dTime) * 1e-6;
 	int i = 0;
-	OBJECT *pO;
-	while ((pO = at(i++)))
+	_Object *pO;
+	while ((pO = m_pU->get(i++)))
 	{
-		pO->m_bb.y += spd;
-		pO->m_bb.w += spd;
-		IF_CONT(pO->m_bb.midY() > m_cLen);
+		pO->setY(pO->getY() + spd);
+		IF_CONT(pO->getY() > m_cLen);
 
-		add(pO);
+		m_pU->add(*pO);
 	}
 
-	if(m_newO.m_topClass >= 0)
+	if (m_newO.getTopClass() >= 0)
 	{
-		add(&m_newO);
+		m_pU->add(m_newO);
 		m_newO.init();
 	}
 }
 
-void _SortingCtrlServer::handleCMD(uint8_t* pCMD)
+void _SortingCtrlServer::handleCMD(uint8_t *pCMD)
 {
 	NULL_(pCMD);
 	IF_(check() < 0);
 
 	uint8_t cmd = pCMD[1];
 
-	if(cmd == SORTINGCTRL_OBJ)
+	if (cmd == SORTINGCTRL_OBJ)
 	{
 		float d = m_cSpeed * ((float) m_dT) * 1e-6;
-		//		m_newO.m_bb.x = constrain(((float)unpack_uint16(&pCMD[3], false))*0.001 - m_bbSize, 0.0, 1.0);
-		//		m_newO.m_bb.y = constrain(((float)unpack_uint16(&pCMD[5], false))*0.001 - m_bbSize + d, 0.0, 1.0);
-		m_newO.m_bb.x = (float)pCMD[3]/255.0 - m_bbSize;
-		m_newO.m_bb.y = (float)pCMD[4]/255.0 - m_bbSize + d;
-		m_newO.m_bb.z = constrain<float>(m_newO.m_bb.x + m_bbSize * 2, 0.0, 1.0);
-		m_newO.m_bb.w = constrain<float>(m_newO.m_bb.y + m_bbSize * 2 + d, 0.0, 1.0);
-		IF_(m_newO.m_bb.area() < m_minArea);
 
-		m_newO.m_dist = m_pDV->d(&m_newO.m_bb);
-		m_newO.m_topClass = unpack_int16(&pCMD[5], false);
+		m_newO.setX((float) pCMD[3] / 255.0);
+		m_newO.setY((float) pCMD[3] / 255.0);
+		m_newO.setWidth(m_bbSize * 2);
+		m_newO.setHeight(m_bbSize * 2);
+		IF_(m_newO.area() < m_pU->m_rArea.x);
+
+		vFloat4 bb = m_newO.getBB2D();
+		m_newO.setZ(m_pDV->d(&bb));
+		m_newO.setTopClass(unpack_int16(&pCMD[5], false), 1.0);
 	}
-	else if(cmd == SORTINGCTRL_STATE)
+	else if (cmd == SORTINGCTRL_STATE)
 	{
 		m_iState = pCMD[3];
 	}

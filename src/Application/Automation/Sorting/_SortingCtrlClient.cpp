@@ -96,7 +96,7 @@ void _SortingCtrlClient::update(void)
 //		if(m_COO.m_id >= 0)
 //		{
 //			if(m_tStamp - m_tLastSent > m_tSendInt)
-//				this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//				this->sendBB(m_COO.m_id, m_COO.getTopClass(), m_COO.m_bb);
 //		}
 
 		this->autoFPSto();
@@ -120,7 +120,7 @@ void _SortingCtrlClient::onBtn(int id, int state)
 	if(id >= 0 && id <= 4)
 	{
 		m_COO.setTopClass(id, 1.0);
-//		this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//		this->sendBB(m_COO.m_id, m_COO.getTopClass(), m_COO.m_bb);
 	}
 	else if(id == 5)
 	{
@@ -182,7 +182,7 @@ void _SortingCtrlClient::onMouse(int event, float x, float y)
 		}
 	}
 
-//	this->sendBB(m_COO.m_id, m_COO.m_topClass, m_COO.m_bb);
+//	this->sendBB(m_COO.m_id, m_COO.getTopClass(), m_COO.m_bb);
 }
 
 void _SortingCtrlClient::draw(void)

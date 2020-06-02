@@ -77,15 +77,14 @@ void _ArUco::detect(void)
 	Mat m = *m_pV->BGR()->m();
 	IF_(m.empty());
 
-	float bW = 1.0/(float)m.cols;
-	float bH = 1.0/(float)m.rows;
-
     std::vector<int> vID;
     std::vector<std::vector<cv::Point2f> > vvCorner;
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
 	_Object o;
 	float dx,dy;
+	float kx = 1.0/(float)m.cols;
+	float ky = 1.0/(float)m.rows;
 
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
@@ -106,7 +105,7 @@ void _ArUco::detect(void)
 			pV[j].y = vvCorner[i][j].y;
 		}
 		o.setVertices2D(pV,4);
-		o.normalize(bW, bH);
+		o.scale(kx, ky);
 
 		// distance
 		if(m_pDV)
@@ -118,8 +117,8 @@ void _ArUco::detect(void)
 		// center position
 		dx = (float)(pLT.x + pRT.x + pRB.x + pLB.x)*0.25;
 		dy = (float)(pLT.y + pRT.y + pRB.y + pLB.y)*0.25;
-		o.setX(dx * bW);
-		o.setY(dy * bH);
+		o.setX(dx * kx);
+		o.setY(dy * ky);
 
 		// radius
 		dx -= pLT.x;
@@ -156,22 +155,22 @@ void _ArUco::draw(void)
 	IF_(m_pU->size() <= 0);
 
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((Window*) this->m_pWindow)->getFrame()->m();
 
 	i=0;
 	while((pO = m_pU->get(i++)) != NULL)
 	{
-		Point pCenter = Point(pO->getX() * pMat->cols,
-							  pO->getY() * pMat->rows);
-		circle(*pMat, pCenter, pO->getRadius(), Scalar(255, 255, 0), 2);
+		Point pCenter = Point(pO->getX() * pM->cols,
+							  pO->getY() * pM->rows);
+		circle(*pM, pCenter, pO->getRadius(), Scalar(255, 255, 0), 2);
 
-		putText(*pMat, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
+		putText(*pM, "iTag=" + i2str(pO->getTopClass()) + ", angle=" + i2str(pO->getRoll()),
 				pCenter,
 				FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0, 255, 0), 0);
 
 		double rad = -pO->getRoll() * DEG_2_RAD;
 		Point pD = Point(pO->getRadius()*sin(rad), pO->getRadius()*cos(rad));
-		line(*pMat, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
+		line(*pM, pCenter + pD, pCenter - pD, Scalar(0, 0, 255), 2);
 	}
 }
 

@@ -11,11 +11,12 @@ _ObjectArray::_ObjectArray()
 {
 	m_pO = NULL;
 	m_nO = 0;
-	m_nBuf = 0;
+	m_nBuf = 16;
 }
 
 _ObjectArray::~_ObjectArray()
 {
+	DEL(m_pO);
 }
 
 bool _ObjectArray::init(void* pKiss)

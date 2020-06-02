@@ -131,7 +131,7 @@ void _SlideWindow::detect(void)
 		o.init();
 		o.setBB2D(bb);
 
-		Rect r = bb2Rect(o.getBB2DNormalizedBy(m_mDin.cols, m_mDin.rows));
+		Rect r = bb2Rect(o.getBB2Dscaled(m_mDin.cols, m_mDin.rows));
 		Mat mDinR = m_mDin(r);
 		int nP = cv::countNonZero(mDinR);
 		IF_CONT((float )nP / (float )r.area() < m_dMinArea);
@@ -159,7 +159,7 @@ void _SlideWindow::draw(void)
 		Window *pWin = (Window*) this->m_pWindow;
 		Mat *pM = pWin->getFrame()->m();
 
-		Rect r = bb2Rect(normalizeBB(m_vRoi,pM->cols,pM->rows));
+		Rect r = bb2Rect(bbScale(m_vRoi,pM->cols,pM->rows));
 		rectangle(*pM, r, Scalar(0, 255, 0), 1);
 	}
 

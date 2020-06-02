@@ -79,17 +79,17 @@ void _AP_avoid::updateTarget(void)
 {
 	IF_(check()<0);
 
-	OBJECT o;
+	_Object o;
 	o.init();
-	OBJECT* pO;
+	_Object* pO;
 	int i=0;
-	while((pO = m_pDet->at(i++)) != NULL)
+	while((pO = m_pDet->m_pU->get(i++)) != NULL)
 	{
 		o = *pO;
-		o.m_topClass = 0;
+		o.setTopClass(0);
 	}
 
-	if(o.m_topClass<0)
+	if(o.getTopClass()<0)
 	{
 		m_obs.init();
 		LOG_I("Target not found");
@@ -113,19 +113,16 @@ void _AP_avoid::draw(void)
 	this->_AutopilotBase::draw();
 	IF_(check()<0);
 
-	string msg = "nTarget=" + i2str(m_pDet->size());
+	string msg = "nTarget=" + i2str(m_pDet->m_pU->size());
 	addMsg(msg);
 
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	IF_(m_obs.m_topClass<0);
+	IF_(m_obs.getTopClass()<0);
 
-	vInt2 cs;
-	cs.x = pMat->cols;
-	cs.y = pMat->rows;
-	Rect r = convertBB<vInt4>(convertBB(m_obs.m_bb, cs));
-	rectangle(*pMat, r, Scalar(0,0,255), 3);
+	Rect r = bb2Rect(m_obs.getBB2Dscaled(pM->cols, pM->rows));
+	rectangle(*pM, r, Scalar(0,0,255), 3);
 
 }
 

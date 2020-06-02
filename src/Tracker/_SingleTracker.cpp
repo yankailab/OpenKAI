@@ -104,7 +104,7 @@ void _SingleTracker::track(void)
 
 		m_pTracker->update(m, m_rBB);
 
-		m_bb = normalizeBB(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
+		m_bb = bbScale(rect2BB<vFloat4>(m_rBB), 1.0/m.cols, 1.0/m.rows);
 	}
 
 }

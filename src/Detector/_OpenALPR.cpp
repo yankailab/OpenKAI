@@ -151,7 +151,7 @@ bool _OpenALPR::detect(void)
 			o.m_pV[p].y = plate.plate_points[p].y;
 		}
 		o.m_nV = 4;
-		o.normalizeBB(cs);
+		o.bbScale(cs);
 		//TODO
 
 		this->add(&o);

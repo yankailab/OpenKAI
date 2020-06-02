@@ -87,7 +87,7 @@ bool _TrackerBase::startTrack(vFloat4& bb)
 	bb.z = constrain(bb.z * mBig, 0.0f, 1.0f);
 	bb.w = constrain(bb.w * mBig, 0.0f, 1.0f);
 
-	Rect rBB = bb2Rect(normalizeBB(bb, pM->cols, pM->rows));
+	Rect rBB = bb2Rect(bbScale(bb, pM->cols, pM->rows));
 	IF_F(rBB.width == 0 || rBB.height == 0);
 
 	m_newBB = rBB;

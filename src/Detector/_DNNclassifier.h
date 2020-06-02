@@ -25,7 +25,7 @@ public:
 	bool start(void);
 	void draw(void);
 	int check(void);
-	bool classify(Mat m, _Object* pO, float minConfidence);
+	bool classify(Mat m, _Object* pO, float minConfidence=0.0);
 
 private:
 	void classify(void);

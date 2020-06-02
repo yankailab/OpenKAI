@@ -114,7 +114,7 @@ void _Cascade::detectGPU(void)
 	for (int i = 0; i < vRect.size(); i++)
 	{
 		o.setBB2D(rect2BB<vFloat4>(vRect[i]));
-		o.normalize(kx, ky);
+		o.scale(kx, ky);
 		o.setTopClass(0, 1.0);
 		o.setZ(0.0);
 		o.setText(m_className);
@@ -149,7 +149,7 @@ void _Cascade::detectCPU(void)
 	for (int i = 0; i < vRect.size(); i++)
 	{
 		o.setBB2D(rect2BB<vFloat4>(vRect[i]));
-		o.normalize(kx, ky);
+		o.scale(kx, ky);
 		o.setTopClass(0, 1.0);
 		o.setZ(0.0);
 		o.setText(m_className);

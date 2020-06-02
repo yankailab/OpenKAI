@@ -190,12 +190,11 @@ bool _ANR::cn(void)
 {
 	IF__(check()<0, false);
 
-	OBJECT* pO;
+	_Object* pO;
 	int i = 0;
-	while ((pO = m_pDcn->at(i++)) != NULL)
+	while ((pO = m_pDcn->m_pU->get(i++)) != NULL)
 	{
-		vFloat4 bb = pO->m_bb;
-		string s = string(pO->m_pText);
+		string s = string(pO->getText());
 		s = deleteNonASCII(s.c_str());
 
 		bool bMatch = false;
@@ -210,7 +209,7 @@ bool _ANR::cn(void)
 
 		if(bMatch)
 		{
-			m_cnPrefixBB = bb;
+			m_cnPrefixBB = pO->getBB2D();
 			m_tStampCNprefix = getTimeUsec();
 			break;
 		}
@@ -224,15 +223,15 @@ bool _ANR::cn(void)
 
 	string cn;
 	i=0;
-	while ((pO = m_pDcn->at(i++)) != NULL)
+	while ((pO = m_pDcn->m_pU->get(i++)) != NULL)
 	{
-		vFloat4 bb = pO->m_bb;
+		vFloat4 bb = pO->getBB2D();
 
 		IF_CONT(bb.x < m_cnPrefixBB.x);
 		IF_CONT(abs(bb.y - m_cnPrefixBB.y) > m_cnPosMargin);
 		IF_CONT(abs(bb.w - m_cnPrefixBB.w) > m_cnPosMargin);
 
-		string s = string(pO->m_pText);
+		string s = string(pO->getText());
 		s = char2Number(s.c_str());
 		s = deleteNonNumber(s.c_str());
 		IF_CONT(s.length() < m_nCNdigit);

@@ -198,10 +198,10 @@ void _DNNdetect::detectYolo(void)
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(vClassID[idx], (float) vConfidence[idx]);
 		o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
-		o.normalize(kx, ky);
+		o.scale(kx, ky);
 
 		m_pU->add(o);
-		LOG_I("Class: " + i2str(o.m_topClass));
+		LOG_I("Class: " + i2str(o.getTopClass()));
 	}
 
 	m_pU->updateObj();
@@ -239,7 +239,7 @@ void _DNNdetect::detect(void)
 		o.setBB2D(bb);
 
 		m_pU->add(o);
-		LOG_I("Class: " + i2str(o.m_topClass));
+		LOG_I("Class: " + i2str(o.getTopClass()));
 	}
 
 	m_pU->updateObj();
@@ -259,11 +259,11 @@ void _DNNdetect::draw(void)
 	int i = 0;
 	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		int iClass = pO->m_topClass;
+		int iClass = pO->getTopClass();
 		IF_CONT(m_iClassDraw >= 0 && iClass != m_iClassDraw);
 		IF_CONT(iClass < 0);
 
-		Rect r = bb2Rect(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
+		Rect r = bb2Rect(pO->getBB2Dscaled(pMat->cols, pMat->rows));
 		rectangle(*pMat, r, col, 1);
 
 		if (iClass < m_nClass)

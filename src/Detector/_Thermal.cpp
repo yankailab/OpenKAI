@@ -95,7 +95,7 @@ void _Thermal::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setBB2D(rect2BB < vFloat4 > (r));
-		o.normalize(m_mR.cols, m_mR.rows);
+		o.scale(m_mR.cols, m_mR.rows);
 		o.setTopClass(0, o.area());
 
 		m_pU->add(o);

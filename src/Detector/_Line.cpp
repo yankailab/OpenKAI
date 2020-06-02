@@ -145,7 +145,7 @@ void _Line::detect(void)
 	o.init();
 	o.m_tStamp = m_tStamp;
 	o.setBB2D(rect2BB <vFloat4> (rBB));
-	o.normalize(kx,ky);
+	o.scale(kx,ky);
 	o.setTopClass(0, 1.0);
 	m_pU->add(o);
 

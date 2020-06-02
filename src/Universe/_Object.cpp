@@ -239,7 +239,7 @@ vFloat4 _Object::getBB2D(void)
 	return bb;
 }
 
-vFloat4 _Object::getBB2DNormalizedBy(float kx, float ky)
+vFloat4 _Object::getBB2Dscaled(float kx, float ky)
 {
 	float hw = m_vDim.x * 0.5;
 	float hh = m_vDim.y * 0.5;
@@ -253,7 +253,7 @@ vFloat4 _Object::getBB2DNormalizedBy(float kx, float ky)
 	return bb;
 }
 
-void _Object::normalize(float kx, float ky, float kz)
+void _Object::scale(float kx, float ky, float kz)
 {
 	m_vPos.x *= kx;
 	m_vPos.y *= ky;

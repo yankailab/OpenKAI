@@ -68,7 +68,7 @@ public:
 	vFloat2 m_rArea;
 	vFloat2 m_rW;
 	vFloat2 m_rH;
-	float m_bbScale;
+	float m_bbExpand;
 	bool m_bMerge;
 	float m_mergeOverlap;
 	vFloat4 m_vRoi;

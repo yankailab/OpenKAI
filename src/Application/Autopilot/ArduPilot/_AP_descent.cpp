@@ -118,10 +118,10 @@ bool _AP_descent::findTarget(void)
 	int i = 0;
 	while ((pO = m_pDet->m_pU->get(i++)) != NULL)
 	{
-		IF_CONT(pO->m_topClass <= iTag);
+		IF_CONT(pO->getTopClass() <= iTag);
 
 		tO = pO;
-		iTag = pO->m_topClass;
+		iTag = pO->getTopClass();
 	}
 
 	NULL_F(tO);
@@ -147,7 +147,7 @@ bool _AP_descent::findTarget(void)
 	{
 		for(LAND_TAG& tag : pLand->m_vTag)
 		{
-			IF_CONT(tag.m_iTag != tO->m_topClass);
+			IF_CONT(tag.m_iTag != tO->getTopClass());
 
 			m_vP.w = Hdg(m_vP.w + tag.m_angle);
 			break;
@@ -180,7 +180,7 @@ void _AP_descent::draw(void)
 	IF_(!checkWindow());
 	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-	Rect r = bb2Rect(normalizeBB(m_vTargetBB, pMat->cols, pMat->rows));
+	Rect r = bb2Rect(bbScale(m_vTargetBB, pMat->cols, pMat->rows));
 	rectangle(*pMat, r, Scalar(0,0,255), 2);
 }
 

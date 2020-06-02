@@ -124,7 +124,7 @@ void _Bullseye::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setBB2D(rect2BB<vFloat4>(r));
-		o.normalize(kx,ky);
+		o.scale(kx,ky);
 		o.setTopClass(0, o.area());
 
 		m_pU->add(o);

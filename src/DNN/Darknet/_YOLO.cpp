@@ -136,7 +136,7 @@ bool _YOLO::detect(void)
 		obj.setBB(iBB,cSize);
 
 		this->add(&obj);
-		LOG_I("Class: " + i2str(obj.m_topClass));
+		LOG_I("Class: " + i2str(obj.getTopClass()));
 	}
 
 	return true;

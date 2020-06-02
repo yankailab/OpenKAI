@@ -14,7 +14,7 @@ _Universe::_Universe()
 	m_rW.init(-FLT_MAX, FLT_MAX);
 	m_rH.init(-FLT_MAX, FLT_MAX);
 
-	m_bbScale = -1.0;
+	m_bbExpand = -1.0;
 	m_bMerge = false;
 	m_mergeOverlap = 0.8;
 	m_vRoi.init(0.0, 0.0, 1.0, 1.0);
@@ -42,7 +42,7 @@ bool _Universe::init(void* pKiss)
 	pK->v("rArea", &m_rArea);
 	pK->v("rW", &m_rW);
 	pK->v("rH", &m_rH);
-	pK->v("bbScale", &m_bbScale);
+	pK->v("bbExpand", &m_bbExpand);
 	pK->v("bMerge", &m_bMerge);
 	pK->v("mergeOverlap", &m_mergeOverlap);
 	pK->v("vRoi", &m_vRoi);
@@ -124,7 +124,7 @@ _Object* _Universe::add(_Object& o)
 //		{
 //			OBJECT* pO = &m_pNext->get(i);
 //			if(!pO)break;
-//			IF_CONT(pO->m_topClass != o.m_topClass);
+//			IF_CONT(pO->m_topClass != o.getTopClass());
 //			IF_CONT(nIoU(BB, pO->m_bb) < m_mergeOverlap);
 //
 //			pO->m_bb.x = small(pNewO->m_bb.x, pO->m_bb.x);
@@ -151,8 +151,8 @@ int _Universe::size(void)
 	return m_pPrev->size();
 }
 
-//void _Universe::updateStatistics(void)
-//{
+void _Universe::updateStatistics(void)
+{
 //	int i;
 //	for(i=0; i<m_nClass; i++)
 //		m_vClass[i].m_n = 0;
@@ -168,7 +168,7 @@ int _Universe::size(void)
 //
 //		m_vClass[iClass].m_n++;
 //	}
-//}
+}
 
 void _Universe::draw(void)
 {
@@ -183,7 +183,7 @@ void _Universe::draw(void)
 	Scalar oCol;
 	Scalar bCol = Scalar(100,100,100);
 	int col;
-	int colStep = 255/m_nClass;
+	int colStep = 20;
 	_Object* pO;
 	int i=0;
 	while((pO = get(i++)) != NULL)
@@ -194,7 +194,7 @@ void _Universe::draw(void)
 		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
 		//bb
-		Rect r = bb2Rect<vFloat4>(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
+		Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pMat->cols, pMat->rows));
 		rectangle(*pMat, r, oCol, 1);
 
 		//position
@@ -206,16 +206,16 @@ void _Universe::draw(void)
 		}
 
 		//class
-		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
-		{
-			string oName = m_vClass[iClass].m_name;
-			if (oName.length()>0)
-			{
-				putText(*pMat, oName,
-						Point(r.x + 15, r.y + 50),
-						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
-			}
-		}
+//		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
+//		{
+//			string oName = m_vClass[iClass].m_name;
+//			if (oName.length()>0)
+//			{
+//				putText(*pMat, oName,
+//						Point(r.x + 15, r.y + 50),
+//						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+//			}
+//		}
 
 		//text
 		if(m_bDrawText)
@@ -231,22 +231,22 @@ void _Universe::draw(void)
 	}
 
 	//roi
-	Rect roi = bb2Rect(normalizeBB(m_vRoi, pMat->cols, pMat->rows));
+	Rect roi = bb2Rect(bbScale(m_vRoi, pMat->cols, pMat->rows));
 	rectangle(*pMat, roi, Scalar(0,255,255), 1);
 
 	IF_(!m_bDrawStatistics);
 	updateStatistics();
 
-	for(i=0; i<m_nClass; i++)
-	{
-		OBJ_CLASS* pC = &m_vClass[i];
-		col = colStep * i;
-		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
-
-		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
-				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
-				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
-	}
+//	for(i=0; i<m_nClass; i++)
+//	{
+//		OBJ_CLASS* pC = &m_vClass[i];
+//		col = colStep * i;
+//		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
+//
+//		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
+//				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
+//				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
+//	}
 #endif
 
 }

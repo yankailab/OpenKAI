@@ -191,7 +191,7 @@ inline double bearing(double lat1, double lon1, double lat2, double lon2)
     return bearing;
 }
 
-template <typename T> inline T bbScale(T& bb, float k)
+template <typename T> inline T bbExpand(T& bb, float k)
 {
 	float s = abs(1.0 - k) * 0.5;
 	float dW = bb.width() * s;
@@ -217,7 +217,7 @@ template <typename T> inline T bbScale(T& bb, float k)
 	return B;
 }
 
-template <typename T> inline T normalizeBB(T bb, float kx, float ky)
+template <typename T> inline T bbScale(T bb, float kx, float ky)
 {
 	T v;
 	v.x = bb.x * kx;

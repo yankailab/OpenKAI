@@ -171,7 +171,7 @@ void _DNNtext::detect(void)
 			pV[p].y = pP[p].y * ky;
 		}
 		o.setVertices2D(pV,4);
-		o.normalize(mIn.cols, mIn.rows);
+		o.scale(mIn.cols, mIn.rows);
 
 		m_pU->add(o);
 	}
@@ -247,7 +247,7 @@ void _DNNtext::ocr(void)
 	int i = 0;
 	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		Rect r = bb2Rect(pO->getBB2DNormalizedBy(mIn.cols, mIn.rows));
+		Rect r = bb2Rect(pO->getBB2Dscaled(mIn.cols, mIn.rows));
 		Mat mRoi = mIn(r);
 		Mat m;
 		string strO;
@@ -351,7 +351,7 @@ void _DNNtext::draw(void)
 		line(*pMat, Point2f(pV3->x, pV3->y),
 					Point2f(pV0->x, pV0->y), col, t);
 
-		Rect r = bb2Rect(pO->getBB2DNormalizedBy(pMat->cols, pMat->rows));
+		Rect r = bb2Rect(pO->getBB2Dscaled(pMat->cols, pMat->rows));
 		rectangle(*pMat, r, col, t+1);
 
 #ifdef USE_OCR

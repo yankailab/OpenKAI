@@ -105,7 +105,7 @@ void _DepthSegment::detect(void)
 			o.init();
 			o.m_tStamp = m_tStamp;
 			o.setBB2D(rect2BB<vFloat4>(re));
-			o.normalize(kx, ky);
+			o.scale(kx, ky);
 			o.setZ(r);
 			o.setTopClass(0, o.area());
 
