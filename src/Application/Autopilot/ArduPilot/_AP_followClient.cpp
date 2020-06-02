@@ -42,7 +42,7 @@ bool _AP_followClient::init(void *pKiss)
 	pK->v("dBBsize", &m_dBBsize);
 	pK->v("tIntSend", &m_ieSend.m_tInterval);
 
-	Startup *pS = (Startup*) pK->root()->o("APP")->m_pInst;
+	Startup *pS = (Startup*) pK->root()->child("APP")->m_pInst;
 	pS->addKeyCallback(callbackKey, this);
 
 	string iName;

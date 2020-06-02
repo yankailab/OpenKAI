@@ -36,7 +36,7 @@ bool _AP_follow::init(void* pKiss)
 	pK->v("iClass",&m_iClass);
 //	pK->v("tIntSend",&m_ieSend.m_tInterval);
 
-	Kiss* pG = pK->o("mount");
+	Kiss* pG = pK->child("mount");
 	if(!pG->empty())
 	{
 		pG->v("bEnable", &m_apMount.m_bEnable);

@@ -24,7 +24,7 @@ bool _AP_goto::init(void* pKiss)
 
 	pK->v("iRelayLED",&m_iRelayLED);
 
-	Kiss* pG = pK->o("mount");
+	Kiss* pG = pK->child("mount");
 	if(!pG->empty())
 	{
 		double p=0, r=0, y=0;

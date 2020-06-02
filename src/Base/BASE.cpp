@@ -37,7 +37,7 @@ bool BASE::init(void* pKiss)
 	IF_F(name.empty());
 
 	bool bLog = false;
-	pK->root()->o("APP")->v("bLog",&bLog);
+	pK->root()->child("APP")->v("bLog",&bLog);
 	if(bLog)
 	{
 		pK->v("bLog",&m_bLog);

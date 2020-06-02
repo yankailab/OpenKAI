@@ -42,7 +42,7 @@ bool Startup::start(Kiss* pKiss)
 	signal(SIGINT, signalHandler);
 
 	NULL_F(pKiss);
-	Kiss* pApp = pKiss->root()->o("APP");
+	Kiss* pApp = pKiss->root()->child("APP");
 	IF_F(pApp->empty());
 	pApp->m_pInst = (BASE*)this;
 
@@ -120,13 +120,14 @@ bool Startup::start(Kiss* pKiss)
 bool Startup::createAllInst(Kiss* pKiss)
 {
 	NULL_F(pKiss);
-	Kiss** pItr = pKiss->root()->getChildItr();
 
 	OK_INST o;
 	int i = 0;
-	while (pItr[i])
+	while (1)
 	{
-		Kiss* pK = pItr[i++];
+		Kiss* pK = pKiss->root()->child(i++);
+		if(pK->empty())break;
+
 		IF_CONT(pK->m_class == "Startup");
 
 		o.m_pInst = m_module.createInstance(pK);

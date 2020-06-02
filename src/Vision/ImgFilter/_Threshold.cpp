@@ -28,11 +28,11 @@ bool _Threshold::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	Kiss** ppM = pK->getChildItr();
-	int i=0;
-	while (ppM[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pM = ppM[i++];
+		Kiss* pM = pK->child(i++);
+		if(pM->empty())break;
 
 		IMG_THRESHOLD t;
 		t.init();

@@ -17,11 +17,12 @@ bool _AP_servo::init(void* pKiss)
 	IF_F(!this->_AutopilotBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	Kiss** pItr = pK->getChildItr();
-	int i=0;
-	while (pItr[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pS = pItr[i++];
+		Kiss* pS = pK->child(i++);
+		if(pS->empty())break;
+
 		AP_SERVO s;
 		s.init();
 		pS->v("iChan",&s.m_iChan);

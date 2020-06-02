@@ -22,7 +22,7 @@ bool _AP_RTH::init(void* pKiss)
 
 	pK->v("kZsensor", &m_kZsensor);
 
-	Kiss* pG = pK->o("mount");
+	Kiss* pG = pK->child("mount");
 	if(!pG->empty())
 	{
 		double p=0, r=0, y=0;

@@ -49,13 +49,15 @@ bool _AP_base::init(void* pKiss)
 	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
 	NULL_F(m_pMav);
 
-	Kiss* pM = pK->o("mavMsgInterval");
+	Kiss* pM = pK->child("mavMsgInterval");
 	NULL_T(pM);
-	Kiss** pItr = pM->getChildItr();
+
 	int i = 0;
-	while (pItr[i])
+	while (1)
 	{
-		Kiss* pMI = pItr[i++];
+		Kiss* pMI = pM->child(i++);
+		if(pMI->empty())break;
+
 		int id;
 		float tInt;
 		pMI->v("id", &id);
@@ -63,9 +65,7 @@ bool _AP_base::init(void* pKiss)
 		tInt *= USEC_1SEC;
 
 		if(!m_pMav->setMsgInterval(id,tInt))
-		{
 			LOG_E("Inteval msg id = " + i2str(id) + " not found");
-		}
 	}
 
 	return true;

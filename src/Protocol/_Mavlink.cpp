@@ -74,13 +74,12 @@ bool _Mavlink::init(void* pKiss)
 	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pIO, "_IOBase not found");
 
-	Kiss** pItr = pK->getChildItr();
 	int i = 0;
-	while (pItr[i])
+	while (1)
 	{
-		Kiss* pP = pItr[i];
 		IF_F(i >= MAV_N_PEER);
-		i++;
+		Kiss* pP = pK->child(i++);
+		if(pP->empty())break;
 
 		MAVLINK_PEER mP;
 		mP.init();

@@ -33,13 +33,12 @@ bool _AP_depthVision::init(void* pKiss)
 	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
-	Kiss** pItrDS = pK->getChildItr();
 	m_nROI = 0;
-
-	while (pItrDS[m_nROI])
+	while (1)
 	{
-		Kiss* pKs = pItrDS[m_nROI];
 		IF_F(m_nROI >= N_DEPTH_ROI);
+		Kiss* pKs = pK->child(m_nROI);
+		if(pKs->empty())break;
 
 		DEPTH_ROI* pR = &m_pROI[m_nROI];
 		pR->init();

@@ -32,15 +32,15 @@ bool _CutOut::init(void* pKiss)
 	pK->v("extImgOut",&m_extImgOut);
 	pK->v("nMinPixel",&m_nMinPixel);
 
-	Kiss* pDir = pK->o("dir");
+	Kiss* pDir = pK->child("dir");
 	IF_T(pDir->empty());
-	Kiss** pItr = pDir->getChildItr();
 
 	CutOutDir D;
-	unsigned int i = 0;
-	while (pItr[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pCD = pItr[i++];
+		Kiss* pCD = pDir->child(i++);
+		if(pCD->empty())break;
 
 		D.init();
 		pCD->v("dirRGBIn",&D.m_dirRGBIn);

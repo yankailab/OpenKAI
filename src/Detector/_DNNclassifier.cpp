@@ -40,15 +40,16 @@ bool _DNNclassifier::init(void *pKiss)
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);
 
-	Kiss *pR = pK->o("ROI");
-	Kiss **pItr;
+	Kiss *pR = pK->child("ROI");
 	vFloat4 r;
 	if (pR)
 	{
-		pItr = pR->getChildItr();
 		int i = 0;
-		while ((pR = pItr[i++]))
+		while (1)
 		{
+			pR = pK->child("ROI")->child(i++);
+			if(pR->empty())break;
+
 			r.init();
 			pR->v("x", &r.x);
 			pR->v("y", &r.y);

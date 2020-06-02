@@ -30,15 +30,16 @@ bool _MissionControl::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	Kiss* pCC = pK->o("mission");
+	Kiss* pCC = pK->child("mission");
 	IF_T(pCC->empty());
-	Kiss** pItr = pCC->getChildItr();
 
 	MISSION_INST M;
-	unsigned int i = 0;
-	while (pItr[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pKM = pItr[i++];
+		Kiss* pKM = pCC->child(i++);
+		if(pKM->empty())break;
+
 		M.init();
 
 		//Add action modules below

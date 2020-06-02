@@ -32,20 +32,20 @@ bool Land::init(void* pKiss)
 	pK->v("hdg",&m_hdg);
 	pK->v("speed",&m_speed);
 
-	Kiss* pT = pK->o("tag");
+	Kiss* pT = pK->child("tag");
 	IF_T(pT->empty());
-	Kiss** ppT = pT->getChildItr();
 
 	LAND_TAG t;
-	unsigned int i = 0;
-	while (ppT[i])
+	Kiss* pC;
+	int i = 0;
+	while (1)
 	{
-		pT = ppT[i++];
+		pC = pT->child(i++);
+		if(pC->empty())break;
 
 		t.init();
-		pT->v("iTag",&t.m_iTag);
-		pT->v("angle",&t.m_angle);
-
+		pC->v("iTag",&t.m_iTag);
+		pC->v("angle",&t.m_angle);
 		m_vTag.push_back(t);
 	}
 

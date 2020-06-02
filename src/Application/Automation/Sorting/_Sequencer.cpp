@@ -28,24 +28,26 @@ bool _Sequencer::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	Kiss* pAction = pK->o("action");
+	Kiss* pAction = pK->child("action");
 	NULL_Fl(pAction, "action not found");
 
-	Kiss** ppAction = pAction->getChildItr();
-	int i=0;
-	while (ppAction[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pActionI = ppAction[i++];
+		Kiss* pActionI = pAction->child(i++);
+		if(pActionI->empty())break;
+
 		SEQ_ACTION sa;
 		sa.init();
 		pActionI->v("name",&sa.m_name);
 		pActionI->v("dT", &sa.m_dT);
 
-		Kiss** ppActuator = pActionI->getChildItr();
-		int j=0;
-		while (ppActuator[j])
+		int j = 0;
+		while (1)
 		{
-			Kiss* pActuatorI = ppActuator[j++];
+			Kiss* pActuatorI = pActionI->child(j++);
+			if(pActuatorI->empty())break;
+
 			SEQ_ACTUATOR aA;
 			aA.init();
 

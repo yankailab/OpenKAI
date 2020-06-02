@@ -7,8 +7,6 @@
 
 using namespace std;
 
-#define N_CHILDREN 128
-
 namespace kai
 {
 
@@ -19,14 +17,16 @@ public:
 	~Kiss(void);
 
 	bool parse(string* pStr);
-	Kiss* o(const string& name);
 	JSON* json(void);
-	Kiss** getClassItr(const string& className);
-	Kiss** getChildItr(void);
-	void* getChildInst(const string& name);
+
+	Kiss* child(const string& name);
+	Kiss* child(int i);
 	Kiss* root(void);
 	Kiss* parent(void);
 	bool empty(void);
+
+	void* getChildInst(const string& name);
+	void* getInst(const string& name);
 
 	template <typename T> bool v(const string& name, T* pVal)
 	{
@@ -50,14 +50,10 @@ public:
 	BASE* m_pInst;
 
 	Kiss* m_pParent;
-	int m_nChild;
-	Kiss* m_pChild[N_CHILDREN];
+	vector<Kiss*> m_vChild;
 
 	Kiss* m_pNULL;
 	bool m_bNULL;
-
-	Kiss* m_ppItr[N_CHILDREN];
-
 };
 
 }

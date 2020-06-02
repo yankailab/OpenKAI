@@ -50,7 +50,7 @@ bool Window::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->root()->o("APP")->v("bWindow", &m_bWindow);
+	pK->root()->child("APP")->v("bWindow", &m_bWindow);
 	if (!m_bWindow)
 		LOG_I("Window mode is disabled. Turn \"bWindow\":1 to enable");
 
@@ -140,14 +140,15 @@ bool Window::init(void* pKiss)
 		setMouseCallback(*this->getName(), callBackMouse, this);
 	}
 
-	Kiss* pB = pK->o("button");
-	if(pB)
+	Kiss* pB = pK->child("button");
+	if(!pB->empty())
 	{
-		Kiss** ppB = pB->getChildItr();
-
-		int i=0;
-		while((pB=ppB[i++]))
+		int i = 0;
+		while(1)
 		{
+			pB = pK->child("button")->child(i++);
+			if(pB->empty())break;
+
 			WINDOW_BUTTON wb;
 			wb.init();
 			pB->v("id",&wb.m_id);

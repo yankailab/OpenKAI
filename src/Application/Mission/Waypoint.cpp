@@ -32,11 +32,11 @@ bool Waypoint::init(void* pKiss)
 
 	pK->v("loop",(int*)&m_loop);
 
-	Kiss** ppP = pK->getChildItr();
 	int i = 0;
-	while (ppP[i])
+	while (1)
 	{
-		Kiss* pP = ppP[i++];
+		Kiss* pP = pK->child(i++);
+		if(pP->empty())break;
 
 		MISSION_WAYPOINT p;
 		p.init();

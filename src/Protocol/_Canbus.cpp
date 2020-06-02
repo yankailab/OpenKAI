@@ -19,12 +19,12 @@ bool _Canbus::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	Kiss** pItr = pK->getChildItr();
 	m_nCanData = 0;
-	while (pItr[m_nCanData])
+	while (1)
 	{
-		Kiss* pAddr = pItr[m_nCanData];
 		IF_F(m_nCanData >= N_CANDATA);
+		Kiss* pAddr = pK->child(m_nCanData);
+		if(pAddr->empty())break;
 
 		m_pCanData[m_nCanData].init();
 		F_ERROR_F(pAddr->v("addr", (int*)&(m_pCanData[m_nCanData].m_addr)));

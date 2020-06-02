@@ -31,13 +31,12 @@ bool _AP_distLidar::init(void* pKiss)
 	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
 	IF_Fl(!m_pDS,iName + " not found");
 
-	Kiss** pItrDS = pK->getChildItr();
 	m_nSection = 0;
-
-	while (pItrDS[m_nSection])
+	while (1)
 	{
-		Kiss* pKs = pItrDS[m_nSection];
 		IF_F(m_nSection >= N_LIDAR_SECTION);
+		Kiss* pKs = pK->child(m_nSection);
+		if(pKs->empty())break;
 
 		DIST_LIDAR_SECTION* pS = &m_pSection[m_nSection];
 		pS->init();

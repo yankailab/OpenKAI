@@ -64,19 +64,17 @@ bool _Lane::init(void* pKiss)
 
 	m_mOverhead = Mat(Size(m_sizeOverhead.x, m_sizeOverhead.y), CV_8UC3);
 
-	Kiss* pO = NULL;
-	Kiss** pItr = NULL;
-
 	// color filters
-	Kiss* pKF = pK->o("colorFilter");
+	Kiss* pKF = pK->child("colorFilter");
 	NULL_Fl(pKF,"colorFilter not found");
 
-	pItr = pKF->getChildItr();
+	Kiss* pO;
 	m_nFilter = 0;
-	while (pItr[m_nFilter])
+	while (1)
 	{
 		IF_F(m_nFilter >= N_LANE_FILTER);
-		pO = pItr[m_nFilter];
+		pO = pKF->child(m_nFilter);
+		if(pO->empty())break;
 
 		LANE_FILTER* pF = &m_pFilter[m_nFilter];
 		F_INFO(pO->v("iColorSpace", &pF->m_iColorSpace));
@@ -95,15 +93,15 @@ bool _Lane::init(void* pKiss)
 	int nMed=0;
 	F_INFO(pK->v("nMed", &nMed));
 
-	Kiss* pKL = pK->o("lane");
+	Kiss* pKL = pK->child("lane");
 	NULL_Fl(pKL,"lane not found");
 
-	pItr = pKL->getChildItr();
 	m_nLane = 0;
-	while (pItr[m_nLane])
+	while (1)
 	{
 		IF_F(m_nLane >= N_LANE_FILTER);
-		pO = pItr[m_nLane];
+		pO = pKL->child(m_nLane);
+		if(pO->empty())break;
 
 		LANE* pLane = &m_pLane[m_nLane];
 		pLane->init(m_sizeOverhead.y,nAvr,nMed);

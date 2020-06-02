@@ -5,7 +5,6 @@ namespace kai
 
 Kiss::Kiss(void)
 {
-	m_nChild = 0;
 	m_class = "";
 	m_name = "";
 	m_bNULL = false;
@@ -16,15 +15,15 @@ Kiss::Kiss(void)
 
 Kiss::~Kiss(void)
 {
-	for(int i=0;i<m_nChild;i++)
-	{
-		DEL(m_pChild[i]);
-	}
+	for(Kiss* k : m_vChild)
+		DEL(k);
+
+	m_vChild.clear();
 }
 
 bool Kiss::parse(string* pStr)
 {
-	if (m_bNULL)return false;
+	IF_F(m_bNULL);
 
 	//Create NULL instance
 	if(m_pParent)
@@ -96,6 +95,11 @@ bool Kiss::parse(string* pStr)
 	return bInst;
 }
 
+JSON* Kiss::json(void)
+{
+	return &m_json;
+}
+
 void Kiss::trim(string* pStr)
 {
 	std::string::size_type k;
@@ -140,10 +144,7 @@ void Kiss::delComment(string* pStr)
 
 bool Kiss::addChild(string* pStr)
 {
-	if (m_bNULL)
-		return false;
-	if (m_nChild >= N_CHILDREN)
-		return false;
+	IF_F(m_bNULL);
 
 	Kiss* pChild = new Kiss();
 	pChild->m_pParent = this;
@@ -153,24 +154,29 @@ bool Kiss::addChild(string* pStr)
 		return false;
 	}
 
-	m_pChild[m_nChild] = pChild;
-	m_nChild++;
-
+	m_vChild.push_back(pChild);
 	return true;
 }
 
-Kiss* Kiss::o(const string& name)
+Kiss* Kiss::child(const string& name)
 {
-	if (m_bNULL)
-		return m_pNULL;
+	IF__(m_bNULL, m_pNULL);
 
-	for (int i = 0; i < m_nChild; i++)
+	for (Kiss* k : m_vChild)
 	{
-		if (m_pChild[i]->m_name == name)
-			return m_pChild[i];
+		if (k->m_name == name)
+			return k;
 	}
 
 	return m_pNULL;
+}
+
+Kiss* Kiss::child(int i)
+{
+	IF__(i < 0, m_pNULL);
+	IF__(i >= m_vChild.size(), m_pNULL);
+
+	return m_vChild[i];
 }
 
 Kiss* Kiss::root(void)
@@ -178,62 +184,38 @@ Kiss* Kiss::root(void)
 	Kiss* pRoot = this;
 
 	while(pRoot->m_pParent)
-	{
 		pRoot = pRoot->m_pParent;
-	}
 
 	return pRoot;
 }
 
 Kiss* Kiss::parent(void)
 {
+	IF__(!m_pParent, m_pNULL);
+
 	return m_pParent;
-}
-
-JSON* Kiss::json(void)
-{
-	return &m_json;
-}
-
-Kiss** Kiss::getClassItr(const string& className)
-{
-	if(className.empty())return NULL;
-
-	int i;
-	int nFound = 0;
-
-	//Find list with the class name
-	for(i=0; i<m_nChild; i++)
-	{
-		Kiss* pC = m_pChild[i];
-		IF_CONT(pC->m_class != className);
-
-		m_ppItr[nFound]=pC;
-		nFound++;
-
-		if(nFound == N_CHILDREN-1)break;
-	}
-
-	m_ppItr[nFound]=NULL;
-	nFound++;
-
-	return m_ppItr;
-}
-
-Kiss** Kiss::getChildItr(void)
-{
-	m_pChild[m_nChild]=NULL;
-
-	return m_pChild;
 }
 
 void* Kiss::getChildInst(const string& name)
 {
-	Kiss* pC = o(name);
+	Kiss* pC = child(name);
 	IF_N(!pC);
 	IF_N(pC->empty());
 
 	return pC->m_pInst;
+}
+
+void* Kiss::getInst(const string& name)
+{
+	vector<string> vName = splitBy(name, '.');
+	IF_N(vName.empty());
+
+	Kiss* pK = root();
+	for(string n : vName)
+		pK = pK->child(n);
+
+	IF_N(pK->empty());
+	return pK->m_pInst;
 }
 
 bool Kiss::empty(void)

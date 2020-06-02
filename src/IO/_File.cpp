@@ -23,7 +23,7 @@ bool _File::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	string presetDir = "";
-	F_INFO(pK->root()->o("APP")->v("presetDir", &presetDir));
+	F_INFO(pK->root()->child("APP")->v("presetDir", &presetDir));
 	F_INFO(pK->v("fileName", &m_name));
 	m_name = presetDir + m_name;
 	m_ioStatus = io_closed;

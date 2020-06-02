@@ -61,7 +61,7 @@ bool _ANR::init(void* pKiss)
 	pK->v("offsetRdigit",&m_offsetRdigit);
 	pK->v("wRdigit",&m_wRdigit);
 
-	Kiss* pA = pK->o("oalpr");
+	Kiss* pA = pK->child("oalpr");
 	if(pA)
 	{
 		int jpgQuality = 80;

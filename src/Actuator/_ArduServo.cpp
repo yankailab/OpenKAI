@@ -18,12 +18,13 @@ bool _ArduServo::init(void* pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	Kiss** pItr = pK->getChildItr();
 	ARDUSERVO_CHAN c;
-	unsigned int i = 0;
-	while (pItr[i])
+	int i = 0;
+	while (1)
 	{
-		Kiss* pC = pItr[i++];
+		Kiss* pC = pK->child(i++);
+		if(pC->empty())break;
+
 		c.init();
 		pC->v("pwmL",&c.m_pwmL);
 		pC->v("pwmH",&c.m_pwmH);

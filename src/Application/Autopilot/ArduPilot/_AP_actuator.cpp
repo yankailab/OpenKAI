@@ -26,11 +26,12 @@ bool _AP_actuator::init(void* pKiss)
 
 	string iName;
 
-	Kiss** pItr = pK->getChildItr();
 	int i = 0;
-	while (pItr[i])
+	while (1)
 	{
-		Kiss* pA = pItr[i++];
+		Kiss* pA = pK->child(i++);
+		if(pA->empty())break;
+
 		AP_actuator a;
 		a.init();
 
