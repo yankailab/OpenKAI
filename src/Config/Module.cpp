@@ -94,6 +94,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_Rotate);
+	ADD_MODULE(_RTCM3);
 	ADD_MODULE(_SlideWindow);
 	ADD_MODULE(_ShopCam);
 	ADD_MODULE(_Thermal);

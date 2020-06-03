@@ -38,6 +38,7 @@
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
+#include "../Navigation/_RTCM3.h"
 
 #include "../IO/_TCPserver.h"
 #include "../IO/_TCPclient.h"
