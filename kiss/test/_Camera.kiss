@@ -23,6 +23,10 @@
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	
+	"/textSize":0.8,
+	"/lingH":35,
+	"/textCol":[255,0,0],
 }
 
 {
@@ -71,9 +75,9 @@
 	"name":"imgFile",
 	"class":"_ImgFile",
 	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"file":"/home/kai/Downloads/eii-test.jpg",
+	"bInst":1,
+	"Window":"OKiew",
+	"file":"/home/kai/Pictures/test.jpg",
 	"w":1280,
 	"h":720,
 }

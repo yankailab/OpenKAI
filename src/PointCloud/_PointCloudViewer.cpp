@@ -61,8 +61,9 @@ bool _PointCloudViewer::start(void)
 
 void _PointCloudViewer::update(void)
 {
-	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x,
-			m_vWinSize.y);
+	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x, m_vWinSize.y);
+	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
+
 	m_bOpen = true;
 
 	if (m_pPC)

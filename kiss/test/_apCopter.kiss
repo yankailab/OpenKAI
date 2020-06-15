@@ -1,0 +1,141 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"apConsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bDrawMsg":1,
+	"bFullScreen":0,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"apConsole",
+	"/port":"/dev/ttyTHS1",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+	"/baud":57600,
+	"_wakeUp":"apMavlink",
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"apConsole",
+	"_IOBase":"apSerial",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	"tTimeout":10000000,
+
+	{
+		"bInst":1,
+		"_Mavlink":"apMavID",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"apConsole",
+	"port":19840,
+	"_wakeUp":"apMavID",
+}
+
+{
+	"name":"apMavID",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Console":"apConsole",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
+	}	
+}
+
+{
+	"name":"apMavInfo",
+	"class":"_AP_base",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"apConsole",
+	"_Mavlink":"apMavlink",
+	"freqSendHeartbeat":1,
+	
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":1,
+		}
+		{
+			"name":"localPosition",
+			"id"32,
+			"tInt":0.5,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":0.2,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":2,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+		
+	}
+}
