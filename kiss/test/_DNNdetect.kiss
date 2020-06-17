@@ -4,8 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":1,
-	"bConsole":0,
+	"bLog":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
@@ -18,10 +17,16 @@
 }
 
 {
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":640,
@@ -29,10 +34,10 @@
 }
 
 {
-	"name":"gst1",
+	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":60,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"pipeline":"nvcamerasrc fpsRange='60.0 60.0' sensor-id=0 ! video/x-raw(memory:NVMM), width=(int)1280, height=(int)720, format=(string)I420, framerate=(fraction)60/1 ! nvvidconv flip-method=0 ! video/x-raw, format=(string)I420 ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.150 port=5678",
 	"_pipeline":"v4l2src device=/dev/video2 ! videoflip method=2 ! video/x-raw,format=BGR,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
@@ -41,7 +46,7 @@
 }
 
 {
-	"name":"videoFile",
+	"name":"cam",
 	"class":"_VideoFile",
 	"FPS":30,
 	"bInst":0,
@@ -69,6 +74,14 @@
 }
 
 {
+	"name":"universe",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+}
+
+{
 	"name":"Yolo",
 	"class":"_DNNdetect",
 	"bInst":0,
@@ -77,12 +90,14 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"Console":"OKconsole",
+	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"yolo",
 	"modelDir":"/home/kai/dev/model/yolov3/",
-	"modelFile":"yolov3.cfg",
-	"trainedFile":"yolov3.weights",
-	"classFile":"class.names",
+	"fModel":"yolov3.cfg",
+	"fWeight":"yolov3.weights",
+	"fClass":"class.names",
 	"bSwapRB":1,
 	"scale":0.00392,
 	"thr":0.1,
@@ -92,21 +107,21 @@
 {
 	"name":"TF",
 	"class":"_DNNdetect",
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"Console":"OKconsole",
+	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"tf",
 	"modelDir":"/home/kai/dev/model/face/",
-	"modelFile":"opencv_face_detector.pbtxt",
-	"trainedFile":"opencv_face_detector_uint8.pb",
+	"fModel":"opencv_face_detector.pbtxt",
+	"fWeight":"opencv_face_detector_uint8.pb",
 	"bSwapRB":1,
-	"meanB":104,
-	"meanG":177,
-	"meanR":123,
+	"vMean":[104,177,123],
 	"scale":1.0,
 	"nW":300,
 	"nH":300,
@@ -123,15 +138,39 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
+	"Console":"OKconsole",
+	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"caffe",
 	"modelDir":"/home/kai/dev/model/face/",
-	"modelFile":"deploy.prototxt",
-	"trainedFile":"res10_300x300_ssd_iter_140000_fp16.caffemodel",
+	"fModel":"deploy.prototxt",
+	"fWeight":"res10_300x300_ssd_iter_140000_fp16.caffemodel",
 	"bSwapRB":0,
-	"meanB":104,
-	"meanG":177,
-	"meanR":123,
+	"vMean":[104,177,123],
+	"scale":1.0,
+	"nW":300,
+	"nH":300,
+	"thr":0.5,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"DetectNet",
+	"class":"_DetectNet",
+	"bInst":1,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_VisionBase":"cam",
+	"_Universe":"universe",
+	"modelDir":"/home/kai/dev/model/face/",
+	"fModel":"networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",
+	"fWeight":"res10_300x300_ssd_iter_140000_fp16.caffemodel",
+	"fClass":"networks/SSD-Inception-v2/ssd_coco_labels.txt",
+	"bSwapRB":0,
+	"vMean":[104,177,123],
 	"scale":1.0,
 	"nW":300,
 	"nH":300,

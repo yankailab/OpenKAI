@@ -11,8 +11,8 @@
 #include "../../Detector/_DetectorBase.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_TENSORRT
-#include "../../Base/tensorRT.h"
+#ifdef USE_JETSON_INFERENCE
+#include "../../Base/jetsonInf.h"
 
 namespace kai
 {

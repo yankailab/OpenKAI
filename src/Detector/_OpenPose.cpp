@@ -41,7 +41,7 @@ bool _OpenPose::init(void *pKiss)
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);
 
-	m_net = readNetFromCaffe(m_modelFile, m_trainedFile);
+	m_net = readNetFromCaffe(m_fModel, m_fWeight);
 	IF_Fl(m_net.empty(), "read Net failed");
 
 	m_net.setPreferableBackend(m_iBackend);

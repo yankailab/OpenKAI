@@ -43,10 +43,7 @@ bool _DNNdetect::init(void *pKiss)
 	pK->v("bSwapRB", &m_bSwapRB);
 	pK->v("scale", &m_scale);
 	pK->v("iClassDraw", &m_iClassDraw);
-
-	pK->v("meanB", &m_vMean.x);
-	pK->v("meanG", &m_vMean.y);
-	pK->v("meanR", &m_vMean.z);
+	pK->v("vMean", &m_vMean);
 
 	string n;
 	pK->v("dnnType", &n);
@@ -59,15 +56,15 @@ bool _DNNdetect::init(void *pKiss)
 
 	if (m_dnnType == dnn_yolo)
 	{
-		m_net = readNetFromDarknet(m_modelFile, m_trainedFile);
+		m_net = readNetFromDarknet(m_fModel, m_fWeight);
 	}
 	else if (m_dnnType == dnn_caffe)
 	{
-		m_net = readNetFromCaffe(m_modelFile, m_trainedFile);
+		m_net = readNetFromCaffe(m_fModel, m_fWeight);
 	}
 	else if (m_dnnType == dnn_tf)
 	{
-		m_net = readNetFromTensorflow(m_trainedFile, m_modelFile);
+		m_net = readNetFromTensorflow(m_fWeight, m_fModel);
 	}
 
 	IF_Fl(m_net.empty(), "read Net failed");

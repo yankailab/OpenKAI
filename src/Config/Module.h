@@ -146,9 +146,9 @@
 #include "../Vision/_Mynteye.h"
 #endif
 
-#ifdef USE_TENSORRT
-#include "../DNN/TensorRT/_ImageNet.h"
-#include "../DNN/TensorRT/_DetectNet.h"
+#ifdef USE_JETSON_INFERENCE
+#include "../DNN/JetsonInference/_ImageNet.h"
+#include "../DNN/JetsonInference/_DetectNet.h"
 #endif
 
 #ifdef USE_OCR

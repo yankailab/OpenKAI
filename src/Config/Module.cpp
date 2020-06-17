@@ -145,7 +145,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mynteye);
 #endif
 
-#ifdef USE_TENSORRT
+#ifdef USE_JETSON_INFERENCE
 	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_DetectNet);
 #endif

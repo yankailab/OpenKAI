@@ -39,7 +39,6 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"nBuf":32,
 }
 
 {

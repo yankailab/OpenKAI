@@ -41,10 +41,10 @@ public:
 	_Universe* m_pU;
 
 	//model
-	string m_modelFile;
-	string m_trainedFile;
-	string m_meanFile;
-	string m_classFile;
+	string m_fModel;
+	string m_fWeight;
+	string m_fMean;
+	string m_fClass;
 	int m_nClass;
 	vector<OBJ_CLASS> m_vClass;
 

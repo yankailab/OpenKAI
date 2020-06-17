@@ -16,10 +16,10 @@ _DetectorBase::_DetectorBase()
 	m_pDB = NULL;
 	m_pU = NULL;
 
-	m_modelFile = "";
-	m_trainedFile = "";
-	m_meanFile = "";
-	m_classFile = "";
+	m_fModel = "";
+	m_fWeight = "";
+	m_fMean = "";
+	m_fClass = "";
 	m_nClass = 0;
 
 	m_bDrawStatistics = false;
@@ -45,15 +45,14 @@ bool _DetectorBase::init(void* pKiss)
 	//model
 	string modelDir = "";
 	F_INFO(pK->v("modelDir", &modelDir));
+	pK->v("fModel", &m_fModel);
+	pK->v("fWeight", &m_fWeight);
+	pK->v("fMean", &m_fMean);
+	pK->v("fClass", &m_fClass);
 
-	pK->v<string>("modelFile", &m_modelFile);
-	pK->v<string>("trainedFile", &m_trainedFile);
-	pK->v<string>("meanFile", &m_meanFile);
-	pK->v<string>("classFile", &m_classFile);
-
-	m_modelFile = modelDir + m_modelFile;
-	m_trainedFile = modelDir + m_trainedFile;
-	m_meanFile = modelDir + m_meanFile;
+	m_fModel = modelDir + m_fModel;
+	m_fWeight = modelDir + m_fWeight;
+	m_fMean = modelDir + m_fMean;
 
 	//statistics
 	string s;

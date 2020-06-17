@@ -37,7 +37,7 @@ bool _YOLO::init(void* pKiss)
 	KISSm(pK, nBatch);
 	KISSm(pK, nPredAvr);
 
-	IF_Fl(!yoloInit(m_modelFile.c_str(), m_trainedFile.c_str(),
+	IF_Fl(!yoloInit(m_fModel.c_str(), m_fWeight.c_str(),
 					m_labelFile.c_str(), m_nPredAvr, m_nBatch),
 			"YOLO init failed");
 

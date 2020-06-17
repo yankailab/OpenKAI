@@ -33,12 +33,12 @@ bool _Cascade::init(void *pKiss)
 
 	if (m_bGPU)
 	{
-		m_pGCC = cuda::CascadeClassifier::create(m_modelFile);
+		m_pGCC = cuda::CascadeClassifier::create(m_fModel);
 		NULL_F(m_pGCC);
 	}
 	else
 	{
-		F_ERROR_F(m_CC.load(m_modelFile));
+		F_ERROR_F(m_CC.load(m_fModel));
 	}
 
 	return true;

@@ -92,8 +92,8 @@ bool _Caffe::setup(void)
 	Caffe::set_mode(Caffe::GPU);
 #endif
 
-	m_pNet.reset(new Net<float>(m_modelFile, TEST));
-	m_pNet->CopyTrainedLayersFrom(m_trainedFile);
+	m_pNet.reset(new Net<float>(m_fModel, TEST));
+	m_pNet->CopyTrainedLayersFrom(m_fWeight);
 
 	CHECK_EQ(m_pNet->num_inputs(), 1)<< "Network should have exactly one input";
 	CHECK_EQ(m_pNet->num_outputs(), 1)<< "Network should have exactly one output";
@@ -104,7 +104,7 @@ bool _Caffe::setup(void)
 	m_inputGeometry = cv::Size(inputLayer->width(), inputLayer->height());
 
 	// Load the binaryproto mean file
-	SetMean(m_meanFile);
+	SetMean(m_fMean);
 
 	// Load labels
 	std::ifstream labels(m_labelFile.c_str());

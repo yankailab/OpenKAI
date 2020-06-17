@@ -160,7 +160,7 @@ git clone https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
 mkdir build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=OFF -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_TENSORRT=OFF ../
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DUSE_CUDA=OFF -DUSE_OPENCV_CONTRIB=ON -DUSE_DARKNET=ON -DDarknet_root=/home/ubuntu/dev/darknet -DUSE_REALSENSE=OFF -Dlibrealsense_root=/home/ubuntu/dev/librealsense -DUSE_JETSON_INFERENCE=OFF ../
 make all
 
 # Wifi Setup

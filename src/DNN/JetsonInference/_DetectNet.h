@@ -11,8 +11,7 @@
 #include "../../Base/common.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_TENSORRT
-#include "../../Base/tensorRT.h"
+#ifdef USE_JETSON_INFERENCE
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"
 
@@ -27,9 +26,11 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 	bool draw(void);
 
 private:
+	bool open(void);
 	void detect(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -41,24 +42,13 @@ private:
 public:
 	detectNet* m_pDN;
 	int m_nBox;
-	int m_nBoxMax;
 	uint32_t m_nClass;
 
-	cv::Mat mean_;
 	Frame* m_pRGBA;
 	Frame* m_pRGBAf;
-	double m_coverageThr;
-
-	double m_minSize;
-	double m_maxSize;
-	vDouble4 m_area;
-
-	float* m_bbCPU;
-	float* m_bbCUDA;
-	float* m_confCPU;
-	float* m_confCUDA;
-
-	string m_className;
+	float m_coverageThr;
+	bool	m_bSwapRB;
+	vFloat3 m_vMean;
 
 };
 

@@ -2,10 +2,10 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_ImageNet.h"
+#include "../JetsonInference/_ImageNet.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_TENSORRT
+#ifdef USE_JETSON_INFERENCE
 
 namespace kai
 {
@@ -63,9 +63,9 @@ bool _ImageNet::start(void)
 
 void _ImageNet::update(void)
 {
-	m_pIN = imageNet::Create(m_modelFile.c_str(),
-							 m_trainedFile.c_str(),
-							 m_meanFile.c_str(),
+	m_pIN = imageNet::Create(m_fModel.c_str(),
+							 m_fWeight.c_str(),
+							 m_fMean.c_str(),
 							 m_labelFile.c_str(),
 							 m_blobIn.c_str(),
 							 m_blobOut.c_str(),

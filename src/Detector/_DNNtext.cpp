@@ -53,7 +53,7 @@ bool _DNNtext::init(void* pKiss)
 	pK->v("meanG", &m_vMean.y);
 	pK->v("meanR", &m_vMean.z);
 
-	m_net = readNet(m_modelFile);
+	m_net = readNet(m_fModel);
 	IF_Fl(m_net.empty(), "read Net failed");
 
 	m_net.setPreferableBackend(m_iBackend);

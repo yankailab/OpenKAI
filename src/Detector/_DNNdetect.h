@@ -20,7 +20,7 @@ enum DNN_type
 {
 	dnn_caffe,
 	dnn_yolo,
-	dnn_tf
+	dnn_tf,
 };
 
 class _DNNdetect: public _DetectorBase

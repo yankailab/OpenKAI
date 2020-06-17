@@ -67,7 +67,7 @@ bool _DNNclassifier::init(void *pKiss)
 		m_vROI.push_back(r);
 	}
 
-	m_net = readNet(m_trainedFile, m_modelFile);
+	m_net = readNet(m_fWeight, m_fModel);
 	IF_Fl(m_net.empty(), "read Net failed");
 
 	m_net.setPreferableBackend(m_iBackend);
