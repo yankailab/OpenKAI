@@ -12,7 +12,11 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
-#include "../../Base/jetsonInf.h"
+/*
+//#include <cuda_runtime.h>
+//#include "cudaMappedMemory.h"
+//#include "cudaNormalize.h"
+#include "imageNet.h"
 
 namespace kai
 {
@@ -55,6 +59,7 @@ public:
 };
 
 }
+*/
 #endif
 #endif
 #endif

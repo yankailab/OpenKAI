@@ -43,16 +43,10 @@ bool _DetectorBase::init(void* pKiss)
 	//general
 
 	//model
-	string modelDir = "";
-	F_INFO(pK->v("modelDir", &modelDir));
 	pK->v("fModel", &m_fModel);
 	pK->v("fWeight", &m_fWeight);
 	pK->v("fMean", &m_fMean);
 	pK->v("fClass", &m_fClass);
-
-	m_fModel = modelDir + m_fModel;
-	m_fWeight = modelDir + m_fWeight;
-	m_fMean = modelDir + m_fMean;
 
 	//statistics
 	string s;

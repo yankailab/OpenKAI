@@ -12,11 +12,21 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
+//#include <cuda_runtime.h>
+//#include "cudaMappedMemory.h"
+//#include "cudaNormalize.h"
+#include "detectNet.h"
 #include "../../Vision/_VisionBase.h"
 #include "../../Detector/_DetectorBase.h"
 
 namespace kai
 {
+
+enum DETECTNET_TYPE
+{
+	detectNet_uff,
+	detectNet_cafffe,
+};
 
 class _DetectNet: public _DetectorBase
 {
@@ -43,10 +53,19 @@ public:
 	detectNet* m_pDN;
 	int m_nBox;
 	uint32_t m_nClass;
+	DETECTNET_TYPE m_type;
+	float m_thr;
+	string m_layerIn;
+	string m_layerOut;
+	string m_layerNboxOut;
+	vInt3 m_vDimIn;
+	int m_nMaxBatch;
+	int m_precision;
+	int m_device;
+	bool m_bAllowGPUfallback;
 
 	Frame* m_pRGBA;
 	Frame* m_pRGBAf;
-	float m_coverageThr;
 	bool	m_bSwapRB;
 	vFloat3 m_vMean;
 

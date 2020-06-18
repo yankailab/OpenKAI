@@ -146,7 +146,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 
 #ifdef USE_JETSON_INFERENCE
-	ADD_MODULE(_ImageNet);
+//	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_DetectNet);
 #endif
 

@@ -2,11 +2,11 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "../JetsonInference/_ImageNet.h"
+#include "_ImageNet.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_JETSON_INFERENCE
-
+/*
 namespace kai
 {
 
@@ -221,6 +221,7 @@ bool _ImageNet::draw(void)
 }
 
 }
+*/
 #endif
 #endif
 

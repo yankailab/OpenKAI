@@ -14,14 +14,24 @@ _DetectNet::_DetectNet()
 {
 	m_pRGBA = NULL;
 	m_pRGBAf = NULL;
-	m_coverageThr = 0.5;
 
 	m_pDN = NULL;
 	m_nBox = 0;
 	m_nClass = 0;
+	m_type = detectNet_uff;
+	m_thr = 0.5;
+	m_layerIn = "Input";
+	m_layerOut = "NMS";
+	m_layerNboxOut = "NMS_1";
+	m_vDimIn.init(3,300,300);
+	m_nMaxBatch = DEFAULT_MAX_BATCH_SIZE;
+	m_precision = TYPE_FASTEST;
+	m_device = DEVICE_GPU;
+	m_bAllowGPUfallback = true;
 
 	m_bSwapRB = false;
 	m_vMean.init(0.0);
+
 }
 
 _DetectNet::~_DetectNet()
@@ -35,9 +45,10 @@ bool _DetectNet::init(void* pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("coverageThr", &m_coverageThr);
+	pK->v("thr", &m_thr);
 	pK->v("bSwapRB", &m_bSwapRB);
 	pK->v("vMean", &m_vMean);
+	pK->v("type", &m_type);
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
@@ -73,21 +84,25 @@ int _DetectNet::check(void)
 
 bool _DetectNet::open(void)
 {
-	m_pDN = detectNet::Create(
-			m_fModel.c_str(),
-			m_fWeight.c_str(),
-			m_fMean.c_str(),
-			m_minConfidence);
-
-
-	return Create("networks/SSD-Inception-v2/ssd_inception_v2_coco.uff", "networks/SSD-Inception-v2/ssd_coco_labels.txt", threshold, "Input", Dims3(3,300,300), "NMS", "NMS_1", maxBatchSize, precision, device, allowGPUFallback);
-
-
+	if(m_type==detectNet_uff)
+	{
+		m_pDN = Create(m_fModel,
+						m_fClass,
+						m_thr,
+						m_layerIn.c_str(),
+						Dims3(m_vDimIn.x, m_vDimIn.y, m_vDimIn.z),
+						m_layerOut.c_str(),
+						m_layerNboxOut.c_str(),
+						m_nMaxBatch,
+						m_precision,
+						m_device,
+						m_bAllowGPUfallback);
+	}
 
 	NULL_F(m_pDN);
 
 	m_nClass = m_pDN->GetNumClasses();
-	m_pDN->SetThreshold(m_coverageThr);
+	m_pDN->SetThreshold(m_thr);
 
 	return true;
 }
@@ -125,9 +140,6 @@ void _DetectNet::detect(void)
 
 	for( int i=0; i < m_nBox; i++ )
 	{
-		printf("detected obj %i  class #%u (%s)  confidence=%f\n", i, pBox[i].ClassID, net->GetClassDesc(pBox[i].ClassID), pBox[i].Confidence);
-		printf("bounding box %i  (%f, %f)  (%f, %f)  w=%f  h=%f\n", i, pBox[i].Left, pBox[i].Top, pBox[i].Right, pBox[i].Bottom, pBox[i].Width(), pBox[i].Height());
-
 		detectNet::Detection* pB = &pBox[i];
 
 		_Object o;

@@ -11,10 +11,6 @@
 #include "cv.h"
 #endif
 
-#ifdef USE_JETSON_INFERENCE
-#include "jetsonInf.h"
-#endif
-
 #include "platform.h"
 #include "macro.h"
 #include "constant.h"
