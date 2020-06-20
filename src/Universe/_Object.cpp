@@ -269,7 +269,9 @@ void _Object::setVertices2D(vFloat2 *pV, int nV)
 {
 	NULL_(pV);
 
+#ifdef USE_OPENCV
 	m_vVertex.clear();
+
 	vector<Point> vP;
 	Point p;
 	for (int i = 0; i < nV; i++)
@@ -283,6 +285,7 @@ void _Object::setVertices2D(vFloat2 *pV, int nV)
 
 	vFloat4 bb = rect2BB<vFloat4>(boundingRect(vP));
 	setBB2D(bb);
+#endif
 }
 
 vFloat2* _Object::getVertex(int i)
@@ -349,7 +352,6 @@ string _Object::getText(void)
 
 float _Object::nIoU(_Object& obj)
 {
-
 	return 0.0;
 }
 

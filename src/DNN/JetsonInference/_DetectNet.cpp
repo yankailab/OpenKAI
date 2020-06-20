@@ -48,7 +48,7 @@ bool _DetectNet::init(void* pKiss)
 	pK->v("thr", &m_thr);
 	pK->v("bSwapRB", &m_bSwapRB);
 	pK->v("vMean", &m_vMean);
-	pK->v("type", &m_type);
+	pK->v("type", (int*)&m_type);
 
 	m_pRGBA = new Frame();
 	m_pRGBAf = new Frame();
@@ -86,16 +86,16 @@ bool _DetectNet::open(void)
 {
 	if(m_type==detectNet_uff)
 	{
-		m_pDN = Create(m_fModel,
-						m_fClass,
+		m_pDN = detectNet::Create(m_fModel.c_str(),
+						m_fClass.c_str(),
 						m_thr,
 						m_layerIn.c_str(),
 						Dims3(m_vDimIn.x, m_vDimIn.y, m_vDimIn.z),
 						m_layerOut.c_str(),
 						m_layerNboxOut.c_str(),
 						m_nMaxBatch,
-						m_precision,
-						m_device,
+						(precisionType)m_precision,
+						(deviceType)m_device,
 						m_bAllowGPUfallback);
 	}
 
@@ -132,7 +132,7 @@ void _DetectNet::detect(void)
 	GpuMat fGMat = *m_pRGBAf->gm();
 
 	detectNet::Detection* pBox = NULL;
-	m_nBox = m_pDN->Detect((float*)fGMat.data, fGMat.cols, fGMat.rows, &pBox, OVERLAY_NONE);
+	m_nBox = m_pDN->Detect((float*)fGMat.data, fGMat.cols, fGMat.rows, &pBox, detectNet::OVERLAY_NONE);
 	IF_(m_nBox <= 0);
 
 	float kx = 1.0/(float)fGMat.cols;
@@ -146,24 +146,23 @@ void _DetectNet::detect(void)
 		o.init();
 		o.m_tStamp = m_tStamp;
 		o.setTopClass(pB->ClassID, pB->Confidence);
-		o.setText(m_pDN->GetClassDesc(pB->ClassID));
+		string txt(m_pDN->GetClassDesc(pB->ClassID));
+		o.setText(txt);
 		o.setBB2D(pB->Left, pB->Top, pB->Width(), pB->Height());
 		o.scale(kx,ky);
 
-		add(&o);
+		m_pU->add(o);
 		LOG_I("BBox: "<< o.getText() << " Prob: " << f2str(o.getTopClassProb()));
 	}
 
 }
 
-bool _DetectNet::draw(void)
+void _DetectNet::draw(void)
 {
-	IF_F(!this->_DetectorBase::draw());
+	this->_DetectorBase::draw();
 
-	return true;
 }
 
 }
 #endif
 #endif
-

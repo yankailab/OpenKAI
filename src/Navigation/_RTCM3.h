@@ -9,7 +9,6 @@
 #define OpenKAI_src_Navigation__RTCM3_H_
 
 #include "../IO/_IOBase.h"
-#include "../Dependency/rtklib/rtklib.h"
 
 namespace kai
 {

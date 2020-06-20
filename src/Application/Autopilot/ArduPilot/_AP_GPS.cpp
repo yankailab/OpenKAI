@@ -181,5 +181,4 @@ void _AP_GPS::draw(void)
 }
 
 }
-
 #endif

@@ -6,6 +6,8 @@
 #include "../../../SLAM/_SlamBase.h"
 #include "../ArduPilot/_AP_base.h"
 
+#ifdef USE_REALSENSE
+
 namespace kai
 {
 
@@ -54,4 +56,5 @@ public:
 };
 
 }
+#endif
 #endif

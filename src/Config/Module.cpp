@@ -58,7 +58,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_RTH);
 	ADD_MODULE(_AP_relay);
 	ADD_MODULE(_AP_servo);
-	ADD_MODULE(_AP_GPS);
 	ADD_MODULE(_AP_takeoff);
 	ADD_MODULE(_AP_goto);
 	ADD_MODULE(_AP_link);
@@ -132,6 +131,7 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 
 #ifdef USE_REALSENSE
+	ADD_MODULE(_AP_GPS);
 	ADD_MODULE(_RealSense);
 #endif
 
