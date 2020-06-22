@@ -111,10 +111,6 @@ void _OrientalMotor::checkAlarm(void)
 	IF_(check()<0);
 	IF_(!m_ieCheckAlarm.update(m_tStamp));
 
-	static uint64_t tLastAlarm = 0;
-	IF_(m_tStamp - tLastAlarm < 50000);
-	tLastAlarm = m_tStamp;
-
 	uint16_t pB[2];
 	pB[0] = 1<<7;
 	pB[1] = 0;
@@ -168,10 +164,6 @@ void _OrientalMotor::readStatus(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieReadStatus.update(m_tStamp));
-
-	static uint64_t tLastStatus = 0;
-	IF_(m_tStamp - tLastStatus < 50000);
-	tLastStatus = m_tStamp;
 
 	uint16_t pB[18];
 	int nR = 6;

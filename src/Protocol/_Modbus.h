@@ -21,8 +21,10 @@ public:
 	bool bOpen(void);
 
 	int rawRequest(uint8_t* pB, int nB);
-	int writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB);
 	int readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB);
+	int writeBit(int iSlave, int addr, bool bStatus);
+	int writeRegister(int iSlave, int addr, int v);
+	int writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB);
 
 private:
 	void update(void);

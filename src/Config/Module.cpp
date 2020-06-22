@@ -34,7 +34,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_MOAB);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Object);
-	ADD_MODULE(_OrientalMotor);
 	ADD_MODULE(_Path);
 	ADD_MODULE(PIDctrl);
 	ADD_MODULE(_ProtocolBase);
@@ -49,6 +48,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ArduServo);
 	ADD_MODULE(_ActuatorSync);
 	ADD_MODULE(_Sequencer);
+	ADD_MODULE(_OrientalMotor);
+	ADD_MODULE(_DRV8825_RS485);
 
 	ADD_MODULE(_AP_base);
 	ADD_MODULE(_AP_distLidar);
@@ -67,7 +68,6 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Camera);
-	ADD_MODULE(_Cascade);
 	ADD_MODULE(_Contrast);
 	ADD_MODULE(_Crop);
 	ADD_MODULE(_DNNclassifier);
@@ -126,8 +126,9 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 
 #ifdef USE_CUDA
-	ADD_MODULE(_DenseFlow);
 	ADD_MODULE(_Bullseye);
+	ADD_MODULE(_Cascade);
+	ADD_MODULE(_DenseFlow);
 #endif
 
 #ifdef USE_REALSENSE

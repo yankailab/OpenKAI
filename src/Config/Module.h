@@ -13,9 +13,10 @@
 #include "../Script/Kiss.h"
 #include "switch.h"
 
-#include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
+#include "../Actuator/_OrientalMotor.h"
+#include "../Actuator/_DRV8825_RS485.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
@@ -92,7 +93,6 @@
 #include "../Data/Video/_FrameCutOut.h"
 
 #include "../Detector/_Lane.h"
-#include "../Detector/_Cascade.h"
 #include "../Detector/_DNNdetect.h"
 #include "../Detector/_DNNclassifier.h"
 #include "../Detector/_DNNtext.h"
@@ -128,8 +128,9 @@
 #endif
 
 #ifdef USE_CUDA
-#include "../Vision/_DenseFlow.h"
 #include "../Detector/_Bullseye.h"
+#include "../Detector/_Cascade.h"
+#include "../Vision/_DenseFlow.h"
 #endif
 
 #ifdef USE_REALSENSE

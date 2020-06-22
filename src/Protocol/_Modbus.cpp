@@ -113,26 +113,7 @@ int _Modbus::rawRequest(uint8_t* pB, int nB)
 	return r;
 }
 
-int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
-{
-	IF__(!m_pMb,-1);
-	NULL__(pB,-1);
-
-	int r = -1;
-
-	pthread_mutex_lock(&m_mutex);
-
-	if (modbus_set_slave(m_pMb, iSlave) == 0)
-	{
-		r = modbus_write_registers(m_pMb, addr, nRegister, pB);
-	}
-
-    modbus_flush(m_pMb);
-	pthread_mutex_unlock(&m_mutex);
-
-	return r;
-}
-
+//Function code: 3
 int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 {
 	IF__(!m_pMb,-1);
@@ -145,6 +126,67 @@ int _Modbus::readRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 	if (modbus_set_slave(m_pMb, iSlave) == 0)
 	{
 		r = modbus_read_registers(m_pMb, addr, nRegister, pB);
+	}
+
+    modbus_flush(m_pMb);
+	pthread_mutex_unlock(&m_mutex);
+
+	return r;
+}
+
+//Function code: 5
+int _Modbus::writeBit(int iSlave, int addr, bool bStatus)
+{
+	IF__(!m_pMb,-1);
+
+	int r = -1;
+
+	pthread_mutex_lock(&m_mutex);
+
+	if (modbus_set_slave(m_pMb, iSlave) == 0)
+	{
+		r = modbus_write_bit(m_pMb, addr, bStatus);
+	}
+
+    modbus_flush(m_pMb);
+	pthread_mutex_unlock(&m_mutex);
+
+	return r;
+}
+
+//Function code: 6
+int _Modbus::writeRegister(int iSlave, int addr, int v)
+{
+	IF__(!m_pMb,-1);
+
+	int r = -1;
+
+	pthread_mutex_lock(&m_mutex);
+
+	if (modbus_set_slave(m_pMb, iSlave) == 0)
+	{
+		r = modbus_write_register(m_pMb, addr, v);
+	}
+
+    modbus_flush(m_pMb);
+	pthread_mutex_unlock(&m_mutex);
+
+	return r;
+}
+
+//Function code: 10
+int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
+{
+	IF__(!m_pMb,-1);
+	NULL__(pB,-1);
+
+	int r = -1;
+
+	pthread_mutex_lock(&m_mutex);
+
+	if (modbus_set_slave(m_pMb, iSlave) == 0)
+	{
+		r = modbus_write_registers(m_pMb, addr, nRegister, pB);
 	}
 
     modbus_flush(m_pMb);
