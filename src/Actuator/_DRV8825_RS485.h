@@ -25,6 +25,14 @@ public:
 	void draw(void);
 	int check(void);
 
+	bool setDistPerRound(int32_t dpr);
+	bool setDist(float d);
+	bool setSpeed(float s);
+	bool setAccel(float a);
+	bool setBrake(float b);
+	void run(void);
+	void stop(void);
+
 private:
 	void checkAlarm(void);
 	void sendCMD(void);

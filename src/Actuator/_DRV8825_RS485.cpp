@@ -89,7 +89,6 @@ void _DRV8825_RS485::update(void)
 			checkAlarm();
 			readStatus();
 		}
-		sendCMD();
 
 		this->autoFPSto();
 	}
@@ -101,6 +100,64 @@ int _DRV8825_RS485::check(void)
 	IF__(!m_pMB->bOpen(),-1);
 
 	return 0;
+}
+
+bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
+{
+	IF_F(check()<0);
+
+	uint16_t pB[2];
+	pB[0] = HIGH16(dpr);
+	pB[1] = LOW16(dpr);
+	IF_F(m_pMB->writeRegisters(m_iSlave, 4, 2, pB) != 2);
+
+	return true;
+}
+
+bool _DRV8825_RS485::setDist(float d)
+{
+	IF_F(check()<0);
+	IF_F(d < -1.0 || d > 1.0);
+
+	uint16_t pB[2];
+
+	int32_t step = abs(d) * m_vStepRange.len() + m_vStepRange.x;
+	pB[0] = HIGH16(step);
+	pB[1] = LOW16(step);
+	IF_F(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2);
+
+	pB[0] = (d >= 0.0)?1:0;
+	IF_F(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1);
+
+	return true;
+}
+
+bool _DRV8825_RS485::setSpeed(float s)
+{
+
+	return true;
+}
+
+bool _DRV8825_RS485::setAccel(float a)
+{
+
+	return true;
+}
+
+bool _DRV8825_RS485::setBrake(float b)
+{
+
+	return true;
+}
+
+void _DRV8825_RS485::run(void)
+{
+	m_pMB->writeBit(m_iSlave, 7, true);
+}
+
+void _DRV8825_RS485::stop(void)
+{
+	m_pMB->writeBit(m_iSlave, 3, true);
 }
 
 void _DRV8825_RS485::checkAlarm(void)
@@ -116,47 +173,6 @@ void _DRV8825_RS485::checkAlarm(void)
 	pB[0] = 1<<7;
 	pB[1] = 0;
 	m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
-}
-
-void _DRV8825_RS485::sendCMD(void)
-{
-	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_tStamp));
-	IF_(m_vNormTargetPos.x < 0.0);
-
-	//10: set moving distance
-	int32_t step = m_vNormTargetPos.x * m_vStepRange.len() + m_vStepRange.x;
-	step = constrain(step, m_vStepRange.x, m_vStepRange.y);
-	int32_t speed = m_vNormTargetSpeed.x * m_vSpeedRange.len() + m_vSpeedRange.x;
-	speed = constrain(speed, m_vSpeedRange.x, m_vSpeedRange.y);
-
-	//create the command
-	uint16_t pB[2];
-
-	//4: distance per round
-	pB[0] = HIGH16(0);
-	pB[1] = LOW16(1);
-	if(m_pMB->writeRegisters(m_iSlave, 4, 2, pB) != 2)
-	{
-		m_ieSendCMD.reset();
-	}
-
-	//9: distance
-	pB[0] = HIGH16(step);
-	pB[1] = LOW16(step);
-	if(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2)
-	{
-		m_ieSendCMD.reset();
-	}
-
-	//11: direction
-	pB[0] = 0;
-	if(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1)
-	{
-		m_ieSendCMD.reset();
-	}
-
-	m_pMB->writeBit(m_iSlave, 7, true);
 }
 
 void _DRV8825_RS485::readStatus(void)
