@@ -12,20 +12,13 @@ _DRV8825_RS485::_DRV8825_RS485()
 	m_pMB = NULL;
 	m_iSlave = 1;
 	m_iData = 0;
+	m_dpr = 1;
 
-	m_vStepRange.x = -1e5;
-	m_vStepRange.y = 1e5;
-	m_vSpeedRange.x = -4e6;
-	m_vSpeedRange.y = 4e6;
-	m_vAccelRange.x = 1;
-	m_vAccelRange.y = 1e9;
-	m_vBrakeRange.x = 1;
-	m_vBrakeRange.y = 1e9;
-	m_vCurrentRange.x = 0;
-	m_vCurrentRange.y = 1000;
-
-	m_ieCheckAlarm.init(100000);
-	m_ieSendCMD.init(50000);
+	m_vStepRange.init(0, 1e2);
+	m_vSpeedRange.init(0, 500);
+	m_vAccelRange.init(1, 300);
+	m_vBrakeRange.init(1, 300);
+	m_vCurrentRange.init(0, 1000);
 	m_ieReadStatus.init(50000);
 }
 
@@ -38,21 +31,14 @@ bool _DRV8825_RS485::init(void* pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("iSlave",&m_iSlave);
-	pK->v("iData",&m_iData);
-	pK->v("stepFrom", &m_vStepRange.x);
-	pK->v("stepTo", &m_vStepRange.y);
-	pK->v("speedFrom", &m_vSpeedRange.x);
-	pK->v("speedTo", &m_vSpeedRange.y);
-	pK->v("accelFrom", &m_vAccelRange.x);
-	pK->v("accelTo", &m_vAccelRange.y);
-	pK->v("brakeFrom", &m_vBrakeRange.x);
-	pK->v("brakeTo", &m_vBrakeRange.y);
-	pK->v("currentFrom", &m_vCurrentRange.x);
-	pK->v("currentTo", &m_vCurrentRange.y);
-
-	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
-	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
+	pK->v("iSlave", &m_iSlave);
+	pK->v("iData", &m_iData);
+	pK->v("dpr", &m_dpr);
+	pK->v("vStepRange", &m_vStepRange);
+	pK->v("vSpeedRange", &m_vSpeedRange);
+	pK->v("vAccelRange", &m_vAccelRange);
+	pK->v("vBrakeRange", &m_vBrakeRange);
+	pK->v("vCurrentRange", &m_vCurrentRange);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 	string iName;
@@ -80,13 +66,20 @@ bool _DRV8825_RS485::start(void)
 
 void _DRV8825_RS485::update(void)
 {
+	while(check()<0)
+		this->sleepTime(USEC_1SEC);
+
+	setDistPerRound(m_dpr);
+	setDist(m_vNormTargetPos.x);
+	setSpeed(m_vNormTargetSpeed.x);
+	run();
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
 		if(m_bFeedback)
 		{
-			checkAlarm();
 			readStatus();
 		}
 
@@ -134,6 +127,10 @@ bool _DRV8825_RS485::setDist(float d)
 
 bool _DRV8825_RS485::setSpeed(float s)
 {
+	IF_F(check()<0);
+
+	uint16_t b = constrain<float>(s, 0.0, 1.0) * m_vSpeedRange.len() + m_vStepRange.x;
+	IF_F(m_pMB->writeRegisters(m_iSlave, 8, 1, &b) != 1);
 
 	return true;
 }
@@ -160,30 +157,11 @@ void _DRV8825_RS485::stop(void)
 	m_pMB->writeBit(m_iSlave, 3, true);
 }
 
-void _DRV8825_RS485::checkAlarm(void)
-{
-	IF_(check()<0);
-	IF_(!m_ieCheckAlarm.update(m_tStamp));
-
-	static uint64_t tLastAlarm = 0;
-	IF_(m_tStamp - tLastAlarm < 50000);
-	tLastAlarm = m_tStamp;
-
-	uint16_t pB[2];
-	pB[0] = 1<<7;
-	pB[1] = 0;
-	m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
-}
-
 void _DRV8825_RS485::readStatus(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieReadStatus.update(m_tStamp));
 
-//	static uint64_t tLastStatus = 0;
-//	IF_(m_tStamp - tLastStatus < 50000);
-//	tLastStatus = m_tStamp;
-//
 //	uint16_t pB[18];
 //	int nR = 6;
 //	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);

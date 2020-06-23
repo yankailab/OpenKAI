@@ -34,8 +34,6 @@ public:
 	void stop(void);
 
 private:
-	void checkAlarm(void);
-	void sendCMD(void);
 	void readStatus(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -48,15 +46,14 @@ public:
 	_Modbus* m_pMB;
 	int		m_iSlave;
 	int		m_iData;
+	int32_t m_dpr;	//distance per round
 
 	vInt2	m_vStepRange;
-	vInt2	m_vSpeedRange;
+	vInt2	m_vSpeedRange;	//rpm
 	vInt2	m_vAccelRange;
 	vInt2	m_vBrakeRange;
 	vInt2	m_vCurrentRange;
 
-	INTERVAL_EVENT m_ieCheckAlarm;
-	INTERVAL_EVENT m_ieSendCMD;
 	INTERVAL_EVENT m_ieReadStatus;
 
 };
