@@ -1,0 +1,45 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":9600,
+	"parity":"N",	
+}
+
+{
+	"name":"stepper",
+	"class":"_DRV8825_RS485",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"stepFrom":0,
+	"stepTo":1,
+	"speedFrom":0,
+	"speedTo":100,
+	"vNormTargetPos":[1.0],
+	"vNormTargetSpeed":[1.0],
+}

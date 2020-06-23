@@ -132,14 +132,31 @@ void _DRV8825_RS485::sendCMD(void)
 
 	//create the command
 	uint16_t pB[2];
-	//0009
+
+	//4: distance per round
+	pB[0] = HIGH16(0);
+	pB[1] = LOW16(1);
+	if(m_pMB->writeRegisters(m_iSlave, 4, 2, pB) != 2)
+	{
+		m_ieSendCMD.reset();
+	}
+
+	//9: distance
 	pB[0] = HIGH16(step);
 	pB[1] = LOW16(step);
-
 	if(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2)
 	{
 		m_ieSendCMD.reset();
 	}
+
+	//11: direction
+	pB[0] = 0;
+	if(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1)
+	{
+		m_ieSendCMD.reset();
+	}
+
+	m_pMB->writeBit(m_iSlave, 7, true);
 }
 
 void _DRV8825_RS485::readStatus(void)
