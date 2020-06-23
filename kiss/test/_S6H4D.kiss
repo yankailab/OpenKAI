@@ -1,0 +1,43 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"serial",
+	"class":"_SeiralPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":9600,
+	"parity":"N",
+}
+
+{
+	"name":"S6H4D",
+	"class":"_S6H4D",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_IOBase":"serial",
+
+	"vStepRange":[0, 15],
+	"vSpeedRange":[0, 500],
+	"vNormTargetPos":[-1.0],
+	"vNormTargetSpeed":[1.0],
+}
