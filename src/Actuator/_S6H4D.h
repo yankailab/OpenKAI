@@ -68,17 +68,23 @@ public:
 	_IOBase* m_pIO;
 	S6H4D_STATE m_state;
 
-	vFloat3 m_vPos;
 	vFloat2	m_vPosRangeX;
 	vFloat2	m_vPosRangeY;
 	vFloat2	m_vPosRangeZ;
 
-	vFloat3 m_vRot;
 	vFloat2	m_vRotRangeX;
 	vFloat2	m_vRotRangeY;
 	vFloat2	m_vRotRangeZ;
 
 	vFloat2	m_vSpeedRange;	//mm/m
+
+	//raw values
+	vFloat3 m_vP;
+	vFloat3 m_vA;
+	vFloat2 m_vB;
+	float m_aw;
+	vFloat3 m_vwkXYZ;
+	bool m_bOrder;
 
 };
 

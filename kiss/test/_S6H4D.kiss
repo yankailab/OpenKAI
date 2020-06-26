@@ -17,7 +17,7 @@
 
 {
 	"name":"serial",
-	"class":"_SeiralPort",
+	"class":"_SerialPort",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
