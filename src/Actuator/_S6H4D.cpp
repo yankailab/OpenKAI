@@ -81,7 +81,12 @@ void _S6H4D::update(void)
 	{
 		this->autoFPSfrom();
 
-//		updatePos();
+		setMode(1);
+
+		vFloat3 v;
+//		move(v);
+//		pause();
+		updatePos();
 		readState();
 
 		this->autoFPSto();
@@ -90,6 +95,8 @@ void _S6H4D::update(void)
 
 void _S6H4D::updatePos(void)
 {
+	IF_(check() < 0);
+
 	vFloat3 vP;
 	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
 	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
@@ -102,24 +109,75 @@ void _S6H4D::updatePos(void)
 
 	float spd = m_vNormTargetSpeed.x * m_vSpeedRange.d() + m_vSpeedRange.x;
 
-	S6H4D_CMD cmd;
-	cmd.init();
-	cmd.m_cmd1 = '1';
-	cmd.m_cmd2 = 1;
-	cmd.m_pV[0] = vP.x;
-	cmd.m_pV[1] = vP.y;
-	cmd.m_pV[2] = vP.z;
-	cmd.m_pV[3] = vR.x;
-	cmd.m_pV[4] = vR.y;
-	cmd.m_pV[5] = vR.z;
-	cmd.m_pV[6] = 0;
-	cmd.m_pV[7] = 0;
-	cmd.m_pV[8] = 0;
-	cmd.m_pV[9] = 0;
-	cmd.m_pV[10] = spd;
-	cmd.m_end = 0xef;
+	S6H4D_CMD_MOV cmd;
+	cmd.init('1', 0);
+	cmd.set(vP, vR, spd);
 
-	m_pIO->write((uint8_t*)&cmd, sizeof(S6H4D_CMD));
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::armReset(void)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 12;
+	cmd.m_b[2] = 3;
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::setOrigin(vFloat3& vP)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	*((float*)&cmd.m_b[3]) = vP.x;
+	*((float*)&cmd.m_b[7]) = vP.y;
+	*((float*)&cmd.m_b[11]) = vP.z;
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::setMode(int mode)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 30;
+	cmd.m_b[2] = 9;
+	cmd.m_b[3] = (mode == 0)?0:9;
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::move(vFloat3& vM)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 30;
+	cmd.m_b[2] = 7;
+	cmd.m_b[3] = 100;
+	cmd.m_b[4] = 128;
+	cmd.m_b[5] = 128;
+	cmd.m_b[6] = 106;
+
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::pause(void)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 30;
+	cmd.m_b[2] = 3;
+	cmd.m_b[3] = 2;
+
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
 void _S6H4D::readState(void)
@@ -140,7 +198,7 @@ void _S6H4D::readState(void)
 				m_state.init();
 			}
 		}
-		else if (b == 0xce)
+		else if (b == S6H4D_STAT_BEGIN)
 		{
 			m_state.m_pB[0] = b;
 			m_state.m_iB = 1;
@@ -150,7 +208,7 @@ void _S6H4D::readState(void)
 
 void _S6H4D::decodeState(void)
 {
-	IF_(m_state.m_pB[8] != 0xcf);
+	IF_(m_state.m_pB[8] != S6H4D_STAT_END);
 
 	switch (m_state.m_pB[7])
 	{

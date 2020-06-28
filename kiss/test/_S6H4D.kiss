@@ -36,8 +36,17 @@
 	"Console":"OKconsole",
 	"_IOBase":"serial",
 
-	"vStepRange":[0, 15],
-	"vSpeedRange":[0, 500],
-	"vNormTargetPos":[-1.0],
+	"vSpeedRange":[0, 1000],
+
+	"vPosRangeX":[344.1, 344.1],
+	"vPosRangeY":[0.7, 0.7],
+	"vPosRangeZ":[417.4, 417.4],
+
+	"vRotRangeX":[1.2, 1.2],
+	"vRotRangeY":[-180, -180],
+	"vRotRangeZ":[787.2, 787.2],
+	
 	"vNormTargetSpeed":[1.0],
+	"vNormTargetPos":[0.0, 0.0, 0.0],
+	"vNormTargetRot":[0.0, 0.0, 0.0],
 }

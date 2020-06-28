@@ -4,30 +4,71 @@
 #include "_ActuatorBase.h"
 #include "../IO/_IOBase.h"
 
-#define S6H4D_BEGIN 0xee
-#define S6H4D_END 0xef
+#define S6H4D_CMD_N 48
+#define S6H4D_MOV_BEGIN 0xee
+#define S6H4D_MOV_END 0xef
+#define S6H4D_CTRL_BEGIN 0xfc
+#define S6H4D_CTRL_END 0xfd
+#define S6H4D_STAT_BEGIN 0xce
+#define S6H4D_STAT_END 0xcf
 
 namespace kai
 {
 
-struct S6H4D_CMD
+struct S6H4D_CMD_MOV
 {
-	uint8_t m_begin;
-	uint8_t m_cmd1;
-	uint8_t m_cmd2;
-	float m_pV[11];
-	uint8_t m_end;
+	uint8_t m_b[S6H4D_CMD_N];
+
+	void init(uint8_t a, uint8_t b)
+	{
+		memset(m_b, 0, S6H4D_CMD_N);
+		m_b[0] = S6H4D_MOV_BEGIN;
+		m_b[1] = a;
+		m_b[2] = b;
+		m_b[47] = S6H4D_MOV_END;
+	}
+
+	void f2b(uint8_t* pB, float f)
+	{
+	  uint8_t *pchar = (uint8_t*)&f;
+
+	  for(uint8_t i=0; i<sizeof(float); i++)
+	  {
+	    *pB = *pchar;
+	    pchar++;
+	    pB++;
+	  }
+	}
+
+	void set(vFloat3& vP, vFloat3& vR, float spd)
+	{
+		f2b(&m_b[3], vP.x);
+		f2b(&m_b[7], vP.y);
+		f2b(&m_b[11], vP.z);
+
+		f2b(&m_b[15], vR.x);
+		f2b(&m_b[19], vR.y);
+		f2b(&m_b[23], vR.z);
+
+		f2b(&m_b[27], 1500); //pwm
+
+		f2b(&m_b[31], 0);
+		f2b(&m_b[35], 0);
+		f2b(&m_b[39], 0);
+
+		f2b(&m_b[43], spd);
+	}
+};
+
+struct S6H4D_CMD_CTRL
+{
+	uint8_t m_b[S6H4D_CMD_N];
 
 	void init(void)
 	{
-		m_begin = S6H4D_BEGIN;
-		m_cmd1 = 0;
-		m_cmd2 = 0;
-
-		for(int i=0; i<11; i++)
-			m_pV[i] = 0;
-
-		m_end = S6H4D_END;
+		memset(m_b, 0, S6H4D_CMD_N);
+		m_b[0] = S6H4D_CTRL_BEGIN;
+		m_b[47] = S6H4D_CTRL_END;
 	}
 };
 
@@ -52,6 +93,12 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void draw(void);
+
+	void armReset(void);
+	void setOrigin(vFloat3& vP);
+	void setMode(int mode);
+	void move(vFloat3& vM);
+	void pause(void);
 
 private:
 	void updatePos(void);
