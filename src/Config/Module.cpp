@@ -102,6 +102,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_VideoFile);
 	ADD_MODULE(Window);
 
+	ADD_MODULE(_PickingArm);
 	ADD_MODULE(_SortingArm);
 	ADD_MODULE(_SortingCtrlServer);
 	ADD_MODULE(_SortingCtrlClient);

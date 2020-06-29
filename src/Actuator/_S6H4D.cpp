@@ -16,6 +16,7 @@ _S6H4D::_S6H4D()
 	m_vRotRangeZ.init(0.0, 180.0);
 	m_vSpeedRange.init(0.0, 1e5);
 
+	m_dMove = 128;
 	m_bOrder = true;
 
 	m_cState.init();
@@ -80,16 +81,18 @@ void _S6H4D::update(void)
 	{
 		this->autoFPSfrom();
 
-		if(m_tState.m_mode != m_cState.m_mode)
-			setMode(m_tState.m_mode);
-
+		setMode(m_tState.m_mode);
 		if(m_tState.m_vOrigin != m_cState.m_vOrigin)
 			setOrigin(m_tState.m_vOrigin);
 
-		updatePos();
-
-		//	vFloat3 v;
-		//	move(v);
+		if(m_vNormTargetPos.sum() > -3.0)
+		{
+			updatePos();
+		}
+		else if(m_vNormTargetSpeed.sum() > -3.0)
+		{
+			updateMove();
+		}
 
 		readState();
 
@@ -113,34 +116,19 @@ void _S6H4D::updatePos(void)
 
 	float spd = m_vNormTargetSpeed.x * m_vSpeedRange.d() + m_vSpeedRange.x;
 
-	S6H4D_CMD_MOV cmd;
-	cmd.init('1', 0);
-	cmd.set(vP, vR, spd);
-
-	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+	gotoPos(vP, vR, spd);
 }
 
 void _S6H4D::updateMove(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP;
-	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
-	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
-	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
+	vFloat3 vM;
+	vM.x = m_vNormTargetSpeed.x;
+	vM.y = m_vNormTargetSpeed.y;
+	vM.z = m_vNormTargetSpeed.z;
 
-	vFloat3 vR;
-	vR.x = m_vNormTargetRot.x * m_vRotRangeX.d() + m_vRotRangeX.x;
-	vR.y = m_vNormTargetRot.y * m_vRotRangeY.d() + m_vRotRangeY.x;
-	vR.z = m_vNormTargetRot.z * m_vRotRangeZ.d() + m_vRotRangeZ.x;
-
-	float spd = m_vNormTargetSpeed.x * m_vSpeedRange.d() + m_vSpeedRange.x;
-
-	S6H4D_CMD_MOV cmd;
-	cmd.init('1', 0);
-	cmd.set(vP, vR, spd);
-
-	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+	move(vM);
 }
 
 void _S6H4D::armReset(void)
@@ -180,6 +168,16 @@ void _S6H4D::setMode(int mode)
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
+void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_MOV cmd;
+	cmd.init('1', 0);
+	cmd.set(vP, vR, speed);
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
 void _S6H4D::move(vFloat3& vM)
 {
 	IF_(check() < 0);
@@ -189,10 +187,9 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = 100;
-	cmd.m_b[4] = 128;
-	cmd.m_b[5] = 128;
-	cmd.m_b[6] = 106;
-
+	cmd.m_b[4] = (vM.x >= 0.0) ? constrain<float>(128 + (vM.x - 0.5)*2.0*m_dMove, 0, 255) : 128;
+	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*2.0*m_dMove, 0, 255) : 128;
+	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*2.0*m_dMove, 0, 255) : 128;
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -242,11 +239,9 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_cState.m_vP.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_cState.m_vP.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_cState.m_vP.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
-
-		//TODO: substract the origin
+		m_cState.m_vP.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_cState.m_vOrigin.x;
+		m_cState.m_vP.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_cState.m_vOrigin.y;
+		m_cState.m_vP.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_cState.m_vOrigin.z;
 
 		m_vNormPos.x = (float) (m_cState.m_vP.x - m_vPosRangeX.x) / (float) m_vPosRangeX.len();
 		m_vNormPos.y = (float) (m_cState.m_vP.y - m_vPosRangeY.x) / (float) m_vPosRangeY.len();

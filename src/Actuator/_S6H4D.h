@@ -103,6 +103,7 @@ public:
 	void armReset(void);
 	void setOrigin(vFloat3 &vP);
 	void setMode(int mode);
+	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void move(vFloat3 &vM);
 	void pause(void);
 	void state(void);
@@ -131,6 +132,7 @@ public:
 	vFloat2 m_vRotRangeZ;
 	vFloat2 m_vSpeedRange;	//mm/m
 
+	float m_dMove;
 	bool m_bOrder;
 
 	S6H4D_STATE m_cState;	// current state

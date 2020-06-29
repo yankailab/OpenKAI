@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "../Cartesian/_SortingCtrlServer.h"
+#include "../../RobotArm/Cartesian/_SortingCtrlServer.h"
 
 #ifdef USE_OPENCV
 

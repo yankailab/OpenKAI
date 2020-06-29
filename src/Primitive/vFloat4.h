@@ -164,6 +164,11 @@ struct vFloat4
 		return sqrt(x*x + y*y + z*z + w*w);
 	}
 
+	float sum(void)
+	{
+		return x + y + z + w;
+	}
+
 	void constrain(float a, float b)
 	{
 		x = (x<a)?a:x;

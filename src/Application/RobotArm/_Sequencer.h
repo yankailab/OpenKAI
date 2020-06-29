@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Automation__Sequencer_H_
-#define OpenKAI_src_Automation__Sequencer_H_
+#ifndef OpenKAI_src_RobotArm__Sequencer_H_
+#define OpenKAI_src_RobotArm__Sequencer_H_
 
 #include "../../Base/common.h"
 #include "../../Actuator/_ActuatorBase.h"

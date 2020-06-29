@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_Sequencer.h"
+#include "../RobotArm/_Sequencer.h"
 
 namespace kai
 {
