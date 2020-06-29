@@ -11,19 +11,16 @@ _S6H4D::_S6H4D()
 	m_vPosRangeX.init(0.0, 100.0);
 	m_vPosRangeY.init(0.0, 100.0);
 	m_vPosRangeZ.init(0.0, 100.0);
-
 	m_vRotRangeX.init(0.0, 180.0);
 	m_vRotRangeY.init(0.0, 180.0);
 	m_vRotRangeZ.init(0.0, 180.0);
-
 	m_vSpeedRange.init(0.0, 1e5);
 
-	m_vP.init();
-	m_vA.init();
-	m_vB.init();
-	m_aw = 0;
-	m_vwkXYZ.init();
 	m_bOrder = true;
+
+	m_cState.init();
+	m_tState.init();
+	m_tState.m_vOrigin.init(344.1, 0.0, 417.4);
 }
 
 _S6H4D::~_S6H4D()
@@ -44,6 +41,8 @@ bool _S6H4D::init(void *pKiss)
 	pK->v("vSpeedRange", &m_vSpeedRange);
 
 	pK->v("bOrder", &m_bOrder);
+	pK->v("vOrigin", &m_tState.m_vOrigin);
+	pK->v("mode", &m_tState.m_mode);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -81,12 +80,17 @@ void _S6H4D::update(void)
 	{
 		this->autoFPSfrom();
 
-		setMode(1);
+		if(m_tState.m_mode != m_cState.m_mode)
+			setMode(m_tState.m_mode);
 
-		vFloat3 v;
-//		move(v);
-//		pause();
+		if(m_tState.m_vOrigin != m_cState.m_vOrigin)
+			setOrigin(m_tState.m_vOrigin);
+
 		updatePos();
+
+		//	vFloat3 v;
+		//	move(v);
+
 		readState();
 
 		this->autoFPSto();
@@ -94,6 +98,29 @@ void _S6H4D::update(void)
 }
 
 void _S6H4D::updatePos(void)
+{
+	IF_(check() < 0);
+
+	vFloat3 vP;
+	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
+	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
+	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
+
+	vFloat3 vR;
+	vR.x = m_vNormTargetRot.x * m_vRotRangeX.d() + m_vRotRangeX.x;
+	vR.y = m_vNormTargetRot.y * m_vRotRangeY.d() + m_vRotRangeY.x;
+	vR.z = m_vNormTargetRot.z * m_vRotRangeZ.d() + m_vRotRangeZ.x;
+
+	float spd = m_vNormTargetSpeed.x * m_vSpeedRange.d() + m_vSpeedRange.x;
+
+	S6H4D_CMD_MOV cmd;
+	cmd.init('1', 0);
+	cmd.set(vP, vR, spd);
+
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::updateMove(void)
 {
 	IF_(check() < 0);
 
@@ -133,9 +160,11 @@ void _S6H4D::setOrigin(vFloat3& vP)
 
 	S6H4D_CMD_CTRL cmd;
 	cmd.init();
-	*((float*)&cmd.m_b[3]) = vP.x;
-	*((float*)&cmd.m_b[7]) = vP.y;
-	*((float*)&cmd.m_b[11]) = vP.z;
+	cmd.m_b[1] = 20;
+	cmd.m_b[2] = 1;
+	f2b(&cmd.m_b[3], vP.x);
+	f2b(&cmd.m_b[7], vP.y);
+	f2b(&cmd.m_b[11], vP.z);
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -213,36 +242,40 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vP.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_vP.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_vP.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vP.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vP.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vP.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 
-		m_vNormPos.x = (float) (m_vP.x - m_vPosRangeX.x) / (float) m_vPosRangeX.len();
-		m_vNormPos.y = (float) (m_vP.y - m_vPosRangeY.x) / (float) m_vPosRangeY.len();
-		m_vNormPos.z = (float) (m_vP.z - m_vPosRangeZ.x) / (float) m_vPosRangeZ.len();
+		//TODO: substract the origin
+
+		m_vNormPos.x = (float) (m_cState.m_vP.x - m_vPosRangeX.x) / (float) m_vPosRangeX.len();
+		m_vNormPos.y = (float) (m_cState.m_vP.y - m_vPosRangeY.x) / (float) m_vPosRangeY.len();
+		m_vNormPos.z = (float) (m_cState.m_vP.z - m_vPosRangeZ.x) / (float) m_vPosRangeZ.len();
 		break;
 	case 1:
-		m_vA.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_vA.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_vA.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vA.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vA.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vA.z = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 
-		m_vNormRot.x = (float) (m_vA.x - m_vRotRangeX.x) / (float) m_vRotRangeX.len();
-		m_vNormRot.y = (float) (m_vA.y - m_vRotRangeY.x) / (float) m_vRotRangeY.len();
-		m_vNormRot.z = (float) (m_vA.z - m_vRotRangeZ.x) / (float) m_vRotRangeZ.len();
+		m_vNormRot.x = (float) (m_cState.m_vA.x - m_vRotRangeX.x) / (float) m_vRotRangeX.len();
+		m_vNormRot.y = (float) (m_cState.m_vA.y - m_vRotRangeY.x) / (float) m_vRotRangeY.len();
+		m_vNormRot.z = (float) (m_cState.m_vA.z - m_vRotRangeZ.x) / (float) m_vRotRangeZ.len();
 		break;
 	case 2:
-		m_vB.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_vB.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_aw = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vB.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vB.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_aw = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 3:
-		m_vwkXYZ.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_vwkXYZ.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_vwkXYZ.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vOrigin.x = (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vOrigin.y = (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vOrigin.z = (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 4:
 		break;
 	case 5:
+		m_cState.m_vW.x = (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vW.y = (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
 		break;
 	default:
 		break;
@@ -254,14 +287,21 @@ void _S6H4D::draw(void)
 {
 	this->_ActuatorBase::draw();
 
-	addMsg("-- Raw values --",1);
+	addMsg("-- Current state --",1);
+	addMsg("vP = (" + f2str(m_cState.m_vP.x) + ", " + f2str(m_cState.m_vP.y) + ", " + f2str(m_cState.m_vP.z) + ")" ,1);
+	addMsg("vA = (" + f2str(m_cState.m_vA.x) + ", " + f2str(m_cState.m_vA.y) + ", " + f2str(m_cState.m_vA.z) + ")" ,1);
+	addMsg("vB = (" + f2str(m_cState.m_vB.x) + ", " + f2str(m_cState.m_vB.y) + ")" ,1);
+	addMsg("aw = " + f2str(m_cState.m_aw) ,1);
+	addMsg("vOrigin = (" + f2str(m_cState.m_vOrigin.x) + ", " + f2str(m_cState.m_vOrigin.y) + ", " + f2str(m_cState.m_vOrigin.z) + ")" ,1);
+	addMsg("vW = (" + f2str(m_cState.m_vW.x) + ", " + f2str(m_cState.m_vW.y) + ")" ,1);
 
-	addMsg("vNormPos = (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ")" ,1);
-	addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")" ,1);
-
-	addMsg("vNormRot = (" + f2str(m_vNormRot.x) + ", " + f2str(m_vNormRot.y) + ", " + f2str(m_vNormRot.z) + ")" ,1);
-	addMsg("vA = (" + f2str(m_vA.x) + ", " + f2str(m_vA.y) + ", " + f2str(m_vA.z) + ")" ,1);
-
+	addMsg("-- Target state --",1);
+	addMsg("vP = (" + f2str(m_tState.m_vP.x) + ", " + f2str(m_tState.m_vP.y) + ", " + f2str(m_tState.m_vP.z) + ")" ,1);
+	addMsg("vA = (" + f2str(m_tState.m_vA.x) + ", " + f2str(m_tState.m_vA.y) + ", " + f2str(m_tState.m_vA.z) + ")" ,1);
+	addMsg("vB = (" + f2str(m_tState.m_vB.x) + ", " + f2str(m_tState.m_vB.y) + ")" ,1);
+	addMsg("aw = " + f2str(m_tState.m_aw) ,1);
+	addMsg("vOrigin = (" + f2str(m_tState.m_vOrigin.x) + ", " + f2str(m_tState.m_vOrigin.y) + ", " + f2str(m_tState.m_vOrigin.z) + ")" ,1);
+	addMsg("vW = (" + f2str(m_tState.m_vW.x) + ", " + f2str(m_tState.m_vW.y) + ")" ,1);
 
 }
 

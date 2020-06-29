@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "_SortingArm.h"
+#include "../Cartesian/_SortingArm.h"
 
 #ifdef USE_OPENCV
 
@@ -127,7 +127,7 @@ void _SortingArm::updateArm(void)
 		for(int i=0; i<m_vAB.size(); i++)
 		{
 			_ActuatorBase* pA = m_vAB[i];
-			pA->moveToOrigin();
+			pA->gotoOrigin();
 			sleep(1);
 		}
 

@@ -9,7 +9,7 @@
 #define OpenKAI_src_Automation__SortingArm_H_
 
 #include "../../../Detector/_DetectorBase.h"
-#include "_Sequencer.h"
+#include "../_Sequencer.h"
 #include "_SortingCtrlServer.h"
 
 #ifdef USE_OPENCV

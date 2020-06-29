@@ -81,28 +81,16 @@ bool _ActuatorBase::open(void)
 	return false;
 }
 
-void _ActuatorBase::move(vFloat4& vSpeed)
-{
-	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
-}
-
-void _ActuatorBase::moveToOrigin(void)
-{
-	vFloat4 vSpeed;
-	vSpeed.init(1.0);
-	pos(m_vNormOriginPos, vSpeed);
-}
-
-void _ActuatorBase::pos(vFloat4& vPos, vFloat4& vSpeed)
+void _ActuatorBase::pos(vFloat4& vPos)
 {
 	m_vNormTargetPos.x = (vPos.x >= 0.0)?constrain(vPos.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.y = (vPos.y >= 0.0)?constrain(vPos.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.z = (vPos.z >= 0.0)?constrain(vPos.z, 0.0f, 1.0f):-1.0;
 	m_vNormTargetPos.w = (vPos.w >= 0.0)?constrain(vPos.w, 0.0f, 1.0f):-1.0;
+}
 
+void _ActuatorBase::speed(vFloat4& vSpeed)
+{
 	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
@@ -115,6 +103,11 @@ void _ActuatorBase::rot(vFloat4& vRot)
 	m_vNormTargetRot.y = (vRot.y >= 0.0)?constrain(vRot.y, 0.0f, 1.0f):-1.0;
 	m_vNormTargetRot.z = (vRot.z >= 0.0)?constrain(vRot.z, 0.0f, 1.0f):-1.0;
 	m_vNormTargetRot.w = (vRot.w >= 0.0)?constrain(vRot.w, 0.0f, 1.0f):-1.0;
+}
+
+void _ActuatorBase::gotoOrigin(void)
+{
+	pos(m_vNormOriginPos);
 }
 
 void _ActuatorBase::setGlobalTarget(vFloat4& t)
@@ -162,9 +155,13 @@ void _ActuatorBase::draw(void)
 	this->_ThreadBase::draw();
 
 	addMsg("-- Normalized state --",1);
-	addMsg("Current pos = (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")",1);
-	addMsg("Target pos = (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")",1);
-	addMsg("Speed = (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")",1);
+	addMsg("vNormPos = (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")", 1);
+	addMsg("vNormTargetPos = (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")", 1);
+	addMsg("vNormRot = (" + f2str(m_vNormRot.x) + ", " + f2str(m_vNormRot.y) + ", " + f2str(m_vNormRot.z) + ", " + f2str(m_vNormRot.w) + ")", 1);
+	addMsg("vNormTargetRot = (" + f2str(m_vNormTargetRot.x) + ", " + f2str(m_vNormTargetRot.y) + ", " + f2str(m_vNormTargetRot.z) + ", " + f2str(m_vNormTargetRot.w) + ")", 1);
+	addMsg("vNormSpeed = (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")", 1);
+	addMsg("vNormTargetSpeed = (" + f2str(m_vNormTargetSpeed.x) + ", " + f2str(m_vNormTargetSpeed.y) + ", " + f2str(m_vNormTargetSpeed.z) + ", " + f2str(m_vNormTargetSpeed.w) + ")", 1);
+
 }
 
 }

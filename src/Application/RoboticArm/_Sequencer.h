@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Automation__Sequencer_H_
 #define OpenKAI_src_Automation__Sequencer_H_
 
-#include "../../../Base/common.h"
-#include "../../../Actuator/_ActuatorBase.h"
+#include "../../Base/common.h"
+#include "../../Actuator/_ActuatorBase.h"
 
 namespace kai
 {
@@ -30,7 +30,8 @@ struct SEQ_ACTUATOR
 	bool move(void)
 	{
 		NULL_F(m_pA);
-		m_pA->pos(m_vPos, m_vSpeed);
+		m_pA->pos(m_vPos);
+		m_pA->speed(m_vSpeed);
 
 		return m_pA->bComplete();
 	}

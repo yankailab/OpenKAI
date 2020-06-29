@@ -1,4 +1,4 @@
-#include "_SortingCtrlClient.h"
+#include "../Cartesian/_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV
 

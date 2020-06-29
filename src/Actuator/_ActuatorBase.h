@@ -23,12 +23,11 @@ public:
 	virtual bool start(void);
 	virtual void draw(void);
 
-	virtual void move(vFloat4& vSpeed);
-	virtual void moveToOrigin(void);
-
-	virtual void pos(vFloat4& vPos, vFloat4& vSpeed);
+	virtual void pos(vFloat4& vPos);
+	virtual void speed(vFloat4& vSpeed);
 	virtual void rot(vFloat4& vRot);
 
+	virtual void gotoOrigin(void);
 	virtual void setGlobalTarget(vFloat4& t);
 
 	virtual bool bComplete(void);

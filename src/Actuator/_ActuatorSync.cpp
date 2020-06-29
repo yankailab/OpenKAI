@@ -81,28 +81,30 @@ void _ActuatorSync::updateSync(void)
 
 }
 
-void _ActuatorSync::move(vFloat4& vSpeed)
+void _ActuatorSync::speed(vFloat4& vSpeed)
 {
 	for(int i=0; i<m_nAB; i++)
-		m_pAB[i]->move(vSpeed);
+		m_pAB[i]->speed(vSpeed);
 
-	this->_ActuatorBase::move(vSpeed);
+	this->_ActuatorBase::speed(vSpeed);
 }
 
-void _ActuatorSync::pos(vFloat4& vPos, vFloat4& vSpeed)
+void _ActuatorSync::pos(vFloat4& vPos)
 {
 	for(int i=0; i<m_nAB; i++)
-		m_pAB[i]->pos(vPos, vSpeed);
+	{
+		m_pAB[i]->pos(vPos);
+	}
 
-	this->_ActuatorBase::pos(vPos, vSpeed);
+	this->_ActuatorBase::pos(vPos);
 }
 
-void _ActuatorSync::moveToOrigin(void)
+void _ActuatorSync::gotoOrigin(void)
 {
 	for(int i=0; i<m_nAB; i++)
-		m_pAB[i]->moveToOrigin();
+		m_pAB[i]->gotoOrigin();
 
-	this->_ActuatorBase::moveToOrigin();
+	this->_ActuatorBase::gotoOrigin();
 }
 
 bool _ActuatorSync::bComplete(void)

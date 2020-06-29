@@ -33,9 +33,8 @@
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
-#include "../Application/Automation/Sorting/_Sequencer.h"
 #include "../Application/Mission/_MissionControl.h"
-
+#include "../Application/RoboticArm/_Sequencer.h"
 #include "../Control/PIDctrl.h"
 
 #include "../Navigation/_Path.h"
@@ -118,9 +117,9 @@
 #include "../Application/Surveillance/_GDcam.h"
 #include "../Application/Surveillance/_ShopCam.h"
 
-#include "../Application/Automation/Sorting/_SortingArm.h"
-#include "../Application/Automation/Sorting/_SortingCtrlServer.h"
-#include "../Application/Automation/Sorting/_SortingCtrlClient.h"
+#include "../Application/RoboticArm/Cartesian/_SortingArm.h"
+#include "../Application/RoboticArm/Cartesian/_SortingCtrlServer.h"
+#include "../Application/RoboticArm/Cartesian/_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

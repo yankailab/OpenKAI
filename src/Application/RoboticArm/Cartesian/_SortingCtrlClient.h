@@ -3,7 +3,7 @@
 
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Protocol/_ProtocolBase.h"
-#include "_SortingCtrlServer.h"
+#include "../Cartesian/_SortingCtrlServer.h"
 
 #ifdef USE_OPENCV
 

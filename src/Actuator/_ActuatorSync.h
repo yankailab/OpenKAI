@@ -25,9 +25,9 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 
-	virtual void move(vFloat4& vSpeed);
-	virtual void pos(vFloat4& vPos, vFloat4& vSpeed);
-	virtual void moveToOrigin(void);
+	virtual void pos(vFloat4& vPos);
+	virtual void speed(vFloat4& vSpeed);
+	virtual void gotoOrigin(void);
 
 	virtual bool bComplete(void);
 

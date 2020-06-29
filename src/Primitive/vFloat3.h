@@ -102,6 +102,15 @@ struct vFloat3
 		z /= r;
 	}
 
+	inline bool operator!=(vFloat3 r)
+    {
+		IF_F(x != r.x);
+		IF_F(y != r.y);
+		IF_F(z != r.z);
+
+		return true;
+	}
+
 	float len(void)
 	{
 		return sqrt(x*x + y*y + z*z);
