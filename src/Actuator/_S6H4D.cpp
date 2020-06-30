@@ -190,6 +190,10 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[4] = (vM.x >= 0.0) ? constrain<float>(128 + (vM.x - 0.5)*2.0*m_dMove, 0, 255) : 128;
 	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*2.0*m_dMove, 0, 255) : 128;
 	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*2.0*m_dMove, 0, 255) : 128;
+
+	//TODO: add border detect and protection
+
+
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 

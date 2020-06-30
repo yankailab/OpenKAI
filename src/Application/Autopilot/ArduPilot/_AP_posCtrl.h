@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 #define OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 
-#include "../../../Base/common.h"
 #include "../../../Control/PIDctrl.h"
 #include "../ArduPilot/_AP_base.h"
 

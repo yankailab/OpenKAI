@@ -4,16 +4,22 @@
 	"appName":"OpenKAI",
 	"bWindow":1,
 	"bDraw":1,
-	"bLog":0,
-	"bConsole":0,
+	"bLog":1,
 	"bStdErr":1,
 	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
 	"bInst":1,
+	"bFullScreen":0,
 }
 
 {
@@ -26,7 +32,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"deviceID":0,
 	"w":1280,
@@ -58,6 +64,29 @@
 }
 
 {
+	"name":"cam",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":1280,
+	"hD":720,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+}
+
+{
 	"name":"histEqualize",
 	"class":"_HistEqualize",
 	"FPS":30,
@@ -70,7 +99,7 @@
 	"name":"contrast",
 	"class":"_Contrast",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"FilterView",
 	"_VisionBase":"cam",
 	"alpha":1.5,
@@ -78,12 +107,21 @@
 }
 
 {
+	"name":"d2g",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":1,
+	"Window":"FilterView",
+	"_DepthVisionBase":"cam",
+}
+
+{
 	"name":"thr",
 	"class":"_Threshold",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"FilterView",
-	"_VisionBase":"contrast",
+	"_VisionBase":"d2g",
 
 	{
 		"type":1,
@@ -99,7 +137,7 @@
 	"name":"thr",
 	"class":"_Threshold",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"FilterView",
 	"_VisionBase":"contrast",
 

@@ -8,13 +8,25 @@
 #ifndef OpenKAI_src_RobotArm_Articulated__PickingArm_H_
 #define OpenKAI_src_RobotArm_Articulated__PickingArm_H_
 
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Universe/_Universe.h"
 #include "../../../Actuator/_ActuatorBase.h"
+#include "../../../Control/PIDctrl.h"
 
 #ifdef USE_OPENCV
 
 namespace kai
 {
+
+struct PICKING_CLASS
+{
+	int m_iClass;
+
+	void init(void)
+	{
+		m_iClass = 0;
+	}
+
+};
 
 class _PickingArm: public _ThreadBase
 {
@@ -38,15 +50,16 @@ private:
 
 public:
 	_ActuatorBase* m_pA;
-	_DetectorBase* m_pD;
+	_Universe* m_pU;
 	_Object		m_tO;
 
-	int			m_nClass;
-	uint64_t	m_classFlag;
+	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
+	vFloat3 m_vTargetP;	//constant, screen coordinate where the followed object should get to
+	PIDctrl* m_pXpid;
+	PIDctrl* m_pYpid;
+	PIDctrl* m_pZpid;
 
-	vector<float> m_vDropPos;
-
-
+	vector<PICKING_CLASS>	m_vClass;
 };
 
 }
