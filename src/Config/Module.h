@@ -75,6 +75,7 @@
 #include "../Vision/_Raspivid.h"
 #include "../Vision/_GPhoto.h"
 #include "../Vision/ImgFilter/_Morphology.h"
+#include "../Vision/ImgFilter/_Mask.h"
 #include "../Vision/ImgFilter/_Threshold.h"
 #include "../Vision/ImgFilter/_Contrast.h"
 #include "../Vision/ImgFilter/_Crop.h"

@@ -74,16 +74,16 @@
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":1280,
-	"h":720,
+	"w":1920,
+	"h":1080,
 	"rsFPS":30,
-	"wD":1280,
-	"hD":720,
+	"wD":1024,
+	"hD":768,
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
 	"vRange":[0.1,15.0],
-	"bAlign":0,
+	"bAlign":1,
 }
 
 {
@@ -111,26 +111,30 @@
 	"class":"_Depth2Gray",
 	"FPS":30,
 	"bInst":1,
-	"Window":"FilterView",
+	"/Window":"FilterView",
 	"_DepthVisionBase":"cam",
 }
 
 {
-	"name":"thr",
-	"class":"_Threshold",
+	"name":"resize",
+	"class":"_Resize",
 	"FPS":30,
 	"bInst":1,
-	"Window":"FilterView",
+	"/Window":"FilterView",
 	"_VisionBase":"d2g",
+	"w":1920,
+	"h":1080,
+}
 
-	{
-		"type":1,
-		"vMax":255.0,
-		"method":0,
-		"thrType":0,
-		"blockSize":9,
-		"C":0,
-	}
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/FilterView",
+	"_VisionBase":"resize",
+	"rFrom":10,
+	"rTo":30,
 }
 
 {
@@ -179,9 +183,9 @@
 	"name":"erode",
 	"class":"_Erode",
 	"FPS":30,
-	"bInst":0,
-	"Window":"FilterView",
-	"_VisionBase":"thr",
+	"bInst":1,
+	"Window":"/FilterView",
+	"_VisionBase":"inRange",
 
 	{
 		"nItr":1,
@@ -189,3 +193,14 @@
 		"kH":3,
 	}
 }
+
+{
+	"name":"mask",
+	"class":"_Mask",
+	"FPS":30,
+	"bInst":1,
+	"Window":"FilterView",
+	"_VisionBase":"cam",
+	"_VisionBaseMask":"erode",
+}
+

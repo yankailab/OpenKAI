@@ -89,6 +89,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_ImgFile);
 	ADD_MODULE(_Lane);
 	ADD_MODULE(_Line);
+	ADD_MODULE(_Mask);
 	ADD_MODULE(_Morphology);
 	ADD_MODULE(_OpenPose);
 	ADD_MODULE(_Raspivid);

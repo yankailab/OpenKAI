@@ -116,7 +116,10 @@ void _Threshold::filter(void)
 {
 	IF_(m_pV->BGR()->bEmpty());
 
-	m_fIn.copy(m_pV->BGR()->cvtColor(COLOR_RGB2GRAY));
+	if(m_pV->BGR()->m_mat.type() != CV_8UC1)
+		m_fIn.copy(m_pV->BGR()->cvtColor(COLOR_RGB2GRAY));
+	else
+		m_fIn.copy(*m_pV->BGR());
 
 	Mat m1 = *m_fIn.m();
 	Mat m2;
