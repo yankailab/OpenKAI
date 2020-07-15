@@ -54,6 +54,7 @@
 #include "../Protocol/_ProtocolBase.h"
 #include "../Protocol/_Modbus.h"
 #include "../Sensor/_LeddarVu.h"
+#include "../Sensor/_TOFsense.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
 #include "../SLAM/_ORB_SLAM2.h"
 

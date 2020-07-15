@@ -1,0 +1,37 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"serial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"TOFsense",
+	"class":"_TOFsense",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_IOBase":"serial",
+}

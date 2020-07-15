@@ -11,7 +11,6 @@
 #include "../Base/_ThreadBase.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
-#include "../Protocol/_Mavlink.h"
 
 #define MAX_DIST_SENSOR_DIV 720
 
@@ -22,7 +21,8 @@ enum DIST_SENSOR_TYPE
 {
 	ds_Unknown,
 	ds_RPLIDAR,
-	ds_LeddarVu
+	ds_LeddarVu,
+	ds_TOFsense,
 };
 
 struct DIST_SENSOR_DIV
@@ -95,8 +95,8 @@ public:
 
 	float rMin(void);
 	float rMax(void);
-	void input(float deg, float d);
-	void input(float deg, float d, float a);
+	void input(float deg, float d, float a = -1.0);
+	void input(int iDiv, float d, float a = -1.0);
 	bool bReady(void);
 
 	virtual DIST_SENSOR_TYPE type(void);

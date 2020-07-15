@@ -19,7 +19,6 @@ _LeddarVu::_LeddarVu()
 
 	m_nDetection = 0;
 	m_lightSrcPwr = 0;
-	m_tStamp = 0;
 
 	m_nAccumulationsExpo = 5;
 	m_nOversamplingsExpo = 1;
@@ -32,6 +31,8 @@ _LeddarVu::_LeddarVu()
 	m_bSaturationCompensation = true;
 	m_bOvershootManagement = true;
 	m_oprMode = 1;
+
+	m_nDiv = 8;
 }
 
 _LeddarVu::~_LeddarVu()
@@ -310,9 +311,6 @@ void _LeddarVu::draw(void)
 	msg += ", nDet=" + i2str(m_nDetection);
 	msg += ", lightSrcPwr=" + i2str(m_lightSrcPwr);
 	msg += ", tStamp=" + i2str(m_tStamp);
-	addMsg(msg);
-
-	msg = "nDiv:" + i2str(m_nDiv) + ", nDet:" + i2str(m_nDetection);
 	addMsg(msg);
 
 	int i;

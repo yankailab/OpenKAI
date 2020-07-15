@@ -1,20 +1,22 @@
-#include "BrushlessWheels.h"
+#include "BLC.h"
 
 //#define SERIAL_DEBUG
 
 #define MAX_RPM 100
 #define PWM_PIN_L 7
 #define PWM_PIN_R 8
-#define PWM_L 1100
+#define PWM_L 800
 #define PWM_M 1500
-#define PWM_H 1900
+#define PWM_H 2200
 #define PWM_DZ 10
 
 BrushlessWheels BW;
 
 float pwm2rpm(int pwm)
 {
-  pwm = constrain(pwm, PWM_L, PWM_H);
+  if (pwm < PWM_L || pwm > PWM_H)
+    return 0.0;
+
   float rpm;
 
   if(abs(pwm-PWM_M) < PWM_DZ)
@@ -41,13 +43,21 @@ void setup()
 
 void loop()
 {
-  float rpmL = pwm2rpm(pulseIn(PWM_PIN_L, HIGH));
-  float rpmR = pwm2rpm(pulseIn(PWM_PIN_R, HIGH));
+  int pwmL = pulseIn(PWM_PIN_L, HIGH);
+  int pwmR = pulseIn(PWM_PIN_R, HIGH);
+  
+  float rpmL = pwm2rpm(pwmL);
+  float rpmR = pwm2rpm(pwmR);
 
   BW.DriveWheels(rpmL, rpmR);
 
 #ifdef SERIAL_DEBUG
-  Serial.print("rpm: ");
+  Serial.print("pwm: ");
+  Serial.print(pwmL);
+  Serial.print(", ");
+  Serial.print(pwmR);
+  
+  Serial.print("; rpm: ");
   Serial.print(rpmL);
   Serial.print(", ");
   Serial.print(rpmR);

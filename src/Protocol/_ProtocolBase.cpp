@@ -88,14 +88,14 @@ void _ProtocolBase::update(void)
 
 bool _ProtocolBase::readCMD(void)
 {
-	uint8_t	inByte;
-	int		byteRead;
+	uint8_t	b;
+	int		nB;
 
-	while ((byteRead = m_pIO->read(&inByte,1)) > 0)
+	while ((nB = m_pIO->read(&b,1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
-			m_recvMsg.m_pBuf[m_recvMsg.m_iByte] = inByte;
+			m_recvMsg.m_pBuf[m_recvMsg.m_iByte] = b;
 			m_recvMsg.m_iByte++;
 
 			if (m_recvMsg.m_iByte == 3)
@@ -107,10 +107,10 @@ bool _ProtocolBase::readCMD(void)
 				return true;
 			}
 		}
-		else if (inByte == PROTOCOL_BEGIN)
+		else if (b == PROTOCOL_BEGIN)
 		{
-			m_recvMsg.m_cmd = inByte;
-			m_recvMsg.m_pBuf[0] = inByte;
+			m_recvMsg.m_cmd = b;
+			m_recvMsg.m_pBuf[0] = b;
 			m_recvMsg.m_iByte = 1;
 			m_recvMsg.m_nPayload = 0;
 		}

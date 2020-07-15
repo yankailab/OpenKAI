@@ -13,7 +13,7 @@ namespace kai
 _DistSensorBase::_DistSensorBase()
 {
 	m_pDiv = NULL;
-	m_nDiv = 0;
+	m_nDiv = 1;
 	m_fovH = 360;
 	m_fovV = 0.1;
 	m_dDeg = 0;
@@ -101,13 +101,21 @@ void _DistSensorBase::input(float deg, float d, float a)
 	IF_(!m_bReady);
 	IF_(deg < 0);
 
-	if(d < m_rMin)d = -1;
-	if(d > m_rMax)d = -1;
-
 	deg += m_hdg;
 	int iDiv = (int) (deg * m_dDegInv);
 	while (iDiv >= m_nDiv)
 		iDiv -= m_nDiv;
+
+	input(iDiv, d, a);
+}
+
+void _DistSensorBase::input(int iDiv, float d, float a)
+{
+	IF_(!m_bReady);
+	IF_(iDiv < 0 || iDiv >= m_nDiv);
+
+	if(d < m_rMin)d = -1;
+	if(d > m_rMax)d = -1;
 
 	m_pDiv[iDiv].input(d,a);
 }

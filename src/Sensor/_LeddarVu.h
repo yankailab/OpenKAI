@@ -52,7 +52,6 @@ public:
 	float m_showOriginOffsetY;
 
 	uint16_t m_nDetection;
-	uint32_t m_tStamp;
 
 	//configurations
 	uint16_t	m_nAccumulationsExpo;
