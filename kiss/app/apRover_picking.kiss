@@ -1,0 +1,356 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":0,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)1280, height=(int)720, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.253 port=5678 auto-multicast=false",
+}
+
+{
+	"name":"cam",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+}
+
+{
+	"name":"universe",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"FPS":30,
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"FPS":30,
+	"bInst":0,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_VisionBase":"cam",
+	"_Universe":"universe",
+	"dict":17,
+}
+
+{
+	"name":"tofSerial",
+	"class":"_SerialPort",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
+}
+
+{
+	"name":"TOFsense",
+	"class":"_TOFsense",
+	"bInst":0,
+	"FPS":30,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_IOBase":"tofSerial",
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":"/dev/ttyTHS1",
+	"baud":921600,
+	"/port":"/dev/ttyACM0",
+	"/baud":57600,
+	"_wakeUp":"apMavlink",
+}
+
+{
+	"name":"apMavlink",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"apSerial",
+	"mySystemID":255,
+	"myComponentID":190,
+	"devSystemID":-1,
+	"devComponentID":-1,
+	"tTimeout":10000000,
+
+	{
+		"bInst":1,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"apUDP",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":19840,
+	"_wakeUp":"mavGCS",
+}
+
+{
+	"name":"mavGCS",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_IOBase":"apUDP",
+	
+	{
+		"bInst":1,
+		"_Mavlink":"apMavlink",
+	}	
+}
+
+{
+	"name":"mission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
+	}
+}
+
+{
+	"name":"apBase",
+	"class":"_AP_base",
+	"FPS":10,
+	"bInst":1,
+	"_MissionControl":"mission",
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_Mavlink":"apMavlink",
+	"freqSendHeartbeat":1,
+	"apType":1,
+	
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":1,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":0.3,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":0.1,
+		}
+		{
+			"name":"localPosition",
+			"id"32,
+			"tInt":1.0,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":1.0,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":2,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}
+
+
+
+
+{
+	"name":"armSerial",
+	"class":"_SerialPort",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":9600,
+}
+
+{
+	"name":"S6H4D",
+	"class":"_S6H4D",
+	"bInst":0,
+	"FPS":5,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"armSerial",
+
+	"vSpeedRange":[0, 1000],
+
+	"vPosRangeX":[344.1, 344.1],
+	"vPosRangeY":[0.7, 0.7],
+	"vPosRangeZ":[417.4, 417.4],
+
+	"vRotRangeX":[1.2, 1.2],
+	"vRotRangeY":[-180, -180],
+	"vRotRangeZ":[787.2, 787.2],
+	
+	"vNormTargetSpeed":[1.0],
+	"vNormTargetPos":[0.0, 0.0, 0.0],
+	"vNormTargetRot":[0.0, 0.0, 0.0],
+}
+
+{
+	"name":"PIDx",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":10.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":0.0,
+	"oMax":1.0,
+}
+
+{
+	"name":"PIDy",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":10.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":0.0,
+	"oMax":1.0,
+}
+
+{
+	"name":"PIDz",
+	"class":"PIDctrl",
+	"bInst":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":10.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":0.0,
+	"oMax":1.0,
+}
+
+{
+	"name":"DetectNet",
+	"class":"_DetectNet",
+	"bInst":0,
+	"bDraw":1,
+	"bLog":1,
+	"FPS":30,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_VisionBase":"cam",
+	"_Universe":"universe",
+	"fModel":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",
+	"fClass":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_coco_labels.txt",
+	"bSwapRB":0,
+	"scale":1.0,
+	"vDimIn":[3,300,300],
+	"thr":0.1,
+	"iClassDraw":-1,
+}
+
+{
+	"name":"pickingArm",
+	"class":"_PickingArm",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_ActuatorBase":"S6H4D",
+	"_Universe":"universe",
+
+	{
+		"name":"class",
+		
+		{
+			"iClass":0,
+		}
+	}			
+}

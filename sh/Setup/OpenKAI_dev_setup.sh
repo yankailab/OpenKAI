@@ -192,7 +192,7 @@ sudo make install -j8
 # (Optional) Jetson inference
 # Jetson Nano
 sudo apt-get -y install libpython3-dev python3-numpy
-git clone --recursive https://github.com/dusty-nv/jetson-inference.git
+git clone --recursive --depth 1 https://github.com/dusty-nv/jetson-inference.git
 cd jetson-inference
 mkdir build
 cd build
