@@ -53,7 +53,7 @@ bool _Sequencer::init(void* pKiss)
 
 			string iName = "";
 			F_ERROR_F(pActuatorI->v("_ActuatorBase", &iName));
-			aA.m_pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+			aA.m_pA = (_ActuatorBase*) (pK->getInst(iName));
 			IF_CONT(!aA.m_pA);
 
 			pActuatorI->v("pos", &aA.m_vPos);

@@ -22,7 +22,7 @@ Takeoff::~Takeoff()
 
 bool Takeoff::init(void* pKiss)
 {
-	IF_F(!this->MissionBase::init(pKiss));
+	IF_F(!this->Mission::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("alt",&m_alt);
@@ -32,7 +32,7 @@ bool Takeoff::init(void* pKiss)
 
 bool Takeoff::update(void)
 {
-	IF_F(!this->MissionBase::update());
+	IF_F(!this->Mission::update());
 
 	LOG_I("Takeoff complete");
 	return true;
@@ -40,7 +40,7 @@ bool Takeoff::update(void)
 
 void Takeoff::draw(void)
 {
-	this->MissionBase::draw();
+	this->Mission::draw();
 	addMsg("alt = "+f2str(m_alt));
 
 }

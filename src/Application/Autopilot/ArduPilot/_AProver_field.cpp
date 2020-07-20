@@ -32,7 +32,7 @@ _AProver_field::~_AProver_field()
 
 bool _AProver_field::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nSpeed", &m_nSpeed);
@@ -44,27 +44,27 @@ bool _AProver_field::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AProver_drive", &iName);
-	m_pDrive = (_AProver_drive*) (pK->root()->getChildInst(iName));
+	m_pDrive = (_AProver_drive*) (pK->getInst(iName));
 	IF_Fl(!m_pDrive, iName + ": not found");
 
 	iName = "";
 	pK->v("PIDctrl", &iName);
-	m_pPIDhdg = (PIDctrl*) (pK->root()->getChildInst(iName));
+	m_pPIDhdg = (PIDctrl*) (pK->getInst(iName));
 	NULL_Fl(m_pPIDhdg, iName + ": not found");
 
 	iName = "";
 	pK->v("_DetBB", &iName);
-	m_pDetBB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDetBB = (_DetectorBase*) (pK->getInst(iName));
 	NULL_Fl(m_pDetBB, iName + ": not found");
 
 	iName = "";
 	pK->v("_DetSB", &iName);
-	m_pDetSB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDetSB = (_DetectorBase*) (pK->getInst(iName));
 	NULL_Fl(m_pDetSB, iName + ": not found");
 
 	return true;
@@ -94,7 +94,7 @@ int _AProver_field::check(void)
 	NULL__(m_pDetSB->m_pU, -1);
 	NULL__(m_pPIDhdg, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AProver_field::update(void)
@@ -103,7 +103,7 @@ void _AProver_field::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		if(!updateDrive())
 		{
@@ -190,7 +190,7 @@ void _AProver_field::findSideBoarder(void)
 
 void _AProver_field::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	IF_(check()<0);
 
 	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));

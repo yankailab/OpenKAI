@@ -10,10 +10,10 @@
 
 #include "../../Base/_ThreadBase.h"
 #include "Goto.h"
-#include "MissionBase.h"
 #include "Waypoint.h"
 #include "Land.h"
 #include "Loiter.h"
+#include "Mission.h"
 #include "RTH.h"
 #include "Takeoff.h"
 
@@ -24,7 +24,7 @@ namespace kai
 
 struct MISSION_INST
 {
-	MissionBase* m_pInst;
+	Mission* m_pInst;
 	Kiss* m_pKiss;
 
 	void init(void)
@@ -45,7 +45,7 @@ public:
 	void draw(void);
 	bool console(int& iY);
 
-	MissionBase* getMission(void);
+	Mission* getMission(void);
 	string getMissionName(void);
 	int getMissionIdx(void);
 	MISSION_TYPE getMissionType(void);

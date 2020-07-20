@@ -37,7 +37,7 @@ bool _Contrast::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->parent()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->getInst(iName));
 	IF_Fl(!m_pV, iName + ": not found");
 
 	return true;

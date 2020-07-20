@@ -14,7 +14,7 @@ _AP_relay::~_AP_relay()
 
 bool _AP_relay::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	int i = 0;
@@ -33,7 +33,7 @@ bool _AP_relay::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_AP_base", &iName));
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 
 	return true;
 }
@@ -57,7 +57,7 @@ int _AP_relay::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_relay::update(void)
@@ -66,7 +66,7 @@ void _AP_relay::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateRelay();
 
 		this->autoFPSto();
@@ -89,7 +89,7 @@ void _AP_relay::updateRelay(void)
 void _AP_relay::draw(void)
 {
 	IF_(check()<0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	for(AP_relay s : m_vRelay)

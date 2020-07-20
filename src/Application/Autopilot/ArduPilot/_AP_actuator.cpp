@@ -18,7 +18,7 @@ _AP_actuator::~_AP_actuator()
 
 bool _AP_actuator::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vPWMrange", &m_vPWMrange);
@@ -37,7 +37,7 @@ bool _AP_actuator::init(void* pKiss)
 
 		iName = "";
 		pA->v("_ActuatorBase", &iName);
-		a.m_pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+		a.m_pA = (_ActuatorBase*) (pK->getInst(iName));
 		NULL_Fl(a.m_pA, "_ActuatorBase: " + iName + " not found");
 
 		vInt4 vRCin;
@@ -66,7 +66,7 @@ bool _AP_actuator::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
@@ -91,7 +91,7 @@ int _AP_actuator::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_actuator::update(void)
@@ -100,7 +100,7 @@ void _AP_actuator::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateActuator();
 
 		this->autoFPSto();
@@ -137,7 +137,7 @@ void _AP_actuator::updateActuator(void)
 void _AP_actuator::draw(void)
 {
 	IF_(check() < 0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_iMode), 1);

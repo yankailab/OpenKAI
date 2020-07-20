@@ -57,7 +57,7 @@ bool _MotionDetector::init(void *pKiss)
 
 	string iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pVision = (_VisionBase*) (pK->getInst(iName));
 
 	return true;
 }

@@ -16,7 +16,7 @@ _AP_takeoff::~_AP_takeoff()
 
 bool _AP_takeoff::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("apMode", &m_apMode);
@@ -24,7 +24,7 @@ bool _AP_takeoff::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
@@ -49,7 +49,7 @@ int _AP_takeoff::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_takeoff::update(void)
@@ -58,7 +58,7 @@ void _AP_takeoff::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateMission();
 
 		this->autoFPSto();
@@ -74,7 +74,7 @@ void _AP_takeoff::updateMission(void)
 		IF_(m_pAP->getApMode() != m_apMode);
 	}
 
-	MissionBase* pM = m_pMC->getMission();
+	Mission* pM = m_pMC->getMission();
 	NULL_(pM);
 	IF_(pM->type() != mission_takeoff);
 
@@ -92,7 +92,7 @@ void _AP_takeoff::updateMission(void)
 void _AP_takeoff::draw(void)
 {
 	IF_(check()<0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	addMsg("alt = "+f2str(m_pAP->m_vGlobalPos.w) + ", dAlt = " + f2str(m_dAlt));

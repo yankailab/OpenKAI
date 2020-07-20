@@ -18,7 +18,7 @@ _AP_depthVision::~_AP_depthVision()
 
 bool _AP_depthVision::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -26,11 +26,11 @@ bool _AP_depthVision::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
 	m_nROI = 0;
@@ -56,7 +56,7 @@ bool _AP_depthVision::init(void* pKiss)
 
 void _AP_depthVision::update(void)
 {
-	this->_AutopilotBase::update();
+	this->_MissionBase::update();
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMav);
@@ -89,7 +89,7 @@ void _AP_depthVision::update(void)
 
 void _AP_depthVision::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	addMsg("nROI=" + i2str(m_nROI));
 
 	IF_(!checkWindow());

@@ -41,7 +41,7 @@ _APcopter_photo::~_APcopter_photo()
 
 bool _APcopter_photo::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("quality", &m_quality);
@@ -68,30 +68,30 @@ bool _APcopter_photo::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	NULL_Fl(m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AP_posCtrl", &iName);
-	m_pPC = (_AP_posCtrl*) (pK->root()->getChildInst(iName));
+	m_pPC = (_AP_posCtrl*) (pK->getInst(iName));
 	NULL_Fl(m_pPC, iName + ": not found");
 
 	iName = "";
 	pK->v("_DistSensorBase", &iName);
-	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
+	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
 	NULL_Fl(m_pDS, iName + ": not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_DepthVisionBase", &iName);
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_GPhoto", &iName);
-	m_pG = (_GPhoto*) (pK->root()->getChildInst(iName));
+	m_pG = (_GPhoto*) (pK->getInst(iName));
 
 	return true;
 }
@@ -116,7 +116,7 @@ int _APcopter_photo::check(void)
 	NULL__(m_pPC, -1);
 	NULL__(m_pDS, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _APcopter_photo::update(void)
@@ -124,7 +124,7 @@ void _APcopter_photo::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		if(check()>=0)
 		{
@@ -264,7 +264,7 @@ void _APcopter_photo::shutter(void)
 void _APcopter_photo::draw(void)
 {
 	IF_(check()<0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));

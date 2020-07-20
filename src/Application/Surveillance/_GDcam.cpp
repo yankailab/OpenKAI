@@ -73,7 +73,7 @@ bool _GDcam::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pD = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pD = (_DetectorBase*) (pK->getInst(iName));
 	IF_Fl(!m_pD, iName + " not found");
 
 	return true;

@@ -8,7 +8,7 @@
 namespace kai
 {
 
-class _AP_mission: public _AutopilotBase
+class _AP_mission: public _MissionBase
 {
 public:
 	_AP_mission();

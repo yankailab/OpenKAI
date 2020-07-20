@@ -48,7 +48,7 @@ bool _Livox::init(void* pKiss)
 
 //	string iName = "";
 //	F_INFO(pK->v("_VisionBase", &iName));
-//	m_pVB = (_VisionBase*) (pK->parent()->getChildInst(iName));
+//	m_pVB = (_VisionBase*) (pK->getInst(iName));
 
 	return true;
 }

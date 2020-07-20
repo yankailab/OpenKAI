@@ -44,7 +44,7 @@ bool _MissionControl::init(void* pKiss)
 
 		//Add action modules below
 
-		ADD_MISSION(MissionBase);
+		ADD_MISSION(Mission);
 		ADD_MISSION(Takeoff);
 		ADD_MISSION(Loiter);
 		ADD_MISSION(Waypoint);
@@ -95,7 +95,7 @@ void _MissionControl::update(void)
 	{
 		this->autoFPSfrom();
 
-		MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+		Mission* pMission = m_vMission[m_iMission].m_pInst;
 		if(pMission->update())
 		{
 			transit(pMission->m_nextMission);
@@ -117,7 +117,7 @@ void _MissionControl::transit(int iNextMission)
 	IF_(iNextMission >= m_vMission.size());
 	IF_(iNextMission == m_iMission);
 
-	MissionBase* pMission = m_vMission[m_iMission].m_pInst;
+	Mission* pMission = m_vMission[m_iMission].m_pInst;
 	pMission->reset();
 
 	m_iMission = iNextMission;
@@ -134,7 +134,7 @@ int _MissionControl::getMissionIdx(const string& missionName)
 	return -1;
 }
 
-MissionBase* _MissionControl::getMission(void)
+Mission* _MissionControl::getMission(void)
 {
 	IF_N(m_iMission >= m_vMission.size());
 	IF_N(m_iMission < 0);
@@ -156,7 +156,7 @@ string _MissionControl::getMissionName(void)
 
 MISSION_TYPE _MissionControl::getMissionType(void)
 {
-	MissionBase* pMB = getMission();
+	Mission* pMB = getMission();
 
 	if(!pMB)
 		return mission_unknown;
@@ -174,7 +174,7 @@ void _MissionControl::draw(void)
 	addMsg("iMission: "+i2str(m_iMission),1);
 	IF_(m_iMission < 0);
 
-	MissionBase* pMB = m_vMission[m_iMission].m_pInst;
+	Mission* pMB = m_vMission[m_iMission].m_pInst;
 	addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
 
 	if(pMB->type() == mission_wp)

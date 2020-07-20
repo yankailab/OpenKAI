@@ -64,19 +64,19 @@ bool _SortingArm::init(void* pKiss)
 	for (i = 0; i < vActuator.size(); i++)
 	{
 		iName = vActuator[i];
-		_ActuatorBase* pA = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+		_ActuatorBase* pA = (_ActuatorBase*) (pK->getInst(iName));
 		IF_Fl(!pA, iName + " not found");
 		m_vAB.push_back(pA);
 	}
 
 	iName = "";
 	F_ERROR_F(pK->v("_Sequencer", &iName));
-	m_pSeq = (_Sequencer*) (pK->root()->getChildInst(iName));
+	m_pSeq = (_Sequencer*) (pK->getInst(iName));
 	IF_Fl(!m_pSeq, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_SortingCtrlServer", &iName));
-	m_pCS = (_SortingCtrlServer*) (pK->root()->getChildInst(iName));
+	m_pCS = (_SortingCtrlServer*) (pK->getInst(iName));
 	IF_Fl(!m_pCS, iName + " not found");
 
 	return true;

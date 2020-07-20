@@ -45,7 +45,7 @@ _AP_posCtrl::~_AP_posCtrl()
 
 bool _AP_posCtrl::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vTargetP", &m_vTargetP);
@@ -62,19 +62,19 @@ bool _AP_posCtrl::init(void* pKiss)
 
 	iName = "";
 	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->root()->getChildInst(iName));
+	m_pRoll = (PIDctrl*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->root()->getChildInst(iName));
+	m_pPitch = (PIDctrl*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->root()->getChildInst(iName));
+	m_pAlt = (PIDctrl*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
@@ -99,7 +99,7 @@ int _AP_posCtrl::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_posCtrl::update(void)
@@ -107,7 +107,7 @@ void _AP_posCtrl::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		setPosLocal();
 
@@ -190,7 +190,7 @@ void _AP_posCtrl::releaseCtrl(void)
 
 void _AP_posCtrl::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	addMsg( "Local NED:");

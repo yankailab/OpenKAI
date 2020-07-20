@@ -48,7 +48,7 @@ bool _GDimgUploader::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->getInst(iName));
 	IF_Fl(!m_pV, iName + " not found");
 
 	return true;

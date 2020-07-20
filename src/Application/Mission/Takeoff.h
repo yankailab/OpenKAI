@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Mission_Takeoff_H_
 #define OpenKAI_src_Mission_Takeoff_H_
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
 
-class Takeoff: public MissionBase
+class Takeoff: public Mission
 {
 public:
 	Takeoff();

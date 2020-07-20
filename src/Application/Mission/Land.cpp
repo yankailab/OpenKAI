@@ -25,7 +25,7 @@ Land::~Land()
 
 bool Land::init(void* pKiss)
 {
-	IF_F(!this->MissionBase::init(pKiss));
+	IF_F(!this->Mission::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("tag",&m_tag);
@@ -54,7 +54,7 @@ bool Land::init(void* pKiss)
 
 bool Land::update(void)
 {
-	IF_F(!this->MissionBase::update());
+	IF_F(!this->Mission::update());
 
 	LOG_I("Landed");
 	return true;
@@ -62,7 +62,7 @@ bool Land::update(void)
 
 void Land::draw(void)
 {
-	this->MissionBase::draw();
+	this->Mission::draw();
 }
 
 }

@@ -32,7 +32,7 @@ _AP_followClient::~_AP_followClient()
 
 bool _AP_followClient::init(void *pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("diff", &m_diff);
@@ -48,7 +48,7 @@ bool _AP_followClient::init(void *pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_AP_link", &iName));
-	m_pAL = (_AP_link*) (pK->root()->getChildInst(iName));
+	m_pAL = (_AP_link*) (pK->getInst(iName));
 	NULL_Fl(m_pAL, iName + ": not found");
 
 	return true;
@@ -72,7 +72,7 @@ int _AP_followClient::check(void)
 {
 	NULL__(m_pAL, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_followClient::update(void)
@@ -81,7 +81,7 @@ void _AP_followClient::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		updateBB();
 		updateState();
@@ -176,7 +176,7 @@ void _AP_followClient::onKey(int key)
 
 void _AP_followClient::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 
 	addMsg("iState = " + i2str(m_pAL->m_iState), 1);
 	addMsg(	"detector = (" + f2str(m_vBB.midX()) + ", " + f2str(m_vBB.midY())

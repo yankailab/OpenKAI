@@ -30,7 +30,7 @@ RTH::~RTH()
 
 bool RTH::init(void* pKiss)
 {
-	IF_F(!this->MissionBase::init(pKiss));
+	IF_F(!this->Mission::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("speedV",&m_speedV);
@@ -46,7 +46,7 @@ bool RTH::init(void* pKiss)
 bool RTH::update(void)
 {
 	IF_F(!m_bSetHome);
-	this->MissionBase::update();
+	this->Mission::update();
 
 	vDouble2 dH;
 	dH.x = m_vPos.x - m_vHome.x;
@@ -69,7 +69,7 @@ void RTH::reset(void)
 	m_vHome.init();
 	m_vPos.init();
 	m_bSetHome = false;
-	this->MissionBase::reset();
+	this->Mission::reset();
 }
 
 void RTH::setHome(vDouble3& p)
@@ -96,7 +96,7 @@ double RTH::getHdg(void)
 
 void RTH::draw(void)
 {
-	this->MissionBase::draw();
+	this->Mission::draw();
 
 	addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
 				   + f2str(m_vHome.y,7) + ", "

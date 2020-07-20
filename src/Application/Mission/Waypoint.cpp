@@ -27,7 +27,7 @@ Waypoint::~Waypoint()
 
 bool Waypoint::init(void* pKiss)
 {
-	IF_F(!this->MissionBase::init(pKiss));
+	IF_F(!this->Mission::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("loop",(int*)&m_loop);
@@ -133,14 +133,14 @@ bool Waypoint::update(void)
 
 void Waypoint::reset(void)
 {
-	this->MissionBase::reset();
+	this->Mission::reset();
 
 	m_iWP = 0;
 }
 
 void Waypoint::draw(void)
 {
-	this->MissionBase::draw();
+	this->Mission::draw();
 
 	string msg;
 	addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);

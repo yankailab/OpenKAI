@@ -21,7 +21,7 @@ _AProver_drive::~_AProver_drive()
 
 bool _AProver_drive::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nSpeed",&m_nSpeed);
@@ -34,7 +34,7 @@ bool _AProver_drive::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	return true;
@@ -59,7 +59,7 @@ int _AProver_drive::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AProver_drive::update(void)
@@ -105,7 +105,7 @@ void _AProver_drive::setYawMode(bool bRelative)
 
 void _AProver_drive::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 
 	addMsg("speed=" + f2str(m_speed) + ", kSpeed=" + f2str(m_kSpeed) + ", nSpeed=" + f2str(m_nSpeed));
 	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + f2str(m_yaw));

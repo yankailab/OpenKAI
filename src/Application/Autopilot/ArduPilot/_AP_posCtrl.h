@@ -7,7 +7,7 @@
 namespace kai
 {
 
-class _AP_posCtrl: public _AutopilotBase
+class _AP_posCtrl: public _MissionBase
 {
 public:
 	_AP_posCtrl();

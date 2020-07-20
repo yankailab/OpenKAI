@@ -17,7 +17,7 @@ _AP_RTH::~_AP_RTH()
 
 bool _AP_RTH::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("kZsensor", &m_kZsensor);
@@ -45,12 +45,12 @@ bool _AP_RTH::init(void* pKiss)
 
 	iName = "";
 	pK->v("APcopter_base", &iName);
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_DistSensorBase", &iName);
-	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
+	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
 
 	return true;
 }
@@ -60,12 +60,12 @@ int _AP_RTH::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_RTH::update(void)
 {
-	this->_AutopilotBase::update();
+	this->_MissionBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
 	RTH* pRTH = (RTH*)m_pMC->getMission();
@@ -121,7 +121,7 @@ void _AP_RTH::update(void)
 
 void _AP_RTH::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	if(!bActive())
 		addMsg("Inactive",1);
 	else

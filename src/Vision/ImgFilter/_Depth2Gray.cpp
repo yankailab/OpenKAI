@@ -31,7 +31,7 @@ bool _Depth2Gray::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_DepthVisionBase", &iName);
-	m_pV = (_DepthVisionBase*) (pK->parent()->getChildInst(iName));
+	m_pV = (_DepthVisionBase*) (pK->getInst(iName));
 	IF_Fl(!m_pV, iName + ": not found");
 
 	return true;

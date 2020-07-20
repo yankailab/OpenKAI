@@ -1,18 +1,16 @@
+#ifndef OpenKAI_src_Mission__MissionBase_H_
+#define OpenKAI_src_Mission__MissionBase_H_
 
-#ifndef OpenKAI_src_Autopilot_AutopilotBase_H_
-#define OpenKAI_src_Autopilot_AutopilotBase_H_
-
-#include "../../Base/_ThreadBase.h"
-#include "../Mission/_MissionControl.h"
+#include "_MissionControl.h"
 
 namespace kai
 {
 
-class _AutopilotBase: public _ThreadBase
+class _MissionBase: public _ThreadBase
 {
 public:
-	_AutopilotBase();
-	~_AutopilotBase();
+	_MissionBase();
+	~_MissionBase();
 
 	virtual bool init(void* pKiss);
 	virtual void update(void);
@@ -29,7 +27,6 @@ public:
 	int m_iLastMission;
 	bool m_bMissionChanged;
 
-	_AutopilotBase* m_pAB;
 	void* m_pCtrl;
 };
 

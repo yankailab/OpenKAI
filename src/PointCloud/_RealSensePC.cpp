@@ -34,12 +34,12 @@ bool _RealSensePC::init(void* pKiss)
 
 	iName = "";
 	pK->v("_RealSense", &iName);
-	m_pRS = (_RealSense*) (pK->root()->getChildInst(iName));
+	m_pRS = (_RealSense*) (pK->getInst(iName));
 	IF_Fl(!m_pRS, iName + ": not found");
 
 	iName = "";
 	pK->v("_PointCloudViewer", &iName);
-	m_pViewer = (_PointCloudViewer*) (pK->root()->getChildInst(iName));
+	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
 	return true;
 }

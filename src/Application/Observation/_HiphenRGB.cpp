@@ -44,17 +44,17 @@ bool _HiphenRGB::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->root()->getChildInst(iName));
+	m_pGPS = (_GPS*) (pK->getInst(iName));
 	IF_Fl(!m_pGPS, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_Camera", &iName));
-	m_pCam = (_Camera*) (pK->root()->getChildInst(iName));
+	m_pCam = (_Camera*) (pK->getInst(iName));
 	IF_Fl(!m_pCam, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_HiphenServer", &iName));
-	m_pHiphen = (_HiphenServer*) (pK->root()->getChildInst(iName));
+	m_pHiphen = (_HiphenServer*) (pK->getInst(iName));
 	IF_Fl(!m_pHiphen, iName + " not found");
 
 	return true;

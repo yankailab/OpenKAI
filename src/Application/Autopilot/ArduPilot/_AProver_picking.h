@@ -1,8 +1,9 @@
-#ifndef OpenKAI_src_Autopilot_AP__AProver_field_H_
-#define OpenKAI_src_Autopilot_AP__AProver_field_H_
+#ifndef OpenKAI_src_Autopilot_AP__AProver_picking_H_
+#define OpenKAI_src_Autopilot_AP__AProver_picking_H_
 
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
+#include "../../RobotArm/Articulated/_PickingArm.h"
 #include "_AP_base.h"
 #include "_AProver_drive.h"
 
@@ -11,11 +12,11 @@
 namespace kai
 {
 
-class _AProver_field: public _MissionBase
+class _AProver_picking: public _MissionBase
 {
 public:
-	_AProver_field();
-	~_AProver_field();
+	_AProver_picking();
+	~_AProver_picking();
 
 	virtual	bool init(void* pKiss);
 	virtual bool start(void);
@@ -24,33 +25,21 @@ public:
 	virtual void draw(void);
 
 protected:
-	void findBlockBoarder(void);
-	void findSideBoarder(void);
 	bool updateDrive(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_AProver_field *) This)->update();
+		((_AProver_picking *) This)->update();
 		return NULL;
 	}
 
 public:
 	_AP_base* 	m_pAP;
 	_AProver_drive* m_pDrive;
-	_DetectorBase* m_pDetBB;
-	_DetectorBase* m_pDetSB;
 	PIDctrl* m_pPIDhdg;
+	_PickingArm* m_pArm;
 
 	uint8_t m_iRCmode;
 	float	m_nSpeed;
-
-	bool m_bBlockBorder;
-	float m_sideBorder;
-	float m_sideBorderTarget;
-	vFloat2 m_vSideBorderRange;
-	float m_dHdg;
-
-	uint8_t m_iPinLED;
-	uint8_t m_iPinShutter;
 
 };
 

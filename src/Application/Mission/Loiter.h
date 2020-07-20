@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Mission_Loiter_H_
 #define OpenKAI_src_Mission_Loiter_H_
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
 
-class Loiter: public MissionBase
+class Loiter: public Mission
 {
 public:
 	Loiter();

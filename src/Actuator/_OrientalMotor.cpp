@@ -61,7 +61,7 @@ bool _OrientalMotor::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_Modbus", &iName));
-	m_pMB = (_Modbus*) (pK->root()->getChildInst(iName));
+	m_pMB = (_Modbus*) (pK->getInst(iName));
 	IF_Fl(!m_pMB, iName + " not found");
 
 	return true;

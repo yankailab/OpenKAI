@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Mission_RTH_H_
 #define OpenKAI_src_Mission_RTH_H_
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
 
-class RTH: public MissionBase
+class RTH: public Mission
 {
 public:
 	RTH();

@@ -16,6 +16,8 @@ _PickingArm::_PickingArm()
 {
 	m_pA = NULL;
 	m_pU = NULL;
+	m_state = pa_standby;
+
 	m_pXpid = NULL;
 	m_pYpid = NULL;
 	m_pZpid = NULL;
@@ -28,7 +30,7 @@ _PickingArm::~_PickingArm()
 
 bool _PickingArm::init(void *pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	Kiss *pClass = pK->child("class");
@@ -41,7 +43,7 @@ bool _PickingArm::init(void *pKiss)
 		if (pClass->empty())
 			break;
 
-		PICKING_CLASS pc;
+		PICKINGARM_CLASS pc;
 		pc.init();
 		pC->v("iClass", &pc.m_iClass);
 
@@ -145,7 +147,7 @@ void _PickingArm::updateArm(void)
 
 void _PickingArm::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_MissionBase::draw();
 
 }
 

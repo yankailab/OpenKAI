@@ -1,33 +1,28 @@
-#include "_AutopilotBase.h"
+#include "_MissionBase.h"
 
 namespace kai
 {
 
-_AutopilotBase::_AutopilotBase()
+_MissionBase::_MissionBase()
 {
 	m_pMC = NULL;
 	m_iLastMission = 0;
 	m_bMissionChanged = false;
-	m_pAB = NULL;
 	m_pCtrl = NULL;
 }
 
-_AutopilotBase::~_AutopilotBase()
+_MissionBase::~_MissionBase()
 {
 }
 
-bool _AutopilotBase::init(void* pKiss)
+bool _MissionBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName="";
-	pK->v("_AutopilotBase", &iName);
-	m_pAB = (_AutopilotBase*) (pK->parent()->getChildInst(iName));
-
-	iName = "";
 	pK->v("_MissionControl", &iName);
-	m_pMC = (_MissionControl*) (pK->root()->getChildInst(iName));
+	m_pMC = (_MissionControl*) (pK->getInst(iName));
 	NULL_T(m_pMC);
 
 	vector<string> vAS;
@@ -45,12 +40,12 @@ bool _AutopilotBase::init(void* pKiss)
 	return true;
 }
 
-int _AutopilotBase::check(void)
+int _MissionBase::check(void)
 {
 	return 0;
 }
 
-void _AutopilotBase::update(void)
+void _MissionBase::update(void)
 {
 	NULL_(m_pMC);
 	int currentMission = m_pMC->getMissionIdx();
@@ -65,7 +60,7 @@ void _AutopilotBase::update(void)
 	}
 }
 
-bool _AutopilotBase::bActive(void)
+bool _MissionBase::bActive(void)
 {
 	NULL_T(m_pMC);
 	IF_T(m_vActiveMission.empty());
@@ -79,12 +74,12 @@ bool _AutopilotBase::bActive(void)
 	return false;
 }
 
-bool _AutopilotBase::bMissionChanged(void)
+bool _MissionBase::bMissionChanged(void)
 {
 	return m_bMissionChanged;
 }
 
-void _AutopilotBase::drawActive(void)
+void _MissionBase::drawActive(void)
 {
 	if(!bActive())
 		addMsg("[Inactive]",1);
@@ -92,7 +87,7 @@ void _AutopilotBase::drawActive(void)
 		addMsg("[Active]",1);
 }
 
-void _AutopilotBase::draw(void)
+void _MissionBase::draw(void)
 {
 	this->_ThreadBase::draw();
 }

@@ -37,7 +37,7 @@ _AProver_photo::~_AProver_photo()
 
 bool _AProver_photo::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("quality", &m_quality);
@@ -61,25 +61,25 @@ bool _AProver_photo::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	NULL_Fl(m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AProver_drive", &iName);
-	m_pDrive = (_AProver_drive*) (pK->root()->getChildInst(iName));
+	m_pDrive = (_AProver_drive*) (pK->getInst(iName));
 	NULL_Fl(m_pDrive, iName + ": not found");
 
 	iName = "";
 	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_DepthVisionBase", &iName);
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_GPhoto", &iName);
-	m_pG = (_GPhoto*) (pK->root()->getChildInst(iName));
+	m_pG = (_GPhoto*) (pK->getInst(iName));
 
 	return true;
 }
@@ -103,7 +103,7 @@ int _AProver_photo::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pDrive, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AProver_photo::update(void)
@@ -111,7 +111,7 @@ void _AProver_photo::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		shutter();
 
@@ -218,7 +218,7 @@ void _AProver_photo::shutter(void)
 void _AProver_photo::draw(void)
 {
 	IF_(check()<0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	addMsg("iTake = " + i2str(m_iTake));

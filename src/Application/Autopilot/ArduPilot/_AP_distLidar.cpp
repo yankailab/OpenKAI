@@ -16,7 +16,7 @@ _AP_distLidar::~_AP_distLidar()
 
 bool _AP_distLidar::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -24,11 +24,11 @@ bool _AP_distLidar::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 
 	iName = "";
 	F_INFO(pK->v("_DistSensorBase", &iName));
-	m_pDS = (_DistSensorBase*) (pK->root()->getChildInst(iName));
+	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
 	IF_Fl(!m_pDS,iName + " not found");
 
 	m_nSection = 0;
@@ -58,7 +58,7 @@ bool _AP_distLidar::init(void* pKiss)
 
 void _AP_distLidar::update(void)
 {
-	this->_AutopilotBase::update();
+	this->_MissionBase::update();
 
 	updateMavlink();
 }
@@ -100,7 +100,7 @@ void _AP_distLidar::updateMavlink(void)
 
 void _AP_distLidar::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());

@@ -29,7 +29,7 @@ struct DIST_LIDAR_SECTION
 	}
 };
 
-class _AP_distLidar: public _AutopilotBase
+class _AP_distLidar: public _MissionBase
 {
 public:
 	_AP_distLidar();

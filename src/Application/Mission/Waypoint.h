@@ -8,8 +8,8 @@
 #ifndef OpenKAI_src_Mission_Waypoint_H_
 #define OpenKAI_src_Mission_Waypoint_H_
 
-#include "MissionBase.h"
 #include "../../Navigation/Coordinate.h"
+#include "Mission.h"
 
 namespace kai
 {
@@ -88,7 +88,7 @@ enum WP_LOOP
 	wp_loop_shuttle = 2,
 };
 
-class Waypoint: public MissionBase
+class Waypoint: public Mission
 {
 public:
 	Waypoint();

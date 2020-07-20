@@ -66,7 +66,7 @@ struct AP_actuator
 	}
 };
 
-class _AP_actuator: public _AutopilotBase
+class _AP_actuator: public _MissionBase
 {
 public:
 	_AP_actuator();

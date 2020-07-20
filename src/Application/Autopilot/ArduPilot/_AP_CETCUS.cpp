@@ -15,19 +15,19 @@ _AP_CETCUS::~_AP_CETCUS()
 
 bool _AP_CETCUS::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName;
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_CETCUS", &iName);
-	m_pC = (_CETCUS*) (pK->root()->getChildInst(iName));
+	m_pC = (_CETCUS*) (pK->getInst(iName));
 	IF_Fl(!m_pC, iName + ": not found");
 
 	return true;
@@ -53,7 +53,7 @@ int _AP_CETCUS::check(void)
 	NULL__(m_pAP->m_pMav,-1);
 	NULL__(m_pC,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_CETCUS::update(void)
@@ -62,7 +62,7 @@ void _AP_CETCUS::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		updateCETCUS();
 
@@ -89,7 +89,7 @@ bool _AP_CETCUS::updateCETCUS(void)
 
 void _AP_CETCUS::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 }
 
 }

@@ -1,12 +1,12 @@
 /*
- * MissionBase.h
+ * Mission.h
  *
  *  Created on: Nov 13, 2018
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_MissionBase_H_
-#define OpenKAI_src_Mission_MissionBase_H_
+#ifndef OpenKAI_src_Mission_Mission_H_
+#define OpenKAI_src_Mission_Mission_H_
 
 #include "../../Base/_ThreadBase.h"
 
@@ -25,11 +25,11 @@ enum MISSION_TYPE
 	mission_takeoff,
 };
 
-class MissionBase: public BASE
+class Mission: public BASE
 {
 public:
-	MissionBase();
-	virtual ~MissionBase();
+	Mission();
+	virtual ~Mission();
 
 	virtual bool init(void* pKiss);
 	virtual bool update(void);

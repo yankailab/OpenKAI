@@ -68,7 +68,7 @@ bool _DNNtext::init(void* pKiss)
 #ifdef USE_OCR
 	string iName = "";
 	F_INFO(pK->v("OCR", &iName));
-	m_pOCR = (OCR*) (pK->root()->getChildInst(iName));
+	m_pOCR = (OCR*) (pK->getInst(iName));
 	IF_Fl(!m_pOCR, iName + " not found");
 #endif
 

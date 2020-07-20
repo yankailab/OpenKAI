@@ -24,7 +24,7 @@ bool _MOAB::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->root()->getChildInst(iName));
+	m_pIO = (_IOBase*) (pK->getInst(iName));
 	NULL_Fl(m_pIO,"_IOBase not found");
 
 	return true;

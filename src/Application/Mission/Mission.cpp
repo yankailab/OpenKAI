@@ -1,16 +1,16 @@
 /*
- * MissionBase.cpp
+ * Mission.cpp
  *
  *  Created on: Nov 13, 2018
  *      Author: yankai
  */
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
 
-MissionBase::MissionBase()
+Mission::Mission()
 {
 	m_type = mission_base;
 	m_nextMission = "";
@@ -20,11 +20,11 @@ MissionBase::MissionBase()
 	reset();
 }
 
-MissionBase::~MissionBase()
+Mission::~Mission()
 {
 }
 
-bool MissionBase::init(void* pKiss)
+bool Mission::init(void* pKiss)
 {
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -37,13 +37,13 @@ bool MissionBase::init(void* pKiss)
 	return true;
 }
 
-void MissionBase::reset(void)
+void Mission::reset(void)
 {
 	m_tStart = 0;
 	m_bComplete = false;
 }
 
-bool MissionBase::update(void)
+bool Mission::update(void)
 {
 	if(m_bComplete)
 	{
@@ -62,17 +62,17 @@ bool MissionBase::update(void)
 	return true;
 }
 
-void MissionBase::complete(void)
+void Mission::complete(void)
 {
 	m_bComplete = true;
 }
 
-MISSION_TYPE MissionBase::type(void)
+MISSION_TYPE Mission::type(void)
 {
 	return m_type;
 }
 
-void MissionBase::draw(void)
+void Mission::draw(void)
 {
 	this->BASE::draw();
 }

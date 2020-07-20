@@ -90,19 +90,19 @@ bool _DetectorBase::init(void* pKiss)
 
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
-	m_pV = (_VisionBase*) (pK->root()->getChildInst(iName));
+	m_pV = (_VisionBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_DepthVisionBase",&iName);
-	m_pDV = (_DepthVisionBase*)(pK->root()->getChildInst(iName));
+	m_pDV = (_DepthVisionBase*)(pK->getInst(iName));
 
 	iName = "";
 	pK->v("_DetectorBase", &iName);
-	m_pDB = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDB = (_DetectorBase*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_Universe", &iName);
-	m_pU = (_Universe*) (pK->root()->getChildInst(iName));
+	m_pU = (_Universe*) (pK->getInst(iName));
 
 	return true;
 }

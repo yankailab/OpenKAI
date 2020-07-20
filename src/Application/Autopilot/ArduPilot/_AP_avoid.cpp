@@ -18,22 +18,22 @@ _AP_avoid::~_AP_avoid()
 
 bool _AP_avoid::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName;
 	iName = "";
 	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (_AP_base*) (pK->parent()->getChildInst(iName));
+	m_pAP = (_AP_base*)pK->getInst(iName);
 
 	iName = "";
 	F_ERROR_F(pK->v("_Mavlink", &iName));
-	m_pMavlink = (_Mavlink*) (pK->root()->getChildInst(iName));
+	m_pMavlink = (_Mavlink*)pK->getInst(iName);
 	NULL_Fl(m_pMavlink, iName+": not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDet = (_DetectorBase*)pK->getInst(iName);
 	NULL_Fl(m_pDet, iName+": not found");
 
 	return true;
@@ -68,7 +68,7 @@ void _AP_avoid::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateTarget();
 
 		this->autoFPSto();
@@ -110,7 +110,7 @@ void _AP_avoid::updateTarget(void)
 
 void _AP_avoid::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	IF_(check()<0);
 
 	string msg = "nTarget=" + i2str(m_pDet->m_pU->size());

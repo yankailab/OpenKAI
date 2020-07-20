@@ -26,7 +26,7 @@ struct DEPTH_ROI
 	}
 };
 
-class _AP_depthVision: public _AutopilotBase
+class _AP_depthVision: public _MissionBase
 {
 public:
 	_AP_depthVision();

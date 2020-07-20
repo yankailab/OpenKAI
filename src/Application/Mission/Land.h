@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Mission_Land_H_
 #define OpenKAI_src_Mission_Land_H_
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
@@ -25,7 +25,7 @@ struct LAND_TAG
 	}
 };
 
-class Land: public MissionBase
+class Land: public Mission
 {
 public:
 	Land();

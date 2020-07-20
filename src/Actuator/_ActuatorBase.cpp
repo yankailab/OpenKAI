@@ -53,7 +53,7 @@ bool _ActuatorBase::init(void* pKiss)
 
 	iName = "";
 	F_INFO(pK->v("_ActuatorBase", &iName));
-	m_pParent = (_ActuatorBase*) (pK->root()->getChildInst(iName));
+	m_pParent = (_ActuatorBase*) (pK->getInst(iName));
 
 	return true;
 }

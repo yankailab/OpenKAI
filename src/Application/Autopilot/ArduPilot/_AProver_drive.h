@@ -6,7 +6,7 @@
 namespace kai
 {
 
-class _AProver_drive: public _AutopilotBase
+class _AProver_drive: public _MissionBase
 {
 public:
 	_AProver_drive();

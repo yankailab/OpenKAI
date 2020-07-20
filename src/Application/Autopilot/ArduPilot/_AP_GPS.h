@@ -11,7 +11,7 @@
 namespace kai
 {
 
-class _AP_GPS: public _AutopilotBase
+class _AP_GPS: public _MissionBase
 {
 public:
 	_AP_GPS();

@@ -36,7 +36,7 @@ _AP_GPS::~_AP_GPS()
 
 bool _AP_GPS::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("yaw", &m_yaw);
@@ -60,12 +60,12 @@ bool _AP_GPS::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_AP_base", &iName));
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_SlamBase", &iName));
-	m_pSB = (_SlamBase*) (pK->root()->getChildInst(iName));
+	m_pSB = (_SlamBase*) (pK->getInst(iName));
 	IF_Fl(!m_pSB, iName + ": not found");
 
 	return true;
@@ -99,7 +99,7 @@ void _AP_GPS::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 
 		updateGPS();
 
@@ -175,7 +175,7 @@ bool _AP_GPS::reset(void)
 
 void _AP_GPS::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 
 	addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7) + ", yaw=" + f2str(m_yaw));
 }

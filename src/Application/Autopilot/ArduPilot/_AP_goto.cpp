@@ -47,12 +47,12 @@ bool _AP_goto::init(void* pKiss)
 
 	iName = "";
 	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 	IF_Fl(!m_pAP, iName + ": not found");
 
 	iName = "";
 	pK->v("_AP_target_base", &iName);
-	m_pAPtarget = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAPtarget = (_AP_base*) (pK->getInst(iName));
 
 	return true;
 }

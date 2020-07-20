@@ -27,7 +27,7 @@ bool _ActuatorSync::init(void* pKiss)
 
 	for(int i=0; i<vName.size(); i++)
 	{
-		void* p = pK->root()->getChildInst(vName[i]);
+		void* p = pK->getInst(vName[i]);
 		IF_CONT(!p);
 
 		m_pAB[m_nAB] = (_ActuatorSync*)p;

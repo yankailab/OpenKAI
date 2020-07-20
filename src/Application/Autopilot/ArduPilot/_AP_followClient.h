@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_followClient_H_
 #define OpenKAI_src_Autopilot_AP__AP_followClient_H_
 
-#include "../_AutopilotBase.h"
+#include "../../Mission/_MissionBase.h"
 #include "../ArduPilot/_AP_link.h"
 
 #ifdef USE_OPENCV
@@ -12,7 +12,7 @@ namespace kai
 #define APFOLLOW_OFF 0
 #define APFOLLOW_ON 1
 
-class _AP_followClient: public _AutopilotBase
+class _AP_followClient: public _MissionBase
 {
 public:
 	_AP_followClient();

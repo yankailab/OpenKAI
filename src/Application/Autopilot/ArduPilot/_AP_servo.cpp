@@ -14,7 +14,7 @@ _AP_servo::~_AP_servo()
 
 bool _AP_servo::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	int i = 0;
@@ -33,7 +33,7 @@ bool _AP_servo::init(void* pKiss)
 	string iName;
 	iName = "";
 	F_ERROR_F(pK->v("_AP_base", &iName));
-	m_pAP = (_AP_base*) (pK->root()->getChildInst(iName));
+	m_pAP = (_AP_base*) (pK->getInst(iName));
 
 	return true;
 }
@@ -57,7 +57,7 @@ int _AP_servo::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_servo::update(void)
@@ -66,7 +66,7 @@ void _AP_servo::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateServo();
 
 		this->autoFPSto();
@@ -89,7 +89,7 @@ void _AP_servo::updateServo(void)
 void _AP_servo::draw(void)
 {
 	IF_(check()<0);
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 	drawActive();
 
 	for(AP_SERVO s : m_vServo)

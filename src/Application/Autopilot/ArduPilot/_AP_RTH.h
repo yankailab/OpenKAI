@@ -9,7 +9,7 @@
 namespace kai
 {
 
-class _AP_RTH: public _AutopilotBase
+class _AP_RTH: public _MissionBase
 {
 public:
 	_AP_RTH();

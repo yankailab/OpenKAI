@@ -46,12 +46,12 @@ bool BASE::init(void* pKiss)
 
 	name = "";
 	F_INFO(pK->v("Console",&name));
-	m_pConsole = (Console*)(pK->root()->getChildInst(name));
+	m_pConsole = (Console*)(pK->getInst(name));
 
 #ifdef USE_OPENCV
 	name = "";
 	F_INFO(pK->v("Window",&name));
-	m_pWindow = (Window*)(pK->root()->getChildInst(name));
+	m_pWindow = (Window*)(pK->getInst(name));
 #endif
 
 	return true;

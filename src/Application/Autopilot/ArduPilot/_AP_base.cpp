@@ -29,7 +29,7 @@ _AP_base::~_AP_base()
 
 bool _AP_base::init(void* pKiss)
 {
-	IF_F(!this->_AutopilotBase::init(pKiss));
+	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("apType",(int*)&m_apType);
@@ -46,7 +46,7 @@ bool _AP_base::init(void* pKiss)
 	string iName;
 	iName = "";
 	pK->v("_Mavlink", &iName);
-	m_pMav = (_Mavlink*) (pK->root()->getChildInst(iName));
+	m_pMav = (_Mavlink*) (pK->getInst(iName));
 	NULL_F(m_pMav);
 
 	Kiss* pM = pK->child("mavMsgInterval");
@@ -89,7 +89,7 @@ int _AP_base::check(void)
 {
 	NULL__(m_pMav,-1);
 
-	return this->_AutopilotBase::check();
+	return this->_MissionBase::check();
 }
 
 void _AP_base::update(void)
@@ -98,7 +98,7 @@ void _AP_base::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_AutopilotBase::update();
+		this->_MissionBase::update();
 		updateBase();
 
 		this->autoFPSto();
@@ -258,7 +258,7 @@ vFloat3 _AP_base::getApAttitude(void)
 
 void _AP_base::draw(void)
 {
-	this->_AutopilotBase::draw();
+	this->_MissionBase::draw();
 
 	addMsg("State-----------------------------",1);
 	if(m_bApArmed)

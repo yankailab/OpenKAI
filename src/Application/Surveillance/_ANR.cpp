@@ -92,24 +92,24 @@ bool _ANR::init(void* pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_DetectorBaseCN", &iName));
-	m_pDcn = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDcn = (_DetectorBase*) (pK->getInst(iName));
 	IF_Fl(!m_pDcn, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("_DetectorBaseLP", &iName));
-	m_pDlp = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDlp = (_DetectorBase*) (pK->getInst(iName));
 	IF_Fl(!m_pDlp, iName + " not found");
 
 	iName = "";
 	F_INFO(pK->v("_WebSocket", &iName));
-	m_pWS = (_WebSocket*) (pK->root()->getChildInst(iName));
+	m_pWS = (_WebSocket*) (pK->getInst(iName));
 	IF_Fl(!m_pWS, iName + " not found");
 
 #ifdef USE_OCR
 	IF_T(!m_bOCR);
 	iName = "";
 	F_INFO(pK->v("OCR", &iName));
-	m_pOCR = (OCR*) (pK->root()->getChildInst(iName));
+	m_pOCR = (OCR*) (pK->getInst(iName));
 	IF_Fl(!m_pOCR, iName + " not found");
 #endif
 

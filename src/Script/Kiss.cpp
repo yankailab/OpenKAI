@@ -196,15 +196,6 @@ Kiss* Kiss::parent(void)
 	return m_pParent;
 }
 
-void* Kiss::getChildInst(const string& name)
-{
-	Kiss* pC = child(name);
-	IF_N(!pC);
-	IF_N(pC->empty());
-
-	return pC->m_pInst;
-}
-
 void* Kiss::getInst(const string& name)
 {
 	vector<string> vName = splitBy(name, '.');

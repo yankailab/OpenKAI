@@ -33,6 +33,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_servo.h"
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
 #include "../Application/Mission/_MissionControl.h"
 #include "../Application/RobotArm/_Sequencer.h"
 #include "../Control/PIDctrl.h"

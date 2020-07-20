@@ -45,11 +45,11 @@ bool _SlideWindow::init(void *pKiss)
 
 	string iName = "";
 //	F_ERROR_F(pK->v("_DNNclassifier", &iName));
-//	m_pC = (_DNNclassifier*) (pK->root()->getChildInst(iName));
+//	m_pC = (_DNNclassifier*) (pK->getInst(iName));
 //	NULL_Fl(m_pC, iName + " not found");
 
 	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
-	m_pD = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pD = (_DepthVisionBase*) (pK->getInst(iName));
 	NULL_Fl(m_pD, iName + " not found");
 
 	m_nW = 0;

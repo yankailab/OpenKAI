@@ -61,11 +61,11 @@ bool _AP_follow::init(void* pKiss)
 
 	iName = "";
 	pK->v("_TrackerBase", &iName);
-	m_pT = (_TrackerBase*) (pK->root()->getChildInst(iName));
+	m_pT = (_TrackerBase*)pK->getInst(iName);
 
 	iName = "";
 	pK->v("_DetectorBase", &iName);
-	m_pDet = (_DetectorBase*) (pK->root()->getChildInst(iName));
+	m_pDet = (_DetectorBase*)pK->getInst(iName);
 
 	return true;
 }

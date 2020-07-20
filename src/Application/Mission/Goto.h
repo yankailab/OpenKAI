@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Mission_Goto_H_
 #define OpenKAI_src_Mission_Goto_H_
 
-#include "MissionBase.h"
+#include "Mission.h"
 
 namespace kai
 {
 
-class Goto: public MissionBase
+class Goto: public Mission
 {
 public:
 	Goto();

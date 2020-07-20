@@ -71,7 +71,7 @@ bool _ORB_SLAM2::init(void* pKiss)
 	//link
 	string iName = "";
 	F_INFO(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->root()->getChildInst(&iName));
+	m_pVision = (_VisionBase*) (pK->getInst(&iName));
 
 	return true;
 }

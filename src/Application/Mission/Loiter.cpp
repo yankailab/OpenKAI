@@ -23,7 +23,7 @@ Loiter::~Loiter()
 
 bool Loiter::init(void* pKiss)
 {
-	IF_F(!this->MissionBase::init(pKiss));
+	IF_F(!this->Mission::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("hdg",&m_hdg);
@@ -33,13 +33,13 @@ bool Loiter::init(void* pKiss)
 
 bool Loiter::update(void)
 {
-	return this->MissionBase::update();
+	return this->Mission::update();
 }
 
 void Loiter::reset(void)
 {
 	m_vPos.init();
-	this->MissionBase::reset();
+	this->Mission::reset();
 }
 
 void Loiter::setPos(vDouble3& p)
@@ -49,7 +49,7 @@ void Loiter::setPos(vDouble3& p)
 
 void Loiter::draw(void)
 {
-	this->MissionBase::draw();
+	this->Mission::draw();
 
 	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "

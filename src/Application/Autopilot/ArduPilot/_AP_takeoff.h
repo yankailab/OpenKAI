@@ -2,12 +2,12 @@
 #define OpenKAI_src_Autopilot_AP__AP_takeoff_H_
 
 #include "../../../Base/common.h"
-#include "../ArduPilot/_AP_base.h"
+#include "_AP_base.h"
 
 namespace kai
 {
 
-class _AP_takeoff: public _AutopilotBase
+class _AP_takeoff: public _MissionBase
 {
 public:
 	_AP_takeoff();

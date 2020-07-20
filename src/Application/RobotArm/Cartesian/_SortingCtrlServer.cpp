@@ -45,14 +45,14 @@ bool _SortingCtrlServer::init(void *pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->root()->getChildInst(iName));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
 	IF_Fl(!m_pDV, iName + " not found");
 
 	m_nClass = 5;
 
 	iName = "";
 	F_ERROR_F(pK->v("_ProtocolBase", &iName));
-	m_pPB = (_ProtocolBase*) (pK->root()->getChildInst(iName));
+	m_pPB = (_ProtocolBase*) (pK->getInst(iName));
 	IF_Fl(!m_pPB, iName + " not found");
 
 	m_pPB->setCallback(callbackCMD, this);

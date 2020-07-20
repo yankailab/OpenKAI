@@ -19,7 +19,7 @@ struct AP_SERVO
 	}
 };
 
-class _AP_servo: public _AutopilotBase
+class _AP_servo: public _MissionBase
 {
 public:
 	_AP_servo();
