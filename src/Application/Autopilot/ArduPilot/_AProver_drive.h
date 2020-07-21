@@ -40,6 +40,14 @@ public:
 	float	m_speed;
 	float	m_yawMode;
 
+	bool	m_bSetYawSpeed;
+	bool	m_bRcChanOverride;
+	float	m_pwmM;
+	float	m_pwmD;
+	uint16_t* m_pRcYaw;
+	uint16_t* m_pRcThrottle;
+	mavlink_rc_channels_override_t m_rcOverride;
+
 };
 
 }

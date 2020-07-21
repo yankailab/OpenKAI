@@ -13,6 +13,13 @@ _AProver_drive::_AProver_drive()
 
 	m_speed = 1.0;	//1.0m/s
 	m_yawMode = 1.0;
+
+	m_bSetYawSpeed = true;
+	m_bRcChanOverride = true;
+	m_pwmM = 1500;
+	m_pwmD = 500;
+	m_pRcYaw = NULL;
+	m_pRcThrottle = NULL;
 }
 
 _AProver_drive::~_AProver_drive()
@@ -30,6 +37,43 @@ bool _AProver_drive::init(void* pKiss)
 
 	pK->v("speed",&m_speed);
 	pK->v("yawMode",&m_yawMode);
+
+	pK->v("bSetYawSpeed",&m_bSetYawSpeed);
+	pK->v("bRcChanOverride",&m_bRcChanOverride);
+
+	uint16_t* pRC[18];
+	pRC[0] = &m_rcOverride.chan1_raw;
+	pRC[1] = &m_rcOverride.chan2_raw;
+	pRC[2] = &m_rcOverride.chan3_raw;
+	pRC[3] = &m_rcOverride.chan4_raw;
+	pRC[4] = &m_rcOverride.chan5_raw;
+	pRC[5] = &m_rcOverride.chan6_raw;
+	pRC[6] = &m_rcOverride.chan7_raw;
+	pRC[7] = &m_rcOverride.chan8_raw;
+	pRC[8] = &m_rcOverride.chan9_raw;
+	pRC[9] = &m_rcOverride.chan10_raw;
+	pRC[10] = &m_rcOverride.chan11_raw;
+	pRC[11] = &m_rcOverride.chan12_raw;
+	pRC[12] = &m_rcOverride.chan13_raw;
+	pRC[13] = &m_rcOverride.chan14_raw;
+	pRC[14] = &m_rcOverride.chan15_raw;
+	pRC[15] = &m_rcOverride.chan16_raw;
+	pRC[16] = &m_rcOverride.chan17_raw;
+	pRC[17] = &m_rcOverride.chan18_raw;
+
+	int iRcYaw = 2;
+	pK->v("iRcYaw", &iRcYaw);
+	int iRcThrottle = 3;
+	pK->v("iRcThrottle", &iRcThrottle);
+
+	IF_Fl(iRcYaw > 18, "RC yaw channel exceeds limit");
+	IF_Fl(iRcThrottle > 18, "RC throttle channel exceeds limit");
+
+	m_pRcYaw = pRC[iRcYaw];
+	m_pRcThrottle = pRC[iRcThrottle];
+
+	pK->v("pwmM", &m_pwmM);
+	pK->v("pwmD", &m_pwmD);
 
 	string iName;
 	iName = "";
@@ -78,9 +122,19 @@ bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
 
-	m_pAP->m_pMav->clNavSetYawSpeed(m_yaw,
-										m_nSpeed * m_kSpeed * m_speed,
-										m_yawMode);
+	if(m_bSetYawSpeed)
+	{
+		m_pAP->m_pMav->clNavSetYawSpeed(m_yaw,
+											m_nSpeed * m_kSpeed * m_speed,
+											m_yawMode);
+	}
+
+	if(m_bRcChanOverride)
+	{
+		*m_pRcYaw = m_yaw * m_pwmD + m_pwmM;
+		*m_pRcThrottle = m_nSpeed * m_pwmD + m_pwmM;
+		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
+	}
 
 	return true;
 }

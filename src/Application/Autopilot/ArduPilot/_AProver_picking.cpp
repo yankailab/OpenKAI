@@ -100,10 +100,26 @@ bool _AProver_picking::updateDrive(void)
 	IF_F(check() < 0);
 	IF_F(!bActive());
 
+	uint32_t apMode = m_pAP->getApMode();
+	if(apMode == AP_ROVER_HOLD)
+	{
+		m_pDrive->setSpeed(0.0);
+		m_pDrive->setYaw(0.0);
+	}
+	else if(apMode == AP_ROVER_MANUAL)
+	{
+
+	}
+
 	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
+
 	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX);
 
 	string mission = m_pMC->getMissionName();
+
+
+
+
 
 	//mode
 	if(mission == "STANDBY")
