@@ -4,6 +4,7 @@
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
 #include "../../RobotArm/Articulated/_PickingArm.h"
+#include "../../../Utility/RC.h"
 #include "_AP_base.h"
 #include "_AProver_drive.h"
 
@@ -26,6 +27,7 @@ public:
 
 protected:
 	bool updateDrive(void);
+	bool updatePicking(void);
 	static void* getUpdateThread(void* This)
 	{
 		((_AProver_picking *) This)->update();
@@ -35,11 +37,10 @@ protected:
 public:
 	_AP_base* 	m_pAP;
 	_AProver_drive* m_pDrive;
-	PIDctrl* m_pPIDhdg;
-	_PickingArm* m_pArm;
+	RC_CHANNEL m_rcMode;
 
-	uint8_t m_iRCmode;
-	float	m_nSpeed;
+	_PickingArm* m_pArm;
+	vector<RC_CHANNEL>	m_vRC; //x,y,z,yaw,gripper
 
 };
 

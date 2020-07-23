@@ -85,11 +85,11 @@ void _S6H4D::update(void)
 		if(m_tState.m_vOrigin != m_cState.m_vOrigin)
 			setOrigin(m_tState.m_vOrigin);
 
-		if(m_vNormTargetPos.sum() > -3.0)
+		if(m_vNormTargetPos.sum() > -4.0)
 		{
 			updatePos();
 		}
-		else if(m_vNormTargetSpeed.sum() > -3.0)
+		else if(m_vNormTargetSpeed.sum() > -4.0)
 		{
 			updateMove();
 		}

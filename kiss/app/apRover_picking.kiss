@@ -178,6 +178,33 @@
 			"class":"MissionBase",
 			"nextMission":"STANDBY",
 		}
+		{
+			"bInst":1,
+			"name":"MANUAL",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
+		{
+			"bInst":1,
+			"name":"AUTOPICK",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
+		{
+			"bInst":1,
+			"name":"AUTO",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OKconsole",
+			"class":"MissionBase",
+			"nextMission":"STANDBY",
+		}
 	}
 }
 

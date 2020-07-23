@@ -18,10 +18,16 @@
 namespace kai
 {
 
+enum PICKINGARM_MODE
+{
+	paMode_unknown,
+	paMode_external,
+	paMode_auto,
+};
+
 enum PICKINGARM_STATE
 {
 	pa_standby,
-	pa_external,
 	pa_search,
 	pa_catch,
 	pa_recover,
@@ -49,6 +55,9 @@ public:
 	void draw(void);
 	int check(void);
 
+	void setMode(PICKINGARM_MODE m);
+	void move(vFloat4& vM);
+
 private:
 	void updateArm(void);
 	void update(void);
@@ -62,6 +71,7 @@ public:
 	_ActuatorBase* m_pA;
 	_Universe* m_pU;
 	_Object		m_tO;
+	PICKINGARM_MODE m_mode;
 	PICKINGARM_STATE m_state;
 
 	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
@@ -69,6 +79,8 @@ public:
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
+
+	vFloat4 m_vM;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
 };

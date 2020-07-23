@@ -9,11 +9,9 @@ _AProver_picking::_AProver_picking()
 {
 	m_pAP = NULL;
 	m_pDrive = NULL;
-	m_pPIDhdg = NULL;
 	m_pArm = NULL;
 
-	m_nSpeed = 0.0;
-	m_iRCmode = 0;
+	m_rcMode.init();
 }
 
 _AProver_picking::~_AProver_picking()
@@ -25,7 +23,27 @@ bool _AProver_picking::init(void* pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("nSpeed", &m_nSpeed);
+	pK->v("iRCmode", &m_rcMode.m_iChan);
+	pK->a("vRCdiv", &m_rcMode.m_vDiv);
+
+	Kiss *pRC = pK->child("RC");
+	int i = 0;
+	while (1)
+	{
+		Kiss *pC = pRC->child(i++);
+		if (pC->empty())
+			break;
+
+		RC_CHANNEL rc;
+		rc.init();
+		pC->v("iChan", &rc.m_iChan);
+		pC->v("pwmL", &rc.m_pwmL);
+		pC->v("pwmM", &rc.m_pwmM);
+		pC->v("pwmH", &rc.m_pwmH);
+		pC->a("pwmH", &rc.m_vDiv);
+		rc.update();
+		m_vRC.push_back(rc);
+	}
 
 	string iName;
 	iName = "";
@@ -37,11 +55,6 @@ bool _AProver_picking::init(void* pKiss)
 	pK->v("_AProver_drive", &iName);
 	m_pDrive = (_AProver_drive*)pK->getInst(iName);
 	IF_Fl(!m_pDrive, iName + ": not found");
-
-	iName = "";
-	pK->v("PIDctrl", &iName);
-	m_pPIDhdg = (PIDctrl*)pK->getInst(iName);
-	NULL_Fl(m_pPIDhdg, iName + ": not found");
 
 	iName = "";
 	pK->v("_PickingArm", &iName);
@@ -70,7 +83,6 @@ int _AProver_picking::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 	NULL__(m_pDrive, -1);
-	NULL__(m_pPIDhdg, -1);
 	NULL__(m_pArm, -1);
 
 	return this->_MissionBase::check();
@@ -86,10 +98,12 @@ void _AProver_picking::update(void)
 
 		if(!updateDrive())
 		{
+			m_pMC->transit("STANDBY");
 			m_pDrive->setSpeed(0.0);
 			m_pDrive->setYaw(0.0);
-			m_pMC->transit("STANDBY");
 		}
+
+		updatePicking();
 
 		this->autoFPSto();
 	}
@@ -100,46 +114,69 @@ bool _AProver_picking::updateDrive(void)
 	IF_F(check() < 0);
 	IF_F(!bActive());
 
+	bool bArmed = m_pAP->bApArmed();
 	uint32_t apMode = m_pAP->getApMode();
-	if(apMode == AP_ROVER_HOLD)
+	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_rcMode.m_iChan);
+	string mission = m_pMC->getMissionName();
+
+	IF_F(!bArmed);
+	IF_F(apMode == AP_ROVER_HOLD);
+	IF_F(rcMode == UINT16_MAX);
+
+	if(mission == "STANDBY")
 	{
-		m_pDrive->setSpeed(0.0);
-		m_pDrive->setYaw(0.0);
+		m_rcMode.pwm(rcMode);
+		int iMode = m_rcMode.i();
+
+		switch(iMode)
+		{
+		case 0:
+			m_pMC->transit("MANUAL");
+			break;
+		case 1:
+			m_pMC->transit("AUTOPICK");
+			break;
+		case 2:
+			m_pMC->transit("AUTO");
+			break;
+		}
 	}
-	else if(apMode == AP_ROVER_MANUAL)
-	{
 
-	}
+	//m_pDrive->setSpeed(nSpeed);
 
-	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
+	return true;
+}
 
-	IF_F(m_pAP->getApMode() != AP_ROVER_GUIDED || rcMode == UINT16_MAX);
+bool _AProver_picking::updatePicking(void)
+{
+	IF_F(check() < 0);
+	IF_F(!bActive());
 
 	string mission = m_pMC->getMissionName();
 
-
-
-
-
-	//mode
-	if(mission == "STANDBY")
+	if(mission == "MANUAL")
 	{
-		if(rcMode < 1250)
-			m_pMC->transit("FORWARD");
-		else if(rcMode > 1750)
-			m_pMC->transit("BACKWARD");
+		for(RC_CHANNEL rc : m_vRC)
+		{
+			uint16_t r = m_pAP->m_pMav->m_rcChannels.getRC(rc.m_iChan);
+			if(r == UINT16_MAX)r = rc.m_pwmM;
+			rc.pwm(r);
+		}
+
+		vFloat4 vM;
+		vM.init(-1.0);
+		vM.x = m_vRC[0].v();
+		vM.y = m_vRC[1].v();
+		vM.z = m_vRC[2].v();
+
+		m_pArm->move(vM);
+
+	}
+	else	//AUTOPICK
+	{
+
 	}
 
-	//speed
-	float nSpeed;
-	if(mission == "FORWARD")
-		nSpeed = m_nSpeed;
-	else if(mission == "BACKWARD")
-		nSpeed = -m_nSpeed;
-	else
-		nSpeed = 0.0;
-
-	m_pDrive->setSpeed(nSpeed);
 
 	return true;
 }

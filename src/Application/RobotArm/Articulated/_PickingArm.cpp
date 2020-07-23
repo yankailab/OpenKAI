@@ -16,6 +16,7 @@ _PickingArm::_PickingArm()
 {
 	m_pA = NULL;
 	m_pU = NULL;
+	m_mode = paMode_unknown;
 	m_state = pa_standby;
 
 	m_pXpid = NULL;
@@ -117,32 +118,49 @@ void _PickingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
-	_Object *pO;
-	_Object *tO = NULL;
-	float topProb = 0.0;
-	int i = 0;
-	while ((pO = m_pU->get(i++)) != NULL)
-	{
-//		IF_CONT(pO->getTopClass() != m_vClass);
-		IF_CONT(pO->getTopClassProb() < topProb);
-
-		tO = pO;
-		topProb = pO->getTopClassProb();
-	}
-
 	vFloat4 vM;
-
 	vM.init(-1.0);
 	m_pA->pos(vM);
 
-	vM.init(0.5);
-	if (tO)
+	if(m_mode == paMode_external)
 	{
-		vM.x = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
-		vM.y = m_pXpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
-		vM.z = m_pXpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
+		vM = m_vM;
 	}
+	else if(m_mode == paMode_auto)
+	{
+		_Object *pO;
+		_Object *tO = NULL;
+		float topProb = 0.0;
+		int i = 0;
+		while ((pO = m_pU->get(i++)) != NULL)
+		{
+	//		IF_CONT(pO->getTopClass() != m_vClass);
+			IF_CONT(pO->getTopClassProb() < topProb);
+
+			tO = pO;
+			topProb = pO->getTopClassProb();
+		}
+
+		vM.init(0.5);
+		if (tO)
+		{
+			vM.x = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
+			vM.y = m_pXpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
+			vM.z = m_pXpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
+		}
+	}
+
 	m_pA->speed(vM);
+}
+
+void _PickingArm::setMode(PICKINGARM_MODE m)
+{
+	m_mode = m;
+}
+
+void _PickingArm::move(vFloat4& vM)
+{
+	m_vM = vM;
 }
 
 void _PickingArm::draw(void)

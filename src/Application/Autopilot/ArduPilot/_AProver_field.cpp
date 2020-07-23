@@ -38,6 +38,8 @@ bool _AProver_field::init(void* pKiss)
 	pK->v("nSpeed", &m_nSpeed);
 	pK->v("sideBorderTarget", &m_sideBorderTarget);
 	pK->v("vSideBorderRange", &m_vSideBorderRange);
+	pK->v("iRCmode", &m_iRCmode);
+
 	pK->v<uint8_t>("iPinLED", &m_iPinLED);
 	pK->v<uint8_t>("iPinShutter", &m_iPinShutter);
 
