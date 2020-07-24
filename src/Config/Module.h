@@ -18,6 +18,7 @@
 #include "../Actuator/_DRV8825_RS485.h"
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/_S6H4D.h"
+#include "../Actuator/_StepperGripper.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"

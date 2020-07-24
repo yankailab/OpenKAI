@@ -30,6 +30,22 @@
 {
 	"name":"stepper",
 	"class":"_DRV8825_RS485",
+	"bInst":0,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"vStepRange":[0, 15],
+	"vSpeedRange":[0, 500],
+	"vNormTargetPos":[1.0],
+	"vNormTargetSpeed":[1.0],
+}
+
+{
+	"name":"gripper",
+	"class":"_StepperGripper",
 	"bInst":1,
 	"FPS":5,
 	"bLog":1,
@@ -39,6 +55,7 @@
 	"dpr":1,
 	"vStepRange":[0, 15],
 	"vSpeedRange":[0, 500],
-	"vNormTargetPos":[-1.0],
+	"vNormTargetPos":[1.0],
 	"vNormTargetSpeed":[1.0],
 }
+

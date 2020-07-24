@@ -10,6 +10,7 @@ _AProver_picking::_AProver_picking()
 	m_pAP = NULL;
 	m_pDrive = NULL;
 	m_pArm = NULL;
+	m_pGripper = NULL;
 
 	m_rcMode.init();
 }
@@ -60,7 +61,12 @@ bool _AProver_picking::init(void* pKiss)
 	iName = "";
 	pK->v("_PickingArm", &iName);
 	m_pArm = (_PickingArm*)pK->getInst(iName);
-//	NULL_Fl(m_pArm, iName + ": not found");
+	NULL_Fl(m_pArm, iName + ": not found");
+
+	iName = "";
+	pK->v("_StepperGripper", &iName);
+	m_pGripper = (_StepperGripper*)pK->getInst(iName);
+	NULL_Fl(m_pGripper, iName + ": not found");
 
 	return true;
 }
@@ -84,7 +90,8 @@ int _AProver_picking::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 //	NULL__(m_pDrive, -1);
-//	NULL__(m_pArm, -1);
+	NULL__(m_pArm, -1);
+	NULL__(m_pGripper, -1);
 
 	return this->_MissionBase::check();
 }
@@ -120,12 +127,12 @@ bool _AProver_picking::updateDrive(void)
 	uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC(m_rcMode.m_iChan);
 	string mission = m_pMC->getMissionName();
 
-	IF_F(!bArmed);
-	IF_F(apMode == AP_ROVER_HOLD);
-	IF_F(pwmMode == UINT16_MAX);
+//	IF_F(!bArmed);
+//	IF_F(apMode == AP_ROVER_HOLD);
+//	IF_F(pwmMode == UINT16_MAX);
 
-	if(mission == "STANDBY")
-	{
+//	if(mission == "STANDBY")
+//	{
 		m_rcMode.pwm(pwmMode);
 		int iMode = m_rcMode.i();
 
@@ -141,7 +148,7 @@ bool _AProver_picking::updateDrive(void)
 			m_pMC->transit("AUTO");
 			break;
 		}
-	}
+//	}
 
 	//m_pDrive->setSpeed(nSpeed);
 
@@ -153,31 +160,34 @@ bool _AProver_picking::updatePicking(void)
 	IF_F(check() < 0);
 	IF_F(!bActive());
 
-	string mission = m_pMC->getMissionName();
+	int i;
 
+	for(i=0; i<m_vRC.size(); i++)
+	{
+		RC_CHANNEL* pRC = &m_vRC[i];
+		uint16_t r = m_pAP->m_pMav->m_rcChannels.getRC(pRC->m_iChan);
+		if(r == UINT16_MAX)r = pRC->m_pwmM;
+		pRC->pwm(r);
+	}
+
+	string mission = m_pMC->getMissionName();
 	if(mission == "MANUAL")
 	{
-		for(RC_CHANNEL rc : m_vRC)
-		{
-			uint16_t r = m_pAP->m_pMav->m_rcChannels.getRC(rc.m_iChan);
-			if(r == UINT16_MAX)r = rc.m_pwmM;
-			rc.pwm(r);
-		}
-
 		vFloat4 vM;
 		vM.init(-1.0);
 		vM.x = m_vRC[0].v();
 		vM.y = m_vRC[1].v();
 		vM.z = m_vRC[2].v();
 
+		m_pArm->setMode(paMode_external);
 		m_pArm->move(vM);
 
+		m_pGripper->grip((m_vRC[4].i())?true:false);
 	}
 	else	//AUTOPICK
 	{
 
 	}
-
 
 	return true;
 }
@@ -189,10 +199,8 @@ void _AProver_picking::draw(void)
 
 	addMsg("RC mode: " + i2str(m_rcMode.i()));
 
-	string msg = "| ";
 	for(RC_CHANNEL rc : m_vRC)
-		msg += i2str(rc.m_pwm) + "/" + f2str(rc.v()) + "/" + i2str(rc.i())+ " | ";
-	addMsg(msg);
+		addMsg("Chan" + i2str(rc.m_iChan) + ": " + i2str(rc.m_pwm) + " | " + f2str(rc.v()) + " | " + i2str(rc.i()));
 
 }
 

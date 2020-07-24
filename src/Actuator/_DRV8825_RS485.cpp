@@ -69,10 +69,10 @@ void _DRV8825_RS485::update(void)
 	while(check()<0)
 		this->sleepTime(USEC_1SEC);
 
-	setDistPerRound(m_dpr);
-	setDist(m_vNormTargetPos.x);
-	setSpeed(m_vNormTargetSpeed.x);
-	run();
+//	setDistPerRound(m_dpr);
+//	setDist(m_vNormTargetPos.x);
+//	setSpeed(m_vNormTargetSpeed.x);
+//	run();
 
 	while (m_bThreadON)
 	{
@@ -129,7 +129,7 @@ bool _DRV8825_RS485::setSpeed(float s)
 {
 	IF_F(check()<0);
 
-	uint16_t b = constrain<float>(s, 0.0, 1.0) * m_vSpeedRange.len() + m_vStepRange.x;
+	uint16_t b = constrain<float>(s, 0.0, 1.0) * m_vSpeedRange.len() + m_vSpeedRange.x;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 8, 1, &b) != 1);
 
 	return true;

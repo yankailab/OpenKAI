@@ -33,7 +33,7 @@ public:
 	void run(void);
 	void stop(void);
 
-private:
+protected:
 	void readStatus(void);
 	void update(void);
 	static void* getUpdateThread(void* This)

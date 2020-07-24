@@ -4,6 +4,7 @@
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
 #include "../../RobotArm/Articulated/_PickingArm.h"
+#include "../../../Actuator/_StepperGripper.h"
 #include "../../../Utility/RC.h"
 #include "_AP_base.h"
 #include "_AProver_drive.h"
@@ -40,6 +41,7 @@ public:
 	RC_CHANNEL m_rcMode;
 
 	_PickingArm* m_pArm;
+	_StepperGripper* m_pGripper;
 	vector<RC_CHANNEL>	m_vRC; //x,y,z,yaw,gripper
 
 };

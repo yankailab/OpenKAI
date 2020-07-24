@@ -41,7 +41,7 @@ bool _PickingArm::init(void *pKiss)
 	while (1)
 	{
 		Kiss *pC = pClass->child(i++);
-		if (pClass->empty())
+		if (pC->empty())
 			break;
 
 		PICKINGARM_CLASS pc;
@@ -66,14 +66,17 @@ bool _PickingArm::init(void *pKiss)
 	iName = "";
 	F_ERROR_F(pK->v("PIDx", &iName));
 	m_pXpid = (PIDctrl*) (pK->getInst(iName));
+	IF_Fl(!m_pXpid, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("PIDy", &iName));
 	m_pYpid = (PIDctrl*) (pK->getInst(iName));
+	IF_Fl(!m_pYpid, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("PIDz", &iName));
 	m_pZpid = (PIDctrl*) (pK->getInst(iName));
+	IF_Fl(!m_pZpid, iName + " not found");
 
 	return true;
 }
@@ -125,6 +128,8 @@ void _PickingArm::updateArm(void)
 	if(m_mode == paMode_external)
 	{
 		vM = m_vM;
+
+		m_pA->speed(vM);
 	}
 	else if(m_mode == paMode_auto)
 	{
@@ -148,9 +153,9 @@ void _PickingArm::updateArm(void)
 			vM.y = m_pXpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
 			vM.z = m_pXpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
 		}
-	}
 
-	m_pA->speed(vM);
+		m_pA->speed(vM);
+	}
 }
 
 void _PickingArm::setMode(PICKINGARM_MODE m)
@@ -167,6 +172,7 @@ void _PickingArm::draw(void)
 {
 	this->_MissionBase::draw();
 
+	addMsg("vM = (" + f2str(m_vM.x) + ", " + f2str(m_vM.y) + ", " + f2str(m_vM.z) + ", " + f2str(m_vM.w) + ")");
 }
 
 }

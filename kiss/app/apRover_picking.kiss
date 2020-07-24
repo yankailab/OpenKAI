@@ -226,7 +226,7 @@
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.3,
+			"tInt":0.5,
 		}
 		{
 			"name":"rcChannels",
@@ -282,6 +282,8 @@
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
 	"_AProver_drive":"apDrive",	
+	"_PickingArm":"pickingArm",
+	"_StepperGripper":"gripper",
 	"iRCmodeChan":5,
 	"vRCmodeDiv":[1250,1750,2000],
 	
@@ -290,11 +292,11 @@
 		
 		{
 			"name":"armX",
-			"iChan":4,
+			"iChan":2,
 		}
 		{
 			"name":"armY",
-			"iChan":2,
+			"iChan":4,
 		}
 		{
 			"name":"armZ",
@@ -307,27 +309,27 @@
 		{
 			"name":"armCatch",
 			"iChan":11,
+			"vDiv":[1500],
 		}
-		
 	}	
 }
 
 {
 	"name":"armSerial",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":9600,
 }
 
 {
 	"name":"S6H4D",
 	"class":"_S6H4D",
-	"bInst":0,
+	"bInst":1,
 	"FPS":5,
 	"bLog":1,
 	"Window":"OKview",
@@ -344,7 +346,7 @@
 	"vRotRangeY":[-180, -180],
 	"vRotRangeZ":[787.2, 787.2],
 	
-	"vNormTargetSpeed":[1.0],
+	"vNormTargetSpeed":[0.5,0.5,0.5],
 	"vNormTargetPos":[0.0, 0.0, 0.0],
 	"vNormTargetRot":[0.0, 0.0, 0.0],
 }
@@ -352,7 +354,7 @@
 {
 	"name":"PIDx",
 	"class":"PIDctrl",
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"P":10.0,
@@ -367,7 +369,7 @@
 {
 	"name":"PIDy",
 	"class":"PIDctrl",
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"P":10.0,
@@ -382,7 +384,7 @@
 {
 	"name":"PIDz",
 	"class":"PIDctrl",
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"P":10.0,
@@ -416,13 +418,16 @@
 {
 	"name":"pickingArm",
 	"class":"_PickingArm",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_ActuatorBase":"S6H4D",
 	"_Universe":"universe",
+	"PIDx":"PIDx",
+	"PIDy":"PIDy",
+	"PIDz":"PIDz",
 
 	{
 		"name":"class",
@@ -431,4 +436,32 @@
 			"iClass":0,
 		}
 	}			
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":9600,
+	"parity":"N",	
+}
+
+{
+	"name":"gripper",
+	"class":"_StepperGripper",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"vStepRange":[0, 15],
+	"vSpeedRange":[0, 500],
+	"vNormTargetPos":[1.0],
+	"vNormTargetSpeed":[1.0],
 }

@@ -43,19 +43,19 @@ struct RC_CHANNEL
 
 	void pwm(uint16_t pwm)
 	{
-		pwm = constrain(pwm, m_pwmL, m_pwmH);
+		m_pwm = constrain(pwm, m_pwmL, m_pwmH);
 
-		if(pwm >= m_pwmM)
-			m_v = (pwm - m_pwmM) * m_bH + 0.5;
+		if(m_pwm >= m_pwmM)
+			m_v = (float)(m_pwm - m_pwmM) * m_bH + 0.5;
 		else
-			m_v = 0.5 - (m_pwmM - pwm) * m_bL;
+			m_v = 0.5 - (float)(m_pwmM - m_pwm) * m_bL;
 
 		IF_(m_vDiv.empty());
 
 		int i=0;
 		for(int d : m_vDiv)
 		{
-			if(pwm < d)break;
+			if(m_pwm < d)break;
 			i++;
 		}
 		m_i = i;
