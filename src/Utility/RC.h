@@ -32,7 +32,7 @@ struct RC_CHANNEL
 		m_i = 0;
 	}
 
-	void update(void)
+	void setup(void)
 	{
 		m_bH = m_pwmH - m_pwmM;
 		m_bH = 0.5/m_bH;

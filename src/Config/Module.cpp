@@ -122,6 +122,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_APcopter_photo);
 	ADD_MODULE(_AProver_photo);
 	ADD_MODULE(_AProver_field);
+	ADD_MODULE(_AProver_picking);
 
 #ifdef USE_OPENCV_CONTRIB
 	ADD_MODULE(_ArUco);

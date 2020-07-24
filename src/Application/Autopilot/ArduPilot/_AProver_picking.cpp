@@ -23,8 +23,9 @@ bool _AProver_picking::init(void* pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("iRCmode", &m_rcMode.m_iChan);
-	pK->a("vRCdiv", &m_rcMode.m_vDiv);
+	pK->v("iRCmodeChan", &m_rcMode.m_iChan);
+	pK->a("vRCmodeDiv", &m_rcMode.m_vDiv);
+	m_rcMode.setup();
 
 	Kiss *pRC = pK->child("RC");
 	int i = 0;
@@ -40,8 +41,8 @@ bool _AProver_picking::init(void* pKiss)
 		pC->v("pwmL", &rc.m_pwmL);
 		pC->v("pwmM", &rc.m_pwmM);
 		pC->v("pwmH", &rc.m_pwmH);
-		pC->a("pwmH", &rc.m_vDiv);
-		rc.update();
+		pC->a("vDiv", &rc.m_vDiv);
+		rc.setup();
 		m_vRC.push_back(rc);
 	}
 
@@ -54,12 +55,12 @@ bool _AProver_picking::init(void* pKiss)
 	iName = "";
 	pK->v("_AProver_drive", &iName);
 	m_pDrive = (_AProver_drive*)pK->getInst(iName);
-	IF_Fl(!m_pDrive, iName + ": not found");
+//	IF_Fl(!m_pDrive, iName + ": not found");
 
 	iName = "";
 	pK->v("_PickingArm", &iName);
 	m_pArm = (_PickingArm*)pK->getInst(iName);
-	NULL_Fl(m_pArm, iName + ": not found");
+//	NULL_Fl(m_pArm, iName + ": not found");
 
 	return true;
 }
@@ -82,8 +83,8 @@ int _AProver_picking::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
-	NULL__(m_pDrive, -1);
-	NULL__(m_pArm, -1);
+//	NULL__(m_pDrive, -1);
+//	NULL__(m_pArm, -1);
 
 	return this->_MissionBase::check();
 }
@@ -99,8 +100,8 @@ void _AProver_picking::update(void)
 		if(!updateDrive())
 		{
 			m_pMC->transit("STANDBY");
-			m_pDrive->setSpeed(0.0);
-			m_pDrive->setYaw(0.0);
+//			m_pDrive->setSpeed(0.0);
+//			m_pDrive->setYaw(0.0);
 		}
 
 		updatePicking();
@@ -116,16 +117,16 @@ bool _AProver_picking::updateDrive(void)
 
 	bool bArmed = m_pAP->bApArmed();
 	uint32_t apMode = m_pAP->getApMode();
-	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_rcMode.m_iChan);
+	uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC(m_rcMode.m_iChan);
 	string mission = m_pMC->getMissionName();
 
 	IF_F(!bArmed);
 	IF_F(apMode == AP_ROVER_HOLD);
-	IF_F(rcMode == UINT16_MAX);
+	IF_F(pwmMode == UINT16_MAX);
 
 	if(mission == "STANDBY")
 	{
-		m_rcMode.pwm(rcMode);
+		m_rcMode.pwm(pwmMode);
 		int iMode = m_rcMode.i();
 
 		switch(iMode)
@@ -186,7 +187,13 @@ void _AProver_picking::draw(void)
 	this->_MissionBase::draw();
 	IF_(check()<0);
 
-//	addMsg("dHdg=" + f2str(m_dHdg) + ", sideBoarder=" + f2str(m_sideBorder));
+	addMsg("RC mode: " + i2str(m_rcMode.i()));
+
+	string msg = "| ";
+	for(RC_CHANNEL rc : m_vRC)
+		msg += i2str(rc.m_pwm) + "/" + f2str(rc.v()) + "/" + i2str(rc.i())+ " | ";
+	addMsg(msg);
+
 }
 
 }
