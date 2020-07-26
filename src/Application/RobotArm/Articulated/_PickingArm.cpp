@@ -16,13 +16,24 @@ _PickingArm::_PickingArm()
 {
 	m_pA = NULL;
 	m_pU = NULL;
+	m_tO.init();
 	m_mode = paMode_unknown;
 	m_state = pa_standby;
+
+	m_vTargetBB.init();
+	m_vP.init();
+	m_vP.x = 0.5;
+	m_vP.y = 0.5;
+	m_vTargetP.init();
+	m_vTargetP.x = 0.5;
+	m_vTargetP.y = 0.5;
 
 	m_pXpid = NULL;
 	m_pYpid = NULL;
 	m_pZpid = NULL;
-	m_tO.init();
+
+	m_vM.init(0.5);
+	m_vR.init(0.5);
 }
 
 _PickingArm::~_PickingArm()
@@ -55,7 +66,7 @@ bool _PickingArm::init(void *pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_ActuatorBase", &iName));
-	m_pA = (_ActuatorBase*) (pK->getInst(iName));
+	m_pA = (_S6H4D*) (pK->getInst(iName));
 	IF_Fl(!m_pA, iName + " not found");
 
 	iName = "";
@@ -127,9 +138,8 @@ void _PickingArm::updateArm(void)
 
 	if(m_mode == paMode_external)
 	{
-		vM = m_vM;
-
-		m_pA->speed(vM);
+		m_pA->speed(m_vM);
+		m_pA->rotate(m_vR);
 	}
 	else if(m_mode == paMode_auto)
 	{
@@ -149,6 +159,16 @@ void _PickingArm::updateArm(void)
 		vM.init(0.5);
 		if (tO)
 		{
+			m_vTargetBB = tO->getBB2D();
+			float x = m_vTargetBB.midX() - m_vTargetP.x;
+			float y = m_vTargetBB.midY() - m_vTargetP.y;
+			float angle = m_pA->m_cState.m_vA1.x;
+
+			float s = sin(angle);
+			float c = cos(angle);
+			m_vP.x = x*c - y*s + m_vTargetP.x;
+			m_vP.y = x*s + y*c + m_vTargetP.y;
+
 			vM.x = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
 			vM.y = m_pXpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
 			vM.z = m_pXpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
@@ -166,6 +186,11 @@ void _PickingArm::setMode(PICKINGARM_MODE m)
 void _PickingArm::move(vFloat4& vM)
 {
 	m_vM = vM;
+}
+
+void _PickingArm::rotate(vFloat4& vR)
+{
+	m_vR = vR;
 }
 
 void _PickingArm::draw(void)

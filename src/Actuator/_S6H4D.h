@@ -70,9 +70,8 @@ struct S6H4D_CMD_STATE
 struct S6H4D_STATE
 {
 	vFloat3 m_vP;
-	vFloat3 m_vA;
-	vFloat2 m_vB;
-	float m_aw;
+	vFloat3 m_vA1;
+	vFloat3 m_vA2;
 	vFloat3 m_vOrigin;
 	int m_mode;
 	vFloat2 m_vW;
@@ -80,9 +79,8 @@ struct S6H4D_STATE
 	void init(void)
 	{
 		m_vP.init();
-		m_vA.init();
-		m_vB.init();
-		m_aw = 0;
+		m_vA1.init();
+		m_vA2.init();
 		m_vOrigin.init();
 		m_mode = 1;
 		m_vW.init();
@@ -103,14 +101,18 @@ public:
 	void armReset(void);
 	void setOrigin(vFloat3 &vP);
 	void setMode(int mode);
-	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
-	void move(vFloat3 &vM);
 	void pause(void);
 	void state(void);
+
+	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
+	void move(vFloat3 &vM);
+	void rot(int iAxis, float angle);
 
 private:
 	void updatePos(void);
 	void updateMove(void);
+	void updateRot(void);
+	void autoGripperHdg(void);
 	void readState(void);
 	void decodeState(void);
 	void update(void);
@@ -124,20 +126,29 @@ public:
 	_IOBase *m_pIO;
 	S6H4D_CMD_STATE m_state;
 
-	vFloat2 m_vPosRangeX;
-	vFloat2 m_vPosRangeY;
-	vFloat2 m_vPosRangeZ;
-	vFloat2 m_vRotRangeX;
-	vFloat2 m_vRotRangeY;
-	vFloat2 m_vRotRangeZ;
+	vFloat2 m_vXrange;
+	vFloat2 m_vYrange;
+	vFloat2 m_vZrange;
+	vFloat2 m_vWrange;
+
+	vFloat2 m_vA1range;
+	vFloat2 m_vA2range;
+	vFloat2 m_vA3range;
+	vFloat2 m_vA4range;
+	vFloat2 m_vA5range;
+	vFloat2 m_vA6range;
+
 	vFloat2 m_vSpeedRange;	//mm/m
+	float	m_speed;
 
 	float m_dMove;
 	bool m_bOrder;
 
+	bool	m_bAutoGripperHdg;
+	float	m_autoGripperHdgSpeed;
+
 	S6H4D_STATE m_cState;	// current state
 	S6H4D_STATE m_tState;	// target state
-
 
 };
 

@@ -9,18 +9,19 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_vNormOriginPos.init(0.0);
-	m_vNormPos.init(-1.0);
-	m_vNormTargetPos.init(-1.0);
-	m_vNormPosErr.init(0.01);
+	m_vNoriginPos.init(0.0);
+	m_vNpos.init(-1.0);
+	m_vNtargetPos.init(-1.0);
+	m_vNposErr.init(0.01);
+	m_vNspeed.init(0.0);
+	m_vNtargetSpeed.init(0.0);
 
-	m_vNormSpeed.init(0.0);
-	m_vNormTargetSpeed.init(0.0);
-
-	m_vNormOriginRot.init(0.0);
-	m_vNormRot.init(-1.0);
-	m_vNormTargetRot.init(-1.0);
-	m_vNormRotErr.init(0.01);
+	m_vNoriginAngle.init(0.0);
+	m_vNangle.init(-1.0);
+	m_vNtargetAngle.init(-1.0);
+	m_vNangleErr.init(0.01);
+	m_vNrotSpeed.init(0.0);
+	m_vNtargetRotSpeed.init(0.0);
 
 	m_bFeedback = false;
 	m_pParent = NULL;
@@ -35,17 +36,17 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("vNormOriginPos", &m_vNormOriginPos);
-	pK->v("vNormPos", &m_vNormPos);
-	pK->v("vNormTargetPos", &m_vNormTargetPos);
-	pK->v("vNormPosErr", &m_vNormPosErr);
+	pK->v("vNoriginPos", &m_vNoriginPos);
+	pK->v("vNpos", &m_vNpos);
+	pK->v("vNtargetPos", &m_vNtargetPos);
+	pK->v("vNposErr", &m_vNposErr);
+	pK->v("vNtargetSpeed", &m_vNtargetSpeed);
 
-	pK->v("vNormTargetSpeed", &m_vNormTargetSpeed);
-
-	pK->v("vNormOriginRot", &m_vNormOriginRot);
-	pK->v("vNormRot", &m_vNormRot);
-	pK->v("vNormTargetRot", &m_vNormTargetRot);
-	pK->v("vNormRotErr", &m_vNormRotErr);
+	pK->v("vNoriginAngle", &m_vNoriginAngle);
+	pK->v("vNangle", &m_vNangle);
+	pK->v("vNtargetAngle", &m_vNtargetAngle);
+	pK->v("vNangleErr", &m_vNangleErr);
+	pK->v("vNtargetRotSpeed", &m_vNtargetSpeed);
 
 	pK->v("bFeedback",&m_bFeedback);
 
@@ -83,31 +84,49 @@ bool _ActuatorBase::open(void)
 
 void _ActuatorBase::pos(vFloat4& vPos)
 {
-	m_vNormTargetPos.x = (vPos.x >= 0.0)?constrain(vPos.x, 0.0f, 1.0f):-1.0;
-	m_vNormTargetPos.y = (vPos.y >= 0.0)?constrain(vPos.y, 0.0f, 1.0f):-1.0;
-	m_vNormTargetPos.z = (vPos.z >= 0.0)?constrain(vPos.z, 0.0f, 1.0f):-1.0;
-	m_vNormTargetPos.w = (vPos.w >= 0.0)?constrain(vPos.w, 0.0f, 1.0f):-1.0;
+	m_vNtargetPos.x = constrain(vPos.x, -1.0f, 1.0f);
+	m_vNtargetPos.y = constrain(vPos.y, -1.0f, 1.0f);
+	m_vNtargetPos.z = constrain(vPos.z, -1.0f, 1.0f);
+	m_vNtargetPos.w = constrain(vPos.w, -1.0f, 1.0f);
 }
 
 void _ActuatorBase::speed(vFloat4& vSpeed)
 {
-	m_vNormTargetSpeed.x = (vSpeed.x >= 0.0)?constrain(vSpeed.x, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.y = (vSpeed.y >= 0.0)?constrain(vSpeed.y, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.z = (vSpeed.z >= 0.0)?constrain(vSpeed.z, 0.0f, 1.0f):-1.0;
-	m_vNormTargetSpeed.w = (vSpeed.w >= 0.0)?constrain(vSpeed.w, 0.0f, 1.0f):-1.0;
+	m_vNtargetSpeed.x = constrain(vSpeed.x, -1.0f, 1.0f);
+	m_vNtargetSpeed.y = constrain(vSpeed.y, -1.0f, 1.0f);
+	m_vNtargetSpeed.z = constrain(vSpeed.z, -1.0f, 1.0f);
+	m_vNtargetSpeed.w = constrain(vSpeed.w, -1.0f, 1.0f);
+
+	if((m_vNpos.x >= 1.0 && m_vNtargetSpeed.x > 0.5) || (m_vNpos.x <= 0.0 && m_vNtargetSpeed.x < 0.5))m_vNtargetSpeed.x = 0.5;
+	if((m_vNpos.y >= 1.0 && m_vNtargetSpeed.y > 0.5) || (m_vNpos.y <= 0.0 && m_vNtargetSpeed.y < 0.5))m_vNtargetSpeed.y = 0.5;
+	if((m_vNpos.z >= 1.0 && m_vNtargetSpeed.z > 0.5) || (m_vNpos.z <= 0.0 && m_vNtargetSpeed.z < 0.5))m_vNtargetSpeed.z = 0.5;
+	if((m_vNpos.w >= 1.0 && m_vNtargetSpeed.w > 0.5) || (m_vNpos.w <= 0.0 && m_vNtargetSpeed.w < 0.5))m_vNtargetSpeed.w = 0.5;
 }
 
-void _ActuatorBase::rot(vFloat4& vRot)
+void _ActuatorBase::angle(vFloat4& vAngle)
 {
-	m_vNormTargetRot.x = (vRot.x >= 0.0)?constrain(vRot.x, 0.0f, 1.0f):-1.0;
-	m_vNormTargetRot.y = (vRot.y >= 0.0)?constrain(vRot.y, 0.0f, 1.0f):-1.0;
-	m_vNormTargetRot.z = (vRot.z >= 0.0)?constrain(vRot.z, 0.0f, 1.0f):-1.0;
-	m_vNormTargetRot.w = (vRot.w >= 0.0)?constrain(vRot.w, 0.0f, 1.0f):-1.0;
+	m_vNtargetAngle.x = constrain(vAngle.x, -1.0f, 1.0f);
+	m_vNtargetAngle.y = constrain(vAngle.y, -1.0f, 1.0f);
+	m_vNtargetAngle.z = constrain(vAngle.z, -1.0f, 1.0f);
+	m_vNtargetAngle.w = constrain(vAngle.w, -1.0f, 1.0f);
+}
+
+void _ActuatorBase::rotate(vFloat4& vRot)
+{
+	m_vNtargetRotSpeed.x = constrain(vRot.x, -1.0f, 1.0f);
+	m_vNtargetRotSpeed.y = constrain(vRot.y, -1.0f, 1.0f);
+	m_vNtargetRotSpeed.z = constrain(vRot.z, -1.0f, 1.0f);
+	m_vNtargetRotSpeed.w = constrain(vRot.w, -1.0f, 1.0f);
+
+	if((m_vNangle.x >= 1.0 && m_vNtargetRotSpeed.x > 0.5) || (m_vNangle.x <= 0.0 && m_vNtargetRotSpeed.x < 0.5))m_vNtargetRotSpeed.x = 0.5;
+	if((m_vNangle.y >= 1.0 && m_vNtargetRotSpeed.y > 0.5) || (m_vNangle.y <= 0.0 && m_vNtargetRotSpeed.y < 0.5))m_vNtargetRotSpeed.y = 0.5;
+	if((m_vNangle.z >= 1.0 && m_vNtargetRotSpeed.z > 0.5) || (m_vNangle.z <= 0.0 && m_vNtargetRotSpeed.z < 0.5))m_vNtargetRotSpeed.z = 0.5;
+	if((m_vNangle.w >= 1.0 && m_vNtargetRotSpeed.w > 0.5) || (m_vNangle.w <= 0.0 && m_vNtargetRotSpeed.w < 0.5))m_vNtargetRotSpeed.w = 0.5;
 }
 
 void _ActuatorBase::gotoOrigin(void)
 {
-	pos(m_vNormOriginPos);
+	pos(m_vNoriginPos);
 }
 
 void _ActuatorBase::setGlobalTarget(vFloat4& t)
@@ -117,24 +136,24 @@ void _ActuatorBase::setGlobalTarget(vFloat4& t)
 
 bool _ActuatorBase::bComplete(void)
 {
-	if(m_vNormTargetPos.x >= 0.0)
+	if(m_vNtargetPos.x >= 0.0)
 	{
-		IF_F(!EAQ(m_vNormPos.x, m_vNormTargetPos.x, m_vNormPosErr.x));
+		IF_F(!EAQ(m_vNpos.x, m_vNtargetPos.x, m_vNposErr.x));
 	}
 
-	if(m_vNormTargetPos.y >= 0.0)
+	if(m_vNtargetPos.y >= 0.0)
 	{
-		IF_F(!EAQ(m_vNormPos.y, m_vNormTargetPos.y, m_vNormPosErr.y));
+		IF_F(!EAQ(m_vNpos.y, m_vNtargetPos.y, m_vNposErr.y));
 	}
 
-	if(m_vNormTargetPos.z >= 0.0)
+	if(m_vNtargetPos.z >= 0.0)
 	{
-		IF_F(!EAQ(m_vNormPos.z, m_vNormTargetPos.z, m_vNormPosErr.z));
+		IF_F(!EAQ(m_vNpos.z, m_vNtargetPos.z, m_vNposErr.z));
 	}
 
-	if(m_vNormTargetPos.w >= 0.0)
+	if(m_vNtargetPos.w >= 0.0)
 	{
-		IF_F(!EAQ(m_vNormPos.w, m_vNormTargetPos.w, m_vNormPosErr.w));
+		IF_F(!EAQ(m_vNpos.w, m_vNtargetPos.w, m_vNposErr.w));
 	}
 
 	return true;
@@ -142,12 +161,12 @@ bool _ActuatorBase::bComplete(void)
 
 vFloat4 _ActuatorBase::getPos(void)
 {
-	return m_vNormPos;
+	return m_vNpos;
 }
 
 vFloat4 _ActuatorBase::getSpeed(void)
 {
-	return m_vNormSpeed;
+	return m_vNspeed;
 }
 
 void _ActuatorBase::draw(void)
@@ -155,12 +174,12 @@ void _ActuatorBase::draw(void)
 	this->_ThreadBase::draw();
 
 	addMsg("-- Normalized state --",1);
-	addMsg("vNormPos = (" + f2str(m_vNormPos.x) + ", " + f2str(m_vNormPos.y) + ", " + f2str(m_vNormPos.z) + ", " + f2str(m_vNormPos.w) + ")", 1);
-	addMsg("vNormTargetPos = (" + f2str(m_vNormTargetPos.x) + ", " + f2str(m_vNormTargetPos.y) + ", " + f2str(m_vNormTargetPos.z) + ", " + f2str(m_vNormTargetPos.w) + ")", 1);
-	addMsg("vNormRot = (" + f2str(m_vNormRot.x) + ", " + f2str(m_vNormRot.y) + ", " + f2str(m_vNormRot.z) + ", " + f2str(m_vNormRot.w) + ")", 1);
-	addMsg("vNormTargetRot = (" + f2str(m_vNormTargetRot.x) + ", " + f2str(m_vNormTargetRot.y) + ", " + f2str(m_vNormTargetRot.z) + ", " + f2str(m_vNormTargetRot.w) + ")", 1);
-	addMsg("vNormSpeed = (" + f2str(m_vNormSpeed.x) + ", " + f2str(m_vNormSpeed.y) + ", " + f2str(m_vNormSpeed.z) + ", " + f2str(m_vNormSpeed.w) + ")", 1);
-	addMsg("vNormTargetSpeed = (" + f2str(m_vNormTargetSpeed.x) + ", " + f2str(m_vNormTargetSpeed.y) + ", " + f2str(m_vNormTargetSpeed.z) + ", " + f2str(m_vNormTargetSpeed.w) + ")", 1);
+	addMsg("vNpos = (" + f2str(m_vNpos.x) + ", " + f2str(m_vNpos.y) + ", " + f2str(m_vNpos.z) + ", " + f2str(m_vNpos.w) + ")", 1);
+	addMsg("vNtargetPos = (" + f2str(m_vNtargetPos.x) + ", " + f2str(m_vNtargetPos.y) + ", " + f2str(m_vNtargetPos.z) + ", " + f2str(m_vNtargetPos.w) + ")", 1);
+	addMsg("vNrot = (" + f2str(m_vNangle.x) + ", " + f2str(m_vNangle.y) + ", " + f2str(m_vNangle.z) + ", " + f2str(m_vNangle.w) + ")", 1);
+	addMsg("vNtargetRot = (" + f2str(m_vNtargetAngle.x) + ", " + f2str(m_vNtargetAngle.y) + ", " + f2str(m_vNtargetAngle.z) + ", " + f2str(m_vNtargetAngle.w) + ")", 1);
+	addMsg("vNspeed = (" + f2str(m_vNspeed.x) + ", " + f2str(m_vNspeed.y) + ", " + f2str(m_vNspeed.z) + ", " + f2str(m_vNspeed.w) + ")", 1);
+	addMsg("vNtargetSpeed = (" + f2str(m_vNtargetSpeed.x) + ", " + f2str(m_vNtargetSpeed.y) + ", " + f2str(m_vNtargetSpeed.z) + ", " + f2str(m_vNtargetSpeed.w) + ")", 1);
 
 }
 

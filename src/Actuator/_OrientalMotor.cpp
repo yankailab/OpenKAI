@@ -121,12 +121,12 @@ void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
-	IF_(m_vNormTargetPos.x < 0.0);
+	IF_(m_vNtargetPos.x < 0.0);
 
 	//update normalized value to actual unit
-	m_tState.m_step = m_vNormTargetPos.x * m_vStepRange.len() + m_vStepRange.x;
+	m_tState.m_step = m_vNtargetPos.x * m_vStepRange.len() + m_vStepRange.x;
 	m_tState.m_step = constrain(m_tState.m_step, m_vStepRange.x, m_vStepRange.y);
-	m_tState.m_speed = m_vNormTargetSpeed.x * m_vSpeedRange.len() + m_vSpeedRange.x;
+	m_tState.m_speed = m_vNtargetSpeed.x * m_vSpeedRange.len() + m_vSpeedRange.x;
 	m_tState.m_speed = constrain(m_tState.m_speed, m_vSpeedRange.x, m_vSpeedRange.y);
 
 	//create the command
@@ -174,8 +174,8 @@ void _OrientalMotor::readStatus(void)
 	m_cState.m_speed = MAKE32(pB[4], pB[5]);
 
 	//update actual unit to normalized value
-	m_vNormPos.x = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
-	m_vNormSpeed.x = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
+	m_vNpos.x = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
+	m_vNspeed.x = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
 
 	LOG_I("step: "+i2str(m_cState.m_step) +
 			", speed: " + i2str(m_cState.m_speed));

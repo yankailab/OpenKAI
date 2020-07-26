@@ -104,11 +104,11 @@ struct vFloat3
 
 	inline bool operator!=(vFloat3 r)
     {
-		IF_F(x != r.x);
-		IF_F(y != r.y);
-		IF_F(z != r.z);
+		IF_T(x != r.x);
+		IF_T(y != r.y);
+		IF_T(z != r.z);
 
-		return true;
+		return false;
 	}
 
 	float len(void)

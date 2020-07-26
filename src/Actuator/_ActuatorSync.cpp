@@ -76,8 +76,8 @@ void _ActuatorSync::updateSync(void)
 {
 	_ActuatorBase* pA = m_pAB[m_iABget];
 	NULL_(pA);
-	m_vNormPos = pA->getPos();
-	m_vNormSpeed = pA->getSpeed();
+	m_vNpos = pA->getPos();
+	m_vNspeed = pA->getSpeed();
 
 }
 

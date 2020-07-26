@@ -335,7 +335,7 @@ inline uint32_t unpack_uint32(const void* pB, bool bOrder = true)
 
 inline void f2b(uint8_t *pB, float f)
 {
-	uint8_t *pF = (uint8_t*) &f;
+	uint8_t* pF = (uint8_t*) &f;
 
 	for (uint8_t i = 0; i < sizeof(float); i++)
 	{

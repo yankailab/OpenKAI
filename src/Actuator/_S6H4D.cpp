@@ -5,23 +5,29 @@ namespace kai
 
 _S6H4D::_S6H4D()
 {
+	m_vNoriginPos.init(0.5);
+	m_vNoriginAngle.init(0.5);
+
 	m_pIO = NULL;
 	m_state.init();
 
-	m_vPosRangeX.init(0.0, 100.0);
-	m_vPosRangeY.init(0.0, 100.0);
-	m_vPosRangeZ.init(0.0, 100.0);
-	m_vRotRangeX.init(0.0, 180.0);
-	m_vRotRangeY.init(0.0, 180.0);
-	m_vRotRangeZ.init(0.0, 180.0);
+	m_vXrange.init(-100.0, 100.0);
+	m_vYrange.init(-100.0, 100.0);
+	m_vZrange.init(-100.0, 100.0);
+	m_vA1range.init(0.0, 180.0);
+	m_vA2range.init(0.0, 180.0);
+	m_vA3range.init(0.0, 180.0);
 	m_vSpeedRange.init(0.0, 1e5);
+	m_speed = 1.0;
 
 	m_dMove = 128;
 	m_bOrder = true;
+	m_bAutoGripperHdg = false;
+	m_autoGripperHdgSpeed = 0.2;
 
 	m_cState.init();
 	m_tState.init();
-	m_tState.m_vOrigin.init(344.1, 0.0, 417.4);
+	m_tState.m_vOrigin.init(344, 1.0, 417);
 }
 
 _S6H4D::~_S6H4D()
@@ -33,17 +39,22 @@ bool _S6H4D::init(void *pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v("vPosRangeX", &m_vPosRangeX);
-	pK->v("vPosRangeY", &m_vPosRangeY);
-	pK->v("vPosRangeZ", &m_vPosRangeZ);
-	pK->v("vRotRangeX", &m_vRotRangeX);
-	pK->v("vRotRangeY", &m_vRotRangeY);
-	pK->v("vRotRangeZ", &m_vRotRangeZ);
+	pK->v("vXrange", &m_vXrange);
+	pK->v("vYrange", &m_vYrange);
+	pK->v("vZrange", &m_vZrange);
+
+	pK->v("vA1range", &m_vA1range);
+	pK->v("vA2range", &m_vA2range);
+	pK->v("vA3range", &m_vA3range);
+
 	pK->v("vSpeedRange", &m_vSpeedRange);
+	pK->v("speed", &m_speed);
+	pK->v("bAutoGripperHdg", &m_bAutoGripperHdg);
+	pK->v("autoGripperHdgSpeed", &m_autoGripperHdgSpeed);
 
 	pK->v("bOrder", &m_bOrder);
-	pK->v("vOrigin", &m_tState.m_vOrigin);
 	pK->v("mode", &m_tState.m_mode);
+	pK->v("vOrigin", &m_tState.m_vOrigin);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -77,24 +88,40 @@ int _S6H4D::check(void)
 
 void _S6H4D::update(void)
 {
+	while(check() < 0)
+		this->sleepTime(USEC_1SEC);
+
+	setMode(m_tState.m_mode);
+	if(m_tState.m_vOrigin != m_cState.m_vOrigin)
+		setOrigin(m_tState.m_vOrigin);
+
+	//go to the origin
+	updatePos();
+
+
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		setMode(m_tState.m_mode);
-		if(m_tState.m_vOrigin != m_cState.m_vOrigin)
-			setOrigin(m_tState.m_vOrigin);
-
-		if(m_vNormTargetPos.sum() > -4.0)
+		if(m_vNtargetPos.sum() > -4.0)
 		{
-			updatePos();
+//			updatePos();
 		}
-		else if(m_vNormTargetSpeed.sum() > -4.0)
+
+		if(m_vNtargetSpeed.sum() > -4.0)
 		{
 			updateMove();
 		}
 
+		if(m_vNtargetAngle.sum() > -4.0)
+		{
+//			updateRot();
+		}
+
 		readState();
+
+		if(m_bAutoGripperHdg)
+			autoGripperHdg();
 
 		this->autoFPSto();
 	}
@@ -104,19 +131,17 @@ void _S6H4D::updatePos(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP;
-	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
-	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
-	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
+	m_tState.m_vP.x = m_vNtargetPos.x * m_vXrange.d() + m_vXrange.x;
+	m_tState.m_vP.y = m_vNtargetPos.y * m_vYrange.d() + m_vYrange.x;
+	m_tState.m_vP.z = m_vNtargetPos.z * m_vZrange.d() + m_vZrange.x;
 
-	vFloat3 vR;
-	vR.x = m_vNormTargetRot.x * m_vRotRangeX.d() + m_vRotRangeX.x;
-	vR.y = m_vNormTargetRot.y * m_vRotRangeY.d() + m_vRotRangeY.x;
-	vR.z = m_vNormTargetRot.z * m_vRotRangeZ.d() + m_vRotRangeZ.x;
+	m_tState.m_vA2.x = m_vNtargetAngle.x * m_vA1range.d() + m_vA1range.x;
+	m_tState.m_vA2.y = m_vNtargetAngle.y * m_vA2range.d() + m_vA2range.x;
+	m_tState.m_vA2.z = m_vNtargetAngle.z * m_vA3range.d() + m_vA3range.x;
 
-	float spd = m_vNormTargetSpeed.x * m_vSpeedRange.d() + m_vSpeedRange.x;
+	float spd = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
-	gotoPos(vP, vR, spd);
+	gotoPos(m_tState.m_vP, m_tState.m_vA2, spd);
 }
 
 void _S6H4D::updateMove(void)
@@ -124,11 +149,43 @@ void _S6H4D::updateMove(void)
 	IF_(check() < 0);
 
 	vFloat3 vM;
-	vM.x = m_vNormTargetSpeed.x;
-	vM.y = m_vNormTargetSpeed.y;
-	vM.z = m_vNormTargetSpeed.z;
+	vM.x = m_vNtargetSpeed.x;
+	vM.y = m_vNtargetSpeed.y;
+	vM.z = m_vNtargetSpeed.z;
 
 	move(vM);
+}
+
+void _S6H4D::updateRot(void)
+{
+	IF_(check() < 0);
+
+	if(m_vNtargetRotSpeed.x >= 0.0)
+		rot(3, m_vNtargetRotSpeed.x);
+
+	if(m_vNtargetRotSpeed.y >= 0.0)
+		rot(4, m_vNtargetRotSpeed.y);
+
+	if(m_vNtargetRotSpeed.z >= 0.0)
+		rot(5, m_vNtargetRotSpeed.z);
+}
+
+void _S6H4D::autoGripperHdg(void)
+{
+	IF_(check() < 0);
+
+//	if(m_cState.m_vA2.z <= m_vRotRangeZ.x || m_cState.m_vA2.z >= m_vRotRangeZ.y)
+//	{
+//		rot(5, 0.5);
+//		return;
+//	}
+
+	if(EAQ(m_cState.m_vA1.x, -m_cState.m_vA2.z, 0.1))
+		rot(5, 0.5);
+	else if(m_cState.m_vA1.x > -m_cState.m_vA2.z)
+		rot(5, 0.5 + m_autoGripperHdgSpeed);
+	else
+		rot(5, 0.5 - m_autoGripperHdgSpeed);
 }
 
 void _S6H4D::armReset(void)
@@ -150,9 +207,9 @@ void _S6H4D::setOrigin(vFloat3& vP)
 	cmd.init();
 	cmd.m_b[1] = 20;
 	cmd.m_b[2] = 1;
-	f2b(&cmd.m_b[3], vP.x);
-	f2b(&cmd.m_b[7], vP.y);
-	f2b(&cmd.m_b[11], vP.z);
+	f2b(&cmd.m_b[3], vP.x * 10.0);
+	f2b(&cmd.m_b[7], vP.y * 10.0);
+	f2b(&cmd.m_b[11], vP.z * 10.0);
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -191,8 +248,19 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*2.0*m_dMove, 0, 255) : 128;
 	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*2.0*m_dMove, 0, 255) : 128;
 
-	//TODO: add border detect and protection
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
 
+void _S6H4D::rot(int iAxis, float angle)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 30;
+	cmd.m_b[2] = 7;
+	cmd.m_b[3] = iAxis;
+	cmd.m_b[4] = (angle >= 0.0) ? constrain<float>(128 + (angle - 0.5)*2.0*m_dMove, 0, 255) : 128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -247,28 +315,28 @@ void _S6H4D::decodeState(void)
 		m_cState.m_vP.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_cState.m_vOrigin.y;
 		m_cState.m_vP.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_cState.m_vOrigin.z;
 
-		m_vNormPos.x = (float) (m_cState.m_vP.x - m_vPosRangeX.x) / (float) m_vPosRangeX.len();
-		m_vNormPos.y = (float) (m_cState.m_vP.y - m_vPosRangeY.x) / (float) m_vPosRangeY.len();
-		m_vNormPos.z = (float) (m_cState.m_vP.z - m_vPosRangeZ.x) / (float) m_vPosRangeZ.len();
+		m_vNpos.x = (float) (m_cState.m_vP.x - m_vXrange.x) / (float) m_vXrange.len();
+		m_vNpos.y = (float) (m_cState.m_vP.y - m_vYrange.x) / (float) m_vYrange.len();
+		m_vNpos.z = (float) (m_cState.m_vP.z - m_vZrange.x) / (float) m_vZrange.len();
 		break;
 	case 1:
-		m_cState.m_vA.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_cState.m_vA.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_cState.m_vA.z = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
-
-		m_vNormRot.x = (float) (m_cState.m_vA.x - m_vRotRangeX.x) / (float) m_vRotRangeX.len();
-		m_vNormRot.y = (float) (m_cState.m_vA.y - m_vRotRangeY.x) / (float) m_vRotRangeY.len();
-		m_vNormRot.z = (float) (m_cState.m_vA.z - m_vRotRangeZ.x) / (float) m_vRotRangeZ.len();
+		m_cState.m_vA1.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vA1.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vA1.z = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 2:
-		m_cState.m_vB.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_cState.m_vB.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_cState.m_aw = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vA2.x = 0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vA2.y = 0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vA2.z = 0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+
+		m_vNangle.x = (float) (m_cState.m_vA2.x - m_vA1range.x) / (float) m_vA1range.len();
+		m_vNangle.y = (float) (m_cState.m_vA2.y - m_vA2range.x) / (float) m_vA2range.len();
+		m_vNangle.z = (float) (m_cState.m_vA2.z - m_vA3range.x) / (float) m_vA3range.len();
 		break;
 	case 3:
-		m_cState.m_vOrigin.x = (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		m_cState.m_vOrigin.y = (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		m_cState.m_vOrigin.z = (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_cState.m_vOrigin.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_cState.m_vOrigin.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_cState.m_vOrigin.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 4:
 		break;
@@ -286,19 +354,19 @@ void _S6H4D::draw(void)
 {
 	this->_ActuatorBase::draw();
 
+	addMsg("",1);
 	addMsg("-- Current state --",1);
 	addMsg("vP = (" + f2str(m_cState.m_vP.x) + ", " + f2str(m_cState.m_vP.y) + ", " + f2str(m_cState.m_vP.z) + ")" ,1);
-	addMsg("vA = (" + f2str(m_cState.m_vA.x) + ", " + f2str(m_cState.m_vA.y) + ", " + f2str(m_cState.m_vA.z) + ")" ,1);
-	addMsg("vB = (" + f2str(m_cState.m_vB.x) + ", " + f2str(m_cState.m_vB.y) + ")" ,1);
-	addMsg("aw = " + f2str(m_cState.m_aw) ,1);
+	addMsg("vA1 = (" + f2str(m_cState.m_vA1.x) + ", " + f2str(m_cState.m_vA1.y) + ", " + f2str(m_cState.m_vA1.z) + ")" ,1);
+	addMsg("vA2 = (" + f2str(m_cState.m_vA2.x) + ", " + f2str(m_cState.m_vA2.y) + ", " + f2str(m_cState.m_vA2.z) + ")" ,1);
 	addMsg("vOrigin = (" + f2str(m_cState.m_vOrigin.x) + ", " + f2str(m_cState.m_vOrigin.y) + ", " + f2str(m_cState.m_vOrigin.z) + ")" ,1);
 	addMsg("vW = (" + f2str(m_cState.m_vW.x) + ", " + f2str(m_cState.m_vW.y) + ")" ,1);
 
+	addMsg("",1);
 	addMsg("-- Target state --",1);
 	addMsg("vP = (" + f2str(m_tState.m_vP.x) + ", " + f2str(m_tState.m_vP.y) + ", " + f2str(m_tState.m_vP.z) + ")" ,1);
-	addMsg("vA = (" + f2str(m_tState.m_vA.x) + ", " + f2str(m_tState.m_vA.y) + ", " + f2str(m_tState.m_vA.z) + ")" ,1);
-	addMsg("vB = (" + f2str(m_tState.m_vB.x) + ", " + f2str(m_tState.m_vB.y) + ")" ,1);
-	addMsg("aw = " + f2str(m_tState.m_aw) ,1);
+	addMsg("vA1 = (" + f2str(m_tState.m_vA1.x) + ", " + f2str(m_tState.m_vA1.y) + ", " + f2str(m_tState.m_vA1.z) + ")" ,1);
+	addMsg("vA2 = (" + f2str(m_tState.m_vA2.x) + ", " + f2str(m_tState.m_vA2.y) + ", " + f2str(m_tState.m_vA2.z) + ")" ,1);
 	addMsg("vOrigin = (" + f2str(m_tState.m_vOrigin.x) + ", " + f2str(m_tState.m_vOrigin.y) + ", " + f2str(m_tState.m_vOrigin.z) + ")" ,1);
 	addMsg("vW = (" + f2str(m_tState.m_vW.x) + ", " + f2str(m_tState.m_vW.y) + ")" ,1);
 

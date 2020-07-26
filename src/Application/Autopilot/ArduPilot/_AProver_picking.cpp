@@ -182,6 +182,10 @@ bool _AProver_picking::updatePicking(void)
 		m_pArm->setMode(paMode_external);
 		m_pArm->move(vM);
 
+		vM.init(-1.0);
+		vM.x = m_vRC[3].v();
+//		m_pArm->rotate(vM);
+
 		m_pGripper->grip((m_vRC[4].i())?true:false);
 	}
 	else	//AUTOPICK

@@ -10,8 +10,8 @@
 
 #include "../../Mission/_MissionBase.h"
 #include "../../../Universe/_Universe.h"
-#include "../../../Actuator/_ActuatorBase.h"
 #include "../../../Control/PIDctrl.h"
+#include "../../../Actuator/_S6H4D.h"
 
 #ifdef USE_OPENCV
 
@@ -57,6 +57,7 @@ public:
 
 	void setMode(PICKINGARM_MODE m);
 	void move(vFloat4& vM);
+	void rotate(vFloat4& vR);
 
 private:
 	void updateArm(void);
@@ -68,12 +69,13 @@ private:
 	}
 
 public:
-	_ActuatorBase* m_pA;
+	_S6H4D* m_pA;
 	_Universe* m_pU;
 	_Object		m_tO;
 	PICKINGARM_MODE m_mode;
 	PICKINGARM_STATE m_state;
 
+	vFloat4 m_vTargetBB;
 	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
 	vFloat3 m_vTargetP;	//constant, screen coordinate where the followed object should get to
 	PIDctrl* m_pXpid;
@@ -81,6 +83,7 @@ public:
 	PIDctrl* m_pZpid;
 
 	vFloat4 m_vM;
+	vFloat4 m_vR;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
 };

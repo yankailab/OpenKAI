@@ -25,7 +25,8 @@ public:
 
 	virtual void pos(vFloat4& vPos);
 	virtual void speed(vFloat4& vSpeed);
-	virtual void rot(vFloat4& vRot);
+	virtual void angle(vFloat4& vAngle);
+	virtual void rotate(vFloat4& vRot);
 
 	virtual void gotoOrigin(void);
 	virtual void setGlobalTarget(vFloat4& t);
@@ -44,18 +45,19 @@ private:
 	}
 
 public:
-	vFloat4 m_vNormOriginPos;
-	vFloat4 m_vNormPos;
-	vFloat4 m_vNormTargetPos;
-	vFloat4 m_vNormPosErr;
+	vFloat4 m_vNoriginPos;
+	vFloat4 m_vNpos;
+	vFloat4 m_vNtargetPos;
+	vFloat4 m_vNposErr;
+	vFloat4 m_vNspeed;
+	vFloat4 m_vNtargetSpeed;
 
-	vFloat4 m_vNormSpeed;
-	vFloat4 m_vNormTargetSpeed;
-
-	vFloat4 m_vNormOriginRot;
-	vFloat4 m_vNormRot;
-	vFloat4 m_vNormTargetRot;
-	vFloat4 m_vNormRotErr;
+	vFloat4 m_vNoriginAngle;
+	vFloat4 m_vNangle;
+	vFloat4 m_vNtargetAngle;
+	vFloat4 m_vNangleErr;
+	vFloat4 m_vNrotSpeed;
+	vFloat4 m_vNtargetRotSpeed;
 
 	bool	m_bFeedback;
 
