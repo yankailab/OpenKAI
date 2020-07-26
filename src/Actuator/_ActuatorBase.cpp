@@ -9,20 +9,7 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_vNoriginPos.init(0.0);
-	m_vNpos.init(-1.0);
-	m_vNtargetPos.init(-1.0);
-	m_vNposErr.init(0.01);
-	m_vNspeed.init(0.0);
-	m_vNtargetSpeed.init(0.0);
-
-	m_vNoriginAngle.init(0.0);
-	m_vNangle.init(-1.0);
-	m_vNtargetAngle.init(-1.0);
-	m_vNangleErr.init(0.01);
-	m_vNrotSpeed.init(0.0);
-	m_vNtargetRotSpeed.init(0.0);
-
+	m_nAxis = 0;
 	m_bFeedback = false;
 	m_pParent = NULL;
 }
@@ -36,19 +23,30 @@ bool _ActuatorBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("vNoriginPos", &m_vNoriginPos);
-	pK->v("vNpos", &m_vNpos);
-	pK->v("vNtargetPos", &m_vNtargetPos);
-	pK->v("vNposErr", &m_vNposErr);
-	pK->v("vNtargetSpeed", &m_vNtargetSpeed);
-
-	pK->v("vNoriginAngle", &m_vNoriginAngle);
-	pK->v("vNangle", &m_vNangle);
-	pK->v("vNtargetAngle", &m_vNtargetAngle);
-	pK->v("vNangleErr", &m_vNangleErr);
-	pK->v("vNtargetRotSpeed", &m_vNtargetSpeed);
-
 	pK->v("bFeedback",&m_bFeedback);
+
+	Kiss *pAxis = pK->child("Axis");
+	int i = 0;
+	while (1)
+	{
+		Kiss *pA = pAxis->child(i++);
+		if (pA->empty())
+			break;
+
+		ACTUATOR_AXIS aa;
+		aa.init();
+		pA->v("nP", &aa.m_nP);
+		pA->v("nTargetP", &aa.m_nPtarget);
+		pA->v("nOriginP", &aa.m_nPorigin);
+		pA->v("nPerr", &aa.m_nPerr);
+		pA->v("nSpeed", &aa.m_nS);
+		pA->v("nTargetSpeed", &aa.m_nStarget);
+		pA->v("vRangeP", &aa.m_vPrange);
+		pA->v("vRangeSpeed", &aa.m_vSrange);
+		m_vAxis.push_back(aa);
+	}
+
+	IF_F(m_vAxis.size() < m_nAxis);
 
 	string iName;
 
@@ -82,105 +80,87 @@ bool _ActuatorBase::open(void)
 	return false;
 }
 
-void _ActuatorBase::pos(vFloat4& vPos)
+void _ActuatorBase::setPtarget(int i, float nP)
 {
-	m_vNtargetPos.x = constrain(vPos.x, -1.0f, 1.0f);
-	m_vNtargetPos.y = constrain(vPos.y, -1.0f, 1.0f);
-	m_vNtargetPos.z = constrain(vPos.z, -1.0f, 1.0f);
-	m_vNtargetPos.w = constrain(vPos.w, -1.0f, 1.0f);
+	IF_(i<0 || i>=m_vAxis.size());
+
+	ACTUATOR_AXIS* pA = &m_vAxis[i];
+	pA->setPtarget(nP);
 }
 
-void _ActuatorBase::speed(vFloat4& vSpeed)
+void _ActuatorBase::setStarget(int i, float nS)
 {
-	m_vNtargetSpeed.x = constrain(vSpeed.x, -1.0f, 1.0f);
-	m_vNtargetSpeed.y = constrain(vSpeed.y, -1.0f, 1.0f);
-	m_vNtargetSpeed.z = constrain(vSpeed.z, -1.0f, 1.0f);
-	m_vNtargetSpeed.w = constrain(vSpeed.w, -1.0f, 1.0f);
+	IF_(i<0 || i>=m_vAxis.size());
 
-	if((m_vNpos.x >= 1.0 && m_vNtargetSpeed.x > 0.5) || (m_vNpos.x <= 0.0 && m_vNtargetSpeed.x < 0.5))m_vNtargetSpeed.x = 0.5;
-	if((m_vNpos.y >= 1.0 && m_vNtargetSpeed.y > 0.5) || (m_vNpos.y <= 0.0 && m_vNtargetSpeed.y < 0.5))m_vNtargetSpeed.y = 0.5;
-	if((m_vNpos.z >= 1.0 && m_vNtargetSpeed.z > 0.5) || (m_vNpos.z <= 0.0 && m_vNtargetSpeed.z < 0.5))m_vNtargetSpeed.z = 0.5;
-	if((m_vNpos.w >= 1.0 && m_vNtargetSpeed.w > 0.5) || (m_vNpos.w <= 0.0 && m_vNtargetSpeed.w < 0.5))m_vNtargetSpeed.w = 0.5;
-}
-
-void _ActuatorBase::angle(vFloat4& vAngle)
-{
-	m_vNtargetAngle.x = constrain(vAngle.x, -1.0f, 1.0f);
-	m_vNtargetAngle.y = constrain(vAngle.y, -1.0f, 1.0f);
-	m_vNtargetAngle.z = constrain(vAngle.z, -1.0f, 1.0f);
-	m_vNtargetAngle.w = constrain(vAngle.w, -1.0f, 1.0f);
-}
-
-void _ActuatorBase::rotate(vFloat4& vRot)
-{
-	m_vNtargetRotSpeed.x = constrain(vRot.x, -1.0f, 1.0f);
-	m_vNtargetRotSpeed.y = constrain(vRot.y, -1.0f, 1.0f);
-	m_vNtargetRotSpeed.z = constrain(vRot.z, -1.0f, 1.0f);
-	m_vNtargetRotSpeed.w = constrain(vRot.w, -1.0f, 1.0f);
-
-	if((m_vNangle.x >= 1.0 && m_vNtargetRotSpeed.x > 0.5) || (m_vNangle.x <= 0.0 && m_vNtargetRotSpeed.x < 0.5))m_vNtargetRotSpeed.x = 0.5;
-	if((m_vNangle.y >= 1.0 && m_vNtargetRotSpeed.y > 0.5) || (m_vNangle.y <= 0.0 && m_vNtargetRotSpeed.y < 0.5))m_vNtargetRotSpeed.y = 0.5;
-	if((m_vNangle.z >= 1.0 && m_vNtargetRotSpeed.z > 0.5) || (m_vNangle.z <= 0.0 && m_vNtargetRotSpeed.z < 0.5))m_vNtargetRotSpeed.z = 0.5;
-	if((m_vNangle.w >= 1.0 && m_vNtargetRotSpeed.w > 0.5) || (m_vNangle.w <= 0.0 && m_vNtargetRotSpeed.w < 0.5))m_vNtargetRotSpeed.w = 0.5;
+	ACTUATOR_AXIS* pA = &m_vAxis[i];
+	pA->setStarget(nS);
 }
 
 void _ActuatorBase::gotoOrigin(void)
 {
-	pos(m_vNoriginPos);
-}
-
-void _ActuatorBase::setGlobalTarget(vFloat4& t)
-{
-
+	for(int i=0; i<m_vAxis.size(); i++)
+	{
+		ACTUATOR_AXIS* pA = &m_vAxis[i];
+		pA->gotoOrigin();
+	}
 }
 
 bool _ActuatorBase::bComplete(void)
 {
-	if(m_vNtargetPos.x >= 0.0)
+	for(ACTUATOR_AXIS aa : m_vAxis)
 	{
-		IF_F(!EAQ(m_vNpos.x, m_vNtargetPos.x, m_vNposErr.x));
-	}
-
-	if(m_vNtargetPos.y >= 0.0)
-	{
-		IF_F(!EAQ(m_vNpos.y, m_vNtargetPos.y, m_vNposErr.y));
-	}
-
-	if(m_vNtargetPos.z >= 0.0)
-	{
-		IF_F(!EAQ(m_vNpos.z, m_vNtargetPos.z, m_vNposErr.z));
-	}
-
-	if(m_vNtargetPos.w >= 0.0)
-	{
-		IF_F(!EAQ(m_vNpos.w, m_vNtargetPos.w, m_vNposErr.w));
+		IF_F(!aa.bComplete());
 	}
 
 	return true;
 }
 
-vFloat4 _ActuatorBase::getPos(void)
+float _ActuatorBase::getP(int i)
 {
-	return m_vNpos;
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].m_nP;
 }
 
-vFloat4 _ActuatorBase::getSpeed(void)
+float _ActuatorBase::getS(int i)
 {
-	return m_vNspeed;
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].m_nS;
 }
+
+float _ActuatorBase::getRawP(int i)
+{
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].getRawP();
+}
+
+float _ActuatorBase::getRawS(int i)
+{
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].getRawS();
+}
+
 
 void _ActuatorBase::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	addMsg("-- Normalized state --",1);
-	addMsg("vNpos = (" + f2str(m_vNpos.x) + ", " + f2str(m_vNpos.y) + ", " + f2str(m_vNpos.z) + ", " + f2str(m_vNpos.w) + ")", 1);
-	addMsg("vNtargetPos = (" + f2str(m_vNtargetPos.x) + ", " + f2str(m_vNtargetPos.y) + ", " + f2str(m_vNtargetPos.z) + ", " + f2str(m_vNtargetPos.w) + ")", 1);
-	addMsg("vNrot = (" + f2str(m_vNangle.x) + ", " + f2str(m_vNangle.y) + ", " + f2str(m_vNangle.z) + ", " + f2str(m_vNangle.w) + ")", 1);
-	addMsg("vNtargetRot = (" + f2str(m_vNtargetAngle.x) + ", " + f2str(m_vNtargetAngle.y) + ", " + f2str(m_vNtargetAngle.z) + ", " + f2str(m_vNtargetAngle.w) + ")", 1);
-	addMsg("vNspeed = (" + f2str(m_vNspeed.x) + ", " + f2str(m_vNspeed.y) + ", " + f2str(m_vNspeed.z) + ", " + f2str(m_vNspeed.w) + ")", 1);
-	addMsg("vNtargetSpeed = (" + f2str(m_vNtargetSpeed.x) + ", " + f2str(m_vNtargetSpeed.y) + ", " + f2str(m_vNtargetSpeed.z) + ", " + f2str(m_vNtargetSpeed.w) + ")", 1);
+	addMsg("-- State --",1);
 
+	for(int i=0; i<m_vAxis.size(); i++)
+	{
+		ACTUATOR_AXIS* pA = &m_vAxis[i];
+
+		addMsg("Axis " + i2str(i), 1);
+		addMsg("nP = " + f2str(pA->m_nP) + ", nTargetP = " + f2str(pA->m_nPtarget) + ", nOriginP = " + f2str(pA->m_nPorigin) + ", nPerr" + f2str(pA->m_nPerr), 1);
+		addMsg("nS = " + f2str(pA->m_nS) + ", nTargetS = " + f2str(pA->m_nStarget), 1);
+		addMsg("p = " + f2str(pA->m_p) + ", vRangeP = [" + f2str(pA->m_vPrange.x) + ", " + f2str(pA->m_vPrange.y) + "]", 1);
+		addMsg("s = " + f2str(pA->m_s) + ", vRangeS = [" + f2str(pA->m_vSrange.x) + ", " + f2str(pA->m_vSrange.y) + "]", 1);
+		addMsg("-----------------------", 1);
+	}
 }
 
 }

@@ -11,7 +11,7 @@
 #include "../../Mission/_MissionBase.h"
 #include "../../../Universe/_Universe.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../../Actuator/_S6H4D.h"
+#include "../../../Actuator/_ActuatorBase.h"
 
 #ifdef USE_OPENCV
 
@@ -69,7 +69,7 @@ private:
 	}
 
 public:
-	_S6H4D* m_pA;
+	_ActuatorBase* m_pA;
 	_Universe* m_pU;
 	_Object		m_tO;
 	PICKINGARM_MODE m_mode;

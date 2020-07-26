@@ -30,8 +30,8 @@ struct SEQ_ACTUATOR
 	bool move(void)
 	{
 		NULL_F(m_pA);
-		m_pA->pos(m_vPos);
-		m_pA->speed(m_vSpeed);
+//		m_pA->pos(m_vPos);
+//		m_pA->speed(m_vSpeed);
 
 		return m_pA->bComplete();
 	}

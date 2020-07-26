@@ -13,6 +13,110 @@
 namespace kai
 {
 
+struct ACTUATOR_AXIS
+{
+	//normalized
+	float m_nP;
+	float m_nPtarget;
+	float m_nPorigin;
+	float m_nPerr;
+	float m_nS;
+	float m_nStarget;
+
+	//raw
+	vFloat2 m_vPrange;
+	float m_p;
+	float m_pOrigin;
+	vFloat2 m_vSrange;
+	float m_s;
+
+	void init(void)
+	{
+		m_nP = -1.0;
+		m_nPtarget = -1.0;
+		m_nPorigin = -1.0;
+		m_nPerr = 0.01;
+		m_nS = 0.0;
+		m_nStarget = 0.0;
+
+		m_vPrange.init(0.0);
+		m_p = 0.0;
+		m_pOrigin = 0.0;
+		m_vSrange.init(0.0);
+		m_s = 0.0;
+	}
+
+	bool bComplete(void)
+	{
+		IF_T(m_nP < 0.0);
+		IF_T(EAQ(m_nP, m_nPtarget, m_nPerr));
+
+		return false;
+	}
+
+	void setPtarget(float nP)
+	{
+		m_nP = constrain(nP, -1.0f, 1.0f);
+	}
+
+	void setStarget(float nS)
+	{
+		nS = constrain(nS, -1.0f, 1.0f);
+		if(m_nP >= 0.0 && m_nP <= 1.0)
+			m_nStarget = nS;
+	}
+
+	void gotoOrigin(void)
+	{
+		setPtarget(m_nPorigin);
+	}
+
+	float getRawPtarget(void)
+	{
+		return m_nPtarget * m_vPrange.d() + m_vPrange.x;
+	}
+
+	float getRawStarget(void)
+	{
+		return m_nStarget * m_vSrange.d() + m_vSrange.x;
+	}
+
+	void setP(float nP)
+	{
+		m_nP = nP;
+		m_p = m_nP * m_vPrange.d() + m_vPrange.x;
+	}
+
+	void setS(float nS)
+	{
+		m_nS = nS;
+		m_s = m_nS * m_vSrange.d() + m_vSrange.x;
+	}
+
+	void setRawP(float p)
+	{
+		m_p = p;
+		m_nP = (float) (m_p - m_vPrange.x) / (float) m_vPrange.len();
+	}
+
+	void setRawS(float s)
+	{
+		m_s = s;
+		m_nS = (float) (m_s - m_vSrange.x) / (float) m_vSrange.len();
+	}
+
+	float getRawP(void)
+	{
+		return m_p;
+	}
+
+	float getRawS(void)
+	{
+		return m_nS;
+	}
+
+};
+
 class _ActuatorBase: public _ThreadBase
 {
 public:
@@ -23,17 +127,15 @@ public:
 	virtual bool start(void);
 	virtual void draw(void);
 
-	virtual void pos(vFloat4& vPos);
-	virtual void speed(vFloat4& vSpeed);
-	virtual void angle(vFloat4& vAngle);
-	virtual void rotate(vFloat4& vRot);
+	virtual void setPtarget(int i, float nP);
+	virtual void setStarget(int i, float nS);
+	virtual float getP(int i);
+	virtual float getS(int i);
+	virtual float getRawP(int i);
+	virtual float getRawS(int i);
 
 	virtual void gotoOrigin(void);
-	virtual void setGlobalTarget(vFloat4& t);
-
 	virtual bool bComplete(void);
-	virtual vFloat4 getPos(void);
-	virtual vFloat4 getSpeed(void);
 
 private:
 	virtual bool open(void);
@@ -45,22 +147,10 @@ private:
 	}
 
 public:
-	vFloat4 m_vNoriginPos;
-	vFloat4 m_vNpos;
-	vFloat4 m_vNtargetPos;
-	vFloat4 m_vNposErr;
-	vFloat4 m_vNspeed;
-	vFloat4 m_vNtargetSpeed;
-
-	vFloat4 m_vNoriginAngle;
-	vFloat4 m_vNangle;
-	vFloat4 m_vNtargetAngle;
-	vFloat4 m_vNangleErr;
-	vFloat4 m_vNrotSpeed;
-	vFloat4 m_vNtargetRotSpeed;
+	vector<ACTUATOR_AXIS> m_vAxis;
+	int m_nAxis;
 
 	bool	m_bFeedback;
-
 	_ActuatorBase* m_pParent;
 
 };

@@ -68,7 +68,7 @@ void _StepperGripper::updateGripper(void)
 
 	setDistPerRound(m_dpr);
 	setDist((m_bOpen)?-1.0:1.0);
-	setSpeed(m_vNtargetSpeed.x);
+	setSpeed(1.0);
 	run();
 
 	m_bState = m_bOpen;

@@ -61,8 +61,8 @@ struct AP_actuator
 
 		vFloat4 vP;
 		vP = pP;
-		m_pA->pos(vP);
-		m_pA->speed(m_vSpeed);
+//		m_pA->pos(vP);
+//		m_pA->speed(m_vSpeed);
 	}
 };
 

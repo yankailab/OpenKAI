@@ -66,7 +66,7 @@ bool _PickingArm::init(void *pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("_ActuatorBase", &iName));
-	m_pA = (_S6H4D*) (pK->getInst(iName));
+	m_pA = (_ActuatorBase*) (pK->getInst(iName));
 	IF_Fl(!m_pA, iName + " not found");
 
 	iName = "";
@@ -132,14 +132,15 @@ void _PickingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
-	vFloat4 vM;
-	vM.init(-1.0);
-	m_pA->pos(vM);
-
 	if(m_mode == paMode_external)
 	{
-		m_pA->speed(m_vM);
-		m_pA->rotate(m_vR);
+		m_pA->setStarget(0, m_vM.x);
+		m_pA->setStarget(1, m_vM.y);
+		m_pA->setStarget(2, m_vM.z);
+
+		m_pA->setStarget(6, m_vR.x);
+		m_pA->setStarget(7, m_vR.y);
+		m_pA->setStarget(8, m_vR.z);
 	}
 	else if(m_mode == paMode_auto)
 	{
@@ -149,32 +150,29 @@ void _PickingArm::updateArm(void)
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-	//		IF_CONT(pO->getTopClass() != m_vClass);
+			IF_CONT(pO->getTopClass() != m_vClass);
 			IF_CONT(pO->getTopClassProb() < topProb);
 
 			tO = pO;
 			topProb = pO->getTopClassProb();
 		}
 
-		vM.init(0.5);
 		if (tO)
 		{
 			m_vTargetBB = tO->getBB2D();
 			float x = m_vTargetBB.midX() - m_vTargetP.x;
 			float y = m_vTargetBB.midY() - m_vTargetP.y;
-			float angle = m_pA->m_cState.m_vA1.x;
+			float angle = m_pA->getRawP(3);
 
 			float s = sin(angle);
 			float c = cos(angle);
 			m_vP.x = x*c - y*s + m_vTargetP.x;
 			m_vP.y = x*s + y*c + m_vTargetP.y;
 
-			vM.x = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
-			vM.y = m_pXpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
-			vM.z = m_pXpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
+			m_pA->setStarget(0, m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp));
+			m_pA->setStarget(1, m_pYpid->update(m_vP.y, m_vTargetP.y, m_tStamp));
+			m_pA->setStarget(2, m_pZpid->update(m_vP.z, m_vTargetP.z, m_tStamp));
 		}
-
-		m_pA->speed(vM);
 	}
 }
 
