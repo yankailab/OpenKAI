@@ -15,6 +15,8 @@ namespace kai
 
 struct ACTUATOR_AXIS
 {
+	string m_name;
+
 	//normalized
 	float m_nP;
 	float m_nPtarget;
@@ -25,13 +27,15 @@ struct ACTUATOR_AXIS
 
 	//raw
 	vFloat2 m_vPrange;
-	float m_p;
+	float m_rawP;
 	float m_pOrigin;
 	vFloat2 m_vSrange;
-	float m_s;
+	float m_rawS;
 
 	void init(void)
 	{
+		m_name = "";
+
 		m_nP = -1.0;
 		m_nPtarget = -1.0;
 		m_nPorigin = -1.0;
@@ -40,10 +44,10 @@ struct ACTUATOR_AXIS
 		m_nStarget = 0.0;
 
 		m_vPrange.init(0.0);
-		m_p = 0.0;
+		m_rawP = 0.0;
 		m_pOrigin = 0.0;
 		m_vSrange.init(0.0);
-		m_s = 0.0;
+		m_rawS = 0.0;
 	}
 
 	bool bComplete(void)
@@ -66,9 +70,63 @@ struct ACTUATOR_AXIS
 			m_nStarget = nS;
 	}
 
+	void setP(float nP)
+	{
+		m_nP = nP;
+		m_rawP = m_nP * m_vPrange.d() + m_vPrange.x;
+	}
+
+	void setS(float nS)
+	{
+		m_nS = nS;
+		m_rawS = m_nS * m_vSrange.d() + m_vSrange.x;
+	}
+
 	void gotoOrigin(void)
 	{
 		setPtarget(m_nPorigin);
+	}
+
+	void setRawP(float p)
+	{
+		m_rawP = p;
+		m_nP = (float) (m_rawP - m_vPrange.x) / (float) m_vPrange.len();
+	}
+
+	void setRawS(float s)
+	{
+		m_rawS = s;
+		m_nS = (float) (m_rawS - m_vSrange.x) / (float) m_vSrange.len();
+	}
+
+	float getP(void)
+	{
+		return m_nP;
+	}
+
+	float getS(void)
+	{
+		return m_nS;
+	}
+
+	float getPtarget(void)
+	{
+		return m_nPtarget;
+	}
+
+	float getStarget(void)
+	{
+		return m_nStarget;
+	}
+
+	float getRawP(void)
+	{
+		return m_rawP;
+	}
+
+	float getRawS(void)
+	{
+		return m_rawS;
 	}
 
 	float getRawPtarget(void)
@@ -81,40 +139,13 @@ struct ACTUATOR_AXIS
 		return m_nStarget * m_vSrange.d() + m_vSrange.x;
 	}
 
-	void setP(float nP)
+	bool bNormal(void)
 	{
-		m_nP = nP;
-		m_p = m_nP * m_vPrange.d() + m_vPrange.x;
-	}
+		IF_F(m_nP < 0.0);
+		IF_F(m_nP > 1.0);
 
-	void setS(float nS)
-	{
-		m_nS = nS;
-		m_s = m_nS * m_vSrange.d() + m_vSrange.x;
+		return true;
 	}
-
-	void setRawP(float p)
-	{
-		m_p = p;
-		m_nP = (float) (m_p - m_vPrange.x) / (float) m_vPrange.len();
-	}
-
-	void setRawS(float s)
-	{
-		m_s = s;
-		m_nS = (float) (m_s - m_vSrange.x) / (float) m_vSrange.len();
-	}
-
-	float getRawP(void)
-	{
-		return m_p;
-	}
-
-	float getRawS(void)
-	{
-		return m_nS;
-	}
-
 };
 
 class _ActuatorBase: public _ThreadBase
@@ -129,13 +160,13 @@ public:
 
 	virtual void setPtarget(int i, float nP);
 	virtual void setStarget(int i, float nS);
+	virtual void gotoOrigin(void);
+	virtual bool bComplete(void);
+
 	virtual float getP(int i);
 	virtual float getS(int i);
 	virtual float getRawP(int i);
 	virtual float getRawS(int i);
-
-	virtual void gotoOrigin(void);
-	virtual bool bComplete(void);
 
 private:
 	virtual bool open(void);

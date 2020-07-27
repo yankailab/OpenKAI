@@ -33,13 +33,6 @@ public:
 	DeltaRobot m_dr;
 	int m_oprMode;
 	bool m_bGripper;
-
-	vFloat3 m_vAngle;
-	vFloat3 m_vPos;
-	vFloat2	m_vPosRangeX;
-	vFloat2	m_vPosRangeY;
-	vFloat2	m_vPosRangeZ;
-
 };
 
 }

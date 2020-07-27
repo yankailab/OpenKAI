@@ -13,16 +13,11 @@ _OrientalMotor::_OrientalMotor()
 	m_iSlave = 1;
 	m_iData = 0;
 
-	m_vStepRange.x = -1e5;
-	m_vStepRange.y = 1e5;
-	m_vSpeedRange.x = -4e6;
-	m_vSpeedRange.y = 4e6;
-	m_vAccelRange.x = 1;
-	m_vAccelRange.y = 1e9;
-	m_vBrakeRange.x = 1;
-	m_vBrakeRange.y = 1e9;
-	m_vCurrentRange.x = 0;
-	m_vCurrentRange.y = 1000;
+	m_vStepRange.init(-1e5, 1e5);
+	m_vSpeedRange.init(-4e6, 4e6);
+	m_vAccelRange.init(1, 1e9);
+	m_vBrakeRange.init(1, 1e9);
+	m_vCurrentRange.init(0, 1000);
 
 	m_cState.init();
 	m_tState.init();
@@ -43,20 +38,19 @@ bool _OrientalMotor::init(void* pKiss)
 
 	pK->v("iSlave",&m_iSlave);
 	pK->v("iData",&m_iData);
-	pK->v("stepFrom", &m_vStepRange.x);
-	pK->v("stepTo", &m_vStepRange.y);
-	pK->v("speedFrom", &m_vSpeedRange.x);
-	pK->v("speedTo", &m_vSpeedRange.y);
-	pK->v("accelFrom", &m_vAccelRange.x);
-	pK->v("accelTo", &m_vAccelRange.y);
-	pK->v("brakeFrom", &m_vBrakeRange.x);
-	pK->v("brakeTo", &m_vBrakeRange.y);
-	pK->v("currentFrom", &m_vCurrentRange.x);
-	pK->v("currentTo", &m_vCurrentRange.y);
+	pK->v("vStepRange", &m_vStepRange);
+	pK->v("vSpeedRange", &m_vSpeedRange);
+	pK->v("vAccelRange", &m_vAccelRange);
+	pK->v("vBrakeRange", &m_vBrakeRange);
+	pK->v("vCurrentRange", &m_vCurrentRange);
 
 	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
 	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+
+	ACTUATOR_AXIS* pA = &m_vAxis[0];
+	pA->m_vPrange.init(m_vStepRange.x, m_vStepRange.y);
+	pA->m_vSrange.init(m_vSpeedRange.x, m_vSpeedRange.y);
 
 	string iName;
 	iName = "";
@@ -121,12 +115,14 @@ void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
-	IF_(m_vNtargetPos.x < 0.0);
+
+	ACTUATOR_AXIS* pA = &m_vAxis[0];
+	IF_(pA->getPtarget() < 0.0);
 
 	//update normalized value to actual unit
-	m_tState.m_step = m_vNtargetPos.x * m_vStepRange.len() + m_vStepRange.x;
+	m_tState.m_step = pA->getPtarget() * m_vStepRange.len() + m_vStepRange.x;
 	m_tState.m_step = constrain(m_tState.m_step, m_vStepRange.x, m_vStepRange.y);
-	m_tState.m_speed = m_vNtargetSpeed.x * m_vSpeedRange.len() + m_vSpeedRange.x;
+	m_tState.m_speed = pA->getStarget() * m_vSpeedRange.len() + m_vSpeedRange.x;
 	m_tState.m_speed = constrain(m_tState.m_speed, m_vSpeedRange.x, m_vSpeedRange.y);
 
 	//create the command
@@ -174,8 +170,11 @@ void _OrientalMotor::readStatus(void)
 	m_cState.m_speed = MAKE32(pB[4], pB[5]);
 
 	//update actual unit to normalized value
-	m_vNpos.x = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
-	m_vNspeed.x = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
+	ACTUATOR_AXIS* pA = &m_vAxis[0];
+	IF_(pA->getPtarget() < 0.0);
+
+	pA->setRawP(m_cState.m_step);
+	pA->setRawS(m_cState.m_speed);
 
 	LOG_I("step: "+i2str(m_cState.m_step) +
 			", speed: " + i2str(m_cState.m_speed));

@@ -86,7 +86,7 @@ public:
 
 	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void move(vFloat3 &vM);
-	void rot(int iAxis, float angle);
+	void rot(int iAxis, float r);
 
 private:
 	void updatePos(void);
@@ -106,12 +106,11 @@ public:
 	_IOBase *m_pIO;
 	S6H4D_CMD_STATE m_state;
 
-	vFloat2 m_vSpeedRange;	//mm/m
-	float	m_speed;
-
-	float m_dMove;
 	bool m_bOrder;
 	int m_mode;
+	vFloat2 m_vSpeedRange;	//mm/m
+	float m_speed;
+	vFloat3 m_vOrigin;
 
 };
 

@@ -76,35 +76,24 @@ void _ActuatorSync::updateSync(void)
 {
 	_ActuatorBase* pA = m_pAB[m_iABget];
 	NULL_(pA);
-	m_vNpos = pA->getPos();
-	m_vNspeed = pA->getSpeed();
-
 }
 
-void _ActuatorSync::speed(vFloat4& vSpeed)
+void _ActuatorSync::setPtarget(int i, float nP)
 {
 	for(int i=0; i<m_nAB; i++)
-		m_pAB[i]->speed(vSpeed);
-
-	this->_ActuatorBase::speed(vSpeed);
+		m_pAB[i]->setPtarget(i, nP);
 }
 
-void _ActuatorSync::pos(vFloat4& vPos)
+void _ActuatorSync::setStarget(int i, float nS)
 {
 	for(int i=0; i<m_nAB; i++)
-	{
-		m_pAB[i]->pos(vPos);
-	}
-
-	this->_ActuatorBase::pos(vPos);
+		m_pAB[i]->setStarget(i, nS);
 }
 
 void _ActuatorSync::gotoOrigin(void)
 {
 	for(int i=0; i<m_nAB; i++)
 		m_pAB[i]->gotoOrigin();
-
-	this->_ActuatorBase::gotoOrigin();
 }
 
 bool _ActuatorSync::bComplete(void)
@@ -115,6 +104,26 @@ bool _ActuatorSync::bComplete(void)
 	}
 
 	return true;
+}
+
+float _ActuatorSync::getP(int i)
+{
+	return m_pAB[m_iABget]->getP(i);
+}
+
+float _ActuatorSync::getS(int i)
+{
+	return m_pAB[m_iABget]->getS(i);
+}
+
+float _ActuatorSync::getRawP(int i)
+{
+	return m_pAB[m_iABget]->getRawP(i);
+}
+
+float _ActuatorSync::getRawS(int i)
+{
+	return m_pAB[m_iABget]->getRawS(i);
 }
 
 }

@@ -138,9 +138,9 @@ void _PickingArm::updateArm(void)
 		m_pA->setStarget(1, m_vM.y);
 		m_pA->setStarget(2, m_vM.z);
 
-		m_pA->setStarget(6, m_vR.x);
-		m_pA->setStarget(7, m_vR.y);
-		m_pA->setStarget(8, m_vR.z);
+		m_pA->setStarget(3, m_vR.x);
+		m_pA->setStarget(4, m_vR.y);
+		m_pA->setStarget(5, m_vR.z);
 	}
 	else if(m_mode == paMode_auto)
 	{
@@ -150,7 +150,7 @@ void _PickingArm::updateArm(void)
 		int i = 0;
 		while ((pO = m_pU->get(i++)) != NULL)
 		{
-			IF_CONT(pO->getTopClass() != m_vClass);
+//			IF_CONT(pO->getTopClass() != m_vClass);
 			IF_CONT(pO->getTopClassProb() < topProb);
 
 			tO = pO;
@@ -162,7 +162,7 @@ void _PickingArm::updateArm(void)
 			m_vTargetBB = tO->getBB2D();
 			float x = m_vTargetBB.midX() - m_vTargetP.x;
 			float y = m_vTargetBB.midY() - m_vTargetP.y;
-			float angle = m_pA->getRawP(3);
+			float angle = m_pA->getRawP(6);
 
 			float s = sin(angle);
 			float c = cos(angle);

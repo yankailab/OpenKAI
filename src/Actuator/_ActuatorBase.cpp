@@ -9,7 +9,7 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_nAxis = 0;
+	m_nAxis = 1;
 	m_bFeedback = false;
 	m_pParent = NULL;
 }
@@ -33,17 +33,18 @@ bool _ActuatorBase::init(void* pKiss)
 		if (pA->empty())
 			break;
 
-		ACTUATOR_AXIS aa;
-		aa.init();
-		pA->v("nP", &aa.m_nP);
-		pA->v("nTargetP", &aa.m_nPtarget);
-		pA->v("nOriginP", &aa.m_nPorigin);
-		pA->v("nPerr", &aa.m_nPerr);
-		pA->v("nSpeed", &aa.m_nS);
-		pA->v("nTargetSpeed", &aa.m_nStarget);
-		pA->v("vRangeP", &aa.m_vPrange);
-		pA->v("vRangeSpeed", &aa.m_vSrange);
-		m_vAxis.push_back(aa);
+		ACTUATOR_AXIS a;
+		a.init();
+		pA->v("name", &a.m_name);
+		pA->v("nP", &a.m_nP);
+		pA->v("nPtarget", &a.m_nPtarget);
+		pA->v("nPorigin", &a.m_nPorigin);
+		pA->v("nPerr", &a.m_nPerr);
+		pA->v("nS", &a.m_nS);
+		pA->v("nStarget", &a.m_nStarget);
+		pA->v("vPrange", &a.m_vPrange);
+		pA->v("vSrange", &a.m_vSrange);
+		m_vAxis.push_back(a);
 	}
 
 	IF_F(m_vAxis.size() < m_nAxis);
@@ -107,9 +108,9 @@ void _ActuatorBase::gotoOrigin(void)
 
 bool _ActuatorBase::bComplete(void)
 {
-	for(ACTUATOR_AXIS aa : m_vAxis)
+	for(ACTUATOR_AXIS a : m_vAxis)
 	{
-		IF_F(!aa.bComplete());
+		IF_F(!a.bComplete());
 	}
 
 	return true;
@@ -143,7 +144,6 @@ float _ActuatorBase::getRawS(int i)
 	return m_vAxis[i].getRawS();
 }
 
-
 void _ActuatorBase::draw(void)
 {
 	this->_ThreadBase::draw();
@@ -154,11 +154,11 @@ void _ActuatorBase::draw(void)
 	{
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 
-		addMsg("Axis " + i2str(i), 1);
-		addMsg("nP = " + f2str(pA->m_nP) + ", nTargetP = " + f2str(pA->m_nPtarget) + ", nOriginP = " + f2str(pA->m_nPorigin) + ", nPerr" + f2str(pA->m_nPerr), 1);
-		addMsg("nS = " + f2str(pA->m_nS) + ", nTargetS = " + f2str(pA->m_nStarget), 1);
-		addMsg("p = " + f2str(pA->m_p) + ", vRangeP = [" + f2str(pA->m_vPrange.x) + ", " + f2str(pA->m_vPrange.y) + "]", 1);
-		addMsg("s = " + f2str(pA->m_s) + ", vRangeS = [" + f2str(pA->m_vSrange.x) + ", " + f2str(pA->m_vSrange.y) + "]", 1);
+		addMsg(pA->m_name, 1);
+		addMsg("nP=" + f2str(pA->m_nP) + ", nPtarget=" + f2str(pA->m_nPtarget) + ", nPorigin=" + f2str(pA->m_nPorigin) + ", nPerr=" + f2str(pA->m_nPerr), 1);
+		addMsg("nS=" + f2str(pA->m_nS) + ", nStarget=" + f2str(pA->m_nStarget), 1);
+		addMsg("p=" + f2str(pA->m_rawP) + ", vPrange=[" + f2str(pA->m_vPrange.x) + ", " + f2str(pA->m_vPrange.y) + "]", 1);
+		addMsg("s=" + f2str(pA->m_rawS) + ", vSrange=[" + f2str(pA->m_vSrange.x) + ", " + f2str(pA->m_vSrange.y) + "]", 1);
 		addMsg("-----------------------", 1);
 	}
 }

@@ -33,18 +33,6 @@ public:
 	LabArm m_la;
 	int m_oprMode;
 	bool m_bGripper;
-
-	vFloat3 m_vPos;
-	vFloat2	m_vPosRangeX;
-	vFloat2	m_vPosRangeY;
-	vFloat2	m_vPosRangeZ;
-
-	vFloat3 m_vRot;
-	vFloat2	m_vRotRangeX;
-	vFloat2	m_vRotRangeY;
-	vFloat2	m_vRotRangeZ;
-
-
 };
 
 }

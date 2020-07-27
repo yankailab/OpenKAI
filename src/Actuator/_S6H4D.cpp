@@ -8,14 +8,13 @@ _S6H4D::_S6H4D()
 	m_pIO = NULL;
 	m_state.init();
 
-	m_vSpeedRange.init(0.0, 1e5);
-	m_speed = 1.0;
-
-	m_dMove = 128;
 	m_bOrder = true;
 	m_mode = 1;
+	m_vSpeedRange.init(0.0, 1e5);
+	m_speed = 1.0;
+	m_vOrigin.init(350, 0.0, 400);
 
-//	m_tState.m_vOrigin.init(344, 1.0, 417);
+	m_nAxis = 6;
 }
 
 _S6H4D::~_S6H4D()
@@ -27,11 +26,11 @@ bool _S6H4D::init(void *pKiss)
 	IF_F(!this->_ActuatorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v("vSpeedRange", &m_vSpeedRange);
-	pK->v("speed", &m_speed);
-
 	pK->v("bOrder", &m_bOrder);
 	pK->v("mode", &m_mode);
+	pK->v("vSpeedRange", &m_vSpeedRange);
+	pK->v("speed", &m_speed);
+	pK->v("vOrigin", &m_vOrigin);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -69,11 +68,7 @@ void _S6H4D::update(void)
 		this->sleepTime(USEC_1SEC);
 
 	setMode(m_mode);
-	vFloat3 vO;
-	vO.x = m_vAxis[0].m_pOrigin;
-	vO.y = m_vAxis[1].m_pOrigin;
-	vO.z = m_vAxis[2].m_pOrigin;
-	setOrigin(vO);
+	setOrigin(m_vOrigin);
 
 	//go to the origin
 	updatePos();
@@ -187,14 +182,14 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = 100;
-	cmd.m_b[4] = (vM.x >= 0.0) ? constrain<float>(128 + (vM.x - 0.5)*2.0*m_dMove, 0, 255) : 128;
-	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*2.0*m_dMove, 0, 255) : 128;
-	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*2.0*m_dMove, 0, 255) : 128;
+	cmd.m_b[4] = (vM.x >= 0.0 && m_vAxis[0].bNormal()) ? constrain<float>(128 + (vM.x - 0.5)*255, 0, 255) : 128;
+	cmd.m_b[5] = (vM.y >= 0.0 && m_vAxis[1].bNormal()) ? constrain<float>(128 + (vM.y - 0.5)*255, 0, 255) : 128;
+	cmd.m_b[6] = (vM.z >= 0.0 && m_vAxis[2].bNormal()) ? constrain<float>(128 + (vM.z - 0.5)*255, 0, 255) : 128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
-void _S6H4D::rot(int iAxis, float angle)
+void _S6H4D::rot(int iAxis, float r)
 {
 	IF_(check() < 0);
 
@@ -203,7 +198,7 @@ void _S6H4D::rot(int iAxis, float angle)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = iAxis;
-	cmd.m_b[4] = (angle >= 0.0) ? constrain<float>(128 + (angle - 0.5)*2.0*m_dMove, 0, 255) : 128;
+	cmd.m_b[4] = (r >= 0.0 && m_vAxis[iAxis].bNormal()) ? constrain<float>(128 + (r - 0.5)*255, 0, 255) : 128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -254,19 +249,20 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vAxis[0].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vAxis[0].m_pOrigin);
-		m_vAxis[1].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vAxis[1].m_pOrigin);
-		m_vAxis[2].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vAxis[2].m_pOrigin);
+		m_vAxis[0].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOrigin.x);
+		m_vAxis[1].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOrigin.y);
+		m_vAxis[2].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOrigin.z);
 		break;
 	case 1:
-		m_vAxis[3].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vAxis[3].m_pOrigin);
-		m_vAxis[4].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vAxis[4].m_pOrigin);
-		m_vAxis[5].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vAxis[5].m_pOrigin);
+		if(m_nAxis < 9)break;
+		m_vAxis[6].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[7].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[8].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 2:
-		m_vAxis[6].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vAxis[6].m_pOrigin);
-		m_vAxis[7].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vAxis[7].m_pOrigin);
-		m_vAxis[8].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vAxis[8].m_pOrigin);
+		m_vAxis[3].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[4].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[5].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 3:
 		vFloat3 vO;

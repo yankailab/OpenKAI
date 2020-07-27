@@ -25,11 +25,15 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 
-	virtual void pos(vFloat4& vPos);
-	virtual void speed(vFloat4& vSpeed);
+	virtual void setPtarget(int i, float nP);
+	virtual void setStarget(int i, float nS);
 	virtual void gotoOrigin(void);
-
 	virtual bool bComplete(void);
+
+	virtual float getP(int i);
+	virtual float getS(int i);
+	virtual float getRawP(int i);
+	virtual float getRawS(int i);
 
 private:
 	virtual void updateSync(void);

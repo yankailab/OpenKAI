@@ -9,12 +9,13 @@ _DeltaArm::_DeltaArm()
 {
 	m_oprMode = 3;
 	m_bGripper = false;
-	m_vPosRangeX.x = 0;
-	m_vPosRangeX.y = 100.0;
-	m_vPosRangeY.x = 0;
-	m_vPosRangeY.y = 100.0;
-	m_vPosRangeZ.x = 0;
-	m_vPosRangeZ.y = 100.0;
+
+//	m_vPosRangeX.x = 0;
+//	m_vPosRangeX.y = 100.0;
+//	m_vPosRangeY.x = 0;
+//	m_vPosRangeY.y = 100.0;
+//	m_vPosRangeZ.x = 0;
+//	m_vPosRangeZ.y = 100.0;
 }
 
 _DeltaArm::~_DeltaArm()
@@ -29,9 +30,6 @@ bool _DeltaArm::init(void* pKiss)
 
 	pK->v("oprMode",&m_oprMode);
 	pK->v("bGripper",&m_bGripper);
-	pK->v("vPosRangeX",&m_vPosRangeX);
-	pK->v("vPosRangeY",&m_vPosRangeY);
-	pK->v("vPosRangeZ",&m_vPosRangeZ);
 
 	//Initialize the robot and passing 3 as operation mode (Position control) as default
 	string port;
@@ -89,32 +87,28 @@ void _DeltaArm::readStatus(void)
 	tLastStatus = m_tStamp;
 
 	float v[3];
-	m_dr.GetRobotAngle(v);
-	m_vAngle.x = v[0];
-	m_vAngle.y = v[1];
-	m_vAngle.z = v[2];
-
 	m_dr.GetXYZ(v);
-	m_vPos.x = v[0];
-	m_vPos.y = v[1];
-	m_vPos.z = v[2];
+	m_vAxis[0].setRawP(v[0]);
+	m_vAxis[1].setRawP(v[1]);
+	m_vAxis[2].setRawP(v[2]);
 
-	m_vNormPos.x = (float)(m_vPos.x - m_vPosRangeX.x) / (float)m_vPosRangeX.len();
-	m_vNormPos.y = (float)(m_vPos.y - m_vPosRangeY.x) / (float)m_vPosRangeY.len();
-	m_vNormPos.z = (float)abs(m_vPos.z - m_vPosRangeZ.x) / (float)m_vPosRangeZ.len();
+	m_dr.GetRobotAngle(v);
+	m_vAxis[3].setRawP(v[0]);
+	m_vAxis[4].setRawP(v[1]);
+	m_vAxis[5].setRawP(v[2]);
 }
 
 void _DeltaArm::updatePos(void)
 {
 	vFloat3 vP;
-	vP.x = m_vNormTargetPos.x * m_vPosRangeX.d() + m_vPosRangeX.x;
-	vP.y = m_vNormTargetPos.y * m_vPosRangeY.d() + m_vPosRangeY.x;
-	vP.z = m_vNormTargetPos.z * m_vPosRangeZ.d() + m_vPosRangeZ.x;
+	vP.x = m_vAxis[0].getRawPtarget();
+	vP.y = m_vAxis[1].getRawPtarget();
+	vP.z = m_vAxis[2].getRawPtarget();
 	m_dr.GotoPoint(vP.x, vP.y, vP.z);
 
-	if(m_bGripper && m_vNormTargetPos.w >= 0.0)
+	if(m_bGripper && m_vAxis[6].getPtarget() >= 0.0)
 	{
-		if(m_vNormTargetPos.w > 0.5)
+		if(m_vAxis[6].getPtarget() > 0.5)
 			m_dr.GripperOpen();
 		else
 			m_dr.GripperClose();
