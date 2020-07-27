@@ -132,14 +132,14 @@ float _ActuatorBase::getS(int i)
 
 float _ActuatorBase::getRawP(int i)
 {
-	IF__(i<0 || i>=m_vAxis.size(), -1);
+	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
 
 	return m_vAxis[i].getRawP();
 }
 
 float _ActuatorBase::getRawS(int i)
 {
-	IF__(i<0 || i>=m_vAxis.size(), -1);
+	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
 
 	return m_vAxis[i].getRawS();
 }

@@ -12,6 +12,8 @@
 #include "../../../Universe/_Universe.h"
 #include "../../../Control/PIDctrl.h"
 #include "../../../Actuator/_ActuatorBase.h"
+#include "../../../Actuator/_StepperGripper.h"
+#include "../../../Sensor/_DistSensorBase.h"
 
 #ifdef USE_OPENCV
 
@@ -20,9 +22,9 @@ namespace kai
 
 enum PICKINGARM_MODE
 {
-	paMode_unknown,
-	paMode_external,
-	paMode_auto,
+	paMode_unknown = 0,
+	paMode_external = 1,
+	paMode_auto = 2,
 };
 
 enum PICKINGARM_STATE
@@ -56,8 +58,9 @@ public:
 	int check(void);
 
 	void setMode(PICKINGARM_MODE m);
-	void move(vFloat4& vM);
-	void rotate(vFloat4& vR);
+	void move(vFloat3& vM);
+	void rotate(vFloat3& vR);
+	void grip(bool bOpen);
 
 private:
 	void updateArm(void);
@@ -70,20 +73,21 @@ private:
 
 public:
 	_ActuatorBase* m_pA;
+	_StepperGripper* m_pG;
+	_DistSensorBase* m_pD;
 	_Universe* m_pU;
-	_Object		m_tO;
 	PICKINGARM_MODE m_mode;
 	PICKINGARM_STATE m_state;
 
-	vFloat4 m_vTargetBB;
+	float	m_baseAngle;
 	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
 	vFloat3 m_vTargetP;	//constant, screen coordinate where the followed object should get to
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
 
-	vFloat4 m_vM;
-	vFloat4 m_vR;
+	vFloat3 m_vM;
+	vFloat3 m_vR;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
 };

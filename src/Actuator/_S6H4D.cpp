@@ -182,9 +182,24 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = 100;
-	cmd.m_b[4] = (vM.x >= 0.0 && m_vAxis[0].bNormal()) ? constrain<float>(128 + (vM.x - 0.5)*255, 0, 255) : 128;
-	cmd.m_b[5] = (vM.y >= 0.0 && m_vAxis[1].bNormal()) ? constrain<float>(128 + (vM.y - 0.5)*255, 0, 255) : 128;
-	cmd.m_b[6] = (vM.z >= 0.0 && m_vAxis[2].bNormal()) ? constrain<float>(128 + (vM.z - 0.5)*255, 0, 255) : 128;
+	cmd.m_b[4] = (vM.x >= 0.0) ? constrain<float>(128 + (vM.x - 0.5)*255, 0, 255) : 128;
+	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*255, 0, 255) : 128;
+	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*255, 0, 255) : 128;
+
+	ACTUATOR_AXIS* pA;
+	uint8_t* pC;
+
+	pA = &m_vAxis[0];
+	pC = &cmd.m_b[4];
+	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+
+	pA = &m_vAxis[1];
+	pC = &cmd.m_b[5];
+	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+
+	pA = &m_vAxis[2];
+	pC = &cmd.m_b[6];
+	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -192,6 +207,7 @@ void _S6H4D::move(vFloat3& vM)
 void _S6H4D::rot(int iAxis, float r)
 {
 	IF_(check() < 0);
+	IF_(iAxis >= m_nAxis);
 
 	S6H4D_CMD_CTRL cmd;
 	cmd.init();
@@ -199,6 +215,10 @@ void _S6H4D::rot(int iAxis, float r)
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = iAxis;
 	cmd.m_b[4] = (r >= 0.0 && m_vAxis[iAxis].bNormal()) ? constrain<float>(128 + (r - 0.5)*255, 0, 255) : 128;
+
+	ACTUATOR_AXIS* pA = &m_vAxis[iAxis];
+	uint8_t* pC = &cmd.m_b[4];
+	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }

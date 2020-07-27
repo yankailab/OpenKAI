@@ -70,7 +70,7 @@
 			"vSrange":[0,1000],
 		}
 		{
-			"name":"A1",
+			"name":"A4",
 			"nPtarget":0.5,
 			"nPorigin":0.5,
 			"nPerr":0.1,
@@ -79,7 +79,7 @@
 			"vSrange":[0,1000],
 		}
 		{
-			"name":"A2",
+			"name":"A5",
 			"nPtarget":0.0,
 			"nPorigin":0.0,
 			"nPerr":0.1,
@@ -96,7 +96,17 @@
 			"vPrange":[-30,30],
 			"vSrange":[0,1000],
 		}
-		
+		{
+			"name":"A1",
+			"vPrange":[-60,60],
+		}
+		{
+			"name":"A2",
+			"vPrange":[-60,60],
+		}
+		{
+			"name":"A3",
+			"vPrange":[-60,60],
+		}	
 	}
-
 }

@@ -34,6 +34,7 @@ bool Kiss::parse(string* pStr)
 	{
 		m_pNULL = new Kiss();
 		m_pNULL->m_bNULL = true;
+		m_pNULL->m_pNULL = m_pNULL;
 	}
 
 	int k;

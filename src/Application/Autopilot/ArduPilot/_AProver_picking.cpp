@@ -10,8 +10,6 @@ _AProver_picking::_AProver_picking()
 	m_pAP = NULL;
 	m_pDrive = NULL;
 	m_pArm = NULL;
-	m_pGripper = NULL;
-
 	m_rcMode.init();
 }
 
@@ -63,11 +61,6 @@ bool _AProver_picking::init(void* pKiss)
 	m_pArm = (_PickingArm*)pK->getInst(iName);
 	NULL_Fl(m_pArm, iName + ": not found");
 
-	iName = "";
-	pK->v("_StepperGripper", &iName);
-	m_pGripper = (_StepperGripper*)pK->getInst(iName);
-	NULL_Fl(m_pGripper, iName + ": not found");
-
 	return true;
 }
 
@@ -91,7 +84,6 @@ int _AProver_picking::check(void)
 	NULL__(m_pAP->m_pMav, -1);
 //	NULL__(m_pDrive, -1);
 	NULL__(m_pArm, -1);
-	NULL__(m_pGripper, -1);
 
 	return this->_MissionBase::check();
 }
@@ -173,7 +165,7 @@ bool _AProver_picking::updatePicking(void)
 	string mission = m_pMC->getMissionName();
 	if(mission == "MANUAL")
 	{
-		vFloat4 vM;
+		vFloat3 vM;
 		vM.init(-1.0);
 		vM.x = m_vRC[0].v();
 		vM.y = m_vRC[1].v();
@@ -186,7 +178,7 @@ bool _AProver_picking::updatePicking(void)
 		vM.x = m_vRC[3].v();
 //		m_pArm->rotate(vM);
 
-		m_pGripper->grip((m_vRC[4].i())?true:false);
+		m_pArm->grip((m_vRC[4].i())?true:false);
 	}
 	else	//AUTOPICK
 	{

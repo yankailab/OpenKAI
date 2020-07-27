@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -40,43 +40,21 @@
 
 {
 	"name":"cam",
-	"class":"_RealSense",
+	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"vPreset":"High Density",
 	"rsRGB":1,
-	"w":1280,
-	"h":720,
-}
-
-{
-	"name":"universe",
-	"class":"_Universe",
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"FPS":30,
-}
-
-{
-	"name":"arUco",
-	"class":"_ArUco",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_VisionBase":"cam",
-	"_Universe":"universe",
-	"dict":17,
+	"w":640,
+	"h":480,
 }
 
 {
 	"name":"tofSerial",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
@@ -87,9 +65,10 @@
 {
 	"name":"TOFsense",
 	"class":"_TOFsense",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
+	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"tofSerial",
 }
@@ -276,7 +255,7 @@
 	"name":"apPicking",
 	"class":"_AProver_picking",
 	"FPS":10,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
@@ -334,22 +313,80 @@
 	"bLog":1,
 	"Console":"OKconsole",
 	"_IOBase":"armSerial",
-
+	"vOrigin":[350, 0.0, 400],
 	"vSpeedRange":[0, 1000],
 	"speed":1.0,
-	"bAutoGripperHdg":0,
-	"autoGripperHdgSpeed":0.14,
-	"vOrigin":[344, 0.0, 417],
-	"vPosRangeX":[-250, 250],
-	"vPosRangeY":[-250, 250],
-	"vPosRangeZ":[-250, 250],
-	"vRotRangeX":[0.0, 0.0],
-	"vRotRangeY":[0, 30],
-	"vRotRangeZ":[-30.0, 30.0],	
-
-	"vNtargetPos":[0.5, 0.5, 0.5, -1.0],
-	"vNtargetAngle":[0.5, 0.0, 0.5, -1.0],
-	"vNtargetSpeed":[-1.0, -1.0, -1.0, -1.0],
+	
+	{
+		"name":"Axis",
+		
+		{
+			"name":"X",
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[-250,250],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"Y",
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[-250,250],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"Z",
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[-250,250],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"A4",
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[-30,30],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"A5",
+			"nPtarget":0.0,
+			"nPorigin":0.0,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[0,30],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"Agripper",
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"nStarget":1.0,
+			"vPrange":[-30,30],
+			"vSrange":[0,1000],
+		}
+		{
+			"name":"A1",
+			"vPrange":[-60,60],
+		}
+		{
+			"name":"A2",
+			"vPrange":[-60,60],
+		}
+		{
+			"name":"A3",
+			"vPrange":[-60,60],
+		}	
+	}
 }
 
 {
@@ -398,6 +435,27 @@
 }
 
 {
+	"name":"universe",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"FPS":30,
+}
+
+{
+	"name":"arUco",
+	"class":"_ArUco",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_VisionBase":"cam",
+	"_Universe":"universe",
+	"dict":17,
+}
+
+{
 	"name":"DetectNet",
 	"class":"_DetectNet",
 	"bInst":0,
@@ -425,7 +483,10 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_ActuatorBase":"S6H4D",
+	"_StepperGripper":"gripper",
+	"_DistSensorBase":"TOFsense",
 	"_Universe":"universe",
+	"mode":2,
 	"PIDx":"PIDx",
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
@@ -465,4 +526,17 @@
 	"vSpeedRange":[0, 500],
 	"vNtargetPos":[1.0],
 	"vNtargetSpeed":[1.0],
+	
+	{
+		"name":"Axis",	
+		{
+			"name":"X",
+			"nPtarget":0.0,
+			"nPorigin":0.0,
+			"nPerr":0.01,
+			"nStarget":1.0,
+			"vPrange":[0,1000],
+			"vSrange":[0,1000],
+		}
+	}
 }
