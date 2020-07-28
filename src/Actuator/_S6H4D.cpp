@@ -12,9 +12,10 @@ _S6H4D::_S6H4D()
 	m_mode = 1;
 	m_vSpeedRange.init(0.0, 1e5);
 	m_speed = 1.0;
-	m_vOrigin.init(350, 0.0, 400);
+	m_vOriginTarget.init(350, 0.0, 400);
+	m_vOrigin.init(0.0);
 
-	m_nAxis = 6;
+	m_nMinAxis = 6;
 }
 
 _S6H4D::~_S6H4D()
@@ -30,7 +31,7 @@ bool _S6H4D::init(void *pKiss)
 	pK->v("mode", &m_mode);
 	pK->v("vSpeedRange", &m_vSpeedRange);
 	pK->v("speed", &m_speed);
-	pK->v("vOrigin", &m_vOrigin);
+	pK->v("vOriginTarget", &m_vOriginTarget);
 
 	string iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -68,7 +69,7 @@ void _S6H4D::update(void)
 		this->sleepTime(USEC_1SEC);
 
 	setMode(m_mode);
-	setOrigin(m_vOrigin);
+	setOrigin(m_vOriginTarget);
 
 	//go to the origin
 	updatePos();
@@ -78,6 +79,9 @@ void _S6H4D::update(void)
 		this->autoFPSfrom();
 
 		readState();
+
+		updateMove();
+//		updateRot();
 
 		this->autoFPSto();
 	}
@@ -107,9 +111,9 @@ void _S6H4D::updateMove(void)
 	IF_(check() < 0);
 
 	vFloat3 vM;
-	vM.x = m_vAxis[0].m_nS;
-	vM.y = m_vAxis[1].m_nS;
-	vM.z = m_vAxis[2].m_nS;
+	vM.x = m_vAxis[0].getStarget();
+	vM.y = m_vAxis[1].getStarget();
+	vM.z = m_vAxis[2].getStarget();
 	move(vM);
 }
 
@@ -122,7 +126,7 @@ void _S6H4D::updateRot(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 		IF_CONT(pA->m_nS < 0.0);
 
-		rot(i, pA->m_nStarget);
+		rot(i, pA->getStarget());
 	}
 }
 
@@ -167,9 +171,19 @@ void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
 {
 	IF_(check() < 0);
 
+	vFloat3 vPlim;
+	vPlim.x = constrain(vP.x, m_vAxis[0].m_vPrange.x, m_vAxis[0].m_vPrange.y);
+	vPlim.y = constrain(vP.y, m_vAxis[1].m_vPrange.x, m_vAxis[1].m_vPrange.y);
+	vPlim.z = constrain(vP.z, m_vAxis[2].m_vPrange.x, m_vAxis[2].m_vPrange.y);
+
+	vFloat3 vRlim;
+	vRlim.x = constrain(vR.x, m_vAxis[3].m_vPrange.x, m_vAxis[3].m_vPrange.y);
+	vRlim.y = constrain(vR.y, m_vAxis[4].m_vPrange.x, m_vAxis[4].m_vPrange.y);
+	vRlim.z = constrain(vR.z, m_vAxis[5].m_vPrange.x, m_vAxis[5].m_vPrange.y);
+
 	S6H4D_CMD_MOV cmd;
 	cmd.init('1', 0);
-	cmd.set(vP, vR, speed);
+	cmd.set(vPlim, vRlim, speed);
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -199,7 +213,7 @@ void _S6H4D::move(vFloat3& vM)
 
 	pA = &m_vAxis[2];
 	pC = &cmd.m_b[6];
-	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+	if((pA->m_nP >= 1.0 && *pC < 128) || (pA->m_nP <= 0.0 && *pC > 128))*pC=128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -207,7 +221,7 @@ void _S6H4D::move(vFloat3& vM)
 void _S6H4D::rot(int iAxis, float r)
 {
 	IF_(check() < 0);
-	IF_(iAxis >= m_nAxis);
+	IF_(iAxis >= m_nMinAxis);
 
 	S6H4D_CMD_CTRL cmd;
 	cmd.init();
@@ -269,12 +283,12 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vAxis[0].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOrigin.x);
-		m_vAxis[1].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOrigin.y);
-		m_vAxis[2].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOrigin.z);
+		m_vAxis[0].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x);
+		m_vAxis[1].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y);
+		m_vAxis[2].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
 		break;
 	case 1:
-		if(m_nAxis < 9)break;
+		if(m_vAxis.size() < 9)break;
 		m_vAxis[6].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
 		m_vAxis[7].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
 		m_vAxis[8].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
@@ -285,10 +299,9 @@ void _S6H4D::decodeState(void)
 		m_vAxis[5].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 3:
-		vFloat3 vO;
-		vO.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
-		vO.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
-		vO.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
+		m_vOrigin.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_vOrigin.y = 0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_vOrigin.z = 0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 4:
 		break;
@@ -306,6 +319,9 @@ void _S6H4D::decodeState(void)
 void _S6H4D::draw(void)
 {
 	this->_ActuatorBase::draw();
+
+	addMsg("vOriginTarget = (" + f2str(m_vOriginTarget.x) + ", " + f2str(m_vOriginTarget.y) + ", " + f2str(m_vOriginTarget.z) + ")", 1);
+	addMsg("vOrigin = (" + f2str(m_vOrigin.x) + ", " + f2str(m_vOrigin.y) + ", " + f2str(m_vOrigin.z) + ")", 1);
 
 }
 

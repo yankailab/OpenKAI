@@ -177,11 +177,11 @@ void _PickingArm::updateArm(void)
 
 		if (tO)
 		{
-			m_baseAngle = m_pA->getRawP(6);
+			m_baseAngle = -m_pA->getRawP(6);
 			if(m_baseAngle == FLT_MAX)m_baseAngle = 0.0;
-			m_baseAngle *= DEG_2_RAD;
-			float s = sin(m_baseAngle);
-			float c = cos(m_baseAngle);
+			float rad = m_baseAngle * DEG_2_RAD;
+			float s = sin(rad);
+			float c = cos(rad);
 
 			vFloat3 vP = tO->getPos();
 			float x = vP.x - m_vTargetP.x;
@@ -191,7 +191,7 @@ void _PickingArm::updateArm(void)
 
 			m_vM.y = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
 			m_vM.x = m_pYpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
-			m_vM.z = m_pZpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
+			m_vM.z = 0.5;//m_pZpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
 		}
 		else
 		{

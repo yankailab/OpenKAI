@@ -16,7 +16,7 @@
 }
 
 {
-	"name":"serial",
+	"name":"armSerial",
 	"class":"_SerialPort",
 	"bInst":1,
 	"FPS":30,
@@ -34,67 +34,67 @@
 	"FPS":5,
 	"bLog":1,
 	"Console":"OKconsole",
-	"_IOBase":"serial",
-	"vOrigin":[350, 0.0, 400],
+	"_IOBase":"armSerial",
+	"vOriginTarget":[350, 0.0, 400],
 	"vSpeedRange":[0, 1000],
 	"speed":1.0,
 	
 	{
-		"name":"Axis",
+		"name":"axis",
 		
 		{
 			"name":"X",
+			"vPrange":[-150,150],
 			"nPtarget":0.5,
 			"nPorigin":0.5,
 			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[-250,250],
 			"vSrange":[0,1000],
+			"nStarget":0.5,
 		}
 		{
 			"name":"Y",
+			"vPrange":[-250,250],
 			"nPtarget":0.5,
 			"nPorigin":0.5,
 			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[-250,250],
 			"vSrange":[0,1000],
+			"nStarget":0.5,
 		}
 		{
 			"name":"Z",
-			"nPtarget":0.5,
+			"vPrange":[-500,100],
+			"nPtarget":1.0,
 			"nPorigin":0.5,
 			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[-250,250],
 			"vSrange":[0,1000],
+			"nStarget":0.5,
 		}
 		{
 			"name":"A4",
+			"vPrange":[-30,30],
 			"nPtarget":0.5,
 			"nPorigin":0.5,
 			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[-30,30],
 			"vSrange":[0,1000],
+			"nStarget":0.5,
 		}
 		{
 			"name":"A5",
-			"nPtarget":0.0,
-			"nPorigin":0.0,
-			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[0,30],
-			"vSrange":[0,1000],
-		}
-		{
-			"name":"Agripper",
+			"vPrange":[-15,15],
 			"nPtarget":0.5,
 			"nPorigin":0.5,
 			"nPerr":0.1,
-			"nStarget":1.0,
-			"vPrange":[-30,30],
 			"vSrange":[0,1000],
+			"nStarget":0.5,
+		}
+		{
+			"name":"Agripper",
+			"vPrange":[-30,30],
+			"nPtarget":0.5,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"vSrange":[0,1000],
+			"nStarget":0.5,
 		}
 		{
 			"name":"A1",

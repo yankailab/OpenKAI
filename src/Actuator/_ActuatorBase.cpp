@@ -9,7 +9,7 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_nAxis = 1;
+	m_nMinAxis = 1;
 	m_bFeedback = false;
 	m_pParent = NULL;
 }
@@ -25,7 +25,7 @@ bool _ActuatorBase::init(void* pKiss)
 
 	pK->v("bFeedback",&m_bFeedback);
 
-	Kiss *pAxis = pK->child("Axis");
+	Kiss *pAxis = pK->child("axis");
 	int i = 0;
 	while (1)
 	{
@@ -47,7 +47,7 @@ bool _ActuatorBase::init(void* pKiss)
 		m_vAxis.push_back(a);
 	}
 
-	IF_F(m_vAxis.size() < m_nAxis);
+	IF_F(m_vAxis.size() < m_nMinAxis);
 
 	string iName;
 

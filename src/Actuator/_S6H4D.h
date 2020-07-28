@@ -110,6 +110,7 @@ public:
 	int m_mode;
 	vFloat2 m_vSpeedRange;	//mm/m
 	float m_speed;
+	vFloat3 m_vOriginTarget;
 	vFloat3 m_vOrigin;
 
 };

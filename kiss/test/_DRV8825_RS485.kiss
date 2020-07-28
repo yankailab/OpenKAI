@@ -22,7 +22,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":9600,
 	"parity":"N",	
 }
@@ -30,6 +30,33 @@
 {
 	"name":"stepper",
 	"class":"_DRV8825_RS485",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"vStepRange":[0, 15],
+	"vSpeedRange":[0, 300],
+	
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"vPrange":[0,15],
+			"nPtarget":-1.0,
+			"nPorigin":0.5,
+			"nPerr":0.1,
+			"vSrange":[0,500],
+			"nStarget":1.0,
+		}
+	}
+}
+
+{
+	"name":"gripper",
+	"class":"_StepperGripper",
 	"bInst":0,
 	"FPS":5,
 	"bLog":1,
@@ -39,23 +66,5 @@
 	"dpr":1,
 	"vStepRange":[0, 15],
 	"vSpeedRange":[0, 500],
-	"vNormTargetPos":[1.0],
-	"vNormTargetSpeed":[1.0],
-}
-
-{
-	"name":"gripper",
-	"class":"_StepperGripper",
-	"bInst":1,
-	"FPS":5,
-	"bLog":1,
-	"Console":"OKconsole",
-	"_Modbus":"modbus",
-	"iSlave":1,
-	"dpr":1,
-	"vStepRange":[0, 15],
-	"vSpeedRange":[0, 500],
-	"vNormTargetPos":[1.0],
-	"vNormTargetSpeed":[1.0],
 }
 

@@ -182,6 +182,7 @@ bool _AProver_picking::updatePicking(void)
 	}
 	else	//AUTOPICK
 	{
+		m_pArm->setMode(paMode_auto);
 
 	}
 

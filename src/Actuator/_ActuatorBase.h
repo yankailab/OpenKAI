@@ -58,16 +58,16 @@ struct ACTUATOR_AXIS
 		return false;
 	}
 
-	void setPtarget(float nP)
+	void setPtarget(float nPt)
 	{
-		m_nP = constrain(nP, -1.0f, 1.0f);
+		nPt = constrain(nPt, -1.0f, 1.0f);
+		m_nPtarget = nPt;
 	}
 
-	void setStarget(float nS)
+	void setStarget(float nSt)
 	{
-		nS = constrain(nS, -1.0f, 1.0f);
-		if(m_nP >= 0.0 && m_nP <= 1.0)
-			m_nStarget = nS;
+		nSt = constrain(nSt, -1.0f, 1.0f);
+		m_nStarget = nSt;
 	}
 
 	void setP(float nP)
@@ -179,7 +179,7 @@ private:
 
 public:
 	vector<ACTUATOR_AXIS> m_vAxis;
-	int m_nAxis;
+	int m_nMinAxis;
 
 	bool	m_bFeedback;
 	_ActuatorBase* m_pParent;

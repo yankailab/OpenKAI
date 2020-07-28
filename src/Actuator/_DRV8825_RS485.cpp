@@ -69,10 +69,10 @@ void _DRV8825_RS485::update(void)
 	while(check()<0)
 		this->sleepTime(USEC_1SEC);
 
-//	setDistPerRound(m_dpr);
-//	setDist(m_vNormTargetPos.x);
-//	setSpeed(m_vNormTargetSpeed.x);
-//	run();
+	setDistPerRound(m_dpr);
+	setDist(m_vAxis[0].getPtarget());
+	setSpeed(m_vAxis[0].getStarget());
+	run();
 
 	while (m_bThreadON)
 	{
