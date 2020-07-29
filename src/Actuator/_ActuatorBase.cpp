@@ -36,14 +36,16 @@ bool _ActuatorBase::init(void* pKiss)
 		ACTUATOR_AXIS a;
 		a.init();
 		pA->v("name", &a.m_name);
-		pA->v("nP", &a.m_nP);
-		pA->v("nPtarget", &a.m_nPtarget);
-		pA->v("nPorigin", &a.m_nPorigin);
-		pA->v("nPerr", &a.m_nPerr);
-		pA->v("nS", &a.m_nS);
-		pA->v("nStarget", &a.m_nStarget);
-		pA->v("vPrange", &a.m_vPrange);
-		pA->v("vSrange", &a.m_vSrange);
+		pA->v("p", &a.m_p);
+		pA->v("pTarget", &a.m_pTarget);
+		pA->v("pOrigin", &a.m_pOrigin);
+		pA->v("pErr", &a.m_pEerr);
+		pA->v("vRawPrange", &a.m_vRawPrange);
+		pA->v("s", &a.m_s);
+		pA->v("sTarget", &a.m_sTarget);
+		pA->v("vRawSrange", &a.m_vRawSrange);
+		pA->v("aTarget", &a.m_aTarget);
+		pA->v("vRawArange", &a.m_vRawArange);
 		m_vAxis.push_back(a);
 	}
 
@@ -120,14 +122,14 @@ float _ActuatorBase::getP(int i)
 {
 	IF__(i<0 || i>=m_vAxis.size(), -1);
 
-	return m_vAxis[i].m_nP;
+	return m_vAxis[i].m_p;
 }
 
 float _ActuatorBase::getS(int i)
 {
 	IF__(i<0 || i>=m_vAxis.size(), -1);
 
-	return m_vAxis[i].m_nS;
+	return m_vAxis[i].m_s;
 }
 
 float _ActuatorBase::getRawP(int i)
@@ -155,10 +157,10 @@ void _ActuatorBase::draw(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 
 		addMsg(pA->m_name, 1);
-		addMsg("nP=" + f2str(pA->m_nP) + ", nPtarget=" + f2str(pA->m_nPtarget) + ", nPorigin=" + f2str(pA->m_nPorigin) + ", nPerr=" + f2str(pA->m_nPerr), 1);
-		addMsg("nS=" + f2str(pA->m_nS) + ", nStarget=" + f2str(pA->m_nStarget), 1);
-		addMsg("p=" + f2str(pA->m_rawP) + ", vPrange=[" + f2str(pA->m_vPrange.x) + ", " + f2str(pA->m_vPrange.y) + "]", 1);
-		addMsg("s=" + f2str(pA->m_rawS) + ", vSrange=[" + f2str(pA->m_vSrange.x) + ", " + f2str(pA->m_vSrange.y) + "]", 1);
+		addMsg("nP=" + f2str(pA->m_p) + ", nPtarget=" + f2str(pA->m_pTarget) + ", nPorigin=" + f2str(pA->m_pOrigin) + ", nPerr=" + f2str(pA->m_pEerr), 1);
+		addMsg("nS=" + f2str(pA->m_s) + ", nStarget=" + f2str(pA->m_sTarget), 1);
+		addMsg("p=" + f2str(pA->m_rawP) + ", vPrange=[" + f2str(pA->m_vRawPrange.x) + ", " + f2str(pA->m_vRawPrange.y) + "]", 1);
+		addMsg("s=" + f2str(pA->m_rawS) + ", vSrange=[" + f2str(pA->m_vRawSrange.x) + ", " + f2str(pA->m_vRawSrange.y) + "]", 1);
 		addMsg("-----------------------", 1);
 	}
 }

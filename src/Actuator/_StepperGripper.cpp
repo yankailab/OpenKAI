@@ -68,7 +68,8 @@ void _StepperGripper::updateGripper(void)
 
 	setDistPerRound(m_dpr);
 	setDist((m_bOpen)?-1.0:1.0);
-	setSpeed(1.0);
+	setSpeed(m_vAxis[0].getStarget());
+	setAccel(m_vAxis[0].getAtarget());
 	run();
 
 	m_bState = m_bOpen;

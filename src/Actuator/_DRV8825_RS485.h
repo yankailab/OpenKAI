@@ -30,8 +30,10 @@ public:
 	bool setSpeed(float s);
 	bool setAccel(float a);
 	bool setBrake(float b);
+
 	void run(void);
 	void stop(void);
+	void resetPos(void);
 
 protected:
 	void readStatus(void);

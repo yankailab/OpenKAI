@@ -17,43 +17,52 @@ struct ACTUATOR_AXIS
 {
 	string m_name;
 
-	//normalized
-	float m_nP;
-	float m_nPtarget;
-	float m_nPorigin;
-	float m_nPerr;
-	float m_nS;
-	float m_nStarget;
-
-	//raw
-	vFloat2 m_vPrange;
-	float m_rawP;
+	//pos
+	float m_p;
+	float m_pTarget;
 	float m_pOrigin;
-	vFloat2 m_vSrange;
+	float m_pEerr;
+	vFloat2 m_vRawPrange;
+	float m_rawP;
+	float m_rawPorigin;
+
+	//speed
+	float m_s;
+	float m_sTarget;
+	vFloat2 m_vRawSrange;
 	float m_rawS;
+
+	//accel
+	float m_aTarget;
+	vFloat2 m_vRawArange;
+	float m_rawA;
 
 	void init(void)
 	{
 		m_name = "";
 
-		m_nP = -1.0;
-		m_nPtarget = -1.0;
-		m_nPorigin = -1.0;
-		m_nPerr = 0.01;
-		m_nS = 0.0;
-		m_nStarget = 0.0;
-
-		m_vPrange.init(0.0);
+		m_p = -1.0;
+		m_pTarget = -1.0;
+		m_pOrigin = -1.0;
+		m_pEerr = 0.01;
+		m_vRawPrange.init(0.0);
 		m_rawP = 0.0;
-		m_pOrigin = 0.0;
-		m_vSrange.init(0.0);
+		m_rawPorigin = 0.0;
+
+		m_s = 0.0;
+		m_sTarget = 0.0;
+		m_vRawSrange.init(0.0);
 		m_rawS = 0.0;
+
+		m_aTarget = 0.0;
+		m_vRawArange.init(0.0);
+		m_rawA = 0.0;
 	}
 
 	bool bComplete(void)
 	{
-		IF_T(m_nP < 0.0);
-		IF_T(EAQ(m_nP, m_nPtarget, m_nPerr));
+		IF_T(m_p < 0.0);
+		IF_T(EAQ(m_p, m_pTarget, m_pEerr));
 
 		return false;
 	}
@@ -61,62 +70,73 @@ struct ACTUATOR_AXIS
 	void setPtarget(float nPt)
 	{
 		nPt = constrain(nPt, -1.0f, 1.0f);
-		m_nPtarget = nPt;
+		m_pTarget = nPt;
 	}
 
 	void setStarget(float nSt)
 	{
 		nSt = constrain(nSt, -1.0f, 1.0f);
-		m_nStarget = nSt;
+		m_sTarget = nSt;
+	}
+
+	void setAtarget(float nAt)
+	{
+		nAt = constrain(nAt, -1.0f, 1.0f);
+		m_aTarget = nAt;
 	}
 
 	void setP(float nP)
 	{
-		m_nP = nP;
-		m_rawP = m_nP * m_vPrange.d() + m_vPrange.x;
+		m_p = nP;
+		m_rawP = m_p * m_vRawPrange.d() + m_vRawPrange.x;
 	}
 
 	void setS(float nS)
 	{
-		m_nS = nS;
-		m_rawS = m_nS * m_vSrange.d() + m_vSrange.x;
+		m_s = nS;
+		m_rawS = m_s * m_vRawSrange.d() + m_vRawSrange.x;
 	}
 
 	void gotoOrigin(void)
 	{
-		setPtarget(m_nPorigin);
+		setPtarget(m_pOrigin);
 	}
 
 	void setRawP(float p)
 	{
 		m_rawP = p;
-		m_nP = (float) (m_rawP - m_vPrange.x) / (float) m_vPrange.len();
+		m_p = (float) (m_rawP - m_vRawPrange.x) / (float) m_vRawPrange.len();
 	}
 
 	void setRawS(float s)
 	{
 		m_rawS = s;
-		m_nS = (float) (m_rawS - m_vSrange.x) / (float) m_vSrange.len();
+		m_s = (float) (m_rawS - m_vRawSrange.x) / (float) m_vRawSrange.len();
 	}
 
 	float getP(void)
 	{
-		return m_nP;
+		return m_p;
 	}
 
 	float getS(void)
 	{
-		return m_nS;
+		return m_s;
 	}
 
 	float getPtarget(void)
 	{
-		return m_nPtarget;
+		return m_pTarget;
 	}
 
 	float getStarget(void)
 	{
-		return m_nStarget;
+		return m_sTarget;
+	}
+
+	float getAtarget(void)
+	{
+		return m_aTarget;
 	}
 
 	float getRawP(void)
@@ -131,18 +151,18 @@ struct ACTUATOR_AXIS
 
 	float getRawPtarget(void)
 	{
-		return m_nPtarget * m_vPrange.d() + m_vPrange.x;
+		return m_pTarget * m_vRawPrange.d() + m_vRawPrange.x;
 	}
 
 	float getRawStarget(void)
 	{
-		return m_nStarget * m_vSrange.d() + m_vSrange.x;
+		return m_sTarget * m_vRawSrange.d() + m_vRawSrange.x;
 	}
 
 	bool bNormal(void)
 	{
-		IF_F(m_nP < 0.0);
-		IF_F(m_nP > 1.0);
+		IF_F(m_p < 0.0);
+		IF_F(m_p > 1.0);
 
 		return true;
 	}

@@ -49,8 +49,8 @@ bool _OrientalMotor::init(void* pKiss)
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
 	ACTUATOR_AXIS* pA = &m_vAxis[0];
-	pA->m_vPrange.init(m_vStepRange.x, m_vStepRange.y);
-	pA->m_vSrange.init(m_vSpeedRange.x, m_vSpeedRange.y);
+	pA->m_vRawPrange.init(m_vStepRange.x, m_vStepRange.y);
+	pA->m_vRawSrange.init(m_vSpeedRange.x, m_vSpeedRange.y);
 
 	string iName;
 	iName = "";

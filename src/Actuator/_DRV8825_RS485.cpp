@@ -70,8 +70,10 @@ void _DRV8825_RS485::update(void)
 		this->sleepTime(USEC_1SEC);
 
 	setDistPerRound(m_dpr);
+	resetPos();
 	setDist(m_vAxis[0].getPtarget());
 	setSpeed(m_vAxis[0].getStarget());
+	setAccel(m_vAxis[0].getAtarget());
 	run();
 
 	while (m_bThreadON)
@@ -137,6 +139,10 @@ bool _DRV8825_RS485::setSpeed(float s)
 
 bool _DRV8825_RS485::setAccel(float a)
 {
+	IF_F(check()<0);
+
+	uint16_t b = constrain<float>(a, 0.0, 1.0) * m_vAccelRange.len() + m_vAccelRange.x;
+	IF_F(m_pMB->writeRegisters(m_iSlave, 2, 1, &b) != 1);
 
 	return true;
 }
@@ -157,38 +163,27 @@ void _DRV8825_RS485::stop(void)
 	m_pMB->writeBit(m_iSlave, 3, true);
 }
 
+void _DRV8825_RS485::resetPos(void)
+{
+	m_pMB->writeBit(m_iSlave, 10, true);
+}
+
 void _DRV8825_RS485::readStatus(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieReadStatus.update(m_tStamp));
 
-//	uint16_t pB[18];
-//	int nR = 6;
-//	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);
-//	IF_(r != 6);
-//
-//	m_cState.m_step = MAKE32(pB[0], pB[1]);
-//	m_cState.m_speed = MAKE32(pB[4], pB[5]);
-//
-//	//update actual unit to normalized value
-//	m_vNormPos.x = (float)(m_cState.m_step - m_vStepRange.x) / (float)m_vStepRange.len();
-//	m_vNormSpeed.x = (float)(m_cState.m_speed - m_vSpeedRange.x) / (float)m_vSpeedRange.len();
-//
-//	LOG_I("step: "+i2str(m_cState.m_step) +
-//			", speed: " + i2str(m_cState.m_speed));
+	uint16_t pB[2];
+	int r = m_pMB->readRegisters(m_iSlave, 23, 1, pB);
+	IF_(r != 1);
+
+//	int p = MAKE32(pB[0], pB[1]);
+	int16_t p = pB[0];
 }
 
 void _DRV8825_RS485::draw(void)
 {
 	this->_ActuatorBase::draw();
-
-//	addMsg("-- Current state --",1);
-//	addMsg("step: " + i2str(m_cState.m_step),1);
-//	addMsg("speed: " + i2str(m_cState.m_speed),1);
-//
-//	addMsg("-- Target state --",1);
-//	addMsg("step: " + i2str(m_tState.m_step),1);
-//	addMsg("speed: " + i2str(m_tState.m_speed),1);
 }
 
 }

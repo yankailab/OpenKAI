@@ -124,7 +124,7 @@ void _S6H4D::updateRot(void)
 	for(int i=3; i<6; i++)
 	{
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
-		IF_CONT(pA->m_nS < 0.0);
+		IF_CONT(pA->m_s < 0.0);
 
 		rot(i, pA->getStarget());
 	}
@@ -172,14 +172,14 @@ void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
 	IF_(check() < 0);
 
 	vFloat3 vPlim;
-	vPlim.x = constrain(vP.x, m_vAxis[0].m_vPrange.x, m_vAxis[0].m_vPrange.y);
-	vPlim.y = constrain(vP.y, m_vAxis[1].m_vPrange.x, m_vAxis[1].m_vPrange.y);
-	vPlim.z = constrain(vP.z, m_vAxis[2].m_vPrange.x, m_vAxis[2].m_vPrange.y);
+	vPlim.x = constrain(vP.x, m_vAxis[0].m_vRawPrange.x, m_vAxis[0].m_vRawPrange.y);
+	vPlim.y = constrain(vP.y, m_vAxis[1].m_vRawPrange.x, m_vAxis[1].m_vRawPrange.y);
+	vPlim.z = constrain(vP.z, m_vAxis[2].m_vRawPrange.x, m_vAxis[2].m_vRawPrange.y);
 
 	vFloat3 vRlim;
-	vRlim.x = constrain(vR.x, m_vAxis[3].m_vPrange.x, m_vAxis[3].m_vPrange.y);
-	vRlim.y = constrain(vR.y, m_vAxis[4].m_vPrange.x, m_vAxis[4].m_vPrange.y);
-	vRlim.z = constrain(vR.z, m_vAxis[5].m_vPrange.x, m_vAxis[5].m_vPrange.y);
+	vRlim.x = constrain(vR.x, m_vAxis[3].m_vRawPrange.x, m_vAxis[3].m_vRawPrange.y);
+	vRlim.y = constrain(vR.y, m_vAxis[4].m_vRawPrange.x, m_vAxis[4].m_vRawPrange.y);
+	vRlim.z = constrain(vR.z, m_vAxis[5].m_vRawPrange.x, m_vAxis[5].m_vRawPrange.y);
 
 	S6H4D_CMD_MOV cmd;
 	cmd.init('1', 0);
@@ -205,15 +205,15 @@ void _S6H4D::move(vFloat3& vM)
 
 	pA = &m_vAxis[0];
 	pC = &cmd.m_b[4];
-	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
 
 	pA = &m_vAxis[1];
 	pC = &cmd.m_b[5];
-	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
 
 	pA = &m_vAxis[2];
 	pC = &cmd.m_b[6];
-	if((pA->m_nP >= 1.0 && *pC < 128) || (pA->m_nP <= 0.0 && *pC > 128))*pC=128;
+	if((pA->m_p >= 1.0 && *pC < 128) || (pA->m_p <= 0.0 && *pC > 128))*pC=128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -232,7 +232,7 @@ void _S6H4D::rot(int iAxis, float r)
 
 	ACTUATOR_AXIS* pA = &m_vAxis[iAxis];
 	uint8_t* pC = &cmd.m_b[4];
-	if((pA->m_nP >= 1.0 && *pC > 128) || (pA->m_nP <= 0.0 && *pC < 128))*pC=128;
+	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }

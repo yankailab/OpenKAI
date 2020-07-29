@@ -39,17 +39,21 @@
 	"dpr":1,
 	"vStepRange":[0, 15],
 	"vSpeedRange":[0, 300],
+	"vAccelRange":[10, 300],
+	"bFeedback":1,
 	
 	{
 		"name":"axis",
 		{
 			"name":"X",
-			"vPrange":[0,15],
-			"nPtarget":-1.0,
-			"nPorigin":0.5,
-			"nPerr":0.1,
-			"vSrange":[0,500],
-			"nStarget":1.0,
+			"pTarget":1.0,
+			"pOrigin":0.5,
+			"pErr":0.1,
+			"vRawPrange":[0,15],
+			"sTarget":1.0,
+			"vRawSrange":[0,500],
+			"aTarget":0.0,
+			"vRawArange":[0,500],
 		}
 	}
 }
