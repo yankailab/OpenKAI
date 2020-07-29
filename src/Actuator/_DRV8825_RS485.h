@@ -26,17 +26,19 @@ public:
 	int check(void);
 
 	bool setDistPerRound(int32_t dpr);
-	bool setDist(float d);
-	bool setSpeed(float s);
-	bool setAccel(float a);
-	bool setBrake(float b);
+	bool setDist(int32_t d);
+	bool setSpeed(void);
+	bool setAccel(void);
+	bool setBrake(void);
+	void resetPos(void);
 
 	void run(void);
 	void stop(void);
-	void resetPos(void);
+	void reset(void);
 
 protected:
 	void readStatus(void);
+	void updateMove(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -49,12 +51,7 @@ public:
 	int		m_iSlave;
 	int		m_iData;
 	int32_t m_dpr;	//distance per round
-
-	vInt2	m_vStepRange;
-	vInt2	m_vSpeedRange;	//rpm
-	vInt2	m_vAccelRange;
-	vInt2	m_vBrakeRange;
-	vInt2	m_vCurrentRange;
+	ACTUATOR_AXIS* m_pA;
 
 	INTERVAL_EVENT m_ieReadStatus;
 

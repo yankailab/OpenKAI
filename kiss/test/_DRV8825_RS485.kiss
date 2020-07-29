@@ -37,9 +37,6 @@
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
-	"vStepRange":[0, 15],
-	"vSpeedRange":[0, 300],
-	"vAccelRange":[10, 300],
 	"bFeedback":1,
 	
 	{
@@ -51,9 +48,9 @@
 			"pErr":0.1,
 			"vRawPrange":[0,15],
 			"sTarget":1.0,
-			"vRawSrange":[0,500],
+			"vRawSrange":[0,300],
 			"aTarget":0.0,
-			"vRawArange":[0,500],
+			"vRawArange":[10,300],
 		}
 	}
 }
@@ -68,7 +65,5 @@
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
-	"vStepRange":[0, 15],
-	"vSpeedRange":[0, 500],
 }
 

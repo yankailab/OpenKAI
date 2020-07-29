@@ -55,8 +55,7 @@ void _StepperGripper::update(void)
 
 		updateGripper();
 
-		if(m_bFeedback)
-			readStatus();
+		readStatus();
 
 		this->autoFPSto();
 	}
@@ -67,9 +66,9 @@ void _StepperGripper::updateGripper(void)
 	IF_(m_bState == m_bOpen);
 
 	setDistPerRound(m_dpr);
-	setDist((m_bOpen)?-1.0:1.0);
-	setSpeed(m_vAxis[0].getStarget());
-	setAccel(m_vAxis[0].getAtarget());
+//	setDist((m_bOpen)?-1.0:1.0);
+//	setSpeed(m_vAxis[0].getStarget());
+//	setAccel(m_vAxis[0].getAtarget());
 	run();
 
 	m_bState = m_bOpen;

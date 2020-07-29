@@ -159,6 +159,11 @@ struct ACTUATOR_AXIS
 		return m_sTarget * m_vRawSrange.d() + m_vRawSrange.x;
 	}
 
+	float getRawAtarget(void)
+	{
+		return m_aTarget * m_vRawArange.d() + m_vRawArange.x;
+	}
+
 	bool bNormal(void)
 	{
 		IF_F(m_p < 0.0);
@@ -201,7 +206,10 @@ public:
 	vector<ACTUATOR_AXIS> m_vAxis;
 	int m_nMinAxis;
 
-	bool	m_bFeedback;
+	bool m_bFeedback;
+	bool m_bMoving;
+	float m_pTargetMoving;
+
 	_ActuatorBase* m_pParent;
 
 };

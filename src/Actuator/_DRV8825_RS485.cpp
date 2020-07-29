@@ -13,12 +13,8 @@ _DRV8825_RS485::_DRV8825_RS485()
 	m_iSlave = 1;
 	m_iData = 0;
 	m_dpr = 1;
+	m_pA = NULL;
 
-	m_vStepRange.init(0, 1e2);
-	m_vSpeedRange.init(0, 500);
-	m_vAccelRange.init(1, 300);
-	m_vBrakeRange.init(1, 300);
-	m_vCurrentRange.init(0, 1000);
 	m_ieReadStatus.init(50000);
 }
 
@@ -34,12 +30,9 @@ bool _DRV8825_RS485::init(void* pKiss)
 	pK->v("iSlave", &m_iSlave);
 	pK->v("iData", &m_iData);
 	pK->v("dpr", &m_dpr);
-	pK->v("vStepRange", &m_vStepRange);
-	pK->v("vSpeedRange", &m_vSpeedRange);
-	pK->v("vAccelRange", &m_vAccelRange);
-	pK->v("vBrakeRange", &m_vBrakeRange);
-	pK->v("vCurrentRange", &m_vCurrentRange);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
+
+	m_pA = &m_vAxis[0];
 
 	string iName;
 	iName = "";
@@ -69,21 +62,14 @@ void _DRV8825_RS485::update(void)
 	while(check()<0)
 		this->sleepTime(USEC_1SEC);
 
-	setDistPerRound(m_dpr);
-	resetPos();
-	setDist(m_vAxis[0].getPtarget());
-	setSpeed(m_vAxis[0].getStarget());
-	setAccel(m_vAxis[0].getAtarget());
-	run();
+	reset();
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		if(m_bFeedback)
-		{
-			readStatus();
-		}
+		updateMove();
+		readStatus();
 
 		this->autoFPSto();
 	}
@@ -93,8 +79,27 @@ int _DRV8825_RS485::check(void)
 {
 	NULL__(m_pMB,-1);
 	IF__(!m_pMB->bOpen(),-1);
+	NULL__(m_pA,-1);
 
 	return 0;
+}
+
+void _DRV8825_RS485::updateMove(void)
+{
+	IF_(check()<0);
+
+	if(m_bMoving)
+	{
+		IF_(m_pA->getRawP() != m_pTargetMoving);
+		m_bMoving = false;
+	}
+
+	m_pTargetMoving = m_pA->getRawPtarget();
+	setDist(m_pTargetMoving);
+	setSpeed();
+	setAccel();
+	run();
+	m_bMoving = true;
 }
 
 bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
@@ -109,45 +114,44 @@ bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
 	return true;
 }
 
-bool _DRV8825_RS485::setDist(float d)
+bool _DRV8825_RS485::setDist(int32_t d)
 {
 	IF_F(check()<0);
-	IF_F(d < -1.0 || d > 1.0);
 
 	uint16_t pB[2];
-
-	int32_t step = abs(d) * m_vStepRange.len() + m_vStepRange.x;
-	pB[0] = HIGH16(step);
-	pB[1] = LOW16(step);
+	int32_t step = d - m_pA->getRawP();// m_pA->getRawPtarget() - m_pA->getRawP();
+	int32_t ds = abs(step);
+	pB[0] = HIGH16(ds);
+	pB[1] = LOW16(ds);
 	IF_F(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2);
 
-	pB[0] = (d >= 0.0)?1:0;
+	pB[0] = (step >= 0)?1:0;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1);
 
 	return true;
 }
 
-bool _DRV8825_RS485::setSpeed(float s)
+bool _DRV8825_RS485::setSpeed(void)
 {
 	IF_F(check()<0);
 
-	uint16_t b = constrain<float>(s, 0.0, 1.0) * m_vSpeedRange.len() + m_vSpeedRange.x;
+	uint16_t b = m_pA->getRawStarget();
 	IF_F(m_pMB->writeRegisters(m_iSlave, 8, 1, &b) != 1);
 
 	return true;
 }
 
-bool _DRV8825_RS485::setAccel(float a)
+bool _DRV8825_RS485::setAccel(void)
 {
 	IF_F(check()<0);
 
-	uint16_t b = constrain<float>(a, 0.0, 1.0) * m_vAccelRange.len() + m_vAccelRange.x;
+	uint16_t b = m_pA->getRawAtarget();
 	IF_F(m_pMB->writeRegisters(m_iSlave, 2, 1, &b) != 1);
 
 	return true;
 }
 
-bool _DRV8825_RS485::setBrake(float b)
+bool _DRV8825_RS485::setBrake(void)
 {
 
 	return true;
@@ -168,6 +172,16 @@ void _DRV8825_RS485::resetPos(void)
 	m_pMB->writeBit(m_iSlave, 10, true);
 }
 
+void _DRV8825_RS485::reset(void)
+{
+	setDistPerRound(m_dpr);
+	resetPos();
+//	setDist();
+	setSpeed();
+	setAccel();
+	run();
+}
+
 void _DRV8825_RS485::readStatus(void)
 {
 	IF_(check()<0);
@@ -179,6 +193,7 @@ void _DRV8825_RS485::readStatus(void)
 
 //	int p = MAKE32(pB[0], pB[1]);
 	int16_t p = pB[0];
+	m_pA->setRawP(p);
 }
 
 void _DRV8825_RS485::draw(void)

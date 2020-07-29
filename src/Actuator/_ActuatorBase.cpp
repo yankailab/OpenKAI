@@ -9,8 +9,10 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
+	m_bFeedback = true;
 	m_nMinAxis = 1;
-	m_bFeedback = false;
+	m_bMoving = false;
+	m_pTargetMoving = 0;
 	m_pParent = NULL;
 }
 
@@ -22,8 +24,6 @@ bool _ActuatorBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
-
-	pK->v("bFeedback",&m_bFeedback);
 
 	Kiss *pAxis = pK->child("axis");
 	int i = 0;
@@ -157,10 +157,10 @@ void _ActuatorBase::draw(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 
 		addMsg(pA->m_name, 1);
-		addMsg("nP=" + f2str(pA->m_p) + ", nPtarget=" + f2str(pA->m_pTarget) + ", nPorigin=" + f2str(pA->m_pOrigin) + ", nPerr=" + f2str(pA->m_pEerr), 1);
-		addMsg("nS=" + f2str(pA->m_s) + ", nStarget=" + f2str(pA->m_sTarget), 1);
-		addMsg("p=" + f2str(pA->m_rawP) + ", vPrange=[" + f2str(pA->m_vRawPrange.x) + ", " + f2str(pA->m_vRawPrange.y) + "]", 1);
-		addMsg("s=" + f2str(pA->m_rawS) + ", vSrange=[" + f2str(pA->m_vRawSrange.x) + ", " + f2str(pA->m_vRawSrange.y) + "]", 1);
+		addMsg("p=" + f2str(pA->m_p) + ", pTarget=" + f2str(pA->m_pTarget) + ", pOrigin=" + f2str(pA->m_pOrigin) + ", pErr=" + f2str(pA->m_pEerr), 1);
+		addMsg("rawP=" + f2str(pA->m_rawP) + ", vRawPrange=[" + f2str(pA->m_vRawPrange.x) + ", " + f2str(pA->m_vRawPrange.y) + "]", 1);
+		addMsg("s=" + f2str(pA->m_s) + ", sTarget=" + f2str(pA->m_sTarget), 1);
+		addMsg("rawS=" + f2str(pA->m_rawS) + ", vRawSrange=[" + f2str(pA->m_vRawSrange.x) + ", " + f2str(pA->m_vRawSrange.y) + "]", 1);
 		addMsg("-----------------------", 1);
 	}
 }
