@@ -11,6 +11,9 @@ _StepperGripper::_StepperGripper()
 {
 	m_bState = false;
 	m_bOpen = true;
+
+	m_pOpen = -1.0;
+	m_pClose = 1.0;
 }
 
 _StepperGripper::~_StepperGripper()
@@ -21,6 +24,10 @@ bool _StepperGripper::init(void* pKiss)
 {
 	IF_F(!this->_DRV8825_RS485::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("pOpen", &m_pOpen);
+	pK->v("pClose", &m_pClose);
+	pK->v("bOpen", &m_bOpen);
 
 	return true;
 }
@@ -44,34 +51,34 @@ void _StepperGripper::update(void)
 	while(check()<0)
 		this->sleepTime(USEC_1SEC);
 
-//	setDistPerRound(m_dpr);
-//	setDist(m_vNormTargetPos.x);
-//	setSpeed(m_vNormTargetSpeed.x);
-//	run();
+	while(!initPos())
+		this->sleepTime(USEC_1SEC);
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		updateGripper();
-
+		updateMove();
 		readStatus();
 
 		this->autoFPSto();
 	}
 }
 
-void _StepperGripper::updateGripper(void)
+void _StepperGripper::updateMove(void)
 {
+	IF_(check()<0);
+	IF_(m_pA->m_p.m_vRaw == FLT_MAX);
+
+	if(EAQ(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
+		m_bState = true;
+	else if(EAQ(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
+		m_bState = false;
+
 	IF_(m_bState == m_bOpen);
 
-	setDistPerRound(m_dpr);
-//	setDist((m_bOpen)?-1.0:1.0);
-//	setSpeed(m_vAxis[0].getStarget());
-//	setAccel(m_vAxis[0].getAtarget());
-	run();
-
-	m_bState = m_bOpen;
+	this->setPtarget(0, m_bOpen?m_pOpen:m_pClose);
+	this->_DRV8825_RS485::updateMove();
 }
 
 void _StepperGripper::grip(bool bOpen)

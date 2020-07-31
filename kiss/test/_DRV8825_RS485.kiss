@@ -22,7 +22,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":9600,
 	"parity":"N",	
 }
@@ -38,19 +38,20 @@
 	"iSlave":1,
 	"dpr":1,
 	"bFeedback":1,
-	
+	"dInit":-20,
+
 	{
 		"name":"axis",
 		{
 			"name":"X",
-			"pTarget":1.0,
-			"pOrigin":0.5,
-			"pErr":0.1,
-			"vRawPrange":[0,15],
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRawRange":[0,15],
 			"sTarget":1.0,
-			"vRawSrange":[0,300],
+			"sRawRange":[0,300],
 			"aTarget":0.0,
-			"vRawArange":[10,300],
+			"aRawRange":[10,300],
 		}
 	}
 }
@@ -65,5 +66,24 @@
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
-}
+	"bFeedback":1,
+	"dInit":20,
+	"pOpen":1,
+	"pClose":0,
+	"bOpen":0,
 
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRawRange":[-15,0],
+			"sTarget":1.0,
+			"sRawRange":[0,300],
+			"aTarget":0.0,
+			"aRawRange":[10,300],
+		}
+	}
+}

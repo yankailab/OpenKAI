@@ -32,8 +32,8 @@ public:
 
 	virtual float getP(int i);
 	virtual float getS(int i);
-	virtual float getRawP(int i);
-	virtual float getRawS(int i);
+	virtual float getPraw(int i);
+	virtual float getSraw(int i);
 
 private:
 	virtual void updateSync(void);

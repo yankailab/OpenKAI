@@ -92,14 +92,14 @@ void _S6H4D::updatePos(void)
 	IF_(check() < 0);
 
 	vFloat3 vP;
-	vP.x = m_vAxis[0].getRawPtarget();
-	vP.y = m_vAxis[1].getRawPtarget();
-	vP.z = m_vAxis[2].getRawPtarget();
+	vP.x = m_vAxis[0].m_p.getTargetRaw();
+	vP.y = m_vAxis[1].m_p.getTargetRaw();
+	vP.z = m_vAxis[2].m_p.getTargetRaw();
 
 	vFloat3 vA;
-	vA.x = m_vAxis[3].getRawPtarget();
-	vA.y = m_vAxis[4].getRawPtarget();
-	vA.z = m_vAxis[5].getRawPtarget();
+	vA.x = m_vAxis[3].m_p.getTargetRaw();
+	vA.y = m_vAxis[4].m_p.getTargetRaw();
+	vA.z = m_vAxis[5].m_p.getTargetRaw();
 
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
@@ -111,9 +111,9 @@ void _S6H4D::updateMove(void)
 	IF_(check() < 0);
 
 	vFloat3 vM;
-	vM.x = m_vAxis[0].getStarget();
-	vM.y = m_vAxis[1].getStarget();
-	vM.z = m_vAxis[2].getStarget();
+	vM.x = m_vAxis[0].m_s.m_vTarget;
+	vM.y = m_vAxis[1].m_s.m_vTarget;
+	vM.z = m_vAxis[2].m_s.m_vTarget;
 	move(vM);
 }
 
@@ -124,9 +124,9 @@ void _S6H4D::updateRot(void)
 	for(int i=3; i<6; i++)
 	{
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
-		IF_CONT(pA->m_s < 0.0);
+		IF_CONT(pA->m_s.m_vTarget < 0.0);
 
-		rot(i, pA->getStarget());
+		rot(i, pA->m_s.m_vTarget);
 	}
 }
 
@@ -172,14 +172,14 @@ void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
 	IF_(check() < 0);
 
 	vFloat3 vPlim;
-	vPlim.x = constrain(vP.x, m_vAxis[0].m_vRawPrange.x, m_vAxis[0].m_vRawPrange.y);
-	vPlim.y = constrain(vP.y, m_vAxis[1].m_vRawPrange.x, m_vAxis[1].m_vRawPrange.y);
-	vPlim.z = constrain(vP.z, m_vAxis[2].m_vRawPrange.x, m_vAxis[2].m_vRawPrange.y);
+	vPlim.x = constrain(vP.x, m_vAxis[0].m_p.m_vRawRange.x, m_vAxis[0].m_p.m_vRawRange.y);
+	vPlim.y = constrain(vP.y, m_vAxis[1].m_p.m_vRawRange.x, m_vAxis[1].m_p.m_vRawRange.y);
+	vPlim.z = constrain(vP.z, m_vAxis[2].m_p.m_vRawRange.x, m_vAxis[2].m_p.m_vRawRange.y);
 
 	vFloat3 vRlim;
-	vRlim.x = constrain(vR.x, m_vAxis[3].m_vRawPrange.x, m_vAxis[3].m_vRawPrange.y);
-	vRlim.y = constrain(vR.y, m_vAxis[4].m_vRawPrange.x, m_vAxis[4].m_vRawPrange.y);
-	vRlim.z = constrain(vR.z, m_vAxis[5].m_vRawPrange.x, m_vAxis[5].m_vRawPrange.y);
+	vRlim.x = constrain(vR.x, m_vAxis[3].m_p.m_vRawRange.x, m_vAxis[3].m_p.m_vRawRange.y);
+	vRlim.y = constrain(vR.y, m_vAxis[4].m_p.m_vRawRange.x, m_vAxis[4].m_p.m_vRawRange.y);
+	vRlim.z = constrain(vR.z, m_vAxis[5].m_p.m_vRawRange.x, m_vAxis[5].m_p.m_vRawRange.y);
 
 	S6H4D_CMD_MOV cmd;
 	cmd.init('1', 0);
@@ -200,21 +200,6 @@ void _S6H4D::move(vFloat3& vM)
 	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5)*255, 0, 255) : 128;
 	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5)*255, 0, 255) : 128;
 
-	ACTUATOR_AXIS* pA;
-	uint8_t* pC;
-
-	pA = &m_vAxis[0];
-	pC = &cmd.m_b[4];
-	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
-
-	pA = &m_vAxis[1];
-	pC = &cmd.m_b[5];
-	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
-
-	pA = &m_vAxis[2];
-	pC = &cmd.m_b[6];
-	if((pA->m_p >= 1.0 && *pC < 128) || (pA->m_p <= 0.0 && *pC > 128))*pC=128;
-
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -228,11 +213,7 @@ void _S6H4D::rot(int iAxis, float r)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = iAxis;
-	cmd.m_b[4] = (r >= 0.0 && m_vAxis[iAxis].bNormal()) ? constrain<float>(128 + (r - 0.5)*255, 0, 255) : 128;
-
-	ACTUATOR_AXIS* pA = &m_vAxis[iAxis];
-	uint8_t* pC = &cmd.m_b[4];
-	if((pA->m_p >= 1.0 && *pC > 128) || (pA->m_p <= 0.0 && *pC < 128))*pC=128;
+	cmd.m_b[4] = (r >= 0.0) ? constrain<float>(128 + (r - 0.5)*255, 0, 255) : 128;
 
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
@@ -283,20 +264,20 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vAxis[0].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x);
-		m_vAxis[1].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y);
-		m_vAxis[2].setRawP(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
+		m_vAxis[0].m_p.setRaw(0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x);
+		m_vAxis[1].m_p.setRaw(0.1 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y);
+		m_vAxis[2].m_p.setRaw(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
 		break;
 	case 1:
 		if(m_vAxis.size() < 9)break;
-		m_vAxis[6].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[7].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[8].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[6].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[7].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[8].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 2:
-		m_vAxis[3].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[4].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[5].setRawP(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[3].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[4].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[5].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 3:
 		m_vOrigin.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);

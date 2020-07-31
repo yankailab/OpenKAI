@@ -25,8 +25,9 @@ public:
 	void draw(void);
 	int check(void);
 
+protected:
 	bool setDistPerRound(int32_t dpr);
-	bool setDist(int32_t d);
+	bool setPos(float p);
 	bool setSpeed(void);
 	bool setAccel(void);
 	bool setBrake(void);
@@ -34,9 +35,8 @@ public:
 
 	void run(void);
 	void stop(void);
-	void reset(void);
+	bool initPos(void);
 
-protected:
 	void readStatus(void);
 	void updateMove(void);
 	void update(void);
@@ -52,6 +52,8 @@ public:
 	int		m_iData;
 	int32_t m_dpr;	//distance per round
 	ACTUATOR_AXIS* m_pA;
+
+	int32_t m_dInit;
 
 	INTERVAL_EVENT m_ieReadStatus;
 

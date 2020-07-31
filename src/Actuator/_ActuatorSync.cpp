@@ -116,14 +116,14 @@ float _ActuatorSync::getS(int i)
 	return m_pAB[m_iABget]->getS(i);
 }
 
-float _ActuatorSync::getRawP(int i)
+float _ActuatorSync::getPraw(int i)
 {
-	return m_pAB[m_iABget]->getRawP(i);
+	return m_pAB[m_iABget]->getPraw(i);
 }
 
-float _ActuatorSync::getRawS(int i)
+float _ActuatorSync::getSraw(int i)
 {
-	return m_pAB[m_iABget]->getRawS(i);
+	return m_pAB[m_iABget]->getSraw(i);
 }
 
 }

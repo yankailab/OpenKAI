@@ -13,163 +13,86 @@
 namespace kai
 {
 
+struct ACTUATOR_AXIS_PARAM
+{
+	float m_v;
+	float m_vTarget;
+	float m_vRaw;
+	float m_vErr;
+	vFloat2 m_vRawRange;
+
+	void init(void)
+	{
+		m_v = -1.0;
+		m_vTarget = 0.0;
+		m_vRawRange.init(0.0);
+		m_vRaw = FLT_MAX;
+		m_vErr = 0.0;
+	}
+
+	bool bComplete(void)
+	{
+		IF_T(m_v < 0.0);
+		IF_T(EAQ(m_v, m_vTarget, m_vErr));
+
+		return false;
+	}
+
+	void setTarget(float nV)
+	{
+		nV = constrain(nV, -1.0f, 1.0f);
+		m_vTarget = nV;
+	}
+
+	void set(float nV)
+	{
+		m_v = nV;
+		m_vRaw = m_v * m_vRawRange.d() + m_vRawRange.x;
+	}
+
+	void setRaw(float rV)
+	{
+		m_vRaw = rV;
+		m_v = (float) (m_vRaw - m_vRawRange.x) / (float) m_vRawRange.len();
+	}
+
+	float getRaw(float nV)
+	{
+		return nV * m_vRawRange.d() + m_vRawRange.x;
+	}
+
+	float getTargetRaw(void)
+	{
+		return m_vTarget * m_vRawRange.d() + m_vRawRange.x;
+	}
+};
+
 struct ACTUATOR_AXIS
 {
 	string m_name;
 
-	//pos
-	float m_p;
-	float m_pTarget;
 	float m_pOrigin;
-	float m_pEerr;
-	vFloat2 m_vRawPrange;
-	float m_rawP;
-	float m_rawPorigin;
-
-	//speed
-	float m_s;
-	float m_sTarget;
-	vFloat2 m_vRawSrange;
-	float m_rawS;
-
-	//accel
-	float m_aTarget;
-	vFloat2 m_vRawArange;
-	float m_rawA;
+	ACTUATOR_AXIS_PARAM m_p;	//pos
+	ACTUATOR_AXIS_PARAM m_s;	//speed
+	ACTUATOR_AXIS_PARAM m_a;	//accel
+	ACTUATOR_AXIS_PARAM m_b;	//brake
+	ACTUATOR_AXIS_PARAM m_c;	//current
 
 	void init(void)
 	{
 		m_name = "";
 
-		m_p = -1.0;
-		m_pTarget = -1.0;
-		m_pOrigin = -1.0;
-		m_pEerr = 0.01;
-		m_vRawPrange.init(0.0);
-		m_rawP = 0.0;
-		m_rawPorigin = 0.0;
-
-		m_s = 0.0;
-		m_sTarget = 0.0;
-		m_vRawSrange.init(0.0);
-		m_rawS = 0.0;
-
-		m_aTarget = 0.0;
-		m_vRawArange.init(0.0);
-		m_rawA = 0.0;
-	}
-
-	bool bComplete(void)
-	{
-		IF_T(m_p < 0.0);
-		IF_T(EAQ(m_p, m_pTarget, m_pEerr));
-
-		return false;
-	}
-
-	void setPtarget(float nPt)
-	{
-		nPt = constrain(nPt, -1.0f, 1.0f);
-		m_pTarget = nPt;
-	}
-
-	void setStarget(float nSt)
-	{
-		nSt = constrain(nSt, -1.0f, 1.0f);
-		m_sTarget = nSt;
-	}
-
-	void setAtarget(float nAt)
-	{
-		nAt = constrain(nAt, -1.0f, 1.0f);
-		m_aTarget = nAt;
-	}
-
-	void setP(float nP)
-	{
-		m_p = nP;
-		m_rawP = m_p * m_vRawPrange.d() + m_vRawPrange.x;
-	}
-
-	void setS(float nS)
-	{
-		m_s = nS;
-		m_rawS = m_s * m_vRawSrange.d() + m_vRawSrange.x;
+		m_pOrigin = 0.0;
+		m_p.init();
+		m_s.init();
+		m_a.init();
+		m_b.init();
+		m_c.init();
 	}
 
 	void gotoOrigin(void)
 	{
-		setPtarget(m_pOrigin);
-	}
-
-	void setRawP(float p)
-	{
-		m_rawP = p;
-		m_p = (float) (m_rawP - m_vRawPrange.x) / (float) m_vRawPrange.len();
-	}
-
-	void setRawS(float s)
-	{
-		m_rawS = s;
-		m_s = (float) (m_rawS - m_vRawSrange.x) / (float) m_vRawSrange.len();
-	}
-
-	float getP(void)
-	{
-		return m_p;
-	}
-
-	float getS(void)
-	{
-		return m_s;
-	}
-
-	float getPtarget(void)
-	{
-		return m_pTarget;
-	}
-
-	float getStarget(void)
-	{
-		return m_sTarget;
-	}
-
-	float getAtarget(void)
-	{
-		return m_aTarget;
-	}
-
-	float getRawP(void)
-	{
-		return m_rawP;
-	}
-
-	float getRawS(void)
-	{
-		return m_rawS;
-	}
-
-	float getRawPtarget(void)
-	{
-		return m_pTarget * m_vRawPrange.d() + m_vRawPrange.x;
-	}
-
-	float getRawStarget(void)
-	{
-		return m_sTarget * m_vRawSrange.d() + m_vRawSrange.x;
-	}
-
-	float getRawAtarget(void)
-	{
-		return m_aTarget * m_vRawArange.d() + m_vRawArange.x;
-	}
-
-	bool bNormal(void)
-	{
-		IF_F(m_p < 0.0);
-		IF_F(m_p > 1.0);
-
-		return true;
+		m_p.setTarget(m_pOrigin);
 	}
 };
 
@@ -190,8 +113,8 @@ public:
 
 	virtual float getP(int i);
 	virtual float getS(int i);
-	virtual float getRawP(int i);
-	virtual float getRawS(int i);
+	virtual float getPraw(int i);
+	virtual float getSraw(int i);
 
 private:
 	virtual bool open(void);
@@ -208,7 +131,7 @@ public:
 
 	bool m_bFeedback;
 	bool m_bMoving;
-	float m_pTargetMoving;
+	float m_pTarget;
 
 	_ActuatorBase* m_pParent;
 

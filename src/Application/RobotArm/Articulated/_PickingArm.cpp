@@ -177,7 +177,7 @@ void _PickingArm::updateArm(void)
 
 		if (tO)
 		{
-			m_baseAngle = -m_pA->getRawP(6);
+			m_baseAngle = -m_pA->getPraw(6);
 			if(m_baseAngle == FLT_MAX)m_baseAngle = 0.0;
 			float rad = m_baseAngle * DEG_2_RAD;
 			float s = sin(rad);

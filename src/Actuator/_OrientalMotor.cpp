@@ -9,18 +9,10 @@ namespace kai
 
 _OrientalMotor::_OrientalMotor()
 {
+	m_pA = NULL;
 	m_pMB = NULL;
 	m_iSlave = 1;
 	m_iData = 0;
-
-	m_vStepRange.init(-1e5, 1e5);
-	m_vSpeedRange.init(-4e6, 4e6);
-	m_vAccelRange.init(1, 1e9);
-	m_vBrakeRange.init(1, 1e9);
-	m_vCurrentRange.init(0, 1000);
-
-	m_cState.init();
-	m_tState.init();
 
 	m_ieCheckAlarm.init(100000);
 	m_ieSendCMD.init(50000);
@@ -38,19 +30,12 @@ bool _OrientalMotor::init(void* pKiss)
 
 	pK->v("iSlave",&m_iSlave);
 	pK->v("iData",&m_iData);
-	pK->v("vStepRange", &m_vStepRange);
-	pK->v("vSpeedRange", &m_vSpeedRange);
-	pK->v("vAccelRange", &m_vAccelRange);
-	pK->v("vBrakeRange", &m_vBrakeRange);
-	pK->v("vCurrentRange", &m_vCurrentRange);
 
 	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
 	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
 
-	ACTUATOR_AXIS* pA = &m_vAxis[0];
-	pA->m_vRawPrange.init(m_vStepRange.x, m_vStepRange.y);
-	pA->m_vRawSrange.init(m_vSpeedRange.x, m_vSpeedRange.y);
+	m_pA = &m_vAxis[0];
 
 	string iName;
 	iName = "";
@@ -94,6 +79,7 @@ void _OrientalMotor::update(void)
 
 int _OrientalMotor::check(void)
 {
+	NULL__(m_pA,-1);
 	NULL__(m_pMB,-1);
 	IF__(!m_pMB->bOpen(),-1);
 
@@ -115,15 +101,14 @@ void _OrientalMotor::sendCMD(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
-
-	ACTUATOR_AXIS* pA = &m_vAxis[0];
-	IF_(pA->getPtarget() < 0.0);
+	IF_(m_pA->m_p.m_vTarget < 0.0);
 
 	//update normalized value to actual unit
-	m_tState.m_step = pA->getPtarget() * m_vStepRange.len() + m_vStepRange.x;
-	m_tState.m_step = constrain(m_tState.m_step, m_vStepRange.x, m_vStepRange.y);
-	m_tState.m_speed = pA->getStarget() * m_vSpeedRange.len() + m_vSpeedRange.x;
-	m_tState.m_speed = constrain(m_tState.m_speed, m_vSpeedRange.x, m_vSpeedRange.y);
+	int32_t step = m_pA->m_p.getTargetRaw();
+	int32_t speed = m_pA->m_s.getTargetRaw();
+	int32_t accel = m_pA->m_a.getTargetRaw();
+	int32_t brake = m_pA->m_b.getTargetRaw();
+	int32_t current = m_pA->m_c.getTargetRaw();
 
 	//create the command
 	uint16_t pB[18];
@@ -133,18 +118,18 @@ void _OrientalMotor::sendCMD(void)
 	pB[2] = 0;
 	pB[3] = 1;
 	//92
-	pB[4] = HIGH16(m_tState.m_step);
-	pB[5] = LOW16(m_tState.m_step);
-	pB[6] = HIGH16(m_tState.m_speed);
-	pB[7] = LOW16(m_tState.m_speed);
+	pB[4] = HIGH16(step);
+	pB[5] = LOW16(step);
+	pB[6] = HIGH16(speed);
+	pB[7] = LOW16(speed);
 
 	//96
-	pB[8] = HIGH16(m_tState.m_accel);
-	pB[9] = LOW16(m_tState.m_accel);
-	pB[10] = HIGH16(m_tState.m_brake);
-	pB[11] = LOW16(m_tState.m_brake);
-	pB[12] = HIGH16(m_tState.m_current);
-	pB[13] = LOW16(m_tState.m_current);
+	pB[8] = HIGH16(accel);
+	pB[9] = LOW16(accel);
+	pB[10] = HIGH16(brake);
+	pB[11] = LOW16(brake);
+	pB[12] = HIGH16(current);
+	pB[13] = LOW16(current);
 	pB[14] = 0;
 	pB[15] = 1;
 	pB[16] = 0;
@@ -166,31 +151,18 @@ void _OrientalMotor::readStatus(void)
 	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);
 	IF_(r != 6);
 
-	m_cState.m_step = MAKE32(pB[0], pB[1]);
-	m_cState.m_speed = MAKE32(pB[4], pB[5]);
-
 	//update actual unit to normalized value
-	ACTUATOR_AXIS* pA = &m_vAxis[0];
-	IF_(pA->getPtarget() < 0.0);
+	IF_(m_pA->m_p.m_vTarget < 0.0);
 
-	pA->setRawP(m_cState.m_step);
-	pA->setRawS(m_cState.m_speed);
+	m_pA->m_p.setRaw(MAKE32(pB[0], pB[1]));
+	m_pA->m_s.setRaw(MAKE32(pB[4], pB[5]));
 
-	LOG_I("step: "+i2str(m_cState.m_step) +
-			", speed: " + i2str(m_cState.m_speed));
+	LOG_I("step: "+f2str(m_pA->m_p.m_vRaw) + ", speed: " + f2str(m_pA->m_s.m_vRaw));
 }
 
 void _OrientalMotor::draw(void)
 {
 	this->_ActuatorBase::draw();
-
-	addMsg("-- Current state --",1);
-	addMsg("step: " + i2str(m_cState.m_step),1);
-	addMsg("speed: " + i2str(m_cState.m_speed),1);
-
-	addMsg("-- Target state --",1);
-	addMsg("step: " + i2str(m_tState.m_step),1);
-	addMsg("speed: " + i2str(m_tState.m_speed),1);
 }
 
 }

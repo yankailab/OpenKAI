@@ -55,18 +55,10 @@ private:
 	}
 
 public:
+	ACTUATOR_AXIS* m_pA;
 	_Modbus* m_pMB;
 	int		m_iSlave;
 	int		m_iData;
-
-	vInt2	m_vStepRange;
-	vInt2	m_vSpeedRange;
-	vInt2	m_vAccelRange;
-	vInt2	m_vBrakeRange;
-	vInt2	m_vCurrentRange;
-
-	OM_STATE m_cState;
-	OM_STATE m_tState;
 
 	INTERVAL_EVENT m_ieCheckAlarm;
 	INTERVAL_EVENT m_ieSendCMD;

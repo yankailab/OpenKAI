@@ -26,7 +26,7 @@ public:
 	void grip(bool bOpen);
 
 private:
-	void updateGripper(void);
+	void updateMove(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -35,8 +35,11 @@ private:
 	}
 
 public:
-	bool m_bState;
+	bool m_bState;	//true:open false:close
 	bool m_bOpen;
+
+	float m_pOpen;
+	float m_pClose;
 
 };
 
