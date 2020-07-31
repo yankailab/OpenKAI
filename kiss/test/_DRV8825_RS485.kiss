@@ -59,7 +59,7 @@
 {
 	"name":"gripper",
 	"class":"_StepperGripper",
-	"bInst":0,
+	"bInst":1,
 	"FPS":5,
 	"bLog":1,
 	"Console":"OKconsole",
@@ -67,10 +67,10 @@
 	"iSlave":1,
 	"dpr":1,
 	"bFeedback":1,
-	"dInit":20,
+	"dInit":-20,
 	"pOpen":1,
 	"pClose":0,
-	"bOpen":0,
+	"bOpen":1,
 
 	{
 		"name":"axis",
@@ -79,7 +79,7 @@
 			"pOrigin":0.0,
 			"pTarget":0.0,
 			"pErr":0.01,
-			"pRawRange":[-15,0],
+			"pRawRange":[0,15],
 			"sTarget":1.0,
 			"sRawRange":[0,300],
 			"aTarget":0.0,

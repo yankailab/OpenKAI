@@ -38,6 +38,14 @@ struct ACTUATOR_AXIS_PARAM
 		return false;
 	}
 
+	bool bNormal(void)
+	{
+		IF_F(m_v < 0.0);
+		IF_F(m_v > 1.0);
+
+		return true;
+	}
+
 	void setTarget(float nV)
 	{
 		nV = constrain(nV, -1.0f, 1.0f);
@@ -93,6 +101,11 @@ struct ACTUATOR_AXIS
 	void gotoOrigin(void)
 	{
 		m_p.setTarget(m_pOrigin);
+	}
+
+	bool bNormal(void)
+	{
+		return m_p.bNormal();
 	}
 };
 

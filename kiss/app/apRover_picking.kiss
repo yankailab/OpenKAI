@@ -349,69 +349,69 @@
 		
 		{
 			"name":"X",
-			"vRawPrange":[-150,150],
+			"pRawRange":[-150,150],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Y",
-			"vRawPrange":[-250,250],
+			"pRawRange":[-250,250],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Z",
-			"vRawPrange":[-500,100],
+			"pRawRange":[-500,100],
 			"pTarget":1.0,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"A4",
-			"vRawPrange":[-30,30],
+			"pRawRange":[-30,30],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"A5",
-			"vRawPrange":[-15,15],
+			"pRawRange":[-15,15],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Agripper",
-			"vRawPrange":[-30,30],
+			"pRawRange":[-30,30],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"vRawSrange":[0,1000],
+			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"A1",
-			"vRawPrange":[-60,60],
+			"pRawRange":[-60,60],
 		}
 		{
 			"name":"A2",
-			"vRawPrange":[-60,60],
+			"pRawRange":[-60,60],
 		}
 		{
 			"name":"A3",
-			"vRawPrange":[-60,60],
+			"pRawRange":[-60,60],
 		}	
 	}
 }

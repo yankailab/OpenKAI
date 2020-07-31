@@ -103,6 +103,17 @@ struct vFloat2
 	{
 		return y-x;
 	}
+
+	float constrain(float v)
+	{
+		if (v > y)
+			v = y;
+		else if (v < x)
+			v = x;
+
+		return v;
+	}
+
 };
 
 }

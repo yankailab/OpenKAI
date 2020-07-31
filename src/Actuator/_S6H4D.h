@@ -89,6 +89,7 @@ public:
 	void rot(int iAxis, float r);
 
 private:
+	bool checkRange(void);
 	void updatePos(void);
 	void updateMove(void);
 	void updateRot(void);

@@ -80,11 +80,38 @@ void _S6H4D::update(void)
 
 		readState();
 
-		updateMove();
-//		updateRot();
+		if(checkRange())
+		{
+			updateMove();
+		}
 
 		this->autoFPSto();
 	}
+}
+
+bool _S6H4D::checkRange(void)
+{
+	IF_F(check() < 0);
+
+	bool bCheck = true;
+	for(int i=6; i<9; i++)
+	{
+		ACTUATOR_AXIS* pA = &m_vAxis[i];
+		int j = i-3;
+
+		if(pA->m_p.m_v > 1.0)
+		{
+			rot(j, -1.0);
+			bCheck = false;
+		}
+		else if(pA->m_p.m_v < 0.0)
+		{
+			rot(j, 1.0);
+			bCheck = false;
+		}
+	}
+
+	return bCheck;
 }
 
 void _S6H4D::updatePos(void)
@@ -172,14 +199,14 @@ void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
 	IF_(check() < 0);
 
 	vFloat3 vPlim;
-	vPlim.x = constrain(vP.x, m_vAxis[0].m_p.m_vRawRange.x, m_vAxis[0].m_p.m_vRawRange.y);
-	vPlim.y = constrain(vP.y, m_vAxis[1].m_p.m_vRawRange.x, m_vAxis[1].m_p.m_vRawRange.y);
-	vPlim.z = constrain(vP.z, m_vAxis[2].m_p.m_vRawRange.x, m_vAxis[2].m_p.m_vRawRange.y);
+	vPlim.x = m_vAxis[0].m_p.m_vRawRange.constrain(vP.x);
+	vPlim.y = m_vAxis[1].m_p.m_vRawRange.constrain(vP.y);
+	vPlim.z = m_vAxis[2].m_p.m_vRawRange.constrain(vP.z);
 
 	vFloat3 vRlim;
-	vRlim.x = constrain(vR.x, m_vAxis[3].m_p.m_vRawRange.x, m_vAxis[3].m_p.m_vRawRange.y);
-	vRlim.y = constrain(vR.y, m_vAxis[4].m_p.m_vRawRange.x, m_vAxis[4].m_p.m_vRawRange.y);
-	vRlim.z = constrain(vR.z, m_vAxis[5].m_p.m_vRawRange.x, m_vAxis[5].m_p.m_vRawRange.y);
+	vRlim.x = m_vAxis[3].m_p.m_vRawRange.constrain(vR.x);
+	vRlim.y = m_vAxis[4].m_p.m_vRawRange.constrain(vR.y);
+	vRlim.z = m_vAxis[5].m_p.m_vRawRange.constrain(vR.z);
 
 	S6H4D_CMD_MOV cmd;
 	cmd.init('1', 0);
