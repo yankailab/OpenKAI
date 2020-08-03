@@ -68,8 +68,8 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":-20,
-	"pOpen":1,
-	"pClose":0,
+	"pOpen":0,
+	"pClose":1,
 	"bOpen":1,
 
 	{

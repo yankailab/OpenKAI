@@ -178,7 +178,7 @@ bool _AProver_picking::updatePicking(void)
 		vM.x = m_vRC[3].v();
 //		m_pArm->rotate(vM);
 
-		m_pArm->grip((m_vRC[4].i())?true:false);
+		m_pArm->grip((m_vRC[4].i())?false:true);
 	}
 	else	//AUTOPICK
 	{

@@ -67,6 +67,32 @@ struct S6H4D_CMD_STATE
 	}
 };
 
+struct S6H4D_AREA
+{
+	vFloat2 m_vX;
+	vFloat2 m_vY;
+	vFloat2 m_vZ;
+
+	void init(void)
+	{
+		m_vX.init(0.0);
+		m_vY.init(0.0);
+		m_vZ.init(0.0);
+	}
+
+	bool bInside(vFloat3& vP)
+	{
+		IF_F((m_vX.x != 0.0) && (vP.x < m_vX.x));
+		IF_F((m_vX.y != 0.0) && (vP.x > m_vX.y));
+		IF_F((m_vY.x != 0.0) && (vP.y < m_vY.x));
+		IF_F((m_vY.y != 0.0) && (vP.y > m_vY.y));
+		IF_F((m_vZ.x != 0.0) && (vP.z < m_vZ.x));
+		IF_F((m_vZ.y != 0.0) && (vP.z > m_vZ.y));
+
+		return true;
+	}
+};
+
 class _S6H4D: public _ActuatorBase
 {
 public:
@@ -82,7 +108,7 @@ public:
 	void setOrigin(vFloat3 &vP);
 	void setMode(int mode);
 	void pause(void);
-	void state(void);
+	void resetCtrl(void);
 
 	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void move(vFloat3 &vM);
@@ -113,6 +139,10 @@ public:
 	float m_speed;
 	vFloat3 m_vOriginTarget;
 	vFloat3 m_vOrigin;
+	vFloat3 m_vLastValidP;
+
+	vFloat2 m_vRrange;
+	vector<S6H4D_AREA> m_vForbArea;
 
 };
 

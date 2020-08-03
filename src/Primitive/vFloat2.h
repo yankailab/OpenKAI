@@ -104,6 +104,11 @@ struct vFloat2
 		return y-x;
 	}
 
+	float r(void)
+	{
+		return sqrt((x*x) + (y*y));
+	}
+
 	float constrain(float v)
 	{
 		if (v > y)

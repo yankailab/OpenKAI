@@ -343,6 +343,18 @@
 	"vOriginTarget":[350, 0.0, 400],
 	"vSpeedRange":[0, 1000],
 	"speed":1.0,
+	"vRrange":[15.0, 50.0],
+	
+	{
+		"name":"forbiddenArea",
+
+		{
+			"name":"robot",
+			"vX":[0, 0],
+			"vY":[0, 0],
+			"vZ":[0, 0],
+		}
+	}
 	
 	{
 		"name":"axis",
@@ -375,6 +387,19 @@
 			"sTarget":0.5,
 		}
 		{
+			"name":"A1",
+			"/pRawRange":[-130,130],
+			"pRawRange":[-60,60],
+		}
+		{
+			"name":"A2",
+			"pRawRange":[-20,50],
+		}
+		{
+			"name":"A3",
+			"pRawRange":[45,145],
+		}	
+		{
 			"name":"A4",
 			"pRawRange":[-30,30],
 			"pTarget":0.5,
@@ -401,18 +426,6 @@
 			"sRawRange":[0,1000],
 			"sTarget":0.5,
 		}
-		{
-			"name":"A1",
-			"pRawRange":[-60,60],
-		}
-		{
-			"name":"A2",
-			"pRawRange":[-60,60],
-		}
-		{
-			"name":"A3",
-			"pRawRange":[-60,60],
-		}	
 	}
 }
 
@@ -525,8 +538,8 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":-20,
-	"pOpen":1,
-	"pClose":0,
+	"pOpen":0,
+	"pClose":1,
 	"bOpen":1,
 
 	{

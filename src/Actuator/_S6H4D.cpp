@@ -14,7 +14,9 @@ _S6H4D::_S6H4D()
 	m_speed = 1.0;
 	m_vOriginTarget.init(350, 0.0, 400);
 	m_vOrigin.init(0.0);
+	m_vLastValidP.init(0.0);
 
+	m_vRrange.init(0.0, 500);
 	m_nMinAxis = 6;
 }
 
@@ -32,6 +34,23 @@ bool _S6H4D::init(void *pKiss)
 	pK->v("vSpeedRange", &m_vSpeedRange);
 	pK->v("speed", &m_speed);
 	pK->v("vOriginTarget", &m_vOriginTarget);
+	pK->v("vRrange", &m_vRrange);
+
+	Kiss *pF = pK->child("forbiddenArea");
+	int i = 0;
+	while (1)
+	{
+		Kiss *pA = pF->child(i++);
+		if (pA->empty())
+			break;
+
+		S6H4D_AREA a;
+		a.init();
+		pA->v("vX", &a.m_vX);
+		pA->v("vY", &a.m_vY);
+		pA->v("vZ", &a.m_vZ);
+		m_vForbArea.push_back(a);
+	}
 
 	string iName = "";
 	F_ERROR_F(pK->v("_IOBase", &iName));
@@ -69,9 +88,13 @@ void _S6H4D::update(void)
 		this->sleepTime(USEC_1SEC);
 
 	setMode(m_mode);
-	setOrigin(m_vOriginTarget);
-
-	//go to the origin
+	while(m_vOrigin != m_vOriginTarget)
+	{
+		setOrigin(m_vOriginTarget);
+		this->sleepTime(USEC_1SEC);
+		readState();
+	}
+	//go to the init pos based on new set origin
 	updatePos();
 
 	while (m_bThreadON)
@@ -79,11 +102,15 @@ void _S6H4D::update(void)
 		this->autoFPSfrom();
 
 		readState();
-
-		if(checkRange())
+		if(m_vOrigin != m_vOriginTarget)
 		{
-			updateMove();
+			setOrigin(m_vOriginTarget);
+			continue;
 		}
+
+		checkRange();
+
+		updateMove();
 
 		this->autoFPSto();
 	}
@@ -93,23 +120,64 @@ bool _S6H4D::checkRange(void)
 {
 	IF_F(check() < 0);
 
+	ACTUATOR_AXIS* pX = &m_vAxis[0];
+	ACTUATOR_AXIS* pY = &m_vAxis[1];
+	ACTUATOR_AXIS* pZ = &m_vAxis[2];
 	bool bCheck = true;
-	for(int i=6; i<9; i++)
+
+	// Radius range
+	vFloat2 vP;
+	vP.x = pX->m_p.m_vRaw;
+	vP.y = pY->m_p.m_vRaw;
+	float r = vP.r();
+	if(r < m_vRrange.x || r > m_vRrange.y)
+//		bCheck = false;
+
+	// Axis range
+	for(int i=3; i<6; i++)
 	{
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
-		int j = i-3;
+		float v = pA->m_p.m_v;
+		IF_CONT(v >= 0.0 && v <= 1.0);
 
-		if(pA->m_p.m_v > 1.0)
-		{
-			rot(j, -1.0);
-			bCheck = false;
-		}
-		else if(pA->m_p.m_v < 0.0)
-		{
-			rot(j, 1.0);
-			bCheck = false;
-		}
+		bCheck = false;
+		break;
 	}
+
+	// Forbidden area
+	vFloat3 vPf;
+	vPf.init(pX->m_p.m_vRaw, pY->m_p.m_vRaw, pZ->m_p.m_vRaw);
+	for(S6H4D_AREA a : m_vForbArea)
+	{
+		IF_CONT(a.bInside(vPf));
+//		bCheck = false;
+		break;
+	}
+
+	// Go to the last valid position if the current one is invalid
+	if(bCheck)
+	{
+		m_vLastValidP.x = m_vAxis[0].m_p.m_vRaw;
+		m_vLastValidP.y = m_vAxis[1].m_p.m_vRaw;
+		m_vLastValidP.z = m_vAxis[2].m_p.m_vRaw;
+
+		return true;
+	}
+
+	resetCtrl();
+	m_vOrigin.init(0.0);
+	while(m_vOrigin != m_vOriginTarget)
+	{
+		setOrigin(m_vOriginTarget);
+		readState();
+	}
+
+	vFloat3 vA;
+	vA.x = m_vAxis[6].m_p.getTargetRaw();
+	vA.y = m_vAxis[7].m_p.getTargetRaw();
+	vA.z = m_vAxis[8].m_p.getTargetRaw();
+	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
+	gotoPos(m_vLastValidP, vA, s);
 
 	return bCheck;
 }
@@ -124,9 +192,9 @@ void _S6H4D::updatePos(void)
 	vP.z = m_vAxis[2].m_p.getTargetRaw();
 
 	vFloat3 vA;
-	vA.x = m_vAxis[3].m_p.getTargetRaw();
-	vA.y = m_vAxis[4].m_p.getTargetRaw();
-	vA.z = m_vAxis[5].m_p.getTargetRaw();
+	vA.x = m_vAxis[6].m_p.getTargetRaw();
+	vA.y = m_vAxis[7].m_p.getTargetRaw();
+	vA.z = m_vAxis[8].m_p.getTargetRaw();
 
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
@@ -198,19 +266,9 @@ void _S6H4D::gotoPos(vFloat3 &vP, vFloat3& vR, float speed)
 {
 	IF_(check() < 0);
 
-	vFloat3 vPlim;
-	vPlim.x = m_vAxis[0].m_p.m_vRawRange.constrain(vP.x);
-	vPlim.y = m_vAxis[1].m_p.m_vRawRange.constrain(vP.y);
-	vPlim.z = m_vAxis[2].m_p.m_vRawRange.constrain(vP.z);
-
-	vFloat3 vRlim;
-	vRlim.x = m_vAxis[3].m_p.m_vRawRange.constrain(vR.x);
-	vRlim.y = m_vAxis[4].m_p.m_vRawRange.constrain(vR.y);
-	vRlim.z = m_vAxis[5].m_p.m_vRawRange.constrain(vR.z);
-
 	S6H4D_CMD_MOV cmd;
 	cmd.init('1', 0);
-	cmd.set(vPlim, vRlim, speed);
+	cmd.set(vP, vR, speed);
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -258,6 +316,19 @@ void _S6H4D::pause(void)
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
+void _S6H4D::resetCtrl(void)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_CTRL cmd;
+	cmd.init();
+	cmd.m_b[1] = 12;
+	cmd.m_b[2] = 6;
+	cmd.m_b[3] = 0;
+
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
 void _S6H4D::readState(void)
 {
 	IF_(check() < 0);
@@ -296,15 +367,14 @@ void _S6H4D::decodeState(void)
 		m_vAxis[2].m_p.setRaw(0.1 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
 		break;
 	case 1:
-		if(m_vAxis.size() < 9)break;
-		m_vAxis[6].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[7].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[8].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
-		break;
-	case 2:
 		m_vAxis[3].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
 		m_vAxis[4].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
 		m_vAxis[5].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
+		break;
+	case 2:
+		m_vAxis[6].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[7].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[8].m_p.setRaw(0.01 * (float)unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 3:
 		m_vOrigin.x = 0.1 * (float)unpack_int16(&m_state.m_pB[1], m_bOrder);
@@ -321,7 +391,6 @@ void _S6H4D::decodeState(void)
 	default:
 		break;
 	}
-
 }
 
 void _S6H4D::draw(void)
