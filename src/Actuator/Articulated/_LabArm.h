@@ -1,8 +1,8 @@
-#ifndef OpenKAI_src_Actuator__LabArm_H_
-#define OpenKAI_src_Actuator__LabArm_H_
+#ifndef OpenKAI_src_Actuator_Articulated__LabArm_H_
+#define OpenKAI_src_Actuator_Articulated__LabArm_H_
 
-#include "_ActuatorBase.h"
-#include "../Dependency/Rasheed/LabArm.h"
+#include "../_ActuatorBase.h"
+#include "../../Dependency/Rasheed/LabArm.h"
 
 #ifdef USE_DYNAMIXEL
 

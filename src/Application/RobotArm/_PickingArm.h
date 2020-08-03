@@ -5,15 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_RobotArm_Articulated__PickingArm_H_
-#define OpenKAI_src_RobotArm_Articulated__PickingArm_H_
+#ifndef OpenKAI_src_RobotArm__PickingArm_H_
+#define OpenKAI_src_RobotArm__PickingArm_H_
 
-#include "../../Mission/_MissionBase.h"
-#include "../../../Universe/_Universe.h"
-#include "../../../Control/PIDctrl.h"
-#include "../../../Actuator/_ActuatorBase.h"
-#include "../../../Actuator/_StepperGripper.h"
-#include "../../../Sensor/_DistSensorBase.h"
+#include "../Mission/_MissionBase.h"
+#include "../../Universe/_Universe.h"
+#include "../../Control/PIDctrl.h"
+#include "../../Actuator/_ActuatorBase.h"
+#include "../../Actuator/_StepperGripper.h"
+#include "../../Sensor/_DistSensorBase.h"
 
 #ifdef USE_OPENCV
 

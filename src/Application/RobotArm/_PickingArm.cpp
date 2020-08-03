@@ -5,7 +5,7 @@
  *      Author: yankai
  */
 
-#include "../../RobotArm/Articulated/_PickingArm.h"
+#include "_PickingArm.h"
 
 #ifdef USE_OPENCV
 

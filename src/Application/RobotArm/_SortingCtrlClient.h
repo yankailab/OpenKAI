@@ -1,9 +1,9 @@
 #ifndef OpenKAI_src_Automation__SortingImgClient_H_
 #define OpenKAI_src_Automation__SortingImgClient_H_
 
-#include "../../../Detector/_DetectorBase.h"
-#include "../../../Protocol/_ProtocolBase.h"
-#include "../../RobotArm/Cartesian/_SortingCtrlServer.h"
+#include "../../Detector/_DetectorBase.h"
+#include "../../Protocol/_ProtocolBase.h"
+#include "_SortingCtrlServer.h"
 
 #ifdef USE_OPENCV
 

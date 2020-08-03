@@ -1,4 +1,4 @@
-#include "../../RobotArm/Cartesian/_SortingCtrlClient.h"
+#include "_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV
 

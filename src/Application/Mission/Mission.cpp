@@ -30,9 +30,20 @@ bool Mission::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nextMission", &m_nextMission);
-
 	if(pK->v("tTimeout",&m_tTimeout))
 		m_tTimeout *= USEC_1SEC;
+
+	string name;
+
+	name = "";
+	pK->parent()->parent()->v("Console", &name);
+	m_pConsole = (Console*)(pK->getInst(name));
+
+#ifdef USE_OPENCV
+	name = "";
+	pK->parent()->parent()->v("Window",&name);
+	m_pWindow = (Window*)(pK->getInst(name));
+#endif
 
 	return true;
 }

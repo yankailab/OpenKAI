@@ -1,8 +1,8 @@
-#ifndef OpenKAI_src_Actuator__S6H4D_H_
-#define OpenKAI_src_Actuator__S6H4D_H_
+#ifndef OpenKAI_src_Actuator_Articulated__S6H4D_H_
+#define OpenKAI_src_Actuator_Articulated__S6H4D_H_
 
-#include "_ActuatorBase.h"
-#include "../IO/_IOBase.h"
+#include "../_ActuatorBase.h"
+#include "../../IO/_IOBase.h"
 
 #define S6H4D_CMD_N 48
 #define S6H4D_MOV_BEGIN 0xee
@@ -104,24 +104,26 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
-	void armReset(void);
-	void setOrigin(vFloat3 &vP);
-	void setMode(int mode);
-	void pause(void);
-	void resetCtrl(void);
-
-	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
-	void move(vFloat3 &vM);
-	void rot(int iAxis, float r);
-
-private:
-	bool checkRange(void);
+protected:
+	bool checkArm(void);
 	void updatePos(void);
-	void updateMove(void);
+	void updateSpeed(void);
 	void updateRot(void);
-	void autoGripperHdg(void);
 	void readState(void);
 	void decodeState(void);
+
+	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
+	void stickSpeed(vFloat3 &vM);
+	void stickRot(int iAxis, float r);
+	void stickStop(void);
+	void stickRelease(void);
+
+	void armSetOrigin(vFloat3 &vP);
+	void armSetMode(int mode);
+	void armPause(void);
+	void armReset(void);
+	void armCtrlReset(void);
+
 	void update(void);
 	static void* getUpdateThread(void *This)
 	{
@@ -141,7 +143,7 @@ public:
 	vFloat3 m_vOrigin;
 	vFloat3 m_vLastValidP;
 
-	vFloat2 m_vRrange;
+	vFloat2 m_vRmechRange;
 	vector<S6H4D_AREA> m_vForbArea;
 
 };

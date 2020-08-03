@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Automation__SortingImgServer_H_
 #define OpenKAI_src_Automation__SortingImgServer_H_
 
-#include "../../../Detector/_DetectorBase.h"
-#include "../../../Protocol/_ProtocolBase.h"
-#include "../../../Vision/_DepthVisionBase.h"
+#include "../../Detector/_DetectorBase.h"
+#include "../../Protocol/_ProtocolBase.h"
+#include "../../Vision/_DepthVisionBase.h"
 
 #ifdef USE_OPENCV
 

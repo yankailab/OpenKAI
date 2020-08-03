@@ -137,7 +137,7 @@
 }
 
 {
-	"name":"mission",
+	"name":"baseMission",
 	"class":"_MissionControl",
 	"FPS":30,
 	"bInst":1,
@@ -150,34 +150,94 @@
 		{
 			"bInst":1,
 			"name":"STANDBY",
-			"Window":"OKview",
-			"Console":"OKconsole",
 			"class":"Mission",
 			"nextMission":"STANDBY",
 		}
 		{
 			"bInst":1,
 			"name":"MANUAL",
-			"Window":"OKview",
-			"Console":"OKconsole",
 			"class":"Mission",
 			"nextMission":"STANDBY",
 		}
 		{
 			"bInst":1,
 			"name":"AUTOPICK",
-			"Window":"OKview",
-			"Console":"OKconsole",
 			"class":"Mission",
 			"nextMission":"STANDBY",
 		}
 		{
 			"bInst":1,
 			"name":"AUTO",
-			"Window":"OKview",
-			"Console":"OKconsole",
 			"class":"Mission",
 			"nextMission":"STANDBY",
+		}
+	}
+}
+
+{
+	"name":"armMission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"startMission":"STANDBY",
+
+	{
+		"name":"mission",
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"Mission",
+			"nextMission":"STANDBY",
+		}
+		{
+			"bInst":1,
+			"name":"MANUAL",
+			"class":"Mission",
+			"nextMission":"STANDBY",
+		}
+		{
+			"bInst":1,
+			"name":"RECOVER",
+			"class":"Mission",
+			"nextMission":"SEARCH",
+		}
+		{
+			"bInst":1,
+			"name":"SEARCH",
+			"class":"Mission",
+			"nextMission":"CATCH",
+		}
+		{
+			"bInst":1,
+			"name":"CATCH",
+			"class":"Mission",
+			"nextMission":"ASCEND",
+		}
+		{
+			"bInst":1,
+			"name":"ASCEND",
+			"class":"Mission",
+			"nextMission":"DELIVER",
+		}
+		{
+			"bInst":1,
+			"name":"DELIVER",
+			"class":"Mission",
+			"nextMission":"DESCEND",
+		}
+		{
+			"bInst":1,
+			"name":"DESCEND",
+			"class":"Mission",
+			"nextMission":"DROP",
+		}
+		{
+			"bInst":1,
+			"name":"DROP",
+			"class":"Mission",
+			"nextMission":"RECOVER",
 		}
 	}
 }

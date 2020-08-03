@@ -17,7 +17,7 @@
 #include "../Actuator/_ActuatorSync.h"
 #include "../Actuator/_DRV8825_RS485.h"
 #include "../Actuator/_OrientalMotor.h"
-#include "../Actuator/_S6H4D.h"
+#include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
@@ -121,10 +121,10 @@
 #include "../Application/Surveillance/_GDcam.h"
 #include "../Application/Surveillance/_ShopCam.h"
 
-#include "../Application/RobotArm/Articulated/_PickingArm.h"
-#include "../Application/RobotArm/Cartesian/_SortingArm.h"
-#include "../Application/RobotArm/Cartesian/_SortingCtrlServer.h"
-#include "../Application/RobotArm/Cartesian/_SortingCtrlClient.h"
+#include "../Application/RobotArm/_PickingArm.h"
+#include "../Application/RobotArm/_SortingArm.h"
+#include "../Application/RobotArm/_SortingCtrlServer.h"
+#include "../Application/RobotArm/_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"

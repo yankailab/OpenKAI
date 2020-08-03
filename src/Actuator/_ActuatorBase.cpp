@@ -13,6 +13,11 @@ _ActuatorBase::_ActuatorBase()
 	m_nMinAxis = 1;
 	m_bMoving = false;
 	m_pTarget = 0;
+
+	m_lastCmdType = actCmd_unknown;
+	m_tLastCmd = 0;
+	m_tCmdTimeout = USEC_1SEC;
+
 	m_pParent = NULL;
 }
 
@@ -24,6 +29,8 @@ bool _ActuatorBase::init(void* pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("tCmdTimeout", &m_tCmdTimeout);
 
 	Kiss *pAxis = pK->child("axis");
 	int i = 0;
@@ -100,6 +107,14 @@ void _ActuatorBase::update(void)
 {
 }
 
+bool _ActuatorBase::bCmdTimeout(void)
+{
+	uint64_t t = getTimeUsec();
+	IF_F(t - m_tLastCmd < m_tCmdTimeout);
+
+	return true;
+}
+
 bool _ActuatorBase::open(void)
 {
 	return false;
@@ -111,6 +126,9 @@ void _ActuatorBase::setPtarget(int i, float nP)
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_p.setTarget(nP);
+
+	m_lastCmdType = actCmd_pos;
+	m_tLastCmd = getTimeUsec();
 }
 
 void _ActuatorBase::setStarget(int i, float nS)
@@ -119,6 +137,9 @@ void _ActuatorBase::setStarget(int i, float nS)
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_s.setTarget(nS);
+
+	m_lastCmdType = actCmd_spd;
+	m_tLastCmd = getTimeUsec();
 }
 
 void _ActuatorBase::gotoOrigin(void)
@@ -128,6 +149,9 @@ void _ActuatorBase::gotoOrigin(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 		pA->gotoOrigin();
 	}
+
+	m_lastCmdType = actCmd_pos;
+	m_tLastCmd = getTimeUsec();
 }
 
 bool _ActuatorBase::bComplete(void)

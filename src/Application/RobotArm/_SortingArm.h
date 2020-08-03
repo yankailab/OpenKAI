@@ -8,9 +8,9 @@
 #ifndef OpenKAI_src_Automation__SortingArm_H_
 #define OpenKAI_src_Automation__SortingArm_H_
 
-#include "../../../Detector/_DetectorBase.h"
-#include "../../RobotArm/_Sequencer.h"
-#include "../../RobotArm/Cartesian/_SortingCtrlServer.h"
+#include "../../Detector/_DetectorBase.h"
+#include "../RobotArm/_Sequencer.h"
+#include "../RobotArm/_SortingCtrlServer.h"
 
 #ifdef USE_OPENCV
 

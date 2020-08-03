@@ -3,7 +3,7 @@
 
 #include "../../../Detector/_DetectorBase.h"
 #include "../../../Control/PIDctrl.h"
-#include "../../RobotArm/Articulated/_PickingArm.h"
+#include "../../RobotArm/_PickingArm.h"
 #include "../../../Utility/RC.h"
 #include "_AP_base.h"
 #include "_AProver_drive.h"

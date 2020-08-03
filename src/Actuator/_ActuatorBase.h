@@ -109,6 +109,14 @@ struct ACTUATOR_AXIS
 	}
 };
 
+enum ACTUATOR_CMD_TYPE
+{
+	actCmd_unknown,
+	actCmd_pos,
+	actCmd_spd,
+	actCmd_posSpd,
+};
+
 class _ActuatorBase: public _ThreadBase
 {
 public:
@@ -129,7 +137,8 @@ public:
 	virtual float getPraw(int i);
 	virtual float getSraw(int i);
 
-private:
+protected:
+	virtual bool bCmdTimeout(void);
 	virtual bool open(void);
 	virtual void update(void);
 	static void* getUpdateThread(void* This)
@@ -145,6 +154,10 @@ public:
 	bool m_bFeedback;
 	bool m_bMoving;
 	float m_pTarget;
+
+	ACTUATOR_CMD_TYPE m_lastCmdType;
+	uint64_t m_tLastCmd;
+	uint64_t m_tCmdTimeout;
 
 	_ActuatorBase* m_pParent;
 
