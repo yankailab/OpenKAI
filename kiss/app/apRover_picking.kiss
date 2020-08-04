@@ -137,7 +137,7 @@
 }
 
 {
-	"name":"baseMission",
+	"name":"mission",
 	"class":"_MissionControl",
 	"FPS":30,
 	"bInst":1,
@@ -178,7 +178,7 @@
 	"name":"armMission",
 	"class":"_MissionControl",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"startMission":"STANDBY",
@@ -388,7 +388,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":9600,
 }
 
@@ -401,9 +401,9 @@
 	"Console":"OKconsole",
 	"_IOBase":"armSerial",
 	"vOriginTarget":[350, 0.0, 400],
-	"vSpeedRange":[0, 1000],
+	"vSpeedRange":[0, 1800],
 	"speed":1.0,
-	"vRrange":[15.0, 50.0],
+	"vRmechRange":[200.0, 500.0],
 	
 	{
 		"name":"forbiddenArea",
@@ -440,7 +440,7 @@
 		{
 			"name":"Z",
 			"pRawRange":[-500,100],
-			"pTarget":1.0,
+			"pTarget":0.9,
 			"pOrigin":0.5,
 			"pErr":0.1,
 			"sRawRange":[0,1000],
@@ -453,11 +453,11 @@
 		}
 		{
 			"name":"A2",
-			"pRawRange":[-20,50],
+			"pRawRange":[-30,50],
 		}
 		{
 			"name":"A3",
-			"pRawRange":[45,145],
+			"pRawRange":[45,150],
 		}	
 		{
 			"name":"A4",
@@ -581,7 +581,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":9600,
 	"parity":"N",
 }

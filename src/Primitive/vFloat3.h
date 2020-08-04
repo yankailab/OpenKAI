@@ -111,6 +111,15 @@ struct vFloat3
 		return false;
 	}
 
+	inline bool operator==(vFloat3 r)
+    {
+		IF_F(x != r.x);
+		IF_F(y != r.y);
+		IF_F(z != r.z);
+
+		return true;
+	}
+
 	float len(void)
 	{
 		return sqrt(x*x + y*y + z*z);
@@ -137,6 +146,15 @@ struct vFloat3
 		pv[2] = &z;
 
 		return *pv[i];
+	}
+
+	bool bEaq(vFloat3& v, float d)
+	{
+		IF_F(abs(x - v.x) > d);
+		IF_F(abs(y - v.y) > d);
+		IF_F(abs(z - v.z) > d);
+
+		return true;
 	}
 };
 

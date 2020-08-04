@@ -164,6 +164,14 @@ bool _ActuatorBase::bComplete(void)
 	return true;
 }
 
+bool _ActuatorBase::bComplete(int i)
+{
+	IF_F(i<0 || i>=m_vAxis.size());
+
+	ACTUATOR_AXIS* pA = &m_vAxis[i];
+	return pA->m_p.bComplete();
+}
+
 float _ActuatorBase::getP(int i)
 {
 	IF__(i<0 || i>=m_vAxis.size(), -1);

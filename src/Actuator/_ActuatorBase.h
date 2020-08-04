@@ -131,6 +131,7 @@ public:
 	virtual void setStarget(int i, float nS);
 	virtual void gotoOrigin(void);
 	virtual bool bComplete(void);
+	virtual bool bComplete(int i);
 
 	virtual float getP(int i);
 	virtual float getS(int i);

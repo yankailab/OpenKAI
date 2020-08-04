@@ -13,7 +13,7 @@ namespace kai
 #define HIGH16(x) ((x >> 16) & 0x0000ffff)
 #define LOW16(x) (x & 0x0000ffff)
 #define MAKE32(x,y) (((((uint32_t)x)<<16)&0xffff0000) | y)
-#define EAQ(x,y,z) ((abs(x-y)<z)?true:false)
+#define EAQ(x,y,z) ((abs(x-y)<=z)?true:false)
 
 template <typename T> inline T map(T x, T inMin, T inMax, T outMin, T outMax)
 {

@@ -89,6 +89,10 @@ struct S6H4D_AREA
 		IF_F((m_vZ.x != 0.0) && (vP.z < m_vZ.x));
 		IF_F((m_vZ.y != 0.0) && (vP.z > m_vZ.y));
 
+		vFloat2 vN;
+		vN.init(0.0,0.0);
+		IF_F(m_vX == vN && m_vY == vN && m_vZ == vN);
+
 		return true;
 	}
 };
@@ -106,12 +110,20 @@ public:
 
 protected:
 	bool checkArm(void);
+	bool checkRadius(void);
+	bool checkForbiddenArea(void);
+	bool checkTimeout(void);
+
 	void updatePos(void);
 	void updateSpeed(void);
 	void updateRot(void);
 	void readState(void);
 	void decodeState(void);
 
+	vFloat3 getPos(void);
+	vFloat3 getPosRaw(void);
+
+	void gotoLastValidPos(void);
 	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void stickSpeed(vFloat3 &vM);
 	void stickRot(int iAxis, float r);
@@ -128,6 +140,13 @@ protected:
 	static void* getUpdateThread(void *This)
 	{
 		((_S6H4D*) This)->update();
+		return NULL;
+	}
+
+	void updateR(void);
+	static void* getUpdateThreadR(void* This)
+	{
+		((_S6H4D*) This)->updateR();
 		return NULL;
 	}
 

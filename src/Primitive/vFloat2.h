@@ -89,6 +89,14 @@ struct vFloat2
 		y /= r;
 	}
 
+	inline bool operator==(vFloat2 r)
+    {
+		IF_F(x != r.x);
+		IF_F(y != r.y);
+
+		return true;
+	}
+
 	float mid(void)
 	{
 		return (x + y) * 0.5;
