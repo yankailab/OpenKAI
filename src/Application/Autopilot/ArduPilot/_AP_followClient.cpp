@@ -122,7 +122,7 @@ void _AP_followClient::updateBB(void)
 	vBB.w = pWin->m_vMouse.y + m_bbSize;
 
 	IF_(
-			!m_ieSend.update(m_tStamp) && EAQ(vBB.x, m_vBB.x, m_diff) && EAQ(vBB.y, m_vBB.y, m_diff) && EAQ(vBB.z, m_vBB.z, m_diff) && EAQ(vBB.w, m_vBB.w, m_diff));
+			!m_ieSend.update(m_tStamp) && EQUAL(vBB.x, m_vBB.x, m_diff) && EQUAL(vBB.y, m_vBB.y, m_diff) && EQUAL(vBB.z, m_vBB.z, m_diff) && EQUAL(vBB.w, m_vBB.w, m_diff));
 
 	m_pAL->setBB(vBB);
 	m_vBB = vBB;
@@ -131,7 +131,7 @@ void _AP_followClient::updateBB(void)
 void _AP_followClient::updateAlt(void)
 {
 	IF_(check() < 0);
-	IF_(EAQ(m_alt,0.0,0.01));
+	IF_(EQUAL(m_alt,0.0,0.01));
 
 	m_pAL->setAlt(m_alt);
 	m_alt = 0.0;
@@ -140,7 +140,7 @@ void _AP_followClient::updateAlt(void)
 void _AP_followClient::updateHdg(void)
 {
 	IF_(check() < 0);
-	IF_(EAQ(m_hdg,0.0,0.01));
+	IF_(EQUAL(m_hdg,0.0,0.01));
 
 	m_pAL->setHdg(m_hdg);
 	m_hdg = 0.0;

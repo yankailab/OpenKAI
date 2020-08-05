@@ -33,7 +33,7 @@ struct ACTUATOR_AXIS_PARAM
 	bool bComplete(void)
 	{
 		IF_T(m_v < 0.0);
-		IF_T(EAQ(m_v, m_vTarget, m_vErr));
+		IF_T(EQUAL(m_v, m_vTarget, m_vErr));
 
 		return false;
 	}

@@ -12,11 +12,12 @@ _S6H4D::_S6H4D()
 	m_mode = 1;
 	m_vSpeedRange.init(0.0, 1e5);
 	m_speed = 1.0;
-	m_vOriginTarget.init(350, 0.0, 400);
+	m_vOriginTarget.init(0.0);
 	m_vOrigin.init(0.0);
 	m_vLastValidP.init(0.0);
+	m_bPgoing = false;
+	m_pErr = 0.01;
 
-	m_vRmechRange.init(0.0, 500);
 	m_nMinAxis = 6;
 }
 
@@ -34,7 +35,7 @@ bool _S6H4D::init(void *pKiss)
 	pK->v("vSpeedRange", &m_vSpeedRange);
 	pK->v("speed", &m_speed);
 	pK->v("vOriginTarget", &m_vOriginTarget);
-	pK->v("vRmechRange", &m_vRmechRange);
+	pK->v("pErr", &m_pErr);
 
 	m_vLastValidP.x = m_vAxis[0].m_p.m_vTarget;
 	m_vLastValidP.y = m_vAxis[1].m_p.m_vTarget;
@@ -48,11 +49,15 @@ bool _S6H4D::init(void *pKiss)
 		if (pA->empty())
 			break;
 
-		S6H4D_AREA a;
+		S6H4D_VOL a;
 		a.init();
+		pA->v("type", (int*)&a.m_type);
+		pA->v("bInside", &a.m_bInside);
 		pA->v("vX", &a.m_vX);
 		pA->v("vY", &a.m_vY);
 		pA->v("vZ", &a.m_vZ);
+		pA->v("vC", &a.m_vC);
+		pA->v("vR", &a.m_vR);
 		m_vForbArea.push_back(a);
 	}
 
@@ -100,9 +105,7 @@ void _S6H4D::update(void)
 		this->sleepTime(USEC_1SEC);
 		readState();
 	}
-	//go to the init pos based on newly set origin
-	stickRelease();
-	updatePos();
+	gotoPos(m_vOrigin);
 
 	while (m_bThreadON)
 	{
@@ -110,7 +113,12 @@ void _S6H4D::update(void)
 
 		readState();
 
-		if(checkArm())
+		if(m_bPgoing)
+		{
+			if(getPos().bEqual(m_vPgoing, m_pErr))
+				m_bPgoing = false;
+		}
+		else if(checkArm())
 		{
 			if (m_lastCmdType == actCmd_pos)
 			{
@@ -135,9 +143,7 @@ bool _S6H4D::checkArm(void)
 {
 	IF_F(check() < 0);
 
-	IF_F(!checkRadius());
 	IF_F(!checkForbiddenArea());
-
 	m_vLastValidP = getPos();
 
 	IF_F(!checkTimeout());
@@ -145,33 +151,16 @@ bool _S6H4D::checkArm(void)
 	return true;
 }
 
-bool _S6H4D::checkRadius(void)
-{
-	IF_F(check() < 0);
-
-	vFloat3 vPraw = getPosRaw();
-	vFloat2 rP;	// Radius range based on the mechanical origin
-	rP.x = vPraw.x + m_vOrigin.x;
-	rP.y = vPraw.y + m_vOrigin.y;
-	float r = rP.r();
-
-	IF_T(r >= m_vRmechRange.x && r <= m_vRmechRange.y);
-
-	gotoLastValidPos();
-	return false;
-}
-
 bool _S6H4D::checkForbiddenArea(void)
 {
 	IF_F(check() < 0);
 
-	vFloat3 vPraw = getPosRaw();
-	vPraw += m_vOrigin;
-	for (S6H4D_AREA a : m_vForbArea)
+	vFloat3 vPraw = getPosRaw() + m_vOrigin;
+	for (S6H4D_VOL a : m_vForbArea)
 	{
-		IF_CONT(!a.bInside(vPraw));
+		IF_CONT(a.bValid(vPraw));
 
-		gotoLastValidPos();
+		gotoPos(m_vLastValidP);
 		return false;
 	}
 
@@ -191,14 +180,17 @@ bool _S6H4D::checkTimeout(void)
 	return true;
 }
 
-void _S6H4D::gotoLastValidPos(void)
+void _S6H4D::gotoPos(vFloat3& vP)
 {
 	stickStop();
 	stickRelease();
-	setPtarget(0, m_vLastValidP.x);
-	setPtarget(1, m_vLastValidP.y);
-	setPtarget(2, m_vLastValidP.z);
+	setPtarget(0, vP.x);
+	setPtarget(1, vP.y);
+	setPtarget(2, vP.z);
 	updatePos();
+
+	m_vPgoing = vP;
+	m_bPgoing = true;
 }
 
 vFloat3 _S6H4D::getPos(void)
@@ -237,7 +229,7 @@ void _S6H4D::updatePos(void)
 
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
-	gotoPos(vP, vA, s);
+	armGotoPos(vP, vA, s);
 }
 
 void _S6H4D::updateSpeed(void)
@@ -264,16 +256,6 @@ void _S6H4D::updateRot(void)
 	}
 }
 
-void _S6H4D::gotoPos(vFloat3 &vP, vFloat3 &vR, float speed)
-{
-	IF_(check() < 0);
-
-	S6H4D_CMD_MOV cmd;
-	cmd.init('1', 0);
-	cmd.set(vP, vR, speed);
-	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
-}
-
 void _S6H4D::stickSpeed(vFloat3 &vM)
 {
 	IF_(check() < 0);
@@ -283,16 +265,9 @@ void _S6H4D::stickSpeed(vFloat3 &vM)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = 100;
-	cmd.m_b[4] =
-			(vM.x >= 0.0) ?
-					constrain<float>(128 + (vM.x - 0.5) * 255, 0, 255) : 128;
-	cmd.m_b[5] =
-			(vM.y >= 0.0) ?
-					constrain<float>(128 + (vM.y - 0.5) * 255, 0, 255) : 128;
-	cmd.m_b[6] =
-			(vM.z >= 0.0) ?
-					constrain<float>(128 + (vM.z - 0.5) * 255, 0, 255) : 128;
-
+	cmd.m_b[4] = (vM.x >= 0.0) ? constrain<float>(128 + (vM.x - 0.5) * 255, 0, 255) : 128;
+	cmd.m_b[5] = (vM.y >= 0.0) ? constrain<float>(128 + (vM.y - 0.5) * 255, 0, 255) : 128;
+	cmd.m_b[6] = (vM.z >= 0.0) ? constrain<float>(128 + (vM.z - 0.5) * 255, 0, 255) : 128;
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -306,9 +281,7 @@ void _S6H4D::stickRot(int iAxis, float r)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = iAxis;
-	cmd.m_b[4] =
-			(r >= 0.0) ? constrain<float>(128 + (r - 0.5) * 255, 0, 255) : 128;
-
+	cmd.m_b[4] = (r >= 0.0) ? constrain<float>(128 + (r - 0.5) * 255, 0, 255) : 128;
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -336,6 +309,16 @@ void _S6H4D::stickRelease(void)
 	cmd.m_b[1] = 30;
 	cmd.m_b[2] = 7;
 	cmd.m_b[3] = 200;
+	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
+}
+
+void _S6H4D::armGotoPos(vFloat3 &vP, vFloat3 &vR, float speed)
+{
+	IF_(check() < 0);
+
+	S6H4D_CMD_MOV cmd;
+	cmd.init('1', 0);
+	cmd.set(vP, vR, speed);
 	m_pIO->write(cmd.m_b, S6H4D_CMD_N);
 }
 
@@ -435,31 +418,19 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vAxis[0].m_p.setRaw(
-				0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder)
-						- m_vOriginTarget.x);
-		m_vAxis[1].m_p.setRaw(
-				0.1 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder)
-						- m_vOriginTarget.y);
-		m_vAxis[2].m_p.setRaw(
-				0.1 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder)
-						- m_vOriginTarget.z);
+		m_vAxis[0].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x);
+		m_vAxis[1].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y);
+		m_vAxis[2].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
 		break;
 	case 1:
-		m_vAxis[3].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[4].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[5].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[3].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[4].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[5].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 2:
-		m_vAxis[6].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[7].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[8].m_p.setRaw(
-				0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[6].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
+		m_vAxis[7].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
+		m_vAxis[8].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
 		break;
 	case 3:
 		m_vOrigin.x = 0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder);
@@ -481,13 +452,14 @@ void _S6H4D::decodeState(void)
 void _S6H4D::draw(void)
 {
 	addMsg(	"vOriginTarget = (" + f2str(m_vOriginTarget.x) + ", "
-					+ f2str(m_vOriginTarget.y) + ", " + f2str(m_vOriginTarget.z)
-					+ ")", 1);
-	addMsg(	"vOrigin = (" + f2str(m_vOrigin.x) + ", " + f2str(m_vOrigin.y)
-					+ ", " + f2str(m_vOrigin.z) + ")", 1);
-
-	addMsg(	"vLastValidP = (" + f2str(m_vLastValidP.x) + ", " + f2str(m_vLastValidP.y)
-					+ ", " + f2str(m_vLastValidP.z) + ")", 1);
+								+ f2str(m_vOriginTarget.y) + ", "
+								+ f2str(m_vOriginTarget.z) + ")", 1);
+	addMsg(	"vOrigin = (" + f2str(m_vOrigin.x) + ", "
+						  + f2str(m_vOrigin.y) + ", "
+						  + f2str(m_vOrigin.z) + ")", 1);
+	addMsg(	"vLastValidP = (" + f2str(m_vLastValidP.x) + ", "
+							  + f2str(m_vLastValidP.y) + ", "
+							  + f2str(m_vLastValidP.z) + ")", 1);
 
 	this->_ActuatorBase::draw();
 

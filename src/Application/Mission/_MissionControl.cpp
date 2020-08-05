@@ -12,7 +12,7 @@ namespace kai
 
 _MissionControl::_MissionControl()
 {
-	m_iMission = 0;
+	m_iM = 0;
 }
 
 _MissionControl::~_MissionControl()
@@ -68,9 +68,9 @@ bool _MissionControl::init(void* pKiss)
 
 	string startMission = "";
 	F_INFO(pK->v("startMission", &startMission));
-	m_iMission = getMissionIdx(startMission);
-	if(m_iMission < 0)
-		m_iMission = 0;
+	m_iM = getMissionIdx(startMission);
+	if(m_iM < 0)
+		m_iM = 0;
 
 	return true;
 }
@@ -95,7 +95,7 @@ void _MissionControl::update(void)
 	{
 		this->autoFPSfrom();
 
-		Mission* pMission = m_vMission[m_iMission].m_pInst;
+		Mission* pMission = m_vMission[m_iM].m_pInst;
 		if(pMission->update())
 		{
 			transit(pMission->m_nextMission);
@@ -105,29 +105,37 @@ void _MissionControl::update(void)
 	}
 }
 
-void _MissionControl::transit(const string& nextMissionName)
+void _MissionControl::transit(void)
 {
-	int iNext = getMissionIdx(nextMissionName);
+	Mission* pM = m_vMission[m_iM].m_pInst;
+	NULL_(pM);
+
+	transit(pM->m_nextMission);
+}
+
+void _MissionControl::transit(const string& mName)
+{
+	int iNext = getMissionIdx(mName);
 	transit(iNext);
 }
 
-void _MissionControl::transit(int iNextMission)
+void _MissionControl::transit(int iM)
 {
-	IF_(iNextMission < 0);
-	IF_(iNextMission >= m_vMission.size());
-	IF_(iNextMission == m_iMission);
+	IF_(iM < 0);
+	IF_(iM >= m_vMission.size());
+	IF_(iM == m_iM);
 
-	Mission* pMission = m_vMission[m_iMission].m_pInst;
+	Mission* pMission = m_vMission[m_iM].m_pInst;
 	pMission->reset();
 
-	m_iMission = iNextMission;
+	m_iM = iM;
 }
 
-int _MissionControl::getMissionIdx(const string& missionName)
+int _MissionControl::getMissionIdx(const string& mName)
 {
 	for(unsigned int i=0; i<m_vMission.size(); i++)
 	{
-		if(((Kiss*)m_vMission[i].m_pInst->m_pKiss)->m_name == missionName)
+		if(((Kiss*)m_vMission[i].m_pInst->m_pKiss)->m_name == mName)
 			return i;
 	}
 
@@ -136,22 +144,23 @@ int _MissionControl::getMissionIdx(const string& missionName)
 
 Mission* _MissionControl::getMission(void)
 {
-	IF_N(m_iMission >= m_vMission.size());
-	IF_N(m_iMission < 0);
-	return m_vMission[m_iMission].m_pInst;
+	IF_N(m_iM >= m_vMission.size());
+	IF_N(m_iM < 0);
+	return m_vMission[m_iM].m_pInst;
 }
 
 int _MissionControl::getMissionIdx(void)
 {
-	return m_iMission;
+	return m_iM;
 }
 
 string _MissionControl::getMissionName(void)
 {
-	IF_N(m_iMission >= m_vMission.size());
-	IF_N(m_iMission < 0);
-	string mName = ((Kiss*)m_vMission[m_iMission].m_pInst->m_pKiss)->m_name;
-	return mName;
+	IF_N(m_iM >= m_vMission.size());
+	IF_N(m_iM < 0);
+
+	string name = ((Kiss*)m_vMission[m_iM].m_pInst->m_pKiss)->m_name;
+	return name;
 }
 
 MISSION_TYPE _MissionControl::getMissionType(void)
@@ -171,10 +180,10 @@ void _MissionControl::draw(void)
 	addMsg("nMission: "+i2str(m_vMission.size()),1);
 	IF_(m_vMission.size() <= 0);
 
-	addMsg("iMission: "+i2str(m_iMission),1);
-	IF_(m_iMission < 0);
+	addMsg("iMission: "+i2str(m_iM),1);
+	IF_(m_iM < 0);
 
-	Mission* pMB = m_vMission[m_iMission].m_pInst;
+	Mission* pMB = m_vMission[m_iM].m_pInst;
 	addMsg("Current mission: " + ((Kiss*)pMB->m_pKiss)->m_name,1);
 
 	if(pMB->type() == mission_wp)

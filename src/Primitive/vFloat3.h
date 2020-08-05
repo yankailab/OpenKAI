@@ -148,13 +148,18 @@ struct vFloat3
 		return *pv[i];
 	}
 
-	bool bEaq(vFloat3& v, float d)
+	bool bEqual(vFloat3& v, float d)
 	{
 		IF_F(abs(x - v.x) > d);
 		IF_F(abs(y - v.y) > d);
 		IF_F(abs(z - v.z) > d);
 
 		return true;
+	}
+
+	float r(void)
+	{
+		return sqrt((x*x) + (y*y) + (z*z));
 	}
 };
 

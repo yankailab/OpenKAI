@@ -11,6 +11,7 @@ _AProver_picking::_AProver_picking()
 	m_pDrive = NULL;
 	m_pArm = NULL;
 	m_rcMode.init();
+	m_pArmMC = NULL;
 }
 
 _AProver_picking::~_AProver_picking()
@@ -61,6 +62,11 @@ bool _AProver_picking::init(void* pKiss)
 	m_pArm = (_PickingArm*)pK->getInst(iName);
 	NULL_Fl(m_pArm, iName + ": not found");
 
+	iName = "";
+	pK->v("_MissionControlArm", &iName);
+	m_pArmMC = (_MissionControl*)pK->getInst(iName);
+	NULL_Fl(m_pArmMC, iName + ": not found");
+
 	return true;
 }
 
@@ -84,6 +90,7 @@ int _AProver_picking::check(void)
 	NULL__(m_pAP->m_pMav, -1);
 //	NULL__(m_pDrive, -1);
 	NULL__(m_pArm, -1);
+	NULL__(m_pArmMC, -1);
 
 	return this->_MissionBase::check();
 }
@@ -163,6 +170,8 @@ bool _AProver_picking::updatePicking(void)
 	}
 
 	string mission = m_pMC->getMissionName();
+	string armMission = m_pArmMC->getMissionName();
+
 	if(mission == "MANUAL")
 	{
 		vFloat3 vM;
@@ -171,7 +180,7 @@ bool _AProver_picking::updatePicking(void)
 		vM.y = m_vRC[1].v();
 		vM.z = m_vRC[2].v();
 
-		m_pArm->setMode(paMode_external);
+		m_pArmMC->transit("EXTERNAL");
 		m_pArm->move(vM);
 
 		vM.init(-1.0);
@@ -182,7 +191,7 @@ bool _AProver_picking::updatePicking(void)
 	}
 	else	//AUTOPICK
 	{
-		m_pArm->setMode(paMode_auto);
+		m_pArmMC->transit("RECOVER");
 
 	}
 

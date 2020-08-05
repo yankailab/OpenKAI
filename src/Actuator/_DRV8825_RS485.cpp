@@ -94,7 +94,7 @@ void _DRV8825_RS485::updateMove(void)
 
 	if(m_bMoving)
 	{
-		IF_(!EAQ(m_pA->m_p.m_v, m_pTarget, m_pA->m_p.m_vErr));
+		IF_(!EQUAL(m_pA->m_p.m_v, m_pTarget, m_pA->m_p.m_vErr));
 		m_bMoving = false;
 	}
 

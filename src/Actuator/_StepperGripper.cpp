@@ -70,9 +70,9 @@ void _StepperGripper::updateMove(void)
 	IF_(check()<0);
 	IF_(m_pA->m_p.m_vRaw == FLT_MAX);
 
-	if(EAQ(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
+	if(EQUAL(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
 		m_bState = true;
-	else if(EAQ(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
+	else if(EQUAL(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
 		m_bState = false;
 
 	IF_(m_bState == m_bOpen);
@@ -84,6 +84,11 @@ void _StepperGripper::updateMove(void)
 void _StepperGripper::grip(bool bOpen)
 {
 	m_bOpen = bOpen;
+}
+
+bool _StepperGripper::bGrip(void)
+{
+	return m_bState;
 }
 
 void _StepperGripper::draw(void)

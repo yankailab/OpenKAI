@@ -20,21 +20,6 @@
 namespace kai
 {
 
-enum PICKINGARM_MODE
-{
-	paMode_unknown = 0,
-	paMode_external = 1,
-	paMode_auto = 2,
-};
-
-enum PICKINGARM_STATE
-{
-	pa_standby,
-	pa_search,
-	pa_catch,
-	pa_recover,
-};
-
 struct PICKINGARM_CLASS
 {
 	int m_iClass;
@@ -57,12 +42,19 @@ public:
 	void draw(void);
 	int check(void);
 
-	void setMode(PICKINGARM_MODE m);
 	void move(vFloat3& vM);
 	void rotate(vFloat3& vR);
 	void grip(bool bOpen);
 
 private:
+	bool recover(void);
+	bool follow(void);
+	bool grip(void);
+	bool ascend(void);
+	bool deliver(void);
+	bool descend(void);
+	bool drop(void);
+
 	void updateArm(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -76,8 +68,6 @@ public:
 	_StepperGripper* m_pG;
 	_DistSensorBase* m_pD;
 	_Universe* m_pU;
-	PICKINGARM_MODE m_mode;
-	PICKINGARM_STATE m_state;
 
 	float	m_baseAngle;
 	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
@@ -85,6 +75,11 @@ public:
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
+	float	m_dZgrip;
+
+	vFloat3 m_vPrecover;
+	vFloat3 m_vPdeliver;
+	vFloat3 m_vPdescend;
 
 	vFloat3 m_vM;
 	vFloat3 m_vR;

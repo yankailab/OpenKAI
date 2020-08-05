@@ -37,9 +37,11 @@ protected:
 public:
 	_AP_base* 	m_pAP;
 	_AProver_drive* m_pDrive;
-	RC_CHANNEL m_rcMode;
 
 	_PickingArm* m_pArm;
+	_MissionControl* m_pArmMC;
+
+	RC_CHANNEL m_rcMode;
 	vector<RC_CHANNEL>	m_vRC; //x,y,z,yaw,gripper
 
 };

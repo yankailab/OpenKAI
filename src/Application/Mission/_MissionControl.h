@@ -49,9 +49,10 @@ public:
 	string getMissionName(void);
 	int getMissionIdx(void);
 	MISSION_TYPE getMissionType(void);
-	int getMissionIdx(const string& missionName);
-	void transit(const string& nextMissionName);
-	void transit(int iNextMission);
+	int getMissionIdx(const string& mName);
+	void transit(void);
+	void transit(const string& mName);
+	void transit(int iM);
 
 private:
 	void update(void);
@@ -62,7 +63,7 @@ private:
 	}
 
 	vector<MISSION_INST> m_vMission;
-	unsigned int m_iMission;
+	unsigned int m_iM;	//current mission
 
 };
 

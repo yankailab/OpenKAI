@@ -24,6 +24,7 @@ public:
 	void draw(void);
 
 	void grip(bool bOpen);
+	bool bGrip(void);
 
 private:
 	void updateMove(void);

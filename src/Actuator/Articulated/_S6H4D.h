@@ -67,32 +67,66 @@ struct S6H4D_CMD_STATE
 	}
 };
 
-struct S6H4D_AREA
+enum S6H4D_VOL_TYPE
 {
+	vol_box = 0,
+	vol_ball = 1,
+	vol_cylinder = 2,
+};
+
+struct S6H4D_VOL
+{
+	S6H4D_VOL_TYPE m_type;
+	bool	m_bInside;	//true: inside valid
+
 	vFloat2 m_vX;
 	vFloat2 m_vY;
 	vFloat2 m_vZ;
 
+	vFloat3 m_vC;
+	vFloat2 m_vR;
+
 	void init(void)
 	{
+		m_type = vol_ball;
+		m_bInside = false;
 		m_vX.init(0.0);
 		m_vY.init(0.0);
 		m_vZ.init(0.0);
+		m_vC.init(0.0);
+		m_vR.init(0.0);
 	}
 
-	bool bInside(vFloat3& vP)
+	bool bValid(vFloat3& vP)
 	{
-		IF_F((m_vX.x != 0.0) && (vP.x < m_vX.x));
-		IF_F((m_vX.y != 0.0) && (vP.x > m_vX.y));
-		IF_F((m_vY.x != 0.0) && (vP.y < m_vY.x));
-		IF_F((m_vY.y != 0.0) && (vP.y > m_vY.y));
-		IF_F((m_vZ.x != 0.0) && (vP.z < m_vZ.x));
-		IF_F((m_vZ.y != 0.0) && (vP.z > m_vZ.y));
+		bool bInside = true;
 
-		vFloat2 vN;
-		vN.init(0.0,0.0);
-		IF_F(m_vX == vN && m_vY == vN && m_vZ == vN);
+		if(m_type == vol_box)
+		{
+			if(vP.x < m_vX.x)bInside = false;
+			if(vP.x > m_vX.y)bInside = false;
+			if(vP.y < m_vY.x)bInside = false;
+			if(vP.y > m_vY.y)bInside = false;
+			if(vP.z < m_vZ.x)bInside = false;
+			if(vP.z > m_vZ.y)bInside = false;
+		}
+		else if(m_type == vol_ball)
+		{
+			vFloat3 vR = vP - m_vC;
+			float r = vR.r();
+			if(r < m_vR.x)bInside = false;
+			if(r > m_vR.y)bInside = false;
+		}
+		else if(m_type == vol_cylinder)
+		{
+			vFloat3 vR = vP - m_vC;
+			vR.z = 0.0;
+			float r = vR.r();
+			if(r < m_vR.x)bInside = false;
+			if(r > m_vR.y)bInside = false;
+		}
 
+		IF_F(m_bInside != bInside);
 		return true;
 	}
 };
@@ -110,7 +144,6 @@ public:
 
 protected:
 	bool checkArm(void);
-	bool checkRadius(void);
 	bool checkForbiddenArea(void);
 	bool checkTimeout(void);
 
@@ -120,16 +153,16 @@ protected:
 	void readState(void);
 	void decodeState(void);
 
+	void gotoPos(vFloat3& vP);
 	vFloat3 getPos(void);
 	vFloat3 getPosRaw(void);
 
-	void gotoLastValidPos(void);
-	void gotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void stickSpeed(vFloat3 &vM);
 	void stickRot(int iAxis, float r);
 	void stickStop(void);
 	void stickRelease(void);
 
+	void armGotoPos(vFloat3 &vP, vFloat3& vR, float speed);
 	void armSetOrigin(vFloat3 &vP);
 	void armSetMode(int mode);
 	void armPause(void);
@@ -140,13 +173,6 @@ protected:
 	static void* getUpdateThread(void *This)
 	{
 		((_S6H4D*) This)->update();
-		return NULL;
-	}
-
-	void updateR(void);
-	static void* getUpdateThreadR(void* This)
-	{
-		((_S6H4D*) This)->updateR();
 		return NULL;
 	}
 
@@ -162,9 +188,11 @@ public:
 	vFloat3 m_vOrigin;
 	vFloat3 m_vLastValidP;
 
-	vFloat2 m_vRmechRange;
-	vector<S6H4D_AREA> m_vForbArea;
+	bool m_bPgoing;
+	vFloat3 m_vPgoing;
+	float m_pErr;
 
+	vector<S6H4D_VOL> m_vForbArea;
 };
 
 }

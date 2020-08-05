@@ -193,25 +193,25 @@
 		}
 		{
 			"bInst":1,
-			"name":"MANUAL",
+			"name":"EXTERNAL",
 			"class":"Mission",
-			"nextMission":"STANDBY",
+			"nextMission":"EXTERNAL",
 		}
 		{
 			"bInst":1,
 			"name":"RECOVER",
 			"class":"Mission",
-			"nextMission":"SEARCH",
+			"nextMission":"FOLLOW",
 		}
 		{
 			"bInst":1,
-			"name":"SEARCH",
+			"name":"FOLLOW",
 			"class":"Mission",
-			"nextMission":"CATCH",
+			"nextMission":"GRIP",
 		}
 		{
 			"bInst":1,
-			"name":"CATCH",
+			"name":"GRIP",
 			"class":"Mission",
 			"nextMission":"ASCEND",
 		}
@@ -365,10 +365,10 @@
 	"_StepperGripper":"gripper",
 	"_DistSensorBase":"TOFsense",
 	"_Universe":"universe",
-	"mode":0,
 	"PIDx":"PIDx",
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
+	"dZgrip":0.05,
 
 	{
 		"name":"/class",
@@ -401,18 +401,41 @@
 	"Console":"OKconsole",
 	"_IOBase":"armSerial",
 	"vOriginTarget":[350, 0.0, 400],
-	"vSpeedRange":[0, 1800],
+	"vSpeedRange":[0, 2000],
 	"speed":1.0,
-	"vRmechRange":[200.0, 500.0],
 	
 	{
 		"name":"forbiddenArea",
 
 		{
-			"name":"robot",
-			"vX":[0, 0],
-			"vY":[0, 0],
-			"vZ":[0, 0],
+			"name":"roverBody",
+			"type":0,
+			"bInside":0,
+			"vX":[-500, 200],
+			"vY":[-200, 500],
+			"vZ":[-350, 200],
+		}
+		{
+			"name":"armMechnicalRange",
+			"type":1,
+			"bInside":1,
+			"vC":[0, 0, 0],
+			"vR":[150, 600],
+		}
+		{
+			"name":"armBaseRange",
+			"type":2,
+			"bInside":1,
+			"vC":[0, 0, 0],
+			"vR":[150, 600],
+		}
+		{
+			"name":"boxLim",
+			"type":0,
+			"bInside":0,
+			"vX":[-1000, -200],
+			"vY":[-1000, 1000],
+			"vZ":[-1000, 1000],
 		}
 	}
 	
@@ -421,7 +444,7 @@
 		
 		{
 			"name":"X",
-			"pRawRange":[-150,150],
+			"pRawRange":[-1000,1000],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
@@ -430,7 +453,7 @@
 		}
 		{
 			"name":"Y",
-			"pRawRange":[-250,250],
+			"pRawRange":[-1000,1000],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
@@ -448,8 +471,7 @@
 		}
 		{
 			"name":"A1",
-			"/pRawRange":[-130,130],
-			"pRawRange":[-60,60],
+			"pRawRange":[-130,130],
 		}
 		{
 			"name":"A2",
