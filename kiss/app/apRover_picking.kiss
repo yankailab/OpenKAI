@@ -157,19 +157,19 @@
 			"bInst":1,
 			"name":"MANUAL",
 			"class":"Mission",
-			"nextMission":"STANDBY",
+			"nextMission":"MANUAL",
 		}
 		{
 			"bInst":1,
 			"name":"AUTOPICK",
 			"class":"Mission",
-			"nextMission":"STANDBY",
+			"nextMission":"AUTOPICK",
 		}
 		{
 			"bInst":1,
 			"name":"AUTO",
 			"class":"Mission",
-			"nextMission":"STANDBY",
+			"nextMission":"AUTO",
 		}
 	}
 }
@@ -185,12 +185,6 @@
 
 	{
 		"name":"mission",
-		{
-			"bInst":1,
-			"name":"STANDBY",
-			"class":"Mission",
-			"nextMission":"STANDBY",
-		}
 		{
 			"bInst":1,
 			"name":"EXTERNAL",
@@ -249,7 +243,7 @@
 	"bInst":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
-	"/Console":"OKconsole",
+	"Console":"OKconsole",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"apType":1,
@@ -378,7 +372,6 @@
 		}
 	}			
 }
-
 
 {
 	"name":"armSerial",

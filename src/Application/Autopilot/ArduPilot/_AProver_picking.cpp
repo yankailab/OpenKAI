@@ -119,7 +119,6 @@ void _AProver_picking::update(void)
 bool _AProver_picking::updateDrive(void)
 {
 	IF_F(check() < 0);
-	IF_F(!bActive());
 
 	bool bArmed = m_pAP->bApArmed();
 	uint32_t apMode = m_pAP->getApMode();
@@ -128,26 +127,23 @@ bool _AProver_picking::updateDrive(void)
 
 //	IF_F(!bArmed);
 //	IF_F(apMode == AP_ROVER_HOLD);
-//	IF_F(pwmMode == UINT16_MAX);
+	IF_F(pwmMode == UINT16_MAX);
 
-//	if(mission == "STANDBY")
-//	{
-		m_rcMode.pwm(pwmMode);
-		int iMode = m_rcMode.i();
+	m_rcMode.pwm(pwmMode);
+	int iMode = m_rcMode.i();
 
-		switch(iMode)
-		{
-		case 0:
-			m_pMC->transit("MANUAL");
-			break;
-		case 1:
-			m_pMC->transit("AUTOPICK");
-			break;
-		case 2:
-			m_pMC->transit("AUTO");
-			break;
-		}
-//	}
+	switch(iMode)
+	{
+	case 0:
+		m_pMC->transit("MANUAL");
+		break;
+	case 1:
+		m_pMC->transit("AUTOPICK");
+		break;
+	case 2:
+		m_pMC->transit("AUTO");
+		break;
+	}
 
 	//m_pDrive->setSpeed(nSpeed);
 
@@ -157,7 +153,6 @@ bool _AProver_picking::updateDrive(void)
 bool _AProver_picking::updatePicking(void)
 {
 	IF_F(check() < 0);
-	IF_F(!bActive());
 
 	int i;
 
@@ -182,16 +177,16 @@ bool _AProver_picking::updatePicking(void)
 
 		m_pArmMC->transit("EXTERNAL");
 		m_pArm->move(vM);
-
-		vM.init(-1.0);
-		vM.x = m_vRC[3].v();
-//		m_pArm->rotate(vM);
-
 		m_pArm->grip((m_vRC[4].i())?false:true);
+
+//		vM.init(-1.0);
+//		vM.x = m_vRC[3].v();
+//		m_pArm->rotate(vM);
 	}
 	else	//AUTOPICK
 	{
-		m_pArmMC->transit("RECOVER");
+		if(armMission == "EXTERNAL")
+			m_pArmMC->transit("RECOVER");
 
 	}
 

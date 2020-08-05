@@ -12,7 +12,6 @@ _ActuatorBase::_ActuatorBase()
 	m_bFeedback = true;
 	m_nMinAxis = 1;
 	m_bMoving = false;
-	m_pTarget = 0;
 
 	m_lastCmdType = actCmd_unknown;
 	m_tLastCmd = 0;
@@ -47,31 +46,26 @@ bool _ActuatorBase::init(void* pKiss)
 
 		pA->v("p", &a.m_p.m_v);
 		pA->v("pTarget", &a.m_p.m_vTarget);
-		pA->v("pRaw", &a.m_p.m_vRaw);
 		pA->v("pErr", &a.m_p.m_vErr);
 		pA->v("pRawRange", &a.m_p.m_vRawRange);
 
 		pA->v("s", &a.m_s.m_v);
 		pA->v("sTarget", &a.m_s.m_vTarget);
-		pA->v("sRaw", &a.m_s.m_vRaw);
 		pA->v("sErr", &a.m_s.m_vErr);
 		pA->v("sRawRange", &a.m_s.m_vRawRange);
 
 		pA->v("a", &a.m_a.m_v);
 		pA->v("aTarget", &a.m_a.m_vTarget);
-		pA->v("aRaw", &a.m_a.m_vRaw);
 		pA->v("aErr", &a.m_a.m_vErr);
 		pA->v("aRawRange", &a.m_a.m_vRawRange);
 
 		pA->v("b", &a.m_b.m_v);
 		pA->v("bTarget", &a.m_b.m_vTarget);
-		pA->v("bRaw", &a.m_b.m_vRaw);
 		pA->v("bErr", &a.m_b.m_vErr);
 		pA->v("bRawRange", &a.m_b.m_vRawRange);
 
 		pA->v("c", &a.m_c.m_v);
 		pA->v("cTarget", &a.m_c.m_vTarget);
-		pA->v("cRaw", &a.m_c.m_vRaw);
 		pA->v("cErr", &a.m_c.m_vErr);
 		pA->v("cRawRange", &a.m_c.m_vRawRange);
 
@@ -190,14 +184,14 @@ float _ActuatorBase::getPraw(int i)
 {
 	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
 
-	return m_vAxis[i].m_p.m_vRaw;
+	return m_vAxis[i].m_p.getRaw();
 }
 
 float _ActuatorBase::getSraw(int i)
 {
 	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
 
-	return m_vAxis[i].m_s.m_vRaw;
+	return m_vAxis[i].m_s.getRaw();
 }
 
 void _ActuatorBase::draw(void)
@@ -212,7 +206,7 @@ void _ActuatorBase::draw(void)
 		addMsg(pA->m_name, 1);
 		addMsg("p=" + f2str(pA->m_p.m_v) +
 				", pT=" + f2str(pA->m_p.m_vTarget) +
-				", pR=" + f2str(pA->m_p.m_vRaw) +
+				", pR=" + f2str(pA->m_p.getRaw()) +
 				", pRange=[" + f2str(pA->m_p.m_vRawRange.x) + ", " + f2str(pA->m_p.m_vRawRange.y) + "]" +
 				", pO=" + f2str(pA->m_pOrigin) +
 				", pE=" + f2str(pA->m_p.m_vErr)
@@ -220,28 +214,28 @@ void _ActuatorBase::draw(void)
 
 		addMsg("s=" + f2str(pA->m_s.m_v) +
 				", sT=" + f2str(pA->m_s.m_vTarget) +
-				", sR=" + f2str(pA->m_s.m_vRaw) +
+				", sR=" + f2str(pA->m_s.getRaw()) +
 				", sRange=[" + f2str(pA->m_s.m_vRawRange.x) + ", " + f2str(pA->m_s.m_vRawRange.y) + "]" +
 				", sE=" + f2str(pA->m_s.m_vErr)
 				, 1);
 
 		addMsg("a=" + f2str(pA->m_a.m_v) +
 				", aT=" + f2str(pA->m_a.m_vTarget) +
-				", aR=" + f2str(pA->m_a.m_vRaw) +
+				", aR=" + f2str(pA->m_a.getRaw()) +
 				", aRange=[" + f2str(pA->m_a.m_vRawRange.x) + ", " + f2str(pA->m_a.m_vRawRange.y) + "]" +
 				", aE=" + f2str(pA->m_a.m_vErr)
 				, 1);
 
 		addMsg("b=" + f2str(pA->m_b.m_v) +
 				", bT=" + f2str(pA->m_b.m_vTarget) +
-				", bR=" + f2str(pA->m_b.m_vRaw) +
+				", bR=" + f2str(pA->m_b.getRaw()) +
 				", bRange=[" + f2str(pA->m_b.m_vRawRange.x) + ", " + f2str(pA->m_b.m_vRawRange.y) + "]" +
 				", bE=" + f2str(pA->m_b.m_vErr)
 				, 1);
 
 		addMsg("c=" + f2str(pA->m_c.m_v) +
 				", cT=" + f2str(pA->m_c.m_vTarget) +
-				", cR=" + f2str(pA->m_c.m_vRaw) +
+				", cR=" + f2str(pA->m_c.getRaw()) +
 				", cRange=[" + f2str(pA->m_c.m_vRawRange.x) + ", " + f2str(pA->m_c.m_vRawRange.y) + "]" +
 				", cE=" + f2str(pA->m_c.m_vErr)
 				, 1);

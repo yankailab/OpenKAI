@@ -27,7 +27,7 @@ public:
 
 protected:
 	bool setDistPerRound(int32_t dpr);
-	bool setPos(float p);
+	bool setPos(void);
 	bool setSpeed(void);
 	bool setAccel(void);
 	bool setBrake(void);

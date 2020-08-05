@@ -68,7 +68,7 @@ void _StepperGripper::update(void)
 void _StepperGripper::updateMove(void)
 {
 	IF_(check()<0);
-	IF_(m_pA->m_p.m_vRaw == FLT_MAX);
+	IF_(!m_pA->m_p.bValid());
 
 	if(EQUAL(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
 		m_bState = true;

@@ -17,17 +17,15 @@ struct ACTUATOR_AXIS_PARAM
 {
 	float m_v;
 	float m_vTarget;
-	float m_vRaw;
 	float m_vErr;
 	vFloat2 m_vRawRange;
 
 	void init(void)
 	{
 		m_v = -1.0;
-		m_vTarget = 0.0;
-		m_vRawRange.init(0.0);
-		m_vRaw = FLT_MAX;
+		m_vTarget = -1.0;
 		m_vErr = 0.0;
+		m_vRawRange.init(0.0);
 	}
 
 	bool bComplete(void)
@@ -38,7 +36,7 @@ struct ACTUATOR_AXIS_PARAM
 		return false;
 	}
 
-	bool bNormal(void)
+	bool bValid(void)
 	{
 		IF_F(m_v < 0.0);
 		IF_F(m_v > 1.0);
@@ -48,25 +46,28 @@ struct ACTUATOR_AXIS_PARAM
 
 	void setTarget(float nV)
 	{
-		nV = constrain(nV, -1.0f, 1.0f);
-		m_vTarget = nV;
+		m_vTarget = constrain(nV, -1.0f, 1.0f);
+	}
+
+	void setTargetRaw(float rV)
+	{
+		float v = (float) (rV - m_vRawRange.x) / (float) m_vRawRange.len();
+		m_vTarget = constrain(v, -1.0f, 1.0f);
 	}
 
 	void set(float nV)
 	{
 		m_v = nV;
-		m_vRaw = m_v * m_vRawRange.d() + m_vRawRange.x;
 	}
 
 	void setRaw(float rV)
 	{
-		m_vRaw = rV;
-		m_v = (float) (m_vRaw - m_vRawRange.x) / (float) m_vRawRange.len();
+		m_v = (float) (rV - m_vRawRange.x) / (float) m_vRawRange.len();
 	}
 
-	float getRaw(float nV)
+	float getRaw(void)
 	{
-		return nV * m_vRawRange.d() + m_vRawRange.x;
+		return m_v * m_vRawRange.d() + m_vRawRange.x;
 	}
 
 	float getTargetRaw(void)
@@ -101,11 +102,6 @@ struct ACTUATOR_AXIS
 	void gotoOrigin(void)
 	{
 		m_p.setTarget(m_pOrigin);
-	}
-
-	bool bNormal(void)
-	{
-		return m_p.bNormal();
 	}
 };
 
@@ -154,7 +150,6 @@ public:
 
 	bool m_bFeedback;
 	bool m_bMoving;
-	float m_pTarget;
 
 	ACTUATOR_CMD_TYPE m_lastCmdType;
 	uint64_t m_tLastCmd;

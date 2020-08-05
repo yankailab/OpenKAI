@@ -15,7 +15,6 @@ _S6H4D::_S6H4D()
 	m_vOriginTarget.init(0.0);
 	m_vOrigin.init(0.0);
 	m_vLastValidP.init(0.0);
-	m_bPgoing = false;
 	m_pErr = 0.01;
 
 	m_nMinAxis = 6;
@@ -113,10 +112,10 @@ void _S6H4D::update(void)
 
 		readState();
 
-		if(m_bPgoing)
+		if(m_bMoving)
 		{
 			if(getPos().bEqual(m_vPgoing, m_pErr))
-				m_bPgoing = false;
+				m_bMoving = false;
 		}
 		else if(checkArm())
 		{
@@ -190,7 +189,7 @@ void _S6H4D::gotoPos(vFloat3& vP)
 	updatePos();
 
 	m_vPgoing = vP;
-	m_bPgoing = true;
+	m_bMoving = true;
 }
 
 vFloat3 _S6H4D::getPos(void)
@@ -206,9 +205,9 @@ vFloat3 _S6H4D::getPos(void)
 vFloat3 _S6H4D::getPosRaw(void)
 {
 	vFloat3 vP;
-	vP.x = m_vAxis[0].m_p.m_vRaw;
-	vP.y = m_vAxis[1].m_p.m_vRaw;
-	vP.z = m_vAxis[2].m_p.m_vRaw;
+	vP.x = m_vAxis[0].m_p.getRaw();
+	vP.y = m_vAxis[1].m_p.getRaw();
+	vP.z = m_vAxis[2].m_p.getRaw();
 
 	return vP;
 }

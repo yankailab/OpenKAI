@@ -20,12 +20,12 @@ _PickingArm::_PickingArm()
 	m_pU = NULL;
 
 	m_baseAngle = 0.0;
-	m_vP.init();
 	m_vP.x = 0.5;
 	m_vP.y = 0.5;
-	m_vTargetP.init();
+	m_vP.z = 0.0;
 	m_vTargetP.x = 0.5;
 	m_vTargetP.y = 0.5;
+	m_vTargetP.z = 0.0;
 	m_dZgrip = 0.0;
 
 	m_pXpid = NULL;
@@ -153,10 +153,7 @@ void _PickingArm::updateArm(void)
 	string mission = m_pMC->getMissionName();
 	bool bTransit = false;
 
-	if(mission == "STANDBY")
-	{
-	}
-	else if(mission == "EXTERNAL")
+	if(mission == "EXTERNAL")
 	{
 		m_pA->setStarget(0, m_vM.x);
 		m_pA->setStarget(1, m_vM.y);
@@ -240,7 +237,6 @@ bool _PickingArm::follow(void)
 	}
 
 	m_baseAngle = -m_pA->getPraw(3);
-	if(m_baseAngle == FLT_MAX)m_baseAngle = 0.0;
 	float rad = m_baseAngle * DEG_2_RAD;
 	float s = sin(rad);
 	float c = cos(rad);

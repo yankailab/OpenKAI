@@ -59,6 +59,15 @@ bool _DRV8825_RS485::start(void)
 	return true;
 }
 
+int _DRV8825_RS485::check(void)
+{
+	NULL__(m_pMB,-1);
+	IF__(!m_pMB->bOpen(),-1);
+	NULL__(m_pA,-1);
+
+	return 0;
+}
+
 void _DRV8825_RS485::update(void)
 {
 	while(check()<0)
@@ -78,30 +87,20 @@ void _DRV8825_RS485::update(void)
 	}
 }
 
-int _DRV8825_RS485::check(void)
-{
-	NULL__(m_pMB,-1);
-	IF__(!m_pMB->bOpen(),-1);
-	NULL__(m_pA,-1);
-
-	return 0;
-}
-
 void _DRV8825_RS485::updateMove(void)
 {
 	IF_(check()<0);
-	IF_(m_pA->m_p.m_vRaw == FLT_MAX);
+	IF_(!m_pA->m_p.bValid());
 
 	if(m_bMoving)
 	{
-		IF_(!EQUAL(m_pA->m_p.m_v, m_pTarget, m_pA->m_p.m_vErr));
+		IF_(!m_pA->m_p.bComplete());
 		m_bMoving = false;
 	}
 
-	m_pTarget = m_pA->m_p.m_vTarget;
-	IF_(!setPos(m_pTarget));
-	setSpeed();
-	setAccel();
+	IF_(!setPos());
+	IF_(!setSpeed());
+	IF_(!setAccel());
 	run();
 	m_bMoving = true;
 }
@@ -118,11 +117,11 @@ bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
 	return true;
 }
 
-bool _DRV8825_RS485::setPos(float p)
+bool _DRV8825_RS485::setPos(void)
 {
 	IF_F(check()<0);
 
-	int32_t step = m_pA->m_p.getRaw(p) - m_pA->m_p.m_vRaw;
+	int32_t step = m_pA->m_p.getTargetRaw() - m_pA->m_p.getRaw();
 	int32_t ds = abs(step);
 	IF_F(step==0);
 

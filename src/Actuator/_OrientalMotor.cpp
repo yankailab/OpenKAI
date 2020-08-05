@@ -157,7 +157,7 @@ void _OrientalMotor::readStatus(void)
 	m_pA->m_p.setRaw(MAKE32(pB[0], pB[1]));
 	m_pA->m_s.setRaw(MAKE32(pB[4], pB[5]));
 
-	LOG_I("step: "+f2str(m_pA->m_p.m_vRaw) + ", speed: " + f2str(m_pA->m_s.m_vRaw));
+	LOG_I("step: "+f2str(m_pA->m_p.getRaw()) + ", speed: " + f2str(m_pA->m_s.getRaw()));
 }
 
 void _OrientalMotor::draw(void)

@@ -188,7 +188,6 @@ public:
 	vFloat3 m_vOrigin;
 	vFloat3 m_vLastValidP;
 
-	bool m_bPgoing;
 	vFloat3 m_vPgoing;
 	float m_pErr;
 
