@@ -155,6 +155,8 @@ protected:
 	void gotoPos(vFloat3& vP);
 	vFloat3 getPos(void);
 	vFloat3 getPosRaw(void);
+	vFloat3 getAngle(void);
+	vFloat3 getAngleRaw(void);
 
 	void stickSpeed(vFloat3 &vM);
 	void stickRot(int iAxis, float r);

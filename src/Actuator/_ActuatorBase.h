@@ -123,11 +123,12 @@ public:
 	virtual bool start(void);
 	virtual void draw(void);
 
+	virtual void atomicFrom(void);
+	virtual void atomicTo(void);
 	virtual void setPtarget(int i, float nP);
 	virtual void setPtargetRaw(int i, float rawP);
 	virtual void setStarget(int i, float nS);
 	virtual void gotoOrigin(void);
-	virtual void setCmd(ACTUATOR_CMD_TYPE cType);
 	virtual bool bComplete(void);
 	virtual bool bComplete(int i);
 
@@ -152,6 +153,8 @@ public:
 
 	bool m_bFeedback;
 	bool m_bMoving;
+
+	pthread_mutex_t m_mutex;
 
 	ACTUATOR_CMD_TYPE m_lastCmdType;
 	uint64_t m_tLastCmd;

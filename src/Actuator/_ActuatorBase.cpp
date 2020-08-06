@@ -17,11 +17,13 @@ _ActuatorBase::_ActuatorBase()
 	m_tLastCmd = 0;
 	m_tCmdTimeout = USEC_1SEC;
 
+	pthread_mutex_init(&m_mutex, NULL);
 	m_pParent = NULL;
 }
 
 _ActuatorBase::~_ActuatorBase()
 {
+	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _ActuatorBase::init(void* pKiss)
@@ -99,6 +101,7 @@ bool _ActuatorBase::start(void)
 
 void _ActuatorBase::update(void)
 {
+	m_tStamp = getTimeUsec();
 }
 
 bool _ActuatorBase::bCmdTimeout(void)
@@ -114,28 +117,50 @@ bool _ActuatorBase::open(void)
 	return false;
 }
 
+void _ActuatorBase::atomicFrom(void)
+{
+	pthread_mutex_lock(&m_mutex);
+}
+
+void _ActuatorBase::atomicTo(void)
+{
+	pthread_mutex_unlock(&m_mutex);
+}
+
 void _ActuatorBase::setPtarget(int i, float nP)
 {
-	IF_(i<0 || i>=m_vAxis.size());
+	IF_(i<0);
+	IF_(i>=m_vAxis.size());
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_p.setTarget(nP);
+
+	m_lastCmdType = actCmd_pos;
+	m_tLastCmd = m_tStamp;
 }
 
 void _ActuatorBase::setPtargetRaw(int i, float rawP)
 {
-	IF_(i<0 || i>=m_vAxis.size());
+	IF_(i<0);
+	IF_(i>=m_vAxis.size());
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_p.setTargetRaw(rawP);
+
+	m_lastCmdType = actCmd_pos;
+	m_tLastCmd = m_tStamp;
 }
 
 void _ActuatorBase::setStarget(int i, float nS)
 {
-	IF_(i<0 || i>=m_vAxis.size());
+	IF_(i<0);
+	IF_(i>=m_vAxis.size());
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_s.setTarget(nS);
+
+	m_lastCmdType = actCmd_spd;
+	m_tLastCmd = m_tStamp;
 }
 
 void _ActuatorBase::gotoOrigin(void)
@@ -145,12 +170,9 @@ void _ActuatorBase::gotoOrigin(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 		pA->gotoOrigin();
 	}
-}
 
-void _ActuatorBase::setCmd(ACTUATOR_CMD_TYPE cType)
-{
-	m_lastCmdType = cType;
-	m_tLastCmd = getTimeUsec();
+	m_lastCmdType = actCmd_pos;
+	m_tLastCmd = m_tStamp;
 }
 
 bool _ActuatorBase::bComplete(void)

@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 	}
 
 	string* pKiss = g_file.readAll();
-	if(pKiss==NULL)
+	if(!pKiss)
 	{
 		printf("Cannot open Kiss file\n");
 		return 1;
@@ -43,7 +43,6 @@ int main(int argc, char* argv[])
 	}
 	g_file.close();
 
-	//Start Application
 	g_pStart = new Startup();
 	g_pStart->start(g_pKiss);
 

@@ -178,46 +178,66 @@ void _S6H4D::gotoPos(vFloat3& vP)
 {
 	stickStop();
 	stickRelease();
+
+	pthread_mutex_lock(&m_mutex);
 	setPtarget(0, vP.x);
 	setPtarget(1, vP.y);
 	setPtarget(2, vP.z);
+	pthread_mutex_lock(&m_mutex);
+
 	updatePos();
 }
 
 vFloat3 _S6H4D::getPos(void)
 {
-	vFloat3 vP;
-	vP.x = m_vAxis[0].m_p.m_v;
-	vP.y = m_vAxis[1].m_p.m_v;
-	vP.z = m_vAxis[2].m_p.m_v;
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[0].m_p.m_v,
+			  m_vAxis[1].m_p.m_v,
+			  m_vAxis[2].m_p.m_v);
+	pthread_mutex_unlock(&m_mutex);
 
-	return vP;
+	return v;
 }
 
 vFloat3 _S6H4D::getPosRaw(void)
 {
-	vFloat3 vP;
-	vP.x = m_vAxis[0].m_p.getRaw();
-	vP.y = m_vAxis[1].m_p.getRaw();
-	vP.z = m_vAxis[2].m_p.getRaw();
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[0].m_p.getTargetRaw(),
+			  m_vAxis[1].m_p.getTargetRaw(),
+			  m_vAxis[2].m_p.getTargetRaw());
+	pthread_mutex_unlock(&m_mutex);
 
-	return vP;
+	return v;
+}
+
+vFloat3 _S6H4D::getAngle(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[6].m_p.m_v,
+			  m_vAxis[7].m_p.m_v,
+			  m_vAxis[8].m_p.m_v);
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
+}
+
+vFloat3 _S6H4D::getAngleRaw(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[6].m_p.getTargetRaw(),
+			  m_vAxis[7].m_p.getTargetRaw(),
+			  m_vAxis[8].m_p.getTargetRaw());
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
 }
 
 void _S6H4D::updatePos(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP;
-	vP.x = m_vAxis[0].m_p.getTargetRaw();
-	vP.y = m_vAxis[1].m_p.getTargetRaw();
-	vP.z = m_vAxis[2].m_p.getTargetRaw();
-
-	vFloat3 vA;
-	vA.x = m_vAxis[6].m_p.getTargetRaw();
-	vA.y = m_vAxis[7].m_p.getTargetRaw();
-	vA.z = m_vAxis[8].m_p.getTargetRaw();
-
+	vFloat3 vP = getPosRaw();
+	vFloat3 vA = getAngleRaw();
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
 	armGotoPos(vP, vA, s);
@@ -433,7 +453,7 @@ void _S6H4D::decodeState(void)
 	case 4:
 		break;
 	case 5:
-		vFloat3 vW;
+		vFloat2 vW;
 		vW.x = (float) unpack_int16(&m_state.m_pB[1], m_bOrder);
 		vW.y = (float) unpack_int16(&m_state.m_pB[3], m_bOrder);
 		break;

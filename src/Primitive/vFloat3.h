@@ -10,6 +10,27 @@ struct vFloat3
 	float y;
 	float z;
 
+	vFloat3(void)
+	{
+		x = 0.0;
+		y = 0.0;
+		z = 0.0;
+	}
+
+	vFloat3(float v)
+	{
+		x = v;
+		y = v;
+		z = v;
+	}
+
+	vFloat3(float a, float b, float c)
+	{
+		x = a;
+		y = b;
+		z = c;
+	}
+
 	void init(void)
 	{
 		x = 0.0;

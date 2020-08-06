@@ -31,6 +31,32 @@ struct PICKINGARM_CLASS
 
 };
 
+struct PICKINGARM_MISSION
+{
+	int8_t EXTERNAL;
+	int8_t RECOVER;
+	int8_t FOLLOW;
+	int8_t GRIP;
+	int8_t ASCEND;
+	int8_t DELIVER;
+	int8_t DESCEND;
+	int8_t DROP;
+
+	bool bValid(void)
+	{
+		IF_F(EXTERNAL < 0);
+		IF_F(RECOVER < 0);
+		IF_F(FOLLOW < 0);
+		IF_F(GRIP < 0);
+		IF_F(ASCEND < 0);
+		IF_F(DELIVER < 0);
+		IF_F(DESCEND < 0);
+		IF_F(DROP < 0);
+
+		return true;
+	}
+};
+
 class _PickingArm: public _MissionBase
 {
 public:
@@ -55,6 +81,7 @@ private:
 	bool descend(void);
 	bool drop(void);
 
+	_Object* findTarget(void);
 	void updateArm(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -75,7 +102,7 @@ public:
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
-	float	m_dZgrip;
+	vFloat3	m_vZrange;
 
 	vFloat3 m_vPrawRecover;
 	vFloat3 m_vPrawDeliver;
@@ -85,6 +112,8 @@ public:
 	vFloat3 m_vR;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
+
+	PICKINGARM_MISSION m_iMission;
 };
 
 }
