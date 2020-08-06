@@ -107,7 +107,7 @@ struct ACTUATOR_AXIS
 
 enum ACTUATOR_CMD_TYPE
 {
-	actCmd_unknown,
+	actCmd_standby,
 	actCmd_pos,
 	actCmd_spd,
 	actCmd_posSpd,
@@ -124,8 +124,10 @@ public:
 	virtual void draw(void);
 
 	virtual void setPtarget(int i, float nP);
+	virtual void setPtargetRaw(int i, float rawP);
 	virtual void setStarget(int i, float nS);
 	virtual void gotoOrigin(void);
+	virtual void setCmd(ACTUATOR_CMD_TYPE cType);
 	virtual bool bComplete(void);
 	virtual bool bComplete(int i);
 

@@ -145,7 +145,6 @@ public:
 protected:
 	bool checkArm(void);
 	bool checkForbiddenArea(void);
-	bool checkTimeout(void);
 
 	void updatePos(void);
 	void updateSpeed(void);
@@ -188,7 +187,7 @@ public:
 	vFloat3 m_vOrigin;
 	vFloat3 m_vLastValidP;
 
-	vFloat3 m_vPgoing;
+	vFloat3 m_vPrawGoing;
 	float m_pErr;
 
 	vector<S6H4D_VOL> m_vForbArea;

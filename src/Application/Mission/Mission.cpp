@@ -13,7 +13,7 @@ namespace kai
 Mission::Mission()
 {
 	m_type = mission_base;
-	m_nextMission = "";
+	m_next = "";
 	m_tStamp = 0;
 	m_tTimeout = 0;
 
@@ -29,7 +29,7 @@ bool Mission::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("nextMission", &m_nextMission);
+	pK->v("next", &m_next);
 	if(pK->v("tTimeout",&m_tTimeout))
 		m_tTimeout *= USEC_1SEC;
 

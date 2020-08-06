@@ -170,7 +170,6 @@ bool _AProver_picking::updatePicking(void)
 	if(mission == "MANUAL")
 	{
 		vFloat3 vM;
-		vM.init(-1.0);
 		vM.x = m_vRC[0].v();
 		vM.y = m_vRC[1].v();
 		vM.z = m_vRC[2].v();

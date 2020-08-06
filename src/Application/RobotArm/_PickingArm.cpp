@@ -35,8 +35,9 @@ _PickingArm::_PickingArm()
 	m_vM.init(0.5);
 	m_vR.init(0.5);
 
-	m_vPrecover.init(0.5, 0.5, 0.9);
-	m_vPdeliver.init(0.5, 0.5, 0.9);
+	m_vPrawRecover.init(0.0, 0.0, 0.0);
+	m_vPrawDeliver.init(-200, 300.0, 0.0);
+	m_vPrawDescend.init(-200, 300.0, -100.0);
 }
 
 _PickingArm::~_PickingArm()
@@ -49,6 +50,9 @@ bool _PickingArm::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("dZgrip", &m_dZgrip);
+	pK->v("vPrawRecover", &m_vPrawRecover);
+	pK->v("vPrawDeliver", &m_vPrawDeliver);
+	pK->v("vPrawDescend", &m_vPrawDescend);
 
 	Kiss *pClass = pK->child("class");
 	NULL_Fl(pClass, "class not found");
@@ -155,13 +159,14 @@ void _PickingArm::updateArm(void)
 
 	if(mission == "EXTERNAL")
 	{
+		m_pA->setCmd(actCmd_standby);
 		m_pA->setStarget(0, m_vM.x);
 		m_pA->setStarget(1, m_vM.y);
 		m_pA->setStarget(2, m_vM.z);
-
 		m_pA->setStarget(3, m_vR.x);
 		m_pA->setStarget(4, m_vR.y);
 		m_pA->setStarget(5, m_vR.z);
+		m_pA->setCmd(actCmd_spd);
 	}
 	else if(mission == "RECOVER")
 	{
@@ -198,13 +203,15 @@ void _PickingArm::updateArm(void)
 
 bool _PickingArm::recover(void)
 {
-	m_pA->setPtarget(0, 0.5);
-	m_pA->setPtarget(1, 0.5);
-	m_pA->setPtarget(2, 0.9);
+	m_pA->setCmd(actCmd_standby);
+	m_pA->setPtargetRaw(0, m_vPrawRecover.x);
+	m_pA->setPtargetRaw(1, m_vPrawRecover.y);
+	m_pA->setPtargetRaw(2, m_vPrawRecover.z);
+	m_pA->setCmd(actCmd_pos);
 
-	IF_F(m_pA->bComplete(0));
-	IF_F(m_pA->bComplete(1));
-	IF_F(m_pA->bComplete(2));
+	IF_F(!m_pA->bComplete(0));
+	IF_F(!m_pA->bComplete(1));
+	IF_F(!m_pA->bComplete(2));
 
 	return true;
 }
@@ -230,9 +237,11 @@ bool _PickingArm::follow(void)
 	if(!tO)
 	{
 		m_vM.init(0.5);
+		m_pA->setCmd(actCmd_standby);
 		m_pA->setStarget(0, m_vM.x);
 		m_pA->setStarget(1, m_vM.y);
 		m_pA->setStarget(2, m_vM.z);
+		m_pA->setCmd(actCmd_spd);
 		return false;
 	}
 
@@ -250,11 +259,16 @@ bool _PickingArm::follow(void)
 
 	m_vM.y = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
 	m_vM.x = m_pYpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
-
-
 	m_vM.z = 0.5;//m_pZpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
 
-	IF_F(m_vP.z > m_dZgrip);
+	m_pA->setCmd(actCmd_standby);
+	m_pA->setStarget(0, m_vM.x);
+	m_pA->setStarget(1, m_vM.y);
+	m_pA->setStarget(2, m_vM.z);
+	m_pA->setCmd(actCmd_spd);
+
+//	IF_F(m_vP.z < 0.0);
+//	IF_F(m_vP.z > m_dZgrip);
 	return true;
 }
 
@@ -268,33 +282,39 @@ bool _PickingArm::grip(void)
 
 bool _PickingArm::ascend(void)
 {
-	m_pA->setPtarget(0, 0.5);
-	m_pA->setPtarget(1, 0.5);
-	m_pA->setPtarget(2, 0.9);
+	m_pA->setCmd(actCmd_standby);
+	m_pA->setPtargetRaw(0, m_pA->getPraw(0));
+	m_pA->setPtargetRaw(1, m_pA->getPraw(1));
+	m_pA->setPtargetRaw(2, m_vPrawRecover.z);
+	m_pA->setCmd(actCmd_pos);
 
-	IF_F(m_pA->bComplete(2));
+	IF_F(!m_pA->bComplete(2));
 	return true;
 }
 
 bool _PickingArm::deliver(void)
 {
-	m_pA->setPtarget(0, 0.5);
-	m_pA->setPtarget(1, 0.5);
-	m_pA->setPtarget(2, 0.9);
+	m_pA->setCmd(actCmd_standby);
+	m_pA->setPtargetRaw(0, m_vPrawDeliver.x);
+	m_pA->setPtargetRaw(1, m_vPrawDeliver.y);
+	m_pA->setPtargetRaw(2, m_vPrawDeliver.z);
+	m_pA->setCmd(actCmd_pos);
 
-	IF_F(m_pA->bComplete(0));
-	IF_F(m_pA->bComplete(1));
-	IF_F(m_pA->bComplete(2));
+	IF_F(!m_pA->bComplete(0));
+	IF_F(!m_pA->bComplete(1));
+	IF_F(!m_pA->bComplete(2));
 	return true;
 }
 
 bool _PickingArm::descend(void)
 {
-	m_pA->setPtarget(0, 0.5);
-	m_pA->setPtarget(1, 0.5);
-	m_pA->setPtarget(2, 0.9);
+	m_pA->setCmd(actCmd_standby);
+	m_pA->setPtargetRaw(0, m_vPrawDescend.x);
+	m_pA->setPtargetRaw(1, m_vPrawDescend.y);
+	m_pA->setPtargetRaw(2, m_vPrawDescend.z);
+	m_pA->setCmd(actCmd_pos);
 
-	IF_F(m_pA->bComplete(2));
+	IF_F(!m_pA->bComplete(2));
 	return true;
 }
 

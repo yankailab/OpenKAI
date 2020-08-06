@@ -70,6 +70,12 @@ void _StepperGripper::updateMove(void)
 	IF_(check()<0);
 	IF_(!m_pA->m_p.bValid());
 
+	if(m_bMoving)
+	{
+		IF_(!m_pA->m_p.bComplete());
+		m_bMoving = false;
+	}
+
 	if(EQUAL(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
 		m_bState = true;
 	else if(EQUAL(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
@@ -77,8 +83,12 @@ void _StepperGripper::updateMove(void)
 
 	IF_(m_bState == m_bOpen);
 
-	this->setPtarget(0, m_bOpen?m_pOpen:m_pClose);
-	this->_DRV8825_RS485::updateMove();
+	setPtarget(0, m_bOpen?m_pOpen:m_pClose);
+	IF_(!setPos());
+	IF_(!setSpeed());
+	IF_(!setAccel());
+	run();
+	m_bMoving = true;
 }
 
 void _StepperGripper::grip(bool bOpen)

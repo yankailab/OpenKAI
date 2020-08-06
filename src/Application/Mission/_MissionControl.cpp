@@ -60,15 +60,17 @@ bool _MissionControl::init(void* pKiss)
 		m_vMission.push_back(M);
 	}
 
+	IF_F(m_vMission.empty());
+
 	for(i=0; i<m_vMission.size();i++)
 	{
 		MISSION_INST* pM = &m_vMission[i];
 		IF_Fl(!pM->m_pInst->init(pM->m_pKiss), pM->m_pKiss->m_name+": init failed");
 	}
 
-	string startMission = "";
-	F_INFO(pK->v("startMission", &startMission));
-	m_iM = getMissionIdx(startMission);
+	string start = "";
+	F_INFO(pK->v("start", &start));
+	m_iM = getMissionIdx(start);
 	if(m_iM < 0)
 		m_iM = 0;
 
@@ -95,10 +97,12 @@ void _MissionControl::update(void)
 	{
 		this->autoFPSfrom();
 
+		IF_CONT(m_iM >= m_vMission.size());
+		IF_CONT(m_iM < 0);
 		Mission* pMission = m_vMission[m_iM].m_pInst;
 		if(pMission->update())
 		{
-			transit(pMission->m_nextMission);
+			transit(pMission->m_next);
 		}
 
 		this->autoFPSto();
@@ -110,7 +114,7 @@ void _MissionControl::transit(void)
 	Mission* pM = m_vMission[m_iM].m_pInst;
 	NULL_(pM);
 
-	transit(pM->m_nextMission);
+	transit(pM->m_next);
 }
 
 void _MissionControl::transit(const string& mName)
@@ -144,8 +148,6 @@ int _MissionControl::getMissionIdx(const string& mName)
 
 Mission* _MissionControl::getMission(void)
 {
-	IF_N(m_iM >= m_vMission.size());
-	IF_N(m_iM < 0);
 	return m_vMission[m_iM].m_pInst;
 }
 
@@ -156,9 +158,6 @@ int _MissionControl::getMissionIdx(void)
 
 string _MissionControl::getMissionName(void)
 {
-	IF_N(m_iM >= m_vMission.size());
-	IF_N(m_iM < 0);
-
 	string name = ((Kiss*)m_vMission[m_iM].m_pInst->m_pKiss)->m_name;
 	return name;
 }

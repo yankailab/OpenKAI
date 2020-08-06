@@ -15,7 +15,8 @@ _S6H4D::_S6H4D()
 	m_vOriginTarget.init(0.0);
 	m_vOrigin.init(0.0);
 	m_vLastValidP.init(0.0);
-	m_pErr = 0.01;
+	m_vPrawGoing.init(0.0);
+	m_pErr = 0.1;
 
 	m_nMinAxis = 6;
 }
@@ -104,7 +105,9 @@ void _S6H4D::update(void)
 		this->sleepTime(USEC_1SEC);
 		readState();
 	}
-	gotoPos(m_vOrigin);
+	stickStop();
+	stickRelease();
+	updatePos();
 
 	while (m_bThreadON)
 	{
@@ -114,7 +117,7 @@ void _S6H4D::update(void)
 
 		if(m_bMoving)
 		{
-			if(getPos().bEqual(m_vPgoing, m_pErr))
+			if(getPosRaw().bEqual(m_vPrawGoing, m_pErr))
 				m_bMoving = false;
 		}
 		else if(checkArm())
@@ -145,7 +148,12 @@ bool _S6H4D::checkArm(void)
 	IF_F(!checkForbiddenArea());
 	m_vLastValidP = getPos();
 
-	IF_F(!checkTimeout());
+	if (bCmdTimeout())
+	{
+		stickStop();
+		m_lastCmdType = actCmd_standby;
+		return false;
+	}
 
 	return true;
 }
@@ -166,19 +174,6 @@ bool _S6H4D::checkForbiddenArea(void)
 	return true;
 }
 
-bool _S6H4D::checkTimeout(void)
-{
-	IF_F(check() < 0);
-
-	if (bCmdTimeout())
-	{
-		stickStop();
-		return false;
-	}
-
-	return true;
-}
-
 void _S6H4D::gotoPos(vFloat3& vP)
 {
 	stickStop();
@@ -187,9 +182,6 @@ void _S6H4D::gotoPos(vFloat3& vP)
 	setPtarget(1, vP.y);
 	setPtarget(2, vP.z);
 	updatePos();
-
-	m_vPgoing = vP;
-	m_bMoving = true;
 }
 
 vFloat3 _S6H4D::getPos(void)
@@ -229,6 +221,8 @@ void _S6H4D::updatePos(void)
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
 	armGotoPos(vP, vA, s);
+	m_vPrawGoing = vP;
+	m_bMoving = true;
 }
 
 void _S6H4D::updateSpeed(void)

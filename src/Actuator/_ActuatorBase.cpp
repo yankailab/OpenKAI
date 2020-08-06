@@ -13,7 +13,7 @@ _ActuatorBase::_ActuatorBase()
 	m_nMinAxis = 1;
 	m_bMoving = false;
 
-	m_lastCmdType = actCmd_unknown;
+	m_lastCmdType = actCmd_standby;
 	m_tLastCmd = 0;
 	m_tCmdTimeout = USEC_1SEC;
 
@@ -120,9 +120,14 @@ void _ActuatorBase::setPtarget(int i, float nP)
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_p.setTarget(nP);
+}
 
-	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = getTimeUsec();
+void _ActuatorBase::setPtargetRaw(int i, float rawP)
+{
+	IF_(i<0 || i>=m_vAxis.size());
+
+	ACTUATOR_AXIS* pA = &m_vAxis[i];
+	pA->m_p.setTargetRaw(rawP);
 }
 
 void _ActuatorBase::setStarget(int i, float nS)
@@ -131,9 +136,6 @@ void _ActuatorBase::setStarget(int i, float nS)
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
 	pA->m_s.setTarget(nS);
-
-	m_lastCmdType = actCmd_spd;
-	m_tLastCmd = getTimeUsec();
 }
 
 void _ActuatorBase::gotoOrigin(void)
@@ -143,8 +145,11 @@ void _ActuatorBase::gotoOrigin(void)
 		ACTUATOR_AXIS* pA = &m_vAxis[i];
 		pA->gotoOrigin();
 	}
+}
 
-	m_lastCmdType = actCmd_pos;
+void _ActuatorBase::setCmd(ACTUATOR_CMD_TYPE cType)
+{
+	m_lastCmdType = cType;
 	m_tLastCmd = getTimeUsec();
 }
 

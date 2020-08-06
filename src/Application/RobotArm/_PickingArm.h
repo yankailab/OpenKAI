@@ -77,9 +77,9 @@ public:
 	PIDctrl* m_pZpid;
 	float	m_dZgrip;
 
-	vFloat3 m_vPrecover;
-	vFloat3 m_vPdeliver;
-	vFloat3 m_vPdescend;
+	vFloat3 m_vPrawRecover;
+	vFloat3 m_vPrawDeliver;
+	vFloat3 m_vPrawDescend;
 
 	vFloat3 m_vM;
 	vFloat3 m_vR;

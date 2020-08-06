@@ -41,7 +41,7 @@ public:
 
 public:
 	MISSION_TYPE m_type;
-	string m_nextMission;
+	string m_next;
 
 	uint64_t m_tStart;
 	uint64_t m_tStamp;
