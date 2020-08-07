@@ -152,12 +152,16 @@ protected:
 	void readState(void);
 	void decodeState(void);
 
-	void gotoPos(vFloat3& vP);
+	vFloat3 getTargetPos(void);
+	vFloat3 getTargetPosRaw(void);
 	vFloat3 getPos(void);
 	vFloat3 getPosRaw(void);
+	vFloat3 getTargetAngle(void);
+	vFloat3 getTargetAngleRaw(void);
 	vFloat3 getAngle(void);
 	vFloat3 getAngleRaw(void);
 
+	void gotoPos(vFloat3& vP);
 	void stickSpeed(vFloat3 &vM);
 	void stickRot(int iAxis, float r);
 	void stickStop(void);

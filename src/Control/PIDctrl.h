@@ -46,6 +46,8 @@ public:
 	float m_oMax;
 	float m_output;
 
+	float m_A;
+	float m_thrReset;
 	uint64_t m_tLastUpdate;
 
 };

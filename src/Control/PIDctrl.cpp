@@ -21,6 +21,8 @@ PIDctrl::PIDctrl()
 	m_I = 0;
 	m_Imax = 0;
 	m_D = 0;
+	m_A = 0;
+	m_thrReset = FLT_MAX;
 	reset();
 }
 
@@ -44,6 +46,9 @@ bool PIDctrl::init(void* pKiss)
 	pK->v("Imax",&m_Imax);
 	pK->v("D",&m_D);
 
+	pK->v("A", &m_A);
+	pK->v("thrReset", &m_thrReset);
+
 	return true;
 }
 
@@ -56,6 +61,12 @@ float PIDctrl::update(float v, float vTarget, uint64_t t)
 	{
 		reset();
 		return 0;
+	}
+
+	if(abs(vTarget - m_vTarget) > m_thrReset)
+	{
+		reset();
+		m_v = v;
 	}
 
 	m_vPred = v + (v - m_v) * m_dT;
@@ -71,7 +82,7 @@ float PIDctrl::update(float v, float vTarget, uint64_t t)
 			 + m_D * (m_e - m_eOld) * (USEC_1SEC / (float)(t - m_tLastUpdate)) // unit: sec
 			 + constrain(m_I * m_eInteg, -m_Imax, m_Imax);
 
-	m_output = constrain(o, m_oMin, m_oMax);
+	m_output = constrain(m_A + o, m_oMin, m_oMax);
 
 	m_tLastUpdate = t;
 	return m_output;

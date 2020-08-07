@@ -183,9 +183,31 @@ void _S6H4D::gotoPos(vFloat3& vP)
 	setPtarget(0, vP.x);
 	setPtarget(1, vP.y);
 	setPtarget(2, vP.z);
-	pthread_mutex_lock(&m_mutex);
+	pthread_mutex_unlock(&m_mutex);
 
 	updatePos();
+}
+
+vFloat3 _S6H4D::getTargetPos(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[0].m_p.m_vTarget,
+			  m_vAxis[1].m_p.m_vTarget,
+			  m_vAxis[2].m_p.m_vTarget);
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
+}
+
+vFloat3 _S6H4D::getTargetPosRaw(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[0].m_p.getTargetRaw(),
+			  m_vAxis[1].m_p.getTargetRaw(),
+			  m_vAxis[2].m_p.getTargetRaw());
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
 }
 
 vFloat3 _S6H4D::getPos(void)
@@ -202,9 +224,31 @@ vFloat3 _S6H4D::getPos(void)
 vFloat3 _S6H4D::getPosRaw(void)
 {
 	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[0].m_p.getTargetRaw(),
-			  m_vAxis[1].m_p.getTargetRaw(),
-			  m_vAxis[2].m_p.getTargetRaw());
+	vFloat3 v(m_vAxis[0].m_p.getRaw(),
+			  m_vAxis[1].m_p.getRaw(),
+			  m_vAxis[2].m_p.getRaw());
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
+}
+
+vFloat3 _S6H4D::getTargetAngle(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[6].m_p.m_vTarget,
+			  m_vAxis[7].m_p.m_vTarget,
+			  m_vAxis[8].m_p.m_vTarget);
+	pthread_mutex_unlock(&m_mutex);
+
+	return v;
+}
+
+vFloat3 _S6H4D::getTargetAngleRaw(void)
+{
+	pthread_mutex_lock(&m_mutex);
+	vFloat3 v(m_vAxis[6].m_p.getTargetRaw(),
+			  m_vAxis[7].m_p.getTargetRaw(),
+			  m_vAxis[8].m_p.getTargetRaw());
 	pthread_mutex_unlock(&m_mutex);
 
 	return v;
@@ -224,9 +268,9 @@ vFloat3 _S6H4D::getAngle(void)
 vFloat3 _S6H4D::getAngleRaw(void)
 {
 	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[6].m_p.getTargetRaw(),
-			  m_vAxis[7].m_p.getTargetRaw(),
-			  m_vAxis[8].m_p.getTargetRaw());
+	vFloat3 v(m_vAxis[6].m_p.getRaw(),
+			  m_vAxis[7].m_p.getRaw(),
+			  m_vAxis[8].m_p.getRaw());
 	pthread_mutex_unlock(&m_mutex);
 
 	return v;
@@ -236,8 +280,8 @@ void _S6H4D::updatePos(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP = getPosRaw();
-	vFloat3 vA = getAngleRaw();
+	vFloat3 vP = getTargetPosRaw();
+	vFloat3 vA = getTargetAngleRaw();
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
 	armGotoPos(vP, vA, s);

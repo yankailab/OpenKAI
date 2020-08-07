@@ -70,9 +70,12 @@ public:
 
 	void move(vFloat3& vM);
 	void rotate(vFloat3& vR);
+	void stop(void);
 	void grip(bool bOpen);
 
 private:
+	void speed(vFloat3& vS);
+	void external(void);
 	bool recover(void);
 	bool follow(void);
 	bool grip(void);
@@ -97,8 +100,8 @@ public:
 	_Universe* m_pU;
 
 	float	m_baseAngle;
-	vFloat3 m_vP;		//variable, screen coordinate of the object being followed
-	vFloat3 m_vTargetP;	//constant, screen coordinate where the followed object should get to
+	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
+	vFloat3 m_vTargetP;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
@@ -108,7 +111,7 @@ public:
 	vFloat3 m_vPrawDeliver;
 	vFloat3 m_vPrawDescend;
 
-	vFloat3 m_vM;
+	vFloat3 m_vS;
 	vFloat3 m_vR;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
