@@ -48,18 +48,18 @@ bool _StepperGripper::start(void)
 
 void _StepperGripper::update(void)
 {
-	while(check()<0)
-		this->sleepTime(USEC_1SEC);
-
 	while(!initPos())
 		this->sleepTime(USEC_1SEC);
+
+	setSpeed();
+	setAccel();
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		updateMove();
 		readStatus();
+		updateMove();
 
 		this->autoFPSto();
 	}
@@ -68,27 +68,34 @@ void _StepperGripper::update(void)
 void _StepperGripper::updateMove(void)
 {
 	IF_(check()<0);
-	IF_(!m_pA->m_p.bValid());
 
-	if(m_bMoving)
-	{
-		IF_(!m_pA->m_p.bComplete());
-		m_bMoving = false;
-	}
+	IF_(!bComplete());
+//	if(m_bMoving)
+//	{
+//		IF_(!m_pA->m_p.bComplete());
+//		m_bMoving = false;
+//	}
 
 	if(EQUAL(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
+	{
 		m_bState = true;
+	}
 	else if(EQUAL(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
+	{
 		m_bState = false;
+	}
+	else
+	{
+		initPos();
+		return;
+	}
 
 	IF_(m_bState == m_bOpen);
 
 	setPtarget(0, m_bOpen?m_pOpen:m_pClose);
 	IF_(!setPos());
-	IF_(!setSpeed());
-	IF_(!setAccel());
 	run();
-	m_bMoving = true;
+//	m_bMoving = true;
 }
 
 void _StepperGripper::grip(bool bOpen)

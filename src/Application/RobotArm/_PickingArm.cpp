@@ -21,8 +21,9 @@ _PickingArm::_PickingArm()
 
 	m_baseAngle = 0.0;
 	m_vP.init(0.5,0.5,0.0);
-	m_vTargetP.init(0.5,0.5,0.0);
-	m_vZrange.init(0.0, 3.0, 30.0);
+	m_vPtarget.init(0.5,0.5,0.0);
+	m_vZrange.init(0.0, 0.06, 0.15, 30.0);
+	m_zSpeed = 0.2;
 
 	m_pXpid = NULL;
 	m_pYpid = NULL;
@@ -45,7 +46,9 @@ bool _PickingArm::init(void *pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
+	pK->v("vPtarget", &m_vPtarget);
 	pK->v("vZrange", &m_vZrange);
+	pK->v("zSpeed", &m_zSpeed);
 	pK->v("vPrawRecover", &m_vPrawRecover);
 	pK->v("vPrawDeliver", &m_vPrawDeliver);
 	pK->v("vPrawDescend", &m_vPrawDescend);
@@ -71,7 +74,6 @@ bool _PickingArm::init(void *pKiss)
 	m_iMission.EXTERNAL = m_pMC->getMissionIdx("EXTERNAL");
 	m_iMission.RECOVER = m_pMC->getMissionIdx("RECOVER");
 	m_iMission.FOLLOW = m_pMC->getMissionIdx("FOLLOW");
-	m_iMission.GRIP = m_pMC->getMissionIdx("GRIP");
 	m_iMission.ASCEND = m_pMC->getMissionIdx("ASCEND");
 	m_iMission.DELIVER = m_pMC->getMissionIdx("DELIVER");
 	m_iMission.DESCEND = m_pMC->getMissionIdx("DESCEND");
@@ -176,10 +178,6 @@ void _PickingArm::updateArm(void)
 	{
 		bTransit = follow();
 	}
-	else if(iM == m_iMission.GRIP)
-	{
-		bTransit = grip();
-	}
 	else if(iM == m_iMission.ASCEND)
 	{
 		bTransit = ascend();
@@ -207,26 +205,22 @@ void _PickingArm::updateArm(void)
 
 void _PickingArm::stop(void)
 {
-	m_pA->atomicFrom();
 	m_pA->setStarget(0, 0.5);
 	m_pA->setStarget(1, 0.5);
 	m_pA->setStarget(2, 0.5);
 	m_pA->setStarget(6, 0.5);
 	m_pA->setStarget(7, 0.5);
 	m_pA->setStarget(8, 0.5);
-	m_pA->atomicTo();
 }
 
 void _PickingArm::external(void)
 {
-	m_pA->atomicFrom();
 	m_pA->setStarget(0, m_vS.x);
 	m_pA->setStarget(1, m_vS.y);
 	m_pA->setStarget(2, m_vS.z);
 	m_pA->setStarget(6, m_vR.x);
 	m_pA->setStarget(7, m_vR.y);
 	m_pA->setStarget(8, m_vR.z);
-	m_pA->atomicTo();
 }
 
 bool _PickingArm::recover(void)
@@ -247,7 +241,6 @@ bool _PickingArm::recover(void)
 bool _PickingArm::follow(void)
 {
 	m_vP.z = m_pD->d(0);
-	m_vP.z = 1.0;
 
 	if(m_vP.z < m_vZrange.x)
 	{
@@ -257,7 +250,7 @@ bool _PickingArm::follow(void)
 	}
 	else if(m_vP.z < m_vZrange.y)
 	{
-		//close enough to grip
+		//stop and gripper closed
 		stop();
 		IF_T(!m_pG->bGrip());
 		m_pG->grip(false);
@@ -265,9 +258,14 @@ bool _PickingArm::follow(void)
 	}
 	else if(m_vP.z < m_vZrange.z)
 	{
+		//gripper start to close
+		m_pG->grip(false);
+		return false;
+	}
+	else if(m_vP.z < m_vZrange.w)
+	{
 		//keep on getting closer even no target is seen any more
-		vFloat3 vS(0.5, 0.5, 0.3);
-		speed(vS);
+		speed(vFloat3(0.5, 0.5, 0.5+m_zSpeed));
 		return false;
 	}
 
@@ -277,37 +275,28 @@ bool _PickingArm::follow(void)
 	if(!tO)
 	{
 		//no target is seen, ascend the arm
-		vFloat3 vS(0.5, 0.5, 0.7);
-		if(m_pA->getPraw(2) >= m_vPrawRecover.z)
+		vFloat3 vS(0.5, 0.5, 0.5-m_zSpeed);
+		if(m_pA->getPraw(2) < m_vPrawRecover.z)
 			vS.z = 0.5;
 		speed(vS);
 		return false;
 	}
 
 	m_baseAngle = -m_pA->getPraw(3);
-	if(m_baseAngle >= 80)
-	{
-		stop();
-		return false;
-	}
-
 	float rad = m_baseAngle * DEG_2_RAD;
 	float s = sin(rad);
 	float c = cos(rad);
 
 	vFloat3 vP = tO->getPos();
-	float x = vP.x - m_vTargetP.x;
-	float y = vP.y - m_vTargetP.y;
+	float x = vP.x - m_vPtarget.x;
+	float y = vP.y - m_vPtarget.y;
 	float r = sqrt(x*x + y*y);
-	m_vP.x = x*c - y*s + m_vTargetP.x;
-	m_vP.y = x*s + y*c + m_vTargetP.y;
+	m_vP.x = x*c - y*s + m_vPtarget.x;
+	m_vP.y = x*s + y*c + m_vPtarget.y;
 
-	m_vS.y = m_pXpid->update(m_vP.x, m_vTargetP.x, m_tStamp);
-	m_vS.x = m_pYpid->update(m_vP.y, m_vTargetP.y, m_tStamp);
-	m_vS.z = 0.5;//m_pZpid->update(m_vP.z, m_vTargetP.z, m_tStamp);
-	if(r < 0.2)
-		m_vS.z = -0.3;
-
+	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_tStamp);
+	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_tStamp);
+	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_tStamp) * constrain(1.0 - r*0.707106781, 0.0, 1.0); //r/root(2)
 	speed(m_vS);
 
 	return false;
@@ -334,21 +323,11 @@ _Object* _PickingArm::findTarget(void)
 	return tO;
 }
 
-bool _PickingArm::grip(void)
+void _PickingArm::speed(const vFloat3& vS)
 {
-	m_pG->grip(false);
-
-	IF_F(m_pG->bGrip());
-	return true;
-}
-
-void _PickingArm::speed(vFloat3& vS)
-{
-	m_pA->atomicFrom();
 	m_pA->setStarget(0, vS.x);
 	m_pA->setStarget(1, vS.y);
 	m_pA->setStarget(2, vS.z);
-	m_pA->atomicTo();
 }
 
 bool _PickingArm::ascend(void)
@@ -418,9 +397,10 @@ void _PickingArm::draw(void)
 {
 	this->_MissionBase::draw();
 
-	addMsg("vM = (" + f2str(m_vS.x) + ", " + f2str(m_vS.y) + ", " + f2str(m_vS.z) + ")");
+	addMsg("vS = (" + f2str(m_vS.x) + ", " + f2str(m_vS.y) + ", " + f2str(m_vS.z) + ")");
 	addMsg("vR = (" + f2str(m_vR.x) + ", " + f2str(m_vR.y) + ", " + f2str(m_vR.z) + ")");
-	addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ")");
+	addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")");
+	addMsg("vPtarget = (" + f2str(m_vPtarget.x) + ", " + f2str(m_vPtarget.y) + ", " + f2str(m_vPtarget.z) + ")");
 	addMsg("baseAngle = " + f2str(m_baseAngle));
 
 	IF_(!checkWindow());

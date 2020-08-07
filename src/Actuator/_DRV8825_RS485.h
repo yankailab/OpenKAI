@@ -32,6 +32,7 @@ protected:
 	bool setAccel(void);
 	bool setBrake(void);
 	void resetPos(void);
+	bool bComplete(void);
 
 	void run(void);
 	void stop(void);

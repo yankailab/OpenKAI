@@ -36,7 +36,6 @@ struct PICKINGARM_MISSION
 	int8_t EXTERNAL;
 	int8_t RECOVER;
 	int8_t FOLLOW;
-	int8_t GRIP;
 	int8_t ASCEND;
 	int8_t DELIVER;
 	int8_t DESCEND;
@@ -47,7 +46,6 @@ struct PICKINGARM_MISSION
 		IF_F(EXTERNAL < 0);
 		IF_F(RECOVER < 0);
 		IF_F(FOLLOW < 0);
-		IF_F(GRIP < 0);
 		IF_F(ASCEND < 0);
 		IF_F(DELIVER < 0);
 		IF_F(DESCEND < 0);
@@ -74,11 +72,10 @@ public:
 	void grip(bool bOpen);
 
 private:
-	void speed(vFloat3& vS);
+	void speed(const vFloat3& vS);
 	void external(void);
 	bool recover(void);
 	bool follow(void);
-	bool grip(void);
 	bool ascend(void);
 	bool deliver(void);
 	bool descend(void);
@@ -101,11 +98,12 @@ public:
 
 	float	m_baseAngle;
 	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
-	vFloat3 m_vTargetP;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
+	vFloat3 m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
 	PIDctrl* m_pXpid;
 	PIDctrl* m_pYpid;
 	PIDctrl* m_pZpid;
-	vFloat3	m_vZrange;
+	vFloat4	m_vZrange;
+	float m_zSpeed;
 
 	vFloat3 m_vPrawRecover;
 	vFloat3 m_vPrawDeliver;

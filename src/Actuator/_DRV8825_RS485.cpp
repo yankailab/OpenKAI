@@ -70,9 +70,6 @@ int _DRV8825_RS485::check(void)
 
 void _DRV8825_RS485::update(void)
 {
-	while(check()<0)
-		this->sleepTime(USEC_1SEC);
-
 	while(!initPos())
 		this->sleepTime(USEC_1SEC);
 
@@ -80,8 +77,8 @@ void _DRV8825_RS485::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateMove();
 		readStatus();
+		updateMove();
 
 		this->autoFPSto();
 	}
@@ -90,19 +87,19 @@ void _DRV8825_RS485::update(void)
 void _DRV8825_RS485::updateMove(void)
 {
 	IF_(check()<0);
-	IF_(!m_pA->m_p.bValid());
 
-	if(m_bMoving)
-	{
-		IF_(!m_pA->m_p.bComplete());
-		m_bMoving = false;
-	}
+	IF_(!bComplete());
+//	if(m_bMoving)
+//	{
+//		IF_(!m_pA->m_p.bComplete());
+//		m_bMoving = false;
+//	}
 
 	IF_(!setPos());
 	IF_(!setSpeed());
 	IF_(!setAccel());
 	run();
-	m_bMoving = true;
+//	m_bMoving = true;
 }
 
 bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
@@ -158,27 +155,32 @@ bool _DRV8825_RS485::setAccel(void)
 
 bool _DRV8825_RS485::setBrake(void)
 {
+	IF_F(check()<0);
 
 	return true;
 }
 
 void _DRV8825_RS485::run(void)
 {
+	IF_(check()<0);
 	m_pMB->writeBit(m_iSlave, 7, true);
 }
 
 void _DRV8825_RS485::stop(void)
 {
+	IF_(check()<0);
 	m_pMB->writeBit(m_iSlave, 3, true);
 }
 
 void _DRV8825_RS485::resetPos(void)
 {
+	IF_(check()<0);
 	m_pMB->writeBit(m_iSlave, 10, true);
 }
 
 bool _DRV8825_RS485::initPos(void)
 {
+	IF_F(check()<0);
 	setDistPerRound(m_dpr);
 
 	uint16_t pB[2];
@@ -194,10 +196,21 @@ bool _DRV8825_RS485::initPos(void)
 	setAccel();
 	run();
 
-	this->sleepTime(5*USEC_1SEC);
+	while(!bComplete());
 	resetPos();
 
 	return true;
+}
+
+bool _DRV8825_RS485::bComplete(void)
+{
+	IF_F(check()<0);
+
+	uint16_t b;
+	int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
+	IF_F(r != 1);
+
+	return (b==1)?true:false;
 }
 
 void _DRV8825_RS485::readStatus(void)

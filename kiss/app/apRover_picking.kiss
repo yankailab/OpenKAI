@@ -319,12 +319,6 @@
 			"bInst":1,
 			"name":"FOLLOW",
 			"class":"Mission",
-			"next":"GRIP",
-		}
-		{
-			"bInst":1,
-			"name":"GRIP",
-			"class":"Mission",
 			"next":"ASCEND",
 		}
 		{
@@ -375,8 +369,8 @@
 	"Console":"armConsole",
 	"_IOBase":"armSerial",
 	"vOriginTarget":[350, 0.0, 400],
-	"vSpeedRange":[0, 2000],
-	"speed":1.0,
+	"vSpeedRange":[0, 30000],
+	"speed":0.1,
 	"pErr":1.0,
 	
 	{
@@ -550,6 +544,7 @@
 	"dpr":1,
 	"bFeedback":1,
 	"dInit":-20,
+	"tIntReadStatus":100,
 	"pOpen":0,
 	"pClose":1,
 	"bOpen":1,
@@ -564,7 +559,7 @@
 			"pRawRange":[0,15],
 			"sTarget":1.0,
 			"sRawRange":[0,300],
-			"aTarget":0.0,
+			"aTarget":1.0,
 			"aRawRange":[10,300],
 		}
 	}
@@ -576,7 +571,6 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"armConsole",
-	"A":0.5,
 	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -592,7 +586,6 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"armConsole",
-	"A":0.5,
 	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
@@ -608,8 +601,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"armConsole",
-	"A":0.5,
-	"P":-1.0,
+	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -634,10 +626,11 @@
 	"PIDx":"PIDx",
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
-	"vZrange":[0.0, 0.06, 0.3],
+	"vZrange":[0.0, 0.06, 0.15, 0.3],
 	"vPrawRecover":[0, 0, 0],
 	"vPrawDeliver":[-200, -300, 0],
 	"vPrawDescend":[-200, -300, -100],
+	"zSpeed":0.2,
 
 	{
 		"name":"/class",
