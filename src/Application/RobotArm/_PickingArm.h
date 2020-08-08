@@ -82,6 +82,7 @@ private:
 	bool drop(void);
 
 	_Object* findTarget(void);
+	bool bTargetClass(int iClass);
 	void updateArm(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -114,6 +115,9 @@ public:
 	vFloat3 m_vR;
 
 	vector<PICKINGARM_CLASS>	m_vClass;
+	_Object m_o;
+	uint64_t m_oTstamp;
+	uint64_t m_oTimeout;
 
 	PICKINGARM_MISSION m_iMission;
 };

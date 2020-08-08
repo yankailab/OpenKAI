@@ -12,13 +12,13 @@
 {
 	"name":"rovConsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
 	"name":"armConsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -186,11 +186,11 @@
 		{
 			"name":"rcChannels",
 			"id":65,
-			"tInt":0.1,
+			"tInt":0.3,
 		}
 		{
 			"name":"localPosition",
-			"id"32,
+			"id":32,
 			"tInt":1.0,
 		}
 		{
@@ -201,7 +201,7 @@
 		{
 			"name":"homePosition",
 			"id":242,
-			"tInt":2,
+			"tInt":10,
 		}
 		{
 			"name":"batteryStatus",
@@ -334,7 +334,7 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"armConsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyUSB1",
 	"baud":9600,
 }
 
@@ -348,7 +348,7 @@
 	"_IOBase":"armSerial",
 	"vOriginTarget":[350, 0.0, 300],
 	"vSpeedRange":[0, 5000],
-	"speed":2000,
+	"speed":3000,
 	"pErr":1.0,
 	
 	{
@@ -465,7 +465,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"armConsole",
-	"port":"/dev/ttyUSB1",
+	"port":"/dev/ttyUSB0",
 	"baud":115200,
 	"parity":"N",
 }
@@ -511,13 +511,14 @@
 	"Window":"OKview",
 	"Console":"armConsole",
 	"FPS":30,
+	"bDrawText":1,
 }
 
 {
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"armConsole",
 	"_VisionBase":"cam",
@@ -528,7 +529,7 @@
 {
 	"name":"DetectNet",
 	"class":"_DetectNet",
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
@@ -627,19 +628,21 @@
 	"PIDx":"PIDx",
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
-	"vZrange":[0.0, 0.06, 0.15, 0.3],
-	"vPrecover":[0, 0, 200],
+	"vZrange":[0.0, 0.08, 0.13, 0.3],
+	"vPrecover":[0, 0, 100],
 	"vPdeliver":[-500, 300, 200],
 	"vPdescend":[-500, 300, -100],
 	"zSpeed":0.2,
 	"zrK":1.0,
 	
 	{
-		"name":"/class",
+		"name":"class",
 		
 		{
-			"iClass":0,
+			"iClass":53,
+		}
+		{
+			"iClass":53,
 		}
 	}			
 }
-

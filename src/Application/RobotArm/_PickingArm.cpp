@@ -36,6 +36,9 @@ _PickingArm::_PickingArm()
 	m_vPrecover.init(0.0, 0.0, 0.0);
 	m_vPdeliver.init(-200, 300.0, 0.0);
 	m_vPdescend.init(-200, 300.0, -100.0);
+
+	m_oTstamp = 0;
+	m_oTimeout = USEC_1SEC;
 }
 
 _PickingArm::~_PickingArm()
@@ -54,6 +57,7 @@ bool _PickingArm::init(void *pKiss)
 	pK->v("vPrecover", &m_vPrecover);
 	pK->v("vPdeliver", &m_vPdeliver);
 	pK->v("vPdescend", &m_vPdescend);
+	pK->v("oTimeout", &m_oTimeout);
 
 	Kiss *pClass = pK->child("class");
 	NULL_Fl(pClass, "class not found");
@@ -308,21 +312,51 @@ _Object* _PickingArm::findTarget(void)
 {
 	_Object *pO;
 	_Object *tO = NULL;
-	float topProb = 0.0;
+//	float topProb = 0.0;
+	float rSqr = FLT_MAX;
 	int i = 0;
 	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		if(!m_vClass.empty())
-		{
-			IF_CONT(pO->getTopClass() != m_vClass[0].m_iClass);
-		}
-		IF_CONT(pO->getTopClassProb() < topProb);
+
+		vFloat3 p = pO->getPos();
+		float x = p.x - m_vPtarget.x;
+		float y = p.y - m_vPtarget.y;
+		float r = x*x + y*y;
+		IF_CONT(r > rSqr);
+//		IF_CONT(pO->getTopClassProb() < topProb);
+		IF_CONT(!bTargetClass(pO->getTopClass()));
 
 		tO = pO;
-		topProb = pO->getTopClassProb();
+//		topProb = pO->getTopClassProb();
+		rSqr = r;
 	}
 
-	return tO;
+	if(tO)
+	{
+		m_o = *tO;
+		m_oTstamp = m_tStamp;
+		return &m_o;
+	}
+
+	if(m_tStamp - m_oTstamp < m_oTimeout)
+	{
+		return &m_o;
+	}
+
+	return NULL;
+}
+
+bool _PickingArm::bTargetClass(int iClass)
+{
+	IF_T(m_vClass.empty());
+
+	for(PICKINGARM_CLASS c : m_vClass)
+	{
+		IF_CONT(c.m_iClass != iClass);
+		return true;
+	}
+
+	return false;
 }
 
 void _PickingArm::speed(const vFloat3& vS)
