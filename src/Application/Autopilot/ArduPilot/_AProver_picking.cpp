@@ -177,6 +177,7 @@ bool _AProver_picking::updatePicking(void)
 		m_pArmMC->transit("EXTERNAL");
 		m_pArm->move(vM);
 		m_pArm->grip((m_vRC[4].i())?false:true);
+		m_pArm->wakeUp();
 
 //		vM.init(-1.0);
 //		vM.x = m_vRC[3].v();

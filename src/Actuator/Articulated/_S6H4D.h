@@ -152,14 +152,10 @@ protected:
 	void readState(void);
 	void decodeState(void);
 
-	vFloat3 getTargetPos(void);
-	vFloat3 getTargetPosRaw(void);
-	vFloat3 getPos(void);
-	vFloat3 getPosRaw(void);
-	vFloat3 getTargetAngle(void);
-	vFloat3 getTargetAngleRaw(void);
-	vFloat3 getAngle(void);
-	vFloat3 getAngleRaw(void);
+	vFloat3 getPtarget(void);
+	vFloat3 getP(void);
+	vFloat3 getAtarget(void);
+	vFloat3 getA(void);
 
 	void gotoPos(vFloat3& vP);
 	void stickSpeed(vFloat3 &vM);
@@ -193,7 +189,7 @@ public:
 	vFloat3 m_vOrigin;
 	vFloat3 m_vLastValidP;
 
-	vFloat3 m_vPrawGoing;
+	vFloat3 m_vPgoing;
 	float m_pErr;
 
 	vector<S6H4D_VOL> m_vForbArea;

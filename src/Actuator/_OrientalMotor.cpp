@@ -104,11 +104,11 @@ void _OrientalMotor::sendCMD(void)
 	IF_(m_pA->m_p.m_vTarget < 0.0);
 
 	//update normalized value to actual unit
-	int32_t step = m_pA->m_p.getTargetRaw();
-	int32_t speed = m_pA->m_s.getTargetRaw();
-	int32_t accel = m_pA->m_a.getTargetRaw();
-	int32_t brake = m_pA->m_b.getTargetRaw();
-	int32_t current = m_pA->m_c.getTargetRaw();
+	int32_t step = m_pA->m_p.m_vTarget;
+	int32_t speed = m_pA->m_s.m_vTarget;
+	int32_t accel = m_pA->m_a.m_vTarget;
+	int32_t brake = m_pA->m_b.m_vTarget;
+	int32_t current = m_pA->m_c.m_vTarget;
 
 	//create the command
 	uint16_t pB[18];
@@ -154,10 +154,10 @@ void _OrientalMotor::readStatus(void)
 	//update actual unit to normalized value
 	IF_(m_pA->m_p.m_vTarget < 0.0);
 
-	m_pA->m_p.setRaw(MAKE32(pB[0], pB[1]));
-	m_pA->m_s.setRaw(MAKE32(pB[4], pB[5]));
+	m_pA->m_p.m_v = MAKE32(pB[0], pB[1]);
+	m_pA->m_s.m_v = MAKE32(pB[4], pB[5]);
 
-	LOG_I("step: "+f2str(m_pA->m_p.getRaw()) + ", speed: " + f2str(m_pA->m_s.getRaw()));
+	LOG_I("step: "+f2str(m_pA->m_p.m_v) + ", speed: " + f2str(m_pA->m_s.m_v));
 }
 
 void _OrientalMotor::draw(void)

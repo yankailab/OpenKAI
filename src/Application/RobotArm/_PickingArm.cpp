@@ -32,9 +32,9 @@ _PickingArm::_PickingArm()
 	m_vS.init(0.5);
 	m_vR.init(0.5);
 
-	m_vPrawRecover.init(0.0, 0.0, 0.0);
-	m_vPrawDeliver.init(-200, 300.0, 0.0);
-	m_vPrawDescend.init(-200, 300.0, -100.0);
+	m_vPrecover.init(0.0, 0.0, 0.0);
+	m_vPdeliver.init(-200, 300.0, 0.0);
+	m_vPdescend.init(-200, 300.0, -100.0);
 }
 
 _PickingArm::~_PickingArm()
@@ -49,9 +49,9 @@ bool _PickingArm::init(void *pKiss)
 	pK->v("vPtarget", &m_vPtarget);
 	pK->v("vZrange", &m_vZrange);
 	pK->v("zSpeed", &m_zSpeed);
-	pK->v("vPrawRecover", &m_vPrawRecover);
-	pK->v("vPrawDeliver", &m_vPrawDeliver);
-	pK->v("vPrawDescend", &m_vPrawDescend);
+	pK->v("vPrecover", &m_vPrecover);
+	pK->v("vPdeliver", &m_vPdeliver);
+	pK->v("vPdescend", &m_vPdescend);
 
 	Kiss *pClass = pK->child("class");
 	NULL_Fl(pClass, "class not found");
@@ -226,9 +226,9 @@ void _PickingArm::external(void)
 bool _PickingArm::recover(void)
 {
 	m_pA->atomicFrom();
-	m_pA->setPtargetRaw(0, m_vPrawRecover.x);
-	m_pA->setPtargetRaw(1, m_vPrawRecover.y);
-	m_pA->setPtargetRaw(2, m_vPrawRecover.z);
+	m_pA->setPtarget(0, m_vPrecover.x);
+	m_pA->setPtarget(1, m_vPrecover.y);
+	m_pA->setPtarget(2, m_vPrecover.z);
 	m_pA->atomicTo();
 
 	IF_F(!m_pA->bComplete(0));
@@ -276,13 +276,13 @@ bool _PickingArm::follow(void)
 	{
 		//no target is seen, ascend the arm
 		vFloat3 vS(0.5, 0.5, 0.5-m_zSpeed);
-		if(m_pA->getPraw(2) < m_vPrawRecover.z)
+		if(m_pA->getP(2) < m_vPrecover.z)
 			vS.z = 0.5;
 		speed(vS);
 		return false;
 	}
 
-	m_baseAngle = -m_pA->getPraw(3);
+	m_baseAngle = -m_pA->getP(3);
 	float rad = m_baseAngle * DEG_2_RAD;
 	float s = sin(rad);
 	float c = cos(rad);
@@ -333,9 +333,9 @@ void _PickingArm::speed(const vFloat3& vS)
 bool _PickingArm::ascend(void)
 {
 	m_pA->atomicFrom();
-	m_pA->setPtargetRaw(0, m_pA->getPraw(0));
-	m_pA->setPtargetRaw(1, m_pA->getPraw(1));
-	m_pA->setPtargetRaw(2, m_vPrawRecover.z);
+	m_pA->setPtarget(0, m_pA->getP(0));
+	m_pA->setPtarget(1, m_pA->getP(1));
+	m_pA->setPtarget(2, m_vPrecover.z);
 	m_pA->atomicTo();
 
 	IF_F(!m_pA->bComplete(2));
@@ -345,9 +345,9 @@ bool _PickingArm::ascend(void)
 bool _PickingArm::deliver(void)
 {
 	m_pA->atomicFrom();
-	m_pA->setPtargetRaw(0, m_vPrawDeliver.x);
-	m_pA->setPtargetRaw(1, m_vPrawDeliver.y);
-	m_pA->setPtargetRaw(2, m_vPrawDeliver.z);
+	m_pA->setPtarget(0, m_vPdeliver.x);
+	m_pA->setPtarget(1, m_vPdeliver.y);
+	m_pA->setPtarget(2, m_vPdeliver.z);
 	m_pA->atomicTo();
 
 	IF_F(!m_pA->bComplete(0));
@@ -359,9 +359,9 @@ bool _PickingArm::deliver(void)
 bool _PickingArm::descend(void)
 {
 	m_pA->atomicFrom();
-	m_pA->setPtargetRaw(0, m_vPrawDescend.x);
-	m_pA->setPtargetRaw(1, m_vPrawDescend.y);
-	m_pA->setPtargetRaw(2, m_vPrawDescend.z);
+	m_pA->setPtarget(0, m_vPdescend.x);
+	m_pA->setPtarget(1, m_vPdescend.y);
+	m_pA->setPtarget(2, m_vPdescend.z);
 	m_pA->atomicTo();
 
 	IF_F(!m_pA->bComplete(2));

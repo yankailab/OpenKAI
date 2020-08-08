@@ -18,61 +18,34 @@ struct ACTUATOR_AXIS_PARAM
 	float m_v;
 	float m_vTarget;
 	float m_vErr;
-	vFloat2 m_vRawRange;
+	vFloat2 m_vRange;
 
 	void init(void)
 	{
-		m_v = -1.0;
-		m_vTarget = -1.0;
+		m_v = 0.0;
+		m_vTarget = 0.0;
 		m_vErr = 0.0;
-		m_vRawRange.init(0.0);
+		m_vRange.init(0.0);
 	}
 
 	bool bComplete(void)
 	{
-		IF_T(m_v < 0.0);
-		IF_T(EQUAL(m_v, m_vTarget, m_vErr));
-
-		return false;
-	}
-
-	bool bValid(void)
-	{
-		IF_F(m_v < 0.0);
-		IF_F(m_v > 1.0);
+		IF_F(!EQUAL(m_v, m_vTarget, m_vErr));
 
 		return true;
 	}
 
-	void setTarget(float nV)
+	bool bInRange(void)
 	{
-		m_vTarget = constrain(nV, -1.0f, 1.0f);
+		IF_F(m_v < m_vRange.x);
+		IF_F(m_v > m_vRange.y);
+
+		return true;
 	}
 
-	void setTargetRaw(float rV)
+	void setTarget(float v)
 	{
-		float v = (float) (rV - m_vRawRange.x) / (float) m_vRawRange.len();
-		m_vTarget = constrain(v, -1.0f, 1.0f);
-	}
-
-	void set(float nV)
-	{
-		m_v = nV;
-	}
-
-	void setRaw(float rV)
-	{
-		m_v = (float) (rV - m_vRawRange.x) / (float) m_vRawRange.len();
-	}
-
-	float getRaw(void)
-	{
-		return m_v * m_vRawRange.d() + m_vRawRange.x;
-	}
-
-	float getTargetRaw(void)
-	{
-		return m_vTarget * m_vRawRange.d() + m_vRawRange.x;
+		m_vTarget = m_vRange.constrain(v);
 	}
 };
 
@@ -125,17 +98,14 @@ public:
 
 	virtual void atomicFrom(void);
 	virtual void atomicTo(void);
-	virtual void setPtarget(int i, float nP);
-	virtual void setPtargetRaw(int i, float rawP);
-	virtual void setStarget(int i, float nS);
+	virtual void setPtarget(int i, float p);
+	virtual void setStarget(int i, float s);
 	virtual void gotoOrigin(void);
 	virtual bool bComplete(void);
 	virtual bool bComplete(int i);
 
 	virtual float getP(int i);
 	virtual float getS(int i);
-	virtual float getPraw(int i);
-	virtual float getSraw(int i);
 
 protected:
 	virtual bool bCmdTimeout(void);

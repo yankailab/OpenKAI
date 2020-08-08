@@ -28,7 +28,7 @@
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"Console":"rovConsole",
-	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
@@ -36,7 +36,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"rovConsole",
 	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
@@ -48,7 +48,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"rovConsole",
@@ -65,10 +65,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"rovConsole",
-	"port":"/dev/ttyTHS1",
-	"baud":115200,
-	"/port":"/dev/ttyACM0",
-	"/baud":57600,
+	"/port":"/dev/ttyTHS1",
+	"/baud":115200,
+	"port":"/dev/ttyACM0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -271,28 +271,6 @@
 }
 
 {
-	"name":"tofSerial",
-	"class":"_SerialPort",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Console":"armConsole",
-	"port":"/dev/ttyACM0",
-	"baud":115200,
-}
-
-{
-	"name":"TOFsense",
-	"class":"_TOFsense",
-	"bInst":1,
-	"FPS":30,
-	"bLog":1,
-	"Window":"OKview",
-	"Console":"armConsole",
-	"_IOBase":"tofSerial",
-}
-
-{
 	"name":"armMission",
 	"class":"_MissionControl",
 	"FPS":30,
@@ -413,69 +391,114 @@
 		
 		{
 			"name":"X",
-			"pRawRange":[-1000,1000],
+			"pRange":[-1000,1000],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Y",
-			"pRawRange":[-1000,1000],
+			"pRange":[-1000,1000],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Z",
-			"pRawRange":[-500,100],
+			"pRange":[-500,100],
 			"pTarget":0.9,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"A1",
-			"pRawRange":[-130,130],
+			"pRange":[-130,130],
 		}
 		{
 			"name":"A2",
-			"pRawRange":[-30,50],
+			"pRange":[-30,50],
 		}
 		{
 			"name":"A3",
-			"pRawRange":[45,150],
+			"pRange":[45,150],
 		}	
 		{
 			"name":"A4",
-			"pRawRange":[-30,30],
+			"pRange":[-30,30],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"A5",
-			"pRawRange":[-15,15],
+			"pRange":[-15,15],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
 		}
 		{
 			"name":"Agripper",
-			"pRawRange":[-30,30],
+			"pRange":[-30,30],
 			"pTarget":0.5,
 			"pOrigin":0.5,
 			"pErr":0.1,
-			"sRawRange":[0,1000],
+			"sRange":[0,1000],
 			"sTarget":0.5,
+		}
+	}
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"armConsole",
+	"port":"/dev/ttyUSB1",
+	"baud":115200,
+	"parity":"N",
+}
+
+{
+	"name":"gripper",
+	"class":"_StepperGripper",
+	"bInst":1,
+	"FPS":10,
+	"bLog":1,
+	"Console":"armConsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+	"dpr":1,
+	"bFeedback":1,
+	"dInit":-20,
+	"tIntReadStatus":1000,
+	"pOpen":0,
+	"pClose":15,
+	"bOpen":1,
+
+	{
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":0.1,
+			"pRange":[0,15],
+			"sTarget":300,
+			"sRange":[50,300],
+			"aTarget":300,
+			"aRange":[10,300],
 		}
 	}
 }
@@ -521,48 +544,25 @@
 }
 
 {
-	"name":"modbus",
-	"class":"_Modbus",
+	"name":"tofSerial",
+	"class":"_SerialPort",
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Console":"armConsole",
-	"port":"/dev/ttyUSB1",
-	"baud":9600,
-	"parity":"N",
+	"port":"/dev/ttyACM0",
+	"baud":115200,
 }
 
 {
-	"name":"gripper",
-	"class":"_StepperGripper",
+	"name":"TOFsense",
+	"class":"_TOFsense",
 	"bInst":1,
-	"FPS":5,
+	"FPS":30,
 	"bLog":1,
+	"Window":"OKview",
 	"Console":"armConsole",
-	"_Modbus":"modbus",
-	"iSlave":1,
-	"dpr":1,
-	"bFeedback":1,
-	"dInit":-20,
-	"tIntReadStatus":100,
-	"pOpen":0,
-	"pClose":1,
-	"bOpen":1,
-
-	{
-		"name":"axis",
-		{
-			"name":"X",
-			"pOrigin":0.0,
-			"pTarget":0.0,
-			"pErr":0.1,
-			"pRawRange":[0,15],
-			"sTarget":1.0,
-			"sRawRange":[0,300],
-			"aTarget":1.0,
-			"aRawRange":[10,300],
-		}
-	}
+	"_IOBase":"tofSerial",
 }
 
 {
@@ -627,9 +627,9 @@
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
 	"vZrange":[0.0, 0.06, 0.15, 0.3],
-	"vPrawRecover":[0, 0, 0],
-	"vPrawDeliver":[-200, -300, 0],
-	"vPrawDescend":[-200, -300, -100],
+	"vPrecover":[0, 0, 0],
+	"vPdeliver":[-200, -300, 0],
+	"vPdescend":[-200, -300, -100],
 	"zSpeed":0.2,
 
 	{

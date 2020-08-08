@@ -31,14 +31,14 @@ protected:
 	bool setSpeed(void);
 	bool setAccel(void);
 	bool setBrake(void);
-	void resetPos(void);
+	bool resetPos(void);
 	bool bComplete(void);
 
-	void run(void);
-	void stop(void);
+	bool run(void);
+	bool stop(void);
 	bool initPos(void);
 
-	void readStatus(void);
+	bool readStatus(void);
 	void updateMove(void);
 	void update(void);
 	static void* getUpdateThread(void* This)

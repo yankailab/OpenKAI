@@ -27,6 +27,7 @@ public:
 	bool bGrip(void);
 
 private:
+	bool setMove(bool bOpen);
 	void updateMove(void);
 	void update(void);
 	static void* getUpdateThread(void* This)

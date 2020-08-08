@@ -169,7 +169,7 @@ void _ArduServo::updatePWM(void)
 
 	m_pIO->write(m_pBuf, OKLINK_N_HEADER + nChan * 2);
 
-	pA->m_p.setRaw(pA->m_p.m_vTarget);
+	pA->m_p.m_v = pA->m_p.m_vTarget;
 }
 
 void _ArduServo::draw(void)

@@ -49,27 +49,27 @@ bool _ActuatorBase::init(void* pKiss)
 		pA->v("p", &a.m_p.m_v);
 		pA->v("pTarget", &a.m_p.m_vTarget);
 		pA->v("pErr", &a.m_p.m_vErr);
-		pA->v("pRawRange", &a.m_p.m_vRawRange);
+		pA->v("pRange", &a.m_p.m_vRange);
 
 		pA->v("s", &a.m_s.m_v);
 		pA->v("sTarget", &a.m_s.m_vTarget);
 		pA->v("sErr", &a.m_s.m_vErr);
-		pA->v("sRawRange", &a.m_s.m_vRawRange);
+		pA->v("sRange", &a.m_s.m_vRange);
 
 		pA->v("a", &a.m_a.m_v);
 		pA->v("aTarget", &a.m_a.m_vTarget);
 		pA->v("aErr", &a.m_a.m_vErr);
-		pA->v("aRawRange", &a.m_a.m_vRawRange);
+		pA->v("aRange", &a.m_a.m_vRange);
 
 		pA->v("b", &a.m_b.m_v);
 		pA->v("bTarget", &a.m_b.m_vTarget);
 		pA->v("bErr", &a.m_b.m_vErr);
-		pA->v("bRawRange", &a.m_b.m_vRawRange);
+		pA->v("bRange", &a.m_b.m_vRange);
 
 		pA->v("c", &a.m_c.m_v);
 		pA->v("cTarget", &a.m_c.m_vTarget);
 		pA->v("cErr", &a.m_c.m_vErr);
-		pA->v("cRawRange", &a.m_c.m_vRawRange);
+		pA->v("cRange", &a.m_c.m_vRange);
 
 		m_vAxis.push_back(a);
 	}
@@ -127,37 +127,25 @@ void _ActuatorBase::atomicTo(void)
 	pthread_mutex_unlock(&m_mutex);
 }
 
-void _ActuatorBase::setPtarget(int i, float nP)
+void _ActuatorBase::setPtarget(int i, float p)
 {
 	IF_(i<0);
 	IF_(i>=m_vAxis.size());
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
-	pA->m_p.setTarget(nP);
+	pA->m_p.setTarget(p);
 
 	m_lastCmdType = actCmd_pos;
 	m_tLastCmd = m_tStamp;
 }
 
-void _ActuatorBase::setPtargetRaw(int i, float rawP)
+void _ActuatorBase::setStarget(int i, float s)
 {
 	IF_(i<0);
 	IF_(i>=m_vAxis.size());
 
 	ACTUATOR_AXIS* pA = &m_vAxis[i];
-	pA->m_p.setTargetRaw(rawP);
-
-	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = m_tStamp;
-}
-
-void _ActuatorBase::setStarget(int i, float nS)
-{
-	IF_(i<0);
-	IF_(i>=m_vAxis.size());
-
-	ACTUATOR_AXIS* pA = &m_vAxis[i];
-	pA->m_s.setTarget(nS);
+	pA->m_s.setTarget(s);
 
 	m_lastCmdType = actCmd_spd;
 	m_tLastCmd = m_tStamp;
@@ -207,20 +195,6 @@ float _ActuatorBase::getS(int i)
 	return m_vAxis[i].m_s.m_v;
 }
 
-float _ActuatorBase::getPraw(int i)
-{
-	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
-
-	return m_vAxis[i].m_p.getRaw();
-}
-
-float _ActuatorBase::getSraw(int i)
-{
-	IF__(i<0 || i>=m_vAxis.size(), FLT_MAX);
-
-	return m_vAxis[i].m_s.getRaw();
-}
-
 void _ActuatorBase::draw(void)
 {
 	this->_ThreadBase::draw();
@@ -233,37 +207,32 @@ void _ActuatorBase::draw(void)
 		addMsg(pA->m_name, 1);
 		addMsg("p=" + f2str(pA->m_p.m_v) +
 				", pT=" + f2str(pA->m_p.m_vTarget) +
-				", pR=" + f2str(pA->m_p.getRaw()) +
-				", pRange=[" + f2str(pA->m_p.m_vRawRange.x) + ", " + f2str(pA->m_p.m_vRawRange.y) + "]" +
+				", pRange=[" + f2str(pA->m_p.m_vRange.x) + ", " + f2str(pA->m_p.m_vRange.y) + "]" +
 				", pO=" + f2str(pA->m_pOrigin) +
 				", pE=" + f2str(pA->m_p.m_vErr)
 				, 1);
 
 		addMsg("s=" + f2str(pA->m_s.m_v) +
 				", sT=" + f2str(pA->m_s.m_vTarget) +
-				", sR=" + f2str(pA->m_s.getRaw()) +
-				", sRange=[" + f2str(pA->m_s.m_vRawRange.x) + ", " + f2str(pA->m_s.m_vRawRange.y) + "]" +
+				", sRange=[" + f2str(pA->m_s.m_vRange.x) + ", " + f2str(pA->m_s.m_vRange.y) + "]" +
 				", sE=" + f2str(pA->m_s.m_vErr)
 				, 1);
 
 		addMsg("a=" + f2str(pA->m_a.m_v) +
 				", aT=" + f2str(pA->m_a.m_vTarget) +
-				", aR=" + f2str(pA->m_a.getRaw()) +
-				", aRange=[" + f2str(pA->m_a.m_vRawRange.x) + ", " + f2str(pA->m_a.m_vRawRange.y) + "]" +
+				", aRange=[" + f2str(pA->m_a.m_vRange.x) + ", " + f2str(pA->m_a.m_vRange.y) + "]" +
 				", aE=" + f2str(pA->m_a.m_vErr)
 				, 1);
 
 		addMsg("b=" + f2str(pA->m_b.m_v) +
 				", bT=" + f2str(pA->m_b.m_vTarget) +
-				", bR=" + f2str(pA->m_b.getRaw()) +
-				", bRange=[" + f2str(pA->m_b.m_vRawRange.x) + ", " + f2str(pA->m_b.m_vRawRange.y) + "]" +
+				", bRange=[" + f2str(pA->m_b.m_vRange.x) + ", " + f2str(pA->m_b.m_vRange.y) + "]" +
 				", bE=" + f2str(pA->m_b.m_vErr)
 				, 1);
 
 		addMsg("c=" + f2str(pA->m_c.m_v) +
 				", cT=" + f2str(pA->m_c.m_vTarget) +
-				", cR=" + f2str(pA->m_c.getRaw()) +
-				", cRange=[" + f2str(pA->m_c.m_vRawRange.x) + ", " + f2str(pA->m_c.m_vRawRange.y) + "]" +
+				", cRange=[" + f2str(pA->m_c.m_vRange.x) + ", " + f2str(pA->m_c.m_vRange.y) + "]" +
 				", cE=" + f2str(pA->m_c.m_vErr)
 				, 1);
 	}

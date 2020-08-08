@@ -15,7 +15,7 @@ _S6H4D::_S6H4D()
 	m_vOriginTarget.init(0.0);
 	m_vOrigin.init(0.0);
 	m_vLastValidP.init(0.0);
-	m_vPrawGoing.init(0.0);
+	m_vPgoing.init(0.0);
 	m_pErr = 0.1;
 
 	m_nMinAxis = 6;
@@ -117,7 +117,7 @@ void _S6H4D::update(void)
 
 		if(m_bMoving)
 		{
-			if(getPosRaw().bEqual(m_vPrawGoing, m_pErr))
+			if(getP().bEqual(m_vPgoing, m_pErr))
 				m_bMoving = false;
 		}
 		else if(checkArm())
@@ -146,7 +146,7 @@ bool _S6H4D::checkArm(void)
 	IF_F(check() < 0);
 
 	IF_F(!checkForbiddenArea());
-	m_vLastValidP = getPos();
+	m_vLastValidP = getP();
 
 	if (bCmdTimeout())
 	{
@@ -162,7 +162,7 @@ bool _S6H4D::checkForbiddenArea(void)
 {
 	IF_F(check() < 0);
 
-	vFloat3 vPraw = getPosRaw() + m_vOrigin;
+	vFloat3 vPraw = getP() + m_vOrigin;
 	for (S6H4D_VOL a : m_vForbArea)
 	{
 		IF_CONT(a.bValid(vPraw));
@@ -188,7 +188,7 @@ void _S6H4D::gotoPos(vFloat3& vP)
 	updatePos();
 }
 
-vFloat3 _S6H4D::getTargetPos(void)
+vFloat3 _S6H4D::getPtarget(void)
 {
 	pthread_mutex_lock(&m_mutex);
 	vFloat3 v(m_vAxis[0].m_p.m_vTarget,
@@ -199,18 +199,7 @@ vFloat3 _S6H4D::getTargetPos(void)
 	return v;
 }
 
-vFloat3 _S6H4D::getTargetPosRaw(void)
-{
-	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[0].m_p.getTargetRaw(),
-			  m_vAxis[1].m_p.getTargetRaw(),
-			  m_vAxis[2].m_p.getTargetRaw());
-	pthread_mutex_unlock(&m_mutex);
-
-	return v;
-}
-
-vFloat3 _S6H4D::getPos(void)
+vFloat3 _S6H4D::getP(void)
 {
 	pthread_mutex_lock(&m_mutex);
 	vFloat3 v(m_vAxis[0].m_p.m_v,
@@ -221,18 +210,7 @@ vFloat3 _S6H4D::getPos(void)
 	return v;
 }
 
-vFloat3 _S6H4D::getPosRaw(void)
-{
-	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[0].m_p.getRaw(),
-			  m_vAxis[1].m_p.getRaw(),
-			  m_vAxis[2].m_p.getRaw());
-	pthread_mutex_unlock(&m_mutex);
-
-	return v;
-}
-
-vFloat3 _S6H4D::getTargetAngle(void)
+vFloat3 _S6H4D::getAtarget(void)
 {
 	pthread_mutex_lock(&m_mutex);
 	vFloat3 v(m_vAxis[6].m_p.m_vTarget,
@@ -243,18 +221,7 @@ vFloat3 _S6H4D::getTargetAngle(void)
 	return v;
 }
 
-vFloat3 _S6H4D::getTargetAngleRaw(void)
-{
-	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[6].m_p.getTargetRaw(),
-			  m_vAxis[7].m_p.getTargetRaw(),
-			  m_vAxis[8].m_p.getTargetRaw());
-	pthread_mutex_unlock(&m_mutex);
-
-	return v;
-}
-
-vFloat3 _S6H4D::getAngle(void)
+vFloat3 _S6H4D::getA(void)
 {
 	pthread_mutex_lock(&m_mutex);
 	vFloat3 v(m_vAxis[6].m_p.m_v,
@@ -265,27 +232,16 @@ vFloat3 _S6H4D::getAngle(void)
 	return v;
 }
 
-vFloat3 _S6H4D::getAngleRaw(void)
-{
-	pthread_mutex_lock(&m_mutex);
-	vFloat3 v(m_vAxis[6].m_p.getRaw(),
-			  m_vAxis[7].m_p.getRaw(),
-			  m_vAxis[8].m_p.getRaw());
-	pthread_mutex_unlock(&m_mutex);
-
-	return v;
-}
-
 void _S6H4D::updatePos(void)
 {
 	IF_(check() < 0);
 
-	vFloat3 vP = getTargetPosRaw();
-	vFloat3 vA = getTargetAngleRaw();
+	vFloat3 vP = getPtarget();
+	vFloat3 vA = getAtarget();
 	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
 
 	armGotoPos(vP, vA, s);
-	m_vPrawGoing = vP;
+	m_vPgoing = vP;
 	m_bMoving = true;
 }
 
@@ -475,19 +431,19 @@ void _S6H4D::decodeState(void)
 	switch (m_state.m_pB[7])
 	{
 	case 0:
-		m_vAxis[0].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x);
-		m_vAxis[1].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y);
-		m_vAxis[2].m_p.setRaw(0.1 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z);
+		m_vAxis[0].m_p.m_v = 0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder) - m_vOriginTarget.x;
+		m_vAxis[1].m_p.m_v = 0.1 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder) - m_vOriginTarget.y;
+		m_vAxis[2].m_p.m_v = 0.1 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder) - m_vOriginTarget.z;
 		break;
 	case 1:
-		m_vAxis[3].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[4].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[5].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[3].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_vAxis[4].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_vAxis[5].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 2:
-		m_vAxis[6].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder));
-		m_vAxis[7].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder));
-		m_vAxis[8].m_p.setRaw(0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder));
+		m_vAxis[6].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder);
+		m_vAxis[7].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[3], m_bOrder);
+		m_vAxis[8].m_p.m_v = 0.01 * (float) unpack_int16(&m_state.m_pB[5], m_bOrder);
 		break;
 	case 3:
 		m_vOrigin.x = 0.1 * (float) unpack_int16(&m_state.m_pB[1], m_bOrder);

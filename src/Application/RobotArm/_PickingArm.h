@@ -105,9 +105,9 @@ public:
 	vFloat4	m_vZrange;
 	float m_zSpeed;
 
-	vFloat3 m_vPrawRecover;
-	vFloat3 m_vPrawDeliver;
-	vFloat3 m_vPrawDescend;
+	vFloat3 m_vPrecover;
+	vFloat3 m_vPdeliver;
+	vFloat3 m_vPdescend;
 
 	vFloat3 m_vS;
 	vFloat3 m_vR;
