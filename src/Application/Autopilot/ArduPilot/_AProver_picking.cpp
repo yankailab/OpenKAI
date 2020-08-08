@@ -46,6 +46,13 @@ bool _AProver_picking::init(void* pKiss)
 		m_vRC.push_back(rc);
 	}
 
+	IF_F(!m_pMC);
+	m_iMission.STANDBY = m_pMC->getMissionIdx("STANDBY");
+	m_iMission.MANUAL = m_pMC->getMissionIdx("MANUAL");
+	m_iMission.AUTOPICK = m_pMC->getMissionIdx("AUTOPICK");
+	m_iMission.AUTO = m_pMC->getMissionIdx("AUTO");
+	IF_F(!m_iMission.bValid());
+
 	string iName;
 	iName = "";
 	pK->v("_AP_base", &iName);
@@ -105,7 +112,7 @@ void _AProver_picking::update(void)
 
 		if(!updateDrive())
 		{
-			m_pMC->transit("STANDBY");
+			m_pMC->transit(m_iMission.STANDBY);
 //			m_pDrive->setSpeed(0.0);
 //			m_pDrive->setYaw(0.0);
 		}
@@ -135,13 +142,13 @@ bool _AProver_picking::updateDrive(void)
 	switch(iMode)
 	{
 	case 0:
-		m_pMC->transit("MANUAL");
+		m_pMC->transit(m_iMission.MANUAL);
 		break;
 	case 1:
-		m_pMC->transit("AUTOPICK");
+		m_pMC->transit(m_iMission.AUTOPICK);
 		break;
 	case 2:
-		m_pMC->transit("AUTO");
+		m_pMC->transit(m_iMission.AUTO);
 		break;
 	}
 
@@ -164,10 +171,14 @@ bool _AProver_picking::updatePicking(void)
 		pRC->pwm(r);
 	}
 
-	string mission = m_pMC->getMissionName();
+	int iM = m_pMC->getMissionIdx();
 	string armMission = m_pArmMC->getMissionName();
 
-	if(mission == "MANUAL")
+	if(iM == m_iMission.STANDBY)
+	{
+
+	}
+	else if(iM == m_iMission.MANUAL)
 	{
 		vFloat3 vM;
 		vM.x = m_vRC[0].v();

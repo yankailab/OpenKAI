@@ -55,6 +55,7 @@ public:
 	ACTUATOR_AXIS* m_pA;
 
 	int32_t m_dInit;
+	uint32_t m_cmdInt;
 
 	INTERVAL_EVENT m_ieReadStatus;
 

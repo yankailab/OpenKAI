@@ -24,6 +24,7 @@ _PickingArm::_PickingArm()
 	m_vPtarget.init(0.5,0.5,0.0);
 	m_vZrange.init(0.0, 0.06, 0.15, 30.0);
 	m_zSpeed = 0.2;
+	m_zrK = 1.0;
 
 	m_pXpid = NULL;
 	m_pYpid = NULL;
@@ -49,6 +50,7 @@ bool _PickingArm::init(void *pKiss)
 	pK->v("vPtarget", &m_vPtarget);
 	pK->v("vZrange", &m_vZrange);
 	pK->v("zSpeed", &m_zSpeed);
+	pK->v("zrK", &m_zrK);
 	pK->v("vPrecover", &m_vPrecover);
 	pK->v("vPdeliver", &m_vPdeliver);
 	pK->v("vPdescend", &m_vPdescend);
@@ -276,7 +278,7 @@ bool _PickingArm::follow(void)
 	{
 		//no target is seen, ascend the arm
 		vFloat3 vS(0.5, 0.5, 0.5-m_zSpeed);
-		if(m_pA->getP(2) < m_vPrecover.z)
+		if(m_pA->getP(2) > m_vPrecover.z)
 			vS.z = 0.5;
 		speed(vS);
 		return false;
@@ -296,7 +298,7 @@ bool _PickingArm::follow(void)
 
 	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_tStamp);
 	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_tStamp);
-	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_tStamp) * constrain(1.0 - r*0.707106781, 0.0, 1.0); //r/root(2)
+	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_tStamp) * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 	speed(m_vS);
 
 	return false;
@@ -333,12 +335,15 @@ void _PickingArm::speed(const vFloat3& vS)
 bool _PickingArm::ascend(void)
 {
 	m_pA->atomicFrom();
-	m_pA->setPtarget(0, m_pA->getP(0));
-	m_pA->setPtarget(1, m_pA->getP(1));
+	m_pA->setPtarget(0, m_vPrecover.x);
+	m_pA->setPtarget(1, m_vPrecover.y);
 	m_pA->setPtarget(2, m_vPrecover.z);
 	m_pA->atomicTo();
 
+	IF_F(!m_pA->bComplete(0));
+	IF_F(!m_pA->bComplete(1));
 	IF_F(!m_pA->bComplete(2));
+
 	return true;
 }
 

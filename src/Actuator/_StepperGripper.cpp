@@ -55,7 +55,6 @@ void _StepperGripper::update(void)
 	{
 		this->autoFPSfrom();
 
-//		readStatus();
 		updateMove();
 
 		this->autoFPSto();
@@ -66,30 +65,10 @@ void _StepperGripper::updateMove(void)
 {
 	IF_(check()<0);
 
-//	IF_(!m_pA->m_p.bComplete());
-//
-//	if(EQUAL(m_pA->m_p.m_v, m_pOpen, m_pA->m_p.m_vErr))
-//	{
-//		m_bState = true;
-//	}
-//	else if(EQUAL(m_pA->m_p.m_v, m_pClose, m_pA->m_p.m_vErr))
-//	{
-//		m_bState = false;
-//	}
-//	else
-//	{
-//		initPos();
-//		return;
-//	}
-
 	IF_(m_bState == m_bOpen);
-
-//	setPtarget(0, m_bOpen?m_pOpen:m_pClose);
 	IF_(!setMove(!m_bState));
 	IF_(!run());
-	this->sleepTime(100000);
-	while(!bComplete())
-		this->sleepTime(100000);
+	while(!bComplete());
 	m_bState = !m_bState;
 }
 
@@ -107,11 +86,11 @@ bool _StepperGripper::setMove(bool bOpen)
 	pB[0] = HIGH16(ds);
 	pB[1] = LOW16(ds);
 	IF_F(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2);
-	this->sleepTime(100000);
+	this->sleepTime(m_cmdInt);
 
 	pB[0] = (step > 0)?0:1;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1);
-	this->sleepTime(100000);
+	this->sleepTime(m_cmdInt);
 
 	return true;
 }

@@ -13,6 +13,24 @@
 namespace kai
 {
 
+struct AP_PICKING_MISSION
+{
+	int8_t STANDBY;
+	int8_t MANUAL;
+	int8_t AUTOPICK;
+	int8_t AUTO;
+
+	bool bValid(void)
+	{
+		IF_F(STANDBY < 0);
+		IF_F(MANUAL < 0);
+		IF_F(AUTOPICK < 0);
+		IF_F(AUTO < 0);
+
+		return true;
+	}
+};
+
 class _AProver_picking: public _MissionBase
 {
 public:
@@ -43,6 +61,8 @@ public:
 
 	RC_CHANNEL m_rcMode;
 	vector<RC_CHANNEL>	m_vRC; //x,y,z,yaw,gripper
+
+	AP_PICKING_MISSION m_iMission;
 
 };
 

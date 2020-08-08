@@ -104,6 +104,7 @@ public:
 	PIDctrl* m_pZpid;
 	vFloat4	m_vZrange;
 	float m_zSpeed;
+	float m_zrK;
 
 	vFloat3 m_vPrecover;
 	vFloat3 m_vPdeliver;

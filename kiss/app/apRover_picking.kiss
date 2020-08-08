@@ -28,7 +28,7 @@
 	"bDrawMsg":1,
 	"bFullScreen":0,
 	"Console":"rovConsole",
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
@@ -36,7 +36,7 @@
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"rovConsole",
 	"/pipeline":"v4l2src device=/dev/video0 ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue ! videoconvert ! appsink t. ! queue ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
@@ -48,7 +48,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"rovConsole",
@@ -65,10 +65,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"rovConsole",
-	"/port":"/dev/ttyTHS1",
-	"/baud":115200,
-	"port":"/dev/ttyACM0",
-	"baud":57600,
+	"port":"/dev/ttyTHS1",
+	"baud":115200,
+	"/port":"/dev/ttyACM0",
+	"/baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -346,9 +346,9 @@
 	"bLog":1,
 	"Console":"armConsole",
 	"_IOBase":"armSerial",
-	"vOriginTarget":[350, 0.0, 400],
-	"vSpeedRange":[0, 30000],
-	"speed":0.1,
+	"vOriginTarget":[350, 0.0, 300],
+	"vSpeedRange":[0, 5000],
+	"speed":2000,
 	"pErr":1.0,
 	
 	{
@@ -483,6 +483,7 @@
 	"bFeedback":1,
 	"dInit":-20,
 	"tIntReadStatus":1000,
+	"cmdInt":10000,
 	"pOpen":0,
 	"pClose":15,
 	"bOpen":1,
@@ -495,8 +496,8 @@
 			"pTarget":0,
 			"pErr":0.1,
 			"pRange":[0,15],
-			"sTarget":300,
-			"sRange":[50,300],
+			"sTarget":350,
+			"sRange":[50,350],
 			"aTarget":300,
 			"aRange":[10,300],
 		}
@@ -576,8 +577,8 @@
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":0.3,
-	"oMax":0.7,
+	"oMin":-0.3,
+	"oMax":0.3,
 }
 
 {
@@ -591,8 +592,8 @@
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":0.3,
-	"oMax":0.7,
+	"oMin":-0.3,
+	"oMax":0.3,
 }
 
 {
@@ -601,13 +602,13 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"armConsole",
-	"P":1.0,
+	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":0.3,
-	"oMax":0.7,
+	"oMin":-0.3,
+	"oMax":0.3,
 }
 
 {
@@ -627,11 +628,12 @@
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
 	"vZrange":[0.0, 0.06, 0.15, 0.3],
-	"vPrecover":[0, 0, 0],
-	"vPdeliver":[-200, -300, 0],
-	"vPdescend":[-200, -300, -100],
+	"vPrecover":[0, 0, 200],
+	"vPdeliver":[-500, 300, 200],
+	"vPdescend":[-500, 300, -100],
 	"zSpeed":0.2,
-
+	"zrK":1.0,
+	
 	{
 		"name":"/class",
 		

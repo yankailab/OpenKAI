@@ -10,8 +10,8 @@ _S6H4D::_S6H4D()
 
 	m_bOrder = true;
 	m_mode = 1;
-	m_vSpeedRange.init(0.0, 1e5);
-	m_speed = 1.0;
+	m_vSpeedRange.init(0.0, 5000);
+	m_speed = 2000;
 	m_vOriginTarget.init(0.0);
 	m_vOrigin.init(0.0);
 	m_vLastValidP.init(0.0);
@@ -102,7 +102,7 @@ void _S6H4D::update(void)
 	while (m_vOrigin != m_vOriginTarget)
 	{
 		armSetOrigin(m_vOriginTarget);
-		this->sleepTime(USEC_1SEC);
+		this->sleepTime(100000);
 		readState();
 	}
 	stickStop();
@@ -162,10 +162,10 @@ bool _S6H4D::checkForbiddenArea(void)
 {
 	IF_F(check() < 0);
 
-	vFloat3 vPraw = getP() + m_vOrigin;
+	vFloat3 vP = getP() + m_vOrigin;
 	for (S6H4D_VOL a : m_vForbArea)
 	{
-		IF_CONT(a.bValid(vPraw));
+		IF_CONT(a.bValid(vP));
 
 		gotoPos(m_vLastValidP);
 		return false;
@@ -238,7 +238,7 @@ void _S6H4D::updatePos(void)
 
 	vFloat3 vP = getPtarget();
 	vFloat3 vA = getAtarget();
-	float s = m_speed * m_vSpeedRange.d() + m_vSpeedRange.x;
+	float s = m_vSpeedRange.constrain(m_speed);
 
 	armGotoPos(vP, vA, s);
 	m_vPgoing = vP;
