@@ -12,13 +12,13 @@
 {
 	"name":"rovConsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
 	"name":"armConsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -67,7 +67,7 @@
 	"Console":"rovConsole",
 	"port":"/dev/ttyTHS1",
 	"baud":115200,
-	"/port":"/dev/ttyACM0",
+	"/port":"/dev/ttyACM1",
 	"/baud":57600,
 	"_wakeUp":"apMavlink",
 }
@@ -346,9 +346,9 @@
 	"bLog":1,
 	"Console":"armConsole",
 	"_IOBase":"armSerial",
-	"vOriginTarget":[350, 0.0, 300],
-	"vSpeedRange":[0, 5000],
-	"speed":3000,
+	"vOriginTarget":[0, 0, 0],
+	"vSpeedRange":[0, 15000],
+	"speed":10000,
 	"pErr":1.0,
 	
 	{
@@ -367,14 +367,14 @@
 			"type":1,
 			"bInside":1,
 			"vC":[0, 0, 0],
-			"vR":[150, 600],
+			"vR":[150, 650],
 		}
 		{
 			"name":"armBaseRange",
 			"type":2,
 			"bInside":1,
 			"vC":[0, 0, 0],
-			"vR":[150, 600],
+			"vR":[150, 650],
 		}
 		{
 			"name":"boxLim",
@@ -384,6 +384,14 @@
 			"vY":[-1000, 1000],
 			"vZ":[-1000, 1000],
 		}
+		{
+			"name":"ground",
+			"type":0,
+			"bInside":0,
+			"vX":[-1000, 1000],
+			"vY":[-1000, 1000],
+			"vZ":[-1000, -200],
+		}
 	}
 	
 	{
@@ -392,68 +400,65 @@
 		{
 			"name":"X",
 			"pRange":[-1000,1000],
-			"pTarget":0.5,
-			"pOrigin":0.5,
-			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
+			"pTarget":350,
+			"pOrigin":350,
+			"pErr":1,
 		}
 		{
 			"name":"Y",
 			"pRange":[-1000,1000],
-			"pTarget":0.5,
-			"pOrigin":0.5,
-			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
+			"pTarget":0,
+			"pOrigin":0,
+			"pErr":1,
 		}
 		{
 			"name":"Z",
-			"pRange":[-500,100],
-			"pTarget":0.9,
-			"pOrigin":0.5,
-			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
+			"pRange":[-500,500],
+			"pTarget":300,
+			"pOrigin":300,
+			"pErr":1,
 		}
 		{
 			"name":"A1",
 			"pRange":[-130,130],
+			"pTarget":0,
+			"pOrigin":0,
+			"pErr":0.1,
 		}
 		{
 			"name":"A2",
 			"pRange":[-30,50],
+			"pTarget":0,
+			"pOrigin":0,
+			"pErr":0.1,
 		}
 		{
 			"name":"A3",
 			"pRange":[45,150],
+			"pTarget":0,
+			"pOrigin":0,
+			"pErr":0.1,
 		}	
 		{
 			"name":"A4",
 			"pRange":[-30,30],
-			"pTarget":0.5,
-			"pOrigin":0.5,
+			"pTarget":0,
+			"pOrigin":0,
 			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
 		}
 		{
 			"name":"A5",
 			"pRange":[-15,15],
-			"pTarget":0.5,
-			"pOrigin":0.5,
+			"pTarget":0,
+			"pOrigin":0,
 			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
 		}
 		{
 			"name":"Agripper",
 			"pRange":[-30,30],
-			"pTarget":0.5,
-			"pOrigin":0.5,
+			"pTarget":0,
+			"pOrigin":0,
 			"pErr":0.1,
-			"sRange":[0,1000],
-			"sTarget":0.5,
 		}
 	}
 }
@@ -494,7 +499,7 @@
 			"name":"X",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":0.1,
+			"pErr":1,
 			"pRange":[0,15],
 			"sTarget":350,
 			"sRange":[50,350],
@@ -578,8 +583,8 @@
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -593,8 +598,8 @@
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -608,8 +613,8 @@
 	"Imax":0.0,
 	"D":0.0,
 	"dT":0.0,
-	"oMin":-0.3,
-	"oMax":0.3,
+	"oMin":-0.5,
+	"oMax":0.5,
 }
 
 {
@@ -628,21 +633,25 @@
 	"PIDx":"PIDx",
 	"PIDy":"PIDy",
 	"PIDz":"PIDz",
-	"vZrange":[0.0, 0.08, 0.13, 0.3],
-	"vPrecover":[0, 0, 100],
-	"vPdeliver":[-500, 300, 200],
-	"vPdescend":[-500, 300, -100],
-	"zSpeed":0.2,
-	"zrK":1.0,
+	"vZrange":[0.03, 0.09, 0.2, 0.3],
+	"vPrecover":[350, 0, 400],
+	"vPdeliver":[-150, 300, 400],
+	"vPdescend":[-150, 300, 250],
+	"zSpeed":0.3,
+	"zrK":1.5,
+	"oTimeout":1000000,
 	
 	{
 		"name":"class",
 		
 		{
-			"iClass":53,
+			"iClass":0,
 		}
 		{
 			"iClass":53,
+		}
+		{
+			"iClass":84,
 		}
 	}			
 }

@@ -281,10 +281,8 @@ bool _PickingArm::follow(void)
 	if(!tO)
 	{
 		//no target is seen, ascend the arm
-		vFloat3 vS(0.5, 0.5, 0.5-m_zSpeed);
-		if(m_pA->getP(2) > m_vPrecover.z)
-			vS.z = 0.5;
-		speed(vS);
+		//TODO: set speed
+		recover();
 		return false;
 	}
 

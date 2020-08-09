@@ -25,7 +25,7 @@ struct ACTUATOR_AXIS_PARAM
 		m_v = 0.0;
 		m_vTarget = 0.0;
 		m_vErr = 0.0;
-		m_vRange.init(0.0);
+		m_vRange.init(-FLT_MAX, FLT_MAX);
 	}
 
 	bool bComplete(void)

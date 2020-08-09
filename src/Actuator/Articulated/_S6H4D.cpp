@@ -13,7 +13,7 @@ _S6H4D::_S6H4D()
 	m_vSpeedRange.init(0.0, 5000);
 	m_speed = 2000;
 	m_vOriginTarget.init(0.0);
-	m_vOrigin.init(0.0);
+	m_vOrigin.init(FLT_MAX);
 	m_vLastValidP.init(0.0);
 	m_vPgoing.init(0.0);
 	m_pErr = 0.1;
