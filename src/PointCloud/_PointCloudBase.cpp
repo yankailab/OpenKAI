@@ -16,7 +16,6 @@ _PointCloudBase::_PointCloudBase()
 {
 	m_bOpen = false;
 	m_type = pointCloud_unknown;
-	m_pPC = NULL;
 	m_spPC = shared_ptr<PointCloud>(new PointCloud);
 }
 

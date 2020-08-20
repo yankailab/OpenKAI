@@ -42,7 +42,6 @@ public:
 	virtual POINTCLOUD_TYPE getType(void);
 
 public:
-	PointCloud* m_pPC;
 	shared_ptr<PointCloud> m_spPC;
 
 	bool m_bOpen;

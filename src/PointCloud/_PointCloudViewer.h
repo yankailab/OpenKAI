@@ -30,7 +30,7 @@ public:
 	virtual void draw(void);
 	virtual POINTCLOUD_TYPE getType(void);
 
-	void render(shared_ptr<PointCloud> spPC);
+	void render(PointCloud* pPC);
 
 private:
 	void render(void);
@@ -45,6 +45,7 @@ public:
 	Visualizer m_vis;
 	vInt2 m_vWinSize;
 	string m_fName;
+	PointCloud* m_pPC;
 
 	pthread_mutex_t m_mutex;
 };

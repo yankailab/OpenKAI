@@ -27,11 +27,13 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	void draw(void);
 	bool open(void);
 	void close(void);
+	int check(void);
+	void draw(void);
 
 private:
+	void updatePC(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -44,6 +46,9 @@ public:
 	_RealSense* m_pRS;
     rs2::pointcloud m_rsPC;
     rs2::points m_rsPoints;
+    PointCloud* m_pPC;
+
+	pthread_mutex_t m_mutex;
 
     Image m_imgD;
     Image m_imgRGB;

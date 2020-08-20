@@ -19,10 +19,14 @@ _RealSensePC::_RealSensePC()
 	m_type = pointCloud_realsense;
 	m_pRS = NULL;
 	m_pViewer = NULL;
+
+	m_pPC = new PointCloud();
+	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _RealSensePC::~_RealSensePC()
 {
+	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _RealSensePC::init(void* pKiss)
@@ -78,41 +82,85 @@ bool _RealSensePC::start(void)
 	return true;
 }
 
+int _RealSensePC::check(void)
+{
+	IF__(!open(), -1);
+	NULL__(m_pRS, -1);
+	IF__(m_pRS->BGR()->m()->empty(), -1);
+
+	return 0;
+}
+
 void _RealSensePC::update(void)
 {
-	while (!open())
-	{
-		LOG_I("Waiting for RealSense");
-		this->sleepTime(USEC_1SEC);
-	}
-
-    auto cIntr = m_pRS->m_cIntrinsics;
-    auto dIntr = m_pRS->m_dIntrinsics;
-
-	m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
-	m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
+//    auto cIntr = m_pRS->m_cIntrinsics;
+//    auto dIntr = m_pRS->m_dIntrinsics;
+//    dIntr = cIntr;
+//	m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
+//	m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
 
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-//        m_rsPC.map_to(m_pRS->m_rsColor);
-//        m_rsPoints = m_rsPC.calculate(m_pRS->m_rsDepth);
-
-		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
-		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
-
-		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
-        camera::PinholeCameraIntrinsic camInt(dIntr.width,
-        										dIntr.height,
-												dIntr.fx,
-												dIntr.fy,
-												dIntr.ppx,
-												dIntr.ppy);
-        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
+		updatePC();
 
 		this->autoFPSto();
 	}
+}
+
+void _RealSensePC::updatePC(void)
+{
+	IF_(check()<0);
+
+    m_rsPC.map_to(m_pRS->m_rsColor);
+    m_rsPoints = m_rsPC.calculate(m_pRS->m_rsDepth);
+
+    Mat mBGR;
+    m_pRS->BGR()->m()->copyTo(mBGR);
+    auto rspVertex = m_rsPoints.get_vertices();
+    auto rspTexCoord = m_rsPoints.get_texture_coordinates();
+    int nP = m_rsPoints.size();
+
+	pthread_mutex_lock(&m_mutex);
+
+    m_pPC->points_.clear();
+    m_pPC->colors_.clear();
+
+    const static float c_b = 1.0/255.0;
+
+    for(int i=0; i<nP; i++)
+    {
+        rs2::vertex vr = rspVertex[i];
+        IF_CONT(vr.z < 1e-5);
+
+        Eigen::Vector3d ve(vr.x, vr.y, vr.z);
+        m_pPC->points_.push_back(ve);
+
+        rs2::texture_coordinate tc = rspTexCoord[i];
+        int tx = constrain<int>(tc.u * mBGR.cols, 0, mBGR.cols-1);
+        int ty = constrain<int>(tc.v * mBGR.rows, 0, mBGR.rows-1);
+        Vec3b vC = mBGR.at<Vec3b>(ty, tx);
+        Eigen::Vector3d te(vC[2], vC[1], vC[0]);
+        te *= c_b;
+        m_pPC->colors_.push_back(te);
+    }
+
+	pthread_mutex_unlock(&m_mutex);
+
+//		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
+//		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
+//
+//		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
+//        camera::PinholeCameraIntrinsic camInt(dIntr.width,
+//        										dIntr.height,
+//												dIntr.fx,
+//												dIntr.fy,
+//												dIntr.ppx,
+//												dIntr.ppy);
+//        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
+//        m_pPC = m_spPC;
+
 }
 
 void _RealSensePC::draw(void)
@@ -120,8 +168,10 @@ void _RealSensePC::draw(void)
 	this->_PointCloudBase::draw();
 
 	IF_(!m_pViewer);
-	m_pViewer->render(m_spPC);
 
+	pthread_mutex_lock(&m_mutex);
+	m_pViewer->render(m_pPC);
+	pthread_mutex_unlock(&m_mutex);
 }
 
 }

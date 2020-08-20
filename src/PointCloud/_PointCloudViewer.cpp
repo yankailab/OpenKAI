@@ -16,6 +16,7 @@ _PointCloudViewer::_PointCloudViewer()
 {
 	m_type = pointCloud_viewer;
 	m_vWinSize.init(1280, 720);
+	m_pPC = NULL;
 
 	pthread_mutex_init(&m_mutex, NULL);
 }
@@ -101,10 +102,10 @@ void _PointCloudViewer::render(void)
 	}
 }
 
-void _PointCloudViewer::render(shared_ptr<PointCloud> spPC)
+void _PointCloudViewer::render(PointCloud* pPC)
 {
 	pthread_mutex_lock(&m_mutex);
-	*m_spPC = *spPC;
+	*m_spPC = *pPC;
 	pthread_mutex_unlock(&m_mutex);
 }
 
