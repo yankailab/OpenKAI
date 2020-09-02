@@ -46,11 +46,10 @@ public:
 	_RealSense* m_pRS;
     rs2::pointcloud m_rsPC;
     rs2::points m_rsPoints;
-    PointCloud* m_pPC;
 
 	pthread_mutex_t m_mutex;
 
-    Image m_imgD;
+//    Image m_imgD;
     Image m_imgRGB;
 
 };

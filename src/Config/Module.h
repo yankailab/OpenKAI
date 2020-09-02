@@ -145,6 +145,7 @@
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "../PointCloud/_RealSensePC.h"
+#include "../PointCloud/_PointCloudFile.h"
 #endif
 #endif	//USE_OPEN3D
 

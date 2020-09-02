@@ -44,9 +44,10 @@ private:
 public:
 	Visualizer m_vis;
 	vInt2 m_vWinSize;
-	string m_fName;
-	PointCloud* m_pPC;
+	shared_ptr<TriangleMesh> m_pMcoordFrame;
+	float m_fov;
 
+	shared_ptr<PointCloud> m_spPC;
 	pthread_mutex_t m_mutex;
 };
 

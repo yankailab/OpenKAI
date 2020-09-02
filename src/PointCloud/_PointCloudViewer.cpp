@@ -16,7 +16,9 @@ _PointCloudViewer::_PointCloudViewer()
 {
 	m_type = pointCloud_viewer;
 	m_vWinSize.init(1280, 720);
-	m_pPC = NULL;
+	m_pMcoordFrame = NULL;
+	m_fov = 0.0;
+	m_spPC = shared_ptr<PointCloud>(new PointCloud);
 
 	pthread_mutex_init(&m_mutex, NULL);
 }
@@ -32,13 +34,9 @@ bool _PointCloudViewer::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vWinSize", &m_vWinSize);
+	pK->v("fov", &m_fov);
 
-	pK->v("fName", &m_fName);
-	if (!m_fName.empty())
-	{
-		m_pPC = new geometry::PointCloud();
-		IF_F(!io::ReadPointCloud(m_fName.c_str(), *m_pPC));
-	}
+	m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
 
 	utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -64,13 +62,11 @@ void _PointCloudViewer::update(void)
 {
 	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x, m_vWinSize.y);
 	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
+	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
 
 	m_bOpen = true;
-
-	if (m_pPC)
-		*m_spPC = *m_pPC;
-
 	m_vis.AddGeometry(m_spPC);
+	m_vis.AddGeometry(m_pMcoordFrame);
 
 	while (m_bThreadON)
 	{

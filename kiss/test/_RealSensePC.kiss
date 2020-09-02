@@ -32,13 +32,14 @@
 	"Console":"OKconsole",
 	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
 	"vWinSize":[1920,1080],
+	"fov":100,
 }
 
 {
 	"name":"rs",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -60,7 +61,7 @@
 {
 	"name":"rsPC",
 	"class":"_RealSensePC",
-	"bInst":1,
+	"bInst":0,
 	"_RealSense":"rs",
 	"_PointCloudViewer":"pcv",
 }
