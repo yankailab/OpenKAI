@@ -18,6 +18,7 @@ _RealSense::_RealSense()
 	m_type = vision_realsense;
 	m_pTPP = new _ThreadBase();
 
+	m_rsSN = "";
 	m_vPreset = "High Density";
 	m_bRsRGB = true;
 	m_rsFPS = 30;
@@ -42,6 +43,7 @@ bool _RealSense::init(void* pKiss)
 	IF_F(!_DepthVisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
+	pK->v("rsSN", &m_rsSN);
 	pK->v("rsFPS", &m_rsFPS);
 	pK->v("rsDFPS", &m_rsDFPS);
 	pK->v("vPreset", &m_vPreset);
@@ -61,7 +63,16 @@ bool _RealSense::open(void)
 
 	try
 	{
+//		rs2::context rsCtx;
+//	    // Capture serial numbers before opening streaming
+//	    std::vector<std::string> serials;
+//	    for (auto&& dev : rsCtx.query_devices())
+//	        serials.push_back(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER));
+
 		rs2::config cfg;
+		if(!m_rsSN.empty())
+			cfg.enable_device(m_rsSN);
+
 		cfg.enable_stream(RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS);
 		if (m_bRsRGB)
 		{

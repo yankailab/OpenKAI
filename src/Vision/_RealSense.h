@@ -48,6 +48,7 @@ private:
 	}
 
 public:
+	string m_rsSN;
 	rs2::pipeline m_rsPipe;
 	rs2::frame m_rsColor;
 	rs2::frame m_rsDepth;
