@@ -19,13 +19,10 @@ _RealSensePC::_RealSensePC()
 	m_type = pointCloud_realsense;
 	m_pRS = NULL;
 	m_pViewer = NULL;
-
-	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _RealSensePC::~_RealSensePC()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _RealSensePC::init(void *pKiss)
@@ -118,8 +115,8 @@ void _RealSensePC::updatePC(void)
 
 	pthread_mutex_lock(&m_mutex);
 
-	m_pPC->points_.clear();
-	m_pPC->colors_.clear();
+	m_PC.points_.clear();
+	m_PC.colors_.clear();
 
 	const static float c_b = 1.0 / 255.0;
 
@@ -130,7 +127,7 @@ void _RealSensePC::updatePC(void)
 		IF_CONT(vr.z > m_vRz.y);
 
 		Eigen::Vector3d ve(vr.x, vr.y, vr.z);
-		m_pPC->points_.push_back(ve);
+		m_PC.points_.push_back(ve);
 
 		rs2::texture_coordinate tc = rspTexCoord[i];
 		int tx = constrain<int>(tc.u * mBGR.cols, 0, mBGR.cols - 1);
@@ -138,7 +135,7 @@ void _RealSensePC::updatePC(void)
 		Vec3b vC = mBGR.at<Vec3b>(ty, tx);
 		Eigen::Vector3d te(vC[2], vC[1], vC[0]);
 		te *= c_b;
-		m_pPC->colors_.push_back(te);
+		m_PC.colors_.push_back(te);
 	}
 
 	pthread_mutex_unlock(&m_mutex);
@@ -173,7 +170,7 @@ void _RealSensePC::draw(void)
 	IF_(!m_pViewer);
 
 	pthread_mutex_lock(&m_mutex);
-	m_pViewer->render(m_pPC);
+	m_pViewer->render(&m_PC);
 	pthread_mutex_unlock(&m_mutex);
 }
 

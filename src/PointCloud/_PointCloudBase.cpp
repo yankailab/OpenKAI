@@ -16,15 +16,18 @@ _PointCloudBase::_PointCloudBase()
 {
 	m_bOpen = false;
 	m_type = pointCloud_unknown;
-	m_pPC = new PointCloud();
 
 	m_vT.init(0);
 	m_vR.init(0);
 	m_vRz.init(0.0, FLT_MAX);
+
+	pthread_mutex_init(&m_mutex, NULL);
+
 }
 
 _PointCloudBase::~_PointCloudBase()
 {
+	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PointCloudBase::init(void *pKiss)
@@ -66,16 +69,25 @@ void _PointCloudBase::close(void)
 
 void _PointCloudBase::transform(void)
 {
-	NULL_(m_pPC);
-
 	Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
 	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
-	mT.block(0,0,3,3) = m_pPC->GetRotationMatrixFromXYZ(vR);
+	mT.block(0,0,3,3) = m_PC.GetRotationMatrixFromXYZ(vR);
 	mT(0,3) = m_vT.x;
 	mT(1,3) = m_vT.y;
 	mT(2,3) = m_vT.z;
 
-	m_pPC->Transform(mT);
+	pthread_mutex_lock(&m_mutex);
+	m_PC.Transform(mT);
+	pthread_mutex_unlock(&m_mutex);
+}
+
+void _PointCloudBase::getPointCloud(PointCloud* pPC)
+{
+	NULL_(pPC);
+
+	pthread_mutex_lock(&m_mutex);
+	*pPC = m_PC;
+	pthread_mutex_unlock(&m_mutex);
 }
 
 void _PointCloudBase::draw(void)

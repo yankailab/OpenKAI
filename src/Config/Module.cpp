@@ -146,6 +146,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_REALSENSE
 	ADD_MODULE(_RealSensePC);
 	ADD_MODULE(_PointCloudFile);
+	ADD_MODULE(_PointCloudMerge);
 #endif
 #endif //USE_OPEN3D
 

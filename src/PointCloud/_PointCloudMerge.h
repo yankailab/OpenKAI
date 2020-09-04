@@ -1,34 +1,30 @@
 /*
- * _RealSensePC.h
+ * _PointCloudMerge.h
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_RealSensePC_H_
-#define OpenKAI_src_Vision_RealSensePC_H_
+#ifndef OpenKAI_src_Vision_PointCloudMerge_H_
+#define OpenKAI_src_Vision_PointCloudMerge_H_
 
 #include "../Base/common.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#ifdef USE_REALSENSE
-#include "../Vision/_RealSense.h"
 #include "_PointCloudViewer.h"
 
 namespace kai
 {
 
-class _RealSensePC: public _PointCloudBase
+class _PointCloudMerge: public _PointCloudBase
 {
 public:
-	_RealSensePC();
-	virtual ~_RealSensePC();
+	_PointCloudMerge();
+	virtual ~_PointCloudMerge();
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool open(void);
-	void close(void);
 	int check(void);
 	void draw(void);
 
@@ -37,23 +33,19 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_RealSensePC *) This)->update();
+		((_PointCloudMerge *) This)->update();
 		return NULL;
 	}
 
 public:
 	_PointCloudViewer* m_pViewer;
-	_RealSense* m_pRS;
-    rs2::pointcloud m_rsPC;
-    rs2::points m_rsPoints;
+	vector<_PointCloudBase*> m_vpPC;
 
-//    Image m_imgD;
-//    Image m_imgRGB;
+	pthread_mutex_t m_mutex;
 
 };
 
 }
-#endif
 #endif
 #endif
 #endif

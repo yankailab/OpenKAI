@@ -42,15 +42,19 @@ public:
 	virtual POINTCLOUD_TYPE getType(void);
 
 	virtual void transform(void);
+	virtual void getPointCloud(PointCloud* pPC);
 
-public:
-    PointCloud* m_pPC;
+protected:
+    PointCloud m_PC;
 	vFloat3 m_vT;	//translation
 	vFloat3 m_vR;	//rotation
 	vFloat2 m_vRz;	//z region
 
 	bool m_bOpen;
 	POINTCLOUD_TYPE m_type;
+
+	pthread_mutex_t m_mutex;
+
 };
 
 }

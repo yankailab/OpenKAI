@@ -30,9 +30,22 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
 	"vWinSize":[1920,1080],
 	"fov":100,
+}
+
+{
+	"name":"pcFile",
+	"class":"_PointCloudFile",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_PointCloudViewer":"pcv",
+	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"vRz":[0, 1000.0],
 }
 
 {

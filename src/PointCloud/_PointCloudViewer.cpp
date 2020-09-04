@@ -37,6 +37,7 @@ bool _PointCloudViewer::init(void *pKiss)
 	pK->v("fov", &m_fov);
 
 	m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
+	//X:red, Y:green, Z:blue
 
 	utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 

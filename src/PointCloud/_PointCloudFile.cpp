@@ -29,11 +29,7 @@ bool _PointCloudFile::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("fName", &m_fName);
-	if (!m_fName.empty())
-	{
-		IF_F(!io::ReadPointCloud(m_fName.c_str(), *m_pPC));
-		m_bOpen = true;
-	}
+	open();
 
 	string iName;
 
@@ -46,6 +42,12 @@ bool _PointCloudFile::init(void *pKiss)
 
 bool _PointCloudFile::open(void)
 {
+	IF_F(!m_fName.empty());
+
+	IF_F(!io::ReadPointCloud(m_fName.c_str(), m_PC));
+	transform();
+	m_bOpen = true;
+
 	return m_bOpen;
 }
 
@@ -54,8 +56,7 @@ void _PointCloudFile::close(void)
 	if (m_threadMode == T_THREAD)
 	{
 		goSleep();
-		while (!bSleeping())
-			;
+		while (!bSleeping());
 	}
 
 	this->_PointCloudBase::close();
@@ -99,8 +100,19 @@ void _PointCloudFile::updateFile(void)
 {
 	IF_(check() < 0);
 
-	transform();
+}
 
+void _PointCloudFile::transform(void)
+{
+	Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
+	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
+	mT.block(0,0,3,3) = m_PC.GetRotationMatrixFromXYZ(vR);
+	mT(0,3) = m_vT.x;
+	mT(1,3) = m_vT.y;
+	mT(2,3) = m_vT.z;
+
+	m_PCprocess = m_PC;
+	m_PCprocess.Transform(mT);
 }
 
 void _PointCloudFile::draw(void)
@@ -108,7 +120,7 @@ void _PointCloudFile::draw(void)
 	this->_PointCloudBase::draw();
 
 	IF_(!m_pViewer);
-	m_pViewer->render(m_pPC);
+	m_pViewer->render(&m_PCprocess);
 }
 
 }

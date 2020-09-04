@@ -30,6 +30,8 @@ public:
 	int check(void);
 	void draw(void);
 
+	virtual void transform(void);
+
 private:
 	void updateFile(void);
 	void update(void);
@@ -41,6 +43,7 @@ private:
 
 public:
 	_PointCloudViewer* m_pViewer;
+    PointCloud m_PCprocess;
 	string m_fName;
 
 };
