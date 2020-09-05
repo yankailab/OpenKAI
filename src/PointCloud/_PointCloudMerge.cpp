@@ -15,7 +15,7 @@ namespace kai
 
 _PointCloudMerge::_PointCloudMerge()
 {
-	m_type = pointCloud_realsense;
+	m_type = pointCloud_general;
 	m_pViewer = NULL;
 
 	pthread_mutex_init(&m_mutex, NULL);
@@ -42,8 +42,7 @@ bool _PointCloudMerge::init(void *pKiss)
 
 	for(string p : vPC)
 	{
-		iName = "";
-		_PointCloudBase* pPC = (_PointCloudBase*) (pK->getInst(iName));
+		_PointCloudBase* pPC = (_PointCloudBase*) (pK->getInst(p));
 		IF_CONT(!pPC);
 
 		m_vpPC.push_back(pPC);
@@ -103,13 +102,14 @@ void _PointCloudMerge::updatePC(void)
 		for (int i = 0; i < pc.points_.size(); i++)
 		{
 			m_PC.points_.push_back(pc.points_[i]);
-			m_PC.points_.push_back(pc.colors_[i]);
+			m_PC.colors_.push_back(pc.colors_[i]);
 		}
 	}
 
 	pthread_mutex_unlock(&m_mutex);
 
 	transform();
+
 }
 
 void _PointCloudMerge::draw(void)

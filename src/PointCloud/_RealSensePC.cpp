@@ -138,10 +138,9 @@ void _RealSensePC::updatePC(void)
 		m_PC.colors_.push_back(te);
 	}
 
-	pthread_mutex_unlock(&m_mutex);
-
 	transform();
 
+	pthread_mutex_unlock(&m_mutex);
 
 //		auto cIntr = m_pRS->m_cIntrinsics;
 //		auto dIntr = m_pRS->m_dIntrinsics;

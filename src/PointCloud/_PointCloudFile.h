@@ -31,6 +31,7 @@ public:
 	void draw(void);
 
 	virtual void transform(void);
+	virtual void getPointCloud(PointCloud* pPC);
 
 private:
 	void updateFile(void);

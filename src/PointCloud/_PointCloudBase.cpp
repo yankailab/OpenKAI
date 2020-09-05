@@ -76,9 +76,7 @@ void _PointCloudBase::transform(void)
 	mT(1,3) = m_vT.y;
 	mT(2,3) = m_vT.z;
 
-	pthread_mutex_lock(&m_mutex);
 	m_PC.Transform(mT);
-	pthread_mutex_unlock(&m_mutex);
 }
 
 void _PointCloudBase::getPointCloud(PointCloud* pPC)

@@ -15,7 +15,7 @@ namespace kai
 
 _PointCloudFile::_PointCloudFile()
 {
-	m_type = pointCloud_realsense;
+	m_type = pointCloud_file;
 	m_pViewer = NULL;
 }
 
@@ -42,7 +42,7 @@ bool _PointCloudFile::init(void *pKiss)
 
 bool _PointCloudFile::open(void)
 {
-	IF_F(!m_fName.empty());
+	IF_F(m_fName.empty());
 
 	IF_F(!io::ReadPointCloud(m_fName.c_str(), m_PC));
 	transform();
@@ -111,8 +111,19 @@ void _PointCloudFile::transform(void)
 	mT(1,3) = m_vT.y;
 	mT(2,3) = m_vT.z;
 
+	pthread_mutex_lock(&m_mutex);
 	m_PCprocess = m_PC;
 	m_PCprocess.Transform(mT);
+	pthread_mutex_unlock(&m_mutex);
+}
+
+void _PointCloudFile::getPointCloud(PointCloud* pPC)
+{
+	NULL_(pPC);
+
+	pthread_mutex_lock(&m_mutex);
+	*pPC = m_PCprocess;
+	pthread_mutex_unlock(&m_mutex);
 }
 
 void _PointCloudFile::draw(void)
@@ -120,7 +131,9 @@ void _PointCloudFile::draw(void)
 	this->_PointCloudBase::draw();
 
 	IF_(!m_pViewer);
+	pthread_mutex_lock(&m_mutex);
 	m_pViewer->render(&m_PCprocess);
+	pthread_mutex_unlock(&m_mutex);
 }
 
 }

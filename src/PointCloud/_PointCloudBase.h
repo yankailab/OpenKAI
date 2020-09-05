@@ -21,6 +21,8 @@ namespace kai
 enum POINTCLOUD_TYPE
 {
 	pointCloud_unknown,
+	pointCloud_general,
+	pointCloud_file,
 	pointCloud_viewer,
 	pointCloud_realsense,
 	pointCloud_livox,

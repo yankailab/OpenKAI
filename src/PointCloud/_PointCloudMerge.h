@@ -41,8 +41,6 @@ public:
 	_PointCloudViewer* m_pViewer;
 	vector<_PointCloudBase*> m_vpPC;
 
-	pthread_mutex_t m_mutex;
-
 };
 
 }
