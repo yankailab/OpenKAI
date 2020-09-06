@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_PointCloud__PointCloudViewer_H_
 #define OpenKAI_src_PointCloud__PointCloudViewer_H_
 
-#include "_PointCloudBase.h"
+#include "../Base/_ThreadBase.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -18,7 +18,7 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-class _PointCloudViewer: public _PointCloudBase
+class _PointCloudViewer: public _ThreadBase
 {
 public:
 	_PointCloudViewer();
@@ -28,7 +28,6 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void draw(void);
-	virtual POINTCLOUD_TYPE getType(void);
 
 	void render(PointCloud* pPC);
 

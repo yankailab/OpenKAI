@@ -15,15 +15,12 @@ namespace kai
 
 _PointCloudMerge::_PointCloudMerge()
 {
-	m_type = pointCloud_general;
 	m_pViewer = NULL;
 
-	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _PointCloudMerge::~_PointCloudMerge()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PointCloudMerge::init(void *pKiss)
@@ -36,18 +33,18 @@ bool _PointCloudMerge::init(void *pKiss)
 	pK->v("_PointCloudViewer", &iName);
 	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
-	vector<string> vPC;
-	pK->a("vPC", &vPC);
-	IF_F(vPC.empty());
+	vector<string> vU;
+	pK->a("vPC", &vU);
+	IF_F(vU.empty());
 
-	for(string p : vPC)
+	for(string u : vU)
 	{
-		_PointCloudBase* pPC = (_PointCloudBase*) (pK->getInst(p));
-		IF_CONT(!pPC);
+		_Universe* pU = (_Universe*) (pK->getInst(u));
+		IF_CONT(!pU);
 
-		m_vpPC.push_back(pPC);
+		m_vpU.push_back(pU);
 	}
-	IF_F(m_vpPC.empty());
+	IF_F(m_vpU.empty());
 
 	return true;
 }
@@ -67,11 +64,6 @@ bool _PointCloudMerge::start(void)
 	return true;
 }
 
-int _PointCloudMerge::check(void)
-{
-	return 0;
-}
-
 void _PointCloudMerge::update(void)
 {
 	while (m_bThreadON)
@@ -79,6 +71,8 @@ void _PointCloudMerge::update(void)
 		this->autoFPSfrom();
 
 		updatePC();
+		transform();
+		addObj();
 
 		this->autoFPSto();
 	}
@@ -88,39 +82,24 @@ void _PointCloudMerge::updatePC(void)
 {
 	IF_(check() < 0);
 
-	pthread_mutex_lock(&m_mutex);
-
 	m_PC.points_.clear();
 	m_PC.colors_.clear();
 	m_PC.normals_.clear();
 
-	for(_PointCloudBase* p : m_vpPC)
+	for(_Universe* pU : m_vpU)
 	{
-		PointCloud pc;
-		p->getPointCloud(&pc);
+		_Object* pO = pU->get(0);
+		IF_CONT(!pO);
 
-		for (int i = 0; i < pc.points_.size(); i++)
-		{
-			m_PC.points_.push_back(pc.points_[i]);
-			m_PC.colors_.push_back(pc.colors_[i]);
-		}
+		vector<Eigen::Vector3d>* pV;
+
+		pV = pO->getPointCloudPoint();
+		m_PC.points_.insert(m_PC.points_.end(), pV->begin(), pV->end());
+
+		pV = pO->getPointCloudColor();
+		m_PC.colors_.insert(m_PC.colors_.end(), pV->begin(), pV->end());
 	}
 
-	pthread_mutex_unlock(&m_mutex);
-
-	transform();
-
-}
-
-void _PointCloudMerge::draw(void)
-{
-	this->_PointCloudBase::draw();
-
-	IF_(!m_pViewer);
-
-	pthread_mutex_lock(&m_mutex);
-	m_pViewer->render(&m_PC);
-	pthread_mutex_unlock(&m_mutex);
 }
 
 }

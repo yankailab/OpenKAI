@@ -12,7 +12,7 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudViewer.h"
+#include "_PointCloudBase.h"
 
 namespace kai
 {
@@ -25,8 +25,6 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
-	int check(void);
-	void draw(void);
 
 private:
 	void updatePC(void);
@@ -38,8 +36,7 @@ private:
 	}
 
 public:
-	_PointCloudViewer* m_pViewer;
-	vector<_PointCloudBase*> m_vpPC;
+	vector<_Universe*> m_vpU;
 
 };
 

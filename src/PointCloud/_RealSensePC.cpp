@@ -16,9 +16,7 @@ namespace kai
 
 _RealSensePC::_RealSensePC()
 {
-	m_type = pointCloud_realsense;
 	m_pRS = NULL;
-	m_pViewer = NULL;
 }
 
 _RealSensePC::~_RealSensePC()
@@ -37,10 +35,6 @@ bool _RealSensePC::init(void *pKiss)
 	m_pRS = (_RealSense*) (pK->getInst(iName));
 	IF_Fl(!m_pRS, iName + ": not found");
 
-	iName = "";
-	pK->v("_PointCloudViewer", &iName);
-	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
-
 	return true;
 }
 
@@ -57,8 +51,7 @@ void _RealSensePC::close(void)
 	if (m_threadMode == T_THREAD)
 	{
 		goSleep();
-		while (!bSleeping())
-			;
+		while (!bSleeping());
 	}
 
 	this->_PointCloudBase::close();
@@ -85,7 +78,7 @@ int _RealSensePC::check(void)
 	NULL__(m_pRS, -1);
 	IF__(m_pRS->BGR()->m()->empty(), -1);
 
-	return 0;
+	return this->_PointCloudBase::check();
 }
 
 void _RealSensePC::update(void)
@@ -95,6 +88,10 @@ void _RealSensePC::update(void)
 		this->autoFPSfrom();
 
 		updatePC();
+		transform();
+
+		m_pU->updateObj();
+		addObj();
 
 		this->autoFPSto();
 	}
@@ -112,8 +109,6 @@ void _RealSensePC::updatePC(void)
 	auto rspVertex = m_rsPoints.get_vertices();
 	auto rspTexCoord = m_rsPoints.get_texture_coordinates();
 	int nP = m_rsPoints.size();
-
-	pthread_mutex_lock(&m_mutex);
 
 	m_PC.points_.clear();
 	m_PC.colors_.clear();
@@ -138,9 +133,6 @@ void _RealSensePC::updatePC(void)
 		m_PC.colors_.push_back(te);
 	}
 
-	transform();
-
-	pthread_mutex_unlock(&m_mutex);
 
 //		auto cIntr = m_pRS->m_cIntrinsics;
 //		auto dIntr = m_pRS->m_dIntrinsics;
@@ -160,17 +152,6 @@ void _RealSensePC::updatePC(void)
 //        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
 //        m_pPC = m_spPC;
 
-}
-
-void _RealSensePC::draw(void)
-{
-	this->_PointCloudBase::draw();
-
-	IF_(!m_pViewer);
-
-	pthread_mutex_lock(&m_mutex);
-	m_pViewer->render(&m_PC);
-	pthread_mutex_unlock(&m_mutex);
 }
 
 }

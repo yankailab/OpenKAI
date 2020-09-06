@@ -15,14 +15,10 @@ namespace kai
 
 _PointCloudRegistration::_PointCloudRegistration()
 {
-	m_type = pointCloud_unknown;
-
-	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _PointCloudRegistration::~_PointCloudRegistration()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PointCloudRegistration::init(void *pKiss)
@@ -87,14 +83,14 @@ void _PointCloudRegistration::updateRegistration(void)
 	{
 		_PointCloudBase* pPCsource = m_vpPC[i];
 		PointCloud pcSource;
-		pPCsource->getPointCloud(&pcSource);
+//		pPCsource->getPointCloud(&pcSource);
 
 		int j=i+1;
 		if(j>=nPC)j=0;
 
 		_PointCloudBase* pPCtarget = m_vpPC[j];
 		PointCloud pcTarget;
-		pPCtarget->getPointCloud(&pcTarget);
+//		pPCtarget->getPointCloud(&pcTarget);
 
 		//open3d::registration::RegistrationICP()
 	}

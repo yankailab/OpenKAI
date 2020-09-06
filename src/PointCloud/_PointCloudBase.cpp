@@ -15,19 +15,16 @@ namespace kai
 _PointCloudBase::_PointCloudBase()
 {
 	m_bOpen = false;
-	m_type = pointCloud_unknown;
+	m_pViewer = NULL;
 
+	m_pU = NULL;
 	m_vT.init(0);
 	m_vR.init(0);
 	m_vRz.init(0.0, FLT_MAX);
-
-	pthread_mutex_init(&m_mutex, NULL);
-
 }
 
 _PointCloudBase::~_PointCloudBase()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PointCloudBase::init(void *pKiss)
@@ -39,17 +36,20 @@ bool _PointCloudBase::init(void *pKiss)
 	pK->v("vR", &m_vR);
 	pK->v("vRz", &m_vRz);
 
+	string iName = "";
+	pK->v("_Universe", &iName);
+	m_pU = (_Universe*) (pK->getInst(iName));
+
+	iName = "";
+	pK->v("_PointCloudViewer", &iName);
+	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
+
 	return true;
 }
 
 int _PointCloudBase::size(void)
 {
 	return -1;
-}
-
-POINTCLOUD_TYPE _PointCloudBase::getType(void)
-{
-	return m_type;
 }
 
 bool _PointCloudBase::open(void)
@@ -67,8 +67,18 @@ void _PointCloudBase::close(void)
 	m_bOpen = false;
 }
 
+int _PointCloudBase::check(void)
+{
+	NULL__(m_pU, -1);
+	IF__(!m_bOpen, -1);
+
+	return 0;
+}
+
 void _PointCloudBase::transform(void)
 {
+	IF_(check()<0);
+
 	Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
 	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
 	mT.block(0,0,3,3) = m_PC.GetRotationMatrixFromXYZ(vR);
@@ -79,18 +89,22 @@ void _PointCloudBase::transform(void)
 	m_PC.Transform(mT);
 }
 
-void _PointCloudBase::getPointCloud(PointCloud* pPC)
+void _PointCloudBase::addObj(void)
 {
-	NULL_(pPC);
-
-	pthread_mutex_lock(&m_mutex);
-	*pPC = m_PC;
-	pthread_mutex_unlock(&m_mutex);
+	_Object o;
+	o.init();
+	o.m_tStamp = m_tStamp;
+	o.setPointCloudPoint(m_PC.points_);
+	o.setPointCloudColor(m_PC.colors_);
+	m_pU->add(o);
 }
 
 void _PointCloudBase::draw(void)
 {
 	this->_ThreadBase::draw();
+
+	NULL_(m_pViewer);
+	m_pViewer->render(&m_PC);
 }
 
 }

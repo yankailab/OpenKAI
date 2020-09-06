@@ -14,7 +14,6 @@ namespace kai
 
 _PointCloudViewer::_PointCloudViewer()
 {
-	m_type = pointCloud_viewer;
 	m_vWinSize.init(1280, 720);
 	m_pMcoordFrame = NULL;
 	m_fov = 0.0;
@@ -65,7 +64,6 @@ void _PointCloudViewer::update(void)
 	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
 	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
 
-	m_bOpen = true;
 	m_vis.AddGeometry(m_spPC);
 	m_vis.AddGeometry(m_pMcoordFrame);
 
@@ -104,11 +102,6 @@ void _PointCloudViewer::render(PointCloud* pPC)
 	pthread_mutex_lock(&m_mutex);
 	*m_spPC = *pPC;
 	pthread_mutex_unlock(&m_mutex);
-}
-
-POINTCLOUD_TYPE _PointCloudViewer::getType(void)
-{
-	return m_type;
 }
 
 void _PointCloudViewer::draw(void)

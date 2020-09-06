@@ -147,6 +147,7 @@
 #include "../PointCloud/_RealSensePC.h"
 #include "../PointCloud/_PointCloudFile.h"
 #include "../PointCloud/_PointCloudMerge.h"
+#include "../PointCloud/_PointCloudRegistration.h"
 #endif
 #endif	//USE_OPEN3D
 

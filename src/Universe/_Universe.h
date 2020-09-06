@@ -9,6 +9,7 @@
 #define OpenKAI_src_Universe__Universe_H_
 
 #include "_ObjectArray.h"
+#include "../PointCloud/_PointCloudViewer.h"
 
 namespace kai
 {
@@ -79,6 +80,9 @@ public:
 	bool m_bDrawClass;
 	bool m_bDrawText;
 	bool m_bDrawPos;
+
+	//point cloud
+	_PointCloudViewer* m_pPCV;
 
 };
 
