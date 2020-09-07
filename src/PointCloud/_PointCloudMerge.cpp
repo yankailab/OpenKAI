@@ -34,7 +34,7 @@ bool _PointCloudMerge::init(void *pKiss)
 	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
 	vector<string> vU;
-	pK->a("vPC", &vU);
+	pK->a("vPCuniv", &vU);
 	IF_F(vU.empty());
 
 	for(string u : vU)
@@ -45,6 +45,8 @@ bool _PointCloudMerge::init(void *pKiss)
 		m_vpU.push_back(pU);
 	}
 	IF_F(m_vpU.empty());
+
+	m_bOpen = true;
 
 	return true;
 }
@@ -72,6 +74,8 @@ void _PointCloudMerge::update(void)
 
 		updatePC();
 		transform();
+
+		m_pU->updateObj();
 		addObj();
 
 		this->autoFPSto();

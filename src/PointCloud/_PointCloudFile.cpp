@@ -37,8 +37,6 @@ bool _PointCloudFile::open(void)
 	IF_F(m_fName.empty());
 
 	IF_F(!io::ReadPointCloud(m_fName.c_str(), m_PCfile));
-	m_PC = m_PCfile;
-	transform();
 	m_bOpen = true;
 
 	return m_bOpen;
@@ -76,16 +74,17 @@ void _PointCloudFile::update(void)
 	{
 		this->autoFPSfrom();
 
-		updateFile();
+		if(check()>=0)
+		{
+			m_PC = m_PCfile;
+			transform();
+
+			m_pU->updateObj();
+			addObj();
+		}
 
 		this->autoFPSto();
 	}
-}
-
-void _PointCloudFile::updateFile(void)
-{
-	IF_(check() < 0);
-
 }
 
 void _PointCloudFile::draw(void)

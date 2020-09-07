@@ -25,6 +25,8 @@ _Universe::_Universe()
 	m_bDrawText = false;
 	m_bDrawPos = false;
 
+	m_pPCV = NULL;
+
 	clearObj();
 }
 
@@ -56,6 +58,10 @@ bool _Universe::init(void* pKiss)
 	m_pO[0].init(pKiss);
 	m_pO[1].init(pKiss);
 	clearObj();
+
+	string iName = "";
+	pK->v("_PointCloudViewer", &iName);
+	m_pPCV = (_PointCloudViewer*) (pK->getInst(iName));
 
 	return true;
 }
@@ -176,77 +182,98 @@ void _Universe::draw(void)
 
 	addMsg("nObj=" + i2str(m_pPrev->size()), 1);
 
-#ifdef USE_OPENCV
-	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
-
-	Scalar oCol;
-	Scalar bCol = Scalar(100,100,100);
-	int col;
-	int colStep = 20;
 	_Object* pO;
-	int i=0;
-	while((pO = get(i++)) != NULL)
+	int i;
+
+#ifdef USE_OPENCV
+	if(checkWindow())
 	{
-		int iClass = pO->getTopClass();
+		Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 
-		col = colStep * iClass;
-		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
-
-		//bb
-		Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pMat->cols, pMat->rows));
-		rectangle(*pMat, r, oCol, 1);
-
-		//position
-		if(m_bDrawPos)
+		Scalar oCol;
+		Scalar bCol = Scalar(100,100,100);
+		int col;
+		int colStep = 20;
+		i = 0;
+		while((pO = get(i++)) != NULL)
 		{
-			putText(*pMat, f2str(pO->getPos().z),
-					Point(r.x + 15, r.y + 25),
-					FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
-		}
+			int iClass = pO->getTopClass();
 
-		//class
-//		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
-//		{
-//			string oName = m_vClass[iClass].m_name;
-//			if (oName.length()>0)
-//			{
-//				putText(*pMat, oName,
-//						Point(r.x + 15, r.y + 50),
-//						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
-//			}
-//		}
+			col = colStep * iClass;
+			oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
 
-		//text
-		if(m_bDrawText)
-		{
-			string oName = string(pO->getText());
-			if (oName.length()>0)
+			//bb
+			Rect r = bb2Rect<vFloat4>(pO->getBB2Dscaled(pMat->cols, pMat->rows));
+			rectangle(*pMat, r, oCol, 1);
+
+			//position
+			if(m_bDrawPos)
 			{
-				putText(*pMat, oName,
-						Point(r.x + 15, r.y + 50),
+				putText(*pMat, f2str(pO->getPos().z),
+						Point(r.x + 15, r.y + 25),
 						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
 			}
+
+			//class
+	//		if(m_bDrawClass && iClass < m_nClass && iClass >= 0)
+	//		{
+	//			string oName = m_vClass[iClass].m_name;
+	//			if (oName.length()>0)
+	//			{
+	//				putText(*pMat, oName,
+	//						Point(r.x + 15, r.y + 50),
+	//						FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+	//			}
+	//		}
+
+			//text
+			if(m_bDrawText)
+			{
+				string oName = string(pO->getText());
+				if (oName.length()>0)
+				{
+					putText(*pMat, oName,
+							Point(r.x + 15, r.y + 50),
+							FONT_HERSHEY_SIMPLEX, 0.6, oCol, 1);
+				}
+			}
+		}
+
+		//roi
+		Rect roi = bb2Rect(bbScale(m_vRoi, pMat->cols, pMat->rows));
+		rectangle(*pMat, roi, Scalar(0,255,255), 1);
+
+		IF_(!m_bDrawStatistics);
+		updateStatistics();
+
+	//	for(i=0; i<m_nClass; i++)
+	//	{
+	//		OBJ_CLASS* pC = &m_vClass[i];
+	//		col = colStep * i;
+	//		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
+	//
+	//		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
+	//				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
+	//				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
+	//	}
+
+	}
+#endif
+
+#ifdef USE_OPEN3D
+
+	if(m_pPCV)
+	{
+		i=0;
+		while((pO = get(i++)) != NULL)
+		{
+		    PointCloud pc;
+		    pc.points_ = *pO->getPointCloudPoint();
+		    pc.colors_ = *pO->getPointCloudColor();
+		    m_pPCV->render(&pc);
 		}
 	}
 
-	//roi
-	Rect roi = bb2Rect(bbScale(m_vRoi, pMat->cols, pMat->rows));
-	rectangle(*pMat, roi, Scalar(0,255,255), 1);
-
-	IF_(!m_bDrawStatistics);
-	updateStatistics();
-
-//	for(i=0; i<m_nClass; i++)
-//	{
-//		OBJ_CLASS* pC = &m_vClass[i];
-//		col = colStep * i;
-//		oCol = Scalar((col+85)%255, (col+170)%255, col) + bCol;
-//
-//		putText(*pMat, pC->m_name + ": " + i2str(pC->m_n),
-//				Point(m_classLegendPos.x, m_classLegendPos.y + i*m_classLegendPos.z),
-//				FONT_HERSHEY_SIMPLEX, 0.5, oCol, 1);
-//	}
 #endif
 
 }

@@ -30,7 +30,6 @@ public:
 	void draw(void);
 
 private:
-	void updateFile(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
