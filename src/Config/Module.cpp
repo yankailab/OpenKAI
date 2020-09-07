@@ -148,6 +148,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_PointCloudFile);
 	ADD_MODULE(_PointCloudMerge);
 	ADD_MODULE(_PointCloudRegistration);
+	ADD_MODULE(_UItransform);
 #endif
 #endif //USE_OPEN3D
 

@@ -56,7 +56,7 @@
 	"name":"pcFile1",
 	"class":"_PointCloudFile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Universe":"univ1",
@@ -70,13 +70,13 @@
 	"name":"pcFile2",
 	"class":"_PointCloudFile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Universe":"univ2",
 	"fName":"/home/kai/dev/Open3D/examples/TestData/fragment.pcd",
-	"vT":[-5.0, 0, 0],
-	"vR":[1.5, 0, 0],
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
 	"vRz":[0, 1000.0],
 }
 
@@ -84,7 +84,7 @@
 	"name":"rs1",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -107,7 +107,7 @@
 {
 	"name":"rsPC1",
 	"class":"_RealSensePC",
-	"bInst":1,
+	"bInst":0,
 	"_RealSense":"rs1",
 	"_Universe":"univ1",
 }
@@ -116,7 +116,7 @@
 	"name":"rs2",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -139,7 +139,7 @@
 {
 	"name":"rsPC2",
 	"class":"_RealSensePC",
-	"bInst":1,
+	"bInst":0,
 	"_RealSense":"rs2",
 	"_Universe":"univ2",
 }
@@ -165,4 +165,23 @@
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"FPS":100,
+	"bInst":1,
+	"Window":"OKview",
+}
+
+{
+	"name":"uiTransform",
+	"class":"_UItransform",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"ws",
+	"vPCB":["pcFile1","pcFile2"],
 }

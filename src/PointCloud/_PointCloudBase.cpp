@@ -75,6 +75,16 @@ int _PointCloudBase::check(void)
 	return 0;
 }
 
+void _PointCloudBase::setTranslation(vFloat3& vT)
+{
+	m_vT = vT;
+}
+
+void _PointCloudBase::setRotation(vFloat3& vR)
+{
+	m_vR = vR;
+}
+
 void _PointCloudBase::transform(void)
 {
 	IF_(check()<0);

@@ -148,6 +148,7 @@
 #include "../PointCloud/_PointCloudFile.h"
 #include "../PointCloud/_PointCloudMerge.h"
 #include "../PointCloud/_PointCloudRegistration.h"
+#include "../PointCloud/_UItransform.h"
 #endif
 #endif	//USE_OPEN3D
 

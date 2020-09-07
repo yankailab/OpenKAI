@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+pre {
+    background: #EEE;
+    border: 1px solid #CCC;
+    padding: 10px;
+}
+#page-wrapper {
+    border-top: 5px solid #69c773;
+    margin: 1em auto;
+    width: 600px;
+}
+</style>
+
+<script>
+window.onload = function() {
+    function $(selector) {
+        return document.querySelector(selector);
+    }
+    
+    var socket = new WebSocket('ws://127.0.0.1:7890');
+    socket.onopen = function(event) {
+        $('#messages').innerHTML = 'Connected<br>';
+    };
+    socket.onmessage = function(event) {
+        $('#messages').innerHTML = 'Received:<br>' + event.data + '<br>';
+    };
+    socket.onclose = function(event) {
+        $('#messages').innerHTML = 'Disconnected ' + event.reason;
+    };
+
+    $('#submit').onclick = function(e) {
+        socket.send($('#message').value);
+        $('#messages').innerHTML = 'Sent:<br>' + $('input').value + '<br>';
+        $('input').value = '';
+    };
+
+    $('#btnSET').onclick = function(e) {
+	    var cmd = $('#iModel').value +
+				  "," + $('#tX').value +
+				  "," + $('#tY').value +
+				  "," + $('#tZ').value +
+				  "," + $('#rX').value +
+				  "," + $('#rY').value +
+				  "," + $('#rZ').value + ';';
+        socket.send(cmd);
+        $('#messages').innerHTML = 'Sent:<br>' +cmd+ '<br>';
+    };        
+};
+</script>
+
+<div id="page-wrapper">
+    <pre id="messages">Connecting...</pre>
+    
+    <button id="btnSET" style="WIDTH: 100px; HEIGHT: 50px">SET</button>
+    </br></br>
+
+	Model index:
+    <input id="iModel" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    </br>
+
+	Translation
+    </br>
+    X:
+    <input id="tX" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    Y:
+    <input id="tY" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    Z:
+    <input id="tZ" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    </br>
+
+	Rotation
+    </br>
+    X:
+    <input id="rX" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    Y:
+    <input id="rY" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    Z:
+    <input id="rZ" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    </br>
+
+    </br>
+    </br>
+    <input id="message" required>
+    <button id="submit">Send Message</button>
+</div>
+

@@ -34,6 +34,9 @@ public:
 	virtual int size(void);
 	virtual int check(void);
 
+	virtual void setTranslation(vFloat3& vT);
+	virtual void setRotation(vFloat3& vR);
+
 protected:
 	virtual void transform(void);
 	virtual void addObj(void);
