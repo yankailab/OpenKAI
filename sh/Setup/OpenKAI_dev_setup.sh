@@ -202,13 +202,26 @@ sudo make install
 sudo ldconfig
 
 #----------------------------------------------------
+# Filament
+sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev
+git clone --depth 1 https://github.com/google/filament.git
+cd filament
+mkdir out
+mkdir out/release
+cd out/release
+CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../release/filament ../..
+ninja -j6
+ninja install
+
+#----------------------------------------------------
 # Open3D
 sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev qhull-bin
-git clone --branch v0.9.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+pip3 install pybind11
+git clone --branch v0.10.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_PYBIND11=OFF -DBUILD_PYTHON_MODULE=OFF -DBUILD_JSONCPP=ON -DENABLE_JUPYTER=OFF -DENABLE_GUI=OFF ../
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_EIGEN3=OFF -DBUILD_PYBIND11=OFF -DBUILD_PYTHON_MODULE=OFF -DENABLE_JUPYTER=OFF -DENABLE_GUI=ON -DPATH_TO_FILAMENT=/home/kai/dev/filament/out/release/filament ../
 make -j12
 sudo make install
 

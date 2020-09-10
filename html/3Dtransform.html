@@ -19,6 +19,18 @@ window.onload = function() {
         return document.querySelector(selector);
     }
     
+    function sendCmd(){
+	    var cmd = $('#sensorName').value +
+				  "," + $('#tX').value +
+				  "," + $('#tY').value +
+				  "," + $('#tZ').value +
+				  "," + $('#rX').value +
+				  "," + $('#rY').value +
+				  "," + $('#rZ').value + ';';
+        socket.send(cmd);
+        $('#messages').innerHTML = 'Sent:<br>' +cmd+ '<br>';
+    }
+    
     var socket = new WebSocket('ws://127.0.0.1:7890');
     socket.onopen = function(event) {
         $('#messages').innerHTML = 'Connected<br>';
@@ -37,16 +49,82 @@ window.onload = function() {
     };
 
     $('#btnSET').onclick = function(e) {
-	    var cmd = $('#iModel').value +
-				  "," + $('#tX').value +
-				  "," + $('#tY').value +
-				  "," + $('#tZ').value +
-				  "," + $('#rX').value +
-				  "," + $('#rY').value +
-				  "," + $('#rZ').value + ';';
-        socket.send(cmd);
-        $('#messages').innerHTML = 'Sent:<br>' +cmd+ '<br>';
+    	sendCmd();
+    };
+    
+    $('#tXp').onclick = function(e)
+    {
+        $('#tX').value = parseFloat($('#tX').value) + parseFloat($('#dV').value);
+    	sendCmd();
     };        
+    
+    $('#tXm').onclick = function(e)
+    {
+        $('#tX').value = parseFloat($('#tX').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#tYp').onclick = function(e)
+    {
+        $('#tY').value = parseFloat($('#tY').value) + parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#tYm').onclick = function(e)
+    {
+        $('#tY').value = parseFloat($('#tY').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#tZp').onclick = function(e)
+    {
+        $('#tZ').value = parseFloat($('#tZ').value) + parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#tZm').onclick = function(e)
+    {
+        $('#tZ').value = parseFloat($('#tZ').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+
+
+    $('#rXp').onclick = function(e)
+    {
+        $('#rX').value = parseFloat($('#rX').value) + parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#rXm').onclick = function(e)
+    {
+        $('#rX').value = parseFloat($('#rX').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#rYp').onclick = function(e)
+    {
+        $('#rY').value = parseFloat($('#rY').value) + parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#rYm').onclick = function(e)
+    {
+        $('#rY').value = parseFloat($('#rY').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#rZp').onclick = function(e)
+    {
+        $('#rZ').value = parseFloat($('#rZ').value) + parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
+    $('#rZm').onclick = function(e)
+    {
+        $('#rZ').value = parseFloat($('#rZ').value) - parseFloat($('#dV').value);
+    	sendCmd();
+    };
+    
 };
 </script>
 
@@ -56,28 +134,56 @@ window.onload = function() {
     <button id="btnSET" style="WIDTH: 100px; HEIGHT: 50px">SET</button>
     </br></br>
 
-	Model index:
-    <input id="iModel" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+	Sensor:
+    <input id="sensorName" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+	Increment:
+    <input id="dV" style="WIDTH: 100px; HEIGHT: 50px" value=0.001>
     </br>
 
 	Translation
     </br>
+
     X:
     <input id="tX" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="tXp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="tXm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+    
     Y:
     <input id="tY" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="tYp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="tYm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+
     Z:
     <input id="tZ" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="tZp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="tZm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+
     </br>
 
 	Rotation
     </br>
+
     X:
     <input id="rX" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="rXp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="rXm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+
     Y:
     <input id="rY" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="rYp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="rYm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+
     Z:
     <input id="rZ" style="WIDTH: 100px; HEIGHT: 50px" value=0>
+    <button id="rZp" style="WIDTH: 50px; HEIGHT: 50px">+</button>
+    <button id="rZm" style="WIDTH: 50px; HEIGHT: 50px">-</button>    
+    </br>
+
     </br>
 
     </br>

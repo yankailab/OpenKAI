@@ -99,10 +99,16 @@ void _UItransform::handleMsg(string& str)
 	vector<string> vP = splitBy(str, ',');
 	IF_(vP.size() < 7);
 
-	int iModel = stoi(vP[0]);
-	IF_(iModel >= m_vPCB.size());
+	string sensorName = vP[0];
+	_PointCloudBase* pPCB = NULL;
+	for(int i=0; i<m_vPCB.size(); i++)
+	{
+		IF_CONT(*m_vPCB[i]->getName() != sensorName);
 
-	_PointCloudBase* pPCB = m_vPCB[iModel];
+		pPCB = m_vPCB[i];
+		break;
+	}
+	NULL_(pPCB);
 
 	vFloat3 v;
 	v.init(stof(vP[1]), stof(vP[2]), stof(vP[3]));
