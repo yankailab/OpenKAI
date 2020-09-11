@@ -9,6 +9,7 @@
 #define OpenKAI_src_PointCloud__PointCloudViewer_H_
 
 #include "../Base/_ThreadBase.h"
+#include "../Universe/_Object.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -30,6 +31,7 @@ public:
 	virtual void draw(void);
 
 	void render(PointCloud* pPC);
+	void render(_Object* pO);
 
 private:
 	void render(void);

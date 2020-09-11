@@ -51,77 +51,89 @@ window.onload = function() {
     $('#btnSET').onclick = function(e) {
     	sendCmd();
     };
+
+    $('#btnReset').onclick = function(e)
+    {
+	    $('#tX').value = 0;
+	    $('#tY').value = 0;
+	    $('#tZ').value = 0;
+	    $('#rX').value = 0;
+	    $('#rY').value = 0;
+	    $('#rZ').value = 0;
+    };
+    
+    var nD = 5;
     
     $('#tXp').onclick = function(e)
     {
-        $('#tX').value = parseFloat($('#tX').value) + parseFloat($('#dV').value);
+        $('#tX').value = parseFloat($('#tX').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };        
     
     $('#tXm').onclick = function(e)
     {
-        $('#tX').value = parseFloat($('#tX').value) - parseFloat($('#dV').value);
+        $('#tX').value = parseFloat($('#tX').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#tYp').onclick = function(e)
     {
-        $('#tY').value = parseFloat($('#tY').value) + parseFloat($('#dV').value);
+        $('#tY').value = parseFloat($('#tY').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#tYm').onclick = function(e)
     {
-        $('#tY').value = parseFloat($('#tY').value) - parseFloat($('#dV').value);
+        $('#tY').value = parseFloat($('#tY').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#tZp').onclick = function(e)
     {
-        $('#tZ').value = parseFloat($('#tZ').value) + parseFloat($('#dV').value);
+        $('#tZ').value = parseFloat($('#tZ').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#tZm').onclick = function(e)
     {
-        $('#tZ').value = parseFloat($('#tZ').value) - parseFloat($('#dV').value);
+        $('#tZ').value = parseFloat($('#tZ').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
 
 
     $('#rXp').onclick = function(e)
     {
-        $('#rX').value = parseFloat($('#rX').value) + parseFloat($('#dV').value);
+        $('#rX').value = parseFloat($('#rX').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#rXm').onclick = function(e)
     {
-        $('#rX').value = parseFloat($('#rX').value) - parseFloat($('#dV').value);
+        $('#rX').value = parseFloat($('#rX').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#rYp').onclick = function(e)
     {
-        $('#rY').value = parseFloat($('#rY').value) + parseFloat($('#dV').value);
+        $('#rY').value = parseFloat($('#rY').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#rYm').onclick = function(e)
     {
-        $('#rY').value = parseFloat($('#rY').value) - parseFloat($('#dV').value);
+        $('#rY').value = parseFloat($('#rY').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#rZp').onclick = function(e)
     {
-        $('#rZ').value = parseFloat($('#rZ').value) + parseFloat($('#dV').value);
+        $('#rZ').value = parseFloat($('#rZ').value, nD) + parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
     $('#rZm').onclick = function(e)
     {
-        $('#rZ').value = parseFloat($('#rZ').value) - parseFloat($('#dV').value);
+        $('#rZ').value = parseFloat($('#rZ').value, nD) - parseFloat($('#dV').value, nD);
     	sendCmd();
     };
     
@@ -132,6 +144,7 @@ window.onload = function() {
     <pre id="messages">Connecting...</pre>
     
     <button id="btnSET" style="WIDTH: 100px; HEIGHT: 50px">SET</button>
+    <button id="btnReset" style="WIDTH: 100px; HEIGHT: 50px">Reset</button>
     </br></br>
 
 	Sensor:

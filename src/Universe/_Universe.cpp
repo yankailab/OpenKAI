@@ -267,10 +267,7 @@ void _Universe::draw(void)
 		i=0;
 		while((pO = get(i++)) != NULL)
 		{
-		    PointCloud pc;
-		    pc.points_ = *pO->getPointCloudPoint();
-		    pc.colors_ = *pO->getPointCloudColor();
-		    m_pPCV->render(&pc);
+		    m_pPCV->render(pO);
 		}
 	}
 
