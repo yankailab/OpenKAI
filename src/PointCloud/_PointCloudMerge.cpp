@@ -33,18 +33,18 @@ bool _PointCloudMerge::init(void *pKiss)
 	pK->v("_PointCloudViewer", &iName);
 	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
-	vector<string> vU;
-	pK->a("vPCuniv", &vU);
-	IF_F(vU.empty());
+	vector<string> vPCB;
+	pK->a("vPointCloudBase", &vPCB);
+	IF_F(vPCB.empty());
 
-	for(string u : vU)
+	for(string p : vPCB)
 	{
-		_Universe* pU = (_Universe*) (pK->getInst(u));
-		IF_CONT(!pU);
+		_PointCloudBase* pPCB = (_PointCloudBase*) (pK->getInst(p));
+		IF_CONT(!pPCB);
 
-		m_vpU.push_back(pU);
+		m_vpPCB.push_back(pPCB);
 	}
-	IF_F(m_vpU.empty());
+	IF_F(m_vpPCB.empty());
 
 	m_bOpen = true;
 
@@ -75,8 +75,7 @@ void _PointCloudMerge::update(void)
 		updatePC();
 		transform();
 
-		m_pU->updateObj();
-		addObj();
+		m_sPC.update();
 
 		this->autoFPSto();
 	}
@@ -86,24 +85,24 @@ void _PointCloudMerge::updatePC(void)
 {
 	IF_(check() < 0);
 
-	m_PC.points_.clear();
-	m_PC.colors_.clear();
-	m_PC.normals_.clear();
+	PointCloud* pPC = m_sPC.next();
+	pPC->points_.clear();
+	pPC->colors_.clear();
+	pPC->normals_.clear();
 
-	for(_Universe* pU : m_vpU)
+	for(_PointCloudBase* pPCB : m_vpPCB)
 	{
-		_Object* pO = pU->get(0);
-		IF_CONT(!pO);
+//		IF_CONT(pPCB->m_sPC.prev()->points_.empty());
 
 		vector<Eigen::Vector3d>* pV;
+		pV = &pPCB->m_sPC.prev()->points_;
+		pPC->points_.insert(pPC->points_.end(), pV->begin(), pV->end());
 
-		pV = pO->getPointCloudPoint();
-		m_PC.points_.insert(m_PC.points_.end(), pV->begin(), pV->end());
-
-		pV = pO->getPointCloudColor();
-		m_PC.colors_.insert(m_PC.colors_.end(), pV->begin(), pV->end());
+		pV = &pPCB->m_sPC.prev()->colors_;
+		pPC->colors_.insert(pPC->colors_.end(), pV->begin(), pV->end());
 	}
 
+	m_pViewer->render(pPC);
 }
 
 }

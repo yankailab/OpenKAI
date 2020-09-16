@@ -76,22 +76,14 @@ void _PointCloudFile::update(void)
 
 		if(check()>=0)
 		{
-			m_PC = m_PCfile;
+			*m_sPC.next() = m_PCfile;
 			transform();
 
-			m_pU->updateObj();
-			addObj();
+			m_sPC.update();
 		}
 
 		this->autoFPSto();
 	}
-}
-
-void _PointCloudFile::draw(void)
-{
-	this->_PointCloudBase::draw();
-
-	IF_(!m_pViewer);
 }
 
 }

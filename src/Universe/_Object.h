@@ -76,12 +76,6 @@ public:
 	void setVertices2D(vFloat2 *pV, int nV);
 	vFloat2* getVertex(int i);
 
-	//point cloud
-	void setPointCloudPoint(vector<Eigen::Vector3d>& vP);
-	void setPointCloudColor(vector<Eigen::Vector3d>& vC);
-	vector<Eigen::Vector3d>* getPointCloudPoint(void);
-	vector<Eigen::Vector3d>* getPointCloudColor(void);
-
 	//classification
 	void resetClass(void);
 	void addClassIdx(int iClass);
@@ -129,10 +123,6 @@ protected:
 
 	//vertex
 	vector<vFloat2> m_vVertex;
-
-	//point cloud
-    vector<Eigen::Vector3d> m_vPCpoint;
-    vector<Eigen::Vector3d> m_vPCcolor;
 
 	//bitflag
 	uint64_t	m_mFlag;

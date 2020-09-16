@@ -17,7 +17,6 @@ _PointCloudBase::_PointCloudBase()
 	m_bOpen = false;
 	m_pViewer = NULL;
 
-	m_pU = NULL;
 	m_vT.init(0);
 	m_vR.init(0);
 	m_vRz.init(0.0, FLT_MAX);
@@ -36,11 +35,17 @@ bool _PointCloudBase::init(void *pKiss)
 	pK->v("vR", &m_vR);
 	pK->v("vRz", &m_vRz);
 
-	string iName = "";
-	pK->v("_Universe", &iName);
-	m_pU = (_Universe*) (pK->getInst(iName));
+	int nPCreserve = 0;
+	pK->v("nPCreserve", &nPCreserve);
+	if(nPCreserve > 0)
+	{
+		m_sPC.prev()->points_.reserve(nPCreserve);
+		m_sPC.prev()->colors_.reserve(nPCreserve);
+		m_sPC.next()->points_.reserve(nPCreserve);
+		m_sPC.next()->colors_.reserve(nPCreserve);
+	}
 
-	iName = "";
+	string iName = "";
 	pK->v("_PointCloudViewer", &iName);
 	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
@@ -69,7 +74,6 @@ void _PointCloudBase::close(void)
 
 int _PointCloudBase::check(void)
 {
-	NULL__(m_pU, -1);
 	IF__(!m_bOpen, -1);
 
 	return 0;
@@ -91,22 +95,12 @@ void _PointCloudBase::transform(void)
 
 	Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
 	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
-	mT.block(0,0,3,3) = m_PC.GetRotationMatrixFromXYZ(vR);
+	mT.block(0,0,3,3) = m_sPC.next()->GetRotationMatrixFromXYZ(vR);
 	mT(0,3) = m_vT.x;
 	mT(1,3) = m_vT.y;
 	mT(2,3) = m_vT.z;
 
-	m_PC.Transform(mT);
-}
-
-void _PointCloudBase::addObj(void)
-{
-	_Object o;
-	o.init();
-	o.m_tStamp = m_tStamp;
-	o.setPointCloudPoint(m_PC.points_);
-	o.setPointCloudColor(m_PC.colors_);
-	m_pU->add(o);
+	m_sPC.next()->Transform(mT);
 }
 
 void _PointCloudBase::draw(void)
@@ -114,7 +108,7 @@ void _PointCloudBase::draw(void)
 	this->_ThreadBase::draw();
 
 	NULL_(m_pViewer);
-	m_pViewer->render(&m_PC);
+//	m_pViewer->render(m_sPC.prev());
 }
 
 }

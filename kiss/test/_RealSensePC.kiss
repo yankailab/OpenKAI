@@ -35,31 +35,13 @@
 }
 
 {
-	"name":"univ1",
-	"class":"_Universe",
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"/_PointCloudViewer":"pcv",
-}
-
-{
-	"name":"univ2",
-	"class":"_Universe",
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"/_PointCloudViewer":"pcv",
-}
-
-{
 	"name":"pcFile1",
 	"class":"_PointCloudFile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"_Universe":"univ1",
+	"/_PointCloudViewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
@@ -73,9 +55,9 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"_Universe":"univ2",
+	"/_PointCloudViewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-	"vT":[0, 0, 0],
+	"vT":[5, 0, 0],
 	"vR":[0, 0, 0],
 	"vRz":[0, 1000.0],
 }
@@ -84,7 +66,7 @@
 	"name":"rs1",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -107,9 +89,8 @@
 {
 	"name":"rsPC1",
 	"class":"_RealSensePC",
-	"bInst":1,
+	"bInst":0,
 	"_RealSense":"rs1",
-	"_Universe":"univ1",
 }
 
 {
@@ -141,16 +122,6 @@
 	"class":"_RealSensePC",
 	"bInst":0,
 	"_RealSense":"rs2",
-	"_Universe":"univ2",
-}
-
-{
-	"name":"univM",
-	"class":"_Universe",
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_PointCloudViewer":"pcv",
 }
 
 {
@@ -160,8 +131,8 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"_Universe":"univM",
-	"vPCuniv":["univ1","univ2"],
+	"_PointCloudViewer":"pcv",
+	"vPointCloudBase":["pcFile1","pcFile2","rs1","rs2"],
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"vRz":[0, 1000.0],

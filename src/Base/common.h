@@ -25,6 +25,7 @@
 #include "../Primitive/vDouble2.h"
 #include "../Primitive/vDouble3.h"
 #include "../Primitive/vDouble4.h"
+#include "../Primitive/vSwitch.h"
 #include "../Utility/util.h"
 
 #endif

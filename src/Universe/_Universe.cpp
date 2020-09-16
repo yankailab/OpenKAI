@@ -25,8 +25,6 @@ _Universe::_Universe()
 	m_bDrawText = false;
 	m_bDrawPos = false;
 
-	m_pPCV = NULL;
-
 	clearObj();
 }
 
@@ -58,10 +56,6 @@ bool _Universe::init(void* pKiss)
 	m_pO[0].init(pKiss);
 	m_pO[1].init(pKiss);
 	clearObj();
-
-	string iName = "";
-	pK->v("_PointCloudViewer", &iName);
-	m_pPCV = (_PointCloudViewer*) (pK->getInst(iName));
 
 	return true;
 }
@@ -258,19 +252,6 @@ void _Universe::draw(void)
 	//	}
 
 	}
-#endif
-
-#ifdef USE_OPEN3D
-
-	if(m_pPCV)
-	{
-		i=0;
-		while((pO = get(i++)) != NULL)
-		{
-		    m_pPCV->render(pO);
-		}
-	}
-
 #endif
 
 }

@@ -9,7 +9,7 @@
 #define OpenKAI_src_PointCloud__PointCloudBase_H_
 
 #include "../Base/_ThreadBase.h"
-#include "../Universe/_Universe.h"
+#include "_PointCloudViewer.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -36,13 +36,11 @@ public:
 
 	virtual void setTranslation(vFloat3& vT);
 	virtual void setRotation(vFloat3& vR);
-
-protected:
 	virtual void transform(void);
-	virtual void addObj(void);
 
-	_Universe* m_pU;
-	PointCloud m_PC;
+public:
+	vSwitch<PointCloud> m_sPC;
+
 	vFloat3 m_vT;	//translation
 	vFloat3 m_vR;	//rotation
 	vFloat2 m_vRz;	//z region

@@ -295,26 +295,6 @@ vFloat2* _Object::getVertex(int i)
 	return &m_vVertex[i];
 }
 
-void _Object::setPointCloudPoint(vector<Eigen::Vector3d>& vP)
-{
-	m_vPCpoint = vP;
-}
-
-void _Object::setPointCloudColor(vector<Eigen::Vector3d>& vC)
-{
-	m_vPCcolor = vC;
-}
-
-vector<Eigen::Vector3d>* _Object::getPointCloudPoint(void)
-{
-	return &m_vPCpoint;
-}
-
-vector<Eigen::Vector3d>* _Object::getPointCloudColor(void)
-{
-	return &m_vPCcolor;
-}
-
 void _Object::addClassIdx(int iClass)
 {
 	m_mClass |= 1 << iClass;

@@ -104,17 +104,6 @@ void _PointCloudViewer::render(PointCloud* pPC)
 	pthread_mutex_unlock(&m_mutex);
 }
 
-void _PointCloudViewer::render(_Object* pO)
-{
-	NULL_(pO);
-    PointCloud pc;
-
-    pthread_mutex_lock(&m_mutex);
-    m_spPC->points_ = *pO->getPointCloudPoint();
-    m_spPC->colors_ = *pO->getPointCloudColor();
-	pthread_mutex_unlock(&m_mutex);
-}
-
 void _PointCloudViewer::draw(void)
 {
 	this->_ThreadBase::draw();

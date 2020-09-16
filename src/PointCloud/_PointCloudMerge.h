@@ -36,7 +36,7 @@ private:
 	}
 
 public:
-	vector<_Universe*> m_vpU;
+	vector<_PointCloudBase*> m_vpPCB;
 
 };
 

@@ -90,8 +90,7 @@ void _RealSensePC::update(void)
 		updatePC();
 		transform();
 
-		m_pU->updateObj();
-		addObj();
+		m_sPC.update();
 
 		this->autoFPSto();
 	}
@@ -110,8 +109,10 @@ void _RealSensePC::updatePC(void)
 	auto rspTexCoord = m_rsPoints.get_texture_coordinates();
 	int nP = m_rsPoints.size();
 
-	m_PC.points_.clear();
-	m_PC.colors_.clear();
+	PointCloud* pPC = m_sPC.next();
+	pPC->points_.clear();
+	pPC->colors_.clear();
+	pPC->normals_.clear();
 
 	const static float c_b = 1.0 / 255.0;
 
@@ -122,7 +123,7 @@ void _RealSensePC::updatePC(void)
 		IF_CONT(vr.z > m_vRz.y);
 
 		Eigen::Vector3d ve(vr.x, vr.y, vr.z);
-		m_PC.points_.push_back(ve);
+		pPC->points_.push_back(ve);
 
 		rs2::texture_coordinate tc = rspTexCoord[i];
 		int tx = constrain<int>(tc.u * mBGR.cols, 0, mBGR.cols - 1);
@@ -130,7 +131,7 @@ void _RealSensePC::updatePC(void)
 		Vec3b vC = mBGR.at<Vec3b>(ty, tx);
 		Eigen::Vector3d te(vC[2], vC[1], vC[0]);
 		te *= c_b;
-		m_PC.colors_.push_back(te);
+		pPC->colors_.push_back(te);
 	}
 
 
