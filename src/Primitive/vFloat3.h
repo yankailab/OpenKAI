@@ -81,10 +81,11 @@ struct vFloat3
 
 	inline vFloat3 operator/(float r)
     {
+		float rb = 1.0/r;
 		vFloat3 v;
-		v.x = x / r;
-		v.y = y / r;
-		v.z = z / r;
+		v.x = x * rb;
+		v.y = y * rb;
+		v.z = z * rb;
 		return v;
 	}
 
@@ -93,6 +94,13 @@ struct vFloat3
 		x = r;
 		y = r;
 		z = r;
+	}
+
+	inline void operator=(Eigen::Vector3d& r)
+    {
+		x = r.x();
+		y = r.y();
+		z = r.z();
 	}
 
 	inline void operator+=(vFloat3 r)

@@ -45,6 +45,26 @@ bool _PointCloudBase::init(void *pKiss)
 		m_sPC.next()->colors_.reserve(nPCreserve);
 	}
 
+	Kiss *pF = pK->child("vFilter");
+	int i = 0;
+	while (1)
+	{
+		Kiss *pA = pF->child(i++);
+		if (pA->empty())
+			break;
+
+		POINTCLOUD_VOL v;
+		v.init();
+		pA->v("type", (int*)&v.m_type);
+		pA->v("bInside", &v.m_bInside);
+		pA->v("vX", &v.m_vX);
+		pA->v("vY", &v.m_vY);
+		pA->v("vZ", &v.m_vZ);
+		pA->v("vC", &v.m_vC);
+		pA->v("vR", &v.m_vR);
+		m_vFilter.push_back(v);
+	}
+
 	string iName = "";
 	pK->v("_PointCloudViewer", &iName);
 	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
@@ -101,6 +121,19 @@ void _PointCloudBase::transform(void)
 	mT(2,3) = m_vT.z;
 
 	m_sPC.next()->Transform(mT);
+}
+
+bool _PointCloudBase::bFilter(Eigen::Vector3d& vP)
+{
+	for (POINTCLOUD_VOL v : m_vFilter)
+	{
+		vFloat3 vf;
+		vf = vP;
+		IF_CONT(v.bValid(vf));
+		return false;
+	}
+
+	return true;
 }
 
 void _PointCloudBase::draw(void)
