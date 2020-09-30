@@ -26,18 +26,33 @@ bool _PointCloudRegistration::init(void *pKiss)
 	IF_F(!_PointCloudBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	vector<string> vPC;
-	pK->a("vPC", &vPC);
-	IF_F(vPC.empty());
+	Kiss* pPair = pK->child("pair");
+	IF_T(pPair->empty());
 
-	for(string p : vPC)
+	PCREGIST_PAIR P;
+	int i = 0;
+	while (1)
 	{
-		_PointCloudBase* pPC = (_PointCloudBase*) (pK->getInst(p));
-		IF_CONT(!pPC);
+		Kiss* pP = pPair->child(i++);
+		if(pP->empty())break;
 
-		m_vpPC.push_back(pPC);
+		P.init();
+		string n;
+
+		n = "";
+		pP->v("source", &n);
+		P.m_pSource = (_PointCloudBase*) (pK->getInst(n));
+		IF_Fl(!P.m_pSource, n + ": not found");
+
+		n = "";
+		pP->v("target", &n);
+		P.m_pTarget = (_PointCloudBase*) (pK->getInst(n));
+		IF_Fl(!P.m_pTarget, n + ": not found");
+
+		m_vpPair.push_back(P);
 	}
-	IF_F(m_vpPC.empty());
+
+	IF_F(m_vpPair.empty());
 
 	return true;
 }
@@ -78,21 +93,31 @@ void _PointCloudRegistration::updateRegistration(void)
 {
 	IF_(check() < 0);
 
-	int nPC = m_vpPC.size();
+	int nPC = m_vpPair.size();
 	for(int i=0; i<nPC; i++)
 	{
-		_PointCloudBase* pPCsource = m_vpPC[i];
-		PointCloud pcSource;
-//		pPCsource->getPointCloud(&pcSource);
+		PCREGIST_PAIR* p = &m_vpPair[i];
 
-		int j=i+1;
-		if(j>=nPC)j=0;
+		PointCloud pcSource = *p->m_pSource->getPCprev();
+		PointCloud pcTarget = *p->m_pTarget->getPCprev();
 
-		_PointCloudBase* pPCtarget = m_vpPC[j];
-		PointCloud pcTarget;
-//		pPCtarget->getPointCloud(&pcTarget);
+		registration::RegistrationResult rr = open3d::registration::RegistrationICP(
+												pcSource,
+												pcTarget,
+												p->m_thr,
+												Eigen::Matrix4d::Identity(),
+												open3d::registration::TransformationEstimationPointToPoint()
+												);
 
-		//open3d::registration::RegistrationICP()
+		rr.transformation_;
+
+//		reg_p2p = o3d.registration.registration_icp(
+//		        source, target, threshold, trans_init,
+//		        o3d.registration.TransformationEstimationPointToPoint())
+//		print(reg_p2p)
+//		print("Transformation is:")
+//		print(reg_p2p.transformation)
+//		draw_registration_result(source, target, reg_p2p.transformation)
 	}
 
 }

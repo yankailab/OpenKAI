@@ -17,6 +17,20 @@
 namespace kai
 {
 
+struct PCREGIST_PAIR
+{
+	_PointCloudBase* m_pSource;
+	_PointCloudBase* m_pTarget;
+	float m_thr;
+
+	void init(void)
+	{
+		m_pSource = NULL;
+		m_pTarget = NULL;
+	}
+
+};
+
 class _PointCloudRegistration: public _PointCloudBase
 {
 public:
@@ -38,7 +52,7 @@ private:
 	}
 
 public:
-	vector<_PointCloudBase*> m_vpPC;
+	vector<PCREGIST_PAIR> m_vpPair;
 
 };
 

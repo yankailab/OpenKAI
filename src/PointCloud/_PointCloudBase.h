@@ -103,6 +103,8 @@ public:
 	virtual void transform(void);
 	virtual bool bFilter(Eigen::Vector3d& vP);
 
+	virtual PointCloud* getPCprev(void);
+
 public:
 	vSwitch<PointCloud> m_sPC;
 

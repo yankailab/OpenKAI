@@ -136,6 +136,11 @@ bool _PointCloudBase::bFilter(Eigen::Vector3d& vP)
 	return true;
 }
 
+PointCloud* _PointCloudBase::getPCprev(void)
+{
+	return m_sPC.prev();
+}
+
 void _PointCloudBase::draw(void)
 {
 	this->_ThreadBase::draw();
