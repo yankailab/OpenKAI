@@ -144,11 +144,7 @@
 
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
-#include "../PointCloud/_RealSensePC.h"
-#include "../PointCloud/_PointCloudFile.h"
-#include "../PointCloud/_PointCloudMerge.h"
-#include "../PointCloud/_PointCloudRegistration.h"
-#include "../PointCloud/_UItransform.h"
+#include "../PointCloud/_PCrealSense.h"
 #endif
 #endif	//USE_OPEN3D
 
@@ -185,9 +181,14 @@
 
 #endif	//USE_OPENCV
 
-
 #ifdef USE_OPEN3D
-#include "../PointCloud/_PointCloudViewer.h"
+#include "../PointCloud/_PCfile.h"
+#include "../PointCloud/_PCfilter.h"
+#include "../PointCloud/_PCmerge.h"
+#include "../PointCloud/_PCregistration.h"
+#include "../PointCloud/_PCtransform.h"
+#include "../PointCloud/_PCviewer.h"
+#include "../PointCloud/_UItransform.h"
 #endif
 
 #ifdef USE_REALSENSE

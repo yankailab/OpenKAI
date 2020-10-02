@@ -28,12 +28,12 @@ bool _UItransform::init(void* pKiss)
 	IF_F(vP.empty());
 	for(string p : vP)
 	{
-		_PointCloudBase* pPCB = (_PointCloudBase*) (pK->getInst(p));
-		IF_CONT(!pPCB);
+		_PCtransform* pPCT = (_PCtransform*) (pK->getInst(p));
+		IF_CONT(!pPCT);
 
-		m_vPCB.push_back(pPCB);
+		m_vPCT.push_back(pPCT);
 	}
-	IF_F(m_vPCB.empty());
+	IF_F(m_vPCT.empty());
 
 	return true;
 }
@@ -100,21 +100,21 @@ void _UItransform::handleMsg(string& str)
 	IF_(vP.size() < 7);
 
 	string sensorName = vP[0];
-	_PointCloudBase* pPCB = NULL;
-	for(int i=0; i<m_vPCB.size(); i++)
+	_PCtransform* pPCT = NULL;
+	for(int i=0; i<m_vPCT.size(); i++)
 	{
-		IF_CONT(*m_vPCB[i]->getName() != sensorName);
+		IF_CONT(*m_vPCT[i]->getName() != sensorName);
 
-		pPCB = m_vPCB[i];
+		pPCT = m_vPCT[i];
 		break;
 	}
-	NULL_(pPCB);
+	NULL_(pPCT);
 
 	vFloat3 v;
 	v.init(stof(vP[1]), stof(vP[2]), stof(vP[3]));
-	pPCB->setTranslation(v);
+	pPCT->setTranslation(v);
 	v.init(stof(vP[4]), stof(vP[5]), stof(vP[6]));
-	pPCB->setRotation(v);
+	pPCT->setRotation(v);
 
 }
 

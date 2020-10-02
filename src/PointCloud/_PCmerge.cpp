@@ -1,11 +1,11 @@
 /*
- * _PointCloudMerge.cpp
+ * _PCmerge.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_PointCloudMerge.h"
+#include "_PCmerge.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
@@ -13,25 +13,22 @@
 namespace kai
 {
 
-_PointCloudMerge::_PointCloudMerge()
+_PCmerge::_PCmerge()
 {
 	m_pViewer = NULL;
 
 }
 
-_PointCloudMerge::~_PointCloudMerge()
+_PCmerge::~_PCmerge()
 {
 }
 
-bool _PointCloudMerge::init(void *pKiss)
+bool _PCmerge::init(void *pKiss)
 {
 	IF_F(!_PointCloudBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	string iName;
-	iName = "";
-	pK->v("_PointCloudViewer", &iName);
-	m_pViewer = (_PointCloudViewer*) (pK->getInst(iName));
 
 	vector<string> vPCB;
 	pK->a("vPointCloudBase", &vPCB);
@@ -46,12 +43,10 @@ bool _PointCloudMerge::init(void *pKiss)
 	}
 	IF_F(m_vpPCB.empty());
 
-	m_bOpen = true;
-
 	return true;
 }
 
-bool _PointCloudMerge::start(void)
+bool _PCmerge::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -66,43 +61,46 @@ bool _PointCloudMerge::start(void)
 	return true;
 }
 
-void _PointCloudMerge::update(void)
+int _PCmerge::check(void)
+{
+	return 0;
+}
+
+void _PCmerge::update(void)
 {
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		updatePC();
-		transform();
-
+		updateMerge();
 		m_sPC.update();
 
 		this->autoFPSto();
 	}
 }
 
-void _PointCloudMerge::updatePC(void)
+void _PCmerge::updateMerge(void)
 {
 	IF_(check() < 0);
 
-	PointCloud* pPC = m_sPC.next();
-	pPC->points_.clear();
-	pPC->colors_.clear();
-	pPC->normals_.clear();
+	PointCloud* pOut = m_sPC.next();
+	pOut->points_.clear();
+	pOut->colors_.clear();
+	pOut->normals_.clear();
 
 	for(_PointCloudBase* pPCB : m_vpPCB)
 	{
-//		IF_CONT(pPCB->m_sPC.prev()->points_.empty());
+		IF_CONT(pPCB->getPC()->points_.empty());
 
 		vector<Eigen::Vector3d>* pV;
 		pV = &pPCB->m_sPC.prev()->points_;
-		pPC->points_.insert(pPC->points_.end(), pV->begin(), pV->end());
+		pOut->points_.insert(pOut->points_.end(), pV->begin(), pV->end());
 
 		pV = &pPCB->m_sPC.prev()->colors_;
-		pPC->colors_.insert(pPC->colors_.end(), pV->begin(), pV->end());
+		pOut->colors_.insert(pOut->colors_.end(), pV->begin(), pV->end());
 	}
 
-	m_pViewer->render(pPC);
+//	m_pViewer->render(pOut);
 }
 
 }

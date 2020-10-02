@@ -1,11 +1,11 @@
 /*
- * _RealSensePC.cpp
+ * _PCrealSense.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_RealSensePC.h"
+#include "_PCrealSense.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
@@ -14,19 +14,22 @@
 namespace kai
 {
 
-_RealSensePC::_RealSensePC()
+_PCrealSense::_PCrealSense()
 {
 	m_pRS = NULL;
+	m_vRz.init(0.0, FLT_MAX);
 }
 
-_RealSensePC::~_RealSensePC()
+_PCrealSense::~_PCrealSense()
 {
 }
 
-bool _RealSensePC::init(void *pKiss)
+bool _PCrealSense::init(void *pKiss)
 {
 	IF_F(!_PointCloudBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
+
+	pK->v("vRz", &m_vRz);
 
 	string iName;
 
@@ -38,26 +41,7 @@ bool _RealSensePC::init(void *pKiss)
 	return true;
 }
 
-bool _RealSensePC::open(void)
-{
-	NULL_F(m_pRS);
-
-	m_bOpen = m_pRS->isOpened();
-	return m_bOpen;
-}
-
-void _RealSensePC::close(void)
-{
-	if (m_threadMode == T_THREAD)
-	{
-		goSleep();
-		while (!bSleeping());
-	}
-
-	this->_PointCloudBase::close();
-}
-
-bool _RealSensePC::start(void)
+bool _PCrealSense::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -72,31 +56,29 @@ bool _RealSensePC::start(void)
 	return true;
 }
 
-int _RealSensePC::check(void)
+int _PCrealSense::check(void)
 {
-	IF__(!open(), -1);
 	NULL__(m_pRS, -1);
+	IF__(!m_pRS->isOpened(), -1);
 	IF__(m_pRS->BGR()->m()->empty(), -1);
 
 	return this->_PointCloudBase::check();
 }
 
-void _RealSensePC::update(void)
+void _PCrealSense::update(void)
 {
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
 
-		updatePC();
-		transform();
-
+		updateRS();
 		m_sPC.update();
 
 		this->autoFPSto();
 	}
 }
 
-void _RealSensePC::updatePC(void)
+void _PCrealSense::updateRS(void)
 {
 	IF_(check() < 0);
 

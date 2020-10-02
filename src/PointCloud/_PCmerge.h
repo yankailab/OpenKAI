@@ -1,12 +1,12 @@
 /*
- * _PointCloudMerge.h
+ * _PCmerge.h
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_PointCloudMerge_H_
-#define OpenKAI_src_Vision_PointCloudMerge_H_
+#ifndef OpenKAI_src_PointCloud_PCmerge_H_
+#define OpenKAI_src_PointCloud_PCmerge_H_
 
 #include "../Base/common.h"
 
@@ -17,21 +17,22 @@
 namespace kai
 {
 
-class _PointCloudMerge: public _PointCloudBase
+class _PCmerge: public _PointCloudBase
 {
 public:
-	_PointCloudMerge();
-	virtual ~_PointCloudMerge();
+	_PCmerge();
+	virtual ~_PCmerge();
 
 	bool init(void* pKiss);
 	bool start(void);
+	int check(void);
 
 private:
-	void updatePC(void);
+	void updateMerge(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_PointCloudMerge *) This)->update();
+		((_PCmerge *) This)->update();
 		return NULL;
 	}
 

@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud__PointCloudViewer_H_
-#define OpenKAI_src_PointCloud__PointCloudViewer_H_
+#ifndef OpenKAI_src_PointCloud__PCviewer_H_
+#define OpenKAI_src_PointCloud__PCviewer_H_
 
 #include "../Base/_ThreadBase.h"
 
@@ -18,11 +18,11 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-class _PointCloudViewer: public _ThreadBase
+class _PCviewer: public _ThreadBase
 {
 public:
-	_PointCloudViewer();
-	virtual ~_PointCloudViewer();
+	_PCviewer();
+	virtual ~_PCviewer();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -36,7 +36,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_PointCloudViewer *) This)->update();
+		((_PCviewer *) This)->update();
 		return NULL;
 	}
 

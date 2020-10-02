@@ -144,11 +144,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
-	ADD_MODULE(_RealSensePC);
-	ADD_MODULE(_PointCloudFile);
-	ADD_MODULE(_PointCloudMerge);
-	ADD_MODULE(_PointCloudRegistration);
-	ADD_MODULE(_UItransform);
+	ADD_MODULE(_PCrealSense);
 #endif
 #endif //USE_OPEN3D
 
@@ -190,7 +186,13 @@ BASE* Module::createInstance(Kiss* pK)
 #endif	//USE_OPENCV
 
 #ifdef USE_OPEN3D
-	ADD_MODULE(_PointCloudViewer);
+	ADD_MODULE(_PCfile);
+	ADD_MODULE(_PCfilter);
+	ADD_MODULE(_PCmerge);
+	ADD_MODULE(_PCregistration);
+	ADD_MODULE(_PCtransform);
+	ADD_MODULE(_PCviewer);
+	ADD_MODULE(_UItransform);
 #endif
 
 #ifdef USE_REALSENSE

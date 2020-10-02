@@ -1,12 +1,12 @@
 /*
- * _PointCloudFile.h
+ * _PCfile.h
  *
  *  Created on: Sept 3, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Vision_PointCloudFile_H_
-#define OpenKAI_src_Vision_PointCloudFile_H_
+#ifndef OpenKAI_src_PointCloud_PCfile_H_
+#define OpenKAI_src_PointCloud_PCfile_H_
 
 #include "../Base/common.h"
 
@@ -17,27 +17,25 @@
 namespace kai
 {
 
-class _PointCloudFile: public _PointCloudBase
+class _PCfile: public _PointCloudBase
 {
 public:
-	_PointCloudFile();
-	virtual ~_PointCloudFile();
+	_PCfile();
+	virtual ~_PCfile();
 
 	bool init(void* pKiss);
 	bool start(void);
 	bool open(void);
-	void close(void);
 
 private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_PointCloudFile *) This)->update();
+		((_PCfile *) This)->update();
 		return NULL;
 	}
 
 public:
-	PointCloud m_PCfile;
 	string m_fName;
 
 };

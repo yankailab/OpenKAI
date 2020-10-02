@@ -3,7 +3,7 @@
 
 #include "../Base/_ThreadBase.h"
 #include "../IO/_WebSocket.h"
-#include "_PointCloudBase.h"
+#include "_PCtransform.h"
 
 using namespace picojson;
 
@@ -35,7 +35,7 @@ private:
 
 public:
 	_IOBase* m_pIO;
-	vector<_PointCloudBase*> m_vPCB;
+	vector<_PCtransform*> m_vPCT;
 
 };
 

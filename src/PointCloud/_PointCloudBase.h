@@ -9,7 +9,7 @@
 #define OpenKAI_src_PointCloud__PointCloudBase_H_
 
 #include "../Base/_ThreadBase.h"
-#include "_PointCloudViewer.h"
+#include "_PCviewer.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -19,69 +19,6 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-enum POINTCLOUD_VOL_TYPE
-{
-	pc_vol_box = 0,
-	pc_vol_ball = 1,
-	pc_vol_cylinder = 2,
-};
-
-struct POINTCLOUD_VOL
-{
-	POINTCLOUD_VOL_TYPE m_type;
-	bool	m_bInside;	//true: inside valid
-
-	vFloat2 m_vX;
-	vFloat2 m_vY;
-	vFloat2 m_vZ;
-
-	vFloat3 m_vC;
-	vFloat2 m_vR;
-
-	void init(void)
-	{
-		m_type = pc_vol_ball;
-		m_bInside = false;
-		m_vX.init(0.0);
-		m_vY.init(0.0);
-		m_vZ.init(0.0);
-		m_vC.init(0.0);
-		m_vR.init(0.0);
-	}
-
-	bool bValid(vFloat3& vP)
-	{
-		bool bInside = true;
-
-		if(m_type == pc_vol_box)
-		{
-			if(vP.x < m_vX.x)bInside = false;
-			if(vP.x > m_vX.y)bInside = false;
-			if(vP.y < m_vY.x)bInside = false;
-			if(vP.y > m_vY.y)bInside = false;
-			if(vP.z < m_vZ.x)bInside = false;
-			if(vP.z > m_vZ.y)bInside = false;
-		}
-		else if(m_type == pc_vol_ball)
-		{
-			vFloat3 vR = vP - m_vC;
-			float r = vR.r();
-			if(r < m_vR.x)bInside = false;
-			if(r > m_vR.y)bInside = false;
-		}
-		else if(m_type == pc_vol_cylinder)
-		{
-			vFloat3 vR = vP - m_vC;
-			vR.z = 0.0;
-			float r = vR.r();
-			if(r < m_vR.x)bInside = false;
-			if(r > m_vR.y)bInside = false;
-		}
-
-		IF_F(m_bInside != bInside);
-		return true;
-	}
-};
 
 class _PointCloudBase: public _ThreadBase
 {
@@ -91,30 +28,16 @@ public:
 
 	virtual bool init(void* pKiss);
 	virtual void draw(void);
-
-	virtual bool open(void);
-	virtual bool isOpened(void);
-	virtual void close(void);
 	virtual int size(void);
 	virtual int check(void);
 
-	virtual void setTranslation(vFloat3& vT);
-	virtual void setRotation(vFloat3& vR);
-	virtual void transform(void);
-	virtual bool bFilter(Eigen::Vector3d& vP);
-
-	virtual PointCloud* getPCprev(void);
+	virtual PointCloud* getPC(void);
 
 public:
+	_PointCloudBase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
 
-	vFloat3 m_vT;	//translation
-	vFloat3 m_vR;	//rotation
-	vFloat2 m_vRz;	//z region
-	vector<POINTCLOUD_VOL> m_vFilter;
-
-	bool m_bOpen;
-	_PointCloudViewer* m_pViewer;
+	_PCviewer* m_pViewer;
 };
 
 }

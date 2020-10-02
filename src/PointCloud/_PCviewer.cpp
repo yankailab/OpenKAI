@@ -1,18 +1,18 @@
 /*
- * _PointCloudViewer.cpp
+ * _PCviewer.cpp
  *
  *  Created on: May 28, 2020
  *      Author: yankai
  */
 
-#include "_PointCloudViewer.h"
+#include "_PCviewer.h"
 
 #ifdef USE_OPEN3D
 
 namespace kai
 {
 
-_PointCloudViewer::_PointCloudViewer()
+_PCviewer::_PCviewer()
 {
 	m_vWinSize.init(1280, 720);
 	m_pMcoordFrame = NULL;
@@ -22,12 +22,12 @@ _PointCloudViewer::_PointCloudViewer()
 	pthread_mutex_init(&m_mutex, NULL);
 }
 
-_PointCloudViewer::~_PointCloudViewer()
+_PCviewer::~_PCviewer()
 {
 	pthread_mutex_destroy(&m_mutex);
 }
 
-bool _PointCloudViewer::init(void *pKiss)
+bool _PCviewer::init(void *pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -43,7 +43,7 @@ bool _PointCloudViewer::init(void *pKiss)
 	return true;
 }
 
-bool _PointCloudViewer::start(void)
+bool _PCviewer::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -58,7 +58,7 @@ bool _PointCloudViewer::start(void)
 	return true;
 }
 
-void _PointCloudViewer::update(void)
+void _PCviewer::update(void)
 {
 	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x, m_vWinSize.y);
 	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
@@ -79,12 +79,12 @@ void _PointCloudViewer::update(void)
 	m_vis.DestroyVisualizerWindow();
 }
 
-int _PointCloudViewer::check(void)
+int _PCviewer::check(void)
 {
 	return 0;
 }
 
-void _PointCloudViewer::render(void)
+void _PCviewer::render(void)
 {
 	pthread_mutex_lock(&m_mutex);
 	m_vis.UpdateGeometry(m_spPC);
@@ -97,14 +97,14 @@ void _PointCloudViewer::render(void)
 	}
 }
 
-void _PointCloudViewer::render(PointCloud* pPC)
+void _PCviewer::render(PointCloud* pPC)
 {
 	pthread_mutex_lock(&m_mutex);
 	*m_spPC = *pPC;
 	pthread_mutex_unlock(&m_mutex);
 }
 
-void _PointCloudViewer::draw(void)
+void _PCviewer::draw(void)
 {
 	this->_ThreadBase::draw();
 }
