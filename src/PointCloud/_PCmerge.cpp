@@ -25,7 +25,7 @@ _PCmerge::~_PCmerge()
 
 bool _PCmerge::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	string iName;
@@ -36,7 +36,7 @@ bool _PCmerge::init(void *pKiss)
 
 	for(string p : vPCB)
 	{
-		_PointCloudBase* pPCB = (_PointCloudBase*) (pK->getInst(p));
+		_PCbase* pPCB = (_PCbase*) (pK->getInst(p));
 		IF_CONT(!pPCB);
 
 		m_vpPCB.push_back(pPCB);
@@ -88,7 +88,7 @@ void _PCmerge::updateMerge(void)
 	pOut->colors_.clear();
 	pOut->normals_.clear();
 
-	for(_PointCloudBase* pPCB : m_vpPCB)
+	for(_PCbase* pPCB : m_vpPCB)
 	{
 		IF_CONT(pPCB->getPC()->points_.empty());
 

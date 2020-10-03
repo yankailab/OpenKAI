@@ -26,7 +26,7 @@ _PCrealSense::~_PCrealSense()
 
 bool _PCrealSense::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vRz", &m_vRz);
@@ -62,7 +62,7 @@ int _PCrealSense::check(void)
 	IF__(!m_pRS->isOpened(), -1);
 	IF__(m_pRS->BGR()->m()->empty(), -1);
 
-	return this->_PointCloudBase::check();
+	return this->_PCbase::check();
 }
 
 void _PCrealSense::update(void)

@@ -12,12 +12,12 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 namespace kai
 {
 
-class _PCmerge: public _PointCloudBase
+class _PCmerge: public _PCbase
 {
 public:
 	_PCmerge();
@@ -37,7 +37,7 @@ private:
 	}
 
 public:
-	vector<_PointCloudBase*> m_vpPCB;
+	vector<_PCbase*> m_vpPCB;
 
 };
 

@@ -12,7 +12,7 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 namespace kai
 {
@@ -81,7 +81,7 @@ struct POINTCLOUD_VOL
 	}
 };
 
-class _PCfilter: public _PointCloudBase
+class _PCfilter: public _PCbase
 {
 public:
 	_PCfilter();

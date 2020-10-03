@@ -1,12 +1,12 @@
 /*
- * PointCloudBase.h
+ * PCbase.h
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud__PointCloudBase_H_
-#define OpenKAI_src_PointCloud__PointCloudBase_H_
+#ifndef OpenKAI_src_PointCloud__PCbase_H_
+#define OpenKAI_src_PointCloud__PCbase_H_
 
 #include "../Base/_ThreadBase.h"
 #include "_PCviewer.h"
@@ -20,21 +20,21 @@ namespace kai
 {
 
 
-class _PointCloudBase: public _ThreadBase
+class _PCbase: public _ThreadBase
 {
 public:
-	_PointCloudBase();
-	virtual ~_PointCloudBase();
+	_PCbase();
+	virtual ~_PCbase();
 
 	virtual bool init(void* pKiss);
-	virtual void draw(void);
 	virtual int size(void);
 	virtual int check(void);
+	virtual void draw(void);
 
 	virtual PointCloud* getPC(void);
 
 public:
-	_PointCloudBase* m_pPCB;
+	_PCbase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
 
 	_PCviewer* m_pViewer;

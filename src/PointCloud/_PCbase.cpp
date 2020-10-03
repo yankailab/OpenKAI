@@ -1,28 +1,28 @@
 /*
- * _PointCloudBase.cpp
+ * _PCbase.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 #ifdef USE_OPEN3D
 
 namespace kai
 {
 
-_PointCloudBase::_PointCloudBase()
+_PCbase::_PCbase()
 {
 	m_pPCB = NULL;
 	m_pViewer = NULL;
 }
 
-_PointCloudBase::~_PointCloudBase()
+_PCbase::~_PCbase()
 {
 }
 
-bool _PointCloudBase::init(void *pKiss)
+bool _PCbase::init(void *pKiss)
 {
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -40,37 +40,37 @@ bool _PointCloudBase::init(void *pKiss)
 	string iName;
 
 	iName = "";
-	pK->v("_PointCloudBase", &iName);
-	m_pPCB = (_PointCloudBase*) (pK->getInst(iName));
+	pK->v("_PCbase", &iName);
+	m_pPCB = (_PCbase*) (pK->getInst(iName));
 
 	iName = "";
-	pK->v("_PointCloudViewer", &iName);
+	pK->v("_PCviewer", &iName);
 	m_pViewer = (_PCviewer*) (pK->getInst(iName));
 
 	return true;
 }
 
-int _PointCloudBase::check(void)
+int _PCbase::check(void)
 {
 	return 0;
 }
 
-PointCloud* _PointCloudBase::getPC(void)
+PointCloud* _PCbase::getPC(void)
 {
 	return m_sPC.prev();
 }
 
-int _PointCloudBase::size(void)
+int _PCbase::size(void)
 {
 	return m_sPC.prev()->points_.size();
 }
 
-void _PointCloudBase::draw(void)
+void _PCbase::draw(void)
 {
 	this->_ThreadBase::draw();
 
 	NULL_(m_pViewer);
-//	m_pViewer->render(m_sPC.prev());
+	m_pViewer->render(getPC());
 }
 
 }

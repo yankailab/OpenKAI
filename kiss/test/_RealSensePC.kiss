@@ -25,7 +25,7 @@
 
 {
 	"name":"pcv",
-	"class":"_PointCloudViewer",
+	"class":"_PCviewer",
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
@@ -36,30 +36,52 @@
 
 {
 	"name":"pcFile1",
-	"class":"_PointCloudFile",
+	"class":"_PCfile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/_PointCloudViewer":"pcv",
+	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-	"vT":[0, 0, 0],
-	"vR":[0, 0, 0],
-	"vRz":[0, 1000.0],
 }
 
 {
 	"name":"pcFile2",
-	"class":"_PointCloudFile",
+	"class":"_PCfile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/_PointCloudViewer":"pcv",
+	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-	"vT":[5, 0, 0],
-	"vR":[0, 0, 0],
-	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"pcTf2",
+	"class":"_PCtransform",
+	"bInst":1,
+	"_PCbase":"pcFile2",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0.3, 0, 0],
+	"nMt":1,
+}
+
+{
+	"name":"pcTf21",
+	"class":"_PCregistration",
+	"bInst":1,
+	"FPS":1,
+	
+	{
+		"name":"pair",
+		
+		{
+			"source":"pcTf2",
+			"target":"pcFile1",
+			"_PCtransform":"pcTf2",
+		}
+	}
 }
 
 {
@@ -88,17 +110,18 @@
 
 {
 	"name":"rsPC1",
-	"class":"_RealSensePC",
+	"class":"_PCrealSense",
 	"bInst":0,
 	"_RealSense":"rs1",
-	"/_PointCloudViewer":"pcv",
+	"/_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
 }
 
 {
 	"name":"rs2",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -120,10 +143,11 @@
 
 {
 	"name":"rsPC2",
-	"class":"_RealSensePC",
-	"bInst":1,
+	"class":"_PCrealSense",
+	"bInst":0,
 	"_RealSense":"rs2",
-	"_PointCloudViewer":"pcv",
+	"_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
 }
 
 {
@@ -133,7 +157,7 @@
 	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"_PointCloudViewer":"pcv",
+	"_PCviewer":"pcv",
 	"vPointCloudBase":["pcFile1","pcFile2","rs1","rs2"],
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
@@ -144,7 +168,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 }
 
@@ -152,7 +176,7 @@
 	"name":"uiTransform",
 	"class":"_UItransform",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",

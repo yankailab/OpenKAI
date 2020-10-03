@@ -12,12 +12,12 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 namespace kai
 {
 
-class _PCtransform: public _PointCloudBase
+class _PCtransform: public _PCbase
 {
 public:
 	_PCtransform();
@@ -30,6 +30,10 @@ public:
 	virtual void setTranslation(vFloat3& vT);
 	virtual void setRotation(vFloat3& vR);
 	virtual void setTranslationMatrix(int i, Eigen::Matrix4d_u& mR);
+
+	virtual vFloat3 getTranslation(void);
+	virtual vFloat3 getRotation(void);
+	virtual Eigen::Matrix4d getTranslationMatrix(int i);
 
 private:
 	void updateTransform(void);

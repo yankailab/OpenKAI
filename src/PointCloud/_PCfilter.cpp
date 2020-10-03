@@ -23,7 +23,7 @@ _PCfilter::~_PCfilter()
 
 bool _PCfilter::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	Kiss *pF = pK->child("vFilter");

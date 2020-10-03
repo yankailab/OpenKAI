@@ -14,12 +14,12 @@
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "../Vision/_RealSense.h"
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 namespace kai
 {
 
-class _PCrealSense: public _PointCloudBase
+class _PCrealSense: public _PCbase
 {
 public:
 	_PCrealSense();

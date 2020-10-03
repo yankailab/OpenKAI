@@ -12,12 +12,12 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudBase.h"
+#include "_PCbase.h"
 
 namespace kai
 {
 
-class _PCfile: public _PointCloudBase
+class _PCfile: public _PCbase
 {
 public:
 	_PCfile();

@@ -23,7 +23,7 @@ _PCfile::~_PCfile()
 
 bool _PCfile::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("fName", &m_fName);

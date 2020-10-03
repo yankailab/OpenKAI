@@ -25,7 +25,7 @@ _PCtransform::~_PCtransform()
 
 bool _PCtransform::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vT", &m_vT);
@@ -88,6 +88,7 @@ void _PCtransform::updateTransform(void)
 	for(Eigen::Matrix4d m : m_vmT)
 		mT *= m;
 
+	*m_sPC.next() = *m_pPCB->getPC();
 	m_sPC.next()->Transform(mT);
 }
 
@@ -96,15 +97,33 @@ void _PCtransform::setTranslation(vFloat3& vT)
 	m_vT = vT;
 }
 
+vFloat3 _PCtransform::getTranslation(void)
+{
+	return m_vT;
+}
+
 void _PCtransform::setRotation(vFloat3& vR)
 {
 	m_vR = vR;
+}
+
+vFloat3 _PCtransform::getRotation(void)
+{
+	return m_vR;
 }
 
 void _PCtransform::setTranslationMatrix(int i, Eigen::Matrix4d_u& mR)
 {
 	IF_(i >= m_vmT.size());
 	m_vmT[i] = mR;
+}
+
+Eigen::Matrix4d _PCtransform::getTranslationMatrix(int i)
+{
+	if(i >= m_vmT.size())
+		return Eigen::Matrix4d::Identity();
+
+	return m_vmT[i];
 }
 
 }

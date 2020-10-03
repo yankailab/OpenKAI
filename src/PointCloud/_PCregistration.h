@@ -12,28 +12,28 @@
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
-#include "_PointCloudBase.h"
+#include "_PCtransform.h"
 
 namespace kai
 {
 
 struct PCREGIST_PAIR
 {
-	_PointCloudBase* m_pSource;
-	_PointCloudBase* m_pTarget;
-	float m_thr;
+	_PCbase* m_pSource;
+	_PCbase* m_pTarget;
+	_PCtransform* m_pTf;
 	int m_iMt;
 
 	void init(void)
 	{
 		m_pSource = NULL;
 		m_pTarget = NULL;
-		m_thr = 0.02;
+		m_pTf = NULL;
 		m_iMt = 0;
 	}
 };
 
-class _PCregistration: public _PointCloudBase
+class _PCregistration: public _PCbase
 {
 public:
 	_PCregistration();
@@ -55,6 +55,9 @@ private:
 
 public:
 	vector<PCREGIST_PAIR> m_vpPair;
+
+	float m_thr;	//ICP threshold
+	int m_nMinP;	//minimum number of points needed for registration
 
 };
 

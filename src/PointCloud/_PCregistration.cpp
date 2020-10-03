@@ -15,6 +15,8 @@ namespace kai
 
 _PCregistration::_PCregistration()
 {
+	m_thr = 0.02;
+	m_nMinP = 1000;
 }
 
 _PCregistration::~_PCregistration()
@@ -23,8 +25,11 @@ _PCregistration::~_PCregistration()
 
 bool _PCregistration::init(void *pKiss)
 {
-	IF_F(!_PointCloudBase::init(pKiss));
+	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
+
+	pK->v("thr", &m_thr);
+	pK->v("nMinP", &m_nMinP);
 
 	Kiss* pPair = pK->child("pair");
 	IF_T(pPair->empty());
@@ -41,13 +46,18 @@ bool _PCregistration::init(void *pKiss)
 
 		n = "";
 		pP->v("source", &n);
-		P.m_pSource = (_PointCloudBase*) (pK->getInst(n));
+		P.m_pSource = (_PCbase*) (pK->getInst(n));
 		IF_Fl(!P.m_pSource, n + ": not found");
 
 		n = "";
 		pP->v("target", &n);
-		P.m_pTarget = (_PointCloudBase*) (pK->getInst(n));
+		P.m_pTarget = (_PCbase*) (pK->getInst(n));
 		IF_Fl(!P.m_pTarget, n + ": not found");
+
+		n = "";
+		pP->v("_PCtransform", &n);
+		P.m_pTf = (_PCtransform*) (pK->getInst(n));
+		IF_Fl(!P.m_pTf, n + ": not found");
 
 		m_vpPair.push_back(P);
 	}
@@ -104,20 +114,20 @@ void _PCregistration::updateRegistration(void)
 		registration::RegistrationResult rr = open3d::registration::RegistrationICP(
 												pcSource,
 												pcTarget,
-												p->m_thr,
+												m_thr,
 												Eigen::Matrix4d::Identity(),
 												open3d::registration::TransformationEstimationPointToPoint()
 												);
 
-//		p->m_pSource->setTranslationMatrix(p->m_iMt, rr.transformation_);
+		Eigen::Matrix4d_u m = p->m_pTf->getTranslationMatrix(p->m_iMt) * rr.transformation_;
+		p->m_pTf->setTranslationMatrix(p->m_iMt, m);
 	}
 
 }
 
 void _PCregistration::draw(void)
 {
-	this->_PointCloudBase::draw();
-
+	this->_ThreadBase::draw();
 }
 
 }
