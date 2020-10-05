@@ -17,14 +17,10 @@ _PCviewer::_PCviewer()
 	m_vWinSize.init(1280, 720);
 	m_pMcoordFrame = NULL;
 	m_fov = 0.0;
-	m_spPC = shared_ptr<PointCloud>(new PointCloud);
-
-	pthread_mutex_init(&m_mutex, NULL);
 }
 
 _PCviewer::~_PCviewer()
 {
-	pthread_mutex_destroy(&m_mutex);
 }
 
 bool _PCviewer::init(void *pKiss)
@@ -35,10 +31,10 @@ bool _PCviewer::init(void *pKiss)
 	pK->v("vWinSize", &m_vWinSize);
 	pK->v("fov", &m_fov);
 
-	m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
-	//X:red, Y:green, Z:blue
-
 	utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
+
+	//X:red, Y:green, Z:blue
+	m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
 
 	return true;
 }
@@ -58,13 +54,16 @@ bool _PCviewer::start(void)
 	return true;
 }
 
+int _PCviewer::check(void)
+{
+	return 0;
+}
+
 void _PCviewer::update(void)
 {
 	m_vis.CreateVisualizerWindow(this->getName()->c_str(), m_vWinSize.x, m_vWinSize.y);
 	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
 	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
-
-	m_vis.AddGeometry(m_spPC);
 	m_vis.AddGeometry(m_pMcoordFrame);
 
 	while (m_bThreadON)
@@ -79,16 +78,15 @@ void _PCviewer::update(void)
 	m_vis.DestroyVisualizerWindow();
 }
 
-int _PCviewer::check(void)
-{
-	return 0;
-}
-
 void _PCviewer::render(void)
 {
-	pthread_mutex_lock(&m_mutex);
-	m_vis.UpdateGeometry(m_spPC);
-	pthread_mutex_unlock(&m_mutex);
+	for(int i=0; i<m_vGeo.size(); i++)
+	{
+		PCVIEWER_GEO* pG =&m_vGeo[i];
+
+		pG->addToVisualizer(&m_vis);
+		pG->updateVisualizer(&m_vis);
+	}
 
 	if (m_vis.HasGeometry())
 	{
@@ -97,11 +95,21 @@ void _PCviewer::render(void)
 	}
 }
 
-void _PCviewer::render(PointCloud* pPC)
+int _PCviewer::addGeometry(void)
 {
-	pthread_mutex_lock(&m_mutex);
-	*m_spPC = *pPC;
-	pthread_mutex_unlock(&m_mutex);
+	PCVIEWER_GEO g;
+	g.init();
+
+	m_vGeo.push_back(g);
+	return m_vGeo.size()-1;
+}
+
+void _PCviewer::updateGeometry(int i, PointCloud* pPC)
+{
+	IF_(i >= m_vGeo.size());
+	IF_(i < 0);
+
+	m_vGeo[i].updateGeometry(pPC);
 }
 
 void _PCviewer::draw(void)

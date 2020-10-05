@@ -38,6 +38,7 @@ public:
 	vSwitch<PointCloud> m_sPC;
 
 	_PCviewer* m_pViewer;
+	int m_iV;
 };
 
 }

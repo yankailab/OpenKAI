@@ -18,6 +18,64 @@ using namespace open3d::visualization;
 namespace kai
 {
 
+struct PCVIEWER_GEO
+{
+	shared_ptr<PointCloud> m_spPC;
+	pthread_mutex_t m_mutex;
+	bool m_bAdded;
+	bool m_bUpdated;
+
+	void init(void)
+	{
+		m_spPC = shared_ptr<PointCloud>(new PointCloud);
+		pthread_mutex_init(&m_mutex, NULL);
+		m_bAdded = false;
+		m_bUpdated = false;
+	}
+
+	void destroy(void)
+	{
+		pthread_mutex_destroy(&m_mutex);
+	}
+
+	void updateGeometry(PointCloud* pPC)
+	{
+		NULL_(pPC);
+
+		pthread_mutex_lock(&m_mutex);
+		*m_spPC = *pPC;
+		pthread_mutex_unlock(&m_mutex);
+
+		m_bUpdated = true;
+	}
+
+	void addToVisualizer(Visualizer* pV)
+	{
+		NULL_(pV);
+		IF_(m_bAdded);
+
+		pthread_mutex_lock(&m_mutex);
+		pV->AddGeometry(m_spPC);
+		pthread_mutex_unlock(&m_mutex);
+
+		m_bAdded = true;
+	}
+
+	void updateVisualizer(Visualizer* pV)
+	{
+		NULL_(pV);
+		IF_(!m_bAdded);
+		IF_(!m_bUpdated);
+
+		pthread_mutex_lock(&m_mutex);
+		pV->UpdateGeometry(m_spPC);
+		pthread_mutex_unlock(&m_mutex);
+
+		m_bUpdated = false;
+	}
+
+};
+
 class _PCviewer: public _ThreadBase
 {
 public:
@@ -29,7 +87,8 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
-	void render(PointCloud* pPC);
+	int addGeometry(void);
+	void updateGeometry(int i, PointCloud* pPC);
 
 private:
 	void render(void);
@@ -46,8 +105,7 @@ public:
 	shared_ptr<TriangleMesh> m_pMcoordFrame;
 	float m_fov;
 
-	shared_ptr<PointCloud> m_spPC;
-	pthread_mutex_t m_mutex;
+	vector<PCVIEWER_GEO> m_vGeo;
 };
 
 }

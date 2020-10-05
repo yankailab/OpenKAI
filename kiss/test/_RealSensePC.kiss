@@ -38,7 +38,7 @@
 	"name":"pcFile1",
 	"class":"_PCfile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
@@ -52,7 +52,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }
 
@@ -63,7 +63,7 @@
 	"_PCbase":"pcFile2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
-	"vR":[0.3, 0, 0],
+	"vR":[0.1, 0, 0],
 	"nMt":1,
 }
 
@@ -72,13 +72,14 @@
 	"class":"_PCregistration",
 	"bInst":1,
 	"FPS":1,
+	"thr":0.02,
 	
 	{
 		"name":"pair",
 		
 		{
 			"source":"pcTf2",
-			"target":"pcFile1",
+			"target":"pcFile2",
 			"_PCtransform":"pcTf2",
 		}
 	}

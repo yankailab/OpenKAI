@@ -16,6 +16,7 @@ _PCbase::_PCbase()
 {
 	m_pPCB = NULL;
 	m_pViewer = NULL;
+	m_iV = -1;
 }
 
 _PCbase::~_PCbase()
@@ -47,6 +48,9 @@ bool _PCbase::init(void *pKiss)
 	pK->v("_PCviewer", &iName);
 	m_pViewer = (_PCviewer*) (pK->getInst(iName));
 
+	if(m_pViewer)
+		m_iV = m_pViewer->addGeometry();
+
 	return true;
 }
 
@@ -70,7 +74,7 @@ void _PCbase::draw(void)
 	this->_ThreadBase::draw();
 
 	NULL_(m_pViewer);
-	m_pViewer->render(getPC());
+	m_pViewer->updateGeometry(m_iV, getPC());
 }
 
 }
