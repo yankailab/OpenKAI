@@ -9,6 +9,7 @@
 #define OpenKAI_src_PointCloud_PCtransform_H_
 
 #include "../Base/common.h"
+#include "../IO/_File.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D

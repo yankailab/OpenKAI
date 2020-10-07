@@ -36,6 +36,28 @@ bool _PCtransform::init(void *pKiss)
 	for(; nM > 0; nM--)
 		m_vmT.push_back(Eigen::Matrix4d::Identity());
 
+	//read from external kiss file if there is one
+	string n;
+	pK->v("kiss", &n);
+	IF_T(n.empty());
+
+	_File f;
+	IF_T(!f.open(&n));
+
+	string* pF = f.readAll();
+	IF_T(!pF);
+	IF_T(pF->empty());
+
+	Kiss* pKf = new Kiss();
+	if(pKf->parse(pF))
+	{
+		pK = pKf->child("transform");
+		pK->v("vT", &m_vT);
+		pK->v("vR", &m_vR);
+	}
+
+	delete pKf;
+	f.close();
 	return true;
 }
 

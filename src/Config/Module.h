@@ -144,7 +144,7 @@
 
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
-#include "../PointCloud/_PCrealSense.h"
+#include "../PointCloud/_PCrs.h"
 #endif
 #endif	//USE_OPEN3D
 
@@ -188,7 +188,9 @@
 #include "../PointCloud/_PCregistration.h"
 #include "../PointCloud/_PCtransform.h"
 #include "../PointCloud/_PCviewer.h"
-#include "../PointCloud/_UItransform.h"
+#include "../PointCloud/_PCsend.h"
+#include "../PointCloud/_PCrecv.h"
+#include "../PointCloud/_PCui.h"
 #endif
 
 #ifdef USE_REALSENSE

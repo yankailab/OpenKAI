@@ -144,7 +144,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
-	ADD_MODULE(_PCrealSense);
+	ADD_MODULE(_PCrs);
 #endif
 #endif //USE_OPEN3D
 
@@ -192,7 +192,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_PCregistration);
 	ADD_MODULE(_PCtransform);
 	ADD_MODULE(_PCviewer);
-	ADD_MODULE(_UItransform);
+	ADD_MODULE(_PCsend);
+	ADD_MODULE(_PCrecv);
+	ADD_MODULE(_PCui);
 #endif
 
 #ifdef USE_REALSENSE

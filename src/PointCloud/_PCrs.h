@@ -1,12 +1,12 @@
 /*
- * _PCrealSense.h
+ * _PCrs.h
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCrealSense_H_
-#define OpenKAI_src_PointCloud_PCrealSense_H_
+#ifndef OpenKAI_src_PointCloud_PCrs_H_
+#define OpenKAI_src_PointCloud_PCrs_H_
 
 #include "../Base/common.h"
 
@@ -19,11 +19,11 @@
 namespace kai
 {
 
-class _PCrealSense: public _PCbase
+class _PCrs: public _PCbase
 {
 public:
-	_PCrealSense();
-	virtual ~_PCrealSense();
+	_PCrs();
+	virtual ~_PCrs();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -34,7 +34,7 @@ private:
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
-		((_PCrealSense *) This)->update();
+		((_PCrs *) This)->update();
 		return NULL;
 	}
 

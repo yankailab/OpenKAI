@@ -11,7 +11,6 @@
 #include "Startup/Startup.h"
 #include "IO/_File.h"
 
-
 using namespace kai;
 
 Startup* g_pStart;

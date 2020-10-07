@@ -1,11 +1,11 @@
 /*
- * _PCrealSense.cpp
+ * _PCrs.cpp
  *
  *  Created on: May 24, 2020
  *      Author: yankai
  */
 
-#include "_PCrealSense.h"
+#include "_PCrs.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
@@ -14,17 +14,17 @@
 namespace kai
 {
 
-_PCrealSense::_PCrealSense()
+_PCrs::_PCrs()
 {
 	m_pRS = NULL;
 	m_vRz.init(0.0, FLT_MAX);
 }
 
-_PCrealSense::~_PCrealSense()
+_PCrs::~_PCrs()
 {
 }
 
-bool _PCrealSense::init(void *pKiss)
+bool _PCrs::init(void *pKiss)
 {
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -41,7 +41,7 @@ bool _PCrealSense::init(void *pKiss)
 	return true;
 }
 
-bool _PCrealSense::start(void)
+bool _PCrs::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -56,7 +56,7 @@ bool _PCrealSense::start(void)
 	return true;
 }
 
-int _PCrealSense::check(void)
+int _PCrs::check(void)
 {
 	NULL__(m_pRS, -1);
 	IF__(!m_pRS->isOpened(), -1);
@@ -65,7 +65,7 @@ int _PCrealSense::check(void)
 	return this->_PCbase::check();
 }
 
-void _PCrealSense::update(void)
+void _PCrs::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -78,7 +78,7 @@ void _PCrealSense::update(void)
 	}
 }
 
-void _PCrealSense::updateRS(void)
+void _PCrs::updateRS(void)
 {
 	IF_(check() < 0);
 
