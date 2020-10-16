@@ -17,6 +17,7 @@ _PCtransform::_PCtransform()
 {
 	m_vT.init(0);
 	m_vR.init(0);
+	m_paramKiss = "";
 }
 
 _PCtransform::~_PCtransform()
@@ -37,12 +38,12 @@ bool _PCtransform::init(void *pKiss)
 		m_vmT.push_back(Eigen::Matrix4d::Identity());
 
 	//read from external kiss file if there is one
-	string n;
-	pK->v("kiss", &n);
-	IF_T(n.empty());
+	string m_kiss;
+	pK->v("kiss", &m_kiss);
+	IF_T(m_kiss.empty());
 
 	_File f;
-	IF_T(!f.open(&n));
+	IF_T(!f.open(&m_kiss));
 
 	string* pF = f.readAll();
 	IF_T(!pF);
@@ -146,6 +147,33 @@ Eigen::Matrix4d _PCtransform::getTranslationMatrix(int i)
 		return Eigen::Matrix4d::Identity();
 
 	return m_vmT[i];
+}
+
+void _PCtransform::saveParamKiss(void)
+{
+	IF_(m_paramKiss.empty());
+
+	picojson::object o;
+	o.insert(make_pair("name", value(*this->getName())));
+
+	picojson::array vT;
+	vT.push_back(value(m_vT.x));
+	vT.push_back(value(m_vT.y));
+	vT.push_back(value(m_vT.z));
+	o.insert(make_pair("vT", value(vT)));
+
+	picojson::array vR;
+	vR.push_back(value(m_vR.x));
+	vR.push_back(value(m_vR.y));
+	vR.push_back(value(m_vR.z));
+	o.insert(make_pair("vR", value(vR)));
+
+	string k = picojson::value(o).serialize();
+
+	_File f;
+	IF_(!f.open(&m_paramKiss));
+	f.write((uint8_t*)k.c_str(), k.length());
+	f.close();
 }
 
 }

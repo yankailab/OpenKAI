@@ -1,11 +1,11 @@
 /*
- * _PCrecv.cpp
+ * _PCio.cpp
  *
  *  Created on: Oct 8, 2020
  *      Author: yankai
  */
 
-#include "_PCrecv.h"
+#include "_PCsend.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
@@ -13,20 +13,26 @@
 namespace kai
 {
 
-_PCrecv::_PCrecv()
+_PCsend::_PCsend()
 {
 	m_pPCB = NULL;
 	m_pIO = NULL;
+
+	m_pBuf = NULL;
+	m_nBuf = 256;
 }
 
-_PCrecv::~_PCrecv()
+_PCsend::~_PCsend()
 {
 }
 
-bool _PCrecv::init(void *pKiss)
+bool _PCsend::init(void *pKiss)
 {
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
+
+	pK->v("nBuf", &m_nBuf);
+	m_pBuf = new uint8_t[m_nBuf];
 
 	string n;
 
@@ -43,7 +49,7 @@ bool _PCrecv::init(void *pKiss)
 	return true;
 }
 
-bool _PCrecv::start(void)
+bool _PCsend::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -58,15 +64,16 @@ bool _PCrecv::start(void)
 	return true;
 }
 
-int _PCrecv::check(void)
+int _PCsend::check(void)
 {
 	NULL__(m_pPCB, -1);
 	NULL__(m_pIO, -1);
+	IF__(!m_pIO->isOpen(),-1);
 
 	return 0;
 }
 
-void _PCrecv::update(void)
+void _PCsend::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -79,11 +86,24 @@ void _PCrecv::update(void)
 	}
 }
 
-void _PCrecv::updateIO(void)
+void _PCsend::updateIO(void)
 {
 	IF_(check()<0);
 
 	*m_sPC.next() = *m_pPCB->getPC();
+	PointCloud* pOut = m_sPC.next();
+	int nP = pOut->points_.size();
+
+	m_nBuf = 0;
+	int iB = 0;
+
+	for (int i = 0; i < nP; i++)
+	{
+		pOut->points_[i];
+		pOut->colors_[i];
+		pOut->normals_[i];
+	}
+
 }
 
 }

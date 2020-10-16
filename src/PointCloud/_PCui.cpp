@@ -99,17 +99,9 @@ void _PCui::send(void)
 	IF_(check()<0);
 
 	picojson::object o;
-	o.insert(make_pair("action", value(string("start_fly"))));
-
-//	picojson::array wpA;
-//	for(unsigned int i=0; i< m_vWP.size(); i++)
-//	{
-//		CETCUS_WAYPOINT* pWP = &m_vWP[i];
-//		object wp;
-//		wp.insert(make_pair("id", value(i2str(pWP->m_id))));
-//		wpA.push_back(value(wp));
-//	}
-//	o.insert(make_pair("waypoints", value(wpA)));
+	o.insert(make_pair("name", value(*this->getName())));
+//	o.insert(make_pair("nP", value()));
+//	o.insert(make_pair("nCam", value()));
 
 	string msg = picojson::value(o).serialize() + m_msgFinishSend;
 	m_pIO->write((unsigned char*)msg.c_str(), msg.size());
@@ -155,67 +147,66 @@ bool _PCui::recv()
 
 void _PCui::handleMsg(string& str)
 {
-	string error;
+	string err;
 	const char* jsonstr = str.c_str();
-	picojson::value json;
-	picojson::parse(json, jsonstr, jsonstr + strlen(jsonstr), &error);
+	value json;
+	parse(json, jsonstr, jsonstr + strlen(jsonstr), &err);
 	IF_(!json.is<object>());
 
-	picojson::object& jo = json.get<picojson::object>();
-	string action = jo["action"].get<string>();
-//	if(action == "plane_connect");
+	object& jo = json.get<object>();
+	string cmd = jo["cmd"].get<string>();
+	string pct = jo["pct"].get<string>();
 
-	int status = (int)jo["status"].get<double>();
-	string data = jo["data"].get<string>();
-	string message = jo["message"].get<string>();
+	_PCtransform* pPCT = findTransform(pct);
 
+	if(cmd == "save_kiss")
+	{
+		NULL_(pPCT);
+		pPCT->saveParamKiss();
+	}
+	else if(cmd == "var_tr")
+	{
+		NULL_(pPCT);
+
+		vFloat3 v;
+		v.x = (float)jo["tX"].get<double>();
+		v.y = (float)jo["tY"].get<double>();
+		v.z = (float)jo["tZ"].get<double>();
+		pPCT->setTranslation(v);
+		v.x = (float)jo["rX"].get<double>();
+		v.y = (float)jo["rY"].get<double>();
+		v.z = (float)jo["rZ"].get<double>();
+		pPCT->setRotation(v);
+	}
+	else if(cmd == "save_ply")
+	{
+		NULL_(pPCT);
+	}
+	else if(cmd == "filter_")
+	{
+		NULL_(pPCT);
+	}
+	else if(cmd == "on_autoAlign")
+	{
+		NULL_(pPCT);
+	}
+	else if(cmd == "off_autoAlign")
+	{
+		NULL_(pPCT);
+	}
 }
 
-//bool _PCui::recv()
-//{
-//	IF_F(check()<0);
-//
-//	static string s_strB = "";
-//	unsigned char B;
-//	int nB;
-//
-//	while ((nB = m_pIO->read(&B, 1)) > 0)
-//	{
-//		s_strB += B;
-//		IF_CONT(B != ';');
-//
-//		s_strB.erase(s_strB.length()-1, 1);
-//		handleMsg(s_strB);
-//
-//		LOG_I("Received: " + s_strB);
-//		s_strB.clear();
-//	}
-//
-//	return false;
-//}
-//
-//void _PCui::handleMsg(string& str)
-//{
-//	vector<string> vP = splitBy(str, ',');
-//	IF_(vP.size() < 7);
-//
-//	string sensorName = vP[0];
-//	_PCtransform* pPCT = NULL;
-//	for(int i=0; i<m_vPCT.size(); i++)
-//	{
-//		IF_CONT(*m_vPCT[i]->getName() != sensorName);
-//
-//		pPCT = m_vPCT[i];
-//		break;
-//	}
-//	NULL_(pPCT);
-//
-//	vFloat3 v;
-//	v.init(stof(vP[1]), stof(vP[2]), stof(vP[3]));
-//	pPCT->setTranslation(v);
-//	v.init(stof(vP[4]), stof(vP[5]), stof(vP[6]));
-//	pPCT->setRotation(v);
-//}
+_PCtransform* _PCui::findTransform(string& n)
+{
+	for(int i=0; i<m_vPCT.size(); i++)
+	{
+		IF_CONT(*m_vPCT[i]->getName() != n);
+
+		return m_vPCT[i];
+	}
+
+	return NULL;
+}
 
 void _PCui::draw(void)
 {

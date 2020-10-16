@@ -1,11 +1,11 @@
 /*
- * _PCio.cpp
+ * _PCrecv.cpp
  *
  *  Created on: Oct 8, 2020
  *      Author: yankai
  */
 
-#include "_PCsend.h"
+#include "_PCrecv.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPEN3D
@@ -13,17 +13,17 @@
 namespace kai
 {
 
-_PCsend::_PCsend()
+_PCrecv::_PCrecv()
 {
 	m_pPCB = NULL;
 	m_pIO = NULL;
 }
 
-_PCsend::~_PCsend()
+_PCrecv::~_PCrecv()
 {
 }
 
-bool _PCsend::init(void *pKiss)
+bool _PCrecv::init(void *pKiss)
 {
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -43,7 +43,7 @@ bool _PCsend::init(void *pKiss)
 	return true;
 }
 
-bool _PCsend::start(void)
+bool _PCrecv::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
 
@@ -58,7 +58,7 @@ bool _PCsend::start(void)
 	return true;
 }
 
-int _PCsend::check(void)
+int _PCrecv::check(void)
 {
 	NULL__(m_pPCB, -1);
 	NULL__(m_pIO, -1);
@@ -66,7 +66,7 @@ int _PCsend::check(void)
 	return 0;
 }
 
-void _PCsend::update(void)
+void _PCrecv::update(void)
 {
 	while (m_bThreadON)
 	{
@@ -79,11 +79,12 @@ void _PCsend::update(void)
 	}
 }
 
-void _PCsend::updateIO(void)
+void _PCrecv::updateIO(void)
 {
 	IF_(check()<0);
 
 	*m_sPC.next() = *m_pPCB->getPC();
+
 }
 
 }

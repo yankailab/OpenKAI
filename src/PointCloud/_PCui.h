@@ -28,6 +28,7 @@ protected:
 	virtual void handleMsg(string& str);
 
 private:
+	virtual _PCtransform* findTransform(string& n);
 	void updateW(void);
 	static void* getUpdateThreadW(void* This)
 	{
