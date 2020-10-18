@@ -53,6 +53,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_DRV8825_RS485);
 	ADD_MODULE(_S6H4D);
 	ADD_MODULE(_StepperGripper);
+	ADD_MODULE(_ZLAC8015);
 
 	ADD_MODULE(_AP_base);
 	ADD_MODULE(_AP_distLidar);

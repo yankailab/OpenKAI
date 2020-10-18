@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Actuator__DeltaArm_H_
 #define OpenKAI_src_Actuator__DeltaArm_H_
 
-#include "../Dependency/Rasheed/DeltaRobot.h"
-#include "_ActuatorBase.h"
+#include "../../Dependency/Rasheed/DeltaRobot.h"
+#include "../_ActuatorBase.h"
 
 #ifdef USE_DYNAMIXEL
 

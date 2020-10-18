@@ -19,6 +19,7 @@
 #include "../Actuator/_OrientalMotor.h"
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
+#include "../Actuator/Motor/_ZLAC8015.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
