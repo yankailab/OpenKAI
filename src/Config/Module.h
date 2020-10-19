@@ -144,9 +144,15 @@
 #endif
 
 #ifdef USE_OPEN3D
+
+#ifdef USE_HPS3D
+#include "../PointCloud/_HPS3D.h"
+#endif
+
 #ifdef USE_REALSENSE
 #include "../PointCloud/_PCrs.h"
 #endif
+
 #endif	//USE_OPEN3D
 
 #ifdef USE_MYNTEYE

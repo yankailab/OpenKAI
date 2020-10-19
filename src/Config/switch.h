@@ -4,6 +4,7 @@
 #define USE_CUDA
 #define USE_OPEN3D
 #define USE_REALSENSE
+#define USE_HPS3D
 //#define USE_JETSON_INFERENCE
 //#define USE_DYNAMIXEL
 //#define USE_LIVOX

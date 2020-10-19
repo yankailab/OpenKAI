@@ -35,13 +35,16 @@ sudo chmod a+x /etc/rc.local
 sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 
 # Delete unused modules that conflicts the serial comm
-sudo apt-get -y purge whoopsie 
 sudo systemctl stop ModemManager
-sudo apt-get -y purge modemmanager
-systemctl stop nvgetty 
+sudo apt-get -y purge whoopsie modemmanager && sudo apt autoremove
+systemctl stop nvgetty
 systemctl disable nvgetty
 udevadm trigger
 sudo reboot now
+
+# Switching start up desktop
+sudo systemctl set-default multi-user.target
+#sudo systemctl set-default graphical.target
 
 #----------------------------------------------------
 sudo apt-get update
@@ -118,15 +121,10 @@ cd librealsense
 ./scripts/setup_udev_rules.sh
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
+#cmake -DCMAKE_BUILD_TYPE=Release ../
+cmake -DFORCE_LIBUVC=true -DBUILD_WITH_CUDA=true -DCMAKE_BUILD_TYPE=Release ../
 make -j12
 sudo make install
-
-# For Jetson Nano
-git clone https://github.com/jetsonhacksnano/installLibrealsense.git
-cd installLibrealsense
-./patchUbuntu.sh
-./installLibrealsense.sh
 
 # Alternative/Jetson Xavier
 sudo apt-key adv --keyserver keys.gnupg.net --recv-key F6E65AC044F831AC80A06380C8B3A55A6F3EFCDE || sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-key 
