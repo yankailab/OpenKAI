@@ -41,7 +41,7 @@
 	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }
 
@@ -49,7 +49,7 @@
 	"name":"pcFile2",
 	"class":"_PCfile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_PCviewer":"pcv",
@@ -59,7 +59,7 @@
 {
 	"name":"pcTf2",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bInst":0,
 	"_PCbase":"pcFile2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -71,7 +71,7 @@
 {
 	"name":"pcTf21",
 	"class":"_PCregistration",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"thr":0.02,
 	
@@ -90,12 +90,12 @@
 	"name":"rs1",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"depthWindow":"depthView",
-	"vPreset":"High Density",
+	"vPreset":"Short Range",
 	"rsRGB":1,
 	"w":1280,
 	"h":720,
@@ -113,9 +113,9 @@
 {
 	"name":"rsPC1",
 	"class":"_PCrealSense",
-	"bInst":0,
+	"bInst":1,
 	"_RealSense":"rs1",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
 

@@ -7,7 +7,6 @@
 
 #include "_PCrecv.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -88,5 +87,4 @@ void _PCrecv::updateIO(void)
 }
 
 }
-#endif
 #endif

@@ -7,7 +7,6 @@
 
 #include "_PCfilter.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -119,5 +118,4 @@ bool _PCfilter::bFilter(Eigen::Vector3d& vP)
 }
 
 }
-#endif
 #endif

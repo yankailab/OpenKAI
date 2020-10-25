@@ -73,8 +73,8 @@ void _PCbase::draw(void)
 {
 	this->_ThreadBase::draw();
 
-	NULL_(m_pViewer);
-	m_pViewer->updateGeometry(m_iV, getPC());
+//	NULL_(m_pViewer);
+//	m_pViewer->updateGeometry(m_iV, getPC());
 }
 
 }

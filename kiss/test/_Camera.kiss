@@ -75,7 +75,7 @@
 	"name":"imgFile",
 	"class":"_ImgFile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKiew",
 	"file":"/home/kai/Pictures/test.jpg",
 	"w":1280,

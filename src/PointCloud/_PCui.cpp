@@ -1,5 +1,6 @@
 #include "_PCui.h"
 
+#ifdef USE_OPEN3D
 namespace kai
 {
 
@@ -223,3 +224,4 @@ void _PCui::draw(void)
 }
 
 }
+#endif

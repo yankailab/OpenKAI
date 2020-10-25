@@ -71,7 +71,7 @@
 	"name":"realsense2",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Window":"OKview2",
 	"Console":"OKconsole",

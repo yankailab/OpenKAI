@@ -7,7 +7,6 @@
 
 #include "_PCmerge.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -104,5 +103,4 @@ void _PCmerge::updateMerge(void)
 }
 
 }
-#endif
 #endif

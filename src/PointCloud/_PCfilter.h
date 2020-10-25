@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #include "_PCbase.h"
 
@@ -107,6 +106,5 @@ public:
 };
 
 }
-#endif
 #endif
 #endif

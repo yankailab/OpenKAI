@@ -11,6 +11,8 @@
 #include "cv.h"
 #endif
 
+#include <Eigen/Dense>
+
 #include "platform.h"
 #include "macro.h"
 #include "constant.h"

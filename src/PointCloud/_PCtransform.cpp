@@ -7,7 +7,6 @@
 
 #include "_PCtransform.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -177,5 +176,4 @@ void _PCtransform::saveParamKiss(void)
 }
 
 }
-#endif
 #endif

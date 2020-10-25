@@ -7,6 +7,7 @@
 
 using namespace picojson;
 
+#ifdef USE_OPEN3D
 namespace kai
 {
 
@@ -49,4 +50,5 @@ public:
 };
 
 }
+#endif
 #endif

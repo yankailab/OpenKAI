@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #include "_PCbase.h"
 
@@ -26,6 +25,7 @@ public:
 	bool init(void* pKiss);
 	bool start(void);
 	bool open(void);
+	void draw(void);
 
 private:
 	void update(void);
@@ -41,6 +41,5 @@ public:
 };
 
 }
-#endif
 #endif
 #endif

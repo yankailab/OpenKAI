@@ -12,7 +12,6 @@
 #include "../IO/_IOBase.h"
 #include "../Protocol/_ProtocolBase.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #include "_PCbase.h"
 
@@ -47,6 +46,5 @@ public:
 };
 
 }
-#endif
 #endif
 #endif

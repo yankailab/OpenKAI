@@ -74,6 +74,11 @@ void _PCrs::update(void)
 		updateRS();
 		m_sPC.update();
 
+		if(m_pViewer)
+		{
+			m_pViewer->updateGeometry(m_iV, getPC());
+		}
+
 		this->autoFPSto();
 	}
 }

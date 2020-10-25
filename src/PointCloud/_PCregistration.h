@@ -10,7 +10,6 @@
 
 #include "../Base/common.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 #include "_PCtransform.h"
 
@@ -62,6 +61,5 @@ public:
 };
 
 }
-#endif
 #endif
 #endif

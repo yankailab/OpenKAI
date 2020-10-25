@@ -7,7 +7,6 @@
 
 #include "_PCregistration.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -111,12 +110,12 @@ void _PCregistration::updateRegistration(void)
 		PointCloud pcSource = *p->m_pSource->getPC();
 		PointCloud pcTarget = *p->m_pTarget->getPC();
 
-		registration::RegistrationResult rr = open3d::registration::RegistrationICP(
+		pipelines::registration::RegistrationResult rr = pipelines::registration::RegistrationICP(
 												pcSource,
 												pcTarget,
 												m_thr,
 												Eigen::Matrix4d::Identity(),
-												open3d::registration::TransformationEstimationPointToPoint()
+												pipelines::registration::TransformationEstimationPointToPoint()
 												);
 
 		Eigen::Matrix4d_u m = p->m_pTf->getTranslationMatrix(p->m_iMt) * rr.transformation_;
@@ -131,5 +130,4 @@ void _PCregistration::draw(void)
 }
 
 }
-#endif
 #endif

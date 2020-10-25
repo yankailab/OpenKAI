@@ -7,7 +7,6 @@
 
 #include "_PCsend.h"
 
-#ifdef USE_OPENCV
 #ifdef USE_OPEN3D
 
 namespace kai
@@ -107,5 +106,4 @@ void _PCsend::updateIO(void)
 }
 
 }
-#endif
 #endif
