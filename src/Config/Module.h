@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"
-#include "switch.h"
 
 #include "../Actuator/_ArduServo.h"
 #include "../Actuator/_ActuatorSync.h"
@@ -144,15 +143,9 @@
 #endif
 
 #ifdef USE_OPEN3D
-
-#ifdef USE_HPS3D
-#include "../PointCloud/_HPS3D.h"
-#endif
-
 #ifdef USE_REALSENSE
-#include "../PointCloud/_PCrs.h"
+#include "../PointCloud/_PCrsCV.h"
 #endif
-
 #endif	//USE_OPEN3D
 
 #ifdef USE_MYNTEYE
@@ -198,6 +191,13 @@
 #include "../PointCloud/_PCsend.h"
 #include "../PointCloud/_PCrecv.h"
 #include "../PointCloud/_PCui.h"
+#ifdef USE_REALSENSE
+#include "../PointCloud/_PCrs.h"
+#endif
+#endif
+
+#ifdef USE_HPS3D
+#include "../PointCloud/_HPS3D.h"
 #endif
 
 #ifdef USE_REALSENSE

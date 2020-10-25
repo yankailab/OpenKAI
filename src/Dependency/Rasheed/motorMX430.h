@@ -1,7 +1,6 @@
 #ifndef MOTORMX430_H
 #define MOTORMX430_H
 
-#include "../../Config/switch.h"
 #ifdef USE_DYNAMIXEL
 
 #include <fcntl.h>

@@ -144,15 +144,9 @@ BASE* Module::createInstance(Kiss* pK)
 #endif
 
 #ifdef USE_OPEN3D
-
-#ifdef USE_HPS3D
-	ADD_MODULE(_HPS3D);
-#endif
-
 #ifdef USE_REALSENSE
-	ADD_MODULE(_PCrs);
+	ADD_MODULE(_PCrsCV);
 #endif
-
 #endif //USE_OPEN3D
 
 #ifdef USE_MYNTEYE
@@ -202,6 +196,13 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_PCsend);
 	ADD_MODULE(_PCrecv);
 	ADD_MODULE(_PCui);
+#ifdef USE_REALSENSE
+	ADD_MODULE(_PCrs);
+#endif
+#endif
+
+#ifdef USE_HPS3D
+	ADD_MODULE(_HPS3D);
 #endif
 
 #ifdef USE_REALSENSE

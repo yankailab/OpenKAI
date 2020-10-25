@@ -110,7 +110,7 @@ void _Camera::update(void)
 		}
 
 		this->autoFPSfrom();
-
+        
 		Mat mCam;
 		while (!m_camera.read(mCam));
 		m_fBGR.copy(mCam);

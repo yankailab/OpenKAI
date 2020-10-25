@@ -1,8 +1,6 @@
 #ifndef OpenKAI_src_Base_common_H_
 #define OpenKAI_src_Base_common_H_
 
-#include "../Config/switch.h"
-
 #ifdef USE_OPEN3D
 #include "open3d.h"
 #endif

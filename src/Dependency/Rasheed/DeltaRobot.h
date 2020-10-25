@@ -1,7 +1,6 @@
 #ifndef RASHEED_DELTAROBOT_H
 #define RASHEED_DELTAROBOT_H
 
-#include "../../Config/switch.h"
 #ifdef USE_DYNAMIXEL
 
 #include <fcntl.h>

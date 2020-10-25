@@ -1,7 +1,6 @@
 #ifndef RASHEED_LABARM_H
 #define RASHEED_LABARM_H
 
-#include "../../Config/switch.h"
 #ifdef USE_DYNAMIXEL
 
 #include "motorMX430.h"	

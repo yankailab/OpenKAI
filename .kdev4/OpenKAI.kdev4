@@ -1,0 +1,68 @@
+[Buildset]
+BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x01\x00\x00\x00\x0e\x00O\x00p\x00e\x00n\x00K\x00A\x00I)
+
+[CMake]
+Build Directory Count=1
+Current Build Directory Index-Host System=0
+
+[CMake][CMake Build Directory 0]
+Build Directory Path=/home/kai/dev/OpenKAI/build
+Build Type=Debug
+CMake Binary=/usr/local/bin/cmake
+CMake Executable=/usr/local/bin/cmake
+Environment Profile=
+Extra Arguments=
+Install Directory=/usr/local
+Runtime=Host System
+
+[Launch]
+Launch Configurations=Launch Configuration 0,Launch Configuration 1
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=OpenKAI_Camera
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=/home/kai/dev/OpenKAI/kiss/test/_Camera.kiss
+Debugger Shell=
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\x0e\x00O\x00p\x00e\x00n\x00K\x00A\x00I\x00\x00\x00\x0e\x00O\x00p\x00e\x00n\x00K\x00A\x00I)
+Dependency Action=Nothing
+Display Demangle Names=true
+Display Static Members=false
+EnvironmentGroup=
+Executable=file:///home/kai/dev/OpenKAI
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+GDB Path=
+Kill Before Executing Again=4194304
+Project Target=OpenKAI,OpenKAI
+Remote GDB Config Script=
+Remote GDB Run Script=
+Remote GDB Shell Script=
+Start With=ApplicationOutput
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Launch][Launch Configuration 1]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=OpenKAI_PCrs
+Type=Native Application
+
+[Launch][Launch Configuration 1][Data]
+Arguments=/home/kai/dev/OpenKAI/kiss/test/_PCrs.kiss
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00\x0e\x00O\x00p\x00e\x00n\x00K\x00A\x00I\x00\x00\x00\x0e\x00O\x00p\x00e\x00n\x00K\x00A\x00I)
+Dependency Action=Nothing
+EnvironmentGroup=
+Executable=file:///home/kai/dev/OpenKAI
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Kill Before Executing Again=4194304
+Project Target=OpenKAI,OpenKAI
+Use External Terminal=false
+Working Directory=
+isExecutable=false
+
+[Project]
+VersionControlSupport=kdevgit

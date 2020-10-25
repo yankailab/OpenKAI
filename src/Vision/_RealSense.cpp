@@ -63,12 +63,6 @@ bool _RealSense::open(void)
 
 	try
 	{
-//		rs2::context rsCtx;
-//	    // Capture serial numbers before opening streaming
-//	    std::vector<std::string> serials;
-//	    for (auto&& dev : rsCtx.query_devices())
-//	        serials.push_back(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER));
-
 		rs2::config cfg;
 		if(!m_rsSN.empty())
 			cfg.enable_device(m_rsSN);
@@ -286,8 +280,6 @@ void _RealSense::updateTPP(void)
 		Mat mD;
 		mZ.convertTo(mD, CV_32FC1);
 
-//		auto depth_scale = m_rsPipe.get_active_profile().get_device().first<rs2::depth_sensor>().get_depth_scale();
-//		m_fDepth = mD * depth_scale;
 		m_fDepth = mD * m_dScale;
 	}
 }
