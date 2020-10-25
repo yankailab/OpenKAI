@@ -1,9 +1,0 @@
-{
-    "explorer.confirmDelete": false,
-    "editor.fontSize": 16,
-    "editor.fontFamily": "'Courier New', 'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback'",
-    "workbench.colorCustomizations": {
-        "editor.selectionHighlightBackground": "#ff0000",
-        "editor.selectionBackground": "#88a9ffd0"
-    }
-}

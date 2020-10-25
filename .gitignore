@@ -6,5 +6,6 @@
 .project
 .cproject
 *.*~
+/.kdev4/
 !.gitignore
 
