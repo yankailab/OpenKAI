@@ -83,10 +83,10 @@ sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.17.2/cmake-3.17.2.tar.gz
-tar xvf cmake-3.17.2.tar.gz
-rm -r cmake-3.17.2.tar.gz
-cd cmake-3.17.2
+wget https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz
+tar xvf cmake-3.18.4.tar.gz
+rm -r cmake-3.18.4.tar.gz
+cd cmake-3.18.4
 ./bootstrap
 make -j12
 sudo make install
@@ -94,7 +94,7 @@ sudo reboot now
 
 #----------------------------------------------------
 # Eigen
-git clone https://gitlab.com/libeigen/eigen.git
+git clone --depth 1 https://gitlab.com/libeigen/eigen.git
 cd eigen
 mkdir build
 cd build
@@ -114,7 +114,7 @@ sudo make install
 
 #----------------------------------------------------
 # (Optional) RealSense
-git clone https://github.com/IntelRealSense/librealsense.git
+git clone --depth 1 https://github.com/IntelRealSense/librealsense.git
 cd librealsense
 ./scripts/setup_udev_rules.sh
 mkdir build
@@ -180,14 +180,14 @@ sudo make install -j8
 
 #----------------------------------------------------
 # (Optional) Jetson inference
-# Jetson Nano
+# Jetson Nano/Xavier
 sudo apt-get -y install libpython3-dev python3-numpy
 git clone --recursive --depth 1 https://github.com/dusty-nv/jetson-inference.git
 cd jetson-inference
 mkdir build
 cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
-make
+make -j4
 sudo make install
 sudo ldconfig
 
@@ -205,13 +205,26 @@ ninja install
 
 #----------------------------------------------------
 # Open3D
-sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev qhull-bin
-pip3 install pybind11
-git clone --branch v0.11.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
+sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev libqhull-dev qhull-bin gfortran python-pybind11 libblas-dev liblapack-dev liblapacke-dev
+git clone --branch v0.11.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
+git pull --recurse-submodules
 mkdir build
 cd build
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_EIGEN3=OFF -DBUILD_PYBIND11=OFF -DBUILD_PYTHON_MODULE=OFF -DENABLE_JUPYTER=OFF -DENABLE_GUI=ON -DPATH_TO_FILAMENT=/home/kai/dev/filament/out/release/filament ../
+
+#PC
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DCMAKE_BUILD_TYPE=Release -DDEVELOPER_BUILD=OFF -DFILAMENT_PRECOMPILED_ROOT=../../filament/out/release/filament -DUSE_BLAS=OFF ../
+
+#Jetson
+Open3D/cpp/open3d/core/linalg/BlasWrapper.h
+#include "/usr/include/aarch64-linux-gnu/cblas-netlib.h" <-- add this
+#include "open3d/core/linalg/LinalgHeadersCPU.h"
+
+#if PossonRecon is missing
+cd Open3D/3rdparty/PossionRecon/
+git clone https://github.com/intel-isl/Open3D-PoissonRecon.git
+mv Open3D-PossionRecon PossionRecon
+
 make -j12
 sudo make install
 
@@ -288,6 +301,16 @@ make all -j8
 # Copy startup sh into home
 sudo chmod a+x $HOME/ok.sh
 #----------------------------------------------------
+
+Make Jetson boot SD image
+
+sudo fdisk -l
+sudo umount /dev/sda
+sudo dd if=/dev/sda of=~/sd.img bs=6M
+
+sudo fdisk -l
+sudo umount /dev/sdb
+sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 
 # Outdated, to be updated
