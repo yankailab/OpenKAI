@@ -20,15 +20,20 @@ window.onload = function() {
     }
     
     function sendCmd(){
-	    var cmd = $('#sensorName').value +
-				  "," + $('#tX').value +
-				  "," + $('#tY').value +
-				  "," + $('#tZ').value +
-				  "," + $('#rX').value +
-				  "," + $('#rY').value +
-				  "," + $('#rZ').value + ';';
-        socket.send(cmd);
-        $('#messages').innerHTML = 'Sent:<br>' +cmd+ '<br>';
+    
+        cmd = {
+            sensorName:$('#sensorName').value,
+            tX:parseFloat($('#tX').value),
+            tY:parseFloat($('#tY').value),
+            tZ:parseFloat($('#tZ').value),
+            rX:parseFloat($('#rX').value),
+            rY:parseFloat($('#rY').value),
+            rZ:parseFloat($('#rZ').value),
+        };
+            
+        cmdStr = JSON.stringify(cmd);
+        socket.send(cmdStr);
+        $('#messages').innerHTML = 'Sent:<br>' +cmdStr+ '<br>';
     }
     
     var socket = new WebSocket('ws://127.0.0.1:7890');

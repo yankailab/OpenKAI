@@ -91,6 +91,11 @@ void _PCtransform::update(void)
 
 		updateTransform();
 		m_sPC.update();
+       
+  		if(m_pViewer)
+		{
+			m_pViewer->updateGeometry(m_iV, getPC());
+		}
 
 		this->autoFPSto();
 	}

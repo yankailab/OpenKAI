@@ -1,0 +1,74 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"pcv",
+	"class":"_PCviewer",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"vWinSize":[1920,1080],
+	"fov":100,
+}
+
+{
+	"name":"rs1",
+	"class":"_PCrs",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"vWHcol":[1280,720],
+	"rsFPS":30,
+	"vWHd":[640,480],
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"rsSN":"00000000f0211594",
+	"/_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"tf1",
+	"class":"_PCtransform",
+	"bInst":1,
+	"_PCbase":"rs1",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"nMt":1,
+	"kiss":"/home/kai/dev/OpenKAI/kiss/app/tf1.kiss",
+}
+
+{
+	"name":"ws",
+	"class":"_WebSocket",
+	"FPS":100,
+	"bInst":0,
+	"Window":"OKview",
+}
+
+{
+	"name":"uiTransform",
+	"class":"_UItransform",
+	"FPS":30,
+	"bInst":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_IOBase":"ws",
+	"vPCB":["rs1","rs2"],
+}

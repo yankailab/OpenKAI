@@ -22,10 +22,6 @@ bool _File::init(void* pKiss)
 	IF_F(!this->_IOBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string presetDir = "";
-	F_INFO(pK->root()->child("APP")->v("presetDir", &presetDir));
-	F_INFO(pK->v("fileName", &m_name));
-	m_name = presetDir + m_name;
 	m_ioStatus = io_closed;
 	return true;
 }
@@ -45,8 +41,9 @@ bool _File::open(void)
 	IF_F(m_name.empty());
 	IF_T(m_ioStatus == io_opened);
 
-	m_file.open(m_name.c_str(), ios::in | ios::out | ios::app);
-	IF_F(!m_file.is_open());
+    m_file.open(m_name.c_str(), ios::in | ios::out | ios::app);
+    IF_F(!m_file.is_open());
+    
 	m_file.seekg(0, ios_base::beg);
 	m_buf = "";
 	m_ioStatus = io_opened;
@@ -103,7 +100,7 @@ string* _File::readAll(void)
 
 	while (m_file && !m_file.eof())
 	{
-		getline(m_file, oneLine);
+        getline(m_file, oneLine);        
 		m_buf += oneLine;
 	}
 

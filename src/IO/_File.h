@@ -26,7 +26,7 @@ public:
 	bool open(string* pName);
 	string* readAll(void);
 
-private:
+public:
 	string m_name;
 	string m_buf;
 	fstream m_file;
