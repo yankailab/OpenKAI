@@ -16,13 +16,14 @@ int main(int argc, char* argv[])
 	}
 
 	printf("Kiss file: %s\n", argStr.c_str());
-	if(!g_file.open(&argStr))
+    g_pFile = new _File();
+	if(!g_pFile->open(&argStr))
 	{
 		printf("Kiss file not found\n");
 		return 1;
 	}
 
-	string* pKiss = g_file.readAll();
+	string* pKiss = g_pFile->readAll();
 	if(!pKiss)
 	{
 		printf("Cannot open Kiss file\n");
@@ -41,8 +42,9 @@ int main(int argc, char* argv[])
 		printf("Kiss file parsing failed\n");
 		return 1;
 	}
-	g_file.close();
-
+	g_pFile->close();
+    delete g_pFile;
+    
 	g_pStart = new Startup();
 	g_pStart->start(g_pKiss);
 

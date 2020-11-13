@@ -41,10 +41,10 @@ bool _PCtransform::init(void *pKiss)
 	pK->v("kiss", &m_kiss);
 	IF_T(m_kiss.empty());
 
-	_File f;
-	IF_T(!f.open(&m_kiss));
+	_File* pFile = new _File();
+	IF_T(!pFile->open(&m_kiss));
 
-	string* pF = f.readAll();
+	string* pF = pFile->readAll();
 	IF_T(!pF);
 	IF_T(pF->empty());
 
@@ -57,7 +57,7 @@ bool _PCtransform::init(void *pKiss)
 	}
 
 	delete pKf;
-	f.close();
+	pFile->close();
 	return true;
 }
 

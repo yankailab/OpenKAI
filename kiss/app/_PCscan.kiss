@@ -58,17 +58,18 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
+	"_wakeUp":"ui",
 }
 
 {
-	"name":"uiTransform",
-	"class":"_UItransform",
+	"name":"ui",
+	"class":"_PCui",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",
-	"vPCB":["rs1","rs2"],
+	"vPCB":["tf1","tf2"],
 }

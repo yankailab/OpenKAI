@@ -22,7 +22,8 @@ window.onload = function() {
     function sendCmd(){
     
         cmd = {
-            sensorName:$('#sensorName').value,
+            cmd:'var_tr',
+            pct:$('#sensorName').value,
             tX:parseFloat($('#tX').value),
             tY:parseFloat($('#tY').value),
             tZ:parseFloat($('#tZ').value),
@@ -31,7 +32,7 @@ window.onload = function() {
             rZ:parseFloat($('#rZ').value),
         };
             
-        cmdStr = JSON.stringify(cmd);
+        cmdStr = JSON.stringify(cmd) + 'SWOOLE_SOCKET_FINISH';
         socket.send(cmdStr);
         $('#messages').innerHTML = 'Sent:<br>' +cmdStr+ '<br>';
     }
