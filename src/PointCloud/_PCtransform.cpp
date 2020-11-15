@@ -37,12 +37,11 @@ bool _PCtransform::init(void *pKiss)
 		m_vmT.push_back(Eigen::Matrix4d::Identity());
 
 	//read from external kiss file if there is one
-	string m_kiss;
-	pK->v("kiss", &m_kiss);
-	IF_T(m_kiss.empty());
+	pK->v("paramKiss", &m_paramKiss);
+	IF_T(m_paramKiss.empty());
 
 	_File* pFile = new _File();
-	IF_T(!pFile->open(&m_kiss));
+	IF_T(!pFile->open(&m_paramKiss));
 
 	string* pF = pFile->readAll();
 	IF_T(!pF);
@@ -158,7 +157,7 @@ void _PCtransform::saveParamKiss(void)
 	IF_(m_paramKiss.empty());
 
 	picojson::object o;
-	o.insert(make_pair("name", value(*this->getName())));
+	o.insert(make_pair("name", "transform"));
 
 	picojson::array vT;
 	vT.push_back(value(m_vT.x));
@@ -174,10 +173,10 @@ void _PCtransform::saveParamKiss(void)
 
 	string k = picojson::value(o).serialize();
 
-	_File f;
-	IF_(!f.open(&m_paramKiss));
-	f.write((uint8_t*)k.c_str(), k.length());
-	f.close();
+	_File* pFile = new _File();
+	IF_(!pFile->open(&m_paramKiss, ios::out));
+	pFile->write((uint8_t*)k.c_str(), k.length());
+	pFile->close();
 }
 
 }

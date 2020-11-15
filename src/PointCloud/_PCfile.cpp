@@ -65,7 +65,10 @@ void _PCfile::update(void)
 	{
 		this->autoFPSfrom();
 
-		m_pViewer->updateGeometry(m_iV, getPC());
+//        if(m_pViewer)
+//        {
+//            m_pViewer->updateGeometry(m_iV, getPC());
+//        }
 
 		this->autoFPSto();
 	}

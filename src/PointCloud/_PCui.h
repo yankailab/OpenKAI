@@ -45,7 +45,6 @@ private:
 	}
 
 public:
-	vector<_PCtransform*> m_vPCT;
 
 };
 

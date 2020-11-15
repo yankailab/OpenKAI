@@ -20,7 +20,6 @@ window.onload = function() {
     }
     
     function sendCmd(){
-    
         cmd = {
             cmd:'var_tr',
             pct:$('#sensorName').value,
@@ -56,6 +55,17 @@ window.onload = function() {
 
     $('#btnSET').onclick = function(e) {
     	sendCmd();
+    };
+
+    $('#btnSave').onclick = function(e) {
+        cmd = {
+            cmd:'save_kiss',
+            pct:$('#sensorName').value,
+        };
+            
+        cmdStr = JSON.stringify(cmd) + 'SWOOLE_SOCKET_FINISH';
+        socket.send(cmdStr);
+        $('#messages').innerHTML = 'Sent:<br>' +cmdStr+ '<br>';
     };
 
     $('#btnReset').onclick = function(e)
@@ -150,6 +160,7 @@ window.onload = function() {
     <pre id="messages">Connecting...</pre>
     
     <button id="btnSET" style="WIDTH: 100px; HEIGHT: 50px">SET</button>
+    <button id="btnSave" style="WIDTH: 100px; HEIGHT: 50px">Save</button>
     <button id="btnReset" style="WIDTH: 100px; HEIGHT: 50px">Reset</button>
     </br></br>
 

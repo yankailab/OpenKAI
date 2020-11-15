@@ -21,10 +21,20 @@
 }
 
 {
+	"name":"pcf",
+	"class":"_PCfile",
+	"FPS":30,
+	"bInst":1,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+}
+
+{
 	"name":"rs1",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -46,12 +56,12 @@
 	"name":"tf1",
 	"class":"_PCtransform",
 	"bInst":1,
-	"_PCbase":"rs1",
+	"_PCbase":"pcf",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"kiss":"/home/kai/dev/OpenKAI/kiss/app/tf1.kiss",
+	"paramKiss":"/home/kai/dev/OpenKAI/kiss/app/tf1.kiss",
 }
 
 {
@@ -71,5 +81,4 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",
-	"vPCB":["tf1","tf2"],
 }

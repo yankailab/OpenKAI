@@ -26,22 +26,22 @@ bool _File::init(void* pKiss)
 	return true;
 }
 
-bool _File::open(string* pName)
+bool _File::open(string* pName, ios_base::openmode mode)
 {
 	NULL_F(pName);
 	IF_T(m_ioStatus == io_opened);
 	m_name = *pName;
 	m_ioStatus = io_closed;
 
-	return open();
+	return open(mode);
 }
 
-bool _File::open(void)
+bool _File::open(ios_base::openmode mode)
 {
 	IF_F(m_name.empty());
 	IF_T(m_ioStatus == io_opened);
 
-    m_file.open(m_name.c_str(), ios::in | ios::out | ios::app);
+    m_file.open(m_name.c_str(), mode);
     IF_F(!m_file.is_open());
     
 	m_file.seekg(0, ios_base::beg);
