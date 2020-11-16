@@ -32,7 +32,7 @@ public:
 	int check(void);
 
 private:
-	void updateIO(void);
+	void sendPC(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -45,6 +45,7 @@ public:
 
 	uint8_t*	m_pB;
 	int			m_nB;
+    uint64_t    m_tInt;
 };
 
 }

@@ -28,7 +28,7 @@ bool _PCrecv::init(void *pKiss)
 	Kiss *pK = (Kiss*) pKiss;
 
     int nB = 256;
-    pK->v("nBuf", &nB);
+    pK->v("nB", &nB);
 	m_recvMsg.init(nB);
 
 	string n;
@@ -36,7 +36,7 @@ bool _PCrecv::init(void *pKiss)
 	F_ERROR_F(pK->v("_IOBase", &n));
 	m_pIO = (_IOBase*) (pK->getInst(n));
 	NULL_Fl(m_pIO, "_IOBase not found");
-
+    
 	return true;
 }
 
@@ -67,18 +67,6 @@ void _PCrecv::update(void)
 {
 	while (m_bThreadON)
 	{
-		if(!m_pIO)
-		{
-			this->sleepTime(USEC_1SEC);
-			continue;
-		}
-
-		if(!m_pIO->isOpen())
-		{
-			this->sleepTime(USEC_1SEC);
-			continue;
-		}
-
 		this->autoFPSfrom();
 
 		while(readCMD())
@@ -93,9 +81,10 @@ void _PCrecv::update(void)
 
 bool _PCrecv::readCMD(void)
 {
+    IF_F(check()<0);
+    
 	uint8_t	b;
 	int		nB;
-
 	while ((nB = m_pIO->read(&b,1)) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)

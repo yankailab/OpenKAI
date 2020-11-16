@@ -24,7 +24,7 @@
 	"name":"pcf",
 	"class":"_PCfile",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
@@ -34,7 +34,7 @@
 	"name":"rs1",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -47,7 +47,7 @@
 	"fSpat":0,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
-	"rsSN":"00000000f0211594",
+	"/rsSN":"00000000f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -73,8 +73,9 @@
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"_IOBase":"UDPsend",	
-	"_PCbase":"pcf",
+	"_PCbase":"rs1",
 	"nB":256,
+	"tInt":100000,
 }
 
 {
@@ -86,6 +87,7 @@
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"port":19840,
+	"listenPort":19840,
 	"_wakeUp":"PCrecv",
 }
 
@@ -99,6 +101,7 @@
 	"Console":"OpenKAI",
 	"_IOBase":"UDPrecv",
 	"_PCviewer":"pcv",
+	"nB":128000,
 }
 
 {

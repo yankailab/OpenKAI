@@ -36,7 +36,7 @@ bool _TCPserver::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v<uint16_t>("listenPort", &m_listenPort);
+	pK->v<uint16_t>("port", &m_listenPort);
 	pK->v<int>("nListen", &m_nListen);
 	pK->v<unsigned int>("nSocket", &m_nSocket);
 
@@ -128,7 +128,7 @@ bool _TCPserver::setup(void)
 {
 	//Create socket
 	m_socket = socket(AF_INET, SOCK_STREAM, 0);
-	IF_F(m_socket == -1);
+	IF_F(m_socket < 0);
 
 	//Prepare the sockaddr_in structure
 	m_serverAddr.sin_family = AF_INET;
