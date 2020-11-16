@@ -53,16 +53,66 @@
 }
 
 {
+	"name":"UDPsend",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"addr":"127.0.0.1",
+	"port":19840,
+}
+
+{
+	"name":"PCsend",
+	"class":"_PCsend",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"UDPsend",	
+	"_PCbase":"pcf",
+	"nB":256,
+}
+
+{
+	"name":"UDPrecv",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"port":19840,
+	"_wakeUp":"PCrecv",
+}
+
+{
+	"name":"PCrecv",
+	"class":"_PCrecv",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"UDPrecv",
+	"_PCviewer":"pcv",
+}
+
+{
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bInst":1,
-	"_PCbase":"pcf",
+	"bInst":0,
+	"_PCbase":"PCrecv",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
 	"paramKiss":"/home/kai/dev/OpenKAI/kiss/app/tf1.kiss",
 }
+
 
 {
 	"name":"ws",

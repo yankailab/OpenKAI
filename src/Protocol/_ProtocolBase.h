@@ -9,15 +9,15 @@
 //2 PAYLOAD LENGTH
 //3 Payload...
 
-#define PROTOCOL_BEGIN 0xFE
-#define PROTOCOL_N_HEADER 3
+#define PB_BEGIN 0xFE
+#define PB_N_HDR 3
 
 struct PROTOCOL_CMD
 {
 	int m_cmd;
 	int m_nPayload;
-	int m_iByte;
-	uint8_t* m_pBuf;
+	int m_iB;
+	uint8_t* m_pB;
 
 	void init(int nB)
 	{
@@ -25,14 +25,14 @@ struct PROTOCOL_CMD
 
 		if(nB<=0)
 			nB = 256;
-		m_pBuf = new uint8_t[nB];
+		m_pB = new uint8_t[nB];
 	}
 
 	void reset(void)
 	{
 		m_cmd = 0;
 		m_nPayload = 0;
-		m_iByte = 0;
+		m_iB = 0;
 	}
 };
 

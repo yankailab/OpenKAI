@@ -10,13 +10,15 @@
 
 #include "../Base/common.h"
 #include "../IO/_IOBase.h"
+#include "../Protocol/_ProtocolBase.h"
 
 #ifdef USE_OPEN3D
+#include "_PCsend.h"
 #include "_PCbase.h"
 
 namespace kai
 {
-
+    
 class _PCrecv: public _PCbase
 {
 public:
@@ -28,7 +30,9 @@ public:
 	int check(void);
 
 private:
-	void updateIO(void);
+	virtual bool readCMD(void);
+	virtual void handleCMD(void);
+    void decodeStream(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -37,9 +41,9 @@ private:
 	}
 
 public:
-	_PCbase* m_pPCB;
 	_IOBase* m_pIO;
-
+	PROTOCOL_CMD m_recvMsg;
+	uint64_t	m_nCMDrecv;
 };
 
 }

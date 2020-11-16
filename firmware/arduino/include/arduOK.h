@@ -6,8 +6,8 @@
 //3 Payload...
 
 //Protocol
-#define PROTOCOL_BEGIN 0xFE
-#define PROTOCOL_N_HEADER 3
+#define PB_BEGIN 0xFE
+#define PB_N_HDR 3
 #define PROTOCOL_N_BUF 256
 
 //Functions to be implemented
@@ -44,7 +44,7 @@ void decodeCMD(void)
       {
         g_cmd.m_nPayload = inByte;
       }
-      else if (g_cmd.m_iByte == g_cmd.m_nPayload + PROTOCOL_N_HEADER)
+      else if (g_cmd.m_iByte == g_cmd.m_nPayload + PB_N_HDR )
       {
         runCMD();
         g_cmd.m_cmd = 0;
@@ -52,7 +52,7 @@ void decodeCMD(void)
         if (++iMsg > g_nMsg)return;
       }
     }
-    else if (inByte == PROTOCOL_BEGIN)
+    else if (inByte == PB_BEGIN )
     {
       g_cmd.m_cmd = inByte;
       g_cmd.m_pBuf[0] = inByte;

@@ -15,6 +15,9 @@
 #ifdef USE_OPEN3D
 #include "_PCbase.h"
 
+#define PC_STREAM 0
+#define PC_FRAME_END 1
+
 namespace kai
 {
 
@@ -38,11 +41,10 @@ private:
 	}
 
 public:
-	_PCbase* m_pPCB;
 	_IOBase* m_pIO;
 
-	uint8_t*	m_pBuf;
-	int			m_nBuf;
+	uint8_t*	m_pB;
+	int			m_nB;
 };
 
 }

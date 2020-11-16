@@ -78,19 +78,19 @@ void _AP_link::update(void)
 void _AP_link::handleCMD(void)
 {
 	int16_t x,y,z,w;
-	switch (m_recvMsg.m_pBuf[1])
+	switch (m_recvMsg.m_pB[1])
 	{
 	case APLINK_STATE:
-		m_iState = m_recvMsg.m_pBuf[3];
+		m_iState = m_recvMsg.m_pB[3];
 		m_tState = m_tStamp;
 		LOG_I("State="+i2str((int)m_iState));
 		break;
 
 	case APLINK_BB:
-		x = unpack_int16(&m_recvMsg.m_pBuf[3], false);
-		y = unpack_int16(&m_recvMsg.m_pBuf[5], false);
-		z = unpack_int16(&m_recvMsg.m_pBuf[7], false);
-		w = unpack_int16(&m_recvMsg.m_pBuf[9], false);
+		x = unpack_int16(&m_recvMsg.m_pB[3], false);
+		y = unpack_int16(&m_recvMsg.m_pB[5], false);
+		z = unpack_int16(&m_recvMsg.m_pB[7], false);
+		w = unpack_int16(&m_recvMsg.m_pB[9], false);
 		m_vBB.x = ((float)x)*0.001;
 		m_vBB.y = ((float)y)*0.001;
 		m_vBB.z = ((float)z)*0.001;
@@ -101,10 +101,10 @@ void _AP_link::handleCMD(void)
 		break;
 
 	case APLINK_TARGET:
-		x = unpack_int16(&m_recvMsg.m_pBuf[3], false);
-		y = unpack_int16(&m_recvMsg.m_pBuf[5], false);
-		z = unpack_int16(&m_recvMsg.m_pBuf[7], false);
-		w = unpack_int16(&m_recvMsg.m_pBuf[9], false);
+		x = unpack_int16(&m_recvMsg.m_pB[3], false);
+		y = unpack_int16(&m_recvMsg.m_pB[5], false);
+		z = unpack_int16(&m_recvMsg.m_pB[7], false);
+		w = unpack_int16(&m_recvMsg.m_pB[9], false);
 		m_vTargetBB.x = ((float)x)*0.001;
 		m_vTargetBB.y = ((float)y)*0.001;
 		m_vTargetBB.z = ((float)z)*0.001;
@@ -115,14 +115,14 @@ void _AP_link::handleCMD(void)
 		break;
 
 	case APLINK_ALT:
-		x = unpack_int16(&m_recvMsg.m_pBuf[3], false);
+		x = unpack_int16(&m_recvMsg.m_pB[3], false);
 		m_alt = ((float)x)*0.001;
 		m_tAlt = m_tStamp;
 		LOG_I("Alt="+f2str(m_alt));
 		break;
 
 	case APLINK_HDG:
-		x = unpack_int16(&m_recvMsg.m_pBuf[3], false);
+		x = unpack_int16(&m_recvMsg.m_pB[3], false);
 		m_hdg = ((float)x)*0.001;
 		m_tHdg = m_tStamp;
 		LOG_I("Hdg="+f2str(m_hdg));
@@ -139,19 +139,19 @@ void _AP_link::state(uint8_t iState)
 {
 	IF_(check()<0);
 
-	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[0] = PB_BEGIN;
 	m_pBuf[1] = APLINK_STATE;
 	m_pBuf[2] = 1;
 	m_pBuf[3] = iState;
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
+	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
 void _AP_link::setBB(vFloat4& vP)
 {
 	IF_(check()<0);
 
-	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[0] = PB_BEGIN;
 	m_pBuf[1] = APLINK_BB;
 	m_pBuf[2] = 8;
 
@@ -160,14 +160,14 @@ void _AP_link::setBB(vFloat4& vP)
 	pack_int16(&m_pBuf[7], (int16_t)(vP.z * 1000), false);
 	pack_int16(&m_pBuf[9], (int16_t)(vP.w * 1000), false);
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
+	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
 void _AP_link::setTargetBB(vFloat4& vP)
 {
 	IF_(check()<0);
 
-	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[0] = PB_BEGIN;
 	m_pBuf[1] = APLINK_TARGET;
 	m_pBuf[2] = 8;
 
@@ -176,31 +176,31 @@ void _AP_link::setTargetBB(vFloat4& vP)
 	pack_int16(&m_pBuf[7], (int16_t)(vP.z * 1000), false);
 	pack_int16(&m_pBuf[9], (int16_t)(vP.w * 1000), false);
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
+	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
 void _AP_link::setAlt(float dA)
 {
 	IF_(check()<0);
 
-	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[0] = PB_BEGIN;
 	m_pBuf[1] = APLINK_ALT;
 	m_pBuf[2] = 2;
 	pack_int16(&m_pBuf[3], (int16_t)(dA * 1000), false);
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
+	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
 void _AP_link::setHdg(float dH)
 {
 	IF_(check()<0);
 
-	m_pBuf[0] = PROTOCOL_BEGIN;
+	m_pBuf[0] = PB_BEGIN;
 	m_pBuf[1] = APLINK_HDG;
 	m_pBuf[2] = 2;
 	pack_int16(&m_pBuf[3], (int16_t)(dH * 1000), false);
 
-	m_pIO->write(m_pBuf, PROTOCOL_N_HEADER + (int)m_pBuf[2]);
+	m_pIO->write(m_pBuf, PB_N_HDR + (int)m_pBuf[2]);
 }
 
 void _AP_link::draw(void)

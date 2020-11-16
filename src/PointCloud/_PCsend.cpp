@@ -14,11 +14,9 @@ namespace kai
 
 _PCsend::_PCsend()
 {
-	m_pPCB = NULL;
 	m_pIO = NULL;
-
-	m_pBuf = NULL;
-	m_nBuf = 256;
+	m_pB = NULL;
+	m_nB = 1024;
 }
 
 _PCsend::~_PCsend()
@@ -30,16 +28,11 @@ bool _PCsend::init(void *pKiss)
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v("nBuf", &m_nBuf);
-	m_pBuf = new uint8_t[m_nBuf];
+	pK->v("nB", &m_nB);
+	m_pB = new uint8_t[m_nB];
+    NULL_F(m_pB);
 
 	string n;
-
-	n = "";
-	F_ERROR_F(pK->v("_PCbase", &n));
-	m_pPCB = (_PCbase*) (pK->getInst(n));
-	NULL_Fl(m_pPCB, "_PCbase not found");
-
 	n = "";
 	F_ERROR_F(pK->v("_IOBase", &n));
 	m_pIO = (_IOBase*) (pK->getInst(n));
@@ -93,16 +86,53 @@ void _PCsend::updateIO(void)
 	PointCloud* pOut = m_sPC.next();
 	int nP = pOut->points_.size();
 
-	m_nBuf = 0;
-	int iB = 0;
-
+    const double PC_SCALE = 1000;
+    int iB = PB_N_HDR;
+    m_pB[0] = PB_BEGIN;
+    m_pB[1] = PC_STREAM;
+    
 	for (int i = 0; i < nP; i++)
 	{
-		pOut->points_[i];
-		pOut->colors_[i];
-		pOut->normals_[i];
-	}
+        Eigen::Vector3d vP = pOut->points_[i];
+        Eigen::Vector3d vC = pOut->colors_[i];
+        Eigen::Vector3d vN = pOut->normals_[i];
+        
+        pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
+        iB += 2;
+        pack_int16(&m_pB[iB], (int16_t)(vP.y() * PC_SCALE), false);
+        iB += 2;
+        pack_int16(&m_pB[iB], (int16_t)(vP.z() * PC_SCALE), false);
+        iB += 2;
 
+        pack_int16(&m_pB[iB], (int16_t)(vC.x() * PC_SCALE), false);
+        iB += 2;
+        pack_int16(&m_pB[iB], (int16_t)(vC.y() * PC_SCALE), false);
+        iB += 2;
+        pack_int16(&m_pB[iB], (int16_t)(vC.z() * PC_SCALE), false);
+        iB += 2;
+
+        if(iB + 12 >= m_nB)
+        {
+            m_pB[2] = iB - PB_N_HDR;
+            m_pIO->write(m_pB, PB_N_HDR + (int)m_pB[2]);
+
+            iB = PB_N_HDR;
+        }
+    }
+    
+    if(iB > PB_N_HDR )
+    {
+        m_pB[2] = iB - PB_N_HDR;
+        m_pIO->write(m_pB, PB_N_HDR + (int)m_pB[2]);
+    }
+
+    
+    //frame sync
+    m_pB[0] = PB_BEGIN;
+    m_pB[1] = PC_FRAME_END;
+    m_pB[2] = 0;
+    m_pIO->write(m_pB, PB_N_HDR + (int)m_pB[2]);
+    
 }
 
 }

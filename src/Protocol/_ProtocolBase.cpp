@@ -2,6 +2,7 @@
 
 namespace kai
 {
+    
 _ProtocolBase::_ProtocolBase()
 {
 	m_pIO = NULL;
@@ -26,11 +27,11 @@ bool _ProtocolBase::init(void* pKiss)
 	m_pBuf = new uint8_t[m_nBuf];
 	m_recvMsg.init(m_nBuf);
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->getInst(iName));
-	NULL_Fl(m_pIO, iName + ": not found");
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_IOBase", &n));
+	m_pIO = (_IOBase*) (pK->getInst(n));
+	NULL_Fl(m_pIO, n + ": not found");
 
 	return true;
 }
@@ -95,23 +96,21 @@ bool _ProtocolBase::readCMD(void)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
-			m_recvMsg.m_pBuf[m_recvMsg.m_iByte] = b;
-			m_recvMsg.m_iByte++;
+			m_recvMsg.m_pB[m_recvMsg.m_iB] = b;
+			m_recvMsg.m_iB++;
 
-			if (m_recvMsg.m_iByte == 3)
+			if (m_recvMsg.m_iB == 3)
 			{
-				m_recvMsg.m_nPayload = m_recvMsg.m_pBuf[2];
+				m_recvMsg.m_nPayload = m_recvMsg.m_pB[2];
 			}
-			else if (m_recvMsg.m_iByte == m_recvMsg.m_nPayload + PROTOCOL_N_HEADER)
-			{
-				return true;
-			}
+			
+			IF_T(m_recvMsg.m_iB == m_recvMsg.m_nPayload + PB_N_HDR );
 		}
-		else if (b == PROTOCOL_BEGIN)
+		else if (b == PB_BEGIN )
 		{
 			m_recvMsg.m_cmd = b;
-			m_recvMsg.m_pBuf[0] = b;
-			m_recvMsg.m_iByte = 1;
+			m_recvMsg.m_pB[0] = b;
+			m_recvMsg.m_iB = 1;
 			m_recvMsg.m_nPayload = 0;
 		}
 	}
@@ -123,7 +122,7 @@ void _ProtocolBase::handleCMD(void)
 {
 	if(m_pfCallback)
 	{
-		m_pfCallback(m_recvMsg.m_pBuf, m_pfInst);
+		m_pfCallback(m_recvMsg.m_pB, m_pfInst);
 	}
 
 	m_recvMsg.reset();
