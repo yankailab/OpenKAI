@@ -15,7 +15,6 @@ using namespace kai;
 
 Startup* g_pStart;
 Kiss* g_pKiss;
-_File* g_pFile;
 
 void printEnvironment(void);
 

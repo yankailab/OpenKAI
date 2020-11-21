@@ -204,6 +204,8 @@ void _AProver_photo::shutter(void)
 		system(cmd.c_str());
 
 		LOG_I("GPhoto: " + fName);
+        
+        //gphoto2 --capture-image-and-download --usbid 001,009 --filename test.jpg
 	}
 
 	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTake));

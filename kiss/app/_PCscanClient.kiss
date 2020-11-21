@@ -1,0 +1,68 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"pcf",
+	"class":"_PCfile",
+	"FPS":30,
+	"bInst":0,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"fName":"/home/lab/dev/Open3D/examples/test_data/fragment.pcd",
+}
+
+{
+	"name":"rs1",
+	"class":"_PCrs",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"vWHcol":[640,480],
+	"rsFPS":30,
+	"vWHd":[640,480],
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"/rsSN":"00000000f0211594",
+	"/_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"UDPsend",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"addr":"192.168.16.139",
+	"port":19840,
+}
+
+{
+	"name":"PCsend",
+	"class":"_PCsend",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"UDPsend",	
+	"_PCbase":"rs1",
+	"nB":256,
+	"tInt":100000,
+}

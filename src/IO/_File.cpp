@@ -55,6 +55,7 @@ bool _File::open(ios_base::openmode mode)
 void _File::close(void)
 {
 	IF_(!m_file.is_open());
+   	IF_(m_ioStatus == io_closed);
 
 	m_file.flush();
 	m_file.close();
@@ -73,7 +74,7 @@ int _File::read(uint8_t* pBuf, int nB)
 
 	if (m_buf.size() == 0)
 	{
-		if (readAll() == NULL)
+		if (!readAll(NULL))
 			return -1;
 		m_iByte = 0;
 	}
@@ -90,9 +91,9 @@ int _File::read(uint8_t* pBuf, int nB)
 	return nB;
 }
 
-string* _File::readAll(void)
+bool _File::readAll(string* pStr)
 {
-	IF_N(!m_file.is_open());
+	IF_F(!m_file.is_open());
 
 	m_file.seekg(0, ios_base::beg);
 	m_buf.clear();
@@ -100,11 +101,14 @@ string* _File::readAll(void)
 
 	while (m_file && !m_file.eof())
 	{
-        getline(m_file, oneLine);        
+        getline(m_file, oneLine);
 		m_buf += oneLine;
 	}
+	
+	if(pStr)
+        *pStr = m_buf;
 
-	return &m_buf;
+	return true;
 }
 
 bool _File::write(uint8_t* pBuf, int nB)

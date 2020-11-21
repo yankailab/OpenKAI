@@ -192,6 +192,16 @@ sudo make install
 sudo ldconfig
 
 #----------------------------------------------------
+# (Optional) Chilitags
+git clone --depth 1 https://github.com/chili-epfl/chilitags.git
+cd chilitags
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make -j12
+sudo make install
+
+#----------------------------------------------------
 # Filament
 sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev
 git clone --branch v1.9.5 --depth 1 https://github.com/google/filament.git
@@ -249,29 +259,6 @@ cd Livox-SDK/build
 cmake ..
 make -j8
 sudo make install
-
-#----------------------------------------------------
-# (Optional) Tesseract
-sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev
-git clone https://github.com/tesseract-ocr/tesseract.git
-cd tesseract
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make all -j8
-sudo make install
-
-#----------------------------------------------------
-# (Optional) OpenALPR
-git clone https://github.com/yankailab/openalpr.git
-cd openalpr
-cd src
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make all -j8
-sudo make install
-sudo ldconfig
 
 #----------------------------------------------------
 # (Optional) Dynamixel
@@ -360,3 +347,25 @@ make
 sudo make install
 sudo ldconfig
 
+#----------------------------------------------------
+# (Optional) Tesseract
+sudo apt-get -y install libleptonica-dev libcurl4-openssl-dev liblog4cplus-dev libpng-dev libjpeg8-dev libtiff5-dev zlib1g-dev
+git clone https://github.com/tesseract-ocr/tesseract.git
+cd tesseract
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j8
+sudo make install
+
+#----------------------------------------------------
+# (Optional) OpenALPR
+git clone https://github.com/yankailab/openalpr.git
+cd openalpr
+cd src
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j8
+sudo make install
+sudo ldconfig

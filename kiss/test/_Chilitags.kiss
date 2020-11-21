@@ -1,0 +1,56 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}
+
+{
+	"name":"universe",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+}
+
+{
+	"name":"Chilitags",
+	"class":"_Chilitags",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_VisionBase":"cam",
+	"_Universe":"universe",
+	"persistence":0,
+	"gain":0,
+}

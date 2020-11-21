@@ -24,7 +24,7 @@ public:
 	bool writeLine(uint8_t* pBuf, int nB);
 
 	bool open(string* pName, ios_base::openmode mode = ios::in | ios::out | ios::app);
-	string* readAll(void);
+	bool readAll(string* pStr);
 
 public:
 	string m_name;

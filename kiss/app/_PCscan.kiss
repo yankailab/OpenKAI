@@ -34,7 +34,7 @@
 	"name":"rs1",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -55,7 +55,7 @@
 {
 	"name":"UDPsend",
 	"class":"_UDP",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -67,7 +67,7 @@
 {
 	"name":"PCsend",
 	"class":"_PCsend",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",

@@ -179,6 +179,10 @@
 #include "../Vision/_Pylon.h"
 #endif
 
+#ifdef USE_CHILITAGS
+#include "../Detector/_Chilitags.h"
+#endif
+
 #endif	//USE_OPENCV
 
 #ifdef USE_OPEN3D

@@ -6,17 +6,18 @@ LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 OPTION(USE_CAFFE "Use Caffe" OFF)
 OPTION(USE_CUDA "Use NVIDIA CUDA" OFF)
+OPTION(USE_CHILITAGS "Use Chilitags" OFF)
 OPTION(USE_DARKNET "Use Darknet" OFF)
 OPTION(USE_DYNAMIXEL "Use Dynamixel" OFF)
 OPTION(USE_JETSON_INFERENCE "Use NVIDIA TensorRT" OFF)
 OPTION(USE_LIVOX "Use Livox" OFF)
 OPTION(USE_MYNTEYE "Use Mynteye" OFF)
+OPTION(USE_OPEN3D "Use Open3D" OFF)
 OPTION(USE_OPENCV "Use OpenCV" ON)
 OPTION(USE_OPENCV_CONTRIB "Use OpenCV contribution" OFF)
 OPTION(USE_ORB_SLAM2 "Use Orb_Slam2" OFF)
 OPTION(USE_OCR "Use Tesseract" OFF)
 OPTION(USE_OPENALPR "Use OpenALPR" OFF)
-OPTION(USE_OPEN3D "Use Open3D" OFF)
 OPTION(USE_PYLON "Use Basler camera with Pylon" OFF)
 OPTION(USE_REALSENSE "Use Intel RealSense" OFF)
 
@@ -26,6 +27,12 @@ set(OpenKAI_definitions "-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17"
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
 set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas ncurses)
+
+
+if(USE_CHILITAGS)
+  add_definitions(-DUSE_CHILITAGS)
+  set(OpenKAI_lib ${OpenKAI_lib} chilitags)
+endif()
 
 if(USE_OPEN3D)
   add_definitions(-DUSE_OPEN3D)
