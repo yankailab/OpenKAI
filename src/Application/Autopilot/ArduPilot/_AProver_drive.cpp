@@ -14,8 +14,8 @@ _AProver_drive::_AProver_drive()
 	m_speed = 1.0;	//1.0m/s
 	m_yawMode = 1.0;
 
-	m_bSetYawSpeed = true;
-	m_bRcChanOverride = true;
+	m_bSetYawSpeed = false;
+	m_bRcChanOverride = false;
 	m_pwmM = 1500;
 	m_pwmD = 500;
 	m_pRcYaw = NULL;
@@ -60,6 +60,9 @@ bool _AProver_drive::init(void* pKiss)
 	pRC[15] = &m_rcOverride.chan16_raw;
 	pRC[16] = &m_rcOverride.chan17_raw;
 	pRC[17] = &m_rcOverride.chan18_raw;
+    
+    for(int i=0; i<18; i++)
+        *pRC[i] = UINT16_MAX;
 
 	int iRcYaw = 2;
 	pK->v("iRcYaw", &iRcYaw);
@@ -102,6 +105,7 @@ int _AProver_drive::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
+    NULL__(m_pMC, -1);
 
 	return this->_MissionBase::check();
 }
@@ -121,12 +125,13 @@ void _AProver_drive::update(void)
 bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
+	IF_F(!bActive() < 0);
 
 	if(m_bSetYawSpeed)
 	{
 		m_pAP->m_pMav->clNavSetYawSpeed(m_yaw,
-											m_nSpeed * m_kSpeed * m_speed,
-											m_yawMode);
+										m_nSpeed * m_kSpeed * m_speed,
+										m_yawMode);
 	}
 
 	if(m_bRcChanOverride)
@@ -160,6 +165,7 @@ void _AProver_drive::setYawMode(bool bRelative)
 void _AProver_drive::draw(void)
 {
 	this->_MissionBase::draw();
+    drawActive();
 
 	addMsg("speed=" + f2str(m_speed) + ", kSpeed=" + f2str(m_kSpeed) + ", nSpeed=" + f2str(m_nSpeed));
 	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + f2str(m_yaw));

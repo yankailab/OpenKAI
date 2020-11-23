@@ -113,7 +113,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_photo.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_field.h"
 
 #include "../Application/Observation/_HiphenRGB.h"

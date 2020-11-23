@@ -122,7 +122,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_follow);
 	ADD_MODULE(_AP_followClient);
 	ADD_MODULE(_APcopter_photo);
-	ADD_MODULE(_AProver_photo);
+	ADD_MODULE(_AProver_follow);
 	ADD_MODULE(_AProver_field);
 	ADD_MODULE(_AProver_picking);
 

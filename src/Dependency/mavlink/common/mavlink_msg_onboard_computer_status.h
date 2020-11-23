@@ -3,9 +3,9 @@
 
 #define MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS 390
 
-MAVPACKED(
+
 typedef struct __mavlink_onboard_computer_status_t {
- uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.*/
+ uint64_t time_usec; /*< [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.*/
  uint32_t uptime; /*< [ms] Time since system boot.*/
  uint32_t ram_usage; /*< [MiB] Amount of used RAM on the component system. A value of UINT32_MAX implies the field is unused.*/
  uint32_t ram_total; /*< [MiB] Total amount of RAM on the component system. A value of UINT32_MAX implies the field is unused.*/
@@ -25,7 +25,7 @@ typedef struct __mavlink_onboard_computer_status_t {
  uint8_t gpu_combined[10]; /*<  Combined GPU usage as the last 10 slices of 100 MS (a histogram). This allows to identify spikes in load that max out the system, but only for a short amount of time. A value of UINT8_MAX implies the field is unused.*/
  int8_t temperature_board; /*< [degC] Temperature of the board. A value of INT8_MAX implies the field is unused.*/
  int8_t temperature_core[8]; /*< [degC] Temperature of the CPU core. A value of INT8_MAX implies the field is unused.*/
-}) mavlink_onboard_computer_status_t;
+} mavlink_onboard_computer_status_t;
 
 #define MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS_LEN 238
 #define MAVLINK_MSG_ID_ONBOARD_COMPUTER_STATUS_MIN_LEN 238
@@ -111,7 +111,7 @@ typedef struct __mavlink_onboard_computer_status_t {
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param msg The MAVLink message to compress the data into
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param uptime [ms] Time since system boot.
  * @param type  Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.
  * @param cpu_cores  CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.
@@ -194,7 +194,7 @@ static inline uint16_t mavlink_msg_onboard_computer_status_pack(uint8_t system_i
  * @param component_id ID of this component (e.g. 200 for IMU)
  * @param chan The MAVLink channel this message will be sent over
  * @param msg The MAVLink message to compress the data into
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param uptime [ms] Time since system boot.
  * @param type  Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.
  * @param cpu_cores  CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.
@@ -303,7 +303,7 @@ static inline uint16_t mavlink_msg_onboard_computer_status_encode_chan(uint8_t s
  * @brief Send a onboard_computer_status message
  * @param chan MAVLink channel to send the message
  *
- * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @param time_usec [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  * @param uptime [ms] Time since system boot.
  * @param type  Type of the onboard computer: 0: Mission computer primary, 1: Mission computer backup 1, 2: Mission computer backup 2, 3: Compute node, 4-5: Compute spares, 6-9: Payload computers.
  * @param cpu_cores  CPU usage on the component in percent (100 - idle). A value of UINT8_MAX implies the field is unused.
@@ -459,7 +459,7 @@ static inline void mavlink_msg_onboard_computer_status_send_buf(mavlink_message_
 /**
  * @brief Get field time_usec from onboard_computer_status message
  *
- * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
+ * @return [us] Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude of the number.
  */
 static inline uint64_t mavlink_msg_onboard_computer_status_get_time_usec(const mavlink_message_t* msg)
 {
