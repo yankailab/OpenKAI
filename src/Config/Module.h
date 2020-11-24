@@ -35,9 +35,15 @@
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
-#include "../Application/Mission/_MissionControl.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_follow.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_UT.h"
+#include "../Application/Autopilot/ArduPilot/_AProver_KU.h"
 #include "../Application/RobotArm/_Sequencer.h"
+
 #include "../Control/PIDctrl.h"
+#include "../Control/Drive.h"
+
+#include "../Mission/_MissionControl.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"
@@ -113,8 +119,6 @@
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
 #include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_follow.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_field.h"
 
 #include "../Application/Observation/_HiphenRGB.h"
 #include "../Application/Surveillance/_ANR.h"

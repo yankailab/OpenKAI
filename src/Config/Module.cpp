@@ -68,6 +68,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);
+	ADD_MODULE(_AProver_follow);
+	ADD_MODULE(_AProver_UT);
+	ADD_MODULE(_AProver_KU);
 
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
@@ -122,8 +125,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_follow);
 	ADD_MODULE(_AP_followClient);
 	ADD_MODULE(_APcopter_photo);
-	ADD_MODULE(_AProver_follow);
-	ADD_MODULE(_AProver_field);
 	ADD_MODULE(_AProver_picking);
 
 #ifdef USE_OPENCV_CONTRIB

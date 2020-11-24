@@ -10,13 +10,14 @@ _AProver_follow::_AProver_follow()
     m_pU = NULL;
     m_pXpid = NULL;
 
-    m_nSpeed = 0.0;
-    m_yaw = 0.0;
-    m_vP.init ( 0.5,0.5,0.0 );
-    m_vPtarget.init ( 0.5,0.5,0.0 );
+    m_iClass = -1;
+    m_vP.init ( 0.5, 0.5, 0.0 );
+    m_vPtarget.init ( 0.5, 0.5, 0.0 );
 
-    m_rcMode.init();
-    m_rcDir.init();
+    m_nSpd = 1.0;
+    m_dir = 1.0;
+    m_yaw = 0.0;
+    
 }
 
 _AProver_follow::~_AProver_follow()
@@ -26,21 +27,13 @@ _AProver_follow::~_AProver_follow()
 bool _AProver_follow::init ( void* pKiss )
 {
     IF_F ( !this->_MissionBase::init ( pKiss ) );
+    IF_F ( !m_pMC );
+
     Kiss* pK = ( Kiss* ) pKiss;
 
-    pK->v ( "nSpeed", &m_nSpeed );
-    pK->v ( "iRCmodeChan", &m_rcMode.m_iChan );
-    pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
-    m_rcMode.setup();
-    pK->v ( "iRCdirChan", &m_rcDir.m_iChan );
-    pK->a ( "vRCdirDiv", &m_rcDir.m_vDiv );
-    m_rcDir.setup();
-
-    IF_F ( !m_pMC );
-    m_iMode.MANUAL = m_pMC->getMissionIdx ( "MANUAL" );
-    m_iMode.HYBRID = m_pMC->getMissionIdx ( "HYBRID" );
-    m_iMode.AUTO = m_pMC->getMissionIdx ( "AUTO" );
-    IF_F ( !m_iMode.bValid() );
+    pK->v ( "nSpd", &m_nSpd );
+    pK->v ( "dir", &m_dir );
+    pK->v ( "yaw", &m_yaw );
 
     string n;
 
@@ -50,9 +43,9 @@ bool _AProver_follow::init ( void* pKiss )
     NULL_Fl ( m_pAP, n + ": not found" );
 
     n = "";
-    pK->v ( "_AProver_drive", &n );
-    m_pD = ( _AProver_drive* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pD, n + ": not found" );
+    pK->v ( "Drive", &n );
+    m_pD = ( Drive* ) ( pK->getInst ( n ) );
+    IF_Fl ( !m_pD, n + ": not found" );
 
     n = "";
     pK->v ( "_Universe", &n );
@@ -85,7 +78,6 @@ int _AProver_follow::check ( void )
 {
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pD, -1 );
-    NULL__ ( m_pMC, -1 );
     NULL__ ( m_pU, -1 );
     NULL__ ( m_pXpid, -1 );
 
@@ -99,43 +91,9 @@ void _AProver_follow::update ( void )
         this->autoFPSfrom();
         this->_MissionBase::update();
 
-        updateMode();
         updateDrive();
 
         this->autoFPSto();
-    }
-}
-
-void _AProver_follow::updateMode ( void )
-{
-    IF_ ( check() <0 );
-
-    uint32_t apMode = m_pAP->getApMode();
-    uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
-    IF_ ( pwmMode == UINT16_MAX );
-
-    m_rcMode.pwm ( pwmMode );
-    int iMode = m_rcMode.i();
-
-    switch ( iMode )
-    {
-    case 0:
-        m_pMC->transit ( m_iMode.MANUAL );
-        break;
-    case 1:
-        m_pMC->transit ( m_iMode.HYBRID );
-        break;
-    case 2:
-        m_pMC->transit ( m_iMode.AUTO );
-        break;
-    default:
-        m_pMC->transit ( m_iMode.MANUAL );
-        break;
-    }
-
-    if ( apMode != AP_ROVER_MANUAL )
-    {
-        m_pMC->transit ( m_iMode.MANUAL );
     }
 }
 
@@ -144,46 +102,20 @@ void _AProver_follow::updateDrive ( void )
     IF_ ( check() <0 );
     IF_ ( !bActive() <0 );
 
-    uint16_t pwmDir = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcDir.m_iChan );
-    float dir = 0.0;
-    if ( pwmDir != UINT16_MAX )
+    _Object* pO = findTarget();
+    if ( pO )
     {
-        m_rcDir.pwm ( pwmDir );
-        dir = ( float ) m_rcDir.i();
-        dir -= 1.0;
-    }
-    float nSpeed = dir * m_nSpeed;
-
-    int iM = m_pMC->getMissionIdx();
-    if ( iM == m_iMode.HYBRID )
-    {
-        m_yaw = 0.0;
-        m_nSpeed = nSpeed;
-    }
-    else if ( iM == m_iMode.AUTO )
-    {
-        _Object* pO = findTarget();
-        if(pO)
-        {
-            m_vP.x = pO->getX() * dir; //for backward we have to reverse the PID
-            m_yaw = m_pXpid->update (m_vP.x, m_vPtarget.x, m_tStamp );
-        }
-        else
-        {
-            m_yaw = 0.0;
-        }
-
-        int iClass = pO->getTopClass();
-        m_nSpeed = nSpeed;
+        m_vP.x = pO->getX();
+        m_yaw = m_pXpid->update ( m_vP.x, m_vPtarget.x, m_tStamp );
     }
     else
     {
         m_yaw = 0.0;
-        m_nSpeed = 0.0;
     }
 
-    m_pD->setYaw ( m_yaw );
-    m_pD->setSpeed ( m_nSpeed );
+    int iClass = pO->getTopClass();
+
+    m_pD->setDrive(m_nSpd, m_dir, m_yaw);
 }
 
 _Object* _AProver_follow::findTarget ( void )
@@ -291,5 +223,16 @@ void _AProver_follow::draw ( void )
 
 	LOG_I("Take: " + i2str(m_iTake) + ", Tag: " + i2str(m_iTake));
 	m_iTake++;
+
+    {
+	"name":"gphoto",
+	"class":"_GPhoto",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"cmdUnmount":"gio mount -s gphoto2",
+}
+
 */
 

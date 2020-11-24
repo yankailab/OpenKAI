@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AProver_drive_H_
 
 #include "_AP_base.h"
+#include "../../../Control/Drive.h"
 
 namespace kai
 {
@@ -18,8 +19,8 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
-	virtual void setSpeed(float nSpeed);
-	virtual void setYaw(float yaw);
+//	virtual void setSpeed(float nSpeed);
+//	virtual void setYaw(float yaw);
 	virtual void setYawMode(bool bRelative);
 
 protected:
@@ -32,15 +33,10 @@ protected:
 
 public:
 	_AP_base* 	m_pAP;
-
-	float	m_nSpeed;
-	float	m_kSpeed;	// +/-1.0 forward/backward
-	float	m_yaw;
-
-	float	m_speed;
-	float	m_yawMode;
+    Drive*      m_pD;
 
 	bool	m_bSetYawSpeed;
+    float   m_yawMode;
 	bool	m_bRcChanOverride;
 	float	m_pwmM;
 	float	m_pwmD;

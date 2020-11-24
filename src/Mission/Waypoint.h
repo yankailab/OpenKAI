@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Mission_Waypoint_H_
 #define OpenKAI_src_Mission_Waypoint_H_
 
-#include "../../Navigation/Coordinate.h"
+#include "../Navigation/Coordinate.h"
 #include "Mission.h"
 
 namespace kai

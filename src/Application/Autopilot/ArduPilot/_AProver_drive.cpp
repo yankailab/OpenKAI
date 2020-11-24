@@ -6,14 +6,9 @@ namespace kai
 _AProver_drive::_AProver_drive()
 {
 	m_pAP = NULL;
+    m_pD = NULL;
 
-	m_nSpeed = 0.0;
-	m_kSpeed = 1.0;
-	m_yaw = 0.0;
-
-	m_speed = 1.0;	//1.0m/s
 	m_yawMode = 1.0;
-
 	m_bSetYawSpeed = false;
 	m_bRcChanOverride = false;
 	m_pwmM = 1500;
@@ -31,14 +26,8 @@ bool _AProver_drive::init(void* pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("nSpeed",&m_nSpeed);
-	pK->v("kSpeed",&m_kSpeed);
-	pK->v("yaw",&m_yaw);
-
-	pK->v("speed",&m_speed);
-	pK->v("yawMode",&m_yawMode);
-
 	pK->v("bSetYawSpeed",&m_bSetYawSpeed);
+	pK->v("yawMode",&m_yawMode);
 	pK->v("bRcChanOverride",&m_bRcChanOverride);
 
 	uint16_t* pRC[18];
@@ -66,10 +55,9 @@ bool _AProver_drive::init(void* pKiss)
 
 	int iRcYaw = 2;
 	pK->v("iRcYaw", &iRcYaw);
+	IF_Fl(iRcYaw > 18, "RC yaw channel exceeds limit");
 	int iRcThrottle = 3;
 	pK->v("iRcThrottle", &iRcThrottle);
-
-	IF_Fl(iRcYaw > 18, "RC yaw channel exceeds limit");
 	IF_Fl(iRcThrottle > 18, "RC throttle channel exceeds limit");
 
 	m_pRcYaw = pRC[iRcYaw];
@@ -78,13 +66,19 @@ bool _AProver_drive::init(void* pKiss)
 	pK->v("pwmM", &m_pwmM);
 	pK->v("pwmD", &m_pwmD);
 
-	string iName;
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+	string n;
+    
+	n = "";
+	pK->v("_AP_base", &n );
+	m_pAP = (_AP_base*) (pK->getInst( n ));
+	IF_Fl(!m_pAP, n + ": not found");
 
-	return true;
+	n = "";
+	pK->v("Drive", &n );
+	m_pD = (Drive*) (pK->getInst( n ));
+	IF_Fl(!m_pD, n + ": not found");
+
+    return true;
 }
 
 bool _AProver_drive::start(void)
@@ -105,7 +99,7 @@ int _AProver_drive::check(void)
 {
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
-    NULL__(m_pMC, -1);
+    NULL__(m_pD, -1);
 
 	return this->_MissionBase::check();
 }
@@ -126,32 +120,29 @@ bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
 	IF_F(!bActive() < 0);
-
+    
+    float spd = m_pD->getSpeed(0);
+    float yaw = m_pD->getSteering(0);
+    
 	if(m_bSetYawSpeed)
 	{
-		m_pAP->m_pMav->clNavSetYawSpeed(m_yaw,
-										m_nSpeed * m_kSpeed * m_speed,
+		m_pAP->m_pMav->clNavSetYawSpeed(yaw,
+										spd,
 										m_yawMode);
 	}
 
 	if(m_bRcChanOverride)
 	{
-		*m_pRcYaw = m_yaw * m_pwmD + m_pwmM;
-		*m_pRcThrottle = m_nSpeed * m_pwmD + m_pwmM;
+		*m_pRcYaw = constrain(yaw * m_pwmD + m_pwmM,
+                              m_pwmM - m_pwmD,
+                              m_pwmM + m_pwmD);
+		*m_pRcThrottle = constrain(spd * m_pwmD + m_pwmM,
+                                   m_pwmM - m_pwmD,
+                                   m_pwmM + m_pwmD);
 		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
 	}
 
 	return true;
-}
-
-void _AProver_drive::setSpeed(float nSpeed)
-{
-	m_nSpeed = nSpeed;
-}
-
-void _AProver_drive::setYaw(float yaw)
-{
-	m_yaw = yaw;
 }
 
 void _AProver_drive::setYawMode(bool bRelative)
@@ -167,8 +158,7 @@ void _AProver_drive::draw(void)
 	this->_MissionBase::draw();
     drawActive();
 
-	addMsg("speed=" + f2str(m_speed) + ", kSpeed=" + f2str(m_kSpeed) + ", nSpeed=" + f2str(m_nSpeed));
-	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + f2str(m_yaw));
+	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
 }
 
 }

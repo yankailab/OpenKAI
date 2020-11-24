@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Mission__MissionControl_H_
 #define OpenKAI_src_Mission__MissionControl_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../Base/_ThreadBase.h"
 #include "Goto.h"
 #include "Waypoint.h"
 #include "Land.h"

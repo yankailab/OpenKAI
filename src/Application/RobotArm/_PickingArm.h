@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_RobotArm__PickingArm_H_
 #define OpenKAI_src_RobotArm__PickingArm_H_
 
-#include "../Mission/_MissionBase.h"
+#include "../../Mission/_MissionBase.h"
 #include "../../Universe/_Universe.h"
 #include "../../Control/PIDctrl.h"
 #include "../../Actuator/_ActuatorBase.h"

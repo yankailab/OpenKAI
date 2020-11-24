@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Mission_Mission_H_
 #define OpenKAI_src_Mission_Mission_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../Base/_ThreadBase.h"
 
 namespace kai
 {

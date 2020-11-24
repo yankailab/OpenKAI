@@ -1,8 +1,8 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_followClient_H_
 #define OpenKAI_src_Autopilot_AP__AP_followClient_H_
 
-#include "../../Mission/_MissionBase.h"
-#include "../ArduPilot/_AP_link.h"
+#include "../../../Mission/_MissionBase.h"
+#include "_AP_link.h"
 
 #ifdef USE_OPENCV
 
