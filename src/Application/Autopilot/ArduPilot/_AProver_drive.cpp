@@ -31,36 +31,37 @@ bool _AProver_drive::init(void* pKiss)
 	pK->v("bRcChanOverride",&m_bRcChanOverride);
 
 	uint16_t* pRC[18];
-	pRC[0] = &m_rcOverride.chan1_raw;
-	pRC[1] = &m_rcOverride.chan2_raw;
-	pRC[2] = &m_rcOverride.chan3_raw;
-	pRC[3] = &m_rcOverride.chan4_raw;
-	pRC[4] = &m_rcOverride.chan5_raw;
-	pRC[5] = &m_rcOverride.chan6_raw;
-	pRC[6] = &m_rcOverride.chan7_raw;
-	pRC[7] = &m_rcOverride.chan8_raw;
-	pRC[8] = &m_rcOverride.chan9_raw;
-	pRC[9] = &m_rcOverride.chan10_raw;
-	pRC[10] = &m_rcOverride.chan11_raw;
-	pRC[11] = &m_rcOverride.chan12_raw;
-	pRC[12] = &m_rcOverride.chan13_raw;
-	pRC[13] = &m_rcOverride.chan14_raw;
-	pRC[14] = &m_rcOverride.chan15_raw;
-	pRC[15] = &m_rcOverride.chan16_raw;
-	pRC[16] = &m_rcOverride.chan17_raw;
-	pRC[17] = &m_rcOverride.chan18_raw;
+	pRC[0] = NULL;
+	pRC[1] = &m_rcOverride.chan1_raw;
+	pRC[2] = &m_rcOverride.chan2_raw;
+	pRC[3] = &m_rcOverride.chan3_raw;
+	pRC[4] = &m_rcOverride.chan4_raw;
+	pRC[5] = &m_rcOverride.chan5_raw;
+	pRC[6] = &m_rcOverride.chan6_raw;
+	pRC[7] = &m_rcOverride.chan7_raw;
+	pRC[8] = &m_rcOverride.chan8_raw;
+	pRC[9] = &m_rcOverride.chan9_raw;
+	pRC[10] = &m_rcOverride.chan10_raw;
+	pRC[11] = &m_rcOverride.chan11_raw;
+	pRC[12] = &m_rcOverride.chan12_raw;
+	pRC[13] = &m_rcOverride.chan13_raw;
+	pRC[14] = &m_rcOverride.chan14_raw;
+	pRC[15] = &m_rcOverride.chan15_raw;
+	pRC[16] = &m_rcOverride.chan16_raw;
+	pRC[17] = &m_rcOverride.chan17_raw;
+	pRC[18] = &m_rcOverride.chan18_raw;
     
-    for(int i=0; i<18; i++)
+    for(int i=1; i<18; i++)
         *pRC[i] = UINT16_MAX;
 
-	int iRcYaw = 2;
+	int iRcYaw = 1;
 	pK->v("iRcYaw", &iRcYaw);
-	IF_Fl(iRcYaw > 18, "RC yaw channel exceeds limit");
+	IF_Fl(iRcYaw <=0 || iRcYaw > 18, "RC yaw channel exceeds limit");
 	m_pRcYaw = pRC[iRcYaw];
     
 	int iRcThrottle = 3;
 	pK->v("iRcThrottle", &iRcThrottle);
-	IF_Fl(iRcThrottle > 18, "RC throttle channel exceeds limit");
+	IF_Fl(iRcThrottle <=0 || iRcThrottle > 18, "RC throttle channel exceeds limit");
 	m_pRcThrottle = pRC[iRcThrottle];
 
 	pK->v("pwmM", &m_pwmM);
@@ -119,8 +120,16 @@ void _AProver_drive::update(void)
 bool _AProver_drive::updateDrive(void)
 {
 	IF_F(check() < 0);
-	IF_F(!bActive() < 0);
+	if(!bActive())
+    {
+     	IF_F(!m_bRcChanOverride);
+		*m_pRcYaw = 0;
+		*m_pRcThrottle = 0;
+		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
+        return false;
+    }
     
+    m_pD->update();
     float nSpd = m_pD->getSpeed(0);
     float nStr = m_pD->getSteering(0);
     

@@ -2,10 +2,10 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -92,8 +92,8 @@
 	"Console":"OKconsole",
 	"_VisionBase":"cam",
 	"_Universe":"univTag",
-	"persistence":0,
-	"gain":0,
+	"persistence":0.5,
+	"gain":0.5,
 }
 
 {
@@ -103,11 +103,11 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"/Console":"OKconsole",
 	"/port":"/dev/ttyTHS0",
-	"/baud":115200,
-	"port":"/dev/ttyUSB0",
-	"baud":57600,
+	"port":"/dev/ttyACM0",
+	"/baud":57600,
+	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
 
@@ -223,9 +223,9 @@
 	"activeMission":["STANDBY","HYBRID","AUTO"],
 	"_AP_base":"apBase",
 	"Drive":"drive",
-    "iRCmodeChan":6,
+    "iRCmodeChan":7,
 	"vRCmodeDiv":[1250,1750,2000],
-    "iRCdirChan":7,
+    "iRCdirChan":6,
 	"vRCdirDiv":[1250,1750,2000],
 }
 
@@ -245,8 +245,8 @@
 			"name":"M",
 			"kSpd":1.0,
 			"kStr":1.0,
-			"vSpdRange":[-1.0, 1.0],
-			"vStrRange":[-1.0, 1.0],
+			"vSpdRange":[-0.2, 0.2],
+			"vStrRange":[-0.3, 0.3],
 		}
 	}
 }
@@ -263,6 +263,8 @@
 	"_AP_base":"apBase",
 	"Drive":"drive",
 	"bRcChanOverride":1,
+	"iRcYaw":1,
+	"iRcThrottle":3,
 }
 
 {
@@ -284,7 +286,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":0.01,
+	"P":0.08,
 	"I":0.0,
 	"Imax":0.0,
 	"oMin":-1.0,
@@ -306,7 +308,7 @@
 	"_Universe":"univTag",
 	"PIDtag":"PIDtag",
 	"PIDhdg":"PIDhdg",
-	"nSpd":"1.0",
-	"tagTargetX":"0.5",
-	"nStr":"1.0",
+	"nSpd":1.0,
+	"tagTargetX":0.5,
+	"nStr":1.0,
 }

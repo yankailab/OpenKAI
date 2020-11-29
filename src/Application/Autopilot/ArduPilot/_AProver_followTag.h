@@ -41,8 +41,11 @@ private:
     
 	float   m_nSpd;
 	float   m_tagTargetX;
-    float   m_targetHdg;    //given by current compass and tag direction
-	float   m_nStr;
+    float   m_tagTargetHdg;
+    float   m_tagPointingHdg;
+    float   m_targetHdg;
+    float   m_dHdg;
+    float   m_nStr;
     
    	int     m_iClass;
     

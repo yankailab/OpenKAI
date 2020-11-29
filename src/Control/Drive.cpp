@@ -88,7 +88,7 @@ void Drive::draw(void)
 {
 	this->ControlBase::draw();
 
-	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
+	addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));
     for(int i=0; i<m_vM.size(); i++)
     {
         DRIVE_MOTOR* pM = &m_vM[i];

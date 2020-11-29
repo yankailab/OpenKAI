@@ -12,8 +12,11 @@ _AProver_followTag::_AProver_followTag()
     m_pPIDhdg = NULL;
 
     m_nSpd = 0.0;
-    m_targetHdg = 0.0;
     m_tagTargetX = 0.5;
+    m_tagTargetHdg = 0.0;
+    m_tagPointingHdg = 0.0;
+    m_targetHdg = 0.0;
+    m_dHdg = 0.0;
     m_nStr = 0.0;
 
     m_iClass = -1;
@@ -104,7 +107,7 @@ void _AProver_followTag::update ( void )
 void _AProver_followTag::updateFollow ( void )
 {
     IF_ ( check() <0 );
-    IF_ ( !bActive() <0 );
+	IF_(!bActive());
     
     float apHdg = m_pAP->getApHdg();
 
@@ -112,12 +115,18 @@ void _AProver_followTag::updateFollow ( void )
     if ( pO )
     {
         float tagX = pO->getX();
-        float tagTargetHdg = m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
-        float tagPointingHdg = pO->getRoll();
-        m_targetHdg = apHdg + tagPointingHdg + tagTargetHdg;
+        m_tagTargetHdg = m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
+        m_tagPointingHdg = 0.0;//pO->getRoll();
+        m_targetHdg = apHdg + m_tagPointingHdg + m_tagTargetHdg;
+    }
+    else
+    {
+        m_tagTargetHdg = 0.0;
+        m_tagPointingHdg = 0.0;
     }
     
-    float tHdg = apHdg + dHdg(apHdg, m_targetHdg);
+    m_dHdg = dHdg(apHdg, m_targetHdg);
+    float tHdg = apHdg + m_dHdg;
     m_nStr = m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
 
     m_pD->setSpeed(m_nSpd);
@@ -153,6 +162,10 @@ void _AProver_followTag::draw ( void )
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
+   	addMsg("tagTargetHdg=" + f2str(m_tagTargetHdg));
+   	addMsg("tagPointingHdg=" + f2str(m_tagPointingHdg));
+   	addMsg("targetHdg=" + f2str(m_targetHdg));
+   	addMsg("dHdg=" + f2str(m_dHdg));
 }
 
 }
