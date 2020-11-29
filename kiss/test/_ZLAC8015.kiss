@@ -1,0 +1,132 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":0,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":115200,
+	"parity":"N",	
+}
+
+{
+	"name":"zlac8015_LF",
+	"class":"_ZLAC8015",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":1,
+
+	{
+		"name":"axis",
+		{
+			"name":"lf",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":160.0,
+			"sRange":[0,300],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"zlac8015_LB",
+	"class":"_ZLAC8015",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":2,
+
+	{
+		"name":"axis",
+		{
+			"name":"lb",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":160.0,
+			"sRange":[0,300],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"zlac8015_RF",
+	"class":"_ZLAC8015",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":3,
+
+	{
+		"name":"axis",
+		{
+			"name":"rf",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":-160.0,
+			"sRange":[0,300],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}
+
+{
+	"name":"zlac8015_RB",
+	"class":"_ZLAC8015",
+	"bInst":1,
+	"FPS":5,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_Modbus":"modbus",
+	"iSlave":4,
+
+	{
+		"name":"axis",
+		{
+			"name":"rb",
+			"pOrigin":0.0,
+			"pTarget":0.0,
+			"pErr":0.01,
+			"pRange":[0,15],
+			"sTarget":-160.0,
+			"sRange":[0,300],
+			"aTarget":0.0,
+			"aRange":[10,300],
+		}
+	}
+}

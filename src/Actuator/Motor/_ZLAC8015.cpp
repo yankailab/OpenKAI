@@ -81,9 +81,21 @@ void _ZLAC8015::updateMove(void)
 {
 	IF_(check()<0);
 
+    
+    int r;
+    
+//    r = m_pMB->writeRegister(m_iSlave, 0x203A, 100);
+//    r = m_pMB->writeRegister(m_iSlave, 0x203A, -100);
+//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x07);
+
+//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06);
+    
 	IF_(!setMode());
-	IF_(!setAccel());
-	IF_(!setBrake());
+    r = m_pMB->writeRegister(m_iSlave, 0x2037, 500);
+    r = m_pMB->writeRegister(m_iSlave, 0x2038, 500);
+    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x08);
+//	IF_(!setAccel());
+//	IF_(!setBrake());
 	IF_(!setSpeed());
 }
 
@@ -91,7 +103,9 @@ bool _ZLAC8015::setMode(void)
 {
 	IF_F(check()<0);
 
-	IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
+//	IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
+	int r = m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode);
+    IF_F(r != 1);
 
 	return true;
 }
@@ -101,7 +115,9 @@ bool _ZLAC8015::setAccel(void)
 	IF_F(check()<0);
 
 	uint16_t v = m_pA->m_a.m_vTarget;
-	IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
+//	IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
+	int r = m_pMB->writeRegister(m_iSlave, 0x2037, v);
+    if(r != 1)return false;
 
 	return true;
 }
@@ -120,7 +136,7 @@ bool _ZLAC8015::setSpeed(void)
 {
 	IF_F(check()<0);
 
-	uint16_t v = m_pA->m_s.m_vTarget;
+	int16_t v = m_pA->m_s.m_vTarget;
 	IF_F(m_pMB->writeRegister(m_iSlave, 0x203A, v) != 1);
 
 	return true;
@@ -151,11 +167,11 @@ bool _ZLAC8015::readStatus(void)
 	IF_T(!m_ieReadStatus.update(m_tStamp));
 
 	uint16_t pB[2];
-	int r = m_pMB->readRegisters(m_iSlave, 22, 2, pB);
-	IF_F(r != 2);
+	int r = m_pMB->readRegisters(m_iSlave, 0x202C, 1, pB);
+	IF_F(r != 1);
 
 //	int p = MAKE32(pB[0], pB[1]);
-	int16_t p = pB[1];
+	int16_t p = pB[0];
 	m_pA->m_p.m_v = p;
 
 	return true;

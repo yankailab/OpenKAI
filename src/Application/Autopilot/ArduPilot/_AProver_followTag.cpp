@@ -1,30 +1,32 @@
-#include "_AProver_follow.h"
+#include "_AProver_followTag.h"
 
 namespace kai
 {
 
-_AProver_follow::_AProver_follow()
+_AProver_followTag::_AProver_followTag()
 {
     m_pAP = NULL;
     m_pD = NULL;
     m_pU = NULL;
-    m_pXpid = NULL;
+    m_pPIDtag = NULL;
+    m_pPIDhdg = NULL;
 
     m_iClass = -1;
     m_vP.init ( 0.5, 0.5, 0.0 );
     m_vPtarget.init ( 0.5, 0.5, 0.0 );
+    m_targetHdg = 0.0;
+    m_dHdg = 0.0;
 
     m_nSpd = 1.0;
     m_dir = 1.0;
-    m_yaw = 0.0;
-    
+    m_tagTargetHdg = 0.0;
 }
 
-_AProver_follow::~_AProver_follow()
+_AProver_followTag::~_AProver_followTag()
 {
 }
 
-bool _AProver_follow::init ( void* pKiss )
+bool _AProver_followTag::init ( void* pKiss )
 {
     IF_F ( !this->_MissionBase::init ( pKiss ) );
     IF_F ( !m_pMC );
@@ -33,7 +35,6 @@ bool _AProver_follow::init ( void* pKiss )
 
     pK->v ( "nSpd", &m_nSpd );
     pK->v ( "dir", &m_dir );
-    pK->v ( "yaw", &m_yaw );
 
     string n;
 
@@ -53,14 +54,19 @@ bool _AProver_follow::init ( void* pKiss )
     NULL_Fl ( m_pU, n + ": not found" );
 
     n = "";
-    pK->v ( "PIDx", &n );
-    m_pXpid = ( PIDctrl* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pXpid, n + " not found" );
+    pK->v ( "PIDhdg", &n );
+    m_pPIDhdg = ( PIDctrl* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDhdg, n + " not found" );
+
+    n = "";
+    pK->v ( "PIDtag", &n );
+    m_pPIDtag = ( PIDctrl* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDtag, n + " not found" );
 
     return true;
 }
 
-bool _AProver_follow::start ( void )
+bool _AProver_followTag::start ( void )
 {
     m_bThreadON = true;
     int retCode = pthread_create ( &m_threadID, 0, getUpdateThread, this );
@@ -74,17 +80,18 @@ bool _AProver_follow::start ( void )
     return true;
 }
 
-int _AProver_follow::check ( void )
+int _AProver_followTag::check ( void )
 {
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pD, -1 );
     NULL__ ( m_pU, -1 );
-    NULL__ ( m_pXpid, -1 );
+    NULL__ ( m_pPIDhdg, -1 );
+    NULL__ ( m_pPIDtag, -1 );
 
     return this->_MissionBase::check();
 }
 
-void _AProver_follow::update ( void )
+void _AProver_followTag::update ( void )
 {
     while ( m_bThreadON )
     {
@@ -97,28 +104,33 @@ void _AProver_follow::update ( void )
     }
 }
 
-void _AProver_follow::updateDrive ( void )
+void _AProver_followTag::updateDrive ( void )
 {
     IF_ ( check() <0 );
     IF_ ( !bActive() <0 );
+    
+    float apHdg = m_pAP->getApHdg();
 
     _Object* pO = findTarget();
     if ( pO )
     {
+        float tagPointingHdg = pO->getRoll();
         m_vP.x = pO->getX();
-        m_yaw = m_pXpid->update ( m_vP.x, m_vPtarget.x, m_tStamp );
-    }
-    else
-    {
-        m_yaw = 0.0;
-    }
+        m_tagTargetHdg = m_pPIDtag->update ( m_vP.x, m_vPtarget.x, m_tStamp );
 
-    int iClass = pO->getTopClass();
+        m_targetHdg = apHdg + tagPointingHdg + m_tagTargetHdg;        
+    }
+    
+    float tHdg = apHdg + dHdg(apHdg, m_targetHdg);
+    float steering = m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
 
-    m_pD->setDrive(m_nSpd, m_dir, m_yaw);
+    m_pD->setDrive(m_nSpd, m_dir, steering );
+
+//    int iClass = pO->getTopClass();
+
 }
 
-_Object* _AProver_follow::findTarget ( void )
+_Object* _AProver_followTag::findTarget ( void )
 {
     IF_N ( check() <0 );
 
@@ -141,7 +153,7 @@ _Object* _AProver_follow::findTarget ( void )
     return tO;
 }
 
-void _AProver_follow::draw ( void )
+void _AProver_followTag::draw ( void )
 {
     this->_MissionBase::draw();
     drawActive();

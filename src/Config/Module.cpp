@@ -68,7 +68,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);
-	ADD_MODULE(_AProver_follow);
+	ADD_MODULE( _AProver_followTag );
 	ADD_MODULE(_AProver_UT);
 	ADD_MODULE(_AProver_KU);
 
