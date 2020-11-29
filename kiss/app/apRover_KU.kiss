@@ -41,7 +41,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"deviceID":0,
@@ -75,7 +75,7 @@
 }
 
 {
-	"name":"universe",
+	"name":"univTag",
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"OKview",
@@ -91,7 +91,7 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_VisionBase":"cam",
-	"_Universe":"universe",
+	"_Universe":"univTag",
 	"persistence":0,
 	"gain":0,
 }
@@ -104,10 +104,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyTHS0",
-	"baud":115200,
-	"/port":"/dev/ttyUSB0",
-	"/baud":57600,
+	"/port":"/dev/ttyTHS0",
+	"/baud":115200,
+	"port":"/dev/ttyUSB0",
+	"baud":57600,
 	"_wakeUp":"apMavlink",
 }
 
@@ -146,9 +146,9 @@
 		}
 		{
 			"bInst":1,
-			"name":"MANUAL",
+			"name":"HYBRID",
 			"class":"Mission",
-			"next":"MANUAL",
+			"next":"HYBRID",
 		}
 		{
 			"bInst":1,
@@ -177,7 +177,7 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":1,
+			"tInt":0.5,
 		}
 		{
 			"name":"attitude",
@@ -213,51 +213,100 @@
 }
 
 {
+	"name":"apKU",
+	"class":"_AProver_KU",
+	"FPS":5,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"_MissionControl":"mission",
+	"activeMission":["STANDBY","HYBRID","AUTO"],
+	"_AP_base":"apBase",
+	"Drive":"drive",
+    "iRCmodeChan":6,
+	"vRCmodeDiv":[1250,1750,2000],
+    "iRCdirChan":7,
+	"vRCdirDiv":[1250,1750,2000],
+}
+
+{
+	"name":"drive",
+	"class":"Drive",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"nSpd":0.0,
+	"nStr":0.0,
+	
+	{
+		"name":"motor",
+		
+		{
+			"name":"M",
+			"kSpd":1.0,
+			"kStr":1.0,
+			"vSpdRange":[-1.0, 1.0],
+			"vStrRange":[-1.0, 1.0],
+		}
+	}
+}
+
+{
 	"name":"apDrive",
 	"class":"_AProver_drive",
 	"FPS":5,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
 	"activeMission":["HYBRID","AUTO"],
 	"_AP_base":"apBase",
-	"kSpeed":1.0,
-	"nSpeed":0.0,
-	"yaw":0.0,
+	"Drive":"drive",
+	"bRcChanOverride":1,
 }
 
 {
-	"name":"PIDx",
+	"name":"PIDtag", /*change x 0.0 to 1.0 to degree */
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":1.0,
+	"P":10.0,  /* 0.5 max * 10 = 5.0 degree max */
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"oMin":-0.5,
-	"oMax":0.5,
+	"oMin":-10.0,
+	"oMax":10.0,
 }
 
 {
-	"name":"apFollow",
-	"class":"_AProver_follow",
+	"name":"PIDhdg",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"oMin":-1.0,
+	"oMax":1.0,
+}
+
+{
+	"name":"apFollowTag",
+	"class":"_AProver_followTag",
 	"FPS":5,
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_MissionControl":"mission",
-	"activeMission":["STANDBY","HYBRID","AUTO"],
+	"activeMission":["HYBRID","AUTO"],
 	"_AP_base":"apBase",
-	"_AProver_drive":"apDrive",
-	"_Universe":"universe",
-	"PIDx":"PIDx",
-    "iRCmodeChan":5,
-	"vRCmodeDiv":[1250,1750,2000],
-    "iRCdirChan":5,
-	"vRCdirDiv":[1250,1750,2000],
+	"Drive":"drive",
+	"_Universe":"univTag",
+	"PIDtag":"PIDtag",
+	"PIDhdg":"PIDhdg",
+	"nSpd":"1.0",
+	"tagTargetX":"0.5",
+	"nStr":"1.0",
 }

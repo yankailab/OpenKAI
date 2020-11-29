@@ -11,15 +11,12 @@ _AProver_followTag::_AProver_followTag()
     m_pPIDtag = NULL;
     m_pPIDhdg = NULL;
 
-    m_iClass = -1;
-    m_vP.init ( 0.5, 0.5, 0.0 );
-    m_vPtarget.init ( 0.5, 0.5, 0.0 );
+    m_nSpd = 0.0;
     m_targetHdg = 0.0;
-    m_dHdg = 0.0;
+    m_tagTargetX = 0.5;
+    m_nStr = 0.0;
 
-    m_nSpd = 1.0;
-    m_dir = 1.0;
-    m_tagTargetHdg = 0.0;
+    m_iClass = -1;
 }
 
 _AProver_followTag::~_AProver_followTag()
@@ -29,12 +26,12 @@ _AProver_followTag::~_AProver_followTag()
 bool _AProver_followTag::init ( void* pKiss )
 {
     IF_F ( !this->_MissionBase::init ( pKiss ) );
-    IF_F ( !m_pMC );
+    NULL_F( m_pMC );
 
     Kiss* pK = ( Kiss* ) pKiss;
-
     pK->v ( "nSpd", &m_nSpd );
-    pK->v ( "dir", &m_dir );
+    pK->v ( "tagTargetX", &m_tagTargetX );
+    pK->v ( "nStr", &m_nStr );
 
     string n;
 
@@ -98,13 +95,13 @@ void _AProver_followTag::update ( void )
         this->autoFPSfrom();
         this->_MissionBase::update();
 
-        updateDrive();
+        updateFollow();
 
         this->autoFPSto();
     }
 }
 
-void _AProver_followTag::updateDrive ( void )
+void _AProver_followTag::updateFollow ( void )
 {
     IF_ ( check() <0 );
     IF_ ( !bActive() <0 );
@@ -114,17 +111,17 @@ void _AProver_followTag::updateDrive ( void )
     _Object* pO = findTarget();
     if ( pO )
     {
+        float tagX = pO->getX();
+        float tagTargetHdg = m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
         float tagPointingHdg = pO->getRoll();
-        m_vP.x = pO->getX();
-        m_tagTargetHdg = m_pPIDtag->update ( m_vP.x, m_vPtarget.x, m_tStamp );
-
-        m_targetHdg = apHdg + tagPointingHdg + m_tagTargetHdg;        
+        m_targetHdg = apHdg + tagPointingHdg + tagTargetHdg;
     }
     
     float tHdg = apHdg + dHdg(apHdg, m_targetHdg);
-    float steering = m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
+    m_nStr = m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
 
-    m_pD->setDrive(m_nSpd, m_dir, steering );
+    m_pD->setSpeed(m_nSpd);
+    m_pD->setSteering(m_nStr);
 
 //    int iClass = pO->getTopClass();
 
@@ -136,18 +133,15 @@ _Object* _AProver_followTag::findTarget ( void )
 
     _Object *pO;
     _Object *tO = NULL;
-    float minD = FLT_MAX;
+    float topY = FLT_MAX;
     int i = 0;
     while ( ( pO = m_pU->get ( i++ ) ) != NULL )
     {
         vFloat3 p = pO->getPos();
-        float x = p.x - m_vPtarget.x;
-        float y = p.y - m_vPtarget.y;
-        float r = x*x + y*y;
-        IF_CONT ( r > minD );
+        IF_CONT ( p.y > topY );
 
         tO = pO;
-        minD = r;
+        topY = p.x;
     }
 
     return tO;
@@ -158,6 +152,7 @@ void _AProver_followTag::draw ( void )
     this->_MissionBase::draw();
     drawActive();
 
+   	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
 }
 
 }

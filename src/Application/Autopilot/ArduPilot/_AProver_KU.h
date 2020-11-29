@@ -2,6 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AProver_KU_H_
 
 #include "_AP_base.h"
+#include "../../../Control/Drive.h"
 #include "../../../Utility/RC.h"
 
 namespace kai
@@ -45,6 +46,7 @@ private:
 
 public:
 	_AP_base* m_pAP;
+    Drive*    m_pD;
     
     RC_CHANNEL m_rcMode;
     RC_CHANNEL m_rcDir;

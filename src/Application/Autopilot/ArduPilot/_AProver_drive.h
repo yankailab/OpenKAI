@@ -19,8 +19,6 @@ public:
 	virtual void update(void);
 	virtual void draw(void);
 
-//	virtual void setSpeed(float nSpeed);
-//	virtual void setYaw(float yaw);
 	virtual void setYawMode(bool bRelative);
 
 protected:

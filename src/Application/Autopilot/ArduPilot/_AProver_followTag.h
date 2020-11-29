@@ -24,7 +24,7 @@ public:
 	void draw(void);
 
 private:
-	void updateDrive(void);
+	void updateFollow (void);
     _Object* findTarget(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -39,16 +39,12 @@ private:
     PIDctrl* m_pPIDtag;
     PIDctrl* m_pPIDhdg;
     
+	float   m_nSpd;
+	float   m_tagTargetX;
     float   m_targetHdg;    //given by current compass and tag direction
-    float   m_dHdg;
+	float   m_nStr;
     
-   	int         m_iClass;
-	vFloat3     m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
-	vFloat3     m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
-
-	float       m_nSpd;
-    float       m_dir; //forward/backward
-	float	    m_tagTargetHdg;
+   	int     m_iClass;
     
 };
 

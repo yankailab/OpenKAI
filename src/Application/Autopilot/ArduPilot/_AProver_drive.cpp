@@ -56,11 +56,11 @@ bool _AProver_drive::init(void* pKiss)
 	int iRcYaw = 2;
 	pK->v("iRcYaw", &iRcYaw);
 	IF_Fl(iRcYaw > 18, "RC yaw channel exceeds limit");
+	m_pRcYaw = pRC[iRcYaw];
+    
 	int iRcThrottle = 3;
 	pK->v("iRcThrottle", &iRcThrottle);
 	IF_Fl(iRcThrottle > 18, "RC throttle channel exceeds limit");
-
-	m_pRcYaw = pRC[iRcYaw];
 	m_pRcThrottle = pRC[iRcThrottle];
 
 	pK->v("pwmM", &m_pwmM);
@@ -121,22 +121,22 @@ bool _AProver_drive::updateDrive(void)
 	IF_F(check() < 0);
 	IF_F(!bActive() < 0);
     
-    float spd = m_pD->getSpeed(0);
-    float yaw = m_pD->getSteering(0);
+    float nSpd = m_pD->getSpeed(0);
+    float nStr = m_pD->getSteering(0);
     
 	if(m_bSetYawSpeed)
 	{
-		m_pAP->m_pMav->clNavSetYawSpeed(yaw,
-										spd,
+		m_pAP->m_pMav->clNavSetYawSpeed( nStr,
+										  nSpd,
 										m_yawMode);
 	}
 
 	if(m_bRcChanOverride)
 	{
-		*m_pRcYaw = constrain(yaw * m_pwmD + m_pwmM,
+		*m_pRcYaw = constrain( nStr * m_pwmD + m_pwmM,
                               m_pwmM - m_pwmD,
                               m_pwmM + m_pwmD);
-		*m_pRcThrottle = constrain(spd * m_pwmD + m_pwmM,
+		*m_pRcThrottle = constrain( nSpd * m_pwmD + m_pwmM,
                                    m_pwmM - m_pwmD,
                                    m_pwmM + m_pwmD);
 		m_pAP->m_pMav->rcChannelsOverride(m_rcOverride);
