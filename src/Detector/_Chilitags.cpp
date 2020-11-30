@@ -17,6 +17,7 @@ _Chilitags::_Chilitags()
 {
     m_persistence = 0;
     m_gain = 0.0;
+    m_angleOffset = 0.0;
 }
 
 _Chilitags::~_Chilitags()
@@ -30,6 +31,7 @@ bool _Chilitags::init ( void* pKiss )
 
     pK->v ( "persistence", &m_persistence );
     pK->v ( "gain", &m_gain );
+    pK->v ( "angleOffset", &m_angleOffset );
 
     m_chilitags.setFilter ( m_persistence, m_gain );
 
@@ -130,7 +132,7 @@ void _Chilitags::detect ( void )
         // angle in deg
         dx = pV[3].x - pV[0].x;
         dy = pV[3].y - pV[0].y;
-        o.setRoll ( -atan2 ( dx,dy ) * RAD_2_DEG + 180.0 );
+        o.setRoll ( Hdg(-atan2 ( dx,dy ) * RAD_2_DEG + 180.0 + m_angleOffset) );
 
         m_pU->add ( o );
         LOG_I ( "ID: "+ i2str ( o.getTopClass() ) );

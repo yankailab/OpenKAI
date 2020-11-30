@@ -94,6 +94,7 @@
 	"_Universe":"univTag",
 	"persistence":0.5,
 	"gain":0.5,
+	"angleOffset":-180,
 }
 
 {
@@ -106,8 +107,8 @@
 	"/Console":"OKconsole",
 	"/port":"/dev/ttyTHS0",
 	"port":"/dev/ttyACM0",
-	"/baud":57600,
-	"baud":115200,
+	"baud":57600,
+	"/baud":115200,
 	"_wakeUp":"apMavlink",
 }
 
@@ -182,12 +183,12 @@
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":1.0,
+			"tInt":0.5,
 		}
 		{
 			"name":"rcChannels",
 			"id":65,
-			"tInt":0.1,
+			"tInt":0.2,
 		}
 		{
 			"name":"localPosition",
@@ -197,7 +198,7 @@
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":1.0,
+			"tInt":0.2,
 		}
 		{
 			"name":"homePosition",
@@ -223,10 +224,10 @@
 	"activeMission":["STANDBY","HYBRID","AUTO"],
 	"_AP_base":"apBase",
 	"Drive":"drive",
-    "iRCmodeChan":7,
+    "iRCmodeChan":8,
 	"vRCmodeDiv":[1250,1750,2000],
-    "iRCdirChan":6,
-	"vRCdirDiv":[1250,1750,2000],
+    "iRCdirChan":5,
+	"vRCdirDiv":[1250,1600,2000],
 }
 
 {
@@ -245,8 +246,8 @@
 			"name":"M",
 			"kSpd":1.0,
 			"kStr":1.0,
-			"vSpdRange":[-0.2, 0.2],
-			"vStrRange":[-0.3, 0.3],
+			"vSpdRange":[-0.1, 0.1],
+			"vStrRange":[-0.2, 0.2],
 		}
 	}
 }
@@ -273,7 +274,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":10.0,  /* 0.5 max * 10 = 5.0 degree max */
+	"P":-10.0,  /* 0.5 max * 10 = 5.0 degree max */
 	"I":0.0,
 	"Imax":0.0,
 	"oMin":-10.0,

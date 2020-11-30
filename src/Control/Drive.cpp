@@ -65,6 +65,21 @@ void Drive::setDirection(float nDir)
     m_nDir = nDir;
 }
 
+float Drive::getSpeed(void)
+{
+    return m_nSpd;
+}
+
+float Drive::getDirection(void)
+{
+    return m_nDir;
+}
+
+float Drive::getSteering(void)
+{
+    return m_nStr;
+}
+
 void Drive::setSteering(float nStr)
 {
     m_nStr = nStr;

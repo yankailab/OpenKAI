@@ -15,7 +15,7 @@ _AProver_followTag::_AProver_followTag()
     m_tagTargetX = 0.5;
     m_tagTargetHdg = 0.0;
     m_tagPointingHdg = 0.0;
-    m_targetHdg = 0.0;
+    m_targetHdg = -1.0;
     m_dHdg = 0.0;
     m_nStr = 0.0;
 
@@ -109,27 +109,33 @@ void _AProver_followTag::updateFollow ( void )
     IF_ ( check() <0 );
 	IF_(!bActive());
     
-    float apHdg = m_pAP->getApHdg();
+    m_pD->setSpeed(m_nSpd);
 
+    float apHdg = m_pAP->getApHdg();
+    IF_(apHdg < 0.0);
+    
+    if(m_targetHdg < 0.0 || bMissionChanged())
+        m_targetHdg = apHdg;
+
+    float dir = m_pD->getDirection();   //+/-1.0
     _Object* pO = findTarget();
     if ( pO )
     {
         float tagX = pO->getX();
-        m_tagTargetHdg = m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
+        m_tagTargetHdg = dir * m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
         m_tagPointingHdg = 0.0;//pO->getRoll();
-        m_targetHdg = apHdg + m_tagPointingHdg + m_tagTargetHdg;
+        m_targetHdg = Hdg(apHdg + m_tagPointingHdg + m_tagTargetHdg);
     }
     else
     {
         m_tagTargetHdg = 0.0;
         m_tagPointingHdg = 0.0;
     }
-    
+
     m_dHdg = dHdg(apHdg, m_targetHdg);
     float tHdg = apHdg + m_dHdg;
-    m_nStr = m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
+    m_nStr = dir * m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
 
-    m_pD->setSpeed(m_nSpd);
     m_pD->setSteering(m_nStr);
 
 //    int iClass = pO->getTopClass();

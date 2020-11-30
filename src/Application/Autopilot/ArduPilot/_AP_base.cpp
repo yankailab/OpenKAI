@@ -20,7 +20,7 @@ _AP_base::_AP_base()
 	m_vLocalPos.init();
 	m_vSpeed.init();
 	m_vAtti.init();
-	m_apHdg = 0.0;
+	m_apHdg = -1.0;
 }
 
 _AP_base::~_AP_base()

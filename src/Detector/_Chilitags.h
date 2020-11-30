@@ -44,6 +44,7 @@ public:
     Chilitags m_chilitags;
     int m_persistence;
     float m_gain;
+    float m_angleOffset;
 
 };
 

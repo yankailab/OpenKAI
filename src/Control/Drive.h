@@ -49,7 +49,12 @@ public:
 	virtual void setSpeed(float nSpd);
     virtual void setDirection(float nDir);
     virtual void setSteering(float nStr);
-	virtual float getSpeed(int iM);
+
+    virtual float getSpeed(void);
+    virtual float getDirection(void);
+    virtual float getSteering(void);
+
+    virtual float getSpeed(int iM);
  	virtual float getSteering(int iM);
     
 private:
