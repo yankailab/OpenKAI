@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -12,7 +12,7 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -41,7 +41,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"deviceID":0,
@@ -53,7 +53,7 @@
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"OKview",
@@ -92,7 +92,7 @@
 	"Console":"OKconsole",
 	"_VisionBase":"cam",
 	"_Universe":"univTag",
-	"persistence":0.5,
+	"persistence":5.0,
 	"gain":0.5,
 	"angleOffset":-180,
 }
@@ -105,10 +105,10 @@
 	"bLog":0,
 	"Window":"OKview",
 	"/Console":"OKconsole",
-	"/port":"/dev/ttyTHS0",
-	"port":"/dev/ttyACM0",
-	"baud":57600,
-	"/baud":115200,
+	"port":"/dev/ttyTHS0",
+	"/port":"/dev/ttyACM0",
+	"/baud":57600,
+	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
 
@@ -183,7 +183,7 @@
 		{
 			"name":"attitude",
 			"id":30,
-			"tInt":0.5,
+			"tInt":1.0,
 		}
 		{
 			"name":"rcChannels",
@@ -198,7 +198,7 @@
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.2,
+			"tInt":1.0,
 		}
 		{
 			"name":"homePosition",
@@ -216,7 +216,7 @@
 {
 	"name":"apKU",
 	"class":"_AProver_KU",
-	"FPS":5,
+	"FPS":10,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -246,8 +246,8 @@
 			"name":"M",
 			"kSpd":1.0,
 			"kStr":1.0,
-			"vSpdRange":[-0.1, 0.1],
-			"vStrRange":[-0.2, 0.2],
+			"vSpdRange":[-0.25, 0.25],
+			"vStrRange":[-0.25, 0.25],
 		}
 	}
 }
@@ -255,7 +255,7 @@
 {
 	"name":"apDrive",
 	"class":"_AProver_drive",
-	"FPS":5,
+	"FPS":10,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
@@ -269,29 +269,29 @@
 }
 
 {
-	"name":"PIDtag", /*change x 0.0 to 1.0 to degree */
+	"name":"PIDtagX", /*change x 0.0 to 0.5 to yaw */
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":-10.0,  /* 0.5 max * 10 = 5.0 degree max */
-	"I":0.0,
-	"Imax":0.0,
-	"oMin":-10.0,
-	"oMax":10.0,
-}
-
-{
-	"name":"PIDhdg",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"P":0.08,
+	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
 	"oMin":-1.0,
 	"oMax":1.0,
+}
+
+{
+	"name":"PIDtagHdg",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":-0.01,
+	"I":0.0,
+	"Imax":0.0,
+	"oMin":-0.125,
+	"oMax":0.125,
 }
 
 {
@@ -307,9 +307,10 @@
 	"_AP_base":"apBase",
 	"Drive":"drive",
 	"_Universe":"univTag",
-	"PIDtag":"PIDtag",
-	"PIDhdg":"PIDhdg",
+	"PIDtagX":"PIDtagX",
+	"PIDtagHdg":"PIDtagHdg",
 	"nSpd":1.0,
+	"nStr":0.0,
 	"tagTargetX":0.5,
-	"nStr":1.0,
+	"iTagStop":0,
 }

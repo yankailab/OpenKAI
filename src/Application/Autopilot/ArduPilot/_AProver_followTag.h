@@ -36,18 +36,16 @@ private:
 	_AP_base* m_pAP;
 	Drive* m_pD;
     _Universe* m_pU;
-    PIDctrl* m_pPIDtag;
-    PIDctrl* m_pPIDhdg;
+    PIDctrl* m_pPIDtagX;
+    PIDctrl* m_pPIDtagHdg;
     
+    float m_errX;
+    float m_errHdg;
+
 	float   m_nSpd;
-	float   m_tagTargetX;
-    float   m_tagTargetHdg;
-    float   m_tagPointingHdg;
-    float   m_targetHdg;
-    float   m_dHdg;
     float   m_nStr;
-    
-   	int     m_iClass;
+	float   m_tagTargetX;    
+   	int     m_iTagStop;
     
 };
 

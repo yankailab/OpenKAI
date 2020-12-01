@@ -8,18 +8,16 @@ _AProver_followTag::_AProver_followTag()
     m_pAP = NULL;
     m_pD = NULL;
     m_pU = NULL;
-    m_pPIDtag = NULL;
-    m_pPIDhdg = NULL;
+    m_pPIDtagX = NULL;
+    m_pPIDtagHdg = NULL;
 
+    m_errX = 0.0;
+    m_errHdg = 0.0;
+    
     m_nSpd = 0.0;
-    m_tagTargetX = 0.5;
-    m_tagTargetHdg = 0.0;
-    m_tagPointingHdg = 0.0;
-    m_targetHdg = -1.0;
-    m_dHdg = 0.0;
     m_nStr = 0.0;
-
-    m_iClass = -1;
+    m_tagTargetX = 0.5;
+    m_iTagStop = -1;
 }
 
 _AProver_followTag::~_AProver_followTag()
@@ -33,8 +31,9 @@ bool _AProver_followTag::init ( void* pKiss )
 
     Kiss* pK = ( Kiss* ) pKiss;
     pK->v ( "nSpd", &m_nSpd );
-    pK->v ( "tagTargetX", &m_tagTargetX );
     pK->v ( "nStr", &m_nStr );
+    pK->v ( "tagTargetX", &m_tagTargetX );
+    pK->v ( "iTagStop", &m_iTagStop );
 
     string n;
 
@@ -54,14 +53,14 @@ bool _AProver_followTag::init ( void* pKiss )
     NULL_Fl ( m_pU, n + ": not found" );
 
     n = "";
-    pK->v ( "PIDhdg", &n );
-    m_pPIDhdg = ( PIDctrl* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pPIDhdg, n + " not found" );
+    pK->v ( "PIDtagX", &n );
+    m_pPIDtagX = ( PIDctrl* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDtagX, n + " not found" );
 
     n = "";
-    pK->v ( "PIDtag", &n );
-    m_pPIDtag = ( PIDctrl* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pPIDtag, n + " not found" );
+    pK->v ( "PIDtagHdg", &n );
+    m_pPIDtagHdg = ( PIDctrl* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDtagHdg, n + " not found" );
 
     return true;
 }
@@ -85,8 +84,8 @@ int _AProver_followTag::check ( void )
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pD, -1 );
     NULL__ ( m_pU, -1 );
-    NULL__ ( m_pPIDhdg, -1 );
-    NULL__ ( m_pPIDtag, -1 );
+    NULL__ ( m_pPIDtagX, -1 );
+    NULL__ ( m_pPIDtagHdg, -1 );
 
     return this->_MissionBase::check();
 }
@@ -109,36 +108,30 @@ void _AProver_followTag::updateFollow ( void )
     IF_ ( check() <0 );
 	IF_(!bActive());
     
-    m_pD->setSpeed(m_nSpd);
-
-    float apHdg = m_pAP->getApHdg();
-    IF_(apHdg < 0.0);
-    
-    if(m_targetHdg < 0.0 || bMissionChanged())
-        m_targetHdg = apHdg;
-
     float dir = m_pD->getDirection();   //+/-1.0
+    float nSpd = m_nSpd;
+    
     _Object* pO = findTarget();
     if ( pO )
     {
-        float tagX = pO->getX();
-        m_tagTargetHdg = dir * m_pPIDtag->update ( tagX, m_tagTargetX, m_tStamp );
-        m_tagPointingHdg = 0.0;//pO->getRoll();
-        m_targetHdg = Hdg(apHdg + m_tagPointingHdg + m_tagTargetHdg);
-    }
-    else
-    {
-        m_tagTargetHdg = 0.0;
-        m_tagPointingHdg = 0.0;
+        int iTag = pO->getTopClass();
+        if(iTag == m_iTagStop)
+        {
+            nSpd = 0.0;
+            m_errX = 0.0;
+        }
+        else
+        {
+            m_errX = dir * (pO->getX() - m_tagTargetX);
+        }
+        
+        m_errHdg = dHdg<float>(0.0, pO->getRoll());
     }
 
-    m_dHdg = dHdg(apHdg, m_targetHdg);
-    float tHdg = apHdg + m_dHdg;
-    m_nStr = dir * m_pPIDhdg->update ( apHdg, tHdg, m_tStamp );
-
+    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_tStamp )
+             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_tStamp );
     m_pD->setSteering(m_nStr);
-
-//    int iClass = pO->getTopClass();
+    m_pD->setSpeed(nSpd);
 
 }
 
@@ -168,10 +161,7 @@ void _AProver_followTag::draw ( void )
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
-   	addMsg("tagTargetHdg=" + f2str(m_tagTargetHdg));
-   	addMsg("tagPointingHdg=" + f2str(m_tagPointingHdg));
-   	addMsg("targetHdg=" + f2str(m_targetHdg));
-   	addMsg("dHdg=" + f2str(m_dHdg));
+   	addMsg("errX=" + f2str(m_errX) + ", errHdg=" + f2str(m_errHdg));
 }
 
 }
