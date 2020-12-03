@@ -10,7 +10,7 @@
 }
 
 {
-	"name":"OpenKAI",
+	"name":"console",
 	"class":"Console",
 	"bInst":1,
 }
@@ -35,37 +35,62 @@
 }
 
 {
-	"name":"omWRot",
+	"name":"omRot",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":5,
-	"stepFrom":0,
-	"stepTo":-8000,
-	"speedFrom":0,
-	"speedTo":1000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Rot",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[-8000,0],
+			"sTarget":100,
+			"sRange":[0,1000],
+		}
+	}
 }
+
 
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":6,
-	"stepFrom":20000,
-	"stepTo":35000,
-	"speedFrom":0,
-	"speedTo":8000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"WX",
+			"pOrigin":20000,
+			"pTarget":20000,
+			"pErr":10,
+			"pRange":[20000,35000],
+			"sTarget":1000,
+			"sRange":[0,8000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+		}
+	}
 }
 
 {
@@ -73,34 +98,59 @@
 	"class":"_OrientalMotor",
 	"bInst":1,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":7,
-	"stepFrom":0,
-	"stepTo":30000,
-	"speedFrom":0,
-	"speedTo":8000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
-}
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
 
+	{
+		"name":"axis",
+		{
+			"name":"WY",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,30000],
+			"sTarget":1000,
+			"sRange":[0,8000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+		}
+	}
+}
 
 {
 	"name":"omR",
 	"class":"_OrientalMotor",
 	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":1,
-	"stepFrom":10,
-	"stepTo":85000,
-	"speedFrom":0,
-	"speedTo":15000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[0.5],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Y",
+			"pOrigin":100,
+			"pTarget":100,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+		}
+	}
 }
 
 {
@@ -108,16 +158,29 @@
 	"class":"_OrientalMotor",
 	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"stepFrom":10,
-	"stepTo":85000,
-	"speedFrom":0,
-	"speedTo":15000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[0.5],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Y",
+			"pOrigin":100,
+			"pTarget":100,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+		}
+	}
 }
 
 {
@@ -125,27 +188,27 @@
 	"class":"_OrientalMotor",
 	"bInst":0,
 	"FPS":30,
-	"bLog":1,
+	"bLog":0,
 	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":2,
-	
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
 	{
 		"name":"axis",
 		{
 			"name":"X",
-			"pOrigin":0.5,
-			"pTarget":0.5,
-			"pErr":0.01,
-			"pRawRange":[10,85000],
-			"sTarget":1.0,
-			"sRawRange":[0,15000],
-			"aTarget":1.0,
-			"aRawRange":[1,1000000],
-			"bTarget":1.0,
-			"bRawRange":[1,1000000],
-			"cTarget":1.0,
-			"cRawRange":[1,1000],
+			"pOrigin":43000,
+			"pTarget":43000,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
 		}
 	}
 }

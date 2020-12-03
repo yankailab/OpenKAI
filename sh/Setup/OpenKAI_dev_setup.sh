@@ -247,9 +247,21 @@ autoreconf -fiv
 make -j8
 
 #----------------------------------------------------
+# (Optional) Innfos Gluon
+git clone --depth 1 https://github.com/innfos/innfos-gluon-cpp-sdk.git
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/include/ /usr/local/include/innfos_sca_sdk/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/lib/linux_x86_64/* /usr/local/lib/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/include/ /usr/local/include/innfos_sdk/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/lib/* /usr/local/lib/
+
+#----------------------------------------------------
 # (Optional) Hypersen HPS3D
-sudo cp OpenKAI/lib/HPS3D/libhps3d.so /usr/local/lib/
-sudo ldconfig
+git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git
+sudo mkdir /usr/local/include/HPS3D/
+sudo cp HPS3D_SDK/English/api.h /usr/local/include/HPS3D/
+sudo cp HPS3D_SDK/English/libhps3d64.so /usr/local/lib/
+#sudo cp HPS3D_SDK/English/libhps3d_aarch64.so /usr/local/lib/
+#sudo cp HPS3D_SDK/English/libhps3d_arm.so /usr/local/lib/
 
 #----------------------------------------------------
 # (Optional) Livox

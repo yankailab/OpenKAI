@@ -28,6 +28,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenServer);
+	ADD_MODULE(_InnfosGluon);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_TOFsense);
 	ADD_MODULE(_Mavlink);
