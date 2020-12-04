@@ -37,11 +37,11 @@ bool _OrientalMotor::init(void* pKiss)
 
 	m_pA = &m_vAxis[0];
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_Modbus", &iName));
-	m_pMB = (_Modbus*) (pK->getInst(iName));
-	IF_Fl(!m_pMB, iName + " not found");
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_Modbus", &n ));
+	m_pMB = (_Modbus*) (pK->getInst( n ));
+	IF_Fl(!m_pMB, n + " not found");
 
 	return true;
 }
@@ -71,7 +71,14 @@ void _OrientalMotor::update(void)
 			checkAlarm();
 			readStatus();
 		}
-		sendCMD();
+		
+		if(!bCmdTimeout())
+        {
+            if(m_lastCmdType == actCmd_pos)
+                updatePos();
+            else if(m_lastCmdType == actCmd_spd)
+                updateSpeed();
+        }
 
 		this->autoFPSto();
 	}
@@ -97,13 +104,11 @@ void _OrientalMotor::checkAlarm(void)
 	m_pMB->writeRegisters(m_iSlave, 125, 1, pB);
 }
 
-void _OrientalMotor::sendCMD(void)
+void _OrientalMotor::updatePos (void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
-	IF_(m_pA->m_p.m_vTarget < 0.0);
 
-	//update normalized value to actual unit
 	int32_t step = m_pA->m_p.m_vTarget;
 	int32_t speed = m_pA->m_s.m_vTarget;
 	int32_t accel = m_pA->m_a.m_vTarget;
@@ -136,9 +141,55 @@ void _OrientalMotor::sendCMD(void)
 	pB[17] = 0;
 
 	if(m_pMB->writeRegisters(m_iSlave, 88, 18, pB) != 18)
-	{
 		m_ieSendCMD.reset();
-	}
+}
+
+void _OrientalMotor::updateSpeed (void)
+{
+	IF_(check()<0);
+	IF_(!m_ieSendCMD.update(m_tStamp));
+
+	int32_t step = 0;
+    uint8_t dMode = 1; 
+    int32_t speed = m_pA->m_s.m_vTarget;
+    if(speed > 0)
+        step = m_pA->m_p.m_vRange.y;
+    else if(speed < 0)
+        step = m_pA->m_p.m_vRange.x;
+    else
+        dMode = 3;
+    
+	int32_t accel = m_pA->m_a.m_vTarget;
+	int32_t brake = m_pA->m_b.m_vTarget;
+	int32_t current = m_pA->m_c.m_vTarget;
+
+	//create the command
+	uint16_t pB[18];
+	//88
+	pB[0] = 0;
+	pB[1] = m_iData;
+	pB[2] = 0;
+	pB[3] = dMode;
+	//92
+	pB[4] = HIGH16(step);
+	pB[5] = LOW16(step);
+	pB[6] = HIGH16(speed);
+	pB[7] = LOW16(speed);
+
+	//96
+	pB[8] = HIGH16(accel);
+	pB[9] = LOW16(accel);
+	pB[10] = HIGH16(brake);
+	pB[11] = LOW16(brake);
+	pB[12] = HIGH16(current);
+	pB[13] = LOW16(current);
+	pB[14] = 0;
+	pB[15] = 1;
+	pB[16] = 0;
+	pB[17] = 0;
+
+	if(m_pMB->writeRegisters(m_iSlave, 88, 18, pB) != 18)
+		m_ieSendCMD.reset();
 }
 
 void _OrientalMotor::readStatus(void)
@@ -150,9 +201,6 @@ void _OrientalMotor::readStatus(void)
 	int nR = 6;
 	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);
 	IF_(r != 6);
-
-	//update actual unit to normalized value
-	IF_(m_pA->m_p.m_vTarget < 0.0);
 
 	m_pA->m_p.m_v = MAKE32(pB[0], pB[1]);
 	m_pA->m_s.m_v = MAKE32(pB[4], pB[5]);

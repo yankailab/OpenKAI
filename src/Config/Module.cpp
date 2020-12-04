@@ -28,7 +28,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_GPS);
 	ADD_MODULE(_HiphenCMD);
 	ADD_MODULE(_HiphenServer);
-	ADD_MODULE(_InnfosGluon);
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_TOFsense);
 	ADD_MODULE(_Mavlink);
@@ -70,9 +69,12 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);
-	ADD_MODULE( _AProver_followTag );
-	ADD_MODULE(_AProver_UT);
+
+    ADD_MODULE(_AProver_UT);
+    ADD_MODULE(_UTprArmL);
+	ADD_MODULE(_AProver_UTfollowTag);
 	ADD_MODULE(_AProver_KU);
+	ADD_MODULE(_AProver_KUfollowTag);
 
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
@@ -159,6 +161,10 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_JETSON_INFERENCE
 //	ADD_MODULE(_ImageNet);
 	ADD_MODULE(_DetectNet);
+#endif
+    
+#ifdef USE_INNFOS
+    ADD_MODULE(_InnfosGluon);
 #endif
 
 #ifdef USE_OCR

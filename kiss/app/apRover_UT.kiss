@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -31,14 +31,14 @@
 {
 	"name":"viewR",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"filterView",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.0.19 port=5678 auto-multicast=false",
 }
 
@@ -68,7 +68,7 @@
 	"name":"camR",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewR",
 	"Console":"OKconsole",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
@@ -165,13 +165,14 @@
 }
 
 {
-	"name":"detSB",
+	"name":"detSide",
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_VisionBase":"rotL",
+	"_Universe":"univSide",
 	"wSlide":0.2,
 	"minPixLine":0.1,
 }
@@ -188,15 +189,80 @@
 }
 
 {
-	"name":"detBB",
+	"name":"detDivider",
 	"class":"_Line",
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
 	"_VisionBase":"cropM",
+	"_Universe":"univDivider",
 	"wSlide":0.2,
 	"minPixLine":0.1,
+}
+
+{
+	"name":"univSide",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+}
+
+{
+	"name":"univDivider",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+}
+
+{
+	"name":"D435",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"bDebug":0,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"depthWindow":"depthView",
+	"vPreset":"High Density",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":640,
+	"hD":360,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"vKpos":[0.09, 0.09, 0.75, 0.75],
+}
+
+{
+	"name":"univTag",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+}
+
+{
+	"name":"Chilitags",
+	"class":"_Chilitags",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_VisionBase":"D435",
+	"_Universe":"univTag",
+	"persistence":5.0,
+	"gain":0.5,
+	"angleOffset":-180,
 }
 
 {
@@ -227,288 +293,251 @@
 	"myComponentID":190,
 	"devSystemID":-1,
 	"devComponentID":-1,
-	
-	{
-		"bInst":1,
-		"_Mavlink":"mavGCS",
-	}	
+	"tTimeout":10000000,	
 }
 
 {
-	"name":"apUDP",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"port":19840,
-	"_wakeUp":"mavGCS",
-}
-
-{
-	"name":"mavGCS",
-	"class":"_Mavlink",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Console":"OKconsole",
-	"_IOBase":"apUDP",
-	"mySystemID":255,
-	"myComponentID":190,
-	"devSystemID":-1,
-	"devComponentID":-1,
-	
-	{
-		"bInst":1,
-		"_Mavlink":"apMavlink",
-	}	
-}
-
-{
-	"name":"mission",
+	"name":"missionDrive",
 	"class":"_MissionControl",
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"startMission":"STANDBY",
+	"startMission":"MANUAL",
 
 	{
 		"name":"mission",
 		{
 			"bInst":1,
-			"name":"STANDBY",
-			"Window":"viewL",
-			"Console":"OKconsole",
-			"class":"MissionBase",
-			"nextMission":"STANDBY",
+			"name":"MANUAL",
+			"class":"Mission",
+			"next":"MANUAL",
 		}
 		{
 			"bInst":1,
 			"name":"FORWARD",
-			"Window":"viewL",
-			"Console":"OKconsole",
-			"class":"MissionBase",
-			"nextMission":"FORWARD",
+			"class":"Mission",
+			"next":"FORWARD",
 		}
 		{
 			"bInst":1,
 			"name":"BACKWARD",
-			"Window":"viewL",
-			"Console":"OKconsole",
-			"class":"MissionBase",
-			"nextMission":"BACKWARD",
-		}
-		{
-			"bInst":1,
-			"name":"BB",
-			"Window":"viewL",
-			"Console":"OKconsole",
-			"class":"MissionBase",
-			"tTimeout":3,
-			"nextMission":"STANDBY",
+			"class":"Mission",
+			"next":"BACKWARD",
 		}
 	}
 }
 
+{
+	"name":"missionArm",
+	"class":"_MissionControl",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"startMission":"DRIVE",
+
+	{
+		"name":"mission",
+		{
+			"bInst":1,
+			"name":"DRIVE",
+			"class":"Mission",
+			"next":"DRIVE",
+		}
+		{
+			"bInst":1,
+			"name":"DIVIDER",
+			"class":"Mission",
+			"tTimeout":3,
+			"next":"Drive",
+		}
+		{
+			"bInst":1,
+			"name":"FOLLOW",
+			"class":"Mission",
+			"next":"PAUSE",
+		}
+		{
+			"bInst":1,
+			"name":"PAUSE",
+			"class":"Mission",
+			"tTimeout":3,
+			"next":"RECOVER",
+		}
+		{
+			"bInst":1,
+			"name":"RECOVER",
+			"class":"Mission",
+			"next":"DRIVE",
+		}
+	}
+}
 
 {
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":10,
 	"bInst":1,
+	"_MissionControl":"missionDrive",
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"_MissionControl":"mission",
 	"_Mavlink":"apMavlink",
+	"freqSendHeartbeat":1,
 	"apType":1,
-	"freqSendHeartbeat":2,
-	"freqRawSensors":0,
-	"freqExtStat":1,
-	"freqRC":5,
-	"freqPos":1,
-	"freqExtra1":1,
+	
+	{
+		"name":"mavMsgInterval",
+		
+		{
+			"name":"heartbeat",
+			"id":0,
+			"tInt":0.5,
+		}
+		{
+			"name":"attitude",
+			"id":30,
+			"tInt":1.0,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
+			"tInt":0.2,
+		}
+		{
+			"name":"localPosition",
+			"id":32,
+			"tInt":1.0,
+		}
+		{
+			"name":"globalPosition",
+			"id":33,
+			"tInt":1.0,
+		}
+		{
+			"name":"homePosition",
+			"id":242,
+			"tInt":10,
+		}
+		{
+			"name":"batteryStatus",
+			"id":147,
+			"tInt":10,
+		}
+	}
+}
+
+{
+	"name":"apUT",
+	"class":"_AProver_UT",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"missionDrive",
+	"_AP_base":"apBase",
+	"Drive":"drive",
+    "iRCmodeChan":8,
+	"vRCmodeDiv":[1250,1750,2000],
+}
+
+{
+	"name":"drive",
+	"class":"Drive",
+	"bInst":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"nSpd":0.0,
+	"nStr":0.0,
+	
+	{
+		"name":"motor",
+		
+		{
+			"name":"M",
+			"kSpd":1.0,
+			"kStr":1.0,
+			"vSpdRange":[-0.25, 0.25],
+			"vStrRange":[-0.25, 0.25],
+		}
+	}
 }
 
 {
 	"name":"apDrive",
 	"class":"_AProver_drive",
-	"FPS":5,
+	"FPS":10,
 	"bInst":1,
-	"Window":"viewL",
+	"Window":"OKview",
 	"Console":"OKconsole",
-	"_MissionControl":"mission",
+	"_MissionControl":"missionDrive",
+	"activeMission":["FORWARD","BACKWARD"],
 	"_AP_base":"apBase",
-	"kSpeed":1.0,
-	"speed":0.2,
-	"nSpeed":0.0,
-	"yawMode":1.0,
-	"yaw":0.0,
+	"Drive":"drive",
+	"bRcChanOverride":1,
+	"iRcYaw":1,
+	"iRcThrottle":3,
 }
 
 {
-	"name":"PIDhdg",
+	"name":"PIDside", /*change x 0.0 to 0.5 to yaw */
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"P":-2.0,
+	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
-	"D":0.0,
-	"dT":0.0,
-	"oMin":-5.0,
-	"oMax":5.0,
+	"oMin":-1.0,
+	"oMax":1.0,
 }
 
 {
-	"name":"apField",
-	"class":"_AProver_field",
+	"name":"apFollowTag",
+	"class":"_AProver_UTfollowTag",
+	"FPS":5,
+	"bInst":1,
+	"bLog":1,
+	"Window":"viewL",
+	"Console":"OKconsole",
+	"_MissionControl":"missionArm",
+	"activeMission":["DRIVE"],
+	"_AP_base":"apBase",
+	"Drive":"drive",
+	"_UniverseSide":"univSide",
+	"PIDside":"PIDside",
+	"_UniverseDivider":"univDivider",
+	"_UniverseTag":"univTag",
+	"targetSide":0.4,
+	"nSpd":1.0,
+	"nStr":0.0,
+	"vTagX":[0.2, 0.8],
+	"vSide":[0.2, 0.8],
+}
+
+{
+	"name":"armL",
+	"class":"_UTprArmL",
 	"FPS":10,
 	"bInst":1,
+	"bLog":1,
 	"Window":"viewL",
 	"Console":"OKconsole",
-	"_MissionControl":"mission",
-	"activeMission":["STANDBY","FORWARD","BACKWARD","BB"],
+	"_MissionControl":"missionArm",
+	"activeMission":["DRIVE"],
+	"_ActuatorBaseX":"omWX",
+	"_ActuatorBaseY":"omRot",
+	"_ActuatorBaseZ":"omWY",
 	"_AP_base":"apBase",
-	"_AProver_drive":"apDrive",
-	"PIDctrl":"PIDhdg",
-	"_DetBB":"detBB",
-	"_DetSB":"detSB",
-	"_Mavlink":"apMavlink",
-	"iRCmode":8,
-	"nSpeed":1.0,
-	"vSideBorderRange":[0.2,0.8],
-	"sideBorderTarget":0.4,
-	"iPinLED":21,
-	"iPinShutter":10,
+	"_Universe":"univTag",
+	"PIDx":"PIDarmX",
+	"PIDy":"PIDarmY",
+	"vPtarget":[0.5, 0.5, 0.0],
+	"vPrecover":[25000, 0.0, 0.0],
+	"zSpeed":1000.0,
+	"zrK":1.0,
+	"zGoal":20000,
 }
-
-{
-	"name":"apActuator",
-	"class":"_AP_actuator",
-	"FPS":10,
-	"bInst":1,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"_MissionControl":"mission",
-	"activeMission":["STANDBY","FORWARD","BACKWARD","BB"],
-	"_AP_base":"apBase",
-	"iRCmode":5,
-	"vPWMrange":[900, 1250, 1750, 2100],
-
-	{
-		"name":"OMh",
-		"bInst":0,
-		"_ActuatorBase":"omH",
-		"vRCin":[4, -1, -1, -1],
-		"vPWMrange":[900, 1250, 1750, 2100],
-		"vSpeed":[1.0, 0, 0, 0],
-		"vK":[-1.0, 0, 0, 0],
-		"iMode":2,
-	}
-	{
-		"name":"OMv",
-		"bInst":0,
-		"_ActuatorBase":"omV",
-		"vRCin":[2, -1, -1, -1],
-		"vPWMrange":[1100, 1250, 1750, 1900],
-		"vSpeed":[1.0, 0, 0, 0],
-		"vK":[1.0, 0, 0, 0],
-		"iMode":2,
-	}
-	
-	{
-		"name":"DA",
-		"bInst":0,
-		"_ActuatorBase":"deltaArm",
-		"vRCin":[2, 4, 6, -1],
-		"vPWMrange":[1100, 1250, 1750, 1900],
-		"vSpeed":[1.0, 1.0, 1.0, 0],
-		"vK":[1.0, 0, 0, 0],
-		"iMode":1,
-	}
-
-	{
-		"name":"OMwRot",
-		"bInst":1,
-		"_ActuatorBase":"omWRot",
-		"vRCin":[4, -1, -1, -1],
-		"vPWMrange":[900, 1250, 1750, 2100],
-		"vSpeed":[0.5, 0, 0, 0],
-		"vK":[1.0, 0, 0, 0],
-		"iMode":1,
-	}
-	{
-		"name":"OMwx",
-		"bInst":1,
-		"_ActuatorBase":"omWX",
-		"vRCin":[2, -1, -1, -1],
-		"vPWMrange":[900, 1250, 1750, 2100],
-		"vSpeed":[1.0, 0, 0, 0],
-		"vK":[1.0, 0, 0, 0],
-		"iMode":1,
-	}
-	{
-		"name":"OMwy",
-		"bInst":1,
-		"_ActuatorBase":"omWY",
-		"vRCin":[6, -1, -1, -1],
-		"vPWMrange":[900, 1250, 1750, 2100],
-		"vSpeed":[0.5, 0, 0, 0],
-		"vK":[1.0, 0, 0, 0],
-		"iMode":1,
-	}
-}
-
-
-{
-	"name":"apRelayStandby",
-	"class":"_AP_relay",
-	"FPS":5,
-	"bInst":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"_MissionControl":"mission",
-	"activeMission":["STANDBY","FORWARD","BACKWARD"],
-	"_AP_base":"apBase",
-
-	{
-		"name":"LED",
-		"iChan":9,
-		"bRelay":0,
-	}
-	{
-		"name":"shutter",
-		"iChan":10,
-		"bRelay":0,
-	}		
-}
-
-{
-	"name":"apRelayBB",
-	"class":"_AP_relay",
-	"FPS":5,
-	"bInst":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"_MissionControl":"mission",
-	"activeMission":["BB"],
-	"_AP_base":"apBase",
-
-	{
-		"name":"LED",
-		"iChan":9,
-		"bRelay":1,
-	}
-	{
-		"name":"shutter",
-		"iChan":10,
-		"bRelay":1,
-	}		
-}
-
 
 
 
@@ -517,102 +546,182 @@
 	"class":"_Modbus",
 	"bInst":1,
 	"FPS":30,
-	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"bLog":1,
+	"Window":"OKview",
 	"port":"/dev/ttyUSB0",
 	"baud":230400,
-	"parity":"E",	
+	"parity":"E",
 }
 
 {
-	"name":"omWRot",
+	"name":"omRot",
 	"class":"_OrientalMotor",
-	"bInst":1,
-	"FPS":5,
-	"bLog":1,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":5,
-	"stepFrom":0,
-	"stepTo":-8000,
-	"speedFrom":0,
-	"speedTo":1000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Rot",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[-8000,0],
+			"sTarget":100,
+			"sRange":[-100,100],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+	}
 }
+
 
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":1,
-	"FPS":5,
-	"bLog":1,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":6,
-	"stepFrom":20000,
-	"stepTo":35000,
-	"speedFrom":0,
-	"speedTo":9000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"WX",
+			"pOrigin":20000,
+			"pTarget":20000,
+			"pErr":10,
+			"pRange":[20000,39000],
+			"sTarget":1000,
+			"sRange":[0,8000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+	}
 }
 
 {
 	"name":"omWY",
 	"class":"_OrientalMotor",
-	"bInst":1,
-	"FPS":5,
-	"bLog":1,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":7,
-	"stepFrom":0,
-	"stepTo":30000,
-	"speedFrom":0,
-	"speedTo":8000,
-	"vNormTargetPos":[0.0],
-	"vNormTargetSpeed":[1.0],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"WY",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,30000],
+			"sTarget":1000,
+			"sRange":[0,8000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+	}
 }
 
 {
 	"name":"omR",
 	"class":"_OrientalMotor",
 	"bInst":0,
-	"FPS":10,
+	"FPS":30,
 	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":1,
-	"stepFrom":10,
-	"stepTo":85000,
-	"speedFrom":0,
-	"speedTo":15000,
-	"vNormTargetPos":[0.3],
-	"vNormTargetSpeed":[0.5],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Y",
+			"pOrigin":100,
+			"pTarget":100,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+	}
 }
 
 {
 	"name":"omL",
 	"class":"_OrientalMotor",
 	"bInst":0,
-	"FPS":10,
+	"FPS":30,
 	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":3,
-	"stepFrom":10,
-	"stepTo":85000,
-	"speedFrom":0,
-	"speedTo":15000,
-	"vNormTargetPos":[0.3],
-	"vNormTargetSpeed":[0.5],
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
+
+	{
+		"name":"axis",
+		{
+			"name":"Y",
+			"pOrigin":100,
+			"pTarget":100,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
+	}
 }
 
 {
@@ -626,75 +735,37 @@
 	"_ActuatorList":["omL","omR"],
 }
 
+
 {
-	"name":"omH",
+	"name":"omM",
 	"class":"_OrientalMotor",
 	"bInst":0,
-	"FPS":5,
+	"FPS":30,
 	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
+	"Window":"OKview",
+	"Console":"console",
 	"_Modbus":"modbus",
 	"iSlave":2,
-	"stepFrom":10,
-	"stepTo":85000,
-	"speedFrom":0,
-	"speedTo":15000,
-	"vNormTargetPos":[0.5],
-	"vNormTargetSpeed":[1.0],
-	
-	"vNormPos":[0.5],
-}
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":100000,
+	"tInt":100000,
 
-{
-	"name":"deltaArm",
-	"class":"_DeltaArm",
-	"bInst":0,
-	"FPS":2,
-	"bLog":1,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"oprMode":3,
-	"bGripper":0,
-	"vPosRangeX":[-300, 300],
-	"vPosRangeY":[-300, 300],
-	"vPosRangeZ":[-410, -980],
-	"vNormTargetPos":[0.5, 0.5, 0.0, 0.0],
-	"vNormTargetSpeed":[0.0, 0.0, 0.0, 0.0],
-	"vNormPosErr":[0.1,0.1,0.1],
-}
-
-{
-	"name":"arduIO",
-	"class":"_UDP",
-	"bInst":0,
-	"FPS":30,
-	"bLog":0,
-	"Window":"viewL",
-	"Console":"OKconsole",
-	"addr":"192.168.1.100",
-	"port":8888,
-	"_wakeUp":"arduServo",
-}
-
-{
-	"name":"arduServo",
-	"class":"_ArduServo",
-	"bInst":0,
-	"FPS":30,
-	"bLog":1,
-	"Window":"viewL",
-	"_IOBase":"arduIO",
-	
 	{
-		"pwmL":1000,
-		"pwmH":2000,
-		"dir":-1,
-	}
-	{
-		"pwmL":1000,
-		"pwmH":2000,
-		"dir":1,
+		"name":"axis",
+		{
+			"name":"X",
+			"pOrigin":43000,
+			"pTarget":43000,
+			"pErr":10,
+			"pRange":[10,85000],
+			"sTarget":1000,
+			"sRange":[0,15000],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
+		}
 	}
 }
-

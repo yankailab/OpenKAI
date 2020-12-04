@@ -57,7 +57,13 @@
 			"pErr":10,
 			"pRange":[-8000,0],
 			"sTarget":100,
-			"sRange":[0,1000],
+			"sRange":[-100,100],
+			"aTarget":1000000,
+			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }
@@ -66,7 +72,7 @@
 {
 	"name":"omWX",
 	"class":"_OrientalMotor",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -84,11 +90,15 @@
 			"pOrigin":20000,
 			"pTarget":20000,
 			"pErr":10,
-			"pRange":[20000,35000],
+			"pRange":[20000,39000],
 			"sTarget":1000,
 			"sRange":[0,8000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }
@@ -119,6 +129,10 @@
 			"sRange":[0,8000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }
@@ -149,6 +163,10 @@
 			"sRange":[0,15000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }
@@ -179,6 +197,10 @@
 			"sRange":[0,15000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }
@@ -209,6 +231,10 @@
 			"sRange":[0,15000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
+			"bTarget":1000000,
+			"bRange":[1,1000000],
+			"cTarget":1000,
+			"cRange":[1,1000],
 		}
 	}
 }

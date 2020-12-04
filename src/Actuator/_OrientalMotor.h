@@ -45,7 +45,8 @@ public:
 
 private:
 	void checkAlarm(void);
-	void sendCMD(void);
+	void updatePos (void);
+	void updateSpeed (void);
 	void readStatus(void);
 	void update(void);
 	static void* getUpdateThread(void* This)

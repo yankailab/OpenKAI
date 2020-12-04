@@ -19,7 +19,6 @@
 #include "../Actuator/Articulated/_S6H4D.h"
 #include "../Actuator/_StepperGripper.h"
 #include "../Actuator/Motor/_ZLAC8015.h"
-#include "../Actuator/_InnfosGluon.h"
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
@@ -36,10 +35,14 @@
 #include "../Application/Autopilot/ArduPilot/_AP_takeoff.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_drive.h"
 #include "../Application/Autopilot/ArduPilot/_AProver_picking.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_followTag.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_UT.h"
-#include "../Application/Autopilot/ArduPilot/_AProver_KU.h"
 #include "../Application/RobotArm/_Sequencer.h"
+
+#include "../Application/UTphenoRover/_AProver_UT.h"
+#include "../Application/UTphenoRover/_UTprArmL.h"
+#include "../Application/UTphenoRover/_AProver_UTfollowTag.h"
+#include "../Application/KUphenoRover/_AProver_KU.h"
+#include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
+
 
 #include "../Control/PIDctrl.h"
 #include "../Control/Drive.h"
@@ -155,6 +158,10 @@
 
 #ifdef USE_MYNTEYE
 #include "../Vision/_Mynteye.h"
+#endif
+
+#ifdef USE_INNFOS
+#include "../Actuator/_InnfosGluon.h"
 #endif
 
 #ifdef USE_JETSON_INFERENCE

@@ -51,6 +51,7 @@ sudo apt-get update
 
 # Dependencies
 sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libusb-dev libudev-dev libflann-dev libproj-dev libcurl4 curl libpcap-dev libgtk-3-dev python
+sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev
 
 # Optional
 sudo apt-get -y install apache2
@@ -143,8 +144,8 @@ gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p
 
 #----------------------------------------------------
 # OpenCV
-git clone --branch 4.3.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.3.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 
 # OpenCV with CUDA
 cd opencv
@@ -203,7 +204,6 @@ sudo make install
 
 #----------------------------------------------------
 # Filament
-sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev
 git clone --branch v1.9.5 --depth 1 https://github.com/google/filament.git
 cd filament
 mkdir out
@@ -215,7 +215,6 @@ ninja install
 
 #----------------------------------------------------
 # Open3D
-sudo apt-get -y install libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev libqhull-dev qhull-bin gfortran python-pybind11 libblas-dev liblapack-dev liblapacke-dev
 git clone --branch v0.11.1 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
 git pull --recurse-submodules
@@ -223,7 +222,7 @@ mkdir build
 cd build
 
 #PC
-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DCMAKE_BUILD_TYPE=Release -DDEVELOPER_BUILD=OFF -DFILAMENT_PRECOMPILED_ROOT=../../filament/out/release/filament -DUSE_BLAS=OFF ../
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=ON -DBUILD_PYTHON_MODULE=OFF -DCMAKE_BUILD_TYPE=Release -DDEVELOPER_BUILD=OFF -DFILAMENT_PRECOMPILED_ROOT=../../filament/out/release/filament -DUSE_BLAS=OFF -DUSE_SYSTEM_JPEG=ON -DUSE_SIMD=ON ../
 
 #Jetson
 Open3D/cpp/open3d/core/linalg/BlasWrapper.h

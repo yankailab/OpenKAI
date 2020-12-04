@@ -39,6 +39,10 @@ private:
 	}
 
 public:
+    ActuatorGroup m_gluon;
+    double m_maxLinearAccel;
+    double m_maxAngularAccel;
+    
 	INTERVAL_EVENT m_ieCheckAlarm;
 	INTERVAL_EVENT m_ieSendCMD;
 	INTERVAL_EVENT m_ieReadStatus;

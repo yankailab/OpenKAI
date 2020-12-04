@@ -1,23 +1,23 @@
-#ifndef OpenKAI_src_Autopilot_AP__AProver_UT_H_
-#define OpenKAI_src_Autopilot_AP__AProver_UT_H_
+#ifndef OpenKAI_src_Application_UTphenoRovere__AProver_UT_H_
+#define OpenKAI_src_Application_UTphenoRovere__AProver_UT_H_
 
-#include "_AP_base.h"
-#include "_AProver_drive.h"
-#include "../../../Universe/_Universe.h"
-#include "../../../Utility/RC.h"
+#include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../Autopilot/ArduPilot/_AProver_drive.h"
+#include "../../Universe/_Universe.h"
+#include "../../Utility/RC.h"
 
 namespace kai
 {
 
 struct APROVER_UT_MODE
 {
-	int8_t STANDBY;
+	int8_t MANUAL;
 	int8_t FORWARD;
 	int8_t BACKWARD;
 
 	bool bValid(void)
 	{
-		IF_F(STANDBY < 0);
+		IF_F(MANUAL < 0);
 		IF_F(FORWARD < 0);
 		IF_F(BACKWARD < 0);
 
@@ -38,8 +38,6 @@ public:
 	virtual void draw(void);
 
 protected:
-	void findDivider(void);
-	void findTag(void);
 	void updateMode(void);
 	static void* getUpdateThread(void* This)
 	{
@@ -49,26 +47,9 @@ protected:
 
 public:
 	_AP_base* 	m_pAP;
-    _Universe* m_pUdiv;
-    _Universe* m_pUtag;
-
-    //divider
-	bool m_bDivider;
-
-    //tag
-    int         m_iClass;
-	bool	    m_bTarget;
-	float       m_nSpeed;
-	float	    m_yaw;
-
-    //input
-    RC_CHANNEL m_rcDir;
+    Drive*    m_pD;
     RC_CHANNEL m_rcMode;
     APROVER_UT_MODE m_iMode;
-
-    //indicator
-	uint8_t m_iPinLED;
-	uint8_t m_iPinShutter;
 
 };
 

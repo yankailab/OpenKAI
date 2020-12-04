@@ -126,7 +126,13 @@ struct vFloat2
 
 		return v;
 	}
-
+	
+	bool bInside(float v)
+    {
+        IF_F(v < x);
+        IF_F(v > y);
+        return true;
+    }
 };
 
 }

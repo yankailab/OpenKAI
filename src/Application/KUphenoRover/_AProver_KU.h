@@ -1,9 +1,9 @@
 #ifndef OpenKAI_src_Autopilot_AP__AProver_KU_H_
 #define OpenKAI_src_Autopilot_AP__AProver_KU_H_
 
-#include "_AP_base.h"
-#include "../../../Control/Drive.h"
-#include "../../../Utility/RC.h"
+#include "../Autopilot/ArduPilot/_AP_base.h"
+#include "../../Control/Drive.h"
+#include "../../Utility/RC.h"
 
 namespace kai
 {
@@ -49,8 +49,7 @@ public:
     Drive*    m_pD;
     
     RC_CHANNEL m_rcMode;
-    RC_CHANNEL m_rcDir;
-    
+    RC_CHANNEL m_rcDir;    
     APROVER_KU_MODE m_iMode;
 };
 
