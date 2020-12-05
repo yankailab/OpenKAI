@@ -24,7 +24,8 @@ OPTION(USE_REALSENSE "Use Intel RealSense" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
 
-set(OpenKAI_definitions "-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
+#set(OpenKAI_definitions "-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
+set(OpenKAI_definitions "-O0 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
 set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas ncurses)

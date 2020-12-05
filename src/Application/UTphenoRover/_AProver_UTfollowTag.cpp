@@ -130,10 +130,13 @@ void _AProver_UTfollowTag::updateFollow ( void )
     
     // follow the left side border of the multi-sheet
     pO = m_pUside->get(0);
-    if ( pO && m_vSide.bInside(pO->getY()))
+    float errSide = 0.0;
+    if (pO)
     {
-        m_errSide = dir * (pO->getY() - m_targetSide );
+        if(m_vSide.bInside(pO->getY()))
+            errSide = dir * (pO->getY() - m_targetSide);
     }
+    m_errSide = errSide;
     m_nStr = dir * m_pPIDside->update ( m_errSide, 0.0, m_tStamp );
 
     
@@ -159,17 +162,14 @@ void _AProver_UTfollowTag::updateFollow ( void )
     pO = m_pUtag->get(0);
     if ( pO )
     {
-        if(m_iTag < 0 && m_vTagX.bInside(pO->getX()))
+        int iTag = pO->getTopClass();
+        if(m_iTag != iTag && m_vTagX.bInside(pO->getX()))
         {
-            m_iTag = pO->getTopClass();
             nSpd = 0.0;
             m_nStr = 0.0;
+            m_iTag = iTag;
             m_pMC->transit(m_iMission.FOLLOW);        
         }
-    }
-    else
-    {
-        m_iTag = -1;
     }
 
     m_pD->setSteering(m_nStr);

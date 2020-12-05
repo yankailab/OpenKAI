@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -12,7 +12,7 @@
 {
 	"name":"consoleDrive",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -24,14 +24,14 @@
 {
 	"name":"viewDrive",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.189 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"viewArmL",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
 }
 
@@ -46,7 +46,7 @@
 	"name":"camDrive",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
 	"deviceID":0,
@@ -58,7 +58,7 @@
 	"name":"camDrive",
 	"class":"_GStreamer",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
@@ -183,8 +183,8 @@
 	"name":"detDivider",
 	"class":"_Line",
 	"FPS":30,
-	"bInst":1,
-	"Window":"viewDrive",
+	"bInst":0,
+	"Window":"/viewDev",
 	"Console":"consoleDrive",
 	"_VisionBase":"cropM",
 	"_Universe":"univDivider",
@@ -212,7 +212,7 @@
 	"name":"D435",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"viewArmL",
@@ -231,6 +231,8 @@
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 	"vKpos":[0.09, 0.09, 0.75, 0.75],
+	"/rsSN":"00000000f0211594",
+	"rsSN":"030522070296",	
 }
 
 {
@@ -249,10 +251,10 @@
 	"bDraw":1,
 	"Window":"viewArmL",
 	"Console":"consoleArmL",
-	"/_VisionBase":"D435",
-	"_VisionBase":"camDrive",
+	"_VisionBase":"D435",
+	"/_VisionBase":"camDrive",
 	"_Universe":"univTag",
-	"persistence":5.0,
+	"persistence":10.0,
 	"gain":0.5,
 	"angleOffset":-180,
 }
@@ -348,13 +350,14 @@
 			"bInst":1,
 			"name":"FOLLOW",
 			"class":"Mission",
+			"tTimeout":60,
 			"next":"PAUSE",
 		}
 		{
 			"bInst":1,
 			"name":"PAUSE",
 			"class":"Mission",
-			"tTimeout":3,
+			"tTimeout":5,
 			"next":"RECOVER",
 		}
 		{
@@ -430,7 +433,7 @@
 	"_AP_base":"apBase",
 	"Drive":"drive",
     "iRCmodeChan":8,
-	"vRCmodeDiv":[1250,1750,2000],
+	"vRCmodeDiv":[1250,1750,2200],
 }
 
 {
@@ -487,11 +490,11 @@
 {
 	"name":"apFollowTag",
 	"class":"_AProver_UTfollowTag",
-	"FPS":5,
+	"FPS":20,
 	"bInst":1,
 	"bLog":1,
-	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
 	"_MissionControl":"missionArm",
 	"activeMission":["DRIVE"],
 	"_AP_base":"apBase",
@@ -503,7 +506,7 @@
 	"targetSide":0.4,
 	"nSpd":1.0,
 	"nStr":0.0,
-	"vTagX":[0.2, 0.8],
+	"vTagX":[0.3, 0.7],
 	"vSide":[0.2, 0.8],
 }
 
@@ -511,9 +514,22 @@
 	"name":"PIDarmX",
 	"class":"PIDctrl",
 	"bInst":1,
-	"Window":"viewDrive",
-	"Console":"consoleDrive",
-	"P":-1000,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+	"P":20000,
+	"I":0.0,
+	"Imax":0.0,
+	"oMin":-5000,
+	"oMax":5000,
+}
+
+{
+	"name":"PIDarmY",
+	"class":"PIDctrl",
+	"bInst":1,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+	"P":1000,
 	"I":0.0,
 	"Imax":0.0,
 	"oMin":-1000,
@@ -521,22 +537,9 @@
 }
 
 {
-	"name":"PIDarmY",
-	"class":"PIDctrl",
-	"bInst":1,
-	"Window":"viewDrive",
-	"Console":"consoleDrive",
-	"P":-1000,
-	"I":0.0,
-	"Imax":0.0,
-	"oMin":-100,
-	"oMax":100,
-}
-
-{
 	"name":"armL",
 	"class":"_UTprArmL",
-	"FPS":10,
+	"FPS":5,
 	"bInst":1,
 	"bLog":1,
 	"Window":"viewArmL",
@@ -551,10 +554,10 @@
 	"PIDx":"PIDarmX",
 	"PIDy":"PIDarmY",
 	"vPtarget":[0.5, 0.5, 0.0],
-	"vPrecover":[25000, 0.0, 0.0],
-	"zSpeed":1000.0,
-	"zrK":1.0,
-	"zGoal":20000,
+	"vPrecover":[30000, 0.0, 0.0],
+	"zSpeed":3000.0,
+	"zrK":5.0,
+	"vZgoal":[5000.0, 10000.0],
 }
 
 
@@ -594,7 +597,7 @@
 			"pErr":10,
 			"pRange":[-8000,0],
 			"sTarget":100,
-			"sRange":[-100,100],
+			"sRange":[-1000,1000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
 			"bTarget":1000000,
@@ -629,7 +632,7 @@
 			"pErr":10,
 			"pRange":[25000,39000],
 			"sTarget":1000,
-			"sRange":[0,8000],
+			"sRange":[-5000,5000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
 			"bTarget":1000000,
@@ -661,9 +664,9 @@
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":10,
-			"pRange":[0,30000],
+			"pRange":[0,10000],
 			"sTarget":1000,
-			"sRange":[0,8000],
+			"sRange":[-5000,5000],
 			"aTarget":1000000,
 			"aRange":[1,1000000],
 			"bTarget":1000000,
@@ -673,6 +676,8 @@
 		}
 	}
 }
+
+
 
 {
 	"name":"omR",

@@ -72,13 +72,13 @@ void _OrientalMotor::update(void)
 			readStatus();
 		}
 		
-		if(!bCmdTimeout())
-        {
+//		if(!bCmdTimeout())
+//        {
             if(m_lastCmdType == actCmd_pos)
                 updatePos();
             else if(m_lastCmdType == actCmd_spd)
                 updateSpeed();
-        }
+//        }
 
 		this->autoFPSto();
 	}
@@ -110,7 +110,7 @@ void _OrientalMotor::updatePos (void)
 	IF_(!m_ieSendCMD.update(m_tStamp));
 
 	int32_t step = m_pA->m_p.m_vTarget;
-	int32_t speed = m_pA->m_s.m_vTarget;
+	int32_t speed = m_pA->m_s.m_vRange.y;
 	int32_t accel = m_pA->m_a.m_vTarget;
 	int32_t brake = m_pA->m_b.m_vTarget;
 	int32_t current = m_pA->m_c.m_vTarget;

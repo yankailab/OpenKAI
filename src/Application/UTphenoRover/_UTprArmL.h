@@ -49,7 +49,7 @@ public:
 	vFloat3 m_vPrecover;//arm stock pos
 	float m_zSpeed;
 	float m_zrK;
-	float m_zGoal;
+	vFloat2 m_vZgoal;
 
 	UTPR_MISSIOIN m_iMission;
 };

@@ -19,7 +19,7 @@ _UTprArmL::_UTprArmL()
 
     m_zSpeed = 1000;
 	m_zrK = 1.0;
-	m_zGoal = 20000;
+	m_vZgoal.init(15000, 20000);
 }
 
 _UTprArmL::~_UTprArmL()
@@ -35,7 +35,7 @@ bool _UTprArmL::init(void *pKiss)
 	pK->v("vPrecover", &m_vPrecover);
 	pK->v("zSpeed", &m_zSpeed);
 	pK->v("zrK", &m_zrK);
-	pK->v("zGoal", &m_zGoal);
+	pK->v("vZgoal", &m_vZgoal);
 
 	IF_F(!m_pMC);
 	IF_F(!m_iMission.assign(m_pMC));
@@ -120,7 +120,7 @@ void _UTprArmL::updateArm(void)
 
 	int iM = m_pMC->getMissionIdx();
 	bool bTransit = false;
-
+    
 	if(iM == m_iMission.FOLLOW)
 	{
 		bTransit = follow();
@@ -138,16 +138,21 @@ void _UTprArmL::updateArm(void)
 		m_pMC->transit();
 }
 
-void _UTprArmL::stop(void)
-{
-	m_pAx->setStarget(0, 0);
-	m_pAy->setStarget(0, 0);
-	m_pAz->setStarget(0, 0);
-}
-
 bool _UTprArmL::follow(void)
 {
-    IF_T(m_pAz->getP(0) >= m_zGoal);
+    float z = m_pAz->getP(0);
+    if(z >= m_vZgoal.y)
+    {
+        stop();
+        return true;
+    }
+    else if(z >= m_vZgoal.x)
+    {
+        m_pAx->setStarget(0, 0);
+        m_pAy->setStarget(0, 0);
+        m_pAz->setStarget(0, m_zSpeed);
+        return false;
+    }
     
 	_Object* tO = findTarget();
 	if(!tO)
@@ -156,9 +161,9 @@ bool _UTprArmL::follow(void)
 		return false;
 	}
 
-	vFloat3 vP = tO->getPos();
-   	float x = vP.x - m_vPtarget.x;
-	float y = vP.y - m_vPtarget.y;
+	m_vP = tO->getPos();
+   	float x = m_vP.x - m_vPtarget.x;
+	float y = m_vP.y - m_vPtarget.y;
 	float r = sqrt(x*x + y*y);
 
 	float sX = m_pXpid->update(m_vP.x, m_vPtarget.x, m_tStamp);
@@ -196,15 +201,27 @@ _Object* _UTprArmL::findTarget(void)
 bool _UTprArmL::recover(void)
 {
     //recover vertical axis first
-	m_pAz->setPtarget(0, m_vPrecover.z);
-	IF_F(!m_pAz->bComplete(0));
+	if(!m_pAz->bComplete(0))
+    {
+        m_pAx->setStarget(0, 0);
+        m_pAy->setStarget(0, 0);
+        m_pAz->setPtarget(0, m_vPrecover.z);
+        return false;
+    }
 
     m_pAx->setPtarget(0, m_vPrecover.x);
 	m_pAy->setPtarget(0, m_vPrecover.y);
 	IF_F(!m_pAx->bComplete(0));
-	IF_F(!m_pAy->bComplete(0));
+//	IF_F(!m_pAy->bComplete(0));
 
 	return true;
+}
+
+void _UTprArmL::stop(void)
+{
+	m_pAx->setStarget(0, 0);
+	m_pAy->setStarget(0, 0);
+	m_pAz->setStarget(0, 0);
 }
 
 void _UTprArmL::draw(void)
