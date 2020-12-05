@@ -75,7 +75,7 @@ private:
     bool m_bDivider;
     
     _Universe* m_pUtag;
-    bool m_bTag;
+    int m_iTag;
     vFloat2  m_vTagX;
 
 	float   m_nSpd;

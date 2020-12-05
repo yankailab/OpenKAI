@@ -63,7 +63,7 @@ private:
 	}
 
 	vector<MISSION_INST> m_vMission;
-	unsigned int m_iM;	//current mission
+	int m_iM;	//current mission
 
 };
 

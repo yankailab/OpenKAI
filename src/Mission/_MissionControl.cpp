@@ -69,7 +69,7 @@ bool _MissionControl::init(void* pKiss)
 	}
 
 	string start = "";
-	F_INFO(pK->v("start", &start));
+	pK->v("start", &start);
 	m_iM = getMissionIdx(start);
 	if(m_iM < 0)
 		m_iM = 0;

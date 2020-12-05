@@ -116,6 +116,7 @@ void _UTprArmL::update(void)
 void _UTprArmL::updateArm(void)
 {
 	IF_(check() < 0);
+	IF_(!bActive());
 
 	int iM = m_pMC->getMissionIdx();
 	bool bTransit = false;

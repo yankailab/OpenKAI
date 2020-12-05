@@ -18,6 +18,7 @@ _AProver_UTfollowTag::_AProver_UTfollowTag()
     m_bDivider = false;
     
     m_pUtag = NULL;
+    m_iTag = -1;
     m_vTagX.init(0.2, 0.8);
     
     m_nSpd = 0.0;
@@ -158,9 +159,9 @@ void _AProver_UTfollowTag::updateFollow ( void )
     pO = m_pUtag->get(0);
     if ( pO )
     {
-        if(!m_bTag && m_vTagX.bInside(pO->getX()))
+        if(m_iTag < 0 && m_vTagX.bInside(pO->getX()))
         {
-            m_bTag = true;
+            m_iTag = pO->getTopClass();
             nSpd = 0.0;
             m_nStr = 0.0;
             m_pMC->transit(m_iMission.FOLLOW);        
@@ -168,7 +169,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
     }
     else
     {
-        m_bTag = false;
+        m_iTag = -1;
     }
 
     m_pD->setSteering(m_nStr);
