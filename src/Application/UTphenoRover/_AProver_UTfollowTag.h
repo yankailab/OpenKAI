@@ -15,6 +15,7 @@ struct UTPR_MISSIOIN
 {
 	int8_t DRIVE;
 	int8_t DIVIDER;
+	int8_t EXTRACT;
 	int8_t FOLLOW;
 	int8_t RECOVER;
 
@@ -22,6 +23,7 @@ struct UTPR_MISSIOIN
 	{
 		IF_F(DRIVE < 0);
 		IF_F(DIVIDER < 0);
+		IF_F(EXTRACT < 0);
 		IF_F(FOLLOW < 0);
 		IF_F(RECOVER < 0);
 
@@ -33,6 +35,7 @@ struct UTPR_MISSIOIN
         NULL_F(pMC);
         DRIVE = pMC->getMissionIdx("DRIVE");
         DIVIDER = pMC->getMissionIdx("DIVIDER");
+        EXTRACT = pMC->getMissionIdx("EXTRACT");
         FOLLOW = pMC->getMissionIdx("FOLLOW");
         RECOVER = pMC->getMissionIdx("RECOVER");
         

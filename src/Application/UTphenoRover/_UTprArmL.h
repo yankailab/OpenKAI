@@ -23,9 +23,10 @@ public:
 	void stop(void);
 
 private:
-	bool recover(void);
+	bool extract(void);
 	bool follow(void);
 	bool ascend(void);
+	bool recover(void);
 
 	_Object* findTarget(void);
 	void updateArm(void);
@@ -46,10 +47,12 @@ public:
 
 	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
 	vFloat3 m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
-	vFloat3 m_vPrecover;//arm stock pos
+
+	vFloat3 m_vPextract;
 	float m_zSpeed;
 	float m_zrK;
 	vFloat2 m_vZgoal;
+	vFloat3 m_vPrecover;//arm stock pos
 
 	UTPR_MISSIOIN m_iMission;
 };

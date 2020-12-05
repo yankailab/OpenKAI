@@ -202,8 +202,11 @@ void _OrientalMotor::readStatus(void)
 	int r = m_pMB->readRegisters(m_iSlave, 204, nR, pB);
 	IF_(r != 6);
 
-	m_pA->m_p.m_v = MAKE32(pB[0], pB[1]);
-	m_pA->m_s.m_v = MAKE32(pB[4], pB[5]);
+    int32_t p = MAKE32(pB[0], pB[1]);
+	int32_t s = MAKE32(pB[4], pB[5]);
+
+    m_pA->m_p.m_v = (float)p;
+	m_pA->m_s.m_v = (float)s;
 
 	LOG_I("step: "+f2str(m_pA->m_p.m_v) + ", speed: " + f2str(m_pA->m_s.m_v));
 }

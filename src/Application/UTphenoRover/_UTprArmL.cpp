@@ -12,14 +12,16 @@ _UTprArmL::_UTprArmL()
 
 	m_vP.init(0.5,0.5,0.0);
 	m_vPtarget.init(0.5,0.5,0.0);
-	m_vPrecover.init(25000, 0, 0); //x,rot,y
+
 
 	m_pXpid = NULL;
 	m_pYpid = NULL;
 
+    m_vPextract.init(39000, -9000, 0); //x,rot,y
     m_zSpeed = 1000;
 	m_zrK = 1.0;
 	m_vZgoal.init(15000, 20000);
+    m_vPrecover.init(25000, 0, 0); //x,rot,y
 }
 
 _UTprArmL::~_UTprArmL()
@@ -31,11 +33,12 @@ bool _UTprArmL::init(void *pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
+	pK->v("vPextract", &m_vPextract);
 	pK->v("vPtarget", &m_vPtarget);
-	pK->v("vPrecover", &m_vPrecover);
 	pK->v("zSpeed", &m_zSpeed);
 	pK->v("zrK", &m_zrK);
 	pK->v("vZgoal", &m_vZgoal);
+	pK->v("vPrecover", &m_vPrecover);
 
 	IF_F(!m_pMC);
 	IF_F(!m_iMission.assign(m_pMC));
@@ -121,7 +124,11 @@ void _UTprArmL::updateArm(void)
 	int iM = m_pMC->getMissionIdx();
 	bool bTransit = false;
     
-	if(iM == m_iMission.FOLLOW)
+	if(iM == m_iMission.EXTRACT)
+	{
+		bTransit = extract();
+	}
+	else if(iM == m_iMission.FOLLOW)
 	{
 		bTransit = follow();
 	}
@@ -136,6 +143,25 @@ void _UTprArmL::updateArm(void)
 
 	if(bTransit)
 		m_pMC->transit();
+}
+
+bool _UTprArmL::extract(void)
+{
+    //extract rot axis first
+	m_pAy->setPtarget(0, m_vPextract.y);
+	while(!m_pAy->bComplete(0))
+        this->sleepTime(100000);
+
+    m_pAx->setPtarget(0, m_vPextract.x);
+    m_pAz->setPtarget(0, m_vPextract.z);
+
+	while(!m_pAx->bComplete(0))
+        this->sleepTime(100000);
+
+    while(!m_pAz->bComplete(0))
+        this->sleepTime(100000);
+
+	return true;
 }
 
 bool _UTprArmL::follow(void)
@@ -157,7 +183,7 @@ bool _UTprArmL::follow(void)
 	_Object* tO = findTarget();
 	if(!tO)
 	{
-		recover();
+		stop();
 		return false;
 	}
 
@@ -201,18 +227,20 @@ _Object* _UTprArmL::findTarget(void)
 bool _UTprArmL::recover(void)
 {
     //recover vertical axis first
-	if(!m_pAz->bComplete(0))
-    {
-        m_pAx->setStarget(0, 0);
-        m_pAy->setStarget(0, 0);
-        m_pAz->setPtarget(0, m_vPrecover.z);
-        return false;
-    }
+    m_pAx->setStarget(0, 0);
+    m_pAy->setStarget(0, 0);
+    m_pAz->setPtarget(0, m_vPrecover.z);
+
+    while(!m_pAz->bComplete(0))
+        this->sleepTime(100000);
 
     m_pAx->setPtarget(0, m_vPrecover.x);
-	m_pAy->setPtarget(0, m_vPrecover.y);
-	IF_F(!m_pAx->bComplete(0));
-//	IF_F(!m_pAy->bComplete(0));
+    while(!m_pAx->bComplete(0))
+        this->sleepTime(100000);
+
+    m_pAy->setPtarget(0, m_vPrecover.y);
+	while(!m_pAy->bComplete(0))
+        this->sleepTime(100000);
 
 	return true;
 }

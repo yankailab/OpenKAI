@@ -168,7 +168,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
             nSpd = 0.0;
             m_nStr = 0.0;
             m_iTag = iTag;
-            m_pMC->transit(m_iMission.FOLLOW);        
+            m_pMC->transit(m_iMission.EXTRACT);        
         }
     }
 
