@@ -9,8 +9,10 @@ namespace kai
 
 _ActuatorBase::_ActuatorBase()
 {
-	m_bFeedback = true;
 	m_nMinAxis = 1;
+
+    m_bPower = false;
+	m_bFeedback = true;
 	m_bMoving = false;
 
 	m_lastCmdType = actCmd_standby;
@@ -83,6 +85,11 @@ bool _ActuatorBase::init(void* pKiss)
 	m_pParent = (_ActuatorBase*) (pK->getInst(iName));
 
 	return true;
+}
+
+bool _ActuatorBase::power(bool bON)
+{
+    return true;    
 }
 
 bool _ActuatorBase::start(void)

@@ -106,6 +106,8 @@ public:
 
 	virtual float getP(int i);
 	virtual float getS(int i);
+    
+    virtual bool power(bool bON);
 
 protected:
 	virtual bool bCmdTimeout(void);
@@ -121,6 +123,7 @@ public:
 	vector<ACTUATOR_AXIS> m_vAxis;
 	int m_nMinAxis;
 
+    bool m_bPower;
 	bool m_bFeedback;
 	bool m_bMoving;
 

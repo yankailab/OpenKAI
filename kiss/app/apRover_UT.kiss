@@ -5,7 +5,7 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -251,8 +251,8 @@
 	"bDraw":1,
 	"Window":"viewArmL",
 	"Console":"consoleArmL",
-	"/_VisionBase":"D435",
-	"_VisionBase":"camDrive",
+	"_VisionBase":"D435",
+	"/_VisionBase":"camDrive",
 	"_Universe":"univTag",
 	"persistence":10.0,
 	"gain":0.5,
@@ -633,10 +633,10 @@
 		"name":"axis",
 		{
 			"name":"WX",
-			"pOrigin":20000,
-			"pTarget":20000,
+			"pOrigin":22000,
+			"pTarget":22000,
 			"pErr":10,
-			"pRange":[20000,39000],
+			"pRange":[22000,48000],
 			"sTarget":1000,
 			"sRange":[-3000,3000],
 			"aTarget":1000000,
@@ -797,4 +797,91 @@
 			"cRange":[1,1000],
 		}
 	}
+}
+
+
+
+{
+	"name":"gluon",
+	"class":"_InnfosGluon",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+	"tIntCheckAlarm":100000,
+	"tIntReadStatus":50000,
+
+	{
+		"name":"axis",
+		{
+			"name":"J1",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+		{
+			"name":"J2",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+		{
+			"name":"J3",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+		{
+			"name":"J4",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+		{
+			"name":"J5",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+		{
+			"name":"J6",
+			"pOrigin":0,
+			"pTarget":0,
+			"pErr":10,
+			"pRange":[0,10],
+			"sTarget":0,
+			"sRange":[0,10],
+		}
+	}
+}
+
+{
+	"name":"apActuator",
+	"class":"_AP_actuator",
+	"FPS":10,
+	"bInst":1,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+	"_AP_base":"apBase",
+	"_ActuatorBase":"gluon",
+    "iRCmodeChan":10,
+	"vRCmodeDiv":[1250,1750,2200],
+    "iRCstickV":2,
+    "iRCstickH":4,
 }

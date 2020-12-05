@@ -26,10 +26,12 @@ public:
 	bool start(void);
 	void draw(void);
 	int check(void);
+    
+    virtual bool power(bool bON);
 
 private:
 	void checkAlarm(void);
-	void sendCMD(void);
+	void updateGluon (void);
 	void readStatus(void);
 	void update(void);
 	static void* getUpdateThread(void* This)
@@ -42,6 +44,7 @@ public:
     ActuatorGroup m_gluon;
     double m_maxLinearAccel;
     double m_maxAngularAccel;
+    
     
 	INTERVAL_EVENT m_ieCheckAlarm;
 	INTERVAL_EVENT m_ieSendCMD;

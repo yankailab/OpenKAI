@@ -6,10 +6,11 @@ namespace kai
 _AP_actuator::_AP_actuator()
 {
 	m_pAP = NULL;
-	m_iRCmode = 0;
-	m_iMode = -1;
-	m_vPWMrange.init(900, 1250, 1750, 2100);
-
+    m_pAB = NULL;
+    
+    m_rcMode.init();
+    m_rcStickV.init();
+    m_rcStickH.init();    
 }
 
 _AP_actuator::~_AP_actuator()
@@ -21,53 +22,20 @@ bool _AP_actuator::init(void* pKiss)
 	IF_F(!this->_MissionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("vPWMrange", &m_vPWMrange);
-	pK->v("iRCmode", &m_iRCmode);
+    pK->v ( "iRCmodeChan", &m_rcMode.m_iChan );
+    pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
+    pK->v ( "iRCstickV", &m_rcStickV.m_iChan );
+    pK->v ( "iRCstickH", &m_rcStickH.m_iChan );
 
-	string iName;
+	string n = "";
 
-	int i = 0;
-	while (1)
-	{
-		Kiss* pA = pK->child(i++);
-		if(pA->empty())break;
-
-		AP_actuator a;
-		a.init();
-
-		iName = "";
-		pA->v("_ActuatorBase", &iName);
-		a.m_pA = (_ActuatorBase*) (pK->getInst(iName));
-		NULL_Fl(a.m_pA, "_ActuatorBase: " + iName + " not found");
-
-		vInt4 vRCin;
-		vRCin.init(-1);
-		pA->v("vRCin", &vRCin);
-		a.m_pRCin[0] = vRCin.x;
-		a.m_pRCin[1] = vRCin.y;
-		a.m_pRCin[2] = vRCin.z;
-		a.m_pRCin[3] = vRCin.w;
-
-		vFloat4 vF;
-		if(pA->v("vInc", &vF))
-		{
-			a.m_pInc[0] = vF.x;
-			a.m_pInc[1] = vF.y;
-			a.m_pInc[2] = vF.z;
-			a.m_pInc[3] = vF.w;
-		}
-		pA->v("vPWMrange", &a.m_vPWMrange);
-		pA->v("vK", &a.m_vK);
-		pA->v("vSpeed", &a.m_vSpeed);
-		pA->v("iMode", &a.m_iMode);
-
-		m_vActuator.push_back(a);
-	}
-
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+    pK->v("_AP_base", &n );
+	m_pAP = (_AP_base*) (pK->getInst( n ));
+	IF_Fl(!m_pAP, n + ": not found");
+    
+   	pK->v("_ActuatorBase", &n );
+	m_pAB = (_ActuatorBase*) (pK->getInst( n ));
+	IF_Fl(!m_pAB, n + ": not found");
 
 	return true;
 }
@@ -90,6 +58,7 @@ int _AP_actuator::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
+	NULL__(m_pAB, -1);
 
 	return this->_MissionBase::check();
 }
@@ -110,28 +79,27 @@ void _AP_actuator::update(void)
 void _AP_actuator::updateActuator(void)
 {
 	IF_(check() < 0);
-	IF_(!bActive());
 
-	uint16_t rcMode = m_pAP->m_pMav->m_rcChannels.getRC(m_iRCmode);
-	if(rcMode < m_vPWMrange.x || rcMode > m_vPWMrange.w)
-	{
-		m_iMode = -1;
-		return;
-	}
+    uint16_t pwm;
+    
+    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
+    IF_ ( pwm == UINT16_MAX );
+    m_rcMode.pwm ( pwm );
+    int iMode = m_rcMode.i();
+    
+    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickV.m_iChan );
+    IF_ ( pwm == UINT16_MAX );
+    m_rcStickV.pwm ( pwm );
+    
+    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickH.m_iChan );
+    IF_ ( pwm == UINT16_MAX );
+    m_rcStickH.pwm ( pwm );
 
-	if(rcMode < m_vPWMrange.y)
-		m_iMode = 0;
-	else if(rcMode < m_vPWMrange.z)
-		m_iMode = 1;
-	else
-		m_iMode = 2;
-
-	for (int i=0; i<m_vActuator.size(); i++)
-	{
-		AP_actuator* pA = &m_vActuator[i];
-		IF_CONT(pA->m_iMode != m_iMode);
-		pA->update(m_pAP->m_pMav);
-	}
+    m_pAB->power(iMode!=0?true:false);
+    IF_(iMode == 0);
+    
+    m_pAB->setPtarget(0, m_rcStickV.v());
+    m_pAB->setPtarget(1, m_rcStickH.v());    
 }
 
 void _AP_actuator::draw(void)
@@ -140,7 +108,9 @@ void _AP_actuator::draw(void)
 	this->_MissionBase::draw();
 	drawActive();
 
-	addMsg("iMode: "+i2str(m_iMode), 1);
+	addMsg("iMode: "+i2str(m_rcMode.i()), 1);
+	addMsg("stickV: "+f2str(m_rcStickV.i()), 1);
+	addMsg("stickH: "+f2str(m_rcStickH.i()), 1);
 }
 
 }
