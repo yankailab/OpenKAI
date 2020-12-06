@@ -2,10 +2,10 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -18,7 +18,7 @@
 {
 	"name":"consoleArmL",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -236,7 +236,7 @@
 }
 
 {
-	"name":"univTag",
+	"name":"univTagL",
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewArmL",
@@ -244,7 +244,30 @@
 }
 
 {
-	"name":"Chilitags",
+	"name":"ChilitagsL",
+	"class":"_Chilitags",
+	"FPS":30,
+	"bInst":1,
+	"bDraw":1,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+	"_VisionBase":"camDrive",
+	"_Universe":"univTagL",
+	"persistence":10.0,
+	"gain":0.5,
+	"angleOffset":-180,
+}
+
+{
+	"name":"univTagArm",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewArmL",
+	"Console":"consoleArmL",
+}
+
+{
+	"name":"ChilitagsArm",
 	"class":"_Chilitags",
 	"FPS":30,
 	"bInst":1,
@@ -252,8 +275,7 @@
 	"Window":"viewArmL",
 	"Console":"consoleArmL",
 	"_VisionBase":"D435",
-	"/_VisionBase":"camDrive",
-	"_Universe":"univTag",
+	"_Universe":"univTagL",
 	"persistence":10.0,
 	"gain":0.5,
 	"angleOffset":-180,
@@ -508,11 +530,11 @@
 	"_UniverseSide":"univSide",
 	"PIDside":"PIDside",
 	"_UniverseDivider":"univDivider",
-	"_UniverseTag":"univTag",
+	"_UniverseTag":"univTagL",
 	"targetSide":0.4,
 	"nSpd":1.0,
 	"nStr":0.0,
-	"vTagX":[0.0, 1.0],
+	"vTag":[0.0, 1.0],
 	"vSide":[0.2, 0.8],
 }
 
@@ -556,7 +578,7 @@
 	"_ActuatorBaseY":"omRot",
 	"_ActuatorBaseZ":"omWY",
 	"_AP_base":"apBase",
-	"_Universe":"univTag",
+	"_Universe":"univTagArm",
 	"PIDx":"PIDarmX",
 	"PIDy":"PIDarmY",
 	"vPtarget":[0.5, 0.5, 0.0],
@@ -601,7 +623,7 @@
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":10,
-			"pRange":[-10000,0],
+			"pRange":[-12500,0],
 			"sTarget":100,
 			"sRange":[-2000,2000],
 			"aTarget":1000000,
@@ -804,7 +826,7 @@
 {
 	"name":"gluon",
 	"class":"_InnfosGluon",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
@@ -818,55 +840,55 @@
 			"name":"J1",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 		{
 			"name":"J2",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 		{
 			"name":"J3",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 		{
 			"name":"J4",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 		{
 			"name":"J5",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 		{
 			"name":"J6",
 			"pOrigin":0,
 			"pTarget":0,
-			"pErr":10,
-			"pRange":[0,10],
+			"pErr":1,
+			"pRange":[-1.5,1.5],
 			"sTarget":0,
-			"sRange":[0,10],
+			"sRange":[-1,1],
 		}
 	}
 }
@@ -875,7 +897,7 @@
 	"name":"apActuator",
 	"class":"_AP_actuator",
 	"FPS":10,
-	"bInst":1,
+	"bInst":0,
 	"Window":"viewArmL",
 	"Console":"consoleArmL",
 	"_AP_base":"apBase",

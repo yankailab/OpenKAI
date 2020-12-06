@@ -96,10 +96,18 @@ void _AP_actuator::updateActuator(void)
     m_rcStickH.pwm ( pwm );
 
     m_pAB->power(iMode!=0?true:false);
-    IF_(iMode == 0);
+    IF_(iMode != 0);
     
-    m_pAB->setPtarget(0, m_rcStickV.v());
-    m_pAB->setPtarget(1, m_rcStickH.v());    
+//    m_pAB->setPtarget(0, m_rcStickV.v());
+//    m_pAB->setPtarget(1, m_rcStickH.v());
+    
+    float s;
+    
+    s= m_rcStickV.v();
+    m_pAB->setStarget(0, s);
+
+    s= m_rcStickH.v();
+    m_pAB->setStarget(1, s);    
 }
 
 void _AP_actuator::draw(void)

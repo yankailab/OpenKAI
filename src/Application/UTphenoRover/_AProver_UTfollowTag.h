@@ -79,7 +79,7 @@ private:
     
     _Universe* m_pUtag;
     int m_iTag;
-    vFloat2  m_vTagX;
+    vFloat2  m_vTag;
 
 	float   m_nSpd;
     float   m_nStr;

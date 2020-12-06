@@ -28,9 +28,7 @@ bool _InnfosGluon::init(void* pKiss)
 	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
 	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
-    
-    IF_F(EstablishConnection());
- 
+     
 	string n;
 
 	return true;
@@ -38,20 +36,21 @@ bool _InnfosGluon::init(void* pKiss)
 
 bool _InnfosGluon::power(bool bON)
 {
-    IF__(bON == m_bPower, m_bPower);
+    IF_T(bON == m_bPower);
 
     if(bON)
     {
-        if(m_gluon.Initialization() == 0)
-            m_bPower = true;
+        IF_F(EstablishConnection());
+        IF_F(m_gluon.Initialization());
+
+        m_bPower = true;
     }
     else
     {
-        if(m_gluon.Shutdown() == 0)
-            m_bPower = false;
+        IF_F(m_gluon.Shutdown());
+
+        m_bPower = false;
     }
-    
-    return m_bPower;
 }
 
 bool _InnfosGluon::start(void)
@@ -70,7 +69,7 @@ bool _InnfosGluon::start(void)
 
 int _InnfosGluon::check(void)
 {
-    IF__(m_bPower, -1);
+    IF__(!m_bPower, -1);
     
 	return 0;
 }
@@ -100,12 +99,16 @@ void _InnfosGluon::updateGluon (void)
 	IF_(!m_ieSendCMD.update(m_tStamp));
     
     double pJoint[7];
-    for(int i=0; i<m_vAxis.size(); i++)
-    {
-        pJoint[i] = m_vAxis[i].m_p.m_vTarget;
-    }
+
+//    for(int i=0; i<m_vAxis.size(); i++)
+//        pJoint[i] = m_vAxis[i].m_p.m_vTarget;
     
 //    MoveToTargetJoint(&m_gluon, pJoint);
+    
+    
+    for(int i=0; i<m_vAxis.size(); i++)
+        pJoint[i] = m_vAxis[i].m_s.m_vTarget;
+    MoveJointIncremental(&m_gluon, pJoint);
     
     
 //    m_gluon.GetMaxLineAcceleration(m_maxLinearAccel);

@@ -78,11 +78,11 @@ bool _ActuatorBase::init(void* pKiss)
 
 	IF_F(m_vAxis.size() < m_nMinAxis);
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_INFO(pK->v("_ActuatorBase", &iName));
-	m_pParent = (_ActuatorBase*) (pK->getInst(iName));
+	n = "";
+	F_INFO(pK->v("_ActuatorBase", &n ));
+	m_pParent = (_ActuatorBase*) (pK->getInst( n ));
 
 	return true;
 }

@@ -207,18 +207,15 @@ _Object* _UTprArmL::findTarget(void)
 {    
 	_Object *pO;
 	_Object *tO = NULL;
-	float rSqr = FLT_MAX;
+	float rMin = FLT_MAX;
 	int i = 0;
 	while ((pO = m_pU->get(i++)) != NULL)
 	{
-		vFloat3 p = pO->getPos();
-		float x = p.x - m_vPtarget.x;
-		float y = p.y - m_vPtarget.y;
-		float r = x*x + y*y;
-		IF_CONT(r > rSqr);
+        float r = pO->getRadius();
+		IF_CONT(r > rMin);
 
 		tO = pO;
-		rSqr = r;
+		rMin = r;
 	}
 
     return tO;
