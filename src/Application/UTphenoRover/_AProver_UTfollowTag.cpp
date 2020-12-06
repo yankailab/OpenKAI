@@ -19,7 +19,8 @@ _AProver_UTfollowTag::_AProver_UTfollowTag()
     
     m_pUtag = NULL;
     m_iTag = -1;
-    m_vTag.init(0.2, 0.8);
+    m_vTagY.init(0.2, 0.8);
+    m_vTagX.init(0.2, 0.8);
     
     m_nSpd = 0.0;
     m_nStr = 0.0;
@@ -37,7 +38,8 @@ bool _AProver_UTfollowTag::init ( void* pKiss )
     pK->v ( "targetSide", &m_targetSide );
     pK->v ( "nSpd", &m_nSpd );
     pK->v ( "nStr", &m_nStr );
-    pK->v ( "vTag", &m_vTag );
+    pK->v ( "vTagY", &m_vTagY );
+    pK->v ( "vTagX", &m_vTagX );
     pK->v ( "vSide", &m_vSide );
     
     IF_F(!m_pMC);
@@ -163,7 +165,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
     if ( pO )
     {
         int iTag = pO->getTopClass();
-        if(m_iTag != iTag && m_vTag.bInside(pO->getY()))
+        if(m_iTag != iTag && m_vTagY.bInside(pO->getY()) && m_vTagX.bInside(pO->getX()))
         {
             nSpd = 0.0;
             m_nStr = 0.0;
