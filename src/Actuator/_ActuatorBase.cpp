@@ -12,6 +12,7 @@ _ActuatorBase::_ActuatorBase()
 	m_nMinAxis = 1;
 
     m_bPower = false;
+    m_bReady = false;
 	m_bFeedback = true;
 	m_bMoving = false;
 
@@ -200,6 +201,20 @@ float _ActuatorBase::getS(int i)
 	IF__(i<0 || i>=m_vAxis.size(), -1);
 
 	return m_vAxis[i].m_s.m_v;
+}
+
+float _ActuatorBase::getPtarget(int i)
+{
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].m_p.m_vTarget;
+}
+
+float _ActuatorBase::getStarget(int i)
+{
+	IF__(i<0 || i>=m_vAxis.size(), -1);
+
+	return m_vAxis[i].m_s.m_vTarget;
 }
 
 void _ActuatorBase::draw(void)

@@ -28,7 +28,7 @@ bool _InnfosGluon::init(void* pKiss)
 	pK->v("tIntCheckAlarm", &m_ieCheckAlarm.m_tInterval);
 	pK->v("tIntSendCMD", &m_ieSendCMD.m_tInterval);
 	pK->v("tIntReadStatus", &m_ieReadStatus.m_tInterval);
-     
+
 	string n;
 
 	return true;
@@ -42,13 +42,14 @@ bool _InnfosGluon::power(bool bON)
     {
         IF_F(EstablishConnection());
         IF_F(m_gluon.Initialization());
-
         m_bPower = true;
+        
+        m_gluon.ActivatePositionMode();
+//        m_gluon.ActivateVelocityMode();
     }
     else
     {
         IF_F(m_gluon.Shutdown());
-
         m_bPower = false;
     }
 }
@@ -80,6 +81,7 @@ void _InnfosGluon::update(void)
 	{
 		this->autoFPSfrom();
 
+        readStatus();
 		updateGluon();
 
 		this->autoFPSto();
@@ -97,18 +99,17 @@ void _InnfosGluon::updateGluon (void)
 {
 	IF_(check()<0);
 	IF_(!m_ieSendCMD.update(m_tStamp));
+//    IF_(!m_bReady);
     
     double pJoint[7];
-
-//    for(int i=0; i<m_vAxis.size(); i++)
-//        pJoint[i] = m_vAxis[i].m_p.m_vTarget;
-    
-//    MoveToTargetJoint(&m_gluon, pJoint);
-    
     
     for(int i=0; i<m_vAxis.size(); i++)
-        pJoint[i] = m_vAxis[i].m_s.m_vTarget;
-    MoveJointIncremental(&m_gluon, pJoint);
+        pJoint[i] = m_vAxis[i].m_p.m_vTarget;
+    MoveToTargetJoint(&m_gluon, pJoint);
+    
+//    for(int i=0; i<m_vAxis.size(); i++)
+//        pJoint[i] = m_vAxis[i].m_s.m_vTarget;
+//    MoveJointIncremental(&m_gluon, pJoint);
     
     
 //    m_gluon.GetMaxLineAcceleration(m_maxLinearAccel);
@@ -123,7 +124,7 @@ void _InnfosGluon::readStatus(void)
 {
 	IF_(check()<0);
 	IF_(!m_ieReadStatus.update(m_tStamp));
-    
+    return;//
     int nAxis = m_gluon.GetAxisNum();
     double pJoint[7];
     m_gluon.GetCurrentJointAngle(pJoint);
@@ -133,6 +134,8 @@ void _InnfosGluon::readStatus(void)
         if(i >= m_vAxis.size())break;
         m_vAxis[i].m_p.m_v = pJoint[i];        
     }
+    
+    m_bReady = true;
 }
 
 void _InnfosGluon::draw(void)

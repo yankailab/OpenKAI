@@ -106,6 +106,8 @@ public:
 
 	virtual float getP(int i);
 	virtual float getS(int i);
+	virtual float getPtarget(int i);
+	virtual float getStarget(int i);
     
     virtual bool power(bool bON);
 
@@ -124,6 +126,7 @@ public:
 	int m_nMinAxis;
 
     bool m_bPower;
+    bool m_bReady;
 	bool m_bFeedback;
 	bool m_bMoving;
 

@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
 	"bStdErr":1,
@@ -18,7 +18,13 @@
 {
 	"name":"consoleArmL",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
+}
+
+{
+	"name":"consoleGluon",
+	"class":"Console",
+	"bInst":0,
 }
 
 {
@@ -275,7 +281,7 @@
 	"Window":"viewArmL",
 	"Console":"consoleArmL",
 	"_VisionBase":"D435",
-	"_Universe":"univTagL",
+	"_Universe":"univTagArm",
 	"persistence":10.0,
 	"gain":0.5,
 	"angleOffset":-180,
@@ -514,6 +520,7 @@
 	"oMin":-1.0,
 	"oMax":1.0,
 }
+			"sRange":[-1,1],
 
 {
 	"name":"apFollowTag",
@@ -534,8 +541,8 @@
 	"targetSide":0.4,
 	"nSpd":1.0,
 	"nStr":0.0,
-	"vTagX":[0.2, 0.8],
-	"vTagY":[0.2, 0.8],
+	"vTagX":[0.1, 0.6],
+	"vTagY":[0.3, 0.9],
 	"vSide":[0.2, 0.8],
 }
 
@@ -586,8 +593,8 @@
 	"vPextract":[38000, -9000.0, 0.0],
 	"zSpeed":3000.0,
 	"zrK":5.0,
-	"vZgoal":[10000.0, 23000.0],
-	"vPrecover":[20000, 0.0, 0.0],
+	"vZgoal":[10000.0, 20000.0],
+	"vPrecover":[22000, 0.0, 0.0],
 }
 
 
@@ -827,13 +834,13 @@
 {
 	"name":"gluon",
 	"class":"_InnfosGluon",
-	"bInst":1,
+	"bInst":0,
 	"FPS":30,
-	"bLog":0,
-	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"bLog":1,
+	"Window":"viewGluon",
+	"Console":"consoleGluon",
 	"tIntCheckAlarm":100000,
-	"tIntReadStatus":50000,
+	"tIntReadStatus":500000,
 
 	{
 		"name":"axis",
@@ -842,54 +849,54 @@
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 		{
 			"name":"J2",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 		{
 			"name":"J3",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 		{
 			"name":"J4",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 		{
 			"name":"J5",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 		{
 			"name":"J6",
 			"pOrigin":0,
 			"pTarget":0,
 			"pErr":1,
-			"pRange":[-1.5,1.5],
+			"pRange":[-1.0,1.0],
 			"sTarget":0,
-			"sRange":[-1,1],
+			"sRange":[-0.01, 0.01],
 		}
 	}
 }
@@ -899,12 +906,12 @@
 	"class":"_AP_actuator",
 	"FPS":10,
 	"bInst":0,
-	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"Window":"viewGluon",
+	"Console":"consoleGluon",
 	"_AP_base":"apBase",
 	"_ActuatorBase":"gluon",
-    "iRCmodeChan":10,
-	"vRCmodeDiv":[1250,1750,2200],
+    "iRCmodeChan":5,
+	"vRCmodeDiv":[1250,2200],
     "iRCstickV":2,
     "iRCstickH":4,
 }

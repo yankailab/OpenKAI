@@ -17,6 +17,7 @@ struct RC_CHANNEL
 	float m_bH;
 	float m_bL;
 	float m_v;	//normalized to 0.0 ~ 1.0
+	float m_dz;
 
 	vector<int> m_vDiv;
 	uint16_t m_i;
@@ -30,6 +31,7 @@ struct RC_CHANNEL
 		m_pwm = m_pwmM;
 		m_v = 0.5;
 		m_i = 0;
+        m_dz = 0.05;
 	}
 
 	void setup(void)
@@ -64,6 +66,14 @@ struct RC_CHANNEL
 	float v(void)
 	{
 		return m_v;
+	}
+	
+    float d(void)
+	{
+        float d = m_v - 0.5;
+        if(abs(d) < m_dz)d = 0.0;
+        
+		return d;
 	}
 
 	uint16_t i(void)

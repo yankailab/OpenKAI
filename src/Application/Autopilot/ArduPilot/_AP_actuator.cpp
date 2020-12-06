@@ -26,6 +26,10 @@ bool _AP_actuator::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
     pK->v ( "iRCstickV", &m_rcStickV.m_iChan );
     pK->v ( "iRCstickH", &m_rcStickH.m_iChan );
+    
+    m_rcMode.setup();
+    m_rcStickV.setup();
+    m_rcStickH.setup();    
 
 	string n = "";
 
@@ -95,19 +99,19 @@ void _AP_actuator::updateActuator(void)
     IF_ ( pwm == UINT16_MAX );
     m_rcStickH.pwm ( pwm );
 
+    
+    
     m_pAB->power(iMode!=0?true:false);
-    IF_(iMode != 0);
-    
-//    m_pAB->setPtarget(0, m_rcStickV.v());
-//    m_pAB->setPtarget(1, m_rcStickH.v());
-    
-    float s;
-    
-    s= m_rcStickV.v();
-    m_pAB->setStarget(0, s);
+    IF_(iMode == 0);
+        
+    m_pAB->setPtarget(0, m_pAB->getPtarget(0) + m_rcStickV.d());
+    m_pAB->setPtarget(1, m_pAB->getPtarget(1) + m_rcStickH.d());
 
-    s= m_rcStickH.v();
-    m_pAB->setStarget(1, s);    
+//    m_pAB->setStarget(0, m_rcStickV.d());
+//    m_pAB->setStarget(1, m_rcStickH.d());
+//    m_pAB->setPtarget(0, (m_rcStickV.v() - 0.5) * CV_PI);
+//    m_pAB->setPtarget(1, (m_rcStickH.v() - 0.5) * CV_PI);
+
 }
 
 void _AP_actuator::draw(void)
@@ -117,8 +121,8 @@ void _AP_actuator::draw(void)
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_rcMode.i()), 1);
-	addMsg("stickV: "+f2str(m_rcStickV.i()), 1);
-	addMsg("stickH: "+f2str(m_rcStickH.i()), 1);
+	addMsg("stickV v = "+f2str(m_rcStickV.v()) + ", d = " + f2str(m_rcStickV.d()), 1);
+	addMsg("stickH v = "+f2str(m_rcStickH.v()) + ", d = " + f2str(m_rcStickH.d()), 1);
 }
 
 }
