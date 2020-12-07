@@ -520,7 +520,6 @@
 	"oMin":-1.0,
 	"oMax":1.0,
 }
-			"sRange":[-1,1],
 
 {
 	"name":"apFollowTag",
