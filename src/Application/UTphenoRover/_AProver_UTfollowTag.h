@@ -4,7 +4,7 @@
 
 #include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../../Universe/_Universe.h"
-#include "../../Control/PIDctrl.h"
+#include "../../Control/PID.h"
 #include "../../Control/Drive.h"
 #include "../../Utility/util.h"
 
@@ -69,7 +69,7 @@ private:
 	Drive* m_pD;
 
     _Universe* m_pUside;
-    PIDctrl* m_pPIDside;
+    PID* m_pPIDside;
     float m_errSide;
 	float m_targetSide;
     vFloat2 m_vSide;

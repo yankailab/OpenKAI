@@ -2,7 +2,7 @@
 #define OpenKAI_src_Application_UTphenoRover__UTprArmL_H_
 
 #include "../../Universe/_Universe.h"
-#include "../../Control/PIDctrl.h"
+#include "../../Control/PID.h"
 #include "../../Actuator/_ActuatorBase.h"
 #include "_AProver_UTfollowTag.h"
 
@@ -42,8 +42,8 @@ public:
 	_ActuatorBase* m_pAy;
 	_ActuatorBase* m_pAz;
 	_Universe* m_pU;
-    PIDctrl* m_pXpid;
-	PIDctrl* m_pYpid;
+    PID* m_pXpid;
+	PID* m_pYpid;
 
 	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
 	vFloat3 m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit

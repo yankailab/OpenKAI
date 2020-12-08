@@ -36,7 +36,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Object);
 	ADD_MODULE(_Path);
-	ADD_MODULE(PIDctrl);
+	ADD_MODULE( PID );
 	ADD_MODULE(Drive);
 	ADD_MODULE(_ProtocolBase);
 	ADD_MODULE(_RPLIDAR);
@@ -75,6 +75,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_UTfollowTag);
 	ADD_MODULE(_AProver_KU);
 	ADD_MODULE(_AProver_KUfollowTag);
+	ADD_MODULE(_AProver_BR);
+	ADD_MODULE(_AProver_BRfollow);
 
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);

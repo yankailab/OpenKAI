@@ -64,7 +64,7 @@ bool _AProver_UTfollowTag::init ( void* pKiss )
 
     n = "";
     pK->v ( "PIDside", &n );
-    m_pPIDside = ( PIDctrl* ) ( pK->getInst ( n ) );
+    m_pPIDside = ( PID* ) ( pK->getInst ( n ) );
     NULL_Fl ( m_pPIDside, n + " not found" );
 
     n = "";

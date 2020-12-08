@@ -54,12 +54,12 @@ bool _AProver_KUfollowTag::init ( void* pKiss )
 
     n = "";
     pK->v ( "PIDtagX", &n );
-    m_pPIDtagX = ( PIDctrl* ) ( pK->getInst ( n ) );
+    m_pPIDtagX = ( PID* ) ( pK->getInst ( n ) );
     NULL_Fl ( m_pPIDtagX, n + " not found" );
 
     n = "";
     pK->v ( "PIDtagHdg", &n );
-    m_pPIDtagHdg = ( PIDctrl* ) ( pK->getInst ( n ) );
+    m_pPIDtagHdg = ( PID* ) ( pK->getInst ( n ) );
     NULL_Fl ( m_pPIDtagHdg, n + " not found" );
 
     return true;

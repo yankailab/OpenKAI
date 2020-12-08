@@ -13,11 +13,11 @@
 namespace kai
 {
 
-class PIDctrl: public ControlBase
+class PID: public ControlBase
 {
 public:
-	PIDctrl();
-	virtual ~PIDctrl();
+	PID();
+	virtual ~PID();
 
 	virtual bool init(void* pKiss);
 	virtual float update(float v, float vTarget, uint64_t t);

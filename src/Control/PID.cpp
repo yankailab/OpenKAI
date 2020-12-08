@@ -5,12 +5,12 @@
  *      Author: yankai
  */
 
-#include "PIDctrl.h"
+#include "PID.h"
 
 namespace kai
 {
 
-PIDctrl::PIDctrl()
+PID::PID()
 {
 	m_dT = 0;
 	m_oMin = -FLT_MAX;
@@ -26,11 +26,11 @@ PIDctrl::PIDctrl()
 	reset();
 }
 
-PIDctrl::~PIDctrl()
+PID::~PID()
 {
 }
 
-bool PIDctrl::init(void* pKiss)
+bool PID::init(void* pKiss)
 {
 	IF_F(!this->ControlBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -52,7 +52,7 @@ bool PIDctrl::init(void* pKiss)
 	return true;
 }
 
-float PIDctrl::update(float v, float vTarget, uint64_t t)
+float PID::update(float v, float vTarget, uint64_t t)
 {
 	if(t <= m_tLastUpdate)
 		return m_output;
@@ -88,12 +88,12 @@ float PIDctrl::update(float v, float vTarget, uint64_t t)
 	return m_output;
 }
 
-double PIDctrl::o(void)
+double PID::o(void)
 {
 	return m_output;
 }
 
-void PIDctrl::reset(void)
+void PID::reset(void)
 {
 	m_v = 0.0;
 	m_vPred = 0.0;
@@ -107,7 +107,7 @@ void PIDctrl::reset(void)
 	m_tLastUpdate = 0;
 }
 
-void PIDctrl::draw(void)
+void PID::draw(void)
 {
 	this->ControlBase::draw();
 

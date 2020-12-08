@@ -1,7 +1,6 @@
 #ifndef OpenKAI_src_Autopilot_AP__AProver_picking_H_
 #define OpenKAI_src_Autopilot_AP__AProver_picking_H_
 
-#include "../../../Control/PIDctrl.h"
 #include "../../RobotArm/_PickingArm.h"
 #include "../../../Utility/RC.h"
 #include "_AP_base.h"

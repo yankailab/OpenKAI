@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 #define OpenKAI_src_Autopilot_AP__AP_posCtrl_H_
 
-#include "../../../Control/PIDctrl.h"
+#include "../../../Control/PID.h"
 #include "../ArduPilot/_AP_base.h"
 
 namespace kai
@@ -42,9 +42,9 @@ public:
 	vFloat4 m_vTargetP;	//constant, screen coordinate where the followed object should get to
 	vDouble4 m_vTargetGlobal;	//lat, lon, alt, hdg
 
-	PIDctrl* m_pRoll;
-	PIDctrl* m_pPitch;
-	PIDctrl* m_pAlt;
+	PID* m_pRoll;
+	PID* m_pPitch;
+	PID* m_pAlt;
 
 	bool	m_bYaw;
 

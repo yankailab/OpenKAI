@@ -67,12 +67,12 @@ bool _UTprArmL::init(void *pKiss)
 
 	n = "";
 	F_ERROR_F(pK->v("PIDx", &n ));
-	m_pXpid = (PIDctrl*) (pK->getInst( n ));
+	m_pXpid = ( PID*) (pK->getInst( n ));
 	NULL_Fl(m_pXpid, n + " not found");
 
 	n = "";
 	F_ERROR_F(pK->v("PIDy", &n ));
-	m_pYpid = (PIDctrl*) (pK->getInst( n ));
+	m_pYpid = ( PID*) (pK->getInst( n ));
 	NULL_Fl(m_pYpid, n + " not found");
 
 	return true;

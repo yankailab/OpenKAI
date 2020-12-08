@@ -10,7 +10,7 @@
 
 #include "../../Mission/_MissionBase.h"
 #include "../../Universe/_Universe.h"
-#include "../../Control/PIDctrl.h"
+#include "../../Control/PID.h"
 #include "../../Actuator/_ActuatorBase.h"
 #include "../../Actuator/_StepperGripper.h"
 #include "../../Sensor/_DistSensorBase.h"
@@ -100,9 +100,9 @@ public:
 	float	m_baseAngle;
 	vFloat3 m_vP;		//x,y:variable, screen coordinate of the object being followed, z:variable in mm unit
 	vFloat3 m_vPtarget;	//x,y:constant, screen coordinate where the followed object should get to, z:variable in mm unit
-	PIDctrl* m_pXpid;
-	PIDctrl* m_pYpid;
-	PIDctrl* m_pZpid;
+	PID* m_pXpid;
+	PID* m_pYpid;
+	PID* m_pZpid;
 	vFloat4	m_vZrange;
 	float m_zSpeed;
 	float m_zrK;

@@ -42,9 +42,10 @@
 #include "../Application/UTphenoRover/_AProver_UTfollowTag.h"
 #include "../Application/KUphenoRover/_AProver_KU.h"
 #include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
+#include "../Application/BenchRover/_AProver_BR.h"
+#include "../Application/BenchRover/_AProver_BRfollow.h"
 
-
-#include "../Control/PIDctrl.h"
+#include "../Control/PID.h"
 #include "../Control/Drive.h"
 
 #include "../Mission/_MissionControl.h"

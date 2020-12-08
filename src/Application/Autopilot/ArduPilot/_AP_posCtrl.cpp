@@ -62,15 +62,15 @@ bool _AP_posCtrl::init(void* pKiss)
 
 	iName = "";
 	pK->v("PIDroll", &iName);
-	m_pRoll = (PIDctrl*) (pK->getInst(iName));
+	m_pRoll = ( PID*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("PIDpitch", &iName);
-	m_pPitch = (PIDctrl*) (pK->getInst(iName));
+	m_pPitch = ( PID*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("PIDalt", &iName);
-	m_pAlt = (PIDctrl*) (pK->getInst(iName));
+	m_pAlt = ( PID*) (pK->getInst(iName));
 
 	iName = "";
 	pK->v("_AP_base", &iName);

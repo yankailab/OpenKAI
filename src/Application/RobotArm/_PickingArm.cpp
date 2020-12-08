@@ -110,17 +110,17 @@ bool _PickingArm::init(void *pKiss)
 
 	iName = "";
 	F_ERROR_F(pK->v("PIDx", &iName));
-	m_pXpid = (PIDctrl*) (pK->getInst(iName));
+	m_pXpid = ( PID*) (pK->getInst(iName));
 	NULL_Fl(m_pXpid, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("PIDy", &iName));
-	m_pYpid = (PIDctrl*) (pK->getInst(iName));
+	m_pYpid = ( PID*) (pK->getInst(iName));
 	NULL_Fl(m_pYpid, iName + " not found");
 
 	iName = "";
 	F_ERROR_F(pK->v("PIDz", &iName));
-	m_pZpid = (PIDctrl*) (pK->getInst(iName));
+	m_pZpid = ( PID*) (pK->getInst(iName));
 	NULL_Fl(m_pZpid, iName + " not found");
 
 	return true;
