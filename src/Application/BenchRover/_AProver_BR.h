@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AProver_BR_H_
 
 #include "../Autopilot/ArduPilot/_AP_base.h"
-#include "../../Control/Drive.h"
+#include "../../Control/_Drive.h"
 #include "../../Utility/RC.h"
 
 namespace kai
@@ -56,10 +56,13 @@ private:
 
 public:
 	_AP_base* m_pAP;
-    Drive*    m_pD;
+    _Drive*    m_pD;
     
     RC_CHANNEL m_rcMode;
     APROVER_BR_MODE m_iMode;
+     
+    RC_CHANNEL m_rcStickV;
+    RC_CHANNEL m_rcStickH;
 };
 
 }

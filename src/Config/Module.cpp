@@ -37,7 +37,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Object);
 	ADD_MODULE(_Path);
 	ADD_MODULE( PID );
-	ADD_MODULE(Drive);
+	ADD_MODULE( _Drive );
 	ADD_MODULE(_ProtocolBase);
 	ADD_MODULE(_RPLIDAR);
 	ADD_MODULE(_SerialPort);

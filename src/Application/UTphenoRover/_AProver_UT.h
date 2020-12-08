@@ -47,7 +47,7 @@ protected:
 
 public:
 	_AP_base* 	m_pAP;
-    Drive*    m_pD;
+    _Drive*    m_pD;
     RC_CHANNEL m_rcMode;
     APROVER_UT_MODE m_iMode;
 

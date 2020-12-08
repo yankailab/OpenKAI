@@ -9,6 +9,9 @@ _AProver_BR::_AProver_BR()
     m_pD = NULL;
 
     m_rcMode.init();
+    m_rcMode.m_iChan = 8;
+    m_rcStickV.init();
+    m_rcStickH.init();
 }
 
 _AProver_BR::~_AProver_BR()
@@ -21,7 +24,13 @@ bool _AProver_BR::init ( void* pKiss )
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "iRCmode", &m_rcMode.m_iChan );
+    pK->a ( "vRCmode", &m_rcMode.m_vDiv );
     m_rcMode.setup();
+    
+    pK->v ( "iRCstickV", &m_rcStickV.m_iChan );
+    pK->v ( "iRCstickH", &m_rcStickH.m_iChan );    
+    m_rcStickV.setup();
+    m_rcStickH.setup();    
 
     IF_F ( !m_pMC );
     IF_F ( !m_iMode.assign ( m_pMC ) );
@@ -34,7 +43,7 @@ bool _AProver_BR::init ( void* pKiss )
 
     n = "";
     pK->v ( "Drive", &n );
-    m_pD = ( Drive* ) ( pK->getInst ( n ) );
+    m_pD = ( _Drive* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pD, n + ": not found" );
 
     return true;
@@ -84,25 +93,25 @@ void _AProver_BR::updateMode ( void )
     float dir = 0.0;
     int mode = m_iMode.MANUAL;
 
-    uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
-    if ( pwmMode != UINT16_MAX )
+    uint16_t pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcMode.m_iChan );
+    if ( pwm != UINT16_MAX )
     {
-        m_rcMode.pwm ( pwmMode );
+        m_rcMode.pwm ( pwm );
 
         int iMode = m_rcMode.i();
         switch ( iMode )
         {
         case 0:
-            mode = m_iMode.FORWARD;
-            dir = 1.0;
+            mode = m_iMode.BACKWARD;
+            dir = -1.0;
             break;
         case 1:
             mode = m_iMode.MANUAL;
             dir = 0.0;
             break;
         case 2:
-            mode = m_iMode.BACKWARD;
-            dir = -1.0;
+            mode = m_iMode.FORWARD;
+            dir = 1.0;
             break;
         default:
             mode = m_iMode.MANUAL;
@@ -111,15 +120,46 @@ void _AProver_BR::updateMode ( void )
         }
     }
 
-    uint32_t apMode = m_pAP->getApMode();
-    if ( apMode != AP_ROVER_MANUAL )
+    if ( (m_pAP->getApMode() != AP_ROVER_MANUAL) ||
+         (!m_pAP->bApArmed()))
     {
         mode = m_iMode.MANUAL;
         dir = 0.0;
+        m_pMC->transit ( mode );
+        m_pD->setDirection ( dir );
+        m_pD->setSpeed ( 0.0 );
+        return;
     }
-
+    
+    if(mode != m_iMode.MANUAL)
+    {
+        m_pMC->transit ( mode );
+        m_pD->setDirection ( dir );
+        return;
+    }
+    
+    //Manual mode
+    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickV.m_iChan );
+    if( pwm == UINT16_MAX )pwm = m_rcStickV.m_pwmM;
+    m_rcStickV.pwm ( pwm );
+    
+    pwm = m_pAP->m_pMav->m_rcChannels.getRC ( m_rcStickH.m_iChan );
+    if( pwm == UINT16_MAX )pwm = m_rcStickH.m_pwmM;
+    m_rcStickH.pwm ( pwm );
+    
     m_pMC->transit ( mode );
-    m_pD->setDirection ( dir );
+    
+    float v = (m_rcStickV.v() - 0.5) * 2.0;
+    float d = 0;
+    if(v > 0)d=1.0;
+    else if(v < 0)d=-1.0;
+    
+    m_pD->setDirection(d);
+    m_pD->setSpeed(abs(v));
+    
+    v = (m_rcStickH.v() - 0.5) * 2.0;
+    v *= d;
+    m_pD->setSteering(v);
 }
 
 void _AProver_BR::draw ( void )
@@ -128,6 +168,8 @@ void _AProver_BR::draw ( void )
     drawActive();
 
     addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_pwm ) + ", i=" + i2str ( m_rcMode.i() ) );
+    addMsg ( "rcStickV pwm=" + i2str ( m_rcStickV.m_pwm ) + ", v=" + f2str ( m_rcStickV.v() ) );
+    addMsg ( "rcStickH pwm=" + i2str ( m_rcStickH.m_pwm ) + ", v=" + f2str ( m_rcStickH.v() ) );
 }
 
 }

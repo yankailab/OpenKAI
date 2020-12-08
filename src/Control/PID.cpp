@@ -32,7 +32,7 @@ PID::~PID()
 
 bool PID::init(void* pKiss)
 {
-	IF_F(!this->ControlBase::init(pKiss));
+	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vMin",&m_vMin);
@@ -109,7 +109,7 @@ void PID::reset(void)
 
 void PID::draw(void)
 {
-	this->ControlBase::draw();
+	this->BASE::draw();
 
 	addMsg("v=" + f2str(m_v)
 			+ " vPred=" + f2str(m_vPred)

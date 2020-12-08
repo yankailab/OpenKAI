@@ -39,7 +39,7 @@ bool _AProver_UT::init(void* pKiss)
     
     n = "";
 	pK->v("Drive", &n);
-	m_pD = (Drive*) (pK->getInst(n));
+	m_pD = ( _Drive*) (pK->getInst(n));
 	IF_Fl(!m_pD, n + ": not found");
 
     

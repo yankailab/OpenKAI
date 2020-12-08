@@ -42,7 +42,7 @@ bool _AProver_BRfollow::init ( void* pKiss )
 
     n = "";
     pK->v ( "Drive", &n );
-    m_pD = ( Drive* ) ( pK->getInst ( n ) );
+    m_pD = ( _Drive* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pD, n + ": not found" );
 
     n = "";
@@ -109,23 +109,22 @@ void _AProver_BRfollow::updateFollow ( void )
     float dir = m_pD->getDirection();   //+/-1.0
     float nSpd = m_nSpd;
     
-    _Object* pO = findTarget();
+    _Object* pO = m_pUpath->get(0);
+    if ( pO )
+        m_errX = dir * (pO->getX() - m_targetX);
+    else
+        m_errX = 0.0;
+
+    m_nStr = dir * m_pPID->update ( m_errX, 0.0, m_tStamp );
+    
+    pO = findTarget();
     if ( pO )
     {
         int iTag = pO->getTopClass();
         if(iTag == m_iTagStop)
-        {
             nSpd = 0.0;
-            m_errX = 0.0;
-        }
-        else
-        {
-            m_errX = dir * (pO->getX() - m_targetX);
-        }
-        
     }
 
-    m_nStr = dir * m_pPID->update ( m_errX, 0.0, m_tStamp );
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
 }

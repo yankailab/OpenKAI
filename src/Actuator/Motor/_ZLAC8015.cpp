@@ -11,7 +11,7 @@ _ZLAC8015::_ZLAC8015()
 {
 	m_pMB = NULL;
 	m_iSlave = 1;
-	m_iMode = 3;
+	m_iMode = 3;   //speed control
 	m_pA = NULL;
 
 	m_ieReadStatus.init(50000);
@@ -32,12 +32,12 @@ bool _ZLAC8015::init(void* pKiss)
 
 	m_pA = &m_vAxis[0];
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_Modbus", &iName));
-	m_pMB = (_Modbus*) (pK->getInst(iName));
-	IF_Fl(!m_pMB, iName + " not found");
-
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_Modbus", &n ));
+	m_pMB = (_Modbus*) (pK->getInst( n ));
+	IF_Fl(!m_pMB, n + " not found");
+    
 	return true;
 }
 
@@ -70,42 +70,47 @@ void _ZLAC8015::update(void)
 	{
 		this->autoFPSfrom();
 
-		readStatus();
-		updateMove();
+        if(!m_bReady)
+        {
+            setup();
+        }
+        else
+        {
+            readStatus();
+            updateMove();
+        }
 
 		this->autoFPSto();
 	}
+}
+
+void _ZLAC8015::setup(void)
+{
+    IF_(!setMode());
+    IF_(!setAccel());
+    IF_(!setBrake());
+    IF_(!m_pMB->writeRegister(m_iSlave, 0x2031, 0x08)); //power on the motor
+    
+    m_bReady = true;
 }
 
 void _ZLAC8015::updateMove(void)
 {
 	IF_(check()<0);
 
+    setSpeed();
     
-    int r;
-    
-//    r = m_pMB->writeRegister(m_iSlave, 0x203A, 100);
-//    r = m_pMB->writeRegister(m_iSlave, 0x203A, -100);
-//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x07);
-
-//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06);
-    
-	IF_(!setMode());
-    r = m_pMB->writeRegister(m_iSlave, 0x2037, 500);
-    r = m_pMB->writeRegister(m_iSlave, 0x2038, 500);
-    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x08);
-//	IF_(!setAccel());
-//	IF_(!setBrake());
-	IF_(!setSpeed());
+//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x07); //power off
+//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
 }
 
 bool _ZLAC8015::setMode(void)
 {
 	IF_F(check()<0);
 
-//	IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
-	int r = m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode);
-    IF_F(r != 1);
+	IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
+//	int r = m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode);
+//    IF_F(r != 1);
 
 	return true;
 }
@@ -115,9 +120,7 @@ bool _ZLAC8015::setAccel(void)
 	IF_F(check()<0);
 
 	uint16_t v = m_pA->m_a.m_vTarget;
-//	IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
-	int r = m_pMB->writeRegister(m_iSlave, 0x2037, v);
-    if(r != 1)return false;
+	IF_F(m_pMB->writeRegister(m_iSlave, 0x2037, v) != 1);
 
 	return true;
 }

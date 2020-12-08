@@ -2,7 +2,7 @@
 #define OpenKAI_src_Autopilot_AP__AProver_drive_H_
 
 #include "_AP_base.h"
-#include "../../../Control/Drive.h"
+#include "../../../Control/_Drive.h"
 
 namespace kai
 {
@@ -31,7 +31,7 @@ protected:
 
 public:
 	_AP_base* 	m_pAP;
-    Drive*      m_pD;
+    _Drive*      m_pD;
 
 	bool	m_bSetYawSpeed;
     float   m_yawMode;

@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Control__Drive_H_
 #define OpenKAI_src_Control__Drive_H_
 
-#include "ControlBase.h"
+#include "../Actuator/_ActuatorBase.h"
 
 namespace kai
 {
@@ -11,39 +11,42 @@ struct DRIVE_MOTOR
     //config
     float m_kSpd;           //velocity +/-
     float m_kStr;
-    vFloat2 m_vSpdRange;    //speed range
-	vFloat2 m_vStrRange;    //steering range
     
     //var
     float m_spd;
-    float m_str;
+    
+    _ActuatorBase* m_pActuator;
+    int8_t m_iAxis;
 
     void init(void)
     {
         m_kSpd = 1.0;
         m_kStr = 1.0;
-        m_vSpdRange.init(-1.0,1.0);
-        m_vStrRange.init(-1.0,1.0);
         
         m_spd = 0.0;
-        m_str = 0.0;
+        m_pActuator = NULL;
+        m_iAxis = 0;
     }
     
     void update(float nSpd, float nStr)
     {
-        m_spd = m_vSpdRange.constrain(nSpd * m_kSpd);
-        m_str = m_vStrRange.constrain(nStr * m_kStr);
+        m_spd = nSpd * m_kSpd + nStr * m_kStr;
+        
+        NULL_(m_pActuator);
+        m_pActuator->setStarget(m_iAxis, m_spd);
     }
 };
 
-class Drive: public ControlBase
+class _Drive: public _ThreadBase
 {
 public:
-	Drive();
-	~Drive();
+	_Drive();
+	~_Drive();
 
 	virtual	bool init(void* pKiss);
+	virtual bool start(void);
 	virtual void update(void);
+	virtual int check(void);
 	virtual void draw(void);
 
 	virtual void setSpeed(float nSpd);
@@ -54,15 +57,24 @@ public:
     virtual float getDirection(void);
     virtual float getSteering(void);
 
-    virtual float getSpeed(int iM);
- 	virtual float getSteering(int iM);
-    
+    virtual float getMotorSpeed(int iM);
+
+private:
+   	static void* getUpdateThread(void* This)
+	{
+		(( _Drive*) This)->update();
+		return NULL;
+	}
+
 private:
 	float	m_nSpd;
     float   m_nDir;
     float	m_nStr;
 	
-    vector<DRIVE_MOTOR> m_vM;
+    vFloat2 m_vSpdRange;    //overall speed range
+	vFloat2 m_vStrRange;    //overall steering range
+
+	vector<DRIVE_MOTOR> m_vM;
 
 };
 

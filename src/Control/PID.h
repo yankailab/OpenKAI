@@ -8,12 +8,13 @@
 #ifndef OpenKAI_src_Control_PIDctrl_H_
 #define OpenKAI_src_Control_PIDctrl_H_
 
-#include "ControlBase.h"
+#include "../Base/BASE.h"
+#include "../Script/Kiss.h"
 
 namespace kai
 {
 
-class PID: public ControlBase
+class PID: public BASE
 {
 public:
 	PID();

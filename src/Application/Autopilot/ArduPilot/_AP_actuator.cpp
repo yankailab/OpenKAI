@@ -10,7 +10,7 @@ _AP_actuator::_AP_actuator()
     
     m_rcMode.init();
     m_rcStickV.init();
-    m_rcStickH.init();    
+    m_rcStickH.init();
 }
 
 _AP_actuator::~_AP_actuator()
@@ -104,8 +104,8 @@ void _AP_actuator::updateActuator(void)
     m_pAB->power(iMode!=0?true:false);
     IF_(iMode == 0);
         
-    m_pAB->setPtarget(0, m_pAB->getPtarget(0) + m_rcStickV.d());
-    m_pAB->setPtarget(1, m_pAB->getPtarget(1) + m_rcStickH.d());
+//    m_pAB->setPtarget(0, m_pAB->getPtarget(0) + m_rcStickV.d());
+//    m_pAB->setPtarget(1, m_pAB->getPtarget(1) + m_rcStickH.d());
 
 //    m_pAB->setStarget(0, m_rcStickV.d());
 //    m_pAB->setStarget(1, m_rcStickH.d());
@@ -121,8 +121,8 @@ void _AP_actuator::draw(void)
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_rcMode.i()), 1);
-	addMsg("stickV v = "+f2str(m_rcStickV.v()) + ", d = " + f2str(m_rcStickV.d()), 1);
-	addMsg("stickH v = "+f2str(m_rcStickH.v()) + ", d = " + f2str(m_rcStickH.d()), 1);
+	addMsg("stickV v = "+f2str(m_rcStickV.v()), 1);
+	addMsg("stickH v = "+f2str(m_rcStickH.v()), 1);
 }
 
 }

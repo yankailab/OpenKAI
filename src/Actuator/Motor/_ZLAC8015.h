@@ -34,8 +34,9 @@ protected:
 	bool bComplete(void);
 	bool stop(void);
 	bool setSlave(int iSlave);
-
 	bool readStatus(void);
+    
+    void setup(void);
 
 	void updateMove(void);
 	void update(void);
@@ -52,7 +53,6 @@ public:
 	ACTUATOR_AXIS* m_pA;
 
 	INTERVAL_EVENT m_ieReadStatus;
-
 };
 
 }

@@ -5,7 +5,7 @@
 #include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../../Universe/_Universe.h"
 #include "../../Control/PID.h"
-#include "../../Control/Drive.h"
+#include "../../Control/_Drive.h"
 #include "../../Utility/util.h"
 
 namespace kai
@@ -34,7 +34,7 @@ private:
 
 private:
 	_AP_base* m_pAP;
-	Drive* m_pD;
+	_Drive* m_pD;
     _Universe* m_pU;
     PID* m_pPIDtagX;
     PID* m_pPIDtagHdg;

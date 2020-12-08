@@ -2,11 +2,10 @@
 #ifndef OpenKAI_src_Application_KUphenoRover__AProver_BRfollow_H_
 #define OpenKAI_src_Application_KUphenoRover__AProver_BRfollow_H_
 
-#include "../Autopilot/ArduPilot/_AP_base.h"
 #include "../../Universe/_Universe.h"
 #include "../../Control/PID.h"
-#include "../../Control/Drive.h"
-#include "../../Utility/util.h"
+#include "../../Control/_Drive.h"
+#include "_AProver_BR.h"
 
 namespace kai
 {
@@ -34,11 +33,11 @@ private:
 
 private:
 	_AP_base* m_pAP;
-	Drive* m_pD;
+	_Drive* m_pD;
     PID* m_pPID;
     _Universe* m_pUpath;
     _Universe* m_pUtag;
-    
+        
 	float   m_targetX;
     float   m_errX;
 	float   m_nSpd;

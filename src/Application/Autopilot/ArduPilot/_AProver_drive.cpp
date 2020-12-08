@@ -76,7 +76,7 @@ bool _AProver_drive::init(void* pKiss)
 
 	n = "";
 	pK->v("Drive", &n );
-	m_pD = (Drive*) (pK->getInst( n ));
+	m_pD = ( _Drive*) (pK->getInst( n ));
 	IF_Fl(!m_pD, n + ": not found");
 
     return true;
@@ -130,8 +130,8 @@ bool _AProver_drive::updateDrive(void)
     }
     
     m_pD->update();
-    float nSpd = m_pD->getSpeed(0);
-    float nStr = m_pD->getSteering(0);
+    float nSpd = m_pD->getSpeed();
+    float nStr = m_pD->getSteering();
     
 	if(m_bSetYawSpeed)
 	{
