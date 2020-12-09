@@ -39,10 +39,11 @@ private:
     _Universe* m_pUtag;
         
 	float   m_targetX;
-    float   m_errX;
+    float   m_pathX;
 	float   m_nSpd;
     float   m_nStr;
    	int     m_iTagStop;
+    int     m_iTag;
     
 };
 

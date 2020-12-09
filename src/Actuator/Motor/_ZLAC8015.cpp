@@ -77,6 +77,7 @@ void _ZLAC8015::update(void)
         else
         {
             readStatus();
+            clearAlarm();
             updateMove();
         }
 
@@ -89,19 +90,35 @@ void _ZLAC8015::setup(void)
     IF_(!setMode());
     IF_(!setAccel());
     IF_(!setBrake());
-    IF_(!m_pMB->writeRegister(m_iSlave, 0x2031, 0x08)); //power on the motor
+    IF_(!power(true));
     
     m_bReady = true;
+}
+
+bool _ZLAC8015::power(bool bON)
+{
+	IF_F(check()<0);
+    IF_T(bON == m_bPower);
+
+    if(bON)
+    {
+        IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x08) != 1);
+        m_bPower = true;
+    }
+    else
+    {
+        IF_F(m_pMB->writeRegister(m_iSlave, 0x2031, 0x07) != 1);
+        m_bPower = false;
+    }
+    
+    return true;
 }
 
 void _ZLAC8015::updateMove(void)
 {
 	IF_(check()<0);
 
-    setSpeed();
-    
-//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x07); //power off
-//    r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
+    setSpeed();    
 }
 
 bool _ZLAC8015::setMode(void)
@@ -109,8 +126,6 @@ bool _ZLAC8015::setMode(void)
 	IF_F(check()<0);
 
 	IF_F(m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode) != 1);
-//	int r = m_pMB->writeRegister(m_iSlave, 0x2032, m_iMode);
-//    IF_F(r != 1);
 
 	return true;
 }
@@ -176,6 +191,17 @@ bool _ZLAC8015::readStatus(void)
 //	int p = MAKE32(pB[0], pB[1]);
 	int16_t p = pB[0];
 	m_pA->m_p.m_v = p;
+
+	return true;
+}
+
+bool _ZLAC8015::clearAlarm(void)
+{
+	IF_F(check()<0);
+	IF_T(!m_ieReadStatus.update(m_tStamp));
+
+    int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
+	IF_F(r != 1);
 
 	return true;
 }

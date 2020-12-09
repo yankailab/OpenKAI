@@ -89,9 +89,10 @@ bool _RealSense::open(void)
 		// We do this to reduce the number of black pixels
 		// The hardware can perform hole-filling much better and much more power efficient then our software
 		auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
-		for (auto i = range.min; i < range.max; i += range.step)
+		for (auto i = range.min; i <= range.max; i += range.step)
 		{
-			IF_CONT(std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i)) != m_vPreset);
+            string preset = std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i));
+			IF_CONT(preset != m_vPreset);
 			sensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
 			break;
 		}

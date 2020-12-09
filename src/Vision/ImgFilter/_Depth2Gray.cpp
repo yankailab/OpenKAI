@@ -28,11 +28,11 @@ bool _Depth2Gray::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName;
-	iName = "";
-	pK->v("_DepthVisionBase", &iName);
-	m_pV = (_DepthVisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pV, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_DepthVisionBase", &n );
+	m_pV = (_DepthVisionBase*) (pK->getInst( n ));
+	IF_Fl(!m_pV, n + ": not found");
 
 	return true;
 }

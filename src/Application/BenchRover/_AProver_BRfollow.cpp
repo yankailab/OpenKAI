@@ -12,10 +12,11 @@ _AProver_BRfollow::_AProver_BRfollow()
     m_pUtag = NULL;
 
     m_targetX = 0.5;
-    m_errX = 0.0;
+    m_pathX = m_targetX;
     m_nSpd = 0.0;
     m_nStr = 0.0;
     m_iTagStop = -1;
+    m_iTag = -1;
 }
 
 _AProver_BRfollow::~_AProver_BRfollow()
@@ -109,20 +110,33 @@ void _AProver_BRfollow::updateFollow ( void )
     float dir = m_pD->getDirection();   //+/-1.0
     float nSpd = m_nSpd;
     
+    //path following compensation
     _Object* pO = m_pUpath->get(0);
     if ( pO )
-        m_errX = dir * (pO->getX() - m_targetX);
+        m_pathX = pO->getY();
     else
-        m_errX = 0.0;
+        m_pathX = m_targetX;
 
-    m_nStr = dir * m_pPID->update ( m_errX, 0.0, m_tStamp );
+    float errX = dir * (m_pathX - m_targetX);
+    m_nStr = dir * m_pPID->update ( errX, 0.0, m_tStamp );
     
+    //tag actions
     pO = findTarget();
     if ( pO )
     {
         int iTag = pO->getTopClass();
         if(iTag == m_iTagStop)
+        {
             nSpd = 0.0;
+            m_nStr = 0.0;
+        }
+        else if(iTag != m_iTag)
+        {
+            m_pD->setSteering(0.0);
+            m_pD->setSpeed(0.0);
+            this->sleepTime(3 * USEC_1SEC);
+            m_iTag = iTag;
+        }
     }
 
     m_pD->setSteering(m_nStr);
@@ -137,7 +151,7 @@ _Object* _AProver_BRfollow::findTarget ( void )
     _Object *tO = NULL;
     float topY = FLT_MAX;
     int i = 0;
-    while ( ( pO = m_pUpath->get ( i++ ) ) != NULL )
+    while ( ( pO = m_pUtag->get ( i++ ) ) != NULL )
     {
         vFloat3 p = pO->getPos();
         IF_CONT ( p.y > topY );
@@ -155,7 +169,7 @@ void _AProver_BRfollow::draw ( void )
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
-   	addMsg("errX=" + f2str(m_errX) + ", targetX=" + f2str(m_targetX));
+   	addMsg("pathX=" + f2str(m_pathX) + ", targetX=" + f2str(m_targetX));
 }
 
 }

@@ -5,7 +5,7 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":0,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -24,48 +24,176 @@
 {
 	"name":"viewDrive",
 	"class":"Window",
-	"bInst":0,
-	"bDrawMsg":1,
-	"bFullScreen":0,
-	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=10.0.0.201 port=5678 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=127.0.0.1 port=5678 auto-multicast=false",
+	"bInst":1,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
 }
 
 {
-	"name":"cam",
-	"class":"_Camera",
-	"FPS":30,
+	"name":"viewDepth",
+	"class":"Window",
 	"bInst":1,
-	"Window":"viewDrive",
-	"Console":"consoleDrive",
-	"deviceID":0,
-	"w":640,
-	"h":480,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5679 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5679 auto-multicast=false",
+}
+
+{
+	"name":"viewDev",
+	"class":"Window",
+	"bInst":1,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5680 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5680 auto-multicast=false",
+}
+
+{
+	"name":"viewTop",
+	"class":"Window",
+	"bInst":1,
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5681 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5681 auto-multicast=false",
 }
 
 {
 	"name":"cam",
 	"class":"_RealSense",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"bDebug":0,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
-	"depthWindow":"depthView",
-	"vPreset":"High Density",
+	"depthWindow":"viewDepth",
+	"vPreset":"Short Range",
 	"rsRGB":1,
 	"w":1280,
 	"h":720,
 	"rsFPS":30,
 	"wD":640,
-	"hD":360,
+	"hD":480,
 	"rsDFPS":30,
 	"fDec":0,
 	"fSpat":0,
-	"vRange":[0.1,15.0],
+	"vRange":[0.0, 5.0],
 	"bAlign":0,
 	"vKpos":[0.09, 0.09, 0.75, 0.75],
+	"/rsSN":"00000000f0210205",
+	"rsSN":"00000000f0211594",
+}
+
+{
+	"name":"depth",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_DepthVisionBase":"cam",
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"depth",
+	"rFrom":25,
+	"rTo":255,
+}
+
+{
+	"name":"morph",
+	"class":"_Morphology",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"inRange",
+	
+	{
+		"morphOp":2,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+	
+	{
+		"morphOp":3,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+}
+
+{
+	"name":"crop",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"_VisionBase":"morph",
+	"Console":"consoleDrive",
+	"roi":[0.0, 0.2, 1.0, 0.8],
+}
+
+{
+	"name":"rotate",
+	"class":"_Rotate",
+	"FPS":30,
+	"bInst":1,
+	"Window":"viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"crop",
+	"code":0,
+}
+
+{
+	"name":"univPath",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewDev",
+	"Console":"consoleDrive",
+}
+
+{
+	"name":"detect",
+	"class":"_Line",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"rotate",
+	"_Universe":"univPath",
+	"wSlide":0.1,
+	"minPixLine":0.08,
+}
+
+{
+	"name":"cam2",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"bDebug":0,
+	"Window":"viewTop",
+	"Console":"consoleDrive",
+	"/depthWindow":"viewDepth",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":640,
+	"hD":480,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.0, 5.0],
+	"bAlign":0,
+	"vKpos":[0.09, 0.09, 0.75, 0.75],
+	"/rsSN":"819612071624",	
+	"rsSN":"00000000f0210776",
 }
 
 {
@@ -80,23 +208,15 @@
 	"name":"Chilitags",
 	"class":"_Chilitags",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bDraw":1,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
-	"_VisionBase":"cam",
+	"_VisionBase":"cam2",
 	"_Universe":"univTag",
 	"persistence":5.0,
 	"gain":0.5,
 	"angleOffset":-180,
-}
-
-{
-	"name":"univPath",
-	"class":"_Universe",
-	"bInst":1,
-	"Window":"viewDrive",
-	"Console":"consoleDrive",
 }
 
 {
@@ -107,8 +227,8 @@
 	"bLog":0,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
-	"/port":"/dev/ttyTHS0",
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyTHS0",
+	"/port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
@@ -300,7 +420,7 @@
 	"_UniversePath":"univPath",
 	"_UniverseTag":"univTag",
 	"targetX":0.5,
-	"nSpd":1.0,
+	"nSpd":0.25,
 	"nStr":0.0,
 	"iTagStop":0,
 }
@@ -340,7 +460,7 @@
 			"pErr":10,
 			"pRange":[-1, 1],
 			"sTarget":0,
-			"sRange":[-1000, 1000],
+			"sRange":[-100, 100],
 			"aTarget":500,
 			"aRange":[0,32767],
 			"bTarget":500,
@@ -371,7 +491,7 @@
 			"pErr":10,
 			"pRange":[-1, 1],
 			"sTarget":0,
-			"sRange":[-1000, 1000],
+			"sRange":[-100, 100],
 			"aTarget":500,
 			"aRange":[0,32767],
 			"bTarget":500,
@@ -402,7 +522,7 @@
 			"pErr":10,
 			"pRange":[-1, 1],
 			"sTarget":0,
-			"sRange":[-1000, 1000],
+			"sRange":[-100, 100],
 			"aTarget":500,
 			"aRange":[0,32767],
 			"bTarget":500,
@@ -433,7 +553,7 @@
 			"pErr":10,
 			"pRange":[-1, 1],
 			"sTarget":0,
-			"sRange":[-1000, 1000],
+			"sRange":[-100, 100],
 			"aTarget":500,
 			"aRange":[0,32767],
 			"bTarget":500,

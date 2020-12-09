@@ -128,6 +128,7 @@ void _AProver_BR::updateMode ( void )
         m_pMC->transit ( mode );
         m_pD->setDirection ( dir );
         m_pD->setSpeed ( 0.0 );
+        m_pD->setSteering( 0.0 );
         return;
     }
     

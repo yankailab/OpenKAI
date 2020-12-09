@@ -29,16 +29,16 @@ bool _Line::init(void *pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	pK->v<float>("minPixLine", &m_minPixLine);
-	pK->v<float>("wSlide", &m_wSlide);
+	pK->v("minPixLine", &m_minPixLine);
+	pK->v("wSlide", &m_wSlide);
 
 	m_nClass = 1;
 
-	string iName;
-	iName = "";
-	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pV, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_VisionBase", &n );
+	m_pV = (_VisionBase*) (pK->getInst( n ));
+	IF_Fl(!m_pV, n + ": not found");
 
 	return true;
 }
@@ -62,13 +62,10 @@ void _Line::update(void)
 	{
 		this->autoFPSfrom();
 
-		if (check() >= 0)
-		{
-			detect();
+		detect();
 
-			if (m_bGoSleep)
-				m_pU->m_pPrev->clear();
-		}
+		if (m_bGoSleep)
+			m_pU->m_pPrev->clear();
 
 		this->autoFPSto();
 	}
@@ -85,12 +82,14 @@ int _Line::check(void)
 
 void _Line::detect(void)
 {
+    IF_(check()<0);
+    
 	m_pV->BGR()->m()->copyTo(m_mIn);
 	float nP = m_mIn.rows * m_mIn.cols;
 
-	Mat vSum;
-	cv::reduce(m_mIn, vSum, 1, cv::REDUCE_SUM, CV_32SC1);
-	vSum *= (float) 1.0 / 255.0;
+	Mat mR;
+	cv::reduce(m_mIn, mR, 1, cv::REDUCE_SUM, CV_32SC1);
+	mR *= (float) 1.0 / 255.0;
 
 	//sliding window
 	int i, j;
@@ -98,30 +97,21 @@ void _Line::detect(void)
 	int iTo = -1;
 	int nSlide = m_wSlide * m_mIn.rows * 0.5;
 
-	for (i = 0; i < vSum.rows; i++)
+	for (i = 0; i < mR.rows; i++)
 	{
-		int sFrom = constrain(i - nSlide, 0, vSum.rows);
-		int sTo = constrain(i + nSlide, 0, vSum.rows);
+		int sFrom = constrain(i - nSlide, 0, mR.rows);
+		int sTo = constrain(i + nSlide, 0, mR.rows);
 
 		int v = 0;
 		for (j = sFrom; j < sTo; j++)
-			v += vSum.at<int>(j, 0);
+			v += mR.at<int>(j, 0);
 
 		if ((float) v / nP > m_minPixLine)
 		{
-			iFrom = i;
+			iFrom = sFrom;
+            iTo = sTo;
 			break;
 		}
-
-//		if(v > m_vThr && iFrom < 0)
-//		{
-//			iFrom = i;
-//		}
-//		else if(v < m_vThr && iFrom >= 0)
-//		{
-//			iTo = i;
-//			break;
-//		}
 	}
 
 	if (iFrom < 0)
@@ -129,8 +119,6 @@ void _Line::detect(void)
 		m_line = -1.0;
 		return;
 	}
-
-	iTo = constrain(iTo, iFrom + 1, vSum.rows);
 
 	float kx = 1.0/m_mIn.cols;
 	float ky = 1.0/m_mIn.rows;

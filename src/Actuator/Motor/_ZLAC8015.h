@@ -24,6 +24,9 @@ public:
 	bool start(void);
 	void draw(void);
 	int check(void);
+    
+    bool power(bool bON);
+
 
 protected:
 	bool setMode(void);
@@ -35,6 +38,7 @@ protected:
 	bool stop(void);
 	bool setSlave(int iSlave);
 	bool readStatus(void);
+    bool clearAlarm(void);
     
     void setup(void);
 
