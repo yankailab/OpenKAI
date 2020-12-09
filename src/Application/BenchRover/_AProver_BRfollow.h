@@ -34,16 +34,19 @@ private:
 private:
 	_AP_base* m_pAP;
 	_Drive* m_pD;
-    PID* m_pPID;
-    _Universe* m_pUpath;
-    _Universe* m_pUtag;
+    PID* m_pPIDtagX;
+    PID* m_pPIDtagHdg;
+    _Universe* m_pU;
         
-	float   m_targetX;
-    float   m_pathX;
-	float   m_nSpd;
-    float   m_nStr;
+	float   m_tagTargetX;
+    float   m_errX;
+    float   m_errHdg;
    	int     m_iTagStop;
     int     m_iTag;
+	float   m_nSpd;
+    float   m_nStr;
+    
+    int     m_tStop;
     
 };
 

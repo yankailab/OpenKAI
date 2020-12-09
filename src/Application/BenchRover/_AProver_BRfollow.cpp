@@ -7,16 +7,19 @@ _AProver_BRfollow::_AProver_BRfollow()
 {
     m_pAP = NULL;
     m_pD = NULL;
-    m_pPID = NULL;
-    m_pUpath = NULL;
-    m_pUtag = NULL;
+    m_pPIDtagX = NULL;
+    m_pPIDtagHdg = NULL;
+    m_pU = NULL;
 
-    m_targetX = 0.5;
-    m_pathX = m_targetX;
-    m_nSpd = 0.0;
-    m_nStr = 0.0;
+    m_tagTargetX = 0.5;
+    m_errX = 0.0;
+    m_errHdg = 0.0;
     m_iTagStop = -1;
     m_iTag = -1;
+    m_nSpd = 0.0;
+    m_nStr = 0.0;
+
+    m_tStop = 3;
 }
 
 _AProver_BRfollow::~_AProver_BRfollow()
@@ -29,10 +32,11 @@ bool _AProver_BRfollow::init ( void* pKiss )
     NULL_F( m_pMC );
 
     Kiss* pK = ( Kiss* ) pKiss;
-    pK->v ( "targetX", &m_targetX );
+    pK->v ( "targetX", &m_tagTargetX );
     pK->v ( "nSpd", &m_nSpd );
     pK->v ( "nStr", &m_nStr );
     pK->v ( "iTagStop", &m_iTagStop );
+    pK->v ( "tStop", &m_tStop );
 
     string n;
 
@@ -47,19 +51,19 @@ bool _AProver_BRfollow::init ( void* pKiss )
     IF_Fl ( !m_pD, n + ": not found" );
 
     n = "";
-    pK->v ( "PID", &n );
-    m_pPID = ( PID* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pPID, n + " not found" );
+    pK->v ( "PIDtagX", &n );
+    m_pPIDtagX = ( PID* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDtagX, n + " not found" );
 
     n = "";
-    pK->v ( "_UniversePath", &n );
-    m_pUpath = ( _Universe* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pUpath, n + ": not found" );
+    pK->v ( "PIDtagHdg", &n );
+    m_pPIDtagHdg = ( PID* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pPIDtagHdg, n + " not found" );
 
     n = "";
-    pK->v ( "_UniverseTag", &n );
-    m_pUtag = ( _Universe* ) ( pK->getInst ( n ) );
-    NULL_Fl ( m_pUtag, n + ": not found" );
+    pK->v ( "_Universe", &n );
+    m_pU = ( _Universe* ) ( pK->getInst ( n ) );
+    NULL_Fl ( m_pU, n + ": not found" );
 
     return true;
 }
@@ -82,9 +86,9 @@ int _AProver_BRfollow::check ( void )
 {
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pD, -1 );
-    NULL__ ( m_pPID, -1 );
-    NULL__ ( m_pUpath, -1 );
-    NULL__ ( m_pUtag, -1 );
+    NULL__ ( m_pPIDtagX, -1 );
+    NULL__ ( m_pPIDtagHdg, -1 );
+    NULL__ ( m_pU, -1 );
 
     return this->_MissionBase::check();
 }
@@ -110,34 +114,34 @@ void _AProver_BRfollow::updateFollow ( void )
     float dir = m_pD->getDirection();   //+/-1.0
     float nSpd = m_nSpd;
     
-    //path following compensation
-    _Object* pO = m_pUpath->get(0);
-    if ( pO )
-        m_pathX = pO->getY();
-    else
-        m_pathX = m_targetX;
-
-    float errX = dir * (m_pathX - m_targetX);
-    m_nStr = dir * m_pPID->update ( errX, 0.0, m_tStamp );
-    
-    //tag actions
-    pO = findTarget();
+    _Object* pO = findTarget();
     if ( pO )
     {
         int iTag = pO->getTopClass();
         if(iTag == m_iTagStop)
         {
             nSpd = 0.0;
-            m_nStr = 0.0;
+            m_errX = 0.0;
+            m_errHdg = 0.0;
         }
         else if(iTag != m_iTag)
         {
             m_pD->setSteering(0.0);
             m_pD->setSpeed(0.0);
-            this->sleepTime(3 * USEC_1SEC);
             m_iTag = iTag;
+            this->sleepTime(m_tStop * USEC_1SEC);
+            return;
         }
+        else
+        {
+            m_errX = dir * (pO->getX() - m_tagTargetX);
+            m_errHdg = dHdg<float>(0.0, pO->getRoll());
+        }
+        
     }
+
+    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_tStamp )
+             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_tStamp );
 
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
@@ -151,7 +155,7 @@ _Object* _AProver_BRfollow::findTarget ( void )
     _Object *tO = NULL;
     float topY = FLT_MAX;
     int i = 0;
-    while ( ( pO = m_pUtag->get ( i++ ) ) != NULL )
+    while ( ( pO = m_pU->get ( i++ ) ) != NULL )
     {
         vFloat3 p = pO->getPos();
         IF_CONT ( p.y > topY );
@@ -169,7 +173,7 @@ void _AProver_BRfollow::draw ( void )
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
-   	addMsg("pathX=" + f2str(m_pathX) + ", targetX=" + f2str(m_targetX));
+   	addMsg("errX=" + f2str(m_errX) + ", errHdg=" + f2str(m_errHdg));
 }
 
 }

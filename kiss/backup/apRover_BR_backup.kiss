@@ -25,8 +25,8 @@
 	"name":"viewDrive",
 	"class":"Window",
 	"bInst":1,
-	"gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.8.189 port=5678 auto-multicast=false",
-	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
+	"gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=192.168.1.139 port=5678 auto-multicast=false",
 }
 
 {
@@ -56,7 +56,123 @@
 }
 
 {
-	"name":"univ",
+	"name":"depth",
+	"class":"_Depth2Gray",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_DepthVisionBase":"cam",
+}
+
+{
+	"name":"inRange",
+	"class":"_InRange",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"depth",
+	"rFrom":25,
+	"rTo":255,
+}
+
+{
+	"name":"morph",
+	"class":"_Morphology",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"inRange",
+	
+	{
+		"morphOp":2,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+	
+	{
+		"morphOp":3,
+		"nItr":2,
+		"kW":3,
+		"kH":3,
+	}
+}
+
+{
+	"name":"crop",
+	"class":"_Crop",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"_VisionBase":"morph",
+	"Console":"consoleDrive",
+	"roi":[0.0, 0.2, 1.0, 0.8],
+}
+
+{
+	"name":"rotate",
+	"class":"_Rotate",
+	"FPS":30,
+	"bInst":1,
+	"Window":"viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"crop",
+	"code":0,
+}
+
+{
+	"name":"univPath",
+	"class":"_Universe",
+	"bInst":1,
+	"Window":"viewDev",
+	"Console":"consoleDrive",
+}
+
+{
+	"name":"detect",
+	"class":"_Line",
+	"FPS":30,
+	"bInst":1,
+	"Window":"/viewDev",
+	"Console":"consoleDrive",
+	"_VisionBase":"rotate",
+	"_Universe":"univPath",
+	"wSlide":0.1,
+	"minPixLine":0.08,
+}
+
+{
+	"name":"cam2",
+	"class":"_RealSense",
+	"FPS":30,
+	"bInst":1,
+	"bLog":1,
+	"bDebug":0,
+	"Window":"viewTop",
+	"Console":"consoleDrive",
+	"/depthWindow":"viewDepth",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"w":1280,
+	"h":720,
+	"rsFPS":30,
+	"wD":640,
+	"hD":480,
+	"rsDFPS":30,
+	"fDec":0,
+	"fSpat":0,
+	"vRange":[0.0, 5.0],
+	"bAlign":0,
+	"vKpos":[0.09, 0.09, 0.75, 0.75],
+	"/rsSN":"819612071624",	
+	"rsSN":"00000000f0210776",
+}
+
+{
+	"name":"univTag",
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewDrive",
@@ -71,8 +187,8 @@
 	"bDraw":1,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
-	"_VisionBase":"cam",
-	"_Universe":"univ",
+	"_VisionBase":"cam2",
+	"_Universe":"univTag",
 	"persistence":5.0,
 	"gain":0.5,
 	"angleOffset":-180,
@@ -165,7 +281,7 @@
 		{
 			"name":"rcChannels",
 			"id":65,
-			"tInt":0.2,
+			"tInt":0.1,
 		}
 		{
 			"name":"localPosition",
@@ -257,7 +373,7 @@
 	"bInst":1,
 	"Window":"viewDrive",
 	"Console":"consoleDrive",
-	"P":-0.1,
+	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
 	"oMin":-1.0,
@@ -293,10 +409,9 @@
 	"PIDtagHdg":"PIDtagHdg",
 	"_Universe":"univ",
 	"targetX":0.5,
-	"nSpd":0.15,
+	"nSpd":0.25,
 	"nStr":0.0,
 	"iTagStop":0,
-	"Stop":3,
 }
 
 
