@@ -29,7 +29,7 @@ struct RC_CHANNEL
 		m_pwmM = 1500;
 		m_pwmH = 2000;
 		m_pwm = m_pwmM;
-        m_pwmDz = 2;
+        m_pwmDz = 1;
 
         m_v = 0.5;
 		m_i = 0;

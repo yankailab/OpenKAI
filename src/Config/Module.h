@@ -230,6 +230,9 @@
 #include "../Sensor/_Livox.h"
 #endif
 
+#ifdef USE_XARM
+#include "../Actuator/Articulated/_xArm.h"
+#endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}
 

@@ -1,0 +1,35 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"xArm",
+	"class":"_xArm",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"ip":"192.168.1.222",
+	"oprMode":3,
+}

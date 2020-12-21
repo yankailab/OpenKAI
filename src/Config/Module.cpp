@@ -194,7 +194,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_ORB_SLAM2
 	ADD_MODULE(_ORB_SLAM2);
 #endif
-    
+
 #ifdef USE_CHILITAGS
 	ADD_MODULE(_Chilitags);
 #endif
@@ -231,6 +231,10 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_DYNAMIXEL
 	ADD_MODULE(_DeltaArm);
 	ADD_MODULE(_LabArm);
+#endif
+
+#ifdef USE_XARM
+	ADD_MODULE(_xArm);
 #endif
 
     return NULL;

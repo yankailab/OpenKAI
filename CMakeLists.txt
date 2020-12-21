@@ -21,6 +21,7 @@ OPTION(USE_OCR "Use Tesseract" OFF)
 OPTION(USE_OPENALPR "Use OpenALPR" OFF)
 OPTION(USE_PYLON "Use Basler camera with Pylon" OFF)
 OPTION(USE_REALSENSE "Use Intel RealSense" OFF)
+OPTION(USE_XARM "Use xArm" OFF)
 
 find_package(Eigen3 3.1.0 REQUIRED)
 
@@ -91,6 +92,13 @@ endif()
 if(USE_REALSENSE)
   add_definitions(-DUSE_REALSENSE)
   set(OpenKAI_lib ${OpenKAI_lib} realsense2)
+endif()
+
+if(USE_XARM)
+  add_definitions(-DUSE_XARM)
+  set(XARM_include "/home/kai/dev/xArm-CPLUS-SDK/include" CACHE STRING "")
+  set(OpenKAI_include ${OpenKAI_include} ${XARM_include})
+  set(OpenKAI_lib ${OpenKAI_lib} xarm)
 endif()
 
 

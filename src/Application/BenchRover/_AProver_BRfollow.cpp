@@ -140,8 +140,8 @@ void _AProver_BRfollow::updateFollow ( void )
         
     }
 
-    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_tStamp )
-             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_tStamp );
+    m_nStr = m_pPIDtagX->update ( m_errX, 0.0, m_tStamp )
+             + m_pPIDtagHdg->update ( m_errHdg, 0.0, m_tStamp );
 
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
