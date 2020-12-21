@@ -15,6 +15,7 @@
 #ifdef USE_OPEN3D
 #include "_PCbase.h"
 
+#define PC_N_HDR 4
 #define PC_STREAM 0
 #define PC_FRAME_END 1
 

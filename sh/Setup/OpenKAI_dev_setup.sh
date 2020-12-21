@@ -205,7 +205,7 @@ sudo make install
 
 #----------------------------------------------------
 # Filament
-git clone --branch v1.9.5 --depth 1 https://github.com/google/filament.git
+git clone --branch v1.9.9 --depth 1 https://github.com/google/filament.git
 cd filament
 mkdir out
 mkdir out/release

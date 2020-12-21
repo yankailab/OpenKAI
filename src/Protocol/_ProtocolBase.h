@@ -18,6 +18,7 @@ struct PROTOCOL_CMD
 	int m_nPayload;
 	int m_iB;
 	uint8_t* m_pB;
+    int m_nB;
 
 	void init(int nB)
 	{
@@ -25,7 +26,8 @@ struct PROTOCOL_CMD
 
 		if(nB<=0)
 			nB = 256;
-		m_pB = new uint8_t[nB];
+        m_nB = nB;
+		m_pB = new uint8_t[m_nB];
 	}
 
 	void reset(void)

@@ -89,7 +89,7 @@ void _PCtransform::update(void)
 		this->autoFPSfrom();
 
 		updateTransform();
-		m_sPC.update();
+        updatePC();
        
   		if(m_pViewer)
 		{

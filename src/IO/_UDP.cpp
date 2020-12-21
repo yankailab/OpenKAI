@@ -164,7 +164,7 @@ void _UDP::updateR(void)
 void _UDP::draw(void)
 {
 	this->_ThreadBase::draw();
-	addMsg("Port:" + i2str(m_port),1);
+	addMsg("Port:" + i2str(m_port), 1);
 }
 
 }

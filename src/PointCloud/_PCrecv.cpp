@@ -84,20 +84,20 @@ bool _PCrecv::readCMD(void)
     IF_F(check()<0);
     
 	uint8_t	b;
-	int		nB;
-	while ((nB = m_pIO->read(&b,1)) > 0)
+	while (m_pIO->read(&b,1) > 0)
 	{
 		if (m_recvMsg.m_cmd != 0)
 		{
 			m_recvMsg.m_pB[m_recvMsg.m_iB] = b;
 			m_recvMsg.m_iB++;
 
-			if (m_recvMsg.m_iB == 3)
+			if (m_recvMsg.m_iB == 4)
 			{
-				m_recvMsg.m_nPayload = m_recvMsg.m_pB[2];
+				m_recvMsg.m_nPayload = unpack_int16(&m_recvMsg.m_pB[2], false);
 			}
 			
-			IF_T(m_recvMsg.m_iB == m_recvMsg.m_nPayload + PB_N_HDR );
+			IF_T(m_recvMsg.m_iB >= m_recvMsg.m_nPayload + PC_N_HDR );
+            IF_T(m_recvMsg.m_iB >= m_recvMsg.m_nB);
 		}
 		else if (b == PB_BEGIN )
 		{
@@ -146,8 +146,10 @@ void _PCrecv::decodeStream(void)
    	int16_t x,y,z;
 	PointCloud* pPC = m_sPC.next();
 
-    for(int i=3; i<m_recvMsg.m_nPayload + PB_N_HDR; i+=12)
+    for(int i=PC_N_HDR; i<m_recvMsg.m_nPayload + PC_N_HDR; i+=12)
     {
+        IF_(i + 12 > m_recvMsg.m_nB);
+        
         x = unpack_int16(&m_recvMsg.m_pB[i], false);
         y = unpack_int16(&m_recvMsg.m_pB[i+2], false);
         z = unpack_int16(&m_recvMsg.m_pB[i+4], false);

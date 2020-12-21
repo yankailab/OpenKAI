@@ -86,18 +86,22 @@ void _PCsend::sendPC(void)
 	PointCloud pcOut;
     m_pPCB->getPC(&pcOut);
 	int nP = pcOut.points_.size();
+    IF_(nP <= 0);
 
     const double PC_SCALE = 1000;
     const int PC_DB = 2;
-    int iB = PB_N_HDR;
     m_pB[0] = PB_BEGIN;
     m_pB[1] = PC_STREAM;
+    int iB = PC_N_HDR;
     
 	for (int i = 0; i < nP; i++)
 	{
+        IF_CONT(pcOut.points_.empty());
+        IF_CONT(pcOut.colors_.empty());
+        
         Eigen::Vector3d vP = pcOut.points_[i];
         Eigen::Vector3d vC = pcOut.colors_[i];
-        Eigen::Vector3d vN = pcOut.normals_[i];
+//        Eigen::Vector3d vN = pcOut.normals_[i];
         
         pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
         iB += PC_DB;
@@ -115,17 +119,17 @@ void _PCsend::sendPC(void)
 
         if(iB + PC_DB * 6 > m_nB)
         {
-            m_pB[2] = iB - PB_N_HDR;
+            pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
             while(!m_pIO->write(m_pB, iB))
                 this->sleepTime(m_tInt);
 
-            iB = PB_N_HDR;
+            iB = PC_N_HDR;
         }
     }
     
-    if(iB > PB_N_HDR)
+    if(iB > PC_N_HDR)
     {
-        m_pB[2] = iB - PB_N_HDR;
+        pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
         while(!m_pIO->write(m_pB, iB))
             this->sleepTime(m_tInt);
     }
@@ -136,7 +140,8 @@ void _PCsend::sendPC(void)
     m_pB[0] = PB_BEGIN;
     m_pB[1] = PC_FRAME_END;
     m_pB[2] = 0;
-    while(!m_pIO->write(m_pB, PB_N_HDR))
+    m_pB[3] = 0;
+    while(!m_pIO->write(m_pB, PC_N_HDR))
         this->sleepTime(m_tInt);
 
 }

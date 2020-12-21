@@ -80,7 +80,7 @@ bool _PCrs::open(void)
 		auto profile = m_rsPipe.start(cfg);
 		auto sensor = profile.get_device().first<rs2::depth_sensor>();
 		auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
-		for (auto i = range.min; i < range.max; i += range.step)
+		for (auto i = range.min; i <= range.max; i += range.step)
 		{
 			IF_CONT(std::string(sensor.get_option_value_description(RS2_OPTION_VISUAL_PRESET, i)) != m_vPreset);
 			sensor.set_option(RS2_OPTION_VISUAL_PRESET, i);
@@ -197,7 +197,7 @@ void _PCrs::update(void)
 		this->autoFPSfrom();
 
 		updateRS();
-		m_sPC.update();
+        updatePC();
 
 		if(m_pViewer)
 		{
@@ -262,9 +262,6 @@ void _PCrs::updateRS(void)
 	int nP = m_rsPoints.size();
 
 	PointCloud* pPC = m_sPC.next();
-	pPC->points_.clear();
-	pPC->colors_.clear();
-	pPC->normals_.clear();
 
 	const static float c_b = 1.0 / 255.0;
 

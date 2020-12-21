@@ -18,12 +18,12 @@ _PCbase::_PCbase()
 	m_pViewer = NULL;
 	m_iV = -1;
 
-    pthread_mutex_init(&m_wakeupMutex, NULL);
+    pthread_mutex_init(&m_mutexPC, NULL);
 }
 
 _PCbase::~_PCbase()
 {
-   	pthread_mutex_destroy(&m_wakeupMutex);
+   	pthread_mutex_destroy(&m_mutexPC);
 }
 
 bool _PCbase::init(void *pKiss)
