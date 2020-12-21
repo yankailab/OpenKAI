@@ -43,12 +43,12 @@ bool _PCtransform::init(void *pKiss)
 	_File* pFile = new _File();
 	IF_T(!pFile->open(&m_paramKiss));
 
-	string* pF = pFile->readAll();
-	IF_T(!pF);
-	IF_T(pF->empty());
+	string fn;
+    pFile->readAll(&fn);
+	IF_T(fn.empty() );
 
 	Kiss* pKf = new Kiss();
-	if(pKf->parse(pF))
+	if(pKf->parse( &fn ))
 	{
 		pK = pKf->child("transform");
 		pK->v("vT", &m_vT);
@@ -93,7 +93,7 @@ void _PCtransform::update(void)
        
   		if(m_pViewer)
 		{
-			m_pViewer->updateGeometry(m_iV, getPC());
+			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 		}
 
 		this->autoFPSto();
@@ -114,7 +114,7 @@ void _PCtransform::updateTransform(void)
 	for(Eigen::Matrix4d m : m_vmT)
 		mT *= m;
 
-	*m_sPC.next() = *m_pPCB->getPC();
+	m_pPCB->getPC(m_sPC.next());
 	m_sPC.next()->Transform(mT);
 }
 

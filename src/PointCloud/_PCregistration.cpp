@@ -107,8 +107,10 @@ void _PCregistration::updateRegistration(void)
 	{
 		PCREGIST_PAIR* p = &m_vpPair[i];
 
-		PointCloud pcSource = *p->m_pSource->getPC();
-		PointCloud pcTarget = *p->m_pTarget->getPC();
+		PointCloud pcSource;
+        p->m_pSource->getPC(&pcSource);
+		PointCloud pcTarget;
+        p->m_pTarget->getPC(&pcTarget);
 
 		pipelines::registration::RegistrationResult rr = pipelines::registration::RegistrationICP(
 												pcSource,

@@ -83,8 +83,9 @@ void _PCsend::sendPC(void)
 {
 	IF_(check()<0);
 
-	PointCloud pOut = *m_pPCB->getPC();
-	int nP = pOut.points_.size();
+	PointCloud pcOut;
+    m_pPCB->getPC(&pcOut);
+	int nP = pcOut.points_.size();
 
     const double PC_SCALE = 1000;
     const int PC_DB = 2;
@@ -94,9 +95,9 @@ void _PCsend::sendPC(void)
     
 	for (int i = 0; i < nP; i++)
 	{
-        Eigen::Vector3d vP = pOut.points_[i];
-        Eigen::Vector3d vC = pOut.colors_[i];
-        Eigen::Vector3d vN = pOut.normals_[i];
+        Eigen::Vector3d vP = pcOut.points_[i];
+        Eigen::Vector3d vC = pcOut.colors_[i];
+        Eigen::Vector3d vN = pcOut.normals_[i];
         
         pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
         iB += PC_DB;

@@ -92,15 +92,16 @@ void _PCfilter::updateFilter(void)
 	pOut->colors_.clear();
 	pOut->normals_.clear();
 
-	PointCloud* pIn = m_pPCB->getPC();
-	int nP = pIn->points_.size();
+	PointCloud pcIn;
+    m_pPCB->getPC(&pcIn);
+	int nP = pcIn.points_.size();
 	for (int i = 0; i < nP; i++)
 	{
-		Eigen::Vector3d vP = pIn->points_[i];
+		Eigen::Vector3d vP = pcIn.points_[i];
 		IF_CONT(!bFilter(vP));
 
 		pOut->points_.push_back(vP);
-		pOut->colors_.push_back(pIn->colors_[i]);
+		pOut->colors_.push_back( pcIn.colors_[i]);
 	}
 }
 

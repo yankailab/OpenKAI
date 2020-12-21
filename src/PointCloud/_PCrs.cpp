@@ -201,7 +201,7 @@ void _PCrs::update(void)
 
 		if(m_pViewer)
 		{
-			m_pViewer->updateGeometry(m_iV, getPC());
+			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 		}
 
 		this->autoFPSto();

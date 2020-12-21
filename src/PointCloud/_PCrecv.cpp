@@ -124,14 +124,11 @@ void _PCrecv::handleCMD(void)
     }
 	case PC_FRAME_END:
     {
-		m_sPC.update();
-        m_sPC.next()->points_.clear();
-        m_sPC.next()->colors_.clear();
-        m_sPC.next()->normals_.clear();
+        updatePC();
         
    		if(m_pViewer)
 		{
-			m_pViewer->updateGeometry(m_iV, getPC());
+			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 		}
 
 		break;

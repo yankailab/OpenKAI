@@ -39,7 +39,7 @@ bool _PCfile::open(void)
 	IF_F(!io::ReadPointCloud(m_fName, *m_sPC.prev()));
 
 	NULL_T(m_pViewer);
-	m_pViewer->updateGeometry(m_iV, getPC());
+	m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 
 	return true;
 }

@@ -19,7 +19,6 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-
 class _PCbase: public _ThreadBase
 {
 public:
@@ -31,11 +30,13 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
-	virtual PointCloud* getPC(void);
+	virtual void getPC(PointCloud* pPC);
+	virtual void updatePC(void);
 
 public:
 	_PCbase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
+    pthread_mutex_t m_mutexPC;
 
 	_PCviewer* m_pViewer;
 	int m_iV;

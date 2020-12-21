@@ -89,13 +89,15 @@ void _PCmerge::updateMerge(void)
 
 	for(_PCbase* pPCB : m_vpPCB)
 	{
-		IF_CONT(pPCB->getPC()->points_.empty());
+        PointCloud pc;
+        pPCB->getPC(&pc);
+		IF_CONT(pc.points_.empty());
 
 		vector<Eigen::Vector3d>* pV;
-		pV = &pPCB->m_sPC.prev()->points_;
+		pV = &pc.points_;
 		pOut->points_.insert(pOut->points_.end(), pV->begin(), pV->end());
 
-		pV = &pPCB->m_sPC.prev()->colors_;
+		pV = &pc.colors_;
 		pOut->colors_.insert(pOut->colors_.end(), pV->begin(), pV->end());
 	}
 

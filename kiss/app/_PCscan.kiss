@@ -24,7 +24,7 @@
 	"name":"pcf",
 	"class":"_PCfile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
@@ -48,14 +48,14 @@
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 	"/rsSN":"00000000f0211594",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
 
 {
 	"name":"UDPsend",
 	"class":"_UDP",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
@@ -67,13 +67,13 @@
 {
 	"name":"PCsend",
 	"class":"_PCsend",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"_IOBase":"UDPsend",	
-	"_PCbase":"rs1",
+	"_PCbase":"pcf",
 	"nB":256,
 	"tInt":100000,
 }
@@ -100,14 +100,14 @@
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"_IOBase":"UDPrecv",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"nB":128000,
 }
 
 {
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bInst":1,
 	"_PCbase":"PCrecv",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -121,7 +121,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
 }
@@ -130,7 +130,7 @@
 	"name":"ui",
 	"class":"_PCui",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",

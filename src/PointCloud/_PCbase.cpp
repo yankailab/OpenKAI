@@ -17,10 +17,13 @@ _PCbase::_PCbase()
 	m_pPCB = NULL;
 	m_pViewer = NULL;
 	m_iV = -1;
+
+    pthread_mutex_init(&m_wakeupMutex, NULL);
 }
 
 _PCbase::~_PCbase()
 {
+   	pthread_mutex_destroy(&m_wakeupMutex);
 }
 
 bool _PCbase::init(void *pKiss)
@@ -38,15 +41,15 @@ bool _PCbase::init(void *pKiss)
 		m_sPC.next()->colors_.reserve(nPCreserve);
 	}
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("_PCbase", &iName);
-	m_pPCB = (_PCbase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_PCbase", &n );
+	m_pPCB = (_PCbase*) (pK->getInst( n ));
 
-	iName = "";
-	pK->v("_PCviewer", &iName);
-	m_pViewer = (_PCviewer*) (pK->getInst(iName));
+	n = "";
+	pK->v("_PCviewer", &n );
+	m_pViewer = (_PCviewer*) (pK->getInst( n ));
 
 	if(m_pViewer)
 		m_iV = m_pViewer->addGeometry();
@@ -59,9 +62,23 @@ int _PCbase::check(void)
 	return 0;
 }
 
-PointCloud* _PCbase::getPC(void)
+void _PCbase::getPC(PointCloud* pPC)
 {
-	return m_sPC.prev();
+    NULL_(pPC);
+    
+	pthread_mutex_lock(&m_mutexPC);
+    *pPC = *m_sPC.prev();
+	pthread_mutex_unlock(&m_mutexPC);
+}
+
+void _PCbase::updatePC(void)
+{
+	pthread_mutex_lock(&m_mutexPC);
+	m_sPC.update();
+    m_sPC.next()->points_.clear();
+    m_sPC.next()->colors_.clear();
+    m_sPC.next()->normals_.clear();
+	pthread_mutex_unlock(&m_mutexPC);
 }
 
 int _PCbase::size(void)

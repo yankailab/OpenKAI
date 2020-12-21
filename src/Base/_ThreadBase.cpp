@@ -55,9 +55,9 @@ bool _ThreadBase::init(void* pKiss)
 	pK->v("FPS", &FPS);
 	setTargetFPS(FPS);
 
-	string iName = "";
-	pK->v("_wakeUp", &iName);
-	m_pWakeUp = (_ThreadBase*) (pK->getInst(iName));
+	string n = "";
+	pK->v("_wakeUp", &n );
+	m_pWakeUp = (_ThreadBase*) (pK->getInst( n ));
 
 	return true;
 }
