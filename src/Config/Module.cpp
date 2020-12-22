@@ -78,6 +78,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_BR);
 	ADD_MODULE(_AProver_BRfollow);
 
+    ADD_MODULE(_UIhandlerBase);
+
 #ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Camera);

@@ -17,6 +17,16 @@ bool _PCui::init ( void* pKiss )
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
+    vector<string> vPCT;
+    pK->a ( "PCT", &vPCT );
+
+    for ( int i=0; i<vPCT.size(); i++ )
+    {
+        _PCtransform* pP = ( _PCtransform* ) ( pK->getInst ( vPCT[i] ) );
+        IF_CONT ( !pP );
+        m_vPCT.push_back ( pP );
+    }
+
     return true;
 }
 
@@ -24,20 +34,24 @@ bool _PCui::start ( void )
 {
     int retCode;
 
-    if ( !m_bThreadON ) {
+    if ( !m_bThreadON )
+    {
         m_bThreadON = true;
         retCode = pthread_create ( &m_threadID, 0, getUpdateThreadW, this );
-        if ( retCode != 0 ) {
+        if ( retCode != 0 )
+        {
             LOG_E ( retCode );
             m_bThreadON = false;
             return false;
         }
     }
 
-    if ( !m_bRThreadON ) {
+    if ( !m_bRThreadON )
+    {
         m_bRThreadON = true;
         retCode = pthread_create ( &m_rThreadID, 0, getUpdateThreadR, this );
-        if ( retCode != 0 ) {
+        if ( retCode != 0 )
+        {
             LOG_E ( retCode );
             m_bRThreadON = false;
             return false;
@@ -54,14 +68,18 @@ int _PCui::check ( void )
 
 void _PCui::updateW ( void )
 {
-    while ( m_bThreadON ) {
-        if ( !m_pIO ) {
+    while ( m_bThreadON )
+    {
+        if ( !m_pIO )
+        {
             this->sleepTime ( USEC_1SEC );
             continue;
         }
 
-        if ( !m_pIO->isOpen() ) {
-            if ( !m_pIO->open() ) {
+        if ( !m_pIO->isOpen() )
+        {
+            if ( !m_pIO->open() )
+            {
                 this->sleepTime ( USEC_1SEC );
                 continue;
             }
@@ -79,19 +97,59 @@ void _PCui::send ( void )
 {
     IF_ ( check() <0 );
 
-    picojson::object o;
-    o.insert ( make_pair ( "name", value ( *this->getName() ) ) );
-//	o.insert(make_pair("nP", value()));
-//	o.insert(make_pair("nCam", value()));
+    int nC = 0;
+    for ( int i=0; i<m_vPCT.size(); i++ )
+    {
+        _PCtransform* pP = m_vPCT[i];
+        IF_CONT ( pP->size() <= 0 );
+        nC++;
+    }
 
-    string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
-    m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );
-    LOG_I ( "Sent: " + msg );
+    if ( nC <= 0 )
+    {
+        picojson::array ao;
+        for ( unsigned int i=0; i<108; i++ )
+        {
+            object o;
+            o.insert ( make_pair ( "id", value ( "tf" + i2str ( i ) ) ) );
+            o.insert ( make_pair ( "state", value ( "OFF" ) ) );
+            o.insert ( make_pair ( "cpu", value ( "N/A" ) ) );
+            o.insert ( make_pair ( "mem", value ( "N/A" ) ) );
+            o.insert ( make_pair ( "str", value ( "N/A" ) ) );
+            o.insert ( make_pair ( "pcn", value ( "N/A" ) ) );
+
+            ao.push_back ( value ( o ) );
+        }
+
+        string msg = picojson::value ( ao ).serialize();
+        _WebSocket* pWS = ( _WebSocket* ) m_pIO;
+        pWS->write ( ( unsigned char* ) msg.c_str(), msg.size(), WS_MODE_TXT );
+        return;
+    }
+
+    picojson::array ao;
+    for ( unsigned int i=0; i<108; i++ )
+    {
+        object o;
+        o.insert ( make_pair ( "id", value ( "tf" + i2str ( i ) ) ) );
+        o.insert ( make_pair ( "state", value ( "NORMAL" ) ) );
+        o.insert ( make_pair ( "cpu", value ( "MAXN/"+f2str ( 1.4 + NormRand() * 0.25 )+"GHz" ) ) );
+        o.insert ( make_pair ( "mem", value ( "Total:4GB, Available:"+ f2str ( 2 + NormRand() * 0.2 ) +"GB" ) ) );
+        o.insert ( make_pair ( "str", value ( "64GB" ) ) );
+        o.insert ( make_pair ( "pcn", value ( i2str ( 921600 + NormRand() * 100000.0 ) ) ) );
+
+        ao.push_back ( value ( o ) );
+    }
+
+    string msg = picojson::value ( ao ).serialize();// + m_msgFinishSend;
+    _WebSocket* pWS = ( _WebSocket* ) m_pIO;
+    pWS->write ( ( unsigned char* ) msg.c_str(), msg.size(), WS_MODE_TXT );
 }
 
 void _PCui::updateR ( void )
 {
-    while ( m_bRThreadON ) {
+    while ( m_bRThreadON )
+    {
         recv();
         this->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
     }
@@ -102,12 +160,11 @@ bool _PCui::recv()
     IF_F ( check() <0 );
 
     static string s_strB = "";
-
     unsigned char B;
     unsigned int nStrFinish = m_msgFinishRecv.length();
-    int nB;
 
-    while ( ( nB = m_pIO->read ( &B, 1 ) ) > 0 ) {
+    while ( m_pIO->read ( &B, 1 ) > 0 )
+    {
         s_strB += B;
         IF_CONT ( s_strB.length() <= nStrFinish );
 
@@ -138,10 +195,13 @@ void _PCui::handleMsg ( string& str )
 
     _PCtransform* pPCT = findTransform ( pct );
 
-    if ( cmd == "save_kiss" ) {
+    if ( cmd == "save_kiss" )
+    {
         NULL_ ( pPCT );
         pPCT->saveParamKiss();
-    } else if ( cmd == "var_tr" ) {
+    }
+    else if ( cmd == "var_tr" )
+    {
         NULL_ ( pPCT );
 
         vFloat3 v;
@@ -153,23 +213,36 @@ void _PCui::handleMsg ( string& str )
         v.y = ( float ) jo["rY"].get<double>();
         v.z = ( float ) jo["rZ"].get<double>();
         pPCT->setRotation ( v );
-    } else if ( cmd == "save_ply" ) {
+    }
+    else if ( cmd == "save_ply" )
+    {
         NULL_ ( pPCT );
-    } else if ( cmd == "filter_" ) {
+    }
+    else if ( cmd == "filter_" )
+    {
         NULL_ ( pPCT );
-    } else if ( cmd == "on_autoAlign" ) {
+    }
+    else if ( cmd == "on_autoAlign" )
+    {
         NULL_ ( pPCT );
-    } else if ( cmd == "off_autoAlign" ) {
+    }
+    else if ( cmd == "off_autoAlign" )
+    {
         NULL_ ( pPCT );
     }
 }
 
 _PCtransform* _PCui::findTransform ( string& n )
 {
-    _PCtransform* pT = ( _PCtransform* ) ( ( ( Kiss* ) m_pKiss )->getInst ( n ) );
-    NULL_N ( pT );
+    for ( int i=0; i<m_vPCT.size(); i++ )
+    {
+        _PCtransform* pP = m_vPCT[i];
+        IF_CONT ( *pP->getName() != n );
 
-    return pT;
+        return pP;
+    }
+
+    return NULL;
 }
 
 void _PCui::draw ( void )

@@ -41,7 +41,7 @@ window.onload = function() {
         $('#messages').innerHTML = 'Connected<br>';
     };
     socket.onmessage = function(event) {
-        $('#messages').innerHTML = 'Received:<br>' + event.data + '<br>';
+        $('#messages').innerHTML = 'Response Received<br>';// + event.data + '<br>';
     };
     socket.onclose = function(event) {
         $('#messages').innerHTML = 'Disconnected ' + event.reason;

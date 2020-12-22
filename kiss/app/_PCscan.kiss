@@ -100,14 +100,14 @@
 	"Window":"OKview",
 	"Console":"OpenKAI",
 	"_IOBase":"UDPrecv",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"nB":1280,
 }
 
 {
 	"name":"tf1",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bInst":1,
 	"_PCbase":"PCrecv",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -121,7 +121,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":0,
+	"bInst":1,
 	"Window":"OKview",
 	"_wakeUp":"ui",
 }
@@ -129,9 +129,10 @@
 {
 	"name":"ui",
 	"class":"_PCui",
-	"FPS":30,
-	"bInst":0,
+	"FPS":1,
+	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",
+	"PCT":["tf1"],
 }

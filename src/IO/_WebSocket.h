@@ -54,8 +54,8 @@ public:
 	void close(void);
 	void draw(void);
 
-	bool write(uint8_t* pBuf, int nB, uint32_t mode);
-	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode);
+	bool write(uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);
+	bool writeTo(uint32_t id, uint8_t* pBuf, int nB, uint32_t mode = WS_MODE_BIN);
 	int  read(uint8_t* pBuf, int nB);
 	int  readFrom(uint32_t id, uint8_t* pBuf, int nB);
 
