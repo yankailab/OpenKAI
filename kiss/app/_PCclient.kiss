@@ -47,10 +47,8 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
-	"Console":"OpenKAI",
 	"addr":"192.168.16.139",
-	"port":19840,
+	"port":20001,
 }
 
 {
@@ -59,8 +57,6 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
-	"Console":"OpenKAI",
 	"_IOBase":"UDPsend",	
 	"_PCbase":"rs1",
 	"nB":256,

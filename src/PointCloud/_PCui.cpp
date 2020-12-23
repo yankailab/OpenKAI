@@ -249,11 +249,11 @@ void _PCui::draw ( void )
 {
     this->_ThreadBase::draw();
 
-    string msg = *this->getName();
+    string msg;
     if ( m_pIO->isOpen() )
-        msg += ": CONNECTED";
+        msg = "STANDBY, CONNECTED";
     else
-        msg += ": Not connected";
+        msg = "STANDBY, Not connected";
 
     addMsg ( msg );
 
