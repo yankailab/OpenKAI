@@ -77,6 +77,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_KUfollowTag);
 	ADD_MODULE(_AProver_BR);
 	ADD_MODULE(_AProver_BRfollow);
+	ADD_MODULE(_AProver_tag);
+	ADD_MODULE(_AProver_followTag);
 
     ADD_MODULE(_UIhandlerBase);
 

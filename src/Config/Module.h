@@ -44,6 +44,8 @@
 #include "../Application/KUphenoRover/_AProver_KUfollowTag.h"
 #include "../Application/BenchRover/_AProver_BR.h"
 #include "../Application/BenchRover/_AProver_BRfollow.h"
+#include "../Application/TagRover/_AProver_tag.h"
+#include "../Application/TagRover/_AProver_followTag.h"
 
 #include "../Application/UIhandler/_UIhandlerBase.h"
 
