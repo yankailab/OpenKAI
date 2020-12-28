@@ -82,7 +82,7 @@ void _Drive::update(void)
         for(int i=0; i<m_vM.size(); i++)
         {
             DRIVE_MOTOR* pM = &m_vM[i];
-            pM->update(m_nSpd * m_nDir, m_nStr);
+            pM->update(m_nSpd * m_nDir, m_nStr); // nStr should not be applied to nSpd calc in apRover mode
         }
 
         this->autoFPSto();

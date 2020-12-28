@@ -212,6 +212,7 @@
 #include "../PointCloud/_PCsend.h"
 #include "../PointCloud/_PCrecv.h"
 #include "../PointCloud/_PCui.h"
+#include "../PointCloud/_Crystal.h"
 #ifdef USE_REALSENSE
 #include "../PointCloud/_PCrs.h"
 #endif

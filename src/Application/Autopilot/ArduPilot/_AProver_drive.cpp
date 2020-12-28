@@ -30,7 +30,7 @@ bool _AProver_drive::init(void* pKiss)
 	pK->v("yawMode",&m_yawMode);
 	pK->v("bRcChanOverride",&m_bRcChanOverride);
 
-	uint16_t* pRC[18];
+	uint16_t* pRC[19];
 	pRC[0] = NULL;
 	pRC[1] = &m_rcOverride.chan1_raw;
 	pRC[2] = &m_rcOverride.chan2_raw;
@@ -51,7 +51,7 @@ bool _AProver_drive::init(void* pKiss)
 	pRC[17] = &m_rcOverride.chan17_raw;
 	pRC[18] = &m_rcOverride.chan18_raw;
     
-    for(int i=1; i<18; i++)
+    for(int i=1; i<19; i++)
         *pRC[i] = UINT16_MAX;
 
 	int iRcYaw = 1;
@@ -129,7 +129,7 @@ bool _AProver_drive::updateDrive(void)
         return false;
     }
     
-    float nSpd = m_pD->getMotorSpeed(0);
+    float nSpd = m_pD->getSpeed() * m_pD->getDirection();
     float nStr = m_pD->getSteering();
     
 	if(m_bSetYawSpeed)
@@ -165,6 +165,9 @@ void _AProver_drive::draw(void)
 {
 	this->_MissionBase::draw();
     drawActive();
+    
+    NULL_(m_pRcYaw);
+    NULL_(m_pRcThrottle);
 
 	addMsg("yawMode=" + f2str(m_yawMode) + ", yaw=" + i2str(*m_pRcYaw) + ", throttle=" + i2str(*m_pRcThrottle));
 }
