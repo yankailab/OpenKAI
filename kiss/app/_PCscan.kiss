@@ -41,79 +41,95 @@
 	"rsRGB":1,
 	"vWHcol":[1280,720],
 	"rsFPS":30,
-	"vWHd":[640,480],
+	"vWHd":[1024,768],
 	"rsDFPS":30,
-	"fDec":0,
-	"fSpat":0,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
+	"fEmitter":1.0,
+	"fLaserPower":1.0,
 	"/rsSN":"00000000f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
 
 {
-	"name":"UDPsend",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"addr":"127.0.0.1",
-	"port":19840,
-	"nFIFO":1280000,
-}
-
-{
-	"name":"PCsend",
-	"class":"_PCsend",
-	"bInst":1,
-	"FPS":30,
-	"bLog":1,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"_IOBase":"UDPsend",	
-	"_PCbase":"rs1",
-	"nB":256,
-	"tInt":100000,
-}
-
-{
-	"name":"UDPrecv",
-	"class":"_UDP",
-	"bInst":1,
-	"FPS":30,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"port":19840,
-	"listenPort":19840,
-	"nFIFO":1280000,
-	"_wakeUp":"PCrecv",
-}
-
-{
-	"name":"PCrecv",
-	"class":"_PCrecv",
-	"bInst":1,
-	"FPS":30,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"_IOBase":"UDPrecv",
-	"/_PCviewer":"pcv",
-	"nB":1280,
-}
-
-{
 	"name":"tf1",
 	"class":"_PCtransform",
 	"bInst":1,
-	"_PCbase":"PCrecv",
+	"_PCbase":"rs1",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"paramKiss":"/home/kai/dev/OpenKAI/kiss/app/tf1.kiss",
+	"paramKiss":"/home/kai/dev/config/tf1.kiss",
+}
+
+{
+	"name":"rs2",
+	"class":"_PCrs",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Console":"OKconsole",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"vWHcol":[1280,720],
+	"rsFPS":30,
+	"vWHd":[1024,768],
+	"rsDFPS":30,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"fEmitter":1.0,
+	"fLaserPower":1.0,
+	"/rsSN":"00000000f0211594",
+	"/_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"tf2",
+	"class":"_PCtransform",
+	"bInst":0,
+	"_PCbase":"rs2",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"nMt":1,
+	"paramKiss":"/home/kai/dev/config/tf2.kiss",
+}
+
+{
+	"name":"rs3",
+	"class":"_PCrs",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Console":"OKconsole",
+	"vPreset":"Short Range",
+	"rsRGB":1,
+	"vWHcol":[1280,720],
+	"rsFPS":30,
+	"vWHd":[1024,768],
+	"rsDFPS":30,
+	"vRange":[0.1,15.0],
+	"bAlign":0,
+	"fEmitter":1.0,
+	"fLaserPower":1.0,
+	"/rsSN":"00000000f0211594",
+	"/_PCviewer":"pcv",
+	"vRz":[0, 1000.0],
+}
+
+{
+	"name":"tf3",
+	"class":"_PCtransform",
+	"bInst":0,
+	"_PCbase":"rs3",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"nMt":1,
+	"paramKiss":"/home/kai/dev/config/tf3.kiss",
 }
 
 
@@ -134,5 +150,64 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",
-	"PCT":["tf1"],
+	"PCT":["tf1","tf2","tf3"],
 }
+
+
+
+
+
+
+
+{
+	"name":"UDPsend",
+	"class":"_UDP",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"addr":"127.0.0.1",
+	"port":19840,
+	"nFIFO":1280000,
+}
+
+{
+	"name":"PCsend",
+	"class":"_PCsend",
+	"bInst":0,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"UDPsend",	
+	"_PCbase":"rs1",
+	"nB":256,
+	"tInt":100000,
+}
+
+{
+	"name":"UDPrecv",
+	"class":"_UDP",
+	"bInst":0,
+	"FPS":30,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"port":19840,
+	"listenPort":19840,
+	"nFIFO":1280000,
+	"_wakeUp":"PCrecv",
+}
+
+{
+	"name":"PCrecv",
+	"class":"_PCrecv",
+	"bInst":0,
+	"FPS":30,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"UDPrecv",
+	"/_PCviewer":"pcv",
+	"nB":1280,
+}
+

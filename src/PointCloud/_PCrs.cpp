@@ -67,17 +67,14 @@ bool _PCrs::open(void)
 
 	try
 	{
-		rs2::config cfg;
 		if(!m_rsSN.empty())
-			cfg.enable_device(m_rsSN);
+			m_rsConfig.enable_device(m_rsSN);
 
-		cfg.enable_stream(RS2_STREAM_DEPTH, m_vWHd.x, m_vWHd.y, RS2_FORMAT_Z16, m_rsDFPS);
+		m_rsConfig.enable_stream(RS2_STREAM_DEPTH, m_vWHd.x, m_vWHd.y, RS2_FORMAT_Z16, m_rsDFPS);
 		if (m_bRsRGB)
-		{
-			cfg.enable_stream(RS2_STREAM_COLOR, m_vWHc.x, m_vWHc.y, RS2_FORMAT_BGR8, m_rsFPS);
-		}
+			m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vWHc.x, m_vWHc.y, RS2_FORMAT_BGR8, m_rsFPS);
 
-		auto profile = m_rsPipe.start(cfg);
+		auto profile = m_rsPipe.start(m_rsConfig);
 		auto sensor = profile.get_device().first<rs2::depth_sensor>();
 		auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
 		for (auto i = range.min; i <= range.max; i += range.step)
@@ -160,6 +157,11 @@ bool _PCrs::open(void)
 	return true;
 }
 
+void _PCrs::hardwareReset(void)
+{
+    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
+}
+
 bool _PCrs::start(void)
 {
 	IF_F(!this->_ThreadBase::start());
@@ -189,6 +191,7 @@ void _PCrs::update(void)
 			if (!open())
 			{
 				LOG_E("Cannot open RealSense");
+                hardwareReset();
 				this->sleepTime(USEC_1SEC);
 				continue;
 			}
@@ -196,21 +199,29 @@ void _PCrs::update(void)
 
 		this->autoFPSfrom();
 
-		updateRS();
-        updatePC();
+		if(updateRS())
+        {
+            updatePC();
 
-		if(m_pViewer)
-		{
-			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-		}
+            if(m_pViewer)
+            {
+                m_pViewer->updateGeometry(m_iV, m_sPC.prev());
+            }
+        }
+        else
+        {
+            hardwareReset();
+			this->sleepTime(USEC_1SEC);
+            m_bOpen = false;
+        }
 
 		this->autoFPSto();
 	}
 }
 
-void _PCrs::updateRS(void)
+bool _PCrs::updateRS(void)
 {
-	IF_(check() < 0);
+	IF_T(check() < 0);
     
 	try
 	{
@@ -238,15 +249,19 @@ void _PCrs::updateRS(void)
 	} catch (const rs2::camera_disconnected_error& e)
 	{
 		LOG_E("Realsense disconnected");
+        return false;
 	} catch (const rs2::recoverable_error& e)
 	{
 		LOG_E("Realsense open failed");
+        return false;
 	} catch (const rs2::error& e)
 	{
 		LOG_E("Realsense error");
+        return false;
 	} catch (const std::exception& e)
 	{
 		LOG_E("Realsense exception");
+        return false;
 	}
 
 
@@ -284,6 +299,7 @@ void _PCrs::updateRS(void)
  		pPC->colors_.push_back(te);
 	}
 
+    return true;
 }
 
 }
