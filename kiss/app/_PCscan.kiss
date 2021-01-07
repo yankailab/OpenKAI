@@ -47,7 +47,7 @@
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"/rsSN":"00000000f0211594",
+	"rsSN":"00000000f0210205",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -68,7 +68,7 @@
 	"name":"rs2",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -81,7 +81,7 @@
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"/rsSN":"00000000f0211594",
+	"rsSN":"00000000f0210237",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -89,7 +89,7 @@
 {
 	"name":"tf2",
 	"class":"_PCtransform",
-	"bInst":0,
+	"bInst":1,
 	"_PCbase":"rs2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
@@ -115,7 +115,7 @@
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"/rsSN":"00000000f0211594",
+	"rsSN":"00000000f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -138,6 +138,7 @@
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
+	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
 }
