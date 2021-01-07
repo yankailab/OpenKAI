@@ -166,7 +166,7 @@ bool _RealSense::open ( void )
 
 void _RealSense::hardwareReset ( void )
 {
-    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
+//    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
 }
 
 void _RealSense::close ( void )
@@ -213,6 +213,7 @@ void _RealSense::update ( void )
             if ( !open() )
             {
                 LOG_E ( "Cannot open RealSense" );
+                hardwareReset();
                 this->sleepTime ( USEC_1SEC );
                 continue;
             }

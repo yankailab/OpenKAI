@@ -41,13 +41,13 @@
 	"rsRGB":1,
 	"vWHcol":[1280,720],
 	"rsFPS":30,
-	"vWHd":[1024,768],
+	"vWHd":[640,480],
 	"rsDFPS":30,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"rsSN":"00000000f0210205",
+	"rsSN":"f0210205",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -61,7 +61,7 @@
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"paramKiss":"/home/kai/dev/config/tf1.kiss",
+	"paramKiss":"/home/kai/config/tf1.kiss",
 }
 
 {
@@ -75,13 +75,13 @@
 	"rsRGB":1,
 	"vWHcol":[1280,720],
 	"rsFPS":30,
-	"vWHd":[1024,768],
+	"vWHd":[640,480],
 	"rsDFPS":30,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"rsSN":"00000000f0210237",
+	"rsSN":"f0210237",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -95,7 +95,7 @@
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"paramKiss":"/home/kai/dev/config/tf2.kiss",
+	"paramKiss":"/home/kai/config/tf2.kiss",
 }
 
 {
@@ -109,13 +109,13 @@
 	"rsRGB":1,
 	"vWHcol":[1280,720],
 	"rsFPS":30,
-	"vWHd":[1024,768],
+	"vWHd":[640,480],
 	"rsDFPS":30,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
-	"rsSN":"00000000f0211594",
+	"rsSN":"f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 }
@@ -129,7 +129,7 @@
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"paramKiss":"/home/kai/dev/config/tf3.kiss",
+	"paramKiss":"/home/kai/config/tf3.kiss",
 }
 
 

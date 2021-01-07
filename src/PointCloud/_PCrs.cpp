@@ -159,7 +159,7 @@ bool _PCrs::open(void)
 
 void _PCrs::hardwareReset(void)
 {
-    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
+//    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
 }
 
 bool _PCrs::start(void)
