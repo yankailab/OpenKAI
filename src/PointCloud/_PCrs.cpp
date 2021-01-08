@@ -74,8 +74,14 @@ bool _PCrs::open(void)
 		if (m_bRsRGB)
 			m_rsConfig.enable_stream(RS2_STREAM_COLOR, m_vWHc.x, m_vWHc.y, RS2_FORMAT_BGR8, m_rsFPS);
 
-		auto profile = m_rsPipe.start(m_rsConfig);
-		auto sensor = profile.get_device().first<rs2::depth_sensor>();
+        m_rsProfile = m_rsPipe.start(m_rsConfig);
+        rs2::device dev = m_rsProfile.get_device();
+        LOG_I("Device Name:" + string(dev.get_info(RS2_CAMERA_INFO_NAME)));
+        LOG_I("Firmware Version:" + string(dev.get_info(RS2_CAMERA_INFO_FIRMWARE_VERSION)));
+        LOG_I("Serial Number:" + string(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER)));
+        LOG_I("Product Id:" + string(dev.get_info(RS2_CAMERA_INFO_PRODUCT_ID)));
+        
+		auto sensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
 		auto range = sensor.get_option_range(RS2_OPTION_VISUAL_PRESET);
 		for (auto i = range.min; i <= range.max; i += range.step)
 		{
@@ -160,6 +166,9 @@ bool _PCrs::open(void)
 void _PCrs::hardwareReset(void)
 {
 //    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
+
+    rs2::device dev = m_rsProfile.get_device();
+    dev.hardware_reset();
 }
 
 bool _PCrs::start(void)

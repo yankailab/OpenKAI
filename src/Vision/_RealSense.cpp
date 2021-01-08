@@ -70,14 +70,19 @@ bool _RealSense::open ( void )
         if ( m_bRsRGB )
             m_rsConfig.enable_stream ( RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS );
 
-        auto profile = m_rsPipe.start ( m_rsConfig );
-
-        auto cStream = profile.get_stream ( RS2_STREAM_COLOR ).as<rs2::video_stream_profile>();
+        m_rsProfile = m_rsPipe.start(m_rsConfig);
+        rs2::device dev = m_rsProfile.get_device();
+        LOG_I("Device Name:" + string(dev.get_info(RS2_CAMERA_INFO_NAME)));
+        LOG_I("Firmware Version:" + string(dev.get_info(RS2_CAMERA_INFO_FIRMWARE_VERSION)));
+        LOG_I("Serial Number:" + string(dev.get_info(RS2_CAMERA_INFO_SERIAL_NUMBER)));
+        LOG_I("Product Id:" + string(dev.get_info(RS2_CAMERA_INFO_PRODUCT_ID)));
+        
+        auto cStream = m_rsProfile.get_stream ( RS2_STREAM_COLOR ).as<rs2::video_stream_profile>();
         m_cIntrinsics = cStream.get_intrinsics();
-        auto dStream = profile.get_stream ( RS2_STREAM_DEPTH ).as<rs2::video_stream_profile>();
+        auto dStream = m_rsProfile.get_stream ( RS2_STREAM_DEPTH ).as<rs2::video_stream_profile>();
         m_dIntrinsics = dStream.get_intrinsics();
 
-        auto sensor = profile.get_device().first<rs2::depth_sensor>();
+        auto sensor = m_rsProfile.get_device().first<rs2::depth_sensor>();
         m_dScale = sensor.get_depth_scale();
 
         auto range = sensor.get_option_range ( RS2_OPTION_VISUAL_PRESET );
@@ -167,6 +172,8 @@ bool _RealSense::open ( void )
 void _RealSense::hardwareReset ( void )
 {
 //    m_rsConfig.resolve(m_rsPipe).get_device().hardware_reset();
+    rs2::device dev = m_rsProfile.get_device();
+    dev.hardware_reset();
 }
 
 void _RealSense::close ( void )

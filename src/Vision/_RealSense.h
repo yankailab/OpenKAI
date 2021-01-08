@@ -52,6 +52,7 @@ private:
 public:
 	string m_rsSN;
     rs2::config m_rsConfig;
+	rs2::pipeline_profile m_rsProfile;
 	rs2::pipeline m_rsPipe;
 	rs2::frame m_rsColor;
 	rs2::frame m_rsDepth;
