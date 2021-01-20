@@ -80,6 +80,9 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AProver_tag);
 	ADD_MODULE(_AProver_followTag);
 
+    ADD_MODULE(_DroneBox);
+    ADD_MODULE(_DroneBoxJSON);
+
     ADD_MODULE(_UIhandlerBase);
 
 #ifdef USE_OPENCV

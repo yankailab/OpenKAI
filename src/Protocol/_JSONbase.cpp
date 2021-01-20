@@ -139,9 +139,8 @@ bool _JSONbase::recv()
 
 	unsigned char B;
 	unsigned int nStrFinish = m_msgFinishRecv.length();
-	int nB;
 
-	while ((nB = m_pIO->read(&B, 1)) > 0)
+	while (m_pIO->read(&B, 1) > 0)
 	{
 		s_strB += B;
 		IF_CONT(s_strB.length() <= nStrFinish);

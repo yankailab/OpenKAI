@@ -8,7 +8,7 @@
 namespace kai
 {
 
-struct APROVER_BR_MODE
+struct BENCHROVER_STATE   
 {
 	int8_t MANUAL;
 	int8_t FORWARD;
@@ -59,7 +59,7 @@ public:
     _Drive*    m_pD;
     
     RC_CHANNEL m_rcMode;
-    APROVER_BR_MODE m_iMode;
+    BENCHROVER_STATE m_iMode;
      
     RC_CHANNEL m_rcStickV;
     RC_CHANNEL m_rcStickH;

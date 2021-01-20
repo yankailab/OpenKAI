@@ -46,6 +46,8 @@
 #include "../Application/BenchRover/_AProver_BRfollow.h"
 #include "../Application/TagRover/_AProver_tag.h"
 #include "../Application/TagRover/_AProver_followTag.h"
+#include "../Application/DroneBox/_DroneBox.h"
+#include "../Application/DroneBox/_DroneBoxJSON.h"
 
 #include "../Application/UIhandler/_UIhandlerBase.h"
 
