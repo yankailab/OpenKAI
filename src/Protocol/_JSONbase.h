@@ -45,6 +45,7 @@ public:
 
 	string m_msgFinishSend;
 	string m_msgFinishRecv;
+    string m_strB;
 
 	pthread_t m_rThreadID;
 	bool	m_bRThreadON;

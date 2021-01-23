@@ -1,0 +1,19 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"cl",
+	"class":"clBase",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+}

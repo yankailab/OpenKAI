@@ -126,7 +126,11 @@ void _JSONbase::updateR(void)
 {
 	while (m_bRThreadON)
 	{
-		recv();
+        if(recv())
+        {
+            handleMsg(m_strB);
+            m_strB.clear();            
+        }
 		this->sleepTime(0); //wait for the IObase to wake me up when received data
 	}
 }
@@ -135,24 +139,20 @@ bool _JSONbase::recv()
 {
 	IF_F(check()<0);
 
-	static string s_strB = "";
-
 	unsigned char B;
 	unsigned int nStrFinish = m_msgFinishRecv.length();
 
 	while (m_pIO->read(&B, 1) > 0)
 	{
-		s_strB += B;
-		IF_CONT(s_strB.length() <= nStrFinish);
+		m_strB += B;
+		IF_CONT(m_strB.length() <= nStrFinish);
 
-		string lstr = s_strB.substr(s_strB.length()-nStrFinish, nStrFinish);
+		string lstr = m_strB.substr(m_strB.length()-nStrFinish, nStrFinish);
 		IF_CONT(lstr != m_msgFinishRecv);
 
-		s_strB.erase(s_strB.length()-nStrFinish, nStrFinish);
-		handleMsg(s_strB);
-
-		LOG_I("Received: " + s_strB);
-		s_strB.clear();
+		m_strB.erase(m_strB.length()-nStrFinish, nStrFinish);
+		LOG_I("Received: " + m_strB);
+        return true;
 	}
 
 	return false;
@@ -173,7 +173,6 @@ void _JSONbase::handleMsg(string& str)
 	int status = (int)jo["status"].get<double>();
 	string data = jo["data"].get<string>();
 	string message = jo["message"].get<string>();
-
 }
 
 void _JSONbase::draw(void)

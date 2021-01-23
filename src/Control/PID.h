@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Control_PIDctrl_H_
-#define OpenKAI_src_Control_PIDctrl_H_
+#ifndef OpenKAI_src_Control_PID_H_
+#define OpenKAI_src_Control_PID_H_
 
 #include "../Base/BASE.h"
 #include "../Script/Kiss.h"

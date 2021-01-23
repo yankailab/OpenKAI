@@ -315,3 +315,22 @@ bool _PCrs::updateRS(void)
 #endif
 #endif
 
+
+//		auto cIntr = m_pRS->m_cIntrinsics;
+//		auto dIntr = m_pRS->m_dIntrinsics;
+//		dIntr = cIntr;
+//		m_imgD.Prepare(dIntr.width, dIntr.height, 1, 2);
+//		m_imgRGB.Prepare(cIntr.width, cIntr.height, 3, 1);
+//		memcpy(m_imgD.data_.data(), m_pRS->m_rsDepth.get_data(), dIntr.width * dIntr.height * 2);
+//		memcpy(m_imgRGB.data_.data(), m_pRS->m_rsColor.get_data(), cIntr.width * cIntr.height * 3);
+//
+//		shared_ptr<RGBDImage> imgRGBD = RGBDImage::CreateFromColorAndDepth(m_imgRGB, m_imgD, 1.0/m_pRS->m_dScale, m_pRS->m_vRange.y, false);
+//        camera::PinholeCameraIntrinsic camInt(dIntr.width,
+//        										dIntr.height,
+//												dIntr.fx,
+//												dIntr.fy,
+//												dIntr.ppx,
+//												dIntr.ppy);
+//        m_spPC = PointCloud::CreateFromRGBDImage(*imgRGBD, camInt);
+//        m_pPC = m_spPC;
+

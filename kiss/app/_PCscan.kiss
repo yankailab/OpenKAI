@@ -10,6 +10,30 @@
 }
 
 {
+	"name":"OKview",
+	"class":"Window",
+	"bInst":1,
+	"bFullScreen":0,
+	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
+	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
+	"/textSize":0.8,
+	"/lingH":35,
+	"/textCol":[255,0,0],
+}
+
+{
+	"name":"camera",
+	"class":"_Camera",
+	"FPS":30,
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"deviceID":0,
+	"w":640,
+	"h":480,
+}
+
+{
 	"name":"pcv",
 	"class":"_PCviewer",
 	"FPS":30,
@@ -24,9 +48,9 @@
 	"name":"pcf",
 	"class":"_PCfile",
 	"FPS":30,
-	"bInst":0,
+	"bInst":1,
 	"Console":"OKconsole",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }
 
@@ -102,7 +126,7 @@
 	"name":"rs3",
 	"class":"_PCrs",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -123,7 +147,7 @@
 {
 	"name":"tf3",
 	"class":"_PCtransform",
-	"bInst":1,
+	"bInst":0,
 	"_PCbase":"rs3",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],

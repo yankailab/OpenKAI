@@ -86,6 +86,10 @@ BASE* Module::createInstance(Kiss* pK)
     ADD_MODULE(_UIhandlerBase);
 
 #ifdef USE_OPENCV
+	ADD_MODULE(clBase);
+#endif
+    
+#ifdef USE_OPENCV
 	ADD_MODULE(_ANR);
 	ADD_MODULE(_Camera);
 	ADD_MODULE(_Contrast);

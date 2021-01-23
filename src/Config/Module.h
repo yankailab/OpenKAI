@@ -85,6 +85,10 @@
 #include "../Vision/Hiphen/_HiphenServer.h"
 #include "../Vision/Hiphen/_HiphenCMD.h"
 
+#ifdef USE_OPENCL
+#include "../Compute/OpenCL/clBase.h"
+#endif
+
 #ifdef USE_OPENCV
 
 #include "../UI/Window.h"
