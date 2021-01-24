@@ -85,7 +85,7 @@ BASE* Module::createInstance(Kiss* pK)
 
     ADD_MODULE(_UIhandlerBase);
 
-#ifdef USE_OPENCV
+#ifdef USE_OPENCL
 	ADD_MODULE(clBase);
 #endif
     

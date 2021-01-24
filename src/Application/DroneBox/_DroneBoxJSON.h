@@ -19,21 +19,18 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
-    //general
-    void heartbeat(void);
+    //msg
+    void sendHeartbeat (void);
+    bool sendMsg (picojson::object& o);
     
-    //vehicle to base
-    void actionReuqest(void);  //hatch open, platform up, if approved
-    void actionComplete(void); //platform down, hatch close
-
-    //base to vehicle
-    void actionReply(void);
-
 protected:
-    void heartbeat(picojson::object& jo);
-    void actionReuqest(picojson::object& jo);
-    void actionComplete(picojson::object& jo);
-    void actionReply(picojson::object& jo);
+    void heartbeat(picojson::object& o);
+    void landingRequest (picojson::object& o);
+    void landingStatus (picojson::object& o);
+    void takeoffRequest (picojson::object& o);
+    void takeoffStatus (picojson::object& o);
+    void ackLandingRequest(picojson::object& o);
+    void ackTakeoffRequest(picojson::object& o);
     
 	virtual void send(void);
 	virtual void handleMsg(string& str);

@@ -3,6 +3,7 @@
 
 #include "../Base/_ThreadBase.h"
 #include "../IO/_IOBase.h"
+#include <openssl/md5.h>
 
 using namespace picojson;
 
@@ -24,6 +25,7 @@ protected:
 	virtual void send(void);
 	virtual bool recv(void);
 	virtual void handleMsg(string& str);
+    virtual void md5(string& str, string* pDigest);
 
 private:
 	void updateW(void);

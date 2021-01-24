@@ -30,7 +30,7 @@ find_package(Eigen3 3.1.0 REQUIRED)
 set(OpenKAI_definitions "-w -Wall -c -fmessage-length=0 -MMD -MP -std=c++17")
 set(OpenKAI_libDir /usr/lib /usr/local/lib)
 set(OpenKAI_include /usr/local/include /usr/include ${EIGEN3_INCLUDE_DIR})
-set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas ncurses)
+set(OpenKAI_lib pthread boost_system glog uuid ${EIGEN3_LIBS} gsl gslcblas ncurses ssl crypto)
 
 if(USE_CHILITAGS)
   add_definitions(-DUSE_CHILITAGS)

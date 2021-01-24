@@ -93,7 +93,7 @@ void _DroneBoxJSON::send ( void )
     
 }
 
-void _DroneBoxJSON::heartbeat(void)
+void _DroneBoxJSON::sendHeartbeat (void)
 {
     object o;
     o.insert ( make_pair ( "id", value ( "tf" + i2str ( 1 ) ) ) );
@@ -103,19 +103,10 @@ void _DroneBoxJSON::heartbeat(void)
     m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );
 }
 
-void _DroneBoxJSON::actionReuqest(void)
+bool _DroneBoxJSON::sendMsg (picojson::object& o)
 {
-    
-}
-
-void _DroneBoxJSON::actionComplete(void)
-{
-    
-}
-
-void _DroneBoxJSON::actionReply(void)
-{
-    
+    string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
+    return m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );  
 }
 
 void _DroneBoxJSON::updateR ( void )
@@ -160,22 +151,37 @@ void _DroneBoxJSON::handleMsg ( string& str )
 
 }
 
-void _DroneBoxJSON::heartbeat(picojson::object& jo)
+void _DroneBoxJSON::heartbeat(picojson::object& o)
 {
     
 }
 
-void _DroneBoxJSON::actionReuqest(picojson::object& jo)
+void _DroneBoxJSON::landingRequest (picojson::object& o)
 {
     
 }
 
-void _DroneBoxJSON::actionComplete(picojson::object& jo)
+void _DroneBoxJSON::landingStatus (picojson::object& o)
 {
     
 }
 
-void _DroneBoxJSON::actionReply(picojson::object& jo)
+void _DroneBoxJSON::takeoffRequest (picojson::object& o)
+{
+    
+}
+
+void _DroneBoxJSON::takeoffStatus (picojson::object& o)
+{
+    
+}
+
+void _DroneBoxJSON::ackLandingRequest(picojson::object& o)
+{
+    
+}
+
+void _DroneBoxJSON::ackTakeoffRequest(picojson::object& o)
 {
     
 }

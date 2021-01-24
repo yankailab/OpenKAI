@@ -1,5 +1,7 @@
 #include "clBase.h"
 
+#ifdef USE_OPENCL
+
 namespace kai
 {
 
@@ -117,3 +119,4 @@ void clBase::draw ( void )
 }
 
 }
+#endif
