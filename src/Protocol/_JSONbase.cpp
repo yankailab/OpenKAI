@@ -150,19 +150,14 @@ bool _JSONbase::recv()
 
 void _JSONbase::handleMsg ( string& str )
 {
-    string error;
+    string err;
     const char* jsonstr = str.c_str();
-    picojson::value json;
-    picojson::parse ( json, jsonstr, jsonstr + strlen ( jsonstr ), &error );
+    value json;
+    parse ( json, jsonstr, jsonstr + strlen ( jsonstr ), &err );
     IF_ ( !json.is<object>() );
 
-    picojson::object& jo = json.get<picojson::object>();
-    string action = jo["action"].get<string>();
-//	if(action == "plane_connect");
-
-    int status = ( int ) jo["status"].get<double>();
-    string data = jo["data"].get<string>();
-    string message = jo["message"].get<string>();
+    object& jo = json.get<object>();
+    string cmd = jo["cmd"].get<string>();
 }
 
 void _JSONbase:: md5( string& str, string* pDigest )

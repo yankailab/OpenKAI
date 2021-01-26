@@ -82,6 +82,7 @@ BASE* Module::createInstance(Kiss* pK)
 
     ADD_MODULE(_DroneBox);
     ADD_MODULE(_DroneBoxJSON);
+    ADD_MODULE(_AP_droneBoxJSON);
 
     ADD_MODULE(_UIhandlerBase);
 

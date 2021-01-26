@@ -45,4 +45,6 @@
 #define DEL_ARRAY(x) if(x){delete[] x;x=NULL;}
 #define SWAP(x,y,t) {t=x;x=y;y=t;}
 
+#define JO(o,n,v) {o.insert(make_pair(n,value(v)));}
+
 #endif

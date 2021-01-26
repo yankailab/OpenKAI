@@ -1,18 +1,18 @@
-#include "_DroneBoxJSON.h"
+#include "_AP_droneBoxJSON.h"
 
 namespace kai
 {
 
-_DroneBoxJSON::_DroneBoxJSON()
+_AP_droneBoxJSON::_AP_droneBoxJSON()
 {
-    m_pDB = NULL;
+    m_pAP = NULL;
 }
 
-_DroneBoxJSON::~_DroneBoxJSON()
+_AP_droneBoxJSON::~_AP_droneBoxJSON()
 {
 }
 
-bool _DroneBoxJSON::init ( void* pKiss )
+bool _AP_droneBoxJSON::init ( void* pKiss )
 {
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
@@ -23,14 +23,14 @@ bool _DroneBoxJSON::init ( void* pKiss )
     
     string n;
     n = "";
-    pK->v ( "_DroneBox", &n );
-    m_pDB = ( _DroneBox* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pDB, n + ": not found" );
+    pK->v ( "_AP_base", &n );
+    m_pAP = ( _AP_base* ) ( pK->getInst ( n ) );
+    IF_Fl ( !m_pAP, n + ": not found" );
 
     return true;
 }
 
-bool _DroneBoxJSON::start ( void )
+bool _AP_droneBoxJSON::start ( void )
 {
     int retCode;
 
@@ -61,14 +61,14 @@ bool _DroneBoxJSON::start ( void )
     return true;
 }
 
-int _DroneBoxJSON::check ( void )
+int _AP_droneBoxJSON::check ( void )
 {
-    NULL__ ( m_pDB, -1 );
+    NULL__ ( m_pAP, -1 );
 
     return this->_JSONbase::check();
 }
 
-void _DroneBoxJSON::updateW ( void )
+void _AP_droneBoxJSON::updateW ( void )
 {
     while ( m_bThreadON )
     {
@@ -95,7 +95,7 @@ void _DroneBoxJSON::updateW ( void )
     }
 }
 
-void _DroneBoxJSON::send ( void )
+void _AP_droneBoxJSON::send ( void )
 {
     IF_ ( check() <0 );
 
@@ -105,7 +105,7 @@ void _DroneBoxJSON::send ( void )
     }
 }
 
-void _DroneBoxJSON::sendHeartbeat (void)
+void _AP_droneBoxJSON::sendHeartbeat (void)
 {
     object o;
     JO(o, "id", "tf" + i2str(1));
@@ -114,13 +114,13 @@ void _DroneBoxJSON::sendHeartbeat (void)
     m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );
 }
 
-bool _DroneBoxJSON::sendMsg (picojson::object& o)
+bool _AP_droneBoxJSON::sendMsg (picojson::object& o)
 {
     string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
     return m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );  
 }
 
-void _DroneBoxJSON::updateR ( void )
+void _AP_droneBoxJSON::updateR ( void )
 {
     while ( m_bRThreadON )
     {
@@ -133,7 +133,7 @@ void _DroneBoxJSON::updateR ( void )
     }
 }
 
-void _DroneBoxJSON::handleMsg ( string& str )
+void _AP_droneBoxJSON::handleMsg ( string& str )
 {
     string err;
     const char* jsonstr = str.c_str();
@@ -157,41 +157,38 @@ void _DroneBoxJSON::handleMsg ( string& str )
 
 }
 
-void _DroneBoxJSON::heartbeat(picojson::object& o)
+void _AP_droneBoxJSON::heartbeat(picojson::object& o)
 {
     IF_(check()<0 );
     
 }
 
-void _DroneBoxJSON::landingRequest (picojson::object& o)
+void _AP_droneBoxJSON::landingRequest (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->landingRequest(o["vID"].get<double>());
+//    m_pDB->landingRequest(o["vID"].get<int>());
 }
 
-void _DroneBoxJSON::landingStatus (picojson::object& o)
+void _AP_droneBoxJSON::landingStatus (picojson::object& o)
+{
+    IF_(check()<0 );
+
+}
+
+void _AP_droneBoxJSON::takeoffRequest (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->landingStatus(o["vID"].get<double>());
 }
 
-void _DroneBoxJSON::takeoffRequest (picojson::object& o)
+void _AP_droneBoxJSON::takeoffStatus (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->takeoffRequest(o["vID"].get<double>());
 }
 
-void _DroneBoxJSON::takeoffStatus (picojson::object& o)
-{
-    IF_(check()<0 );
-    
-    m_pDB->takeoffStatus(o["vID"].get<double>());
-}
-
-void _DroneBoxJSON::draw ( void )
+void _AP_droneBoxJSON::draw ( void )
 {
     this->_ThreadBase::draw();
 

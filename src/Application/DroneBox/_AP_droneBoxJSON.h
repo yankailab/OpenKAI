@@ -1,19 +1,19 @@
-#ifndef OpenKAI_src_Application_DroneBox__DroneBoxJSON_H_
-#define OpenKAI_src_Application_DroneBox__DroneBoxJSON_H_
+#ifndef OpenKAI_src_Application_DroneBox__AP_droneBoxJSON_H_
+#define OpenKAI_src_Application_DroneBox__AP_droneBoxJSON_H_
 
 #include "../../Protocol/_JSONbase.h"
-#include "_DroneBox.h"
+#include "../../Application/Autopilot/ArduPilot/_AP_base.h"
 
 using namespace picojson;
 
 namespace kai
 {
 
-class _DroneBoxJSON : public _JSONbase
+class _AP_droneBoxJSON : public _JSONbase
 {
 public:
-	_DroneBoxJSON();
-	~_DroneBoxJSON();
+	_AP_droneBoxJSON();
+	~_AP_droneBoxJSON();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -38,19 +38,19 @@ private:
 	void updateW(void);
 	static void* getUpdateThreadW(void* This)
 	{
-		((_DroneBoxJSON*) This)->updateW();
+		((_AP_droneBoxJSON*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
 	static void* getUpdateThreadR(void* This)
 	{
-		((_DroneBoxJSON*) This)->updateR();
+		((_AP_droneBoxJSON*) This)->updateR();
 		return NULL;
 	}
 
 public:
-    _DroneBox* m_pDB;
+    _AP_base* m_pAP;
 
     INTERVAL_EVENT m_tIntHeartbeat;
     
