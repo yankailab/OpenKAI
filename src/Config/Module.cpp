@@ -66,6 +66,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_servo);
 	ADD_MODULE(_AP_takeoff);
 	ADD_MODULE(_AP_goto);
+	ADD_MODULE(_AP_gs);
 	ADD_MODULE(_AP_link);
 	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);

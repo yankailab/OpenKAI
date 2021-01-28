@@ -8,7 +8,6 @@ _MissionBase::_MissionBase()
 	m_pMC = NULL;
 	m_iLastMission = 0;
 	m_bMissionChanged = false;
-	m_pCtrl = NULL;
 }
 
 _MissionBase::~_MissionBase()
@@ -29,7 +28,7 @@ bool _MissionBase::init(void* pKiss)
 	pK->a("activeMission", &vAS);
 	for(int i=0; i<vAS.size(); i++)
 	{
-		int iMission = m_pMC->getMissionIdx(vAS[i]);
+		int iMission = m_pMC->getMissionIdxByName (vAS[i]);
 		if(iMission<0)continue;
 
 		m_vActiveMission.push_back(iMission);

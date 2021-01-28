@@ -48,7 +48,7 @@ public:
 	string getMissionName(void);
 	int getMissionIdx(void);
 	MISSION_TYPE getMissionType(void);
-	int getMissionIdx(const string& mName);
+	int getMissionIdxByName (const string& mName);
 	void transit(void);
 	void transit(const string& mName);
 	void transit(int iM);

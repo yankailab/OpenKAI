@@ -104,12 +104,25 @@ void _JSONbase::send ( void )
 {
     IF_ ( check() <0 );
 
-    picojson::object o;
-    o.insert ( make_pair ( "action", value ( string ( "start_fly" ) ) ) );
+    if(m_tIntHeartbeat.update(m_tStamp))
+    {
+        sendHeartbeat();
+    }
+}
 
+bool _JSONbase::sendMsg (picojson::object& o)
+{
     string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
-    m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );
-    LOG_I ( "Sent: " + msg );
+    return m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );  
+}
+
+bool _JSONbase::sendHeartbeat (void)
+{
+    object o;
+    JO(o, "id", i2str(1));
+    JO(o, "t", li2str(m_tStamp));
+    
+    return sendMsg(o);
 }
 
 void _JSONbase::updateR ( void )
@@ -150,14 +163,23 @@ bool _JSONbase::recv()
 
 void _JSONbase::handleMsg ( string& str )
 {
-    string err;
-    const char* jsonstr = str.c_str();
-    value json;
-    parse ( json, jsonstr, jsonstr + strlen ( jsonstr ), &err );
-    IF_ ( !json.is<object>() );
-
+    value json;    
+    IF_(!str2JSON(str,&json));
+    
     object& jo = json.get<object>();
     string cmd = jo["cmd"].get<string>();
+}
+
+bool _JSONbase::str2JSON(string& str, picojson::value* pJson)
+{
+    NULL_F(pJson);
+    
+    string err;
+    const char* jsonstr = str.c_str();
+    parse ( *pJson, jsonstr, jsonstr + strlen ( jsonstr ), &err );
+    IF_F ( !pJson->is<object>() );
+    
+    return true;
 }
 
 void _JSONbase:: md5( string& str, string* pDigest )

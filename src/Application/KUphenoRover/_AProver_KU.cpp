@@ -31,9 +31,9 @@ bool _AProver_KU::init(void* pKiss)
     m_rcMode.setup();
     m_rcDir.setup();
 
-    m_iMode.STANDBY = m_pMC->getMissionIdx ( "STANDBY" );
-    m_iMode.HYBRID = m_pMC->getMissionIdx ( "HYBRID" );
-    m_iMode.AUTO = m_pMC->getMissionIdx ( "AUTO" );
+    m_iMode.STANDBY = m_pMC->getMissionIdxByName ( "STANDBY" );
+    m_iMode.HYBRID = m_pMC->getMissionIdxByName ( "HYBRID" );
+    m_iMode.AUTO = m_pMC->getMissionIdxByName ( "AUTO" );
     IF_F ( !m_iMode.bValid() );
 
 	string n;

@@ -43,10 +43,10 @@ bool _AP_base::init(void* pKiss)
 	m_lastHeartbeat = 0;
 	m_iHeartbeat = 0;
 
-	string iName;
-	iName = "";
-	pK->v("_Mavlink", &iName);
-	m_pMav = (_Mavlink*) (pK->getInst(iName));
+	string n;
+	n = "";
+	pK->v("_Mavlink", &n );
+	m_pMav = (_Mavlink*) (pK->getInst( n ));
 	NULL_F(m_pMav);
 
 	Kiss* pM = pK->child("mavMsgInterval");

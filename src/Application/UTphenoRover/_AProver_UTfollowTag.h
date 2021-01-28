@@ -33,11 +33,11 @@ struct UTPR_MISSIOIN
 	bool assign(_MissionControl* pMC)
     {
         NULL_F(pMC);
-        DRIVE = pMC->getMissionIdx("DRIVE");
-        DIVIDER = pMC->getMissionIdx("DIVIDER");
-        EXTRACT = pMC->getMissionIdx("EXTRACT");
-        FOLLOW = pMC->getMissionIdx("FOLLOW");
-        RECOVER = pMC->getMissionIdx("RECOVER");
+        DRIVE = pMC->getMissionIdxByName ("DRIVE");
+        DIVIDER = pMC->getMissionIdxByName ("DIVIDER");
+        EXTRACT = pMC->getMissionIdxByName ("EXTRACT");
+        FOLLOW = pMC->getMissionIdxByName ("FOLLOW");
+        RECOVER = pMC->getMissionIdxByName ("RECOVER");
         
         return bValid();
     }

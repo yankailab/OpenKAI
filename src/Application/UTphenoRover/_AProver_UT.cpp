@@ -26,9 +26,9 @@ bool _AProver_UT::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
     m_rcMode.setup();
 
-    m_iMode.MANUAL = m_pMC->getMissionIdx ( "MANUAL" );
-    m_iMode.FORWARD = m_pMC->getMissionIdx ( "FORWARD" );
-    m_iMode.BACKWARD = m_pMC->getMissionIdx ( "BACKWARD" );
+    m_iMode.MANUAL = m_pMC->getMissionIdxByName ( "MANUAL" );
+    m_iMode.FORWARD = m_pMC->getMissionIdxByName ( "FORWARD" );
+    m_iMode.BACKWARD = m_pMC->getMissionIdxByName ( "BACKWARD" );
     IF_F ( !m_iMode.bValid() );
 
 	string n;

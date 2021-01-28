@@ -7,9 +7,6 @@ _DroneBox::_DroneBox()
 {
     m_pMB = NULL;
     m_iSlave = 1;
-    m_iBox = -1;
-    m_iVehicle = -1;
-    m_iState = 0;
 }
 
 _DroneBox::~_DroneBox()
@@ -18,15 +15,10 @@ _DroneBox::~_DroneBox()
 
 bool _DroneBox::init ( void* pKiss )
 {
-    IF_F ( !this->_MissionBase::init ( pKiss ) );
+    IF_F ( !this->_GCSbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "iSlave", &m_iSlave );
-    pK->v ( "iBox", &m_iBox );
-    pK->v ( "iVehicle", &m_iVehicle );
-
-    IF_F ( !m_pMC );
-    IF_F ( !m_state.assign ( m_pMC ) );
 
     string n;
 
@@ -119,66 +111,6 @@ void _DroneBox::updateBox ( void )
     {
         boxTakeoffComplete();
     }    
-}
-
-bool _DroneBox::landingRequest ( int vID )
-{
-    IF_F ( check() <0 );
-    int m = m_pMC->getMissionIdx();
-    
-    IF_T(m == m_state.LANDING_READY);
-    IF_T(m == m_state.LANDING_REQUEST);
-    
-    m_pMC->transit(m_state.LANDING_REQUEST);
-    
-    return true;
-}
-
-bool _DroneBox::bLandingReady ( int vID )
-{
-    IF_F ( check() <0 );
-    int m = m_pMC->getMissionIdx();
-    
-    IF_T(m == m_state.LANDING_READY);
-
-    return false;
-}
-
-void _DroneBox::landingStatus ( int vID )
-{
-    IF_ ( check() <0 );
-
-    m_pMC->transit(m_state.LANDING_COMPLETE);
-}
-
-bool _DroneBox::takeoffRequest ( int vID )
-{
-    IF_F ( check() <0 );
-    int m = m_pMC->getMissionIdx();
-    
-    IF_T(m == m_state.TAKEOFF_READY);
-    IF_T(m == m_state.TAKEOFF_REQUEST);
-    
-    m_pMC->transit(m_state.TAKEOFF_REQUEST);
-    
-    return true;
-}
-
-bool _DroneBox::bTakeoffReady ( int vID )
-{
-    IF_F ( check() <0 );
-    int m = m_pMC->getMissionIdx();
-    
-    IF_T(m == m_state.TAKEOFF_READY);
-
-    return false;
-}
-
-void _DroneBox::takeoffStatus ( int vID )
-{
-    IF_ ( check() <0 );
-
-    m_pMC->transit(m_state.TAKEOFF_COMPLETE);
 }
 
 void _DroneBox::boxLandingPrepare ( void )

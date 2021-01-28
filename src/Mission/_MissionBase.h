@@ -26,8 +26,6 @@ public:
 	std::vector<int> m_vActiveMission;
 	int m_iLastMission;
 	bool m_bMissionChanged;
-
-	void* m_pCtrl;
 };
 
 }

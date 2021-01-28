@@ -99,25 +99,7 @@ void _DroneBoxJSON::send ( void )
 {
     IF_ ( check() <0 );
 
-    if(m_tIntHeartbeat.update(m_tStamp))
-    {
-        sendHeartbeat();
-    }
-}
-
-void _DroneBoxJSON::sendHeartbeat (void)
-{
-    object o;
-    JO(o, "id", "tf" + i2str(1));
-
-    string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
-    m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );
-}
-
-bool _DroneBoxJSON::sendMsg (picojson::object& o)
-{
-    string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
-    return m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );  
+    this->_JSONbase::send();
 }
 
 void _DroneBoxJSON::updateR ( void )
@@ -135,12 +117,9 @@ void _DroneBoxJSON::updateR ( void )
 
 void _DroneBoxJSON::handleMsg ( string& str )
 {
-    string err;
-    const char* jsonstr = str.c_str();
-    value json;
-    parse ( json, jsonstr, jsonstr + strlen ( jsonstr ), &err );
-    IF_ ( !json.is<object>() );
-
+    value json;    
+    IF_(!str2JSON(str,&json));
+    
     object& jo = json.get<object>();
     string cmd = jo["cmd"].get<string>();
 
@@ -154,7 +133,6 @@ void _DroneBoxJSON::handleMsg ( string& str )
         takeoffRequest(jo);
     else if ( cmd == "takeoffStatus" )
         takeoffStatus(jo);
-
 }
 
 void _DroneBoxJSON::heartbeat(picojson::object& o)
@@ -167,33 +145,63 @@ void _DroneBoxJSON::landingRequest (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->landingRequest(o["vID"].get<double>());
+    int vID = o["vID"].get<double>();
+    object jo;
+    JO(jo, "gID", i2str(m_pDB->getID()));
+    JO(jo, "cmd", "ackLandingRequest");
+    
+    if(m_pDB->landingRequest(vID))
+    {
+        JO(jo, "result", "approved");        
+    }
+    else
+    {
+        JO(jo, "result", "denied");        
+    }
+    
+    sendMsg(jo);
 }
 
 void _DroneBoxJSON::landingStatus (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->landingStatus(o["vID"].get<double>());
+    int vID = o["vID"].get<double>();
+    m_pDB->landingStatus(vID);
 }
 
 void _DroneBoxJSON::takeoffRequest (picojson::object& o)
 {
-    IF_(check()<0 );
+    IF_(check()<0);
     
-    m_pDB->takeoffRequest(o["vID"].get<double>());
+    int vID = o["vID"].get<double>();
+    object jo;
+    JO(jo, "gID", i2str(m_pDB->getID()));
+    JO(jo, "cmd", "ackTakeoffRequest");
+    
+    if(m_pDB->takeoffRequest(vID))
+    {
+        JO(jo, "result", "approved");        
+    }
+    else
+    {
+        JO(jo, "result", "denied");        
+    }
+    
+    sendMsg(jo);
 }
 
 void _DroneBoxJSON::takeoffStatus (picojson::object& o)
 {
     IF_(check()<0 );
     
-    m_pDB->takeoffStatus(o["vID"].get<double>());
+    int vID = o["vID"].get<double>();
+    m_pDB->takeoffStatus(vID);
 }
 
 void _DroneBoxJSON::draw ( void )
 {
-    this->_ThreadBase::draw();
+    this->_JSONbase::draw();
 
     string msg;
     if ( m_pIO->isOpen() )

@@ -23,9 +23,13 @@ public:
 
 protected:
 	virtual void send(void);
+    virtual bool sendMsg (picojson::object& o);
+    virtual bool sendHeartbeat (void);    
+
 	virtual bool recv(void);
 	virtual void handleMsg(string& str);
     virtual void md5(string& str, string* pDigest);
+   	virtual bool str2JSON(string& str, picojson::value* pJson);
 
 private:
 	void updateW(void);
@@ -52,6 +56,7 @@ public:
 	pthread_t m_rThreadID;
 	bool	m_bRThreadON;
 
+    INTERVAL_EVENT m_tIntHeartbeat;
 };
 
 }

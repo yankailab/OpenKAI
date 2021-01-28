@@ -27,8 +27,8 @@ bool _AProver_tag::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
     m_rcMode.setup();
 
-    m_iMode.MANUAL = m_pMC->getMissionIdx ( "MANUAL" );
-    m_iMode.AUTO = m_pMC->getMissionIdx ( "AUTO" );
+    m_iMode.MANUAL = m_pMC->getMissionIdxByName ( "MANUAL" );
+    m_iMode.AUTO = m_pMC->getMissionIdxByName ( "AUTO" );
     IF_F ( !m_iMode.bValid() );
 
 	string n;

@@ -70,7 +70,7 @@ bool _MissionControl::init(void* pKiss)
 
 	string start = "";
 	pK->v("start", &start);
-	m_iM = getMissionIdx(start);
+	m_iM = getMissionIdxByName (start);
 	if(m_iM < 0)
 		m_iM = 0;
 
@@ -119,7 +119,7 @@ void _MissionControl::transit(void)
 
 void _MissionControl::transit(const string& mName)
 {
-	int iNext = getMissionIdx(mName);
+	int iNext = getMissionIdxByName (mName);
 	transit(iNext);
 }
 
@@ -135,7 +135,7 @@ void _MissionControl::transit(int iM)
 	m_iM = iM;
 }
 
-int _MissionControl::getMissionIdx(const string& mName)
+int _MissionControl::getMissionIdxByName (const string& mName)
 {
 	for(unsigned int i=0; i<m_vMission.size(); i++)
 	{

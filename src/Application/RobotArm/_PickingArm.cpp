@@ -77,13 +77,13 @@ bool _PickingArm::init(void *pKiss)
 	}
 
 	IF_F(!m_pMC);
-	m_iMission.EXTERNAL = m_pMC->getMissionIdx("EXTERNAL");
-	m_iMission.RECOVER = m_pMC->getMissionIdx("RECOVER");
-	m_iMission.FOLLOW = m_pMC->getMissionIdx("FOLLOW");
-	m_iMission.ASCEND = m_pMC->getMissionIdx("ASCEND");
-	m_iMission.DELIVER = m_pMC->getMissionIdx("DELIVER");
-	m_iMission.DESCEND = m_pMC->getMissionIdx("DESCEND");
-	m_iMission.DROP = m_pMC->getMissionIdx("DROP");
+	m_iMission.EXTERNAL = m_pMC->getMissionIdxByName ("EXTERNAL");
+	m_iMission.RECOVER = m_pMC->getMissionIdxByName ("RECOVER");
+	m_iMission.FOLLOW = m_pMC->getMissionIdxByName ("FOLLOW");
+	m_iMission.ASCEND = m_pMC->getMissionIdxByName ("ASCEND");
+	m_iMission.DELIVER = m_pMC->getMissionIdxByName ("DELIVER");
+	m_iMission.DESCEND = m_pMC->getMissionIdxByName ("DESCEND");
+	m_iMission.DROP = m_pMC->getMissionIdxByName ("DROP");
 	IF_F(!m_iMission.bValid());
 
 	string iName;

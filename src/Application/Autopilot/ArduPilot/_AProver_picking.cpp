@@ -47,10 +47,10 @@ bool _AProver_picking::init(void* pKiss)
 	}
 
 	IF_F(!m_pMC);
-	m_iMission.STANDBY = m_pMC->getMissionIdx("STANDBY");
-	m_iMission.MANUAL = m_pMC->getMissionIdx("MANUAL");
-	m_iMission.AUTOPICK = m_pMC->getMissionIdx("AUTOPICK");
-	m_iMission.AUTO = m_pMC->getMissionIdx("AUTO");
+	m_iMission.STANDBY = m_pMC->getMissionIdxByName ("STANDBY");
+	m_iMission.MANUAL = m_pMC->getMissionIdxByName ("MANUAL");
+	m_iMission.AUTOPICK = m_pMC->getMissionIdxByName ("AUTOPICK");
+	m_iMission.AUTO = m_pMC->getMissionIdxByName ("AUTO");
 	IF_F(!m_iMission.bValid());
 
 	string iName;

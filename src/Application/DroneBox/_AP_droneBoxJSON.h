@@ -2,9 +2,7 @@
 #define OpenKAI_src_Application_DroneBox__AP_droneBoxJSON_H_
 
 #include "../../Protocol/_JSONbase.h"
-#include "../../Application/Autopilot/ArduPilot/_AP_base.h"
-
-using namespace picojson;
+#include "../../Application/Autopilot/ArduPilot/_AP_gs.h"
 
 namespace kai
 {
@@ -19,20 +17,15 @@ public:
 	virtual bool start(void);
 	virtual int check(void);
 	virtual void draw(void);
-
-    //msg
-    bool sendMsg (picojson::object& o);
-    void sendHeartbeat (void);
     
 protected:
-    void heartbeat(picojson::object& o);
-    void landingRequest (picojson::object& o);
-    void landingStatus (picojson::object& o);
-    void takeoffRequest (picojson::object& o);
-    void takeoffStatus (picojson::object& o);
+	void send(void);
     
-	virtual void send(void);
-	virtual void handleMsg(string& str);
+    //msg handlers
+	void handleMsg(string& str);
+    void heartbeat(picojson::object& o);
+    void ackLandingRequest (picojson::object& o);
+    void ackTakeoffRequest (picojson::object& o);
 
 private:
 	void updateW(void);
@@ -50,10 +43,7 @@ private:
 	}
 
 public:
-    _AP_base* m_pAP;
-
-    INTERVAL_EVENT m_tIntHeartbeat;
-    
+    _AP_gs* m_pAPgs;
 };
 
 }

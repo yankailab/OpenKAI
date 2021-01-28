@@ -26,9 +26,9 @@ struct BENCHROVER_STATE
 	bool assign(_MissionControl* pMC)
     {
         NULL_F(pMC);
-        MANUAL = pMC->getMissionIdx("MANUAL");
-        FORWARD = pMC->getMissionIdx("FORWARD");
-        BACKWARD = pMC->getMissionIdx("BACKWARD");
+        MANUAL = pMC->getMissionIdxByName ("MANUAL");
+        FORWARD = pMC->getMissionIdxByName ("FORWARD");
+        BACKWARD = pMC->getMissionIdxByName ("BACKWARD");
         
         return bValid();
     }
