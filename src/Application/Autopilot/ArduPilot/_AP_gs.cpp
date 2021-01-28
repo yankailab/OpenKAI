@@ -44,6 +44,7 @@ bool _AP_gs::start ( void )
 int _AP_gs::check ( void )
 {
     NULL__ ( m_pAP, -1 );
+    NULL__ ( m_pMC, -1 );
 
     return this->_MissionBase::check();
 }
@@ -65,43 +66,66 @@ void _AP_gs::updateGS ( void )
 {
     IF_ ( check() <0 );
     
+    uint32_t apMode = m_pAP->getApMode();
+    bool bApArmed = m_pAP->bApArmed();
+    float alt = m_pAP->getGlobalPos().w;
+    int iState = m_pMC->getMissionIdx();
     
+    if(apMode == AP_COPTER_LOITER)
+    {
+        if(iState == m_state.STANDBY)
+        {
+            m_pMC->transit(m_state.TAKEOFF_REQUEST);
+        }
+    }
+    else if(apMode == AP_COPTER_AUTO && bApArmed)
+    {
+        if(alt > 10.0)
+        {
+            m_pMC->transit(m_state.AIRBORNE);            
+        }
+        else
+        {
+            m_pMC->transit(m_state.LANDING_REQUEST);
+        }
+    }
     
+}
 
-    int m = m_pMC->getMissionIdx();
+void _AP_gs::getState(int* pState, GCS_STATE* pGstate)
+{
+    IF_(check()<0);
+    NULL_(pState);
+    NULL_(pGstate);
+    
+    *pState = m_pMC->getMissionIdx();
+    *pGstate = m_state;
+}
 
-    if(m == m_state.STANDBY)
-    {
-        
-    }
-    else if(m == m_state.LANDING_REQUEST)
-    {
-    }
-    else if(m == m_state.LANDING_READY)
-    {
-        
-    }
-    else if(m == m_state.LANDING_COMPLETE)
-    {
-    }
-    else if(m == m_state.TAKEOFF_REQUEST)
-    {
-    }
-    else if(m == m_state.TAKEOFF_READY)
-    {
-        
-    }
-    else if(m == m_state.TAKEOFF_COMPLETE)
-    {
-    }    
+void _AP_gs::landingReady(bool bReady)
+{
+    IF_(!bReady);
+    
+    int iState = m_pMC->getMissionIdx();
+    IF_(iState != m_state.LANDING_REQUEST);
+    
+    m_pMC->transit(m_state.LANDING_READY);
+}
+
+void _AP_gs::takeoffReady(bool bReady)
+{
+    IF_(!bReady);
+    
+    int iState = m_pMC->getMissionIdx();
+    IF_(iState != m_state.TAKEOFF_REQUEST);
+    
+    m_pMC->transit(m_state.TAKEOFF_READY);
 }
 
 void _AP_gs::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_GCSbase::draw();
     drawActive();
-
-    addMsg ( "State=" + i2str ( m_iState ) );
 }
 
 }

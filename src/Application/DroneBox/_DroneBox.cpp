@@ -89,7 +89,7 @@ void _DroneBox::updateBox ( void )
     {
         
     }
-    else if(m == m_state.LANDING_COMPLETE)
+    else if(m == m_state.STANDBY)
     {
         boxLandingComplete();
     }
@@ -107,7 +107,7 @@ void _DroneBox::updateBox ( void )
     {
         
     }
-    else if(m == m_state.TAKEOFF_COMPLETE)
+    else if(m == m_state.AIRBORNE)
     {
         boxTakeoffComplete();
     }    
@@ -179,10 +179,8 @@ void _DroneBox::boxRecover ( void )
 
 void _DroneBox::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_GCSbase::draw();
     drawActive();
-
-    addMsg ( "State=" + i2str ( m_iState ) );
 }
 
 }

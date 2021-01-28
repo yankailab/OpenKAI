@@ -6,7 +6,6 @@ namespace kai
 _GCSbase::_GCSbase()
 {
     m_gcsID = -1;
-    m_iState = 0;
 }
 
 _GCSbase::~_GCSbase()
@@ -50,7 +49,7 @@ void _GCSbase::updateGCS ( void )
     else if(m == m_state.LANDING_READY)
     {        
     }
-    else if(m == m_state.LANDING_COMPLETE)
+    else if(m == m_state.STANDBY)
     {
     }
     else if(m == m_state.TAKEOFF_REQUEST)
@@ -59,7 +58,7 @@ void _GCSbase::updateGCS ( void )
     else if(m == m_state.TAKEOFF_READY)
     {        
     }
-    else if(m == m_state.TAKEOFF_COMPLETE)
+    else if(m == m_state.AIRBORNE)
     {
     }    
 }
@@ -96,7 +95,7 @@ void _GCSbase::landingStatus ( int vID )
 {
     IF_ ( check() <0 );
 
-    m_pMC->transit(m_state.LANDING_COMPLETE);
+    m_pMC->transit(m_state.STANDBY);
 }
 
 bool _GCSbase::takeoffRequest ( int vID )
@@ -126,15 +125,13 @@ void _GCSbase::takeoffStatus ( int vID )
 {
     IF_ ( check() <0 );
 
-    m_pMC->transit(m_state.TAKEOFF_COMPLETE);
+    m_pMC->transit(m_state.AIRBORNE);
 }
 
 void _GCSbase::draw ( void )
 {
     this->_MissionBase::draw();
     drawActive();
-
-    addMsg ( "State=" + i2str ( m_iState ) );
 }
 
 }

@@ -99,6 +99,36 @@ void _AP_droneBoxJSON::send ( void )
     IF_ ( check() <0 );
 
     this->_JSONbase::send();
+
+    GCS_STATE state;
+    int iState;
+    m_pAPgs->getState(&iState, &state);
+        
+    object o;
+    JO(o, "id", i2str(1));
+    JO(o, "t", li2str(m_tStamp));
+
+    if(iState == state.TAKEOFF_REQUEST)
+    {
+        JO(o, "cmd", "takeoffRequest");
+        sendMsg(o);
+    }
+    else if(iState == state.AIRBORNE)
+    {
+        JO(o, "cmd", "takeoffStatus");
+        sendMsg(o);
+    }
+    else if(iState == state.LANDING_REQUEST)
+    {
+        JO(o, "cmd", "landingRequest");
+        sendMsg(o);       
+    }
+    else if(iState == state.STANDBY)
+    {
+        JO(o, "cmd", "landingStatus");
+        sendMsg(o);       
+    }
+
 }
 
 void _AP_droneBoxJSON::updateR ( void )
@@ -139,13 +169,23 @@ void _AP_droneBoxJSON::heartbeat(picojson::object& o)
 void _AP_droneBoxJSON::ackLandingRequest (picojson::object& o)
 {
     IF_(check()<0 );
-
+        
+    string ack = o["ack"].get<string>();
+    bool bReady = false;
+    if(ack == "approved")bReady = true;
+    
+    m_pAPgs->landingReady(bReady);
 }
 
 void _AP_droneBoxJSON::ackTakeoffRequest (picojson::object& o)
 {
     IF_(check()<0 );
     
+    string ack = o["ack"].get<string>();
+    bool bReady = false;
+    if(ack == "approved")bReady = true;
+    
+    m_pAPgs->takeoffReady(bReady);
 }
 
 void _AP_droneBoxJSON::draw ( void )

@@ -9,22 +9,20 @@ namespace kai
 struct GCS_STATE
 {
     int8_t STANDBY;
-	int8_t LANDING_REQUEST;
-    int8_t LANDING_READY;
-	int8_t LANDING_COMPLETE;
     int8_t TAKEOFF_REQUEST;
     int8_t TAKEOFF_READY;
-	int8_t TAKEOFF_COMPLETE;
+    int8_t AIRBORNE;
+	int8_t LANDING_REQUEST;
+    int8_t LANDING_READY;
 
 	bool bValid(void)
 	{
 		IF_F(STANDBY < 0);
-		IF_F(LANDING_REQUEST < 0);
-		IF_F(LANDING_READY < 0);
-		IF_F(LANDING_COMPLETE < 0);
 		IF_F(TAKEOFF_REQUEST < 0);
 		IF_F(TAKEOFF_READY < 0);
-		IF_F(TAKEOFF_COMPLETE < 0);
+		IF_F(AIRBORNE < 0);
+		IF_F(LANDING_REQUEST < 0);
+		IF_F(LANDING_READY < 0);
 
 		return true;
 	}
@@ -33,12 +31,11 @@ struct GCS_STATE
     {
         NULL_F(pMC);
         STANDBY = pMC->getMissionIdxByName ("STANDBY");
-        LANDING_REQUEST = pMC->getMissionIdxByName ("LANDING_REQUEST");
-        LANDING_READY = pMC->getMissionIdxByName ("LANDING_READY");
-        LANDING_COMPLETE = pMC->getMissionIdxByName ("LANDING_COMPLETE");
         TAKEOFF_REQUEST = pMC->getMissionIdxByName ("TAKEOFF_REQUEST");
         TAKEOFF_READY = pMC->getMissionIdxByName ("TAKEOFF_READY");
-        TAKEOFF_COMPLETE = pMC->getMissionIdxByName ("TAKEOFF_COMPLETE");
+        AIRBORNE = pMC->getMissionIdxByName ("AIRBORNE");
+        LANDING_REQUEST = pMC->getMissionIdxByName ("LANDING_REQUEST");
+        LANDING_READY = pMC->getMissionIdxByName ("LANDING_READY");
         
         return bValid();
     }
@@ -68,7 +65,6 @@ protected:
 public:
     int m_gcsID;
 
-    int m_iState;
     GCS_STATE m_state;
 };
 

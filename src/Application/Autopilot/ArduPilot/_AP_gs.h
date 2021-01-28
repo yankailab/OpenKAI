@@ -19,6 +19,10 @@ public:
 	void update(void);
 	void draw(void);
     
+    void getState(int* pState, GCS_STATE* pGstate);
+    void landingReady(bool bReady);
+    void takeoffReady(bool bReady);
+    
 protected:
     void updateGS (void);
 	static void* getUpdateThread(void* This)
