@@ -2,7 +2,7 @@
 #define OpenKAI_src_Application_DroneBox__AP_droneBoxJSON_H_
 
 #include "../../Protocol/_JSONbase.h"
-#include "../../Application/Autopilot/ArduPilot/_AP_gs.h"
+#include "../../Application/Autopilot/ArduPilot/_AP_gcs.h"
 
 namespace kai
 {
@@ -43,7 +43,7 @@ private:
 	}
 
 public:
-    _AP_gs* m_pAPgs;
+    _AP_gcs* m_pAPgcs;
 };
 
 }

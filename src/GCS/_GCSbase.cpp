@@ -37,35 +37,36 @@ void _GCSbase::updateGCS ( void )
 {
     IF_ ( check() <0 );
 
-    int m = m_pMC->getMissionIdx();
+    m_state.m_iState = m_pMC->getMissionIdx();
 
-    if(m == m_state.STANDBY)
-    {
-        
+    if(m_state.bSTANDBY())
+    {       
     }
-    else if(m == m_state.LANDING_REQUEST)
+    else if(m_state.bTAKEOFF_REQUEST())
     {
     }
-    else if(m == m_state.LANDING_READY)
+    else if(m_state.bTAKEOFF_READY())
     {        
     }
-    else if(m == m_state.STANDBY)
-    {
-    }
-    else if(m == m_state.TAKEOFF_REQUEST)
-    {
-    }
-    else if(m == m_state.TAKEOFF_READY)
-    {        
-    }
-    else if(m == m_state.AIRBORNE)
+    else if(m_state.bAIRBORNE())
     {
     }    
+    else if(m_state.bLANDING_REQUEST())
+    {
+    }
+    else if(m_state.bLANDING_READY())
+    {        
+    }
 }
 
 int _GCSbase::getID (void)
 {
     return m_gcsID;
+}
+
+GCS_STATE* _GCSbase::getState(void)
+{    
+    return &m_state;
 }
 
 bool _GCSbase::landingRequest ( int vID )
@@ -91,9 +92,10 @@ bool _GCSbase::bLandingReady ( int vID )
     return false;
 }
 
-void _GCSbase::landingStatus ( int vID )
+void _GCSbase::landingStatus ( int vID, bool bComplete )
 {
     IF_ ( check() <0 );
+    IF_(!bComplete);
 
     m_pMC->transit(m_state.STANDBY);
 }
@@ -103,8 +105,8 @@ bool _GCSbase::takeoffRequest ( int vID )
     IF_F ( check() <0 );
     int m = m_pMC->getMissionIdx();
     
-    IF_T(m == m_state.TAKEOFF_READY);
     IF_T(m == m_state.TAKEOFF_REQUEST);
+    IF_T(m == m_state.TAKEOFF_READY);
     
     m_pMC->transit(m_state.TAKEOFF_REQUEST);
     
@@ -121,9 +123,10 @@ bool _GCSbase::bTakeoffReady ( int vID )
     return false;
 }
 
-void _GCSbase::takeoffStatus ( int vID )
+void _GCSbase::takeoffStatus ( int vID, bool bComplete )
 {
     IF_ ( check() <0 );
+    IF_(!bComplete);
 
     m_pMC->transit(m_state.AIRBORNE);
 }
@@ -131,7 +134,6 @@ void _GCSbase::takeoffStatus ( int vID )
 void _GCSbase::draw ( void )
 {
     this->_MissionBase::draw();
-    drawActive();
 }
 
 }

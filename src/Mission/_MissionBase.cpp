@@ -19,9 +19,9 @@ bool _MissionBase::init(void* pKiss)
 	IF_F(!this->_ThreadBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName="";
-	pK->v("_MissionControl", &iName);
-	m_pMC = (_MissionControl*) (pK->getInst(iName));
+	string n = "";
+	pK->v("_MissionControl", &n );
+	m_pMC = (_MissionControl*) (pK->getInst( n ));
 	NULL_T(m_pMC);
 
 	vector<string> vAS;
@@ -47,11 +47,11 @@ int _MissionBase::check(void)
 void _MissionBase::update(void)
 {
 	NULL_(m_pMC);
-	int currentMission = m_pMC->getMissionIdx();
-	if(m_iLastMission != currentMission)
+	int iMission = m_pMC->getMissionIdx();
+	if(m_iLastMission != iMission )
 	{
 		m_bMissionChanged = true;
-		m_iLastMission = currentMission;
+		m_iLastMission = iMission;
 	}
 	else
 	{
@@ -89,6 +89,7 @@ void _MissionBase::drawActive(void)
 void _MissionBase::draw(void)
 {
 	this->_ThreadBase::draw();
+    drawActive();
 }
 
 }

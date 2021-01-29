@@ -145,14 +145,14 @@ void _DroneBoxJSON::landingRequest (picojson::object& o)
 {
     IF_(check()<0 );
     
-    int vID = o["vID"].get<double>();
+    int vID = o["id"].get<double>();
     object jo;
-    JO(jo, "gID", i2str(m_pDB->getID()));
+    JO(jo, "id", i2str(m_pDB->getID()));
     JO(jo, "cmd", "ackLandingRequest");
     
     if(m_pDB->landingRequest(vID))
     {
-        JO(jo, "result", "approved");        
+        JO(jo, "result", "ok");        
     }
     else
     {
@@ -166,22 +166,25 @@ void _DroneBoxJSON::landingStatus (picojson::object& o)
 {
     IF_(check()<0 );
     
-    int vID = o["vID"].get<double>();
-    m_pDB->landingStatus(vID);
+    int vID = o["id"].get<double>();
+    string stat = o["stat"].get<string>();
+    bool bComplete = (stat == "standby");
+
+    m_pDB->landingStatus(vID, bComplete);
 }
 
 void _DroneBoxJSON::takeoffRequest (picojson::object& o)
 {
     IF_(check()<0);
     
-    int vID = o["vID"].get<double>();
+    int vID = o["id"].get<double>();
     object jo;
-    JO(jo, "gID", i2str(m_pDB->getID()));
+    JO(jo, "id", i2str(m_pDB->getID()));
     JO(jo, "cmd", "ackTakeoffRequest");
     
     if(m_pDB->takeoffRequest(vID))
     {
-        JO(jo, "result", "approved");        
+        JO(jo, "result", "ok");        
     }
     else
     {
@@ -195,22 +198,16 @@ void _DroneBoxJSON::takeoffStatus (picojson::object& o)
 {
     IF_(check()<0 );
     
-    int vID = o["vID"].get<double>();
-    m_pDB->takeoffStatus(vID);
+    int vID = o["id"].get<double>();
+    string stat = o["stat"].get<string>();
+    bool bComplete = (stat == "airborne");
+    
+    m_pDB->takeoffStatus(vID, bComplete);
 }
 
 void _DroneBoxJSON::draw ( void )
 {
     this->_JSONbase::draw();
-
-    string msg;
-    if ( m_pIO->isOpen() )
-        msg = "STANDBY, CONNECTED";
-    else
-        msg = "STANDBY, Not connected";
-
-    addMsg ( msg );
-
 }
 
 }

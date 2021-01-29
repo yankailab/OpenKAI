@@ -13,11 +13,11 @@ public:
 	_DroneBox();
 	~_DroneBox();
 
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
-	void update(void);
-	void draw(void);
+	virtual bool init(void* pKiss);
+	virtual bool start(void);
+	virtual int check(void);
+	virtual void update(void);
+	virtual void draw(void);
     
     //Drone Box mechanical control
     void boxLandingPrepare (void);
@@ -29,7 +29,7 @@ public:
     void boxRecover (void);
 
 protected:
-    void updateBox (void);
+    virtual void updateGCS (void);
 	static void* getUpdateThread(void* This)
 	{
 		((_DroneBox*) This)->update();

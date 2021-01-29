@@ -25,7 +25,7 @@
 #include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"
-#include "../Application/Autopilot/ArduPilot/_AP_gs.h"
+#include "../Application/Autopilot/ArduPilot/_AP_gcs.h"
 #include "../Application/Autopilot/ArduPilot/_AP_GPS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_link.h"
 #include "../Application/Autopilot/ArduPilot/_AP_mission.h"

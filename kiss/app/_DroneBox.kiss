@@ -1,0 +1,69 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":0,
+	"bLog":1,
+	"bStdErr":0,
+	"waitKey":30,
+}
+
+{
+	"name":"OpenKAI",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"apSerial",
+	"class":"_SerialPort",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"port":"/dev/ttyACM0",
+	"baud":57600,
+	"_wakeUp":"mavAP",
+}
+
+{
+	"name":"mavAP",
+	"class":"_Mavlink",
+	"bInst":1,
+	"FPS":30,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"_IOBase":"apSerial",
+
+	{
+		"bInst":0,
+		"_Mavlink":"mavGCS",
+	}	
+}
+
+{
+	"name":"mission",
+	"class":"_MissionControl",
+	"FPS":30,
+	"bInst":0,
+	"bDraw":1,
+	"Window":"OKview",
+	"Console":"OpenKAI",
+	"startMission":"AVOID",
+
+	{
+		"name":"mission",
+		{
+			"bInst":0,
+			"name":"LAND",
+			"Window":"OKview",
+			"bDraw":1,
+			"Console":"OpenKAI",
+			"class":"MissionBase",
+		}
+	}
+}
+

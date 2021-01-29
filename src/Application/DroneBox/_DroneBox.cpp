@@ -49,7 +49,7 @@ int _DroneBox::check ( void )
     NULL__ ( m_pMB, -1 );
     IF__ ( !m_pMB->bOpen(), -1 );
 
-    return this->_MissionBase::check();
+    return this->_GCSbase::check();
 }
 
 void _DroneBox::update ( void )
@@ -59,41 +59,23 @@ void _DroneBox::update ( void )
         this->autoFPSfrom();
         this->_MissionBase::update();
 
-        updateBox();
+        updateGCS();
 
         this->autoFPSto();
     }
 }
 
-void _DroneBox::updateBox ( void )
+void _DroneBox::updateGCS ( void )
 {
     IF_ ( check() <0 );
 
-    int m = m_pMC->getMissionIdx();
-
-    if(m == m_state.STANDBY)
-    {
-        
-    }
-    else if(m == m_state.LANDING_REQUEST)
-    {
-        if( bBoxLandingReady())
-        {
-            m_pMC->transit(m_state.LANDING_READY);
-            return;
-        }
-
-        boxLandingPrepare();
-    }
-    else if(m == m_state.LANDING_READY)
-    {
-        
-    }
-    else if(m == m_state.STANDBY)
+    this->_GCSbase::updateGCS();
+    
+    if(m_state.bSTANDBY())
     {
         boxLandingComplete();
     }
-    else if(m == m_state.TAKEOFF_REQUEST)
+    else if(m_state.bTAKEOFF_REQUEST())
     {
         if( bBoxTakeoffReady())
         {
@@ -103,14 +85,28 @@ void _DroneBox::updateBox ( void )
 
         boxTakeoffPrepare();
     }
-    else if(m == m_state.TAKEOFF_READY)
+    else if(m_state.bTAKEOFF_READY())
     {
         
     }
-    else if(m == m_state.AIRBORNE)
+    else if(m_state.bAIRBORNE())
     {
         boxTakeoffComplete();
     }    
+    else if(m_state.bLANDING_REQUEST())
+    {
+        if( bBoxLandingReady())
+        {
+            m_pMC->transit(m_state.LANDING_READY);
+            return;
+        }
+
+        boxLandingPrepare();
+    }
+    else if(m_state.bLANDING_READY())
+    {
+        
+    }
 }
 
 void _DroneBox::boxLandingPrepare ( void )
@@ -180,7 +176,6 @@ void _DroneBox::boxRecover ( void )
 void _DroneBox::draw ( void )
 {
     this->_GCSbase::draw();
-    drawActive();
 }
 
 }
