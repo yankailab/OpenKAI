@@ -7,7 +7,7 @@
 namespace kai
 {
 
-class _AP_takeoff: public _MissionBase
+class _AP_takeoff: public _StateBase
 {
 public:
 	_AP_takeoff();

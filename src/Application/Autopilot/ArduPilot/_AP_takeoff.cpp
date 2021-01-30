@@ -16,7 +16,7 @@ _AP_takeoff::~_AP_takeoff()
 
 bool _AP_takeoff::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("apMode", &m_apMode);
@@ -49,7 +49,7 @@ int _AP_takeoff::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_takeoff::update(void)
@@ -58,7 +58,7 @@ void _AP_takeoff::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateMission();
 
 		this->autoFPSto();
@@ -74,9 +74,9 @@ void _AP_takeoff::updateMission(void)
 		IF_(m_pAP->getApMode() != m_apMode);
 	}
 
-	Mission* pM = m_pMC->getMission();
+	State* pM = m_pSC->getState();
 	NULL_(pM);
-	IF_(pM->type() != mission_takeoff);
+	IF_(pM->type() != state_takeoff);
 
 	Takeoff* pTO = (Takeoff*)pM;
 	m_dAlt = (float)m_pAP->m_vGlobalPos.w - pTO->m_alt;
@@ -92,8 +92,7 @@ void _AP_takeoff::updateMission(void)
 void _AP_takeoff::draw(void)
 {
 	IF_(check()<0);
-	this->_MissionBase::draw();
-	drawActive();
+	this->_StateBase::draw();
 
 	addMsg("alt = "+f2str(m_pAP->m_vGlobalPos.w) + ", dAlt = " + f2str(m_dAlt));
 }

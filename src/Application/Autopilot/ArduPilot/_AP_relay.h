@@ -19,7 +19,7 @@ struct AP_relay
 	}
 };
 
-class _AP_relay: public _MissionBase
+class _AP_relay: public _StateBase
 {
 public:
 	_AP_relay();

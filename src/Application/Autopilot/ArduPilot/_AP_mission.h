@@ -8,7 +8,7 @@
 namespace kai
 {
 
-class _AP_mission: public _MissionBase
+class _AP_mission: public _StateBase
 {
 public:
 	_AP_mission();

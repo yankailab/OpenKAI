@@ -24,7 +24,7 @@ struct APROVER_KU_MODE
 	}
 };
 
-class _AProver_KU: public _MissionBase
+class _AProver_KU: public _StateBase
 {
 public:
 	_AProver_KU();

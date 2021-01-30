@@ -18,7 +18,7 @@ _AP_depthVision::~_AP_depthVision()
 
 bool _AP_depthVision::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -56,7 +56,7 @@ bool _AP_depthVision::init(void* pKiss)
 
 void _AP_depthVision::update(void)
 {
-	this->_MissionBase::update();
+	this->_StateBase::update();
 
 	NULL_(m_pAP);
 	NULL_(m_pAP->m_pMav);
@@ -89,7 +89,7 @@ void _AP_depthVision::update(void)
 
 void _AP_depthVision::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	addMsg("nROI=" + i2str(m_nROI));
 
 	IF_(!checkWindow());

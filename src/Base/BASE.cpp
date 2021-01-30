@@ -32,9 +32,9 @@ bool BASE::init(void* pKiss)
 	Kiss* pK = (Kiss*)pKiss;
 	m_pKiss = pKiss;
 
-	string name="";
-	F_ERROR_F(pK->v("name",&name));
-	IF_F(name.empty());
+	string n="";
+	F_ERROR_F(pK->v("name",&n ));
+	IF_F( n.empty());
 
 	bool bLog = false;
 	pK->root()->child("APP")->v("bLog",&bLog);
@@ -44,14 +44,14 @@ bool BASE::init(void* pKiss)
 	}
 	pK->v("bDebug",&m_bDebug);
 
-	name = "";
-	F_INFO(pK->v("Console",&name));
-	m_pConsole = (Console*)(pK->getInst(name));
+	n = "";
+	pK->v("Console",&n );
+	m_pConsole = (Console*)(pK->getInst( n ));
 
 #ifdef USE_OPENCV
-	name = "";
-	F_INFO(pK->v("Window",&name));
-	m_pWindow = (Window*)(pK->getInst(name));
+	n = "";
+	pK->v("Window",&n );
+	m_pWindow = (Window*)(pK->getInst( n ));
 #endif
 
 	return true;

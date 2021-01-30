@@ -5,15 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Loiter_H_
-#define OpenKAI_src_Mission_Loiter_H_
+#ifndef OpenKAI_src_State_Loiter_H_
+#define OpenKAI_src_State_Loiter_H_
 
-#include "Mission.h"
+#include "State.h"
 
 namespace kai
 {
 
-class Loiter: public Mission
+class Loiter: public State
 {
 public:
 	Loiter();

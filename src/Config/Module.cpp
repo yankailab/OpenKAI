@@ -31,7 +31,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_LeddarVu);
 	ADD_MODULE(_TOFsense);
 	ADD_MODULE(_Mavlink);
-	ADD_MODULE(_MissionControl);
+	ADD_MODULE( _StateControl );
 	ADD_MODULE(_MOAB);
 	ADD_MODULE(_Modbus);
 	ADD_MODULE(_Object);
@@ -68,7 +68,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_goto);
 	ADD_MODULE(_AP_gcs);
 	ADD_MODULE(_AP_link);
-	ADD_MODULE(_AP_CETCUS);
 	ADD_MODULE(_AProver_drive);
 
     ADD_MODULE(_AProver_UT);

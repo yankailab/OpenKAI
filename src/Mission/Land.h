@@ -5,10 +5,10 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Land_H_
-#define OpenKAI_src_Mission_Land_H_
+#ifndef OpenKAI_src_State_Land_H_
+#define OpenKAI_src_State_Land_H_
 
-#include "Mission.h"
+#include "State.h"
 
 namespace kai
 {
@@ -25,7 +25,7 @@ struct LAND_TAG
 	}
 };
 
-class Land: public Mission
+class Land: public State
 {
 public:
 	Land();

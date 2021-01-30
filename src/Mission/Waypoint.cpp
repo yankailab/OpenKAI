@@ -18,7 +18,7 @@ Waypoint::Waypoint()
 	m_vPos.init(-1.0);
 	m_vErr.init(-1.0);
 
-	m_type = mission_wp;
+	m_type = state_wp;
 }
 
 Waypoint::~Waypoint()
@@ -27,7 +27,7 @@ Waypoint::~Waypoint()
 
 bool Waypoint::init(void* pKiss)
 {
-	IF_F(!this->Mission::init(pKiss));
+	IF_F(!this->State::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("loop",(int*)&m_loop);
@@ -38,7 +38,7 @@ bool Waypoint::init(void* pKiss)
 		Kiss* pP = pK->child(i++);
 		if(pP->empty())break;
 
-		MISSION_WAYPOINT p;
+        STATE_WAYPOINT p;
 		p.init();
 		pP->v("vP",&p.m_vP);
 		pP->v("vV",&p.m_vV);
@@ -64,7 +64,7 @@ void Waypoint::setPos(vDouble4& vPos)
 	m_vPos = vPos;
 }
 
-MISSION_WAYPOINT* Waypoint::getWaypoint(void)
+STATE_WAYPOINT* Waypoint::getWaypoint(void)
 {
 	IF__(check()<0, NULL);
 
@@ -78,7 +78,7 @@ int Waypoint::getClosestWPidx(void)
 
 	for(int i=0;i<m_vWP.size();i++)
 	{
-		MISSION_WAYPOINT* pWP = &m_vWP[i];
+		STATE_WAYPOINT* pWP = &m_vWP[i];
 		double d = abs(pWP->m_vP.x - m_vPos.x) + abs(pWP->m_vP.y - m_vPos.y);
 		IF_CONT(d > minD);
 
@@ -93,7 +93,7 @@ bool Waypoint::update(void)
 {
 	IF_F(check()<0);
 
-	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
+	STATE_WAYPOINT* pWP = &m_vWP[m_iWP];
 	IF_F(!pWP->update(m_vPos, &m_vErr));
 	LOG_I("WP: " + i2str(m_iWP) +" complete");
 
@@ -133,21 +133,21 @@ bool Waypoint::update(void)
 
 void Waypoint::reset(void)
 {
-	this->Mission::reset();
+	this->State::reset();
 
 	m_iWP = 0;
 }
 
 void Waypoint::draw(void)
 {
-	this->Mission::draw();
+	this->State::draw();
 
 	string msg;
 	addMsg("nWP=" + i2str(m_vWP.size()) + ", iWP=" + i2str(m_iWP),1);
 
 	IF_(check()<0);
 
-	MISSION_WAYPOINT* pWP = &m_vWP[m_iWP];
+	STATE_WAYPOINT* pWP = &m_vWP[m_iWP];
 
 	addMsg("WP = (" + f2str(pWP->m_vP.x,7) + ", "
 				   + f2str(pWP->m_vP.y,7) + ", "

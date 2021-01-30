@@ -12,7 +12,7 @@ namespace kai
 
 Land::Land()
 {
-	m_type = mission_land;
+	m_type = state_land;
 
 	m_tag = 0;
 	m_hdg = 0.0;
@@ -25,7 +25,7 @@ Land::~Land()
 
 bool Land::init(void* pKiss)
 {
-	IF_F(!this->Mission::init(pKiss));
+	IF_F(!this->State::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("tag",&m_tag);
@@ -54,7 +54,7 @@ bool Land::init(void* pKiss)
 
 bool Land::update(void)
 {
-	IF_F(!this->Mission::update());
+	IF_F(!this->State::update());
 
 	LOG_I("Landed");
 	return true;
@@ -62,7 +62,7 @@ bool Land::update(void)
 
 void Land::draw(void)
 {
-	this->Mission::draw();
+	this->State::draw();
 }
 
 }

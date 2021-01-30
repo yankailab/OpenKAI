@@ -7,7 +7,7 @@
 namespace kai
 {
 
-class _AP_posCtrl: public _MissionBase
+class _AP_posCtrl: public _StateBase
 {
 public:
 	_AP_posCtrl();

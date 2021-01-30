@@ -44,9 +44,9 @@ bool _AP_gcs::start ( void )
 int _AP_gcs::check ( void )
 {
     NULL__ ( m_pAP, -1 );
-    NULL__ ( m_pMC, -1 );
+    NULL__ ( m_pSC, -1 );
 
-    return this->_MissionBase::check();
+    return this->_StateBase::check();
 }
 
 void _AP_gcs::update ( void )
@@ -54,7 +54,7 @@ void _AP_gcs::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateGCS();
 
@@ -76,23 +76,23 @@ void _AP_gcs::updateGCS ( void )
     {
         if(!m_state.bTAKEOFF_READY())
         {
-            m_pMC->transit(m_state.TAKEOFF_REQUEST);
+            m_pSC->transit(m_state.TAKEOFF_REQUEST);
         }
     }
     else if(bApArmed)
     {
         if(alt > 10.0)
         {
-            m_pMC->transit(m_state.AIRBORNE);            
+            m_pSC->transit(m_state.AIRBORNE);            
         }
         else if(!m_state.bLANDING_READY())
         {
-            m_pMC->transit(m_state.LANDING_REQUEST);
+            m_pSC->transit(m_state.LANDING_REQUEST);
         }
     }
     else
     {
-        m_pMC->transit(m_state.STANDBY);        
+        m_pSC->transit(m_state.STANDBY);        
     }
     
 }
@@ -103,7 +103,7 @@ void _AP_gcs::landingReady(bool bReady)
     IF_(!m_state.bLANDING_REQUEST());
     IF_(!m_state.bLANDING_READY());
     
-    m_pMC->transit(m_state.LANDING_READY);
+    m_pSC->transit(m_state.LANDING_READY);
 }
 
 void _AP_gcs::takeoffReady(bool bReady)
@@ -112,7 +112,7 @@ void _AP_gcs::takeoffReady(bool bReady)
     IF_(!m_state.bTAKEOFF_REQUEST());
     IF_(!m_state.bTAKEOFF_READY());
     
-    m_pMC->transit(m_state.TAKEOFF_READY);
+    m_pSC->transit(m_state.TAKEOFF_READY);
 }
 
 void _AP_gcs::draw ( void )

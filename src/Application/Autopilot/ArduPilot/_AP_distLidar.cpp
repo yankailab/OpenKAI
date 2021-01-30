@@ -16,7 +16,7 @@ _AP_distLidar::~_AP_distLidar()
 
 bool _AP_distLidar::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
@@ -58,7 +58,7 @@ bool _AP_distLidar::init(void* pKiss)
 
 void _AP_distLidar::update(void)
 {
-	this->_MissionBase::update();
+	this->_StateBase::update();
 
 	updateMavlink();
 }
@@ -100,7 +100,7 @@ void _AP_distLidar::updateMavlink(void)
 
 void _AP_distLidar::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());

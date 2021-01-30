@@ -12,7 +12,7 @@ namespace kai
 
 Loiter::Loiter()
 {
-	m_type = mission_loiter;
+	m_type = state_loiter;
 	m_hdg = 0;
 	reset();
 }
@@ -23,7 +23,7 @@ Loiter::~Loiter()
 
 bool Loiter::init(void* pKiss)
 {
-	IF_F(!this->Mission::init(pKiss));
+	IF_F(!this->State::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("hdg",&m_hdg);
@@ -33,13 +33,13 @@ bool Loiter::init(void* pKiss)
 
 bool Loiter::update(void)
 {
-	return this->Mission::update();
+	return this->State::update();
 }
 
 void Loiter::reset(void)
 {
 	m_vPos.init();
-	this->Mission::reset();
+	this->State::reset();
 }
 
 void Loiter::setPos(vDouble3& p)
@@ -49,7 +49,7 @@ void Loiter::setPos(vDouble3& p)
 
 void Loiter::draw(void)
 {
-	this->Mission::draw();
+	this->State::draw();
 
 	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "

@@ -12,7 +12,7 @@ namespace kai
 
 Goto::Goto()
 {
-	m_type = mission_goto;
+	m_type = state_goto;
 	m_hdg = 0;
 	reset();
 }
@@ -23,7 +23,7 @@ Goto::~Goto()
 
 bool Goto::init(void* pKiss)
 {
-	IF_F(!this->Mission::init(pKiss));
+	IF_F(!this->State::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("hdg",&m_hdg);
@@ -33,7 +33,7 @@ bool Goto::init(void* pKiss)
 
 bool Goto::update(void)
 {
-	this->Mission::update();
+	this->State::update();
 
 	IF_F(m_tTimeout <= 0);
 	IF_F(m_tStamp < m_tStart + m_tTimeout);
@@ -45,7 +45,7 @@ bool Goto::update(void)
 void Goto::reset(void)
 {
 	m_vPos.init();
-	this->Mission::reset();
+	this->State::reset();
 }
 
 void Goto::setPos(vDouble3& p)
@@ -55,7 +55,7 @@ void Goto::setPos(vDouble3& p)
 
 void Goto::draw(void)
 {
-	this->Mission::draw();
+	this->State::draw();
 
 	addMsg("Pos = (" + f2str(m_vPos.x,7) + ", "
 				   + f2str(m_vPos.y,7) + ", "

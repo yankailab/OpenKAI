@@ -5,15 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_RTH_H_
-#define OpenKAI_src_Mission_RTH_H_
+#ifndef OpenKAI_src_State_RTH_H_
+#define OpenKAI_src_State_RTH_H_
 
-#include "Mission.h"
+#include "State.h"
 
 namespace kai
 {
 
-class RTH: public Mission
+class RTH: public State
 {
 public:
 	RTH();

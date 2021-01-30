@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+pre {
+    background: #EEE;
+    border: 1px solid #CCC;
+    padding: 10px;
+}
+#page-wrapper {
+    border-top: 5px solid #69c773;
+    margin: 1em auto;
+    width: 600px;
+}
+</style>
+
+<script>
+window.onload = function() {
+    function $(selector) {
+        return document.querySelector(selector);
+    }
+        
+    var socket = new WebSocket('ws://127.0.0.1:7890');
+    socket.onopen = function(event)
+    {
+        $('#msg').innerHTML = 'Connected';
+    };
+    socket.onmessage = function(event)
+    {
+        $('#msg').innerHTML = 'Received';        
+        $('#msgRecv').innerHTML = event.data;
+    };
+    socket.onclose = function(event)
+    {
+        $('#msg').innerHTML = 'Disconnected: ' + event.reason;
+    };
+
+    $('#submit').onclick = function(e)
+    {
+        socket.send($('#message').value);
+        $('#msgSend').innerHTML = 'Sent:<br>' + $('input').value + '<br>';
+    };
+
+    var strEOJ = "EOJ";
+    
+    $('#heartbeat').onclick = function(e)
+    {
+        cmd = {
+            cmd:'heartbeat',
+            t:12345,
+            id:1,
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+    
+    $('#takeoffRequest').onclick = function(e)
+    {
+        cmd = {
+            cmd:'takeoffRequest',
+            t:12345,
+            id:1,
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+    $('#takeoffStatus').onclick = function(e)
+    {
+        cmd = {
+            cmd:'takeoffStatus',
+            t:12345,
+            id:1,
+            stat:'airborne',
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+    $('#landingRequest').onclick = function(e)
+    {
+        cmd = {
+            cmd:'landingRequest',
+            t:12345,
+            id:1,
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+    $('#landingStatus').onclick = function(e)
+    {
+        cmd = {
+            cmd:'landingStatus',
+            t:12345,
+            id:1,
+            stat:'standby',
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+    $('#ackLandingRequest').onclick = function(e)
+    {
+        cmd = {
+            cmd:'ackLandingRequest',
+            t:12345,
+            id:1,
+            result:'ok',
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+    $('#ackTakeoffRequest').onclick = function(e)
+    {
+        cmd = {
+            cmd:'ackTakeoffRequest',
+            t:12345,
+            id:1,
+            result:'ok',
+        };
+            
+        cmdStr = JSON.stringify(cmd) + strEOJ;
+        socket.send(cmdStr);
+        $('#msgSend').innerHTML = cmdStr;
+    };
+
+};
+</script>
+
+<div id="page-wrapper">
+    msg
+    <pre id="msg">Connecting...</pre>
+    </br>
+    msgSend
+    <pre id="msgSend"></pre>
+    </br>
+    msgRecv
+    <pre id="msgRecv"></pre>
+    </br>
+    
+    <button id="heartbeat" style="WIDTH: 150px; HEIGHT: 50px">Heartbeat</button>
+    </br>
+    <button id="landingRequest" style="WIDTH: 150px; HEIGHT: 50px">Landing Request</button>
+    </br>
+    <button id="landingStatus" style="WIDTH: 150px; HEIGHT: 50px">Landing Complete</button>
+    </br>
+    <button id="takeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Request</button>
+    </br>
+    <button id="takeoffStatus" style="WIDTH: 150px; HEIGHT: 50px">Takeoff Complete</button>
+    </br>
+    </br>
+
+    <button id="ackLandingRequest" style="WIDTH: 150px; HEIGHT: 50px">ackLandingRequest</button>
+    </br>
+    <button id="ackTakeoffRequest" style="WIDTH: 150px; HEIGHT: 50px">ackTakeoffRequest</button>
+    </br>
+    </br>
+    
+    <input id="message" required>
+    <button id="submit">Send Message</button>
+</div>
+

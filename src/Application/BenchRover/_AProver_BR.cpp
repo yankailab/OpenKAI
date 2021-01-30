@@ -20,7 +20,7 @@ _AProver_BR::~_AProver_BR()
 
 bool _AProver_BR::init ( void* pKiss )
 {
-    IF_F ( !this->_MissionBase::init ( pKiss ) );
+    IF_F ( !this->_StateBase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "iRCmode", &m_rcMode.m_iChan );
@@ -32,8 +32,8 @@ bool _AProver_BR::init ( void* pKiss )
     m_rcStickV.setup();
     m_rcStickH.setup();    
 
-    IF_F ( !m_pMC );
-    IF_F ( !m_iMode.assign ( m_pMC ) );
+    IF_F ( !m_pSC );
+    IF_F ( !m_iMode.assign ( m_pSC ) );
 
     string n;
     n = "";
@@ -67,10 +67,10 @@ int _AProver_BR::check ( void )
 {
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pAP->m_pMav, -1 );
-    NULL__ ( m_pMC, -1 );
+    NULL__ ( m_pSC, -1 );
     NULL__ ( m_pD, -1 );
 
-    return this->_MissionBase::check();
+    return this->_StateBase::check();
 }
 
 void _AProver_BR::update ( void )
@@ -78,7 +78,7 @@ void _AProver_BR::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateMode();
 
@@ -125,7 +125,7 @@ void _AProver_BR::updateMode ( void )
     {
         mode = m_iMode.MANUAL;
         dir = 0.0;
-        m_pMC->transit ( mode );
+        m_pSC->transit ( mode );
         m_pD->setDirection ( dir );
         m_pD->setSpeed ( 0.0 );
         m_pD->setSteering( 0.0 );
@@ -134,7 +134,7 @@ void _AProver_BR::updateMode ( void )
     
     if(mode != m_iMode.MANUAL)
     {
-        m_pMC->transit ( mode );
+        m_pSC->transit ( mode );
         m_pD->setDirection ( dir );
         return;
     }
@@ -148,7 +148,7 @@ void _AProver_BR::updateMode ( void )
     if( pwm == UINT16_MAX )pwm = m_rcStickH.m_pwmM;
     m_rcStickH.pwm ( pwm );
     
-    m_pMC->transit ( mode );
+    m_pSC->transit ( mode );
     
     float v = (m_rcStickV.v() - 0.5) * 2.0;
     float d = 0;
@@ -165,7 +165,7 @@ void _AProver_BR::updateMode ( void )
 
 void _AProver_BR::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_StateBase::draw();
     drawActive();
 
     addMsg ( "rcMode pwm=" + i2str ( m_rcMode.m_pwm ) + ", i=" + i2str ( m_rcMode.i() ) );

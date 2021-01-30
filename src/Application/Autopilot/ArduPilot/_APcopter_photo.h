@@ -12,7 +12,7 @@
 namespace kai
 {
 
-class _APcopter_photo: public _MissionBase
+class _APcopter_photo: public _StateBase
 {
 public:
 	_APcopter_photo();

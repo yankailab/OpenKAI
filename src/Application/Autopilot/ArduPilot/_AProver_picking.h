@@ -29,7 +29,7 @@ struct AP_PICKING_MISSION
 	}
 };
 
-class _AProver_picking: public _MissionBase
+class _AProver_picking: public _StateBase
 {
 public:
 	_AProver_picking();
@@ -55,12 +55,12 @@ public:
 	_AProver_drive* m_pDrive;
 
 	_PickingArm* m_pArm;
-	_MissionControl* m_pArmMC;
+	_StateControl* m_pArmMC;
 
 	RC_CHANNEL m_rcMode;
 	vector<RC_CHANNEL>	m_vRC; //x,y,z,yaw,gripper
 
-	AP_PICKING_MISSION m_iMission;
+	AP_PICKING_MISSION m_iState;
 
 };
 

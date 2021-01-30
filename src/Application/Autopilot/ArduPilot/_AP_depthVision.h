@@ -26,7 +26,7 @@ struct DEPTH_ROI
 	}
 };
 
-class _AP_depthVision: public _MissionBase
+class _AP_depthVision: public _StateBase
 {
 public:
 	_AP_depthVision();

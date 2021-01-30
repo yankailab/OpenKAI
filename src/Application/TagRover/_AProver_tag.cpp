@@ -18,8 +18,8 @@ _AProver_tag::~_AProver_tag()
 
 bool _AProver_tag::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
-   	NULL_F(m_pMC);
+	IF_F(!this->_StateBase::init(pKiss));
+   	NULL_F(m_pSC);
 
 	Kiss* pK = (Kiss*) pKiss;
 
@@ -27,8 +27,8 @@ bool _AProver_tag::init(void* pKiss)
     pK->a ( "vRCmodeDiv", &m_rcMode.m_vDiv );
     m_rcMode.setup();
 
-    m_iMode.MANUAL = m_pMC->getMissionIdxByName ( "MANUAL" );
-    m_iMode.AUTO = m_pMC->getMissionIdxByName ( "AUTO" );
+    m_iMode.MANUAL = m_pSC->getStateIdxByName ( "MANUAL" );
+    m_iMode.AUTO = m_pSC->getStateIdxByName ( "AUTO" );
     IF_F ( !m_iMode.bValid() );
 
 	string n;
@@ -64,9 +64,9 @@ int _AProver_tag::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
-	NULL__(m_pMC, -1);
+	NULL__(m_pSC, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AProver_tag::update(void)
@@ -74,7 +74,7 @@ void _AProver_tag::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
 		updateMode();
 
@@ -89,7 +89,7 @@ void _AProver_tag::updateMode(void)
     uint32_t apMode = m_pAP->getApMode();
     if ( apMode != AP_ROVER_MANUAL )
     {
-        m_pMC->transit ( m_iMode.MANUAL );
+        m_pSC->transit ( m_iMode.MANUAL );
         return;
     }
     
@@ -102,18 +102,18 @@ void _AProver_tag::updateMode(void)
     switch ( iMode )
     {
     case 0:
-        m_pMC->transit ( m_iMode.AUTO );
+        m_pSC->transit ( m_iMode.AUTO );
         dir = 1.0;
         break;
     case 1:
-        m_pMC->transit ( m_iMode.MANUAL );
+        m_pSC->transit ( m_iMode.MANUAL );
         break;
     case 2:
-        m_pMC->transit ( m_iMode.AUTO );
+        m_pSC->transit ( m_iMode.AUTO );
         dir = 1.0;
         break;
     default:
-        m_pMC->transit ( m_iMode.MANUAL );
+        m_pSC->transit ( m_iMode.MANUAL );
         break;
     }
     
@@ -122,7 +122,7 @@ void _AProver_tag::updateMode(void)
 
 void _AProver_tag::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
     drawActive();
 
    	addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));

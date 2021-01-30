@@ -16,11 +16,7 @@ bool _DroneBoxJSON::init ( void* pKiss )
 {
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
-    
-    int v = USEC_1SEC;
-    pK->v("tIntHeartbeat", &v);
-    m_tIntHeartbeat.init(v);
-    
+        
     string n;
     n = "";
     pK->v ( "_DroneBox", &n );
@@ -117,7 +113,7 @@ void _DroneBoxJSON::updateR ( void )
 
 void _DroneBoxJSON::handleMsg ( string& str )
 {
-    value json;    
+    value json;
     IF_(!str2JSON(str,&json));
     
     object& jo = json.get<object>();
@@ -144,6 +140,7 @@ void _DroneBoxJSON::heartbeat(picojson::object& o)
 void _DroneBoxJSON::landingRequest (picojson::object& o)
 {
     IF_(check()<0 );
+    IF_(!o["id"].is<double>());
     
     int vID = o["id"].get<double>();
     object jo;
@@ -165,6 +162,7 @@ void _DroneBoxJSON::landingRequest (picojson::object& o)
 void _DroneBoxJSON::landingStatus (picojson::object& o)
 {
     IF_(check()<0 );
+    IF_(!o["id"].is<double>());
     
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();
@@ -176,6 +174,7 @@ void _DroneBoxJSON::landingStatus (picojson::object& o)
 void _DroneBoxJSON::takeoffRequest (picojson::object& o)
 {
     IF_(check()<0);
+    IF_(!o["id"].is<double>());
     
     int vID = o["id"].get<double>();
     object jo;
@@ -197,6 +196,7 @@ void _DroneBoxJSON::takeoffRequest (picojson::object& o)
 void _DroneBoxJSON::takeoffStatus (picojson::object& o)
 {
     IF_(check()<0 );
+    IF_(!o["id"].is<double>());
     
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();

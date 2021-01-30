@@ -94,7 +94,7 @@ bool _AP_descent::updateTarget(void)
 	float h = m_vTargetBB.height();
 	if (m_dTarget > 0.0 && m_dTarget < m_alt && w > m_detSize && h > m_detSize)
 	{
-		m_pMC->getMission()->complete();
+		m_pSC->getState()->complete();
 		for(int i=0; i<10; i++)
 		{
 			releaseCtrl();
@@ -142,8 +142,8 @@ bool _AP_descent::findTarget(void)
 
 	//heading
 	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());
-	Land* pLand = (Land*)m_pMC->getMission();
-	if(pLand->m_type == mission_land)
+	Land* pLand = (Land*)m_pSC->getState();
+	if(pLand->m_type == state_land)
 	{
 		for(LAND_TAG& tag : pLand->m_vTag)
 		{

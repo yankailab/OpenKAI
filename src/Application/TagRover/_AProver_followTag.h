@@ -11,7 +11,7 @@
 namespace kai
 {
 
-class _AProver_followTag: public _MissionBase
+class _AProver_followTag: public _StateBase
 {
 public:
 	_AProver_followTag();

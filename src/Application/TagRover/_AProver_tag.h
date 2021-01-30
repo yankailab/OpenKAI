@@ -23,7 +23,7 @@ struct APROVER_TAG_MODE
 	}
 };
 
-class _AProver_tag: public _MissionBase
+class _AProver_tag: public _StateBase
 {
 public:
 	_AProver_tag();

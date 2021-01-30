@@ -20,7 +20,7 @@ _AProver_picking::~_AProver_picking()
 
 bool _AProver_picking::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("iRCmodeChan", &m_rcMode.m_iChan);
@@ -46,12 +46,12 @@ bool _AProver_picking::init(void* pKiss)
 		m_vRC.push_back(rc);
 	}
 
-	IF_F(!m_pMC);
-	m_iMission.STANDBY = m_pMC->getMissionIdxByName ("STANDBY");
-	m_iMission.MANUAL = m_pMC->getMissionIdxByName ("MANUAL");
-	m_iMission.AUTOPICK = m_pMC->getMissionIdxByName ("AUTOPICK");
-	m_iMission.AUTO = m_pMC->getMissionIdxByName ("AUTO");
-	IF_F(!m_iMission.bValid());
+	IF_F(!m_pSC);
+	m_iState.STANDBY = m_pSC->getStateIdxByName ("STANDBY");
+	m_iState.MANUAL = m_pSC->getStateIdxByName ("MANUAL");
+	m_iState.AUTOPICK = m_pSC->getStateIdxByName ("AUTOPICK");
+	m_iState.AUTO = m_pSC->getStateIdxByName ("AUTO");
+	IF_F(!m_iState.bValid());
 
 	string iName;
 	iName = "";
@@ -70,8 +70,8 @@ bool _AProver_picking::init(void* pKiss)
 	NULL_Fl(m_pArm, iName + ": not found");
 
 	iName = "";
-	pK->v("_MissionControlArm", &iName);
-	m_pArmMC = (_MissionControl*)pK->getInst(iName);
+	pK->v("_StateControlArm", &iName);
+	m_pArmMC = ( _StateControl*)pK->getInst(iName);
 	NULL_Fl(m_pArmMC, iName + ": not found");
 
 	return true;
@@ -99,7 +99,7 @@ int _AProver_picking::check(void)
 	NULL__(m_pArm, -1);
 	NULL__(m_pArmMC, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AProver_picking::update(void)
@@ -108,11 +108,11 @@ void _AProver_picking::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
 		if(!updateDrive())
 		{
-			m_pMC->transit(m_iMission.STANDBY);
+			m_pSC->transit(m_iState.STANDBY);
 //			m_pDrive->setSpeed(0.0);
 //			m_pDrive->setYaw(0.0);
 		}
@@ -130,7 +130,7 @@ bool _AProver_picking::updateDrive(void)
 	bool bArmed = m_pAP->bApArmed();
 	uint32_t apMode = m_pAP->getApMode();
 	uint16_t pwmMode = m_pAP->m_pMav->m_rcChannels.getRC(m_rcMode.m_iChan);
-	string mission = m_pMC->getMissionName();
+	string mission = m_pSC->getStateName();
 
 //	IF_F(!bArmed);
 //	IF_F(apMode == AP_ROVER_HOLD);
@@ -142,13 +142,13 @@ bool _AProver_picking::updateDrive(void)
 	switch(iMode)
 	{
 	case 0:
-		m_pMC->transit(m_iMission.MANUAL);
+		m_pSC->transit(m_iState.MANUAL);
 		break;
 	case 1:
-		m_pMC->transit(m_iMission.AUTOPICK);
+		m_pSC->transit(m_iState.AUTOPICK);
 		break;
 	case 2:
-		m_pMC->transit(m_iMission.AUTO);
+		m_pSC->transit(m_iState.AUTO);
 		break;
 	}
 
@@ -171,14 +171,14 @@ bool _AProver_picking::updatePicking(void)
 		pRC->pwm(r);
 	}
 
-	int iM = m_pMC->getMissionIdx();
-	string armMission = m_pArmMC->getMissionName();
+	int iM = m_pSC->getStateIdx();
+	string armMission = m_pArmMC->getStateName();
 
-	if(iM == m_iMission.STANDBY)
+	if(iM == m_iState.STANDBY)
 	{
 
 	}
-	else if(iM == m_iMission.MANUAL)
+	else if(iM == m_iState.MANUAL)
 	{
 		vFloat3 vM;
 		vM.x = m_vRC[0].v();
@@ -206,7 +206,7 @@ bool _AProver_picking::updatePicking(void)
 
 void _AProver_picking::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	IF_(check()<0);
 
 	addMsg("RC mode: " + i2str(m_rcMode.i()));

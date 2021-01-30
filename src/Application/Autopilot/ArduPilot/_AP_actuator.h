@@ -9,7 +9,7 @@
 namespace kai
 {
 
-class _AP_actuator: public _MissionBase
+class _AP_actuator: public _StateBase
 {
 public:
 	_AP_actuator();

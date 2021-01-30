@@ -5,16 +5,16 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Waypoint_H_
-#define OpenKAI_src_Mission_Waypoint_H_
+#ifndef OpenKAI_src_State_Waypoint_H_
+#define OpenKAI_src_State_Waypoint_H_
 
 #include "../Navigation/Coordinate.h"
-#include "Mission.h"
+#include "State.h"
 
 namespace kai
 {
 
-struct MISSION_WAYPOINT
+struct STATE_WAYPOINT 
 {
 	vDouble4	m_vP;	//lat, lon, alt, hdg
 	vDouble4	m_vV;
@@ -88,7 +88,7 @@ enum WP_LOOP
 	wp_loop_shuttle = 2,
 };
 
-class Waypoint: public Mission
+class Waypoint: public State
 {
 public:
 	Waypoint();
@@ -101,11 +101,11 @@ public:
 	void draw(void);
 
 	void setPos(vDouble4& vPos);
-	MISSION_WAYPOINT* getWaypoint(void);
+	STATE_WAYPOINT* getWaypoint(void);
 	int getClosestWPidx(void);
 
 public:
-	vector<MISSION_WAYPOINT> m_vWP;
+	vector<STATE_WAYPOINT> m_vWP;
 	int		m_iWP;
 	int		m_dWP;
 	WP_LOOP m_loop;

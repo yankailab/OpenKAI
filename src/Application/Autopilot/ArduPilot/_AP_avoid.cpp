@@ -18,7 +18,7 @@ _AP_avoid::~_AP_avoid()
 
 bool _AP_avoid::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	string iName;
@@ -68,7 +68,7 @@ void _AP_avoid::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateTarget();
 
 		this->autoFPSto();
@@ -110,7 +110,7 @@ void _AP_avoid::updateTarget(void)
 
 void _AP_avoid::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	IF_(check()<0);
 
 	string msg = "nTarget=" + i2str(m_pDet->m_pU->size());

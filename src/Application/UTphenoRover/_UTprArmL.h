@@ -9,7 +9,7 @@
 namespace kai
 {
 
-class _UTprArmL: public _MissionBase
+class _UTprArmL: public _StateBase
 {
 public:
 	_UTprArmL(void);
@@ -54,7 +54,7 @@ public:
 	vFloat2 m_vZgoal;
 	vFloat3 m_vPrecover;//arm stock pos
 
-	UTPR_MISSIOIN m_iMission;
+	UTPR_MISSIOIN m_iState;
 };
 
 }

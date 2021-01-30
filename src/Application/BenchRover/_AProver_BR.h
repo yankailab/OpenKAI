@@ -23,18 +23,18 @@ struct BENCHROVER_STATE
 		return true;
 	}
 	
-	bool assign(_MissionControl* pMC)
+	bool assign(_StateControl* pMC)
     {
         NULL_F(pMC);
-        MANUAL = pMC->getMissionIdxByName ("MANUAL");
-        FORWARD = pMC->getMissionIdxByName ("FORWARD");
-        BACKWARD = pMC->getMissionIdxByName ("BACKWARD");
+        MANUAL = pMC->getStateIdxByName ("MANUAL");
+        FORWARD = pMC->getStateIdxByName ("FORWARD");
+        BACKWARD = pMC->getStateIdxByName ("BACKWARD");
         
         return bValid();
     }
 };
 
-class _AProver_BR: public _MissionBase
+class _AProver_BR: public _StateBase
 {
 public:
 	_AProver_BR();

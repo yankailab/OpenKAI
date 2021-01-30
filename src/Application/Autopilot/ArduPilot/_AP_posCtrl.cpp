@@ -45,7 +45,7 @@ _AP_posCtrl::~_AP_posCtrl()
 
 bool _AP_posCtrl::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vTargetP", &m_vTargetP);
@@ -99,7 +99,7 @@ int _AP_posCtrl::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_posCtrl::update(void)
@@ -107,7 +107,7 @@ void _AP_posCtrl::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
 		setPosLocal();
 
@@ -190,8 +190,7 @@ void _AP_posCtrl::releaseCtrl(void)
 
 void _AP_posCtrl::draw(void)
 {
-	this->_MissionBase::draw();
-	drawActive();
+	this->_StateBase::draw();
 
 	addMsg( "Local NED:");
 	addMsg(	"vTargetP = (" + f2str(m_vTargetP.x) + ", "

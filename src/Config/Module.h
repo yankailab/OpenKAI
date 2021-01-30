@@ -22,7 +22,6 @@
 
 #include "../Application/Autopilot/ArduPilot/_AP_base.h"
 #include "../Application/Autopilot/ArduPilot/_AP_actuator.h"
-#include "../Application/Autopilot/ArduPilot/_AP_CETCUS.h"
 #include "../Application/Autopilot/ArduPilot/_AP_distLidar.h"
 #include "../Application/Autopilot/ArduPilot/_AP_goto.h"
 #include "../Application/Autopilot/ArduPilot/_AP_gcs.h"
@@ -56,7 +55,7 @@
 #include "../Control/PID.h"
 #include "../Control/_Drive.h"
 
-#include "../Mission/_MissionControl.h"
+#include "../State/_StateControl.h"
 
 #include "../Navigation/_Path.h"
 #include "../Navigation/_GPS.h"

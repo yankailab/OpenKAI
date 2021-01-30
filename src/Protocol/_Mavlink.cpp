@@ -67,11 +67,11 @@ bool _Mavlink::init(void* pKiss)
 
 	m_status.packet_rx_drop_count = 0;
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("_IOBase", &iName);
-	m_pIO = (_IOBase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_IOBase", &n );
+	m_pIO = (_IOBase*) (pK->getInst( n ));
 	IF_Fl(!m_pIO, "_IOBase not found");
 
 	int i = 0;
@@ -84,12 +84,12 @@ bool _Mavlink::init(void* pKiss)
 		MAVLINK_PEER mP;
 		mP.init();
 
-		iName = "";
-		F_ERROR_F(pP->v("_Mavlink", &iName));
-		mP.m_pPeer = pK->getInst(iName);
+		n = "";
+		F_ERROR_F(pP->v("_Mavlink", &n ));
+		mP.m_pPeer = pK->getInst( n );
 		if (!mP.m_pPeer)
 		{
-			LOG_I("_Mavlink not found: " + iName);
+			LOG_I("_Mavlink not found: " + n );
 			continue;
 		}
 

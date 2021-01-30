@@ -17,7 +17,7 @@ _AP_RTH::~_AP_RTH()
 
 bool _AP_RTH::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("kZsensor", &m_kZsensor);
@@ -41,16 +41,16 @@ bool _AP_RTH::init(void* pKiss)
 		pG->v("mountMode", &m_apMount.m_config.mount_mode);
 	}
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("APcopter_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+	n = "";
+	pK->v("APcopter_base", &n );
+	m_pAP = (_AP_base*) (pK->getInst( n ));
+	IF_Fl(!m_pAP, n + ": not found");
 
-	iName = "";
-	pK->v("_DistSensorBase", &iName);
-	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_DistSensorBase", &n );
+	m_pDS = (_DistSensorBase*) (pK->getInst( n ));
 
 	return true;
 }
@@ -60,15 +60,15 @@ int _AP_RTH::check(void)
 	NULL__(m_pAP,-1);
 	NULL__(m_pAP->m_pMav,-1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_RTH::update(void)
 {
-	this->_MissionBase::update();
+	this->_StateBase::update();
 	IF_(check()<0);
 	IF_(!bActive());
-	RTH* pRTH = (RTH*)m_pMC->getMission();
+	RTH* pRTH = (RTH*)m_pSC->getState();
 	NULL_(pRTH);
 
 /*	m_pAP->setMount(m_apMount);
@@ -121,11 +121,7 @@ void _AP_RTH::update(void)
 
 void _AP_RTH::draw(void)
 {
-	this->_MissionBase::draw();
-	if(!bActive())
-		addMsg("Inactive",1);
-	else
-		addMsg("RTH",1);
+	this->_StateBase::draw();
 }
 
 }

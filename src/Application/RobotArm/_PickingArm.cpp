@@ -47,7 +47,7 @@ _PickingArm::~_PickingArm()
 
 bool _PickingArm::init(void *pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vPtarget", &m_vPtarget);
@@ -76,15 +76,15 @@ bool _PickingArm::init(void *pKiss)
 		m_vClass.push_back(pc);
 	}
 
-	IF_F(!m_pMC);
-	m_iMission.EXTERNAL = m_pMC->getMissionIdxByName ("EXTERNAL");
-	m_iMission.RECOVER = m_pMC->getMissionIdxByName ("RECOVER");
-	m_iMission.FOLLOW = m_pMC->getMissionIdxByName ("FOLLOW");
-	m_iMission.ASCEND = m_pMC->getMissionIdxByName ("ASCEND");
-	m_iMission.DELIVER = m_pMC->getMissionIdxByName ("DELIVER");
-	m_iMission.DESCEND = m_pMC->getMissionIdxByName ("DESCEND");
-	m_iMission.DROP = m_pMC->getMissionIdxByName ("DROP");
-	IF_F(!m_iMission.bValid());
+	IF_F(!m_pSC);
+	m_iState.EXTERNAL = m_pSC->getStateIdxByName ("EXTERNAL");
+	m_iState.RECOVER = m_pSC->getStateIdxByName ("RECOVER");
+	m_iState.FOLLOW = m_pSC->getStateIdxByName ("FOLLOW");
+	m_iState.ASCEND = m_pSC->getStateIdxByName ("ASCEND");
+	m_iState.DELIVER = m_pSC->getStateIdxByName ("DELIVER");
+	m_iState.DESCEND = m_pSC->getStateIdxByName ("DESCEND");
+	m_iState.DROP = m_pSC->getStateIdxByName ("DROP");
+	IF_F(!m_iState.bValid());
 
 	string iName;
 
@@ -149,7 +149,7 @@ int _PickingArm::check(void)
 	NULL__(m_pYpid, -1);
 	NULL__(m_pZpid, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _PickingArm::update(void)
@@ -158,7 +158,7 @@ void _PickingArm::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateArm();
 
 		this->autoFPSto();
@@ -169,34 +169,34 @@ void _PickingArm::updateArm(void)
 {
 	IF_(check() < 0);
 
-	int iM = m_pMC->getMissionIdx();
+	int iM = m_pSC->getStateIdx();
 	bool bTransit = false;
 
-	if(iM == m_iMission.EXTERNAL)
+	if(iM == m_iState.EXTERNAL)
 	{
 		external();
 	}
-	else if(iM == m_iMission.RECOVER)
+	else if(iM == m_iState.RECOVER)
 	{
 		bTransit = recover();
 	}
-	else if(iM == m_iMission.FOLLOW)
+	else if(iM == m_iState.FOLLOW)
 	{
 		bTransit = follow();
 	}
-	else if(iM == m_iMission.ASCEND)
+	else if(iM == m_iState.ASCEND)
 	{
 		bTransit = ascend();
 	}
-	else if(iM == m_iMission.DELIVER)
+	else if(iM == m_iState.DELIVER)
 	{
 		bTransit = deliver();
 	}
-	else if(iM == m_iMission.DESCEND)
+	else if(iM == m_iState.DESCEND)
 	{
 		bTransit = descend();
 	}
-	else if(iM == m_iMission.DROP)
+	else if(iM == m_iState.DROP)
 	{
 		bTransit = drop();
 	}
@@ -206,7 +206,7 @@ void _PickingArm::updateArm(void)
 	}
 
 	if(bTransit)
-		m_pMC->transit();
+		m_pSC->transit();
 }
 
 void _PickingArm::stop(void)
@@ -432,7 +432,7 @@ void _PickingArm::grip(bool bOpen)
 
 void _PickingArm::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 
 	addMsg("vS = (" + f2str(m_vS.x) + ", " + f2str(m_vS.y) + ", " + f2str(m_vS.z) + ")");
 	addMsg("vR = (" + f2str(m_vR.x) + ", " + f2str(m_vR.y) + ", " + f2str(m_vR.z) + ")");

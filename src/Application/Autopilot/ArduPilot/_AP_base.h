@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Protocol/_Mavlink.h"
-#include "../../../Mission/_MissionBase.h"
+#include "../../../State/_StateBase.h"
 
 #define AP_N_CUSTOM_MODE 28
 
@@ -91,7 +91,7 @@ struct AP_MOUNT
 	}
 };
 
-class _AP_base: public _MissionBase
+class _AP_base: public _StateBase
 {
 public:
 	_AP_base();

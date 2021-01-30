@@ -30,7 +30,7 @@ _UTprArmL::~_UTprArmL()
 
 bool _UTprArmL::init(void *pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vPextract", &m_vPextract);
@@ -40,8 +40,8 @@ bool _UTprArmL::init(void *pKiss)
 	pK->v("vZgoal", &m_vZgoal);
 	pK->v("vPrecover", &m_vPrecover);
 
-	IF_F(!m_pMC);
-	IF_F(!m_iMission.assign(m_pMC));
+	IF_F(!m_pSC);
+	IF_F(!m_iState.assign(m_pSC));
 
 	string n;
 
@@ -100,7 +100,7 @@ int _UTprArmL::check(void)
 	NULL__(m_pXpid, -1);
 	NULL__(m_pYpid, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _UTprArmL::update(void)
@@ -109,7 +109,7 @@ void _UTprArmL::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateArm();
 
 		this->autoFPSto();
@@ -121,18 +121,18 @@ void _UTprArmL::updateArm(void)
 	IF_(check() < 0);
 	IF_(!bActive());
 
-	int iM = m_pMC->getMissionIdx();
+	int iM = m_pSC->getStateIdx();
 	bool bTransit = false;
     
-	if(iM == m_iMission.EXTRACT)
+	if(iM == m_iState.EXTRACT)
 	{
 		bTransit = extract();
 	}
-	else if(iM == m_iMission.FOLLOW)
+	else if(iM == m_iState.FOLLOW)
 	{
 		bTransit = follow();
 	}
-	else if(iM == m_iMission.RECOVER)
+	else if(iM == m_iState.RECOVER)
 	{
 		bTransit = recover();
 	}
@@ -142,7 +142,7 @@ void _UTprArmL::updateArm(void)
 	}
 
 	if(bTransit)
-		m_pMC->transit();
+		m_pSC->transit();
 }
 
 bool _UTprArmL::extract(void)
@@ -251,7 +251,7 @@ void _UTprArmL::stop(void)
 
 void _UTprArmL::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 
 	addMsg("vP = (" + f2str(m_vP.x) + ", " + f2str(m_vP.y) + ", " + f2str(m_vP.z) + ")");
 	addMsg("vPtarget = (" + f2str(m_vPtarget.x) + ", " + f2str(m_vPtarget.y) + ", " + f2str(m_vPtarget.z) + ")");

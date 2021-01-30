@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_GCS__GCSbase_H_
 #define OpenKAI_src_GCS__GCSbase_H_
 
-#include "../Mission/_MissionBase.h"
+#include "../State/_StateBase.h"
 
 namespace kai
 {
@@ -16,17 +16,17 @@ struct GCS_STATE
 	int8_t LANDING_REQUEST;
     int8_t LANDING_READY;
     
-	bool assign(_MissionControl* pMC)
+	bool assign(_StateControl* pMC)
     {
         NULL_F(pMC);
 
         m_iState = -1;
-        STANDBY = pMC->getMissionIdxByName ("STANDBY");
-        TAKEOFF_REQUEST = pMC->getMissionIdxByName ("TAKEOFF_REQUEST");
-        TAKEOFF_READY = pMC->getMissionIdxByName ("TAKEOFF_READY");
-        AIRBORNE = pMC->getMissionIdxByName ("AIRBORNE");
-        LANDING_REQUEST = pMC->getMissionIdxByName ("LANDING_REQUEST");
-        LANDING_READY = pMC->getMissionIdxByName ("LANDING_READY");
+        STANDBY = pMC->getStateIdxByName ("STANDBY");
+        TAKEOFF_REQUEST = pMC->getStateIdxByName ("TAKEOFF_REQUEST");
+        TAKEOFF_READY = pMC->getStateIdxByName ("TAKEOFF_READY");
+        AIRBORNE = pMC->getStateIdxByName ("AIRBORNE");
+        LANDING_REQUEST = pMC->getStateIdxByName ("LANDING_REQUEST");
+        LANDING_READY = pMC->getStateIdxByName ("LANDING_READY");
         
         return bValid();
     }
@@ -74,7 +74,7 @@ struct GCS_STATE
     }
 };
 
-class _GCSbase: public _MissionBase
+class _GCSbase: public _StateBase
 {
 public:
 	_GCSbase();

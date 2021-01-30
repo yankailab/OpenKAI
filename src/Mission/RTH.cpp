@@ -12,7 +12,7 @@ namespace kai
 
 RTH::RTH()
 {
-	m_type = mission_rth;
+	m_type = state_rth;
 	m_speedV = 1.0;
 	m_speedH = 1.0;
 	m_hdg = 0.0;
@@ -30,7 +30,7 @@ RTH::~RTH()
 
 bool RTH::init(void* pKiss)
 {
-	IF_F(!this->Mission::init(pKiss));
+	IF_F(!this->State::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("speedV",&m_speedV);
@@ -46,7 +46,7 @@ bool RTH::init(void* pKiss)
 bool RTH::update(void)
 {
 	IF_F(!m_bSetHome);
-	this->Mission::update();
+	this->State::update();
 
 	vDouble2 dH;
 	dH.x = m_vPos.x - m_vHome.x;
@@ -69,7 +69,7 @@ void RTH::reset(void)
 	m_vHome.init();
 	m_vPos.init();
 	m_bSetHome = false;
-	this->Mission::reset();
+	this->State::reset();
 }
 
 void RTH::setHome(vDouble3& p)
@@ -96,7 +96,7 @@ double RTH::getHdg(void)
 
 void RTH::draw(void)
 {
-	this->Mission::draw();
+	this->State::draw();
 
 	addMsg("Home = (" + f2str(m_vHome.x,7) + ", "
 				   + f2str(m_vHome.y,7) + ", "

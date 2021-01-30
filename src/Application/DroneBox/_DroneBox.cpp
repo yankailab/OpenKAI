@@ -47,7 +47,7 @@ bool _DroneBox::start ( void )
 int _DroneBox::check ( void )
 {
     NULL__ ( m_pMB, -1 );
-    IF__ ( !m_pMB->bOpen(), -1 );
+//    IF__ ( !m_pMB->bOpen(), -1 );
 
     return this->_GCSbase::check();
 }
@@ -57,7 +57,7 @@ void _DroneBox::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateGCS();
 
@@ -79,7 +79,7 @@ void _DroneBox::updateGCS ( void )
     {
         if( bBoxTakeoffReady())
         {
-            m_pMC->transit(m_state.TAKEOFF_READY);
+            m_pSC->transit(m_state.TAKEOFF_READY);
             return;
         }
 
@@ -97,7 +97,7 @@ void _DroneBox::updateGCS ( void )
     {
         if( bBoxLandingReady())
         {
-            m_pMC->transit(m_state.LANDING_READY);
+            m_pSC->transit(m_state.LANDING_READY);
             return;
         }
 

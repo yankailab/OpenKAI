@@ -36,7 +36,7 @@ _AP_GPS::~_AP_GPS()
 
 bool _AP_GPS::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("yaw", &m_yaw);
@@ -99,7 +99,7 @@ void _AP_GPS::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
 		updateGPS();
 
@@ -175,7 +175,7 @@ bool _AP_GPS::reset(void)
 
 void _AP_GPS::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 
 	addMsg("lat=" + lf2str(m_llPos.m_lat,7) + ", lon=" + lf2str(m_llPos.m_lng,7) + ", yaw=" + f2str(m_yaw));
 }

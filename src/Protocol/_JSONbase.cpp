@@ -9,8 +9,8 @@ _JSONbase::_JSONbase()
     m_bRThreadON = false;
     m_pIO = NULL;
 
-    m_msgFinishSend = "SWOOLEFN";
-    m_msgFinishRecv = "SWOOLE_SOCKET_FINISH";
+    m_msgFinishSend = "EOJ";
+    m_msgFinishRecv = "EOJ";
 }
 
 _JSONbase::~_JSONbase()
@@ -24,6 +24,10 @@ bool _JSONbase::init ( void* pKiss )
 
     pK->v ( "msgFinishSend", &m_msgFinishSend );
     pK->v ( "msgFinishRecv", &m_msgFinishRecv );
+    
+    int v = USEC_1SEC;
+    pK->v ( "tIntHeartbeat", &v );
+    m_tIntHeartbeat.init(v);
 
     string n;
     n = "";
@@ -113,6 +117,13 @@ void _JSONbase::send ( void )
 bool _JSONbase::sendMsg (picojson::object& o)
 {
     string msg = picojson::value ( o ).serialize() + m_msgFinishSend;
+    
+    if(m_pIO->ioType() == io_webSocket)
+    {
+        _WebSocket* pWS = (_WebSocket*)m_pIO;
+        return pWS->write ( ( unsigned char* ) msg.c_str(), msg.size(), WS_MODE_TXT );  
+    }
+    
     return m_pIO->write ( ( unsigned char* ) msg.c_str(), msg.size() );  
 }
 

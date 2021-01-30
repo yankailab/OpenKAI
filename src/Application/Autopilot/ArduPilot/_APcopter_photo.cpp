@@ -41,7 +41,7 @@ _APcopter_photo::~_APcopter_photo()
 
 bool _APcopter_photo::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("quality", &m_quality);
@@ -116,7 +116,7 @@ int _APcopter_photo::check(void)
 	NULL__(m_pPC, -1);
 	NULL__(m_pDS, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _APcopter_photo::update(void)
@@ -124,7 +124,7 @@ void _APcopter_photo::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
 		if(check()>=0)
 		{
@@ -264,7 +264,7 @@ void _APcopter_photo::shutter(void)
 void _APcopter_photo::draw(void)
 {
 	IF_(check()<0);
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	drawActive();
 
 	addMsg("alt = " + f2str(m_alt) + ", lastAlt = " + f2str(m_lastAlt) + ", dAlt = " + f2str(m_dAlt));

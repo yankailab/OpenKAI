@@ -23,7 +23,7 @@ _AProver_drive::~_AProver_drive()
 
 bool _AProver_drive::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("bSetYawSpeed",&m_bSetYawSpeed);
@@ -102,7 +102,7 @@ int _AProver_drive::check(void)
 	NULL__(m_pAP->m_pMav,-1);
     NULL__(m_pD, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AProver_drive::update(void)
@@ -163,7 +163,7 @@ void _AProver_drive::setYawMode(bool bRelative)
 
 void _AProver_drive::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
     drawActive();
     
     NULL_(m_pRcYaw);

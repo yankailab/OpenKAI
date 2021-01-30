@@ -5,15 +5,15 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Mission_Takeoff_H_
-#define OpenKAI_src_Mission_Takeoff_H_
+#ifndef OpenKAI_src_State_Takeoff_H_
+#define OpenKAI_src_State_Takeoff_H_
 
-#include "Mission.h"
+#include "State.h"
 
 namespace kai
 {
 
-class Takeoff: public Mission
+class Takeoff: public State
 {
 public:
 	Takeoff();

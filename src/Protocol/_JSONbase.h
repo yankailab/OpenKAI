@@ -2,7 +2,7 @@
 #define OpenKAI_src_Protocol__JSONbase_H_
 
 #include "../Base/_ThreadBase.h"
-#include "../IO/_IOBase.h"
+#include "../IO/_WebSocket.h"
 #include <openssl/md5.h>
 
 using namespace picojson;

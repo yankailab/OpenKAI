@@ -32,7 +32,7 @@ _AProver_UTfollowTag::~_AProver_UTfollowTag()
 
 bool _AProver_UTfollowTag::init ( void* pKiss )
 {
-    IF_F ( !this->_MissionBase::init ( pKiss ) );
+    IF_F ( !this->_StateBase::init ( pKiss ) );
 
     Kiss* pK = ( Kiss* ) pKiss;
     pK->v ( "targetSide", &m_targetSide );
@@ -42,8 +42,8 @@ bool _AProver_UTfollowTag::init ( void* pKiss )
     pK->v ( "vTagX", &m_vTagX );
     pK->v ( "vSide", &m_vSide );
     
-    IF_F(!m_pMC);
-	IF_F(!m_iMission.assign(m_pMC));
+    IF_F(!m_pSC);
+	IF_F(!m_iState.assign(m_pSC));
 
     string n;
 
@@ -103,7 +103,7 @@ int _AProver_UTfollowTag::check ( void )
     NULL__ ( m_pUdivider, -1 );
     NULL__ ( m_pUtag, -1 );
 
-    return this->_MissionBase::check();
+    return this->_StateBase::check();
 }
 
 void _AProver_UTfollowTag::update ( void )
@@ -111,7 +111,7 @@ void _AProver_UTfollowTag::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateFollow();
 
@@ -151,7 +151,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
             m_bDivider = true;
             nSpd = 0.0;
             m_nStr = 0.0;
-            m_pMC->transit(m_iMission.DIVIDER);
+            m_pSC->transit(m_iState.DIVIDER);
         }
     }
     else
@@ -170,7 +170,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
             nSpd = 0.0;
             m_nStr = 0.0;
             m_iTag = iTag;
-            m_pMC->transit(m_iMission.EXTRACT);        
+            m_pSC->transit(m_iState.EXTRACT);        
         }
     }
 
@@ -180,7 +180,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
 
 void _AProver_UTfollowTag::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_StateBase::draw();
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));

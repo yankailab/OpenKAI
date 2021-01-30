@@ -16,11 +16,7 @@ bool _AP_droneBoxJSON::init ( void* pKiss )
 {
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
-    
-    int v = USEC_1SEC;
-    pK->v("tIntHeartbeat", &v);
-    m_tIntHeartbeat.init(v);
-    
+
     string n;
     n = "";
     pK->v ( "_AP_gcs", &n );
@@ -168,6 +164,8 @@ void _AP_droneBoxJSON::heartbeat(picojson::object& o)
 void _AP_droneBoxJSON::ackLandingRequest (picojson::object& o)
 {
     IF_(check()<0 );
+    IF_(!o["id"].is<double>());
+    IF_(!o["result"].is<string>());
         
     string r = o["result"].get<string>();
     bool bReady = ( r == "ok");
@@ -178,6 +176,8 @@ void _AP_droneBoxJSON::ackLandingRequest (picojson::object& o)
 void _AP_droneBoxJSON::ackTakeoffRequest (picojson::object& o)
 {
     IF_(check()<0 );
+    IF_(!o["id"].is<double>());
+    IF_(!o["result"].is<string>());
     
     string r = o["result"].get<string>();
     bool bReady = ( r == "ok");

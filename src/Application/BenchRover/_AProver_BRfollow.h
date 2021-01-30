@@ -10,7 +10,7 @@
 namespace kai
 {
 
-class _AProver_BRfollow: public _MissionBase
+class _AProver_BRfollow: public _StateBase
 {
 public:
 	_AProver_BRfollow();

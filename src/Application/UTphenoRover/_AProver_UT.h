@@ -25,7 +25,7 @@ struct APROVER_UT_MODE
 	}
 };
 
-class _AProver_UT: public _MissionBase
+class _AProver_UT: public _StateBase
 {
 public:
 	_AProver_UT();

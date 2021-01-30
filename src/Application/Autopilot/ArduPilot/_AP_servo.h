@@ -19,7 +19,7 @@ struct AP_SERVO
 	}
 };
 
-class _AP_servo: public _MissionBase
+class _AP_servo: public _StateBase
 {
 public:
 	_AP_servo();

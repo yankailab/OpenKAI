@@ -29,7 +29,7 @@ struct DIST_LIDAR_SECTION
 	}
 };
 
-class _AP_distLidar: public _MissionBase
+class _AP_distLidar: public _StateBase
 {
 public:
 	_AP_distLidar();

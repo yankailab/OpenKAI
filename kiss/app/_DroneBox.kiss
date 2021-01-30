@@ -5,65 +5,115 @@
 	"bWindow":0,
 	"bDraw":0,
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
-	"name":"OpenKAI",
+	"name":"OKconsole",
 	"class":"Console",
 	"bInst":1,
 }
 
 {
-	"name":"apSerial",
-	"class":"_SerialPort",
-	"bInst":1,
+	"name":"state",
+	"class":"_StateControl",
 	"FPS":30,
-	"bLog":0,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"port":"/dev/ttyACM0",
-	"baud":57600,
-	"_wakeUp":"mavAP",
-}
-
-{
-	"name":"mavAP",
-	"class":"_Mavlink",
 	"bInst":1,
-	"FPS":30,
-	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
-	"_IOBase":"apSerial",
+	"Console":"OKconsole",
+	"start":"STANDBY",
 
 	{
-		"bInst":0,
-		"_Mavlink":"mavGCS",
-	}	
-}
-
-{
-	"name":"mission",
-	"class":"_MissionControl",
-	"FPS":30,
-	"bInst":0,
-	"bDraw":1,
-	"Window":"OKview",
-	"Console":"OpenKAI",
-	"startMission":"AVOID",
-
-	{
-		"name":"mission",
+		"name":"state",
 		{
-			"bInst":0,
-			"name":"LAND",
-			"Window":"OKview",
-			"bDraw":1,
-			"Console":"OpenKAI",
-			"class":"MissionBase",
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"TAKEOFF_REQUEST",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"TAKEOFF_READY",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"AIRBORNE",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"LANDING_REQUEST",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"LANDING_READY",
+			"class":"State",
 		}
 	}
 }
 
+{
+	"name":"modbus",
+	"class":"_Modbus",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"port":"/dev/ttyUSB0",
+	"baud":9800,
+	"parity":"N",	
+}
+
+{
+	"name":"droneBox",
+	"class":"_DroneBox",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_StateControl":"state",
+	"gcsID":1,
+	"_Modbus":"modbus",
+	"iSlave":1,
+}
+
+{
+	"name":"telem",
+	"class":"_WebSocket",
+	"FPS":100,
+	"bInst":1,
+	"bLog":0,
+	"Window":"OKview",
+	"_wakeUp":"droneBoxJSON",
+}
+
+{
+	"name":"telem",
+	"class":"_SerialPort",
+	"bInst":0,
+	"FPS":30,
+	"bLog":0,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"port":"/dev/ttyACM0",
+	"baud":57600,
+	"_wakeUp":"droneBoxJSON",
+}
+
+{
+	"name":"droneBoxJSON",
+	"class":"_DroneBoxJSON",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_DroneBox":"droneBox",
+	"_IOBase":"telem",
+}

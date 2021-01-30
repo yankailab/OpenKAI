@@ -10,7 +10,7 @@
 namespace kai
 {
 
-class _AP_avoid: public _MissionBase
+class _AP_avoid: public _StateBase
 {
 public:
 	_AP_avoid();

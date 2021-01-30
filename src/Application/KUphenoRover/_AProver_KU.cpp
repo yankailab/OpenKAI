@@ -18,8 +18,8 @@ _AProver_KU::~_AProver_KU()
 
 bool _AProver_KU::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
-	NULL_F(m_pMC);
+	IF_F(!this->_StateBase::init(pKiss));
+	NULL_F(m_pSC);
 
     Kiss* pK = (Kiss*)pKiss;
     
@@ -31,9 +31,9 @@ bool _AProver_KU::init(void* pKiss)
     m_rcMode.setup();
     m_rcDir.setup();
 
-    m_iMode.STANDBY = m_pMC->getMissionIdxByName ( "STANDBY" );
-    m_iMode.HYBRID = m_pMC->getMissionIdxByName ( "HYBRID" );
-    m_iMode.AUTO = m_pMC->getMissionIdxByName ( "AUTO" );
+    m_iMode.STANDBY = m_pSC->getStateIdxByName ( "STANDBY" );
+    m_iMode.HYBRID = m_pSC->getStateIdxByName ( "HYBRID" );
+    m_iMode.AUTO = m_pSC->getStateIdxByName ( "AUTO" );
     IF_F ( !m_iMode.bValid() );
 
 	string n;
@@ -68,10 +68,10 @@ int _AProver_KU::check(void)
 {
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
-	NULL__(m_pMC, -1);
+	NULL__(m_pSC, -1);
 	NULL__(m_pD, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AProver_KU::update(void)
@@ -79,7 +79,7 @@ void _AProver_KU::update(void)
 	while (m_bThreadON)
 	{
 		this->autoFPSfrom();
-		this->_MissionBase::update();
+		this->_StateBase::update();
 
         updateMode();
 
@@ -104,7 +104,7 @@ void _AProver_KU::updateMode ( void )
     uint32_t apMode = m_pAP->getApMode();
     if ( apMode != AP_ROVER_MANUAL )
     {
-        m_pMC->transit ( m_iMode.STANDBY );
+        m_pSC->transit ( m_iMode.STANDBY );
         return;
     }
     
@@ -115,23 +115,23 @@ void _AProver_KU::updateMode ( void )
     switch ( iMode )
     {
     case 0:
-        m_pMC->transit ( m_iMode.STANDBY );
+        m_pSC->transit ( m_iMode.STANDBY );
         break;
     case 1:
-        m_pMC->transit ( m_iMode.HYBRID );
+        m_pSC->transit ( m_iMode.HYBRID );
         break;
     case 2:
-        m_pMC->transit ( m_iMode.AUTO );
+        m_pSC->transit ( m_iMode.AUTO );
         break;
     default:
-        m_pMC->transit ( m_iMode.STANDBY );
+        m_pSC->transit ( m_iMode.STANDBY );
         break;
     }
 }
 
 void _AProver_KU::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
     drawActive();
 
    	addMsg("rcMode pwm=" + i2str(m_rcMode.m_pwm) + ", i=" + i2str(m_rcMode.i()));

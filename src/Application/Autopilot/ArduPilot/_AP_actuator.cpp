@@ -19,7 +19,7 @@ _AP_actuator::~_AP_actuator()
 
 bool _AP_actuator::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
     pK->v ( "iRCmodeChan", &m_rcMode.m_iChan );
@@ -64,7 +64,7 @@ int _AP_actuator::check(void)
 	NULL__(m_pAP->m_pMav, -1);
 	NULL__(m_pAB, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_actuator::update(void)
@@ -73,7 +73,7 @@ void _AP_actuator::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateActuator();
 
 		this->autoFPSto();
@@ -117,7 +117,7 @@ void _AP_actuator::updateActuator(void)
 void _AP_actuator::draw(void)
 {
 	IF_(check() < 0);
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	drawActive();
 
 	addMsg("iMode: "+i2str(m_rcMode.i()), 1);

@@ -28,8 +28,8 @@ _AProver_BRfollow::~_AProver_BRfollow()
 
 bool _AProver_BRfollow::init ( void* pKiss )
 {
-    IF_F ( !this->_MissionBase::init ( pKiss ) );
-    NULL_F( m_pMC );
+    IF_F ( !this->_StateBase::init ( pKiss ) );
+    NULL_F( m_pSC );
 
     Kiss* pK = ( Kiss* ) pKiss;
     pK->v ( "targetX", &m_tagTargetX );
@@ -90,7 +90,7 @@ int _AProver_BRfollow::check ( void )
     NULL__ ( m_pPIDtagHdg, -1 );
     NULL__ ( m_pU, -1 );
 
-    return this->_MissionBase::check();
+    return this->_StateBase::check();
 }
 
 void _AProver_BRfollow::update ( void )
@@ -98,7 +98,7 @@ void _AProver_BRfollow::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateFollow();
 
@@ -169,7 +169,7 @@ _Object* _AProver_BRfollow::findTarget ( void )
 
 void _AProver_BRfollow::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_StateBase::draw();
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));

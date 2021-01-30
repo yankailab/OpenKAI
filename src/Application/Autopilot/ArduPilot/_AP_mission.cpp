@@ -15,7 +15,7 @@ _AP_mission::~_AP_mission()
 
 bool _AP_mission::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	string iName;
@@ -52,7 +52,7 @@ int _AP_mission::check(void)
 	NULL__(m_pAP->m_pMav, -1);
 //	NULL__(m_pAPdescent, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_mission::update(void)
@@ -61,7 +61,7 @@ void _AP_mission::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateMission();
 
 		this->autoFPSto();
@@ -73,31 +73,31 @@ void _AP_mission::updateMission(void)
 	IF_(check()<0);
 
 	int apMode = m_pAP->getApMode();
-	string mission = m_pMC->getMissionName();
+	string mission = m_pSC->getStateName();
 
 	if(apMode != AP_COPTER_GUIDED)
 	{
-		m_pMC->transit("STANDBY");
+		m_pSC->transit("STANDBY");
 		return;
 	}
 
 	if(mission == "STANDBY")
 	{
-		m_pMC->transit("TAKEOFF");
+		m_pSC->transit("TAKEOFF");
 		return;
 	}
 
 //	if(mission == "FOLLOW")
 //	{
 //		if(m_pAPdescent->m_bTarget)
-//			m_pMC->transit("DESCENT");
+//			m_pSC->transit("DESCENT");
 //		return;
 //	}
 //
 //	if(mission == "DESCENT")
 //	{
 //		if(!m_pAPdescent->m_bTarget)
-//			m_pMC->transit("FOLLOW");
+//			m_pSC->transit("FOLLOW");
 //		return;
 //	}
 
@@ -113,7 +113,7 @@ void _AP_mission::updateMission(void)
 
 void _AP_mission::draw(void)
 {
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 
 }
 

@@ -9,7 +9,7 @@
 namespace kai
 {
 
-class _AP_RTH: public _MissionBase
+class _AP_RTH: public _StateBase
 {
 public:
 	_AP_RTH();

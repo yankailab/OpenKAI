@@ -14,7 +14,7 @@ _AP_servo::~_AP_servo()
 
 bool _AP_servo::init(void* pKiss)
 {
-	IF_F(!this->_MissionBase::init(pKiss));
+	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	int i = 0;
@@ -57,7 +57,7 @@ int _AP_servo::check(void)
 	NULL__(m_pAP, -1);
 	NULL__(m_pAP->m_pMav, -1);
 
-	return this->_MissionBase::check();
+	return this->_StateBase::check();
 }
 
 void _AP_servo::update(void)
@@ -66,7 +66,7 @@ void _AP_servo::update(void)
 	{
 		this->autoFPSfrom();
 
-		this->_MissionBase::update();
+		this->_StateBase::update();
 		updateServo();
 
 		this->autoFPSto();
@@ -89,7 +89,7 @@ void _AP_servo::updateServo(void)
 void _AP_servo::draw(void)
 {
 	IF_(check()<0);
-	this->_MissionBase::draw();
+	this->_StateBase::draw();
 	drawActive();
 
 	for(AP_SERVO s : m_vServo)

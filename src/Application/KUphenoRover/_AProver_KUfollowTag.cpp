@@ -26,8 +26,8 @@ _AProver_KUfollowTag::~_AProver_KUfollowTag()
 
 bool _AProver_KUfollowTag::init ( void* pKiss )
 {
-    IF_F ( !this->_MissionBase::init ( pKiss ) );
-    NULL_F( m_pMC );
+    IF_F ( !this->_StateBase::init ( pKiss ) );
+    NULL_F( m_pSC );
 
     Kiss* pK = ( Kiss* ) pKiss;
     pK->v ( "nSpd", &m_nSpd );
@@ -87,7 +87,7 @@ int _AProver_KUfollowTag::check ( void )
     NULL__ ( m_pPIDtagX, -1 );
     NULL__ ( m_pPIDtagHdg, -1 );
 
-    return this->_MissionBase::check();
+    return this->_StateBase::check();
 }
 
 void _AProver_KUfollowTag::update ( void )
@@ -95,7 +95,7 @@ void _AProver_KUfollowTag::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_MissionBase::update();
+        this->_StateBase::update();
 
         updateFollow();
 
@@ -157,7 +157,7 @@ _Object* _AProver_KUfollowTag::findTarget ( void )
 
 void _AProver_KUfollowTag::draw ( void )
 {
-    this->_MissionBase::draw();
+    this->_StateBase::draw();
     drawActive();
 
    	addMsg("nSpd=" + f2str(m_nSpd) + ", nStr=" + f2str(m_nStr));
