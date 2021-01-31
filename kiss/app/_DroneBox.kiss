@@ -65,7 +65,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyUSB0",
 	"baud":9800,
 	"parity":"N",	
 }
@@ -73,7 +73,7 @@
 {
 	"name":"droneBox",
 	"class":"_DroneBox",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"bLog":1,
 	"Console":"OKconsole",
@@ -87,7 +87,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"Console":"OKconsole",
 	"_wakeUp":"dbjWS",
@@ -111,7 +111,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyACM1",
+	"port":"/dev/ttyUSB1",
 	"baud":57600,
 	"_wakeUp":"dbjTelem",
 }

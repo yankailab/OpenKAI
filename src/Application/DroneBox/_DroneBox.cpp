@@ -47,7 +47,7 @@ bool _DroneBox::start ( void )
 int _DroneBox::check ( void )
 {
     NULL__ ( m_pMB, -1 );
-//    IF__ ( !m_pMB->bOpen(), -1 );
+    IF__ ( !m_pMB->bOpen(), -1 );
 
     return this->_GCSbase::check();
 }

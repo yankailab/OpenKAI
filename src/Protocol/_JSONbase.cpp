@@ -131,6 +131,7 @@ bool _JSONbase::sendHeartbeat (void)
 {
     object o;
     JO(o, "id", i2str(1));
+    JO(o, "cmd", "heartbeat");
     JO(o, "t", li2str(m_tStamp));
     
     return sendMsg(o);

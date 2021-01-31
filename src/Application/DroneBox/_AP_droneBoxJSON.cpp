@@ -145,6 +145,8 @@ void _AP_droneBoxJSON::handleMsg ( string& str )
     IF_(!str2JSON(str,&json));
     
     object& jo = json.get<object>();
+
+    IF_(!jo["cmd"].is<string>());
     string cmd = jo["cmd"].get<string>();
 
     if ( cmd == "heartbeat" )

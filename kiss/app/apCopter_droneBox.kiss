@@ -193,7 +193,7 @@
 	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"Console":"OKconsole",
 	"_wakeUp":"dbjWS",
@@ -202,7 +202,7 @@
 {
 	"name":"dbjWS",
 	"class":"_AP_droneBoxJSON",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"bLog":1,
 	"Console":"OKconsole",
@@ -217,7 +217,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyUSB0",
 	"baud":57600,
 	"_wakeUp":"dbjTelem",
 }
