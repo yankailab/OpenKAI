@@ -135,7 +135,9 @@ void _AP_droneBoxJSON::updateR ( void )
             handleMsg(m_strB);
             m_strB.clear();            
         }
-        this->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        
+        if(m_strB.empty())
+            this->sleepTime ( 100000 ); //wait for the IObase to wake me up when received data
     }
 }
 

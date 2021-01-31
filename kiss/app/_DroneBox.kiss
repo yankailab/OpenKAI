@@ -66,15 +66,15 @@
 	"bLog":0,
 	"Console":"OKconsole",
 	"port":"/dev/ttyUSB0",
-	"baud":9800,
+	"baud":9600,
 	"parity":"N",	
 }
 
 {
 	"name":"droneBox",
 	"class":"_DroneBox",
-	"bInst":0,
-	"FPS":1,
+	"bInst":1,
+	"FPS":10,
 	"bLog":1,
 	"Console":"OKconsole",
 	"_StateControl":"state",
@@ -96,7 +96,7 @@
 {
 	"name":"dbjWS",
 	"class":"_DroneBoxJSON",
-	"bInst":1,
+	"bInst":0,
 	"FPS":1,
 	"bLog":1,
 	"Console":"OKconsole",

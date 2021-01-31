@@ -6,7 +6,7 @@ namespace kai
 _AP_gcs::_AP_gcs()
 {
     m_pAP = NULL;
-    m_altAirborne = 10.0;
+    m_altAirborne = 20.0;
 }
 
 _AP_gcs::~_AP_gcs()

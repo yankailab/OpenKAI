@@ -18,7 +18,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"Console":"OKconsole",
 }
 
@@ -186,7 +186,7 @@
 	"Console":"OKconsole",
 	"_AP_base":"apBase",
 	"_StateControl":"state",
-	"altAirborne":10.0,
+	"altAirborne":20.0,
 }
 
 {
