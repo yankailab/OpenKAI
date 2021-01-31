@@ -32,6 +32,8 @@ protected:
 
 public:
     _AP_base* m_pAP;
+    
+    float m_altAirborne;
 };
 
 }

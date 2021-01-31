@@ -3,9 +3,9 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
-	"bDraw":0,
+	"bDraw":1,
 	"bLog":1,
-	"bStdErr":1,
+	"bStdErr":0,
 	"waitKey":30,
 }
 
@@ -20,7 +20,6 @@
 	"class":"_StateControl",
 	"FPS":30,
 	"bInst":1,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"start":"STANDBY",
 
@@ -66,7 +65,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Console":"OKconsole",
-	"port":"/dev/ttyUSB0",
+	"port":"/dev/ttyACM0",
 	"baud":9800,
 	"parity":"N",	
 }
@@ -85,30 +84,40 @@
 }
 
 {
-	"name":"telem",
+	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
 	"bLog":0,
-	"Window":"OKview",
-	"_wakeUp":"droneBoxJSON",
+	"Console":"OKconsole",
+	"_wakeUp":"dbjWS",
+}
+
+{
+	"name":"dbjWS",
+	"class":"_DroneBoxJSON",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_DroneBox":"droneBox",
+	"_IOBase":"ws",
 }
 
 {
 	"name":"telem",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
 	"Console":"OKconsole",
-	"port":"/dev/ttyACM0",
+	"port":"/dev/ttyACM1",
 	"baud":57600,
-	"_wakeUp":"droneBoxJSON",
+	"_wakeUp":"dbjTelem",
 }
 
 {
-	"name":"droneBoxJSON",
+	"name":"dbjTelem",
 	"class":"_DroneBoxJSON",
 	"bInst":1,
 	"FPS":1,
@@ -116,4 +125,26 @@
 	"Console":"OKconsole",
 	"_DroneBox":"droneBox",
 	"_IOBase":"telem",
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"Console":"OKconsole",
+	"port":20000,
+	"nFIFO":12800,
+	"_wakeUp":"dbjUDP",
+}
+
+{
+	"name":"dbjUDP",
+	"class":"_DroneBoxJSON",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_DroneBox":"droneBox",
+	"_IOBase":"udp",
 }

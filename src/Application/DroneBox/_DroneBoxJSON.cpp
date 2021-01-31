@@ -163,6 +163,7 @@ void _DroneBoxJSON::landingStatus (picojson::object& o)
 {
     IF_(check()<0 );
     IF_(!o["id"].is<double>());
+    IF_(!o["stat"].is<string>());
     
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();
@@ -197,6 +198,7 @@ void _DroneBoxJSON::takeoffStatus (picojson::object& o)
 {
     IF_(check()<0 );
     IF_(!o["id"].is<double>());
+    IF_(!o["stat"].is<string>());
     
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();

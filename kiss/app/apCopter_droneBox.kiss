@@ -3,7 +3,7 @@
 	"class":"Startup",
 	"appName":"OpenKAI",
 	"bWindow":0,
-	"bDraw":0,
+	"bDraw":1,
 	"bLog":1,
 	"bStdErr":0,
 	"waitKey":30,
@@ -23,6 +23,49 @@
 }
 
 {
+	"name":"state",
+	"class":"_StateControl",
+	"FPS":30,
+	"bInst":1,
+	"Console":"OKconsole",
+	"start":"STANDBY",
+
+	{
+		"name":"state",
+		{
+			"bInst":1,
+			"name":"STANDBY",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"TAKEOFF_REQUEST",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"TAKEOFF_READY",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"AIRBORNE",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"LANDING_REQUEST",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"LANDING_READY",
+			"class":"State",
+		}
+	}
+}
+
+{
 	"name":"cam",
 	"class":"_GStreamer",
 	"FPS":30,
@@ -36,7 +79,7 @@
 	"name":"cam",
 	"class":"_Camera",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"deviceID":0,
@@ -48,7 +91,7 @@
 	"name":"arUco",
 	"class":"_ArUco",
 	"FPS":30,
-	"bInst":1,
+	"bInst":0,
 	"bDraw":1,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -64,9 +107,9 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"port":"/dev/ttyTHS1",
+	"/port":"/dev/ttyACM0",
 	"baud":115200,
 	"_wakeUp":"apMavlink",
 }
@@ -77,61 +120,16 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
 }
 
-{
-	"name":"state",
-	"class":"_StateControl",
-	"FPS":30,
-	"bInst":1,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"start":"STANDBY",
-
-	{
-		"name":"state",
-		{
-			"bInst":1,
-			"name":"STANDBY",
-			"class":"Mission",
-		}
-		{
-			"bInst":1,
-			"name":"TAKEOFF_REQUEST",
-			"class":"Mission",
-		}
-		{
-			"bInst":1,
-			"name":"TAKEOFF_READY",
-			"class":"Mission",
-		}
-		{
-			"bInst":1,
-			"name":"AIRBORNE",
-			"class":"Mission",
-		}
-		{
-			"bInst":1,
-			"name":"LANDING_REQUEST",
-			"class":"Mission",
-		}
-		{
-			"bInst":1,
-			"name":"LANDING_READY",
-			"class":"Mission",
-		}
-	}
-}
 {
 	"name":"apBase",
 	"class":"_AP_base",
 	"FPS":10,
 	"bInst":1,
 	"_StateControl":"state",
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
@@ -143,11 +141,16 @@
 		{
 			"name":"heartbeat",
 			"id":0,
-			"tInt":0.5,
+			"tInt":1.0,
 		}
 		{
 			"name":"attitude",
 			"id":30,
+			"tInt":1.0,
+		}
+		{
+			"name":"rcChannels",
+			"id":65,
 			"tInt":1.0,
 		}
 		{
@@ -158,7 +161,7 @@
 		{
 			"name":"globalPosition",
 			"id":33,
-			"tInt":0.2,
+			"tInt":0.5,
 		}
 		{
 			"name":"homePosition",
@@ -180,37 +183,47 @@
 	"bInst":1,
 	"bLog":1,
 	"bDraw":1,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"_AP_base":"apBase",
 	"_StateControl":"state",
+	"altAirborne":10.0,
 }
 
 {
-	"name":"telem",
+	"name":"ws",
 	"class":"_WebSocket",
 	"FPS":100,
 	"bInst":1,
 	"bLog":0,
-	"Window":"OKview",
-	"_wakeUp":"apDroneBoxJSON",
+	"Console":"OKconsole",
+	"_wakeUp":"dbjWS",
+}
+
+{
+	"name":"dbjWS",
+	"class":"_AP_droneBoxJSON",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_AP_gcs":"apGCS",
+	"_IOBase":"ws",
 }
 
 {
 	"name":"telem",
 	"class":"_SerialPort",
-	"bInst":0,
+	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"port":"/dev/ttyACM0",
 	"baud":57600,
-	"_wakeUp":"apDroneBoxJSON",
+	"_wakeUp":"dbjTelem",
 }
 
 {
-	"name":"apDroneBoxJSON",
+	"name":"dbjTelem",
 	"class":"_AP_droneBoxJSON",
 	"bInst":1,
 	"FPS":1,
@@ -218,4 +231,27 @@
 	"Console":"OKconsole",
 	"_AP_gcs":"apGCS",
 	"_IOBase":"telem",
+}
+
+{
+	"name":"udp",
+	"class":"_UDP",
+	"bInst":1,
+	"FPS":30,
+	"bLog":0,
+	"Console":"OKconsole",
+	"addr":"192.168.16.100",
+	"port":20000,
+	"_wakeUp":"dbjUDP",
+}
+
+{
+	"name":"dbjUDP",
+	"class":"_AP_droneBoxJSON",
+	"bInst":1,
+	"FPS":1,
+	"bLog":1,
+	"Console":"OKconsole",
+	"_AP_gcs":"apGCS",
+	"_IOBase":"udp",
 }

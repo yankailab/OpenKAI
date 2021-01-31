@@ -6,6 +6,7 @@ namespace kai
 _AP_gcs::_AP_gcs()
 {
     m_pAP = NULL;
+    m_altAirborne = 10.0;
 }
 
 _AP_gcs::~_AP_gcs()
@@ -16,6 +17,8 @@ bool _AP_gcs::init ( void* pKiss )
 {
     IF_F ( !this->_GCSbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
+
+    pK->v ( "altAirborne", &m_altAirborne );
 
     string n;
 
@@ -46,7 +49,7 @@ int _AP_gcs::check ( void )
     NULL__ ( m_pAP, -1 );
     NULL__ ( m_pSC, -1 );
 
-    return this->_StateBase::check();
+    return this->_GCSbase::check();
 }
 
 void _AP_gcs::update ( void )
@@ -54,7 +57,7 @@ void _AP_gcs::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_StateBase::update();
+        this->_GCSbase::update();
 
         updateGCS();
 
@@ -81,7 +84,7 @@ void _AP_gcs::updateGCS ( void )
     }
     else if(bApArmed)
     {
-        if(alt > 10.0)
+        if(alt > m_altAirborne)
         {
             m_pSC->transit(m_state.AIRBORNE);            
         }
@@ -100,7 +103,6 @@ void _AP_gcs::updateGCS ( void )
 void _AP_gcs::landingReady(bool bReady)
 {
     IF_(!bReady);
-    IF_(!m_state.bLANDING_REQUEST());
     IF_(!m_state.bLANDING_READY());
     
     m_pSC->transit(m_state.LANDING_READY);
@@ -109,7 +111,6 @@ void _AP_gcs::landingReady(bool bReady)
 void _AP_gcs::takeoffReady(bool bReady)
 {
     IF_(!bReady);
-    IF_(!m_state.bTAKEOFF_REQUEST());
     IF_(!m_state.bTAKEOFF_READY());
     
     m_pSC->transit(m_state.TAKEOFF_READY);

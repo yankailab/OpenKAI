@@ -57,7 +57,7 @@ void _DroneBox::update ( void )
     while ( m_bThreadON )
     {
         this->autoFPSfrom();
-        this->_StateBase::update();
+        this->_GCSbase::update();
 
         updateGCS();
 
@@ -122,7 +122,7 @@ bool _DroneBox::bBoxLandingReady ( void )
     IF_F ( check() <0 );
 
     //01 03 00 01 00 01 D5 CA
-    uint16_t b;
+    uint16_t b = 0;
     int r = m_pMB->readRegisters ( m_iSlave, 1, 1, &b );
     IF_F ( r != 1 );
 
@@ -150,7 +150,7 @@ bool _DroneBox::bBoxTakeoffReady ( void )
     IF_F ( check() <0 );
 
     //01 03 00 04 00 01 C5 CB
-    uint16_t b;
+    uint16_t b = 0;
     int r = m_pMB->readRegisters ( m_iSlave, 4, 1, &b );
     IF_F ( r != 1 );
 
