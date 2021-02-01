@@ -12,6 +12,8 @@ _Modbus::_Modbus()
 	m_parity = 'E';
 	m_baud = 115200;
 	m_bOpen = false;
+    m_tOutSec = 1;
+    m_tOutUSec = 0;
 }
 
 _Modbus::~_Modbus()
@@ -32,6 +34,8 @@ bool _Modbus::init(void* pKiss)
 	pK->v("port",&m_port);
 	pK->v("parity",&m_parity);
 	pK->v("baud",&m_baud);
+	pK->v("tOutSec",&m_tOutSec);
+	pK->v("tOutUSec",&m_tOutUSec);
 
 	return true;
 }
@@ -47,6 +51,7 @@ bool _Modbus::open(void)
 	}
 
 	modbus_set_debug(m_pMb, false);
+    IF_F(modbus_set_response_timeout(m_pMb, m_tOutSec, m_tOutUSec) != 0);
 
 	if (modbus_connect(m_pMb) != 0)
 	{

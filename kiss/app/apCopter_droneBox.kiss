@@ -186,7 +186,7 @@
 	"Console":"OKconsole",
 	"_AP_base":"apBase",
 	"_StateControl":"state",
-	"altAirborne":20.0,
+	"altAirborne":10.0,
 }
 
 {

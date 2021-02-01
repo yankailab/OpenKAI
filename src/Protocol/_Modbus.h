@@ -40,6 +40,9 @@ public:
 	string	m_parity;
 	int		m_baud;
 	bool	m_bOpen;
+    
+    uint32_t m_tOutSec;
+    uint32_t m_tOutUSec;
 
 	pthread_mutex_t m_mutex;
 

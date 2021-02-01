@@ -5,14 +5,14 @@
 	"bWindow":0,
 	"bDraw":1,
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
 }
 
 {
@@ -67,7 +67,8 @@
 	"Console":"OKconsole",
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
-	"parity":"N",	
+	"parity":"N",
+	"tOutSec":2,
 }
 
 {

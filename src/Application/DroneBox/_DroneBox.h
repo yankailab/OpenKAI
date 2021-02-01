@@ -6,6 +6,18 @@
 
 namespace kai
 {
+    
+enum DRONEBOX_LAST_CMD
+{
+    dbx_unknown = -1,
+    dbx_landingPrepare = 0,
+    dbx_bLandingReady = 1,
+    dbx_landingComplete = 2,
+    dbx_takeoffPrepare = 3,
+    dbx_bTakeoffReady = 4,
+    dbx_takeoffComplete = 5,
+    dbx_boxRecover = 6,
+};
 
 class _DroneBox: public _GCSbase
 {
@@ -39,6 +51,8 @@ protected:
 public:
     _Modbus* m_pMB;
 	int		m_iSlave;
+    
+    DRONEBOX_LAST_CMD m_lastCMD;
 };
 
 }
