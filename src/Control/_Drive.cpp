@@ -19,7 +19,7 @@ _Drive::~_Drive()
 
 bool _Drive::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nSpd",&m_nSpd);
@@ -55,29 +55,22 @@ bool _Drive::init(void* pKiss)
 
 bool _Drive::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 int _Drive::check ( void )
 {
-
-    return this->_ThreadBase::check();
+    return this->_ModuleBase::check();
 }
 
 void _Drive::update(void)
 {
-    while ( m_bThreadON )
+    while ( m_pT->bRun() )
     {
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
+        
+        LOG_I("test");
 
         for(int i=0; i<m_vM.size(); i++)
         {
@@ -85,7 +78,7 @@ void _Drive::update(void)
             pM->update(m_nSpd * m_nDir, m_nStr); // nStr should not be applied to nSpd calc in apRover mode
         }
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -128,7 +121,7 @@ float _Drive::getMotorSpeed(int iM)
 
 void _Drive::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	addMsg("nSpd = " + f2str(m_nSpd) + ", nDir = " + f2str(m_nDir) + ", nStr = " + f2str(m_nStr));
     for(int i=0; i<m_vM.size(); i++)

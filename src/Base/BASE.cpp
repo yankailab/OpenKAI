@@ -76,7 +76,7 @@ bool BASE::start(void)
 
 int BASE::check(void)
 {
-	return -1;
+	return 0;
 }
 
 int BASE::serialize(uint8_t* pB, int nB)
@@ -113,11 +113,6 @@ void BASE::draw(void)
 	{
 		Console* pC = (Console*)m_pConsole;
 		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
-
-//	    if(m_msgLev > 0)
-//			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_ERROR)|A_BOLD, CONSOLE_X_MSG);
-//	    else
-//			pC->addMsg(m_msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG);
 	}
 
 #ifdef USE_OPENCV

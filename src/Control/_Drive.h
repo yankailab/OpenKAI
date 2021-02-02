@@ -1,6 +1,7 @@
 #ifndef OpenKAI_src_Control__Drive_H_
 #define OpenKAI_src_Control__Drive_H_
 
+#include "../Base/_ModuleBase.h"
 #include "../Actuator/_ActuatorBase.h"
 
 namespace kai
@@ -37,7 +38,7 @@ struct DRIVE_MOTOR
     }
 };
 
-class _Drive: public _ThreadBase
+class _Drive: public _ModuleBase
 {
 public:
 	_Drive();
@@ -45,7 +46,6 @@ public:
 
 	virtual	bool init(void* pKiss);
 	virtual bool start(void);
-	virtual void update(void);
 	virtual int check(void);
 	virtual void draw(void);
 
@@ -60,7 +60,8 @@ public:
     virtual float getMotorSpeed(int iM);
 
 private:
-   	static void* getUpdateThread(void* This)
+	virtual void update(void);
+   	static void* getUpdate(void* This)
 	{
 		(( _Drive*) This)->update();
 		return NULL;
