@@ -20,16 +20,16 @@ bool _AP_distLidar::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
-	string iName;
+	string n;
 
-	iName = "";
-	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (_AP_base*) (pK->getInst(iName));
+	n = "";
+	F_INFO(pK->v("APcopter_base", &n));
+	m_pAP = (_AP_base*) (pK->getInst(n));
 
-	iName = "";
-	F_INFO(pK->v("_DistSensorBase", &iName));
-	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
-	IF_Fl(!m_pDS,iName + " not found");
+	n = "";
+	F_INFO(pK->v("_DistSensorBase", &n));
+	m_pDS = (_DistSensorBase*) (pK->getInst(n));
+	IF_Fl(!m_pDS,n + " not found");
 
 	m_nSection = 0;
 	while (1)

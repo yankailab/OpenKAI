@@ -23,7 +23,7 @@ _SlamBase::~_SlamBase()
 
 bool _SlamBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	return true;
@@ -65,7 +65,7 @@ vFloat4 _SlamBase::q(void)
 
 void _SlamBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg;
 	msg = "vT = (" + f2str(m_vT.x,3) + ", "

@@ -42,13 +42,13 @@ _Livox::~_Livox()
 
 bool _Livox::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 
-//	string iName = "";
-//	F_INFO(pK->v("_VisionBase", &iName));
-//	m_pVB = (_VisionBase*) (pK->getInst(iName));
+//	string n = "";
+//	F_INFO(pK->v("_VisionBase", &n));
+//	m_pVB = (_VisionBase*) (pK->getInst(n));
 
 	return true;
 }
@@ -92,36 +92,28 @@ void _Livox::close(void)
 
 bool _Livox::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Livox::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateLidar();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -267,7 +259,7 @@ void OnLivoxDeviceBroadcast(const BroadcastDeviceInfo *info)
 
 void _Livox::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	string msg;
 
 }

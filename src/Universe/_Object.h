@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_Universe__Object_H_
 #define OpenKAI_src_Universe__Object_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 namespace kai
 {
 
-class _Object: public _ThreadBase
+class _Object: public _ModuleBase
 {
 public:
 	_Object();
@@ -96,7 +96,7 @@ public:
 	virtual void updateKinetics(void);
 
 private:
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Object *) This)->update();
 		return NULL;

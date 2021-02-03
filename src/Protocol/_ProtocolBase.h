@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Protocol__ProtocolBase_H_
 #define OpenKAI_src_Protocol__ProtocolBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../IO/_IOBase.h"
 
 //0 PROTOCOL_BEGIN
@@ -43,7 +43,7 @@ typedef void (*CallbackProtocol)(uint8_t* pCMD, void* pInst);
 namespace kai
 {
 
-class _ProtocolBase: public _ThreadBase
+class _ProtocolBase: public _ModuleBase
 {
 public:
 	_ProtocolBase();
@@ -60,7 +60,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ProtocolBase *) This)->update();
 		return NULL;

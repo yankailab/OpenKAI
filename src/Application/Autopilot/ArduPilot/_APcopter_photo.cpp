@@ -64,34 +64,34 @@ bool _APcopter_photo::init(void* pKiss)
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	NULL_Fl(m_pAP, iName + ": not found");
+	n = "";
+	pK->v("_AP_base", &n);
+	m_pAP = (_AP_base*) (pK->getInst(n));
+	NULL_Fl(m_pAP, n + ": not found");
 
-	iName = "";
-	pK->v("_AP_posCtrl", &iName);
-	m_pPC = (_AP_posCtrl*) (pK->getInst(iName));
-	NULL_Fl(m_pPC, iName + ": not found");
+	n = "";
+	pK->v("_AP_posCtrl", &n);
+	m_pPC = (_AP_posCtrl*) (pK->getInst(n));
+	NULL_Fl(m_pPC, n + ": not found");
 
-	iName = "";
-	pK->v("_DistSensorBase", &iName);
-	m_pDS = (_DistSensorBase*) (pK->getInst(iName));
-	NULL_Fl(m_pDS, iName + ": not found");
+	n = "";
+	pK->v("_DistSensorBase", &n);
+	m_pDS = (_DistSensorBase*) (pK->getInst(n));
+	NULL_Fl(m_pDS, n + ": not found");
 
-	iName = "";
-	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_VisionBase", &n);
+	m_pV = (_VisionBase*) (pK->getInst(n));
 
-	iName = "";
-	pK->v("_DepthVisionBase", &iName);
-	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_DepthVisionBase", &n);
+	m_pDV = (_DepthVisionBase*) (pK->getInst(n));
 
-	iName = "";
-	pK->v("_GPhoto", &iName);
-	m_pG = (_GPhoto*) (pK->getInst(iName));
+	n = "";
+	pK->v("_GPhoto", &n);
+	m_pG = (_GPhoto*) (pK->getInst(n));
 
 	return true;
 }
@@ -99,7 +99,7 @@ bool _APcopter_photo::init(void* pKiss)
 bool _APcopter_photo::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: " << retCode;
@@ -121,9 +121,9 @@ int _APcopter_photo::check(void)
 
 void _APcopter_photo::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 		this->_StateBase::update();
 
 		if(check()>=0)
@@ -142,7 +142,7 @@ void _APcopter_photo::update(void)
 			}
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -185,7 +185,7 @@ void _APcopter_photo::shutter(void)
 	m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, true);
 
 	if(m_tDelay > 0)
-		this->sleepTime(m_tDelay);
+		m_pT->sleepTime(m_tDelay);
 
 	string cmd;
 	cmd = "mkdir /media/usb";

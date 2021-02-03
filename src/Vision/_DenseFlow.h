@@ -18,7 +18,7 @@
 namespace kai
 {
 
-class _DenseFlow: public _ThreadBase
+class _DenseFlow: public _ModuleBase
 {
 public:
 	_DenseFlow();
@@ -37,7 +37,7 @@ private:
 	void drawOpticalFlow(const Mat_<float>& flowx, const Mat_<float>& flowy, Mat& dst, float maxmotion);
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DenseFlow*) This)->update();
 		return NULL;

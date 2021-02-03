@@ -173,10 +173,10 @@ void _PCrs::hardwareReset(void)
 
 bool _PCrs::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -193,7 +193,7 @@ int _PCrs::check(void)
 
 void _PCrs::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
    		if (!m_bOpen)
 		{
@@ -201,12 +201,12 @@ void _PCrs::update(void)
 			{
 				LOG_E("Cannot open RealSense");
                 hardwareReset();
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(updateRS())
         {
@@ -220,11 +220,11 @@ void _PCrs::update(void)
         else
         {
             hardwareReset();
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
             m_bOpen = false;
         }
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

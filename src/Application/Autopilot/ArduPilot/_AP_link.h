@@ -33,7 +33,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_link *) This)->update();
 		return NULL;

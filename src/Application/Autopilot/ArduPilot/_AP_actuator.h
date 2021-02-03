@@ -23,7 +23,7 @@ public:
 
 private:
 	void updateActuator(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_actuator*) This)->update();
 		return NULL;

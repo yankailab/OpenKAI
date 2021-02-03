@@ -16,7 +16,7 @@
 namespace kai
 {
 
-class _GDimgUploader: public _ThreadBase
+class _GDimgUploader: public _ModuleBase
 {
 public:
 	_GDimgUploader(void);
@@ -30,7 +30,7 @@ public:
 private:
 	void updateUpload(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_GDimgUploader *) This)->update();
 		return NULL;

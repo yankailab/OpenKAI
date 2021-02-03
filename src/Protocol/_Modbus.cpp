@@ -28,7 +28,7 @@ _Modbus::~_Modbus()
 
 bool _Modbus::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("port",&m_port);
@@ -72,34 +72,26 @@ bool _Modbus::bOpen(void)
 
 bool _Modbus::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Modbus::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!m_pMb)
 		{
 			if(!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -202,7 +194,7 @@ int _Modbus::writeRegisters(int iSlave, int addr, int nRegister, uint16_t* pB)
 
 void _Modbus::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Tracker__SingleTracker_H_
 #define OpenKAI_src_Tracker__SingleTracker_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 #ifdef USE_OPENCV_CONTRIB
@@ -32,7 +32,7 @@ public:
 private:
 	void track(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_SingleTracker*) This)->update();
 		return NULL;

@@ -36,7 +36,7 @@ public:
 private:
 	virtual void updateSync(void);
 	virtual void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ActuatorSync*) This)->update();
 		return NULL;

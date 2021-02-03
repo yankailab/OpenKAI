@@ -23,7 +23,7 @@ public:
 
 protected:
 	bool updateDrive(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AProver_drive *) This)->update();
 		return NULL;

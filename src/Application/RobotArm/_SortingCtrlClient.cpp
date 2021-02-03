@@ -53,7 +53,7 @@ bool _SortingCtrlClient::init(void *pKiss)
 bool _SortingCtrlClient::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: " << retCode;
@@ -71,21 +71,21 @@ int _SortingCtrlClient::check(void)
 
 void _SortingCtrlClient::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		while (readCMD())
 		{
@@ -99,7 +99,7 @@ void _SortingCtrlClient::update(void)
 //				this->sendBB(m_COO.m_id, m_COO.getTopClass(), m_COO.m_bb);
 //		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

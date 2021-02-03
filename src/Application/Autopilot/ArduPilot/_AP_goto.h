@@ -21,7 +21,7 @@ public:
 private:
 	bool updateGoto(void);
 	bool findTarget(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_goto *) This)->update();
 		return NULL;

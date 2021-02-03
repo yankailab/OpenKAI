@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_PointCloud__PCbase_H_
 #define OpenKAI_src_PointCloud__PCbase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "_PCviewer.h"
 
 #ifdef USE_OPEN3D
@@ -19,7 +19,7 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-class _PCbase: public _ThreadBase
+class _PCbase: public _ModuleBase
 {
 public:
 	_PCbase();

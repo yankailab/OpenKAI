@@ -32,7 +32,7 @@ _DenseFlow::~_DenseFlow()
 
 bool _DenseFlow::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("w",&m_w);
@@ -43,38 +43,28 @@ bool _DenseFlow::init(void* pKiss)
 	m_pGrayFrames->init(2);
 	m_pFarn = cuda::FarnebackOpticalFlow::create();
 
-	//link
-	string iName = "";
-	F_INFO(pK->v("_VisionBase",&iName));
-	m_pVision = (_VisionBase*)(pK->getInst(iName));
+	string n = "";
+	F_INFO(pK->v("_VisionBase",&n));
+	m_pVision = (_VisionBase*)(pK->getInst(n));
 
 	return true;
 }
 
 bool _DenseFlow::start(void)
 {
-	NULL_T(m_pVision);
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _DenseFlow::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		detect();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -184,7 +174,7 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 
 void _DenseFlow::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 

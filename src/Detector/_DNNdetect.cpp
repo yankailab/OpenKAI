@@ -85,7 +85,7 @@ bool _DNNdetect::init(void *pKiss)
 bool _DNNdetect::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -98,9 +98,9 @@ bool _DNNdetect::start(void)
 
 void _DNNdetect::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -114,7 +114,7 @@ void _DNNdetect::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -246,7 +246,7 @@ void _DNNdetect::draw(void)
 {
 	IF_(check() < 0);
 
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	IF_(!checkWindow());
 	Mat *pMat = ((Window*) this->m_pWindow)->getFrame()->m();
 

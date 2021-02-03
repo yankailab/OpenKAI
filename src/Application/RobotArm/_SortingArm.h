@@ -17,7 +17,7 @@
 namespace kai
 {
 
-class _SortingArm: public _ThreadBase
+class _SortingArm: public _ModuleBase
 {
 public:
 	_SortingArm(void);
@@ -32,7 +32,7 @@ private:
 	void updateState(void);
 	void updateArm(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_SortingArm *) This)->update();
 		return NULL;

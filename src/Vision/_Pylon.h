@@ -32,7 +32,7 @@ public:
 private:
 	bool open(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Pylon*) This)->update();
 		return NULL;

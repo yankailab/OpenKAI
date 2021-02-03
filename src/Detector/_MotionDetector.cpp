@@ -55,9 +55,9 @@ bool _MotionDetector::init(void *pKiss)
 //	}
 //
 
-	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->getInst(iName));
+	string n = "";
+	F_ERROR_F(pK->v("_VisionBase", &n));
+	m_pVision = (_VisionBase*) (pK->getInst(n));
 
 	return true;
 }
@@ -65,7 +65,7 @@ bool _MotionDetector::init(void *pKiss)
 bool _MotionDetector::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -77,9 +77,9 @@ bool _MotionDetector::start(void)
 
 void _MotionDetector::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -87,7 +87,7 @@ void _MotionDetector::update(void)
 			detect();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

@@ -45,9 +45,20 @@ bool _Thread::init(void* pKiss)
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	int FPS = DEFAULT_FPS;
+	float FPS = DEFAULT_FPS;
 	pK->v("FPS", &FPS);
 	setTargetFPS(FPS);
+    
+    string n = "";
+	pK->parent()->v("Console",&n );
+	m_pConsole = (Console*)(pK->getInst( n ));
+
+#ifdef USE_OPENCV
+	n = "";
+	pK->parent()->v("Window",&n );
+	m_pWindow = (Window*)(pK->getInst( n ));
+#endif
+
 
 	return true;
 }
@@ -55,6 +66,8 @@ bool _Thread::init(void* pKiss)
 bool _Thread::start(void *(*__start_routine) (void *),
                     void *__restrict __arg)
 {
+    IF_F(m_bThreadON);
+    
 	m_bThreadON = true;
 	int r = pthread_create(&m_threadID, 0, __start_routine, __arg);
 	if (r != 0)
@@ -120,12 +133,17 @@ float _Thread::getFPS(void)
 	return m_FPS;
 }
 
-void _Thread::setTargetFPS(int fps)
+void _Thread::setTargetFPS(float fps)
 {
 	IF_(fps<=0);
 
 	m_targetFPS = fps;
 	m_targetFrameTime = USEC_1SEC / m_targetFPS;
+}
+
+float _Thread::getTargetFPS(void)
+{
+	return m_targetFPS;
 }
 
 void _Thread::autoFPSfrom(void)
@@ -143,14 +161,24 @@ void _Thread::autoFPSto(void)
 	int uSleep = (int) (m_targetFrameTime - (m_tTo - m_tFrom));
 	if (uSleep > 1000)
 	{
-		this->sleepTime(uSleep);
+		sleepTime(uSleep);
 	}
 
 	if(m_bGoSleep)
 	{
 		m_FPS = 0;
-		this->sleepTime(0);
+		sleepTime(0);
 	}
+}
+
+float _Thread::getTstamp(void)
+{
+	return m_tStamp;
+}
+
+float _Thread::getDtime(void)
+{
+	return m_dTime;
 }
 
 void _Thread::draw(void)

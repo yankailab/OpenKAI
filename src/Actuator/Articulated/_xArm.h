@@ -32,7 +32,7 @@ protected:
     virtual	void readState(void);
 
 	void update(void);
-	static void* getUpdateThread(void *This)
+	static void* getUpdate(void *This)
 	{
 		((_xArm*) This)->update();
 		return NULL;

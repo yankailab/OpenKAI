@@ -42,10 +42,10 @@ bool _PCrecv::init(void *pKiss)
 
 bool _PCrecv::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -65,9 +65,9 @@ int _PCrecv::check(void)
 
 void _PCrecv::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		while(readCMD())
 		{
@@ -75,7 +75,7 @@ void _PCrecv::update(void)
 			m_nCMDrecv++;
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

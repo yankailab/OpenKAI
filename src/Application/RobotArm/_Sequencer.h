@@ -67,7 +67,7 @@ struct SEQ_ACTION
 	}
 };
 
-class _Sequencer: public _ThreadBase
+class _Sequencer: public _ModuleBase
 {
 public:
 	_Sequencer(void);
@@ -90,7 +90,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Sequencer *) This)->update();
 		return NULL;

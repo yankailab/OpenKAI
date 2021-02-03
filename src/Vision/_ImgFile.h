@@ -28,7 +28,7 @@ public:
 private:
 	bool open(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ImgFile*) This)->update();
 		return NULL;

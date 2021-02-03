@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Application__HiphenRGB_H_
 #define OpenKAI_src_Application__HiphenRGB_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 #include "../../Navigation/_GPS.h"
@@ -18,7 +18,7 @@
 namespace kai
 {
 
-class _HiphenRGB: public _ThreadBase
+class _HiphenRGB: public _ModuleBase
 {
 public:
 	_HiphenRGB(void);
@@ -33,7 +33,7 @@ public:
 private:
 	void take(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_HiphenRGB *) This)->update();
 		return NULL;

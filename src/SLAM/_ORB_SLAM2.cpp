@@ -44,7 +44,7 @@ _ORB_SLAM2::~_ORB_SLAM2()
 
 bool _ORB_SLAM2::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, width);
@@ -68,25 +68,17 @@ bool _ORB_SLAM2::init(void* pKiss)
 	m_pFrame = new Frame();
 	m_tStartup = 0;
 
-	//link
-	string iName = "";
-	F_INFO(pK->v("_VisionBase", &iName));
-	m_pVision = (_VisionBase*) (pK->getInst(&iName));
+	string n = "";
+	F_INFO(pK->v("_VisionBase", &n));
+	m_pVision = (_VisionBase*) (pK->getInst(&n));
 
 	return true;
 }
 
 bool _ORB_SLAM2::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 bool _ORB_SLAM2::bTracking(void)
@@ -96,13 +88,13 @@ bool _ORB_SLAM2::bTracking(void)
 
 void _ORB_SLAM2::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		detect();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -161,7 +153,7 @@ void _ORB_SLAM2::detect(void)
 
 bool _ORB_SLAM2::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ModuleBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 
 	string msg;

@@ -485,7 +485,7 @@ struct MAVLINK_PEER
 	}
 };
 
-class _Mavlink: public _ThreadBase
+class _Mavlink: public _ModuleBase
 {
 public:
 	_Mavlink();
@@ -544,7 +544,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void *This)
+	static void* getUpdate(void *This)
 	{
 		((_Mavlink*) This)->update();
 		return NULL;

@@ -16,15 +16,15 @@ _MOAB::~_MOAB()
 
 bool _MOAB::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("vK", &m_vK);
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->getInst(iName));
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_IOBase", &n));
+	m_pIO = (_IOBase*) (pK->getInst(n));
 	NULL_Fl(m_pIO,"_IOBase not found");
 
 	return true;
@@ -32,25 +32,17 @@ bool _MOAB::init(void* pKiss)
 
 bool _MOAB::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _MOAB::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
@@ -58,16 +50,16 @@ void _MOAB::update(void)
 		{
 			if(!m_pIO->open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		send();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -98,7 +90,7 @@ void _MOAB::setSpeed(float speed, float steer)
 
 void _MOAB::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	if (!m_pIO->isOpen())
 		addMsg("Not connected");

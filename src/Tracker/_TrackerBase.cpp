@@ -30,15 +30,15 @@ _TrackerBase::~_TrackerBase()
 
 bool _TrackerBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("trackerType",&m_trackerType);
 	pK->v("margin",&m_margin);
 
-	string iName = "";
-	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pV = (_VisionBase*) (pK->getInst(iName));
+	string n = "";
+	F_ERROR_F(pK->v("_VisionBase", &n));
+	m_pV = (_VisionBase*) (pK->getInst(n));
 
 	return true;
 }
@@ -51,7 +51,7 @@ int _TrackerBase::check(void)
 {
 	NULL__(m_pV,-1);
 
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 void _TrackerBase::update(void)
@@ -99,7 +99,7 @@ bool _TrackerBase::startTrack(vFloat4& bb)
 
 void _TrackerBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg = "Stop";
 	if(m_trackState == track_init)

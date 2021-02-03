@@ -19,14 +19,14 @@
 #include <caffe/caffe.hpp>
 #include <caffe/layers/memory_data_layer.hpp>
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Utility/util.h"
 
 namespace kai
 {
 using namespace caffe;
 
-class _CaffeRegressionInf: public _ThreadBase
+class _CaffeRegressionInf: public _ModuleBase
 {
 public:
 	_CaffeRegressionInf();
@@ -40,7 +40,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_CaffeRegressionInf*) This)->update();
 		return NULL;

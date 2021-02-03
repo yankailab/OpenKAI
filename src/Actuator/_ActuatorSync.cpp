@@ -44,7 +44,7 @@ bool _ActuatorSync::init(void* pKiss)
 bool _ActuatorSync::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -62,13 +62,13 @@ int _ActuatorSync::check(void)
 
 void _ActuatorSync::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateSync();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

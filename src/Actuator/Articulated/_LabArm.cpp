@@ -56,7 +56,7 @@ bool _LabArm::init(void* pKiss)
 bool _LabArm::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: "<< retCode;
@@ -69,14 +69,14 @@ bool _LabArm::start(void)
 
 void _LabArm::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		readStatus();
 		updatePos();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -111,13 +111,13 @@ void _LabArm::updatePos(void)
 	float pTargetP[6] = {vP.x, vP.y, vP.z, 0,0,0};//vR.x, vR.y, vR.z};
 	m_la.GotoXYZ(pTargetP);
 
-//	this->sleepTime(USEC_1SEC*3);
+//	m_pT->sleepTime(USEC_1SEC*3);
 //
 //	m_la.motor3.Goto(vR.x);
 //	m_la.motor5.Goto(vR.y);
 //	m_la.motor6.Goto(vR.z);
 //
-//	this->sleepTime(USEC_1SEC*3);
+//	m_pT->sleepTime(USEC_1SEC*3);
 
 	if(m_bGripper && m_vAxis[6].getPtarget() >= 0.0)
 	{

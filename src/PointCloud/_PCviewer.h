@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_PointCloud__PCviewer_H_
 #define OpenKAI_src_PointCloud__PCviewer_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -76,7 +76,7 @@ struct PCVIEWER_GEO
 
 };
 
-class _PCviewer: public _ThreadBase
+class _PCviewer: public _ModuleBase
 {
 public:
 	_PCviewer();
@@ -93,7 +93,7 @@ public:
 private:
 	void render(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCviewer *) This)->update();
 		return NULL;

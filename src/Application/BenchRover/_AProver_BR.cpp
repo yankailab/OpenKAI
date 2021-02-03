@@ -52,7 +52,7 @@ bool _AProver_BR::init ( void* pKiss )
 bool _AProver_BR::start ( void )
 {
     m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdateThread, this );
+    int retCode = pthread_create ( &m_threadID, 0, getUpdate, this );
     if ( retCode != 0 )
     {
         LOG ( ERROR ) << "Return code: "<< retCode;
@@ -75,14 +75,14 @@ int _AProver_BR::check ( void )
 
 void _AProver_BR::update ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
         this->_StateBase::update();
 
         updateMode();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 

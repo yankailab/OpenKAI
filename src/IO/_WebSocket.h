@@ -67,14 +67,14 @@ private:
 	WS_CLIENT* findClientById(uint32_t id);
 
 	void updateW(void);
-	static void* getUpdateThreadW(void* This)
+	static void* getUpdateW(void* This)
 	{
 		((_WebSocket*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	static void* getUpdateR(void* This)
 	{
 		((_WebSocket*) This)->updateR();
 		return NULL;

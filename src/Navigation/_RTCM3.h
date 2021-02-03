@@ -13,7 +13,7 @@
 namespace kai
 {
 
-class _RTCM3: public _ThreadBase
+class _RTCM3: public _ModuleBase
 {
 public:
 	_RTCM3(void);
@@ -26,7 +26,7 @@ public:
 private:
 	void decode(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_RTCM3 *) This)->update();
 		return NULL;

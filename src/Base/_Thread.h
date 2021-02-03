@@ -33,9 +33,12 @@ public:
 	virtual void wakeUp(void);
 
 	virtual float getFPS(void);
-	virtual void setTargetFPS(int fps);
+	virtual void setTargetFPS(float fps);
+	virtual float getTargetFPS(void);
 	virtual void autoFPSfrom(void);
 	virtual void autoFPSto(void);
+    virtual float getTstamp(void);
+    virtual float getDtime(void);
 
 protected:
 	pthread_t m_threadID;

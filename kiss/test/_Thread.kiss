@@ -30,7 +30,7 @@
 	
 	{
 		"name":"thread",
-		"FPS":10,
+		"FPS":0.5,
 	}
 	{
 		"name":"motor",

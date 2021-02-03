@@ -18,14 +18,14 @@
 #include <caffe/caffe.hpp>
 #include <caffe/layers/memory_data_layer.hpp>
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Utility/util.h"
 
 namespace kai
 {
 using namespace caffe;
 
-class _CaffeRegressionTrain: public _ThreadBase
+class _CaffeRegressionTrain: public _ModuleBase
 {
 public:
 	_CaffeRegressionTrain();
@@ -38,7 +38,7 @@ private:
 	void inference();
 	int readImgListToFloat(string fImgList, float *pData, float *pLabel, int nRead);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_CaffeRegressionTrain*) This)->update();
 		return NULL;

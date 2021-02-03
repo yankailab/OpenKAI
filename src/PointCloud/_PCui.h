@@ -30,14 +30,14 @@ protected:
 private:
 	virtual _PCtransform* findTransform(string& n);
 	void updateW(void);
-	static void* getUpdateThreadW(void* This)
+	static void* getUpdateW(void* This)
 	{
 		((_PCui*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	static void* getUpdateR(void* This)
 	{
 		((_PCui*) This)->updateR();
 		return NULL;

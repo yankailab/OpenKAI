@@ -37,7 +37,7 @@ public:
 
 protected:
 	void updateMode(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AProver_tag *) This)->update();
 		return NULL;

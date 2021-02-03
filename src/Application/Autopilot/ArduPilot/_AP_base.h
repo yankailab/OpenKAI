@@ -119,7 +119,7 @@ public:
 
 private:
 	void updateBase(void);
-	static void* getUpdateThread(void *This)
+	static void* getUpdate(void *This)
 	{
 		((_AP_base*) This)->update();
 		return NULL;

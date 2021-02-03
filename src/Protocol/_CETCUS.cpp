@@ -39,17 +39,17 @@ _CETCUS::~_CETCUS()
 
 bool _CETCUS::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("msgFinishSend", &m_msgFinishSend);
 	pK->v("msgFinishRecv", &m_msgFinishRecv);
 	pK->v("uavNo", &m_uavNo);
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->getInst(iName));
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_IOBase", &n));
+	m_pIO = (_IOBase*) (pK->getInst(n));
 	NULL_Fl(m_pIO,"_IOBase not found");
 
 	return true;
@@ -62,7 +62,7 @@ bool _CETCUS::start(void)
 	if(!m_bThreadON)
 	{
 		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
+		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -74,7 +74,7 @@ bool _CETCUS::start(void)
 	if(!m_bRThreadON)
 	{
 		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -96,11 +96,11 @@ int _CETCUS::check(void)
 
 void _CETCUS::updateW(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
@@ -108,16 +108,16 @@ void _CETCUS::updateW(void)
 		{
 			if(!m_pIO->open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateMission();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -143,10 +143,10 @@ void _CETCUS::updateMission(void)
 
 void _CETCUS::updateR(void)
 {
-	while (m_bRThreadON)
+	while(m_pTr->bRun())
 	{
 		recv();
-		this->sleepTime(0);
+		m_pT->sleepTime(0);
 	}
 }
 
@@ -410,7 +410,7 @@ void _CETCUS::endFly(void)
 
 void _CETCUS::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg = *this->getName();
 	if (m_pIO->isOpen())

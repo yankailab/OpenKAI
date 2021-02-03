@@ -77,7 +77,7 @@ bool _TCPclient::start(void)
 	if(!m_bThreadON)
 	{
 		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
+		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -89,7 +89,7 @@ bool _TCPclient::start(void)
 	if(!m_bRThreadON)
 	{
 		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -103,18 +103,18 @@ bool _TCPclient::start(void)
 
 void _TCPclient::updateW(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		uint8_t pB[N_IO_BUF];
 		int nB;
@@ -133,13 +133,13 @@ void _TCPclient::updateW(void)
 			LOG_I("send: " + i2str(nSend) + " bytes");
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
 void _TCPclient::updateR(void)
 {
-	while (m_bRThreadON)
+	while(m_pTr->bRun())
 	{
 		if (!isOpen())
 		{
@@ -171,7 +171,7 @@ bool _TCPclient::bComplete(void)
 
 void _TCPclient::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
 	addMsg(msg);

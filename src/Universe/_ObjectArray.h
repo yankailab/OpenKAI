@@ -13,7 +13,7 @@
 namespace kai
 {
 
-class _ObjectArray: public _ThreadBase
+class _ObjectArray: public _ModuleBase
 {
 public:
 	_ObjectArray();
@@ -31,7 +31,7 @@ public:
 	virtual int size(void);
 
 private:
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ObjectArray *) This)->update();
 		return NULL;

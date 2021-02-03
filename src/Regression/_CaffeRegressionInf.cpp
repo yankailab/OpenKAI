@@ -46,7 +46,7 @@ _CaffeRegressionInf::~_CaffeRegressionInf()
 
 bool _CaffeRegressionInf::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK, baseDir);
@@ -79,16 +79,8 @@ bool _CaffeRegressionInf::init(void* pKiss)
 
 bool _CaffeRegressionInf::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _CaffeRegressionInf::update(void)
@@ -111,9 +103,9 @@ void _CaffeRegressionInf::update(void)
 	m_pOutput = new double[m_dataSize * m_outputDim];
 
 	//start update loop
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		//start inference
 		for (int iBatch = 0; iBatch < m_batchIter; iBatch++)
@@ -140,7 +132,7 @@ void _CaffeRegressionInf::update(void)
 
 		reset();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

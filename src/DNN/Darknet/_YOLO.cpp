@@ -58,7 +58,7 @@ bool _YOLO::init(void* pKiss)
 bool _YOLO::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -71,9 +71,9 @@ bool _YOLO::start(void)
 
 void _YOLO::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		IF_CONT(!detect());
 
@@ -84,7 +84,7 @@ void _YOLO::update(void)
 			m_obj.m_pPrev->reset();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

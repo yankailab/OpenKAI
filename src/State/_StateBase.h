@@ -6,7 +6,7 @@
 namespace kai
 {
 
-class _StateBase: public _ThreadBase
+class _StateBase: public _ModuleBase
 {
 public:
 	_StateBase();

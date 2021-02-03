@@ -69,7 +69,7 @@ private:
 	void Preprocess(const vector<GpuMat> vImg, vector<vector<GpuMat> >* vvInputBatch);
 
 	void update(void);
-	static void* getUpdateThread(void* This) {
+	static void* getUpdate(void* This) {
 		((_Caffe*) This)->update();
 		return NULL;
 	}

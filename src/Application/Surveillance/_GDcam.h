@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Application__GDcam_H_
 #define OpenKAI_src_Application__GDcam_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Script/JSON.h"
 
@@ -19,7 +19,7 @@
 namespace kai
 {
 
-class _GDcam: public _ThreadBase
+class _GDcam: public _ModuleBase
 {
 public:
 	_GDcam(void);
@@ -36,7 +36,7 @@ private:
 	void oAlpr(const string& fName);
 	void gdUpload(const string& fName);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_GDcam *) This)->update();
 		return NULL;

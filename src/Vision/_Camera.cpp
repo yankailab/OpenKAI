@@ -39,6 +39,7 @@ bool _Camera::init(void* pKiss)
 
 bool _Camera::open(void)
 {
+    IF_F(check()<0);
 	IF_T(m_bOpen);
 
 	m_camera.open(m_deviceID);
@@ -50,7 +51,7 @@ bool _Camera::open(void)
 
 	m_camera.set(CAP_PROP_FRAME_WIDTH, m_w);
 	m_camera.set(CAP_PROP_FRAME_HEIGHT, m_h);
-	m_camera.set(CAP_PROP_FPS, m_targetFPS);
+	m_camera.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 	Mat mCam;
 	for(int i=0; i<m_nInitRead; i++)
@@ -71,45 +72,30 @@ bool _Camera::open(void)
 
 void _Camera::close(void)
 {
-	if(m_threadMode==T_THREAD)
-	{
-		goSleep();
-		while(!bSleeping());
-	}
-
-	m_camera.release();
 	this->_VisionBase::close();
+	m_camera.release();
 }
 
 bool _Camera::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Camera::update(void)
 {
-	while (m_bThreadON)
+	while (m_pT->bRun())
 	{
 		if (!m_bOpen)
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
         
 		Mat mCam;
 		while (!m_camera.read(mCam));
@@ -121,7 +107,7 @@ void _Camera::update(void)
 			m_bOpen = false;
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

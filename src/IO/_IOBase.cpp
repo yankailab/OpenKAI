@@ -27,7 +27,7 @@ _IOBase::~_IOBase()
 
 bool _IOBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nFIFO",&m_nFIFO);
@@ -88,7 +88,7 @@ int _IOBase::read(uint8_t* pBuf, int nB)
 
 void _IOBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	addMsg("nFifoW=" + i2str(m_fifoW.m_nData) + ", nFifoR=" + i2str(m_fifoR.m_nData), 1);
 }
 

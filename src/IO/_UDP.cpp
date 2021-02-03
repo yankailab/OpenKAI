@@ -78,7 +78,7 @@ bool _UDP::start(void)
 	if(!m_bThreadON)
 	{
 		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
+		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -90,7 +90,7 @@ bool _UDP::start(void)
 	if(!m_bRThreadON)
 	{
 		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -104,18 +104,18 @@ bool _UDP::start(void)
 
 void _UDP::updateW(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		uint8_t pB[N_IO_BUF];
 		int nB;
@@ -132,13 +132,13 @@ void _UDP::updateW(void)
 			LOG_I("send: " + i2str(nSend) + " bytes to " + string(inet_ntoa(m_sAddr.sin_addr)) + ", port:" + i2str(ntohs(m_sAddr.sin_port)));
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
 void _UDP::updateR(void)
 {
-	while (m_bRThreadON)
+	while(m_pTr->bRun())
 	{
 		while(!isOpen())
 		{
@@ -163,7 +163,7 @@ void _UDP::updateR(void)
 
 void _UDP::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	addMsg("Port:" + i2str(m_port), 1);
 }
 

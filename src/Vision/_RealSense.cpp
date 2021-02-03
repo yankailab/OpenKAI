@@ -16,7 +16,7 @@ namespace kai
 _RealSense::_RealSense()
 {
     m_type = vision_realsense;
-    m_pTPP = new _ThreadBase();
+    m_pTPP = NULL;
 
     m_rsSN = "";
     m_vPreset = "High Density";
@@ -53,6 +53,16 @@ bool _RealSense::init ( void* pKiss )
     pK->v ( "bAlign", &m_bAlign );
     pK->v ( "fEmitter", &m_fEmitter );
     pK->v ( "fLaserPower", &m_fLaserPower );
+    
+    Kiss* pKt = pK->child("threadPP");
+    IF_F(pKt->empty());
+    
+    m_pTPP = new _Thread();
+    if(!m_pTPP->init(pKt))
+    {
+        DEL(m_pTPP);
+        return false;
+    }
 
     return true;
 }
@@ -178,42 +188,28 @@ void _RealSense::hardwareReset ( void )
 
 void _RealSense::close ( void )
 {
-    if ( m_threadMode == T_THREAD )
-    {
-        goSleep();
-        while ( !bSleeping() );
-        while ( !m_pTPP->bSleeping() );
-    }
-
-    m_rsPipe.stop();
     this->_VisionBase::close();
+    m_rsPipe.stop();
 }
 
 bool _RealSense::start ( void )
 {
-    IF_F ( !this->_ThreadBase::start() );
+    IF_F(check()<0);
+	IF_F(!m_pT->start(getUpdate, this));
+	return m_pTPP->start(getUpdate, this);
+}
 
-    m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdateThread, this );
-    if ( retCode != 0 )
-    {
-        m_bThreadON = false;
-        return false;
-    }
-
-    retCode = pthread_create ( &m_pTPP->m_threadID, 0, getTPP, this );
-    if ( retCode != 0 )
-    {
-        m_bThreadON = false;
-        return false;
-    }
-
-    return true;
+int _RealSense::check(void)
+{
+    NULL__(m_pT, -1);
+    NULL__(m_pTPP, -1);
+    
+	return _DepthVisionBase::check();
 }
 
 void _RealSense::update ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
         if ( !m_bOpen )
         {
@@ -221,12 +217,12 @@ void _RealSense::update ( void )
             {
                 LOG_E ( "Cannot open RealSense" );
                 hardwareReset();
-                this->sleepTime ( USEC_1SEC );
+                m_pT->sleepTime ( USEC_1SEC );
                 continue;
             }
         }
 
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
 
         if ( updateRS() )
         {
@@ -235,11 +231,11 @@ void _RealSense::update ( void )
         else
         {
             hardwareReset();
-            this->sleepTime ( USEC_1SEC );
+            m_pT->sleepTime ( USEC_1SEC );
             m_bOpen = false;
         }
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -299,7 +295,7 @@ bool _RealSense::updateRS ( void )
 
 void _RealSense::updateTPP ( void )
 {
-    while ( m_bThreadON )
+    while(m_pTPP->bRun())
     {
         m_pTPP->sleepTime ( 0 );
 

@@ -48,7 +48,7 @@ public:
 
 private:
 	void updateMode(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AProver_BR*) This)->update();
 		return NULL;

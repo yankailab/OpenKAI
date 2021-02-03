@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_IO__TCPserver_H_
 #define OpenKAI_src_IO__TCPserver_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Script/Kiss.h"
 #include "../IO/_IOBase.h"
 #include "_TCPclient.h"
@@ -19,7 +19,7 @@
 namespace kai
 {
 
-class _TCPserver: public _ThreadBase
+class _TCPserver: public _ModuleBase
 {
 public:
 	_TCPserver();
@@ -34,7 +34,7 @@ public:
 	void cleanupClient(void);
 	bool handler(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_TCPserver*) This)->update();
 		return NULL;

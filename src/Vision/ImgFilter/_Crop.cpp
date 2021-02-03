@@ -34,11 +34,11 @@ bool _Crop::init(void* pKiss)
 
 	pK->v("roi",&m_roi);
 
-	string iName;
-	iName = "";
-	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pV, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_VisionBase", &n);
+	m_pV = (_VisionBase*) (pK->getInst(n));
+	IF_Fl(!m_pV, n + ": not found");
 
 	return true;
 }
@@ -53,38 +53,23 @@ bool _Crop::open(void)
 
 void _Crop::close(void)
 {
-	if(m_threadMode==T_THREAD)
-	{
-		goSleep();
-		while(!bSleeping());
-	}
-
 	this->_VisionBase::close();
 }
 
 bool _Crop::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Crop::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 			open();
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(m_bOpen)
 		{
@@ -92,7 +77,7 @@ void _Crop::update(void)
 				filter();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

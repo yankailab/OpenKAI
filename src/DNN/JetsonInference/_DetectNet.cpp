@@ -59,7 +59,7 @@ bool _DetectNet::init(void* pKiss)
 bool _DetectNet::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -111,14 +111,14 @@ void _DetectNet::update(void)
 {
 	open();
 
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		detect();
 		m_pU->updateObj();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 
 }

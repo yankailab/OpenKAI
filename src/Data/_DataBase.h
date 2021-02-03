@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Data__DataBase_H_
 #define OpenKAI_src_Data__DataBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 #include "../Base/cv.h"
@@ -19,7 +19,7 @@
 namespace kai
 {
 
-class _DataBase: public _ThreadBase
+class _DataBase: public _ModuleBase
 {
 public:
 	_DataBase();
@@ -36,7 +36,7 @@ public:
 private:
 	void getDirFileList(string* pStrDir);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DataBase*) This)->update();
 		return NULL;

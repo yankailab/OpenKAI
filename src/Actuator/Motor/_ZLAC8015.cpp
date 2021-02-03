@@ -44,7 +44,7 @@ bool _ZLAC8015::init(void* pKiss)
 bool _ZLAC8015::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -66,9 +66,9 @@ int _ZLAC8015::check(void)
 
 void _ZLAC8015::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
         if(!m_bReady)
         {
@@ -81,7 +81,7 @@ void _ZLAC8015::update(void)
             updateMove();
         }
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

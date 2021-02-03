@@ -27,7 +27,7 @@ public:
 
 protected:
 	void updateGPS(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_GPS *) This)->update();
 		return NULL;

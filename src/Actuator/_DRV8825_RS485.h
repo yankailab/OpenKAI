@@ -41,7 +41,7 @@ protected:
 	bool readStatus(void);
 	void updateMove(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DRV8825_RS485*) This)->update();
 		return NULL;

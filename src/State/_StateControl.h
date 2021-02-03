@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_State__StateControl_H_
 #define OpenKAI_src_State__StateControl_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Mission/Goto.h"
 #include "../Mission/Waypoint.h"
 #include "../Mission/Land.h"
@@ -34,7 +34,7 @@ struct STATE_INST
 	}
 };
 
-class _StateControl: public _ThreadBase
+class _StateControl: public _ModuleBase
 {
 public:
 	_StateControl();
@@ -55,7 +55,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		(( _StateControl *) This)->update();
 		return NULL;

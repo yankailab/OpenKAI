@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Application__ANR_H_
 #define OpenKAI_src_Application__ANR_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../../Base/_ModuleBase.h"
 #include "../../Detector/_DetectorBase.h"
 #include "../../Detector/OCR.h"
 #include "../../IO/_WebSocket.h"
@@ -19,7 +19,7 @@
 namespace kai
 {
 
-class _ANR: public _ThreadBase
+class _ANR: public _ModuleBase
 {
 public:
 	_ANR(void);
@@ -36,7 +36,7 @@ private:
 	void lp(void);
 	void lpO(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ANR *) This)->update();
 		return NULL;

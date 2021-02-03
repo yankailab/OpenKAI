@@ -30,37 +30,25 @@ bool _HiphenIMG::init(void* pKiss)
 	IF_F(!this->_TCPclient::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->getInst(iName));
-	IF_Fl(!m_pGPS, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_GPS", &n));
+	m_pGPS = (_GPS*) (pK->getInst(n));
+	IF_Fl(!m_pGPS, n + " not found");
 
 	return true;
 }
 
 bool _HiphenIMG::start(void)
 {
-	int retCode;
-	if(!m_bRThreadON)
-	{
-		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bRThreadON = false;
-			return false;
-		}
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
-void _HiphenIMG::updateR(void)
+void _HiphenIMG::update(void)
 {
-	while (m_bRThreadON)
+	while(m_pT->bRun())
 	{
 		int nR = ::recv(m_socket, &m_pBuf[m_iB], N_HIPHEN_BUF - m_iB, 0);
 		m_iB += nR;

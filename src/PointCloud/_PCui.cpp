@@ -37,7 +37,7 @@ bool _PCui::start ( void )
     if ( !m_bThreadON )
     {
         m_bThreadON = true;
-        retCode = pthread_create ( &m_threadID, 0, getUpdateThreadW, this );
+        retCode = pthread_create ( &m_threadID, 0, getUpdateW, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -49,7 +49,7 @@ bool _PCui::start ( void )
     if ( !m_bRThreadON )
     {
         m_bRThreadON = true;
-        retCode = pthread_create ( &m_rThreadID, 0, getUpdateThreadR, this );
+        retCode = pthread_create ( &m_rThreadID, 0, getUpdateR, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -68,11 +68,11 @@ int _PCui::check ( void )
 
 void _PCui::updateW ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
         if ( !m_pIO )
         {
-            this->sleepTime ( USEC_1SEC );
+            m_pT->sleepTime ( USEC_1SEC );
             continue;
         }
 
@@ -80,16 +80,16 @@ void _PCui::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                this->sleepTime ( USEC_1SEC );
+                m_pT->sleepTime ( USEC_1SEC );
                 continue;
             }
         }
 
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
 
         send();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -151,7 +151,7 @@ void _PCui::updateR ( void )
     while ( m_bRThreadON )
     {
         recv();
-        this->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        m_pT->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
     }
 }
 
@@ -247,7 +247,7 @@ _PCtransform* _PCui::findTransform ( string& n )
 
 void _PCui::draw ( void )
 {
-    this->_ThreadBase::draw();
+    this->_ModuleBase::draw();
 
     string msg;
     if ( m_pIO->isOpen() )

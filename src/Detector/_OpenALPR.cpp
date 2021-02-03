@@ -60,7 +60,7 @@ bool _OpenALPR::init(void* pKiss)
 bool _OpenALPR::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -73,9 +73,9 @@ bool _OpenALPR::start(void)
 
 void _OpenALPR::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		IF_CONT(!detect());
 
@@ -86,7 +86,7 @@ void _OpenALPR::update(void)
 			m_pPrev->reset();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -162,7 +162,7 @@ bool _OpenALPR::detect(void)
 
 bool _OpenALPR::draw(void)
 {
-	IF_F(!this->_ThreadBase::draw());
+	IF_F(!this->_ModuleBase::draw());
 	Window* pWin = (Window*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();

@@ -18,16 +18,16 @@ bool _AP_mission::init(void* pKiss)
 	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	string iName;
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_AP_base", &n);
+	m_pAP = (_AP_base*) (pK->getInst(n));
+	IF_Fl(!m_pAP, n + ": not found");
 
-//	iName = "";
-//	pK->v("_AP_descent", &iName);
-//	m_pAPdescent = (_AP_descent*) (pK->getInst(iName));
-//	IF_Fl(!m_pAPdescent, iName + ": not found");
+//	n = "";
+//	pK->v("_AP_descent", &n);
+//	m_pAPdescent = (_AP_descent*) (pK->getInst(n));
+//	IF_Fl(!m_pAPdescent, n + ": not found");
 
 	return true;
 }
@@ -35,7 +35,7 @@ bool _AP_mission::init(void* pKiss)
 bool _AP_mission::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: "<< retCode;
@@ -57,14 +57,14 @@ int _AP_mission::check(void)
 
 void _AP_mission::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 		updateMission();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

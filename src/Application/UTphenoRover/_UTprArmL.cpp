@@ -81,7 +81,7 @@ bool _UTprArmL::init(void *pKiss)
 bool _UTprArmL::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -105,14 +105,14 @@ int _UTprArmL::check(void)
 
 void _UTprArmL::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 		updateArm();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -150,16 +150,16 @@ bool _UTprArmL::extract(void)
     //extract rot axis first
 	m_pAy->setPtarget(0, m_vPextract.y);
 	while(!m_pAy->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
     m_pAx->setPtarget(0, m_vPextract.x);
     m_pAz->setPtarget(0, m_vPextract.z);
 
 	while(!m_pAx->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
     while(!m_pAz->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
 	return true;
 }
@@ -229,15 +229,15 @@ bool _UTprArmL::recover(void)
     m_pAz->setPtarget(0, m_vPrecover.z);
 
     while(!m_pAz->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
     m_pAx->setPtarget(0, m_vPrecover.x);
     while(!m_pAx->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
     m_pAy->setPtarget(0, m_vPrecover.y);
 	while(!m_pAy->bComplete(0))
-        this->sleepTime(100000);
+        m_pT->sleepTime(100000);
 
 	return true;
 }

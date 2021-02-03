@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_PointCloud__Crystal_H_
 #define OpenKAI_src_PointCloud__Crystal_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPEN3D
 using namespace open3d;
@@ -29,7 +29,7 @@ struct CRYSTAL_CELL
 	}
 };
 
-class _Crystal: public _ThreadBase
+class _Crystal: public _ModuleBase
 {
 public:
 	_Crystal();
@@ -43,7 +43,7 @@ public:
 protected:
 	void render(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Crystal *) This)->update();
 		return NULL;

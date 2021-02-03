@@ -43,7 +43,7 @@ private:
 	bool open(void);
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DetectNet*) This)->update();
 		return NULL;

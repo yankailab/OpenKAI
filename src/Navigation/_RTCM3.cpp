@@ -25,12 +25,12 @@ _RTCM3::~_RTCM3()
 
 bool _RTCM3::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->getInst(iName));
+	string n = "";
+	F_ERROR_F(pK->v("_IOBase", &n));
+	m_pIO = (_IOBase*) (pK->getInst(n));
 	IF_Fl(!m_pIO, "_IOBase not found");
 
 	return true;
@@ -39,7 +39,7 @@ bool _RTCM3::init(void* pKiss)
 bool _RTCM3::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -51,14 +51,14 @@ bool _RTCM3::start(void)
 
 void _RTCM3::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		decode();
 		m_msg = "";
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -68,7 +68,7 @@ void _RTCM3::decode(void)
 
 void _RTCM3::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	if(!m_pIO->isOpen())
 	{

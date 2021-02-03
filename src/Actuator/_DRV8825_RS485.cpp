@@ -38,11 +38,11 @@ bool _DRV8825_RS485::init(void* pKiss)
 
 	m_pA = &m_vAxis[0];
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_Modbus", &iName));
-	m_pMB = (_Modbus*) (pK->getInst(iName));
-	IF_Fl(!m_pMB, iName + " not found");
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_Modbus", &n));
+	m_pMB = (_Modbus*) (pK->getInst(n));
+	IF_Fl(!m_pMB, n + " not found");
 
 	return true;
 }
@@ -50,7 +50,7 @@ bool _DRV8825_RS485::init(void* pKiss)
 bool _DRV8825_RS485::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -74,14 +74,14 @@ void _DRV8825_RS485::update(void)
 {
 	while(!initPos());
 
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		readStatus();
 		updateMove();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -105,7 +105,7 @@ bool _DRV8825_RS485::setDistPerRound(int32_t dpr)
 	pB[0] = HIGH16(dpr);
 	pB[1] = LOW16(dpr);
 	IF_F(m_pMB->writeRegisters(m_iSlave, 4, 2, pB) != 2);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	return true;
 }
@@ -122,11 +122,11 @@ bool _DRV8825_RS485::setPos(void)
 	pB[0] = HIGH16(ds);
 	pB[1] = LOW16(ds);
 	IF_F(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	pB[0] = (step > 0)?0:1;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	return true;
 }
@@ -137,7 +137,7 @@ bool _DRV8825_RS485::setSpeed(void)
 
 	uint16_t b = m_pA->m_s.m_vTarget;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 8, 1, &b) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	return true;
 }
@@ -148,7 +148,7 @@ bool _DRV8825_RS485::setAccel(void)
 
 	uint16_t b = m_pA->m_a.m_vTarget;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 2, 1, &b) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	return true;
 }
@@ -165,7 +165,7 @@ bool _DRV8825_RS485::run(void)
 	IF_F(check()<0);
 
 	IF_F(m_pMB->writeBit(m_iSlave, 7, true) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 	return true;
 }
 
@@ -174,7 +174,7 @@ bool _DRV8825_RS485::stop(void)
 	IF_F(check()<0);
 
 	IF_F(m_pMB->writeBit(m_iSlave, 3, true) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 	return true;
 }
 
@@ -183,7 +183,7 @@ bool _DRV8825_RS485::resetPos(void)
 	IF_F(check()<0);
 
 	IF_F(m_pMB->writeBit(m_iSlave, 10, true) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 	return true;
 }
 
@@ -197,11 +197,11 @@ bool _DRV8825_RS485::initPos(void)
 	pB[0] = HIGH16(ds);
 	pB[1] = LOW16(ds);
 	IF_F(m_pMB->writeRegisters(m_iSlave, 9, 2, pB) != 2);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	pB[0] = (m_dInit > 0)?0:1;
 	IF_F(m_pMB->writeRegisters(m_iSlave, 11, 1, pB) != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	IF_F(!setSpeed());
 	IF_F(!setAccel());
@@ -220,7 +220,7 @@ bool _DRV8825_RS485::bComplete(void)
 	uint16_t b;
 	int r = m_pMB->readRegisters(m_iSlave, 12, 1, &b);
 	IF_F(r != 1);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 	return (b==1)?true:false;
 }
@@ -233,7 +233,7 @@ bool _DRV8825_RS485::readStatus(void)
 	uint16_t pB[2];
 	int r = m_pMB->readRegisters(m_iSlave, 22, 2, pB);
 	IF_F(r != 2);
-	this->sleepTime(m_cmdInt);
+	m_pT->sleepTime(m_cmdInt);
 
 //	int p = MAKE32(pB[0], pB[1]);
 	int16_t p = pB[1];

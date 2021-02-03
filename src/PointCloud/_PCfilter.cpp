@@ -50,10 +50,10 @@ bool _PCfilter::init(void *pKiss)
 
 bool _PCfilter::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -72,14 +72,14 @@ int _PCfilter::check(void)
 
 void _PCfilter::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateFilter();
 		m_sPC.update();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

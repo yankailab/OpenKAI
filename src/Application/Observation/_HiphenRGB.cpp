@@ -32,7 +32,7 @@ _HiphenRGB::~_HiphenRGB()
 
 bool _HiphenRGB::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("bFlip", &m_bFlip);
@@ -40,22 +40,22 @@ bool _HiphenRGB::init(void* pKiss)
 	m_compress.push_back(IMWRITE_JPEG_QUALITY);
 	m_compress.push_back(m_quality);
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_GPS", &iName));
-	m_pGPS = (_GPS*) (pK->getInst(iName));
-	IF_Fl(!m_pGPS, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_GPS", &n));
+	m_pGPS = (_GPS*) (pK->getInst(n));
+	IF_Fl(!m_pGPS, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_Camera", &iName));
-	m_pCam = (_Camera*) (pK->getInst(iName));
-	IF_Fl(!m_pCam, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_Camera", &n));
+	m_pCam = (_Camera*) (pK->getInst(n));
+	IF_Fl(!m_pCam, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_HiphenServer", &iName));
-	m_pHiphen = (_HiphenServer*) (pK->getInst(iName));
-	IF_Fl(!m_pHiphen, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_HiphenServer", &n));
+	m_pHiphen = (_HiphenServer*) (pK->getInst(n));
+	IF_Fl(!m_pHiphen, n + " not found");
 
 	return true;
 }
@@ -63,7 +63,7 @@ bool _HiphenRGB::init(void* pKiss)
 bool _HiphenRGB::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -75,13 +75,13 @@ bool _HiphenRGB::start(void)
 
 void _HiphenRGB::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		take();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -124,7 +124,7 @@ void _HiphenRGB::take(void)
 
 void _HiphenRGB::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	addMsg("iImg: "+i2str(m_iImg));
 }

@@ -8,14 +8,14 @@
 #ifndef OpenKAI_src_Data_Image__BBoxCutOut_H_
 #define OpenKAI_src_Data_Image__BBoxCutOut_H_
 
-#include "../../Base/_ThreadBase.h"
+#include "../../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 
 namespace kai
 {
 
-class _BBoxCutOut: public _ThreadBase
+class _BBoxCutOut: public _ModuleBase
 {
 public:
 	_BBoxCutOut();
@@ -27,7 +27,7 @@ public:
 private:
 	void process();
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_BBoxCutOut*) This)->update();
 		return NULL;

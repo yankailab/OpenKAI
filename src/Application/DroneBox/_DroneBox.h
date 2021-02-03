@@ -42,7 +42,7 @@ public:
 
 protected:
     virtual void updateGCS (void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DroneBox*) This)->update();
 		return NULL;

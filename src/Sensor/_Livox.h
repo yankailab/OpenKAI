@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor__Livox_H_
 #define OpenKAI_src_Sensor__Livox_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_LIVOX
 #include "livox_sdk.h"
@@ -30,7 +30,7 @@ typedef struct
 	DeviceInfo info;
 } LivoxDevice;
 
-class _Livox: public _ThreadBase
+class _Livox: public _ModuleBase
 {
 public:
 	_Livox();
@@ -45,7 +45,7 @@ private:
 	bool open(void);
 	bool updateLidar(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Livox*) This)->update();
 		return NULL;

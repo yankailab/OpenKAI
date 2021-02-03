@@ -19,7 +19,7 @@ _JSONbase::~_JSONbase()
 
 bool _JSONbase::init ( void* pKiss )
 {
-    IF_F ( !this->_ThreadBase::init ( pKiss ) );
+    IF_F ( !this->_ModuleBase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "msgFinishSend", &m_msgFinishSend );
@@ -45,7 +45,7 @@ bool _JSONbase::start ( void )
     if ( !m_bThreadON )
     {
         m_bThreadON = true;
-        retCode = pthread_create ( &m_threadID, 0, getUpdateThreadW, this );
+        retCode = pthread_create ( &m_threadID, 0, getUpdateW, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -57,7 +57,7 @@ bool _JSONbase::start ( void )
     if ( !m_bRThreadON )
     {
         m_bRThreadON = true;
-        retCode = pthread_create ( &m_rThreadID, 0, getUpdateThreadR, this );
+        retCode = pthread_create ( &m_rThreadID, 0, getUpdateR, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -79,11 +79,11 @@ int _JSONbase::check ( void )
 
 void _JSONbase::updateW ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
         if ( !m_pIO )
         {
-            this->sleepTime ( USEC_1SEC );
+            m_pT->sleepTime ( USEC_1SEC );
             continue;
         }
 
@@ -91,16 +91,16 @@ void _JSONbase::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                this->sleepTime ( USEC_1SEC );
+                m_pT->sleepTime ( USEC_1SEC );
                 continue;
             }
         }
 
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
 
         send();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -146,7 +146,7 @@ void _JSONbase::updateR ( void )
             handleMsg ( m_strB );
             m_strB.clear();
         }
-        this->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        m_pT->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
     }
 }
 
@@ -206,7 +206,7 @@ void _JSONbase:: md5( string& str, string* pDigest )
 
 void _JSONbase::draw ( void )
 {
-    this->_ThreadBase::draw();
+    this->_ModuleBase::draw();
 
     string msg = *this->getName();
     if ( m_pIO->isOpen() )

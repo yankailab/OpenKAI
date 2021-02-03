@@ -197,7 +197,7 @@ struct LANE
 
 };
 
-class _Lane: public _ThreadBase
+class _Lane: public _ModuleBase
 {
 public:
 	_Lane();
@@ -213,7 +213,7 @@ private:
 	void filterBin(void);
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Lane*) This)->update();
 		return NULL;

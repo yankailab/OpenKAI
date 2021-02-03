@@ -6,7 +6,7 @@
 namespace kai
 {
 
-class _MOAB: public _ThreadBase
+class _MOAB: public _ModuleBase
 {
 public:
 	_MOAB();
@@ -21,7 +21,7 @@ public:
 private:
 	void update(void);
 	void send(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_MOAB *) This)->update();
 		return NULL;

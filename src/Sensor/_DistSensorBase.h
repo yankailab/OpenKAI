@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Sensor__DistSensorBase_H_
 #define OpenKAI_src_Sensor__DistSensorBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../Filter/Median.h"
 #include "../Filter/Average.h"
 
@@ -83,7 +83,7 @@ struct DIST_SENSOR_DIV
 	}
 };
 
-class _DistSensorBase: public _ThreadBase
+class _DistSensorBase: public _ModuleBase
 {
 public:
 	_DistSensorBase();

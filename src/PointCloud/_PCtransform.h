@@ -40,7 +40,7 @@ public:
 private:
 	void updateTransform(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCtransform *) This)->update();
 		return NULL;

@@ -29,22 +29,22 @@ bool _ShopCam::init(void *pKiss)
 	IF_F(!this->_DetectorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_DetectorBase", &iName));
-	m_pD = (_DetectorBase*) (pK->getInst(iName));
-	IF_Fl(!m_pD, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DetectorBase", &n));
+	m_pD = (_DetectorBase*) (pK->getInst(n));
+	IF_Fl(!m_pD, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_DNNclassifierG", &iName));
-	m_pG = (_DNNclassifier*) (pK->getInst(iName));
-	IF_Fl(!m_pG, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DNNclassifierG", &n));
+	m_pG = (_DNNclassifier*) (pK->getInst(n));
+	IF_Fl(!m_pG, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_DNNclassifierA", &iName));
-	m_pA = (_DNNclassifier*) (pK->getInst(iName));
-	IF_Fl(!m_pA, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DNNclassifierA", &n));
+	m_pA = (_DNNclassifier*) (pK->getInst(n));
+	IF_Fl(!m_pA, n + " not found");
 
 	return true;
 }
@@ -52,7 +52,7 @@ bool _ShopCam::init(void *pKiss)
 bool _ShopCam::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -64,9 +64,9 @@ bool _ShopCam::start(void)
 
 void _ShopCam::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -77,7 +77,7 @@ void _ShopCam::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -154,7 +154,7 @@ bool _ShopCam::updateDet(void)
 
 void _ShopCam::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	IF_(!checkWindow());
 

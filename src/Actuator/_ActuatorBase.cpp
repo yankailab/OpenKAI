@@ -31,7 +31,7 @@ _ActuatorBase::~_ActuatorBase()
 
 bool _ActuatorBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("tCmdTimeout", &m_tCmdTimeout);
@@ -96,7 +96,7 @@ bool _ActuatorBase::power(bool bON)
 bool _ActuatorBase::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -219,7 +219,7 @@ float _ActuatorBase::getStarget(int i)
 
 void _ActuatorBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	for(int i=0; i<m_vAxis.size(); i++)
 	{

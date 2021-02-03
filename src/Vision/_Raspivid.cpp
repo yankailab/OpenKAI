@@ -102,31 +102,24 @@ bool _Raspivid::open(void)
 
 bool _Raspivid::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Raspivid::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		while (read(m_iFr, m_pFB, m_nFB) != m_nFB);
 
@@ -141,7 +134,7 @@ void _Raspivid::update(void)
 			m_fBGR.copy(fRGB.cvtColor(COLOR_RGB2BGR));
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

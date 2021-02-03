@@ -33,7 +33,7 @@ private:
     void hardwareReset(void);
 	bool updateRS(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCrs *) This)->update();
 		return NULL;

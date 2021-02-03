@@ -79,29 +79,20 @@ void _RStracking::close(void)
 
 bool _RStracking::start(void)
 {
-	IF_F(!this->_SlamBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _RStracking::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bReady)
 		{
 			if (!open())
 			{
 				LOG_E("Cannot open RealSense tracking");
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
@@ -113,7 +104,7 @@ void _RStracking::update(void)
 			continue;
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		try
 		{
@@ -146,7 +137,7 @@ void _RStracking::update(void)
 			LOG_E("Realsense exception");
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

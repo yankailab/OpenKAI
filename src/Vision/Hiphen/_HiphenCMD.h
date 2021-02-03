@@ -46,20 +46,21 @@ public:
 
 public:
 	void updateW(void);
-	static void* getUpdateThreadW(void* This)
+	static void* getUpdateW(void* This)
 	{
 		((_HiphenCMD*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	static void* getUpdateR(void* This)
 	{
 		((_HiphenCMD*) This)->updateR();
 		return NULL;
 	}
 
 public:
+    _Thread* m_pTr;
 
 };
 

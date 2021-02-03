@@ -62,10 +62,10 @@ bool _PCtransform::init(void *pKiss)
 
 bool _PCtransform::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -84,9 +84,9 @@ int _PCtransform::check(void)
 
 void _PCtransform::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateTransform();
         updatePC();
@@ -96,7 +96,7 @@ void _PCtransform::update(void)
 			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

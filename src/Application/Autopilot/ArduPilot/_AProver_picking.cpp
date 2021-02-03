@@ -53,26 +53,26 @@ bool _AProver_picking::init(void* pKiss)
 	m_iState.AUTO = m_pSC->getStateIdxByName ("AUTO");
 	IF_F(!m_iState.bValid());
 
-	string iName;
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*)pK->getInst(iName);
-	IF_Fl(!m_pAP, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_AP_base", &n);
+	m_pAP = (_AP_base*)pK->getInst(n);
+	IF_Fl(!m_pAP, n + ": not found");
 
-	iName = "";
-	pK->v("_AProver_drive", &iName);
-	m_pDrive = (_AProver_drive*)pK->getInst(iName);
-//	IF_Fl(!m_pDrive, iName + ": not found");
+	n = "";
+	pK->v("_AProver_drive", &n);
+	m_pDrive = (_AProver_drive*)pK->getInst(n);
+//	IF_Fl(!m_pDrive, n + ": not found");
 
-	iName = "";
-	pK->v("_PickingArm", &iName);
-	m_pArm = (_PickingArm*)pK->getInst(iName);
-	NULL_Fl(m_pArm, iName + ": not found");
+	n = "";
+	pK->v("_PickingArm", &n);
+	m_pArm = (_PickingArm*)pK->getInst(n);
+	NULL_Fl(m_pArm, n + ": not found");
 
-	iName = "";
-	pK->v("_StateControlArm", &iName);
-	m_pArmMC = ( _StateControl*)pK->getInst(iName);
-	NULL_Fl(m_pArmMC, iName + ": not found");
+	n = "";
+	pK->v("_StateControlArm", &n);
+	m_pArmMC = ( _StateControl*)pK->getInst(n);
+	NULL_Fl(m_pArmMC, n + ": not found");
 
 	return true;
 }
@@ -80,7 +80,7 @@ bool _AProver_picking::init(void* pKiss)
 bool _AProver_picking::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR)<< "Return code: " << retCode;
@@ -104,9 +104,9 @@ int _AProver_picking::check(void)
 
 void _AProver_picking::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 
@@ -119,7 +119,7 @@ void _AProver_picking::update(void)
 
 		updatePicking();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

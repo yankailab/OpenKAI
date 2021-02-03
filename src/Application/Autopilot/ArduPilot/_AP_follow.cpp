@@ -57,15 +57,15 @@ bool _AP_follow::init(void* pKiss)
 		pG->v("mountMode", &m_apMount.m_config.mount_mode);
 	}
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("_TrackerBase", &iName);
-	m_pT = (_TrackerBase*)pK->getInst(iName);
+	n = "";
+	pK->v("_TrackerBase", &n);
+	m_pT = (_TrackerBase*)pK->getInst(n);
 
-	iName = "";
-	pK->v("_DetectorBase", &iName);
-	m_pDet = (_DetectorBase*)pK->getInst(iName);
+	n = "";
+	pK->v("_DetectorBase", &n);
+	m_pDet = (_DetectorBase*)pK->getInst(n);
 
 	return true;
 }
@@ -73,7 +73,7 @@ bool _AP_follow::init(void* pKiss)
 bool _AP_follow::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: " << retCode;
@@ -93,9 +93,9 @@ int _AP_follow::check(void)
 
 void _AP_follow::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_AP_posCtrl::update();
 		if(updateTarget())
@@ -107,7 +107,7 @@ void _AP_follow::update(void)
 			releaseCtrl();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

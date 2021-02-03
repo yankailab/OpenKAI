@@ -42,7 +42,7 @@ public:
 
 private:
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_SortingCtrlClient *) This)->update();
 		return NULL;

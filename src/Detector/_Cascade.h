@@ -31,7 +31,7 @@ private:
 	void detectCPU(void);
 	void detectGPU(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Cascade*) This)->update();
 		return NULL;

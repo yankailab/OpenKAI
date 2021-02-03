@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Protocol__Canbus_H_
 #define OpenKAI_src_Protocol__Canbus_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../IO/_SerialPort.h"
 
 //0 START MARK
@@ -49,7 +49,7 @@ struct CAN_DATA
 	}
 };
 
-class _Canbus: public _ThreadBase
+class _Canbus: public _ModuleBase
 {
 public:
 	_Canbus();
@@ -67,7 +67,7 @@ public:
 public:
 	void recvMsg(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Canbus *) This)->update();
 		return NULL;

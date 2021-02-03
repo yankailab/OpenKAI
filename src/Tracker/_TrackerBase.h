@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Tracker__TrackerBase_H_
 #define OpenKAI_src_Tracker__TrackerBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 #include "../Detector/_DetectorBase.h"
@@ -24,7 +24,7 @@ enum TRACK_STATE
 	track_stop
 };
 
-class _TrackerBase: public _ThreadBase
+class _TrackerBase: public _ModuleBase
 {
 public:
 	_TrackerBase();

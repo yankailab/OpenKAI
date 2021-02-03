@@ -59,7 +59,7 @@ public:
 private:
 	void updatePWM(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ArduServo *) This)->update();
 		return NULL;

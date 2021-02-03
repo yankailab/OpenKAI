@@ -33,7 +33,7 @@ public:
 
 private:
 	void updateRelay(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_relay*) This)->update();
 		return NULL;

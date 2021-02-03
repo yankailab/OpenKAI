@@ -24,7 +24,7 @@ public:
 
 private:
 	void updateTarget(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_avoid*) This)->update();
 		return NULL;

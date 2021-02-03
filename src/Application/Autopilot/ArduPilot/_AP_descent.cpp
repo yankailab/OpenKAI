@@ -38,7 +38,7 @@ bool _AP_descent::init(void* pKiss)
 bool _AP_descent::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR)<< "Return code: "<< retCode;
@@ -56,9 +56,9 @@ int _AP_descent::check(void)
 
 void _AP_descent::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_AP_posCtrl::update();
 
@@ -68,7 +68,7 @@ void _AP_descent::update(void)
 			m_dTarget = -1.0;
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

@@ -49,7 +49,7 @@ private:
 	bool readPacket(void);
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_IRLock*) This)->update();
 		return NULL;

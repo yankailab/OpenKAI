@@ -28,17 +28,17 @@ bool _Mask::init(void* pKiss)
 	IF_F(!_VisionBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	string iName;
+	string n;
 
-	iName = "";
-	pK->v("_VisionBase", &iName);
-	m_pV = (_VisionBase*) (pK->parent()->getInst(iName));
-	IF_Fl(!m_pV, iName + ": not found");
+	n = "";
+	pK->v("_VisionBase", &n);
+	m_pV = (_VisionBase*) (pK->parent()->getInst(n));
+	IF_Fl(!m_pV, n + ": not found");
 
-	iName = "";
-	pK->v("_VisionBaseMask", &iName);
-	m_pVmask = (_VisionBase*) (pK->parent()->getInst(iName));
-	IF_Fl(!m_pVmask, iName + ": not found");
+	n = "";
+	pK->v("_VisionBaseMask", &n);
+	m_pVmask = (_VisionBase*) (pK->parent()->getInst(n));
+	IF_Fl(!m_pVmask, n + ": not found");
 
 	return true;
 }
@@ -58,38 +58,23 @@ bool _Mask::open(void)
 
 void _Mask::close(void)
 {
-	if(m_threadMode==T_THREAD)
-	{
-		goSleep();
-		while(!bSleeping());
-	}
-
 	this->_VisionBase::close();
 }
 
 bool _Mask::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Mask::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 			open();
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(m_bOpen)
 		{
@@ -99,7 +84,7 @@ void _Mask::update(void)
 			}
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

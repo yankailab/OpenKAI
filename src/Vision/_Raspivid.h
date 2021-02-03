@@ -34,7 +34,7 @@ public:
 private:
 	bool open(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Raspivid*) This)->update();
 		return NULL;

@@ -86,42 +86,42 @@ bool _PickingArm::init(void *pKiss)
 	m_iState.DROP = m_pSC->getStateIdxByName ("DROP");
 	IF_F(!m_iState.bValid());
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_ActuatorBase", &iName));
-	m_pA = (_ActuatorBase*) (pK->getInst(iName));
-	NULL_Fl(m_pA, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_ActuatorBase", &n));
+	m_pA = (_ActuatorBase*) (pK->getInst(n));
+	NULL_Fl(m_pA, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_StepperGripper", &iName));
-	m_pG = (_StepperGripper*)pK->getInst(iName);
-	NULL_Fl(m_pG, iName + ": not found");
+	n = "";
+	F_ERROR_F(pK->v("_StepperGripper", &n));
+	m_pG = (_StepperGripper*)pK->getInst(n);
+	NULL_Fl(m_pG, n + ": not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_Universe", &iName));
-	m_pU = (_Universe*) (pK->getInst(iName));
-	NULL_Fl(m_pU, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_Universe", &n));
+	m_pU = (_Universe*) (pK->getInst(n));
+	NULL_Fl(m_pU, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_DistSensorBase", &iName));
-	m_pD = (_DistSensorBase*) (pK->getInst(iName));
-	NULL_Fl(m_pD, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DistSensorBase", &n));
+	m_pD = (_DistSensorBase*) (pK->getInst(n));
+	NULL_Fl(m_pD, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("PIDx", &iName));
-	m_pXpid = ( PID*) (pK->getInst(iName));
-	NULL_Fl(m_pXpid, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("PIDx", &n));
+	m_pXpid = ( PID*) (pK->getInst(n));
+	NULL_Fl(m_pXpid, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("PIDy", &iName));
-	m_pYpid = ( PID*) (pK->getInst(iName));
-	NULL_Fl(m_pYpid, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("PIDy", &n));
+	m_pYpid = ( PID*) (pK->getInst(n));
+	NULL_Fl(m_pYpid, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("PIDz", &iName));
-	m_pZpid = ( PID*) (pK->getInst(iName));
-	NULL_Fl(m_pZpid, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("PIDz", &n));
+	m_pZpid = ( PID*) (pK->getInst(n));
+	NULL_Fl(m_pZpid, n + " not found");
 
 	return true;
 }
@@ -129,7 +129,7 @@ bool _PickingArm::init(void *pKiss)
 bool _PickingArm::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -154,14 +154,14 @@ int _PickingArm::check(void)
 
 void _PickingArm::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 		updateArm();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

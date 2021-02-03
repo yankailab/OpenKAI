@@ -34,7 +34,7 @@ public:
 	        std::vector<RotatedRect>& vDetections, std::vector<float>& vConfidences);
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_DNNtext*) This)->update();
 		return NULL;

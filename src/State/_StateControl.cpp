@@ -27,7 +27,7 @@ _StateControl::~_StateControl()
 
 bool _StateControl::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	Kiss* pCC = pK->child("state");
@@ -79,23 +79,15 @@ bool _StateControl::init(void* pKiss)
 
 bool _StateControl::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _StateControl::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		IF_CONT(m_iS >= m_vState.size());
 		IF_CONT(m_iS < 0);
@@ -105,7 +97,7 @@ void _StateControl::update(void)
 			transit(pState->m_next);
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -174,7 +166,7 @@ STATE_TYPE _StateControl::getStateType(void)
 
 void _StateControl::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	addMsg("nState: "+i2str(m_vState.size()),1);
 	IF_(m_vState.size() <= 0);

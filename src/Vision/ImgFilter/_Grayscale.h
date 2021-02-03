@@ -30,7 +30,7 @@ public:
 private:
 	void filter(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Grayscale*) This)->update();
 		return NULL;

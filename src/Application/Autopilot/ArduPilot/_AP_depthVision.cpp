@@ -22,16 +22,16 @@ bool _AP_depthVision::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	//link
-	string iName;
+	string n;
 
-	iName = "";
-	F_INFO(pK->v("APcopter_base", &iName));
-	m_pAP = (_AP_base*) (pK->getInst(iName));
+	n = "";
+	F_INFO(pK->v("APcopter_base", &n));
+	m_pAP = (_AP_base*) (pK->getInst(n));
 
-	iName = "";
-	F_INFO(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pDV, iName + " not found");
+	n = "";
+	F_INFO(pK->v("_DepthVisionBase", &n));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(n));
+	IF_Fl(!m_pDV, n + " not found");
 
 	m_nROI = 0;
 	while (1)

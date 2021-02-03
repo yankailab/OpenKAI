@@ -36,7 +36,7 @@ private:
 	bool checkRPLIDARHealth(void);
 	void updateLidar(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_RPLIDAR*) This)->update();
 		return NULL;

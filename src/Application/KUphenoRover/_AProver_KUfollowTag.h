@@ -26,7 +26,7 @@ public:
 private:
 	void updateFollow (void);
     _Object* findTarget(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		(( _AProver_KUfollowTag *) This)->update();
 		return NULL;

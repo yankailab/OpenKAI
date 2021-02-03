@@ -21,7 +21,7 @@ public:
 
 private:
 	void updateMission(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_takeoff*) This)->update();
 		return NULL;

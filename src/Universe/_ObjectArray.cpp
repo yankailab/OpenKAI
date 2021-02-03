@@ -21,7 +21,7 @@ _ObjectArray::~_ObjectArray()
 
 bool _ObjectArray::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("nBuf", &m_nBuf);
@@ -34,24 +34,17 @@ bool _ObjectArray::init(void* pKiss)
 
 bool _ObjectArray::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _ObjectArray::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -82,7 +75,7 @@ int _ObjectArray::size(void)
 
 void _ObjectArray::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

@@ -15,7 +15,7 @@
 namespace kai
 {
 
-class _GPS: public _ThreadBase
+class _GPS: public _ModuleBase
 {
 public:
 	_GPS(void);
@@ -32,7 +32,7 @@ private:
 	bool readNMEA(void);
 	void decodeNMEA(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_GPS *) This)->update();
 		return NULL;

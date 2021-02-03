@@ -52,7 +52,7 @@ _ANR::~_ANR()
 
 bool _ANR::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("cnPrefix",&m_cnPrefix);
@@ -88,29 +88,29 @@ bool _ANR::init(void* pKiss)
 	for(int i=0; i<vPrefix.size(); i++)
 		m_vPrefixCandidate.push_back(vPrefix[i]);
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_DetectorBaseCN", &iName));
-	m_pDcn = (_DetectorBase*) (pK->getInst(iName));
-	IF_Fl(!m_pDcn, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DetectorBaseCN", &n));
+	m_pDcn = (_DetectorBase*) (pK->getInst(n));
+	IF_Fl(!m_pDcn, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_DetectorBaseLP", &iName));
-	m_pDlp = (_DetectorBase*) (pK->getInst(iName));
-	IF_Fl(!m_pDlp, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DetectorBaseLP", &n));
+	m_pDlp = (_DetectorBase*) (pK->getInst(n));
+	IF_Fl(!m_pDlp, n + " not found");
 
-	iName = "";
-	F_INFO(pK->v("_WebSocket", &iName));
-	m_pWS = (_WebSocket*) (pK->getInst(iName));
-	IF_Fl(!m_pWS, iName + " not found");
+	n = "";
+	F_INFO(pK->v("_WebSocket", &n));
+	m_pWS = (_WebSocket*) (pK->getInst(n));
+	IF_Fl(!m_pWS, n + " not found");
 
 #ifdef USE_OCR
 	IF_T(!m_bOCR);
-	iName = "";
-	F_INFO(pK->v("OCR", &iName));
-	m_pOCR = (OCR*) (pK->getInst(iName));
-	IF_Fl(!m_pOCR, iName + " not found");
+	n = "";
+	F_INFO(pK->v("OCR", &n));
+	m_pOCR = (OCR*) (pK->getInst(n));
+	IF_Fl(!m_pOCR, n + " not found");
 #endif
 
 	return true;
@@ -119,7 +119,7 @@ bool _ANR::init(void* pKiss)
 bool _ANR::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -131,9 +131,9 @@ bool _ANR::start(void)
 
 void _ANR::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(cn())
 		{
@@ -142,7 +142,7 @@ void _ANR::update(void)
 
 //		lp();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -388,7 +388,7 @@ void _ANR::lp(void)
 
 void _ANR::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	if(getTimeUsec() - m_tStampCN > m_timeOut)
 		addMsg("CN unrecognized");

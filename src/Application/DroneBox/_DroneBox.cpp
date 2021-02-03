@@ -34,7 +34,7 @@ bool _DroneBox::init ( void* pKiss )
 bool _DroneBox::start ( void )
 {
     m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdateThread, this );
+    int retCode = pthread_create ( &m_threadID, 0, getUpdate, this );
     if ( retCode != 0 )
     {
         LOG ( ERROR ) << "Return code: "<< retCode;
@@ -55,14 +55,14 @@ int _DroneBox::check ( void )
 
 void _DroneBox::update ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
         this->_GCSbase::update();
 
         updateGCS();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 

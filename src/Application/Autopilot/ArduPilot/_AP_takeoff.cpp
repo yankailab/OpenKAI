@@ -21,11 +21,11 @@ bool _AP_takeoff::init(void* pKiss)
 
 	pK->v("apMode", &m_apMode);
 
-	string iName;
-	iName = "";
-	pK->v("_AP_base", &iName);
-	m_pAP = (_AP_base*) (pK->getInst(iName));
-	IF_Fl(!m_pAP, iName + ": not found");
+	string n;
+	n = "";
+	pK->v("_AP_base", &n);
+	m_pAP = (_AP_base*) (pK->getInst(n));
+	IF_Fl(!m_pAP, n + ": not found");
 
 	return true;
 }
@@ -33,7 +33,7 @@ bool _AP_takeoff::init(void* pKiss)
 bool _AP_takeoff::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: "<< retCode;
@@ -54,14 +54,14 @@ int _AP_takeoff::check(void)
 
 void _AP_takeoff::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 		updateMission();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

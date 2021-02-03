@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Vision__VisionBase_H_
 #define OpenKAI_src_Vision__VisionBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #ifdef USE_OPENCV
 #include "../Base/cv.h"
@@ -43,7 +43,7 @@ enum VISION_TYPE
 	vision_gphoto,
 };
 
-class _VisionBase: public _ThreadBase
+class _VisionBase: public _ModuleBase
 {
 public:
 	_VisionBase();

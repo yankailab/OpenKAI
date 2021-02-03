@@ -82,46 +82,31 @@ bool _Mynteye::open(void)
 
 void _Mynteye::close(void)
 {
-	if (m_threadMode == T_THREAD)
-	{
-		goSleep();
-		while (!bSleeping());
-	}
-
-	m_me.Close();
 	this->_VisionBase::close();
+	m_me.Close();
 }
 
 bool _Mynteye::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Mynteye::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 		{
 			if (!open())
 			{
 				LOG_E("Cannot open Mynteye");
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		m_me.WaitForStream();
 
@@ -138,7 +123,7 @@ void _Mynteye::update(void)
 				m_fDepth.copy(imgDepth.img->ToMat());
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

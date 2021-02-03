@@ -49,7 +49,7 @@ private:
 	void updateSpeed (void);
 	void readStatus(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_OrientalMotor*) This)->update();
 		return NULL;

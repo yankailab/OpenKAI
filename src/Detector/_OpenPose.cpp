@@ -53,7 +53,7 @@ bool _OpenPose::init(void *pKiss)
 bool _OpenPose::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -66,9 +66,9 @@ bool _OpenPose::start(void)
 
 void _OpenPose::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -78,7 +78,7 @@ void _OpenPose::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -159,7 +159,7 @@ void _OpenPose::detect(void)
 
 void _OpenPose::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 	IF_(!checkWindow());
 
 	Window *pWin = (Window*) this->m_pWindow;

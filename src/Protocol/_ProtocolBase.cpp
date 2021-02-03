@@ -20,7 +20,7 @@ _ProtocolBase::~_ProtocolBase()
 
 bool _ProtocolBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("nBuf", &m_nBuf);
@@ -38,16 +38,8 @@ bool _ProtocolBase::init(void* pKiss)
 
 bool _ProtocolBase::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 int _ProtocolBase::check(void)
@@ -56,26 +48,26 @@ int _ProtocolBase::check(void)
 	IF__(!m_pIO->isOpen(),-1);
 	NULL_F(m_pBuf);
 
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 void _ProtocolBase::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
 		if(!m_pIO->isOpen())
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		while(readCMD())
 		{
@@ -83,7 +75,7 @@ void _ProtocolBase::update(void)
 			m_nCMDrecv++;
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -139,7 +131,7 @@ void _ProtocolBase::setCallback(CallbackProtocol cb, void* pInst)
 
 void _ProtocolBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	if (!m_pIO->isOpen())
 	{

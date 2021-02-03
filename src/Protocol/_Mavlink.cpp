@@ -47,7 +47,7 @@ _Mavlink::~_Mavlink()
 
 bool _Mavlink::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("mySystemID", &m_mySystemID);
@@ -109,40 +109,31 @@ bool _Mavlink::init(void* pKiss)
 
 bool _Mavlink::start(void)
 {
-	//Start thread
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Mavlink::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		handleMessages();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -798,7 +789,7 @@ void _Mavlink::setCmdRoute(uint32_t iCmd, bool bON)
 
 void _Mavlink::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	if (!m_pIO->isOpen())
 	{

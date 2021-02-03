@@ -25,7 +25,7 @@ _CutOut::~_CutOut()
 
 bool _CutOut::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("extImgIn",&m_extImgIn);
@@ -62,7 +62,7 @@ bool _CutOut::init(void* pKiss)
 bool _CutOut::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;

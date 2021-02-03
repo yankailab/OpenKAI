@@ -11,7 +11,6 @@
 #include "../Base/common.h"
 
 #ifdef USE_OPENCV
-#include "../Base/_ThreadBase.h"
 #include "_VisionBase.h"
 #include "../Filter/Median.h"
 

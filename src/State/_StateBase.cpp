@@ -16,7 +16,7 @@ _StateBase::~_StateBase()
 
 bool _StateBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	string n = "";
@@ -41,7 +41,7 @@ bool _StateBase::init(void* pKiss)
 
 int _StateBase::check(void)
 {
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 void _StateBase::update(void)
@@ -88,7 +88,7 @@ void _StateBase::drawActive(void)
 
 void _StateBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
     drawActive();
 }
 

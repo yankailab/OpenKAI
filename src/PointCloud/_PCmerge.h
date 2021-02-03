@@ -29,7 +29,7 @@ public:
 private:
 	void updateMerge(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCmerge *) This)->update();
 		return NULL;

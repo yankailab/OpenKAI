@@ -30,7 +30,7 @@ public:
 private:
 	bool updateDet(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ShopCam *) This)->update();
 		return NULL;

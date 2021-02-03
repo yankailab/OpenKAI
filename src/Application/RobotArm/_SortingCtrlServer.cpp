@@ -41,19 +41,19 @@ bool _SortingCtrlServer::init(void *pKiss)
 	pK->v("dT", &m_dT);
 	pK->v("tStateInterval", &m_ieState.m_tInterval);
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
-	m_pDV = (_DepthVisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pDV, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_DepthVisionBase", &n));
+	m_pDV = (_DepthVisionBase*) (pK->getInst(n));
+	IF_Fl(!m_pDV, n + " not found");
 
 	m_nClass = 5;
 
-	iName = "";
-	F_ERROR_F(pK->v("_ProtocolBase", &iName));
-	m_pPB = (_ProtocolBase*) (pK->getInst(iName));
-	IF_Fl(!m_pPB, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_ProtocolBase", &n));
+	m_pPB = (_ProtocolBase*) (pK->getInst(n));
+	IF_Fl(!m_pPB, n + " not found");
 
 	m_pPB->setCallback(callbackCMD, this);
 
@@ -63,7 +63,7 @@ bool _SortingCtrlServer::init(void *pKiss)
 bool _SortingCtrlServer::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -83,9 +83,9 @@ int _SortingCtrlServer::check(void)
 
 void _SortingCtrlServer::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -99,7 +99,7 @@ void _SortingCtrlServer::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

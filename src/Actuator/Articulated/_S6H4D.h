@@ -171,7 +171,7 @@ protected:
 	void armCtrlReset(void);
 
 	void update(void);
-	static void* getUpdateThread(void *This)
+	static void* getUpdate(void *This)
 	{
 		((_S6H4D*) This)->update();
 		return NULL;

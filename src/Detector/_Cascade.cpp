@@ -55,7 +55,7 @@ int _Cascade::check(void)
 bool _Cascade::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -68,9 +68,9 @@ bool _Cascade::start(void)
 
 void _Cascade::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -80,7 +80,7 @@ void _Cascade::update(void)
 				detectCPU();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 
 }

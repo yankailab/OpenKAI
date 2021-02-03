@@ -64,7 +64,7 @@ bool _SerialPort::start(void)
 	if(!m_bThreadON)
 	{
 		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
+		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -76,7 +76,7 @@ bool _SerialPort::start(void)
 	if(!m_bRThreadON)
 	{
 		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
+		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
 		if (retCode != 0)
 		{
 			LOG_E(retCode);
@@ -90,18 +90,18 @@ bool _SerialPort::start(void)
 
 void _SerialPort::updateW(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		uint8_t pB[N_IO_BUF];
 		int nB;
@@ -113,13 +113,13 @@ void _SerialPort::updateW(void)
 
 		tcdrain(m_fd);
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
 void _SerialPort::updateR(void)
 {
-	while (m_bRThreadON)
+	while(m_pTr->bRun())
 	{
 		if (!isOpen())
 		{

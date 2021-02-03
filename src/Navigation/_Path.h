@@ -8,13 +8,13 @@
 #ifndef OpenKAI_src_Navigation__Path_H_
 #define OpenKAI_src_Navigation__Path_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "Coordinate.h"
 
 namespace kai
 {
 
-class _Path: public _ThreadBase
+class _Path: public _ModuleBase
 {
 public:
 	_Path(void);
@@ -33,7 +33,7 @@ public:
 private:
 	void updateGPS(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Path *) This)->update();
 		return NULL;

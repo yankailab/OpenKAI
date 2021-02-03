@@ -18,7 +18,7 @@ _Object::~_Object()
 
 bool _Object::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	return true;
@@ -40,30 +40,24 @@ void _Object::init(void)
 
 bool _Object::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Object::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
 void _Object::updateKinetics(void)
 {
-	m_vSpeed += m_vAccel * (float)m_dTime * OV_USEC_1SEC;
+    IF_(check()<0);
+	m_vSpeed += m_vAccel * m_pT->getDtime() * OV_USEC_1SEC;
 	m_vPos += m_vSpeed;
 }
 
@@ -357,7 +351,7 @@ float _Object::nIoU(_Object& obj)
 
 void _Object::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 //	IF_(!checkWindow());
 //	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();

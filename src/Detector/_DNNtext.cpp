@@ -66,10 +66,10 @@ bool _DNNtext::init(void* pKiss)
 	IF_T(!m_bOCR);
 
 #ifdef USE_OCR
-	string iName = "";
-	F_INFO(pK->v("OCR", &iName));
-	m_pOCR = (OCR*) (pK->getInst(iName));
-	IF_Fl(!m_pOCR, iName + " not found");
+	string n = "";
+	F_INFO(pK->v("OCR", &n));
+	m_pOCR = (OCR*) (pK->getInst(n));
+	IF_Fl(!m_pOCR, n + " not found");
 #endif
 
 	return true;
@@ -78,7 +78,7 @@ bool _DNNtext::init(void* pKiss)
 bool _DNNtext::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -91,9 +91,9 @@ bool _DNNtext::start(void)
 
 void _DNNtext::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(check() >= 0)
 		{
@@ -106,7 +106,7 @@ void _DNNtext::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

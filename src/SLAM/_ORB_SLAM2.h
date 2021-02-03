@@ -21,7 +21,7 @@
 namespace kai
 {
 
-class _ORB_SLAM2: public _ThreadBase
+class _ORB_SLAM2: public _ModuleBase
 {
 public:
 	_ORB_SLAM2();
@@ -36,7 +36,7 @@ public:
 private:
 	void detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ORB_SLAM2*) This)->update();
 		return NULL;

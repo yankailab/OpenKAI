@@ -24,11 +24,12 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+    void close(void);
 
 private:
 	bool open(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_VideoFile*) This)->update();
 		return NULL;

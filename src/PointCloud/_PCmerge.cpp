@@ -27,7 +27,7 @@ bool _PCmerge::init(void *pKiss)
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	string iName;
+	string n;
 
 	vector<string> vPCB;
 	pK->a("vPointCloudBase", &vPCB);
@@ -47,10 +47,10 @@ bool _PCmerge::init(void *pKiss)
 
 bool _PCmerge::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -67,14 +67,14 @@ int _PCmerge::check(void)
 
 void _PCmerge::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateMerge();
 		m_sPC.update();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

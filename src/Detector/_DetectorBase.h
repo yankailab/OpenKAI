@@ -18,7 +18,7 @@
 namespace kai
 {
 
-class _DetectorBase: public _ThreadBase
+class _DetectorBase: public _ModuleBase
 {
 public:
 	_DetectorBase();

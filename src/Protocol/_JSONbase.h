@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Protocol__JSONbase_H_
 #define OpenKAI_src_Protocol__JSONbase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 #include "../IO/_WebSocket.h"
 #include <openssl/md5.h>
 
@@ -10,7 +10,7 @@ using namespace picojson;
 namespace kai
 {
 
-class _JSONbase: public _ThreadBase
+class _JSONbase: public _ModuleBase
 {
 public:
 	_JSONbase();
@@ -33,14 +33,14 @@ protected:
 
 private:
 	void updateW(void);
-	static void* getUpdateThreadW(void* This)
+	static void* getUpdateW(void* This)
 	{
 		((_JSONbase*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	static void* getUpdateR(void* This)
 	{
 		((_JSONbase*) This)->updateR();
 		return NULL;

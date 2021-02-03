@@ -30,7 +30,7 @@ _GDimgUploader::~_GDimgUploader()
 
 bool _GDimgUploader::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("tInterval",&m_tInterval);
@@ -44,12 +44,12 @@ bool _GDimgUploader::init(void* pKiss)
 	m_vJPGquality.push_back(IMWRITE_JPEG_QUALITY);
 	m_vJPGquality.push_back(jpgQuality);
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_VisionBase", &iName));
-	m_pV = (_VisionBase*) (pK->getInst(iName));
-	IF_Fl(!m_pV, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_VisionBase", &n));
+	m_pV = (_VisionBase*) (pK->getInst(n));
+	IF_Fl(!m_pV, n + " not found");
 
 	return true;
 }
@@ -57,7 +57,7 @@ bool _GDimgUploader::init(void* pKiss)
 bool _GDimgUploader::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -69,9 +69,9 @@ bool _GDimgUploader::start(void)
 
 void _GDimgUploader::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(m_tStamp - m_tLastUpload > m_tInterval)
 		{
@@ -79,7 +79,7 @@ void _GDimgUploader::update(void)
 			m_tLastUpload = m_tStamp;
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -115,7 +115,7 @@ void _GDimgUploader::updateUpload(void)
 
 void _GDimgUploader::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

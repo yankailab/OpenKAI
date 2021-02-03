@@ -12,67 +12,55 @@ namespace kai
 
 _HiphenCMD::_HiphenCMD()
 {
+    m_pTr = NULL;
 }
 
 _HiphenCMD::~_HiphenCMD()
 {
+    DEL ( m_pTr );
 }
 
 bool _HiphenCMD::init(void* pKiss)
 {
 	IF_F(!_TCPclient::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+    
+    Kiss* pKt = pK->child("threadR");
+    IF_F(pKt->empty());
+    
+    m_pTr = new _Thread();
+    if(!m_pTr->init(pKt))
+    {
+        DEL(m_pTr);
+        return false;
+    }
 
 	return true;
 }
 
 bool _HiphenCMD::start(void)
 {
-	int retCode;
-
-	if(!m_bThreadON)
-	{
-		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateThreadW, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bThreadON = false;
-			return false;
-		}
-	}
-
-	if(!m_bRThreadON)
-	{
-		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateThreadR, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bRThreadON = false;
-			return false;
-		}
-	}
-
-	return true;
+    IF_F(check()<0);
+	IF_F(!m_pT->start(getUpdateW, this));
+	return m_pTr->start(getUpdateR, this);
 }
 
 void _HiphenCMD::updateW(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!isOpen())
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 
 			this->startRecord();
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		uint8_t pB[N_IO_BUF];
 		int nB;
@@ -91,14 +79,14 @@ void _HiphenCMD::updateW(void)
 			LOG_I("send: " + i2str(nSend) + " bytes");
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 
 }
 
 void _HiphenCMD::updateR(void)
 {
-	while (m_bRThreadON)
+	while (m_pTr->bRun())
 	{
 		if (!isOpen())
 		{
@@ -119,8 +107,6 @@ void _HiphenCMD::updateR(void)
 		string strR((char*)pB);
 		LOG_I("Received: " + strR);
 		//TODO: add JSON decode for strR;
-
-		this->wakeUpLinked();
 	}
 }
 

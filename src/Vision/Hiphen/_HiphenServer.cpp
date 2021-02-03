@@ -45,27 +45,17 @@ bool _HiphenServer::init(void* pKiss)
 
 bool _HiphenServer::start(void)
 {
-	IF_T(m_bThreadON);
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR)<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _HiphenServer::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!handler())
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 		}
 	}
 }

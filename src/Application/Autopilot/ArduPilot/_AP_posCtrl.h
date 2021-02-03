@@ -25,7 +25,7 @@ public:
 	void setPosGlobal(void);
 
 private:
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_posCtrl *) This)->update();
 		return NULL;

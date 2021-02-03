@@ -31,10 +31,10 @@ public:
 	void decodeData(void);
 	void decodeHeader(void);
 
-	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	void update(void);
+	static void* getUpdate(void* This)
 	{
-		((_HiphenIMG*) This)->updateR();
+		((_HiphenIMG*) This)->update();
 		return NULL;
 	}
 

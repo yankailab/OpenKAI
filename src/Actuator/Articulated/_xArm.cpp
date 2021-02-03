@@ -37,7 +37,7 @@ bool _xArm::start(void)
 	IF_T(m_bThreadON);
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -57,22 +57,22 @@ int _xArm::check(void)
 
 void _xArm::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
         
         if(!m_bPower)
         {
             if(!power(true))
             {
-                this->sleepTime(USEC_1SEC);
+                m_pT->sleepTime(USEC_1SEC);
                 continue;
             }
         }
         
 		readState();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

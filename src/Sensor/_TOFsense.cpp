@@ -22,12 +22,12 @@ bool _TOFsense::init(void *pKiss)
 	IF_F(!this->_DistSensorBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-	string iName;
+	string n;
 
-	iName = "";
-	F_ERROR_F(pK->v("_IOBase", &iName));
-	m_pIO = (_IOBase*) (pK->getInst(iName));
-	IF_Fl(!m_pIO, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_IOBase", &n));
+	m_pIO = (_IOBase*) (pK->getInst(n));
+	IF_Fl(!m_pIO, n + " not found");
 
 	m_frame.init(16);
 	m_bReady = 1;
@@ -37,42 +37,34 @@ bool _TOFsense::init(void *pKiss)
 
 bool _TOFsense::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _TOFsense::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_pIO)
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			this->sleepTime(USEC_1SEC);
+			m_pT->sleepTime(USEC_1SEC);
 			continue;
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		while (readCMD())
 		{
 			handleCMD();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -145,7 +137,7 @@ DIST_SENSOR_TYPE _TOFsense::type(void)
 
 void _TOFsense::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg;
 	msg += "nDiv=" + i2str(m_nDiv);

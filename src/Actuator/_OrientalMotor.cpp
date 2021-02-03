@@ -49,7 +49,7 @@ bool _OrientalMotor::init(void* pKiss)
 bool _OrientalMotor::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -62,9 +62,9 @@ bool _OrientalMotor::start(void)
 
 void _OrientalMotor::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(m_bFeedback)
 		{
@@ -80,7 +80,7 @@ void _OrientalMotor::update(void)
                 updateSpeed();
 //        }
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

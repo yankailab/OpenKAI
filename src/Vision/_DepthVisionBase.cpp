@@ -47,9 +47,9 @@ bool _DepthVisionBase::init(void* pKiss)
 	pK->v("vRange", &m_vRange);
 	pK->v("vKpos", &m_vKpos);
 
-	string iName = "";
-	F_INFO(pK->v("depthWindow", &iName));
-	m_pDepthWin = (Window*) (pK->getInst(iName));
+	string n = "";
+	F_INFO(pK->v("depthWindow", &n));
+	m_pDepthWin = (Window*) (pK->getInst(n));
 
 	return true;
 }

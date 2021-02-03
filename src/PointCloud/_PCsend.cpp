@@ -45,10 +45,10 @@ bool _PCsend::init(void *pKiss)
 
 bool _PCsend::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -69,13 +69,13 @@ int _PCsend::check(void)
 
 void _PCsend::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
         sendPC();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -121,7 +121,7 @@ void _PCsend::sendPC(void)
         {
             pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
             while(!m_pIO->write(m_pB, iB))
-                this->sleepTime(m_tInt);
+                m_pT->sleepTime(m_tInt);
 
             iB = PC_N_HDR;
         }
@@ -131,10 +131,10 @@ void _PCsend::sendPC(void)
     {
         pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
         while(!m_pIO->write(m_pB, iB))
-            this->sleepTime(m_tInt);
+            m_pT->sleepTime(m_tInt);
     }
 
-    this->sleepTime(m_tInt);
+    m_pT->sleepTime(m_tInt);
 
     //frame sync
     m_pB[0] = PB_BEGIN;
@@ -142,7 +142,7 @@ void _PCsend::sendPC(void)
     m_pB[2] = 0;
     m_pB[3] = 0;
     while(!m_pIO->write(m_pB, PC_N_HDR))
-        this->sleepTime(m_tInt);
+        m_pT->sleepTime(m_tInt);
 
 }
 

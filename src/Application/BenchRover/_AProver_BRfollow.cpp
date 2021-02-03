@@ -71,7 +71,7 @@ bool _AProver_BRfollow::init ( void* pKiss )
 bool _AProver_BRfollow::start ( void )
 {
     m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdateThread, this );
+    int retCode = pthread_create ( &m_threadID, 0, getUpdate, this );
     if ( retCode != 0 )
     {
         LOG ( ERROR ) << "Return code: " << retCode;
@@ -95,14 +95,14 @@ int _AProver_BRfollow::check ( void )
 
 void _AProver_BRfollow::update ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
         this->_StateBase::update();
 
         updateFollow();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -129,7 +129,7 @@ void _AProver_BRfollow::updateFollow ( void )
             m_pD->setSteering(0.0);
             m_pD->setSpeed(0.0);
             m_iTag = iTag;
-            this->sleepTime(m_tStop * USEC_1SEC);
+            m_pT->sleepTime(m_tStop * USEC_1SEC);
             return;
         }
         else

@@ -31,14 +31,14 @@ protected:
     
 private:
 	void updateW(void);
-	static void* getUpdateThreadW(void* This)
+	static void* getUpdateW(void* This)
 	{
 		((_DroneBoxJSON*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
-	static void* getUpdateThreadR(void* This)
+	static void* getUpdateR(void* This)
 	{
 		((_DroneBoxJSON*) This)->updateR();
 		return NULL;

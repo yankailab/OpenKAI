@@ -25,7 +25,7 @@ _Sequencer::~_Sequencer()
 
 bool _Sequencer::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	Kiss* pAction = pK->child("action");
@@ -51,9 +51,9 @@ bool _Sequencer::init(void* pKiss)
 			SEQ_ACTUATOR aA;
 			aA.init();
 
-			string iName = "";
-			F_ERROR_F(pActuatorI->v("_ActuatorBase", &iName));
-			aA.m_pA = (_ActuatorBase*) (pK->getInst(iName));
+			string n = "";
+			F_ERROR_F(pActuatorI->v("_ActuatorBase", &n));
+			aA.m_pA = (_ActuatorBase*) (pK->getInst(n));
 			IF_CONT(!aA.m_pA);
 
 			pActuatorI->v("pos", &aA.m_vPos);
@@ -73,7 +73,7 @@ bool _Sequencer::init(void* pKiss)
 bool _Sequencer::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -85,13 +85,13 @@ bool _Sequencer::start(void)
 
 void _Sequencer::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateAction();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -211,7 +211,7 @@ void _Sequencer::gotoAction(const string& name)
 
 void _Sequencer::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

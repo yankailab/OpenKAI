@@ -33,7 +33,7 @@ bool _RPLIDAR::init(void* pKiss)
 bool _RPLIDAR::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG_E(retCode);
@@ -46,22 +46,22 @@ bool _RPLIDAR::start(void)
 
 void _RPLIDAR::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if(!m_pRPL)
 		{
 			if (!open())
 			{
-				this->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(USEC_1SEC);
 				continue;
 			}
 		}
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateLidar();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

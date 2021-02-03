@@ -25,7 +25,7 @@ _PCviewer::~_PCviewer()
 
 bool _PCviewer::init(void *pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vWinSize", &m_vWinSize);
@@ -41,10 +41,10 @@ bool _PCviewer::init(void *pKiss)
 
 bool _PCviewer::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -66,13 +66,13 @@ void _PCviewer::update(void)
 	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
 	m_vis.AddGeometry(m_pMcoordFrame);
 
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		render();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 
 	m_vis.DestroyVisualizerWindow();
@@ -114,7 +114,7 @@ void _PCviewer::updateGeometry(int i, PointCloud* pPC)
 
 void _PCviewer::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

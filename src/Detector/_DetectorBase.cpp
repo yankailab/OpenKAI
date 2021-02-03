@@ -37,7 +37,7 @@ _DetectorBase::~_DetectorBase()
 
 bool _DetectorBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	//general
@@ -88,21 +88,21 @@ bool _DetectorBase::init(void* pKiss)
 	pK->v<bool>("bDrawText", &m_bDrawText);
 	pK->v<bool>("bDrawPos", &m_bDrawPos);
 
-	string iName = "";
-	F_INFO(pK->v("_VisionBase", &iName));
-	m_pV = (_VisionBase*) (pK->getInst(iName));
+	string n = "";
+	F_INFO(pK->v("_VisionBase", &n));
+	m_pV = (_VisionBase*) (pK->getInst(n));
 
-	iName = "";
-	pK->v("_DepthVisionBase",&iName);
-	m_pDV = (_DepthVisionBase*)(pK->getInst(iName));
+	n = "";
+	pK->v("_DepthVisionBase",&n);
+	m_pDV = (_DepthVisionBase*)(pK->getInst(n));
 
-	iName = "";
-	pK->v("_DetectorBase", &iName);
-	m_pDB = (_DetectorBase*) (pK->getInst(iName));
+	n = "";
+	pK->v("_DetectorBase", &n);
+	m_pDB = (_DetectorBase*) (pK->getInst(n));
 
-	iName = "";
-	pK->v("_Universe", &iName);
-	m_pU = (_Universe*) (pK->getInst(iName));
+	n = "";
+	pK->v("_Universe", &n);
+	m_pU = (_Universe*) (pK->getInst(n));
 
 	return true;
 }
@@ -132,7 +132,7 @@ string _DetectorBase::getClassName(int iClass)
 
 void _DetectorBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	addMsg("nObj=" + i2str(m_pU->size()), 1);
 

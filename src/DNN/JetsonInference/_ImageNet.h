@@ -38,7 +38,7 @@ private:
 	void detect(void);
 	void classifyBatch(int iBatchFrom, int nBatch);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ImageNet*) This)->update();
 		return NULL;

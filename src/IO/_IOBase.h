@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_IO_IOBase_H_
 #define OpenKAI_src_IO_IOBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 #define N_IO_BUF 512
 
@@ -130,7 +130,7 @@ struct IO_FIFO
 
 };
 
-class _IOBase: public _ThreadBase
+class _IOBase: public _ModuleBase
 {
 public:
 	_IOBase();

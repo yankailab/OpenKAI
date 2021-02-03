@@ -8,12 +8,12 @@
 #ifndef OpenKAI_src_SLAM__SlamBase_H_
 #define OpenKAI_src_SLAM__SlamBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 namespace kai
 {
 
-class _SlamBase: public _ThreadBase
+class _SlamBase: public _ModuleBase
 {
 public:
 	_SlamBase();

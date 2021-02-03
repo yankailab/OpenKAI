@@ -25,7 +25,7 @@ public:
 protected:
 	bool updateTarget(void);
 	virtual bool findTarget(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_descent *) This)->update();
 		return NULL;

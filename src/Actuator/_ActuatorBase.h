@@ -8,7 +8,7 @@
 #ifndef OpenKAI_src_Actuator__ActuatorBase_H_
 #define OpenKAI_src_Actuator__ActuatorBase_H_
 
-#include "../Base/_ThreadBase.h"
+#include "../Base/_ModuleBase.h"
 
 namespace kai
 {
@@ -86,7 +86,7 @@ enum ACTUATOR_CMD_TYPE
 	actCmd_posSpd,
 };
 
-class _ActuatorBase: public _ThreadBase
+class _ActuatorBase: public _ModuleBase
 {
 public:
 	_ActuatorBase();
@@ -115,7 +115,7 @@ protected:
 	virtual bool bCmdTimeout(void);
 	virtual bool open(void);
 	virtual void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ActuatorBase*) This)->update();
 		return NULL;

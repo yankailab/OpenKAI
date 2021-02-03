@@ -53,7 +53,7 @@ _CaffeRegressionTrain::~_CaffeRegressionTrain()
 
 bool _CaffeRegressionTrain::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	KISSm(pK,baseDir);

@@ -35,7 +35,7 @@ public:
 private:
 	void sendPC(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCsend *) This)->update();
 		return NULL;

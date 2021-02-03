@@ -94,7 +94,7 @@ private:
 	void update(void);
 	void updateFilter(void);
 	virtual bool bFilter(Eigen::Vector3d& vP);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PCfilter *) This)->update();
 		return NULL;

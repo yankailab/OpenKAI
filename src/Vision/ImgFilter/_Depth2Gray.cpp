@@ -47,38 +47,23 @@ bool _Depth2Gray::open(void)
 
 void _Depth2Gray::close(void)
 {
-	if(m_threadMode==T_THREAD)
-	{
-		goSleep();
-		while(!bSleeping());
-	}
-
 	this->_VisionBase::close();
 }
 
 bool _Depth2Gray::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    IF_F(check()<0);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Depth2Gray::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
 		if (!m_bOpen)
 			open();
 
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if(m_bOpen)
 		{
@@ -86,7 +71,7 @@ void _Depth2Gray::update(void)
 				filter();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

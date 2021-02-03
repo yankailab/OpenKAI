@@ -37,7 +37,7 @@ private:
 	void updateAlt(void);
 	void updateHdg(void);
 	void updateState(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AP_followClient *) This)->update();
 		return NULL;

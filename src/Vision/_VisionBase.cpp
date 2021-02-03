@@ -31,7 +31,7 @@ _VisionBase::~_VisionBase()
 
 bool _VisionBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
 	pK->v("w",&m_w);
@@ -98,6 +98,11 @@ bool _VisionBase::isOpened(void)
 
 void _VisionBase::close(void)
 {
+    IF_(check()<0);
+
+    m_pT->goSleep();
+	while(!m_pT->bSleeping());
+
 	m_bOpen = false;
 }
 
@@ -124,7 +129,7 @@ void _VisionBase::draw(void)
 		}
 	}
 
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

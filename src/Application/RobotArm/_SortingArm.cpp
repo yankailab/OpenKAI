@@ -38,7 +38,7 @@ _SortingArm::~_SortingArm()
 
 bool _SortingArm::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("actuatorX",&m_actuatorX);
@@ -51,7 +51,7 @@ bool _SortingArm::init(void* pKiss)
 	pK->v("gripZ", &m_rGripZ);
 	pK->a("vDropPos", &m_vDropPos);
 
-	string iName;
+	string n;
 	int i;
 
 	vector<int> vClass;
@@ -63,21 +63,21 @@ bool _SortingArm::init(void* pKiss)
 	pK->a("vActuator", &vActuator);
 	for (i = 0; i < vActuator.size(); i++)
 	{
-		iName = vActuator[i];
-		_ActuatorBase* pA = (_ActuatorBase*) (pK->getInst(iName));
-		IF_Fl(!pA, iName + " not found");
+		n = vActuator[i];
+		_ActuatorBase* pA = (_ActuatorBase*) (pK->getInst(n));
+		IF_Fl(!pA, n + " not found");
 		m_vAB.push_back(pA);
 	}
 
-	iName = "";
-	F_ERROR_F(pK->v("_Sequencer", &iName));
-	m_pSeq = (_Sequencer*) (pK->getInst(iName));
-	IF_Fl(!m_pSeq, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_Sequencer", &n));
+	m_pSeq = (_Sequencer*) (pK->getInst(n));
+	IF_Fl(!m_pSeq, n + " not found");
 
-	iName = "";
-	F_ERROR_F(pK->v("_SortingCtrlServer", &iName));
-	m_pCS = (_SortingCtrlServer*) (pK->getInst(iName));
-	IF_Fl(!m_pCS, iName + " not found");
+	n = "";
+	F_ERROR_F(pK->v("_SortingCtrlServer", &n));
+	m_pCS = (_SortingCtrlServer*) (pK->getInst(n));
+	IF_Fl(!m_pCS, n + " not found");
 
 	return true;
 }
@@ -85,7 +85,7 @@ bool _SortingArm::init(void* pKiss)
 bool _SortingArm::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -97,13 +97,13 @@ bool _SortingArm::start(void)
 
 void _SortingArm::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateArm();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
@@ -246,7 +246,7 @@ void _SortingArm::updateArm(void)
 
 void _SortingArm::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	IF_(!checkWindow());
 	Window* pWin = (Window*) this->m_pWindow;

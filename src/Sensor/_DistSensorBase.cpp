@@ -37,7 +37,7 @@ _DistSensorBase::~_DistSensorBase()
 
 bool _DistSensorBase::init(void* pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("fovH",&m_fovH);
@@ -311,7 +311,7 @@ float _DistSensorBase::dAvr(float degFrom, float degTo)
 
 void _DistSensorBase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 	string msg = "| ";
 	for (int i = 0; i < m_nDiv; i++)

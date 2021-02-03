@@ -32,7 +32,7 @@ public:
 private:
 	bool detect(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_OpenALPR*) This)->update();
 		return NULL;

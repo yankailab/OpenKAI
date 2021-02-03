@@ -85,7 +85,7 @@ private:
 	bool bTargetClass(int iClass);
 	void updateArm(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_PickingArm *) This)->update();
 		return NULL;

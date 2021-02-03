@@ -25,7 +25,7 @@ struct OBJ_CLASS
 	}
 };
 
-class _Universe: public _ThreadBase
+class _Universe: public _ModuleBase
 {
 public:
 	_Universe();
@@ -47,7 +47,7 @@ public:
 	virtual void updateStatistics(void);
 
 private:
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_Universe *) This)->update();
 		return NULL;

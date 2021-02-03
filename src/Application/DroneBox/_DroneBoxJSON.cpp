@@ -33,7 +33,7 @@ bool _DroneBoxJSON::start ( void )
     if ( !m_bThreadON )
     {
         m_bThreadON = true;
-        retCode = pthread_create ( &m_threadID, 0, getUpdateThreadW, this );
+        retCode = pthread_create ( &m_threadID, 0, getUpdateW, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -45,7 +45,7 @@ bool _DroneBoxJSON::start ( void )
     if ( !m_bRThreadON )
     {
         m_bRThreadON = true;
-        retCode = pthread_create ( &m_rThreadID, 0, getUpdateThreadR, this );
+        retCode = pthread_create ( &m_rThreadID, 0, getUpdateR, this );
         if ( retCode != 0 )
         {
             LOG_E ( retCode );
@@ -66,11 +66,11 @@ int _DroneBoxJSON::check ( void )
 
 void _DroneBoxJSON::updateW ( void )
 {
-    while ( m_bThreadON )
+    while(m_pT->bRun())
     {
         if ( !m_pIO )
         {
-            this->sleepTime ( USEC_1SEC );
+            m_pT->sleepTime ( USEC_1SEC );
             continue;
         }
 
@@ -78,16 +78,16 @@ void _DroneBoxJSON::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                this->sleepTime ( USEC_1SEC );
+                m_pT->sleepTime ( USEC_1SEC );
                 continue;
             }
         }
 
-        this->autoFPSfrom();
+        m_pT->autoFPSfrom();
 
         send();
 
-        this->autoFPSto();
+        m_pT->autoFPSto();
     }
 }
 
@@ -109,7 +109,7 @@ void _DroneBoxJSON::updateR ( void )
         }
         
         if(m_strB.empty())
-            this->sleepTime ( 100000 ); //wait for the IObase to wake me up when received data
+            m_pT->sleepTime ( 100000 ); //wait for the IObase to wake me up when received data
     }
 }
 

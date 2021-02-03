@@ -43,14 +43,14 @@ bool _SlideWindow::init(void *pKiss)
 	pK->v("dRange", &m_dRange);
 	pK->v("dMinArea", &m_dMinArea);
 
-	string iName = "";
-//	F_ERROR_F(pK->v("_DNNclassifier", &iName));
-//	m_pC = (_DNNclassifier*) (pK->getInst(iName));
-//	NULL_Fl(m_pC, iName + " not found");
+	string n = "";
+//	F_ERROR_F(pK->v("_DNNclassifier", &n));
+//	m_pC = (_DNNclassifier*) (pK->getInst(n));
+//	NULL_Fl(m_pC, n + " not found");
 
-	F_ERROR_F(pK->v("_DepthVisionBase", &iName));
-	m_pD = (_DepthVisionBase*) (pK->getInst(iName));
-	NULL_Fl(m_pD, iName + " not found");
+	F_ERROR_F(pK->v("_DepthVisionBase", &n));
+	m_pD = (_DepthVisionBase*) (pK->getInst(n));
+	NULL_Fl(m_pD, n + " not found");
 
 	m_nW = 0;
 	while (m_vRoi.x + m_nW * m_dW * m_vRoi.width() + m_w * m_vRoi.width()
@@ -70,7 +70,7 @@ bool _SlideWindow::init(void *pKiss)
 bool _SlideWindow::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -82,9 +82,9 @@ bool _SlideWindow::start(void)
 
 void _SlideWindow::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		if (check() >= 0)
 		{
@@ -94,7 +94,7 @@ void _SlideWindow::update(void)
 				m_pU->m_pPrev->clear();
 		}
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

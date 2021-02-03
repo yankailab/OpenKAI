@@ -44,7 +44,7 @@ public:
 protected:
 	bool updateDrive(void);
 	bool updatePicking(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_AProver_picking *) This)->update();
 		return NULL;

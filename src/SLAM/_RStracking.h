@@ -30,7 +30,7 @@ public:
 
 private:
     void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_RStracking *) This)->update();
 		return NULL;

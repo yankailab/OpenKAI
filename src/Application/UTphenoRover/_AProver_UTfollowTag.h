@@ -58,7 +58,7 @@ public:
 
 private:
 	void updateFollow (void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		(( _AProver_UTfollowTag *) This)->update();
 		return NULL;

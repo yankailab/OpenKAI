@@ -44,7 +44,7 @@ protected:
 
 	void updateMove(void);
 	void update(void);
-	static void* getUpdateThread(void* This)
+	static void* getUpdate(void* This)
 	{
 		((_ZLAC8015*) This)->update();
 		return NULL;

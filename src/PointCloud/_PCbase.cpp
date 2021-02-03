@@ -28,7 +28,7 @@ _PCbase::~_PCbase()
 
 bool _PCbase::init(void *pKiss)
 {
-	IF_F(!this->_ThreadBase::init(pKiss));
+	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	int nPCreserve = 0;
@@ -88,7 +88,7 @@ int _PCbase::size(void)
 
 void _PCbase::draw(void)
 {
-	this->_ThreadBase::draw();
+	this->_ModuleBase::draw();
 
 //	NULL_(m_pViewer);
 //	m_pViewer->updateGeometry(m_iV, getPC());

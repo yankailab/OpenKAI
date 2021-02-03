@@ -29,7 +29,7 @@ bool _HPS3D::init(void *pKiss)
 
 //	pK->v("vRz", &m_vRz);
 
-	string iName;
+	string n;
 
 
 
@@ -89,10 +89,10 @@ bool _HPS3D::init(void *pKiss)
 
 bool _HPS3D::start(void)
 {
-	IF_F(!this->_ThreadBase::start());
+	IF_F(!this->_ModuleBase::start());
 
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		m_bThreadON = false;
@@ -110,14 +110,14 @@ int _HPS3D::check(void)
 
 void _HPS3D::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		updateRS();
 		m_sPC.update();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 

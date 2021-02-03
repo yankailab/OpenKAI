@@ -30,10 +30,10 @@ bool _AP_servo::init(void* pKiss)
 		m_vServo.push_back(s);
 	}
 
-	string iName;
-	iName = "";
-	F_ERROR_F(pK->v("_AP_base", &iName));
-	m_pAP = (_AP_base*) (pK->getInst(iName));
+	string n;
+	n = "";
+	F_ERROR_F(pK->v("_AP_base", &n));
+	m_pAP = (_AP_base*) (pK->getInst(n));
 
 	return true;
 }
@@ -41,7 +41,7 @@ bool _AP_servo::init(void* pKiss)
 bool _AP_servo::start(void)
 {
 	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdateThread, this);
+	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
 	if (retCode != 0)
 	{
 		LOG(ERROR) << "Return code: "<< retCode;
@@ -62,14 +62,14 @@ int _AP_servo::check(void)
 
 void _AP_servo::update(void)
 {
-	while (m_bThreadON)
+	while(m_pT->bRun())
 	{
-		this->autoFPSfrom();
+		m_pT->autoFPSfrom();
 
 		this->_StateBase::update();
 		updateServo();
 
-		this->autoFPSto();
+		m_pT->autoFPSto();
 	}
 }
 
