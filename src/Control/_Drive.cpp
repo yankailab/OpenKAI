@@ -55,8 +55,8 @@ bool _Drive::init(void* pKiss)
 
 bool _Drive::start(void)
 {
-    IF_F(check()<0);
-	return m_pT->start(getUpdate, this);
+    NULL_F(m_pT);
+    return m_pT->start(getUpdate, this);
 }
 
 int _Drive::check ( void )

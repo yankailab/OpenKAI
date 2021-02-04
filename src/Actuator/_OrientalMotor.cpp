@@ -48,16 +48,8 @@ bool _OrientalMotor::init(void* pKiss)
 
 bool _OrientalMotor::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _OrientalMotor::update(void)
@@ -90,13 +82,13 @@ int _OrientalMotor::check(void)
 	NULL__(m_pMB,-1);
 	IF__(!m_pMB->bOpen(),-1);
 
-	return 0;
+	return this->_ActuatorBase::check();
 }
 
 void _OrientalMotor::checkAlarm(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieCheckAlarm.update(m_tStamp));
+	IF_(!m_ieCheckAlarm.update(m_pT->getTstamp()));
 
 	uint16_t pB[2];
 	pB[0] = 1<<7;
@@ -107,7 +99,7 @@ void _OrientalMotor::checkAlarm(void)
 void _OrientalMotor::updatePos (void)
 {
 	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_tStamp));
+	IF_(!m_ieSendCMD.update(m_pT->getTstamp()));
 
 	int32_t step = m_pA->m_p.m_vTarget;
 	int32_t speed = m_pA->m_s.m_vRange.y;
@@ -147,7 +139,7 @@ void _OrientalMotor::updatePos (void)
 void _OrientalMotor::updateSpeed (void)
 {
 	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_tStamp));
+	IF_(!m_ieSendCMD.update(m_pT->getTstamp()));
 
 	int32_t step = 0;
     uint8_t dMode = 1; 
@@ -195,7 +187,7 @@ void _OrientalMotor::updateSpeed (void)
 void _OrientalMotor::readStatus(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieReadStatus.update(m_tStamp));
+	IF_(!m_ieReadStatus.update(m_pT->getTstamp()));
 
 	uint16_t pB[18];
 	int nR = 6;

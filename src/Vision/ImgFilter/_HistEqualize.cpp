@@ -52,7 +52,7 @@ void _HistEqualize::close(void)
 
 bool _HistEqualize::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

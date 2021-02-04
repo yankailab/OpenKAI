@@ -121,7 +121,6 @@ bool _Lane::init(void* pKiss)
 		m_pNp[i] = m_sizeOverhead.y;
 	}
 
-	//link
 	string n = "";
 	F_ERROR_F(pK->v("_VisionBase", &n));
 	m_pV = (_VisionBase*) (pK->getInst(n));
@@ -132,15 +131,8 @@ bool _Lane::init(void* pKiss)
 
 bool _Lane::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _Lane::update(void)
@@ -160,7 +152,7 @@ int _Lane::check(void)
 	NULL__(m_pV, -1);
 	IF__(m_pV->BGR()->m()->empty(),-1);
 
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 void _Lane::detect(void)

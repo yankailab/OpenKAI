@@ -67,7 +67,8 @@ bool _IOBase::write(uint8_t* pBuf, int nB)
 
 	IF_F(!m_fifoW.input(pBuf,nB));
 
-	this->wakeUp();
+    NULL_T(m_pT);
+	m_pT->wakeUp();
 	return true;
 }
 

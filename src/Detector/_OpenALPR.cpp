@@ -59,16 +59,8 @@ bool _OpenALPR::init(void* pKiss)
 
 bool _OpenALPR::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _OpenALPR::update(void)
@@ -100,7 +92,7 @@ int _OpenALPR::check(void)
 	IF__(pBGR->tStamp() <= m_fBGR.tStamp(), -1);
 	NULL__(m_pAlpr, -1);
 
-	return 0;
+	return this->_DetectorBase::check();
 }
 
 bool _OpenALPR::detect(void)
@@ -136,7 +128,7 @@ bool _OpenALPR::detect(void)
 
 		OBJECT o;
 		o.init();
-		o.m_tStamp = m_tStamp;
+		o.m_tStamp = m_pT->getTstamp();
 		alpr::AlprPlate content = plate.topNPlates[0];
 		o.setTopClass(0, content.overall_confidence);
 

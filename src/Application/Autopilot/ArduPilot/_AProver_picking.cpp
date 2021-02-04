@@ -79,16 +79,8 @@ bool _AProver_picking::init(void* pKiss)
 
 bool _AProver_picking::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR)<< "Return code: " << retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AProver_picking::check(void)
@@ -188,7 +180,7 @@ bool _AProver_picking::updatePicking(void)
 		m_pArmMC->transit("EXTERNAL");
 		m_pArm->move(vM);
 		m_pArm->grip((m_vRC[4].i())?false:true);
-		m_pArm->wakeUp();
+//		m_pArm->wakeUp();
 
 //		vM.init(-1.0);
 //		vM.x = m_vRC[3].v();

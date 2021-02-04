@@ -105,6 +105,7 @@ private:
 	}
 
 public:
+    _Thread* m_pTr;
 	_IOBase* m_pIO;
 
 	string m_msgFinishSend;
@@ -132,11 +133,6 @@ public:
 	CETCUS_WAYPOINT m_wpStart;
 	CETCUS_WAYPOINT m_wpEnd;
 	vector<CETCUS_WAYPOINT> m_vWP;
-
-
-	pthread_t m_rThreadID;
-	bool	m_bRThreadON;
-
 
 };
 

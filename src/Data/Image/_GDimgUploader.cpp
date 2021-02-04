@@ -56,15 +56,8 @@ bool _GDimgUploader::init(void* pKiss)
 
 bool _GDimgUploader::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _GDimgUploader::update(void)
@@ -73,10 +66,10 @@ void _GDimgUploader::update(void)
 	{
 		m_pT->autoFPSfrom();
 
-		if(m_tStamp - m_tLastUpload > m_tInterval)
+		if(m_pT->getTstamp() - m_tLastUpload > m_tInterval)
 		{
 			updateUpload();
-			m_tLastUpload = m_tStamp;
+			m_tLastUpload = m_pT->getTstamp();
 		}
 
 		m_pT->autoFPSto();

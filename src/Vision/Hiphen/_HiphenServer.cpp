@@ -45,8 +45,8 @@ bool _HiphenServer::init(void* pKiss)
 
 bool _HiphenServer::start(void)
 {
-    IF_F(check()<0);
-	return m_pT->start(getUpdate, this);
+    NULL_F(m_pT);
+    return m_pT->start(getUpdate, this);
 }
 
 void _HiphenServer::update(void)

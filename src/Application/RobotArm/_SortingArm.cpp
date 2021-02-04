@@ -84,15 +84,8 @@ bool _SortingArm::init(void* pKiss)
 
 bool _SortingArm::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _SortingArm::update(void)
@@ -160,7 +153,7 @@ void _SortingArm::updateArm(void)
 			return;
 		}
 
-		float spd = m_pCS->m_cSpeed * ((float) m_dTime) * 1e-6;
+		float spd = m_pCS->m_cSpeed * ((float) m_pT->getDtime()) * 1e-6;
 		m_tO.setY(m_tO.getY() + spd);
 		y = m_tO.getY();
 

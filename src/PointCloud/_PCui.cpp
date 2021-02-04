@@ -6,10 +6,12 @@ namespace kai
 
 _PCui::_PCui()
 {
+    m_pTr = NULL;
 }
 
 _PCui::~_PCui()
 {
+    DEL(m_pTr);
 }
 
 bool _PCui::init ( void* pKiss )
@@ -26,39 +28,26 @@ bool _PCui::init ( void* pKiss )
         IF_CONT ( !pP );
         m_vPCT.push_back ( pP );
     }
+    
+    Kiss* pKt = pK->child("threadR");
+    IF_F(pKt->empty());
+    
+    m_pTr = new _Thread();
+    if(!m_pTr->init(pKt))
+    {
+        DEL(m_pTr);
+        return false;
+    }
 
     return true;
 }
 
 bool _PCui::start ( void )
 {
-    int retCode;
-
-    if ( !m_bThreadON )
-    {
-        m_bThreadON = true;
-        retCode = pthread_create ( &m_threadID, 0, getUpdateW, this );
-        if ( retCode != 0 )
-        {
-            LOG_E ( retCode );
-            m_bThreadON = false;
-            return false;
-        }
-    }
-
-    if ( !m_bRThreadON )
-    {
-        m_bRThreadON = true;
-        retCode = pthread_create ( &m_rThreadID, 0, getUpdateR, this );
-        if ( retCode != 0 )
-        {
-            LOG_E ( retCode );
-            m_bRThreadON = false;
-            return false;
-        }
-    }
-
-    return true;
+    NULL_F(m_pT);
+    NULL_F(m_pTr);
+    IF_F(!m_pT->start(getUpdateW, this));
+	return m_pTr->start(getUpdateR, this);
 }
 
 int _PCui::check ( void )
@@ -148,10 +137,10 @@ void _PCui::send ( void )
 
 void _PCui::updateR ( void )
 {
-    while ( m_bRThreadON )
+    while ( m_pTr->bRun() )
     {
         recv();
-        m_pT->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        m_pTr->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
     }
 }
 

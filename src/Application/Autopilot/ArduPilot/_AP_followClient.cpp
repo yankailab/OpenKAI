@@ -56,16 +56,8 @@ bool _AP_followClient::init(void *pKiss)
 
 bool _AP_followClient::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: " << retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_followClient::check(void)
@@ -122,7 +114,7 @@ void _AP_followClient::updateBB(void)
 	vBB.w = pWin->m_vMouse.y + m_bbSize;
 
 	IF_(
-			!m_ieSend.update(m_tStamp) && EQUAL(vBB.x, m_vBB.x, m_diff) && EQUAL(vBB.y, m_vBB.y, m_diff) && EQUAL(vBB.z, m_vBB.z, m_diff) && EQUAL(vBB.w, m_vBB.w, m_diff));
+			!m_ieSend.update(m_pT->getTstamp()) && EQUAL(vBB.x, m_vBB.x, m_diff) && EQUAL(vBB.y, m_vBB.y, m_diff) && EQUAL(vBB.z, m_vBB.z, m_diff) && EQUAL(vBB.w, m_vBB.w, m_diff));
 
 	m_pAL->setBB(vBB);
 	m_vBB = vBB;
@@ -209,7 +201,7 @@ void _AP_followClient::draw(void)
 				Scalar(0, 255, 0), 1);
 	}
 
-	if (m_tStamp - m_pAL->m_tBB < USEC_1SEC)
+	if (m_pT->getTstamp() - m_pAL->m_tBB < USEC_1SEC)
 	{
 		//tracking bb
 		rectangle(*pMat,
@@ -225,7 +217,7 @@ void _AP_followClient::draw(void)
 						m_pAL->m_vBB.midY() * pMat->rows), Scalar(0, 0, 255));
 	}
 
-	if (m_tStamp - m_pAL->m_tTargetBB < USEC_1SEC)
+	if (m_pT->getTstamp() - m_pAL->m_tTargetBB < USEC_1SEC)
 	{
 		//target bb
 		rectangle(*pMat,

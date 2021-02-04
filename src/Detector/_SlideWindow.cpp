@@ -69,15 +69,8 @@ bool _SlideWindow::init(void *pKiss)
 
 bool _SlideWindow::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _SlideWindow::update(void)
@@ -90,7 +83,7 @@ void _SlideWindow::update(void)
 		{
 			detect();
 
-			if (m_bGoSleep)
+			if (m_pT->bGoSleep())
 				m_pU->m_pPrev->clear();
 		}
 
@@ -106,7 +99,7 @@ int _SlideWindow::check(void)
 	NULL__(m_pD, -1);
 	IF__(m_pD->BGR()->bEmpty(), -1);
 
-	return 0;
+	return this->_DetectorBase::check();
 }
 
 void _SlideWindow::detect(void)

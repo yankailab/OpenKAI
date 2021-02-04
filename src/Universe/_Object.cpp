@@ -40,7 +40,7 @@ void _Object::init(void)
 
 bool _Object::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

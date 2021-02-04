@@ -5,11 +5,13 @@ namespace kai
 
 _AP_droneBoxJSON::_AP_droneBoxJSON()
 {
+    m_Tr = NULL;
     m_pAPgcs = NULL;
 }
 
 _AP_droneBoxJSON::~_AP_droneBoxJSON()
 {
+    DEL(m_pTr);
 }
 
 bool _AP_droneBoxJSON::init ( void* pKiss )
@@ -22,38 +24,26 @@ bool _AP_droneBoxJSON::init ( void* pKiss )
     pK->v ( "_AP_gcs", &n );
     m_pAPgcs = ( _AP_gcs* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pAPgcs, n + ": not found" );
+    
+    Kiss* pKt = pK->child("threadR");
+    IF_F(pKt->empty());
+    
+    m_pTr = new _Thread();
+    if(!m_pTr->init(pKt))
+    {
+        DEL(m_pTr);
+        return false;
+    }
+    
     return true;
 }
 
 bool _AP_droneBoxJSON::start ( void )
 {
-    int retCode;
-
-    if ( !m_bThreadON )
-    {
-        m_bThreadON = true;
-        retCode = pthread_create ( &m_threadID, 0, getUpdateW, this );
-        if ( retCode != 0 )
-        {
-            LOG_E ( retCode );
-            m_bThreadON = false;
-            return false;
-        }
-    }
-
-    if ( !m_bRThreadON )
-    {
-        m_bRThreadON = true;
-        retCode = pthread_create ( &m_rThreadID, 0, getUpdateR, this );
-        if ( retCode != 0 )
-        {
-            LOG_E ( retCode );
-            m_bRThreadON = false;
-            return false;
-        }
-    }
-
-    return true;
+    NULL_F(m_pT);
+    NULL_F(m_pTr);
+	IF_F(!m_pT->start(getUpdateW, this));
+	return m_pTr->start(getUpdateR, this);
 }
 
 int _AP_droneBoxJSON::check ( void )
@@ -100,7 +90,7 @@ void _AP_droneBoxJSON::send ( void )
         
     object o;
     JO(o, "id", (double)1);
-    JO(o, "t", (double)m_tStamp);
+    JO(o, "t", (double)m_pT->getTstamp());
 
     if(pState->bTAKEOFF_REQUEST())
     {
@@ -128,7 +118,7 @@ void _AP_droneBoxJSON::send ( void )
 
 void _AP_droneBoxJSON::updateR ( void )
 {
-    while ( m_bRThreadON )
+    while ( m_pTr->bRun() )
     {
         if(recv())
         {

@@ -89,7 +89,7 @@ bool _Pylon::open(void)
 
 bool _Pylon::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

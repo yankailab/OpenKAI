@@ -66,7 +66,7 @@ void _VideoFile::close(void)
 
 bool _VideoFile::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

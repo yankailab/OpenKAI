@@ -73,16 +73,8 @@ bool _AProver_followTag::init ( void* pKiss )
 
 bool _AProver_followTag::start ( void )
 {
-    m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdate, this );
-    if ( retCode != 0 )
-    {
-        LOG ( ERROR ) << "Return code: " << retCode;
-        m_bThreadON = false;
-        return false;
-    }
-
-    return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AProver_followTag::check ( void )
@@ -140,8 +132,8 @@ void _AProver_followTag::updateFollow ( void )
         m_errX = 0.0;
     }
 
-    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_tStamp )
-             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_tStamp );
+    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_pT->getTstamp())
+             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_pT->getTstamp());
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
 

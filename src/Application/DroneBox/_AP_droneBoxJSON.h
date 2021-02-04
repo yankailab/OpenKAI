@@ -43,6 +43,7 @@ private:
 	}
 
 public:
+    _Thread* m_Tr;
     _AP_gcs* m_pAPgcs;
 };
 

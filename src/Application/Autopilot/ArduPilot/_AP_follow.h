@@ -34,7 +34,7 @@ protected:
 
 public:
 	_DetectorBase*	m_pDet;
-	_TrackerBase*	m_pT;
+	_TrackerBase*	m_pTracker;
 	int				m_iClass;
 	bool			m_bTarget;
 	vFloat4			m_vTargetBB;

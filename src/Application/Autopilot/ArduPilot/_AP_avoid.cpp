@@ -41,16 +41,8 @@ bool _AP_avoid::init(void* pKiss)
 
 bool _AP_avoid::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_avoid::check(void)
@@ -59,7 +51,7 @@ int _AP_avoid::check(void)
 	NULL__(m_pDet, -1);
 	NULL__(m_pMavlink, -1);
 
-	return 0;
+	return this->_StateBase::check();
 }
 
 void _AP_avoid::update(void)

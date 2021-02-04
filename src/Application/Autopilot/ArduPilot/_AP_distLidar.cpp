@@ -19,7 +19,6 @@ bool _AP_distLidar::init(void* pKiss)
 	IF_F(!this->_StateBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	//link
 	string n;
 
 	n = "";

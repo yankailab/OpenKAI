@@ -40,7 +40,7 @@ bool _ModuleBase::init(void* pKiss)
 
 bool _ModuleBase::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

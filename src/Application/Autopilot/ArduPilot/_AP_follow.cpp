@@ -8,7 +8,7 @@ namespace kai
 _AP_follow::_AP_follow()
 {
 	m_pDet = NULL;
-	m_pT = NULL;
+	m_pTracker = NULL;
 	m_iClass = -1;
 
 	m_bTarget = false;
@@ -61,7 +61,7 @@ bool _AP_follow::init(void* pKiss)
 
 	n = "";
 	pK->v("_TrackerBase", &n);
-	m_pT = (_TrackerBase*)pK->getInst(n);
+	m_pTracker = (_TrackerBase*)pK->getInst(n);
 
 	n = "";
 	pK->v("_DetectorBase", &n);
@@ -72,16 +72,8 @@ bool _AP_follow::init(void* pKiss)
 
 bool _AP_follow::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: " << retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F( m_pT );
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_follow::check(void)
@@ -117,8 +109,8 @@ bool _AP_follow::updateTarget(void)
 	if(!bActive())
 	{
 		m_bTarget = false;
-		if(m_pT)
-			m_pT->stopTrack();
+		if( m_pTracker )
+			m_pTracker->stopTrack();
 
 		return false;
 	}
@@ -127,14 +119,14 @@ bool _AP_follow::updateTarget(void)
 		m_pAP->setMount(m_apMount);
 
 	m_bTarget = findTarget();
-	if(m_pT)
+	if( m_pTracker )
 	{
 		if(m_bTarget)
-			m_pT->startTrack(m_vTargetBB);
+			m_pTracker->startTrack(m_vTargetBB);
 
-		if(m_pT->trackState() == track_update)
+		if( m_pTracker->trackState() == track_update)
 		{
-			m_vTargetBB = *m_pT->getBB();
+			m_vTargetBB = *m_pTracker->getBB();
 			m_bTarget = true;
 		}
 	}

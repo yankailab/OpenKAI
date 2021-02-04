@@ -62,15 +62,8 @@ bool _SortingCtrlServer::init(void *pKiss)
 
 bool _SortingCtrlServer::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _SortingCtrlServer::check(void)
@@ -92,10 +85,10 @@ void _SortingCtrlServer::update(void)
 			updateImg();
 			m_pU->updateObj();
 
-//		if(m_ieState.update(m_tStamp))
+//		if(m_ieState.update(m_pT->getTstamp()))
 //			m_pPB->sendState(m_iState);
 
-			if (m_bGoSleep)
+			if (m_pT->bGoSleep())
 				m_pU->m_pPrev->clear();
 		}
 
@@ -108,7 +101,7 @@ void _SortingCtrlServer::updateImg(void)
 	IF_(check() < 0);
 
 	//update existing target positions
-	float spd = m_cSpeed * ((float) m_dTime) * 1e-6;
+	float spd = m_cSpeed * ((float) m_pT->getDtime()) * 1e-6;
 	int i = 0;
 	_Object *pO;
 	while ((pO = m_pU->get(i++)))

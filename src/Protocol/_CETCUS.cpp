@@ -5,8 +5,7 @@ namespace kai
 
 _CETCUS::_CETCUS()
 {
-	m_rThreadID = 0;
-	m_bRThreadON = false;
+    m_pTr = NULL;
 	m_pIO = NULL;
 
 	m_msgFinishSend = "SWOOLEFN";
@@ -35,6 +34,7 @@ _CETCUS::_CETCUS()
 
 _CETCUS::~_CETCUS()
 {
+    DEL(m_pTr);
 }
 
 bool _CETCUS::init(void* pKiss)
@@ -51,39 +51,26 @@ bool _CETCUS::init(void* pKiss)
 	F_ERROR_F(pK->v("_IOBase", &n));
 	m_pIO = (_IOBase*) (pK->getInst(n));
 	NULL_Fl(m_pIO,"_IOBase not found");
+    
+    Kiss* pKt = pK->child("threadR");
+    IF_F(pKt->empty());
+    
+    m_pTr = new _Thread();
+    if(!m_pTr->init(pKt))
+    {
+        DEL(m_pTr);
+        return false;
+    }
 
 	return true;
 }
 
 bool _CETCUS::start(void)
 {
-	int retCode;
-
-	if(!m_bThreadON)
-	{
-		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bThreadON = false;
-			return false;
-		}
-	}
-
-	if(!m_bRThreadON)
-	{
-		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bRThreadON = false;
-			return false;
-		}
-	}
-
-	return true;
+    NULL_F(m_pT);
+    NULL_F(m_pTr);
+    IF_F(!m_pT->start(getUpdateW, this));
+	return m_pTr->start(getUpdateR, this);
 }
 
 int _CETCUS::check(void)

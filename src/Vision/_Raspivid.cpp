@@ -75,7 +75,7 @@ bool _Raspivid::init(void* pKiss)
 bool _Raspivid::open(void)
 {
 	string cmdR = m_cmd + " " + "-w " + i2str(m_w) + " " + "-h " + i2str(m_h)
-			+ " " + "-fps " + i2str(m_targetFPS) + " " + "-t 0 " + "-o - "
+			+ " " + "-fps " + i2str((int)m_pT->getTargetFPS()) + " " + "-t 0 " + "-o - "
 			+ m_option + " ";
 
 	if (m_cMode == raspivid_rgb)
@@ -102,7 +102,7 @@ bool _Raspivid::open(void)
 
 bool _Raspivid::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

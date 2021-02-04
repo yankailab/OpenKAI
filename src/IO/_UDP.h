@@ -45,6 +45,8 @@ private:
 	}
 
 public:
+    _Thread* m_pTr;
+    
 	string	m_addr;
 	uint16_t m_port;
 

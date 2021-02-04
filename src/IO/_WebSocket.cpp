@@ -12,6 +12,7 @@ namespace kai
 
 _WebSocket::_WebSocket()
 {
+    m_pTr = NULL;
 	m_fifoIn = "/tmp/wspipein.fifo";
 	m_fifoOut = "/tmp/wspipeout.fifo";
 	m_fdW = 0;
@@ -28,6 +29,7 @@ _WebSocket::~_WebSocket()
 	pthread_mutex_destroy(&m_mutexW);
 	m_vClient.clear();
 	close();
+    DEL(m_pTr);
 }
 
 bool _WebSocket::init(void* pKiss)
@@ -39,6 +41,17 @@ bool _WebSocket::init(void* pKiss)
 	pK->v("fifoOut", &m_fifoOut);
 
 	m_vClient.clear();
+    
+    Kiss* pKt = pK->child("threadR");
+    IF_F(pKt->empty());
+    
+    m_pTr = new _Thread();
+    if(!m_pTr->init(pKt))
+    {
+        DEL(m_pTr);
+        return false;
+    }
+    
 	return true;
 }
 
@@ -67,33 +80,10 @@ void _WebSocket::close(void)
 
 bool _WebSocket::start(void)
 {
-	int retCode;
-
-	if(!m_bThreadON)
-	{
-		m_bThreadON = true;
-		retCode = pthread_create(&m_threadID, 0, getUpdateW, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bThreadON = false;
-			return false;
-		}
-	}
-
-	if(!m_bRThreadON)
-	{
-		m_bRThreadON = true;
-		retCode = pthread_create(&m_rThreadID, 0, getUpdateR, this);
-		if (retCode != 0)
-		{
-			LOG_E(retCode);
-			m_bRThreadON = false;
-			return false;
-		}
-	}
-
-	return true;
+    NULL_F(m_pT);
+    NULL_F(m_pTr);
+    IF_F(!m_pT->start(getUpdateW, this));
+	return m_pTr->start(getUpdateR, this);
 }
 
 void _WebSocket::updateW(void)
@@ -148,8 +138,6 @@ void _WebSocket::updateR(void)
 
 		m_fifoR.input(pB, nR);
 		decodeMsg();
-
-		this->wakeUpLinked();
 	}
 }
 
@@ -307,7 +295,7 @@ WS_CLIENT* _WebSocket::findClientById(uint32_t id)
 
 void _WebSocket::draw(void)
 {
-	this->_ModuleBase::draw();
+	this->_IOBase::draw();
 	addMsg("nClients: " + i2str(m_vClient.size()),1);
 }
 

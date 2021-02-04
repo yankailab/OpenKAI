@@ -59,7 +59,7 @@ bool _PCbase::init(void *pKiss)
 
 int _PCbase::check(void)
 {
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 void _PCbase::getPC(PointCloud* pPC)

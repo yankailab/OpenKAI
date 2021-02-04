@@ -55,16 +55,8 @@ bool _DeltaArm::init(void* pKiss)
 
 bool _DeltaArm::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _DeltaArm::update(void)
@@ -84,7 +76,7 @@ void _DeltaArm::readStatus(void)
 {
 	static uint64_t tLastStatus = 0;
 	IF_(m_tStamp - tLastStatus < 100000);
-	tLastStatus = m_tStamp;
+	tLastStatus = m_pT->getTstamp();
 
 	float v[3];
 	m_dr.GetXYZ(v);

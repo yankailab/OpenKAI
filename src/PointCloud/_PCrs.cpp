@@ -173,17 +173,8 @@ void _PCrs::hardwareReset(void)
 
 bool _PCrs::start(void)
 {
-	IF_F(!this->_ModuleBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _PCrs::check(void)

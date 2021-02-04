@@ -80,15 +80,8 @@ bool _UTprArmL::init(void *pKiss)
 
 bool _UTprArmL::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _UTprArmL::check(void)
@@ -192,8 +185,8 @@ bool _UTprArmL::follow(void)
 	float y = m_vP.y - m_vPtarget.y;
 	float r = sqrt(x*x + y*y);
 
-	float sX = m_pXpid->update(m_vP.x, m_vPtarget.x, m_tStamp);
-	float sY = m_pYpid->update(m_vP.y, m_vPtarget.y, m_tStamp);
+	float sX = m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTstamp());
+	float sY = m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTstamp());
 	float sZ = m_zSpeed * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 
 	m_pAx->setStarget(0, sX);

@@ -59,16 +59,8 @@ bool _AP_goto::init(void* pKiss)
 
 bool _AP_goto::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: " << retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_goto::check(void)
@@ -120,7 +112,7 @@ bool _AP_goto::findTarget(void)
 {
 	IF_F(check()<0);
 
-	IF_F(!m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving(m_tStamp));
+	IF_F(!m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving(m_pT->getTstamp()));
 
 	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
 	IF_F(vAPpos.x <= 0.0);

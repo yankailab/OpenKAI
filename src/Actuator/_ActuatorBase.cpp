@@ -95,21 +95,14 @@ bool _ActuatorBase::power(bool bON)
 
 bool _ActuatorBase::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _ActuatorBase::update(void)
 {
-	m_tStamp = getTimeUsec();
+    IF_(check() < 0);
+	m_pT->setTstamp(getTimeUsec());
 }
 
 bool _ActuatorBase::bCmdTimeout(void)
@@ -144,7 +137,7 @@ void _ActuatorBase::setPtarget(int i, float p)
 	pA->m_p.setTarget(p);
 
 	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = m_tStamp;
+	m_tLastCmd = m_pT->getTstamp();
 }
 
 void _ActuatorBase::setStarget(int i, float s)
@@ -156,7 +149,7 @@ void _ActuatorBase::setStarget(int i, float s)
 	pA->m_s.setTarget(s);
 
 	m_lastCmdType = actCmd_spd;
-	m_tLastCmd = m_tStamp;
+	m_tLastCmd = m_pT->getTstamp();
 }
 
 void _ActuatorBase::gotoOrigin(void)
@@ -168,7 +161,7 @@ void _ActuatorBase::gotoOrigin(void)
 	}
 
 	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = m_tStamp;
+	m_tLastCmd = m_pT->getTstamp();
 }
 
 bool _ActuatorBase::bComplete(void)

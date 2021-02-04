@@ -117,6 +117,11 @@ void _Thread::goSleep(void)
 	m_bGoSleep = true;
 }
 
+bool _Thread::bGoSleep(void)
+{
+	return m_bGoSleep;
+}
+
 bool _Thread::bSleeping(void)
 {
 	return m_bSleeping;
@@ -169,6 +174,11 @@ void _Thread::autoFPSto(void)
 		m_FPS = 0;
 		sleepTime(0);
 	}
+}
+
+void _Thread::setTstamp(float tStamp)
+{
+    m_tStamp = tStamp;
 }
 
 float _Thread::getTstamp(void)

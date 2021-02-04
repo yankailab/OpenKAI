@@ -73,7 +73,7 @@ bool _LeddarVu::init(void* pKiss)
 
 bool _LeddarVu::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 
@@ -212,7 +212,7 @@ bool _LeddarVu::updateLidar(void)
 	m_nDiv = reg[1];
 	m_nDetection = reg[10];
 	m_lightSrcPwr = reg[11];
-	m_tStamp = reg[13] + (reg[14] << 16);
+//	m_tStamp = reg[13] + (reg[14] << 16);
 
 	const static float BASE_D = 1.0 / 100.0;
 	const static float BASE_A = 1.0 / 64.0;

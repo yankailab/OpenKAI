@@ -38,7 +38,7 @@ bool _ProtocolBase::init(void* pKiss)
 
 bool _ProtocolBase::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

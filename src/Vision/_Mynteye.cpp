@@ -88,7 +88,7 @@ void _Mynteye::close(void)
 
 bool _Mynteye::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

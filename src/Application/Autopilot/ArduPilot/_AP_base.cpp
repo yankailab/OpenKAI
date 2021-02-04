@@ -73,16 +73,8 @@ bool _AP_base::init(void* pKiss)
 
 bool _AP_base::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: "<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_base::check(void)
@@ -114,7 +106,7 @@ void _AP_base::updateBase(void)
 	m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
 
 	//Attitude
-	if(m_pMav->m_attitude.bReceiving(m_tStamp))
+	if(m_pMav->m_attitude.bReceiving(m_pT->getTstamp()))
 	{
 		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
 		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
@@ -122,7 +114,7 @@ void _AP_base::updateBase(void)
 	}
 
 	//get home position
-	if(!m_pMav->m_homePosition.bReceiving(m_tStamp))
+	if(!m_pMav->m_homePosition.bReceiving(m_pT->getTstamp()))
 	{
 		m_pMav->clGetHomePosition();
 	}
@@ -135,7 +127,7 @@ void _AP_base::updateBase(void)
 	}
 
 	//get position
-	if(m_pMav->m_globalPositionINT.bReceiving(m_tStamp))
+	if(m_pMav->m_globalPositionINT.bReceiving(m_pT->getTstamp()))
 	{
 		m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
 		m_vGlobalPos.y = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
@@ -144,7 +136,7 @@ void _AP_base::updateBase(void)
 		m_apHdg = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
 	}
 
-	if(m_pMav->m_localPositionNED.bReceiving(m_tStamp))
+	if(m_pMav->m_localPositionNED.bReceiving(m_pT->getTstamp()))
 	{
 		m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
 		m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
@@ -155,10 +147,10 @@ void _AP_base::updateBase(void)
 	}
 
 	//Send Heartbeat
-	if(m_freqSendHeartbeat > 0 && m_tStamp - m_lastHeartbeat >= m_freqSendHeartbeat)
+	if(m_freqSendHeartbeat > 0 && m_pT->getTstamp() - m_lastHeartbeat >= m_freqSendHeartbeat)
 	{
 		m_pMav->heartbeat();
-		m_lastHeartbeat = m_tStamp;
+		m_lastHeartbeat = m_pT->getTstamp();
 	}
 
 	m_pMav->sendSetMsgInterval();

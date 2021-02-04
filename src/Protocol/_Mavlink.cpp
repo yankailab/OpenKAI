@@ -109,7 +109,7 @@ bool _Mavlink::init(void* pKiss)
 
 bool _Mavlink::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 
@@ -686,7 +686,7 @@ void _Mavlink::sendSetMsgInterval(void)
 	for(MavMsgBase* pM : m_vpMsg)
 	{
 		IF_CONT(pM->m_tInterval < 0);
-		IF_CONT(pM->bReceiving(m_tStamp));
+		IF_CONT(pM->bReceiving(m_pT->getTstamp()));
 		clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
 	}
 }

@@ -109,7 +109,7 @@ bool _DetectorBase::init(void* pKiss)
 
 int _DetectorBase::check(void)
 {
-	return 0;
+	return this->_ModuleBase::check();
 }
 
 int _DetectorBase::getClassIdx(string& className)

@@ -45,6 +45,7 @@ private:
 	}
 
 public:
+    _Thread* m_Tr;
     _DroneBox* m_pDB;
 };
 

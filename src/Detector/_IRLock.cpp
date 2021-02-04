@@ -50,20 +50,13 @@ int _IRLock::check(void)
 {
 	NULL__(m_pU, -1);
 
-	return 0;
+	return this->_DetectorBase::check();
 }
 
 bool _IRLock::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _IRLock::update(void)
@@ -76,7 +69,7 @@ void _IRLock::update(void)
 		{
 			detect();
 
-			if (m_bGoSleep)
+			if (m_pT->bGoSleep())
 				m_pU->m_pPrev->clear();
 		}
 
@@ -89,7 +82,7 @@ void _IRLock::detect(void)
 	IF_(!readPacket());
 
 	_Object o;
-	o.m_tStamp = m_tStamp;
+//	o.m_tStamp = m_pT->getTstamp();
 	o.setTopClass(INT_MAX, 1.0);
 
 	uint16_t x = unpack_uint16(&m_pBuf[8], false);

@@ -53,7 +53,7 @@ void _SingleTracker::createTracker(void)
 
 bool _SingleTracker::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 

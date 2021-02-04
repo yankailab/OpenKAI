@@ -128,15 +128,8 @@ bool _PickingArm::init(void *pKiss)
 
 bool _PickingArm::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _PickingArm::check(void)
@@ -298,9 +291,9 @@ bool _PickingArm::follow(void)
 	m_vP.x = x*c - y*s + m_vPtarget.x;
 	m_vP.y = x*s + y*c + m_vPtarget.y;
 
-	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_tStamp);
-	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_tStamp);
-	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_tStamp) * constrain(1.0 - r*m_zrK, 0.0, 1.0);
+	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTstamp());
+	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTstamp());
+	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_pT->getTstamp()) * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 	speed(m_vS);
 
 	return false;
@@ -332,11 +325,11 @@ _Object* _PickingArm::findTarget(void)
 	if(tO)
 	{
 		m_o = *tO;
-		m_oTstamp = m_tStamp;
+		m_oTstamp = m_pT->getTstamp();
 		return &m_o;
 	}
 
-	if(m_tStamp - m_oTstamp < m_oTimeout)
+	if(m_pT->getTstamp() - m_oTstamp < m_oTimeout)
 	{
 		return &m_o;
 	}

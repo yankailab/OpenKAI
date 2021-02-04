@@ -45,17 +45,8 @@ bool _PCsend::init(void *pKiss)
 
 bool _PCsend::start(void)
 {
-	IF_F(!this->_ModuleBase::start());
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _PCsend::check(void)
@@ -64,7 +55,7 @@ int _PCsend::check(void)
 	NULL__(m_pIO, -1);
 	IF__(!m_pIO->isOpen(),-1);
 
-	return 0;
+	return this->_PCbase::check();
 }
 
 void _PCsend::update(void)

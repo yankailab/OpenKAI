@@ -43,16 +43,8 @@ bool _ZLAC8015::init(void* pKiss)
 
 bool _ZLAC8015::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _ZLAC8015::check(void)
@@ -61,7 +53,7 @@ int _ZLAC8015::check(void)
 	IF__(!m_pMB->bOpen(),-1);
 	NULL__(m_pA,-1);
 
-	return 0;
+	return this->_ActuatorBase::check();
 }
 
 void _ZLAC8015::update(void)
@@ -182,7 +174,7 @@ bool _ZLAC8015::bComplete(void)
 bool _ZLAC8015::readStatus(void)
 {
 	IF_F(check()<0);
-	IF_T(!m_ieReadStatus.update(m_tStamp));
+	IF_T(!m_ieReadStatus.update(m_pT->getTstamp()));
 
 	uint16_t pB[2];
 	int r = m_pMB->readRegisters(m_iSlave, 0x202C, 1, pB);
@@ -198,7 +190,7 @@ bool _ZLAC8015::readStatus(void)
 bool _ZLAC8015::clearAlarm(void)
 {
 	IF_F(check()<0);
-	IF_T(!m_ieReadStatus.update(m_tStamp));
+	IF_T(!m_ieReadStatus.update(m_pT->getTstamp()));
 
     int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
 	IF_F(r != 1);

@@ -82,16 +82,8 @@ bool _AProver_UTfollowTag::init ( void* pKiss )
 
 bool _AProver_UTfollowTag::start ( void )
 {
-    m_bThreadON = true;
-    int retCode = pthread_create ( &m_threadID, 0, getUpdate, this );
-    if ( retCode != 0 )
-    {
-        LOG ( ERROR ) << "Return code: " << retCode;
-        m_bThreadON = false;
-        return false;
-    }
-
-    return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AProver_UTfollowTag::check ( void )
@@ -139,7 +131,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
             errSide = dir * (pO->getY() - m_targetSide);
     }
     m_errSide = errSide;
-    m_nStr = dir * m_pPIDside->update ( m_errSide, 0.0, m_tStamp );
+    m_nStr = dir * m_pPIDside->update ( m_errSide, 0.0, m_pT->getTstamp());
 
     
     // make a stop at divider

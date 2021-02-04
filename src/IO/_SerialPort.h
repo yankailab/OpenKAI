@@ -47,6 +47,7 @@ private:
 	}
 
 private:
+    _Thread* m_pTr;
 	int m_fd;
 	string m_port;
 	int m_baud;

@@ -40,7 +40,8 @@ bool _HiphenCMD::init(void* pKiss)
 
 bool _HiphenCMD::start(void)
 {
-    IF_F(check()<0);
+    NULL_F(m_pT);
+    NULL_F(m_pTr);
 	IF_F(!m_pT->start(getUpdateW, this));
 	return m_pTr->start(getUpdateR, this);
 }

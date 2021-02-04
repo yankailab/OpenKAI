@@ -47,14 +47,12 @@ private:
 	}
 
 public:
-	_IOBase* m_pIO;
+    _Thread* m_pTr;
+    _IOBase* m_pIO;
 
 	string m_msgFinishSend;
 	string m_msgFinishRecv;
     string m_strB;
-
-	pthread_t m_rThreadID;
-	bool	m_bRThreadON;
 
     INTERVAL_EVENT m_tIntHeartbeat;
 };

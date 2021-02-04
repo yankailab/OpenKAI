@@ -44,8 +44,9 @@ private:
 	}
 
 public:
-    vector<_PCtransform*> m_vPCT;
+    _Thread* m_pTr;
     
+    vector<_PCtransform*> m_vPCT;
 
 };
 

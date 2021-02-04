@@ -84,8 +84,6 @@ BASE* Module::createInstance(Kiss* pK)
     ADD_MODULE(_DroneBoxJSON);
     ADD_MODULE(_AP_droneBoxJSON);
 
-    ADD_MODULE(_UIhandlerBase);
-
 #ifdef USE_OPENCL
 	ADD_MODULE(clBase);
 #endif

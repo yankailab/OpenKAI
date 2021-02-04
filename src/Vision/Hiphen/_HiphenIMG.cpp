@@ -42,8 +42,8 @@ bool _HiphenIMG::init(void* pKiss)
 
 bool _HiphenIMG::start(void)
 {
-    IF_F(check()<0);
-	return m_pT->start(getUpdate, this);
+    NULL_F(m_pT);
+    return m_pT->start(getUpdate, this);
 }
 
 void _HiphenIMG::update(void)

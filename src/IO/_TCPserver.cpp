@@ -45,18 +45,8 @@ bool _TCPserver::init(void* pKiss)
 
 bool _TCPserver::start(void)
 {
-	IF_T(m_bThreadON);
-
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR)<< retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 void _TCPserver::update(void)

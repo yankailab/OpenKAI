@@ -35,15 +35,8 @@ bool _ArUco::init(void* pKiss)
 
 bool _ArUco::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _ArUco::check(void)
@@ -51,7 +44,7 @@ int _ArUco::check(void)
 	NULL__(m_pV,-1);
 	NULL__(m_pU,-1);
 
-	return 0;
+	return this->_DetectorBase::check();
 }
 
 void _ArUco::update(void)
@@ -64,7 +57,7 @@ void _ArUco::update(void)
 		{
 			detect();
 
-			if(m_bGoSleep)
+			if(m_pT->bGoSleep())
 				m_pU->m_pPrev->clear();
 		}
 
@@ -89,7 +82,7 @@ void _ArUco::detect(void)
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
 		o.init();
-		o.m_tStamp = m_tStamp;
+//		o.m_tStamp = m_pT->getTstamp();
 		o.setTopClass(vID[i],1.0);
 
 		Point2f pLT = vvCorner[i][0];

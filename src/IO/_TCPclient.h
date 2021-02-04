@@ -42,7 +42,9 @@ public:
 	}
 
 public:
-	struct sockaddr_in m_serverAddr;
+    _Thread* m_pTr;
+	
+    struct sockaddr_in m_serverAddr;
 	string	m_strAddr;
 	uint16_t m_port;
 

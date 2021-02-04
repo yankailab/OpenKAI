@@ -28,6 +28,7 @@ public:
 
     virtual bool bRun(void);
 	virtual void goSleep(void);
+	virtual bool bGoSleep(void);
 	virtual void sleepTime(int64_t usec);
 	virtual bool bSleeping(void);
 	virtual void wakeUp(void);
@@ -37,6 +38,7 @@ public:
 	virtual float getTargetFPS(void);
 	virtual void autoFPSfrom(void);
 	virtual void autoFPSto(void);
+    virtual void setTstamp(float tStamp);
     virtual float getTstamp(void);
     virtual float getDtime(void);
 

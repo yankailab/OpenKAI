@@ -82,16 +82,8 @@ bool _AP_posCtrl::init(void* pKiss)
 
 bool _AP_posCtrl::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG(ERROR) << "Return code: " << retCode;
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _AP_posCtrl::check(void)
@@ -121,13 +113,13 @@ void _AP_posCtrl::setPosLocal(void)
 
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
-		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_tStamp);
+		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_pT->getTstamp());
 
 	if (m_pPitch)
-		p = m_pPitch->update(m_vP.y, m_vTargetP.y, m_tStamp);
+		p = m_pPitch->update(m_vP.y, m_vTargetP.y, m_pT->getTstamp());
 
 	if (m_pAlt)
-		a = m_pAlt->update(m_vP.z, m_vTargetP.z, m_tStamp);
+		a = m_pAlt->update(m_vP.z, m_vTargetP.z, m_pT->getTstamp());
 	else
 		a = m_vP.z;
 

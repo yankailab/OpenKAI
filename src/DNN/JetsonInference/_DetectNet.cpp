@@ -58,16 +58,8 @@ bool _DetectNet::init(void* pKiss)
 
 bool _DetectNet::start(void)
 {
-	m_bThreadON = true;
-	int retCode = pthread_create(&m_threadID, 0, getUpdate, this);
-	if (retCode != 0)
-	{
-		LOG_E(retCode);
-		m_bThreadON = false;
-		return false;
-	}
-
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
 }
 
 int _DetectNet::check(void)
@@ -79,7 +71,7 @@ int _DetectNet::check(void)
 	NULL__(pBGR, -1);
 	IF__(pBGR->bEmpty(), -1);
 
-	return 0;
+	return this->_DetectBase::check();
 }
 
 bool _DetectNet::open(void)
@@ -144,7 +136,7 @@ void _DetectNet::detect(void)
 
 		_Object o;
 		o.init();
-		o.m_tStamp = m_tStamp;
+		o.m_tStamp = m_pT->getTstamp();
 		o.setTopClass(pB->ClassID, pB->Confidence);
 		string txt(m_pDN->GetClassDesc(pB->ClassID));
 		o.setText(txt);
