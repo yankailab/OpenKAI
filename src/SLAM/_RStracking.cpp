@@ -18,12 +18,6 @@ _RStracking::_RStracking()
 
 _RStracking::~_RStracking()
 {
-	if (m_threadMode == T_THREAD)
-	{
-		goSleep();
-		while (!bSleeping());
-	}
-
 	close();
 }
 

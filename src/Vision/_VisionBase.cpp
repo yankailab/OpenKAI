@@ -16,12 +16,8 @@ _VisionBase::_VisionBase()
 {
 	m_bOpen = false;
 	m_type = vision_unknown;
-	m_w = 1280;
-	m_h = 720;
-	m_cW = 640;
-	m_cH = 360;
-	m_fovW = 60;
-	m_fovH = 60;
+    m_vSize.init(1280,720);
+    m_vFov.init(60,60);
 	m_bbDraw.x = -1.0;
 }
 
@@ -34,13 +30,8 @@ bool _VisionBase::init(void* pKiss)
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*)pKiss;
 
-	pK->v("w",&m_w);
-	pK->v("h",&m_h);
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
-
-	pK->v("fovW",&m_fovW);
-	pK->v("fovH",&m_fovH);
+	pK->v("vSize",&m_vSize);
+    pK->v("vFov",&m_vFov);
 	pK->v("bbDraw",&m_bbDraw);
 
 	m_bOpen = false;
@@ -52,33 +43,9 @@ Frame* _VisionBase::BGR(void)
 	return &m_fBGR;
 }
 
-void _VisionBase::info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle)
-{
-	if(pSize)
-	{
-		pSize->x = m_w;
-		pSize->y = m_h;
-	}
-
-	if(pCenter)
-	{
-		pCenter->x = m_cW;
-		pCenter->y = m_cH;
-	}
-
-	if(pAngle)
-	{
-		pAngle->x = m_fovW;
-		pAngle->y = m_fovH;
-	}
-}
-
 vInt2 _VisionBase::getSize(void)
 {
-	vInt2 s;
-	s.x = m_w;
-	s.y = m_h;
-	return s;
+	return m_vSize;
 }
 
 VISION_TYPE _VisionBase::getType(void)

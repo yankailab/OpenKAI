@@ -76,9 +76,9 @@ bool _RealSense::open ( void )
         if ( !m_rsSN.empty() )
             m_rsConfig.enable_device ( m_rsSN );
 
-        m_rsConfig.enable_stream ( RS2_STREAM_DEPTH, m_wD, m_hD, RS2_FORMAT_Z16, m_rsDFPS );
+        m_rsConfig.enable_stream ( RS2_STREAM_DEPTH, m_vDsize.x, m_vDsize.y, RS2_FORMAT_Z16, m_rsDFPS );
         if ( m_bRsRGB )
-            m_rsConfig.enable_stream ( RS2_STREAM_COLOR, m_w, m_h, RS2_FORMAT_BGR8, m_rsFPS );
+            m_rsConfig.enable_stream ( RS2_STREAM_COLOR, m_vSize.x, m_vSize.y, RS2_FORMAT_BGR8, m_rsFPS );
 
         m_rsProfile = m_rsPipe.start(m_rsConfig);
         rs2::device dev = m_rsProfile.get_device();
@@ -135,10 +135,8 @@ bool _RealSense::open ( void )
                 m_rsDepth = rsFrameset.get_depth_frame();
             }
 
-            m_w = m_rsColor.as<rs2::video_frame>().get_width();
-            m_h = m_rsColor.as<rs2::video_frame>().get_height();
-            m_cW = m_w / 2;
-            m_cH = m_h / 2;
+            m_vSize.x = m_rsColor.as<rs2::video_frame>().get_width();
+            m_vSize.y = m_rsColor.as<rs2::video_frame>().get_height();
         }
         else
         {
@@ -150,8 +148,8 @@ bool _RealSense::open ( void )
         if ( m_fSpat > 0.0 )
             m_rsDepth = m_rsfSpat.process ( m_rsDepth );
 
-        m_wD = m_rsDepth.as<rs2::video_frame>().get_width();
-        m_hD = m_rsDepth.as<rs2::video_frame>().get_height();
+        m_vDsize.x = m_rsDepth.as<rs2::video_frame>().get_width();
+        m_vDsize.y = m_rsDepth.as<rs2::video_frame>().get_height();
 
     }
     catch ( const rs2::camera_disconnected_error& e )
@@ -262,7 +260,7 @@ bool _RealSense::updateRS ( void )
                 m_rsDepth = rsFrameset.get_depth_frame();
             }
 
-            m_fBGR.copy ( Mat ( Size ( m_w, m_h ), CV_8UC3, ( void* ) m_rsColor.get_data(), Mat::AUTO_STEP ) );
+            m_fBGR.copy ( Mat ( Size ( m_vSize.x, m_vSize.y ), CV_8UC3, ( void* ) m_rsColor.get_data(), Mat::AUTO_STEP ) );
         }
         else
         {
@@ -307,7 +305,7 @@ void _RealSense::updateTPP ( void )
         if ( m_pDepthWin )
             m_rsDepthShow = m_rsDepth;
 
-        Mat mZ = Mat ( Size ( m_wD, m_hD ), CV_16UC1, ( void* ) m_rsDepth.get_data(), Mat::AUTO_STEP );
+        Mat mZ = Mat ( Size ( m_vDsize.x, m_vDsize.y ), CV_16UC1, ( void* ) m_rsDepth.get_data(), Mat::AUTO_STEP );
         Mat mD;
         mZ.convertTo ( mD, CV_32FC1 );
 
@@ -322,7 +320,7 @@ void _RealSense::draw ( void )
         IF_ ( m_fDepth.bEmpty() );
         rs2::colorizer rsColorMap;
         rs2::frame dColor = rsColorMap.process ( m_rsDepthShow );
-        Mat mDColor ( Size ( m_wD, m_hD ), CV_8UC3, ( void* ) dColor.get_data(),
+        Mat mDColor ( Size ( m_vDsize.x, m_vDsize.y ), CV_8UC3, ( void* ) dColor.get_data(),
                       Mat::AUTO_STEP );
         m_depthShow = mDColor;
     }

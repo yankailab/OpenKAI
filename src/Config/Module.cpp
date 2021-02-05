@@ -160,12 +160,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_RealSense);
 #endif
 
-#ifdef USE_OPEN3D
-#ifdef USE_REALSENSE
-	ADD_MODULE(_PCrsCV);
-#endif
-#endif //USE_OPEN3D
-
 #ifdef USE_MYNTEYE
 	ADD_MODULE(_Mynteye);
 #endif

@@ -59,7 +59,6 @@ bool _Thread::init(void* pKiss)
 	m_pWindow = (Window*)(pK->getInst( n ));
 #endif
 
-
 	return true;
 }
 

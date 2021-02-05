@@ -136,7 +136,7 @@ void _AP_GPS::updateGPS(void)
 	UTM_POS pUTM = m_GPS.offset(m_utmOrigin, vT);
 	m_llPos = m_GPS.UTM2LL(pUTM);
 
-	double tBase = (double)USEC_1SEC/(double)m_dTime;
+	double tBase = (double)USEC_1SEC/(double)m_pT->getDtime();
 	vFloat3 vV;
 	vV.x = (pUTM.m_northing - m_utmPos.m_northing)*tBase;
 	vV.y = (pUTM.m_easting - m_utmPos.m_easting)*tBase;

@@ -105,7 +105,7 @@ void _HiphenRGB::take(void)
 	fBGR.m()->copyTo(mBGR);
 	IF_(mBGR.empty());
 
-	IF_(mBGR.cols*mBGR.rows < m_pCam->m_w*m_pCam->m_h);
+	IF_(mBGR.cols*mBGR.rows < m_pCam->getSize().area());
 
 	string fName = m_pHiphen->getDir() + i2str(m_iImg) + "_rgb" + ".tiff";
 	cv::imwrite(fName, mBGR, m_compress);

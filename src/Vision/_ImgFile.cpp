@@ -42,10 +42,8 @@ bool _ImgFile::open(void)
 	}
 
 	m_fBGR.copy(m);
-	m_w = m.cols;
-	m_h = m.rows;
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
+	m_vSize.x = m.cols;
+	m_vSize.y = m.rows;
 
 	m_bOpen = true;
 	return true;

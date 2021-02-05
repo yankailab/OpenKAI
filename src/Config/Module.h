@@ -160,12 +160,6 @@
 #include "../Vision/_RealSense.h"
 #endif
 
-#ifdef USE_OPEN3D
-#ifdef USE_REALSENSE
-#include "../PointCloud/_PCrsCV.h"
-#endif
-#endif	//USE_OPEN3D
-
 #ifdef USE_MYNTEYE
 #include "../Vision/_Mynteye.h"
 #endif

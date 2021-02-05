@@ -49,8 +49,8 @@ bool _Camera::open(void)
 		return false;
 	}
 
-	m_camera.set(CAP_PROP_FRAME_WIDTH, m_w);
-	m_camera.set(CAP_PROP_FRAME_HEIGHT, m_h);
+	m_camera.set(CAP_PROP_FRAME_WIDTH, m_vSize.x);
+	m_camera.set(CAP_PROP_FRAME_HEIGHT, m_vSize.y);
 	m_camera.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 	Mat mCam;
@@ -60,11 +60,8 @@ bool _Camera::open(void)
 	}
 	m_fBGR.copy(mCam);
 
-	m_w = mCam.cols;
-	m_h = mCam.rows;
-
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
+	m_vSize.x = mCam.cols;
+	m_vSize.y = mCam.rows;
 
 	m_bOpen = true;
 	return true;

@@ -79,7 +79,7 @@ void _Resize::filter(void)
 {
 	IF_(m_pV->BGR()->bEmpty());
 
-	m_fBGR.copy(m_pV->BGR()->resize(m_w, m_h));
+	m_fBGR.copy(m_pV->BGR()->resize(m_vSize.x, m_vSize.y));
 }
 
 }

@@ -59,19 +59,14 @@ public:
 	virtual vInt2 getSize(void);
 	virtual VISION_TYPE getType(void);
 	virtual Frame* BGR(void);
-	virtual void info(vInt2* pSize, vInt2* pCenter, vDouble2* pAngle);
 
 public:
 	bool m_bOpen;
 	VISION_TYPE m_type;
 
-	int m_w;
-	int m_h;
-	int m_cW;
-	int m_cH;
-	double m_fovW;
-	double m_fovH;
-
+    vInt2 m_vSize;
+    vFloat2 m_vFov;
+    
 	Frame	m_fBGR;
 	vFloat4	m_bbDraw;
 };

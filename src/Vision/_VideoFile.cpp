@@ -41,18 +41,15 @@ bool _VideoFile::open(void)
 		return false;
 	}
 
-	m_vc.set(CAP_PROP_FRAME_WIDTH, m_w);
-	m_vc.set(CAP_PROP_FRAME_HEIGHT, m_h);
+	m_vc.set(CAP_PROP_FRAME_WIDTH, m_vSize.x);
+	m_vc.set(CAP_PROP_FRAME_HEIGHT, m_vSize.y);
 	m_vc.set(CAP_PROP_FPS, m_pT->getTargetFPS());
 
 	Mat cMat;
 	while (!m_vc.read(cMat));
 
-	m_w = cMat.cols;
-	m_h = cMat.rows;
-
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
+	m_vSize.x = cMat.cols;
+	m_vSize.y = cMat.rows;
 
 	m_bOpen = true;
 	return true;

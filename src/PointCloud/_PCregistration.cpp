@@ -119,7 +119,7 @@ void _PCregistration::updateRegistration(void)
 
 void _PCregistration::draw(void)
 {
-	this->_ModuleBase::draw();
+	this->_PCbase::draw();
 }
 
 }

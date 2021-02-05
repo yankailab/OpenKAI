@@ -16,48 +16,52 @@
 	"bFullScreen":0,
 	"/gstOutput":"appsrc ! videoconvert ! x264enc tune=zerolatency byte-stream=true ! h264parse ! rtph264pay config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",
 	"/gstOutput":"appsrc ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1400 config-interval=1 pt=96 ! udpsink host=224.1.1.1 port=5678 auto-multicast=false",	
-	"/textSize":0.8,
-	"/lingH":35,
-	"/textCol":[255,0,0],
 }
 
 {
 	"name":"camera",
 	"class":"_Camera",
-	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"deviceID":0,
-	"w":640,
-	"h":480,
+	"vSize":[640,480],	
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"FPS":30,
 	"bInst":1,
-	"Window":"OKview",
 	"Console":"OKconsole",
 	"vWinSize":[1920,1080],
 	"fov":100,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"pcf",
 	"class":"_PCfile",
-	"FPS":30,
 	"bInst":1,
+	"bLog":1,
 	"Console":"OKconsole",
 	"_PCviewer":"pcv",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
 	"name":"rs1",
 	"class":"_PCrs",
-	"FPS":30,
 	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
@@ -74,6 +78,10 @@
 	"rsSN":"f0210205",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
@@ -86,6 +94,10 @@
 	"vR":[0, 0, 0],
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tf1.kiss",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
@@ -108,6 +120,10 @@
 	"rsSN":"f0210237",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
@@ -125,7 +141,6 @@
 {
 	"name":"rs3",
 	"class":"_PCrs",
-	"FPS":30,
 	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
@@ -142,6 +157,10 @@
 	"rsSN":"f0211594",
 	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
@@ -160,26 +179,33 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"FPS":100,
 	"bInst":1,
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
+    {
+		"name":"thread",
+		"FPS":100,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 }
 
 {
 	"name":"ui",
 	"class":"_PCui",
-	"FPS":1,
-	"bInst":1,
+	"bInst":0,
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_IOBase":"ws",
 	"PCT":["tf1","tf2","tf3"],
+    {
+		"name":"thread",
+		"FPS":1,
+	}
 }
-
-
-
 
 
 

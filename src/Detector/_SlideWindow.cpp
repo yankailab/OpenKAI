@@ -108,8 +108,7 @@ void _SlideWindow::detect(void)
 	m_pD->BGR()->m()->copyTo(m_mD);
 	cv::inRange(m_mD, 1, m_maxD * 255.0, m_mDin);
 
-	vInt2 cs;
-	m_pD->info(&cs, NULL, NULL);
+	vInt2 cs = m_pD->getSize();
 
 	_Object o;
 	float rW = m_vRoi.width();

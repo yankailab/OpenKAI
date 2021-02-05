@@ -31,8 +31,7 @@ public:
 	float d(vFloat4* pROI);
 
 public:
-	int		m_wD;
-	int		m_hD;
+    vInt2   m_vDsize;
 	Frame	m_fDepth;
 	int		m_nHistLev;
 	int		m_iHistFrom;

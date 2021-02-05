@@ -51,11 +51,8 @@ bool _GStreamer::open(void)
 	}
 	m_fBGR.copy(mCam);
 
-	m_w = mCam.cols;
-	m_h = mCam.rows;
-
-	m_cW = m_w / 2;
-	m_cH = m_h / 2;
+	m_vSize.x = mCam.cols;
+	m_vSize.y = mCam.rows;
 
 	m_bOpen = true;
 	return true;
