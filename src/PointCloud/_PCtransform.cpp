@@ -129,10 +129,10 @@ vFloat3 _PCtransform::getRotation(void)
 	return m_vR;
 }
 
-void _PCtransform::setTranslationMatrix(int i, Eigen::Matrix4d_u& mR)
+void _PCtransform::setTranslationMatrix(int i, Eigen::Matrix4d_u& mT)
 {
 	IF_(i >= m_vmT.size());
-	m_vmT[i] = mR;
+	m_vmT[i] = mT;
 }
 
 Eigen::Matrix4d _PCtransform::getTranslationMatrix(int i)

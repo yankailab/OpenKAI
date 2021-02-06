@@ -64,6 +64,11 @@ void _PCmerge::update(void)
 
 		updateMerge();
 		m_sPC.update();
+        
+        if(m_pViewer)
+        {
+            m_pViewer->updateGeometry(m_iV, m_sPC.prev());
+        }
 
 		m_pT->autoFPSto();
 	}
@@ -83,14 +88,18 @@ void _PCmerge::updateMerge(void)
         PointCloud pc;
         pPCB->getPC(&pc);
 		IF_CONT(pc.points_.empty());
+        
+        *pOut += pc;
 
-		vector<Eigen::Vector3d>* pV;
+/*		vector<Eigen::Vector3d>* pV;
 		pV = &pc.points_;
 		pOut->points_.insert(pOut->points_.end(), pV->begin(), pV->end());
 
 		pV = &pc.colors_;
 		pOut->colors_.insert(pOut->colors_.end(), pV->begin(), pV->end());
-	}
+*/
+        
+    }
 
 //	m_pViewer->render(pOut);
 }

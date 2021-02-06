@@ -29,7 +29,7 @@ public:
 
 	virtual void setTranslation(vFloat3& vT);
 	virtual void setRotation(vFloat3& vR);
-	virtual void setTranslationMatrix(int i, Eigen::Matrix4d_u& mR);
+	virtual void setTranslationMatrix(int i, Eigen::Matrix4d_u& mT);
 
 	virtual vFloat3 getTranslation(void);
 	virtual vFloat3 getRotation(void);

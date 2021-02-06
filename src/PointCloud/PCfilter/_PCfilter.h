@@ -8,10 +8,10 @@
 #ifndef OpenKAI_src_PointCloud_PCfilter_H_
 #define OpenKAI_src_PointCloud_PCfilter_H_
 
-#include "../Base/common.h"
+#include "../../Base/common.h"
 
 #ifdef USE_OPEN3D
-#include "_PCbase.h"
+#include "../_PCbase.h"
 
 namespace kai
 {
