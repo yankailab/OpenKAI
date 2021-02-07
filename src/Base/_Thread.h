@@ -50,7 +50,7 @@ protected:
 
 	uint64_t m_tStamp;
 	uint64_t m_tFrom;
-	uint64 m_tTo;
+	uint64_t m_tTo;
 	float m_targetFPS;
 	float m_targetFrameTime;
 	float m_dTime;

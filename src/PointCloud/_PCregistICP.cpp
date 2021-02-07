@@ -34,7 +34,7 @@ bool _PCregistICP::init ( void *pKiss )
 
     pK->v ( "thr", &m_thr );
     pK->v ( "nMinP", &m_nMinP );
-    pK->v ( "iMt", &P.m_iMt );
+    pK->v ( "iMt", &m_iMt );
 
     string n;
 
@@ -64,9 +64,9 @@ bool _PCregistICP::start ( void )
 
 int _PCregistICP::check ( void )
 {
-    NULL_l(m_pSource, -1);
-    NULL_l(m_pTarget, -1);
-    NULL_l(m_pTf, -1);
+    NULL__(m_pSource, -1);
+    NULL__(m_pTarget, -1);
+    NULL__(m_pTf, -1);
 
     return _PCbase::check();
 }
@@ -100,8 +100,8 @@ void _PCregistICP::updateRegistration ( void )
                 pipelines::registration::TransformationEstimationPointToPoint()
             );
 
-    Eigen::Matrix4d_u m = m_pTf->getTranslationMatrix ( p->m_iMt ) * rr.transformation_;
-    m_pTf->setTranslationMatrix ( p->m_iMt, m );
+    Eigen::Matrix4d_u m = m_pTf->getTranslationMatrix ( m_iMt ) * rr.transformation_;
+    m_pTf->setTranslationMatrix ( m_iMt, m );
 }
 
 void _PCregistICP::draw ( void )

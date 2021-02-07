@@ -46,6 +46,19 @@
 }
 
 {
+	"name":"pcv2",
+	"class":"_PCviewer",
+	"bInst":0,
+	"Console":"OKconsole",
+	"vWinSize":[1920,1080],
+	"fov":100,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
 	"name":"pcf",
 	"class":"_PCfile",
 	"bInst":1,

@@ -12,6 +12,9 @@
 
 #ifdef USE_OPEN3D
 #include "_PCtransform.h"
+#include <open3d/pipelines/registration/FastGlobalRegistration.h>
+
+using namespace open3d::pipelines::registration;
 
 namespace kai
 {
@@ -28,8 +31,9 @@ public:
 	void draw(void);
 
 private:
-	void preprocess(PointCloud& pc);
-	void updateRegistration(void);
+	std::shared_ptr<Feature> preprocess(PointCloud& pc);
+    RegistrationResult fastGlobalRegistration(void);
+    void updateRegistration(void);
 	void update(void);
 	static void* getUpdate(void* This)
 	{
@@ -42,11 +46,14 @@ public:
 	int m_nMinP;	//minimum number of points needed for registration
 	
 	double m_voxelSize;
-	int m_maxNN;
+	int m_maxNNnormal;
+	int m_maxNNfpfh;
 
 	_PCbase* m_pSource;
 	_PCbase* m_pTarget;
-	_PCtransform* m_pTf;
+    RegistrationResult m_RR;
+    
+    _PCtransform* m_pTf;
 	int m_iMt;
 
 };

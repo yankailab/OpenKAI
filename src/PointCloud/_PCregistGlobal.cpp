@@ -18,7 +18,8 @@ _PCregistGlobal::_PCregistGlobal()
     m_nMinP = 1000;
     
     m_voxelSize = 0.1;
-    m_maxNN = 30;
+    m_maxNNnormal = 30;
+    m_maxNNfpfh = 100;
 
     m_pSource = NULL;
     m_pTarget = NULL;
@@ -39,7 +40,8 @@ bool _PCregistGlobal::init ( void *pKiss )
     pK->v ( "nMinP", &m_nMinP );
     pK->v ( "iMt", &m_iMt );
     pK->v ( "voxelSize", &m_voxelSize );
-    pK->v ( "maxNN", &m_maxNN );
+    pK->v ( "maxNNnormal", &m_maxNNnormal );
+    pK->v ( "maxNNfpfh", &m_maxNNnormal );
 
     string n;
 
@@ -69,9 +71,9 @@ bool _PCregistGlobal::start ( void )
 
 int _PCregistGlobal::check ( void )
 {
-    NULL_l(m_pSource, -1);
-    NULL_l(m_pTarget, -1);
-    NULL_l(m_pTf, -1);
+    NULL__(m_pSource, -1);
+    NULL__(m_pTarget, -1);
+    NULL__(m_pTf, -1);
     
     return _PCbase::check();
 }
@@ -88,69 +90,48 @@ void _PCregistGlobal::update ( void )
     }
 }
 
-void _PCregistGlobal::preprocess(PointCloud& pc)
-{
-    double rNormal = m_voxelSize * 2;
-    pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(rNormal, m_maxNN));
-    
-    double rFeature = m_voxelSize * 5;
-    std::shared_ptr<open3d::pipelines::registration::Feature> spF =
-    open3d::pipelines::registration::ComputeFPFHFeature(
-        pc,
-        open3d::geometry::KDTreeSearchParamHybrid(rFeature, m_maxNN)
-    );
-    
-//    return spF;
-
-/*    radius_normal = voxel_size * 2
-    print(":: Estimate normal with search radius %.3f." % radius_normal)
-    pcd_down.estimate_normals(
-        o3d.geometry.KDTreeSearchParamHybrid(radius=radius_normal, max_nn=30))
-
-    radius_feature = voxel_size * 5
-    print(":: Compute FPFH feature with search radius %.3f." % radius_feature)
-    pcd_fpfh = o3d.pipelines.registration.compute_fpfh_feature(
-        pcd_down,
-        o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
-    return pcd_down, pcd_fpfh
-*/    
-}
-
 void _PCregistGlobal::updateRegistration ( void )
 {
     IF_ ( check() < 0 );
 
+    m_RR = fastGlobalRegistration();
+
+}
+
+RegistrationResult _PCregistGlobal::fastGlobalRegistration(void)
+{
     PointCloud pcSource;
     m_pSource->getPC ( &pcSource );
     PointCloud pcTarget;
     m_pTarget->getPC ( &pcTarget );
+    
+    Feature spFpfhSrc = *preprocess(pcSource);
+    Feature spFpfhTgt = *preprocess(pcTarget);
 
-    double rNormal = pcSourve
+    double dThr = m_voxelSize * 0.5;
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    pipelines::registration::RegistrationResult rr = pipelines::registration::RegistrationICP (
-                pcSource,
-                pcTarget,
-                m_thr,
-                Eigen::Matrix4d::Identity(),
-                pipelines::registration::TransformationEstimationPointToPoint()
-            );
+    return
+    FastGlobalRegistration
+    (
+        pcSource,
+        pcTarget,
+        spFpfhSrc,
+        spFpfhTgt,
+        open3d::pipelines::registration::FastGlobalRegistrationOption()
+    );
+}
 
-    Eigen::Matrix4d_u m = m_pTf->getTranslationMatrix ( p->m_iMt ) * rr.transformation_;
-    m_pTf->setTranslationMatrix ( p->m_iMt, m );
+std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud& pc)
+{
+    double rNormal = m_voxelSize * 2;
+    pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(rNormal, m_maxNNnormal ));
+    
+    double rFeature = m_voxelSize * 5;
+    return open3d::pipelines::registration::ComputeFPFHFeature
+    (
+        pc,
+        open3d::geometry::KDTreeSearchParamHybrid(rFeature, m_maxNNfpfh )
+    );    
 }
 
 void _PCregistGlobal::draw ( void )
