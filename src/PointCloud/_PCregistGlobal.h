@@ -32,7 +32,7 @@ public:
 
 private:
 	std::shared_ptr<Feature> preprocess(PointCloud& pc);
-    RegistrationResult fastGlobalRegistration(void);
+    bool fastGlobalRegistration(void);
     void updateRegistration(void);
 	void update(void);
 	static void* getUpdate(void* This)
@@ -42,15 +42,14 @@ private:
 	}
 
 public:
-	float m_thr;	//ICP threshold
 	int m_nMinP;	//minimum number of points needed for registration
 	
 	double m_voxelSize;
 	int m_maxNNnormal;
 	int m_maxNNfpfh;
 
-	_PCbase* m_pSource;
-	_PCbase* m_pTarget;
+	_PCbase* m_pSrc;
+	_PCbase* m_pTgt;
     RegistrationResult m_RR;
     
     _PCtransform* m_pTf;

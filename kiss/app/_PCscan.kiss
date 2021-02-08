@@ -46,19 +46,6 @@
 }
 
 {
-	"name":"pcv2",
-	"class":"_PCviewer",
-	"bInst":0,
-	"Console":"OKconsole",
-	"vWinSize":[1920,1080],
-	"fov":100,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-}
-
-{
 	"name":"pcf",
 	"class":"_PCfile",
 	"bInst":1,
@@ -73,11 +60,27 @@
 }
 
 {
+	"name":"tfPcf",
+	"class":"_PCtransform",
+	"bInst":1,
+	"_PCbase":"pcf",
+	"_PCviewer":"pcv",
+	"vT":[1, 0.8, 0.9],
+	"vR":[0.5, 0.3, 0.5],
+	"nMt":1,
+	"paramKiss":"/home/kai/config/tf1.kiss",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
 	"name":"pcDS",
 	"class":"_PCdownSample",
 	"bInst":1,
 	"Console":"OKconsole",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"_PCbase":"pcf",
 	"voxelSize":0.1,
     {
@@ -85,6 +88,65 @@
 		"FPS":30,
 	}
 }
+
+{
+	"name":"pcDS2",
+	"class":"_PCdownSample",
+	"bInst":1,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"_PCbase":"tfPcf",
+	"voxelSize":0.1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"tfRR",
+	"class":"_PCtransform",
+	"bInst":1,
+	"_PCbase":"pcf",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"nMt":1,
+	"paramKiss":"/home/kai/config/tfRR.kiss",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+{
+	"name":"pcRegistGlobal",
+	"class":"_PCregistGlobal",
+	"bInst":1,
+	"Console":"OKconsole",
+	"_PCbaseSrc":"pcf",
+	"_PCbaseTgt":"tfPcf",
+	"_PCtransform":"tfRR",
+	"nMinP":1000,
+	"iMt":0,
+	"voxelSize":0.1,
+	"maxNNnormal":30,
+	"maxNNfpfh":100,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 {
 	"name":"rs1",
@@ -206,7 +268,7 @@
 {
 	"name":"ws",
 	"class":"_WebSocket",
-	"bInst":1,
+	"bInst":0,
 	"bLog":0,
 	"Window":"OKview",
 	"_wakeUp":"ui",
