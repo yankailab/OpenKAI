@@ -10,6 +10,12 @@
 }
 
 {
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
 	"name":"OKview",
 	"class":"Window",
 	"bInst":0,
@@ -68,6 +74,7 @@
 	"vT":[1, 0.8, 0.9],
 	"vR":[0.5, 0.3, 0.5],
 	"nMt":1,
+	"vColOvrr":[0, 0, 1.0],
 	"paramKiss":"/home/kai/config/tf1.kiss",
     {
 		"name":"thread",
@@ -104,15 +111,16 @@
 }
 
 {
-	"name":"tfRR",
+	"name":"tfRRglobal",
 	"class":"_PCtransform",
 	"bInst":1,
+	"Console":"OKconsole",
 	"_PCbase":"pcf",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"paramKiss":"/home/kai/config/tfRR.kiss",
+	"paramKiss":"/home/kai/config/tfRRglobal.kiss",
     {
 		"name":"thread",
 		"FPS":30,
@@ -126,10 +134,11 @@
 	"Console":"OKconsole",
 	"_PCbaseSrc":"pcf",
 	"_PCbaseTgt":"tfPcf",
-	"_PCtransform":"tfRR",
-	"nMinP":1000,
+	"_PCtransform":"tfRRglobal",
 	"iMt":0,
-	"voxelSize":0.1,
+	"rVoxel":0.1,
+	"rNormal":0.2,
+	"rFeature":0.5,
 	"maxNNnormal":30,
 	"maxNNfpfh":100,
     {
@@ -141,8 +150,39 @@
 
 
 
+{
+	"name":"tfRRicp",
+	"class":"_PCtransform",
+	"bInst":1,
+	"Console":"OKconsole",
+	"_PCbase":"tfRRglobal",
+	"_PCviewer":"pcv",
+	"vT":[0, 0, 0],
+	"vR":[0, 0, 0],
+	"nMt":1,
+	"vColOvrr":[0, 1.0, 0.0],
+	"paramKiss":"/home/kai/config/tfRRicp.kiss",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
 
-
+{
+	"name":"pcRegistICP",
+	"class":"_PCregistGlobal",
+	"bInst":1,
+	"Console":"OKconsole",
+	"_PCbaseSrc":"tfRRglobal",
+	"_PCbaseTgt":"tfPcf",
+	"_PCtransform":"tfRRicp",
+	"thr":0.2,
+	"iMt":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
 
 
 

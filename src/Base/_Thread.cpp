@@ -194,7 +194,7 @@ void _Thread::draw(void)
 {
 	this->BASE::draw();
 
-	string msg = "FPS: " + i2str((int)m_FPS);
+	string msg = "FPS: " + f2str(m_FPS,2);
 
 	if(m_pConsole)
 	{

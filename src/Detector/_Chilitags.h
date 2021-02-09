@@ -45,6 +45,8 @@ public:
     int m_persistence;
     float m_gain;
     float m_angleOffset;
+    
+    vInt2 m_vTagRange;
 
 };
 

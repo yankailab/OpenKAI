@@ -13,6 +13,8 @@
 #ifdef USE_OPEN3D
 #include "_PCtransform.h"
 
+using namespace open3d::pipelines::registration;
+
 namespace kai
 {
 
@@ -38,13 +40,11 @@ private:
 
 public:
 	float m_thr;	//ICP threshold
-	int m_nMinP;	//minimum number of points needed for registration
-
-	_PCbase* m_pSource;
-	_PCbase* m_pTarget;
+	_PCbase* m_pSrc;
+	_PCbase* m_pTgt;
 	_PCtransform* m_pTf;
 	int m_iMt;
-
+    RegistrationResult m_RR;
 };
 
 }

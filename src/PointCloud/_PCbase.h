@@ -40,6 +40,7 @@ public:
 
 	_PCviewer* m_pViewer;
 	int m_iV;
+    vFloat3 m_vColOvrr;
 };
 
 }

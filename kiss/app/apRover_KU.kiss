@@ -95,6 +95,7 @@
 	"persistence":5.0,
 	"gain":0.5,
 	"angleOffset":-180,
+	"vTagRange":[0,100],
 }
 
 {

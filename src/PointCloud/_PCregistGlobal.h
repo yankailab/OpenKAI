@@ -42,19 +42,17 @@ private:
 	}
 
 public:
-	int m_nMinP;	//minimum number of points needed for registration
-	
-	double m_voxelSize;
+	double m_rVoxel;
+    double m_rNormal;
+    double m_rFeature;
 	int m_maxNNnormal;
 	int m_maxNNfpfh;
 
 	_PCbase* m_pSrc;
 	_PCbase* m_pTgt;
-    RegistrationResult m_RR;
-    
     _PCtransform* m_pTf;
 	int m_iMt;
-
+    RegistrationResult m_RR;    
 };
 
 }

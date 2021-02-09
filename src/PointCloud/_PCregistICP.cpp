@@ -15,12 +15,10 @@ namespace kai
 _PCregistICP::_PCregistICP()
 {
     m_thr = 0.02;
-    m_nMinP = 1000;
-
-    m_pSource = NULL;
-    m_pTarget = NULL;
-    m_pTf = NULL;
     m_iMt = 0;
+    m_pSrc = NULL;
+    m_pTgt = NULL;
+    m_pTf = NULL;
 }
 
 _PCregistICP::~_PCregistICP()
@@ -33,20 +31,19 @@ bool _PCregistICP::init ( void *pKiss )
     Kiss *pK = ( Kiss* ) pKiss;
 
     pK->v ( "thr", &m_thr );
-    pK->v ( "nMinP", &m_nMinP );
     pK->v ( "iMt", &m_iMt );
 
     string n;
 
     n = "";
-    pK->v ( "source", &n );
-    m_pSource = ( _PCbase* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pSource, n + ": not found" );
+    pK->v ( "_PCbaseSrc", &n );
+    m_pSrc = ( _PCbase* ) ( pK->getInst ( n ) );
+    IF_Fl ( !m_pSrc, n + ": not found" );
 
     n = "";
-    pK->v ( "target", &n );
-    m_pTarget = ( _PCbase* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pTarget, n + ": not found" );
+    pK->v ( "_PCbaseTgt", &n );
+    m_pTgt = ( _PCbase* ) ( pK->getInst ( n ) );
+    IF_Fl ( !m_pTgt, n + ": not found" );
 
     n = "";
     pK->v ( "_PCtransform", &n );
@@ -64,8 +61,8 @@ bool _PCregistICP::start ( void )
 
 int _PCregistICP::check ( void )
 {
-    NULL__(m_pSource, -1);
-    NULL__(m_pTarget, -1);
+    NULL__( m_pSrc, -1);
+    NULL__( m_pTgt, -1);
     NULL__(m_pTf, -1);
 
     return _PCbase::check();
@@ -87,26 +84,28 @@ void _PCregistICP::updateRegistration ( void )
 {
     IF_ ( check() < 0 );
 
-    PointCloud pcSource;
-    m_pSource->getPC ( &pcSource );
-    PointCloud pcTarget;
-    m_pTarget->getPC ( &pcTarget );
+    PointCloud pcSrc;
+    m_pSrc->getPC ( &pcSrc );
+    PointCloud pcTgt;
+    m_pTgt->getPC ( &pcTgt );
 
-    pipelines::registration::RegistrationResult rr = pipelines::registration::RegistrationICP (
-                pcSource,
-                pcTarget,
+    m_RR = pipelines::registration::RegistrationICP
+            (
+                pcSrc,
+                pcTgt,
                 m_thr,
                 Eigen::Matrix4d::Identity(),
                 pipelines::registration::TransformationEstimationPointToPoint()
             );
 
-    Eigen::Matrix4d_u m = m_pTf->getTranslationMatrix ( m_iMt ) * rr.transformation_;
-    m_pTf->setTranslationMatrix ( m_iMt, m );
+    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );
 }
 
 void _PCregistICP::draw ( void )
 {
     this->_PCbase::draw();
+    addMsg("Fitness = " + f2str((float)m_RR.fitness_) + 
+            ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));
 }
 
 }

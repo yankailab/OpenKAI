@@ -14,9 +14,9 @@ namespace kai
 
 _PCregistGlobal::_PCregistGlobal()
 {
-    m_nMinP = 1000;
-    
-    m_voxelSize = 0.1;
+    m_rVoxel = 0.1;
+    m_rNormal = 0.2;
+    m_rFeature = 0.5;
     m_maxNNnormal = 30;
     m_maxNNfpfh = 100;
 
@@ -35,9 +35,10 @@ bool _PCregistGlobal::init ( void *pKiss )
     IF_F ( !_PCbase::init ( pKiss ) );
     Kiss *pK = ( Kiss* ) pKiss;
 
-    pK->v ( "nMinP", &m_nMinP );
     pK->v ( "iMt", &m_iMt );
-    pK->v ( "voxelSize", &m_voxelSize );
+    pK->v ( "rVoxel", &m_rVoxel );
+    pK->v ( "rNormal", &m_rNormal );
+    pK->v ( "rFeature", &m_rFeature );
     pK->v ( "maxNNnormal", &m_maxNNnormal );
     pK->v ( "maxNNfpfh", &m_maxNNnormal );
 
@@ -94,8 +95,7 @@ void _PCregistGlobal::updateRegistration ( void )
 
     IF_(!fastGlobalRegistration());
     
-//    Eigen::Matrix4d_u m = m_pTf->getTranslationMatrix ( m_iMt ) * rr.transformation_;
-    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );
+    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );    
 }
 
 bool _PCregistGlobal::fastGlobalRegistration(void)
@@ -111,7 +111,7 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
     Feature spFpfhSrc = *preprocess( pcSrc );
     Feature spFpfhTgt = *preprocess( pcTgt );
 
-    double dThr = m_voxelSize * 0.5;
+    double dThr = m_rVoxel * 0.5;
     
     m_RR = FastGlobalRegistration
             (
@@ -127,20 +127,19 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
 
 std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud& pc)
 {
-    double rNormal = m_voxelSize * 2;
-    pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(rNormal, m_maxNNnormal ));
-    
-    double rFeature = m_voxelSize * 5;
+    pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
     return open3d::pipelines::registration::ComputeFPFHFeature
     (
         pc,
-        open3d::geometry::KDTreeSearchParamHybrid(rFeature, m_maxNNfpfh )
+        open3d::geometry::KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh )
     );    
 }
 
 void _PCregistGlobal::draw ( void )
 {
     this->_PCbase::draw();
+    addMsg("Fitness = " + f2str((float)m_RR.fitness_) + 
+            ", Inliner_rmse = " + f2str((float)m_RR.inlier_rmse_));    
 }
 
 }

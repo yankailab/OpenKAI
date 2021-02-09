@@ -17,6 +17,7 @@ _PCbase::_PCbase()
 	m_pPCB = NULL;
 	m_pViewer = NULL;
 	m_iV = -1;
+    m_vColOvrr.x = -1.0;
 
     pthread_mutex_init(&m_mutexPC, NULL);
 }
@@ -31,6 +32,8 @@ bool _PCbase::init(void *pKiss)
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
+    pK->v("vColOvrr", &m_vColOvrr);
+    
 	int nPCreserve = 0;
 	pK->v("nPCreserve", &nPCreserve);
 	if(nPCreserve > 0)
