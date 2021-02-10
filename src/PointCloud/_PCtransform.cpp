@@ -84,17 +84,6 @@ void _PCtransform::update(void)
        
   		if(m_pViewer)
 		{
-            if(m_vColOvrr.x >= 0.0)
-            {
-                m_sPC.prev()->PaintUniformColor(
-                    Eigen::Vector3d(
-                     m_vColOvrr.x,
-                     m_vColOvrr.y,
-                     m_vColOvrr.z                        
-                    )
-                );
-            }
-            
 			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
 		}
 

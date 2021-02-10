@@ -52,7 +52,8 @@ public:
 	_PCbase* m_pTgt;
     _PCtransform* m_pTf;
 	int m_iMt;
-    RegistrationResult m_RR;    
+    RegistrationResult m_RR;
+    double m_lastFit;
 };
 
 }

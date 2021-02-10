@@ -93,7 +93,7 @@
 	"_VisionBase":"cam",
 	"_Universe":"univTag",
 	"persistence":5.0,
-	"gain":0.5,
+	"gain":0.0,
 	"angleOffset":-180,
 	"vTagRange":[0,100],
 }

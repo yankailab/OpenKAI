@@ -19,6 +19,7 @@ _PCregistICP::_PCregistICP()
     m_pSrc = NULL;
     m_pTgt = NULL;
     m_pTf = NULL;
+    m_lastFit = 0.0;
 }
 
 _PCregistICP::~_PCregistICP()
@@ -89,15 +90,20 @@ void _PCregistICP::updateRegistration ( void )
     PointCloud pcTgt;
     m_pTgt->getPC ( &pcTgt );
 
-    m_RR = pipelines::registration::RegistrationICP
-            (
+    IF_(pcSrc.IsEmpty());
+    IF_(pcTgt.IsEmpty());
+
+    m_RR = pipelines::registration::RegistrationICP(
                 pcSrc,
                 pcTgt,
                 m_thr,
                 Eigen::Matrix4d::Identity(),
                 pipelines::registration::TransformationEstimationPointToPoint()
             );
-
+    
+    IF_(m_RR.fitness_ < m_lastFit);
+    m_lastFit = m_RR.fitness_;
+    
     m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );
 }
 

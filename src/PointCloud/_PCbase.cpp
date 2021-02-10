@@ -14,84 +14,102 @@ namespace kai
 
 _PCbase::_PCbase()
 {
-	m_pPCB = NULL;
-	m_pViewer = NULL;
-	m_iV = -1;
+    m_pPCB = NULL;
+    m_pViewer = NULL;
+    m_iV = -1;
     m_vColOvrr.x = -1.0;
 
-    pthread_mutex_init(&m_mutexPC, NULL);
+    pthread_mutex_init ( &m_mutexPC, NULL );
 }
 
 _PCbase::~_PCbase()
 {
-   	pthread_mutex_destroy(&m_mutexPC);
+    pthread_mutex_destroy ( &m_mutexPC );
 }
 
-bool _PCbase::init(void *pKiss)
+bool _PCbase::init ( void *pKiss )
 {
-	IF_F(!this->_ModuleBase::init(pKiss));
-	Kiss *pK = (Kiss*) pKiss;
+    IF_F ( !this->_ModuleBase::init ( pKiss ) );
+    Kiss *pK = ( Kiss* ) pKiss;
 
-    pK->v("vColOvrr", &m_vColOvrr);
-    
-	int nPCreserve = 0;
-	pK->v("nPCreserve", &nPCreserve);
-	if(nPCreserve > 0)
-	{
-		m_sPC.prev()->points_.reserve(nPCreserve);
-		m_sPC.prev()->colors_.reserve(nPCreserve);
-		m_sPC.next()->points_.reserve(nPCreserve);
-		m_sPC.next()->colors_.reserve(nPCreserve);
-	}
+    pK->v ( "vColOvrr", &m_vColOvrr );
 
-	string n;
+    int nPCreserve = 0;
+    pK->v ( "nPCreserve", &nPCreserve );
+    if ( nPCreserve > 0 )
+    {
+        m_sPC.prev()->points_.reserve ( nPCreserve );
+        m_sPC.prev()->colors_.reserve ( nPCreserve );
+        m_sPC.next()->points_.reserve ( nPCreserve );
+        m_sPC.next()->colors_.reserve ( nPCreserve );
+    }
 
-	n = "";
-	pK->v("_PCbase", &n );
-	m_pPCB = (_PCbase*) (pK->getInst( n ));
+    string n;
 
-	n = "";
-	pK->v("_PCviewer", &n );
-	m_pViewer = (_PCviewer*) (pK->getInst( n ));
+    n = "";
+    pK->v ( "_PCbase", &n );
+    m_pPCB = ( _PCbase* ) ( pK->getInst ( n ) );
 
-	if(m_pViewer)
-		m_iV = m_pViewer->addGeometry();
+    n = "";
+    pK->v ( "_PCviewer", &n );
+    m_pViewer = ( _PCviewer* ) ( pK->getInst ( n ) );
 
-	return true;
+    if ( m_pViewer )
+    {
+        m_iV = m_pViewer->addGeometry();
+    }
+
+    return true;
 }
 
-int _PCbase::check(void)
+int _PCbase::check ( void )
 {
-	return this->_ModuleBase::check();
+    return this->_ModuleBase::check();
 }
 
-void _PCbase::getPC(PointCloud* pPC)
+void _PCbase::getPC ( PointCloud* pPC )
 {
-    NULL_(pPC);
-    
-	pthread_mutex_lock(&m_mutexPC);
+    NULL_ ( pPC );
+
+    pthread_mutex_lock ( &m_mutexPC );
     *pPC = *m_sPC.prev();
-	pthread_mutex_unlock(&m_mutexPC);
+    pthread_mutex_unlock ( &m_mutexPC );
 }
 
-void _PCbase::updatePC(void)
+void _PCbase::updatePC ( void )
 {
-	pthread_mutex_lock(&m_mutexPC);
-	m_sPC.update();
+    paintPC(m_sPC.next());
+    
+    pthread_mutex_lock ( &m_mutexPC );
+    m_sPC.update();
     m_sPC.next()->points_.clear();
     m_sPC.next()->colors_.clear();
     m_sPC.next()->normals_.clear();
-	pthread_mutex_unlock(&m_mutexPC);
+    pthread_mutex_unlock ( &m_mutexPC );
 }
 
-int _PCbase::size(void)
+void _PCbase::paintPC ( PointCloud* pPC )
 {
-	return m_sPC.prev()->points_.size();
+    NULL_ ( pPC );
+    IF_ ( m_vColOvrr.x < 0.0 )
+
+    pPC->PaintUniformColor (
+        Eigen::Vector3d (
+            m_vColOvrr.x,
+            m_vColOvrr.y,
+            m_vColOvrr.z
+        )
+    );
 }
 
-void _PCbase::draw(void)
+int _PCbase::size ( void )
 {
-	this->_ModuleBase::draw();
+    return m_sPC.prev()->points_.size();
+}
+
+void _PCbase::draw ( void )
+{
+    this->_ModuleBase::draw();
 
 //	NULL_(m_pViewer);
 //	m_pViewer->updateGeometry(m_iV, getPC());

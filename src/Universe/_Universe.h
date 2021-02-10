@@ -72,6 +72,7 @@ public:
 	bool m_bMerge;
 	float m_mergeOverlap;
 	vFloat4 m_vRoi;
+    vInt2 m_vClassRange;
 
 	//show
 	bool m_bDrawStatistics;

@@ -45,6 +45,7 @@ public:
 	_PCtransform* m_pTf;
 	int m_iMt;
     RegistrationResult m_RR;
+    double m_lastFit;
 };
 
 }

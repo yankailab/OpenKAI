@@ -14,7 +14,7 @@ namespace kai
 
 _PCdownSample::_PCdownSample()
 {
-    m_voxelSize = 0.1;
+    m_rVoxel = 0.1;
 }
 
 _PCdownSample::~_PCdownSample()
@@ -26,7 +26,7 @@ bool _PCdownSample::init(void *pKiss)
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
-    pK->v("voxelSize", &m_voxelSize);
+    pK->v("rVoxel", &m_rVoxel);
 
 	return true;
 }
@@ -74,7 +74,7 @@ void _PCdownSample::updateFilter(void)
 	PointCloud pcIn;
     m_pPCB->getPC(&pcIn);
     
-    *pOut = *pcIn.VoxelDownSample(m_voxelSize);    
+    *pOut = *pcIn.VoxelDownSample(m_rVoxel);    
 }
 
 }

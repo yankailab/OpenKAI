@@ -19,24 +19,24 @@ namespace kai
 class _PCdownSample: public _PCbase
 {
 public:
-	_PCdownSample();
-	virtual ~_PCdownSample();
+    _PCdownSample();
+    virtual ~_PCdownSample();
 
-	bool init(void* pKiss);
-	bool start(void);
-	int check(void);
+    bool init ( void* pKiss );
+    bool start ( void );
+    int check ( void );
 
 private:
-	void update(void);
-	void updateFilter(void);
-	static void* getUpdate(void* This)
-	{
-		((_PCdownSample *) This)->update();
-		return NULL;
-	}
+    void update ( void );
+    void updateFilter ( void );
+    static void* getUpdate ( void* This )
+    {
+        ( ( _PCdownSample * ) This )->update();
+        return NULL;
+    }
 
 public:
-    float m_voxelSize;
+    float m_rVoxel;
 };
 
 }

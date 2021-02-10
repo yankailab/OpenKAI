@@ -65,7 +65,7 @@ public:
 
     bool m_bOpen;
     vInt2 m_vWHc;
-    vInt2 m_vWHd;    
+    vInt2 m_vWHd;
     shared_ptr<Image> m_spImg;
 	vFloat2 m_vRz;	//z region
 

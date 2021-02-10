@@ -18,6 +18,7 @@ _Universe::_Universe()
 	m_bMerge = false;
 	m_mergeOverlap = 0.8;
 	m_vRoi.init(0.0, 0.0, 1.0, 1.0);
+    m_vClassRange.init(-INT_MAX, INT_MAX);
 
 	m_bDrawStatistics = false;
 	m_classLegendPos.init(25,100,15);
@@ -46,6 +47,7 @@ bool _Universe::init(void* pKiss)
 	pK->v("bMerge", &m_bMerge);
 	pK->v("mergeOverlap", &m_mergeOverlap);
 	pK->v("vRoi", &m_vRoi);
+    pK->v("vClassRange", &m_vClassRange );
 
 	//draw
 	pK->v("bDrawStatistics", &m_bDrawStatistics);
@@ -97,7 +99,8 @@ _Object* _Universe::add(_Object& o)
 	IF_N(o.area() < m_rArea.x || o.area() > m_rArea.y);
 	IF_N(o.getWidth() < m_rW.x || o.getWidth() > m_rW.y);
 	IF_N(o.getHeight() < m_rH.x || o.getHeight() > m_rH.y);
-
+	IF_N(o.getTopClass() < m_vClassRange.x || o.getTopClass() > m_vClassRange.y);
+    
 	vFloat3 p = o.getPos();
 	IF_N(p.x < m_vRoi.x);
 	IF_N(p.x > m_vRoi.z);

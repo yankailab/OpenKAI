@@ -18,7 +18,6 @@ _Chilitags::_Chilitags()
     m_persistence = 0;
     m_gain = 0.0;
     m_angleOffset = 0.0;
-    m_vTagRange.init(0,10000);
 }
 
 _Chilitags::~_Chilitags()
@@ -33,7 +32,6 @@ bool _Chilitags::init ( void* pKiss )
     pK->v ( "persistence", &m_persistence );
     pK->v ( "gain", &m_gain );
     pK->v ( "angleOffset", &m_angleOffset );
-    pK->v ( "vTagRange", &m_vTagRange );
 
     m_chilitags.setFilter ( m_persistence, m_gain );
 
@@ -88,10 +86,7 @@ void _Chilitags::detect ( void )
     float ky = 1.0/ ( float ) m.rows;
 
     for ( const std::pair<int, chilitags::Quad> & tag : tags )
-    {
-        int id = tag.first;
-        IF_CONT(id < m_vTagRange.x || id > m_vTagRange.y);
-        
+    {        
         o.init();
 //        o.m_tStamp = m_pT->getTstamp();
         o.setTopClass ( tag.first,1.0 );

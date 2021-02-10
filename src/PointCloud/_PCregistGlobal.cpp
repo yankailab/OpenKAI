@@ -19,6 +19,7 @@ _PCregistGlobal::_PCregistGlobal()
     m_rFeature = 0.5;
     m_maxNNnormal = 30;
     m_maxNNfpfh = 100;
+    m_lastFit = 0.0;
 
     m_pSrc = NULL;
     m_pTgt = NULL;
@@ -121,6 +122,9 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
                 spFpfhTgt,
                 open3d::pipelines::registration::FastGlobalRegistrationOption()
             );
+    
+    IF_F(m_RR.fitness_ < m_lastFit);
+    m_lastFit = m_RR.fitness_;
     
     return true;
 }

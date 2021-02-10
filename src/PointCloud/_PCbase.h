@@ -32,8 +32,11 @@ public:
 
 	virtual void getPC(PointCloud* pPC);
 	virtual void updatePC(void);
+    
+protected:
+    virtual void paintPC(PointCloud* pPC);
+    
 
-public:
 	_PCbase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
     pthread_mutex_t m_mutexPC;
