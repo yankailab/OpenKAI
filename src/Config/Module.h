@@ -203,11 +203,12 @@
 
 #ifdef USE_OPEN3D
 #include "../PointCloud/_PCfile.h"
-#include "../PointCloud/PCfilter/_PCfilter.h"
+#include "../PointCloud/PCfilter/_PCcrop.h"
 #include "../PointCloud/PCfilter/_PCdownSample.h"
 #include "../PointCloud/_PCmerge.h"
-#include "../PointCloud/_PCregistICP.h"
-#include "../PointCloud/_PCregistGlobal.h"
+#include "../PointCloud/PCregistration/_PCregistCol.h"
+#include "../PointCloud/PCregistration/_PCregistICP.h"
+#include "../PointCloud/PCregistration/_PCregistGlobal.h"
 #include "../PointCloud/_PCtransform.h"
 #include "../PointCloud/_PCviewer.h"
 #include "../PointCloud/_PCsend.h"

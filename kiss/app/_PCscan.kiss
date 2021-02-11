@@ -22,6 +22,7 @@
 	"Console":"OKconsole",
 	"vWinSize":[1920,1080],
 	"fov":100,
+	"bCoordFrame":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -46,12 +47,35 @@
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
 	"rsSN":"f0210481",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
-	"vColOvrr":[0.0, 1.0, 0.0],
+	"/vColOvrr":[0.0, 1.0, 0.0],
     {
 		"name":"thread",
 		"FPS":30,
+	}
+}
+
+{
+	"name":"crop1",
+	"class":"_PCcrop",
+	"bInst":1,
+	"Console":"OKconsole",
+	"_PCviewer":"pcv",
+	"_PCbase":"rs1",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	
+    {
+		"name":"vFilter",
+        {
+            "type":1,
+            "bInside":1,
+            "vC":[0.0, 0.0, 0.3],
+            "vR":[0.0, 0.3],
+        }
 	}
 }
 
@@ -61,7 +85,7 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
-	"_PCbase":"rs1",
+	"_PCbase":"crop1",
 	"rVoxel":0.1,
     {
 		"name":"thread",
@@ -96,12 +120,35 @@
 }
 
 {
+	"name":"crop2",
+	"class":"_PCcrop",
+	"bInst":1,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"_PCbase":"rs2",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	
+    {
+		"name":"vFilter",
+        {
+            "type":1,
+            "bInside":1,
+            "vC":[0.0, 0.0, 0.3],
+            "vR":[0.0, 0.3],
+        }
+	}
+}
+
+{
 	"name":"ds2",
 	"class":"_PCdownSample",
 	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
-	"_PCbase":"rs2",
+	"_PCbase":"crop2",
 	"rVoxel":0.1,
     {
 		"name":"thread",
@@ -114,11 +161,11 @@
 	"class":"_PCtransform",
 	"bInst":1,
 	"Console":"OKconsole",
-	"_PCviewer":"pcv",
-	"_PCbase":"rs2",
+	"/_PCviewer":"pcv",
+	"_PCbase":"crop2",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
-	"vColOvrr":[0, 0, 1.0],
+	"/vColOvrr":[0, 0, 1.0],
 	"nMt":1,
 	"paramKiss":"/home/kai/config/tfGlobal12.kiss",
     {
@@ -168,11 +215,12 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"_PCbase":"tfGlobal12",
+	"/_PCbase":"crop2",
 	"_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
-	"vColOvrr":[1.0, 1.0, 0.0],
+	"/vColOvrr":[1.0, 1.0, 0.0],
 	"paramKiss":"/home/kai/config/tfICP12.kiss",
     {
 		"name":"thread",
@@ -182,10 +230,12 @@
 
 {
 	"name":"rgICP12",
-	"class":"_PCregistICP",
+	"class":"_PCregistCol",
 	"bInst":1,
 	"Console":"OKconsole",
+	"/_PCbaseSrc":"tfGlobal12",
 	"_PCbaseSrc":"dsG12",
+	"/_PCbaseSrc":"ds2",
 	"_PCbaseTgt":"ds1",
 	"_PCtransform":"tfICP12",
 	"thr":0.1,

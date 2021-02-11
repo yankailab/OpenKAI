@@ -1,12 +1,12 @@
 /*
- * _PCfilter.h
+ * _PCcrop.h
  *
  *  Created on: Sept 3, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCfilter_H_
-#define OpenKAI_src_PointCloud_PCfilter_H_
+#ifndef OpenKAI_src_PointCloud_PCcrop_H_
+#define OpenKAI_src_PointCloud_PCcrop_H_
 
 #include "../../Base/common.h"
 
@@ -80,11 +80,11 @@ struct POINTCLOUD_VOL
 	}
 };
 
-class _PCfilter: public _PCbase
+class _PCcrop: public _PCbase
 {
 public:
-	_PCfilter();
-	virtual ~_PCfilter();
+	_PCcrop();
+	virtual ~_PCcrop();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -96,7 +96,7 @@ private:
 	virtual bool bFilter(Eigen::Vector3d& vP);
 	static void* getUpdate(void* This)
 	{
-		((_PCfilter *) This)->update();
+		(( _PCcrop *) This)->update();
 		return NULL;
 	}
 

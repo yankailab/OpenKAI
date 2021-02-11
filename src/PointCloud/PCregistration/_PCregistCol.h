@@ -1,29 +1,29 @@
 /*
- * _PCregistGlobal.h
+ * _PCregistCol.h
  *
  *  Created on: Sept 6, 2020
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_PointCloud_PCregistGlobal_H_
-#define OpenKAI_src_PointCloud_PCregistGlobal_H_
+#ifndef OpenKAI_src_PointCloud_PCregistCol_H_
+#define OpenKAI_src_PointCloud_PCregistCol_H_
 
-#include "../Base/common.h"
+#include "../../Base/common.h"
 
 #ifdef USE_OPEN3D
-#include "_PCtransform.h"
-#include <open3d/pipelines/registration/FastGlobalRegistration.h>
+#include "../_PCtransform.h"
+#include <open3d/pipelines/registration/ColoredICP.h>
 
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-class _PCregistGlobal: public _PCbase
+class _PCregistCol: public _PCbase
 {
 public:
-	_PCregistGlobal();
-	virtual ~_PCregistGlobal();
+	_PCregistCol();
+	virtual ~_PCregistCol();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -31,22 +31,22 @@ public:
 	void draw(void);
 
 private:
-	std::shared_ptr<Feature> preprocess(PointCloud& pc);
-    bool fastGlobalRegistration(void);
+    bool ICPcolorRegistration(void);
     void updateRegistration(void);
 	void update(void);
 	static void* getUpdate(void* This)
 	{
-		(( _PCregistGlobal *) This)->update();
+		(( _PCregistCol *) This)->update();
 		return NULL;
 	}
 
 public:
 	double m_rVoxel;
     double m_rNormal;
-    double m_rFeature;
 	int m_maxNNnormal;
-	int m_maxNNfpfh;
+    double m_rFitness;
+    double m_rRMSE;
+    int m_maxIter;
 
 	_PCbase* m_pSrc;
 	_PCbase* m_pTgt;

@@ -41,7 +41,7 @@ bool _PCregistGlobal::init ( void *pKiss )
     pK->v ( "rNormal", &m_rNormal );
     pK->v ( "rFeature", &m_rFeature );
     pK->v ( "maxNNnormal", &m_maxNNnormal );
-    pK->v ( "maxNNfpfh", &m_maxNNnormal );
+    pK->v ( "maxNNfpfh", &m_maxNNfpfh );
 
     string n;
 
@@ -120,7 +120,7 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
                 pcTgt,
                 spFpfhSrc,
                 spFpfhTgt,
-                open3d::pipelines::registration::FastGlobalRegistrationOption()
+                FastGlobalRegistrationOption()
             );
     
     IF_F(m_RR.fitness_ < m_lastFit);
@@ -131,11 +131,11 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
 
 std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud& pc)
 {
-    pc.EstimateNormals(open3d::geometry::KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
-    return open3d::pipelines::registration::ComputeFPFHFeature
+    pc.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
+    return ComputeFPFHFeature
     (
         pc,
-        open3d::geometry::KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh )
+        KDTreeSearchParamHybrid(m_rFeature, m_maxNNfpfh )
     );    
 }
 

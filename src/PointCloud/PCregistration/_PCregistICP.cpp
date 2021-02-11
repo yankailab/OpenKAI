@@ -14,6 +14,7 @@ namespace kai
 
 _PCregistICP::_PCregistICP()
 {
+    m_est = icp_p2point;
     m_thr = 0.02;
     m_iMt = 0;
     m_pSrc = NULL;
@@ -31,6 +32,7 @@ bool _PCregistICP::init ( void *pKiss )
     IF_F ( !_PCbase::init ( pKiss ) );
     Kiss *pK = ( Kiss* ) pKiss;
 
+    pK->v ( "est", (int*)&m_est );
     pK->v ( "thr", &m_thr );
     pK->v ( "iMt", &m_iMt );
 
@@ -92,15 +94,34 @@ void _PCregistICP::updateRegistration ( void )
 
     IF_(pcSrc.IsEmpty());
     IF_(pcTgt.IsEmpty());
-
-    m_RR = pipelines::registration::RegistrationICP(
+    
+    if(m_est == icp_p2point)
+    {
+        m_RR = RegistrationICP(
                 pcSrc,
                 pcTgt,
                 m_thr,
-                Eigen::Matrix4d::Identity(),
-                pipelines::registration::TransformationEstimationPointToPoint()
+//                Eigen::Matrix4d::Identity(),
+                m_RR.transformation_,
+                TransformationEstimationPointToPoint()
+            );       
+    }
+    else if(m_est == icp_p2plane)
+    {
+        m_RR = RegistrationICP(
+                pcSrc,
+                pcTgt,
+                m_thr,
+//                Eigen::Matrix4d::Identity(),
+                m_RR.transformation_,
+                TransformationEstimationPointToPlane()
             );
-    
+    }
+    else
+    {
+        return;
+    }
+
     IF_(m_RR.fitness_ < m_lastFit);
     m_lastFit = m_RR.fitness_;
     

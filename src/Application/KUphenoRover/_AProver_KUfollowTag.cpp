@@ -138,7 +138,7 @@ _Object* _AProver_KUfollowTag::findTarget ( void )
     while ( ( pO = m_pU->get ( i++ ) ) != NULL )
     {
         vFloat3 p = pO->getPos();
-        IF_CONT ( p.y > topY );
+        IF_CONT ( p.y * m_pD->getDirection() > topY );
 
         tO = pO;
         topY = p.x;

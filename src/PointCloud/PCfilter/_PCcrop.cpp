@@ -1,26 +1,26 @@
 /*
- * _PCfilter.cpp
+ * _PCcrop.cpp
  *
  *  Created on: Sept 3, 2020
  *      Author: yankai
  */
 
-#include "_PCfilter.h"
+#include "_PCcrop.h"
 
 #ifdef USE_OPEN3D
 
 namespace kai
 {
 
-_PCfilter::_PCfilter()
+_PCcrop::_PCcrop()
 {
 }
 
-_PCfilter::~_PCfilter()
+_PCcrop::~_PCcrop()
 {
 }
 
-bool _PCfilter::init(void *pKiss)
+bool _PCcrop::init(void *pKiss)
 {
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -48,41 +48,42 @@ bool _PCfilter::init(void *pKiss)
 	return true;
 }
 
-bool _PCfilter::start(void)
+bool _PCcrop::start(void)
 {
     NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 
-int _PCfilter::check(void)
+int _PCcrop::check(void)
 {
 	NULL__(m_pPCB, -1);
 
 	return _PCbase::check();
 }
 
-void _PCfilter::update(void)
+void _PCcrop::update(void)
 {
 	while(m_pT->bRun())
 	{
 		m_pT->autoFPSfrom();
 
 		updateFilter();
-		m_sPC.update();
+		updatePC();
+        
+   		if(m_pViewer)
+		{
+			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
+		}
 
 		m_pT->autoFPSto();
 	}
 }
 
-void _PCfilter::updateFilter(void)
+void _PCcrop::updateFilter(void)
 {
 	IF_(check()<0);
 
 	PointCloud* pOut = m_sPC.next();
-	pOut->points_.clear();
-	pOut->colors_.clear();
-	pOut->normals_.clear();
-
 	PointCloud pcIn;
     m_pPCB->getPC(&pcIn);
 	int nP = pcIn.points_.size();
@@ -96,7 +97,7 @@ void _PCfilter::updateFilter(void)
 	}
 }
 
-bool _PCfilter::bFilter(Eigen::Vector3d& vP)
+bool _PCcrop::bFilter(Eigen::Vector3d& vP)
 {
 	for (POINTCLOUD_VOL v : m_vFilter)
 	{

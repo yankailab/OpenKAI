@@ -14,9 +14,10 @@ namespace kai
 
 _PCviewer::_PCviewer()
 {
+	m_fov = 0.0;
 	m_vWinSize.init(1280, 720);
 	m_pMcoordFrame = NULL;
-	m_fov = 0.0;
+    m_bCoordFrame = true;
 }
 
 _PCviewer::~_PCviewer()
@@ -30,11 +31,12 @@ bool _PCviewer::init(void *pKiss)
 
 	pK->v("vWinSize", &m_vWinSize);
 	pK->v("fov", &m_fov);
+	pK->v("bCoordFrame", &m_bCoordFrame);
 
 	utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
 	//X:red, Y:green, Z:blue
-	m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
+    m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
 
 	return true;
 }
@@ -55,7 +57,9 @@ void _PCviewer::update(void)
 	m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
 	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
 	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
-	m_vis.AddGeometry(m_pMcoordFrame);
+
+    if(m_bCoordFrame)
+        m_vis.AddGeometry(m_pMcoordFrame);
 
 	while(m_pT->bRun())
 	{

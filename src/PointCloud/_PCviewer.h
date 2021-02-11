@@ -102,8 +102,9 @@ private:
 public:
 	Visualizer m_vis;
 	vInt2 m_vWinSize;
-	shared_ptr<TriangleMesh> m_pMcoordFrame;
 	float m_fov;
+	shared_ptr<TriangleMesh> m_pMcoordFrame;
+    bool m_bCoordFrame;
 
 	vector<PCVIEWER_GEO> m_vGeo;
 };
