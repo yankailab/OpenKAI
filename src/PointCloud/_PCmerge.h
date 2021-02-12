@@ -37,7 +37,7 @@ private:
 
 public:
 	vector<_PCbase*> m_vpPCB;
-
+    float m_rVoxel;
 };
 
 }

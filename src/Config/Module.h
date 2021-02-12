@@ -204,6 +204,7 @@
 #ifdef USE_OPEN3D
 #include "../PointCloud/_PCfile.h"
 #include "../PointCloud/PCfilter/_PCcrop.h"
+#include "../PointCloud/PCfilter/_PCremove.h"
 #include "../PointCloud/PCfilter/_PCdownSample.h"
 #include "../PointCloud/_PCmerge.h"
 #include "../PointCloud/PCregistration/_PCregistCol.h"

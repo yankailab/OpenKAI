@@ -208,6 +208,7 @@ BASE* Module::createInstance(Kiss* pK)
 #ifdef USE_OPEN3D
 	ADD_MODULE(_PCfile);
 	ADD_MODULE( _PCcrop );
+	ADD_MODULE( _PCremove );
 	ADD_MODULE(_PCdownSample);
 	ADD_MODULE(_PCmerge);
 	ADD_MODULE( _PCregistCol );

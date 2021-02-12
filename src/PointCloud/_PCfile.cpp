@@ -68,9 +68,6 @@ void _PCfile::update(void)
 void _PCfile::draw(void)
 {
 	this->_ModuleBase::draw();
-
-//	NULL_(m_pViewer);
-//	m_pViewer->updateGeometry(m_iV, getPC());
 }
 
 }

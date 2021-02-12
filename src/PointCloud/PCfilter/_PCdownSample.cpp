@@ -67,10 +67,6 @@ void _PCdownSample::updateFilter(void)
 	IF_(check()<0);
 
 	PointCloud* pOut = m_sPC.next();
-	pOut->points_.clear();
-	pOut->colors_.clear();
-	pOut->normals_.clear();
-
 	PointCloud pcIn;
     m_pPCB->getPC(&pcIn);
     

@@ -15,7 +15,7 @@ namespace kai
 _PCmerge::_PCmerge()
 {
 	m_pViewer = NULL;
-
+    m_rVoxel = 0.0;
 }
 
 _PCmerge::~_PCmerge()
@@ -27,10 +27,12 @@ bool _PCmerge::init(void *pKiss)
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
+    pK->v("rVoxel", &m_rVoxel);
+    
 	string n;
 
 	vector<string> vPCB;
-	pK->a("vPointCloudBase", &vPCB);
+	pK->a("vPCbase", &vPCB);
 	IF_F(vPCB.empty());
 
 	for(string p : vPCB)
@@ -63,7 +65,7 @@ void _PCmerge::update(void)
 		m_pT->autoFPSfrom();
 
 		updateMerge();
-		m_sPC.update();
+        updatePC();
         
         if(m_pViewer)
         {
@@ -78,30 +80,22 @@ void _PCmerge::updateMerge(void)
 {
 	IF_(check() < 0);
 
-	PointCloud* pOut = m_sPC.next();
-	pOut->points_.clear();
-	pOut->colors_.clear();
-	pOut->normals_.clear();
-
+    PointCloud pcMerge;
 	for(_PCbase* pPCB : m_vpPCB)
 	{
         PointCloud pc;
         pPCB->getPC(&pc);
 		IF_CONT(pc.points_.empty());
         
-        *pOut += pc;
-
-/*		vector<Eigen::Vector3d>* pV;
-		pV = &pc.points_;
-		pOut->points_.insert(pOut->points_.end(), pV->begin(), pV->end());
-
-		pV = &pc.colors_;
-		pOut->colors_.insert(pOut->colors_.end(), pV->begin(), pV->end());
-*/
-        
+        pcMerge += pc;
     }
+    
+	PointCloud* pOut = m_sPC.next();
 
-//	m_pViewer->render(pOut);
+    if(m_rVoxel <= 0.0)
+        *pOut = pcMerge;
+    else
+        *pOut = *pcMerge.VoxelDownSample(m_rVoxel);
 }
 
 }

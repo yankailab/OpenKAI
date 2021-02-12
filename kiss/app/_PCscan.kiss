@@ -12,7 +12,21 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":1,
+	"bInst":0,
+}
+
+{
+	"name":"pcf",
+	"class":"_PCfile",
+	"bInst":0,
+	"bLog":1,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 }
 
 {
@@ -61,7 +75,7 @@
 	"class":"_PCcrop",
 	"bInst":1,
 	"Console":"OKconsole",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"_PCbase":"rs1",
     {
 		"name":"thread",
@@ -73,9 +87,24 @@
         {
             "type":1,
             "bInside":1,
-            "vC":[0.0, 0.0, 0.3],
-            "vR":[0.0, 0.3],
+            "vC":[0.0, 0.0, 0.5],
+            "vR":[0.0, 0.5],
         }
+	}
+}
+
+{
+	"name":"rm1",
+	"class":"_PCremove",
+	"bInst":1,
+	"Console":"OKconsole",
+	"_PCviewer":"pcv",
+	"_PCbase":"crop1",
+	"nP":1,
+	"r":0.5,
+    {
+		"name":"thread",
+		"FPS":30,
 	}
 }
 
@@ -85,8 +114,8 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
-	"_PCbase":"crop1",
-	"rVoxel":0.1,
+	"_PCbase":"rm1",
+	"rVoxel":0.005,
     {
 		"name":"thread",
 		"FPS":30,
@@ -136,9 +165,24 @@
         {
             "type":1,
             "bInside":1,
-            "vC":[0.0, 0.0, 0.3],
-            "vR":[0.0, 0.3],
+            "vC":[0.0, 0.0, 0.5],
+            "vR":[0.0, 0.5],
         }
+	}
+}
+
+{
+	"name":"rm2",
+	"class":"_PCremove",
+	"bInst":1,
+	"Console":"OKconsole",
+	"/_PCviewer":"pcv",
+	"_PCbase":"crop2",
+	"nP":16,
+	"r":0.05,
+    {
+		"name":"thread",
+		"FPS":30,
 	}
 }
 
@@ -148,8 +192,8 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
-	"_PCbase":"crop2",
-	"rVoxel":0.1,
+	"_PCbase":"rm2",
+	"rVoxel":0.005,
     {
 		"name":"thread",
 		"FPS":30,
@@ -162,7 +206,7 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
-	"_PCbase":"crop2",
+	"_PCbase":"rm2",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"/vColOvrr":[0, 0, 1.0],
@@ -181,7 +225,7 @@
 	"Console":"OKconsole",
 	"/_PCviewer":"pcv",
 	"_PCbase":"tfGlobal12",
-	"rVoxel":0.1,
+	"rVoxel":0.005,
     {
 		"name":"thread",
 		"FPS":30,
@@ -197,14 +241,14 @@
 	"_PCbaseTgt":"ds1",
 	"_PCtransform":"tfGlobal12",
 	"iMt":0,
-	"rVoxel":0.1,
-	"rNormal":0.2,
-	"rFeature":0.5,
+	"rVoxel":0.005,
+	"rNormal":0.01,
+	"rFeature":0.025,
 	"maxNNnormal":30,
 	"maxNNfpfh":100,
     {
 		"name":"thread",
-		"FPS":1,
+		"FPS":30,
 	}
 }
 
@@ -215,8 +259,7 @@
 	"bInst":1,
 	"Console":"OKconsole",
 	"_PCbase":"tfGlobal12",
-	"/_PCbase":"crop2",
-	"_PCviewer":"pcv",
+	"/_PCviewer":"pcv",
 	"vT":[0, 0, 0],
 	"vR":[0, 0, 0],
 	"nMt":1,
@@ -233,9 +276,7 @@
 	"class":"_PCregistCol",
 	"bInst":1,
 	"Console":"OKconsole",
-	"/_PCbaseSrc":"tfGlobal12",
 	"_PCbaseSrc":"dsG12",
-	"/_PCbaseSrc":"ds2",
 	"_PCbaseTgt":"ds1",
 	"_PCtransform":"tfICP12",
 	"thr":0.1,
@@ -247,7 +288,19 @@
 }
 
 
-
+{
+	"name":"merge",
+	"class":"_PCmerge",
+	"bInst":1,
+	"Console":"OKconsole",
+	"vPCbase":["rm1","tfICP12"],
+	"_PCviewer":"pcv",
+    "rVoxel":0.0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
 
 
 
