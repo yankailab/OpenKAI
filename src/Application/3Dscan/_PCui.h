@@ -1,9 +1,9 @@
 #ifndef OpenKAI_src_Protocol___PCwebUI_H_
 #define OpenKAI_src_Protocol___PCwebUI_H_
 
-#include "../Protocol/_JSONbase.h"
-#include "../IO/_WebSocket.h"
-#include "_PCtransform.h"
+#include "../../Protocol/_JSONbase.h"
+#include "../../IO/_WebSocket.h"
+#include "../../PointCloud/_PCtransform.h"
 
 using namespace picojson;
 

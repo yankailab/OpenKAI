@@ -1,19 +1,19 @@
-#include "_Crystal.h"
+#include "_PClattice.h"
 
 #ifdef USE_OPEN3D
 
 namespace kai
 {
 
-_Crystal::_Crystal()
+_PClattice::_PClattice()
 {
 }
 
-_Crystal::~_Crystal()
+_PClattice::~_PClattice()
 {
 }
 
-bool _Crystal::init(void *pKiss)
+bool _PClattice::init(void *pKiss)
 {
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
@@ -23,18 +23,18 @@ bool _Crystal::init(void *pKiss)
 	return true;
 }
 
-bool _Crystal::start(void)
+bool _PClattice::start(void)
 {
     NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 
-int _Crystal::check(void)
+int _PClattice::check(void)
 {
 	return this->_ModuleBase::check();
 }
 
-void _Crystal::update(void)
+void _PClattice::update(void)
 {
 	while(m_pT->bRun())
 	{
@@ -46,11 +46,11 @@ void _Crystal::update(void)
 	}
 }
 
-void _Crystal::render(void)
+void _PClattice::render(void)
 {
 }
 
-void _Crystal::draw(void)
+void _PClattice::draw(void)
 {
 	this->_ModuleBase::draw();
 }

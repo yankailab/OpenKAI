@@ -219,7 +219,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_PCsend);
 	ADD_MODULE(_PCrecv);
 	ADD_MODULE(_PCui);
-	ADD_MODULE(_Crystal);
+	ADD_MODULE( _PClattice );
 #ifdef USE_REALSENSE
 	ADD_MODULE(_PCrs);
 #endif

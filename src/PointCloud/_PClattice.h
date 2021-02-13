@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_PointCloud__Crystal_H_
-#define OpenKAI_src_PointCloud__Crystal_H_
+#ifndef OpenKAI_src_PointCloud__PClattice_H_
+#define OpenKAI_src_PointCloud__PClattice_H_
 
 #include "../Base/_ModuleBase.h"
 
@@ -11,12 +11,12 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-struct CRYSTAL_CELL
+struct PCLATTICE_CELL
 {
     vFloat3 m_vColor;
     uint16_t m_nP;          //nPoints inside the cell
 
-    CRYSTAL_CELL* m_pSub;
+    PCLATTICE_CELL* m_pSub;
     uint16_t m_dSub;        //sub cell dimension
 
 	void init(void)
@@ -29,11 +29,11 @@ struct CRYSTAL_CELL
 	}
 };
 
-class _Crystal: public _ModuleBase
+class _PClattice: public _ModuleBase
 {
 public:
-	_Crystal();
-	virtual ~_Crystal();
+	_PClattice();
+	virtual ~_PClattice();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -45,12 +45,12 @@ protected:
 	void update(void);
 	static void* getUpdate(void* This)
 	{
-		((_Crystal *) This)->update();
+		(( _PClattice *) This)->update();
 		return NULL;
 	}
 
 private:
-    CRYSTAL_CELL* m_pCell;
+    PCLATTICE_CELL* m_pCell;
     uint16_t m_dCell;        //top level cell dimension
     
     vFloat3 m_vCoverage;

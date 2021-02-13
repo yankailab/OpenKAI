@@ -239,6 +239,13 @@ sudo make install
 # remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
 
 #----------------------------------------------------
+# (Optional) Dynamixel
+git clone https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
+cd xArm-CPLUS-SDK/
+make all -j$(nproc)
+sudo make install
+
+#----------------------------------------------------
 # (Optional) KDevelop
 wget -O KDevelop.AppImage https://download.kde.org/stable/kdevelop/5.6.0/bin/linux/KDevelop-5.6.0-x86_64.AppImage
 chmod +x KDevelop.AppImage

@@ -109,7 +109,6 @@ if(USE_XARM)
   set(OpenKAI_lib ${OpenKAI_lib} xarm)
 endif()
 
-
 if(USE_DARKNET)
   add_definitions(-DUSE_DARKNET)  
   set(Darknet_root "/darknet" CACHE STRING "")

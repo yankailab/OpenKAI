@@ -14,7 +14,6 @@ namespace kai
 
 _PCregistGlobal::_PCregistGlobal()
 {
-    m_rVoxel = 0.1;
     m_rNormal = 0.2;
     m_rFeature = 0.5;
     m_maxNNnormal = 30;
@@ -37,7 +36,6 @@ bool _PCregistGlobal::init ( void *pKiss )
     Kiss *pK = ( Kiss* ) pKiss;
 
     pK->v ( "iMt", &m_iMt );
-    pK->v ( "rVoxel", &m_rVoxel );
     pK->v ( "rNormal", &m_rNormal );
     pK->v ( "rFeature", &m_rFeature );
     pK->v ( "maxNNnormal", &m_maxNNnormal );
@@ -112,8 +110,6 @@ bool _PCregistGlobal::fastGlobalRegistration(void)
     Feature spFpfhSrc = *preprocess( pcSrc );
     Feature spFpfhTgt = *preprocess( pcTgt );
 
-    double dThr = m_rVoxel * 0.5;
-    
     m_RR = FastGlobalRegistration
             (
                 pcSrc,

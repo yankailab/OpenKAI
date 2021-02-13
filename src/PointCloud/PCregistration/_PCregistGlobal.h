@@ -42,7 +42,6 @@ private:
 	}
 
 public:
-	double m_rVoxel;
     double m_rNormal;
     double m_rFeature;
 	int m_maxNNnormal;
