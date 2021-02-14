@@ -102,12 +102,12 @@ bool _ActuatorBase::start(void)
 void _ActuatorBase::update(void)
 {
     IF_(check() < 0);
-	m_pT->setTstamp(getTimeUsec());
+//	m_pT->setTstamp(getApproxTbootUs());
 }
 
 bool _ActuatorBase::bCmdTimeout(void)
 {
-	uint64_t t = getTimeUsec();
+	uint64_t t = getApproxTbootUs();
 	IF_F(t - m_tLastCmd < m_tCmdTimeout);
 
 	return true;

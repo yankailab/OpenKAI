@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Protocol___PCwebUI_H_
-#define OpenKAI_src_Protocol___PCwebUI_H_
+#ifndef OpenKAI_src_Protocol___PCscan_H_
+#define OpenKAI_src_Protocol___PCscan_H_
 
 #include "../../Protocol/_JSONbase.h"
 #include "../../IO/_WebSocket.h"
@@ -11,11 +11,11 @@ using namespace picojson;
 namespace kai
 {
 
-class _PCui : public _JSONbase
+class _PCscan : public _JSONbase
 {
 public:
-	_PCui();
-	~_PCui();
+	_PCscan();
+	~_PCscan();
 
 	virtual bool init(void* pKiss);
 	virtual bool start(void);
@@ -32,14 +32,14 @@ private:
 	void updateW(void);
 	static void* getUpdateW(void* This)
 	{
-		((_PCui*) This)->updateW();
+		(( _PCscan*) This)->updateW();
 		return NULL;
 	}
 
 	void updateR(void);
 	static void* getUpdateR(void* This)
 	{
-		((_PCui*) This)->updateR();
+		(( _PCscan*) This)->updateR();
 		return NULL;
 	}
 

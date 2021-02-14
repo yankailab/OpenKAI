@@ -67,13 +67,13 @@ void _SortingCtrlClient::update(void)
 	{
 		if (!m_pIO)
 		{
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
 			continue;
 		}
 

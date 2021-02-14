@@ -112,7 +112,7 @@ void _PCsend::sendPC(void)
         {
             pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
             while(!m_pIO->write(m_pB, iB))
-                m_pT->sleepTime(m_tInt);
+                m_pT->sleepT (m_tInt);
 
             iB = PC_N_HDR;
         }
@@ -122,10 +122,10 @@ void _PCsend::sendPC(void)
     {
         pack_int16(&m_pB[2], (int16_t)(iB - PC_N_HDR), false);
         while(!m_pIO->write(m_pB, iB))
-            m_pT->sleepTime(m_tInt);
+            m_pT->sleepT (m_tInt);
     }
 
-    m_pT->sleepTime(m_tInt);
+    m_pT->sleepT (m_tInt);
 
     //frame sync
     m_pB[0] = PB_BEGIN;
@@ -133,7 +133,7 @@ void _PCsend::sendPC(void)
     m_pB[2] = 0;
     m_pB[3] = 0;
     while(!m_pIO->write(m_pB, PC_N_HDR))
-        m_pT->sleepTime(m_tInt);
+        m_pT->sleepT (m_tInt);
 
 }
 

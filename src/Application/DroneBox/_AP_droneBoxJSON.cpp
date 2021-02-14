@@ -59,7 +59,7 @@ void _AP_droneBoxJSON::updateW ( void )
     {
         if ( !m_pIO )
         {
-            m_pT->sleepTime ( USEC_1SEC );
+            m_pT->sleepT ( USEC_1SEC );
             continue;
         }
 
@@ -67,7 +67,7 @@ void _AP_droneBoxJSON::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                m_pT->sleepTime ( USEC_1SEC );
+                m_pT->sleepT ( USEC_1SEC );
                 continue;
             }
         }
@@ -127,7 +127,7 @@ void _AP_droneBoxJSON::updateR ( void )
         }
         
         if(m_strB.empty())
-            m_pT->sleepTime ( 100000 ); //wait for the IObase to wake me up when received data
+            m_pT->sleepT ( 100000 ); //wait for the IObase to wake me up when received data
     }
 }
 

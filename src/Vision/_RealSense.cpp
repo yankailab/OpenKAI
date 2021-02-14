@@ -216,7 +216,7 @@ void _RealSense::update ( void )
             {
                 LOG_E ( "Cannot open RealSense" );
                 hardwareReset();
-                m_pT->sleepTime ( USEC_1SEC );
+                m_pT->sleepT ( USEC_1SEC );
                 continue;
             }
         }
@@ -230,7 +230,7 @@ void _RealSense::update ( void )
         else
         {
             hardwareReset();
-            m_pT->sleepTime ( USEC_1SEC );
+            m_pT->sleepT ( USEC_1SEC );
             m_bOpen = false;
         }
 
@@ -296,7 +296,7 @@ void _RealSense::updateTPP ( void )
 {
     while(m_pTPP->bRun())
     {
-        m_pTPP->sleepTime ( 0 );
+        m_pTPP->sleepT ( 0 );
 
         if ( m_fDec > 0.0 )
             m_rsDepth = m_rsfDec.process ( m_rsDepth );

@@ -215,7 +215,7 @@
 #include "../PointCloud/_PCsend.h"
 #include "../PointCloud/_PCrecv.h"
 #include "../PointCloud/_PClattice.h"
-#include "../Application/3Dscan/_PCui.h"
+#include "../Application/3Dscan/_PCscan.h"
 #ifdef USE_REALSENSE
 #include "../PointCloud/_PCrs.h"
 #endif

@@ -96,7 +96,7 @@ inline string getFileExt(string& file)
 	return file.substr(extPos);
 }
 
-inline uint32_t getTimeBootMs()
+inline uint64_t getTbootMs(void)
 {
 	// get number of milliseconds since boot
 	struct timespec tFromBoot;
@@ -105,14 +105,13 @@ inline uint32_t getTimeBootMs()
 	return tFromBoot.tv_sec * 1000 + tFromBoot.tv_nsec / 1000000;
 }
 
-inline uint64_t getTimeUsec()
+inline uint64_t getApproxTbootUs(void)
 {
-	struct timeval tStamp;
-	gettimeofday(&tStamp, NULL);
-	uint64_t time = (uint64_t) tStamp.tv_sec * (uint64_t) 1000000
-			+ tStamp.tv_usec;
+	// get number of micro since boot
+	struct timespec tFromBoot;
+	clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 
-	return time;
+	return tFromBoot.tv_sec * USEC_1SEC + (tFromBoot.tv_nsec >> 10);// / 1000;
 }
 
 inline double NormRand(void)

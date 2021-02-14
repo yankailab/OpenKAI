@@ -203,12 +203,12 @@ bool _ANR::cn(void)
 		if(bMatch)
 		{
 			m_cnPrefixBB = pO->getBB2D();
-			m_tStampCNprefix = getTimeUsec();
+			m_tStampCNprefix = getApproxTbootUs();
 			break;
 		}
 	}
 
-	if(getTimeUsec() - m_tStampCNprefix > m_timeOut)
+	if(getApproxTbootUs() - m_tStampCNprefix > m_timeOut)
 	{
 		m_cn = "";
 		return false;
@@ -231,10 +231,10 @@ bool _ANR::cn(void)
 
 		cn = m_cnPrefix + s.substr(0,m_nCNdigit);
 		m_cnBB = bb;
-		m_tStampCN = getTimeUsec();
+		m_tStampCN = getApproxTbootUs();
 	}
 
-	if(getTimeUsec() - m_tStampCN > m_timeOut)
+	if(getApproxTbootUs() - m_tStampCN > m_timeOut)
 	{
 		m_cn = "";
 		return false;
@@ -304,7 +304,7 @@ void _ANR::lpO(void)
 			cStr.length(),
 			WS_MODE_TXT);
 
-	if (getTimeUsec() - m_tStampLP > m_timeOut)
+	if (getApproxTbootUs() - m_tStampLP > m_timeOut)
 	{
 		m_lp = "";
 		return;
@@ -365,14 +365,14 @@ void _ANR::lp(void)
 				m_lp = m_pOCR->scan(&r);
 			}
 
-			m_tStampLP = getTimeUsec();
+			m_tStampLP = getApproxTbootUs();
 		}
 	}
 #endif
 
 	LOG_I("L Number: " + m_lp);
 
-	if(getTimeUsec() - m_tStampLP > m_timeOut)
+	if(getApproxTbootUs() - m_tStampLP > m_timeOut)
 	{
 		m_lp = "";
 		return;
@@ -383,7 +383,7 @@ void _ANR::draw(void)
 {
 	this->_ModuleBase::draw();
 
-	if(getTimeUsec() - m_tStampCN > m_timeOut)
+	if(getApproxTbootUs() - m_tStampCN > m_timeOut)
 		addMsg("CN unrecognized");
 	else
 		addMsg("CN: " + m_cn);
@@ -392,7 +392,7 @@ void _ANR::draw(void)
 	Window* pWin = (Window*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
-	IF_(getTimeUsec() - m_tStampCN > m_timeOut);
+	IF_(getApproxTbootUs() - m_tStampCN > m_timeOut);
 
 	Scalar col = Scalar(0,0,255);
 

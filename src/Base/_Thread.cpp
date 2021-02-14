@@ -15,14 +15,15 @@ _Thread::_Thread()
 	m_bThreadON = false;
 	m_threadID = 0;
 	m_tStamp = 0;
-	m_dTime = 1.0;
+	m_dT = 1.0;
 	m_FPS = 0;
 	m_targetFPS = DEFAULT_FPS;
-	m_targetFrameTime = USEC_1SEC / m_targetFPS;
+	m_targetTframe = USEC_1SEC / m_targetFPS;
 	m_tFrom = 0;
 	m_tTo = 0;
 	m_bGoSleep = false;
 	m_bSleeping = false;
+    m_tWakeUp = 0;
 
 	pthread_mutex_init(&m_wakeupMutex, NULL);
 	pthread_cond_init(&m_wakeupSignal, NULL);
@@ -58,6 +59,15 @@ bool _Thread::init(void* pKiss)
 	pK->parent()->v("Window",&n );
 	m_pWindow = (Window*)(pK->getInst( n ));
 #endif
+    
+    vector<string> vWakeup;
+    pK->a ( "vWakeup", &vWakeup );
+    for ( int i=0; i<vWakeup.size(); i++ )
+    {
+        _Thread* pT = ( _Thread* ) ( pK->getInst ( vWakeup[i] ) );
+        IF_CONT ( !pT );
+        m_vWakeUp.push_back ( pT );
+    }
 
 	return true;
 }
@@ -78,34 +88,6 @@ bool _Thread::start(void *(*__start_routine) (void *),
 	return true;
 }
 
-void _Thread::sleepTime(int64_t usec)
-{
-	if(usec>0)
-	{
-		struct timeval now;
-		struct timespec timeout;
-
-		gettimeofday(&now, NULL);
-		int64_t nsec = (now.tv_usec + usec) * 1000;
-		timeout.tv_sec = now.tv_sec + nsec / NSEC_1SEC;
-		timeout.tv_nsec = nsec % NSEC_1SEC;
-
-		m_bSleeping = true;
-		pthread_mutex_lock(&m_wakeupMutex);
-		pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &timeout);
-		pthread_mutex_unlock(&m_wakeupMutex);
-	}
-	else
-	{
-		m_bSleeping = true;
-		pthread_mutex_lock(&m_wakeupMutex);
-		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
-		pthread_mutex_unlock(&m_wakeupMutex);
-	}
-
-	m_bSleeping = false;
-}
-
 bool _Thread::bRun(void)
 {
     return m_bThreadON;
@@ -121,6 +103,36 @@ bool _Thread::bGoSleep(void)
 	return m_bGoSleep;
 }
 
+void _Thread::sleepT (int64_t usec)
+{
+	if(usec > 0)
+	{
+		struct timeval tNow;
+		gettimeofday(&tNow, NULL);
+		
+        int64_t nsec = (tNow.tv_usec + usec) * 1000;
+        int64_t sec = nsec / NSEC_1SEC;
+
+		struct timespec tTimeout;
+        tTimeout.tv_sec = tNow.tv_sec + sec;
+		tTimeout.tv_nsec = nsec - sec * NSEC_1SEC;// % NSEC_1SEC;
+
+		m_bSleeping = true;
+		pthread_mutex_lock(&m_wakeupMutex);
+		pthread_cond_timedwait(&m_wakeupSignal, &m_wakeupMutex, &tTimeout );
+		pthread_mutex_unlock(&m_wakeupMutex);
+	}
+	else
+	{
+		m_bSleeping = true;
+		pthread_mutex_lock(&m_wakeupMutex);
+		pthread_cond_wait(&m_wakeupSignal, &m_wakeupMutex);
+		pthread_mutex_unlock(&m_wakeupMutex);
+	}
+
+	m_bSleeping = false;
+}
+
 bool _Thread::bSleeping(void)
 {
 	return m_bSleeping;
@@ -128,6 +140,7 @@ bool _Thread::bSleeping(void)
 
 void _Thread::wakeUp(void)
 {
+    m_tWakeUp = m_tFrom;
 	m_bGoSleep = false;
 	pthread_cond_signal(&m_wakeupSignal);
 }
@@ -142,7 +155,7 @@ void _Thread::setTargetFPS(float fps)
 	IF_(fps<=0);
 
 	m_targetFPS = fps;
-	m_targetFrameTime = USEC_1SEC / m_targetFPS;
+	m_targetTframe = USEC_1SEC / m_targetFPS;
 }
 
 float _Thread::getTargetFPS(void)
@@ -152,32 +165,35 @@ float _Thread::getTargetFPS(void)
 
 void _Thread::autoFPSfrom(void)
 {
-	m_tFrom = getTimeUsec();
-	m_dTime = (float)(m_tFrom - m_tStamp + 1);
+	m_tFrom = getApproxTbootUs();
+	m_dT = (float)(m_tFrom - m_tStamp + 1);
 	m_tStamp = m_tFrom;
-	m_FPS = USEC_1SEC / m_dTime;
+	m_FPS = USEC_1SEC / m_dT;
 }
 
 void _Thread::autoFPSto(void)
 {
-	m_tTo = getTimeUsec();
+    //Pipeline wakeup
+    if(!m_vWakeUp.empty())
+    {
+        for(int i=0; i<m_vWakeUp.size(); i++)
+            m_vWakeUp[i]->wakeUp();
+    }
 
-	int uSleep = (int) (m_targetFrameTime - (m_tTo - m_tFrom));
+	m_tTo = getApproxTbootUs();
+
+    int uSleep = (int) ( m_targetTframe - (m_tTo - m_tFrom));
 	if (uSleep > 1000)
 	{
-		sleepTime(uSleep);
+		sleepT (uSleep);
 	}
 
 	if(m_bGoSleep)
 	{
+        IF_(m_tFrom <= m_tWakeUp);
 		m_FPS = 0;
-		sleepTime(0);
+		sleepT (0);
 	}
-}
-
-void _Thread::setTstamp(float tStamp)
-{
-    m_tStamp = tStamp;
 }
 
 float _Thread::getTstamp(void)
@@ -185,20 +201,20 @@ float _Thread::getTstamp(void)
 	return m_tStamp;
 }
 
-float _Thread::getDtime(void)
+float _Thread::getDt (void)
 {
-	return m_dTime;
+	return m_dT;
 }
 
 void _Thread::draw(void)
 {
-	this->BASE::draw();
-
 	string msg = "FPS: " + f2str(m_FPS,2);
+    string t = " " + *this->getName();
 
 	if(m_pConsole)
 	{
 		Console* pC = (Console*)m_pConsole;
+		pC->addMsg(t, COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 		pC->addMsg(msg, COLOR_PAIR(CONSOLE_COL_FPS)|A_BOLD, CONSOLE_X_FPS);
 	}
 
@@ -206,6 +222,7 @@ void _Thread::draw(void)
 	if(checkWindow())
 	{
 		Window* pWin = (Window*)this->m_pWindow;
+		pWin->addMsg(t);
 		pWin->addMsg(msg, 1);
 	}
 #endif

@@ -62,7 +62,7 @@ bool State::update(void)
 		return true;
 	}
 
-	m_tStamp = getTimeUsec();
+	m_tStamp = getApproxTbootUs();
 	if(m_tStart <= 0)
 		m_tStart = m_tStamp;
 

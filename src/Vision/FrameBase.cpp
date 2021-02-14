@@ -29,13 +29,13 @@ uint64_t FrameBase::tStamp(void)
 void FrameBase::operator=(const Mat& m)
 {
 	m_mat = m;
-	m_tStamp = getTimeUsec();
+	m_tStamp = getApproxTbootUs();
 }
 
 void FrameBase::allocate(int w, int h)
 {
 	m_mat = Mat(h, w, CV_8UC3, Scalar(0,0,0));
-	m_tStamp = getTimeUsec();
+	m_tStamp = getApproxTbootUs();
 }
 
 void FrameBase::copy(const FrameBase& f)
@@ -47,7 +47,7 @@ void FrameBase::copy(const FrameBase& f)
 void FrameBase::copy(const Mat& m)
 {
 	m.copyTo(m_mat);
-	m_tStamp = getTimeUsec();
+	m_tStamp = getApproxTbootUs();
 }
 
 Mat* FrameBase::m(void)

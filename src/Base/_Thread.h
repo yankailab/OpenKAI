@@ -29,7 +29,7 @@ public:
     virtual bool bRun(void);
 	virtual void goSleep(void);
 	virtual bool bGoSleep(void);
-	virtual void sleepTime(int64_t usec);
+	virtual void sleepT (int64_t usec);
 	virtual bool bSleeping(void);
 	virtual void wakeUp(void);
 
@@ -38,9 +38,8 @@ public:
 	virtual float getTargetFPS(void);
 	virtual void autoFPSfrom(void);
 	virtual void autoFPSto(void);
-    virtual void setTstamp(float tStamp);
     virtual float getTstamp(void);
-    virtual float getDtime(void);
+    virtual float getDt(void);
 
 protected:
 	pthread_t m_threadID;
@@ -52,11 +51,15 @@ protected:
 	uint64_t m_tFrom;
 	uint64_t m_tTo;
 	float m_targetFPS;
-	float m_targetFrameTime;
-	float m_dTime;
+	float m_targetTframe;
+	float m_dT;
 	float m_FPS;
-	bool	m_bGoSleep;
-	bool	m_bSleeping;
+	bool m_bGoSleep;
+	bool m_bSleeping;
+    
+    //Pipeline
+    vector<_Thread*> m_vWakeUp;
+    uint64_t m_tWakeUp;
 };
 
 }

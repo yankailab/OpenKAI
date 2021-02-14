@@ -55,7 +55,7 @@ void _HiphenServer::update(void)
 	{
 		if(!handler())
 		{
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
 		}
 	}
 }

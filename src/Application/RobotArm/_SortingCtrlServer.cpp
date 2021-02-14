@@ -101,7 +101,7 @@ void _SortingCtrlServer::updateImg(void)
 	IF_(check() < 0);
 
 	//update existing target positions
-	float spd = m_cSpeed * ((float) m_pT->getDtime()) * 1e-6;
+	float spd = m_cSpeed * ((float) m_pT->getDt()) * 1e-6;
 	int i = 0;
 	_Object *pO;
 	while ((pO = m_pU->get(i++)))

@@ -70,7 +70,7 @@ void _JSONbase::updateW ( void )
     {
         if ( !m_pIO )
         {
-            m_pT->sleepTime ( USEC_1SEC );
+            m_pT->sleepT ( USEC_1SEC );
             continue;
         }
 
@@ -78,7 +78,7 @@ void _JSONbase::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                m_pT->sleepTime ( USEC_1SEC );
+                m_pT->sleepT ( USEC_1SEC );
                 continue;
             }
         }
@@ -133,7 +133,7 @@ void _JSONbase::updateR ( void )
             handleMsg ( m_strB );
             m_strB.clear();
         }
-        m_pT->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
     }
 }
 

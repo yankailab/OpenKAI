@@ -119,13 +119,13 @@ void _Mavlink::update(void)
 	{
 		if (!m_pIO)
 		{
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
 			continue;
 		}
 
@@ -185,7 +185,7 @@ void _Mavlink::distanceSensor(mavlink_distance_sensor_t& D)
 	 */
 
 	D.id = 0;
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 
 	mavlink_message_t msg;
 	mavlink_msg_distance_sensor_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -212,7 +212,7 @@ void _Mavlink::globalVisionPositionEstimate(
 	 */
 
 	mavlink_message_t msg;
-	D.usec = getTimeBootMs();
+	D.usec = getTbootMs();
 
 	mavlink_msg_global_vision_position_estimate_encode(m_mySystemID,
 			m_myComponentID, &msg, &D);
@@ -256,7 +256,7 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 	 */
 
 	D.time_week = 1;
-	D.time_week_ms = getTimeBootMs();
+	D.time_week_ms = getTbootMs();
 
 	mavlink_message_t msg;
 	mavlink_msg_gps_input_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -269,7 +269,7 @@ void _Mavlink::gpsInput(mavlink_gps_input_t& D)
 
 void _Mavlink::globalPositionInt(mavlink_global_position_int_t& D)
 {
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 
 	mavlink_message_t msg;
 	mavlink_msg_global_position_int_encode(m_mySystemID, m_myComponentID, &msg,
@@ -286,7 +286,7 @@ void _Mavlink::globalPositionInt(mavlink_global_position_int_t& D)
 
 void _Mavlink::landingTarget(mavlink_landing_target_t& D)
 {
-	D.time_usec = getTimeUsec();
+	D.time_usec = getApproxTbootUs();
 
 	mavlink_message_t msg;
 	mavlink_msg_landing_target_encode(m_mySystemID, m_myComponentID, &msg, &D);
@@ -372,7 +372,7 @@ void _Mavlink::param_set(mavlink_param_set_t& D)
 
 void _Mavlink::positionTargetLocalNed(mavlink_position_target_local_ned_t& D)
 {
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 
 	mavlink_message_t msg;
 	mavlink_msg_position_target_local_ned_encode(m_mySystemID, m_myComponentID,
@@ -460,7 +460,7 @@ void _Mavlink::setAttitudeTarget(mavlink_set_attitude_target_t& D)
 	//	D.thrust = thrust;
 	//	D.type_mask = mask;
 
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
@@ -489,7 +489,7 @@ void _Mavlink::setMode(mavlink_set_mode_t& D)
 void _Mavlink::setPositionTargetLocalNED(
 		mavlink_set_position_target_local_ned_t& D)
 {
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
@@ -507,7 +507,7 @@ void _Mavlink::setPositionTargetLocalNED(
 void _Mavlink::setPositionTargetGlobalINT(
 		mavlink_set_position_target_global_int_t& D)
 {
-	D.time_boot_ms = getTimeBootMs();
+	D.time_boot_ms = getTbootMs();
 	D.target_system = m_devSystemID;
 	D.target_component = m_devComponentID;
 
@@ -536,7 +536,7 @@ void _Mavlink::visionPositionEstimate(mavlink_vision_position_estimate_t& D)
 	 */
 
 	mavlink_message_t msg;
-	D.usec = getTimeBootMs();
+	D.usec = getTbootMs();
 
 	mavlink_msg_vision_position_estimate_encode(m_mySystemID, m_myComponentID,
 			&msg, &D);

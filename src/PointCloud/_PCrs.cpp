@@ -192,7 +192,7 @@ void _PCrs::update(void)
 			{
 				LOG_E("Cannot open RealSense");
                 hardwareReset();
-				m_pT->sleepTime(USEC_1SEC);
+				m_pT->sleepT (USEC_1SEC);
 				continue;
 			}
 		}
@@ -211,7 +211,7 @@ void _PCrs::update(void)
         else
         {
             hardwareReset();
-			m_pT->sleepTime(USEC_1SEC);
+			m_pT->sleepT (USEC_1SEC);
             m_bOpen = false;
         }
 

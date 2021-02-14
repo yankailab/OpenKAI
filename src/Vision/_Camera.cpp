@@ -87,7 +87,7 @@ void _Camera::update(void)
 		{
 			if (!open())
 			{
-				m_pT->sleepTime(USEC_1SEC);
+				m_pT->sleepT (USEC_1SEC);
 				continue;
 			}
 		}

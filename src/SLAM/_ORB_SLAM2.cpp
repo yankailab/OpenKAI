@@ -109,7 +109,7 @@ void _ORB_SLAM2::detect(void)
 	IF_(pGray->bEmpty());
 	*m_pFrame = pGray->resize(m_width, m_height);
 
-	uint64_t tNow = getTimeUsec();
+	uint64_t tNow = getApproxTbootUs();
 	if (m_tStartup <= 0)
 	{
 		m_tStartup = tNow;

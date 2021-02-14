@@ -153,7 +153,7 @@ void _SortingArm::updateArm(void)
 			return;
 		}
 
-		float spd = m_pCS->m_cSpeed * ((float) m_pT->getDtime()) * 1e-6;
+		float spd = m_pCS->m_cSpeed * ((float) m_pT->getDt()) * 1e-6;
 		m_tO.setY(m_tO.getY() + spd);
 		y = m_tO.getY();
 

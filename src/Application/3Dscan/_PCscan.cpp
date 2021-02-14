@@ -1,20 +1,20 @@
-#include "_PCui.h"
+#include "_PCscan.h"
 
 #ifdef USE_OPEN3D
 namespace kai
 {
 
-_PCui::_PCui()
+_PCscan::_PCscan()
 {
     m_pTr = NULL;
 }
 
-_PCui::~_PCui()
+_PCscan::~_PCscan()
 {
     DEL(m_pTr);
 }
 
-bool _PCui::init ( void* pKiss )
+bool _PCscan::init ( void* pKiss )
 {
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
@@ -42,7 +42,7 @@ bool _PCui::init ( void* pKiss )
     return true;
 }
 
-bool _PCui::start ( void )
+bool _PCscan::start ( void )
 {
     NULL_F(m_pT);
     NULL_F(m_pTr);
@@ -50,18 +50,18 @@ bool _PCui::start ( void )
 	return m_pTr->start(getUpdateR, this);
 }
 
-int _PCui::check ( void )
+int _PCscan::check ( void )
 {
     return this->_JSONbase::check();
 }
 
-void _PCui::updateW ( void )
+void _PCscan::updateW ( void )
 {
     while(m_pT->bRun())
     {
         if ( !m_pIO )
         {
-            m_pT->sleepTime ( USEC_1SEC );
+            m_pT->sleepT ( USEC_1SEC );
             continue;
         }
 
@@ -69,7 +69,7 @@ void _PCui::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                m_pT->sleepTime ( USEC_1SEC );
+                m_pT->sleepT ( USEC_1SEC );
                 continue;
             }
         }
@@ -82,7 +82,7 @@ void _PCui::updateW ( void )
     }
 }
 
-void _PCui::send ( void )
+void _PCscan::send ( void )
 {
     IF_ ( check() <0 );
 
@@ -94,38 +94,11 @@ void _PCui::send ( void )
         nC++;
     }
 
-    if ( nC <= 0 )
-    {
-        picojson::array ao;
-        for ( unsigned int i=0; i<108; i++ )
-        {
-            object o;
-            o.insert ( make_pair ( "id", value ( "tf" + i2str ( i ) ) ) );
-            o.insert ( make_pair ( "state", value ( "OFF" ) ) );
-            o.insert ( make_pair ( "cpu", value ( "N/A" ) ) );
-            o.insert ( make_pair ( "mem", value ( "N/A" ) ) );
-            o.insert ( make_pair ( "str", value ( "N/A" ) ) );
-            o.insert ( make_pair ( "pcn", value ( "N/A" ) ) );
-
-            ao.push_back ( value ( o ) );
-        }
-
-        string msg = picojson::value ( ao ).serialize();
-        _WebSocket* pWS = ( _WebSocket* ) m_pIO;
-        pWS->write ( ( unsigned char* ) msg.c_str(), msg.size(), WS_MODE_TXT );
-        return;
-    }
-
     picojson::array ao;
     for ( unsigned int i=0; i<108; i++ )
     {
         object o;
         o.insert ( make_pair ( "id", value ( "tf" + i2str ( i ) ) ) );
-        o.insert ( make_pair ( "state", value ( "NORMAL" ) ) );
-        o.insert ( make_pair ( "cpu", value ( "MAXN/"+f2str ( 1.4 + NormRand() * 0.25 )+"GHz" ) ) );
-        o.insert ( make_pair ( "mem", value ( "Total:4GB, Available:"+ f2str ( 2 + NormRand() * 0.2 ) +"GB" ) ) );
-        o.insert ( make_pair ( "str", value ( "64GB" ) ) );
-        o.insert ( make_pair ( "pcn", value ( i2str ( 921600 + NormRand() * 100000.0 ) ) ) );
 
         ao.push_back ( value ( o ) );
     }
@@ -135,16 +108,16 @@ void _PCui::send ( void )
     pWS->write ( ( unsigned char* ) msg.c_str(), msg.size(), WS_MODE_TXT );
 }
 
-void _PCui::updateR ( void )
+void _PCscan::updateR ( void )
 {
     while ( m_pTr->bRun() )
     {
         recv();
-        m_pTr->sleepTime ( 0 ); //wait for the IObase to wake me up when received data
+        m_pTr->sleepT ( 0 ); //wait for the IObase to wake me up when received data
     }
 }
 
-bool _PCui::recv()
+bool _PCscan::recv()
 {
     IF_F ( check() <0 );
 
@@ -170,7 +143,7 @@ bool _PCui::recv()
     return false;
 }
 
-void _PCui::handleMsg ( string& str )
+void _PCscan::handleMsg ( string& str )
 {
     string err;
     const char* jsonstr = str.c_str();
@@ -221,7 +194,7 @@ void _PCui::handleMsg ( string& str )
     }
 }
 
-_PCtransform* _PCui::findTransform ( string& n )
+_PCtransform* _PCscan::findTransform ( string& n )
 {
     for ( int i=0; i<m_vPCT.size(); i++ )
     {
@@ -234,7 +207,7 @@ _PCtransform* _PCui::findTransform ( string& n )
     return NULL;
 }
 
-void _PCui::draw ( void )
+void _PCscan::draw ( void )
 {
     this->_ModuleBase::draw();
 

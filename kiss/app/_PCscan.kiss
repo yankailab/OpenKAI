@@ -12,7 +12,7 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
@@ -61,7 +61,7 @@
 	"fEmitter":1.0,
 	"fLaserPower":1.0,
 	"rsSN":"f0210481",
-	"/_PCviewer":"pcv",
+	"_PCviewer":"pcv",
 	"vRz":[0, 1000.0],
 	"/vColOvrr":[0.0, 1.0, 0.0],
     {

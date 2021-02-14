@@ -143,16 +143,16 @@ bool _UTprArmL::extract(void)
     //extract rot axis first
 	m_pAy->setPtarget(0, m_vPextract.y);
 	while(!m_pAy->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
     m_pAx->setPtarget(0, m_vPextract.x);
     m_pAz->setPtarget(0, m_vPextract.z);
 
 	while(!m_pAx->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
     while(!m_pAz->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
 	return true;
 }
@@ -222,15 +222,15 @@ bool _UTprArmL::recover(void)
     m_pAz->setPtarget(0, m_vPrecover.z);
 
     while(!m_pAz->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
     m_pAx->setPtarget(0, m_vPrecover.x);
     while(!m_pAx->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
     m_pAy->setPtarget(0, m_vPrecover.y);
 	while(!m_pAy->bComplete(0))
-        m_pT->sleepTime(100000);
+        m_pT->sleepT (100000);
 
 	return true;
 }

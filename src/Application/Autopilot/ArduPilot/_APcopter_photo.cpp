@@ -177,7 +177,7 @@ void _APcopter_photo::shutter(void)
 	m_pAP->m_pMav->clDoSetRelay(m_iRelayShutter, true);
 
 	if(m_tDelay > 0)
-		m_pT->sleepTime(m_tDelay);
+		m_pT->sleepT (m_tDelay);
 
 	string cmd;
 	cmd = "mkdir /media/usb";

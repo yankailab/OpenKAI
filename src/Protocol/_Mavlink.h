@@ -41,7 +41,7 @@ public:
 
 	virtual void decode(mavlink_message_t* pM)
 	{
-		m_tStamp = getTimeUsec();
+		m_tStamp = getApproxTbootUs();
 	}
 
 	uint32_t	m_id;

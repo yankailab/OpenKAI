@@ -43,19 +43,19 @@ void FrameGPU::updateTstampG(uint64_t t)
 void FrameGPU::operator=(const Mat& m)
 {
 	m_mat = m;
-	updateTstamp(getTimeUsec());
+	updateTstamp(getApproxTbootUs());
 }
 
 void FrameGPU::operator=(const GpuMat& m)
 {
 	m_matG = m;
-	updateTstampG(getTimeUsec());
+	updateTstampG(getApproxTbootUs());
 }
 
 void FrameGPU::allocate(int w, int h)
 {
 	m_mat = Mat::zeros(Size(w,h), CV_8UC3);
-	updateTstamp(getTimeUsec());
+	updateTstamp(getApproxTbootUs());
 }
 
 void FrameGPU::copy(const FrameGPU& f)
@@ -75,13 +75,13 @@ void FrameGPU::copy(const FrameGPU& f)
 void FrameGPU::copy(const Mat& m)
 {
 	m.copyTo(m_mat);
-	updateTstamp(getTimeUsec());
+	updateTstamp(getApproxTbootUs());
 }
 
 void FrameGPU::copy(const GpuMat& m)
 {
 	m.copyTo(m_matG);
-	updateTstampG(getTimeUsec());
+	updateTstampG(getApproxTbootUs());
 }
 
 Mat* FrameGPU::m(void)

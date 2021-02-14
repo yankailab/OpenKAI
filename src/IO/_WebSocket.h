@@ -29,7 +29,7 @@ struct WS_CLIENT
 	bool init(uint32_t id, int nB)
 	{
 		m_id = id;
-		m_tStamp = getTimeUsec();
+		m_tStamp = getApproxTbootUs();
 		IF_F(!m_fifo.init(nB));
 		reset();
 

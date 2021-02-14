@@ -86,13 +86,13 @@ int _S6H4D::check(void)
 void _S6H4D::update(void)
 {
 	while (check() < 0)
-		m_pT->sleepTime(USEC_1SEC);
+		m_pT->sleepT (USEC_1SEC);
 
 	armSetMode(m_mode);
 	while (m_vOrigin != m_vOriginTarget)
 	{
 		armSetOrigin(m_vOriginTarget);
-		m_pT->sleepTime(100000);
+		m_pT->sleepT (100000);
 		readState();
 	}
 	stickStop();

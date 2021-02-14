@@ -160,7 +160,7 @@ void _ImageNet::detect(void)
 void _ImageNet::classifyBatch(int iBatchFrom, int nBatch)
 {
 	m_pIN->ClassifyBatch(nBatch, m_pmClass, m_piClass, (float)m_minConfidence);
-	uint64_t tStamp = getTimeUsec();
+	uint64_t tStamp = getApproxTbootUs();
 
 	for(int i=0; i<nBatch; i++)
 	{
