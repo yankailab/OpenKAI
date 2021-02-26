@@ -131,7 +131,7 @@ sudo modprobe v4l2loopback
 gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
 
 #----------------------------------------------------
-# OpenCV
+# (Optional) OpenCV
 git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv.git
 git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
@@ -196,7 +196,7 @@ make -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
-# gwsocket
+# (Optional) gwsocket
 git clone https://github.com/allinurl/gwsocket.git
 cd gwsocket
 autoreconf -fiv
@@ -222,10 +222,9 @@ sudo cp HPS3D_SDK/English/libhps3d64.so /usr/local/lib/
 
 #----------------------------------------------------
 # (Optional) Livox
-sudo apt-get install -y pkg-config libapr1-dev libboost-atomic-dev libboost-system-dev
 git clone https://github.com/Livox-SDK/Livox-SDK.git
 cd Livox-SDK/build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
 sudo make install
 
@@ -308,41 +307,6 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF ../
 make all -j12
 sudo make install
-
-# Darknet
-cd $FULLDEVDIR
-git clone https://github.com/yankailab/darknet.git
-cd darknet
-make -j6
-cd data
-wget --no-check-certificate https://pjreddie.com/media/files/yolov2.weights
-wget --no-check-certificate https://pjreddie.com/media/files/yolov3.weights
-wget --no-check-certificate https://pjreddie.com/media/files/yolov3-tiny.weights
-wget --no-check-certificate https://pjreddie.com/media/files/yolov3-spp.weights
-
-# ORB_SLAM2_GPU
-cd $FULLDEVDIR
-git clone https://github.com/yankailab/orb_slam2_gpu.git
-cd orb_slam2_gpu
-chmod +x build.sh
-./build.sh
-
-# (Optional) TensorRT
-# TensorRT, download the latest .deb from NVIDIA site
-sudo dpkg -i nv-tensorrt-repo-ubuntu1804-cuda10.1-trt6.0.1.5-ga-20190913_1-1_amd64.deb
-sudo apt update
-sudo apt install tensorrt
-# PC
-sudo apt-get -y install libpython3-dev python3-numpy
-sudo cp /usr/lib/x86_64-linux-gnu/glib-2.0/include/glibconfig.h /usr/include/glib-2.0/glibconfig.h
-git clone --recursive https://github.com/dusty-nv/jetson-inference.git
-cd jetson-inference
-mkdir build
-cd build
-cmake -DCMAKE_BUILD_TYPE=Release ../
-make
-sudo make install
-sudo ldconfig
 
 #----------------------------------------------------
 # (Optional) Tesseract

@@ -154,7 +154,7 @@ endif()
 
 if(USE_LIVOX)
   add_definitions(-DUSE_LIVOX)
-  set(OpenKAI_lib ${OpenKAI_lib} livox_sdk_static apr-1)
+  set(OpenKAI_lib ${OpenKAI_lib} livox_sdk_static)
 endif()
 
 # Setting specific lib here
