@@ -235,7 +235,7 @@
 #endif
 
 #ifdef USE_LIVOX
-#include "../Sensor/_Livox.h"
+#include "../Sensor/Livox/_Livox.h"
 #endif
 
 #ifdef USE_XARM

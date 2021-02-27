@@ -34,7 +34,6 @@ private:
 	
 protected:
     _Thread* m_pT;
-
     
 };
 
