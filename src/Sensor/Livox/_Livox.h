@@ -11,7 +11,7 @@
 #include "../../Base/_ModuleBase.h"
 
 #ifdef USE_LIVOX
-#include "lds_lidar.h"
+//#include "lds_lidar.h"
 
 namespace kai
 {
@@ -40,6 +40,7 @@ private:
 public:
     bool m_bOpen;
     vector<string> m_vBroadcastCode;
+//    LdsLidar* m_pLidar;
 
 };
 

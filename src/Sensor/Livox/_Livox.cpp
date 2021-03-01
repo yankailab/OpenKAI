@@ -12,6 +12,7 @@ namespace kai
 _Livox::_Livox()
 {
     m_bOpen = false;
+//    m_pLidar = NULL;
 }
 
 _Livox::~_Livox()
@@ -30,12 +31,16 @@ bool _Livox::init ( void* pKiss )
 
 bool _Livox::open ( void )
 {
-
+//    m_pLidar = &LdsLidar::GetInstance();
+//    IF_Fl(m_pLidar->InitLdsLidar(m_vBroadcastCode), "Init lds lidar fail or already initialized");
+    
+    LOG_I("Init lds lidar success! Starting discovering Lidars\n");
     return true;
 }
 
 void _Livox::close ( void )
 {
+//    m_pLidar->DeInitLdsLidar();
 }
 
 bool _Livox::start ( void )

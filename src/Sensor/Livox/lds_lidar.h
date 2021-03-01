@@ -3,6 +3,9 @@
 #ifndef LDS_LIDAR_H_
 #define LDS_LIDAR_H_
 
+#include "../../Base/BASE.h"
+#include "../../Script/Kiss.h"
+
 #ifdef USE_LIVOX
 
 #include <memory>
@@ -12,6 +15,8 @@
 #include "livox_def.h"
 #include "livox_sdk.h"
 
+namespace kai
+{
 
 typedef enum {
     kConnectStateOff = 0,
@@ -41,19 +46,27 @@ typedef struct {
     volatile uint32_t get_bits;
 } UserConfig;
 
+
+typedef void (*LivoxDataCallback)(LivoxEthPacket* pData, void* pLivox);
+
 typedef struct {
     uint8_t handle;
     LidarConnectState connect_state;
     DeviceInfo info;
     UserConfig config;
+    
+    LivoxDataCallback pDataCb;
+    void* pLivox;
 } LidarDevice;
+
 
 /**
  * LiDAR data source, data from dependent lidar.
  */
-class LdsLidar
+class LdsLidar: public BASE
 {
 public:
+	virtual bool init(void* pKiss);
 
     static LdsLidar& GetInstance()
     {
@@ -63,7 +76,7 @@ public:
 
     int InitLdsLidar ( std::vector<std::string>& broadcast_code_strs );
     int DeInitLdsLidar ( void );
-
+    
 private:
     LdsLidar();
     LdsLidar ( const LdsLidar& ) = delete;
@@ -114,7 +127,17 @@ private:
     LidarDevice lidars_[kMaxLidarCount];
 
     uint32_t data_recveive_count_[kMaxLidarCount];
+    
+public:
+    bool setDataCallback(const string& broadcastCode, LivoxDataCallback pCb, void* pLivox);
+    bool m_bEnableFan;
+    uint32_t m_returnMode;
+    uint32_t m_coordinate;
+    uint32_t m_imuRate;
+    vector<string> m_vBroadcastCode;
+    
 };
 
+}
 #endif
 #endif

@@ -7,6 +7,8 @@
 #include <thread>
 #include <memory>
 
+namespace kai
+{
 
 /** Const varible ------------------------------------------------------------------------------- */
 /** User add broadcast code here */
@@ -35,10 +37,25 @@ LdsLidar::LdsLidar()
         /** Unallocated state */
         lidars_[i].connect_state = kConnectStateOff;
     }
+    
+    m_bEnableFan = true;
+    m_returnMode = kStrongestReturn;
+    m_coordinate = kCoordinateCartesian;
+    m_imuRate = kImuFreq200Hz;
 }
 
 LdsLidar::~LdsLidar()
 {
+}
+
+bool LdsLidar::init ( void* pKiss )
+{
+    IF_F ( !this->BASE::init ( pKiss ) );
+    Kiss* pK = ( Kiss* ) pKiss;
+
+    pK->a("vBroadcastCode", &m_vBroadcastCode );
+
+    return true;
 }
 
 int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
@@ -47,7 +64,7 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
     if ( is_initialized_ )
     {
         printf ( "LiDAR data source is already inited!\n" );
-        return -1;
+        return 0;//-1;
     }
 
     if ( !Init() )
@@ -125,6 +142,22 @@ int LdsLidar::DeInitLdsLidar ( void )
     return 0;
 }
 
+bool LdsLidar::setDataCallback (const string& broadcastCode, LivoxDataCallback pCb, void* pLivox)
+{
+    if(!pLivox)return false;
+    
+    for(int i=0; i<kMaxLidarCount; i++)
+    {
+        LidarDevice* pL = &lidars_[i];
+        if(broadcastCode != string(pL->info.broadcast_code))continue;
+        
+        pL->pDataCb = pCb;
+        pL->pLivox = pLivox;
+        return true;
+    }
+    
+    return false;
+}
 
 /** Static function in LdsLidar for callback or event process ------------------------------------*/
 
@@ -142,14 +175,21 @@ void LdsLidar::GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
         return;
     }
 
+    LidarDevice* pLdev = &lidar_this->lidars_[handle];
+    if(!pLdev->pDataCb)return;
+    pLdev->pDataCb(data, pLdev->pLivox);
+
+    /*
     if ( eth_packet )
     {
         lidar_this->data_recveive_count_[handle] ++;
+        
         if ( lidar_this->data_recveive_count_[handle] % 100 == 0 )
         {
             printf ( "receive packet count %d %d\n", handle, lidar_this->data_recveive_count_[handle] );
 
-            /** Parsing the timestamp and the point cloud data. */
+            
+            // Parsing the timestamp and the point cloud data.
             uint64_t cur_timestamp = * ( ( uint64_t * ) ( data->timestamp ) );
             if ( data ->data_type == kCartesian )
             {
@@ -189,6 +229,7 @@ void LdsLidar::GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
             }
         }
     }
+    */
 }
 
 void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
@@ -227,10 +268,12 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
         LidarDevice* p_lidar = & ( g_lidars->lidars_[handle] );
         p_lidar->handle = handle;
         p_lidar->connect_state = kConnectStateOff;
-        p_lidar->config.enable_fan = true;
-        p_lidar->config.return_mode = kStrongestReturn;
-        p_lidar->config.coordinate = kCoordinateCartesian;
-        p_lidar->config.imu_rate = kImuFreq200Hz;
+        p_lidar->config.enable_fan = g_lidars->m_bEnableFan;
+        p_lidar->config.return_mode = g_lidars->m_returnMode;
+        p_lidar->config.coordinate = g_lidars->m_coordinate;
+        p_lidar->config.imu_rate = g_lidars->m_imuRate;
+        p_lidar->pDataCb = NULL;
+        p_lidar->pLivox = NULL;
     }
     else
     {
@@ -561,6 +604,8 @@ bool LdsLidar::FindInWhitelist ( const char* bd_code )
     }
 
     return false;
+}
+
 }
 #endif
 
