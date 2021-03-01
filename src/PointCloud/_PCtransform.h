@@ -27,12 +27,7 @@ public:
 	bool start(void);
 	int check(void);
 
-	virtual void setTranslation(vFloat3& vT);
-	virtual void setRotation(vFloat3& vR);
 	virtual void setTranslationMatrix(int i, Eigen::Matrix4d_u& mT);
-
-	virtual vFloat3 getTranslation(void);
-	virtual vFloat3 getRotation(void);
 	virtual Eigen::Matrix4d getTranslationMatrix(int i);
 
 	virtual void saveParamKiss(void);
@@ -47,10 +42,7 @@ private:
 	}
 
 public:
-	vFloat3 m_vT;	//translation
-	vFloat3 m_vR;	//rotation
 	vector<Eigen::Matrix4d> m_vmT; //additional transform matrices
-
 	string m_paramKiss;
 };
 

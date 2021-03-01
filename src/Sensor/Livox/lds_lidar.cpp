@@ -42,6 +42,7 @@ LdsLidar::LdsLidar()
     m_returnMode = kStrongestReturn;
     m_coordinate = kCoordinateCartesian;
     m_imuRate = kImuFreq200Hz;
+    m_scanPattern = kNoneRepetitiveScanPattern;
 }
 
 LdsLidar::~LdsLidar()
@@ -54,13 +55,20 @@ bool LdsLidar::init ( void* pKiss )
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->a("vBroadcastCode", &m_vBroadcastCode );
-
+    pK->v("bEnableFan", &m_bEnableFan );
+    pK->v("returnMode", &m_returnMode );
+    pK->v("coordinate", &m_coordinate );
+    pK->v("imuRate", &m_imuRate );
+    pK->v("scanPattern", &m_scanPattern );
+    
+    int r = InitLdsLidar(m_vBroadcastCode);
+    
+    IF_F(r != 0);
     return true;
 }
 
 int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
 {
-
     if ( is_initialized_ )
     {
         printf ( "LiDAR data source is already inited!\n" );
@@ -272,6 +280,7 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
         p_lidar->config.return_mode = g_lidars->m_returnMode;
         p_lidar->config.coordinate = g_lidars->m_coordinate;
         p_lidar->config.imu_rate = g_lidars->m_imuRate;
+        p_lidar->config.scan_pattern = g_lidars->m_scanPattern;
         p_lidar->pDataCb = NULL;
         p_lidar->pLivox = NULL;
     }
@@ -356,6 +365,13 @@ void LdsLidar::OnDeviceChange ( const DeviceInfo *info, DeviceEvent type )
                 LidarSetImuPushFrequency ( handle, ( ImuFreq ) ( p_lidar->config.imu_rate ),\
                                            LdsLidar::SetImuRatePushFrequencyCb, g_lidars );
                 p_lidar->config.set_bits |= kConfigImuRate;
+            }
+            
+            if ( kDeviceTypeLidarAvia == info->type )
+            {
+                LidarSetScanPattern ( handle, ( LidarScanPattern ) ( p_lidar->config.scan_pattern ),\
+                                               LdsLidar::SetScanPatternCb, g_lidars );
+                p_lidar->config.set_bits |= kConfigScanPattern;
             }
 
             p_lidar->connect_state = kConnectStateConfig;
@@ -507,6 +523,37 @@ void LdsLidar::SetImuRatePushFrequencyCb ( livox_status status, uint8_t handle, 
         LidarSetImuPushFrequency ( handle, ( ImuFreq ) ( p_lidar->config.imu_rate ),\
                                    LdsLidar::SetImuRatePushFrequencyCb, lds_lidar );
         printf ( "Set imu rate fail, try again!\n" );
+    }
+}
+
+void LdsLidar::SetScanPatternCb ( livox_status status, uint8_t handle, \
+        DeviceParameterResponse *response, void *client_data )
+{
+    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+
+    if ( handle >= kMaxLidarCount )
+    {
+        return;
+    }
+    LidarDevice* p_lidar = & ( lds_lidar->lidars_[handle] );
+
+    if ( status == kStatusSuccess )
+    {
+        p_lidar->config.set_bits &= ~ ( ( uint32_t ) ( kConfigScanPattern ) );
+        printf ( "Set scan pattern rate success!\n" );
+
+        if ( !p_lidar->config.set_bits )
+        {
+            LidarStartSampling ( handle, LdsLidar::StartSampleCb, lds_lidar );
+            p_lidar->connect_state = kConnectStateSampling;
+        }
+
+    }
+    else
+    {
+        LidarSetScanPattern ( handle, ( LidarScanPattern ) ( p_lidar->config.scan_pattern ),\
+                                   LdsLidar::SetScanPatternCb, lds_lidar );
+        printf ( "Set scan pattern rate fail, try again!\n" );
     }
 }
 

@@ -33,14 +33,27 @@ public:
 	virtual void getPC(PointCloud* pPC);
 	virtual void updatePC(void);
     
+    virtual void setTranslation(vDouble3& vT);
+	virtual void setRotation(vDouble3& vR);
+	virtual vDouble3 getTranslation(void);
+	virtual vDouble3 getRotation(void);
+    
 protected:
+    virtual void updateTransformMatrix(void);
     virtual void paintPC(PointCloud* pPC);
     
-
+    //data
 	_PCbase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
     pthread_mutex_t m_mutexPC;
+    
+    //dynamics
+    bool m_bTransform;
+   	vDouble3 m_vT;	//translation
+	vDouble3 m_vR;	//rotation
+	Eigen::Affine3d m_A;
 
+    //visualization
 	_PCviewer* m_pViewer;
 	int m_iV;
     vFloat3 m_vColOvrr;

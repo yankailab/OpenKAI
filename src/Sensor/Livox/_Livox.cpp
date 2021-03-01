@@ -12,7 +12,8 @@ namespace kai
 _Livox::_Livox()
 {
     m_bOpen = false;
-//    m_pLidar = NULL;
+    m_pL = NULL;
+    m_iTransformed = 0;
 }
 
 _Livox::~_Livox()
@@ -21,26 +22,38 @@ _Livox::~_Livox()
 
 bool _Livox::init ( void* pKiss )
 {
-    IF_F ( !this->_ModuleBase::init ( pKiss ) );
+    IF_F ( !this->_PCbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
-    pK->a("vBroadcastCode", &m_vBroadcastCode );
+    pK->v ( "broadcastCode", &m_broadcastCode );
+
+    string n;
+    n = "";
+    pK->v ( "lds_lidar", &n );
+    m_pL = ( LdsLidar* ) ( pK->getInst ( n ) );
 
     return true;
 }
 
 bool _Livox::open ( void )
 {
-//    m_pLidar = &LdsLidar::GetInstance();
-//    IF_Fl(m_pLidar->InitLdsLidar(m_vBroadcastCode), "Init lds lidar fail or already initialized");
-    
-    LOG_I("Init lds lidar success! Starting discovering Lidars\n");
+    IF_F ( check() <0 );
+
+    IF_F ( !m_pL->setDataCallback ( m_broadcastCode, CbRecvData, ( void* ) this ) );
+
+    LOG_I ( "Init lds lidar success! Starting discovering Lidars\n" );
     return true;
 }
 
 void _Livox::close ( void )
 {
-//    m_pLidar->DeInitLdsLidar();
+}
+
+int _Livox::check ( void )
+{
+    NULL__ ( !m_pL, -1 );
+
+    return this->_PCbase::check();
 }
 
 bool _Livox::start ( void )
@@ -66,19 +79,84 @@ void _Livox::update ( void )
 
         updateLidar();
 
+        if ( m_pViewer )
+        {
+            m_pViewer->updateGeometry ( m_iV, m_sPC.prev() );
+        }
+
         m_pT->autoFPSto();
     }
 }
 
 bool _Livox::updateLidar ( void )
 {
+    PointCloud* pPC = m_sPC.next();
+
+    if ( m_bTransform )
+    {
+        while ( m_iTransformed < pPC->points_.size() )
+        {
+            Eigen::Vector3d* pP = &pPC->points_[m_iTransformed];
+            *pP = m_A * (*pP);
+            
+            m_iTransformed++;
+        }
+    }
+
     return true;
+}
+
+void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
+{
+    NULL_ ( pData );
+    NULL_ ( pLivox );
+
+    _Livox* pL = ( _Livox* ) pLivox;
+
+    // Parsing the timestamp and the point cloud data.
+    uint64_t cur_timestamp = * ( ( uint64_t * ) ( pData->timestamp ) );
+    if ( pData ->data_type == kCartesian )
+    {
+        LivoxRawPoint *p_point_data = ( LivoxRawPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kSpherical )
+    {
+        LivoxSpherPoint *p_point_data = ( LivoxSpherPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kExtendCartesian )
+    {
+        LivoxExtendRawPoint *p_point_data = ( LivoxExtendRawPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kExtendSpherical )
+    {
+        LivoxExtendSpherPoint *p_point_data = ( LivoxExtendSpherPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kDualExtendCartesian )
+    {
+        LivoxDualExtendRawPoint *p_point_data = ( LivoxDualExtendRawPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kDualExtendSpherical )
+    {
+        LivoxDualExtendSpherPoint *p_point_data = ( LivoxDualExtendSpherPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kImu )
+    {
+        LivoxImuPoint *p_point_data = ( LivoxImuPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kTripleExtendCartesian )
+    {
+        LivoxTripleExtendRawPoint *p_point_data = ( LivoxTripleExtendRawPoint * ) pData->data;
+    }
+    else if ( pData ->data_type == kTripleExtendSpherical )
+    {
+        LivoxTripleExtendSpherPoint *p_point_data = ( LivoxTripleExtendSpherPoint * ) pData->data;
+    }
+
 }
 
 void _Livox::draw ( void )
 {
-    this->_ModuleBase::draw();
-    string msg;
+    this->_PCbase::draw();
 
 }
 

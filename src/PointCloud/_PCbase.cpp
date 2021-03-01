@@ -18,6 +18,11 @@ _PCbase::_PCbase()
     m_pViewer = NULL;
     m_iV = -1;
     m_vColOvrr.x = -1.0;
+    
+    m_bTransform = false;
+    m_vT.init(0);
+	m_vR.init(0);
+	m_A = Eigen::Matrix4d::Identity();
 
     pthread_mutex_init ( &m_mutexPC, NULL );
 }
@@ -43,6 +48,10 @@ bool _PCbase::init ( void *pKiss )
         m_sPC.next()->points_.reserve ( nPCreserve );
         m_sPC.next()->colors_.reserve ( nPCreserve );
     }
+    
+    pK->v("bTransform", &m_bTransform);
+    pK->v("vT", &m_vT);
+	pK->v("vR", &m_vR);
 
     string n;
 
@@ -107,12 +116,41 @@ int _PCbase::size ( void )
     return m_sPC.prev()->points_.size();
 }
 
+void _PCbase::updateTransformMatrix(void)
+{
+	Eigen::Matrix4d mT;
+	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
+    mT.block(0,0,3,3) = Geometry3D::GetRotationMatrixFromXYZ(vR);
+	mT(0,3) = m_vT.x;
+	mT(1,3) = m_vT.y;
+	mT(2,3) = m_vT.z;
+
+    m_A = mT;
+}
+
+void _PCbase::setTranslation(vDouble3& vT)
+{
+	m_vT = vT;
+}
+
+vDouble3 _PCbase::getTranslation(void)
+{
+	return m_vT;
+}
+
+void _PCbase::setRotation(vDouble3& vR)
+{
+	m_vR = vR;
+}
+
+vDouble3 _PCbase::getRotation(void)
+{
+	return m_vR;
+}
+
 void _PCbase::draw ( void )
 {
     this->_ModuleBase::draw();
-
-//	NULL_(m_pViewer);
-//	m_pViewer->updateGeometry(m_iV, getPC());
 }
 
 }

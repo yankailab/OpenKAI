@@ -166,7 +166,7 @@ void _PCscan::handleMsg ( string& str )
     {
         NULL_ ( pPCT );
 
-        vFloat3 v;
+        vDouble3 v;
         v.x = ( float ) jo["tX"].get<double>();
         v.y = ( float ) jo["tY"].get<double>();
         v.z = ( float ) jo["tZ"].get<double>();

@@ -8,27 +8,29 @@
 #ifndef OpenKAI_src_Sensor__Livox_H_
 #define OpenKAI_src_Sensor__Livox_H_
 
-#include "../../Base/_ModuleBase.h"
+#include "../../PointCloud/_PCbase.h"
 
 #ifdef USE_LIVOX
-//#include "lds_lidar.h"
+#include "lds_lidar.h"
 
 namespace kai
 {
 
-class _Livox: public _ModuleBase
+class _Livox: public _PCbase
 {
 public:
     _Livox();
     ~_Livox();
 
-    bool init ( void* pKiss );
-    void close ( void );
-    bool start ( void );
-    void draw ( void );
+    virtual bool init ( void* pKiss );
+    virtual int check ( void );
+    virtual bool start ( void );
+    virtual void draw ( void );
 
-private:
+protected:
+    static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
     bool open ( void );
+    void close ( void );
     bool updateLidar ( void );
     void update ( void );
     static void* getUpdate ( void* This )
@@ -36,11 +38,12 @@ private:
         ( ( _Livox* ) This )->update();
         return NULL;
     }
-
+    
 public:
     bool m_bOpen;
-    vector<string> m_vBroadcastCode;
-//    LdsLidar* m_pLidar;
+    string m_broadcastCode;
+    LdsLidar* m_pL;
+    uint32_t m_iTransformed;
 
 };
 

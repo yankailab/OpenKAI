@@ -14,8 +14,6 @@ namespace kai
 
 _PCtransform::_PCtransform()
 {
-	m_vT.init(0);
-	m_vR.init(0);
 	m_paramKiss = "";
 }
 
@@ -27,9 +25,6 @@ bool _PCtransform::init(void *pKiss)
 {
 	IF_F(!_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
-
-	pK->v("vT", &m_vT);
-	pK->v("vR", &m_vR);
 
 	int nM;
 	pK->v("nMt", &nM);
@@ -107,26 +102,6 @@ void _PCtransform::updateTransform(void)
 
 	m_pPCB->getPC(m_sPC.next());
 	m_sPC.next()->Transform(mT);
-}
-
-void _PCtransform::setTranslation(vFloat3& vT)
-{
-	m_vT = vT;
-}
-
-vFloat3 _PCtransform::getTranslation(void)
-{
-	return m_vT;
-}
-
-void _PCtransform::setRotation(vFloat3& vR)
-{
-	m_vR = vR;
-}
-
-vFloat3 _PCtransform::getRotation(void)
-{
-	return m_vR;
 }
 
 void _PCtransform::setTranslationMatrix(int i, Eigen::Matrix4d_u& mT)
