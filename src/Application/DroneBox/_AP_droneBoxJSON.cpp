@@ -92,28 +92,46 @@ void _AP_droneBoxJSON::send ( void )
     JO(o, "id", (double)1);
     JO(o, "t", (double)m_pT->getTstamp());
 
+    if(pState->bSTANDBY())
+    {
+        JO(o, "cmd", "stat");
+        JO(o, "stat", "standby");
+        sendMsg(o);
+        return;
+    }
+    
     if(pState->bTAKEOFF_REQUEST())
     {
-        JO(o, "cmd", "takeoffRequest");
+        JO(o, "cmd", "req");
+        JO(o, "do", "takeoff");
         sendMsg(o);
+        return;
     }
-    else if(pState->bAIRBORNE())
+    
+    if(pState->bAIRBORNE())
     {
-        JO(o, "cmd", "takeoffStatus");
+        JO(o, "cmd", "stat");
         JO(o, "stat", "airborne");
         sendMsg(o);
+        return;
     }
-    else if(pState->bLANDING_REQUEST())
+
+    if(pState->bLANDING_REQUEST())
     {
-        JO(o, "cmd", "landingRequest");
+        JO(o, "cmd", "req");
+        JO(o, "do", "landing");
         sendMsg(o);       
+        return;
     }
-    else if(pState->bSTANDBY())
+    
+    if(pState->bLANDED())
     {
-        JO(o, "cmd", "landingStatus");
-        JO(o, "stat", "standby");
-        sendMsg(o);       
+        JO(o, "cmd", "stat");
+        JO(o, "stat", "landed");
+        sendMsg(o);
+        return;
     }
+
 }
 
 void _AP_droneBoxJSON::updateR ( void )
@@ -143,10 +161,8 @@ void _AP_droneBoxJSON::handleMsg ( string& str )
 
     if ( cmd == "heartbeat" )
         heartbeat(jo);
-    else if ( cmd == "ackLandingRequest" )
-        ackLandingRequest(jo);
-    else if ( cmd == "ackTakeoffRequest" )
-        ackTakeoffRequest(jo);
+    else if ( cmd == "ack" )
+        ack(jo);
 }
 
 void _AP_droneBoxJSON::heartbeat(picojson::object& o)
@@ -155,28 +171,25 @@ void _AP_droneBoxJSON::heartbeat(picojson::object& o)
     
 }
 
-void _AP_droneBoxJSON::ackLandingRequest (picojson::object& o)
+void _AP_droneBoxJSON::ack (picojson::object& o)
 {
     IF_(check()<0 );
     IF_(!o["id"].is<double>());
-    IF_(!o["result"].is<string>());
-        
-    string r = o["result"].get<string>();
-    bool bReady = ( r == "ok");
-
-    m_pAPgcs->landingReady(bReady);
-}
-
-void _AP_droneBoxJSON::ackTakeoffRequest (picojson::object& o)
-{
-    IF_(check()<0 );
-    IF_(!o["id"].is<double>());
+    IF_(!o["do"].is<string>());
     IF_(!o["result"].is<string>());
     
     string r = o["result"].get<string>();
     bool bReady = ( r == "ok");
 
-    m_pAPgcs->takeoffReady(bReady);
+    string d = o["do"].get<string>();
+    if(d=="takeoff")
+    {
+        m_pAPgcs->takeoffReady(bReady);
+    }
+    else if(d=="landing")
+    {
+        m_pAPgcs->landingReady(bReady);
+    }
 }
 
 void _AP_droneBoxJSON::draw ( void )

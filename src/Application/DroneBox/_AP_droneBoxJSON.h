@@ -24,8 +24,7 @@ protected:
     //msg handlers
 	void handleMsg(string& str);
     void heartbeat(picojson::object& o);
-    void ackLandingRequest (picojson::object& o);
-    void ackTakeoffRequest (picojson::object& o);
+    void ack (picojson::object& o);
 
 private:
 	void updateW(void);

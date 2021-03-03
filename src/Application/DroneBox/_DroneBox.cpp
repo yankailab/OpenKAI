@@ -62,14 +62,17 @@ void _DroneBox::updateGCS ( void )
 {
     IF_ ( check() <0 );
 
-    this->_GCSbase::updateGCS();
+    this->updateGCS();
+    
     
     if(m_state.bSTANDBY())
     {
-        boxLandingComplete();
+        boxRecover();
         return;
     }
 
+    
+    //Takeoff procedure
     if(m_state.bTAKEOFF_REQUEST())
     {
         boxTakeoffPrepare();
@@ -84,13 +87,15 @@ void _DroneBox::updateGCS ( void )
     {
         return;
     }
-
+    
     if(m_state.bAIRBORNE())
     {
         boxTakeoffComplete();
         return;
-    }    
-
+    }
+    
+    
+    //Landing procedure
     if(m_state.bLANDING_REQUEST())
     {
         boxLandingPrepare();
@@ -105,19 +110,33 @@ void _DroneBox::updateGCS ( void )
     {
         return;        
     }
+    
+    if(m_state.bLANDING())
+    {
+        return;        
+    }
+
+    if(m_state.bLANDED())
+    {
+        IF_(!boxLandingComplete());
+        
+        m_pSC->transit(m_state.STANDBY);        
+        return;        
+    }
 }
 
-void _DroneBox::boxLandingPrepare ( void )
+bool _DroneBox::boxLandingPrepare ( void )
 {
-    IF_ ( check() <0 );
-    IF_(m_lastCMD == dbx_landingPrepare);
+    IF_F ( check() <0 );
+    IF_T (m_lastCMD == dbx_landingPrepare);
 
     //01 06 00 00 00 01 48 0A
     int r = m_pMB->writeRegister ( m_iSlave, 0, 1 );
     LOG_I("boxLandingPrepare: " + i2str(r));
-    IF_(r <= 0);
+    IF_F(r <= 0);
     
     m_lastCMD = dbx_landingPrepare;
+    return true;
 }
 
 bool _DroneBox::bBoxLandingReady ( void )
@@ -133,30 +152,32 @@ bool _DroneBox::bBoxLandingReady ( void )
     return ( b==1 ) ?true:false;
 }
 
-void _DroneBox::boxLandingComplete ( void )
+bool _DroneBox::boxLandingComplete ( void )
 {
-    IF_ ( check() <0 );
-    IF_(m_lastCMD == dbx_landingComplete);
+    IF_F ( check() <0 );
+    IF_F (m_lastCMD == dbx_landingComplete);
 
     //01 06 00 02 00 01 E9 CA
     int r = m_pMB->writeRegister ( m_iSlave, 2, 1 );
     LOG_I("boxLandingComplete: " + i2str(r));
-    IF_(r <= 0);
+    IF_F(r <= 0);
     
     m_lastCMD = dbx_landingComplete;
+    return true;
 }
 
-void _DroneBox::boxTakeoffPrepare ( void )
+bool _DroneBox::boxTakeoffPrepare ( void )
 {
-    IF_ ( check() <0 );
-    IF_(m_lastCMD == dbx_takeoffPrepare);
+    IF_F ( check() <0 );
+    IF_T (m_lastCMD == dbx_takeoffPrepare);
 
     //01 06 00 03 00 01 B8 0A
     int r = m_pMB->writeRegister ( m_iSlave, 3, 1 );
     LOG_I("boxTakeoffPrepare: " + i2str(r));
-    IF_(r <= 0);
+    IF_F(r <= 0);
     
     m_lastCMD = dbx_takeoffPrepare;
+    return true;
 }
 
 bool _DroneBox::bBoxTakeoffReady ( void )
@@ -172,29 +193,31 @@ bool _DroneBox::bBoxTakeoffReady ( void )
     return ( b==1 ) ?true:false;
 }
 
-void _DroneBox::boxTakeoffComplete ( void )
+bool _DroneBox::boxTakeoffComplete ( void )
 {
-    IF_ ( check() <0 );
-    IF_(m_lastCMD == dbx_takeoffComplete);
+    IF_F ( check() <0 );
+    IF_T (m_lastCMD == dbx_takeoffComplete);
 
     //01 06 00 05 00 01 58 0B
     int r = m_pMB->writeRegister ( m_iSlave, 5, 1 );
     LOG_I("boxTakeoffComplete: " + i2str(r));
-    IF_( r <= 0 );
+    IF_F ( r <= 0 );
 
     m_lastCMD = dbx_takeoffComplete;
+    return true;
 }
 
-void _DroneBox::boxRecover ( void )
+bool _DroneBox::boxRecover ( void )
 {
-    IF_ ( check() <0 );
+    IF_F ( check() <0 );
 
     //01 06 00 06 00 01 A8 0B
     int r = m_pMB->writeRegister ( m_iSlave, 6, 1 );
     LOG_I("boxRecover: " + i2str(r));
-    IF_( r <= 0 );
+    IF_F( r <= 0 );
 
     m_lastCMD = dbx_boxRecover;
+    return true;
 }
 
 void _DroneBox::draw ( void )

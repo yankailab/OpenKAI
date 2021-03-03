@@ -11,27 +11,27 @@ _DroneBoxJSON::_DroneBoxJSON()
 
 _DroneBoxJSON::~_DroneBoxJSON()
 {
-    DEL(m_pTr);
+    DEL ( m_pTr );
 }
 
 bool _DroneBoxJSON::init ( void* pKiss )
 {
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
-        
+
     string n;
     n = "";
     pK->v ( "_DroneBox", &n );
     m_pDB = ( _DroneBox* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pDB, n + ": not found" );
-    
-    Kiss* pKt = pK->child("threadR");
-    IF_F(pKt->empty());
-    
+
+    Kiss* pKt = pK->child ( "threadR" );
+    IF_F ( pKt->empty() );
+
     m_pTr = new _Thread();
-    if(!m_pTr->init(pKt))
+    if ( !m_pTr->init ( pKt ) )
     {
-        DEL(m_pTr);
+        DEL ( m_pTr );
         return false;
     }
 
@@ -40,10 +40,10 @@ bool _DroneBoxJSON::init ( void* pKiss )
 
 bool _DroneBoxJSON::start ( void )
 {
-    NULL_F(m_pT);
-    NULL_F(m_pTr);
-	IF_F(!m_pT->start(getUpdateW, this));
-	return m_pTr->start(getUpdateR, this);
+    NULL_F ( m_pT );
+    NULL_F ( m_pTr );
+    IF_F ( !m_pT->start ( getUpdateW, this ) );
+    return m_pTr->start ( getUpdateR, this );
 }
 
 int _DroneBoxJSON::check ( void )
@@ -55,7 +55,7 @@ int _DroneBoxJSON::check ( void )
 
 void _DroneBoxJSON::updateW ( void )
 {
-    while(m_pT->bRun())
+    while ( m_pT->bRun() )
     {
         if ( !m_pIO )
         {
@@ -91,13 +91,13 @@ void _DroneBoxJSON::updateR ( void )
 {
     while ( m_pTr->bRun() )
     {
-        if(recv())
+        if ( recv() )
         {
-            handleMsg(m_strB);
-            m_strB.clear();            
+            handleMsg ( m_strB );
+            m_strB.clear();
         }
-        
-        if(m_strB.empty())
+
+        if ( m_strB.empty() )
             m_pT->sleepT ( 100000 ); //wait for the IObase to wake me up when received data
     }
 }
@@ -105,99 +105,78 @@ void _DroneBoxJSON::updateR ( void )
 void _DroneBoxJSON::handleMsg ( string& str )
 {
     value json;
-    IF_(!str2JSON(str,&json));
-    
+    IF_ ( !str2JSON ( str,&json ) );
+
     object& jo = json.get<object>();
-    
-    IF_(!jo["cmd"].is<string>());
+    IF_ ( !jo["cmd"].is<string>() );
     string cmd = jo["cmd"].get<string>();
 
     if ( cmd == "heartbeat" )
-        heartbeat(jo);
-    else if ( cmd == "landingRequest" )
-        landingRequest(jo);
-    else if ( cmd == "landingStatus" )
-        landingStatus(jo);
-    else if ( cmd == "takeoffRequest" )
-        takeoffRequest(jo);
-    else if ( cmd == "takeoffStatus" )
-        takeoffStatus(jo);
+        heartbeat ( jo );
+    else if ( cmd == "stat" )
+        stat ( jo );
+    else if ( cmd == "req" )
+        req ( jo );
 }
 
-void _DroneBoxJSON::heartbeat(picojson::object& o)
+void _DroneBoxJSON::heartbeat ( picojson::object& o )
 {
-    IF_(check()<0 );
-    
+    IF_ ( check() <0 );
+
 }
 
-void _DroneBoxJSON::landingRequest (picojson::object& o)
+void _DroneBoxJSON::stat ( picojson::object& o )
 {
-    IF_(check()<0 );
-    IF_(!o["id"].is<double>());
-    
-    int vID = o["id"].get<double>();
-    object jo;
-    JO(jo, "id", i2str(m_pDB->getID()));
-    JO(jo, "cmd", "ackLandingRequest");
-    
-    if(m_pDB->landingRequest(vID))
-    {
-        JO(jo, "result", "ok");        
-    }
-    else
-    {
-        JO(jo, "result", "denied");        
-    }
-    
-    sendMsg(jo);
-}
+    IF_ ( check() <0 );
+    IF_ ( !o["id"].is<double>() );
+    IF_ ( !o["stat"].is<string>() );
 
-void _DroneBoxJSON::landingStatus (picojson::object& o)
-{
-    IF_(check()<0 );
-    IF_(!o["id"].is<double>());
-    IF_(!o["stat"].is<string>());
-    
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();
-    bool bComplete = (stat == "standby");
 
-    m_pDB->landingStatus(vID, bComplete);
+    if(stat == "airborne")
+        m_pDB->takeoffStatus ( vID, true );
+    else if(stat == "landed")
+        m_pDB->landingStatus ( vID, true );
 }
 
-void _DroneBoxJSON::takeoffRequest (picojson::object& o)
+void _DroneBoxJSON::req ( picojson::object& o )
 {
-    IF_(check()<0);
-    IF_(!o["id"].is<double>());
-    
+    IF_ ( check() <0 );
+    IF_ ( !o["id"].is<double>() );
+    IF_ ( !o["do"].is<string>() );
+
     int vID = o["id"].get<double>();
+    string d = o["do"].get<string>();
+
     object jo;
-    JO(jo, "id", i2str(m_pDB->getID()));
-    JO(jo, "cmd", "ackTakeoffRequest");
-    
-    if(m_pDB->takeoffRequest(vID))
-    {
-        JO(jo, "result", "ok");        
-    }
-    else
-    {
-        JO(jo, "result", "denied");        
-    }
-    
-    sendMsg(jo);
-}
+    JO ( jo, "id", i2str ( m_pDB->getID() ) );
+    JO ( jo, "cmd", "ack" );
 
-void _DroneBoxJSON::takeoffStatus (picojson::object& o)
-{
-    IF_(check()<0 );
-    IF_(!o["id"].is<double>());
-    IF_(!o["stat"].is<string>());
-    
-    int vID = o["id"].get<double>();
-    string stat = o["stat"].get<string>();
-    bool bComplete = (stat == "airborne");
-    
-    m_pDB->takeoffStatus(vID, bComplete);
+    if ( d=="takeoff" )
+    {
+        if ( m_pDB->takeoffRequest ( vID ) )
+        {
+            JO ( jo, "result", "ok" );            
+        }
+        else
+        {
+            JO ( jo, "result", "denied" );            
+        }
+    }
+    else if ( d=="landing" )
+    {
+        if ( m_pDB->landingRequest ( vID ) )
+        {
+            JO ( jo, "result", "ok" );            
+        }
+        else
+        {
+            JO ( jo, "result", "denied" );            
+        }
+    }
+
+    sendMsg ( jo );
 }
 
 void _DroneBoxJSON::draw ( void )

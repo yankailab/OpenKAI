@@ -47,11 +47,11 @@ int _StateBase::check(void)
 void _StateBase::update(void)
 {
 	NULL_(m_pSC);
-	int iMission = m_pSC->getStateIdx();
-	if(m_iLastState != iMission )
+	int iState = m_pSC->getStateIdx();
+	if(m_iLastState != iState )
 	{
 		m_bStateChanged = true;
-		m_iLastState = iMission;
+		m_iLastState = iState;
 	}
 	else
 	{

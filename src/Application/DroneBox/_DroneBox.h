@@ -32,13 +32,13 @@ public:
 	virtual void draw(void);
     
     //Drone Box mechanical control
-    void boxLandingPrepare (void);
+    bool boxLandingPrepare (void);
     bool bBoxLandingReady (void);
-    void boxLandingComplete (void);
-    void boxTakeoffPrepare (void);
+    bool boxLandingComplete (void);
+    bool boxTakeoffPrepare (void);
     bool bBoxTakeoffReady (void);
-    void boxTakeoffComplete (void);
-    void boxRecover (void);
+    bool boxTakeoffComplete (void);
+    bool boxRecover (void);
 
 protected:
     virtual void updateGCS (void);

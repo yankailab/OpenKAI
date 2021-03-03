@@ -15,18 +15,22 @@ struct GCS_STATE
     int8_t AIRBORNE;
 	int8_t LANDING_REQUEST;
     int8_t LANDING_READY;
+    int8_t LANDING;
+    int8_t LANDED;
     
-	bool assign(_StateControl* pMC)
+	bool assign(_StateControl* pSC )
     {
-        NULL_F(pMC);
+        NULL_F( pSC );
 
         m_iState = -1;
-        STANDBY = pMC->getStateIdxByName ("STANDBY");
-        TAKEOFF_REQUEST = pMC->getStateIdxByName ("TAKEOFF_REQUEST");
-        TAKEOFF_READY = pMC->getStateIdxByName ("TAKEOFF_READY");
-        AIRBORNE = pMC->getStateIdxByName ("AIRBORNE");
-        LANDING_REQUEST = pMC->getStateIdxByName ("LANDING_REQUEST");
-        LANDING_READY = pMC->getStateIdxByName ("LANDING_READY");
+        STANDBY = pSC->getStateIdxByName ("STANDBY");
+        TAKEOFF_REQUEST = pSC->getStateIdxByName ("TAKEOFF_REQUEST");
+        TAKEOFF_READY = pSC->getStateIdxByName ("TAKEOFF_READY");
+        AIRBORNE = pSC->getStateIdxByName ("AIRBORNE");
+        LANDING_REQUEST = pSC->getStateIdxByName ("LANDING_REQUEST");
+        LANDING_READY = pSC->getStateIdxByName ("LANDING_READY");
+        LANDING = pSC->getStateIdxByName ("LANDING");
+        LANDED = pSC->getStateIdxByName ("LANDED");
         
         return bValid();
     }
@@ -39,9 +43,17 @@ struct GCS_STATE
 		IF_F(AIRBORNE < 0);
 		IF_F(LANDING_REQUEST < 0);
 		IF_F(LANDING_READY < 0);
+		IF_F(LANDING < 0);
+		IF_F(LANDED < 0);
 
 		return true;
 	}
+	
+	void update(_StateControl* pSC)
+    {
+        NULL_(pSC);
+        m_iState = pSC->getStateIdx();
+    }
 	
 	bool bSTANDBY(void)
     {
@@ -72,6 +84,17 @@ struct GCS_STATE
     {
         return (m_iState == LANDING_READY);
     }
+    
+    bool bLANDING(void)
+    {
+        return (m_iState == LANDING);
+    }
+
+    bool bLANDED(void)
+    {
+        return (m_iState == LANDED);
+    }
+
 };
 
 class _GCSbase: public _StateBase

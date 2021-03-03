@@ -59,35 +59,82 @@ void _AP_gcs::update ( void )
 
 void _AP_gcs::updateGCS ( void )
 {
-    IF_ ( check() <0 );
-    
-    this->_GCSbase::updateGCS();
-    
+    IF_ ( check() < 0 );
+
+    this->updateGCS();
+
     uint32_t apMode = m_pAP->getApMode();
     bool bApArmed = m_pAP->bApArmed();
     float alt = m_pAP->getGlobalPos().w; //relative altitude
+    
+    
+    // For manual reset
+    if(apMode == AP_COPTER_STABILIZE)
+    {
+        m_pSC->transit(m_state.STANDBY);
+        return;
+    }
 
-    if(apMode == AP_COPTER_LOITER)
+    // Standby
+    if(m_state.bSTANDBY())
     {
-        if(!m_state.bTAKEOFF_READY())
-        {
-            m_pSC->transit(m_state.TAKEOFF_REQUEST);
-        }
+        IF_(apMode != AP_COPTER_AUTO);
+        
+        m_pSC->transit(m_state.TAKEOFF_REQUEST);        
+        return;
     }
-    else if(bApArmed)
-    {
-        if(alt > m_altAirborne)
-        {
-            m_pSC->transit(m_state.AIRBORNE);            
-        }
-        else if(!m_state.bLANDING_READY())
-        {
-            m_pSC->transit(m_state.LANDING_REQUEST);
-        }
+    
+    //Takeoff procedure
+    if(m_state.bTAKEOFF_REQUEST())
+    {        
+        return;
     }
-    else
+
+    if(m_state.bTAKEOFF_READY())
     {
+//        m_pAP->setApArm(true);
+        
+        if(bApArmed && alt > m_altAirborne)
+            m_pSC->transit(m_state.AIRBORNE);
+
+        return;
+    }
+    
+    if(m_state.bAIRBORNE())
+    {
+        IF_(alt > m_altAirborne);
+        
+        //TODO: check current waypoint == last waypoing?
+
+        m_pSC->transit(m_state.LANDING_REQUEST);
+        return;
+    }
+    
+    //Landing procedure
+    if(m_state.bLANDING_REQUEST())
+    {
+        return;
+    }
+
+    if(m_state.bLANDING_READY())
+    {
+        m_pSC->transit(m_state.LANDING);
+        return;
+    }
+    
+    if(m_state.bLANDING())
+    {
+        IF_(bApArmed);
+        
+        m_pSC->transit(m_state.LANDED);        
+        return;        
+    }
+
+    if(m_state.bLANDED())
+    {
+        //add some delay?
         m_pSC->transit(m_state.STANDBY);        
+        return;        
     }
     
 }
@@ -95,17 +142,17 @@ void _AP_gcs::updateGCS ( void )
 void _AP_gcs::landingReady(bool bReady)
 {
     IF_(!bReady);
-    IF_(!m_state.bLANDING_READY());
-    
-    m_pSC->transit(m_state.LANDING_READY);
+
+    if(m_state.bLANDING_REQUEST())
+        m_pSC->transit(m_state.LANDING_READY);
 }
 
 void _AP_gcs::takeoffReady(bool bReady)
 {
     IF_(!bReady);
-    IF_(!m_state.bTAKEOFF_READY());
     
-    m_pSC->transit(m_state.TAKEOFF_READY);
+    if(m_state.bTAKEOFF_REQUEST())
+        m_pSC->transit(m_state.TAKEOFF_READY);
 }
 
 void _AP_gcs::draw ( void )

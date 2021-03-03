@@ -36,27 +36,8 @@ int _GCSbase::check ( void )
 void _GCSbase::updateGCS ( void )
 {
     IF_ ( check() <0 );
-
-    m_state.m_iState = m_pSC->getStateIdx();
-
-    if(m_state.bSTANDBY())
-    {       
-    }
-    else if(m_state.bTAKEOFF_REQUEST())
-    {
-    }
-    else if(m_state.bTAKEOFF_READY())
-    {        
-    }
-    else if(m_state.bAIRBORNE())
-    {
-    }    
-    else if(m_state.bLANDING_REQUEST())
-    {
-    }
-    else if(m_state.bLANDING_READY())
-    {        
-    }
+    
+    m_state.update(m_pSC);
 }
 
 int _GCSbase::getID (void)
@@ -72,22 +53,16 @@ GCS_STATE* _GCSbase::getState(void)
 bool _GCSbase::landingRequest ( int vID )
 {
     IF_F ( check() <0 );
-    int m = m_pSC->getStateIdx();
-    
-    IF_T(m == m_state.LANDING_READY);
-    IF_T(m == m_state.LANDING_REQUEST);
+    IF_T(m_state.bLANDING_READY());
     
     m_pSC->transit(m_state.LANDING_REQUEST);
-    
     return true;
 }
 
 bool _GCSbase::bLandingReady ( int vID )
 {
     IF_F ( check() <0 );
-    int m = m_pSC->getStateIdx();
-    
-    IF_T(m == m_state.LANDING_READY);
+    IF_T(m_state.bLANDING_READY());
 
     return false;
 }
@@ -103,22 +78,16 @@ void _GCSbase::landingStatus ( int vID, bool bComplete )
 bool _GCSbase::takeoffRequest ( int vID )
 {
     IF_F ( check() <0 );
-    int m = m_pSC->getStateIdx();
+    IF_T(m_state.bTAKEOFF_READY());
     
-    IF_T(m == m_state.TAKEOFF_REQUEST);
-    IF_T(m == m_state.TAKEOFF_READY);
-    
-    m_pSC->transit(m_state.TAKEOFF_REQUEST);
-    
+    m_pSC->transit(m_state.TAKEOFF_REQUEST);    
     return true;
 }
 
 bool _GCSbase::bTakeoffReady ( int vID )
 {
     IF_F ( check() <0 );
-    int m = m_pSC->getStateIdx();
-    
-    IF_T(m == m_state.TAKEOFF_READY);
+    IF_T(m_state.bTAKEOFF_READY());
 
     return false;
 }
