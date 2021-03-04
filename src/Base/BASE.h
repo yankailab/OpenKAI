@@ -32,7 +32,7 @@ public:
 	string* getClass(void);
 
 	bool checkWindow(void);
-	void addMsg(const string& msg, int iTab = 0);
+	void addMsg(const string& msg, int iLine = 1);
 
 public:
 	void*	m_pKiss;

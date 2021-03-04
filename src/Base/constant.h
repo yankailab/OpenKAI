@@ -29,7 +29,7 @@
 #define CONSOLE_COL_MSG 4
 #define CONSOLE_COL_ERROR 5
 #define CONSOLE_X_NAME 0
-#define CONSOLE_X_FPS 20
+#define CONSOLE_X_FPS 18
 #define CONSOLE_X_MSG 30
 
 #endif

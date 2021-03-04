@@ -168,7 +168,7 @@ void _StateControl::draw(void)
 {
 	this->_ModuleBase::draw();
 
-	addMsg("nState: "+i2str(m_vState.size()),1);
+	addMsg("nState: "+i2str(m_vState.size()), 0);
 	IF_(m_vState.size() <= 0);
 
 	addMsg("iState: "+i2str(m_iS),1);

@@ -112,30 +112,16 @@ void BASE::draw(void)
 	if(m_pConsole)
 	{
 		Console* pC = (Console*)m_pConsole;
+		pC->addMsg("____________________________________", COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 		pC->addMsg(*this->getName(), COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 	}
-
-#ifdef USE_OPENCV
-	if(checkWindow())
-	{
-		Window* pWin = (Window*)this->m_pWindow;
-		pWin->addMsg(*this->getName());
-	}
-#endif
 }
 
-void BASE::addMsg(const string& msg, int iTab)
+void BASE::addMsg(const string& msg, int iLine)
 {
-	if(m_pConsole)
-		((Console*)m_pConsole)->addMsg(msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG, 1);
-
-#ifdef USE_OPENCV
-	if(checkWindow())
-	{
-		Window* pWin = ((Window*)m_pWindow);
-		pWin->addMsg(msg, iTab);
-	}
-#endif
+	NULL_(m_pConsole);
+    
+	((Console*)m_pConsole)->addMsg(msg, COLOR_PAIR(CONSOLE_COL_MSG), CONSOLE_X_MSG, iLine);
 }
 
 }

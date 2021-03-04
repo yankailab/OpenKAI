@@ -18,8 +18,11 @@
 {
 	"name":"state",
 	"class":"_StateControl",
-	"FPS":30,
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"Console":"OKconsole",
 	"start":"STANDBY",
 
@@ -72,7 +75,10 @@
 	"name":"modbus",
 	"class":"_Modbus",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":0,
 	"Console":"OKconsole",
 	"port":"/dev/ttyUSB0",
@@ -85,7 +91,10 @@
 	"name":"droneBox",
 	"class":"_DroneBox",
 	"bInst":1,
-	"FPS":10,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_StateControl":"state",
@@ -95,43 +104,35 @@
 }
 
 {
-	"name":"ws",
-	"class":"_WebSocket",
-	"FPS":100,
-	"bInst":0,
-	"bLog":0,
-	"Console":"OKconsole",
-	"_wakeUp":"dbjWS",
-}
-
-{
-	"name":"dbjWS",
-	"class":"_DroneBoxJSON",
-	"bInst":0,
-	"FPS":1,
-	"bLog":1,
-	"Console":"OKconsole",
-	"_DroneBox":"droneBox",
-	"_IOBase":"ws",
-}
-
-{
 	"name":"telem",
 	"class":"_SerialPort",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 	"bLog":0,
 	"Console":"OKconsole",
 	"port":"/dev/ttyUSB1",
 	"baud":57600,
-	"_wakeUp":"dbjTelem",
 }
 
 {
 	"name":"dbjTelem",
 	"class":"_DroneBoxJSON",
 	"bInst":1,
-	"FPS":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_DroneBox":"droneBox",
@@ -142,18 +143,31 @@
 	"name":"udp",
 	"class":"_UDP",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 	"Console":"OKconsole",
 	"port":20000,
 	"nFIFO":12800,
-	"_wakeUp":"dbjUDP",
 }
 
 {
 	"name":"dbjUDP",
 	"class":"_DroneBoxJSON",
 	"bInst":1,
-	"FPS":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_DroneBox":"droneBox",

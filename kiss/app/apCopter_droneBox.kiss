@@ -25,7 +25,10 @@
 {
 	"name":"state",
 	"class":"_StateControl",
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bInst":1,
 	"Console":"OKconsole",
 	"start":"STANDBY",
@@ -78,8 +81,11 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"FPS":30,
 	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
@@ -88,8 +94,11 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"FPS":30,
 	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"deviceID":0,
@@ -100,8 +109,11 @@
 {
 	"name":"arUco",
 	"class":"_ArUco",
-	"FPS":30,
 	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bDraw":1,
 	"Window":"OKview",
 	"_VisionBase":"cam",
@@ -115,30 +127,46 @@
 	"name":"apSerial",
 	"class":"_SerialPort",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 	"bLog":0,
 	"Console":"OKconsole",
 	"port":"/dev/ttyTHS1",
 	"/port":"/dev/ttyACM0",
 	"baud":115200,
-	"_wakeUp":"apMavlink",
 }
 
 {
 	"name":"apMavlink",
 	"class":"_Mavlink",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_IOBase":"apSerial",
+	
+    {
+		"name":"routing",
+	}
 }
 
 {
 	"name":"apBase",
 	"class":"_AP_base",
-	"FPS":10,
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
 	"_StateControl":"state",
 	"Console":"OKconsole",
 	"_Mavlink":"apMavlink",
@@ -189,8 +217,11 @@
 {
 	"name":"apGCS",
 	"class":"_AP_gcs",
-	"FPS":10,
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":10,
+	}
 	"bLog":1,
 	"bDraw":1,
 	"Console":"OKconsole",
@@ -200,31 +231,17 @@
 }
 
 {
-	"name":"ws",
-	"class":"_WebSocket",
-	"FPS":100,
-	"bInst":0,
-	"bLog":0,
-	"Console":"OKconsole",
-	"_wakeUp":"dbjWS",
-}
-
-{
-	"name":"dbjWS",
-	"class":"_AP_droneBoxJSON",
-	"bInst":0,
-	"FPS":1,
-	"bLog":1,
-	"Console":"OKconsole",
-	"_AP_gcs":"apGCS",
-	"_IOBase":"ws",
-}
-
-{
 	"name":"telem",
 	"class":"_SerialPort",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 	"bLog":0,
 	"Console":"OKconsole",
 	"port":"/dev/ttyUSB0",
@@ -236,7 +253,14 @@
 	"name":"dbjTelem",
 	"class":"_AP_droneBoxJSON",
 	"bInst":1,
-	"FPS":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_AP_gcs":"apGCS",
@@ -247,7 +271,14 @@
 	"name":"udp",
 	"class":"_UDP",
 	"bInst":1,
-	"FPS":30,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadR",
+		"FPS":1,
+	}
 	"bLog":0,
 	"Console":"OKconsole",
 	"addr":"192.168.16.100",
@@ -259,7 +290,14 @@
 	"name":"dbjUDP",
 	"class":"_AP_droneBoxJSON",
 	"bInst":1,
-	"FPS":1,
+    {
+		"name":"thread",
+		"FPS":1,
+	}
+    {
+		"name":"threadR",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"_AP_gcs":"apGCS",

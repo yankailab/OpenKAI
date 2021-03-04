@@ -138,14 +138,15 @@ void _AP_droneBoxJSON::updateR ( void )
 {
     while ( m_pTr->bRun() )
     {
+        m_pTr->autoFPSfrom();
+
         if(recv())
         {
             handleMsg(m_strB);
             m_strB.clear();            
         }
-        
-        if(m_strB.empty())
-            m_pT->sleepT ( 100000 ); //wait for the IObase to wake me up when received data
+
+        m_pTr->autoFPSto();
     }
 }
 
@@ -176,9 +177,9 @@ void _AP_droneBoxJSON::ack (picojson::object& o)
     IF_(check()<0 );
     IF_(!o["id"].is<double>());
     IF_(!o["do"].is<string>());
-    IF_(!o["result"].is<string>());
+    IF_(!o["ack"].is<string>());
     
-    string r = o["result"].get<string>();
+    string r = o["ack"].get<string>();
     bool bReady = ( r == "ok");
 
     string d = o["do"].get<string>();
@@ -195,6 +196,9 @@ void _AP_droneBoxJSON::ack (picojson::object& o)
 void _AP_droneBoxJSON::draw ( void )
 {
     this->_JSONbase::draw();
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
 }
 
 }

@@ -152,7 +152,11 @@ void _UDP::updateR(void)
 void _UDP::draw(void)
 {
 	this->_IOBase::draw();
-	addMsg("Port:" + i2str(m_port), 1);
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
+
+	addMsg("Port:" + i2str(m_port));
 }
 
 }

@@ -91,14 +91,15 @@ void _DroneBoxJSON::updateR ( void )
 {
     while ( m_pTr->bRun() )
     {
+        m_pTr->autoFPSfrom();
+
         if ( recv() )
         {
             handleMsg ( m_strB );
             m_strB.clear();
         }
 
-        if ( m_strB.empty() )
-            m_pT->sleepT ( 100000 ); //wait for the IObase to wake me up when received data
+        m_pTr->autoFPSto();
     }
 }
 
@@ -154,22 +155,22 @@ void _DroneBoxJSON::req ( picojson::object& o )
     {
         if ( m_pDB->takeoffRequest ( vID ) )
         {
-            JO ( jo, "result", "ok" );            
+            JO ( jo, "ack", "ok" );            
         }
         else
         {
-            JO ( jo, "result", "denied" );            
+            JO ( jo, "ack", "denied" );            
         }
     }
     else if ( d=="landing" )
     {
         if ( m_pDB->landingRequest ( vID ) )
         {
-            JO ( jo, "result", "ok" );            
+            JO ( jo, "ack", "ok" );            
         }
         else
         {
-            JO ( jo, "result", "denied" );            
+            JO ( jo, "ack", "denied" );            
         }
     }
 
@@ -179,6 +180,9 @@ void _DroneBoxJSON::req ( picojson::object& o )
 void _DroneBoxJSON::draw ( void )
 {
     this->_JSONbase::draw();
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
 }
 
 }

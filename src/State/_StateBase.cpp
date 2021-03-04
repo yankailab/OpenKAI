@@ -81,9 +81,9 @@ bool _StateBase::bStateChanged(void)
 void _StateBase::drawActive(void)
 {
 	if(!bActive())
-		addMsg("[Inactive]",1);
+		addMsg("[Inactive]", 0);
 	else
-		addMsg("[Active]",1);
+		addMsg("[ACTIVE]", 0);
 }
 
 void _StateBase::draw(void)

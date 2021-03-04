@@ -296,6 +296,10 @@ WS_CLIENT* _WebSocket::findClientById(uint32_t id)
 void _WebSocket::draw(void)
 {
 	this->_IOBase::draw();
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
+
 	addMsg("nClients: " + i2str(m_vClient.size()),1);
 }
 

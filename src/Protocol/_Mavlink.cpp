@@ -74,11 +74,15 @@ bool _Mavlink::init(void* pKiss)
 	m_pIO = (_IOBase*) (pK->getInst( n ));
 	IF_Fl(!m_pIO, "_IOBase not found");
 
+    
+    Kiss* pR = pK->child("routing");
+    IF_T(pR->empty());
+    
 	int i = 0;
 	while (1)
 	{
 		IF_F(i >= MAV_N_PEER);
-		Kiss* pP = pK->child(i++);
+		Kiss* pP = pR->child(i++);
 		if(pP->empty())break;
 
 		MAVLINK_PEER mP;
@@ -793,12 +797,13 @@ void _Mavlink::draw(void)
 
 	if (!m_pIO->isOpen())
 	{
-		addMsg("Not Connected", 1);
+		addMsg("Not Connected", 0);
 		return;
 	}
 
-	addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType), 1);
-	addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType), 1);
+    addMsg("Connected", 0);
+	addMsg("mySysID=" + i2str(m_mySystemID) + " myComID=" + i2str(m_myComponentID) + " myType=" + i2str(m_myType));
+	addMsg("devSysID=" + i2str(m_devSystemID) + " devComID=" + i2str(m_devComponentID) + " devType=" + i2str(m_devType));
 }
 
 }

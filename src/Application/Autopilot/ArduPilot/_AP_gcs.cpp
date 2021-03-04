@@ -7,6 +7,7 @@ _AP_gcs::_AP_gcs()
 {
     m_pAP = NULL;
     m_altAirborne = 20.0;
+    m_dLanded = 5;
 }
 
 _AP_gcs::~_AP_gcs()
@@ -19,6 +20,7 @@ bool _AP_gcs::init ( void* pKiss )
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "altAirborne", &m_altAirborne );
+    pK->v ( "dLanded", &m_dLanded );
 
     string n;
 
@@ -50,6 +52,7 @@ void _AP_gcs::update ( void )
     {
         m_pT->autoFPSfrom();
         this->_GCSbase::update();
+        this->_GCSbase::updateGCS();
 
         updateGCS();
 
@@ -60,8 +63,6 @@ void _AP_gcs::update ( void )
 void _AP_gcs::updateGCS ( void )
 {
     IF_ ( check() < 0 );
-
-    this->updateGCS();
 
     uint32_t apMode = m_pAP->getApMode();
     bool bApArmed = m_pAP->bApArmed();
@@ -132,7 +133,7 @@ void _AP_gcs::updateGCS ( void )
 
     if(m_state.bLANDED())
     {
-        //add some delay?
+        m_pT->sleepT(USEC_1SEC * m_dLanded);
         m_pSC->transit(m_state.STANDBY);        
         return;        
     }

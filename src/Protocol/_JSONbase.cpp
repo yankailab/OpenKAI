@@ -128,12 +128,16 @@ void _JSONbase::updateR ( void )
 {
     while ( m_pTr->bRun() )
     {
+        m_pTr->autoFPSfrom();
+
         if ( recv() )
         {
             handleMsg ( m_strB );
             m_strB.clear();
         }
-        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
+//        m_pT->sleepT ( 0 ); //wait for the IObase to wake me up when received data
+
+        m_pTr->autoFPSto();        
     }
 }
 
@@ -195,13 +199,13 @@ void _JSONbase::draw ( void )
 {
     this->_ModuleBase::draw();
 
-    string msg = *this->getName();
+    string msg;
     if ( m_pIO->isOpen() )
-        msg += ": Connected";
+        msg = "Connected";
     else
-        msg += ": Not connected";
+        msg = "Not connected";
 
-    addMsg ( msg );
+    addMsg ( msg, 0 );
 
 }
 

@@ -53,15 +53,13 @@ int _ModuleBase::check(void)
 
 void _ModuleBase::update(void)
 {
-    IF_(check()<0);
 }
 
 void _ModuleBase::draw(void)
 {
-    IF_(check()<0);
-
     this->BASE::draw();
-
+    
+    NULL_(m_pT);
     m_pT->draw();
 }
 

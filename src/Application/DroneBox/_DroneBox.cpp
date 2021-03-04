@@ -51,6 +51,7 @@ void _DroneBox::update ( void )
     {
         m_pT->autoFPSfrom();
         this->_GCSbase::update();
+        this->_GCSbase::updateGCS();
 
         updateGCS();
 
@@ -62,8 +63,6 @@ void _DroneBox::updateGCS ( void )
 {
     IF_ ( check() <0 );
 
-    this->updateGCS();
-    
     
     if(m_state.bSTANDBY())
     {

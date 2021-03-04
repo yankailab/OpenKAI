@@ -56,7 +56,7 @@ void Console::draw(void)
 
 	attrset(COLOR_PAIR(CONSOLE_COL_TITLE)|A_BOLD);
 	mvaddstr(0, 1, this->getName()->c_str());
-	m_iY = 1;
+	m_iY = 0;
 }
 
 }

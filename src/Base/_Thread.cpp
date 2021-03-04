@@ -217,15 +217,6 @@ void _Thread::draw(void)
 		pC->addMsg(t, COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
 		pC->addMsg(msg, COLOR_PAIR(CONSOLE_COL_FPS)|A_BOLD, CONSOLE_X_FPS);
 	}
-
-#ifdef USE_OPENCV
-	if(checkWindow())
-	{
-		Window* pWin = (Window*)this->m_pWindow;
-		pWin->addMsg(t);
-		pWin->addMsg(msg, 1);
-	}
-#endif
 }
 
 }

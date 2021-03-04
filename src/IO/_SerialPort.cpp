@@ -280,5 +280,13 @@ bool _SerialPort::setup(void)
 	return true;
 }
 
+void _SerialPort::draw(void)
+{
+    this->_IOBase::draw();
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
+}
+
 }
 

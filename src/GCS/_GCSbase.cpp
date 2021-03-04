@@ -29,7 +29,6 @@ bool _GCSbase::init ( void* pKiss )
 
 int _GCSbase::check ( void )
 {
-
     return this->_StateBase::check();
 }
 
@@ -67,15 +66,7 @@ bool _GCSbase::takeoffRequest ( int vID )
     IF_F ( check() <0 );
     IF_T(m_state.bTAKEOFF_READY());
     
-    m_pSC->transit(m_state.TAKEOFF_REQUEST);    
-    return true;
-}
-
-bool _GCSbase::bTakeoffReady ( int vID )
-{
-    IF_F ( check() <0 );
-    IF_T(m_state.bTAKEOFF_READY());
-
+    m_pSC->transit(m_state.TAKEOFF_REQUEST);
     return false;
 }
 
@@ -85,14 +76,6 @@ bool _GCSbase::landingRequest ( int vID )
     IF_T(m_state.bLANDING_READY());
     
     m_pSC->transit(m_state.LANDING_REQUEST);
-    return true;
-}
-
-bool _GCSbase::bLandingReady ( int vID )
-{
-    IF_F ( check() <0 );
-    IF_T(m_state.bLANDING_READY());
-
     return false;
 }
 

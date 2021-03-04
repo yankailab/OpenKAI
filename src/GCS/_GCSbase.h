@@ -112,9 +112,7 @@ public:
 
     virtual void status (int vID, const string& stat);
     virtual bool takeoffRequest(int vID);
-    virtual bool bTakeoffReady(int vID);
     virtual bool landingRequest(int vID);
-    virtual bool bLandingReady(int vID);
 
 protected:
     virtual void updateGCS (void);

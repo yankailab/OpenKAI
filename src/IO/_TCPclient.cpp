@@ -161,7 +161,10 @@ bool _TCPclient::bComplete(void)
 void _TCPclient::draw(void)
 {
 	this->_IOBase::draw();
-
+    
+    NULL_(m_pTr);
+    m_pTr->draw();
+    
 	string msg = "Peer IP: " + m_strAddr + ":" + i2str(m_port) + ((m_bClient) ? "; Client" : "; Server");
 	addMsg(msg);
 }
