@@ -50,29 +50,16 @@ GCS_STATE* _GCSbase::getState(void)
     return &m_state;
 }
 
-bool _GCSbase::landingRequest ( int vID )
-{
-    IF_F ( check() <0 );
-    IF_T(m_state.bLANDING_READY());
-    
-    m_pSC->transit(m_state.LANDING_REQUEST);
-    return true;
-}
-
-bool _GCSbase::bLandingReady ( int vID )
-{
-    IF_F ( check() <0 );
-    IF_T(m_state.bLANDING_READY());
-
-    return false;
-}
-
-void _GCSbase::landingStatus ( int vID, bool bComplete )
+void _GCSbase::status ( int vID, const string& stat )
 {
     IF_ ( check() <0 );
-    IF_(!bComplete);
 
-    m_pSC->transit(m_state.STANDBY);
+    if(stat == "standby")
+        m_pSC->transit(m_state.STANDBY);
+    if(stat == "airborne")
+        m_pSC->transit(m_state.AIRBORNE);
+    if(stat == "landed")
+        m_pSC->transit(m_state.LANDED);    
 }
 
 bool _GCSbase::takeoffRequest ( int vID )
@@ -92,12 +79,21 @@ bool _GCSbase::bTakeoffReady ( int vID )
     return false;
 }
 
-void _GCSbase::takeoffStatus ( int vID, bool bComplete )
+bool _GCSbase::landingRequest ( int vID )
 {
-    IF_ ( check() <0 );
-    IF_(!bComplete);
+    IF_F ( check() <0 );
+    IF_T(m_state.bLANDING_READY());
+    
+    m_pSC->transit(m_state.LANDING_REQUEST);
+    return true;
+}
 
-    m_pSC->transit(m_state.AIRBORNE);
+bool _GCSbase::bLandingReady ( int vID )
+{
+    IF_F ( check() <0 );
+    IF_T(m_state.bLANDING_READY());
+
+    return false;
 }
 
 void _GCSbase::draw ( void )

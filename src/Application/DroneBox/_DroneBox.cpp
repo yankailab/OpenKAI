@@ -149,6 +149,7 @@ bool _DroneBox::bBoxLandingReady ( void )
     LOG_I("bBoxLandingReady: " + i2str(r) + ", " + i2str(b));
     IF_F ( r != 1 );
     
+    m_lastCMD = dbx_bLandingReady;
     return ( b==1 ) ?true:false;
 }
 
@@ -190,6 +191,7 @@ bool _DroneBox::bBoxTakeoffReady ( void )
     LOG_I("bBoxTakeoffReady: " + i2str(r) + ", " + i2str(b));
     IF_F ( r != 1 );
 
+    m_lastCMD = dbx_bTakeoffReady;
     return ( b==1 ) ?true:false;
 }
 

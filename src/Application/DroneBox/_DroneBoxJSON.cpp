@@ -134,10 +134,7 @@ void _DroneBoxJSON::stat ( picojson::object& o )
     int vID = o["id"].get<double>();
     string stat = o["stat"].get<string>();
 
-    if(stat == "airborne")
-        m_pDB->takeoffStatus ( vID, true );
-    else if(stat == "landed")
-        m_pDB->landingStatus ( vID, true );
+    m_pDB->status ( vID, stat );
 }
 
 void _DroneBoxJSON::req ( picojson::object& o )

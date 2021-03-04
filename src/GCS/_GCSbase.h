@@ -110,12 +110,11 @@ public:
     virtual int getID (void);
     virtual GCS_STATE* getState(void);
 
-    virtual bool landingRequest(int vID);
-    virtual bool bLandingReady(int vID);
-    virtual void landingStatus(int vID, bool bComplete);
+    virtual void status (int vID, const string& stat);
     virtual bool takeoffRequest(int vID);
     virtual bool bTakeoffReady(int vID);
-    virtual void takeoffStatus (int vID, bool bComplete);
+    virtual bool landingRequest(int vID);
+    virtual bool bLandingReady(int vID);
 
 protected:
     virtual void updateGCS (void);

@@ -62,6 +62,16 @@
 			"name":"LANDING_READY",
 			"class":"State",
 		}
+		{
+			"bInst":1,
+			"name":"LANDING",
+			"class":"State",
+		}
+		{
+			"bInst":1,
+			"name":"LANDED",
+			"class":"State",
+		}
 	}
 }
 
