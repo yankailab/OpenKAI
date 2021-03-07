@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/yankailab/OpenKAI/raw/master/data/OpenKAI.png" alt="OpenKAI" width="350px">
+<img src="https://github.com/yankailab/OpenKAI/raw/master/data/OK.png" alt="OpenKAI" width="350px">
 </p>
 
 ## What is it?
