@@ -34,6 +34,7 @@ public:
     _AP_base* m_pAP;
     
     float m_altAirborne;
+    float m_altLand;
     int m_dLanded;
 };
 

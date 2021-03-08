@@ -55,7 +55,7 @@
 		}
 		{
 			"bInst":1,
-			"name":"LANDING_READY",
+			"name":"LANDING_DESCENT",
 			"class":"State",
 		}
 		{

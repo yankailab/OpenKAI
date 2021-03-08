@@ -25,7 +25,7 @@ bool _StateBase::init(void* pKiss)
 	NULL_T(m_pSC);
 
 	vector<string> vAS;
-	pK->a("activeState", &vAS);
+	pK->a("vActiveState", &vAS);
 	for(int i=0; i<vAS.size(); i++)
 	{
 		int iS = m_pSC->getStateIdxByName (vAS[i]);

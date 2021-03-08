@@ -7,6 +7,7 @@ _AP_gcs::_AP_gcs()
 {
     m_pAP = NULL;
     m_altAirborne = 20.0;
+    m_altLand = 5.0;
     m_dLanded = 5;
 }
 
@@ -20,6 +21,7 @@ bool _AP_gcs::init ( void* pKiss )
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "altAirborne", &m_altAirborne );
+    pK->v ( "altLand", &m_altLand );
     pK->v ( "dLanded", &m_dLanded );
 
     string n;
@@ -52,7 +54,6 @@ void _AP_gcs::update ( void )
     {
         m_pT->autoFPSfrom();
         this->_GCSbase::update();
-        this->_GCSbase::updateGCS();
 
         updateGCS();
 
@@ -62,6 +63,7 @@ void _AP_gcs::update ( void )
 
 void _AP_gcs::updateGCS ( void )
 {
+    this->_GCSbase::updateGCS();
     IF_ ( check() < 0 );
 
     uint32_t apMode = m_pAP->getApMode();
@@ -114,17 +116,29 @@ void _AP_gcs::updateGCS ( void )
     //Landing procedure
     if(m_state.bLANDING_REQUEST())
     {
+        //hold pos for landing ready
+        if(apMode == AP_COPTER_AUTO)
+            m_pAP->setApMode(AP_COPTER_GUIDED);
+        
         return;
     }
 
-    if(m_state.bLANDING_READY())
+    if(m_state.bLANDING_DESCENT())
     {
+        //vision navigated descend
+        IF_(alt > m_altLand);
+
         m_pSC->transit(m_state.LANDING);
         return;
     }
     
     if(m_state.bLANDING())
     {
+        //switch to AP controlled landing
+        if(apMode == AP_COPTER_GUIDED)
+            m_pAP->setApMode(AP_COPTER_LAND);            
+
+        //check if touched down
         IF_(bApArmed);
         
         m_pSC->transit(m_state.LANDED);        
@@ -145,7 +159,7 @@ void _AP_gcs::landingReady(bool bReady)
     IF_(!bReady);
 
     if(m_state.bLANDING_REQUEST())
-        m_pSC->transit(m_state.LANDING_READY);
+        m_pSC->transit(m_state.LANDING_DESCENT);
 }
 
 void _AP_gcs::takeoffReady(bool bReady)

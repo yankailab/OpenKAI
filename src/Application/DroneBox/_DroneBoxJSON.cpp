@@ -148,29 +148,30 @@ void _DroneBoxJSON::req ( picojson::object& o )
     string d = o["do"].get<string>();
 
     object jo;
-    JO ( jo, "id", i2str ( m_pDB->getID() ) );
+    JO ( jo, "id", (double)m_pDB->getID() );
     JO ( jo, "cmd", "ack" );
+    JO ( jo, "do", d );
 
     if ( d=="takeoff" )
     {
         if ( m_pDB->takeoffRequest ( vID ) )
         {
-            JO ( jo, "ack", "ok" );            
+            JO ( jo, "r", "ok" );            
         }
         else
         {
-            JO ( jo, "ack", "denied" );            
+            JO ( jo, "r", "denied" );            
         }
     }
     else if ( d=="landing" )
     {
         if ( m_pDB->landingRequest ( vID ) )
         {
-            JO ( jo, "ack", "ok" );            
+            JO ( jo, "r", "ok" );            
         }
         else
         {
-            JO ( jo, "ack", "denied" );            
+            JO ( jo, "r", "denied" );            
         }
     }
 

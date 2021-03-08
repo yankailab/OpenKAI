@@ -177,9 +177,9 @@ void _AP_droneBoxJSON::ack (picojson::object& o)
     IF_(check()<0 );
     IF_(!o["id"].is<double>());
     IF_(!o["do"].is<string>());
-    IF_(!o["ack"].is<string>());
+    IF_(!o["r"].is<string>());
     
-    string r = o["ack"].get<string>();
+    string r = o["r"].get<string>();
     bool bReady = ( r == "ok");
 
     string d = o["do"].get<string>();
