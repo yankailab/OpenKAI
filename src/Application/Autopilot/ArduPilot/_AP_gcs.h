@@ -32,7 +32,8 @@ protected:
 
 public:
     _AP_base* m_pAP;
-    
+
+    bool m_bAutoArm;
     float m_altAirborne;
     float m_altLand;
     int m_dLanded;

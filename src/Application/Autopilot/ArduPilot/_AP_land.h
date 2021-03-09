@@ -10,11 +10,11 @@
 namespace kai
 {
 
-class _AP_descent: public _AP_follow
+class _AP_land: public _AP_follow
 {
 public:
-	_AP_descent();
-	~_AP_descent();
+	_AP_land();
+	~_AP_land();
 
 	bool init(void* pKiss);
 	bool start(void);
@@ -27,7 +27,7 @@ protected:
 	virtual bool findTarget(void);
 	static void* getUpdate(void* This)
 	{
-		((_AP_descent *) This)->update();
+		(( _AP_land *) This)->update();
 		return NULL;
 	}
 

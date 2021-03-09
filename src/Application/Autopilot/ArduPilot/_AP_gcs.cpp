@@ -6,6 +6,7 @@ namespace kai
 _AP_gcs::_AP_gcs()
 {
     m_pAP = NULL;
+    m_bAutoArm = false;
     m_altAirborne = 20.0;
     m_altLand = 5.0;
     m_dLanded = 5;
@@ -20,6 +21,7 @@ bool _AP_gcs::init ( void* pKiss )
     IF_F ( !this->_GCSbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
+    pK->v ( "bAutoArm", &m_bAutoArm );
     pK->v ( "altAirborne", &m_altAirborne );
     pK->v ( "altLand", &m_altLand );
     pK->v ( "dLanded", &m_dLanded );
@@ -43,6 +45,7 @@ bool _AP_gcs::start ( void )
 int _AP_gcs::check ( void )
 {
     NULL__ ( m_pAP, -1 );
+    NULL__ ( m_pAP->m_pMav, -1 );
     NULL__ ( m_pSC, -1 );
 
     return this->_GCSbase::check();
@@ -81,13 +84,13 @@ void _AP_gcs::updateGCS ( void )
     // Standby
     if(m_state.bSTANDBY())
     {
-        IF_(apMode != AP_COPTER_AUTO);
+        IF_(apMode != AP_COPTER_GUIDED);
         
         m_pSC->transit(m_state.TAKEOFF_REQUEST);        
         return;
     }
     
-    //Takeoff procedure
+    // Takeoff procedure
     if(m_state.bTAKEOFF_REQUEST())
     {        
         return;
@@ -95,7 +98,10 @@ void _AP_gcs::updateGCS ( void )
 
     if(m_state.bTAKEOFF_READY())
     {
-//        m_pAP->setApArm(true);
+        if(m_bAutoArm)
+            m_pAP->setApArm(true);
+
+        m_pAP->m_pMav->clNavTakeoff(m_altAirborne + 0.5);
         
         if(bApArmed && alt > m_altAirborne)
             m_pSC->transit(m_state.AIRBORNE);
@@ -107,7 +113,8 @@ void _AP_gcs::updateGCS ( void )
     {
         IF_(alt > m_altAirborne);
         
-        //TODO: check current waypoint == last waypoing?
+        if(apMode == AP_COPTER_GUIDED)
+            m_pAP->setApMode(AP_COPTER_AUTO);
 
         m_pSC->transit(m_state.LANDING_REQUEST);
         return;
@@ -123,16 +130,17 @@ void _AP_gcs::updateGCS ( void )
         return;
     }
 
-    if(m_state.bLANDING_DESCENT())
+    if(m_state.bLANDING())
     {
         //vision navigated descend
+        
         IF_(alt > m_altLand);
 
-        m_pSC->transit(m_state.LANDING);
+        m_pSC->transit(m_state.TOUCHDOWN );
         return;
     }
     
-    if(m_state.bLANDING())
+    if(m_state.bTOUCHDOWN())
     {
         //switch to AP controlled landing
         if(apMode == AP_COPTER_GUIDED)
@@ -159,7 +167,7 @@ void _AP_gcs::landingReady(bool bReady)
     IF_(!bReady);
 
     if(m_state.bLANDING_REQUEST())
-        m_pSC->transit(m_state.LANDING_DESCENT);
+        m_pSC->transit(m_state.LANDING);
 }
 
 void _AP_gcs::takeoffReady(bool bReady)

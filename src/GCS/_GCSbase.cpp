@@ -73,7 +73,7 @@ bool _GCSbase::takeoffRequest ( int vID )
 bool _GCSbase::landingRequest ( int vID )
 {
     IF_F ( check() <0 );
-    IF_T(m_state.bLANDING_DESCENT());
+    IF_T(m_state.bLANDING());
     
     m_pSC->transit(m_state.LANDING_REQUEST);
     return false;

@@ -100,17 +100,17 @@ void _DroneBox::updateGCS ( void )
         boxLandingPrepare();
 
         if( bBoxLandingReady())
-            m_pSC->transit(m_state.LANDING_DESCENT);
+            m_pSC->transit(m_state.LANDING);
 
         return;
     }
 
-    if(m_state.bLANDING_DESCENT())
+    if(m_state.bLANDING())
     {
         return;        
     }
     
-    if(m_state.bLANDING())
+    if(m_state.bTOUCHDOWN())
     {
         return;        
     }

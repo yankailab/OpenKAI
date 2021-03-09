@@ -14,8 +14,8 @@ struct GCS_STATE
     int8_t TAKEOFF_READY;
     int8_t AIRBORNE;
 	int8_t LANDING_REQUEST;
-    int8_t LANDING_DESCENT;
     int8_t LANDING;
+    int8_t TOUCHDOWN;
     int8_t LANDED;
     
 	bool assign(_StateControl* pSC )
@@ -28,8 +28,8 @@ struct GCS_STATE
         TAKEOFF_READY = pSC->getStateIdxByName ("TAKEOFF_READY");
         AIRBORNE = pSC->getStateIdxByName ("AIRBORNE");
         LANDING_REQUEST = pSC->getStateIdxByName ("LANDING_REQUEST");
-        LANDING_DESCENT = pSC->getStateIdxByName ("LANDING_DESCENT");
         LANDING = pSC->getStateIdxByName ("LANDING");
+        TOUCHDOWN = pSC->getStateIdxByName ("TOUCHDOWN");
         LANDED = pSC->getStateIdxByName ("LANDED");
         
         return bValid();
@@ -42,8 +42,8 @@ struct GCS_STATE
 		IF_F(TAKEOFF_READY < 0);
 		IF_F(AIRBORNE < 0);
 		IF_F(LANDING_REQUEST < 0);
-		IF_F(LANDING_DESCENT < 0);
 		IF_F(LANDING < 0);
+		IF_F(TOUCHDOWN < 0);
 		IF_F(LANDED < 0);
 
 		return true;
@@ -80,14 +80,14 @@ struct GCS_STATE
         return (m_iState == LANDING_REQUEST);
     }
 
-   	bool bLANDING_DESCENT(void)
-    {
-        return (m_iState == LANDING_DESCENT);
-    }
-    
-    bool bLANDING(void)
+   	bool bLANDING(void)
     {
         return (m_iState == LANDING);
+    }
+    
+    bool bTOUCHDOWN(void)
+    {
+        return (m_iState == TOUCHDOWN );
     }
 
     bool bLANDED(void)

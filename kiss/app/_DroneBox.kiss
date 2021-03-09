@@ -55,12 +55,12 @@
 		}
 		{
 			"bInst":1,
-			"name":"LANDING_DESCENT",
+			"name":"LANDING",
 			"class":"State",
 		}
 		{
 			"bInst":1,
-			"name":"LANDING",
+			"name":"TOUCHDOWN",
 			"class":"State",
 		}
 		{

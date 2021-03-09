@@ -62,12 +62,12 @@
 		}
 		{
 			"bInst":1,
-			"name":"LANDING_DESCENT",
+			"name":"LANDING",
 			"class":"State",
 		}
 		{
 			"bInst":1,
-			"name":"LANDING",
+			"name":"TOUCHDOWN",
 			"class":"State",
 		}
 		{
@@ -173,20 +173,20 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
+	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.16.198 port=5678 auto-multicast=false",
 }
 
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -231,7 +231,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":-1.0,
+	"P":-0.2,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -246,7 +246,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":1.0,
+	"P":0.2,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -256,8 +256,8 @@
 }
 
 {
-	"name":"apDescent",
-	"class":"_AP_descent",
+	"name":"apLand",
+	"class":"_AP_land",
     {
 		"name":"thread",
 		"FPS":10,
@@ -267,14 +267,14 @@
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"_StateControl":"state",
-	"vActiveState":["LANDING_DESCENT"],
+	"vActiveState":["LANDING"],
 	"_AP_base":"apBase",
 	"_Universe":"univTag",
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
-	"vTargetP":[0.5, 0.5, 0.3, 0.0],
+	"vTargetP":[0.5, 0.5, 0.5, 0.0],
 	"bYaw":0,
-	"yawRate":90.0,	
+	"yawRate":90.0,
 	"alt":0.8,
 	"wLen":5,
 	"zrK":1.0,
@@ -305,8 +305,10 @@
 	"Console":"OKconsole",
 	"_AP_base":"apBase",
 	"_StateControl":"state",
-	"altAirborne":20.0,
+	"altAirborne":15.0,
+	"altLand":3.0,
 	"dLanded":5,
+	"bAutoArm":0,
 }
 
 {
