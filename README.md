@@ -3,8 +3,9 @@
 </p>
 
 ## OpenKAI: A modern framework for unmanned vehicle and robot control
-OpenKAI (Kinetic AI) is an open-source framework that supports rapid development of unmanned vehicles and robots that incorporate AI, varied sensors, actuators etc.. OpenKAI is light weight to run on embedded hardwares. A simple and unified multi-threading modular architecture written purely in C++ makes it highly customizable for versatile applications, easy for expansion and maintenance.
-We are keep adding supports for sensors and actuators available on market from hacker products to industry solutions. The supported devices can be used easily as an abstracted object in OpenKAI. We welcome contributions from device vendors to provide evaluation device, as well as coders from open-source community.
+OpenKAI (Kinetic AI) is an open-source framework that supports rapid development of unmanned vehicles and robots that incorporate AI, varied sensors, actuators, etc.. OpenKAI is light weight to run on embedded hardwares. A simple and unified multi-threading modular architecture written purely in C++ makes it highly customizable for versatile applications.
+
+We are keep adding supports for sensors and actuators available on market from hackable modules to industry solutions. The supported devices can be used easily as an abstracted object in OpenKAI. We welcome contributions from device vendors to provide evaluation device, as well as coders from open-source community.
 
 ## Platforms
 Tested but not limited to
@@ -13,11 +14,9 @@ Tested but not limited to
 * Raspberry Pi (Raspberry Pi OS)
 
 ## Dependencies
-A small set of library are choosen carefully for the minimum denpendency
-Compulsory:
-Pthread, Google glog, Eigen.
-Optional:
-OpenCV, Open3D, OpenCL, etc..
+A small set of library are choosen carefully for the minimum denpendency.
+* Compulsory: Pthread, Google glog, Eigen.
+* Optional: OpenCV, Open3D, OpenCL, etc..
 
 ## Interfaces
 * UART
@@ -37,6 +36,7 @@ OpenCV, Open3D, OpenCL, etc..
 * Pixhawk and its compatibles (Mavlink/UART)
 * Oriental Motor (Modbus/RS-485)
 * ZLAC 8015 (Modbus/RS-485)
+
 and more are coming.
 
 ## Sensors
@@ -48,11 +48,13 @@ and more are coming.
 * Canon SLR
 * Sony RX0 series
 * Livox (Coming soon)
+
 and more are coming.
 
 ## Actuators
 * Oriental Motor
 * DRV8825 (RS485)
+
 and more are coming.
 
 ## Displays
