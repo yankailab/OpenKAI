@@ -9,13 +9,13 @@
 #define OpenKAI_src_State__StateControl_H_
 
 #include "../Base/_ModuleBase.h"
-#include "../Mission/Goto.h"
-#include "../Mission/Waypoint.h"
-#include "../Mission/Land.h"
-#include "../Mission/Loiter.h"
-#include "../Mission/State.h"
-#include "../Mission/RTH.h"
-#include "../Mission/Takeoff.h"
+#include "../State/Goto.h"
+#include "../State/Waypoint.h"
+#include "../State/Land.h"
+#include "../State/Loiter.h"
+#include "../State/State.h"
+#include "../State/RTH.h"
+#include "../State/Takeoff.h"
 
 #define ADD_STATE(x) if(pKs->m_class==#x){S.m_pInst=new x();S.m_pKiss=pKs;}
 

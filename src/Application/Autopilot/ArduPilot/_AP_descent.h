@@ -36,8 +36,7 @@ public:
 	int	m_iRelayLED;
 
 	float m_alt;
-	float m_detSize;
-	vFloat4 m_vRDD;		//descents when detection inside the ROI
+    float m_zrK;
 	float m_dTarget;	//dist to target
 
 };

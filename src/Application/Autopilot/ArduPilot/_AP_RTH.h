@@ -3,7 +3,7 @@
 
 #include "../../../Base/common.h"
 #include "../../../Sensor/_DistSensorBase.h"
-#include "../../../Mission/RTH.h"
+#include "../../../State/RTH.h"
 #include "../ArduPilot/_AP_base.h"
 
 namespace kai

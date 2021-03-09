@@ -1,7 +1,7 @@
 #ifndef OpenKAI_src_Autopilot_AP__AP_follow_H_
 #define OpenKAI_src_Autopilot_AP__AP_follow_H_
 
-#include "../../../Detector/_DetectorBase.h"
+#include "../../../Universe/_Universe.h"
 #include "../../../Tracker/_TrackerBase.h"
 #include "../ArduPilot/_AP_base.h"
 #include "../ArduPilot/_AP_posCtrl.h"
@@ -33,7 +33,7 @@ protected:
 	}
 
 public:
-	_DetectorBase*	m_pDet;
+	_Universe*     	m_pU;
 	_TrackerBase*	m_pTracker;
 	int				m_iClass;
 	bool			m_bTarget;

@@ -8,10 +8,9 @@ namespace kai
 _AP_descent::_AP_descent()
 {
 	m_alt = 3.0;
-	m_detSize = 0.25;
-	m_vRDD.init(0.0, 0.0, 1.0, 1.0);
+    m_zrK = 1.0;
 	m_dTarget = -1.0;
-	m_iRelayLED = 0;
+	m_iRelayLED = -1;
 }
 
 _AP_descent::~_AP_descent()
@@ -24,8 +23,7 @@ bool _AP_descent::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("alt", &m_alt);
-	pK->v("detSize", &m_detSize);
-	pK->v("vRDD", &m_vRDD);
+	pK->v("zrK", &m_zrK);
 	pK->v("iRelayLED",&m_iRelayLED);
 
 	int wLen = 3;
@@ -51,8 +49,7 @@ void _AP_descent::update(void)
 	while(m_pT->bRun())
 	{
 		m_pT->autoFPSfrom();
-
-		this->_AP_posCtrl::update();
+		this->_StateBase::update();
 
 		if (!updateTarget())
 		{
@@ -69,7 +66,8 @@ bool _AP_descent::updateTarget(void)
 	IF_F(check() < 0);
 
 	m_bTarget = findTarget();
-	m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, m_bTarget);
+    if(m_iRelayLED >=0)
+        m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, m_bTarget);
 
 	IF_F(!bActive());
 
@@ -79,19 +77,6 @@ bool _AP_descent::updateTarget(void)
 	if(!m_bTarget)
 	{
 		releaseCtrl();
-		return false;
-	}
-
-	float w = m_vTargetBB.width();
-	float h = m_vTargetBB.height();
-	if (m_dTarget > 0.0 && m_dTarget < m_alt && w > m_detSize && h > m_detSize)
-	{
-		m_pSC->getState()->complete();
-		for(int i=0; i<10; i++)
-		{
-			releaseCtrl();
-		}
-
 		return false;
 	}
 
@@ -108,7 +93,7 @@ bool _AP_descent::findTarget(void)
 	_Object* pO;
 	int iTag = -1;
 	int i = 0;
-	while ((pO = m_pDet->m_pU->get(i++)) != NULL)
+	while ((pO = m_pU->get(i++)) != NULL)
 	{
 		IF_CONT(pO->getTopClass() <= iTag);
 
@@ -121,16 +106,11 @@ bool _AP_descent::findTarget(void)
 	//position
 	m_vP.x = tO->getX();
 	m_vP.y = tO->getY();
-
-	if (m_vP.x > m_vRDD.x && m_vP.x < m_vRDD.z
-			&& m_vP.y > m_vRDD.y && m_vP.y < m_vRDD.w)
-	{
-		m_vP.z = m_vTargetP.z;
-	}
-	else
-	{
-		m_vP.z = 0.0;
-	}
+    
+    float x = m_vP.x - m_vTargetP.x;
+	float y = m_vP.y - m_vTargetP.y;
+	float r = sqrt(x*x + y*y);
+    m_vP.z = m_vTargetP.z * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 
 	//heading
 	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());

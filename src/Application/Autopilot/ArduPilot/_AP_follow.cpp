@@ -7,7 +7,7 @@ namespace kai
 
 _AP_follow::_AP_follow()
 {
-	m_pDet = NULL;
+	m_pU = NULL;
 	m_pTracker = NULL;
 	m_iClass = -1;
 
@@ -64,8 +64,8 @@ bool _AP_follow::init(void* pKiss)
 	m_pTracker = (_TrackerBase*)pK->getInst(n);
 
 	n = "";
-	pK->v("_DetectorBase", &n);
-	m_pDet = (_DetectorBase*)pK->getInst(n);
+	pK->v("_Universe", &n);
+	m_pU = (_Universe*)pK->getInst(n);
 
 	return true;
 }
@@ -78,7 +78,7 @@ bool _AP_follow::start(void)
 
 int _AP_follow::check(void)
 {
-	NULL__(m_pDet,-1);
+	NULL__( m_pU,-1);
 
 	return this->_AP_posCtrl::check();
 }
@@ -149,7 +149,7 @@ bool _AP_follow::findTarget(void)
 	_Object* tO = NULL;
 	float topProb = 0.0;
 	int i=0;
-	while((pO = m_pDet->m_pU->get(i++)) != NULL)
+	while((pO = m_pU->get(i++)) != NULL)
 	{
 		IF_CONT(pO->getTopClass() != m_iClass);
 		IF_CONT(pO->getTopClassProb() < topProb);
