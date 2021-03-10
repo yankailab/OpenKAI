@@ -111,10 +111,10 @@ void _AP_gcs::updateGCS ( void )
     
     if(m_state.bAIRBORNE())
     {
-        IF_(alt > m_altAirborne);
-        
         if(apMode == AP_COPTER_GUIDED)
             m_pAP->setApMode(AP_COPTER_AUTO);
+
+        IF_(alt > m_altAirborne);
 
         m_pSC->transit(m_state.LANDING_REQUEST);
         return;

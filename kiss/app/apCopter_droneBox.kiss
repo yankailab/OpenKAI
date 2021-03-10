@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":1,
+	"bWindow":0,
 	"bDraw":1,
 	"bLog":1,
 	"bStdErr":0,
@@ -18,7 +18,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":1,
+	"bInst":0,
 	"Console":"OKconsole",
 }
 

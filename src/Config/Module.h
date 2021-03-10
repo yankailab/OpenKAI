@@ -124,6 +124,7 @@
 #include "../Detector/_IRLock.h"
 #include "../Detector/_Line.h"
 #include "../Detector/_OpenPose.h"
+#include "../Detector/_HandKey.h"
 #include "../Detector/_SlideWindow.h"
 #include "../Detector/_Thermal.h"
 

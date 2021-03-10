@@ -79,9 +79,7 @@ bool _AP_land::updateTarget(void)
 //		releaseCtrl();
 //		return false;
         
-        m_vP.x = 0.5;
-        m_vP.y = 0.5;
-        m_vP.z = 0.3;
+        m_vP = m_vTargetP;
         m_vP.w = m_pAP->getApHdg();
 	}
 

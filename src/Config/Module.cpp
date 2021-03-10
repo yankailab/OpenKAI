@@ -114,6 +114,7 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Mask);
 	ADD_MODULE(_Morphology);
 	ADD_MODULE(_OpenPose);
+	ADD_MODULE(_HandKey);
 	ADD_MODULE(_Raspivid);
 	ADD_MODULE(_Resize);
 	ADD_MODULE(_Rotate);
