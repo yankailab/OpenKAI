@@ -16,6 +16,14 @@
 }
 
 {
+	"name":"lds_lidar",
+	"class":"lds_lidar",
+	"bInst":1,
+	"bLog":0,
+	"Console":"OKconsole",
+}
+
+{
 	"name":"Livox",
 	"class":"_Livox",
 	"bInst":1,
@@ -25,4 +33,5 @@
 	}
 	"bLog":0,
 	"Console":"OKconsole",
+	"lds_lidar":"lds_lidar",
 }

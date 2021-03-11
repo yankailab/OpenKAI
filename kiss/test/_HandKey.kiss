@@ -5,7 +5,6 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"bConsole":0,
 	"bStdErr":1,
 	"waitKey":30,
 }
@@ -26,7 +25,6 @@
 		"FPS":30,
 	}
 	"Window":"OKview",
-	"Console":"OKconsole",
 	"deviceID":0,
 	"vSize":[640, 480],
 }
@@ -62,7 +60,7 @@
 {
 	"name":"HandKey",
 	"class":"_HandKey",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -71,9 +69,9 @@
 	"bLog":1,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"modelDir":"/home/kai/dev/model/HandKey/",
-	"modelFile":"pose_deploy.prototxt",
-	"trainedFile":"pose_iter_102000.caffemodel",
-	"bSwapRB":0,
+	"fModel":"/home/kai/dev/model/HandKey/pose_deploy.prototxt",
+	"fWeight":"/home/kai/dev/model/HandKey/pose_iter_102000.caffemodel",
+	"iBackend":0,
+	"iTarget":0,
 }
 

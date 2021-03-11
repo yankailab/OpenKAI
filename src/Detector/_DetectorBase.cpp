@@ -134,8 +134,6 @@ void _DetectorBase::draw(void)
 {
 	this->_ModuleBase::draw();
 
-	addMsg("nObj=" + i2str(m_pU->size()), 1);
-
 }
 
 }

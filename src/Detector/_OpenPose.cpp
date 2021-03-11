@@ -37,9 +37,7 @@ bool _OpenPose::init(void *pKiss)
 	pK->v("iTarget", &m_iTarget);
 	pK->v("bSwapRB", &m_bSwapRB);
 	pK->v("scale", &m_scale);
-	pK->v("meanB", &m_vMean.x);
-	pK->v("meanG", &m_vMean.y);
-	pK->v("meanR", &m_vMean.z);
+	pK->v("vMean", &m_vMean);
 
 	m_net = readNetFromCaffe(m_fModel, m_fWeight);
 	IF_Fl(m_net.empty(), "read Net failed");
@@ -76,7 +74,6 @@ void _OpenPose::update(void)
 
 int _OpenPose::check(void)
 {
-	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
 	Frame *pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
@@ -146,7 +143,6 @@ void _OpenPose::detect(void)
 		circle(m_mDebug, partB, 8, Scalar(0, 0, 255), -1);
 	}
 
-	m_pU->updateObj();
 }
 
 void _OpenPose::draw(void)

@@ -37,9 +37,7 @@ bool _HandKey::init(void *pKiss)
 	pK->v("iTarget", &m_iTarget);
 	pK->v("bSwapRB", &m_bSwapRB);
 	pK->v("scale", &m_scale);
-	pK->v("meanB", &m_vMean.x);
-	pK->v("meanG", &m_vMean.y);
-	pK->v("meanR", &m_vMean.z);
+	pK->v("vMean", &m_vMean);
 
 	m_net = readNetFromCaffe(m_fModel, m_fWeight);
 	IF_Fl(m_net.empty(), "read Net failed");
@@ -62,13 +60,10 @@ void _HandKey::update(void)
 	{
 		m_pT->autoFPSfrom();
 
-		if (check() >= 0)
-		{
-			detect();
+		detect();
 
-			if (m_pT->bGoSleep())
-				m_pU->m_pPrev->clear();
-		}
+		if (m_pT->bGoSleep())
+			m_pU->m_pPrev->clear();
 
 		m_pT->autoFPSto();
 	}
@@ -76,7 +71,6 @@ void _HandKey::update(void)
 
 int _HandKey::check(void)
 {
-	NULL__(m_pU, -1);
 	NULL__(m_pV, -1);
 	Frame *pBGR = m_pV->BGR();
 	NULL__(pBGR, -1);
@@ -88,6 +82,8 @@ int _HandKey::check(void)
 
 void _HandKey::detect(void)
 {
+    IF_(check() < 0);
+    
 	Frame *pBGR = m_pV->BGR();
 	m_fBGR.copy(*pBGR);
 	Mat mIn = *m_fBGR.m();
@@ -143,8 +139,7 @@ void _HandKey::detect(void)
 		circle(m_mDebug, partA, 8, Scalar(0, 0, 255), -1);
 		circle(m_mDebug, partB, 8, Scalar(0, 0, 255), -1);
 	}
-
-	m_pU->updateObj();
+	
 }
 
 void _HandKey::draw(void)

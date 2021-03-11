@@ -75,13 +75,7 @@ bool _AP_land::updateTarget(void)
 		m_pAP->setMount(m_apMount);
 
 	if(!m_bTarget)
-	{
-//		releaseCtrl();
-//		return false;
-        
         m_vP = m_vTargetP;
-        m_vP.w = m_pAP->getApHdg();
-	}
 
 	setPosLocal();
 	return true;
@@ -117,7 +111,8 @@ bool _AP_land::findTarget(void)
     m_vP.z = m_vTargetP.z * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 
 	//heading
-	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());
+//	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());
+    m_vP.w = dHdg<float>(0.0, tO->getRoll()) * 0.5;
 
 	//distance
 	m_filter.input(tO->getZ());

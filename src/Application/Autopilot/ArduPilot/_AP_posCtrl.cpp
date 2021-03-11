@@ -128,8 +128,9 @@ void _AP_posCtrl::setPosLocal(void)
 	m_sptLocal.vx = p;		//forward
 	m_sptLocal.vy = r;		//right
 	m_sptLocal.vz = a;		//down
-	m_sptLocal.yaw = (float) m_vP.w * DEG_2_RAD;
-	m_sptLocal.type_mask = 0b0000000111000111;	//set velocity
+	m_sptLocal.yaw = 0.0;//(float) m_vP.w * DEG_2_RAD;
+	m_sptLocal.yaw_rate = (float) m_vP.w * DEG_2_RAD;
+	m_sptLocal.type_mask = 0b0000010111000111;	//set velocity
 	if(!m_bYaw)
 		m_sptLocal.type_mask |= 0b0000110000000000;
 

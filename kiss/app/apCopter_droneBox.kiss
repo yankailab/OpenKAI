@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
 	"bStdErr":0,
@@ -18,7 +18,7 @@
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"Console":"OKconsole",
 }
 
@@ -173,7 +173,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -186,7 +186,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -231,7 +231,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":-0.2,
+	"P":-1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -246,7 +246,7 @@
 	"bInst":1,
 	"Window":"OKview",
 	"Console":"OKconsole",
-	"P":0.2,
+	"P":1.0,
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
@@ -273,11 +273,11 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"vTargetP":[0.5, 0.5, 0.5, 0.0],
-	"bYaw":0,
+	"bYaw":1,
 	"yawRate":90.0,
 	"alt":0.8,
 	"wLen":5,
-	"zrK":1.0,
+	"zrK":1.5,
 	
 	{
 		"name":"mount",
