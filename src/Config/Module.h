@@ -237,7 +237,7 @@
 
 #ifdef USE_LIVOX
 #include "../Sensor/Livox/_Livox.h"
-#include "../Sensor/Livox/lds_lidar.h"
+#include "../Sensor/Livox/LivoxLidar.h"
 #endif
 
 #ifdef USE_XARM

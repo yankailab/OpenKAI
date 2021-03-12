@@ -3,9 +3,9 @@
 </p>
 
 ## OpenKAI: A modern framework for unmanned vehicle and robot control
-OpenKAI (Kinetic AI) is an open-source framework that supports rapid development of unmanned vehicles and robots that incorporate AI, varied sensors, actuators, etc.. OpenKAI is light weight to run on embedded hardwares. A simple and unified multi-threading modular architecture written purely in C++ makes it highly customizable for versatile applications.
+OpenKAI (Kinetic AI) is an open-source framework that realize rapid development of unmanned vehicles and robots that incorporate AI, sensors, actuators, etc.. OpenKAI is light weight to run on embedded hardwares. A simple and unified multi-threading modular architecture written purely in C++ makes it highly customizable for versatile applications and easily expanded to support new devices.
 
-We are keep adding supports for sensors and actuators available on market from hackable modules to industry solutions. The supported devices can be used easily as an abstracted object in OpenKAI. We welcome contributions from device vendors to provide evaluation device, as well as coders from open-source community.
+We are keep adding supports for sensors and actuators available on market from hackable modules to industry solutions. The supported devices can be used easily as an abstracted object in OpenKAI. We welcome contributions from vendors to provide evaluation device, as well as coders from open-source community.
 
 ## Platforms
 Tested but not limited to
@@ -14,8 +14,7 @@ Tested but not limited to
 * Raspberry Pi (Raspberry Pi OS)
 
 ## Dependencies
-A small set of library are choosen carefully for the minimum denpendency.
-* Compulsory: Pthread, Google glog, Eigen.
+* Mandatory: Pthread, Google glog, Eigen.
 * Optional: OpenCV, Open3D, OpenCL, etc..
 
 ## Interfaces
@@ -59,7 +58,6 @@ and more are coming.
 
 ## Displays
 * Mutrics ARiC AR glasses (Coming soon)
-* Ordinal Displays
 
 ## Showcase of Solutions
 Visual obstacle avoidance using ZED camera and Pixhawk (APMcopter 3.5-dev and above).

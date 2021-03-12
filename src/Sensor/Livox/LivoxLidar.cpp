@@ -1,6 +1,6 @@
 #ifdef USE_LIVOX
 
-#include "lds_lidar.h"
+#include "LivoxLidar.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -18,10 +18,10 @@ static const char* local_broadcast_code_list[] =
 };
 
 /** For callback use only */
-LdsLidar* g_lidars = nullptr;
+LivoxLidar* g_lidars = nullptr;
 
 /** Lds lidar function ---------------------------------------------------------------------------*/
-LdsLidar::LdsLidar()
+LivoxLidar::LivoxLidar()
 {
     auto_connect_mode_ = true;
     whitelist_count_   = 0;
@@ -48,11 +48,11 @@ LdsLidar::LdsLidar()
     m_scanPattern = kNoneRepetitiveScanPattern;
 }
 
-LdsLidar::~LdsLidar()
+LivoxLidar::~LivoxLidar()
 {
 }
 
-bool LdsLidar::init ( void* pKiss )
+bool LivoxLidar::init ( void* pKiss )
 {
     IF_F ( !this->BASE::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
@@ -70,7 +70,7 @@ bool LdsLidar::init ( void* pKiss )
     return true;
 }
 
-int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
+int LivoxLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
 {
     if ( is_initialized_ )
     {
@@ -89,21 +89,21 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
     GetLivoxSdkVersion ( &_sdkversion );
     printf ( "Livox SDK version %d.%d.%d\n", _sdkversion.major, _sdkversion.minor, _sdkversion.patch );
 
-    SetBroadcastCallback ( LdsLidar::OnDeviceBroadcast );
-    SetDeviceStateUpdateCallback ( LdsLidar::OnDeviceChange );
+    SetBroadcastCallback ( LivoxLidar::OnDeviceBroadcast );
+    SetDeviceStateUpdateCallback ( LivoxLidar::OnDeviceChange );
 
     /** Add commandline input broadcast code */
     for ( auto input_str : broadcast_code_strs )
     {
-        LdsLidar::AddBroadcastCodeToWhitelist ( input_str.c_str() );
+        LivoxLidar::AddBroadcastCodeToWhitelist ( input_str.c_str() );
     }
 
     /** Add local broadcast code */
-    LdsLidar::AddLocalBroadcastCode();
+    LivoxLidar::AddLocalBroadcastCode();
 
     if ( whitelist_count_ )
     {
-        LdsLidar::DisableAutoConnectMode();
+        LivoxLidar::DisableAutoConnectMode();
         printf ( "Disable auto connect mode!\n" );
 
         printf ( "List all broadcast code in whiltelist:\n" );
@@ -114,7 +114,7 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
     }
     else
     {
-        LdsLidar::EnableAutoConnectMode();
+        LivoxLidar::EnableAutoConnectMode();
         printf ( "No broadcast code was added to whitelist, swith to automatic connection mode!\n" );
     }
 
@@ -136,7 +136,7 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
 }
 
 
-int LdsLidar::DeInitLdsLidar ( void )
+int LivoxLidar::DeInitLdsLidar ( void )
 {
 
     if ( !is_initialized_ )
@@ -151,7 +151,7 @@ int LdsLidar::DeInitLdsLidar ( void )
     return 0;
 }
 
-bool LdsLidar::setDataCallback (const string& broadcastCode, LivoxDataCallback pCb, void* pLivox)
+bool LivoxLidar::setDataCallback (const string& broadcastCode, LivoxDataCallback pCb, void* pLivox)
 {
     if(!pLivox)return false;
     
@@ -172,12 +172,12 @@ bool LdsLidar::setDataCallback (const string& broadcastCode, LivoxDataCallback p
 /** Static function in LdsLidar for callback or event process ------------------------------------*/
 
 /** Receiving point cloud data from Livox LiDAR. */
-void LdsLidar::GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
+void LivoxLidar::GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
                                 uint32_t data_num, void *client_data )
 {
     using namespace std;
 
-    LdsLidar* lidar_this = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lidar_this = static_cast<LivoxLidar *> ( client_data );
     LivoxEthPacket* eth_packet = data;
 
     if ( !data || !data_num || ( handle >= kMaxLidarCount ) )
@@ -188,61 +188,9 @@ void LdsLidar::GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
     LidarDevice* pLdev = &lidar_this->lidars_[handle];
     if(!pLdev->pDataCb)return;
     pLdev->pDataCb(data, pLdev->pLivox);
-
-    /*
-    if ( eth_packet )
-    {
-        lidar_this->data_recveive_count_[handle] ++;
-        
-        if ( lidar_this->data_recveive_count_[handle] % 100 == 0 )
-        {
-            printf ( "receive packet count %d %d\n", handle, lidar_this->data_recveive_count_[handle] );
-
-            
-            // Parsing the timestamp and the point cloud data.
-            uint64_t cur_timestamp = * ( ( uint64_t * ) ( data->timestamp ) );
-            if ( data ->data_type == kCartesian )
-            {
-                LivoxRawPoint *p_point_data = ( LivoxRawPoint * ) data->data;
-            }
-            else if ( data ->data_type == kSpherical )
-            {
-                LivoxSpherPoint *p_point_data = ( LivoxSpherPoint * ) data->data;
-            }
-            else if ( data ->data_type == kExtendCartesian )
-            {
-                LivoxExtendRawPoint *p_point_data = ( LivoxExtendRawPoint * ) data->data;
-            }
-            else if ( data ->data_type == kExtendSpherical )
-            {
-                LivoxExtendSpherPoint *p_point_data = ( LivoxExtendSpherPoint * ) data->data;
-            }
-            else if ( data ->data_type == kDualExtendCartesian )
-            {
-                LivoxDualExtendRawPoint *p_point_data = ( LivoxDualExtendRawPoint * ) data->data;
-            }
-            else if ( data ->data_type == kDualExtendSpherical )
-            {
-                LivoxDualExtendSpherPoint *p_point_data = ( LivoxDualExtendSpherPoint * ) data->data;
-            }
-            else if ( data ->data_type == kImu )
-            {
-                LivoxImuPoint *p_point_data = ( LivoxImuPoint * ) data->data;
-            }
-            else if ( data ->data_type == kTripleExtendCartesian )
-            {
-                LivoxTripleExtendRawPoint *p_point_data = ( LivoxTripleExtendRawPoint * ) data->data;
-            }
-            else if ( data ->data_type == kTripleExtendSpherical )
-            {
-                LivoxTripleExtendSpherPoint *p_point_data = ( LivoxTripleExtendSpherPoint * ) data->data;
-            }
-        }
-    }
-    */
 }
 
-void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
+void LivoxLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
 {
     if ( info == nullptr )
     {
@@ -274,7 +222,7 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
     result = AddLidarToConnect ( info->broadcast_code, &handle );
     if ( result == kStatusSuccess && handle < kMaxLidarCount )
     {
-        SetDataCallback ( handle, LdsLidar::GetLidarDataCb, ( void * ) g_lidars );
+        SetDataCallback ( handle, LivoxLidar::GetLidarDataCb, ( void * ) g_lidars );
         LidarDevice* p_lidar = & ( g_lidars->lidars_[handle] );
         p_lidar->handle = handle;
         p_lidar->connect_state = kConnectStateOff;
@@ -283,8 +231,6 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
         p_lidar->config.coordinate = g_lidars->m_coordinate;
         p_lidar->config.imu_rate = g_lidars->m_imuRate;
         p_lidar->config.scan_pattern = g_lidars->m_scanPattern;
-//        p_lidar->pDataCb = NULL;
-//        p_lidar->pLivox = NULL;
     }
     else
     {
@@ -293,7 +239,7 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
 }
 
 /** Callback function of changing of device state. */
-void LdsLidar::OnDeviceChange ( const DeviceInfo *info, DeviceEvent type )
+void LivoxLidar::OnDeviceChange ( const DeviceInfo *info, DeviceEvent type )
 {
     if ( info == nullptr )
     {
@@ -340,39 +286,39 @@ void LdsLidar::OnDeviceChange ( const DeviceInfo *info, DeviceEvent type )
             printf ( "Device State Error Code 0X%08x\n", p_lidar->info.status.status_code.error_code );
         }
         printf ( "Device feature %d\n", p_lidar->info.feature );
-        SetErrorMessageCallback ( handle, LdsLidar::LidarErrorStatusCb );
+        SetErrorMessageCallback ( handle, LivoxLidar::LidarErrorStatusCb );
 
         /** Config lidar parameter */
         if ( p_lidar->info.state == kLidarStateNormal )
         {
             if ( p_lidar->config.coordinate != 0 )
             {
-                SetSphericalCoordinate ( handle, LdsLidar::SetCoordinateCb, g_lidars );
+                SetSphericalCoordinate ( handle, LivoxLidar::SetCoordinateCb, g_lidars );
             }
             else
             {
-                SetCartesianCoordinate ( handle, LdsLidar::SetCoordinateCb, g_lidars );
+                SetCartesianCoordinate ( handle, LivoxLidar::SetCoordinateCb, g_lidars );
             }
             p_lidar->config.set_bits |= kConfigCoordinate;
 
             if ( kDeviceTypeLidarMid40 != info->type )
             {
                 LidarSetPointCloudReturnMode ( handle, ( PointCloudReturnMode ) ( p_lidar->config.return_mode ),\
-                                               LdsLidar::SetPointCloudReturnModeCb, g_lidars );
+                                               LivoxLidar::SetPointCloudReturnModeCb, g_lidars );
                 p_lidar->config.set_bits |= kConfigReturnMode;
             }
 
             if ( kDeviceTypeLidarMid40 != info->type && kDeviceTypeLidarMid70 != info->type )
             {
                 LidarSetImuPushFrequency ( handle, ( ImuFreq ) ( p_lidar->config.imu_rate ),\
-                                           LdsLidar::SetImuRatePushFrequencyCb, g_lidars );
+                                           LivoxLidar::SetImuRatePushFrequencyCb, g_lidars );
                 p_lidar->config.set_bits |= kConfigImuRate;
             }
             
             if ( kDeviceTypeLidarAvia == info->type )
             {
                 LidarSetScanPattern ( handle, ( LidarScanPattern ) ( p_lidar->config.scan_pattern ),\
-                                               LdsLidar::SetScanPatternCb, g_lidars );
+                                               LivoxLidar::SetScanPatternCb, g_lidars );
                 p_lidar->config.set_bits |= kConfigScanPattern;
             }
 
@@ -382,7 +328,7 @@ void LdsLidar::OnDeviceChange ( const DeviceInfo *info, DeviceEvent type )
 }
 
 /** Query the firmware version of Livox LiDAR. */
-void LdsLidar::DeviceInformationCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::DeviceInformationCb ( livox_status status, uint8_t handle, \
                                      DeviceInformationResponse *ack, void *client_data )
 {
     if ( status != kStatusSuccess )
@@ -400,7 +346,7 @@ void LdsLidar::DeviceInformationCb ( livox_status status, uint8_t handle, \
 }
 
 /** Callback function of Lidar error message. */
-void LdsLidar::LidarErrorStatusCb ( livox_status status, uint8_t handle, ErrorMessage *message )
+void LivoxLidar::LidarErrorStatusCb ( livox_status status, uint8_t handle, ErrorMessage *message )
 {
     static uint32_t error_message_count = 0;
     if ( message != NULL )
@@ -424,16 +370,16 @@ void LdsLidar::LidarErrorStatusCb ( livox_status status, uint8_t handle, ErrorMe
     }
 }
 
-void LdsLidar::ControlFanCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::ControlFanCb ( livox_status status, uint8_t handle, \
                               uint8_t response, void *client_data )
 {
 
 }
 
-void LdsLidar::SetPointCloudReturnModeCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::SetPointCloudReturnModeCb ( livox_status status, uint8_t handle, \
         uint8_t response, void *client_data )
 {
-    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lds_lidar = static_cast<LivoxLidar *> ( client_data );
 
     if ( handle >= kMaxLidarCount )
     {
@@ -448,22 +394,22 @@ void LdsLidar::SetPointCloudReturnModeCb ( livox_status status, uint8_t handle, 
 
         if ( !p_lidar->config.set_bits )
         {
-            LidarStartSampling ( handle, LdsLidar::StartSampleCb, lds_lidar );
+            LidarStartSampling ( handle, LivoxLidar::StartSampleCb, lds_lidar );
             p_lidar->connect_state = kConnectStateSampling;
         }
     }
     else
     {
         LidarSetPointCloudReturnMode ( handle, ( PointCloudReturnMode ) ( p_lidar->config.return_mode ),\
-                                       LdsLidar::SetPointCloudReturnModeCb, lds_lidar );
+                                       LivoxLidar::SetPointCloudReturnModeCb, lds_lidar );
         printf ( "Set return mode fail, try again!\n" );
     }
 }
 
-void LdsLidar::SetCoordinateCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::SetCoordinateCb ( livox_status status, uint8_t handle, \
                                  uint8_t response, void *client_data )
 {
-    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lds_lidar = static_cast<LivoxLidar *> ( client_data );
 
     if ( handle >= kMaxLidarCount )
     {
@@ -478,7 +424,7 @@ void LdsLidar::SetCoordinateCb ( livox_status status, uint8_t handle, \
 
         if ( !p_lidar->config.set_bits )
         {
-            LidarStartSampling ( handle, LdsLidar::StartSampleCb, lds_lidar );
+            LidarStartSampling ( handle, LivoxLidar::StartSampleCb, lds_lidar );
             p_lidar->connect_state = kConnectStateSampling;
         }
     }
@@ -486,21 +432,21 @@ void LdsLidar::SetCoordinateCb ( livox_status status, uint8_t handle, \
     {
         if ( p_lidar->config.coordinate != 0 )
         {
-            SetSphericalCoordinate ( handle, LdsLidar::SetCoordinateCb, lds_lidar );
+            SetSphericalCoordinate ( handle, LivoxLidar::SetCoordinateCb, lds_lidar );
         }
         else
         {
-            SetCartesianCoordinate ( handle, LdsLidar::SetCoordinateCb, lds_lidar );
+            SetCartesianCoordinate ( handle, LivoxLidar::SetCoordinateCb, lds_lidar );
         }
 
         printf ( "Set coordinate fail, try again!\n" );
     }
 }
 
-void LdsLidar::SetImuRatePushFrequencyCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::SetImuRatePushFrequencyCb ( livox_status status, uint8_t handle, \
         uint8_t response, void *client_data )
 {
-    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lds_lidar = static_cast<LivoxLidar *> ( client_data );
 
     if ( handle >= kMaxLidarCount )
     {
@@ -515,7 +461,7 @@ void LdsLidar::SetImuRatePushFrequencyCb ( livox_status status, uint8_t handle, 
 
         if ( !p_lidar->config.set_bits )
         {
-            LidarStartSampling ( handle, LdsLidar::StartSampleCb, lds_lidar );
+            LidarStartSampling ( handle, LivoxLidar::StartSampleCb, lds_lidar );
             p_lidar->connect_state = kConnectStateSampling;
         }
 
@@ -523,15 +469,15 @@ void LdsLidar::SetImuRatePushFrequencyCb ( livox_status status, uint8_t handle, 
     else
     {
         LidarSetImuPushFrequency ( handle, ( ImuFreq ) ( p_lidar->config.imu_rate ),\
-                                   LdsLidar::SetImuRatePushFrequencyCb, lds_lidar );
+                                   LivoxLidar::SetImuRatePushFrequencyCb, lds_lidar );
         printf ( "Set imu rate fail, try again!\n" );
     }
 }
 
-void LdsLidar::SetScanPatternCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::SetScanPatternCb ( livox_status status, uint8_t handle, \
         DeviceParameterResponse *response, void *client_data )
 {
-    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lds_lidar = static_cast<LivoxLidar *> ( client_data );
 
     if ( handle >= kMaxLidarCount )
     {
@@ -546,7 +492,7 @@ void LdsLidar::SetScanPatternCb ( livox_status status, uint8_t handle, \
 
         if ( !p_lidar->config.set_bits )
         {
-            LidarStartSampling ( handle, LdsLidar::StartSampleCb, lds_lidar );
+            LidarStartSampling ( handle, LivoxLidar::StartSampleCb, lds_lidar );
             p_lidar->connect_state = kConnectStateSampling;
         }
 
@@ -554,16 +500,16 @@ void LdsLidar::SetScanPatternCb ( livox_status status, uint8_t handle, \
     else
     {
         LidarSetScanPattern ( handle, ( LidarScanPattern ) ( p_lidar->config.scan_pattern ),\
-                                   LdsLidar::SetScanPatternCb, lds_lidar );
+                                   LivoxLidar::SetScanPatternCb, lds_lidar );
         printf ( "Set scan pattern rate fail, try again!\n" );
     }
 }
 
 /** Callback function of starting sampling. */
-void LdsLidar::StartSampleCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::StartSampleCb ( livox_status status, uint8_t handle, \
                                uint8_t response, void *client_data )
 {
-    LdsLidar* lds_lidar = static_cast<LdsLidar *> ( client_data );
+    LivoxLidar* lds_lidar = static_cast<LivoxLidar *> ( client_data );
 
     if ( handle >= kMaxLidarCount )
     {
@@ -593,13 +539,13 @@ void LdsLidar::StartSampleCb ( livox_status status, uint8_t handle, \
 }
 
 /** Callback function of stopping sampling. */
-void LdsLidar::StopSampleCb ( livox_status status, uint8_t handle, \
+void LivoxLidar::StopSampleCb ( livox_status status, uint8_t handle, \
                               uint8_t response, void *client_data )
 {
 }
 
 /** Add broadcast code to whitelist */
-int LdsLidar::AddBroadcastCodeToWhitelist ( const char* bd_code )
+int LivoxLidar::AddBroadcastCodeToWhitelist ( const char* bd_code )
 {
     if ( !bd_code || ( strlen ( bd_code ) > kBroadcastCodeSize ) || \
             ( whitelist_count_ >= kMaxLidarCount ) )
@@ -607,7 +553,7 @@ int LdsLidar::AddBroadcastCodeToWhitelist ( const char* bd_code )
         return -1;
     }
 
-    if ( LdsLidar::FindInWhitelist ( bd_code ) )
+    if ( LivoxLidar::FindInWhitelist ( bd_code ) )
     {
         printf ( "%s is alrealy exist!\n", bd_code );
         return -1;
@@ -619,7 +565,7 @@ int LdsLidar::AddBroadcastCodeToWhitelist ( const char* bd_code )
     return 0;
 }
 
-void LdsLidar::AddLocalBroadcastCode ( void )
+void LivoxLidar::AddLocalBroadcastCode ( void )
 {
     for ( size_t i=0; i<sizeof ( local_broadcast_code_list ) /sizeof ( intptr_t ); ++i )
     {
@@ -628,7 +574,7 @@ void LdsLidar::AddLocalBroadcastCode ( void )
         if ( ( kBroadcastCodeSize == strlen ( local_broadcast_code_list[i] ) + 1 ) && \
                 ( nullptr == strstr ( local_broadcast_code_list[i], invalid_bd.c_str() ) ) )
         {
-            LdsLidar::AddBroadcastCodeToWhitelist ( local_broadcast_code_list[i] );
+            LivoxLidar::AddBroadcastCodeToWhitelist ( local_broadcast_code_list[i] );
         }
         else
         {
@@ -637,7 +583,7 @@ void LdsLidar::AddLocalBroadcastCode ( void )
     }
 }
 
-bool LdsLidar::FindInWhitelist ( const char* bd_code )
+bool LivoxLidar::FindInWhitelist ( const char* bd_code )
 {
     if ( !bd_code )
     {

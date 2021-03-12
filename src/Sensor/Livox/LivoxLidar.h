@@ -3,10 +3,10 @@
 #ifndef LDS_LIDAR_H_
 #define LDS_LIDAR_H_
 
+#ifdef USE_LIVOX
+
 #include "../../Base/BASE.h"
 #include "../../Script/Kiss.h"
-
-#ifdef USE_LIVOX
 
 #include <memory>
 #include <vector>
@@ -65,24 +65,24 @@ typedef struct {
 /**
  * LiDAR data source, data from dependent lidar.
  */
-class LdsLidar: public BASE
+class LivoxLidar: public BASE
 {
 public:
     virtual bool init ( void* pKiss );
 
-    static LdsLidar& GetInstance()
+    static LivoxLidar& GetInstance()
     {
-        static LdsLidar lds_lidar;
+        static LivoxLidar lds_lidar;
         return lds_lidar;
     }
 
     int InitLdsLidar ( std::vector<std::string>& broadcast_code_strs );
     int DeInitLdsLidar ( void );
 
-    LdsLidar();
-    LdsLidar ( const LdsLidar& ) = delete;
-    ~LdsLidar();
-    LdsLidar& operator= ( const LdsLidar& ) = delete;
+    LivoxLidar();
+    LivoxLidar ( const LivoxLidar& ) = delete;
+    ~LivoxLidar();
+    LivoxLidar& operator= ( const LivoxLidar& ) = delete;
 
 private:
     static void GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,

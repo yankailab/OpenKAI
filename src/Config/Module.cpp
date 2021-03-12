@@ -236,7 +236,7 @@ BASE* Module::createInstance(Kiss* pK)
 
 #ifdef USE_LIVOX
 	ADD_MODULE(_Livox);
-	ADD_MODULE(LdsLidar);
+	ADD_MODULE(LivoxLidar);
 #endif
 
 #ifdef USE_DYNAMIXEL

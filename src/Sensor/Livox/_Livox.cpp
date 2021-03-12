@@ -29,8 +29,8 @@ bool _Livox::init ( void* pKiss )
 
     string n;
     n = "";
-    pK->v ( "lds_lidar", &n );
-    m_pL = ( LdsLidar* ) ( pK->getInst ( n ) );
+    pK->v ( "LivoxLidar", &n );
+    m_pL = ( LivoxLidar* ) ( pK->getInst ( n ) );
 
     return true;
 }
@@ -40,10 +40,10 @@ bool _Livox::open ( void )
     IF_F ( check() <0 );
 
     IF_F ( !m_pL->setDataCallback ( m_broadcastCode, CbRecvData, ( void* ) this ) );
-    
+
     m_bOpen = true;
 
-    LOG_I ( "Init lds lidar success! Starting discovering Lidars\n" );
+    LOG_I ( "Init LivoxLidar success! Starting discovering Lidars\n" );
     return true;
 }
 
@@ -94,17 +94,6 @@ bool _Livox::updateLidar ( void )
 {
     PointCloud* pPC = m_sPC.next();
 
-    if ( m_bTransform )
-    {
-        while ( m_iTransformed < pPC->points_.size() )
-        {
-            Eigen::Vector3d* pP = &pPC->points_[m_iTransformed];
-            *pP = m_A * (*pP);
-            
-            m_iTransformed++;
-        }
-    }
-
     return true;
 }
 
@@ -113,49 +102,81 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     NULL_ ( pData );
     NULL_ ( pLivox );
 
+    uint64_t tStamp = * ( ( uint64_t * ) ( pData->timestamp ) );
     _Livox* pL = ( _Livox* ) pLivox;
 
-    // Parsing the timestamp and the point cloud data.
-    uint64_t cur_timestamp = * ( ( uint64_t * ) ( pData->timestamp ) );
     if ( pData ->data_type == kCartesian )
     {
         LivoxRawPoint *p_point_data = ( LivoxRawPoint * ) pData->data;
     }
-    else if ( pData ->data_type == kSpherical )
-    {
-        LivoxSpherPoint *p_point_data = ( LivoxSpherPoint * ) pData->data;
-    }
     else if ( pData ->data_type == kExtendCartesian )
     {
-        LivoxExtendRawPoint *pD = ( LivoxExtendRawPoint * ) pData->data;
-        
-        printf("xyzrt=(%d, %d, %d, %d, %d)\n", pD->x, pD->y, pD->z, pD->reflectivity, pD->tag);
-    }
-    else if ( pData ->data_type == kExtendSpherical )
-    {
-        LivoxExtendSpherPoint *p_point_data = ( LivoxExtendSpherPoint * ) pData->data;
+        pL->addP ( ( LivoxExtendRawPoint* ) pData->data );
     }
     else if ( pData ->data_type == kDualExtendCartesian )
     {
-        LivoxDualExtendRawPoint *p_point_data = ( LivoxDualExtendRawPoint * ) pData->data;
-    }
-    else if ( pData ->data_type == kDualExtendSpherical )
-    {
-        LivoxDualExtendSpherPoint *p_point_data = ( LivoxDualExtendSpherPoint * ) pData->data;
-    }
-    else if ( pData ->data_type == kImu )
-    {
-        LivoxImuPoint *p_point_data = ( LivoxImuPoint * ) pData->data;
+        pL->addDualP ( ( LivoxDualExtendRawPoint* ) pData->data );
     }
     else if ( pData ->data_type == kTripleExtendCartesian )
     {
-        LivoxTripleExtendRawPoint *p_point_data = ( LivoxTripleExtendRawPoint * ) pData->data;
+        pL->addTripleP ( ( LivoxTripleExtendRawPoint* ) pData->data );
     }
-    else if ( pData ->data_type == kTripleExtendSpherical )
+    else if ( pData ->data_type == kImu )
     {
-        LivoxTripleExtendSpherPoint *p_point_data = ( LivoxTripleExtendSpherPoint * ) pData->data;
+        pL->updateIMU ( ( LivoxImuPoint* ) pData->data );
     }
+}
 
+void _Livox::addP(Eigen::Vector3d& p)
+{
+    Eigen::Vector3d vP = m_A * p;
+    
+    PointCloud* pPC = m_sPC.next();
+    pPC->points_.push_back(vP);
+}
+
+void _Livox::addP ( LivoxExtendRawPoint* pLp )
+{
+    LivoxExtendRawPoint* pP = ( LivoxExtendRawPoint * ) pLp;
+    Eigen::Vector3d vP(pP->x, pP->y, pP->z);
+    addP(vP);
+}
+
+void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp )
+{
+    LivoxDualExtendRawPoint* pP = ( LivoxDualExtendRawPoint *) pLp;
+
+    Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
+    Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
+
+    addP(vP1);
+    addP(vP2);
+}
+
+void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp )
+{
+    LivoxTripleExtendRawPoint* pP = ( LivoxTripleExtendRawPoint *) pLp;
+
+    Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
+    Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
+    Eigen::Vector3d vP3(pP->x3, pP->y3, pP->z3);
+
+    addP(vP1);
+    addP(vP2);
+    addP(vP3);
+}
+
+void _Livox::updateIMU ( LivoxImuPoint* pLd )
+{
+    LivoxImuPoint *pD = ( LivoxImuPoint * ) pLd;
+
+    printf ( "gxyz=(%f, %f, %f) axyz=(%f, %f, %f)\n",
+             pD->gyro_x,
+             pD->gyro_y,
+             pD->gyro_z,
+             pD->acc_x,
+             pD->acc_y,
+             pD->acc_z );
 }
 
 void _Livox::draw ( void )

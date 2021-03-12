@@ -11,7 +11,7 @@
 #include "../../PointCloud/_PCbase.h"
 
 #ifdef USE_LIVOX
-#include "lds_lidar.h"
+#include "LivoxLidar.h"
 
 namespace kai
 {
@@ -29,6 +29,13 @@ public:
 
 protected:
     static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
+    
+    void addP(Eigen::Vector3d& p);
+    void addP(LivoxExtendRawPoint* pLp);
+    void addDualP(LivoxDualExtendRawPoint* pLp);
+    void addTripleP(LivoxTripleExtendRawPoint* pLp);
+    void updateIMU(LivoxImuPoint* pLd);
+    
     bool open ( void );
     void close ( void );
     bool updateLidar ( void );
@@ -42,7 +49,7 @@ protected:
 public:
     bool m_bOpen;
     string m_broadcastCode;
-    LdsLidar* m_pL;
+    LivoxLidar* m_pL;
     uint32_t m_iTransformed;
 
 };

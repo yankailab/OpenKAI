@@ -16,11 +16,17 @@
 }
 
 {
-	"name":"lds_lidar",
-	"class":"LdsLidar",
+	"name":"LivoxLidar",
+	"class":"LivoxLidar",
 	"bInst":1,
 	"bLog":1,
 	"Console":"OKconsole",
+	"vBroadcastCode":["3JEDHC900100791"],
+	"bEnableFan":1,
+	"returnMode":1,
+	"coordinate":0,
+	"imuRate":1,
+	"scanPattern":0,
 }
 
 {
@@ -33,6 +39,6 @@
 	}
 	"bLog":1,
 	"Console":"OKconsole",
-	"lds_lidar":"lds_lidar",
+	"LivoxLidar":"LivoxLidar",
 	"broadcastCode":"3JEDHC900100791",
 }
