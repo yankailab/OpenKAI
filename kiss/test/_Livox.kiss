@@ -5,7 +5,7 @@
 	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
-	"bStdErr":0,
+	"bStdErr":1,
 	"waitKey":30,
 }
 
@@ -17,9 +17,9 @@
 
 {
 	"name":"lds_lidar",
-	"class":"lds_lidar",
+	"class":"LdsLidar",
 	"bInst":1,
-	"bLog":0,
+	"bLog":1,
 	"Console":"OKconsole",
 }
 
@@ -31,7 +31,8 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bLog":0,
+	"bLog":1,
 	"Console":"OKconsole",
 	"lds_lidar":"lds_lidar",
+	"broadcastCode":"3JEDHC900100791",
 }

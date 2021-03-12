@@ -79,12 +79,12 @@ public:
     int InitLdsLidar ( std::vector<std::string>& broadcast_code_strs );
     int DeInitLdsLidar ( void );
 
-private:
     LdsLidar();
     LdsLidar ( const LdsLidar& ) = delete;
     ~LdsLidar();
     LdsLidar& operator= ( const LdsLidar& ) = delete;
 
+private:
     static void GetLidarDataCb ( uint8_t handle, LivoxEthPacket *data,
                                  uint32_t data_num, void *client_data );
     static void OnDeviceBroadcast   ( const BroadcastDeviceInfo *info );

@@ -36,6 +36,9 @@ LdsLidar::LdsLidar()
         lidars_[i].handle = kMaxLidarCount;
         /** Unallocated state */
         lidars_[i].connect_state = kConnectStateOff;
+        
+        lidars_[i].pDataCb = NULL;
+        lidars_[i].pLivox = NULL;
     }
     
     m_bEnableFan = true;
@@ -115,6 +118,9 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
         printf ( "No broadcast code was added to whitelist, swith to automatic connection mode!\n" );
     }
 
+    /** Add here, only for callback use */
+    g_lidars = this;
+
     /** Start livox sdk to receive lidar data */
     if ( !Start() )
     {
@@ -123,11 +129,6 @@ int LdsLidar::InitLdsLidar ( std::vector<std::string>& broadcast_code_strs )
         return -1;
     }
 
-    /** Add here, only for callback use */
-    if ( g_lidars == nullptr )
-    {
-        g_lidars = this;
-    }
     is_initialized_= true;
     printf ( "Livox-SDK init success!\n" );
 
@@ -157,7 +158,8 @@ bool LdsLidar::setDataCallback (const string& broadcastCode, LivoxDataCallback p
     for(int i=0; i<kMaxLidarCount; i++)
     {
         LidarDevice* pL = &lidars_[i];
-        if(broadcastCode != string(pL->info.broadcast_code))continue;
+        string bCode = string(pL->info.broadcast_code);
+        if(broadcastCode != bCode)continue;
         
         pL->pDataCb = pCb;
         pL->pLivox = pLivox;
@@ -281,8 +283,8 @@ void LdsLidar::OnDeviceBroadcast ( const BroadcastDeviceInfo *info )
         p_lidar->config.coordinate = g_lidars->m_coordinate;
         p_lidar->config.imu_rate = g_lidars->m_imuRate;
         p_lidar->config.scan_pattern = g_lidars->m_scanPattern;
-        p_lidar->pDataCb = NULL;
-        p_lidar->pLivox = NULL;
+//        p_lidar->pDataCb = NULL;
+//        p_lidar->pLivox = NULL;
     }
     else
     {

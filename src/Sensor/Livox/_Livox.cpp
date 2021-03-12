@@ -40,6 +40,8 @@ bool _Livox::open ( void )
     IF_F ( check() <0 );
 
     IF_F ( !m_pL->setDataCallback ( m_broadcastCode, CbRecvData, ( void* ) this ) );
+    
+    m_bOpen = true;
 
     LOG_I ( "Init lds lidar success! Starting discovering Lidars\n" );
     return true;
@@ -51,7 +53,7 @@ void _Livox::close ( void )
 
 int _Livox::check ( void )
 {
-    NULL__ ( !m_pL, -1 );
+    NULL__ ( m_pL, -1 );
 
     return this->_PCbase::check();
 }
@@ -125,7 +127,9 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     }
     else if ( pData ->data_type == kExtendCartesian )
     {
-        LivoxExtendRawPoint *p_point_data = ( LivoxExtendRawPoint * ) pData->data;
+        LivoxExtendRawPoint *pD = ( LivoxExtendRawPoint * ) pData->data;
+        
+        printf("xyzrt=(%d, %d, %d, %d, %d)\n", pD->x, pD->y, pD->z, pD->reflectivity, pD->tag);
     }
     else if ( pData ->data_type == kExtendSpherical )
     {
