@@ -125,6 +125,7 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     {
         pL->updateIMU ( ( LivoxImuPoint* ) pData->data );
     }
+    
 }
 
 void _Livox::addP(Eigen::Vector3d& p)

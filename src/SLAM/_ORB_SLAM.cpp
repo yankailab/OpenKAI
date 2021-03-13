@@ -1,22 +1,21 @@
 /*
- * _ORB_SLAM2.cpp
+ * _ORB_SLAM.cpp
  *
  *  Created on: Jul 18, 2017
  *      Author: yankai
  */
 
-#include "_ORB_SLAM2.h"
+#include "_ORB_SLAM.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_ORB_SLAM2
+#ifdef USE_ORB_SLAM
 
 namespace kai
 {
 
-_ORB_SLAM2::_ORB_SLAM2()
+_ORB_SLAM::_ORB_SLAM()
 {
-	m_width = 640;
-	m_height = 360;
+    m_vSize.init(640,360);
 	m_tStartup = 0;
 
 	m_pVision = NULL;
@@ -31,7 +30,7 @@ _ORB_SLAM2::_ORB_SLAM2()
 	m_mTwc = Mat(3,1,CV_32F);
 }
 
-_ORB_SLAM2::~_ORB_SLAM2()
+_ORB_SLAM::~_ORB_SLAM()
 {
 	if (m_pOS)
 	{
@@ -42,14 +41,13 @@ _ORB_SLAM2::~_ORB_SLAM2()
 	DEL(m_pFrame);
 }
 
-bool _ORB_SLAM2::init(void* pKiss)
+bool _ORB_SLAM::init(void* pKiss)
 {
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	KISSm(pK, width);
-	KISSm(pK, height);
-	KISSm(pK, bViewer);
+    pK->v("vSize", &m_vSize);
+    pK->v("bViewer", &m_bViewer);
 
 	string fileVocabulary = "";
 	string fileSetting = "";
@@ -62,31 +60,31 @@ bool _ORB_SLAM2::init(void* pKiss)
 	IF_Fl(!ifs,"setting file not found");
 
 	// Create SLAM system. It initializes all system threads and gets ready to process frames.
-	m_pOS = new ORB_SLAM2::System(fileVocabulary, fileSetting,
-			ORB_SLAM2::System::MONOCULAR, m_bViewer);
+	m_pOS = new ORB_SLAM3::System(fileVocabulary, fileSetting,
+			ORB_SLAM3::System::MONOCULAR, m_bViewer);
 
 	m_pFrame = new Frame();
 	m_tStartup = 0;
 
 	string n = "";
 	F_INFO(pK->v("_VisionBase", &n));
-	m_pVision = (_VisionBase*) (pK->getInst(&n));
+	m_pVision = (_VisionBase*) (pK->getInst(n));
 
 	return true;
 }
 
-bool _ORB_SLAM2::start(void)
+bool _ORB_SLAM::start(void)
 {
     NULL_F(m_pT);
 	return m_pT->start(getUpdate, this);
 }
 
-bool _ORB_SLAM2::bTracking(void)
+bool _ORB_SLAM::bTracking(void)
 {
 	return m_bTracking;
 }
 
-void _ORB_SLAM2::update(void)
+void _ORB_SLAM::update(void)
 {
 	while(m_pT->bRun())
 	{
@@ -98,16 +96,16 @@ void _ORB_SLAM2::update(void)
 	}
 }
 
-void _ORB_SLAM2::detect(void)
+void _ORB_SLAM::detect(void)
 {
 	static const double usecBase = 1.0 / ((double) USEC_1SEC);
 
 	NULL_(m_pOS);
 	NULL_(m_pVision);
-	Frame* pGray = m_pVision->Gray();
+	Frame* pGray;// = m_pVision->Gray();
 	NULL_(pGray);
 	IF_(pGray->bEmpty());
-	*m_pFrame = pGray->resize(m_width, m_height);
+	*m_pFrame = pGray->resize(m_vSize.x, m_vSize.y);
 
 	uint64_t tNow = getApproxTbootUs();
 	if (m_tStartup <= 0)
@@ -151,14 +149,11 @@ void _ORB_SLAM2::detect(void)
 			"Q: "  << "  " << fixed << m_vQ.x << "  " << fixed << m_vQ.y << "  " << fixed << m_vQ.z << "  " << fixed << m_vQ.w << endl;
 }
 
-bool _ORB_SLAM2::draw(void)
+void _ORB_SLAM::draw(void)
 {
-	IF_F(!this->_ModuleBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	this->_ModuleBase::draw();
 
 	string msg;
-	pWin->tabNext();
-
 	if (m_bTracking)
 	{
 		msg = "Tracking";
@@ -167,14 +162,10 @@ bool _ORB_SLAM2::draw(void)
 	{
 		msg = "Tracking lost";
 	}
-	pWin->addMsg(msg);
+	addMsg(msg);
 
 	msg = "Global pos: x=" + f2str(m_vT.x) + ", y=" + f2str(m_vT.y) + ", z=" + f2str(m_vT.z);
-	pWin->addMsg(msg);
-
-	pWin->tabPrev();
-
-	return true;
+	addMsg(msg);
 }
 
 }

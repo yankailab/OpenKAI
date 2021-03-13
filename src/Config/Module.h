@@ -74,7 +74,6 @@
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_TOFsense.h"
 #include "../Sensor/RPLIDAR/_RPLIDAR.h"
-#include "../SLAM/_ORB_SLAM2.h"
 
 #include "../UI/Console.h"
 
@@ -132,7 +131,6 @@
 #include "../Application/Autopilot/ArduPilot/_AP_depthVision.h"
 #include "../Application/Autopilot/ArduPilot/_AP_land.h"
 #include "../Application/Autopilot/ArduPilot/_AP_follow.h"
-#include "../Application/Autopilot/ArduPilot/_AP_followClient.h"
 #include "../Application/Autopilot/ArduPilot/_APcopter_photo.h"
 
 #include "../Application/Observation/_HiphenRGB.h"
@@ -242,6 +240,10 @@
 
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"
+#endif
+
+#ifdef USE_ORB_SLAM
+#include "../SLAM/_ORB_SLAM.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

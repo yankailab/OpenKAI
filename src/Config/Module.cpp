@@ -140,7 +140,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_AP_depthVision);
 	ADD_MODULE( _AP_land );
 	ADD_MODULE(_AP_follow);
-	ADD_MODULE(_AP_followClient);
 	ADD_MODULE(_APcopter_photo);
 	ADD_MODULE(_AProver_picking);
 
@@ -196,8 +195,8 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Pylon);
 #endif
 
-#ifdef USE_ORB_SLAM2
-	ADD_MODULE(_ORB_SLAM2);
+#ifdef USE_ORB_SLAM
+	ADD_MODULE(_ORB_SLAM);
 #endif
 
 #ifdef USE_CHILITAGS

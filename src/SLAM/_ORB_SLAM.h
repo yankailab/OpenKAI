@@ -1,35 +1,34 @@
 /*
- * _ORB_SLAM2.h
+ * _ORB_SLAM.h
  *
  *  Created on: Jul 18, 2017
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_SLAM__ORB_SLAM2_H_
-#define OpenKAI_src_SLAM__ORB_SLAM2_H_
+#ifndef OpenKAI_src_SLAM__ORB_SLAM_H_
+#define OpenKAI_src_SLAM__ORB_SLAM_H_
 
 #include "../Base/common.h"
 
 #ifdef USE_OPENCV
-#ifdef USE_ORB_SLAM2
+#ifdef USE_ORB_SLAM
 #include "../Vision/_VisionBase.h"
 #include <System.h>
-#include <KeyFrame.h>
 #include "Eigen/Eigen"
 #include <opencv2/core/eigen.hpp>
 
 namespace kai
 {
 
-class _ORB_SLAM2: public _ModuleBase
+class _ORB_SLAM: public _ModuleBase
 {
 public:
-	_ORB_SLAM2();
-	virtual ~_ORB_SLAM2();
+	_ORB_SLAM();
+	virtual ~_ORB_SLAM();
 
 	bool init(void* pKiss);
 	bool start(void);
-	bool draw(void);
+	void draw(void);
 
 	bool bTracking(void);
 
@@ -38,16 +37,15 @@ private:
 	void update(void);
 	static void* getUpdate(void* This)
 	{
-		((_ORB_SLAM2*) This)->update();
+		((_ORB_SLAM*) This)->update();
 		return NULL;
 	}
 
 public:
-	int	m_width;
-	int m_height;
+    vInt2 m_vSize;
 
 	_VisionBase*	m_pVision;
-	ORB_SLAM2::System* m_pOS;
+	ORB_SLAM3::System* m_pOS;
 	Frame* m_pFrame;
 	uint64_t m_tStartup;
 

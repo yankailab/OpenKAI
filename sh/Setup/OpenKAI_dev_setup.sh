@@ -47,12 +47,16 @@ sudo systemctl set-default multi-user.target
 #----------------------------------------------------
 sudo apt-get update
 
+# Update gcc
+sudo apt-get -y install g++-10 gcc-10
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /usr/bin/g++ g++ /usr/bin/g++-10
+sudo update-alternatives --config gcc
+
 # Dependencies
 sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libusb-dev libudev-dev libflann-dev libproj-dev libcurl4 curl libpcap-dev libgtk-3-dev python libssl-dev
 sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev
 
 # (Optional)
-sudo apt-get -y install apache2
 sudo apt-get -y install libimage-exiftool-perl
 sudo apt-get -y install python-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
@@ -243,6 +247,22 @@ git clone https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
 cd xArm-CPLUS-SDK/
 make all -j$(nproc)
 sudo make install
+
+#----------------------------------------------------
+# (Optional) Pangolin & Orb_Slam3
+git clone --depth 1 https://github.com/stevenlovegrove/Pangolin.git
+cd Pangolin
+mkdir build
+cd build
+cmake -DCMAKE_BUILD_TYPE=Release ../
+make all -j$(nproc)
+sudo make install
+
+git clone --depth 1 https://github.com/yankailab/ORB_SLAM3.git
+cd ORB_SLAM3
+chmod +x build.sh
+./build.sh
+# sudo make install
 
 #----------------------------------------------------
 # (Optional) KDevelop
