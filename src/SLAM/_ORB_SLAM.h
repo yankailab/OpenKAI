@@ -28,6 +28,7 @@ public:
 
 	bool init(void* pKiss);
 	bool start(void);
+    int check(void);
 	void draw(void);
 
 	bool bTracking(void);
@@ -42,11 +43,9 @@ private:
 	}
 
 public:
-    vInt2 m_vSize;
-
-	_VisionBase*	m_pVision;
+	_VisionBase*   m_pV;
+    vInt2          m_vSize;
 	ORB_SLAM3::System* m_pOS;
-	Frame* m_pFrame;
 	uint64_t m_tStartup;
 
 	Mat m_pose;

@@ -1,0 +1,89 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":0,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"OKconsole",
+	"class":"Console",
+	"bInst":1,
+}
+
+{
+	"name":"OKview",
+	"class":"Window",
+	"bInst":0,
+	"bFullScreen":0,
+}
+
+{
+	"name":"cam",
+	"class":"_Camera",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"Window":"OKview",
+	"deviceID":0,
+	"vSize":[640, 480],
+}
+
+{
+	"name":"cam",
+	"class":"_GStreamer",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"Window":"OKview",
+	"pipeline":"v4l2src device=/dev/video4 ! videoflip method=0 ! video/x-raw,width=1280,height=720,framerate=30/1 ! videoconvert ! appsink",
+}
+
+{
+	"name":"gray",
+	"class":"_Grayscale",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"/Window":"OKview",
+	"_VisionBase":"cam",
+}
+
+{
+	"name":"resize",
+	"class":"_Resize",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"Window":"OKview",
+	"_VisionBase":"gray",
+	"vSize":[640,360],
+}
+
+{
+	"name":"orbSlam",
+	"class":"_ORB_SLAM",
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"bInst":1,
+	"/Window":"OKview",
+	"_VisionBase":"resize",
+	"fVocabulary":"/home/kai/dev/ORB_SLAM3/Vocabulary/ORBvoc.txt",
+	"fSetting":"/home/kai/dev/OpenKAI/data/orb_slam/TUM1.yaml",
+	"bViewer":1,
+}
+

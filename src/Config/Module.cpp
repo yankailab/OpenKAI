@@ -195,12 +195,12 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE(_Pylon);
 #endif
 
-#ifdef USE_ORB_SLAM
-	ADD_MODULE(_ORB_SLAM);
-#endif
-
 #ifdef USE_CHILITAGS
 	ADD_MODULE(_Chilitags);
+#endif
+
+#ifdef USE_ORB_SLAM
+	ADD_MODULE(_ORB_SLAM);
 #endif
 
 #endif	//USE_OPENCV

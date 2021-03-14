@@ -18,9 +18,8 @@ _ORB_SLAM::_ORB_SLAM()
     m_vSize.init(640,360);
 	m_tStartup = 0;
 
-	m_pVision = NULL;
+	m_pV = NULL;
 	m_pOS = NULL;
-	m_pFrame = NULL;
 
 	m_vT.init();
 	m_bTracking = false;
@@ -37,8 +36,6 @@ _ORB_SLAM::~_ORB_SLAM()
 		m_pOS->Shutdown();
 		delete m_pOS;
 	}
-
-	DEL(m_pFrame);
 }
 
 bool _ORB_SLAM::init(void* pKiss)
@@ -49,28 +46,38 @@ bool _ORB_SLAM::init(void* pKiss)
     pK->v("vSize", &m_vSize);
     pK->v("bViewer", &m_bViewer);
 
-	string fileVocabulary = "";
-	string fileSetting = "";
+	string fVocabulary = "";
+	string fSetting = "";
 
-	F_INFO(pK->v("fileVocabulary", &fileVocabulary));
-	F_INFO(pK->v("fileSetting", &fileSetting));
+	F_INFO(pK->v("fVocabulary", &fVocabulary ));
+	F_INFO(pK->v("fSetting", &fSetting ));
 
 	ifstream ifs;
-	ifs.open(fileSetting.c_str(), std::ios::in);
+	ifs.open( fSetting.c_str(), std::ios::in);
 	IF_Fl(!ifs,"setting file not found");
 
 	// Create SLAM system. It initializes all system threads and gets ready to process frames.
-	m_pOS = new ORB_SLAM3::System(fileVocabulary, fileSetting,
-			ORB_SLAM3::System::MONOCULAR, m_bViewer);
+	m_pOS = new ORB_SLAM3::System(fVocabulary,
+                                  fSetting,
+                                  ORB_SLAM3::System::MONOCULAR,
+                                  m_bViewer);
 
-	m_pFrame = new Frame();
 	m_tStartup = 0;
 
 	string n = "";
 	F_INFO(pK->v("_VisionBase", &n));
-	m_pVision = (_VisionBase*) (pK->getInst(n));
+	m_pV = (_VisionBase*) (pK->getInst(n));
 
 	return true;
+}
+
+int _ORB_SLAM::check ( void )
+{
+    NULL__ ( m_pV, -1 );
+    NULL__(m_pV->BGR(), -1);
+	NULL__(m_pOS, -1);
+
+    return this->_ModuleBase::check();
 }
 
 bool _ORB_SLAM::start(void)
@@ -98,24 +105,21 @@ void _ORB_SLAM::update(void)
 
 void _ORB_SLAM::detect(void)
 {
+    IF_(check() < 0);
+    
 	static const double usecBase = 1.0 / ((double) USEC_1SEC);
 
-	NULL_(m_pOS);
-	NULL_(m_pVision);
-	Frame* pGray;// = m_pVision->Gray();
-	NULL_(pGray);
-	IF_(pGray->bEmpty());
-	*m_pFrame = pGray->resize(m_vSize.x, m_vSize.y);
+	Mat mGray;
+    m_pV->BGR()->m()->copyTo(mGray);
+	IF_(mGray.empty());
 
 	uint64_t tNow = getApproxTbootUs();
 	if (m_tStartup <= 0)
-	{
 		m_tStartup = tNow;
-	}
 
 	double t = ((double) (tNow - m_tStartup)) * usecBase;
 
-	m_pose = m_pOS->TrackMonocular(*m_pFrame->m(), t);
+	m_pose = m_pOS->TrackMonocular(mGray, t);
 	if (m_pose.empty())
 	{
 		m_bTracking = false;
