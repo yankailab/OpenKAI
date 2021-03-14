@@ -30,10 +30,9 @@ public:
 protected:
     static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
     
-    void addP(Eigen::Vector3d& p);
-    void addP(LivoxExtendRawPoint* pLp);
-    void addDualP(LivoxDualExtendRawPoint* pLp);
-    void addTripleP(LivoxTripleExtendRawPoint* pLp);
+    void addP(LivoxExtendRawPoint* pLp, uint64_t& tStamp);
+    void addDualP(LivoxDualExtendRawPoint* pLp, uint64_t& tStamp);
+    void addTripleP(LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp);
     void updateIMU(LivoxImuPoint* pLd);
     
     bool open ( void );
@@ -51,6 +50,8 @@ public:
     string m_broadcastCode;
     LivoxLidar* m_pL;
     uint32_t m_iTransformed;
+    
+    Eigen::Vector3d m_vCol;
 
 };
 

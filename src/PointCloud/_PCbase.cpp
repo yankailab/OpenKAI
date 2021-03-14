@@ -25,6 +25,11 @@ _PCbase::_PCbase()
 	m_A = Eigen::Matrix4d::Identity();
 
     pthread_mutex_init ( &m_mutexPC, NULL );
+    
+    m_pP = NULL;
+    m_nP = 256;
+    m_iP = 0;
+    m_tP = 0;
 }
 
 _PCbase::~_PCbase()
@@ -39,6 +44,7 @@ bool _PCbase::init ( void *pKiss )
 
     pK->v ( "vColOvrr", &m_vColOvrr );
 
+    //frame
     int nPCreserve = 0;
     pK->v ( "nPCreserve", &nPCreserve );
     if ( nPCreserve > 0 )
@@ -49,6 +55,17 @@ bool _PCbase::init ( void *pKiss )
         m_sPC.next()->colors_.reserve ( nPCreserve );
     }
     
+    //ring buf
+    pK->v ( "nP", &m_nP );
+    if(m_nP > 0)
+    {
+        m_pP = new PC_POINT[m_nP];
+        NULL_F(m_pP);
+        m_iP = 0;
+        m_tP = 0;
+    }
+
+    //transform
     pK->v("bTransform", &m_bTransform);
     pK->v("vT", &m_vT);
 	pK->v("vR", &m_vR);
@@ -73,6 +90,8 @@ bool _PCbase::init ( void *pKiss )
 
 int _PCbase::check ( void )
 {
+    NULL__(m_pP, -1);
+    
     return this->_ModuleBase::check();
 }
 
@@ -114,6 +133,19 @@ void _PCbase::paintPC ( PointCloud* pPC )
 int _PCbase::size ( void )
 {
     return m_sPC.prev()->points_.size();
+}
+
+void _PCbase::addP(Eigen::Vector3d& vP, Eigen::Vector3d& vC, uint64_t& tStamp)
+{
+    IF_(check() < 0);
+    
+    if(++m_iP >= m_nP)
+        m_iP = 0;
+    
+    PC_POINT* pP = &m_pP[m_iP];
+    pP->m_vP = m_A * vP;
+    pP->m_vC = vC;
+    pP->m_tStamp = tStamp;
 }
 
 void _PCbase::updateTransformMatrix(void)

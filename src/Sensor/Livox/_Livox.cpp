@@ -14,6 +14,8 @@ _Livox::_Livox()
     m_bOpen = false;
     m_pL = NULL;
     m_iTransformed = 0;
+    
+    Eigen::Vector3d(-1.0, -1.0, -1.0);
 }
 
 _Livox::~_Livox()
@@ -111,15 +113,15 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     }
     else if ( pData ->data_type == kExtendCartesian )
     {
-        pL->addP ( ( LivoxExtendRawPoint* ) pData->data );
+        pL->addP ( ( LivoxExtendRawPoint* ) pData->data, tStamp );
     }
     else if ( pData ->data_type == kDualExtendCartesian )
     {
-        pL->addDualP ( ( LivoxDualExtendRawPoint* ) pData->data );
+        pL->addDualP ( ( LivoxDualExtendRawPoint* ) pData->data, tStamp );
     }
     else if ( pData ->data_type == kTripleExtendCartesian )
     {
-        pL->addTripleP ( ( LivoxTripleExtendRawPoint* ) pData->data );
+        pL->addTripleP ( ( LivoxTripleExtendRawPoint* ) pData->data, tStamp );
     }
     else if ( pData ->data_type == kImu )
     {
@@ -128,33 +130,25 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     
 }
 
-void _Livox::addP(Eigen::Vector3d& p)
-{
-    Eigen::Vector3d vP = m_A * p;
-    
-    PointCloud* pPC = m_sPC.next();
-    pPC->points_.push_back(vP);
-}
-
-void _Livox::addP ( LivoxExtendRawPoint* pLp )
+void _Livox::addP ( LivoxExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxExtendRawPoint* pP = ( LivoxExtendRawPoint * ) pLp;
     Eigen::Vector3d vP(pP->x, pP->y, pP->z);
-    addP(vP);
+    this->_PCbase::addP(vP, m_vCol, tStamp);
 }
 
-void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp )
+void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxDualExtendRawPoint* pP = ( LivoxDualExtendRawPoint *) pLp;
 
     Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
     Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
 
-    addP(vP1);
-    addP(vP2);
+    this->_PCbase::addP(vP1, m_vCol, tStamp);
+    this->_PCbase::addP(vP2, m_vCol, tStamp);
 }
 
-void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp )
+void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxTripleExtendRawPoint* pP = ( LivoxTripleExtendRawPoint *) pLp;
 
@@ -162,9 +156,9 @@ void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp )
     Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
     Eigen::Vector3d vP3(pP->x3, pP->y3, pP->z3);
 
-    addP(vP1);
-    addP(vP2);
-    addP(vP3);
+    this->_PCbase::addP(vP1, m_vCol, tStamp);
+    this->_PCbase::addP(vP2, m_vCol, tStamp);
+    this->_PCbase::addP(vP3, m_vCol, tStamp);
 }
 
 void _Livox::updateIMU ( LivoxImuPoint* pLd )

@@ -19,6 +19,13 @@ using namespace open3d::visualization;
 namespace kai
 {
 
+struct PC_POINT
+{
+    Eigen::Vector3d m_vP;   //pos
+    Eigen::Vector3d m_vC;   //color
+    uint64_t m_tStamp;
+};
+
 class _PCbase: public _ModuleBase
 {
 public:
@@ -30,8 +37,12 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
+    //frame
 	virtual void getPC(PointCloud* pPC);
 	virtual void updatePC(void);
+    
+    //ring buf
+    virtual void addP(Eigen::Vector3d& vP, Eigen::Vector3d& vC, uint64_t& tStamp);
     
     virtual void setTranslation(vDouble3& vT);
 	virtual void setRotation(vDouble3& vR);
@@ -42,10 +53,16 @@ protected:
     virtual void updateTransformMatrix(void);
     virtual void paintPC(PointCloud* pPC);
     
-    //data
+    //frame buf
 	_PCbase* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
     pthread_mutex_t m_mutexPC;
+    
+    //ring buf
+    PC_POINT* m_pP;
+    int m_nP;
+    int m_iP;
+    uint64_t m_tP;
     
     //dynamics
     bool m_bTransform;
