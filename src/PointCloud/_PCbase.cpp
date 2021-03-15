@@ -12,178 +12,87 @@
 namespace kai
 {
 
-_PCbase::_PCbase()
-{
-    m_pPCB = NULL;
-    m_pViewer = NULL;
-    m_iV = -1;
-    m_vColOvrr.x = -1.0;
-    
-    m_bTransform = false;
-    m_vT.init(0);
-	m_vR.init(0);
-	m_A = Eigen::Matrix4d::Identity();
-
-    pthread_mutex_init ( &m_mutexPC, NULL );
-    
-    m_pP = NULL;
-    m_nP = 256;
-    m_iP = 0;
-    m_tP = 0;
-}
-
-_PCbase::~_PCbase()
-{
-    pthread_mutex_destroy ( &m_mutexPC );
-}
-
-bool _PCbase::init ( void *pKiss )
-{
-    IF_F ( !this->_ModuleBase::init ( pKiss ) );
-    Kiss *pK = ( Kiss* ) pKiss;
-
-    pK->v ( "vColOvrr", &m_vColOvrr );
-
-    //frame
-    int nPCreserve = 0;
-    pK->v ( "nPCreserve", &nPCreserve );
-    if ( nPCreserve > 0 )
+    _PCbase::_PCbase()
     {
-        m_sPC.prev()->points_.reserve ( nPCreserve );
-        m_sPC.prev()->colors_.reserve ( nPCreserve );
-        m_sPC.next()->points_.reserve ( nPCreserve );
-        m_sPC.next()->colors_.reserve ( nPCreserve );
-    }
-    
-    //ring buf
-    pK->v ( "nP", &m_nP );
-    if(m_nP > 0)
-    {
-        m_pP = new PC_POINT[m_nP];
-        NULL_F(m_pP);
-        m_iP = 0;
-        m_tP = 0;
+        m_pPCB = NULL;
+        m_iPr = 0;
+
+        m_ring.init();
+
+        m_bTransform = false;
+        m_vT.init(0);
+        m_vR.init(0);
+        m_A = Eigen::Matrix4d::Identity();
     }
 
-    //transform
-    pK->v("bTransform", &m_bTransform);
-    pK->v("vT", &m_vT);
-	pK->v("vR", &m_vR);
-
-    string n;
-
-    n = "";
-    pK->v ( "_PCbase", &n );
-    m_pPCB = ( _PCbase* ) ( pK->getInst ( n ) );
-
-    n = "";
-    pK->v ( "_PCviewer", &n );
-    m_pViewer = ( _PCviewer* ) ( pK->getInst ( n ) );
-
-    if ( m_pViewer )
+    _PCbase::~_PCbase()
     {
-        m_iV = m_pViewer->addGeometry();
+        m_ring.release();
     }
 
-    return true;
-}
+    bool _PCbase::init(void *pKiss)
+    {
+        IF_F(!this->_ModuleBase::init(pKiss));
+        Kiss *pK = (Kiss *)pKiss;
+        
+        int nP = 0;
+        pK->v("nP", &nP);
+        IF_F(!m_ring.setup(nP));
 
-int _PCbase::check ( void )
-{
-    NULL__(m_pP, -1);
-    
-    return this->_ModuleBase::check();
-}
+        //transform
+        pK->v("bTransform", &m_bTransform);
+        pK->v("vT", &m_vT);
+        pK->v("vR", &m_vR);
 
-void _PCbase::getPC ( PointCloud* pPC )
-{
-    NULL_ ( pPC );
+        string n;
+        n = "";
+        pK->v("_PCbase", &n);
+        m_pPCB = (_PCbase *)(pK->getInst(n));
 
-    pthread_mutex_lock ( &m_mutexPC );
-    *pPC = *m_sPC.prev();
-    pthread_mutex_unlock ( &m_mutexPC );
-}
+        return true;
+    }
 
-void _PCbase::updatePC ( void )
-{
-    paintPC(m_sPC.next());
-    
-    pthread_mutex_lock ( &m_mutexPC );
-    m_sPC.update();
-    m_sPC.next()->points_.clear();
-    m_sPC.next()->colors_.clear();
-    m_sPC.next()->normals_.clear();
-    pthread_mutex_unlock ( &m_mutexPC );
-}
+    int _PCbase::check(void)
+    {
+        return this->_ModuleBase::check();
+    }
 
-void _PCbase::paintPC ( PointCloud* pPC )
-{
-    NULL_ ( pPC );
-    IF_ ( m_vColOvrr.x < 0.0 )
+    void _PCbase::add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t &tStamp)
+    {
+        Vector3d p = m_A * vP;
+        m_ring.add(p, vC, tStamp);
+    }
 
-    pPC->PaintUniformColor (
-        Eigen::Vector3d (
-            m_vColOvrr.x,
-            m_vColOvrr.y,
-            m_vColOvrr.z
-        )
-    );
-}
+    void _PCbase::setTranslation(vDouble3 &vT, vDouble3 &vR)
+    {
+        m_vT = vT;
+        m_vR = vR;
 
-int _PCbase::size ( void )
-{
-    return m_sPC.prev()->points_.size();
-}
+        Eigen::Matrix4d mT;
+        Eigen::Vector3d eR(m_vR.x, m_vR.y, m_vR.z);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
+        mT(0, 3) = m_vT.x;
+        mT(1, 3) = m_vT.y;
+        mT(2, 3) = m_vT.z;
 
-void _PCbase::addP(Eigen::Vector3d& vP, Eigen::Vector3d& vC, uint64_t& tStamp)
-{
-    IF_(check() < 0);
-    
-    if(++m_iP >= m_nP)
-        m_iP = 0;
-    
-    PC_POINT* pP = &m_pP[m_iP];
-    pP->m_vP = m_A * vP;
-    pP->m_vC = vC;
-    pP->m_tStamp = tStamp;
-}
+        m_A = mT;
+    }
 
-void _PCbase::updateTransformMatrix(void)
-{
-	Eigen::Matrix4d mT;
-	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
-    mT.block(0,0,3,3) = Geometry3D::GetRotationMatrixFromXYZ(vR);
-	mT(0,3) = m_vT.x;
-	mT(1,3) = m_vT.y;
-	mT(2,3) = m_vT.z;
+    PC_RING* _PCbase::getRing(void)
+    {
+        return &m_ring;
+    }
 
-    m_A = mT;
-}
+    void _PCbase::readSrc(void)
+    {
+        NULL_(m_pPCB);
+        m_ring.readSrc(m_pPCB->getRing(), &m_iPr);        
+    }
 
-void _PCbase::setTranslation(vDouble3& vT)
-{
-	m_vT = vT;
-}
-
-vDouble3 _PCbase::getTranslation(void)
-{
-	return m_vT;
-}
-
-void _PCbase::setRotation(vDouble3& vR)
-{
-	m_vR = vR;
-}
-
-vDouble3 _PCbase::getRotation(void)
-{
-	return m_vR;
-}
-
-void _PCbase::draw ( void )
-{
-    this->_ModuleBase::draw();
-}
+    void _PCbase::draw(void)
+    {
+        this->_ModuleBase::draw();
+    }
 
 }
 #endif

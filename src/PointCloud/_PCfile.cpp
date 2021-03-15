@@ -36,33 +36,20 @@ bool _PCfile::open(void)
 	IF_F(m_fName.empty());
 
 //	io::ReadPointCloudOption ro;
-	IF_F(!io::ReadPointCloud(m_fName, *m_sPC.prev()));
+	PointCloud pc;
+	IF_F(!io::ReadPointCloud(m_fName, pc));
 
-	NULL_T(m_pViewer);
-	m_pViewer->updateGeometry(m_iV, m_sPC.prev());
+	for(int i=0; i<pc.points_.size(); i++)
+	{
+		add(pc.points_[i], pc.colors_[i], 0);
+	}
 
 	return true;
 }
 
 bool _PCfile::start(void)
 {
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-void _PCfile::update(void)
-{
-	while(m_pT->bRun())
-	{
-		m_pT->autoFPSfrom();
-
-//        if(m_pViewer)
-//        {
-//            m_pViewer->updateGeometry(m_iV, getPC());
-//        }
-
-		m_pT->autoFPSto();
-	}
+	return true;
 }
 
 void _PCfile::draw(void)

@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCviewer.h"
-
 #ifdef USE_OPEN3D
+#include "_PCviewer.h"
 
 namespace kai
 {
@@ -18,6 +17,8 @@ _PCviewer::_PCviewer()
 	m_vWinSize.init(1280, 720);
 	m_pMcoordFrame = NULL;
     m_bCoordFrame = true;
+
+	m_spPC = shared_ptr<PointCloud>(new PointCloud);
 }
 
 _PCviewer::~_PCviewer()
@@ -26,7 +27,7 @@ _PCviewer::~_PCviewer()
 
 bool _PCviewer::init(void *pKiss)
 {
-	IF_F(!this->_ModuleBase::init(pKiss));
+	IF_F(!this->_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("vWinSize", &m_vWinSize);
@@ -37,6 +38,20 @@ bool _PCviewer::init(void *pKiss)
 
 	//X:red, Y:green, Z:blue
     m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
+
+	string n;
+	vector<string> vPCB;
+	pK->a("vPCbase", &vPCB);
+	IF_F(vPCB.empty());
+
+	for(string p : vPCB)
+	{
+		_PCbase* pPCB = (_PCbase*) (pK->getInst(p));
+		IF_CONT(!pPCB);
+
+		m_vpPCB.push_back(pPCB);
+	}
+	IF_F(m_vpPCB.empty());
 
 	return true;
 }
@@ -49,14 +64,16 @@ bool _PCviewer::start(void)
 
 int _PCviewer::check(void)
 {
-	return this->_ModuleBase::check();
+	return this->_PCbase::check();
 }
 
 void _PCviewer::update(void)
-{    
+{
 	m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
-	m_vis.GetRenderOption().background_color_ = Eigen::Vector3d::Zero();
+	m_vis.GetRenderOption().background_color_ = Vector3d::Zero();
 	m_vis.GetViewControl().ChangeFieldOfView(m_fov);
+
+	m_vis.AddGeometry(m_spPC);
 
     if(m_bCoordFrame)
         m_vis.AddGeometry(m_pMcoordFrame);
@@ -75,13 +92,10 @@ void _PCviewer::update(void)
 
 void _PCviewer::render(void)
 {
-	for(int i=0; i<m_vGeo.size(); i++)
-	{
-		PCVIEWER_GEO* pG =&m_vGeo[i];
+	//*m_spPC = *pPC;
+	//read all inputs into one ring
 
-		pG->addToVisualizer(&m_vis);
-		pG->updateVisualizer(&m_vis);
-	}
+	m_vis.UpdateGeometry(m_spPC);
 
 	if (m_vis.HasGeometry())
 	{
@@ -90,26 +104,9 @@ void _PCviewer::render(void)
 	}
 }
 
-int _PCviewer::addGeometry(void)
-{
-	PCVIEWER_GEO g;
-	g.init();
-
-	m_vGeo.push_back(g);
-	return m_vGeo.size()-1;
-}
-
-void _PCviewer::updateGeometry(int i, PointCloud* pPC)
-{
-	IF_(i >= m_vGeo.size());
-	IF_(i < 0);
-
-	m_vGeo[i].updateGeometry(pPC);
-}
-
 void _PCviewer::draw(void)
 {
-	this->_ModuleBase::draw();
+	this->_PCbase::draw();
 }
 
 }
