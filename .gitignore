@@ -7,5 +7,6 @@
 .cproject
 *.*~
 /.kdev4/
+null.d
 !.gitignore
 
