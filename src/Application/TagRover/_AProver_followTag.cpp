@@ -132,8 +132,8 @@ void _AProver_followTag::updateFollow ( void )
         m_errX = 0.0;
     }
 
-    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_pT->getTstamp())
-             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_pT->getTstamp());
+    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_pT->getTfrom())
+             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_pT->getTfrom());
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
 

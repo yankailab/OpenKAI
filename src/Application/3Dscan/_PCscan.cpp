@@ -1,6 +1,6 @@
+#ifdef USE_OPEN3D
 #include "_PCscan.h"
 
-#ifdef USE_OPEN3D
 namespace kai
 {
 
@@ -19,14 +19,14 @@ bool _PCscan::init ( void* pKiss )
     IF_F ( !this->_JSONbase::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
-    vector<string> vPCT;
-    pK->a ( "PCT", &vPCT );
+    vector<string> vPCB;
+    pK->a ( "PCB", &vPCB );
 
-    for ( int i=0; i<vPCT.size(); i++ )
+    for ( int i=0; i<vPCB.size(); i++ )
     {
-        _PCtransform* pP = ( _PCtransform* ) ( pK->getInst ( vPCT[i] ) );
+        _PCbase* pP = ( _PCbase* ) ( pK->getInst ( vPCB[i] ) );
         IF_CONT ( !pP );
-        m_vPCT.push_back ( pP );
+        m_vPCB.push_back ( pP );
     }
     
     Kiss* pKt = pK->child("threadR");
@@ -87,10 +87,10 @@ void _PCscan::send ( void )
     IF_ ( check() <0 );
 
     int nC = 0;
-    for ( int i=0; i<m_vPCT.size(); i++ )
+    for ( int i=0; i<m_vPCB.size(); i++ )
     {
-        _PCtransform* pP = m_vPCT[i];
-        IF_CONT ( pP->size() <= 0 );
+        _PCbase* pP = m_vPCB[i];
+//        IF_CONT ( pP->size() <= 0 );
         nC++;
     }
 
@@ -155,50 +155,52 @@ void _PCscan::handleMsg ( string& str )
     string cmd = jo["cmd"].get<string>();
     string pct = jo["pct"].get<string>();
 
-    _PCtransform* pPCT = findTransform ( pct );
+    _PCbase* pPCB = findPC ( pct );
 
     if ( cmd == "save_kiss" )
     {
-        NULL_ ( pPCT );
-        pPCT->saveParamKiss();
+        NULL_ ( pPCB );
+        pPCB->saveParam();
     }
     else if ( cmd == "var_tr" )
     {
-        NULL_ ( pPCT );
+        NULL_ ( pPCB);
 
-        vDouble3 v;
-        v.x = ( float ) jo["tX"].get<double>();
-        v.y = ( float ) jo["tY"].get<double>();
-        v.z = ( float ) jo["tZ"].get<double>();
-        pPCT->setTranslation ( v );
-        v.x = ( float ) jo["rX"].get<double>();
-        v.y = ( float ) jo["rY"].get<double>();
-        v.z = ( float ) jo["rZ"].get<double>();
-        pPCT->setRotation ( v );
+        vDouble3 vT;
+        vT.x = ( float ) jo["tX"].get<double>();
+        vT.y = ( float ) jo["tY"].get<double>();
+        vT.z = ( float ) jo["tZ"].get<double>();
+
+        vDouble3 vR;
+        vR.x = ( float ) jo["rX"].get<double>();
+        vR.y = ( float ) jo["rY"].get<double>();
+        vR.z = ( float ) jo["rZ"].get<double>();
+
+        pPCB->setTranslation(vT, vR);
     }
     else if ( cmd == "save_ply" )
     {
-        NULL_ ( pPCT );
+        NULL_ ( pPCB );
     }
     else if ( cmd == "filter_" )
     {
-        NULL_ ( pPCT );
+        NULL_ ( pPCB );
     }
     else if ( cmd == "on_autoAlign" )
     {
-        NULL_ ( pPCT );
+        NULL_ ( pPCB );
     }
     else if ( cmd == "off_autoAlign" )
     {
-        NULL_ ( pPCT );
+        NULL_ ( pPCB );
     }
 }
 
-_PCtransform* _PCscan::findTransform ( string& n )
+_PCbase* _PCscan::findPC ( string& n )
 {
-    for ( int i=0; i<m_vPCT.size(); i++ )
+    for ( int i=0; i<m_vPCB.size(); i++ )
     {
-        _PCtransform* pP = m_vPCT[i];
+        _PCbase* pP = m_vPCB[i];
         IF_CONT ( *pP->getName() != n );
 
         return pP;

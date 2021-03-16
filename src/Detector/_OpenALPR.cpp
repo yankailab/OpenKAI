@@ -128,7 +128,7 @@ bool _OpenALPR::detect(void)
 
 		OBJECT o;
 		o.init();
-		o.m_tStamp = m_pT->getTstamp();
+		o.m_tStamp = m_pT->getTfrom();
 		alpr::AlprPlate content = plate.topNPlates[0];
 		o.setTopClass(0, content.overall_confidence);
 

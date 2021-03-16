@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCregistGlobal.h"
-
 #ifdef USE_OPEN3D
+#include "_PCregistGlobal.h"
 
 namespace kai
 {
@@ -22,7 +21,6 @@ _PCregistGlobal::_PCregistGlobal()
 
     m_pSrc = NULL;
     m_pTgt = NULL;
-    m_pTf = NULL;
     m_iMt = 0;
 }
 
@@ -53,11 +51,6 @@ bool _PCregistGlobal::init ( void *pKiss )
     m_pTgt = ( _PCbase* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pTgt, n + ": not found" );
 
-    n = "";
-    pK->v ( "_PCtransform", &n );
-    m_pTf = ( _PCtransform* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pTf, n + ": not found" );
-
     return true;
 }
 
@@ -71,7 +64,6 @@ int _PCregistGlobal::check ( void )
 {
     NULL__( m_pSrc, -1);
     NULL__( m_pTgt, -1);
-    NULL__(m_pTf, -1);
     
     return _PCbase::check();
 }
@@ -94,35 +86,35 @@ void _PCregistGlobal::updateRegistration ( void )
 
     IF_(!fastGlobalRegistration());
     
-    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );    
+//    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );    
 }
 
 bool _PCregistGlobal::fastGlobalRegistration(void)
 {
-    PointCloud pcSrc;
-    m_pSrc->getPC ( &pcSrc );
-    PointCloud pcTgt;
-    m_pTgt->getPC ( &pcTgt );
+    // PointCloud pcSrc;
+    // m_pSrc->getPC ( &pcSrc );
+    // PointCloud pcTgt;
+    // m_pTgt->getPC ( &pcTgt );
     
-    IF_F(pcSrc.IsEmpty());
-    IF_F(pcTgt.IsEmpty());
+    // IF_F(pcSrc.IsEmpty());
+    // IF_F(pcTgt.IsEmpty());
     
-    Feature spFpfhSrc = *preprocess( pcSrc );
-    Feature spFpfhTgt = *preprocess( pcTgt );
+    // Feature spFpfhSrc = *preprocess( pcSrc );
+    // Feature spFpfhTgt = *preprocess( pcTgt );
 
-    m_RR = FastGlobalRegistration
-            (
-                pcSrc,
-                pcTgt,
-                spFpfhSrc,
-                spFpfhTgt,
-                FastGlobalRegistrationOption()
-            );
+    // m_RR = FastGlobalRegistration
+    //         (
+    //             pcSrc,
+    //             pcTgt,
+    //             spFpfhSrc,
+    //             spFpfhTgt,
+    //             FastGlobalRegistrationOption()
+    //         );
     
-    IF_F(m_RR.fitness_ < m_lastFit);
-    m_lastFit = m_RR.fitness_;
+    // IF_F(m_RR.fitness_ < m_lastFit);
+    // m_lastFit = m_RR.fitness_;
     
-    return true;
+    // return true;
 }
 
 std::shared_ptr<Feature> _PCregistGlobal::preprocess(PointCloud& pc)

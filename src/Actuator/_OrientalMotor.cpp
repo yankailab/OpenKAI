@@ -88,7 +88,7 @@ int _OrientalMotor::check(void)
 void _OrientalMotor::checkAlarm(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieCheckAlarm.update(m_pT->getTstamp()));
+	IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
 
 	uint16_t pB[2];
 	pB[0] = 1<<7;
@@ -99,7 +99,7 @@ void _OrientalMotor::checkAlarm(void)
 void _OrientalMotor::updatePos (void)
 {
 	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_pT->getTstamp()));
+	IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
 	int32_t step = m_pA->m_p.m_vTarget;
 	int32_t speed = m_pA->m_s.m_vRange.y;
@@ -139,7 +139,7 @@ void _OrientalMotor::updatePos (void)
 void _OrientalMotor::updateSpeed (void)
 {
 	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_pT->getTstamp()));
+	IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 
 	int32_t step = 0;
     uint8_t dMode = 1; 
@@ -187,7 +187,7 @@ void _OrientalMotor::updateSpeed (void)
 void _OrientalMotor::readStatus(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieReadStatus.update(m_pT->getTstamp()));
+	IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 	uint16_t pB[18];
 	int nR = 6;

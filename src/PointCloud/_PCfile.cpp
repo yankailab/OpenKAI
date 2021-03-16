@@ -41,7 +41,7 @@ bool _PCfile::open(void)
 
 	for(int i=0; i<pc.points_.size(); i++)
 	{
-		add(pc.points_[i], pc.colors_[i]);
+		m_ring.add(pc.points_[i], pc.colors_[i]);
 	}
 
 	return true;
@@ -54,7 +54,7 @@ bool _PCfile::start(void)
 
 void _PCfile::draw(void)
 {
-	this->_ModuleBase::draw();
+	this->_PCbase::draw();
 }
 
 }

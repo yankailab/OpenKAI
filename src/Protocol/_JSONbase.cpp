@@ -95,7 +95,7 @@ void _JSONbase::send ( void )
 {
     IF_ ( check() <0 );
 
-    if(m_tIntHeartbeat.update(m_pT->getTstamp()))
+    if(m_tIntHeartbeat.update(m_pT->getTfrom()))
     {
         sendHeartbeat();
     }
@@ -119,7 +119,7 @@ bool _JSONbase::sendHeartbeat (void)
     object o;
     JO(o, "id", i2str(1));
     JO(o, "cmd", "heartbeat");
-    JO(o, "t", li2str(m_pT->getTstamp()));
+    JO(o, "t", li2str(m_pT->getTfrom()));
     
     return sendMsg(o);
 }

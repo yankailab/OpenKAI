@@ -83,14 +83,14 @@ void _InnfosGluon::update(void)
 void _InnfosGluon::checkAlarm(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieCheckAlarm.update(m_pT->getTstamp()));
+	IF_(!m_ieCheckAlarm.update(m_pT->getTfrom()));
 
 }
 
 void _InnfosGluon::updateGluon (void)
 {
 	IF_(check()<0);
-	IF_(!m_ieSendCMD.update(m_pT->getTstamp()));
+	IF_(!m_ieSendCMD.update(m_pT->getTfrom()));
 //    IF_(!m_bReady);
     
     double pJoint[7];
@@ -115,7 +115,7 @@ void _InnfosGluon::updateGluon (void)
 void _InnfosGluon::readStatus(void)
 {
 	IF_(check()<0);
-	IF_(!m_ieReadStatus.update(m_pT->getTstamp()));
+	IF_(!m_ieReadStatus.update(m_pT->getTfrom()));
     return;//
     int nAxis = m_gluon.GetAxisNum();
     double pJoint[7];

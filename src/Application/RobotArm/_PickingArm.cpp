@@ -291,9 +291,9 @@ bool _PickingArm::follow(void)
 	m_vP.x = x*c - y*s + m_vPtarget.x;
 	m_vP.y = x*s + y*c + m_vPtarget.y;
 
-	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTstamp());
-	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTstamp());
-	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_pT->getTstamp()) * constrain(1.0 - r*m_zrK, 0.0, 1.0);
+	m_vS.y = 0.5 + m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTfrom());
+	m_vS.x = 0.5 + m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTfrom());
+	m_vS.z = 0.5 + m_pZpid->update(m_vP.z, m_vPtarget.z, m_pT->getTfrom()) * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 	speed(m_vS);
 
 	return false;
@@ -325,11 +325,11 @@ _Object* _PickingArm::findTarget(void)
 	if(tO)
 	{
 		m_o = *tO;
-		m_oTstamp = m_pT->getTstamp();
+		m_oTstamp = m_pT->getTfrom();
 		return &m_o;
 	}
 
-	if(m_pT->getTstamp() - m_oTstamp < m_oTimeout)
+	if(m_pT->getTfrom() - m_oTstamp < m_oTimeout)
 	{
 		return &m_o;
 	}

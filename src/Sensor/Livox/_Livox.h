@@ -8,9 +8,8 @@
 #ifndef OpenKAI_src_Sensor__Livox_H_
 #define OpenKAI_src_Sensor__Livox_H_
 
-#include "../../PointCloud/_PCbase.h"
-
 #ifdef USE_LIVOX
+#include "../../PointCloud/_PCbase.h"
 #include "LivoxLidar.h"
 
 namespace kai

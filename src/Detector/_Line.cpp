@@ -124,7 +124,7 @@ void _Line::detect(void)
 
 	_Object o;
 	o.init();
-//	o.m_tStamp = m_pT->getTstamp();
+//	o.m_tStamp = m_pT->getTfrom();
 	o.setBB2D(rect2BB <vFloat4> (rBB));
 	o.scale(kx,ky);
 	o.setTopClass(0, 1.0);

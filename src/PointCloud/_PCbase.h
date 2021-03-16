@@ -10,6 +10,8 @@
 #ifdef USE_OPEN3D
 
 #include "../Base/_ModuleBase.h"
+#include "../IO/_File.h"
+
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -66,7 +68,7 @@ namespace kai
             DEL(m_pP);
         }
 
-        void add(Vector3d &vP, Vector3d &vC, uint64_t tStamp)
+        void add(Vector3d &vP, Vector3d &vC, uint64_t tStamp = UINT64_MAX)
         {
             NULL_(m_pP);
 
@@ -174,9 +176,9 @@ namespace kai
         virtual PC_RING *getRing(void);
         virtual void readSrc(void);
 
-    protected:
-        virtual void updateTransformMatrix(void);
+        virtual void saveParam(void);
 
+    protected:
         //pipeline input src
         _PCbase *m_pPCB;
         int m_iPr;
@@ -189,6 +191,9 @@ namespace kai
         vDouble3 m_vT; //translation
         vDouble3 m_vR; //rotation
         Eigen::Affine3d m_A;
+
+        //param save
+        string m_fParam;
     };
 
 }

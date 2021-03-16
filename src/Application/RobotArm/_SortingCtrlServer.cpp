@@ -85,7 +85,7 @@ void _SortingCtrlServer::update(void)
 			updateImg();
 			m_pU->updateObj();
 
-//		if(m_ieState.update(m_pT->getTstamp()))
+//		if(m_ieState.update(m_pT->getTfrom()))
 //			m_pPB->sendState(m_iState);
 
 			if (m_pT->bGoSleep())

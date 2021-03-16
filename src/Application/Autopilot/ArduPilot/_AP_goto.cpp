@@ -112,7 +112,7 @@ bool _AP_goto::findTarget(void)
 {
 	IF_F(check()<0);
 
-	IF_F(!m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving(m_pT->getTstamp()));
+	IF_F(!m_pAPtarget->m_pMav->m_globalPositionINT.bReceiving(m_pT->getTfrom()));
 
 	vDouble4 vAPpos = m_pAPtarget->getGlobalPos();
 	IF_F(vAPpos.x <= 0.0);

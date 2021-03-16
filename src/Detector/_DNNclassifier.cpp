@@ -141,7 +141,7 @@ void _DNNclassifier::classify(void)
 
 		_Object o;
 		o.init();
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(pClassID.x, conf);
 		o.setBB2D(nBB);
 		m_pU->add(o);

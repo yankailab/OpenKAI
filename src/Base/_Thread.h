@@ -38,7 +38,6 @@ public:
 	virtual float getTargetFPS(void);
 	virtual void autoFPSfrom(void);
 	virtual void autoFPSto(void);
-    virtual float getTstamp(void);
     virtual float getDt(void);
 
 	virtual uint64_t getTfrom(void);

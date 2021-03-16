@@ -8,10 +8,8 @@
 #ifndef OpenKAI_src_PointCloud_PCregistGlobal_H_
 #define OpenKAI_src_PointCloud_PCregistGlobal_H_
 
-#include "../../Base/common.h"
-
 #ifdef USE_OPEN3D
-#include "../_PCtransform.h"
+#include "../_PCbase.h"
 #include <open3d/pipelines/registration/FastGlobalRegistration.h>
 
 using namespace open3d::pipelines::registration;
@@ -49,7 +47,6 @@ public:
 
 	_PCbase* m_pSrc;
 	_PCbase* m_pTgt;
-    _PCtransform* m_pTf;
 	int m_iMt;
     RegistrationResult m_RR;
     double m_lastFit;

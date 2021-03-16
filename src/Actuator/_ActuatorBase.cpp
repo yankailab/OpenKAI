@@ -137,7 +137,7 @@ void _ActuatorBase::setPtarget(int i, float p)
 	pA->m_p.setTarget(p);
 
 	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = m_pT->getTstamp();
+	m_tLastCmd = m_pT->getTfrom();
 }
 
 void _ActuatorBase::setStarget(int i, float s)
@@ -149,7 +149,7 @@ void _ActuatorBase::setStarget(int i, float s)
 	pA->m_s.setTarget(s);
 
 	m_lastCmdType = actCmd_spd;
-	m_tLastCmd = m_pT->getTstamp();
+	m_tLastCmd = m_pT->getTfrom();
 }
 
 void _ActuatorBase::gotoOrigin(void)
@@ -161,7 +161,7 @@ void _ActuatorBase::gotoOrigin(void)
 	}
 
 	m_lastCmdType = actCmd_pos;
-	m_tLastCmd = m_pT->getTstamp();
+	m_tLastCmd = m_pT->getTfrom();
 }
 
 bool _ActuatorBase::bComplete(void)

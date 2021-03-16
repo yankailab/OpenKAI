@@ -116,7 +116,7 @@ void _Sequencer::updateAction(void)
 	//wait if still in delay time
 	if(m_tResume > 0)
 	{
-		IF_(m_pT->getTstamp() < m_tResume);
+		IF_(m_pT->getTfrom() < m_tResume);
 		m_tResume = 0;
 	}
 
@@ -151,7 +151,7 @@ void _Sequencer::updateAction(void)
 
 	//delay time after motion complete
 	if(pAction->m_dT > 0)
-		m_tResume = m_pT->getTstamp() + pAction->m_dT;
+		m_tResume = m_pT->getTfrom() + pAction->m_dT;
 	else if(pAction->m_dT < 0)
 		m_tResume = UINT64_MAX;
 

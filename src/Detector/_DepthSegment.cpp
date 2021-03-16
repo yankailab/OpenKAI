@@ -96,7 +96,7 @@ void _DepthSegment::detect(void)
 			Rect re = boundingRect(vPoly);
 
 			o.init();
-//			o.m_tStamp = m_pT->getTstamp();
+//			o.m_tStamp = m_pT->getTfrom();
 			o.setBB2D(rect2BB<vFloat4>(re));
 			o.scale(kx, ky);
 			o.setZ(r);

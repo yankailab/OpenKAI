@@ -88,7 +88,7 @@ void _Chilitags::detect ( void )
     for ( const std::pair<int, chilitags::Quad> & tag : tags )
     {        
         o.init();
-//        o.m_tStamp = m_pT->getTstamp();
+//        o.m_tStamp = m_pT->getTfrom();
         o.setTopClass ( tag.first,1.0 );
 
         // We wrap the corner matrix into a datastructure that allows an easy access to the coordinates

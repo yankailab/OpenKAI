@@ -86,7 +86,7 @@ void _Thermal::detect(void)
 		Rect r = boundingRect(vPoly);
 
 		o.init();
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setBB2D(rect2BB < vFloat4 > (r));
 		o.scale(m_mR.cols, m_mR.rows);
 		o.setTopClass(0, o.area());

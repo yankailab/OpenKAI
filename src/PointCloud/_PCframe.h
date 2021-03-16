@@ -8,10 +8,8 @@
 #ifndef OpenKAI_src_PointCloud__PCframe_H_
 #define OpenKAI_src_PointCloud__PCframe_H_
 
-#include "../Base/_ModuleBase.h"
-#include "_PCviewer.h"
-
 #ifdef USE_OPEN3D
+#include "_PCbase.h"
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -19,7 +17,7 @@ using namespace open3d::visualization;
 namespace kai
 {
 
-class _PCframe: public _ModuleBase
+class _PCframe: public _PCbase
 {
 public:
 	_PCframe();
@@ -34,14 +32,6 @@ public:
 	virtual void getPC(PointCloud* pPC);
 	virtual void updatePC(void);
     
-    //ring buf
-    virtual void addP(Eigen::Vector3d& vP, Eigen::Vector3d& vC, uint64_t& tStamp);
-    
-    virtual void setTranslation(vDouble3& vT);
-	virtual void setRotation(vDouble3& vR);
-	virtual vDouble3 getTranslation(void);
-	virtual vDouble3 getRotation(void);
-    
 protected:
     virtual void updateTransformMatrix(void);
     virtual void paintPC(PointCloud* pPC);
@@ -50,20 +40,8 @@ protected:
 	_PCframe* m_pPCB;
 	vSwitch<PointCloud> m_sPC;
     pthread_mutex_t m_mutexPC;
-    
-    //ring buf
-    PC_RING_BUF m_ringB;
-    
-    //dynamics
-    bool m_bTransform;
-   	vDouble3 m_vT;	//translation
-	vDouble3 m_vR;	//rotation
-	Eigen::Affine3d m_A;
 
-    //visualization
-	_PCviewer* m_pViewer;
-	int m_iV;
-    vFloat3 m_vColOvrr;
+	vFloat3 m_vColOvrr;    
 };
 
 }

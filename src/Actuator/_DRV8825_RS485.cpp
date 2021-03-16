@@ -220,7 +220,7 @@ bool _DRV8825_RS485::bComplete(void)
 bool _DRV8825_RS485::readStatus(void)
 {
 	IF_F(check()<0);
-	IF_T(!m_ieReadStatus.update(m_pT->getTstamp()));
+	IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 	uint16_t pB[2];
 	int r = m_pMB->readRegisters(m_iSlave, 22, 2, pB);

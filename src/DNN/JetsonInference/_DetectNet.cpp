@@ -136,7 +136,7 @@ void _DetectNet::detect(void)
 
 		_Object o;
 		o.init();
-		o.m_tStamp = m_pT->getTstamp();
+		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(pB->ClassID, pB->Confidence);
 		string txt(m_pDN->GetClassDesc(pB->ClassID));
 		o.setText(txt);

@@ -110,7 +110,7 @@ void _Cascade::detectGPU(void)
 		o.setTopClass(0, 1.0);
 		o.setZ(0.0);
 		o.setText(m_className);
-		o.m_tStamp = m_pT->getTstamp();
+		o.m_tStamp = m_pT->getTfrom();
 
 		m_pU->add(o);
 	}
@@ -145,7 +145,7 @@ void _Cascade::detectCPU(void)
 		o.setTopClass(0, 1.0);
 		o.setZ(0.0);
 		o.setText(m_className);
-		o.m_tStamp = m_pT->getTstamp();
+		o.m_tStamp = m_pT->getTfrom();
 
 		m_pU->add(o);
 	}

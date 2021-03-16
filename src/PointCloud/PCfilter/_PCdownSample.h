@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_PointCloud_PCdownSample_H_
 #define OpenKAI_src_PointCloud_PCdownSample_H_
 
-#include "../../Base/common.h"
-
 #ifdef USE_OPEN3D
 #include "../_PCbase.h"
 

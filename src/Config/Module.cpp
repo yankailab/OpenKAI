@@ -214,7 +214,6 @@ BASE* Module::createInstance(Kiss* pK)
 	ADD_MODULE( _PCregistCol );
 	ADD_MODULE( _PCregistICP );
 	ADD_MODULE( _PCregistGlobal );
-	ADD_MODULE(_PCtransform);
 	ADD_MODULE(_PCviewer);
 	ADD_MODULE(_PCsend);
 	ADD_MODULE(_PCrecv);

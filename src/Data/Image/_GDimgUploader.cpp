@@ -66,10 +66,10 @@ void _GDimgUploader::update(void)
 	{
 		m_pT->autoFPSfrom();
 
-		if(m_pT->getTstamp() - m_tLastUpload > m_tInterval)
+		if(m_pT->getTfrom() - m_tLastUpload > m_tInterval)
 		{
 			updateUpload();
-			m_tLastUpload = m_pT->getTstamp();
+			m_tLastUpload = m_pT->getTfrom();
 		}
 
 		m_pT->autoFPSto();

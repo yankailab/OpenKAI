@@ -63,7 +63,7 @@ void FrameGPU::copy(const FrameGPU& f)
 	if(f.m_tStamp > f.m_tStampG)
 	{
 		f.m_mat.copyTo(m_mat);
-		updateTstamp(f.m_pT->getTstamp());
+		updateTstamp(f.m_pT->getTfrom());
 	}
 	else
 	{
@@ -117,7 +117,7 @@ FrameGPU FrameGPU::crop(Rect bb)
 	if(m_tStamp > m_tStampG)
 	{
 		fb.m_mat = m_mat(bb);
-		fb.updateTstamp(m_pT->getTstamp());
+		fb.updateTstamp(m_pT->getTfrom());
 	}
 	else
 	{
@@ -221,7 +221,7 @@ void FrameGPU::updateG(void)
 	IF_(m_tStamp <= m_tStampG);
 
 	m_matG.upload(m_mat);
-	m_tStampG = m_pT->getTstamp();
+	m_tStampG = m_pT->getTfrom();
 }
 
 void FrameGPU::sync(void)

@@ -174,7 +174,7 @@ bool _ZLAC8015::bComplete(void)
 bool _ZLAC8015::readStatus(void)
 {
 	IF_F(check()<0);
-	IF_T(!m_ieReadStatus.update(m_pT->getTstamp()));
+	IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
 	uint16_t pB[2];
 	int r = m_pMB->readRegisters(m_iSlave, 0x202C, 1, pB);
@@ -190,7 +190,7 @@ bool _ZLAC8015::readStatus(void)
 bool _ZLAC8015::clearAlarm(void)
 {
 	IF_F(check()<0);
-	IF_T(!m_ieReadStatus.update(m_pT->getTstamp()));
+	IF_T(!m_ieReadStatus.update(m_pT->getTfrom()));
 
     int r = m_pMB->writeRegister(m_iSlave, 0x2031, 0x06); //clear alarm
 	IF_F(r != 1);

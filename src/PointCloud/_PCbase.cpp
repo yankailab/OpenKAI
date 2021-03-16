@@ -22,6 +22,8 @@ namespace kai
         m_vT.init(0);
         m_vR.init(0);
         m_A = Eigen::Matrix4d::Identity();
+
+        m_fParam = "";
     }
 
     _PCbase::~_PCbase()
@@ -33,20 +35,42 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-        
+
         int nP = 0;
         pK->v("nP", &nP);
         IF_F(!m_ring.setup(nP));
+
+        string n;
+        n = "";
+        pK->v("_PCbase", &n);
+        m_pPCB = (_PCbase *)(pK->getInst(n));
 
         //transform
         pK->v("bTransform", &m_bTransform);
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
 
-        string n;
-        n = "";
-        pK->v("_PCbase", &n);
-        m_pPCB = (_PCbase *)(pK->getInst(n));
+        //read from external kiss file if there is one
+        pK->v("fParam", &m_fParam);
+        IF_T(m_fParam.empty());
+
+        _File *pFile = new _File();
+        IF_T(!pFile->open(&m_fParam));
+
+        string fn;
+        pFile->readAll(&fn);
+        IF_T(fn.empty());
+
+        Kiss *pKf = new Kiss();
+        if (pKf->parse(&fn))
+        {
+            pK = pKf->child("transform");
+            pK->v("vT", &m_vT);
+            pK->v("vR", &m_vR);
+        }
+
+        delete pKf;
+        pFile->close();
 
         return true;
     }
@@ -77,7 +101,7 @@ namespace kai
         m_A = mT;
     }
 
-    PC_RING* _PCbase::getRing(void)
+    PC_RING *_PCbase::getRing(void)
     {
         return &m_ring;
     }
@@ -85,12 +109,39 @@ namespace kai
     void _PCbase::readSrc(void)
     {
         NULL_(m_pPCB);
-        m_ring.readSrc(m_pPCB->getRing(), &m_iPr);        
+        m_ring.readSrc(m_pPCB->getRing(), &m_iPr);
     }
 
     void _PCbase::draw(void)
     {
         this->_ModuleBase::draw();
+    }
+
+    void _PCbase::saveParam(void)
+    {
+        IF_(m_fParam.empty());
+
+        picojson::object o;
+        o.insert(make_pair("name", "transform"));
+
+        picojson::array vT;
+        vT.push_back(value(m_vT.x));
+        vT.push_back(value(m_vT.y));
+        vT.push_back(value(m_vT.z));
+        o.insert(make_pair("vT", value(vT)));
+
+        picojson::array vR;
+        vR.push_back(value(m_vR.x));
+        vR.push_back(value(m_vR.y));
+        vR.push_back(value(m_vR.z));
+        o.insert(make_pair("vR", value(vR)));
+
+        string k = picojson::value(o).serialize();
+
+        _File *pFile = new _File();
+        IF_(!pFile->open(&m_fParam, ios::out));
+        pFile->write((uint8_t *)k.c_str(), k.length());
+        pFile->close();
     }
 
 }

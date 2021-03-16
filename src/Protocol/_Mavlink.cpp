@@ -690,7 +690,7 @@ void _Mavlink::sendSetMsgInterval(void)
 	for(MavMsgBase* pM : m_vpMsg)
 	{
 		IF_CONT(pM->m_tInterval < 0);
-		IF_CONT(pM->bReceiving(m_pT->getTstamp()));
+		IF_CONT(pM->bReceiving(m_pT->getTfrom()));
 		clSetMessageInterval(pM->m_id, pM->m_tInterval, 0);
 	}
 }

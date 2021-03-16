@@ -74,7 +74,7 @@ void _AP_link::handleCMD(void)
 	{
 	case APLINK_STATE:
 		m_iState = m_recvMsg.m_pB[3];
-		m_tState = m_pT->getTstamp();
+		m_tState = m_pT->getTfrom();
 		LOG_I("State="+i2str((int)m_iState));
 		break;
 
@@ -87,7 +87,7 @@ void _AP_link::handleCMD(void)
 		m_vBB.y = ((float)y)*0.001;
 		m_vBB.z = ((float)z)*0.001;
 		m_vBB.w = ((float)w)*0.001;
-		m_tBB = m_pT->getTstamp();
+		m_tBB = m_pT->getTfrom();
 		LOG_I("BB=("+f2str(m_vBB.x)+","+f2str(m_vBB.y)+","
 					+f2str(m_vBB.z)+","+f2str(m_vBB.w)+")");
 		break;
@@ -101,7 +101,7 @@ void _AP_link::handleCMD(void)
 		m_vTargetBB.y = ((float)y)*0.001;
 		m_vTargetBB.z = ((float)z)*0.001;
 		m_vTargetBB.w = ((float)w)*0.001;
-		m_tTargetBB = m_pT->getTstamp();
+		m_tTargetBB = m_pT->getTfrom();
 		LOG_I("TargetBB=("+f2str(m_vTargetBB.x)+","+f2str(m_vTargetBB.y)+","
 					+f2str(m_vTargetBB.z)+","+f2str(m_vTargetBB.w)+")");
 		break;
@@ -109,14 +109,14 @@ void _AP_link::handleCMD(void)
 	case APLINK_ALT:
 		x = unpack_int16(&m_recvMsg.m_pB[3], false);
 		m_alt = ((float)x)*0.001;
-		m_tAlt = m_pT->getTstamp();
+		m_tAlt = m_pT->getTfrom();
 		LOG_I("Alt="+f2str(m_alt));
 		break;
 
 	case APLINK_HDG:
 		x = unpack_int16(&m_recvMsg.m_pB[3], false);
 		m_hdg = ((float)x)*0.001;
-		m_tHdg = m_pT->getTstamp();
+		m_tHdg = m_pT->getTfrom();
 		LOG_I("Hdg="+f2str(m_hdg));
 		break;
 

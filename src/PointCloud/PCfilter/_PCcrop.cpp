@@ -68,12 +68,6 @@ void _PCcrop::update(void)
 		m_pT->autoFPSfrom();
 
 		updateFilter();
-		updatePC();
-        
-   		if(m_pViewer)
-		{
-			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-		}
 
 		m_pT->autoFPSto();
 	}
@@ -83,18 +77,18 @@ void _PCcrop::updateFilter(void)
 {
 	IF_(check()<0);
 
-	PointCloud* pOut = m_sPC.next();
-	PointCloud pcIn;
-    m_pPCB->getPC(&pcIn);
-	int nP = pcIn.points_.size();
-	for (int i = 0; i < nP; i++)
-	{
-		Eigen::Vector3d vP = pcIn.points_[i];
-		IF_CONT(!bFilter(vP));
+	// PointCloud* pOut = m_sPC.next();
+	// PointCloud pcIn;
+    // m_pPCB->getPC(&pcIn);
+	// int nP = pcIn.points_.size();
+	// for (int i = 0; i < nP; i++)
+	// {
+	// 	Eigen::Vector3d vP = pcIn.points_[i];
+	// 	IF_CONT(!bFilter(vP));
 
-		pOut->points_.push_back(vP);
-		pOut->colors_.push_back( pcIn.colors_[i]);
-	}
+	// 	pOut->points_.push_back(vP);
+	// 	pOut->colors_.push_back( pcIn.colors_[i]);
+	// }
 }
 
 bool _PCcrop::bFilter(Eigen::Vector3d& vP)

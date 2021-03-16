@@ -120,8 +120,8 @@ void _AProver_KUfollowTag::updateFollow ( void )
         m_errHdg = dHdg<float>(0.0, pO->getRoll());
     }
 
-    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_pT->getTstamp())
-             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_pT->getTstamp());
+    m_nStr = dir * m_pPIDtagX->update ( m_errX, 0.0, m_pT->getTfrom())
+             + dir * m_pPIDtagHdg->update ( m_errHdg, 0.0, m_pT->getTfrom());
     m_pD->setSteering(m_nStr);
     m_pD->setSpeed(nSpd);
 

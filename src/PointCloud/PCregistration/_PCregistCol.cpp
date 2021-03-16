@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCregistCol.h"
-
 #ifdef USE_OPEN3D
+#include "_PCregistCol.h"
 
 namespace kai
 {
@@ -24,7 +23,6 @@ _PCregistCol::_PCregistCol()
 
     m_pSrc = NULL;
     m_pTgt = NULL;
-    m_pTf = NULL;
     m_iMt = 0;
 }
 
@@ -57,11 +55,6 @@ bool _PCregistCol::init ( void *pKiss )
     m_pTgt = ( _PCbase* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pTgt, n + ": not found" );
 
-    n = "";
-    pK->v ( "_PCtransform", &n );
-    m_pTf = ( _PCtransform* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pTf, n + ": not found" );
-
     return true;
 }
 
@@ -75,7 +68,6 @@ int _PCregistCol::check ( void )
 {
     NULL__( m_pSrc, -1);
     NULL__( m_pTgt, -1);
-    NULL__(m_pTf, -1);
     
     return _PCbase::check();
 }
@@ -98,36 +90,36 @@ void _PCregistCol::updateRegistration ( void )
 
     IF_(!ICPcolorRegistration());
     
-    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );    
+//    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );    
 }
 
 bool _PCregistCol::ICPcolorRegistration(void)
 {
-    PointCloud pcSrc;
-    m_pSrc->getPC ( &pcSrc );
-    PointCloud pcTgt;
-    m_pTgt->getPC ( &pcTgt );
+    // PointCloud pcSrc;
+    // m_pSrc->getPC ( &pcSrc );
+    // PointCloud pcTgt;
+    // m_pTgt->getPC ( &pcTgt );
     
-    IF_F(pcSrc.IsEmpty());
-    IF_F(pcTgt.IsEmpty());
+    // IF_F(pcSrc.IsEmpty());
+    // IF_F(pcTgt.IsEmpty());
 
-    pcSrc.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
-    pcTgt.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
+    // pcSrc.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
+    // pcTgt.EstimateNormals(KDTreeSearchParamHybrid(m_rNormal, m_maxNNnormal ));
 
-    m_RR = RegistrationColoredICP
-            (
-                pcSrc,
-                pcTgt,
-                m_rVoxel,
-                m_RR.transformation_,
-                TransformationEstimationForColoredICP(),
-                ICPConvergenceCriteria(m_rFitness,
-                                       m_rRMSE,
-                                       m_maxIter)
-            );
+    // m_RR = RegistrationColoredICP
+    //         (
+    //             pcSrc,
+    //             pcTgt,
+    //             m_rVoxel,
+    //             m_RR.transformation_,
+    //             TransformationEstimationForColoredICP(),
+    //             ICPConvergenceCriteria(m_rFitness,
+    //                                    m_rRMSE,
+    //                                    m_maxIter)
+    //         );
     
-    IF_F(m_RR.fitness_ < m_lastFit);
-    m_lastFit = m_RR.fitness_;
+    // IF_F(m_RR.fitness_ < m_lastFit);
+    // m_lastFit = m_RR.fitness_;
     
     return true;
 }

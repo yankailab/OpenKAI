@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCremove.h"
-
 #ifdef USE_OPEN3D
+#include "_PCremove.h"
 
 namespace kai
 {
@@ -53,12 +52,6 @@ void _PCremove::update(void)
 		m_pT->autoFPSfrom();
 
 		updateFilter();
-		updatePC();
-        
-   		if(m_pViewer)
-		{
-			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-		}
 
 		m_pT->autoFPSto();
 	}
@@ -68,13 +61,13 @@ void _PCremove::updateFilter(void)
 {
 	IF_(check()<0);
 
-	PointCloud pcIn;
-    m_pPCB->getPC(&pcIn);
+	// PointCloud pcIn;
+    // m_pPCB->getPC(&pcIn);
 
-    auto[pc, vP] = pcIn.RemoveStatisticalOutliers(20,2.0);//m_nP, m_r);
+    // auto[pc, vP] = pcIn.RemoveStatisticalOutliers(20,2.0);//m_nP, m_r);
 
-    PointCloud* pOut = m_sPC.next();
-    *pOut = *pc;
+    // PointCloud* pOut = m_sPC.next();
+    // *pOut = *pc;
 }
 
 }

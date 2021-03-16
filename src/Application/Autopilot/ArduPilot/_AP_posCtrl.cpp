@@ -113,13 +113,13 @@ void _AP_posCtrl::setPosLocal(void)
 
 	float p = 0, r = 0, a = 0;
 	if (m_pRoll)
-		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_pT->getTstamp());
+		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_pT->getTfrom());
 
 	if (m_pPitch)
-		p = m_pPitch->update(m_vP.y, m_vTargetP.y, m_pT->getTstamp());
+		p = m_pPitch->update(m_vP.y, m_vTargetP.y, m_pT->getTfrom());
 
 	if (m_pAlt)
-		a = m_pAlt->update(m_vP.z, m_vTargetP.z, m_pT->getTstamp());
+		a = m_pAlt->update(m_vP.z, m_vTargetP.z, m_pT->getTfrom());
 	else
 		a = m_vP.z;
 

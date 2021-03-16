@@ -184,7 +184,7 @@ void _DNNdetect::detectYolo(void)
 
 		_Object o;
 		o.init();
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(vClassID[idx], (float) vConfidence[idx]);
 		o.setBB2D(rect2BB<vFloat4>(vRect[idx]));
 		o.scale(kx, ky);
@@ -223,7 +223,7 @@ void _DNNdetect::detect(void)
 
 		_Object o;
 		o.init();
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(0.0, 1.0);
 		o.setBB2D(bb);
 

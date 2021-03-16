@@ -302,7 +302,7 @@ void _LeddarVu::draw(void)
 	msg += "nDiv=" + i2str(m_nDiv);
 	msg += ", nDet=" + i2str(m_nDetection);
 	msg += ", lightSrcPwr=" + i2str(m_lightSrcPwr);
-	msg += ", tStamp=" + i2str((int)m_pT->getTstamp());
+	msg += ", tStamp=" + i2str((int)m_pT->getTfrom());
 	addMsg(msg);
 
 	int i;

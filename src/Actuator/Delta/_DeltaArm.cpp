@@ -76,7 +76,7 @@ void _DeltaArm::readStatus(void)
 {
 	static uint64_t tLastStatus = 0;
 	IF_(m_tStamp - tLastStatus < 100000);
-	tLastStatus = m_pT->getTstamp();
+	tLastStatus = m_pT->getTfrom();
 
 	float v[3];
 	m_dr.GetXYZ(v);

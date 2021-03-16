@@ -116,7 +116,7 @@ void _MotionDetector::detect(void)
 
 		o.init();
 		o.setTopClass(-1, 0);
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setBB2D(rect2BB < vFloat4 > (r));
 		o.scale(kx,ky);
 

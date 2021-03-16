@@ -1,0 +1,38 @@
+{
+	"name":"APP",
+	"class":"Startup",
+	"appName":"OpenKAI",
+	"bWindow":1,
+	"bDraw":1,
+	"bLog":1,
+	"bStdErr":1,
+	"waitKey":30,
+}
+
+{
+	"name":"pcv",
+	"class":"_PCviewer",
+	"bInst":0,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"vWinSize":[1920,1080],
+	"fov":100,
+	"vPCbase":["pcFile"],
+}
+
+{
+	"name":"pcFile",
+	"class":"_PCfile",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"Console":"OKconsole",
+	"nP":102400,
+	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
+}

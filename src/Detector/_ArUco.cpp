@@ -82,7 +82,7 @@ void _ArUco::detect(void)
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
 		o.init();
-//		o.m_tStamp = m_pT->getTstamp();
+//		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(vID[i],1.0);
 
 		Point2f pLT = vvCorner[i][0];

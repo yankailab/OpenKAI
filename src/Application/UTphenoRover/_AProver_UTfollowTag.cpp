@@ -131,7 +131,7 @@ void _AProver_UTfollowTag::updateFollow ( void )
             errSide = dir * (pO->getY() - m_targetSide);
     }
     m_errSide = errSide;
-    m_nStr = dir * m_pPIDside->update ( m_errSide, 0.0, m_pT->getTstamp());
+    m_nStr = dir * m_pPIDside->update ( m_errSide, 0.0, m_pT->getTfrom());
 
     
     // make a stop at divider

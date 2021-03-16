@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCdownSample.h"
-
 #ifdef USE_OPEN3D
+#include "_PCdownSample.h"
 
 namespace kai
 {
@@ -51,12 +50,6 @@ void _PCdownSample::update(void)
 		m_pT->autoFPSfrom();
 
 		updateFilter();
-        updatePC();
-
-  		if(m_pViewer)
-		{
-			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-		}
 
 		m_pT->autoFPSto();
 	}
@@ -66,11 +59,11 @@ void _PCdownSample::updateFilter(void)
 {
 	IF_(check()<0);
 
-	PointCloud* pOut = m_sPC.next();
-	PointCloud pcIn;
-    m_pPCB->getPC(&pcIn);
+	// PointCloud* pOut = m_sPC.next();
+	// PointCloud pcIn;
+    // m_pPCB->getPC(&pcIn);
     
-    *pOut = *pcIn.VoxelDownSample(m_rVoxel);    
+    // *pOut = *pcIn.VoxelDownSample(m_rVoxel);    
 }
 
 }

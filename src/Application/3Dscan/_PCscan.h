@@ -1,13 +1,13 @@
 #ifndef OpenKAI_src_Protocol___PCscan_H_
 #define OpenKAI_src_Protocol___PCscan_H_
 
+#ifdef USE_OPEN3D
 #include "../../Protocol/_JSONbase.h"
 #include "../../IO/_WebSocket.h"
-#include "../../PointCloud/_PCtransform.h"
+#include "../../PointCloud/_PCbase.h"
 
 using namespace picojson;
 
-#ifdef USE_OPEN3D
 namespace kai
 {
 
@@ -28,7 +28,7 @@ protected:
 	virtual void handleMsg(string& str);
 
 private:
-	virtual _PCtransform* findTransform(string& n);
+	virtual _PCbase* findPC(string& n);
 	void updateW(void);
 	static void* getUpdateW(void* This)
 	{
@@ -46,7 +46,7 @@ private:
 public:
     _Thread* m_pTr;
     
-    vector<_PCtransform*> m_vPCT;
+    vector<_PCbase*> m_vPCB;
 
 };
 

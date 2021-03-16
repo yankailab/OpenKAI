@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCregistICP.h"
-
 #ifdef USE_OPEN3D
+#include "_PCregistICP.h"
 
 namespace kai
 {
@@ -19,7 +18,6 @@ _PCregistICP::_PCregistICP()
     m_iMt = 0;
     m_pSrc = NULL;
     m_pTgt = NULL;
-    m_pTf = NULL;
     m_lastFit = 0.0;
 }
 
@@ -48,11 +46,6 @@ bool _PCregistICP::init ( void *pKiss )
     m_pTgt = ( _PCbase* ) ( pK->getInst ( n ) );
     IF_Fl ( !m_pTgt, n + ": not found" );
 
-    n = "";
-    pK->v ( "_PCtransform", &n );
-    m_pTf = ( _PCtransform* ) ( pK->getInst ( n ) );
-    IF_Fl ( !m_pTf, n + ": not found" );
-
     return true;
 }
 
@@ -66,7 +59,6 @@ int _PCregistICP::check ( void )
 {
     NULL__( m_pSrc, -1);
     NULL__( m_pTgt, -1);
-    NULL__(m_pTf, -1);
 
     return _PCbase::check();
 }
@@ -87,45 +79,45 @@ void _PCregistICP::updateRegistration ( void )
 {
     IF_ ( check() < 0 );
 
-    PointCloud pcSrc;
-    m_pSrc->getPC ( &pcSrc );
-    PointCloud pcTgt;
-    m_pTgt->getPC ( &pcTgt );
+//     PointCloud pcSrc;
+//     m_pSrc->getPC ( &pcSrc );
+//     PointCloud pcTgt;
+//     m_pTgt->getPC ( &pcTgt );
 
-    IF_(pcSrc.IsEmpty());
-    IF_(pcTgt.IsEmpty());
+//     IF_(pcSrc.IsEmpty());
+//     IF_(pcTgt.IsEmpty());
     
-    if(m_est == icp_p2point)
-    {
-        m_RR = RegistrationICP(
-                pcSrc,
-                pcTgt,
-                m_thr,
-//                Eigen::Matrix4d::Identity(),
-                m_RR.transformation_,
-                TransformationEstimationPointToPoint()
-            );       
-    }
-    else if(m_est == icp_p2plane)
-    {
-        m_RR = RegistrationICP(
-                pcSrc,
-                pcTgt,
-                m_thr,
-//                Eigen::Matrix4d::Identity(),
-                m_RR.transformation_,
-                TransformationEstimationPointToPlane()
-            );
-    }
-    else
-    {
-        return;
-    }
+//     if(m_est == icp_p2point)
+//     {
+//         m_RR = RegistrationICP(
+//                 pcSrc,
+//                 pcTgt,
+//                 m_thr,
+// //                Eigen::Matrix4d::Identity(),
+//                 m_RR.transformation_,
+//                 TransformationEstimationPointToPoint()
+//             );       
+//     }
+//     else if(m_est == icp_p2plane)
+//     {
+//         m_RR = RegistrationICP(
+//                 pcSrc,
+//                 pcTgt,
+//                 m_thr,
+// //                Eigen::Matrix4d::Identity(),
+//                 m_RR.transformation_,
+//                 TransformationEstimationPointToPlane()
+//             );
+//     }
+//     else
+//     {
+//         return;
+//     }
 
-    IF_(m_RR.fitness_ < m_lastFit);
-    m_lastFit = m_RR.fitness_;
+//     IF_(m_RR.fitness_ < m_lastFit);
+//     m_lastFit = m_RR.fitness_;
     
-    m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );
+//     m_pTf->setTranslationMatrix ( m_iMt, m_RR.transformation_ );
 }
 
 void _PCregistICP::draw ( void )

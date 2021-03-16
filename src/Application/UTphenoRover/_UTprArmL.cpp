@@ -185,8 +185,8 @@ bool _UTprArmL::follow(void)
 	float y = m_vP.y - m_vPtarget.y;
 	float r = sqrt(x*x + y*y);
 
-	float sX = m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTstamp());
-	float sY = m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTstamp());
+	float sX = m_pXpid->update(m_vP.x, m_vPtarget.x, m_pT->getTfrom());
+	float sY = m_pYpid->update(m_vP.y, m_vPtarget.y, m_pT->getTfrom());
 	float sZ = m_zSpeed * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 
 	m_pAx->setStarget(0, sX);

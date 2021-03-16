@@ -90,7 +90,7 @@ void _AP_droneBoxJSON::send ( void )
         
     object o;
     JO(o, "id", (double)1);
-    JO(o, "t", (double)m_pT->getTstamp());
+    JO(o, "t", (double)m_pT->getTfrom());
 
     if(pState->bSTANDBY())
     {

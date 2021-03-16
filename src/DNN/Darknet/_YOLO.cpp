@@ -116,7 +116,7 @@ bool _YOLO::detect(void)
 		yolo_object* pYO = &m_pYoloObj[i];
 
 		obj.init();
-		obj.m_tStamp = m_pT->getTstamp();
+		obj.m_tStamp = m_pT->getTfrom();
 		obj.setClassMask(pYO->m_mClass);
 		obj.setTopClass(pYO->m_topClass, (double) pYO->m_topProb);
 
