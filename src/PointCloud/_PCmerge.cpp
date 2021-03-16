@@ -14,7 +14,6 @@ namespace kai
 
 _PCmerge::_PCmerge()
 {
-	m_pViewer = NULL;
     m_rVoxel = 0.0;
 }
 
@@ -65,13 +64,7 @@ void _PCmerge::update(void)
 		m_pT->autoFPSfrom();
 
 		updateMerge();
-        updatePC();
         
-        if(m_pViewer)
-        {
-            m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-        }
-
 		m_pT->autoFPSto();
 	}
 }
@@ -80,22 +73,12 @@ void _PCmerge::updateMerge(void)
 {
 	IF_(check() < 0);
 
-    PointCloud pcMerge;
+	//read all inputs into one ring
 	for(_PCbase* pPCB : m_vpPCB)
 	{
-        PointCloud pc;
-        pPCB->getPC(&pc);
-		IF_CONT(pc.points_.empty());
-        
-        pcMerge += pc;
-    }
-    
-	PointCloud* pOut = m_sPC.next();
+		m_ring.readSrc(pPCB->getRing());
+	}
 
-    if(m_rVoxel <= 0.0)
-        *pOut = pcMerge;
-    else
-        *pOut = *pcMerge.VoxelDownSample(m_rVoxel);
 }
 
 }

@@ -92,8 +92,14 @@ void _PCviewer::update(void)
 
 void _PCviewer::render(void)
 {
-	//*m_spPC = *pPC;
 	//read all inputs into one ring
+	m_spPC->points_.clear();
+	for(_PCbase* pPCB : m_vpPCB)
+	{
+		pPCB->getRing()->get(&m_spPC->points_,
+							 &m_spPC->colors_,
+							m_pT->getTto());
+	}
 
 	m_vis.UpdateGeometry(m_spPC);
 

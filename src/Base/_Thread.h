@@ -41,13 +41,15 @@ public:
     virtual float getTstamp(void);
     virtual float getDt(void);
 
+	virtual uint64_t getTfrom(void);
+	virtual uint64_t getTto(void);
+
 protected:
 	pthread_t m_threadID;
 	bool m_bThreadON;
 	pthread_mutex_t m_wakeupMutex;
 	pthread_cond_t m_wakeupSignal;
 
-	uint64_t m_tStamp;
 	uint64_t m_tFrom;
 	uint64_t m_tTo;
 	float m_targetFPS;

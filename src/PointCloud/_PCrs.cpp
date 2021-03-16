@@ -5,10 +5,9 @@
  *      Author: yankai
  */
 
-#include "_PCrs.h"
-
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
+#include "_PCrs.h"
 
 namespace kai
 {
@@ -199,16 +198,7 @@ void _PCrs::update(void)
 
 		m_pT->autoFPSfrom();
 
-		if(updateRS())
-        {
-            updatePC();
-
-            if(m_pViewer)
-            {
-                m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-            }
-        }
-        else
+		if(!updateRS())
         {
             hardwareReset();
 			m_pT->sleepT (USEC_1SEC);
@@ -276,8 +266,6 @@ bool _PCrs::updateRS(void)
 	auto rspTexCoord = m_rsPoints.get_texture_coordinates();
 	int nP = m_rsPoints.size();
 
-	PointCloud* pPC = m_sPC.next();
-
 	const static float c_b = 1.0 / 255.0;
 
 	for (int i = 0; i < nP; i++)
@@ -286,17 +274,17 @@ bool _PCrs::updateRS(void)
 		IF_CONT(vr.z < m_vRz.x);
 		IF_CONT(vr.z > m_vRz.y);
 
-		Eigen::Vector3d ve(vr.x, vr.y, vr.z);
-		pPC->points_.push_back(ve);
+		Vector3d evP(vr.x, vr.y, vr.z);
 
 		rs2::texture_coordinate tc = rspTexCoord[i];
 		int tx = constrain<int>(tc.u * m_vWHc.x, 0, m_vWHc.x - 1);
 		int ty = constrain<int>(tc.v * m_vWHc.y, 0, m_vWHc.y - 1);
- 		Eigen::Vector3d te((double)*m_spImg->PointerAt<uint8_t>(tx,ty,2),
+ 		Vector3d evC((double)*m_spImg->PointerAt<uint8_t>(tx,ty,2),
                            (double)*m_spImg->PointerAt<uint8_t>(tx,ty,1),
                            (double)*m_spImg->PointerAt<uint8_t>(tx,ty,0));
- 		te *= c_b;
- 		pPC->colors_.push_back(te);
+ 		evC *= c_b;
+
+		m_ring.add(evP, evC, m_pT->getTfrom());
 	}
 
     return true;

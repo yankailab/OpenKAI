@@ -103,9 +103,7 @@ bool _PCrecv::readCMD(void)
 }
 
 void _PCrecv::handleCMD(void)
-{
-	PointCloud* pPC = m_sPC.next();
-        
+{        
 	switch (m_recvMsg.m_pB[1])
 	{
 	case PC_STREAM:
@@ -115,13 +113,6 @@ void _PCrecv::handleCMD(void)
     }
 	case PC_FRAME_END:
     {
-        updatePC();
-        
-   		if(m_pViewer)
-		{
-			m_pViewer->updateGeometry(m_iV, m_sPC.prev());
-		}
-
 		break;
     }
     default:
@@ -135,7 +126,6 @@ void _PCrecv::decodeStream(void)
 {
     const double PC_SCALE_INV = 0.001;
    	int16_t x,y,z;
-	PointCloud* pPC = m_sPC.next();
 
     for(int i=PC_N_HDR; i<m_recvMsg.m_nPayload + PC_N_HDR; i+=12)
     {
@@ -144,18 +134,18 @@ void _PCrecv::decodeStream(void)
         x = unpack_int16(&m_recvMsg.m_pB[i], false);
         y = unpack_int16(&m_recvMsg.m_pB[i+2], false);
         z = unpack_int16(&m_recvMsg.m_pB[i+4], false);
-        Eigen::Vector3d vp(((double)x)*PC_SCALE_INV,
+        Eigen::Vector3d vP(((double)x)*PC_SCALE_INV,
                             ((double)y)*PC_SCALE_INV,
                             ((double)z)*PC_SCALE_INV);
-        pPC->points_.push_back(vp);
 
         x = unpack_int16(&m_recvMsg.m_pB[i+6], false);
         y = unpack_int16(&m_recvMsg.m_pB[i+8], false);
         z = unpack_int16(&m_recvMsg.m_pB[i+10], false);
-        Eigen::Vector3d vc(((double)x)*PC_SCALE_INV,
+        Eigen::Vector3d vC(((double)x)*PC_SCALE_INV,
                             ((double)y)*PC_SCALE_INV,
                             ((double)z)*PC_SCALE_INV);
-        pPC->colors_.push_back(vc);
+
+		m_ring.add(vP, vC, m_pT->getTfrom());
     }
 }
 

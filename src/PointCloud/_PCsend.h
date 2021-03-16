@@ -44,6 +44,8 @@ private:
 public:
 	_IOBase* m_pIO;
 
+	int m_iPsent;
+
 	uint8_t*	m_pB;
 	int			m_nB;
     uint64_t    m_tInt;

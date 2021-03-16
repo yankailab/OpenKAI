@@ -15,6 +15,7 @@ namespace kai
 _PCsend::_PCsend()
 {
 	m_pIO = NULL;
+    m_iPsent = 0;
 	m_pB = NULL;
 	m_nB = 256;
     m_tInt = 100000;
@@ -73,11 +74,7 @@ void _PCsend::update(void)
 void _PCsend::sendPC(void)
 {
 	IF_(check()<0);
-
-	PointCloud pcOut;
-    m_pPCB->getPC(&pcOut);
-	int nP = pcOut.points_.size();
-    IF_(nP <= 0);
+    IF_(m_iPsent == m_ring.m_iP);
 
     const double PC_SCALE = 1000;
     const int PC_DB = 2;
@@ -85,14 +82,11 @@ void _PCsend::sendPC(void)
     m_pB[1] = PC_STREAM;
     int iB = PC_N_HDR;
     
-	for (int i = 0; i < nP; i++)
+	while(m_iPsent != m_ring.m_iP)
 	{
-        IF_CONT(pcOut.points_.empty());
-        IF_CONT(pcOut.colors_.empty());
-        
-        Eigen::Vector3d vP = pcOut.points_[i];
-        Eigen::Vector3d vC = pcOut.colors_[i];
-//        Eigen::Vector3d vN = pcOut.normals_[i];
+        Vector3d vP;
+        Vector3d vC;
+        IF_CONT(!m_ring.get(&vP, &vC, &m_iPsent));
         
         pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
         iB += PC_DB;

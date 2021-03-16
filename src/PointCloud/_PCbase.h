@@ -7,10 +7,9 @@
 
 #ifndef OpenKAI_src_PointCloud__PCbase_H_
 #define OpenKAI_src_PointCloud__PCbase_H_
+#ifdef USE_OPEN3D
 
 #include "../Base/_ModuleBase.h"
-
-#ifdef USE_OPEN3D
 using namespace open3d;
 using namespace open3d::geometry;
 using namespace open3d::visualization;
@@ -24,6 +23,13 @@ namespace kai
         Vector3d m_vP; //pos
         Vector3d m_vC; //color
         uint64_t m_tStamp;
+
+        void init(void)
+        {
+            m_vP = Vector3d(0.0, 0.0, 0.0);
+            m_vC = Vector3d(0.0, 0.0, 0.0);
+            m_tStamp = 0;
+        }
     };
 
     struct PC_RING
@@ -31,14 +37,14 @@ namespace kai
         PC_POINT *m_pP;
         int m_nP;
         int m_iP;
-        uint64_t m_tStart;
+        uint64_t m_tLastUpdate;
 
         void init(void)
         {
             m_pP = NULL;
             m_nP = 0;
             m_iP = 0;
-            m_tStart = 0;
+            m_tLastUpdate = 0;
         }
 
         bool setup(int nP)
@@ -48,7 +54,10 @@ namespace kai
             m_pP = new PC_POINT[m_nP];
             NULL_F(m_pP);
             m_iP = 0;
-            m_tStart = 0;
+            m_tLastUpdate = 0;
+
+            for (int i = 0; i < m_nP; i++)
+                m_pP[i].init();
         }
 
         void release(void)
@@ -67,6 +76,37 @@ namespace kai
             pP->m_tStamp = tStamp;
 
             m_iP = iRing(m_iP, m_nP);
+        }
+
+        void get(vector<Vector3d> *pvP, vector<Vector3d> *pvC, uint64_t tFrom = 0)
+        {
+            NULL_(pvP);
+            NULL_(pvC);
+
+            for (int i = 0; i < m_nP; i++)
+            {
+                PC_POINT *pP = &m_pP[i];
+                IF_CONT(pP->m_tStamp < tFrom);
+
+                pvP->push_back(pP->m_vP);
+                pvC->push_back(pP->m_vC);
+            }
+        }
+
+        bool get(Vector3d *peP, Vector3d *peC, int *pI)
+        {
+            NULL_F(peP);
+            NULL_F(peC);
+            NULL_F(pI);
+            IF_F(*pI < 0);
+            IF_F(*pI >= m_nP);
+
+            PC_POINT *pP = &m_pP[*pI];
+            *peP = pP->m_vP;
+            *peC = pP->m_vC;
+
+            *pI = iRing(*pI, m_nP);
+            return true;
         }
 
         void readSrc(PC_RING *pRB, int *pPr, uint64_t tFrom = 0)
@@ -88,6 +128,23 @@ namespace kai
                 }
 
                 *pPr = iRing(*pPr, pRB->m_nP);
+            }
+        }
+
+        void readSrc(PC_RING *pRB, uint64_t tFrom = 0)
+        {
+            NULL_(pRB);
+            NULL_(m_pP);
+
+            PC_POINT *pP = pRB->m_pP;
+
+            for (int i = 0; i < pRB->m_nP; i++)
+            {
+                PC_POINT p = pP[i];
+                IF_CONT(p.m_tStamp < tFrom);
+
+                m_pP[m_iP] = p;
+                m_iP = iRing(m_iP, m_nP);
             }
         }
 

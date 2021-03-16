@@ -8,8 +8,6 @@
 #ifndef OpenKAI_src_PointCloud_PCrs_H_
 #define OpenKAI_src_PointCloud_PCrs_H_
 
-#include "../Base/common.h"
-
 #ifdef USE_OPEN3D
 #ifdef USE_REALSENSE
 #include "_PCbase.h"

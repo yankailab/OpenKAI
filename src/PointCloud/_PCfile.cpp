@@ -41,7 +41,7 @@ bool _PCfile::open(void)
 
 	for(int i=0; i<pc.points_.size(); i++)
 	{
-		add(pc.points_[i], pc.colors_[i], 0);
+		add(pc.points_[i], pc.colors_[i]);
 	}
 
 	return true;

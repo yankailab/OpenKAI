@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCbase.h"
-
 #ifdef USE_OPEN3D
+#include "_PCbase.h"
 
 namespace kai
 {

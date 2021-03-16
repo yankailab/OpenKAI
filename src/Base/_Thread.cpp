@@ -14,7 +14,6 @@ _Thread::_Thread()
 {
 	m_bThreadON = false;
 	m_threadID = 0;
-	m_tStamp = 0;
 	m_dT = 1.0;
 	m_FPS = 0;
 	m_targetFPS = DEFAULT_FPS;
@@ -165,9 +164,9 @@ float _Thread::getTargetFPS(void)
 
 void _Thread::autoFPSfrom(void)
 {
-	m_tFrom = getApproxTbootUs();
-	m_dT = (float)(m_tFrom - m_tStamp + 1);
-	m_tStamp = m_tFrom;
+	uint64_t tNow = getApproxTbootUs();
+	m_dT = (float)(tNow - m_tFrom + 1);
+	m_tFrom = tNow;
 	m_FPS = USEC_1SEC / m_dT;
 }
 
@@ -196,9 +195,14 @@ void _Thread::autoFPSto(void)
 	}
 }
 
-float _Thread::getTstamp(void)
+uint64_t _Thread::getTfrom(void)
 {
-	return m_tStamp;
+	return m_tFrom;
+}
+
+uint64_t _Thread::getTto(void)
+{
+	return m_tTo;
 }
 
 float _Thread::getDt (void)
