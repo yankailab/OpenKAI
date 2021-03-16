@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/OpenKAI",
-            "args": ["/home/kai/dev/OpenKAI/kiss/test/_Camera.kiss"],
+            "args": ["${workspaceFolder}/kiss/test/_PCfile.kiss"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],

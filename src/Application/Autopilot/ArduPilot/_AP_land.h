@@ -35,7 +35,7 @@ public:
 	Median m_filter;
 	int	m_iRelayLED;
 
-	float m_alt;
+	float m_targetAlt;
     float m_zrK;
 	float m_dTarget;	//dist to target
 

@@ -45,9 +45,7 @@ public:
 	PID* m_pRoll;
 	PID* m_pPitch;
 	PID* m_pAlt;
-
-	bool	m_bYaw;
-
+	PID* m_pYaw;
 };
 
 }

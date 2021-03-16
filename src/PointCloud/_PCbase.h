@@ -53,6 +53,7 @@ namespace kai
         {
             IF_F(nP <= 0);
 
+            m_nP = nP;
             m_pP = new PC_POINT[m_nP];
             NULL_F(m_pP);
             m_iP = 0;
@@ -60,6 +61,8 @@ namespace kai
 
             for (int i = 0; i < m_nP; i++)
                 m_pP[i].init();
+
+            return true;
         }
 
         void release(void)
@@ -170,7 +173,7 @@ namespace kai
         virtual int check(void);
         virtual void draw(void);
 
-        virtual void add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t &tStamp);
+        virtual void add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t tStamp = UINT64_MAX);
         virtual void setTranslation(vDouble3 &vT, vDouble3 &vR);
 
         virtual PC_RING *getRing(void);

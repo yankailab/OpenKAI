@@ -256,6 +256,21 @@
 }
 
 {
+	"name":"PIDyaw",
+	"class":"PID",
+	"bInst":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"P":-10.0,
+	"I":0.0,
+	"Imax":0.0,
+	"D":0.0,
+	"dT":0.0,
+	"oMin":-90.0,
+	"oMax":90.0,
+}
+
+{
 	"name":"apLand",
 	"class":"_AP_land",
     {
@@ -272,10 +287,9 @@
 	"_Universe":"univTag",
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
-	"vTargetP":[0.5, 0.5, 0.5, 0.0],
-	"bYaw":1,
-	"yawRate":90.0,
-	"alt":0.8,
+	"PIDyaw":"PIDyaw",
+	"vTargetP":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"targetAlt":0.8,
 	"wLen":5,
 	"zrK":1.5,
 	

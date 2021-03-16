@@ -39,6 +39,9 @@ bool _PCfile::open(void)
 	PointCloud pc;
 	IF_F(!io::ReadPointCloud(m_fName, pc));
 
+	m_ring.release();
+	IF_F(!m_ring.setup(pc.points_.size()));
+
 	for(int i=0; i<pc.points_.size(); i++)
 	{
 		m_ring.add(pc.points_[i], pc.colors_[i]);

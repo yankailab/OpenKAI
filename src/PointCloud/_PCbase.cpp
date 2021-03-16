@@ -80,7 +80,7 @@ namespace kai
         return this->_ModuleBase::check();
     }
 
-    void _PCbase::add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t &tStamp)
+    void _PCbase::add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t tStamp)
     {
         Vector3d p = m_A * vP;
         m_ring.add(p, vC, tStamp);

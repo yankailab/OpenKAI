@@ -7,7 +7,7 @@ namespace kai
 
 _AP_land::_AP_land()
 {
-	m_alt = 3.0;
+	m_targetAlt = 1.0;
     m_zrK = 1.0;
 	m_dTarget = -1.0;
 	m_iRelayLED = -1;
@@ -22,7 +22,7 @@ bool _AP_land::init(void* pKiss)
 	IF_F(!this->_AP_follow::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	pK->v("alt", &m_alt);
+	pK->v("targetAlt", &m_targetAlt);
 	pK->v("zrK", &m_zrK);
 	pK->v("iRelayLED",&m_iRelayLED);
 
@@ -111,8 +111,7 @@ bool _AP_land::findTarget(void)
     m_vP.z = m_vTargetP.z * constrain(1.0 - r*m_zrK, 0.0, 1.0);
 
 	//heading
-//	m_vP.w = Hdg(m_pAP->getApHdg() + tO->getRoll());
-    m_vP.w = dHdg<float>(0.0, tO->getRoll()) * 0.5;
+    m_vP.w = tO->getRoll();
 
 	//distance
 	m_filter.input(tO->getZ());

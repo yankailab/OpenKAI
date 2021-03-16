@@ -12,7 +12,7 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -22,6 +22,7 @@
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"vPCbase":["pcFile"],
+	"nP":102400,
 }
 
 {

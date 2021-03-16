@@ -94,6 +94,7 @@ void _PCviewer::render(void)
 {
 	//read all inputs into one ring
 	m_spPC->points_.clear();
+	m_spPC->colors_.clear();
 	for(_PCbase* pPCB : m_vpPCB)
 	{
 		pPCB->getRing()->get(&m_spPC->points_,
