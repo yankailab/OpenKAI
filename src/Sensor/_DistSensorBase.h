@@ -34,8 +34,8 @@ struct DIST_SENSOR_DIV
 
 	void init(int nAvr, int nMed)
 	{
-		m_fMed.init(nMed,0);
-		m_fAvr.init(nAvr,0);
+		m_fMed.init(nMed);
+		m_fAvr.init(nAvr);
 		m_d = -1.0;
 		m_a = -1.0;
 	}

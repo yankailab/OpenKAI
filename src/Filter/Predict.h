@@ -1,12 +1,12 @@
 /*
- * Average.h
+ * Predict.h
  *
- *  Created on: Nov 18, 2015
+ *  Created on: Mar 18, 2021
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Filter_Average_H_
-#define OpenKAI_src_Filter_Average_H_
+#ifndef OpenKAI_src_Filter_Predict_H_
+#define OpenKAI_src_Filter_Predict_H_
 
 #include "FilterBase.h"
 
@@ -14,15 +14,15 @@ namespace kai
 {
 
 	template <class T>
-	class Average : public FilterBase<T>
+	class Predict : public FilterBase<T>
 	{
 	public:
-		Average<T>()
+		Predict<T>()
 		{
 			FilterBase<T>::m_nW = 2;
 		}
-		virtual ~Average()
-		{
+		virtual ~Predict()
+		{			
 		}
 
 		bool init(int nW)
@@ -36,7 +36,7 @@ namespace kai
 			return true;
 		}
 
-		T input(T v)
+		T input(T v, T dT)
 		{
 			if(!FilterBase<T>::add(v))
 			{
@@ -44,11 +44,11 @@ namespace kai
 				return FilterBase<T>::m_v;
 			}
 
-			T tot = 0.0;
-			for (int i = 0; i < FilterBase<T>::m_nW; i++)
-				tot += FilterBase<T>::m_qV.at(i);
+			int s = FilterBase<T>::m_qV.size();
+			T p = FilterBase<T>::m_qV.at(s-2);
+			T q = FilterBase<T>::m_qV.at(s-1);
 
-			FilterBase<T>::m_v = tot / (T)FilterBase<T>::m_nW;
+			FilterBase<T>::m_v = q + (q - p) * dT;
 			return FilterBase<T>::m_v;
 		}
 	};

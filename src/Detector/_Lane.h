@@ -79,8 +79,8 @@ struct LANE
 
 		for (int i = 0; i < n; i++)
 		{
-			m_pMed[i].init(nMed, 0);
-			m_pAvr[i].init(nAvr, 0);
+			m_pMed[i].init(nMed);
+			m_pAvr[i].init(nAvr);
 		}
 
 		m_pX = new double[n];

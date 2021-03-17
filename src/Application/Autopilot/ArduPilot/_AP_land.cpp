@@ -28,7 +28,7 @@ bool _AP_land::init(void* pKiss)
 
 	int wLen = 3;
 	pK->v("wLen", &wLen);
-	m_filter.init(wLen, 2);
+	m_filter.init(wLen);
 
 	return true;
 }

@@ -108,20 +108,21 @@ void _AP_posCtrl::setPosLocal(void)
 {
 	IF_(check()<0);
 
+	uint64_t t = m_pT->getTfrom();
 	float p = 0, r = 0, a = 0, y = 0;
 	if (m_pRoll)
-		r = m_pRoll->update(m_vP.x, m_vTargetP.x, m_pT->getTfrom());
+		r = m_pRoll->update(m_vP.x, m_vTargetP.x, t);
 
 	if (m_pPitch)
-		p = m_pPitch->update(m_vP.y, m_vTargetP.y, m_pT->getTfrom());
+		p = m_pPitch->update(m_vP.y, m_vTargetP.y, t);
 
 	if (m_pAlt)
-		a = m_pAlt->update(m_vP.z, m_vTargetP.z, m_pT->getTfrom());
+		a = m_pAlt->update(m_vP.z, m_vTargetP.z, t);
 	else
 		a = m_vP.z;
 
 	if(m_pYaw)
-		y = m_pYaw->update(dHdg<float>(m_vTargetP.w, m_vP.w), 0.0, m_pT->getTfrom());
+		y = m_pYaw->update(dHdg<float>(m_vTargetP.w, m_vP.w), 0.0, t);
 
 	m_sptLocal.coordinate_frame = MAV_FRAME_BODY_OFFSET_NED;
 	m_sptLocal.vx = p;		//forward
