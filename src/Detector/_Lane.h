@@ -54,8 +54,8 @@ struct LANE_FILTER
 struct LANE
 {
 	int m_n;
-	Median* m_pMed = NULL;
-	Average* m_pAvr = NULL;
+	Median<float>* m_pMed = NULL;
+	Average<float>* m_pAvr = NULL;
 	double m_deviation;
 	vDouble4 m_ROI;
 
@@ -74,8 +74,8 @@ struct LANE
 		m_ROI.init();
 		m_ROI.z = 1.0;
 		m_ROI.w = 1.0;
-		m_pMed = new Median[n];
-		m_pAvr = new Average[n];
+		m_pMed = new Median<float>[n];
+		m_pAvr = new Average<float>[n];
 
 		for (int i = 0; i < n; i++)
 		{

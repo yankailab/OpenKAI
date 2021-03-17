@@ -32,7 +32,7 @@ protected:
 	}
 
 public:
-	Median m_filter;
+	Median<float> m_filter;
 	int	m_iRelayLED;
 
 	float m_targetAlt;

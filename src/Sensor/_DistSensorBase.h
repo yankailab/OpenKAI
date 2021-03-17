@@ -29,8 +29,8 @@ struct DIST_SENSOR_DIV
 {
 	float m_d;	//raw input
 	float m_a; //amplitude
-	Median m_fMed;
-	Average m_fAvr;
+	Median<float> m_fMed;
+	Average<float> m_fAvr;
 
 	void init(int nAvr, int nMed)
 	{

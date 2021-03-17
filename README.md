@@ -1,5 +1,5 @@
 <p align="center">
-<img src="https://github.com/yankailab/OpenKAI/raw/master/data/OK.png" alt="OpenKAI">
+<img src="https://github.com/yankailab/OpenKAI/raw/master/data/OK.png" width=300px alt="OpenKAI">
 </p>
 
 ## OpenKAI: A modern framework for unmanned vehicle and robot control

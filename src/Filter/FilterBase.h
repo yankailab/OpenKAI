@@ -13,26 +13,60 @@
 namespace kai
 {
 
-class FilterBase
-{
-public:
-	FilterBase();
-	virtual ~FilterBase();
+	template <class T>
+	class FilterBase
+	{
+	public:
+		FilterBase()
+		{
+			m_nTraj = 2;
+			reset();
+		}
 
-	virtual bool init(int nTraj);
-	virtual void input(double v);
-	virtual double v(void);
-	virtual void reset(void);
+		virtual ~FilterBase()
+		{
+			
+		}
 
-public:
-	double	m_v;
-	std::deque<double> m_data;
+		virtual bool init(int nTraj)
+		{
+			m_nTraj = (nTraj < 2) ? 2 : nTraj;
 
-	unsigned int m_nTraj;
-	std::deque<double> m_traj;
+			reset();
+			return true;
+		}
 
-	double	m_variance;
-};
+		virtual void input(T v)
+		{
+			while (m_qTraj.size() >= m_nTraj)
+			{
+				m_qTraj.pop_front();
+			}
+			m_qTraj.push_back(m_v);
+		}
+
+		virtual T v(void)
+		{
+			return m_v;
+		}
+
+		virtual void reset(void)
+		{
+			m_v = 0.0;
+			m_variance = 0.0;
+			m_qData.clear();
+			m_qTraj.clear();
+		}
+
+	public:
+		T m_v;
+		std::deque<T> m_qData;
+
+		unsigned int m_nTraj;
+		std::deque<T> m_qTraj;
+
+		T m_variance;
+	};
 
 }
 #endif
