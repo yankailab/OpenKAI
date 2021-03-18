@@ -2,7 +2,6 @@
 #define OpenKAI_src_Autopilot_AP__AP_descent_H_
 
 #include "../../../Detector/_DetectorBase.h"
-#include "../../../Filter/FilterBase.h"
 #include "../ArduPilot/_AP_follow.h"
 
 #ifdef USE_OPENCV
@@ -32,12 +31,10 @@ protected:
 	}
 
 public:
-	Median<float> m_filter;
-	int	m_iRelayLED;
-
 	float m_targetAlt;
     float m_zrK;
 	float m_dTarget;	//dist to target
+
 
 };
 }

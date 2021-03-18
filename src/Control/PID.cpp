@@ -54,21 +54,14 @@ void PID::reset(void)
 	m_eI = 0.0;
 
 	m_vOut = 0.0;
-	m_tLastUpdate = 0;
 }
 
-float PID::update(float v, float vT, uint64_t tUsec)
+float PID::update(float v, float vT, float dT)
 {
-	IF__(tUsec <= m_tLastUpdate, m_vOut);
-
-	float dT = ((float)(tUsec - m_tLastUpdate)) * ((float)1e-6);
-	float ovdT = 1.0/dT;
-	if(m_tLastUpdate == 0)
-	{
-		dT = 0.0;
-		ovdT = 0.0;
-	}
-
+	float ovdT = 0.0;
+	if(dT != 0.0)
+		ovdT = 1.0/dT;
+	
 	m_v = constrain(v, m_vMin, m_vMax);
 	m_vT = vT;
 
@@ -82,8 +75,6 @@ float PID::update(float v, float vT, uint64_t tUsec)
 			 + constrain(m_I * m_eI, -m_Imax, m_Imax);
 
 	m_vOut = constrain(o, m_oMin, m_oMax);
-
-	m_tLastUpdate = tUsec;
 	return m_vOut;
 }
 

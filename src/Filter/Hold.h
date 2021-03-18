@@ -24,30 +24,26 @@ namespace kai
 		{			
 		}
 
-		bool init(uint64_t tHold, T m_vTover)
+		bool init(T dThold, T m_vTover)
 		{
-			m_tHold = tHold;
-			m_tLastUpdate = 0;
+			m_dThold = dThold;
 			return true;
 		}
 
-		T input(T v, bool b, uint64_t t)
+		T input(T v, bool b, T dT)
 		{
 			if(!b)
 			{
-				uint64_t dT = t - m_tLastUpdate;
-				IF__(dT < m_tHold, FilterBase<T>::m_v);
+				IF__(dT < m_dThold, FilterBase<T>::m_v);
 				return m_vTover;
 			}
 
 			FilterBase<T>::m_v = v;
-			m_tLastUpdate = t;
 			return FilterBase<T>::m_v;
 		}
 
 	private:
-		uint64_t m_tHold;
-		uint64_t m_tLastUpdate;
+		T m_dThold;
 		T m_vTover;
 	};
 

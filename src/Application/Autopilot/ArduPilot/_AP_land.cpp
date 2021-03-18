@@ -7,10 +7,9 @@ namespace kai
 
 _AP_land::_AP_land()
 {
-	m_targetAlt = 1.0;
     m_zrK = 1.0;
+	m_targetAlt = 1.0;
 	m_dTarget = -1.0;
-	m_iRelayLED = -1;
 }
 
 _AP_land::~_AP_land()
@@ -24,11 +23,6 @@ bool _AP_land::init(void* pKiss)
 
 	pK->v("targetAlt", &m_targetAlt);
 	pK->v("zrK", &m_zrK);
-	pK->v("iRelayLED",&m_iRelayLED);
-
-	int wLen = 3;
-	pK->v("wLen", &wLen);
-	m_filter.init(wLen);
 
 	return true;
 }
@@ -53,7 +47,6 @@ void _AP_land::update(void)
 
 		if (!updateTarget())
 		{
-			m_filter.reset();
 			m_dTarget = -1.0;
 		}
 
@@ -68,9 +61,6 @@ bool _AP_land::updateTarget(void)
 
 	m_bTarget = findTarget();
     
-    if(m_iRelayLED >=0)
-        m_pAP->m_pMav->clDoSetRelay(m_iRelayLED, m_bTarget);
-
 	if (m_apMount.m_bEnable)
 		m_pAP->setMount(m_apMount);
 
@@ -114,8 +104,8 @@ bool _AP_land::findTarget(void)
     m_vP.w = tO->getRoll();
 
 	//distance
-	m_filter.input(tO->getZ());
-	m_dTarget = m_filter.v();
+//	m_filter.input(tO->getZ());
+//	m_dTarget = m_filter.v();
 
 	return true;
 }

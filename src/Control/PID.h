@@ -21,7 +21,7 @@ public:
 	virtual ~PID();
 
 	virtual bool init(void* pKiss);
-	virtual float update(float v, float vT, uint64_t tUsec);
+	virtual float update(float v, float vT, float dT);
 	virtual double o(void);
 	virtual void draw(void);
 	virtual void reset(void);
@@ -44,9 +44,6 @@ public:
 	float m_vOut;
 	float m_oMin;
 	float m_oMax;
-
-	uint64_t m_tLastUpdate;
-
 };
 
 }
