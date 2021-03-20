@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCfile.h"
-
 #ifdef USE_OPEN3D
+#include "_PCfile.h"
 
 namespace kai
 {
@@ -22,7 +21,7 @@ _PCfile::~_PCfile()
 
 bool _PCfile::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_PCframe::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 	pK->v("fName", &m_fName);
@@ -36,28 +35,30 @@ bool _PCfile::open(void)
 	IF_F(m_fName.empty());
 
 //	io::ReadPointCloudOption ro;
-	PointCloud pc;
-	IF_F(!io::ReadPointCloud(m_fName, pc));
-
-	m_ring.release();
-	IF_F(!m_ring.setup(pc.points_.size()));
-
-	for(int i=0; i<pc.points_.size(); i++)
-	{
-		m_ring.add(pc.points_[i], pc.colors_[i]);
-	}
+	IF_F(!io::ReadPointCloud(m_fName, *m_sPC.prev()));
 
 	return true;
 }
 
 bool _PCfile::start(void)
 {
-	return true;
+    NULL_F(m_pT);
+	return m_pT->start(getUpdate, this);
+}
+
+void _PCfile::update(void)
+{
+	while(m_pT->bRun())
+	{
+		m_pT->autoFPSfrom();
+
+		m_pT->autoFPSto();
+	}
 }
 
 void _PCfile::draw(void)
 {
-	this->_PCbase::draw();
+	this->_ModuleBase::draw();
 }
 
 }

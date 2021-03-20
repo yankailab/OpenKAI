@@ -15,7 +15,7 @@ _PClattice::~_PClattice()
 
 bool _PClattice::init(void *pKiss)
 {
-	IF_F(!this->_ModuleBase::init(pKiss));
+	IF_F(!this->_PCbase::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
 //	pK->v("v", &m_v);
@@ -31,7 +31,7 @@ bool _PClattice::start(void)
 
 int _PClattice::check(void)
 {
-	return this->_ModuleBase::check();
+	return this->_PCbase::check();
 }
 
 void _PClattice::update(void)

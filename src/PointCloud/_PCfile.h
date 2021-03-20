@@ -7,14 +7,14 @@
 
 #ifndef OpenKAI_src_PointCloud_PCfile_H_
 #define OpenKAI_src_PointCloud_PCfile_H_
-#ifdef USE_OPEN3D
 
-#include "_PCbase.h"
+#ifdef USE_OPEN3D
+#include "_PCframe.h"
 
 namespace kai
 {
 
-class _PCfile: public _PCbase
+class _PCfile: public _PCframe
 {
 public:
 	_PCfile();
@@ -24,6 +24,14 @@ public:
 	bool start(void);
 	bool open(void);
 	void draw(void);
+
+private:
+	void update(void);
+	static void* getUpdate(void* This)
+	{
+		((_PCfile *) This)->update();
+		return NULL;
+	}
 
 public:
 	string m_fName;

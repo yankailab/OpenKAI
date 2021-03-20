@@ -1,12 +1,8 @@
 #ifndef OpenKAI_src_PointCloud__PClattice_H_
 #define OpenKAI_src_PointCloud__PClattice_H_
 
-#include "../Base/_ModuleBase.h"
-
 #ifdef USE_OPEN3D
-using namespace open3d;
-using namespace open3d::geometry;
-using namespace open3d::visualization;
+#include "_PCbase.h"
 
 namespace kai
 {
@@ -29,7 +25,7 @@ struct PCLATTICE_CELL
 	}
 };
 
-class _PClattice: public _ModuleBase
+class _PClattice: public _PCbase
 {
 public:
 	_PClattice();

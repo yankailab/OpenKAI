@@ -52,7 +52,7 @@ bool _PCsend::start(void)
 
 int _PCsend::check(void)
 {
-	NULL__(m_pPCB, -1);
+	NULL__(m_pInCtx.m_pPCB, -1);
 	NULL__(m_pIO, -1);
 	IF__(!m_pIO->isOpen(),-1);
 
@@ -74,7 +74,7 @@ void _PCsend::update(void)
 void _PCsend::sendPC(void)
 {
 	IF_(check()<0);
-    IF_(m_iPsent == m_ring.m_iP);
+//    IF_(m_iPsent == m_ring.m_iP);
 
     const double PC_SCALE = 1000;
     const int PC_DB = 2;
@@ -82,11 +82,11 @@ void _PCsend::sendPC(void)
     m_pB[1] = PC_STREAM;
     int iB = PC_N_HDR;
     
-	while(m_iPsent != m_ring.m_iP)
+//	while(m_iPsent != m_ring.m_iP)
 	{
         Vector3d vP;
         Vector3d vC;
-        IF_CONT(!m_ring.get(&vP, &vC, &m_iPsent));
+//        IF_CONT(!m_ring.get(&vP, &vC, &m_iPsent));
         
         pack_int16(&m_pB[iB], (int16_t)(vP.x() * PC_SCALE), false);
         iB += PC_DB;

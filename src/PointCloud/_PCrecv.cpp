@@ -5,9 +5,8 @@
  *      Author: yankai
  */
 
-#include "_PCrecv.h"
-
 #ifdef USE_OPEN3D
+#include "_PCrecv.h"
 
 namespace kai
 {
@@ -24,7 +23,7 @@ _PCrecv::~_PCrecv()
 
 bool _PCrecv::init(void *pKiss)
 {
-	IF_F(!_PCbase::init(pKiss));
+	IF_F(!_PCstream::init(pKiss));
 	Kiss *pK = (Kiss*) pKiss;
 
     int nB = 256;
@@ -51,7 +50,7 @@ int _PCrecv::check(void)
 	NULL__(m_pIO, -1);
 	IF__(!m_pIO->isOpen(),-1);
 
-	return this->_PCbase::check();
+	return this->_PCstream::check();
 }
 
 void _PCrecv::update(void)
@@ -145,7 +144,7 @@ void _PCrecv::decodeStream(void)
                             ((double)y)*PC_SCALE_INV,
                             ((double)z)*PC_SCALE_INV);
 
-		m_ring.add(vP, vC, m_pT->getTfrom());
+		add(vP, vC, m_pT->getTfrom());
     }
 }
 

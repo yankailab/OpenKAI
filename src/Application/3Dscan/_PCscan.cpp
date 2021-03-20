@@ -160,7 +160,7 @@ void _PCscan::handleMsg ( string& str )
     if ( cmd == "save_kiss" )
     {
         NULL_ ( pPCB );
-        pPCB->saveParam();
+//        pPCB->saveParam();
     }
     else if ( cmd == "var_tr" )
     {

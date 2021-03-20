@@ -56,7 +56,7 @@ bool _PCcrop::start(void)
 
 int _PCcrop::check(void)
 {
-	NULL__(m_pPCB, -1);
+	NULL__(m_pInCtx.m_pPCB, -1);
 
 	return _PCbase::check();
 }

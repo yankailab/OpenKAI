@@ -9,41 +9,41 @@
 #define OpenKAI_src_PointCloud__PCviewer_H_
 #ifdef USE_OPEN3D
 
-#include "_PCbase.h"
+#include "_PCframe.h"
 
 namespace kai
 {
 
-class _PCviewer: public _PCbase
-{
-public:
-	_PCviewer();
-	virtual ~_PCviewer();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void draw(void);
-
-private:
-	void render(void);
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCviewer : public _PCframe
 	{
-		((_PCviewer *) This)->update();
-		return NULL;
-	}
+	public:
+		_PCviewer();
+		virtual ~_PCviewer();
 
-public:
-	Visualizer m_vis;
-	vInt2 m_vWinSize;
-	float m_fov;
-	shared_ptr<TriangleMesh> m_pMcoordFrame;
-    bool m_bCoordFrame;
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
+		virtual void draw(void);
 
-	vector<_PCbase*> m_vpPCB;
-	shared_ptr<PointCloud> m_spPC;
-};
+	private:
+		void render(void);
+		void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCviewer *)This)->update();
+			return NULL;
+		}
+
+	public:
+		Visualizer m_vis;
+		vInt2 m_vWinSize;
+		float m_fov;
+		shared_ptr<TriangleMesh> m_pMcoordFrame;
+		bool m_bCoordFrame;
+
+		vector<_PCbase *> m_vpPCB;
+		shared_ptr<PointCloud> m_spPC;
+	};
 
 }
 #endif

@@ -1,0 +1,55 @@
+/*
+ * PCstream.h
+ *
+ *  Created on: May 24, 2020
+ *      Author: yankai
+ */
+
+#ifndef OpenKAI_src_PointCloud__PCstream_H_
+#define OpenKAI_src_PointCloud__PCstream_H_
+#ifdef USE_OPEN3D
+
+#include "_PCbase.h"
+
+namespace kai
+{
+    inline int iInc(int i, int n)
+    {
+        i++;
+        if (i >= n)
+            i = 0;
+
+        return i;
+    }
+
+    class _PCstream : public _PCbase
+    {
+    public:
+        _PCstream();
+        virtual ~_PCstream();
+
+        virtual bool init(void *pKiss);
+        virtual int check(void);
+        virtual void draw(void);
+
+        virtual void add(Vector3d &vP, Vector3d &vC, uint64_t tStamp = UINT64_MAX);
+
+    protected:
+        virtual void getStream(void *p);
+        virtual void getFrame(void *p);
+        virtual void getLattice(void *p);
+
+    public:
+        //ring buf
+        PC_POINT *m_pP;
+        int m_nP;
+        int m_iP;
+        uint64_t m_tLastUpdate;
+
+        //pipeline input src
+
+    };
+
+}
+#endif
+#endif

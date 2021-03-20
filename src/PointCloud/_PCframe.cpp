@@ -5,114 +5,125 @@
  *      Author: yankai
  */
 
-#include "_PCframe.h"
-
 #ifdef USE_OPEN3D
+#include "_PCframe.h"
+#include "_PCstream.h"
+#include "_PClattice.h"
 
 namespace kai
 {
 
-_PCframe::_PCframe()
-{
-    m_pPCB = NULL;
-    m_vColOvrr.init(-1.0);
-
-    pthread_mutex_init ( &m_mutexPC, NULL );
-}
-
-_PCframe::~_PCframe()
-{
-    pthread_mutex_destroy ( &m_mutexPC );
-}
-
-bool _PCframe::init ( void *pKiss )
-{
-    IF_F ( !this->_PCbase::init ( pKiss ) );
-    Kiss *pK = ( Kiss* ) pKiss;
-
-    pK->v("vColOvrr", &m_vColOvrr);
-
-    //frame
-    int nPCreserve = 0;
-    pK->v ( "nPCreserve", &nPCreserve );
-    if ( nPCreserve > 0 )
+    _PCframe::_PCframe()
     {
-        m_sPC.prev()->points_.reserve ( nPCreserve );
-        m_sPC.prev()->colors_.reserve ( nPCreserve );
-        m_sPC.next()->points_.reserve ( nPCreserve );
-        m_sPC.next()->colors_.reserve ( nPCreserve );
+        m_vColOvrr.init(-1.0);
+
+        pthread_mutex_init(&m_mutexPC, NULL);
     }
-    
-    string n;
-    n = "";
-    pK->v ( "_PCframe", &n );
-    m_pPCB = ( _PCframe* ) ( pK->getInst ( n ) );
 
-    return true;
-}
+    _PCframe::~_PCframe()
+    {
+        pthread_mutex_destroy(&m_mutexPC);
+    }
 
-int _PCframe::check ( void )
-{
-    
-    return this->_PCbase::check();
-}
+    bool _PCframe::init(void *pKiss)
+    {
+        IF_F(!this->_PCbase::init(pKiss));
+        Kiss *pK = (Kiss *)pKiss;
 
-void _PCframe::getPC ( PointCloud* pPC )
-{
-    NULL_ ( pPC );
+        pK->v("vColOvrr", &m_vColOvrr);
 
-    pthread_mutex_lock ( &m_mutexPC );
-    *pPC = *m_sPC.prev();
-    pthread_mutex_unlock ( &m_mutexPC );
-}
+        //frame
+        int nPCreserve = 0;
+        pK->v("nPCreserve", &nPCreserve);
+        if (nPCreserve > 0)
+        {
+            m_sPC.prev()->points_.reserve(nPCreserve);
+            m_sPC.prev()->colors_.reserve(nPCreserve);
+            m_sPC.next()->points_.reserve(nPCreserve);
+            m_sPC.next()->colors_.reserve(nPCreserve);
+        }
 
-void _PCframe::updatePC ( void )
-{
-    paintPC(m_sPC.next());
-    
-    pthread_mutex_lock ( &m_mutexPC );
-    m_sPC.update();
-    m_sPC.next()->points_.clear();
-    m_sPC.next()->colors_.clear();
-    m_sPC.next()->normals_.clear();
-    pthread_mutex_unlock ( &m_mutexPC );
-}
+        return true;
+    }
 
-void _PCframe::paintPC ( PointCloud* pPC )
-{
-    NULL_ ( pPC );
-    IF_ ( m_vColOvrr.x < 0.0 )
+    int _PCframe::check(void)
+    {
+        return this->_PCbase::check();
+    }
 
-    pPC->PaintUniformColor (
-        Vector3d (
-            m_vColOvrr.x,
-            m_vColOvrr.y,
-            m_vColOvrr.z
-        )
-    );
-}
+    void _PCframe::getPC(PointCloud *pPC)
+    {
+        NULL_(pPC);
 
-int _PCframe::size ( void )
-{
-    return m_sPC.prev()->points_.size();
-}
+        pthread_mutex_lock(&m_mutexPC);
+        *pPC = *m_sPC.prev();
+        pthread_mutex_unlock(&m_mutexPC);
+    }
 
-void _PCframe::updateTransformMatrix(void)
-{
-	Eigen::Matrix4d mT;
-	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
-    mT.block(0,0,3,3) = Geometry3D::GetRotationMatrixFromXYZ(vR);
-	mT(0,3) = m_vT.x;
-	mT(1,3) = m_vT.y;
-	mT(2,3) = m_vT.z;
+    void _PCframe::updatePC(void)
+    {
+        paintPC(m_sPC.next());
 
-    m_A = mT;
-}
+        pthread_mutex_lock(&m_mutexPC);
+        m_sPC.update();
+        m_sPC.next()->points_.clear();
+        m_sPC.next()->colors_.clear();
+        m_sPC.next()->normals_.clear();
+        pthread_mutex_unlock(&m_mutexPC);
+    }
 
-void _PCframe::draw ( void )
-{
-    this->_PCbase::draw();
-}
+    void _PCframe::getStream(void *p)
+    {
+        NULL_(p);
+
+        _PCstream* pS = (_PCstream*)p;
+        PointCloud* pPC = m_sPC.next();  
+        for (int i = 0; i < pS->m_nP; i++)
+        {
+            PC_POINT *pP = &pS->m_pP[i];
+            IF_CONT(pP->m_tStamp < m_pInCtx.m_tFrom);
+
+            pPC->points_.push_back(pP->m_vP);
+            pPC->colors_.push_back(pP->m_vC);
+        }
+    }
+
+    void _PCframe::getFrame(void *p)
+    {
+        NULL_(p);
+
+        _PCframe* pF = (_PCframe*)p;
+        PointCloud pc;
+        pF->getPC(&pc);
+
+        *m_sPC.next() += pc;
+    }
+
+    void _PCframe::getLattice(void *p)
+    {
+    }
+
+    void _PCframe::paintPC(PointCloud *pPC)
+    {
+        NULL_(pPC);
+        IF_(m_vColOvrr.x < 0.0)
+
+        pPC->PaintUniformColor(
+            Vector3d(
+                m_vColOvrr.x,
+                m_vColOvrr.y,
+                m_vColOvrr.z));
+    }
+
+    int _PCframe::size(void)
+    {
+        return m_sPC.prev()->points_.size();
+    }
+
+    void _PCframe::draw(void)
+    {
+        this->_PCbase::draw();
+    }
 
 }
 #endif

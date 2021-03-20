@@ -76,7 +76,7 @@ void _PCmerge::updateMerge(void)
 	//read all inputs into one ring
 	for(_PCbase* pPCB : m_vpPCB)
 	{
-		m_ring.readSrc(pPCB->getRing());
+//		m_ring.readSrc(pPCB->getRing());
 	}
 
 }

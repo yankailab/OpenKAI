@@ -24,7 +24,7 @@ _Livox::~_Livox()
 
 bool _Livox::init ( void* pKiss )
 {
-    IF_F ( !this->_PCbase::init ( pKiss ) );
+    IF_F ( !this->_PCstream::init ( pKiss ) );
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "broadcastCode", &m_broadcastCode );
@@ -57,7 +57,7 @@ int _Livox::check ( void )
 {
     NULL__ ( m_pL, -1 );
 
-    return this->_PCbase::check();
+    return this->_PCstream::check();
 }
 
 bool _Livox::start ( void )
@@ -128,7 +128,7 @@ void _Livox::addP ( LivoxExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxExtendRawPoint* pP = ( LivoxExtendRawPoint * ) pLp;
     Eigen::Vector3d vP(pP->x, pP->y, pP->z);
-    this->_PCbase::add(vP, m_vCol, tStamp);
+    this->_PCstream::add(vP, m_vCol, tStamp);
 }
 
 void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
@@ -138,8 +138,8 @@ void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
     Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
     Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
 
-    this->_PCbase::add(vP1, m_vCol, tStamp);
-    this->_PCbase::add(vP2, m_vCol, tStamp);
+    this->_PCstream::add(vP1, m_vCol, tStamp);
+    this->_PCstream::add(vP2, m_vCol, tStamp);
 }
 
 void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp )
@@ -150,9 +150,9 @@ void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp )
     Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
     Eigen::Vector3d vP3(pP->x3, pP->y3, pP->z3);
 
-    this->_PCbase::add(vP1, m_vCol, tStamp);
-    this->_PCbase::add(vP2, m_vCol, tStamp);
-    this->_PCbase::add(vP3, m_vCol, tStamp);
+    this->_PCstream::add(vP1, m_vCol, tStamp);
+    this->_PCstream::add(vP2, m_vCol, tStamp);
+    this->_PCstream::add(vP3, m_vCol, tStamp);
 }
 
 void _Livox::updateIMU ( LivoxImuPoint* pLd )
@@ -170,7 +170,7 @@ void _Livox::updateIMU ( LivoxImuPoint* pLd )
 
 void _Livox::draw ( void )
 {
-    this->_PCbase::draw();
+    this->_PCstream::draw();
 
 }
 

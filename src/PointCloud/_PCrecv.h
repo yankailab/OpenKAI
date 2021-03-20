@@ -8,18 +8,16 @@
 #ifndef OpenKAI_src_PointCloud_PCrecv_H_
 #define OpenKAI_src_PointCloud_PCrecv_H_
 
-#include "../Base/common.h"
+#ifdef USE_OPEN3D
+#include "_PCsend.h"
+#include "_PCstream.h"
 #include "../IO/_IOBase.h"
 #include "../Protocol/_ProtocolBase.h"
 
-#ifdef USE_OPEN3D
-#include "_PCsend.h"
-#include "_PCbase.h"
-
 namespace kai
 {
-    
-class _PCrecv: public _PCbase
+
+class _PCrecv: public _PCstream
 {
 public:
 	_PCrecv();

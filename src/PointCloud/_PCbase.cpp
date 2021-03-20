@@ -13,22 +13,17 @@ namespace kai
 
     _PCbase::_PCbase()
     {
-        m_pPCB = NULL;
-        m_iPr = 0;
-
-        m_ring.init();
-
+        m_type = pc_unknown;
         m_bTransform = false;
         m_vT.init(0);
         m_vR.init(0);
-        m_A = Eigen::Matrix4d::Identity();
+        m_A = Matrix4d::Identity();
 
-        m_fParam = "";
+        m_pInCtx.init();
     }
 
     _PCbase::~_PCbase()
     {
-        m_ring.release();
     }
 
     bool _PCbase::init(void *pKiss)
@@ -36,41 +31,17 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        int nP = 0;
-        pK->v("nP", &nP);
-        IF_F(!m_ring.setup(nP));
-
-        string n;
-        n = "";
-        pK->v("_PCbase", &n);
-        m_pPCB = (_PCbase *)(pK->getInst(n));
-
         //transform
         pK->v("bTransform", &m_bTransform);
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
+        if (m_bTransform)
+            setTranslation(m_vT, m_vR);
 
-        //read from external kiss file if there is one
-        pK->v("fParam", &m_fParam);
-        IF_T(m_fParam.empty());
-
-        _File *pFile = new _File();
-        IF_T(!pFile->open(&m_fParam));
-
-        string fn;
-        pFile->readAll(&fn);
-        IF_T(fn.empty());
-
-        Kiss *pKf = new Kiss();
-        if (pKf->parse(&fn))
-        {
-            pK = pKf->child("transform");
-            pK->v("vT", &m_vT);
-            pK->v("vR", &m_vR);
-        }
-
-        delete pKf;
-        pFile->close();
+        string n;
+        n = "";
+        pK->v("_PCbase", &n);
+        m_pInCtx.m_pPCB = (_PCbase *)(pK->getInst(n));
 
         return true;
     }
@@ -80,10 +51,9 @@ namespace kai
         return this->_ModuleBase::check();
     }
 
-    void _PCbase::add(Eigen::Vector3d &vP, Eigen::Vector3d &vC, uint64_t tStamp)
+    PC_TYPE _PCbase::getType(void)
     {
-        Vector3d p = m_A * vP;
-        m_ring.add(p, vC, tStamp);
+        return m_type;
     }
 
     void _PCbase::setTranslation(vDouble3 &vT, vDouble3 &vR)
@@ -101,47 +71,35 @@ namespace kai
         m_A = mT;
     }
 
-    PC_RING *_PCbase::getRing(void)
+    void _PCbase::readPC(void *pPC)
     {
-        return &m_ring;
+        NULL_(pPC);
+
+        PC_TYPE t = ((_PCbase *)pPC)->getType();
+
+        if (t == pc_stream)
+            getStream(pPC);
+        else if (t == pc_frame)
+            getFrame(pPC);
+        else if (t == pc_lattice)
+            getLattice(pPC);
     }
 
-    void _PCbase::readSrc(void)
+    void _PCbase::getStream(void *p)
     {
-        NULL_(m_pPCB);
-        m_ring.readSrc(m_pPCB->getRing(), &m_iPr);
+    }
+
+    void _PCbase::getFrame(void *p)
+    {
+    }
+
+    void _PCbase::getLattice(void *p)
+    {
     }
 
     void _PCbase::draw(void)
     {
         this->_ModuleBase::draw();
-    }
-
-    void _PCbase::saveParam(void)
-    {
-        IF_(m_fParam.empty());
-
-        picojson::object o;
-        o.insert(make_pair("name", "transform"));
-
-        picojson::array vT;
-        vT.push_back(value(m_vT.x));
-        vT.push_back(value(m_vT.y));
-        vT.push_back(value(m_vT.z));
-        o.insert(make_pair("vT", value(vT)));
-
-        picojson::array vR;
-        vR.push_back(value(m_vR.x));
-        vR.push_back(value(m_vR.y));
-        vR.push_back(value(m_vR.z));
-        o.insert(make_pair("vR", value(vR)));
-
-        string k = picojson::value(o).serialize();
-
-        _File *pFile = new _File();
-        IF_(!pFile->open(&m_fParam, ios::out));
-        pFile->write((uint8_t *)k.c_str(), k.length());
-        pFile->close();
     }
 
 }
