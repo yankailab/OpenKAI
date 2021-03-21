@@ -8,16 +8,14 @@
 #ifndef OpenKAI_src_PointCloud_PCregistCol_H_
 #define OpenKAI_src_PointCloud_PCregistCol_H_
 #ifdef USE_OPEN3D
-
-#include "../_PCbase.h"
+#include "../PCfilter/_PCtransform.h"
 #include <open3d/pipelines/registration/ColoredICP.h>
-
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-class _PCregistCol: public _PCbase
+class _PCregistCol: public _ModuleBase
 {
 public:
 	_PCregistCol();
@@ -29,7 +27,6 @@ public:
 	void draw(void);
 
 private:
-    bool ICPcolorRegistration(void);
     void updateRegistration(void);
 	void update(void);
 	static void* getUpdate(void* This)
@@ -46,10 +43,10 @@ public:
     double m_rRMSE;
     int m_maxIter;
 
-	_PCbase* m_pSrc;
-	_PCbase* m_pTgt;
-	int m_iMt;
+	_PCframe* m_pSrc;
+	_PCframe* m_pTgt;
     RegistrationResult m_RR;
+	_PCtransform* m_pTf;
     double m_lastFit;
 };
 

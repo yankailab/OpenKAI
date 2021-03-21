@@ -25,9 +25,7 @@ public:
 	bool start(void);
 	int check(void);
 
-	virtual void setTranslationMatrix(int i, Eigen::Matrix4d_u& mT);
-	virtual Eigen::Matrix4d getTranslationMatrix(int i);
-
+	virtual void setTranslationMatrix(Matrix4d_u& mTt);
 	virtual void saveParamKiss(void);
 
 private:
@@ -40,7 +38,7 @@ private:
 	}
 
 public:
-	vector<Eigen::Matrix4d> m_vmT; //additional transform matrices
+	Matrix4d_u m_mTt;
 	string m_paramKiss;
 };
 

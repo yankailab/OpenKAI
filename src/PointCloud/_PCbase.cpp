@@ -17,6 +17,7 @@ namespace kai
         m_bTransform = false;
         m_vT.init(0);
         m_vR.init(0);
+        m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
 
         m_pInCtx.init();
@@ -37,6 +38,9 @@ namespace kai
         pK->v("vR", &m_vR);
         if (m_bTransform)
             setTranslation(m_vT, m_vR);
+
+        //pipeline ctx
+        pK->v("ctxdT", &m_pInCtx.m_dT);
 
         string n;
         n = "";
@@ -61,14 +65,15 @@ namespace kai
         m_vT = vT;
         m_vR = vR;
 
-        Eigen::Matrix4d mT;
-        Eigen::Vector3d eR(m_vR.x, m_vR.y, m_vR.z);
+        Matrix4d mT = Matrix4d::Identity();
+        Vector3d eR(m_vR.x, m_vR.y, m_vR.z);
         mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
         mT(0, 3) = m_vT.x;
         mT(1, 3) = m_vT.y;
         mT(2, 3) = m_vT.z;
 
-        m_A = mT;
+        m_mT = mT;
+        m_A = m_mT;
     }
 
     void _PCbase::readPC(void *pPC)

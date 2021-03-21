@@ -9,8 +9,7 @@
 #define OpenKAI_src_PointCloud_PCregistICP_H_
 
 #ifdef USE_OPEN3D
-#include "../_PCbase.h"
-
+#include "../PCfilter/_PCtransform.h"
 using namespace open3d::pipelines::registration;
 
 namespace kai
@@ -22,7 +21,7 @@ enum PCREGIST_ICP_EST
     icp_p2plane = 1,
 };
 
-class _PCregistICP: public _PCbase
+class _PCregistICP: public _ModuleBase
 {
 public:
 	_PCregistICP();
@@ -45,10 +44,10 @@ private:
 public:
 	float m_thr;	//ICP threshold
 	PCREGIST_ICP_EST m_est;
-	_PCbase* m_pSrc;
-	_PCbase* m_pTgt;
-	int m_iMt;
+	_PCframe* m_pSrc;
+	_PCframe* m_pTgt;
     RegistrationResult m_RR;
+	_PCtransform* m_pTf;
     double m_lastFit;
 };
 

@@ -15,7 +15,7 @@ _Livox::_Livox()
     m_pL = NULL;
     m_iTransformed = 0;
     
-    Eigen::Vector3d(-1.0, -1.0, -1.0);
+    m_vCol.init(-1.0, -1.0, -1.0);
 }
 
 _Livox::~_Livox()
@@ -28,6 +28,7 @@ bool _Livox::init ( void* pKiss )
     Kiss* pK = ( Kiss* ) pKiss;
 
     pK->v ( "broadcastCode", &m_broadcastCode );
+    pK->v ( "vCol", &m_vCol );
 
     string n;
     n = "";
@@ -98,8 +99,8 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     NULL_ ( pData );
     NULL_ ( pLivox );
 
-    uint64_t tStamp = * ( ( uint64_t * ) ( pData->timestamp ) );
     _Livox* pL = ( _Livox* ) pLivox;
+    uint64_t tStamp = pL->m_pT->getTfrom(); //* ( ( uint64_t * ) ( pData->timestamp ) );
 
     if ( pData ->data_type == kCartesian )
     {
@@ -127,32 +128,35 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
 void _Livox::addP ( LivoxExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxExtendRawPoint* pP = ( LivoxExtendRawPoint * ) pLp;
-    Eigen::Vector3d vP(pP->x, pP->y, pP->z);
-    this->_PCstream::add(vP, m_vCol, tStamp);
+    Vector3d vP(pP->x, pP->y, pP->z);
+    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
+    add(vP, vC, tStamp);
 }
 
 void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxDualExtendRawPoint* pP = ( LivoxDualExtendRawPoint *) pLp;
 
-    Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
-    Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
+    Vector3d vP1(pP->x1, pP->y1, pP->z1);
+    Vector3d vP2(pP->x2, pP->y2, pP->z2);
+    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
 
-    this->_PCstream::add(vP1, m_vCol, tStamp);
-    this->_PCstream::add(vP2, m_vCol, tStamp);
+    add(vP1, vC, tStamp);
+    add(vP2, vC, tStamp);
 }
 
 void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp )
 {
     LivoxTripleExtendRawPoint* pP = ( LivoxTripleExtendRawPoint *) pLp;
 
-    Eigen::Vector3d vP1(pP->x1, pP->y1, pP->z1);
-    Eigen::Vector3d vP2(pP->x2, pP->y2, pP->z2);
-    Eigen::Vector3d vP3(pP->x3, pP->y3, pP->z3);
+    Vector3d vP1(pP->x1, pP->y1, pP->z1);
+    Vector3d vP2(pP->x2, pP->y2, pP->z2);
+    Vector3d vP3(pP->x3, pP->y3, pP->z3);
+    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
 
-    this->_PCstream::add(vP1, m_vCol, tStamp);
-    this->_PCstream::add(vP2, m_vCol, tStamp);
-    this->_PCstream::add(vP3, m_vCol, tStamp);
+    add(vP1, vC, tStamp);
+    add(vP2, vC, tStamp);
+    add(vP3, vC, tStamp);
 }
 
 void _Livox::updateIMU ( LivoxImuPoint* pLd )
@@ -171,9 +175,7 @@ void _Livox::updateIMU ( LivoxImuPoint* pLd )
 void _Livox::draw ( void )
 {
     this->_PCstream::draw();
-
 }
 
 }
 #endif
-

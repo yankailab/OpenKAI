@@ -50,7 +50,7 @@ public:
     LivoxLidar* m_pL;
     uint32_t m_iTransformed;
     
-    Eigen::Vector3d m_vCol;
+    vDouble3 m_vCol;
 
 };
 

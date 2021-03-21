@@ -9,15 +9,14 @@
 #define OpenKAI_src_PointCloud_PCregistGlobal_H_
 
 #ifdef USE_OPEN3D
-#include "../_PCbase.h"
+#include "../PCfilter/_PCtransform.h"
 #include <open3d/pipelines/registration/FastGlobalRegistration.h>
-
 using namespace open3d::pipelines::registration;
 
 namespace kai
 {
 
-class _PCregistGlobal: public _PCbase
+class _PCregistGlobal: public _ModuleBase
 {
 public:
 	_PCregistGlobal();
@@ -30,7 +29,6 @@ public:
 
 private:
 	std::shared_ptr<Feature> preprocess(PointCloud& pc);
-    bool fastGlobalRegistration(void);
     void updateRegistration(void);
 	void update(void);
 	static void* getUpdate(void* This)
@@ -45,10 +43,10 @@ public:
 	int m_maxNNnormal;
 	int m_maxNNfpfh;
 
-	_PCbase* m_pSrc;
-	_PCbase* m_pTgt;
-	int m_iMt;
+	_PCframe* m_pSrc;
+	_PCframe* m_pTgt;
     RegistrationResult m_RR;
+	_PCtransform* m_pTf;
     double m_lastFit;
 };
 

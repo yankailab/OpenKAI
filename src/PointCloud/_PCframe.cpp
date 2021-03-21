@@ -78,11 +78,12 @@ namespace kai
         NULL_(p);
 
         _PCstream* pS = (_PCstream*)p;
-        PointCloud* pPC = m_sPC.next();  
+        PointCloud* pPC = m_sPC.next();
+        uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
         for (int i = 0; i < pS->m_nP; i++)
         {
             PC_POINT *pP = &pS->m_pP[i];
-            IF_CONT(pP->m_tStamp < m_pInCtx.m_tFrom);
+            IF_CONT(pP->m_tStamp < tFrom);
 
             pPC->points_.push_back(pP->m_vP);
             pPC->colors_.push_back(pP->m_vC);

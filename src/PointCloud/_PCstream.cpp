@@ -71,11 +71,12 @@ namespace kai
 
         _PCstream* pS = (_PCstream*)p;
         PC_POINT* pP = pS->m_pP;
+        uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
         while (m_pInCtx.m_iPr != pS->m_iP)
         {
             PC_POINT po = pP[m_pInCtx.m_iPr];
 
-            if (po.m_tStamp >= m_pInCtx.m_tFrom)
+            if (po.m_tStamp >= tFrom)
             {
                 m_pP[m_iP] = po;
                 m_iP = iInc(m_iP, m_nP);

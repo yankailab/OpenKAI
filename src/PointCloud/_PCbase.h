@@ -41,15 +41,17 @@ namespace kai
     struct PC_PIPIN_CTX
     {
         void *m_pPCB;
-        uint64_t m_tFrom;
 
-        //stream
+        //stream 2 stream
         int m_iPr;
+
+        //stream 2 frame
+        uint64_t m_dT;
 
         void init(void)
         {
             m_pPCB = NULL;
-            m_tFrom = 0;
+            m_dT = 0;
             m_iPr = 0;
         }
     };
@@ -80,6 +82,7 @@ namespace kai
         bool m_bTransform;
         vDouble3 m_vT; //translation
         vDouble3 m_vR; //rotation
+    	Matrix4d m_mT;
         Eigen::Affine3d m_A;
 
         //pipeline input

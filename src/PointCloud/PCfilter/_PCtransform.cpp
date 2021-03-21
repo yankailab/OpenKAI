@@ -11,132 +11,110 @@
 namespace kai
 {
 
-_PCtransform::_PCtransform()
-{
-	m_paramKiss = "";
-}
-
-_PCtransform::~_PCtransform()
-{
-}
-
-bool _PCtransform::init(void *pKiss)
-{
-	IF_F(!_PCframe::init(pKiss));
-	Kiss *pK = (Kiss*) pKiss;
-
-	int nM;
-	pK->v("nMt", &nM);
-	for(; nM > 0; nM--)
-		m_vmT.push_back(Eigen::Matrix4d::Identity());
-
-	//read from external kiss file if there is one
-	pK->v("paramKiss", &m_paramKiss);
-	IF_T(m_paramKiss.empty());
-
-	_File* pFile = new _File();
-	IF_T(!pFile->open(&m_paramKiss));
-
-	string fn;
-    pFile->readAll(&fn);
-	IF_T(fn.empty() );
-
-	Kiss* pKf = new Kiss();
-	if(pKf->parse( &fn ))
+	_PCtransform::_PCtransform()
 	{
-		pK = pKf->child("transform");
-		pK->v("vT", &m_vT);
-		pK->v("vR", &m_vR);
+		m_mTt = Matrix4d::Identity();
+		m_paramKiss = "";
 	}
 
-	delete pKf;
-	pFile->close();
-	return true;
-}
-
-bool _PCtransform::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-int _PCtransform::check(void)
-{
-	NULL__(m_pInCtx.m_pPCB, -1);
-
-	return this->_PCframe::check();
-}
-
-void _PCtransform::update(void)
-{
-	while(m_pT->bRun())
+	_PCtransform::~_PCtransform()
 	{
-		m_pT->autoFPSfrom();
-
-		updateTransform();
-
-		m_pT->autoFPSto();
 	}
-}
 
-void _PCtransform::updateTransform(void)
-{
-	IF_(check()<0);
+	bool _PCtransform::init(void *pKiss)
+	{
+		IF_F(!_PCframe::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
 
-	Eigen::Matrix4d mT = Eigen::Matrix4d::Identity();
-	Eigen::Vector3d vR(m_vR.x, m_vR.y, m_vR.z);
-//	mT.block(0,0,3,3) = m_sPC.next()->GetRotationMatrixFromXYZ(vR);
-	mT(0,3) = m_vT.x;
-	mT(1,3) = m_vT.y;
-	mT(2,3) = m_vT.z;
+		//read from external kiss file if there is one
+		pK->v("paramKiss", &m_paramKiss);
+		IF_T(m_paramKiss.empty());
 
-	for(Eigen::Matrix4d m : m_vmT)
-		mT *= m;
+		_File *pFile = new _File();
+		IF_T(!pFile->open(&m_paramKiss));
 
-//	m_pPCB->getPC(m_sPC.next());
-	m_sPC.next()->Transform(mT);
-}
+		string fn;
+		pFile->readAll(&fn);
+		IF_T(fn.empty());
 
-void _PCtransform::setTranslationMatrix(int i, Eigen::Matrix4d_u& mT)
-{
-	IF_(i >= m_vmT.size());
-	m_vmT[i] = mT;
-}
+		Kiss *pKf = new Kiss();
+		if (pKf->parse(&fn))
+		{
+			pK = pKf->child("transform");
+			pK->v("vT", &m_vT);
+			pK->v("vR", &m_vR);
+		}
 
-Eigen::Matrix4d _PCtransform::getTranslationMatrix(int i)
-{
-	if(i >= m_vmT.size())
-		return Eigen::Matrix4d::Identity();
+		delete pKf;
+		pFile->close();
+		return true;
+	}
 
-	return m_vmT[i];
-}
+	bool _PCtransform::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->start(getUpdate, this);
+	}
 
-void _PCtransform::saveParamKiss(void)
-{
-	IF_(m_paramKiss.empty());
+	int _PCtransform::check(void)
+	{
+		NULL__(m_pInCtx.m_pPCB, -1);
 
-	picojson::object o;
-	o.insert(make_pair("name", "transform"));
+		return this->_PCframe::check();
+	}
 
-	picojson::array vT;
-	vT.push_back(value(m_vT.x));
-	vT.push_back(value(m_vT.y));
-	vT.push_back(value(m_vT.z));
-	o.insert(make_pair("vT", value(vT)));
+	void _PCtransform::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			m_pT->autoFPSfrom();
 
-	picojson::array vR;
-	vR.push_back(value(m_vR.x));
-	vR.push_back(value(m_vR.y));
-	vR.push_back(value(m_vR.z));
-	o.insert(make_pair("vR", value(vR)));
+			updateTransform();
 
-	string k = picojson::value(o).serialize();
+			m_pT->autoFPSto();
+		}
+	}
 
-	_File* pFile = new _File();
-	IF_(!pFile->open(&m_paramKiss, ios::out));
-	pFile->write((uint8_t*)k.c_str(), k.length());
-	pFile->close();
-}
+	void _PCtransform::updateTransform(void)
+	{
+		IF_(check() < 0);
+
+		readPC(m_pInCtx.m_pPCB);
+		m_sPC.next()->Transform(m_mTt);
+		updatePC();
+	}
+
+	void _PCtransform::setTranslationMatrix(Matrix4d_u &mTt)
+	{
+		m_mTt = mTt * m_mT;
+	}
+
+	void _PCtransform::saveParamKiss(void)
+	{
+		IF_(m_paramKiss.empty());
+
+		picojson::object o;
+		o.insert(make_pair("name", "transform"));
+
+		picojson::array vT;
+		vT.push_back(value(m_vT.x));
+		vT.push_back(value(m_vT.y));
+		vT.push_back(value(m_vT.z));
+		o.insert(make_pair("vT", value(vT)));
+
+		picojson::array vR;
+		vR.push_back(value(m_vR.x));
+		vR.push_back(value(m_vR.y));
+		vR.push_back(value(m_vR.z));
+		o.insert(make_pair("vR", value(vR)));
+
+		string k = picojson::value(o).serialize();
+
+		_File *pFile = new _File();
+		IF_(!pFile->open(&m_paramKiss, ios::out));
+		pFile->write((uint8_t *)k.c_str(), k.length());
+		pFile->close();
+	}
 
 }
 #endif
