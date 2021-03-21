@@ -22,7 +22,6 @@
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"vPCbase":["pcFile"],
-	"nP":102400,
 }
 
 {
@@ -34,6 +33,5 @@
 		"FPS":30,
 	}
 	"Console":"OKconsole",
-	"nP":102400,
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }

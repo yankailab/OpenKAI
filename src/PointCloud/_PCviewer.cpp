@@ -27,7 +27,7 @@ namespace kai
 
 	bool _PCviewer::init(void *pKiss)
 	{
-		IF_F(!this->_PCbase::init(pKiss));
+		IF_F(!this->_PCframe::init(pKiss));
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vWinSize", &m_vWinSize);
@@ -116,7 +116,7 @@ namespace kai
 
 	void _PCviewer::draw(void)
 	{
-		this->_PCbase::draw();
+		this->_PCframe::draw();
 	}
 
 }

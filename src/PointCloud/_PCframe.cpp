@@ -15,8 +15,9 @@ namespace kai
 
     _PCframe::_PCframe()
     {
+        m_type = pc_frame;
+        
         m_vColOvrr.init(-1.0);
-
         pthread_mutex_init(&m_mutexPC, NULL);
     }
 
@@ -32,7 +33,7 @@ namespace kai
 
         pK->v("vColOvrr", &m_vColOvrr);
 
-        //frame
+        //frame buf
         int nPCreserve = 0;
         pK->v("nPCreserve", &nPCreserve);
         if (nPCreserve > 0)

@@ -12,69 +12,26 @@
 {
 	"name":"pcv",
 	"class":"_PCviewer",
-	"FPS":30,
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"Window":"OKview",
 	"Console":"OKconsole",
 	"vWinSize":[1920,1080],
 	"fov":100,
+	"vPCbase":["pcRS"],
 }
 
 {
-	"name":"pcFile1",
-	"class":"_PCfile",
-	"FPS":30,
-	"bInst":0,
-	"Console":"OKconsole",
-	"_PCviewer":"pcv",
-	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-}
-
-{
-	"name":"pcFile2",
-	"class":"_PCfile",
-	"FPS":30,
-	"bInst":0,
-	"Console":"OKconsole",
-	"_PCviewer":"pcv",
-	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-}
-
-{
-	"name":"pcTf2",
-	"class":"_PCtransform",
-	"bInst":0,
-	"_PCbase":"pcFile2",
-	"_PCviewer":"pcv",
-	"vT":[0, 0, 0],
-	"vR":[0.1, 0, 0],
-	"nMt":1,
-	"kiss":"/home/kai/dev/workspace/OpenKAI/OpenKAI/kiss/test/_PCtf1.kiss",
-}
-
-{
-	"name":"pcTf21",
-	"class":"_PCregistration",
-	"bInst":0,
-	"FPS":1,
-	"thr":0.02,
-	
-	{
-		"name":"pair",
-		
-		{
-			"source":"pcTf2",
-			"target":"pcFile2",
-			"_PCtransform":"pcTf2",
-		}
-	}
-}
-
-{
-	"name":"rs1",
+	"name":"pcRS",
 	"class":"_PCrs",
-	"FPS":30,
 	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
 	"bLog":1,
 	"Console":"OKconsole",
 	"vPreset":"Short Range",
@@ -87,41 +44,6 @@
 	"fSpat":0,
 	"vRange":[0.1,15.0],
 	"bAlign":0,
-	"rsSN":"00000000f0211594",
-	"_PCviewer":"pcv",
+	"rsSN":"f0211594",
 	"vRz":[0, 1000.0],
-}
-
-
-{
-	"name":"pcMerge",
-	"class":"_PointCloudMerge",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_PCviewer":"pcv",
-	"vPointCloudBase":["pcFile1","pcFile2","rs1","rs2"],
-	"vT":[0, 0, 0],
-	"vR":[0, 0, 0],
-	"vRz":[0, 1000.0],
-}
-
-{
-	"name":"ws",
-	"class":"_WebSocket",
-	"FPS":100,
-	"bInst":0,
-	"Window":"OKview",
-}
-
-{
-	"name":"uiTransform",
-	"class":"_UItransform",
-	"FPS":30,
-	"bInst":0,
-	"Window":"OKview",
-	"Console":"OKconsole",
-	"_IOBase":"ws",
-	"vPCB":["pcFile1","pcFile2","rsPC1","rsPC2"],
 }

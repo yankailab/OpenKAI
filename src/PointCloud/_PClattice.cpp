@@ -7,6 +7,7 @@ namespace kai
 
 _PClattice::_PClattice()
 {
+	m_type = pc_lattice;
 }
 
 _PClattice::~_PClattice()
