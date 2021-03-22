@@ -15,7 +15,7 @@ namespace kai
 _GDimgUploader::_GDimgUploader()
 {
 	m_pV = NULL;
-	m_tInterval = USEC_1SEC;
+	m_tInterval = SEC_2_USEC;
 	m_tLastUpload = 0;
 	m_tempDir = "GDcam_";
 	m_gdUpload = "python gdUpload.py";

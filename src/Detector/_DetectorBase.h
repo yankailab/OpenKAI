@@ -7,10 +7,9 @@
 
 #ifndef OpenKAI_src_Base__DetectorBase_H_
 #define OpenKAI_src_Base__DetectorBase_H_
+#ifdef USE_OPENCV
 
 #include "../Universe/_Universe.h"
-
-#ifdef USE_OPENCV
 #include "../Vision/_VisionBase.h"
 #include "../Vision/_DepthVisionBase.h"
 #include "../Protocol/_Mavlink.h"

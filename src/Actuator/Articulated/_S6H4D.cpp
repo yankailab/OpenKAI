@@ -86,7 +86,7 @@ int _S6H4D::check(void)
 void _S6H4D::update(void)
 {
 	while (check() < 0)
-		m_pT->sleepT (USEC_1SEC);
+		m_pT->sleepT (SEC_2_USEC);
 
 	armSetMode(m_mode);
 	while (m_vOrigin != m_vOriginTarget)

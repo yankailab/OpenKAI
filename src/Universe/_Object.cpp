@@ -57,7 +57,7 @@ void _Object::update(void)
 void _Object::updateKinetics(void)
 {
     IF_(check()<0);
-	m_vSpeed += m_vAccel * m_pT->getDt() * OV_USEC_1SEC;
+	m_vSpeed += m_vAccel * m_pT->getDt() * USEC_2_SEC;
 	m_vPos += m_vSpeed;
 }
 

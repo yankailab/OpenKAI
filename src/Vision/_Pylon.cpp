@@ -101,7 +101,7 @@ void _Pylon::update(void)
 		{
 			if (!open())
 			{
-				m_pT->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(SEC_2_USEC);
 				continue;
 			}
 		}

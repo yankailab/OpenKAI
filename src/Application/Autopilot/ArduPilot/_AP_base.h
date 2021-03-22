@@ -109,7 +109,7 @@ public:
 
 	bool bApArmed(void);
 
-	uint32_t getApMode(void);
+	int getApMode(void);
 	string getApModeName(void);
 	vDouble3 getHomePos(void);
 	vDouble4 getGlobalPos(void);
@@ -132,7 +132,7 @@ public:
 	int m_freqSendHeartbeat;
 
 	AP_TYPE m_apType;
-	uint32_t m_apMode;
+	int m_apMode;
 	bool m_bApArmed;
 
 	bool m_bHomeSet;

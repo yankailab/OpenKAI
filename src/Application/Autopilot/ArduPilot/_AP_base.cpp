@@ -10,7 +10,7 @@ _AP_base::_AP_base()
 	m_iHeartbeat = 0;
 
 	m_apType = ardupilot_copter;
-	m_apMode = 0;
+	m_apMode = -1;
 	m_bApArmed = false;
 	m_freqSendHeartbeat = 1;
 
@@ -36,7 +36,7 @@ bool _AP_base::init(void* pKiss)
 	pK->v("freqSendHeartbeat",&m_freqSendHeartbeat);
 
 	if(m_freqSendHeartbeat > 0)
-		m_freqSendHeartbeat = USEC_1SEC / m_freqSendHeartbeat;
+		m_freqSendHeartbeat = SEC_2_USEC / m_freqSendHeartbeat;
 	else
 		m_freqSendHeartbeat = 0;
 
@@ -62,7 +62,7 @@ bool _AP_base::init(void* pKiss)
 		float tInt;
 		pMI->v("id", &id);
 		pMI->v("tInt", &tInt);
-		tInt *= USEC_1SEC;
+		tInt *= SEC_2_USEC;
 
 		if(!m_pMav->setMsgInterval(id,tInt))
 			LOG_E("Inteval msg id = " + i2str(id) + " not found");
@@ -101,12 +101,17 @@ void _AP_base::updateBase(void)
 {
 	IF_(check()<0);
 
+	uint64_t tNow = m_pT->getTfrom();
+
 	//update Ardupilot
-	m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
-	m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
+	if(m_pMav->m_heartbeat.bReceiving(tNow))
+	{
+		m_apMode = m_pMav->m_heartbeat.m_msg.custom_mode;
+		m_bApArmed = m_pMav->m_heartbeat.m_msg.base_mode & 0b10000000;
+	}
 
 	//Attitude
-	if(m_pMav->m_attitude.bReceiving(m_pT->getTfrom()))
+	if(m_pMav->m_attitude.bReceiving(tNow))
 	{
 		m_vAtti.x = m_pMav->m_attitude.m_msg.yaw;
 		m_vAtti.y = m_pMav->m_attitude.m_msg.pitch;
@@ -114,7 +119,7 @@ void _AP_base::updateBase(void)
 	}
 
 	//get home position
-	if(!m_pMav->m_homePosition.bReceiving(m_pT->getTfrom()))
+	if(!m_pMav->m_homePosition.bReceiving(tNow))
 	{
 		m_pMav->clGetHomePosition();
 	}
@@ -127,7 +132,7 @@ void _AP_base::updateBase(void)
 	}
 
 	//get position
-	if(m_pMav->m_globalPositionINT.bReceiving(m_pT->getTfrom()))
+	if(m_pMav->m_globalPositionINT.bReceiving(tNow))
 	{
 		m_vGlobalPos.x = ((double)(m_pMav->m_globalPositionINT.m_msg.lat)) * 1e-7;
 		m_vGlobalPos.y = ((double)(m_pMav->m_globalPositionINT.m_msg.lon)) * 1e-7;
@@ -136,7 +141,7 @@ void _AP_base::updateBase(void)
 		m_apHdg = ((float)(m_pMav->m_globalPositionINT.m_msg.hdg)) * 1e-2;
 	}
 
-	if(m_pMav->m_localPositionNED.bReceiving(m_pT->getTfrom()))
+	if(m_pMav->m_localPositionNED.bReceiving(tNow))
 	{
 		m_vLocalPos.x = m_pMav->m_localPositionNED.m_msg.x;
 		m_vLocalPos.y = m_pMav->m_localPositionNED.m_msg.y;
@@ -147,10 +152,10 @@ void _AP_base::updateBase(void)
 	}
 
 	//Send Heartbeat
-	if(m_freqSendHeartbeat > 0 && m_pT->getTfrom() - m_lastHeartbeat >= m_freqSendHeartbeat)
+	if(m_freqSendHeartbeat > 0 && tNow - m_lastHeartbeat >= m_freqSendHeartbeat)
 	{
 		m_pMav->heartbeat();
-		m_lastHeartbeat = m_pT->getTfrom();
+		m_lastHeartbeat = tNow;
 	}
 
 	m_pMav->sendSetMsgInterval();
@@ -165,7 +170,7 @@ void _AP_base::setApMode(uint32_t iMode)
 	m_pMav->setMode(D);
 }
 
-uint32_t _AP_base::getApMode(void)
+int _AP_base::getApMode(void)
 {
 	return m_apMode;
 }
@@ -173,6 +178,7 @@ uint32_t _AP_base::getApMode(void)
 string _AP_base::getApModeName(void)
 {
 	if(m_apMode >= AP_N_CUSTOM_MODE)return "?";
+	if(m_apMode < 0)return "?";
 
 	if(m_apType == ardupilot_copter)
 		return AP_COPTER_CUSTOM_MODE_NAME[m_apMode];

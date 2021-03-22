@@ -38,8 +38,8 @@ namespace kai
 		ADD_MODULE(_Path);
 		ADD_MODULE(PID);
 		ADD_MODULE(_Drive);
+		ADD_MODULE(Destimator);
 		ADD_MODULE(_ProtocolBase);
-		ADD_MODULE(_RPLIDAR);
 		ADD_MODULE(_SerialPort);
 		ADD_MODULE(_TCPserver);
 		ADD_MODULE(_TCPclient);

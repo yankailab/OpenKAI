@@ -5,8 +5,8 @@
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_Filter_PolyFit_H_
-#define OpenKAI_src_Filter_PolyFit_H_
+#ifndef OpenKAI_src_Arithmetic_PolyFit_H_
+#define OpenKAI_src_Arithmetic_PolyFit_H_
 
 #include "../Base/common.h"
 #include <gsl/gsl_multifit.h>
@@ -20,12 +20,12 @@ public:
 	PolyFit();
 	virtual ~PolyFit();
 
-	bool init(int n, int nDeg);
-	void x(int i, double y);
-	void fit(void);
-	double yPoly(int x);
+	virtual bool init(int n, int nDeg);
+	virtual void x(int i, double y);
+	virtual void fit(void);
+	virtual double yPoly(int x);
 
-public:
+protected:
 	gsl_multifit_linear_workspace *m_gWS;
 	gsl_matrix *m_gCov, *m_gX;
 	gsl_vector *m_gY, *m_gC;

@@ -107,7 +107,7 @@ void _ORB_SLAM::detect(void)
 {
     IF_(check() < 0);
     
-	static const double usecBase = 1.0 / ((double) USEC_1SEC);
+	static const double usecBase = 1.0 / ((double) SEC_2_USEC);
 
 	Mat mGray;
     m_pV->BGR()->m()->copyTo(mGray);

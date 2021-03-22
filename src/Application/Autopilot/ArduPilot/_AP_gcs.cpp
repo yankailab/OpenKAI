@@ -69,7 +69,7 @@ void _AP_gcs::updateGCS ( void )
     this->_GCSbase::updateGCS();
     IF_ ( check() < 0 );
 
-    uint32_t apMode = m_pAP->getApMode();
+    int apMode = m_pAP->getApMode();
     bool bApArmed = m_pAP->bApArmed();
     float alt = m_pAP->getGlobalPos().w; //relative altitude
     
@@ -155,7 +155,7 @@ void _AP_gcs::updateGCS ( void )
 
     if(m_state.bLANDED())
     {
-        m_pT->sleepT(USEC_1SEC * m_dLanded);
+        m_pT->sleepT(SEC_2_USEC * m_dLanded);
         m_pSC->transit(m_state.STANDBY);        
         return;        
     }

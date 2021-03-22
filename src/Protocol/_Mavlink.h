@@ -21,7 +21,7 @@ public:
 		m_id = 0x7fffffff;
 		m_tStamp = 0;
 		m_tInterval = -1;
-		m_tTimeout = USEC_1SEC * 10;
+		m_tTimeout = SEC_2_USEC * 10;
 	};
 
 	virtual ~MavMsgBase(void){};

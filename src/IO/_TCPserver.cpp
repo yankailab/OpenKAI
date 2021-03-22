@@ -55,7 +55,7 @@ void _TCPserver::update(void)
 	{
 		if(!handler())
 		{
-			m_pT->sleepT (USEC_1SEC);
+			m_pT->sleepT (SEC_2_USEC);
 		}
 	}
 }

@@ -52,7 +52,7 @@ void _Canbus::update(void)
 	{
 		if(!m_pIO)
 		{
-			m_pT->sleepT (USEC_1SEC);
+			m_pT->sleepT (SEC_2_USEC);
 			continue;
 		}
 
@@ -60,7 +60,7 @@ void _Canbus::update(void)
 		{
 			if(!m_pIO->open())
 			{
-				m_pT->sleepT (USEC_1SEC);
+				m_pT->sleepT (SEC_2_USEC);
 				continue;
 			}
 		}

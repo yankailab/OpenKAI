@@ -31,7 +31,8 @@
 	}
 	"bInst":1,
 	"Console":"OKconsole",
-	"start":"STANDBY",
+	"/start":"STANDBY",
+	"start":"LANDING",
 
 	{
 		"name":"state",
@@ -235,7 +236,6 @@
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"dT":0.0,
 	"oMin":-1.0,
 	"oMax":1.0,
 }
@@ -250,7 +250,6 @@
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"dT":0.0,
 	"oMin":-1.0,
 	"oMax":1.0,
 }
@@ -265,7 +264,6 @@
 	"I":0.0,
 	"Imax":0.0,
 	"D":0.0,
-	"dT":0.0,
 	"oMin":-90.0,
 	"oMax":90.0,
 }
@@ -288,10 +286,12 @@
 	"PIDroll":"PIDroll",
 	"PIDpitch":"PIDpitch",
 	"PIDyaw":"PIDyaw",
-	"vTargetP":[0.5, 0.5, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
+	"vTargetP":[0.48, 0.46, 0.3, 0.0], /*xTarget, yTarget, zSpeed, yawTarget */
 	"targetAlt":0.8,
-	"wLen":5,
-	"zrK":1.5,
+	"zrK":10.0,
+	"nWmed":3,
+	"nWpred":2,
+	"dThold":0.3,
 	
 	{
 		"name":"mount",
@@ -320,7 +320,8 @@
 	"_AP_base":"apBase",
 	"_StateControl":"state",
 	"altAirborne":15.0,
-	"altLand":3.0,
+	"/altLand":2.5,
+	"altLand":-2.0,
 	"dLanded":5,
 	"bAutoArm":0,
 }

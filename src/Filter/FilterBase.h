@@ -19,14 +19,14 @@ namespace kai
 	public:
 		FilterBase()
 		{
+			m_pV = &m_v;
 		}
 
 		virtual ~FilterBase()
-		{
-			
+		{	
 		}
 
-		virtual T input(T v)
+		virtual T* update(T* pV)
 		{
 		}
 
@@ -41,11 +41,6 @@ namespace kai
 			return true;
 		}
 
-		virtual T v(void)
-		{
-			return m_v;
-		}
-
 		virtual void reset(void)
 		{
 			m_v = 0.0;
@@ -53,11 +48,17 @@ namespace kai
 			m_variance = 0.0;
 		}
 
+		virtual T v(void)
+		{
+			return m_v;
+		}
+
+	public:
+		T* m_pV;
 	protected:
 		T m_v;				//output
 		std::deque<T> m_qV;	//trajectory
 		int m_nW;			//window length
-
 		T m_variance;
 	};
 

@@ -36,18 +36,16 @@ bool _AP_follow::init(void* pKiss)
 	int nWmed = 3;
 	int nWpred = 2;
 	float dThold = 0.8;
-	float vTover = -0.1;
-
 	pK->v("nWmed", &nWmed);
 	pK->v("nWpred", &nWpred);
 	pK->v("dThold", &dThold);
-	pK->v("vTover", &vTover);
 
-	IF_F(m_fX.init(nWmed, nWpred, dThold, vTover));
-	IF_F(m_fY.init(nWmed, nWpred, dThold, vTover));
-	IF_F(m_fW.init(nWmed, nWpred, dThold, vTover));
+	IF_F(!m_fX.init(nWmed, nWpred, dThold));
+	IF_F(!m_fY.init(nWmed, nWpred, dThold));
+	IF_F(!m_fR.init(nWmed, nWpred, dThold));
+	IF_F(!m_fH.init(nWmed, nWpred, dThold));
 
-	pK->v("iClass",&m_iClass);
+	pK->v("iClass", &m_iClass);
 //	pK->v("tIntSend",&m_ieSend.m_tInterval);
 
 	Kiss* pG = pK->child("mount");

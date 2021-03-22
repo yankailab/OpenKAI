@@ -61,7 +61,7 @@ void Goto::draw(void)
 				   + f2str(m_vPos.y,7) + ", "
 		           + f2str(m_vPos.z,7) + ")",1);
 
-	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*OV_USEC_1SEC);
+	int tOut = (int)((double)(m_tTimeout - (m_tStamp - m_tStart))*USEC_2_SEC);
 	tOut = constrain(tOut, 0, INT_MAX);
 	addMsg("Timeout = " + i2str(tOut),1);
 }

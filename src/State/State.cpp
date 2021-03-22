@@ -32,7 +32,7 @@ bool State::init(void* pKiss)
 	pK->v("next", &m_next);
     
 	if(pK->v("tTimeout",&m_tTimeout))
-		m_tTimeout *= USEC_1SEC;
+		m_tTimeout *= SEC_2_USEC;
 
 	return true;
 }

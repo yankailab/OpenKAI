@@ -55,7 +55,7 @@ void _xArm::update(void)
         {
             if(!power(true))
             {
-                m_pT->sleepT (USEC_1SEC);
+                m_pT->sleepT (SEC_2_USEC);
                 continue;
             }
         }

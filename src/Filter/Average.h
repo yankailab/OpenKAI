@@ -33,24 +33,30 @@ namespace kai
 
 			FilterBase<T>::reset();
 
+			m_base = 1.0 / FilterBase<T>::m_nW;
 			return true;
 		}
 
-		T input(T v)
+		T* update(T* pV)
 		{
-			if(!FilterBase<T>::add(v))
+			NULL_N(pV);
+
+			if(!FilterBase<T>::add(*pV))
 			{
-				FilterBase<T>::m_v = v;
-				return FilterBase<T>::m_v;
+				FilterBase<T>::m_v = *pV;
+				return FilterBase<T>::m_pV;
 			}
 
 			T tot = 0.0;
 			for (int i = 0; i < FilterBase<T>::m_nW; i++)
 				tot += FilterBase<T>::m_qV.at(i);
 
-			FilterBase<T>::m_v = tot / (T)FilterBase<T>::m_nW;
-			return FilterBase<T>::m_v;
+			FilterBase<T>::m_v = tot * m_base;
+			return FilterBase<T>::m_pV;
 		}
+
+	protected:
+		T m_base;
 	};
 
 }

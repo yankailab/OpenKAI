@@ -24,7 +24,7 @@ bool _JSONbase::init ( void* pKiss )
     pK->v ( "msgFinishSend", &m_msgFinishSend );
     pK->v ( "msgFinishRecv", &m_msgFinishRecv );
     
-    int v = USEC_1SEC;
+    int v = SEC_2_USEC;
     pK->v ( "tIntHeartbeat", &v );
     m_tIntHeartbeat.init(v);
 
@@ -70,7 +70,7 @@ void _JSONbase::updateW ( void )
     {
         if ( !m_pIO )
         {
-            m_pT->sleepT ( USEC_1SEC );
+            m_pT->sleepT ( SEC_2_USEC );
             continue;
         }
 
@@ -78,7 +78,7 @@ void _JSONbase::updateW ( void )
         {
             if ( !m_pIO->open() )
             {
-                m_pT->sleepT ( USEC_1SEC );
+                m_pT->sleepT ( SEC_2_USEC );
                 continue;
             }
         }

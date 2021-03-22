@@ -38,19 +38,21 @@ namespace kai
 			return true;
 		}
 
-		T input(T v)
+		T* update(T* pV)
 		{
-			if(!FilterBase<T>::add(v))
+			NULL_N(pV);
+
+			if(!FilterBase<T>::add(*pV))
 			{
-				FilterBase<T>::m_v = v;
-				return FilterBase<T>::m_v;
+				FilterBase<T>::m_v = *pV;
+				return FilterBase<T>::m_pV;
 			}
 
 			m_qSort = FilterBase<T>::m_qV;
 			std::sort(m_qSort.begin(), m_qSort.end());
 			FilterBase<T>::m_v = m_qSort.at(m_iMid);
 
-			return FilterBase<T>::m_v;
+			return FilterBase<T>::m_pV;
 		}
 
 		void reset(void)

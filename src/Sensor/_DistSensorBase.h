@@ -27,7 +27,7 @@ enum DIST_SENSOR_TYPE
 
 struct DIST_SENSOR_DIV
 {
-	float m_d;	//raw input
+	float m_d; //raw input
 	float m_a; //amplitude
 	Median<float> m_fMed;
 	Average<float> m_fAvr;
@@ -46,8 +46,7 @@ struct DIST_SENSOR_DIV
 		m_d = d;
 		if(d >= 0.0)
 		{
-			m_fMed.input(d);
-			m_fAvr.input(m_fMed.v());
+			m_fAvr.update(m_fMed.update(&m_d));
 			return;
 		}
 

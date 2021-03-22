@@ -36,12 +36,14 @@ namespace kai
 			return true;
 		}
 
-		T input(T v, T dT)
+		T* update(T* pV, T dT)
 		{
-			if(!FilterBase<T>::add(v))
+			NULL_N(pV);
+
+			if(!FilterBase<T>::add(*pV))
 			{
-				FilterBase<T>::m_v = v;
-				return FilterBase<T>::m_v;
+				FilterBase<T>::m_v = *pV;
+				return FilterBase<T>::m_pV;
 			}
 
 			int s = FilterBase<T>::m_qV.size();
@@ -49,7 +51,7 @@ namespace kai
 			T q = FilterBase<T>::m_qV.at(s-1);
 
 			FilterBase<T>::m_v = q + (q - p) * dT;
-			return FilterBase<T>::m_v;
+			return FilterBase<T>::m_pV;
 		}
 	};
 

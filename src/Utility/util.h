@@ -111,7 +111,7 @@ inline uint64_t getApproxTbootUs(void)
 	struct timespec tFromBoot;
 	clock_gettime(CLOCK_BOOTTIME, &tFromBoot);
 
-	return tFromBoot.tv_sec * USEC_1SEC + (tFromBoot.tv_nsec >> 10);// / 1000;
+	return tFromBoot.tv_sec * SEC_2_USEC + (tFromBoot.tv_nsec >> 10);// / 1000;
 }
 
 inline double NormRand(void)

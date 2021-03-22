@@ -103,13 +103,13 @@ void _LabArm::updatePos(void)
 	float pTargetP[6] = {vP.x, vP.y, vP.z, 0,0,0};//vR.x, vR.y, vR.z};
 	m_la.GotoXYZ(pTargetP);
 
-//	m_pT->sleepTime(USEC_1SEC*3);
+//	m_pT->sleepTime(SEC_2_USEC*3);
 //
 //	m_la.motor3.Goto(vR.x);
 //	m_la.motor5.Goto(vR.y);
 //	m_la.motor6.Goto(vR.z);
 //
-//	m_pT->sleepTime(USEC_1SEC*3);
+//	m_pT->sleepTime(SEC_2_USEC*3);
 
 	if(m_bGripper && m_vAxis[6].getPtarget() >= 0.0)
 	{

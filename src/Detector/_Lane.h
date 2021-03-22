@@ -109,10 +109,9 @@ struct LANE
 		gsl_vector_free(m_gC);
 	}
 
-	void input(int i, double v)
+	void input(int i, float v)
 	{
-		m_pMed[i].input(v);
-		m_pAvr[i].input(m_pMed[i].v());
+		m_pAvr[i].update(m_pMed[i].update(&v));
 	}
 
 	double vFilter(int i)

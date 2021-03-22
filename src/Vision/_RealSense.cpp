@@ -216,7 +216,7 @@ void _RealSense::update ( void )
             {
                 LOG_E ( "Cannot open RealSense" );
                 hardwareReset();
-                m_pT->sleepT ( USEC_1SEC );
+                m_pT->sleepT ( SEC_2_USEC );
                 continue;
             }
         }
@@ -230,7 +230,7 @@ void _RealSense::update ( void )
         else
         {
             hardwareReset();
-            m_pT->sleepT ( USEC_1SEC );
+            m_pT->sleepT ( SEC_2_USEC );
             m_bOpen = false;
         }
 

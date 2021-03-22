@@ -17,7 +17,7 @@ _Thread::_Thread()
 	m_dT = 1.0;
 	m_FPS = 0;
 	m_targetFPS = DEFAULT_FPS;
-	m_targetTframe = USEC_1SEC / m_targetFPS;
+	m_targetTframe = SEC_2_USEC / m_targetFPS;
 	m_tFrom = 0;
 	m_tTo = 0;
 	m_bGoSleep = false;
@@ -75,6 +75,8 @@ bool _Thread::start(void *(*__start_routine) (void *),
                     void *__restrict __arg)
 {
     IF_F(m_bThreadON);
+
+	m_tFrom = getApproxTbootUs();
     
 	m_bThreadON = true;
 	int r = pthread_create(&m_threadID, 0, __start_routine, __arg);
@@ -154,7 +156,7 @@ void _Thread::setTargetFPS(float fps)
 	IF_(fps<=0);
 
 	m_targetFPS = fps;
-	m_targetTframe = USEC_1SEC / m_targetFPS;
+	m_targetTframe = SEC_2_USEC / m_targetFPS;
 }
 
 float _Thread::getTargetFPS(void)
@@ -167,7 +169,7 @@ void _Thread::autoFPSfrom(void)
 	uint64_t tNow = getApproxTbootUs();
 	m_dT = (float)(tNow - m_tFrom + 1);
 	m_tFrom = tNow;
-	m_FPS = USEC_1SEC / m_dT;
+	m_FPS = SEC_2_USEC / m_dT;
 }
 
 void _Thread::autoFPSto(void)

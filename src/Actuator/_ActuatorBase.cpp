@@ -18,7 +18,7 @@ _ActuatorBase::_ActuatorBase()
 
 	m_lastCmdType = actCmd_standby;
 	m_tLastCmd = 0;
-	m_tCmdTimeout = USEC_1SEC;
+	m_tCmdTimeout = SEC_2_USEC;
 
 	pthread_mutex_init(&m_mutex, NULL);
 	m_pParent = NULL;

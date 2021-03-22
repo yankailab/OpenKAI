@@ -38,7 +38,7 @@ _PickingArm::_PickingArm()
 	m_vPdescend.init(-200, 300.0, -100.0);
 
 	m_oTstamp = 0;
-	m_oTimeout = USEC_1SEC;
+	m_oTimeout = SEC_2_USEC;
 }
 
 _PickingArm::~_PickingArm()

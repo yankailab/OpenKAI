@@ -2,9 +2,8 @@
  *  Created on: Sept 28, 2016
  *      Author: yankai
  */
-#include "_DetectorBase.h"
-
 #ifdef USE_OPENCV
+#include "_DetectorBase.h"
 
 namespace kai
 {

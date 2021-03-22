@@ -23,7 +23,7 @@ _ANR::_ANR()
 	m_cnBB.init();
 	m_tStampCNprefix = 0;
 	m_tStampCN = 0;
-	m_timeOut = USEC_1SEC;
+	m_timeOut = SEC_2_USEC;
 	m_nCNdigit = 6;
 	m_offsetRdigit = 0.01;
 	m_wRdigit = 0.05;
@@ -81,7 +81,7 @@ bool _ANR::init(void* pKiss)
 #endif
 
 	if(pK->v("timeOut",&m_timeOut))
-		m_timeOut *= USEC_1SEC;
+		m_timeOut *= SEC_2_USEC;
 
 	vector<string> vPrefix;
 	pK->a("vPrefix", &vPrefix);

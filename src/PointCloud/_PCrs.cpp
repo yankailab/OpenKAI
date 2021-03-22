@@ -193,7 +193,7 @@ namespace kai
 				{
 					LOG_E("Cannot open RealSense");
 					hardwareReset();
-					m_pT->sleepT(USEC_1SEC);
+					m_pT->sleepT(SEC_2_USEC);
 					continue;
 				}
 			}
@@ -207,7 +207,7 @@ namespace kai
 			else
 			{
 				hardwareReset();
-				m_pT->sleepT(USEC_1SEC);
+				m_pT->sleepT(SEC_2_USEC);
 				m_bOpen = false;
 			}
 

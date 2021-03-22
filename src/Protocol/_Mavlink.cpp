@@ -58,7 +58,7 @@ bool _Mavlink::init(void* pKiss)
 	pK->v("devComponentID", &m_devComponentID);
 	pK->v("devType", &m_devType);
 
-	uint64_t tTimeout = USEC_1SEC * 10;
+	uint64_t tTimeout = SEC_2_USEC * 10;
 	pK->v("tTimeout", &tTimeout);
 	for(MavMsgBase* pM : m_vpMsg)
 	{
@@ -123,13 +123,13 @@ void _Mavlink::update(void)
 	{
 		if (!m_pIO)
 		{
-			m_pT->sleepT (USEC_1SEC);
+			m_pT->sleepT (SEC_2_USEC);
 			continue;
 		}
 
 		if (!m_pIO->isOpen())
 		{
-			m_pT->sleepT (USEC_1SEC);
+			m_pT->sleepT (SEC_2_USEC);
 			continue;
 		}
 

@@ -101,7 +101,7 @@ void _Mynteye::update(void)
 			if (!open())
 			{
 				LOG_E("Cannot open Mynteye");
-				m_pT->sleepTime(USEC_1SEC);
+				m_pT->sleepTime(SEC_2_USEC);
 				continue;
 			}
 		}

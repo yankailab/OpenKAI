@@ -23,7 +23,7 @@ _SortingCtrlServer::_SortingCtrlServer()
 	m_bbSize = 0.05;
 	m_dT = 0.0;
 	m_iState = SORT_STATE_OFF;
-	m_ieState.init(USEC_1SEC);
+	m_ieState.init(SEC_2_USEC);
 }
 
 _SortingCtrlServer::~_SortingCtrlServer()
@@ -101,7 +101,7 @@ void _SortingCtrlServer::updateImg(void)
 	IF_(check() < 0);
 
 	//update existing target positions
-	float spd = m_cSpeed * ((float) m_pT->getDt()) * 1e-6;
+	float spd = m_cSpeed * ((float) m_pT->getDt()) * USEC_2_SEC;
 	int i = 0;
 	_Object *pO;
 	while ((pO = m_pU->get(i++)))
@@ -128,7 +128,7 @@ void _SortingCtrlServer::handleCMD(uint8_t *pCMD)
 
 	if (cmd == SORTINGCTRL_OBJ)
 	{
-		float d = m_cSpeed * ((float) m_dT) * 1e-6;
+		float d = m_cSpeed * ((float) m_dT) * USEC_2_SEC;
 
 		m_newO.setX((float) pCMD[3] / 255.0);
 		m_newO.setY((float) pCMD[3] / 255.0);

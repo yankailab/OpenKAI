@@ -78,7 +78,7 @@ void _GStreamer::update(void)
 		{
 			if (!open())
 			{
-				m_pT->sleepT (USEC_1SEC);
+				m_pT->sleepT (SEC_2_USEC);
 				continue;
 			}
 		}

@@ -121,7 +121,7 @@ void _AProver_BRfollow::updateFollow ( void )
             m_pD->setSteering(0.0);
             m_pD->setSpeed(0.0);
             m_iTag = iTag;
-            m_pT->sleepT (m_tStop * USEC_1SEC);
+            m_pT->sleepT (m_tStop * SEC_2_USEC);
             return;
         }
         else

@@ -70,8 +70,8 @@ void _ArUco::detect(void)
 	Mat m = *m_pV->BGR()->m();
 	IF_(m.empty());
 
-    std::vector<int> vID;
-    std::vector<std::vector<cv::Point2f> > vvCorner;
+    vector<int> vID;
+    vector<vector<cv::Point2f> > vvCorner;
     cv::aruco::detectMarkers(m, m_pDict, vvCorner, vID);
 
 	_Object o;
@@ -82,7 +82,6 @@ void _ArUco::detect(void)
 	for (unsigned int i = 0; i < vID.size(); i++)
 	{
 		o.init();
-//		o.m_tStamp = m_pT->getTfrom();
 		o.setTopClass(vID[i],1.0);
 
 		Point2f pLT = vvCorner[i][0];
@@ -105,6 +104,10 @@ void _ArUco::detect(void)
 		{
 			vFloat4 bb = o.getBB2D();
 			o.setZ(m_pDV->d(&bb));
+		}
+		else
+		{
+
 		}
 
 		// center position

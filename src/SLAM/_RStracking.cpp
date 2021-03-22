@@ -86,7 +86,7 @@ void _RStracking::update(void)
 			if (!open())
 			{
 				LOG_E("Cannot open RealSense tracking");
-				m_pT->sleepT (USEC_1SEC);
+				m_pT->sleepT (SEC_2_USEC);
 				continue;
 			}
 		}

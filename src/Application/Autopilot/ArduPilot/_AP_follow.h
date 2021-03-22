@@ -20,11 +20,11 @@ struct FOLLOW_TARGET_FILT
 	Predict<float> m_pred;
 	Hold<float> m_hold;
 
-	bool init(int nWmed, int nWpred, float dThold, float vTover)
+	bool init(int nWmed, int nWpred, float dThold)
 	{
 		IF_F(!m_med.init(nWmed));
 		IF_F(!m_pred.init(nWpred));
-		IF_F(!m_hold.init(dThold, vTover));
+		IF_F(!m_hold.init(dThold));
 
 		return true;
 	}
@@ -36,9 +36,10 @@ struct FOLLOW_TARGET_FILT
 		m_hold.reset();
 	}
 
-	float input(float v, bool b, float dTsec)
+	float* update(float* pV, float dTsec)
 	{
-		return m_pred.input(m_med.input(m_hold.input(v,b,dTsec) ), dTsec);
+//		return m_pred.update(m_med.update(m_hold.update(pV, dTsec) ), dTsec);
+		return m_med.update(m_hold.update(pV, dTsec) );
 	}
 };
 
@@ -72,7 +73,9 @@ public:
 
 	FOLLOW_TARGET_FILT m_fX;
 	FOLLOW_TARGET_FILT m_fY;
-	FOLLOW_TARGET_FILT m_fW;
+	FOLLOW_TARGET_FILT m_fR;
+	FOLLOW_TARGET_FILT m_fH;
+	float			m_dTf;
 
 	AP_MOUNT		m_apMount;
 
