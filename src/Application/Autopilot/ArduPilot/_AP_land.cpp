@@ -10,7 +10,6 @@ _AP_land::_AP_land()
     m_zrK = 1.0;
 	m_targetAlt = 1.0;
 	m_dTarget = -1.0;
-	m_dTf = 0.0;
 }
 
 _AP_land::~_AP_land()
@@ -83,6 +82,11 @@ bool _AP_land::findTarget(void)
 	int i = 0;
 	while ((pO = m_pU->get(i++)) != NULL)
 	{
+		if(m_iClass >= 0)
+		{
+			IF_CONT(pO->getTopClass() != m_iClass);
+		}
+
         float w = pO->getWidth();
 		IF_CONT(w > minW);
 
@@ -91,6 +95,7 @@ bool _AP_land::findTarget(void)
 	}
 
 	float *pX, *pY, *pR, *pH;
+	uint64_t t = m_pT->getTfrom();
 
 	if(tO)
 	{
@@ -99,22 +104,17 @@ bool _AP_land::findTarget(void)
 		float r = tO->getRadius();
 		float h = tO->getRoll();
 
-		m_dTf = 0.0;
-
-		//position
-		pX = m_fX.update(&x, m_dTf);
-		pY = m_fY.update(&y, m_dTf);
-		pR = m_fR.update(&r, m_dTf);
-		pH = m_fH.update(&h, 0);
+		pX = m_fX.update(&x, t);
+		pY = m_fY.update(&y, t);
+		pR = m_fR.update(&r, t);
+		pH = m_fH.update(&h, t);
 	}
 	else
 	{
-		m_dTf += m_pT->getDt() * USEC_2_SEC;
-
-		pX = m_fX.update(NULL, m_dTf);
-		pY = m_fY.update(NULL, m_dTf);
-		pR = m_fR.update(NULL, m_dTf);
-		pH = m_fH.update(NULL, 0);
+		pX = m_fX.update(NULL, t);
+		pY = m_fY.update(NULL, t);
+		pR = m_fR.update(NULL, t);
+		pH = m_fH.update(NULL, t);
 	}
 
 	NULL_F(pX);
@@ -144,7 +144,7 @@ void _AP_land::draw(void)
 
 	if (!m_bTarget)
 	{
-		addMsg("Target not found, dTf = " + f2str(m_dTf), 1);
+		addMsg("Target not found", 1);
 		return;
 	}
 

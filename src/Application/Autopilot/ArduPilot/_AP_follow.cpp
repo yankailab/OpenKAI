@@ -33,9 +33,9 @@ bool _AP_follow::init(void* pKiss)
 	IF_F(!this->_AP_posCtrl::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
 
-	int nWmed = 3;
-	int nWpred = 2;
-	float dThold = 0.8;
+	int nWmed = 0;
+	int nWpred = 0;
+	float dThold = 0.0;
 	pK->v("nWmed", &nWmed);
 	pK->v("nWpred", &nWpred);
 	pK->v("dThold", &dThold);

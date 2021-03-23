@@ -30,15 +30,11 @@ namespace kai
 		{
 		}
 
-		virtual bool add(T v)
+		virtual void add(T v)
 		{
 			m_qV.push_back(v);
-			IF_F(m_qV.size() < m_nW);
-
 			while (m_qV.size() > m_nW)
 				m_qV.pop_front();
-
-			return true;
 		}
 
 		virtual void reset(void)

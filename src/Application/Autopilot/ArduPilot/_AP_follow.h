@@ -38,8 +38,7 @@ struct FOLLOW_TARGET_FILT
 
 	float* update(float* pV, float dTsec)
 	{
-//		return m_pred.update(m_med.update(m_hold.update(pV, dTsec) ), dTsec);
-		return m_med.update(m_hold.update(pV, dTsec) );
+		return m_pred.update(m_med.update(m_hold.update(pV, dTsec) ), dTsec);
 	}
 };
 
@@ -75,7 +74,6 @@ public:
 	FOLLOW_TARGET_FILT m_fY;
 	FOLLOW_TARGET_FILT m_fR;
 	FOLLOW_TARGET_FILT m_fH;
-	float			m_dTf;
 
 	AP_MOUNT		m_apMount;
 

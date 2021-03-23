@@ -1,5 +1,5 @@
-#ifndef OpenKAI_src_Autopilot_AP__AP_descent_H_
-#define OpenKAI_src_Autopilot_AP__AP_descent_H_
+#ifndef OpenKAI_src_Autopilot_AP__AP_land_H_
+#define OpenKAI_src_Autopilot_AP__AP_land_H_
 
 #include "../../../Detector/_DetectorBase.h"
 #include "../ArduPilot/_AP_follow.h"
@@ -34,8 +34,6 @@ public:
 	float m_targetAlt;
     float m_zrK;
 	float m_dTarget;	//dist to target
-
-
 };
 }
 #endif

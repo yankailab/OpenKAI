@@ -21,31 +21,39 @@ namespace kai
 		{
 		}
 		virtual ~Hold()
-		{			
+		{
 		}
 
-		bool init(T dThold)
+		bool init(uint64_t dThold)
 		{
 			m_dThold = dThold;
 			return true;
 		}
 
-		T* update(T* pV, T dT)
+		T *update(T *pV, uint64_t t)
 		{
-			if(pV)
+			if (pV)
 			{
 				FilterBase<T>::m_v = *pV;
+				m_tLast = t;
+				return FilterBase<T>::m_pV;
 			}
-			else if(dT >= m_dThold)
-			{
-				return NULL;
-			}
+
+			uint64_t dT = t - m_tLast;
+			IF_N(dT >= m_dThold);
 
 			return FilterBase<T>::m_pV;
 		}
 
+		void reset(void)
+		{
+			FilterBase<T>::reset();
+			m_tLast = 0;
+		}
+
 	private:
-		T m_dThold;
+		uint64_t m_dThold;
+		uint64_t m_tLast;
 	};
 
 }
