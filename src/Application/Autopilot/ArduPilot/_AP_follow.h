@@ -20,7 +20,7 @@ struct FOLLOW_TARGET_FILT
 	Predict<float> m_pred;
 	Hold<float> m_hold;
 
-	bool init(int nWmed, int nWpred, float dThold)
+	bool init(int nWmed, int nWpred, uint64_t dThold)
 	{
 		IF_F(!m_med.init(nWmed));
 		IF_F(!m_pred.init(nWpred));
@@ -36,9 +36,9 @@ struct FOLLOW_TARGET_FILT
 		m_hold.reset();
 	}
 
-	float* update(float* pV, float dTsec)
+	float* update(float* pV, uint64_t t)
 	{
-		return m_pred.update(m_med.update(m_hold.update(pV, dTsec) ), dTsec);
+		return m_pred.update(m_med.update(m_hold.update(pV, t) ), t);
 	}
 };
 

@@ -2,7 +2,7 @@
 	"name":"APP",
 	"class":"Startup",
 	"appName":"OpenKAI",
-	"bWindow":0,
+	"bWindow":1,
 	"bDraw":1,
 	"bLog":1,
 	"bStdErr":1,
@@ -12,13 +12,13 @@
 {
 	"name":"OKconsole",
 	"class":"Console",
-	"bInst":0,
+	"bInst":1,
 }
 
 {
 	"name":"OKview",
 	"class":"Window",
-	"bInst":0,
+	"bInst":1,
 	"Console":"OKconsole",
 }
 
@@ -31,7 +31,8 @@
 	}
 	"bInst":1,
 	"Console":"OKconsole",
-	"start":"STANDBY",
+	"/start":"STANDBY",
+	"start":"LANDING",
 
 	{
 		"name":"state",
@@ -173,7 +174,7 @@
 {
 	"name":"cam",
 	"class":"_GStreamer",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -186,7 +187,7 @@
 {
 	"name":"cam",
 	"class":"_Camera",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -290,7 +291,7 @@
 	"zrK":10.0,
 	"nWmed":0,
 	"nWpred":0,
-	"dThold":0.3,
+	"dThold":0,
 	"iClass":-1,
 	
 	{
@@ -320,7 +321,7 @@
 	"_AP_base":"apBase",
 	"_StateControl":"state",
 	"altAirborne":15.0,
-	"altLand":2.5,
+	"altLand":-2.5,
 	"dLanded":5,
 	"bAutoArm":0,
 }

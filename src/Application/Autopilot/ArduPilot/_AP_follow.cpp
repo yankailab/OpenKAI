@@ -35,7 +35,7 @@ bool _AP_follow::init(void* pKiss)
 
 	int nWmed = 0;
 	int nWpred = 0;
-	float dThold = 0.0;
+	uint64_t dThold = 0.0;
 	pK->v("nWmed", &nWmed);
 	pK->v("nWpred", &nWpred);
 	pK->v("dThold", &dThold);
