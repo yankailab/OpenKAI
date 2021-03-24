@@ -19,23 +19,27 @@ public:
 	_SlamBase();
 	virtual ~_SlamBase();
 
-	bool init(void* pKiss);
-	void draw(void);
+	virtual bool init(void* pKiss);
+	virtual void draw(void);
 
-	bool bReady(void);
-	void reset(void);
-	vFloat3 t(void);
-	vFloat3 v(void);
-	vFloat4 q(void);
+	virtual bool bReady(void);
+	virtual void reset(void);
+	virtual vFloat3 t(void);
+	virtual vFloat3 v(void);
+	virtual vFloat3 r(void);
+	virtual vFloat4 q(void);
 
 protected:
-	void resetAll(void);
+	virtual void resetAll(void);
 
-public:
+protected:
 	bool	m_bReady;
 	bool	m_bReset;
+
+	vInt3 m_vAxisIdx; //idx of yaw, pitch, roll
 	vFloat3	m_vT;	//translation
 	vFloat3	m_vV;	//velocity
+	vFloat3 m_vR;	//rotation
 	vFloat4 m_vQ;	//quaternion
 	float	m_confidence;
 

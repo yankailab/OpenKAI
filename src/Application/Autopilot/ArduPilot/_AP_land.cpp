@@ -95,7 +95,7 @@ bool _AP_land::findTarget(void)
 	}
 
 	float *pX, *pY, *pR, *pH;
-	uint64_t t = m_pT->getTfrom();
+	float dTs = m_pT->getDt() * USEC_2_SEC;
 
 	if(tO)
 	{
@@ -104,17 +104,17 @@ bool _AP_land::findTarget(void)
 		float r = tO->getRadius();
 		float h = tO->getRoll();
 
-		pX = m_fX.update(&x, t);
-		pY = m_fY.update(&y, t);
-		pR = m_fR.update(&r, t);
-		pH = m_fH.update(&h, t);
+		pX = m_fX.update(&x, dTs);
+		pY = m_fY.update(&y, dTs);
+		pR = m_fR.update(&r, dTs);
+		pH = m_fH.update(&h, dTs);
 	}
 	else
 	{
-		pX = m_fX.update(NULL, t);
-		pY = m_fY.update(NULL, t);
-		pR = m_fR.update(NULL, t);
-		pH = m_fH.update(NULL, t);
+		pX = m_fX.update(NULL, dTs);
+		pY = m_fY.update(NULL, dTs);
+		pR = m_fR.update(NULL, dTs);
+		pH = m_fH.update(NULL, dTs);
 	}
 
 	NULL_F(pX);

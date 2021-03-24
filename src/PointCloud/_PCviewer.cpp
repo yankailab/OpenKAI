@@ -42,7 +42,6 @@ namespace kai
 		string n;
 		vector<string> vPCB;
 		pK->a("vPCbase", &vPCB);
-		IF_F(vPCB.empty());
 
 		for (string p : vPCB)
 		{
@@ -51,7 +50,6 @@ namespace kai
 
 			m_vpPCB.push_back(pPCB);
 		}
-		IF_F(m_vpPCB.empty());
 
 		return true;
 	}
@@ -69,6 +67,18 @@ namespace kai
 
 	void _PCviewer::update(void)
 	{
+
+    auto &app = gui::Application::GetInstance();
+	app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
+
+    auto vis = std::make_shared<GuiVisualizer>("Open3D GUI", 2000, 1000);
+    gui::Application::GetInstance().AddWindow(vis);
+    vis.reset();
+    app.Run();
+
+
+
+
 		m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
 		m_vis.GetRenderOption().background_color_ = Vector3d::Zero();
 		m_vis.GetViewControl().ChangeFieldOfView(m_fov);

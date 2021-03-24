@@ -51,7 +51,7 @@ namespace kai
         void init(void)
         {
             m_pPCB = NULL;
-            m_dT = 0;
+            m_dT = UINT64_MAX;
             m_iPr = 0;
         }
     };
@@ -77,6 +77,10 @@ namespace kai
 
     protected:
         PC_TYPE m_type;
+
+        //offset
+        vDouble3 m_vToffset; //translation
+        vDouble3 m_vRoffset; //rotation
 
         //dynamics
         bool m_bTransform;

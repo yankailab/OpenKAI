@@ -10,6 +10,8 @@
 #ifdef USE_OPEN3D
 
 #include "_PCframe.h"
+#include <open3d/visualization/gui/Native.h>
+#include <open3d/visualization/visualizer/GuiVisualizer.h>
 
 namespace kai
 {

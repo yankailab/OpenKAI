@@ -18,9 +18,10 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"Console":"OKconsole",
+	"/vBroadcastCode":["3JEDHC900100791"],
 	"vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
 	"returnMode":1,
@@ -32,7 +33,7 @@
 {
 	"name":"Livox",
 	"class":"_Livox",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -40,5 +41,37 @@
 	"bLog":1,
 	"Console":"OKconsole",
 	"LivoxLidar":"LivoxLidar",
+	"/broadcastCode":"3JEDHC900100791",
 	"broadcastCode":"3JEDHC900100791",
+	"nP":256000,
+	"vToffset":[0,0,0],
+	"vRoffset":[0,0,0],
+	"bTransform":1,
+}
+
+{
+	"name":"pcv",
+	"class":"_PCviewer",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"vWinSize":[1920,1080],
+	"fov":100,
+	"/ctxdT":0,
+	"vPCbase":["Livox"],
+}
+
+{
+	"name":"T265",
+	"class":"_RStracking",
+	"FPS":30,
+	"bInst":0,
+	"bLog":1,
+	"Window":"OKview",
+	"Console":"OKconsole",
+	"vAxisIdx":[0,1,2],
 }

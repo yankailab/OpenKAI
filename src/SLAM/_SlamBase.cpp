@@ -14,6 +14,7 @@ _SlamBase::_SlamBase()
 {
 	m_bReady = false;
 	m_bReset = false;
+	m_vAxisIdx.init(0,1,2);
 	resetAll();
 }
 
@@ -25,6 +26,8 @@ bool _SlamBase::init(void* pKiss)
 {
 	IF_F(!this->_ModuleBase::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
+
+	pK->v("vAxisIdx", &m_vAxisIdx);
 
 	return true;
 }
@@ -43,6 +46,7 @@ void _SlamBase::resetAll(void)
 {
 	m_vT.init();
 	m_vV.init();
+	m_vR.init();
 	m_vQ.init();
 	m_confidence = 0.0;
 	m_bReset = false;
@@ -56,6 +60,11 @@ vFloat3 _SlamBase::t(void)
 vFloat3 _SlamBase::v(void)
 {
 	return m_vV;
+}
+
+vFloat3 _SlamBase::r(void)
+{
+	return m_vR;
 }
 
 vFloat4 _SlamBase::q(void)
@@ -76,6 +85,11 @@ void _SlamBase::draw(void)
 	msg = "vV = (" + f2str(m_vV.x,3) + ", "
 				  + f2str(m_vV.y,3) + ", "
 				  + f2str(m_vV.z,3) + ")";
+	addMsg(msg,1);
+
+	msg = "vR = (" + f2str(m_vR.x,3) + ", "
+				  + f2str(m_vR.y,3) + ", "
+				  + f2str(m_vR.z,3) + ")";
 	addMsg(msg,1);
 
 	msg = "vQ = (" + f2str(m_vQ.x,3) + ", "

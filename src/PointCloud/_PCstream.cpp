@@ -16,9 +16,10 @@ namespace kai
         m_type = pc_stream;
 
         m_pP = NULL;
-        m_nP = 0;
+        m_nP = 256;
         m_iP = 0;
         m_tLastUpdate = 0;
+        m_bAccept = true;
     }
 
     _PCstream::~_PCstream()
@@ -32,11 +33,10 @@ namespace kai
         IF_F(!this->_PCbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        int nP = 0;
-        pK->v("nP", &nP);
-        IF_F(nP <= 0);
+        pK->v("bAccept", &m_bAccept);
+        pK->v("nP", &m_nP);
+        IF_F(m_nP <= 0);
 
-        m_nP = nP;
         m_pP = new PC_POINT[m_nP];
         NULL_F(m_pP);
         m_iP = 0;
@@ -53,9 +53,15 @@ namespace kai
         return this->_PCbase::check();
     }
 
+    void _PCstream::AcceptAdd(bool b)
+    {
+        m_bAccept = b;
+    }
+
     void _PCstream::add(Vector3d &vP, Vector3d &vC, uint64_t tStamp)
     {
         NULL_(m_pP);
+        IF_(!m_bAccept);
 
         PC_POINT *pP = &m_pP[m_iP];
         pP->m_vP = (m_bTransform) ? (m_A * vP) : vP;

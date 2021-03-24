@@ -24,23 +24,24 @@ namespace kai
 		{
 		}
 
-		bool init(uint64_t dThold)
+		bool init(float dThold)
 		{
 			m_dThold = dThold;
+			reset();
 			return true;
 		}
 
-		T *update(T *pV, uint64_t t)
+		T *update(T *pV, float dT)
 		{
 			if (pV)
 			{
 				FilterBase<T>::m_v = *pV;
-				m_tLast = t;
+				m_dT = 0;
 				return FilterBase<T>::m_pV;
 			}
 
-			uint64_t dT = t - m_tLast;
-			IF_N(dT >= m_dThold);
+			m_dT += dT;
+			IF_N(m_dT >= m_dThold);
 
 			return FilterBase<T>::m_pV;
 		}
@@ -48,12 +49,12 @@ namespace kai
 		void reset(void)
 		{
 			FilterBase<T>::reset();
-			m_tLast = 0;
+			m_dT = 0;
 		}
 
 	private:
-		uint64_t m_dThold;
-		uint64_t m_tLast;
+		float m_dThold;
+		float m_dT;
 	};
 
 }

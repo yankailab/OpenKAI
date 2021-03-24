@@ -14,6 +14,8 @@ namespace kai
     _PCbase::_PCbase()
     {
         m_type = pc_unknown;
+        m_vToffset.init(0);
+        m_vRoffset.init(0);
         m_bTransform = false;
         m_vT.init(0);
         m_vR.init(0);
@@ -31,6 +33,10 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
+
+        //offset
+        pK->v("vToffset", &m_vToffset);
+        pK->v("vRoffset", &m_vRoffset);
 
         //transform
         pK->v("bTransform", &m_bTransform);
@@ -66,11 +72,13 @@ namespace kai
         m_vR = vR;
 
         Matrix4d mT = Matrix4d::Identity();
-        Vector3d eR(m_vR.x, m_vR.y, m_vR.z);
+        Vector3d eR(m_vR.x + m_vRoffset.x,
+                    m_vR.y + m_vRoffset.y,
+                    m_vR.z + m_vRoffset.z);
         mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-        mT(0, 3) = m_vT.x;
-        mT(1, 3) = m_vT.y;
-        mT(2, 3) = m_vT.z;
+        mT(0, 3) = m_vT.x + m_vToffset.x;
+        mT(1, 3) = m_vT.y + m_vToffset.y;
+        mT(2, 3) = m_vT.z + m_vToffset.z;
 
         m_mT = mT;
         m_A = m_mT;

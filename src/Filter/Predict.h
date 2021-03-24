@@ -29,11 +29,11 @@ namespace kai
 		{
 			IF_F(nW < 0);
 			FilterBase<T>::m_nW = nW;
-			FilterBase<T>::reset();
+			reset();
 			return true;
 		}
 
-		T *update(T *pV, uint64_t t)
+		T *update(T *pV, float dT)
 		{
 			NULL_N(pV);
 			if (FilterBase<T>::m_nW < 2 ||
@@ -47,12 +47,7 @@ namespace kai
 			int s = FilterBase<T>::m_qV.size();
 			T p = FilterBase<T>::m_qV.at(s - 2);
 			T q = FilterBase<T>::m_qV.at(s - 1);
-
-			double dT = (double)(t - m_tLast) * USEC_2_SEC;
-			if (m_tLast == 0)
-				dT = 0.0;
 				
-			m_tLast = t;
 			FilterBase<T>::m_v = q + (q - p) * (T)dT;
 			return FilterBase<T>::m_pV;
 		}
@@ -60,11 +55,7 @@ namespace kai
 		void reset(void)
 		{
 			FilterBase<T>::reset();
-			m_tLast = 0;
 		}
-
-	private:
-		uint64_t m_tLast;
 	};
 
 }

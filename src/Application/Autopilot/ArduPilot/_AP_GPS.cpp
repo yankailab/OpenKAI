@@ -130,9 +130,9 @@ void _AP_GPS::updateGPS(void)
 
 	vFloat3 vRSt = m_pSB->t();
 	vFloat3 vT;
-	vT.x = vRSt.v(m_vAxisIdx.x) * m_vAxisK.x;
-	vT.y = vRSt.v(m_vAxisIdx.y) * m_vAxisK.y;
-	vT.z = vRSt.v(m_vAxisIdx.z) * m_vAxisK.z;
+	vT.x = *vRSt.v(m_vAxisIdx.x) * m_vAxisK.x;
+	vT.y = *vRSt.v(m_vAxisIdx.y) * m_vAxisK.y;
+	vT.z = *vRSt.v(m_vAxisIdx.z) * m_vAxisK.z;
 	UTM_POS pUTM = m_GPS.offset(m_utmOrigin, vT);
 	m_llPos = m_GPS.UTM2LL(pUTM);
 

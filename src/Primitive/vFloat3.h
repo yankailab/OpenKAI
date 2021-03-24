@@ -164,7 +164,7 @@ struct vFloat3
 		z = (z>b)?b:z;
 	}
 
-	float v(int i)
+	float* v(int i)
 	{
 		IF__(i>=3, 0);
 		IF__(i<0, 0);
@@ -174,7 +174,7 @@ struct vFloat3
 		pv[1] = &y;
 		pv[2] = &z;
 
-		return *pv[i];
+		return pv[i];
 	}
 
 	bool bEqual(vFloat3& v, float d)

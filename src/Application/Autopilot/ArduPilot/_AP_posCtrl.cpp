@@ -108,7 +108,7 @@ void _AP_posCtrl::setPosLocal(void)
 {
 	IF_(check()<0);
 
-	float dTs = ((float)m_pT->getDt()) * USEC_2_SEC;
+	float dTs = m_pT->getDt() * USEC_2_SEC;
 	float p = 0, r = 0, a = 0, y = 0;
 	if (m_pRoll)
 		r = m_pRoll->update(m_vP.x, m_vTargetP.x, dTs);

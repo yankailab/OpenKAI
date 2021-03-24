@@ -32,6 +32,7 @@ namespace kai
         virtual int check(void);
         virtual void draw(void);
 
+        virtual void AcceptAdd(bool b);
         virtual void add(Vector3d &vP, Vector3d &vC, uint64_t tStamp = UINT64_MAX);
 
     protected:
@@ -45,6 +46,7 @@ namespace kai
         int m_nP;
         int m_iP;
         uint64_t m_tLastUpdate;
+        bool m_bAccept;
 
         //pipeline input src
 

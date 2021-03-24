@@ -5,140 +5,154 @@
  *      Author: yankai
  */
 
-#include "_RStracking.h"
-
 #ifdef USE_REALSENSE
+#include "_RStracking.h"
 
 namespace kai
 {
 
-_RStracking::_RStracking()
-{
-}
-
-_RStracking::~_RStracking()
-{
-	close();
-}
-
-bool _RStracking::init(void* pKiss)
-{
-	IF_F(!this->_SlamBase::init(pKiss));
-	Kiss* pK = (Kiss*) pKiss;
-
-	return true;
-}
-
-bool _RStracking::open(void)
-{
-	IF_T(m_bReady);
-
-	try
+	_RStracking::_RStracking()
 	{
-		rs2::config cfg;
-	    cfg.enable_stream(RS2_STREAM_POSE, RS2_FORMAT_6DOF);
-
-		m_rsPipe.start(cfg);
-
-		rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
-
-	} catch (const rs2::camera_disconnected_error& e)
-	{
-		LOG_E("Realsense tracking disconnected");
-		return false;
-	} catch (const rs2::recoverable_error& e)
-	{
-		LOG_E("Realsense tracking open failed");
-		return false;
-	} catch (const rs2::error& e)
-	{
-		LOG_E("Realsense tracking error");
-		return false;
-	} catch (const std::exception& e)
-	{
-		LOG_E("Realsense tracking exception");
-		return false;
 	}
 
-	m_bReady = true;
-	return true;
-}
-
-void _RStracking::close(void)
-{
-	IF_(!m_bReady);
-	m_rsPipe.stop();
-	m_bReady = false;
-}
-
-bool _RStracking::start(void)
-{
-    NULL_F(m_pT);
-	return m_pT->start(getUpdate, this);
-}
-
-void _RStracking::update(void)
-{
-	while(m_pT->bRun())
+	_RStracking::~_RStracking()
 	{
-		if (!m_bReady)
-		{
-			if (!open())
-			{
-				LOG_E("Cannot open RealSense tracking");
-				m_pT->sleepT (SEC_2_USEC);
-				continue;
-			}
-		}
+		close();
+	}
 
-		if(m_bReset)
-		{
-			close();
-			this->_SlamBase::resetAll();
-			continue;
-		}
+	bool _RStracking::init(void *pKiss)
+	{
+		IF_F(!this->_SlamBase::init(pKiss));
+		Kiss *pK = (Kiss *)pKiss;
 
-		m_pT->autoFPSfrom();
+		return true;
+	}
+
+	bool _RStracking::open(void)
+	{
+		IF_T(m_bReady);
 
 		try
 		{
-	        auto frames = m_rsPipe.wait_for_frames();
-	        auto f = frames.first_or_default(RS2_STREAM_POSE);
-	        auto pose = f.as<rs2::pose_frame>().get_pose_data();
+			rs2::config cfg;
+			cfg.enable_stream(RS2_STREAM_POSE, RS2_FORMAT_6DOF);
 
-	        m_vT.x = pose.translation.x;
-	        m_vT.y = pose.translation.y;
-	        m_vT.z = pose.translation.z;
+			m_rsPipe.start(cfg);
 
-	        m_vQ.x = pose.rotation.x;
-	        m_vQ.y = pose.rotation.y;
-	        m_vQ.z = pose.rotation.z;
-	        m_vQ.w = pose.rotation.w;
-
-	        m_confidence = pose.tracker_confidence;
-
-		} catch (const rs2::camera_disconnected_error& e)
+			rs2::frameset rsFrameset = m_rsPipe.wait_for_frames();
+		}
+		catch (const rs2::camera_disconnected_error &e)
 		{
 			LOG_E("Realsense tracking disconnected");
-		} catch (const rs2::recoverable_error& e)
+			return false;
+		}
+		catch (const rs2::recoverable_error &e)
 		{
 			LOG_E("Realsense tracking open failed");
-		} catch (const rs2::error& e)
+			return false;
+		}
+		catch (const rs2::error &e)
 		{
 			LOG_E("Realsense tracking error");
-		} catch (const std::exception& e)
+			return false;
+		}
+		catch (const std::exception &e)
 		{
-			LOG_E("Realsense exception");
+			LOG_E("Realsense tracking exception");
+			return false;
 		}
 
-		m_pT->autoFPSto();
+		m_bReady = true;
+		return true;
 	}
-}
 
-void _RStracking::draw(void)
-{
-	this->_SlamBase::draw();
-}
+	void _RStracking::close(void)
+	{
+		IF_(!m_bReady);
+		m_rsPipe.stop();
+		m_bReady = false;
+	}
+
+	bool _RStracking::start(void)
+	{
+		NULL_F(m_pT);
+		return m_pT->start(getUpdate, this);
+	}
+
+	void _RStracking::update(void)
+	{
+		while (m_pT->bRun())
+		{
+			if (!m_bReady)
+			{
+				if (!open())
+				{
+					LOG_E("Cannot open RealSense tracking");
+					m_pT->sleepT(SEC_2_USEC);
+					continue;
+				}
+			}
+
+			if (m_bReset)
+			{
+				close();
+				this->_SlamBase::resetAll();
+				continue;
+			}
+
+			m_pT->autoFPSfrom();
+
+			try
+			{
+				auto frames = m_rsPipe.wait_for_frames();
+				auto f = frames.first_or_default(RS2_STREAM_POSE);
+				auto pose = f.as<rs2::pose_frame>().get_pose_data();
+
+				*m_vT.v(m_vAxisIdx.x) = pose.translation.x;
+				*m_vT.v(m_vAxisIdx.y) = pose.translation.y;
+				*m_vT.v(m_vAxisIdx.z) = pose.translation.z;
+
+				m_vQ.x = pose.rotation.x;
+				m_vQ.y = pose.rotation.y;
+				m_vQ.z = pose.rotation.z;
+				m_vQ.w = pose.rotation.w;
+
+				float w = m_vQ.w;
+				float x = -m_vQ.z;
+				float y = m_vQ.x;
+				float z = -m_vQ.y;
+				const float ovP = 180.0/OK_PI;
+				*m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								//pitch
+				*m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
+				*m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
+
+				m_confidence = pose.tracker_confidence;
+			}
+			catch (const rs2::camera_disconnected_error &e)
+			{
+				LOG_E("Realsense tracking disconnected");
+			}
+			catch (const rs2::recoverable_error &e)
+			{
+				LOG_E("Realsense tracking open failed");
+			}
+			catch (const rs2::error &e)
+			{
+				LOG_E("Realsense tracking error");
+			}
+			catch (const std::exception &e)
+			{
+				LOG_E("Realsense exception");
+			}
+
+			m_pT->autoFPSto();
+		}
+	}
+
+	void _RStracking::draw(void)
+	{
+		this->_SlamBase::draw();
+	}
 
 }
 #endif
