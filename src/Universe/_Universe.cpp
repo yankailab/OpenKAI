@@ -178,7 +178,7 @@ void _Universe::draw(void)
 #ifdef USE_OPENCV
 	if(checkWindow())
 	{
-		Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+		Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 
 		Scalar oCol;
 		Scalar bCol = Scalar(100,100,100);

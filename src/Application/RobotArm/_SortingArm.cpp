@@ -242,7 +242,7 @@ void _SortingArm::draw(void)
 	this->_ModuleBase::draw();
 
 	IF_(!checkWindow());
-	Window* pWin = (Window*) this->m_pWindow;
+	CVwindow* pWin = (CVwindow*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
 	int iL = m_vRoiX.x * pMat->cols;

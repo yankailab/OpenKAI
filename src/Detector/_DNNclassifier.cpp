@@ -178,7 +178,7 @@ void _DNNclassifier::draw(void)
 	this->_DetectorBase::draw();
 
 	IF_(!checkWindow());
-	Mat *pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat *pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 
 	_Object *pO = m_pU->get(0);
 	NULL_(pO);

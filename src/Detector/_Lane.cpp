@@ -237,7 +237,7 @@ void _Lane::draw(void)
 
 	IF_(!checkWindow());
 	IF_(m_mPerspectiveInv.empty());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 
 	//visualization of the lane
 	Mat mLane = Mat::zeros(m_mOverhead.size(), CV_8UC1);

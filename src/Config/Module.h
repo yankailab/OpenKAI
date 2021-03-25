@@ -90,7 +90,7 @@
 
 #ifdef USE_OPENCV
 
-#include "../UI/Window.h"
+#include "../UI/CVwindow.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
@@ -142,7 +142,6 @@
 #include "../Application/RobotArm/_PickingArm.h"
 #include "../Application/RobotArm/_SortingArm.h"
 #include "../Application/RobotArm/_SortingCtrlServer.h"
-#include "../Application/RobotArm/_SortingCtrlClient.h"
 
 #ifdef USE_OPENCV_CONTRIB
 #include "../Detector/_ArUco.h"
@@ -247,6 +246,10 @@
 
 #ifdef USE_XARM
 #include "../Actuator/Articulated/_xArm.h"
+#endif
+
+#ifdef USE_GUI
+#include "../UI/GUIwindow.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

@@ -7,11 +7,9 @@
 
 #ifndef OpenKAI_src_Detector__Cascade_H_
 #define OpenKAI_src_Detector__Cascade_H_
-
-#include "../Detector/_DetectorBase.h"
-
 #ifdef USE_OPENCV
 #ifdef USE_CUDA
+#include "../Detector/_DetectorBase.h"
 
 namespace kai
 {

@@ -75,3 +75,14 @@
 	"Console":"OKconsole",
 	"vAxisIdx":[0,1,2],
 }
+
+{
+	"name":"GUI",
+	"class":"GUIwindow",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+

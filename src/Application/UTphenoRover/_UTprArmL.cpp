@@ -251,7 +251,7 @@ void _UTprArmL::draw(void)
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());
-	Mat* pM = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 	Point pC = Point(m_vP.x * pM->cols, m_vP.y * pM->rows);
 	circle(*pM, pC, 5.0, Scalar(255, 255, 0), 2);
 #endif

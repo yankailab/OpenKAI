@@ -76,7 +76,7 @@ void _VisionBase::close(void)
 void _VisionBase::draw(void)
 {
 	NULL_(m_pWindow);
-	Frame* pFrame = ((Window*)m_pWindow)->getFrame();
+	Frame* pFrame = ((CVwindow*)m_pWindow)->getFrame();
 
 	if(!m_fBGR.bEmpty())
 	{

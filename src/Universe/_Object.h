@@ -95,6 +95,10 @@ public:
 	//kinetics
 	virtual void updateKinetics(void);
 
+	//time stamp
+	virtual void setTstamp(uint64_t t);
+	virtual uint64_t getTstamp(void);
+
 private:
 	static void* getUpdate(void* This)
 	{
@@ -107,6 +111,7 @@ protected:
 	vFloat3		m_vPos;		//center pos x, y, z
 	vFloat3		m_vAtti;	//attitude roll, pith, yaw
 	vFloat4		m_vDim;		//width, height, depth, radius
+	uint64_t	m_tStamp;
 
 	//kinetics
 	vFloat3		m_vSpeed;

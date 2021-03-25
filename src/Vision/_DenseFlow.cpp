@@ -175,7 +175,7 @@ vDouble2 _DenseFlow::vFlow(vInt4* pROI)
 void _DenseFlow::draw(void)
 {
 	this->_ModuleBase::draw();
-	Window* pWin = (Window*) this->m_pWindow;
+	CVwindow* pWin = (CVwindow*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 
 	IF_(m_pFlow[0].empty());

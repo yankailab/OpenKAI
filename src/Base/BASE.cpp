@@ -7,7 +7,7 @@
 
 #include "BASE.h"
 #include "../Script/Kiss.h"
-#include "../UI/Window.h"
+#include "../UI/CVwindow.h"
 #include "../UI/Console.h"
 
 namespace kai
@@ -51,7 +51,7 @@ bool BASE::init(void* pKiss)
 #ifdef USE_OPENCV
 	n = "";
 	pK->v("Window",&n );
-	m_pWindow = (Window*)(pK->getInst( n ));
+	m_pWindow = (CVwindow*)(pK->getInst( n ));
 #endif
 
 	return true;
@@ -94,7 +94,7 @@ bool BASE::checkWindow(void)
 	NULL_F(m_pWindow);
 
 #ifdef USE_OPENCV
-	Window* pWin = (Window*)m_pWindow;
+	CVwindow* pWin = (CVwindow*)m_pWindow;
 	NULL_F(pWin->getFrame());
 
 	Mat* pMat = pWin->getFrame()->m();

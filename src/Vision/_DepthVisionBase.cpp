@@ -47,7 +47,7 @@ bool _DepthVisionBase::init(void* pKiss)
 
 	string n = "";
 	F_INFO(pK->v("depthWindow", &n));
-	m_pDepthWin = (Window*) (pK->getInst(n));
+	m_pDepthWin = (CVwindow*) (pK->getInst(n));
 
 	return true;
 }
@@ -117,7 +117,7 @@ void _DepthVisionBase::draw(void)
 
 	if(checkWindow())
 	{
-		Window* pWin = (Window*)this->m_pWindow;
+		CVwindow* pWin = (CVwindow*)this->m_pWindow;
 		Frame* pFrame = pWin->getFrame();
 		Mat* pM = pFrame->m();
 

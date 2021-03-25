@@ -124,12 +124,11 @@ namespace kai
 		ADD_MODULE(_Thermal);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_VideoFile);
-		ADD_MODULE(Window);
+		ADD_MODULE(CVwindow);
 
 		ADD_MODULE(_PickingArm);
 		ADD_MODULE(_SortingArm);
 		ADD_MODULE(_SortingCtrlServer);
-		ADD_MODULE(_SortingCtrlClient);
 
 		ADD_MODULE(_GDimgUploader);
 		ADD_MODULE(_BBoxCutOut);
@@ -247,6 +246,10 @@ namespace kai
 
 #ifdef USE_XARM
 		ADD_MODULE(_xArm);
+#endif
+
+#ifdef USE_GUI
+		ADD_MODULE(GUIwindow);
 #endif
 
 		return NULL;

@@ -154,7 +154,7 @@ void _AP_land::draw(void)
 	addMsg("Size=(" + f2str(m_vTargetBB.width()) + ", " + f2str(m_vTargetBB.height()) + ")", 1);
 
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 
 	Rect r = bb2Rect(bbScale(m_vTargetBB, pMat->cols, pMat->rows));
 	rectangle(*pMat, r, Scalar(0,0,255), 2);

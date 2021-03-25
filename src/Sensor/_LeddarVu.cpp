@@ -317,7 +317,7 @@ void _LeddarVu::draw(void)
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());
-	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 
 	Point pCenter(pMat->cols * m_showOriginOffsetX, pMat->rows * m_showOriginOffsetY);
 	Scalar col = Scalar(0, 255, 0);

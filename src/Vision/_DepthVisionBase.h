@@ -43,7 +43,7 @@ public:
 	float	m_minHistD;
 
 	Frame	m_depthShow;
-	Window* m_pDepthWin;
+	CVwindow* m_pDepthWin;
 
 };
 

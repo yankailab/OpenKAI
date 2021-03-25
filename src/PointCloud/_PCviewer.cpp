@@ -68,13 +68,13 @@ namespace kai
 	void _PCviewer::update(void)
 	{
 
-    auto &app = gui::Application::GetInstance();
-	app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
+    // auto &app = gui::Application::GetInstance();
+	// app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
 
-    auto vis = std::make_shared<GuiVisualizer>("Open3D GUI", 2000, 1000);
-    gui::Application::GetInstance().AddWindow(vis);
-    vis.reset();
-    app.Run();
+    // auto vis = std::make_shared<GuiVisualizer>("Open3D GUI", 2000, 1000);
+    // gui::Application::GetInstance().AddWindow(vis);
+    // vis.reset();
+    // app.Run();
 
 
 

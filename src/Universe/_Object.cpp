@@ -34,6 +34,7 @@ void _Object::init(void)
 	m_vTraj.clear();
 	m_mFlag = 0;
 	m_pTracker = NULL;
+	m_tStamp = 0;
 
 	resetClass();
 }
@@ -349,12 +350,22 @@ float _Object::nIoU(_Object& obj)
 	return 0.0;
 }
 
+void _Object::setTstamp(uint64_t t)
+{
+	m_tStamp = t;
+}
+
+uint64_t _Object::getTstamp(void)
+{
+	return m_tStamp;
+}
+
 void _Object::draw(void)
 {
 	this->_ModuleBase::draw();
 
 //	IF_(!checkWindow());
-//	Mat* pMat = ((Window*) this->m_pWindow)->getFrame()->m();
+//	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
 }
 
 }

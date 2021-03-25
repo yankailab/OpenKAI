@@ -35,3 +35,14 @@
 	"Console":"OKconsole",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }
+
+{
+	"name":"GUI",
+	"class":"GUIwindow",
+	"bInst":1,
+    {
+		"name":"thread",
+		"FPS":30,
+	}
+}
+

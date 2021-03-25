@@ -7,11 +7,10 @@
 
 #ifndef OpenKAI_src_Vision_Frame_H_
 #define OpenKAI_src_Vision_Frame_H_
+#ifdef USE_OPENCV
 
 #include "FrameBase.h"
 #include "FrameGPU.h"
-
-#ifdef USE_OPENCV
 
 namespace kai
 {

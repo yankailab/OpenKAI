@@ -9,10 +9,12 @@ OPTION(USE_CUDA "Use NVIDIA CUDA" OFF)
 OPTION(USE_CHILITAGS "Use Chilitags" OFF)
 OPTION(USE_DARKNET "Use Darknet" OFF)
 OPTION(USE_DYNAMIXEL "Use Dynamixel" OFF)
+OPTION(USE_GUI "Use GUI" OFF)
 OPTION(USE_INNFOS "Use Innfos" OFF)
 OPTION(USE_JETSON_INFERENCE "Use NVIDIA TensorRT" OFF)
 OPTION(USE_LIVOX "Use Livox" OFF)
 OPTION(USE_MYNTEYE "Use Mynteye" OFF)
+OPTION(USE_GUI "Use GUI" OFF)
 OPTION(USE_OPEN3D "Use Open3D" OFF)
 OPTION(USE_OPENCL "Use OpenCL" OFF)
 OPTION(USE_OPENCV "Use OpenCV" ON)
@@ -159,6 +161,10 @@ if(USE_LIVOX)
   set(OpenKAI_lib ${OpenKAI_lib} livox_sdk_static)
 endif()
 
+#if(USE_GUI)
+#  add_definitions(-DUSE_GUI)
+#endif()
+
 # Setting specific lib here
 link_directories(${OpenKAI_libDir})
 
@@ -173,10 +179,15 @@ endif()
 
 # Definitions
 add_definitions(${OpenKAI_definitions})
-#add_definitions("-O3 -w -Wall -c -fmessage-length=0 -MMD -MP -std=c++1y")
 
 # File
-file(GLOB OpenKAI_cpp src/*.cpp src/*/*.cpp src/*/*/*.cpp src/*/*/*/*.cpp src/*/*/*/*/*.cpp src/*/*/*/*/*/*.cpp src/*/*/*/*/*/*/*.cpp src/*.c src/*/*.c src/*/*/*.c src/*/*/*/*.c src/*/*/*/*/*.c src/*/*/*/*/*/*.c src/*/*/*/*/*/*/*.c src/*.cc src/*/*.cc src/*/*/*.cc src/*/*/*/*.cc src/*/*/*/*/*.cc src/*/*/*/*/*/*.cc src/*/*/*/*/*/*/*.cc)
+file(GLOB_RECURSE OpenKAI_cpp CONFIGURE_DEPENDS src/*.cpp src/*.cc src/*.c)
+if(USE_GUI)
+  add_definitions(-DUSE_GUI)
+#  file(GLOB GUI_cpp GUI/*.c GUI/*.h GUI/*/*.c GUI/*/*.h)
+#  set(OpenKAI_cpp ${OpenKAI_cpp} ${GUI_cpp})
+  set(OpenKAI_lib ${OpenKAI_lib} glfw GL m GLU GLEW)
+endif()
 
 if(USE_CUDA)
 cuda_add_executable(OpenKAI ${OpenKAI_cpp})

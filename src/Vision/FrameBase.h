@@ -7,10 +7,8 @@
 
 #ifndef OpenKAI_src_Vision_FrameBase_H_
 #define OpenKAI_src_Vision_FrameBase_H_
-
-#include "../Base/common.h"
-
 #ifdef USE_OPENCV
+#include "../Base/common.h"
 #include "../Base/cv.h"
 
 namespace kai

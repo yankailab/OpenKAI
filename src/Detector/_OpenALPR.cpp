@@ -155,7 +155,7 @@ bool _OpenALPR::detect(void)
 bool _OpenALPR::draw(void)
 {
 	IF_F(!this->_ModuleBase::draw());
-	Window* pWin = (Window*) this->m_pWindow;
+	CVwindow* pWin = (CVwindow*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 	IF_F(pMat->empty());

@@ -389,7 +389,7 @@ void _ANR::draw(void)
 		addMsg("CN: " + m_cn);
 
 	IF_(!checkWindow());
-	Window* pWin = (Window*) this->m_pWindow;
+	CVwindow* pWin = (CVwindow*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
 	IF_(getApproxTbootUs() - m_tStampCN > m_timeOut);

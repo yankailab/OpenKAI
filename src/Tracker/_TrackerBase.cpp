@@ -113,7 +113,7 @@ void _TrackerBase::draw(void)
 			+ f2str(m_bb.midY()) + ")");
 
 	IF_(!checkWindow());
-	Window* pWin = (Window*) this->m_pWindow;
+	CVwindow* pWin = (CVwindow*) this->m_pWindow;
 	Frame* pFrame = pWin->getFrame();
 	Mat* pMat = pFrame->m();
 

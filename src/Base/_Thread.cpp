@@ -56,7 +56,7 @@ bool _Thread::init(void* pKiss)
 #ifdef USE_OPENCV
 	n = "";
 	pK->parent()->v("Window",&n );
-	m_pWindow = (Window*)(pK->getInst( n ));
+	m_pWindow = (CVwindow*)(pK->getInst( n ));
 #endif
     
     vector<string> vWakeup;
