@@ -39,10 +39,11 @@
 {
 	"name":"GUI",
 	"class":"GUIwindow",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
 	}
+	"_PCviewer":"pcv",
 }
 

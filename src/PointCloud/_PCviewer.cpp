@@ -19,6 +19,7 @@ namespace kai
 		m_bCoordFrame = true;
 
 		m_spPC = shared_ptr<PointCloud>(new PointCloud);
+		m_pTgui = NULL;
 	}
 
 	_PCviewer::~_PCviewer()
@@ -51,13 +52,27 @@ namespace kai
 			m_vpPCB.push_back(pPCB);
 		}
 
+		Kiss *pKt = pK->child("thread");
+		IF_F(pKt->empty());
+		m_pTgui = new _Thread();
+		if (!m_pTgui->init(pKt))
+		{
+			DEL(m_pTgui);
+			return false;
+		}
+
 		return true;
 	}
 
 	bool _PCviewer::start(void)
 	{
 		NULL_F(m_pT);
-		return m_pT->start(getUpdate, this);
+		IF_F(!m_pT->start(getUpdate, this));
+		
+		NULL_F(m_pTgui);
+		IF_F(!m_pTgui->start(getUpdateGUI, this));
+
+		return true;
 	}
 
 	int _PCviewer::check(void)
@@ -67,37 +82,50 @@ namespace kai
 
 	void _PCviewer::update(void)
 	{
+		// m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
+		// m_vis.GetRenderOption().background_color_ = Vector3d::Zero();
+		// m_vis.GetViewControl().ChangeFieldOfView(m_fov);
+		// m_vis.AddGeometry(m_spPC);
+		// if (m_bCoordFrame)
+		// 	m_vis.AddGeometry(m_pMcoordFrame);
 
-    // auto &app = gui::Application::GetInstance();
-	// app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
+		while(!m_spWin);
+		
+		render();
 
-    // auto vis = std::make_shared<GuiVisualizer>("Open3D GUI", 2000, 1000);
-    // gui::Application::GetInstance().AddWindow(vis);
-    // vis.reset();
-    // app.Run();
-
-
-
-
-		m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
-		m_vis.GetRenderOption().background_color_ = Vector3d::Zero();
-		m_vis.GetViewControl().ChangeFieldOfView(m_fov);
-
-		m_vis.AddGeometry(m_spPC);
-
-		if (m_bCoordFrame)
-			m_vis.AddGeometry(m_pMcoordFrame);
+		vDouble3 vT,vR;
+		vT.init(0.0);
+		vR.init(0.0);
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			render();
+//			render();
+		for (_PCbase *pPCB : m_vpPCB)
+		{
+			readPC(pPCB);
+		}
+		updatePC();
+		*m_spPC = *m_sPC.prev();
+
+		vR.x += 0.1;
+        Matrix4d mT = Matrix4d::Identity();
+        Vector3d eR(vR.x,
+                    vR.y,
+                    vR.z);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
+        mT(0, 3) = vT.x;
+        mT(1, 3) = vT.y;
+        mT(2, 3) = vT.z;
+		m_spPC->Transform(mT);
+
+		m_spWin->updateGeometry(m_spPC);
 
 			m_pT->autoFPSto();
 		}
 
-		m_vis.DestroyVisualizerWindow();
+//		m_vis.DestroyVisualizerWindow();
 	}
 
 	void _PCviewer::render(void)
@@ -109,19 +137,27 @@ namespace kai
 		}
 
 		updatePC();
-
-		m_spPC->points_.clear();
-		m_spPC->colors_.clear();
-		m_spPC->normals_.clear();
 		*m_spPC = *m_sPC.prev();
 
-		m_vis.UpdateGeometry(m_spPC);
+		m_spWin->SetGeometry(m_spPC, false);
+		// m_vis.UpdateGeometry(m_spPC);
 
-		if (m_vis.HasGeometry())
-		{
-			m_vis.PollEvents();
-			m_vis.UpdateRender();
-		}
+		// if (m_vis.HasGeometry())
+		// {
+		// 	m_vis.PollEvents();
+		// 	m_vis.UpdateRender();
+		// }
+	}
+
+	void _PCviewer::updateGUI(void)
+	{
+		auto &app = gui::Application::GetInstance();
+		app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
+
+//		shared_ptr<GUIscan> win = shared_ptr<GUIscan>(new GUIscan("Open3D GUI", 2000, 1000));
+		m_spWin = std::make_shared<GUIscan>("Open3D GUI", 2000, 1000);
+		gui::Application::GetInstance().AddWindow(m_spWin);
+		app.Run();
 	}
 
 	void _PCviewer::draw(void)

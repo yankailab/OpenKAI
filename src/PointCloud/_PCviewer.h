@@ -11,7 +11,8 @@
 
 #include "_PCframe.h"
 #include <open3d/visualization/gui/Native.h>
-#include <open3d/visualization/visualizer/GuiVisualizer.h>
+//#include <open3d/visualization/visualizer/GuiVisualizer.h>
+#include "../Application/3Dscan/GUIscan.h"
 
 namespace kai
 {
@@ -36,7 +37,14 @@ namespace kai
 			return NULL;
 		}
 
-	public:
+		void updateGUI(void);
+		static void *getUpdateGUI(void *This)
+		{
+			((_PCviewer *)This)->updateGUI();
+			return NULL;
+		}
+
+	private:
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
 		float m_fov;
@@ -45,6 +53,9 @@ namespace kai
 
 		vector<_PCbase *> m_vpPCB;
 		shared_ptr<PointCloud> m_spPC;
+
+		_Thread* m_pTgui;
+		shared_ptr<GUIscan> m_spWin;
 	};
 
 }

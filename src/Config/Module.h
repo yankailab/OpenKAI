@@ -249,7 +249,7 @@
 #endif
 
 #ifdef USE_GUI
-#include "../UI/GUIwindow.h"
+#include "../UI/_GUIwindow.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

@@ -249,7 +249,7 @@ namespace kai
 #endif
 
 #ifdef USE_GUI
-		ADD_MODULE(GUIwindow);
+		ADD_MODULE(_GUIwindow);
 #endif
 
 		return NULL;
