@@ -18,7 +18,7 @@
 		"FPS":30,
 	}
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"vPCbase":["pcFile"],
@@ -32,18 +32,6 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
 }
-
-{
-	"name":"GUI",
-	"class":"GUIwindow",
-	"bInst":0,
-    {
-		"name":"thread",
-		"FPS":30,
-	}
-	"_PCviewer":"pcv",
-}
-

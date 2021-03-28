@@ -4,7 +4,7 @@
 	"appName":"OpenKAI",
 	"bWindow":0,
 	"bLog":0,
-	"bConsole":1,
+	"b_Console":1,
 	"bStdErr":0,
 	"waitKey":30,
 }

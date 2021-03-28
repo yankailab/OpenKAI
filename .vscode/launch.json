@@ -13,7 +13,7 @@
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "externalConsole": false,
+            "external_Console": false,
             "MIMode": "gdb",
             "setupCommands": [
                 {

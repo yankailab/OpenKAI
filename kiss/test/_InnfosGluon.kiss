@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"console",
-	"class":"Console",
+	"name":"_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"console",
+	"_Console":"_Console",
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":100000,
 	"tInt":100000,

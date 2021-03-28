@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 {
@@ -21,7 +21,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"/port":"/dev/ttyTHS1",
@@ -37,7 +37,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"apSerial",
 	
 	{
@@ -57,7 +57,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":19840,
 	"_wakeUp":"mavGCS",
 }
@@ -69,7 +69,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"apUDP",
 	
 	{
@@ -89,7 +89,7 @@
 	"bInst":0,
 	"FPS":30,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 }
 
 {
@@ -99,7 +99,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"apWS",
 	
 	{

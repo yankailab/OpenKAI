@@ -11,7 +11,7 @@
 
 {
 	"name":"OpenKAI",
-	"class":"Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"_Console":"OpenKAI",
 	"addr":"192.168.8.250",
 	"port":8888,
 	"_wakeUp":"MOABcmd",
@@ -42,6 +42,6 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"_Console":"OpenKAI",
 	"_IOBase":"MOABudp",
 }

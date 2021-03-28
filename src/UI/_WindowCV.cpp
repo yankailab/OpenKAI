@@ -6,13 +6,13 @@
  */
 
 #ifdef USE_OPENCV
-#include "CVwindow.h"
+#include "_WindowCV.h"
 #include "../Script/Kiss.h"
 
 namespace kai
 {
 
-CVwindow::CVwindow()
+_WindowCV::_WindowCV()
 {
 	m_textY = 0;
 	m_vTextStart.init(20,20);
@@ -28,7 +28,7 @@ CVwindow::CVwindow()
 	m_fileRec = "";
 }
 
-CVwindow::~CVwindow()
+_WindowCV::~_WindowCV()
 {
 	if (m_VW.isOpened())
 	{
@@ -36,7 +36,7 @@ CVwindow::~CVwindow()
 	}
 }
 
-bool CVwindow::init(void* pKiss)
+bool _WindowCV::init(void* pKiss)
 {
 	IF_F(!this->BASE::init(pKiss));
 	Kiss* pK = (Kiss*) pKiss;
@@ -126,7 +126,7 @@ bool CVwindow::init(void* pKiss)
 	return true;
 }
 
-void CVwindow::draw(void)
+void _WindowCV::draw(void)
 {
 	IF_(m_frame.bEmpty());
 
@@ -165,22 +165,22 @@ void CVwindow::draw(void)
 	*m_frame.m() = Scalar(0,0,0);
 }
 
-Frame* CVwindow::getFrame(void)
+Frame* _WindowCV::getFrame(void)
 {
 	return &m_frame;
 }
 
-double CVwindow::textSize(void)
+double _WindowCV::textSize(void)
 {
 	return m_textSize;
 }
 
-Scalar CVwindow::textColor(void)
+Scalar _WindowCV::textColor(void)
 {
 	return m_textCol;
 }
 
-void CVwindow::addMsg(const string& pMsg, int iTab)
+void _WindowCV::addMsg(const string& pMsg, int iTab)
 {
 	IF_(!m_bDrawMsg);
 

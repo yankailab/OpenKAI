@@ -37,7 +37,7 @@ public:
 public:
 	void*	m_pKiss;
 	void*	m_pWindow;
-	void*	m_pConsole;
+	void*	m_p_Console;
 	bool	m_bLog;
 	bool	m_bDebug;
 };

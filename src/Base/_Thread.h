@@ -10,8 +10,8 @@
 
 #include "BASE.h"
 #include "../Script/Kiss.h"
-#include "../UI/CVwindow.h"
-#include "../UI/Console.h"
+#include "../UI/_WindowCV.h"
+#include "../UI/_Console.h"
 
 namespace kai
 {

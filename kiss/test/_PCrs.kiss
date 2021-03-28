@@ -18,7 +18,7 @@
 		"FPS":30,
 	}
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"vPCbase":["pcRS"],
@@ -33,7 +33,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vPreset":"Short Range",
 	"rsRGB":1,
 	"vWHcol":[1280,720],

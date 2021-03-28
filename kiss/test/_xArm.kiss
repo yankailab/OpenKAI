@@ -11,7 +11,7 @@
 
 {
 	"name":"OpenKAI",
-	"class":"Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"_Console":"OpenKAI",
 	"ip":"192.168.1.222",
 	"oprMode":3,
 }

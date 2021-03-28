@@ -14,11 +14,11 @@
 namespace kai
 {
 
-class CVwindow: public BASE
+class _WindowCV: public BASE
 {
 public:
-	CVwindow();
-	virtual ~CVwindow();
+	_WindowCV();
+	virtual ~_WindowCV();
 
 	bool init(void *pKiss);
 	void draw(void);

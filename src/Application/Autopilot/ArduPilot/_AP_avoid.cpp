@@ -109,7 +109,7 @@ void _AP_avoid::draw(void)
 	addMsg(msg);
 
 	IF_(!checkWindow());
-	Mat* pM = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	IF_(m_obs.getTopClass()<0);
 

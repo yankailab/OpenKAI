@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 

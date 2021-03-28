@@ -76,7 +76,7 @@
 #include "../Sensor/_LeddarVu.h"
 #include "../Sensor/_TOFsense.h"
 
-#include "../UI/Console.h"
+#include "../UI/_Console.h"
 
 #include "../Universe/_Object.h"
 #include "../Universe/_Universe.h"
@@ -90,7 +90,7 @@
 
 #ifdef USE_OPENCV
 
-#include "../UI/CVwindow.h"
+#include "../UI/_WindowCV.h"
 #include "../Vision/_Camera.h"
 #include "../Vision/_VideoFile.h"
 #include "../Vision/_ImgFile.h"
@@ -249,7 +249,7 @@
 #endif
 
 #ifdef USE_GUI
-#include "../UI/_GUIwindow.h"
+#include "../UI/_WindowGUI.h"
 #endif
 
 #define ADD_MODULE(x) if(pK->m_class == #x){return createInst<x>(pK);}

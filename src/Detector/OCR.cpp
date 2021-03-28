@@ -96,9 +96,9 @@ bool OCR::draw(void)
 	return this->BASE::draw();
 }
 
-bool OCR::console(int& iY)
+bool OCR::_Console(int& iY)
 {
-	return this->BASE::console(iY);
+	return this->BASE::_Console(iY);
 }
 
 }

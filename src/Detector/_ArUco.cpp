@@ -151,7 +151,7 @@ void _ArUco::draw(void)
 	IF_(m_pU->size() <= 0);
 
 	IF_(!checkWindow());
-	Mat* pM = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	i=0;
 	while((pO = m_pU->get(i++)) != NULL)

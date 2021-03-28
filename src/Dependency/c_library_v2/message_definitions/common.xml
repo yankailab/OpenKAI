@@ -5956,7 +5956,7 @@
       <field type="int32_t" name="value">Signed integer value</field>
     </message>
     <message id="253" name="STATUSTEXT">
-      <description>Status text message. These messages are printed in yellow in the COMM console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
+      <description>Status text message. These messages are printed in yellow in the COMM _Console of QGroundControl. WARNING: They consume quite some bandwidth, so use only for important status and error messages. If implemented wisely, these messages are buffered on the MCU and sent only at a limited rate (e.g. 10 Hz).</description>
       <field type="uint8_t" name="severity" enum="MAV_SEVERITY">Severity of status. Relies on the definitions within RFC-5424.</field>
       <field type="char[50]" name="text">Status text message, without null termination character</field>
       <extensions/>

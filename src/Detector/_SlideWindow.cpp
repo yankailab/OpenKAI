@@ -148,7 +148,7 @@ void _SlideWindow::draw(void)
 
 	if (checkWindow())
 	{
-		CVwindow *pWin = (CVwindow*) this->m_pWindow;
+		_WindowCV *pWin = (_WindowCV*) this->m_pWindow;
 		Mat *pM = pWin->getFrame()->m();
 
 		Rect r = bb2Rect(bbScale(m_vRoi,pM->cols,pM->rows));

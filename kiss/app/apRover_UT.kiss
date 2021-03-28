@@ -10,20 +10,20 @@
 }
 
 {
-	"name":"consoleDrive",
-	"class":"Console",
+	"name":"_ConsoleDrive",
+	"class":"_Console",
 	"bInst":0,
 }
 
 {
-	"name":"consoleArmL",
-	"class":"Console",
+	"name":"_ConsoleArmL",
+	"class":"_Console",
 	"bInst":0,
 }
 
 {
-	"name":"consoleGluon",
-	"class":"Console",
+	"name":"_ConsoleGluon",
+	"class":"_Console",
 	"bInst":0,
 }
 
@@ -54,7 +54,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"deviceID":0,
 	"w":640,
 	"h":480,
@@ -66,7 +66,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.120:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 	"/pipeline":"rtspsrc location=rtsp://admin:12345@192.168.1.121:554/live/main latency=0 ! decodebin ! videoconvert ! appsink",
 }
@@ -77,7 +77,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"camDrive",
 }
 
@@ -88,7 +88,7 @@
 	"bInst":1,
 	"Window":"/viewDev",
 	"_VisionBase":"gsL",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"alpha":1.8,
 	"beta":-200.0,
 }
@@ -99,7 +99,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"contL",
 	"rFrom":0,
 	"rTo":50,
@@ -111,7 +111,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"irL",
 	
 	{
@@ -135,7 +135,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"morphL",
 }
 
@@ -146,7 +146,7 @@
 	"bInst":1,
 	"Window":"/viewDev",
 	"_VisionBase":"invL",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"roi":[0.2, 0.0, 0.8, 0.5],
 }
 
@@ -156,7 +156,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"cropL",
 	"code":0,
 }
@@ -167,7 +167,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"rotL",
 	"_Universe":"univSide",
 	"wSlide":0.2,
@@ -180,7 +180,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"morphL",
 	"roi":[0.5, 0.2, 1.0, 0.6],
 }
@@ -191,7 +191,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"/viewDev",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_VisionBase":"cropM",
 	"_Universe":"univDivider",
 	"wSlide":0.2,
@@ -203,7 +203,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 }
 
 {
@@ -211,7 +211,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 }
 
 {
@@ -222,7 +222,7 @@
 	"bLog":1,
 	"bDebug":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"depthWindow":"viewDev",
 	"vPreset":"High Density",
 	"rsRGB":1,
@@ -246,7 +246,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 }
 
 {
@@ -256,7 +256,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_VisionBase":"camDrive",
 	"_Universe":"univTagL",
 	"persistence":10.0,
@@ -269,7 +269,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 }
 
 {
@@ -279,7 +279,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_VisionBase":"D435",
 	"_Universe":"univTagArm",
 	"persistence":10.0,
@@ -294,7 +294,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 	"/port":"/dev/ttyUSB0",
@@ -309,7 +309,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_IOBase":"apSerial",
 	"mySystemID":255,
 	"myComponentID":190,
@@ -324,7 +324,7 @@
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"start":"MANUAL",
 
 	{
@@ -356,7 +356,7 @@
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"start":"DRIVE",
 
 	{
@@ -410,7 +410,7 @@
 	"bInst":1,
 	"_MissionControl":"missionDrive",
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	"apType":1,
@@ -462,7 +462,7 @@
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_MissionControl":"missionDrive",
 	"_AP_base":"apBase",
 	"Drive":"drive",
@@ -475,7 +475,7 @@
 	"class":"Drive",
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleMain",
+	"_Console":"_ConsoleMain",
 	"nSpd":0.0,
 	"nStr":0.0,
 	
@@ -498,7 +498,7 @@
 	"FPS":10,
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"_MissionControl":"missionDrive",
 	"activeMission":["FORWARD","BACKWARD"],
 	"_AP_base":"apBase",
@@ -513,7 +513,7 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"viewDrive",
-	"Console":"consoleDrive",
+	"_Console":"_ConsoleDrive",
 	"P":-0.5,
 	"I":0.0,
 	"Imax":0.0,
@@ -528,7 +528,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_MissionControl":"missionArm",
 	"activeMission":["DRIVE"],
 	"_AP_base":"apBase",
@@ -550,7 +550,7 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"P":20000,
 	"I":0.0,
 	"Imax":0.0,
@@ -563,7 +563,7 @@
 	"class":"PIDctrl",
 	"bInst":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"P":1000,
 	"I":0.0,
 	"Imax":0.0,
@@ -578,7 +578,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_MissionControl":"missionArm",
 	"activeMission":["EXTRACT","FOLLOW","RECOVER"],
 	"_ActuatorBaseX":"omWX",
@@ -616,7 +616,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":5,
 	"tIntCheckAlarm":100000,
@@ -651,7 +651,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":6,
 	"tIntCheckAlarm":100000,
@@ -685,7 +685,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":7,
 	"tIntCheckAlarm":100000,
@@ -721,7 +721,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"tIntCheckAlarm":100000,
@@ -755,7 +755,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":3,
 	"tIntCheckAlarm":100000,
@@ -789,7 +789,7 @@
 	"FPS":10,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_ActuatorList":["omL","omR"],
 }
 
@@ -801,7 +801,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"viewArmL",
-	"Console":"consoleArmL",
+	"_Console":"_ConsoleArmL",
 	"_Modbus":"modbus",
 	"iSlave":2,
 	"tIntCheckAlarm":100000,
@@ -837,7 +837,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"viewGluon",
-	"Console":"consoleGluon",
+	"_Console":"_ConsoleGluon",
 	"tIntCheckAlarm":100000,
 	"tIntReadStatus":500000,
 
@@ -906,7 +906,7 @@
 	"FPS":10,
 	"bInst":0,
 	"Window":"viewGluon",
-	"Console":"consoleGluon",
+	"_Console":"_ConsoleGluon",
 	"_AP_base":"apBase",
 	"_ActuatorBase":"gluon",
     "iRCmodeChan":5,

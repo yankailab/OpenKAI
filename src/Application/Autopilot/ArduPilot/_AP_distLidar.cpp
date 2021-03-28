@@ -104,7 +104,7 @@ void _AP_distLidar::draw(void)
 #ifdef USE_OPENCV
 	IF_(!checkWindow());
 
-	CVwindow* pWin = (CVwindow*) this->m_pWindow;
+	_WindowCV* pWin = (_WindowCV*) this->m_pWindow;
 	Mat* pMat = pWin->getFrame()->m();
 
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);

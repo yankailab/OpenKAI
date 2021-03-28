@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -21,7 +21,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
 }
@@ -32,6 +32,6 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"serial",
 }

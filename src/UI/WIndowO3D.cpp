@@ -1,17 +1,17 @@
 #ifdef USE_OPEN3D
-#include "GUIscan.h"
+#include "WindowO3D.h"
 
 namespace open3d
 {
     namespace visualization
     {
-        GUIscan::GUIscan(const std::string &title, int width, int height)
-            : gui::Window(title, width, height), impl_(new GUIscan::Impl())
+        WindowO3D::WindowO3D(const std::string &title, int width, int height)
+            : gui::Window(title, width, height), impl_(new WindowO3D::Impl())
         {
             Init();
         }
 
-        GUIscan::GUIscan(
+        WindowO3D::WindowO3D(
             const std::vector<std::shared_ptr<const geometry::Geometry>>
                 &geometries,
             const std::string &title,
@@ -20,13 +20,13 @@ namespace open3d
             int left,
             int top)
             : gui::Window(title, left, top, width, height),
-              impl_(new GUIscan::Impl())
+              impl_(new WindowO3D::Impl())
         {
             Init();
             SetGeometry(geometries[0], false); // also updates the camera
         }
 
-        void GUIscan::Init()
+        void WindowO3D::Init()
         {
             auto &app = gui::Application::GetInstance();
             auto &theme = GetTheme();
@@ -168,14 +168,14 @@ namespace open3d
             AddChild(settings.wgt_base);
         }
 
-        GUIscan::~GUIscan() {}
+        WindowO3D::~WindowO3D() {}
 
-        void GUIscan::SetTitle(const std::string &title)
+        void WindowO3D::SetTitle(const std::string &title)
         {
             Super::SetTitle(title.c_str());
         }
 
-        void GUIscan::SetGeometry(
+        void WindowO3D::SetGeometry(
             std::shared_ptr<const geometry::Geometry> geometry, bool loaded_model)
         {
             auto scene3d = impl_->scene_wgt_->GetScene();
@@ -267,7 +267,7 @@ namespace open3d
             impl_->scene_wgt_->ForceRedraw();
         }
 
-        void GUIscan::Layout(const gui::Theme &theme)
+        void WindowO3D::Layout(const gui::Theme &theme)
         {
             auto r = GetContentRect();
             const auto em = theme.font_size;
@@ -296,7 +296,7 @@ namespace open3d
             Super::Layout(theme);
         }
 
-        void GUIscan::LoadGeometry(const std::string &path)
+        void WindowO3D::LoadGeometry(const std::string &path)
         {
             auto progressbar = std::make_shared<gui::ProgressBar>();
             gui::Application::GetInstance().PostToMainThread(this, [this, path,
@@ -404,7 +404,7 @@ namespace open3d
             });
         }
 
-        void GUIscan::ExportCurrentImage(const std::string &path)
+        void WindowO3D::ExportCurrentImage(const std::string &path)
         {
             impl_->scene_wgt_->EnableSceneCaching(false);
             impl_->scene_wgt_->GetScene()->GetScene()->RenderToImage(
@@ -420,7 +420,7 @@ namespace open3d
                 });
         }
 
-        void GUIscan::OnMenuItemSelected(gui::Menu::ItemId item_id)
+        void WindowO3D::OnMenuItemSelected(gui::Menu::ItemId item_id)
         {
             auto menu_id = MenuId(item_id);
             switch (menu_id)
@@ -547,7 +547,7 @@ namespace open3d
             }
         }
 
-        void GUIscan::updateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
+        void WindowO3D::updateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
         {
             t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*sPC.get(), core::Dtype::Float32);
             gui::Application::GetInstance().PostToMainThread(

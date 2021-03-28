@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -70,7 +70,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"depthWindow":"depthView",
 	"vPreset":"High Density",
 	"rsRGB":1,

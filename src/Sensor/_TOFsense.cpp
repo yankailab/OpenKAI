@@ -155,7 +155,7 @@ void _TOFsense::draw(void)
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());
-	Mat *pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat *pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	Point pCenter(pMat->cols * 0.5, pMat->rows * 0.5);
 	Scalar col = Scalar(0, 255, 0);

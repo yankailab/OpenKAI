@@ -150,7 +150,7 @@ void _OpenPose::draw(void)
 	this->_DetectorBase::draw();
 	IF_(!checkWindow());
 
-	CVwindow *pWin = (CVwindow*) this->m_pWindow;
+	_WindowCV *pWin = (_WindowCV*) this->m_pWindow;
 	Frame *pFrame = pWin->getFrame();
 	Mat *pMat = pFrame->m();
 

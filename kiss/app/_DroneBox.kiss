@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -23,7 +23,7 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"start":"STANDBY",
 
 	{
@@ -80,7 +80,7 @@
 		"FPS":30,
 	}
 	"bLog":0,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
 	"parity":"N",
@@ -96,7 +96,7 @@
 		"FPS":10,
 	}
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_StateControl":"state",
 	"gcsID":1,
 	"_Modbus":"modbus",
@@ -116,7 +116,7 @@
 		"FPS":1,
 	}
 	"bLog":0,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyUSB1",
 	"baud":57600,
 }
@@ -134,7 +134,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_DroneBox":"droneBox",
 	"_IOBase":"telem",
 }
@@ -151,7 +151,7 @@
 		"name":"threadR",
 		"FPS":1,
 	}
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":20000,
 	"nFIFO":12800,
 }
@@ -169,7 +169,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_DroneBox":"droneBox",
 	"_IOBase":"udp",
 }

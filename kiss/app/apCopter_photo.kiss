@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"pipeline":"nvarguscamerasrc ! video/x-raw(memory:NVMM), width=1280, height=720, format=(string)NV12, framerate=(fraction)30/1 ! nvvidconv flip-method=0 ! video/x-raw, width=(int)640, height=(int)360, format=(string)BGRx ! tee name=t t. ! queue ! videoconvert ! video/x-raw, format=(string)BGR ! appsink t. ! queue ! videoconvert ! omxh264enc insert-sps-pps=true ! rtph264pay mtu=1500 config-interval=1 pt=96 ! udpsink host=192.168.1.201 port=5678 auto-multicast=false",
 }
 
@@ -40,7 +40,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 }
 
 {
@@ -49,7 +49,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"cmdUnmount":"gio mount -s gphoto2",
 }
 
@@ -60,7 +60,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyTHS1",
 	"/port":"/dev/ttyACM0",
 	"/port":"/dev/ttyUSB0",
@@ -76,7 +76,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"apSerial",
 	"mySystemID":255,
 	"myComponentID":190,
@@ -96,7 +96,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":19840,
 	"_wakeUp":"mavGCS",
 }
@@ -108,7 +108,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_IOBase":"apUDP",
 	"mySystemID":255,
 	"myComponentID":190,
@@ -128,7 +128,7 @@
 	"bInst":1,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"rMin":0.1,
 	"rMax":100.0,
 	"fovH":48,
@@ -164,7 +164,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"startMission":"STANDBY",
 
 	{
@@ -173,7 +173,7 @@
 			"bInst":1,
 			"name":"STANDBY",
 			"Window":"OKview",
-			"Console":"OKconsole",
+			"_Console":"OK_Console",
 			"class":"MissionBase",
 			"nextMission":"STANDBY",
 		}
@@ -188,7 +188,7 @@
 	"bDraw":1,
 	"_MissionControl":"mission",
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"apType":0,
 	"_Mavlink":"apMavlink",
 	
@@ -219,7 +219,7 @@
 	"FPS":10,
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
 	"_SlamBase":"T265",
@@ -250,7 +250,7 @@
 	"FPS":5,
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
 }
@@ -262,7 +262,7 @@
 	"bInst":1,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_MissionControl":"mission",
 	"_AP_base":"apBase",
 	"_AP_posCtrl":"apPosCtrl",

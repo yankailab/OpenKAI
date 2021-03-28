@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -20,7 +20,7 @@
 	"class":"LivoxLidar",
 	"bInst":0,
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"/vBroadcastCode":["3JEDHC900100791"],
 	"vBroadcastCode":["3JEDHC900100791"],
 	"bEnableFan":1,
@@ -39,7 +39,7 @@
 		"FPS":30,
 	}
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"LivoxLidar":"LivoxLidar",
 	"/broadcastCode":"3JEDHC900100791",
 	"broadcastCode":"3JEDHC900100791",
@@ -58,7 +58,7 @@
 		"FPS":30,
 	}
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"/ctxdT":0,
@@ -72,7 +72,7 @@
 	"bInst":0,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vAxisIdx":[0,1,2],
 }
 

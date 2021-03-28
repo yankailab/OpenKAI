@@ -151,7 +151,7 @@ void _ShopCam::draw(void)
 
 	IF_(!checkWindow());
 
-	CVwindow *pWin = (CVwindow*) this->m_pWindow;
+	_WindowCV *pWin = (_WindowCV*) this->m_pWindow;
 	Frame *pFrame = pWin->getFrame();
 	Mat *pM = pFrame->m();
 

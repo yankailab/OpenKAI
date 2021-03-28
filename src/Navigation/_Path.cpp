@@ -95,7 +95,7 @@ void _Path::draw(void)
 
 #ifdef USE_OPENCV
 	IF_(!checkWindow());
-	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);

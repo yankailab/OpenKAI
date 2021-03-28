@@ -1,23 +1,23 @@
 /*
- * Console.h
+ * _Console.h
  *
  *  Created on: Oct 13, 2019
  *      Author: Kai Yan
  */
 
-#ifndef OpenKAI_src_UI_Console_H_
-#define OpenKAI_src_UI_Console_H_
+#ifndef OpenKAI_src_UI__Console_H_
+#define OpenKAI_src_UI__Console_H_
 
 #include "../Base/BASE.h"
 
 namespace kai
 {
 
-class Console: public BASE
+class _Console: public BASE
 {
 public:
-	Console();
-	virtual ~Console();
+	_Console();
+	virtual ~_Console();
 
 	bool init(void *pKiss);
 	void draw(void);

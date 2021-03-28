@@ -324,7 +324,7 @@ void _DistSensorBase::draw(void)
 	IF_(!checkWindow());
 	IF_(!m_bReady);
 	IF_(m_nDiv <= 0);
-	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	//Plot center as vehicle position
 	Point pCenter(pMat->cols / 2, pMat->rows / 2);

@@ -17,8 +17,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":0,
 }
 
@@ -80,7 +80,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 }
 
 {
@@ -92,7 +92,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"yolo",
@@ -115,7 +115,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"tf",
@@ -140,7 +140,7 @@
 	"FPS":30,
 	"Window":"OKview",
 	"_VisionBase":"cam",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_Universe":"universe",
 	"threadMode":0,
 	"dnnType":"caffe",
@@ -164,7 +164,7 @@
 	"bLog":1,
 	"FPS":30,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_VisionBase":"cam",
 	"_Universe":"universe",
 	"fModel":"/home/lab/dev/jetson-inference/data/networks/SSD-Inception-v2/ssd_inception_v2_coco.uff",

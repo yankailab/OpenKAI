@@ -14,7 +14,7 @@
 	"class":"_PCfile",
 	"FPS":30,
 	"bInst":0,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"/_PCviewer":"pcv",
 	"fName":"/home/lab/dev/Open3D/examples/test_data/fragment.pcd",
 }
@@ -25,7 +25,7 @@
 	"FPS":30,
 	"bInst":1,
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"vPreset":"High Density",
 	"rsRGB":1,
 	"vWHcol":[640,480],

@@ -95,7 +95,7 @@ void _AP_depthVision::draw(void)
 	IF_(!checkWindow());
 	NULL_(m_pDV);
 
-	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	for(int i=0; i<m_nROI; i++)
 	{

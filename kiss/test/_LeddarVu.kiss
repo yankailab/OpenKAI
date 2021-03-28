@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -31,7 +31,7 @@
 	"FPS":30,
 	"bInst":0,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"deviceID":0,
 	"width":640,
 	"height":480,
@@ -44,7 +44,7 @@
 	"bInst":1,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"rMin":0.1,
 	"rMax":100.0,
 	"fovH":48,

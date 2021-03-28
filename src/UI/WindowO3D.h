@@ -1,11 +1,10 @@
-#ifndef OpenKAI_src_Application_3Dscan_GUIscan_H_
-#define OpenKAI_src_Application_3Dscan_GUIscan_H_
+#ifndef OpenKAI_src_UI_WindowO3D_H_
+#define OpenKAI_src_UI_WindowO3D_H_
 #ifdef USE_OPEN3D
-#include "../../Base/common.h"
+#include "../Base/common.h"
 
 namespace open3d
 {
-
 	namespace geometry
 	{
 		class AxisAlignedBoundingBox;
@@ -34,20 +33,20 @@ namespace open3d
 			struct Theme;
 		}
 
-		class GUIscan : public gui::Window
+		class WindowO3D : public gui::Window
 		{
 			using Super = gui::Window;
 
 		public:
-			GUIscan(const std::string &title, int width, int height);
-			GUIscan(const std::vector<std::shared_ptr<const geometry::Geometry>> &
+			WindowO3D(const std::string &title, int width, int height);
+			WindowO3D(const std::vector<std::shared_ptr<const geometry::Geometry>> &
 						geometries,
 					const std::string &title,
 					int width,
 					int height,
 					int left,
 					int top);
-			virtual ~GUIscan();
+			virtual ~WindowO3D();
 
 			void SetTitle(const std::string &title);
 			void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry,
@@ -73,7 +72,7 @@ namespace open3d
 			void Init();
 		};
 
-		struct GUIscan::Impl
+		struct WindowO3D::Impl
 		{
 			std::shared_ptr<gui::SceneWidget> scene_wgt_;
 			std::shared_ptr<gui::VGrid> help_keys_;

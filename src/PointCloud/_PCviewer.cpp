@@ -154,8 +154,8 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
 
-//		shared_ptr<GUIscan> win = shared_ptr<GUIscan>(new GUIscan("Open3D GUI", 2000, 1000));
-		m_spWin = std::make_shared<GUIscan>("Open3D GUI", 2000, 1000);
+//		shared_ptr<WindowO3D> win = shared_ptr<WindowO3D>(new WindowO3D("Open3D GUI", 2000, 1000));
+		m_spWin = std::make_shared<WindowO3D>("Open3D GUI", 2000, 1000);
 		gui::Application::GetInstance().AddWindow(m_spWin);
 		app.Run();
 	}

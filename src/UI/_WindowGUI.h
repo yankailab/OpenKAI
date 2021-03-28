@@ -1,23 +1,23 @@
 /*
- * _GUIwindow.h
+ * _WindowGUI.h
  *
  *  Created on: Mar 26, 2021
  *      Author: yankai
  */
 
-#ifndef OpenKAI_src_UI_GUIwindow_H_
-#define OpenKAI_src_UI_GUIwindow_H_
+#ifndef OpenKAI_src_UI_WindowGUI_H_
+#define OpenKAI_src_UI_WindowGUI_H_
 #ifdef USE_GUI
 #include "../Base/_ModuleBase.h"
 
 namespace kai
 {
 
-class _GUIwindow: public _ModuleBase
+class _WindowGUI: public _ModuleBase
 {
 public:
-    _GUIwindow();
-    ~_GUIwindow();
+    _WindowGUI();
+    ~_WindowGUI();
 
     virtual bool init ( void* pKiss );
     virtual int check ( void );
@@ -30,7 +30,7 @@ protected:
     void update ( void );
     static void* getUpdate ( void* This )
     {
-        ( ( _GUIwindow* ) This )->update();
+        ( ( _WindowGUI* ) This )->update();
         return NULL;
     }
     

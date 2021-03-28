@@ -165,7 +165,7 @@ public:
 	bool init(const char* portName, int baudRate);
 
 	//###################################################################  KINEMATICS FUNCTIONS
-	//printMatrix*: printf matrix contain in the console. Used for debugging.
+	//printMatrix*: printf matrix contain in the _Console. Used for debugging.
 	//Input: matrix[4][4] or [3][3] depending on the function. (can be optimized into one function)
 	void printMatrix(double matrix[][4], int size);
 	void printMatrix3(double matrix[][3], int size);

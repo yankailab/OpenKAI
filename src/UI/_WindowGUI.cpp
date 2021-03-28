@@ -3,21 +3,21 @@
  *      Author: yankai
  */
 #ifdef USE_GUI
-#include "_GUIwindow.h"
+#include "_WindowGUI.h"
 #include "../Script/Kiss.h"
 
 namespace kai
 {
 
-    _GUIwindow::_GUIwindow()
+    _WindowGUI::_WindowGUI()
     {
     }
 
-    _GUIwindow::~_GUIwindow()
+    _WindowGUI::~_WindowGUI()
     {
     }
 
-    bool _GUIwindow::init(void *pKiss)
+    bool _WindowGUI::init(void *pKiss)
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
@@ -25,23 +25,23 @@ namespace kai
         return true;
     }
 
-    bool _GUIwindow::setup(void)
+    bool _WindowGUI::setup(void)
     {
         return true;
     }
 
-    int _GUIwindow::check(void)
+    int _WindowGUI::check(void)
     {
         return this->_ModuleBase::check();
     }
 
-    bool _GUIwindow::start ( void )
+    bool _WindowGUI::start ( void )
     {
         NULL_F ( m_pT );
         return m_pT->start ( getUpdate, this );
     }
 
-    void _GUIwindow::update ( void )
+    void _WindowGUI::update ( void )
     {
         sleep(5);
         setup();
@@ -56,16 +56,16 @@ namespace kai
         }
     }
 
-    bool _GUIwindow::updateGUI ( void )
+    bool _WindowGUI::updateGUI ( void )
     {
         return true;
     }
 
-    // void _GUIwindow::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
+    // void _WindowGUI::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     // {
     // }
 
-    void _GUIwindow::draw(void)
+    void _WindowGUI::draw(void)
     {
         this->_ModuleBase::draw();
     }

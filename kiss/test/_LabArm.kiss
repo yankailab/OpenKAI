@@ -11,7 +11,7 @@
 
 {
 	"name":"OpenKAI",
-	"class":"Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -29,7 +29,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"_Console":"OpenKAI",
 	"port":"/dev/ttyUSB0",
 	"baudRate":57600,
 	"oprMode":3,
@@ -55,7 +55,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"OpenKAI",
+	"_Console":"OpenKAI",
 	
 	{
 		"name":"action",

@@ -128,7 +128,7 @@ void _MotionDetector::draw(void)
 {
 	this->_DetectorBase::draw();
 	IF_(!checkWindow());
-	Mat *pM = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat *pM = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	if (!m_mFG.empty())
 	{

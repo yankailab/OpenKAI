@@ -124,7 +124,7 @@ public:
 	//SetOperatingMode: set the operating mode in the motor (Availiable mode: 0 (Current), 1 (Velocity), 3 (Position), 4 (Extended position), 5 (current-based position), 16 (PWM))
 	//Input: wanted mode uint8_t
 	void SetOperatingMode(uint8_t mode);
-	//PrintOperationMode: printf in the console the operationmode. Used for debugging.
+	//PrintOperationMode: printf in the _Console the operationmode. Used for debugging.
 	void PrintOperatingMode();
 
 	//SetPID: set the different parameters of the internal motor's PID controler.
@@ -148,13 +148,13 @@ public:
 	//SetCurrentLimit: set the maximun current (torque) output of the motor. Used for current-based position control (gripper)
 	//Input is set in the define section CURRENT_LIMIT 1193
 	void SetCurrentLimit();
-	//PrintCurrentLimit: printf the value of the current limit (mA) in the console. Used for debugging.
+	//PrintCurrentLimit: printf the value of the current limit (mA) in the _Console. Used for debugging.
 	void PrintCurrentLimit();
 
 	//SetGoalCurrent: set the goal current. Used for current-based position control
 	//Input: wanted goal current mA uint16_t. The function check if the wanted goalcurrent is not exceeding the currentlimit
 	void SetGoalCurrent(uint16_t GoalCurrent);
-	//PrintGoalcurrent: printf the value of the goalcurrent (mA) in the console. Used for debugging.
+	//PrintGoalcurrent: printf the value of the goalcurrent (mA) in the _Console. Used for debugging.
 	void PrintGoalCurrent();
 
 	//## Update 2019/02/08

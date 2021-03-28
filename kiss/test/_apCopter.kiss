@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"apConsole",
-	"class":"Console",
+	"name":"ap_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -32,7 +32,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"apConsole",
+	"_Console":"ap_Console",
 	"/port":"/dev/ttyTHS1",
 	"port":"/dev/ttyACM0",
 	"baud":115200,
@@ -47,7 +47,7 @@
 	"FPS":30,
 	"bLog":1,
 	"Window":"OKview",
-	"Console":"apConsole",
+	"_Console":"ap_Console",
 	"_IOBase":"apSerial",
 	"mySystemID":255,
 	"myComponentID":190,
@@ -68,7 +68,7 @@
 	"FPS":30,
 	"bLog":0,
 	"Window":"OKview",
-	"Console":"apConsole",
+	"_Console":"ap_Console",
 	"port":19840,
 	"_wakeUp":"apMavID",
 }
@@ -79,7 +79,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":1,
-	"Console":"apConsole",
+	"_Console":"ap_Console",
 	"_IOBase":"apUDP",
 	
 	{
@@ -94,7 +94,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"apConsole",
+	"_Console":"ap_Console",
 	"_Mavlink":"apMavlink",
 	"freqSendHeartbeat":1,
 	

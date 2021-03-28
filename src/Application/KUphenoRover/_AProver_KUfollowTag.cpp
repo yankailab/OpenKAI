@@ -237,8 +237,8 @@ void _AProver_KUfollowTag::draw ( void )
 	"class":"_GPhoto",
 	"FPS":30,
 	"bInst":1,
-	"CVwindow":"OKview",
-	"Console":"OKconsole",
+	"_WindowCV":"OKview",
+	"_Console":"OK_Console",
 	"cmdUnmount":"gio mount -s gphoto2",
 }
 

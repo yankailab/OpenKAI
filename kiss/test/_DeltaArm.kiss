@@ -11,7 +11,7 @@
 
 {
 	"name":"OpenKAI",
-	"class":"Console",
+	"class":"_Console",
 	"bInst":1,
 }
 

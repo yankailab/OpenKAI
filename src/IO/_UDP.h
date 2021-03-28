@@ -9,7 +9,7 @@
 #define OpenKAI_src_IO__UDP_H_
 
 #include "../Script/Kiss.h"
-#include "../UI/CVwindow.h"
+#include "../UI/_WindowCV.h"
 #include "_IOBase.h"
 
 #define DEFAULT_UDP_PORT 19840

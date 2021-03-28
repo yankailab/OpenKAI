@@ -205,7 +205,7 @@ void _GDcam::draw(void)
 	this->_ModuleBase::draw();
 
 	IF_(!checkWindow());
-	Mat* pMat = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pMat = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 
 	Scalar col = Scalar(0,255,0);
 

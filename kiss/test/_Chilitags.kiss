@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -27,7 +27,7 @@
 	"FPS":30,
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"deviceID":0,
 	"w":640,
 	"h":480,
@@ -38,7 +38,7 @@
 	"class":"_Universe",
 	"bInst":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 }
 
 {
@@ -48,7 +48,7 @@
 	"bInst":1,
 	"bDraw":1,
 	"Window":"OKview",
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_VisionBase":"cam",
 	"_Universe":"universe",
 	"persistence":0,

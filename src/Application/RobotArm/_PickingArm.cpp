@@ -434,7 +434,7 @@ void _PickingArm::draw(void)
 	addMsg("baseAngle = " + f2str(m_baseAngle));
 
 	IF_(!checkWindow());
-	Mat* pM = ((CVwindow*) this->m_pWindow)->getFrame()->m();
+	Mat* pM = ((_WindowCV*) this->m_pWindow)->getFrame()->m();
 	Point pC = Point(m_vP.x * pM->cols, m_vP.y * pM->rows);
 	circle(*pM, pC, 5.0, Scalar(255, 255, 0), 2);
 }

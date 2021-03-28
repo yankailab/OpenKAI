@@ -22,7 +22,7 @@ namespace kai
 	{
 		IF_N(!pK);
 
-		ADD_MODULE(Console);
+		ADD_MODULE(_Console);
 		ADD_MODULE(_Canbus);
 		ADD_MODULE(_CETCUS);
 		ADD_MODULE(_GPS);
@@ -124,7 +124,7 @@ namespace kai
 		ADD_MODULE(_Thermal);
 		ADD_MODULE(_Threshold);
 		ADD_MODULE(_VideoFile);
-		ADD_MODULE(CVwindow);
+		ADD_MODULE(_WindowCV);
 
 		ADD_MODULE(_PickingArm);
 		ADD_MODULE(_SortingArm);
@@ -249,7 +249,7 @@ namespace kai
 #endif
 
 #ifdef USE_GUI
-		ADD_MODULE(_GUIwindow);
+		ADD_MODULE(_WindowGUI);
 #endif
 
 		return NULL;

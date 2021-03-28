@@ -23,13 +23,13 @@
 #define CR '\x0d'
 #define LF '\x0a'
 
-#define CONSOLE_COL_TITLE 1
-#define CONSOLE_COL_NAME 2
-#define CONSOLE_COL_FPS 3
-#define CONSOLE_COL_MSG 4
-#define CONSOLE_COL_ERROR 5
-#define CONSOLE_X_NAME 0
-#define CONSOLE_X_FPS 18
-#define CONSOLE_X_MSG 30
+#define _Console_COL_TITLE 1
+#define _Console_COL_NAME 2
+#define _Console_COL_FPS 3
+#define _Console_COL_MSG 4
+#define _Console_COL_ERROR 5
+#define _Console_X_NAME 0
+#define _Console_X_FPS 18
+#define _Console_X_MSG 30
 
 #endif

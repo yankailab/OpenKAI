@@ -10,8 +10,8 @@
 }
 
 {
-	"name":"OKconsole",
-	"class":"Console",
+	"name":"OK_Console",
+	"class":"_Console",
 	"bInst":1,
 }
 
@@ -21,7 +21,7 @@
 	"bInst":1,
 	"FPS":30,
 	"bLog":0,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"port":"/dev/ttyUSB0",
 	"baud":9600,
 	"parity":"N",	
@@ -33,7 +33,7 @@
 	"bInst":1,
 	"FPS":5,
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,
@@ -62,7 +62,7 @@
 	"bInst":1,
 	"FPS":5,
 	"bLog":1,
-	"Console":"OKconsole",
+	"_Console":"OK_Console",
 	"_Modbus":"modbus",
 	"iSlave":1,
 	"dpr":1,

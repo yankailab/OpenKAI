@@ -50,13 +50,13 @@ bool _Thread::init(void* pKiss)
 	setTargetFPS(FPS);
     
     string n = "";
-	pK->parent()->v("Console",&n );
-	m_pConsole = (Console*)(pK->getInst( n ));
+	pK->parent()->v("_Console",&n );
+	m_p_Console = (_Console*)(pK->getInst( n ));
 
 #ifdef USE_OPENCV
 	n = "";
 	pK->parent()->v("Window",&n );
-	m_pWindow = (CVwindow*)(pK->getInst( n ));
+	m_pWindow = (_WindowCV*)(pK->getInst( n ));
 #endif
     
     vector<string> vWakeup;
@@ -217,11 +217,11 @@ void _Thread::draw(void)
 	string msg = "FPS: " + f2str(m_FPS,2);
     string t = " " + *this->getName();
 
-	if(m_pConsole)
+	if(m_p_Console)
 	{
-		Console* pC = (Console*)m_pConsole;
-		pC->addMsg(t, COLOR_PAIR(CONSOLE_COL_NAME)|A_BOLD, CONSOLE_X_NAME, 1);
-		pC->addMsg(msg, COLOR_PAIR(CONSOLE_COL_FPS)|A_BOLD, CONSOLE_X_FPS);
+		_Console* pC = (_Console*)m_p_Console;
+		pC->addMsg(t, COLOR_PAIR(_Console_COL_NAME)|A_BOLD, _Console_X_NAME, 1);
+		pC->addMsg(msg, COLOR_PAIR(_Console_COL_FPS)|A_BOLD, _Console_X_FPS);
 	}
 }
 

@@ -12,7 +12,7 @@
 #include "_PCframe.h"
 #include <open3d/visualization/gui/Native.h>
 //#include <open3d/visualization/visualizer/GuiVisualizer.h>
-#include "../Application/3Dscan/GUIscan.h"
+#include "../UI/WindowO3D.h"
 
 namespace kai
 {
@@ -55,7 +55,7 @@ namespace kai
 		shared_ptr<PointCloud> m_spPC;
 
 		_Thread* m_pTgui;
-		shared_ptr<GUIscan> m_spWin;
+		shared_ptr<WindowO3D> m_spWin;
 	};
 
 }
