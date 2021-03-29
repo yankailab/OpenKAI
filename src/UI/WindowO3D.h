@@ -158,7 +158,9 @@ namespace open3d
 
 			void UpdateFromModel(rendering::Renderer &renderer, bool material_changed)
 			{
-				auto bcolor = settings_.model_.GetBackgroundColor();
+				Eigen::Vector3f bcolor = settings_.model_.GetBackgroundColor();
+				bcolor.setZero();
+				
 				scene_wgt_->GetScene()->SetBackground(
 					{bcolor.x(), bcolor.y(), bcolor.z(), 1.f});
 

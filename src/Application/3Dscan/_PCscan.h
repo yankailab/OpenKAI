@@ -1,17 +1,14 @@
-#ifndef OpenKAI_src_Protocol___PCscan_H_
-#define OpenKAI_src_Protocol___PCscan_H_
+#ifndef OpenKAI_src_Application_3Dscan__PCscan_H_
+#define OpenKAI_src_Application_3Dscan__PCscan_H_
 
 #ifdef USE_OPEN3D
-#include "../../Protocol/_JSONbase.h"
-#include "../../IO/_WebSocket.h"
 #include "../../PointCloud/_PCbase.h"
-
-using namespace picojson;
+#include "../../SLAM/_SlamBase.h"
 
 namespace kai
 {
 
-class _PCscan : public _JSONbase
+class _PCscan : public _ModuleBase
 {
 public:
 	_PCscan();
@@ -22,32 +19,27 @@ public:
 	virtual int check(void);
 	virtual void draw(void);
 
-protected:
-	virtual void send(void);
-	virtual bool recv(void);
-	virtual void handleMsg(string& str);
-
 private:
-	virtual _PCbase* findPC(string& n);
-	void updateW(void);
-	static void* getUpdateW(void* This)
+	void updateIMU ( void );
+	void update(void);
+	static void* getUpdate(void* This)
 	{
-		(( _PCscan*) This)->updateW();
+		(( _PCscan*) This)->update();
 		return NULL;
 	}
 
-	void updateR(void);
-	static void* getUpdateR(void* This)
+	void updateUI(void);
+	static void* getUpdateUI(void* This)
 	{
-		(( _PCscan*) This)->updateR();
+		(( _PCscan*) This)->updateUI();
 		return NULL;
 	}
 
 public:
-    _Thread* m_pTr;
+    _Thread* m_pTui;
     
     vector<_PCbase*> m_vPCB;
-
+    _SlamBase* m_pSB;
 };
 
 }

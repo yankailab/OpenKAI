@@ -9,6 +9,7 @@
 #define OpenKAI_src_SLAM__SlamBase_H_
 
 #include "../Base/_ModuleBase.h"
+using namespace Eigen;
 
 namespace kai
 {
@@ -28,6 +29,7 @@ public:
 	virtual vFloat3 v(void);
 	virtual vFloat3 r(void);
 	virtual vFloat4 q(void);
+	virtual const Matrix4d& mT(void);
 
 protected:
 	virtual void resetAll(void);
@@ -42,6 +44,10 @@ protected:
 	vFloat3 m_vR;	//rotation
 	vFloat4 m_vQ;	//quaternion
 	float	m_confidence;
+
+	vFloat3 m_vRoffset;	//rotation offset
+
+	Matrix4d m_mT;
 
 };
 

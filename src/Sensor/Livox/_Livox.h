@@ -29,6 +29,7 @@ public:
 protected:
     static void CbRecvData(LivoxEthPacket* pData, void* pLivox);
     
+    void addP(LivoxRawPoint* pLp, uint64_t& tStamp);
     void addP(LivoxExtendRawPoint* pLp, uint64_t& tStamp);
     void addDualP(LivoxDualExtendRawPoint* pLp, uint64_t& tStamp);
     void addTripleP(LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp);

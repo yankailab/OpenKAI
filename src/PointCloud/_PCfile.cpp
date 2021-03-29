@@ -35,7 +35,9 @@ bool _PCfile::open(void)
 	IF_F(m_fName.empty());
 
 //	io::ReadPointCloudOption ro;
-	IF_F(!io::ReadPointCloud(m_fName, *m_sPC.prev()));
+	IF_F(!io::ReadPointCloud(m_fName, m_pc));	
+	*m_sPC.next() = m_pc;
+	updatePC();
 
 	return true;
 }
@@ -51,6 +53,14 @@ void _PCfile::update(void)
 	while(m_pT->bRun())
 	{
 		m_pT->autoFPSfrom();
+
+		if(m_bTransform)
+		{
+			PointCloud pc = m_pc;
+			pc.Transform(m_mT);
+			*m_sPC.next() = pc;
+			updatePC();
+		}
 
 		m_pT->autoFPSto();
 	}

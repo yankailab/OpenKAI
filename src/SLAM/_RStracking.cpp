@@ -121,10 +121,25 @@ namespace kai
 				float x = -m_vQ.z;
 				float y = m_vQ.x;
 				float z = -m_vQ.y;
-				const float ovP = 180.0/OK_PI;
-				*m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								//pitch
-				*m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
-				*m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
+				const float ovP = 180.0 / OK_PI;
+
+				*m_vR.v(m_vAxisIdx.x) = m_vRoffset.x + -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
+				*m_vR.v(m_vAxisIdx.y) = m_vRoffset.y + atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
+				*m_vR.v(m_vAxisIdx.z) = m_vRoffset.z + atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
+
+				Eigen::Matrix3d mR = Eigen::Quaterniond(
+										 m_vQ.w,
+										 m_vQ.x,
+										 m_vQ.y,
+										 m_vQ.z)
+										 .toRotationMatrix();
+
+				Matrix4d mT = Matrix4d::Identity();
+				mT.block(0, 0, 3, 3) = mR;
+				mT(0, 3) = m_vT.x;
+				mT(1, 3) = m_vT.y;
+				mT(2, 3) = m_vT.z;
+				m_mT = mT;
 
 				m_confidence = pose.tracker_confidence;
 			}

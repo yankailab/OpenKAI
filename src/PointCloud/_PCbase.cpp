@@ -84,6 +84,12 @@ namespace kai
         m_A = m_mT;
     }
 
+    void _PCbase::setTranslation(const Matrix4d &mT)
+    {
+        m_mT = mT;
+        m_A = m_mT;
+    }
+
     void _PCbase::readPC(void *pPC)
     {
         NULL_(pPC);

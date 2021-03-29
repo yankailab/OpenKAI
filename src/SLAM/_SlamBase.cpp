@@ -15,6 +15,7 @@ _SlamBase::_SlamBase()
 	m_bReady = false;
 	m_bReset = false;
 	m_vAxisIdx.init(0,1,2);
+	m_vRoffset.init(0.0);
 	resetAll();
 }
 
@@ -28,6 +29,7 @@ bool _SlamBase::init(void* pKiss)
 	Kiss* pK = (Kiss*) pKiss;
 
 	pK->v("vAxisIdx", &m_vAxisIdx);
+	pK->v("vRoffset", &m_vRoffset);
 
 	return true;
 }
@@ -48,6 +50,7 @@ void _SlamBase::resetAll(void)
 	m_vV.init();
 	m_vR.init();
 	m_vQ.init();
+	m_mT = Matrix4d::Identity();
 	m_confidence = 0.0;
 	m_bReset = false;
 }
@@ -70,6 +73,11 @@ vFloat3 _SlamBase::r(void)
 vFloat4 _SlamBase::q(void)
 {
 	return m_vQ;
+}
+
+const Matrix4d& _SlamBase::mT(void)
+{
+	return m_mT;
 }
 
 void _SlamBase::draw(void)

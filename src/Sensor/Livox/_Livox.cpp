@@ -104,7 +104,7 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
 
     if ( pData ->data_type == kCartesian )
     {
-        LivoxRawPoint *p_point_data = ( LivoxRawPoint * ) pData->data;
+        pL->addP ( ( LivoxRawPoint* ) pData->data, tStamp );
     }
     else if ( pData ->data_type == kExtendCartesian )
     {
@@ -125,18 +125,22 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     
 }
 
-void _Livox::addP ( LivoxExtendRawPoint* pLp, uint64_t& tStamp )
+void _Livox::addP ( LivoxRawPoint* pP, uint64_t& tStamp )
 {
-    LivoxExtendRawPoint* pP = ( LivoxExtendRawPoint * ) pLp;
     Vector3d vP(pP->x, pP->y, pP->z);
     Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
     add(vP, vC, tStamp);
 }
 
-void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
+void _Livox::addP ( LivoxExtendRawPoint* pP, uint64_t& tStamp )
 {
-    LivoxDualExtendRawPoint* pP = ( LivoxDualExtendRawPoint *) pLp;
+    Vector3d vP(pP->x, pP->y, pP->z);
+    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
+    add(vP, vC, tStamp);
+}
 
+void _Livox::addDualP ( LivoxDualExtendRawPoint* pP, uint64_t& tStamp )
+{
     Vector3d vP1(pP->x1, pP->y1, pP->z1);
     Vector3d vP2(pP->x2, pP->y2, pP->z2);
     Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
@@ -145,24 +149,20 @@ void _Livox::addDualP ( LivoxDualExtendRawPoint* pLp, uint64_t& tStamp )
     add(vP2, vC, tStamp);
 }
 
-void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pLp, uint64_t& tStamp )
+void _Livox::addTripleP ( LivoxTripleExtendRawPoint* pP, uint64_t& tStamp )
 {
-    LivoxTripleExtendRawPoint* pP = ( LivoxTripleExtendRawPoint *) pLp;
-
     Vector3d vP1(pP->x1, pP->y1, pP->z1);
     Vector3d vP2(pP->x2, pP->y2, pP->z2);
     Vector3d vP3(pP->x3, pP->y3, pP->z3);
-    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);    
+    Vector3d vC(m_vCol.x, m_vCol.y, m_vCol.z);
 
     add(vP1, vC, tStamp);
     add(vP2, vC, tStamp);
     add(vP3, vC, tStamp);
 }
 
-void _Livox::updateIMU ( LivoxImuPoint* pLd )
+void _Livox::updateIMU ( LivoxImuPoint* pD )
 {
-    LivoxImuPoint *pD = ( LivoxImuPoint * ) pLd;
-
     printf ( "gxyz=(%f, %f, %f) axyz=(%f, %f, %f)\n",
              pD->gyro_x,
              pD->gyro_y,

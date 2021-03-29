@@ -82,7 +82,7 @@ namespace kai
         uint64_t tFrom = m_pT->getTfrom() - m_pInCtx.m_dT;
         if(m_pInCtx.m_dT >= UINT64_MAX)
             tFrom = 0;
-            
+    
         for (int i = 0; i < pS->m_nP; i++)
         {
             PC_POINT *pP = &pS->m_pP[i];

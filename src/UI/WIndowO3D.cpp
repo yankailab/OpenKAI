@@ -213,11 +213,11 @@ namespace open3d
                     //     loaded_material.shader = "defaultLit";
                     // }
 
-//                    scene3d->AddGeometry(MODEL_NAME, pcd.get(), loaded_material);
+                    //                    scene3d->AddGeometry(MODEL_NAME, pcd.get(), loaded_material);
                     t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*pcd.get(), core::Dtype::Float32);
                     scene3d->AddGeometry(MODEL_NAME,
-                                        &tpcd,
-                                        loaded_material);
+                                         &tpcd,
+                                         loaded_material);
 
                     impl_->settings_.model_.SetDisplayingPointClouds(true);
                     if (!impl_->settings_.model_.GetUserHasChangedLightingProfile())
@@ -552,16 +552,11 @@ namespace open3d
             t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*sPC.get(), core::Dtype::Float32);
             gui::Application::GetInstance().PostToMainThread(
                 this, [this, tpcd]() {
-
-            impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(MODEL_NAME,
-                                                                      tpcd,
-                                                                      open3d::visualization::rendering::Scene::kUpdatePointsFlag);// | open3d::visualization::rendering::Scene::kUpdateColorsFlag);
-            impl_->scene_wgt_->ForceRedraw();
-
+                    impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(MODEL_NAME,
+                                                                              tpcd,
+                                                                              open3d::visualization::rendering::Scene::kUpdatePointsFlag | open3d::visualization::rendering::Scene::kUpdateColorsFlag);
+                    impl_->scene_wgt_->ForceRedraw();
                 });
-
-
-
         }
 
     } // namespace visualization

@@ -35,6 +35,7 @@ private:
 
 public:
 	string m_fName;
+	PointCloud m_pc;
 
 };
 

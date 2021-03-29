@@ -68,6 +68,7 @@ namespace kai
 
         virtual PC_TYPE getType(void);
         virtual void setTranslation(vDouble3 &vT, vDouble3 &vR);
+        virtual void setTranslation(const Matrix4d &mT);
         virtual void readPC(void* pPC);
 
     protected:

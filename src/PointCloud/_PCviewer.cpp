@@ -82,50 +82,32 @@ namespace kai
 
 	void _PCviewer::update(void)
 	{
-		// m_vis.CreateVisualizerWindow(*this->getName(), m_vWinSize.x, m_vWinSize.y);
-		// m_vis.GetRenderOption().background_color_ = Vector3d::Zero();
-		// m_vis.GetViewControl().ChangeFieldOfView(m_fov);
-		// m_vis.AddGeometry(m_spPC);
-		// if (m_bCoordFrame)
-		// 	m_vis.AddGeometry(m_pMcoordFrame);
-
-		while(!m_spWin);
+		while(!m_spWin)
+			m_pT->sleepT(500000);
 		
-		render();
+		do
+		{
+			m_pT->sleepT(100000);
 
-		vDouble3 vT,vR;
-		vT.init(0.0);
-		vR.init(0.0);
+			for (_PCbase *pPCB : m_vpPCB)
+				readPC(pPCB);
+
+			updatePC();
+			*m_spPC = *m_sPC.prev();
+		}
+		while(m_spPC->points_.size()<100);
+
+		m_spWin->SetGeometry(m_spPC, false);
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-//			render();
-		for (_PCbase *pPCB : m_vpPCB)
-		{
-			readPC(pPCB);
-		}
-		updatePC();
-		*m_spPC = *m_sPC.prev();
-
-		vR.x += 0.1;
-        Matrix4d mT = Matrix4d::Identity();
-        Vector3d eR(vR.x,
-                    vR.y,
-                    vR.z);
-        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-        mT(0, 3) = vT.x;
-        mT(1, 3) = vT.y;
-        mT(2, 3) = vT.z;
-		m_spPC->Transform(mT);
-
-		m_spWin->updateGeometry(m_spPC);
+			render();
 
 			m_pT->autoFPSto();
 		}
 
-//		m_vis.DestroyVisualizerWindow();
 	}
 
 	void _PCviewer::render(void)
@@ -138,15 +120,7 @@ namespace kai
 
 		updatePC();
 		*m_spPC = *m_sPC.prev();
-
-		m_spWin->SetGeometry(m_spPC, false);
-		// m_vis.UpdateGeometry(m_spPC);
-
-		// if (m_vis.HasGeometry())
-		// {
-		// 	m_vis.PollEvents();
-		// 	m_vis.UpdateRender();
-		// }
+		m_spWin->updateGeometry(m_spPC);
 	}
 
 	void _PCviewer::updateGUI(void)
@@ -154,7 +128,6 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
 
-//		shared_ptr<WindowO3D> win = shared_ptr<WindowO3D>(new WindowO3D("Open3D GUI", 2000, 1000));
 		m_spWin = std::make_shared<WindowO3D>("Open3D GUI", 2000, 1000);
 		gui::Application::GetInstance().AddWindow(m_spWin);
 		app.Run();
