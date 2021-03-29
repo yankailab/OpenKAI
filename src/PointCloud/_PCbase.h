@@ -67,9 +67,11 @@ namespace kai
         virtual void draw(void);
 
         virtual PC_TYPE getType(void);
-        virtual void setTranslation(vDouble3 &vT, vDouble3 &vR);
+        virtual void setTranslation(const vDouble3 &vT, const vDouble3 &vR);
         virtual void setTranslation(const Matrix4d &mT);
         virtual void readPC(void* pPC);
+
+        virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
 
     protected:
         virtual void getStream(void* p);
@@ -79,12 +81,13 @@ namespace kai
     protected:
         PC_TYPE m_type;
 
-        //offset
+        //static offset
         vDouble3 m_vToffset; //translation
         vDouble3 m_vRoffset; //rotation
+    	Matrix4d m_mToffset;
+        Eigen::Affine3d m_Aoffset;
 
-        //dynamics
-        bool m_bTransform;
+        //dynamic transform
         vDouble3 m_vT; //translation
         vDouble3 m_vR; //rotation
     	Matrix4d m_mT;

@@ -63,6 +63,7 @@ namespace kai
 
     void _PCframe::updatePC(void)
     {
+        m_sPC.next()->Transform(m_mT);
         paintPC(m_sPC.next());
 
         pthread_mutex_lock(&m_mutexPC);

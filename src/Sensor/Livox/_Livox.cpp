@@ -100,7 +100,9 @@ void _Livox::CbRecvData ( LivoxEthPacket* pData, void* pLivox )
     NULL_ ( pLivox );
 
     _Livox* pL = ( _Livox* ) pLivox;
-    uint64_t tStamp = pL->m_pT->getTfrom(); //* ( ( uint64_t * ) ( pData->timestamp ) );
+    uint8_t tStampType = pData->timestamp_type;
+    uint64_t tStamp = * ( ( uint64_t * ) ( pData->timestamp ) );
+    //uint64_t tNow = getTbootMs();//pL->m_pT->getTfrom();
 
     if ( pData ->data_type == kCartesian )
     {

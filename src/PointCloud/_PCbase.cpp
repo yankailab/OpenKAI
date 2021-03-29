@@ -16,7 +16,8 @@ namespace kai
         m_type = pc_unknown;
         m_vToffset.init(0);
         m_vRoffset.init(0);
-        m_bTransform = false;
+        m_mToffset = Matrix4d::Identity();
+        m_Aoffset = Matrix4d::Identity();
         m_vT.init(0);
         m_vR.init(0);
         m_mT = Matrix4d::Identity();
@@ -34,16 +35,16 @@ namespace kai
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
 
-        //offset
+        //origin offset
         pK->v("vToffset", &m_vToffset);
         pK->v("vRoffset", &m_vRoffset);
+        m_mToffset = getTranslationMatrix(m_vToffset, m_vRoffset);
+        m_Aoffset = m_mToffset;
 
         //transform
-        pK->v("bTransform", &m_bTransform);
         pK->v("vT", &m_vT);
         pK->v("vR", &m_vR);
-        if (m_bTransform)
-            setTranslation(m_vT, m_vR);
+        setTranslation(m_vT, m_vR);
 
         //pipeline ctx
         pK->v("ctxdT", &m_pInCtx.m_dT);
@@ -66,27 +67,29 @@ namespace kai
         return m_type;
     }
 
-    void _PCbase::setTranslation(vDouble3 &vT, vDouble3 &vR)
+    Matrix4d _PCbase::getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR)
+    {
+        Matrix4d mT = Matrix4d::Identity();
+        Vector3d eR(vR.x, vR.y, vR.z);
+        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
+        mT(0, 3) = m_vT.x;
+        mT(1, 3) = m_vT.y;
+        mT(2, 3) = m_vT.z;
+
+        return mT;
+    }
+
+    void _PCbase::setTranslation(const vDouble3 &vT, const vDouble3 &vR)
     {
         m_vT = vT;
         m_vR = vR;
-
-        Matrix4d mT = Matrix4d::Identity();
-        Vector3d eR(m_vR.x + m_vRoffset.x,
-                    m_vR.y + m_vRoffset.y,
-                    m_vR.z + m_vRoffset.z);
-        mT.block(0, 0, 3, 3) = Geometry3D::GetRotationMatrixFromXYZ(eR);
-        mT(0, 3) = m_vT.x + m_vToffset.x;
-        mT(1, 3) = m_vT.y + m_vToffset.y;
-        mT(2, 3) = m_vT.z + m_vToffset.z;
-
-        m_mT = mT;
+        m_mT = getTranslationMatrix(m_vT, m_vR) * m_mToffset;
         m_A = m_mT;
     }
 
     void _PCbase::setTranslation(const Matrix4d &mT)
     {
-        m_mT = mT;
+        m_mT = mT * m_mToffset;
         m_A = m_mT;
     }
 

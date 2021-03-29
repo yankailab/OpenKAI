@@ -54,13 +54,8 @@ void _PCfile::update(void)
 	{
 		m_pT->autoFPSfrom();
 
-		if(m_bTransform)
-		{
-			PointCloud pc = m_pc;
-			pc.Transform(m_mT);
-			*m_sPC.next() = pc;
-			updatePC();
-		}
+		*m_sPC.next() = m_pc;
+		updatePC();
 
 		m_pT->autoFPSto();
 	}

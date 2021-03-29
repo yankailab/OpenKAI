@@ -64,7 +64,7 @@ namespace kai
         IF_(!m_bAccept);
 
         PC_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = (m_bTransform) ? (m_A * vP) : vP;
+        pP->m_vP = m_A * vP;
         pP->m_vC = vC;
         pP->m_tStamp = tStamp;
 

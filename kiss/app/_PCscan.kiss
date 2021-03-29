@@ -28,19 +28,19 @@
 	"vWinSize":[1920,1080],
 	"fov":100,
 	"vPCbase":["pcFile","pcRS","pcLivox"],
+	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 }
 
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
 	}
 	"_Console":"OK_Console",
 	"fName":"/home/kai/dev/Open3D/examples/test_data/fragment.pcd",
-	"bTransform":1,
 }
 
 {
@@ -65,13 +65,12 @@
 	"bAlign":0,
 	"rsSN":"f0211594",
 	"vRz":[0, 1000.0],
-	"bTransform":1,
 }
 
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vBroadcastCode":["3JEDHC900100791","3GGDJ1500105411","0TFDHAW001808W1"],
@@ -85,7 +84,7 @@
 {
 	"name":"pcLivox",
 	"class":"_Livox",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -100,7 +99,6 @@
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 	"vCol":[0, 1.0, 0],
-	"bTransform":1,
 }
 
 {
@@ -110,15 +108,15 @@
 		"name":"thread",
 		"FPS":30,
 	}
-	"bInst":1,
+	"bInst":0,
 	"bLog":1,
 	"_Console":"OK_Console",
-	"vRoffset":[0,0,0],
 }
 
 {
 	"name":"PCscan",
 	"class":"_PCscan",
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -127,7 +125,6 @@
 		"name":"threadUI",
 		"FPS":30,
 	}
-	"bInst":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vPCB":["pcFile","pcLivox","pcRS"],

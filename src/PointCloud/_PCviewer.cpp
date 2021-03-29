@@ -20,6 +20,7 @@ namespace kai
 
 		m_spPC = shared_ptr<PointCloud>(new PointCloud);
 		m_pTgui = NULL;
+		m_pathRes = "";
 	}
 
 	_PCviewer::~_PCviewer()
@@ -34,6 +35,7 @@ namespace kai
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("fov", &m_fov);
 		pK->v("bCoordFrame", &m_bCoordFrame);
+		pK->v("pathRes", &m_pathRes);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -82,20 +84,11 @@ namespace kai
 
 	void _PCviewer::update(void)
 	{
-		while(!m_spWin)
-			m_pT->sleepT(500000);
-		
-		do
-		{
-			m_pT->sleepT(100000);
+		//wait for the UI thread to get window ready
+		m_pT->sleepT(0);
 
-			for (_PCbase *pPCB : m_vpPCB)
-				readPC(pPCB);
-
-			updatePC();
-			*m_spPC = *m_sPC.prev();
-		}
-		while(m_spPC->points_.size()<100);
+		while(m_spPC->IsEmpty())
+			readAllPC();
 
 		m_spWin->SetGeometry(m_spPC, false);
 
@@ -103,14 +96,15 @@ namespace kai
 		{
 			m_pT->autoFPSfrom();
 
-			render();
+			readAllPC();
+			m_spWin->updateGeometry(m_spPC);
 
 			m_pT->autoFPSto();
 		}
 
 	}
 
-	void _PCviewer::render(void)
+	void _PCviewer::readAllPC(void)
 	{
 		//read all inputs into one
 		for (_PCbase *pPCB : m_vpPCB)
@@ -120,16 +114,17 @@ namespace kai
 
 		updatePC();
 		*m_spPC = *m_sPC.prev();
-		m_spWin->updateGeometry(m_spPC);
 	}
 
 	void _PCviewer::updateGUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
-		app.Initialize("/home/kai/dev/Open3D/build/bin/resources");
+		app.Initialize(m_pathRes.c_str());
 
 		m_spWin = std::make_shared<WindowO3D>("Open3D GUI", 2000, 1000);
 		gui::Application::GetInstance().AddWindow(m_spWin);
+
+		m_pT->wakeUp();
 		app.Run();
 	}
 

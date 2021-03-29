@@ -29,7 +29,7 @@ namespace kai
 		virtual void draw(void);
 
 	private:
-		void render(void);
+		void readAllPC(void);
 		void update(void);
 		static void *getUpdate(void *This)
 		{
@@ -45,6 +45,7 @@ namespace kai
 		}
 
 	private:
+		string m_pathRes;
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
 		float m_fov;
