@@ -22,6 +22,9 @@ namespace kai
         m_vR.init(0);
         m_mT = Matrix4d::Identity();
         m_A = Matrix4d::Identity();
+        m_vAxisIdx.init(0,1,2);
+        m_vAxisK.init(1.0);
+        m_unitK = 1.0;
 
         m_pInCtx.init();
     }
@@ -34,6 +37,10 @@ namespace kai
     {
         IF_F(!this->_ModuleBase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
+
+        pK->v("vAxisIdx", &m_vAxisIdx);
+        pK->v("vAxisK", &m_vAxisK);
+        pK->v("unitK", &m_unitK);
 
         //origin offset
         pK->v("vToffset", &m_vToffset);
@@ -54,6 +61,7 @@ namespace kai
         pK->v("_PCbase", &n);
         m_pInCtx.m_pPCB = (_PCbase *)(pK->getInst(n));
 
+        m_nPread = 0;
         return true;
     }
 
@@ -105,6 +113,11 @@ namespace kai
             getFrame(pPC);
         else if (t == pc_lattice)
             getLattice(pPC);
+    }
+
+    int _PCbase::nPread(void)
+    {
+        return m_nPread;
     }
 
     void _PCbase::getStream(void *p)

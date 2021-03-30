@@ -72,6 +72,7 @@ namespace kai
         virtual void readPC(void* pPC);
 
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
+        virtual int nPread(void);
 
     protected:
         virtual void getStream(void* p);
@@ -80,6 +81,12 @@ namespace kai
 
     protected:
         PC_TYPE m_type;
+        int m_nPread;
+
+        //axis index for sensors
+        vInt3 m_vAxisIdx;
+        vFloat3 m_vAxisK;
+        float m_unitK;
 
         //static offset
         vDouble3 m_vToffset; //translation

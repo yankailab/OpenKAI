@@ -34,7 +34,7 @@
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":1,
+	"bInst":0,
     {
 		"name":"thread",
 		"FPS":30,
@@ -70,7 +70,7 @@
 {
 	"name":"LivoxLidar",
 	"class":"LivoxLidar",
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 	"vBroadcastCode":["3JEDHC900100791","3GGDJ1500105411","0TFDHAW001808W1"],
@@ -84,7 +84,7 @@
 {
 	"name":"pcLivox",
 	"class":"_Livox",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -99,6 +99,10 @@
 	"vToffset":[0,0,0],
 	"vRoffset":[0,0,0],
 	"vCol":[0, 1.0, 0],
+	"vAxisIdx":[1, 0, 2],
+	"vAxisK":[-1, 1, 1],
+	"vToffset":[-0.015, -0.048, 0.0],
+	"unitK":0.001,
 }
 
 {
@@ -106,9 +110,9 @@
 	"class":"_RStracking",
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":200,
 	}
-	"bInst":0,
+	"bInst":1,
 	"bLog":1,
 	"_Console":"OK_Console",
 }
@@ -116,7 +120,7 @@
 {
 	"name":"PCscan",
 	"class":"_PCscan",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,

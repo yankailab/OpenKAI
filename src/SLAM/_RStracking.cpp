@@ -123,9 +123,9 @@ namespace kai
 				float z = -m_vQ.y;
 				const float ovP = 180.0 / OK_PI;
 
-				*m_vR.v(m_vAxisIdx.x) = m_vRoffset.x + -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
-				*m_vR.v(m_vAxisIdx.y) = m_vRoffset.y + atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
-				*m_vR.v(m_vAxisIdx.z) = m_vRoffset.z + atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
+				*m_vR.v(m_vAxisIdx.x) = -asin(2.0 * (x * z - w * y)) * ovP;								  //pitch
+				*m_vR.v(m_vAxisIdx.y) = atan2(2.0 * (w * x + y * z), w * w - x * x - y * y + z * z) * ovP; //roll
+				*m_vR.v(m_vAxisIdx.z) = atan2(2.0 * (w * z + x * y), w * w + x * x - y * y - z * z) * ovP; //yaw
 
 				Eigen::Matrix3d mR = Eigen::Quaterniond(
 										 m_vQ.w,

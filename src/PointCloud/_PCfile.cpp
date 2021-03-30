@@ -38,6 +38,7 @@ bool _PCfile::open(void)
 	IF_F(!io::ReadPointCloud(m_fName, m_pc));	
 	*m_sPC.next() = m_pc;
 	updatePC();
+	m_nPread = m_pc.points_.size();
 
 	return true;
 }

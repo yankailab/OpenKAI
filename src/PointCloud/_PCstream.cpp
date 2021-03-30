@@ -64,11 +64,16 @@ namespace kai
         IF_(!m_bAccept);
 
         PC_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = m_A * vP;
+        pP->m_vP = m_A * Vector3d(
+                                vP[m_vAxisIdx.x] * m_vAxisK.x,
+                                vP[m_vAxisIdx.y] * m_vAxisK.y,
+                                vP[m_vAxisIdx.z] * m_vAxisK.z
+                                );//vP;
         pP->m_vC = vC;
         pP->m_tStamp = tStamp;
 
         m_iP = iInc(m_iP, m_nP);
+        m_nPread++;
     }
 
     void _PCstream::getStream(void* p)

@@ -87,7 +87,7 @@ namespace kai
 		//wait for the UI thread to get window ready
 		m_pT->sleepT(0);
 
-		while(m_spPC->IsEmpty())
+		while(m_nPread <= 0)
 			readAllPC();
 
 		m_spWin->SetGeometry(m_spPC, false);
@@ -106,10 +106,11 @@ namespace kai
 
 	void _PCviewer::readAllPC(void)
 	{
-		//read all inputs into one
+		m_nPread = 0;
 		for (_PCbase *pPCB : m_vpPCB)
 		{
 			readPC(pPCB);
+			m_nPread += pPCB->nPread();
 		}
 
 		updatePC();
