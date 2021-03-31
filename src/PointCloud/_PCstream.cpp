@@ -63,12 +63,15 @@ namespace kai
         NULL_(m_pP);
         IF_(!m_bAccept);
 
+        Vector3d uP = Vector3d(
+                            vP[m_vAxisIdx.x] * m_vAxisK.x,
+                            vP[m_vAxisIdx.y] * m_vAxisK.y,
+                            vP[m_vAxisIdx.z] * m_vAxisK.z
+                            );
+        uP *= m_unitK;
+
         PC_POINT *pP = &m_pP[m_iP];
-        pP->m_vP = m_A * Vector3d(
-                                vP[m_vAxisIdx.x] * m_vAxisK.x,
-                                vP[m_vAxisIdx.y] * m_vAxisK.y,
-                                vP[m_vAxisIdx.z] * m_vAxisK.z
-                                );//vP;
+        pP->m_vP = m_A * uP;
         pP->m_vC = vC;
         pP->m_tStamp = tStamp;
 

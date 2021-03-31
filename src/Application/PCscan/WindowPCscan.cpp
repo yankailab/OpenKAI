@@ -1,33 +1,49 @@
 #ifdef USE_OPEN3D
-#include "WindowO3D.h"
+#include "WindowPCscan.h"
 
 namespace open3d
 {
     namespace visualization
     {
-        WindowO3D::WindowO3D(const std::string &title, int width, int height)
-            : gui::Window(title, width, height), impl_(new WindowO3D::Impl())
+        WindowPCscan::WindowPCscan(const std::string &title, int width, int height)
+            : WindowO3D(title, width, height), impl_(new WindowPCscan::Impl())
         {
             Init();
         }
 
-        WindowO3D::WindowO3D(
-            const std::vector<std::shared_ptr<const geometry::Geometry>>
-                &geometries,
-            const std::string &title,
-            int width,
-            int height,
-            int left,
-            int top)
-            : gui::Window(title, left, top, width, height),
-              impl_(new WindowO3D::Impl())
+        void WindowPCscan::setCbResetPC(OnBtnClickedCb pCb, void *pPCV)
         {
-            Init();
-            SetGeometry(geometries[0], false); // also updates the camera
+            if (!pPCV)
+                return;
+
+            m_cbResetPC.m_pCb = pCb;
+            m_cbResetPC.m_pPCV = pPCV;
         }
 
-        void WindowO3D::Init()
+        void WindowPCscan::setCbResetPicker(OnBtnClickedCb pCb, void *pPCV)
         {
+            if (!pPCV)
+                return;
+
+            m_cbResetPicker.m_pCb = pCb;
+            m_cbResetPicker.m_pPCV = pPCV;
+        }
+
+        void WindowPCscan::setCbSavePC(OnBtnClickedCb pCb, void *pPCV)
+        {
+            if (!pPCV)
+                return;
+
+            m_cbSavePC.m_pCb = pCb;
+            m_cbSavePC.m_pPCV = pPCV;
+        }
+
+        void WindowPCscan::Init()
+        {
+            m_cbResetPC.init();
+            m_cbResetPicker.init();
+            m_cbSavePC.init();
+
             auto &app = gui::Application::GetInstance();
             auto &theme = GetTheme();
 
@@ -107,19 +123,22 @@ namespace open3d
             auto btnResetPC = std::make_shared<SmallButton>("Reset Point Cloud");
             btnResetPC->SetOnClicked([this]()
             {
-                printf("Reset point cloud");
+                if (!m_cbResetPC.m_pCb)return;
+                m_cbResetPC.m_pCb(m_cbResetPC.m_pPCV);
             });
 
             auto btnResetPick = std::make_shared<SmallButton>("Reset Picker");
             btnResetPick->SetOnClicked([this]()
             {
-                printf("Reset picker");
+                if (!m_cbResetPicker.m_pCb)return;
+                m_cbResetPicker.m_pCb(m_cbResetPicker.m_pPCV);
             });
 
             auto btnSavePC = std::make_shared<SmallButton>("Save Point Cloud");
             btnSavePC->SetOnClicked([this]()
             {
-                printf("Save Point Cloud");
+                if (!m_cbSavePC.m_pCb)return;
+                m_cbSavePC.m_pCb(m_cbSavePC.m_pPCV);
             });
 
             auto pc_resetPC = std::make_shared<gui::Horiz>(grid_spacing);
@@ -145,7 +164,6 @@ namespace open3d
             pc_ctrls->AddFixed(separation_height);
 
             settings.wgt_base->AddChild(pc_ctrls);
-
 
             // Mouse controls
             auto view_ctrls =
@@ -219,14 +237,14 @@ namespace open3d
             AddChild(settings.wgt_base);
         }
 
-        WindowO3D::~WindowO3D() {}
+        WindowPCscan::~WindowPCscan() {}
 
-        void WindowO3D::SetTitle(const std::string &title)
+        void WindowPCscan::SetTitle(const std::string &title)
         {
             Super::SetTitle(title.c_str());
         }
 
-        void WindowO3D::SetGeometry(
+        void WindowPCscan::SetGeometry(
             std::shared_ptr<const geometry::Geometry> geometry, bool loaded_model)
         {
             auto scene3d = impl_->scene_wgt_->GetScene();
@@ -318,7 +336,7 @@ namespace open3d
             impl_->scene_wgt_->ForceRedraw();
         }
 
-        void WindowO3D::Layout(const gui::Theme &theme)
+        void WindowPCscan::Layout(const gui::Theme &theme)
         {
             auto r = GetContentRect();
             const auto em = theme.font_size;
@@ -347,7 +365,7 @@ namespace open3d
             Super::Layout(theme);
         }
 
-        void WindowO3D::LoadGeometry(const std::string &path)
+        void WindowPCscan::LoadGeometry(const std::string &path)
         {
             auto progressbar = std::make_shared<gui::ProgressBar>();
             gui::Application::GetInstance().PostToMainThread(this, [this, path,
@@ -455,7 +473,7 @@ namespace open3d
             });
         }
 
-        void WindowO3D::ExportCurrentImage(const std::string &path)
+        void WindowPCscan::ExportCurrentImage(const std::string &path)
         {
             impl_->scene_wgt_->EnableSceneCaching(false);
             impl_->scene_wgt_->GetScene()->GetScene()->RenderToImage(
@@ -471,7 +489,7 @@ namespace open3d
                 });
         }
 
-        void WindowO3D::OnMenuItemSelected(gui::Menu::ItemId item_id)
+        void WindowPCscan::OnMenuItemSelected(gui::Menu::ItemId item_id)
         {
             auto menu_id = MenuId(item_id);
             switch (menu_id)
@@ -598,7 +616,7 @@ namespace open3d
             }
         }
 
-        void WindowO3D::UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
+        void WindowPCscan::UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
         {
             t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*sPC.get(), core::Dtype::Float32);
             gui::Application::GetInstance().PostToMainThread(

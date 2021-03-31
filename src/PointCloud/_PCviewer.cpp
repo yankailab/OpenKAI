@@ -15,8 +15,6 @@ namespace kai
 	{
 		m_fov = 0.0;
 		m_vWinSize.init(1280, 720);
-		m_pMcoordFrame = NULL;
-		m_bCoordFrame = true;
 
 		m_spPC = shared_ptr<PointCloud>(new PointCloud);
 		m_pTgui = NULL;
@@ -34,13 +32,9 @@ namespace kai
 
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("fov", &m_fov);
-		pK->v("bCoordFrame", &m_bCoordFrame);
 		pK->v("pathRes", &m_pathRes);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
-
-		//X:red, Y:green, Z:blue
-		m_pMcoordFrame = open3d::geometry::TriangleMesh::CreateCoordinateFrame();
 
 		string n;
 		vector<string> vPCB;
@@ -97,7 +91,7 @@ namespace kai
 			m_pT->autoFPSfrom();
 
 			readAllPC();
-			m_spWin->updateGeometry(m_spPC);
+			m_spWin->UpdateGeometry(m_spPC);
 
 			m_pT->autoFPSto();
 		}
@@ -122,7 +116,7 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_spWin = std::make_shared<WindowO3D>("Open3D GUI", 2000, 1000);
+		m_spWin = std::make_shared<WindowO3D>(*this->getName(), 2000, 1000);
 		gui::Application::GetInstance().AddWindow(m_spWin);
 
 		m_pT->wakeUp();

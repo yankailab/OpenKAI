@@ -11,7 +11,6 @@
 
 #include "_PCframe.h"
 #include <open3d/visualization/gui/Native.h>
-//#include <open3d/visualization/visualizer/GuiVisualizer.h>
 #include "../UI/WindowO3D.h"
 
 namespace kai
@@ -28,29 +27,28 @@ namespace kai
 		virtual int check(void);
 		virtual void draw(void);
 
-	private:
-		void readAllPC(void);
-		void update(void);
+	protected:
+		virtual void readAllPC(void);
+		virtual void update(void);
+		virtual void updateGUI(void);
+
 		static void *getUpdate(void *This)
 		{
 			((_PCviewer *)This)->update();
 			return NULL;
 		}
 
-		void updateGUI(void);
 		static void *getUpdateGUI(void *This)
 		{
 			((_PCviewer *)This)->updateGUI();
 			return NULL;
 		}
 
-	private:
+	protected:
 		string m_pathRes;
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
 		float m_fov;
-		shared_ptr<TriangleMesh> m_pMcoordFrame;
-		bool m_bCoordFrame;
 
 		vector<_PCbase *> m_vpPCB;
 		shared_ptr<PointCloud> m_spPC;

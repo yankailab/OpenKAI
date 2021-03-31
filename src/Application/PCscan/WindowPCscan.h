@@ -1,52 +1,38 @@
-#ifndef OpenKAI_src_UI_WindowO3D_H_
-#define OpenKAI_src_UI_WindowO3D_H_
+#ifndef OpenKAI_src_Application_PCscan_WindowPCscan_H_
+#define OpenKAI_src_Application_PCscan_WindowPCscan_H_
 #ifdef USE_OPEN3D
-#include "../Base/common.h"
+#include "../../UI/WindowO3D.h"
 
 namespace open3d
 {
-	namespace geometry
-	{
-		class AxisAlignedBoundingBox;
-		class Geometry;
-	} // namespace geometry
 
 	namespace visualization
 	{
-
-		const std::string MODEL_NAME = "__model__";
-        enum MenuId
-        {
-            FILE_OPEN,
-            FILE_EXPORT_RGB,
-            FILE_QUIT,
-            SETTINGS_LIGHT_AND_MATERIALS,
-            HELP_KEYS,
-            HELP_CAMERA,
-            HELP_ABOUT,
-            HELP_CONTACT,
-            HELP_DEBUG
-        };
-
 		namespace gui
 		{
 			struct Theme;
 		}
 
-		class WindowO3D : public gui::Window
+		typedef void ( *OnBtnClickedCb ) ( void* pPCV );
+		struct WindowPCscanCb
 		{
-			using Super = gui::Window;
+			OnBtnClickedCb m_pCb;
+			void* m_pPCV;
+
+			void init(void)
+			{
+				m_pCb = NULL;
+				m_pPCV = NULL;
+			}
+		};
+
+		class WindowPCscan : public WindowO3D
+		{
+			using Super = WindowO3D;
 
 		public:
-			WindowO3D(const std::string &title, int width, int height);
-			WindowO3D(const std::vector<std::shared_ptr<const geometry::Geometry>> &
-						geometries,
-					const std::string &title,
-					int width,
-					int height,
-					int left,
-					int top);
-			virtual ~WindowO3D();
+			WindowPCscan(const std::string &title, int width, int height);
+			virtual ~WindowPCscan();
 
 			virtual void SetTitle(const std::string &title);
 			virtual void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry,
@@ -58,6 +44,10 @@ namespace open3d
 			virtual void Layout(const gui::Theme &theme) override;
 			virtual void UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC);
 
+			void setCbResetPC(OnBtnClickedCb pCb, void* pPCV);
+			void setCbResetPicker(OnBtnClickedCb pCb, void* pPCV);
+			void setCbSavePC(OnBtnClickedCb pCb, void* pPCV);
+
 		protected:
 			virtual void OnMenuItemSelected(gui::Menu::ItemId item_id) override;
 
@@ -65,10 +55,14 @@ namespace open3d
 			struct Impl;
 			std::unique_ptr<Impl> impl_;
 
+			WindowPCscanCb m_cbResetPC;
+			WindowPCscanCb m_cbResetPicker;
+			WindowPCscanCb m_cbSavePC;
+
 			void Init();
 		};
 
-		struct WindowO3D::Impl
+		struct WindowPCscan::Impl
 		{
 			std::shared_ptr<gui::SceneWidget> scene_wgt_;
 			std::shared_ptr<gui::VGrid> help_keys_;
@@ -318,8 +312,8 @@ namespace open3d
 			}
 		};
 
-	} // namespace visualization
-} // namespace open3d
+	}
+}
 
 #endif
 #endif

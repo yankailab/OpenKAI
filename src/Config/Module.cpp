@@ -221,6 +221,7 @@ namespace kai
 		ADD_MODULE(_PCregistICP);
 		ADD_MODULE(_PCregistGlobal);
 		ADD_MODULE(_PCscan);
+		ADD_MODULE(_PCscanView);
 #ifdef USE_REALSENSE
 		ADD_MODULE(_PCrs);
 #endif

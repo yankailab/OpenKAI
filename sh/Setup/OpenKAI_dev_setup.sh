@@ -184,6 +184,7 @@ sudo make install
 # (Optional) Open3D
 git clone --branch v0.12.0 --depth 1 --recursive https://github.com/intel-isl/Open3D
 cd Open3D
+git submodule update --init --recursive
 mkdir build
 cd build
 
@@ -198,6 +199,18 @@ cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=
 
 make -j$(nproc)
 sudo make install
+
+#----------------------------------------------------
+# (Optional, use Open3D included version if possible) Filament
+git clone --branch v1.9.9 --depth 1 https://github.com/google/filament.git
+cd filament
+mkdir out
+mkdir out/release
+cd out/release
+CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../release/filament ../..
+ninja -j6
+ninja install
+# need clang >= 7 for jetson!
 
 #----------------------------------------------------
 # (Optional) gwsocket
@@ -226,7 +239,7 @@ sudo cp HPS3D_SDK/English/libhps3d64.so /usr/local/lib/
 
 #----------------------------------------------------
 # (Optional) Livox
-git clone https://github.com/Livox-SDK/Livox-SDK.git
+git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK.git
 cd Livox-SDK/build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
@@ -265,12 +278,6 @@ chmod +x build.sh
 # sudo make install
 
 #----------------------------------------------------
-# (Optional) KDevelop
-wget -O KDevelop.AppImage https://download.kde.org/stable/kdevelop/5.6.0/bin/linux/KDevelop-5.6.0-x86_64.AppImage
-chmod +x KDevelop.AppImage
-./KDevelop.AppImage
-
-#----------------------------------------------------
 # OpenKAI
 git clone https://github.com/yankailab/OpenKAI.git
 cd OpenKAI
@@ -305,18 +312,6 @@ cd build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make all -j12
 sudo make install
-
-#----------------------------------------------------
-# (Optional) Filament
-git clone --branch v1.9.9 --depth 1 https://github.com/google/filament.git
-cd filament
-mkdir out
-mkdir out/release
-cd out/release
-CC=/usr/bin/clang CXX=/usr/bin/clang++ CXXFLAGS=-stdlib=libc++ cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=../release/filament ../..
-ninja -j6
-ninja install
-# need clang >= 7 for jetson!
 
 #----------------------------------------------------
 # (Optional) VTK
