@@ -19,6 +19,7 @@ namespace kai
 		m_spPC = shared_ptr<PointCloud>(new PointCloud);
 		m_pTgui = NULL;
 		m_pathRes = "";
+		m_device = "CPU:0";
 	}
 
 	_PCviewer::~_PCviewer()
@@ -33,6 +34,7 @@ namespace kai
 		pK->v("vWinSize", &m_vWinSize);
 		pK->v("fov", &m_fov);
 		pK->v("pathRes", &m_pathRes);
+		pK->v("device", &m_device);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 
@@ -83,7 +85,6 @@ namespace kai
 
 		while(m_nPread <= 0)
 			readAllPC();
-
 		m_spWin->SetGeometry(m_spPC, false);
 
 		while (m_pT->bRun())

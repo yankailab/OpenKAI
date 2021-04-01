@@ -29,12 +29,13 @@
 	"fov":100,
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
+	"device":"CPU:0",
 }
 
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,
@@ -123,7 +124,7 @@
 	"bInst":1,
     {
 		"name":"thread",
-		"FPS":30,
+		"FPS":200,
 	}
     {
 		"name":"threadUI",

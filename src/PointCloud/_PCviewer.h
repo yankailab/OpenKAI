@@ -49,6 +49,7 @@ namespace kai
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
 		float m_fov;
+		string m_device;
 
 		vector<_PCbase *> m_vpPCB;
 		shared_ptr<PointCloud> m_spPC;

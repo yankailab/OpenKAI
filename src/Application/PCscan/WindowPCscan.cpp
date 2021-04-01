@@ -40,40 +40,14 @@ namespace open3d
 
         void WindowPCscan::Init()
         {
+            m_strDevice = "CPU:0";
             m_cbResetPC.init();
             m_cbResetPicker.init();
             m_cbSavePC.init();
 
             auto &app = gui::Application::GetInstance();
             auto &theme = GetTheme();
-
-            // Create menu
-            if (!gui::Application::GetInstance().GetMenubar())
-            {
-                auto menu = std::make_shared<gui::Menu>();
-                auto file_menu = std::make_shared<gui::Menu>();
-                file_menu->AddItem("Open...", FILE_OPEN, gui::KEY_O);
-                file_menu->AddItem("Export Current Image...", FILE_EXPORT_RGB);
-                file_menu->AddSeparator();
-                file_menu->AddItem("Quit", FILE_QUIT, gui::KEY_Q);
-                menu->AddMenu("File", file_menu);
-
-                auto settings_menu = std::make_shared<gui::Menu>();
-                settings_menu->AddItem("Lighting & Materials",
-                                       SETTINGS_LIGHT_AND_MATERIALS);
-                settings_menu->SetChecked(SETTINGS_LIGHT_AND_MATERIALS, true);
-                menu->AddMenu("Settings", settings_menu);
-
-                auto help_menu = std::make_shared<gui::Menu>();
-                help_menu->AddItem("Show Controls", HELP_KEYS);
-                help_menu->AddItem("Show Camera Info", HELP_CAMERA);
-                help_menu->AddSeparator();
-                help_menu->AddItem("About", HELP_ABOUT);
-                help_menu->AddItem("Contact", HELP_CONTACT);
-                menu->AddMenu("Help", help_menu);
-
-                gui::Application::GetInstance().SetMenubar(menu);
-            }
+            gui::Application::GetInstance().SetMenubar(NULL);
 
             // Create scene
             impl_->scene_wgt_ = std::make_shared<gui::SceneWidget>();
@@ -121,23 +95,23 @@ namespace open3d
                 std::make_shared<gui::CollapsableVert>("Main Controls", 0, indent);
 
             auto btnResetPC = std::make_shared<SmallButton>("Reset Point Cloud");
-            btnResetPC->SetOnClicked([this]()
-            {
-                if (!m_cbResetPC.m_pCb)return;
+            btnResetPC->SetOnClicked([this]() {
+                if (!m_cbResetPC.m_pCb)
+                    return;
                 m_cbResetPC.m_pCb(m_cbResetPC.m_pPCV);
             });
 
             auto btnResetPick = std::make_shared<SmallButton>("Reset Picker");
-            btnResetPick->SetOnClicked([this]()
-            {
-                if (!m_cbResetPicker.m_pCb)return;
+            btnResetPick->SetOnClicked([this]() {
+                if (!m_cbResetPicker.m_pCb)
+                    return;
                 m_cbResetPicker.m_pCb(m_cbResetPicker.m_pPCV);
             });
 
             auto btnSavePC = std::make_shared<SmallButton>("Save Point Cloud");
-            btnSavePC->SetOnClicked([this]()
-            {
-                if (!m_cbSavePC.m_pCb)return;
+            btnSavePC->SetOnClicked([this]() {
+                if (!m_cbSavePC.m_pCb)
+                    return;
                 m_cbSavePC.m_pCb(m_cbSavePC.m_pPCV);
             });
 
@@ -244,57 +218,38 @@ namespace open3d
             Super::SetTitle(title.c_str());
         }
 
-        void WindowPCscan::SetGeometry(
-            std::shared_ptr<const geometry::Geometry> geometry, bool loaded_model)
+        void WindowPCscan::SetGeometry(std::shared_ptr<const geometry::Geometry> geometry)
         {
             auto scene3d = impl_->scene_wgt_->GetScene();
             scene3d->ClearGeometry();
-
             impl_->SetMaterialsToDefault();
 
             rendering::Material loaded_material;
-            if (loaded_model)
-            {
-                scene3d->AddModel(MODEL_NAME, impl_->loaded_model_);
-                impl_->settings_.model_.SetDisplayingPointClouds(false);
-            }
-            else
-            {
-                // NOTE: If a model was NOT loaded then these must be point clouds
-                std::shared_ptr<const geometry::Geometry> g = geometry;
+            std::shared_ptr<const geometry::Geometry> g = geometry;
 
-                // If a point cloud or mesh has no vertex colors or a single uniform
-                // color (usually white), then we want to display it normally, that
-                // is, lit. But if the cloud/mesh has differing vertex colors, then
-                // we assume that the vertex colors have the lighting value baked in
-                // (for example, fountain.ply at http://qianyi.info/scenedata.html)
-                if (g->GetGeometryType() ==
-                    geometry::Geometry::GeometryType::PointCloud)
+            if (g->GetGeometryType() ==
+                geometry::Geometry::GeometryType::PointCloud)
+            {
+                auto pcd = std::static_pointer_cast<const geometry::PointCloud>(g);
+
+                loaded_material.shader = "defaultUnlit";
+
+                t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
+                    FromLegacyPointCloud(
+                        *pcd.get(),
+                        core::Dtype::Float32,
+                        core::Device(m_strDevice));
+                scene3d->AddGeometry(MODEL_NAME,
+                                     &tpcd,
+                                     loaded_material,
+                                     true);
+
+                impl_->settings_.model_.SetDisplayingPointClouds(true);
+                if (!impl_->settings_.model_.GetUserHasChangedLightingProfile())
                 {
-                    auto pcd = std::static_pointer_cast<const geometry::PointCloud>(g);
-
-                    //                    if (pcd->HasColors() && !PointCloudHasUniformColor(*pcd))
-                    //                    {
-                    loaded_material.shader = "defaultUnlit";
-                    // }
-                    // else
-                    // {
-                    //     loaded_material.shader = "defaultLit";
-                    // }
-
-                    //                    scene3d->AddGeometry(MODEL_NAME, pcd.get(), loaded_material);
-                    t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*pcd.get(), core::Dtype::Float32);
-                    scene3d->AddGeometry(MODEL_NAME,
-                                         &tpcd,
-                                         loaded_material);
-
-                    impl_->settings_.model_.SetDisplayingPointClouds(true);
-                    if (!impl_->settings_.model_.GetUserHasChangedLightingProfile())
-                    {
-                        auto &profile =
-                            GuiSettingsModel::GetDefaultPointCloudLightingProfile();
-                        impl_->settings_.model_.SetLightingProfile(profile);
-                    }
+                    auto &profile =
+                        GuiSettingsModel::GetDefaultPointCloudLightingProfile();
+                    impl_->settings_.model_.SetLightingProfile(profile);
                 }
             }
 
@@ -316,16 +271,7 @@ namespace open3d
 
             // Setup UI for loaded model/point cloud
             impl_->settings_.model_.UnsetCustomDefaultColor();
-            if (loaded_model)
-            {
-                impl_->settings_.model_.SetCurrentMaterials(
-                    GuiSettingsModel::MATERIAL_FROM_FILE_NAME);
-                impl_->settings_.view_->ShowFileMaterialEntry(true);
-            }
-            else
-            {
-                impl_->settings_.view_->ShowFileMaterialEntry(false);
-            }
+            impl_->settings_.view_->ShowFileMaterialEntry(false);
             impl_->settings_.view_->Update(); // make sure prefab material is correct
 
             auto &bounds = scene3d->GetBoundingBox();
@@ -363,114 +309,6 @@ namespace open3d
             impl_->settings_.wgt_base->SetFrame(lightSettingsRect);
 
             Super::Layout(theme);
-        }
-
-        void WindowPCscan::LoadGeometry(const std::string &path)
-        {
-            auto progressbar = std::make_shared<gui::ProgressBar>();
-            gui::Application::GetInstance().PostToMainThread(this, [this, path,
-                                                                    progressbar]() {
-                auto &theme = GetTheme();
-                auto loading_dlg = std::make_shared<gui::Dialog>("Loading");
-                auto vert =
-                    std::make_shared<gui::Vert>(0, gui::Margins(theme.font_size));
-                auto loading_text = std::string("Loading ") + path;
-                vert->AddChild(std::make_shared<gui::Label>(loading_text.c_str()));
-                vert->AddFixed(theme.font_size);
-                vert->AddChild(progressbar);
-                loading_dlg->AddChild(vert);
-                ShowDialog(loading_dlg);
-            });
-
-            gui::Application::GetInstance().RunInThread([this, path, progressbar]() {
-                auto UpdateProgress = [this, progressbar](float value) {
-                    gui::Application::GetInstance().PostToMainThread(
-                        this,
-                        [progressbar, value]() { progressbar->SetValue(value); });
-                };
-
-                // clear current model
-                impl_->loaded_model_.meshes_.clear();
-                impl_->loaded_model_.materials_.clear();
-
-                auto geometry_type = io::ReadFileGeometryType(path);
-
-                bool model_success = false;
-                if (geometry_type & io::CONTAINS_TRIANGLES)
-                {
-                    try
-                    {
-                        model_success = io::ReadTriangleModel(
-                            path, impl_->loaded_model_, false);
-                    }
-                    catch (...)
-                    {
-                        model_success = false;
-                    }
-                }
-                if (!model_success)
-                {
-                    utility::LogInfo("{} appears to be a point cloud", path.c_str());
-                }
-
-                auto geometry = std::shared_ptr<geometry::Geometry3D>();
-                if (!model_success)
-                {
-                    auto cloud = std::make_shared<geometry::PointCloud>();
-                    bool success = false;
-                    const float ioProgressAmount = 0.5f;
-                    try
-                    {
-                        io::ReadPointCloudOption opt;
-                        opt.update_progress = [ioProgressAmount,
-                                               UpdateProgress](double percent) -> bool {
-                            UpdateProgress(ioProgressAmount * float(percent / 100.0));
-                            return true;
-                        };
-                        success = io::ReadPointCloud(path, *cloud, opt);
-                    }
-                    catch (...)
-                    {
-                        success = false;
-                    }
-                    if (success)
-                    {
-                        utility::LogInfo("Successfully read {}", path.c_str());
-                        UpdateProgress(ioProgressAmount);
-                        if (!cloud->HasNormals())
-                        {
-                            cloud->EstimateNormals();
-                        }
-                        UpdateProgress(0.666f);
-                        cloud->NormalizeNormals();
-                        UpdateProgress(0.75f);
-                        geometry = cloud;
-                    }
-                    else
-                    {
-                        utility::LogWarning("Failed to read points {}", path.c_str());
-                        cloud.reset();
-                    }
-                }
-
-                if (model_success || geometry)
-                {
-                    gui::Application::GetInstance().PostToMainThread(
-                        this, [this, model_success, geometry]() {
-                            SetGeometry(geometry, model_success);
-                            CloseDialog();
-                        });
-                }
-                else
-                {
-                    gui::Application::GetInstance().PostToMainThread(this, [this,
-                                                                            path]() {
-                        CloseDialog();
-                        auto msg = std::string("Could not load '") + path + "'.";
-                        ShowMessageBox("Error", msg.c_str());
-                    });
-                }
-            });
         }
 
         void WindowPCscan::ExportCurrentImage(const std::string &path)
@@ -556,79 +394,35 @@ namespace open3d
 
                 break;
             }
-            case HELP_KEYS:
-            {
-                bool is_visible = !impl_->help_keys_->IsVisible();
-                impl_->help_keys_->SetVisible(is_visible);
-                auto menubar = gui::Application::GetInstance().GetMenubar();
-                menubar->SetChecked(HELP_KEYS, is_visible);
-                break;
-            }
-            case HELP_CAMERA:
-            {
-                bool is_visible = !impl_->help_camera_->IsVisible();
-                impl_->help_camera_->SetVisible(is_visible);
-                auto menubar = gui::Application::GetInstance().GetMenubar();
-                menubar->SetChecked(HELP_CAMERA, is_visible);
-                if (is_visible)
-                {
-                    impl_->scene_wgt_->SetOnCameraChanged([this](rendering::Camera
-                                                                     *cam) {
-                        auto children = this->impl_->help_camera_->GetChildren();
-                        auto set_text = [](const Eigen::Vector3f &v,
-                                           std::shared_ptr<gui::Widget> label) {
-                            auto l = std::dynamic_pointer_cast<gui::Label>(label);
-                            l->SetText(fmt::format("[{:.2f} {:.2f} "
-                                                   "{:.2f}]",
-                                                   v.x(), v.y(), v.z())
-                                           .c_str());
-                        };
-                        set_text(cam->GetPosition(), children[1]);
-                        set_text(cam->GetForwardVector(), children[3]);
-                        set_text(cam->GetLeftVector(), children[5]);
-                        set_text(cam->GetUpVector(), children[7]);
-                        this->SetNeedsLayout();
-                    });
-                }
-                else
-                {
-                    impl_->scene_wgt_->SetOnCameraChanged(
-                        std::function<void(rendering::Camera *)>());
-                }
-                break;
-            }
-            case HELP_ABOUT:
-            {
-                //                auto dlg = CreateAboutDialog(this);
-                //                ShowDialog(dlg);
-                break;
-            }
-            case HELP_CONTACT:
-            {
-                //                auto dlg = CreateContactDialog(this);
-                //                ShowDialog(dlg);
-                break;
-            }
-            case HELP_DEBUG:
-            {
-                break;
-            }
             }
         }
 
         void WindowPCscan::UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
         {
-            t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*sPC.get(), core::Dtype::Float32);
             gui::Application::GetInstance().PostToMainThread(
-                this, [this, tpcd]() {
-                    impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(MODEL_NAME,
-                                                                              tpcd,
-                                                                              open3d::visualization::rendering::Scene::kUpdatePointsFlag | open3d::visualization::rendering::Scene::kUpdateColorsFlag);
+                this, [this, sPC]() 
+                {
+                    t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
+                        FromLegacyPointCloud(
+                            *sPC.get(),
+                            core::Dtype::Float32,
+                            core::Device(m_strDevice));
+
+                    impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(
+                        MODEL_NAME,
+                        tpcd,
+                        open3d::visualization::rendering::Scene::kUpdatePointsFlag |
+                            open3d::visualization::rendering::Scene::kUpdateColorsFlag);
                     impl_->scene_wgt_->ForceRedraw();
                 });
         }
 
-    } // namespace visualization
-} // namespace open3d
+        void WindowPCscan::setDevice(const string &device)
+        {
+            m_strDevice = device;
+        }
+
+    }
+}
 
 #endif

@@ -35,11 +35,9 @@ namespace open3d
 			virtual ~WindowPCscan();
 
 			virtual void SetTitle(const std::string &title);
-			virtual void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry,
-							 bool loaded_model);
+			virtual void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry);
 
 			/// Loads asynchronously, will return immediately.
-			virtual void LoadGeometry(const std::string &path);
 			virtual void ExportCurrentImage(const std::string &path);
 			virtual void Layout(const gui::Theme &theme) override;
 			virtual void UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC);
@@ -48,6 +46,8 @@ namespace open3d
 			void setCbResetPicker(OnBtnClickedCb pCb, void* pPCV);
 			void setCbSavePC(OnBtnClickedCb pCb, void* pPCV);
 
+			void setDevice(const string& device);
+
 		protected:
 			virtual void OnMenuItemSelected(gui::Menu::ItemId item_id) override;
 
@@ -55,6 +55,7 @@ namespace open3d
 			struct Impl;
 			std::unique_ptr<Impl> impl_;
 
+			string m_strDevice;
 			WindowPCscanCb m_cbResetPC;
 			WindowPCscanCb m_cbResetPicker;
 			WindowPCscanCb m_cbSavePC;

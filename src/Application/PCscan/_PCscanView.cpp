@@ -47,10 +47,12 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
+		m_spWin->setDevice(m_device);
+
 		while(m_nPread <= 0)
 			readAllPC();
 
-		m_spWin->SetGeometry(m_spPC, false);
+		m_spWin->SetGeometry(m_spPC);
 
 		while (m_pT->bRun())
 		{
