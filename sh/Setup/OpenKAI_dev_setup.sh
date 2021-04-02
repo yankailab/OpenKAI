@@ -45,20 +45,32 @@ sudo systemctl set-default multi-user.target
 #sudo systemctl set-default graphical.target
 
 #----------------------------------------------------
+# System setup
 sudo apt-get update
 
-# Update gcc
+# GCC
 sudo apt-get -y install g++-10 gcc-10
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /usr/bin/g++ g++ /usr/bin/g++-10
 sudo update-alternatives --config gcc
 
-# Dependencies
-sudo apt-get -y install build-essential cmake cmake-curses-gui git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libprotobuf-dev protobuf-compiler libatlas-base-dev libopenblas-base libopenblas-dev liblapack-dev liblapack3 gsl-bin libgsl0-dev gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-doc gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 gstreamer1.0-qt5 gstreamer1.0-pulseaudio libdc1394-22 libdc1394-22-dev libjpeg-dev libpng-dev libtiff-dev libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libtheora-dev libxvidcore-dev x264 v4l-utils libturbojpeg libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libusb-1.0-0-dev libusb-dev libudev-dev libflann-dev libproj-dev libcurl4 curl libpcap-dev libgtk-3-dev python libssl-dev
-sudo apt-get -y install clang libglu1-mesa-dev libc++-dev libc++abi-dev ninja-build libxi-dev libx11-dev xorg-dev libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev libxt-dev libc++-dev libc++abi-dev clang libglew-dev libfmt-dev libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev
+# Basic
+sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libgtk-3-dev libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev
+
+# Image, codecs, gstreamer
+sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libturbojpeg libavcodec-dev libavformat-dev libxvidcore-dev x264
+
+# OpenGL
+sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev
+
+# Numerical
+sudo apt-get -y install libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev liblapack3 libatlas-base-dev libopenblas-base libopenblas-dev gsl-bin libgsl0-dev libflann-dev libproj-dev
+
+# Not sure if needed
+sudo apt-get -y install libfmt-dev xorg-dev libxt-dev libxi-dev libx11-dev libpcap-dev libdc1394-22 libdc1394-22-dev libswscale-dev libtheora-dev libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev 
 
 # (Optional)
 sudo apt-get -y install libimage-exiftool-perl
-sudo apt-get -y install python-pip
+sudo apt-get -y install python python-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 
 sudo apt autoremove
@@ -67,9 +79,8 @@ sudo apt clean
 #----------------------------------------------------
 # (Optional) CUDA
 # Update the video driver first with Software and Update
-sudo apt -y install gcc-8 g++-8 gcc-9 g++-9
+sudo apt -y install gcc-8 g++-8
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-8 8 --slave /usr/bin/g++ g++ /usr/bin/g++-8
-sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-9 9 --slave /usr/bin/g++ g++ /usr/bin/g++-9
 # Select gcc 8 for CUDA compatibility
 sudo update-alternatives --config gcc
 wget http://developer.download.nvidia.com/compute/cuda/10.2/Prod/local_installers/cuda_10.2.89_440.33.01_linux.run
@@ -82,15 +93,15 @@ sudo dpkg -i libcudnn7_7.6.5.32-1+cuda10.2_amd64.deb
 sudo dpkg -i libcudnn7-dev_7.6.5.32-1+cuda10.2_amd64.deb
 
 # CUDA 11
-wget https://developer.download.nvidia.com/compute/cuda/11.2.0/local_installers/cuda_11.2.0_460.27.04_linux.run
-sudo sh cuda_11.2.0_460.27.04_linux.run
+wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
+sudo sh cuda_11.2.2_460.32.03_linux.run
+sudo echo -e "export PATH=/usr/local/cuda/bin:\$PATH\nexport LD_LIBRARY_PATH=/usr/local/cuda/lib64:\$LD_LIBRARY_PATH\nexport LC_ALL=en_US.UTF-8" >> ~/.bashrc
 
 #----------------------------------------------------
 # CMake
-wget https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz
-tar xvf cmake-3.18.4.tar.gz
-rm -r cmake-3.18.4.tar.gz
-cd cmake-3.18.4
+wget https://github.com/Kitware/CMake/releases/download/v3.20.0/cmake-3.20.0.tar.gz
+tar xvf cmake-3.20.0.tar.gz
+cd cmake-3.20.0
 ./bootstrap
 make -j$(nproc)
 sudo make install
@@ -136,8 +147,8 @@ gphoto2 --stdout --capture-movie | ffmpeg -i - -vcodec rawvideo -pix_fmt yuv420p
 
 #----------------------------------------------------
 # (Optional) OpenCV
-git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv.git
-git clone --branch 4.5.0 --depth 1 https://github.com/opencv/opencv_contrib.git
+git clone --branch 4.5.1 --depth 1 https://github.com/opencv/opencv.git
+git clone --branch 4.5.1 --depth 1 https://github.com/opencv/opencv_contrib.git
 cd opencv
 mkdir build
 cd build
@@ -198,6 +209,12 @@ Open3D/cpp/open3d/core/linalg/BlasWrapper.h
 cmake -DCMAKE_BUILD_TYPE=Release -DGLIBCXX_USE_CXX11_ABI=ON -DBUILD_CUDA_MODULE=ON -DBUILD_EXAMPLES=OFF -DBUILD_FILAMENT_FROM_SOURCE=OFF -DBUILD_GUI=OFF -DBUILD_PYTHON_MODULE=OFF -DBUILD_SHARED_LIBS=ON -DDEVELOPER_BUILD=OFF -DUSE_BLAS=ON -DUSE_SYSTEM_EIGEN3=OFF -DUSE_SYSTEM_JPEG=ON ../
 
 make -j$(nproc)
+
+#if error, try this
+mkdir filament-binaries/lib/x86_64
+cp filament-binaries/lib/*.a filament-binaries/lib/x86_64
+make -j$(nproc)
+
 sudo make install
 
 #----------------------------------------------------
@@ -214,28 +231,11 @@ ninja install
 
 #----------------------------------------------------
 # (Optional) gwsocket
-git clone https://github.com/allinurl/gwsocket.git
+git clone --depth 1 https://github.com/allinurl/gwsocket.git
 cd gwsocket
 autoreconf -fiv
 ./configure
 make -j$(nproc)
-
-#----------------------------------------------------
-# (Optional) Innfos Gluon
-git clone --depth 1 https://github.com/innfos/innfos-gluon-cpp-sdk.git
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/include/ /usr/local/include/innfos_sca_sdk/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/lib/linux_x86_64/* /usr/local/lib/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/include/ /usr/local/include/innfos_sdk/
-sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/lib/* /usr/local/lib/
-
-#----------------------------------------------------
-# (Optional) Hypersen HPS3D
-git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git
-sudo mkdir /usr/local/include/HPS3D/
-sudo cp HPS3D_SDK/English/api.h /usr/local/include/HPS3D/
-sudo cp HPS3D_SDK/English/libhps3d64.so /usr/local/lib/
-#sudo cp HPS3D_SDK/English/libhps3d_aarch64.so /usr/local/lib/
-#sudo cp HPS3D_SDK/English/libhps3d_arm.so /usr/local/lib/
 
 #----------------------------------------------------
 # (Optional) Livox
@@ -243,22 +243,6 @@ git clone --depth 1 https://github.com/Livox-SDK/Livox-SDK.git
 cd Livox-SDK/build
 cmake -DCMAKE_BUILD_TYPE=Release ../
 make -j$(nproc)
-sudo make install
-
-#----------------------------------------------------
-# (Optional) Dynamixel
-git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
-cd DynamixelSDK/c++/build/linux64
-make -j$(nproc)
-sudo make install
-# For Jetson Nano
-# remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
-
-#----------------------------------------------------
-# (Optional) Dynamixel
-git clone https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
-cd xArm-CPLUS-SDK/
-make all -j$(nproc)
 sudo make install
 
 #----------------------------------------------------
@@ -276,6 +260,22 @@ cd ORB_SLAM3
 chmod +x build.sh
 ./build.sh
 # sudo make install
+
+#----------------------------------------------------
+# (Optional) Dynamixel
+git clone https://github.com/ROBOTIS-GIT/DynamixelSDK.git
+cd DynamixelSDK/c++/build/linux64
+make -j$(nproc)
+sudo make install
+# For Jetson Nano
+# remove "-m64" in "FORMAT" line of the Makefile in linux64 directory
+
+#----------------------------------------------------
+# (Optional) xArm
+git clone https://github.com/xArm-Developer/xArm-CPLUS-SDK.git
+cd xArm-CPLUS-SDK/
+make all -j$(nproc)
+sudo make install
 
 #----------------------------------------------------
 # OpenKAI
@@ -302,6 +302,23 @@ sudo dd if=~/sd.img of=/dev/sdb bs=6M
 
 
 # Outdated, to be updated
+#----------------------------------------------------
+# (Optional) Innfos Gluon
+git clone --depth 1 https://github.com/innfos/innfos-gluon-cpp-sdk.git
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/include/ /usr/local/include/innfos_sca_sdk/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sca_sdk/lib/linux_x86_64/* /usr/local/lib/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/include/ /usr/local/include/innfos_sdk/
+sudo cp -r innfos-gluon-cpp-sdk/sdk/sdk/lib/* /usr/local/lib/
+
+#----------------------------------------------------
+# (Optional) Hypersen HPS3D
+git clone --depth 1 https://github.com/hypersen/HPS3D_SDK.git
+sudo mkdir /usr/local/include/HPS3D/
+sudo cp HPS3D_SDK/English/api.h /usr/local/include/HPS3D/
+sudo cp HPS3D_SDK/English/libhps3d64.so /usr/local/lib/
+#sudo cp HPS3D_SDK/English/libhps3d_aarch64.so /usr/local/lib/
+#sudo cp HPS3D_SDK/English/libhps3d_arm.so /usr/local/lib/
+
 #----------------------------------------------------
 # (Optional) MYNT EYE
 git clone https://github.com/slightech/MYNT-EYE-D-SDK.git
