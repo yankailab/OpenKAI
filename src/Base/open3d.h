@@ -2,7 +2,6 @@
 #define GLEW_STATIC
 #include <open3d/Open3D.h>
 
-#include <open3d/visualization/gui/Window.h>
 #include <open3d/Open3DConfig.h>
 #include <open3d/geometry/BoundingVolume.h>
 #include <open3d/geometry/Image.h>
@@ -17,6 +16,7 @@
 #include <open3d/utility/Console.h>
 #include <open3d/utility/FileSystem.h>
 #include <open3d/visualization/gui/Application.h>
+#include <open3d/visualization/gui/Window.h>
 #include <open3d/visualization/gui/Button.h>
 #include <open3d/visualization/gui/Checkbox.h>
 #include <open3d/visualization/gui/Color.h>
@@ -26,10 +26,14 @@
 #include <open3d/visualization/gui/FileDialog.h>
 #include <open3d/visualization/gui/Label.h>
 #include <open3d/visualization/gui/Layout.h>
+#include <open3d/visualization/gui/ListView.h>
+#include <open3d/visualization/gui/NumberEdit.h>
 #include <open3d/visualization/gui/ProgressBar.h>
 #include <open3d/visualization/gui/SceneWidget.h>
 #include <open3d/visualization/gui/Slider.h>
+#include <open3d/visualization/gui/TabControl.h>
 #include <open3d/visualization/gui/Theme.h>
+#include <open3d/visualization/gui/TreeView.h>
 #include <open3d/visualization/gui/VectorEdit.h>
 #include <open3d/visualization/rendering/Camera.h>
 #include <open3d/visualization/rendering/Material.h>
@@ -44,3 +48,7 @@
 #include <open3d/visualization/visualizer/GuiSettingsView.h>
 #include <open3d/visualization/visualizer/GuiWidgets.h>
 #include <open3d/visualization/visualizer/Receiver.h>
+#include <open3d/visualization/visualizer/GuiVisualizer.h>
+#include <open3d/visualization/visualizer/O3DVisualizer.h>
+#include <open3d/visualization/visualizer/O3DVisualizerSelections.h>
+

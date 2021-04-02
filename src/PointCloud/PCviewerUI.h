@@ -1,20 +1,28 @@
-#ifndef OpenKAI_src_Application_PCscan_WindowPCscan_H_
-#define OpenKAI_src_Application_PCscan_WindowPCscan_H_
+#ifndef OpenKAI_src_Application_PointCloud_PCviewerUI_H_
+#define OpenKAI_src_Application_PointCloud_PCviewerUI_H_
 #ifdef USE_OPEN3D
-#include "../../UI/WindowO3D.h"
+#include "../Base/common.h"
 
 namespace open3d
 {
 
 	namespace visualization
 	{
+		const std::string _MODEL_NAME = "__model__";
+        enum MENU_ID
+        {
+            M_FILE_OPEN,
+            M_FILE_EXPORT_RGB,
+            M_FILE_QUIT,
+        };
+		
 		namespace gui
 		{
 			struct Theme;
 		}
 
 		typedef void ( *OnBtnClickedCb ) ( void* pPCV );
-		struct WindowPCscanCb
+		struct PCviewerUICb
 		{
 			OnBtnClickedCb m_pCb;
 			void* m_pPCV;
@@ -26,44 +34,34 @@ namespace open3d
 			}
 		};
 
-		class WindowPCscan : public WindowO3D
+		class PCviewerUI : public GuiVisualizer
 		{
-			using Super = WindowO3D;
+			using Super = GuiVisualizer;
 
 		public:
-			WindowPCscan(const std::string &title, int width, int height);
-			virtual ~WindowPCscan();
+			PCviewerUI(const std::string &title, int width, int height);
+			virtual ~PCviewerUI();
 
-			virtual void SetTitle(const std::string &title);
-			virtual void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry);
+			void SetGeometry(std::shared_ptr<const geometry::Geometry> geometry);
+			void UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC);
 
 			/// Loads asynchronously, will return immediately.
-			virtual void ExportCurrentImage(const std::string &path);
-			virtual void Layout(const gui::Theme &theme) override;
-			virtual void UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC);
-
-			void setCbResetPC(OnBtnClickedCb pCb, void* pPCV);
-			void setCbResetPicker(OnBtnClickedCb pCb, void* pPCV);
-			void setCbSavePC(OnBtnClickedCb pCb, void* pPCV);
+			void ExportCurrentImage(const std::string &path);
+			void Layout(const gui::Theme &theme) override;
 
 			void setDevice(const string& device);
 
 		protected:
+			void Init();
 			virtual void OnMenuItemSelected(gui::Menu::ItemId item_id) override;
 
-		private:
 			struct Impl;
 			std::unique_ptr<Impl> impl_;
 
 			string m_strDevice;
-			WindowPCscanCb m_cbResetPC;
-			WindowPCscanCb m_cbResetPicker;
-			WindowPCscanCb m_cbSavePC;
-
-			void Init();
 		};
 
-		struct WindowPCscan::Impl
+		struct PCviewerUI::Impl
 		{
 			std::shared_ptr<gui::SceneWidget> scene_wgt_;
 			std::shared_ptr<gui::VGrid> help_keys_;
@@ -182,7 +180,7 @@ namespace open3d
 					current_materials.lit_name ==
 						GuiSettingsModel::MATERIAL_FROM_FILE_NAME)
 				{
-					scene_wgt_->GetScene()->UpdateModelMaterial(MODEL_NAME,
+					scene_wgt_->GetScene()->UpdateModelMaterial(_MODEL_NAME,
 																loaded_model_);
 				}
 				else

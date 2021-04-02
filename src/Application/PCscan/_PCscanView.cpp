@@ -47,19 +47,19 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
-		m_spWin->setDevice(m_device);
+//		m_spWin->setDevice(m_device);
 
 		while (m_nPread <= 0)
 			readAllPC();
 
-		m_spWin->SetGeometry(m_spPC);
+		m_spWin->AddPointCloud("GEO", m_spPC);
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
 			readAllPC();
-			m_spWin->UpdateGeometry(m_spPC);
+			m_spWin->UpdatePointCloud("GEO", m_spPC);
 
 			m_pT->autoFPSto();
 		}
@@ -70,12 +70,12 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_spWin = std::make_shared<WindowPCscan>(*this->getName(), 2000, 1000);
+		m_spWin = std::make_shared<visualizer::PCscanUI>(*this->getName(), 2000, 1000);
 		app.AddWindow(m_spWin);
 
-		m_spWin->setCbResetPC(OnBtnResetPC, (void *)this);
-		m_spWin->setCbResetPicker(OnBtnResetPicker, (void *)this);
-		m_spWin->setCbSavePC(OnBtnSavePC, (void *)this);
+		// m_spWin->setCbResetPC(OnBtnResetPC, (void *)this);
+		// m_spWin->setCbResetPicker(OnBtnResetPicker, (void *)this);
+		// m_spWin->setCbSavePC(OnBtnSavePC, (void *)this);
 
 		m_pT->wakeUp();
 		app.Run();

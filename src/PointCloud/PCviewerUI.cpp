@@ -1,49 +1,19 @@
 #ifdef USE_OPEN3D
-#include "WindowPCscan.h"
+#include "PCviewerUI.h"
 
 namespace open3d
 {
     namespace visualization
     {
-        WindowPCscan::WindowPCscan(const std::string &title, int width, int height)
-            : WindowO3D(title, width, height), impl_(new WindowPCscan::Impl())
+        PCviewerUI::PCviewerUI(const std::string &title, int width, int height)
+            : GuiVisualizer(title, width, height), impl_(new PCviewerUI::Impl())
         {
             Init();
         }
 
-        void WindowPCscan::setCbResetPC(OnBtnClickedCb pCb, void *pPCV)
-        {
-            if (!pPCV)
-                return;
-
-            m_cbResetPC.m_pCb = pCb;
-            m_cbResetPC.m_pPCV = pPCV;
-        }
-
-        void WindowPCscan::setCbResetPicker(OnBtnClickedCb pCb, void *pPCV)
-        {
-            if (!pPCV)
-                return;
-
-            m_cbResetPicker.m_pCb = pCb;
-            m_cbResetPicker.m_pPCV = pPCV;
-        }
-
-        void WindowPCscan::setCbSavePC(OnBtnClickedCb pCb, void *pPCV)
-        {
-            if (!pPCV)
-                return;
-
-            m_cbSavePC.m_pCb = pCb;
-            m_cbSavePC.m_pPCV = pPCV;
-        }
-
-        void WindowPCscan::Init()
+        void PCviewerUI::Init()
         {
             m_strDevice = "CPU:0";
-            m_cbResetPC.init();
-            m_cbResetPicker.init();
-            m_cbSavePC.init();
 
             auto &app = gui::Application::GetInstance();
             auto &theme = GetTheme();
@@ -89,55 +59,6 @@ namespace open3d
             settings.wgt_base = std::make_shared<gui::Vert>(0, base_margins);
 
             gui::Margins indent(em, 0, 0, 0);
-
-            //Main controls
-            auto pc_ctrls =
-                std::make_shared<gui::CollapsableVert>("Main Controls", 0, indent);
-
-            auto btnResetPC = std::make_shared<SmallButton>("Reset Point Cloud");
-            btnResetPC->SetOnClicked([this]() {
-                if (!m_cbResetPC.m_pCb)
-                    return;
-                m_cbResetPC.m_pCb(m_cbResetPC.m_pPCV);
-            });
-
-            auto btnResetPick = std::make_shared<SmallButton>("Reset Picker");
-            btnResetPick->SetOnClicked([this]() {
-                if (!m_cbResetPicker.m_pCb)
-                    return;
-                m_cbResetPicker.m_pCb(m_cbResetPicker.m_pPCV);
-            });
-
-            auto btnSavePC = std::make_shared<SmallButton>("Save Point Cloud");
-            btnSavePC->SetOnClicked([this]() {
-                if (!m_cbSavePC.m_pCb)
-                    return;
-                m_cbSavePC.m_pCb(m_cbSavePC.m_pPCV);
-            });
-
-            auto pc_resetPC = std::make_shared<gui::Horiz>(grid_spacing);
-            pc_resetPC->AddStretch();
-            pc_resetPC->AddChild(gui::Horiz::MakeCentered(btnResetPC));
-            pc_resetPC->AddStretch();
-
-            auto pc_resetPick = std::make_shared<gui::Horiz>(grid_spacing);
-            pc_resetPick->AddStretch();
-            pc_resetPick->AddChild(gui::Horiz::MakeCentered(btnResetPick));
-            pc_resetPick->AddStretch();
-
-            auto pc_savePC = std::make_shared<gui::Horiz>(grid_spacing);
-            pc_savePC->AddStretch();
-            pc_savePC->AddChild(gui::Horiz::MakeCentered(btnSavePC));
-            pc_savePC->AddStretch();
-
-            pc_ctrls->AddChild(pc_resetPC);
-            pc_ctrls->AddFixed(separation_height);
-            pc_ctrls->AddChild(pc_resetPick);
-            pc_ctrls->AddFixed(separation_height);
-            pc_ctrls->AddChild(pc_savePC);
-            pc_ctrls->AddFixed(separation_height);
-
-            settings.wgt_base->AddChild(pc_ctrls);
 
             // Mouse controls
             auto view_ctrls =
@@ -211,14 +132,9 @@ namespace open3d
             AddChild(settings.wgt_base);
         }
 
-        WindowPCscan::~WindowPCscan() {}
+        PCviewerUI::~PCviewerUI() {}
 
-        void WindowPCscan::SetTitle(const std::string &title)
-        {
-            Super::SetTitle(title.c_str());
-        }
-
-        void WindowPCscan::SetGeometry(std::shared_ptr<const geometry::Geometry> geometry)
+        void PCviewerUI::SetGeometry(std::shared_ptr<const geometry::Geometry> geometry)
         {
             auto scene3d = impl_->scene_wgt_->GetScene();
             scene3d->ClearGeometry();
@@ -238,8 +154,10 @@ namespace open3d
                     FromLegacyPointCloud(
                         *pcd.get(),
                         core::Dtype::Float32,
-                        core::Device(m_strDevice));
-                scene3d->AddGeometry(MODEL_NAME,
+                        core::Device(m_strDevice)
+                        );
+
+                scene3d->AddGeometry(_MODEL_NAME,
                                      &tpcd,
                                      loaded_material,
                                      true);
@@ -282,7 +200,32 @@ namespace open3d
             impl_->scene_wgt_->ForceRedraw();
         }
 
-        void WindowPCscan::Layout(const gui::Theme &theme)
+        void PCviewerUI::UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
+        {
+            gui::Application::GetInstance().PostToMainThread(
+                this, [this, sPC]() 
+                {
+                    t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
+                        FromLegacyPointCloud(
+                            *sPC.get(),
+                            core::Dtype::Float32,
+                            core::Device(m_strDevice));
+
+                    impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(
+                        _MODEL_NAME,
+                        tpcd,
+                        open3d::visualization::rendering::Scene::kUpdatePointsFlag |
+                            open3d::visualization::rendering::Scene::kUpdateColorsFlag);
+                    impl_->scene_wgt_->ForceRedraw();
+                });
+        }
+
+        void PCviewerUI::setDevice(const string &device)
+        {
+            m_strDevice = device;
+        }
+
+        void PCviewerUI::Layout(const gui::Theme &theme)
         {
             auto r = GetContentRect();
             const auto em = theme.font_size;
@@ -311,7 +254,7 @@ namespace open3d
             Super::Layout(theme);
         }
 
-        void WindowPCscan::ExportCurrentImage(const std::string &path)
+        void PCviewerUI::ExportCurrentImage(const std::string &path)
         {
             impl_->scene_wgt_->EnableSceneCaching(false);
             impl_->scene_wgt_->GetScene()->GetScene()->RenderToImage(
@@ -327,44 +270,12 @@ namespace open3d
                 });
         }
 
-        void WindowPCscan::OnMenuItemSelected(gui::Menu::ItemId item_id)
+        void PCviewerUI::OnMenuItemSelected(gui::Menu::ItemId item_id)
         {
-            auto menu_id = MenuId(item_id);
+            auto menu_id = MENU_ID(item_id);
             switch (menu_id)
             {
-            case FILE_OPEN:
-            {
-                auto dlg = std::make_shared<gui::FileDialog>(
-                    gui::FileDialog::Mode::OPEN, "Open Geometry", GetTheme());
-                dlg->AddFilter(".ply .stl .fbx .obj .off .gltf .glb",
-                               "Triangle mesh files (.ply, .stl, .fbx, .obj, .off, "
-                               ".gltf, .glb)");
-                dlg->AddFilter(".xyz .xyzn .xyzrgb .ply .pcd .pts",
-                               "Point cloud files (.xyz, .xyzn, .xyzrgb, .ply, "
-                               ".pcd, .pts)");
-                dlg->AddFilter(".ply", "Polygon files (.ply)");
-                dlg->AddFilter(".stl", "Stereolithography files (.stl)");
-                dlg->AddFilter(".fbx", "Autodesk Filmbox files (.fbx)");
-                dlg->AddFilter(".obj", "Wavefront OBJ files (.obj)");
-                dlg->AddFilter(".off", "Object file format (.off)");
-                dlg->AddFilter(".gltf", "OpenGL transfer files (.gltf)");
-                dlg->AddFilter(".glb", "OpenGL binary transfer files (.glb)");
-                dlg->AddFilter(".xyz", "ASCII point cloud files (.xyz)");
-                dlg->AddFilter(".xyzn", "ASCII point cloud with normals (.xyzn)");
-                dlg->AddFilter(".xyzrgb",
-                               "ASCII point cloud files with colors (.xyzrgb)");
-                dlg->AddFilter(".pcd", "Point Cloud Data files (.pcd)");
-                dlg->AddFilter(".pts", "3D Points files (.pts)");
-                dlg->AddFilter("", "All files");
-                dlg->SetOnCancel([this]() { this->CloseDialog(); });
-                dlg->SetOnDone([this](const char *path) {
-                    this->CloseDialog();
-                    OnDragDropped(path);
-                });
-                ShowDialog(dlg);
-                break;
-            }
-            case FILE_EXPORT_RGB:
+            case M_FILE_EXPORT_RGB:
             {
                 auto dlg = std::make_shared<gui::FileDialog>(
                     gui::FileDialog::Mode::SAVE, "Save File", GetTheme());
@@ -378,48 +289,10 @@ namespace open3d
                 ShowDialog(dlg);
                 break;
             }
-            case FILE_QUIT:
+            case M_FILE_QUIT:
                 gui::Application::GetInstance().Quit();
                 break;
-            case SETTINGS_LIGHT_AND_MATERIALS:
-            {
-                auto visibility = !impl_->settings_.wgt_base->IsVisible();
-                impl_->settings_.wgt_base->SetVisible(visibility);
-                auto menubar = gui::Application::GetInstance().GetMenubar();
-                menubar->SetChecked(SETTINGS_LIGHT_AND_MATERIALS, visibility);
-
-                // We need relayout because materials settings pos depends on light
-                // settings visibility
-                Layout(GetTheme());
-
-                break;
             }
-            }
-        }
-
-        void WindowPCscan::UpdateGeometry(std::shared_ptr<const geometry::PointCloud> sPC)
-        {
-            gui::Application::GetInstance().PostToMainThread(
-                this, [this, sPC]() 
-                {
-                    t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
-                        FromLegacyPointCloud(
-                            *sPC.get(),
-                            core::Dtype::Float32,
-                            core::Device(m_strDevice));
-
-                    impl_->scene_wgt_->GetScene()->GetScene()->UpdateGeometry(
-                        MODEL_NAME,
-                        tpcd,
-                        open3d::visualization::rendering::Scene::kUpdatePointsFlag |
-                            open3d::visualization::rendering::Scene::kUpdateColorsFlag);
-                    impl_->scene_wgt_->ForceRedraw();
-                });
-        }
-
-        void WindowPCscan::setDevice(const string &device)
-        {
-            m_strDevice = device;
         }
 
     }

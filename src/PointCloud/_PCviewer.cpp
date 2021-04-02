@@ -85,7 +85,7 @@ namespace kai
 
 		while(m_nPread <= 0)
 			readAllPC();
-		m_spWin->SetGeometry(m_spPC, false);
+		m_spWin->SetGeometry(m_spPC);
 
 		while (m_pT->bRun())
 		{
@@ -117,7 +117,7 @@ namespace kai
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());
 
-		m_spWin = std::make_shared<WindowO3D>(*this->getName(), 2000, 1000);
+		m_spWin = std::make_shared<PCviewerUI>(*this->getName(), 2000, 1000);
 		gui::Application::GetInstance().AddWindow(m_spWin);
 
 		m_pT->wakeUp();

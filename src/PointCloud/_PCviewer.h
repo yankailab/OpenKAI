@@ -8,10 +8,8 @@
 #ifndef OpenKAI_src_PointCloud__PCviewer_H_
 #define OpenKAI_src_PointCloud__PCviewer_H_
 #ifdef USE_OPEN3D
-
 #include "_PCframe.h"
-#include <open3d/visualization/gui/Native.h>
-#include "../UI/WindowO3D.h"
+#include "PCviewerUI.h"
 
 namespace kai
 {
@@ -55,7 +53,7 @@ namespace kai
 		shared_ptr<PointCloud> m_spPC;
 
 		_Thread* m_pTgui;
-		shared_ptr<WindowO3D> m_spWin;
+		shared_ptr<PCviewerUI> m_spWin;
 	};
 
 }

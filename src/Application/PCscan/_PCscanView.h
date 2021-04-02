@@ -9,7 +9,7 @@
 #define OpenKAI_src_Application_PCscan__PCscanView_H_
 #ifdef USE_OPEN3D
 #include "../../PointCloud/_PCviewer.h"
-#include "WindowPCscan.h"
+#include "PCscanUI.h"
 
 namespace kai
 {
@@ -45,7 +45,8 @@ namespace kai
 		}
 
 	protected:
-		shared_ptr<WindowPCscan> m_spWin;
+//		shared_ptr<PCscanUI> m_spWin;
+		shared_ptr<visualizer::PCscanUI> m_spWin;
 	};
 
 }
