@@ -13,17 +13,7 @@ namespace open3d
                 static const std::string kShaderLit = "defaultLit";
                 static const std::string kShaderUnlit = "defaultUnlit";
                 static const std::string kShaderUnlitLines = "unlitLine";
-
                 static const std::string kDefaultIBL = "default";
-
-                enum MenuId
-                {
-                    MENU_ABOUT = 0,
-                    MENU_EXPORT_RGB,
-                    MENU_CLOSE,
-                    MENU_SETTINGS,
-                    MENU_ACTIONS_BASE = 1000 /* this should be last */
-                };
 
                 template <typename T>
                 std::shared_ptr<T> GiveOwnership(T *ptr)
@@ -44,8 +34,7 @@ namespace open3d
                         if (!frames.empty())
                         {
                             // Add spacing on the bottom to look like the start of a new row
-                            return Size(width_,
-                                        frames.back().GetBottom() - frames[0].y + spacing_);
+                            return Size(width_, frames.back().GetBottom() - frames[0].y + spacing_);
                         }
                         else
                         {
@@ -93,54 +82,6 @@ namespace open3d
                     }
                 };
 
-                class EmptyIfHiddenVert : public CollapsableVert
-                {
-                    using Super = CollapsableVert;
-
-                public:
-                    EmptyIfHiddenVert(const char *text) : CollapsableVert(text) {}
-                    EmptyIfHiddenVert(const char *text,
-                                      int spacing,
-                                      const Margins &margins = Margins())
-                        : CollapsableVert(text, spacing, margins) {}
-
-                    void SetVisible(bool vis) override
-                    {
-                        Super::SetVisible(vis);
-                        Super::SetIsOpen(vis);
-                        needsLayout_ = true;
-                    }
-
-                    Size CalcPreferredSize(const Theme &theme) const override
-                    {
-                        if (IsVisible())
-                        {
-                            return Super::CalcPreferredSize(theme);
-                        }
-                        else
-                        {
-                            return Size(0, 0);
-                        }
-                    }
-
-                    Widget::DrawResult Draw(const DrawContext &context) override
-                    {
-                        auto result = Super::Draw(context);
-                        if (needsLayout_)
-                        {
-                            needsLayout_ = false;
-                            return Widget::DrawResult::RELAYOUT;
-                        }
-                        else
-                        {
-                            return result;
-                        }
-                    }
-
-                private:
-                    bool needsLayout_ = false;
-                };
-
                 class DrawObjectTreeCell : public Widget
                 {
                     using Super = Widget;
@@ -162,21 +103,6 @@ namespace open3d
                     {
                         flags_ = flags;
 
-                        std::string time_str;
-                        if (flags & FLAG_TIME)
-                        {
-                            char buf[32];
-                            if (time == double(int(time)))
-                            {
-                                snprintf(buf, sizeof(buf), "t=%d", int(time));
-                            }
-                            else
-                            {
-                                snprintf(buf, sizeof(buf), "t=%g", time);
-                            }
-                            time_str = std::string(buf);
-                        }
-
                         // We don't want any text in the checkbox, but passing "" seems to make
                         // it not toggle, so we need to pass in something. This way it will
                         // just be extra spacing.
@@ -185,11 +111,9 @@ namespace open3d
                         checkbox_->SetOnChecked(on_toggled);
                         name_ = std::make_shared<Label>(name);
                         group_ = std::make_shared<Label>((flags & FLAG_GROUP) ? group : "");
-                        time_ = std::make_shared<Label>(time_str.c_str());
                         AddChild(checkbox_);
                         AddChild(name_);
                         AddChild(group_);
-                        AddChild(time_);
                     }
 
                     ~DrawObjectTreeCell() {}
@@ -219,7 +143,6 @@ namespace open3d
                         x += name_width;
                         group_->SetFrame(Rect(x, frame.y, group_width, frame.height));
                         x += group_width;
-                        time_->SetFrame(Rect(x, frame.y, time_width, frame.height));
                     }
 
                 private:
@@ -227,7 +150,6 @@ namespace open3d
                     std::shared_ptr<Checkbox> checkbox_;
                     std::shared_ptr<Label> name_;
                     std::shared_ptr<Label> group_;
-                    std::shared_ptr<Label> time_;
 
                     int GroupWidth(const Theme &theme) const
                     {
@@ -277,18 +199,9 @@ namespace open3d
                 std::vector<DrawObject> objects_;
                 std::shared_ptr<O3DVisualizerSelections> selections_;
                 bool selections_need_update_ = true;
-                std::function<void(double)> on_animation_;
-                std::function<bool()> on_animation_tick_;
-                std::shared_ptr<Receiver> receiver_;
 
                 UIState ui_state_;
                 bool can_auto_show_settings_ = true;
-
-                double min_time_ = 0.0;
-                double max_time_ = 0.0;
-                double start_animation_clock_time_ = 0.0;
-                double next_animation_tick_clock_time_ = 0.0;
-                double last_animation_tick_clock_time_ = 0.0;
 
                 Window *window_ = nullptr;
                 SceneWidget *scene_ = nullptr;
@@ -299,8 +212,7 @@ namespace open3d
                     // all the shared_ptrs at destruction just to ensure that the gui gets
                     // destroyed before the Window, because the Window will do that for us.
                     Menu *actions_menu;
-                    std::unordered_map<int, std::function<void(PCscanUI &)>>
-                        menuid2action;
+                    std::unordered_map<int, std::function<void(PCscanUI &)>> menuid2action;
 
                     Vert *panel;
                     CollapsableVert *mouse_panel;
@@ -314,9 +226,9 @@ namespace open3d
                     ListView *selection_sets;
 
                     CollapsableVert *scene_panel;
-                    Checkbox *show_skybox;
-                    Checkbox *show_axes;
-                    ColorEdit *bg_color;
+//                    Checkbox *show_skybox;
+//                    Checkbox *show_axes;
+//                    ColorEdit *bg_color;
                     Slider *point_size;
                     Combobox *shader;
                     Combobox *lighting;
@@ -332,23 +244,9 @@ namespace open3d
 
                     CollapsableVert *geometries_panel;
                     TreeView *geometries;
-#if GROUPS_USE_TREE
                     std::map<std::string, TreeView::ItemId> group2itemid;
-#endif // GROUPS_USE_TREE
                     std::map<std::string, TreeView::ItemId> object2itemid;
 
-#if !GROUPS_USE_TREE
-                    EmptyIfHiddenVert *groups_panel;
-                    TreeView *groups;
-#endif // !GROUPS_USE_TREE
-
-                    EmptyIfHiddenVert *time_panel;
-                    Slider *time_slider;
-                    NumberEdit *time_edit;
-                    SmallToggleButton *play;
-
-                    EmptyIfHiddenVert *actions_panel;
-                    ButtonList *actions;
                 } settings;
 
                 void Construct(PCscanUI *w)
@@ -401,8 +299,7 @@ namespace open3d
                     Margins margins(em, 0, half_em, 0);
                     Margins tabbed_margins(0, half_em, 0, 0);
 
-                    settings.mouse_panel =
-                        new CollapsableVert("Mouse Controls", v_spacing, margins);
+                    settings.mouse_panel = new CollapsableVert("Mouse Controls", v_spacing, margins);
                     settings.panel->AddChild(GiveOwnership(settings.mouse_panel));
 
                     settings.mouse_tab = new TabControl();
@@ -411,9 +308,9 @@ namespace open3d
                     settings.view_panel = new Vert(v_spacing, tabbed_margins);
                     settings.pick_panel = new Vert(v_spacing, tabbed_margins);
                     settings.mouse_tab->AddTab("Scene", GiveOwnership(settings.view_panel));
-                    settings.mouse_tab->AddTab("Selection",
-                                               GiveOwnership(settings.pick_panel));
-                    settings.mouse_tab->SetOnSelectedTabChanged([this](int tab_idx) {
+                    settings.mouse_tab->AddTab("Selection", GiveOwnership(settings.pick_panel));
+                    settings.mouse_tab->SetOnSelectedTabChanged([this](int tab_idx)
+                    {
                         if (tab_idx == 0)
                         {
                             SetMouseMode(settings.view_mouse_mode);
@@ -425,8 +322,8 @@ namespace open3d
                     });
 
                     // Mouse countrols
-                    auto MakeMouseButton = [this](const char *name,
-                                                  SceneWidget::Controls type) {
+                    auto MakeMouseButton = [this](const char *name, SceneWidget::Controls type)
+                    {
                         auto button = new SmallToggleButton(name);
                         button->SetOnClicked([this, type]() { this->SetMouseMode(type); });
                         this->settings.mouse_buttons[type] = button;
@@ -434,21 +331,16 @@ namespace open3d
                     };
                     auto *h = new Horiz(v_spacing);
                     h->AddStretch();
-                    h->AddChild(GiveOwnership(MakeMouseButton(
-                        "Arcball", SceneWidget::Controls::ROTATE_CAMERA)));
-                    h->AddChild(GiveOwnership(
-                        MakeMouseButton("Fly", SceneWidget::Controls::FLY)));
-                    h->AddChild(GiveOwnership(
-                        MakeMouseButton("Model", SceneWidget::Controls::ROTATE_MODEL)));
+                    h->AddChild(GiveOwnership(MakeMouseButton("Arcball", SceneWidget::Controls::ROTATE_CAMERA)));
+                    h->AddChild(GiveOwnership(MakeMouseButton("Fly", SceneWidget::Controls::FLY)));
+                    h->AddChild(GiveOwnership(MakeMouseButton("Model", SceneWidget::Controls::ROTATE_MODEL)));
                     h->AddStretch();
                     settings.view_panel->AddChild(GiveOwnership(h));
 
                     h = new Horiz(v_spacing);
                     h->AddStretch();
-                    h->AddChild(GiveOwnership(MakeMouseButton(
-                        "Sun Direction", SceneWidget::Controls::ROTATE_SUN)));
-                    h->AddChild(GiveOwnership(MakeMouseButton(
-                        "Environment", SceneWidget::Controls::ROTATE_IBL)));
+                    h->AddChild(GiveOwnership(MakeMouseButton("Sun Direction", SceneWidget::Controls::ROTATE_SUN)));
+                    h->AddChild(GiveOwnership(MakeMouseButton("Environment", SceneWidget::Controls::ROTATE_IBL)));
                     h->AddStretch();
                     settings.view_panel->AddChild(GiveOwnership(h));
                     settings.view_panel->AddFixed(half_em);
@@ -476,11 +368,7 @@ namespace open3d
                         SelectSelectionSet(settings.selection_sets->GetSelectedIndex());
                     });
 
-#if __APPLE__
-                    const char *selection_help = "Cmd-click to select a point";
-#else
                     const char *selection_help = "Ctrl-click to select a point";
-#endif // __APPLE__
                     h = new Horiz();
                     h->AddStretch();
                     h->AddChild(std::make_shared<Label>(selection_help));
@@ -497,29 +385,6 @@ namespace open3d
                     // Scene controls
                     settings.scene_panel = new CollapsableVert("Scene", v_spacing, margins);
                     settings.panel->AddChild(GiveOwnership(settings.scene_panel));
-
-                    settings.show_skybox = new Checkbox("Show Skybox");
-                    settings.show_skybox->SetOnChecked(
-                        [this](bool is_checked) { this->ShowSkybox(is_checked); });
-
-                    settings.show_axes = new Checkbox("Show Axis");
-                    settings.show_axes->SetOnChecked(
-                        [this](bool is_checked) { this->ShowAxes(is_checked); });
-
-                    h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(settings.show_axes));
-                    h->AddFixed(em);
-                    h->AddChild(GiveOwnership(settings.show_skybox));
-                    settings.scene_panel->AddChild(GiveOwnership(h));
-
-                    settings.bg_color = new ColorEdit();
-                    settings.bg_color->SetValue(ui_state_.bg_color.x(),
-                                                ui_state_.bg_color.y(),
-                                                ui_state_.bg_color.z());
-                    settings.bg_color->SetOnValueChanged([this](const Color &c) {
-                        this->SetBackground({c.GetRed(), c.GetGreen(), c.GetBlue(), 1.0f},
-                                            nullptr);
-                    });
 
                     settings.point_size = new Slider(Slider::INT);
                     settings.point_size->SetLimits(1, 10);
@@ -568,8 +433,6 @@ namespace open3d
                     auto *grid = new VGrid(2, v_spacing);
                     settings.scene_panel->AddChild(GiveOwnership(grid));
 
-                    grid->AddChild(std::make_shared<Label>("BG Color"));
-                    grid->AddChild(GiveOwnership(settings.bg_color));
                     grid->AddChild(std::make_shared<Label>("PointSize"));
                     grid->AddChild(GiveOwnership(settings.point_size));
                     grid->AddChild(std::make_shared<Label>("Shader"));
@@ -600,8 +463,7 @@ namespace open3d
                     });
 
                     h->AddChild(GiveOwnership(settings.use_ibl));
-                    h->AddFixed(int(std::round(
-                        1.4 * em))); // align with Show Skybox checkbox above
+                    h->AddFixed(int(std::round(1.4 * em))); // align with Show Skybox checkbox above
                     h->AddChild(GiveOwnership(settings.use_sun));
 
                     settings.light_panel->AddChild(
@@ -696,57 +558,6 @@ namespace open3d
                     settings.geometries = new TreeView();
                     settings.geometries_panel->AddChild(GiveOwnership(settings.geometries));
 
-#if !GROUPS_USE_TREE
-                    // Groups
-                    settings.groups_panel =
-                        new EmptyIfHiddenVert("Groups", v_spacing, margins);
-                    settings.panel->AddChild(GiveOwnership(settings.groups_panel));
-
-                    settings.groups = new TreeView();
-                    settings.groups_panel->AddChild(GiveOwnership(settings.groups));
-
-                    settings.groups_panel->SetVisible(false);
-#endif // !GROUPS_USE_TREE
-
-                    // Time controls
-                    settings.time_panel = new EmptyIfHiddenVert("Time", v_spacing, margins);
-                    settings.panel->AddChild(GiveOwnership(settings.time_panel));
-
-                    settings.time_slider = new Slider(Slider::DOUBLE);
-                    settings.time_slider->SetOnValueChanged([this](double new_value) {
-                        this->ui_state_.current_time = new_value;
-                        this->UpdateTimeUI();
-                        this->SetCurrentTime(new_value);
-                    });
-
-                    settings.time_edit = new NumberEdit(NumberEdit::DOUBLE);
-                    settings.time_edit->SetOnValueChanged([this](double new_value) {
-                        this->ui_state_.current_time = new_value;
-                        this->UpdateTimeUI();
-                        this->SetCurrentTime(new_value);
-                    });
-
-                    settings.play = new SmallToggleButton("Play");
-                    settings.play->SetOnClicked(
-                        [this]() { this->SetAnimating(settings.play->GetIsOn()); });
-
-                    h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(settings.time_slider));
-                    h->AddChild(GiveOwnership(settings.time_edit));
-                    h->AddChild(GiveOwnership(settings.play));
-                    settings.time_panel->AddChild(GiveOwnership(h));
-
-                    settings.time_panel->SetVisible(false); // hide until we add a
-                                                            // geometry with time
-
-                    // Custom actions
-                    settings.actions_panel =
-                        new EmptyIfHiddenVert("Custom Actions", v_spacing, margins);
-                    settings.panel->AddChild(GiveOwnership(settings.actions_panel));
-                    settings.actions_panel->SetVisible(false);
-
-                    settings.actions = new ButtonList(v_spacing);
-                    settings.actions_panel->AddChild(GiveOwnership(settings.actions));
                 }
 
                 void AddGeometry(const std::string &name,
@@ -778,17 +589,12 @@ namespace open3d
 
                         auto cloud = std::dynamic_pointer_cast<geometry::PointCloud>(geom);
                         auto lines = std::dynamic_pointer_cast<geometry::LineSet>(geom);
-                        auto obb = std::dynamic_pointer_cast<geometry::OrientedBoundingBox>(
-                            geom);
-                        auto aabb =
-                            std::dynamic_pointer_cast<geometry::AxisAlignedBoundingBox>(
-                                geom);
+                        auto obb = std::dynamic_pointer_cast<geometry::OrientedBoundingBox>(geom);
+                        auto aabb = std::dynamic_pointer_cast<geometry::AxisAlignedBoundingBox>(geom);
                         auto mesh = std::dynamic_pointer_cast<geometry::MeshBase>(geom);
 
-                        auto t_cloud =
-                            std::dynamic_pointer_cast<t::geometry::PointCloud>(tgeom);
-                        auto t_mesh =
-                            std::dynamic_pointer_cast<t::geometry::TriangleMesh>(tgeom);
+                        auto t_cloud = std::dynamic_pointer_cast<t::geometry::PointCloud>(tgeom);
+                        auto t_mesh = std::dynamic_pointer_cast<t::geometry::TriangleMesh>(tgeom);
 
                         if (cloud)
                         {
@@ -855,25 +661,6 @@ namespace open3d
                     // the object will already be added in the list and then get added again
                     // below.
                     AddGroup(group_name); // regenerates if necessary
-                    bool update_for_time = (min_time_ == max_time_ && time != max_time_);
-                    min_time_ = std::min(min_time_, time);
-                    max_time_ = std::max(max_time_, time);
-                    if (time != 0.0)
-                    {
-                        UpdateTimeUIRange();
-                        settings.time_panel->SetVisible(true);
-                    }
-                    if (update_for_time)
-                    {
-                        UpdateObjectTree();
-                    }
-                    // Auto-open the settings panel if we set anything fancy that would
-                    // imply using the UI.
-                    if (can_auto_show_settings_ &&
-                        (added_groups_.size() == 2 || update_for_time))
-                    {
-                        ShowSettings(true);
-                    }
 
                     objects_.push_back({name, geom, tgeom, mat, group_name, time,
                                         is_visible, is_default_color});
@@ -914,19 +701,11 @@ namespace open3d
                     // Need to check group membership in case this was the last item in its
                     // group. As long as we're doing that, recompute the min/max time, too.
                     std::set<std::string> groups;
-                    min_time_ = max_time_ = 0.0;
                     for (size_t i = 0; i < objects_.size(); ++i)
                     {
                         auto &o = objects_[i];
-                        min_time_ = std::min(min_time_, o.time);
-                        max_time_ = std::max(max_time_, o.time);
                         groups.insert(o.group);
                     }
-                    if (min_time_ == max_time_)
-                    {
-                        SetAnimating(false);
-                    }
-                    UpdateTimeUIRange();
 
                     added_groups_ = groups;
                     std::set<std::string> enabled;
@@ -1047,18 +826,12 @@ namespace open3d
                     }
                     ui_state_.show_settings = show;
                     settings.panel->SetVisible(show);
-                    auto menubar = Application::GetInstance().GetMenubar();
-                    if (menubar)
-                    { // might not have been created yet
-                        menubar->SetChecked(MENU_SETTINGS, show);
-                    }
                     window_->SetNeedsLayout();
                 }
 
                 void ShowSkybox(bool show)
                 {
                     ui_state_.show_skybox = show;
-                    settings.show_skybox->SetChecked(show); // in case called manually
                     scene_->GetScene()->ShowSkybox(show);
                     scene_->ForceRedraw();
                 }
@@ -1066,7 +839,6 @@ namespace open3d
                 void ShowAxes(bool show)
                 {
                     ui_state_.show_axes = show;
-                    settings.show_axes->SetChecked(show); // in case called manually
                     scene_->GetScene()->ShowAxes(show);
                     scene_->ForceRedraw();
                 }
@@ -1250,90 +1022,6 @@ namespace open3d
                     return selections_->GetSets();
                 }
 
-                void SetCurrentTime(double t)
-                {
-                    ui_state_.current_time = t;
-                    if (ui_state_.current_time > max_time_)
-                    {
-                        ui_state_.current_time = min_time_;
-                    }
-                    for (auto &o : objects_)
-                    {
-                        UpdateGeometryVisibility(o);
-                    }
-                    UpdateTimeUI();
-
-                    if (on_animation_)
-                    {
-                        on_animation_(ui_state_.current_time);
-                    }
-                }
-
-                void SetAnimating(bool is_animating)
-                {
-                    if (is_animating == ui_state_.is_animating)
-                    {
-                        return;
-                    }
-
-                    ui_state_.is_animating = is_animating;
-                    if (is_animating)
-                    {
-                        ui_state_.current_time = max_time_;
-                        auto now = Application::GetInstance().Now();
-                        start_animation_clock_time_ = now;
-                        last_animation_tick_clock_time_ = now;
-                        if (on_animation_tick_)
-                        {
-                            window_->SetOnTickEvent(on_animation_tick_);
-                        }
-                        else
-                        {
-                            window_->SetOnTickEvent(
-                                [this]() -> bool { return this->OnAnimationTick(); });
-                        }
-                    }
-                    else
-                    {
-                        window_->SetOnTickEvent(nullptr);
-                        SetCurrentTime(0.0);
-                        next_animation_tick_clock_time_ = 0.0;
-                    }
-                    settings.time_slider->SetEnabled(!is_animating);
-                    settings.time_edit->SetEnabled(!is_animating);
-                }
-
-                void SetOnAnimationTick(
-                    PCscanUI &o3dvis,
-                    std::function<TickResult(PCscanUI &, double, double)> cb)
-                {
-                    if (cb)
-                    {
-                        on_animation_tick_ = [this, &o3dvis, cb]() -> bool {
-                            auto now = Application::GetInstance().Now();
-                            auto dt = now - this->last_animation_tick_clock_time_;
-                            auto total_time = now - this->start_animation_clock_time_;
-                            this->last_animation_tick_clock_time_ = now;
-
-                            auto result = cb(o3dvis, dt, total_time);
-
-                            if (result == TickResult::REDRAW)
-                            {
-                                this->scene_->ForceRedraw();
-                                return true;
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        };
-                    }
-                    else
-                    {
-                        on_animation_tick_ = nullptr;
-                    }
-                }
-
                 void SetUIState(const UIState &new_state)
                 {
                     int point_size_changed = (new_state.point_size != ui_state_.point_size);
@@ -1407,18 +1095,11 @@ namespace open3d
                         }
                     }
 
-                    if (old_is_animating != new_is_animating)
-                    {
-                        ui_state_.is_animating = old_is_animating;
-                        SetAnimating(new_is_animating);
-                    }
-
                     scene_->ForceRedraw();
                 }
 
                 void AddGroup(const std::string &group)
                 {
-#if GROUPS_USE_TREE
                     if (added_groups_.find(group) == added_groups_.end())
                     {
                         added_groups_.insert(group);
@@ -1428,29 +1109,11 @@ namespace open3d
                     {
                         UpdateObjectTree();
                     }
-#else
-                    if (added_groups_.find(group) == added_groups_.end())
-                    {
-                        added_groups_.insert(group);
-                        ui_state_.enabled_groups.insert(group);
-
-                        auto cell = std::make_shared<CheckableTextTreeCell>(
-                            group.c_str(), true, [this, group](bool is_on) {
-                                this->EnableGroup(group, is_on);
-                            });
-                        auto root = settings.groups->GetRootItem();
-                        settings.groups->AddItem(root, cell);
-                    }
-                    if (added_groups_.size() >= 2)
-                    {
-                        settings.groups_panel->SetVisible(true);
-                    }
-#endif // GROUPS_USE_TREE
                 }
 
                 void EnableGroup(const std::string &group, bool enable)
                 {
-#if GROUPS_USE_TREE
+
                     auto group_it = settings.group2itemid.find(group);
                     if (group_it != settings.group2itemid.end())
                     {
@@ -1462,7 +1125,7 @@ namespace open3d
                             group_cell->GetCheckbox()->SetChecked(enable);
                         }
                     }
-#endif // GROUPS_USE_TREE
+
                     if (enable)
                     {
                         ui_state_.enabled_groups.insert(group);
@@ -1480,7 +1143,7 @@ namespace open3d
                 void AddObjectToTree(const DrawObject &o)
                 {
                     TreeView::ItemId parent = settings.geometries->GetRootItem();
-#if GROUPS_USE_TREE
+
                     if (added_groups_.size() >= 2)
                     {
                         auto it = settings.group2itemid.find(o.group);
@@ -1499,14 +1162,10 @@ namespace open3d
                             settings.group2itemid[o.group] = parent;
                         }
                     }
-#endif // GROUPS_USE_TREE
+
 
                     int flag = DrawObjectTreeCell::FLAG_NONE;
-#if !GROUPS_USE_TREE
-                    flag |= (added_groups_.size() >= 2 ? DrawObjectTreeCell::FLAG_GROUP
-                                                       : 0);
-#endif // !GROUPS_USE_TREE
-                    flag |= (min_time_ != max_time_ ? DrawObjectTreeCell::FLAG_TIME : 0);
+
                     auto cell = std::make_shared<DrawObjectTreeCell>(
                         o.name.c_str(), o.group.c_str(), o.time, o.is_visible, flag,
                         [this, name = o.name](bool is_on) {
@@ -1518,9 +1177,7 @@ namespace open3d
 
                 void UpdateObjectTree()
                 {
-#if GROUPS_USE_TREE
                     settings.group2itemid.clear();
-#endif // GROUPS_USE_TREE
                     settings.object2itemid.clear();
                     settings.geometries->Clear();
 
@@ -1528,25 +1185,6 @@ namespace open3d
                     {
                         AddObjectToTree(o);
                     }
-                }
-
-                void UpdateTimeUIRange()
-                {
-                    bool enabled = (min_time_ < max_time_);
-                    settings.time_slider->SetEnabled(enabled);
-                    settings.time_edit->SetEnabled(enabled);
-                    settings.play->SetEnabled(enabled);
-
-                    settings.time_slider->SetLimits(min_time_, max_time_);
-                    ui_state_.current_time = std::min(
-                        max_time_, std::max(min_time_, ui_state_.current_time));
-                    UpdateTimeUI();
-                }
-
-                void UpdateTimeUI()
-                {
-                    settings.time_slider->SetValue(ui_state_.current_time);
-                    settings.time_edit->SetValue(ui_state_.current_time);
                 }
 
                 void UpdateGeometryVisibility(const DrawObject &o)
@@ -1627,24 +1265,6 @@ namespace open3d
                     selections_->SetSelectableGeometry(pickable);
                 }
 
-                bool OnAnimationTick()
-                {
-                    auto now = Application::GetInstance().Now();
-                    if (now >= next_animation_tick_clock_time_)
-                    {
-                        SetCurrentTime(ui_state_.current_time + ui_state_.time_step);
-                        UpdateAnimationTickClockTime(now);
-
-                        return true;
-                    }
-                    return false;
-                }
-
-                void UpdateAnimationTickClockTime(double now)
-                {
-                    next_animation_tick_clock_time_ = now + ui_state_.frame_delay;
-                }
-
                 void ExportCurrentImage(const std::string &path)
                 {
                     scene_->EnableSceneCaching(false);
@@ -1662,57 +1282,6 @@ namespace open3d
                         });
                 }
 
-                void OnAbout()
-                {
-                    auto &theme = window_->GetTheme();
-                    auto dlg = std::make_shared<gui::Dialog>("About");
-
-                    auto title = std::make_shared<gui::Label>(
-                        (std::string("Open3D ") + OPEN3D_VERSION).c_str());
-                    auto text = std::make_shared<gui::Label>(
-                        "The MIT License (MIT)\n"
-                        "Copyright (c) 2018 - 2020 www.open3d.org\n\n"
-
-                        "Permission is hereby granted, free of charge, to any person "
-                        "obtaining a copy of this software and associated "
-                        "documentation "
-                        "files (the \"Software\"), to deal in the Software without "
-                        "restriction, including without limitation the rights to use, "
-                        "copy, modify, merge, publish, distribute, sublicense, and/or "
-                        "sell copies of the Software, and to permit persons to whom "
-                        "the Software is furnished to do so, subject to the following "
-                        "conditions:\n\n"
-
-                        "The above copyright notice and this permission notice shall "
-                        "be "
-                        "included in all copies or substantial portions of the "
-                        "Software.\n\n"
-
-                        "THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY "
-                        "KIND, "
-                        "EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE "
-                        "WARRANTIES "
-                        "OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND "
-                        "NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT "
-                        "HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, "
-                        "WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING "
-                        "FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR "
-                        "OTHER DEALINGS IN THE SOFTWARE.");
-                    auto ok = std::make_shared<gui::Button>("OK");
-                    ok->SetOnClicked([this]() { this->window_->CloseDialog(); });
-
-                    gui::Margins margins(theme.font_size);
-                    auto layout = std::make_shared<gui::Vert>(0, margins);
-                    layout->AddChild(gui::Horiz::MakeCentered(title));
-                    layout->AddFixed(theme.font_size);
-                    layout->AddChild(text);
-                    layout->AddFixed(theme.font_size);
-                    layout->AddChild(gui::Horiz::MakeCentered(ok));
-                    dlg->AddChild(layout);
-
-                    window_->ShowDialog(dlg);
-                }
-
                 void OnExportRGB()
                 {
                     auto dlg = std::make_shared<gui::FileDialog>(
@@ -1726,10 +1295,6 @@ namespace open3d
                     });
                     window_->ShowDialog(dlg);
                 }
-
-                void OnClose() { window_->Close(); }
-
-                void OnToggleSettings() { ShowSettings(!ui_state_.show_settings); }
 
                 std::string UniquifyName(const std::string &name)
                 {
@@ -1794,46 +1359,11 @@ namespace open3d
             {
                 impl_->Construct(this);
 
-                // Create the app menu. We will take over the existing menubar (if any)
-                // since a) we need to cache a pointer, and b) we should be the only
-                // window, since the whole point of this class is to have an easy way to
-                // visualize something with a blocking call to draw().
-                auto menu = std::make_shared<Menu>();
-#if defined(__APPLE__)
-                // The first menu item to be added on macOS becomes the application
-                // menu (no matter its name)
-                auto app_menu = std::make_shared<Menu>();
-                app_menu->AddItem("About", MENU_ABOUT);
-                menu->AddMenu("Open3D", app_menu);
-#endif // __APPLE__
-                auto file_menu = std::make_shared<Menu>();
-                file_menu->AddItem("Export Current Image...", MENU_EXPORT_RGB);
-                file_menu->AddSeparator();
-                file_menu->AddItem("Close Window", MENU_CLOSE, KeyName::KEY_W);
-                menu->AddMenu("File", file_menu);
+                Application::GetInstance().SetMenubar(NULL);
 
-                auto actions_menu = std::make_shared<Menu>();
-                actions_menu->AddItem("Show Settings", MENU_SETTINGS);
-                actions_menu->SetChecked(MENU_SETTINGS, false);
-                menu->AddMenu("Actions", actions_menu);
-                impl_->settings.actions_menu = actions_menu.get();
-
-#if !defined(__APPLE__)
-                auto help_menu = std::make_shared<Menu>();
-                help_menu->AddItem("About", MENU_ABOUT);
-                menu->AddMenu("Help", help_menu);
-#endif // !__APPLE__
-
-                Application::GetInstance().SetMenubar(menu);
-
-                SetOnMenuItemActivated(MENU_ABOUT, [this]() { this->impl_->OnAbout(); });
-                SetOnMenuItemActivated(MENU_EXPORT_RGB,
-                                       [this]() { this->impl_->OnExportRGB(); });
-                SetOnMenuItemActivated(MENU_CLOSE, [this]() { this->impl_->OnClose(); });
-                SetOnMenuItemActivated(MENU_SETTINGS,
-                                       [this]() { this->impl_->OnToggleSettings(); });
-
-                impl_->ShowSettings(false, false);
+                impl_->ShowSettings(true);
+                impl_->ShowAxes(true);
+                impl_->ResetCameraToDefault();
             }
 
             PCscanUI::~PCscanUI() {}
@@ -1841,69 +1371,6 @@ namespace open3d
             Open3DScene *PCscanUI::GetScene() const
             {
                 return impl_->scene_->GetScene().get();
-            }
-
-            void PCscanUI::StartRPCInterface(const std::string &address, int timeout)
-            {
-#ifdef BUILD_RPC_INTERFACE
-                impl_->receiver_ = std::make_shared<Receiver>(
-                    this, impl_->scene_->GetScene(), address, timeout);
-                try
-                {
-                    utility::LogInfo("Starting to listen on {}", address);
-                    impl_->receiver_->Start();
-                }
-                catch (std::exception &e)
-                {
-                    utility::LogWarning("Failed to start RPC interface: {}", e.what());
-                }
-#else
-                utility::LogWarning(
-                    "PCscanUI::StartRPCInterface: RPC interface not built");
-#endif
-            }
-
-            void PCscanUI::StopRPCInterface()
-            {
-#ifdef BUILD_RPC_INTERFACE
-                if (impl_->receiver_)
-                {
-                    utility::LogInfo("Stopping RPC interface");
-                }
-                impl_->receiver_.reset();
-#else
-                utility::LogWarning(
-                    "PCscanUI::StopRPCInterface: RPC interface not built");
-#endif
-            }
-
-            void PCscanUI::AddAction(const std::string &name,
-                                     std::function<void(PCscanUI &)> callback)
-            {
-                // Add button to the "Custom Actions" segment in the UI
-                SmallButton *button = new SmallButton(name.c_str());
-                button->SetOnClicked([this, callback]() { callback(*this); });
-                impl_->settings.actions->AddChild(GiveOwnership(button));
-
-                SetNeedsLayout();
-                impl_->settings.actions_panel->SetVisible(true);
-                impl_->settings.actions_panel->SetIsOpen(true);
-
-                if (impl_->can_auto_show_settings_ &&
-                    impl_->settings.actions->size() == 1)
-                {
-                    impl_->ShowSettings(true);
-                }
-
-                // Add menu item
-                if (impl_->settings.menuid2action.empty())
-                {
-                    impl_->settings.actions_menu->AddSeparator();
-                }
-                int id = MENU_ACTIONS_BASE + int(impl_->settings.menuid2action.size());
-                impl_->settings.actions_menu->AddItem(name.c_str(), id);
-                impl_->settings.menuid2action[id] = callback;
-                SetOnMenuItemActivated(id, [this, callback]() { callback(*this); });
             }
 
             void PCscanUI::SetBackground(
@@ -2018,56 +1485,6 @@ namespace open3d
                 return impl_->GetSelectionSets();
             }
 
-            double PCscanUI::GetAnimationFrameDelay() const
-            {
-                return impl_->ui_state_.frame_delay;
-            }
-
-            void PCscanUI::SetAnimationFrameDelay(double secs)
-            {
-                impl_->ui_state_.frame_delay = secs;
-            }
-
-            double PCscanUI::GetAnimationTimeStep() const
-            {
-                return impl_->ui_state_.time_step;
-            }
-
-            void PCscanUI::SetAnimationTimeStep(double time_step)
-            {
-                impl_->ui_state_.time_step = time_step;
-                SetAnimationFrameDelay(time_step);
-            }
-
-            double PCscanUI::GetAnimationDuration() const
-            {
-                return impl_->max_time_ - impl_->min_time_ + GetAnimationTimeStep();
-            }
-
-            void PCscanUI::SetAnimationDuration(double sec)
-            {
-                impl_->max_time_ = impl_->min_time_ + sec - GetAnimationTimeStep();
-                impl_->UpdateTimeUIRange();
-                impl_->settings.time_panel->SetVisible(impl_->min_time_ < impl_->max_time_);
-            }
-
-            double PCscanUI::GetCurrentTime() const
-            {
-                return impl_->ui_state_.current_time;
-            }
-
-            void PCscanUI::SetCurrentTime(double t) { impl_->SetCurrentTime(t); }
-
-            bool PCscanUI::GetIsAnimating() const
-            {
-                return impl_->ui_state_.is_animating;
-            }
-
-            void PCscanUI::SetAnimating(bool is_animating)
-            {
-                impl_->SetAnimating(is_animating);
-            }
-
             void PCscanUI::SetupCamera(float fov,
                                        const Eigen::Vector3f &center,
                                        const Eigen::Vector3f &eye,
@@ -2083,25 +1500,6 @@ namespace open3d
                 return impl_->ui_state_;
             }
 
-            void PCscanUI::SetOnAnimationFrame(
-                std::function<void(PCscanUI &, double)> cb)
-            {
-                if (cb)
-                {
-                    impl_->on_animation_ = [this, cb](double t) { cb(*this, t); };
-                }
-                else
-                {
-                    impl_->on_animation_ = nullptr;
-                }
-            }
-
-            void PCscanUI::SetOnAnimationTick(
-                std::function<TickResult(PCscanUI &, double, double)> cb)
-            {
-                impl_->SetOnAnimationTick(*this, cb);
-            }
-
             void PCscanUI::ExportCurrentImage(const std::string &path)
             {
                 impl_->ExportCurrentImage(path);
@@ -2111,26 +1509,12 @@ namespace open3d
             {
                 auto em = theme.font_size;
                 int settings_width = 15 * theme.font_size;
-#if !GROUPS_USE_TREE
-                if (impl_->added_groups_.size() >= 2)
-                {
-                    settings_width += 5 * theme.font_size;
-                }
-#endif // !GROUPS_USE_TREE
-                if (impl_->min_time_ != impl_->max_time_)
-                {
-                    settings_width += 3 * theme.font_size;
-                }
 
                 auto f = GetContentRect();
-                impl_->settings.actions->SetWidth(settings_width -
-                                                  int(std::round(1.5 * em)));
                 if (impl_->settings.panel->IsVisible())
                 {
-                    impl_->scene_->SetFrame(
-                        Rect(f.x, f.y, f.width - settings_width, f.height));
-                    impl_->settings.panel->SetFrame(Rect(f.GetRight() - settings_width, f.y,
-                                                         settings_width, f.height));
+                    impl_->scene_->SetFrame(Rect(f.x, f.y, f.width - settings_width, f.height));
+                    impl_->settings.panel->SetFrame(Rect(f.GetRight() - settings_width, f.y, settings_width, f.height));
                 }
                 else
                 {
