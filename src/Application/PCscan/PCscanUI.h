@@ -65,27 +65,13 @@ namespace open3d
 				struct UIState
 				{
 					Shader scene_shader = Shader::STANDARD;
-					bool show_settings = false;
-					bool show_skybox = false;
-					bool show_axes = false;
-					bool is_animating = false;
+					bool show_settings = true;
+					bool show_axes = true;
 					std::set<std::string> enabled_groups;
 
 					Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
-					int point_size = 3;
+					int point_size = 2;
 					int line_width = 2;
-
-					bool use_ibl = false;
-					bool use_sun = true;
-					std::string ibl_path = ""; // "" is default path
-					int ibl_intensity = 0;
-					int sun_intensity = 100000;
-					Eigen::Vector3f sun_dir = {0.577f, -0.577f, -0.577f};
-					Eigen::Vector3f sun_color = {1.0f, 1.0f, 1.0f};
-
-					double current_time = 0.0;	// seconds
-					double time_step = 1.0;		// seconds
-					double frame_delay = 0.100; // seconds
 				};
 
 				PCscanUI(const std::string &title, int width, int height);
@@ -94,17 +80,8 @@ namespace open3d
 				void SetBackground(const Eigen::Vector4f &bg_color,
 								   std::shared_ptr<geometry::Image> bg_image = nullptr);
 
-				void SetShader(Shader shader);
-
 				void AddGeometry(const std::string &name,
 								 std::shared_ptr<geometry::Geometry3D> geom,
-								 rendering::Material *material = nullptr,
-								 const std::string &group = "",
-								 double time = 0.0,
-								 bool is_visible = true);
-
-				void AddGeometry(const std::string &name,
-								 std::shared_ptr<t::geometry::Geometry> tgeom,
 								 rendering::Material *material = nullptr,
 								 const std::string &group = "",
 								 double time = 0.0,
@@ -134,7 +111,6 @@ namespace open3d
 				void ResetCameraToDefault();
 
 				void ShowSettings(bool show);
-				void ShowSkybox(bool show);
 				void ShowAxes(bool show);
 				void SetPointSize(int point_size);
 				void SetLineWidth(int line_width);
