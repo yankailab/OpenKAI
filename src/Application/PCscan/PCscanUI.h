@@ -14,15 +14,15 @@ namespace open3d
 	{
 		class Geometry3D;
 		class Image;
-	} // namespace geometry
+	}
 
 	namespace t
 	{
 		namespace geometry
 		{
 			class Geometry;
-		} // namespace geometry
-	}	  // namespace t
+		}
+	}
 
 	namespace visualization
 	{
@@ -30,7 +30,7 @@ namespace open3d
 		namespace rendering
 		{
 			class Open3DScene;
-		} // namespace rendering
+		}
 
 		namespace visualizer
 		{
@@ -54,8 +54,6 @@ namespace open3d
 					std::shared_ptr<geometry::Geometry3D> geometry;
 					std::shared_ptr<t::geometry::Geometry> tgeometry;
 					rendering::Material material;
-					std::string group;
-					double time = 0.0;
 					bool is_visible = true;
 
 					// internal
@@ -83,15 +81,11 @@ namespace open3d
 				void AddGeometry(const std::string &name,
 								 std::shared_ptr<geometry::Geometry3D> geom,
 								 rendering::Material *material = nullptr,
-								 const std::string &group = "",
-								 double time = 0.0,
 								 bool is_visible = true);
 
 				void AddPointCloud(const std::string &name,
 								 std::shared_ptr<geometry::PointCloud> sPC,
 								 rendering::Material *material = nullptr,
-								 const std::string &group = "",
-								 double time = 0.0,
 								 bool is_visible = true);
 
 				void UpdatePointCloud(const std::string &name,
@@ -114,7 +108,6 @@ namespace open3d
 				void ShowAxes(bool show);
 				void SetPointSize(int point_size);
 				void SetLineWidth(int line_width);
-				void EnableGroup(const std::string &group, bool enable);
 
 				std::vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const;
 

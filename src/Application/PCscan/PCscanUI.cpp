@@ -20,88 +20,11 @@ namespace open3d
                     return std::shared_ptr<T>(ptr);
                 }
 
-                class DrawObjectTreeCell : public Widget
-                {
-                    using Super = Widget;
-
-                public:
-                    enum
-                    {
-                        FLAG_NONE = 0,
-                        FLAG_GROUP = (1 << 0),
-                        FLAG_TIME = (1 << 1)
-                    };
-
-                    DrawObjectTreeCell(const char *name,
-                                       const char *group,
-                                       double time,
-                                       bool is_checked,
-                                       int flags,
-                                       std::function<void(bool)> on_toggled)
-                    {
-                        flags_ = flags;
-
-                        // We don't want any text in the checkbox, but passing "" seems to make
-                        // it not toggle, so we need to pass in something. This way it will
-                        // just be extra spacing.
-                        checkbox_ = std::make_shared<Checkbox>(" ");
-                        checkbox_->SetChecked(is_checked);
-                        checkbox_->SetOnChecked(on_toggled);
-                        name_ = std::make_shared<Label>(name);
-                        group_ = std::make_shared<Label>((flags & FLAG_GROUP) ? group : "");
-                        AddChild(checkbox_);
-                        AddChild(name_);
-                        AddChild(group_);
-                    }
-
-                    ~DrawObjectTreeCell() {}
-
-                    std::shared_ptr<Checkbox> GetCheckbox() { return checkbox_; }
-                    std::shared_ptr<Label> GetName() { return name_; }
-
-                    Size CalcPreferredSize(const Theme &theme) const override
-                    {
-                        auto check_pref = checkbox_->CalcPreferredSize(theme);
-                        auto name_pref = name_->CalcPreferredSize(theme);
-                        int w = check_pref.width + name_pref.width + GroupWidth(theme);
-                        return Size(w, std::max(check_pref.height, name_pref.height));
-                    }
-
-                    void Layout(const Theme &theme) override
-                    {
-                        auto &frame = GetFrame();
-                        auto check_width = checkbox_->CalcPreferredSize(theme).width;
-                        checkbox_->SetFrame(Rect(frame.x, frame.y, check_width, frame.height));
-                        auto group_width = GroupWidth(theme);
-                        auto x = checkbox_->GetFrame().GetRight();
-                        auto name_width = frame.GetRight() - group_width - x;
-                        name_->SetFrame(Rect(x, frame.y, name_width, frame.height));
-                        x += name_width;
-                        group_->SetFrame(Rect(x, frame.y, group_width, frame.height));
-                        x += group_width;
-                    }
-
-                private:
-                    int flags_;
-                    std::shared_ptr<Checkbox> checkbox_;
-                    std::shared_ptr<Label> name_;
-                    std::shared_ptr<Label> group_;
-
-                    int GroupWidth(const Theme &theme) const
-                    {
-                        if (flags_ & FLAG_GROUP)
-                            return 5 * theme.font_size;
-                        else
-                            return 0;
-                    }
-                };
-
             } // namespace
 
             struct PCscanUI::Impl
             {
                 std::set<std::string> added_names_;
-                std::set<std::string> added_groups_;
                 std::vector<DrawObject> objects_;
                 std::shared_ptr<O3DVisualizerSelections> selections_;
                 bool selections_need_update_ = true;
@@ -112,31 +35,14 @@ namespace open3d
 
                 struct
                 {
-                    // We only keep pointers here because that way we don't have to release
-                    // all the shared_ptrs at destruction just to ensure that the gui gets
-                    // destroyed before the Window, because the Window will do that for us.
-                    Menu *actions_menu;
-                    std::unordered_map<int, std::function<void(PCscanUI &)>> menuid2action;
-
                     Vert *panel;
                     CollapsableVert *mouse_panel;
-                    TabControl *mouse_tab;
-                    Vert *view_panel;
-                    SceneWidget::Controls view_mouse_mode;
-                    std::map<SceneWidget::Controls, Button *> mouse_buttons;
-                    Vert *pick_panel;
                     Button *new_selection_set;
                     Button *delete_selection_set;
                     ListView *selection_sets;
 
                     CollapsableVert *scene_panel;
                     Slider *point_size;
-
-                    CollapsableVert *geometries_panel;
-                    TreeView *geometries;
-                    std::map<std::string, TreeView::ItemId> group2itemid;
-                    std::map<std::string, TreeView::ItemId> object2itemid;
-
                 } settings;
 
                 void Construct(PCscanUI *w)
@@ -170,10 +76,12 @@ namespace open3d
                     o3dscene->SetBackground(ui_state_.bg_color);
 
                     MakeSettingsUI();
-                    SetMouseMode(SceneWidget::Controls::ROTATE_CAMERA);
+//                    SetMouseMode(SceneWidget::Controls::ROTATE_CAMERA);
+                    SetMouseMode(SceneWidget::Controls::FLY);
                     ShowAxes(true);
                     SetPointSize(ui_state_.point_size);       // sync selections_' point size
                     ResetCameraToDefault();
+//                    SetPicking();
 
                     Eigen::Vector3f sun_dir = {0,0,0};
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
@@ -191,58 +99,58 @@ namespace open3d
                     Margins margins(em, 0, half_em, 0);
                     Margins tabbed_margins(0, half_em, 0, 0);
 
-                    settings.mouse_panel = new CollapsableVert("Mouse Controls", v_spacing, margins);
+                    settings.mouse_panel = new CollapsableVert("SCAN", v_spacing, margins);
                     settings.panel->AddChild(GiveOwnership(settings.mouse_panel));
 
-                    settings.mouse_tab = new TabControl();
-                    settings.mouse_panel->AddChild(GiveOwnership(settings.mouse_tab));
+                    auto *btnResetCam = new SmallButton("Reset Camera  ");
+                    btnResetCam->SetOnClicked
+                    (
+                        [this]() { this->ResetCameraToDefault(); }
+                    );
 
-                    settings.view_panel = new Vert(v_spacing, tabbed_margins);
-                    settings.pick_panel = new Vert(v_spacing, tabbed_margins);
-                    settings.mouse_tab->AddTab("Scene", GiveOwnership(settings.view_panel));
-                    settings.mouse_tab->AddTab("Selection", GiveOwnership(settings.pick_panel));
-                    settings.mouse_tab->SetOnSelectedTabChanged([this](int tab_idx)
-                    {
-                        if (tab_idx == 0)
-                        {
-                            SetMouseMode(settings.view_mouse_mode);
+                    auto *btnScanStart = new SmallButton("Start New Scan");
+                    btnScanStart->SetOnClicked
+                    (
+                        [this]() { 
+//                            SetMouseMode(SceneWidget::Controls::ROTATE_CAMERA);
+                            SetMouseMode(SceneWidget::Controls::FLY);
                         }
-                        else
-                        {
-                            SetPicking();
-                        }
-                    });
+                    );
 
-                    // Mouse countrols
-                    auto MakeMouseButton = [this](const char *name, SceneWidget::Controls type)
-                    {
-                        auto button = new SmallToggleButton(name);
-                        button->SetOnClicked([this, type]() { this->SetMouseMode(type); });
-                        this->settings.mouse_buttons[type] = button;
-                        return button;
-                    };
-                    auto *h = new Horiz(v_spacing);
-                    h->AddStretch();
-                    h->AddChild(GiveOwnership(MakeMouseButton("Arcball", SceneWidget::Controls::ROTATE_CAMERA)));
-                    h->AddStretch();
-                    settings.view_panel->AddChild(GiveOwnership(h));
-                    settings.view_panel->AddFixed(half_em);
+                    auto *btnSelect = new SmallButton("Select Point  ");
+                    btnSelect->SetOnClicked
+                    (
+                        [this]() { SetPicking(); }
+                    );
 
-                    auto *reset = new SmallButton("Reset Camera");
-                    reset->SetOnClicked([this]() { this->ResetCameraToDefault(); });
+
+                    auto h = new Horiz(v_spacing);
+                    h->AddChild(GiveOwnership(btnResetCam));
+                    h->AddStretch();
+                    settings.mouse_panel->AddChild(GiveOwnership(h));
 
                     h = new Horiz(v_spacing);
+                    h->AddChild(GiveOwnership(btnScanStart));
                     h->AddStretch();
-                    h->AddChild(GiveOwnership(reset));
+                    settings.mouse_panel->AddChild(GiveOwnership(h));
+
+                    h = new Horiz(v_spacing);
+                    h->AddChild(GiveOwnership(btnSelect));
                     h->AddStretch();
-                    settings.view_panel->AddChild(GiveOwnership(h));
+                    settings.mouse_panel->AddChild(GiveOwnership(h));
+
 
                     // Selection sets controls
                     settings.new_selection_set = new SmallButton(" + ");
-                    settings.new_selection_set->SetOnClicked(
-                        [this]() { NewSelectionSet(); });
+                    settings.new_selection_set->SetOnClicked
+                    (
+                        [this]() {
+                            NewSelectionSet(); 
+                    });
                     settings.delete_selection_set = new SmallButton(" - ");
-                    settings.delete_selection_set->SetOnClicked([this]() {
+                    settings.delete_selection_set->SetOnClicked
+                    (
+                        [this]() {
                         int idx = settings.selection_sets->GetSelectedIndex();
                         RemoveSelectionSet(idx);
                     });
@@ -257,14 +165,15 @@ namespace open3d
                     h->AddStretch();
                     h->AddChild(std::make_shared<Label>(selection_help));
                     h->AddStretch();
-                    settings.pick_panel->AddChild(GiveOwnership(h));
+                    settings.mouse_panel->AddChild(GiveOwnership(h));
                     h = new Horiz(v_spacing);
                     h->AddChild(std::make_shared<Label>("Selection Sets"));
                     h->AddStretch();
                     h->AddChild(GiveOwnership(settings.new_selection_set));
                     h->AddChild(GiveOwnership(settings.delete_selection_set));
-                    settings.pick_panel->AddChild(GiveOwnership(h));
-                    settings.pick_panel->AddChild(GiveOwnership(settings.selection_sets));
+                    settings.mouse_panel->AddChild(GiveOwnership(h));
+                    settings.mouse_panel->AddChild(GiveOwnership(settings.selection_sets));
+
 
                     // Scene controls
                     settings.scene_panel = new CollapsableVert("Scene", v_spacing, margins);
@@ -283,14 +192,6 @@ namespace open3d
                     grid->AddChild(std::make_shared<Label>("PointSize"));
                     grid->AddChild(GiveOwnership(settings.point_size));
 
-                    // Geometry list
-                    settings.geometries_panel =
-                        new CollapsableVert("Geometries", v_spacing, margins);
-                    settings.panel->AddChild(GiveOwnership(settings.geometries_panel));
-
-                    settings.geometries = new TreeView();
-                    settings.geometries_panel->AddChild(GiveOwnership(settings.geometries));
-
                 }
 
                 void AddGeometry(const std::string &name,
@@ -298,15 +199,8 @@ namespace open3d
 //                                 std::shared_ptr<t::geometry::Geometry> tgeom,
                                  std::shared_ptr<t::geometry::PointCloud> tgeom,
                                  rendering::Material *material,
-                                 const std::string &group,
-                                 double time,
-                                 bool is_visible)
+                                 bool is_visible = true)
                 {
-                    std::string group_name = group;
-                    if (group_name == "")
-                    {
-                        group_name = "default";
-                    }
                     bool is_default_color;
                     bool no_shadows = false;
                     Material mat;
@@ -375,17 +269,8 @@ namespace open3d
                         mat.point_size = ConvertToScaledPixels(ui_state_.point_size);
                     }
 
-                    // We assume that the caller isn't setting a group or time (and in any
-                    // case we don't know beforehand what they will do). So if they do,
-                    // we need to update the geometry tree accordingly. This needs to happen
-                    // before we add the object to the list, otherwise when we regenerate
-                    // the object will already be added in the list and then get added again
-                    // below.
-                    AddGroup(group_name); // regenerates if necessary
-
-                    objects_.push_back({name, geom, tgeom, mat, group_name, time,
+                    objects_.push_back({name, geom, tgeom, mat, 
                                         is_visible, is_default_color});
-                    AddObjectToTree(objects_.back());
 
                     auto scene = scene_->GetScene();
 
@@ -404,38 +289,15 @@ namespace open3d
 
                 void RemoveGeometry(const std::string &name)
                 {
-                    std::string group;
                     for (size_t i = 0; i < objects_.size(); ++i)
                     {
                         if (objects_[i].name == name)
                         {
-                            group = objects_[i].group;
                             objects_.erase(objects_.begin() + i);
-                            settings.object2itemid.erase(objects_[i].name);
                             break;
                         }
                     }
 
-                    // Need to check group membership in case this was the last item in its
-                    // group. As long as we're doing that, recompute the min/max time, too.
-                    std::set<std::string> groups;
-                    for (size_t i = 0; i < objects_.size(); ++i)
-                    {
-                        auto &o = objects_[i];
-                        groups.insert(o.group);
-                    }
-
-                    added_groups_ = groups;
-                    std::set<std::string> enabled;
-                    for (auto &g : ui_state_.enabled_groups)
-                    { // remove deleted groups
-                        if (groups.find(g) != groups.end())
-                        {
-                            enabled.insert(g);
-                        }
-                    }
-                    ui_state_.enabled_groups = enabled;
-                    UpdateObjectTree();
                     scene_->GetScene()->RemoveGeometry(name);
 
                     // Bounds have changed, so update the selection point size, since they
@@ -454,15 +316,6 @@ namespace open3d
                             if (show != o.is_visible)
                             {
                                 o.is_visible = show;
-
-                                auto id = settings.object2itemid[o.name];
-                                auto cell = settings.geometries->GetItem(id);
-                                auto obj_cell =
-                                    std::dynamic_pointer_cast<DrawObjectTreeCell>(cell);
-                                if (obj_cell)
-                                {
-                                    obj_cell->GetCheckbox()->SetChecked(show);
-                                }
 
                                 UpdateGeometryVisibility(o); // calls ForceRedraw()
                                 window_->PostRedraw();
@@ -614,12 +467,6 @@ namespace open3d
                     }
 
                     scene_->SetViewControls(mode);
-                    settings.view_mouse_mode = mode;
-                    for (const auto &t_b : settings.mouse_buttons)
-                    {
-                        t_b.second->SetOn(false);
-                    }
-                    settings.mouse_buttons[mode]->SetOn(true);
                 }
 
                 void SetPicking()
@@ -644,7 +491,6 @@ namespace open3d
                 {
                     int point_size_changed = (new_state.point_size != ui_state_.point_size);
                     int line_width_changed = (new_state.line_width != ui_state_.line_width);
-                    auto old_enabled_groups = ui_state_.enabled_groups;
                     if (&new_state != &ui_state_)
                     {
                         ui_state_ = new_state;
@@ -664,119 +510,13 @@ namespace open3d
                         SetLineWidth(ui_state_.line_width);
                     }
 
-                    if (old_enabled_groups != ui_state_.enabled_groups)
-                    {
-                        for (auto &group : added_groups_)
-                        {
-                            bool enabled = (ui_state_.enabled_groups.find(group) !=
-                                            ui_state_.enabled_groups.end());
-                            EnableGroup(group, enabled);
-                        }
-                    }
-
                     scene_->ForceRedraw();
-                }
-
-                void AddGroup(const std::string &group)
-                {
-                    if (added_groups_.find(group) == added_groups_.end())
-                    {
-                        added_groups_.insert(group);
-                        ui_state_.enabled_groups.insert(group);
-                    }
-                    if (added_groups_.size() == 2)
-                    {
-                        UpdateObjectTree();
-                    }
-                }
-
-                void EnableGroup(const std::string &group, bool enable)
-                {
-                    auto group_it = settings.group2itemid.find(group);
-                    if (group_it != settings.group2itemid.end())
-                    {
-                        auto cell = settings.geometries->GetItem(group_it->second);
-                        auto group_cell =
-                            std::dynamic_pointer_cast<CheckableTextTreeCell>(cell);
-                        if (group_cell)
-                        {
-                            group_cell->GetCheckbox()->SetChecked(enable);
-                        }
-                    }
-
-                    if (enable)
-                    {
-                        ui_state_.enabled_groups.insert(group);
-                    }
-                    else
-                    {
-                        ui_state_.enabled_groups.erase(group);
-                    }
-                    for (auto &o : objects_)
-                    {
-                        UpdateGeometryVisibility(o);
-                    }
-                }
-
-                void AddObjectToTree(const DrawObject &o)
-                {
-                    TreeView::ItemId parent = settings.geometries->GetRootItem();
-
-                    if (added_groups_.size() >= 2)
-                    {
-                        auto it = settings.group2itemid.find(o.group);
-                        if (it != settings.group2itemid.end())
-                        {
-                            parent = it->second;
-                        }
-                        else
-                        {
-                            auto cell = std::make_shared<CheckableTextTreeCell>(
-                                o.group.c_str(), true,
-                                [this, group = o.group](bool is_on) {
-                                    this->EnableGroup(group, is_on);
-                                });
-                            parent = settings.geometries->AddItem(parent, cell);
-                            settings.group2itemid[o.group] = parent;
-                        }
-                    }
-
-
-                    int flag = DrawObjectTreeCell::FLAG_NONE;
-
-                    auto cell = std::make_shared<DrawObjectTreeCell>(
-                        o.name.c_str(), o.group.c_str(), o.time, o.is_visible, flag,
-                        [this, name = o.name](bool is_on) {
-                            ShowGeometry(name, is_on);
-                        });
-                    auto id = settings.geometries->AddItem(parent, cell);
-                    settings.object2itemid[o.name] = id;
-                }
-
-                void UpdateObjectTree()
-                {
-                    settings.group2itemid.clear();
-                    settings.object2itemid.clear();
-                    settings.geometries->Clear();
-
-                    for (auto &o : objects_)
-                    {
-                        AddObjectToTree(o);
-                    }
                 }
 
                 void UpdateGeometryVisibility(const DrawObject &o)
                 {
-                    scene_->GetScene()->ShowGeometry(o.name, IsGeometryVisible(o));
+                    scene_->GetScene()->ShowGeometry(o.name, o.is_visible);
                     scene_->ForceRedraw();
-                }
-
-                bool IsGeometryVisible(const DrawObject &o)
-                {
-                    bool is_group_enabled = (ui_state_.enabled_groups.find(o.group) !=
-                                             ui_state_.enabled_groups.end());
-                    bool is_visible = o.is_visible;
-                    return (is_visible & is_group_enabled);
                 }
 
                 void NewSelectionSet()
@@ -831,10 +571,9 @@ namespace open3d
                     pickable.reserve(objects_.size());
                     for (auto &o : objects_)
                     {
-                        if (!IsGeometryVisible(o))
-                        {
+                        if (!o.is_visible)
                             continue;
-                        }
+
                         pickable.emplace_back(o.name, o.geometry.get(), o.tgeometry.get());
                     }
                     selections_->SetSelectableGeometry(pickable);
@@ -869,26 +608,6 @@ namespace open3d
                         this->ExportCurrentImage(path);
                     });
                     window_->ShowDialog(dlg);
-                }
-
-                std::string UniquifyName(const std::string &name)
-                {
-                    if (added_names_.find(name) == added_names_.end())
-                    {
-                        return name;
-                    }
-
-                    int n = 0;
-                    std::string unique;
-                    do
-                    {
-                        n += 1;
-                        std::stringstream s;
-                        s << name << "_" << n;
-                        unique = s.str();
-                    } while (added_names_.find(unique) != added_names_.end());
-
-                    return unique;
                 }
 
                 Eigen::Vector4f CalcDefaultUnlitColor()
@@ -933,19 +652,16 @@ namespace open3d
             void PCscanUI::AddGeometry(const std::string &name,
                                        std::shared_ptr<geometry::Geometry3D> geom,
                                        rendering::Material *material /*= nullptr*/,
-                                       const std::string &group /*= ""*/,
-                                       double time /*= 0.0*/,
                                        bool is_visible /*= true*/)
             {
-                impl_->AddGeometry(name, geom, nullptr, material, group, time, is_visible);
+                impl_->AddGeometry(name, geom, nullptr, material,
+                 is_visible);
             }
 
             void PCscanUI::AddPointCloud(const std::string &name,
                                          std::shared_ptr<geometry::PointCloud> sPC,
                                          rendering::Material *material /*= nullptr*/,
-                                         const std::string &group /*= ""*/,
-                                         double time /*= 0.0*/,
-                                         bool is_visible /*= true*/)
+                                          bool is_visible /*= true*/)
             {
                 t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
                     FromLegacyPointCloud(
@@ -958,7 +674,8 @@ namespace open3d
                 impl_->AddGeometry(name,
                                     nullptr, 
                                     spP,
-                                    material, group, time, is_visible);
+                                    material, 
+                                    is_visible);
             }
 
             void PCscanUI::UpdatePointCloud(const std::string &name,
@@ -1007,11 +724,6 @@ namespace open3d
             void PCscanUI::SetLineWidth(int line_width)
             {
                 impl_->SetLineWidth(line_width);
-            }
-
-            void PCscanUI::EnableGroup(const std::string &group, bool enable)
-            {
-                impl_->EnableGroup(group, enable);
             }
 
             std::vector<O3DVisualizerSelections::SelectionSet>
