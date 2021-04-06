@@ -50,26 +50,23 @@ namespace open3d
 
 				struct DrawObject
 				{
-					std::string name;
-					std::shared_ptr<geometry::Geometry3D> geometry;
-					std::shared_ptr<t::geometry::Geometry> tgeometry;
-					rendering::Material material;
-					bool is_visible = true;
-
-					// internal
-					bool is_color_default = true;
+					std::string m_name;
+					std::shared_ptr<geometry::Geometry3D> m_sGeometry;
+					std::shared_ptr<t::geometry::Geometry> m_sTgeometry;
+					rendering::Material m_material;
+					bool m_bVisible = true;
 				};
 
 				struct UIState
 				{
-					Shader scene_shader = Shader::STANDARD;
-					bool show_settings = true;
-					bool show_axes = true;
-					std::set<std::string> enabled_groups;
+					Shader m_sceneShader = Shader::STANDARD;
+					bool m_bShowSettings = true;
+					bool m_bShowAxes = true;
 
 					Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
-					int point_size = 2;
-					int line_width = 2;
+					int m_pointSize = 2;
+					int m_lineWidth = 2;
+					SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
 				};
 
 				PCscanUI(const std::string &title, int width, int height);
@@ -115,6 +112,7 @@ namespace open3d
 
 				UIState GetUIState() const;
 				rendering::Open3DScene *GetScene() const;
+				const std::string m_modelName = "POINTCLOUD";
 
 			protected:
 				void Layout(const gui::Theme &theme);

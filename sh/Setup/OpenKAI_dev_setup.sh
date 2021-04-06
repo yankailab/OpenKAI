@@ -54,19 +54,19 @@ sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10 --slave /
 sudo update-alternatives --config gcc
 
 # Basic
-sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libgtk-3-dev libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev
+sudo apt-get -y install build-essential clang libc++-dev libc++abi-dev cmake cmake-curses-gui ninja-build git autoconf automake libtool pkg-config libssl-dev libboost-all-dev libgflags-dev libgoogle-glog-dev uuid-dev libboost-filesystem-dev libboost-system-dev libboost-thread-dev ncurses-dev libssl-dev libprotobuf-dev protobuf-compiler libcurl4 curl libgtk-3-dev libusb-1.0-0-dev libusb-dev libudev-dev libc++-dev libc++abi-dev libfmt-dev
 
 # Image, codecs, gstreamer
 sudo apt-get -y install gstreamer1.0-0 gstreamer1.0-plugins-base libgstreamer1.0-0 libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav gstreamer1.0-tools gstreamer1.0-x gstreamer1.0-alsa gstreamer1.0-gl gstreamer1.0-gtk3 libv4l-dev v4l-utils libjpeg-dev libpng-dev libtiff-dev libturbojpeg libavcodec-dev libavformat-dev libxvidcore-dev x264
 
 # OpenGL
-sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev
+sudo apt-get -y install libglu1-mesa-dev libglu1-mesa libgl1-mesa-glx libgl1-mesa-dev libglfw3 libglfw3-dev libglew-dev mesa-common-dev freeglut3-dev xorg-dev libxt-dev libxi-dev libx11-dev
 
 # Numerical
 sudo apt-get -y install libqhull-dev qhull-bin gfortran libblas-dev liblapack-dev liblapacke-dev liblapack3 libatlas-base-dev libopenblas-base libopenblas-dev gsl-bin libgsl0-dev libflann-dev libproj-dev
 
 # Not sure if needed
-sudo apt-get -y install libfmt-dev xorg-dev libxt-dev libxi-dev libx11-dev libpcap-dev libdc1394-22 libdc1394-22-dev libswscale-dev libtheora-dev libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev 
+sudo apt-get -y install libpcap-dev libdc1394-22 libdc1394-22-dev libswscale-dev libtheora-dev libvorbis-dev libfaac-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev 
 
 # (Optional)
 sudo apt-get -y install libimage-exiftool-perl
