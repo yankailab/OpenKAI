@@ -52,14 +52,14 @@ namespace kai
 		while (m_nPread <= 0)
 			readAllPC();
 
-		m_spWin->AddPointCloud("GEO", m_spPC);
+		m_spWin->AddPointCloud("PCMODEL", m_spPC);
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
 			readAllPC();
-			m_spWin->UpdatePointCloud("GEO", m_spPC);
+			m_spWin->UpdatePointCloud("PCMODEL", m_spPC);
 
 			m_pT->autoFPSto();
 		}

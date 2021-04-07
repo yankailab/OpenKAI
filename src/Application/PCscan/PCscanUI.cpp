@@ -10,210 +10,222 @@ namespace open3d
 
             namespace
             {
-                static const std::string kShaderLit = "defaultLit";
-                static const std::string kShaderUnlit = "defaultUnlit";
-                static const std::string kShaderUnlitLines = "unlitLine";
+                static const string kShaderLit = "defaultLit";
+                static const string kShaderUnlit = "defaultUnlit";
+                static const string kShaderUnlitLines = "unlitLine";
 
                 template <typename T>
-                std::shared_ptr<T> GiveOwnership(T *ptr)
+                shared_ptr<T> GiveOwnership(T *ptr)
                 {
-                    return std::shared_ptr<T>(ptr);
+                    return shared_ptr<T>(ptr);
                 }
+            }
 
-            } // namespace
+            struct UIState
+            {
+                Shader m_sceneShader = Shader::STANDARD;
+                bool m_bShowSettings = true;
+                bool m_bShowAxes = true;
+
+                Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
+                int m_pointSize = 2;
+                int m_lineWidth = 5;
+                SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
+            };
 
             struct PCscanUI::Impl
             {
-                std::set<std::string> m_sGname;
-                std::vector<DrawObject> m_vObject;
-                std::shared_ptr<O3DVisualizerSelections> m_sSelection;
-                bool bUpdateSelection = true;
+                vector<DrawObject> m_vObject;
+                shared_ptr<O3DVisualizerSelections> m_sVertex;
 
                 UIState m_uiState;
                 Window *m_pWindow = nullptr;
                 SceneWidget *m_pScene = nullptr;
+                string m_modelName;
+                string m_areaName;
+                geometry::LineSet m_areaLine;
+                shared_ptr<geometry::LineSet> m_spAreaLine;
+                Vector3d m_areaLineCol;
 
-                struct
-                {
-                    Vert *m_panelAll;
-                    CollapsableVert *m_panelScan;
-                    ProgressBar *m_scanProgress;
+                //UI components
+                Vert *m_panelCtrl;
 
-                    CollapsableVert *m_panelVertexSet;
-                    Button *m_btnCalcArea;
-                    Label *m_lArea;
-                    Button *m_btnNewVertexSet;
-                    Button *m_btnDeleteVertexSet;
-                    ListView *m_listSelectSet;
+                CollapsableVert *m_panelCam;
+                Button *m_btnResetCam;
 
-                    CollapsableVert *m_panelSetting;
-                    Slider *m_sliderPointSize;
-                } settings;
+                CollapsableVert *m_panelScan;
+                Button *m_btnScanStart;
+                ProgressBar *m_progScan;
+
+                CollapsableVert *m_panelVertexSet;
+                Button *m_btnNewVertexSet;
+                Button *m_btnDeleteVertexSet;
+                ListView *m_listVertexSet;
+                Label *m_lArea;
+
+                CollapsableVert *m_panelSetting;
+                Slider *m_sliderPointSize;
+                //UI components
 
                 void Construct(PCscanUI *w)
                 {
                     if (m_pWindow)
                         return;
 
+                    m_modelName = "PCMODEL";
+                    m_areaName = "PCAREA";
+                    m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
+                    m_spAreaLine = make_shared<geometry::LineSet>(m_areaLine);
+
                     m_pWindow = w;
                     m_pScene = new SceneWidget();
-                    m_sSelection = std::make_shared<O3DVisualizerSelections>(*m_pScene);
-                    m_pScene->SetScene(std::make_shared<Open3DScene>(w->GetRenderer()));
+                    m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
+                    m_pScene->SetScene(make_shared<Open3DScene>(w->GetRenderer()));
                     m_pScene->EnableSceneCaching(true); // smoother UI with large geometry
                     m_pScene->SetOnPointsPicked(
-                        [this](const std::map<
-                                   std::string,
-                                   std::vector<std::pair<size_t, Eigen::Vector3d>>>
+                        [this](const map<
+                                   string,
+                                   vector<pair<size_t, Eigen::Vector3d>>>
                                    &indices,
                                int keymods) {
                             if (keymods & int(KeyModifier::SHIFT))
-                            {
-                                m_sSelection->UnselectIndices(indices);
-                            }
+                                m_sVertex->UnselectIndices(indices);
                             else
-                            {
-                                m_sSelection->SelectIndices(indices);
-                            }
+                                m_sVertex->SelectIndices(indices);
+
+                            UpdateArea();
                         });
                     w->AddChild(GiveOwnership(m_pScene));
 
                     auto o3dscene = m_pScene->GetScene();
                     o3dscene->SetBackground(m_uiState.bg_color);
-
-                    MakeSettingsUI();
-                    SetMouseMode(m_uiState.m_mouseMode);
-                    ShowAxes(true);
-                    SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
-                    ResetCameraToDefault();
-                    //                    SetPicking();
-
                     Eigen::Vector3f sun_dir = {0, 0, 0};
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
+
+                    MakeCtrlPanel();
+                    ShowAxes(true);
+                    SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
+                    SetLineWidth(m_uiState.m_lineWidth);
+                    SetMouseCameraMode(m_uiState.m_mouseMode);
+                    ResetCameraToDefault();
                 }
 
-                void MakeSettingsUI()
+                void MakeCtrlPanel(void)
                 {
                     auto em = m_pWindow->GetTheme().font_size;
-                    auto half_em = int(std::round(0.5f * float(em)));
-                    auto v_spacing = int(std::round(0.25 * float(em)));
+                    auto half_em = int(round(0.5f * float(em)));
+                    auto v_spacing = int(round(0.25 * float(em)));
 
-                    settings.m_panelAll = new Vert(half_em);
-                    m_pWindow->AddChild(GiveOwnership(settings.m_panelAll));
+                    m_panelCtrl = new Vert(half_em);
+                    m_pWindow->AddChild(GiveOwnership(m_panelCtrl));
 
                     Margins margins(em, 0, half_em, 0);
                     Margins tabbed_margins(0, half_em, 0, 0);
 
-                    // Scan
-                    settings.m_panelScan = new CollapsableVert("SCAN", v_spacing, margins);
-                    settings.m_panelAll->AddChild(GiveOwnership(settings.m_panelScan));
+                    // Camera
+                    m_panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(m_panelCam));
 
-                    auto *btnResetCam = new Button("Reset Camera  ");
-                    btnResetCam->SetOnClicked(
-                        [this]() { this->ResetCameraToDefault(); });
-
-                    auto *btnScanStart = new Button("Start New Scan");
-                    btnScanStart->SetToggleable(true);
-                    btnScanStart->SetOnClicked([this]()
-                    {
-                        //toggle
-                        SetMouseMode(m_uiState.m_mouseMode);
+                    m_btnResetCam = new Button("Reset Camera  ");
+                    m_btnResetCam->SetOnClicked([this]() {
+                        this->ResetCameraToDefault();
                     });
-
                     auto h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(btnResetCam));
+                    h->AddChild(GiveOwnership(m_btnResetCam));
                     h->AddStretch();
-                    settings.m_panelScan->AddChild(GiveOwnership(h));
+                    m_panelCam->AddChild(GiveOwnership(h));
 
+                    // Scan
+                    m_panelScan = new CollapsableVert("SCAN", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(m_panelScan));
+
+                    m_btnScanStart = new Button("Start New Scan");
+                    m_btnScanStart->SetToggleable(true);
+                    m_btnScanStart->SetOnClicked([this]() {
+                        //toggle
+                        SetMouseCameraMode(m_uiState.m_mouseMode);
+                    });
                     h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(btnScanStart));
+                    h->AddChild(GiveOwnership(m_btnScanStart));
                     h->AddStretch();
-                    settings.m_panelScan->AddChild(GiveOwnership(h));
+                    m_panelScan->AddChild(GiveOwnership(h));
 
-                    // auto *btnSelect = new Button("Select Point   ");
-                    // btnSelect->SetOnClicked(
-                    //     [this]() { SetPicking(); });
-                    // h = new Horiz(v_spacing);
-                    // h->AddChild(GiveOwnership(btnSelect));
-                    // h->AddStretch();
-                    // settings.m_panelScan->AddChild(GiveOwnership(h));
+                    const char *strMem = "Used memory:";
+                    h = new Horiz();
+                    h->AddChild(make_shared<Label>(strMem));
+                    h->AddStretch();
+                    m_panelScan->AddChild(GiveOwnership(h));
+
+                    m_progScan = new ProgressBar();
+                    m_progScan->SetValue(0.5);
+                    h = new Horiz(v_spacing);
+                    h->AddChild(GiveOwnership(m_progScan));
+                    m_panelScan->AddChild(GiveOwnership(h));
 
                     // Vertex selection
-                    settings.m_panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
-                    settings.m_panelAll->AddChild(GiveOwnership(settings.m_panelVertexSet));
+                    m_panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(m_panelVertexSet));
 
-                    settings.m_btnNewVertexSet = new SmallButton(" + ");
-                    settings.m_btnNewVertexSet->SetOnClicked(
+                    m_btnNewVertexSet = new SmallButton(" + ");
+                    m_btnNewVertexSet->SetOnClicked(
                         [this]() {
-                            NewSelectionSet();
-                            SetPicking();
+                            NewVertexSet();
+                            SetMousePickingMode();
                         });
-                    settings.m_btnDeleteVertexSet = new SmallButton(" - ");
-                    settings.m_btnDeleteVertexSet->SetOnClicked(
+                    m_btnDeleteVertexSet = new SmallButton(" - ");
+                    m_btnDeleteVertexSet->SetOnClicked(
                         [this]() {
-                            int idx = settings.m_listSelectSet->GetSelectedIndex();
-                            RemoveSelectionSet(idx);
+                            int idx = m_listVertexSet->GetSelectedIndex();
+                            RemoveVertexSet(idx);
                         });
-
                     h = new Horiz(v_spacing);
-                    h->AddChild(std::make_shared<Label>("Select Area"));
+                    h->AddChild(make_shared<Label>("Select Area"));
                     h->AddStretch();
-                    h->AddChild(GiveOwnership(settings.m_btnNewVertexSet));
-                    h->AddChild(GiveOwnership(settings.m_btnDeleteVertexSet));
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
+                    h->AddChild(GiveOwnership(m_btnNewVertexSet));
+                    h->AddChild(GiveOwnership(m_btnDeleteVertexSet));
+                    m_panelVertexSet->AddChild(GiveOwnership(h));
 
                     const char *selection_help = "(Ctrl-click to select a point)";
                     h = new Horiz();
-                    h->AddChild(std::make_shared<Label>(selection_help));
+                    h->AddChild(make_shared<Label>(selection_help));
                     h->AddStretch();
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
+                    m_panelVertexSet->AddChild(GiveOwnership(h));
 
-                    settings.m_listSelectSet = new ListView();
-                    settings.m_listSelectSet->SetOnValueChanged([this](const char *, bool) 
-                    {
-                        SelectSelectionSet(settings.m_listSelectSet->GetSelectedIndex());
-                        int idx = settings.m_listSelectSet->GetSelectedIndex();
-                        UpdateArea(idx);
+                    m_listVertexSet = new ListView();
+                    m_listVertexSet->SetOnValueChanged([this](const char *, bool) {
+                        SelectVertexSet(m_listVertexSet->GetSelectedIndex());
+                        UpdateArea();
                     });
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(settings.m_listSelectSet));
+                    m_panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
 
                     // Area Calculation
-                    settings.m_btnCalcArea = new Button("Calculate Area");
-                    settings.m_btnCalcArea->SetOnClicked([this]()
-                    {
-                        int idx = settings.m_listSelectSet->GetSelectedIndex();
-                        UpdateArea(idx);
-                    });
-                    settings.m_lArea = new Label();
-                    settings.m_lArea->SetBackgroundColor(Color(1.0, 0, 0));
-
+                    m_lArea = new Label();
+                    m_lArea->SetBackgroundColor(Color(1.0, 0, 0));
                     h = new Horiz();
-                    h->AddChild(GiveOwnership(settings.m_btnCalcArea));
+                    h->AddChild(GiveOwnership(m_lArea));
                     h->AddStretch();
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
-                    h = new Horiz();
-                    h->AddChild(GiveOwnership(settings.m_lArea));
-                    h->AddStretch();
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
+                    m_panelVertexSet->AddChild(GiveOwnership(h));
 
                     // Scene controls
-                    settings.m_panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
-                    settings.m_panelAll->AddChild(GiveOwnership(settings.m_panelSetting));
-                    settings.m_sliderPointSize = new Slider(Slider::INT);
-                    settings.m_sliderPointSize->SetLimits(1, 10);
-                    settings.m_sliderPointSize->SetValue(m_uiState.m_pointSize);
-                    settings.m_sliderPointSize->SetOnValueChanged([this](const double newValue) {
+                    m_panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
+                    m_panelSetting->SetIsOpen(false);
+                    m_panelCtrl->AddChild(GiveOwnership(m_panelSetting));
+                    m_sliderPointSize = new Slider(Slider::INT);
+                    m_sliderPointSize->SetLimits(1, 10);
+                    m_sliderPointSize->SetValue(m_uiState.m_pointSize);
+                    m_sliderPointSize->SetOnValueChanged([this](const double newValue) {
                         this->SetPointSize(int(newValue));
                     });
 
                     auto *grid = new VGrid(2, v_spacing);
-                    settings.m_panelSetting->AddChild(GiveOwnership(grid));
+                    m_panelSetting->AddChild(GiveOwnership(grid));
 
-                    grid->AddChild(std::make_shared<Label>("PointSize"));
-                    grid->AddChild(GiveOwnership(settings.m_sliderPointSize));
+                    grid->AddChild(make_shared<Label>("PointSize"));
+                    grid->AddChild(GiveOwnership(m_sliderPointSize));
                 }
 
-                void AddGeometry(const std::string &name,
-                                 std::shared_ptr<geometry::Geometry3D> geom,
+                void AddGeometry(const string &name,
+                                 shared_ptr<geometry::Geometry3D> geom,
                                  rendering::Material *material = nullptr,
                                  bool bVisible = true)
                 {
@@ -230,9 +242,9 @@ namespace open3d
                         bool has_colors = false;
                         bool has_normals = false;
 
-                        auto cloud = std::dynamic_pointer_cast<geometry::PointCloud>(geom);
-                        auto lines = std::dynamic_pointer_cast<geometry::LineSet>(geom);
-                        auto mesh = std::dynamic_pointer_cast<geometry::MeshBase>(geom);
+                        auto cloud = dynamic_pointer_cast<geometry::PointCloud>(geom);
+                        auto lines = dynamic_pointer_cast<geometry::LineSet>(geom);
+                        auto mesh = dynamic_pointer_cast<geometry::MeshBase>(geom);
 
                         if (cloud)
                         {
@@ -277,14 +289,14 @@ namespace open3d
                     auto scene = m_pScene->GetScene();
                     scene->AddGeometry(name, geom.get(), mat);
                     scene->GetScene()->GeometryShadows(name, false, false);
-                    UpdateGeometryVisibility(m_vObject.back());
+                    scene->ShowGeometry(name, bVisible);
 
                     SetPointSize(m_uiState.m_pointSize);
                     m_pScene->ForceRedraw();
                 }
 
-                void AddTgeometry(const std::string &name,
-                                  std::shared_ptr<t::geometry::PointCloud> tgeom,
+                void AddTgeometry(const string &name,
+                                  shared_ptr<t::geometry::PointCloud> tgeom,
                                   bool bVisible = true)
                 {
                     bool no_shadows = false;
@@ -292,8 +304,8 @@ namespace open3d
                     bool has_colors = false;
                     bool has_normals = false;
 
-                    auto t_cloud = std::dynamic_pointer_cast<t::geometry::PointCloud>(tgeom);
-                    auto t_mesh = std::dynamic_pointer_cast<t::geometry::TriangleMesh>(tgeom);
+                    auto t_cloud = dynamic_pointer_cast<t::geometry::PointCloud>(tgeom);
+                    auto t_mesh = dynamic_pointer_cast<t::geometry::TriangleMesh>(tgeom);
                     if (t_cloud)
                     {
                         has_colors = t_cloud->HasPointColors();
@@ -324,19 +336,19 @@ namespace open3d
 
                     scene->AddGeometry(name, tgeom.get(), mat);
                     scene->GetScene()->GeometryShadows(name, false, false);
-                    UpdateGeometryVisibility(m_vObject.back());
+                    scene->ShowGeometry(name, bVisible);
 
                     SetPointSize(m_uiState.m_pointSize);
                     m_pScene->ForceRedraw();
                 }
 
-                void RemoveGeometry(const std::string &name)
+                void RemoveGeometry(const string &name)
                 {
                     for (size_t i = 0; i < m_vObject.size(); ++i)
                     {
                         if (m_vObject[i].m_name == name)
                         {
-                            m_vObject.erase(m_vObject.begin() + i);
+                            //                            m_vObject.erase(m_vObject.begin() + i);
                             break;
                         }
                     }
@@ -350,41 +362,12 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 }
 
-                void ShowGeometry(const std::string &name, bool show)
+                DrawObject GetGeometry(const string &name) const
                 {
                     for (auto &o : m_vObject)
                     {
                         if (o.m_name == name)
-                        {
-                            if (show != o.m_bVisible)
-                            {
-                                o.m_bVisible = show;
-
-                                UpdateGeometryVisibility(o); // calls ForceRedraw()
-                                m_pWindow->PostRedraw();
-
-                                if (m_sSelection->IsActive())
-                                {
-                                    UpdateSelectableGeometry();
-                                }
-                                else
-                                {
-                                    bUpdateSelection = true;
-                                }
-                            }
-                            break;
-                        }
-                    }
-                }
-
-                PCscanUI::DrawObject GetGeometry(const std::string &name) const
-                {
-                    for (auto &o : m_vObject)
-                    {
-                        if (o.m_name == name)
-                        {
                             return o;
-                        }
                     }
                     return DrawObject();
                 }
@@ -400,7 +383,7 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 }
 
-                void ResetCameraToDefault()
+                void ResetCameraToDefault(void)
                 {
                     auto scene = m_pScene->GetScene();
                     m_pScene->SetupCamera(60.0f, scene->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
@@ -414,7 +397,7 @@ namespace open3d
                 }
 
                 void SetBackground(const Eigen::Vector4f &bg_color,
-                                   std::shared_ptr<geometry::Image> bg_image)
+                                   shared_ptr<geometry::Image> bg_image)
                 {
                     m_uiState.bg_color = bg_color;
                     auto scene = m_pScene->GetScene();
@@ -425,7 +408,7 @@ namespace open3d
                 void ShowSettings(bool show)
                 {
                     m_uiState.m_bShowSettings = show;
-                    settings.m_panelAll->SetVisible(show);
+                    m_panelCtrl->SetVisible(show);
                     m_pWindow->SetNeedsLayout();
                 }
 
@@ -439,7 +422,7 @@ namespace open3d
                 void SetPointSize(int px)
                 {
                     m_uiState.m_pointSize = px;
-                    settings.m_sliderPointSize->SetValue(double(px));
+                    m_sliderPointSize->SetValue(double(px));
 
                     px = int(ConvertToScaledPixels(px));
                     for (auto &o : m_vObject)
@@ -451,8 +434,8 @@ namespace open3d
                     auto xdim = bbox.max_bound_.x() - bbox.min_bound_.x();
                     auto ydim = bbox.max_bound_.y() - bbox.min_bound_.z();
                     auto zdim = bbox.max_bound_.z() - bbox.min_bound_.y();
-                    auto psize = double(std::max(5, px)) * 0.000666 * std::max(xdim, std::max(ydim, zdim));
-                    m_sSelection->SetPointSize(psize);
+                    auto psize = double(max(5, px)) * 0.000666 * max(xdim, max(ydim, zdim));
+                    m_sVertex->SetPointSize(psize);
 
                     m_pScene->SetPickablePointSize(px);
                     m_pScene->ForceRedraw();
@@ -471,7 +454,7 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 }
 
-                void SetShader(PCscanUI::Shader shader)
+                void SetShader(Shader shader)
                 {
                     m_uiState.m_sceneShader = shader;
                     for (auto &o : m_vObject)
@@ -481,9 +464,9 @@ namespace open3d
                     m_pScene->ForceRedraw();
                 }
 
-                void OverrideMaterial(const std::string &name,
+                void OverrideMaterial(const string &name,
                                       const Material &original_material,
-                                      PCscanUI::Shader shader)
+                                      Shader shader)
                 {
                     bool is_lines = (original_material.shader == "unlitLine" ||
                                      original_material.shader == "lines");
@@ -499,138 +482,170 @@ namespace open3d
 
                 float ConvertToScaledPixels(int px)
                 {
-                    return std::round(px * m_pWindow->GetScaling());
+                    return round(px * m_pWindow->GetScaling());
                 }
 
-                void SetMouseMode(SceneWidget::Controls mode)
+                void SetMouseCameraMode(SceneWidget::Controls mode)
                 {
-                    if (m_sSelection->IsActive())
+                    if (m_sVertex->IsActive())
                     {
-                        m_sSelection->MakeInactive();
+                        m_sVertex->MakeInactive();
                     }
 
                     m_pScene->SetViewControls(mode);
                 }
 
-                void SetPicking()
+                void SetMousePickingMode(void)
                 {
-                    if (m_sSelection->GetNumberOfSets() == 0)
+                    if (m_sVertex->GetNumberOfSets() == 0)
                     {
-                        NewSelectionSet();
-                    }
-                    if (bUpdateSelection)
-                    {
-                        UpdateSelectableGeometry();
-                    }
-                    m_sSelection->MakeActive();
-                }
-
-                std::vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const
-                {
-                    return m_sSelection->GetSets();
-                }
-
-                void SetUIState(const UIState &new_state)
-                {
-                    int point_size_changed = (new_state.m_pointSize != m_uiState.m_pointSize);
-                    int line_width_changed = (new_state.m_lineWidth != m_uiState.m_lineWidth);
-                    if (&new_state != &m_uiState)
-                    {
-                        m_uiState = new_state;
+                        NewVertexSet();
                     }
 
-                    ShowSettings(m_uiState.m_bShowSettings);
-                    SetShader(m_uiState.m_sceneShader);
-                    SetBackground(m_uiState.bg_color, nullptr);
-                    ShowAxes(m_uiState.m_bShowAxes);
+                    UpdateSelectableGeometry();
+                    m_sVertex->MakeActive();
+                }
 
-                    if (point_size_changed)
+                void UpdateSelectableGeometry(void)
+                {
+                    vector<SceneWidget::PickableGeometry> pickable;
+                    pickable.reserve(m_vObject.size());
+                    for (auto &o : m_vObject)
                     {
-                        SetPointSize(m_uiState.m_pointSize);
+                        if (!o.m_bVisible)
+                            continue;
+
+                        pickable.emplace_back(o.m_name, o.m_sGeometry.get(), o.m_sTgeometry.get());
                     }
-                    if (line_width_changed)
-                    {
-                        SetLineWidth(m_uiState.m_lineWidth);
-                    }
-
-                    m_pScene->ForceRedraw();
+                    m_sVertex->SetSelectableGeometry(pickable);
                 }
 
-                void UpdateGeometryVisibility(const DrawObject &o)
+                vector<O3DVisualizerSelections::SelectionSet> GetSelectionSets() const
                 {
-                    m_pScene->GetScene()->ShowGeometry(o.m_name, o.m_bVisible);
-                    m_pScene->ForceRedraw();
+                    return m_sVertex->GetSets();
                 }
 
-                void NewSelectionSet()
+                void NewVertexSet(void)
                 {
-                    m_sSelection->NewSet();
-                    UpdateSelectionSetList();
-                    SelectSelectionSet(int(m_sSelection->GetNumberOfSets()) - 1);
+                    m_sVertex->NewSet();
+                    UpdateVertexSetList();
+                    SelectVertexSet(int(m_sVertex->GetNumberOfSets()) - 1);
                 }
 
-                void RemoveSelectionSet(int index)
+                void RemoveVertexSet(int index)
                 {
-                    m_sSelection->RemoveSet(index);
-                    if (m_sSelection->GetNumberOfSets() == 0)
+                    m_sVertex->RemoveSet(index);
+                    if (m_sVertex->GetNumberOfSets() == 0)
                     {
                         // You can remove the last set, but there must always be one
                         // set, so we re-create one. (So removing the last set has the
                         // effect of clearing it.)
-                        m_sSelection->NewSet();
+                        m_sVertex->NewSet();
                     }
-                    UpdateSelectionSetList();
+                    UpdateVertexSetList();
                 }
 
-                void SelectSelectionSet(int index)
+                void SelectVertexSet(int index)
                 {
-                    settings.m_listSelectSet->SetSelectedIndex(index);
-                    m_sSelection->SelectSet(index);
+                    m_listVertexSet->SetSelectedIndex(index);
+                    m_sVertex->SelectSet(index);
                 }
 
-                void UpdateArea(int index)
+                void UpdateVertexSetList(void)
                 {
-                    //draw rectangle
-                    std::map<std::string, std::set<O3DVisualizerSelections::SelectedIndex>> msSI;
-                    msSI = m_sSelection->GetSets().at(index);
+                    size_t n = m_sVertex->GetNumberOfSets();
+                    int idx = m_listVertexSet->GetSelectedIndex();
+                    idx = max(0, idx);
+                    idx = min(idx, int(n) - 1);
 
-                    std::set<O3DVisualizerSelections::SelectedIndex> sSI = msSI["GEO"];
-                    int nP = sSI.size();
-                    if (nP < 4)
-                        return;
-
-                    static geometry::LineSet LS;
-                    LS.points_.clear();
-                    LS.lines_.clear();
-                    LS.colors_.clear();
-
-                    for (O3DVisualizerSelections::SelectedIndex sI : sSI)
+                    vector<string> items;
+                    items.reserve(n);
+                    for (size_t i = 0; i < n; ++i)
                     {
-                        LS.points_.push_back(sI.point);
+                        stringstream s;
+                        s << "Set " << (i + 1);
+                        items.push_back(s.str());
+                    }
+                    m_listVertexSet->SetItems(items);
+
+                    SelectVertexSet(idx);
+                    m_pWindow->PostRedraw();
+                }
+
+                void UpdateArea(void)
+                {
+                    int index = m_listVertexSet->GetSelectedIndex();
+                    if (index < 0)
+                    {
+                        UpdateAreaLabel(-1.0);
+                        return;
                     }
 
-                    LS.lines_.push_back(Vector2i(0, 1));
-                    LS.lines_.push_back(Vector2i(1, 2));
-                    LS.lines_.push_back(Vector2i(2, 3));
-                    LS.lines_.push_back(Vector2i(3, 0));
+                    //draw rectangle
+                    map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
+                    msSI = m_sVertex->GetSets().at(index);
+                    set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
+                    int nP = sSI.size();
+                    if (nP < 3)
+                    {
+                        UpdateAreaLabel(-1.0);
+                        return;
+                    }
 
-                    std::shared_ptr<geometry::LineSet> sLS = std::make_shared<geometry::LineSet>(LS);
-                    AddGeometry("RectSelected", sLS);
-                    
+                    m_areaLine.points_.clear();
+                    m_areaLine.lines_.clear();
+                    m_areaLine.colors_.clear();
+                    for (int i = 0; i < nP; i++)
+                    {
+                        for (O3DVisualizerSelections::SelectedIndex sI : sSI)
+                        {
+                            if(sI.order != i)continue;
+                            m_areaLine.points_.push_back(sI.point);
+                            break;
+                        }
+                    }
+
+                    nP = m_areaLine.points_.size();
+                    for (int i = 0; i < nP; i++)
+                    {
+                        int j = i + 1;
+                        if (j >= nP)
+                            j = 0;
+                        m_areaLine.lines_.push_back(Vector2i(i, j));
+                        m_areaLine.colors_.push_back(m_areaLineCol);
+                    }
+
+                    RemoveGeometry(m_areaName);
+                    AddGeometry(m_areaName, GiveOwnership(&m_areaLine));
+                    //                    AddGeometry(m_areaName, m_spAreaLine);
+
                     //Calc area
-                    Vector3d p1 = LS.points_[0];
-                    Vector3d p2 = LS.points_[1];
-                    Vector3d p3 = LS.points_[2];
-                    Vector3d p4 = LS.points_[3];
+                    double S = 0;
+                    for (int i = 1; i <= nP - 2; i++)
+                    {
+                        S +=
+                            CalcArea(
+                                m_areaLine.points_[0],
+                                m_areaLine.points_[i],
+                                m_areaLine.points_[i + 1]);
+                    }
 
-                    double S = CalcArea(p1, p2, p3) + CalcArea(p1, p3, p4);
-                    char buf[16];
-                    std::string format = "%.3f";
-                    snprintf(buf, 16, format.c_str(), S);
-                    std::string strS = "Area = " + std::string(buf) + " m^2";
-                    settings.m_lArea->SetText(strS.c_str());
-
+                    UpdateAreaLabel(S);
                     m_pWindow->PostRedraw();
+                }
+
+                void UpdateAreaLabel(double S)
+                {
+                    string strS = "Set not selected";
+                    if (S >= 0.0)
+                    {
+                        char buf[16];
+                        string format = "%.3f";
+                        snprintf(buf, 16, format.c_str(), S);
+                        strS = "Area = " + string(buf) + " m^2";
+                    }
+
+                    m_lArea->SetText(strS.c_str());
                 }
 
                 double CalcArea(const Vector3d &p1,
@@ -647,51 +662,16 @@ namespace open3d
                     return sqrt(s * (s - a) * (s - b) * (s - c));
                 }
 
-                void UpdateSelectionSetList()
-                {
-                    size_t n = m_sSelection->GetNumberOfSets();
-                    int idx = settings.m_listSelectSet->GetSelectedIndex();
-                    idx = std::max(0, idx);
-                    idx = std::min(idx, int(n) - 1);
-
-                    std::vector<std::string> items;
-                    items.reserve(n);
-                    for (size_t i = 0; i < n; ++i)
-                    {
-                        std::stringstream s;
-                        s << "Set " << (i + 1);
-                        items.push_back(s.str());
-                    }
-                    settings.m_listSelectSet->SetItems(items);
-
-                    SelectSelectionSet(idx);
-                    m_pWindow->PostRedraw();
-                }
-
-                void UpdateSelectableGeometry()
-                {
-                    std::vector<SceneWidget::PickableGeometry> pickable;
-                    pickable.reserve(m_vObject.size());
-                    for (auto &o : m_vObject)
-                    {
-                        if (!o.m_bVisible)
-                            continue;
-
-                        pickable.emplace_back(o.m_name, o.m_sGeometry.get(), o.m_sTgeometry.get());
-                    }
-                    m_sSelection->SetSelectableGeometry(pickable);
-                }
-
-                void ExportCurrentImage(const std::string &path)
+                void ExportCurrentImage(const string &path)
                 {
                     m_pScene->EnableSceneCaching(false);
                     m_pScene->GetScene()->GetScene()->RenderToImage(
-                        [this, path](std::shared_ptr<geometry::Image> image) mutable {
+                        [this, path](shared_ptr<geometry::Image> image) mutable {
                             if (!io::WriteImage(path, *image))
                             {
                                 this->m_pWindow->ShowMessageBox(
                                     "Error",
-                                    (std::string("Could not write image to ") +
+                                    (string("Could not write image to ") +
                                      path + ".")
                                         .c_str());
                             }
@@ -701,7 +681,7 @@ namespace open3d
 
                 void OnExportRGB()
                 {
-                    auto dlg = std::make_shared<gui::FileDialog>(
+                    auto dlg = make_shared<gui::FileDialog>(
                         gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
                     dlg->AddFilter(".png", "PNG images (.png)");
                     dlg->AddFilter("", "All files");
@@ -730,7 +710,7 @@ namespace open3d
             };
 
             // ----------------------------------------------------------------------------
-            PCscanUI::PCscanUI(const std::string &title, int width, int height)
+            PCscanUI::PCscanUI(const string &title, int width, int height)
                 : Window(title, width, height), impl_(new PCscanUI::Impl())
             {
                 impl_->Construct(this);
@@ -746,21 +726,21 @@ namespace open3d
 
             void PCscanUI::SetBackground(
                 const Eigen::Vector4f &bg_color,
-                std::shared_ptr<geometry::Image> bg_image /*= nullptr*/)
+                shared_ptr<geometry::Image> bg_image /*= nullptr*/)
             {
                 impl_->SetBackground(bg_color, bg_image);
             }
 
-            void PCscanUI::AddGeometry(const std::string &name,
-                                       std::shared_ptr<geometry::Geometry3D> geom,
+            void PCscanUI::AddGeometry(const string &name,
+                                       shared_ptr<geometry::Geometry3D> geom,
                                        rendering::Material *material /*= nullptr*/,
                                        bool bVisible /*= true*/)
             {
                 impl_->AddGeometry(name, geom, material, bVisible);
             }
 
-            void PCscanUI::AddPointCloud(const std::string &name,
-                                         std::shared_ptr<geometry::PointCloud> sPC,
+            void PCscanUI::AddPointCloud(const string &name,
+                                         shared_ptr<geometry::PointCloud> sPC,
                                          rendering::Material *material /*= nullptr*/,
                                          bool bVisible /*= true*/)
             {
@@ -769,14 +749,14 @@ namespace open3d
                         *sPC.get(),
                         core::Dtype::Float32);
 
-                std::shared_ptr<t::geometry::PointCloud> spP =
-                    std::make_shared<t::geometry::PointCloud>(tpcd);
+                shared_ptr<t::geometry::PointCloud> spP =
+                    make_shared<t::geometry::PointCloud>(tpcd);
 
                 impl_->AddTgeometry(name, spP, bVisible);
             }
 
-            void PCscanUI::UpdatePointCloud(const std::string &name,
-                                            std::shared_ptr<geometry::PointCloud> sPC)
+            void PCscanUI::UpdatePointCloud(const string &name,
+                                            shared_ptr<geometry::PointCloud> sPC)
             {
                 gui::Application::GetInstance().PostToMainThread(
                     this, [this, sPC, name]() {
@@ -794,17 +774,12 @@ namespace open3d
                     });
             }
 
-            void PCscanUI::RemoveGeometry(const std::string &name)
+            void PCscanUI::RemoveGeometry(const string &name)
             {
                 return impl_->RemoveGeometry(name);
             }
 
-            void PCscanUI::ShowGeometry(const std::string &name, bool show)
-            {
-                return impl_->ShowGeometry(name, show);
-            }
-
-            PCscanUI::DrawObject PCscanUI::GetGeometry(const std::string &name) const
+            DrawObject PCscanUI::GetGeometry(const string &name) const
             {
                 return impl_->GetGeometry(name);
             }
@@ -823,7 +798,7 @@ namespace open3d
                 impl_->SetLineWidth(line_width);
             }
 
-            std::vector<O3DVisualizerSelections::SelectionSet>
+            vector<O3DVisualizerSelections::SelectionSet>
             PCscanUI::GetSelectionSets() const
             {
                 return impl_->GetSelectionSets();
@@ -839,12 +814,7 @@ namespace open3d
                 return impl_->ResetCameraToDefault();
             }
 
-            PCscanUI::UIState PCscanUI::GetUIState() const
-            {
-                return impl_->m_uiState;
-            }
-
-            void PCscanUI::ExportCurrentImage(const std::string &path)
+            void PCscanUI::ExportCurrentImage(const string &path)
             {
                 impl_->ExportCurrentImage(path);
             }
@@ -855,10 +825,10 @@ namespace open3d
                 int settings_width = 15 * theme.font_size;
 
                 auto f = GetContentRect();
-                if (impl_->settings.m_panelAll->IsVisible())
+                if (impl_->m_panelCtrl->IsVisible())
                 {
                     impl_->m_pScene->SetFrame(Rect(f.x, f.y, f.width - settings_width, f.height));
-                    impl_->settings.m_panelAll->SetFrame(Rect(f.GetRight() - settings_width, f.y, settings_width, f.height));
+                    impl_->m_panelCtrl->SetFrame(Rect(f.GetRight() - settings_width, f.y, settings_width, f.height));
                 }
                 else
                 {
