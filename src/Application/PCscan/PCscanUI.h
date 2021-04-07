@@ -6,6 +6,7 @@
 #include <unordered_set>
 using namespace open3d::visualization::gui;
 using namespace open3d::visualization::rendering;
+using namespace Eigen;
 
 namespace open3d
 {

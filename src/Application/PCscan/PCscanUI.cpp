@@ -37,8 +37,11 @@ namespace open3d
                 {
                     Vert *m_panelAll;
                     CollapsableVert *m_panelScan;
+                    ProgressBar *m_scanProgress;
 
                     CollapsableVert *m_panelVertexSet;
+                    Button *m_btnCalcArea;
+                    Label *m_lArea;
                     Button *m_btnNewVertexSet;
                     Button *m_btnDeleteVertexSet;
                     ListView *m_listSelectSet;
@@ -109,14 +112,12 @@ namespace open3d
                         [this]() { this->ResetCameraToDefault(); });
 
                     auto *btnScanStart = new Button("Start New Scan");
-                    btnScanStart->SetOnClicked(
-                        [this]() {
-                            SetMouseMode(m_uiState.m_mouseMode);
-                        });
-
-                    auto *btnSelect = new Button("Select Point  ");
-                    btnSelect->SetOnClicked(
-                        [this]() { SetPicking(); });
+                    btnScanStart->SetToggleable(true);
+                    btnScanStart->SetOnClicked([this]()
+                    {
+                        //toggle
+                        SetMouseMode(m_uiState.m_mouseMode);
+                    });
 
                     auto h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(btnResetCam));
@@ -128,10 +129,13 @@ namespace open3d
                     h->AddStretch();
                     settings.m_panelScan->AddChild(GiveOwnership(h));
 
-                    h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(btnSelect));
-                    h->AddStretch();
-                    settings.m_panelScan->AddChild(GiveOwnership(h));
+                    // auto *btnSelect = new Button("Select Point   ");
+                    // btnSelect->SetOnClicked(
+                    //     [this]() { SetPicking(); });
+                    // h = new Horiz(v_spacing);
+                    // h->AddChild(GiveOwnership(btnSelect));
+                    // h->AddStretch();
+                    // settings.m_panelScan->AddChild(GiveOwnership(h));
 
                     // Vertex selection
                     settings.m_panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
@@ -141,6 +145,7 @@ namespace open3d
                     settings.m_btnNewVertexSet->SetOnClicked(
                         [this]() {
                             NewSelectionSet();
+                            SetPicking();
                         });
                     settings.m_btnDeleteVertexSet = new SmallButton(" - ");
                     settings.m_btnDeleteVertexSet->SetOnClicked(
@@ -148,38 +153,47 @@ namespace open3d
                             int idx = settings.m_listSelectSet->GetSelectedIndex();
                             RemoveSelectionSet(idx);
                         });
-                    settings.m_listSelectSet = new ListView();
-                    settings.m_listSelectSet->SetOnValueChanged([this](const char *, bool) 
-                    {
-                        SelectSelectionSet(settings.m_listSelectSet->GetSelectedIndex());
-                    });
-
-                    auto *btnCalc = new Button("Calculate");
-                    btnCalc->SetOnClicked([this]()
-                    {
-                        CalcSelectionArea();
-                    });
-
-                    h = new Horiz();
-                    h->AddChild(GiveOwnership(btnCalc));
-                    h->AddStretch();
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
-
-                    const char *selection_help = "Ctrl-click to select a point";
-                    h = new Horiz();
-                    h->AddStretch();
-                    h->AddChild(std::make_shared<Label>(selection_help));
-                    h->AddStretch();
-                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
 
                     h = new Horiz(v_spacing);
-                    h->AddChild(std::make_shared<Label>("Selection Sets"));
+                    h->AddChild(std::make_shared<Label>("Select Area"));
                     h->AddStretch();
                     h->AddChild(GiveOwnership(settings.m_btnNewVertexSet));
                     h->AddChild(GiveOwnership(settings.m_btnDeleteVertexSet));
                     settings.m_panelVertexSet->AddChild(GiveOwnership(h));
 
+                    const char *selection_help = "(Ctrl-click to select a point)";
+                    h = new Horiz();
+                    h->AddChild(std::make_shared<Label>(selection_help));
+                    h->AddStretch();
+                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
+
+                    settings.m_listSelectSet = new ListView();
+                    settings.m_listSelectSet->SetOnValueChanged([this](const char *, bool) 
+                    {
+                        SelectSelectionSet(settings.m_listSelectSet->GetSelectedIndex());
+                        int idx = settings.m_listSelectSet->GetSelectedIndex();
+                        UpdateArea(idx);
+                    });
                     settings.m_panelVertexSet->AddChild(GiveOwnership(settings.m_listSelectSet));
+
+                    // Area Calculation
+                    settings.m_btnCalcArea = new Button("Calculate Area");
+                    settings.m_btnCalcArea->SetOnClicked([this]()
+                    {
+                        int idx = settings.m_listSelectSet->GetSelectedIndex();
+                        UpdateArea(idx);
+                    });
+                    settings.m_lArea = new Label();
+                    settings.m_lArea->SetBackgroundColor(Color(1.0, 0, 0));
+
+                    h = new Horiz();
+                    h->AddChild(GiveOwnership(settings.m_btnCalcArea));
+                    h->AddStretch();
+                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
+                    h = new Horiz();
+                    h->AddChild(GiveOwnership(settings.m_lArea));
+                    h->AddStretch();
+                    settings.m_panelVertexSet->AddChild(GiveOwnership(h));
 
                     // Scene controls
                     settings.m_panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
@@ -270,8 +284,8 @@ namespace open3d
                 }
 
                 void AddTgeometry(const std::string &name,
-                                   std::shared_ptr<t::geometry::PointCloud> tgeom,
-                                   bool bVisible = true)
+                                  std::shared_ptr<t::geometry::PointCloud> tgeom,
+                                  bool bVisible = true)
                 {
                     bool no_shadows = false;
                     Material mat;
@@ -572,33 +586,65 @@ namespace open3d
                 {
                     settings.m_listSelectSet->SetSelectedIndex(index);
                     m_sSelection->SelectSet(index);
+                }
 
+                void UpdateArea(int index)
+                {
                     //draw rectangle
                     std::map<std::string, std::set<O3DVisualizerSelections::SelectedIndex>> msSI;
                     msSI = m_sSelection->GetSets().at(index);
 
                     std::set<O3DVisualizerSelections::SelectedIndex> sSI = msSI["GEO"];
                     int nP = sSI.size();
-                    if(nP < 4)return;
+                    if (nP < 4)
+                        return;
 
                     static geometry::LineSet LS;
                     LS.points_.clear();
                     LS.lines_.clear();
                     LS.colors_.clear();
 
-                    for(O3DVisualizerSelections::SelectedIndex sI : sSI)
+                    for (O3DVisualizerSelections::SelectedIndex sI : sSI)
                     {
                         LS.points_.push_back(sI.point);
                     }
 
-                    LS.lines_.push_back(Eigen::Vector2i(0,1));
-                    LS.lines_.push_back(Eigen::Vector2i(1,2));
-                    LS.lines_.push_back(Eigen::Vector2i(2,3));
-                    LS.lines_.push_back(Eigen::Vector2i(3,0));
+                    LS.lines_.push_back(Vector2i(0, 1));
+                    LS.lines_.push_back(Vector2i(1, 2));
+                    LS.lines_.push_back(Vector2i(2, 3));
+                    LS.lines_.push_back(Vector2i(3, 0));
 
                     std::shared_ptr<geometry::LineSet> sLS = std::make_shared<geometry::LineSet>(LS);
                     AddGeometry("RectSelected", sLS);
+                    
+                    //Calc area
+                    Vector3d p1 = LS.points_[0];
+                    Vector3d p2 = LS.points_[1];
+                    Vector3d p3 = LS.points_[2];
+                    Vector3d p4 = LS.points_[3];
+
+                    double S = CalcArea(p1, p2, p3) + CalcArea(p1, p3, p4);
+                    char buf[16];
+                    std::string format = "%.3f";
+                    snprintf(buf, 16, format.c_str(), S);
+                    std::string strS = "Area = " + std::string(buf) + " m^2";
+                    settings.m_lArea->SetText(strS.c_str());
+
                     m_pWindow->PostRedraw();
+                }
+
+                double CalcArea(const Vector3d &p1,
+                                const Vector3d &p2,
+                                const Vector3d &p3)
+                {
+                    Vector3d d12 = p2 - p1;
+                    Vector3d d23 = p3 - p2;
+                    Vector3d d31 = p1 - p3;
+                    double a = d12.norm();
+                    double b = d23.norm();
+                    double c = d31.norm();
+                    double s = (a + b + c) / 2;
+                    return sqrt(s * (s - a) * (s - b) * (s - c));
                 }
 
                 void UpdateSelectionSetList()
@@ -620,11 +666,6 @@ namespace open3d
 
                     SelectSelectionSet(idx);
                     m_pWindow->PostRedraw();
-                }
-
-                void CalcSelectionArea(void)
-                {
-
                 }
 
                 void UpdateSelectableGeometry()

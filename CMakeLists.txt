@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.20)
 set(CMAKE_BUILD_TYPE Debug)
 project(OpenKAI)
 
@@ -52,8 +52,8 @@ if(USE_OPEN3D)
   set(OpenKAI_lib ${OpenKAI_lib} ${Open3D_LIBRARIES})
   set(OpenKAI_libDir ${OpenKAI_libDir} ${Open3D_LIBRARY_DIRS})
   link_directories(${Open3D_LIBRARY_DIRS})
-  set(Open3D_root "Open3D" CACHE STRING "")
-  set(OpenKAI_include ${OpenKAI_include} "${Open3D_root}/3rdparty/jsoncpp/include")
+  set(Open3D_jsoncpp "Open3D/3rdparty/jsoncpp/include" CACHE STRING "")
+  set(OpenKAI_include ${OpenKAI_include} ${Open3D_jsoncpp})
 endif()
 
 if(USE_OPENCL)
