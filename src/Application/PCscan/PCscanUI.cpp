@@ -26,6 +26,7 @@ namespace open3d
                 Shader m_sceneShader = Shader::STANDARD;
                 bool m_bShowSettings = true;
                 bool m_bShowAxes = true;
+                bool m_bScanning = false;
 
                 Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
                 int m_pointSize = 2;
@@ -43,8 +44,6 @@ namespace open3d
                 SceneWidget *m_pScene = nullptr;
                 string m_modelName;
                 string m_areaName;
-                geometry::LineSet m_areaLine;
-                shared_ptr<geometry::LineSet> m_spAreaLine;
                 Vector3d m_areaLineCol;
 
                 //UI components
@@ -67,6 +66,9 @@ namespace open3d
                 Slider *m_sliderPointSize;
                 //UI components
 
+                //UI handler
+                O3D_UI_Cb m_cbBtnScan;
+
                 void Construct(PCscanUI *w)
                 {
                     if (m_pWindow)
@@ -75,7 +77,7 @@ namespace open3d
                     m_modelName = "PCMODEL";
                     m_areaName = "PCAREA";
                     m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
-                    m_spAreaLine = make_shared<geometry::LineSet>(m_areaLine);
+                    m_cbBtnScan.init();
 
                     m_pWindow = w;
                     m_pScene = new SceneWidget();
@@ -128,7 +130,8 @@ namespace open3d
 
                     m_btnResetCam = new Button("Reset Camera  ");
                     m_btnResetCam->SetOnClicked([this]() {
-                        this->ResetCameraToDefault();
+                        ResetCameraToDefault();
+                        SetMouseCameraMode(m_uiState.m_mouseMode);
                     });
                     auto h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_btnResetCam));
@@ -139,11 +142,14 @@ namespace open3d
                     m_panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                     m_panelCtrl->AddChild(GiveOwnership(m_panelScan));
 
-                    m_btnScanStart = new Button("Start New Scan");
+                    m_btnScanStart = new Button("Start Scan");
                     m_btnScanStart->SetToggleable(true);
-                    m_btnScanStart->SetOnClicked([this]() {
+                    m_btnScanStart->SetOnClicked([this]()
+                    {
                         //toggle
                         SetMouseCameraMode(m_uiState.m_mouseMode);
+                		if(!m_cbBtnScan.bValid())return;
+                        m_cbBtnScan.call();
                     });
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_btnScanStart));
@@ -166,13 +172,13 @@ namespace open3d
                     m_panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
                     m_panelCtrl->AddChild(GiveOwnership(m_panelVertexSet));
 
-                    m_btnNewVertexSet = new SmallButton(" + ");
+                    m_btnNewVertexSet = new SmallButton("  +  ");
                     m_btnNewVertexSet->SetOnClicked(
                         [this]() {
                             NewVertexSet();
                             SetMousePickingMode();
                         });
-                    m_btnDeleteVertexSet = new SmallButton(" - ");
+                    m_btnDeleteVertexSet = new SmallButton("  -  ");
                     m_btnDeleteVertexSet->SetOnClicked(
                         [this]() {
                             int idx = m_listVertexSet->GetSelectedIndex();
@@ -222,6 +228,15 @@ namespace open3d
 
                     grid->AddChild(make_shared<Label>("PointSize"));
                     grid->AddChild(GiveOwnership(m_sliderPointSize));
+                }
+
+                void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
+                {
+                    if(!pCb)return;
+                    if(!pPCV)return;
+
+                    m_cbBtnScan.m_pCb = pCb;
+                    m_cbBtnScan.m_pPCV = pPCV;
                 }
 
                 void AddGeometry(const string &name,
@@ -344,16 +359,17 @@ namespace open3d
 
                 void RemoveGeometry(const string &name)
                 {
-                    for (size_t i = 0; i < m_vObject.size(); ++i)
-                    {
-                        if (m_vObject[i].m_name == name)
-                        {
-                            //                            m_vObject.erase(m_vObject.begin() + i);
-                            break;
-                        }
-                    }
-
                     m_pScene->GetScene()->RemoveGeometry(name);
+
+                    for (size_t i = 0; i < m_vObject.size(); i++)
+                    {
+                        DrawObject *pO = &m_vObject[i];
+                        if (pO->m_name != name)
+                            continue;
+
+                        m_vObject.erase(m_vObject.begin() + i);
+                        break;
+                    }
 
                     // Bounds have changed, so update the selection point size, since they
                     // depend on the bounds.
@@ -530,6 +546,7 @@ namespace open3d
                     m_sVertex->NewSet();
                     UpdateVertexSetList();
                     SelectVertexSet(int(m_sVertex->GetNumberOfSets()) - 1);
+                    UpdateArea();
                 }
 
                 void RemoveVertexSet(int index)
@@ -543,6 +560,7 @@ namespace open3d
                         m_sVertex->NewSet();
                     }
                     UpdateVertexSetList();
+                    UpdateArea();
                 }
 
                 void SelectVertexSet(int index)
@@ -563,7 +581,7 @@ namespace open3d
                     for (size_t i = 0; i < n; ++i)
                     {
                         stringstream s;
-                        s << "Set " << (i + 1);
+                        s << "Area " << (i + 1);
                         items.push_back(s.str());
                     }
                     m_listVertexSet->SetItems(items);
@@ -574,50 +592,57 @@ namespace open3d
 
                 void UpdateArea(void)
                 {
-                    int index = m_listVertexSet->GetSelectedIndex();
-                    if (index < 0)
+                    int iS = m_listVertexSet->GetSelectedIndex();
+                    if (iS < 0)
                     {
-                        UpdateAreaLabel(-1.0);
+                        UpdateAreaLabel(-1.0, iS);
+                        RemoveGeometry(m_areaName);
                         return;
                     }
 
                     //draw rectangle
                     map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
-                    msSI = m_sVertex->GetSets().at(index);
+                    msSI = m_sVertex->GetSets().at(iS);
                     set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
                     int nP = sSI.size();
                     if (nP < 3)
                     {
-                        UpdateAreaLabel(-1.0);
+                        UpdateAreaLabel(-1.0, iS);
+                        RemoveGeometry(m_areaName);
                         return;
                     }
 
-                    m_areaLine.points_.clear();
-                    m_areaLine.lines_.clear();
-                    m_areaLine.colors_.clear();
-                    for (int i = 0; i < nP; i++)
+                    vector<O3DVisualizerSelections::SelectedIndex> vSI;
+                    for (O3DVisualizerSelections::SelectedIndex sI : sSI)
                     {
-                        for (O3DVisualizerSelections::SelectedIndex sI : sSI)
+                        int i;
+                        for (i = vSI.size() - 1; i >= 0; i--)
                         {
-                            if(sI.order != i)continue;
-                            m_areaLine.points_.push_back(sI.point);
-                            break;
+                            if (vSI[i].order < sI.order)
+                                break;
                         }
+
+                        vSI.insert(vSI.begin() + i + 1, sI);
                     }
 
-                    nP = m_areaLine.points_.size();
+                    shared_ptr<geometry::LineSet> spLS = shared_ptr<geometry::LineSet>(new geometry::LineSet());
+                    for (int i = 0; i < vSI.size(); i++)
+                    {
+                        spLS->points_.push_back(vSI[i].point);
+                    }
+
+                    nP = spLS->points_.size();
                     for (int i = 0; i < nP; i++)
                     {
                         int j = i + 1;
                         if (j >= nP)
                             j = 0;
-                        m_areaLine.lines_.push_back(Vector2i(i, j));
-                        m_areaLine.colors_.push_back(m_areaLineCol);
+                        spLS->lines_.push_back(Vector2i(i, j));
+                        spLS->colors_.push_back(m_areaLineCol);
                     }
 
                     RemoveGeometry(m_areaName);
-                    AddGeometry(m_areaName, GiveOwnership(&m_areaLine));
-                    //                    AddGeometry(m_areaName, m_spAreaLine);
+                    AddGeometry(m_areaName, spLS);
 
                     //Calc area
                     double S = 0;
@@ -625,27 +650,24 @@ namespace open3d
                     {
                         S +=
                             CalcArea(
-                                m_areaLine.points_[0],
-                                m_areaLine.points_[i],
-                                m_areaLine.points_[i + 1]);
+                                spLS->points_[0],
+                                spLS->points_[i],
+                                spLS->points_[i + 1]);
                     }
 
-                    UpdateAreaLabel(S);
+                    UpdateAreaLabel(S, iS);
                     m_pWindow->PostRedraw();
                 }
 
-                void UpdateAreaLabel(double S)
+                void UpdateAreaLabel(double S, int i)
                 {
-                    string strS = "Set not selected";
+                    char buf[128];
                     if (S >= 0.0)
-                    {
-                        char buf[16];
-                        string format = "%.3f";
-                        snprintf(buf, 16, format.c_str(), S);
-                        strS = "Area = " + string(buf) + " m^2";
-                    }
+                        snprintf(buf, 128, "Area %i = %.3f m^2", i + 1, S);
+                    else
+                        snprintf(buf, 128, "Area %i not selected", i + 1);
 
-                    m_lArea->SetText(strS.c_str());
+                    m_lArea->SetText(buf);
                 }
 
                 double CalcArea(const Vector3d &p1,
@@ -836,6 +858,11 @@ namespace open3d
                 }
 
                 Super::Layout(theme);
+            }
+
+            void PCscanUI::SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
+            {
+                impl_->SetCbBtnScan(pCb, pPCV);
             }
 
         } // namespace visualizer

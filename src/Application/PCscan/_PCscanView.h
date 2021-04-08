@@ -25,9 +25,9 @@ namespace kai
 		virtual int check(void);
 
 	protected:
-		static void OnBtnResetPC( void* pPCV );
-		static void OnBtnResetPicker( void* pPCV );
-		static void OnBtnSavePC( void* pPCV );
+		static void OnBtnScan( void* pPCV );
+		static void OnBtnReset( void* pPCV );
+		static void OnBtnSave( void* pPCV );
 
 		virtual void update(void);
 		virtual void updateGUI(void);
@@ -45,7 +45,6 @@ namespace kai
 		}
 
 	protected:
-//		shared_ptr<PCscanUI> m_spWin;
 		shared_ptr<visualizer::PCscanUI> m_spWin;
 	};
 

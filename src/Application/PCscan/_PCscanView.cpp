@@ -53,6 +53,7 @@ namespace kai
 			readAllPC();
 
 		m_spWin->AddPointCloud("PCMODEL", m_spPC);
+		m_spWin->ResetCameraToDefault();
 
 		while (m_pT->bRun())
 		{
@@ -73,7 +74,7 @@ namespace kai
 		m_spWin = std::make_shared<visualizer::PCscanUI>(*this->getName(), 2000, 1000);
 		app.AddWindow(m_spWin);
 
-		// m_spWin->setCbResetPC(OnBtnResetPC, (void *)this);
+		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
 		// m_spWin->setCbResetPicker(OnBtnResetPicker, (void *)this);
 		// m_spWin->setCbSavePC(OnBtnSavePC, (void *)this);
 
@@ -82,19 +83,19 @@ namespace kai
 		exit(0);
 	}
 
-	void _PCscanView::OnBtnResetPC(void *pPCV)
+	void _PCscanView::OnBtnScan(void *pPCV)
 	{
 		NULL_(pPCV);
 		_PCscanView *pV = (_PCscanView *)pPCV;
 	}
 
-	void _PCscanView::OnBtnResetPicker(void *pPCV)
+	void _PCscanView::OnBtnReset(void *pPCV)
 	{
 		NULL_(pPCV);
 		_PCscanView *pV = (_PCscanView *)pPCV;
 	}
 
-	void _PCscanView::OnBtnSavePC(void *pPCV)
+	void _PCscanView::OnBtnSave(void *pPCV)
 	{
 		NULL_(pPCV);
 		_PCscanView *pV = (_PCscanView *)pPCV;
