@@ -1,6 +1,7 @@
 #pragma once
 #ifdef USE_OPEN3D
 #include "../../Base/open3d.h"
+#include "../../Utility/utilStr.h"
 #include <set>
 #include <unordered_map>
 #include <unordered_set>

@@ -45,6 +45,7 @@ namespace open3d
                 string m_modelName;
                 string m_areaName;
                 Vector3d m_areaLineCol;
+                vector<shared_ptr<Label3D>> m_vspDistLabel;
 
                 //UI components
                 Vert *m_panelCtrl;
@@ -60,7 +61,6 @@ namespace open3d
                 Button *m_btnNewVertexSet;
                 Button *m_btnDeleteVertexSet;
                 ListView *m_listVertexSet;
-                Label *m_lArea;
 
                 CollapsableVert *m_panelSetting;
                 Slider *m_sliderPointSize;
@@ -89,11 +89,16 @@ namespace open3d
                                    string,
                                    vector<pair<size_t, Eigen::Vector3d>>>
                                    &indices,
-                               int keymods) {
+                               int keymods) 
+                        {
                             if (keymods & int(KeyModifier::SHIFT))
+                            {
                                 m_sVertex->UnselectIndices(indices);
+                            }
                             else
+                            {                                
                                 m_sVertex->SelectIndices(indices);
+                            }
 
                             UpdateArea();
                         });
@@ -144,11 +149,11 @@ namespace open3d
 
                     m_btnScanStart = new Button("Start Scan");
                     m_btnScanStart->SetToggleable(true);
-                    m_btnScanStart->SetOnClicked([this]()
-                    {
+                    m_btnScanStart->SetOnClicked([this]() {
                         //toggle
                         SetMouseCameraMode(m_uiState.m_mouseMode);
-                		if(!m_cbBtnScan.bValid())return;
+                        if (!m_cbBtnScan.bValid())
+                            return;
                         m_cbBtnScan.call();
                     });
                     h = new Horiz(v_spacing);
@@ -204,14 +209,6 @@ namespace open3d
                     });
                     m_panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
 
-                    // Area Calculation
-                    m_lArea = new Label();
-                    m_lArea->SetBackgroundColor(Color(1.0, 0, 0));
-                    h = new Horiz();
-                    h->AddChild(GiveOwnership(m_lArea));
-                    h->AddStretch();
-                    m_panelVertexSet->AddChild(GiveOwnership(h));
-
                     // Scene controls
                     m_panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
                     m_panelSetting->SetIsOpen(false);
@@ -232,8 +229,10 @@ namespace open3d
 
                 void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
                 {
-                    if(!pCb)return;
-                    if(!pPCV)return;
+                    if (!pCb)
+                        return;
+                    if (!pPCV)
+                        return;
 
                     m_cbBtnScan.m_pCb = pCb;
                     m_cbBtnScan.m_pPCV = pPCV;
@@ -593,22 +592,23 @@ namespace open3d
                 void UpdateArea(void)
                 {
                     int iS = m_listVertexSet->GetSelectedIndex();
-                    if (iS < 0)
+                    size_t nSet = m_sVertex->GetNumberOfSets();
+                    if (iS < 0 || iS >= nSet)
                     {
-                        UpdateAreaLabel(-1.0, iS);
                         RemoveGeometry(m_areaName);
+                        RemoveDistLabel();
                         return;
                     }
 
-                    //draw rectangle
+                    //draw polygon
                     map<string, set<O3DVisualizerSelections::SelectedIndex>> msSI;
                     msSI = m_sVertex->GetSets().at(iS);
                     set<O3DVisualizerSelections::SelectedIndex> sSI = msSI[m_modelName];
                     int nP = sSI.size();
                     if (nP < 3)
                     {
-                        UpdateAreaLabel(-1.0, iS);
                         RemoveGeometry(m_areaName);
+                        RemoveDistLabel();
                         return;
                     }
 
@@ -634,9 +634,7 @@ namespace open3d
                     nP = spLS->points_.size();
                     for (int i = 0; i < nP; i++)
                     {
-                        int j = i + 1;
-                        if (j >= nP)
-                            j = 0;
+                        int j = (i + 1) % nP;
                         spLS->lines_.push_back(Vector2i(i, j));
                         spLS->colors_.push_back(m_areaLineCol);
                     }
@@ -644,44 +642,60 @@ namespace open3d
                     RemoveGeometry(m_areaName);
                     AddGeometry(m_areaName, spLS);
 
-                    //Calc area
-                    double S = 0;
-                    for (int i = 1; i <= nP - 2; i++)
+                    //Distance labels
+                    RemoveDistLabel();
+                    Vector3d vPa = Vector3d(0, 0, 0);
+                    for (int i = 0; i < nP; i++)
                     {
-                        S +=
-                            CalcArea(
-                                spLS->points_[0],
-                                spLS->points_[i],
-                                spLS->points_[i + 1]);
+                        int j = (i + 1) % nP;
+                        vPa += spLS->points_[i];
+                        Vector3d p1 = spLS->points_[i];
+                        Vector3d p2 = spLS->points_[j];
+                        Vector3d vPd = (p1 + p2) * 0.5;
+                        Vector3f vPdf = Vector3f(vPd.x(), vPd.y(), vPd.z());
+                        double d = (p2 - p1).norm();
+                        string strD = f2str(d, 3) + " m";
+                        shared_ptr<Label3D> spL = m_pScene->AddLabel(vPdf, strD.c_str());
+                        spL->SetPosition(vPdf);
+                        spL->SetTextColor(Color(1, 1, 1));
+                        m_vspDistLabel.push_back(spL);
                     }
 
-                    UpdateAreaLabel(S, iS);
+                    double S = Area(spLS->points_);
+                    string strS = "Area = " + f2str(S, 3) + " m^2";
+                    vPa /= nP;
+                    Vector3f vPaf = Vector3f(vPa.x(), vPa.y(), vPa.z());
+                    shared_ptr<Label3D> spA = m_pScene->AddLabel(vPaf, strS.c_str());
+                    spA->SetPosition(vPaf);
+                    spA->SetTextColor(Color(1, 1, 0));
+                    m_vspDistLabel.push_back(spA);
+
                     m_pWindow->PostRedraw();
                 }
 
-                void UpdateAreaLabel(double S, int i)
+                void RemoveDistLabel(void)
                 {
-                    char buf[128];
-                    if (S >= 0.0)
-                        snprintf(buf, 128, "Area %i = %.3f m^2", i + 1, S);
-                    else
-                        snprintf(buf, 128, "Area %i not selected", i + 1);
-
-                    m_lArea->SetText(buf);
+                    for (shared_ptr<Label3D> spLabel : m_vspDistLabel)
+                    {
+                        m_pScene->RemoveLabel(spLabel);
+                    }
+                    m_vspDistLabel.clear();
                 }
 
-                double CalcArea(const Vector3d &p1,
-                                const Vector3d &p2,
-                                const Vector3d &p3)
+                double Area(vector<Vector3d> &vP)
                 {
-                    Vector3d d12 = p2 - p1;
-                    Vector3d d23 = p3 - p2;
-                    Vector3d d31 = p1 - p3;
-                    double a = d12.norm();
-                    double b = d23.norm();
-                    double c = d31.norm();
-                    double s = (a + b + c) / 2;
-                    return sqrt(s * (s - a) * (s - b) * (s - c));
+                    int nP = vP.size();
+                    Vector3d vA = Vector3d(0, 0, 0);
+                    int j = 0;
+
+                    for (int i = 0; i < nP; i++)
+                    {
+                        j = (i + 1) % nP;
+                        vA += vP[i].cross(vP[j]);
+                    }
+
+                    vA *= 0.5;
+                    return vA.norm();
                 }
 
                 void ExportCurrentImage(const string &path)

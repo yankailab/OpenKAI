@@ -6,6 +6,8 @@
 #endif
 
 #include "../Base/platform.h"
+#include "../Base/macro.h"
+#include "../Base/constant.h"
 
 namespace kai
 {

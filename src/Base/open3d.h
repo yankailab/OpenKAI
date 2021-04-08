@@ -25,6 +25,7 @@
 #include <open3d/visualization/gui/Dialog.h>
 #include <open3d/visualization/gui/FileDialog.h>
 #include <open3d/visualization/gui/Label.h>
+#include <open3d/visualization/gui/Label3D.h>
 #include <open3d/visualization/gui/Layout.h>
 #include <open3d/visualization/gui/ListView.h>
 #include <open3d/visualization/gui/NumberEdit.h>
