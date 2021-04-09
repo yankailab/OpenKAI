@@ -8,6 +8,7 @@
 #ifndef OpenKAI_src_Application_PCscan__PCscan_H_
 #define OpenKAI_src_Application_PCscan__PCscan_H_
 #ifdef USE_OPEN3D
+#include "../../PointCloud/_PCstream.h"
 #include "../../PointCloud/_PCviewer.h"
 #include "../../SLAM/_SlamBase.h"
 #include "PCscanUI.h"
@@ -24,6 +25,9 @@ namespace kai
 		virtual bool init(void *pKiss);
 		virtual bool start(void);
 		virtual int check(void);
+
+		virtual bool startScan(void);
+		virtual bool stopScan(void);
 
 	protected:
 		virtual void update(void);
@@ -51,7 +55,9 @@ namespace kai
 		}
 
 	protected:
+		_PCstream* m_pPS;
 		shared_ptr<visualizer::PCscanUI> m_spWin;
+		string m_modelName;
 		_Thread *m_pTk;
 		_SlamBase *m_pSB;
 

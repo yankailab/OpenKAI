@@ -50,23 +50,14 @@ namespace open3d
                 //UI components
                 Vert *m_panelCtrl;
 
-                CollapsableVert *m_panelCam;
-                Button *m_btnCamOrigin;
-                Button *m_btnCamAuto;
-                Button *m_btnCamSavePC;
-                Button *m_btnCamSaveRGB;
-
-                CollapsableVert *m_panelScan;
                 Button *m_btnScanStart;
                 ProgressBar *m_progScan;
                 Label *m_labelProg;
 
-                CollapsableVert *m_panelVertexSet;
                 Button *m_btnNewVertexSet;
                 Button *m_btnDeleteVertexSet;
                 ListView *m_listVertexSet;
 
-                CollapsableVert *m_panelSetting;
                 Slider *m_sliderPointSize;
                 //UI components
 
@@ -83,7 +74,6 @@ namespace open3d
                     m_modelName = "PCMODEL";
                     m_areaName = "PCAREA";
                     m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
-
                     m_cbBtnScan.init();
                     m_cbBtnSavePC.init();
 
@@ -117,15 +107,15 @@ namespace open3d
                     Eigen::Vector3f sun_dir = {0, 0, 0};
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
 
-                    MakeCtrlPanel();
+                    InitCtrlPanel();
                     ShowAxes(true);
                     SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
                     SetLineWidth(m_uiState.m_lineWidth);
-                    SetMouseCameraMode(m_uiState.m_mouseMode);
+                    SetMouseCameraMode();
                     ResetCameraToDefault();
                 }
 
-                void MakeCtrlPanel(void)
+                void InitCtrlPanel(void)
                 {
                     auto em = m_pWindow->GetTheme().font_size;
                     auto half_em = int(round(0.5f * float(em)));
@@ -135,78 +125,54 @@ namespace open3d
                     m_pWindow->AddChild(GiveOwnership(m_panelCtrl));
 
                     Margins margins(em, 0, half_em, 0);
-                    Margins tabbed_margins(0, half_em, 0, 0);
 
-                    // Camera
-                    m_panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
-                    m_panelCtrl->AddChild(GiveOwnership(m_panelCam));
+                    // File
+                    auto panelFile = new CollapsableVert("FILE", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(panelFile));
 
-                    m_btnCamOrigin = new Button("Origin");
-                    m_btnCamOrigin->SetOnClicked([this]()
-                    {
-                        ResetCameraToDefault();
-                        SetMouseCameraMode(m_uiState.m_mouseMode);
-                    });
-        
                     auto h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(m_btnCamOrigin));
-                    h->AddStretch();
-
-                    m_btnCamAuto = new Button("Auto Pan");
-                    m_btnCamAuto->SetOnClicked([this]()
+                    auto btnCamSavePC = new Button("  Export .PLY  ");
+                    btnCamSavePC->SetOnClicked([this]()
                     {
-                        ResetCameraToDefault();
-                        SetMouseCameraMode(m_uiState.m_mouseMode);
+                        OnExportPLY();
                     });
-                    h->AddChild(GiveOwnership(m_btnCamAuto));
+                    h->AddChild(GiveOwnership(btnCamSavePC));
                     h->AddStretch();
 
-                    m_panelCam->AddChild(GiveOwnership(h));
-
-                    h = new Horiz(v_spacing);
-                    m_btnCamSavePC = new Button("Export .ply");
-                    m_btnCamSavePC->SetOnClicked([this]()
+                    auto btnCamSaveRGB = new Button("  Export RGB  ");
+                    btnCamSaveRGB->SetOnClicked([this]()
                     {
-                        m_cbBtnSavePC.call(NULL);
-                    });
-                    h->AddChild(GiveOwnership(m_btnCamSavePC));
-                    h->AddStretch();
-
-                    m_btnCamSaveRGB = new Button("Export RGB");
-                    m_btnCamSaveRGB->SetOnClicked([this]()
-                    {
-//                        m_cbBtnSavePC.call(NULL);
                         OnExportRGB();
                     });
-                    h->AddChild(GiveOwnership(m_btnCamSaveRGB));
+                    h->AddChild(GiveOwnership(btnCamSaveRGB));
                     h->AddStretch();
-
-                    m_panelCam->AddChild(GiveOwnership(h));
+                    panelFile->AddChild(GiveOwnership(h));
+                    panelFile->SetIsOpen(false);
 
                     // Scan
-                    m_panelScan = new CollapsableVert("SCAN", v_spacing, margins);
-                    m_panelCtrl->AddChild(GiveOwnership(m_panelScan));
+                    auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(panelScan));
 
-                    m_btnScanStart = new Button("Start");
-                    m_btnScanStart->SetToggleable(m_bScanning);
+                    m_btnScanStart = new Button("     Start     ");
+                    m_btnScanStart->SetToggleable(true);
                     m_btnScanStart->SetOnClicked([this]()
                     {
-                        SetMouseCameraMode(m_uiState.m_mouseMode);
+                        SetMouseCameraMode();
                         RemoveAllVertexSet();
 
                         m_bScanning = !m_bScanning;
 
-                        m_btnScanStart->SetToggleable(m_bScanning);
+                        m_btnScanStart->SetOn(m_bScanning);
                         if(m_bScanning)
                         {
-                            m_btnScanStart->SetText("Stop ");
+                            m_btnScanStart->SetText("     Stop     ");
                             m_btnNewVertexSet->SetEnabled(false);
                             m_btnDeleteVertexSet->SetEnabled(false);
                             m_listVertexSet->SetEnabled(false);
                         }
                         else
                         {
-                            m_btnScanStart->SetText("Start");
+                            m_btnScanStart->SetText("     Start     ");
                             m_btnNewVertexSet->SetEnabled(true);
                             m_btnDeleteVertexSet->SetEnabled(true);
                             m_listVertexSet->SetEnabled(true);
@@ -214,27 +180,39 @@ namespace open3d
 
                         int b = m_bScanning ? 1 : 0;
                         m_cbBtnScan.call(&b);
+
+                        m_pWindow->PostRedraw();
                     });
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_btnScanStart));
                     h->AddStretch();
-                    m_panelScan->AddChild(GiveOwnership(h));
 
-                    m_labelProg = new Label("Used memory: 0%");
+                    auto btnCamAuto = new Button("   Auto Pan   ");
+                    btnCamAuto->SetOnClicked([this]()
+                    {
+                        ResetCameraToDefault();
+                        SetMouseCameraMode();
+                    });
+                    h->AddChild(GiveOwnership(btnCamAuto));
+                    h->AddStretch();
+
+                    panelScan->AddChild(GiveOwnership(h));
+
+                    m_labelProg = new Label("Memory used: 0%");
                     h = new Horiz();
                     h->AddChild(GiveOwnership(m_labelProg));
                     h->AddStretch();
-                    m_panelScan->AddChild(GiveOwnership(h));
+                    panelScan->AddChild(GiveOwnership(h));
 
                     m_progScan = new ProgressBar();
                     m_progScan->SetValue(0.0);
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_progScan));
-                    m_panelScan->AddChild(GiveOwnership(h));
+                    panelScan->AddChild(GiveOwnership(h));
 
                     // Vertex selection
-                    m_panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
-                    m_panelCtrl->AddChild(GiveOwnership(m_panelVertexSet));
+                    auto panelVertexSet = new CollapsableVert("MEASURE", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(panelVertexSet));
 
                     m_btnNewVertexSet = new SmallButton("  +  ");
                     m_btnNewVertexSet->SetOnClicked(
@@ -253,25 +231,25 @@ namespace open3d
                     h->AddStretch();
                     h->AddChild(GiveOwnership(m_btnNewVertexSet));
                     h->AddChild(GiveOwnership(m_btnDeleteVertexSet));
-                    m_panelVertexSet->AddChild(GiveOwnership(h));
+                    panelVertexSet->AddChild(GiveOwnership(h));
 
-                    const char *selection_help = "(Ctrl-click to select a point)";
                     h = new Horiz();
-                    h->AddChild(make_shared<Label>(selection_help));
+                    h->AddChild(make_shared<Label>("(Ctrl-click to select a point)"));
                     h->AddStretch();
-                    m_panelVertexSet->AddChild(GiveOwnership(h));
+                    panelVertexSet->AddChild(GiveOwnership(h));
 
                     m_listVertexSet = new ListView();
-                    m_listVertexSet->SetOnValueChanged([this](const char *, bool) {
-                        SelectVertexSet(m_listVertexSet->GetSelectedIndex());
-                        UpdateArea();
-                    });
-                    m_panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
+                    m_listVertexSet->SetOnValueChanged(
+                        [this](const char *, bool) {
+                            SelectVertexSet(m_listVertexSet->GetSelectedIndex());
+                            UpdateArea();
+                        });
+                    panelVertexSet->AddChild(GiveOwnership(m_listVertexSet));
 
                     // Scene controls
-                    m_panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
-                    m_panelSetting->SetIsOpen(false);
-                    m_panelCtrl->AddChild(GiveOwnership(m_panelSetting));
+                    auto panelSetting = new CollapsableVert("SETTING", v_spacing, margins);
+                    panelSetting->SetIsOpen(false);
+                    m_panelCtrl->AddChild(GiveOwnership(panelSetting));
                     m_sliderPointSize = new Slider(Slider::INT);
                     m_sliderPointSize->SetLimits(1, 10);
                     m_sliderPointSize->SetValue(m_uiState.m_pointSize);
@@ -280,32 +258,19 @@ namespace open3d
                     });
 
                     auto *grid = new VGrid(2, v_spacing);
-                    m_panelSetting->AddChild(GiveOwnership(grid));
-
+                    panelSetting->AddChild(GiveOwnership(grid));
                     grid->AddChild(make_shared<Label>("PointSize"));
                     grid->AddChild(GiveOwnership(m_sliderPointSize));
                 }
 
                 void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV)
                 {
-                    if (!pCb)
-                        return;
-                    if (!pPCV)
-                        return;
-
-                    m_cbBtnScan.m_pCb = pCb;
-                    m_cbBtnScan.m_pPCV = pPCV;
+                    m_cbBtnScan.add(pCb, pPCV);
                 }
 
                 void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV)
                 {
-                    if (!pCb)
-                        return;
-                    if (!pPCV)
-                        return;
-
-                    m_cbBtnSavePC.m_pCb = pCb;
-                    m_cbBtnSavePC.m_pPCV = pPCV;
+                    m_cbBtnSavePC.add(pCb, pPCV);
                 }
 
                 void SetProgressBar(float v)
@@ -474,12 +439,26 @@ namespace open3d
                     auto scene = m_pScene->GetScene();
                     m_pScene->SetupCamera(60.0f, scene->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
 
-                    Eigen::Vector3f vCenter(0, 0, 0);
-                    Eigen::Vector3f vEye(0, 0, 1);
-                    Eigen::Vector3f vUp(1, 0, 0);
-                    scene->GetCamera()->LookAt(vCenter, vEye, vUp);
+                    // Eigen::Vector3f vCenter(0, 0, 0);
+                    // Eigen::Vector3f vEye(0, 0, 1);
+                    // Eigen::Vector3f vUp(1, 0, 0);
+                    // scene->GetCamera()->LookAt(vCenter, vEye, vUp);
 
                     m_pScene->ForceRedraw();
+                }
+
+                void SetMouseCameraMode(void)
+                {
+                    if(m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
+                        m_sVertex->MakeInactive();
+
+                    m_pScene->SetViewControls(m_uiState.m_mouseMode);
+                }
+
+                void SetMousePickingMode(void)
+                {
+                    UpdateSelectableGeometry();
+                    m_sVertex->MakeActive();
                 }
 
                 void SetBackground(const Eigen::Vector4f &bg_color,
@@ -521,7 +500,9 @@ namespace open3d
                     auto ydim = bbox.max_bound_.y() - bbox.min_bound_.z();
                     auto zdim = bbox.max_bound_.z() - bbox.min_bound_.y();
                     auto psize = double(max(5, px)) * 0.000666 * max(xdim, max(ydim, zdim));
-                    m_sVertex->SetPointSize(psize);
+
+                    if(m_sVertex->GetNumberOfSets())
+                        m_sVertex->SetPointSize(psize);
 
                     m_pScene->SetPickablePointSize(px);
                     m_pScene->ForceRedraw();
@@ -571,27 +552,6 @@ namespace open3d
                     return round(px * m_pWindow->GetScaling());
                 }
 
-                void SetMouseCameraMode(SceneWidget::Controls mode)
-                {
-                    if (m_sVertex->IsActive())
-                    {
-                        m_sVertex->MakeInactive();
-                    }
-
-                    m_pScene->SetViewControls(mode);
-                }
-
-                void SetMousePickingMode(void)
-                {
-                    if (m_sVertex->GetNumberOfSets() == 0)
-                    {
-                        NewVertexSet();
-                    }
-
-                    UpdateSelectableGeometry();
-                    m_sVertex->MakeActive();
-                }
-
                 void UpdateSelectableGeometry(void)
                 {
                     vector<SceneWidget::PickableGeometry> pickable;
@@ -621,15 +581,8 @@ namespace open3d
 
                 void RemoveVertexSet(int index)
                 {
+                    if(index < 0)return;
                     m_sVertex->RemoveSet(index);
-                    if (m_sVertex->GetNumberOfSets() == 0)
-                    {
-                        // You can remove the last set, but there must always be one
-                        // set, so we re-create one. (So removing the last set has the
-                        // effect of clearing it.)
-//                        m_sVertex->NewSet();
-                    }
-
                     UpdateVertexSetList();
                     UpdateArea();
                 }
@@ -812,6 +765,21 @@ namespace open3d
                     });
                     m_pWindow->ShowDialog(dlg);
                 }
+
+                void OnExportPLY()
+                {
+                    auto dlg = make_shared<gui::FileDialog>(
+                        gui::FileDialog::Mode::SAVE, "Save File", m_pWindow->GetTheme());
+                    dlg->AddFilter(".ply", "Point Cloud Files (.ply)");
+                    dlg->AddFilter("", "All files");
+                    dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
+                    dlg->SetOnDone([this](const char *path) {
+                        this->m_pWindow->CloseDialog();
+                        this->m_cbBtnSavePC.call((void*)path);
+                    });
+                    m_pWindow->ShowDialog(dlg);
+                }
+
             };
 
             // ----------------------------------------------------------------------------

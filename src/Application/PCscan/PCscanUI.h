@@ -23,6 +23,12 @@ struct O3D_UI_Cb
 		m_pPCV = NULL;
 	}
 
+	void add(OnBtnClickedCb pCb, void *pPCV)
+	{
+        m_pCb = pCb;
+        m_pPCV = pPCV;
+	}
+
 	bool bValid(void)
 	{
 		return (m_pCb && m_pPCV)?true:false;

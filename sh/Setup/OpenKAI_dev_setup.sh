@@ -72,6 +72,7 @@ sudo apt-get -y install libpcap-dev libdc1394-22 libdc1394-22-dev libswscale-dev
 sudo apt-get -y install libimage-exiftool-perl
 sudo apt-get -y install python python-pip
 pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+snap install cloudcompare
 
 sudo apt autoremove
 sudo apt clean

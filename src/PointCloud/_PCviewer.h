@@ -28,7 +28,6 @@ namespace kai
 	protected:
 		virtual void readAllPC(void);
 		virtual void update(void);
-		virtual void updateGUI(void);
 
 		static void *getUpdate(void *This)
 		{
@@ -36,9 +35,10 @@ namespace kai
 			return NULL;
 		}
 
-		static void *getUpdateGUI(void *This)
+		virtual void updateUI(void);
+		static void *getUpdateUI(void *This)
 		{
-			((_PCviewer *)This)->updateGUI();
+			((_PCviewer *)This)->updateUI();
 			return NULL;
 		}
 

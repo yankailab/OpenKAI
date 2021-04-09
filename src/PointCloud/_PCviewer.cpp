@@ -68,7 +68,7 @@ namespace kai
 		IF_F(!m_pT->start(getUpdate, this));
 		
 		NULL_F(m_pTui);
-		IF_F(!m_pTui->start(getUpdateGUI, this));
+		IF_F(!m_pTui->start(getUpdateUI, this));
 
 		return true;
 	}
@@ -112,7 +112,7 @@ namespace kai
 		*m_spPC = *m_sPC.prev();
 	}
 
-	void _PCviewer::updateGUI(void)
+	void _PCviewer::updateUI(void)
 	{
 		auto &app = gui::Application::GetInstance();
 		app.Initialize(m_pathRes.c_str());

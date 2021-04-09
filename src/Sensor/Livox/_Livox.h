@@ -52,7 +52,6 @@ public:
     uint32_t m_iTransformed;
     
     vDouble3 m_vCol;
-
 };
 
 }

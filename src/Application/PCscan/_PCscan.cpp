@@ -13,9 +13,11 @@ namespace kai
 
 	_PCscan::_PCscan()
 	{
+		m_pPS = NULL;
         m_pTk = NULL;
         m_pSB = NULL;
 		m_bScanning = false;
+		m_modelName = "PCMODEL";
 	}
 
 	_PCscan::~_PCscan()
@@ -31,6 +33,10 @@ namespace kai
         string n = "";
         pK->v("_SlamBase", &n);
         m_pSB = (_SlamBase *)(pK->getInst(n));
+
+        n = "";
+        pK->v("_PCstream", &n);
+        m_pPS = (_PCstream *)(pK->getInst(n));
 
         Kiss *pKk = pK->child("threadK");
         IF_F(pKk->empty());
@@ -60,7 +66,8 @@ namespace kai
 
 	int _PCscan::check(void)
 	{
-        NULL__(m_pSB, -1);
+        NULL__(m_pPS, -1);
+
 		return this->_PCviewer::check();
 	}
 
@@ -71,7 +78,7 @@ namespace kai
 		while (m_nPread <= 0)
 			readAllPC();
 
-		m_spWin->AddPointCloud("PCMODEL", m_spPC);
+		m_spWin->AddPointCloud(m_modelName, m_spPC);
 		m_spWin->ResetCameraToDefault();
 
 		while (m_pT->bRun())
@@ -81,7 +88,12 @@ namespace kai
 			if(m_bScanning)
 			{
 				readAllPC();
-				m_spWin->UpdatePointCloud("PCMODEL", m_spPC);
+				m_spWin->UpdatePointCloud(m_modelName, m_spPC);
+
+				float m = 0.0;
+				if(m_pPS)
+					m = (float)m_pPS->iP()/(float)m_pPS->nP();
+				m_spWin->SetProgressBar(m);
 			}
 
 			m_pT->autoFPSto();
@@ -94,7 +106,10 @@ namespace kai
         {
             m_pTk->autoFPSfrom();
 
-            updateSlam();
+			if(m_bScanning)
+			{
+    	        updateSlam();
+			}
 
             m_pTk->autoFPSto();
         }
@@ -104,10 +119,11 @@ namespace kai
     {
         IF_(check() < 0);
 
+		auto mT = m_pSB->mT();
         for (int i = 0; i < m_vpPCB.size(); i++)
         {
             _PCbase *pP = m_vpPCB[i];
-            pP->setTranslation(m_pSB->mT());
+            pP->setTranslation(mT);
         }
     }
 
@@ -120,28 +136,42 @@ namespace kai
 		app.AddWindow(m_spWin);
 
 		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
-//		m_spWin->SetCbSavePC(OnBtnSavePC, (void *)this);
+		m_spWin->SetCbBtnSavePC(OnBtnSavePC, (void *)this);
 
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
 	}
+	
+	bool _PCscan::startScan(void)
+	{
+		m_pSB->reset();
+		sleep(1);
+		m_bScanning = true;
+	}
+
+	bool _PCscan::stopScan(void)
+	{
+		m_bScanning = false;
+	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void* pD)
 	{
 		NULL_(pPCV);
+		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
+		bool bScanning = *((int*)pD)!=0?true:false;
 
-
-		if(pV->m_bScanning)
-		{
-		}
-
+		if(bScanning)
+			pV->startScan();
+		else
+			pV->stopScan();
 	}
 
 	void _PCscan::OnBtnSavePC(void *pPCV, void* pD)
 	{
 		NULL_(pPCV);
+		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
 
 		io::WritePointCloudOption par;
@@ -151,7 +181,7 @@ namespace kai
 		pthread_mutex_lock(&pV->m_mutexPC);
 		PointCloud pc = *pV->m_sPC.prev();
 		pthread_mutex_unlock(&pV->m_mutexPC);
-		io::WritePointCloudToPLY("/home/kai/dev/testModel.ply", pc, par);
+		io::WritePointCloudToPLY((const char*)pD, pc, par);
 	}
 
 }

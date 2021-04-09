@@ -108,6 +108,16 @@ namespace kai
     {
     }
 
+    int _PCstream::nP(void)
+    {
+        return m_nP;
+    }
+
+    int _PCstream::iP(void)
+    {
+        return m_iP;
+    }
+
     void _PCstream::draw(void)
     {
         this->_ModuleBase::draw();

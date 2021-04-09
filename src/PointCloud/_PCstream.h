@@ -34,6 +34,8 @@ namespace kai
 
         virtual void AcceptAdd(bool b);
         virtual void add(Vector3d &vP, Vector3d &vC, uint64_t tStamp = UINT64_MAX);
+        virtual int nP(void);
+        virtual int iP(void);
 
     protected:
         virtual void getStream(void *p);
