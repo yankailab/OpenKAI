@@ -26,7 +26,6 @@ namespace open3d
                 Shader m_sceneShader = Shader::STANDARD;
                 bool m_bShowSettings = true;
                 bool m_bShowAxes = true;
-                bool m_bScanning = false;
 
                 Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
                 int m_pointSize = 2;
@@ -42,6 +41,7 @@ namespace open3d
                 UIState m_uiState;
                 Window *m_pWindow = nullptr;
                 SceneWidget *m_pScene = nullptr;
+                bool m_bScanning;
                 string m_modelName;
                 string m_areaName;
                 Vector3d m_areaLineCol;
@@ -51,11 +51,15 @@ namespace open3d
                 Vert *m_panelCtrl;
 
                 CollapsableVert *m_panelCam;
-                Button *m_btnResetCam;
+                Button *m_btnCamOrigin;
+                Button *m_btnCamAuto;
+                Button *m_btnCamSavePC;
+                Button *m_btnCamSaveRGB;
 
                 CollapsableVert *m_panelScan;
                 Button *m_btnScanStart;
                 ProgressBar *m_progScan;
+                Label *m_labelProg;
 
                 CollapsableVert *m_panelVertexSet;
                 Button *m_btnNewVertexSet;
@@ -68,16 +72,20 @@ namespace open3d
 
                 //UI handler
                 O3D_UI_Cb m_cbBtnScan;
+                O3D_UI_Cb m_cbBtnSavePC;
 
                 void Construct(PCscanUI *w)
                 {
                     if (m_pWindow)
                         return;
 
+                    m_bScanning = false;
                     m_modelName = "PCMODEL";
                     m_areaName = "PCAREA";
                     m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
+
                     m_cbBtnScan.init();
+                    m_cbBtnSavePC.init();
 
                     m_pWindow = w;
                     m_pScene = new SceneWidget();
@@ -133,42 +141,93 @@ namespace open3d
                     m_panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
                     m_panelCtrl->AddChild(GiveOwnership(m_panelCam));
 
-                    m_btnResetCam = new Button("Reset Camera  ");
-                    m_btnResetCam->SetOnClicked([this]() {
+                    m_btnCamOrigin = new Button("Origin");
+                    m_btnCamOrigin->SetOnClicked([this]()
+                    {
                         ResetCameraToDefault();
                         SetMouseCameraMode(m_uiState.m_mouseMode);
                     });
+        
                     auto h = new Horiz(v_spacing);
-                    h->AddChild(GiveOwnership(m_btnResetCam));
+                    h->AddChild(GiveOwnership(m_btnCamOrigin));
                     h->AddStretch();
+
+                    m_btnCamAuto = new Button("Auto Pan");
+                    m_btnCamAuto->SetOnClicked([this]()
+                    {
+                        ResetCameraToDefault();
+                        SetMouseCameraMode(m_uiState.m_mouseMode);
+                    });
+                    h->AddChild(GiveOwnership(m_btnCamAuto));
+                    h->AddStretch();
+
+                    m_panelCam->AddChild(GiveOwnership(h));
+
+                    h = new Horiz(v_spacing);
+                    m_btnCamSavePC = new Button("Export .ply");
+                    m_btnCamSavePC->SetOnClicked([this]()
+                    {
+                        m_cbBtnSavePC.call(NULL);
+                    });
+                    h->AddChild(GiveOwnership(m_btnCamSavePC));
+                    h->AddStretch();
+
+                    m_btnCamSaveRGB = new Button("Export RGB");
+                    m_btnCamSaveRGB->SetOnClicked([this]()
+                    {
+//                        m_cbBtnSavePC.call(NULL);
+                        OnExportRGB();
+                    });
+                    h->AddChild(GiveOwnership(m_btnCamSaveRGB));
+                    h->AddStretch();
+
                     m_panelCam->AddChild(GiveOwnership(h));
 
                     // Scan
                     m_panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                     m_panelCtrl->AddChild(GiveOwnership(m_panelScan));
 
-                    m_btnScanStart = new Button("Start Scan");
-                    m_btnScanStart->SetToggleable(true);
-                    m_btnScanStart->SetOnClicked([this]() {
-                        //toggle
+                    m_btnScanStart = new Button("Start");
+                    m_btnScanStart->SetToggleable(m_bScanning);
+                    m_btnScanStart->SetOnClicked([this]()
+                    {
                         SetMouseCameraMode(m_uiState.m_mouseMode);
-                        if (!m_cbBtnScan.bValid())
-                            return;
-                        m_cbBtnScan.call();
+                        RemoveAllVertexSet();
+
+                        m_bScanning = !m_bScanning;
+
+                        m_btnScanStart->SetToggleable(m_bScanning);
+                        if(m_bScanning)
+                        {
+                            m_btnScanStart->SetText("Stop ");
+                            m_btnNewVertexSet->SetEnabled(false);
+                            m_btnDeleteVertexSet->SetEnabled(false);
+                            m_listVertexSet->SetEnabled(false);
+                        }
+                        else
+                        {
+                            m_btnScanStart->SetText("Start");
+                            m_btnNewVertexSet->SetEnabled(true);
+                            m_btnDeleteVertexSet->SetEnabled(true);
+                            m_listVertexSet->SetEnabled(true);
+                        }
+
+                        int b = m_bScanning ? 1 : 0;
+                        m_cbBtnScan.call(&b);
                     });
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_btnScanStart));
                     h->AddStretch();
                     m_panelScan->AddChild(GiveOwnership(h));
 
-                    const char *strMem = "Used memory:";
+                    m_labelProg = new Label("Used memory: 0%");
                     h = new Horiz();
-                    h->AddChild(make_shared<Label>(strMem));
+                    h->AddChild(GiveOwnership(m_labelProg));
                     h->AddStretch();
                     m_panelScan->AddChild(GiveOwnership(h));
 
                     m_progScan = new ProgressBar();
-                    m_progScan->SetValue(0.5);
+                    m_progScan->SetValue(0.0);
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_progScan));
                     m_panelScan->AddChild(GiveOwnership(h));
@@ -238,6 +297,25 @@ namespace open3d
                     m_cbBtnScan.m_pPCV = pPCV;
                 }
 
+                void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV)
+                {
+                    if (!pCb)
+                        return;
+                    if (!pPCV)
+                        return;
+
+                    m_cbBtnSavePC.m_pCb = pCb;
+                    m_cbBtnSavePC.m_pPCV = pPCV;
+                }
+
+                void SetProgressBar(float v)
+                {
+                    m_progScan->SetValue(v);
+                    string s = "Memory used: " + i2str((int)(v*10)) + "%";
+                    m_labelProg->SetText(s.c_str());
+                }
+
+
                 void AddGeometry(const string &name,
                                  shared_ptr<geometry::Geometry3D> geom,
                                  rendering::Material *material = nullptr,
@@ -276,7 +354,7 @@ namespace open3d
                             has_colors = true; // always want base_color as white
                         }
 
-                        mat.base_color = CalcDefaultUnlitColor();
+                        mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                         mat.shader = kShaderUnlit;
                         if (lines)
                         {
@@ -286,12 +364,10 @@ namespace open3d
                         is_default_color = true;
                         if (has_colors)
                         {
-                            mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                             is_default_color = false;
                         }
                         if (has_normals)
                         {
-                            mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                             mat.shader = kShaderLit;
                             is_default_color = false;
                         }
@@ -331,15 +407,10 @@ namespace open3d
                         has_colors = true; // always want base_color as white
                     }
 
-                    mat.base_color = CalcDefaultUnlitColor();
+                    mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                     mat.shader = kShaderUnlit;
-
-                    if (has_colors)
-                        mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
-
                     if (has_normals)
                     {
-                        mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                         mat.shader = kShaderLit;
                     }
 
@@ -556,8 +627,18 @@ namespace open3d
                         // You can remove the last set, but there must always be one
                         // set, so we re-create one. (So removing the last set has the
                         // effect of clearing it.)
-                        m_sVertex->NewSet();
+//                        m_sVertex->NewSet();
                     }
+
+                    UpdateVertexSetList();
+                    UpdateArea();
+                }
+
+                void RemoveAllVertexSet(void)
+                {
+                    while (m_sVertex->GetNumberOfSets() > 0)
+                        m_sVertex->RemoveSet(0);
+
                     UpdateVertexSetList();
                     UpdateArea();
                 }
@@ -571,10 +652,6 @@ namespace open3d
                 void UpdateVertexSetList(void)
                 {
                     size_t n = m_sVertex->GetNumberOfSets();
-                    int idx = m_listVertexSet->GetSelectedIndex();
-                    idx = max(0, idx);
-                    idx = min(idx, int(n) - 1);
-
                     vector<string> items;
                     items.reserve(n);
                     for (size_t i = 0; i < n; ++i)
@@ -585,7 +662,14 @@ namespace open3d
                     }
                     m_listVertexSet->SetItems(items);
 
-                    SelectVertexSet(idx);
+                    if(n > 0)
+                    {
+                        int idx = m_listVertexSet->GetSelectedIndex();
+                        idx = min(idx, int(n) - 1);
+                        idx = max(0, idx);
+                        SelectVertexSet(idx);
+                    }
+
                     m_pWindow->PostRedraw();
                 }
 
@@ -728,21 +812,6 @@ namespace open3d
                     });
                     m_pWindow->ShowDialog(dlg);
                 }
-
-                Eigen::Vector4f CalcDefaultUnlitColor()
-                {
-                    float luminosity = 0.21f * m_uiState.bg_color.x() +
-                                       0.72f * m_uiState.bg_color.y() +
-                                       0.07f * m_uiState.bg_color.z();
-                    if (luminosity >= 0.5f)
-                    {
-                        return {0.0f, 0.0f, 0.0f, 1.0f};
-                    }
-                    else
-                    {
-                        return {1.0f, 1.0f, 1.0f, 1.0f};
-                    }
-                }
             };
 
             // ----------------------------------------------------------------------------
@@ -834,6 +903,11 @@ namespace open3d
                 impl_->SetLineWidth(line_width);
             }
 
+			void PCscanUI::SetProgressBar(float v)
+            {
+                impl_->SetProgressBar(v);
+            }
+
             vector<O3DVisualizerSelections::SelectionSet>
             PCscanUI::GetSelectionSets() const
             {
@@ -879,6 +953,10 @@ namespace open3d
                 impl_->SetCbBtnScan(pCb, pPCV);
             }
 
+            void PCscanUI::SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV)
+            {
+                impl_->SetCbBtnSavePC(pCb, pPCV);
+            }
         } // namespace visualizer
     }     // namespace visualization
 } // namespace open3d

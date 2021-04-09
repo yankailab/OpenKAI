@@ -16,11 +16,19 @@
 }
 
 {
-	"name":"pcv",
-	"class":"_PCscanView",
+	"name":"pcScan",
+	"class":"_PCscan",
 	"bInst":1,
     {
 		"name":"thread",
+		"FPS":30,
+	}
+    {
+		"name":"threadK",
+		"FPS":200,
+	}
+    {
+		"name":"threadUI",
 		"FPS":30,
 	}
 	"Window":"OKview",
@@ -30,6 +38,8 @@
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"pathRes":"/home/kai/dev/Open3D/build/bin/resources",
 	"device":"CPU:0",
+	"vPCbase":["pcFile","pcLivox","pcRS"],
+	"_SlamBase":"T265",
 }
 
 {
@@ -116,22 +126,4 @@
 	"bInst":1,
 	"bLog":1,
 	"_Console":"OK_Console",
-}
-
-{
-	"name":"PCscan",
-	"class":"_PCscan",
-	"bInst":1,
-    {
-		"name":"thread",
-		"FPS":200,
-	}
-    {
-		"name":"threadUI",
-		"FPS":30,
-	}
-	"bLog":1,
-	"_Console":"OK_Console",
-	"vPCB":["pcFile","pcLivox","pcRS"],
-	"_SlamBase":"T265",
 }

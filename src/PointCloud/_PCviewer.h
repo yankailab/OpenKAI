@@ -52,7 +52,7 @@ namespace kai
 		vector<_PCbase *> m_vpPCB;
 		shared_ptr<PointCloud> m_spPC;
 
-		_Thread* m_pTgui;
+		_Thread* m_pTui;
 		shared_ptr<PCviewerUI> m_spWin;
 	};
 

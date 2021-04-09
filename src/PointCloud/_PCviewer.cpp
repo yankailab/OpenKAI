@@ -17,7 +17,7 @@ namespace kai
 		m_vWinSize.init(1280, 720);
 
 		m_spPC = shared_ptr<PointCloud>(new PointCloud);
-		m_pTgui = NULL;
+		m_pTui = NULL;
 		m_pathRes = "";
 		m_device = "CPU:0";
 	}
@@ -50,12 +50,12 @@ namespace kai
 			m_vpPCB.push_back(pPCB);
 		}
 
-		Kiss *pKt = pK->child("thread");
+		Kiss *pKt = pK->child("threadUI");
 		IF_F(pKt->empty());
-		m_pTgui = new _Thread();
-		if (!m_pTgui->init(pKt))
+		m_pTui = new _Thread();
+		if (!m_pTui->init(pKt))
 		{
-			DEL(m_pTgui);
+			DEL(m_pTui);
 			return false;
 		}
 
@@ -67,8 +67,8 @@ namespace kai
 		NULL_F(m_pT);
 		IF_F(!m_pT->start(getUpdate, this));
 		
-		NULL_F(m_pTgui);
-		IF_F(!m_pTgui->start(getUpdateGUI, this));
+		NULL_F(m_pTui);
+		IF_F(!m_pTui->start(getUpdateGUI, this));
 
 		return true;
 	}

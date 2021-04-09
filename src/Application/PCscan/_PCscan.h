@@ -1,46 +1,62 @@
-#ifndef OpenKAI_src_Application_3Dscan__PCscan_H_
-#define OpenKAI_src_Application_3Dscan__PCscan_H_
+/*
+ * _PCscan.h
+ *
+ *  Created on: May 28, 2020
+ *      Author: yankai
+ */
 
+#ifndef OpenKAI_src_Application_PCscan__PCscan_H_
+#define OpenKAI_src_Application_PCscan__PCscan_H_
 #ifdef USE_OPEN3D
-#include "../../PointCloud/_PCbase.h"
+#include "../../PointCloud/_PCviewer.h"
 #include "../../SLAM/_SlamBase.h"
+#include "PCscanUI.h"
 
 namespace kai
 {
 
-class _PCscan : public _ModuleBase
-{
-public:
-	_PCscan();
-	~_PCscan();
-
-	virtual bool init(void* pKiss);
-	virtual bool start(void);
-	virtual int check(void);
-	virtual void draw(void);
-
-private:
-	void updateIMU ( void );
-	void update(void);
-	static void* getUpdate(void* This)
+	class _PCscan : public _PCviewer
 	{
-		(( _PCscan*) This)->update();
-		return NULL;
-	}
+	public:
+		_PCscan();
+		virtual ~_PCscan();
 
-	void updateUI(void);
-	static void* getUpdateUI(void* This)
-	{
-		(( _PCscan*) This)->updateUI();
-		return NULL;
-	}
+		virtual bool init(void *pKiss);
+		virtual bool start(void);
+		virtual int check(void);
 
-public:
-    _Thread* m_pTui;
-    
-    vector<_PCbase*> m_vPCB;
-    _SlamBase* m_pSB;
-};
+	protected:
+		virtual void update(void);
+		static void *getUpdate(void *This)
+		{
+			((_PCscan *)This)->update();
+			return NULL;
+		}
+
+		virtual void updateSlam(void);
+		virtual void updateKinematics(void);
+		static void *getUpdateKinematics(void *This)
+		{
+			((_PCscan *)This)->updateKinematics();
+			return NULL;
+		}
+
+		static void OnBtnScan(void *pPCV, void* pD);
+		static void OnBtnSavePC(void *pPCV, void* pD);
+		virtual void updateUI(void);
+		static void *getUpdateUI(void *This)
+		{
+			((_PCscan *)This)->updateUI();
+			return NULL;
+		}
+
+	protected:
+		shared_ptr<visualizer::PCscanUI> m_spWin;
+		_Thread *m_pTk;
+		_SlamBase *m_pSB;
+
+		bool m_bScanning;
+	};
 
 }
 #endif

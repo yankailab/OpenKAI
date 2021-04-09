@@ -11,7 +11,7 @@ using namespace std;
 using namespace Eigen;
 
 
-typedef void (*OnBtnClickedCb)(void *pPCV);
+typedef void (*OnBtnClickedCb)(void *pPCV, void *pD);
 struct O3D_UI_Cb
 {
 	OnBtnClickedCb m_pCb;
@@ -28,9 +28,11 @@ struct O3D_UI_Cb
 		return (m_pCb && m_pPCV)?true:false;
 	}
 
-	void call(void)
+	void call(void* pD)
 	{
-		m_pCb(m_pPCV);
+		if(!bValid())return;
+
+		m_pCb(m_pPCV, pD);
 	}
 };
 
@@ -119,6 +121,8 @@ namespace open3d
 				rendering::Open3DScene *GetScene() const;
 
 				void SetCbBtnScan(OnBtnClickedCb pCb, void* pPCV );
+				void SetCbBtnSavePC(OnBtnClickedCb pCb, void* pPCV );
+				void SetProgressBar(float v);
 
 			protected:
 				void Layout(const gui::Theme &theme);

@@ -21,19 +21,6 @@ namespace open3d
 			struct Theme;
 		}
 
-		typedef void ( *OnBtnClickedCb ) ( void* pPCV );
-		struct PCviewerUICb
-		{
-			OnBtnClickedCb m_pCb;
-			void* m_pPCV;
-
-			void init(void)
-			{
-				m_pCb = NULL;
-				m_pPCV = NULL;
-			}
-		};
-
 		class PCviewerUI : public GuiVisualizer
 		{
 			using Super = GuiVisualizer;
