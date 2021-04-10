@@ -87,10 +87,11 @@ namespace kai
         for (int i = 0; i < pS->m_nP; i++)
         {
             PC_POINT *pP = &pS->m_pP[i];
-            IF_CONT(pP->m_tStamp < tFrom);
+            IF_CONT(pP->m_tStamp <= tFrom);
 
             pPC->points_.push_back(pP->m_vP);
             pPC->colors_.push_back(pP->m_vC);
+            m_nPread++;
         }
     }
 
@@ -103,6 +104,7 @@ namespace kai
         pF->getPC(&pc);
 
         *m_sPC.next() += pc;
+        m_nPread += pc.points_.size();
     }
 
     void _PCframe::getLattice(void *p)

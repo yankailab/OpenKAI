@@ -276,7 +276,7 @@ namespace open3d
                 void SetProgressBar(float v)
                 {
                     m_progScan->SetValue(v);
-                    string s = "Memory used: " + i2str((int)(v*10)) + "%";
+                    string s = "Memory used: " + i2str((int)(v*100)) + "%";
                     m_labelProg->SetText(s.c_str());
                 }
 
@@ -374,10 +374,10 @@ namespace open3d
 
                     mat.base_color = {1.0f, 1.0f, 1.0f, 1.0f};
                     mat.shader = kShaderUnlit;
-                    if (has_normals)
-                    {
-                        mat.shader = kShaderLit;
-                    }
+                    // if (has_normals)
+                    // {
+                    //     mat.shader = kShaderLit;
+                    // }
 
                     mat.point_size = ConvertToScaledPixels(m_uiState.m_pointSize);
 
@@ -390,6 +390,19 @@ namespace open3d
 
                     SetPointSize(m_uiState.m_pointSize);
                     m_pScene->ForceRedraw();
+                }
+
+                void UpdateTgeometry(const string &name, shared_ptr<t::geometry::PointCloud> tgeom)
+                {
+                    for (size_t i = 0; i < m_vObject.size(); i++)
+                    {
+                        DrawObject *pO = &m_vObject[i];
+                        if (pO->m_name != name)
+                            continue;
+
+                        m_vObject[i].m_sTgeometry = tgeom;
+                        break;
+                    }
                 }
 
                 void RemoveGeometry(const string &name)
@@ -442,7 +455,7 @@ namespace open3d
                     // Eigen::Vector3f vCenter(0, 0, 0);
                     // Eigen::Vector3f vEye(0, 0, 1);
                     // Eigen::Vector3f vUp(1, 0, 0);
-                    // scene->GetCamera()->LookAt(vCenter, vEye, vUp);
+                    //scene->GetCamera()->LookAt(vCenter, vEye, vUp);
 
                     m_pScene->ForceRedraw();
                 }
@@ -813,36 +826,27 @@ namespace open3d
             }
 
             void PCscanUI::AddPointCloud(const string &name,
-                                         shared_ptr<geometry::PointCloud> sPC,
+                                         shared_ptr<t::geometry::PointCloud> sTg,
                                          rendering::Material *material /*= nullptr*/,
                                          bool bVisible /*= true*/)
             {
-                t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
-                    FromLegacyPointCloud(
-                        *sPC.get(),
-                        core::Dtype::Float32);
-
-                shared_ptr<t::geometry::PointCloud> spP =
-                    make_shared<t::geometry::PointCloud>(tpcd);
-
-                impl_->AddTgeometry(name, spP, bVisible);
+                impl_->AddTgeometry(name, sTg, bVisible);
             }
 
             void PCscanUI::UpdatePointCloud(const string &name,
-                                            shared_ptr<geometry::PointCloud> sPC)
+                                            shared_ptr<t::geometry::PointCloud> sTg)
             {
-                gui::Application::GetInstance().PostToMainThread(
-                    this, [this, sPC, name]() {
-                        t::geometry::PointCloud tpcd = open3d::t::geometry::PointCloud::
-                            FromLegacyPointCloud(
-                                *sPC.get(),
-                                core::Dtype::Float32);
+                impl_->UpdateTgeometry(name, sTg);
 
+               gui::Application::GetInstance().PostToMainThread(
+                   this, [this, name]() 
+                   {
                         impl_->m_pScene->GetScene()->GetScene()->UpdateGeometry(
                             name,
-                            tpcd,
+                            *impl_->GetGeometry(name).m_sTgeometry,
                             open3d::visualization::rendering::Scene::kUpdatePointsFlag |
                                 open3d::visualization::rendering::Scene::kUpdateColorsFlag);
+
                         impl_->m_pScene->ForceRedraw();
                     });
             }

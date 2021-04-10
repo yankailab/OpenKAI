@@ -105,7 +105,6 @@ namespace kai
 		for (_PCbase *pPCB : m_vpPCB)
 		{
 			readPC(pPCB);
-			m_nPread += pPCB->nPread();
 		}
 
 		updatePC();

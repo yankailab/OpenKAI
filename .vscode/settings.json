@@ -66,6 +66,7 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "sparselu": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "*.ipp": "cpp"
     }
 }

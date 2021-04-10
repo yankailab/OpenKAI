@@ -108,6 +108,14 @@ namespace kai
     {
     }
 
+    void _PCstream::clear(void)
+    {
+        for(int i=0; i<m_nP; i++)
+            m_pP->init();
+
+        m_iP = 0;
+    }
+
     int _PCstream::nP(void)
     {
         return m_nP;

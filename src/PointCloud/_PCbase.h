@@ -74,6 +74,8 @@ namespace kai
         virtual Matrix4d getTranslationMatrix(const vDouble3 &vT, const vDouble3 &vR);
         virtual int nPread(void);
 
+        virtual void clear(void);
+
     protected:
         virtual void getStream(void* p);
         virtual void getFrame(void* p);

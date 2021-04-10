@@ -82,7 +82,7 @@ namespace open3d
 			{
 				string m_name;
 				shared_ptr<geometry::Geometry3D> m_sGeometry;
-				shared_ptr<t::geometry::Geometry> m_sTgeometry;
+				shared_ptr<t::geometry::PointCloud> m_sTgeometry;
 				rendering::Material m_material;
 				bool m_bVisible = true;
 			};
@@ -111,12 +111,15 @@ namespace open3d
 								 shared_ptr<geometry::Geometry3D> geom,
 								 rendering::Material *material = nullptr,
 								 bool is_visible = true);
+
 				void AddPointCloud(const string &name,
-								   shared_ptr<geometry::PointCloud> sPC,
+								   shared_ptr<t::geometry::PointCloud> sTg,
 								   rendering::Material *material = nullptr,
 								   bool is_visible = true);
+
 				void UpdatePointCloud(const string &name,
-									  shared_ptr<geometry::PointCloud> sPC);
+									  shared_ptr<t::geometry::PointCloud> sTg);
+				
 				void RemoveGeometry(const string &name);
 				void ShowGeometry(const string &name, bool show);
 				DrawObject GetGeometry(const string &name) const;

@@ -37,6 +37,8 @@ namespace kai
         virtual int nP(void);
         virtual int iP(void);
 
+        virtual void clear(void);
+
     protected:
         virtual void getStream(void *p);
         virtual void getFrame(void *p);

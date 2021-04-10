@@ -120,6 +120,10 @@ namespace kai
         return m_nPread;
     }
 
+    void _PCbase::clear(void)
+    {
+    }
+
     void _PCbase::getStream(void *p)
     {
     }
