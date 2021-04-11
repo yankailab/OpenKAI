@@ -16,7 +16,6 @@ namespace kai
 		m_fov = 0.0;
 		m_vWinSize.init(1280, 720);
 
-		m_spPC = shared_ptr<PointCloud>(new PointCloud);
 		m_pTui = NULL;
 		m_pathRes = "";
 		m_device = "CPU:0";
@@ -85,14 +84,15 @@ namespace kai
 
 		while(m_nPread <= 0)
 			readAllPC();
-		m_spWin->SetGeometry(m_spPC);
+
+		m_spWin->SetGeometry(shared_ptr<PointCloud>(m_sPC.get()));
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
 			readAllPC();
-			m_spWin->UpdateGeometry(m_spPC);
+			m_spWin->UpdateGeometry(shared_ptr<PointCloud>(m_sPC.get()));
 
 			m_pT->autoFPSto();
 		}
@@ -108,7 +108,26 @@ namespace kai
 		}
 
 		updatePC();
-		*m_spPC = *m_sPC.prev();
+	}
+
+	void _PCviewer::makeInitPC(PointCloud* pPC, int n, double l, int iAxis, Vector3d vCol)
+	{
+		NULL_(pPC);
+
+		pPC->points_.clear();
+		pPC->colors_.clear();
+		pPC->normals_.clear();
+
+		double pFrom = -l*0.5;
+		double d = l / n;
+		for(int i=0; i<n; i++)
+		{
+			Vector3d vP(0,0,0);
+			vP[iAxis] = pFrom + i * d;
+			
+			pPC->points_.push_back(vP);
+			pPC->colors_.push_back(vCol);
+		}
 	}
 
 	void _PCviewer::updateUI(void)

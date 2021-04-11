@@ -38,8 +38,8 @@ namespace kai
         pK->v("nPCreserve", &nPCreserve);
         if (nPCreserve > 0)
         {
-            m_sPC.prev()->points_.reserve(nPCreserve);
-            m_sPC.prev()->colors_.reserve(nPCreserve);
+            m_sPC.get()->points_.reserve(nPCreserve);
+            m_sPC.get()->colors_.reserve(nPCreserve);
             m_sPC.next()->points_.reserve(nPCreserve);
             m_sPC.next()->colors_.reserve(nPCreserve);
         }
@@ -57,7 +57,7 @@ namespace kai
         NULL_(pPC);
 
         pthread_mutex_lock(&m_mutexPC);
-        *pPC = *m_sPC.prev();
+        *pPC = *m_sPC.get();
         pthread_mutex_unlock(&m_mutexPC);
     }
 
@@ -67,7 +67,7 @@ namespace kai
         paintPC(m_sPC.next());
 
         pthread_mutex_lock(&m_mutexPC);
-        m_sPC.update();
+        m_sPC.swap();
         m_sPC.next()->points_.clear();
         m_sPC.next()->colors_.clear();
         m_sPC.next()->normals_.clear();
@@ -125,7 +125,7 @@ namespace kai
 
     int _PCframe::size(void)
     {
-        return m_sPC.prev()->points_.size();
+        return m_sPC.get()->points_.size();
     }
 
     void _PCframe::draw(void)

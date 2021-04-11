@@ -40,7 +40,7 @@ namespace kai
 
 	protected:
 		//frame buf
-		vSwitch<PointCloud> m_sPC;
+		tSwap<PointCloud> m_sPC;
 		pthread_mutex_t m_mutexPC;
 
 		vFloat3 m_vColOvrr;

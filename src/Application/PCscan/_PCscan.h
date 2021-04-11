@@ -30,6 +30,7 @@ namespace kai
 		virtual bool stopScan(void);
 
 	protected:
+		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
 		{

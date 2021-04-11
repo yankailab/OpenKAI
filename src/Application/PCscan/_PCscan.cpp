@@ -76,69 +76,89 @@ namespace kai
 	{
 		m_pT->sleepT(0);
 
-		while (m_nPread < m_pPS->nP())
-			readAllPC();
-
-		std::shared_ptr<t::geometry::PointCloud> spTpc(new t::geometry::PointCloud());
-		*spTpc = open3d::t::geometry::PointCloud::FromLegacyPointCloud(*m_spPC, core::Dtype::Float32);
-
-		m_spWin->AddPointCloud(m_modelName, spTpc);
+		makeInitPC(
+			m_sPC.next(),
+			m_pPS->nP(),
+			10,
+			0,
+			Vector3d(0, 1, 1));
+		updatePC();
+		m_spWin->AddPointCloud(m_modelName,
+							   make_shared<t::geometry::PointCloud>(
+								   t::geometry::PointCloud::FromLegacyPointCloud(
+									   *m_sPC.get(),
+									   core::Dtype::Float32)));
 		m_spWin->ResetCameraToDefault();
-
-//float a = 0.0;
 
 		while (m_pT->bRun())
 		{
 			m_pT->autoFPSfrom();
 
-			if (m_bScanning)
-			{
-//				readAllPC();
-
-		//nP in the Update must be <= nP in the Add
-
-		PointCloud pc;
-        for (int i = 0; i < m_pPS->nP(); i++)
-        {
-            PC_POINT *pP = &m_pPS->m_pP[i];
-            IF_CONT(pP->m_tStamp <= 0);
-
-            pc.points_.push_back(pP->m_vP);
-            pc.colors_.push_back(pP->m_vC);
-        }
-
-//		int nP = pc.points_.size();
-
-		// PointCloud pc;
-        // for (int i = 0; i < 1000; i++)
-        // {
-		// 	float f = (float)i;
-		// 	f *= 0.1;
-        //     pc.points_.push_back(Vector3d(f + a,f,f));
-        //     pc.colors_.push_back(Vector3d(0,1,0));
-        // }
-		// a += 0.1;
-		// if(a>10.0)a=0.0;
-
-				std::shared_ptr<t::geometry::PointCloud> spTpc = 
-					make_shared<t::geometry::PointCloud>(
-						t::geometry::PointCloud::FromLegacyPointCloud(
-							pc,
-							core::Dtype::Float32
-							)
-						);
-
-				m_spWin->UpdatePointCloud(m_modelName, spTpc);
-
-				float m = 0.0;
-				if (m_pPS)
-					m = (float)m_pPS->iP() / (float)m_pPS->nP();
-				m_spWin->SetProgressBar(m);
-			}
+			updateScan();
 
 			m_pT->autoFPSto();
 		}
 	}
+
+	void _PCscan::updateScan(void)
+	{
+		IF_(check() < 0);
+		IF_(!m_bScanning);
+
+		readAllPC();
+		PointCloud *pPC = m_sPC.get();
+		int n = pPC->points_.size();
+		IF_(n <= 0);
+		int nP = m_pPS->nP();
+
+		if (n < nP)
+		{
+			PointCloud pc;
+			makeInitPC(
+				&pc,
+				nP - n,
+				10,
+				0,
+				Vector3d(0, 1, 1));
+			*pPC += pc;
+		}
+		else if (n > nP)
+		{
+			int d = n - nP;
+			pPC->points_.erase(pPC->points_.end()-d, pPC->points_.end());
+			pPC->colors_.erase(pPC->colors_.end()-d, pPC->colors_.end());
+		}
+
+		pPC->normals_.clear();
+
+		m_spWin->UpdatePointCloud(m_modelName,
+								  make_shared<t::geometry::PointCloud>(
+									  t::geometry::PointCloud::FromLegacyPointCloud(
+										  *pPC,
+										  core::Dtype::Float32)));
+
+		float m = 0.0;
+		if (m_pPS)
+			m = (float)m_pPS->iP() / (float)m_pPS->nP();
+		m_spWin->SetProgressBar(m);
+	}
+
+	bool _PCscan::startScan(void)
+	{
+		IF_F(check() < 0);
+		m_bScanning = false;
+
+		m_pSB->reset();
+		sleep(1);
+		m_pPS->clear();
+		m_bScanning = true;
+	}
+
+	bool _PCscan::stopScan(void)
+	{
+		m_bScanning = false;
+	}
+
 
 	void _PCscan::updateKinematics(void)
 	{
@@ -146,10 +166,7 @@ namespace kai
 		{
 			m_pTk->autoFPSfrom();
 
-			if (m_bScanning)
-			{
-				updateSlam();
-			}
+			updateSlam();
 
 			m_pTk->autoFPSto();
 		}
@@ -158,6 +175,7 @@ namespace kai
 	void _PCscan::updateSlam(void)
 	{
 		IF_(check() < 0);
+		IF_(!m_bScanning);
 
 		auto mT = m_pSB->mT();
 		for (int i = 0; i < m_vpPCB.size(); i++)
@@ -181,22 +199,6 @@ namespace kai
 		m_pT->wakeUp();
 		app.Run();
 		exit(0);
-	}
-
-	bool _PCscan::startScan(void)
-	{
-		IF_F(check() < 0);
-		m_bScanning = false;
-
-		m_pSB->reset();
-		sleep(1);
-		m_pPS->clear();
-		m_bScanning = true;
-	}
-
-	bool _PCscan::stopScan(void)
-	{
-		m_bScanning = false;
 	}
 
 	void _PCscan::OnBtnScan(void *pPCV, void *pD)
@@ -223,7 +225,7 @@ namespace kai
 		par.compressed = io::WritePointCloudOption::Compressed::Uncompressed;
 
 		pthread_mutex_lock(&pV->m_mutexPC);
-		PointCloud pc = *pV->m_sPC.prev();
+		PointCloud pc = *pV->m_sPC.get();
 		pthread_mutex_unlock(&pV->m_mutexPC);
 		io::WritePointCloudToPLY((const char *)pD, pc, par);
 	}

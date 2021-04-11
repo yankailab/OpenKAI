@@ -22,38 +22,6 @@ template <typename T> inline T map(T x, T inMin, T inMax, T outMin, T outMax)
   return (x - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-inline string deleteNonASCII(const char* pStr)
-{
-	string asc = "";
-	if(!pStr)return asc;
-
-	int i=0;
-	while(pStr[i]!=0)
-	{
-		char c = pStr[i++];
-		IF_CONT(c<0);
-		IF_CONT(c>=128);
-		asc += c;
-	}
-	return asc;
-}
-
-inline string deleteNonNumber(const char* pStr)
-{
-	string asc = "";
-	if(!pStr)return asc;
-
-	int i=0;
-	while(pStr[i]!=0)
-	{
-		char c = pStr[i++];
-		IF_CONT(c<48);
-		IF_CONT(c>57);
-		asc += c;
-	}
-	return asc;
-}
-
 inline double dEarth(double lat1, double lon1, double lat2, double lon2)
 {
   double p = 0.017453292519943295;    // Math.PI / 180
@@ -62,40 +30,6 @@ inline double dEarth(double lat1, double lon1, double lat2, double lon2)
           (1 - cos((lon2 - lon1) * p))*0.5;
 
   return 12742000.0 * asin(sqrt(a)); // 2 * R; R = 6371000 m
-}
-
-inline string tFormat(void)
-{
-	time_t timer;
-	char buffer[26];
-	struct tm* tm_info;
-	time(&timer);
-	tm_info = localtime(&timer);
-	strftime(buffer, 26, "%Y-%m-%d_%H-%M-%S", tm_info);
-	puts(buffer);
-
-	string str = buffer;
-	return str;
-}
-
-inline string getFileDir(string file)
-{
-	return file.erase(file.find_last_of('/') + 1, string::npos);
-}
-
-inline string checkDirName(string& dir)
-{
-	if (dir.at(dir.length() - 1) != '/')
-		dir.push_back('/');
-
-	return dir;
-}
-
-inline string getFileExt(string& file)
-{
-	size_t extPos = file.find_last_of(".");
-	if(extPos == std::string::npos)return "";
-	return file.substr(extPos);
 }
 
 inline uint64_t getTbootMs(void)
@@ -344,82 +278,6 @@ inline void f2b(uint8_t *pB, float f)
 		pF++;
 		pB++;
 	}
-}
-
-#define UTIL_BUF 32
-
-inline string i2str(int v)
-{
-	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%d", v);
-	return string(buf);
-}
-
-inline string li2str(long v)
-{
-	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%ld", v);
-	return string(buf);
-}
-
-inline string f2str(float v)
-{
-	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", v);
-	return string(buf);
-}
-
-inline string f2str(float v, int nDigit)
-{
-	char buf[UTIL_BUF];
-	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), (float)v);
-	return string(buf);
-}
-
-inline string lf2str(double v)
-{
-	char buf[UTIL_BUF];
-	snprintf(buf, UTIL_BUF, "%.3f", (double)v);
-	return string(buf);
-}
-
-inline string lf2str(double v, int nDigit)
-{
-	char buf[UTIL_BUF];
-	string format = "%."+i2str(nDigit)+"f";
-	snprintf(buf, UTIL_BUF, format.c_str(), (double)v);
-	return string(buf);
-}
-
-inline void trimJson(string* pStr)
-{
-	unsigned int idx = pStr->rfind('}', pStr->size()) + 1;
-	if (pStr->size() > idx)
-	{
-		pStr->erase(idx);
-	}
-
-	idx = pStr->find('{', 0);
-	if (idx != string::npos && idx > 0)
-	{
-		pStr->erase(0, idx - 1);
-	}
-}
-
-inline vector<string> splitBy(string str, char c)
-{
-	vector<string> v;
-	string buf = "";
-	stringstream ss;
-
-	ss << str;
-	while (getline(ss, buf, c))
-	{
-		v.push_back(buf);
-	}
-
-	return v;
 }
 
 #ifdef USE_OPENCV

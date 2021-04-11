@@ -27,8 +27,9 @@ namespace kai
 
 	protected:
 		virtual void readAllPC(void);
-		virtual void update(void);
+		virtual void makeInitPC(PointCloud* pPC, int n, double l, int iAxis, Vector3d vCol);
 
+		virtual void update(void);
 		static void *getUpdate(void *This)
 		{
 			((_PCviewer *)This)->update();
@@ -50,7 +51,6 @@ namespace kai
 		string m_device;
 
 		vector<_PCbase *> m_vpPCB;
-		shared_ptr<PointCloud> m_spPC;
 
 		_Thread* m_pTui;
 		shared_ptr<PCviewerUI> m_spWin;

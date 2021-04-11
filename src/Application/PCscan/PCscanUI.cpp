@@ -104,7 +104,7 @@ namespace open3d
 
                     auto o3dscene = m_pScene->GetScene();
                     o3dscene->SetBackground(m_uiState.bg_color);
-                    Eigen::Vector3f sun_dir = {0, 0, 0};
+                    Eigen::Vector3f sun_dir(0,0,0);
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
 
                     InitCtrlPanel();
@@ -694,7 +694,7 @@ namespace open3d
 
                     //Distance labels
                     RemoveDistLabel();
-                    Vector3d vPa = Vector3d(0, 0, 0);
+                    Vector3d vPa(0,0,0);
                     for (int i = 0; i < nP; i++)
                     {
                         int j = (i + 1) % nP;
@@ -735,7 +735,7 @@ namespace open3d
                 double Area(vector<Vector3d> &vP)
                 {
                     int nP = vP.size();
-                    Vector3d vA = Vector3d(0, 0, 0);
+                    Vector3d vA(0,0,0);
                     int j = 0;
 
                     for (int i = 0; i < nP; i++)
@@ -838,9 +838,9 @@ namespace open3d
             {
                 impl_->UpdateTgeometry(name, sTg);
 
-               gui::Application::GetInstance().PostToMainThread(
-                   this, [this, name]() 
-                   {
+                gui::Application::GetInstance().PostToMainThread(
+                    this, [this, name]() 
+                    {
                         impl_->m_pScene->GetScene()->GetScene()->UpdateGeometry(
                             name,
                             *impl_->GetGeometry(name).m_sTgeometry,

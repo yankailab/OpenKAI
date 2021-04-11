@@ -111,7 +111,7 @@ namespace kai
     void _PCstream::clear(void)
     {
         for(int i=0; i<m_nP; i++)
-            m_pP->init();
+            m_pP[i].init();
 
         m_iP = 0;
     }
