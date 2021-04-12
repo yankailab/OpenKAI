@@ -64,6 +64,7 @@ namespace open3d
                 //UI handler
                 O3D_UI_Cb m_cbBtnScan;
                 O3D_UI_Cb m_cbBtnSavePC;
+                O3D_UI_Cb m_cbBtnAutoCam;
 
                 void Construct(PCscanUI *w)
                 {
@@ -74,8 +75,10 @@ namespace open3d
                     m_modelName = "PCMODEL";
                     m_areaName = "PCAREA";
                     m_areaLineCol = Vector3d(1.0, 0.0, 1.0);
+
                     m_cbBtnScan.init();
                     m_cbBtnSavePC.init();
+                    m_cbBtnAutoCam.init();
 
                     m_pWindow = w;
                     m_pScene = new SceneWidget();
@@ -112,7 +115,6 @@ namespace open3d
                     SetPointSize(m_uiState.m_pointSize); // sync selections_' point size
                     SetLineWidth(m_uiState.m_lineWidth);
                     SetMouseCameraMode();
-                    ResetCameraToDefault();
                 }
 
                 void InitCtrlPanel(void)
@@ -149,6 +151,32 @@ namespace open3d
                     panelFile->AddChild(GiveOwnership(h));
                     panelFile->SetIsOpen(false);
 
+                    // Camera
+                    auto panelCam = new CollapsableVert("CAMERA", v_spacing, margins);
+                    m_panelCtrl->AddChild(GiveOwnership(panelCam));
+                    h = new Horiz(v_spacing);
+
+                    auto btnCamAuto = new Button(" Cam Auto ");
+                    btnCamAuto->SetOnClicked([this]()
+                    {
+                        bool b = true;
+                        m_cbBtnAutoCam.call(&b);
+                        SetMouseCameraMode();
+                    });
+                    h->AddChild(GiveOwnership(btnCamAuto));
+                    h->AddStretch();
+
+                    auto btnCamReset = new Button(" Cam Reset ");
+                    btnCamReset->SetOnClicked([this]()
+                    {
+                        bool b = false;
+                        m_cbBtnAutoCam.call(&b);
+                        SetMouseCameraMode();
+                    });
+                    h->AddChild(GiveOwnership(btnCamReset));
+                    h->AddStretch();
+                    panelCam->AddChild(GiveOwnership(h));
+
                     // Scan
                     auto panelScan = new CollapsableVert("SCAN", v_spacing, margins);
                     m_panelCtrl->AddChild(GiveOwnership(panelScan));
@@ -178,28 +206,16 @@ namespace open3d
                             m_listVertexSet->SetEnabled(true);
                         }
 
-                        int b = m_bScanning ? 1 : 0;
-                        m_cbBtnScan.call(&b);
-
+                        m_cbBtnScan.call(&m_bScanning);
                         m_pWindow->PostRedraw();
                     });
                     h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_btnScanStart));
                     h->AddStretch();
-
-                    auto btnCamAuto = new Button("   Auto Pan   ");
-                    btnCamAuto->SetOnClicked([this]()
-                    {
-                        ResetCameraToDefault();
-                        SetMouseCameraMode();
-                    });
-                    h->AddChild(GiveOwnership(btnCamAuto));
-                    h->AddStretch();
-
                     panelScan->AddChild(GiveOwnership(h));
 
                     m_labelProg = new Label("Memory used: 0%");
-                    h = new Horiz();
+                    h = new Horiz(v_spacing);
                     h->AddChild(GiveOwnership(m_labelProg));
                     h->AddStretch();
                     panelScan->AddChild(GiveOwnership(h));
@@ -271,6 +287,11 @@ namespace open3d
                 void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV)
                 {
                     m_cbBtnSavePC.add(pCb, pPCV);
+                }
+
+                void SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV)
+                {
+                    m_cbBtnAutoCam.add(pCb, pPCV);
                 }
 
                 void SetProgressBar(float v)
@@ -436,27 +457,19 @@ namespace open3d
                     return DrawObject();
                 }
 
-                void SetupCamera(float fov,
+
+                void SetCamera(float fov,
                                  const Eigen::Vector3f &center,
                                  const Eigen::Vector3f &eye,
-                                 const Eigen::Vector3f &up)
+                                 const Eigen::Vector3f &up,
+                                 const Eigen::Vector3f &CoR,
+                                 bool bAutoBound = true
+                                 )
                 {
                     auto scene = m_pScene->GetScene();
-                    m_pScene->SetupCamera(fov, scene->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
-                    scene->GetCamera()->LookAt(center, eye, up);
-                    m_pScene->ForceRedraw();
-                }
-
-                void ResetCameraToDefault(void)
-                {
-                    auto scene = m_pScene->GetScene();
-                    m_pScene->SetupCamera(60.0f, scene->GetBoundingBox(), {0.0f, 0.0f, 0.0f});
-
-                    // Eigen::Vector3f vCenter(0, 0, 0);
-                    // Eigen::Vector3f vEye(0, 0, 1);
-                    // Eigen::Vector3f vUp(1, 0, 0);
-                    //scene->GetCamera()->LookAt(vCenter, vEye, vUp);
-
+                    m_pScene->SetupCamera(fov, scene->GetBoundingBox(), CoR);
+                    if(!bAutoBound)
+                        scene->GetCamera()->LookAt(center, eye, up);
                     m_pScene->ForceRedraw();
                 }
 
@@ -886,14 +899,15 @@ namespace open3d
                 return impl_->GetSelectionSets();
             }
 
-            void PCscanUI::SetupCamera(float fov,
-                                       const Eigen::Vector3f &center,
-                                       const Eigen::Vector3f &eye,
-                                       const Eigen::Vector3f &up) {}
-
-            void PCscanUI::ResetCameraToDefault()
+            void PCscanUI::SetCamera(float fov,
+                                 const Eigen::Vector3f &center,
+                                 const Eigen::Vector3f &eye,
+                                 const Eigen::Vector3f &up,
+                                 const Eigen::Vector3f &CoR,
+                                 bool bAutoBound = true
+                                 )
             {
-                return impl_->ResetCameraToDefault();
+                impl_->SetCamera(fov, center, eye, up, CoR, bAutoBound);
             }
 
             void PCscanUI::ExportCurrentImage(const string &path)
@@ -929,6 +943,12 @@ namespace open3d
             {
                 impl_->SetCbBtnSavePC(pCb, pPCV);
             }
+
+            void PCscanUI::SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV)
+            {
+                impl_->SetCbBtnAutoCam(pCb, pPCV);
+            }
+
         } // namespace visualizer
     }     // namespace visualization
 } // namespace open3d

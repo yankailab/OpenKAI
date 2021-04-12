@@ -25,6 +25,7 @@ namespace kai
         m_vAxisIdx.init(0,1,2);
         m_vAxisK.init(1.0);
         m_unitK = 1.0;
+        m_vColOvrr.init(-1.0);
 
         m_pInCtx.init();
     }
@@ -41,6 +42,7 @@ namespace kai
         pK->v("vAxisIdx", &m_vAxisIdx);
         pK->v("vAxisK", &m_vAxisK);
         pK->v("unitK", &m_unitK);
+        pK->v("vColOvrr", &m_vColOvrr);
 
         //origin offset
         pK->v("vToffset", &m_vToffset);

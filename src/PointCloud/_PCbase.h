@@ -104,6 +104,9 @@ namespace kai
 
         //pipeline input
         PC_PIPIN_CTX m_pInCtx;
+
+        //color override
+  		vFloat3 m_vColOvrr;
     };
 
 }

@@ -13,12 +13,17 @@ namespace kai
 
 	_PCviewer::_PCviewer()
 	{
-		m_fov = 0.0;
 		m_vWinSize.init(1280, 720);
 
 		m_pTui = NULL;
 		m_pathRes = "";
 		m_device = "CPU:0";
+
+		m_fov = 70.0;
+		m_vCamCenter.init(0);
+		m_vCamEye.init(0, 0, 1);
+		m_vCamUp.init(0, 1, 0);
+		m_vCamCoR.init(0, 0, 0);
 	}
 
 	_PCviewer::~_PCviewer()
@@ -31,9 +36,14 @@ namespace kai
 		Kiss *pK = (Kiss *)pKiss;
 
 		pK->v("vWinSize", &m_vWinSize);
-		pK->v("fov", &m_fov);
 		pK->v("pathRes", &m_pathRes);
 		pK->v("device", &m_device);
+
+		pK->v("fov", &m_fov);
+		pK->v("vCamCenter", &m_vCamCenter);
+		pK->v("vCamEye", &m_vCamEye);
+		pK->v("vCamUp", &m_vCamUp);
+		pK->v("vCamCoR", &m_vCamCoR);
 
 		utility::SetVerbosityLevel(utility::VerbosityLevel::Error);
 

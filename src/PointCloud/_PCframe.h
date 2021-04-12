@@ -42,8 +42,6 @@ namespace kai
 		//frame buf
 		tSwap<PointCloud> m_sPC;
 		pthread_mutex_t m_mutexPC;
-
-		vFloat3 m_vColOvrr;
 	};
 
 }

@@ -17,7 +17,6 @@ namespace kai
     {
         m_type = pc_frame;
         
-        m_vColOvrr.init(-1.0);
         pthread_mutex_init(&m_mutexPC, NULL);
     }
 
@@ -30,8 +29,6 @@ namespace kai
     {
         IF_F(!this->_PCbase::init(pKiss));
         Kiss *pK = (Kiss *)pKiss;
-
-        pK->v("vColOvrr", &m_vColOvrr);
 
         //frame buf
         int nPCreserve = 0;

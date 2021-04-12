@@ -47,8 +47,13 @@ namespace kai
 		string m_pathRes;
 		Visualizer m_vis;
 		vInt2 m_vWinSize;
-		float m_fov;
 		string m_device;
+
+		float m_fov;
+		vFloat3 m_vCamCenter;
+		vFloat3 m_vCamEye;
+		vFloat3 m_vCamUp;
+		vFloat3 m_vCamCoR;
 
 		vector<_PCbase *> m_vpPCB;
 

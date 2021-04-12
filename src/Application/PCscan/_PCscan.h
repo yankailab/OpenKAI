@@ -30,6 +30,7 @@ namespace kai
 		virtual bool stopScan(void);
 
 	protected:
+		virtual void updateCamera(bool bAutoBound);
 		virtual void updateScan(void);
 		virtual void update(void);
 		static void *getUpdate(void *This)
@@ -48,6 +49,7 @@ namespace kai
 
 		static void OnBtnScan(void *pPCV, void* pD);
 		static void OnBtnSavePC(void *pPCV, void* pD);
+		static void OnBtnAutoCam(void *pPCV, void* pD);
 		virtual void updateUI(void);
 		static void *getUpdateUI(void *This)
 		{

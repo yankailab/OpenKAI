@@ -34,7 +34,7 @@ struct O3D_UI_Cb
 		return (m_pCb && m_pPCV)?true:false;
 	}
 
-	void call(void* pD)
+	void call(void* pD = NULL)
 	{
 		if(!bValid())return;
 
@@ -95,11 +95,13 @@ namespace open3d
 				PCscanUI(const string &title, int width, int height);
 				virtual ~PCscanUI();
 
-				void SetupCamera(float fov,
-								 const Vector3f &center,
-								 const Vector3f &eye,
-								 const Vector3f &up);
-				void ResetCameraToDefault();
+	            void SetCamera(float fov,
+                                 const Vector3f &center,
+                                 const Vector3f &eye,
+                                 const Vector3f &up,
+                                 const Vector3f &CoR,
+								 bool bAutoBound
+                                 );
 				void ShowSettings(bool show);
 				void ShowAxes(bool show);
 				void SetPointSize(int point_size);
@@ -131,6 +133,7 @@ namespace open3d
 
 				void SetCbBtnScan(OnBtnClickedCb pCb, void* pPCV );
 				void SetCbBtnSavePC(OnBtnClickedCb pCb, void* pPCV );
+				void SetCbBtnAutoCam(OnBtnClickedCb pCb, void* pPCV );
 				void SetProgressBar(float v);
 
 			protected:

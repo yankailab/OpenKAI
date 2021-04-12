@@ -81,14 +81,15 @@ namespace kai
 			m_pPS->nP(),
 			10,
 			0,
-			Vector3d(0, 1, 1));
+			Vector3d(1, 0, 0));
 		updatePC();
 		m_spWin->AddPointCloud(m_modelName,
 							   make_shared<t::geometry::PointCloud>(
 								   t::geometry::PointCloud::FromLegacyPointCloud(
 									   *m_sPC.get(),
 									   core::Dtype::Float32)));
-		m_spWin->ResetCameraToDefault();
+
+		updateCamera(false);
 
 		while (m_pT->bRun())
 		{
@@ -119,7 +120,7 @@ namespace kai
 				nP - n,
 				10,
 				0,
-				Vector3d(0, 1, 1));
+				Vector3d(1, 0, 0));
 			*pPC += pc;
 		}
 		else if (n > nP)
@@ -141,6 +142,19 @@ namespace kai
 		if (m_pPS)
 			m = (float)m_pPS->iP() / (float)m_pPS->nP();
 		m_spWin->SetProgressBar(m);
+	}
+
+	void _PCscan::updateCamera(bool bAutoBound)
+	{
+		IF_(check()<0);
+		IF_(!m_spWin);
+
+		Vector3f vCenter(m_vCamCenter.x, m_vCamCenter.y, m_vCamCenter.z);
+		Vector3f vEye(m_vCamEye.x, m_vCamEye.y, m_vCamEye.z);
+		Vector3f vUp(m_vCamUp.x, m_vCamUp.y, m_vCamUp.z);
+		Vector3f vCoR(m_vCamCoR.x, m_vCamCoR.y, m_vCamCoR.z);
+
+		m_spWin->SetCamera(m_fov, vCenter, vEye, vUp, vCoR, bAutoBound);
 	}
 
 	bool _PCscan::startScan(void)
@@ -195,6 +209,7 @@ namespace kai
 
 		m_spWin->SetCbBtnScan(OnBtnScan, (void *)this);
 		m_spWin->SetCbBtnSavePC(OnBtnSavePC, (void *)this);
+		m_spWin->SetCbBtnAutoCam(OnBtnAutoCam, (void *)this);
 
 		m_pT->wakeUp();
 		app.Run();
@@ -206,7 +221,7 @@ namespace kai
 		NULL_(pPCV);
 		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
-		bool bScanning = *((int *)pD) != 0 ? true : false;
+		bool bScanning = *((bool*)pD);
 
 		if (bScanning)
 			pV->startScan();
@@ -229,6 +244,16 @@ namespace kai
 		pthread_mutex_unlock(&pV->m_mutexPC);
 		io::WritePointCloudToPLY((const char *)pD, pc, par);
 	}
+
+	void _PCscan::OnBtnAutoCam(void *pPCV, void *pD)
+	{
+		NULL_(pPCV);
+		NULL_(pD);
+		_PCscan *pV = (_PCscan *)pPCV;
+
+		pV->updateCamera(*((bool *)pD));
+	}
+
 
 }
 #endif
