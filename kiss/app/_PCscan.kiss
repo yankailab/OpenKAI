@@ -38,17 +38,20 @@
 	"vPCbase":["pcFile","pcRS","pcLivox"],
 	"_SlamBase":"T265",
 	"_PCstream":"pcLivox",
-	"fov":70,
 	"vCamCenter":[0,0,0],
 	"vCamEye":[0,0,1],
 	"vCamUp":[0,1,0],
 	"vCamCoR":[0,0,0],
+	"camFov":70,
+	"camAspect":1.8,
+	"vCamNF":[0,100],
+	"camFovType":0,
 }
 
 {
 	"name":"pcFile",
 	"class":"_PCfile",
-	"bInst":0,
+	"bInst":1,
     {
 		"name":"thread",
 		"FPS":30,

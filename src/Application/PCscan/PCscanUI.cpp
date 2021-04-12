@@ -23,11 +23,13 @@ namespace open3d
 
             struct UIState
             {
+                bool m_bSceneCache = false;
                 Shader m_sceneShader = Shader::STANDARD;
                 bool m_bShowSettings = true;
                 bool m_bShowAxes = true;
 
                 Eigen::Vector4f bg_color = {0.0f, 0.0f, 0.0f, 0.0f};
+                double m_selectPointSize = 0.025;
                 int m_pointSize = 2;
                 int m_lineWidth = 5;
                 SceneWidget::Controls m_mouseMode = SceneWidget::Controls::FLY;
@@ -57,6 +59,7 @@ namespace open3d
                 Button *m_btnNewVertexSet;
                 Button *m_btnDeleteVertexSet;
                 ListView *m_listVertexSet;
+                Label *m_labelArea;
 
                 Slider *m_sliderPointSize;
                 //UI components
@@ -84,20 +87,19 @@ namespace open3d
                     m_pScene = new SceneWidget();
                     m_sVertex = make_shared<O3DVisualizerSelections>(*m_pScene);
                     m_pScene->SetScene(make_shared<Open3DScene>(w->GetRenderer()));
-                    m_pScene->EnableSceneCaching(true); // smoother UI with large geometry
+                    m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache); // smoother UI with large geometry
                     m_pScene->SetOnPointsPicked(
                         [this](const map<
                                    string,
                                    vector<pair<size_t, Eigen::Vector3d>>>
                                    &indices,
-                               int keymods) 
-                        {
+                               int keymods) {
                             if (keymods & int(KeyModifier::SHIFT))
                             {
                                 m_sVertex->UnselectIndices(indices);
                             }
                             else
-                            {                                
+                            {
                                 m_sVertex->SelectIndices(indices);
                             }
 
@@ -107,7 +109,7 @@ namespace open3d
 
                     auto o3dscene = m_pScene->GetScene();
                     o3dscene->SetBackground(m_uiState.bg_color);
-                    Eigen::Vector3f sun_dir(0,0,0);
+                    Eigen::Vector3f sun_dir(0, 0, 0);
                     o3dscene->SetLighting(Open3DScene::LightingProfile::NO_SHADOWS, sun_dir);
 
                     InitCtrlPanel();
@@ -134,16 +136,14 @@ namespace open3d
 
                     auto h = new Horiz(v_spacing);
                     auto btnCamSavePC = new Button("  Export .PLY  ");
-                    btnCamSavePC->SetOnClicked([this]()
-                    {
+                    btnCamSavePC->SetOnClicked([this]() {
                         OnExportPLY();
                     });
                     h->AddChild(GiveOwnership(btnCamSavePC));
                     h->AddStretch();
 
                     auto btnCamSaveRGB = new Button("  Export RGB  ");
-                    btnCamSaveRGB->SetOnClicked([this]()
-                    {
+                    btnCamSaveRGB->SetOnClicked([this]() {
                         OnExportRGB();
                     });
                     h->AddChild(GiveOwnership(btnCamSaveRGB));
@@ -156,21 +156,18 @@ namespace open3d
                     m_panelCtrl->AddChild(GiveOwnership(panelCam));
                     h = new Horiz(v_spacing);
 
-                    auto btnCamAuto = new Button(" Cam Auto ");
-                    btnCamAuto->SetOnClicked([this]()
-                    {
-                        bool b = true;
-                        m_cbBtnAutoCam.call(&b);
+                    auto btnCamAuto = new Button("     Auto     ");
+                    btnCamAuto->SetOnClicked([this]() {
+                        Vector3f CoR(0, 0, 0);
+                        CamAutoBound(CoR);
                         SetMouseCameraMode();
                     });
                     h->AddChild(GiveOwnership(btnCamAuto));
                     h->AddStretch();
 
-                    auto btnCamReset = new Button(" Cam Reset ");
-                    btnCamReset->SetOnClicked([this]()
-                    {
-                        bool b = false;
-                        m_cbBtnAutoCam.call(&b);
+                    auto btnCamReset = new Button("     Reset    ");
+                    btnCamReset->SetOnClicked([this]() {
+                        m_cbBtnAutoCam.call();
                         SetMouseCameraMode();
                     });
                     h->AddChild(GiveOwnership(btnCamReset));
@@ -183,15 +180,14 @@ namespace open3d
 
                     m_btnScanStart = new Button("     Start     ");
                     m_btnScanStart->SetToggleable(true);
-                    m_btnScanStart->SetOnClicked([this]()
-                    {
+                    m_btnScanStart->SetOnClicked([this]() {
                         SetMouseCameraMode();
                         RemoveAllVertexSet();
 
                         m_bScanning = !m_bScanning;
 
                         m_btnScanStart->SetOn(m_bScanning);
-                        if(m_bScanning)
+                        if (m_bScanning)
                         {
                             m_btnScanStart->SetText("     Stop     ");
                             m_btnNewVertexSet->SetEnabled(false);
@@ -249,8 +245,14 @@ namespace open3d
                     h->AddChild(GiveOwnership(m_btnDeleteVertexSet));
                     panelVertexSet->AddChild(GiveOwnership(h));
 
-                    h = new Horiz();
+                    h = new Horiz(v_spacing);
                     h->AddChild(make_shared<Label>("(Ctrl-click to select a point)"));
+                    h->AddStretch();
+                    panelVertexSet->AddChild(GiveOwnership(h));
+
+                    h = new Horiz(v_spacing);
+                    m_labelArea = new Label("Area not selected");
+                    h->AddChild(GiveOwnership(m_labelArea));
                     h->AddStretch();
                     panelVertexSet->AddChild(GiveOwnership(h));
 
@@ -297,10 +299,14 @@ namespace open3d
                 void SetProgressBar(float v)
                 {
                     m_progScan->SetValue(v);
-                    string s = "Memory used: " + i2str((int)(v*100)) + "%";
+                    string s = "Memory used: " + i2str((int)(v * 100)) + "%";
                     m_labelProg->SetText(s.c_str());
                 }
 
+                void SetLabelArea(const string &s)
+                {
+                    m_labelArea->SetText(s.c_str());
+                }
 
                 void AddGeometry(const string &name,
                                  shared_ptr<geometry::Geometry3D> geom,
@@ -457,25 +463,48 @@ namespace open3d
                     return DrawObject();
                 }
 
+                void CamSetProj(
+                    double fov,
+                    double aspect,
+                    double near,
+                    double far,
+                    uint8_t fov_type)
+                {
+                    auto sCam = m_pScene->GetScene()->GetCamera();
+                    sCam->SetProjection(
+                        fov,
+                        aspect,
+                        near,
+                        far,
+                        (fov_type == 0) ? Camera::FovType::Horizontal : Camera::FovType::Vertical);
 
-                void SetCamera(float fov,
-                                 const Eigen::Vector3f &center,
-                                 const Eigen::Vector3f &eye,
-                                 const Eigen::Vector3f &up,
-                                 const Eigen::Vector3f &CoR,
-                                 bool bAutoBound = true
-                                 )
+                    m_pScene->ForceRedraw();
+                }
+
+                void CamSetPose(
+                    const Eigen::Vector3f &center,
+                    const Eigen::Vector3f &eye,
+                    const Eigen::Vector3f &up)
+                {
+                    auto sCam = m_pScene->GetScene()->GetCamera();
+                    sCam->LookAt(center, eye, up);
+
+                    m_pScene->ForceRedraw();
+                }
+
+                void CamAutoBound(const Eigen::Vector3f &CoR)
                 {
                     auto scene = m_pScene->GetScene();
-                    m_pScene->SetupCamera(fov, scene->GetBoundingBox(), CoR);
-                    if(!bAutoBound)
-                        scene->GetCamera()->LookAt(center, eye, up);
+                    auto sCam = scene->GetCamera();
+                    m_pScene->SetupCamera(sCam->GetFieldOfView(),
+                                          scene->GetBoundingBox(),
+                                          CoR);
                     m_pScene->ForceRedraw();
                 }
 
                 void SetMouseCameraMode(void)
                 {
-                    if(m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
+                    if (m_sVertex->IsActive() && m_sVertex->GetNumberOfSets() > 0)
                         m_sVertex->MakeInactive();
 
                     m_pScene->SetViewControls(m_uiState.m_mouseMode);
@@ -521,14 +550,9 @@ namespace open3d
                         o.m_material.point_size = float(px);
                         OverrideMaterial(o.m_name, o.m_material, m_uiState.m_sceneShader);
                     }
-                    auto bbox = m_pScene->GetScene()->GetBoundingBox();
-                    auto xdim = bbox.max_bound_.x() - bbox.min_bound_.x();
-                    auto ydim = bbox.max_bound_.y() - bbox.min_bound_.z();
-                    auto zdim = bbox.max_bound_.z() - bbox.min_bound_.y();
-                    auto psize = double(max(5, px)) * 0.000666 * max(xdim, max(ydim, zdim));
 
-                    if(m_sVertex->GetNumberOfSets())
-                        m_sVertex->SetPointSize(psize);
+                    if (m_sVertex->GetNumberOfSets())
+                        m_sVertex->SetPointSize(m_uiState.m_selectPointSize);
 
                     m_pScene->SetPickablePointSize(px);
                     m_pScene->ForceRedraw();
@@ -607,7 +631,8 @@ namespace open3d
 
                 void RemoveVertexSet(int index)
                 {
-                    if(index < 0)return;
+                    if (index < 0)
+                        return;
                     m_sVertex->RemoveSet(index);
                     UpdateVertexSetList();
                     UpdateArea();
@@ -641,7 +666,7 @@ namespace open3d
                     }
                     m_listVertexSet->SetItems(items);
 
-                    if(n > 0)
+                    if (n > 0)
                     {
                         int idx = m_listVertexSet->GetSelectedIndex();
                         idx = min(idx, int(n) - 1);
@@ -707,7 +732,7 @@ namespace open3d
 
                     //Distance labels
                     RemoveDistLabel();
-                    Vector3d vPa(0,0,0);
+                    Vector3d vPa(0, 0, 0);
                     for (int i = 0; i < nP; i++)
                     {
                         int j = (i + 1) % nP;
@@ -733,6 +758,8 @@ namespace open3d
                     spA->SetTextColor(Color(1, 1, 0));
                     m_vspDistLabel.push_back(spA);
 
+                    strS = "Area"+ i2str(iS+1) +" = " + f2str(S, 3) + " m^2";
+                    SetLabelArea(strS);
                     m_pWindow->PostRedraw();
                 }
 
@@ -748,7 +775,7 @@ namespace open3d
                 double Area(vector<Vector3d> &vP)
                 {
                     int nP = vP.size();
-                    Vector3d vA(0,0,0);
+                    Vector3d vA(0, 0, 0);
                     int j = 0;
 
                     for (int i = 0; i < nP; i++)
@@ -774,7 +801,7 @@ namespace open3d
                                      path + ".")
                                         .c_str());
                             }
-                            m_pScene->EnableSceneCaching(true);
+                            m_pScene->EnableSceneCaching(m_uiState.m_bSceneCache);
                         });
                 }
 
@@ -801,11 +828,10 @@ namespace open3d
                     dlg->SetOnCancel([this]() { this->m_pWindow->CloseDialog(); });
                     dlg->SetOnDone([this](const char *path) {
                         this->m_pWindow->CloseDialog();
-                        this->m_cbBtnSavePC.call((void*)path);
+                        this->m_cbBtnSavePC.call((void *)path);
                     });
                     m_pWindow->ShowDialog(dlg);
                 }
-
             };
 
             // ----------------------------------------------------------------------------
@@ -852,8 +878,7 @@ namespace open3d
                 impl_->UpdateTgeometry(name, sTg);
 
                 gui::Application::GetInstance().PostToMainThread(
-                    this, [this, name]() 
-                    {
+                    this, [this, name]() {
                         impl_->m_pScene->GetScene()->GetScene()->UpdateGeometry(
                             name,
                             *impl_->GetGeometry(name).m_sTgeometry,
@@ -888,7 +913,7 @@ namespace open3d
                 impl_->SetLineWidth(line_width);
             }
 
-			void PCscanUI::SetProgressBar(float v)
+            void PCscanUI::SetProgressBar(float v)
             {
                 impl_->SetProgressBar(v);
             }
@@ -899,15 +924,32 @@ namespace open3d
                 return impl_->GetSelectionSets();
             }
 
-            void PCscanUI::SetCamera(float fov,
-                                 const Eigen::Vector3f &center,
-                                 const Eigen::Vector3f &eye,
-                                 const Eigen::Vector3f &up,
-                                 const Eigen::Vector3f &CoR,
-                                 bool bAutoBound = true
-                                 )
+            void PCscanUI::CamSetProj(
+                double fov,
+                double aspect,
+                double near,
+                double far,
+                uint8_t fov_type)
             {
-                impl_->SetCamera(fov, center, eye, up, CoR, bAutoBound);
+                impl_->CamSetProj(
+                    fov,
+                    aspect,
+                    near,
+                    far,
+                    fov_type);
+            }
+
+            void PCscanUI::CamSetPose(
+                const Eigen::Vector3f &center,
+                const Eigen::Vector3f &eye,
+                const Eigen::Vector3f &up)
+            {
+                impl_->CamSetPose(center, eye, up);
+            }
+
+            void PCscanUI::CamAutoBound(const Eigen::Vector3f &CoR)
+            {
+                impl_->CamAutoBound(CoR);
             }
 
             void PCscanUI::ExportCurrentImage(const string &path)

@@ -89,7 +89,8 @@ namespace kai
 									   *m_sPC.get(),
 									   core::Dtype::Float32)));
 
-		updateCamera(false);
+		updateCamProj();
+		updateCamPose();
 
 		while (m_pT->bRun())
 		{
@@ -144,7 +145,19 @@ namespace kai
 		m_spWin->SetProgressBar(m);
 	}
 
-	void _PCscan::updateCamera(bool bAutoBound)
+	void _PCscan::updateCamProj(void)
+	{
+		IF_(check()<0);
+		IF_(!m_spWin);
+
+		m_spWin->CamSetProj(m_camProj.m_fov,
+							m_camProj.m_aspect,
+							m_camProj.m_vNF.x,
+							m_camProj.m_vNF.y,
+							m_camProj.m_fovType);
+	}
+
+	void _PCscan::updateCamPose(void)
 	{
 		IF_(check()<0);
 		IF_(!m_spWin);
@@ -152,9 +165,7 @@ namespace kai
 		Vector3f vCenter(m_vCamCenter.x, m_vCamCenter.y, m_vCamCenter.z);
 		Vector3f vEye(m_vCamEye.x, m_vCamEye.y, m_vCamEye.z);
 		Vector3f vUp(m_vCamUp.x, m_vCamUp.y, m_vCamUp.z);
-		Vector3f vCoR(m_vCamCoR.x, m_vCamCoR.y, m_vCamCoR.z);
-
-		m_spWin->SetCamera(m_fov, vCenter, vEye, vUp, vCoR, bAutoBound);
+		m_spWin->CamSetPose(vCenter, vEye, vUp);
 	}
 
 	bool _PCscan::startScan(void)
@@ -248,10 +259,9 @@ namespace kai
 	void _PCscan::OnBtnAutoCam(void *pPCV, void *pD)
 	{
 		NULL_(pPCV);
-		NULL_(pD);
 		_PCscan *pV = (_PCscan *)pPCV;
 
-		pV->updateCamera(*((bool *)pD));
+		pV->updateCamPose();
 	}
 
 

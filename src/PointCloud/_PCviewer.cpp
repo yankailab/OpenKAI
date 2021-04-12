@@ -19,7 +19,7 @@ namespace kai
 		m_pathRes = "";
 		m_device = "CPU:0";
 
-		m_fov = 70.0;
+		m_camProj.init();
 		m_vCamCenter.init(0);
 		m_vCamEye.init(0, 0, 1);
 		m_vCamUp.init(0, 1, 0);
@@ -39,7 +39,11 @@ namespace kai
 		pK->v("pathRes", &m_pathRes);
 		pK->v("device", &m_device);
 
-		pK->v("fov", &m_fov);
+		pK->v("camFov", &m_camProj.m_fov);
+		pK->v("camAspect", &m_camProj.m_aspect);
+		pK->v("vCamNF", &m_camProj.m_vNF);
+		pK->v("camFovType", &m_camProj.m_fovType);
+
 		pK->v("vCamCenter", &m_vCamCenter);
 		pK->v("vCamEye", &m_vCamEye);
 		pK->v("vCamUp", &m_vCamUp);

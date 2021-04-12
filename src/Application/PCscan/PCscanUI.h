@@ -10,7 +10,6 @@ using namespace open3d::visualization::rendering;
 using namespace std;
 using namespace Eigen;
 
-
 typedef void (*OnBtnClickedCb)(void *pPCV, void *pD);
 struct O3D_UI_Cb
 {
@@ -25,18 +24,19 @@ struct O3D_UI_Cb
 
 	void add(OnBtnClickedCb pCb, void *pPCV)
 	{
-        m_pCb = pCb;
-        m_pPCV = pPCV;
+		m_pCb = pCb;
+		m_pPCV = pPCV;
 	}
 
 	bool bValid(void)
 	{
-		return (m_pCb && m_pPCV)?true:false;
+		return (m_pCb && m_pPCV) ? true : false;
 	}
 
-	void call(void* pD = NULL)
+	void call(void *pD = NULL)
 	{
-		if(!bValid())return;
+		if (!bValid())
+			return;
 
 		m_pCb(m_pPCV, pD);
 	}
@@ -95,13 +95,19 @@ namespace open3d
 				PCscanUI(const string &title, int width, int height);
 				virtual ~PCscanUI();
 
-	            void SetCamera(float fov,
-                                 const Vector3f &center,
-                                 const Vector3f &eye,
-                                 const Vector3f &up,
-                                 const Vector3f &CoR,
-								 bool bAutoBound
-                                 );
+				void CamSetProj(
+                    double fov,
+                    double aspect,
+                    double near,
+                    double far,
+                    uint8_t fov_type
+					);
+				void CamSetPose(
+					const Eigen::Vector3f &center,
+					const Eigen::Vector3f &eye,
+					const Eigen::Vector3f &up);
+				void CamAutoBound(const Eigen::Vector3f &CoR);
+
 				void ShowSettings(bool show);
 				void ShowAxes(bool show);
 				void SetPointSize(int point_size);
@@ -121,7 +127,7 @@ namespace open3d
 
 				void UpdatePointCloud(const string &name,
 									  shared_ptr<t::geometry::PointCloud> sTg);
-				
+
 				void RemoveGeometry(const string &name);
 				void ShowGeometry(const string &name, bool show);
 				DrawObject GetGeometry(const string &name) const;
@@ -131,9 +137,9 @@ namespace open3d
 				void ExportCurrentImage(const string &path);
 				rendering::Open3DScene *GetScene() const;
 
-				void SetCbBtnScan(OnBtnClickedCb pCb, void* pPCV );
-				void SetCbBtnSavePC(OnBtnClickedCb pCb, void* pPCV );
-				void SetCbBtnAutoCam(OnBtnClickedCb pCb, void* pPCV );
+				void SetCbBtnScan(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnSavePC(OnBtnClickedCb pCb, void *pPCV);
+				void SetCbBtnAutoCam(OnBtnClickedCb pCb, void *pPCV);
 				void SetProgressBar(float v);
 
 			protected:
